@@ -20,6 +20,8 @@ Private $iHidden As Integer
 
 Public Sub Form_Open()
 
+  WebSettings.IconDatabase.Path = File.Dir(File.Dir(Temp$()))
+
   CreateView()
   btnZoomNormal_Click
   txtURL.SetFocus
@@ -165,7 +167,6 @@ End
 Public Sub WebView_Icon()
 
   Dim hView As WebView = Last
-  Debug
   tabBrowser[hView.Tag].Picture = hView.Icon
   If Not IsLastCurrentView() Then Return
   Me.Icon = hView.Icon
@@ -201,6 +202,8 @@ Private Sub CreateView()
   tabBrowser.Index = iLast
   hView = New WebView(tabBrowser) As "WebView"
   hView.Tag = tabBrowser.Index
+  Print WebSettings.Font[WebSettings.FixedFont]
+  WebSettings.Font[WebSettings.FixedFont] = "Inconsolata"
   Object.Unlock(tabBrowser)
   tabBrowser_Click
   
@@ -250,5 +253,19 @@ Public Sub btnClose_Click()
   '   $iHidden = 0
   '   tabBrowser_Click
   ' Endif
+  
+End
+
+Public Sub WebView_Auth()
+  
+  Dim hView As WebView = Last
+  
+  If Not FAuth.Run(hView.Auth.Url, hView.Auth.Realm) Then
+ 
+    hView.Auth.User = FAuth.User
+    hView.Auth.Password = FAuth.Password
+    'Debug hView.Auth.Url;; hView.Auth.User;; hView.Auth.Password
+    
+  Endif 
   
 End

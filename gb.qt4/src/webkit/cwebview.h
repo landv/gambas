@@ -26,10 +26,13 @@
 #include "main.h"
 
 #include <QUrl>
+#include <QAuthenticator>
+#include <QNetworkReply>
 #include <QWebView>
 
 #ifndef __CWEBVIEW_CPP
 
+extern GB_DESC CWebViewAuthDesc[];
 extern GB_DESC CWebViewDesc[];
 
 #else
@@ -60,6 +63,8 @@ typedef
 		double progress;
 		char *status;
 		QT_PICTURE icon;
+		QNetworkReply *reply;
+		QAuthenticator *authenticator;
 	}
 	CWEBVIEW;
 
@@ -82,6 +87,7 @@ public slots:
 	void statusBarMessage(const QString &text);
 	void titleChanged(const QString &title);
 	void linkHovered(const QString &link, const QString &title, const QString &textContent);
+	void authenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator);
 };
 
 #endif

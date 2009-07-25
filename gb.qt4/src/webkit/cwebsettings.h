@@ -1,8 +1,8 @@
 /***************************************************************************
 
-  main.cpp
+  cwebsettings.h
 
-  (c) 2000-2007 Benoit Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,45 +20,26 @@
 
 ***************************************************************************/
 
-#define __MAIN_CPP
+#ifndef __CWEBSETTINGS_H
+#define __CWEBSETTINGS_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <string.h>
-
-#include "cwebsettings.h"
-#include "cwebframe.h"
-#include "cwebview.h"
 #include "main.h"
 
-extern "C" {
+#include <QUrl>
+#include <QWebView>
+#include <QWebSettings>
 
-GB_INTERFACE GB EXPORT;
-QT_INTERFACE QT;
+#ifndef __CWEBSETTINGS_CPP
 
-GB_DESC *GB_CLASSES[] EXPORT =
-{
-	CWebSettingsIconDatabaseDesc,
-	CWebSettingsFontDesc,
-	CWebSettingsDesc,
-	CWebFrameChildrenDesc,
-	CWebFrameDesc,
-	CWebViewSettingsDesc,
-  CWebViewAuthDesc,
-  CWebViewDesc,
-  NULL
-};
+extern GB_DESC CWebViewSettingsDesc[];
+extern GB_DESC CWebSettingsFontDesc[];
+extern GB_DESC CWebSettingsIconDatabaseDesc[];
+extern GB_DESC CWebSettingsDesc[];
 
-int EXPORT GB_INIT(void)
-{
-  GB.GetInterface("gb.qt4", QT_INTERFACE_VERSION, &QT);
-  return FALSE;
-}
+#else
 
-void EXPORT GB_EXIT()
-{
-}
+#define WEBVIEW ((QWebView *)((QT_WIDGET *)_object)->widget)
 
-}
+#endif
 
+#endif

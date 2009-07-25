@@ -1,0 +1,38 @@
+' Gambas class file
+
+Static Public User As String
+Static Public Password As String
+
+'Private $sUrl As String
+'Private $sRealm As String
+
+Public Sub Run(sUrl As String, sRealm As String) As Boolean
+
+  lblRealm.Text = sRealm
+  Me.Title = sUrl
+  '$sUrl = sUrl
+  '$sRealm = sRealm
+  Return Not Me.ShowModal()
+
+End
+
+Public Sub btnOK_Click()
+
+  User = txtUser.Text
+  Password = txtPassword.Text
+  Me.Close(True)
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+
+Public Sub Form_Open()
+
+  txtUser.SetFocus
+
+End

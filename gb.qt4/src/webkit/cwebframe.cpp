@@ -96,6 +96,31 @@ BEGIN_METHOD(WebFrameChildren_get, GB_INTEGER index)
 
 END_METHOD
 
+#if 0
+BEGIN_METHOD(WebFrame_EvalJavaScript, GB_STRING javascript)
+
+	QVariant result = FRAME->evaluateJavascript(QSTRING_ARG(javascript));
+	
+	switch (result->type())
+	{
+		case QVariant::Bool: GB.ReturnBoolean(result.toBool());
+		case QVariant::Date:
+		case QVariant::DateTime:
+		case QVariant::Double:
+		case QVariant::Hash:
+		case QVariant::Int:
+		case QVariant::List:
+		case QVariant::LongLong:
+		case QVariant::RegExp:
+		case QVariant::String:
+		case QVariant::UInt:
+		case QVariant::ULongLong:
+			
+	}
+
+END_METHOD
+#endif
+
 GB_DESC CWebFrameChildrenDesc[] =
 {
   GB_DECLARE(".WebFrameChildren", sizeof(CWEBFRAME)), GB_VIRTUAL_CLASS(),
@@ -116,6 +141,7 @@ GB_DESC CWebFrameDesc[] =
 	GB_PROPERTY_SELF("Children", ".WebFrameChildren"),
 	GB_PROPERTY_READ("Parent", "WebFrame", WebFrame_Parent),
 	GB_PROPERTY("Url", "s", WebFrame_Url),
+	//GB_METHOD("EvalJavaScript", NULL, WebFrame_EvalJavaScript, "(JavaScript)s"),
 	
 	GB_END_DECLARE
 };

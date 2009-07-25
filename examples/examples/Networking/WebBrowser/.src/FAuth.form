@@ -1,0 +1,60 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,54,26)
+  Text = ("Please authenticate")
+  Icon = Picture["icon:/small/unlock"]
+  Resizable = False
+  Arrangement = Arrange.Vertical
+  AutoResize = True
+  Spacing = True
+  Margin = True
+  { HPanel1 HPanel
+    MoveScaled(1,1,52,18)
+    AutoResize = True
+    Spacing = True
+    { lblRealm TextLabel
+      MoveScaled(2,1,22,4)
+      Expand = True
+      AutoResize = True
+      Text = ("")
+    }
+    { Label1 Label
+      MoveScaled(2,6,13,3)
+      Text = ("User")
+    }
+    { txtUser TextBox
+      MoveScaled(19,6,32,4)
+      Expand = True
+      Text = ("")
+    }
+    { Label2 Label
+      MoveScaled(2,11,13,3)
+      Text = ("Password")
+    }
+    { txtPassword TextBox
+      MoveScaled(19,11,32,4)
+      Expand = True
+      Text = ("")
+      Password = True
+    }
+  }
+  { HBox1 HBox
+    MoveScaled(1,20,52,4)
+    Spacing = True
+    { Panel1 Panel
+      MoveScaled(4,0,4,4)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(17,0,16,4)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(34,0,16,4)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

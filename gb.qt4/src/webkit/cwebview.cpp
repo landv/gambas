@@ -22,7 +22,7 @@
 
 #define __CWEBVIEW_CPP
 
-#include <QUrl>
+#include <QNetworkAccessManager>
 #include <QWebPage>
 #include <QWebFrame>
 
@@ -39,6 +39,7 @@ DECLARE_EVENT(EVENT_TITLE);
 DECLARE_EVENT(EVENT_SELECT);
 DECLARE_EVENT(EVENT_STATUS);
 DECLARE_EVENT(EVENT_NEW_WINDOW);
+DECLARE_EVENT(EVENT_AUTH);
 
 BEGIN_METHOD(WebView_new, GB_OBJECT parent)
 
@@ -57,6 +58,9 @@ BEGIN_METHOD(WebView_new, GB_OBJECT parent)
   
 	QObject::connect(wid->page(), SIGNAL(linkHovered(const QString &, const QString &, const QString &)), &CWebView::manager, 
 										SLOT(linkHovered(const QString &, const QString &, const QString &)));
+										
+	QObject::connect(wid->page()->networkAccessManager(), SIGNAL(authenticationRequired(QNetworkReply *, QAuthenticator *)), &CWebView::manager,
+										SLOT(authenticationRequired(QNetworkReply *, QAuthenticator *)));
 
 END_METHOD
 
@@ -186,6 +190,76 @@ BEGIN_PROPERTY(WebView_Current)
 
 END_PROPERTY
 
+
+BEGIN_PROPERTY(WebViewAuth_Url)
+
+	if (THIS->reply)
+		GB.ReturnNewZeroString(TO_UTF8(THIS->reply->url().toString()));
+	else
+		GB.ReturnNull();
+
+END_PROPERTY
+
+BEGIN_PROPERTY(WebViewAuth_Realm)
+
+	if (THIS->authenticator)
+		GB.ReturnNewZeroString(TO_UTF8(THIS->authenticator->realm()));
+	else
+		GB.ReturnNull();
+
+END_PROPERTY
+
+BEGIN_PROPERTY(WebViewAuth_User)
+
+	if (READ_PROPERTY)
+	{
+		if (THIS->authenticator)
+			GB.ReturnNewZeroString(TO_UTF8(THIS->authenticator->user()));
+		else
+			GB.ReturnNull();
+	}
+	else
+	{
+		if (THIS->authenticator)
+			THIS->authenticator->setUser(QSTRING_PROP());
+		else
+			GB.Error("No authentication required");
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(WebViewAuth_Password)
+
+	if (READ_PROPERTY)
+	{
+		if (THIS->authenticator)
+			GB.ReturnNewZeroString(TO_UTF8(THIS->authenticator->password()));
+		else
+			GB.ReturnNull();
+	}
+	else
+	{
+		if (THIS->authenticator)
+			THIS->authenticator->setPassword(QSTRING_PROP());
+		else
+			GB.Error("No authentication required");
+	}
+
+END_PROPERTY
+
+
+GB_DESC CWebViewAuthDesc[] =
+{
+  GB_DECLARE(".WebViewAuth", sizeof(CWEBVIEW)), GB_VIRTUAL_CLASS(),
+	
+	GB_PROPERTY_READ("Url", "s", WebViewAuth_Url),
+	GB_PROPERTY_READ("Realm", "s", WebViewAuth_Realm),
+	GB_PROPERTY("User", "s", WebViewAuth_User),
+	GB_PROPERTY("Password", "s", WebViewAuth_Password),
+	
+	GB_END_DECLARE
+};
+
 GB_DESC CWebViewDesc[] =
 {
   GB_DECLARE("WebView", sizeof(CWEBVIEW)), GB_INHERITS("Control"),
@@ -212,6 +286,9 @@ GB_DESC CWebViewDesc[] =
 	GB_PROPERTY_READ("Frame", "WebFrame", WebView_Frame),
 	GB_PROPERTY_READ("Current", "WebFrame", WebView_Current),
 	
+	GB_PROPERTY_SELF("Settings", ".WebViewSettings"),
+	GB_PROPERTY_SELF("Auth", ".WebViewAuth"),
+
 	GB_METHOD("Back", NULL, WebView_Back, NULL),
 	GB_METHOD("Forward", NULL, WebView_Forward, NULL),
 	GB_METHOD("Reload", NULL, WebView_Reload, NULL),
@@ -231,6 +308,7 @@ GB_DESC CWebViewDesc[] =
 	GB_EVENT("Select", NULL, NULL, &EVENT_SELECT),
 	GB_EVENT("Status", NULL, NULL, &EVENT_STATUS),
 	GB_EVENT("NewWindow", NULL, "(Modal)b", &EVENT_NEW_WINDOW),
+	GB_EVENT("Auth", NULL, NULL, &EVENT_AUTH),
 
 	GB_END_DECLARE
 };
@@ -266,7 +344,8 @@ void CWebView::iconChanged()
 	GET_SENDER();
 	QIcon icon = WIDGET->icon();
 	GB.Unref(POINTER(&THIS->icon));
-	THIS->icon = QT.CreatePicture(icon.pixmap(32, 32));
+	THIS->icon = QT.CreatePicture(icon.pixmap(16, 16));
+	GB.Ref(THIS->icon);
 	GB.Raise(THIS, EVENT_ICON, 0);
 }
 
@@ -322,7 +401,23 @@ void CWebView::titleChanged(const QString &title)
 
 void CWebView::linkHovered(const QString &link, const QString &title, const QString &textContent)
 {
-	GET_SENDER();
+	void *_object = QT.GetObject(((QWebPage*)sender())->view());
 	const char *str = TO_UTF8(link);
 	GB.Raise(THIS, EVENT_LINK, 1, GB_T_STRING, str, strlen(str));
 }
+
+void CWebView::authenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator)
+{
+	void *_object = QT.GetObject((QWidget *)((QNetworkAccessManager*)sender())->parent());
+	if (!THIS)
+		return;
+	
+	THIS->reply = reply;
+	THIS->authenticator = authenticator;
+	
+	GB.Raise(THIS, EVENT_AUTH, 0);
+	
+	THIS->reply = 0;
+	THIS->authenticator = 0;
+}
+
