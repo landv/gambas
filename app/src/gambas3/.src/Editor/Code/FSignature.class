@@ -36,14 +36,17 @@ Public Sub Open(iX As Integer, hSymbol As CSymbolInfo, iArg As Integer, Optional
   Dim hEditor As Editor
   Dim iY As Integer
   Dim hCont As Container
+  Dim sName As String
 
   hEditor = GetEditor() 
   Me.Font = hEditor.Font
   
-  sSign = hSymbol.Name
-  If Left$(sSign) = "_" Then sSign = hSymbol.Class
-  sSign = "<b>" & sSign & "</b>" & hSymbol.GetSignature(iArg)
-  'sSignBal = hSymbol.GetSignature(TRUE)
+  sSign = hSymbol.GetSignature(iArg)
+  If Not sSign Then Return
+  
+  sName = hSymbol.Name
+  If Left$(sName) = "_" Then sName = hSymbol.Class
+  sSign = "<b>" & sName & "</b>" & sSign 
   
   lblNewSignature.W = Max(64, hEditor.W - 64)
   lblNewSignature.Text = sSign

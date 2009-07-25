@@ -279,6 +279,8 @@ Private Sub MakeSignature(sSign As String) As String
   
   Return sSign
   
+Catch
+
 End
 
 
@@ -300,6 +302,7 @@ Public Function GetSignature(Optional iShowArg As Integer = -1) As String
     'sRes = MakeArgBold(Mid$(sSign, 2), iShowArg)
     'Debug Mid$(sSign, 2)
     sSign = MakeSignature(Mid$(sSign, 2))
+    If Not sSign Then Return
     'Debug "--> "; sSign
   Endif
   
@@ -425,6 +428,7 @@ Public Function GetDescription(Optional bBalise As Boolean) As String
 
   Dim bStatic As Boolean
   Dim sDesc As String
+  Dim sSign As String
 
   bStatic = UCase(Kind) = Kind
 
@@ -454,7 +458,12 @@ Public Function GetDescription(Optional bBalise As Boolean) As String
   Endif
   
   If InStr(":m", LCase(Kind)) Then 
-    sDesc &= " " & GetSignature()
+    sSign = GetSignature()
+    If sSign Then
+      sDesc &= sSign
+    Else
+      sDesc &= "(...)"
+    Endif
   Else
     If Type Then sDesc &= " AS " & GetType(Type, False)
   Endif
