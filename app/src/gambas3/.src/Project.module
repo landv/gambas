@@ -477,6 +477,11 @@ Private Function CloseProject() As Boolean
 
       If Not hForm.Closed Then
 
+        If Not hForm.Path Then
+          Debug "hForm.Path = NULL ?"
+          Stop
+        Endif
+
         Inc nOpen
         If hForm = ActiveForm Then Config["/OpenFile/Active"] = nOpen
   
@@ -489,7 +494,7 @@ Private Function CloseProject() As Boolean
         If sState Then sState = ":" & sState
         Config["/OpenFile/File[" & CStr(nOpen) & "]"] = hForm.Path & sState
         
-        If aFold Then Config["/OpenFile/Fold[" & CStr(nOpen) & "]"] = aFold
+        If aFold And If aFold.Count Then Config["/OpenFile/Fold[" & CStr(nOpen) & "]"] = aFold
         
       Endif
 

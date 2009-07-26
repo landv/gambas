@@ -3,7 +3,7 @@
 { Form Form
   MoveScaled(0,0,134,86)
   Text = ("")
-  Icon = Picture["img/logo/logo-32.png"]
+  Icon = Picture["img/logo/logo-32-head.png"]
   Arrangement = Arrange.Vertical
   { mnuFile Menu
     Text = ("&File")
@@ -278,11 +278,6 @@
       Action = "update-all-form"
       Text = ("&Update all forms")
       Picture = Picture["icon:/small/refresh"]
-    }
-    { mnuDatabaseManager Menu
-      Action = "database-manager"
-      Text = ("&Database manager...")
-      Picture = Picture["img/16/database-manager.png"]
     }
     { Menu20 Menu
       Text = ("")
@@ -907,11 +902,6 @@
     Text = "&Cut"
     Shortcut = "Ctrl+X"
     Picture = "icon:/small/cut"
-  }
-  { Action database-manager
-    Text = "&Database manager..."
-    Shortcut = ""
-    Picture = "img/16/database-manager.png"
   }
   { Action delete
     Text = "&Delete..."

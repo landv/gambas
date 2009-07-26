@@ -126,6 +126,7 @@ int MAIN_x11_last_key_code = 0;
 static bool in_event_loop = false;
 static int _no_destroy = 0;
 static QTranslator *qt = NULL;
+static bool _application_keypress = false;
 static GB_FUNCTION _application_keypress_func;
 static QWidget *_mouseGrabber = 0;
 static QWidget *_keyboardGrabber = 0;
@@ -315,7 +316,10 @@ static bool QT_EventFilter(QEvent *e)
 {
 	QKeyEvent *kevent = (QKeyEvent *)e;
 	bool cancel;
-
+	
+	if (!_application_keypress)
+		return false;
+	
 	CKEY_clear(true);
 
 	GB.FreeString(&CKEY_info.text);
@@ -554,7 +558,10 @@ static void QT_Init(void)
 	MAIN_update_scale();
 
 	if (GB.GetFunction(&_application_keypress_func, GB.FindClass(GB.Application.Startup()), "Application_KeyPress", "", "") == 0)
+	{
+		_application_keypress = true;
 		MyApplication::setEventFilter(true);
+	}
 
 	qApp->installEventFilter(&CWidget::manager);
 

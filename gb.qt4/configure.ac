@@ -38,7 +38,7 @@ GB_COMPONENT_PKG_CONFIG(
   QTWEBKIT,
   [QT4 webkit component],
   [webkit],
-  QtCore ">= 4.3.4" QtGui QtWebKit
+  QtCore ">= 4.3.4" QtGui QtNetwork QtDBus QtXml QtWebKit
 )
 
 GB_COMPONENT(
@@ -55,7 +55,7 @@ GB_COMPONENT_PKG_CONFIG(
   QTOPENGL,
   [QT4 OpenGL],
   [opengl],
-  QtOpenGL ">= 4.3.4"
+  QtCore ">= 4.3.4" QtGui QtOpenGL
 )
 
 MOC=`pkg-config --variable=moc_location QtCore`

@@ -1120,10 +1120,10 @@ Private Sub RefreshMenu()
   GetCurrent
 
   If $sKey = Project.KEY_CONNECTION Or If Project.IsConnectionPath($sKey) Then
-    Project.SetCurrentPopup(mnuDatabase)
+    If tvwProject.HasFocus Then Project.SetCurrentPopup(mnuDatabase)
     mnuDatabase_Show
   Else
-    Project.SetCurrentPopup(mnuPopup)
+    If tvwProject.HasFocus Then Project.SetCurrentPopup(mnuPopup)
     mnuPopup_Show
   Endif
   

@@ -3,6 +3,7 @@
 Static Private $aTheme As String[] = ["amethyst", "amber", "emerald", "ruby", "sapphire", "visual", "obsidian", "quest", "quick"]
 Static Private $aThemeName As String[] = [("Amethyst"), ("Amber"), ("Emerald"), ("Ruby"), ("Sapphire"), ("Visual"), ("Obsidian"), ("Quest"), ("Quick")]
 Static Private $aBrowser As String[] = ["konqueror", "firefox", "epiphany", "seamonkey", "opera"]
+Static Private $aTerminal As String[] = ["konsole", "gnome-terminal", "Terminal", "xterm"]
 
 Private $cLast As Collection
 Private $cCurrent As Collection
@@ -55,6 +56,7 @@ Public Sub _new()
   cmbTheme.Add(("Select a theme"), 0)
   cmbIconTheme.List = [("Desktop"), "Gnome", "KDE", "KDE4"]
   cmbBrowser.List = [("(Default)"), "Konqueror", "Firefox", "Epiphany", "SeaMonkey", "Opera"]
+  cmbTerminal.List = [("(Default)"), "Konsole", "Gnome Terminal", "XFCE Terminal", "XTerm"]
   
   $cLast = MTheme.ReadSettings(Settings, "/Highlight", True)
   $cCurrent = MTheme.Copy($cLast)
@@ -81,6 +83,7 @@ Public Sub _new()
   ReadConfig
   cmbIconTheme.Index = ["gnome", "kde"].Find(Settings["/Theme"]) + 1
   cmbBrowser.Index = $aBrowser.Find(Settings["/Browser"]) + 1
+  cmbTerminal.Index = $aTerminal.Find(Settings["/Terminal"]) + 1
   $bNoChange = False
   
   For iInd = 0 To MTheme.ColorKeys.Max
@@ -316,13 +319,23 @@ End
 Public Sub cmbBrowser_Click()
 
   If cmbBrowser.Index > 0 Then 
-    Settings["/Browser"] = LCase(cmbBrowser.Text)
+    Settings["/Browser"] = $aBrowser[cmbBrowser.Index - 1]
   Else   
     Settings["/Browser"] = ""
   Endif
   
   Project.Browser = ""
 
+End
+
+Public Sub cmbTerminal_Click()
+
+  If cmbTerminal.Index > 0 Then 
+    Settings["/Terminal"] = $aTerminal[cmbTerminal.Index - 1]
+  Else   
+    Settings["/Terminal"] = ""
+  Endif
+  
 End
 
 ' PUBLIC SUB cmbImageEditor_Click()

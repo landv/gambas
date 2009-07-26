@@ -877,7 +877,10 @@ void DEBUG_main(boolean error)
     
     // A null string command means an I/O error
     if (len == 0)
-			abort();
+		{
+			fprintf(stderr, "warning: debugger I/O error\n");
+			exit(1);
+		}
 		
     if (len > 0 && cmd[len - 1] == '\n')
     {

@@ -219,7 +219,11 @@ Public Sub tabBrowser_Click()
     CreateView()
   Else
     hView = GetView()
-    Me.Title = hView.Title & " - Gambas WebKit"
+    If hView.Title Then
+      Me.Title = hView.Title & " - Gambas WebKit"
+    Else
+      Me.Title = "Gambas WebKit"
+    Endif
     tabBrowser.Text = hView.Title
     Me.Icon = hView.Icon
     tabBrowser.Picture = hView.Icon

@@ -726,21 +726,27 @@ Private Sub Start(sCmd As String)
   
     sTitle = Project.Name & " (" & ("Output terminal") & ")"
   
-    Select Case Desktop.Type
+    sProg = Settings["/Terminal"]
     
-      Case "KDE", "KDE4"
-        sProg = "konsole"
-        
-      Case "GNOME"        
-        sProg = "gnome-terminal"
-        
-      Case "XFCE"
-        sProg = "Terminal"
+    If Not sProg Then
+  
+      Select Case Desktop.Type
       
-      Default
-        sProg = "xterm"
-    
-    End Select
+        Case "KDE", "KDE4"
+          sProg = "konsole"
+          
+        Case "GNOME"        
+          sProg = "gnome-terminal"
+          
+        Case "XFCE"
+          sProg = "Terminal"
+        
+        Default
+          sProg = "xterm"
+      
+      End Select
+      
+    Endif
     
     If Project.CheckProgram(sProg) Then 
       sProg = "xterm"
@@ -758,6 +764,7 @@ Private Sub Start(sCmd As String)
       aExec.Insert(["konsole", "--nofork", "--caption", sTitle, "--hold", "--name", Project.Name & "-output", "-e"], 0)
       
     Case "gnome-terminal"
+      ' gnome terminal cannot hold at end
       aExec = ["gnome-terminal", "--hide-menubar", "--title=" & sTitle, "-e", aExec.Join(" ")]
       
     Case "Terminal"

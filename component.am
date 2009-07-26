@@ -3,7 +3,7 @@ gblib_DATA = $(COMPONENT).component
 
 install-data-hook:
 	@$(INSTALL) -d $(DESTDIR)$(gbdatadir)/info
-	@if test -d $(COMPONENT); then \
+	@if test -d $(COMPONENT) && test -e $(COMPONENT)/.project ; then \
 		echo; \
 		echo "Compiling the $(COMPONENT) project..."; \
 		( \
@@ -15,7 +15,6 @@ install-data-hook:
 			$(INSTALL) $(COMPONENT).gambas $(DESTDIR)$(gblibdir); \
 		) \
 	fi
-	@echo;
 	@echo "Installing the $(COMPONENT) control icons if needed...";
 	@if test -d control; then \
 		$(INSTALL) -d $(DESTDIR)$(gbdatadir)/control; \
@@ -27,7 +26,6 @@ install-data-hook:
 		$(INSTALL) -d $(DESTDIR)$(gbdatadir)/control/$(COMPONENT); \
 		$(INSTALL) $(COMPONENT)/.hidden/control/*.png $(DESTDIR)$(gbdatadir)/control/$(COMPONENT); \
 	fi
-	@echo
 	@echo "Creating the information files for $(COMPONENT) component..."
 	@$(DESTDIR)$(bindir)/gbi$(GAMBAS_VERSION) -r $(DESTDIR)$(prefix) $(COMPONENT)
 	@echo

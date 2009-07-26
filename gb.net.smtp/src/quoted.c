@@ -252,7 +252,7 @@ int libsmtp_int_send_quoted_header (const char *header, char *libsmtp_int_data, 
 		
 		if (libsmtp_int_char == 32)
 			libsmtp_int_char = '_';
-		else if (libsmtp_int_char < 33 || libsmtp_int_char > 126 || libsmtp_int_char == '_' || libsmtp_int_char == 61)
+		else if (libsmtp_int_char < 33 || libsmtp_int_char > 126 || libsmtp_int_char == '_' || libsmtp_int_char == '=' || libsmtp_int_char == '?')
 			len = sprintf(libsmtp_int_obuffer, "=%02X", libsmtp_int_char);
 		
 		

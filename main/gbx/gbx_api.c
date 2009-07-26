@@ -771,6 +771,7 @@ GB_VALUE *GB_Call(GB_FUNCTION *_func, int nparam, int release)
 
 	if (!func || !func->desc)
 		GB_Error("Unknown function call");
+		//TEMP.type = GB_T_NULL;
 	else
 	{
 		stop_event = GAMBAS_StopEvent;
