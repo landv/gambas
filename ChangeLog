@@ -1,4 +1,103 @@
 -------------------------------------------------------------------------------
+ gambas2-2.15 - 25 Jul 2009
+-------------------------------------------------------------------------------
+
+[DEVELOPMENT ENVIRONMENT]
+* BUG: Fix a crash while scanning a class if the project is a component
+  and if it is self-checked, which happens as soon as it is locally
+  installed.
+* BUG: Do not warn when a *.info file is not found, as gb.db.* drivers do
+  not have one.
+* NEW: Changing the language in the translation dialog now keep the
+  current translated string selected, and stay in the same translation 
+  file.
+
+[DATABASE MANAGER]
+* BUG: Handle correctly database type written in upper case.
+
+[EXAMPLES]
+* BUG: Fix the PdfViewer example so that it does not crash when it cannot 
+  understand the document index.
+
+[INTERPRETER]
+* BUG: Fix a possible crash in database component classes having
+  sub-collections, like Result.Fields.
+* BUG: Fix a stupid bug that made the interpreter crash when a class was
+  allocated at a negative memory address.
+* BUG: Fix the conversion of strings into numbers, especially when
+  converting Long values.
+
+[COMPILER]
+* BUG: Correctly raise a syntax error when a comma has been forgotten
+  between the stream and the other arguments in instructions like PRINT,
+  SEEK, and so on.
+
+[INFORMER]
+* BUG: Warn for components not declaring classes, like database drivers,
+  only if the '-v' option is defined.
+
+[GB.DB]
+* BUG: Correctly release field information when freeing a Result object.
+* NEW: New unquoting function in the component API.
+
+[GB.DB.FIREBIRD]
+* BUG: Link the driver to the fbclient library.
+
+[GB.DB.SQLITE2]
+* BUG: Prevent possible case mismatches when mapping SQLite datatypes.
+* BUG: Fix some casting with gcc version 4.4.0 20090630 (prerelease)
+* BUG: Fix a crash in datatype mapping.
+
+[GB.DB.SQLITE3]
+* BUG: Prevent possible case mismatches when mapping SQLite datatypes.
+* BUG: Field default values are correctly returned now.
+* BUG: Fix some casting with gcc version 4.4.0 20090630 (prerelease)
+* BUG: Fix a crash in datatype mapping.
+
+[GB.GTK]
+* BUG: If the Control.Font property is set with a family name, the other
+  boolean properties of the font are reset.
+* BUG: Frame.Font now works correctly.
+* BUG: The Window.Sticky property now really returns a boolean.
+* BUG: Fix all controls that use a GtkScrolledWindow.
+* BUG: Fix Control.Raise() and Control.Lower() with controls using a
+  GtkScrolledWindow.
+* BUG: The ClientWidth and ClientHeight properties of TreeView, ListView
+  and ColumnView controls were implemented.
+* BUG: The title of GridView headers is now ellipsized, and are not drawn
+  anymore when there is no space for that.
+* BUG: Fix the leaking of GtkCellRenderer in some classes.
+
+[GB.NET]
+* BUG: Fix a possible crash in the Socket class at connection.
+
+[GB.NET.SMTP]
+* BUG: Fix the UTF-8 encoding of mail subjects having a '?' character
+  inside.
+* NEW: Send the "Date:" header with any mail.
+
+[GB.PDF]
+* BUG: Fix a possible crash whith PDF documents having index but no action 
+  associated with
+
+[GB.QT]
+* BUG: If the Control.Font property is set with a family name, the other
+  boolean properties of the font are reset.
+* BUG: The Window.TopOnly and Window.Stacking properties now return the
+  last value assigned as in gb.gtk. It does not try to get the value from
+  the window manager, as the change may not be immediate.
+* BUG: Fix a typo mistake.
+* BUG: Fix the behaviour of TabStrip when all its pages are hidden.
+
+[GB.XML]
+* BUG: Fix the Xml.Encoding property that was not implemented. It now
+  always returns "UTF-8".
+* BUG: Fix a memory leak in Xml.ToString().
+* BUG: The encoding argument of Xml.ToString() is now taken into account.
+* BUG: Xml.ToString() now uses the UTF-8 charset by default.
+
+
+-------------------------------------------------------------------------------
  gambas2-2.14 - 26 Jun 2009
 -------------------------------------------------------------------------------
 
