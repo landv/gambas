@@ -4,7 +4,7 @@ Static Private $hTile As Picture
 
 Public TitleBar As Control
 
-Private $aWindow As New Object[]
+Private $aWindow As New CWindow[]
 'PRIVATE $aWatcher AS NEW Object[]
 Private $hCurrent As CWindow
 Private $bMove As Boolean
@@ -172,6 +172,21 @@ Public Sub Remove(Window As Window)
   
 End
 
+Private Sub UpdateTitleFromIndex(iInd As Integer)
+  
+  With $aWindow[iInd].Window
+
+    tabWorkspace[iInd].Text = .Text
+    tabWorkspace[iInd].Picture = .Icon
+    ' If $hCurrent And If $hCurrent.Window = hWin Then
+    '   lblTitle.Text = " " & .Text
+    '   imgIcon.Picture = .Icon
+    ' Endif
+  
+  End With
+  
+End
+
 
 Private Sub UpdateTitle(Optional hWin As Window)
   
@@ -184,18 +199,9 @@ Private Sub UpdateTitle(Optional hWin As Window)
   
   iInd = GetIndex(hWin)
   If iInd < 0 Then Return
-
-  With hWin
-
-    tabWorkspace[iInd].Text = .Text
-    tabWorkspace[iInd].Picture = .Icon
-    If $hCurrent And If $hCurrent.Window = hWin Then
-      lblTitle.Text = " " & .Text
-      imgIcon.Picture = .Icon
-    Endif
   
-  End With
-  
+  UpdateTitleFromIndex(iInd)
+
 End
 
 
@@ -598,17 +604,17 @@ Public Sub tabWorkspace_MouseUp()
 
 End
 
-Private Sub FindTabFromTitle(sTitle As String) As Integer
-
-  Dim iInd As Integer
-  
-  For iInd = 0 To tabWorkspace.Count - 1
-    If tabWorkspace[iInd].Text = sTitle Then Return iInd
-  Next
-
-  Return -1  
-  
-End
+' Private Sub FindTabFromTitle(sTitle As String) As Integer
+' 
+'   Dim iInd As Integer
+'   
+'   For iInd = 0 To tabWorkspace.Count - 1
+'     If tabWorkspace[iInd].Text = sTitle Then Return iInd
+'   Next
+' 
+'   Return -1  
+'   
+' End
 
 
 Public Sub tabWorkspace_Menu()
@@ -624,12 +630,12 @@ Public Sub tabWorkspace_Menu()
   mnuWindow.Children.Clear
 
   For iInd = 0 To tabWorkspace.Count - 1
-    aTitle.Add(tabWorkspace[iInd].Text)
+    aTitle.Add(tabWorkspace[iInd].Text & "\t" & Format(iInd, "000"))
   Next
   aTitle.Sort
   
   For Each sTitle In aTitle
-    iInd = FindTabFromTitle(sTitle)
+    iInd = CInt(Mid$(sTitle, InStr(sTitle, "\t") + 1))
     With tabWorkspace[iInd]
       hMenu = New Menu(mnuWindow) As "mnuWindow"
       If .Text Then
@@ -642,9 +648,19 @@ Public Sub tabWorkspace_Menu()
       hMenu.Tag = iInd
     End With
   Next 
-  
-  hMenu = New Menu(mnuWindow)
 
+  hMenu = New Menu(mnuWindow)
+  
+  If $aWindow.Count >= 2 Then  
+
+    hMenu = New Menu(mnuWindow) As "btnSort"
+    hMenu.Text = ("&Sort tabs")
+    hMenu.Picture = Picture["icon:/small/sort-ascent"]
+    
+    hMenu = New Menu(mnuWindow)
+  
+  Endif
+  
   hMenu = New Menu(mnuWindow) As "btnClose"
   hMenu.Text = ("&Close current tab")
   hMenu.Picture = Picture["icon:/small/close"]
@@ -747,5 +763,35 @@ Public Sub SetButtonPosition(iPos As Integer)
   
   $bButtonLeft = iPos = Align.Left
   Form_Resize
+  
+End
+
+Public Sub btnSort_Click()
+  
+  Dim iInd As Integer
+  Dim aTitle As New String[]
+  Dim aWindow As CWindow[]
+
+  Dim hWin As CWindow
+  Dim hMenu As Menu
+  Dim sTitle As String
+  
+  For iInd = 0 To tabWorkspace.Count - 1
+    aTitle.Add(tabWorkspace[iInd].Text & "\t" & Format(iInd, "000"))
+  Next
+  aTitle.Sort
+
+  aWindow = New CWindow[$aWindow.Count]
+  
+  For iInd = 0 To aWindow.Max
+    sTitle = aTitle[iInd]
+    aWindow[iInd] = $aWindow[CInt(Mid$(sTitle, InStr(sTitle, "\t") + 1))]
+  Next
+  
+  $aWindow = aWindow
+
+  For iInd = 0 To $aWindow.Max  
+    UpdateTitleFromIndex(iInd)
+  Next
   
 End

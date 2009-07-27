@@ -267,7 +267,7 @@ Private Sub MakeSignature(sSign As String) As String
       If $cNameType.Exist(sType) Then
         sType = $cNameType[sType]
       Else
-        sType &= ";"
+        sType = UCase(Left(sType)) & Mid$(sType, 2) & ";"
       Endif
       sSign &= "(" & sSym & ")" & sType
 
