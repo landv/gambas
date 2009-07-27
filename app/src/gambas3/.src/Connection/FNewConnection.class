@@ -2,6 +2,7 @@
 
 Private $sPath As String
 Private $bAskPassword As Boolean
+Private $hConn As New Connection
 
 Public Sub Run(Optional sPath As String, Optional bAskPassword As Boolean) As Boolean
 
@@ -81,6 +82,7 @@ Private Sub UpdateConnection() As Boolean
 
   If Not Trim(txtDatabase.Text) Then
     Balloon.Warning(("Please enter the name of the database."), txtDatabase)
+    txtDatabase.SetFocus
     Return True
   Endif
 
@@ -145,6 +147,7 @@ End
 Private Sub ResetDatabase()
   
   panDatabase.Hide
+  $hConn.Close
   txtDatabase.Text = ""
   
 End
@@ -179,29 +182,67 @@ Public Sub cmbType_Click()
 
 End
 
+Private Sub UpdateCreateDatabase()
+  
+  Dim sDatabase As String
+  
+  If Not $hConn.Opened Then Return
+  sDatabase = Trim(txtDatabase.Text)
+  If sDatabase Then
+    If Not $hConn.Databases.Exist(sDatabase) Then
+      btnCreateDatabase.Text = Subst(("&Create database '&1'"), sDatabase)
+      btnCreateDatabase.Show
+      btnDeleteDatabase.Hide
+    Else
+      btnDeleteDatabase.Text = Subst(("&Delete database '&1'"), sDatabase)
+      btnCreateDatabase.Hide
+      btnDeleteDatabase.Show
+    Endif
+    panDatabaseAction.Show
+  Else
+    panDatabaseAction.Hide
+  Endif
+  
+  Try lvwDatabase[sDatabase].Selected = True
+  Try lvwDatabase.Current.EnsureVisible
+  'If Error Then Try lvwDatabase.Current.Selected = False
+  
+End
+
+Private Sub FillDatabaseList()
+  
+  Dim hDatabase As Database
+  
+  lvwDatabase.Clear
+  For Each hDatabase In $hConn.Databases
+    lvwDatabase.Add(hDatabase.Name, hDatabase.Name, Picture["img/16/database.png"]).Selected = hDatabase.Name = Trim(txtDatabase.Text)
+  Next
+  Try lvwDatabase[Trim(txtDatabase.Text)].Selected = True
+  UpdateCreateDatabase
+  
+End
+
+
 Public Sub txtDatabase_Click()
 
-  Dim hConn As New Connection
   Dim hConfig As New Collection
-  Dim hDatabase As Database
 
   If Not panDatabase.Visible Then
   
     Inc Application.Busy
     lvwDatabase.Clear
     FillConfig(hConfig, True)
-    MConnection.InitFrom(hConn, hConfig, txtName.Text)
-    hConn.Open
-    For Each hDatabase In hConn.Databases
-      lvwDatabase.Add(hDatabase.Name, hDatabase.Name, Picture["img/16/database.png"])
-    Next
-    hConn.Close
+    MConnection.InitFrom($hConn, hConfig, txtName.Text)
+    $hConn.Open
+    FillDatabaseList
     panDatabase.Show
+    
     Dec Application.Busy
   
   Else
   
     panDatabase.Hide
+    $hConn.Close
   
   Endif
 
@@ -239,5 +280,52 @@ End
 Public Sub lvwDatabase_Activate()
 
   panDatabase.Hide
+
+End
+
+Public Sub Form_Close()
+
+  Try $hConn.Close
+
+End
+
+Public Sub txtDatabase_Change()
+
+  UpdateCreateDatabase
+
+End
+
+Public Sub btnCreateDatabase_Click()
+
+  Inc Application.Busy
+  $hConn.Databases.Add(Trim(txtDatabase.Text))
+  FillDatabaseList
+  Dec Application.Busy
+  
+Catch
+
+  Application.Busy = 0
+  Balloon.Error(("Unable to create database.") & "\n\n" & Error.Text, btnCreateDatabase)
+  txtDatabase.SetFocus
+
+End
+
+Public Sub btnDeleteDatabase_Click()
+
+  Dim sDatabase As String = lvwDatabase.Current.Text
+
+  If Message.Warning(Subst(("Do you really want to delete the database '&1'?"), sDatabase), ("Delete"), ("Cancel")) = 2 Then Return
+  
+  Inc Application.Busy
+  $hConn.Databases.Remove(sDatabase)
+  txtDatabase.Clear
+  FillDatabaseList
+  Dec Application.Busy
+  
+Catch
+
+  Application.Busy = 0
+  Balloon.Error(("Unable to delete database.") & "\n\n" & Error.Text, btnDeleteDatabase)
+  txtDatabase.SetFocus
 
 End

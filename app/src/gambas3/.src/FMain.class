@@ -60,7 +60,7 @@ Public Sub Form_Open()
 
   ReadConfig
 
-  FDebugInfo.UpdateView
+  'FDebugInfo.UpdateView
 
   tvwProject_Select
   tabProperty_Click
@@ -108,13 +108,8 @@ Private Sub OpenProject()
   sPath = FOpenProject.Run(True)
   If Not sPath Then Return
 
-  If FOpenProject.InAnotherWindow Then
-    'DEBUG Application.Path &/ Application.Name & ".gambas";; sPath
-    Exec [Application.Path &/ Application.Name & ".gambas", sPath]
-  Else
-    Project.Open(sPath)
-    UpdateRecentMenu
-  Endif
+  Project.Open(sPath, FOpenProject.InAnotherWindow)
+  UpdateRecentMenu
 
 End
 
@@ -590,10 +585,10 @@ Private Sub NewProject()
 
   Dim sPath As String
 
-  sPath = FCreateProject.Run()
+  sPath = FCreateProject.Run(True)
   If Not sPath Then Return
 
-  Project.Open(sPath)
+  Project.Open(sPath, FCreateProject.InAnotherWindow)
   UpdateRecentMenu
 
 End

@@ -227,7 +227,7 @@ Public Sub Run(sMsg As String, hCtrl As Control, hIcon As Picture, DX As Integer
     Form_Hide
   'ENDIF
   
-  txtMessage.W = Max(hCtrl.W / 2, 192)
+  txtMessage.W = Max(hCtrl.W / 2, 768)
   txtMessage.Text = Replace(sMsg, "\n", "<br>")
   txtMessage.Adjust
   If txtMessage.W < 64 Then txtMessage.W = 64

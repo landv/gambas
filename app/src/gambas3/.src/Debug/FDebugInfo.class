@@ -37,8 +37,10 @@ Public Sub Form_Open()
   End With
 
   FOutput.Load
-  FHelp.Load
-  FHelp.Reparent(panHelp, 0, 0)
+  UpdateView
+  
+  FHelp.Load(panHelp)
+  'FHelp.Reparent(panHelp, 0, 0)
 
 End
 
@@ -266,21 +268,34 @@ End
 Private Sub ShowAsBalloon(sMsg As String)
 
   Dim hIcon As Picture
+  Dim iInd As Integer
+  Dim iPos As Integer
 
-  sMsg = Replace(sMsg, "\t", "\n")
-  sMsg = Replace(sMsg, "    ", "&nbsp;")
-  sMsg = Replace(sMsg, "&", "&amp;")
-  sMsg = Replace(sMsg, "<", "&lt;")
-  sMsg = Replace(sMsg, ">", "&gt;")
-  
   If Left(sMsg) = "!" Then
     sMsg = Mid$(sMsg, 2) 
     hIcon = Picture["icon:/32/error"]
   Else
     hIcon = Picture["icon:/32/info"]
   Endif 
+  
+  sMsg = Replace(sMsg, "&", "&amp;")
+  sMsg = Replace(sMsg, "<", "&lt;")
+  sMsg = Replace(sMsg, ">", "&gt;")
+  
+  iPos = 0
+  While iInd < String.Len(sMsg)
+    Inc iInd
+    If InStr(" -\n\t", Mid$(sMsg, iInd, 1)) Then
+      iPos = iInd
+    Else If (iInd - iPos) >= 32 Then
+      sMsg = String.Left$(sMsg, iInd) & " <br>" & String.Mid$(sMsg, iInd + 1)
+      iInd += 4
+      iPos = iInd
+    Endif
+  Wend
 
-  'Balloon(sMsg, objForm, hIcon, Mouse.ScreenX - objForm.ScreenX, Mouse.ScreenY - objForm.ScreenY)
+  'sMsg = Replace(sMsg, "\t", "\n")
+  'sMsg = Replace(sMsg, "    ", "&nbsp;")
   Balloon(sMsg, Design.BalloonControl, hIcon, Design.BalloonX, Design.BalloonY)
 
 End

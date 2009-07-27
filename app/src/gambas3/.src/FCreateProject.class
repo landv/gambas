@@ -1,12 +1,16 @@
 ' Gambas class file
 
+Public InAnotherWindow As Boolean
+
 Private $sPath As String
 
 Private $cVar As New Collection(gb.Text)
 Private $bRepository As Boolean
+Private $bAnother As Boolean
 
-Public Sub Run() As String
+Public Sub Run(Optional bAnother As Boolean) As String
   
+  $bAnother = bAnother
   If Me.ShowModal() Then Return $sPath
 
 End
@@ -19,6 +23,7 @@ Public Sub Form_Open()
   lstType.Select(panDefaultType)
   wizProject.Index = 0
   edtOutput.Text = ""
+  chkOther.Visible = $bAnother
 
 End
 
@@ -244,6 +249,8 @@ Public Sub wizProject_Close()
   If CreateProject() Then Return
   
   Message(("The project has been successfully created."))
+  
+  InAnotherWindow = chkOther.Value
   
   Me.Close(True)
 

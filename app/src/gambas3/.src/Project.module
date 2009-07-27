@@ -162,6 +162,8 @@ Public Sub Main()
   OUTPUT_FILE = Temp$()
   'CLASSES_FILE = Temp$()
 
+  EXAMPLES_DIR = "Ceci est une très longue phrase dont j'ai l'espoir qu'elle soit correctement coupée par le ballon affiché par la fenêtre de débogage"
+  EXAMPLES_DIR = Replace(EXAMPLES_DIR, " ", "0")
   EXAMPLES_DIR = System.Path &/ "share/gambas" & System.Version & "/examples"
 
   Application.Tooltip.Enabled = Settings["/ShowTooltip", True]
@@ -289,7 +291,7 @@ Finally
 End
 
 
-Public Function Open(sDir As String) As Boolean
+Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Boolean
 
   Dim sOldPath As String
   Dim sOldName As String
@@ -299,6 +301,11 @@ Public Function Open(sDir As String) As Boolean
 
   If Not Exist(sDir &/ ".project") Then 
     FGambas.Error(("This project does not exist.") & "\n\n" & sDir)
+    Return True
+  Endif
+  
+  If bInAnotherWindow Then
+    Exec [Application.Path &/ Application.Name & ".gambas", sDir]
     Return True
   Endif
 

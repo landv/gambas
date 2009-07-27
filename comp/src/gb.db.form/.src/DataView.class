@@ -235,6 +235,9 @@ Public Sub TableView_Timer()
   While $aAdjust.Count
     iRow = $aAdjust.Pop()
     Try $hCtrl.Rows[iRow].H = -1
+    If Not Error Then
+      If $hCtrl.Rows[iRow].H > 256 Then $hCtrl.Rows[iRow].H = 256
+    Endif
   Wend
   
   If bVisible Then EnsureRowVisible($hCtrl.Row)

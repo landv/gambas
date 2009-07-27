@@ -1201,7 +1201,8 @@ Public Sub btnNewTable_Click()
   If MConnection.CreateTable($hConn, sName, FNewTable.Type) Then Return
   
   lvwTable.Add("T" & sName, sName, Picture["img/16/table.png"])
-  lvwTable["T" & sName].Selected = True
+  'lvwTable["T" & sName].Selected = True
+  LoadTable(sName)
 
 End
 

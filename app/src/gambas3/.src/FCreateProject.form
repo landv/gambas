@@ -228,7 +228,7 @@
           { chkCtrlPublic CheckBox
             MoveScaled(1,32,37,4)
             Tag = "VISUAL"
-            Text = ("Visual Basic\xE2\x84\xA2 conversion help")
+            Text = ("Visual Basic™ conversion help")
           }
           { Separator1 Separator
             MoveScaled(1,36,37,3)
@@ -251,41 +251,41 @@
     }
     Index = 2
     Text = ("Project information")
-    { panIdent VBox
-      MoveScaled(0,0,80,16)
+    { panIdent HPanel
+      MoveScaled(0,0,80,18)
       Spacing = True
       { Label10 Label
         MoveScaled(0,0,25,4)
         Font = Font["Bold"]
+        Expand = True
         Text = ("Identification")
       }
-      { HBox6 HBox
-        MoveScaled(2,4,70,4)
-        { Label2 Label
-          MoveScaled(0,0,14,4)
-          Text = ("Name")
-        }
-        { txtName TextBox
-          MoveScaled(15,0,49,4)
-          Expand = True
-          Text = ("")
-        }
+      { Label2 Label
+        MoveScaled(1,4,14,4)
+        Text = ("Name")
       }
-      { HBox7 HBox
-        MoveScaled(2,9,71,4)
-        { Label3 Label
-          MoveScaled(0,0,14,4)
-          Text = ("Title")
-        }
-        { txtTitle TextBox
-          MoveScaled(15,0,51,4)
-          Expand = True
-          Text = ("")
-        }
+      { txtName TextBox
+        MoveScaled(16,4,49,4)
+        Expand = True
+        Text = ("")
+      }
+      { Label3 Label
+        MoveScaled(1,8,14,4)
+        Text = ("Title")
+      }
+      { txtTitle TextBox
+        MoveScaled(16,8,51,4)
+        Expand = True
+        Text = ("")
+      }
+      { chkOther CheckBox
+        MoveScaled(1,13,43,4)
+        Expand = True
+        Text = ("Open in another window")
       }
     }
     { panRepository VBox
-      MoveScaled(0,17,81,23)
+      MoveScaled(0,19,81,22)
       Expand = True
       Spacing = True
       { Label7 Label
@@ -299,16 +299,16 @@
       }
       { edtOutput Editor
         MoveScaled(0,9,79,12)
-        Font = Font["Monospace,-1"]
+        Font = Font["Monospace"]
         Expand = True
         ReadOnly = True
       }
     }
     { Panel1 Panel
-      MoveScaled(1,38,17,4)
+      MoveScaled(0,41,17,4)
     }
     { TextLabel9 TextLabel
-      MoveScaled(1,42,78,12)
+      MoveScaled(0,45,78,12)
       AutoResize = True
       Text = ("Once the information entered, you can\nclick on the <b>OK</b> button to create the project.\n<p>Click on the <b>Previous</b> button if you had made a mistake.\n<p>Click on the <b>Cancel</b> button to cancel the operation.\n\n")
     }

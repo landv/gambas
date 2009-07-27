@@ -229,7 +229,7 @@ Public Sub gvwExpr_Activate()
     sText = gvwExpr[gvwExpr.Row, 0].Text    
     If Not sText Or Right(sText) = ":" Then Return
     sVal = gvwExpr[gvwExpr.Row, 1].Text
-    If Left(sVal) <> "(" Then Return 
+    'If Left(sVal) <> "(" Then Return 
 
     If $bArray Or $bCollection
       sText = $sExpr & "[" & sText & "]"
@@ -654,3 +654,15 @@ Static Public Sub ReadConfig()
   
 End
 
+
+Public Sub gvwExpr_Select()
+
+  Balloon.Hide(gvwExpr)
+
+End
+
+Public Sub gvwExpr_Scroll()
+
+  Balloon.Hide(gvwExpr)
+
+End

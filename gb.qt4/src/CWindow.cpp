@@ -436,6 +436,7 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent)
 	}
 	#endif
 
+
 	if (THIS->embedded && !THIS->xembed)
 	{
 		/* ### This can call post_show_event() directly, whereas the function is not terminated */
@@ -447,6 +448,8 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent)
 		GB.Post((void (*)())show_later, (intptr_t)THIS);
 		//WIDGET->show();
 	}
+	else
+		THIS->hidden = TRUE;
 	
 	THIS->showMenuBar = true;
 
@@ -1059,7 +1062,7 @@ BEGIN_PROPERTY(CWINDOW_top_only)
 	
 	if (READ_PROPERTY)
 	{
-		GB.ReturnBoolean(THIS->stacking = 1);
+		GB.ReturnBoolean(THIS->stacking == 1);
 	}
 	else
 	{
@@ -2205,22 +2208,27 @@ void MyMainWindow::doReparent(QWidget *parent, Qt::WindowFlags f, const QPoint &
 	//if (!THIS->hidden) showIt = true;
 	//hide();
 	hidden = THIS->hidden;
+	//qDebug("doReparent: %s %p: hidden = %d", THIS->widget.name, THIS, hidden);
 	setParent(parent, f);
 	move(pos);
 	//qDebug("doReparent: (%s %p) (%d %d) -> (%d %d)", GB.GetClassName(THIS), THIS, pos.x(), pos.y(), WIDGET->x(), WIDGET->y());
 	
- 	#ifndef NO_X_WINDOW
-		initProperties();
-		if (active)
-			activateWindow();
-	#endif
+	if (!THIS->embedded)
+	{
+		#ifndef NO_X_WINDOW
+			initProperties();
+			if (active)
+				activateWindow();
+		#endif
 
-	setWindowIcon(icon);
+		setWindowIcon(icon);
+	}
 	
 	//qDebug("--> isVisible = %d isHidden = %d", isVisible(), isHidden());
 	
-	if (THIS->embedded && !THIS->hidden)
+	/*if (THIS->embedded && !THIS->hidden)
 	{
+		qDebug("doReparent: %s %p: show_later", THIS->widget.name, THIS);
 		#if DEBUG_WINDOW
 		qDebug("post show_later %s %p", GB.GetClassName(THIS), THIS);
 		#endif
@@ -2228,8 +2236,15 @@ void MyMainWindow::doReparent(QWidget *parent, Qt::WindowFlags f, const QPoint &
 		//GB.Post((void (*)())show_later, (intptr_t)THIS);
 		show_later(THIS);
 		//WIDGET->show();
-	}
-	//qDebug("new parent = %p", parentWidget());
+	}*/
+	
+	/*if (parentWidget())
+		qDebug("doReparent (%s %p): new parent = (%s %p)", THIS->widget.name, THIS, CWidget::get(parentWidget())->name, CWidget::get(parentWidget()));
+	else
+		qDebug("doReparent (%s %p): new parent = 0", THIS->widget.name, THIS);*/
+	
+	if (!hidden)
+		CWINDOW_show(THIS, NULL);
 }
 
 

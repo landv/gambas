@@ -1,6 +1,6 @@
 ' Gambas class file
 
-Private $aFound As New Variant[][]
+Private $aFound As New CFindResult[]
 Private $hFont As Font
 Private $eAngle As Float
 
@@ -15,15 +15,39 @@ End
 
 Public Sub AddFound(sName As String, iLine As Integer, iCol As Integer, iLen As Integer, sText As String)
   
-  $aFound.Add([sName, iLine + 1, iCol, sText, iLen, False])
+  Dim hResult As New CFindResult
+  Dim iInd As Integer
+  
+  hResult.File = sName
+  hResult.Line = iLine + 1
+  hResult.Column = iCol
+  hResult.Text = sText
+  hResult.Length = iLen
+  
+  $aFound.Add(hResult)
   If $aFound.Count > 1 Then 
-    If $aFound[$aFound.Max][0] = $aFound[$aFound.Max - 1][0] Then
-      $aFound[$aFound.Max][5] = $aFound[$aFound.Max - 1][5]
+    If hResult.File = $aFound[$aFound.Max - 1].File Then
+      hResult.Dark = $aFound[$aFound.Max - 1].Dark
     Else
-      $aFound[$aFound.Max][5] = Not $aFound[$aFound.Max - 1][5]
+      hResult.Dark = Not $aFound[$aFound.Max - 1].Dark
     Endif
   Endif
   tvwFind.Rows.Count = $aFound.Count
+  
+  iInd = $aFound.Max
+  While iInd > 0
+    If $aFound[iInd - 1].File <> hResult.File Then Break
+    Dec iInd
+  Wend
+  tvwFind[iInd, 0].RowSpan = $aFound.Max - iInd + 1
+  
+  iInd = $aFound.Max
+  While iInd > 0
+    If $aFound[iInd - 1].File <> hResult.File Then Break
+    If $aFound[iInd - 1].Line <> hResult.Line Then Break
+    Dec iInd
+  Wend
+  tvwFind[iInd, 1].RowSpan = $aFound.Max - iInd + 1
   
 End
 
@@ -69,21 +93,31 @@ Public Sub tvwFind_Data(Row As Integer, Column As Integer)
     
     If Column = 3 Then .Font = $hFont 
     
-    .Text = $aFound[Row][Column]
+    Select Case Column
+      Case 0
+        .Text = $aFound[Row].File
+      Case 1
+        .Text = $aFound[Row].Line
+      Case 2
+        .Text = $aFound[Row].Column
+      Case 3
+        .Text = $aFound[Row].Text
+    End Select
+    .Alignment = Align.TopNormal
 
-    If Row Then
-      If Column = 0 Then 
-        If $aFound[Row - 1][0] = .Text Then 
-          .Text = ""
-        Endif
-      Else If Column = 1 Then
-        If $aFound[Row - 1][0] = $aFound[Row][0] And $aFound[Row - 1][1] = $aFound[Row][1] Then 
-          .Text = "-"
-        Endif
-      Endif
-    Endif 
+    ' If Row Then
+    '   If Column = 0 Then 
+    '     If $aFound[Row - 1][0] = .Text Then 
+    '       .Text = ""
+    '     Endif
+    '   Else If Column = 1 Then
+    '     If $aFound[Row - 1][0] = $aFound[Row][0] And $aFound[Row - 1][1] = $aFound[Row][1] Then 
+    '       .Text = "-"
+    '     Endif
+    '   Endif
+    ' Endif 
     
-    .Background = If($aFound[Row][5], Color.LightBackground, Color.TextBackground)
+    .Background = If($aFound[Row].Dark, Color.LightBackground, Color.TextBackground)
     
   End With
 
@@ -91,7 +125,7 @@ End
 
 Public Sub tvwFind_Select()
 
-  Dim aFind As Variant[]
+  Dim hFind As CFindResult
   Dim iLine As Integer
   Dim iCol As Integer
   Dim iLen As Integer 
@@ -101,17 +135,17 @@ Public Sub tvwFind_Select()
   If timSearch.Enabled Then Return
   If $aFound.Count = 0 Then Return
   
-  aFind = $aFound[tvwFind.Row]
+  hFind = $aFound[tvwFind.Row]
   
-  sPath = Project.FindPath(aFind[0])
+  sPath = Project.FindPath(hFind.File)
   If Not sPath Then Return
   
   Project.OpenFile(sPath)
 
   hEdit = Project.Files[sPath].Editor
-  iLine = aFind[1] - 1
-  iCol = aFind[2] - 1
-  iLen = aFind[4]
+  iLine = hFind.Line - 1
+  iCol = hFind.Column - 1
+  iLen = hFind.Length
   hEdit.Goto(iLine, iCol, True)
   hEdit.Select(iLine, iCol, iLine, iCol + iLen)
   

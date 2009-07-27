@@ -8,6 +8,7 @@ Public Const _Properties As String = "*,Text,Picture,ReadOnly"
 Public Const _DefaultEvent As String = "Click"
 
 Event Click
+Event Change
 
 Property Picture As Picture
 Property Text As String
@@ -119,3 +120,8 @@ Public Sub Observer_GotFocus()
   
 End
 
+Public Sub Clear()
+  
+  $hTextBox.Clear
+  
+End

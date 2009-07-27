@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,70,65)
+  MoveScaled(0,0,70,69)
   Text = ("")
   Icon = Picture["icon:/small/server"]
   Resizable = False
@@ -116,19 +116,40 @@
     }
   }
   { panDatabase HBox
-    MoveScaled(1,40,68,15)
+    MoveScaled(1,40,68,19)
     Visible = False
     { Label8 Label
       MoveScaled(0,0,18,3)
       Text = ("")
     }
-    { lvwDatabase ListView
-      MoveScaled(27,0,31,14)
+    { VBox1 VBox
+      MoveScaled(32,0,35,18)
       Expand = True
+      Spacing = True
+      { lvwDatabase ListView
+        MoveScaled(0,0,31,11)
+        Expand = True
+      }
+      { panDatabaseAction HBox
+        MoveScaled(0,12,34,4)
+        Spacing = True
+        { btnCreateDatabase Button
+          MoveScaled(0,0,14,4)
+          Expand = True
+          Text = ("")
+          Picture = Picture["icon:/small/new"]
+        }
+        { btnDeleteDatabase Button
+          MoveScaled(15,0,14,4)
+          Expand = True
+          Text = ("")
+          Picture = Picture["icon:/small/delete"]
+        }
+      }
     }
   }
   { HBox3 HBox
-    MoveScaled(1,56,68,3)
+    MoveScaled(1,60,68,3)
     { Label10 Label
       MoveScaled(0,0,18,3)
       Text = ("")
@@ -140,7 +161,7 @@
     }
   }
   { HBox1 HBox
-    MoveScaled(1,60,68,4)
+    MoveScaled(1,64,68,4)
     Spacing = True
     { Panel1 Panel
       MoveScaled(4,0,4,4)

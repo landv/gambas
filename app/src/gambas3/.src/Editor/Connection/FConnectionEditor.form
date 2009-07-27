@@ -48,14 +48,12 @@
         { btnNewTable ToolButton
           MoveScaled(10,0,4,4)
           ToolTip = ("New table")
-          AutoResize = True
           Text = ("")
           Picture = Picture["icon:/small/new"]
         }
         { btnKill ToolButton
           MoveScaled(14,0,4,4)
           ToolTip = ("Delete table")
-          AutoResize = True
           Text = ("")
           Picture = Picture["icon:/small/delete"]
         }
@@ -192,6 +190,7 @@
               { btnCopyFieldList ToolButton
                 MoveScaled(44,0,18,4)
                 ToolTip = ("Copy")
+                AutoResize = True
                 Text = ("Copy field list")
                 Picture = Picture["icon:/small/copy"]
               }
