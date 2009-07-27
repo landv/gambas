@@ -468,7 +468,7 @@ BEGIN_METHOD_VOID(CFORM_main)
 
 	CWINDOW *form = (CWINDOW *)GB.AutoCreate(GB.GetClass(NULL), 0);
 	//if (!((MyMainWindow *)form->widget.widget)->isHidden())
-	if (!form->hidden)
+	//if (!form->hidden)
 		CWINDOW_show(form, NULL);
 		
 END_METHOD
