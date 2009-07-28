@@ -1,9 +1,21 @@
 -------------------------------------------------------------------------------
- gambas2-2.15.1 - 28 Jul 2009
+ gambas2-2.15.2 - 29 Jul 2009
 -------------------------------------------------------------------------------
 
-[CONFIGURATION]
-* NEW: Switch to 2.15.1.
+[INTERPRETER]
+* BUG: Fix the number to string conversion routine. The sign must be 
+  extended only in base 2 and 16!
+* BUG: A new function in the debugger interface to search for a class only 
+  inside the running project.
+
+[GB.DEBUG]
+* BUG: Pending breakpoints now search for their class only inside the 
+  running project.
+
+
+-------------------------------------------------------------------------------
+ gambas2-2.15.1 - 28 Jul 2009
+-------------------------------------------------------------------------------
 
 [SCRIPTER]
 * BUG: The scripter now compiles again.
