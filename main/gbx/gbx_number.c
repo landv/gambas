@@ -104,12 +104,15 @@ static bool read_integer(int base, int64_t *result)
 
  	c = last_char();
 	
-	if ((c == '&' || c == 'u' || c == 'U') && base != 10)
-		c = get_char();
-	else
+	if (base != 10)
 	{
-		if (nbr >= 0x8000L && nbr <= 0xFFFFL)
-			nbr |= INT64_C(0xFFFFFFFFFFFF0000);
+		if ((c == '&' || c == 'u' || c == 'U') && base != 10)
+			c = get_char();
+		else
+		{
+			if (nbr >= 0x8000L && nbr <= 0xFFFFL)
+				nbr |= INT64_C(0xFFFFFFFFFFFF0000);
+		}
 	}
 	
 	if (c > 0 && !isspace(c))
@@ -359,7 +362,10 @@ void NUMBER_int_to_string(uint64_t nbr, int prec, int base, VALUE *value)
   
   neg = (nbr & (1LL << 63)) != 0;
   
-  while (nbr > 0)
+  if (base == 10 && neg)
+  	nbr = 1 + ~nbr;
+
+	while (nbr > 0)
   {
     digit = nbr % base;
     nbr /= base;
@@ -379,6 +385,13 @@ void NUMBER_int_to_string(uint64_t nbr, int prec, int base, VALUE *value)
     {
       ptr += len - prec;
       len = prec;
+    }
+    
+    if (base == 10)
+    {
+    	len++;
+    	ptr--;
+    	*ptr = '-';
     }
     
     STRING_new_temp_value(value, NULL, len);

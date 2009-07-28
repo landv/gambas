@@ -282,6 +282,7 @@ void THROW(int code, ...)
 		arg[i] = va_arg(args, char *);
 
 	ERROR_define((char *)(intptr_t)code, arg);
+	
 	PROPAGATE();
 }
 

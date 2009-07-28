@@ -28,7 +28,6 @@
 #include "gb_common.h"
 #include "gambas.h"
 
-
 #include <unistd.h>
 #include <signal.h>
 #include <fcntl.h>
@@ -66,7 +65,6 @@ static FILE *_in;
 static bool _fifo;
 
 #define EXEC_current (*(STACK_CONTEXT *)GB_DEBUG.GetExec())
-
 
 #define WARNING(_msg, ...) fprintf(_out, "W\t" _msg "\n", ##__VA_ARGS__)
 #define INFO(_msg, ...) fprintf(_out, "I\t" _msg "\n", ##__VA_ARGS__)
@@ -438,7 +436,7 @@ static void command_set_breakpoint(const char *cmd)
     //class = (CLASS *)GB.FindClassLocal(class_name);
     //CLASS_load_without_init(class);
 		//fprintf(stderr, "command_set_breakpoint: %s %s\n", class->name, class->component ? class->component->name : "?");
-    set_breakpoint(GB.FindClass(class_name), line);
+    set_breakpoint(GB_DEBUG.FindClass(class_name), line);
   }
 }
 
@@ -454,7 +452,7 @@ static void command_unset_breakpoint(const char *cmd)
   {
     //class = CLASS_find(class_name);
     //CLASS_load_without_init(class);
-    unset_breakpoint(GB.FindClass(class_name), line);
+    unset_breakpoint(GB_DEBUG.FindClass(class_name), line);
   }
 }
 

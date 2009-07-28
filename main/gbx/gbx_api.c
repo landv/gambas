@@ -259,6 +259,7 @@ void *GAMBAS_DebugApi[] =
 	(void *)GB_CollectionEnum,
 	(void *)CLASS_get_next_sorted_symbol,
 	(void *)DEBUG_can_be_used_like_an_array,
+	(void *)DEBUG_find_class,
 	NULL
 };
 

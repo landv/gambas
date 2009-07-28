@@ -70,6 +70,7 @@ bool DEBUG_get_value(const char *sym, int len, GB_VARIANT *ret);
 int DEBUG_can_be_used_like_an_array(void *object, CLASS *class);
 DEBUG_BACKTRACE *DEBUG_backtrace();
 GB_ARRAY DEBUG_get_string_array_from_backtrace(DEBUG_BACKTRACE *bt);
+GB_CLASS DEBUG_find_class(const char *name);
 
 #define DEBUG_free_backtrace(_bt) ARRAY_delete(_bt)
 

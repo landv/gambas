@@ -59,6 +59,7 @@ typedef
 		int (*EnumCollection)(GB_COLLECTION col, GB_VARIANT *value, char **key, int *len);
 		void *(*GetNextSortedSymbol)(void *klass, int *index);
 		int (*CanBeUsedLikeAnArray)(void *object, CLASS *klass);
+		GB_CLASS (*FindClass)(const char *name);
 		}
 	GB_DEBUG_INTERFACE;
 
