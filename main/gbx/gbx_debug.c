@@ -382,3 +382,18 @@ GB_ARRAY DEBUG_get_string_array_from_backtrace(DEBUG_BACKTRACE *bt)
 
 	return array;
 }
+
+GB_CLASS DEBUG_find_class(const char *name)
+{
+	CLASS *class;
+	CLASS *save = CP;
+	
+	CP = NULL;
+	class = CLASS_find(name);
+	CP = save;
+	
+	return class;
+	
+	
+}
+

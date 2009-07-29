@@ -72,5 +72,6 @@ DEBUG_BACKTRACE *DEBUG_backtrace();
 GB_ARRAY DEBUG_get_string_array_from_backtrace(DEBUG_BACKTRACE *bt);
 DEBUG_BACKTRACE *DEBUG_copy_backtrace(DEBUG_BACKTRACE *bt);
 #define DEBUG_free_backtrace(_bt) ARRAY_delete(_bt)
+GB_CLASS DEBUG_find_class(const char *name);
 
 #endif

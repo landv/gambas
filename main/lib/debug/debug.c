@@ -568,7 +568,7 @@ static void command_set_breakpoint(const char *cmd)
     //class = (CLASS *)GB.FindClassLocal(class_name);
     //CLASS_load_without_init(class);
 		//fprintf(stderr, "command_set_breakpoint: %s %s\n", class->name, class->component ? class->component->name : "?");
-    set_breakpoint(GB.FindClass(class_name), line);
+    set_breakpoint(GB_DEBUG.FindClass(class_name), line);
   }
 }
 
@@ -584,7 +584,7 @@ static void command_unset_breakpoint(const char *cmd)
   {
     //class = CLASS_find(class_name);
     //CLASS_load_without_init(class);
-    unset_breakpoint(GB.FindClass(class_name), line);
+    unset_breakpoint(GB_DEBUG.FindClass(class_name), line);
   }
 }
 
