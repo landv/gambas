@@ -9,6 +9,7 @@
   Arrangement = Arrange.Vertical
   { HBox1 HBox
     MoveScaled(1,1,27,4)
+    Background = Color.TextBackground
     { txtExpr TextBox
       MoveScaled(0,0,16,4)
       Font = Font["Bold"]
@@ -17,10 +18,11 @@
       Border = False
     }
     { btnHidden ToolButton
-      MoveScaled(20,0,4,4)
+      MoveScaled(22,0,4,4)
       ToolTip = ("Show hidden symbols")
       Text = ("")
       Picture = Picture["icon:/small/lamp"]
+      Toggle = True
     }
   }
   { gvwExpr GridView

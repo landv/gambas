@@ -264,6 +264,10 @@ Private Sub Init(sInfo As String, bNew As Boolean) As Boolean
   Dim bHasHidden As Boolean
 
   $aSym = Split(sInfo, " ", Chr$(34))
+  If $aSym.Count < 3 Then
+    Debug "???";; sInfo
+    Return True
+  Endif
 
   $sClass = $aSym[0]
   $sRealClass = $aSym[1]
