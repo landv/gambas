@@ -56,7 +56,7 @@ Public Sub GotoSymbol(hSymbol As CSymbolInfo)
   Dim sComp As String
   
   sName = LCase(hSymbol.Name)
-  
+  If Right(sName) = "$" Then sName = Left(sName, -1)
   If hSymbol.Component = "gb" And If hSymbol.Class = "." Then
     sLink = "help/lang"
   Else

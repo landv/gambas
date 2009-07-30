@@ -39,6 +39,7 @@ End
 Public Sub ShowKeywordHelp(hEditor As Editor, sName As String, Optional sName2 As String) As Boolean
    Dim sPath As String
 
+      
       txtHelp.RichText = "<b>" & sName & "</b>"
       txtHelp.RichText &= "<br><font color=green>Kind: </font>Gambas Keyword: "
       
@@ -107,7 +108,7 @@ Public Sub ShowSymbolHelp(hEditor As Editor, hSymbol As CSymbolInfo)
 
     
     sName = LCase(hSymbol.Name)
-    
+    If Right(sName) = "$" Then sName = Left(sName, -1)
     If hSymbol.Component = "gb" And If hSymbol.Class = "." Then
       sLink = "help/lang"
     Else
