@@ -1501,13 +1501,16 @@ End
 
 
 
-Public Sub OpenForm(sName As String, Optional sModule As String = "form")
+Public Sub OpenForm(sName As String, Optional sModule As String = "form", Optional sControl As String)
 
   Dim sPath As String
-
+  Dim hForm As FForm
   sPath = $cSourceDir[sName & "." & sModule]
-  If Exist(sPath) Then OpenFile(sPath)
-
+  If Exist(sPath) Then 
+    hForm = OpenFile(sPath)
+    If sControl Then hForm.SelectControl(sControl)
+  Endif
+  
 End
 
 

@@ -66,7 +66,9 @@ Public Sub ShowSymbolHelp(hEditor As Editor, hSymbol As CSymbolInfo)
   Dim sLink As String
   Dim sName As String
   Dim sComp As String
-
+  Dim hClass As Class
+  Dim sClass As String
+  sClass = hSymbol.Class
   txtHelp.RichText = IIf(hSymbol.IsStatic(), "STATIC", "") & " " & IIf(hSymbol.NotPublic, "PRIVATE", "PUBLIC") & " " & 
       Replace(hSymbol.GetDescription(), hSymbol.Name, "<b>" & hSymbol.Name & "</b>")
       txtHelp.RichText &= "<br><font color=green>Kind: </font><b>"
@@ -79,28 +81,30 @@ Public Sub ShowSymbolHelp(hEditor As Editor, hSymbol As CSymbolInfo)
           txtHelp.RichText &= "Sub/Function"
         Case "C"
           txtHelp.RichText &= "Constant"
+        Case "t"
+          txtHelp.RichText &= "Form control"
+          sClass = hSymbol.Type
+        Case Else
+          txtHelp.Text &= hSymbol.Kind
+
       End Select
       
       txtHelp.RichText &= "</b>"
       
   If hSymbol.LineNumber Then
-  
-  txtHelp.RichText &= Subst("<br>Def.: " & "<a href=\"file://&1.&2\">&1.&2</a> ", hSymbol.Class, hSymbol.LineNumber)
-  'Symbole locale
-   'sResult = "<b><u>Syntax</u></b><br>"
-      
-      
-    'txtHelp.RichText = "<font color=green>Component: </font>This project" & 
-    '                   "&nbsp;&nbsp;&nbsp;<Font color=red>Class: </font>" & hSymbol.Class & 
-    '                   "&nbsp;&nbsp;&nbsp;<Font color=blue>Symbol: </font>" & hSymbol.Name 
-    
-    txtHelp.RichText &= "<hr>" & GetLocalHelp(hSymbol)
+    'Definition
+    txtHelp.RichText &= Subst("<br>Def.: " & "<a href=\"file://&1.&2\">&1.&2</a> ", sClass, hSymbol.LineNumber)
+    'Afficher l'aide Locale
+    txtHelp.RichText &= GetLocalHelp(hSymbol)
   
   Else
   'Symbole externe
-      
-      txtHelp.RichText &= Subst("<br><font color=blue>&1</font> > <Font color=red>&2</font>", hSymbol.Component, hSymbol.Class)
-  
+          'Afficher le formulaire
+    If hSymbol.Kind = "t" Then txtHelp.Text &= Subst("<br>Def.: <a href=\"form://&1.&2\">&1.&2</a>", hSymbol.Class, hSymbol.name)
+
+    'Filiation
+    txtHelp.RichText &= Subst("<br><font color=blue>&1</font> > <Font color=red>&2</font>", hSymbol.Component, sClass)
+
     
     sName = LCase(hSymbol.Name)
     
@@ -111,7 +115,7 @@ Public Sub ShowSymbolHelp(hEditor As Editor, hSymbol As CSymbolInfo)
       sComp = hSymbol.Component
       If sComp = "gb.qt4" Or If sComp = "gb.gtk" Or If sComp = "gb.gui" Then sComp = "gb.qt"
       sLink &= "/" & sComp
-      If hSymbol.Class <> "." Then sLink &= "/" & LCase(hSymbol.Class)
+      If hSymbol.Class <> "." Then sLink &= "/" & LCase(sClass)
     Endif
   
     sLink &/= sName 
@@ -225,6 +229,7 @@ Private Function GetLocalHelp(hSymbol As CSymbolInfo) As String
       iLine = hSymbol.HelpLineNumber
      
     If hSymbol.HelpLineNumber Then 
+      sResult &= "<hr>"
       Do
         s = LTrim(hEdit.Lines[iLine].Text)
         If Left(s, 2) <> "''" Then Break
@@ -232,6 +237,7 @@ Private Function GetLocalHelp(hSymbol As CSymbolInfo) As String
         Inc iLine
         If iLine >= hEdit.Lines.Count Then Break
       Loop
+      
       Return sResult
     Endif
 End
@@ -276,6 +282,10 @@ Public Sub txtHelp_Link(Path As String)
     
     Project.OpenFile(Project.FindPath(aRes[0]), CInt(aRes[1]))
   
+  Endif
+  If Left(Path, 6) = "form:/" Then
+    aRes = Scan(Path, "form://*.*")
+    Project.OpenForm(aRes[0],, aRes[1])
   Endif
 
 End

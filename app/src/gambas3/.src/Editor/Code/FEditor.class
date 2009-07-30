@@ -2169,7 +2169,7 @@ Private Function IsKeyword(iCpt As Integer) As Boolean
 End
 
 
-Private Sub FindDefinition()
+Private Sub FindDefinition(bPopupHelp As Boolean)
 
   Dim sLig As String
   Dim iCol As Integer
@@ -2217,17 +2217,30 @@ Private Sub FindDefinition()
         Endif
       Endif
 
-      MHelp.GotoKeyword(sKeyword, sKeyword2)
+      If bPopupHelp Then
+        MHelp.GotoKeyword(sKeyword, sKeyword2)
+      Else
+        FHelp.ShowKeywordHelp(Editor, sKeyword, sKeyword2)
+      Endif
       Return
 
     Else If Highlight.Types[iCpt] = Highlight.DataType Then 
 
       sKeyword = Highlight.Symbols[iCpt]
-      If MHelp.GotoDataType(sKeyword) Then
-        hClass = CComponent.Classes[sKeyword]
-        If hClass Then 
-          MHelp.GotoClass(hClass.Component, hClass.Name)
-        Endif 
+      If bPopupHelp Then
+        If MHelp.GotoDataType(sKeyword) Then
+          hClass = CComponent.Classes[sKeyword]
+          If hClass Then 
+            MHelp.GotoClass(hClass.Component, hClass.Name)
+          Endif 
+        Endif
+      Else
+        If FHelp.ShowDatatypeHelp(Editor, sKeyword) Then
+          hClass = CComponent.Classes[sKeyword]
+          If hClass Then 
+            FHelp.ShowClassHelp(Editor, hClass.Component, hClass.Name)
+          Endif 
+        Endif
       Endif
       Return
     Endif
@@ -2239,97 +2252,101 @@ Private Sub FindDefinition()
 
   'PRINT hSymbol.Class
 
-  If hSymbol.LineNumber Then
+  If hSymbol.LineNumber And If Not bPopupHelp Then
     Project.SavePosition()
     Project.OpenFile(hSymbol.Class, hSymbol.LineNumber)
   Else
-    MHelp.GotoSymbol(hSymbol)
+    If bPopupHelp Then
+      FHelp.ShowSymbolHelp(Editor, hSymbol)
+    Else
+      MHelp.GotoSymbol(hSymbol)
+    Endif
   Endif
 
 End
 
-Private Sub ShowHelp()
-
-  Dim sLig As String
-  Dim iCol As Integer
-  Dim hSymbol As CSymbolInfo
-  Dim hClass As CClassInfo
-  Dim iCpt As Integer
-  Dim sKeyword As String
-  Dim sKeyword2 As String
-
-  sLig = Highlight.Purge(Editor.Lines[Editor.Line].Text)
-  If Editor.Selected Then 
-    If Editor.Selection.EndLine > Editor.Selection.StartLine Then Return
-    iCol = Editor.Selection.EndColumn
-  Else
-    iCol = Editor.Column
-  Endif
-
-  Repeat
-    Inc iCol
-    If iCol > Len(sLig) Then Break
-  Until InStr(IDENT_CAR, Mid$(sLig, iCol, 1)) = 0
-
-  If iCol < Len(sLig) Then
-    If InStr("[(", Mid$(sLig, iCol, 1)) Then
-      Inc iCol
-    Endif
-  Endif
-  
-  sLig = Left$(sLig, iCol - 1)
-
-
-  If Right(sLig) = "[" Then sLig &= "]"
-  
-  Highlight.Analyze(sLig)
-  'IF IsCurrentProc() THEN RETURN
-
-  iCpt = Highlight.Types.Count - 1
-
-  If iCpt >= 0 Then
-    If IsKeyword(iCpt) Then
-
-      sKeyword = Highlight.Symbols[iCpt]
-      If iCpt > 0 Then
-        Dec iCpt
-        If IsKeyword(iCpt) Then
-          sKeyword2 = Highlight.Symbols[iCpt] & sKeyword
-        Endif
-      Endif
-      FHelp.ShowKeywordHelp(Editor, sKeyword, sKeyword2)
-      'MHelp.GotoKeyword(sKeyword, sKeyword2)
-      Return
-
-    Else If Highlight.Types[iCpt] = Highlight.DataType Then 
-
-      sKeyword = Highlight.Symbols[iCpt]
-      If FHelp.ShowDataTypeHelp(Editor, sKeyword) Then
-        hClass = CComponent.Classes[sKeyword]
-        If hClass Then 
-          FHelp.ShowClassHelp(Editor, hClass.Component, hClass.Name)
-          'MHelp.GotoClass(hClass.Component, hClass.Name)
-        Endif
-      Endif
-      Return
-    Endif
-  Endif
-
-  'Editor.Analyze(Left$(sLig, iCol - 1))
-  hSymbol = GetExpressionSymbol(Highlight.Symbols, Highlight.Types)
-  If Not hSymbol Then Return
-
-  'PRINT hSymbol.Class
-
-  'If hSymbol.LineNumber Then
-  '  Project.SavePosition()
-  '  Project.OpenFile(hSymbol.Class, hSymbol.LineNumber)
-  'Else
-    FHelp.ShowSymbolHelp(Editor, hSymbol)
-    'MHelp.GotoSymbol(hSymbol)
-  'Endif
-
-End
+' Private Sub ShowHelp()
+' 
+'   Dim sLig As String
+'   Dim iCol As Integer
+'   Dim hSymbol As CSymbolInfo
+'   Dim hClass As CClassInfo
+'   Dim iCpt As Integer
+'   Dim sKeyword As String
+'   Dim sKeyword2 As String
+' 
+'   sLig = Highlight.Purge(Editor.Lines[Editor.Line].Text)
+'   If Editor.Selected Then 
+'     If Editor.Selection.EndLine > Editor.Selection.StartLine Then Return
+'     iCol = Editor.Selection.EndColumn
+'   Else
+'     iCol = Editor.Column
+'   Endif
+' 
+'   Repeat
+'     Inc iCol
+'     If iCol > Len(sLig) Then Break
+'   Until InStr(IDENT_CAR, Mid$(sLig, iCol, 1)) = 0
+' 
+'   If iCol < Len(sLig) Then
+'     If InStr("[(", Mid$(sLig, iCol, 1)) Then
+'       Inc iCol
+'     Endif
+'   Endif
+'   
+'   sLig = Left$(sLig, iCol - 1)
+' 
+' 
+'   If Right(sLig) = "[" Then sLig &= "]"
+'   
+'   Highlight.Analyze(sLig)
+'   'IF IsCurrentProc() THEN RETURN
+' 
+'   iCpt = Highlight.Types.Count - 1
+' 
+'   If iCpt >= 0 Then
+'     If IsKeyword(iCpt) Then
+' 
+'       sKeyword = Highlight.Symbols[iCpt]
+'       If iCpt > 0 Then
+'         Dec iCpt
+'         If IsKeyword(iCpt) Then
+'           sKeyword2 = Highlight.Symbols[iCpt] & sKeyword
+'         Endif
+'       Endif
+'       FHelp.ShowKeywordHelp(Editor, sKeyword, sKeyword2)
+'       'MHelp.GotoKeyword(sKeyword, sKeyword2)
+'       Return
+' 
+'     Else If Highlight.Types[iCpt] = Highlight.DataType Then 
+' 
+'       sKeyword = Highlight.Symbols[iCpt]
+'       If FHelp.ShowDataTypeHelp(Editor, sKeyword) Then
+'         hClass = CComponent.Classes[sKeyword]
+'         If hClass Then 
+'           FHelp.ShowClassHelp(Editor, hClass.Component, hClass.Name)
+'           'MHelp.GotoClass(hClass.Component, hClass.Name)
+'         Endif
+'       Endif
+'       Return
+'     Endif
+'   Endif
+' 
+'   'Editor.Analyze(Left$(sLig, iCol - 1))
+'   hSymbol = GetExpressionSymbol(Highlight.Symbols, Highlight.Types)
+'   If Not hSymbol Then Return
+' 
+'   'PRINT hSymbol.Class
+' 
+'   'If hSymbol.LineNumber Then
+'   '  Project.SavePosition()
+'   '  Project.OpenFile(hSymbol.Class, hSymbol.LineNumber)
+'   'Else
+'     FHelp.ShowSymbolHelp(Editor, hSymbol)
+'     'MHelp.GotoSymbol(hSymbol)
+'   'Endif
+' 
+' End
 
 Public Sub OnProjectDebug()
 
@@ -2741,7 +2758,7 @@ End
 
 Public Sub mnuDefinition_Click()
 
-  FindDefinition
+  FindDefinition(False)
 
 End
 
@@ -2835,6 +2852,6 @@ End
 
 Public Sub timShowHelp_Timer()
 
-  ShowHelp
+  FindDefinition(True)
 
 End
