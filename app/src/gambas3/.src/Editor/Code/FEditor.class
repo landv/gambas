@@ -20,6 +20,7 @@ Private $iArgSignature As Integer
 Private $iPosSignature As Integer
 Private $bCompletion As Boolean
 Private $bCleanOnSave As Boolean
+Private $bShowPopupHelp As Boolean
 
 Static Private $hVirtualSymbol As New CSymbolInfo
 
@@ -160,6 +161,8 @@ Public Sub ReadConfig()
 
   $bCompletion = Settings["/Editor/Completion", True]
   $bCleanOnSave = Settings["/Editor/CleanOnSave", False]
+  
+  $bShowPopupHelp = Settings["/Editor/ShowPopupHelp", True]
 
 End
 
@@ -2350,7 +2353,7 @@ Public Sub Editors_MouseUp()
   If Not Editor.Selected Then Return 
   If Editor.Selection.StartLine < Editor.Selection.EndLine Then Return 
   If Not Project.Running Then
-    timShowHelp.Trigger
+    If FDebugInfo.IsHelpVisible() Or $bShowPopupHelp Then timShowHelp.Trigger
     Return 
   Endif
   

@@ -72,6 +72,7 @@ Public Sub _new()
     [cmbLineNumber, "/Editor/ShowLineNumbers", 0],
     [cmbShowChange, "/Editor/ShowChange", 1],
     [cmbShowCurrent, "/Editor/ShowCurrent", 1],
+    [cmbPopupHelp, "Editor/ShowPopupHelp", 1],
     [cmbFoldProc, "/Editor/Fold", 0],
     [txtRecent, "/Recent/Max", Project.DEFAULT_MAX_RECENT],
     [cmbOutput, "/QuietExternalCommands", 0],
@@ -554,5 +555,13 @@ End
 Public Sub Form_Open()
 
   Me.Center
+
+End
+
+Public Sub cmbPopupHelp_Click()
+
+  Settings["/Editor/ShowPopupHelp"] = cmbPopupHelp.Index = 1
+  
+  RefreshEditor
 
 End
