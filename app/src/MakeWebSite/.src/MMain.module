@@ -4,11 +4,13 @@ Private $cVar As New Collection
 Private $cTrans As New Collection
 Private $sLang As String
 
-Private $aLanguages As String[] = ["en:C", "fr:fr_FR.UTF-8", "es:es_ES.UTF-8"]
+Private $aLanguages As String[] = ["en:C", "fr:fr_FR.UTF-8", "es:es_ES.UTF-8", "ar:ar_EG.UTF-8"]
+
+Private Const NBR_NEWS As Integer = 3
 
 Sub InitVar()
   
-  Dim aStable As String[] = ["2.15.0", "2.14.0", "2.13.1", "2.12.0"]
+  Dim aStable As String[] = ["2.15.2", "2.14.0", "2.13.1", "2.12.0"]
   'DIM aDev AS String[] = ["92", "91", "90", "51"]
   
   $cVar["STABLE_VERSION"] = aStable[0]
@@ -165,7 +167,7 @@ Sub Expand(sPath As String)
   Next
   
   If InStr(sData, "$(HEAD_NEWS)") Then 
-    iNews = 2
+    iNews = NBR_NEWS
     sKey = "$(HEAD_NEWS)"
   Else If InStr(sData, "$(NEWS)") Then 
     iNews = 1024
@@ -289,6 +291,15 @@ Private Sub Translate(sSrc As String, sDest As String, Optional bNoTrans As Bool
   sData = ReplaceLink(sData, "href")
   sData = ReplaceLink(sData, "src")
   sData = Replace(sData, "$(LANG)", $sLang)
+  If $sLang = "ar" Then
+    sData = Replace(sData, "$(LANGDIR)", "rtl")
+    sData = Replace(sData, "$(DIR)", "-rtl")
+    sData = Replace(sData, "$(STYLE)", "style-rtl.css")
+  Else
+    sData = Replace(sData, "$(LANGDIR)", "ltr")
+    sData = Replace(sData, "$(DIR)", "")
+    sData = Replace(sData, "$(STYLE)", "style.css")
+  Endif
 
   File.Save(sDest, sData)
   

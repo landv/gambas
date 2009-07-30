@@ -1,8 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="$(LANG)" lang="$(LANG)" dir="$(LANGDIR)">
+
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="$(STYLE)">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
 </head>
 
 <body>
@@ -19,7 +20,7 @@
       <img src="top-right-corner.png" class="top-right-corner">
     </div>
     <div style="padding:0px 8px;margin:0px;color:white;">
-      <b>{Last stable version is}<br><a href="download.html"><font size="+1">2.15.0</font></a>
+      <b>{Last stable version is}<br><a href="download.html"><font size="+1">2.15.2</font></a>
       (<a href="changelog2.html"><b>Changelog</b></a>)</b>
     </div>
     <div class="bottom-corner">
@@ -68,22 +69,13 @@
   <img src="top-left-corner.png" class="top-left-corner">
   <img src="top-right-corner.png" class="top-right-corner">
   <div style="height:4px;"></div>
-  <div><b>26 jul 2009 - Release of Gambas 2.15</b></div>
+  <div><b>30 يول 2009 - Arabic translation of the web site</b></div>
 </div>
 <div class="news">
 <table class="none" width="100%"><tr><td class="none">
-<p>The main changes of this release are:
-<ul>
-  <li>A big bug was fixed in the interpreter that made it crash randomly on some systems.
-  <li>String to number conversion was fixed, especially when converting Long numbers.
-  <li>The Firebird driver is compiled correctly now.
-  <li>The SQLite 3 driver now correctly returns the default value of fields.
-  <li>Raising or lowering controls now works correctly in the GTK+ component.
-  <li>The SMTP component now strictly follows RFC 2047 when sending mails with subjects encoded in UTF-8.
-  <li>The Xml.ToString() method was fixed in the XML component.
-</ul>
-
-<p>See the <a href="changelog2.html">ChangeLog</a> for other bug fixes.
+<p>Thanks to Daif Alotaibi and a lot of HTML elbow-grease of your servant, the web site is now translated into arabic.
+Most of the wiki pages are not translated yet.
+<p><i>If someone knows why scrollbars keep being on the right on right-to-left HTML pages...</i>
 </td></tr></table>
 </div>
 <div class="space"></div>
@@ -91,14 +83,24 @@
   <img src="top-left-corner.png" class="top-left-corner">
   <img src="top-right-corner.png" class="top-right-corner">
   <div style="height:4px;"></div>
-  <div><b>22 jul 2009 - The wiki web site is down</b></div>
+  <div><b>29 يول 2009 - Release of Gambas 2.15.2</b></div>
 </div>
 <div class="news">
 <table class="none" width="100%"><tr><td class="none">
-<p>Because of a weird mistake of my own, <a href="http://gambasdoc.org" target="_blank">http://gambasdoc.org</a> is down for a unknown period of time.
-As many pages of this web site were actually stored in the wiki, they are not accessible anymore.
-<p>Sorry for the inconvenience, the wiki will come back as soon as possible!
-<p><b>UPDATE:</b> Thanks to Rob, the wiki is born again!!
+<p>This release includes a bug fix in string to integer conversion routine that 
+I forgot to backport from the development version.
+</td></tr></table>
+</div>
+<div class="space"></div>
+<div class="news-title">
+  <img src="top-left-corner.png" class="top-left-corner">
+  <img src="top-right-corner.png" class="top-right-corner">
+  <div style="height:4px;"></div>
+  <div><b>28 يول 2009 - Release of Gambas 2.15.1</b></div>
+</div>
+<div class="news">
+<table class="none" width="100%"><tr><td class="none">
+<p>The scripter compilation failed in 2.15. This release fixes that problem.
 </td></tr></table>
 </div>
 <div class="space"></div>

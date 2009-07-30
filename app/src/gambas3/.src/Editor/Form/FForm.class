@@ -2098,7 +2098,7 @@ Public Sub Control_Draw(Optional iIndex As Integer)
     
       Draw.FillX = 0
       Draw.FillY = 0
-      If hCtrl.H >= 28 Then
+      If hCtrl.H >= 32 Then
         Draw.Tile(Picture["img/16/red-arrow-h.png"], 4, 4, hCtrl.W - 8, 8)
         Draw.Tile(Picture["img/16/red-arrow-h.png"], 4, hCtrl.H - 12, hCtrl.W - 8, 8)
       Else 
@@ -2110,7 +2110,7 @@ Public Sub Control_Draw(Optional iIndex As Integer)
 
       Draw.FillX = 0
       Draw.FillY = 0
-      If hCtrl.W >= 28 Then
+      If hCtrl.W >= 32 Then
         Draw.Tile(Picture["img/16/red-arrow-v.png"], 4, 4, 8, hCtrl.H - 8)
         Draw.Tile(Picture["img/16/red-arrow-v.png"], hCtrl.W - 12, 4, 8, hCtrl.H - 8)
       Else 
@@ -2122,7 +2122,7 @@ Public Sub Control_Draw(Optional iIndex As Integer)
     
       Draw.FillX = 0
       Draw.FillY = 0
-      If hCtrl.H >= 28 Then
+      If hCtrl.H >= 32 Then
         Draw.Tile(Picture["img/16/red-arrow-r.png"], 4, 4, hCtrl.W - 8, 8)
         Draw.Tile(Picture["img/16/red-arrow-r.png"], 4, hCtrl.H - 12, hCtrl.W - 8, 8)
       Else 
@@ -2134,7 +2134,7 @@ Public Sub Control_Draw(Optional iIndex As Integer)
 
       Draw.FillX = 0
       Draw.FillY = 0
-      If hCtrl.W >= 28 Then
+      If hCtrl.W >= 32 Then
         Draw.Tile(Picture["img/16/red-arrow-c.png"], 4, 4, 8, hCtrl.H - 8)
         Draw.Tile(Picture["img/16/red-arrow-c.png"], hCtrl.W - 12, 4, 8, hCtrl.H - 8)
       Else 

@@ -68,8 +68,8 @@ Public Sub MakeChangeLog(sDir As String, iVer As Integer)
   $hOut = Open sOut For Create
 
   Print #$hOut, "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">\n"
-    "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">\n"
-    "<link rel=\"stylesheet\" href=\"style.css\">"
+    "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"$(LANG)\" lang=\"$(LANG)\" dir=\"$(LANGDIR)\">\n"
+    "<link rel=\"stylesheet\" href=\"$(STYLE)\">"
     "<head>\n"
     "<base target=\"arch\">\n"
     "</head>\n"

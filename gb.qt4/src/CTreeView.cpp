@@ -955,7 +955,7 @@ BEGIN_PROPERTY(CTREEVIEWITEM_expanded)
   if (READ_PROPERTY)
     GB.ReturnBoolean(it->isOpen());
   else
-    it->setOpen(VPROP(GB_BOOLEAN));
+    WIDGET->setOpen(it, VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 

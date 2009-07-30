@@ -1159,7 +1159,7 @@ Private Sub RefreshSourceCache()
   Next
   
   For Each hForm In Files
-    hForm.Path = $cSourceDir[File.Name(hForm.Path)]
+    If IsSourcePath(hForm.Path) Then hForm.Path = $cSourceDir[File.Name(hForm.Path)]
   Next
 
 End

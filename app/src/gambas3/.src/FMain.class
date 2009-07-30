@@ -11,6 +11,7 @@ Private $bUpdateRecentMenu As Boolean
 Private $bInTreeView As Boolean
 Private $bInRename As Boolean
 Private $sKeyInfo As String
+Private $bNoSelect As String
 
 Public Sub _new()
 
@@ -825,10 +826,17 @@ End
 
 Public Sub tvwProject_Select()
 
-  If tvwProject.Current.Children Then tvwProject.Current.Expanded = True
-
   GetCurrent()
   RefreshMenu
+
+  If tvwProject.Current.Children Then 
+    tvwProject.Current.Expanded = True
+    ' tvwProject.MoveCurrent
+    ' tvwProject.MoveChild
+    ' tvwProject.MoveLast
+    ' tvwProject.Item.EnsureVisible
+    ' tvwProject.Current.EnsureVisible
+  Endif
 
 End
 
@@ -1548,3 +1556,4 @@ Public Sub mnuEditConnection_Click()
   tvwProject_Activate
   
 End
+
