@@ -44,7 +44,7 @@ static int _fdr = -1;
 static int _fdw = -1;
 static CDEBUG *_debug_object = NULL;
 
-#define BUFFER_SIZE 16384
+#define BUFFER_SIZE DEBUG_OUTPUT_MAX_SIZE
 static char *_buffer = NULL;
 static int _buffer_left;
 

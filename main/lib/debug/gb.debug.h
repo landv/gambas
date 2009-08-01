@@ -88,4 +88,6 @@ typedef
 		}
 	DEBUG_INTERFACE;
 
+#define DEBUG_OUTPUT_MAX_SIZE 65536
+	
 #endif

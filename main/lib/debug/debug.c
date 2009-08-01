@@ -591,7 +591,7 @@ static void command_unset_breakpoint(const char *cmd)
 
 void DEBUG_backtrace(FILE *out)
 {
-  int i;
+  int i, n;
   STACK_CONTEXT *context;
   ushort line;
 
@@ -601,6 +601,7 @@ void DEBUG_backtrace(FILE *out)
     fprintf(out, "?");
 
   //for (i = 0; i < (STACK_frame_count - 1); i++)
+	n = 0;
   for (i = 0;; i++)
   {
     context = GB_DEBUG.GetStack(i); //&STACK_frame[i];
@@ -611,12 +612,18 @@ void DEBUG_backtrace(FILE *out)
     {
       line = 0;
       if (calc_line_from_position(context->cp, context->fp, context->pc, &line))
-        fprintf(out, " %s.?.?", context->cp->name);
+        n += fprintf(out, " %s.?.?", context->cp->name);
       else
-        fprintf(out, " %s.%s.%d", context->cp->name, context->fp->debug->name, line);
+        n += fprintf(out, " %s.%s.%d", context->cp->name, context->fp->debug->name, line);
     }
     else if (context->cp)
-      fprintf(out, " ?");
+      n += fprintf(out, " ?");
+		
+		if (n >= (DEBUG_OUTPUT_MAX_SIZE / 2))
+		{
+			fprintf(out, " ...");
+			break;
+		}
   }
 }
 

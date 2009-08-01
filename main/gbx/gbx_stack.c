@@ -24,6 +24,8 @@
 
 #define __GBX_STACK_C
 
+#include <sys/resource.h>
+
 #include "gb_common.h"
 #include "gb_error.h"
 #include "gb_alloc.h"
@@ -43,8 +45,27 @@ STACK_CONTEXT *STACK_frame;
 int STACK_frame_count;
 size_t STACK_relocate = 0;
 
+static uintptr_t _process_stack_limit;
+
 void STACK_init(void)
 {
+	int stack;
+	struct rlimit limit;
+	uintptr_t max;
+	
+	// Get the maximum stack size allowed
+	if (getrlimit(RLIMIT_STACK, &limit))
+		ERROR_panic("Cannot get stack size limit");
+	
+	if (limit.rlim_cur == RLIM_INFINITY)
+		max = 128 << 20; // 128 Mb if there is no limit.
+	else
+		max = (uintptr_t)limit.rlim_cur;
+	
+	max -= STACK_INC * 8; // 32 Kb security (64 Kb on 64 bits OS)
+	
+	_process_stack_limit = (uintptr_t)&stack - max;
+	
 	//fprintf(stderr, "STACK_size = %ld\n", STACK_size);
   ALLOC_ZERO(&STACK_base, STACK_size, "STACK_init");
 
@@ -85,6 +106,12 @@ bool STACK_check(int need)
 
 void STACK_push_frame(STACK_CONTEXT *context, int need)
 {
+	int stack;
+  //fprintf(stderr, "current_stack = %u -> %u / %u\n", current_stack, _process_stack_base - current_stack, _process_stack_max);
+	
+	if ((uintptr_t)&stack < _process_stack_limit)
+		THROW(E_STACK);
+	
 	if ((char *)(SP + need + 8 + sizeof(STACK_CONTEXT)) >= STACK_limit) 
 	{
 		//fprintf(stderr, "**** STACK_GROW: STACK_push_frame\n");
@@ -157,7 +184,6 @@ void STACK_grow(void)
 	char *new_base;
 	size_t size;
 	STACK_CONTEXT *context;
-	
 	#if DEBUG_STACK
 	fprintf(stderr, "STACK_grow: before SP = %d\n", SP - (VALUE *)STACK_base);
 	fprintf(stderr, "STACK_grow: before STACK_limit = %d\n", (VALUE *)STACK_limit - (VALUE *)STACK_base);
