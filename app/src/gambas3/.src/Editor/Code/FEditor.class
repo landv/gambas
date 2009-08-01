@@ -2221,27 +2221,26 @@ Private Sub FindDefinition(bPopupHelp As Boolean)
       Endif
 
       If bPopupHelp Then
-        MHelp.GotoKeyword(sKeyword, sKeyword2)
-      Else
         FHelp.ShowKeywordHelp(Editor, sKeyword, sKeyword2)
+      Else
+        MHelp.GotoKeyword(sKeyword, sKeyword2)
       Endif
       Return
 
     Else If Highlight.Types[iCpt] = Highlight.DataType Then 
-
       sKeyword = Highlight.Symbols[iCpt]
       If bPopupHelp Then
-        If MHelp.GotoDataType(sKeyword) Then
-          hClass = CComponent.Classes[sKeyword]
-          If hClass Then 
-            MHelp.GotoClass(hClass.Component, hClass.Name)
-          Endif 
-        Endif
-      Else
         If FHelp.ShowDatatypeHelp(Editor, sKeyword) Then
           hClass = CComponent.Classes[sKeyword]
           If hClass Then 
             FHelp.ShowClassHelp(Editor, hClass.Component, hClass.Name)
+          Endif 
+        Endif
+      Else
+        If MHelp.GotoDataType(sKeyword) Then
+          hClass = CComponent.Classes[sKeyword]
+          If hClass Then 
+            MHelp.GotoClass(hClass.Component, hClass.Name)
           Endif 
         Endif
       Endif

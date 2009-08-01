@@ -8,12 +8,12 @@ Private Sub ShowHelp(hEditor As Editor)
     Me.Background = Color.LightBackground
     Me.Ignore = True
     Me.Reparent(hEditor.Parent)
-    Me.Height = Min(txtHelp.TextHeight + 10, Desktop.Height / 4)
+    Me.Height = Min(txtHelp.TextHeight + 15, Desktop.Height / 4)
     Me.Width = Desktop.Width / 3
-    iY = hEditor.Y + hEditor.CursorY + 5 + hEditor.LineHeight
+    iY = hEditor.Y + hEditor.CursorY + 20 + hEditor.LineHeight
     
     If (iY + Me.Height) > (hEditor.Y + hEditor.H) Then
-      iY = hEditor.Y + hEditor.CursorY - 5 - Me.Height
+      iY = hEditor.Y + hEditor.CursorY - 15 - Me.Height
     Endif
     hcont = hEditor.Parent
     iX = hEditor.CursorX
