@@ -4,7 +4,7 @@
 
   The Debug class
 
-  (c) 2000-2004 Benoît Minisini <gambas@freesurf.fr>
+  (c) 2000-2004 BenoÃ®t Minisini <gambas@freesurf.fr>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by

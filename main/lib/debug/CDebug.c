@@ -32,6 +32,7 @@
 
 #include "main.h"
 #include "gb_limit.h"
+#include "gb.debug.h"
 #include "CDebug.h"
 
 /*#define DEBUG*/
