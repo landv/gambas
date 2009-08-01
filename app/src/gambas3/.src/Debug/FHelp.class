@@ -19,6 +19,7 @@ Private Sub ShowHelp(hEditor As Editor)
     iX = hEditor.CursorX
     Do
       If hCont Is Form Then Break
+      
       iX += hCont.X
       iY += hCont.Y
       hCont = hCont.Parent
