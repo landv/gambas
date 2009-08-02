@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  c_dbusconnection.h
+  helper.h
 
   gb.dbus component
 
@@ -22,28 +22,18 @@
 
 ***************************************************************************/
 
-#ifndef __C_DBUSCONNECTION_H
-#define __C_DBUSCONNECTION_H
+#ifndef __HELPER_H
+#define __HELPER_H
 
 #include "main.h"
 
-#ifndef __C_DBUSCONNECTION_C
+bool DBUS_call_method(DBusConnection *connection, const char *application, const char *path, const char *interface, const char *method, 
+                      const char *signature_in, const char *signature_out, GB_ARRAY arguments);
 
-extern GB_DESC CDBusConnectionDesc[];
+char *DBUS_introspect(DBusConnection *connection, const char *dest, const char *path);
 
-#else
-
-#define THIS ((CDBUSCONNECTION *)_object)
+bool DBUS_validate_path(const char *path, int len);
+bool DBUS_validate_interface (const char *interface, int len);
+bool DBUS_validate_method(const char *method, int len);
 
 #endif
-
-typedef
-	struct {
-		GB_BASE ob;
-		DBusConnection *connection;
-	}
-	CDBUSCONNECTION;
-
-CDBUSCONNECTION *CDBUSCONNECTION_get(DBusBusType type);
-	
-#endif /* __CDBUS_H */

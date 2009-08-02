@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  cdbus.c
+  c_dbusconnection.c
 
   gb.dbus component
 
@@ -24,6 +24,7 @@
 
 #define __C_DBUSCONNECTION_C
 
+#include "helper.h"
 #include "c_dbusconnection.h"
 
 static CDBUSCONNECTION *_system = NULL;
@@ -79,24 +80,6 @@ CDBUSCONNECTION *CDBUSCONNECTION_get(DBusBusType type)
 		return NULL;
 }
 
-static bool call_method(const char *path, const char *interface, const char *method, GB_VALUE *args, int nparam)
-{
-	DBusMessage *message;
-	
-	message = dbus_message_new_method_call (NULL,	path, interface, method);
-  if (!message)
-	{
-		GB.Error("Couldn't allocate D-Bus message");
-		return TRUE;
-	}
-	
-	dbus_message_set_auto_start (message, TRUE);
-	
-	
-
-	return FALSE;
-}
-
 BEGIN_METHOD_VOID(dbusconnection_exit)
 
 	GB.Unref(POINTER(&_session));
@@ -106,42 +89,57 @@ END_METHOD
 
 BEGIN_METHOD_VOID(dbusconnection_free)
 
-	GB.FreeString(&THIS->path);
-	GB.FreeString(&THIS->interface);
 	dbus_connection_unref(THIS->connection);
 
 END_METHOD
 
-BEGIN_METHOD(dbusconnection_get, GB_STRING path; GB_STRING interface)
+BEGIN_METHOD(dbusconnection_Introspect, GB_STRING application; GB_STRING object)
 
-	GB.FreeString(&THIS->path);
-	GB.FreeString(&THIS->interface);
-	GB.NewString(&THIS->path, STRING(path), LENGTH(path));
-	if (!MISSING(interface))
-		GB.NewString(&THIS->interface, STRING(interface), LENGTH(interface));
+	char *application = GB.ToZeroString(ARG(application));
+	char *object;
+
+	if (!MISSING(object))
+		object = GB.ToZeroString(ARG(object));	
+	else
+		object = "/";
+	
+	GB.ReturnNewZeroString(DBUS_introspect(THIS->connection, application, object));
 
 END_METHOD
 
-BEGIN_METHOD(dbusconnectionpath_unknown, GB_VALUE param[0])
+BEGIN_METHOD(dbusconnection_CallMethod, GB_STRING application; GB_STRING object; GB_STRING interface; GB_STRING method; 
+             GB_STRING input_signature; GB_STRING output_signature; GB_OBJECT arguments)
 
-	if (GB.IsProperty())
+	char *application = GB.ToZeroString(ARG(application));
+	char *object = GB.ToZeroString(ARG(object));
+	char *interface = GB.ToZeroString(ARG(interface));
+	char *method = GB.ToZeroString(ARG(method));
+	char *input_signature = GB.ToZeroString(ARG(input_signature));
+	char *output_signature = GB.ToZeroString(ARG(output_signature));
+	
+	if (DBUS_validate_path(object, LENGTH(object)))
 	{
-		GB.Error("Unknown property");
+		GB.Error("Invalid object path");
 		return;
 	}
 	
-  call_method(THIS->path, THIS->interface, GB.GetUnknown(), ARG(param[0]), GB.NParam());
+	if (!*interface)
+		interface = NULL;
+	else if (DBUS_validate_interface(interface, LENGTH(interface)))
+	{
+		GB.Error("Invalid interface name");
+		return;
+	}
+	
+	if (DBUS_validate_method(method, LENGTH(method)))
+	{
+		GB.Error("Invalid method name");
+		return;
+	}
+	
+	DBUS_call_method(THIS->connection, application, object, interface, method, input_signature, output_signature, VARG(arguments));
 
 END_METHOD
-
-GB_DESC CDBusObjectDesc[] =
-{
-  GB_DECLARE(".DBusObject", 0), GB_VIRTUAL_CLASS(),
-
-	GB_METHOD("_unknown", "v", dbusconnectionpath_unknown, "."),
-
-  GB_END_DECLARE
-};
 
 GB_DESC CDBusConnectionDesc[] =
 {
@@ -149,7 +147,8 @@ GB_DESC CDBusConnectionDesc[] =
 
 	GB_STATIC_METHOD("_exit", NULL, dbusconnection_exit, NULL),
 	GB_METHOD("_free", NULL, dbusconnection_free, NULL),
-	GB_METHOD("_get", ".DBusObject", dbusconnection_get, "(Path)s[(Interface)s]"),
+	GB_METHOD("Introspect", "s", dbusconnection_Introspect, "(Application)s[(Object)s]"),
+	GB_METHOD("CallMethod", "v", dbusconnection_CallMethod, "(Application)s(Object)s(Interface)s(Method)s(InputSignature)s(OutputSignature)s(Arguments)Array;"),
 
   GB_END_DECLARE
 };

@@ -1,0 +1,15 @@
+' Gambas module file
+
+Public Sub Main()
+
+  Dim aRect As Integer[]
+  Dim iInd As Integer
+
+  Print DBus.Session.Introspect("org.kde.kmail", "/kmail/kmail_mainwindow_1")
+  aRect = DBus.Session.CallMethod("org.kde.kmail", "/kmail/kmail_mainwindow_1", "", "Get", "ss", "(iiii)", ["com.trolltech.Qt.QWidget", "rect"])
+  For iInd = 0 To aRect.Max
+    Print aRect[iInd];;
+  Next
+  Print
+
+End
