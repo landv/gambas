@@ -66,8 +66,8 @@ DECLARE_EVENT(EVENT_Unplugged);
 DECLARE_EVENT(EVENT_PlugError);
 
 //static void *CLASS_Image = NULL;
-static void *CLASS_UserContainer = 0;
-static void *CLASS_UserControl = 0;
+static GB_CLASS CLASS_UserContainer = 0;
+static GB_CLASS CLASS_UserControl = 0;
 
 static CWIDGET *_old_active_control = 0;
 static bool _focus_change = false;

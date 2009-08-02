@@ -119,7 +119,7 @@ void CTRAYICON_close_all(void)
   QListIterator<CTRAYICON> it(_list);
   CTRAYICON *_object;
 
-  GB.StopAllEnum(GB.FindClass("TrayIcons"));
+  GB.StopAllEnum((void *)GB.FindClass("TrayIcons"));
   
   while ((_object = it.current()))
   {

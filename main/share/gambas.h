@@ -86,13 +86,13 @@
 /* This type represents a Gambas datatype identifier */
 
 typedef
-	intptr_t GB_TYPE;
+	uintptr_t GB_TYPE;
 
 
 /* This opaque type represents a Gambas class identifier */
 
 typedef
-	void *GB_CLASS;
+	GB_TYPE GB_CLASS;
 
 
 /* This structure represents the base of every Gambas object.
@@ -832,6 +832,7 @@ typedef
 		void (*StoreString)(GB_STRING *, char **);
 		void (*StoreObject)(GB_OBJECT *, void **);
 		void (*StoreVariant)(GB_VARIANT *, void *);
+		void (*ReadValue)(GB_VALUE *, void *, GB_TYPE);
 
 		GB_DATE_SERIAL *(*SplitDate)(GB_DATE *);
 		int (*MakeDate)(GB_DATE_SERIAL *, GB_DATE *);

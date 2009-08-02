@@ -74,7 +74,7 @@ static bool init_stock()
 	}
 	else
 	{
-    error = GB.GetFunction(&_stock_get_func, GB.FindClass("Stock"), "_get", "s", "Picture");
+    error = GB.GetFunction(&_stock_get_func, (void *)GB.FindClass("Stock"), "_get", "s", "Picture");
     init = true;
   }
 

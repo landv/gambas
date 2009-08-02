@@ -471,7 +471,7 @@ BEGIN_PROPERTY(CEDITOR_highlight)
 			{
 				if (p->style == mode)
 				{
-					if (GB.GetFunction(&THIS->highlight, GB.FindClass("Highlight"), p->name, "", "") == 0)
+					if (GB.GetFunction(&THIS->highlight, (void *)GB.FindClass("Highlight"), p->name, "", "") == 0)
 					{
 						p = 0;
 						break;

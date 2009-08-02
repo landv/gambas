@@ -120,7 +120,7 @@ void CTRAYICON_close_all(void)
 	CTRAYICON *_object, *last = 0;
 	int i;
 
-	GB.StopAllEnum(GB.FindClass("TrayIcons"));
+	GB.StopAllEnum((void *)GB.FindClass("TrayIcons"));
 	
 	i = 0;
 	for (;;)

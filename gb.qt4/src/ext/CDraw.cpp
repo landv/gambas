@@ -89,7 +89,7 @@ static int begin(GB_DRAW *d)
 	
 	init();
 
-  if (device == CLASS_Printer)
+  if ((GB_CLASS)device == CLASS_Printer)
   {
     CPRINTER_init();
     QPrinter *printer = CPRINTER_printer;

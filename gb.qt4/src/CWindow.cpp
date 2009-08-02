@@ -1548,7 +1548,7 @@ void MyMainWindow::showEvent(QShowEvent *e)
 		raise();
 		//setFocus();
 		activateWindow();
-		X11_window_activate(winId());
+		//X11_window_activate(winId());
 		_activate = false;
 	}
 	
@@ -1634,7 +1634,7 @@ void MyMainWindow::showActivate(QWidget *transient)
 		else
 			setSizeGrip(false);
 		
-		//_activate = true;
+		_activate = true;
 
 		if (windowState() & Qt::WindowMinimized)
 			showMinimized();

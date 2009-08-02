@@ -173,6 +173,7 @@ void *GAMBAS_Api[] =
   (void *)GB_StoreString,
   (void *)GB_StoreObject,
   (void *)GB_StoreVariant,
+	(void *)VALUE_read,
 
   (void *)DATE_split,
   (void *)DATE_make,
@@ -1018,7 +1019,7 @@ void GB_StopAllEnum(void *enum_object)
 }
 
 
-void GB_Return(unsigned int type, ...)
+void GB_Return(GB_TYPE type, ...)
 {
   static void *jump[16] = {
     &&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
@@ -1143,7 +1144,7 @@ void GB_ReturnObject(void *val)
 }
 
 
-void GB_ReturnPtr(unsigned int type, void *value)
+void GB_ReturnPtr(GB_TYPE type, void *value)
 {
   if (type == T_VOID)
     return;

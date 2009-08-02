@@ -45,10 +45,9 @@
 CDRAG_INFO CDRAG_info = { 0 };
 bool CDRAG_dragging = false;
 void *CDRAG_destination = 0;
-// 
-static void *CLASS_Image;
 
-//static CCURSOR *_cursor = 0;
+static GB_CLASS CLASS_Image;
+
 static CPICTURE *_picture = 0;
 static int _picture_x = -1;
 static int _picture_y = -1;

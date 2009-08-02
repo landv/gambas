@@ -48,9 +48,9 @@ typedef
 DRAW_INTERFACE DRAW EXPORT;
 
 static bool _init = FALSE;
-static void *CLASS_Window;
-static void *CLASS_Picture;
-static void *CLASS_DrawingArea;
+static GB_CLASS CLASS_Window;
+static GB_CLASS CLASS_Picture;
+static GB_CLASS CLASS_DrawingArea;
 
 static void init()
 {

@@ -1509,8 +1509,8 @@ static void init_settings()
   if (init)
   	return;
   	
-	GB.GetFunction(&_get_settings_func, GB.FindClass("_Qt"), "_GetColumnViewSettings", "ColumnView;", "s");
-	GB.GetFunction(&_set_settings_func, GB.FindClass("_Qt"), "_SetColumnViewSettings", "ColumnView;s", "");
+	GB.GetFunction(&_get_settings_func, (void *)GB.FindClass("_Qt"), "_GetColumnViewSettings", "ColumnView;", "s");
+	GB.GetFunction(&_set_settings_func, (void *)GB.FindClass("_Qt"), "_SetColumnViewSettings", "ColumnView;s", "");
 	
 	init = true;
 }

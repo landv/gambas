@@ -734,8 +734,8 @@ void X11_enable_event_filter(bool enable)
 	{
 		GB_CLASS startup = GB.FindClass(GB.Application.Startup());
 		
-		GB.GetFunction(&_desktop_change_func, startup, "Desktop_Change", "ii", "");
-		GB.GetFunction(&_desktop_window_func, startup, "Desktop_Window", "iiiii", "");
+		GB.GetFunction(&_desktop_change_func, (void *)startup, "Desktop_Change", "ii", "");
+		GB.GetFunction(&_desktop_window_func, (void *)startup, "Desktop_Window", "iiiii", "");
 	}
 	
 	X11_event_filter_enabled = enable;

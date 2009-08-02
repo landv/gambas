@@ -36,8 +36,8 @@
 #include "CMenu.h"
 
 
-static void *CLASS_Menu;
-static void *CLASS_Window;
+static GB_CLASS CLASS_Menu;
+static GB_CLASS CLASS_Window;
 
 DECLARE_EVENT(EVENT_Click);
 DECLARE_EVENT(EVENT_Show);

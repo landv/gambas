@@ -1108,7 +1108,7 @@ static int query_fill(DB_DATABASE *db, DB_RESULT result, int pos, GB_VARIANT_VAL
 	ODBC_FIELDS *current;
 	SQLRETURN retcode;
 	int nresultcols;
-	int displaysize;
+	SQLINTEGER displaysize;
 	//int V_OD_erg=0;
 	
 #ifdef ODBC_DEBUG_HEADER
@@ -1174,7 +1174,7 @@ fflush(stderr);
 				
 			SQLDescribeCol(res->odbcStatHandle, i+1 , namebuff, sizeof(namebuff), &colnamelen,&type,&precision, &scale,NULL);
 				
-			SQLColAttribute(res->odbcStatHandle, i+1 , SQL_DESC_LENGTH, "",0, NULL, &displaysize);
+			SQLColAttribute(res->odbcStatHandle, i+1 , SQL_DESC_LENGTH, "",0, NULL, (SQLPOINTER)&displaysize);
 				
 			read=0;
 

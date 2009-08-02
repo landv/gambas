@@ -39,13 +39,15 @@ static GB_FUNCTION _action_get_func;
 static void init_action()
 {
 	static bool init = false;
+	void *klass;
 
 	if (init)
 		return;
 
-	GB.GetFunction(&_action_register_func, GB.FindClass("Action"), "Register", "os", "");
-	GB.GetFunction(&_action_raise_func, GB.FindClass("Action"), "Raise", "o", "");
-	GB.GetFunction(&_action_get_func, GB.FindClass("Action"), "Get", "o", "s");
+	klass = (void *)GB.FindClass("Action");
+	GB.GetFunction(&_action_register_func, klass, "Register", "os", "");
+	GB.GetFunction(&_action_raise_func, klass, "Raise", "o", "");
+	GB.GetFunction(&_action_get_func, klass, "Get", "o", "s");
 
 	init = true;
 }

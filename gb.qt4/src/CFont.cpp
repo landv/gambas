@@ -265,7 +265,7 @@ static void CFONT_manage(int prop, CFONT *_object, void *_param)
   
       GB_FUNCTION func;
   
-      GB.GetFunction(&func, GB.FindClass("Object"), "SetProperty", NULL, NULL);
+      GB.GetFunction(&func, (void *)GB.FindClass("Object"), "SetProperty", NULL, NULL);
       GB.Push(3,
         GB_T_OBJECT, THIS->object,
         GB_T_STRING, "Font", 4,
