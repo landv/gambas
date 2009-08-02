@@ -4,6 +4,7 @@
 Private Sub ShowHelp(hEditor As Editor)
   Dim iX, iY As Integer
   Dim hCont As Container
+  
   If Not FDebugInfo.IsHelpVisible() Then
     Me.Background = Color.LightBackground
     Me.Ignore = True
@@ -15,8 +16,10 @@ Private Sub ShowHelp(hEditor As Editor)
     If (iY + Me.Height) > (hEditor.Y + hEditor.H) Then
       iY = hEditor.Y + hEditor.CursorY - 15 - Me.Height
     Endif
+    
     hcont = hEditor.Parent
     iX = hEditor.CursorX
+    
     Do
       If hCont Is Form Then Break
       
@@ -26,9 +29,7 @@ Private Sub ShowHelp(hEditor As Editor)
     Loop
   
     iX = Max(0, Min(iX, hEditor.W - Me.Width))
-    
     Me.Move(iX, iY)
-    
     Me.Visible = True
     Form_Show
     hEditor.Window.SetFocus
@@ -40,12 +41,8 @@ End
 Public Sub ShowKeywordHelp(hEditor As Editor, sName As String, Optional sName2 As String) As Boolean
    Dim sPath As String
 
-      
-      txtHelp.RichText = "<b>" & sName & "</b>"
-      txtHelp.RichText &= "<br><font color=green>Kind: </font>Gambas Keyword: "
-      
-      'txtHelp.RichText &= GetHelp(GetPath("help/lang/type" &/ LCase(sName)) & ".html")
-      
+  txtHelp.RichText = "<b>" & sName & "</b>"
+  txtHelp.RichText &= "<br><font color=green>Kind: </font>Gambas Keyword: "
 
   If sName2 Then
     If Not ShowKeywordHelp(sName2) Then Return
@@ -56,11 +53,11 @@ Public Sub ShowKeywordHelp(hEditor As Editor, sName As String, Optional sName2 A
   sPath = GetPath("help/lang" &/ LCase(sName)) & ".html"
   If Not Exist(sPath) Then Return True
   txtHelp.RichText &= GetHelp(sPath)
-  'Project.OpenWebPage(sPath)
   ShowHelp(hEditor)
+  
 Catch
-
   Return True
+  
 End
 
 
@@ -74,14 +71,16 @@ Public Sub ShowSymbolHelp(hEditor As Editor, hSymbol As CSymbolInfo)
   txtHelp.RichText = IIf(hSymbol.IsStatic(), "STATIC", "") & " " & IIf(hSymbol.NotPublic, "PRIVATE", "PUBLIC") & " " & 
       Replace(hSymbol.GetDescription(), hSymbol.Name, "<b>" & hSymbol.Name & "</b>")
       txtHelp.RichText &= "<br><font color=green>Kind: </font><b>"
-      Select Case hSymbol.Kind
+      Select Case LCase(hSymbol.Kind)
         Case "v"
           txtHelp.RichText &= "Variable"
         Case "p"
-          txtHelp.RichText &= "Property"
+          txtHelp.RichText &= "Read/Write Property"
+        Case "r"
+          txtHelp.RichText &= "Read only Property"
         Case "m"
           txtHelp.RichText &= "Sub/Function"
-        Case "C"
+        Case "c"
           txtHelp.RichText &= "Constant"
         Case "t"
           txtHelp.RichText &= "Form control"
@@ -105,22 +104,22 @@ Public Sub ShowSymbolHelp(hEditor As Editor, hSymbol As CSymbolInfo)
     If hSymbol.Kind = "t" Then txtHelp.Text &= Subst("<br>Def.: <a href=\"form://&1.&2\">&1.&2</a>", hSymbol.Class, hSymbol.name)
 
     'Filiation
-    txtHelp.RichText &= Subst("<br><font color=blue>&1</font> > <Font color=red>&2</font>", hSymbol.Component, sClass)
+    txtHelp.RichText &= Subst("<br><font color=blue>&1</font> > <Font color=red>&2</font>", CComponent.Classes[sClass].Component, sClass)
 
+    sName = LCase(IIf(hSymbol.Kind = "t", sClass, hSymbol.Name))
     
-    sName = LCase(hSymbol.Name)
     If Right(sName) = "$" Then sName = Left(sName, -1)
     If hSymbol.Component = "gb" And If hSymbol.Class = "." Then
       sLink = "help/lang"
     Else
       sLink = "help/comp"
-      sComp = hSymbol.Component
+      sComp = CComponent.Classes[sClass].Component
       If sComp = "gb.qt4" Or If sComp = "gb.gtk" Or If sComp = "gb.gui" Then sComp = "gb.qt"
       sLink &= "/" & sComp
       If hSymbol.Class <> "." Then sLink &= "/" & LCase(sClass)
     Endif
   
-    sLink &/= sName 
+    sLink &/= sName
     
     If Exist(GetPath(FormatName(sLink)) & ".html")
       sLink = GetPath(FormatName(sLink)) & ".html"
@@ -128,9 +127,10 @@ Public Sub ShowSymbolHelp(hEditor As Editor, hSymbol As CSymbolInfo)
       sLink = "http://gambasdoc.org" &/ sLink & "?v3&" & GetLanguage()
     Endif
       txtHelp.RichText &= GetHelp(sLink)
-      
   Endif
+  
   ShowHelp(hEditor)
+  
 End
   
 
@@ -140,22 +140,19 @@ Public Sub ShowClassHelp(hEditor As Editor, sComponent As String, sName As Strin
   txtHelp.RichText = "<b>" & sName & "</b>"
   txtHelp.RichText &= "<br><font color=green>Kind: </font><b>Class</b>"
   txtHelp.RichText = Subst("<br><font color=blue>&1</font>", sComponent)
-  'txtHelp.RichText = "<font color=green>Component: </font>" & sComponent & 
-  '                   "&nbsp;&nbsp;&nbsp;<Font color=red>Class: </font>" & sName
+
   ShowHelp(hEditor)
+  
 End
 
 
 
 Private Function GetHelp(sFile As String) As String
   Dim aHelp As String[]
-  'FDebugInfo.SetHelpVisible
+
   If Exist(sFile) Then
     ahelp = Scan(File.Load(sFile), "*<div class=\"title\">*</body>*")
-
     Return "<hr>" & aHelp[1]
-  'Else
-  '  Return "Help Not Found"
   Endif
   
   Catch
@@ -167,20 +164,14 @@ Public Function ShowDatatypeHelp(hEditor As Editor, sName As String) As Boolean
 
   Dim sPath As String
   
-  
   sPath = GetPath("help/lang/type" &/ LCase(sName)) & ".html"
   If Not Exist(sPath) Then Return True
 
   txtHelp.RichText = "<b>" & sName & "</b>"
   txtHelp.RichText &= "<br><font color=green>Kind: </font><b>DataType</b>"
-  'txtHelp.RichText = sName
-  'txtHelp.RichText = "<font color=blue>Gambas DataType: </font>" & sName
-  
   txtHelp.RichText &= GetHelp(GetPath("help/lang/type" &/ LCase(sName)) & ".html")
+  
   ShowHelp(hEditor)
-'Catch
-
-'  Return True
 
 End
 
@@ -226,9 +217,8 @@ Private Function GetLocalHelp(hSymbol As CSymbolInfo) As String
     hForm = Project.LoadFile(sClass)
     Try hEdit = hForm.Editor
     If Not hEdit Then Return  
-    'hEdit.Goto(hSymbol.HelpLineNumber, 0)
-    
-      iLine = hSymbol.HelpLineNumber
+
+    iLine = hSymbol.HelpLineNumber
      
     If hSymbol.HelpLineNumber Then 
       sResult &= "<hr>"
@@ -281,12 +271,12 @@ Public Sub txtHelp_Link(Path As String)
   
   If Left(Path, 6) = "file:/" Then
     aRes = Scan(Path, "file://*.*")
-    
+    Project.SavePosition()
     Project.OpenFile(Project.FindPath(aRes[0]), CInt(aRes[1]))
-  
   Endif
   If Left(Path, 6) = "form:/" Then
     aRes = Scan(Path, "form://*.*")
+    Project.SavePosition()
     Project.OpenForm(aRes[0],, aRes[1])
   Endif
 
