@@ -317,6 +317,7 @@ PUBLIC FUNCTION Open(sDir AS String) AS Boolean
   Positions.Clear
 
   FMain.OnProjectChange
+  FDebugInfo.OnProjectChange
   FOpenProject.OnUpdateRecent
   FFind.Hide
   FFind.ReadConfig
