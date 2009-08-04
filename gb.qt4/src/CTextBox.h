@@ -44,7 +44,7 @@ extern GB_DESC CComboBoxItemDesc[];
 #define QLINEEDIT(object) ((QLineEdit *)((CWIDGET *)object)->widget)
 
 #define TEXTBOX ((QLineEdit *)((CWIDGET *)_object)->widget)
-#define COMBOBOX ((QComboBox *)((CWIDGET *)_object)->widget)
+#define COMBOBOX ((MyComboBox *)((CWIDGET *)_object)->widget)
 
 #endif
 
@@ -58,7 +58,6 @@ typedef
   struct {
     CWIDGET widget;
     int index;
-    bool sorted;
     }
   CCOMBOBOX;
 
@@ -72,6 +71,15 @@ public:
   MyComboBox(QWidget *parent);
   virtual void changeEvent(QEvent *e);
   void calcMinimumHeight();
+	bool isSortingEnabled() const { return _sorted; }
+	void setSortingEnabled(bool v) { _sorted = v; if (v) setDirty(); }
+	void setDirty() { _dirty = true; }
+	
+	virtual void showPopup();
+	
+private:
+	bool _sorted;
+	bool _dirty;
 };
 
 
@@ -83,9 +91,9 @@ public:
 
   static CTextBox manager;
 
-  static void getAll(QComboBox *list, GB_ARRAY array);
-  static void setAll(QComboBox *list, GB_ARRAY array);
-  static int find(QComboBox *list, const QString& elt);
+  static void getAll(MyComboBox *list, GB_ARRAY array);
+  static void setAll(MyComboBox *list, GB_ARRAY array);
+  static int find(MyComboBox *list, const QString& elt);
 
 public slots:
 

@@ -83,6 +83,8 @@ Public Sub Form_Open()
   $hMadeIn = Image.Load("img/logo/made-with-gambas.png").Stretch(hImage.W, hImage.H)
 
   Settings.Read(Me)
+  
+  timMadeIn_Timer
 
 End
 
@@ -429,5 +431,17 @@ End
 Public Sub lblWebSite_Leave()
 
   lblWebSite.Foreground = Color.Default
+
+End
+
+Public Sub dwgLogo_Enter()
+
+  timMadeIn.Start
+
+End
+
+Public Sub dwgLogo_Leave()
+
+  timMadeIn.Stop
 
 End

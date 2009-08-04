@@ -473,6 +473,7 @@ BEGIN_PROPERTY(CCOMBOBOX_item_text)
 	{
 		COMBOBOX->blockSignals(true);
 		COMBOBOX->setItemText(THIS->index, QSTRING_PROP());
+		COMBOBOX->setDirty();
 		COMBOBOX->blockSignals(false);
 	}
 
@@ -496,6 +497,7 @@ BEGIN_METHOD(CCOMBOBOX_add, GB_STRING item; GB_INTEGER pos)
 		COMBOBOX->insertItem(pos, QSTRING_ARG(item));
 	//if (THIS->sorted)
 	//  COMBOBOX->view()->sort();
+	COMBOBOX->setDirty();
 	COMBOBOX->setCurrentIndex(index);
 	COMBOBOX->blockSignals(false);
 
@@ -506,6 +508,7 @@ BEGIN_METHOD(CCOMBOBOX_remove, GB_INTEGER pos)
 
 	COMBOBOX->blockSignals(true);
 	COMBOBOX->removeItem(VARG(pos));
+	COMBOBOX->setDirty();
 	COMBOBOX->blockSignals(false);
 
 END_METHOD
@@ -514,13 +517,9 @@ END_METHOD
 BEGIN_PROPERTY(CCOMBOBOX_sorted)
 
 	if (READ_PROPERTY)
-		GB.ReturnBoolean(THIS->sorted);
+		GB.ReturnBoolean(COMBOBOX->isSortingEnabled());
 	else
-	{
-		THIS->sorted = VPROP(GB_BOOLEAN);
-		//if (THIS->sorted)
-		//  COMBOBOX->view()->sort();
-	}
+		COMBOBOX->setSortingEnabled(VPROP(GB_BOOLEAN));
 
 END_METHOD
 
@@ -607,6 +606,7 @@ END_PROPERTY
 MyComboBox::MyComboBox(QWidget *parent) :
 	QComboBox(parent)
 {
+	_sorted = _dirty = false;
 	calcMinimumHeight();
 }
 
@@ -628,6 +628,16 @@ void MyComboBox::calcMinimumHeight()
 		setMinimumHeight(fm.lineSpacing() + 2);
 }
 
+
+void MyComboBox::showPopup()
+{
+	if (_sorted && _dirty)
+	{
+		model()->sort(0);
+		_dirty = false;
+	}
+	QComboBox::showPopup();
+}
 
 /***************************************************************************
 
@@ -654,7 +664,7 @@ void CTextBox::onClick()
 	RAISE_EVENT(EVENT_Click);
 }
 
-int CTextBox::find(QComboBox *list, const QString& s)
+int CTextBox::find(MyComboBox *list, const QString& s)
 {
 	for (int i = 0; i < (int)list->count(); i++)
 	{
@@ -666,7 +676,7 @@ int CTextBox::find(QComboBox *list, const QString& s)
 }
 
 
-void CTextBox::getAll(QComboBox *list, GB_ARRAY array)
+void CTextBox::getAll(MyComboBox *list, GB_ARRAY array)
 {
 	int i;
 	char *str;
@@ -679,7 +689,7 @@ void CTextBox::getAll(QComboBox *list, GB_ARRAY array)
 }
 
 
-void CTextBox::setAll(QComboBox *list, GB_ARRAY array)
+void CTextBox::setAll(MyComboBox *list, GB_ARRAY array)
 {
 	int i;
 	
@@ -694,6 +704,7 @@ void CTextBox::setAll(QComboBox *list, GB_ARRAY array)
 		}
 	}
 
+	list->setDirty();
 	list->blockSignals(false);
 }
 

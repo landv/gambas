@@ -70,6 +70,8 @@ Public Sub _new()
     .Columns[3].Alignment = Align.Right
   End With  
   
+  $sLang = ""
+  
 End
 
 Private Sub GetLangPath(sLang As String, sExt As String) As String
@@ -853,6 +855,7 @@ Private Sub ImportMessage(sPath As String) As Integer
     sMsgId = ""
     sMsgComment = ""
     sMsgStr = ""
+    bFuzzy = False
 
     If Eof(hFic) Then Break
 
