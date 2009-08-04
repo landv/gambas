@@ -60,7 +60,7 @@ bool DRAW_begin(void *device)
 	klass = GB.GetClass(device);
 	if (klass == GB.FindClass("Class"))
 	{
-		klass = device;
+		klass = (GB_CLASS)device;
 		desc = (GB_DRAW_DESC *)GB.GetClassInterface(klass, "StaticDraw");
 	}
 	else
