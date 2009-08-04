@@ -1,9 +1,10 @@
 dnl ---- configure.ac for main programs
 
-AC_INIT(configure.ac)
+AC_INIT
+AC_CONFIG_SRCDIR([configure.ac])
 AC_CONFIG_SUBDIRS(libltdl)
 GB_INIT(main)
-AC_PROG_LIBTOOL
+LT_INIT
 AM_PROG_CC_C_O
 
 dnl ---- Check for internationalization library
@@ -116,7 +117,7 @@ fi
 
 dnl ---- Create makefiles
 
-AC_OUTPUT( \
+AC_CONFIG_FILES([\
 Makefile \
 share/Makefile \
 gbc/Makefile \
@@ -131,4 +132,5 @@ lib/option/Makefile \
 lib/draw/Makefile \
 lib/gui/Makefile \
 lib/image/Makefile \
-)
+])
+AC_OUTPUT

@@ -2,7 +2,7 @@ dnl ---- configure.ac for gb.db.mysql driver
 
 AC_INIT(configure.ac)
 GB_INIT(gb.db.mysql)
-AC_PROG_LIBTOOL
+LT_INIT
 
 GB_COMPONENT(
   mysql,

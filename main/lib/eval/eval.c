@@ -212,7 +212,7 @@ PUBLIC int EVAL_add_class(char *name)
   num =  ARRAY_count(EVAL->class);
 
   desc = ARRAY_add(&EVAL->class);
-  *desc = GB.FindClassLocal(name);
+  *desc = (CLASS *)GB.FindClassLocal(name);
 
   /*sym->class = num + 1;*/
 

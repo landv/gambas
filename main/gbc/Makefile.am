@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_srcdir)/share @INCLTDL@
+AM_CFLAGS = -I$(top_srcdir)/share @INCLTDL@
 
 bin_PROGRAMS = gbc3 gba3 gbi3
 

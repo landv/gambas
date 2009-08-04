@@ -1,12 +1,11 @@
 COMPONENT = gb.db
 include $(top_srcdir)/component.am
 
-INCLUDES = -I$(top_srcdir)/share
-
 gblib_LTLIBRARIES = gb.db.la
 
 gb_db_la_LIBADD = @C_LIB@
 gb_db_la_LDFLAGS = -module @LD_FLAGS@
+gb_db_la_CFLAGS = -I$(top_srcdir)/share
 
 gb_db_la_SOURCES = \
  gb.db.h gb.db.proto.h gb_barray.h \
