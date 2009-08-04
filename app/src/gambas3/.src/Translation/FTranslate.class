@@ -301,8 +301,6 @@ Private Sub SetLang(Optional sLang As String) As Boolean
   
   Close #hFic
 
-  ResizeTable
-
   cvwTranslate.Columns[1].Text = Language.ToName(sLang)
 
   txtOrig.Text = ""
@@ -330,6 +328,7 @@ Private Sub SetLang(Optional sLang As String) As Boolean
 
 Finally
 
+  ResizeTable
   Dec Application.Busy
 
 Catch
