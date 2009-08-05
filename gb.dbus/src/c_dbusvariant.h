@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  main.c
+  c_dbusvariant.h
 
   gb.dbus component
 
@@ -22,33 +22,27 @@
 
 ***************************************************************************/
 
-#define __MAIN_C
-
-#include "c_dbusvariant.h"
-#include "c_dbusconnection.h"
-#include "c_dbus.h"
+#ifndef __C_DBUSVARIANT_H
+#define __C_DBUSVARIANT_H
 
 #include "main.h"
 
-GB_INTERFACE GB EXPORT;
+#ifndef __C_DBUSVARIANT_C
 
-GB_CLASS CLASS_DBusVariant;
+extern GB_DESC CDBusVariantDesc[];
 
-GB_DESC *GB_CLASSES[] EXPORT =
-{
-	CDBusVariantDesc,
-  CDBusConnectionDesc,
-  CDBusDesc,
-  NULL
-};
+#else
 
-int EXPORT GB_INIT(void)
-{
-	CLASS_DBusVariant = GB.FindClass("DBusVariant");
-	return FALSE;
-}
+#define THIS ((CDBUSVARIANT *)_object)
 
-void EXPORT GB_EXIT()
-{
-}
+#endif
 
+typedef
+	struct {
+		GB_BASE ob;
+		GB_VARIANT_VALUE value;
+		char *signature;
+	}
+	CDBUSVARIANT;
+
+#endif /* __CDBUS_H */

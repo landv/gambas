@@ -1,0 +1,88 @@
+' Gambas class file
+
+Export
+
+Private $hConn As DBusConnection
+Private $sName As String
+Private $cCache As New Collection
+Private $sKey As String
+Private $iIndex As Integer
+
+Property Read Connection As DBusConnection
+Property Read Name As String
+Property Read Index As Integer
+
+Public Sub _new(Connection As DBusConnection, ApplicationName As String)
+  
+  $hConn = Connection
+  $sName = ApplicationName
+  If $hConn = DBus.System Then
+    $sKey = "system://" & $sName
+  Else
+    $sKey = "session://" & $sName
+  Endif
+  
+  DBus._ApplicationCache[$sKey] = Me
+  $iIndex = DBus._ApplicationCache.Count
+  DBus._ApplicationCache[$iIndex] = Me
+  
+End
+
+Public Sub _get(ObjectPath As String, Optional Interface As String) As DBusObject
+
+  Dim hObject As DBusObject
+  Dim sKey As String
+  
+  sKey = ObjectPath
+  If Interface Then sKey &= "#" & Interface
+  
+  hObject = $cCache[sKey]
+  If Not hObject Then
+    hObject = New DBusObject(Me, ObjectPath, Interface)
+    $cCache[sKey] = hObject
+  Endif
+  Return hObject
+  
+End
+
+Private Function Connection_Read() As DBusConnection
+
+  Return $hConn
+
+End
+
+Public Sub _Introspect(sObjectPath As String) As String
+  
+  Try Return $hConn._Introspect($sName, sObjectPath)
+  
+End
+
+Private Function Name_Read() As String
+
+  Return $sName
+
+End
+
+Private Function Index_Read() As Integer
+
+  Return $iIndex
+
+End
+
+Public Sub _unknown(...) As Variant
+  
+  Dim aArg As Variant[]
+  Dim iInd As Integer
+  Dim hObject As DBusObject = _get(Replace($sName, "/", "."))
+  
+  If Param.Count Then
+    aArg = New Variant[Param.Count]
+    For iInd = 0 To Param.Max
+      aArg[iInd] = Param[iInd]
+    Next
+  Endif
+  
+  Return hObject._Invoke(Param.Name, Param.Property, aArg)
+  
+End
+

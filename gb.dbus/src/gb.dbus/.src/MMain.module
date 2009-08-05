@@ -5,11 +5,20 @@ Public Sub Main()
   Dim aRect As Integer[]
   Dim iInd As Integer
 
-  Print DBus.Session.Introspect("org.kde.kmail", "/kmail/kmail_mainwindow_1")
-  aRect = DBus.Session.CallMethod("org.kde.kmail", "/kmail/kmail_mainwindow_1", "", "Get", "ss", "(iiii)", ["com.trolltech.Qt.QWidget", "rect"])
-  For iInd = 0 To aRect.Max
-    Print aRect[iInd];;
-  Next
-  Print
+  'DBus["org.kde.kmail"]["/kmail/kmail_mainwindow_1"].geometry = [0, 24, 1024, 768] '.Get("", "rect")
+  'aRect = DBus["org.kde.kmail"]["/kmail/kmail_mainwindow_1", "com.trolltech.Qt.QWidget"].geometry
+  'Get("com.trolltech.Qt.QWidget", "rect")
+
+  'DBus.Session._Introspect("org.kde.kmail", "/kmail/kmail_mainwindow_1")
+  ' aRect = DBus.Session.CallMethod("org.kde.kmail", "/kmail/kmail_mainwindow_1", "", "Get", "ss", "(iiii)", ["com.trolltech.Qt.QWidget", "rect"])
+  ' For iInd = 0 To aRect.Max
+  '   Error aRect[iInd];;
+  ' Next
+  ' Error
+
+  'DBus["org.kde.kmail"]["/kmail/kmail_mainwindow_1"].geometry = [0, 24, 1024, 768]
+  'Print DBus["org.kde.kmail"]["/kmail/kmail_mainwindow_1"].geometry  '"turlutu"
+  'Debug aRect
+  Print DBus["system://org.freedesktop.Hal"]["/org/freedesktop/Hal/Manager", "org.freedesktop.Hal.Manager"].GetAllDevices().Join("\n")
 
 End

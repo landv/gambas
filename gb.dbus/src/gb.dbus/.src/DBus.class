@@ -1,0 +1,32 @@
+' Gambas class file
+
+Export
+
+Static Public _ApplicationCache As New Collection
+
+Static Private $iApp As Integer
+
+Static Public Sub _get(Application As String) As DBusApplication
+  
+  Dim hConn As DBusConnection
+  Dim hApp As DBusApplication
+  Dim sKey As String
+  
+  If Application Like "system://*" Then
+    sKey = Application
+    Application = Mid$(Application, 10)
+    hConn = DBus.System
+  Else If Application Like "session://*" Then
+    sKey = Application
+    Application = Mid$(Application, 11)
+    hConn = DBus.Session
+  Else
+    sKey = "session://" & Application
+    hConn = DBus.Session
+  Endif
+  
+  hApp = _ApplicationCache[sKey]
+  If Not hApp Then hApp = New DBusApplication(hConn, Application)
+  Return hApp
+  
+End

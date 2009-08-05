@@ -48,6 +48,26 @@
 
 #include "gbx_value.h"
 
+static bool unknown_function(VALUE *value)
+{
+	if (value->_function.kind == FUNCTION_UNKNOWN)
+	{
+		EXEC.property = TRUE;
+		EXEC.unknown = CP->load->unknown[value->_function.index];
+
+		EXEC_special(SPEC_UNKNOWN, value->_function.class, value->_function.object, 0, FALSE);
+
+		//object = value->_function.object;
+		OBJECT_UNREF(value->_function.object, "VALUE_conv");
+
+		SP--;
+		//*val = *SP;
+		COPY_VALUE(value, SP);
+		return TRUE;
+	}
+	else
+		return FALSE;
+}
 
 static void VALUE_put(VALUE *value, void *addr, TYPE type)
 {
@@ -218,9 +238,9 @@ void VALUE_convert(VALUE *value, TYPE type)
    /* d      */ { &&__N,     &&__d2b,   &&__d2c,   &&__d2h,   &&__d2i,   &&__d2l,   &&__d2f,   &&__d2f,   &&__OK,    &&__d2s,   &&__d2s,   &&__2v,    &&__N,     &&__N,     &&__N,     &&__N,     },
    /* cs     */ { &&__N,     &&__s2b,   &&__s2c,   &&__s2h,   &&__s2i,   &&__s2l,   &&__s2f,   &&__s2f,   &&__s2d,   &&__OK,    &&__OK,    &&__s2v,   &&__N,     &&__N,     &&__N,     &&__N,     },
    /* s      */ { &&__N,     &&__s2b,   &&__s2c,   &&__s2h,   &&__s2i,   &&__s2l,   &&__s2f,   &&__s2f,   &&__s2d,   &&__OK,    &&__OK,    &&__s2v,   &&__N,     &&__N,     &&__N,     &&__N,     },
-   /* v      */ { &&__N,     &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__OK,    &&__N,     &&__N,     &&__v2,    &&__v2,     },
+   /* v      */ { &&__N,     &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__OK,    &&__N,     &&__N,     &&__v2,    &&__v2,    },
    /* array  */ { &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__OK,    &&__N,     &&__N,     &&__N,     },
-   /* func   */ { &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__OK,    &&__N,     &&__N,     },
+   /* func   */ { &&__N,     &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__N,     &&__OK,    &&__N,     &&__func,  },
    /* class  */ { &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__2v,    &&__N,     &&__N,     &&__OK,    &&__N,     },
    /* null   */ { &&__N,     &&__n2b,   &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__n2d,   &&__n2s,   &&__n2s,   &&__2v,    &&__N,     &&__N,     &&__N,     &&__OK,    },
   };
@@ -536,6 +556,14 @@ __2v:
   value->_variant.vtype = value->type;
   goto __TYPE;
 
+__func:
+
+	if (unknown_function(value))
+		goto __CONV;
+	else
+		goto __N;
+
+
 __OBJECT:
 
   if (!TYPE_is_object(type))
@@ -550,7 +578,7 @@ __OBJECT:
 
     if (type == T_VARIANT)
       goto __2v;
-
+		
     goto __N;
   }
 
@@ -564,6 +592,9 @@ __OBJECT:
 
     if (value->type == T_VARIANT)
       goto __v2;
+
+		if (value->type == T_FUNCTION)
+			goto __func;
 
     if (value->type == T_CLASS)
     {
@@ -993,8 +1024,12 @@ __CLASS:
   *addr = COMMON_buffer;
   return;
 
-__ARRAY:
 __FUNCTION:
+
+	if (unknown_function(value))
+		goto __CONV;
+	
+	__ARRAY:
 
   *len = sprintf(COMMON_buffer, "(%s ?)", TYPE_get_name(value->type));
   *addr = COMMON_buffer;

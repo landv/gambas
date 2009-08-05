@@ -72,9 +72,13 @@ _POP_GENERIC:
 
   if (index == NO_SYMBOL)
   {
-		if (defined && object && !VALUE_is_super(val))
-			class = val->_object.class;
-    THROW(E_NSYMBOL, name, class->name);
+    if (class->special[SPEC_UNKNOWN] == NO_SYMBOL)
+    {
+			if (defined && object && !VALUE_is_super(val))
+				class = val->_object.class;
+			THROW(E_NSYMBOL, name, class->name);
+		}
+		goto _POP_UNKNOWN_PROPERTY;
 	}
 
   desc = class->table[index].desc;
@@ -163,7 +167,6 @@ _POP_GENERIC:
   }
 
 
-
 _POP_VARIABLE_AUTO:
 
   object = EXEC_auto_create(class, TRUE);
@@ -177,7 +180,6 @@ _POP_VARIABLE_2:
   addr = (char *)object + desc->variable.offset;
   VALUE_write(&SP[-2], (void *)addr, desc->variable.type);
   goto _FIN;
-
 
 
 _POP_STATIC_VARIABLE:
@@ -211,8 +213,7 @@ _POP_PROPERTY_2:
   else
   {
     *SP = SP[-2];
-    BORROW(SP);
-    SP++;
+		PUSH();
 
     EXEC.class = desc->property.class;
     EXEC.object = object;
@@ -223,6 +224,18 @@ _POP_PROPERTY_2:
 
     EXEC_function();
   }
+	
+	goto _FIN;
+
+_POP_UNKNOWN_PROPERTY:
+
+	EXEC.property = TRUE;
+	EXEC.unknown = CP->load->unknown[PC[1]];
+
+	*SP = SP[-2];
+	PUSH();
+
+	EXEC_special(SPEC_UNKNOWN, class, object, 1, TRUE);
 
 _FIN:
 

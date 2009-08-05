@@ -122,7 +122,7 @@ static void load_exported_class(ARCHIVE *arch)
 				class = NULL;
 		}
 		else
-    	class = CLASS_find_global(name);
+    	class = CLASS_check_global(name);
 		
 		if (class)
 		{

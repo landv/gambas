@@ -147,8 +147,8 @@ GB_DESC CDBusConnectionDesc[] =
 
 	GB_STATIC_METHOD("_exit", NULL, dbusconnection_exit, NULL),
 	GB_METHOD("_free", NULL, dbusconnection_free, NULL),
-	GB_METHOD("Introspect", "s", dbusconnection_Introspect, "(Application)s[(Object)s]"),
-	GB_METHOD("CallMethod", "v", dbusconnection_CallMethod, "(Application)s(Object)s(Interface)s(Method)s(InputSignature)s(OutputSignature)s(Arguments)Array;"),
+	GB_METHOD("_Introspect", "s", dbusconnection_Introspect, "(Application)s[(Object)s]"),
+	GB_METHOD("_CallMethod", "v", dbusconnection_CallMethod, "(Application)s(Object)s(Interface)s(Method)s(InputSignature)s(OutputSignature)s(Arguments)Array;"),
 
   GB_END_DECLARE
 };

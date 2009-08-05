@@ -1,29 +1,30 @@
 /***************************************************************************
 
-  helper.c
+	helper.c
 
-  gb.dbus component
+	gb.dbus component
 
-  (c) 2009 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2009 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 1, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
 #define __HELPER_C
 
+#include "c_dbusvariant.h"
 #include "helper.h"
 
 typedef
@@ -53,9 +54,9 @@ s         STRING            String
 o         OBJECT_PATH       String
 g         SIGNATURE         String
 v         VARIANT           Variant
-  
+	
 Or a compound type (T is any datatype):
-  
+	
 aT        ARRAY             Array
 (TT...)   STRUCT            Variant[]
 {TT}      DICT_ENTRY        Collection
@@ -133,8 +134,8 @@ static GB_TYPE from_dbus_type(const char *signature)
 		case DBUS_TYPE_INT32: case DBUS_TYPE_UINT32: return GB_T_INTEGER; 
 		case DBUS_TYPE_INT64: case DBUS_TYPE_UINT64: return GB_T_LONG;
 		case DBUS_TYPE_DOUBLE: return GB_T_FLOAT; 
-		case DBUS_TYPE_STRING: return GB_T_STRING;
-		case DBUS_TYPE_OBJECT_PATH: return GB_T_STRING;
+		case DBUS_TYPE_STRING:
+		case DBUS_TYPE_OBJECT_PATH:
 		case DBUS_TYPE_SIGNATURE: return GB_T_STRING; 
 		
 		case DBUS_TYPE_DICT_ENTRY: return GB.FindClass("Collection");
@@ -179,7 +180,7 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 	GB_TYPE gtype;
 	
 	if (arg->type == GB_T_VARIANT)
-		GB.Conv(arg, arg->type);
+		GB.Conv(arg, arg->_variant.value.type);
 		
 	dbus_signature_iter_init(&siter, signature);
 	type = dbus_signature_iter_get_current_type(&siter);
@@ -187,11 +188,13 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 	
 	if (gtype == GB_T_NULL)
 	{
-		GB.Error("Unsupported datatype");
-		return TRUE;
+		goto __UNSUPPORTED;
 	}
-		
-	GB.Conv(arg, gtype);
+	else if (gtype != GB_T_VARIANT)
+	{
+		if (GB.Conv(arg, gtype))
+			return TRUE;
+	}
 
 	switch(type)
 	{
@@ -276,6 +279,7 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 			}
 			
 			dbus_message_iter_close_container(iter, &citer);
+			break;
 		}
 		
 		case DBUS_TYPE_STRUCT:
@@ -301,22 +305,48 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 			}
 			
 			dbus_message_iter_close_container(iter, &citer);
+			break;
 		}
 
 		case DBUS_TYPE_VARIANT:
-		default:
 		{
 			DBusMessageIter citer;
-			const char *contents_signature = to_dbus_type(arg->_variant.type);
+			const char *contents_signature;
+			GB_VALUE rarg;
 			
-			dbus_message_iter_open_container(iter, DBUS_TYPE_VARIANT, contents_signature, &citer);
-			if (append_arg(&citer, contents_signature, arg))
-				return TRUE;
-			dbus_message_iter_close_container(iter, &citer);
+			if (arg->type == CLASS_DBusVariant)
+			{
+				CDBUSVARIANT *dbusvariant = (CDBUSVARIANT *)arg->_object.value;
+				
+				rarg.type = GB_T_VARIANT;
+				rarg._variant.value = dbusvariant->value;
+				arg = &rarg;
+				
+				contents_signature = dbusvariant->signature;
+			}
+			else
+				contents_signature = to_dbus_type(arg->type);
+			
+			if (contents_signature)
+			{
+				dbus_message_iter_open_container(iter, DBUS_TYPE_VARIANT, contents_signature, &citer);
+				if (append_arg(&citer, contents_signature, arg))
+					return TRUE;
+				dbus_message_iter_close_container(iter, &citer);
+				break;
+			}
 		}
+		
+		default:
+			goto __UNSUPPORTED;
 	}
 	
 	return FALSE;
+	
+__UNSUPPORTED:
+	GB.Error("Unsupported datatype");
+	return TRUE;
+
 }
 
 static void return_value_cb(GB_TYPE type, void *value, void *param)
@@ -328,6 +358,10 @@ static void add_value_cb(GB_TYPE type, void *value, void *param)
 {
 	GB_ARRAY array = (GB_ARRAY)param;
 	GB_VALUE val;
+	
+	if (type == GB_T_STRING)
+		type = GB_T_CSTRING;
+	
 	GB.ReadValue(&val, value, type);
 	GB.Conv(&val, GB.Array.Type(array));
 	GB.Store(GB.Array.Type(array), &val, GB.Array.Add(array));
@@ -343,7 +377,7 @@ static bool retrieve_arg(DBusMessageIter *iter, RETRIEVE_CALLBACK cb, void *para
 	{
 		char val[16];
 		dbus_message_iter_get_basic (iter, (void *)val);
-		(*cb)(gtype, &val, param);
+		(*cb)(gtype, val, param);
 		return FALSE;
 	}
 	
@@ -388,12 +422,12 @@ static bool retrieve_arg(DBusMessageIter *iter, RETRIEVE_CALLBACK cb, void *para
 }
 
 bool DBUS_call_method(DBusConnection *connection, const char *application, const char *path, const char *interface, const char *method, 
-                      const char *signature_in, const char *signature_out, GB_ARRAY arguments)
+											const char *signature_in, const char *signature_out, GB_ARRAY arguments)
 {
 	DBusMessage *message;
 	int n;
 	DBusMessageIter iter;
-  DBusMessage *reply;
+	DBusMessage *reply;
 	DBusError error;
 	DBusSignatureIter siter;
 	bool ret;
@@ -402,7 +436,7 @@ bool DBUS_call_method(DBusConnection *connection, const char *application, const
 	int nparam;
 	
 	message = dbus_message_new_method_call(application, path, interface, method);
-  if (!message)
+	if (!message)
 	{
 		GB.Error("Couldn't allocate D-Bus message");
 		return TRUE;
@@ -436,7 +470,7 @@ bool DBUS_call_method(DBusConnection *connection, const char *application, const
 	}
 
 	dbus_error_init(&error);
-  reply = dbus_connection_send_with_reply_and_block(connection, message, -1, &error);
+	reply = dbus_connection_send_with_reply_and_block(connection, message, -1, &error);
 
 	if (dbus_error_is_set(&error))
 	{
@@ -484,32 +518,32 @@ __RETURN:
 
 /*static const char *type_to_name (int message_type)
 {
-  switch (message_type)
-    {
-    case DBUS_MESSAGE_TYPE_SIGNAL:
-      return "signal";
-    case DBUS_MESSAGE_TYPE_METHOD_CALL:
-      return "method call";
-    case DBUS_MESSAGE_TYPE_METHOD_RETURN:
-      return "method return";
-    case DBUS_MESSAGE_TYPE_ERROR:
-      return "error";
-    default:
-      return "(unknown message type)";
-    }
+	switch (message_type)
+		{
+		case DBUS_MESSAGE_TYPE_SIGNAL:
+			return "signal";
+		case DBUS_MESSAGE_TYPE_METHOD_CALL:
+			return "method call";
+		case DBUS_MESSAGE_TYPE_METHOD_RETURN:
+			return "method return";
+		case DBUS_MESSAGE_TYPE_ERROR:
+			return "error";
+		default:
+			return "(unknown message type)";
+		}
 }*/
 
 char *DBUS_introspect(DBusConnection *connection, const char *application, const char *path)
 {
 	DBusMessage *message;
-  DBusMessage *reply;
+	DBusMessage *reply;
 	DBusError error;
 	DBusMessageIter iter;
 	int type;
 	char *signature = NULL;
 	
 	message = dbus_message_new_method_call(application, path, "org.freedesktop.DBus.Introspectable", "Introspect");
-  if (!message)
+	if (!message)
 	{
 		GB.Error("Couldn't allocate D-Bus message");
 		return NULL;
@@ -518,7 +552,7 @@ char *DBUS_introspect(DBusConnection *connection, const char *application, const
 	dbus_message_set_auto_start(message, TRUE);
 
 	dbus_error_init(&error);
-  reply = dbus_connection_send_with_reply_and_block (connection, message, -1, &error);
+	reply = dbus_connection_send_with_reply_and_block (connection, message, -1, &error);
 
 	if (dbus_error_is_set (&error))
 	{
@@ -529,19 +563,19 @@ char *DBUS_introspect(DBusConnection *connection, const char *application, const
 	if (!reply)
 		goto __RETURN;
 	
-  /*const char *sender;
-  const char *destination;
-  int message_type;
+	/*const char *sender;
+	const char *destination;
+	int message_type;
 
-  message_type = dbus_message_get_type (reply);
-  sender = dbus_message_get_sender (reply);
-  destination = dbus_message_get_destination (reply);
-  
+	message_type = dbus_message_get_type (reply);
+	sender = dbus_message_get_sender (reply);
+	destination = dbus_message_get_destination (reply);
+	
 	printf ("%s sender=%s -> dest=%s",
 		type_to_name (message_type),
 		sender ? sender : "(null sender)",
 		destination ? destination : "(null destination)");
-  
+	
 	switch (message_type)
 	{
 		case DBUS_MESSAGE_TYPE_METHOD_CALL:
@@ -591,29 +625,29 @@ Validation routines taken directly from the D-Bus source code.
 
 
 /**
- * Determine wether the given character is valid as the first character
- * in a name.
- */
+* Determine wether the given character is valid as the first character
+* in a name.
+*/
 #define VALID_INITIAL_NAME_CHARACTER(c)         \
-  ( ((c) >= 'A' && (c) <= 'Z') ||               \
-    ((c) >= 'a' && (c) <= 'z') ||               \
-    ((c) == '_') )
+	( ((c) >= 'A' && (c) <= 'Z') ||               \
+		((c) >= 'a' && (c) <= 'z') ||               \
+		((c) == '_') )
 
 /**
- * Determine wether the given character is valid as a second or later
- * character in a name
- */
+* Determine wether the given character is valid as a second or later
+* character in a name
+*/
 #define VALID_NAME_CHARACTER(c)                 \
-  ( ((c) >= '0' && (c) <= '9') ||               \
-    ((c) >= 'A' && (c) <= 'Z') ||               \
-    ((c) >= 'a' && (c) <= 'z') ||               \
-    ((c) == '_') )
+	( ((c) >= '0' && (c) <= '9') ||               \
+		((c) >= 'A' && (c) <= 'Z') ||               \
+		((c) >= 'a' && (c) <= 'z') ||               \
+		((c) == '_') )
 
 bool DBUS_validate_path(const char *path, int len)
 {
-  const unsigned char *s;
-  const unsigned char *end;
-  const unsigned char *last_slash;
+	const unsigned char *s;
+	const unsigned char *end;
+	const unsigned char *last_slash;
 
 	if (len <= 0)
 		len = strlen(path);
@@ -622,7 +656,7 @@ bool DBUS_validate_path(const char *path, int len)
 	end = s + (uint)len;
 
 	if (*s != '/')
-		return FALSE;
+		return TRUE;
 	last_slash = s;
 	++s;
 
