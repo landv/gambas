@@ -611,6 +611,8 @@ Private Function InsertFunction(sProc As String, sType As String, bPublic As Boo
   Try iLine = $cProc[sProc]
   If Not Error Then Return iLine
   
+  If Project.ReadOnly Then Return -1
+  
   Editor.Begin
   
   iLine = Editor.Lines.Count - 1
@@ -2536,7 +2538,14 @@ Public Sub GotoProc(iLine As Integer)
   
   Dim sLine As String
   Dim iCol As Integer
-  Dim iStart As Integer = iLine
+  Dim iStart As Integer
+  
+  If iLine < 0 Then
+    Editor.Goto(Editor.Lines.Count, 0)
+    Return
+  Endif
+  
+  iStart = iLine
   
   Do
     Inc iLine
