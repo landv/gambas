@@ -55,6 +55,7 @@
 #include "gbx_watch.h"
 #include "gbx_project.h"
 #include "gbx_c_array.h"
+#include "gbx_local.h"
 
 #include "gbx_c_process.h"
 
@@ -250,6 +251,23 @@ static void stop_process(CPROCESS *process)
 		exit_child();
 }
 
+static void init_child_tty(int fd)
+{
+	struct termios terminal = { 0 };
+	tcgetattr(fd, &terminal);
+	
+	terminal.c_iflag |= ICRNL | IXON | IXOFF;
+	if (LOCAL_is_UTF8) 
+		terminal.c_iflag |= IUTF8;
+	
+	terminal.c_oflag |= OPOST;
+	
+	terminal.c_lflag |= ISIG | ICANON | IEXTEN | ECHO;
+
+	if (tcsetattr(fd, TCSADRAIN, &terminal))
+		exit(127);
+}
+
 static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 {
 	static const char *shell[] = { "sh", "-c", NULL, NULL };
@@ -266,6 +284,7 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 	int fd_slave;
 	char *slave = NULL;
 	struct termios termios_stdin;
+	struct termios termios_check;
 	struct termios termios_master;
 
 	init_child();
@@ -355,8 +374,14 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 		unlockpt(fd_master);
 		#endif
 		slave = ptsname(fd_master);
+		fprintf(stderr, "slave = %s\n", slave);
 
-		tcgetattr(STDIN_FILENO, &termios_stdin);
+		/*fprintf(stderr, "STDIN_FILENO = %d %d\n", STDIN_FILENO, isatty(STDIN_FILENO));
+		if (tcgetattr(STDIN_FILENO, &termios_stdin))
+		{
+			fprintf(stderr, "#1\n");
+			THROW_SYSTEM(errno, NULL);
+		}*/
 	}
 	else
 	{
@@ -397,10 +422,20 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 
 		if (mode & PM_TERM)
 		{
-			tcgetattr(fd_master, &termios_master);
+			if (tcgetattr(fd_master, &termios_master))
+			{
+				fprintf(stderr, "#2\n");
+				THROW_SYSTEM(errno, NULL);
+			}
+				
 			cfmakeraw(&termios_master);
 			//termios_master.c_lflag &= ~ECHO;
-			tcsetattr(fd_master, TCSANOW, &termios_master);
+
+			if (tcsetattr(fd_master, TCSANOW, &termios_master))
+			{
+				fprintf(stderr, "#3\n");
+				THROW_SYSTEM(errno, NULL);
+			}
 		}
 
 		if (mode & PM_WRITE)
@@ -432,11 +467,12 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 				process->err = fderr[0];
 			}
 
-			fcntl(process->err, F_SETFL, fcntl(process->err, F_GETFL) | O_NONBLOCK);
-
 			GB_Watch(process->out, GB_WATCH_READ, (void *)callback_write, (intptr_t)process);
 			if (process->err >= 0)
+			{
+				fcntl(process->err, F_SETFL, fcntl(process->err, F_GETFL) | O_NONBLOCK);
 				GB_Watch(process->err, GB_WATCH_READ, (void *)callback_error, (intptr_t)process);
+			}
 		}
 
 		if ((mode & PM_SHELL) == 0)
@@ -448,6 +484,8 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 	}
 	else /* child */
 	{
+		bool stdin_isatty = isatty(STDIN_FILENO);
+		
 		sigprocmask(SIG_SETMASK, &old, &sig);
 
 		if (mode & PM_TERM)
@@ -457,8 +495,7 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 			fd_slave = open(slave, O_RDWR);
 			if (fd_slave < 0)
 				exit(127);
-			tcsetattr(fd_slave, TCSANOW, &termios_stdin);
-
+			
 			if (mode & PM_WRITE)
 			{
 				if (dup2(fd_slave, STDIN_FILENO) == -1)
@@ -471,6 +508,20 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 						|| (dup2(fd_slave, STDERR_FILENO) == -1))
 					exit(127);
 			}
+
+			// Strange Linux behaviour ?
+			// Terminal initialization must be done on STDIN_FILENO after using dup2().
+			// If it is done on fd_slave, before using dup2(), it sometimes fails with no error.
+			init_child_tty(STDIN_FILENO);
+			
+			/*puts("---------------------------------");
+			if (stdin_isatty) puts("STDIN is a tty");*/
+			/*tcgetattr(STDIN_FILENO, &termios_check);
+			puts(termios_check.c_lflag & ISIG ? "+ISIG" : "-ISIG");
+			//tcsetattr(STDIN_FILENO, TCSADRAIN, &termios_check);
+			system("stty icanon");
+			system("stty -a");
+			puts("---------------------------------");*/
 		}
 		else
 		{
