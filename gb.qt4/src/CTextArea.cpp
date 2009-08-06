@@ -141,6 +141,8 @@ BEGIN_METHOD(CTEXTAREA_new, GB_OBJECT parent)
 	
 	THIS->widget.flag.fillBackground = true;
   CWIDGET_new(wid, (void *)_object);
+	
+	THIS->length = -1;
 
 END_METHOD
 
@@ -150,7 +152,10 @@ BEGIN_PROPERTY(CTEXTAREA_text)
   if (READ_PROPERTY)
     GB.ReturnNewZeroString(TO_UTF8(WIDGET->document()->toPlainText()));
   else
+	{
     WIDGET->document()->setPlainText(QSTRING_PROP());
+		//THIS->length = -1;
+	}
 
 END_PROPERTY
 
@@ -165,18 +170,28 @@ BEGIN_PROPERTY(CTEXTAREA_alignment)
 END_PROPERTY
 */
 
+static int get_length(void *_object)
+{
+	if (THIS->length < 0)
+	{
+		QTextBlock block = WIDGET->document()->begin();
+		int len = 0;
+		
+		while (block.isValid())
+		{
+			len += block.length() + 1;
+			block = block.next();
+		}
+
+		THIS->length = len - 1;
+	}
+	
+	return THIS->length;
+}
+
 BEGIN_PROPERTY(CTEXTAREA_length)
 
-	QTextBlock block = WIDGET->document()->begin();
-	int len = 0;
-	
-	while (block.isValid())
-	{
-		len += block.length() + 1;
-		block = block.next();
-	}
-
-  GB.ReturnInteger(len - 1);
+  GB.ReturnInteger(get_length(THIS));
 
 END_PROPERTY
 
@@ -269,9 +284,14 @@ BEGIN_PROPERTY(CTEXTAREA_pos)
   }
   else
   {
+		int pos = VPROP(GB_INTEGER);
   	QTextCursor cursor = WIDGET->textCursor();
   	
-  	cursor.setPosition(VPROP(GB_INTEGER));
+		if (pos >= get_length(THIS))
+			cursor.movePosition(QTextCursor::End);
+		else
+			cursor.setPosition(pos);
+		
   	WIDGET->setTextCursor(cursor);
   }
 
@@ -589,7 +609,9 @@ CTextArea CTextArea::manager;
 
 void CTextArea::changed(void)
 {
-  RAISE_EVENT(EVENT_Change);
+	GET_SENDER();
+  THIS->length = -1;
+	GB.Raise(THIS, EVENT_Change, 0);
 }
 
 void CTextArea::cursor(void)
@@ -599,16 +621,7 @@ void CTextArea::cursor(void)
 
 void CTextArea::link(const QString &path)
 {
-  void *_object = CWidget::get((QObject *)sender());
+	GET_SENDER();
 
-  //THIS_EDIT->change = false;
-
-  GB.Raise(_object, EVENT_Link, 1,
-    GB_T_STRING, TO_UTF8(path), 0);
-
-  /*if (!THIS_EDIT->change)
-  {
-    // This cancels the click on the link (see qt source code)
-    WIDGET->setSource(WIDGET->source());
-  }*/
+  GB.Raise(THIS, EVENT_Link, 1, GB_T_STRING, TO_UTF8(path), 0);
 }

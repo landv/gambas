@@ -374,14 +374,6 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 		unlockpt(fd_master);
 		#endif
 		slave = ptsname(fd_master);
-		fprintf(stderr, "slave = %s\n", slave);
-
-		/*fprintf(stderr, "STDIN_FILENO = %d %d\n", STDIN_FILENO, isatty(STDIN_FILENO));
-		if (tcgetattr(STDIN_FILENO, &termios_stdin))
-		{
-			fprintf(stderr, "#1\n");
-			THROW_SYSTEM(errno, NULL);
-		}*/
 	}
 	else
 	{
@@ -423,19 +415,13 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 		if (mode & PM_TERM)
 		{
 			if (tcgetattr(fd_master, &termios_master))
-			{
-				fprintf(stderr, "#2\n");
 				THROW_SYSTEM(errno, NULL);
-			}
 				
 			cfmakeraw(&termios_master);
 			//termios_master.c_lflag &= ~ECHO;
 
 			if (tcsetattr(fd_master, TCSANOW, &termios_master))
-			{
-				fprintf(stderr, "#3\n");
 				THROW_SYSTEM(errno, NULL);
-			}
 		}
 
 		if (mode & PM_WRITE)

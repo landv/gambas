@@ -906,7 +906,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CCONTROL_set_focus)
 
-	CWINDOW *win = CWidget::getWindow(THIS);
+	CWINDOW *win = CWidget::getTopLevel(THIS);
 
 	if (QWIDGET(win)->isVisible())
 		WIDGET->setFocus();

@@ -45,6 +45,7 @@ extern GB_DESC CTextAreaSelectionDesc[];
 typedef
   struct {
     CWIDGET widget;
+		int length;
     }
   CTEXTAREA;
 

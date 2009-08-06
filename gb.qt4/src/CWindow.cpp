@@ -133,9 +133,11 @@ void CWINDOW_fix_menubar(CWINDOW *window)
 {
 	if (window && window->menuBar)
 	{
+		QWidget *save = qApp->focusWidget();
 		window->menuBar->setFocus();
 		QKeyEvent e(QEvent::KeyPress, Qt::Key_Escape, Qt::NoModifier);
 		qApp->sendEvent(window->menuBar, &e);
+		if (save) save->setFocus();
 	}
 }
 
@@ -240,7 +242,6 @@ static void post_show_event(void *_object)
 	
 	if (THIS->focus)
 	{
-		//qDebug("post_show_event: setFocus (%s %p)", GB.GetClassName(THIS->focus), THIS->focus);
 		THIS->focus->widget->setFocus();
 		GB.Unref(POINTER(&THIS->focus));
 		THIS->focus = NULL;

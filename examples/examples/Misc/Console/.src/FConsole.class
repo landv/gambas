@@ -1,139 +1,156 @@
 ' Gambas class file
 
 
-PRIVATE $hProcess AS Process
-PRIVATE $sText AS String
+Private $hProcess As Process
+Private $sText As String
 
-STATIC PUBLIC SUB Main()
+Static Public Sub Main()
 
-  DIM hForm AS Form
+  Dim hForm As Form
 
-  hForm = NEW FConsole
+  hForm = New FConsole
   hForm.Show
 
-END
+End
 
 
-PUBLIC SUB _new()
+Public Sub _new()
 
-  $hProcess = EXEC ["bash", "--noediting"] FOR READ WRITE
-  txtCommand.SetFocus
+  $hProcess = Exec ["bash", "--noediting"] For Input Output As "Process"
 
-END
+End
 
 
-PUBLIC SUB Form_Close()
+Public Sub Form_Close()
 
   $hProcess.Kill
 
-END
+End
 
 
-PUBLIC SUB Form_Resize()
+Public Sub Process_Read()
 
-  txtCommand.Move(0, ME.ClientH - txtCommand.H, ME.ClientW, txtCommand.H)
-  txtConsole.Move(0, 0, ME.ClientW, txtCommand.Y)
-  
-END
+  Dim sStr As String
 
-
-PUBLIC SUB Process_Read()
-
-  DIM sStr AS String
-
-  'WHILE NOT Eof(LAST)
-  
-    READ #LAST, sStr, -256
-  
-    $sText = $sText & sStr
-  'WEND
-  
+  'Debug Eof(Last);; Lof(Last);;
+  'While Not sStr
+  Read #$hProcess, sStr, -256
+  'Wend
+  'Error sStr
+  $sText = $sText & sStr
+  'Debug Quote(sStr)
   UpdateConsole
 
-END
+End
 
 
-PUBLIC SUB Process_Error(sStr AS String)
+Public Sub Process_Error(sStr As String)
   
   $sText = $sText & sStr
   UpdateConsole
   
-END
+End
 
-PRIVATE SUB UpdateConsole()
+Private Sub UpdateConsole()
 
-  DIM iPos AS Integer
-  DIM sStr AS String
+  Dim iPos As Integer
+  Dim sStr As String
   
-  DO
+  While Len($sText)
   
     iPos = InStr($sText, "\n")
-    IF iPos = 0 THEN RETURN
+    If iPos = 0 Then iPos = Len($sText)
     
     sStr = Normalize(Left$($sText, iPos))
+    'Debug sStr
     $sText = Mid$($sText, iPos + 1)
     
     txtConsole.Pos = txtConsole.Length
     txtConsole.Insert(sStr)
   
-  LOOP
+  Wend
   
-END
+End
 
 
 
-PUBLIC SUB Process_Kill()
+Public Sub Process_Kill()
   
   'hProcess = NULL
-  TRY ME.Close
+  Try Me.Close
   
-END
+End
 
 
 
-PUBLIC SUB txtCommand_Activate()
+Public Sub txtCommand_Activate()
   
-  DIM sLig AS String
+  Dim sLig As String
   
   sLig = txtCommand.Text & gb.NewLine
   
-  txtConsole.Insert("# " & sLig)
+  'txtConsole.Pos = txtConsole.Length
+  'txtConsole.Insert("# " & sLig)
   txtCommand.Clear
 
   sLig = Conv$(sLig, Desktop.Charset, System.Charset)
   
-  PRINT #$hProcess, sLig;
+  Print #$hProcess, sLig;
   
-END
+End
 
 
-STATIC PRIVATE FUNCTION Normalize(sStr AS String) AS String
+Static Private Function Normalize(sStr As String) As String
 
-  DIM sNorm AS String
-  DIM iInd AS Integer
-  DIM iCar AS Integer
-  DIM bEsc AS Boolean
+  Dim sNorm As String
+  Dim iInd As Integer
+  Dim iCar As Integer
+  Dim bEsc As Boolean
 
-  FOR iInd = 1 TO Len(sStr)
+  For iInd = 1 To Len(sStr)
 
     iCar = Asc(sStr, iInd)
 
-    IF iCar = 27 THEN
-      bEsc = TRUE
-      CONTINUE
-    ENDIF
+    If iCar = 27 Then
+      bEsc = True
+      Continue
+    Endif
 
-    IF bEsc THEN
-      IF iCar < 32 THEN bEsc = FALSE
-      CONTINUE
-    ENDIF
+    If bEsc Then
+      If iCar < 32 Then bEsc = False
+      Continue
+    Endif
 
-    IF iCar < 32 AND iCar <> 10 THEN iCar = 32
+    If iCar < 32 And iCar <> 10 Then iCar = 32
 
     sNorm = sNorm & Chr$(iCar)
 
-  NEXT
+  Next
   
-  RETURN Conv$(sNorm, System.Charset, Desktop.Charset) 
+  Return Conv$(sNorm, System.Charset, Desktop.Charset) 
   
-END
+End
+
+Public Sub Form_Open()
+
+  txtCommand.SetFocus
+
+End
+
+Public Sub btnCtrlC_Click()
+
+  Print #$hProcess, Chr$(3);
+
+End
+
+Public Sub btnCtrlD_Click()
+
+  Print #$hProcess, Chr$(4);
+
+End
+
+Public Sub btnCtrlZ_Click()
+
+  Print #$hProcess, Chr$(26);
+
+End
