@@ -16,7 +16,7 @@ Public Sub _new(Connection As DBusConnection, ApplicationName As String)
   
   $hConn = Connection
   $sName = ApplicationName
-  If $hConn = DBus.System Then
+  If $hConn = _DBus.System Then
     $sKey = "system://" & $sName
   Else
     $sKey = "session://" & $sName

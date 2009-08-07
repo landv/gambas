@@ -15,14 +15,14 @@ Static Public Sub _get(Application As String) As DBusApplication
   If Application Like "system://*" Then
     sKey = Application
     Application = Mid$(Application, 10)
-    hConn = DBus.System
+    hConn = _DBus.System
   Else If Application Like "session://*" Then
     sKey = Application
     Application = Mid$(Application, 11)
-    hConn = DBus.Session
+    hConn = _DBus.Session
   Else
     sKey = "session://" & Application
-    hConn = DBus.Session
+    hConn = _DBus.Session
   Endif
   
   hApp = _ApplicationCache[sKey]

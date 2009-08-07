@@ -41,7 +41,7 @@ END_PROPERTY
 
 GB_DESC CDBusDesc[] =
 {
-  GB_DECLARE("DBus", 0),
+  GB_DECLARE("_DBus", 0),
 
   GB_STATIC_PROPERTY_READ("System", "DBusConnection", dbus_System),
   GB_STATIC_PROPERTY_READ("Session", "DBusConnection", dbus_Session),
