@@ -22,10 +22,10 @@ END
 
 PUBLIC FUNCTION QuoteString(sVal AS String) AS String
 
+  sVal = Replace(sVal, "\\", "\\\\")
   sVal = Replace(sVal, "\n", "\\n")
   sVal = Replace(sVal, "\t", "\\t")
   sVal = Replace(sVal, Chr$(34), "\\" & Chr$(34))
-  sVal = Replace(sVal, "\\", "\\\\")
   sVal = Chr$(34) & sVal & Chr$(34)
 
   RETURN sVal

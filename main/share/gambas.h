@@ -82,7 +82,7 @@
 /* This type represents a Gambas datatype identifier */
 
 typedef
-  intptr_t GB_TYPE;
+  uintptr_t GB_TYPE;
 
 
 /* This opaque type represents a Gambas class identifier */
