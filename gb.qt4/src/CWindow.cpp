@@ -379,19 +379,11 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent)
 	if (win)
 	{
 		win->_object = THIS;
-		//win->setCentralWidget(container);
-		//win->setOpaqueMoving(true);
 		win->installEventFilter(&CWindow::manager);
 	}
 
 	if (THIS->toplevel || THIS->xembed)
 	{
-		/*if (CWindow::count >= 64)
-		{
-			GB.Error("Too many windows opened");
-			return;
-		}*/
-
 		CWindow::insertTopLevel(THIS);
 		
 		if (CWINDOW_Main == 0)
@@ -1544,6 +1536,8 @@ void MyMainWindow::showEvent(QShowEvent *e)
 	
 	emit_open_event(THIS);
 	
+	CWINDOW_fix_menubar(THIS);
+
 	if (_activate)
 	{
 		raise();
@@ -1552,8 +1546,6 @@ void MyMainWindow::showEvent(QShowEvent *e)
 		//X11_window_activate(winId());
 		_activate = false;
 	}
-	
-	CWINDOW_fix_menubar(THIS);
 }
 
 void MyMainWindow::initProperties()

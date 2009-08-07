@@ -27,8 +27,9 @@
 #include "gb.qt.h"
 #include "CWidget.h"
 
-#include <qsplitter.h>
-#include <qevent.h>
+#include <QSplitter>
+#include <QEvent>
+#include <QResizeEvent>
 
 #ifndef __CSPLITTER_CPP
 extern GB_DESC CHSplitDesc[];
@@ -59,9 +60,14 @@ public:
   bool _event;
   
   int handleCount();
+	
+public slots:
+	
+	void resizeSlot();
 
 protected:
 
+	void resizeEvent(QResizeEvent *);
   bool eventFilter(QObject *, QEvent *);
 
 };

@@ -26,12 +26,11 @@
 
 #include "main.h"
 
-#include <qstringlist.h>
-#include <qsplitter.h>
-//Added by qt3to4:
+#include <QStringList>
+#include <QSplitter>
 #include <QChildEvent>
 #include <QEvent>
-#include <cstdio>
+#include <QTimer>
 
 #include "CConst.h"
 #include "CContainer.h"
@@ -263,15 +262,16 @@ MySplitter::MySplitter(QWidget *parent) :
 {
   _event = false;
   installEventFilter(this);
+  //connect(this, SIGNAL(splitterMoved(int, int)), this, SLOT(splitterMovedSlot(int, int)));
   //setAttribute(Qt::WA_NoSystemBackground, true);
 }
 
-static void send_event(QT_WIDGET *ob)
+static void arrange_children(void *_object)
 {
-  if (!ob->widget)
+  if (!THIS || !WIDGET)
     return;
-
-  QObjectList list = ob->widget->children();
+	
+  QObjectList list = WIDGET->children();
   CWIDGET *child;
   int i;
   
@@ -281,10 +281,29 @@ static void send_event(QT_WIDGET *ob)
   	if (child && child->widget && !child->widget->isHidden() && GB.Is(child, CLASS_Container))
 			CCONTAINER_arrange(child);
   }
-  		
-  GB.Raise(ob, EVENT_Resize, 0);
-  ((MySplitter *)ob->widget)->_event = false;
-	GB.Unref(POINTER(&ob));
+}
+
+static void send_event(void *_object)
+{
+  if (!WIDGET)
+    return;
+
+	arrange_children(THIS);
+  GB.Raise(THIS, EVENT_Resize, 0);
+  WIDGET->_event = false;
+	GB.Unref(POINTER(&_object));
+}
+
+void MySplitter::resizeSlot()
+{
+	void *_object = CWidget::get(this);
+	send_event(THIS);
+}
+
+void MySplitter::resizeEvent(QResizeEvent *e)
+{
+	QSplitter::resizeEvent(e);
+	arrange_children(CWidget::get(this));
 }
 
 bool MySplitter::eventFilter(QObject *o, QEvent *e)
@@ -311,10 +330,10 @@ bool MySplitter::eventFilter(QObject *o, QEvent *e)
   }
   else if (e->type() == QEvent::Resize && !_event)
   {
-    _event = true;
+		_event = true;
 		void *_object = CWidget::get(this);
 		GB.Ref(THIS);
-    GB.Post((void (*)())send_event, (intptr_t)THIS);
+		GB.Post((void (*)())send_event, (intptr_t)THIS);
   }
 
   return QObject::eventFilter(o, e);

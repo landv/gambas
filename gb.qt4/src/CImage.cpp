@@ -196,7 +196,9 @@ BEGIN_METHOD(CIMAGE_save, GB_STRING path; GB_INTEGER quality)
     return;
   }
 
-  ok = QIMAGE->save(path, fmt, VARGOPT(quality, -1));
+  check_image(THIS);
+
+	ok = QIMAGE->save(path, fmt, VARGOPT(quality, -1));
 
   if (!ok)
     GB.Error("Unable to save picture");
