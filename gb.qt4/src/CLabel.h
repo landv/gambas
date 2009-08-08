@@ -44,6 +44,7 @@ extern GB_DESC CSeparatorDesc[];
 
 #define THIS    ((CLABEL *)_object)
 #define WIDGET  ((MyLabel *)((CWIDGET *)_object)->widget)
+#define SEPARATOR  ((MySeparator *)((CWIDGET *)_object)->widget)
 
 #endif
 

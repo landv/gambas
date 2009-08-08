@@ -39,6 +39,7 @@
 #include "gambas.h"
 
 #include "CConst.h"
+#include "CColor.h"
 #include "CLabel.h"
 
 /*#undef CLABEL_PROPERTIES
@@ -202,7 +203,6 @@ BEGIN_METHOD(CSEPARATOR_new, GB_OBJECT parent)
 
 END_METHOD
 
-
 GB_DESC CSeparatorDesc[] =
 {
   GB_DECLARE("Separator", sizeof(CSEPARATOR)), GB_INHERITS("Control"),
@@ -363,66 +363,6 @@ void MyLabel::adjust()
 	calcMinimumHeight(true);
 }
 
-#if 0
-static void make_alpha_from_white(QImage &img)
-{
-	uchar *p;
-	int i, n;
-	
-	p = img.bits();
-	n = img.width() * img.height();
-
-	for (i = 0; i < n; i++, p += 4)
-		p[3] = (p[2] * 11 + p[1] * 16 + p[0] * 5) / 32;
-}
-
-void MyLabel::updateMask()
-{
-	QString s = text();
-	int bg, fg;
-	CWIDGET *_object = CWidget::get(this);
-	
-	if (!transparent)
-	{
-		clearMask();
-		return;
-	}
-	
-	fg = CWIDGET_get_foreground(_object);
-	bg = CWIDGET_get_background(_object);
-	CWIDGET_set_color(_object, 0, 0xFFFFFF);
-	
-	QPixmap *buffer = new QPixmap(width(), height());
-	buffer->fill(Qt::black);
-	QPainter p(buffer);
-	p.initFrom(this);
-	//QLabel::drawFrame(&p);
-	QRect rect(0, 0, width(), height());
-	for (int i = 0; i < frameWidth(); i++)
-		p.drawRect(rect.x() + i, rect.y() + i, rect.width() - i * 2, rect.height() - i * 2);
-	p.end();
-	render(buffer);
-  
-	CWIDGET_set_color(_object, bg, fg);
-
-  /*QPaintDevice *oldRedirect = QPainter::redirect(this);
-	QPainter::redirect(this, buffer);
-	//bool dblbfr = QSharedDoubleBuffer::isDisabled();
-	//QSharedDoubleBuffer::setDisabled( TRUE );
-	QPaintEvent e(rect(), false);
-	QApplication::sendEvent(this, &e);
-	//QSharedDoubleBuffer::setDisabled( dblbfr );
-	QPainter::redirect(this, oldRedirect);*/
-
-	QImage img = buffer->toImage().convertToFormat(QImage::Format_ARGB32);
-	
-	make_alpha_from_white(img);
-	*buffer = QPixmap::fromImage(img);
-	if (!buffer->mask().isNull()) setMask(buffer->mask());
-	delete buffer;	
-}
-#endif
-
 /** class MySeparator ******************************************************/
 
 
@@ -431,19 +371,30 @@ MySeparator::MySeparator(QWidget *parent)
 {
 }
 
-
 void MySeparator::paintEvent( QPaintEvent * )
 {
 	QPainter p(this);
-	QStyleOption opt;
 	
-	opt.rect = rect();
-	opt.palette = palette();
-	opt.state |= QStyle::State_Enabled;
-	
-	if (width() < height())
-		opt.state |= QStyle::State_Horizontal;
+	if (width() == 1 || height() == 1)
+	{
+		p.setPen(CCOLOR_merge(palette().color(QPalette::Window), palette().color(QPalette::WindowText)).lighter());
+		if (width() >= height())
+			p.drawLine(0, height() / 2, width() - 1, height() / 2);
+		else
+			p.drawLine(width() / 2, 0, width() / 2, height() - 1);
+	}
+	else
+	{
+		QStyleOption opt;
+		
+		opt.rect = rect();
+		opt.palette = palette();
+		opt.state |= QStyle::State_Enabled;
+		
+		if (width() < height())
+			opt.state |= QStyle::State_Horizontal;
 
-	style()->drawPrimitive(QStyle::PE_IndicatorToolBarSeparator, &opt, &p);
+		style()->drawPrimitive(QStyle::PE_IndicatorToolBarSeparator, &opt, &p);
+	}
 }
 

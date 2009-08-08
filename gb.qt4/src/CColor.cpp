@@ -39,6 +39,18 @@ static int _h = 0;
 static int _s = 0;
 static int _v = 0;
 
+QColor CCOLOR_merge(const QColor &colorA, const QColor &colorB, int factor)
+{
+	const int maxFactor = 100;
+	QColor tmp = colorA;
+	tmp.setRed((tmp.red() * factor) / maxFactor + (colorB.red() * (maxFactor - factor)) / maxFactor);
+	tmp.setGreen((tmp.green() * factor) / maxFactor + (colorB.green() * (maxFactor - factor)) / maxFactor);
+	tmp.setBlue((tmp.blue() * factor) / maxFactor + (colorB.blue() * (maxFactor - factor)) / maxFactor);
+	return tmp;
+}
+
+
+
 static void get_hsv(int col)
 {
   static int last = 0;
@@ -352,7 +364,7 @@ GB_DESC CColorDesc[] =
   
   GB_STATIC_METHOD("Lighter", "i", CCOLOR_lighter, "(Color)i"),
   GB_STATIC_METHOD("Darker", "i", CCOLOR_darker, "(Color)i"),
-  GB_STATIC_METHOD("Mix", "i", CCOLOR_mix, "(Color1)i(Color2)i[(Weight)f]"),
+  GB_STATIC_METHOD("Merge", "i", CCOLOR_mix, "(Color1)i(Color2)i[(Weight)f]"),
   GB_STATIC_METHOD("Blend", "i", CCOLOR_blend, "(Source)i(Destination)i"),
 
   GB_STATIC_METHOD("_get", ".ColorInfo", CCOLOR_get, "(Color)i"),

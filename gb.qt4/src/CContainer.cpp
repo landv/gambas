@@ -40,6 +40,7 @@
 #include "CWindow.h"
 #include "CConst.h"
 #include "CScrollView.h"
+#include "CColor.h"
 
 #include "CContainer.h"
 
@@ -475,6 +476,7 @@ void MyContainer::setFrameStyle(int frame)
 void CCONTAINER_draw_frame(QPainter *p, int frame, QStyleOptionFrame &opt, QWidget *w)
 {
 	QStyle *style;
+	//QRect rect = opt.rect;
 	
 	if (frame == 0)
 		return;
@@ -487,7 +489,8 @@ void CCONTAINER_draw_frame(QPainter *p, int frame, QStyleOptionFrame &opt, QWidg
 	switch (frame)
 	{
 		case BORDER_PLAIN:
-			qDrawPlainRect(p, opt.rect, opt.palette.foreground().color(), 1);
+			qDrawPlainRect(p, opt.rect, CCOLOR_merge(opt.palette.color(QPalette::Window), opt.palette.color(QPalette::WindowText)).lighter(), 1);
+			//p->setPen(opt.palette.windowText().color());
 			break;
 			
 		case BORDER_SUNKEN:
@@ -495,6 +498,7 @@ void CCONTAINER_draw_frame(QPainter *p, int frame, QStyleOptionFrame &opt, QWidg
 			opt.midLineWidth = 2;
 			opt.state |= QStyle::State_Sunken;
 			style->drawPrimitive(QStyle::PE_Frame, &opt, p, w);
+			//p->setPen(opt.palette.shadow().color());
 			break;
 			
 		case BORDER_RAISED:
@@ -502,15 +506,34 @@ void CCONTAINER_draw_frame(QPainter *p, int frame, QStyleOptionFrame &opt, QWidg
 			opt.midLineWidth = 2;
 			opt.state |= QStyle::State_Raised;
 			style->drawPrimitive(QStyle::PE_Frame, &opt, p, w);
+			//p->setPen(opt.palette.shadow().color());
 			break;
 			
 		case BORDER_ETCHED:
 			qDrawShadeRect(p, opt.rect, opt.palette, true, 1, 0);
+			/*p->setPen(opt.palette.shadow().color());
+			p->drawRect(rect);*/
 			break;
 			
 		default:
-			break;
+			return;
 	}
+	
+	/*if (rect.x() > 0)
+		p->drawLine(rect.x(), rect.y(), rect.x(), rect.y() + rect.height() - 1);
+	if (rect.x() > 0)
+		p->drawLine(rect.x(), rect.y(), rect.x() + rect.width() - 1, rect.y());
+	if (w->parentWidget())
+	{
+		int dx, dy;
+		
+		dx = rect.x() + rect.width() - 1;
+		dy = rect.y() + rect.height() - 1;
+		if (dx < (w->parentWidget()->width() - 1))
+			p->drawLine(dx, rect.y(), dx, dy);
+		if (dy < (w->parentWidget()->height() - 1))
+			p->drawLine(rect.x(), dy, dx, dy);
+	}*/
 }
 
 void MyContainer::drawFrame(QPainter *p)
