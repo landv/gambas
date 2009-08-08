@@ -2,6 +2,9 @@
 
 Export
 
+Static Property Read System As DBusConnection
+Static Property Read Session As DBusConnection
+
 Static Public _ApplicationCache As New Collection
 
 Static Private $iApp As Integer
@@ -29,4 +32,16 @@ Static Public Sub _get(Application As String) As DBusApplication
   If Not hApp Then hApp = New DBusApplication(hConn, Application)
   Return hApp
   
+End
+
+Static Private Function System_Read() As DBusConnection
+
+  Return _DBus.System
+
+End
+
+Static Private Function Session_Read() As DBusConnection
+
+  Return _DBus.Session
+
 End

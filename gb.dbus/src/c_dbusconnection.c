@@ -141,6 +141,12 @@ BEGIN_METHOD(dbusconnection_CallMethod, GB_STRING application; GB_STRING object;
 
 END_METHOD
 
+BEGIN_PROPERTY(dbusconnection_Applications)
+
+	DBUS_call_method(THIS->connection, "org.freedesktop.DBus", "/", "org.freedesktop.DBus", "ListNames", "", "as", NULL);
+
+END_PROPERTY
+
 GB_DESC CDBusConnectionDesc[] =
 {
   GB_DECLARE("DBusConnection", sizeof(CDBUSCONNECTION)),
@@ -149,6 +155,7 @@ GB_DESC CDBusConnectionDesc[] =
 	GB_METHOD("_free", NULL, dbusconnection_free, NULL),
 	GB_METHOD("_Introspect", "s", dbusconnection_Introspect, "(Application)s[(Object)s]"),
 	GB_METHOD("_CallMethod", "v", dbusconnection_CallMethod, "(Application)s(Object)s(Interface)s(Method)s(InputSignature)s(OutputSignature)s(Arguments)Array;"),
+	GB_PROPERTY_READ("Applications", "String[]", dbusconnection_Applications),
 
   GB_END_DECLARE
 };

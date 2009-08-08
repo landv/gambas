@@ -19,6 +19,7 @@ Public Sub Main()
   'DBus["org.kde.kmail"]["/kmail/kmail_mainwindow_1"].geometry = [0, 24, 1024, 768]
   'Print DBus["org.kde.kmail"]["/kmail/kmail_mainwindow_1"].geometry  '"turlutu"
   'Debug aRect
-  Print DBus["system://org.freedesktop.Hal"]["/org/freedesktop/Hal/Manager", "org.freedesktop.Hal.Manager"].GetAllDevices().Join("\n")
+  'Print DBus["system://org.freedesktop.Hal"]["/org/freedesktop/Hal/Manager", "org.freedesktop.Hal.Manager"].GetAllDevices().Join("\n")
+  Print DBus["org.kde.krunner"]["/"].Children.Join("\n")
 
 End

@@ -2,6 +2,8 @@
 
 Export
 
+Property Read Children As String[]
+
 Private $hAppIndex As Integer
 Private $sObjectPath As String
 Private $sInterface As String
@@ -174,4 +176,52 @@ Public Sub _unknown(...) As Variant
   
   Return _Invoke(Param.Name, Param.Property, aArg)
   
+End
+
+' We do not use the cached introspection, because new objects may have appeared.
+' But new interfaces or new methods are unlikey.
+
+Private Function Children_Read() As String[]
+
+  Dim sIntr As String
+  Dim aChildren As New String[]
+  Dim iPos, iPos2, iLevel As Integer
+  Dim sNode, sChild As String
+  Dim hApp As DBusApplication
+  
+  hApp = DBus._ApplicationCache[$hAppIndex]
+  sIntr = hApp._Introspect($sObjectPath)
+  
+  Do
+    iPos2 = iPos
+    iPos = InStr(sIntr, "<node", iPos + 1)
+    If iPos = 0 Then iPos = Len(sIntr) + 1
+    iPos2 = InStr(sIntr, "</node>", iPos2 + 1)
+    If iPos2 = 0 Then iPos2 = Len(sIntr) + 1
+    
+    If iPos > Len(sIntr) And If iPos2 > Len(sIntr) Then Return aChildren
+    
+    If iPos < iPos2 Then
+    
+      Inc iLevel
+      If iLevel <> 2 Then Continue
+    
+      iPos2 = InStr(sIntr, ">", iPos + 1)
+      If iPos2 = 0 Then Continue
+      
+      sNode = Mid$(sIntr, iPos, iPos2 - iPos + 1)
+      Try sChild = Scan(sNode, "*name=\"*\"*")[1]
+      If sChild Then aChildren.Add(sChild)
+      
+      If Right(sNode, 2) = "/>" Then Dec iLevel
+    
+    Else
+    
+      iPos = iPos2
+      Dec iLevel
+    
+    Endif
+    
+  Loop
+
 End
