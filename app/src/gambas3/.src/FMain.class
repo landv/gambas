@@ -61,7 +61,7 @@ Public Sub Form_Open()
 
   ReadConfig
 
-  'FDebugInfo.UpdateView
+  FDebugInfo.UpdateView
 
   tvwProject_Select
   tabProperty_Click
@@ -882,14 +882,14 @@ Public Sub ReadConfig()
   wrkProject.Font = tabProperty.Font
   'wrkProject.Font = tvwProject.Font
   'tabProperty.Font = tvwProject.Font
-  panMessage.Height = lblMessage.Font.Height("") + 2
+  panMessage.Height = lblMessage.Font.Height("") + lblMessage.Padding * 2 + 2
   '$bCanShowBalloon = Settings["/ShowBalloon", TRUE]
   'IF NOT $bCanShowBalloon THEN HideBalloon
   bShow = Settings["/ShowMessages", True]
   panMessage.Visible = bShow
   mnuStatusBar.Value = bShow
 
-  tabProperty.H = tabProperty.ClientY - 2
+  panTabProperty.H = tabProperty.ClientY - 2
 
 End
 

@@ -102,6 +102,7 @@ Public Sub Run(iStyle As Integer)
             Inc iInd
             Highlight.AlternateState = False
             iState = iSaveState 'Highlight.Normal
+            iNextState = iState
             'iNextState = iSaveNextState 'Highlight.Normal
           Endif
           Continue

@@ -2162,7 +2162,7 @@ Public Sub Control_Draw(Optional iIndex As Integer)
         Return
       Endif
       If hCCtrl.GetProperty("Background") Then Return
-      Draw.Foreground = Color.Mix(Color.Background, &H808080&)
+      Draw.Foreground = Color.Merge(Color.Background, &H808080&)
     
     Case Else 
 
@@ -2176,7 +2176,7 @@ Public Sub Control_Draw(Optional iIndex As Integer)
       Else
         Draw.Text(hCtrl.Tag, 4, 4)
       Endif
-      Draw.Foreground = Color.Mix(Color.Background, &H808080&)
+      Draw.Foreground = Color.Merge(Color.Background, &H808080&)
       
   End Select
 

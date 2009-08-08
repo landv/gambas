@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2.1667,27,55.5)
+  MoveScaled(0,2.1429,27,55.4286)
   Text = ("Hierarchy")
   Icon = Picture["img/16/stack-order.png"]
   Persistent = True
@@ -39,9 +39,13 @@
       Picture = Picture["icon:/small/bottom"]
     }
   }
+  { sepControl Separator
+    MoveScaled(3,18,15,0.1429)
+  }
   { tvwControl TreeView
-    MoveScaled(1,17,20,19)
+    MoveScaled(2,23,20,19)
     Visible = False
     Expand = True
+    Border = False
   }
 }

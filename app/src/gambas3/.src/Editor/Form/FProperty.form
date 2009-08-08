@@ -16,7 +16,6 @@
   { panProperty Panel
     MoveScaled(4,16,54,4)
     AutoResize = True
-    Border = Border.Sunken
     { lblName TextLabel
       MoveScaled(0,0,28,4)
       Expand = True
@@ -31,22 +30,25 @@
       Toggle = True
     }
   }
+  { Separator1 Separator
+    MoveScaled(8,21,14,0.1429)
+  }
   { Panel1 Panel
     MoveScaled(3,23,56,21)
     Expand = True
     Arrangement = Arrange.Fill
+    { grdProperty GridView
+      MoveScaled(22,0,25,19)
+      Visible = False
+      Scrollbar = Scroll.Vertical
+      Border = False
+    }
     { cmbProperty ComboBox
       MoveScaled(2,4,16,4)
       Visible = False
       Ignore = True
       Text = ("")
       ReadOnly = True
-    }
-    { grdProperty GridView
-      MoveScaled(22,0,25,19)
-      Visible = False
-      Scrollbar = Scroll.Vertical
-      Border = False
     }
     { spnProperty SpinBox
       MoveScaled(2,9,14,4)

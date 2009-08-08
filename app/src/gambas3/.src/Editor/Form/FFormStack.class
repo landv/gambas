@@ -60,8 +60,6 @@ Static Public Sub GetControlIcon(sKind As String) As Picture
   
 End
 
-
-
 Private Sub FillTree(hCtrl As CControl, Optional sParent As String)
 
   Dim hChild As Control
@@ -121,9 +119,6 @@ Public Sub RefreshReadOnly()
   
 End
 
-
-
-
 Public Sub RefreshAll(Optional sKey As String, Optional bForce As Boolean)
 
   If Not Me.Visible Then Return
@@ -141,6 +136,7 @@ Public Sub RefreshAll(Optional sKey As String, Optional bForce As Boolean)
   tvwControl.Clear
   FillTree($hForm.Control[$hForm.Name])
   tvwControl.Show
+  sepControl.Show
   lblMessage.Hide
   RefreshReadOnly
   
@@ -171,11 +167,10 @@ Public Sub HideAll()
 
   tvwControl.Hide
   panControl.Hide
+  sepControl.Hide
   lblMessage.Show
 
 End
-
-
 
 
 Public Sub btnDown_Click()

@@ -439,7 +439,7 @@ Public Sub Form_Resize()
 
     svwWorkspace.Move(0, 0, Me.ClientW, Me.ClientH)
     panWorkspace.Move(0, 0, Me.ClientW, Me.ClientH)
-    panWorkspace.Background = If($iBackground = Color.Default, Color.Mix(Color.Background, Color.Foreground), $iBackground)
+    panWorkspace.Background = If($iBackground = Color.Default, Color.Merge(Color.Background, Color.Foreground), $iBackground)
     panWorkspace.Border = Border.None
 
     ' If $bLogo Then

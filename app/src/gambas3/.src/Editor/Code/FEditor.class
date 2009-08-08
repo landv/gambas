@@ -344,6 +344,9 @@ Public Sub Form_Arrange()
   Else
     iToolbarOffset = 0
   Endif
+  
+  sepEditor.Move(0, iToolbarOffset, Me.ClientW, 1)
+  Inc iToolbarOffset
 
   Select Case $iViewMode
     Case VIEWMODE_NORMAL

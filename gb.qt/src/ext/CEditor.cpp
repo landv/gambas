@@ -1019,6 +1019,12 @@ BEGIN_METHOD(CEDITOR_show_word, GB_INTEGER line; GB_INTEGER col; GB_INTEGER len)
 
 END_METHOD
 
+BEGIN_PROPERTY(CEDITOR_border)
+
+  QT.BorderProperty(_object, _param);
+
+END_PROPERTY
+
 
 /***************************************************************************/
 
@@ -1190,7 +1196,7 @@ GB_DESC CEditorDesc[] =
   GB_PROPERTY_READ("LineHeight", "i", CEDITOR_line_height),
   GB_PROPERTY_READ("CharWidth", "i", CEDITOR_char_width),
 
-	// Document specific
+  GB_PROPERTY("Border", "b", CEDITOR_border),
 
   GB_PROPERTY("Text", "s", CEDITOR_text),
   GB_PROPERTY_READ("Length", "i", CEDITOR_length),
@@ -1230,7 +1236,7 @@ GB_DESC CEditorDesc[] =
   GB_EVENT("Margin", NULL, "(LineNumber)i", &EVENT_Margin),
   
   GB_CONSTANT("_DefaultEvent", "s", "KeyPress"),
-  GB_CONSTANT("_Properties", "s", "*,Font{Font:Fixed},Highlight{Highlight.None;Custom;Gambas;HTML;CSS;WebPage;Diff}=None,ReadOnly=False,TabSize{Range:1;16}=2"),
+  GB_CONSTANT("_Properties", "s", "*,Font{Font:Fixed},Border=True,Highlight{Highlight.None;Custom;Gambas;HTML;CSS;WebPage;Diff}=None,ReadOnly=False,TabSize{Range:1;16}=2"),
 
   GB_END_DECLARE
 };

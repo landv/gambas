@@ -386,6 +386,7 @@
     Name = "edtEditor"
     MoveScaled(13,12,40,35)
     Expand = True
+    Border = False
   }
   { timProc #Timer
     #X = 420
@@ -403,6 +404,9 @@
   { timShowHelp #Timer
     #X = 518
     #Y = 175
+  }
+  { sepEditor Separator
+    MoveScaled(67,6,8,2)
   }
 }
 

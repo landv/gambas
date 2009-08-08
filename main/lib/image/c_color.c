@@ -410,7 +410,7 @@ GB_DESC CColorDesc[] =
   
   GB_STATIC_METHOD("Lighter", "i", CCOLOR_lighter, "(Color)i"),
   GB_STATIC_METHOD("Darker", "i", CCOLOR_darker, "(Color)i"),
-  GB_STATIC_METHOD("Mix", "i", CCOLOR_mix, "(Color1)i(Color2)i[(Weight)f]"),
+  GB_STATIC_METHOD("Merge", "i", CCOLOR_mix, "(Color1)i(Color2)i[(Weight)f]"),
   GB_STATIC_METHOD("Blend", "i", CCOLOR_blend, "(Source)i(Destination)i"),
 
   GB_STATIC_METHOD("_get", "ColorInfo", CCOLOR_get, "(Color)i"),

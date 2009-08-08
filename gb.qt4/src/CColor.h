@@ -29,7 +29,6 @@
 
 #ifndef __CCOLOR_CPP
 extern GB_DESC CColorDesc[];
-extern GB_DESC CColorInfoDesc[];
 #endif
 
 QColor CCOLOR_merge(const QColor &colorA, const QColor &colorB, int factor = 50);
