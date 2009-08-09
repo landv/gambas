@@ -519,8 +519,7 @@ __s2v:
       STRING_unref(&value->_string.addr);
   }
 
-  *((char **)value->_variant.value) = addr;
-
+	value->_variant.value._string = addr;
   value->_variant.vtype = T_STRING;
 
   goto __TYPE;
@@ -750,7 +749,7 @@ __VARIANT:
   if (type == T_NULL)
     return;
 
-  addr = ((VARIANT *)addr)->value;
+  addr = &((VARIANT *)addr)->value.data;
   /*goto *jump[Min(T_OBJECT, type)];*/
   goto __CONV;
 
@@ -876,7 +875,7 @@ __VARIANT:
   else*/ if (value->_variant.vtype == T_VOID)
     value->_variant.vtype = T_NULL;
 
-  VARIANT_copy(((VARIANT *)addr)->value, value->_variant.value);
+  VARIANT_copy(&((VARIANT *)addr)->value.data, &value->_variant.value.data);
 
   return;
 
@@ -1183,15 +1182,13 @@ bool VALUE_is_null(VALUE *val)
     if (val->_variant.vtype == T_NULL)
       return TRUE;
 
-    if (val->_variant.vtype == T_STRING && *((char **)val->_variant.value) == NULL)
+    if (val->_variant.vtype == T_STRING && val->_variant.value._string == NULL)
       return TRUE;
 
-    if (val->_variant.vtype == T_DATE
-        && ((DATE *)val->_variant.value)->date == 0
-        && ((DATE *)val->_variant.value)->time == 0)
+    if (val->_variant.vtype == T_DATE && val->_variant.value.data == 0)
       return TRUE;
 
-    if (TYPE_is_object(val->_variant.vtype) && *((void **)val->_variant.value) == NULL)
+    if (TYPE_is_object(val->_variant.vtype) && val->_variant.value._object == NULL)
       return TRUE;
   }
 

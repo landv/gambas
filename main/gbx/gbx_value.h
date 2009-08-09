@@ -146,20 +146,13 @@ typedef
   struct {
     TYPE type;
     TYPE vtype;
-    /*
-    union {
-      char _boolean;
-      char _byte;
-      short _short;
-      double _double;
-      int _int;
-      long long _int64;
-      long long _date;
-      char *_string;
-      void *_object;
-      }
-      */
-    char value[8];
+		union {
+			int _int;
+			char *_string;
+			void *_object;
+			uint64_t data;
+			}
+			value;
     }
   VALUE_VARIANT;
 

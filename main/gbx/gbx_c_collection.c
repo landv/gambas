@@ -365,13 +365,14 @@ void GB_CollectionSet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *v
 
 int GB_CollectionGet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *value)
 {
-  void *val;
-
-  val = collection_get_key((CCOLLECTION *)col, key, len);
+  VARIANT *val = collection_get_key((CCOLLECTION *)col, key, len);
+	
   if (val)
   {
     value->type = GB_T_VARIANT;
-    *((VARIANT *)&value->value) = *((VARIANT *)val);
+		value->value.type = val->type;
+		value->value._long.value = val->value.data;
+		
     return FALSE;
   }
   else
@@ -384,7 +385,7 @@ int GB_CollectionGet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *va
 int GB_CollectionEnum(GB_COLLECTION col, GB_VARIANT *value, char **key, int *len)
 {
 	static HASH_ENUM iter;
-  void *val;
+  VARIANT *val;
   HASH_TABLE *hash_table = ((CCOLLECTION *)col)->hash_table;
 
 	if (!value || !key)
@@ -398,7 +399,8 @@ int GB_CollectionEnum(GB_COLLECTION col, GB_VARIANT *value, char **key, int *len
   	return TRUE;
 
   value->type = GB_T_VARIANT;
-  *((VARIANT *)&value->value) = *((VARIANT *)val);
+	value->value.type = val->type;
+	value->value._long.value = val->value.data;
 
 	HASH_TABLE_get_last_key(hash_table, key, len);
 	return FALSE;

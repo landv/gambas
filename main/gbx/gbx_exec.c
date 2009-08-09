@@ -75,7 +75,11 @@ int EXEC_return_value = 0;
 
 void EXEC_init(void)
 {
-	char test[4];
+	union {
+		char _string[4];
+		uint _int;
+		}
+	test;
 
 	PC = NULL;
 	BP = NULL;
@@ -83,12 +87,13 @@ void EXEC_init(void)
 	CP = NULL;
 	RP->type = T_VOID;
 
-	test[0] = 0xAA;
-	test[1] = 0xBB;
-	test[2] = 0xCC;
-	test[3] = 0xDD;
+	test._string[0] = 0xAA;
+	test._string[1] = 0xBB;
+	test._string[2] = 0xCC;
+	test._string[3] = 0xDD;
 
-	EXEC_big_endian = *((uint *)test) == 0xAABBCCDDL;
+	EXEC_big_endian = test._int == 0xAABBCCDDL;
+	
 	if (EXEC_big_endian)
 		fprintf(stderr, "** WARNING: CPU is big endian\n");
 	/*printf("%s endian\n", EXEC_big_endian ? "big" : "little");*/
@@ -116,9 +121,9 @@ void BORROW(VALUE *value)
 
 __VARIANT:
 	if (value->_variant.vtype == T_STRING)
-		STRING_ref((*(char **)value->_variant.value));
+		STRING_ref(value->_variant.value._string);
 	else if (TYPE_is_object(value->_variant.vtype))
-		OBJECT_REF(*((void **)value->_variant.value), "BORROW");
+		OBJECT_REF(value->_variant.value._object, "BORROW");
 	return;
 
 __FUNCTION:
@@ -152,9 +157,9 @@ void UNBORROW(VALUE *value)
 
 __VARIANT:
 	if (value->_variant.vtype == T_STRING)
-		STRING_unref_keep((char **)value->_variant.value);
+		STRING_unref_keep(&value->_variant.value._string);
 	else if (TYPE_is_object(value->_variant.vtype))
-		OBJECT_UNREF_KEEP(*((void **)value->_variant.value), "UNBORROW");
+		OBJECT_UNREF_KEEP(value->_variant.value._object, "UNBORROW");
 	return;
 
 __FUNCTION:
@@ -188,9 +193,9 @@ void RELEASE(VALUE *value)
 
 __VARIANT:
 	if (value->_variant.vtype == T_STRING)
-		STRING_unref((char **)value->_variant.value);
+		STRING_unref(&value->_variant.value._string);
 	else if (TYPE_is_object(value->_variant.vtype))
-		OBJECT_UNREF(*((void **)value->_variant.value), "RELEASE");
+		OBJECT_UNREF(value->_variant.value._object, "RELEASE");
 	return;
 
 __FUNCTION:
@@ -235,9 +240,9 @@ void RELEASE_many(VALUE *value, int n)
 	
 	__VARIANT:
 		if (value->_variant.vtype == T_STRING)
-			STRING_unref((char **)value->_variant.value);
+			STRING_unref(&value->_variant.value._string);
 		else if (TYPE_is_object(value->_variant.vtype))
-			OBJECT_UNREF(*((void **)value->_variant.value), "RELEASE");
+			OBJECT_UNREF(value->_variant.value._object, "RELEASE");
 		continue;
 	
 	__FUNCTION:
@@ -1117,14 +1122,14 @@ __VARIANT:
 
 	if (val->_variant.vtype == T_OBJECT)
 	{
-		object = *((void **)val->_variant.value);
+		object = val->_variant.value._object;
 		class = OBJECT_class(object);
 		defined = FALSE;
 		goto __CHECK;
 	}
 	else if (TYPE_is_object(val->_variant.vtype))
 	{
-		object = *((void **)val->_variant.value);
+		object = val->_variant.value._object;
 		class = (CLASS *)val->_variant.vtype;
 		if (!class->is_virtual)
 			class = OBJECT_class(object); /* Virtual dispatching */

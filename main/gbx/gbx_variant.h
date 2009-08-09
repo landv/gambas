@@ -25,18 +25,25 @@
 #ifndef __VARIANT_H
 #define __VARIANT_H
 
-
+#include "gbx_type.h"
 #include "gbx_string.h"
 #include "gbx_object.h"
 
 typedef
-  struct {
-    intptr_t type;
-    char value[8];
-    }
+  struct 
+	{
+    TYPE type;
+		union
+		{
+			char *_string;
+			void *_object;
+			int64_t data;
+		}
+		value;
+  }
   VARIANT;
 
-#define VARIANT_copy(src, dst)  (*((int64_t *)dst) = *((int64_t *)src))
+#define VARIANT_copy(src, dst)  *dst = *src
 
 static INLINE void VARIANT_undo(VALUE *val)
 {
@@ -48,11 +55,11 @@ static INLINE void VARIANT_free(VARIANT *var)
 {
   if (var->type == T_STRING)
   {
-    STRING_unref((char **)var->value);
+    STRING_unref(&var->value._string);
   }
   else if (TYPE_is_object(var->type))
   {
-    OBJECT_UNREF(*((void **)var->value), "VARIANT_free");
+    OBJECT_UNREF(var->value._object, "VARIANT_free");
   }
 }
 
@@ -60,11 +67,11 @@ static INLINE void VARIANT_keep(VARIANT *var)
 {
   if (var->type == T_STRING)
   {
-    STRING_ref(*((char **)var->value));
+    STRING_ref(var->value._string);
   }
   else if (TYPE_is_object(var->type))
   {
-    OBJECT_REF(*((void **)var->value), "VARIANT_keep");
+    OBJECT_REF(var->value._object, "VARIANT_keep");
   }
 }
 
@@ -73,10 +80,10 @@ static INLINE boolean VARIANT_is_null(VARIANT *var)
   if (var->type == T_NULL)
     return TRUE;
 
-  if (var->type == T_STRING && *((char **)var->value) == NULL)
+  if (var->type == T_STRING && !var->value._string)
     return TRUE;
 
-  if (TYPE_is_object(var->type) && *((void **)var->value) == NULL)
+  if (TYPE_is_object(var->type) && !var->value._object)
     return TRUE;
 
   return FALSE;
@@ -87,7 +94,7 @@ static INLINE void VARIANT_clear(VARIANT *var)
   VARIANT_free(var);
 
 	var->type = 0;
-	*((int64_t *)var->value) = 0;
+	var->value.data = 0;
 }
 
 #endif
