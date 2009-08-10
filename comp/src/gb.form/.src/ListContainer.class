@@ -95,7 +95,6 @@ Public Sub ScrollView_Scroll()
   
 End
 
-
 Public Sub Child_Insert(Child As Control)
 
   'Debug Me.Name
@@ -302,8 +301,10 @@ Public Sub Clear()
   'For Each hChild In $hScrollView.Children
   '  hChild.Delete
   'Next
+  Lock()
   $hScrollView.Children.Clear
   $hSelected = Null
+  Unlock()
   'Wait
   
 End
@@ -322,7 +323,7 @@ Private Sub Background_Write(Value As Integer)
 
 End
 
-Public Sub {Lock}()
+Public Sub Lock()
   
   If $iLock = 0 Then Me.Arrangement = Arrange.None
   Inc $iLock

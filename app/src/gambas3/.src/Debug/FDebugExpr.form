@@ -10,7 +10,6 @@
   { HBox1 HBox
     MoveScaled(1,1,27,4)
     Background = Color.TextBackground
-    Padding = 2
     { txtExpr TextBox
       MoveScaled(0,0,16,4)
       Font = Font["Bold"]
@@ -26,8 +25,11 @@
       Toggle = True
     }
   }
+  { Separator1 Separator
+    MoveScaled(4,7,10,0.1429)
+  }
   { gvwExpr GridView
-    MoveScaled(1,7,21,17)
+    MoveScaled(1,11,21,17)
     Expand = True
     Mode = Select.Single
     Header = GridView.Horizontal

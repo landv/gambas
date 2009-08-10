@@ -1,0 +1,72 @@
+' Gambas class file
+
+Inherits UserControl
+
+Private $hDrawingArea As DrawingArea
+Private $sPath As String
+Private $hProjectInfo As CProjectInfo
+Private $hIcon As Picture
+
+Private Const ICON_SIZE As Integer = 48
+Private Const PADDING As Integer = 6
+
+Public Sub _new()
+  
+  $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
+  Me.H = ICON_SIZE + PADDING * 2
+  
+End
+
+  
+Public Sub SetPath(sPath As String)
+  
+  $sPath = sPath
+  $hProjectInfo = New CProjectInfo(sPath)
+  Me.Tag = sPath
+  
+  With $hProjectInfo
+    
+    If .Icon.W = ICON_SIZE And If .Icon.H = ICON_SIZE Then
+      $hIcon = .Icon
+    Else
+      $hIcon = .Icon.Image.Stretch(ICON_SIZE, ICON_SIZE).Picture
+    Endif
+    
+  End With 
+  
+End
+
+Public Sub DrawingArea_Draw()
+  
+  Dim hIcon As Picture
+  Dim sTitle As String
+  Dim X, W As Integer
+  Dim sPath As String
+  
+  If Not $hProjectInfo Then Return
+  
+  With $hProjectInfo
+    
+    Draw.Picture($hIcon, PADDING, PADDING)
+    sTitle = .Title
+    If Not sTitle Then sTitle = .Name
+    Draw.Font.Bold = True
+    W = Draw.Font.Width(sTitle)
+    X = ICON_SIZE + PADDING * 3
+    Draw.Text(sTitle, X, PADDING, W, Desktop.Scale * 2, Align.TopLeft)
+    Draw.Font.Bold = False
+
+    Draw.Font.Grade = -1
+    Draw.Foreground = Color.DarkGray
+    If .Authors And If .Authors.Count Then
+      X += W + 8
+      Draw.Text(("Author(s)") & " : " & .Authors.Join(", "), X, PADDING, Draw.W - X - PADDING, Desktop.Scale * 2, Align.TopLeft)
+    Endif
+
+    sPath = Replace($sPath, System.User.Home, "~")
+    X = ICON_SIZE + PADDING * 3
+    Draw.Text(sPath, X, PADDING * 2 + Desktop.Scale * 2, Draw.W - X - PADDING, Desktop.Scale * 3, Align.TopLeft)
+    
+  End With
+  
+End

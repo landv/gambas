@@ -119,7 +119,7 @@
     }
   }
   { panToolBar ToolBar
-    MoveScaled(0,0,70,4)
+    MoveScaled(0,0,84,4)
     Key = "text"
     Text = ("Text editor")
     { btnSave ToolButton mnuSave
@@ -224,11 +224,21 @@
       Text = ("")
       Picture = Picture["icon:/small/view-split-v"]
     }
-    { lblEditor Label
-      MoveScaled(52,0,10,4)
+    { HBox1 HBox
+      MoveScaled(52,0,16,4)
       Expand = True
-      Text = ("")
-      Alignment = Align.Right
+      { Panel1 Panel
+        MoveScaled(2,0,1,4)
+        Expand = True
+      }
+      { lblEditor Label
+        MoveScaled(3,0,10,4)
+        AutoResize = True
+        Text = ("")
+      }
+      { Panel2 Panel
+        MoveScaled(14,0,1,4)
+      }
     }
   }
   { edtEditor Editor Editors
@@ -344,6 +354,6 @@
   { Toolbar text
     Text = "Text editor"
     List = "save,reload,show-class,cut,copy,paste,undo,redo,indent,unindent,view-nosplit,view-hsplit,view-vsplit"
-    Default = "save,reload,show-class,cut,copy,paste,undo,redo,indent,unindent,view-nosplit,view-hsplit,view-vsplit,$lblEditor"
+    Default = "save,reload,show-class,cut,copy,paste,undo,redo,indent,unindent,view-nosplit,view-hsplit,view-vsplit,$HBox1"
   }
 }

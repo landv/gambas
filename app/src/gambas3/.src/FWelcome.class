@@ -47,7 +47,7 @@ Public Sub Form_Open()
   Dim hImage As Image
 
   sFont = "Bold"
-  W = panButton.ClientW
+  W = panButton.ClientW + 4
 
   btnNew = New CCoolButton(panButton, 0, POS_BUTTON, W, HEIGHT_BUTTON, ("New project..."), "icon:/large/new", sFont) As "btnNew"
   btnNew.Foreground = Color.SelectedBackground

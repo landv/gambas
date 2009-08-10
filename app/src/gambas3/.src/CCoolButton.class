@@ -54,6 +54,7 @@ Public Sub Panel_Enter()
   $iColor = Last.Foreground
   Last.Background = Color.LightBackground '&88D5FF&
   Last.Foreground = Color.SelectedForeground '&88D5FF&
+  GetPanel().Border = Border.Plain
 
 End
 
@@ -62,6 +63,7 @@ Public Sub Panel_Leave()
   If Object.Type(Last) <> "Panel" Then Return
   Last.Background = Last.Parent.Background
   Last.Foreground = $iColor
+  GetPanel().Border = Border.None
 
 End
 
@@ -81,12 +83,7 @@ End
 
 Public Sub Panel_MouseDown()
 
-  With GetPanel()
-    .Border = Border.Sunken
-  End With
-
-  '$hLabel.Move($hLabel.X + 1, $hLabel.Y + 1)
-  '$hImage.Move($hImage.X + 1, $hImage.Y + 1)
+  GetPanel().Background = Color.SelectedBackground
 
 End
 
@@ -98,7 +95,7 @@ Public Sub Panel_MouseUp()
   Dim Y As Integer
 
   hPanel = GetPanel()
-  hPanel.Border = Border.None
+  HPanel.Background = Color.LightBackground
 
   X = Mouse.X
   Y = Mouse.Y

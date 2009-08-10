@@ -6,7 +6,7 @@ Static Private $bAnother As Boolean
 
 Static Public InAnotherWindow As Boolean
 
-Private frmProjectItem As FProjectItem
+Private frmProjectItem As ProjectItem
 
 Public Sub Run(Optional bAnother As Boolean) As String
 
@@ -17,7 +17,7 @@ End
 
 Public Sub _new()
   
-  frmProjectItem = New FProjectItem(panProject)
+  frmProjectItem = New ProjectItem(panProject)
   
 End
 
@@ -142,22 +142,26 @@ End
 Private Sub FillRecent()
   
   Dim sRecent As String
-  Dim hProjectItem As FProjectItem
-  Dim hFirst As FProjectItem
+  Dim hProjectItem As ProjectItem
+  Dim hFirst As ProjectItem
   Dim aRecent As String[]
   Dim bHighlight As Boolean
+  Dim fTime As Float
+  Dim Y As Integer
   
   If lstRecent.Children.Count Then Return
 
   Inc Application.Busy
 
-  'panRecent.Arrangement = Arrange.None
+  'panRecent.Hide
   lstRecent.Lock
 
   aRecent = Project.GetRecentFiles(chkSortRecent.Value)
 
   For Each sRecent In aRecent
-    hProjectItem = New FProjectItem(lstRecent)
+    hProjectItem = New ProjectItem(lstRecent)
+    hProjectItem.Y = Y
+    Y += hProjectItem.H
     If bHighlight Then hProjectItem.Background = Color.LightBackground
     bHighlight = Not bHighlight
     If Not hFirst Then hFirst = hProjectItem
@@ -168,7 +172,7 @@ Private Sub FillRecent()
   
   ' Workaround a scrollview bug that does not show the scrollbars.
   lstRecent.Unlock 
-  'panRecent.Arrangement = Arrange.Vertical
+  'panRecent.Show
   
   Dec Application.Busy
   
@@ -196,7 +200,7 @@ Private Sub FillExample()
   Dim sDir As String
   Dim sLastDir As String
   Dim hDrawingArea As DrawingArea
-  Dim hProjectItem As FProjectItem
+  Dim hProjectItem As ProjectItem
   Dim hLabel As Label
   Dim bHighlight As Boolean
   
@@ -221,7 +225,7 @@ Private Sub FillExample()
       sLastDir = sDir
     Endif
     
-    hProjectItem = New FProjectItem(lstExample)
+    hProjectItem = New ProjectItem(lstExample)
     If bHighlight Then hProjectItem.Background = Color.LightBackground
     bHighlight = Not bHighlight
     hProjectItem.SetPath(Project.EXAMPLES_DIR &/ sExample)

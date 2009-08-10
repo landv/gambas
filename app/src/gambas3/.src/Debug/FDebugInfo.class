@@ -36,7 +36,7 @@ Public Sub Form_Open()
     .Columns[1].Text = ("Value")
   End With
 
-  FOutput.Load
+  FOutput.Load(panConsole)
   UpdateView
   
   FHelp.Load(panHelp)
