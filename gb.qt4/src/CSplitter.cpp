@@ -31,6 +31,7 @@
 #include <QChildEvent>
 #include <QEvent>
 #include <QTimer>
+#include <cstdio>
 
 #include "CConst.h"
 #include "CContainer.h"
