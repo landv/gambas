@@ -26,11 +26,13 @@
 #ifndef __MAIN_H
 #define __MAIN_H
 
+#include "gb_common.h"
 #include "gambas.h"
 #include "gb.image.h"
 
 #ifndef __MAIN_C
 extern GB_INTERFACE GB;
+extern IMAGE_INTERFACE IMAGE;
 #endif
 
 #ifndef WARNING
@@ -38,5 +40,7 @@ extern GB_INTERFACE GB;
 #endif /* WARNING */
 
 int IMAGE_get_pixel_format(GB_IMG *image);
+bool IMAGE_get(GB_OBJECT *arg, GB_IMG **img, int *format);
 
 #endif
+

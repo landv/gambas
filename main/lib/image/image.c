@@ -25,6 +25,9 @@
 #include "c_color.h"
 #include "image.h"
 
+typedef
+	struct { unsigned char d[3]; } PACKED uint24;
+
 //#define DEBUG_CONVERT
 
 static int _default_format = GB_IMAGE_RGBA;
@@ -61,11 +64,11 @@ static inline uint INV_PREMUL(uint p)
 	else if (ALPHA(p) == 0xFF)
 		return p;
 	else
-	return
-		((ALPHA(p) << 24)
-		| (((255*RED(p))/ ALPHA(p)) << 16)
-		| (((255*GREEN(p)) / ALPHA(p)) << 8)
-		| ((255*BLUE(p)) / ALPHA(p)));
+		return
+			((ALPHA(p) << 24)
+			| (((255*RED(p))/ ALPHA(p)) << 16)
+			| (((255*GREEN(p)) / ALPHA(p)) << 8)
+			| ((255*BLUE(p)) / ALPHA(p)));
 }
 
 static inline uint SWAP(uint p)
@@ -351,20 +354,18 @@ int IMAGE_size(GB_IMG *img)
 
 void IMAGE_create(GB_IMG *img, int width, int height, int format)
 {
+	GB_BASE save = img->ob;
+	CLEAR(img);	
+	img->ob = save;
+	img->owner = &_image_owner;
+
 	if (width <= 0 || height <= 0)
-	{
-		GB_BASE save = img->ob;
-		CLEAR(img);
-		img->ob = save;
-		img->owner = &_image_owner;
 		return;
-	}
 	
 	img->width = width;
 	img->height = height;
 	img->format = format;
 	GB.Alloc(POINTER(&img->data), IMAGE_size(img));
-	img->owner = &_image_owner;
 	img->owner_handle = img->data;
 }
 
@@ -432,7 +433,6 @@ void *IMAGE_check(GB_IMG *img, GB_IMG_OWNER *temp_owner)
 }
 
 // Take ownership of the image
-
 void IMAGE_take(GB_IMG *img, GB_IMG_OWNER *owner, void *owner_handle, int width, int height, unsigned char *data)
 {
 	if (!img)
@@ -677,11 +677,6 @@ int IMAGE_get_default_format()
 
 void IMAGE_bitblt(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int sw, int sh)
 {
-	// Source and destination must have the same 32 bits format
-	
-	if (!GB_IMAGE_FMT_IS_32_BITS(src->format))
-		return;
-
 	if (dst->format != src->format)
 		return;
 
@@ -698,6 +693,75 @@ void IMAGE_bitblt(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int 
 	if ( dx + sw > dst->width ) sw = dst->width - dx;
 	if ( dy + sh > dst->height ) sh = dst->height - dy;
 	if ( sw <= 0 || sh <= 0 ) return; // Nothing left to copy
+	
+	if (GB_IMAGE_FMT_IS_32_BITS(src->format))
+	{
+		uint *d = (uint *)dst->data + dy * dst->width + dx;
+		uint *s = (uint *)src->data + sy * src->width + sx;
+	
+		if (sw < 64)
+		{
+			// Trust ourselves
+			const int dd = dst->width - sw;
+			const int ds = src->width - sw;
+			int t;
+			while (sh--) 
+			{
+				for (t = sw; t--;)
+					*d++ = *s++;
+				d += dd;
+				s += ds;
+			}
+		} 
+		else 
+		{
+			// Trust libc
+			const int dd = dst->width;
+			const int ds = src->width;
+			const int b = sw * sizeof(uint);
+			while (sh--) 
+			{
+				memcpy(d, s, b);
+				d += dd;
+				s += ds;
+			}
+		}
+	}
+	else // 24 bits
+	{
+		char *d = (char *)dst->data + (dy * dst->width + dx) * 3;
+		char *s = (char *)src->data + (sy * src->width + sx) * 3;
+		const int dd = dst->width * 3;
+		const int ds = src->width * 3;
+		const int b = sw * 3;
+
+		while (sh--) 
+		{
+			memcpy(d, s, b);
+			d += dd;
+			s += ds;
+		}
+	}
+}
+
+void IMAGE_compose(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int sw, int sh)
+{
+	if (dst->format != src->format)
+		return;
+
+	// Parameter correction
+	
+	if ( sw < 0 ) sw = src->width;
+	if ( sh < 0 ) sh = src->height;
+	if ( sx < 0 ) { dx -= sx; sw += sx; sx = 0; }
+	if ( sy < 0 ) { dy -= sy; sh += sy; sy = 0; }
+	if ( dx < 0 ) { sx -= dx; sw += dx; dx = 0; }
+	if ( dy < 0 ) { sy -= dy; sh += dy; dy = 0; }
+	if ( sx + sw > src->width ) sw = src->width - sx;
+	if ( sy + sh > src->height ) sh = src->height - sy;
+	if ( dx + sw > dst->width ) sw = dst->width - dx;
+	if ( dy + sh > dst->height ) sh = dst->height - dy;
+	if ( sw <= 0 || sh <= 0 ) return;
 
 	/*if ( src->hasAlphaBuffer() ) {
 	    QRgb* d = (QRgb*)dst->scanLine(dy) + dx;
@@ -725,34 +789,41 @@ void IMAGE_bitblt(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int 
 	    }
 	} else {*/
 	
-	uint *d = (uint *)dst->data + dy * dst->width + dx;
-	uint *s = (uint *)src->data + sy * src->width + sx;
-	
-  if (sw < 64)
-  {
-		// Trust ourselves
-		const int dd = dst->width - sw;
-		const int ds = src->width - sw;
-		int t;
-		while (sh--) 
-		{
-			for (t = sw; t--;)
-				*d++ = *s++;
-			d += dd;
-			s += ds;
-		}
-	} 
-	else 
+	switch(src->format)
 	{
-		// Trust libc
-		const int dd = dst->width;
-		const int ds = src->width;
-		const int b = sw * sizeof(uint);
-		while (sh--) 
+		case GB_IMAGE_RGBA: case GB_IMAGE_BGRA:
 		{
-			memcpy(d, s, b);
-			d += dd;
-			s += ds;
+			uint *d = (uint *)dst->data + dy * dst->width + dx;
+			uint *s = (uint *)src->data + sy * src->width + sx;
+	
+			const int dd = dst->width - sw;
+			const int ds = src->width - sw;
+			int t;
+			while (sh--) 
+			{
+				for (t = sw; t--;)
+				{
+					unsigned char a = ALPHA(*s);
+					if (a == 255)
+						*d++ = *s++;
+					else if (a == 0)
+						++d,++s; // nothing
+					else 
+					{
+						unsigned char r = ((RED(*s)-RED(*d)) * a) / 256 + RED(*d);
+						unsigned char g = ((GREEN(*s)-GREEN(*d)) * a) / 256 + GREEN(*d);
+						unsigned char b = ((BLUE(*s)-BLUE(*d)) * a) / 256 + BLUE(*d);
+						if (ALPHA(*d) > a)
+							a = ALPHA(*d);
+						*d++ = RGBA(r,g,b,a);
+						++s;
+					}
+				}
+				d += dd;
+				s += ds;
+			}
+			
+			break;
 		}
 	}
 }
@@ -776,3 +847,42 @@ void IMAGE_colorize(GB_IMG *img, GB_COLOR color)
 		*p++ = BGRA_to_format(RGBA(r, g, b, ALPHA(col)), img->format);
 	}
 }
+
+void IMAGE_mirror(GB_IMG *src, GB_IMG *dst, bool horizontal, bool vertical)
+{
+	if (dst->width != src->width || dst->height != src->height || dst->format != src->format)
+		return;
+
+  int w = src->width;
+  int h = src->height;
+
+  int dxi = horizontal ? -1 : 1;
+  int dxs = horizontal ? (w - 1) : 0;
+  int dyi = vertical ? -1 : 1;
+  int dy = vertical ? (h - 1) : 0;
+  int sx, sy;
+
+	if (GB_IMAGE_FMT_IS_24_BITS(src->format))
+	{
+    for (sy = 0; sy < h; sy++, dy += dyi) 
+    {
+      uint24 *ssl = (uint24 *)(src->data + sy * src->width * 3);
+      uint24 *dsl = (uint24 *)(dst->data + dy * dst->width * 3);
+      int dx = dxs;
+      for (sx = 0; sx < w; sx++, dx += dxi)
+          dsl[dx] = ssl[sx];
+    }
+  }
+  else 
+  {
+    for (sy = 0; sy < h; sy++, dy += dyi) 
+    {
+      uint *ssl = (uint *)(src->data + sy * src->width * 4);
+      uint *dsl = (uint *)(dst->data + dy * dst->width * 4);
+      int dx = dxs;
+      for (sx = 0; sx < w; sx++, dx += dxi)
+          dsl[dx] = ssl[sx];
+    }
+  }
+}
+

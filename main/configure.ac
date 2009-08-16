@@ -2,9 +2,9 @@ dnl ---- configure.ac for main programs
 
 AC_INIT
 AC_CONFIG_SRCDIR([configure.ac])
-AC_CONFIG_SUBDIRS(libltdl)
+AC_CONFIG_MACRO_DIR([m4])
 GB_INIT(main)
-LT_INIT
+LT_INIT 
 AM_PROG_CC_C_O
 
 dnl ---- Check for internationalization library
@@ -77,17 +77,13 @@ dnl ---- Remove DISABLED file that could have been generated before
 
 rm -f DISABLED
 
-dnl ---- Should I use libtool to load shared libraries in gbi and gbx ?
+dnl ---- We do not use libtool to load shared libraries anymore!
 
-if test "$SYSTEM" != "CYGWIN"; then
-  AC_DEFINE(DONT_USE_LTDL, 1, [Do not use libtool to load shared libraries])
-  if test "$SYSTEM" != "OPENBSD" && test "$SYSTEM" != "FREEBSD"; then
-    DL_LIB="-ldl"
-  else
-    DL_LIB=""
-  fi
+AC_DEFINE(DONT_USE_LTDL, 1, [Do not use libtool to load shared libraries])
+if test "$SYSTEM" != "OPENBSD" && test "$SYSTEM" != "FREEBSD"; then
+  DL_LIB="-ldl"
 else
-  DL_LIB=$LIBLTDL
+  DL_LIB=""
 fi
 
 AC_SUBST(DL_LIB)
@@ -134,3 +130,4 @@ lib/gui/Makefile \
 lib/image/Makefile \
 ])
 AC_OUTPUT
+

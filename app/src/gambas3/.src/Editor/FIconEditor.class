@@ -1311,10 +1311,10 @@ Public Sub DoFlip(iMode As Integer)
     Select Case iMode
 
       Case 0
-        $hPaste = $hPaste.Flip()
+        $hPaste = $hPaste.Mirror(True, False)
 
       Case 1
-        $hPaste = $hPaste.Mirror()
+        $hPaste = $hPaste.Mirror(False, True)
 
       Case 2
         $hPaste = $hPaste.Rotate(Rad(-90))
@@ -1333,10 +1333,10 @@ Public Sub DoFlip(iMode As Integer)
     Select Case iMode
 
       Case 0
-        $hImage = $hImage.Flip()
+        $hImage = $hImage.Mirror(True, False)
 
       Case 1
-        $hImage = $hImage.Mirror()
+        $hImage = $hImage.Mirror(False, True)
 
       Case 2
         $hImage = $hImage.Rotate(Rad(-90))

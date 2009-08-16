@@ -571,13 +571,18 @@ void CLASS_export(void)
 	bool inserted = FALSE;
   CLASS *class = JOB->class;
   int cmp;
+  const char *msg;
 
-  chdir(FILE_get_dir(COMP_project));
+  if (chdir(FILE_get_dir(COMP_project)))
+  {
+    msg = "Cannot change directory";
+    goto __ERROR;
+  }
 	
 	class_update_exported(class);
 	
 	fr = fopen(".info", "r");
-	
+
 	line = read_line(fr, &len);
 
 	for(;;)
@@ -631,5 +636,10 @@ void CLASS_export(void)
 		fclose(fr);
 	
 	close_file_and_rename(fw, ".info#", ".info");
+	return;
+	
+__ERROR:
+
+  THROW("Cannot create class information: &1: &2", msg, strerror(errno));
 }
 

@@ -26,7 +26,6 @@
 #define __MAIN_C
 
 #include "gambas.h"
-#include "gb_common.h"
 #include "main.h"
 
 #include <GL/gl.h>
@@ -36,6 +35,7 @@
 #include "GLU.h"
 
 GB_INTERFACE GB EXPORT;
+IMAGE_INTERFACE IMAGE EXPORT;
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {
@@ -54,13 +54,34 @@ int IMAGE_get_pixel_format(GB_IMG *image)
 	// is it good ?
 	else if ((image->format == GB_IMAGE_BGRA) || (image->format == GB_IMAGE_BGRX))
 		return GL_BGRA;
-	else // BM: what to do then ??
-		return GL_RGBA;
+	else if (image->format == GB_IMAGE_RGB)
+		return GL_RGB;
+	else if (image->format == GB_IMAGE_BGR)
+		return GL_BGR;
+	else
+		return 0;
+}
+
+bool IMAGE_get(GB_OBJECT *arg, GB_IMG **img, int *format)
+{
+	*img = arg->value;
+	
+	if (GB.CheckObject(*img))
+		return TRUE;
+		
+	*format = IMAGE_get_pixel_format(*img);
+	if (!*format)
+	{
+		IMAGE.Convert(*img, GB_IMAGE_RGBA);
+		*format = GL_RGBA;
+	}
+	
+	return FALSE;
 }
 
 int EXPORT GB_INIT(void)
 {
-	//GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
+	GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
 	
   return FALSE;
 }

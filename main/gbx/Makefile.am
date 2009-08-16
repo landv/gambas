@@ -1,4 +1,4 @@
-AM_CFLAGS += -I$(top_srcdir)/share @INTL_INC@ @CONV_INC@ @GBX_THREAD_INC@ @INCLTDL@ @FFI_INC@
+AM_CFLAGS += -I$(top_srcdir)/share @INTL_INC@ @CONV_INC@ @GBX_THREAD_INC@ @FFI_INC@
 
 bin_PROGRAMS = gbx3
 gblib_LTLIBRARIES = gb.la

@@ -154,15 +154,6 @@ BEGIN_PROPERTY(CIMAGE_picture)
 END_PROPERTY
 
 
-BEGIN_METHOD(CIMAGE_resize, GB_INTEGER width; GB_INTEGER height)
-
-  check_image(THIS);
-  take_image(THIS, PICTURE);
-	PICTURE->resize(VARG(width), VARG(height));
-
-END_METHOD
-
-
 BEGIN_METHOD(CIMAGE_load, GB_STRING path)
 
 	CIMAGE *image;
@@ -202,24 +193,6 @@ BEGIN_METHOD(CIMAGE_save, GB_STRING path; GB_INTEGER quality)
 END_METHOD
 
 
-BEGIN_METHOD(CIMAGE_copy, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
-
-	CIMAGE *img;
-	int x=0,y=0,w=PICTURE->width(),h=PICTURE->height();
-
-	if (!MISSING(x)) x=VARG(x);
-	if (!MISSING(y)) y=VARG(y);
-	if (!MISSING(w)) w=VARG(w);
-	if (!MISSING(h)) h=VARG(h);
-
-	check_image(THIS);
-
-  img = CIMAGE_create(PICTURE->copy(x, y, w, h));
-	GB.ReturnObject((void*)img);
-
-END_METHOD
-
-
 BEGIN_METHOD(CIMAGE_stretch, GB_INTEGER width; GB_INTEGER height; GB_BOOLEAN smooth)
 
 	CIMAGE *img;
@@ -227,28 +200,6 @@ BEGIN_METHOD(CIMAGE_stretch, GB_INTEGER width; GB_INTEGER height; GB_BOOLEAN smo
 
 	check_image(THIS);
   img = CIMAGE_create(PICTURE->stretch(VARG(width), VARG(height), smooth));
-	GB.ReturnObject((void*)img);
-
-END_METHOD
-
-
-BEGIN_METHOD_VOID(CIMAGE_flip)
-
-	CIMAGE *img;
-
-	check_image(THIS);
-  img = CIMAGE_create(PICTURE->flip());
-	GB.ReturnObject((void*)img);
-
-END_METHOD
-
-
-BEGIN_METHOD_VOID(CIMAGE_mirror)
-
-	CIMAGE *img;
-
-	check_image(THIS);
-  img = CIMAGE_create(PICTURE->mirror());
 	GB.ReturnObject((void*)img);
 
 END_METHOD
@@ -300,12 +251,8 @@ GB_DESC CImageDesc[] =
 
   GB_STATIC_METHOD("Load", "Image", CIMAGE_load, "(Path)s"),
   GB_METHOD("Save", 0, CIMAGE_save, "(Path)s[(Quality)i]"),
-  GB_METHOD("Resize", 0, CIMAGE_resize, "(Width)i(Height)i"),
 
-  GB_METHOD("Copy", "Image", CIMAGE_copy, "[(X)i(Y)i(Width)i(Height)i]"),
   GB_METHOD("Stretch", "Image", CIMAGE_stretch, "(Width)i(Height)i[(Smooth)b]"),
-  GB_METHOD("Flip", "Image", CIMAGE_flip, 0),
-  GB_METHOD("Mirror", "Image", CIMAGE_mirror, 0),
   GB_METHOD("Rotate", "Image", CIMAGE_rotate, "(Angle)f"),
 
   GB_METHOD("Draw", 0, CIMAGE_draw, "(Image)Image;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),

@@ -1,6 +1,7 @@
 dnl ---- Initialization
 
 AC_INIT(configure.ac)
+AC_CONFIG_MACRO_DIR([m4])
 GB_INIT(gb.compress.zlib)
 AC_PROG_LIBTOOL
 

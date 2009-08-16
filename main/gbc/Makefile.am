@@ -1,11 +1,11 @@
-AM_CFLAGS += -I$(top_srcdir)/share @INCLTDL@
+AM_CFLAGS += -I$(top_srcdir)/share
 
 bin_PROGRAMS = gbc3 gba3 gbi3
 
 gbc3_LDADD = @MATH_LIB@
 gbc3_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS)
 
-gbi3_LDADD = @LIBLTDL@
+gbi3_LDADD = @DL_LIB@
 gbi3_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS)
 
 gba3_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS)

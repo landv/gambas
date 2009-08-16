@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(38,2.6667,74.6667,103.6667)
+  MoveScaled(38,2.5714,76,102)
   Text = ("")
   Resizable = False
   { dwgVideo DrawingArea
@@ -15,129 +15,129 @@
     Delay = 10
   }
   { Panel2 Panel
-    MoveScaled(0,52,74.6667,52)
+    MoveScaled(0,52,75,49)
     { Panel7 Panel
-      MoveScaled(0,0,74.6667,32)
+      MoveScaled(1,0,74,27)
       Border = Border.Raised
       { Label1 Label
-        MoveScaled(5.1667,0,14.6667,4)
+        MoveScaled(2,1,14.5714,4)
         Text = ("Bright")
       }
       { Bright Slider
-        MoveScaled(5.1667,4,25.1667,2.6667)
+        MoveScaled(2,5,25.1429,2.5714)
         Enabled = False
         MaxValue = 65535
       }
       { Label2 Label
-        MoveScaled(5.1667,8,13.1667,4)
+        MoveScaled(2,8,13.1429,4)
         Text = ("Contrast")
       }
       { Contrast Slider
-        MoveScaled(5.1667,13.1667,25.1667,2.6667)
+        MoveScaled(2,12,25.1429,2.5714)
         Enabled = False
         MaxValue = 65535
       }
       { Whiteness Slider
-        MoveScaled(5.1667,22.6667,25.1667,2.6667)
+        MoveScaled(2,19,25.1429,2.5714)
         Enabled = False
         MaxValue = 65535
       }
       { Label3 Label
-        MoveScaled(5.1667,17.1667,14.6667,4)
+        MoveScaled(2,15,14.5714,4)
         Text = ("Whiteness")
       }
       { Label5 Label
-        MoveScaled(44,0,13.1667,4)
+        MoveScaled(42,1,13.1429,4)
         Text = ("Hue")
       }
       { Hue Slider
-        MoveScaled(44,4,25.1667,2.6667)
+        MoveScaled(42,5,25.1429,2.5714)
         Enabled = False
         MaxValue = 65535
       }
       { Label4 Label
-        MoveScaled(44,8,13.1667,4)
+        MoveScaled(42,8,13.1429,4)
         Text = ("Color")
       }
       { Colour Slider
-        MoveScaled(44,13.1667,25.1667,2.6667)
+        MoveScaled(42,12,25.1429,2.5714)
         Enabled = False
         MaxValue = 65535
       }
       { V2 RadioButton
-        MoveScaled(44,22.6667,14.6667,4)
+        MoveScaled(42,19,14.5714,4)
         Enabled = False
         Text = ("160x120")
       }
       { V4 RadioButton
-        MoveScaled(58.6667,18.6667,14.6667,4)
+        MoveScaled(57,16,14.5714,4)
         Enabled = False
         Text = ("320x240")
         Value = True
       }
       { V3 RadioButton
-        MoveScaled(44,26.6667,14.6667,4)
+        MoveScaled(42,22,14.5714,4)
         Enabled = False
         Text = ("176x144")
       }
       { V5 RadioButton
-        MoveScaled(58.6667,22.6667,14.6667,4)
+        MoveScaled(57,19,14.5714,4)
         Enabled = False
         Text = ("352x288")
       }
       { V1 RadioButton
-        MoveScaled(44,18.6667,14.6667,4)
+        MoveScaled(42,16,14.5714,4)
         Enabled = False
         Text = ("128x96")
       }
       { V6 RadioButton
-        MoveScaled(58.6667,26.6667,14.6667,4)
+        MoveScaled(57,22,14.5714,4)
         Enabled = False
         Text = ("640x480")
       }
     }
     { Panel3 Panel
-      MoveScaled(0,30.6667,74.6667,13.1667)
+      MoveScaled(1,28,74,13)
       Border = Border.Raised
       { LblFreq Label
-        MoveScaled(1.1667,1.1667,36,4)
+        MoveScaled(1.1429,1.1429,36,4)
         Text = ("Tuner frequency:")
       }
       { FreqUP Button
-        MoveScaled(1.1667,5.1667,6.6667,5.1667)
+        MoveScaled(1.1429,5.1429,6.5714,5.1429)
         Enabled = False
         Text = ("+")
       }
       { FreqDown Button
-        MoveScaled(9.1667,5.1667,6.6667,5.1667)
+        MoveScaled(9.1429,5.1429,6.5714,5.1429)
         Enabled = False
         Text = ("-")
       }
       { Button2 Button
-        MoveScaled(42.6667,6.6667,29.1667,5.1667)
+        MoveScaled(44,7,29.1429,5.1429)
         Enabled = False
         Text = ("Device Information")
       }
       { BtnTakeShot Button
-        MoveScaled(42.6667,1.1667,29.1667,5.1667)
+        MoveScaled(44,1,29.1429,5.1429)
         Enabled = False
         Text = ("Take a shot")
       }
     }
     { Panel1 Panel
-      MoveScaled(0,44,74.6667,6.6667)
+      MoveScaled(1,42,74,7)
       Border = Border.Raised
       { Label6 Label
-        MoveScaled(1.1667,1.1667,10.6667,4)
+        MoveScaled(1.1429,1.1429,10.5714,4)
         Text = ("Device:")
       }
       { TxtDevice TextBox
-        MoveScaled(13.1667,0,30.6667,5.1667)
+        MoveScaled(11,1,32,5)
         Expand = True
         Text = ("/dev/video")
       }
       { Button1 Button
-        MoveScaled(45.1667,0,26.6667,6.6667)
+        MoveScaled(44,1,29,5)
         Text = ("Capture")
       }
     }

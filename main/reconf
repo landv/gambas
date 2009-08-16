@@ -1,10 +1,1 @@
-#!/bin/sh
-
-rm -f config.cache
-rm -f acconfig.cache
-
-autoreconf --no-recursive $@
-
-cd libltdl
-
-autoreconf --no-recursive $@
+../reconf

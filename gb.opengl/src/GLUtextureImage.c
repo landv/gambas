@@ -25,18 +25,20 @@
 
 #define __GLUTEXTUREIMAGE_C
 
-#include "gambas.h"
-#include "gb_common.h"
 #include "main.h"
 
 #include <GL/glu.h>
 
 BEGIN_METHOD(GLUBUILD1DMIPMAPS, GB_OBJECT Image)
 
-	GB_IMG *image = VARG(Image);
-	int status = 0;
+	GB_IMG *image;
+	int format;
+	int status;
 
-	status = gluBuild1DMipmaps(GL_TEXTURE_1D, 4, image->width, IMAGE_get_pixel_format(image), GL_UNSIGNED_BYTE, image->data);
+	if (IMAGE_get(ARG(Image), &image, &format))
+		return;
+
+	status = gluBuild1DMipmaps(GL_TEXTURE_1D, 4, image->width, format, GL_UNSIGNED_BYTE, image->data);
 
 	GB.ReturnInteger(status);
 

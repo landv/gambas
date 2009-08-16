@@ -188,19 +188,27 @@ END_METHOD
 
 BEGIN_METHOD(GLTEXIMAGE1D, GB_OBJECT Image; GB_INTEGER Level; GB_INTEGER Border)
 
-	GB_IMG *image = VARG(Image);
+	GB_IMG *image;
+	int format;
+	
+	if (IMAGE_get(ARG(Image), &image, &format))
+		return;
 
 	glTexImage1D(GL_TEXTURE_1D, VARGOPT(Level, 0), 4, image->width,  VARGOPT(Border, 0),
-		IMAGE_get_pixel_format(image), GL_UNSIGNED_BYTE, image->data);
+		format, GL_UNSIGNED_BYTE, image->data);
 
 END_METHOD
 
 BEGIN_METHOD(GLTEXIMAGE2D, GB_OBJECT Image; GB_INTEGER Level; GB_INTEGER Border)
 
-	GB_IMG *image = VARG(Image);
+	GB_IMG *image;
+	int format;
+	
+	if (IMAGE_get(ARG(Image), &image, &format))
+		return;
 
 	glTexImage2D(GL_TEXTURE_2D, VARGOPT(Level, 0), 3, image->width, image->height,
-		 VARGOPT(Border, 0), IMAGE_get_pixel_format(image), GL_UNSIGNED_BYTE, image->data);
+		 VARGOPT(Border, 0), format, GL_UNSIGNED_BYTE, image->data);
 
 END_METHOD
 

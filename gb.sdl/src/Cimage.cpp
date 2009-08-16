@@ -125,7 +125,7 @@ GB_DESC CImage[] =
 
   GB_STATIC_METHOD("Load", "Image", CIMAGE_load, "(Path)s"),
 
-  GB_METHOD("Resize", NULL, CIMAGE_resize, "(Width)i(Height)i"),
+  //GB_METHOD("Resize", NULL, CIMAGE_resize, "(Width)i(Height)i"),
 
   GB_END_DECLARE
 };

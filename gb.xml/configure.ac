@@ -1,6 +1,7 @@
 dnl ---- configure.ac for gb.xml
 
 AC_INIT(configure.ac)
+AC_CONFIG_MACRO_DIR([m4])
 GB_INIT(gb.xml)
 AC_PROG_LIBTOOL
 

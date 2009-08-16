@@ -69,9 +69,13 @@ END_METHOD
 
 BEGIN_METHOD(GLDRAWPIXELS, GB_OBJECT Image)
 
-	GB_IMG *image = VARG(Image);
+	GB_IMG *image;
+	int format;
 	
-	glDrawPixels(image->width, image->height, IMAGE_get_pixel_format(image), GL_UNSIGNED_BYTE, image->data);
+	if (IMAGE_get(ARG(Image), &image, &format))
+		return;
+
+	glDrawPixels(image->width, image->height, format, GL_UNSIGNED_BYTE, image->data);
 
 END_METHOD
 

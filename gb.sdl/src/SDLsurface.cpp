@@ -309,3 +309,4 @@ void SDLsurface::Resize(int width, int height)
 	hSurface = tmpSurf;
 	hTextureStatus = TEXTURE_TO_LOAD;
 }
+

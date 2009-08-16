@@ -1,6 +1,7 @@
 dnl ---- configure.ac for gb.qt.kde
 
 AC_INIT(configure.ac)
+AC_CONFIG_MACRO_DIR([m4])
 GB_INIT(gb.qt.kde)
 AC_PROG_LIBTOOL
 

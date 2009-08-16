@@ -136,6 +136,39 @@ BEGIN_METHOD(CIMAGE_copy, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h
 
 END_METHOD
 
+BEGIN_METHOD(CIMAGE_resize, GB_INTEGER width; GB_INTEGER height)
+
+	GB_IMG tmp;
+  int w = VARG(width);
+  int h = VARG(height);
+
+	if (w < 0) w = THIS_IMAGE->width;
+	if (h < 0) h = THIS_IMAGE->height;
+
+	//IMAGE_convert(THIS_IMAGE, IMAGE_get_default_format());
+	//fprintf(stderr, "format = %d\n", THIS_IMAGE->format);
+	tmp.ob = THIS_IMAGE->ob;
+	IMAGE_create(&tmp, w, h, THIS_IMAGE->format);
+  IMAGE_bitblt(&tmp, 0, 0, THIS_IMAGE, 0, 0, w, h);
+
+  IMAGE_delete(THIS_IMAGE);
+  *THIS_IMAGE = tmp;
+
+END_METHOD
+
+BEGIN_METHOD(CIMAGE_mirror, GB_BOOLEAN horz; GB_BOOLEAN vert)
+
+  CIMAGE *image;
+
+  GB.New(POINTER(&image), GB.FindClass("Image"), NULL, NULL);
+
+	IMAGE_create(&image->image, THIS_IMAGE->width, THIS_IMAGE->height, THIS_IMAGE->format);
+  IMAGE_mirror(THIS_IMAGE, &image->image, VARG(horz), VARG(vert));
+
+  GB.ReturnObject(image);
+
+END_METHOD
+
 GB_DESC CImageDesc[] =
 {
   GB_DECLARE("Image", sizeof(CIMAGE)),
@@ -155,7 +188,7 @@ GB_DESC CImageDesc[] =
   GB_PROPERTY_READ("W", "i", CIMAGE_width),
   GB_PROPERTY_READ("H", "i", CIMAGE_height),
   GB_PROPERTY_READ("Depth", "i", CIMAGE_depth),
-  GB_PROPERTY_READ("Data", "i", CIMAGE_data),
+  GB_PROPERTY_READ("Data", "p", CIMAGE_data),
   
   GB_METHOD("Clear", NULL, CIMAGE_clear, NULL),
   GB_METHOD("Fill", NULL, CIMAGE_fill, "(Color)i"),
@@ -165,6 +198,11 @@ GB_DESC CImageDesc[] =
   GB_METHOD("Colorize", NULL, CIMAGE_colorize, "(Color)i"),
   
   GB_METHOD("Copy", "Image", CIMAGE_copy, "[(X)i(Y)i(Width)i(Height)i]"),
+  GB_METHOD("Resize", NULL, CIMAGE_resize, "(Width)i(Height)i"),
+
+  GB_METHOD("Mirror", "Image", CIMAGE_mirror, "(Horizontal)b(Vertical)b"),
+
+  //GB_METHOD("Draw", NULL, CIMAGE_draw, "(Image)Image;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
   
   GB_END_DECLARE
 };
