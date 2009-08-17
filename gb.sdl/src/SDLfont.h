@@ -26,18 +26,57 @@
 #include <X11/Xlib.h>
 #include <X11/Xft/Xft.h>
 
+#include "SDL_ttf.h"
+
 #include <vector>
 #include <string>
 
+#include "SDLsurface.h"
+
 typedef std::vector<std::string> StringList;
+
+enum _fonttype {
+	SDLTTF_font = 1,
+	X_font};
 
 class SDLfont
 {
 public:
-	SDLfont() {};
-	~SDLfont() {};
+	SDLfont();
+	SDLfont(char* fontfile);
+	~SDLfont();
 
 	static StringList GetFontList(void );
+
+	void SetFontName(char* name);
+	void SetFontSize(int size);
+	void SetFontUnderline(bool state);
+
+	const char* GetFontName(void );
+	int GetFontSize(void ) { return hfontsize; };
+	int GetFontAscent(void );
+	int GetFontDescent(void );
+
+	bool IsFontFixed(void );
+	bool IsFontUnderlined(void );
+
+	void SetBackColor(Uint32 color) { hBackColor = color; }
+	void SetForeColor(Uint32 color) { hForeColor = color; }
+
+	SDLsurface* RenderText(const char* text);
+
+private:
+	int hfonttype;
+	int hfontsize;
+	std::string hfontname;
+
+	/* SDL_TTF font */
+	TTF_Font *hSDLfont;
+        int hSDLfontstyle;
+
+	// colors (RRGGBBAA format)
+	Uint32 hBackColor;
+	Uint32 hForeColor;
 };
 
 #endif /* _SDLFONT_H */

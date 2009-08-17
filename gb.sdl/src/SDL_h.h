@@ -24,43 +24,16 @@
 #define __SDL_H_H
 
 #include "SDL.h"
+#include "SDL_syswm.h"
 #include "SDL_opengl.h"
-#include <GL/glx.h>
 #include <X11/cursorfont.h>
 
-#define hSurface (this->hSurfaceInfo)->Surface
-#define hTexture (this->hSurfaceInfo)->TextureIndex
-#define hTextureWidth (this->hSurfaceInfo)->TextureWidth
-#define hTextureHeight (this->hSurfaceInfo)->TextureHeight
-#define hTextureStatus (this->hSurfaceInfo)->TextureStatus
-#define hDrawable (this->hSurfaceInfo)->Drawable
-#define hContext (this->hSurfaceInfo)->Ctx
+#include "SDLapp.h"
+#include "SDLerror.h"
+#include "SDLdebug.h"
 
-// internal texture status values
-#define TEXTURE_OK		(0)
-#define TEXTURE_TO_LOAD		(1)
-
-/*
-   Surface and texture definitions
-
-   Surface : current graphic surface (SDLwindow or SDLsurface)
-   TextureIndex : index of the associated texture
-   TextureWidth/Height : ratio from the Surface (texture must be 2^n size !)
-   TextureStatus : status of the texture (reload/...);
-   Ctx : Keep track of the context for offscreen/onscreen rendering
-*/
-typedef struct {
-	SDL_Surface *Surface;
-	GLuint TextureIndex;
-	GLdouble TextureWidth, TextureHeight;
-	Uint8 TextureStatus;
-	GLXContext Ctx;
-	}
-	SDL_INFO;
-
-class SDL
+namespace SDL
 {
-public:
 	// constant values for drawing
 	// line
 	enum LineStyle {
@@ -104,7 +77,7 @@ public:
 		SplitHCursor = XC_sb_h_double_arrow,
 		SplitVCursor = XC_sb_v_double_arrow,
 		TextCursor = XC_xterm};
-};
+}
 
 #endif /* __SDL_H_H */
 

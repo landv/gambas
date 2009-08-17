@@ -65,21 +65,20 @@ static void take_image(CIMAGE *_object, SDLsurface *image)
 CIMAGE *CIMAGE_create(SDLsurface *image)
 {
 	CIMAGE *img;
-  static GB_CLASS class_id = NULL;
+	static GB_CLASS class_id = NULL;
 
-  if (!class_id)
-    class_id = GB.FindClass("Image");
+	if (!class_id)
+		class_id = GB.FindClass("Image");
 
-  GB.New(POINTER(&img), class_id, NULL, NULL);
+	GB.New(POINTER(&img), class_id, NULL, NULL);
   
-  if (image)
-  	take_image(img, image);
+	if (image)
+		take_image(img, image);
 	else
-  	take_image(img, new SDLsurface());
+		take_image(img, new SDLsurface());
 	
-  return img;
+	return img;
 }
-
 
 /***************************************************************************/
 
@@ -101,7 +100,7 @@ BEGIN_METHOD(CIMAGE_load, GB_STRING path)
 		GB.ReleaseFile(addr, len);
 	}
 	else
-		SDLerror::RaiseError("Unable to load image");
+		GB.Error("Unable to load image");
 
 END_METHOD
 
@@ -113,7 +112,6 @@ BEGIN_METHOD(CIMAGE_resize, GB_INTEGER width; GB_INTEGER height)
 
 END_METHOD
 
-
 /***************************************************************************/
 
 GB_DESC CImage[] =
@@ -122,8 +120,7 @@ GB_DESC CImage[] =
 
   GB_STATIC_METHOD("Load", "Image", CIMAGE_load, "(Path)s"),
 
-  //GB_METHOD("Resize", NULL, CIMAGE_resize, "(Width)i(Height)i"),
+  GB_METHOD("Resize", NULL, CIMAGE_resize, "(Width)i(Height)i"),
 
   GB_END_DECLARE
 };
-

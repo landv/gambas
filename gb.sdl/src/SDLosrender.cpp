@@ -1,12 +1,15 @@
 /***************************************************************************
 
-  timer.cpp
+  SDLosrender.cpp
 
-  (c) 2006 Laurent Carlier <lordheavy@users.sourceforge.net>
+  Gambas extension using SDL
+
+  (c) 2006-2008 Laurent Carlier <lordheavy@users.sourceforge.net>
+                Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
+  the Free Software Foundation; either version 1, or (at your option)
   any later version.
 
   This program is distributed in the hope that it will be useful,
@@ -20,35 +23,18 @@
 
 ***************************************************************************/
 
-#define __TIMER_C
+#include "SDLosrender.h"
+#include "SDLgl.h"
 
-#include "gambas.h"
-#include "main.h"
 
-#include "SDL.h"
+/****** FBO render ******/
 
-static Uint32 myTimer(Uint32 _interval, void *timer)
+bool FBOrender::Check(void )
 {
-	GB.RaiseTimer((GB_TIMER *) timer);
-	return _interval;
-}
+	bool hasFBO = false;
 
-/**************************************************************************
+	hasFBO = GL::CheckExtension("GL_EXT_framebuffer_object");
+	SDLdebug::Print("GL_EXT_framebuffer_object: %b",hasFBO);
 
-  Timer
-
-***************************************************************************/
-
-void startTimer (GB_TIMER *timer)
-{
-	timer->id = (long ) SDL_AddTimer((timer->delay/10)*10, myTimer, timer);
-}
-
-void stopTimer (GB_TIMER *timer)
-{
-	if (!timer->id)
-		return;
-		
-	SDL_RemoveTimer((SDL_TimerID ) timer->id);
-	timer->id = 0;
+	return (hasFBO);
 }

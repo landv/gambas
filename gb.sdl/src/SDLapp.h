@@ -23,7 +23,7 @@
 #ifndef __SDLAPP_H
 #define __SDLAPP_H
 
-#include "SDL_syswm.h"
+#include "SDL_h.h"
 
 class SDLapplication
 {

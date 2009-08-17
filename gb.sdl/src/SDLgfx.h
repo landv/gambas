@@ -24,15 +24,17 @@
 #define __SDLGFX_H
 
 #include "SDL_h.h"
-#include "SDLwindow.h"
-#include "SDLsurface.h"
+
+class SDLwindow;
+class SDLsurface;
+class SDLtexture;
 
 class SDLgfx 
 {
 public:
 	SDLgfx(SDLwindow* window);
 	SDLgfx(SDLsurface* surface);
-	~SDLgfx();
+	~SDLgfx() {};
 
 	void resetGfx(void );
 	Uint32 GetBackColor(void ) { return hBackColor; }
@@ -55,15 +57,12 @@ public:
 	void DrawEllipse(int x, int y, int w, int h);
 
 private:
-	SDL_INFO *hSurfaceInfo;
-	// Are we drawing on a window ?
-	bool hWindowDraw;
-	// We can know if we have defined the context
-	bool hContextDefined;
-	// Pixel buffer :-)
-	GLXPbuffer hPbuffer;
-	// texture Management
-	void ManageTexture(void);
+	// hTex is null if we are drawing on a window !
+	SDLtexture* hTex;
+
+	void SetContext(void );
+	SDL_Surface* GetDestSurface(void );
+
 	// colors (RRGGBBAA format)
 	Uint32 hBackColor;
 	Uint32 hForeColor;

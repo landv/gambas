@@ -9,24 +9,25 @@ gb_sdl_la_LDFLAGS = -module @LD_FLAGS@ @SDL_LDFLAGS@
 
 gb_sdl_la_SOURCES = \
  SDL_h.h \
- SDLcore.h SDLcore.cpp \
- SDLerror.h SDLerror.cpp \
- SDLsurface.h SDLsurface.cpp \
- SDLwindow.h SDLwindow.cpp \
- SDLgfx.h SDLgfx.cpp \
  SDLapp.h SDLapp.cpp \
- SDLcursor.h SDLcursor.cpp \
+ SDLcore.h SDLcore.cpp \
+ SDLdebug.h SDLdebug.cpp \
+ SDLerror.h SDLerror.cpp \
  SDLfont.h SDLfont.cpp \
- main.h main.cpp \
- timer.h timer.cpp \
- Cconst.h Cconst.cpp \
+ SDLgfx.h SDLgfx.cpp \
+ SDLgl.h SDLgl.cpp \
+ SDLcursor.h SDLcursor.cpp \
+ SDLosrender.h SDLosrender.cpp \
+ SDLsurface.h SDLsurface.cpp \
+ SDLtexture.h SDLtexture.cpp \
+ SDLwindow.h SDLwindow.cpp \
  Ccolor.h Ccolor.cpp \
- Cwindow.h Cwindow.cpp \
+ Cconst.h Cconst.cpp \
  Cdesktop.h Cdesktop.cpp \
- Cimage.h Cimage.cpp \
  Cdraw.h Cdraw.cpp \
+ Cfont.h Cfont.cpp \
+ Cimage.h Cimage.cpp \
  Ckey.h Ckey.cpp \
  Cmouse.h Cmouse.cpp \
- Cfont.h Cfont.cpp
-
-
+ Cwindow.h Cwindow.cpp \
+ main.h main.cpp

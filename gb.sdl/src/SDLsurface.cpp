@@ -24,6 +24,7 @@
 
 #include "SDLsurface.h"
 #include "SDLcore.h"
+#include "SDLtexture.h"
 
 #include "SDL_image.h"
 
@@ -32,45 +33,41 @@
 
 SDLsurface::SDLsurface()
 {
-	hSurfaceInfo = new SDL_INFO;
+	hTexture = new SDLtexture(this);
 	hSurface = 0;
-	hTexture = 0;
-	hTextureWidth = 0;
-	hTextureHeight = 0;
-	hContext = NULL;
 }
 
 SDLsurface::SDLsurface(char *data, int width, int height)
 {
-	hSurfaceInfo = new SDL_INFO;
-	hTexture = 0;
-	hTextureWidth = 0;
-	hTextureHeight = 0;
-	hContext = NULL;
+	hTexture = new SDLtexture(this);
 	
-	hSurface = SDL_CreateRGBSurfaceFrom(data, width, height, 32, width * sizeof(int), 
+	hSurface = SDL_CreateRGBSurfaceFrom((void *)data, width, height, 32, width * sizeof(int), 
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN /* OpenGL RGBA masks */
 			0x000000FF, 
 			0x0000FF00, 
 			0x00FF0000, 
-			0xFF000000);
+			0xFF000000
+#else
+			0xFF000000,
+			0x00FF0000, 
+			0x0000FF00, 
+			0x000000FF
+#endif
+			);
 
 	if (!hSurface)
 		SDLcore::RaiseError(SDL_GetError());
 	else
-		hTextureStatus = TEXTURE_TO_LOAD;
+		hTexture->ToLoad();
 }
 
 SDLsurface::SDLsurface(const SDLsurface& surf)
 {
+#define cpySurf surf.hSurface
 
-#define cpySurf surf.hSurfaceInfo->Surface
-
-	hSurfaceInfo = new SDL_INFO;
+	hTexture = new SDLtexture(this);
 	hSurface = 0;
-	hTexture = 0;
-	hTextureWidth = 0;
-	hTextureHeight = 0;
-	hContext = NULL;
+
 	Create(cpySurf->w, cpySurf->h, cpySurf->format->BitsPerPixel);
 
 	if (!hSurface->w || !hSurface->h)
@@ -97,9 +94,14 @@ SDLsurface::SDLsurface(const SDLsurface& surf)
 	}
 
 #undef cpySurf
-
 }
 
+SDLsurface::SDLsurface(SDL_Surface* surf)
+{
+	hTexture = new SDLtexture(this);
+	hSurface = surf;
+	hTexture->ToLoad();
+}
 
 SDLsurface::~SDLsurface()
 {
@@ -107,9 +109,7 @@ SDLsurface::~SDLsurface()
 		SDL_FreeSurface(hSurface);
 
 	if (hTexture)
-		glDeleteTextures(1, &hTexture);
-
-	delete hSurfaceInfo;
+		delete hTexture;
 }
 
 void SDLsurface::Create(int Width, int Height, int Depth)
@@ -137,7 +137,7 @@ void SDLsurface::Create(int Width, int Height, int Depth)
 
 		hSurface = pSurface;
 	}
-	hTextureStatus = TEXTURE_TO_LOAD;
+	hTexture->ToLoad();
 }
 
 void SDLsurface::LoadFromMem(char *addr, long len)
@@ -151,7 +151,7 @@ void SDLsurface::LoadFromMem(char *addr, long len)
 		SDL_FreeSurface(hSurface);
 
 	hSurface = surface;
-	hTextureStatus = TEXTURE_TO_LOAD;
+	hTexture->ToLoad();
 
 #ifdef DEBUGSURFACE
 	if (hSurface->flags & SDL_SRCALPHA)
@@ -251,7 +251,7 @@ void SDLsurface::ConvertDepth(int depth)
 	SDL_FreeSurface(hSurface);
 
 	hSurface = surface;
-	hTextureStatus = TEXTURE_TO_LOAD;
+	hTexture->ToLoad();
 }
 
 void SDLsurface::Fill(Uint32 color)
@@ -260,7 +260,7 @@ void SDLsurface::Fill(Uint32 color)
 		return;
 
 	SDL_FillRect(hSurface, NULL, color);
-	hTextureStatus = TEXTURE_TO_LOAD;
+	hTexture->ToLoad();
 }
 
 void SDLsurface::Resize(int width, int height)
@@ -304,6 +304,5 @@ void SDLsurface::Resize(int width, int height)
 
 	SDL_FreeSurface(hSurface);
 	hSurface = tmpSurf;
-	hTextureStatus = TEXTURE_TO_LOAD;
+	hTexture->ToLoad();
 }
-

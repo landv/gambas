@@ -25,15 +25,11 @@
 
 #include "gambas.h"
 #include "gb.image.h"
-#include "SDLerror.h"
-
-#define COMP_WARN	"gb.sdl warning: ",
-#define COMP_ERR	"gb.sdl error: ",
-#define COMP_INFO	"gb.sdl info: ",
 
 #ifndef __MAIN_CPP
 extern GB_INTERFACE GB;
 extern IMAGE_INTERFACE IMAGE;
+
 extern GB_CLASS CLASS_Window;
 extern GB_CLASS CLASS_Image;
 #endif

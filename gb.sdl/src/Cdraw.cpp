@@ -34,6 +34,7 @@ static CDRAW *draw_current = 0;
 
 #define THIS (draw_current)
 #define GFX (THIS->graphic)
+#define FONT (THIS->font)
 #define WINDOWID(object) ((CWINDOW *)object)->id
 #define IMAGEID(object) (CIMAGE_get((CIMAGE *)object))
 
@@ -162,6 +163,12 @@ BEGIN_METHOD(CDRAW_image, GB_OBJECT image; GB_INTEGER x; GB_INTEGER y; GB_INTEGE
 
 END_METHOD
 
+BEGIN_PROPERTY(CDRAW_font)
+
+	CHECK_GRAPHIC();
+
+END_PROPERTY
+
 BEGIN_PROPERTY(CDRAW_linestyle)
 
 	CHECK_GRAPHIC();
@@ -234,12 +241,11 @@ GB_DESC CDraw[] =
 
 /*
   GB_STATIC_METHOD("Text",     NULL, DRAWING_text,     "(text)s[(X)i(Y)i]"),
-
-  GB_STATIC_PROPERTY("Font",  "Font", DRAWING_font),
 */
 
   GB_STATIC_METHOD("Image", NULL, CDRAW_image, "(Image)Image;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
 
+  GB_STATIC_PROPERTY("Font",  "Font", CDRAW_font),
   GB_STATIC_PROPERTY("LineStyle", "i", CDRAW_linestyle),
   GB_STATIC_PROPERTY("LineWidth", "i", CDRAW_linewidth),
   GB_STATIC_PROPERTY("FillStyle", "i", CDRAW_fillstyle),

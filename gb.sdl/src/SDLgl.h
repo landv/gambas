@@ -1,12 +1,15 @@
 /***************************************************************************
 
-  timer.h
+  SDLgl.h
 
-  (c) 2006 Laurent Carlier <lordheavy@users.sourceforge.net>
+  Gambas extension using SDL
+
+  (c) 2006-2008 Laurent Carlier <lordheavy@users.sourceforge.net>
+                Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
+  the Free Software Foundation; either version 1, or (at your option)
   any later version.
 
   This program is distributed in the hope that it will be useful,
@@ -20,10 +23,16 @@
 
 ***************************************************************************/
 
-#ifndef __TIMER_H
-#define __TIMER_H
+#ifndef __SDLGL_H
+#define __SDLGL_H
 
-void startTimer (GB_TIMER *timer);
-void stopTimer (GB_TIMER *timer); 
+#include "SDL_h.h"
 
-#endif /* __TIMER_H */
+namespace GL {
+
+void init(void );
+bool CheckExtension(const char*);
+
+}
+#endif /* __SDLGL_H */
+

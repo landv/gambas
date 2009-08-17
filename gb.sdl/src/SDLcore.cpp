@@ -22,9 +22,11 @@
 
 #include "SDLcore.h"
 
+#include "SDLwindow.h"
+#include "SDLapp.h"
+
 const SDL_VideoInfo *SDLcore::hVideoInfo = NULL;
 SDLwindow *SDLcore::hWindow = NULL;
-SDLapplication *SDLcore::hApplication = NULL; 
 
 void SDLcore::RegisterWindow(SDLwindow *window)
 {
@@ -44,6 +46,6 @@ void SDLcore::Init(void)
 
 void SDLcore::RaiseError(std::string error)
 {
-	if (hApplication)
-		hApplication->ManageError(error.c_str());
+	if (SDLapp)
+		SDLapp->ManageError(error.c_str());
 }

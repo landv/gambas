@@ -21,8 +21,12 @@
 ***************************************************************************/
 
 #include "SDLgfx.h"
+#include "SDLerror.h"
 #include "SDLcore.h"
 #include "SDLapp.h"
+#include "SDLwindow.h"
+#include "SDLsurface.h"
+#include "SDLtexture.h"
 
 #include <iostream>
 #include <math.h>
@@ -31,7 +35,7 @@
 #define PI 3.14159265359
 
 // debug
-// #define DEBUGGFX
+// #define DEBUG_GFX
 
 // fill patterns
 static GLubyte VertPattern[] = {0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 
@@ -263,31 +267,20 @@ static void SetFillPattern(int value)
 
 SDLgfx::SDLgfx(SDLwindow *window)
 {
-	hSurfaceInfo = window->hSurfaceInfo;
-	hWindowDraw = true;
-	hContextDefined = false;
+	hTex = NULL;
 	resetGfx();
 }
 
 SDLgfx::SDLgfx(SDLsurface *surface)
 {
-	hSurfaceInfo = surface->hSurfaceInfo;
-	hWindowDraw = false;
-	hContextDefined = false;
+	if (!SDLcore::GetWindow())
+	{
+		SDLerror::RaiseError("Window need to be opened first !");
+		return;
+	}
+
+	hTex = surface->GetTexture();
 	resetGfx();
-}
-
-SDLgfx::~SDLgfx()
-{
-	if (hWindowDraw)
-		return;
-
-	if (!hContextDefined)
-		return;
-
-	Display *disp = SDLapp->X11appDisplay();
-	glXDestroyContext(disp, hContext);
-	glXDestroyPbuffer(disp, hPbuffer);
 }
 
 void SDLgfx::resetGfx(void)
@@ -297,7 +290,6 @@ void SDLgfx::resetGfx(void)
 	hLine = SDL::SolidLine;
 	hLineWidth = 1;
 	hFill = SDL::NoFill;
-	hTextureStatus = TEXTURE_TO_LOAD;
 }
 
 void SDLgfx::SetLineStyle(int style)
@@ -318,115 +310,85 @@ void SDLgfx::SetFillStyle(int style)
 
 void SDLgfx::Clear(void)
 {
-	if (!hSurface)
-		return;
+	SetContext();
 
-	Uint32 myColor = hBackColor;
-
-	if (hSurface->flags & SDL_OPENGL)
-	{
-		glClearColor((GLfloat((hBackColor >> 24) & 0xFF)/255), (GLfloat((hBackColor >> 16) & 0xFF)/255), (GLfloat((hBackColor >> 8) & 0xFF)/255), 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-	}
-	else
-	{
-		Uint32 FillColor = SDL_MapRGB(hSurface->format, ((hBackColor >> 24) & 0xFF), ((hBackColor >> 16) & 0xFF), ((hBackColor >> 8) & 0xFF));
-
-		if (SDL_FillRect(hSurface, NULL, FillColor)<0)
-			SDLcore::RaiseError(SDL_GetError());
-	}
-
-	hBackColor = myColor;
-	hTextureStatus = TEXTURE_TO_LOAD;
+	glClearColor((GLfloat((hBackColor >> 24) & 0xFF)/255), (GLfloat((hBackColor >> 16) & 0xFF)/255), (GLfloat((hBackColor >> 8) & 0xFF)/255), 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void SDLgfx::DrawPixel(int x, int y)
 {
-	if (!hSurface)
-		return;
+	SetContext();
 
 	glBegin(GL_POINTS);
 	glColor4f((GLfloat((hForeColor >> 24) & 0xFF)/ 255), (GLfloat((hForeColor >> 16) & 0xFF)/255), (GLfloat((hForeColor >> 8) & 0xFF)/255), (GLfloat(hForeColor  & 0xFF)/255));
 	glVertex2i(x, y);
 	glEnd();
-
-	hTextureStatus = TEXTURE_TO_LOAD;
 }
 
 void SDLgfx::DrawLine(int x1, int y1, int x2, int y2)
 {
-	if (!hSurface)
-		return;
-
 	if (!hLine) // SDLgfx::NoLine
 		return;
 
-	if (hSurface->flags & SDL_OPENGL)
-	{
-		glPushAttrib(GL_ALL_ATTRIB_BITS);
+	SetContext();
 
-		SetLinePattern(hLine);
-		glLineWidth(GLfloat(hLineWidth));
+	glPushAttrib(GL_ALL_ATTRIB_BITS);
 
-		glBegin(GL_LINES);
-		glColor4f((GLfloat((hForeColor >> 24) & 0xFF)/ 255), (GLfloat((hForeColor >> 16) & 0xFF)/255), (GLfloat((hForeColor >> 8) & 0xFF)/255), (GLfloat(hForeColor  & 0xFF)/255));
-		glVertex2i(x1, y1);
-		glVertex2i(x2, y2);
-		glEnd();
+	SetLinePattern(hLine);
+	glLineWidth(GLfloat(hLineWidth));
 
-		glPopAttrib();
-	}
+	glBegin(GL_LINES);
+	glColor4f((GLfloat((hForeColor >> 24) & 0xFF)/ 255), (GLfloat((hForeColor >> 16) & 0xFF)/255), (GLfloat((hForeColor >> 8) & 0xFF)/255), (GLfloat(hForeColor  & 0xFF)/255));
+	glVertex2i(x1, y1);
+	glVertex2i(x2, y2);
+	glEnd();
 
-	hTextureStatus = TEXTURE_TO_LOAD;
+	glPopAttrib();
 }
 
 void SDLgfx::DrawRect(int x, int y, int w, int h)
 {
-	if (!hSurface)
-		return;
-
 	if (!hFill && !hLine)
 		return;
 
-	if (hSurface->flags & SDL_OPENGL)
+	SetContext();
+
+	glPushAttrib(GL_ALL_ATTRIB_BITS);
+
+	SetFillPattern(hFill);
+
+	glColor4f((GLfloat((hForeColor >> 24) & 0xFF)/ 255), (GLfloat((hForeColor >> 16) & 0xFF)/255), (GLfloat((hForeColor >> 8) & 0xFF)/255), (GLfloat(hForeColor  & 0xFF)/255));
+	glBegin(GL_QUADS);
+	glVertex2i(x, y);
+	glVertex2i(x+w, y);
+	glVertex2i(x+w, y+h);
+	glVertex2i(x, y+h);
+	glEnd();
+
+	if (hFill>SDL::SolidFill)
 	{
-		glPushAttrib(GL_ALL_ATTRIB_BITS);
+		SetFillPattern(SDL::NoFill);
+		SetLinePattern(hLine);
+		glLineWidth(GLfloat(hLineWidth));
 
-		SetFillPattern(hFill);
-
-		glColor4f((GLfloat((hForeColor >> 24) & 0xFF)/ 255), (GLfloat((hForeColor >> 16) & 0xFF)/255), (GLfloat((hForeColor >> 8) & 0xFF)/255), (GLfloat(hForeColor  & 0xFF)/255));
 		glBegin(GL_QUADS);
 		glVertex2i(x, y);
 		glVertex2i(x+w, y);
 		glVertex2i(x+w, y+h);
 		glVertex2i(x, y+h);
 		glEnd();
-
-		if (hFill>SDL::SolidFill)
-		{
-			SetFillPattern(SDL::NoFill);
-			SetLinePattern(hLine);
-			glLineWidth(GLfloat(hLineWidth));
-
-			glBegin(GL_QUADS);
-			glVertex2i(x, y);
-			glVertex2i(x+w, y);
-			glVertex2i(x+w, y+h);
-			glVertex2i(x, y+h);
-			glEnd();
-		}
-
-		glPopAttrib();
 	}
+
+	glPopAttrib();
 }
 
 void SDLgfx::DrawEllipse(int x, int y, int w, int h)
 {
-	if (!hSurface)
-		return;
-
 	if (!hFill && !hLine)
 		return;
+
+	SetContext();
 
 	double angle;
 	double step = 2 * PI / 360;
@@ -465,39 +427,39 @@ void SDLgfx::DrawEllipse(int x, int y, int w, int h)
 void SDLgfx::Blit(SDLsurface *surface, int x, int y, int srcX, int srcY,
 		 int srcWidth, int srcHeight, int width, int height)
 {
-	if (!hSurface)
+	if ((srcX > surface->GetWidth()) || (srcY > surface->GetHeight()))
 		return;
 
-	// will keep current SDL_INFO struct
-	SDL_INFO *tmpInfo = hSurfaceInfo;
+	SDL_Surface *destsurf = GetDestSurface();
+
+	if ((x > destsurf->w) || (y > destsurf->h))
+		return;
+
+	SetContext();
+
+	texinfo info;
+
+	SDLtexture *texture = surface->GetTexture();
+	texture->GetAsTexture(&info);
+
 	int myWidth = 0, myHeight = 0;
 
-	// we will work with the SDLsurface SDL_INFO struct
-	hSurfaceInfo = surface->hSurfaceInfo;
-
-	if (!hSurface)
-		goto _endblit;
-
-	if ((srcX > hSurface->w) || (srcY > hSurface->h))
-		goto _endblit;
-
-	if ((srcHeight<0) || ((srcY + srcHeight) > hSurface->h))
-		myHeight = hSurface->h - srcY;
+	if ((srcHeight<0) || ((srcY + srcHeight) > surface->GetHeight()))
+		myHeight = surface->GetHeight() - srcY;
 	else
 		myHeight = srcHeight;
 
-	if ((srcWidth<0) || ((srcX + srcWidth) > hSurface->w))
-		myWidth = hSurface->w - srcX;
+	if ((srcWidth<0) || ((srcX + srcWidth) > surface->GetWidth()))
+		myWidth = surface->GetWidth() - srcX;
 	else
 		myWidth = srcWidth;
 
 	GLdouble myTexX, myTexY, myTexHeight, myTexWidth;
-	ManageTexture();
 
-	myTexX = ((srcX * hTextureWidth) / hSurface->w);
-	myTexY = ((srcY * hTextureHeight) / hSurface->h);
-	myTexWidth = (((srcX + myWidth)* hTextureWidth) / hSurface->w);
-	myTexHeight = (((srcY + myHeight)* hTextureHeight) / hSurface->h);
+	myTexX = ((srcX * info.Width) / surface->GetWidth());
+	myTexY = ((srcY * info.Height) / surface->GetHeight());
+	myTexWidth = (((srcX + myWidth)* info.Width) / surface->GetWidth());
+	myTexHeight = (((srcY + myHeight)* info.Height) / surface->GetHeight());
 
 	if (width != -1)
 		myWidth = width;
@@ -519,90 +481,21 @@ void SDLgfx::Blit(SDLsurface *surface, int x, int y, int srcX, int srcY,
 	glTexCoord2d(myTexWidth, myTexY);
 	glVertex2i(x + myWidth, y);
 	glEnd();
-
-_endblit:
-	hSurfaceInfo = tmpInfo;
 }
 
-static int power_of_two(int input)
+void SDLgfx::SetContext()
 {
-	int value = 1;
-
-	while ( value < input )
-		value <<= 1;
-
-	return value;
+	if (!hTex)
+		SDLcore::GetWindow()->Select();
+	else
+		hTex->Select();
 }
 
-void SDLgfx::ManageTexture()
+SDL_Surface *SDLgfx::GetDestSurface()
 {
-	if (!hTexture)
-	{
-		glGenTextures(1, &hTexture);
-		hTextureStatus = TEXTURE_TO_LOAD;
-	}
+	if (!hTex)
+		return SDLcore::GetWindow()->GetSdlSurface();
+	else
+		return hTex->GetSurface()->GetSdlSurface();
+}
 
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, hTexture);
-
-	if (hTextureStatus & TEXTURE_TO_LOAD)
-	{
-		#ifdef DEBUGGFX
-		std::cout << "Loading texture " << hTextureIndex << std::endl;
-		#endif
-
-		int w, h;
-		SDL_Surface *image;
-		Uint32 saved_flags;
-		Uint8  saved_alpha;
-
-		/* Use the surface width and height expanded to powers of 2 */
-		w = power_of_two(hSurface->w);
-		h = power_of_two(hSurface->h);
-		hTextureWidth = GLdouble(hSurface->w) / w;  /* Max X */
-		hTextureHeight = GLdouble(hSurface->h) / h;  /* Max Y */
-
-		image = SDL_CreateRGBSurface(SDL_SWSURFACE, w, h, 32,
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN /* OpenGL RGBA masks */
-			0x000000FF, 
-			0x0000FF00, 
-			0x00FF0000, 
-			0xFF000000
-#else
-			0xFF000000,
-			0x00FF0000, 
-			0x0000FF00, 
-			0x000000FF
-#endif
-			);
-
-		if ( image == NULL )
-			return;
-
-		/* Save the alpha blending attributes */
-		saved_flags = hSurface->flags & (SDL_SRCALPHA | SDL_RLEACCELOK);
-		saved_alpha = hSurface->format->alpha;
-
-		if ((saved_flags & SDL_SRCALPHA) == SDL_SRCALPHA)
-			SDL_SetAlpha(hSurface, 0, 0);
-
-		/* Copy the surface into the GL texture image */
-		SDL_BlitSurface(hSurface, NULL, image, NULL);
-
-		/* Restore the alpha blending attributes */
-		if ((saved_flags & SDL_SRCALPHA) == SDL_SRCALPHA )
-			SDL_SetAlpha(hSurface, saved_flags, saved_alpha);
-
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, 
-			GL_UNSIGNED_BYTE, image->pixels);
-		/* Use of CLAMP_TO_EDGE, without it give a black line around the texture
-		with DRI radeon drivers */
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		SDL_FreeSurface(image); /* No longer needed */
-
-		hTextureStatus = TEXTURE_OK;
-	}
-}	

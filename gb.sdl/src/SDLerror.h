@@ -25,10 +25,15 @@
 
 #include <string>
 
+#define COMP_WARN	"gb.sdl warning: ",
+#define COMP_ERR	"gb.sdl error: ",
+#define COMP_INFO	"gb.sdl info: ",
+
 class SDLerror
 {
 public:
 	static void RaiseError(std::string );
+//	static void RaiseWarning(std::string );
 };
 
 #endif /* __SDLERROR_H */

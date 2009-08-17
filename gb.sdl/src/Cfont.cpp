@@ -63,6 +63,69 @@ BEGIN_PROPERTY(CFONTS_count)
 
 END_PROPERTY
 
+BEGIN_METHOD(CFONT_load, GB_STRING path)
+
+	static GB_CLASS class_id = NULL;
+
+	if (!class_id)
+		class_id = GB.FindClass("Font");
+
+	CFONT *font;
+	GB.New(POINTER(&font), class_id, NULL, NULL);
+	font->font = new SDLfont(GB.RealFileName(STRING(path), LENGTH(path)));
+	GB.ReturnObject(font);
+
+END_METHOD
+
+BEGIN_METHOD_VOID(CFONT_free)
+
+	if (FONT)
+		delete (FONT);
+
+END_METHOD
+
+BEGIN_PROPERTY(CFONT_name)
+
+	if (READ_PROPERTY)
+		GB.ReturnNewZeroString(FONT->GetFontName());
+	else
+		FONT->SetFontName(GB.ToZeroString(PROP(GB_STRING)));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CFONT_size)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(FONT->GetFontSize());
+	else
+		FONT->SetFontSize(VPROP(GB_INTEGER));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CFONT_ascent)
+
+	GB.ReturnInteger(FONT->GetFontAscent());
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CFONT_descent)
+
+	GB.ReturnInteger(FONT->GetFontDescent());
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CFONT_fixed)
+
+	GB.ReturnBoolean(FONT->IsFontFixed());
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CFONT_scalable)
+
+	GB.ReturnBoolean(!FONT->IsFontFixed());
+
+END_PROPERTY
+
 GB_DESC CFonts[] =
 {
   GB_DECLARE("Fonts", 0),
@@ -74,19 +137,27 @@ GB_DESC CFonts[] =
   GB_END_DECLARE
 };
 
-/*
 GB_DESC CFont[] =
 {
   GB_DECLARE("Font", sizeof(CFONT)),
-  //GB_NOT_CREATABLE(),
 
-  GB_STATIC_METHOD("_init", NULL, CFONT_init, NULL),
-  GB_STATIC_METHOD("_exit", NULL, CFONT_exit, NULL),
-  GB_METHOD("_new", NULL, CFONT_new, "[(Font)s]"),
+  GB_STATIC_METHOD("Load", "Font", CFONT_load, "(Path)s"),
+
+//  GB_METHOD("_new", NULL, CFONT_new, "[(Font)s]"),
   GB_METHOD("_free", NULL, CFONT_free, NULL),
 
   GB_PROPERTY("Name", "s", CFONT_name),
-  GB_PROPERTY("Size", "f", CFONT_size),
+  GB_PROPERTY("Size", "i", CFONT_size),
+
+  GB_PROPERTY_READ("Ascent", "i", CFONT_ascent),
+  GB_PROPERTY_READ("Descent", "i", CFONT_descent),
+  GB_PROPERTY_READ("Fixed", "b", CFONT_fixed),
+  GB_PROPERTY_READ("Scalable", "b", CFONT_scalable),
+
+/*
+  GB_STATIC_METHOD("_init", NULL, CFONT_init, NULL),
+  GB_STATIC_METHOD("_exit", NULL, CFONT_exit, NULL),
+
   GB_PROPERTY("Grade", "i", CFONT_grade),
   GB_PROPERTY("Bold", "b", CFONT_bold),
   GB_PROPERTY("Italic", "b", CFONT_italic),
@@ -100,17 +171,8 @@ GB_DESC CFont[] =
 
   GB_STATIC_METHOD("_get", "Font", CFONT_get, "(Font)s"),
 
-  #ifdef USE_DPI
-  GB_STATIC_PROPERTY("Resolution", "i", CFONT_resolution),
-  #endif
-
-  GB_PROPERTY_READ("Ascent", "i", CFONT_ascent),
-  GB_PROPERTY_READ("Descent", "i", CFONT_descent),
-
-  GB_PROPERTY_READ("Fixed", "b", CFONT_fixed),
-  GB_PROPERTY_READ("Scalable", "b", CFONT_scalable),
   GB_PROPERTY_READ("Styles", "String[]", CFONT_styles),
-
+*/
   GB_END_DECLARE
 };
-*/
+

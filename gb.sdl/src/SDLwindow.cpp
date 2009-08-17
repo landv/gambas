@@ -20,47 +20,35 @@
 
 ***************************************************************************/
 
-#include "SDLcore.h"
 #include "SDLwindow.h"
+#include "SDLcore.h"
+#include "SDLtexture.h"
+#include "SDLgl.h"
 
 #include <iostream>
 
-SDLwindow::SDLwindow(bool openGL)
+SDLwindow::SDLwindow(void )
 {
-	hSurfaceInfo = new SDL_INFO;
-	hCursor = new SDLcursor();
 	hSurface = 0;
-	hTexture = 0;
-	hTextureWidth = 0;
-	hTextureHeight = 0;
-	hContext = NULL;
-	hOpenGL = openGL;
+	hCursor = new SDLcursor();
 	hX = hY = 0;
 	hWidth = 640;
 	hHeight = 480;
 	hFullScreen = false;
 	hResizable = false;
-	hTitle = (char *)"SDL application";
+	hTitle = (char *) "SDL application";
 }
 
 SDLwindow::~SDLwindow()
 {
 	this->Close();
-
 	delete hCursor;
-	// find the good way to manage windows surfaces !
-	delete hSurfaceInfo;
 }
 
 void SDLwindow::Show()
 {
-	Uint32 myFlags = (SDL_ASYNCBLIT | SDL_DOUBLEBUF);
-
-	if (hOpenGL)
-	{
-		myFlags = myFlags | SDL_OPENGL;
-		SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
-	}
+	Uint32 myFlags = (SDL_ASYNCBLIT | SDL_DOUBLEBUF | SDL_OPENGL);
+	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 
 	if (hFullScreen)
 		myFlags = myFlags | SDL_FULLSCREEN;
@@ -76,8 +64,10 @@ void SDLwindow::Show()
 		return;
 	}
 
-	/* Get this, needed for glXMakeCurrent() */
-	hContext = glXGetCurrentContext();
+	hCtx = glXGetCurrentContext();
+	hDrw = glXGetCurrentDrawable();
+	hDpy = glXGetCurrentDisplay();
+
 	/* Set our custom cursor */
 	hCursor->Show();
 
@@ -85,6 +75,9 @@ void SDLwindow::Show()
 
 	if (SDLcore::GetWindow() != this)
 		SDLcore::RegisterWindow(this);
+
+	GL::init();
+	SDLtexture::init();
 
 	Clear();
 	Open();
@@ -96,8 +89,6 @@ void SDLwindow::Close()
 	if (!hSurface)
 		return;
 
-	SDL_QuitSubSystem(SDL_INIT_VIDEO);
-	SDL_InitSubSystem(SDL_INIT_VIDEO);
 	SDLcore::RegisterWindow(NULL);
 	hSurface = NULL;
 }
@@ -107,10 +98,20 @@ void SDLwindow::Refresh()
 	if (!hSurface)
 		return;
 
-	if (hOpenGL)
-		SDL_GL_SwapBuffers();
-	else
-		SDL_Flip(hSurface);
+	SDL_GL_SwapBuffers();
+}
+
+void SDLwindow::Select(void )
+{
+	if (!hSurface)
+		return;
+
+	if ((glXGetCurrentContext()!=hCtx) && (glXGetCurrentDrawable()!=hDrw))
+	{
+		std::cerr << "glXMakeCurrent()" << std::endl;
+		glXMakeCurrent(hDpy, hDrw, hCtx);
+	}
+
 }
 
 void SDLwindow::Clear(Uint32 color)
@@ -118,7 +119,8 @@ void SDLwindow::Clear(Uint32 color)
 	if (!hSurface)
 		return;
 
-	glClearColor((GLfloat((color >> 24) & 0xFF)/255), (GLfloat((color >> 16) & 0xFF)/255), (GLfloat((color >> 8) & 0xFF)/255), 1.0f);
+	glClearColor((GLfloat((color >> 24) & 0xFF)/255), (GLfloat((color >> 16) & 0xFF)/255),
+		(GLfloat((color >> 8) & 0xFF)/255), 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 }
@@ -206,7 +208,7 @@ void SDLwindow::SetTitle(char *title)
 	else
 		SDL_WM_SetCaption(hTitle, hTitle);
 }
-
+/*
 void SDLwindow::SetCursor(SDLcursor *cursor)
 {
 	if (hCursor)
@@ -218,7 +220,7 @@ void SDLwindow::SetCursor(SDLcursor *cursor)
 	if (this->IsShown())
 		hCursor->Show();
 }
-
+*/
 bool SDLwindow::IsShown()
 {
 	if (!hSurface)

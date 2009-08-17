@@ -28,20 +28,19 @@
 #include "gambas.h"
 
 #ifndef __CFONT_CPP
-//extern GB_DESC CFont[];
+extern GB_DESC CFont[];
 extern GB_DESC CFonts[];
-
 #else
 
-//#define THIS OBJECT(CFONT)
-
-#endif
+#define THIS ((CFONT *)_object)
+#define FONT ((CFONT *)_object)->font
+#endif /* __CFONT_CPP */
 
 typedef
 	struct {
 		GB_BASE ob;
-		// QString *family;
+		SDLfont *font;
 	}
-	CFONTINFO;
+	CFONT;
 
-#endif
+#endif /* __CFONT_H */

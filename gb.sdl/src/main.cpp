@@ -32,20 +32,19 @@
 #include "SDLapp.h"
 #include "SDLcore.h"
 
-#include "timer.h"
-
+#include "Ccolor.h"
 #include "Cconst.h"
-#include "Cwindow.h"
-#include "Cimage.h"
-#include "Cdraw.h"
+#include "Cdesktop.h"
 #include "Ckey.h"
 #include "Cmouse.h"
-#include "Cdesktop.h"
-#include "Ccolor.h"
+#include "Cimage.h"
+#include "Cdraw.h"
+#include "Cwindow.h"
 #include "Cfont.h"
 
 GB_CLASS CLASS_Window;
 GB_CLASS CLASS_Image;
+GB_CLASS CLASS_Font;
 
 class mySDLapp : public SDLapplication
 {
@@ -59,7 +58,6 @@ public:
 mySDLapp *myApp = NULL;
 static void my_main(int *argc, char **argv);
 static int my_loop(void );
-//static int my_image(CIMAGE **pimage, GB_IMAGE_INFO *info);
 
 extern "C"
 {
@@ -68,16 +66,15 @@ extern "C"
 
 	GB_DESC *GB_CLASSES[] EXPORT =
 	{
+		CColor,
+		CLine, CFill,
+		CFonts, CFont,
 		CDesktop,
-		CWindow,
+		CKey,
+		CMouse,	CCursor,
 		CImage,
 		CDraw,
-		CKey,
-		CMouse, CCursor,
-		CLine,
-		CFill,
-		CColor,
-		CFonts,
+		CWindow,
 
 		NULL
 	};
@@ -88,10 +85,10 @@ extern "C"
 
 		GB.Hook(GB_HOOK_MAIN, (void *)my_main);
 		GB.Hook(GB_HOOK_LOOP, (void *)my_loop);
-		//GB.Hook(GB_HOOK_IMAGE, (void *)my_image);
 
 		CLASS_Window = GB.FindClass("Window");
 		CLASS_Image = GB.FindClass("Image");
+		CLASS_Font = GB.FindClass("Font");
 
 		return true;
 	}
@@ -129,15 +126,6 @@ void mySDLapp::ManageError(const char *myError)
 {
 	GB.Error(COMP_ERR myError);
 }
-#if 0
-static void my_timer(GB_TIMER *timer, bool on)
-{
-	if (on)
-		startTimer(timer);
-	else
-		stopTimer(timer);
-}
-#endif
 
 static void my_main(int *argc, char **argv)
 {
@@ -154,38 +142,3 @@ static int my_loop()
 
 	return 1;
 }
-
-#if 0
-static int my_image(CIMAGE **pimage, GB_IMAGE_INFO *info)
-{
-	CIMAGE *image = *pimage;
-
-	if (!image)
-	{
-		SDLsurface *img = new SDLsurface();
-		img->Create(info->width, info->height, 32); // format RGBA
-
-		if (info->data)
-			GB.Image.Convert(img->GetData(), GB_IMAGE_RGBA, info->data, info->format, info->width, info->height);
-
-		GB.New(POINTER(&image), CLASS_Image, NULL, NULL);
-
-		if (image->id)
-			delete image->id;
-
-		image->id = img;
-		*pimage = image;
-	}
-	else
-	{
-		info->width = image->id->GetWidth();
-		info->height = image->id->GetHeight();
-		info->data = image->id->GetData();
-		info->format = GB_IMAGE_RGBA;
-	}
-
-	return 0;
-}
-#endif
-
-

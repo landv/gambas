@@ -25,34 +25,43 @@
 
 #include "SDL_h.h"
 
+class SDLtexture;
+
 class SDLsurface
 {
-	friend class SDLgfx;
 public:
 	SDLsurface();
 	SDLsurface(const SDLsurface& surf);
-	SDLsurface(char *data, int width, int height);
+	SDLsurface(SDL_Surface* surf); /* SDLsurface will free surf automaticly */
 	~SDLsurface();
 
 	void Create(int Width, int Height, int Depth = 0);
 	void LoadFromMem(char* addr, long len);
 
 	int GetWidth(void );
-	int width(void) { return GetWidth(); }
 	int GetHeight(void );
-	int height(void) { return GetHeight(); }
 	int GetDepth(void );
 	void* GetData(void );
-	unsigned char *data(void) { return (unsigned char *)GetData(); }
+
+	SDL_Surface* GetSdlSurface(void ) { return hSurface; }
+	SDLtexture* GetTexture(void ) { return hTexture; };
 
 	void SetAlphaBuffer(bool );
 	void ConvertDepth(int );
 	void Fill(Uint32 color = 0);
 	void Resize(int width, int height);
 
-	bool IsNull(void ) { return (hSurfaceInfo->Surface != NULL); };
+	bool IsNull(void ) { return (hSurface ? true: false); };
+
+	// Compatibility //
+	SDLsurface(char *data, int width, int height);
+	int width(void) { return GetWidth(); }
+	int height(void) { return GetHeight(); }
+	unsigned char *data(void) { return (unsigned char *)GetData(); }
+
 private:
-	SDL_INFO *hSurfaceInfo;
+	SDLtexture *hTexture;
+	SDL_Surface *hSurface;
 };
 
 #endif /* __SDLSURFACE_H */

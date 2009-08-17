@@ -1,12 +1,15 @@
 /***************************************************************************
 
-  Cdraw.h
+  SDLgl.cpp
 
-  (c) 2006 Laurent Carlier <lordheavy@users.sourceforge.net>
+  Gambas extension using SDL
+
+  (c) 2006-2008 Laurent Carlier <lordheavy@users.sourceforge.net>
+                Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
+  the Free Software Foundation; either version 1, or (at your option)
   any later version.
 
   This program is distributed in the hope that it will be useful,
@@ -20,27 +23,22 @@
 
 ***************************************************************************/
 
-#ifndef __CDRAW_H
-#define __CDRAW_H
+#include "SDLgl.h"
 
-#include "main.h"
-#include "SDLgfx.h"
-#include "Cfont.h"
+#include <string>
+#include <iostream>
 
-typedef
-	struct {
-		void *device;
-		SDLgfx *graphic;
-		CFONT *font;
-	}
-	CDRAW;
+std::string Extensions = "";
 
-#ifndef __CDRAW_CPP
-extern GB_DESC CDraw[];
-#endif /* __CDRAW_CPP */
+void GL::init()
+{
+	Extensions = reinterpret_cast<const char*> (glGetString(GL_EXTENSIONS));
+}
 
-void DRAW_begin(void *device);
-void DRAW_end(void );
-
-#endif /* __CDRAW_H */
-
+bool GL::CheckExtension(const char *extension)
+{
+	if (Extensions.find(extension) != std::string::npos)
+		return true;
+	else
+		return false;
+}

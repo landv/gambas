@@ -29,7 +29,6 @@
 typedef
 	struct {
 		GB_IMG img;
-		//SDLsurface *id;
 	}
 	CIMAGE;
 
@@ -46,4 +45,3 @@ extern GB_DESC CImage[];
 SDLsurface *CIMAGE_get(CIMAGE *);
 
 #endif /* __CIMAGE_H */
-

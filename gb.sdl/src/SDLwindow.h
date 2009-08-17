@@ -24,19 +24,20 @@
 #define __SDLWINDOW_H
 
 #include "SDL_h.h"
-#include "SDLapp.h"
 #include "SDLcursor.h"
+
+#include <GL/glx.h>
 
 class SDLwindow
 {
-	friend class SDLgfx;
 public:
-	SDLwindow(bool openGL = true);
+	SDLwindow(void );
 	virtual ~SDLwindow();
 
 	void Show(void );
 	void Close(void );
 	void Refresh();
+	void Select(void );
 	void Clear(Uint32 color = 0);
 	Uint32 Id(void );
 
@@ -44,7 +45,8 @@ public:
 	int GetHeight(void );
 	int GetDepth(void );
 	char* GetTitle(void ) { return (hTitle); };
-	SDLcursor* GetCursor(void ) { return (hCursor); }
+	SDL_Surface* GetSdlSurface(void ) { return (hSurface); };
+//	SDLcursor* GetCursor(void ) { return (hCursor); }
 
 	void SetX(int );
 	void SetY(int );
@@ -53,10 +55,9 @@ public:
 	void SetFullScreen(bool );
 	void SetResizable(bool );
 	void SetTitle(char* );
-	void SetCursor(SDLcursor *cursor);
+//	void SetCursor(SDLcursor *cursor);
 
 	bool IsFullScreen(void ) {return (hFullScreen); };
-	bool IsOpenGL(void ) { return (hOpenGL); };
 	bool IsResizable(void ) { return (hResizable); };
 	bool IsShown(void );
 
@@ -74,14 +75,17 @@ public:
 	virtual void Open(void ) =0;
 
 private:
-	SDL_INFO *hSurfaceInfo;
+	SDL_Surface *hSurface;
 	SDLcursor *hCursor;
 	int hX, hY;
 	int hWidth, hHeight;
-	bool hOpenGL;
 	bool hFullScreen;
 	bool hResizable;
 	char* hTitle;
+	// context and drawable (for GlxMakeCurrent)
+	GLXContext hCtx;
+	GLXDrawable hDrw;
+	Display *hDpy;
 };
 
 #endif /* __SDLWINDOW_H */

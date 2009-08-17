@@ -26,6 +26,7 @@
 #include "gambas.h"
 #include "main.h"
 #include "SDLwindow.h"
+#include "Cfont.h"
 
 class myWin : public SDLwindow
 {
@@ -53,6 +54,8 @@ private:
 typedef
 	struct {
 		GB_BASE ob;
+		CFONT *font;
+
 		myWin *id;
 		bool openGL;
 		bool tracking;

@@ -148,12 +148,12 @@ BEGIN_PROPERTY(CWINDOW_border)
 END_PROPERTY
 
 BEGIN_PROPERTY(CWINDOW_mouse)
-
+/*
 	if (READ_PROPERTY)
 		GB.ReturnInteger(WINDOWID->GetCursor()->GetShape());
 	else
 		WINDOWID->GetCursor()->SetShape(VPROP(GB_INTEGER));
-
+*/
 END_PROPERTY
 
 BEGIN_PROPERTY(CWINDOW_tracking)
@@ -171,9 +171,11 @@ BEGIN_PROPERTY(CWINDOW_cursor)
 		GB.ReturnObject(0);
 	else
 	{
+/*
 		CCURSOR *curs = (CCURSOR *)VPROP(GB_OBJECT);
 		WINDOWID->SetCursor(curs->cursor);
 		return;
+*/
 	}
 
 END_PROPERTY
@@ -330,7 +332,7 @@ void myWin::Update(void)
 
 	DRAW_begin(hWindow);
 	bool cancel = GB.Raise(hWindow, EVENT_Refresh, 0);
- 	DRAW_end();
+	DRAW_end();
 
 	// user doesn't want to refresh
 	if (cancel)
@@ -390,7 +392,9 @@ void myWin::Open(void)
 void myWin::KeyEvent(SDL_KeyboardEvent *keyEvent, int eventType)
 {
 	CKEY_info.valid = true;
+      SDLapp->LockX11();
 	CKEY_info.code = XKeycodeToKeysym(SDLapp->X11appDisplay(), keyEvent->keysym.scancode, 0);
+      SDLapp->UnlockX11();
 	CKEY_info.state = keyEvent->keysym.mod;
 
 	if (eventType == SDL_KEYDOWN)

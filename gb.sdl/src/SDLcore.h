@@ -23,13 +23,12 @@
 #ifndef __SDLCORE_H
 #define __SDLCORE_H
 
-#include "SDL.h"
-#include "SDL_syswm.h"
-
-#include "SDLwindow.h"
-#include "SDLapp.h"
+#include "SDL_h.h"
 
 #include <string>
+
+class SDLwindow;
+class SDLapplication;
 
 class SDLcore
 {
@@ -39,15 +38,11 @@ public:
 	// this window will receive the events
 	static void RegisterWindow(SDLwindow* );
 	static SDLwindow* GetWindow(void ) { return (hWindow); };
-	// for error !
-	static void RegisterApplication(SDLapplication* app) { hApplication = app; };
 	static void RaiseError(std::string );
 private:
 	static const SDL_VideoInfo* hVideoInfo;
 	// shown window (for events)
 	static SDLwindow* hWindow;
-	// error propagation
-	static SDLapplication* hApplication;
 };
 
 #endif /* __SDLCORE_H */

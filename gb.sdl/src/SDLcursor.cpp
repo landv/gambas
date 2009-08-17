@@ -76,12 +76,15 @@ void SDLcursor::Show()
 	if (shape == SDL::DefaultCursor)
 		shape = SDL::ArrowCursor;
 
+      SDLapp->LockX11();
 	if (shape != SDL::CustomCursor)
 		cursor = XcursorShapeLoadCursor(myDisplay, shape);
 	else
 		cursor = XcursorImageLoadCursor(myDisplay, hImgCursor);
 
 	XDefineCursor(myDisplay, SDLapp->CurrentWin(), cursor);
+      SDLapp->UnlockX11();
+
 }
 
 void SDLcursor::SetShape(int shape)

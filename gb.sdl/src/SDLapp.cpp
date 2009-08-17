@@ -23,9 +23,8 @@
 #include "SDLapp.h"
 
 #include "SDLcore.h"
-
-#include "SDL.h"
-#include "SDL_syswm.h"
+#include "SDLwindow.h"
+#include "SDL_ttf.h"
 
 #include <iostream>
 #include <string>
@@ -65,8 +64,14 @@ SDLapplication::SDLapplication(int &argc, char **argv)
 		}
 	}
 
+	if (TTF_Init()<0)
+	{
+		sMsg =+ TTF_GetError();
+		goto _error;
+	}
+
 	SDLcore::Init();
-	SDLcore::RegisterApplication(this);
+	SDLdebug::Init();
 	SDLapp = this;
 
 	return;
@@ -86,6 +91,7 @@ SDLapplication::~SDLapplication()
 		return;
 	}
 
+	TTF_Quit();
 	Uint32 sysInit = SDL_WasInit(SDL_INIT_EVERYTHING);
 
 	// if audio is defined, gb.sdl.audio component still not closed !
@@ -131,7 +137,7 @@ void SDLapplication::ManageEvents()
 				SDLcore::GetWindow()->Resize();
 
 				 // take care if window is closed during resize
-				if (this->HaveWindows() && !SDLcore::GetWindow()->IsOpenGL())
+				if (this->HaveWindows())
 					SDLcore::GetWindow()->Show();
 				break;
 			case SDL_KEYDOWN:
@@ -228,3 +234,4 @@ void SDLapplication::UnlockX11()
 	SDLapplication::LockX11Count = 0;
 	info.info.x11.unlock_func();
 }
+
