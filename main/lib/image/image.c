@@ -886,3 +886,53 @@ void IMAGE_mirror(GB_IMG *src, GB_IMG *dst, bool horizontal, bool vertical)
   }
 }
 
+void IMAGE_transform(GB_IMG *dst, GB_IMG *src, double sx, double sy, double sdx, double sdy)
+{
+	int x, y;
+	double ssx;
+	double ssy;
+	uint col, col2;
+	int ix, iy;
+	uchar r, g, b, a;
+	
+	uint *dp = (uint *)dst->data;
+	
+	for (y = 0; y < dst->height; y++)
+	{
+		ssx = sx;
+		ssy = sy;
+		for (x = 0; x < dst->width; x++)
+		{
+			ix = sx;
+			iy = sy;
+			if (is_valid(src, ix, iy))
+				*dp = BGRA_from_format(*((uint *)src->data + iy * src->width + ix), src->format);
+			else
+				*dp = 0;
+			sx += sdx;
+			sy += sdy;
+			dp++;
+		}
+		sx = ssx - sdy;
+		sy = ssy + sdx;
+	}
+	
+	return;
+	
+	dp = (uint *)dst->data;
+	
+	for (y = 0; y < dst->height; y++)
+	{
+		for (x = 0; x < (dst->width - 1); x++)
+		{
+			col = dp[0]; //BGRA_from_format(dp[0], dst->format);
+			col2 = dp[1]; //BGRA_from_format(dp[1], dst->format);
+			r = (RED(col) + ((RED(col) + RED(col2)) >> 1)) >> 1;
+			g = (GREEN(col) + ((GREEN(col) + GREEN(col2)) >> 1)) >> 1;
+			b = (BLUE(col) + ((BLUE(col) + BLUE(col2)) >> 1)) >> 1;
+			a = (ALPHA(col) + ((ALPHA(col) + ALPHA(col2)) >> 1)) >> 1;
+			*dp++ = RGBA(r, g, b, a); //BGRA_to_format(RGBA(r, g, b, a), dst->format);
+		}
+		dp++;
+	}
+}

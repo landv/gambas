@@ -48,7 +48,7 @@
 
 #include "debug.h"
 
-/*#define DEBUG_ME*/
+//#define DEBUG_ME
 
 DEBUG_INFO DEBUG_info = { 0 };
 GB_DEBUG_INTERFACE *DEBUG_interface;
@@ -67,9 +67,13 @@ static bool _fifo;
 
 #define EXEC_current (*(STACK_CONTEXT *)GB_DEBUG.GetExec())
 
-
+#ifdef DEBUG_ME
+#define WARNING(_msg, ...) fprintf(stderr, "W\t" _msg "\n", ##__VA_ARGS__)
+#define INFO(_msg, ...) fprintf(stderr, "I\t" _msg "\n", ##__VA_ARGS__)
+#else
 #define WARNING(_msg, ...) fprintf(_out, "W\t" _msg "\n", ##__VA_ARGS__)
 #define INFO(_msg, ...) fprintf(_out, "I\t" _msg "\n", ##__VA_ARGS__)
+#endif
 
 void DEBUG_break_on_next_line(void)
 {
@@ -387,6 +391,10 @@ void DEBUG_init_breakpoints(CLASS *class)
   int i;
   DEBUG_BREAK *brk;
 
+	#ifdef DEBUG_ME
+	fprintf(stderr, "DEBUG_init_breakpoints: %p %s\n", class, class->name);
+	#endif
+	
   for (i = 0; i < GB.Count(Breakpoint); i++)
   {
   	brk = &Breakpoint[i];

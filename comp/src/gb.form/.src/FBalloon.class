@@ -28,7 +28,7 @@ Private Sub DrawRoundRect(X As Integer, Y As Integer, W As Integer, H As Integer
   Draw.Image(hRound, X, Y)
   hRound = hRound.Mirror(True, False)
   Draw.Image(hRound, X + W - ROUND_SIZE, Y)
-  hRound = hRound.Mirror()
+  hRound = hRound.Mirror(False, True)
   Draw.Image(hRound, X + W - ROUND_SIZE, Y + H - ROUND_SIZE)
   hRound = hRound.Mirror(True, False)
   Draw.Image(hRound, X, Y + H - ROUND_SIZE)

@@ -52,5 +52,6 @@ void IMAGE_bitblt(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int 
 void IMAGE_compose(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int sw, int sh);
 void IMAGE_colorize(GB_IMG *img, GB_COLOR color);
 void IMAGE_mirror(GB_IMG *src, GB_IMG *dst, bool horizontal, bool vertical);
+void IMAGE_transform(GB_IMG *dst, GB_IMG *src, double sx, double sy, double sdx, double sdy);
 
 #endif

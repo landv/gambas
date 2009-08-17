@@ -914,7 +914,11 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
 
       Else If IsConnectionPath(sDir &/ sFile) Then
 
-        If sExt = "connection" Then sFile = File.BaseName(sFile)
+        If Libraries.Exist("gb.db") And If sExt = "connection" Then
+          sFile = File.BaseName(sFile)
+        Else
+          bIgnore = True
+        Endif
 
       Endif
       

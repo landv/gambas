@@ -169,6 +169,34 @@ BEGIN_METHOD(CIMAGE_mirror, GB_BOOLEAN horz; GB_BOOLEAN vert)
 
 END_METHOD
 
+BEGIN_METHOD(CIMAGE_transform, GB_FLOAT sx; GB_FLOAT sy; GB_FLOAT dx; GB_FLOAT dy)
+
+	CIMAGE *image;
+	int w, h;
+	double dx = VARG(dx);
+	double dy = VARG(dy);
+	double f, s;
+	
+  GB.New(POINTER(&image), GB.FindClass("Image"), NULL, NULL);
+	GB.ReturnObject(image);
+
+	f = fabs(dx);
+	if (f > fabs(dy))
+		f = fabs(dy);
+	
+	s = 1 / sqrt(dx * dx + dy * dy);
+	
+	w = (int)(THIS_IMAGE->width * (1.0 + f) * s + 0.5);
+	h = (int)(THIS_IMAGE->height * (1.0 + f) * s + 0.5);
+	
+	if (!w || !h)
+		return;
+	
+	IMAGE_create(&image->image, w, h, THIS_IMAGE->format);
+	IMAGE_transform(&image->image, THIS_IMAGE, VARG(sx), VARG(sy), VARG(dx), VARG(dy));
+
+END_METHOD
+
 GB_DESC CImageDesc[] =
 {
   GB_DECLARE("Image", sizeof(CIMAGE)),
@@ -201,6 +229,8 @@ GB_DESC CImageDesc[] =
   GB_METHOD("Resize", NULL, CIMAGE_resize, "(Width)i(Height)i"),
 
   GB_METHOD("Mirror", "Image", CIMAGE_mirror, "(Horizontal)b(Vertical)b"),
+	
+	GB_METHOD("Transform", "Image", CIMAGE_transform, "(SrcX)f(SrcY)f(DepX)f(DepY)f"),
 
   //GB_METHOD("Draw", NULL, CIMAGE_draw, "(Image)Image;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
   

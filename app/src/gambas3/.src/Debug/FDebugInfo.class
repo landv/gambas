@@ -11,10 +11,8 @@ Private Const TAB_BREAK As Integer = 5
 
 Private $cRefresh As New Collection
 
-Public Sub Form_Open()
-
-  ReadConfig
-
+Public Sub _new()
+  
   With cvwLocal
     .Columns.Count = 2
     .Columns[0].Width = 192
@@ -35,6 +33,20 @@ Public Sub Form_Open()
     .Columns[0].Text = ("Expression")
     .Columns[1].Text = ("Value")
   End With
+  
+  With cvwBreak
+    .Columns.Count = 3
+    .Columns[0].Text = ("Class")
+    .Columns[1].Text = ("Function")
+    .Columns[2].Text = ("Line")
+  End With
+  
+End
+
+
+Public Sub Form_Open()
+
+  ReadConfig
 
   FOutput.Load(panConsole)
   UpdateView
@@ -405,7 +417,7 @@ Public Sub ReadConfig()
   cvwObject.Font = cvwLocal.Font
   lstStack.Font = cvwLocal.Font
   cvwWatch.Font = cvwLocal.Font
-  lstBreak.Font = cvwLocal.Font
+  cvwBreak.Font = cvwLocal.Font
 
   For Each hButton In [btnClearBreak, btnKillAllWatch, btnKillWatch, btnRemoveBreak, btnShowME, btnWatch]
     hButton.AutoResize = False
@@ -418,50 +430,58 @@ End
 Public Sub AddBreakpoint(sName As String, sProc As String, iLine As Integer, bOn As Boolean)
   
   Dim sText As String
-  Dim iInd As Integer
+  Dim bExist As Boolean
 
-  sText = sName & "." & sProc & "." & CStr(iLine + 1)
-  iInd = lstBreak.Find(sText)
+  sText = sName & "." & sProc & "." & CStr(iLine)
+  bExist = cvwBreak.Exist(sText) 
   
   If bOn Then
-    If iInd < 0 Then
-      lstBreak.Add(sText)
+    If Not bExist Then
+      cvwBreak.Add(sText, sName)
+      cvwBreak.Item[1] = sProc
+      cvwBreak.Item[2] = iLine + 1
     Endif
   Else
-    If iInd >= 0 Then    
-      lstBreak.Remove(iInd)
+    If bExist Then
+      cvwBreak.Remove(sText)
     Endif 
   Endif
   
+  cvwBreak.Columns[0].Width = -1
+  cvwBreak.Columns[1].Width = -1
+
 End
 
 Public Sub btnRemoveBreak_Click()
 
   Dim aText As String[]
   Dim hEdit As FEditor
+  Dim sText As String
   
-  If lstBreak.Index < 0 Then Return
+  sText = cvwBreak.Key
+  If Not sText Then Return
   
-  aText = Scan(lstBreak.Text, "*.*.*")
-  Design.SetBreakpoint(aText[0], CInt(aText[2]) - 1, False)
+  aText = Scan(sText, "*.*.*")
+  Design.SetBreakpoint(aText[0], CInt(aText[2]), False)
 
 End
 
 Public Sub btnClearBreak_Click()
 
-  While lstBreak.Count
-    lstBreak.Index = 0
+  While cvwBreak.Count
+    cvwBreak.MoveFirst
+    cvwBreak.Item.Selected = True
     btnRemoveBreak_Click
   Wend  
 
 End
 
-Public Sub lstBreak_Activate()
+Public Sub cvwBreak_Activate()
 
   Dim aText As String[]
   
-  aText = Scan(lstBreak.Text, "*.*.*")
-  Project.OpenFile(aText[0], CInt(aText[2]))
+  aText = Scan(cvwBreak.Key, "*.*.*")
+  Project.OpenFile(aText[0], CInt(aText[2]) + 1)
 
 Catch
 
@@ -667,25 +687,33 @@ Public Sub timBreakpoint_Timer()
   Dim sClass As String
   Dim iInd As Integer
   Dim hEditor As FEditor
+  Dim sKey As String
+  Dim sProc As String
+  Dim sText As String
   
   For Each sClass In $cRefresh
     
-    iInd = 0
-    While iInd < lstBreak.Count
-      If lstBreak[iInd].Text Like (sClass & ".*") Then
-        lstBreak.Remove(iInd)
-      Else
-        Inc iInd
-      Endif
+    cvwBreak.MoveFirst
+    While cvwBreak.Available
+      sKey = cvwBreak.Item.Key
+      sText = cvwBreak.Item.Text
+      cvwBreak.MoveNext
+      If sText = sClass Then cvwBreak.Remove(sKey)
     Wend
     
     hEditor = Project.Files[Project.FindPath(sClass)]
     If Not hEditor Then Continue
     For Each iInd In hEditor.GetBreakpoints()
-      lstBreak.Add(sClass & "." & hEditor.GetProcAt(iInd) & "." & CStr(iInd + 1))
+      sProc = hEditor.GetProcAt(iInd)
+      cvwBreak.Add(sClass & "." & sProc & "." & CStr(iInd), sClass)
+      cvwBreak.Item[1] = sProc
+      cvwBreak.Item[2] = CStr(iInd + 1)
     Next
     
   Next
+  
+  cvwBreak.Columns[0].Width = -1
+  cvwBreak.Columns[1].Width = -1
   
   $cRefresh.Clear
   timBreakpoint.Stop
@@ -700,10 +728,12 @@ Public Sub GetBreakpoints() As String[]
 
   timBreakpoint_Timer
   
-  For iInd = 0 To lstBreak.Count - 1
-    aBreak = Split(lstBreak[iInd].Text, "*.*.*")
-    aBreakPoint.Add(aBreak[0] & "." & CStr(CInt(aBreak[2])))
-  Next
+  cvwBreak.MoveFirst
+  While cvwBreak.Available
+    aBreak = Split(cvwBreak.Item.Key, "*.*.*")
+    aBreakPoint.Add(aBreak[0] & "." & CStr(CInt(aBreak[2]) + 1))
+    cvwBreak.MoveNext
+  Wend
   
   Return aBreakPoint
   

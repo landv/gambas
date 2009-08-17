@@ -68,19 +68,19 @@ static void init(const char *file)
 	PROJECT_init(file);
   DEBUG_init();
 
-	if (EXEC_debug)
-	{
-		DEBUG.Welcome();
-		DEBUG.Main(FALSE);
-	}
-	_welcome = TRUE;
-
 	if (file)
 		PROJECT_load(); // Call STACK_init()
 	else
 		STACK_init();
 		
  	LOCAL_init();
+
+	if (EXEC_debug)
+	{
+		DEBUG.Welcome();
+		DEBUG.Main(FALSE);
+	}
+	_welcome = TRUE;
 }
 
 

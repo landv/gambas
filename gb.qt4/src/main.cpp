@@ -1049,6 +1049,9 @@ static void activate_main_window(int value)
 
 void EXPORT GB_SIGNAL(int signal, void *param)
 {
+	if (!qApp)
+		return;
+	
 	switch(signal)
 	{
 		case GB_SIGNAL_DEBUG_BREAK:
