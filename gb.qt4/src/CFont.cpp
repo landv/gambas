@@ -22,7 +22,6 @@
 
 #define __CFONT_CPP
 
-
 #include "gambas.h"
 #include "main.h"
 

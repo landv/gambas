@@ -38,7 +38,7 @@ static QString dialog_title;
 static GB_ARRAY dialog_filter = NULL;
 static QString dialog_path;
 static GB_ARRAY dialog_paths = NULL;
-static QFont *dialog_font;
+static CFONT *dialog_font = NULL;
 
 static unsigned int dialog_color = 0;
 
@@ -72,18 +72,11 @@ static QString get_filter(void)
 }
 
 
-BEGIN_METHOD_VOID(CDIALOG_init)
-
-	//dialog_font = new QFont();
-
-END_METHOD
-
 BEGIN_METHOD_VOID(CDIALOG_exit)
 
-  GB.StoreObject(NULL, POINTER(&dialog_filter));
-  GB.StoreObject(NULL, POINTER(&dialog_paths));
-  if (dialog_font)
-  	delete dialog_font;
+	GB.StoreObject(NULL, POINTER(&dialog_filter));
+	GB.StoreObject(NULL, POINTER(&dialog_paths));
+	GB.StoreObject(NULL, POINTER(&dialog_font));
 
 END_METHOD
 
@@ -128,12 +121,14 @@ END_PROPERTY
 BEGIN_PROPERTY(CDIALOG_font)
 
   if (READ_PROPERTY)
-    GB.ReturnObject(CFONT_create(*dialog_font));
+		GB.ReturnObject(dialog_font);
   else
   {
-    if (GB.CheckObject(VPROP(GB_OBJECT)))
-      return;
-    *dialog_font = *(((CFONT *)VPROP(GB_OBJECT))->font);
+		CFONT *font = (CFONT *)VPROP(GB_OBJECT);
+		
+		GB.StoreObject(NULL, POINTER(&dialog_font));
+		if (font)
+			dialog_font = CFONT_create(*font->font);
   }
 
 END_PROPERTY
@@ -260,7 +255,10 @@ BEGIN_METHOD_VOID(CDIALOG_select_font)
   int dpiX, dpiY;
   #endif
 
-  qfont = *dialog_font;
+	if (dialog_font)
+		qfont = *dialog_font->font;
+	else
+		qfont = QApplication::font();
   //qDebug("AVANT: %g --> %g", qfont.pointSizeFloat(), SIZE_REAL_TO_VIRTUAL(qfont.pointSizeFloat()));
   qfont.setPointSizeF(SIZE_REAL_TO_VIRTUAL(qfont.pointSizeF()));
   
@@ -285,7 +283,8 @@ BEGIN_METHOD_VOID(CDIALOG_select_font)
     GB.ReturnBoolean(true);
   else
   {
-    *dialog_font = qfont;
+		GB.StoreObject(NULL, POINTER(&dialog_font));
+		dialog_font = CFONT_create(qfont);
     GB.ReturnBoolean(false);
   }
 
@@ -295,7 +294,7 @@ GB_DESC CDialogDesc[] =
 {
   GB_DECLARE("Dialog", 0), GB_VIRTUAL_CLASS(),
 
-  GB_STATIC_METHOD("_init", NULL, CDIALOG_init, NULL),
+  //GB_STATIC_METHOD("_init", NULL, CDIALOG_init, NULL),
   GB_STATIC_METHOD("_exit", NULL, CDIALOG_exit, NULL),
 
   GB_STATIC_METHOD("OpenFile", "b", CDIALOG_open_file, "[(Multi)b]"),
