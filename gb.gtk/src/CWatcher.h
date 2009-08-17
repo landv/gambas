@@ -3,16 +3,10 @@
   CWatcher.h
 
   (c) 2004-2005 - Daniel Campos Fernández <dcamposf@gmail.com>
-  
-  GTK+ component
-  
-  Realizado para la Junta de Extremadura. 
-  Consejería de Educación Ciencia y Tecnología. 
-  Proyecto gnuLinEx
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 1, or (at your option)
+  the Free Software Foundation; either version 2, or (at your option)
   any later version.
 
   This program is distributed in the hope that it will be useful,

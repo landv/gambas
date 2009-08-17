@@ -1,17 +1,12 @@
 /***************************************************************************
 
-  Number.h
+  gbx_number.h
 
-  Numbers management routines
-
-  Datatype management routines. Conversions between each Gambas datatype,
-  and conversions between Gambas datatypes and native datatypes.
-
-  (c) 2000-2005 Beno�t Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 1, or (at your option)
+  the Free Software Foundation; either version 2, or (at your option)
   any later version.
 
   This program is distributed in the hope that it will be useful,

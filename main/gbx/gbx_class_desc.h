@@ -1,14 +1,12 @@
 /***************************************************************************
 
-  class_desc.h
+  gbx_class_desc.h
 
-  Public class description
-
-  (c) 2000-2007 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 1, or (at your option)
+  the Free Software Foundation; either version 2, or (at your option)
   any later version.
 
   This program is distributed in the hope that it will be useful,

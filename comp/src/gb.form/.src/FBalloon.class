@@ -26,11 +26,11 @@ Private Sub DrawRoundRect(X As Integer, Y As Integer, W As Integer, H As Integer
   
   hRound = $hRound
   Draw.Image(hRound, X, Y)
-  hRound = hRound.Flip()
+  hRound = hRound.Mirror(True, False)
   Draw.Image(hRound, X + W - ROUND_SIZE, Y)
   hRound = hRound.Mirror()
   Draw.Image(hRound, X + W - ROUND_SIZE, Y + H - ROUND_SIZE)
-  hRound = hRound.Flip()
+  hRound = hRound.Mirror(True, False)
   Draw.Image(hRound, X, Y + H - ROUND_SIZE)
 
   Draw.FillStyle = Fill.Solid

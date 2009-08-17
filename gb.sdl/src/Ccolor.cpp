@@ -2,14 +2,11 @@
 
   Ccolor.cpp
 
-  The SDL component
-
   (c) 2006 Laurent Carlier <lordheavy@users.sourceforge.net>
-           Benoit Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 1, or (at your option)
+  the Free Software Foundation; either version 2, or (at your option)
   any later version.
 
   This program is distributed in the hope that it will be useful,
