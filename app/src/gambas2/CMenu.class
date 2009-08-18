@@ -25,29 +25,27 @@ END
 
 PUBLIC SUB SetShortcut(sShortcut AS String)
 
-  sShortcut = Upper(sShortcut)
-
   DO
 
-    IF Left$(sShortcut, 5) = "CTRL+" THEN
+    IF UCase(Left$(sShortcut, 5)) = "CTRL+" THEN
       Ctrl = TRUE
       sShortcut = Mid$(sShortcut, 6)
       CONTINUE
     ENDIF
 
-    IF Left$(sShortcut, 6) = "SHIFT+" THEN
+    IF UCase(Left$(sShortcut, 6)) = "SHIFT+" THEN
       Shift = TRUE
       sShortcut = Mid$(sShortcut, 7)
       CONTINUE
     ENDIF
 
-    IF Left$(sShortcut, 4) = "ALT+" THEN
+    IF UCase(Left$(sShortcut, 4)) = "ALT+" THEN
       Alt = TRUE
       sShortcut = Mid$(sShortcut, 5)
       CONTINUE
     ENDIF
 
-    Shortcut = Left$(sShortcut) & Lower(Mid$(sShortcut, 2))
+    Shortcut = sShortcut
     RETURN
 
   LOOP

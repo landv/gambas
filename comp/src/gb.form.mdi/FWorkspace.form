@@ -7,6 +7,18 @@
     Text = ("")
     Visible = False
   }
+  { mnuMove Menu
+    Text = ("")
+    Visible = False
+    { mnuPreviousTab Menu
+      Text = ("Previous tab")
+      Shortcut = "Ctrl+PgUp"
+    }
+    { mnuNextTab Menu
+      Text = ("Next tab")
+      Shortcut = "Ctrl+PgDown"
+    }
+  }
   { tabWorkspace TabStrip
     MoveScaled(2,7,56,51)
     Visible = False

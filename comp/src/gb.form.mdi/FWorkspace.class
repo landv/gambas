@@ -633,3 +633,15 @@ PUBLIC SUB UnLock()
   ENDIF
   
 END
+
+PUBLIC SUB mnuPreviousTab_Click()
+  
+  TRY DEC tabWorkspace.Index
+  
+END
+
+PUBLIC SUB mnuNextTab_Click()
+  
+  TRY INC tabWorkspace.Index
+  
+END
