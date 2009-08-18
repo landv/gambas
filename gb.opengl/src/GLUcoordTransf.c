@@ -47,3 +47,17 @@ BEGIN_METHOD(GLUPERSPECTIVE, GB_FLOAT fovy; GB_FLOAT aspect; GB_FLOAT znear; GB_
 
 END_METHOD
 
+BEGIN_METHOD(GLUPICKMATRIX, GB_FLOAT x; GB_FLOAT y; GB_FLOAT width; GB_FLOAT height; GB_OBJECT viewport)
+
+      GLint iparams[4];
+      GB_ARRAY viewport = (GB_ARRAY) VARG(viewport);
+      int i, count = GB.Array.Count(viewport);
+
+      count = (count > 4 ? 4 : count);
+
+      for (i=0; i<count; i++)
+            iparams[i] = *((GLint *)GB.Array.Get(viewport,i));
+
+      GluPickMatrix(VARG(x), VARG(y), VARG(width), VARG(height), iparams);
+      
+END_METHOD

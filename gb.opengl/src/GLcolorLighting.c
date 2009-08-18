@@ -28,21 +28,33 @@
 
 #include <GL/gl.h>
 
+BEGIN_METHOD(GLCOLOR3F, GB_FLOAT red; GB_FLOAT green; GB_FLOAT blue)
+
+      glColor3d(VARG(red), VARG(green), VARG(blue));
+
+END_METHOD
+
 BEGIN_METHOD(GLCOLORF, GB_FLOAT red; GB_FLOAT green; GB_FLOAT blue; GB_FLOAT alpha)
 
-	if (MISSING(alpha))
-		glColor3d(VARG(red), VARG(green), VARG(blue));
-	else
-		glColor4d(VARG(red), VARG(green), VARG(blue), VARG(alpha));
+      if (MISSING(alpha))
+            glColor3d(VARG(red), VARG(green), VARG(blue));
+      else
+            glColor4d(VARG(red), VARG(green), VARG(blue), VARG(alpha));
+
+END_METHOD
+
+BEGIN_METHOD(GLCOLOR3I, GB_INTEGER red; GB_INTEGER green; GB_INTEGER blue)
+
+      glColor3i(VARG(red), VARG(green), VARG(blue));
 
 END_METHOD
 
 BEGIN_METHOD(GLCOLORI, GB_INTEGER red; GB_INTEGER green; GB_INTEGER blue; GB_INTEGER alpha)
 
-	if (MISSING(alpha))
-		glColor3i(VARG(red), VARG(green), VARG(blue));
-	else
-		glColor4i(VARG(red), VARG(green), VARG(blue), VARG(alpha));
+      if (MISSING(alpha))
+            glColor3i(VARG(red), VARG(green), VARG(blue));
+      else
+            glColor4i(VARG(red), VARG(green), VARG(blue), VARG(alpha));
 
 END_METHOD
 
@@ -126,7 +138,7 @@ BEGIN_METHOD(GLGETLIGHTFV, GB_INTEGER light; GB_INTEGER pname)
 	GB.Array.New(&fArray , GB_T_FLOAT , count);
 	glGetLightfv(VARG(light), VARG(pname), params);
 	
-	for (i=0;i<count; i++)
+	for (i=0; i<count; i++)
 		*((double *)GB.Array.Get(fArray, i)) = params[i];
 	
 	GB.ReturnObject(fArray);
@@ -155,7 +167,7 @@ BEGIN_METHOD(GLGETLIGHTIV, GB_INTEGER light; GB_INTEGER pname)
 	GB.Array.New(&iArray , GB_T_INTEGER , count);
 	glGetLightiv(VARG(light), VARG(pname), params);
 	
-	for (i=0;i<count; i++)
+	for (i=0; i<count; i++)
 		*((GLint *)GB.Array.Get(iArray, i)) = params[i];
 	
 	GB.ReturnObject(iArray);
@@ -184,7 +196,7 @@ BEGIN_METHOD(GLGETMATERIALFV, GB_INTEGER face; GB_INTEGER pname)
 	GB.Array.New(&fArray , GB_T_FLOAT , count);
 	glGetMaterialfv(VARG(face), VARG(pname), params);
 	
-	for (i=0;i<count; i++)
+	for (i=0; i<count; i++)
 		*((double *)GB.Array.Get(fArray, i)) = params[i];
 	
 	GB.ReturnObject(fArray);
@@ -213,7 +225,7 @@ BEGIN_METHOD(GLGETMATERIALIV, GB_INTEGER face; GB_INTEGER pname)
 	GB.Array.New(&iArray , GB_T_INTEGER , count);
 	glGetMaterialiv(VARG(face), VARG(pname), params);
 	
-	for (i=0;i<count; i++)
+	for (i=0; i<count; i++)
 		*((GLint *)GB.Array.Get(iArray, i)) = params[i];
 	
 	GB.ReturnObject(iArray);
@@ -250,10 +262,9 @@ BEGIN_METHOD(GLLIGHTFV, GB_INTEGER light; GB_INTEGER pname; GB_OBJECT params)
 	GB_ARRAY fArray = (GB_ARRAY) VARG(params);
 	uint i, count = GB.Array.Count(fArray);
 	
-	if (count>4)
-		count==4;
+      count = (count > 4 ? 4 : count);
 
-	for (i=0;i<count; i++)
+	for (i=0; i<count; i++)
 		params[i]=*((double *)GB.Array.Get(fArray,i));
 
 	glLightfv(VARG(light), VARG(pname), params);
@@ -266,10 +277,9 @@ BEGIN_METHOD(GLLIGHTIV, GB_INTEGER light; GB_INTEGER pname; GB_OBJECT params)
 	GB_ARRAY iArray = (GB_ARRAY) VARG(params);
 	uint i, count = GB.Array.Count(iArray);
 	
-	if (count>4)
-		count==4;
+      count = (count > 4 ? 4 : count);
 
-	for (i=0;i<count; i++)
+	for (i=0; i<count; i++)
 		params[i]=*((GLint *)GB.Array.Get(iArray,i));
 
 	glLightiv(VARG(light), VARG(pname), params);
@@ -294,10 +304,9 @@ BEGIN_METHOD(GLLIGHTMODELFV, GB_INTEGER pname; GB_OBJECT params)
 	GB_ARRAY fArray = (GB_ARRAY) VARG(params);
 	uint i, count = GB.Array.Count(fArray);
 	
-	if (count>4)
-		count = 4;
+      count = (count > 4 ? 4 : count);
 
-	for (i=0;i<count; i++)
+	for (i=0; i<count; i++)
 		params[i]=*((GLfloat *)GB.Array.Get(fArray,i));
 
 	glLightModelfv(VARG(pname), params);
@@ -310,10 +319,9 @@ BEGIN_METHOD(GLLIGHTMODELIV, GB_INTEGER pname; GB_OBJECT params)
 	GB_ARRAY iArray = (GB_ARRAY) VARG(params);
 	uint i, count = GB.Array.Count(iArray);
 	
-	if (count>4)
-		count = 4;
+      count = (count > 4 ? 4 : count);
 
-	for (i=0;i<count; i++)
+	for (i=0; i<count; i++)
 		params[i]=*((GLint *)GB.Array.Get(iArray,i));
 
 	glLightModeliv(VARG(pname), params);
@@ -338,10 +346,9 @@ BEGIN_METHOD(GLMATERIALFV, GB_INTEGER face; GB_INTEGER pname; GB_OBJECT params)
 	GB_ARRAY fArray = (GB_ARRAY) VARG(params);
 	uint i, count = GB.Array.Count(fArray);
 	
-	if (count>4)
-		count = 4;
+      count = (count > 4 ? 4 : count);
 
-	for (i=0;i<count; i++)
+	for (i=0; i<count; i++)
 		params[i]=*((double *)GB.Array.Get(fArray,i));
 
 	glMaterialfv(VARG(face), VARG(pname), params);
@@ -354,10 +361,9 @@ BEGIN_METHOD(GLMATERIALIV, GB_INTEGER face; GB_INTEGER pname; GB_OBJECT params)
 	GB_ARRAY iArray = (GB_ARRAY) VARG(params);
 	uint i, count = GB.Array.Count(iArray);
 	
-	if (count>4)
-		count=4;
+      count = (count > 4 ? 4 : count);
 
-	for (i=0;i<count; i++)
+	for (i=0; i<count; i++)
 		params[i]=*((GLint *)GB.Array.Get(iArray,i));
 
 	glMaterialiv(VARG(face), VARG(pname), params);

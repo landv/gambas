@@ -303,7 +303,7 @@ static int checkSize(GLenum value)
 	return retSize;
 }
 
-void freeAllocs(void )
+void freeGetsAllocs(void )
 {
 	if (boolSize)
 		GB.Free(POINTER(&boolArray));

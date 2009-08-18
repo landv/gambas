@@ -44,7 +44,7 @@ BEGIN_METHOD(GLCALLLISTS, GB_OBJECT lists)
 	if (!count)
 		return;
 
-	for (i=0;i<count; i++)
+	for (i=0; i<count; i++)
 		glCallList(*((GLuint *)GB.Array.Get(iArray,i)));
 
 END_METHOD

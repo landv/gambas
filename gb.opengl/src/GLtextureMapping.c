@@ -89,51 +89,87 @@ BEGIN_METHOD(GLISTEXTURE, GB_INTEGER texture)
 
 END_METHOD
 
+BEGIN_METHOD(GLTEXCOORD1F, GB_FLOAT S)
+
+      glTexCoord1d(VARG(S));
+
+END_METHOD
+
+BEGIN_METHOD(GLTEXCOORD2F, GB_FLOAT S; GB_FLOAT T)
+
+      glTexCoord2d(VARG(S), VARG(T));
+
+END_METHOD
+
+BEGIN_METHOD(GLTEXCOORD3F, GB_FLOAT S; GB_FLOAT T; GB_FLOAT R)
+
+      glTexCoord3d(VARG(S), VARG(T), VARG(R));
+
+END_METHOD
+
 BEGIN_METHOD(GLTEXCOORDF, GB_FLOAT S; GB_FLOAT T; GB_FLOAT R; GB_FLOAT Q)
 
-	if (MISSING(T))
-	{
-		glTexCoord1d(VARG(S));
-		return;
-	}
+      if (MISSING(T))
+      {
+            glTexCoord1d(VARG(S));
+            return;
+      }
 
-	if (MISSING(R))
-	{
-		glTexCoord2d(VARG(S), VARG(T));
-		return;
-	}
+      if (MISSING(R))
+      {
+            glTexCoord2d(VARG(S), VARG(T));
+            return;
+      }
 
-	if (MISSING(Q))
-	{
-		glTexCoord3d(VARG(S), VARG(T), VARG(R));
-		return;
-	}
+      if (MISSING(Q))
+      {
+            glTexCoord3d(VARG(S), VARG(T), VARG(R));
+            return;
+      }
 
-	glTexCoord4d(VARG(S), VARG(T), VARG(R), VARG(Q));
+      glTexCoord4d(VARG(S), VARG(T), VARG(R), VARG(Q));
+
+END_METHOD
+
+BEGIN_METHOD(GLTEXCOORD1I, GB_INTEGER S)
+
+      glTexCoord1i(VARG(S));
+
+END_METHOD
+
+BEGIN_METHOD(GLTEXCOORD2I, GB_INTEGER S; GB_INTEGER T)
+
+      glTexCoord2i(VARG(S), VARG(T));
+
+END_METHOD
+
+BEGIN_METHOD(GLTEXCOORD3I, GB_INTEGER S; GB_INTEGER T; GB_INTEGER R)
+
+      glTexCoord3i(VARG(S), VARG(T), VARG(R));
 
 END_METHOD
 
 BEGIN_METHOD(GLTEXCOORDI, GB_INTEGER S; GB_INTEGER T; GB_INTEGER R; GB_INTEGER Q)
 
-	if (MISSING(T))
-	{
-		glTexCoord1i(VARG(S));
-		return;
-	}
+      if (MISSING(T))
+      {
+            glTexCoord1i(VARG(S));
+            return;
+      }
 
-	if (MISSING(R))
-	{
-		glTexCoord2i(VARG(S), VARG(T));
-		return;
-	}
+      if (MISSING(R))
+      {
+            glTexCoord2i(VARG(S), VARG(T));
+            return;
+      }
 
-	if (MISSING(Q))
-	{
-		glTexCoord3i(VARG(S), VARG(T), VARG(R));
-		return;
-	}
+      if (MISSING(Q))
+      {
+            glTexCoord3i(VARG(S), VARG(T), VARG(R));
+            return;
+      }
 
-	glTexCoord4i(VARG(S), VARG(T), VARG(R), VARG(Q));
+      glTexCoord4i(VARG(S), VARG(T), VARG(R), VARG(Q));
 
 END_METHOD
 
@@ -150,10 +186,9 @@ BEGIN_METHOD(GLTEXENVFV, GB_INTEGER Target; GB_INTEGER Pname; GB_OBJECT Params)
 	int count = GB.Array.Count(fArray);
 	int i;
 	
-	if (count>4)
-		count==4;
+      count = (count > 4 ? 4 : count);
 
-	for (i=0;i<count; i++)
+	for (i=0; i<count; i++)
 		params[i]=*((GLfloat *)GB.Array.Get(fArray,i));
 
 	glTexParameterfv(VARG(Target), VARG(Pname), params);
@@ -173,10 +208,9 @@ BEGIN_METHOD(GLTEXENVIV, GB_INTEGER Target; GB_INTEGER Pname; GB_OBJECT Params)
 	int count = GB.Array.Count(iArray);
 	int i;
 	
-	if (count>4)
-		count==4;
+      count = (count > 4 ? 4 : count);
 
-	for (i=0;i<count; i++)
+	for (i=0; i<count; i++)
 		params[i]=*((GLint *)GB.Array.Get(iArray,i));
 
 	glTexEnviv(VARG(Target), VARG(Pname), params);
@@ -222,10 +256,9 @@ BEGIN_METHOD(GLTEXPARAMETERFV, GB_INTEGER Target; GB_INTEGER Pname; GB_OBJECT Pa
 	int count = GB.Array.Count(fArray);
 	int i;
 	
-	if (count>4)
-		count==4;
+      count = (count > 4 ? 4 : count);
 
-	for (i=0;i<count; i++)
+	for (i=0; i<count; i++)
 		params[i]=*((GLfloat *)GB.Array.Get(fArray,i));
 
 	glTexParameterfv(VARG(Target), VARG(Pname), params);
@@ -245,10 +278,9 @@ BEGIN_METHOD(GLTEXPARAMETERIV, GB_INTEGER Target; GB_INTEGER Pname; GB_OBJECT Pa
 	int count = GB.Array.Count(iArray);
 	int i;
 	
-	if (count>4)
-		count==4;
+      count = (count > 4 ? 4 : count);
 
-	for (i=0;i<count; i++)
+	for (i=0; i<count; i++)
 		params[i]=*((GLint *)GB.Array.Get(iArray,i));
 
 	glTexParameteriv(VARG(Target), VARG(Pname), params);

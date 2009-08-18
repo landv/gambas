@@ -35,10 +35,9 @@ BEGIN_METHOD(GLCLIPPLANE, GB_INTEGER plane; GB_OBJECT equation)
 	int count = GB.Array.Count(fArray);
 	uint i;
 	
-	if (count!=4)
-		return;
+      count = (count > 4 ? 4 : count);
 
-	for (i=0;i<4; i++)
+	for (i=0; i<count; i++)
 		params[i]=*((GLdouble *)GB.Array.Get(fArray,i));
 
 	glClipPlane(VARG(plane), params);

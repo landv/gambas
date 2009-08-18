@@ -52,10 +52,9 @@ BEGIN_METHOD(GLLOADMATRIXF, GB_OBJECT array)
 	GB_ARRAY matrix = (GB_ARRAY) VARG(array);
 	int i, count = GB.Array.Count(matrix);
 	
-	if (count!=16)
-		return;
+      count = (count > 16 ? 16 : count);
 
-	for (i=0;i<16; i++)
+	for (i=0; i<count; i++)
 		params[i] = *((double *)GB.Array.Get(matrix,i));
 	
 	glLoadMatrixd(params);
@@ -74,10 +73,9 @@ BEGIN_METHOD(GLMULTMATRIXF, GB_OBJECT array)
 	GB_ARRAY matrix = (GB_ARRAY) VARG(array);
 	int i, count = GB.Array.Count(matrix);
 	
-	if (count!=16)
-		return;
+      count = (count > 16 ? 16 : count);
 
-	for (i=0;i<count; i++)
+	for (i=0; i<count; i++)
 		params[i] = *((double *)GB.Array.Get(matrix,i));
 	
 	glMultMatrixd(params);

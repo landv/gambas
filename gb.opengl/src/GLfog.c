@@ -46,10 +46,9 @@ BEGIN_METHOD(GLFOGFV, GB_INTEGER pname; GB_OBJECT params)
 	GB_ARRAY fArray = (GB_ARRAY) VARG(params);
 	uint i, count = GB.Array.Count(fArray);
 	
-	if (count>4)
-		count=4;
+      count = (count > 4 ? 4 : count);
 
-	for (i=0;i<count; i++)
+	for (i=0; i<count; i++)
 		params[i]=*((double *)GB.Array.Get(fArray,i));
 
 	glFogfv(VARG(pname), params);
@@ -62,10 +61,9 @@ BEGIN_METHOD(GLFOGIV, GB_INTEGER pname; GB_OBJECT params)
 	GB_ARRAY iArray = (GB_ARRAY) VARG(params);
 	uint i, count = GB.Array.Count(iArray);
 	
-	if (count>4)
-		count=4;
+      count = (count > 4 ? 4 : count);
 
-	for (i=0;i<count; i++)
+	for (i=0; i<count; i++)
 		params[i]=*((GLint *)GB.Array.Get(iArray,i));
 
 	glFogiv(VARG(pname), params);
