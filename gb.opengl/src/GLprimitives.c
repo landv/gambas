@@ -61,24 +61,47 @@ BEGIN_METHOD(GLRECTI, GB_INTEGER x1; GB_INTEGER y1; GB_INTEGER x2; GB_INTEGER y2
   
 END_METHOD
 
-BEGIN_METHOD(GLVERTEXF, GB_FLOAT x; GB_FLOAT y; GB_FLOAT z; GB_FLOAT w)
+BEGIN_METHOD(GLVERTEX2F, GB_FLOAT x; GB_FLOAT y)
 
-	if (MISSING(z))
-	{
-		glVertex2d(VARG(x), VARG(y));
-		return;
-	}
-
-	if (MISSING(w))
-	{
-		glVertex3d(VARG(x), VARG(y), VARG(z));
-		return;
-	}
-
-	glVertex4d(VARG(x), VARG(y), VARG(z), VARG(w));
+      glVertex2d(VARG(x), VARG(y));
 
 END_METHOD
 
+BEGIN_METHOD(GLVERTEX3F, GB_FLOAT x; GB_FLOAT y; GB_FLOAT z)
+
+      glVertex3d(VARG(x), VARG(y), VARG(z));
+
+END_METHOD
+
+BEGIN_METHOD(GLVERTEXF, GB_FLOAT x; GB_FLOAT y; GB_FLOAT z; GB_FLOAT w)
+
+      if (MISSING(z))
+      {
+            glVertex2d(VARG(x), VARG(y));
+            return;
+      }
+
+      if (MISSING(w))
+      {
+            glVertex3d(VARG(x), VARG(y), VARG(z));
+            return;
+      }
+
+      glVertex4d(VARG(x), VARG(y), VARG(z), VARG(w));
+
+END_METHOD
+
+BEGIN_METHOD(GLVERTEX2I, GB_INTEGER x; GB_INTEGER y)
+
+      glVertex2i(VARG(x), VARG(y));
+
+END_METHOD
+
+BEGIN_METHOD(GLVERTEX3I, GB_INTEGER x; GB_INTEGER y; GB_INTEGER z)
+
+      glVertex3i(VARG(x), VARG(y), VARG(z));
+
+END_METHOD
 
 BEGIN_METHOD(GLVERTEXI, GB_INTEGER x; GB_INTEGER y; GB_INTEGER z; GB_INTEGER w)
 

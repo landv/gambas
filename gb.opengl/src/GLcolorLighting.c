@@ -31,12 +31,24 @@
 
 #include <GL/gl.h>
 
+BEGIN_METHOD(GLCOLOR3F, GB_FLOAT red; GB_FLOAT green; GB_FLOAT blue)
+
+      glColor3d(VARG(red), VARG(green), VARG(blue));
+
+END_METHOD
+
 BEGIN_METHOD(GLCOLORF, GB_FLOAT red; GB_FLOAT green; GB_FLOAT blue; GB_FLOAT alpha)
 
 	if (MISSING(alpha))
 		glColor3d(VARG(red), VARG(green), VARG(blue));
 	else
 		glColor4d(VARG(red), VARG(green), VARG(blue), VARG(alpha));
+
+END_METHOD
+
+BEGIN_METHOD(GLCOLOR3I, GB_INTEGER red; GB_INTEGER green; GB_INTEGER blue)
+
+      glColor3i(VARG(red), VARG(green), VARG(blue));
 
 END_METHOD
 
