@@ -542,7 +542,7 @@ MyPushButton::~MyPushButton()
 
 void MyPushButton::changeEvent(QEvent *e)
 {
-  QWidget::changeEvent(e);
+  QPushButton::changeEvent(e);
 	if (e->type() == QEvent::FontChange || e->type() == QEvent::StyleChange)
 		calcMinimumSize();
 }
@@ -563,22 +563,22 @@ void MyPushButton::calcMinimumSize()
   else
     setMinimumHeight(0);
 
+	setMinimumWidth(0);
 	if (THIS->autoresize)
 	{
 		size = sizeHint();
 		setMinimumWidth(size.width());
 		CWIDGET_resize(THIS, size.width(), height());
+		setMinimumWidth(size.width());
 	}
-	else
-		setMinimumWidth(0);
 
 	//qDebug("%p: %s: %d", this, text().latin1(), minimumHeight());
 }
 
-void MyPushButton::resizeEvent(QResizeEvent *e)
+/*void MyPushButton::resizeEvent(QResizeEvent *e)
 {
 	set_button((CBUTTON *)CWidget::get(this), NULL, true);
-}
+}*/
 
 /*void MyPushButton::paintEvent(QPaintEvent *)
 {
@@ -606,7 +606,7 @@ MyToolButton::~MyToolButton()
 
 void MyToolButton::changeEvent(QEvent *e)
 {
-  QWidget::changeEvent(e);
+  QToolButton::changeEvent(e);
 	if (e->type() == QEvent::FontChange || e->type() == QEvent::StyleChange)
 		calcMinimumSize();
 }
@@ -627,20 +627,19 @@ void MyToolButton::calcMinimumSize()
   else
     setMinimumHeight(0);
 
+	setMinimumWidth(0);
 	if (THIS->autoresize)
 	{
 		size = sizeHint();
-		setMinimumWidth(size.width());
 		CWIDGET_resize(THIS, size.width(), height());
+		setMinimumWidth(size.width());
 	}
-	else
-		setMinimumWidth(0);
 }
 
-void MyToolButton::resizeEvent(QResizeEvent *e)
+/*void MyToolButton::resizeEvent(QResizeEvent *e)
 {
-	set_tool_button((CBUTTON *)CWidget::get(this), NULL, true);
-}
+	//set_tool_button((CBUTTON *)CWidget::get(this), NULL, true);
+}*/
 
 /*void MyToolButton::paintEvent(QPaintEvent *)
 {

@@ -71,7 +71,7 @@ public:
   ~MyPushButton();
   virtual void changeEvent(QEvent *e);
   void calcMinimumSize();
-  virtual void resizeEvent(QResizeEvent *e);
+  //virtual void resizeEvent(QResizeEvent *e);
 	//virtual void paintEvent(QPaintEvent *e);
 
   CWINDOW *top;
@@ -88,7 +88,7 @@ public:
   ~MyToolButton();
   virtual void changeEvent(QEvent *e);
   void calcMinimumSize();
-  virtual void resizeEvent(QResizeEvent *e);
+  //virtual void resizeEvent(QResizeEvent *e);
 	//virtual void paintEvent(QPaintEvent *e);
 };
 
@@ -108,7 +108,6 @@ public slots:
   void clicked(void);
   void clickedToggle(void);
   void clickedTool(void);
-
 };
 
 
