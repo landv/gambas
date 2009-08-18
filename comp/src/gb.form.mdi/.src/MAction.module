@@ -76,9 +76,8 @@ Public Sub FindShortcut() As String
   
 End
 
-Public Sub InitAction()
+Private Sub LoadAction(sFile As String)
   
-  Dim sFile As String
   Dim hFile As File
   Dim sAction As String
   Dim sToolbar As String
@@ -89,6 +88,46 @@ Public Sub InitAction()
   Dim cSlot As New Collection
   Dim bHasShortcut As Boolean
 
+  hFile = Open sFile
+  While Not Eof(hFile)
+    Line Input #hFile, sLine
+    sLine = Trim(sLine)
+    If Not sLine Then Continue
+    If Left(sLine) = "#" Then Continue
+    
+    If sLine Like "{ Action *" Then
+      cSlot.Clear
+      bHasShortcut = False
+      sAction = Trim(Mid$(sLine, 10))
+    Else If sLine Like "{ Toolbar *" Then
+      cSlot.Clear
+      sToolbar = Trim(Mid$(sLine, 10))
+    Else If sLine = "}" Then
+      If sAction Then
+        hAction = New CAction(sAction, bHasShortcut, cSlot, Actions[sAction])
+        Actions[hAction.Key] = hAction
+        sAction = ""
+      Else If sToolbar Then
+        hToolbar = New CToolbar(sToolbar, cSlot)
+        Toolbars[hToolbar.Key] = hToolbar
+        sToolbar = ""
+      Endif
+    Else
+      aLine = Scan(sLine, "* = *")
+      If aLine.Count <> 2 Then Continue
+      cSlot[aLine[0]] = Unquote(aLine[1])
+      If aLine[0] = "Shortcut" Then bHasShortcut = True
+    Endif
+  Wend
+  Close #hFile
+  
+End
+
+
+Public Sub InitAction()
+  
+  Dim sFile As String
+
   If Actions Then Return
 
   'Debug "Loading actions..."
@@ -96,39 +135,12 @@ Public Sub InitAction()
   Actions = New Collection
   Toolbars = New Collection
 
+  For Each sFile In Dir(".action", "*.action")
+    LoadAction(".action" &/ sFile)
+  Next
+  
   For Each sFile In Dir("../.action", "*.action")
-    hFile = Open "../.action" &/ sFile
-    While Not Eof(hFile)
-      Line Input #hFile, sLine
-      sLine = Trim(sLine)
-      If Not sLine Then Continue
-      If Left(sLine) = "#" Then Continue
-      
-      If sLine Like "{ Action *" Then
-        cSlot.Clear
-        bHasShortcut = False
-        sAction = Trim(Mid$(sLine, 10))
-      Else If sLine Like "{ Toolbar *" Then
-        cSlot.Clear
-        sToolbar = Trim(Mid$(sLine, 10))
-      Else If sLine = "}" Then
-        If sAction Then
-          hAction = New CAction(sAction, bHasShortcut, cSlot, Actions[sAction])
-          Actions[hAction.Key] = hAction
-          sAction = ""
-        Else If sToolbar Then
-          hToolbar = New CToolbar(sToolbar, cSlot)
-          Toolbars[hToolbar.Key] = hToolbar
-          sToolbar = ""
-        Endif
-      Else
-        aLine = Scan(sLine, "* = *")
-        If aLine.Count <> 2 Then Continue
-        cSlot[aLine[0]] = Unquote(aLine[1])
-        If aLine[0] = "Shortcut" Then bHasShortcut = True
-      Endif
-    Wend
-    Close #hFile
+    LoadAction("../.action" &/ sFile)
   Next
   
 End

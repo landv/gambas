@@ -25,29 +25,27 @@ End
 
 Public Sub SetShortcut(sShortcut As String)
 
-  sShortcut = Upper(sShortcut)
-
   Do
 
-    If Left$(sShortcut, 5) = "CTRL+" Then
+    If UCase(Left$(sShortcut, 5)) = "CTRL+" Then
       Ctrl = True
       sShortcut = Mid$(sShortcut, 6)
       Continue
     Endif
 
-    If Left$(sShortcut, 6) = "SHIFT+" Then
+    If UCase(Left$(sShortcut, 6)) = "SHIFT+" Then
       Shift = True
       sShortcut = Mid$(sShortcut, 7)
       Continue
     Endif
 
-    If Left$(sShortcut, 4) = "ALT+" Then
+    If UCase(Left$(sShortcut, 4)) = "ALT+" Then
       Alt = True
       sShortcut = Mid$(sShortcut, 5)
       Continue
     Endif
 
-    Shortcut = Left$(sShortcut) & Lower(Mid$(sShortcut, 2))
+    Shortcut = sShortcut
     Return
 
   Loop

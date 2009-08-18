@@ -795,3 +795,15 @@ Public Sub btnSort_Click()
   Next
   
 End
+
+Public Sub mnuPreviousTab_Click()
+  
+  Try Dec tabWorkspace.Index
+  
+End
+
+Public Sub mnuNextTab_Click()
+  
+  Try Inc tabWorkspace.Index
+  
+End

@@ -8,7 +8,7 @@ AC_PROG_LIBTOOL
 GB_CHECK_XWINDOW
 
 dnl TODO: add a version test in GB_COMPONENT!
-GB_PATH_SDL(1.2.8, [], [touch DISABLED])
+GB_PATH_SDL([1.2.8], [], [touch DISABLED])
 
 dnl check Xcursor support
 AC_CHECK_LIB(Xcursor, XcursorLibraryLoadCursor,

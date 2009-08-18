@@ -7,6 +7,19 @@
     Text = ("")
     Visible = False
   }
+  { mnuMove Menu
+    Text = ("")
+    { mnuPreviousTab Menu
+      Action = "workspace-previous-tab"
+      Text = ("Previous tab")
+      Shortcut = "Ctrl+PgUp"
+    }
+    { mnuNextTab Menu
+      Action = "workspace-next-tab"
+      Text = ("Next tab")
+      Shortcut = "Ctrl+PgDown"
+    }
+  }
   { tabWorkspace TabStrip
     MoveScaled(3,9,56,51)
     Visible = False
@@ -88,5 +101,18 @@
     #X = 427
     #Y = 462
     Delay = 0
+  }
+}
+
+# Gambas Action File 3.0
+
+{ Actions
+  { Action workspace-next-tab
+    Text = "Next tab"
+    Shortcut = "Ctrl+PgDown"
+  }
+  { Action workspace-previous-tab
+    Text = "Previous tab"
+    Shortcut = "Ctrl+PgUp"
   }
 }
