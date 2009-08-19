@@ -312,7 +312,7 @@ void SDLgfx::Clear(void)
 {
 	SetContext();
 
-	glClearColor((GLfloat((hBackColor >> 24) & 0xFF)/255), (GLfloat((hBackColor >> 16) & 0xFF)/255), (GLfloat((hBackColor >> 8) & 0xFF)/255), 1.0f);
+ 	glClearColor((GLfloat((hBackColor >> 16) & 0xFF)/255), (GLfloat((hBackColor >> 8) & 0xFF)/255), (GLfloat((hBackColor) & 0xFF)/255), 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
@@ -321,7 +321,8 @@ void SDLgfx::DrawPixel(int x, int y)
 	SetContext();
 
 	glBegin(GL_POINTS);
-	glColor4f((GLfloat((hForeColor >> 24) & 0xFF)/ 255), (GLfloat((hForeColor >> 16) & 0xFF)/255), (GLfloat((hForeColor >> 8) & 0xFF)/255), (GLfloat(hForeColor  & 0xFF)/255));
+	glColor4f((GLfloat((hForeColor >> 16) & 0xFF)/255), (GLfloat((hForeColor >> 8) & 0xFF)/255), (GLfloat(hForeColor  & 0xFF)/255),
+                (GLfloat(~(hForeColor >> 24) & 0xFF)/255));
 	glVertex2i(x, y);
 	glEnd();
 }
@@ -339,7 +340,8 @@ void SDLgfx::DrawLine(int x1, int y1, int x2, int y2)
 	glLineWidth(GLfloat(hLineWidth));
 
 	glBegin(GL_LINES);
-	glColor4f((GLfloat((hForeColor >> 24) & 0xFF)/ 255), (GLfloat((hForeColor >> 16) & 0xFF)/255), (GLfloat((hForeColor >> 8) & 0xFF)/255), (GLfloat(hForeColor  & 0xFF)/255));
+	glColor4f((GLfloat((hForeColor >> 16) & 0xFF)/255), (GLfloat((hForeColor >> 8) & 0xFF)/255), (GLfloat(hForeColor  & 0xFF)/255),
+                (GLfloat(~(hForeColor >> 24) & 0xFF)/ 255));
 	glVertex2i(x1, y1);
 	glVertex2i(x2, y2);
 	glEnd();
@@ -358,7 +360,8 @@ void SDLgfx::DrawRect(int x, int y, int w, int h)
 
 	SetFillPattern(hFill);
 
-	glColor4f((GLfloat((hForeColor >> 24) & 0xFF)/ 255), (GLfloat((hForeColor >> 16) & 0xFF)/255), (GLfloat((hForeColor >> 8) & 0xFF)/255), (GLfloat(hForeColor  & 0xFF)/255));
+	glColor4f((GLfloat((hForeColor >> 16) & 0xFF)/255), (GLfloat((hForeColor >> 8) & 0xFF)/255), (GLfloat(hForeColor & 0xFF)/255),
+                (GLfloat(~(hForeColor >> 24) & 0xFF)/ 255));
 	glBegin(GL_QUADS);
 	glVertex2i(x, y);
 	glVertex2i(x+w, y);
@@ -397,7 +400,8 @@ void SDLgfx::DrawEllipse(int x, int y, int w, int h)
 
 	SetFillPattern(hFill);
 
-	glColor4f((GLfloat((hForeColor >> 24) & 0xFF)/ 255), (GLfloat((hForeColor >> 16) & 0xFF)/255), (GLfloat((hForeColor >> 8) & 0xFF)/255), (GLfloat(hForeColor  & 0xFF)/255));
+	glColor4f((GLfloat((hForeColor >> 16) & 0xFF)/255), (GLfloat((hForeColor >> 8) & 0xFF)/255), (GLfloat(hForeColor & 0xFF)/255),
+                (GLfloat(~(hForeColor >> 24) & 0xFF)/ 255));
 
 	glBegin(GL_POLYGON);
 

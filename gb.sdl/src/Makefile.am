@@ -21,7 +21,6 @@ gb_sdl_la_SOURCES = \
  SDLsurface.h SDLsurface.cpp \
  SDLtexture.h SDLtexture.cpp \
  SDLwindow.h SDLwindow.cpp \
- Ccolor.h Ccolor.cpp \
  Cconst.h Cconst.cpp \
  Cdesktop.h Cdesktop.cpp \
  Cdraw.h Cdraw.cpp \

@@ -32,7 +32,6 @@
 #include "SDLapp.h"
 #include "SDLcore.h"
 
-#include "Ccolor.h"
 #include "Cconst.h"
 #include "Cdesktop.h"
 #include "Ckey.h"
@@ -66,12 +65,11 @@ extern "C"
 
 	GB_DESC *GB_CLASSES[] EXPORT =
 	{
-		CColor,
 		CLine, CFill,
 		CFonts, CFont,
 		CDesktop,
 		CKey,
-		CMouse,	CCursor,
+		CMouse, CCursor,
 		CImage,
 		CDraw,
 		CWindow,
