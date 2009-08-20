@@ -36,7 +36,7 @@
 #include "gbx_api.h"
 #include "gbx_class.h"
 #include "gbx_c_array.h"
-
+#include "gbx_project.h"
 #include "gbx_debug.h"
 
 
@@ -360,6 +360,10 @@ GB_CLASS DEBUG_find_class(const char *name)
 {
 	CLASS *class;
 	CLASS *save = CP;
+	
+	// As the startup class is automatically exported, this is the only way for the debugger to find it.
+	if (!strcmp(name, PROJECT_class->name))
+		return (GB_CLASS)PROJECT_class;
 	
 	CP = NULL;
 	class = CLASS_find(name);

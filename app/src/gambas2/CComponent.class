@@ -288,15 +288,13 @@ PUBLIC SUB CalcSortKey()
   DIM sNeed AS String
   DIM hComp AS CComponent
 
-  'DEBUG ">>>";; Key
-
   IF SortKey = 0 THEN 
 
     IF Require.Count OR IF Need.Count THEN
 
       FOR EACH sComp IN Require
         hComp = All[sComp]
-        IF hComp <> ME THEN hComp.CalcSortKey
+        IF hComp AND IF hComp <> ME THEN hComp.CalcSortKey
       NEXT
   
       FOR EACH sNeed IN Need
@@ -314,8 +312,6 @@ PUBLIC SUB CalcSortKey()
 
   ENDIF
   
-  'DEBUG "<<<";; Key;; "=";; SortKey
-
 END
 
 PUBLIC SUB Load()
