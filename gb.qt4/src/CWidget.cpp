@@ -681,6 +681,9 @@ BEGIN_METHOD(CCONTROL_move_scaled, GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_FLOAT 
 	y = (int)(VARG(y) * MAIN_scale);
 	w = (int)(MISSING(w) ? -1 : (VARG(w) * MAIN_scale));
 	h = (int)(MISSING(h) ? -1 : (VARG(h) * MAIN_scale));
+	
+	if (w == 0) w = 1;
+	if (h == 0) h = 1;
 
 	CWIDGET_move_resize(_object, x, y, w, h);
 
@@ -693,6 +696,9 @@ BEGIN_METHOD(CCONTROL_resize_scaled, GB_FLOAT w; GB_FLOAT h)
 
 	w = (int)(VARG(w) * MAIN_scale);
 	h = (int)(VARG(h) * MAIN_scale);
+	
+	if (w == 0) w = 1;
+	if (h == 0) h = 1;
 
 	CWIDGET_resize(_object, w , h);
 

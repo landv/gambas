@@ -1625,8 +1625,6 @@ void MyMainWindow::showActivate(QWidget *transient)
 		else
 			setSizeGrip(false);
 		
-		_activate = true;
-
 		if (windowState() & Qt::WindowMinimized)
 			showMinimized();
 		else if (windowState() & Qt::WindowFullScreen)
@@ -1636,7 +1634,15 @@ void MyMainWindow::showActivate(QWidget *transient)
 		else
 			show();
 
-		if (isToolbar()) //|| THIS->skipTaskbar)
+		if (_type == _NET_WM_WINDOW_TYPE_NORMAL
+			  || _type == _NET_WM_WINDOW_TYPE_DOCK
+			  || _type == _NET_WM_WINDOW_TYPE_TOOLBAR
+			  || _type == _NET_WM_WINDOW_TYPE_MENU
+			  || _type == _NET_WM_WINDOW_TYPE_UTILITY
+			  || _type == _NET_WM_WINDOW_TYPE_DIALOG
+			  || _type == _NET_WM_WINDOW_TYPE_DROPDOWN_MENU
+			  || _type == _NET_WM_WINDOW_TYPE_POPUP_MENU
+			  || _type == _NET_WM_WINDOW_TYPE_COMBO)
 		{
 			MAIN_process_events();
 			usleep(50000);

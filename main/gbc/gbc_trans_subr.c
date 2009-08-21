@@ -737,7 +737,7 @@ void TRANS_mid()
 	PATTERN *len;
 	PATTERN *save;
 	
-	TRANS_want(RS_LBRA, "Left brace");
+	TRANS_want(RS_LBRA, "Left bracket");
 	
 	str = JOB->current;
 	TRANS_expression(FALSE);
@@ -760,7 +760,7 @@ void TRANS_mid()
 		len = NULL;
 	}
 	
-	TRANS_want(RS_RBRA, "Right brace");
+	TRANS_want(RS_RBRA, "Right bracket");
 	TRANS_want(RS_EQUAL, "Equal");
 	
 	TRANS_expression(FALSE);

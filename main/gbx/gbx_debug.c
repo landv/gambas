@@ -387,6 +387,7 @@ GB_CLASS DEBUG_find_class(const char *name)
 	CLASS *class;
 	CLASS *save = CP;
 	
+	// As the startup class is automatically exported, this is the only way for the debugger to find it.
 	if (!strcmp(name, PROJECT_class->name))
 		return (GB_CLASS)PROJECT_class;
 	

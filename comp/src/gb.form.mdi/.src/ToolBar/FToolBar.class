@@ -33,9 +33,16 @@ Private $iLock As Integer
 
 Private $aHidden As Control[]
 
+Static Public Sub GetToolbarFromKey(sKey As String) As FToolBar
+  
+  
+  
+End
+
+
 Public Sub _new()
   
-  $iHandleSize = Max(8, Desktop.Scale)
+  $iHandleSize = Max(4, Desktop.Scale / 2)
   dwgHandle.Width = $iHandleSize
   dwgHandle.Visible = $bShowHandle
   $hWatcherParent = New Watcher(Me.Parent.Parent) As "Container"
@@ -322,7 +329,9 @@ End
 
 Public Sub dwgHandle_Draw()
 
-  Draw.Style.Button(1, 1, dwgHandle.W - 2, dwgHandle.H - 2, $bPressed And $bInside, Not Me.Enabled)
+  'Draw.Style.Button(1, 1, dwgHandle.W - 2, dwgHandle.H - 2, $bPressed And $bInside, Not Me.Enabled)
+  Draw.Style.Handle(0, 0, dwgHandle.W, dwgHandle.H, Not $bVertical, Not Me.Enabled)
+  'Draw.Style.Separator(0, 0, dwgHandle.W, dwgHandle.H, $bVertical, Not Me.Enabled)
   'Draw.FillX = 0
   'Draw.FillY = 0
   'Draw.Style.Separator(1, 1, dwgHandle.W - 2, dwgHandle.H - 2, $bVertical, Not Me.Enabled)

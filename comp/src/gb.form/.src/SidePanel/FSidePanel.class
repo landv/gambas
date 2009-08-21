@@ -537,15 +537,16 @@ End
 
 Public Sub btnSide_Draw()
 
-  If Last.Tag Then
-    Draw.Style.Button(0, 0, btnSide.W, btnSide.H, Last.Tag = 2)
-  Endif
+  'If Last.Tag Then
+  '  Draw.Style.Button(0, 0, btnSide.W, btnSide.H, Last.Tag = 2)
+  'Endif
   If $hPict Then Draw.Picture($hPict, (Last.W - $hPict.W) / 2, (Last.H - $hPict.H) / 2)
 
 End
 
 Public Sub btnSide_Enter()
 
+  'Last.Background = Color.ButtonBackground
   Last.Tag = 1
   Last.Refresh
 
@@ -553,6 +554,7 @@ End
 
 Public Sub btnSide_Leave()
 
+  'Last.Background = Color.Default
   Last.Tag = Null
   Last.Refresh
 

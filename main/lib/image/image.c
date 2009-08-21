@@ -485,7 +485,6 @@ void IMAGE_fill(GB_IMG *img, GB_COLOR col)
 	GET_POINTER(img, p, pm);
 	
 	col = from_GB_COLOR(col, img->format);
-	
 	while (p != pm)
 		*p++ = col;	
 }
@@ -886,53 +885,67 @@ void IMAGE_mirror(GB_IMG *src, GB_IMG *dst, bool horizontal, bool vertical)
   }
 }
 
+#if 0
+#define GET_RGBA(_col, _r, _g, _b, _a) { _r = RED(_col); _g = GREEN(_col); _b = BLUE(_col); _a = ALPHA(_col); }
+
 void IMAGE_transform(GB_IMG *dst, GB_IMG *src, double sx, double sy, double sdx, double sdy)
 {
 	int x, y;
 	double ssx;
 	double ssy;
-	uint col, col2;
+	uint col, cdp;
 	int ix, iy;
 	uchar r, g, b, a;
+	uchar rc, gc, bc, ac;
+	int wx, wy;
 	
 	uint *dp = (uint *)dst->data;
+	memset(dp, 0, IMAGE_size(dst));
 	
-	for (y = 0; y < dst->height; y++)
+	dp += dst->width;
+	
+	for (y = 1; y < (dst->height - 1); y++)
 	{
 		ssx = sx;
 		ssy = sy;
-		for (x = 0; x < dst->width; x++)
+		
+		dp++;
+		for (x = 1; x < (dst->width - 1); x++)
 		{
 			ix = sx;
 			iy = sy;
+			
 			if (is_valid(src, ix, iy))
-				*dp = BGRA_from_format(*((uint *)src->data + iy * src->width + ix), src->format);
-			else
-				*dp = 0;
+			{
+				col = BGRA_from_format(*((uint *)src->data + iy * src->width + ix), src->format);
+				
+				//dp[1] = RGBA(RED(col) * wx / 256, GREEN(col) * wx / 256, BLUE(col) * wx / 256, ALPHA(col) * wx / 256);
+
+				wx = 128;
+				
+				cdp = BGRA_from_format(*dp, dst->format);
+				dp[0] = RGBA(RED(cdp) + RED(col) * wx / 256, GREEN(cdp) + GREEN(col) * wx / 256, BLUE(cdp) + BLUE(col) * wx / 256, ALPHA(col));
+
+				wx = 32;
+				
+				cdp = BGRA_from_format(dp[-1], dst->format);
+				dp[-1] = RGBA(RED(cdp) + RED(col) * wx / 256, GREEN(cdp) + GREEN(col) * wx / 256, BLUE(cdp) + BLUE(col) * wx / 256, ALPHA(col));
+				
+				cdp = BGRA_from_format(dp[-dst->width], dst->format);
+				dp[-dst->width] = RGBA(RED(cdp) + RED(col) * wx / 256, GREEN(cdp) + GREEN(col) * wx / 256, BLUE(cdp) + BLUE(col) * wx / 256, ALPHA(col));
+				
+				dp[1] = RGBA(RED(col) * wx / 256, GREEN(col) * wx / 256, BLUE(col) * wx / 256, 0);
+				
+				dp[dst->width] = dp[1]; //RGBA(RED(col) * wx / 256, GREEN(col) * wx / 256, BLUE(col) * wx / 256, ALPHA(col) * wx / 256);
+			}
+
 			sx += sdx;
 			sy += sdy;
 			dp++;
 		}
+		dp++;
 		sx = ssx - sdy;
 		sy = ssy + sdx;
 	}
-	
-	return;
-	
-	dp = (uint *)dst->data;
-	
-	for (y = 0; y < dst->height; y++)
-	{
-		for (x = 0; x < (dst->width - 1); x++)
-		{
-			col = dp[0]; //BGRA_from_format(dp[0], dst->format);
-			col2 = dp[1]; //BGRA_from_format(dp[1], dst->format);
-			r = (RED(col) + ((RED(col) + RED(col2)) >> 1)) >> 1;
-			g = (GREEN(col) + ((GREEN(col) + GREEN(col2)) >> 1)) >> 1;
-			b = (BLUE(col) + ((BLUE(col) + BLUE(col2)) >> 1)) >> 1;
-			a = (ALPHA(col) + ((ALPHA(col) + ALPHA(col2)) >> 1)) >> 1;
-			*dp++ = RGBA(r, g, b, a); //BGRA_to_format(RGBA(r, g, b, a), dst->format);
-		}
-		dp++;
-	}
 }
+#endif

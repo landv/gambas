@@ -399,7 +399,7 @@ Public Sub timMadeIn_Timer()
   'If Me.Minimized Then Return
   
   If $eIncAng < 0 Then
-    hImage = $hLogo.Flip()
+    hImage = $hLogo.Mirror(True, False)
   Else
     hImage = $hLogo.Copy()
   Endif

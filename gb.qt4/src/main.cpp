@@ -955,6 +955,8 @@ int EXPORT GB_INIT(void)
 	qInstallMsgHandler(myMessageHandler);
 	#endif
 	#endif
+	
+	//putenv((char *)"QT_ONSCREEN_PAINT=1");
 
 	GB.Hook(GB_HOOK_MAIN, (void *)hook_main);
 	GB.Hook(GB_HOOK_LOOP, (void *)hook_loop);

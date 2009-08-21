@@ -433,7 +433,7 @@ Public Sub Form_Resize()
     Endif  
     
     panWorkspace.Background = Color.Background
-    panWorkspace.Border = Border.Raised
+    panWorkspace.Border = Border.Plain
 
   Else
 
@@ -793,6 +793,8 @@ Public Sub btnSort_Click()
   For iInd = 0 To $aWindow.Max  
     UpdateTitleFromIndex(iInd)
   Next
+  
+  Activate
   
 End
 

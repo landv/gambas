@@ -235,7 +235,6 @@ End
 
 Public Sub Form_Open()
 
-  MAction.InitAction
   Me.Center
 
 End
@@ -282,3 +281,4 @@ Public Sub cmbSize_Click()
   $hForm.SetIconSize(cmbSize.Index)
 
 End
+

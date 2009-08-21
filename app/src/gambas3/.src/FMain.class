@@ -27,8 +27,10 @@ Public Sub _new()
   'Design.Load(panToolbar)  
   FToolbox.Load(panTool)
   'FIconTool.Load(panIcon)
-  FProperty.Load(panFrame)
-  FFormStack.Load(panFrame)
+  FProperty.Load(tabProperty)
+  tabProperty.Index = 1
+  FFormStack.Load(tabProperty)
+  tabProperty.Index = 0
   
   FFind.Load(panCentral)
   FFind.Next = panDebug
@@ -64,7 +66,7 @@ Public Sub Form_Open()
   FDebugInfo.UpdateView
 
   tvwProject_Select
-  tabProperty_Click
+  'tabProperty_Click
   btnShowMenu_Click
   
   mnuOpenExample.Tag = "."
@@ -889,7 +891,7 @@ Public Sub ReadConfig()
   panMessage.Visible = bShow
   mnuStatusBar.Value = bShow
 
-  panTabProperty.H = tabProperty.ClientY - 2
+  'panTabProperty.H = tabProperty.ClientY - 2
 
 End
 
@@ -1358,31 +1360,31 @@ Public Sub mnuOpenExample_Show()
   
 End
 
-Public Sub tabProperty_Click()
-
-  With tabProperty
-
-  Select Case .Index
-  
-    Case 0
-      FFormStack.Hide
-      'FProperty.Move(.X, .Y + .ClientY - 2, .W, .ClientH + 2)
-      FProperty.Show
-    
-    Case 1
-      FProperty.Hide
-      'FFormStack.Move(.X, .Y + .ClientY - 2, .W, .ClientH + 2)
-      FFormStack.Show
-  
-  End Select 
-  
-  End With
-  
-End
+' Public Sub tabProperty_Click()
+' 
+'   With tabProperty
+' 
+'   Select Case .Index
+'   
+'     Case 0
+'       FFormStack.Hide
+'       'FProperty.Move(.X, .Y + .ClientY - 2, .W, .ClientH + 2)
+'       FProperty.Show
+'     
+'     Case 1
+'       FProperty.Hide
+'       'FFormStack.Move(.X, .Y + .ClientY - 2, .W, .ClientH + 2)
+'       FFormStack.Show
+'   
+'   End Select 
+'   
+'   End With
+'   
+' End
 
 Public Sub panProperty_Arrange()
 
-  tabProperty_Click  
+  'tabProperty_Click  
 
 End
 

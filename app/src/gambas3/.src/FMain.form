@@ -748,7 +748,7 @@
       Action = "project"
       Orientation = Align.Left
       { Separator1 Separator
-        MoveScaled(3,2,13,0.1429)
+        MoveScaled(3,2,13,0)
       }
       { HBox1 HBox
         MoveScaled(1,5,27,56)
@@ -763,7 +763,7 @@
           ScrollBar = Scroll.Vertical
         }
         { Separator5 Separator
-          MoveScaled(22,4,0.1429,18)
+          MoveScaled(23,4,0,18)
         }
       }
     }
@@ -791,10 +791,12 @@
       Orientation = Align.Right
       Hidden = True
       { panTabProperty Panel
-        MoveScaled(2,0,28,6)
+        MoveScaled(2,0,28,40)
+        Expand = True
         Arrangement = Arrange.Vertical
         { tabProperty TabStrip
-          MoveScaled(0,0,26,6)
+          MoveScaled(0,0,26,37)
+          Expand = True
           Arrangement = Arrange.Fill
           Count = 2
           Index = 0
@@ -803,12 +805,6 @@
           Text = ("Hierarchy")
           Index = 0
         }
-      }
-      { panFrame Panel
-        MoveScaled(3,8,22,32)
-        Expand = True
-        Arrangement = Arrange.Fill
-        Border = Border.Plain
       }
       { panTool SidePanel
         MoveScaled(6,45,21,37)
@@ -822,15 +818,19 @@
     }
   }
   { timMessage #Timer
-    #X = 707
-    #Y = 105
+    #X = 665
+    #Y = 84
     Delay = 2000
+  }
+  { timOpen #Timer
+    #X = 658
+    #Y = 154
   }
   { panMessage Panel
     MoveScaled(1,77,53,5)
     Arrangement = Arrange.Vertical
     { Separator6 Separator
-      MoveScaled(20,1,9,0.1429)
+      MoveScaled(20,1,9,0)
     }
     { lblMessage Label
       MoveScaled(2,1,39,3)
@@ -839,10 +839,6 @@
       AutoResize = True
       Text = ("OK")
     }
-  }
-  { timOpen #Timer
-    #X = 644
-    #Y = 105
   }
 }
 

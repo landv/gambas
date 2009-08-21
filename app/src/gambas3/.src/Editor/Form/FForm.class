@@ -197,6 +197,7 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
   Dim bBackport As Boolean
   Dim cCoord As String[]
   Dim eW, eH As Float
+  Dim iW, iH As Integer
   Dim bFirst As Boolean
 
   hCtrl = hParent
@@ -414,7 +415,17 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
             If eW <= 3 Then Inc eW
             If eH <= 3 Then Inc eH
           Endif
-          Try hCtrl.Resize(eW * Desktop.Scale, eH * Desktop.Scale, True)
+          If eW = 0 Then
+            iW = 1
+          Else
+            iW = eW * Desktop.Scale
+          Endif
+          If eH = 0 Then
+            iH = 1
+          Else
+            iH = eH * Desktop.Scale
+          Endif
+          Try hCtrl.Resize(iW, iH, True)
         Endif
 
         If Error Then Print "Error: Syntax error: "; sLine

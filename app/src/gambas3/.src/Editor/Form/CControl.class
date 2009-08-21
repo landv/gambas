@@ -1245,7 +1245,9 @@ Static Public Function Grid(iVal As Integer, iGrid As Integer) As Integer
 End
 
 
-Private Function GetCoord(iCoord As Integer) As Float
+Private Function GetCoord(iCoord As Integer, Optional bDim As Boolean) As Float
+
+  If bDim And If iCoord = 1 Then Return 0
 
   Return Round(iCoord / Desktop.Scale, -4)
 
@@ -1405,7 +1407,7 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
     Else
 
       sLine = "MoveScaled(" & GetCoord(cCoord["X"]) & "," & GetCoord(cCoord["Y"])
-      If cCoord.Count > 2 Then sLine = sLine & "," & GetCoord(cCoord["Width"]) & "," & GetCoord(cCoord["Height"])
+      If cCoord.Count > 2 Then sLine = sLine & "," & GetCoord(cCoord["Width"], True) & "," & GetCoord(cCoord["Height"], True)
       sLine = sLine & ")"
 
     Endif

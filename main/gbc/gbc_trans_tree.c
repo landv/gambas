@@ -693,7 +693,7 @@ READ_OPERATOR:
     else
     {
       if (RES_is_only(op_curr) || RES_is_only(op))
-        THROW("Ambiguous expression. Please use braces");
+        THROW("Ambiguous expression. Please use brackets");
 
       nparam = 1;
       op_curr = op;

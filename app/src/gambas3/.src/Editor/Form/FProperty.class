@@ -26,14 +26,14 @@ Public Sub _new()
   
   Settings.Read(Me)
   
+  grdProperty.Columns.Count = 2
+  grdProperty.ScrollBar = Scroll.Vertical
+  grdProperty.Columns.Resizable = True
+
 End
 
 
 Public Sub Form_Open()
-
-  grdProperty.Columns.Count = 2
-  grdProperty.ScrollBar = Scroll.Vertical
-  grdProperty.Columns.Resizable = True
 
   $iBackground = grdProperty.Background
 
@@ -956,6 +956,7 @@ Public Sub ReadConfig()
   txtProperty.Font = grdProperty.Font
   cmbProperty.Font = grdProperty.Font
   spnProperty.Font = grdProperty.Font
+  panProperty.Font = grdProperty.Font
   MoveProperty
   RefreshAll
 
