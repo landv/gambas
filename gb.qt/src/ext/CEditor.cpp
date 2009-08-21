@@ -826,9 +826,13 @@ END_METHOD
 
 BEGIN_METHOD(CEDITOR_pos_to_column, GB_INTEGER x; GB_INTEGER y)
 
-  int line, col;
+  int col, line;
 
-  WIDGET->posToCursor(VARG(x), VARG(y), &line, &col);
+  line = WIDGET->posToLine(VARG(y));
+  col = WIDGET->posToColumn(line, VARG(x)); //posToCursor(VARG(x), VARG(y), &line, &col);
+  col = QMAX(0, col);
+  if (col > DOC->lineLength(line)) { col=false;}
+  
   GB.ReturnInteger(col);
 
 END_METHOD

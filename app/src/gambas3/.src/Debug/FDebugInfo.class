@@ -702,7 +702,7 @@ Public Sub timBreakpoint_Timer()
     Wend
     
     hEditor = Project.Files[Project.FindPath(sClass)]
-    If Not hEditor Then Continue
+    'If Not hEditor Then Continue
     For Each iInd In hEditor.GetBreakpoints()
       sProc = hEditor.GetProcAt(iInd)
       cvwBreak.Add(sClass & "." & sProc & "." & CStr(iInd), sClass)

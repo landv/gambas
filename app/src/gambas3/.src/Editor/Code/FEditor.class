@@ -21,6 +21,9 @@ Private $iPosSignature As Integer
 Private $bCompletion As Boolean
 Private $bCleanOnSave As Boolean
 Private $bShowPopupHelp As Boolean
+Private $X As Integer
+Private $Y As Integer
+
 
 Static Private $hVirtualSymbol As New CSymbolInfo
 
@@ -2177,7 +2180,7 @@ Private Function IsKeyword(iCpt As Integer) As Boolean
 End
 
 
-Private Sub FindDefinition(bPopupHelp As Boolean)
+Private Sub FindDefinition(bPopupHelp As Boolean, Optional iX As Integer, Optional iY As Integer)
 
   Dim sLig As String
   Dim iCol As Integer
@@ -2186,15 +2189,24 @@ Private Sub FindDefinition(bPopupHelp As Boolean)
   Dim iCpt As Integer
   Dim sKeyword As String
   Dim sKeyword2 As String
-
-  sLig = Highlight.Purge(Editor.Lines[Editor.Line].Text)
-  If Editor.Selected Then 
-    If Editor.Selection.EndLine > Editor.Selection.StartLine Then Return
-    iCol = Editor.Selection.EndColumn
-  Else
+  Dim iLine As Integer
+  
+  If Not bPopupHelp Then
+    iLine = Editor.Line
     iCol = Editor.Column
+    If Editor.Selected Then 
+      If Editor.Selection.EndLine > Editor.Selection.StartLine Then Return
+      iCol = Editor.Selection.EndColumn
+    Else
+      iCol = Editor.Column
+    Endif
+  Else
+    iCol = Editor.PosToColumn(iX, iY)
+    iLine = Editor.PosToLine(iY)
   Endif
-
+  
+  sLig = Highlight.Purge(Editor.Lines[iLine].Text)
+  
   Repeat
     Inc iCol
     If iCol > Len(sLig) Then Break
@@ -2208,8 +2220,9 @@ Private Sub FindDefinition(bPopupHelp As Boolean)
   
   sLig = Left$(sLig, iCol - 1)
   If Right(sLig) = "[" Then sLig &= "]"
-  
+  'Editor.ShowWord(iLine, iCol, 3)
   Highlight.Analyze(sLig)
+  Print sLig
   'IF IsCurrentProc() THEN RETURN
 
   iCpt = Highlight.Types.Count - 1
@@ -2226,7 +2239,7 @@ Private Sub FindDefinition(bPopupHelp As Boolean)
       Endif
 
       If bPopupHelp Then
-        FHelp.ShowKeywordHelp(Editor, sKeyword, sKeyword2)
+        FHelp.ShowKeywordHelp(Editor, sKeyword, sKeyword2, iX, iY)
       Else
         MHelp.GotoKeyword(sKeyword, sKeyword2)
       Endif
@@ -2235,10 +2248,10 @@ Private Sub FindDefinition(bPopupHelp As Boolean)
     Else If Highlight.Types[iCpt] = Highlight.DataType Then 
       sKeyword = Highlight.Symbols[iCpt]
       If bPopupHelp Then
-        If FHelp.ShowDatatypeHelp(Editor, sKeyword) Then
+        If FHelp.ShowDatatypeHelp(Editor, sKeyword, ix, iy) Then
           hClass = CComponent.Classes[sKeyword]
           If hClass Then 
-            FHelp.ShowClassHelp(Editor, hClass.Component, hClass.Name)
+            FHelp.ShowClassHelp(Editor, hClass.Component, hClass.Name, iX, iY)
           Endif 
         Endif
       Else
@@ -2264,7 +2277,7 @@ Private Sub FindDefinition(bPopupHelp As Boolean)
     Project.OpenFile(hSymbol.Class, hSymbol.LineNumber)
   Else
     If bPopupHelp Then
-      FHelp.ShowSymbolHelp(Editor, hSymbol)
+      FHelp.ShowSymbolHelp(Editor, hSymbol, iX, iY)
     Else
       MHelp.GotoSymbol(hSymbol)
     Endif
@@ -2351,15 +2364,31 @@ Public Sub Editors_GotFocus()
 
 End
 
+Public Sub Editors_MouseMove()
+  
+  If Not Project.Running Then
+    If FDebugInfo.IsHelpVisible() Or $bShowPopupHelp Then
+      If Not timShowHelp.Enabled Then 
+        timShowHelp.Enabled = True
+
+      Endif
+    Endif
+    $X = Mouse.X
+    $Y = Mouse.Y
+  Endif
+  
+End
+
+
 Public Sub Editors_MouseUp()
 
   HideMessage
   If Not Editor.Selected Then Return 
   If Editor.Selection.StartLine < Editor.Selection.EndLine Then Return 
-  If Not Project.Running Then
-    If FDebugInfo.IsHelpVisible() Or $bShowPopupHelp Then timShowHelp.Trigger
-    Return 
-  Endif
+  'If Not Project.Running Then
+    'If FDebugInfo.IsHelpVisible() Or $bShowPopupHelp Then timShowHelp.Trigger
+  '  Return 
+  'Endif
   
   FDebugInfo.InstantWatch(Trim(Editor.Selection.Text), Editor, 
     Editor.CursorX + Editor.CharWidth * ((Editor.Selection.StartColumn + Editor.Selection.EndColumn) / 2 - Editor.Column), 
@@ -2784,6 +2813,6 @@ End
 
 Public Sub timShowHelp_Timer()
 
-  FindDefinition(True)
-
+  If Editor.PosToColumn($X, $Y) Then FindDefinition(True, $X, $Y)
+  timShowHelp.Enabled = False
 End
