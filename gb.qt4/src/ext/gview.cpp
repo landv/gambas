@@ -131,6 +131,7 @@ GEditor::GEditor(QWidget *parent)
 	_showRow = -1;
 	_showCol = 0;
 	_showLen = 0;
+	_posOutside = false;
 	lineWidthCacheY = -1;
 	
 	for (i = 0; i < GLine::NUM_STATE; i++)
@@ -248,48 +249,6 @@ int GEditor::lineWidth(int y, int len)
 		}
 		return margin + lw;
 	}
-}
-
-int GEditor::posToColumn(int y, int px)
-{
-	int i = -1, lw;
-	int len = doc->lineLength(y);
-	QString s = doc->lines.at(y)->s.getString();
-	int d, f;
-	
-	if (len == 0)
-		return 0;
-		
-	px += contentsX();
-	
-	d = 0;
-	f = len;
-	while (f > d)
-	{
-		if (i < 0)
-			i = px / fm.width("m");
-		else
-			i = (d + f) / 2;
-		
-		lw = lineWidth(y, i);
-		if (px < lw)
-		{
-			f = i;
-			continue;
-		}
-		
-		lw += fm.width(s[i]);
-		if (px >= lw)
-		{
-			d = i + 1;
-			continue;
-		}
-		
-		d = i;
-		break;
-	}
-	
-	return d;
 }
 
 int GEditor::findLargestLine()
@@ -1459,31 +1418,82 @@ __IGNORE:
 }
 
 
-int GEditor::posToLine(int py) const
+int GEditor::posToColumn(int y, int px)
+{
+	int i = -1, lw;
+	int len = doc->lineLength(y);
+	QString s = doc->lines.at(y)->s.getString();
+	int d, f;
+	
+	if (px < margin || px >= visibleWidth())
+		_posOutside = true;
+	else
+		_posOutside = false;
+	
+	if (len == 0)
+		return 0;
+		
+	px += contentsX();
+	
+	d = 0;
+	f = len;
+	while (f > d)
+	{
+		if (i < 0)
+			i = px / fm.width("m");
+		else
+			i = (d + f) / 2;
+		
+		lw = lineWidth(y, i);
+		if (px < lw)
+		{
+			f = i;
+			continue;
+		}
+		
+		lw += fm.width(s[i]);
+		if (px >= lw)
+		{
+			d = i + 1;
+			continue;
+		}
+		
+		d = i;
+		break;
+	}
+	
+	return d;
+}
+
+
+int GEditor::posToLine(int py)
 {
 	int ny;
 
 	ny = rowAt(contentsY() + py);
+	_posOutside = true;
 	if (ny < 0)
 		ny = 0;
 	else if (ny >= visibleLines())
 		ny = visibleLines() - 1;
+	else
+		_posOutside = false;
 	
 	return viewToReal(ny); 
 }
 
-void GEditor::posToCursor(int px, int py, int *y, int *x)
+bool GEditor::posToCursor(int px, int py, int *y, int *x)
 {
 	int nx, ny;
 
 	ny = posToLine(py);
-	
-	//nx = (contentsX() + px - margin) / charWidth;
 	nx = posToColumn(ny, px);
 	nx = QMAX(0, QMIN(nx, lineLength(ny)));
 
 	*y = ny;
 	*x = nx;
+	
+	return _posOutside;
 }
 
 void GEditor::cursorToPos(int y, int x, int *px, int *py)

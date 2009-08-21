@@ -84,6 +84,7 @@ private:
 	GString _showString;
 	bool _showStringIgnoreCase;
 	int _showRow, _showCol, _showLen;
+	bool _posOutside;
 	
 	int lastx;
 	bool left;
@@ -213,9 +214,10 @@ public:
 	int getLineHeight() const { return cellHeight(); }
 	int getCharWidth() const;
 	void cursorToPos(int y, int x, int *px, int *py);
-	int posToLine(int py) const;
+	bool isPosOutside() const { return _posOutside; }
+	int posToLine(int py);
 	int posToColumn(int y, int px);
-	void posToCursor(int px, int py, int *y, int *x);
+	bool posToCursor(int px, int py, int *y, int *x);
 	int lastVisibleRow(int y) const { return rowAt(y + visibleHeight() - 1); }
 	int lastVisibleRow() const { return lastVisibleRow(contentsY()); }
 	void updateLine(int y);

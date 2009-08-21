@@ -816,24 +816,23 @@ END_METHOD
 
 BEGIN_METHOD(CEDITOR_pos_to_line, GB_INTEGER y)
 
-  //int line, col;
-  //int px, py;
-
-  //WIDGET->getCursor(&line, &col);
-  GB.ReturnInteger(WIDGET->posToLine(VARG(y)));
+	int line = WIDGET->posToLine(VARG(y));
+	
+	if (WIDGET->isPosOutside())
+		GB.ReturnInteger(-1);
+	else
+		GB.ReturnInteger(line);
   
 END_METHOD
 
 BEGIN_METHOD(CEDITOR_pos_to_column, GB_INTEGER x; GB_INTEGER y)
 
-  int col, line;
+  int line, col;
 
-  line = WIDGET->posToLine(VARG(y));
-  col = WIDGET->posToColumn(line, VARG(x)); //posToCursor(VARG(x), VARG(y), &line, &col);
-  col = QMAX(0, col);
-  if (col > DOC->lineLength(line)) { col=false;}
-  
-  GB.ReturnInteger(col);
+  if (WIDGET->posToCursor(VARG(x), VARG(y), &line, &col))
+		GB.ReturnInteger(-1);
+	else
+		GB.ReturnInteger(col);
 
 END_METHOD
 
