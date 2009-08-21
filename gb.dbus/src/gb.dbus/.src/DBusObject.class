@@ -78,7 +78,6 @@ Private Sub GetMethodSignature(sMethod As String) As String
   Endif
   
   sSignIn &= ":" & sSignOut
-  message("")
   $cSignature[sMethod] = sSignIn
   Return sSignIn
   
