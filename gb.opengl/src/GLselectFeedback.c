@@ -76,7 +76,7 @@ END_METHOD
 BEGIN_METHOD(GLRENDERMODE, GB_INTEGER Mode)
 
       static GLuint oldrendermode = GL_RENDER; /* default render mode */
-      GLint mode = VARG(Mode);
+      GLint result, mode = VARG(Mode);
 
       /* invalid mode or same render mode:
          return null object, and let propagate an opengl error */
@@ -87,16 +87,16 @@ BEGIN_METHOD(GLRENDERMODE, GB_INTEGER Mode)
             return;
       }
       
-	mode = glRenderMode(mode);
-
-      if (!mode)
+	result = glRenderMode(mode);
+ 
+      if (!result)
       {
             GB.ReturnNull();
             oldrendermode = mode;
             return;
       }
 
-      if (mode < 0)
+      if (result < 0)
       {
             GB.Error ("Gl.RenderMode, buffer is too small !");
             return;
@@ -108,25 +108,27 @@ BEGIN_METHOD(GLRENDERMODE, GB_INTEGER Mode)
             GLuint *hitbuffer = selectbuffer;
             int idxhit, idxname;
             
-            GB.Array.New(&hitArray, GB_T_OBJECT, mode);
+            //GB.New(&hitArray, GB_T_OBJECT, result);
+            GB.New(POINTER(&hitArray), GB.FindClass("Integer[][]"), NULL, NULL);
 
-            for (idxhit=0; idxhit < mode; idxhit++)
+            for (idxhit=0; idxhit < result; idxhit++)
             {
                   GB_ARRAY childhitArray;
                   
-                  int names = (*hitbuffer) + 3;
-                  GB.Array.New(&childhitArray, GB_T_INTEGER, names);
+                  int names = *hitbuffer;
+                  GB.Array.New(&childhitArray, GB_T_INTEGER, names + 3);
                   *((GLuint *)GB.Array.Get(childhitArray, 0)) = *hitbuffer++; // maxname
                   *((GLuint *)GB.Array.Get(childhitArray, 1)) = *hitbuffer++; // zmin
                   *((GLuint *)GB.Array.Get(childhitArray, 2)) = *hitbuffer++; // zmax
 
-                  for (idxname=3; idxname < names; idxname++)
-                        *((GLuint *)GB.Array.Get(childhitArray, 2)) = *hitbuffer++; // names
+                  for (idxname=0; idxname < names; idxname++)
+                        *((GLuint *)GB.Array.Get(childhitArray, 3 + idxname)) = *hitbuffer++; // names
 
-                  *((GB_ARRAY *)GB.Array.Get(hitArray, idxhit)) = childhitArray;
+                  GB.Ref(childhitArray);
+                  *((GB_ARRAY *)GB.Array.Add(hitArray)) = childhitArray;
              }
 
-             GB.ReturnObject(&hitArray);
+             GB.ReturnObject(hitArray);
              return;
       }
 
@@ -136,12 +138,12 @@ BEGIN_METHOD(GLRENDERMODE, GB_INTEGER Mode)
             GLfloat *resultbuffer = feedbuffer;
             int idxfeed;
 
-            GB.Array.New(&feedArray, GB_T_FLOAT, mode);
+            GB.Array.New(&feedArray, GB_T_FLOAT, result);
 
-            for (idxfeed=0; idxfeed < mode; idxfeed++)
+            for (idxfeed=0; idxfeed < result; idxfeed++)
                   *((GLfloat *)GB.Array.Get(feedArray, idxfeed)) = *resultbuffer++;
 
-            GB.ReturnObject(&feedArray);
+            GB.ReturnObject(feedArray);
             return;
       }
       
