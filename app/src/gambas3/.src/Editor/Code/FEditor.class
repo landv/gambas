@@ -2222,7 +2222,7 @@ Private Sub FindDefinition(bPopupHelp As Boolean, Optional iX As Integer, Option
   If Right(sLig) = "[" Then sLig &= "]"
   'Editor.ShowWord(iLine, iCol, 3)
   Highlight.Analyze(sLig)
-  Print sLig
+  
   'IF IsCurrentProc() THEN RETURN
 
   iCpt = Highlight.Types.Count - 1
@@ -2372,6 +2372,8 @@ Public Sub Editors_MouseMove()
         timShowHelp.Enabled = True
 
       Endif
+    Else
+      timShowHelp.Enabled = False
     Endif
     $X = Mouse.X
     $Y = Mouse.Y
