@@ -202,9 +202,10 @@ public:
 	int getLineHeight() const { return cellHeight(); }
 	int getCharWidth() const;
 	void cursorToPos(int y, int x, int *px, int *py) const;
+	bool isPosOutside() const { return false; } // stub
 	int posToLine(int py) const;
 	int posToColumn(int y, int px) const;
-	void posToCursor(int px, int py, int *y, int *x) const;
+	bool posToCursor(int px, int py, int *y, int *x) const;
 	int lastVisibleRow(int y) const { return rowAt(y + visibleHeight() - 1); }
 	int lastVisibleRow() const { return lastVisibleRow(contentsY()); }
 	void updateLine(int y) { updateCell(realToView(y), 0); }

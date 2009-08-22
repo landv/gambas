@@ -1407,7 +1407,7 @@ int GEditor::posToLine(int py) const
 	return viewToReal(ny); 
 }
 
-void GEditor::posToCursor(int px, int py, int *y, int *x) const
+bool GEditor::posToCursor(int px, int py, int *y, int *x) const
 {
 	int nx, ny;
 
@@ -1419,6 +1419,7 @@ void GEditor::posToCursor(int px, int py, int *y, int *x) const
 
 	*y = ny;
 	*x = nx;
+	return false;
 }
 
 void GEditor::cursorToPos(int y, int x, int *px, int *py) const
