@@ -2203,6 +2203,7 @@ Private Sub FindDefinition(bPopupHelp As Boolean, Optional iX As Integer, Option
   Else
     iCol = Editor.PosToColumn(iX, iY)
     iLine = Editor.PosToLine(iY)
+    If iLine < 0 Then Return
   Endif
   
   
@@ -2812,6 +2813,7 @@ End
 
 Public Sub timShowHelp_Timer()
   'Print $X, $Y, Editor.PosToColumn($X, $Y)
+  If FHelp.MouseOver Then Return
   If Editor.PosToColumn($X, $Y) >= 0 Then FindDefinition(True, $X, $Y)
   timShowHelp.Enabled = False
   
