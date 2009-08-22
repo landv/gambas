@@ -7,7 +7,6 @@ Private Sub GetPath(sPath As String) As String
   sPath = Replace(sPath, "/gb+gui/", "/gb+qt/")
   sPath = Replace(sPath, "/gb+gtk/", "/gb+qt/")
   Return System.Path &/ "share/gambas" & CStr(System.Version) &/ "help" &/ sPath
-  
 End
 
 

@@ -2190,7 +2190,7 @@ Private Sub FindDefinition(bPopupHelp As Boolean, Optional iX As Integer, Option
   Dim sKeyword As String
   Dim sKeyword2 As String
   Dim iLine As Integer
-  
+  Print "icol=" & icol
   If Not bPopupHelp Then
     iLine = Editor.Line
     iCol = Editor.Column
@@ -2204,6 +2204,8 @@ Private Sub FindDefinition(bPopupHelp As Boolean, Optional iX As Integer, Option
     iCol = Editor.PosToColumn(iX, iY)
     iLine = Editor.PosToLine(iY)
   Endif
+  
+  
   
   sLig = Highlight.Purge(Editor.Lines[iLine].Text)
   
@@ -2368,12 +2370,7 @@ Public Sub Editors_MouseMove()
   
   If Not Project.Running Then
     If FDebugInfo.IsHelpVisible() Or $bShowPopupHelp Then
-      If Not timShowHelp.Enabled Then 
         timShowHelp.Enabled = True
-
-      Endif
-    Else
-      timShowHelp.Enabled = False
     Endif
     $X = Mouse.X
     $Y = Mouse.Y
@@ -2814,7 +2811,7 @@ End
 
 
 Public Sub timShowHelp_Timer()
-
-  If Editor.PosToColumn($X, $Y) Then FindDefinition(True, $X, $Y)
+  'Print $X, $Y, Editor.PosToColumn($X, $Y)
+  If Editor.PosToColumn($X, $Y) >= 0 Then FindDefinition(True, $X, $Y)
   timShowHelp.Enabled = False
 End

@@ -10,7 +10,10 @@ Private Sub ShowHelp()
   If Not FDebugInfo.IsHelpVisible() Then
     Me.Background = Color.LightBackground
     Me.Ignore = True
-    Me.Reparent(Null)
+    If Me.parent <> Null Then 
+      Me.Reparent(Null)
+      Wait 0.1
+    Endif
     Me.Height = Min(txtHelp.TextHeight + 15, Desktop.Height / 4)
     Me.Width = Desktop.Width / 3
     Me.Padding = 2
@@ -20,7 +23,7 @@ Private Sub ShowHelp()
     Me.Move($hEditor.ScreenX + $iX + 15, $hEditor.ScreenY + $iY + $hEditor.LineHeight + 15)
     Me.Visible = True
     Form_Show
-    $hEditor.SetFocus
+    '$hEditor.SetFocus
   Endif 
   
 End
@@ -33,7 +36,7 @@ Public Sub ShowKeywordHelp(hEditor As Editor, sName As String, Optional sName2 A
   $iY = iY
   txtHelp.RichText = "<b>" & sName & "</b>"
   txtHelp.RichText &= "<br><font color=green>Kind: </font>Gambas Keyword: "
-  ShowWords(sName)
+  ' ShowWords(sName)
   If sName2 Then
     If Not ShowKeywordHelp(sName2) Then Return
   Endif
@@ -55,13 +58,13 @@ Catch
 End
 
 
-Private Sub ShowWords(sWord As String)
-Dim s As String
-s = $hEditor.Lines[$hEditor.PosToLine($iY)].Text
-Try $hEditor.ShowWord($hEditor.PosToLine($iY), InStr(s, sWord, 0, gb.IgnoreCase) - 1, Len(sWord))
-
-  
-End
+' Private Sub ShowWords(sWord As String)
+' Dim s As String
+' s = $hEditor.Lines[$hEditor.PosToLine($iY)].Text
+' Try $hEditor.ShowWord($hEditor.PosToLine($iY), InStr(s, sWord, 0, gb.IgnoreCase) - 1, Len(sWord))
+' 
+'   
+' End
 
 
 Public Sub ShowSymbolHelp(hEditor As Editor, hSymbol As CSymbolInfo, iX As Integer, iY As Integer)
@@ -74,7 +77,7 @@ Public Sub ShowSymbolHelp(hEditor As Editor, hSymbol As CSymbolInfo, iX As Integ
   $iY = iY
   $hEditor = hEditor
   sClass = hSymbol.Class
-  ShowWords(hSymbol.Name)
+  ' ShowWords(hSymbol.Name)
   txtHelp.RichText = IIf(hSymbol.IsStatic(), "STATIC", "") & " " & IIf(hSymbol.NotPublic, "PRIVATE", "PUBLIC") & " " & 
       Replace(hSymbol.GetDescription(), hSymbol.Name, "<b>" & hSymbol.Name & "</b>")
       txtHelp.RichText &= "<br><font color=green>Kind: </font><b>"
@@ -146,7 +149,7 @@ Public Sub ShowClassHelp(hEditor As Editor, sComponent As String, sName As Strin
   $hEditor = hEditor
   $iX = iX
   $iY = iY
-  ShowWords(sname)
+  ' ShowWords(sname)
   'Description de la Classe
   txtHelp.RichText = "<b>" & sName & "</b>"
   txtHelp.RichText &= "<br><font color=green>Kind: </font><b>Class</b>"
@@ -177,7 +180,7 @@ Public Function ShowDatatypeHelp(hEditor As Editor, sName As String, iX As Integ
   $iX = iX
   $iY = iY
   $hEditor = hEditor
-  ShowWords(sName)
+  ' ShowWords(sName)
   sPath = GetPath("help/lang/type" &/ LCase(sName)) & ".html"
   If Not Exist(sPath) Then Return True
 
@@ -257,8 +260,7 @@ End
 Public Sub tmrHide_Timer()
 
   If Not FDebugInfo.IsHelpVisible() Then Me.Hide
-  $hEditor.SetFocus
-  $hEditor.ShowWord()
+  '><>$hEditor.SetFocus
   tmrHide.Stop
 
 End
@@ -273,15 +275,13 @@ Public Sub txtHelp_Leave()
 
   
   If Not FDebugInfo.IsHelpVisible() Then Me.Hide 'tmrHide.Enabled = True
-  $hEditor.SetFocus
-  $hEditor.ShowWord()
+  '$hEditor.SetFocus
 End
 
 Public Sub txtHelp_LostFocus()
 
   If Not FDebugInfo.IsHelpVisible() Then Me.Hide
-  $hEditor.SetFocus
-  $hEditor.ShowWord()
+  '$hEditor.SetFocus
 End
 
 Public Sub txtHelp_Link(Path As String)
