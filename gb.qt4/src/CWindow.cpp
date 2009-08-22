@@ -1634,7 +1634,7 @@ void MyMainWindow::showActivate(QWidget *transient)
 		else
 			show();
 
-		if (_type == _NET_WM_WINDOW_TYPE_NORMAL
+		/*if (_type == _NET_WM_WINDOW_TYPE_NORMAL
 			  || _type == _NET_WM_WINDOW_TYPE_DOCK
 			  || _type == _NET_WM_WINDOW_TYPE_TOOLBAR
 			  || _type == _NET_WM_WINDOW_TYPE_MENU
@@ -1643,19 +1643,13 @@ void MyMainWindow::showActivate(QWidget *transient)
 			  || _type == _NET_WM_WINDOW_TYPE_DROPDOWN_MENU
 			  || _type == _NET_WM_WINDOW_TYPE_POPUP_MENU
 			  || _type == _NET_WM_WINDOW_TYPE_COMBO)
+		{*/
+		if (hasBorder())
 		{
 			MAIN_process_events();
 			usleep(50000);
 			activateWindow();
 		}
-
-		//THIS->opened = true;
-		//qDebug("THIS->opened <- true: %p: %s", THIS, GB.GetClassName(THIS));
-
-		//if (!(THIS->toplevel && THIS->embedded))
-		//	GB.Raise(THIS, EVENT_Move, 0);
-		//GB.Raise(THIS, EVENT_Resize, 0);
-
 	}
 	else
 	{
@@ -1668,7 +1662,8 @@ void MyMainWindow::showActivate(QWidget *transient)
 		}
 		
 		raise();
-		activateWindow();
+		if (hasBorder())
+			activateWindow();
 	}
 
 	afterShow();
@@ -1799,9 +1794,9 @@ void MyMainWindow::setBorder(bool b, bool force)
 	flags = windowFlags();
 	
 	if (b)
-		flags &= ~Qt::FramelessWindowHint;
+		flags &= ~(Qt::FramelessWindowHint|Qt::ToolTip);
 	else
-		flags |= Qt::FramelessWindowHint;
+		flags |= Qt::FramelessWindowHint|Qt::ToolTip;
 	
 	doReparent(parentWidget(), flags, pos());
 }
@@ -2214,7 +2209,7 @@ void MyMainWindow::doReparent(QWidget *parent, Qt::WindowFlags f, const QPoint &
 	{
 		#ifndef NO_X_WINDOW
 			initProperties();
-			if (active)
+			if (active && hasBorder())
 				activateWindow();
 		#endif
 
@@ -2454,7 +2449,7 @@ bool CWindow::eventFilter(QObject *o, QEvent *e)
 		{
 			if (THIS->toplevel)
 			{
-				//qDebug("Activate: CWINDOW_Current = %p  ob = %p", CWINDOW_Current, THIS);
+				//qDebug("Activate: ob = %p", THIS);
 				
 				CWINDOW_activate((CWIDGET *)(CWINDOW_LastActive ? CWINDOW_LastActive : THIS));
 				//GB.Unref(POINTER(&CWINDOW_LastActive));
@@ -2466,7 +2461,7 @@ bool CWindow::eventFilter(QObject *o, QEvent *e)
 		{
 			if (THIS->toplevel)
 			{
-				//qDebug("Deactivate: CWINDOW_Current = %p  ob = %p", CWINDOW_Current, THIS);
+				//qDebug("Deactivate: ob = %p", THIS);
 				/*#if QT_VERSION >= 0x030100
 				if ((THIS == CWINDOW_Current) || (qApp->eventLoop()->loopLevel() <= 1))
 				#else
@@ -2481,7 +2476,7 @@ bool CWindow::eventFilter(QObject *o, QEvent *e)
 				CWINDOW_activate(0);
 			}
 		}
-		else if (e->type() == QEvent::Show) // && !e->spontaneous())
+ 		else if (e->type() == QEvent::Show) // && !e->spontaneous())
 		{
 			MyMainWindow *w = (MyMainWindow *)o;
 
@@ -2499,8 +2494,8 @@ bool CWindow::eventFilter(QObject *o, QEvent *e)
 		}
 		else if (e->type() == QEvent::Hide) // && !e->spontaneous())
 		{
-			//qDebug("Hide: %s %d (%d)", GB.GetClassName(THIS), !WINDOW->isHidden(), e->spontaneous());
-			if (WINDOW->isHidden())
+			//qDebug("Hide: %s %d (%d)", GB.GetClassName(THIS), WINDOW->isHidden(), e->spontaneous());
+			//if (WINDOW->isHidden())
 			{
 				GB.Raise(THIS, EVENT_Hide, 0);
 				if (!e->spontaneous())

@@ -209,7 +209,8 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
     Me.Raise
   Endif
   
-  Try hCtrl.SetFocus
+  'Try hCtrl.SetFocus
+  Try GetTopLevel(hCtrl).Show
   
   $dShow = Timer
   
@@ -277,7 +278,7 @@ End
 
 Public Sub Form_Hide()
 
-  'DEBUG
+  'Debug
   timCheck.Enabled = False
   $hWatcher = Null
   $hWatcher2 = Null
@@ -324,24 +325,25 @@ Public Sub timCheck_Timer()
 
   Dim hWin As Window
 
-  'DEBUG
+  'Debug Me.X;; Me.Y;; Me.Visible;; Me.Picture.W;; Me.Picture.H
 
   If $bInside Then 
-    'Debug
+    'Debug "HIDE"
     Me.Hide
     Return 
   Endif 
 
   If (Timer - $dShow) > ($iDelay / 1000) Then 
-    'Debug
+    'Debug "HIDE"
     Me.Hide
     Return 
   Endif
   
   hWin = GetTopLevel($hCtrl)
   If Not hWin.TopOnly Then
+    'Debug Application.ActiveWindow
     If GetTopLevel(Application.ActiveWindow) <> hWin Then 
-      'Debug
+      'Debug "HIDE"
       Me.Hide
       Return
     Endif

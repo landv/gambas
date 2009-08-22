@@ -2814,4 +2814,5 @@ Public Sub timShowHelp_Timer()
   'Print $X, $Y, Editor.PosToColumn($X, $Y)
   If Editor.PosToColumn($X, $Y) >= 0 Then FindDefinition(True, $X, $Y)
   timShowHelp.Enabled = False
+  
 End

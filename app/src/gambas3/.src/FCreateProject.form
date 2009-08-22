@@ -27,11 +27,10 @@
         Expand = True
         Spacing = True
         { Label5 Label
-          MoveScaled(1,0,25,4)
+          MoveScaled(1,0,25,3)
           Font = Font["Bold"]
           AutoResize = True
           Text = ("Type")
-          Alignment = Align.BottomNormal
         }
         { lstType ListContainer
           MoveScaled(1,5,33,43)
@@ -172,11 +171,10 @@
         Expand = True
         Spacing = True
         { Label12 Label
-          MoveScaled(1,0,25,4)
+          MoveScaled(1,0,25,3)
           Font = Font["Bold"]
           AutoResize = True
           Text = ("Options")
-          Alignment = Align.BottomNormal
         }
         { svwOption ScrollView
           MoveScaled(0,4,39,48)
@@ -253,6 +251,7 @@
     Text = ("Project information")
     { panIdent HPanel
       MoveScaled(0,0,80,18)
+      AutoResize = True
       Spacing = True
       { Label10 Label
         MoveScaled(0,0,25,4)
@@ -305,10 +304,12 @@
       }
     }
     { Panel1 Panel
-      MoveScaled(0,41,17,4)
+      MoveScaled(0,41,17,1)
     }
     { TextLabel9 TextLabel
       MoveScaled(0,45,78,12)
+      Visible = False
+      Font = Font["Italic"]
       AutoResize = True
       Text = ("Once the information entered, you can\nclick on the <b>OK</b> button to create the project.\n<p>Click on the <b>Previous</b> button if you had made a mistake.\n<p>Click on the <b>Cancel</b> button to cancel the operation.\n\n")
     }
