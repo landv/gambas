@@ -35,6 +35,7 @@
 #include "gbx_object.h"
 #include "gbx_class.h"
 #include "gbx_exec.h"
+#include "gbx_regexp.h"
 
 static bool _descent = FALSE;
 
@@ -248,6 +249,13 @@ static int compare_string_lang_case(char **pa, char **pb)
 	return _descent ? (-diff) : diff;
 }
 
+static int compare_string_like(char **pa, char **pb)
+{
+	int la = *pa ? strlen(*pa) : 0;
+	int lb = *pb ? strlen(*pb) : 0;
+	return REGEXP_match(*pb, lb, *pa, la) ? 0 : TABLE_compare_ignore_case(*pa, la, *pb, lb);
+}
+
 int COMPARE_object(void **a, void **b)
 {
 	bool comp;
@@ -326,6 +334,7 @@ COMPARE_FUNC COMPARE_get(TYPE type, int mode)
         case GB_COMP_LANG | GB_COMP_TEXT: return (COMPARE_FUNC)compare_string_lang_case;
         case GB_COMP_LANG: return (COMPARE_FUNC)compare_string_lang;
         case GB_COMP_TEXT: return (COMPARE_FUNC)compare_string_text;
+				case GB_COMP_LIKE: return (COMPARE_FUNC)compare_string_like;
         default: return (COMPARE_FUNC)compare_string_binary;
       }
 

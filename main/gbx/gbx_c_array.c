@@ -752,14 +752,19 @@ BEGIN_METHOD(CARRAY_sort, GB_INTEGER mode)
 END_METHOD
 
 
-static int find(CARRAY *_object, int mode, void *value)
+static int find(CARRAY *_object, int mode, void *value, int start)
 {
 	COMPARE_FUNC compare = COMPARE_get(THIS->type, mode);
 	int i;
 
-	for (i = 0; i < ARRAY_count(THIS->data); i++)
+	if (start < 0)
+		start = 0;
+	else if (start >= ARRAY_count(THIS->data))
+		return (-1);
+	
+	for (i = start; i < ARRAY_count(THIS->data); i++)
 	{
-		if ((*compare)(value, get_data(THIS, i)) == 0)
+		if ((*compare)(get_data(THIS, i), value) == 0)
 			return i;
 	}
 
@@ -767,14 +772,14 @@ static int find(CARRAY *_object, int mode, void *value)
 }
 
 #define IMPLEMENT_find(_type, _gtype) \
-BEGIN_METHOD(CARRAY_##_type##_find, _gtype value) \
+BEGIN_METHOD(CARRAY_##_type##_find, _gtype value; GB_INTEGER start) \
 \
-	GB_ReturnInt(find(THIS, 0, &VARG(value))); \
+	GB_ReturnInt(find(THIS, 0, &VARG(value), VARGOPT(start, 0))); \
 \
 END_METHOD \
 BEGIN_METHOD(CARRAY_##_type##_exist, _gtype value) \
 \
-	GB_ReturnBoolean(find(THIS, 0, &VARG(value)) >= 0); \
+	GB_ReturnBoolean(find(THIS, 0, &VARG(value), 0) >= 0); \
 \
 END_METHOD
 
@@ -785,9 +790,14 @@ IMPLEMENT_find(long, GB_LONG)
 IMPLEMENT_find(float, GB_FLOAT)
 IMPLEMENT_find(date, GB_DATE)
 
-static int find_object(CARRAY *_object, void *value)
+static int find_object(CARRAY *_object, void *value, int start)
 {
 	int i;
+
+	if (start < 0)
+		start = 0;
+	else if (start >= ARRAY_count(THIS->data))
+		return (-1);
 
 	for (i = 0; i < ARRAY_count(THIS->data); i++)
 	{
@@ -798,24 +808,24 @@ static int find_object(CARRAY *_object, void *value)
 	return (-1);
 }
 
-BEGIN_METHOD(CARRAY_object_find, GB_OBJECT value)
+BEGIN_METHOD(CARRAY_object_find, GB_OBJECT value; GB_INTEGER start)
 
-	GB_ReturnInt(find_object(THIS, VARG(value)));
+	GB_ReturnInt(find_object(THIS, VARG(value), VARGOPT(start, 0)));
 
 END_METHOD
 
 BEGIN_METHOD(CARRAY_object_exist, GB_OBJECT value)
 
-	GB_ReturnBoolean(find_object(THIS, VARG(value)) >= 0);
+	GB_ReturnBoolean(find_object(THIS, VARG(value), 0) >= 0);
 
 END_METHOD
 
 
-BEGIN_METHOD(CARRAY_string_find, GB_STRING value; GB_INTEGER mode)
+BEGIN_METHOD(CARRAY_string_find, GB_STRING value; GB_INTEGER mode; GB_INTEGER start)
 
 	char *str = GB_ToZeroString(ARG(value));
 
-	GB_ReturnInteger(find(THIS, VARGOPT(mode, 0), &str));
+	GB_ReturnInteger(find(THIS, VARGOPT(mode, 0), &str, VARGOPT(start, 0)));
 
 END_METHOD
 
@@ -823,7 +833,7 @@ BEGIN_METHOD(CARRAY_string_exist, GB_STRING value; GB_INTEGER mode)
 
 	char *str = GB_ToZeroString(ARG(value));
 
-	GB_ReturnInteger(find(THIS, VARGOPT(mode, 0), &str) >= 0);
+	GB_ReturnInteger(find(THIS, VARGOPT(mode, 0), &str, 0) >= 0);
 
 END_METHOD
 
@@ -1098,7 +1108,7 @@ GB_DESC NATIVE_BooleanArray[] =
 	GB_METHOD("Add", NULL, CARRAY_integer_add, "(Value)b[(Index)i]"),
 	GB_METHOD("Push", NULL, CARRAY_integer_push, "(Value)b"),
 	GB_METHOD("_put", NULL, CARRAY_boolean_put, "(Value)b(Index)i."),
-	GB_METHOD("Find", "i", CARRAY_integer_find, "(Value)b"),
+	GB_METHOD("Find", "i", CARRAY_integer_find, "(Value)b[(Start)i]"),
 	GB_METHOD("Exist", "b", CARRAY_integer_exist, "(Value)b"),
 
 	GB_METHOD("Pop", "b", CARRAY_pop, NULL),
@@ -1128,7 +1138,7 @@ GB_DESC NATIVE_ByteArray[] =
 	GB_METHOD("Add", NULL, CARRAY_integer_add, "(Value)c[(Index)i]"),
 	GB_METHOD("Push", NULL, CARRAY_integer_push, "(Value)c"),
 	GB_METHOD("_put", NULL, CARRAY_byte_put, "(Value)c(Index)i."),
-	GB_METHOD("Find", "i", CARRAY_integer_find, "(Value)c"),
+	GB_METHOD("Find", "i", CARRAY_integer_find, "(Value)c[(Start)i]"),
 	GB_METHOD("Exist", "b", CARRAY_integer_exist, "(Value)c"),
 
 	GB_METHOD("Pop", "c", CARRAY_pop, NULL),
@@ -1158,7 +1168,7 @@ GB_DESC NATIVE_ShortArray[] =
 	GB_METHOD("Add", NULL, CARRAY_integer_add, "(Value)h[(Index)i]"),
 	GB_METHOD("Push", NULL, CARRAY_integer_push, "(Value)h"),
 	GB_METHOD("_put", NULL, CARRAY_short_put, "(Value)h(Index)i."),
-	GB_METHOD("Find", "i", CARRAY_integer_find, "(Value)h"),
+	GB_METHOD("Find", "i", CARRAY_integer_find, "(Value)h[(Start)i]"),
 	GB_METHOD("Exist", "b", CARRAY_integer_exist, "(Value)h"),
 
 	GB_METHOD("Pop", "h", CARRAY_pop, NULL),
@@ -1188,7 +1198,7 @@ GB_DESC NATIVE_IntegerArray[] =
 	GB_METHOD("Add", NULL, CARRAY_integer_add, "(Value)i[(Index)i]"),
 	GB_METHOD("Push", NULL, CARRAY_integer_push, "(Value)i"),
 	GB_METHOD("_put", NULL, CARRAY_integer_put, "(Value)i(Index)i."),
-	GB_METHOD("Find", "i", CARRAY_integer_find, "(Value)i"),
+	GB_METHOD("Find", "i", CARRAY_integer_find, "(Value)i[(Start)i]"),
 	GB_METHOD("Exist", "b", CARRAY_integer_exist, "(Value)i"),
 
 	GB_METHOD("Pop", "i", CARRAY_pop, NULL),
@@ -1218,7 +1228,7 @@ GB_DESC NATIVE_LongArray[] =
 	GB_METHOD("Add", NULL, CARRAY_long_add, "(Value)l[(Index)i]"),
 	GB_METHOD("Push", NULL, CARRAY_long_push, "(Value)l"),
 	GB_METHOD("_put", NULL, CARRAY_long_put, "(Value)l(Index)i."),
-	GB_METHOD("Find", "i", CARRAY_long_find, "(Value)l"),
+	GB_METHOD("Find", "i", CARRAY_long_find, "(Value)l[(Start)i]"),
 	GB_METHOD("Exist", "b", CARRAY_long_exist, "(Value)l"),
 
 	GB_METHOD("Pop", "l", CARRAY_pop, NULL),
@@ -1262,7 +1272,7 @@ GB_DESC NATIVE_PointerArray[] =
 	GB_METHOD("Add", NULL, CARRAY_long_add, "(Value)p[(Index)i]"),
 	GB_METHOD("Push", NULL, CARRAY_long_push, "(Value)p"),
 	GB_METHOD("_put", NULL, CARRAY_long_put, "(Value)p(Index)i."),
-	GB_METHOD("Find", "i", CARRAY_long_find, "(Value)p"),
+	GB_METHOD("Find", "i", CARRAY_long_find, "(Value)p[(Start)i]"),
 	GB_METHOD("Exist", "b", CARRAY_long_exist, "(Value)p"),
 
 	GB_METHOD("Pop", "p", CARRAY_pop, NULL),
@@ -1293,7 +1303,7 @@ GB_DESC NATIVE_StringArray[] =
 	GB_METHOD("Add", NULL, CARRAY_string_add, "(Value)s[(Index)i]"),
 	GB_METHOD("Push", NULL, CARRAY_string_push, "(Value)s"),
 	GB_METHOD("_put", NULL, CARRAY_string_put, "(Value)s(Index)i."),
-	GB_METHOD("Find", "i", CARRAY_string_find, "(Value)s[(Mode)i]"),
+	GB_METHOD("Find", "i", CARRAY_string_find, "(Value)s[(Mode)i(Start)i]"),
 	GB_METHOD("Exist", "b", CARRAY_string_exist, "(Value)s[(Mode)i]"),
 
 	GB_METHOD("Pop", "s", CARRAY_pop, NULL),
@@ -1323,7 +1333,7 @@ GB_DESC NATIVE_FloatArray[] =
 	GB_METHOD("Add", NULL, CARRAY_float_add, "(Value)f[(Index)i]"),
 	GB_METHOD("Push", NULL, CARRAY_float_push, "(Value)f"),
 	GB_METHOD("_put", NULL, CARRAY_float_put, "(Value)f(Index)i."),
-	GB_METHOD("Find", "i", CARRAY_float_find, "(Value)f"),
+	GB_METHOD("Find", "i", CARRAY_float_find, "(Value)f[(Start)i]"),
 	GB_METHOD("Exist", "b", CARRAY_float_exist, "(Value)f"),
 
 	GB_METHOD("Pop", "f", CARRAY_pop, NULL),
@@ -1354,7 +1364,7 @@ GB_DESC NATIVE_SingleArray[] =
 	GB_METHOD("Add", NULL, CARRAY_float_add, "(Value)g[(Index)i]"),
 	GB_METHOD("Push", NULL, CARRAY_float_push, "(Value)g"),
 	GB_METHOD("_put", NULL, CARRAY_single_put, "(Value)g(Index)i."),
-	GB_METHOD("Find", "i", CARRAY_float_find, "(Value)g"),
+	GB_METHOD("Find", "i", CARRAY_float_find, "(Value)g[(Start)i]"),
 	GB_METHOD("Exist", "b", CARRAY_float_exist, "(Value)g"),
 
 	GB_METHOD("Pop", "g", CARRAY_pop, NULL),
@@ -1385,7 +1395,7 @@ GB_DESC NATIVE_DateArray[] =
 	GB_METHOD("Add", NULL, CARRAY_date_add, "(Value)d[(Index)i]"),
 	GB_METHOD("Push", NULL, CARRAY_date_push, "(Value)d"),
 	GB_METHOD("_put", NULL, CARRAY_date_put, "(Value)d(Index)i."),
-	GB_METHOD("Find", "i", CARRAY_date_find, "(Value)d"),
+	GB_METHOD("Find", "i", CARRAY_date_find, "(Value)d[(Start)i]"),
 	GB_METHOD("Exist", "b", CARRAY_date_exist, "(Value)d"),
 
 	GB_METHOD("Pop", "d", CARRAY_pop, NULL),
@@ -1416,7 +1426,7 @@ GB_DESC NATIVE_ObjectArray[] =
 	GB_METHOD("Add", NULL, CARRAY_object_add, "(Value)o[(Index)i.]"),
 	GB_METHOD("Push", NULL, CARRAY_object_push, "(Value)o"),
 	GB_METHOD("_put", NULL, CARRAY_object_put, "(Value)o(Index)i."),
-	GB_METHOD("Find", "i", CARRAY_object_find, "(Value)o"),
+	GB_METHOD("Find", "i", CARRAY_object_find, "(Value)o[(Start)i]"),
 	GB_METHOD("Exist", "b", CARRAY_object_exist, "(Value)o"),
 
 	GB_METHOD("Pop", "o", CARRAY_pop, NULL),
@@ -1445,7 +1455,7 @@ GB_DESC NATIVE_TemplateArray[ARRAY_TEMPLATE_NDESC] =
 	GB_METHOD("Add", NULL, CARRAY_object_add, "(Value)*;[(Index)i.]"),
 	GB_METHOD("Push", NULL, CARRAY_object_push, "(Value)*;"),
 	GB_METHOD("_put", NULL, CARRAY_object_put, "(Value)*;(Index)i."),
-	GB_METHOD("Find", "i", CARRAY_object_find, "(Value)*;"),
+	GB_METHOD("Find", "i", CARRAY_object_find, "(Value)*;[(Start)i]"),
 	GB_METHOD("Exist", "b", CARRAY_object_exist, "(Value)*;"),
 
 	GB_METHOD("Pop", "*", CARRAY_pop, NULL),

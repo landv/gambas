@@ -496,8 +496,12 @@
       Shortcut = "Ctrl+I"
     }
   }
+  { Separator7 Separator
+    MoveScaled(0,0,13,0)
+    Visible = False
+  }
   { panToolbar Panel
-    MoveScaled(0,0,129,4)
+    MoveScaled(0,1,129,4)
     Arrangement = Arrange.Row
     AutoResize = True
     { ToolBar1 ToolBar
@@ -737,8 +741,11 @@
       }
     }
   }
+  { Separator1 Separator
+    MoveScaled(5,6,13,0)
+  }
   { Panel1 Panel
-    MoveScaled(1,6,90,68)
+    MoveScaled(1,8,90,68)
     Expand = True
     Arrangement = Arrange.Horizontal
     { panProject SidePanel
@@ -747,9 +754,6 @@
       Arrangement = Arrange.Vertical
       Action = "project"
       Orientation = Align.Left
-      { Separator1 Separator
-        MoveScaled(3,2,13,0)
-      }
       { HBox1 HBox
         MoveScaled(1,5,27,56)
         Expand = True

@@ -373,7 +373,7 @@ void MySeparator::paintEvent( QPaintEvent * )
 {
 	QPainter p(this);
 	
-	if (width() == 1 || height() == 1)
+	//if (width() == 1 || height() == 1)
 	{
 		p.setPen(CCOLOR_merge(palette().color(QPalette::Window), palette().color(QPalette::WindowText)).lighter());
 		if (width() >= height())
@@ -381,7 +381,7 @@ void MySeparator::paintEvent( QPaintEvent * )
 		else
 			p.drawLine(width() / 2, 0, width() / 2, height() - 1);
 	}
-	else
+	/*else
 	{
 		QStyleOption opt;
 		
@@ -393,6 +393,6 @@ void MySeparator::paintEvent( QPaintEvent * )
 			opt.state |= QStyle::State_Horizontal;
 
 		style()->drawPrimitive(QStyle::PE_IndicatorToolBarSeparator, &opt, &p);
-	}
+	}*/
 }
 

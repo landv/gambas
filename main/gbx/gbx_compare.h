@@ -30,6 +30,7 @@
 #define GB_COMP_BINARY   0
 #define GB_COMP_TEXT     1
 #define GB_COMP_LANG     2
+#define GB_COMP_LIKE     4
 
 #define GB_COMP_TYPE_MASK  7
 

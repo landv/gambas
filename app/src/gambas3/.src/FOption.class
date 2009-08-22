@@ -52,7 +52,7 @@ Public Sub _new()
   Dim hColor As DrawingArea
   Dim hButton As Button
 
-  cmbTheme.List = $aThemeName.Copy().Sort(gb.UseLanguage)
+  cmbTheme.List = $aThemeName.Copy().Sort(gb.Language)
   cmbTheme.Add(("Select a theme"), 0)
   cmbIconTheme.List = [("Desktop"), "Gnome", "KDE", "KDE4"]
   cmbBrowser.List = [("(Default)"), "Konqueror", "Firefox", "Epiphany", "SeaMonkey", "Opera"]
