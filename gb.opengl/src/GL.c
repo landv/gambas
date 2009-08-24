@@ -253,7 +253,7 @@ GB_DESC Cgl[] =
       GB_STATIC_METHOD("PassThrough", NULL, GLPASSTHROUGH, "(Token)f"),
       GB_STATIC_METHOD("PopName", NULL, GLPOPNAME, NULL),
       GB_STATIC_METHOD("PushName", NULL, GLPUSHNAME, "(Name)i"),
-	GB_STATIC_METHOD("RenderMode", "Object[];", GLRENDERMODE, "(Mode)i"),
+	GB_STATIC_METHOD("RenderMode", "Array", GLRENDERMODE, "(Mode)i"),
       GB_STATIC_METHOD("SelectBuffer", NULL, GLSELECTBUFFER, NULL),
 
 	/* glGetxxxx calls - see GLinfo.h/c   */
