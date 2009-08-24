@@ -39,7 +39,7 @@ GB_COMPONENT_PKG_CONFIG(
   QTWEBKIT,
   [QT4 webkit component],
   [webkit],
-  QtCore ">= 4.3.4" QtGui QtNetwork QtDBus QtXml QtWebKit
+  QtCore ">= 4.3.4" QtGui QtNetwork QtDBus QtXml QtWebKit ">= 4.5.0"
 )
 
 GB_COMPONENT(
