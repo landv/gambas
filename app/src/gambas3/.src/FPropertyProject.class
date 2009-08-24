@@ -731,6 +731,7 @@ Private Sub ReadComponent()
     If Left(sLine) = "[" Then 
       If sLine = "[Component]" Then Break 
       sGroup = Mid$(sLine, 2, -1)
+      Continue
     Endif 
     
     iPos = InStr(sLine, "=")
@@ -738,50 +739,58 @@ Private Sub ReadComponent()
     sKey = LCase(Left(sLine, iPos - 1))
     sLine = Mid$(sLine, iPos + 1)
     
-    Select Case sKey
-      Case "need", "needs"
-        $aNeed = Split(sLine, ",")
-      Case "require", "requires"
-        $aRequire = Split(sLine, ",")
-      Case "implement", "implements"
-        $aImplement = Split(sLine, ",")
-      Case "control", "controls"
-        For Each sKey In Split(sLine, ",")
-          If CExportInfo.All.Exist(sKey) Then
-            CExportInfo.All[sKey].Control = True
-            CExportInfo.All[sKey].Group = sGroup
-          Else 
-            Debug "Control="; sKey; "?"
-          Endif
-        Next
-      Case "virtual"
-        For Each sKey In Split(sLine, ",")
-          If CExportInfo.All.Exist(sKey) Then
-            CExportInfo.All[sKey].Virtual = True
-          Else 
-            Debug "Virtual="; sKey; "?"
-          Endif 
-        Next
-      Case "container"
-        For Each sKey In Split(sLine, ",")
-          If CExportInfo.All.Exist(sKey) Then
-            CExportInfo.All[sKey].Container = True
-          Else 
-            Debug "Container="; sKey; "?"
-          Endif
-        Next
-      Case "multicontainer"
-        For Each sKey In Split(sLine, ",")
-          If CExportInfo.All.Exist(sKey) Then
-            CExportInfo.All[sKey].MultiContainer = True
-          Else 
-            Debug "MultiContainer="; sKey; "?"
-          Endif
-        Next
-      Case "type"
-        Try CExportInfo.All[sLine].Form = True
-        
-    End Select 
+    If sGroup = "Change" Then
+    
+      CExportInfo.All[sKey].Similar = sLine
+    
+    Else
+    
+      Select Case sKey
+        Case "need", "needs"
+          $aNeed = Split(sLine, ",")
+        Case "require", "requires"
+          $aRequire = Split(sLine, ",")
+        Case "implement", "implements"
+          $aImplement = Split(sLine, ",")
+        Case "control", "controls"
+          For Each sKey In Split(sLine, ",")
+            If CExportInfo.All.Exist(sKey) Then
+              CExportInfo.All[sKey].Control = True
+              CExportInfo.All[sKey].Group = sGroup
+            Else 
+              Debug "Control="; sKey; "?"
+            Endif
+          Next
+        Case "virtual"
+          For Each sKey In Split(sLine, ",")
+            If CExportInfo.All.Exist(sKey) Then
+              CExportInfo.All[sKey].Virtual = True
+            Else 
+              Debug "Virtual="; sKey; "?"
+            Endif 
+          Next
+        Case "container"
+          For Each sKey In Split(sLine, ",")
+            If CExportInfo.All.Exist(sKey) Then
+              CExportInfo.All[sKey].Container = True
+            Else 
+              Debug "Container="; sKey; "?"
+            Endif
+          Next
+        Case "multicontainer"
+          For Each sKey In Split(sLine, ",")
+            If CExportInfo.All.Exist(sKey) Then
+              CExportInfo.All[sKey].MultiContainer = True
+            Else 
+              Debug "MultiContainer="; sKey; "?"
+            Endif
+          Next
+        Case "type"
+          Try CExportInfo.All[sLine].Form = True
+          
+      End Select 
+      
+    Endif
     
   Wend
   
@@ -848,6 +857,12 @@ Private Sub WriteComponent() As Boolean
     
   Next
   
+  Print #hFile, "[Change]"
+  For Each sClass In CExportInfo.List
+    hExportInfo = CExportInfo.All[sClass]
+    If hExportInfo.Similar Then Print #hFile, sClass; "="; hExportInfo.Similar
+  Next
+
   Close #hFile    
   
   Try Kill sPath
@@ -870,12 +885,14 @@ Public Sub InitComponent()
   Dim sComp As String
   Dim hExportInfo As CExportInfo
 
-  tvwControl.Columns.Count = 3
+  tvwControl.Columns.Count = 4
   tvwControl.Columns[0].Text = ("Class")
-  tvwControl.Columns[0].Width = Desktop.Scale * 36
+  tvwControl.Columns[0].Width = Desktop.Scale * 24
   tvwControl.Columns[1].Text = ("Type")
-  tvwControl.Columns[1].Width = Desktop.Scale * 24
+  tvwControl.Columns[1].Width = Desktop.Scale * 16
   tvwControl.Columns[2].Text = ("Group")
+  tvwControl.Columns[2].Width = Desktop.Scale * 16
+  tvwControl.Columns[3].Text = ("Similar")
 
   CExportInfo.Reset
 
@@ -915,9 +932,12 @@ End
 
 Public Sub tvwControl_Data(Row As Integer, Column As Integer)
 
-  Dim hExportInfo As CExportInfo = CExportInfo.All[CExportInfo.List[Row]]
+  Dim hExportInfo As CExportInfo
   Dim hPict As Picture
 
+  Try hExportInfo = CExportInfo.All[CExportInfo.List[Row]]
+  If Error Then Return
+  
   Select Case Column
     Case 0
       tvwControl.Data.Text = hExportInfo.Name
@@ -933,6 +953,8 @@ Public Sub tvwControl_Data(Row As Integer, Column As Integer)
       tvwControl.Data.Text = hExportInfo.Type
     Case 2
       tvwControl.Data.Text = hExportInfo.Group
+    Case 3
+      tvwControl.Data.Text = hExportInfo.Similar
   End Select 
   
   tvwControl.Data.Background = If(Row And 1, Color.LightBackground, Color.TextBackground)
@@ -987,6 +1009,9 @@ Private Sub SaveEditor()
     
     Case 2
       hExportInfo.Group = cmbControl.Text
+      
+    Case 3
+      hExportInfo.Similar = cmbControl.Text
   
   End Select 
   
@@ -1040,6 +1065,12 @@ Private Sub ShowEditor()
       cmbControl.List = GetGroups()
       cmbControl.Text = hExportInfo.Group
   
+    Case 3
+      If Not hExportInfo.Control Then Return
+      cmbControl.ReadOnly = False
+      cmbControl.List = CExportInfo.List
+      cmbControl.Text = hExportInfo.Similar
+  
   End Select
   
   $iRow = tvwControl.Row
@@ -1065,6 +1096,16 @@ Public Sub tvwControl_Scroll()
 End
 
 Public Sub cmbControl_Click()
+
+  Dim hExportInfo As CExportInfo = CExportInfo.All[CExportInfo.List[$iRow]]
+  Dim sVal As String
+
+  If $iCol = 3 Then
+    sVal = hExportInfo.Similar
+    If sVal Then sVal &= ","
+    sVal &= cmbControl.Text 
+    cmbControl.Text = sVal
+  Endif
 
   SaveEditor
 

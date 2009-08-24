@@ -46,6 +46,7 @@ void *GB_EVAL_2[] EXPORT = {
   (void *)EVAL_compile,
   (void *)EVAL_expression,
   (void *)EVAL_free,
+	(void *)EVAL_get_assignment_symbol,
 
   NULL
   };

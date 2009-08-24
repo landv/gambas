@@ -1709,7 +1709,7 @@ void MyMainWindow::showModal(void)
 	THIS->enterLoop = true;
 	
 	eventLoop.exec();
-	eventLoop.processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::DeferredDeletion, 0);
+	//eventLoop.processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::DeferredDeletion, 0);
 	
 	MyApplication::eventLoop = old;
 	CWINDOW_Current = save;

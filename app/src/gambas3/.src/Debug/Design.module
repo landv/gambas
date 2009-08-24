@@ -220,6 +220,23 @@ Public Sub Debug_Read(Data As String)
  
       End Select
       
+    Case "="
+      
+      sVar = Mid$(aData[0], 2)
+      
+      Select Case Left(sVar)
+      
+        Case "X"
+          FDebugExpr.AddResult(Mid$(sVar, 2), aData[1], True)
+          
+        Case "L"
+          FDebugInfo.AddLocal(Mid$(sVar, 2), aData[1], True)
+ 
+        Case "O"
+          FDebugInfo.AddObject(Mid$(sVar, 2), aData[1], True)
+ 
+      End Select
+      
     Case "#"
     
       sVar = Mid$(aData[0], 2)

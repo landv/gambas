@@ -22,7 +22,7 @@
       }
       Index = 1
       Text = ("Help")
-      Picture = Picture["img/16/find-definition.png"]
+      Picture = Picture["icon:/small/help"]
       { panHelp Panel
         MoveScaled(7,3,54,25)
         Expand = True
@@ -31,48 +31,60 @@
       Index = 2
       Text = ("Local variables")
       Picture = Picture["img/16/local.png"]
-      { cvwLocal ColumnView
-        MoveScaled(2,3,41,22)
-        Expand = True
-        Mode = Select.Multiple
-        Border = False
-        ScrollBar = Scroll.Vertical
+      { HBox4 HBox
+        MoveScaled(1,1,32,4)
+        { chkSortLocal ToolButton
+          MoveScaled(0,0,18,4)
+          AutoResize = True
+          Text = ("Sort local variables")
+          Picture = Picture["icon:/small/sort-ascent"]
+          Toggle = True
+        }
       }
       { Separator4 Separator
-        MoveScaled(26,27,5,0.1429)
+        MoveScaled(7,7,5,0)
       }
-      { chkSortLocal CheckBox
-        MoveScaled(2,30,28,4)
-        Text = ("Sort local variables")
+      { tbvLocal TableView
+        MoveScaled(3,8,63,18)
+        Expand = True
+        Mode = Select.Single
+        Grid = False
+        Header = GridView.Horizontal
+        Border = False
+        NoKeyboard = True
       }
       Index = 3
       Text = ("Current object")
       Picture = Picture["img/16/current.png"]
-      { cvwObject ColumnView
-        MoveScaled(1,1,41,22)
-        Expand = True
-        Mode = Select.Multiple
-        Border = False
-        ScrollBar = Scroll.Vertical
-      }
-      { Separator2 Separator
-        MoveScaled(23,24,8,0.1429)
-      }
       { HBox2 HBox
-        MoveScaled(0,27,58,4)
+        MoveScaled(1,2,58,4)
         Spacing = True
-        { chkSortObject CheckBox
-          MoveScaled(0,0,28,4)
-          Expand = True
+        { chkSortObject ToolButton
+          MoveScaled(1,0,23,4)
+          AutoResize = True
           Text = ("Sort object variables")
+          Picture = Picture["icon:/small/sort-ascent"]
+          Toggle = True
         }
         { btnShowME ToolButton
-          MoveScaled(38,0,16,4)
+          MoveScaled(39,0,16,4)
           ToolTip = ("Display ME")
           AutoResize = True
           Text = ("Display ME")
           Picture = Picture["icon:/small/fullscreen"]
         }
+      }
+      { Separator2 Separator
+        MoveScaled(24,7,8,0)
+      }
+      { tbvObject TableView
+        MoveScaled(1,12,69,20)
+        Expand = True
+        Mode = Select.Single
+        Grid = False
+        Header = GridView.Horizontal
+        Border = False
+        NoKeyboard = True
       }
       Index = 4
       Text = ("Watch")
@@ -107,7 +119,7 @@
         }
       }
       { Separator3 Separator
-        MoveScaled(40,7,5,0.1429)
+        MoveScaled(40,7,5,0)
       }
       { cvwWatch ColumnView
         MoveScaled(2,9,40,22)
@@ -136,7 +148,7 @@
         }
       }
       { Separator1 Separator
-        MoveScaled(34,5,8,0.1429)
+        MoveScaled(34,5,8,0)
       }
       { cvwBreak ColumnView
         MoveScaled(1,6,38,25)

@@ -55,4 +55,6 @@ int EVAL_add_variable(int index);
 
 void EVAL_start(EXPRESSION *expr);
 
+bool EVAL_get_assignment_symbol(EXPRESSION *expr, const char **name, int *len);
+
 #endif

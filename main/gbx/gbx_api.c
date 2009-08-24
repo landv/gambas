@@ -259,6 +259,7 @@ void *GAMBAS_DebugApi[] =
 	(void *)LOCAL_format_date,
 	(void *)LOCAL_format_number,
 	(void *)DEBUG_get_value,
+	(void *)DEBUG_set_value,
 	(void *)CARRAY_get_value,
 	(void *)GB_CollectionEnum,
 	(void *)CLASS_get_next_sorted_symbol,

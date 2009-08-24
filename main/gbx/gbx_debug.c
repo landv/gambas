@@ -225,6 +225,78 @@ __FOUND:
   return FALSE;
 }
 
+int DEBUG_set_value(const char *sym, int len, VALUE *value)
+{
+  int i;
+  LOCAL_SYMBOL *lp;
+  GLOBAL_SYMBOL *gp;
+  CLASS_VAR *var;
+  char *addr;
+	VALUE *where;
+	bool ret = GB_DEBUG_SET_OK;
+
+  TRY
+  {
+		if (DEBUG_info->fp)
+		{
+			for (i = 0; i < DEBUG_info->fp->debug->n_local; i++)
+			{
+				lp = &DEBUG_info->fp->debug->local[i];
+				if (len == lp->sym.len && strncasecmp(sym, lp->sym.name, len) == 0)
+				{
+					where = &DEBUG_info->bp[lp->value];
+					VALUE_conv(value, where->type);
+					RELEASE(where);
+					*where = *value;
+					BORROW(where);
+					goto __FOUND;
+				}
+			}
+		}
+
+		if (DEBUG_info->cp)
+		{
+			for (i = 0; i < DEBUG_info->cp->load->n_global; i++)
+			{
+				gp = &DEBUG_info->cp->load->global[i];
+				if (len != gp->sym.len || strncasecmp(sym, gp->sym.name, len) != 0)
+					continue;
+
+				if (CTYPE_get_kind(gp->ctype) == TK_VARIABLE)
+				{
+					if (!CTYPE_is_static(gp->ctype) && DEBUG_info->op)
+					{
+						var = &DEBUG_info->cp->load->dyn[gp->value];
+						addr = (char *)DEBUG_info->op + var->pos;
+					}
+					else
+					{
+						var = &DEBUG_info->cp->load->stat[gp->value];
+						addr = (char *)DEBUG_info->cp->stat + var->pos;
+					}
+
+					VALUE_class_write(DEBUG_info->cp, value, addr, var->type);
+					goto __FOUND;
+				}
+			}
+		}
+
+		ret = GB_DEBUG_SET_READ_ONLY;
+		
+__FOUND:
+
+		0;
+	}
+  CATCH
+  {
+    ret = GB_DEBUG_SET_ERROR;
+    GAMBAS_Error = TRUE;
+  }
+  END_TRY
+
+  return ret;
+}
+
 int DEBUG_get_object_access_type(void *object, CLASS *class, int *count)
 {
 	CLASS_DESC *desc;

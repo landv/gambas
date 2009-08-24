@@ -232,6 +232,7 @@ Public Sub RefreshAll()
 
   Form_Resize
   panProperty.Show
+  sepProperty.Show
   lblMessage.Hide
   'lblMessage.Ignore = TRUE
   
@@ -272,6 +273,7 @@ Public Sub HideAll()
   lblName.Hide
   spnHelp.Hide
   panProperty.Hide
+  sepProperty.Hide
   lblMessage.Show
   $hForm = Null
 

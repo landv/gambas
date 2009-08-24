@@ -5,7 +5,7 @@ gblib_LTLIBRARIES = gb.eval.la
 
 gb_eval_la_LIBADD = 
 gb_eval_la_LDFLAGS = -module @LD_FLAGS@
-gb_eval_la_CFLAGS = -I$(top_srcdir)/share @INCLTDL@
+gb_eval_la_CFLAGS = -I$(top_srcdir)/share @INCLTDL@ $(AM_CFLAGS)
 
 gb_eval_la_SOURCES = \
  gb_alloc_override.h \

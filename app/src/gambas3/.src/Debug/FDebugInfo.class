@@ -11,16 +11,26 @@ Private Const TAB_BREAK As Integer = 5
 
 Private $cRefresh As New Collection
 
+Private $aLocal As New String[] ' keys
+Private $aValLocal As New String[]
+Private $cLocal As New Collection ' key -> row
+Private $bSortLocal As Boolean
+
+Private $aObject As New String[]
+Private $aValObject As New String[]
+Private $cObject As New Collection
+Private $bSortObject As Boolean
+
 Public Sub _new()
   
-  With cvwLocal
+  With tbvLocal
     .Columns.Count = 2
     .Columns[0].Width = 192
     .Columns[0].Text = ("Name")
     .Columns[1].Text = ("Value")
   End With
 
-  With cvwObject
+  With tbvObject
     .Columns.Count = 2
     .Columns[0].Width = 192
     .Columns[0].Text = ("Name")
@@ -56,13 +66,30 @@ Public Sub Form_Open()
 
 End
 
+Private Sub ClearView(hView As TableView)
+  
+  hView.Rows.Count = 0
+  'hView.Clear
+  If hView = tbvLocal Then
+    $cLocal.Clear
+    $aLocal.Clear
+    $aValLocal.Clear
+  Else
+    $cObject.Clear
+    $aObject.Clear
+    $aValObject.Clear
+  Endif
+  
+End
+
 
 Public Sub Clear()
 
-  cvwLocal.Clear
-  cvwLocal.Tag = ""
-  cvwObject.Clear
-  cvwObject.Tag = ""
+  ClearView(tbvLocal)
+  tbvLocal.Tag = ""
+  ClearView(tbvObject)
+  tbvObject.Tag = ""
+
   lstStack.Clear
   cvwWatch.Clear
   $cRefresh.Clear
@@ -123,13 +150,39 @@ Catch
 
 End
 
+Private Sub SortVariable(aVar As String[])
+  
+  Dim iStart As Integer
+  Dim iEnd As Integer
+  Dim iPos As Integer
+  
+  Do
+    
+    If iPos > aVar.Max Or If Right(aVar[iPos]) = ":" Then
+      iEnd = iPos
+      If iEnd > iStart Then
+        aVar.Insert(aVar.Extract(iStart, iEnd - iStart).Sort(), iStart)
+      Endif
+      iStart = iPos + 1
+    Endif
+    
+    If iPos > aVar.Max Then Break
+    Inc iPos
+    
+  Loop
+  
+End
 
-Private Sub DefineVar(hView As ColumnView, sList As String, sCmd As String, iIndex As Integer)
+
+Private Sub DefineVar(hView As TableView, sList As String, sCmd As String, iIndex As Integer)
 
   Dim sVar As String
   Dim aVar As String[]
   Dim sParent As String
   Dim bFill As Boolean
+  Dim iPos As Integer
+  Dim cCol As Collection
+  Dim bSort As Boolean
 
   If sList <> "*" Then
 
@@ -152,25 +205,42 @@ Private Sub DefineVar(hView As ColumnView, sList As String, sCmd As String, iInd
     
   If bFill Then
     
-    hView.Clear
-    For Each sVar In aVar
+    ClearView(hView)
+    
+    If hView = tbvLocal Then
+      $aLocal = aVar
+      $aValLocal = New String[$aLocal.Count]
+      cCol = $cLocal
+      bSort = chkSortLocal.Value
+    Else
+      $aObject = aVar
+      $aValObject = New String[$aObject.Count]
+      cCol = $cObject
+      bSort = chkSortObject.Value
+    Endif
+    
+    While iPos < aVar.Max
+      sVar = aVar[iPos]
       If Right(sVar) = ":" Then 
-        sVar = UCase(sVar)
-        sParent = sVar
+        If iPos = aVar.Max Or If Right(aVar[iPos + 1]) = ":" Then
+          aVar.Remove(iPos)
+        Else
+          Inc iPos
+        Endif
       Else
-        Select Case sParent
-          Case "S:"
-            Try hView.Add(sParent, ("Static variables"))
-          Case "D:"
-            Try hView.Add(sParent, ("Dynamic variables"))
-        End Select
-        Try hView.Add(sVar, sVar,, sParent)
+        Inc iPos
       Endif
+    Wend
+    
+    If bSort Then SortVariable(aVar)
+    
+    hView.Rows.Count = aVar.Count
+
+    For iPos = 0 To aVar.Max
+      cCol[aVar[iPos]] = iPos
+      If Right(aVar[iPos]) = ":" Then hView[iPos, 0].ColumnSpan = 2
     Next
     
-    Try hView["S:"].Expanded = True
-    Try hView["D:"].Expanded = True
-
   Endif
   
   If tabDebug.Index <> iIndex Then Return
@@ -178,50 +248,92 @@ Private Sub DefineVar(hView As ColumnView, sList As String, sCmd As String, iInd
   For Each sVar In aVar
     If Right(sVar) = ":" Then Continue
     Design.Command("&" & sCmd & sVar & "\t" & sVar)
-
   Next
     
 End
 
-Public Sub AddVar(hView As ColumnView, sVar As String, sValue As String)
+Public Sub AddVar(hView As TableView, sVar As String, sValue As String)
 
-  Try hView.Add(sVar, sVar)
-  If Error Then 
-    If hView[sVar][1] Then hView[sVar].Selected = hView[sVar][1] <> sValue
+  Dim cCol As Collection
+  Dim aVal As String[]
+  Dim iRow As Integer
+
+  If hView = tbvLocal Then
+    cCol = $cLocal
+    aVal = $aValLocal
+  Else
+    cCol = $cObject
+    aVal = $aValObject
   Endif
   
-  hView[sVar][1] = sValue
-
+  Try iRow = cCol[sVar]
+  If Error Then Return
+  
+  If aVal[iRow] <> sValue Then
+    aVal[iRow] = sValue
+    hView[iRow, 1].Refresh
+  Endif
+  
 End
 
 Public Sub DefineLocal(Optional sList As String = "*")
   
-  DefineVar(cvwLocal, sList, "L", TAB_LOCAL)
+  DefineVar(tbvLocal, sList, "L", TAB_LOCAL)
   
 End
 
-Public Sub AddLocal(sVar As String, sValue As String)
-  
-  AddVar(cvwLocal, sVar, sValue)
+Public Sub AddLocal(sVar As String, sValue As String, Optional bAssign As Boolean)
+
+  Dim iRow As Integer
+    
+  If bAssign Then
+    If Left(sValue) = "!" Then
+      Try iRow = $cLocal[sVar]
+      If Not Error Then
+        With tbvLocal[iRow, 1]
+          Balloon.Error(Mid$(sValue, 2), tbvLocal, .X + .W / 2, .Y + .H / 2)
+        End With
+      Endif
+    Else
+      Design.Command("&L" & sVar & "\t" & sVar)
+    Endif
+  Else
+    AddVar(tbvLocal, sVar, sValue)
+  Endif
   
 End
 
 Public Function LocalExists(sExpr As String) As Boolean
-  If Not sExpr Then Return
   
-  Return cvwLocal.Exist(sExpr)
+  If Not sExpr Then Return
+  Return $cLocal.Exist(sExpr)
 
 End
 
 Public Sub DefineObject(Optional sList As String = "*")
   
-  DefineVar(cvwObject, sList, "O", TAB_ME)
+  DefineVar(tbvObject, sList, "O", TAB_ME)
   
 End
 
-Public Sub AddObject(sVar As String, sValue As String)
+Public Sub AddObject(sVar As String, sValue As String, Optional bAssign As Boolean)
   
-  AddVar(cvwObject, sVar, sValue)
+  Dim iRow As Integer
+  
+  If bAssign Then
+    If Left(sValue) = "!" Then
+      Try iRow = $cObject[sVar]
+      If Not Error Then
+        With tbvObject[iRow, 1]
+          Balloon.Error(Mid$(sValue, 2), tbvObject, .X + .W / 2, .Y + .H / 2)
+        End With
+      Endif
+    Else
+      Design.Command("&O" & sVar & "\t" & sVar)
+    Endif
+  Else
+    AddVar(tbvObject, sVar, sValue)
+  Endif
   
 End
 
@@ -413,11 +525,11 @@ Public Sub ReadConfig()
   Dim hButton As ToolButton
 
   tabDebug.Font.Grade = - Settings["/TabStripFont", 0]
-  cvwLocal.Font.Grade = - Settings["/GlobalFont", 0]
-  cvwObject.Font = cvwLocal.Font
-  lstStack.Font = cvwLocal.Font
-  cvwWatch.Font = cvwLocal.Font
-  cvwBreak.Font = cvwLocal.Font
+  tbvLocal.Font.Grade = - Settings["/GlobalFont", 0]
+  tbvObject.Font = tbvLocal.Font
+  lstStack.Font = tbvLocal.Font
+  cvwWatch.Font = tbvLocal.Font
+  cvwBreak.Font = tbvLocal.Font
 
   For Each hButton In [btnClearBreak, btnKillAllWatch, btnKillWatch, btnRemoveBreak, btnShowME, btnWatch]
     hButton.AutoResize = False
@@ -495,23 +607,13 @@ End
 
 Public Sub chkSortLocal_Click()
 
-  If chkSortLocal.Value Then 
-    cvwLocal.Sorted = True
-  Else 
-    cvwLocal.Sorted = False
-    DefineLocal
-  Endif    
+  DefineLocal
 
 End
 
 Public Sub chkSortObject_Click()
 
-  If chkSortObject.Value Then 
-    cvwObject.Sorted = True
-  Else 
-    cvwObject.Sorted = False
-    DefineObject
-  Endif    
+  DefineObject
 
 End
 
@@ -532,35 +634,26 @@ Public Sub tabDebug_Click()
       FHelp.Background = Color.Background
       FHelp.Reparent(panHelp)
       FHelp.Ignore = False
-      
       FHelp.Visible = True
   End Select   
 
 End
 
-Public Sub cvwObject_Collapse()
+Public Sub tbvLocal_Activate()
 
-  cvwObject.Item.Expanded = True  
+  Dim hTable As TableView = Last
+  Dim sExpr As String = hTable[hTable.Row, 0].Text
+  Dim sVal As String = hTable[hTable.Row, 1].Text
 
-End
-
-Public Sub cvwLocal_Activate()
-
-  Dim sText As String = cvwLocal.Item.Text
-
-  If Right(sText) = ":" Then Return
-  If Left(cvwLocal.Item[1]) <> "(" Then Return
-  Design.Command("#X" & sText & "\t" & sText)
+  If Right(sExpr) = ":" Then Return
+  If Left(sVal) <> "(" Then Return
+  Design.Command("#X" & sExpr & "\t" & sExpr)
 
 End
 
-Public Sub cvwObject_Activate()
+Public Sub tbvObject_Activate()
 
-  Dim sText As String = cvwObject.Item.Text
-
-  If Right(sText) = ":" Then Return
-  If Left(cvwObject.Item[1]) <> "(" Then Return
-  Design.Command("#X" & sText & "\t" & sText)  
+  tbvLocal_Activate
 
 End
 
@@ -665,9 +758,9 @@ Public Sub UpdateView()
 End
 
 
-Public Sub btnShowME_Click()
+Public Sub btnShowMe_Click()
 
-  Design.Command("#XME\tME")    
+  Design.Command("#XMe\tMe")
 
 End
 
@@ -751,3 +844,105 @@ Public Sub SetHelpVisible()
   
 End
 
+Public Sub tbvLocal_Data(Row As Integer, Column As Integer)
+
+  Dim hView As TableView = Last
+  Dim aVar As String[]
+  Dim aValue As String[]
+  Dim sVar As String
+
+  If hView = tbvLocal Then
+    aVar = $aLocal
+    aValue = $aValLocal
+  Else
+    aVar = $aObject
+    aValue = $aValObject
+  Endif
+
+  Try sVar = aVar[Row]
+  If Not sVar Then Return
+  
+  With hView.Data
+  
+    If Column = 0 Then
+      If Right(sVar) = ":" Then
+        .Font.Bold = True
+        .Font.Underline = True
+        Debug sVar
+        .Text = If(UCase(sVar) = "S:", ("Static variables"), ("Dynamic variables"))
+      Else
+        .Text = sVar
+      Endif
+    Else
+      Try .Text = aValue[Row]
+    Endif
+    
+  End With
+
+End
+
+Public Sub tbvObject_Data(Row As Integer, Column As Integer)
+
+  tbvLocal_Data(Row, Column)
+
+End
+
+Public Sub tbvLocal_Click()
+
+  Dim hView As TableView = Last
+  If hView.Column = 1 Then 
+    If Right(hView[hView.Row, 0].Text) <> ":" Then hView.Edit
+  Endif
+
+End
+
+Public Sub tbvObject_Click()
+  
+  tbvLocal_Click
+
+End
+
+Public Sub tbvLocal_Save(Row As Integer, Column As Integer, Value As String)
+
+  Dim sVar As String = tbvLocal[Row, 0].Text
+  With tbvLocal[Row, 1]
+    Design.SetBalloon(tbvLocal, .X + .W / 2, .Y + .H / 2)
+  End With
+  Design.Command("=L" & sVar & "\t" & sVar & " = " & Value)
+
+End
+
+Public Sub tbvObject_Save(Row As Integer, Column As Integer, Value As String)
+
+  Dim sVar As String = tbvObject[Row, 0].Text
+  Design.Command("=O" & sVar & "\t" & sVar & " = " & Value)
+  With tbvObject[Row, 1]
+    Design.SetBalloon(tbvObject, .X + .W / 2, .Y + .H / 2)
+  End With
+  Design.Command("&O" & sVar & "\t" & sVar)
+
+End
+
+Public Sub tbvLocal_Scroll()
+
+  Balloon.Hide(Last)
+
+End
+
+Public Sub tbvLocal_Select()
+
+  Balloon.Hide(Last)
+
+End
+
+Public Sub tbvObject_Scroll()
+
+  Balloon.Hide(Last)
+
+End
+
+Public Sub tbvObject_Select()
+
+  Balloon.Hide(Last)
+
+End

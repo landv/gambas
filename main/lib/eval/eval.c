@@ -33,24 +33,24 @@
 
 /*#define DEBUG*/
 
-PUBLIC EXPRESSION *EVAL;
-PUBLIC EXPRESSION EVAL_read_expr;
+EXPRESSION *EVAL;
+EXPRESSION EVAL_read_expr;
 
 
-PUBLIC void EVAL_init(void)
+void EVAL_init(void)
 {
   RESERVED_init();
   CLEAR(&EVAL_read_expr);
 }
 
 
-PUBLIC void EVAL_exit(void)
+void EVAL_exit(void)
 {
   EVAL_clear(&EVAL_read_expr);
   RESERVED_exit();
 }
 
-PUBLIC GB_VALUE *EVAL_expression(EXPRESSION *expr, EVAL_FUNCTION get_value)
+GB_VALUE *EVAL_expression(EXPRESSION *expr, EVAL_FUNCTION get_value)
 {
   EVAL = expr;
 
@@ -81,7 +81,7 @@ PUBLIC GB_VALUE *EVAL_expression(EXPRESSION *expr, EVAL_FUNCTION get_value)
 }
 
 
-PUBLIC void EVAL_clear(EXPRESSION *expr)
+void EVAL_clear(EXPRESSION *expr)
 {
   ARRAY_delete(&expr->tree);
 
@@ -100,7 +100,7 @@ PUBLIC void EVAL_clear(EXPRESSION *expr)
 }
 
 
-PUBLIC void EVAL_start(EXPRESSION *expr)
+void EVAL_start(EXPRESSION *expr)
 {
   ALLOC(&expr->pattern, sizeof(PATTERN) * (16 + expr->len), "EVAL_start");
   expr->pattern_count = 0;
@@ -119,7 +119,7 @@ PUBLIC void EVAL_start(EXPRESSION *expr)
   expr->nvar = 0;
 }
 
-PUBLIC bool EVAL_compile(EXPRESSION *expr, bool assign)
+bool EVAL_compile(EXPRESSION *expr, bool assign)
 {
   bool error = FALSE;
 
@@ -168,8 +168,25 @@ PUBLIC bool EVAL_compile(EXPRESSION *expr, bool assign)
   return error;
 }
 
+bool EVAL_get_assignment_symbol(EXPRESSION *expr, const char **name, int *len)
+{
+	ushort code = EVAL->assign_code;
+	int index;
+  EVAL_SYMBOL *sym;
+	
+	if ((code & 0xFF00) == C_POP_PARAM)
+	{
+		index = -((signed char)(code & 0xFF)) - 1;
+		sym = (EVAL_SYMBOL *)TABLE_get_symbol(EVAL->table, EVAL->var[index]);
+		*name = sym->sym.name;
+		*len = sym->sym.len;
+		return FALSE;
+	}
+	else
+		return TRUE;
+}
 
-PUBLIC void EVAL_new(EXPRESSION **expr, char *src, int len)
+void EVAL_new(EXPRESSION **expr, char *src, int len)
 {
   GB.Alloc((void **)expr, sizeof(EXPRESSION));
   CLEAR(*expr);
@@ -180,7 +197,7 @@ PUBLIC void EVAL_new(EXPRESSION **expr, char *src, int len)
 }
 
 
-PUBLIC void EVAL_free(EXPRESSION **pexpr)
+void EVAL_free(EXPRESSION **pexpr)
 {
   EVAL_clear(*pexpr);
   GB.FreeString(&(*pexpr)->source);
@@ -188,7 +205,7 @@ PUBLIC void EVAL_free(EXPRESSION **pexpr)
 }
 
 
-PUBLIC int EVAL_add_constant(CLASS_CONST *cst)
+int EVAL_add_constant(CLASS_CONST *cst)
 {
   int num;
   CLASS_CONST *desc;
@@ -202,7 +219,7 @@ PUBLIC int EVAL_add_constant(CLASS_CONST *cst)
 }
 
 
-PUBLIC int EVAL_add_class(char *name)
+int EVAL_add_class(char *name)
 {
   int num;
   CLASS **desc;
@@ -218,7 +235,7 @@ PUBLIC int EVAL_add_class(char *name)
 }
 
 
-PUBLIC int EVAL_add_unknown(char *name)
+int EVAL_add_unknown(char *name)
 {
   int num;
   char **desc;
@@ -232,7 +249,7 @@ PUBLIC int EVAL_add_unknown(char *name)
 }
 
 
-PUBLIC int EVAL_add_variable(int index)
+int EVAL_add_variable(int index)
 {
   EVAL_SYMBOL *sym;
 
@@ -248,5 +265,4 @@ PUBLIC int EVAL_add_variable(int index)
 
   return (-sym->local);
 }
-
 

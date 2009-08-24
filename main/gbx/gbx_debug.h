@@ -65,6 +65,7 @@ const char *DEBUG_get_position(CLASS *cp, FUNCTION *fp, PCODE *pc);
 const char *DEBUG_get_current_position(void);
 void DEBUG_where(void);
 bool DEBUG_get_value(const char *sym, int len, GB_VARIANT *ret);
+int DEBUG_set_value(const char *sym, int len, VALUE *value);
 int DEBUG_get_object_access_type(void *object, CLASS *class, int *count);
 DEBUG_BACKTRACE *DEBUG_backtrace();
 GB_ARRAY DEBUG_get_string_array_from_backtrace(DEBUG_BACKTRACE *bt);

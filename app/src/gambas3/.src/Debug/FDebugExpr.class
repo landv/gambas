@@ -42,7 +42,7 @@ Static Public Sub Add(sExpr As String, sInfo As String)
   
 End
 
-Static Public Sub AddResult(sWindow As String, sValue As String)
+Static Public Sub AddResult(sWindow As String, sValue As String, Optional bAssign As Boolean)
   
   Dim iPos As Integer
   Dim hWin As FDebugExpr
@@ -50,7 +50,7 @@ Static Public Sub AddResult(sWindow As String, sValue As String)
   iPos = RInStr(sWindow, "#")
     
   hWin = $cAll[Left(sWindow, iPos - 1)]
-  If hWin Then hWin.SetValue(CInt(Mid(sWindow, iPos + 1)), sValue)
+  If hWin Then hWin.SetValue(CInt(Mid(sWindow, iPos + 1)), sValue, bAssign)
   
 End
 
@@ -182,28 +182,41 @@ Catch
 
 End
 
-Public Sub SetValue(iRow As Integer, sVal As String)
+Public Sub SetValue(iRow As Integer, sVal As String, Optional bAssign As Boolean)
   
   Dim vVal As Variant
   Dim sHex As String
 
-  vVal = Val(sVal)
+  If bAssign Then
   
-  Select Case TypeOf(vVal)
-    Case gb.Integer
-      sHex = Hex$(vVal, 8)
-    Case gb.Long
-      sHex = Hex$(vVal, 16)
-  End Select 
+    If Left(sVal) = "!" Then
+      With gvwExpr[iRow, 1]
+        Balloon.Error(Mid$(sVal, 2), gvwExpr, .X + .W / 2, .Y + .H / 2)
+      End With
+    Endif
   
-  If sHex Then 
-    While Left(sHex) = "0"
-      sHex = Mid$(sHex, 2)
-    Wend
-    If sHex Then sVal &= " / &H" & sHex
+  Else
+
+    vVal = Val(sVal)
+    
+    Select Case TypeOf(vVal)
+      Case gb.Integer
+        sHex = Hex$(vVal, 8)
+      Case gb.Long
+        sHex = Hex$(vVal, 16)
+    End Select 
+    
+    If sHex Then 
+      While Left(sHex) = "0"
+        sHex = Mid$(sHex, 2)
+      Wend
+      If sHex Then sVal &= " / &H" & sHex
+    Endif
+    
+    $cVal[iRow] = sVal
+    
   Endif
   
-  $cVal[iRow] = sVal
   gvwExpr[iRow, 1].Refresh
   
 End
@@ -669,4 +682,56 @@ Public Sub gvwExpr_Scroll()
 
   Balloon.Hide(gvwExpr)
 
+End
+
+Public Sub gvwExpr_Click()
+
+  Dim sSym As String
+
+  If gvwExpr.Column = 1 Then 
+    If Not $bArray And If Not $bCollection Then
+      sSym = $aSym[gvwExpr.Row]
+      If Left(sSym) = ":" Then Return
+    Endif
+    gvwExpr.Edit
+  Endif
+
+End
+
+Public Sub gvwExpr_Save(Row As Integer, Column As Integer, Value As String)
+
+  Dim sSym As String
+  Dim sVal As String
+
+  Value = Trim(Value)
+  If Value Then
+
+    If $bArray Then 
+    
+      $cVal[Row] = Null
+      Design.Command("=X" & $sExpr & "#" & CStr(Row) & "\t" & $sExpr & "[" & Row & "] = " & Value)
+      
+    Else If $bCollection Then
+    
+      sSym = Chr$(34) & $aSym[Row] & Chr$(34)
+      $cVal[Row] = Null
+      Design.Command("=X" & $sExpr & "#" & CStr(Row) & "\t" & $sExpr & "[" & sSym & "] = " & Value)
+      
+    Else
+  
+      sSym = $aSym[Row]
+      $cVal[Row] = Null
+      
+      If Left($sClass) = "." Or If Not $sRealClass Then
+        Design.Command("=X" & $sExpr & "#" & CStr(Row) & "\t" & $sExpr & "." & sSym & " = " & Value)
+      Else 
+        Design.Command("=X" & $sExpr & "#" & CStr(Row) & "\t" & $sRealClass & "(" & $sExpr & ")." & sSym & " = " & Value)
+      Endif
+      
+    Endif
+    
+  Endif
+  
+  gvwExpr.Cancel
+  
 End

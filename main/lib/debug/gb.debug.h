@@ -51,6 +51,13 @@ enum
 	GB_DEBUG_ACCESS_COLLECTION = 2
 };
 	
+enum
+{
+	GB_DEBUG_SET_OK = 0,
+	GB_DEBUG_SET_ERROR = 1,
+	GB_DEBUG_SET_READ_ONLY = 2
+};
+
 typedef
 	struct {
 		void *(*GetExec)(void);
@@ -62,6 +69,7 @@ typedef
 		int (*FormatDate)(GB_DATE_SERIAL *date, int fmt_type, const char *fmt, int len_fmt, char **str, int *len_str);
 		int (*FormatNumber)(double number, int fmt_type, const char *fmt, int len_fmt, char **str, int *len_str, bool local);
 		bool (*GetValue)(const char *sym, int len, GB_VARIANT *ret);
+		int (*SetValue)(const char *sym, int len, VALUE *value);
 		void (*GetArrayValue)(GB_ARRAY array, int index, GB_VALUE *value);
 		int (*EnumCollection)(GB_COLLECTION col, GB_VARIANT *value, char **key, int *len);
 		void *(*GetNextSortedSymbol)(void *klass, int *index);

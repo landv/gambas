@@ -460,6 +460,8 @@ void TRANS_reference(void)
 
   if (!CODE_popify_last())
     THROW("Invalid assignment");
+
+	EVAL->assign_code = EVAL->code[EVAL->ncode - 1];
 }
 
 static void trans_operation(short op, short nparam, PATTERN previous)

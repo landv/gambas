@@ -110,6 +110,7 @@ typedef
 		bool (*Compile)(EVAL_EXPRESSION expr, bool assign);
 		GB_VALUE *(*Run)(EVAL_EXPRESSION expr, EVAL_FUNCTION func);
 		void (*Free)(EVAL_EXPRESSION *expr);
+		bool (*GetAssignmentSymbol)(EVAL_EXPRESSION expr, const char **sym, int *len);
 		}
 	EVAL_INTERFACE;
 

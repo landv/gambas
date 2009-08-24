@@ -26,14 +26,15 @@
     }
   }
   { Separator1 Separator
-    MoveScaled(4,7,10,0.1429)
+    MoveScaled(4,7,10,0)
   }
-  { gvwExpr GridView
-    MoveScaled(1,11,21,17)
+  { gvwExpr TableView
+    MoveScaled(2,11,21,17)
     Expand = True
     Mode = Select.Single
     Header = GridView.Horizontal
     Scrollbar = Scroll.Vertical
     Border = False
+    NoKeyboard = True
   }
 }

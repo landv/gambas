@@ -75,6 +75,17 @@ static bool _fifo;
 #define INFO(_msg, ...) fprintf(_out, "I\t" _msg "\n", ##__VA_ARGS__)
 #endif
 
+static init_eval_interface()
+{
+	static bool init = FALSE;
+
+	if (!init)
+	{
+  	GB.GetInterface("gb.eval", EVAL_INTERFACE_VERSION, &EVAL);
+  	init = TRUE;
+	}
+}
+
 void DEBUG_break_on_next_line(void)
 {
   DEBUG_info.stop = TRUE;
@@ -701,19 +712,16 @@ static void command_frame(const char *cmd)
 
 static void command_eval(const char *cmd)
 {
-	static bool init = FALSE;
   EXPRESSION *expr;
   ERROR_INFO save_error = { 0 };
   DEBUG_INFO save_debug;
   VALUE *val;
   int start, len;
   FILE *out;
+	const char *name;
+	int ret;
 
-	if (!init)
-	{
-  	GB.GetInterface("gb.eval", EVAL_INTERFACE_VERSION, &EVAL);
-  	init = TRUE;
-	}
+	init_eval_interface();
 
 	out = *cmd == '!' ? stdout : _out;
 
@@ -738,9 +746,9 @@ static void command_eval(const char *cmd)
 	start++;
 	EVAL.New(POINTER(&expr), &cmd[start], len - start);
 
-  if (EVAL.Compile(expr, FALSE))
+  if (EVAL.Compile(expr, *cmd == '='))
     goto __ERROR;
-
+	
 //   DEBUG_info.bp = BP;
 //   DEBUG_info.fp = FP;
 //   DEBUG_info.op = OP;
@@ -763,23 +771,41 @@ static void command_eval(const char *cmd)
 		case '#':
 		  PRINT_object(out, val);
 		  break;
+			
+		case '=':
+			if (!EVAL.GetAssignmentSymbol(expr, &name, &len))
+			{
+				ret = GB_DEBUG.SetValue(name, len, val);
+				if (ret == GB_DEBUG_SET_ERROR)
+					goto __ERROR;
+				else if (ret == GB_DEBUG_SET_READ_ONLY)
+				{
+					fprintf(out, "!%.*s is read-only", len, name);
+					goto __END;
+				}
+			}
+			fprintf(out, "OK");
+			break;
 	}
 
   goto __END;
 
 __ERROR:
+
   if (*cmd != '!')
   	fprintf(out, "!");
   GB_DEBUG.PrintError(out, TRUE, FALSE);
 
 __END:
+
   EVAL.Free(POINTER(&expr));
   DEBUG_info = save_debug; //.cp = NULL;
   GB_DEBUG.RestoreError(&save_error);
   
- 	fprintf(out, "\n");
- 	fflush(out);
+	fprintf(out, "\n");
+	fflush(out);
 }
+
 
 static void command_symbol(const char *cmd)
 {
@@ -833,6 +859,7 @@ void DEBUG_main(boolean error)
     { "?", TC_NONE, command_eval, TRUE },
     { "!", TC_NONE, command_eval, TRUE },
     { "#", TC_NONE, command_eval, TRUE },
+    { "=", TC_NONE, command_eval, TRUE },
     //{ "e", TC_NONE, command_error, TRUE },
     { "@", TC_NONE, command_frame, TRUE },
     

@@ -3,11 +3,14 @@
 Inherits GridView
 Export 
 
+Public Const _Properties As String = "*,NoKeyboard"
+
 Event Save(Row As Integer, Column As Integer, Value As String)
 Event Insert
 Event Click
 
 Property Read Editor As Control
+Property NoKeyboard As Boolean
 
 Private $hTextBox As TextBox
 Private $hComboBox As ComboBox
@@ -17,6 +20,7 @@ Private $bTextBox As Boolean
 Private $iCol As Integer
 Private $iRow As Integer
 Private $hWatcher As Watcher
+Private $bNoKeyboard As Boolean
 
 Public Sub _new()
   
@@ -97,7 +101,11 @@ Private Sub MoveEditor()
   With Me[$iRow, $iCol]
     X += .X
     Y += .Y
-    $hEditor.Move(X, Y, .Width, .Height)
+    If Me.Grid Then
+      $hEditor.Move(X, Y, .Width, .Height)
+    Else
+      $hEditor.Move(X, Y, .Width + 1, .Height + 1)
+    Endif
   'DEBUG
   
     ' Debug .X;; .Y;; .W;; .H;; "/";; Me.ClientW;; Me.ClientH;; "/";; Me.W;; Me.H
@@ -230,14 +238,20 @@ Public Sub Editor_Click()
 End
 
 Public Sub Editor_KeyPress()
+
   
   Select Case Key.Code
-
+  
     Case Key.Escape
-      $hEditor.Text = Me[$iRow, $iCol].Text
+      If $hEditor.Text = Me[$iRow, $iCol].Text Then
+        HideEditor(True)
+      Else
+        $hEditor.Text = Me[$iRow, $iCol].Text
+      Endif
       Stop Event
 
     Case Key.Up
+      If $bNoKeyboard Then Return
       While Me.Row > 0
         Dec Me.Row
         Raise Click
@@ -248,6 +262,7 @@ Public Sub Editor_KeyPress()
       Wend
 
     Case Key.Down
+      If $bNoKeyboard Then Return
       While Me.Row < (Me.Rows.Count - 1)
         Inc Me.Row
         Raise Click
@@ -258,6 +273,7 @@ Public Sub Editor_KeyPress()
       Wend
 
     Case Key.Left
+      If $bNoKeyboard Then Return
       If $bTextBox And If $hEditor.Pos > 0 Then Return
       Do
         If Me.Column > 0 Then 
@@ -277,6 +293,7 @@ Public Sub Editor_KeyPress()
       Loop
 
     Case Key.Right
+      If $bNoKeyboard Then Return
       If $bTextBox And If $hEditor.Pos < $hEditor.Length Then Return
       Do
         If Me.Column < (Me.Columns.Count - 1) Then 
@@ -296,6 +313,14 @@ Public Sub Editor_KeyPress()
       Loop
       
     Case Key.Enter, Key.Return
+      If $bNoKeyboard Then 
+        If $hEditor Then 
+          HideEditor
+          Stop Event
+        Endif
+        Return
+      Endif
+      
       Do
         If Me.Column < (Me.Columns.Count - 1) Then 
           Inc Me.Column
@@ -329,5 +354,17 @@ End
 Private Function Editor_Read() As Control
 
   Return $hEditor
+
+End
+
+Private Function NoKeyboard_Read() As Boolean
+
+  Return $bNoKeyboard
+
+End
+
+Private Sub NoKeyboard_Write(Value As Boolean)
+
+  $bNoKeyboard = Value
 
 End

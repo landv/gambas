@@ -956,7 +956,8 @@ int EXPORT GB_INIT(void)
 	#endif
 	#endif
 	
-	//putenv((char *)"QT_ONSCREEN_PAINT=1");
+	putenv((char *)"QT_NO_GLIB=1");
+	//putenv((char *)"QT_SLOW_TOPLEVEL_RESIZE=1");
 
 	GB.Hook(GB_HOOK_MAIN, (void *)hook_main);
 	GB.Hook(GB_HOOK_LOOP, (void *)hook_loop);

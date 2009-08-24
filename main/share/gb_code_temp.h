@@ -54,7 +54,6 @@ static void start_code(void)
 
 static void write_short(short value)
 {
-  //if (!(cur_func->ncode & (CODE_INSTR_INC - 1)))
   if (cur_func->ncode >= cur_func->ncode_max)
   {
   	cur_func->ncode_max += CODE_INSTR_INC;
@@ -65,6 +64,7 @@ static void write_short(short value)
   }
   
   cur_func->code[cur_func->ncode] = value;
+	//fprintf(stderr, "[%d] %04hX\n", cur_func->ncode, (ushort)value);
   cur_func->ncode++;
 }
 

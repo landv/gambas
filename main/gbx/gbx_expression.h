@@ -50,14 +50,15 @@ typedef
     short nvar;
     short last_code;
     short last_code2;
+		short assign_code;
+    int stack_usage;
+    void *op;
     unsigned analyze : 1;
     unsigned rewrite : 1;
 		unsigned comment : 1;
-    unsigned _reserved : 13;
-    int stack_usage;
-    void *op;
+    //unsigned _reserved : 12;
     }
-  PACKED
+  //PACKED
   EXPRESSION;
 
 typedef

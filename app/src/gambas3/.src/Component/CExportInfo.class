@@ -1,7 +1,7 @@
 ' Gambas class file
 
-Static Public All As New Collection
-Static Public List As New String[]
+Static Public All As Collection
+Static Public List As String[]
 
 Static Private $iSortKey As Integer
 
@@ -12,6 +12,7 @@ Property Type As String
 Property Read Icon As Picture
 Public Parent As String
 Public SortKey As Integer
+Public Similar As String
 
 Public Control As Boolean
 Public Virtual As Boolean
@@ -150,7 +151,7 @@ End
 
 Static Public Sub Reset()
   
-  All = New Collection
+  All = New Collection(gb.IgnoreCase)
   List = New String[]
   
 End
