@@ -2190,7 +2190,7 @@ Private Sub FindDefinition(bPopupHelp As Boolean, Optional iX As Integer, Option
   Dim sKeyword As String
   Dim sKeyword2 As String
   Dim iLine As Integer
-  Print "icol=" & icol
+
   If Not bPopupHelp Then
     iLine = Editor.Line
     iCol = Editor.Column
@@ -2817,4 +2817,10 @@ Public Sub timShowHelp_Timer()
   If Editor.PosToColumn($X, $Y) >= 0 Then FindDefinition(True, $X, $Y)
   timShowHelp.Enabled = False
   
+End
+
+Public Sub Editors_Leave()
+
+  If Not FDebugInfo.IsHelpVisible() Then FHelp.Visible = False
+
 End

@@ -35,6 +35,8 @@ Private Sub ShowHelp()
     Me.Visible = True
     Form_Show
     '$hEditor.SetFocus
+  Else
+    If Me.Parent = Null Then FDebugInfo.SetHelpVisible
   Endif 
   
 End

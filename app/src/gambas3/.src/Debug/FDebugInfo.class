@@ -21,6 +21,7 @@ Private $aValObject As New String[]
 Private $cObject As New Collection
 Private $bSortObject As Boolean
 
+
 Public Sub _new()
   
   With tbvLocal
@@ -50,6 +51,7 @@ Public Sub _new()
     .Columns[1].Text = ("Function")
     .Columns[2].Text = ("Line")
   End With
+  
   
 End
 
@@ -834,13 +836,14 @@ End
 
 Public Function IsHelpVisible() As Boolean
   
-  Return tabDebug.Index = TAB_HELP
+  Return tabDebug.Index = TAB_HELP And Me.Parent.Visible
   
 End
 
 Public Sub SetHelpVisible()
   
   tabDebug.Index = TAB_HELP
+  tabDebug_Click
   
 End
 
