@@ -1,0 +1,51 @@
+Connected to D-Bus.
+
+Received reply from :1.2
+  Arguments: "<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN" "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd"> <node> <interface name="org.kde.network"> <method name="deviceData"> <arg type="(ssi)" direction="out"/> <annotation name="com.trolltech.QtDBus.QtTypeName.Out0" value="Mollet::NetDevice"/> <arg name="hostName" type="s" direction="in"/> </method> <method name="serviceData"> <arg type="(ssss)" direction="out"/> <annotation name="com.trolltech.QtDBus.QtTypeName.Out0" value="Mollet::NetService"/> <arg name="hostName" type="s" direction="in"/> <arg name="serviceName" type="s" direction="in"/> <arg name="serviceType" type="s" direction="in"/> </method> <method name="deviceDataList"> <arg type="a(ssi)" direction="out"/> <annotation name="com.trolltech.QtDBus.QtTypeName.Out0" value="Mollet::NetDeviceList"/> </method> <method name="serviceDataList"> <arg type="a(ssss)" direction="out"/> <annotation name="com.trolltech.QtDBus.QtTypeName.Out0" value="Mollet::NetServiceList"/> <arg name="hostName" type="s" direction="in"/> </method> </interface> <interface name="org.freedesktop.DBus.Properties"> <method name="Get"> <arg name="interface_name" type="s" direction="in"/> <arg name="property_name" type="s" direction="in"/> <arg name="value" type="v" direction="out"/> </method> <method name="Set"> <arg name="interface_name" type="s" direction="in"/> <arg name="property_name" type="s" direction="in"/> <arg name="value" type="v" direction="in"/> </method> <method name="GetAll"> <arg name="interface_name" type="s" direction="in"/> <arg name="values" type="a{sv}" direction="out"/> <annotation name="com.trolltech.QtDBus.QtTypeName.Out0" value="QVariantMap"/> </method> </interface> <interface name="org.freedesktop.DBus.Introspectable"> <method name="Introspect"> <arg name="xml_data" type="s" direction="out"/> </method> </interface> <node name="KDebug"/> <node name="MainApplication"/> <node name="NotificationItemWatcher"/> <node name="kbuildsycoca"/> <node name="kded"/> <node name="modules"/> <node name="org"/> </node> "
+  Connected to D-Bus.
+
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN" "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd"> 
+<node> 
+<interface name="org.kde.network">
+ <method name="deviceData">
+  <arg type="(ssi)" direction="out"/>
+   <annotation name="com.trolltech.QtDBus.QtTypeName.Out0" value="Mollet::NetDevice"/>
+    <arg name="hostName" type="s" direction="in"/>
+ </method> <method name="serviceData"> 
+ <arg type="(ssss)" direction="out"/> 
+ <annotation name="com.trolltech.QtDBus.QtTypeName.Out0" value="Mollet::NetService"/> 
+ <arg name="hostName" type="s" direction="in"/> 
+ <arg name="serviceName" type="s" direction="in"/> 
+ <arg name="serviceType" type="s" direction="in"/> 
+ </method> 
+ <method name="deviceDataList"> 
+ <arg type="a(ssi)" direction="out"/> 
+ <annotation name="com.trolltech.QtDBus.QtTypeName.Out0" value="Mollet::NetDeviceList"/>
+  </method> <method name="serviceDataList">
+   <arg type="a(ssss)" direction="out"/>
+    <annotation name="com.trolltech.QtDBus.QtTypeName.Out0" value="Mollet::NetServiceList"/> 
+    <arg name="hostName" type="s" direction="in"/> </method> 
+    </interface> 
+    <interface name="org.freedesktop.DBus.Properties">
+     <method name="Get"> 
+     <arg name="interface_name" type="s" direction="in"/> 
+     <arg name="property_name" type="s" direction="in"/> 
+     <arg name="value" type="v" direction="out"/> 
+     </method> <method name="Set"> 
+     <arg name="interface_name" type="s" direction="in"/> 
+     <arg name="property_name" type="s" direction="in"/> 
+     <arg name="value" type="v" direction="in"/>
+      </method> <method name="GetAll"> 
+      <arg name="interface_name" type="s" direction="in"/> 
+      <arg name="values" type="a{sv}" direction="out"/>
+       <annotation name="com.trolltech.QtDBus.QtTypeName.Out0" value="QVariantMap"/>
+        </method> </interface>
+         <interface name="org.freedesktop.DBus.Introspectable">
+          <method name="Introspect">
+           <arg name="xml_data" type="s" direction="out"/> </method> </interface> 
+           <node name="KDebug"/> <node name="MainApplication"/> 
+           <node name="NotificationItemWatcher"/> 
+           <node name="kbuildsycoca"/> 
+           <node name="kded"/> 
+           <node name="modules"/>
+           <node name="org"/> </node> "
