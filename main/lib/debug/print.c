@@ -312,7 +312,7 @@ void PRINT_object(FILE *where, VALUE *value)
 	VALUE conv;
 	void *object;
 	int i, index;
-	int count;
+	int count = 0;
 	CLASS *class, *real_class;
 	CLASS_DESC_SYMBOL *cd;
 	char *key;

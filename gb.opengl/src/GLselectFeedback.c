@@ -108,8 +108,8 @@ BEGIN_METHOD(GLRENDERMODE, GB_INTEGER Mode)
             GLuint *hitbuffer = selectbuffer;
             int idxhit, idxname;
             
-            //GB.New(&hitArray, GB_T_OBJECT, result);
-            GB.New(POINTER(&hitArray), GB.FindClass("Integer[][]"), NULL, NULL);
+            GB.Array.New(&hitArray, GB.FindClass("Integer[]"), result);
+            //GB.New(POINTER(&hitArray), GB.FindClass("Integer[][]"), NULL, NULL);
 
             for (idxhit=0; idxhit < result; idxhit++)
             {

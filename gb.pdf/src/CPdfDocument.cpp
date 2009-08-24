@@ -504,12 +504,13 @@ END_PROPERTY
 
 BEGIN_PROPERTY(PDFINFO_format)
 
-	char *ctx=NULL;
-
-	GB.Alloc(POINTER(&ctx),16*sizeof(char));
-	snprintf(ctx,16*sizeof(char),"%.2g",THIS->doc->getPDFVersion());
+	char ctx[16];
+	#if POPPLER_VERSION_0_11_3
+		snprintf(ctx, sizeof(ctx), "%.2g", THIS->doc->getPDFMajorVersion () + THIS->doc->getPDFMinorVersion() / 10.0);
+	#else
+		snprintf(ctx, sizeof(ctx), "%.2g", THIS->doc->getPDFVersion());
+	#endif
 	GB.ReturnNewZeroString(ctx);
-	GB.Free(POINTER(&ctx));
 
 END_PROPERTY
 

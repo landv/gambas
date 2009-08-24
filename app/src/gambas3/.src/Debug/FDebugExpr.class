@@ -236,29 +236,43 @@ Public Sub gvwExpr_Activate()
   Dim sText As String
   Dim sVal As String
   Dim sExpr As String
-  
+  Dim sSym As String
+
   If gvwExpr.Row >= 0 Then
   
-    sText = gvwExpr[gvwExpr.Row, 0].Text    
-    If Not sText Or Right(sText) = ":" Then Return
-    sVal = gvwExpr[gvwExpr.Row, 1].Text
-    'If Left(sVal) <> "(" Then Return 
+    If Not $bArray And If Not $bCollection Then
+      sSym = $aSym[gvwExpr.Row]
+      If Left(sSym) = ":" Then Return
+    Endif
 
-    If $bArray Or $bCollection
-      sText = $sExpr & "[" & sText & "]"
-    Else 
-      If Left($sClass) = "." Or If Not $sRealClass Then
-        sText = $sExpr & "." & sText
-      Else 
-        'sText = $sExpr & "." & sText
-        sText = $sRealClass & "(" & $sExpr & ")." & sText
-      Endif
-    Endif 
+    sText = gvwExpr[gvwExpr.Row, 0].Text    
+    If Not sText Then Return
+    sVal = gvwExpr[gvwExpr.Row, 1].Text
     
-    With gvwExpr[gvwExpr.Row, 1]
-      Design.SetBalloon(gvwExpr, .X + .W / 2, .Y + .H / 2)
-    End With
-    OpenExpr(sText)
+    If Left(sVal) = "(" Then
+
+      If $bArray Or $bCollection
+        sText = $sExpr & "[" & sText & "]"
+      Else 
+        If Left($sClass) = "." Or If Not $sRealClass Then
+          sText = $sExpr & "." & sText
+        Else 
+          'sText = $sExpr & "." & sText
+          sText = $sRealClass & "(" & $sExpr & ")." & sText
+        Endif
+      Endif 
+      
+      With gvwExpr[gvwExpr.Row, 1]
+        Design.SetBalloon(gvwExpr, .X + .W / 2, .Y + .H / 2)
+      End With
+      OpenExpr(sText)
+      
+    Else
+    
+      gvwExpr.Column = 1
+      gvwExpr.Edit
+
+    Endif
     
   Endif
 
@@ -403,6 +417,7 @@ Private Sub Init(sInfo As String, bNew As Boolean) As Boolean
   With gvwExpr
   
     .Columns.Count = 2
+    If nRow > 1024 Then Stop
     .Rows.Count = nRow
   
     If $bArray Then 
@@ -681,20 +696,6 @@ End
 Public Sub gvwExpr_Scroll()
 
   Balloon.Hide(gvwExpr)
-
-End
-
-Public Sub gvwExpr_Click()
-
-  Dim sSym As String
-
-  If gvwExpr.Column = 1 Then 
-    If Not $bArray And If Not $bCollection Then
-      sSym = $aSym[gvwExpr.Row]
-      If Left(sSym) = ":" Then Return
-    Endif
-    gvwExpr.Edit
-  Endif
 
 End
 
