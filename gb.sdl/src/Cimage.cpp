@@ -104,13 +104,13 @@ BEGIN_METHOD(CIMAGE_load, GB_STRING path)
 
 END_METHOD
 
-BEGIN_METHOD(CIMAGE_resize, GB_INTEGER width; GB_INTEGER height)
+/*BEGIN_METHOD(CIMAGE_resize, GB_INTEGER width; GB_INTEGER height)
 
 	check_image(THIS);
 	take_image(THIS, IMAGEID);
 	IMAGEID->Resize(VARG(width), VARG(height));
 
-END_METHOD
+END_METHOD*/
 
 /***************************************************************************/
 
@@ -119,8 +119,6 @@ GB_DESC CImage[] =
   GB_DECLARE("Image", sizeof(CIMAGE)),
 
   GB_STATIC_METHOD("Load", "Image", CIMAGE_load, "(Path)s"),
-
-  GB_METHOD("Resize", NULL, CIMAGE_resize, "(Width)i(Height)i"),
 
   GB_END_DECLARE
 };
