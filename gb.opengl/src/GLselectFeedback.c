@@ -125,7 +125,7 @@ BEGIN_METHOD(GLRENDERMODE, GB_INTEGER Mode)
                         *((GLuint *)GB.Array.Get(childhitArray, 3 + idxname)) = *hitbuffer++; // names
 
                   GB.Ref(childhitArray);
-                  *((GB_ARRAY *)GB.Array.Add(hitArray)) = childhitArray;
+                  *((GB_ARRAY *)GB.Array.Get(hitArray, idxhit)) = childhitArray;
              }
 
              GB.ReturnObject(hitArray);
