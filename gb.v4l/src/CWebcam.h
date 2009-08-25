@@ -27,6 +27,7 @@
 #include <sys/ioctl.h>
 #include <linux/types.h>
 #include <linux/videodev.h>
+#include <libv4lconvert.h>
 
 /* #include "videodev2.h" */
 #include "gambas.h"
@@ -49,34 +50,38 @@ extern GB_STREAM_DESC VideoStream;
 // --
 #endif
 
-typedef struct	video_device {
-	int	width;
-	int	height;
-	int	depth;		// colour depth
-	int	buffer_size;	// always width * height * depth
-	int	use_mmap;	// mmap() available for capturing a frame
-	int	capturing;	// our device is capturing frames for us
+typedef 
+	struct video_device 
+	{
+		int	width;
+		int	height;
+		int	depth;		// colour depth
+		int	buffer_size;	// always width * height * depth
+		int	use_mmap;	// mmap() available for capturing a frame
+		int	capturing;	// our device is capturing frames for us
 
-	struct video_capability vcap;
-	struct video_channel vchan;
-	struct video_mbuf vmbuf;
-	struct video_mmap vmmap;
-	struct video_window vwin;
-	struct video_picture videopict;
+		struct video_capability vcap;
+		struct video_channel vchan;
+		struct video_mbuf vmbuf;
+		struct video_mmap vmmap;
+		struct video_window vwin;
+		struct video_picture videopict;
 
-	unsigned char	*frame_buffer;	// not the video memory, but one image
-	int	dev;		// fd of the physical device
-	int Freq2;
+		unsigned char	*frame_buffer;	// not the video memory, but one image
+		int	dev;		// fd of the physical device
+		int Freq2;
+	}
+	video_device_t;
 
-} video_device_t;
 
-
-typedef struct  
-{
-    GB_STREAM_DESC *desc;
-    int _reserved;
-    void *handle;
-}  VIDEO_STREAM;
+typedef 
+	struct  
+	{
+		GB_STREAM_DESC *desc;
+		int _reserved;
+		void *handle;
+	}
+	VIDEO_STREAM;
 
 // ++ V4L2 
 typedef struct gv4l2_buffer
@@ -117,6 +122,7 @@ typedef  struct
         int                     use_mmap;	// is MMAP available
         int                     buffer_count;	// number of buffers
 	int			w,h;		// "current" dimensions
+	int format; // gb.image format
 	//
 	int			bright_max;
 	int			hue_max;
@@ -136,7 +142,8 @@ typedef  struct
 	int			whiteness_def;
 	int			color_def;
 	// --
-
+	struct v4lconvert_data *convert;
+	
 }  CWEBCAM;
 
 

@@ -264,16 +264,16 @@ void gv4l2_close_device( int id )
 //
 int gv4l2_init_device(CWEBCAM * _object , int width , int height )
 {
-        unsigned int min;
+	unsigned int min;
 	static unsigned int n_buffers = 0;
 	int save;
 
-        if ( gv4l2_xioctl (THIS->io, VIDIOC_QUERYCAP, &THIS->cap) == -1 ) {
+	if ( gv4l2_xioctl (THIS->io, VIDIOC_QUERYCAP, &THIS->cap) == -1 ) {
 		gv4l2_debug("VIDIOC_QUERYCAP error");
 		return 0;
 	}
 
-        if (!(THIS->cap.capabilities & V4L2_CAP_VIDEO_CAPTURE)) {
+	if (!(THIS->cap.capabilities & V4L2_CAP_VIDEO_CAPTURE)) {
 		gv4l2_debug("not video capture device");
 		return 0;
 	}
@@ -281,25 +281,27 @@ int gv4l2_init_device(CWEBCAM * _object , int width , int height )
 	//	We need to choose which IO method to use, well try MMAP and
 	//	if that fails, fall back to READ
 	//
-        if (!(THIS->cap.capabilities & V4L2_CAP_STREAMING)) {
+	if (!(THIS->cap.capabilities & V4L2_CAP_STREAMING)) {
 		//
 		//	No MMAP support!
 		//
 		THIS->use_mmap = 0;
-                if (!(THIS->cap.capabilities & V4L2_CAP_READWRITE)) {
+		if (!(THIS->cap.capabilities & V4L2_CAP_READWRITE)) {
 			gv4l2_debug("device does not support mmap or read");
 			return 0;
-		}
-	} else	THIS->use_mmap = 1;
+			}
+		} 
+	else	
+		THIS->use_mmap = 1;
 
 	MCLEAR(THIS->cropcap);
-        THIS->cropcap.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+	THIS->cropcap.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
-        if (!gv4l2_xioctl (THIS->io, VIDIOC_CROPCAP, &THIS->cropcap)) {
-                THIS->crop.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-                THIS->crop.c = THIS->cropcap.defrect;
+	if (!gv4l2_xioctl (THIS->io, VIDIOC_CROPCAP, &THIS->cropcap)) {
+		THIS->crop.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+		THIS->crop.c = THIS->cropcap.defrect;
 
-                if ( gv4l2_xioctl (THIS->io, VIDIOC_S_CROP, &THIS->crop) == -1 ) 
+		if ( gv4l2_xioctl (THIS->io, VIDIOC_S_CROP, &THIS->crop) == -1 ) 
 		{
 			if( errno == EINVAL ) {
 				gv4l2_debug("cropping not supported");
@@ -308,18 +310,20 @@ int gv4l2_init_device(CWEBCAM * _object , int width , int height )
 	}
 
 	MCLEAR(THIS->fmt);
-        THIS->fmt.type                = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+	THIS->fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
 	if( gv4l2_xioctl( THIS->io, VIDIOC_G_FMT, &THIS->fmt ) == -1 ) {
 		gv4l2_debug("Unable to get Video formats");
 		return 0;
 	}
 
-        THIS->fmt.type                = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-        THIS->fmt.fmt.pix.width       = width;
-        THIS->fmt.fmt.pix.height      = height;
-        THIS->fmt.fmt.pix.field       = V4L2_FIELD_INTERLACED;
-	save                          = THIS->fmt.fmt.pix.pixelformat;
+	THIS->fmt.type                = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+	THIS->fmt.fmt.pix.width       = width;
+	THIS->fmt.fmt.pix.height      = height;
+	THIS->fmt.fmt.pix.field       = V4L2_FIELD_INTERLACED;
+	
+	save = THIS->fmt.fmt.pix.pixelformat;
+	
 	//
 	//	Camera format should be picked up from VIDIOC_G_FMT above
 	//	FIXME:: do cameras support multiple formats and so we want
@@ -330,35 +334,42 @@ int gv4l2_init_device(CWEBCAM * _object , int width , int height )
 	//		b. YUV420
 	//		c. revert to whatever the camera was set to
 	//
-        THIS->fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
-        if ( gv4l2_xioctl ( THIS->io, VIDIOC_S_FMT, &THIS->fmt) == -1) {
-                gv4l2_debug("VIDIOC_S_FMT, can't set YUYV, trying YUV 420");
-                THIS->fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUV420;
-                if ( gv4l2_xioctl ( THIS->io, VIDIOC_S_FMT, &THIS->fmt) == -1) {
-                        gv4l2_debug("VIDIOC_S_FMT, can't set YUV420, defaulting ");
-                        THIS->fmt.fmt.pix.pixelformat = save;
-                }
-        }
-        //THIS->fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
+	THIS->fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
+	if ( gv4l2_xioctl ( THIS->io, VIDIOC_S_FMT, &THIS->fmt) == -1) {
+		gv4l2_debug("VIDIOC_S_FMT, can't set YUYV, trying YUV 420");
+		THIS->fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUV420;
+		if ( gv4l2_xioctl ( THIS->io, VIDIOC_S_FMT, &THIS->fmt) == -1) {
+			gv4l2_debug("VIDIOC_S_FMT, can't set YUV420, defaulting ");
+			THIS->fmt.fmt.pix.pixelformat = save;
+		}
+	}
+				
+	// BM: Final image gb.image format
+	THIS->format = GB_IMAGE_BGR; //IMAGE.GetDefaultFormat();
+	
+	// BM: Conversion structure
+	THIS->convert = v4lconvert_create(THIS->io);
+	
+	//THIS->fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
 
-        //if ( gv4l2_xioctl ( THIS->io, VIDIOC_S_FMT, &THIS->fmt) == -1) {
+	//if ( gv4l2_xioctl ( THIS->io, VIDIOC_S_FMT, &THIS->fmt) == -1) {
 	//	gv4l2_debug("VIDIOC_S_FMT, unable to set format");
 	//	return 0;
 	//}
-        // THIS->fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
-        // gv4l2_xioctl ( THIS->io, VIDIOC_S_FMT, &THIS->fmt);
+	// THIS->fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
+	// gv4l2_xioctl ( THIS->io, VIDIOC_S_FMT, &THIS->fmt);
 
-        /* Note VIDIOC_S_FMT may change width and height. */
+	/* Note VIDIOC_S_FMT may change width and height. */
 
-        /* Buggy driver paranoia. */
-        min = THIS->fmt.fmt.pix.width * 2;
-        if (THIS->fmt.fmt.pix.bytesperline < min) 
+	/* Buggy driver paranoia. */
+	min = THIS->fmt.fmt.pix.width * 2;
+	if (THIS->fmt.fmt.pix.bytesperline < min) 
 		THIS->fmt.fmt.pix.bytesperline = min;
-        min = THIS->fmt.fmt.pix.bytesperline * THIS->fmt.fmt.pix.height;
-        if (THIS->fmt.fmt.pix.sizeimage < min)    
+	min = THIS->fmt.fmt.pix.bytesperline * THIS->fmt.fmt.pix.height;
+	if (THIS->fmt.fmt.pix.sizeimage < min)    
 		THIS->fmt.fmt.pix.sizeimage = min;
 
-	GB.Alloc(&THIS->frame,THIS->fmt.fmt.pix.width*THIS->fmt.fmt.pix.height*4);
+	GB.Alloc(&THIS->frame, THIS->fmt.fmt.pix.width * THIS->fmt.fmt.pix.height * (GB_IMAGE_FMT_IS_24_BITS(THIS->format) ? 3 : 4));
 
 	gv4l2_brightness_setup( THIS );
 	gv4l2_contrast_setup( THIS );
@@ -390,49 +401,50 @@ int gv4l2_init_device(CWEBCAM * _object , int width , int height )
 	req.type	= V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	req.memory 	= V4L2_MEMORY_MMAP;
 
-        if ( gv4l2_xioctl (THIS->io, VIDIOC_REQBUFS, &req) == -1 ) {
+	if ( gv4l2_xioctl (THIS->io, VIDIOC_REQBUFS, &req) == -1 ) {
 		gv4l2_debug("mmap not supported or error");
 		return 0;
 	}
-        if (req.count < 2) {
+	if (req.count < 2) {
 		gv4l2_debug("insifficient memory for mmap");
 		return 0;
 	}
-        GB.Alloc ( POINTER(&THIS->buffers),req.count * sizeof (*THIS->buffers));
-        if (!THIS->buffers) {
+	GB.Alloc ( POINTER(&THIS->buffers),req.count * sizeof (*THIS->buffers));
+	if (!THIS->buffers) {
 		gv4l2_debug("insifficient memory for mmap");
 		return 0;
-        }
+		}
 	THIS->buffer_count = req.count;
-        for (n_buffers = 0; n_buffers < req.count; ++n_buffers) {
-                struct v4l2_buffer buf;
+	for (n_buffers = 0; n_buffers < req.count; ++n_buffers) {
+		struct v4l2_buffer buf;
 
-                MCLEAR(buf);
+		MCLEAR(buf);
 
-                buf.type        = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-                buf.memory      = V4L2_MEMORY_MMAP;
-                buf.index       = n_buffers;
+		buf.type        = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+		buf.memory      = V4L2_MEMORY_MMAP;
+		buf.index       = n_buffers;
 
-                if( gv4l2_xioctl (THIS->io, VIDIOC_QUERYBUF, &buf) == -1 ) {
+		if( gv4l2_xioctl (THIS->io, VIDIOC_QUERYBUF, &buf) == -1 ) {
 			gv4l2_debug("VIDIOC_QUERYBUF");
 			return 0;
 		}
 
-                THIS->buffers[n_buffers].length = buf.length;
-                THIS->buffers[n_buffers].start =
-                        mmap (NULL /* start anywhere */,
-                              buf.length,
-                              PROT_READ | PROT_WRITE /* required */,
-                              MAP_SHARED /* recommended */,
-                              THIS->io, buf.m.offset);
+		THIS->buffers[n_buffers].length = buf.length;
+		THIS->buffers[n_buffers].start =
+		mmap (NULL /* start anywhere */,
+					buf.length,
+					PROT_READ | PROT_WRITE /* required */,
+					MAP_SHARED /* recommended */,
+					THIS->io, buf.m.offset);
 
-                if (MAP_FAILED == THIS->buffers[n_buffers].start) {
+		if (MAP_FAILED == THIS->buffers[n_buffers].start) {
 			gv4l2_debug("mmap failed");
 			return 0;
 		}
-        }
+	}
 	return 1;
 }
+
 //=============================================================================
 //
 //	v4l2_start_capture()
@@ -502,12 +514,14 @@ int gv4l2_stop_capture(CWEBCAM * _object)
 //
 void gv4l2_uninit_device(CWEBCAM * _object)
 {
-        unsigned int i;
+	unsigned int i;
 
 	GB.Free( POINTER(&THIS->frame) );
 
+	v4lconvert_destroy(THIS->convert);
+	
 	if( !THIS->use_mmap) { 
-                GB.Free ( POINTER(&THIS->buffers[0].start));
+		GB.Free ( POINTER(&THIS->buffers[0].start));
 		GB.Free ( POINTER(&THIS->buffers));
 		return;
 	}
@@ -515,7 +529,7 @@ void gv4l2_uninit_device(CWEBCAM * _object)
 		if(munmap(THIS->buffers[i].start,THIS->buffers[i].length)==-1) 
 			gv4l2_debug("MUNMAP Error");
 
-        GB.Free ( POINTER(&THIS->buffers));
+	GB.Free ( POINTER(&THIS->buffers));
 }
 //=============================================================================
 //
@@ -579,14 +593,21 @@ void gv4l1_process_image (CWEBCAM * _object, void *start)
 //
 void gv4l2_process_image (CWEBCAM * _object, void *start)
 {
+	struct v4l2_format dest = THIS->fmt;
 	int format,w,h;
-	long size;
+	int size;
 
-	format = THIS->fmt.fmt.pix.pixelformat;
-	w = THIS->fmt.fmt.pix.width;
-	h = THIS->fmt.fmt.pix.height;
-	size = THIS->fmt.fmt.pix.sizeimage;
+	if (THIS->format != GB_IMAGE_BGR)
+		gv4l2_debug("Destination format not supported");
+	
+	dest.fmt.pix.pixelformat = V4L2_PIX_FMT_BGR24;
+	dest.fmt.pix.sizeimage = THIS->fmt.fmt.pix.width * THIS->fmt.fmt.pix.height * 3;
 
+	if (v4lconvert_convert(THIS->convert, &THIS->fmt, &dest, start, THIS->fmt.fmt.pix.sizeimage, THIS->frame, dest.fmt.pix.sizeimage) != dest.fmt.pix.sizeimage)
+		gv4l2_debug("Unable to convert webcam image to BGR24");
+}
+
+#if 0
 	switch(format) 
 	{
 /*
@@ -683,6 +704,8 @@ void gv4l2_process_image (CWEBCAM * _object, void *start)
 	}
 	memcpy(THIS->frame,start,size);
 }
+#endif
+
 //=============================================================================
 //
 //	gv4l2_read_frame( THIS )

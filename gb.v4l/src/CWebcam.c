@@ -822,9 +822,8 @@ END_PROPERTY
 //
 //	Default constructor
 //
-BEGIN_METHOD (CWEBCAM_new,GB_STRING Device; GB_INTEGER Compat;)
+BEGIN_METHOD(CWEBCAM_new, GB_STRING Device; GB_INTEGER Compat)
 
-	int mydev;
 	struct video_tuner vtuner;
 	VIDEO_STREAM *str;
 
@@ -832,12 +831,14 @@ BEGIN_METHOD (CWEBCAM_new,GB_STRING Device; GB_INTEGER Compat;)
 	//
 	//	Open the device
 	//
-	mydev = gv4l2_open_device(STRING(Device));
-	if( mydev == -1) {
+	GB.NewString(&THIS->device, STRING(Device), LENGTH(Device));
+
+	THIS->io = gv4l2_open_device(THIS->device);
+	if (THIS->io == -1) 
+	{
 		GB.Error("Unable to open device");
 		return;
 	}
-	THIS->io = mydev;
 
 	if(MISSING(Compat)) 
 		THIS->is_v4l2 = gv4l2_available( THIS );
@@ -850,13 +851,10 @@ BEGIN_METHOD (CWEBCAM_new,GB_STRING Device; GB_INTEGER Compat;)
 				THIS->is_v4l2 = 1;
 				break;
 			default:
-				close(mydev);
 				GB.Error("Invalid compatibility flag");
+				goto __ERROR;
 		}
 			
-
-	GB.Alloc(POINTER(&THIS->device),sizeof(char)*(LENGTH(Device)+1)); // ++
-	strcpy(THIS->device,STRING(Device));				  // ++
 
 	if( THIS->is_v4l2 ) {
 		//
@@ -865,9 +863,8 @@ BEGIN_METHOD (CWEBCAM_new,GB_STRING Device; GB_INTEGER Compat;)
 		//	Initialise the device
 		//
 		if( !gv4l2_init_device(THIS,DEF_WIDTH,DEF_HEIGHT) ) {
-			close(mydev);
 			GB.Error("Unable to initialise the device");
-			return;
+			goto __ERROR;
 		}
 		//
 		THIS->stream.desc=&VideoStream;
@@ -887,15 +884,14 @@ BEGIN_METHOD (CWEBCAM_new,GB_STRING Device; GB_INTEGER Compat;)
 	//}
 	// -- V4L2
 
-	DEVICE=vd_setup(DEF_WIDTH,DEF_HEIGHT,DEF_DEPTH,mydev);
+	DEVICE=vd_setup(DEF_WIDTH,DEF_HEIGHT,DEF_DEPTH,THIS->io);
 
 //--	if (!vd_setup_capture_mode(DEVICE))
 	if (!vd_setup_capture_mode(THIS)) // ++
 	{
-		close(mydev);
 		GB.Free(POINTER(&DEVICE));
 		GB.Error("Unable to setup capture mode");
-		return;
+		goto __ERROR;
 	}
 
 	vd_setup_video_source(DEVICE,IN_DEFAULT,NORM_DEFAULT);
@@ -908,6 +904,11 @@ BEGIN_METHOD (CWEBCAM_new,GB_STRING Device; GB_INTEGER Compat;)
 	THIS->stream.desc=&VideoStream;
 	str=(VIDEO_STREAM*)POINTER(&THIS->stream);
 	str->handle=(void*)THIS;
+	return;
+	
+__ERROR:
+
+	close(THIS->io);
 
 END_METHOD
 //
@@ -920,7 +921,7 @@ END_METHOD
 BEGIN_METHOD_VOID(CWEBCAM_free)
 
 	// ++ V4L2
-	if (THIS->device) GB.Free(POINTER(&THIS->device));		// ++
+	GB.FreeString(&THIS->device);
 	if (THIS->frame)  GB.Free(POINTER(&THIS->frame));		// ++
 
 	if( THIS->is_v4l2 ) {
@@ -1307,6 +1308,7 @@ BEGIN_PROPERTY(CWEBCAM_debug)
 	gv4l2_debug_mode = VPROP(GB_INTEGER);
 
 END_PROPERTY
+
 //
 //=============================================================================
 //
@@ -1317,21 +1319,22 @@ END_PROPERTY
 //
 int cwebcam_image(CWEBCAM * _object)
 {
-	if( THIS->is_v4l2 ) {
-
-		if( !gv4l2_read_frame( THIS )) return 0;
+	if( THIS->is_v4l2 ) 
+	{
+		if( !gv4l2_read_frame(THIS)) return 0;
 		THIS->w=THIS->fmt.fmt.pix.width;
 		THIS->h=THIS->fmt.fmt.pix.height;
 	}
 	else
 	{
-		if( !vd_get_image( THIS )) return 0;
+		if( !vd_get_image(THIS)) return 0;
 		THIS->w = DEVICE->vmmap.width;
 		THIS->h = DEVICE->vmmap.height;
 		vd_image_done(DEVICE);
 	}
 	return 1;
 }
+
 //
 //	CWEBCAM_image()
 //
@@ -1340,12 +1343,13 @@ int cwebcam_image(CWEBCAM * _object)
 //
 BEGIN_PROPERTY(CWEBCAM_image)
 
-	if( !cwebcam_image(THIS) ) {
+	if (!cwebcam_image(THIS)) 
+	{
 		GB.Error("Unable to get image");
-		GB.ReturnNull();
 		return;
 	}
-	GB.ReturnObject(IMAGE.Create(THIS->w,THIS->h,GB_IMAGE_BGR,THIS->frame));
+	
+	GB.ReturnObject(IMAGE.Create(THIS->w, THIS->h, THIS->format, THIS->frame));
 /*
 	// Ok, this lot has been refactored, sorry
 	// Once I got to "save" it became more efficient ..

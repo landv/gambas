@@ -5,6 +5,13 @@ AC_CONFIG_MACRO_DIR([m4])
 GB_INIT(gb.v4l)
 AC_PROG_LIBTOOL
 
+GB_COMPONENT_PKG_CONFIG(
+  v4lconvert,
+  V4LCONVERT,
+  [Video For Linux conversion library],
+  [src],
+  libv4lconvert)
+
 GB_COMPONENT(
   v4l,
   V4L,
