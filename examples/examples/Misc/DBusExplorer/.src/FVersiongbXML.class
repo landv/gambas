@@ -5,9 +5,9 @@ Private $colTypes As New Collection
 
 Public Sub _new()
 
-  $colTypes["i"] = "Interger"
-  $colTypes["u"] = "Interger"
-  $colTypes["s"] = "Interger"
+  $colTypes["i"] = "Integer"
+  $colTypes["u"] = "Integer"
+  $colTypes["s"] = "String"
   $colTypes["b"] = "Boolean"
   $colTypes["y"] = "Byte"
   $colTypes["ay"] = "Byte[]"
@@ -20,10 +20,7 @@ End
 Public Sub Form_Open()
   Me.Raise
   btnRefresh_Click
-  
 End
-
-
 
 Public Sub ShowPathContent(sPath As String, sBus As String, sApplication As String)
   Dim xmlDoc As New XmlDocument
@@ -195,36 +192,28 @@ Public Sub tvDbus_Select()
 End
 
 
-
 Public Sub tvDbus_MouseMove()
   Dim s As String
   Dim ix, iy As Integer
   Dim hcont As Object
-    If Not tvDbus.Find(Mouse.x, Mouse.y) Then 
+  
+  If Not tvDbus.Find(Mouse.x, Mouse.y) Then 
     
     s = MakeSignature(tvDbus.item.key)
 
-    If IsNull(s) Then 
-      lblsignature.Visible = False
-      Return
-    Endif
     hcont = tvDbus.Parent
     ix = tvDbus.Item.X + tvDbus.Item.w / 2
     iy = tvDbus.Item.Y
-
     
-    lblsignature.Text = s
-    lblsignature.Left = Min(iX, tvDbus.Width - lblsignature.Width)
-    lblsignature.Y = iY
-    lblsignature.Visible = True
-    lblsignature.Refresh
-  Else
-    lblsignature.Visible = False
+    'lblsignature.Text = s
+    'lblsignature.Left = Min(iX, tvDbus.Width - lblsignature.Width)
+    'lblsignature.Y = iY
+    'lblsignature.Visible = True
+    'lblsignature.Refresh
+  'Else
+    'lblsignature.Visible = False
   Endif
+  lblsignature.Text = s
+  
 End
 
-Public Sub tvDbus_Leave()
-
-  lblsignature.Visible = False
-
-End

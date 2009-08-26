@@ -81,24 +81,27 @@
       Index = 0
     }
     { VBox1 HBox
-      MoveScaled(43,5,54,65)
-      Expand = True
+      MoveScaled(46,2,54,65)
       { Separator3 Separator
-        MoveScaled(2,19,0,5)
+        MoveScaled(2,19,0,30)
       }
-      { tvDbus TreeView
-        MoveScaled(5,6,45,53)
+      { VBox2 VBox
+        MoveScaled(6,6,47,56)
         Expand = True
-        Border = False
-      }
-      { lblsignature Label
-        MoveScaled(0,0,22,3)
-        Visible = False
-        Background = Color.LightBackground
-        Ignore = True
-        AutoResize = True
-        Text = ("Label5")
-        Border = Border.Plain
+        { tvDbus TreeView
+          MoveScaled(6,3,33,32)
+          Expand = True
+          Border = False
+        }
+        { Separator4 Separator
+          MoveScaled(12,45,23,0)
+        }
+        { lblsignature Label
+          MoveScaled(5,49,34,3)
+          Background = Color.LightBackground
+          AutoResize = True
+          Text = ("")
+        }
       }
     }
   }
