@@ -3,7 +3,7 @@
 Export
 Inherits UserContainer
 
-Public Const _Properties As String = "*,Action,Orientation{Align.Top;Bottom;Left;Right}=Top,Resizable=True,Border,Hidden"
+Public Const _Properties As String = "*,Action,Orientation{Align.Top;Bottom;Left;Right}=Top,Resizable=True,Border,Separator,Hidden"
 
 Event Show
 Event Hide
@@ -11,6 +11,7 @@ Event Resize
 
 Property Orientation As Integer
 Property Border As Boolean
+Property Separator As Boolean
 Property Hidden As Boolean
 Property Resizable As Boolean
 Property Dimension As Integer
@@ -177,5 +178,17 @@ Private Sub Settings_Write(Value As String)
   
   Try Dimension_Write(CInt(aVal[1]))
   Try Hidden_Write(aVal[0] <> "0")
+
+End
+
+Private Function Separator_Read() As Boolean
+
+  Return $hForm.HasSeparator()
+
+End
+
+Private Sub Separator_Write(Value As Boolean)
+
+  $hForm.SetSeparator(Value)
 
 End

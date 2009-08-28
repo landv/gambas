@@ -8,13 +8,15 @@
     MoveScaled(2,1,46,4)
     Background = Color.Background
     { btnSide DrawingArea
-      MoveScaled(9,0,6,4)
-      Mouse = Mouse.Arrow
+      MoveScaled(10,0,6,4)
     }
     { btnSide2 DrawingArea btnSide
       Name = "btnSide2"
       MoveScaled(19,0,6,4)
-      Mouse = Mouse.Arrow
+    }
+    { sepSide Separator
+      MoveScaled(0,0,9,1)
+      Visible = False
     }
   }
   { panSide Panel

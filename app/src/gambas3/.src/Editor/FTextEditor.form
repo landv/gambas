@@ -122,6 +122,7 @@
     MoveScaled(0,0,84,4)
     Key = "text"
     Text = ("Text editor")
+    Separator = True
     { btnSave ToolButton mnuSave
       Name = "btnSave"
       MoveScaled(0,0,4,4)
@@ -243,8 +244,9 @@
   }
   { edtEditor Editor Editors
     Name = "edtEditor"
-    MoveScaled(2,6,25,15)
+    MoveScaled(6,15,25,15)
     Expand = True
+    Border = False
   }
   { splVertical VSplit
     MoveScaled(48,43,42,18)

@@ -348,9 +348,6 @@ Public Sub Form_Arrange()
     iToolbarOffset = 0
   Endif
   
-  sepEditor.Move(0, iToolbarOffset, Me.ClientW, 1)
-  Inc iToolbarOffset
-
   Select Case $iViewMode
     Case VIEWMODE_NORMAL
       edtEditor.Move(0, iToolbarOffset, Me.ClientW, Me.ClientH - iToolbarOffset)
@@ -2644,6 +2641,7 @@ End
 Private Sub InitEditor(hEditor As Editor)
   
   With hEditor
+    .Border = False
     .View = edtEditor
     .Highlight = edtEditor.Highlight
     .Flags[Editor.HighlightCurrent] = True

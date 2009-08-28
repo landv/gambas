@@ -4,7 +4,7 @@ Export
 
 Inherits UserContainer
 
-Public Const _Properties As String = "*,-Arrangement,-Padding,-Spacing,-Indent,Key,Text,Action,Orientation{ToolBar.Horizontal;Vertical},AutoResize=True"
+Public Const _Properties As String = "*,-Arrangement,-Padding,-Spacing,-Indent,Key,Text,Action,Orientation{ToolBar.Horizontal;Vertical},AutoResize=True,Separator"
 Public Const _Arrangement As Integer = 3
 Public Const _DefaultSize As String = "36,3"
 
@@ -22,6 +22,7 @@ Property Orientation As Integer
 Property AutoResize As Boolean
 Property Key As String
 Property Text As String
+Property Separator As Boolean
 
 Private $hForm As FToolBar
 
@@ -140,4 +141,16 @@ Public Sub _RaiseConfigure()
   
   Raise Configure
   
+End
+
+Private Function Separator_Read() As Boolean
+
+  Return $hForm.HasSeparator()
+
+End
+
+Private Sub Separator_Write(Value As Boolean)
+
+  $hForm.SetSeparator(Value)
+
 End

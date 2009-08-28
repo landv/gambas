@@ -172,15 +172,19 @@ Private Sub RefreshPanel()
   Select Case $iOrientation
 
     Case Align.Top
+      sepSide.Move(0, 0, Me.ClientW, 1)
       panSide.Move(0, 0, Me.ClientW, Me.ClientH - BUTTON_H)
 
     Case Align.Bottom
+      sepSide.Move(0, Me.ClientH - 1, Me.ClientW, 1)
       panSide.Move(0, BUTTON_H, Me.ClientW, Me.ClientH - BUTTON_H)
 
     Case Align.Left
+      sepSide.Move(0, 0, 1, Me.ClientH)
       panSide.Move(0, 0, Me.ClientW - BUTTON_H, Me.ClientH)
 
     Case Align.Right
+      sepSide.Move(Me.ClientW - 1, 0, 1, Me.ClientH)
       panSide.Move(BUTTON_H, 0, Me.ClientW - BUTTON_H, Me.ClientH)
 
   End Select
@@ -565,4 +569,19 @@ Public Sub btnSide_MouseDown()
   Last.Tag = 2
   Last.Refresh
 
+End
+
+Public Sub HasSeparator() As Boolean
+  
+  Return sepSide.Visible
+  
+End
+
+Public Sub SetSeparator(bVisible As Boolean)
+  
+  If sepSide.Visible = bVisible Then Return
+  
+  sepSide.Visible = bVisible
+  RefreshPanel
+  
 End

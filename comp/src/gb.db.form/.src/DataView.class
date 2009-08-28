@@ -3,7 +3,7 @@
 Export
 Inherits UserControl
 
-Public Const _Properties As String = "*,Mode{Select.None;Single;Multiple}=None,Header{TableView.None;Horizontal;Vertical;Both}=Both,Grid,Highlight=True,Columns{Field[]}"
+Public Const _Properties As String = "*,Mode{Select.None;Single;Multiple}=None,Header{TableView.None;Horizontal;Vertical;Both}=Both,Grid,Highlight=True,Columns{Field[]},Border=True"
 'Public Const _DrawWith As String = "GridView"
 
 Event Activate
@@ -12,6 +12,7 @@ Property Mode As Integer
 Property Header As Integer
 Property Grid As Boolean
 Property Highlight As Boolean
+Property Border As Boolean
 
 'PROPERTY Connection AS Connection
 'PROPERTY Table AS String
@@ -477,4 +478,16 @@ Public Sub _OnDatabaseChange()
   
   Refresh()
   
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $hCtrl.Border
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $hCtrl.Border = Value
+
 End

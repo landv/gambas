@@ -25,7 +25,7 @@ Private $iIconSize As Integer
 
 Private $bOpened As Boolean
 
-Private Const $bShowHandle As Boolean = True
+'Private Const $bShowHandle As Boolean = True
 Private $iHandleSize As Integer
 
 Private $iLock As Integer
@@ -44,9 +44,9 @@ Public Sub _new()
   
   $iHandleSize = Max(4, Desktop.Scale / 2)
   dwgHandle.Width = $iHandleSize
-  dwgHandle.Visible = $bShowHandle
   $hWatcherParent = New Watcher(Me.Parent.Parent) As "Container"
   $bAutoResize = True
+  dwgHandle_Leave
   
 End
 
@@ -78,7 +78,7 @@ Private Function GetToolBarWidth() As Integer
   
   If $bVertical Then 
   
-    If $bShowHandle Then HT = dwgHandle.H
+    If dwgHandle.Visible Then HT = dwgHandle.H * 2
   
     For Each hCtrl In panToolBar.Children
       If hCtrl.Visible Then 
@@ -89,7 +89,7 @@ Private Function GetToolBarWidth() As Integer
     
   Else 
   
-    If $bShowHandle Then HT = dwgHandle.W
+    If dwgHandle.Visible Then HT = dwgHandle.W * 2
   
     For Each hCtrl In panToolBar.Children
       If hCtrl.Visible Then 
@@ -153,7 +153,7 @@ End
 
 Private Sub Update()
 
-  Dim W As Integer
+  Dim W, H As Integer
   Dim XH, XP As Integer 
   Dim WH As Integer
 
@@ -173,7 +173,7 @@ Private Sub Update()
     XP = 0
   Else 
     XH = 0
-    If $bShowHandle Then
+    If dwgHandle.Visible Then
       XP = $iHandleSize
     Else
       XP = 0
@@ -184,7 +184,7 @@ Private Sub Update()
   
     If $bDesign Then
     
-      If $bShowHandle Then
+      If dwgHandle.Visible Then
         dwgHandle.Move(XH, 0, $iHandleSize, Me.H)
         panToolBar.Move(XP, 0, Me.W - $iHandleSize, Me.H)
       Else
@@ -194,7 +194,7 @@ Private Sub Update()
     Else If $bHidden Then
     
       panToolBar.Hide
-      If $bShowHandle Then
+      If dwgHandle.Visible Then
         dwgHandle.Move(0, 0, $iHandleSize, GetToolBarHeight(True))
         Me.Parent.Resize($iHandleSize, dwgHandle.H)
       Endif
@@ -203,7 +203,7 @@ Private Sub Update()
     
       panToolBar.Show
       
-      If $bShowHandle Then WH = dwgHandle.W
+      If dwgHandle.Visible Then WH = $iHandleSize 'dwgHandle.W
       
       If $bAutoResize Then
         W = Max($iHandleSize, Min(GetToolBarWidth() + WH, GetFreeWidth()))
@@ -213,8 +213,9 @@ Private Sub Update()
         'W = Max(W, GetFreeWidth())
         'W = Max(8, GetToolBarWidth())
       Endif
+      W += $iHandleSize
       
-      If $bShowHandle Then
+      If dwgHandle.Visible Then
         panToolBar.Move(XP, 0, W - $iHandleSize)
         dwgHandle.Move(XH, 0, $iHandleSize, panToolBar.H)
       Else
@@ -222,10 +223,12 @@ Private Sub Update()
       Endif
       
       If $bAutoResize Then
-        Me.Parent.Resize(W, Max(GetToolBarHeight(True), panToolBar.H))
+        H = Max(GetToolBarHeight(True), panToolBar.H)
       Else 
-        Me.Parent.Resize(W, GetToolBarHeight(True))
+        H = GetToolBarHeight(True)
       Endif
+      If sepToolbar.Visible Then Inc H
+      Me.Parent.Resize(W, H)
       
     Endif
     
@@ -233,7 +236,7 @@ Private Sub Update()
   
     If $bDesign Then
     
-      If $bShowHandle Then
+      If dwgHandle.Visible Then
         dwgHandle.Move(0, XH, Me.W, $iHandleSize)
         panToolBar.Move(0, XP, Me.W, Me.H - $iHandleSize)
       Else
@@ -243,7 +246,7 @@ Private Sub Update()
     Else If $bHidden Then
     
       panToolBar.Hide
-      If $bShowHandle Then
+      If dwgHandle.Visible Then
         dwgHandle.Move(0, 0, GetToolBarHeight(True), $iHandleSize)
         Me.Parent.Resize(dwgHandle.W, $iHandleSize)
       Endif
@@ -252,7 +255,7 @@ Private Sub Update()
     
       panToolBar.Show
 
-      If $bShowHandle Then WH = dwgHandle.H
+      If dwgHandle.Visible Then WH = $iHandleSize 'dwgHandle.H
 
       If $bAutoResize Then
         W = Max(Min(GetToolBarWidth() + WH, GetFreeWidth()), $iHandleSize)
@@ -261,8 +264,9 @@ Private Sub Update()
         W = Max(GetToolBarWidth() + WH, $iHandleSize)
         'W = Max(GetToolBarWidth(), 8)
       Endif
+      W += $iHandleSize
 
-      If $bShowHandle Then
+      If dwgHandle.Visible Then
         panToolBar.Move(0, XP, panToolBar.W, W - $iHandleSize)
         dwgHandle.Move(0, XH, panToolBar.W, $iHandleSize)
       Else
@@ -270,13 +274,21 @@ Private Sub Update()
       Endif
     
       If $bAutoResize Then
-        Me.Parent.Resize(Max(GetToolBarHeight(True), panToolBar.W), W)
+        H = Max(GetToolBarHeight(True), panToolBar.H)
       Else 
-        Me.Parent.Resize(GetToolBarHeight(True), W)
+        H = GetToolBarHeight(True)
       Endif
-      
+      If sepToolbar.Visible Then Inc H
+      Me.Parent.Resize(H, W)
+
     Endif
     
+  Endif
+  
+  If Not $bVertical Then
+    sepToolbar.Move(0, Me.Parent.H - 1, Me.Parent.W, 1)
+  Else
+    sepToolbar.Move(Me.Parent.W - 1, 0, 1, Me.Parent.H)
   Endif
   
   dwgHandle.Refresh
@@ -330,7 +342,10 @@ End
 Public Sub dwgHandle_Draw()
 
   'Draw.Style.Button(1, 1, dwgHandle.W - 2, dwgHandle.H - 2, $bPressed And $bInside, Not Me.Enabled)
-  Draw.Style.Handle(0, 0, dwgHandle.W, dwgHandle.H, Not $bVertical, Not Me.Enabled)
+  'Draw.Style.Handle(1, 1, dwgHandle.W - 2, dwgHandle.H - 2, Not $bVertical, Not Me.Enabled)
+  'If $bInside Then  
+  '  Draw.FillRect(1, 1, dwgHandle.W - 2, dwgHandle.H - 2, Color.Background)
+  'Endif
   'Draw.Style.Separator(0, 0, dwgHandle.W, dwgHandle.H, $bVertical, Not Me.Enabled)
   'Draw.FillX = 0
   'Draw.FillY = 0
@@ -342,7 +357,7 @@ Public Sub dwgHandle_Enter()
 
   If $bDesign Then Return
   $bInside = True
-  dwgHandle.Background = Color.TextBackground
+  'dwgHandle.Background = Color.Lighter(dwgHandle.Background)
   dwgHandle.Refresh
 
 End
@@ -351,7 +366,7 @@ Public Sub dwgHandle_Leave()
 
   If $bDesign Then Return
   $bInside = False
-  dwgHandle.Background = Color.Background
+  dwgHandle.Background = Color.Lighter(Color.Merge(Color.Background, Color.Foreground))
   dwgHandle.Refresh
 
 End
@@ -868,6 +883,8 @@ Public Sub SetKey(sKey As String)
     InitToolbar
     RegisterToolbar
   Endif
+  dwgHandle.Visible = ToolbarKey
+  Update
   
 End
 
@@ -1171,3 +1188,19 @@ Public Sub SetIconSize(iSize As Integer)
   Dec Application.Busy
   
 End
+
+
+Public Sub HasSeparator() As Boolean
+  
+  Return sepToolbar.Visible
+  
+End
+
+Public Sub SetSeparator(bVisible As Boolean)
+  
+  If sepToolbar.Visible = bVisible Then Return
+  sepToolbar.Visible = bVisible
+  Update
+  
+End
+

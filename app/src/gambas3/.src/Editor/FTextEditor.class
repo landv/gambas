@@ -483,6 +483,7 @@ End
 Private Sub InitEditor(hEditor As Editor)
   
   With hEditor
+    .Border = False
     .View = edtEditor
     .Highlight = edtEditor.Highlight
     .Flags[Editor.HighlightCurrent] = edtEditor.Flags[Editor.HighlightCurrent]

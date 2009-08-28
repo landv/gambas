@@ -63,6 +63,7 @@
   { ToolBar1 ToolBar
     MoveScaled(1,1,90,4)
     Text = ("")
+    Separator = True
     { btnUndock ToolButton
       MoveScaled(0,0,4,4)
       ToolTip = ("Undock console")
@@ -146,14 +147,11 @@
         MoveScaled(29,0,1,4)
       }
       { chkCharset CheckBox
-        MoveScaled(32,0,28,4)
+        MoveScaled(31,0,28,4)
         Expand = True
         Text = ("Use system charset")
       }
     }
-  }
-  { Separator1 Separator
-    MoveScaled(9,7,20,0.1429)
   }
   { edtOutput Editor
     MoveScaled(1,9,38,39)

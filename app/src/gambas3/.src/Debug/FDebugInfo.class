@@ -647,7 +647,7 @@ Public Sub tbvLocal_Activate()
   Dim sExpr As String = hTable[hTable.Row, 0].Text
   Dim sVal As String = hTable[hTable.Row, 1].Text
 
-  If Right(sExpr) = ":" Then Return
+  If hTable[hTable.Row, 0].ColumnSpan >= 2 Then Return
   If Left(sVal) = "(" Then 
     Design.Command("#X" & sExpr & "\t" & sExpr)
   Else
