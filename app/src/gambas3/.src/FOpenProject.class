@@ -127,7 +127,26 @@ End
 
 Public Sub fvwProject_Activate()
 
-  dchProject.Value = fvwProject.Dir &/ fvwProject.Current
+  Dim sPath As String = fvwProject.Dir &/ fvwProject.Current
+  Dim sProg As String
+
+  If IsDir(sPath) Then
+    dchProject.Value = sPath
+    Return
+  Endif
+  
+  If sPath Like "*.tar.gz" Then
+    sProg = "tar xfz"
+  Else If sPath Like "*.tar.bz2" Then
+    sProg = "tar xfj"
+  Else
+    Return
+  Endif
+  
+  If Message.Question("<b>" & fvwProject.Current & "</b><p>" & ("Do you want to uncompress this archive?"), ("Uncompress"), ("Cancel")) = 2 Then Return
+  
+  Shell "cd " & Shell$(File.Dir(sPath)) & " && " & sProg & " " & Shell$(sPath) Wait
+  dchProject.Reload
 
 End
 
@@ -281,5 +300,11 @@ End
 Public Sub lstExample_Activate()
 
   btnOK.Value = True
+
+End
+
+Public Sub fvwProject_Menu()
+
+  Debug
 
 End

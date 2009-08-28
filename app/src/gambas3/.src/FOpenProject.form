@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,99,77)
+  MoveScaled(0,0,105,77)
   Text = ("Select a project")
   Icon = Picture["icon:/32/open"]
   Persistent = True
@@ -29,10 +29,10 @@
         MoveScaled(50,3,42,56)
         Arrangement = Arrange.Vertical
         { sdpProject SidePanel
-          MoveScaled(1,3,40,12)
+          MoveScaled(1,1,40,12)
           Arrangement = Arrange.Fill
           { panProject Panel
-            MoveScaled(5,3,34,7)
+            MoveScaled(2,0,34,7)
             Background = Color.TextBackground
             Arrangement = Arrange.Fill
             Padding = 2
@@ -40,7 +40,7 @@
           }
         }
         { fvwProject FileView
-          MoveScaled(1,23,40,32)
+          MoveScaled(1,14,40,37)
           Expand = True
           ShowDetailed = True
           ShowDirectory = True
@@ -82,12 +82,12 @@
       Expand = True
     }
     { btnOK Button
-      MoveScaled(48,0,14,4)
+      MoveScaled(48,0,15,4)
       Text = ("OK")
       Default = True
     }
     { btnCancel Button
-      MoveScaled(65,0,14,4)
+      MoveScaled(65,0,15,4)
       Text = ("Cancel")
       Cancel = True
     }

@@ -40,6 +40,7 @@ typedef
 #define LIB_SIGNAL       "GB_SIGNAL"
 #define LIB_INFO         "GB_INFO"
 #define LIB_GAMBAS       "GB"
+//#define LIB_GAMBAS_PTR   "GB_PTR"
 
 #ifdef DONT_USE_LTDL
  #ifdef OS_OPENBSD

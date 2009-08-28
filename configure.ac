@@ -37,6 +37,7 @@ GB_CONFIG_SUBDIRS(desktop, gb.desktop)
 GB_CONFIG_SUBDIRS(qt4, gb.qt4)
 GB_CONFIG_SUBDIRS(cairo, gb.cairo)
 GB_CONFIG_SUBDIRS(imageio, gb.image.io)
+GB_CONFIG_SUBDIRS(imageimlib, gb.image.imlib)
 
 AC_CONFIG_SUBDIRS(comp)
 AC_CONFIG_SUBDIRS(app)

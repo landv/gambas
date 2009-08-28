@@ -441,7 +441,7 @@ void LIBRARY_delete(LIBRARY *lib)
 void LIBRARY_load(LIBRARY *lib)
 {
   int (*func)();
-  GB_INTERFACE *iface;
+  void *iface;
   GB_DESC **desc;
   char *path;
 
@@ -475,8 +475,14 @@ void LIBRARY_load(LIBRARY *lib)
 
   /* Interface de Gambas */
 
-  iface = get_symbol(lib, LIB_GAMBAS, TRUE);
-  copy_interface((intptr_t *)(void *)GAMBAS_Api, (intptr_t *)(void *)iface);
+  //iface = get_symbol(lib, LIB_GAMBAS_PTR, FALSE);
+	//if (iface)
+	//	*((void **)iface) = &GAMBAS_Api;
+	//else
+	{
+		iface = get_symbol(lib, LIB_GAMBAS, TRUE);
+		copy_interface((intptr_t *)(void *)GAMBAS_Api, (intptr_t *)(void *)iface);
+	}
 
 	/* Signal function */
 	lib->signal = (void(*)())get_symbol(lib, LIB_SIGNAL, FALSE);
