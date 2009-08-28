@@ -1427,8 +1427,6 @@ int GEditor::posToColumn(int y, int px)
 	
 	if (px < margin || px >= visibleWidth())
 		_posOutside = true;
-	else
-		_posOutside = false;
 	
 	if (len == 0)
 		return 0;
@@ -1462,6 +1460,7 @@ int GEditor::posToColumn(int y, int px)
 		break;
 	}
 	
+	_posOutside = d > len;
 	return d;
 }
 
@@ -1485,15 +1484,17 @@ int GEditor::posToLine(int py)
 bool GEditor::posToCursor(int px, int py, int *y, int *x)
 {
 	int nx, ny;
+	bool outside;
 
 	ny = posToLine(py);
+	outside = _posOutside;
 	nx = posToColumn(ny, px);
 	nx = QMAX(0, QMIN(nx, lineLength(ny)));
 
 	*y = ny;
 	*x = nx;
 	
-	return _posOutside;
+	return outside || _posOutside;
 }
 
 void GEditor::cursorToPos(int y, int x, int *px, int *py)
