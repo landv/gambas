@@ -187,13 +187,12 @@ BEGIN_METHOD(CIMAGE_save, GB_STRING path; GB_INTEGER quality)
 END_METHOD
 
 
-BEGIN_METHOD(CIMAGE_stretch, GB_INTEGER width; GB_INTEGER height; GB_BOOLEAN smooth)
+BEGIN_METHOD(CIMAGE_stretch, GB_INTEGER width; GB_INTEGER height)
 
 	CIMAGE *img;
-	bool smooth = VARGOPT(smooth, true);
 
 	check_image(THIS);
-  img = CIMAGE_create(PICTURE->stretch(VARG(width), VARG(height), smooth));
+  img = CIMAGE_create(PICTURE->stretch(VARG(width), VARG(height), true));
 	GB.ReturnObject((void*)img);
 
 END_METHOD
@@ -246,7 +245,7 @@ GB_DESC CImageDesc[] =
   GB_STATIC_METHOD("Load", "Image", CIMAGE_load, "(Path)s"),
   GB_METHOD("Save", 0, CIMAGE_save, "(Path)s[(Quality)i]"),
 
-  GB_METHOD("Stretch", "Image", CIMAGE_stretch, "(Width)i(Height)i[(Smooth)b]"),
+  GB_METHOD("Stretch", "Image", CIMAGE_stretch, "(Width)i(Height)i"),
   GB_METHOD("Rotate", "Image", CIMAGE_rotate, "(Angle)f"),
 
   GB_METHOD("Draw", 0, CIMAGE_draw, "(Image)Image;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),

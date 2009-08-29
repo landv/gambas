@@ -144,7 +144,7 @@ Public Sub Form_Arrange()
   ' H = $iSize * NCOLH + 7
   ' dwgColor.H = H
 
-  $hMap = $hImage.Stretch(dwgColorMap.Width, dwgColorMap.Height, True).Picture
+  $hMap = $hImage.Stretch(dwgColorMap.Width, dwgColorMap.Height).Picture
   MoveCross
 
 End

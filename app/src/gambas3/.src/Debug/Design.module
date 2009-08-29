@@ -7,6 +7,7 @@ Private Const STATE_DEBUG As Integer = 2
 Private Const STATE_STARTING As Integer = 3
 
 Private $iState As Integer
+Private $bError As Boolean
 'PRIVATE $cShow AS NEW Object[]
 Private $hProcess As Process
 'PRIVATE $cCommand AS NEW String[]
@@ -189,7 +190,11 @@ Public Sub Debug_Read(Data As String)
       FDebugInfo.DefineLocal(Trim(aData[3]))
       FDebugInfo.DefineObject(Trim(aData[4]))
 
-      If aData[1] Then Message.Error(aData[1])
+      If aData[1] And If Not $bError Then 
+        $bError = True
+        Message.Error(aData[1])
+        $bError = False
+      Endif
 
       SetState(STATE_DEBUG)
 

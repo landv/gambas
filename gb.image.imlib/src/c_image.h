@@ -37,6 +37,7 @@ extern GB_DESC CImageDesc[];
 #else
 
 #define THIS ((GB_IMG *)_object)
+#define THIS_IMAGE ((Imlib_Image)THIS->temp_handle)
 
 #endif
 

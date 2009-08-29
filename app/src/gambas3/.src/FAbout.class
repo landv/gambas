@@ -353,7 +353,7 @@ Private Sub DisplayText(iIndex As Integer) As Boolean
           H = .Image.H * eStep + 0.5
           X = dwgAbout.W / 2 + (.XD - dwgAbout.W / 2) * eStep + 0.5
           Y = dwgAbout.H / 2 + (.YD - dwgAbout.H / 2) * eStep + 0.5 
-          Draw.Image(.Image.Stretch(W, H, True), X, Y)
+          Draw.Image(.Image.Stretch(W, H), X, Y)
         
         Endif
         

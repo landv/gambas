@@ -37,6 +37,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
 int EXPORT GB_INIT(void)
 {
 	GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
+	imlib_set_cache_size(0);
 	return FALSE;
 }
 

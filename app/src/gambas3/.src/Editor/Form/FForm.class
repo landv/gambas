@@ -2569,7 +2569,7 @@ Public Sub UpdateTitle()
 
     Try hPict = Project.GetPicture(sPict)
     If hPict Then
-      If hPict.Width <> 16 Or hPict.Height <> 16 Then hPict = hPict.Image.Stretch(16, 16, True).Picture
+      If hPict.Width <> 16 Or hPict.Height <> 16 Then hPict = hPict.Image.Stretch(16, 16).Picture
     Else  
       hPict = Picture["img/16/gambas.png"]
     Endif 

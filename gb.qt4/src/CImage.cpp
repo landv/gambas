@@ -205,24 +205,7 @@ BEGIN_METHOD(CIMAGE_save, GB_STRING path; GB_INTEGER quality)
 
 END_METHOD
 
-#if 0
-BEGIN_METHOD(CIMAGE_copy, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
-
-	check_image(THIS);
-  
-  int x = VARGOPT(x, 0);
-  int y = VARGOPT(y, 0);
-  int w = VARGOPT(w, QIMAGE->width());
-  int h = VARGOPT(h, QIMAGE->height());
-  QImage *copy = new QImage();
-
-  *copy = QIMAGE->copy(x, y, w, h);
-  GB.ReturnObject(CIMAGE_create(copy));
-
-END_METHOD
-#endif
-
-BEGIN_METHOD(CIMAGE_stretch, GB_INTEGER width; GB_INTEGER height; GB_BOOLEAN smooth)
+BEGIN_METHOD(CIMAGE_stretch, GB_INTEGER width; GB_INTEGER height)
 
 	//static int count = 0;
   QImage *stretch;
@@ -238,10 +221,10 @@ BEGIN_METHOD(CIMAGE_stretch, GB_INTEGER width; GB_INTEGER height; GB_BOOLEAN smo
 		stretch = new QImage();
 		//count++;
 		//qDebug("CIMAGE_stretch: %d: (%dx%d)->(%dx%d): %d", count, QIMAGE->width(), QIMAGE->height(), VARG(width), VARG(height), VARGOPT(smooth, TRUE) != 0);
-		if (VARGOPT(smooth, TRUE))
-			*stretch = QIMAGE->scaled(VARG(width), VARG(height), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-		else
-			*stretch = QIMAGE->scaled(VARG(width), VARG(height));
+		//if (VARGOPT(smooth, TRUE))
+		*stretch = QIMAGE->scaled(VARG(width), VARG(height), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+		//else
+		//	*stretch = QIMAGE->scaled(VARG(width), VARG(height));
 	}
 
   GB.ReturnObject(CIMAGE_create(stretch));
@@ -274,7 +257,7 @@ BEGIN_METHOD_VOID(CIMAGE_mirror)
 END_METHOD
 #endif
 
-BEGIN_METHOD(CIMAGE_rotate, GB_FLOAT angle)
+BEGIN_METHOD(CIMAGE_rotate, GB_FLOAT angle; GB_BOOLEAN smooth)
 
   QImage *rotate = new QImage();
   QMatrix mat;
@@ -345,12 +328,8 @@ GB_DESC CImageDesc[] =
 
   GB_STATIC_METHOD("Load", "Image", CIMAGE_load, "(Path)s"),
   GB_METHOD("Save", NULL, CIMAGE_save, "(Path)s[(Quality)i]"),
-  //GB_METHOD("Resize", NULL, CIMAGE_resize, "(Width)i(Height)i"),
 
-  //GB_METHOD("Copy", "Image", CIMAGE_copy, "[(X)i(Y)i(Width)i(Height)i]"),
-  GB_METHOD("Stretch", "Image", CIMAGE_stretch, "(Width)i(Height)i[(Smooth)b]"),
-  //GB_METHOD("Flip", "Image", CIMAGE_flip, NULL),
-  //GB_METHOD("Mirror", "Image", CIMAGE_mirror, NULL),
+	GB_METHOD("Stretch", "Image", CIMAGE_stretch, "(Width)i(Height)i"),
   GB_METHOD("Rotate", "Image", CIMAGE_rotate, "(Angle)f"),
 
   GB_METHOD("Draw", NULL, CIMAGE_draw, "(Image)Image;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),

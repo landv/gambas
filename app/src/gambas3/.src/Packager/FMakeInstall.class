@@ -228,7 +228,7 @@ Private Sub InitSystemControls()
 
     hTool.Design = True
     hTool.Enabled = hCheckBox.Value
-    hTool.Picture = hTool.Picture.Image.Stretch(hTool.Width - 2, hTool.Height - 2, True).Picture
+    hTool.Picture = hTool.Picture.Image.Stretch(hTool.Width - 2, hTool.Height - 2).Picture
     
     hPanel.Visible = sMsg
 

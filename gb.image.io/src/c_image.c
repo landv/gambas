@@ -190,7 +190,7 @@ GB_DESC CImageDesc[] =
   GB_DECLARE("Image", sizeof(CIMAGE)),
 
   GB_STATIC_METHOD("Load", "Image", CIMAGE_load, "(Path)s"),
-  GB_METHOD("Save", 0, CIMAGE_save, "(Path)s[(Quality)i]"),
+  GB_METHOD("Save", NULL, CIMAGE_save, "(Path)s[(Quality)i]"),
   
   GB_END_DECLARE
 };

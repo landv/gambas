@@ -256,7 +256,7 @@ Private Sub RefreshArrow()
     Draw.Begin(hPict)
     Draw.Style.Arrow(0, 0, 16, 16, iType)
     Draw.End
-    hImage = hPict.Image.Stretch(10, 10, True)
+    hImage = hPict.Image.Stretch(10, 10)
     hImage.MakeTransparent(Color.White) 
     hPict = hImage.Picture
     Picture[sKey] = hPict

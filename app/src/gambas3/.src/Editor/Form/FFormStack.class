@@ -52,7 +52,7 @@ Static Public Sub GetControlIcon(sKind As String) As Picture
   If Not hPict Then
     hPict = Picture[sImg]
     If Not hPict Then hPict = Picture["img/control/unknown.png"]
-    hPict = hPict.Image.Stretch(16, 16, True).Picture  
+    hPict = hPict.Image.Stretch(16, 16).Picture  
     $cPict[sImg] = hPict
   Endif
   
