@@ -7,7 +7,7 @@ Private $sPath As String
 Private $hProjectInfo As CProjectInfo
 Private $hIcon As Picture
 
-Private Const ICON_SIZE As Integer = 48
+Private Const ICON_SIZE As Integer = 32
 Private Const PADDING As Integer = 6
 
 Public Sub _new()
@@ -50,9 +50,10 @@ Public Sub DrawingArea_Draw()
     Draw.Picture($hIcon, PADDING, PADDING)
     sTitle = .Title
     If Not sTitle Then sTitle = .Name
+    sTitle &= " (" & .Version & ")"
     Draw.Font.Bold = True
     W = Draw.Font.Width(sTitle)
-    X = ICON_SIZE + PADDING * 3
+    X = ICON_SIZE + PADDING * 2
     Draw.Text(sTitle, X, PADDING, W, Desktop.Scale * 2, Align.TopLeft)
     Draw.Font.Bold = False
 
@@ -65,7 +66,7 @@ Public Sub DrawingArea_Draw()
 
     sPath = Replace($sPath, System.User.Home, "~")
     X = ICON_SIZE + PADDING * 3
-    Draw.Text(sPath, X, PADDING * 2 + Desktop.Scale * 2, Draw.W - X - PADDING, Desktop.Scale * 3, Align.TopLeft)
+    Draw.Text(sPath, X, PADDING + 2 + Desktop.Scale * 2, Draw.W - X - PADDING, Desktop.Scale * 3, Align.TopLeft)
     
   End With
   
