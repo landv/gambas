@@ -1,4 +1,5 @@
-INCLUDES = -I$(top_srcdir)/share @INCLTDL@
+AM_CFLAGS += -I$(top_srcdir)/share
+AM_CFLAGS_OPT += -I$(top_srcdir)/share
 
 bin_PROGRAMS = gbc2 gba2 gbi2
 noinst_LTLIBRARIES = libgbcopt.la
@@ -8,7 +9,7 @@ gbc2_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS)
 
 libgbcopt_la_CFLAGS= -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS_OPT)
 
-gbi2_LDADD = @LIBLTDL@
+gbi2_LDADD = @DL_LIB@
 gbi2_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS)
 
 gba2_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS)

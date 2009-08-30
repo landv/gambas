@@ -1,6 +1,5 @@
-## Process this file with automake to produce Makefile.in
-
-SUBDIRS = libltdl gbx gbc lib share
+ACLOCAL_AMFLAGS = -I m4 --install
+SUBDIRS = gbx gbc lib share
 EXTRA_DIST = TODO reconf spec README mime
 
 install-exec-local:

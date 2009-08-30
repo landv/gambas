@@ -1,6 +1,7 @@
 dnl ---- configure.ac for gb.db.sqlite
 
 AC_INIT(configure.ac)
+AC_CONFIG_MACRO_DIR([m4])
 GB_INIT(gb.db.sqlite3)
 AC_PROG_LIBTOOL
 

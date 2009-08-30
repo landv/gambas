@@ -1,6 +1,7 @@
 dnl ---- configure.ac for gb.corba
 
 AC_INIT(configure.ac)
+AC_CONFIG_MACRO_DIR([m4])
 GB_INIT(gb.corba)
 AC_PROG_LIBTOOL
 GB_COMPONENT(

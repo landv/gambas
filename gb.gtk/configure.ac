@@ -1,6 +1,7 @@
 dnl ---- configure.ac for gb.gtk component
 
 AC_INIT(configure.ac)
+AC_CONFIG_MACRO_DIR([m4])
 GB_INIT(gb.gtk)
 AC_PROG_LIBTOOL
 

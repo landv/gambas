@@ -1,6 +1,7 @@
 dnl ---- configure.ac for gb.desktop
 
 AC_INIT(configure.ac)
+AC_CONFIG_MACRO_DIR([m4])
 GB_INIT(gb.desktop)
 AC_PROG_LIBTOOL
 

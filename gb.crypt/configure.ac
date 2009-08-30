@@ -1,6 +1,7 @@
 dnl ---- configure.ac for gb.crypt
 
 AC_INIT(configure.ac)
+AC_CONFIG_MACRO_DIR([m4])
 GB_INIT(gb.crypt)
 AC_PROG_LIBTOOL
 

@@ -1,4 +1,5 @@
-INCLUDES = -I$(top_srcdir)/share @INTL_INC@ @CONV_INC@ @GBX_THREAD_INC@ @INCLTDL@ @FFI_INC@
+AM_CFLAGS += -I$(top_srcdir)/share @INTL_INC@ @CONV_INC@ @GBX_THREAD_INC@ @FFI_INC@
+AM_CFLAGS_OPT += -I$(top_srcdir)/share
 
 bin_PROGRAMS = gbx2
 noinst_LTLIBRARIES = libgbxopt.la

@@ -1,6 +1,7 @@
 dnl ---- configure.ac for gb.db.firebird driver
 
 AC_INIT(configure.ac)
+AC_CONFIG_MACRO_DIR([m4])
 GB_INIT(gb.db.firebird)
 AC_PROG_LIBTOOL
 

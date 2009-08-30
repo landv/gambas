@@ -1,6 +1,7 @@
 dnl ---- configure.ac for gb.pdf
 
 AC_INIT(configure.ac)
+AC_CONFIG_MACRO_DIR([m4])
 GB_INIT(gb.pdf)
 AC_PROG_LIBTOOL
 
