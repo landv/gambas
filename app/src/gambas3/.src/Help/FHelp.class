@@ -325,3 +325,11 @@ Public Sub txtHelp_Leave()
   MouseOver = False
 
 End
+
+Public Sub Form_Close()
+
+  btnUndock.Value = False
+  btnUndock_Click
+  Stop Event
+
+End

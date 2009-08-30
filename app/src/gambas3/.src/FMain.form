@@ -505,6 +505,15 @@
     Key = "main"
     Text = ("")
     Separator = True
+    { ToolButton10 ToolButton
+      MoveScaled(59.1429,-0.1429,4,4)
+      Visible = False
+      ToolTip = ("Toolbox")
+      Action = "control"
+      Text = ("")
+      Picture = Picture["icon:/small/tools"]
+      Toggle = True
+    }
     { ToolButton1 ToolButton
       MoveScaled(0,0,4,4)
       ToolTip = ("New project")
@@ -601,7 +610,7 @@
       MoveScaled(50,0,1,4)
     }
     { ToolButton3 ToolButton
-      MoveScaled(53,0,4,4)
+      MoveScaled(51,0,4,4)
       Visible = False
       ToolTip = ("Project")
       Action = "project"
@@ -611,7 +620,7 @@
       Value = True
     }
     { ToolButton8 ToolButton
-      MoveScaled(57,0,4,4)
+      MoveScaled(55,0,4,4)
       Visible = False
       ToolTip = ("Properties sheet")
       Action = "property"
@@ -619,17 +628,8 @@
       Picture = Picture["icon:/small/edit"]
       Toggle = True
     }
-    { ToolButton10 ToolButton
-      MoveScaled(61,0,4,4)
-      Visible = False
-      ToolTip = ("Toolbox")
-      Action = "control"
-      Text = ("")
-      Picture = Picture["icon:/small/tools"]
-      Toggle = True
-    }
     { btnShowConsole ToolButton
-      MoveScaled(65,0,4,4)
+      MoveScaled(63,0,4,4)
       Visible = False
       ToolTip = ("Console")
       Action = "console"
@@ -638,7 +638,7 @@
       Toggle = True
     }
     { ToolButton11 ToolButton
-      MoveScaled(69,0,4,4)
+      MoveScaled(70,0,4,4)
       ToolTip = ("Find & replace")
       Action = "find"
       Text = ("")
@@ -646,7 +646,7 @@
       Toggle = True
     }
     { Separator4 Separator
-      MoveScaled(74,0,1,4)
+      MoveScaled(74,0,2,4)
     }
     { btnCompile ToolButton
       MoveScaled(75,0,4,4)
@@ -1119,7 +1119,7 @@
 { Toolbars
   { Toolbar main
     Text = ""
-    List = "new-project,open-project,save-project,save-project-as,project-property,refresh-project,option,shortcut,translate,archive,exec,install,project,property,control,console,find,compile,compile-all,start,pause,stop,step,forward,return,until,watch,break,hide-menubar"
+    List = "control,new-project,open-project,save-project,save-project-as,project-property,refresh-project,option,shortcut,translate,archive,exec,install,project,property,console,find,compile,compile-all,start,pause,stop,step,forward,return,until,watch,break,hide-menubar"
     Default = "new-project,open-project,save-project,save-project-as,project-property,option,|,translate,exec,|,find,|,compile,compile-all,start,pause,stop,step,forward,return,until,watch,break,hide-menubar"
   }
 }

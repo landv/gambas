@@ -1099,6 +1099,7 @@ Public Sub Action_Activate(Key As String) As Boolean
     
     Case "help"
       MHelp.Open
+      
     Case "console"
       Try FOutput.SetFocus
       'FOutput.Toggle(Action["console"].Value)
