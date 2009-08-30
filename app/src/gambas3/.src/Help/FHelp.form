@@ -1,24 +1,24 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,68,64)
-  Background = Color.LightBackground
+  MoveScaled(0,0,62,42)
   Expand = True
   Text = ("")
-  Persistent = True
-  Border = False
-  Type = WindowType.Tooltip
-  Stacking = Window.Above
+  Type = WindowType.Utility
   SkipTaskbar = True
-  Arrangement = Arrange.Fill
-  { txtHelp TextEdit
-    MoveScaled(2,3,58,47)
-    ReadOnly = True
-    Border = False
+  Arrangement = Arrange.Vertical
+  { HBox1 HBox
+    MoveScaled(0,0,67,4)
+    { btnUndock ToolButton
+      MoveScaled(1,0,4,4)
+      Text = ("")
+      Picture = Picture["icon:/small/fullscreen"]
+      Toggle = True
+    }
   }
-  { tmrHide #Timer
-    #X = 406
-    #Y = 315
-    Delay = 3000
+  { txtHelp TextEdit
+    MoveScaled(2,5,58,45)
+    Expand = True
+    ReadOnly = True
   }
 }

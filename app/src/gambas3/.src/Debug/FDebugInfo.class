@@ -62,10 +62,9 @@ Public Sub Form_Open()
 
   FOutput.Load(panConsole)
   UpdateView
-  
   FHelp.Load(panHelp)
-  'FHelp.Reparent(panHelp, 0, 0)
-
+  UpdateHelpView
+  
 End
 
 Private Sub ClearView(hView As TableView)
@@ -632,11 +631,11 @@ Public Sub tabDebug_Click()
       FOutput.SetFocus
     Case TAB_BREAK
       timBreakpoint_Timer
-    Case TAB_HELP
-      FHelp.Background = Color.Background
-      FHelp.Reparent(panHelp)
-      FHelp.Ignore = False
-      FHelp.Visible = True
+    ' Case TAB_HELP
+    '   FHelp.Background = Color.Background
+    '   FHelp.Reparent(panHelp)
+    '   FHelp.Ignore = False
+    '   FHelp.Visible = True
   End Select   
 
 End
@@ -728,6 +727,7 @@ Public Sub UpdateView()
     'FOutput.Stacking = If(Project.Running, Window.Above, Window.Normal)
   Endif
   
+
   tabDebug[TAB_CONSOLE].Visible = Not bUndock
   tabDebug[TAB_LOCAL].Visible = Project.Running
   tabDebug[TAB_ME].Visible = Project.Running
@@ -755,8 +755,50 @@ Public Sub UpdateView()
       'Action["console"].Visible = FALSE
       'If bVisible Then FMain.ShowDebug(True)
     Endif
+    
+    
+    
     tabDebug.Index = TAB_CONSOLE
     FOutput.SetFocus
+  Endif 
+  
+
+  
+  FMain.UpdateConsoleAction(Project.Running)
+  
+End
+
+Public Sub UpdateHelpView()
+  
+  Dim bHelpUnDock As Boolean = Settings["/FHelp/Undock"]
+  Dim bVisible As Boolean
+  
+  If bHelpUndock Then  
+    If FHelp.Parent Then 
+      FHelp.Reparent(Null)
+      Settings.Read(FHelp)
+      FHelp.Show
+    Endif
+  Endif
+  
+  tabDebug[TAB_HELP].Visible = Not bHelpUnDock
+  
+        
+  If Not bHelpUnDock Then 
+    If Not FHelp.Parent Then 
+      bVisible = FHelp.Visible
+      'DEBUG "Write: "; FOutput.X;; FOutput.Y
+      Settings.Write(FHelp)
+      FHelp.Reparent(panHelp, 0, 0)
+      FHelp.Show
+      'Action["console"].Value = TRUE
+      'Action["console"].Visible = FALSE
+      'If bVisible Then FMain.ShowDebug(True)
+    Endif
+    
+    
+    
+    tabDebug.Index = TAB_HELP
   Endif 
   
   FMain.UpdateConsoleAction(Project.Running)

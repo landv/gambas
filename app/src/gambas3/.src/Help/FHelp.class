@@ -9,8 +9,24 @@ Public Sub _New()
   
   $sHelpTheme = "<span style=background:green>&1<br><font color=green>Kind: </font>&2<br>&3</span><hr>&4"
   
+
+  'Config.LoadWindow(ME, "/FOutput")
+  Settings.Read(Me)
+  
+  btnUndock.Value = Settings["/FHelp/Undock"]
+
+
+  
 End
 
+Public Sub Form_Open()
+
+  If Not Me.Parent Then 
+    Settings.Read(Me)
+    'DEBUG "Read: "; ME.X;; ME.Y
+  Endif
+  
+End
 
 Private Sub ShowHelp()
   Dim iX, iY As Integer
@@ -33,7 +49,7 @@ Private Sub ShowHelp()
     If iY + Me.Height > Desktop.Height Then iY = $hEditor.ScreenY + $iY - $hEditor.LineHeight - Me.Height - 15
     Me.Move(iX, iY)
     Me.Visible = True
-    Form_Show
+
     '$hEditor.SetFocus
   Else
     If Me.Parent = Null Then FDebugInfo.SetHelpVisible
@@ -68,7 +84,7 @@ Public Sub ShowKeywordHelp(hEditor As Editor, sName As String, Optional sName2 A
   
   
   
-  ShowHelp()
+  ' ShowHelp()
   
 Catch
   Return True
@@ -158,7 +174,7 @@ Public Sub ShowSymbolHelp(hEditor As Editor, hSymbol As CSymbolInfo, iX As Integ
      txtHelp.RichText = Subst($sHelpTheme, sSignature, sKind, sDef, GetHelp(sLink))
   Endif
   
-  ShowHelp()
+  ' ShowHelp()
   
 End
   
@@ -174,7 +190,7 @@ Public Sub ShowClassHelp(hEditor As Editor, sComponent As String, sName As Strin
   sKind = "Class"
   sdef = Subst("<br><font color=blue>&1</font>", sComponent)
   txtHelp.RichText = Subst($sHelpTheme, sSignature, sKind, sDef, "")
-  ShowHelp()
+  ' ShowHelp()
   
 End
 
@@ -207,7 +223,7 @@ Public Function ShowDatatypeHelp(hEditor As Editor, sName As String, iX As Integ
   sSignature = "<b>" & sName & "</b>"
   sKind = "DataType"
   txtHelp.RichText = Subst($sHelpTheme, sSignature, sKind, sDef, GetHelp(sPath))
-  ShowHelp()
+  ' ShowHelp()
 
 End
 
@@ -270,39 +286,14 @@ Private Function GetLocalHelp(hSymbol As CSymbolInfo) As String
     Endif
 End
 
-Public Sub Form_Show()
-
-  If Not FDebugInfo.IsHelpVisible() Then tmrHide.Enabled = True
-
-End
-
-Public Sub tmrHide_Timer()
-
-  If Not FDebugInfo.IsHelpVisible() Then Me.Hide
-  '><>$hEditor.SetFocus
-  tmrHide.Stop
-
-End
 
 Public Sub txtHelp_Enter()
 
-  tmrHide.Enabled = False
+
   MouseOver = True
-End
-
-Public Sub txtHelp_Leave()
-
   
-  If Not FDebugInfo.IsHelpVisible() Then Me.Hide 'tmrHide.Enabled = True
-  MouseOver = False
-  '$hEditor.SetFocus
 End
 
-Public Sub txtHelp_LostFocus()
-
-  If Not FDebugInfo.IsHelpVisible() Then Me.Hide
-  '$hEditor.SetFocus
-End
 
 Public Sub txtHelp_Link(Path As String)
   Dim aRes As String[]
@@ -321,5 +312,16 @@ Public Sub txtHelp_Link(Path As String)
 End
 
 
+Public Sub btnUndock_Click()
+
+  Settings["/FHelp/Undock"] = btnUndock.Value
+  FDebugInfo.UpdateHelpView
+  
+End
 
 
+Public Sub txtHelp_Leave()
+
+  MouseOver = False
+
+End

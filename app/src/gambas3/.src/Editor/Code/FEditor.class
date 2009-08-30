@@ -2382,10 +2382,10 @@ Public Sub Editors_MouseUp()
   HideMessage
   If Not Editor.Selected Then Return 
   If Editor.Selection.StartLine < Editor.Selection.EndLine Then Return 
-  'If Not Project.Running Then
-    'If FDebugInfo.IsHelpVisible() Or $bShowPopupHelp Then timShowHelp.Trigger
-  '  Return 
-  'Endif
+  If Not Project.Running Then
+    FindDefinition(True, Mouse.X, Mouse.Y)
+    Return 
+  Endif
   
   FDebugInfo.InstantWatch(Trim(Editor.Selection.Text), Editor, 
     Editor.CursorX + Editor.CharWidth * ((Editor.Selection.StartColumn + Editor.Selection.EndColumn) / 2 - Editor.Column), 
@@ -2817,8 +2817,3 @@ Public Sub timShowHelp_Timer()
   
 End
 
-Public Sub Editors_Leave()
-
-  If Not FDebugInfo.IsHelpVisible() Then FHelp.Visible = False
-
-End
