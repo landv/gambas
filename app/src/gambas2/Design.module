@@ -281,6 +281,7 @@ PUBLIC SUB Process_Kill()
     ' SIGKILL and SIGTERM are not considered as bugs in the program
     IF $hProcess.Value <> 9 AND $hProcess.Value <> 15 THEN
       sMsg = Subst(("The program has stopped unexpectedly\nby raising signal #&1.\n\nPlease send a bug report to\ngambas@users.sourceforge.net."), $hProcess.Value)
+      sMsg &= "\n\n" & (("Do not forget to specify the Gambas version used, your distribution name and version, and every other information you find useful."))
       FGambas.Error(sMsg)
     ENDIF
   ELSE IF $hProcess.Value THEN
