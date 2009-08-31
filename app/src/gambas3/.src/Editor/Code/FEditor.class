@@ -2200,10 +2200,8 @@ Private Sub FindDefinition(bPopupHelp As Boolean, Optional iX As Integer, Option
   Else
     iCol = Editor.PosToColumn(iX, iY)
     iLine = Editor.PosToLine(iY)
-    If iLine < 0 Then Return
+    If iLine < 0 Or If iCol < 0 Then Return
   Endif
-  
-  
   
   sLig = Highlight.Purge(Editor.Lines[iLine].Text)
   

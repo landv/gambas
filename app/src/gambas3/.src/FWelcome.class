@@ -20,7 +20,7 @@ Private Const LIST_EXAMPLE As Integer = 2
 Private Const POS_BUTTON As Integer = 0
 Private HEIGHT_BUTTON As Integer = Desktop.Scale * 8
 
-Private Const SCALE_DRAWING As Float = 1.5
+Private Const SCALE_DRAWING As Float = 3
 Private $hLogo As Image
 Private $hMadeIn As Image
 Private $hDraw As Picture
@@ -77,7 +77,7 @@ Public Sub Form_Open()
   $hLogo = Image.Load("img/logo/logo.png")
   hImage = New Image($hLogo.W * SCALE_DRAWING, $hLogo.H * SCALE_DRAWING, Color.Transparent)
   $hLogo = $hLogo.Stretch(($hLogo.W * SCALE_DRAWING * 2) / 3, ($hLogo.H * SCALE_DRAWING * 2) / 3)
-  hImage.Draw($hLogo, ($hLogo.W * SCALE_DRAWING) / 6 + 5 * SCALE_DRAWING, ($hLogo.H * SCALE_DRAWING) / 6)
+  hImage.Draw($hLogo, hImage.W / 6 + SCALE_DRAWING * 4, hImage.H / 6)
   $hLogo = hImage
 
   $hMadeIn = Image.Load("img/logo/made-with-gambas.png").Stretch(hImage.W, hImage.H)
