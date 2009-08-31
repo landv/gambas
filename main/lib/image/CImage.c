@@ -166,6 +166,7 @@ BEGIN_METHOD(CIMAGE_mirror, GB_BOOLEAN horz; GB_BOOLEAN vert)
 
   GB_IMG tmp;
 
+  tmp.ob = THIS_IMAGE->ob;
   IMAGE_create(&tmp, THIS_IMAGE->width, THIS_IMAGE->height, THIS_IMAGE->format);
   IMAGE_mirror(THIS_IMAGE, &tmp, VARG(horz), VARG(vert));
 
