@@ -40,7 +40,7 @@ public:
 	void SetShape(int );
 	void SetCursor(SDLsurface* image, int xhot = -1, int yhot = -1);
 
-	int GetShape(void );
+	int GetShape(void ) { return hShape; }
 
 private:
 	Cursor hCursor;

@@ -46,7 +46,7 @@ public:
 	int GetDepth(void );
 	char* GetTitle(void ) { return (hTitle); };
 	SDL_Surface* GetSdlSurface(void ) { return (hSurface); };
-//	SDLcursor* GetCursor(void ) { return (hCursor); }
+	SDLcursor* GetCursor(void ) { return (hCursor); }
 
 	void SetX(int );
 	void SetY(int );
@@ -55,7 +55,7 @@ public:
 	void SetFullScreen(bool );
 	void SetResizable(bool );
 	void SetTitle(char* );
-//	void SetCursor(SDLcursor *cursor);
+	void SetCursor(SDLcursor *cursor);
 
 	bool IsFullScreen(void ) {return (hFullScreen); };
 	bool IsResizable(void ) { return (hResizable); };

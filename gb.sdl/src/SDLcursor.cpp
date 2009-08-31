@@ -125,8 +125,3 @@ void SDLcursor::SetCursor(SDLsurface *image, int xhot, int yhot)
 
 }
 
-int SDLcursor::GetShape()
-{
-	return hShape;
-}
-

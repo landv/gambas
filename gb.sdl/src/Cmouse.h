@@ -27,7 +27,7 @@
 #include "main.h"
 
 #include "SDL.h"
-//#include "SDLcursor.h"
+#include "SDLcursor.h"
 
 typedef
   struct {
@@ -55,7 +55,7 @@ typedef
     GB_BASE ob;
     int x;
     int y;
-//    SDLcursor *cursor;
+    SDLcursor *cursor;
     }
   CCURSOR;
 

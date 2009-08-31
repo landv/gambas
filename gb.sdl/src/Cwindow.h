@@ -27,6 +27,7 @@
 #include "main.h"
 #include "SDLwindow.h"
 #include "Cfont.h"
+#include "Cmouse.h"
 
 class myWin : public SDLwindow
 {
@@ -55,6 +56,7 @@ typedef
 	struct {
 		GB_BASE ob;
 		CFONT *font;
+            CCURSOR *cursor;
 
 		myWin *id;
 		bool openGL;

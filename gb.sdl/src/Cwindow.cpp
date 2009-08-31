@@ -65,6 +65,8 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CWINDOW_free)
 
+      GB.StoreObject(NULL, POINTER(&(THIS->cursor)));
+      GB.StoreObject(NULL, POINTER(&(THIS->font)));
 	delete WINDOWID;
 
 END_METHOD
@@ -148,12 +150,12 @@ BEGIN_PROPERTY(CWINDOW_border)
 END_PROPERTY
 
 BEGIN_PROPERTY(CWINDOW_mouse)
-/*
+
 	if (READ_PROPERTY)
 		GB.ReturnInteger(WINDOWID->GetCursor()->GetShape());
 	else
 		WINDOWID->GetCursor()->SetShape(VPROP(GB_INTEGER));
-*/
+
 END_PROPERTY
 
 BEGIN_PROPERTY(CWINDOW_tracking)
@@ -168,7 +170,7 @@ END_PROPERTY
 BEGIN_PROPERTY(CWINDOW_cursor)
 
 	if (READ_PROPERTY)
-		GB.ReturnObject(0);
+		GB.ReturnObject(THIS->cursor);
 	else
 	{
 /*
