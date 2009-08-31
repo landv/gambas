@@ -67,6 +67,7 @@ END_PROPERTY
 BEGIN_METHOD(CIMAGE_fill, GB_INTEGER col)
 
 	IMAGE_fill(THIS_IMAGE, VARG(col));
+      GB.ReturnObject(THIS);
 
 END_METHOD
 
@@ -88,9 +89,10 @@ BEGIN_PROPERTY(CIMAGE_data)
 
 END_PROPERTY
 
-BEGIN_METHOD_VOID(CIMAGE_make_gray)
+BEGIN_METHOD_VOID(CIMAGE_gray)
 
 	IMAGE_make_gray(THIS_IMAGE);
+      GB.ReturnObject(THIS);
 
 END_METHOD
 
@@ -103,18 +105,21 @@ END_METHOD
 BEGIN_METHOD(CIMAGE_replace, GB_INTEGER src; GB_INTEGER dst; GB_BOOLEAN noteq)
 
 	IMAGE_replace(THIS_IMAGE, VARG(src), VARG(dst), VARGOPT(noteq, FALSE));
+      GB.ReturnObject(THIS);
 
 END_METHOD
 
-BEGIN_METHOD(CIMAGE_make_transparent, GB_INTEGER color)
+BEGIN_METHOD(CIMAGE_transparent, GB_INTEGER color)
 
 	IMAGE_make_transparent(THIS_IMAGE, VARGOPT(color, 0xFFFFFF));
+      GB.ReturnObject(THIS);
 
 END_METHOD
 
 BEGIN_METHOD(CIMAGE_colorize, GB_INTEGER color)
 
 	IMAGE_colorize(THIS_IMAGE, VARG(color));
+      GB.ReturnObject(THIS);
 
 END_METHOD
 
@@ -153,19 +158,20 @@ BEGIN_METHOD(CIMAGE_resize, GB_INTEGER width; GB_INTEGER height)
 
   IMAGE_delete(THIS_IMAGE);
   *THIS_IMAGE = tmp;
+  GB.ReturnObject(THIS);
 
 END_METHOD
 
 BEGIN_METHOD(CIMAGE_mirror, GB_BOOLEAN horz; GB_BOOLEAN vert)
 
-  CIMAGE *image;
+  GB_IMG tmp;
 
-  GB.New(POINTER(&image), GB.FindClass("Image"), NULL, NULL);
+  IMAGE_create(&tmp, THIS_IMAGE->width, THIS_IMAGE->height, THIS_IMAGE->format);
+  IMAGE_mirror(THIS_IMAGE, &tmp, VARG(horz), VARG(vert));
 
-	IMAGE_create(&image->image, THIS_IMAGE->width, THIS_IMAGE->height, THIS_IMAGE->format);
-  IMAGE_mirror(THIS_IMAGE, &image->image, VARG(horz), VARG(vert));
-
-  GB.ReturnObject(image);
+  IMAGE_delete(THIS_IMAGE);
+  *THIS_IMAGE = tmp;
+  GB.ReturnObject(THIS);
 
 END_METHOD
 
@@ -220,15 +226,15 @@ GB_DESC CImageDesc[] =
   GB_PROPERTY_READ("Depth", "i", CIMAGE_depth),
   GB_PROPERTY_READ("Data", "p", CIMAGE_data),
   
-  GB_METHOD("Clear", NULL, CIMAGE_clear, NULL),
-  GB_METHOD("Fill", NULL, CIMAGE_fill, "(Color)i"),
-  GB_METHOD("MakeGray", NULL, CIMAGE_make_gray, NULL),
-  GB_METHOD("MakeTransparent", NULL, CIMAGE_make_transparent, "[(Color)i]"),
-  GB_METHOD("Replace", NULL, CIMAGE_replace, "(OldColor)i(NewColor)i[(NotEqual)b]"),
-  GB_METHOD("Colorize", NULL, CIMAGE_colorize, "(Color)i"),
+  GB_METHOD("Clear", "Image", CIMAGE_clear, NULL),
+  GB_METHOD("Fill", "Image", CIMAGE_fill, "(Color)i"),
+  GB_METHOD("Gray", "Image", CIMAGE_gray, NULL),
+  GB_METHOD("Transparent", "Image", CIMAGE_transparent, "[(Color)i]"),
+  GB_METHOD("Replace", "Image", CIMAGE_replace, "(OldColor)i(NewColor)i[(NotEqual)b]"),
+  GB_METHOD("Colorize", "Image", CIMAGE_colorize, "(Color)i"),
   
   GB_METHOD("Copy", "Image", CIMAGE_copy, "[(X)i(Y)i(Width)i(Height)i]"),
-  GB_METHOD("Resize", NULL, CIMAGE_resize, "(Width)i(Height)i"),
+  GB_METHOD("Resize", "Image", CIMAGE_resize, "(Width)i(Height)i"),
 
   GB_METHOD("Mirror", "Image", CIMAGE_mirror, "(Horizontal)b(Vertical)b"),
 	
