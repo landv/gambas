@@ -36,7 +36,7 @@ public:
 	SDLcursor(const SDLcursor& cursor);
 	~SDLcursor();
 
-	void Show(void );
+	void Show(Window );
 	void SetShape(int );
 	void SetCursor(SDLsurface* image, int xhot = -1, int yhot = -1);
 

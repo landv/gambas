@@ -36,7 +36,7 @@ SDLwindow::SDLwindow(void )
 	hHeight = 480;
 	hFullScreen = false;
 	hResizable = false;
-	hTitle = (char *) "SDL application";
+	hTitle = (char *) "Gambas SDL application";
 }
 
 SDLwindow::~SDLwindow()
@@ -69,7 +69,7 @@ void SDLwindow::Show()
 	hDpy = glXGetCurrentDisplay();
 
 	/* Set our custom cursor */
-	hCursor->Show();
+	hCursor->Show(SDLapp->CurrentWin());
 
 	SDL_WM_SetCaption(hTitle, hTitle);
 
@@ -119,8 +119,8 @@ void SDLwindow::Clear(Uint32 color)
 	if (!hSurface)
 		return;
 
-	glClearColor((GLfloat((color >> 24) & 0xFF)/255), (GLfloat((color >> 16) & 0xFF)/255),
-		(GLfloat((color >> 8) & 0xFF)/255), 1.0f);
+	glClearColor((GLfloat((color >> 16) & 0xFF)/255), (GLfloat((color >> 8) & 0xFF)/255),
+                   (GLfloat((color & 0xFF)/255)), (GLfloat(~(color >> 24) & 0xFF)/255));
 	glClear(GL_COLOR_BUFFER_BIT);
 
 }

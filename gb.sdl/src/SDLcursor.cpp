@@ -54,14 +54,11 @@ SDLcursor::~SDLcursor()
 		XcursorImageDestroy(hImgCursor);
 }
 
-void SDLcursor::Show()
+void SDLcursor::Show(Window w)
 {
 	Cursor cursor = hCursor;
 	int shape = hShape;
 	Display *myDisplay = SDLapp->X11appDisplay();
-
-//	if (!SDLcore::GetWindow()->IsShown())
-//		return;
 
 	if (hShape == SDL::BlankCursor)
 	{
@@ -82,7 +79,7 @@ void SDLcursor::Show()
 	else
 		cursor = XcursorImageLoadCursor(myDisplay, hImgCursor);
 
-	XDefineCursor(myDisplay, SDLapp->CurrentWin(), cursor);
+	XDefineCursor(myDisplay, w, cursor);
       SDLapp->UnlockX11();
 
 }
@@ -122,6 +119,5 @@ void SDLcursor::SetCursor(SDLsurface *image, int xhot, int yhot)
 	hImgCursor->xhot = xhot;
 	hImgCursor->yhot = yhot;
 	hShape = SDL::CustomCursor;
-
 }
 
