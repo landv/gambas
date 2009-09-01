@@ -146,7 +146,20 @@ Public Function MakeSignature(sKey As String) As String
   
   For Each s In Split($ColArgs[sKey], "|")
   
-    If InStr(s, "=in") Then
+    If InStr(s, "=out") Then
+      For Each t In Split(s)
+        If Scan(t, "*=*")[0] = "type" Then 
+          s = Scan(t, "*=*")[1]
+          If $colTypes.Exist(s) Then
+            sOut &= $colTypes[s]
+          Else
+            sOut &= s
+          Endif
+          Endif
+          
+      Next
+      sOut = " As " & sOut
+    Else
       sValue &= "Value As "
       For Each t In Split(s)
         If Scan(t, "*=*")[0] = "type" Then 
@@ -161,19 +174,7 @@ Public Function MakeSignature(sKey As String) As String
       Next
       ars2.Add(sValue)
         sValue = ""
-    Else
-      For Each t In Split(s)
-        If Scan(t, "*=*")[0] = "type" Then 
-          s = Scan(t, "*=*")[1]
-          If $colTypes.Exist(s) Then
-            sOut &= $colTypes[s]
-          Else
-            sOut &= s
-          Endif
-          Endif
-          
-      Next
-      sOut = " As " & sOut
+      
     Endif
   
 
