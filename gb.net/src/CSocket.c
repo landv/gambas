@@ -143,7 +143,7 @@ void CSocket_CallBackFromDns(void *_object)
 	if (!myval || errno==EINPROGRESS) /* this is the good answer : connect in progress */
 	{
 		THIS->iStatus=6;
-		GB.Watch (THIS->Socket,GB_WATCH_WRITE,(void *)CSocket_CallBackConnecting,(long)THIS);
+		GB.Watch (THIS->Socket,GB_WATCH_WRITE,(void *)CSocket_CallBackConnecting, (intptr_t)THIS);
 	}
 	else
 	{
@@ -174,12 +174,14 @@ void CSocket_CallBackFromDns(void *_object)
 /*******************************************************************
  This CallBack is used while waiting to finish a connection process
  ******************************************************************/
-void CSocket_CallBackConnecting(int t_sock,int type,long param)
+void CSocket_CallBackConnecting(int t_sock, int type, intptr_t param)
 {
 	struct sockaddr_in myhost;
 	int mylen;
 	void *_object = (void *)param;
 
+	fprintf(stderr, "CSocket_CallBackConnecting: %p\n", THIS);
+	
 	GB.Watch(THIS->Socket, GB_WATCH_NONE, (void *)CSocket_CallBackConnecting, 0);
 	
 	if (THIS->iStatus!=6) return;
@@ -208,7 +210,7 @@ void CSocket_CallBackConnecting(int t_sock,int type,long param)
 	GB.NewString ( &THIS->sLocalHostIP ,inet_ntoa(myhost.sin_addr),0);
 
 	//GB.Watch (THIS->Socket,GB_WATCH_NONE,(void *)CSocket_CallBack,(long)THIS);
-	GB.Watch (THIS->Socket,GB_WATCH_READ,(void *)CSocket_CallBack,(long)THIS);
+	GB.Watch (THIS->Socket,GB_WATCH_READ,(void *)CSocket_CallBack,(intptr_t)THIS);
 
 	THIS->stream.desc=&SocketStream;
 	GB.Ref(THIS);
@@ -220,7 +222,7 @@ void CSocket_CallBackConnecting(int t_sock,int type,long param)
 /*******************************************************************
  This CallBack is used while socket is connected to remote host
  ******************************************************************/
-void CSocket_CallBack(int t_sock,int type,long lParam)
+void CSocket_CallBack(int t_sock,int type,intptr_t lParam)
 {
 	char buf[1];
 	struct pollfd mypoll;
@@ -442,7 +444,7 @@ int CSocket_connect_unix(void *_object,char *sPath,int lenpath)
   	{
 		THIS->iStatus=7;
 		ioctl(THIS->Socket,FIONBIO,&NoBlock);
-		GB.Watch (THIS->Socket,GB_WATCH_WRITE,(void *)CSocket_CallBack,(long)THIS);
+		GB.Watch (THIS->Socket,GB_WATCH_READ,(void *)CSocket_CallBack,(intptr_t)THIS);
 		THIS->stream.desc=&SocketStream;
                 // $BM
                 if (THIS->Host) GB.FreeString(&THIS->Host);
@@ -748,6 +750,8 @@ END_METHOD
  Gambas object "Destructor"
  **************************************************/
 BEGIN_METHOD_VOID(CSOCKET_free)
+
+	fprintf(stderr, "CSOCKET_free: %p\n", THIS);
 
   if (THIS->DnsTool)
   {
