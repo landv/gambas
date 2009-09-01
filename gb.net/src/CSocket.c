@@ -741,6 +741,7 @@ END_PROPERTY
  ****************************************************/
 BEGIN_METHOD_VOID(CSOCKET_new)
 
+	fprintf(stderr, "CSOCKET_new: %p\n", THIS);
   THIS->stream.tag = THIS;
   THIS->iUsePort = 80;
 
