@@ -180,6 +180,50 @@ void COLOR_hsv_to_rgb(int h, int s, int v, int *R, int *G, int *B)
 	}
 }
 
+GB_COLOR COLOR_merge(GB_COLOR col1, GB_COLOR col2, double weight)
+{
+	int a, r, g, b;
+	
+	if (weight == 0.0)
+		return col1;
+	else if (weight == 1.0)
+		return col2;
+	else
+	{
+		#define MIX_COLOR(_shift) (int)((((col2 >> _shift) & 0xFF) * weight + ((col1 >> _shift) & 0xFF) * (1 - weight)) + 0.5)
+		
+		a = MIX_COLOR(24);
+		r = MIX_COLOR(16);
+		g = MIX_COLOR(8);
+		b = MIX_COLOR(0);
+		
+		return gt_rgba_to_color(r, g, b, a);
+	}
+}
+
+GB_COLOR COLOR_lighter(GB_COLOR color)
+{
+  int h, s, v;
+  int r, g, b, a;
+  
+	gt_color_to_rgba(color, &r, &g, &b, &a);
+  COLOR_rgb_to_hsv(r, g, b, &h, &s, &v);
+  COLOR_hsv_to_rgb(h, s / 2, 255 - (255 - v) / 2, &r, &g, &b);
+
+  return gt_rgba_to_color(r, g, b, a);  
+}
+
+GB_COLOR COLOR_darker(GB_COLOR color)
+{
+  int h, s, v;
+  int r, g, b, a;
+  
+	gt_color_to_rgba(color, &r, &g, &b, &a);
+  COLOR_rgb_to_hsv(r, g, b, &h, &s, &v);
+  COLOR_hsv_to_rgb(h, 255 - (255 - s) / 2, v / 2, &r, &g, &b);
+
+  return gt_rgba_to_color(r, g, b, a);
+}
 
 BEGIN_METHOD(CCOLOR_rgb, GB_INTEGER r; GB_INTEGER g; GB_INTEGER b; GB_INTEGER a)
 
@@ -255,54 +299,19 @@ END_PROPERTY
 
 BEGIN_METHOD(CCOLOR_lighter, GB_INTEGER color)
 
-  int h, s, v;
-  int r, g, b, a;
-  
-	gt_color_to_rgba(VARG(color), &r, &g, &b, &a);
-  COLOR_rgb_to_hsv(r, g, b, &h, &s, &v);
-  COLOR_hsv_to_rgb(h, s / 2, 255 - (255 - v) / 2, &r, &g, &b);
-
-  GB.ReturnInteger(gt_rgba_to_color(r, g, b, a));
+  GB.ReturnInteger(COLOR_lighter(VARG(color)));
   
 END_METHOD
 
 BEGIN_METHOD(CCOLOR_darker, GB_INTEGER color)
 
-  int h, s, v;
-  int r, g, b, a;
-  
-	gt_color_to_rgba(VARG(color), &r, &g, &b, &a);
-  COLOR_rgb_to_hsv(r, g, b, &h, &s, &v);
-  COLOR_hsv_to_rgb(h, 255 - (255 - s) / 2, v / 2, &r, &g, &b);
-
-  GB.ReturnInteger(gt_rgba_to_color(r, g, b, a));
+  GB.ReturnInteger(COLOR_darker(VARG(color)));
 
 END_METHOD
 
-BEGIN_METHOD(CCOLOR_mix, GB_INTEGER color1; GB_INTEGER color2; GB_FLOAT weight)
+BEGIN_METHOD(CCOLOR_merge, GB_INTEGER color1; GB_INTEGER color2; GB_FLOAT weight)
 
-	int col1, col2;
-	int r, g, b, a;
-	double weight = VARGOPT(weight, 0.5);
-	
-	col1 = VARG(color1);
-	col2 = VARG(color2);
-	
-	if (weight == 0.0)
-		GB.ReturnInteger(col1);
-	else if (weight == 1.0)
-		GB.ReturnInteger(col2);
-	else
-	{
-		#define MIX_COLOR(_shift) (int)((((col2 >> _shift) & 0xFF) * weight + ((col1 >> _shift) & 0xFF) * (1 - weight)) + 0.5)
-		
-		a = MIX_COLOR(24);
-		r = MIX_COLOR(16);
-		g = MIX_COLOR(8);
-		b = MIX_COLOR(0);
-		
-		GB.ReturnInteger(gt_rgba_to_color(r, g, b, a));
-	}
+	GB.ReturnInteger(COLOR_merge(VARG(color1), VARG(color2), VARGOPT(weight, 0.5)));
 
 END_METHOD
 
@@ -408,7 +417,7 @@ GB_DESC CColorDesc[] =
   
   GB_STATIC_METHOD("Lighter", "i", CCOLOR_lighter, "(Color)i"),
   GB_STATIC_METHOD("Darker", "i", CCOLOR_darker, "(Color)i"),
-  GB_STATIC_METHOD("Merge", "i", CCOLOR_mix, "(Color1)i(Color2)i[(Weight)f]"),
+  GB_STATIC_METHOD("Merge", "i", CCOLOR_merge, "(Color1)i(Color2)i[(Weight)f]"),
   GB_STATIC_METHOD("Blend", "i", CCOLOR_blend, "(Source)i(Destination)i"),
 
   GB_STATIC_METHOD("_get", "ColorInfo", CCOLOR_get, "(Color)i"),

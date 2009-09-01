@@ -288,7 +288,7 @@ Private Sub InitUser()
       DrawText(.Name, 0, 0, W, H, Color.Merge(.Color, Color.White, 0.7), Color.Default)
       Draw.End
       .Image = hPict.Image
-      .Image.MakeTransparent
+      .Image.Transparent
     End With
   Next
 

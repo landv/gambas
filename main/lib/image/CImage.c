@@ -67,7 +67,7 @@ END_PROPERTY
 BEGIN_METHOD(CIMAGE_fill, GB_INTEGER col)
 
 	IMAGE_fill(THIS_IMAGE, VARG(col));
-      GB.ReturnObject(THIS);
+	GB.ReturnObject(THIS);
 
 END_METHOD
 
@@ -92,7 +92,7 @@ END_PROPERTY
 BEGIN_METHOD_VOID(CIMAGE_gray)
 
 	IMAGE_make_gray(THIS_IMAGE);
-      GB.ReturnObject(THIS);
+	GB.ReturnObject(THIS);
 
 END_METHOD
 
@@ -105,21 +105,21 @@ END_METHOD
 BEGIN_METHOD(CIMAGE_replace, GB_INTEGER src; GB_INTEGER dst; GB_BOOLEAN noteq)
 
 	IMAGE_replace(THIS_IMAGE, VARG(src), VARG(dst), VARGOPT(noteq, FALSE));
-      GB.ReturnObject(THIS);
+	GB.ReturnObject(THIS);
 
 END_METHOD
 
 BEGIN_METHOD(CIMAGE_transparent, GB_INTEGER color)
 
 	IMAGE_make_transparent(THIS_IMAGE, VARGOPT(color, 0xFFFFFF));
-      GB.ReturnObject(THIS);
+	GB.ReturnObject(THIS);
 
 END_METHOD
 
 BEGIN_METHOD(CIMAGE_colorize, GB_INTEGER color)
 
 	IMAGE_colorize(THIS_IMAGE, VARG(color));
-      GB.ReturnObject(THIS);
+	GB.ReturnObject(THIS);
 
 END_METHOD
 

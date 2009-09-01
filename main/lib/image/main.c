@@ -63,6 +63,9 @@ void *GB_IMAGE_1[] EXPORT =
 	(void *)IMAGE_get_default_format,
 	(void *)IMAGE_get_pixel,
 	(void *)IMAGE_convert,
+	(void *)COLOR_merge,
+	(void *)COLOR_lighter,
+	(void *)COLOR_darker,
   NULL
 };
 

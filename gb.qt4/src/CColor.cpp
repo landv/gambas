@@ -27,6 +27,7 @@
 #include <qpalette.h>
 
 #include "gambas.h"
+#include "gb.image.h"
 
 #include "CWidget.h"
 #include "CColor.h"
@@ -37,12 +38,7 @@ static int _v = 0;
 
 QColor CCOLOR_merge(const QColor &colorA, const QColor &colorB, int factor)
 {
-	const int maxFactor = 100;
-	QColor tmp = colorA;
-	tmp.setRed((tmp.red() * factor) / maxFactor + (colorB.red() * (maxFactor - factor)) / maxFactor);
-	tmp.setGreen((tmp.green() * factor) / maxFactor + (colorB.green() * (maxFactor - factor)) / maxFactor);
-	tmp.setBlue((tmp.blue() * factor) / maxFactor + (colorB.blue() * (maxFactor - factor)) / maxFactor);
-	return tmp;
+	return QColor(IMAGE.MergeColor(colorA.rgba(), colorB.rgba(), factor / 100.0));
 }
 
 static void get_hsv(int col)
@@ -131,8 +127,12 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CCOLOR_light_foreground)
 
-	QColor col = CCOLOR_merge(qApp->palette().color(QPalette::Window), qApp->palette().color(QPalette::WindowText)).lighter();
-	GB.ReturnInteger(col.rgb() & 0xFFFFFF);
+	uint col;
+	
+	col = IMAGE.MergeColor(qApp->palette().color(QPalette::Window).rgb() & 0xFFFFFF, qApp->palette().color(QPalette::WindowText).rgb() & 0xFFFFFF, 0.5);
+	col = IMAGE.LighterColor(col);
+
+	GB.ReturnInteger(col);
 
 END_PROPERTY
 

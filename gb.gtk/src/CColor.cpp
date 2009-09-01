@@ -94,6 +94,17 @@ BEGIN_PROPERTY(CCOLOR_button_foreground)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(CCOLOR_light_foreground)
+
+	uint col;
+	
+	col = IMAGE.MergeColor(gDesktop::bgColor(), gDesktop::fgColor(), 0.5);
+	col = IMAGE.LighterColor(col);
+	
+	GB.ReturnInteger(col);
+
+END_PROPERTY
+
 GB_DESC CColorDesc[] =
 {
   GB_DECLARE("Color", 0), GB_VIRTUAL_CLASS(),
@@ -106,6 +117,7 @@ GB_DESC CColorDesc[] =
 
   GB_STATIC_PROPERTY("Foreground", "i", CCOLOR_foreground),
   GB_STATIC_PROPERTY("SelectedForeground", "i", CCOLOR_selected_foreground),
+  GB_STATIC_PROPERTY("LightForeground", "i", CCOLOR_light_foreground),
   GB_STATIC_PROPERTY("TextForeground", "i", CCOLOR_text_foreground),
   GB_STATIC_PROPERTY("ButtonForeground", "i", CCOLOR_button_foreground),
 

@@ -125,6 +125,12 @@ typedef
 		GB_COLOR (*GetPixel)(GB_IMG *img, int x, int y);
 		// Converts an image to one of the following formats: BGRA, RGBA, BGRP, RGBP
 		void (*Convert)(GB_IMG *img, int format);
+		// Merge two colors
+		GB_COLOR (*MergeColor)(GB_COLOR col1, GB_COLOR col2, double weight);
+		// Make a color lighter
+		GB_COLOR (*LighterColor)(GB_COLOR col);
+		// Make a color darker
+		GB_COLOR (*DarkerColor)(GB_COLOR col);
 		}
 	IMAGE_INTERFACE;
 

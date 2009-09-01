@@ -398,11 +398,8 @@ Public Sub timMadeIn_Timer()
   
   'If Me.Minimized Then Return
   
-  If $eIncAng < 0 Then
-    hImage = $hLogo.Mirror(True, False)
-  Else
-    hImage = $hLogo.Copy()
-  Endif
+  hImage = $hLogo.Copy()
+  If $eIncAng < 0 Then hImage.Mirror(True, False)
   hMadeIn = $hMadeIn.Rotate(Rad($eAng))
   hImage.Draw(hMadeIn, - (hMadeIn.W - hImage.W) / 2, - (hMadeIn.H - hImage.H) / 2)
   $hDraw = hImage.Picture
