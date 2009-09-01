@@ -286,12 +286,12 @@ Private Sub Update()
   Endif
   
   If Not $bVertical Then
-    sepToolbar.Move(0, Me.Parent.H - 1, Me.Parent.W, 1)
+    sepToolbar.Move(0, Me.H - 1, Me.W, 1)
   Else
-    sepToolbar.Move(Me.Parent.W - 1, 0, 1, Me.Parent.H)
+    sepToolbar.Move(Me.W - 1, 0, 1, Me.H)
   Endif
   
-  dwgHandle.Refresh
+  'dwgHandle.Refresh
   
   $bLock = False
 

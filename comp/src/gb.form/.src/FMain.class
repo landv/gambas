@@ -1,20 +1,3 @@
 ' Gambas class file
 
 
-Private $hButtonBox As ButtonBox
-
-Public Sub Form_Open()
-
-End
-
-Public Sub ButtonBox1_KeyPress()
-
-  Debug Key.Code;; Key.Text
-
-End
-
-Public Sub ButtonBox1_Click()
-
-  Balloon.Info("Hello!", ButtonBox1)
-
-End

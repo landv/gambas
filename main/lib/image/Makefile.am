@@ -6,7 +6,7 @@ gblib_LTLIBRARIES = gb.image.la
 
 libimage_la_LIBADD =
 libimage_la_LDFLAGS = -module @LD_FLAGS@
-libimage_la_CFLAGS = -I$(top_srcdir)/share $(AM_CFLAGS) -O3
+libimage_la_CFLAGS = -I$(top_srcdir)/share $(AM_CFLAGS_OPT)
 
 libimage_la_SOURCES = \
  image.h image.c

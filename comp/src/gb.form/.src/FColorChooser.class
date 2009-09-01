@@ -11,9 +11,13 @@ Private $iVal As Integer
 
 Private $bLock As Boolean
 
-Private $hImage As Image
+Static Private $hImage As Image
+Static Private $hCross As Picture
+Static Private $hValue As Image
+
 Private $hMap As Picture
-Private $hCross As Picture
+Private $hValueMap As Image
+
 Private $bHide As Boolean
 Private $X As Integer
 Private $Y As Integer
@@ -22,6 +26,8 @@ Private $iSize As Integer
 Private $I As Integer
 Private $J As Integer
 
+Private $iValue As Integer
+
 'Private Const NCOLH As Integer = 11
 'Static Private $aHue As Integer[] = [0, 30, 45, 60, 75, 90, 120, 150, 165, 180, 195, 210, 240, 270, 285, 300, 330, 360]
 
@@ -29,8 +35,13 @@ Private $bNormal As Boolean
 
 Public Sub _new()
 
-  $hImage = Image.Load("img/colormap.png")
-  $hCross = Picture["img/cross.png"]
+  If Not $hImage Then
+    $hImage = Image.Load("img/colormap.png")
+    $hCross = Picture.Load("img/cross.png")
+    $hValue = Image.Load("img/valuemap.png")
+  Endif
+
+  SetAlpha(False)
 
 End
 
@@ -86,7 +97,8 @@ Private Sub RefreshColor(Optional bRGB As Boolean = True, Optional bHSV As Boole
 
   MoveCross
 
-  sldValue.Value = $iVal
+  'sldValue.Value = $iVal
+  dwgValue.Refresh
   If panAlpha.Visible Then
     sldAlpha.Value = txtA.Value
     txtHexa.Text = Hex$($iColor, 8)
@@ -96,6 +108,7 @@ Private Sub RefreshColor(Optional bRGB As Boolean = True, Optional bHSV As Boole
 
   'panColor.Background = $iColor
   panColor.Refresh
+  dwgValue.Refresh
 
   $bLock = False
 
@@ -105,8 +118,6 @@ Private Sub RefreshColor(Optional bRGB As Boolean = True, Optional bHSV As Boole
   Endif
 
 End
-
-
 
 Public Sub SetColor(iColor As Integer)
 
@@ -122,29 +133,16 @@ Public Sub SetColor(iColor As Integer)
 
 End
 
-
 Public Function GetColor() As Integer
 
-  Try sldValue.SetFocus
-  'IF tabColor.Index = 0 THEN
-    Return $iColor
-  'ELSE
-  '  RETURN $sSystem
-  'ENDIF
+  Return $iColor
 
 End
 
-
-
-
 Public Sub Form_Arrange()
 
-  'Dim H As Integer
-  ' $iSize = Max(8, Min(Min((dwgColor.W - 1) / $aHue.Count, (boxColor.H - 1) / 2 / NCOLH), 32))
-  ' H = $iSize * NCOLH + 7
-  ' dwgColor.H = H
-
   $hMap = $hImage.Stretch(dwgColorMap.Width, dwgColorMap.Height).Picture
+  $hValueMap = $hValue.Stretch(dwgValue.W - 8, dwgValue.H - 4)
   MoveCross
 
 End
@@ -237,11 +235,11 @@ End
 
 
 
-Public Sub sldValue_Change()
-
-  ChangeSliderValue(sldValue, txtV)
-
-End
+' Public Sub sldValue_Change()
+' 
+'   ChangeSliderValue(sldValue, txtV)
+' 
+' End
 
 Public Sub dwgColorMap_DblClick()
 
@@ -257,7 +255,6 @@ End
 
 Public Sub Form_Open()
 
-  SetAlpha(False)
   RefreshColor
   txtHexa.SetFocus
 
@@ -466,14 +463,74 @@ End
 ' 
 ' End
 
-Public Sub sldValue_MouseMove()
+' Public Sub sldValue_MouseMove()
+' 
+'   $bNormal = Mouse.Normal
+' 
+' End
+
+Public Sub sldAlpha_MouseMove()
 
   $bNormal = Mouse.Normal
 
 End
 
-Public Sub sldAlpha_MouseMove()
+Public Sub dwgStdColor_Draw()
 
-  $bNormal = Mouse.Normal
+  Dim X, H, W As Integer
+  
+  For H = 0 To 359 Step 15
+    X = dwgStdColor.W * H / 360
+    W = Min(dwgStdColor.W * (H + 15) / 360, dwgStdColor.W - 1) - X
+    Draw.FillRect(X + 2, 2, W - 3, dwgStdColor.H - 4, Color.HSV(360 - H, 255, 255))
+    Draw.Line(X, 0, X, dwgStdColor.H - 1)
+  Next
+
+End
+
+Public Sub dwgStdColor_MouseMove()
+
+  SetColor(Color.HSV(360 - Int(Mouse.X / dwgStdColor.W * 360 / 15) * 15, 255, 255))
+
+End
+
+Public Sub dwgStdColor_MouseDown()
+
+  dwgStdColor_MouseMove
+
+End
+
+Public Sub dwgValue_Draw()
+
+  Dim Y As Integer
+  Dim hImage As Image
+
+  hImage = $hValueMap.Copy()
+  hImage.Colorize(Color.HSV($iHue, $iSat, 255))
+  Draw.Image(hImage, 4, 2)
+  Draw.Foreground = Color.LightForeground
+  Draw.Rect(2, 0, dwgValue.W - 4, dwgValue.H)
+  Y = (256 - $iVal) / 256 * dwgValue.H
+  Y = Max(0, Min(dwgValue.H - 15, Y - 8))
+  Draw.Rect(0, Y, dwgValue.W, 15)
+  Draw.Rect(1, Y + 1, dwgValue.W - 2, 13)
+
+End
+
+Public Sub dwgValue_MouseDown()
+
+  dwgValue_MouseMove
+
+End
+
+Public Sub dwgValue_MouseMove()
+
+  Dim V As Integer
+  
+  V = Mouse.Y / dwgValue.H * 256
+  If Not Mouse.Shift Then V = Int((V + 16) / 32) * 32
+  V = 255 - Min(255, Max(0, V))
+  If V = $iVal Then Return
+  txtV.Value = V
 
 End

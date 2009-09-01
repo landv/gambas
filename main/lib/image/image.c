@@ -372,7 +372,8 @@ void IMAGE_create(GB_IMG *img, int width, int height, int format)
 void IMAGE_create_with_data(GB_IMG *img, int width, int height, int format, unsigned char *data)
 {
 	IMAGE_create(img, width, height, format);
-	memcpy(img->data, data, IMAGE_size(img));
+	if (data)
+		memcpy(img->data, data, IMAGE_size(img));
 }
 
 void IMAGE_convert(GB_IMG *img, int dst_format)
@@ -842,7 +843,7 @@ void IMAGE_colorize(GB_IMG *img, GB_COLOR color)
 	{
 		col = BGRA_from_format(*p, img->format);
 		COLOR_rgb_to_hsv(RED(col), GREEN(col), BLUE(col), &h, &s, &v);
-		COLOR_hsv_to_rgb(hcol, s, v, &r, &g, &b);
+		COLOR_hsv_to_rgb(hcol, scol, v, &r, &g, &b);
 		*p++ = BGRA_to_format(RGBA(r, g, b, ALPHA(col)), img->format);
 	}
 }

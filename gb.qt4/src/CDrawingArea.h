@@ -28,7 +28,7 @@
 #include <QPaintEvent>
 #include <QPixmap>
 #include <QEvent>
-#include <QFrame>
+//#include <QFrame>
 
 #include "CWidget.h"
 #include "CContainer.h"
@@ -50,7 +50,7 @@ typedef
     }
   CDRAWINGAREA;
 
-class MyDrawingArea : public QFrame
+class MyDrawingArea : public MyContainer
 {
   Q_OBJECT
 

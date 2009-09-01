@@ -77,7 +77,7 @@ public:
   QList<CTab *> stack;
 
 	MyTabWidget(QWidget *parent);
-	~MyTabWidget();
+	virtual ~MyTabWidget();
 	virtual void setEnabled(bool e);
 	void forceLayout();
 

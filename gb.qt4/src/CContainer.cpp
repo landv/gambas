@@ -433,6 +433,13 @@ MyContainer::MyContainer(QWidget *parent)
 {
 }
 
+MyContainer::~MyContainer()
+{
+	CWIDGET *_object = CWidget::getReal(this);
+	if (THIS)
+		CWIDGET_set_flag(THIS, WF_DELETED);
+}
+
 void MyContainer::showEvent(QShowEvent *e)
 {
 	void *_object = CWidget::get(this);

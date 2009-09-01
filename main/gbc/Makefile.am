@@ -1,8 +1,12 @@
 AM_CFLAGS += -I$(top_srcdir)/share
+AM_CFLAGS_OPT += -I$(top_srcdir)/share
 
 bin_PROGRAMS = gbc3 gba3 gbi3
+noinst_LTLIBRARIES = libgbcopt.la
 
-gbc3_LDADD = @MATH_LIB@
+libgbcopt_la_CFLAGS= -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS_OPT)
+
+gbc3_LDADD = libgbcopt.la @MATH_LIB@
 gbc3_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS)
 
 gbi3_LDADD = @DL_LIB@
@@ -19,7 +23,7 @@ gbc3_SOURCES = \
  gbc_output.h gbc_trans.h \
  gbc_reserved.c \
  gbc_compile.c \
- gb_table.c gbc_type.c gb_buffer.c \
+ gbc_type.c gb_buffer.c \
  gbc_dump.c gbc_class.c gbc_code.c gbc_trans.c gbc_header.c gbc_trans_code.c \
  gbc_trans_expr.c gbc_trans_tree.c gbc_trans_ctrl.c gbc_trans_subr.c \
  gbc_output.c gbc_pcode.c \
@@ -50,6 +54,5 @@ gbi3_SOURCES= \
  gb_common.c \
  gbi.c
 
-gbc3-gb_table.o: gb_table.c
-	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gbc3_CFLAGS) -O3 $(CFLAGS) -MT gbc3-gb_table.o -MD -MP -MF "$(DEPDIR)/gbc3-gb_table.Tpo" -c -o gbc3-gb_table.o `test -f 'gb_table.c' || echo '$(srcdir)/'`gb_table.c; then mv -f "$(DEPDIR)/gbc3-gb_table.Tpo" "$(DEPDIR)/gbc3-gb_table.Po"; else rm -f "$(DEPDIR)/gbc3-gb_table.Tpo"; exit 1; fi
-
+libgbcopt_la_SOURCES = \
+ gb_table.c

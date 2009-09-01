@@ -37,6 +37,7 @@ Private $bNew As Boolean
 
 Private $sLang As String
 Private $sLangSuff As String
+'Private $sLangVerSuff As String
 Private $sShowSuff As String
 Private $sPath As String
 Private $sRoot As String
@@ -70,6 +71,8 @@ Private $iNoEncode As Integer
 
 Private $eTime As Float
 
+Private $sOnlyVersion As String
+
 Private PARA As String
 
 Private Sub AddParam(sReq As String, sParam As String) As String
@@ -81,6 +84,20 @@ Private Sub AddParam(sReq As String, sParam As String) As String
   Else 
     Return sReq & "&" & sParam
   Endif
+  
+End
+
+Private Sub RemoveParam(sReq As String, sParam As String) As String
+  
+  Dim iPos As Integer
+  
+  iPos = InStr(sReq, "?" & sParam)
+  If iPos = 0 Then iPos = InStr(sReq, "&" & sParam)
+  If iPos Then
+    sReq = Left(sReq, iPos - 1) & Mid$(sReq, iPos + 1 + Len(sParam))
+  Endif
+  If sReq = "?" Then sReq = ""
+  Return sReq
   
 End
 
@@ -190,6 +207,24 @@ Catch
 
 End
 
+Private Sub GetInfoFilePath(sVer As String) As String
+  
+  Return $sRoot &/ "info" &/ sVer
+  
+End
+
+Private Sub InitVersion(sVer As String)
+  
+  $sUri = RemoveParam($sUri, "v3")
+  If $sVersion = "3.0" Then $sUri = AddParam($sUri, "v3")
+  
+  '$sLangSuff = RemoveParam($sLangSuff, "v3")
+  'If $sVersion = "3.0" Then $sLangSuff = AddParam($sLangSuff, "v3")
+
+  InfoFilePath = GetInfoFilePath(sVer)
+  
+End
+
 
 Private Sub OpenDatabase()
 
@@ -265,9 +300,6 @@ Private Sub OpenDatabase()
 
   $sUri = $sPath
   If $sLang <> DEFAULT_LANG Then $sUri = AddParam($sUri, $sLang)
-  If $sVersion = "3.0" Then 
-    $sUri = AddParam($sUri, "v3")
-  Endif
 
   ' Suffixe ?show
 
@@ -286,15 +318,11 @@ Private Sub OpenDatabase()
   Else If $bWget Then
     $sLangSuff = $sLang
   Endif
-  If $sVersion = "3.0" Then 
-    If $sLangSuff Then $sLangSuff &= "&"
-    $sLangSuff &= "v3"
-  Endif
   If $sLangSuff Then $sLangSuff = "?" & $sLangSuff
   
   $aPath = Split($sPath, "/")
 
-  InfoFilePath = $sRoot &/ "info" &/ $sVersion
+  InitVersion($sVersion)
     
   If $sPath Like "/comp/*" Then
     $iType = $aPath.Count - 2
@@ -392,6 +420,7 @@ Private Function GetLink(sPath As String, Optional sMyTitle As String, Optional 
 
   Dim sTitle As String
   Dim sRelPath As String
+  Dim sSuff As String
 
   If sClass Then sClass = "class=\"" & sClass & "\" "
 
@@ -408,21 +437,29 @@ Private Function GetLink(sPath As String, Optional sMyTitle As String, Optional 
       sRelPath = sPath
     Endif 
     
-    sPath = LCase(GetAbsolutePath($sPath, sRelPath))
-    sTitle = GetTitle(sPath)
+    sPath = LCase(GetAbsolutePath(GetRealPath($sPath), sRelPath))
+    If sMyTitle <> ("Cancel") Then 
+      sTitle = GetTitle(sPath)
+    Else
+      sTitle = sMyTitle
+    Endif
+    sSuff = $sLangSuff
+    If sPath Like "/comp/*" Then 
+      If $sVersion = "3.0" Then sSuff = AddParam(sSuff, "v3")
+    Endif
     
     If sTitle Then
       
       If Left(File.Name(sPath)) = ":" And Not bNoImage Then
     
         If sMyTitle Then sTitle = sMyTitle
-        Return "<img src=\"/image" &/ sPath & $sLangSuff & "\" alt=\"" & EncodeHTML(sTitle) & "\">"
+        Return "<img src=\"/image" &/ sPath & sSuff & "\" alt=\"" & EncodeHTML(sTitle) & "\">"
       
       Else
 
         If sMyTitle Then sTitle = sMyTitle
         
-        Return "<a " & GetLinkClass(sClass, bLTR, sTitle) & "href=\"/help" &/ sPath & AddParam($sLangSuff, $sShowSuff) & "\">" & EncodeHTML(sTitle) & "</a>"
+        Return "<a " & GetLinkClass(sClass, bLTR, sTitle) & "href=\"/help" &/ sPath & AddParam(sSuff, $sShowSuff) & "\">" & EncodeHTML(sTitle) & "</a>"
       
       Endif
         
@@ -439,9 +476,9 @@ Private Function GetLink(sPath As String, Optional sMyTitle As String, Optional 
       Else
     
         If sMyTitle Then
-          Return "<a " & GetLinkClass(sClass, bLTR, sMyTitle) & "href=\"/edit" &/ sPath & $sLangSuff & "\"><i>" & EncodeHTML(sMyTitle) & "</i></a>"
+          Return "<a " & GetLinkClass(sClass, bLTR, sMyTitle) & "href=\"/edit" &/ sPath & sSuff & "\"><i>" & EncodeHTML(sMyTitle) & "</i></a>"
         Else
-          Return "<a " & GetLinkClass(sClass, True, "a") & "href=\"/edit" &/ sPath & $sLangSuff & "\"><i>" & EncodeHTML(sRelPath) & "</i></a>"
+          Return "<a " & GetLinkClass(sClass, True, "a") & "href=\"/edit" &/ sPath & sSuff & "\"><i>" & EncodeHTML(sRelPath) & "</i></a>"
         Endif
         
       Endif
@@ -606,7 +643,16 @@ Private Sub EnterSection(sSection As String, Optional sArg As String)
       $sRes &= "<div class=\"box\">\n"
       
     Case "only"
-      $sRes &= "<table class=\"only\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\"><tr><td class=\"only\" width=\"8\" valign=\"top\">" & sParam & "</td><td class=\"only-contents\">"
+      If sParam <> $sVersion Then
+        If $sPath Like "/comp/*" Then
+          $sRes &= "<div style=\"display:none\">"
+        Else
+          $sRes &= "<table class=\"only-" & Left(sParam) & "\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\"><tr><td class=\"only-" & Left(sParam) & "\" width=\"8\" valign=\"top\"><b>" & sParam & "</b></td><td class=\"only-contents\">"
+        Endif
+        $sOnlyVersion = $sVersion
+        $sVersion = sParam
+        InitVersion($sVersion)
+      Endif
       
     Case "html"
       Inc $iNoEncode
@@ -657,7 +703,16 @@ Private Sub LeaveSection()
       $sRes &= "</div>\n"
       
     Case "only"
-      $sRes &= "</td></tr></table>"
+      If $sOnlyVersion Then
+        If $sPath Like "/comp/*" Then
+          $sRes &= "</div>"
+        Else
+          $sRes &= "</td></tr></table>"
+        Endif
+        $sVersion = $sOnlyVersion
+        InitVersion($sVersion)
+        $sOnlyVersion = ""
+      Endif
       
     Case "html"
       Dec $iNoEncode
@@ -908,7 +963,7 @@ Private Function Encode(sText As String) As String
             Continue
           
           Case "class-stat"
-            $sRes &= GetClassStat()
+            $sRes &= GetClassStat(sArg)
             Continue 
           
           Case "no-autolink"
@@ -1327,7 +1382,7 @@ Private Sub PrintVersion()
   
   If $bWget Then Return
   
-  If $sUri Like "/comp*" Then
+  If $sUri Like "/comp/*" Then
     Print "<div class=\"path\">&nbsp;&nbsp;";
     If $sVersion = "3.0" Then
       sElt = Replace($sUri, "v3", "")
@@ -1451,7 +1506,8 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
       rPage = DB.Exec("SELECT sPath FROM page WHERE sPath < &1 ORDER BY sPath DESC LIMIT 2", $sPath)
       If rPage.Available And If IsCommentPath(rPage!sPath) Then rPage.MoveNext
       If rPage.Available Then
-        Print "<a href=\"/help" &/ rPage!sPath & $sLangSuff & "\">" & ("Previous") & "</a>";
+        'Print "<a href=\"/help" &/ rPage!sPath & $sLangSuff & "\">" & ("Previous") & "</a>";
+        Print GetLink(rPage!sPath, ("Previous"), True);
       Else
         Print ("Previous");
       Endif
@@ -1460,7 +1516,8 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
       rPage = DB.Exec("SELECT sPath FROM page WHERE sPath > &1 ORDER BY sPath LIMIT 2", $sPath)
       If rPage.Available And If IsCommentPath(rPage!sPath) Then rPage.MoveNext
       If rPage.Available Then
-        Print "<a href=\"/help" &/ rPage!sPath & $sLangSuff & "\">" & ("Next") & "</a>";
+        'Print "<a href=\"/help" &/ rPage!sPath & $sLangSuff & "\">" & ("Next") & "</a>";
+        Print GetLink(rPage!sPath, ("Next"), True);
       Else
         Print ("Next");
       Endif
@@ -1474,13 +1531,14 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
   
         If $bAdmin Or $bFind Then
         Else If $bEdit Or $bRename Then
-          If $bNew Then
-            Print "<a href=\"/help" &/ GetUncommentPath($sPath) & $sLangSuff & "\">";
-          Else
-            Print "<a href=\"/help" &/ $sPath & $sLangSuff & "\">";
-          Endif
-          Print ("Cancel");
-          Print "</a>&nbsp;&nbsp;";
+          'If $bNew Then
+          '  Print "<a href=\"/help" &/ GetUncommentPath($sPath) & $sLangSuff & "\">";
+          'Else
+          '  Print "<a href=\"/help" &/ $sPath & $sLangSuff & "\">";
+          'Endif
+          'Print ("Cancel");
+          'Print "</a>&nbsp;&nbsp;";
+          Print GetLink($sPath, ("Cancel")); "&nbsp;&nbsp;";
         Else
           Print "<a href=\"/edit" &/ $sPath & $sLangSuff & "\">";
           If sTitle Then
@@ -4149,7 +4207,7 @@ Public Sub Process_Read()
 
 End
 
-Private Sub GetClassStat() As String
+Private Sub GetClassStat(sArg As String) As String
   
   Dim sRes As String
   Dim sVal As String
@@ -4159,9 +4217,18 @@ Private Sub GetClassStat() As String
   Dim aFile As String[]
   Dim iCpt As Integer
   Dim sLine As String
+  Dim aIgnore As String[]
   
-  For Each sFile In Dir(InfoFilePath, "*.info")
-    If sFile = "gb.gui.info" Or sFile = "gb.gtk.info" Then Continue
+  If Not sArg Then sArg = $sVersion
+  
+  If sArg = "2.0" Then
+    aIgnore = ["gb.gui.info", "gb.gtk.info"]
+  Else If sArg = "3.0" Then
+    aIgnore = ["gb.gui.info", "gb.gtk.info", "gb.qt.info"]
+  Endif
+  
+  For Each sFile In Dir(GetInfoFilePath(sArg), "*.info")
+    If aIgnore.Find(sFile) >= 0 Then Continue
     aFile = Split(File.Load(InfoFilePath &/ sFile), "\n", "", True)
     iCpt = 0
     For Each sLine In aFile
@@ -4174,5 +4241,7 @@ Private Sub GetClassStat() As String
   Return Subst(("There are &1 classes and &2 symbols in all Gambas components."), nClass, nSym)
   
 Catch
+
+  Return Error.Where & ": " & Error.Text
   
 End

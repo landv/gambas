@@ -29,6 +29,7 @@
 #include <QEvent>
 #include <QTabWidget>
 
+#include "gb_common.h"
 #include "gambas.h"
 
 #include "CPicture.h"
@@ -162,9 +163,12 @@ MyTabWidget::MyTabWidget(QWidget *parent) : QTabWidget(parent)
 MyTabWidget::~MyTabWidget()
 {
 	int i;
+	CWIDGET *_object = CWidget::getReal(this);
 	
 	for (i = 0; i < stack.count(); i++)
 		delete stack.at(i);
+
+	CWIDGET_set_flag(THIS, WF_DELETED);
 }
 
 void MyTabWidget::setEnabled(bool e)

@@ -1805,8 +1805,6 @@ void CWidget::destroy()
 	if (ob == NULL)
 		return;
 	
-	//qDebug(">> CWidget::destroy %p (%s %p)", w, GB.GetClassName(ob), ob);
-
 	if (enter == ob)
 		enter = NULL;
 
@@ -1829,8 +1827,6 @@ void CWidget::destroy()
 	//qDebug(">> CWidget::destroy %p (%p) :%p:%ld #2", ob, ob->widget, ob->ob.klass, ob->ob.ref);
 	//if (!CWIDGET_test_flag(ob, WF_NODETACH))
 	GB.Detach(ob);
-
-	//qDebug("<< CWidget::destroy %p (%s %p)", w, GB.GetClassName(ob), ob);
 
 	GB.Unref(POINTER(&ob));
 }

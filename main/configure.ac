@@ -128,6 +128,7 @@ lib/option/Makefile \
 lib/draw/Makefile \
 lib/gui/Makefile \
 lib/image/Makefile \
+lib/image.effect/Makefile \
 ])
 AC_OUTPUT
 

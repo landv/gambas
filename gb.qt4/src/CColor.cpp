@@ -129,6 +129,13 @@ BEGIN_PROPERTY(CCOLOR_button_foreground)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(CCOLOR_light_foreground)
+
+	QColor col = CCOLOR_merge(qApp->palette().color(QPalette::Window), qApp->palette().color(QPalette::WindowText)).lighter();
+	GB.ReturnInteger(col.rgb() & 0xFFFFFF);
+
+END_PROPERTY
+
 GB_DESC CColorDesc[] =
 {
   GB_DECLARE("Color", 0), GB_VIRTUAL_CLASS(),
@@ -140,6 +147,7 @@ GB_DESC CColorDesc[] =
   GB_STATIC_PROPERTY("ButtonBackground", "i", CCOLOR_button_background),
 
   GB_STATIC_PROPERTY("Foreground", "i", CCOLOR_foreground),
+  GB_STATIC_PROPERTY("LightForeground", "i", CCOLOR_light_foreground),
   GB_STATIC_PROPERTY("SelectedForeground", "i", CCOLOR_selected_foreground),
   GB_STATIC_PROPERTY("TextForeground", "i", CCOLOR_text_foreground),
   GB_STATIC_PROPERTY("ButtonForeground", "i", CCOLOR_button_foreground),

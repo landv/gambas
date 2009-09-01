@@ -44,7 +44,7 @@ DECLARE_EVENT(EVENT_draw);
 
 ***************************************************************************/
 
-MyDrawingArea::MyDrawingArea(QWidget *parent) : QFrame(parent)
+MyDrawingArea::MyDrawingArea(QWidget *parent) : MyContainer(parent)
 {
 	drawn = 0;
 	cache = 0;
@@ -66,7 +66,10 @@ MyDrawingArea::MyDrawingArea(QWidget *parent) : QFrame(parent)
 MyDrawingArea::~MyDrawingArea()
 {
 	if (_background)
+	{
 		delete _background;
+		_background = 0;
+	}
 }
 
 void MyDrawingArea::setAllowFocus(bool f)
@@ -127,18 +130,22 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 {
 	if (_background)
 	{
-		QFrame::paintEvent(event);
+		MyContainer::paintEvent(event);
 	}
 	else
 	{
 		QPainter paint( this );
 		QRect r;
 
-		r = event->rect().intersect(frameRect());
+		r = event->rect().intersect(rect());
 		if (r.isValid())
 		{
 			QPainter *p;
-			void *object = CWidget::get(this);
+			void *object = CWidget::getReal(this);
+			
+			if (!object)
+				return;
+			
 			bool frame = !contentsRect().contains(event->rect());
 			
 			cache = new QPixmap(r.width(), r.height());
@@ -377,7 +384,7 @@ bool MyDrawingArea::doResize()
 
 void MyDrawingArea::resizeEvent(QResizeEvent *e)
 {
-	QFrame::resizeEvent(e);
+	MyContainer::resizeEvent(e);
 	if (e->oldSize() != e->size())
 		doResize();
 }
@@ -405,7 +412,7 @@ void MyDrawingArea::setCached(bool c)
 
 void MyDrawingArea::setPalette(const QPalette &pal)
 {
-	QFrame::setPalette(pal);
+	MyContainer::setPalette(pal);
 	repaint();
 }
 
@@ -458,7 +465,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CDRAWINGAREA_border)
 
-	CWIDGET_border_full(_object, _param);
+	CCONTAINER_border(_object, _param);
 
 	if (!READ_PROPERTY)
 		WIDGET->clearBackground();

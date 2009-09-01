@@ -30,7 +30,7 @@ Public Sub _new()
   '$hPanel.Border = Border.Sunken
   '$hPanel.Background = Color.TextBackground
   $hPanel.Arrangement = Arrange.Horizontal
-  $hPanel.Padding = 2
+  $hPanel.Padding = 3
   
   $hBackground = New TextBox($hPanel) As "Background"
   $hBackground.ReadOnly = True
@@ -43,7 +43,7 @@ Public Sub _new()
   Object.Attach($hTextBox, Object.Parent(Me), sEventName)
   
   $hButton = New Button($hPanel) As "Button"
-  $hButton.W = Desktop.Scale * 3
+  $hButton.W = Desktop.Scale * 4
   $hButton.Picture = Picture["img/select.png"]
   
   $hTextBox.SetFocus

@@ -1,10 +1,11 @@
 AM_CFLAGS += -I$(top_srcdir)/share @INTL_INC@ @CONV_INC@ @GBX_THREAD_INC@ @FFI_INC@
+AM_CFLAGS_OPT += -I$(top_srcdir)/share
 
 bin_PROGRAMS = gbx3
 noinst_LIBRARIES = libgbx.a
 gblib_LTLIBRARIES = gb.la
 
-libgbx_a_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS) -O3
+libgbx_a_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS_OPT)
 
 gbx3_LDADD = libgbx.a @MATH_LIB@ @INTL_LIB@ @CONV_LIB@ @GETTEXT_LIB@ @DL_LIB@ @GBX_THREAD_LIB@ @FFI_LIB@
 gbx3_LDFLAGS = @LD_FLAGS@ @FFI_LDFLAGS@

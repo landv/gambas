@@ -112,6 +112,7 @@ class MyContainer : public QWidget
 public:
 
   MyContainer(QWidget *);
+	~MyContainer();
 	int frameStyle() const { return _frame; }
 	void setFrameStyle(int frame);
 
@@ -120,10 +121,10 @@ protected:
   virtual void showEvent(QShowEvent *);
   virtual void hideEvent(QHideEvent *);
 	virtual void paintEvent(QPaintEvent *);
+	void drawFrame(QPainter *);
 
 private:
 
-	void drawFrame(QPainter *);
 	int _frame;
 };
 
