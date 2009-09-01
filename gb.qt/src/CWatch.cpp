@@ -133,7 +133,7 @@ CWatch::~CWatch()
 
 void CWatch::read(int fd)
 {
-  //qDebug("CWatch::read: fd = %d readDict[fd] = %p", fd, readDict[fd]);
+  qDebug("CWatch::read: fd = %d callback = %p param = %p", fd, (void *)callback, (void *)param);
   if (readDict[fd])
     (*callback)(fd, GB_WATCH_READ, param);
 }
