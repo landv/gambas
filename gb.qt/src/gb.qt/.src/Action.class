@@ -487,7 +487,7 @@ Private Sub Value_Write(Value As Boolean)
   Dim sKey As String
   
   For Each hCtrl In aCtrl
-    'DEBUG hCtrl;; Value
+    'Debug hCtrl;; Value
     If IsToggle(hCtrl) Then 
       SetToggle(hCtrl, Value)
     Else 

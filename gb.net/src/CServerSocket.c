@@ -102,7 +102,7 @@ void CServerSocket_OnClose(void *sck)
 
 }
 
-void CServerSocket_CallBack(int fd,int type,long lParam)
+void CServerSocket_CallBack(int fd,int type,intptr_t lParam)
 {
 	int okval=0;
 	char *rem_ip_buf;
@@ -129,7 +129,7 @@ void CServerSocket_CallBack(int fd,int type,long lParam)
 	mythis->iStatus=1;
 }
 
-void CServerSocket_CallBackUnix(int fd,int type,long lParam)
+void CServerSocket_CallBackUnix(int fd,int type,intptr_t lParam)
 {
 	//int position=0;
 	int okval=0;
@@ -420,7 +420,7 @@ int srvsock_listen(CSERVERSOCKET* mythis,int mymax)
 	{
 		mythis->iStatus=-2;
 		GB.Ref(mythis);
-		GB.Post(srvsock_post_error,(long)mythis);
+		GB.Post(srvsock_post_error,(intptr_t)mythis);
 		return 2;
 	}
 	// thanks to Benoit : this option allows non-root users to reuse the
@@ -440,7 +440,7 @@ int srvsock_listen(CSERVERSOCKET* mythis,int mymax)
 		close(mythis->ServerSocket);
 		mythis->iStatus=-10;
 		GB.Ref(mythis);
-		GB.Post(srvsock_post_error,(long)mythis);
+		GB.Post(srvsock_post_error,(intptr_t)mythis);
 		return 10;
 	}
 
@@ -451,18 +451,18 @@ int srvsock_listen(CSERVERSOCKET* mythis,int mymax)
 		close(mythis->ServerSocket);
 		mythis->iStatus=-14;
 		GB.Ref(mythis);
-		GB.Post(srvsock_post_error,(long)mythis);
+		GB.Post(srvsock_post_error,(intptr_t)mythis);
 		return 14;
 	}
 	mythis->iCurConn=0;
 	mythis->iMaxConn=mymax;
 	mythis->iStatus=1;
 
-	//CServerSocket_AssignCallBack((long)mythis,mythis->ServerSocket);
+	//CServerSocket_AssignCallBack((intptr_t)mythis,mythis->ServerSocket);
 	if (mythis->iSockType)
-		GB.Watch (mythis->ServerSocket , GB_WATCH_READ , (void *)CServerSocket_CallBack,(long)mythis);
+		GB.Watch (mythis->ServerSocket , GB_WATCH_READ , (void *)CServerSocket_CallBack,(intptr_t)mythis);
 	else
-		GB.Watch (mythis->ServerSocket , GB_WATCH_READ , (void *)CServerSocket_CallBackUnix,(long)mythis);
+		GB.Watch (mythis->ServerSocket , GB_WATCH_READ , (void *)CServerSocket_CallBackUnix,(intptr_t)mythis);
 	return 0;
 }
 
@@ -533,12 +533,12 @@ BEGIN_METHOD_VOID(CSERVERSOCKET_Accept)
 	}
 
 	CSOCKET_init_connected(cli_obj);
-	//cli_obj->stream._free[0]=(long)cli_obj;
+	//cli_obj->stream._free[0]=(intptr_t)cli_obj;
 
 	CServerSocket_NewChild(THIS,cli_obj);
 
 	GB.Ref(cli_obj);
-	GB.Post(CSocket_post_connected,(long)cli_obj);
+	GB.Post(CSocket_post_connected,(intptr_t)cli_obj);
 	THIS->iStatus=3;
 	GB.ReturnObject((void*)cli_obj);
 
@@ -548,7 +548,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CSERVERSOCKET_next)
 
-  long *index = (long *)GB.GetEnum();
+  int *index = (int *)GB.GetEnum();
 
   if (*index >= THIS->nchildren)
     GB.StopEnum();

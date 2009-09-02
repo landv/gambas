@@ -1101,7 +1101,7 @@ Public Sub Action_Activate(Key As String) As Boolean
       MHelp.Open
       
     Case "console"
-      Try FOutput.SetFocus
+      If Action["console"].Value Then Try FOutput.SetFocus
       'FOutput.Toggle(Action["console"].Value)
     
     Case "break"
@@ -1418,6 +1418,7 @@ Public Sub Form_KeyPress()
   If Key.Code = Key.Escape Then 
     HidePanels
     FProperty.HideProperty
+    Try Project.ActiveForm.SetFocus
   Else If Key.Code = Key["M"] And If Key.Control And If Key.Alt Then
     If Me.Menus.Visible Then
       mnuHideMenu_Click

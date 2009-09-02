@@ -1073,7 +1073,7 @@ static void add_strftime(const char *format, struct tm *tm)
 
 static void add_date_token(DATE_SERIAL *date, char *token, int count)
 {
-  struct tm tm;
+  struct tm tm = {0};
   char buf[8];
   int n;
 

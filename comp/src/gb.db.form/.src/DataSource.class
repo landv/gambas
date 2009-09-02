@@ -4,6 +4,8 @@ Export
 
 Inherits Panel
 
+Event Change
+
 Property Connection As Connection
 Property Table As String
 Property Filter As String
@@ -241,6 +243,8 @@ Private Sub Redraw(Optional bRefresh As Boolean)
       Endif
     Endif
   Next
+
+  Raise Change
 
 End
 

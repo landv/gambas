@@ -71,7 +71,7 @@ DECLARE_EVENT (Serial_RNG);
 
 void Serial_Signal_Status(serialsignal *sdata,int iPort)
 {
-	int ist;
+	int ist = 0;
 	sdata->s_DSR=0;
 	sdata->s_DTR=0;
 	sdata->s_RTS=0;
