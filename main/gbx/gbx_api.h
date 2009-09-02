@@ -56,7 +56,7 @@ void GB_ListEnum(void *);
 int GB_NextEnum(void);
 void GB_StopAllEnum(void *);
 
-void GB_Return(unsigned int type, ...);
+void GB_Return(GB_TYPE type, ...);
 void GB_ReturnInteger(int val);
 #define GB_ReturnInt GB_ReturnInteger
 void GB_ReturnLong(int64_t val);
@@ -65,7 +65,7 @@ void GB_ReturnBoolean(int val);
 void GB_ReturnObject(void *val);
 void GB_ReturnNull(void);
 void GB_ReturnFloat(double val);
-void GB_ReturnPtr(unsigned int type, void *value);
+void GB_ReturnPtr(GB_TYPE type, void *value);
 void GB_ReturnDate(GB_DATE *date);
 
 void GB_ReturnString(char *str);
@@ -97,7 +97,7 @@ void GB_StoreString(GB_STRING *src, char **dst);
 void GB_StoreObject(GB_OBJECT *object, void **dst);
 void GB_StoreVariant(GB_VARIANT *src, void *dst);
 
-void GB_Watch(int fd, int flag, void *callback, int param);
+void GB_Watch(int fd, int flag, void *callback, intptr_t param);
 
 int GB_New(void **object, void *class_name, const char *name, void *parent);
 int GB_CheckObject(void *object);
