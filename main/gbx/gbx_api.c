@@ -959,7 +959,7 @@ void GB_StopAllEnum(void *enum_object)
 }
 
 
-void GB_Return(unsigned int type, ...)
+void GB_Return(GB_TYPE type, ...)
 {
   static void *jump[16] = {
     &&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
@@ -1090,7 +1090,7 @@ void GB_ReturnObject(void *val)
 }
 
 
-void GB_ReturnPtr(unsigned int type, void *value)
+void GB_ReturnPtr(GB_TYPE type, void *value)
 {
   if (type == T_VOID)
     return;
@@ -1308,7 +1308,7 @@ void GB_StoreVariant(GB_VARIANT *src, void *dst)
 
 
 
-void GB_Watch(int fd, int flag, void *callback, int param)
+void GB_Watch(int fd, int flag, void *callback, intptr_t param)
 {
   HOOK_DEFAULT(watch, WATCH_watch)(fd, flag, callback, param);
 }
