@@ -180,8 +180,6 @@ void CSocket_CallBackConnecting(int t_sock, int type, intptr_t param)
 	int mylen;
 	void *_object = (void *)param;
 
-	fprintf(stderr, "CSocket_CallBackConnecting: %p\n", THIS);
-	
 	GB.Watch(THIS->Socket, GB_WATCH_NONE, (void *)CSocket_CallBackConnecting, 0);
 	
 	if (THIS->iStatus!=6) return;
@@ -741,7 +739,6 @@ END_PROPERTY
  ****************************************************/
 BEGIN_METHOD_VOID(CSOCKET_new)
 
-	fprintf(stderr, "CSOCKET_new: %p\n", THIS);
   THIS->stream.tag = THIS;
   THIS->iUsePort = 80;
 
@@ -751,8 +748,6 @@ END_METHOD
  Gambas object "Destructor"
  **************************************************/
 BEGIN_METHOD_VOID(CSOCKET_free)
-
-	fprintf(stderr, "CSOCKET_free: %p\n", THIS);
 
   if (THIS->DnsTool)
   {
