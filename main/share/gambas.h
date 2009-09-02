@@ -859,7 +859,7 @@ typedef
     void (*MakeDateFromTime)(int, int, GB_DATE *);
     int (*GetTime)(double *, int);
 
-    void (*Watch)(int, int, void *, int);
+    void (*Watch)(int, int, void *, intptr_t);
 
     GB_VALUE *(*Eval)(void *, void *);
 
