@@ -1248,7 +1248,7 @@ Private Sub DoRefresh(Optional bReset As Boolean)
     Next
   Endif
 
-  sTitle = Name
+  sTitle = Name & " " & MajorVersion & "." & MinorVersion & "." & ReleaseVersion
   If ReadOnly Then sTitle &= " [" & ("read-only") & "]"
   sTitle &= " - " & Application.Title
   If Application.Version Like "*.99.*" Then sTitle &= " - " & ("ALPHA VERSION, USE AT YOUR OWN RISK! :-)")
@@ -4396,7 +4396,7 @@ Public Sub IsStockAllowed() As Boolean
   
 End
 
-Public Sub DrawTitle(hForm As Object) 
+Public Sub DrawTitle(hForm As Object, Optional bNoReadOnly As Boolean) 
 
   Dim sPath As String  
   Dim sTitle As String
@@ -4409,7 +4409,9 @@ Public Sub DrawTitle(hForm As Object)
   'Endif
   
   If hForm.IsModified() Then sTitle &= " [*]" & Left(("modified"), 0)
-  If hForm.ReadOnly And If Not Project.ReadOnly And If Not Project.Running Then sTitle &= " [" & ("read-only") & "]"
+  If Not bNoReadOnly Then
+    If hForm.ReadOnly And If Not Project.ReadOnly And If Not Project.Running Then sTitle &= " [" & ("read-only") & "]"
+  Endif
   If hForm.Title <> sTitle Then hForm.Title = sTitle 
 
 End

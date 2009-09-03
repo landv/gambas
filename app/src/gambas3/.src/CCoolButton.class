@@ -8,7 +8,7 @@ Public Tag As String
 
 Private $hPanel As Panel
 Private $hImage As PictureBox
-Private $hLabel As Label
+Private $hLabel As TextLabel
 Private $iColor As Integer
 
 Event Click()
@@ -40,9 +40,10 @@ Public Sub _new(hContainer As Container, X As Integer, Y As Integer, W As Intege
     $hImage.Resize(32, H - 8)
   Endif
 
-  $hLabel = New Label($hPanel) As "Panel"
+  $hLabel = New TextLabel($hPanel) As "Panel"
   '$hLabel.AutoResize = FALSE
   $hLabel.Expand = True
+  $hLabel.Alignment = Align.Normal
   If sFont Then $hLabel.Font = Font[sFont]
   $hLabel.Text = sText
 

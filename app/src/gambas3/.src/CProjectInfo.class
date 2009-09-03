@@ -5,7 +5,7 @@ Public Title As String
 Public Version As String
 Public Description As String
 Public Authors As String[]
-Public Icon As Picture
+Public Icon As String
 
 Private Sub GetProjectPath(sPath As String) As String
   
@@ -70,6 +70,13 @@ Public Sub _new(sPath As String)
   
   Close #hFile
 
-  Icon = Project.StretchIcon(sPath &/ sIcon, 58).Picture
+  Icon = sPath &/ sIcon 'Project.StretchIcon(sPath &/ sIcon, 58)
 
+End
+
+Public Sub GetTitle() As String
+  
+  If Title Then Return Title
+  Return Name
+  
 End

@@ -26,13 +26,18 @@ Public Sub SetPath(sPath As String)
   
   With $hProjectInfo
     
-    If .Icon.W = ICON_SIZE And If .Icon.H = ICON_SIZE Then
-      $hIcon = .Icon
-    Else
-      $hIcon = .Icon.Image.Stretch(ICON_SIZE, ICON_SIZE).Picture
-    Endif
+    $hIcon = Project.StretchIcon(.Icon, ICON_SIZE).Picture
+    
+    ' If .Icon.W = ICON_SIZE And If .Icon.H = ICON_SIZE Then
+    '   $hIcon = .Icon
+    ' Else
+    '   $hIcon = .Icon.Image.Stretch(ICON_SIZE, ICON_SIZE).Picture
+    ' Endif
     
   End With 
+  
+  $hDrawingArea.ToolTip = Replace($sPath, System.User.Home, "~")
+  $hDrawingArea.Refresh
   
 End
 
@@ -50,23 +55,29 @@ Public Sub DrawingArea_Draw()
     Draw.Picture($hIcon, PADDING, PADDING)
     sTitle = .Title
     If Not sTitle Then sTitle = .Name
-    sTitle &= " (" & .Version & ")"
-    Draw.Font.Bold = True
-    W = Draw.Font.Width(sTitle)
-    X = ICON_SIZE + PADDING * 2
-    Draw.Text(sTitle, X, PADDING, W, Desktop.Scale * 2, Align.TopLeft)
-    Draw.Font.Bold = False
-
-    Draw.Font.Grade = -1
-    Draw.Foreground = Color.DarkGray
+    sTitle = "<b>" & .Name & "</b> " & .Version
+    sTitle &= "<br><font size=\"-1\" color=\"gray\">" & .Title
     If .Authors And If .Authors.Count Then
-      X += W + 8
-      Draw.Text(("Author(s)") & " : " & .Authors.Join(", "), X, PADDING, Draw.W - X - PADDING, Desktop.Scale * 2, Align.TopLeft)
+      If .Title Then sTitle &= " - "
+      sTitle &= "<i>" & ("Author(s)") & " : " & .Authors.Join(", ") & "</i>"
     Endif
+    sTitle &= "</font>"
+    'Draw.Font.Bold = True
+    W = Draw.RichTextWidth(sTitle)
+    X = ICON_SIZE + PADDING * 2
+    Draw.RichText(sTitle, X, 0, W, Desktop.Scale * 4, Align.TopLeft)
+    'Draw.Font.Bold = False
 
-    sPath = Replace($sPath, System.User.Home, "~")
-    X = ICON_SIZE + PADDING * 3
-    Draw.Text(sPath, X, PADDING + 2 + Desktop.Scale * 2, Draw.W - X - PADDING, Desktop.Scale * 3, Align.TopLeft)
+    ' Draw.Font.Grade = -1
+    ' Draw.Foreground = Color.DarkGray
+    ' If .Authors And If .Authors.Count Then
+    '   X += W + 8
+    '   Draw.Text(("Author(s)") & " : " & .Authors.Join(", "), X, PADDING, Draw.W - X - PADDING, Desktop.Scale * 2, Align.TopLeft)
+    ' Endif
+
+    'sPath = Replace($sPath, System.User.Home, "~")
+    'X = ICON_SIZE + PADDING * 3
+    'Draw.Text(sPath, X, PADDING + 2 + Desktop.Scale * 2, Draw.W - X - PADDING, Desktop.Scale * 3, Align.TopLeft)
     
   End With
   

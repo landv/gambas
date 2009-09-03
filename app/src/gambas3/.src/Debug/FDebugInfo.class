@@ -782,7 +782,6 @@ Public Sub UpdateHelpView()
   Endif
   
   Try tabDebug[TAB_HELP].Visible = Not bHelpUnDock
-  
         
   If Not bHelpUnDock Then 
     If Not FHelp.Parent Then 
@@ -796,9 +795,8 @@ Public Sub UpdateHelpView()
       'If bVisible Then FMain.ShowDebug(True)
     Endif
     
+    'Try tabDebug.Index = TAB_HELP
     
-    
-    Try tabDebug.Index = TAB_HELP
   Endif 
   
   FMain.UpdateConsoleAction(Project.Running)

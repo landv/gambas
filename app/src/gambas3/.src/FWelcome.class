@@ -214,7 +214,8 @@ Private Sub FillExample()
   Dim iHeight, X, Y As Integer
   Dim C As Integer
   Dim hImage As Image
-
+  Dim hProjectInfo As CProjectInfo
+  
   If $bExample Then Return
 
   Inc Application.Busy
@@ -258,16 +259,18 @@ Private Sub FillExample()
         Y = Y + .H
       End With
     Endif
-    hButton = New CCoolButton(svwExample, 0, Y, svwExample.ClientW, 32, File.Name(sPath), Project.GetIcon(Project.EXAMPLES_DIR &/ sPath, 24)) As "btnOpenRecent"
-    Y = Y + 32
-    hButton.Tag = Project.EXAMPLES_DIR &/ sPath
+    sPath = Project.EXAMPLES_DIR &/ sPath
+    hProjectInfo = New CProjectInfo(sPath)
+    hButton = New CCoolButton(svwExample, 0, Y, svwExample.ClientW, Desktop.Scale * 6, GetTitle(hProjectInfo), Project.StretchIcon(hProjectInfo.Icon, 32).Picture) As "btnOpenRecent"
+    Y += Desktop.Scale * 6
+    hButton.Tag = sPath
   Next
 
   svwExample.Arrangement = Arrange.Vertical
 
   $bExample = True
 
-Finally
+'Finally
 
   Dec Application.Busy
 
@@ -326,6 +329,14 @@ End
 '   
 ' End
 
+Private Sub GetTitle(hProjectInfo As CProjectInfo) As String
+  
+  With hProjectInfo
+    Return "<b>" & .Name & "</b> " & .Version & "<br><font size=\"-1\" color=\"gray\">" & .Title & "</font>"
+  End With
+  
+End
+
 
 Private Sub FillRecent()
 
@@ -333,6 +344,8 @@ Private Sub FillRecent()
   Dim hChild As Control
   Dim iInd As Integer
   Dim hButton As CCoolButton
+  Dim hProjectInfo As CProjectInfo
+  Dim sTitle As String
 
   Inc Application.Busy
   
@@ -345,9 +358,12 @@ Private Sub FillRecent()
   Next
 
   For iInd = 0 To aList.Count - 1
-    hButton = New CCoolButton(svwRecent, 0, iInd * 32, svwRecent.ClientW, 32, File.Name(aList[iInd]), Project.GetIcon(aList[iInd], 24)) As "btnOpenRecent"
-    hButton.Tag = aList[iInd]
-    hButton.ToolTip = File.Dir(aList[iInd])
+    hProjectInfo = New CProjectInfo(aList[iInd])
+    With hProjectInfo
+      hButton = New CCoolButton(svwRecent, 0, iInd * 32, svwRecent.ClientW, Desktop.Scale * 6, GetTitle(hProjectInfo), Project.StretchIcon(.Icon, 24).Picture) As "btnOpenRecent"
+      hButton.Tag = aList[iInd]
+      hButton.ToolTip = File.Dir(aList[iInd])
+    End With
   Next
 
   If aList.Count = 0 Then btnRecent.Enabled = False
