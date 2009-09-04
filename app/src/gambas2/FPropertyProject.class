@@ -1095,10 +1095,7 @@ END
 
 PUBLIC SUB btnAdd_Click()
 
-  DIM sComp AS String
-  
-  sComp = Trim(LCase(cmbRequire.Text))
-  AddRequire(sComp)
+  AddRequire(cmbRequire.Text)
 
 END
 
