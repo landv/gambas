@@ -38,7 +38,9 @@ static void *temp_image(GB_IMG *img)
 	if (!img->data)
 		image = NULL;
 	else
+	{
 		image = imlib_create_image_using_data(img->width, img->height, (DATA32 *)img->data);
+	}
 	
 	return image;
 }
@@ -55,6 +57,7 @@ Imlib_Image check_image(void *_object)
 {
 	Imlib_Image image = (Imlib_Image)IMAGE.Check(THIS, &_image_owner);
 	imlib_context_set_image(image);
+	imlib_image_set_has_alpha(TRUE);
 	return image;
 }
 
@@ -223,7 +226,7 @@ GB_DESC CImageDesc[] =
 
   GB_METHOD("Draw", NULL, Image_Draw, "(Image)Image;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
 
-	Gb_INTERFACE("Draw", &DRAW_Interface),
+	//Gb_INTERFACE("Draw", &DRAW_Interface),
 
   GB_END_DECLARE
 };

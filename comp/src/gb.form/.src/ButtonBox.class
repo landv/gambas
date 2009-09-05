@@ -12,6 +12,7 @@ Event Change
 
 Property Picture As Picture
 Property Text As String
+Property Read Length As Integer
 Property ReadOnly As Boolean
 
 Private $hPanel As Panel
@@ -124,4 +125,10 @@ Public Sub Clear()
   
   $hTextBox.Clear
   
+End
+
+Private Function Length_Read() As Integer
+
+  Return $hTextBox.Length
+
 End

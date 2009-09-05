@@ -8,6 +8,7 @@ Public Sub _new()
   $colTypes["i"] = "Integer"
   $colTypes["u"] = "Integer"
   $colTypes["s"] = "String"
+  $colTypes["o"] = "DBusObject"
   $colTypes["b"] = "Boolean"
   $colTypes["y"] = "Byte"
   $colTypes["ay"] = "Byte[]"
@@ -15,6 +16,8 @@ Public Sub _new()
   $colTypes["as"] = "String[]"
   $colTypes["v"] = "Variant"
   $colTypes["av"] = "Variant[]"
+  $colTypes["ao"] = "DBusObject[]"
+
 End
 
 Public Sub Form_Open()

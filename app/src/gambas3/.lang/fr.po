@@ -250,7 +250,7 @@ msgstr "-"
 msgid "\""
 msgstr "-"
 
-#: FMain.class:2078
+#: FMain.class:2080
 msgid "&?"
 msgstr "-"
 
@@ -290,11 +290,11 @@ msgstr "Programmation 3D avec OpenGL"
 msgid "About"
 msgstr "A propos"
 
-#: FPropertyProject.class:1904
+#: FPropertyProject.class:1901
 msgid "About &component..."
 msgstr "A propos du &composant..."
 
-#: FMain.class:2099
+#: FMain.class:2101
 msgid "&About Gambas..."
 msgstr "&A propos de Gambas..."
 
@@ -314,11 +314,11 @@ msgstr "Action"
 msgid "Add"
 msgstr "Ajouter"
 
-#: FDebugInfo.class:1095 FMakeInstall.class:1558 FPropertyProject.class:2173
+#: FDebugInfo.class:1135 FMakeInstall.class:1558 FPropertyProject.class:2170
 msgid "&Add"
 msgstr "&Ajouter"
 
-#: FDebugInfo.class:1093
+#: FDebugInfo.class:1133
 msgid "Add expression"
 msgstr "Ajouter une expression"
 
@@ -370,7 +370,7 @@ msgstr "Aligner sur le &haut"
 msgid "&All"
 msgstr "&Tous"
 
-#: FMain.class:1324
+#: FMain.class:1325
 msgid "All backup or generated files will be removed from the project directory."
 msgstr "Les fichiers de sauvegarde et les fichiers générés du projet vont être supprimés."
 
@@ -426,7 +426,7 @@ msgstr "Arabe (Tunisie)"
 msgid "Are you sure to want to replace all?"
 msgstr "Désirez-vous vraiment tout remplacer ?"
 
-#: FPropertyProject.class:1933
+#: FPropertyProject.class:1930
 msgid "Arguments"
 msgstr "Arguments"
 
@@ -442,11 +442,15 @@ msgstr "à la ligne &1 dans &2"
 msgid "Authentification"
 msgstr "Authentification"
 
-#: CComponentBox.class:200
+#: ProjectItem.class:62
+msgid "Author"
+msgstr "Auteur"
+
+#: CComponentBox.class:200 ProjectItem.class:62
 msgid "Authors"
 msgstr "Auteurs"
 
-#: FProjectItem.class:20 FPropertyProject.class:1637 ProjectItem.class:64
+#: FPropertyProject.class:1634
 msgid "Author(s)"
 msgstr "Auteur(s)"
 
@@ -474,7 +478,7 @@ msgstr "Azéri (Azerbaïdjan)"
 msgid "Background"
 msgstr "Arrière-plan"
 
-#: FOption.class:681
+#: FOption.class:670
 msgid "Background color..."
 msgstr "Arrière-plan..."
 
@@ -498,7 +502,7 @@ msgstr "Exemples de base"
 msgid "Basque (Basque country)"
 msgstr "Basque (Pays basque)"
 
-#: FPropertyProject.class:1877
+#: FPropertyProject.class:1874
 msgid "Beta version"
 msgstr "Version Bêta"
 
@@ -506,7 +510,7 @@ msgstr "Version Bêta"
 msgid "<b>$(FILE)</b> will be replaced by the path of the executable"
 msgstr "<b>$(FILE)</b> sera remplacé par le chemin vers l'exécutable"
 
-#: FOption.class:992
+#: FOption.class:981
 msgid "Blend"
 msgstr "Dégradé"
 
@@ -514,7 +518,7 @@ msgstr "Dégradé"
 msgid "Blob"
 msgstr "Blob"
 
-#: FOption.class:689
+#: FOption.class:678
 msgid "Bold"
 msgstr "Gras"
 
@@ -526,7 +530,7 @@ msgstr "Booléen"
 msgid "Border only"
 msgstr "Contour seulement"
 
-#: FDebugInfo.class:1127 MTheme.module:6
+#: FDebugInfo.class:1167 MTheme.module:6
 msgid "Breakpoints"
 msgstr "Points d'arrêt"
 
@@ -534,11 +538,11 @@ msgstr "Points d'arrêt"
 msgid "Bring to foreground"
 msgstr "Au premier plan"
 
-#: FMain.class:2040
+#: FMain.class:2042
 msgid "&Browse project..."
 msgstr "&Parcourir le projet..."
 
-#: FOption.class:924
+#: FOption.class:913
 msgid "Browser"
 msgstr "Navigateur"
 
@@ -686,7 +690,7 @@ msgstr "ChangeLog"
 msgid "Changes"
 msgstr "Modifications"
 
-#: FPropertyProject.class:2011
+#: FPropertyProject.class:2008
 msgid "Changes since last commit"
 msgstr "Modifications depuis le dernier envoi"
 
@@ -710,7 +714,7 @@ msgstr "Choisissez une table"
 msgid "Class"
 msgstr "Classe"
 
-#: FMain.class:2132
+#: FMain.class:2134
 msgid "&Class..."
 msgstr "&Classe..."
 
@@ -718,11 +722,11 @@ msgstr "&Classe..."
 msgid "Classes"
 msgstr "Classes"
 
-#: FMain.class:1324
+#: FMain.class:1325
 msgid "Clean"
 msgstr "Nettoyer"
 
-#: FMain.class:1853
+#: FMain.class:1855
 msgid "&Clean up"
 msgstr "&Nettoyer"
 
@@ -746,7 +750,7 @@ msgstr "&Effacer"
 msgid "Clear all"
 msgstr "Tout effacer"
 
-#: FMain.class:1945
+#: FMain.class:1947
 msgid "Clear &all breakpoints"
 msgstr "Effacer &tous les points d'arrêts"
 
@@ -778,7 +782,7 @@ msgstr "Cliquez sur Insérer pour ajouter un nouveau menu."
 msgid "Clipboard contents"
 msgstr "Contenu du presse-papiers"
 
-#: FOption.class:1186 FTips.class:232
+#: FOption.class:1157 FTips.class:232
 msgid "Close"
 msgstr "Fermer"
 
@@ -786,11 +790,11 @@ msgstr "Fermer"
 msgid "&Close"
 msgstr "&Fermer"
 
-#: FMain.class:1960
+#: FMain.class:1962
 msgid "Close all &debug windows"
 msgstr "Fermer toutes les fenêtres de &débogage"
 
-#: FMain.class:2019
+#: FMain.class:2021
 msgid "Close &all windows"
 msgstr "Fermer &toutes les fenêtres"
 
@@ -810,7 +814,7 @@ msgstr "Colonnes"
 msgid "Command-line application"
 msgstr "Application en ligne de commande"
 
-#: FEditor.class:3034
+#: FEditor.class:3027
 msgid "Comment"
 msgstr "Mettre en commentaire"
 
@@ -818,7 +822,7 @@ msgstr "Mettre en commentaire"
 msgid "Comments"
 msgstr "Commentaires"
 
-#: FPropertyProject.class:2039
+#: FPropertyProject.class:2036
 msgid "&Commit..."
 msgstr "&Envoyer..."
 
@@ -826,23 +830,23 @@ msgstr "&Envoyer..."
 msgid "Commit description"
 msgstr "Description de l'envoi"
 
-#: FPropertyProject.class:1683
+#: FPropertyProject.class:1680
 msgid "Compilation"
 msgstr "Compilation"
 
-#: FMain.class:2496
+#: FMain.class:2499
 msgid "Compile"
 msgstr "Compiler"
 
-#: FMain.class:1795
+#: FMain.class:1797
 msgid "&Compile"
 msgstr "&Compiler"
 
-#: FMain.class:2504
+#: FMain.class:2507
 msgid "Compile all"
 msgstr "Tout compiler"
 
-#: FMain.class:1802
+#: FMain.class:1804
 msgid "Compile &All"
 msgstr "&Tout Compiler"
 
@@ -850,11 +854,11 @@ msgstr "&Tout Compiler"
 msgid "Compiling project"
 msgstr "Compilation du projet"
 
-#: FPropertyProject.class:1840
+#: FPropertyProject.class:1837
 msgid "Component"
 msgstr "Composant"
 
-#: FPropertyProject.class:1869
+#: FPropertyProject.class:1866
 msgid "Component advancement"
 msgstr "Avancement du composant"
 
@@ -862,7 +866,7 @@ msgstr "Avancement du composant"
 msgid "Component programming"
 msgstr "Programmation d'un composant"
 
-#: FPropertyProject.class:1881
+#: FPropertyProject.class:1878
 msgid "Components"
 msgstr "Composants"
 
@@ -890,11 +894,11 @@ msgstr "Propriétés de la connexion"
 msgid "Connections"
 msgstr "Connexions"
 
-#: FDebugInfo.class:994 FMain.class:2474
+#: FDebugInfo.class:1034 FMain.class:2477
 msgid "Console"
 msgstr "Console"
 
-#: FMain.class:1994
+#: FMain.class:1996
 msgid "&Console"
 msgstr "&Console"
 
@@ -914,7 +918,7 @@ msgstr "Contrôles"
 msgid "Copy"
 msgstr "Copier"
 
-#: FList.class:310 FMain.class:2230
+#: FList.class:310 FMain.class:2232
 msgid "&Copy"
 msgstr "&Copier"
 
@@ -922,7 +926,7 @@ msgstr "&Copier"
 msgid "Copy field list"
 msgstr "Copier la liste des champs"
 
-#: FMain.class:2262
+#: FMain.class:2264
 msgid "Copy file pat&h"
 msgstr "Copier le c&hemin du fichier"
 
@@ -1002,7 +1006,7 @@ msgstr "-"
 msgid "Current line"
 msgstr "Ligne courante"
 
-#: FDebugInfo.class:1041
+#: FDebugInfo.class:1081
 msgid "Current object"
 msgstr "Objet courant"
 
@@ -1010,7 +1014,7 @@ msgstr "Objet courant"
 msgid "Cut"
 msgstr "Couper"
 
-#: FMain.class:2223
+#: FMain.class:2225
 msgid "&Cut"
 msgstr "&Couper"
 
@@ -1054,19 +1058,19 @@ msgstr "Interfaçage avec D-Bus"
 msgid "Debian"
 msgstr "-"
 
-#: FDebugInfo.class:981 FMain.class:2630
+#: FDebugInfo.class:1021 FMain.class:2633
 msgid "Debug"
 msgstr "Débogage"
 
-#: FMain.class:1876
+#: FMain.class:1878
 msgid "&Debug"
 msgstr "&Débogage"
 
-#: FPropertyProject.class:1814
+#: FPropertyProject.class:1811
 msgid "Debugging"
 msgstr "Débogage"
 
-#: FEditor.class:2480
+#: FEditor.class:2478
 msgid "(Declarations)"
 msgstr "(Déclarations)"
 
@@ -1074,11 +1078,11 @@ msgstr "(Déclarations)"
 msgid "(Default)"
 msgstr "(Défaut)"
 
-#: FPropertyProject.class:1773
+#: FPropertyProject.class:1770
 msgid "Default language"
 msgstr "Langage par défaut"
 
-#: FOption.class:1075
+#: FOption.class:1064
 msgid "Default tab size"
 msgstr "Tabulation par défaut"
 
@@ -1086,7 +1090,7 @@ msgstr "Tabulation par défaut"
 msgid "Default value"
 msgstr "Valeur par défaut"
 
-#: FOption.class:100
+#: FOption.class:99
 msgid "Define..."
 msgstr "Définir..."
 
@@ -1098,7 +1102,7 @@ msgstr "Supprimer"
 msgid "&Delete"
 msgstr "&Supprimer"
 
-#: FMain.class:2251
+#: FMain.class:2253
 msgid "&Delete..."
 msgstr "&Supprimer..."
 
@@ -1118,7 +1122,7 @@ msgstr "Supprimer la traduction"
 msgid "Delimiter character"
 msgstr "Caractère délimiteur"
 
-#: FCommit.class:175 FMakeInstall.class:1272 FPropertyProject.class:1624
+#: FCommit.class:175 FMakeInstall.class:1272 FPropertyProject.class:1621
 msgid "Description"
 msgstr "Description"
 
@@ -1150,7 +1154,7 @@ msgstr "Gestion de boîte de dialogue"
 msgid "Directory"
 msgstr "Répertoire"
 
-#: FMain.class:2113
+#: FMain.class:2115
 msgid "&Directory"
 msgstr "&Répertoire"
 
@@ -1158,11 +1162,11 @@ msgstr "&Répertoire"
 msgid "Directory already exists."
 msgstr "Le répertoire existe déja."
 
-#: FDebugInfo.class:1058
+#: FDebugInfo.class:1098
 msgid "Display ME"
 msgstr "Afficher ME"
 
-#: FOption.class:840
+#: FOption.class:829
 msgid "Display property help"
 msgstr "Afficher l'aide des propriétés"
 
@@ -1222,11 +1226,11 @@ msgstr "Voulez-vous vraiment retirer tous les fichiers supplémentaires ?"
 msgid "Do you really want to remove the selected rows?"
 msgstr "Désirez-vous vraiment supprimer les lignes sélectionnées ?"
 
-#: FMain.class:1152
+#: FMain.class:1153
 msgid "Do you really want to update all forms?"
 msgstr "Désirez-vous vraiment mettre à-jour tous les formulaires ?"
 
-#: FDebugInfo.class:493
+#: FDebugInfo.class:492
 msgid "Do you want to clear the expression list ?"
 msgstr "Désirez-vous effacer la liste des expressions ?"
 
@@ -1250,7 +1254,7 @@ msgstr "Dessiner"
 msgid "Drawing"
 msgstr "Dessin"
 
-#: FPropertyProject.class:1799
+#: FPropertyProject.class:1796
 msgid "Dump stack on error"
 msgstr "Afficher la pile en cas d'erreur"
 
@@ -1262,15 +1266,15 @@ msgstr "Hollandais (Belgique)"
 msgid "Dutch (Netherlands)"
 msgstr "Hollandais (Pays-bas)"
 
-#: FDebugInfo.class:878
+#: FDebugInfo.class:918
 msgid "Dynamic variables"
 msgstr "Variables dynamiques"
 
-#: FConflict.class:25 FMain.class:2201
+#: FConflict.class:25 FMain.class:2203
 msgid "&Edit"
 msgstr "&Éditer"
 
-#: FMain.class:2206
+#: FMain.class:2208
 msgid "Edit &code"
 msgstr "Editer le &code"
 
@@ -1282,7 +1286,7 @@ msgstr "Éditer la liste des champs"
 msgid "Editing line"
 msgstr "Ligne en édition"
 
-#: FPropertyProject.class:1652
+#: FPropertyProject.class:1649
 msgid "Edition"
 msgstr "Édition"
 
@@ -1290,7 +1294,7 @@ msgstr "Édition"
 msgid "Edit list property"
 msgstr "Éditer la liste des propriétés"
 
-#: FEditor.class:3127 FOption.class:955
+#: FEditor.class:3120 FOption.class:944
 msgid "Editor"
 msgstr "Éditeur"
 
@@ -1298,7 +1302,7 @@ msgstr "Éditeur"
 msgid "Edit text property"
 msgstr "Editer les propriétés de texte"
 
-#: FMain.class:2210
+#: FMain.class:2212
 msgid "Edit with"
 msgstr "Éditer avec"
 
@@ -1346,11 +1350,11 @@ msgstr "Anglais (U.S.A.)"
 msgid "Enhanced standard dialogs"
 msgstr "Boîtes de dialogue standard améliorées"
 
-#: FPropertyProject.class:1920
+#: FPropertyProject.class:1917
 msgid "Environment"
 msgstr "Environnement"
 
-#: FPropertyProject.class:1977
+#: FPropertyProject.class:1974
 msgid "Environment variables"
 msgstr "Variables d'environnement"
 
@@ -1370,7 +1374,7 @@ msgstr "Estonien (Estonie)"
 msgid "Event"
 msgstr "Evènement"
 
-#: CComponent.class:124 FPropertyProject.class:2076
+#: CComponent.class:124 FPropertyProject.class:2073
 msgid "Event loop management"
 msgstr "Gestion de la boucle d'évènements"
 
@@ -1386,11 +1390,11 @@ msgstr "Exemples"
 msgid "Excludes"
 msgstr "Exclut"
 
-#: FMain.class:1827
+#: FMain.class:1829
 msgid "E&xecutable..."
 msgstr "E&xécutable..."
 
-#: FPropertyProject.class:1788
+#: FPropertyProject.class:1785
 msgid "Execution"
 msgstr "Exécution"
 
@@ -1410,7 +1414,7 @@ msgstr "&Exporter..."
 msgid "Export..."
 msgstr "Exporter..."
 
-#: FOption.class:130
+#: FOption.class:129
 msgid "Export a theme file"
 msgstr "Exporter un fichier thème"
 
@@ -1422,11 +1426,11 @@ msgstr "Exporter une traduction"
 msgid "Exported"
 msgstr "Exportée"
 
-#: FPropertyProject.class:2059
+#: FPropertyProject.class:2056
 msgid "Exported classes"
 msgstr "Classes exportées"
 
-#: FOption.class:1158
+#: FOption.class:1129
 msgid "Export theme"
 msgstr "Exporter le thème"
 
@@ -1458,7 +1462,7 @@ msgstr "Fichiers supplémentaires"
 msgid "Farsi (Iran)"
 msgstr "Farsi (Iran)"
 
-#: FPropertyProject.class:2104
+#: FPropertyProject.class:2101
 msgid "Features"
 msgstr "Fonctionnalités"
 
@@ -1482,7 +1486,7 @@ msgstr "Champs"
 msgid "File"
 msgstr "Fichier"
 
-#: FMain.class:1728
+#: FMain.class:1730
 msgid "&File"
 msgstr "&Fichier"
 
@@ -1510,7 +1514,7 @@ msgstr "Rempli avec bord"
 msgid "Find"
 msgstr "Rechercher"
 
-#: FEditor.class:3052 FTextEditor.class:695
+#: FEditor.class:3045 FTextEditor.class:695
 msgid "Find..."
 msgstr "Rechercher..."
 
@@ -1518,7 +1522,7 @@ msgstr "Rechercher..."
 msgid "Find a string in translation"
 msgstr "Rechercher une chaine dans la traduction"
 
-#: FEditor.class:2924
+#: FEditor.class:2917
 msgid "Find definition"
 msgstr "Trouver la définition"
 
@@ -1530,7 +1534,7 @@ msgstr "Liste de recherche"
 msgid "Find next"
 msgstr "Poursuivre la recherche"
 
-#: FEditor.class:3065 FTextEditor.class:708
+#: FEditor.class:3058 FTextEditor.class:708
 msgid "Find Next"
 msgstr "Suivant"
 
@@ -1542,7 +1546,7 @@ msgstr "Rechercher la chaîne non traduite suivante"
 msgid "Find previous"
 msgstr "Recherche en arrière"
 
-#: FEditor.class:3072 FTextEditor.class:715
+#: FEditor.class:3065 FTextEditor.class:715
 msgid "Find Previous"
 msgstr "Précédent"
 
@@ -1550,23 +1554,23 @@ msgstr "Précédent"
 msgid "Find previous untranslated string"
 msgstr "Rechercher la chaîne non traduite précédente"
 
-#: FMain.class:2029
+#: FMain.class:2031
 msgid "&Find && replace"
 msgstr "&Rechercher et remplacer"
 
-#: FMain.class:2483
+#: FMain.class:2486
 msgid "Find & replace"
 msgstr "Rechercher & Remplacer"
 
-#: FMain.class:1919
+#: FMain.class:1921
 msgid "Finis&h"
 msgstr "&Terminer"
 
-#: FMain.class:2552
+#: FMain.class:2555
 msgid "Finish current function"
 msgstr "Terminer la fonction courante"
 
-#: FPropertyProject.class:1877
+#: FPropertyProject.class:1874
 msgid "Finished and stable"
 msgstr "Terminé et stable"
 
@@ -1590,15 +1594,15 @@ msgstr "Décimal"
 msgid "Flood fill"
 msgstr "Remplissage"
 
-#: FOption.class:1057
+#: FOption.class:1046
 msgid "Fold procedures by default"
 msgstr "Replier les procedures par défaut"
 
-#: FOption.class:960
+#: FOption.class:949
 msgid "Font"
 msgstr "Police"
 
-#: FOption.class:723
+#: FOption.class:712
 msgid "Font size"
 msgstr "Taille de police"
 
@@ -1610,7 +1614,7 @@ msgstr "Le nom du groupe contient des caractères interdits."
 msgid "Forbidden characters in control name."
 msgstr "Le nom du contrôle contient des caractères interdits."
 
-#: FOption.class:677
+#: FOption.class:666
 msgid "Foreground color..."
 msgstr "Avant-plan..."
 
@@ -1618,11 +1622,11 @@ msgstr "Avant-plan..."
 msgid "Form"
 msgstr "Formulaire"
 
-#: FMain.class:2140
+#: FMain.class:2142
 msgid "&Form..."
 msgstr "&Formulaire..."
 
-#: FPropertyProject.class:1712
+#: FPropertyProject.class:1709
 msgid "Form controls are public"
 msgstr "Les contrôles des formulaires sont publics"
 
@@ -1630,11 +1634,11 @@ msgstr "Les contrôles des formulaires sont publics"
 msgid "Forms"
 msgstr "Formulaires"
 
-#: FMain.class:2544
+#: FMain.class:2547
 msgid "Forward"
 msgstr "Avancer"
 
-#: FMain.class:1912
+#: FMain.class:1914
 msgid "&Forward"
 msgstr "&Avancer"
 
@@ -1666,7 +1670,7 @@ msgstr "Français (Suisse)"
 msgid "Function"
 msgstr "Fonction"
 
-#: FEditor.class:3305
+#: FEditor.class:3298
 msgid "Function browser"
 msgstr "Liste des fonctions"
 
@@ -1674,7 +1678,7 @@ msgstr "Liste des fonctions"
 msgid "Galician (Spain)"
 msgstr "Galicien (Espagne)"
 
-#: FAbout.class:583 FWelcome.class:500
+#: FAbout.class:583 FWelcome.class:513
 msgid "Gambas"
 msgstr "-"
 
@@ -1702,7 +1706,7 @@ msgstr "Données de formulaires Gambas"
 msgid "Gambas forms"
 msgstr "Formulaires Gambas"
 
-#: FOption.class:129
+#: FOption.class:128
 msgid "Gambas highlight theme files"
 msgstr "Fichiers thèmes de coloration de Gambas"
 
@@ -1730,7 +1734,7 @@ msgstr "Pages web Gambas"
 msgid "Games"
 msgstr "Jeux"
 
-#: FInfo.class:310 FOption.class:708 FPropertyProject.class:1564
+#: FInfo.class:310 FOption.class:697 FPropertyProject.class:1561
 msgid "General"
 msgstr "Général"
 
@@ -1746,7 +1750,7 @@ msgstr "Allemand (Belgique)"
 msgid "German (Germany)"
 msgstr "Allemand (Allemagne)"
 
-#: FPropertyProject.class:1730
+#: FPropertyProject.class:1727
 msgid "Get version from program"
 msgstr "Obtenir la version depuis le programme"
 
@@ -1758,11 +1762,11 @@ msgstr "-"
 msgid "GNU command option parser"
 msgstr "Analyseur d'options de ligne de commande GNU"
 
-#: FEditor.class:2931
+#: FEditor.class:2924
 msgid "Go back"
 msgstr "Revenir en arrière"
 
-#: FEditor.class:2913
+#: FEditor.class:2906
 msgid "Go to"
 msgstr "Aller à"
 
@@ -1770,7 +1774,7 @@ msgstr "Aller à"
 msgid "Go to line"
 msgstr "Aller à la ligne"
 
-#: FEditor.class:2918 FTextEditor.class:632
+#: FEditor.class:2911 FTextEditor.class:632
 msgid "Go to line..."
 msgstr "Aller à la ligne..."
 
@@ -1778,7 +1782,7 @@ msgstr "Aller à la ligne..."
 msgid "Graphical application"
 msgstr "Application graphique"
 
-#: CComponent.class:123 FPropertyProject.class:2070
+#: CComponent.class:123 FPropertyProject.class:2067
 msgid "Graphical form management"
 msgstr "Gestion de formulaires graphiques"
 
@@ -1834,23 +1838,23 @@ msgstr "Hébreu (Israël)"
 msgid "Height"
 msgstr "Hauteur"
 
-#: FDebugInfo.class:1003
+#: FDebugInfo.class:1043
 msgid "Help"
 msgstr "Aide"
 
-#: FMain.class:2082
+#: FMain.class:2084
 msgid "&Help browser"
 msgstr "&Navigateur d'aide"
 
-#: FMain.class:2012
+#: FMain.class:2014
 msgid "Hide menubar"
 msgstr "Cacher la barre de menus"
 
-#: FFormStack.class:282 FMain.class:2658
+#: FFormStack.class:282 FMain.class:2661
 msgid "Hierarchy"
 msgstr "Hiérarchie"
 
-#: FOption.class:1003
+#: FOption.class:992
 msgid "Highlight current line"
 msgstr "Surligner la ligne courante"
 
@@ -1858,7 +1862,7 @@ msgstr "Surligner la ligne courante"
 msgid "Highlighting"
 msgstr "Mise en évidence"
 
-#: FOption.class:1021
+#: FOption.class:1010
 msgid "Highlight modified lines"
 msgstr "Indiquer les lignes modifiées"
 
@@ -1874,7 +1878,7 @@ msgstr "Horizontal"
 msgid "Horizontal flip"
 msgstr "Miroir horizontal"
 
-#: FEditor.class:3093 FTextEditor.class:736
+#: FEditor.class:3086 FTextEditor.class:736
 msgid "Horizontal split"
 msgstr "Séparation horizontale"
 
@@ -1882,7 +1886,7 @@ msgstr "Séparation horizontale"
 msgid "Host"
 msgstr "Hôte"
 
-#: FMain.class:2175
+#: FMain.class:2177
 msgid "&HTML file..."
 msgstr "Fichiers &HTML..."
 
@@ -1898,7 +1902,7 @@ msgstr "Fichiers HTML"
 msgid "HTML text"
 msgstr "Texte HTML"
 
-#: FAbout.class:600 FWelcome.class:512
+#: FAbout.class:600 FWelcome.class:525
 msgid "http://gambas.sourceforge.net"
 msgstr "-"
 
@@ -1906,7 +1910,7 @@ msgstr "-"
 msgid "Hungarian (Hungary)"
 msgstr "Hongrois (Hongrie)"
 
-#: FOption.class:905
+#: FOption.class:894
 msgid "Icon theme"
 msgstr "Thème d'icône"
 
@@ -1926,7 +1930,7 @@ msgstr "Ignorer le jeu de caractères de la base de données"
 msgid "Image"
 msgstr "Image"
 
-#: FMain.class:2168
+#: FMain.class:2170
 msgid "&Image..."
 msgstr "&Image..."
 
@@ -1934,7 +1938,7 @@ msgstr "&Image..."
 msgid "Image filtering component"
 msgstr "Composant de filtrage d'images"
 
-#: CComponent.class:92 FPropertyProject.class:2127
+#: CComponent.class:92 FPropertyProject.class:2124
 msgid "Image loading and saving"
 msgstr "Chargement et sauvegarde d'images"
 
@@ -1946,7 +1950,7 @@ msgstr "Gestion des images"
 msgid "Image processing"
 msgstr "Traitement d'images"
 
-#: FPropertyProject.class:2082
+#: FPropertyProject.class:2079
 msgid "Image provider"
 msgstr "Gestion des images"
 
@@ -1990,7 +1994,7 @@ msgstr "Importer un fichier"
 msgid "Import text file"
 msgstr "Importer un fichier texte"
 
-#: FOption.class:1151
+#: FOption.class:1122
 msgid "Import theme"
 msgstr "Importer un thème"
 
@@ -2038,7 +2042,7 @@ msgstr "Initialisation du répertoire ~/RPM."
 msgid "Initial release"
 msgstr "Version initiale"
 
-#: FList.class:276 FMenu.class:824 FPropertyProject.class:1942
+#: FList.class:276 FMenu.class:824 FPropertyProject.class:1939
 msgid "&Insert"
 msgstr "&Insérer"
 
@@ -2046,7 +2050,7 @@ msgstr "&Insérer"
 msgid "Insert release number in package version"
 msgstr "Insérer le numéro de révision dans la version du paquetage"
 
-#: FMain.class:1841
+#: FMain.class:1843
 msgid "&Installation package..."
 msgstr "Paquetage d'&installation..."
 
@@ -2062,7 +2066,7 @@ msgstr "Entier"
 msgid "Integrated Development Environment for Gambas"
 msgstr "-"
 
-#: FOption.class:713
+#: FOption.class:702
 msgid "Interface"
 msgstr "Interface"
 
@@ -2090,7 +2094,7 @@ msgstr "-"
 msgid "Italian (Italy)"
 msgstr "Italien (Italie)"
 
-#: FOption.class:693
+#: FOption.class:682
 msgid "Italic"
 msgstr "Italique"
 
@@ -2134,7 +2138,7 @@ msgstr "Champ clef"
 msgid "Keywords"
 msgstr "Mots-clés"
 
-#: FOption.class:1099
+#: FOption.class:1088
 msgid "Keywords in upper case"
 msgstr "Mots-clefs en majuscule"
 
@@ -2170,7 +2174,7 @@ msgstr "-"
 msgid "Licence"
 msgstr "License"
 
-#: FOption.class:992
+#: FOption.class:981
 msgid "Line"
 msgstr "Ligne"
 
@@ -2190,7 +2194,7 @@ msgstr "Chargement de &1..."
 msgid "Loading information on component &1..."
 msgstr "Chargement des informations sur le composant &1..."
 
-#: FDebugInfo.class:1012
+#: FDebugInfo.class:1052
 msgid "Local variables"
 msgstr "Variables locales"
 
@@ -2218,7 +2222,7 @@ msgstr "Macédonien (République de Macédoine)"
 msgid "Maintainer information"
 msgstr "Informations sur le mainteneur"
 
-#: FMain.class:1823
+#: FMain.class:1825
 msgid "Make"
 msgstr "Générer"
 
@@ -2226,15 +2230,15 @@ msgstr "Générer"
 msgid "Make a gift!"
 msgstr "Faire un don !"
 
-#: FMain.class:2421 FMakeExecutable.class:81
+#: FMain.class:2434 FMakeExecutable.class:81
 msgid "Make executable"
 msgstr "Générer l'exécutable"
 
-#: FMain.class:2430 FMakeInstall.class:1168
+#: FMain.class:2443 FMakeInstall.class:1168
 msgid "Make installation package"
 msgstr "Créer un paquetage d'installation"
 
-#: FMain.class:2413
+#: FMain.class:2426
 msgid "Make source archive"
 msgstr "Générer une archive des sources"
 
@@ -2254,7 +2258,7 @@ msgstr "Malayalam (Inde)"
 msgid "Mandriva Linux"
 msgstr "-"
 
-#: FOption.class:811
+#: FOption.class:800
 msgid "Max."
 msgstr "-"
 
@@ -2286,7 +2290,7 @@ msgstr "Menus"
 msgid "Messages"
 msgstr "Messages"
 
-#: FOption.class:858
+#: FOption.class:847
 msgid "Minimize at runtime"
 msgstr "Minimiser à l'exécution"
 
@@ -2306,7 +2310,7 @@ msgstr "modifié"
 msgid "Module"
 msgstr "Module"
 
-#: FMain.class:2124
+#: FMain.class:2126
 msgid "&Module..."
 msgstr "&Module..."
 
@@ -2314,7 +2318,7 @@ msgstr "&Module..."
 msgid "Modules"
 msgstr "Modules"
 
-#: FPropertyProject.class:1694
+#: FPropertyProject.class:1691
 msgid "Module symbols are public by default"
 msgstr "Les modules sont publics par défaut"
 
@@ -2378,7 +2382,7 @@ msgstr "Routines spécifiques pour MySQL"
 msgid "Name"
 msgstr "Nom"
 
-#: FDebugInfo.class:118
+#: FDebugInfo.class:117
 msgid "native code"
 msgstr "code natif"
 
@@ -2394,7 +2398,7 @@ msgstr "Réseau"
 msgid "Network programming"
 msgstr "Programmation réseau"
 
-#: FCreateFile.class:562 FMain.class:2109
+#: FCreateFile.class:562 FMain.class:2111
 msgid "New"
 msgstr "Nouveau"
 
@@ -2402,7 +2406,7 @@ msgstr "Nouveau"
 msgid "&New..."
 msgstr "&Nouveau..."
 
-#: FMain.class:2293
+#: FMain.class:2295
 msgid "&New connection..."
 msgstr "&Nouvelle connexion..."
 
@@ -2422,11 +2426,11 @@ msgstr "Nouveau dossier"
 msgid "New index"
 msgstr "Nouvel index"
 
-#: FMain.class:1732
+#: FMain.class:1734
 msgid "&New project..."
 msgstr "&Nouveau projet..."
 
-#: FCreateProject.class:336 FMain.class:2333
+#: FCreateProject.class:336 FMain.class:2346
 msgid "New project"
 msgstr "Nouveau projet"
 
@@ -2446,7 +2450,7 @@ msgstr "Nouvelle traduction"
 msgid "&Next"
 msgstr "&Suivant"
 
-#: FOption.class:787 FPropertyProject.class:1701
+#: FOption.class:776 FPropertyProject.class:1698
 msgid "No"
 msgstr "Non"
 
@@ -2458,7 +2462,7 @@ msgstr "Aide introuvable."
 msgid "Non-ASCII characters are forbidden in a project name."
 msgstr "Un nom de projet ne peut contenir que des caractères ASCII."
 
-#: FOption.class:992 FProperty.class:699
+#: FOption.class:981 FProperty.class:699
 msgid "None"
 msgstr "Aucun"
 
@@ -2478,7 +2482,7 @@ msgstr "(Aucune)"
 msgid "No record imported."
 msgstr "Aucun enregistrement importé."
 
-#: FOption.class:731
+#: FOption.class:720
 msgid "Normal"
 msgstr "Normal"
 
@@ -2490,7 +2494,7 @@ msgstr "Texte normal"
 msgid "Norwegian (Norway)"
 msgstr "Norvégien (Norvège)"
 
-#: FEditor.class:3086 FTextEditor.class:729
+#: FEditor.class:3079 FTextEditor.class:729
 msgid "No split"
 msgstr "Affichage complet"
 
@@ -2506,7 +2510,7 @@ msgstr "Pas assez de valeurs"
 msgid "No terminal emulator found."
 msgstr "Aucun émulateur de terminal n'a été trouvé."
 
-#: CComponentBox.class:94 FPropertyProject.class:1877
+#: CComponentBox.class:94 FPropertyProject.class:1874
 msgid "Not finished but stable"
 msgstr "Non terminé mais stable"
 
@@ -2562,7 +2566,7 @@ msgstr "Opaque"
 msgid "Open"
 msgstr "Ouvrir"
 
-#: FMain.class:2302
+#: FMain.class:2304
 msgid "&Open"
 msgstr "&Ouvrir"
 
@@ -2570,7 +2574,7 @@ msgstr "&Ouvrir"
 msgid "Open after all"
 msgstr "Ouvrir malgré tout"
 
-#: FMain.class:2047
+#: FMain.class:2049
 msgid "&Open a terminal..."
 msgstr "&Ouvrir un terminal..."
 
@@ -2578,11 +2582,11 @@ msgstr "&Ouvrir un terminal..."
 msgid "Open code"
 msgstr "Ouvrir le code"
 
-#: FMain.class:1753
+#: FMain.class:1755
 msgid "Open &example"
 msgstr "Ouvrir un &exemple"
 
-#: FEditor.class:2938
+#: FEditor.class:2931
 msgid "Open form"
 msgstr "Ouvrir le formulaire"
 
@@ -2590,7 +2594,7 @@ msgstr "Ouvrir le formulaire"
 msgid "OpenGL"
 msgstr "OpenGL"
 
-#: CComponent.class:126 FPropertyProject.class:2088
+#: CComponent.class:126 FPropertyProject.class:2085
 msgid "OpenGL display"
 msgstr "Affichage OpenGL"
 
@@ -2614,11 +2618,11 @@ msgstr "Ouvrir dans une nouvelle fenêtre"
 msgid "OpenLDAP client"
 msgstr "Client OpenLDAP"
 
-#: FMain.class:1739
+#: FMain.class:1741
 msgid "&Open project..."
 msgstr "&Ouvrir un projet..."
 
-#: FMain.class:2341
+#: FMain.class:2354
 msgid "Open project"
 msgstr "Ouvrir un projet"
 
@@ -2626,7 +2630,7 @@ msgstr "Ouvrir un projet"
 msgid "Open project..."
 msgstr "Ouvrir un projet..."
 
-#: FMain.class:1745
+#: FMain.class:1747
 msgid "Open &recent"
 msgstr "Ouvrir un projet &récent"
 
@@ -2638,11 +2642,11 @@ msgstr "-"
 msgid "Operators"
 msgstr "Opérateurs"
 
-#: FMakeExecutable.class:98 FOption.class:974 FPropertyProject.class:1647
+#: FMakeExecutable.class:98 FOption.class:963 FPropertyProject.class:1644
 msgid "Options"
 msgstr "Options"
 
-#: FMain.class:2190
+#: FMain.class:2192
 msgid "&Other..."
 msgstr "&Autre..."
 
@@ -2682,19 +2686,19 @@ msgstr "Mot de passe"
 msgid "Paste"
 msgstr "Coller"
 
-#: FList.class:316 FMain.class:2237
+#: FList.class:316 FMain.class:2239
 msgid "&Paste"
 msgstr "&Coller"
 
-#: FEditor.class:3211 FPasteSpecial.class:243
+#: FEditor.class:3204 FPasteSpecial.class:243
 msgid "Paste as comments"
 msgstr "Coller comme commentaires"
 
-#: FEditor.class:3201 FPasteSpecial.class:258
+#: FEditor.class:3194 FPasteSpecial.class:258
 msgid "Paste as multi-line string"
 msgstr "Coller comme chaîne sur plusieurs lignes"
 
-#: FEditor.class:3191 FPasteSpecial.class:253
+#: FEditor.class:3184 FPasteSpecial.class:253
 msgid "Paste as string"
 msgstr "Coller comme chaîne"
 
@@ -2706,7 +2710,7 @@ msgstr "Coller normalement"
 msgid "Paste special"
 msgstr "Collage spécial"
 
-#: FEditor.class:3014
+#: FEditor.class:3007
 msgid "Paste special..."
 msgstr "Collage spécial..."
 
@@ -2718,11 +2722,11 @@ msgstr "Coller avec PRINT"
 msgid "Path"
 msgstr "Emplacement"
 
-#: FMain.class:2520
+#: FMain.class:2523
 msgid "Pause"
 msgstr "Pause"
 
-#: FMain.class:1891
+#: FMain.class:1893
 msgid "&Pause"
 msgstr "&Pause"
 
@@ -2846,11 +2850,11 @@ msgstr "-"
 msgid "PostgreSQL database driver"
 msgstr "Pilote de base de données PostgreSQL"
 
-#: FMain.class:2382 FOption.class:665
+#: FMain.class:2395 FOption.class:654
 msgid "Preferences"
 msgstr "Préférences"
 
-#: FMain.class:2070
+#: FMain.class:2072
 msgid "&Preferences..."
 msgstr "&Préférences..."
 
@@ -2870,19 +2874,19 @@ msgstr "&Précédent"
 msgid "Printing"
 msgstr "Impression"
 
-#: FOption.class:984
+#: FOption.class:973
 msgid "Procedure separation"
 msgstr "Séparation des procédures"
 
-#: FMain.class:2443 FSelectIcon.class:214 Project.module:1200
+#: FMain.class:2456 FSelectIcon.class:214 Project.module:1200
 msgid "Project"
 msgstr "Projet"
 
-#: FMain.class:1791
+#: FMain.class:1793
 msgid "&Project"
 msgstr "&Projet"
 
-#: FMain.class:1969
+#: FMain.class:1971
 msgid "Pro&ject"
 msgstr "Pro&jet"
 
@@ -2902,11 +2906,11 @@ msgstr "Répertoire du projet"
 msgid "Project information"
 msgstr "Information sur le projet"
 
-#: FPropertyProject.class:1755
+#: FPropertyProject.class:1752
 msgid "Project is translatable"
 msgstr "Le projet est traduisible"
 
-#: FMain.class:2365 FPropertyProject.class:51
+#: FMain.class:2378 FPropertyProject.class:51
 msgid "Project properties"
 msgstr "Propriétés du projet"
 
@@ -2918,23 +2922,23 @@ msgstr "Traduction du projet"
 msgid "Project type"
 msgstr "Type de projet"
 
-#: FMain.class:2639 FProperty.class:1087
+#: FMain.class:2642 FProperty.class:1087
 msgid "Properties"
 msgstr "Propriétés"
 
-#: FMain.class:1978
+#: FMain.class:1980
 msgid "&Properties"
 msgstr "&Propriétés"
 
-#: FMain.class:1869
+#: FMain.class:1871
 msgid "&Properties..."
 msgstr "&Propriétés..."
 
-#: FMain.class:2454
+#: FMain.class:2467
 msgid "Properties sheet"
 msgstr "Feuille de propriétés"
 
-#: CComponentBox.class:228 FPropertyProject.class:2044
+#: CComponentBox.class:228 FPropertyProject.class:2041
 msgid "Provides"
 msgstr "Fournit"
 
@@ -2986,7 +2990,7 @@ msgstr "Quête"
 msgid "Quick"
 msgstr "Rapide"
 
-#: FOption.class:822
+#: FOption.class:811
 msgid "Quiet external commands"
 msgstr "Commandes externes silencieuses"
 
@@ -2994,7 +2998,7 @@ msgstr "Commandes externes silencieuses"
 msgid "Quit"
 msgstr "Quitter"
 
-#: FMain.class:1784
+#: FMain.class:1786
 msgid "&Quit"
 msgstr "&Quitter"
 
@@ -3006,7 +3010,7 @@ msgstr "lecture seule"
 msgid "Recent"
 msgstr "Récent"
 
-#: FOption.class:798 FWelcome.class:56
+#: FOption.class:787 FWelcome.class:56
 msgid "Recent projects"
 msgstr "Projets récents"
 
@@ -3014,15 +3018,15 @@ msgstr "Projets récents"
 msgid "Rectangle"
 msgstr "Rectangle"
 
-#: FEditor.class:2986 FForm.class:3591 FOutput.class:468 FTextEditor.class:649
+#: FEditor.class:2979 FForm.class:3591 FOutput.class:468 FTextEditor.class:649
 msgid "Redo"
 msgstr "Rétablir"
 
-#: FMain.class:1859
+#: FMain.class:1861
 msgid "&Refresh"
 msgstr "&Rafraîchir"
 
-#: FMain.class:2374
+#: FMain.class:2387
 msgid "Refresh project"
 msgstr "Rafraîchir le projet"
 
@@ -3050,35 +3054,35 @@ msgstr "Se souvenir du mot de passe"
 msgid "Remove"
 msgstr "Supprimer"
 
-#: FPropertyProject.class:1948
+#: FPropertyProject.class:1945
 msgid "&Remove"
 msgstr "&Supprimer"
 
-#: FDebugInfo.class:1111
+#: FDebugInfo.class:1151
 msgid "Remove all"
 msgstr "Tout supprimer"
 
-#: FPropertyProject.class:2185
+#: FPropertyProject.class:2182
 msgid "Remove All"
 msgstr "Tout supprimer"
 
-#: FDebugInfo.class:1143
+#: FDebugInfo.class:1183
 msgid "Remove all breakpoints"
 msgstr "Supprimer tous les points d'arrêts"
 
-#: FDebugInfo.class:1109
+#: FDebugInfo.class:1149
 msgid "Remove all expressions"
 msgstr "Supprimer toutes les expressions"
 
-#: FDebugInfo.class:1135
+#: FDebugInfo.class:1175
 msgid "Remove current breakpoint"
 msgstr "Supprimer le point d'arrêt sélectionné"
 
-#: FDebugInfo.class:1101
+#: FDebugInfo.class:1141
 msgid "Remove current expression"
 msgstr "Supprimer l'expression sélectionnée"
 
-#: FMain.class:2244
+#: FMain.class:2246
 msgid "&Rename..."
 msgstr "&Renommer..."
 
@@ -3094,7 +3098,7 @@ msgstr "Renommer la table"
 msgid "Replace"
 msgstr "Remplacer"
 
-#: FEditor.class:3058 FTextEditor.class:701
+#: FEditor.class:3051 FTextEditor.class:701
 msgid "Replace..."
 msgstr "Remplacer..."
 
@@ -3110,7 +3114,7 @@ msgstr "Remplacement de couleur"
 msgid "Report"
 msgstr "État"
 
-#: FMain.class:2156
+#: FMain.class:2158
 msgid "&Report..."
 msgstr "&État..."
 
@@ -3126,11 +3130,11 @@ msgstr "États"
 msgid "Repository"
 msgstr "Référentiel"
 
-#: CComponentBox.class:207 FPropertyProject.class:2099
+#: CComponentBox.class:207 FPropertyProject.class:2096
 msgid "Requires"
 msgstr "Nécessite"
 
-#: FPropertyProject.class:1915
+#: FPropertyProject.class:1912
 msgid "&Reset"
 msgstr "&Revenir"
 
@@ -3142,7 +3146,7 @@ msgstr "Résoudre le conflit avec"
 msgid "Retry"
 msgstr "Recommencer"
 
-#: FPropertyProject.class:2033
+#: FPropertyProject.class:2030
 msgid "&Revert..."
 msgstr "&Revenir..."
 
@@ -3166,11 +3170,11 @@ msgstr "'rpmbuild' a retourné le code d'erreur suivant :"
 msgid "Ruby"
 msgstr "Rubis"
 
-#: FMain.class:2512
+#: FMain.class:2515
 msgid "Run"
 msgstr "Démarrer"
 
-#: FMain.class:1880
+#: FMain.class:1882
 msgid "&Run"
 msgstr "Déma&rrer"
 
@@ -3182,15 +3186,15 @@ msgstr "Exécuter la requête"
 msgid "Run this command after"
 msgstr "Exécuter ensuite cette commande"
 
-#: FMain.class:1926
+#: FMain.class:1928
 msgid "Run &until"
 msgstr "Exécuter &jusqu'à la ligne courante"
 
-#: FEditor.class:2954
+#: FEditor.class:2947
 msgid "Run &until current line"
 msgstr "Exécuter &jusqu'à la ligne courante"
 
-#: FMain.class:2561
+#: FMain.class:2564
 msgid "Run until current line"
 msgstr "Exécuter jusqu'à la ligne courante"
 
@@ -3238,19 +3242,19 @@ msgstr "Enregi&strer"
 msgid "Save modified files"
 msgstr "Enregistrer les fichiers modifiés"
 
-#: FMain.class:1766
+#: FMain.class:1768
 msgid "&Save project"
 msgstr "&Enregistrer le projet"
 
-#: FMain.class:2349
+#: FMain.class:2362
 msgid "Save project"
 msgstr "Enregistrer le projet"
 
-#: FMain.class:2357 Project.module:1883
+#: FMain.class:2370 Project.module:1883
 msgid "Save project as"
 msgstr "Enregistrer le projet sous"
 
-#: FMain.class:1773
+#: FMain.class:1775
 msgid "Save project &as..."
 msgstr "Enregistrer le projet &sous..."
 
@@ -3334,7 +3338,7 @@ msgstr "Choisissez une police"
 msgid "Select all"
 msgstr "Sélectionner tout"
 
-#: FEditor.class:3024 FTextEditor.class:685
+#: FEditor.class:3017 FTextEditor.class:685
 msgid "Select &All"
 msgstr "&Tout sélectionner"
 
@@ -3354,7 +3358,7 @@ msgstr "Sélectionnez un projet"
 msgid "Select a theme"
 msgstr "Choisissez un thème"
 
-#: FOption.class:274
+#: FOption.class:273
 msgid "Select a theme file"
 msgstr "Choisissez un fichier thème"
 
@@ -3394,15 +3398,15 @@ msgstr "-"
 msgid "Shortcut"
 msgstr "Raccourci"
 
-#: FMain.class:2392
+#: FMain.class:2405
 msgid "Shortcuts"
 msgstr "Raccourcis"
 
-#: FMain.class:2064
+#: FMain.class:2066
 msgid "&Shortcuts..."
 msgstr "&Raccourcis..."
 
-#: FPropertyProject.class:1891
+#: FPropertyProject.class:1888
 msgid "Show components in beta version"
 msgstr "Afficher les composants en version beta"
 
@@ -3410,21 +3414,17 @@ msgstr "Afficher les composants en version beta"
 msgid "Show hidden symbols"
 msgstr "Afficher les symboles cachés"
 
-#: FOption.class:1039
+#: FOption.class:1028
 msgid "Show line numbers"
 msgstr "Afficher les numéros de lignes"
 
-#: FMain.class:2587
+#: FMain.class:2590
 msgid "Show menu bar"
 msgstr "Afficher la barre de menus"
 
-#: FPropertyProject.class:1885
+#: FPropertyProject.class:1882
 msgid "Show only components used in project"
 msgstr "Afficher uniquement les composants utilisés dans le projet"
-
-#: FOption.class:1117
-msgid "Show popup help"
-msgstr "Afficher l'aide contextuelle"
 
 #: FForm.class:3275
 msgid "Show tab"
@@ -3434,7 +3434,7 @@ msgstr "Afficher l'onglet"
 msgid "Show tips on startup"
 msgstr "Afficher les astuces au démarrage"
 
-#: FOption.class:876
+#: FOption.class:865
 msgid "Show tooltips"
 msgstr "Afficher les bulles d'aide"
 
@@ -3458,7 +3458,7 @@ msgstr "-"
 msgid "Slovenian (Slovenia)"
 msgstr "Slovénien (Slovénie)"
 
-#: FOption.class:731
+#: FOption.class:720
 msgid "Small"
 msgstr "Petite"
 
@@ -3490,19 +3490,19 @@ msgstr "Certains fichiers sources du projet sont en conflit.\nVeuillez résoudre
 msgid "&Sort by path"
 msgstr "&Trier dans l'ordre des chemins"
 
-#: FOpenProject.class:399 FWelcome.class:574
+#: FOpenProject.class:399 FWelcome.class:587
 msgid "Sort by path"
 msgstr "Trier dans l'ordre des chemins"
 
-#: FDebugInfo.class:1021
+#: FDebugInfo.class:1061
 msgid "Sort local variables"
 msgstr "Trier les variables locales"
 
-#: FDebugInfo.class:1051
+#: FDebugInfo.class:1091
 msgid "Sort object variables"
 msgstr "Trier les variables d'objet"
 
-#: FOption.class:780
+#: FOption.class:769
 msgid "Sort properties"
 msgstr "Trier les propriétés"
 
@@ -3514,7 +3514,7 @@ msgstr "Son"
 msgid "Source"
 msgstr "Source"
 
-#: FMain.class:1834
+#: FMain.class:1836
 msgid "&Source archive..."
 msgstr "Archive des fichiers &source..."
 
@@ -3534,11 +3534,11 @@ msgstr "\"Debianisation\" des sources..."
 msgid "Space"
 msgstr "Espace"
 
-#: FOption.class:1088
+#: FOption.class:1077
 msgid "spaces"
 msgstr "espaces"
 
-#: FPropertyProject.class:1675
+#: FPropertyProject.class:1672
 msgid "space(s)"
 msgstr "espace(s)"
 
@@ -3566,7 +3566,7 @@ msgstr "Pilote de base de données SQLite 3"
 msgid "SQL request"
 msgstr "Requête SQL"
 
-#: FDebugInfo.class:1184
+#: FDebugInfo.class:1224
 msgid "Stack backtrace"
 msgstr "État de la pile"
 
@@ -3574,11 +3574,11 @@ msgstr "État de la pile"
 msgid "Standard components"
 msgstr "Composants standards"
 
-#: FEditor.class:2945 FForm.class:3266 FMain.class:2272
+#: FEditor.class:2938 FForm.class:3266 FMain.class:2274
 msgid "&Startup class"
 msgstr "Cla&sse de démarrage"
 
-#: FDebugInfo.class:878
+#: FDebugInfo.class:918
 msgid "Static variables"
 msgstr "Variables statiques"
 
@@ -3586,15 +3586,15 @@ msgstr "Variables statiques"
 msgid "Statistics"
 msgstr "Statistiques"
 
-#: FMain.class:2005
+#: FMain.class:2007
 msgid "Status bar"
 msgstr "Barre d'état"
 
-#: FMain.class:2536
+#: FMain.class:2539
 msgid "Step"
 msgstr "Pas-à-pas"
 
-#: FMain.class:1905
+#: FMain.class:1907
 msgid "St&ep"
 msgstr "P&as-à-pas"
 
@@ -3602,11 +3602,11 @@ msgstr "P&as-à-pas"
 msgid "Stock"
 msgstr "Stock"
 
-#: FMain.class:2528
+#: FMain.class:2531
 msgid "Stop"
 msgstr "Arrêter"
 
-#: FMain.class:1898
+#: FMain.class:1900
 msgid "&Stop"
 msgstr "&Stop"
 
@@ -3622,7 +3622,7 @@ msgstr "Chaînes"
 msgid "Strip useless white spaces"
 msgstr "Supprimer les espaces inutiles"
 
-#: FMain.class:2182
+#: FMain.class:2184
 msgid "&Style sheet..."
 msgstr "&Feuille de style..."
 
@@ -3670,7 +3670,7 @@ msgstr "Table"
 msgid "Table '&1' already exists."
 msgstr "La table « &1 » existe déjà."
 
-#: FPropertyProject.class:1663
+#: FPropertyProject.class:1660
 msgid "Tab size"
 msgstr "Tabulations"
 
@@ -3678,7 +3678,7 @@ msgstr "Tabulations"
 msgid "Tabstrip"
 msgstr "Onglets"
 
-#: FOption.class:742
+#: FOption.class:731
 msgid "Tabstrip font size"
 msgstr "Taille des titres d'onglets"
 
@@ -3694,7 +3694,7 @@ msgstr "Distribution cible"
 msgid "'tar' has returned the following error code:"
 msgstr "'tar' a retourné le code d'erreur suivant:"
 
-#: FOption.class:943
+#: FOption.class:932
 msgid "Terminal"
 msgstr "Terminal"
 
@@ -3766,7 +3766,7 @@ msgstr "Les outils de traduction GNU ne sont pas installés sur votre système.\
 msgid "The length must be greater than 1 and lower than 255."
 msgstr "La longueur doit être comprise entre 1 et 255."
 
-#: FOption.class:1128
+#: FOption.class:1099
 msgid "Theme"
 msgstr "Thème"
 
@@ -3898,7 +3898,7 @@ msgstr "Ce nom est déjà utilisé."
 msgid "This name is already used. Choose another one."
 msgstr "Ce nom est déjà utilisé. Choisissez-en un autre."
 
-#: FWelcome.class:521
+#: FWelcome.class:534
 msgid "This program is published under the GNU General Public Licence."
 msgstr "Ce programme est publié sous la License Publique Générale GNU."
 
@@ -3910,7 +3910,7 @@ msgstr "Ce projet existe déjà."
 msgid "This project does not exist."
 msgstr "Ce projet n'existe pas."
 
-#: FPropertyProject.class:1851
+#: FPropertyProject.class:1848
 msgid "This project is a component"
 msgstr "Ce projet est un composant"
 
@@ -3926,7 +3926,7 @@ msgstr "Il semble que ce projet soit déjà ouvert.\n\nOuvrir le même projet de
 msgid "This string must not be translated"
 msgstr "Cette chaîne ne doit pas être traduite"
 
-#: FOption.class:750
+#: FOption.class:739
 msgid "Tiny"
 msgstr "Très petite"
 
@@ -3934,7 +3934,7 @@ msgstr "Très petite"
 msgid "Tip of the day"
 msgstr "Astuce du jour"
 
-#: FMain.class:2089
+#: FMain.class:2091
 msgid "&Tips of the day"
 msgstr "&Astuces du jour"
 
@@ -3942,7 +3942,7 @@ msgstr "&Astuces du jour"
 msgid "Tips of the day"
 msgstr "Astuces du jour"
 
-#: FCreateProject.class:651 FPropertyProject.class:1613
+#: FCreateProject.class:651 FPropertyProject.class:1610
 msgid "Title"
 msgstr "Titre"
 
@@ -3950,15 +3950,15 @@ msgstr "Titre"
 msgid "Toggle"
 msgstr "-"
 
-#: FMain.class:1937
+#: FMain.class:1939
 msgid "&Toggle breakpoint"
 msgstr "&Basculer un point d'arrêt"
 
-#: FMain.class:2578
+#: FMain.class:2581
 msgid "Toggle breakpoint"
 msgstr "Basculer un point d'arrêt"
 
-#: FEditor.class:2961
+#: FEditor.class:2954
 msgid "Toggle &breakpoint"
 msgstr "Basculer un &point d'arrêt"
 
@@ -3966,19 +3966,19 @@ msgstr "Basculer un &point d'arrêt"
 msgid "Toggle grid"
 msgstr "Bascule l'affichage de la grille"
 
-#: FMain.class:2464
+#: FMain.class:2337
 msgid "Toolbox"
 msgstr "Boîte à outils"
 
-#: FMain.class:1986
+#: FMain.class:1988
 msgid "&Toolbox"
 msgstr "&Boîte à outils"
 
-#: FOption.class:761
+#: FOption.class:750
 msgid "Toolbox size"
 msgstr "Taille de la boîte à outils"
 
-#: FMain.class:2025
+#: FMain.class:2027
 msgid "&Tools"
 msgstr "&Outils"
 
@@ -3990,11 +3990,11 @@ msgstr "Trop de valeurs"
 msgid "Traditional chinese (Taiwan)"
 msgstr "Chinois traditionnel (Taiwan)"
 
-#: FMain.class:2404
+#: FMain.class:2417
 msgid "Translate"
 msgstr "Traduire"
 
-#: FMain.class:1813
+#: FMain.class:1815
 msgid "&Translate..."
 msgstr "&Traduire..."
 
@@ -4002,7 +4002,7 @@ msgstr "&Traduire..."
 msgid "Translated string symbols do not match untranslated string ones."
 msgstr "Les symboles de la chaîne traduite ne correspondent pas à ceux de la chaîne non traduite."
 
-#: FPropertyProject.class:1744 FTranslate.class:1467
+#: FPropertyProject.class:1741 FTranslate.class:1467
 msgid "Translation"
 msgstr "Traduction"
 
@@ -4086,11 +4086,11 @@ msgstr "Impossible d'enregistrer le projet."
 msgid "Unable to uninstall component."
 msgstr "Impossible de désinstaller le composant."
 
-#: Project.module:4469
+#: Project.module:4471
 msgid "Unable to update all forms."
 msgstr "Impossible de mettre à jour tous les formulaires."
 
-#: FEditor.class:3041
+#: FEditor.class:3034
 msgid "Uncomment"
 msgstr "Retirer les commentaires"
 
@@ -4098,11 +4098,11 @@ msgstr "Retirer les commentaires"
 msgid "Uncompress"
 msgstr "Décompresser"
 
-#: FOption.class:697
+#: FOption.class:686
 msgid "Underline"
 msgstr "Souligné"
 
-#: FOption.class:1165 FOutput.class:461 FTextEditor.class:642
+#: FOption.class:1136 FOutput.class:461 FTextEditor.class:642
 msgid "Undo"
 msgstr "Annuler"
 
@@ -4154,15 +4154,15 @@ msgstr "Monter"
 msgid "&Up"
 msgstr "&Monter"
 
-#: FMain.class:1152
+#: FMain.class:1153
 msgid "Update"
 msgstr "Mettre à jour"
 
-#: FPropertyProject.class:2027
+#: FPropertyProject.class:2024
 msgid "&Update"
 msgstr "&Mettre à jour"
 
-#: FMain.class:2054
+#: FMain.class:2056
 msgid "&Update all forms"
 msgstr "&Mettre à jour tous les formulaires"
 
@@ -4174,7 +4174,7 @@ msgstr "Liste d'URIs"
 msgid "Use a fixed font"
 msgstr "Utiliser une police non proportionnelle"
 
-#: FPropertyProject.class:1825
+#: FPropertyProject.class:1822
 msgid "Use a terminal emulator"
 msgstr "Utiliser un émulateur de terminal"
 
@@ -4214,7 +4214,7 @@ msgstr "Nom du vendeur"
 msgid "Verify the translation"
 msgstr "Vérifier la traduction"
 
-#: FPropertyProject.class:1591
+#: FPropertyProject.class:1588
 msgid "Version"
 msgstr "Version"
 
@@ -4222,7 +4222,7 @@ msgstr "Version"
 msgid "Version conflict"
 msgstr "Conflit de version"
 
-#: FInfo.class:439 FPropertyProject.class:2006
+#: FInfo.class:439 FPropertyProject.class:2003
 msgid "Versioning"
 msgstr "Suivi"
 
@@ -4234,7 +4234,7 @@ msgstr "Vertical"
 msgid "Vertical flip"
 msgstr "Miroir vertical"
 
-#: FEditor.class:3100 FTextEditor.class:743
+#: FEditor.class:3093 FTextEditor.class:743
 msgid "Vertical split"
 msgstr "Séparation verticale"
 
@@ -4250,11 +4250,11 @@ msgstr "Capture vidéo"
 msgid "Vietnamese (Vietnam)"
 msgstr "Vietnamien (Viet-nâm)"
 
-#: FEditor.class:3082 FTextEditor.class:725
+#: FEditor.class:3075 FTextEditor.class:725
 msgid "View"
 msgstr "Affichage"
 
-#: FMain.class:1965
+#: FMain.class:1967
 msgid "&View"
 msgstr "&Affichage"
 
@@ -4278,19 +4278,19 @@ msgstr "Conversion depuis Visual Basic™"
 msgid "Wallon (Belgium)"
 msgstr "Wallon (Belgique)"
 
-#: FDebugInfo.class:1079
+#: FDebugInfo.class:1119
 msgid "Watch"
 msgstr "Surveiller"
 
-#: FMain.class:1954
+#: FMain.class:1956
 msgid "&Watch expression"
 msgstr "&Surveiller une expression"
 
-#: FEditor.class:2968
+#: FEditor.class:2961
 msgid "&Watch expression..."
 msgstr "&Voir une expression..."
 
-#: FMain.class:2570
+#: FMain.class:2573
 msgid "Watch expression"
 msgstr "Surveiller des expressions"
 
@@ -4302,7 +4302,7 @@ msgstr "Outils pour les applications Web"
 msgid "WebPage"
 msgstr "Page Web"
 
-#: FMain.class:2148
+#: FMain.class:2150
 msgid "&WebPage..."
 msgstr "&Page Web..."
 
@@ -4310,7 +4310,7 @@ msgstr "&Page Web..."
 msgid "WebPages"
 msgstr "Pages Web"
 
-#: FWelcome.class:477
+#: FWelcome.class:490
 msgid "Welcome to Gambas 3"
 msgstr "Bienvenue dans Gambas 3"
 
@@ -4362,11 +4362,11 @@ msgstr "-"
 msgid "XSLT tools based on libxslt"
 msgstr "Outils XSLT basés sur la bibliothèque libxslt"
 
-#: FOption.class:787 FPropertyProject.class:1701
+#: FOption.class:776 FPropertyProject.class:1698
 msgid "Yes"
 msgstr "Oui"
 
-#: FPropertyProject.class:1225
+#: FPropertyProject.class:1222
 msgid "You are going to cancel your changes!"
 msgstr "Tous les changements vont être annulés !"
 
@@ -4374,7 +4374,7 @@ msgstr "Tous les changements vont être annulés !"
 msgid "You must define a startup class or form!"
 msgstr "Vous devez définir une classe ou un formulaire de démarrage !"
 
-#: FOption.class:304
+#: FOption.class:303
 msgid "You need to restart the application to see your changes."
 msgstr "Vous devez redémarrer l'application pour que vos changements prennent effet."
 

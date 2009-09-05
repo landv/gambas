@@ -1144,10 +1144,7 @@ End
 
 Public Sub btnAdd_Click()
 
-  Dim sComp As String
-  
-  sComp = Trim(LCase(cmbRequire.Text))
-  AddRequire(sComp)
+  AddRequire(cmbRequire.Text)
 
 End
 

@@ -59,7 +59,7 @@ Public Sub DrawingArea_Draw()
     sTitle &= "<br><font size=\"-1\" color=\"gray\">" & .Title
     If .Authors And If .Authors.Count Then
       If .Title Then sTitle &= " - "
-      sTitle &= "<i>" & ("Author(s)") & " : " & .Authors.Join(", ") & "</i>"
+      sTitle &= "<i>" & If(.Authors.Count = 1, ("Author"), ("Authors")) & " : " & .Authors.Join(", ") & "</i>"
     Endif
     sTitle &= "</font>"
     'Draw.Font.Bold = True

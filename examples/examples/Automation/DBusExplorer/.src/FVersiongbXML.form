@@ -9,45 +9,54 @@
     MoveScaled(3,0,83,4)
     Arrangement = Arrange.Horizontal
     { btnRefresh ToolButton
-      MoveScaled(0,0,4,4)
+      MoveScaled(0,0,7,4)
       AutoResize = True
       Text = ("Refresh")
       Picture = Picture["icon:/small/refresh"]
     }
     { HBox1 HBox
       MoveScaled(11,0,52,3)
+      Spacing = True
       { Separator1 Separator
-        MoveScaled(2,0,2,3)
+        MoveScaled(2,0,0,3)
       }
       { Label4 Label
-        MoveScaled(7,0,9,3)
+        MoveScaled(3,0,9,3)
+        Font = Font["Bold"]
+        AutoResize = True
         Text = ("Legend:")
       }
       { PictureBox1 PictureBox
         MoveScaled(11,0,3,3)
         Picture = Picture["method.png"]
+        AutoResize = True
         Alignment = Align.Center
       }
       { Label1 Label
-        MoveScaled(14,0,9,3)
+        MoveScaled(14,0,8,3)
+        AutoResize = True
         Text = ("Method")
       }
       { PictureBox2 PictureBox
         MoveScaled(23,0,3,3)
         Picture = Picture["property.png"]
+        AutoResize = True
         Alignment = Align.Center
       }
       { Label2 Label
         MoveScaled(28,0,10,3)
+        AutoResize = True
         Text = ("Property")
       }
       { PictureBox3 PictureBox
         MoveScaled(37,0,3,3)
         Picture = Picture["signal.png"]
+        AutoResize = True
         Alignment = Align.Center
       }
       { Label3 Label
         MoveScaled(41,0,6,3)
+        AutoResize = True
         Text = ("Signal")
       }
     }

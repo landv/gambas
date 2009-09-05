@@ -479,10 +479,11 @@ Public Sub dwgStdColor_Draw()
 
   Dim X, H, W As Integer
   
+  Draw.Foreground = Color.Gray
   For H = 0 To 359 Step 15
     X = dwgStdColor.W * H / 360
     W = Min(dwgStdColor.W * (H + 15) / 360, dwgStdColor.W - 1) - X
-    Draw.FillRect(X + 2, 2, W - 3, dwgStdColor.H - 4, Color.HSV(360 - H, 255, 255))
+    Draw.FillRect(X + 1, 1, W, dwgStdColor.H - 2, Color.HSV(360 - H, 255, 255))
     Draw.Line(X, 0, X, dwgStdColor.H - 1)
   Next
 
