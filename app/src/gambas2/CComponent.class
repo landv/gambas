@@ -195,9 +195,9 @@ STATIC PRIVATE SUB InitComponent(sFile AS String, bUser AS Boolean)
         ELSE IF sKey = "Virtual" THEN
           .Virtuals.Insert(Split(sLig))
         ELSE IF sKey = "Require" OR sKey = "Requires" THEN
-          .Require = Split(LCase(sLig))
+          .Require = Split(sLig)
         ELSE IF sKey = "Exclude" OR sKey = "Excludes" THEN
-          .Exclude = Split(LCase(sLig))
+          .Exclude = Split(sLig)
         ELSE IF sKey = "Implement" OR sKey = "Implements" THEN
           .Implement = Split(LCase(sLig))
         ELSE IF sKey = "Need" OR sKey = "Needs" THEN
