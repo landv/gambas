@@ -308,8 +308,10 @@ PRIVATE SUB SetLang(OPTIONAL sLang AS String) AS Boolean
   IF cvwTranslate.MoveTo(sCurrent) THEN
     cvwTranslate.MoveFirst
   ENDIF
-  cvwTranslate.Item.Selected = TRUE
-  cvwTranslate.Item.EnsureVisible
+  IF cvwTranslate.Available THEN
+    cvwTranslate.Item.Selected = TRUE
+    cvwTranslate.Item.EnsureVisible
+  ENDIF
 
 FINALLY
 
@@ -317,7 +319,7 @@ FINALLY
 
 CATCH
 
-  sMsg = Error.Text
+  sMsg = Error.Where & ": " & Error.Text
   Message.Error(Subst(("Cannot read translation file for language '&1'"), Language.ToName(sLang)) & "\n\n" & sMsg & $sErrMerge)
   $bIgnore = FALSE
   RETURN TRUE
@@ -787,7 +789,11 @@ END
 
 PRIVATE SUB DisplayTrans()
 
-  lblInfo.Text = Subst(("&1 strings (&2 not translated) - &3 % done"), cvwTranslate.Count, cvwTranslate.Count - $nTrans, ($nTrans * 100) \ cvwTranslate.Count)
+  IF cvwTranslate.Count THEN
+    lblInfo.Text = Subst(("&1 strings (&2 not translated) - &3 % done"), cvwTranslate.Count, cvwTranslate.Count - $nTrans, ($nTrans * 100) \ cvwTranslate.Count)
+  ELSE 
+    lblInfo.Text = ""
+  ENDIF
   btnNext.Enabled = cvwTranslate.Count - $nTrans
   btnPrevious.Enabled = btnNext.Enabled
 
@@ -1050,8 +1056,10 @@ PRIVATE SUB ShiftToSort(OPTIONAL sSortText AS String)
   IF NOT cvwTranslate.Available THEN 
     cvwTranslate.MoveFirst
   ENDIF 
-  cvwTranslate.item.Selected = TRUE
-  cvwTranslate.Item.EnsureVisible()
+  IF cvwTranslate.Available THEN
+    cvwTranslate.Item.Selected = TRUE
+    cvwTranslate.Item.EnsureVisible()
+  ENDIF
   DisplayTrans
   
 END

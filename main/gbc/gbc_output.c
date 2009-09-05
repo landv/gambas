@@ -1140,8 +1140,9 @@ static void output_translation(void)
   SYMBOL *sym;
   unsigned char c;
 
-  /*printf("Generating %s\n", JOB->tname);*/
-
+	if (JOB->verbose)
+		printf("Writing translation file: %s\n", JOB->tname);
+	
   file = fopen(JOB->tname, "w");
   if (!file)
     THROW("Cannot create file '&1'", JOB->tname);
@@ -1172,8 +1173,16 @@ static void output_translation(void)
       continue;
 
     sym = TABLE_get_symbol(Class->string, constant->value);
+
+		//if (JOB->verbose)
+		//	printf("%d (%d): '%.*s'\n", i, constant->value, sym->len, sym->name);
+		
     if (sym->len == 0)
+		{
+			//if (JOB->verbose)
+			//	printf("Already written\n");
       continue;
+		}
 
     for (j = 0; j < sym->len; j++)
     {
@@ -1183,7 +1192,11 @@ static void output_translation(void)
     }
 
 		if (j >= sym->len)
+		{
+			//if (JOB->verbose)
+			//	printf("Ignore string having space characters only\n");
 			continue;
+		}
 
     fprintf(file, "#: %s:%d\n", FILE_get_name(JOB->name), constant->line);
 

@@ -145,13 +145,13 @@ static boolean search(void *symbol, int n_symbol, size_t size, int flag, const c
         goto __T_GREATER;
       
       {
-        const char *s1 = name;
-        const char *s2 = sym->name;
-        char result;
+        const uchar *s1 = (uchar *)name;
+        const uchar *s2 = (uchar *)sym->name;
+        int result;
       
         l = len;
         
-        for(;;)
+        while (l)
         {
           result = tolower(*s1++) - tolower(*s2++);
           
@@ -160,8 +160,7 @@ static boolean search(void *symbol, int n_symbol, size_t size, int flag, const c
           else if (result > 0)
             goto __T_GREATER;
           
-          if (--l == 0)
-            break;
+					l--;
         }
       
         *index = pos;
@@ -194,13 +193,13 @@ static boolean search(void *symbol, int n_symbol, size_t size, int flag, const c
         goto __B_GREATER;
       
       {
-        const char *s1 = name;
-        const char *s2 = sym->name;
-        char result;
+        const uchar *s1 = (uchar *)name;
+        const uchar *s2 = (uchar *)sym->name;
+        int result;
         
         l = len;
       
-        for(;;)
+        while (l)
         {
           result = *s1++ - *s2++;
           
@@ -209,8 +208,7 @@ static boolean search(void *symbol, int n_symbol, size_t size, int flag, const c
           else if (result > 0)
             goto __B_GREATER;
           
-          if (--l == 0)
-            break;
+					l--;
         }
       
         *index = pos;
@@ -506,6 +504,7 @@ PUBLIC void TABLE_print(TABLE *table, boolean sort)
 {
   int i;
   SYMBOL *sym;
+	int olen;
 
   fprintf(stderr, "capacity %i\n", ARRAY_count(table->symbol));
 
@@ -519,11 +518,17 @@ PUBLIC void TABLE_print(TABLE *table, boolean sort)
   printf("\n");
   */
 
+	olen = -1;
   for (i = 0; i < ARRAY_count(table->symbol); i++)
   {
     if (sort)
     {
       sym = SYM(table, SYM(table, i)->sort);
+			if (sym->len != olen)
+			{
+				olen = sym->len;
+				fprintf(stderr, "[%d] ", olen);
+			}
 	    fprintf(stderr, "%.*s ", (int)sym->len, sym->name);
 		}
     else
