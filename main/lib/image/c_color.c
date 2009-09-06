@@ -243,7 +243,7 @@ BEGIN_METHOD(CCOLOR_get, GB_INTEGER color)
 
 	CCOLOR *info;
 
-	GB.New(POINTER(&info), GB.FindClass("Color"), NULL, NULL);
+	GB.New(POINTER(&info), GB.FindClass("ColorInfo"), NULL, NULL);
 	gt_color_to_rgba(VARG(color), &info->r, &info->g, &info->b, &info->a);
   GB.ReturnObject(info);
 
@@ -417,7 +417,7 @@ END_METHOD
 
 
 
-/*GB_DESC CColorInfoDesc[] =
+GB_DESC CColorInfoDesc[] =
 {
   GB_DECLARE("ColorInfo", sizeof(CCOLOR)), GB_NOT_CREATABLE(),
 
@@ -428,13 +428,14 @@ END_METHOD
   GB_PROPERTY("Hue", "i", CCOLOR_info_hue),
   GB_PROPERTY("Saturation", "i", CCOLOR_info_saturation),
   GB_PROPERTY("Value", "i", CCOLOR_info_value),
+  GB_PROPERTY("Color", "i", CCOLOR_info_color),
 
   GB_END_DECLARE
-};*/
+};
 
 GB_DESC CColorDesc[] =
 {
-  GB_DECLARE("Color", sizeof(CCOLOR)), GB_VIRTUAL_CLASS(),
+  GB_DECLARE("Color", 0), GB_NOT_CREATABLE(),
 
   GB_CONSTANT("Default", "i", COLOR_DEFAULT),
 
@@ -477,18 +478,9 @@ GB_DESC CColorDesc[] =
   GB_STATIC_METHOD("Merge", "i", CCOLOR_merge, "(Color1)i(Color2)i[(Weight)f]"),
   GB_STATIC_METHOD("Blend", "i", CCOLOR_blend, "(Source)i(Destination)i"),
 
-  GB_STATIC_METHOD("_get", "Color", CCOLOR_get, "(Color)i"),
-  GB_STATIC_METHOD("_call", "Color", CCOLOR_get, "(Color)i"),
+  GB_STATIC_METHOD("_get", "ColorInfo", CCOLOR_get, "(Color)i"),
+  GB_STATIC_METHOD("_call", "ColorInfo", CCOLOR_get, "(Color)i"),
 	
-  GB_PROPERTY("Alpha", "i", CCOLOR_info_alpha),
-  GB_PROPERTY("Red", "i", CCOLOR_info_red),
-  GB_PROPERTY("Green", "i", CCOLOR_info_green),
-  GB_PROPERTY("Blue", "i", CCOLOR_info_blue),
-  GB_PROPERTY("Hue", "i", CCOLOR_info_hue),
-  GB_PROPERTY("Saturation", "i", CCOLOR_info_saturation),
-  GB_PROPERTY("Value", "i", CCOLOR_info_value),
-  GB_PROPERTY("Color", "i", CCOLOR_info_color),
-
   GB_END_DECLARE
 };
 

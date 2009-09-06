@@ -36,6 +36,7 @@ GB_INTERFACE GB EXPORT;
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {
+	CColorInfoDesc,
 	CColorDesc,
 	CImageDesc,
 	CImageStatDesc,

@@ -750,18 +750,10 @@ Public Sub Editors_KeyPress()
 
   Endif
 
-  If Key.Code = Key.F8 Then
+  If Key.Code = Key.F6 Then
 
-'     IF Key.Shift THEN
-'       Project.Forward
-'     ELSE IF Key.Alt THEN
-'       Project.ReturnFrom
-'     ELSE
-'       Project.Step
-'     ENDIF
-' 
-'     STOP EVENT
-'     RETURN
+    btnProc_MouseDown
+    Stop Event
 
   Else If Key.Code = Key.F2 Then
 
@@ -2927,5 +2919,15 @@ End
 Public Sub btnProc_DblClick()
 
   btnProc_MouseDown
+
+End
+
+
+Public Sub gvwProc_KeyPress()
+
+  If Key.Code = Key.Return Or If Key.Code = Key.Enter Or If Key.Code = Key.Space Then
+    gvwProc_Click
+    Stop Event
+  Endif
 
 End

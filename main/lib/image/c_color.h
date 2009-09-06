@@ -27,7 +27,7 @@
 
 #ifndef __C_COLOR_C
 extern GB_DESC CColorDesc[];
-//extern GB_DESC CColorInfoDesc[];
+extern GB_DESC CColorInfoDesc[];
 #else
 #define THIS ((CCOLOR *)_object)
 enum { CC_R, CC_G, CC_B, CC_A, CC_H, CC_S, CC_V };
