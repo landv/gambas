@@ -241,60 +241,117 @@ END_METHOD
 
 BEGIN_METHOD(CCOLOR_get, GB_INTEGER color)
 
-	COLOR_INFO *info;
+	CCOLOR *info;
 
-	GB.New(POINTER(&info), GB.FindClass("ColorInfo"), NULL, NULL);
+	GB.New(POINTER(&info), GB.FindClass("Color"), NULL, NULL);
 	gt_color_to_rgba(VARG(color), &info->r, &info->g, &info->b, &info->a);
   GB.ReturnObject(info);
 
 END_METHOD
 
+static void handle_rgba_property(CCOLOR *_object, void *_param, int prop)
+{
+	if (READ_PROPERTY)
+	{
+		switch(prop)
+		{
+			case CC_R: GB.ReturnInteger(THIS->r); break;
+			case CC_G: GB.ReturnInteger(THIS->g); break;
+			case CC_B: GB.ReturnInteger(THIS->b); break;
+			case CC_A: GB.ReturnInteger(THIS->a); break;
+		}
+	}
+	else
+	{
+		int v = VPROP(GB_INTEGER);
+		if (v < 0) v = 0; else if (v > 255) v = 255;
+		switch(prop)
+		{
+			case CC_R: THIS->r = v; break;
+			case CC_G: THIS->g = v; break;
+			case CC_B: THIS->b = v; break;
+			case CC_A: THIS->a = v; break;
+		}
+	}
+}
+
 BEGIN_PROPERTY(CCOLOR_info_alpha)
 
-  GB.ReturnInteger(THIS_COLOR_INFO->a);
+	handle_rgba_property(_object, _param, CC_A);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CCOLOR_info_red)
 
-  GB.ReturnInteger(THIS_COLOR_INFO->r);
+	handle_rgba_property(_object, _param, CC_R);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CCOLOR_info_green)
 
-  GB.ReturnInteger(THIS_COLOR_INFO->g);
+	handle_rgba_property(_object, _param, CC_G);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CCOLOR_info_blue)
 
-  GB.ReturnInteger(THIS_COLOR_INFO->b);
+	handle_rgba_property(_object, _param, CC_B);
 
 END_PROPERTY
 
+static void handle_hsv_property(CCOLOR *_object, void *_param, int prop)
+{
+  int h, s, v;
+  gt_rgb_to_hsv_cached(THIS->r, THIS->g, THIS->b, &h, &s, &v);
+	
+	if (READ_PROPERTY)
+	{
+		switch(prop)
+		{
+			case CC_H: GB.ReturnInteger(h); break;
+			case CC_V: GB.ReturnInteger(v); break;
+			case CC_S: GB.ReturnInteger(s); break;
+		}
+	}
+	else
+	{
+		switch(prop)
+		{
+			case CC_H: h = VPROP(GB_INTEGER) % 360; break;
+			case CC_V: v = VPROP(GB_INTEGER); if (v < 0) v = 0; else if (v > 255) v = 255; break;
+			case CC_S: v = VPROP(GB_INTEGER); if (s < 0) s = 0; else if (s > 255) s = 255; break;
+		}
+		COLOR_hsv_to_rgb(h, s, v, &THIS->r, &THIS->g, &THIS->b);
+	}
+}
+
 BEGIN_PROPERTY(CCOLOR_info_hue)
 
-  int h, s, v;
-  gt_rgb_to_hsv_cached(THIS_COLOR_INFO->r, THIS_COLOR_INFO->g, THIS_COLOR_INFO->b, &h, &s, &v);
-  GB.ReturnInteger(h);
+	handle_hsv_property(THIS, _param, CC_H);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CCOLOR_info_saturation)
 
-  int h, s, v;
-  gt_rgb_to_hsv_cached(THIS_COLOR_INFO->r, THIS_COLOR_INFO->g, THIS_COLOR_INFO->b, &h, &s, &v);
-  GB.ReturnInteger(s);
+	handle_hsv_property(THIS, _param, CC_S);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CCOLOR_info_value)
 
-  int h, s, v;
-  gt_rgb_to_hsv_cached(THIS_COLOR_INFO->r, THIS_COLOR_INFO->g, THIS_COLOR_INFO->b, &h, &s, &v);
-  GB.ReturnInteger(v);
-  
+	handle_hsv_property(THIS, _param, CC_V);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CCOLOR_info_color)
+
+	CCOLOR *info = THIS;
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(gt_rgba_to_color(info->r, info->g, info->b, info->a));
+	else
+		gt_color_to_rgba(VPROP(GB_INTEGER), &info->r, &info->g, &info->b, &info->a);
+
 END_PROPERTY
 
 BEGIN_METHOD(CCOLOR_lighter, GB_INTEGER color)
@@ -360,9 +417,9 @@ END_METHOD
 
 
 
-GB_DESC CColorInfoDesc[] =
+/*GB_DESC CColorInfoDesc[] =
 {
-  GB_DECLARE("ColorInfo", sizeof(COLOR_INFO)), GB_NOT_CREATABLE(),
+  GB_DECLARE("ColorInfo", sizeof(CCOLOR)), GB_NOT_CREATABLE(),
 
   GB_PROPERTY("Alpha", "i", CCOLOR_info_alpha),
   GB_PROPERTY("Red", "i", CCOLOR_info_red),
@@ -373,11 +430,11 @@ GB_DESC CColorInfoDesc[] =
   GB_PROPERTY("Value", "i", CCOLOR_info_value),
 
   GB_END_DECLARE
-};
+};*/
 
 GB_DESC CColorDesc[] =
 {
-  GB_DECLARE("Color", 0), GB_VIRTUAL_CLASS(),
+  GB_DECLARE("Color", sizeof(CCOLOR)), GB_VIRTUAL_CLASS(),
 
   GB_CONSTANT("Default", "i", COLOR_DEFAULT),
 
@@ -420,7 +477,17 @@ GB_DESC CColorDesc[] =
   GB_STATIC_METHOD("Merge", "i", CCOLOR_merge, "(Color1)i(Color2)i[(Weight)f]"),
   GB_STATIC_METHOD("Blend", "i", CCOLOR_blend, "(Source)i(Destination)i"),
 
-  GB_STATIC_METHOD("_get", "ColorInfo", CCOLOR_get, "(Color)i"),
+  GB_STATIC_METHOD("_get", "Color", CCOLOR_get, "(Color)i"),
+  GB_STATIC_METHOD("_call", "Color", CCOLOR_get, "(Color)i"),
+	
+  GB_PROPERTY("Alpha", "i", CCOLOR_info_alpha),
+  GB_PROPERTY("Red", "i", CCOLOR_info_red),
+  GB_PROPERTY("Green", "i", CCOLOR_info_green),
+  GB_PROPERTY("Blue", "i", CCOLOR_info_blue),
+  GB_PROPERTY("Hue", "i", CCOLOR_info_hue),
+  GB_PROPERTY("Saturation", "i", CCOLOR_info_saturation),
+  GB_PROPERTY("Value", "i", CCOLOR_info_value),
+  GB_PROPERTY("Color", "i", CCOLOR_info_color),
 
   GB_END_DECLARE
 };

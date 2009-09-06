@@ -19,7 +19,7 @@
     { mnuDefinition Menu
       Action = ".find-definition"
       Text = ("Find definition")
-      Picture = Picture["img/16/find-definition.png"]
+      Picture = Picture["icon:/small/info"]
       Shortcut = "F2"
     }
     { mnuLastPosition Menu
@@ -340,15 +340,14 @@
       Text = ("")
       Picture = Picture["icon:/small/view-split-v"]
     }
-    { Separator2 Separator
+    { Separator1 Separator
       MoveScaled(76,0,1,4)
     }
-    { cmbProc ComboBox
-      MoveScaled(78,0,36,4)
-      ToolTip = ("Function browser")
+    { btnProc ToolButton
+      MoveScaled(77,0,37,4)
       Action = ".proc"
-      Text = ("")
-      ReadOnly = True
+      Text = ("Procedure list")
+      Picture = Picture["icon:/16/next"]
     }
     { btnDefinition ToolButton mnuDefinition
       Name = "btnDefinition"
@@ -357,7 +356,7 @@
       ToolTip = ("Find definition")
       Action = ".find-definition"
       Text = ("")
-      Picture = Picture["img/16/find-definition.png"]
+      Picture = Picture["icon:/16/info"]
     }
     { btnLastPosition ToolButton mnuLastPosition
       Name = "btnLastPosition"
@@ -408,6 +407,23 @@
     #X = 518
     #Y = 175
   }
+  { panProc Panel
+    MoveScaled(83,9,31,39)
+    Visible = False
+    Background = Color.TextBackground
+    Ignore = True
+    Arrangement = Arrange.Fill
+    Border = Border.Plain
+    { gvwProc GridView
+      MoveScaled(2,2,25,30)
+      Tracking = True
+      Mouse = Mouse.Pointing
+      Mode = Select.Single
+      Grid = False
+      Scrollbar = Scroll.Vertical
+      Border = False
+    }
+  }
 }
 
 # Gambas Action File 3.0
@@ -439,7 +455,7 @@
   { Action find-definition
     Text = "Find definition"
     Shortcut = "F2"
-    Picture = "img/16/find-definition.png"
+    Picture = "icon:/16/info"
   }
   { Action find-next
     Text = "Find Next"
@@ -481,8 +497,8 @@
     Picture = "icon:/small/paste"
   }
   { Action proc
-    Text = "Function browser"
-    Picture = "$ComboBox"
+    Text = "Procedure list"
+    Picture = "icon:/16/next"
   }
   { Action redo
     Text = "Redo"

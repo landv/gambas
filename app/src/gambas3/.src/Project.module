@@ -4187,7 +4187,7 @@ Public Sub OpenImage(sLink As String, sEditor As String) As Boolean
   
   If Not bCheck Then Return
     
-  hProcess = Shell sExec & " " & Chr$(34) & sLink & Chr$(34)
+  hProcess = Shell sExec & " " & Chr$(34) & sLink & Chr$(34) As "Process"
   hProcess.Tag = sLink
 
 Catch
