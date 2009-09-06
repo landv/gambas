@@ -133,9 +133,9 @@ BEGIN_PROPERTY(CDESKTOP_charset)
 END_PROPERTY
 
 
-BEGIN_METHOD_VOID(CDESKTOP_grab)
+BEGIN_METHOD(CDESKTOP_grab, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
 
-  GB.ReturnObject(CPICTURE_grab(0));
+  GB.ReturnObject(CPICTURE_grab(0, VARGOPT(x, 0), VARGOPT(y, 0), VARGOPT(w, 0), VARGOPT(h, 0)));
 
 END_METHOD
 
@@ -214,7 +214,7 @@ GB_DESC CDesktopDesc[] =
   GB_STATIC_PROPERTY_READ("Resolution", "i", CDESKTOP_resolution),
   GB_STATIC_PROPERTY_READ("Scale", "i", CDESKTOP_scale),
 
-  GB_STATIC_METHOD("Grab", "Picture", CDESKTOP_grab, NULL),
+  GB_STATIC_METHOD("Screenshot", "Picture", CDESKTOP_grab, "[(X)i(Y)i(Width)i(Height)i]"),
 
   GB_END_DECLARE
 };

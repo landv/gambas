@@ -229,6 +229,7 @@ bool gApplication::_busy = false;
 char *gApplication::_title = NULL;
 int gApplication::_loopLevel = 0;
 int gApplication::_tooltip_delay = 500; // GTK+ default
+void *gApplication::_loop_owner = 0;
 
 GtkTooltips* gApplication::tipHandle()
 {
@@ -323,6 +324,7 @@ void gApplication::init(int *argc,char ***argv)
 	
 	gClipboard::init();
 	gKey::init();
+	_loop_owner = 0;
 }
 
 void gApplication::exit()
@@ -457,21 +459,28 @@ void gApplication::setDefaultTitle(const char *title)
 	_title = g_strdup(title);
 }
 
-void gApplication::enterLoop()
+void gApplication::enterLoop(void *owner)
 {
+	void *old_owner = _loop_owner;
 	int l = _loopLevel;
 	
 	_loopLevel++;
+	_loop_owner = owner;
 	
 	do
 	{
 		do_iteration(false);
 	}
 	while (_loopLevel > l);
+	
+	_loop_owner = old_owner;
 }
 
-void gApplication::exitLoop()
+void gApplication::exitLoop(void *owner)
 {
+	if (!hasLoop(owner))
+		return;
+	
 	if (_loopLevel > 0)
 		_loopLevel--;
 }

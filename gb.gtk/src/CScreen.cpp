@@ -66,14 +66,14 @@ BEGIN_PROPERTY(CSCREEN_charset)
 END_PROPERTY
 
 
-BEGIN_METHOD_VOID(CSCREEN_grab)
+BEGIN_METHOD(CSCREEN_grab, GB_INTEGER x; GB_INTEGER y; GB_INTEGER width; GB_INTEGER height)
 
-	CPICTURE *pic=NULL;
-	gPicture *buf=gDesktop::grab();
+	CPICTURE *pic;
+	gPicture *buf = gDesktop::screenshot(VARGOPT(x,0), VARGOPT(y, 0), VARGOPT(width, 0), VARGOPT(height, 0));
   
 	GB.New(POINTER(&pic), GB.FindClass("Picture"), 0, 0);
 	if (pic->picture) pic->picture->unref();
-	pic->picture=buf;
+	pic->picture = buf;
 	GB.ReturnObject(pic);
 
 END_METHOD
@@ -229,7 +229,7 @@ GB_DESC CDesktopDesc[] =
   GB_STATIC_PROPERTY_READ("Resolution", "i", CSCREEN_resolution),
   GB_STATIC_PROPERTY_READ("Scale","i",CSCREEN_scale),
 
-  GB_STATIC_METHOD("Grab", "Picture", CSCREEN_grab, 0),
+  GB_STATIC_METHOD("Screenshot", "Picture", CSCREEN_grab, "[(X)i(Y)i(Width)i(Height)i]"),
 
   GB_END_DECLARE
 };

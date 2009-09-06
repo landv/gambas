@@ -129,7 +129,7 @@ static void flush_picture()
 }
 
 
-CPICTURE *CPICTURE_grab(QWidget *wid)
+CPICTURE *CPICTURE_grab(QWidget *wid, int x, int y, int w, int h)
 {
   CPICTURE *pict;
   int id;
@@ -143,7 +143,12 @@ CPICTURE *CPICTURE_grab(QWidget *wid)
 		#else
 			id = QX11Info::appRootWindow();
 	
-			*pict->pixmap = QPixmap::grabWindow(id);
+			if (w <= 0 || h <= 0)
+			{
+				x = 0; y = 0; w = -1; h = -1;
+			}
+			
+			*pict->pixmap = QPixmap::grabWindow(id, x, y, w, h);
 		#endif
   }
   else

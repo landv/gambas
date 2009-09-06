@@ -29,9 +29,6 @@ void gMnemonic_correctText(char *st,char **buf);
 guint gMnemonic_correctMarkup(char *st,char **buf);
 void gMnemonic_returnText(char *st,char **buf);
 
-/* Tools */
-gPicture *Grab_gdkWindow(GdkWindow *win);
-
 int gDialog_run(GtkDialog *wid);
 
 #endif

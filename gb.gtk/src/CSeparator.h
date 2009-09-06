@@ -34,8 +34,6 @@ extern GB_DESC CSeparatorDesc[];
 #define THIS ((CSEPARATOR *)_object)
 #define SEPARATOR ((gSeparator*)THIS->ob.widget)
 
-#define CSEPARATOR_PROPERTIES CWIDGET_PROPERTIES 
-
 #endif 
 
 typedef  

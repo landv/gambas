@@ -15,16 +15,19 @@
       Spacing = True
       { dwgStdColor DrawingArea
         MoveScaled(0,0,33,3)
+        Mouse = Mouse.Pointing
         Border = Border.Plain
       }
       { dwgColorMap DrawingArea
         MoveScaled(0,6,25,20)
+        Mouse = Mouse.Cross
         Expand = True
         Border = Border.Plain
       }
     }
     { dwgValue DrawingArea
       MoveScaled(50,3,4,23)
+      Mouse = Mouse.Pointing
     }
   }
   { panInfo HBox
@@ -114,16 +117,24 @@
       MoveScaled(32,11,1,3)
     }
     { VBox1 VBox
-      MoveScaled(34,1,15,19)
+      MoveScaled(34,1,16,19)
       Spacing = True
       { panColor DrawingArea
-        MoveScaled(0,0,11,9)
+        MoveScaled(0,0,11,8)
+        Expand = True
         Border = Border.Plain
       }
       { txtHexa ButtonBox
-        MoveScaled(1,11,13,5)
+        MoveScaled(0,9,13,5)
         Text = ("ButtonBox1")
         Picture = Picture["icon:/small/color-picker"]
+      }
+      { panGrab Panel
+        MoveScaled(4,15,3,3)
+        Visible = False
+        Tracking = True
+        Mouse = Mouse.Cross
+        Ignore = True
       }
     }
   }

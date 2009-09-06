@@ -12,7 +12,7 @@ Private $iVal As Integer
 Private $bLock As Boolean
 
 Static Private $hImage As Image
-Static Private $hCross As Picture
+Static Private $hCross As Image
 Static Private $hValue As Image
 
 Private $hMap As Picture
@@ -25,8 +25,11 @@ Private $Y As Integer
 Private $iSize As Integer
 Private $I As Integer
 Private $J As Integer
+Private $nStdColor As Integer
 
 Private $iValue As Integer
+Private $hZoom As Picture
+Private Const ZOOM_FACTOR As Integer = 6
 
 'Private Const NCOLH As Integer = 11
 'Static Private $aHue As Integer[] = [0, 30, 45, 60, 75, 90, 120, 150, 165, 180, 195, 210, 240, 270, 285, 300, 330, 360]
@@ -37,7 +40,7 @@ Public Sub _new()
 
   If Not $hImage Then
     $hImage = Image.Load("img/colormap.png")
-    $hCross = Picture.Load("img/cross.png")
+    $hCross = Image.Load("img/cross.png")
     $hValue = Image.Load("img/valuemap.png")
   Endif
 
@@ -142,8 +145,15 @@ End
 Public Sub Form_Arrange()
 
   $hMap = $hImage.Stretch(dwgColorMap.Width, dwgColorMap.Height).Picture
-  $hValueMap = $hValue.Stretch(dwgValue.W - 8, dwgValue.H - 4)
+  $hValueMap = $hValue.Stretch(dwgValue.W - 6, dwgValue.H - 2)
   MoveCross
+
+  $nStdColor = 24
+  Repeat
+    If (dwgStdColor.W \ $nStdColor) >= Desktop.Scale * 2 Then Break
+    $nStdColor \= 2
+  Until $nStdColor = 3
+  dwgStdColor.Refresh
 
 End
 
@@ -170,7 +180,7 @@ Public Sub dwgColorMap_Draw()
 
   Draw.Picture($hMap, 0, 0)
   If $bHide Then Return
-  Draw.Picture($hCross, $X - 7, $Y - 7)
+  Draw.Image($hCross, $X - 7, $Y - 7)
 
 End
 
@@ -374,6 +384,26 @@ Public Sub panColor_Draw()
 
   Dim X, Y As Integer
   Dim C As Integer
+  Dim W, H As Integer
+  
+  If $hZoom Then
+  
+    W = (panColor.W + 3) \ ZOOM_FACTOR
+    H = (panColor.H + 3) \ ZOOM_FACTOR
+
+    Draw.LineStyle = Line.None
+    Draw.Zoom($hZoom.Image, ZOOM_FACTOR, 0, 0)
+    Draw.LineStyle = Line.Solid
+    X = ((W \ 2)) * ZOOM_FACTOR
+    Y = ((H \ 2)) * ZOOM_FACTOR
+    Draw.Foreground = Color.LightForeground
+    Draw.Rect(X - 2, Y - 2, ZOOM_FACTOR + 4, ZOOM_FACTOR + 4)
+    Draw.Foreground = Color.Background
+    Draw.Rect(X - 1, Y - 1, ZOOM_FACTOR + 2, ZOOM_FACTOR + 2)
+    'Draw.Rect(X, Y, ZOOM_FACTOR, ZOOM_FACTOR)
+    Return
+  
+  Endif
 
   Draw.FillStyle = Fill.Solid
   Draw.LineStyle = Line.None
@@ -477,12 +507,13 @@ End
 
 Public Sub dwgStdColor_Draw()
 
-  Dim X, H, W As Integer
+  Dim X, H, W, WC, iStep As Integer
   
+  iStep = 360 \ $nStdColor
   Draw.Foreground = Color.Gray
-  For H = 0 To 359 Step 15
+  For H = 0 To 359 Step iStep
     X = dwgStdColor.W * H / 360
-    W = Min(dwgStdColor.W * (H + 15) / 360, dwgStdColor.W - 1) - X
+    W = Min(dwgStdColor.W * (H + iStep) / 360, dwgStdColor.W - 1) - X
     Draw.FillRect(X + 1, 1, W, dwgStdColor.H - 2, Color.HSV(360 - H, 255, 255))
     Draw.Line(X, 0, X, dwgStdColor.H - 1)
   Next
@@ -491,7 +522,9 @@ End
 
 Public Sub dwgStdColor_MouseMove()
 
-  SetColor(Color.HSV(360 - Int(Mouse.X / dwgStdColor.W * 360 / 15) * 15, 255, 255))
+  Dim iStep As Integer
+  iStep = 360 \ $nStdColor
+  SetColor(Color.HSV(360 - Int(Mouse.X / dwgStdColor.W * 360 / iStep) * iStep, 255, 255))
 
 End
 
@@ -508,13 +541,14 @@ Public Sub dwgValue_Draw()
 
   hImage = $hValueMap.Copy()
   hImage.Colorize(Color.HSV($iHue, $iSat, 255))
-  Draw.Image(hImage, 4, 2)
+  Draw.Image(hImage, 3, 1)
   Draw.Foreground = Color.LightForeground
   Draw.Rect(2, 0, dwgValue.W - 4, dwgValue.H)
   Y = (256 - $iVal) / 256 * dwgValue.H
   Y = Max(0, Min(dwgValue.H - 15, Y - 8))
   Draw.Rect(0, Y, dwgValue.W, 15)
   Draw.Rect(1, Y + 1, dwgValue.W - 2, 13)
+  Draw.Rect(2, Y + 2, dwgValue.W - 4, 11)
 
 End
 
@@ -533,5 +567,37 @@ Public Sub dwgValue_MouseMove()
   V = 255 - Min(255, Max(0, V))
   If V = $iVal Then Return
   txtV.Value = V
+
+End
+
+Public Sub txtHexa_Click()
+
+  panGrab.Mouse = Mouse.Custom
+  panGrab.Cursor = New Cursor(txtHexa.Picture, 0, txtHexa.Picture.H - 1)
+  panGrab.Show
+  panGrab_MouseMove
+  panGrab.Grab
+  $hZoom = Null
+  panColor.Refresh 'SetColor(hPict.Image[0, 0])
+  panGrab.Hide
+
+End
+
+Public Sub panGrab_MouseMove()
+
+  Dim W, H As Integer
+  
+  W = (panColor.W + 3) \ ZOOM_FACTOR
+  H = (panColor.H + 3) \ ZOOM_FACTOR
+
+  $hZoom = Desktop.Screenshot(Mouse.ScreenX - W \ 2, Mouse.ScreenY - H \ 2, W, H)
+  panColor.Refresh 'SetColor(hPict.Image[0, 0])
+
+End
+
+Public Sub panGrab_MouseUp()
+
+  Dim hPict As Picture = Desktop.Screenshot(Mouse.ScreenX, Mouse.ScreenY, 1, 1)
+  SetColor(hPict.Image[0, 0])
 
 End

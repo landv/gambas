@@ -241,6 +241,7 @@ void gControl::initAll(gContainer *parent)
 	frame = border = widget = NULL;
 	_scroll = NULL;
 	hFree = NULL;
+	_grab = false;
 	
 	controls = g_list_append(controls,this);
 }
@@ -1031,9 +1032,9 @@ void gControl::setPrevious(gControl *ctrl)
 		setNext(ctrl->next());
 }
 
-gPicture* gControl::grab()
+gPicture* gControl::screenshot()
 {
-	return Grab_gdkWindow(border->window);
+	return gt_grab_window(border->window);
 }
 
 /*********************************************************************
@@ -1650,4 +1651,30 @@ void gControl::setTracking(bool v)
 				gtk_widget_set_events(widget, gtk_widget_get_events(widget) & ~GDK_POINTER_MOTION_MASK);
 		}
 	}
+}
+
+void gControl::grab()
+{
+	if (_grab)
+		return;
+	
+	if (gdk_pointer_grab(border->window, false, (GdkEventMask)(GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK), NULL, NULL, GDK_CURRENT_TIME) != GDK_GRAB_SUCCESS)
+	{
+		fprintf(stderr, "warning: cannot grab pointer\n");
+		return;
+	}
+	if (gdk_keyboard_grab(border->window, false, GDK_CURRENT_TIME) != GDK_GRAB_SUCCESS)
+	{
+		gdk_pointer_ungrab(GDK_CURRENT_TIME);
+		fprintf(stderr, "warning: cannot grab keyboard\n");
+		return;
+	}
+
+	_grab = true;
+	
+	gApplication::enterLoop(this);
+
+	gdk_pointer_ungrab(GDK_CURRENT_TIME);
+	gdk_keyboard_ungrab(GDK_CURRENT_TIME);
+	_grab = false;
 }

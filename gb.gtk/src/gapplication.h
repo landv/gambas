@@ -57,8 +57,9 @@ public:
 
 	static void setDirty();
 	static int loopLevel() { return _loopLevel; }
-	static void enterLoop();
-	static void exitLoop();
+	static void enterLoop(void *owner);
+	static void exitLoop(void *owner);
+	static bool hasLoop(void *owner) { return _loop_owner == owner; }
 
 //"Private"
 	static GtkTooltips *tipHandle();
@@ -66,6 +67,7 @@ public:
 	static char *_title;
 	static int _loopLevel;
 	static int _tooltip_delay;
+	static void *_loop_owner;
 };
 
 #endif

@@ -1313,7 +1313,7 @@ BEGIN_PROPERTY(CCONTROL_action)
 END_PROPERTY
 
 
-BEGIN_METHOD_VOID(CCONTROL_grab)
+BEGIN_METHOD_VOID(CCONTROL_screenshot)
 
 	GB.ReturnObject(CPICTURE_grab(QWIDGET(_object)));
 
@@ -1508,6 +1508,28 @@ BEGIN_PROPERTY(CWIDGET_scrollbar)
 
 END_PROPERTY
 
+BEGIN_METHOD_VOID(CCONTROL_grab)
+
+	QEventLoop eventLoop;
+	QEventLoop *old;
+	
+	if (THIS->flag.grab)
+		return;
+	
+	THIS->flag.grab = true;
+	WIDGET->grabMouse(WIDGET->cursor());
+	WIDGET->grabKeyboard();
+
+	old = MyApplication::eventLoop;
+	MyApplication::eventLoop = &eventLoop;
+	eventLoop.exec();
+	MyApplication::eventLoop = old;
+	
+	WIDGET->releaseMouse();
+	WIDGET->releaseKeyboard();
+	THIS->flag.grab = false;
+
+END_METHOD
 
 
 /* Classe CWidget */
@@ -2032,6 +2054,9 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	
 		GB.Unref(POINTER(&control));
 		
+		if (control->flag.grab && event_id == EVENT_MouseUp)
+			MyApplication::eventLoop->exit();
+		
 		if (cancel)
 			return true;
 	}
@@ -2106,7 +2131,10 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 				return true;
 		}
 
-/*_ACCEL:
+		if (control->flag.grab && event_id == EVENT_KeyPress && kevent->key() == Qt::Key_Escape)
+			MyApplication::eventLoop->exit();
+
+	/*_ACCEL:
 
 		if (event_id == EVENT_KeyPress && CWINDOW_Main && ((QWidget *)widget)->isWindow())
 		{
@@ -2349,8 +2377,9 @@ GB_DESC CControlDesc[] =
 
 	GB_METHOD("SetFocus", NULL, CCONTROL_set_focus, NULL),
 	GB_METHOD("Refresh", NULL, CCONTROL_refresh, "[(X)i(Y)i(Width)i(Height)i]"),
-	GB_METHOD("Grab", "Picture", CCONTROL_grab, NULL),
+	GB_METHOD("Screenshot", "Picture", CCONTROL_screenshot, NULL),
 	GB_METHOD("Drag", "Control", CCONTROL_drag, "(Data)v[(Format)s]"),
+	GB_METHOD("Grab", NULL, CCONTROL_grab, NULL),
 
 	GB_METHOD("Reparent", NULL, CCONTROL_reparent, "(Parent)Container;[(X)i(Y)i]"),
 

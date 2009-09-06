@@ -327,18 +327,22 @@ void Frame_setBorder(GtkFrame *fr,int vl)
  Takes a snapshot of a GdkWindow
  
  *************************************************************/
-gPicture *Grab_gdkWindow(GdkWindow *win)
+
+gPicture *gt_grab_window(GdkWindow *win, int x, int y, int w, int h)
 {
 	GdkPixbuf *buf;
 	GdkColormap* cmap;
 	gPicture *ret;
-	gint x,y;
 	
-	gdk_window_get_geometry(win,0,0,&x,&y,0);
-	if ( (x<1) || (y<1) ) return NULL;
-	cmap=gdk_colormap_get_system();
-	buf=gdk_pixbuf_get_from_drawable(NULL,win,cmap,0,0,0,0,x,y);
-	ret=new gPicture(buf);
+	if (w <= 0 || h <= 0)
+	{
+		x = y = 0;
+		gdk_window_get_geometry(win, 0, 0, &w, &h, 0);
+	}
+	
+	cmap = gdk_colormap_get_system();
+	buf = gdk_pixbuf_get_from_drawable(NULL, win, cmap, x, y, 0, 0, w, h);
+	ret = new gPicture(buf);
 	g_object_unref(G_OBJECT(cmap));
 	return ret;
 }

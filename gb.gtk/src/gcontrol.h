@@ -135,7 +135,8 @@ public:
 	void refresh();
 	void refresh(int x, int y, int w, int h);
 	virtual void afterRefresh();
-	gPicture *grab();
+	gPicture *screenshot();
+	void grab();
 	void destroy();
 	void destroyNow() { destroy(); cleanRemovedControls(); }
 	
@@ -194,9 +195,10 @@ public:
 	unsigned frame_padding : 8;
 	unsigned _scrolled_window : 1;
 	
-	unsigned _no_delete : 1;         // Do not delete on destroy signal
-	unsigned no_input_method : 1;    // No input method management
-	unsigned _no_default_mouse_event : 1; // No default mouse events
+	unsigned _no_delete : 1;               // Do not delete on destroy signal
+	unsigned no_input_method : 1;          // No input method management
+	unsigned _no_default_mouse_event : 1;  // No default mouse events
+	unsigned _grab : 1;                    // control is currently grabbing mouse and keyboard
 	
 	
   void removeParent() { pr = NULL; }

@@ -276,10 +276,9 @@ int gDesktop::scale()
 	return _desktop_scale;
 }
 
-gPicture* gDesktop::grab()
+gPicture* gDesktop::screenshot(int x, int y, int w, int h)
 {
-	return Grab_gdkWindow(gdk_get_default_root_window());	
-	
+	return gt_grab_window(gdk_get_default_root_window(), x, y, w, h);	
 }
 
 

@@ -290,7 +290,7 @@ gMainWindow::~gMainWindow()
 		emit(SIGNAL(onClose));
 		opened = false;
 		if (GTK_IS_WINDOW(border) && modal())
-			gApplication::exitLoop();
+			gApplication::exitLoop(this);
 	}
 	
 	if (_next_timer)
@@ -574,7 +574,7 @@ void gMainWindow::showModal()
 
 	//fprintf(stderr, "showModal: begin %p\n", this);
 
-	gApplication::enterLoop();
+	gApplication::enterLoop(this);
 	
 	//fprintf(stderr, "showModal: end %p\n", this);
 
@@ -884,9 +884,12 @@ bool gMainWindow::doClose()
 {
 	if (_closing)
 		return false;
-
+	
 	if (opened)
 	{
+		if (modal() && !gApplication::hasLoop(this))
+			return true;
+		
 		_closing = true;
 		if (onClose) 
 		{
@@ -898,7 +901,7 @@ bool gMainWindow::doClose()
 		_closing = false;
 		
 		if (modal())
-			gApplication::exitLoop();
+			gApplication::exitLoop(this);
   }
   
   if (!opened) // && !modal())

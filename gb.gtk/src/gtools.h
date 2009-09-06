@@ -103,8 +103,6 @@ void gt_ensure_visible(GtEnsureVisible *arg, int x, int y, int w, int h);
   if (sh > ((height) - sy)) \
     sh = ((height) - sy);
 
-#endif
-
 void gt_drawable_fill(GdkDrawable *d, gColor col, GdkGC *gc);
 
 // Creates a disabled version of a pixbuf
@@ -132,3 +130,10 @@ void gt_set_layout_from_font(PangoLayout *layout, gFont *font);
 void gt_add_layout_from_font(PangoLayout *layout, gFont *font);
 
 #define gt_pango_to_pixel(_pango) (((_pango) + PANGO_SCALE - 1) / PANGO_SCALE)
+
+// Grab a window
+
+gPicture *gt_grab_window(GdkWindow *win, int x = 0, int y = 0, int w = 0, int h = 0);
+
+#endif
+

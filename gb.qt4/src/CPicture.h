@@ -68,7 +68,7 @@ extern GB_DESC CPictureDesc[];
 
 #define CLEAR_PICTURE(_store)  GB.StoreObject(NULL, (void **)(void *)_store)
 
-CPICTURE *CPICTURE_grab(QWidget *wid);
+CPICTURE *CPICTURE_grab(QWidget *wid, int x = 0, int y = 0, int w = -1, int h = -1);
 CPICTURE *CPICTURE_get_picture(const char *path);
 bool CPICTURE_load_image(QImage **p, const char *path, int lenp);
 CPICTURE *CPICTURE_create(const QPixmap *pixmap);

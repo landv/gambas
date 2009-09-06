@@ -49,7 +49,7 @@ public:
 	static int width();
 	static int resolution();
 	static int scale();
-	static gPicture* grab();
+	static gPicture* screenshot(int x = 0, int y = 0, int w = 0, int h = 0);
 	static gMainWindow* activeWindow();
 
 	static bool rightToLeft();

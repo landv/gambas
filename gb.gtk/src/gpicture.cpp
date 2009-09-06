@@ -67,12 +67,11 @@ static bool pixbufFromMemory(GdkPixbuf **img, char *addr, unsigned int len, bool
 	
 	if (gdk_pixbuf_get_n_channels(*img) == 3)
 	{
-		// BM: convert to 4 bytes per pixels
-		GdkPixbuf *aimg;
-		aimg = gdk_pixbuf_add_alpha(*img, FALSE, 0, 0, 0);
-		g_object_unref(G_OBJECT(*img));
-  	g_object_ref(G_OBJECT(aimg));
-		*img = aimg;
+// 		GdkPixbuf *aimg;
+// 		aimg = gdk_pixbuf_add_alpha(*img, FALSE, 0, 0, 0);
+// 		g_object_unref(G_OBJECT(*img));
+//   	g_object_ref(G_OBJECT(aimg));
+// 		*img = aimg;
 		*trans = false;
 	}
 	else
@@ -212,6 +211,16 @@ gPicture::gPicture(GdkPixbuf *image, bool trans) : gShare()
   _height = gdk_pixbuf_get_height(image);
   _transparent = trans;
   img = image;
+
+	if (gdk_pixbuf_get_n_channels(img) == 3)
+	{
+		GdkPixbuf *aimg;
+		aimg = gdk_pixbuf_add_alpha(img, FALSE, 0, 0, 0);
+		g_object_unref(G_OBJECT(img));
+		g_object_ref(G_OBJECT(aimg));
+		img = aimg;
+		_transparent = false;
+	}
 }
 
 // The gPicture takes the GdkPixmap object. Do not unreference it after.
@@ -898,7 +907,7 @@ gPicture *gPicture::stretch(int w, int h, bool smooth)
   image = ret->getPixbuf();
   
   if (smooth)
-    ret->img = gdk_pixbuf_scale_simple(image, w, h, GDK_INTERP_HYPER);
+    ret->img = gdk_pixbuf_scale_simple(image, w, h, GDK_INTERP_BILINEAR);
   else
     ret->img = gdk_pixbuf_scale_simple(image, w, h, GDK_INTERP_NEAREST);
 

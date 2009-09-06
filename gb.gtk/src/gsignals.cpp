@@ -112,6 +112,12 @@ gboolean gcb_keypress (GtkWidget *widget, GdkEventKey *event, gControl *data)
 	
 	if (event->keyval == GDK_Escape)
 	{
+		if (data->_grab)
+		{
+			gApplication::exitLoop(data);
+			return true;
+		}
+		
 		gMainWindow *win = data->window();
 		if (check_button(win->_cancel))
 		{
@@ -219,6 +225,9 @@ gboolean gcb_button_release(GtkWidget *widget,GdkEventButton *event,gControl *da
 		data->onMouseEvent(data,gEvent_MouseRelease);
 		gMouse::invalidate();
 	}
+	
+	if (data->_grab)
+		gApplication::exitLoop(data);
 	
 	return false;
 }
