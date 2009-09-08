@@ -1,0 +1,150 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+'Public Const _Properties As String = "*,AutoResize,Text,Picture,Border,Radio,Toggle,Value"
+Public Const _Properties As String = "*,Action,Text,Picture,Menu"
+
+Event Click
+
+Property Picture As Picture
+Property Text As String
+Property Menu As String
+'Property Action As String
+Property Value As Boolean
+
+Private $hPanel As HBox
+Private $hButton As ToolButton
+Private $hArrow As ToolButton
+Private $hWatcher As Watcher
+Private $sMenu As String
+
+Private $bInside As Boolean
+Private $bPressed As Boolean
+
+Public Sub _new()
+  
+  $hPanel = New HBox(Me)
+  'Me._Arrangement = Arrange.Horizontal
+  $hButton = New ToolButton($hPanel) As "Button"
+  $hButton.Expand = True
+  $hArrow = New ToolButton($hPanel) As "Arrow"
+  $hArrow.W = Desktop.Scale * 2
+  '$hArrow.Ignore = True
+  $hArrow.Picture = Main.GetArrow(Align.Bottom, 10)
+  '$hArrow.Raise
+  '$hWatcher = New Watcher(Me) As "Watcher"
+  
+End
+
+Public Sub Watcher_Resize()
+  
+  $hArrow.Move(Me.W - $hArrow.W, 0, $hArrow.W, Me.H)
+  
+End
+
+
+Private Function Picture_Read() As Picture
+
+  Return $hButton.Picture
+
+End
+
+Private Sub Picture_Write(Value As Picture)
+
+  $hButton.Picture = Value
+
+End
+
+Private Function Text_Read() As String
+
+  Return $hButton.Text
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $hButton.Text = Value
+
+End
+
+Private Function Menu_Read() As String
+
+  Return $sMenu
+
+End
+
+Private Sub Menu_Write(Value As String)
+
+  $sMenu = Value
+
+End
+
+Public Sub Button_Click()
+  
+  Action.Raise(Me)
+  Raise Click
+  
+End
+
+Private Sub FindMenu(hWindow As Window) As Menu
+  
+  Dim hMenu As Menu
+  
+  For Each hMenu In hWindow.Menus
+    If hMenu.Name == $sMenu Then Return hMenu
+  Next
+  
+End
+
+
+Public Sub Arrow_Click()
+  
+  Dim hWindow As Window
+  Dim hMenu As Menu
+  
+  hWindow = Me.Window
+  Do
+    hMenu = FindMenu(hWindow)
+    If hMenu Then Break
+    Try hWindow = hWindow.Parent.Window
+    If Error Then Return
+  Loop
+  
+  Object.Lock($hButton)
+  $hButton.Toggle = True
+  $hButton.Value = True
+  hMenu.Popup($hButton.ScreenX, $hButton.ScreenY + $hButton.H)
+  $hButton.Value = False
+  $hButton.Toggle = False
+  Object.Unlock($hButton)
+  
+End
+
+' Private Function Action_Read() As String
+' 
+'   Return Super.Action
+' 
+' End
+' 
+' Private Sub Action_Write(Value As String)
+' 
+'   'Action.Register(Me, Value)
+'   Super.Action = Value
+' 
+' End
+
+Private Function Value_Read() As Boolean
+
+  Return $hButton.Value
+
+End
+
+Private Sub Value_Write(Value As Boolean)
+
+  $hButton.Value = Value
+
+End
+

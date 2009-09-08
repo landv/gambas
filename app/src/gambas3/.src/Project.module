@@ -1082,6 +1082,11 @@ Public Sub FillDir(sDir As String)
   AddDir(sDir)
   Dec Application.Busy
   
+Catch
+
+  Debug Error.Where; ": "; Error.Text
+  Dec Application.Busy
+  
 End
 
 Private Sub EnsureKey(sKey As String)
@@ -1658,6 +1663,8 @@ Public Sub Process_Kill()
   Dim sLink As String = Last.Tag
   
   If sLink Then RefreshKey(sLink)
+
+Catch ' Can fail when Process_Kill is raised after the IDE has been closed
   
 End
 

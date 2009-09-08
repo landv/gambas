@@ -1826,7 +1826,7 @@ void CWidget::destroy()
 
 	if (ob == NULL)
 		return;
-	
+
 	if (enter == ob)
 		enter = NULL;
 
@@ -1836,16 +1836,17 @@ void CWidget::destroy()
 	if (_old_active_control == ob)
 		_old_active_control = NULL;
 
+	CACTION_register(ob, NULL);
+	
 	set_name(ob, 0);
 
 	dict.remove(w);
-	QWIDGET(ob) = NULL;
 
+	QWIDGET(ob) = NULL;
 	GB.StoreVariant(NULL, &ob->tag);
 	GB.Unref(POINTER(&ob->cursor));
 	GB.Unref(POINTER(&ob->font));
 	
-	CACTION_register(ob, NULL);
 	//qDebug(">> CWidget::destroy %p (%p) :%p:%ld #2", ob, ob->widget, ob->ob.klass, ob->ob.ref);
 	//if (!CWIDGET_test_flag(ob, WF_NODETACH))
 	GB.Detach(ob);

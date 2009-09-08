@@ -406,9 +406,26 @@ Public Sub SetAutoResize(bAutoResize As Boolean)
   
 End
 
+Private Sub SetObserverOn(hCtrl As Control)
+  
+  Dim hObs As Observer
+  Dim hCont As Container
+  
+  hObs = New Observer(hCtrl) As "Item"
+  If Not hCtrl Is Container Then Return
+  
+  hCont = hCtrl
+  For Each hCtrl In hCont.Children
+    SetObserverOn(hCtrl)
+  Next
+  
+End
+
+
 Private Sub InitToolbar()
   
   Dim hCtrl As Control
+  Dim hCont As Container
   Dim hObs As Observer
   Dim sAction As String
   Dim aList As String[]
@@ -423,9 +440,8 @@ Private Sub InitToolbar()
   
   aReparent = New Control[]
   For Each hCtrl In panToolBar.Children
-    'Debug hCtrl.Name;; hCtrl.Action
     If hCtrl.Action Or If hCtrl Is Separator Then
-      hObs = New Observer(hCtrl) As "Item"
+      SetObserverOn(hCtrl)
       sAction = hCtrl.Action
       If sAction Then
         If Left(sAction) = "." Then sAction = Mid$(sAction, 2)
@@ -669,6 +685,10 @@ Public Sub Form_DragMove()
     Return
   Endif
   
+  While hCtrl.Parent <> panToolBar
+    hCtrl = hCtrl.Parent
+  Wend
+
   If hCtrl = panWhere Then Return
   
   X = Drag.X - panToolBar.X - hCtrl.X
@@ -709,11 +729,14 @@ Public Sub Form_DragMove()
   
 End
 
-Public Sub Item_MouseDrag()
+Private Sub OnMouseDrag(hCtrl As Control)
   
-  Dim hCtrl As Control = Last
   Dim iArr As Integer
   Dim sAction As String
+  
+  While hCtrl.Parent <> panToolBar
+    hCtrl = hCtrl.Parent
+  Wend
   
   If Not $bConfigure Then Return
   
@@ -734,6 +757,12 @@ Public Sub Item_MouseDrag()
   
 End
 
+
+Public Sub Item_MouseDrag()
+  
+  OnMouseDrag(Last)
+  
+End
 
 Public Sub Form_Drop()
 
@@ -929,7 +958,7 @@ End
 
 Private Sub ResizeControl(hCtrl As Control, iDim As Integer)
   
-  Dim hToolButton As ToolButton
+  Dim hToolButton As Object
   Dim sAction As String
   Dim hAction As CAction
 
@@ -938,20 +967,24 @@ Private Sub ResizeControl(hCtrl As Control, iDim As Integer)
   Else
     hCtrl.H = iDim
   Endif
-    
-  If hCtrl Is ToolButton And If hCtrl.Action Then
   
-    hToolButton = hCtrl
-    If Not hToolButton.Text Then 
-      hCtrl.Resize(iDim, iDim)
+  If hCtrl Is ToolButton Or If hCtrl Is MenuButton 
+    If hCtrl.Action Then  
+      hToolButton = hCtrl
+      If Not hToolButton.Text Then 
+        If hCtrl Is ToolButton Then
+          hCtrl.Resize(iDim, iDim)
+        Else
+          hCtrl.Resize(iDim + Desktop.Scale * 2, iDim)
+        Endif
+      Endif
+      sAction = hCtrl.Action
+      If Left$(sAction) = "." Then sAction = Mid$(sAction, 2)
+      hAction = MAction.Actions[sAction]
+      If hAction And If hAction.IconPath Then
+        hToolButton.Picture = GetIcon(hAction.IconPath)
+      Endif
     Endif
-    sAction = hCtrl.Action
-    If Left$(sAction) = "." Then sAction = Mid$(sAction, 2)
-    hAction = MAction.Actions[sAction]
-    If hAction And If hAction.IconPath Then
-      hToolButton.Picture = GetIcon(hAction.IconPath)
-    Endif
-
   Endif
   
 End

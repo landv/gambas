@@ -3124,3 +3124,17 @@ Public Sub mnuStartup_Click()
   
 End
 
+Public Sub GetTopLevelMenus() As String[]
+  
+  Dim hCtrl As CControl
+  Dim aMenu As New String[]
+  
+  For Each hCtrl In AllMenus
+    If hCtrl.Parent = Control[Me.Name] Then
+      aMenu.Add(hCtrl.Name)
+    Endif
+  Next
+  
+  Return aMenu.Sort(gb.IgnoreCase)
+  
+End

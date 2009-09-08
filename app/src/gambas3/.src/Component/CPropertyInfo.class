@@ -241,19 +241,14 @@ Public Sub _new(sComponent As String, sClass As String, sName As String, sKind A
   Else
 
     If Type = "i" Then
-  
       If Name = "Background" Or Name = "Foreground" Or InStr(Name, "Color") > 0 Then
-  
         Type = "Color"
-  
       Endif
-  
     Else If Type = "s" Then
-  
       If InStr(Name, "Path") Then
-  
         Type = "Path"
-  
+      Else If Name = "Menu" Then
+        Type = "Menu"
       Endif
   
     Endif

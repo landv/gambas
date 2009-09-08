@@ -53,10 +53,11 @@
       Font = Font["Bold"]
       Text = ("Commit description")
     }
-    { VBox1 VBox
+    { VBox1 Panel
       MoveScaled(1,16,78,37)
       Expand = True
-      Spacing = True
+      Arrangement = Arrange.Vertical
+      Border = Border.Plain
       { HBox4 HBox
         MoveScaled(3,2,69,4)
         { btnCut ToolButton
@@ -112,16 +113,23 @@
           Expand = True
         }
         { lblCursor Label
-          MoveScaled(63,0,5,4)
+          MoveScaled(61,0,5,4)
           Font = Font["Bold"]
           AutoResize = True
           Text = ("")
         }
+        { Panel3 Panel
+          MoveScaled(67,0,1,4)
+        }
+      }
+      { Separator1 Separator
+        MoveScaled(20,7,35,0)
       }
       { edtChange Editor
-        MoveScaled(3,8,65,26)
+        MoveScaled(2,9,65,26)
         Font = Font["Monospace"]
         Expand = True
+        Border = False
       }
     }
     Index = 1

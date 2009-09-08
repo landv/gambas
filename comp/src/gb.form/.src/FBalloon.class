@@ -2,6 +2,8 @@
 
 Private Const ROUND_SIZE As Integer = 8
 
+Static Private $iDelay As Integer = 5000
+
 Private ARROW_HEIGHT As Integer
 
 Private $hWatcher As Watcher
@@ -15,7 +17,6 @@ Private $DY As Integer
 Private $dShow As Float
 Private $sOld As String
 Private $bInside As Boolean
-Private $iDelay As Integer = 5000
 Private $hRound As Image
 
 Private Sub DrawRoundRect(X As Integer, Y As Integer, W As Integer, H As Integer)
@@ -362,13 +363,13 @@ Public Sub GetControl() As Control
 End
 
 
-Public Sub GetDelay() As Integer
+Static Public Sub GetDelay() As Integer
   
   Return $iDelay
   
 End
 
-Public Sub SetDelay(iDelay As Integer)
+Static Public Sub SetDelay(iDelay As Integer)
 
   $iDelay = iDelay
   

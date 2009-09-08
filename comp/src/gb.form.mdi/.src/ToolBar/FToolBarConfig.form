@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,55,51)
+  MoveScaled(0,0,72,51)
   Text = ("Toolbars configuration")
   Type = WindowType.Utility
   Arrangement = Arrange.Vertical
@@ -37,10 +37,9 @@
     Arrangement = Arrange.Fill
     { svwAction ScrollView
       MoveScaled(1,1,48,26)
-      Arrangement = Arrange.Vertical
       Spacing = True
       Margin = True
-      ScrollBar = Scroll.Vertical
+      ScrollBar = Scroll.Horizontal
     }
   }
   { HBox2 HBox

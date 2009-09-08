@@ -44,28 +44,6 @@ enum {
 
 #endif
 
-/*class MyMessageBox : public QMessageBox
-{
-  Q_OBJECT
-  
-public:
-
-  MyMessageBox(const QString& caption, const QString &text, Icon icon,
-               int button0, int button1, int button2);
-
-  ~MyMessageBox() {}
-  int run();
-                 
-protected:
-
-  //void showEvent( QShowEvent * );  
-    
-private:
-
-  bool center;
-};
-*/
-
 class CMessage : public QObject
 {
   Q_OBJECT

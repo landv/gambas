@@ -170,14 +170,14 @@ END_METHOD
 BEGIN_METHOD(Image_Blur, GB_INTEGER radius)
 
 	check_image(THIS);
-	imlib_image_blur(VARG(radius));
+	imlib_image_blur(VARGOPT(radius, 2));
 
 END_METHOD
 
 BEGIN_METHOD(Image_Sharpen, GB_INTEGER radius)
 
 	check_image(THIS);
-	imlib_image_sharpen(VARG(radius));
+	imlib_image_sharpen(VARGOPT(radius, 2));
 
 END_METHOD
 
@@ -207,7 +207,7 @@ BEGIN_METHOD(Image_Draw, GB_OBJECT img; GB_INTEGER x; GB_INTEGER y; GB_INTEGER w
 
 	DRAW_NORMALIZE(x, y, w, h, sx, sy, sw, sh, src_w, src_h);
 	
-	imlib_blend_image_onto_image(src, FALSE, x, y, w, h, sx, sy, sw, sh);
+	imlib_blend_image_onto_image(src, TRUE, sx, sy, sw, sh, x, y, w, h);
 	
 END_METHOD
 
@@ -221,8 +221,8 @@ GB_DESC CImageDesc[] =
 	GB_METHOD("Rotate", "Image", Image_Rotate, "(Angle)f"),
   GB_METHOD("Stretch", "Image", Image_Stretch, "(Width)i(Height)i"),
 	
-	GB_METHOD("Blur", NULL, Image_Blur, "(Radius)i"),
-	GB_METHOD("Sharpen", NULL, Image_Sharpen, "(Radius)i"),
+	GB_METHOD("Blur", NULL, Image_Blur, "[(Radius)i]"),
+	GB_METHOD("Sharpen", NULL, Image_Sharpen, "[(Radius)i]"),
 
   GB_METHOD("Draw", NULL, Image_Draw, "(Image)Image;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
 

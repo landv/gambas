@@ -530,7 +530,7 @@ Private Sub ShowProperty(Optional sFocus As String)
   Dim bButton As Boolean
   Dim sProp As String
   Dim sConst As String
-  Dim aCtrl As String[]
+  Dim aElt As String[]
   Dim sCtrl As String
   Dim aArg As String[]
   Dim hEditor As Object
@@ -690,6 +690,16 @@ Private Sub ShowProperty(Optional sFocus As String)
       cmbProperty.ReadOnly = True
       cmbProperty.List = MConnection.GetConnections()
       cmbProperty.Add("", 0)
+      
+    Case "Menu"
+      
+      aElt = $hForm.GetTopLevelMenus()
+      If aElt.Count = 0 Then Return
+      
+      hEditor = cmbProperty
+      cmbProperty.ReadOnly = True
+      aElt.Add("", 0)
+      cmbProperty.List = aElt
     
     Case Else 'object
     

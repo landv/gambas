@@ -23,15 +23,16 @@ Private Sub Text_Write(Value As String)
 
   If Not txtShortcut Then Return
   
-  Object.Lock(txtShortcut)
+  'Object.Lock(txtShortcut)
   txtShortcut.Text = Value
-  Object.Unlock(txtShortcut)
+  'Object.Unlock(txtShortcut)
 
 End
 
 Public Sub btnClear_Click()
 
   txtShortcut.Text = ""
+  CheckShortcut
 
 End
 
@@ -41,7 +42,10 @@ Public Sub txtShortcut_KeyPress()
   
   If Not FShortcut.HandleKey() Then 
     sShortcut = MAction.FindShortcut()
-    If sShortcut Then txtShortcut.Text = sShortcut
+    If sShortcut Then 
+      txtShortcut.Text = sShortcut
+      CheckShortcut
+    Endif
   Endif
   
   Stop Event
@@ -76,11 +80,11 @@ Private Sub CheckShortcut()
   
 End
 
-Public Sub txtShortcut_Change()
-
-  CheckShortcut
-
-End
+' Public Sub txtShortcut_Change()
+' 
+'   CheckShortcut
+' 
+' End
 
 
 Private Function BadShortcut_Read() As Boolean
@@ -91,7 +95,7 @@ End
 
 Public Sub Form_Open()
 
-  panSpace.Width = 1
+  panSpace.Width = 2
 
 End
 

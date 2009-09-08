@@ -2780,19 +2780,19 @@ Public Sub mnuStartup_Click()
 End
 
 
-Public Sub btnPasteAsString_Click()
+Public Sub mnuPasteAsString_Click()
 
   FPasteSpecial.Run(Editor, FPasteSpecial.MODE_STRING)
 
 End
 
-Public Sub btnPasteAsStringSplit_Click()
+Public Sub mnuPasteAsStringSplit_Click()
 
   FPasteSpecial.Run(Editor, FPasteSpecial.MODE_STRING_SPLIT)
 
 End
 
-Public Sub btnPasteAsComment_Click()
+Public Sub mnuPasteAsComment_Click()
 
   FPasteSpecial.Run(Editor, FPasteSpecial.MODE_COMMENT)  
 
@@ -2846,6 +2846,7 @@ Public Sub btnProc_MouseDown()
     FillProcCombo
   
     gvwProc.Rows.Count = $aProc.Count
+    gvwProc.Rows.Unselect
     gvwProc.Columns.Count = 1
     gvwProc.Rows.H = gvwProc.Font.Height()
     panProc.Move(btnProc.ScreenX - panProc.Parent.ScreenX, btnProc.ScreenY - panProc.Parent.ScreenY + btnProc.H)

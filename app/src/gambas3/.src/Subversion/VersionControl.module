@@ -50,7 +50,7 @@ Public Sub Process_Read()
   
   Dim sData As String
   
-  Read #Last, sData, -64
+  Read #Last, sData, -256
   Insert(sData)
   
 End
@@ -63,10 +63,10 @@ Public Sub Process_Kill()
 End
 
 
-Public Sub AddFile(sPath As String)
+Public Sub AddFile(sPath As String, Optional bForce As Boolean)
 
   If $bSVN Then
-    Run("svn add " & Shell$(sPath))
+    Run("svn add " & If(bForce, "--force ", "") & Shell$(sPath))
   Endif
   If $bCVS Then
     'NB: For CVS file must already exist
@@ -146,7 +146,7 @@ Public Sub MoveDir(sOld As String, sNew As String)
       If File.Name(sDir) <> ".svn" Then Continue
       Shell "rm -rf " & Shell$(sNew &/ sDir) Wait
     Next
-    AddFile(sNew)
+    AddFile(sNew, True)
     RemoveFile(sOld, True)
     'RemoveFile(sOld)
   Endif

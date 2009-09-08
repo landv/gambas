@@ -1101,14 +1101,14 @@ GB_DESC CDrawStyleDesc[] =
 {
 	GB_DECLARE(".Draw.Style", 0), GB_VIRTUAL_CLASS(),
 
-	GB_STATIC_METHOD("Arrow", NULL, CDRAW_style_arrow, "(X)i(Y)i(Width)i(Height)i(Type)i[(State)i]"),
-	GB_STATIC_METHOD("Check", NULL, CDRAW_style_check, "(X)i(Y)i(Width)i(Height)i(Value)i[(State)i]"),
-	GB_STATIC_METHOD("Option", NULL, CDRAW_style_option, "(X)i(Y)i(Width)i(Height)i(Value)b[(State)i]"),
-	GB_STATIC_METHOD("Separator", NULL, CDRAW_style_separator, "(X)i(Y)i(Width)i(Height)i[(Vertical)b(State)i]"),
+	GB_STATIC_METHOD("Arrow", NULL, CDRAW_style_arrow, "(X)i(Y)i(Width)i(Height)i(Type)i[(Flag)i]"),
+	GB_STATIC_METHOD("Check", NULL, CDRAW_style_check, "(X)i(Y)i(Width)i(Height)i(Value)i[(Flag)i]"),
+	GB_STATIC_METHOD("Option", NULL, CDRAW_style_option, "(X)i(Y)i(Width)i(Height)i(Value)b[(Flag)i]"),
+	GB_STATIC_METHOD("Separator", NULL, CDRAW_style_separator, "(X)i(Y)i(Width)i(Height)i[(Vertical)b(Flag)i]"),
 	GB_STATIC_METHOD("Focus", NULL, CDRAW_style_focus, "(X)i(Y)i(Width)i(Height)i"),
-	GB_STATIC_METHOD("Button", NULL, CDRAW_style_button, "(X)i(Y)i(Width)i(Height)i(Value)b[(State)i]"),
-	GB_STATIC_METHOD("Panel", NULL, CDRAW_style_panel, "(X)i(Y)i(Width)i(Height)i(Border)i[(State)i]"),
-	GB_STATIC_METHOD("Handle", NULL, CDRAW_style_handle, "(X)i(Y)i(Width)i(Height)i[(Vertical)b(State)i]"),
+	GB_STATIC_METHOD("Button", NULL, CDRAW_style_button, "(X)i(Y)i(Width)i(Height)i(Value)b[(Flag)i]"),
+	GB_STATIC_METHOD("Panel", NULL, CDRAW_style_panel, "(X)i(Y)i(Width)i(Height)i(Border)i[(Flag)i]"),
+	GB_STATIC_METHOD("Handle", NULL, CDRAW_style_handle, "(X)i(Y)i(Width)i(Height)i[(Vertical)b(Flag)i]"),
 	
 	GB_END_DECLARE
 };
@@ -1184,6 +1184,7 @@ GB_DESC CDrawDesc[] =
 	
 	GB_CONSTANT("Normal", "i", GB_DRAW_STATE_NORMAL),
 	GB_CONSTANT("Disabled", "i", GB_DRAW_STATE_DISABLED),
+	//GB_CONSTANT("ToolButton", "i", GB_DRAW_STATE_TOOL_BUTTON),
 	
 	#if 0
 	GB_STATIC_METHOD("Drawing", NULL, CDRAW_drawing, "(Drawing)Drawing;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),

@@ -61,9 +61,9 @@ void MyScrollView::showEvent(QShowEvent *e)
 {
   CSCROLLVIEW *_object = (CSCROLLVIEW *)CWidget::get(this);
   
-  QScrollArea::showEvent(e);
   if (THIS->container)
 	  THIS->container->autoResize();
+  QScrollArea::showEvent(e);
 }
 
 /***************************************************************************
@@ -370,8 +370,9 @@ void MyContents::checkAutoResizeLater()
 
 void CSCROLLVIEW_arrange(void *_object)
 {
-	if (THIS->container)
-		THIS->container->checkAutoResizeLater();
+	if (THIS->container && THIS->container->isVisible())
+		//THIS->container->checkAutoResizeLater();
+		THIS->container->autoResize();
 		//THIS->container->checkWidget(child->widget);
 }
 

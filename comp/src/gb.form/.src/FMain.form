@@ -3,10 +3,29 @@
 { Form Form
   MoveScaled(0,0,75,63)
   Text = ("")
-  Arrangement = Arrange.Fill
   Margin = True
-  { ColorChooser1 ColorChooser
-    MoveScaled(4,5,61,50)
-    ShowAlpha = True
+  { mnuPopup Menu
+    Text = ("")
+    { Menu1 Menu
+      Text = ("Action 1")
+    }
+    { Menu2 Menu
+      Text = ("Action 2")
+    }
+    { Menu3 Menu
+      Text = ("Action 3")
+    }
+  }
+  { MenuButton1 MenuButton
+    MoveScaled(10,8,6,4)
+    Text = ("")
+    Picture = Picture["icon:/16/paste"]
+    Menu = "mnuPopup"
+  }
+  { ToolButton1 ToolButton
+    MoveScaled(6,8,4,4)
+    Background = &H7FFF00&
+    Text = ("")
+    Picture = Picture["icon:/16/earth"]
   }
 }

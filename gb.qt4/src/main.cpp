@@ -115,6 +115,7 @@ IMAGE_INTERFACE IMAGE EXPORT;
 }
 
 int MAIN_in_wait = 0;
+int MAIN_in_message_box = 0;
 int MAIN_loop_level = 0;
 int MAIN_scale = 6;
 #ifndef NO_X_WINDOW
@@ -496,18 +497,21 @@ static bool must_quit(void)
 	#if DEBUG_WINDOW
 	qDebug("must_quit: Window = %d Watch = %d in_event_loop = %d", CWindow::count, CWatch::count, in_event_loop);
 	#endif
-	return CWindow::count == 0 && CWatch::count == 0 && in_event_loop;
+	return CWindow::count == 0 && CWatch::count == 0 && in_event_loop && MAIN_in_message_box == 0;
 }
 
 static void check_quit_now(intptr_t param)
 {
 	if (must_quit())
 	{
-		#ifndef NO_X_WINDOW
-			CTRAYICON_close_all();
-			qApp->syncX();
-		#endif
-		qApp->exit();
+		if (QApplication::instance())
+		{
+			#ifndef NO_X_WINDOW
+				CTRAYICON_close_all();
+				qApp->syncX();
+			#endif
+			qApp->exit();
+		}
 	}
 	else
 		_check_quit_posted = false;
@@ -715,8 +719,11 @@ static void hook_error(int code, char *error, char *where)
 	}
 
 	release_grab();
+	MAIN_in_message_box++;
 	QMessageBox::critical(0, TO_QSTRING(GB.Application.Name()), msg);
+	MAIN_in_message_box--;
 	unrelease_grab();
+	MAIN_check_quit();
 
 	//qApp->exit();
 }

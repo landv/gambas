@@ -130,13 +130,13 @@ End
 
 Private Function Action_Read() As String
 
-  Return Action.Get(Me)
+  Return Super.Action
 
 End
 
 Private Sub Action_Write(Value As String)
 
-  Action.Register(Me, Value)
+  Super.Action = Value
 
 End
 

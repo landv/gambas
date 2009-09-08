@@ -64,7 +64,7 @@ Public Sub btnOK_Click()
 
 End
 
-Public Sub tvwShortcut_Select()
+Public Sub tvwShortcut_Change()
 
   Dim hAction As CAction 
   
@@ -72,21 +72,15 @@ Public Sub tvwShortcut_Select()
   If tvwShortcut.Row < 0 Then Return
 
   hAction = $aAction[tvwShortcut.Row]
+  'If tvwShortcut.Editor And If $hEditor.Define(hAction) Then Return
 
-  If tvwShortcut.Column = 0 Then tvwShortcut.Column = 1
-
-  If $hEditor.Define(hAction) Then Return
-
+  Object.Lock(tvwShortcut)
+  tvwShortcut.Column = 1
+  Object.Unlock(tvwShortcut)
+  
   tvwShortcut.EditWith($hEditor)
   
 End
-
-Public Sub tvwShortcut_MouseUp()
-  
-  tvwShortcut_Select
-  
-End
-
 
 Private Sub SaveShortcut()
   
@@ -121,7 +115,7 @@ Public Sub btnFind_Click()
     tvwShortcut.Cancel
     btnFind.SetFocus
   Else
-    tvwShortcut_Select
+    tvwShortcut_Change
   Endif
 
 End
@@ -202,6 +196,18 @@ End
 
 Public Sub timAfter_Timer()
 
-  tvwShortcut_Select
+  tvwShortcut_Change
 
 End
+
+' Public Sub tvwShortcut_MouseDown()
+' 
+'   tvwShortcut_Select
+' 
+' End
+' 
+' Public Sub tvwShortcut_MouseUp()
+' 
+'   tvwShortcut_Select
+' 
+' End

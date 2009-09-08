@@ -2242,6 +2242,7 @@ void MyMainWindow::doReparent(QWidget *parent, Qt::WindowFlags f, const QPoint &
 
 void MyMainWindow::center(bool force = false)
 {
+	CWINDOW *_object = (CWINDOW *)CWidget::get(this);
 	QPoint p;
 
 	if (!force && !mustCenter)
@@ -2252,7 +2253,7 @@ void MyMainWindow::center(bool force = false)
 	p.setX((qApp->desktop()->availableGeometry().width() - width()) / 2);
 	p.setY((qApp->desktop()->availableGeometry().height() - height()) / 2);
 
-	move(p);
+	CWIDGET_move(THIS, p.x(), p.y());
 }
 
 void MyMainWindow::configure()

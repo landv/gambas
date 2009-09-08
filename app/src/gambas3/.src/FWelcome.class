@@ -20,7 +20,7 @@ Private Const LIST_EXAMPLE As Integer = 2
 Private Const POS_BUTTON As Integer = 0
 Private HEIGHT_BUTTON As Integer = Desktop.Scale * 8
 
-Private Const SCALE_DRAWING As Float = 3
+Private Const SCALE_DRAWING As Float = 2
 Private $hLogo As Image
 Private $hMadeIn As Image
 Private $hDraw As Picture
@@ -360,7 +360,7 @@ Private Sub FillRecent()
   For iInd = 0 To aList.Count - 1
     hProjectInfo = New CProjectInfo(aList[iInd])
     With hProjectInfo
-      hButton = New CCoolButton(svwRecent, 0, iInd * 32, svwRecent.ClientW, Desktop.Scale * 6, GetTitle(hProjectInfo), Project.StretchIcon(.Icon, 24).Picture) As "btnOpenRecent"
+      hButton = New CCoolButton(svwRecent, 0, iInd * Desktop.Scale * 6, svwRecent.ClientW, Desktop.Scale * 6, GetTitle(hProjectInfo), Project.StretchIcon(.Icon, 24).Picture) As "btnOpenRecent"
       hButton.Tag = aList[iInd]
       hButton.ToolTip = File.Dir(aList[iInd])
     End With

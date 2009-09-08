@@ -38,6 +38,7 @@
 extern "C" GB_INTERFACE GB;
 extern "C" IMAGE_INTERFACE IMAGE;
 extern int MAIN_in_wait;
+extern int MAIN_in_message_box;
 extern int MAIN_loop_level;
 extern int MAIN_scale;
 #ifndef NO_X_WINDOW

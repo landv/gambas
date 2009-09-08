@@ -1,0 +1,36 @@
+' Gambas module file
+
+Public Sub GetArrow(iType As Integer, iSize As Integer) As Picture
+  
+  Dim sKey As String
+  Dim hPict As Picture
+  Dim hImage As Image
+  
+  Select Case iType
+    Case Align.Top
+      sKey = "top"
+    Case Align.Bottom
+      sKey = "bottom"
+    Case Align.Left
+      sKey = "left"
+    Case Align.Right
+      sKey = "right"
+  End Select
+
+  sKey = "$arrow-" & sKey & "-" & iSize
+
+  hPict = Picture[sKey]
+  If Not hPict Then 
+    hPict = New Picture(16, 16)
+    hPict.Fill(Color.White)
+    Draw.Begin(hPict)
+    Draw.Style.Arrow(0, 0, 16, 16, iType)
+    Draw.End
+    hImage = hPict.Image.Stretch(iSize, iSize)
+    hImage.Transparent(Color.White)
+    hPict = hImage.Picture
+    Picture[sKey] = hPict
+  Endif
+  Return hPict
+  
+End

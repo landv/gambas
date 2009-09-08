@@ -54,7 +54,6 @@ typedef
 		}
 	MSG_BUTTON_ROLE;
 	
-static int _global_lock = 0;
 static char *_title = 0;
 
 static MSG_BUTTON_ROLE _button_role[] =
@@ -127,13 +126,13 @@ static int make_message(int type, int nbmax, void *_param)
 	int i, n;
 	QMessageBox *mb;
 	
-	if (_global_lock)
+	if (MAIN_in_message_box)
 	{
 		GB.Error("Message box already displayed");
 		return 0;
 	}
 	
-	_global_lock++;
+	MAIN_in_message_box++;
 
 	// Make message box
 	
@@ -261,7 +260,8 @@ static int make_message(int type, int nbmax, void *_param)
 	else
 		ret = 1;
 	
-	_global_lock--;
+	MAIN_in_message_box--;
+	MAIN_check_quit();
 	
 	delete mb;
 	

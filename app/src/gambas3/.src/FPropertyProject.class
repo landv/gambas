@@ -31,6 +31,7 @@ Private $cComp As New Collection
 Private $hLastComp As CComponentBox
 Private $bLockComp As Boolean
 Private $sVerCtrlStatus As String
+Private $sVerCtrlDiff As String
 
 Private Const LIBRARY_TAB As Integer = 2
 Private Const VERSION_TAB As Integer = 4
@@ -1189,7 +1190,8 @@ Public Sub tabProject_Click()
     If VersionControl.Enabled() Then 
       Inc Application.Busy
       $sVerCtrlStatus = VersionControl.Status()
-      edtDiff.Text = VersionControl.Diff(Project.Dir)
+      $sVerCtrlDiff = VersionControl.Diff(Project.Dir)
+      edtDiff.Text = String$(76, "=") & "\n" & $sVerCtrlStatus & String$(76, "=") & "\n\n" & $sVerCtrlDiff
       btnCommit.Enabled = Len($sVerCtrlStatus)
       btnRevert.Enabled = btnCommit.Enabled
       Dec Application.Busy
@@ -1202,7 +1204,7 @@ End
 
 Public Sub btnCommit_Click()
 
-  If FCommit.Run($sVerCtrlStatus, edtDiff.Text) Then Return
+  If FCommit.Run($sVerCtrlStatus, $sVerCtrlDiff) Then Return
   tabProject_Click
   
 End

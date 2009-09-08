@@ -571,7 +571,7 @@ Private Function ConvertToString(vVal As Variant, hProp As CPropertyInfo) As Str
 
       Return CStr(vVal)
 
-    Case "List", "Path", "Picture", "Font", "Table"
+    Case "List", "Path", "Picture", "Font", "Table", "Menu"
 
       Return CStr(vVal)
       
@@ -1317,7 +1317,7 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
 
       Select Case hProp.Type
 
-        Case "s", "List", "Path", "Table"
+        Case "s", "List", "Path", "Table", "Menu"
           vVal = Quote(vVal)
 
           If hProp.Translate Then

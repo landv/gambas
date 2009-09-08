@@ -75,7 +75,7 @@ static bool _fifo;
 #define INFO(_msg, ...) fprintf(_out, "I\t" _msg "\n", ##__VA_ARGS__)
 #endif
 
-static init_eval_interface()
+static void init_eval_interface()
 {
 	static bool init = FALSE;
 

@@ -981,21 +981,19 @@ static void set_clipping_enabled(GB_DRAW *d, int enable)
 	if (DPM(d)) DPM(d)->setClipping(enable);
 }
 
-QStyleOption get_option(int x, int y, int w, int h, int state)
+static void init_option(QStyleOption &opt, int x, int y, int w, int h, int state)
 {
-	QStyleOption opt;
-	
 	opt.rect = QRect(x, y, w ,h);
 	if (!state)
 		opt.state |= QStyle::State_Enabled;
-		
-	return opt;
 }
 
 static void style_arrow(GB_DRAW *d, int x, int y, int w, int h, int type, int state)
 {
-	QStyleOption opt = get_option(x, y, w, h, state);
+	QStyleOption opt;
 	QStyle::PrimitiveElement pe;
+	
+	init_option(opt, x, y, w, h, state);
 	
 	switch (type)
 	{
@@ -1020,7 +1018,8 @@ static void style_arrow(GB_DRAW *d, int x, int y, int w, int h, int type, int st
 
 static void style_check(GB_DRAW *d, int x, int y, int w, int h, int value, int state)
 {
-	QStyleOption opt = get_option(x, y, w, h, state);
+	QStyleOption opt;
+	init_option(opt, x, y, w, h, state);
 	
 	if (value)
 	{
@@ -1041,7 +1040,8 @@ static void style_check(GB_DRAW *d, int x, int y, int w, int h, int value, int s
 
 static void style_option(GB_DRAW *d, int x, int y, int w, int h, int value, int state)
 {
-	QStyleOption opt = get_option(x, y, w, h, state);
+	QStyleOption opt;
+	init_option(opt, x, y, w, h, state);
 	
 	if (value)
 		opt.state |= QStyle::State_On;
@@ -1057,7 +1057,8 @@ static void style_option(GB_DRAW *d, int x, int y, int w, int h, int value, int 
 
 static void style_separator(GB_DRAW *d, int x, int y, int w, int h, int vertical, int state)
 {
-	QStyleOption opt = get_option(x, y, w, h, state);
+	QStyleOption opt;
+	init_option(opt, x, y, w, h, state);
 	
 	if (!vertical)
 		opt.state |= QStyle::State_Horizontal;
@@ -1073,7 +1074,8 @@ static void style_separator(GB_DRAW *d, int x, int y, int w, int h, int vertical
 
 static void style_focus(GB_DRAW *d, int x, int y, int w, int h)
 {
-	QStyleOption opt = get_option(x, y, w, h, FALSE);
+	QStyleOption opt;
+	init_option(opt, x, y, w, h, FALSE);
 	
 	QApplication::style()->drawPrimitive(QStyle::PE_FrameFocusRect, &opt, DP(d));
 	if (DPM(d)) 
@@ -1086,27 +1088,33 @@ static void style_focus(GB_DRAW *d, int x, int y, int w, int h)
 			
 static void style_button(GB_DRAW *d, int x, int y, int w, int h, int value, int state)
 {
-	QStyleOption opt = get_option(x, y, w, h, state);
+	QStyleOption opt;
+	init_option(opt, x, y, w, h, state);
 	
 	if (value)
 		opt.state |= QStyle::State_On;
 	
-	QApplication::style()->drawPrimitive(QStyle::PE_PanelButtonCommand, &opt, DP(d));
-	if (DPM(d)) 
+	/*if (state & GB_DRAW_STATE_TOOL_BUTTON)
 	{
-		//DPM(d)->setRasterOp(Qt::OrROP);
-		QApplication::style()->drawPrimitive(QStyle::PE_PanelButtonCommand, &opt, DPM(d));
-		//DPM(d)->setRasterOp(Qt::CopyROP);
+		static QToolButton tb;
+		QApplication::style()->drawComplexControl(QStyle::CC_ToolButton, DP(d), &tb, QRect(x, y, w, h), 
+	}
+	else*/
+	{
+		QApplication::style()->drawPrimitive(QStyle::PE_PanelButtonCommand, &opt, DP(d));
+		if (DPM(d)) 
+		{
+			//DPM(d)->setRasterOp(Qt::OrROP);
+			QApplication::style()->drawPrimitive(QStyle::PE_PanelButtonCommand, &opt, DPM(d));
+			//DPM(d)->setRasterOp(Qt::CopyROP);
+		}
 	}
 }
 			
 static void style_panel(GB_DRAW *d, int x, int y, int w, int h, int border, int state)
 {
 	QStyleOptionFrame opt;
-	
-	opt.rect = QRect(x, y, w ,h);
-	if (!state)
-		opt.state |= QStyle::State_Enabled;
+	init_option(opt, x, y, w, h, state);
 	
 	CCONTAINER_draw_frame(DP(d), border, opt);
 	if (DPM(d))
@@ -1159,7 +1167,8 @@ static void style_panel(GB_DRAW *d, int x, int y, int w, int h, int border, int 
 			
 static void style_handle(GB_DRAW *d, int x, int y, int w, int h, int vertical, int state)
 {
-	QStyleOption opt = get_option(x, y, w, h, state);
+	QStyleOption opt;
+	init_option(opt, x, y, w, h, state);
 	
 	if (!vertical)
 		opt.state |= QStyle::State_Horizontal;

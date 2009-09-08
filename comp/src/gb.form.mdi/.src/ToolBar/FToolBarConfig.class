@@ -97,7 +97,7 @@ Private Sub InitAction()
     
   Next
   
-  svwAction.Arrangement = Arrange.Vertical
+  svwAction.Arrangement = Arrange.Column
   
 End
 
@@ -116,34 +116,99 @@ Public Sub Item_Leave()
   
 End
 
-Public Sub Item_Draw()
+Private Sub DrawItem(hAction As CAction)
   
-  Dim hItem As DrawingArea = Last
-  Dim hAction As CAction
+  'Dim hAction As CAction
   Dim hIcon As Picture
   Dim sText As String
   Dim W As Integer
   
-  If hItem.Tag Then hAction = MAction.Actions[hItem.Tag]
+  'If hItem.Tag Then hAction = MAction.Actions[hItem.Tag]
   
   'If $hInside = hItem Then 
-  Draw.Style.Button(0, 0, hItem.W, hItem.H, Not hItem.Enabled)
+  Draw.Style.Button(0, 0, Draw.W, Draw.H, False)
   If hAction Then
     If hAction.Icon Then 
-      Draw.Picture(hAction.Icon, 4, (hItem.H - hAction.Icon.H) / 2)
+      Draw.Picture(hAction.Icon, 4, (Draw.H - hAction.Icon.H) / 2)
       W = hAction.Icon.W
     Else
       W = Stock.GetSize("small")
     Endif
-    Draw.Text(hAction.Display, W + 8, 0, hItem.W - W - 12, hItem.H, Align.Normal)
+    If Draw.W > (Draw.H * 2) Then Draw.Text(hAction.Display, W + 8, 0, Draw.W - W - 12, Draw.H, Align.Normal)
   Else
     W = Stock.GetSize("small")
-    Draw.Rect(4 + W \ 2 - 2, (hItem.H - W) \ 2, 4, W)
-    Draw.Text(("Separator"), W + 8, 0, hItem.W - W - 12, hItem.H, Align.Normal)
+    Draw.Rect(4 + W \ 2 - 2, (Draw.H - W) \ 2, 4, W)
+    If Draw.W > (Draw.H * 2) Then Draw.Text(("Separator"), W + 8, 0, Draw.W - W - 12, Draw.H, Align.Normal)
     'Draw.Style.Separator(8, (hItem.H - W) / 2, W - 4, W, False)
   Endif
   
 End
+
+
+Public Sub Item_Draw()
+  
+  DrawItem(MAction.Actions[Last.Tag])
+  
+End
+
+Private Sub GetItemScreenshot(hAction As CAction) As Picture
+  
+  Dim hPict As Picture
+  Dim hItem As Control
+  ' Dim hObject As Object
+  ' Dim bVisible As Boolean
+  ' Dim hParent As Control
+  ' Dim hWindow As Window
+  ' Dim X, Y As Integer
+  
+  ' hWindow = New Window
+  ' hWindow.Border = False
+  ' hWindow.Move(Mouse.ScreenX - 4, Mouse.ScreenY - 4, hItem.W, hItem.H)
+  ' 
+  ' bVisible = hItem.Visible
+  ' hParent = hItem.Parent
+  ' X = hItem.X
+  ' Y = hItem.Y
+  ' hObject = hItem
+  ' Try hObject.Border = True
+  ' hItem.Reparent(hWindow, 0, 0)
+  ' hItem.Show
+  ' hWindow.Show
+  ' Wait
+  ' hPict = hItem.Screenshot()
+  ' hWindow.Close
+  ' hItem.Reparent(hParent, X, Y)
+  ' hItem.Visible = bVisible
+  
+  ' bVisible = hItem.Visible
+  ' X = hItem.X
+  ' Y = hItem.Y
+  ' hParent = hItem.Parent
+  ' 
+  ' hItem.Ignore = True
+  ' hItem.Reparent($hForm, 0, 0)
+  ' hItem.Raise
+  ' hItem.Background = Color.Background
+  ' hItem.Show
+  ' Wait
+  ' hPict = hItem.Screenshot()
+  ' 
+  ' hItem.Reparent(hParent, X, Y)
+  ' hItem.Visible = bVisible
+  ' hItem.Ignore = False
+  ' hItem.Background = Color.Default
+  
+  hItem = $hForm.FindControl(hAction.Key)
+  hPict = New Picture(hItem.W, hItem.H)
+  Draw.Begin(hPict)
+  Draw.FillRect(0, 0, Draw.W, Draw.H, Color.Background)
+  DrawItem(hAction)
+  Draw.End
+  
+  Return hPict
+  
+End
+
 
 Public Sub DragAction(hCtrl As Control, sAction As String)
   
@@ -151,6 +216,7 @@ Public Sub DragAction(hCtrl As Control, sAction As String)
   Dim bOutside As Boolean
   Dim hDest As Control
   Dim bAnim As Boolean
+  Dim hItem As Control
 
   If Not sAction Then Return
 
@@ -163,9 +229,14 @@ Public Sub DragAction(hCtrl As Control, sAction As String)
 
   If sAction Then hAction = MAction.Actions[sAction]
   
+  'hItem = $hForm.FindControl(sAction)
+  
   $hForm.DragStart(bOutside)
-  If hAction Then 
-    Drag.Icon = hAction.Icon
+  
+  'If hItem Then
+  '  Drag.Icon = GetItemScreenshot(hItem)
+  If hAction Then
+    Drag.Icon = GetItemScreenshot(hAction)
   Else
     Drag.Icon = Null
   Endif
@@ -229,6 +300,7 @@ End
 Public Sub Form_Close()
 
   SetCurrentToolbar(Null)
+  Settings.Write(Me, "/gb.form.mdi/FToolbarConfig")
 
 End
 
@@ -236,6 +308,7 @@ End
 Public Sub Form_Open()
 
   Me.Center
+  Settings.Read(Me, "/gb.form.mdi/FToolbarConfig")
 
 End
 

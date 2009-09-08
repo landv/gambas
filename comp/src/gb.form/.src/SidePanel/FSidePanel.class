@@ -219,9 +219,6 @@ End
 
 Private Sub RefreshArrow()
 
-  Dim hPict As Picture
-  Dim hImage As Image
-  Dim sKey As String
   Dim iType As Integer
   
   If Not $bOpened Then Return
@@ -229,40 +226,23 @@ Private Sub RefreshArrow()
   Select Case $iOrientation
     Case Align.Top, Align.Bottom
       If $bVisible Xor ($iOrientation = Align.Bottom) Then
-        sKey = "$side-top"
         iType = Align.Top
         'hPict = Picture["img/8/side-top.png"]
       Else
-        sKey = "$side-bottom"
         iType = Align.Bottom
         'hPict = Picture["img/8/side-bottom.png"]
       Endif
     Case Align.Left, Align.Right
       If $bVisible Xor ($iOrientation = Align.Right) Then
-        sKey = "$side-left"
         iType = Align.Left
         'hPict = Picture["img/8/side-left.png"]
       Else
-        sKey = "$side-right"
         iType = Align.Right
         'hPict = Picture["img/8/side-right.png"]
       Endif
   End Select
-
-  hPict = Picture[sKey]
-  If Not hPict Then 
-    hPict = New Picture(16, 16)
-    hPict.Fill(Color.White)
-    Draw.Begin(hPict)
-    Draw.Style.Arrow(0, 0, 16, 16, iType)
-    Draw.End
-    hImage = hPict.Image.Stretch(10, 10)
-    hImage.Transparent(Color.White)
-    hPict = hImage.Picture
-    Picture[sKey] = hPict
-  Endif
-
-  $hPict = hPict  
+  
+  $hPict = Main.GetArrow(iType, 10)
   btnSide.Refresh
   btnSide2.Refresh
 
