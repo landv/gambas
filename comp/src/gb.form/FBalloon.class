@@ -15,7 +15,7 @@ PRIVATE $DY AS Integer
 PRIVATE $dShow AS Float
 PRIVATE $sOld AS String
 PRIVATE $bInside AS Boolean
-PRIVATE $iDelay AS Integer = 5000
+STATIC PRIVATE $iDelay AS Integer = 5000
 PRIVATE $hRound AS Image
 
 PRIVATE SUB DrawRoundRect(X AS Integer, Y AS Integer, W AS Integer, H AS Integer)
@@ -343,13 +343,13 @@ PUBLIC SUB GetControl() AS Control
 END
 
 
-PUBLIC SUB GetDelay() AS Integer
+STATIC PUBLIC SUB GetDelay() AS Integer
   
   RETURN $iDelay
   
 END
 
-PUBLIC SUB SetDelay(iDelay AS Integer)
+STATIC PUBLIC SUB SetDelay(iDelay AS Integer)
 
   $iDelay = iDelay
   

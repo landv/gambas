@@ -649,10 +649,6 @@ void EXEC_leave(bool drop) //bool keep_ret_value)
 		A CORRIGER ! En attendant, ils sont d�activ�.
 	*/
 
-#if DEBUG_REF
-	printf("EXEC_leave: return\n");
-#endif
-
 	if (!drop)
 	{
 		//*SP = ret;

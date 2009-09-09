@@ -1041,7 +1041,9 @@ void *CLASS_auto_create(CLASS *class, int nparam)
     class->instance = NULL;
   }
 
-  /*fprintf(stderr, "CLASS_auto_create: create %s\n", class->name);*/
+	#if DEBUG_REF
+		fprintf(stderr, "CLASS_auto_create: create %s\n", class->name);
+	#endif
 
   OBJECT_create(&class->instance, class, NULL, NULL, nparam);
   ob = class->instance;
