@@ -720,6 +720,12 @@ Catch
 
 End
 
+Private Sub CheckSampleCode() As Boolean
+  
+  
+  
+End
+
 
 Public Sub Editors_KeyPress()
 
@@ -896,6 +902,12 @@ Public Sub Editors_KeyPress()
   Else If InStr(IDENT_CAR, Key.Text) Then
 
     CheckCompletion("A")
+    
+  Else If Key.Code = Key.Tab Then
+  
+    If Not Editor.Selected Then
+      If CheckSampleCode() Then Stop Event
+    Endif
 
   Endif
 

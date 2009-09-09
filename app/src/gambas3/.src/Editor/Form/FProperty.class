@@ -14,7 +14,7 @@ Private $sType As String
 Private $sOption As String
 Private $hEditor As Object
 Private $sOldVal As String
-Private $bFreeze As Boolean
+'Private $bFreeze As Boolean
 Private $bButton As Boolean
 Private $bIgnoreHide As Boolean
 Private $bIgnoreCancel As Boolean
@@ -92,6 +92,8 @@ Public Sub RefreshAll()
 '   DIM aColor AS NEW Integer[]
 '   DIM sClassColor AS String
 '   DIM hClass AS CClassInfo
+
+  Balloon.Hide(grdProperty)
 
   Try $hForm = Project.ActiveForm
   If Error Or If Not $hForm Then
@@ -244,7 +246,7 @@ Public Sub RefreshAll()
   'VSplit1.Show
   
   If Not $bMany Then
-    FFormStack.Select($hObject.Name)
+    FFormStack.SelectCurrent
   Endif 
   
   'If btnLock.Value Then 
@@ -322,6 +324,7 @@ End
 
 Public Function SaveProperty() As Boolean
 
+  Dim hTabStrip As TabStrip
   Dim vVal As Variant
   Dim hCtrl As CControl
   Dim sMsg As String
@@ -763,9 +766,9 @@ End
 Public Sub txtProperty_Change()
 
   If $sLast = "Text" Then
-    $bFreeze = True
+    '$bFreeze = True
     SaveProperty
-    $bFreeze = False
+    '$bFreeze = False
   Endif
 
 End
@@ -957,7 +960,8 @@ End
 
 Public Sub txtProperty_LostFocus()
 
-  SaveProperty
+  If SaveProperty() Then Return
+  HideProperty
 
 End
 

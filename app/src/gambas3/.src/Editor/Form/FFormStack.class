@@ -3,7 +3,7 @@
 Static Private $hForm As FForm 'FForm
 Static Private $cPict As New Collection
 
-Private $bNoSelect As Boolean
+Private $bNoSelect As Integer
 
 Private Sub GetForm() As Boolean
   
@@ -127,9 +127,9 @@ Public Sub RefreshAll(Optional sKey As String, Optional bForce As Boolean)
   
   'IF NOT Project.IsForm($hForm) THEN RETURN
 
-  If Not sKey Then
-    Try sKey = $hForm.Master.Name
-  Endif 
+  ' If Not sKey Then
+  '   Try sKey = $hForm.Master.Name
+  ' Endif 
   
   If bForce Then $cPict.Clear
 
@@ -139,13 +139,16 @@ Public Sub RefreshAll(Optional sKey As String, Optional bForce As Boolean)
   sepControl.Show
   lblMessage.Hide
   RefreshReadOnly
+  SelectCurrent
   
-  If sKey Then
-    Try tvwControl[sKey].Selected = True
-    Try tvwControl[sKey].EnsureVisible
-  Endif
-  
-  $bNoSelect = False
+  ' If sKey Then
+  '   Object.Lock(tvwControl)
+  '   Try tvwControl[sKey].Selected = True
+  '   Object.Unlock(tvwControl)
+  '   Try tvwControl[sKey].EnsureVisible
+  ' Endif
+  ' 
+  ' $bNoSelect = False
   
 End
 
@@ -154,9 +157,11 @@ Public Sub RefreshOne(sKey As String)
   If Not Me.Visible Then Return
   If GetForm() Then Return
   
+  Inc $bNoSelect 
   tvwControl[sKey].Delete
+  Dec $bNoSelect
   FillTree($hForm.Control[sKey])
-  
+  SelectCurrent
   'TRY tvwControl[sKey].Selected = TRUE
   'TRY tvwControl[sKey].EnsureVisible
 
@@ -217,13 +222,19 @@ Public Sub btnUp_Click()
 
 End
 
-Public Sub Select(sName As String)
+Public Sub SelectCurrent()
+  
+  Dim sName As String
+  
+  If Not $hForm Then Return
+  Try sName = $hForm.Master.Name
+  If Not sName Then sName = $hForm.Name
   
   If tvwControl.Exist(sName) Then 
     Try tvwControl[sName].EnsureVisible
-    $bNoSelect = True
+    Inc $bNoSelect 
     tvwControl[sName].Selected = True
-    $bNoSelect = False
+    Dec $bNoSelect 
   Endif
 
 End
@@ -231,14 +242,14 @@ End
 
 Public Sub tvwControl_Select()
   
-  If Not $bNoSelect Then 
-    If InStr(tvwControl.Current.Key, ".") Then 
-      tvwControl.MoveParent
-      Try $hForm.SelectControl(tvwControl.Item.Text)
-    Else
-      Try $hForm.SelectControl(tvwControl.Current.Text)
-    Endif
-  Endif 
+  If $bNoSelect Then Return
+
+  If InStr(tvwControl.Current.Key, ".") Then 
+    tvwControl.MoveParent
+    Try $hForm.SelectControl(tvwControl.Item.Text)
+  Else
+    Try $hForm.SelectControl(tvwControl.Current.Text)
+  Endif
 
 End
 

@@ -1,50 +1,48 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(18,23,73,46)
+  MoveScaled(18,23,81,46)
   Text = ("Save modified files")
-  Icon = Picture["img/16/quit.png"]
+  Icon = Picture["icon:/16/quit"]
   Resizable = False
-  { btnSave Button
-    MoveScaled(1,40,17,5)
-    Text = ("&All")
-    Picture = Picture["icon:/medium/save"]
-  }
   { btnQuit Button
-    MoveScaled(37,40,17,5)
+    MoveScaled(63,7,17,5)
     Enabled = False
     Text = ("Continue")
     Picture = Picture["icon:/medium/play"]
     Default = True
   }
   { btnCancel Button
-    MoveScaled(55,40,17,5)
+    MoveScaled(63,1,17,5)
     Text = ("Cancel")
     Picture = Picture["icon:/medium/close"]
     Cancel = True
   }
-  { Panel1 Panel
-    MoveScaled(1,1,71,8)
-    Arrangement = Arrange.Horizontal
-    { Image1 PictureBox
-      MoveScaled(0,0,5,6)
-      Picture = Picture["icon:/32/save"]
-      Alignment = Align.Top
-    }
-    { TextLabel1 TextLabel
-      MoveScaled(7,0,56,6)
-      Font = Font["Bold,+1"]
-      Expand = True
-      Text = ("These files have been modified.\nDo&nbsp;you want to save them?")
-    }
-  }
-  { lvwFile ListView
-    MoveScaled(1,9,71,30)
-    Mode = Select.Multiple
-  }
-  { btnIgnore Button
-    MoveScaled(19,40,17,5)
-    Text = ("&None")
+  { btnIgnore ToggleButton
+    MoveScaled(32,40,30,5)
+    Text = ("Do &not save")
     Picture = Picture["icon:/medium/cancel"]
+    Radio = True
+  }
+  { btnSave ToggleButton
+    MoveScaled(1,40,30,5)
+    Text = ("Save &All")
+    Picture = Picture["icon:/medium/save"]
+    Radio = True
+  }
+  { VBox1 VBox
+    MoveScaled(1,1,61,38)
+    Spacing = True
+    { TextLabel1 TextLabel
+      MoveScaled(0,0,61,6)
+      Font = Font["Bold,+1"]
+      AutoResize = True
+      Text = ("These files have been modified.<br>\nDo you want to save them?")
+    }
+    { lvwFile ListView
+      MoveScaled(3,10,44,21)
+      Expand = True
+      Mode = Select.Multiple
+    }
   }
 }

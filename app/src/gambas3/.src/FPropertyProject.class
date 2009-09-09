@@ -1191,7 +1191,14 @@ Public Sub tabProject_Click()
       Inc Application.Busy
       $sVerCtrlStatus = VersionControl.Status()
       $sVerCtrlDiff = VersionControl.Diff(Project.Dir)
-      edtDiff.Text = String$(76, "=") & "\n" & $sVerCtrlStatus & String$(76, "=") & "\n\n" & $sVerCtrlDiff
+      If $sVerCtrlStatus Then
+        edtDiff.Text = String$(76, "=") & "\n" & $sVerCtrlStatus & String$(76, "=") & "\n\n" & $sVerCtrlDiff
+        edtDiff.Show
+        lblNoDiff.Hide
+      Else
+        edtDiff.Hide
+        lblNoDiff.Show
+      Endif
       btnCommit.Enabled = Len($sVerCtrlStatus)
       btnRevert.Enabled = btnCommit.Enabled
       Dec Application.Busy
@@ -1211,11 +1218,19 @@ End
 
 Public Sub btnUpdate_Click()
 
+  Dim bErr As Boolean
+
   Inc Application.Busy
-  VersionControl.Update  
+  bErr = VersionControl.Update()
   Project.Refresh
   Dec Application.Busy
   tabProject_Click
+
+  If bErr Then  
+    Message.Error(("Unable to update project from repository."))
+  Else
+    Message.Info(("Project has been updated from repository successfully."))
+  Endif
     
 End
 

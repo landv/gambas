@@ -46,6 +46,7 @@
     { cmbProperty ComboBox
       MoveScaled(2,4,16,4)
       Visible = False
+      Background = Color.TextBackground
       Ignore = True
       Text = ("")
       ReadOnly = True
@@ -53,11 +54,13 @@
     { spnProperty SpinBox
       MoveScaled(2,9,14,4)
       Visible = False
+      Background = Color.TextBackground
       Ignore = True
     }
     { txtProperty TextBox
-      MoveScaled(0,14,16,3)
+      MoveScaled(2,14,16,3)
       Visible = False
+      Background = Color.TextBackground
       Ignore = True
       Text = ("")
       Border = False
@@ -65,6 +68,7 @@
     { btnProperty Button
       MoveScaled(16,14,3,3)
       Visible = False
+      Background = Color.TextBackground
       Ignore = True
       Text = ("")
       Picture = Picture["img/16/points.png"]

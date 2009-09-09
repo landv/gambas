@@ -390,10 +390,15 @@
       Text = ("Changes since last commit")
     }
     { edtDiff Editor
-      MoveScaled(6,7,73,57)
+      MoveScaled(5,6,73,57)
       Expand = True
       Highlight = Highlight.Diff
       ReadOnly = True
+    }
+    { lblNoDiff TextLabel
+      MoveScaled(3,8,80,5)
+      Expand = True
+      Text = ("There is no change to commit.")
     }
     { HBox15 HBox
       MoveScaled(1,69,84,4)
