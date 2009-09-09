@@ -1,4 +1,63 @@
 -------------------------------------------------------------------------------
+ gambas2-2.16.0 - 09 Sep 2009
+-------------------------------------------------------------------------------
+
+[CONFIGURATION]
+* BUG: Try to fix building with Autoconf 2.64
+* NEW: Put custom autoconf macros in the "m4" directory.
+* NEW: Drop libltdl.
+* NEW: Use a recent libtool.
+* NEW: Make the ./reconf script verbose.
+* BUG: Clear the breakpoint list when opening a new project.
+
+[DEVELOPMENT ENVIRONMENT]
+* BUG: In the menu editor, shortcuts are now correctly saved in all cases.
+* BUG: Do not fail to load a project when a component is not installed.
+* BUG: In the "Requires" tab of the project property dialog, requirements
+  are not incorrectly converted to lower case anymore.
+* BUG: Keep case of "Exclude" and "Requires" component properties.
+
+[INTERPRETER]
+* BUG: Fix many compilation warnings with gcc 4.4.
+* BUG: Setting a breakpoint in the startup class works again.
+* BUG: The READ instruction could lead to a crash when reading a string
+  with a maximum length. Fix backported from Gambas 3.
+* BUG: 64-bits fixes in the interpreter API. Watching file descriptors 
+  won't crash anymore on 64 bits system when adresses outside of 32 bits 
+  address space are used.
+* BUG: Fix an uninitialized value in the date formatting routine.
+
+[COMPILER]
+* BUG: "Ambiguous braces" error message was incorrect, and has been
+  replaced by "Ambigous brackets".
+* BUG: Fix symbol tables that sometimes didn't work correctly when storing
+  symbols having non-ASCII characters.
+
+[GB.FORM.MDI]
+* NEW: Ctrl+PgUp and Ctrl+PgDown are two new shortcuts to move to the
+  previous or next tab in the Workspace control.
+
+[GB.NET]
+* BUG: Fix an uninitialized value in SerialPort class, when retrieving the
+  port signal status.
+
+[GB.OPENGL]
+* BUG: Fix bad code factorization with Gl.Vertex, Gl.Color, Gl.TexCoord
+  and Gl.RasterPos
+
+[GB.PDF]
+* BUG: Make gb.pdf compile with poppler >= 0.11.3.
+
+[GB.SDL]
+* NEW: Remove the old m4 directory before starting backporting the updated
+  configuration process from Gambas 3.
+
+[GB.SETTINGS]
+* BUG: Fix the internal string quoting routine of the Settings class, so
+  that storing strings with newline inside works correctly.
+
+
+-------------------------------------------------------------------------------
  gambas2-2.15.2 - 29 Jul 2009
 -------------------------------------------------------------------------------
 
