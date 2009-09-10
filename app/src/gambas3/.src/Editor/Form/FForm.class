@@ -1235,7 +1235,7 @@ End
 
 Private Sub ResetClassScan()
 
-  Try Project.Files[File.Dir(Path) &/ Me.Name & ".class"].Scan = Null
+  Try GetEditor().Scan = Null
 
 End
 
@@ -1801,11 +1801,12 @@ Private Sub ResetSave()
 
 End
 
-Private Function GetEditor() As FEditor
+Public Function GetEditor(Optional bLoad As Boolean) As FEditor
 
   Dim sPath As String
 
   sPath = File.Dir(Path) &/ File.BaseName(Path) & ".class"
+  If bLoad Then Project.LoadFile(sPath)
   Return Project.Files[sPath]
 
 End
@@ -1814,10 +1815,9 @@ Private Sub GotoEventMethod(hCtrl As CControl, sEvent As String)
 
   Dim sPath As String
   Dim sGroup As String
+  Dim hEditor As FEditor
 
   If Not hCtrl Then hCtrl = Control[Me.Name]
-
-  sPath = File.Dir(Path) &/ File.BaseName(Path) & ".class"
 
   If hCtrl.Kind = "Form" Then
     sGroup = "Form"
@@ -1825,11 +1825,14 @@ Private Sub GotoEventMethod(hCtrl As CControl, sEvent As String)
     sGroup = hCtrl.GetGroup()
   Endif
 
-  Project.OpenFile(sPath)
-
-  Project.Files[sPath].GotoEvent(sGroup, sEvent,
+  hEditor = GetEditor(True)
+  If Not hEditor Then Return
+  
+  hEditor.GotoEvent(sGroup, sEvent,
     CSymbolInfo.TransformSignature(CComponent.Classes[hCtrl.Kind].Symbols[":" & sEvent].Signature, False))
-
+  
+  Project.ShowFile(hEditor)
+  
 End
 
 

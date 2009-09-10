@@ -770,6 +770,8 @@ Public Function Rename(sNewName As String) As Boolean
     If hForm.Control.Exist(sNewName) Then Return True
   Endif
 
+  hForm.GetEditor(True).RenameControl(Name, sNewName)
+  
   If Name Then hForm.Control[Name] = Null
 
   Name = sNewName

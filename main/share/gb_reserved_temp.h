@@ -246,7 +246,7 @@ SUBR_INFO COMP_subr_info[] =
   { "Replace$",          14,  0,  3,  4 },
   { "Replace",           14,  0,  3,  4 },
 
-  { "Split",             15,  0,  1,  4 },
+  { "Split",             15,  0,  1,  5 },
   { "Scan",              16,  0,  2     },
 
   { "Comp",              17,  0,  2,  3 },
@@ -395,6 +395,8 @@ SUBR_INFO COMP_subr_info[] =
   { "CDate",             39,  8,  1     },
   { "CStr",              39,  9,  1     },
   { "CString",           39,  9,  1     },
+	{ "CVar",              39, 11,  1     },
+	{ "CVariant",          39, 11,  1     },
 
   { "Bin$",              40,  0,  1,  2 },
   { "Bin",               40,  0,  1,  2 },

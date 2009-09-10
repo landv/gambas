@@ -4,8 +4,63 @@
   MoveScaled(0,0,122,87)
   Text = ("")
   Arrangement = Arrange.Vertical
+  { panToolBar ToolBar
+    MoveScaled(2,0,72,4)
+    Key = "connection"
+    Text = ("Connection editor")
+    Separator = True
+    { btnSave ToolButton mnuSave
+      Name = "btnSave"
+      MoveScaled(0,0,4,4)
+      ToolTip = ("Save")
+      Action = ".save"
+      Text = ("")
+      Picture = Picture["icon:/small/save"]
+    }
+    { btnReload ToolButton mnuReload
+      Name = "btnReload"
+      MoveScaled(4,0,4,4)
+      ToolTip = ("Reload")
+      Action = ".reload"
+      Text = ("")
+      Picture = Picture["icon:/small/refresh"]
+    }
+    { btnNewTable ToolButton
+      MoveScaled(10,0,4,4)
+      ToolTip = ("New table")
+      Text = ("")
+      Picture = Picture["icon:/small/new"]
+    }
+    { btnKill ToolButton
+      MoveScaled(14,0,4,4)
+      ToolTip = ("Delete table")
+      Text = ("")
+      Picture = Picture["icon:/small/delete"]
+    }
+    { btnRename ToolButton
+      MoveScaled(18,0,13,4)
+      ToolTip = ("Rename table")
+      AutoResize = True
+      Text = ("Rename...")
+      Picture = Picture["icon:/small/edit"]
+    }
+    { btnImport ToolButton
+      MoveScaled(31,0,12,4)
+      ToolTip = ("Import text file")
+      AutoResize = True
+      Text = ("Import...")
+      Picture = Picture["icon:/small/open"]
+    }
+    { btnRequest ToolButton
+      MoveScaled(43,0,15,4)
+      ToolTip = ("SQL request")
+      AutoResize = True
+      Text = ("SQL request")
+      Picture = Picture["icon:/small/find"]
+    }
+  }
   { HBox1 HBox
-    MoveScaled(1,1,120,84)
+    MoveScaled(2,5,120,84)
     Expand = True
     { SidePanel1 SidePanel
       MoveScaled(1,1,37,73)
@@ -33,63 +88,8 @@
     { VBox1 VBox
       MoveScaled(41,1,78,81)
       Expand = True
-      { panToolBar ToolBar
-        MoveScaled(2,2,72,4)
-        Key = "connection"
-        Text = ("Connection editor")
-        Separator = True
-        { btnSave ToolButton mnuSave
-          Name = "btnSave"
-          MoveScaled(0,0,4,4)
-          ToolTip = ("Save")
-          Action = ".save"
-          Text = ("")
-          Picture = Picture["icon:/small/save"]
-        }
-        { btnReload ToolButton mnuReload
-          Name = "btnReload"
-          MoveScaled(4,0,4,4)
-          ToolTip = ("Reload")
-          Action = ".reload"
-          Text = ("")
-          Picture = Picture["icon:/small/refresh"]
-        }
-        { btnNewTable ToolButton
-          MoveScaled(10,0,4,4)
-          ToolTip = ("New table")
-          Text = ("")
-          Picture = Picture["icon:/small/new"]
-        }
-        { btnKill ToolButton
-          MoveScaled(14,0,4,4)
-          ToolTip = ("Delete table")
-          Text = ("")
-          Picture = Picture["icon:/small/delete"]
-        }
-        { btnRename ToolButton
-          MoveScaled(18,0,13,4)
-          ToolTip = ("Rename table")
-          AutoResize = True
-          Text = ("Rename...")
-          Picture = Picture["icon:/small/edit"]
-        }
-        { btnImport ToolButton
-          MoveScaled(31,0,12,4)
-          ToolTip = ("Import text file")
-          AutoResize = True
-          Text = ("Import...")
-          Picture = Picture["icon:/small/open"]
-        }
-        { btnRequest ToolButton
-          MoveScaled(43,0,15,4)
-          ToolTip = ("SQL request")
-          AutoResize = True
-          Text = ("SQL request")
-          Picture = Picture["icon:/small/find"]
-        }
-      }
       { splTable VSplit
-        MoveScaled(1,8,75,72)
+        MoveScaled(1,1,75,72)
         Expand = True
         { panTable Panel
           MoveScaled(2,2,71,35)

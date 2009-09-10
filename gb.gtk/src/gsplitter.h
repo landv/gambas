@@ -28,8 +28,9 @@ public:
 	gSplitter(gContainer *parent, bool vert);
 
 //"Properties"
-	char* layout();
-	void  setLayout(char *vl);
+	int layoutCount();
+	void getLayout(int *array);
+	void setLayout(int *array, int count);
 
 	//int childCount();
 	//gControl* child(int index);

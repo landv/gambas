@@ -83,7 +83,7 @@ static GB_DESC NATIVE_GambasLanguage[] =
   GB_METHOD("Replace$", "s", NULL, "(String)s(Find)s(Replace)s[(Mode)i]"),
   GB_METHOD("Replace", "s", NULL, "(String)s(Find)s(Replace)s[(Mode)i]"),
 
-  GB_METHOD("Split", "String[]", NULL, "(String)s[(Separator)s(Escape)s(IgnoreVoid)b]"),
+  GB_METHOD("Split", "String[]", NULL, "(String)s[(Separator)s(Escape)s(IgnoreVoid)b(KeepEscape)b]"),
   GB_METHOD("Scan", "String[]", NULL, "(String)s(Pattern)s"),
 
   GB_METHOD("Comp", "i", NULL, "(String1)s(String2)s[(Mode)i]"),

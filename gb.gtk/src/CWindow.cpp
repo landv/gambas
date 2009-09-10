@@ -551,17 +551,21 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(CWINDOW_menu_next)
 
-	CMENU *Mn;
 	gMenu *mn;
-	long *ct;
+	int *ct;
 
-	ct=(long*)GB.GetEnum();
+	ct = (int *)GB.GetEnum();
 
-	if ( ct[0]>=gMenu::winChildCount(WINDOW)  ) { GB.StopEnum(); return; }
-	mn=gMenu::winChildMenu(WINDOW,ct[0]);
-	Mn=(CMENU*)mn->hFree;
-	ct[0]++;
-	GB.ReturnObject(Mn);
+	if (*ct >= gMenu::winChildCount(WINDOW)) 
+	{ 
+		GB.StopEnum(); 
+		return; 
+	}
+	
+	mn = gMenu::winChildMenu(WINDOW, *ct);
+	(*ct)++;
+	
+	GB.ReturnObject(mn->hFree);
 
 END_PROPERTY
 

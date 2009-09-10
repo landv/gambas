@@ -98,7 +98,7 @@ Public Sub btnView_Click()
   btnDetailed.Visible = $bView
   If $bView Then
     fvwChoose.Dir = dvwChoose.Current
-    splChoose.Layout = "10,20"
+    splChoose.Layout = [1, 2]
   Endif
 
 End
@@ -690,41 +690,41 @@ Public Sub btnRemove_Click()
 
 End
 
-Public Sub GetSettings() As String[]
+Public Sub GetSettings() As Variant[]
   
   If Not $bFile Then 
-    Return Settings.Array(dvwChoose.Root, dvwChoose.Current, $bView, splChoose.Layout, btnShowHidden.Value, fvwChoose.Settings, Not panBookmark.Hidden)
+    Return [CVariant(dvwChoose.Root), dvwChoose.Current, $bView, splChoose.Layout, btnShowHidden.Value, fvwChoose.Settings, Not panBookmark.Hidden]
   Else
-    Return Settings.Array(dvwChoose.Root, dvwChoose.Current, fvwChoose.Current, $bView, splChoose.Layout, btnShowHidden.Value, fvwChoose.Settings, GetFilterIndex(), Not panBookmark.Hidden)
+    Return [CVariant(dvwChoose.Root), dvwChoose.Current, fvwChoose.Current, $bView, splChoose.Layout, btnShowHidden.Value, fvwChoose.Settings, GetFilterIndex(), Not panBookmark.Hidden]
   Endif 
 
 End
 
-Public Sub SetSettings(aStr As String[])
+Public Sub SetSettings(aVar As Variant[])
   
   If Not $bFile Then 
   
-    Try SetRoot(aStr[0])
-    Try dvwChoose.Current = aStr[1]
-    Try $bView = aStr[2] = "0"
+    Try SetRoot(aVar[0])
+    Try dvwChoose.Current = aVar[1]
+    Try $bView = Not aVar[2]
     If Not Error Then btnView_Click
-    Try splChoose.Layout = aStr[3]
-    Try btnShowHidden.Value = aStr[4] <> "0"
-    Try fvwChoose.Settings = aStr[5] 
-    Try panBookmark.Hidden = aStr[6] = "0"
+    splChoose.Layout = aVar[3]
+    Try btnShowHidden.Value = aVar[4]
+    Try fvwChoose.Settings = aVar[5] 
+    Try panBookmark.Hidden = Not aVar[6]
     
   Else
   
-    Try SetRoot(aStr[0])
-    Try dvwChoose.Current = aStr[1]
-    Try fvwChoose.Current = aStr[2]
-    Try $bView = aStr[3] = "0"
+    Try SetRoot(aVar[0])
+    Try dvwChoose.Current = aVar[1]
+    Try fvwChoose.Current = aVar[2]
+    Try $bView = Not aVar[3]
     If Not Error Then btnView_Click
-    Try splChoose.Layout = aStr[4]
-    Try btnShowHidden.Value = aStr[5] <> "0"
-    Try fvwChoose.Settings = aStr[6]
-    Try SetFilterIndex(CInt(aStr[7]))
-    Try panBookmark.Hidden = aStr[8] = "0"
+    Try splChoose.Layout = aVar[4]
+    Try btnShowHidden.Value = aVar[5]
+    Try fvwChoose.Settings = aVar[6]
+    Try SetFilterIndex(aVar[7])
+    Try panBookmark.Hidden = Not aVar[8]
     
   Endif
 

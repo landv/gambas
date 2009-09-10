@@ -2944,3 +2944,43 @@ Public Sub gvwProc_KeyPress()
   Endif
 
 End
+
+Public Sub RenameControl(sOld As String, sNew As String)
+
+  Dim iLine As Integer
+  Dim sLine As String
+  Dim sComp As String
+  Dim bChange As Boolean
+  Dim iPos, iPos2 As Integer
+  Dim sCar As String
+    
+  Editor.Begin
+  
+  For iLine = 0 To Editor.Lines.Count - 1
+    sLine = Editor.Lines[iLine].Text
+    sComp = Highlight.Purge(sLine)
+    bChange = False
+    iPos = 0
+    Do
+      iPos2 = InStr(sComp, sOld, iPos + 1, gb.Text)
+      If iPos2 Then
+        iPos = iPos2
+        If iPos > 1 Then
+          If InStr(IDENT_CAR, Mid$(sComp, iPos - 1, 1)) Then Continue
+        Endif
+        If iPos + Len(sOld) <= Len(sComp) Then
+          sCar = Mid$(sComp, iPos + Len(sOld), 1)
+          If sCar <> "_" And If InStr(IDENT_CAR, sCar) Then Continue
+        Endif
+        sLine = Left$(sLine, iPos - 1) & sNew & Mid$(sLine, iPos + Len(sOld))
+        bChange = True
+        Continue
+      Endif
+      Break
+    Loop
+    If bChange Then Editor.Lines[iLine].Text = sLine
+  Next
+  
+  Editor.End
+  
+End

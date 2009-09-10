@@ -654,6 +654,7 @@ void SUBR_split(void)
 	char *sep = "";
 	char *esc = "";
 	bool no_void = FALSE;
+	bool keep_esc = FALSE;
 
 	SUBR_ENTER();
 
@@ -665,10 +666,11 @@ void SUBR_split(void)
 		if (NPARAM >= 3)
 		{
 			esc = SUBR_get_string(&PARAM[2]);
-			if (NPARAM == 4)
+			if (NPARAM >= 4)
 			{
-				VALUE_conv(&PARAM[3], T_BOOLEAN);
-				no_void = PARAM[3]._boolean.value;
+				no_void = SUBR_get_boolean(&PARAM[3]);
+				if (NPARAM == 5)
+					keep_esc = SUBR_get_boolean(&PARAM[4]);
 			}
 		}
 	}
@@ -680,7 +682,7 @@ void SUBR_split(void)
 		if (*sep) STRING_ref(sep);
 		if (*esc) STRING_ref(esc);
 
-		CARRAY_split(array, str, lstr, sep, esc, no_void);
+		CARRAY_split(array, str, lstr, sep, esc, no_void, keep_esc);
 
 		if (*sep) STRING_unref(&sep);
 		if (*esc) STRING_unref(&esc);

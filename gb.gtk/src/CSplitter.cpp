@@ -64,16 +64,23 @@ END_METHOD
 
 BEGIN_PROPERTY(CSPLITTER_layout)
 
-	char *vl;
+	GB_ARRAY array;
 	
 	if (READ_PROPERTY)
 	{
-		vl=WIDGET->layout();
-		GB.ReturnNewString(vl,0);
-		return;
+		GB.Array.New(&array, GB_T_INTEGER, WIDGET->layoutCount());
+		WIDGET->getLayout((int *)GB.Array.Get(array, 0));
+		GB.ReturnObject(array);
 	}
-	
-	WIDGET->setLayout( GB.ToZeroString(PROP(GB_STRING)) );
+	else
+	{
+		GB_ARRAY array = (GB_ARRAY)VPROP(GB_OBJECT);
+		
+		if (GB.CheckObject(array))
+			return;
+
+		WIDGET->setLayout((int *)GB.Array.Get(array, 0), GB.Array.Count(array));
+	}
 
 
 END_PROPERTY
@@ -85,8 +92,8 @@ GB_DESC CHSplitDesc[] =
 
   GB_METHOD("_new", NULL, CHSPLIT_new, "(Parent)Container;"),
 
-  GB_PROPERTY("Layout", "s", CSPLITTER_layout),
-  GB_PROPERTY("Settings", "s", CSPLITTER_layout),
+  GB_PROPERTY("Layout", "Integer[]", CSPLITTER_layout),
+  GB_PROPERTY("Settings", "Integer[]", CSPLITTER_layout),
 
   GB_EVENT("Resize", 0, 0, &EVENT_Resize),
 
@@ -102,8 +109,8 @@ GB_DESC CVSplitDesc[] =
 
   GB_METHOD("_new", 0, CVSPLIT_new, "(Parent)Container;"),
 
-  GB_PROPERTY("Layout", "s", CSPLITTER_layout),
-  GB_PROPERTY("Settings", "s", CSPLITTER_layout),
+  GB_PROPERTY("Layout", "Integer[]", CSPLITTER_layout),
+  GB_PROPERTY("Settings", "Integer[]", CSPLITTER_layout),
 
   GB_EVENT("Resize", 0, 0, &EVENT_Resize),
 

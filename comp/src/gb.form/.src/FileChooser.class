@@ -19,7 +19,7 @@ Property ShowHidden As Boolean
 Property ShowDetailed As Boolean
 Property ShowBookmark As Boolean
 Property Bookmarks As Array
-Property Settings As String[]
+Property Settings As Variant[]
 
 Property ReadOnly As Boolean
 Property Filter As String[]
@@ -273,13 +273,13 @@ Private Sub Bookmarks_Write(Value As Array)
 End
 
 
-Private Function Settings_Read() As String[]
+Private Function Settings_Read() As Variant[]
 
   Return frmChooser.GetSettings()  
 
 End
 
-Private Sub Settings_Write(Value As String[])
+Private Sub Settings_Write(Value As Variant[])
 
   frmChooser.SetSettings(Value)
 

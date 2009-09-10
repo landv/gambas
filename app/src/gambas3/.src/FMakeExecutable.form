@@ -9,42 +9,34 @@
   Spacing = True
   Padding = 8
   { fchExec FileChooser
-    MoveScaled(1,1,68,45)
+    MoveScaled(1,1,74,45)
     Expand = True
     ShowBookmark = True
   }
-  { Expander1 Expander
-    MoveScaled(2,47,70,17)
-    Arrangement = Arrange.Vertical
+  { HBox2 HBox
+    MoveScaled(1,47,68,4)
     Spacing = True
-    Text = ("Options")
-    TextFont = Font["Bold"]
-    Hidden = True
-    { HBox2 HBox
-      MoveScaled(0,0,68,4)
-      Spacing = True
-      { Label1 Label
-        MoveScaled(0,0,24,4)
-        AutoResize = True
-        Text = ("Run this command after")
-      }
-      { txtCommand TextBox
-        MoveScaled(26,0,24,4)
-        ToolTip = ("<b>$(FILE)</b> will be replaced by the path of the executable")
-        Expand = True
-        Text = ("")
-      }
+    { Label1 Label
+      MoveScaled(0,0,24,4)
+      AutoResize = True
+      Text = ("Run this command after")
     }
-    { VBox1 VBox
-      MoveScaled(1,5,67,8)
-      { chkDebug CheckBox
-        MoveScaled(0,0,56,4)
-        Text = ("Keep debugging information in executable")
-      }
-      { chkShortcut CheckBox
-        MoveScaled(0,4,49,4)
-        Text = ("Create a shortcut on the desktop")
-      }
+    { txtCommand TextBox
+      MoveScaled(26,0,24,4)
+      ToolTip = ("<b>$(FILE)</b> will be replaced by the path of the executable")
+      Expand = True
+      Text = ("")
+    }
+  }
+  { VBox1 VBox
+    MoveScaled(1,52,67,8)
+    { chkDebug CheckBox
+      MoveScaled(0,0,56,4)
+      Text = ("Keep debugging information in executable")
+    }
+    { chkShortcut CheckBox
+      MoveScaled(0,4,49,4)
+      Text = ("Create a shortcut on the desktop")
     }
   }
   { HBox1 HBox

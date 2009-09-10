@@ -96,73 +96,67 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CSPLITTER_layout)
 
-  int i;
-  QList<int> list;
-  char buffer[16];
-  int pos;
+	GB_ARRAY array;
+	int i;
+	QList<int> list;
+	int pos;
 
-  if (READ_PROPERTY)
-  {
-    list = WIDGET->sizes();
-    QString s;
+	if (READ_PROPERTY)
+	{
+		list = WIDGET->sizes();
+		
+		GB.Array.New(&array, GB_T_INTEGER, list.count());
 
-    for (i = 0; i < list.count(); i++)
-    {
-      pos = list.at(i);
-      if (pos <= 1)
-        pos = 0;
-      sprintf(buffer, "%d", pos);
-      if (i > 0)
-        s += ',';
-      s += buffer;
-    }
+		for (i = 0; i < list.count(); i++)
+		{
+			pos = list.at(i);
+			if (pos <= 1)
+				pos = 0;
+			*((int *)GB.Array.Get(array, i)) = pos;
+		}
 
-    #ifdef DEBUG_ME
-    qDebug("Splitter.Layout -> %s", s.latin1());
-    #endif
+		GB.ReturnObject(array);
+	}
+	else
+	{
+		int sum;
+		int dim;
+		int count;
+		GB_ARRAY array = (GB_ARRAY)VPROP(GB_OBJECT);
+		
+		if (GB.CheckObject(array))
+			return;
+		
+		count =  GB.Array.Count(array);
+		if (!count)
+			return;
 
-    GB.ReturnNewZeroString(s.toLatin1());
-  }
-  else
-  {
-    QString s = QSTRING_PROP();
-    QStringList sl = s.split(',');
-    int sum;
-    int dim;
+		dim = WIDGET->orientation() == Qt::Horizontal ? WIDGET->width() : WIDGET->height();
+		dim -= WIDGET->handleWidth() * WIDGET->handleCount();
 
-    if (s.length() == 0)
-      return;
+		for (i = 0, sum = 0; i < count; i++)
+		{
+			pos = *((int *)GB.Array.Get(array, i));
+			if (pos < 1) // why <= before ?
+				pos = 0;
+			sum += pos;
+		}
 
-    #ifdef DEBUG_ME
-    qDebug("Splitter.Layout = %s", s.latin1());
-    #endif
+		for (i = 0; i < count; i++)
+		{
+			pos = *((int *)GB.Array.Get(array, i));
+			if (pos < 1) // why <= before ?
+				pos = 0;
+			else
+				pos = pos * dim / sum;
+			#ifdef DEBUG_ME
+			qDebug("Splitter.Layout[%ld] = %ld  dim = %d  sum = %d  pos = %d", i, sl[i].toInt(), dim, sum, pos);
+			#endif
+			list.append(pos);
+		}
 
-    dim = WIDGET->orientation() == Qt::Horizontal ? WIDGET->width() : WIDGET->height();
-    dim -= WIDGET->handleWidth() * WIDGET->handleCount();
-
-    for (i = 0, sum = 0; i < sl.count(); i++)
-    {
-      pos = sl[i].toInt();
-      if (pos < 1) // why <= before ?
-        pos = 0;
-      sum += pos;
-    }
-
-    for (i = 0; i < sl.count(); i++)
-    {
-      pos = sl[i].toInt();
-      if (pos < 1) // why <= before ?
-        pos = 0;
-      else
-        pos = pos * dim / sum;
-      #ifdef DEBUG_ME
-      qDebug("Splitter.Layout[%ld] = %ld  dim = %d  sum = %d  pos = %d", i, sl[i].toInt(), dim, sum, pos);
-      #endif
-      list.append(pos);
-    }
-
-    WIDGET->setSizes(list);
-  }
+		WIDGET->setSizes(list);
+	}
 
 END_PROPERTY
 
@@ -220,8 +214,8 @@ GB_DESC CHSplitDesc[] =
 
   GB_METHOD("_new", NULL, CHSPLIT_new, "(Parent)Container;"),
 
-  GB_PROPERTY("Layout", "s", CSPLITTER_layout),
-  GB_PROPERTY("Settings", "s", CSPLITTER_layout),
+  GB_PROPERTY("Layout", "Integer[]", CSPLITTER_layout),
+  GB_PROPERTY("Settings", "Integer[]", CSPLITTER_layout),
 
   GB_EVENT("Resize", NULL, NULL, &EVENT_Resize),
 
@@ -237,8 +231,8 @@ GB_DESC CVSplitDesc[] =
 
   GB_METHOD("_new", NULL, CVSPLIT_new, "(Parent)Container;"),
 
-  GB_PROPERTY("Layout", "s", CSPLITTER_layout),
-  GB_PROPERTY("Settings", "s", CSPLITTER_layout),
+  GB_PROPERTY("Layout", "Integer[]", CSPLITTER_layout),
+  GB_PROPERTY("Settings", "Integer[]", CSPLITTER_layout),
 
   GB_EVENT("Resize", NULL, NULL, &EVENT_Resize),
 

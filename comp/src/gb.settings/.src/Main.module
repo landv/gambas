@@ -33,80 +33,133 @@ End
 
 Public Function UnQuoteString(sVal As String) As String
 
-  Return UnQuote(sVal)
+  Return Unquote(sVal)
 
 End
 
 Public Function ToString(vVal As Variant) As String
-
-  Dim sVal As String
-  Dim iInd As Integer
-
-  If IsString(vVal) Then
-    Return QuoteString(vVal)
-  Else If IsBoolean(vVal) Then
-    Return IIf(vVal, "True", "False")
-  Else If IsObject(vVal) 
-    If vVal Is String[] Or If vVal Is Integer[] Or If vVal Is Float[] Then
-      sVal = "["
-      For iInd = 0 To vVal.Max
-        If iInd Then sVal &= ","
-        sVal &= ToString(vVal[iInd])
-      Next
-      sVal &= "]"
-    Else 
-      Error.Raise("Unsupported datatype: " & Object.Type(vVal))
-    Endif
-  Else
-    sVal = CStr(vVal)
-    If IsFloat(vVal) Then
-      If InStr(sVal, ".") = "0" Then sVal = sVal & ".0"
-    Endif
-  Endif
-
-  Return sVal
+  
+  Return JSON.Encode(vVal)
   
 End
 
 Public Function FromString(sVal As String) As Variant
-
-  Dim aVal As String[]
-  Dim iInd As Integer
-  Dim aVar As Object
-
-  If Left(sVal) = "\"" Then
-    Return UnQuoteString(sVal)
-  Else If Left(sVal) = "[" Then 
-    If sVal = "[]" Then Return Null
-    aVal = Split(Mid$(sVal, 2, -1), ",", Chr$(34))
-    If Mid$(sVal, 2, 1) = Chr$(34) Then
-      Return aVal
-    Else
-      Select Case TypeOf(FromString(aVal[0]))
-        Case gb.Integer
-          aVar = New Integer[aVal.Count]
-        Case gb.Float
-          aVar = New Float[aVal.Count]
-        Case Else
-          Return Null
-      End Select
-      For iInd = 0 To aVal.Max
-        aVar[iInd] = FromString(aVal[iInd])
-      Next    
-      Return aVar
-    Endif
-  Else If InStr(sVal, "/") Then
-    Return CDate(sVal)
-  Else If InStr(sVal, ".") Then
-    Return CFloat(sVal)
-  Else If LCase(sVal) = "true" Then 
-    Return True
-  Else If LCase(sVal) = "false" Then 
-    Return False
-  Else
-    Return CInt(sVal)
-  Endif
-
+  
+  Return JSON.Decode(sVal)
+  
 End
+
+
+
+
+' Public Function ToString(vVal As Variant) As String
+' 
+'   Dim sVal As String
+'   Dim iInd As Integer
+' 
+'   If IsString(vVal) Then
+'     Return QuoteString(vVal)
+'   Else If IsBoolean(vVal) Then
+'     Return IIf(vVal, "True", "False")
+'   Else If IsObject(vVal) 
+'     If vVal Is Array Then
+'       sVal = "["
+'       For iInd = 0 To vVal.Max
+'         If iInd Then sVal &= ","
+'         sVal &= ToString(vVal[iInd])
+'       Next
+'       sVal &= "]"
+'     Else 
+'       Error.Raise("Unsupported datatype: " & Object.Type(vVal))
+'     Endif
+'   Else
+'     sVal = CStr(vVal)
+'     If IsFloat(vVal) Then
+'       If InStr(sVal, ".") = 0 Then sVal = sVal & ".0"
+'     Endif
+'   Endif
+' 
+'   Return sVal
+'   
+' End
+' 
+' Private Sub TypeFromString(sVal As String) As Integer
+'   
+'   If sVal = "" Then Return gb.Null
+'   If Left(sVal) = Chr$(34) Then Return gb.String
+'   If Left(sVal) = "[" Then Return gb.Object
+'   If sVal == "true" Or If sVal == "false" Then Return gb.Boolean
+'   If InStr(sVal, "/") Then Return gb.Date
+'   If IsNull(Val(sVal)) Then Return gb.Null
+'   If InStr(sVal, ".") Then Return gb.Float
+'   Return gb.Integer
+'   
+' End
+' 
+' 
+' Public Function FromString(sVal As String) As Variant
+' 
+'   Dim aVal As String[]
+'   Dim iInd As Integer
+'   Dim aVar As Array
+'   Dim iType, iType2 As Integer
+' 
+'   If Left(sVal) = "\"" Then
+'     Return UnQuoteString(sVal)
+'   Else If Left(sVal) = "[" Then 
+'     
+'     If sVal = "[]" Then Return Null
+'     
+'     aVal = Split(Mid$(sVal, 2, -1), ",", Chr$(34), False, True)
+' 
+'     iType = gb.Null
+'     For iInd = 0 To aVal.Max
+'       iType2 = TypeFromString(aVal[iInd])
+'       If iType2 = gb.Null Then
+'         iType = gb.Null
+'         Break
+'       Else If iType = gb.Null Then
+'         iType = iType2
+'       Else If iType <> iType2 Then
+'         iType = gb.Variant
+'         Break
+'       Endif
+'     Next
+'     
+'     Select Case iType
+'       Case gb.Boolean
+'         aVar = New Boolean[aVal.Count]
+'       Case gb.Integer
+'         aVar = New Integer[aVal.Count]
+'       Case gb.Float
+'         aVar = New Float[aVal.Count]
+'       Case gb.String
+'         aVar = New String[aVal.Count]
+'       Case gb.Date
+'         aVar = New Date[aVal.Count]
+'       Case gb.Object
+'         aVar = New Object[aVal.Count]
+'       Case gb.Variant
+'         aVar = New Variant[aVal.Count]
+'     End Select
+'     
+'     For iInd = 0 To aVal.Max
+'       aVar[iInd] = FromString(aVal[iInd])
+'     Next    
+'     Return aVar
+'     
+'   Else If InStr(sVal, "/") Then
+'     Return CDate(sVal)
+'   Else If InStr(sVal, ".") Then
+'     Return CFloat(sVal)
+'   Else If sVal == "true" Then 
+'     Return True
+'   Else If sVal == "false" Then 
+'     Return False
+'   Else
+'     Return CInt(sVal)
+'   Endif
+' 
+' End
 
 

@@ -227,10 +227,7 @@ void SUBR_week(void)
         THROW(E_ARG);
         
       if (NPARAM == 3)
-      {
-        VALUE_conv(&PARAM[2], T_BOOLEAN);
-        plain = PARAM[2]._boolean.value;
-      }
+        plain = SUBR_get_boolean(&PARAM[2]);
     }
   }
   else

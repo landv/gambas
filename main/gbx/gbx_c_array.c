@@ -1546,7 +1546,7 @@ static void add_entry()
 }
 
 
-void CARRAY_split(CARRAY *_object, const char *str, int lstr, const char *sep, const char *esc, bool no_void)
+void CARRAY_split(CARRAY *_object, const char *str, int lstr, const char *sep, const char *esc, bool no_void, bool keep_esc)
 {
 	int i;
 	char c;
@@ -1595,11 +1595,17 @@ void CARRAY_split(CARRAY *_object, const char *str, int lstr, const char *sep, c
 				i++;
 			}
 			else
+			{
 				escape = FALSE;
+				if (keep_esc)
+					add_char(str);
+			}
 		}
 		else if (c == escl)
 		{
 			escape = TRUE;
+			if (keep_esc)
+				add_char(str);
 		}
 		else if (c == *sep || (lsep && index(&sep[1], c)))
 		{

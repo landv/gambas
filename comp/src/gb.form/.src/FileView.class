@@ -23,7 +23,7 @@ Property Read Selection As String[]
 Property Filter As String[]
 Property Icon As Picture
 Property Border As Boolean
-Property Settings As String
+Property Settings As Variant[]
 Property Read Count As Integer
 
 Static Private $aImgExt As String[] = ["png", "jpeg", "jpg", "gif", "xpm"]
@@ -540,19 +540,19 @@ Private Sub Border_Write(Value As Boolean)
 
 End
 
-Private Function Settings_Read() As String
+Private Function Settings_Read() As Variant[]
 
-  Return IIf(ShowDetailed_Read(), "1", "0") & "," & IIf(ShowHidden_Read(), "1", "0") & "," & $hColumnView.Settings
+  Return [CVariant(ShowDetailed_Read()), ShowHidden_Read(), $hColumnView.Settings]
+
+  'Return IIf(ShowDetailed_Read(), "1", "0") & "," & IIf(ShowHidden_Read(), "1", "0") & "," & $hColumnView.Settings
 
 End
 
-Private Sub Settings_Write(Value As String)
+Private Sub Settings_Write(Value As Variant[])
 
-  Dim aVal As String[] = Scan(Value, "*,*,*")
-  
-  ShowDetailed_Write(aVal[0] = "1")
-  ShowHidden_Write(aVal[1] = "1")
-  $hColumnView.Settings = aVal[2]
+  ShowDetailed_Write(Value[0])
+  ShowHidden_Write(Value[1])
+  $hColumnView.Settings = Value[2]
   
 Catch
 

@@ -19,7 +19,7 @@ Property Tooltip As String
 Property Value As Boolean
 Property Action As String
 Property Design As Boolean
-Property Settings As String
+Property Settings As Variant[]
 
 Private $hForm As FSidePanel
 Private $bAnimate As Boolean
@@ -166,18 +166,16 @@ Private Sub Design_Write(Value As Boolean)
 End
 
 
-Private Function Settings_Read() As String
+Private Function Settings_Read() As Variant[]
 
-  Return If(Hidden_Read(), "1", "0") & "," & CStr(Dimension_Read())
+  Return [CVariant(Hidden_Read()), Dimension_Read()]
 
 End
 
-Private Sub Settings_Write(Value As String)
+Private Sub Settings_Write(Value As Variant[])
 
-  Dim aVal As String[] = Split(Value, ",")
-  
-  Try Dimension_Write(CInt(aVal[1]))
-  Try Hidden_Write(aVal[0] <> "0")
+  Try Hidden_Write(Value[0])
+  Try Dimension_Write(Value[1])
 
 End
 

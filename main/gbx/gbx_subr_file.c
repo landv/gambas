@@ -434,10 +434,7 @@ void SUBR_stat(void)
   path = get_path(PARAM);
 
 	if (NPARAM == 2)
-	{
-		VALUE_conv(&PARAM[1], T_BOOLEAN);
-		follow = PARAM[1]._boolean.value;
-	}
+		follow = SUBR_get_boolean(&PARAM[1]);
 	
   FILE_stat(path, &info, follow);
 

@@ -1,209 +1,209 @@
 ' Gambas class file
 
-INHERITS UserControl
-EXPORT
+Inherits UserControl
+Export
 
-PUBLIC CONST _Properties AS String = "*,Root,Picture,ShowHidden,ShowFile,ShowDetailed,ShowBookmark,ShowSplitter=True"
-PUBLIC CONST _DefaultEvent AS String = "Change"
-PUBLIC CONST _DefaultSize AS String = "36,36"
+Public Const _Properties As String = "*,Root,Picture,ShowHidden,ShowFile,ShowDetailed,ShowBookmark,ShowSplitter=True"
+Public Const _DefaultEvent As String = "Change"
+Public Const _DefaultSize As String = "36,36"
 
-PROPERTY Root AS String
-PROPERTY Picture AS Picture
-PROPERTY SelectedPath AS String
-PROPERTY Value AS String
-PROPERTY ShowFile AS Boolean
-PROPERTY ShowHidden AS Boolean
-PROPERTY ShowDetailed AS Boolean
-PROPERTY ShowBookmark AS Boolean
-PROPERTY ShowSplitter AS Boolean
-PROPERTY Bookmarks AS Array
-PROPERTY Icon AS Picture
-PROPERTY Settings AS String[]
+Property Root As String
+Property Picture As Picture
+Property SelectedPath As String
+Property Value As String
+Property ShowFile As Boolean
+Property ShowHidden As Boolean
+Property ShowDetailed As Boolean
+Property ShowBookmark As Boolean
+Property ShowSplitter As Boolean
+Property Bookmarks As Array
+Property Icon As Picture
+Property Settings As Variant[]
 
-EVENT Change
-EVENT Activate
-EVENT Icon(Path AS String)
+Event Change
+Event Activate
+Event Icon(Path As String)
 'EVENT ShowHidden
 
-PRIVATE frmChooser AS FDirChooser
+Private frmChooser As FDirChooser
 
-PUBLIC SUB _new()
+Public Sub _new()
 
-  frmChooser = NEW FDirChooser(FALSE, ME) AS "frmChooser"
-  Object.Attach(frmChooser, ME, "frmChooser")
+  frmChooser = New FDirChooser(False, Me) As "frmChooser"
+  Object.Attach(frmChooser, Me, "frmChooser")
   'Object.Delegate(frmChooser, ME)
 
-END
+End
 
-PUBLIC SUB frmChooser_Open()
+Public Sub frmChooser_Open()
 
-  LAST.Form_Open
+  Last.Form_Open
 
-END
+End
 
-PUBLIC SUB frmChooser_Change()
+Public Sub frmChooser_Change()
 
-  RAISE Change
+  Raise Change
 
-END
+End
 
-PUBLIC SUB frmChooser_Select()
+Public Sub frmChooser_Select()
 
-  RAISE Activate
+  Raise Activate
 
-END
+End
 
-PUBLIC SUB frmChooser_GetIcon(Path AS String)
+Public Sub frmChooser_GetIcon(Path As String)
   
-  RAISE Icon(Path)
+  Raise Icon(Path)
   
-END
+End
 
-PRIVATE FUNCTION SelectedPath_Read() AS String
+Private Function SelectedPath_Read() As String
 
-  RETURN frmChooser.GetDir()
+  Return frmChooser.GetDir()
 
-END
+End
 
-PRIVATE SUB SelectedPath_Write(sDir AS String)
+Private Sub SelectedPath_Write(sDir As String)
 
   frmChooser.SetDir(sDir)
 
-END
+End
 
-PRIVATE FUNCTION ShowFile_Read() AS Boolean
+Private Function ShowFile_Read() As Boolean
 
-  RETURN frmChooser.GetFileVisible()
+  Return frmChooser.GetFileVisible()
 
-END
+End
 
-PRIVATE SUB ShowFile_Write(bShowFile AS Boolean)
+Private Sub ShowFile_Write(bShowFile As Boolean)
 
   frmChooser.SetFileVisible(bShowFile)
 
-END
+End
 
-PRIVATE FUNCTION ShowHidden_Read() AS Boolean
+Private Function ShowHidden_Read() As Boolean
 
-  RETURN frmChooser.GetShowHidden()
+  Return frmChooser.GetShowHidden()
 
-END
+End
 
-PRIVATE SUB ShowHidden_Write(bShowHidden AS Boolean)
+Private Sub ShowHidden_Write(bShowHidden As Boolean)
 
   frmChooser.SetShowHidden(bShowHidden)
 
-END
+End
 
-PRIVATE FUNCTION ShowDetailed_Read() AS Boolean
+Private Function ShowDetailed_Read() As Boolean
 
-  RETURN frmChooser.GetShowDetailed()
+  Return frmChooser.GetShowDetailed()
 
-END
+End
 
-PRIVATE SUB ShowDetailed_Write(bShowDetailed AS Boolean)
+Private Sub ShowDetailed_Write(bShowDetailed As Boolean)
 
   frmChooser.SetShowDetailed(bShowDetailed)
 
-END
+End
 
-PRIVATE FUNCTION Root_Read() AS String
+Private Function Root_Read() As String
 
-  RETURN frmChooser.GetRoot()
+  Return frmChooser.GetRoot()
 
-END
+End
 
-PRIVATE SUB Root_Write(Value AS String)
+Private Sub Root_Write(Value As String)
 
   frmChooser.SetRoot(Value)
 
-END
+End
 
-PRIVATE FUNCTION Picture_Read() AS Picture
+Private Function Picture_Read() As Picture
 
-  RETURN frmChooser.GetPicture()
+  Return frmChooser.GetPicture()
 
-END
+End
 
-PRIVATE SUB Picture_Write(Value AS Picture)
+Private Sub Picture_Write(Value As Picture)
 
   frmChooser.SetPicture(Value)
 
-END
+End
 
-PRIVATE FUNCTION Value_Read() AS String
+Private Function Value_Read() As String
 
-  RETURN frmChooser.GetDir()  
+  Return frmChooser.GetDir()  
 
-END
+End
 
-PRIVATE SUB Value_Write(Value AS String)
+Private Sub Value_Write(Value As String)
 
   frmChooser.SetDir(Value)
 
-END
+End
 
-PRIVATE FUNCTION ShowBookmark_Read() AS Boolean
+Private Function ShowBookmark_Read() As Boolean
 
-  RETURN frmChooser.IsBookmarkVisible()  
+  Return frmChooser.IsBookmarkVisible()  
 
-END
+End
 
-PRIVATE SUB ShowBookmark_Write(Value AS Boolean)
+Private Sub ShowBookmark_Write(Value As Boolean)
 
   frmChooser.ShowBookmark(Value)
 
-END
+End
 
-PRIVATE FUNCTION Bookmarks_Read() AS Array
+Private Function Bookmarks_Read() As Array
 
-  RETURN frmChooser.GetPrivateBookmarks()
+  Return frmChooser.GetPrivateBookmarks()
 
-END
+End
 
-PRIVATE SUB Bookmarks_Write(Value AS Array)
+Private Sub Bookmarks_Write(Value As Array)
 
   frmChooser.SetPrivateBookmarks(Value)
 
-END
+End
 
-PRIVATE FUNCTION Icon_Read() AS Picture
+Private Function Icon_Read() As Picture
 
-  RETURN frmChooser.FileView.Icon
+  Return frmChooser.FileView.Icon
 
-END
+End
 
-PRIVATE SUB Icon_Write(Value AS Picture)
+Private Sub Icon_Write(Value As Picture)
 
   frmChooser.FileView.Icon = Value
   frmChooser.DirView.Icon = Value
 
-END
+End
 
 
-PRIVATE FUNCTION Settings_Read() AS String[]
+Private Function Settings_Read() As Variant[]
 
-  RETURN frmChooser.GetSettings()    
+  Return frmChooser.GetSettings()    
 
-END
+End
 
-PRIVATE SUB Settings_Write(Value AS String[])
+Private Sub Settings_Write(Value As Variant[])
 
   frmChooser.SetSettings(Value)
 
-END
+End
 
-PRIVATE FUNCTION ShowSplitter_Read() AS Boolean
+Private Function ShowSplitter_Read() As Boolean
 
-  RETURN frmChooser.GetSplitter()  
+  Return frmChooser.GetSplitter()  
 
-END
+End
 
-PRIVATE SUB ShowSplitter_Write(Value AS Boolean)
+Private Sub ShowSplitter_Write(Value As Boolean)
 
   frmChooser.SetSplitter(Value)
 
-END
+End
 
 ' PUBLIC SUB frmChooser_ShowHidden()
 '   
@@ -211,8 +211,8 @@ END
 '   
 ' END
 
-PUBLIC SUB Reload()
+Public Sub Reload()
   
   frmChooser.Reload
   
-END
+End

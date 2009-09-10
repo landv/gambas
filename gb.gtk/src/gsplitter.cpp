@@ -196,17 +196,22 @@ int gSplitter::handleCount()
 	return nh;
 }
 
-void gSplitter::setLayout(char *vl)
+void gSplitter::setLayout(int *array, int count)
 {
-	char **split;
-	char *sval;
 	int i;
-	long num;
+	int num;
 	double factor;
 	GtkPaned *iter;
 	int shandle;
 	
-	if (!vl || !*vl) return;
+	if (!array)
+		return;
+	
+	if (count > childCount())
+		count = childCount();
+	
+	if (count <= 0)
+		return;
 	
 	//fprintf(stderr, "setLayout: %s\n", vl);
   
@@ -214,23 +219,14 @@ void gSplitter::setLayout(char *vl)
 			"handle-size", &shandle,
 			(void *)NULL);
 	
-	split=g_strsplit((const char*)vl, ",", -1);
-	if (!split) return;
-	 
 	factor = 0;
 	for (i = 0;; i++)
 	{
-		if (i >= childCount())
+		if (i >= count)
 			break;
 		if (child(i)->isVisible())
 		{
-			sval = split[i];
-			if (!sval)
-				break;
-			errno = 0;
-			num = strtol(sval, NULL, 10);
-			if (errno || num < 1)
-				num = 0;
+			num = array[i];
 			factor += num;
 		}
 	}
@@ -247,26 +243,17 @@ void gSplitter::setLayout(char *vl)
 	for (i = 0;; i++)
 	{
 	 	if (!iter) break;
-		if (i >= childCount())
+		if (i >= count)
 			break;
 		
 		if (child(i)->isVisible())
 		{
-			sval = split[i];
-			if (!sval)
-				break;
-				
-			errno = 0;
-			num = strtol(sval,NULL,10);
-			if (errno || num < 1)
-				num = 0;
+			num = array[i];
 			gtk_paned_set_position(iter, (gint)(num * factor + 0.5));
 		}
 		
 		iter = next(iter);
 	}
-	
-	g_strfreev(split);
 	
 	unlock();
 	
@@ -275,13 +262,32 @@ void gSplitter::setLayout(char *vl)
 	//fprintf(stderr, "setLayout: layout = %s\n", layout());
 }
 
+int gSplitter::layoutCount()
+{
+	GtkPaned *iter;
+	int n = 0;
+	
+	iter = next(NULL);
+	if (iter)
+	{
+		n++;
+		for(;;)
+		{
+			iter = next(iter);
+			if (!iter)
+				break;
+			n++;
+		}
+	}
+	
+	return n;
+}
 
-char* gSplitter::layout()
+void gSplitter::getLayout(int *array)
 {
 	GtkPaned *iter;
 	int vl, sum, nhandle, shandle;
-	GString *ret = g_string_new("");
-	char *l;
+	int n;
 	
   gtk_widget_style_get (border,
 			"handle-size", &shandle,
@@ -292,6 +298,7 @@ char* gSplitter::layout()
 	{
 		sum = 0;
 		nhandle = 0;
+		n = 0;
 		for(;;)
 		{
 			vl = get_child_width(iter); //gtk_paned_get_position(iter);
@@ -301,24 +308,14 @@ char* gSplitter::layout()
 			if (vl)
 				nhandle++;
 			sum += vl;
-			g_string_append_printf(ret, "%d,", vl);
+			array[n++] = vl;
 		}
 		
 		if (childCount() > 1 && child(childCount() - 1)->isVisible())
-			g_string_append_printf(ret, "%d", (vertical ? height() : width()) - sum - nhandle * shandle);
+			array[n++] = (vertical ? height() : width()) - sum - nhandle * shandle;
 		else	
-			g_string_append(ret, "0");
+			array[n++] = 0;
 	}
-		
-	l = g_string_free(ret, false);
-	gt_free_later(l);
-	
-	//fprintf(stderr, "layout: %s\n", l);
-	
-	if (!*l)
-		return NULL;
-	else
-		return l;
 }
 
 #if 0

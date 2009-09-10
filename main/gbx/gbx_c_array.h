@@ -62,7 +62,7 @@ extern GB_DESC NATIVE_TemplateArray[];
 
 #endif
 
-void CARRAY_split(CARRAY *_object, const char *str, int lstr, const char *sep, const char *esc, bool many_esc);
+void CARRAY_split(CARRAY *_object, const char *str, int lstr, const char *sep, const char *esc, bool no_void, bool keep_esc);
 void CARRAY_reverse(void *_object, void *_param);
 void CARRAY_get_value(CARRAY *_object, int index, VALUE *value);
 #define CARRAY_invert(_array) CARRAY_reverse(_array, NULL)
