@@ -83,6 +83,7 @@ MyTableItem::MyTableItem(QTable *table, CGRIDVIEW *view)
   _view = view;
   _data = &_default;
   _dict.setAutoDelete(true);
+	setWordWrap(false);
 }
 
 MyTableItem::~MyTableItem()

@@ -18,6 +18,7 @@ PRIVATE $hIndexEditor AS CTableViewEditor
 
 PRIVATE $bModify AS Boolean
 PRIVATE $bReadOnly AS Boolean
+PRIVATE $sOldName AS String
 
 PRIVATE frmData AS FData
 
@@ -205,6 +206,20 @@ PRIVATE SUB ReadTable()
 END
 
 
+PRIVATE SUB RemoveIndexFromTable(sTable AS String)
+  
+  DIM hTable AS Table
+  DIM hIndex AS Index
+  
+  hTable = $hConn.Handle.Tables[sTable]
+  
+  FOR EACH hIndex IN hTable.Indexes
+    IF hIndex.Primary THEN CONTINUE
+    hTable.Indexes.Remove(hIndex.Name)
+  NEXT
+  
+END
+
 PRIVATE SUB WriteTableDef(sName AS String, sType AS String, aPrimaryKey AS String[], OPTIONAL bKill AS Boolean)
 
   DIM hTable AS Table
@@ -212,6 +227,7 @@ PRIVATE SUB WriteTableDef(sName AS String, sType AS String, aPrimaryKey AS Strin
   DIM hCIndex AS CIndexField
   DIM hLastCIndex AS CIndexField
   DIM sError AS String
+  DIM sIndex AS String
 
   TRY $hConn.Handle.Tables.Remove(sName)
   hTable = $hConn.Handle.Tables.Add(sName, sType)
@@ -238,7 +254,9 @@ PRIVATE SUB WriteTableDef(sName AS String, sType AS String, aPrimaryKey AS Strin
 
   FOR EACH hCIndex IN $aIndexField
     IF NOT hCIndex.Index THEN CONTINUE
-    hTable.Indexes.Add(hCIndex.Index, hCIndex.List, hCIndex.Unique)
+    sIndex = hCIndex.Index
+    IF bKill THEN sIndex = "_gambas_" & sIndex
+    hTable.Indexes.Add(sIndex, hCIndex.List, hCIndex.Unique)
   NEXT
 
 FINALLY
@@ -304,6 +322,7 @@ PRIVATE FUNCTION WriteTable() AS Boolean
 
   sType = $hConn.Handle.Tables[$sTable].Type
 
+  IF $sOldName THEN RemoveIndexFromTable($sOldName)
   WriteTableDef($hConn.GetTempTableName(), sType, aPrimaryKey, TRUE)
   WriteTableDef($sName, sType, aPrimaryKey)
 
@@ -1138,7 +1157,6 @@ END
 PUBLIC SUB btnRename_Click()
 
   DIM sNewName AS String
-  DIM sOldName AS String
 
   IF $bReadOnly THEN RETURN
 
@@ -1153,17 +1171,18 @@ PUBLIC SUB btnRename_Click()
     RETURN
   ENDIF
 
-  sOldName = $sName
+  $sOldName = $sName
   $sName = sNewName
   Modify
 
   IF SaveTable() THEN
-    $sName = sOldName
-    RETURN
-  ENDIF
-
-  TRY $hConn.DeleteTable(sOldName)
-  $hConn.RefreshTree
+    $sName = $sOldName
+  ELSE 
+    TRY $hConn.DeleteTable($sOldName)
+    $hConn.RefreshTree
+  ENDIF 
+  
+  $sOldName = ""
 
 END
 

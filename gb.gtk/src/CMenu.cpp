@@ -99,8 +99,9 @@ END_METHOD
 
 BEGIN_METHOD(CMENU_new, GB_OBJECT parent; GB_BOOLEAN hidden)
 
-	void *parent=VARG(parent);
+	void *parent = VARG(parent);
 	bool hidden;
+	char *name;
 	
 	hidden = VARGOPT(hidden, false);
 	
@@ -111,13 +112,9 @@ BEGIN_METHOD(CMENU_new, GB_OBJECT parent; GB_BOOLEAN hidden)
 			GB.Error("Invalid window");
 			return;
 		}
-		THIS->widget=new gMenu( (gMainWindow*)((CWINDOW*)parent)->ob.widget,hidden);
-		MENU->hFree=(void*)THIS;
-		MENU->onFinish=cb_finish;
-		MENU->onShow=cb_show;
-		MENU->onHide=cb_hide;
-		GB.Ref((void*)THIS);
-		return;
+
+		THIS->widget = new gMenu( (gMainWindow*)((CWINDOW*)parent)->ob.widget,hidden);
+		goto __OK;
 	}
 	
 	if (GB.Is(parent,CLASS_Menu))
@@ -127,18 +124,30 @@ BEGIN_METHOD(CMENU_new, GB_OBJECT parent; GB_BOOLEAN hidden)
 			GB.Error("Invalid menu");
 			return;
 		}
-		THIS->widget=new gMenu( (gMenu*)((CMENU*)parent)->widget,hidden);
-		MENU->hFree=(void*)THIS;
-		MENU->onFinish=cb_finish;
+		
+		THIS->widget = new gMenu( (gMenu*)((CMENU*)parent)->widget,hidden);
 		MENU->onClick=cb_click;
-		MENU->onShow=cb_show;
-		MENU->onHide=cb_hide;
-		GB.Ref((void*)THIS);
-		return;
+		goto __OK;
 	}
 	
 	GB.Error("Type mismatch. The parent control of a Menu must be a Window or another Menu.");
+	return;
+	
+__OK:
 
+	MENU->hFree = (void*)THIS;
+	MENU->onFinish=cb_finish;
+	MENU->onShow=cb_show;
+	MENU->onHide=cb_hide;
+
+	name = GB.GetLastEventName();
+	if (!name)
+		name = GB.GetClassName((void *)THIS);
+
+	MENU->setName(name);
+	
+	GB.Ref((void*)THIS);
+		
 END_METHOD
 
 
