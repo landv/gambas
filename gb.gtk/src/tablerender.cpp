@@ -45,6 +45,7 @@ gTableData::gTableData()
 	fg = COLOR_DEFAULT;
 	padding = 0;
 	alignment = ALIGN_NORMAL;
+	wordWrap = false;
 }
 
 gTableData::~gTableData()
@@ -434,6 +435,19 @@ void gTable::setFieldFont(int col, int row, gFont *value)
 	gTableData *d = getData(row, col, true);
 	d->setFont(value);
 }
+
+bool gTable::getFieldWordWrap(int col, int row)
+{
+	gTableData *d = getData(row, col);	
+	return d ? d->wordWrap : false;
+}
+
+void gTable::setFieldWordWrap(int col, int row, bool value)
+{
+	gTableData *d = getData(row, col, true);
+	d->wordWrap = value;
+}
+
 
 
 bool gTable::getRowSelected(int row)
@@ -976,6 +990,7 @@ void gTableRender::renderCell(gTableData *data, GdkGC *gc, GdkRectangle *rect, b
 	char *buf = data->text;
 	int padding = data->padding;
 	double xa, ya;
+	bool hasText = (markup && *markup) || (buf && *buf);
 
 	if (sel)
 		gdk_gc_set_foreground(gc, &sf->style->base[GTK_STATE_SELECTED]);
@@ -1012,10 +1027,27 @@ __NO_BG:
 	xa = gt_from_alignment(data->alignment, false);
 	ya = gt_from_alignment(data->alignment, true);
 	
+	if (data->picture)
+	{
+		g_object_set(G_OBJECT(pix),
+			"pixbuf", data->picture->getPixbuf(),
+			"xalign", hasText ? 0 : xa,
+			"yalign", hasText ? 0.5 : ya,
+			(void *)NULL);
+		gtk_cell_renderer_render(GTK_CELL_RENDERER(pix),sf->window,sf,rect,rect,rect,(GtkCellRendererState)0);
+		
+		rect->x += data->picture->width() + padding;
+		rect->width -= data->picture->width() + padding;
+		if (rect->width < 1)
+			return;
+	}
+
 	g_object_set(G_OBJECT(txt),
 		/*"font-desc", data->font ? data->font->desc() : sf->style->font_desc,*/
 		"xalign", xa,
 		"yalign", ya,
+		"wrap-width", data->wordWrap ? rect->width : -1,
+		"wrap-mode", PANGO_WRAP_WORD_CHAR,
 		(void *)NULL);
 		
 	gt_set_cell_renderer_text_from_font(txt, data->font ? data->font : view->font());
@@ -1041,21 +1073,6 @@ __NO_BG:
 		g_object_set(G_OBJECT(txt), "markup", NULL, "text", buf, (void *)NULL);
 	
 	gtk_cell_renderer_render(GTK_CELL_RENDERER(txt),sf->window,sf,rect,rect,rect,(GtkCellRendererState)0);
-	
-	if (data->picture)
-	{/**/
-		if ((markup && *markup) || (buf && *buf))
-		{
-			xa = 0;
-			ya = 0.5;
-		}
-		g_object_set(G_OBJECT(pix),
-			"pixbuf", data->picture->getPixbuf(),
-			"xalign", xa,
-			"yalign", ya,
-			(void *)NULL);
-		gtk_cell_renderer_render(GTK_CELL_RENDERER(pix),sf->window,sf,rect,rect,rect,(GtkCellRendererState)0);
-	}
 }
 
 void gTableRender::render(GdkRectangle *ar)
@@ -1335,6 +1352,13 @@ void gTableRender::setFieldFont(int col, int row, gFont *value)
 {
 	CHECK_COORD(col, row);
 	gTable::setFieldFont(col, row, value);
+	queryUpdate(row, col);
+}
+
+void gTableRender::setFieldWordWrap(int col, int row, bool value)
+{
+	CHECK_COORD(col, row);
+	gTable::setFieldWordWrap(col, row, value);
 	queryUpdate(row, col);
 }
 

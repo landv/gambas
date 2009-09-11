@@ -1534,6 +1534,11 @@ gFont *gGridView::itemFont(int row, int col)
 	return render->getFieldFont(col, row);
 }
 
+bool gGridView::itemWordWrap(int row,int col)
+{
+	return render->getFieldWordWrap(col,row);
+}
+
 bool gGridView::itemSelected(int row,int col)
 {
 	return render->getFieldSelected(col,row);
@@ -1562,6 +1567,11 @@ void  gGridView::setItemBg(int row, int col, gColor vl)
 void gGridView::setItemPadding(int row,int col,int vl)
 {
 	render->setFieldPadding(col,row,vl);
+}
+
+void gGridView::setItemWordWrap(int row,int col,bool vl)
+{
+	render->setFieldWordWrap(col,row,vl);
 }
 
 void gGridView::setItemAlignment(int row,int col,int vl)

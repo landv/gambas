@@ -218,6 +218,16 @@ BEGIN_PROPERTY(CGRIDVIEWDATA_padding)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(CGRIDVIEWDATA_word_wrap)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(THIS->data->wordWrap);
+	else
+		THIS->data->wordWrap = VPROP(GB_BOOLEAN);
+
+END_PROPERTY
+
+
 BEGIN_PROPERTY(CGRIDVIEWITEM_picture)
 
 	if (READ_PROPERTY)
@@ -349,6 +359,15 @@ BEGIN_PROPERTY(CGRIDVIEWITEM_padding)
 		GB.ReturnInteger(WIDGET->itemPadding(THIS->row,THIS->col));
 	else
 		WIDGET->setItemPadding( THIS->row, THIS->col,VPROP(GB_INTEGER) );
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CGRIDVIEWITEM_word_wrap)
+
+	if (READ_PROPERTY) 
+		GB.ReturnBoolean(WIDGET->itemWordWrap(THIS->row,THIS->col));
+	else
+		WIDGET->setItemWordWrap(THIS->row, THIS->col, VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
@@ -964,12 +983,11 @@ GB_DESC CGridViewItemDesc[] =
   GB_PROPERTY("Text", "s", CGRIDVIEWITEM_text),
   GB_PROPERTY("RichText", "s", CGRIDVIEWITEM_rich_text),
   GB_PROPERTY("Background", "i", CGRIDVIEWITEM_bg),
-  GB_PROPERTY("BackColor", "i", CGRIDVIEWITEM_bg),
   GB_PROPERTY("Foreground", "i", CGRIDVIEWITEM_fg),
-  GB_PROPERTY("ForeColor", "i", CGRIDVIEWITEM_fg),
   GB_PROPERTY("Padding", "i", CGRIDVIEWITEM_padding),
   GB_PROPERTY("Alignment", "i", CGRIDVIEWITEM_alignment),
   GB_PROPERTY("Font", "Font", CGRIDVIEWITEM_font),
+  GB_PROPERTY("WordWrap", "b", CGRIDVIEWITEM_word_wrap),
   //GB_PROPERTY("Selected","b",CGRIDVIEWITEM_selected),
 
   GB_PROPERTY("RowSpan", "i", CGRIDVIEWITEM_row_span),
@@ -989,12 +1007,11 @@ GB_DESC CGridViewDataDesc[] =
   GB_PROPERTY("Text", "s", CGRIDVIEWDATA_text),
   GB_PROPERTY("RichText", "s", CGRIDVIEWDATA_rich_text),
   GB_PROPERTY("Background", "i", CGRIDVIEWDATA_bg),
-  GB_PROPERTY("BackColor", "i", CGRIDVIEWDATA_bg),
   GB_PROPERTY("Foreground", "i", CGRIDVIEWDATA_fg),
-  GB_PROPERTY("ForeColor", "i", CGRIDVIEWDATA_fg),
   GB_PROPERTY("Padding", "i", CGRIDVIEWDATA_padding),
   GB_PROPERTY("Alignment", "i", CGRIDVIEWDATA_alignment),
   GB_PROPERTY("Font", "Font", CGRIDVIEWDATA_font),
+  GB_PROPERTY("WordWrap", "b", CGRIDVIEWDATA_word_wrap),
 
   GB_END_DECLARE
 };

@@ -45,6 +45,7 @@ public:
 	short  padding;
 	gColor  bg;
 	gColor  fg;
+	bool wordWrap;
 
 	void setText(const char *vl);
 	void setRichText(const char *vl);
@@ -117,6 +118,9 @@ public:
 	gFont *getFieldFont(int col, int row);
 	void setFieldFont(int col, int row, gFont *value);
 	
+	bool getFieldWordWrap(int col, int row);
+	void setFieldWordWrap(int col, int row, bool value);
+	
 	bool          getFieldSelected (int col,int row);
 	void          setFieldSelected (int col,int row,bool value);
 	
@@ -183,6 +187,7 @@ public:
 	void          setFieldSelected  (int col,int row,bool value);
 	void setFieldPicture(int col, int row, gPicture *value);
 	void setFieldFont(int col, int row, gFont *value);
+	void setFieldWordWrap(int col, int row, bool value);
 };
 
 #endif

@@ -1173,6 +1173,18 @@ Private Sub RefreshSourceCache()
 
 End
 
+Private Sub UpdateTitle()
+  
+  Dim sTitle As String
+
+  sTitle = Name & " " & MajorVersion & "." & MinorVersion & "." & ReleaseVersion
+  If ReadOnly Then sTitle &= " [" & ("read-only") & "]"
+  sTitle &= " - " & Application.Title
+  If Application.Version Like "*.99.*" Then sTitle &= " - " & ("ALPHA VERSION, USE AT YOUR OWN RISK! :-)")
+  FMain.Title = sTitle
+  
+End
+
 
 Private Sub DoRefresh(Optional bReset As Boolean)
 
@@ -1180,7 +1192,6 @@ Private Sub DoRefresh(Optional bReset As Boolean)
   Dim sDir As String
   Dim sKey As String
   Dim sKeyReset As String
-  Dim sTitle As String
   Dim hFile As Object
   Dim sPath As String
   Dim hModule As CModule
@@ -1253,11 +1264,7 @@ Private Sub DoRefresh(Optional bReset As Boolean)
     Next
   Endif
 
-  sTitle = Name & " " & MajorVersion & "." & MinorVersion & "." & ReleaseVersion
-  If ReadOnly Then sTitle &= " [" & ("read-only") & "]"
-  sTitle &= " - " & Application.Title
-  If Application.Version Like "*.99.*" Then sTitle &= " - " & ("ALPHA VERSION, USE AT YOUR OWN RISK! :-)")
-  FMain.Title = sTitle
+  UpdateTitle
   $bDoRefresh = False
 
 End
@@ -2188,6 +2195,8 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
     If RunAfterMakingExec Then 
       Shell Replace(RunAfterMakingExec, "$(FILE)", Shell$(ExecPath)) Wait
     Endif 
+    
+    UpdateTitle
   
     bOK = True
     
@@ -2704,6 +2713,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   Endif
   
   FMain.UpdateTranslate
+  UpdateTitle
   'CreateConnectionDirectory
 
 Catch

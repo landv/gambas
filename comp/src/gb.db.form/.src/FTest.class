@@ -16,6 +16,22 @@ End
 
 Public Sub Form_Open()
 
-  'DataSource1.Connection = Main.Conn
+  DataSource1.Connection = Main.Conn
+
+End
+
+Public Sub Button2_Click()
+
+  Dim hConn As New Connection
+  
+  hConn.Type = "sqlite"
+  hConn.Name = "test"
+  hConn.Host = "/home/benoit"
+  hConn.Open
+  
+  DataSource1.Connection = hConn
+  
+  DataSource1.Table = "test"
+  DataSource1.Refresh
 
 End

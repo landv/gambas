@@ -342,6 +342,8 @@ Private Sub LoadTable(Optional sNewTable As String) As Boolean
   tbvIndex.Rows.Count = $aIndexField.Count
   tbvIndex.Refresh
   tbvIndex.Rows.H = -1
+  Try tbvIndex.MoveTo(0, 1)
+  UpdateIndexToolbar
 
   $bModify = False
   DrawTitle
@@ -951,8 +953,8 @@ Public Sub btnKillIndex_Click()
 
 End
 
-Public Sub btnDownIndex_Click()
-
+Private Sub CanDownIndex() As Boolean
+  
   Dim iRow As Integer
 
   If $bReadOnly Then Return
@@ -963,8 +965,19 @@ Public Sub btnDownIndex_Click()
   If iRow = ($aIndexField.Count - 1) Then Return
   If $aIndexField[iRow + 1].Index Then Return
 
+  Return True
+  
+End
+
+
+Public Sub btnDownIndex_Click()
+
+  Dim iRow As Integer
+
+  If Not CanDownIndex() Then Return
   If tbvIndex.Save() Then Return
   
+  iRow = tbvIndex.Row
   Swap $aIndexField[iRow].Field, $aIndexField[iRow + 1].Field
   Inc tbvIndex.Row
 
@@ -972,8 +985,8 @@ Public Sub btnDownIndex_Click()
 
 End
 
-Public Sub btnUpIndex_Click()
-
+Private Sub CanUpIndex() As Boolean
+  
   Dim iRow As Integer
 
   If $bReadOnly Then Return
@@ -983,15 +996,41 @@ Public Sub btnUpIndex_Click()
 
   If iRow = 0 Then Return
   If $aIndexField[iRow].Index Then Return
+
+  Return True
   
+End
+
+
+Public Sub btnUpIndex_Click()
+
+  Dim iRow As Integer
+
+  If Not CanUpIndex() Then Return
   If tbvIndex.Save() Then Return
 
+  iRow = tbvIndex.Row
   Swap $aIndexField[iRow].Field, $aIndexField[iRow - 1].Field
   Dec tbvIndex.Row
 
   tbvIndex.Refresh
 
 End
+
+Private Sub RemoveIndexFromTable(sTable As String)
+  
+  Dim hTable As Table
+  Dim hIndex As Index
+  
+  hTable = $hConn.Tables[sTable]
+  
+  For Each hIndex In hTable.Indexes
+    If hIndex.Primary Then Continue
+    hTable.Indexes.Remove(hIndex.Name)
+  Next
+  
+End
+
 
 Private Sub WriteTableDef(sName As String, sType As String, aPrimaryKey As String[], Optional bKill As Boolean)
 
@@ -1000,6 +1039,7 @@ Private Sub WriteTableDef(sName As String, sType As String, aPrimaryKey As Strin
   Dim hCIndex As CIndexField
   Dim hLastCIndex As CIndexField
   Dim sError As String
+  Dim sIndex As String
 
   Try $hConn.Tables.Remove(sName)
   hTable = $hConn.Tables.Add(sName, sType)
@@ -1026,7 +1066,9 @@ Private Sub WriteTableDef(sName As String, sType As String, aPrimaryKey As Strin
 
   For Each hCIndex In $aIndexField
     If Not hCIndex.Index Then Continue
-    hTable.Indexes.Add(hCIndex.Index, hCIndex.List, hCIndex.Unique)
+    sIndex = hCIndex.Index
+    If bKill Then sIndex = "_gambas_" & sIndex
+    hTable.Indexes.Add(sIndex, hCIndex.List, hCIndex.Unique)
   Next
 
 Finally
@@ -1064,7 +1106,7 @@ Private Sub WriteTable(Optional sOldTable As String) As Boolean
   Next
 
   If aPrimaryKey.Count = 0 Then
-    Message.Warning(Subst(("The table '&1' has no primary key."), $sTable))
+    Message.Warning(Subst(("The table '&1' has no primary key."), If(sOldTable, sOldTable, $sTable)))
     Return True
   Endif
 
@@ -1083,6 +1125,7 @@ Private Sub WriteTable(Optional sOldTable As String) As Boolean
     Endif
   
     'WriteTableDef(MConnection.GetTempTableName($hConn), $sType, aPrimaryKey, True)
+    RemoveIndexFromTable(sOldTable)
     WriteTableDef($sTable, $sType, aPrimaryKey)
 
   Else
@@ -1342,5 +1385,33 @@ Public Sub btnCopyFieldList_Click()
   Next
   
   Clipboard.Copy(aList.Join("\n") & "\n", MMime.LIST)
+
+End
+
+Private Sub UpdateFieldToolbar()
+  
+  btnDownField.Enabled = tbvField.Row >= 0 And tbvField.Row < (tbvField.Rows.Count - 1)
+  btnUpField.Enabled = tbvField.Row > 0
+  
+End
+
+
+Public Sub tbvField_Change()
+
+  UpdateFieldToolbar
+
+End
+
+Private Sub UpdateIndexToolbar()
+  
+  btnDownIndex.Enabled = CanDownIndex()
+  btnUpIndex.Enabled = CanUpIndex()
+  
+End
+
+
+Public Sub tbvIndex_Change()
+
+  UpdateIndexToolbar
 
 End

@@ -58,6 +58,7 @@ void MyTableData::init()
 	bg = fg = -1; font = 0; text = 0; pict = 0;
 	padding = 0;
 	richText = 0;
+	wordWrap = false;
 }
 
 void MyTableData::clear()
@@ -210,6 +211,7 @@ void MyTableItem::paint( QPainter *p, const QColorGroup &cg, const QRect &cr, bo
 	int _fg = d->fg;
 	int _alignment = CCONST_alignment(d->alignment, ALIGN_NORMAL, true);
 	int _padding = QMAX(1, (int)d->padding);
+	bool _wordWrap = d->wordWrap;
 	
 	/*if (((MyTable *)table())->noSelection())
 		selected = false;
@@ -263,9 +265,9 @@ void MyTableItem::paint( QPainter *p, const QColorGroup &cg, const QRect &cr, bo
 		p->setFont(*(d->font->font));
 
 	if (rich)
-		DRAW_rich_text(p, x, y, w, h, wordWrap() ? (_alignment | Qt::WordBreak) : _alignment, txt );
+		DRAW_rich_text(p, x, y, w, h, _wordWrap ? (_alignment | Qt::WordBreak) : _alignment, txt );
 	else
-		p->drawText(x, y, w, h, wordWrap() ? (_alignment | Qt::WordBreak) : _alignment, txt );
+		p->drawText(x, y, w, h, _wordWrap ? (_alignment | Qt::WordBreak) : _alignment, txt );
 		
 	if (d->font)
 		p->setFont(table()->font());
@@ -283,6 +285,7 @@ QSize MyTableItem::sizeHint() const
 	QPixmap pix = item->pixmap();
 	QString t = item->text();
 	QFontMetrics fm = d->font ? QFontMetrics(*(d->font->font)) : table()->fontMetrics();
+	bool _wordWrap = d->wordWrap;
 
 	padding = QMAX(1, (int)d->padding);
 	
@@ -296,7 +299,7 @@ QSize MyTableItem::sizeHint() const
 
 	if (t.length())
 	{
-		if ( !wordWrap() && t.find( '\n' ) == -1 )
+		if ( !_wordWrap && t.find( '\n' ) == -1 )
 		{
 			s = QSize(s.width() + fm.width(t) + 10,
 								QMAX( s.height(), fm.height() ) ).expandedTo( strutSize );
@@ -304,7 +307,7 @@ QSize MyTableItem::sizeHint() const
 		else
 		{
 			QRect r = fm.boundingRect(0, 0, table()->columnWidth( col() ) - padding, 0,
-									wordWrap() ? (alignment() | Qt::WordBreak) : alignment(),
+									_wordWrap ? (alignment() | Qt::WordBreak) : alignment(),
 									t );
 			r.setWidth( QMAX( r.width() + 10, table()->columnWidth(col())));
 	
@@ -1156,6 +1159,21 @@ static void padding_property(void *_object, void *_param, bool create)
 }
 
 
+static void word_wrap_property(void *_object, void *_param, bool create)
+{
+	MyTableItem *item = get_item(_object, create);
+		
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(item->data()->wordWrap);
+	else
+	{
+		item->data(create)->wordWrap = VPROP(GB_BOOLEAN);
+		if (create)
+			WIDGET->updateCell(THIS->row, THIS->col);
+	}
+}
+
+
 /***************************************************************************
 
 	GridViewData
@@ -1214,6 +1232,12 @@ END_PROPERTY
 BEGIN_PROPERTY(CGRIDVIEW_data_padding)
 
 	padding_property(_object, _param, false);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CGRIDVIEW_data_word_wrap)
+
+	word_wrap_property(_object, _param, false);
 
 END_PROPERTY
 
@@ -1318,6 +1342,13 @@ END_PROPERTY
 BEGIN_PROPERTY(CGRIDITEM_padding)
 
 	padding_property(_object, _param, true);
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(CGRIDITEM_word_wrap)
+
+	word_wrap_property(_object, _param, true);
 
 END_PROPERTY
 
@@ -2083,10 +2114,9 @@ GB_DESC CGridViewDataDesc[] =
 	GB_PROPERTY("Font", "Font", CGRIDVIEW_data_font),
 	GB_PROPERTY("Alignment", "i", CGRIDVIEW_data_alignment),
 	GB_PROPERTY("Background", "i", CGRIDVIEW_data_background),
-	GB_PROPERTY("BackColor", "i", CGRIDVIEW_data_background),
 	GB_PROPERTY("Foreground", "i", CGRIDVIEW_data_foreground),
-	GB_PROPERTY("ForeColor", "i", CGRIDVIEW_data_foreground),
 	GB_PROPERTY("Padding", "i", CGRIDVIEW_data_padding),
+	GB_PROPERTY("WordWrap","b",CGRIDVIEW_data_word_wrap),
 
 	GB_END_DECLARE
 };
@@ -2104,10 +2134,9 @@ GB_DESC CGridItemDesc[] =
 	GB_PROPERTY("RichText", "s", CGRIDITEM_rich_text),
 	GB_PROPERTY("Alignment", "i", CGRIDITEM_alignment),
 	GB_PROPERTY("Background", "i", CGRIDITEM_background),
-	GB_PROPERTY("BackColor", "i", CGRIDITEM_background),
 	GB_PROPERTY("Foreground", "i", CGRIDITEM_foreground),
-	GB_PROPERTY("ForeColor", "i", CGRIDITEM_foreground),
 	GB_PROPERTY("Padding", "i", CGRIDITEM_padding),
+	GB_PROPERTY("WordWrap","b",CGRIDITEM_word_wrap),
 
 	GB_PROPERTY_READ("X", "i", CGRIDITEM_x),
 	GB_PROPERTY_READ("Y", "i", CGRIDITEM_y),

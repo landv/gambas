@@ -728,6 +728,7 @@ Private Sub ShowProperty(Optional sFocus As String)
 
   $hEditor.Visible = True
   btnProperty.Visible = bButton
+  btnProperty.Raise
 
   $hEditor.SetFocus
 
@@ -961,7 +962,7 @@ End
 Public Sub txtProperty_LostFocus()
 
   If SaveProperty() Then Return
-  HideProperty
+  'HideProperty
 
 End
 

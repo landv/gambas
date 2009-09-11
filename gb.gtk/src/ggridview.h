@@ -88,6 +88,7 @@ public:
 	int     itemAlignment(int row, int col);
 	gPicture *itemPicture(int row, int col);
 	gFont *itemFont(int row, int col);
+	bool     itemWordWrap(int row,int col);
 	bool    itemSelected(int row,int col);
 	void    ensureVisible(int row,int col);
 
@@ -114,6 +115,7 @@ public:
 	void    setItemRichText(int row,int col, const char *vl);
 	void setItemPicture(int row, int col, gPicture *vl);
 	void setItemFont(int row, int col, gFont *vl);
+	void    setItemWordWrap(int row, int col, bool vl);
 	void    setItemSelected(int row,int col,bool vl);
 	
 	void getItemSpan(int row, int col, int *rowspan, int *colspan) { render->getSpan(col, row, colspan, rowspan); }

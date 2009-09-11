@@ -75,6 +75,7 @@ struct MyTableData
   char *text;
   char *richText;
   CPICTURE *pict;
+	bool wordWrap;
 };
 
 class MyTableItem : public Q3TableItem

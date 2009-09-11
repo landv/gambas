@@ -46,6 +46,8 @@ Private $bTimer As Boolean
 Private $bAdjust As Boolean
 Private $aAdjust As New Integer[]
 
+Private $sCharset As String
+
 Public Sub _new()
   
   $hCtrl = New TableView(Me) As "TableView"
@@ -118,7 +120,13 @@ Private Sub Load()
   hSrc = Common.GetSource(Me)
   If hSrc._Check() Then Return
   
-  If hSrc Then
+  If hSrc._GetDB().IgnoreCharset
+    $sCharset = ""
+  Else
+    $sCharset = hSrc._GetDB().Charset
+  Endif
+  
+  'If hSrc Then
     hTable = hSrc._GetTable()
     If hTable <> $hTable Then
       $hTable = hTable
@@ -128,7 +136,7 @@ Private Sub Load()
       $hCtrl.Columns.Count = 0
       If $hTable Then RefreshColumns
     Endif
-  Endif
+  'Endif
 
   If Not $hTable Then Return
   
@@ -266,10 +274,10 @@ Public Sub TableView_Data(Row As Integer, Column As Integer)
           .Background = Color.Mix(Color.TextBackground, Color.LightGray)
         Endif
       Case db.String
-        If DB.IgnoreCharset Then
+        If Not $sCharset Then
           .Text = Left($hTable[Row][iIndex], 1024)
         Else
-          Try .Text = Conv$(Left($hTable[Row][iIndex], 1024), DB.Charset, Desktop.Charset)
+          Try .Text = Conv$(Left($hTable[Row][iIndex], 1024), $sCharset, Desktop.Charset)
         Endif
         If $bHighlight And If Row And 1 Then .Background = $iHighlight
       Case Else
@@ -295,7 +303,7 @@ Public Sub TableView_Data(Row As Integer, Column As Integer)
   
 Catch
 
-  $hCtrl.Data.Text = "#ERROR#"
+  $hCtrl.Data.Text = "#ERROR# " & Error.Where & ": " & Error.Text
   
 End
 

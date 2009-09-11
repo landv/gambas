@@ -31,11 +31,13 @@ Public Sub _new()
   
   $hComboBox = New ComboBox(Me.Window) As "Editor"
   $hComboBox.Ignore = True
+  $hComboBox.Background = Color.TextBackground
   $hComboBox.Hide
 
   $hTextBox = New TextBox(Me.Window) As "Editor"
   $hTextBox.Ignore = True
   $hTextBox.Border = False
+  $hTextBox.Background = Color.TextBackground
   $hTextBox.Hide
 
 End
