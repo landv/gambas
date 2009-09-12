@@ -369,7 +369,8 @@ PUBLIC SUB txtHexa_Change()
   ELSE 
     IF txtHexa.Length <> 6 THEN RETURN 
   ENDIF
-  iColor = Val("&H" & txtHexa.Text & "&")
+  TRY iColor = Val("&H" & txtHexa.Text & "&")
+  IF ERROR THEN RETURN
   IF iColor = $iColor THEN RETURN
   $iColor = iColor
   RefreshColor(TRUE, TRUE)

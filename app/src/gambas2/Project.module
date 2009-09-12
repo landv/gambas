@@ -3976,7 +3976,7 @@ PUBLIC SUB SavePosition()
   IF $bDoNotSavePosition THEN RETURN 
   
   TRY hEditor = ActiveForm
-  IF ERROR THEN RETURN
+  IF NOT hEditor THEN RETURN
   
   sPos = hEditor.Path & "\n" & hEditor.Editor.Line & "\n" & hEditor.Editor.Column
 
