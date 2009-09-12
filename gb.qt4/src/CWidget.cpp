@@ -1907,8 +1907,14 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	//	getDesignDebug(widget);
 
 	control = CWidget::getDesign(widget);
-	if (!control || GB.Is(control, CLASS_Menu))
-		goto _STANDARD;
+	//for(;;)
+	//{
+		if (!control || GB.Is(control, CLASS_Menu))
+			goto _STANDARD;
+	//	if (control->widget->isEnabled())
+	//		break;
+	//	control = (CWIDGET *)CWIDGET_get_parent(control);
+	//}
 
 	real = CWidget::real;
 	design = CWIDGET_test_flag(control, WF_DESIGN); // && !GB.Is(control, CLASS_Container);
@@ -2252,7 +2258,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	{
 		CDRAG_hide_frame(control);
 	}
-		
+	
 	if (!control || CWIDGET_test_flag(control, WF_DELETED))
 	{
 		QObject::eventFilter(widget, event); 

@@ -44,6 +44,7 @@ static gFont *DIALOG_font=NULL;
 int gDialog_run(GtkDialog *window)
 {
   gMainWindow *active;
+	GtkWindowGroup *oldGroup;
   int ret;
   
 	active = gDesktop::activeWindow();
@@ -51,9 +52,11 @@ int gDialog_run(GtkDialog *window)
     gtk_window_set_transient_for(GTK_WINDOW(window), GTK_WINDOW(active->border));
 	
 	gtk_window_present(GTK_WINDOW(window));
+	oldGroup = gApplication::enterGroup();
 	gApplication::_loopLevel++;
 	ret = gtk_dialog_run(window);
 	gApplication::_loopLevel--;
+	gApplication::exitGroup(oldGroup);
 	return ret;
 }
 

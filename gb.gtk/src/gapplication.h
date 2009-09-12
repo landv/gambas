@@ -60,6 +60,8 @@ public:
 	static void enterLoop(void *owner);
 	static void exitLoop(void *owner);
 	static bool hasLoop(void *owner) { return _loop_owner == owner; }
+	static GtkWindowGroup *enterGroup();
+	static void exitGroup(GtkWindowGroup *oldGroup);
 
 //"Private"
 	static GtkTooltips *tipHandle();
@@ -68,6 +70,11 @@ public:
 	static int _loopLevel;
 	static int _tooltip_delay;
 	static void *_loop_owner;
+	static GtkWindowGroup *_group;
+	static GtkWindowGroup *currentGroup();
+	//static void dispatchEnterLeave(gControl *enter);
+	static gControl *_enter;
+	static gControl *_leave;
 };
 
 #endif

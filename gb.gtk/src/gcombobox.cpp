@@ -188,8 +188,8 @@ void gComboBox::create(bool readOnly)
 	if (entry)
 	{
 		initEntry();
-		g_signal_connect(G_OBJECT(entry), "key-press-event", G_CALLBACK(gcb_keypress), (gpointer)this);
-		g_signal_connect(G_OBJECT(entry), "key-release-event", G_CALLBACK(gcb_keyrelease), (gpointer)this);
+		//g_signal_connect(G_OBJECT(entry), "key-press-event", G_CALLBACK(gcb_keypress), (gpointer)this);
+		//g_signal_connect(G_OBJECT(entry), "key-release-event", G_CALLBACK(gcb_keyrelease), (gpointer)this);
 		g_signal_connect(G_OBJECT(entry), "focus-in-event", G_CALLBACK(gcb_focus_in), (gpointer)this);
 		g_signal_connect(G_OBJECT(entry), "focus-out-event", G_CALLBACK(gcb_focus_out), (gpointer)this);
 	}

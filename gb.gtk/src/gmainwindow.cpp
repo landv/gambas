@@ -156,8 +156,6 @@ GList *gMainWindow::windows = NULL;
 gMainWindow *gMainWindow::_active = NULL;
 gMainWindow *gMainWindow::_current = NULL;
 
-static GtkWindowGroup *_current_group = NULL;
-
 void gMainWindow::initialize()
 {
 	//fprintf(stderr, "new window: %p in %p\n", this, parent());
@@ -436,7 +434,6 @@ void gMainWindow::afterShow()
 
 void gMainWindow::setVisible(bool vl)
 {
-	GtkWindowGroup *group;
   gMainWindow *active;
 
 	if (vl)
@@ -447,12 +444,8 @@ void gMainWindow::setVisible(bool vl)
 		
 		if (isTopLevel() && !_xembed)
 		{
-			group = _current_group;
-			if (!group)
-				group = gtk_window_get_group(NULL);
-			
 			//fprintf(stderr, "adding window %p to group %p\n", this, group);
-			gtk_window_group_add_window(group, GTK_WINDOW(border));
+			gtk_window_group_add_window(gApplication::currentGroup(), GTK_WINDOW(border));
 		}
 			
 		_not_spontaneous = !visible;
@@ -556,7 +549,6 @@ bool gMainWindow::modal()
 void gMainWindow::showModal()
 {
   gMainWindow *save;
-  GtkWindowGroup *save_group;
 	
 	if (!isTopLevel()) return;
 	if (modal()) return;
@@ -569,17 +561,12 @@ void gMainWindow::showModal()
   center();
 	show();
 
-	save_group = _current_group;
-	_current_group = gtk_window_group_new();
-
 	//fprintf(stderr, "showModal: begin %p\n", this);
 
 	gApplication::enterLoop(this);
 	
 	//fprintf(stderr, "showModal: end %p\n", this);
 
-	g_object_unref(_current_group);
-	_current_group = save_group;	
 	_current = save;
 	
 	gtk_window_set_modal(GTK_WINDOW(border), false);
@@ -947,12 +934,15 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y)
 		_no_delete = true;
 		gtk_widget_destroy(border);
 		_no_delete = false;
+		
 		border = new_border;
+		registerControl();
 		
 		setParent(newpr);
 		connectParent();
 		borderSignals();
 		initWindow();	
+		
 		setBackground(bg);
 		setForeground(fg);
 		setFont(font());
@@ -972,7 +962,9 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y)
 		_no_delete = true;
 		gtk_widget_destroy(border);
 		_no_delete = false;
+
 		border = new_border;
+		registerControl();
 		
 		parent()->remove(this);
 		parent()->arrange();

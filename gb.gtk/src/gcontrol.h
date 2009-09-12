@@ -63,6 +63,7 @@ public:
 	gControl *previous();
 	int screenX();
 	int screenY();
+	void getScreenPos(int *x, int *y);
 	char *toolTip();
 	virtual int top();
 	int y() { return top(); }
@@ -210,6 +211,7 @@ public:
 	void initAll(gContainer *pr);
 	void realize(bool make_frame = false);
 	void realizeScrolledWindow(GtkWidget *wid, bool doNotRealize = false);
+	void registerControl();
 	void updateGeometry();
 	bool mustUpdateCursor() { return mouse() != -1 || have_cursor; }
 	
@@ -239,6 +241,7 @@ public:
 private:
 	gContainer *pr;
 	char *_name;
+	int loopLevel;
 };
 
 #define SIGNAL(_signal) ((void *)_signal)
