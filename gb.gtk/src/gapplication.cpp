@@ -419,7 +419,7 @@ static void gambas_handle_event(GdkEvent *event)
 					gKey::enable(widget, &event->key);
 					if (control->onKeyEvent) 
 					{
-						fprintf(stderr, "gEvent_KeyPress on %p %s\n", control, control->name());
+						//fprintf(stderr, "gEvent_KeyPress on %p %s\n", control, control->name());
 						cancel = control->onKeyEvent(control, gEvent_KeyPress);
 					}
 					gKey::disable();
