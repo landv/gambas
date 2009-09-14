@@ -40,7 +40,7 @@ public:
 
 //"Private"
 	static void disable();
-	static bool enable(GtkWidget *w, GdkEventKey *e);
+	static bool enable(gControl *control, GdkEventKey *e);
 	static void init();
 	static void exit();
 	
@@ -50,7 +50,7 @@ private:
 	static GdkEventKey _event;
 	static bool _valid;
 	static GtkIMContext *_im_context;
-	static GtkWidget *_im_widget;
+	static gControl *_im_control;
 	static bool _no_input_method;
 };
 

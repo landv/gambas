@@ -63,6 +63,8 @@ public:
 	static GtkWindowGroup *enterGroup();
 	static void exitGroup(GtkWindowGroup *oldGroup);
 
+	static bool (*onKeyEvent)(int type);
+
 //"Private"
 	static GtkTooltips *tipHandle();
 	static bool _busy;

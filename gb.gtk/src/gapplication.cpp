@@ -36,6 +36,8 @@
 #include "gmouse.h"
 #include "gmainwindow.h"
 
+//#define DEBUG_IM 1
+
 /*************************************************************************
 
 gKey
@@ -46,7 +48,7 @@ bool gKey::_valid = false;
 bool gKey::_no_input_method = false;
 GdkEventKey gKey::_event;
 GtkIMContext *gKey::_im_context = NULL;
-GtkWidget *gKey::_im_widget = NULL;
+gControl *gKey::_im_control = NULL;
 char *_im_text = NULL;
 
 const char *gKey::text()
@@ -117,7 +119,7 @@ void gKey::disable()
 	g_free(_event.string);
 }
 
-bool gKey::enable(GtkWidget *widget, GdkEventKey *event)
+bool gKey::enable(gControl *control, GdkEventKey *event)
 {
 	bool filter;
 	
@@ -130,11 +132,15 @@ bool gKey::enable(GtkWidget *widget, GdkEventKey *event)
 	_valid = true;
 	_event = *event;
 	
-	if (_event.type == GDK_KEY_PRESS && !_no_input_method && widget == _im_widget)
+	if (_event.type == GDK_KEY_PRESS && !_no_input_method && control == _im_control)
 	{
-		//fprintf(stderr, "gKey::enable: event->string = '%s'\n", event->string);
+		#if DEBUG_IM
+		fprintf(stderr, "gKey::enable: event->string = '%s'\n", event->string);
+		#endif
 		filter = gtk_im_context_filter_keypress(_im_context, &_event);
-		//fprintf(stderr, "gKey::enable: filter -> %d event->string = '%s'\n", filter, event->string);
+		#if DEBUG_IM
+		fprintf(stderr, "gKey::enable: filter -> %d event->string = '%s'\n", filter, event->string);
+		#endif
 	}
 	else
 		filter = false;
@@ -142,14 +148,17 @@ bool gKey::enable(GtkWidget *widget, GdkEventKey *event)
   if (filter && _im_text)
   {
 		_event.string = g_strdup(_im_text);
-  	filter = false;
+		_event.keyval = 0;
+		filter = false;
   }
   else
   	_event.string = g_strdup(_event.string);
   
   if (!filter)
   {
+		//#if DEBUG_IM
   	//fprintf(stderr, "gKey::enable: gtk_im_context_reset\n");
+		//#endif
   	//gtk_im_context_reset(_im_context);
   	if (_im_text)
   	{
@@ -164,7 +173,9 @@ bool gKey::enable(GtkWidget *widget, GdkEventKey *event)
 
 static void cb_im_commit(GtkIMContext *context, const gchar *str, gpointer pointer)
 {
-	//fprintf(stderr, "cb_im_commit: %s\n", str);
+	#if DEBUG_IM
+	fprintf(stderr, "cb_im_commit: %s\n", str);
+	#endif
 	
 	if (_im_text)
 		g_free(_im_text);
@@ -188,30 +199,34 @@ void gKey::exit()
 
 void gKey::setActiveControl(gControl *control)
 {
-	if (_im_widget)
+	if (_im_control)
 	{
-		//fprintf(stderr, "gtm_im_context_focus_out\n");
 		if (!_no_input_method)
 		{
+			#if DEBUG_IM
+			fprintf(stderr, "gtm_im_context_focus_out\n");
+			#endif
 	  	gtk_im_context_set_client_window (_im_context, 0);
 			gtk_im_context_focus_out(_im_context);
 		}
-		_im_widget = NULL;
+		_im_control = NULL;
 		_no_input_method = false;
 	}
 	
 	if (control)
 	{
-		_im_widget = control->widget;
+		_im_control = control;
 		_no_input_method = control->noInputMethod();
 		
 		if (!_no_input_method)
 		{
-	  	gtk_im_context_set_client_window (_im_context, _im_widget->window);
+	  	gtk_im_context_set_client_window (_im_context, _im_control->widget->window);
 			gtk_im_context_focus_in(_im_context);
 			gtk_im_context_reset(_im_context);
-		}
-		//fprintf(stderr, "gtm_im_context_focus_in\n");
+			#if DEBUG_IM
+			fprintf(stderr, "gtm_im_context_focus_in\n");
+			#endif
+		}		
 	}
 }
 
@@ -416,11 +431,15 @@ static void gambas_handle_event(GdkEvent *event)
 					
 					control = gDesktop::activeControl();
 					
-					gKey::enable(widget, &event->key);
-					if (control->onKeyEvent) 
+					if (!gKey::enable(control, &event->key))
 					{
-						//fprintf(stderr, "gEvent_KeyPress on %p %s\n", control, control->name());
-						cancel = control->onKeyEvent(control, gEvent_KeyPress);
+						if (gApplication::onKeyEvent)
+							cancel = gApplication::onKeyEvent(gEvent_KeyPress);
+						if (!cancel && control->onKeyEvent) 
+						{
+							//fprintf(stderr, "gEvent_KeyPress on %p %s\n", control, control->name());
+							cancel = control->onKeyEvent(control, gEvent_KeyPress);
+						}
 					}
 					gKey::disable();
 					
@@ -459,8 +478,8 @@ static void gambas_handle_event(GdkEvent *event)
 					
 					control = gDesktop::activeControl();
 					
-					gKey::enable(widget, &event->key);
-					control->emit(SIGNAL(control->onKeyEvent), gEvent_KeyRelease);
+					if (!gKey::enable(control, &event->key))
+						control->emit(SIGNAL(control->onKeyEvent), gEvent_KeyRelease);
 					gKey::disable();
 					
 					if (event->key.keyval == GDK_Escape)
@@ -505,6 +524,7 @@ void *gApplication::_loop_owner = 0;
 GtkWindowGroup *gApplication::_group = NULL;
 gControl *gApplication::_enter = NULL;
 gControl *gApplication::_leave = NULL;
+bool (*gApplication::onKeyEvent)(int) = NULL;
 
 GtkTooltips* gApplication::tipHandle()
 {

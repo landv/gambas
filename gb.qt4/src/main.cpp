@@ -313,24 +313,44 @@ MyApplication::MyApplication(int &argc, char **argv)
 
 static bool QT_EventFilter(QEvent *e)
 {
-	QKeyEvent *kevent = (QKeyEvent *)e;
 	bool cancel;
-	
+
 	if (!_application_keypress)
 		return false;
-	
-	CKEY_clear(true);
+		
+	if (e->type() == QEvent::KeyPress)
+	{
+		QKeyEvent *kevent = (QKeyEvent *)e;
+		
+		CKEY_clear(true);
 
-	GB.FreeString(&CKEY_info.text);
-	GB.NewString(&CKEY_info.text, QT_ToUTF8(kevent->text()), 0);
-	CKEY_info.state = kevent->modifiers();
-	CKEY_info.code = kevent->key();
+		GB.FreeString(&CKEY_info.text);
+		GB.NewString(&CKEY_info.text, QT_ToUTF8(kevent->text()), 0);
+		CKEY_info.state = kevent->modifiers();
+		CKEY_info.code = kevent->key();
+
+	}
+	else if (e->type() == QEvent::InputMethod)
+	{
+		QInputMethodEvent *imevent = (QInputMethodEvent *)e;
+
+		if (!imevent->commitString().isEmpty())
+		{
+			CKEY_clear(true);
+
+			GB.FreeString(&CKEY_info.text);
+			//qDebug("IMEnd: %s", imevent->text().latin1());
+			GB.NewString(&CKEY_info.text, QT_ToUTF8(imevent->commitString()), 0);
+			CKEY_info.state = 0;
+			CKEY_info.code = 0;
+		}
+	}
 
 	GB.Call(&_application_keypress_func, 0, FALSE);
 	cancel = GB.Stopped();
 	
 	CKEY_clear(false);
-	
+		
 	return cancel;
 }
 
@@ -346,7 +366,7 @@ bool MyApplication::eventFilter(QObject *o, QEvent *e)
 {
 	if (o->isWidgetType())
 	{
-		if (e->type() == QEvent::KeyPress)
+		if ((e->spontaneous() && e->type() == QEvent::KeyPress) || e->type() == QEvent::InputMethod)
 		{
 			if (QT_EventFilter(e))
 				return true;

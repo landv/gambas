@@ -1263,7 +1263,7 @@ void gTree::setSorted(bool v)
 		return;
 		
 	_sorted = v;
-	_sort_column = v ? (view ? 0 : 1) : -1;
+	_sort_column = v ? 0 : -1;
 	updateSort();
 }
 
