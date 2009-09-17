@@ -262,6 +262,9 @@ Public Sub InitControl(hWin As Form)
   If {Form} Then 
     Properties[CPropertyInfo.SCALE_NAME] = New CPropertyInfo(Component, Name, CPropertyInfo.SCALE_NAME, "", Null)
     PropertyList.Add(CPropertyInfo.SCALE_NAME, 0)
+  Else
+    Properties[CPropertyInfo.PUBLIC_NAME] = New CPropertyInfo(Component, Name, CPropertyInfo.PUBLIC_NAME, "", Null)
+    PropertyList.Add(CPropertyInfo.PUBLIC_NAME, 0)
   Endif
 
   Properties[CPropertyInfo.EVENT_NAME] = New CPropertyInfo(Component, Name, CPropertyInfo.EVENT_NAME, "", Null)

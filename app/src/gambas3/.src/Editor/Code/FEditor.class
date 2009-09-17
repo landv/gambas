@@ -406,6 +406,8 @@ Public Sub Editors_Cursor()
 
   RefreshLineInfo
   HideMessage
+  
+  If Editor.Lines[Editor.Line].Current Then Design.CheckErrorMessage(Me)
 
 End
 
@@ -445,7 +447,13 @@ End
 
 Public Sub GotoCenter(iLine As Integer, Optional iColumn As Integer = -1, Optional bSave As Boolean)
 
+  Dim hEditor As Editor = {Editor}
+
   If bSave Then Project.SavePosition
+  'If iColumn = -2 Then
+  '  iColumn = -1
+  '  Try iColumn = hEditor.Lines[iLine].Length - String.Len(LTrim(hEditor.Lines[iLine].Text))
+  'Endif
   Me.Goto(iLine, iColumn, True)
 
 End
@@ -2383,9 +2391,12 @@ End
 
 Public Sub Editors_MouseUp()
 
-  HideMessage
-  If Not Editor.Selected Then Return 
-  If Editor.Selection.StartLine < Editor.Selection.EndLine Then Return 
+  'HideMessage
+  
+  If Not Editor.Selected Or If Editor.Selection.StartLine < Editor.Selection.EndLine Then
+    Return
+  Endif
+  
   If Not Project.Running Then
     FindDefinition(True, Mouse.X, Mouse.Y)
     Return 
@@ -2428,25 +2439,45 @@ Public Sub lblMessage_MouseMove()
 
 End
 
-Public Sub ShowMessage(sMsg As String)
+Public Sub ShowMessage(sMsg As String, Optional sIcon As String, Optional bNoEscape As Boolean)
 
   Dim hIcon As Picture
+  Dim X, Y As Integer
 
-  sMsg = Replace(sMsg, "\t", "\n")
-  sMsg = Replace(sMsg, "    ", "&nbsp;")
-  sMsg = Replace(sMsg, "&", "&amp;")
-  sMsg = Replace(sMsg, "<", "&lt;")
-  sMsg = Replace(sMsg, ">", "&gt;")
-  If Left(sMsg, 2) = "**" Then 
-    sMsg = Trim(Mid$(sMsg, 3))
-    hIcon = Picture["icon:/32/error"]
-  Endif 
+  If Not bNoEscape Then
+    sMsg = Replace(sMsg, "\t", "\n")
+    sMsg = Replace(sMsg, "    ", "&nbsp;")
+    sMsg = Replace(sMsg, "&", "&amp;")
+    sMsg = Replace(sMsg, "<", "&lt;")
+    sMsg = Replace(sMsg, ">", "&gt;")
+    If Left(sMsg, 2) = "**" Then 
+      sMsg = Trim(Mid$(sMsg, 3))
+      hIcon = Picture["icon:/32/error"]
+    Endif 
+  Endif
+  
+  If sIcon Then hIcon = Picture[sIcon]
 
-  Balloon(sMsg, Editor, hIcon, 
-    Editor.CursorX + Editor.CharWidth * ((Editor.Selection.StartColumn + Editor.Selection.EndColumn) / 2 - Editor.Column), 
-    Mouse.ScreenY - Editor.ScreenY)
+  X = Editor.CursorX
+  Y = Editor.CursorY + Editor.LineHeight \ 2
+  If Editor.Selected Then 
+    If Editor.Selection.StartLine = Editor.Selection.EndLine Then
+      X = (Editor.ToPosX(Editor.Selection.StartColumn, Editor.Line) + Editor.ToPosX(Editor.Selection.EndColumn, Editor.Line)) \ 2
+    Endif
+  Endif
+
+  Balloon(sMsg, Editor, hIcon, X, Y)
 
 End
+
+Public Sub ShowErrorMessage(sMsg As String, sIcon As String)
+  
+  Wait ' If the cursor needs to move first
+  'ShowMessage(sMsg, "img/logo/logo-64.png", True)
+  ShowMessage(sMsg, "icon:/32/" & sIcon, True)
+  
+End
+
 
 Private Sub HideMessage()
   

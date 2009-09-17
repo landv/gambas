@@ -14,6 +14,7 @@ Private $hProcess As Process
 
 Private $sPosClass As String
 Private $iPosLine As Integer
+Private $sError As String
 
 Private $bStart As Boolean
 Private $sCmdStart As String
@@ -49,6 +50,15 @@ Public Sub Exit()
 
 End
 
+Public Sub CheckErrorMessage(hEditor As FEditor)
+  
+  If Not $sError Then Return
+  If hEditor.Name = $sPosClass And If hEditor.Editor.Line = ($iPosLine - 1) Then
+    hEditor.ShowErrorMessage($sError, "error")
+  Endif
+  
+End
+
 
 Private Sub SetState(iState As Integer)
 
@@ -72,7 +82,7 @@ Private Sub SetState(iState As Integer)
   'btnInfo.Enabled = btnStop.Enabled
 
   bDebug = $iState = STATE_DEBUG
-
+  
   'FDebugInfo.Enabled = bDebug
   'FDebugInfo.Visible = $iState <> STATE_STOP
   'FWatch.Enabled = bDebug
@@ -191,9 +201,13 @@ Public Sub Debug_Read(Data As String)
       FDebugInfo.DefineObject(Trim(aData[4]))
 
       If aData[1] And If Not $bError Then 
-        $bError = True
-        Message.Error(aData[1])
-        $bError = False
+        '$bError = True
+        $sError = "<b>" & aData[1] & "</b><p>" & Subst(("In class &1 at line &2."), $sPosClass, $iPosLine)
+        CheckErrorMessage(Project.ActiveForm)
+        ' 'Message.Error(aData[1])
+        ' Try Project.ActiveForm.ShowMessage(aData[1], "error")
+        ' If Error Then Message.Error(aData[1])
+        ' $bError = False
       Endif
 
       SetState(STATE_DEBUG)
@@ -293,7 +307,7 @@ Public Sub Process_Kill()
     ' SIGKILL and SIGTERM are not considered as bugs in the program
     If $hProcess.Value <> 9 And $hProcess.Value <> 15 Then
       sMsg = Subst(("The program has stopped unexpectedly\nby raising signal #&1.\n\nPlease send a bug report to\ngambas@users.sourceforge.net."), $hProcess.Value)
-      FGambas.Error(sMsg)
+      Message.Error(sMsg)
     Endif
   Else If $hProcess.Value Then
     FGambas.Info(Subst(("The program has returned\nthe value: &1"), $hProcess.Value))
@@ -345,6 +359,8 @@ Private Sub AfterStop()
   '   'TRY PRINT "Design.AfterStop: SHOW "; hForm.Name
   '   hForm.Show
   ' NEXT
+
+  $sError = ""
 
   Balloon.Hide
 

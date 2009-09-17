@@ -1264,6 +1264,11 @@ void gTree::setSorted(bool v)
 		
 	_sorted = v;
 	_sort_column = v ? 0 : -1;
+	if (!_sorted)
+	{
+		gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(store), GTK_TREE_SORTABLE_UNSORTED_SORT_COLUMN_ID, GTK_SORT_ASCENDING);
+		gtk_tree_sortable_set_default_sort_func(GTK_TREE_SORTABLE(store), NULL, NULL, NULL);
+	}
 	updateSort();
 }
 

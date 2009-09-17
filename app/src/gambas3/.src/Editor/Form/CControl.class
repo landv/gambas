@@ -15,6 +15,7 @@ Public Virtual As Boolean
 Public Unknown As Boolean
 Public Tag As Variant
 Public DrawWith As String
+Public {Public} As Boolean
 
 'STATIC PUBLIC Properties AS NEW Collection
 'STATIC PUBLIC PropertiesInOrder AS NEW Collection
@@ -380,7 +381,10 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
     Endif
   Endif
 
-  If hProp.DoNotApply Then Goto _DO_NOT_APPLY
+  If hProp.DoNotApply Then 
+    If hProp.Name = "Public" Then {Public} = vVal
+    Goto _DO_NOT_APPLY
+  Endif
   If bDoNotApply Then Goto _DO_NOT_APPLY
   If Unknown Then 
     If Not hProp.Coord Then 
@@ -445,7 +449,7 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
         Else 
           vRealVal = Null
         Endif
-
+        
     End Select
 
   Endif

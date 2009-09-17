@@ -463,7 +463,7 @@ Public Sub Load()
 
     bAgain = False
 
-    Open sPath As #hFic
+    hFic = Open sPath
 
     While Not Eof(hFic)
       Line Input #hFic, sLig
@@ -890,7 +890,7 @@ Static Private Sub ScanForm(hForm As FForm, cSymbol As Collection)
       .Type = hControl.Kind
       .Class = hForm.Name
       .Kind = "t"
-      .NotPublic = Not Project.ControlPublic
+      .NotPublic = (Not Project.ControlPublic) And Not hControl.Public
       cSymbol[.Name] = hSymbol
     End With
   Next

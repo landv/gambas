@@ -40,8 +40,7 @@ Public Sub Form_Open()
 
   Next
   
-  tvwShortcut.Columns[0].Width = -1
-  tvwShortcut.Columns[1].Width = -1
+  tvwShortcut.Columns[0].Width = tvwShortcut.Width - Desktop.Scale * 24
   tvwShortcut.Rows.Height = -1
 
   $hEditor = New FShortcutEditor(Me)

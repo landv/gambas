@@ -418,7 +418,7 @@ Private Sub SaveTranslate(Optional bForce As Boolean)
 
   'PRINT "Saving "; $sPath
 
-  Open $sPath & ".new" For Create As #hFic
+  hFic = Open $sPath & ".new" For Create 
 
   Print #hFic, $sHeader
 

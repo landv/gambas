@@ -2,6 +2,7 @@
 
 Public Const EVENT_NAME As String = "Group"
 Public Const SCALE_NAME As String = "Scaled"
+Public Const PUBLIC_NAME As String = "Public"
 
 Static Private $cRedirect As New Collection
 Static Private $cTranslate As New Collection
@@ -120,6 +121,13 @@ Public Sub _new(sComponent As String, sClass As String, sName As String, sKind A
     Exclude = False
     DoNotApply = True
     DefaultValue = True
+    Return
+  Else If Name = PUBLIC_NAME Then
+    Type = "b"
+    Virtual = True
+    Exclude = False
+    DoNotApply = True
+    DefaultValue = False
     Return
   Endif
 

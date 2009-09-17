@@ -18,9 +18,9 @@ Static Public Sub _init()
   Dim hFic As File
   Dim sLig As String
 
-  Open "tips/tips.en" As #hFic
+  hFic = Open "tips/tips.en"
 
-  While NOT Eof(hFic)
+  While Not Eof(hFic)
     Line Input #hFic, sLig
     If Left$(sLig) = "[" Then
       $aOrder.Add(Mid$(Trim$(sLig), 2, -1))
@@ -74,14 +74,14 @@ Private Function GetNextTip(Optional bPrev As Boolean) As String
   sLang = System.Language
 
   sFile = "tips/tips." & sLang
-  If NOT Exist(sFile) Then
+  If Not Exist(sFile) Then
     iPos = InStr(sLang, "_")
     If iPos Then
       sLang = Left$(sLang, iPos - 1)
       sFile = "tips/tips." & sLang
     Endif
   Endif
-  If NOT Exist(sFile) Then
+  If Not Exist(sFile) Then
     sFile = "tips/tips.en"
   Endif
 

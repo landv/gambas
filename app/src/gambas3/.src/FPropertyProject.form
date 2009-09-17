@@ -435,31 +435,6 @@
       Font = Font["Bold"]
       Text = ("Exported classes")
     }
-    { panImplement Panel
-      MoveScaled(14,32,34,12)
-      Visible = False
-      Arrangement = Arrange.Vertical
-      { CheckBox1 CheckBox
-        MoveScaled(0,0,27,4)
-        Tag = "Form"
-        Text = ("Graphical form management")
-      }
-      { CheckBox2 CheckBox
-        MoveScaled(0,3,27,4)
-        Tag = "EventLoop"
-        Text = ("Event loop management")
-      }
-      { CheckBox3 CheckBox
-        MoveScaled(0,6,27,4)
-        Tag = "ImageProvider"
-        Text = ("Image provider")
-      }
-      { CheckBox4 CheckBox
-        MoveScaled(0,9,27,4)
-        Tag = "OpenGLViewer"
-        Text = ("OpenGL display")
-      }
-    }
     { cmbControl ComboBox
       MoveScaled(23,26,19,4)
       Visible = False

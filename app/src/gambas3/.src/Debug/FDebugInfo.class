@@ -756,13 +756,9 @@ Public Sub UpdateView()
       'If bVisible Then FMain.ShowDebug(True)
     Endif
     
-    
-    
     tabDebug.Index = TAB_CONSOLE
     FOutput.SetFocus
   Endif 
-  
-
   
   FMain.UpdateConsoleAction(Project.Running)
   

@@ -213,7 +213,7 @@ Private Function GetHelpTextFromFile(SymbolHelpPath As String) As String
   bGrabNextLine = False
   sResult = ""
 
-  Open SymbolHelpPath For Read As #hFileIn
+  hFileIn = Open SymbolHelpPath For Read
 
   Do While Not Eof(hFileIn)
     Line Input #hFileIn, sInputLine

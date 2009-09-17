@@ -575,7 +575,7 @@ Private Sub FillTreeWith(hTree As TreeView, sTitle As String, sIcon As String, s
     $sLastCat = ""
   Endif
 
-  Open sFile As #hFile
+  hFile = Open sFile
 
   While Not Eof(hFile)
 

@@ -199,6 +199,7 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
   Dim eW, eH As Float
   Dim iW, iH As Integer
   Dim bFirst As Boolean
+  Dim bPublic As Boolean
 
   hCtrl = hParent
   bFirst = True
@@ -229,16 +230,17 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
 
     If Left$(sLine, 1) = "{" Then
 
-      sLine = Trim(Mid$(sLine, 2))
-      iPos = InStr(sLine, " ")
-      sName = Left$(sLine, iPos - 1)
-      sClass = Trim(Mid$(sLine, iPos + 1))
-      iPos = InStr(sClass, " ")
-      If iPos Then
-        sEventName = Trim(Mid$(sClass, iPos + 1))
-        sClass = Trim(Left$(sClass, iPos - 1))
+      aVal = Split(Trim(Mid$(sLine, 2)), " ")
+      sName = aVal[0]
+      sClass = aVal[1]
+      sEventName = ""
+      Try sEventName = aVal[2]
+      
+      If Left(sName) = "!" Then
+        bPublic = True
+        sName = Mid$(sName, 2)
       Else
-        sEventName = ""
+        bPublic = False
       Endif
 
       If Left$(sClass) = "#" Then sClass = Mid$(sClass, 2)
@@ -261,6 +263,7 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
       hCtrl = CreateControl(sClass, hCtrl, sName)
       
       If sEventName Then hCtrl.SetProperty(CPropertyInfo.EVENT_NAME, sEventName)
+      If bPublic Then hCtrl.SetProperty(CPropertyInfo.PUBLIC_NAME, bPublic)
       
       If sOldClass Then
         Print sOldClass; " -> "; sClass 
@@ -658,6 +661,7 @@ Private Sub SaveOne(hCtrl As CControl)
   Dim sName As String
   Dim sGroup As String
   Dim sAction As String
+  Dim bPublic As Boolean
 
   'hCtrl = Control[sName]
   'PRINT "SaveOne: hCtrl = "; hCtrl
@@ -667,11 +671,12 @@ Private Sub SaveOne(hCtrl As CControl)
   If sName = Me.Name Then sName = FormType
 
   sGroup = hCtrl.GetProperty(CPropertyInfo.EVENT_NAME)
-
+  bPublic = hCtrl.Public
+  
   If hCtrl.Virtual Then
-    AddLine(Trim("{ " & sName & " #" & hCtrl.Kind & " " & sGroup))
+    AddLine(Trim("{ " & If(bPublic, "!", "") & sName & " #" & hCtrl.Kind & " " & sGroup))
   Else
-    AddLine(Trim("{ " & sName & " " & hCtrl.Kind & " " & sGroup))
+    AddLine(Trim("{ " & If(bPublic, "!", "") & sName & " " & hCtrl.Kind & " " & sGroup))
   Endif
 
   If $iSaveLevel = 0 Then

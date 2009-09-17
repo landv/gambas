@@ -188,6 +188,7 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
     'hImage.Transparent()
     hPict = hImage.Picture
   
+    'Wait
     Me.Picture = hPict
     
     $sOld = sNew

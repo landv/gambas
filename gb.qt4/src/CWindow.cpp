@@ -135,7 +135,8 @@ void CWINDOW_fix_menubar(CWINDOW *window)
 		window->menuBar->setFocus();
 		QKeyEvent e(QEvent::KeyPress, Qt::Key_Escape, Qt::NoModifier);
 		qApp->sendEvent(window->menuBar, &e);
-		if (save) save->setFocus();
+		if (save) 
+			save->setFocus();
 	}
 }
 
@@ -829,11 +830,12 @@ BEGIN_PROPERTY(CWINDOW_picture)
 		
 		if (new_pict != THIS->picture)
 		{
+			CPICTURE *old = THIS->picture;
 			GB.Ref(new_pict);
-			GB.Unref(POINTER(&THIS->picture));
 			THIS->picture = new_pict;
 			//CWINDOW_define_mask(THIS);
 			CWIDGET_reset_color((CWIDGET *)THIS);
+			GB.Unref(POINTER(&old));
 		}
 	}
 
@@ -1163,15 +1165,13 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(CWINDOW_control_next)
 
-	QObjectList children;
-	QObject *child;
+	QList<QWidget *> children = WINDOW->findChildren<QWidget *>();
 	CWIDGET *control;
 	int index;
 
 	index = ENUM(int);
 
 	control = NULL;
-	children = WINDOW->children();
 
 	do
 	{
@@ -1181,9 +1181,7 @@ BEGIN_METHOD_VOID(CWINDOW_control_next)
 			return;
 		}
 
-		child = children.at(index);
-		if (child->isWidgetType())
-			control = CWidget::getReal((QWidget *)child);
+		control = CWidget::getReal(children.at(index));
 		index++;
 	}
 	while (!control);
@@ -1534,7 +1532,7 @@ void MyMainWindow::showEvent(QShowEvent *e)
 	
 	emit_open_event(THIS);
 	
-	CWINDOW_fix_menubar(THIS);
+	//CWINDOW_fix_menubar(THIS);
 
 	if (_activate)
 	{

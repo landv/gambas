@@ -1493,7 +1493,7 @@ Public Sub OpenFile(sPath As String, Optional iLine As Integer) As Object
   'ENDIF
 
   If iLine Then 
-    hForm.GotoCenter(iLine - 1, 0)
+    hForm.GotoCenter(iLine - 1, -1)
   Endif
   
   Return hForm
@@ -1559,6 +1559,7 @@ Private Sub CompileError(sMsg As String)
   Dim sFile As String
   Dim iLine As Integer
   Dim hForm As FEditor
+  Dim sErr As String
 
   iPos = RInStr(sMsg, "\n")
   If iPos Then sMsg = Mid$(sMsg, iPos + 1)
@@ -1585,24 +1586,20 @@ Private Sub CompileError(sMsg As String)
   
     hForm = OpenFile($cSourceDir[File.Name(sFile)], iLine)
   
-    sMsg = Trim(Mid$(sMsg, iPos + 1))
+    sErr = Trim(Mid$(sMsg, iPos + 1))
     If hForm And If iLine >= hForm.Editor.Lines.Count Then
-      SetMessage(File.BaseName(sFile) & ": " & sMsg & " " & ("in form definition"))
-      sMsg &= "\n" & ("in form definition")
+      SetMessage(File.BaseName(sFile) & ": " & sErr & " " & ("in form definition"))
+      sMsg = "<b>" & sErr & "</b><p>" & ("in form definition")
     Else
-      SetMessage(File.BaseName(sFile) & "." & CStr(iLine) & ": " & sMsg)
-      sMsg &= "\n" & Subst(("at line &1 in &2"), CStr(iLine), File.Name(sFile))
+      SetMessage(File.BaseName(sFile) & "." & CStr(iLine) & ": " & sErr)
+      sMsg = "<b>" & sErr & "</b><p>" & Subst(("In class &1 at line &2."), File.Name(sFile), CStr(iLine))
     Endif
     
-    If FGambas.Visible Then
-      FGambas.Animate("Depressive", sMsg)
-    Else
-      Message.Warning(sMsg)
-    Endif
+    hForm.ShowErrorMessage(sMsg, "make")
     
   Endif
 
-Catch
+'Catch
 
 End
 
@@ -2695,7 +2692,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
 
     CreateLangDirectory
     
-    Open sPath For Create As #hFic
+    hFic = Open sPath For Create
     Print #hFic, "# "; Path
     Print #hFic, File.Load("pot-header.txt")
     If Title Then
