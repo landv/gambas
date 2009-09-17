@@ -67,16 +67,12 @@ STATIC PUBLIC SUB Clear()
 END
 
 PUBLIC SUB _new(sExpr AS String, sInfo AS String)
-  
-  DIM aGeom AS Integer[]
-  
+
   $sExpr = sExpr
   $sKey = Replace(sExpr, "/", "|")
   $sInfo = sInfo
   
   'Project.Config.Read(ME, $sKey)
-  aGeom = Project.Config["DebugWindow" &/ $sKey &/ "Geometry"]
-  IF aGeom THEN TRY ME.Move(aGeom[0], aGeom[1], aGeom[2], aGeom[3])
   btnHidden.Value = Project.Config["DebugWindow" &/ $sKey &/ "ShowHidden", FALSE]
   
   IF sInfo = YW_DUMMY_INFO THEN
@@ -600,6 +596,11 @@ END
 
 
 PUBLIC SUB Form_Open()
+
+  DIM aGeom AS Integer[]
+  
+  aGeom = Project.Config["DebugWindow" &/ $sKey &/ "Geometry"]
+  IF aGeom THEN TRY ME.Move(aGeom[0], aGeom[1], aGeom[2], aGeom[3])
 
   TRY gvwExpr.Columns[0].Width = -1
 
