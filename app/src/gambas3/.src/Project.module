@@ -133,6 +133,7 @@ Private $cSourceDir As Collection
 
 Private $hCurrentPopup As Menu
 
+Private $hLock As File
 
 Public Sub _init()
   
@@ -298,6 +299,7 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
   Dim bSave As Boolean
   Dim sVer As String
   Dim sFile As String
+  Dim hLock As Stream
 
   If Not Exist(sDir &/ ".project") Then 
     FGambas.Error(("This project does not exist.") & "\n\n" & sDir)
@@ -324,7 +326,9 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
     Endif
   Endif
 
-  If Exist(sDir &/ ".lock") Then
+  Try hLock = Lock sDir &/ ".lock"
+
+  If Not hLock Then
     If Message.Warning(("This project seems to be already opened.\n\nOpening the same project twice can lead to data loss."), 
       ("Open after all"), ("Do not open")) = 2 Then
       Return True
@@ -332,8 +336,6 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
   Endif
 
   If CloseProject() Then Return True
-
-  Try Kill sDir &/ ".lock"
 
   ReadOnly = Not Access(sDir, gb.Write)
   If Not ReadOnly Then
@@ -391,8 +393,8 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
   'FExplorer.ProjectChange
   Design.Clear
   Design.ReadBreakpoints
-
-  Try File.Save(sDir &/ ".lock", "")
+  
+  $hLock = hLock
 
   LastOpenedFiles
 
@@ -408,6 +410,8 @@ Catch
   Endif
 
 _CANCEL:
+
+  If hLock Then Try Unlock #hLock
 
   Path = sOldPath
   Project.Dir = File.Dir(Path)
@@ -521,7 +525,11 @@ Private Function CloseProject() As Boolean
     Files.Clear
     ActiveForm = Null
   
-    Try Kill Project.Dir &/ ".lock"
+    If $hLock Then
+      Unlock #$hLock
+      Try Kill Project.Dir &/ ".lock"
+      $hLock = Null
+    Endif
 
     Dec Application.Busy
   
