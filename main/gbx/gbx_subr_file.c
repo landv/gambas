@@ -85,7 +85,6 @@ static CSTREAM *pop_stream(void **list)
 
 static STREAM *get_default(intptr_t val)
 {
-  static STREAM_MEMORY memory_stream;
   STREAM *stream;
 
   switch(val)
@@ -108,12 +107,6 @@ static STREAM *get_default(intptr_t val)
 			else
       	stream = CSTREAM_stream(CFILE_err);
       break;
-    default:
-      memory_stream.common.type = &STREAM_memory;
-      memory_stream.addr = (void *)val;
-      memory_stream.pos = 0;
-      stream = (STREAM *)&memory_stream;
-      break;
   }
 
   return stream;
@@ -123,12 +116,8 @@ static STREAM *get_stream(VALUE *value, bool can_default)
 {
   STREAM *stream;
 
-  if (TYPE_is_integer(value->type) && can_default)
+  if (TYPE_is_integer(value->type) && can_default && value->_integer.value >= 0 && value->_integer.value <= 2)
     stream = get_default((intptr_t)value->_integer.value);
-  #ifdef OS_64BITS
-  else if (TYPE_is_long(value->type) && can_default)
-    stream = get_default((intptr_t)value->_long.value);
-  #endif
   else
   {
     if (VALUE_is_null(value))
@@ -165,13 +154,30 @@ void SUBR_open(void)
   CFILE *file;
   STREAM stream;
   int mode;
+	void *addr;
 
   SUBR_ENTER_PARAM(2);
 
   SUBR_check_integer(&PARAM[1]);
   mode = PARAM[1]._integer.value;
 
-  STREAM_open(&stream, get_path(PARAM), mode);
+	if (EXEC_code & 0x3F)
+	{
+		if (TYPE_is_integer(PARAM->type))
+			addr = (void *)PARAM->_integer.value;
+		#ifdef OS_64BITS
+		else if (TYPE_is_long(PARAM->type))
+			addr = (void *)PARAM->_long.value;
+		#endif
+		else
+      THROW(E_TYPE, "Pointer", TYPE_get_name(PARAM->type));
+		
+		STREAM_open(&stream, (char *)addr, mode | ST_MEMORY);
+	}
+	else
+	{
+		STREAM_open(&stream, get_path(PARAM), mode);
+	}
 
   file = CFILE_create(&stream, mode);
 

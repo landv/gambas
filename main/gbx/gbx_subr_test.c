@@ -356,6 +356,7 @@ void SUBR_min_max(void)
 
 void SUBR_if(void)
 {
+	TYPE type;
   SUBR_ENTER_PARAM(3);
 
   VALUE_conv(PARAM, T_BOOLEAN);
@@ -364,7 +365,8 @@ void SUBR_if(void)
 	{
 		case 0:
 		
-			if (PARAM[1].type == PARAM[2].type)
+			type = SUBR_check_good_type(&PARAM[1], 2);
+			if (type != T_VARIANT)
 			{
 				*PC |= 1;
 				goto __TYPE;
@@ -376,8 +378,8 @@ void SUBR_if(void)
 			}
 		
 		case 1:
-
 		__TYPE:
+		
 			*RETURN = PARAM->_boolean.value ? PARAM[1] : PARAM[2];
 			
 			break;
@@ -395,6 +397,7 @@ void SUBR_if(void)
 				VALUE_conv(&PARAM[2], T_VARIANT);
 				*RETURN = PARAM[2];
 			}
+			
 			break;
 	}
 

@@ -806,6 +806,21 @@ void CODE_push_null()
 }
 
 
+void CODE_push_void_string()
+{
+  LAST_CODE;
+
+  use_stack(1);
+
+  #ifdef DEBUG
+  printf("PUSH VOID STRING\n");
+  #endif
+
+  write_ZZxx(C_PUSH_MISC, CPM_STRING);
+}
+
+
+
 /*
 static bool change_last_call(ushort flag)
 {

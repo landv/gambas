@@ -106,7 +106,7 @@ static void push_string(int index, bool trans)
 
   if (len == 0)
   {
-    CODE_push_null();
+    CODE_push_void_string();
   }
   else if (len == 1)
   {

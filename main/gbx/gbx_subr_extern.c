@@ -179,6 +179,11 @@ void SUBR_varptr(void)
 			case T_FLOAT:
 				ptr = &val->_float.value;
 				break;
+			
+			case T_STRING:
+			case T_CSTRING:
+				ptr = val->_string.addr + val->_string.start;
+				break;
 				
 			default:
 			  THROW(E_TYPE, "Number", TYPE_get_name(val->type));

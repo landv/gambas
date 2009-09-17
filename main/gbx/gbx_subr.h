@@ -86,6 +86,8 @@ void SUBR_get_string_len(VALUE *param, char **str, int *len);
 
 bool SUBR_get_boolean(VALUE *param);
 
+TYPE SUBR_check_good_type(VALUE *param, int count);
+
 /* subr_math.c */
 
 void SUBR_add_(void);

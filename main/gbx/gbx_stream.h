@@ -98,7 +98,7 @@ typedef
   struct {
     STREAM_COMMON common;
     void *addr;
-    int64_t pos;
+    intptr_t pos;
     }
   PACKED
   STREAM_MEMORY;
@@ -151,7 +151,8 @@ enum {
   ST_DIRECT = 16,
   ST_LINE = 32,
   ST_WATCH = 64,
-  ST_PIPE = 128
+  ST_PIPE = 128,
+	ST_MEMORY = 256
   };
 
 enum {

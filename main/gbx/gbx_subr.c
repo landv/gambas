@@ -166,3 +166,66 @@ bool SUBR_get_boolean(VALUE *param)
 	VALUE_conv(param, T_BOOLEAN);
 	return param->_boolean.value;
 }
+
+static TYPE conv_type(TYPE type)
+{
+	if (type <= T_BYTE)
+		type = T_BYTE;
+	else if (type == T_CSTRING) // || type == T_NULL)
+		type = T_STRING;
+
+	return type;
+}
+
+TYPE SUBR_check_good_type(VALUE *param, int count)
+{
+	int i;
+	TYPE type, type2;
+	
+	type = conv_type(param[0].type);;
+	
+	for (i = 1; i < count; i++)
+	{
+		type2 = conv_type(param[i].type);
+		
+		if (type2 == type)
+			continue;
+		
+		if (type == T_NULL)
+		{
+			if (type2 <= T_FLOAT)
+				goto __VARIANT;
+			
+			type = type2;
+			continue;
+		}
+		
+		if (type <= T_FLOAT && type2 <= T_FLOAT)
+		{
+			if (type2 > type)
+				type = type2;
+			continue;
+		}
+		
+		if (type2 == T_NULL)
+		{
+			if (type <= T_FLOAT)
+				goto __VARIANT;
+			else
+				continue;
+		}
+		
+		if (TYPE_is_object(type) && TYPE_is_object(type2))
+			type = T_OBJECT;
+		else
+			type = T_VARIANT;
+		
+		break;
+	}
+	
+	return type;
+	
+__VARIANT:
+
+	return T_VARIANT;
+}

@@ -54,7 +54,7 @@ static void trans_subr(int subr, int nparam)
     { ".Rmdir" }, { ".Array" }, {".Collection" }, { ".Copy" }, { ".Link" }, 
     { ".Error" }, { ".Lock" }, { ".Unlock" }, { ".InputFrom" }, { ".OutputTo" }, 
     { ".Debug" }, { ".Sleep" }, { ".Randomize" }, { ".ErrorTo" }, { "Left" }, 
-    { "Mid" }
+    { "Mid" }, { ".OpenMemory" }
   };
 
   TRANS_SUBR_INFO *tsi = &subr_info[subr];
@@ -388,43 +388,38 @@ void TRANS_pipe(void)
     else if (TRANS_is(RS_OUTPUT))
       mode |= TS_MODE_WRITE;
 
-    /*if (TRANS_is(RS_CREATE))
-      mode |= TS_MODE_CREATE;
-    else if (TRANS_is(RS_APPEND))
-      mode |= TS_MODE_APPEND;*/
-
-    //if (TRANS_is(RS_DIRECT))
-    //  mode |= TS_MODE_DIRECT;
-
     if (TRANS_is(RS_WATCH))
       mode |= TS_MODE_WATCH;
-
-    /*if (TRANS_is(RS_BIG))
-      mode |= TS_MODE_BIG;
-    else if (TRANS_is(RS_LITTLE))
-      mode |= TS_MODE_LITTLE;*/
-
-    /*JOB->current--;
-    if (PATTERN_is(*JOB->current, RS_FOR))
-      THROW("Syntax error in file open mode");
-    JOB->current++;*/
   }
 
   CODE_push_number(mode | TS_MODE_PIPE);
 
   trans_subr(TS_SUBR_OPEN, 2);
+}
 
-  if (TRANS_in_affectation == 0)
+
+void TRANS_memory(void)
+{
+  int mode = TS_MODE_READ;
+
+  /* Memory address */
+
+  TRANS_expression(FALSE);
+
+  /* Open mode */
+
+  if (TRANS_is(RS_FOR))
   {
-    //CODE_drop();
+    if (TRANS_is(RS_READ))
+      mode |= TS_MODE_READ | TS_MODE_DIRECT;
 
-    /* handle du fichier */
-
-    TRANS_want(RS_AS, NULL);
-    TRANS_ignore(RS_SHARP);
-
-    TRANS_reference();
+    if (TRANS_is(RS_WRITE))
+      mode |= TS_MODE_WRITE | TS_MODE_DIRECT;
   }
+
+  CODE_push_number(mode);
+
+  trans_subr(TS_SUBR_OPEN_MEMORY, 2);
 }
 
 

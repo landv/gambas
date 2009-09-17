@@ -447,7 +447,7 @@ static void analyze_call()
 
 	if (subr_pattern && subr_pattern == PATTERN_make(RT_SUBR, SUBR_VarPtr))
 	{
-		if (!PATTERN_is_identifier(current[0]) || !!PATTERN_is(current[1], RS_RBRA))
+		if (!PATTERN_is_identifier(current[0]) || !PATTERN_is(current[1], RS_RBRA))
 			THROW("Syntax error. VarPtr() takes only one identifier");
 		
 		add_pattern(*current);

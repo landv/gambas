@@ -47,6 +47,7 @@ enum {
   TS_MODE_LINE = 32,
   TS_MODE_WATCH = 64,
   TS_MODE_PIPE = 128,
+	TS_MODE_MEMORY = 256
   };
 
 enum {
@@ -90,6 +91,7 @@ enum {
   TS_SUBR_ERROR_TO,
   TS_SUBR_LEFT,
   TS_SUBR_MID,
+	TS_SUBR_OPEN_MEMORY,
   };
 
 enum {
@@ -187,6 +189,7 @@ void TRANS_read(void);
 void TRANS_write(void);
 void TRANS_open(void);
 void TRANS_pipe(void);
+void TRANS_memory(void);
 void TRANS_close(void);
 void TRANS_lock(void);
 void TRANS_unlock(void);

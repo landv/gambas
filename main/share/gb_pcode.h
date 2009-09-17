@@ -67,11 +67,12 @@
 #define C_PUSH_MISC             0x1400
 #define C_PUSH_ME               0x1500
 
-#define CPM_NULL   0
-#define CPM_VOID   1
-#define CPM_FALSE  2
-#define CPM_TRUE   3
-#define CPM_LAST   4
+#define CPM_NULL      0
+#define CPM_VOID      1
+#define CPM_FALSE     2
+#define CPM_TRUE      3
+#define CPM_LAST      4
+#define CPM_STRING    5
 
 #define C_EVENT                 0x1600
 

@@ -304,6 +304,7 @@ void FORM_do(bool ctrl_public)
 	int len, len_win, len_twin;
 	const char *pos_rewind;
 	bool virtual;
+	bool public;
 
 	if (JOB->form == NULL)
 		return;
@@ -339,7 +340,16 @@ void FORM_do(bool ctrl_public)
 
 			if (win != NULL)
 			{
-				if (ctrl_public)
+				if (word[0] == '!')
+				{
+					word++;
+					len--;
+					public = TRUE;
+				}
+				else
+					public = FALSE;
+				
+				if (ctrl_public || public)
 					print("PUBLIC");
 				else
 					print("PRIVATE");
@@ -424,6 +434,12 @@ void FORM_do(bool ctrl_public)
 			else
 			{
 				//print_fmt("  {%.*s} = NEW ", len, word);
+				if (word[0] == '!')
+				{
+					word++;
+					len--;
+				}
+				
 				print_fmt("  {", word, len, "} = NEW ");
 				parent_enter(word, len);
 

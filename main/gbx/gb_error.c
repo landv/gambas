@@ -40,7 +40,7 @@ bool ERROR_backtrace = FALSE;
 
 static int _lock = 0;
 
-static const char *_message[65] =
+static const char *_message[66] =
 {
   /*  0 E_UNKNOWN */ "Unknown error",
   /*  1 E_MEMORY */ "Out of memory",
@@ -106,6 +106,7 @@ static const char *_message[65] =
   /* 61 E_EXTSYM */ ".Cannot find symbol '&2' in dynamic library '&1'",
   /* 62 E_BYREF */ "Argument cannot be passed by reference",
   /* 63 E_OVERRIDE */ ".'&1.&2' is badly overridden in class '&3'",
+	/* 64 E_NKEY */ "Void key",
   NULL
 };
 

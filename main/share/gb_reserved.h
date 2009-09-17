@@ -177,6 +177,7 @@ typedef
     RS_PIPE,
     RS_RANDOMIZE,
     RS_BYREF,
+		RS_MEMORY,
 
     RS_COLON,
     RS_SCOLON,

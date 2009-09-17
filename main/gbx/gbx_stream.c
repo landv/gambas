@@ -145,31 +145,35 @@ static int default_eof(STREAM *stream)
 
 void STREAM_open(STREAM *stream, const char *path, int mode)
 {
-	if (FILE_is_relative(path))
-	{
-		ARCHIVE *arch = NULL;
-
-		if (strncmp(path, "../", 3))
-			ARCHIVE_get_current(&arch);
-		else if (!EXEC_arch)
-			path += 3;
-		
-		if ((arch && arch->name) || EXEC_arch) // || !FILE_exist_real(path)) - Why that test ?
-		{
-			stream->type = &STREAM_arch;
-			goto _OPEN;
-		}
-
-		if ((mode & ST_ACCESS) != ST_READ || mode & ST_PIPE)
-			THROW(E_ACCESS);
-	}
-
 	if (mode & ST_PIPE)
 	{
 		stream->type = &STREAM_pipe;
 	}
+	else if (mode & ST_MEMORY)
+	{
+		stream->type = &STREAM_memory;
+	}
 	else
 	{
+		if (FILE_is_relative(path))
+		{
+			ARCHIVE *arch = NULL;
+
+			if (strncmp(path, "../", 3))
+				ARCHIVE_get_current(&arch);
+			else if (!EXEC_arch)
+				path += 3;
+			
+			if ((arch && arch->name) || EXEC_arch) // || !FILE_exist_real(path)) - Why that test ?
+			{
+				stream->type = &STREAM_arch;
+				goto _OPEN;
+			}
+
+			if ((mode & ST_ACCESS) != ST_READ || mode & ST_PIPE)
+				THROW(E_ACCESS);
+		}
+
 		if (mode & ST_DIRECT)
 			stream->type = &STREAM_direct;
 		else

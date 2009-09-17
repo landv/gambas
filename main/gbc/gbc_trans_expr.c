@@ -113,7 +113,7 @@ static void push_string(int index, bool trans)
 
   if (len == 0)
   {
-    CODE_push_null();
+    CODE_push_void_string();
   }
   else if (len == 1 && !trans)
   {
@@ -589,6 +589,8 @@ bool TRANS_affectation(bool dup)
     { RS_RAISE, TRANS_raise },
     { RS_PIPE, TRANS_pipe },
     { RS_LOCK, TRANS_lock },
+    { RS_MEMORY, TRANS_memory },
+		{ RS_READ, TRANS_read },
     { RS_NONE, NULL }
   };
 

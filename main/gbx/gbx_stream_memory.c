@@ -46,7 +46,8 @@ static int stream_open(STREAM *stream, const char *path, int mode)
 {
   if (stream->memory.addr == NULL)
     return TRUE;
-
+	
+	stream->memory.addr = (char *)path;
   stream->memory.pos = 0;
 
 	stream->common.available_now = TRUE;
@@ -68,6 +69,9 @@ static int stream_close(STREAM *stream)
 
 static int stream_read(STREAM *stream, char *buffer, int len)
 {
+	/*if ((stream->common.mode & ST_READ) == 0)
+		THROW(E_ACCESS);*/
+	
   CHECK_enter();
   
   if (setjmp(CHECK_jump) == 0)
@@ -92,6 +96,9 @@ static int stream_read(STREAM *stream, char *buffer, int len)
 
 static int stream_write(STREAM *stream, char *buffer, int len)
 {
+	if ((stream->common.mode & ST_WRITE) == 0)
+		THROW(E_ACCESS);
+	
   CHECK_enter();
   
   if (setjmp(CHECK_jump) == 0)
@@ -143,7 +150,7 @@ static int stream_seek(STREAM *stream, int64_t pos, int whence)
 
 static int stream_tell(STREAM *stream, int64_t *pos)
 {
-  *pos = stream->memory.pos;
+  *pos = (int64_t)stream->memory.pos;
   return FALSE;
 }
 

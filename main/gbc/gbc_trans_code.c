@@ -162,7 +162,7 @@ void TRANS_statement(void)
     { RS_INPUT, TRANS_input },
     { RS_WRITE, TRANS_write },
     { RS_READ, TRANS_read },
-    { RS_OPEN, TRANS_open },
+    //{ RS_OPEN, TRANS_open },
     { RS_CLOSE, TRANS_close },
     { RS_SEEK, TRANS_seek },
     { RS_FLUSH, TRANS_flush },
@@ -189,7 +189,7 @@ void TRANS_statement(void)
     { RS_OUTPUT, TRANS_output_to },
     { RS_DEBUG, TRANS_debug },
     { RS_ERROR, TRANS_error },
-    { RS_PIPE, TRANS_pipe },
+    //{ RS_PIPE, TRANS_pipe },
     { RS_RANDOMIZE, TRANS_randomize },
 
     { RS_NONE, NULL }

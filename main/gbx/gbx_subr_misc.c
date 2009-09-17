@@ -293,41 +293,22 @@ _FREE:
 }
 
 
-static TYPE conv_type(TYPE type)
-{
-	if (type <= T_BYTE)
-		type = T_BYTE;
-	/*else if (type <= T_INTEGER)
-		;*/
-	else if (type == T_CSTRING || type == T_NULL)
-		type = T_STRING;
-
-	return type;
-}
-
 void SUBR_array(void)
 {
-	TYPE type, type2;
+	TYPE type;
 	int i;
 	GB_ARRAY array;
 
 	SUBR_ENTER();
 
-	type = conv_type(PARAM[0].type);
-	if (NPARAM >= 2)
-	{
-		type2 = conv_type(PARAM[1].type);
-		if (type != type2)
-		{
-			if (TYPE_is_object(type) && TYPE_is_object(type2))
-				type = T_OBJECT;
-			else
-				type = T_VARIANT;
-		}
-	}
-
+	type = SUBR_check_good_type(PARAM, NPARAM);
+	
+	if (type == T_NULL)
+		type = T_OBJECT;
+	
 	GB_ArrayNew(&array, type, NPARAM);
 
+	// FIXME: If there is an error, the array is not freed!
 	for (i = 0; i < NPARAM; i++)
 	{
 		VALUE_conv(&PARAM[i], type);
@@ -358,7 +339,11 @@ void SUBR_collection(void)
 		vval = vkey + 1;
 		SUBR_get_string_len(vkey, &key, &len);
 		VALUE_conv(vval, T_VARIANT);
-		GB_CollectionSet(col, key, len, (GB_VARIANT *)vval);
+		if (GB_CollectionSet(col, key, len, (GB_VARIANT *)vval))
+		{
+			OBJECT_UNREF(col, "SUBR_collection");
+			THROW(E_VKEY);
+		}
 	}
 
 	RETURN->_object.class = OBJECT_class(col); //CLASS_Array;

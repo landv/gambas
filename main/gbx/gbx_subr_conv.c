@@ -119,9 +119,9 @@ void SUBR_type(void)
   else
   */
 
-  if (VALUE_is_null(PARAM))
+  /*if (VALUE_is_null(PARAM))
     RETURN->_integer.value = T_NULL;
-  else
+  else*/
   {
     type = PARAM->type;
     if (type == T_VARIANT)
@@ -129,7 +129,7 @@ void SUBR_type(void)
 
     if (type == T_CSTRING)
       RETURN->_integer.value = T_STRING;
-    else if (TYPE_is_object(type))
+    else if (TYPE_is_object(type) && type != T_NULL)
       RETURN->_integer.value = T_OBJECT;
     else
       RETURN->_integer.value = type;

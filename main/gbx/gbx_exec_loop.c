@@ -728,14 +728,14 @@ _PUSH_MISC:
 
   {
     static const void *_jump[] =
-      { &&__PUSH_NULL, &&__PUSH_VOID, &&__PUSH_FALSE, &&__PUSH_TRUE, &&__PUSH_LAST };
+      { &&__PUSH_NULL, &&__PUSH_VOID, &&__PUSH_FALSE, &&__PUSH_TRUE, &&__PUSH_LAST, &&__PUSH_STRING };
 
     goto *_jump[GET_XX()];
 
   __PUSH_NULL:
 
     SP->type = T_NULL;
-    SP->_integer.value = 0;
+    //SP->_integer.value = 0;
     SP++;
     goto _NEXT;
 
@@ -765,7 +765,15 @@ _PUSH_MISC:
     SP->_object.object = EVENT_Last;
     PUSH();
     goto _NEXT;
-  }
+
+  __PUSH_STRING:
+    
+		SP->type = T_STRING;
+    SP->_string.addr = NULL;
+		SP->_string.start = SP->_string.len = 0;
+    PUSH();
+    goto _NEXT;
+	}
 
 /*-----------------------------------------------*/
 

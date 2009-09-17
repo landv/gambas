@@ -76,7 +76,7 @@ static void *collection_add_key(CCOLLECTION *col, const char *key, int len)
 {
   if (len == 0)
   {
-    GB_Error("Void key");
+    GB_Error((char *)E_VKEY);
     return NULL;
   }
 
@@ -94,7 +94,7 @@ static void collection_remove_key(CCOLLECTION *col, const char *key, int len)
 
   if (len == 0)
   {
-    GB_Error("Void key");
+    GB_Error((char *)E_VKEY);
     return;
   }
 
