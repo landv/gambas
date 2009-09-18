@@ -254,7 +254,7 @@ End
 Public Procedure Use(Database As String)
 
   modMain.$Query = "USE `" & Database & "`"
-  modMain.$Connection.Exec(modMain.$Query)
+  modMain.RunQuery(modMain.$Query)
   modMain.$Connection.Name = Database
 
 End
@@ -290,5 +290,11 @@ Private Function Event_Read() As _Event
 
   $Event = New _Event
   Return $Event
+
+End
+
+Public Procedure KillProcess(Process As Integer)
+
+   modMain.RunQuery("KILL " & Process)
 
 End
