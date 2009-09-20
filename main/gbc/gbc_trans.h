@@ -63,7 +63,9 @@ enum {
   TS_SUBR_PRINT,
   TS_SUBR_INPUT,
   TS_SUBR_WRITE,
+  TS_SUBR_WRITE_BYTES,
   TS_SUBR_READ,
+  TS_SUBR_READ_BYTES,
   TS_SUBR_OPEN,
   TS_SUBR_CLOSE,
   TS_SUBR_SEEK,
@@ -109,6 +111,7 @@ enum {
 
 #ifndef __GBC_TRANS_C
 EXTERN int TRANS_in_affectation;
+//EXTERN int TRANS_in_expression;
 #endif
 
 
@@ -142,6 +145,8 @@ void TRANS_reference(void);
 bool TRANS_affectation(bool check);
 void TRANS_operation(short op, short nparam, bool output, PATTERN previous);
 void TRANS_new(void);
+TYPE TRANS_variable_get_type(void);
+void TRANS_class(int index);
 
 /* trans_tree.c */
 
@@ -186,6 +191,7 @@ void TRANS_subr(int subr, int nparam);
 void TRANS_print(void);
 void TRANS_input(void);
 void TRANS_read(void);
+void TRANS_read_old(void);
 void TRANS_write(void);
 void TRANS_open(void);
 void TRANS_pipe(void);

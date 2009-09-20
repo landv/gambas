@@ -100,7 +100,7 @@ PUBLIC SUB End()
     PRINT $sHeader
   
     WHILE NOT Eof($hFile)
-      READ #$hFile, sBuffer, -4096
+      sBuffer = READ #$hFile, -4096
       PRINT sBuffer;
     WEND
     CLOSE #$hFile
@@ -129,7 +129,7 @@ PUBLIC SUB SendFile(Path AS String, OPTIONAL ContentType AS String)
   PRINT "Content-length: "; Lof($hFile)
   PRINT
   WHILE NOT Eof($hFile)
-    READ #$hFile, sBuffer, -4096
+    sBuffer = READ #$hFile, -4096
     PRINT sBuffer;
   WEND
   CLOSE #$hFile

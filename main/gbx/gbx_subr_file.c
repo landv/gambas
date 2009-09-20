@@ -375,33 +375,35 @@ void SUBR_seek(void)
   SUBR_LEAVE();
 }
 
-
 void SUBR_read(void)
 {
   STREAM *stream;
-  int len;
+  int len = 0;
+	TYPE type;
   bool do_not = FALSE;
 
-  SUBR_ENTER();
+  SUBR_ENTER_PARAM(2);
 
   stream = get_stream(PARAM, TRUE);
-
-  if (NPARAM == 3)
-  {
-    VALUE_conv(&PARAM[2], T_INTEGER);
-    len = PARAM[2]._integer.value;
-    if (len == 0)
-      do_not = TRUE;
-  }
-  else
-    len = 0;
+	
+	if (EXEC_code & 0x3F)
+	{
+    VALUE_conv(&PARAM[1], T_INTEGER);
+		len = PARAM[1]._integer.value;
+		do_not = len == 0;
+		type = T_STRING;
+	}
+	else
+	{
+		type = SUBR_get_type(&PARAM[1]);
+	}
 
   if (do_not)
     RETURN->type = T_NULL;
   else
-    STREAM_read_type(stream, PARAM[1].type, RETURN, len);
+    STREAM_read_type(stream, type, RETURN, len);
 
-  SUBR_LEAVE();
+	SUBR_LEAVE();
 }
 
 
@@ -409,20 +411,29 @@ void SUBR_write(void)
 {
   STREAM *stream;
   int len;
+	TYPE type;
 
-  SUBR_ENTER();
+  SUBR_ENTER_PARAM(3);
 
   stream = get_stream(PARAM, TRUE);
 
-  if (NPARAM == 3)
-  {
+	if (EXEC_code & 0x3F)
+	{
+    VALUE_conv(&PARAM[1], T_STRING);
+		type = T_STRING;
     VALUE_conv(&PARAM[2], T_INTEGER);
     len = PARAM[2]._integer.value;
-  }
-  else
-    len = 0;
-
-  STREAM_write_type(stream, PARAM[1].type, &PARAM[1], len);
+		if (len < 0)
+			len = PARAM[1]._string.len;
+	}
+	else
+	{
+		type = SUBR_get_type(&PARAM[2]);
+		VALUE_conv(&PARAM[1], type);
+		len = 0;
+	}
+	
+  STREAM_write_type(stream, type, &PARAM[1], len);
 
   SUBR_LEAVE_VOID();
 }

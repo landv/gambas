@@ -23,23 +23,25 @@ Private Sub WriteLength(iLen As Integer)
   Dim iByte As Byte
   Dim iShort As Short
   
+  'Main.Log("WriteLength: " & iLen)
+  
   If iLen < &H80 Then 
     iByte = iLen
-    Write iByte 
+    Write iByte As Byte
   Else If iLen < &H4000 Then
     iByte = Lsr(iLen, 8) Or &H80
-    Write iByte
+    Write iByte As Byte
     iByte = iLen And &HFF
-    Write iByte 
+    Write iByte As Byte
   Else
     iByte = Lsr(iLen, 24) Or &HC0
-    Write iByte
+    Write iByte As Byte
     iByte = Lsr(iLen, 16) And &HFF
-    Write iByte 
+    Write iByte As Byte
     iByte = Lsr(iLen, 8) And &HFF
-    Write iByte 
+    Write iByte As Byte
     iByte = iLen And &HFF
-    Write iByte 
+    Write iByte As Byte
   Endif
   
 End
@@ -49,7 +51,7 @@ Private Sub ReadLength() As Integer
   Dim iByte As Byte
   Dim iLen As Integer
   
-  Read iByte
+  iByte = Read As Byte
   
   Select Case Lsr(iByte, 6)
   
@@ -59,21 +61,22 @@ Private Sub ReadLength() As Integer
     Case 2
       iByte = iByte And &H3F
       iLen = Lsl(CInt(iByte), 8)
-      Read iByte
+      iByte = Read As Byte
       iLen += iByte
   
     Case 3
       iByte = iByte And &H3F
       iLen = Lsl(CLong(iByte), 32)
-      Read iByte
+      iByte = Read As Byte
       iLen += Lsl(CLong(iByte), 16)
-      Read iByte
+      iByte = Read As Byte
       iLen += Lsl(CLong(iByte), 8)
-      Read iByte
+      iByte = Read As Byte
       iLen += iByte
   
   End Select
   
+  'Main.Log("ReadLength: " & iLen)
   Return iLen
     
 End
@@ -81,7 +84,6 @@ End
 Private Sub WriteValue(vVal As Variant)
   
   Dim vElt As Variant
-  Dim iType As Byte
   
   If IsObject(vVal) Then 
     If vVal Is Collection Then 
@@ -90,13 +92,12 @@ Private Sub WriteValue(vVal As Variant)
       WriteLength(vVal.Count)
       For Each vElt In vVal
         'Main.Log("WriteValue: Key = '" & CStr(vVal.Key) & "' Value = '" & CStr(vElt) & "'")
-        Write CStr(vVal.Key)
+        Write vVal.Key As String
         WriteValue(vElt)
       Next 
     Else If vVal Is Array Then 
       Print "A";
-      iType = vVal.Type
-      Write iType
+      Write vVal.Type As Byte
       WriteLength(vVal.Count)
       For Each vElt In vVal
         WriteValue(vElt)
@@ -105,9 +106,8 @@ Private Sub WriteValue(vVal As Variant)
       Error.Raise("Unserializable datatype")
     Endif
   Else 
-    iType = TypeOf(vVal)
-    'WRITE iType
-    Write vVal
+    'Main.Log("WriteValue: " & TypeOf(vVal))
+    Write vVal As Variant
   Endif
   
 End
@@ -151,7 +151,7 @@ Private Sub SaveSession()
     
     'Main.Log("SaveSession: " & $sPath & ": Just update time stamp : " & Exist($sPath))
     hFile = Open $sPath For Write 
-    Write #hFile, CFloat(Now)
+    Write #hFile, Now As Float
     Close #hFile
     
     UnlockSession
@@ -161,8 +161,8 @@ Private Sub SaveSession()
     'Main.Log("SaveSession: " & $sPath & ": Save all session : " & Exist($sPath))
     hFile = Open sTemp For Write Create 
 
-    Write #hFile, CFloat(Now)
-    Write #hFile, $eTimeout
+    Write #hFile, Now As Float
+    Write #hFile, $eTimeout As Float
 
     Output To #hFile
     WriteValue($cVal)
@@ -201,50 +201,42 @@ Private Sub ReadValue() As Variant
   Dim iLen As Integer
   Dim vVal As Variant
   
-  Read iByte
+  iByte = Read As Byte
+  'Main.Log("ReadValue: " & If(iByte <= 32, CStr(iByte), Chr$(iByte)))
 
   Select Case iByte
     Case gb.Boolean
-      Read bBoolean
-      Return bBoolean
+      Return Read As Boolean
     Case gb.Byte
-      Read iByte
-      Return iByte
+      Return Read As Byte
     Case gb.Short
-      Read iShort
-      Return iShort
+      Return Read As Short
     Case gb.Integer
-      Read iInt
-      Return iInt
+      Return Read As Integer
     Case gb.Long
-      Read iLong
-      Return iLong
+      Return Read As Long
     Case gb.Single
-      Read gSingle
-      Return gSingle
+      Return Read As Single
     Case gb.Float
-      Read fFloat
-      Return fFloat
+      Return Read As Float
     Case gb.Date
-      Read dDate
-      Return dDate
+      Return Read As Date
     Case gb.String
-      Read sStr
-      Return sStr
+      Return Read As String
     Case Asc("C")
       'Main.Log("ReadValue: Collection")
       hCol = New Collection
       iLen = ReadLength()
       'Main.Log("ReadValue: " & iLen)
       For iInt = 1 To iLen
-        Read sStr
+        sStr = Read As String
         vVal = ReadValue()
         'Main.Log("ReadValue: Key = '" & sStr & "' Value = '" & CStr(vVal) & "'")
         hCol[sStr] = vVal
       Next
       Return hCol
     Case Asc("A")
-      Read iByte
+      iByte = Read As Byte
       iLen = ReadLength()
       sStr = ["Boolean", "Byte", "Short", "Integer", "Long", "Single", "Float", "Date", "String", "String", "Variant", "", "", "", "", "Object"][iByte]
       'Main.Log("ReadValue: " & sStr & "[" & iLen & "]")
@@ -254,6 +246,8 @@ Private Sub ReadValue() As Variant
         'Main.Log("ReadValue: [" & iInt & "] = " & CStr(aArr[iInt]))
       Next
       Return aArr
+    Case Else
+      Error.Raise("Serialization error")
   End Select  
   
 End
@@ -270,7 +264,7 @@ Private Sub LoadSession()
   
   Dim hFile As File
 
-  ' Main.Log("LoadSession: #1 '" & $sPath & "'")
+  'Main.Log("LoadSession: " & $sPath)
   ' Main.Log("System.Language = " & System.Language)
   ' Main.Log("System.Charset = " & System.Charset)
   ' Main.Log(System.Backtrace.Join(" "))
@@ -284,8 +278,8 @@ Private Sub LoadSession()
   Input From #hFile
 
   'IF ReadValue() = 1 THEN GOTO _ABANDON
-  Read $eStartup
-  Read $eTimeout
+  $eStartup = Read As Float
+  $eTimeout = Read As Float
   If CheckSession() Then 
     'Main.Log("* TimeOut: " & CStr(CDate($eTimeOut)) & " Startup: " & CStr(CDate($eStartup)) & " Now: " & CStr(Now))
     Goto _ABANDON

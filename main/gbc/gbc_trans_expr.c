@@ -135,7 +135,7 @@ static void push_string(int index, bool trans)
 }
 
 
-static void trans_class(int index)
+void TRANS_class(int index)
 {
   const char *name;
 
@@ -147,7 +147,6 @@ static void trans_class(int index)
     THROW("Unknown identifier: &1", name);
   }
 }
-
 
 static void trans_identifier(int index, bool first, bool point, PATTERN next)
 {
@@ -228,7 +227,7 @@ static void trans_identifier(int index, bool first, bool point, PATTERN next)
 
 __CLASS:
 
-	trans_class(index);
+	TRANS_class(index);
 }
 
 
@@ -341,7 +340,7 @@ static void trans_expr_from_tree(TRANS_TREE *tree)
       trans_identifier(PATTERN_index(pattern), PATTERN_is_first(pattern), PATTERN_is_point(pattern), next_pattern);
 
     else if (PATTERN_is_class(pattern))
-      trans_class(PATTERN_index(pattern));
+      TRANS_class(PATTERN_index(pattern));
 
     else if (PATTERN_is_subr(pattern))
     {
@@ -545,6 +544,11 @@ void TRANS_expression(bool check_statement)
 		TRANS_new();
 		return;
 	}
+	else if (TRANS_is(RS_READ))
+	{
+		TRANS_read();
+		return;
+	}
 	
   tree = TRANS_tree(check_statement);
 
@@ -569,6 +573,35 @@ void TRANS_ignore_expression()
   ARRAY_delete(&tree);
 }
 
+TYPE TRANS_variable_get_type()
+{
+	TYPE type = TYPE_make(T_NULL, 0, 0);
+  TRANS_TREE *tree = TRANS_tree(FALSE);
+	int index;
+	CLASS_SYMBOL *sym;
+	
+	if (ARRAY_count(tree) == 1 && PATTERN_is_identifier(*tree))
+	{
+		index = PATTERN_index(*tree);
+		sym = CLASS_get_symbol(JOB->class, index);
+
+		if (!TYPE_is_null(sym->local.type))
+		{
+			return sym->local.type;
+		}
+		else if (!TYPE_is_null(sym->global.type))
+		{
+			int type = TYPE_get_kind(sym->global.type);
+			if (type == TK_VARIABLE)
+				return sym->global.type;
+		}
+	}
+	
+  ARRAY_delete(&tree);
+	
+	return type;
+}
+
 
 void TRANS_reference(void)
 {
@@ -590,7 +623,7 @@ bool TRANS_affectation(bool dup)
     { RS_PIPE, TRANS_pipe },
     { RS_LOCK, TRANS_lock },
     { RS_MEMORY, TRANS_memory },
-		{ RS_READ, TRANS_read },
+		//{ RS_READ, TRANS_read },
     { RS_NONE, NULL }
   };
 

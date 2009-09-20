@@ -35,7 +35,7 @@ void SUBR_is_type(void)
 {
   static void *jump[] = {
     &&__BAD, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
-    &&__STRING, &&__BAD, &&__BAD, &&__BAD, &&__BAD, &&__BAD, &&__NULL,
+    &&__STRING, &&__BAD, &&__VARIANT, &&__BAD, &&__BAD, &&__BAD, &&__NULL,
     &&__OBJECT, &&__NUMBER
     };
 
@@ -43,8 +43,6 @@ void SUBR_is_type(void)
   TYPE type;
 
   SUBR_ENTER_PARAM(1);
-
-  VARIANT_undo(PARAM);
 
   type = EXEC_code & 0x3F;
   goto *jump[type];
@@ -58,16 +56,20 @@ __SINGLE:
 __FLOAT:
 __DATE:
 
-  test = PARAM->type == type;
+  VARIANT_undo(PARAM);
+
+__VARIANT:
+
+	test = PARAM->type == type;
   goto __END;
 
 __STRING:
 
+  VARIANT_undo(PARAM);
+
   test = PARAM->type == T_STRING || PARAM->type == T_CSTRING;
   if (test)
     goto __END;
-  else
-    goto __NULL;
 
 __NULL:
 
@@ -76,12 +78,12 @@ __NULL:
 
 __OBJECT:
 
-  test = TYPE_is_object_null(PARAM->type);
+  test = TYPE_is_object_null(PARAM->type) || (PARAM->type == T_VARIANT && TYPE_is_object_null(PARAM->_variant.vtype));
   goto __END;
 
 __NUMBER:
 
-  test = TYPE_is_number(PARAM->type);
+  test = TYPE_is_number(PARAM->type) || (PARAM->type == T_VARIANT && TYPE_is_number(PARAM->_variant.vtype));
   goto __END;
 
 __BAD:

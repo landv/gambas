@@ -39,8 +39,8 @@
 #include "gb_reserved.h"
 #include "gb_code.h"
 
-
 int TRANS_in_affectation = 0;
+//int TRANS_in_expression = 0;
 
 void TRANS_reset(void)
 {
@@ -447,7 +447,6 @@ bool TRANS_type(int mode, TRANS_DECL *result)
   JOB->current = look;
   return TRUE;
 }
-
 
 bool TRANS_check_declaration(void)
 {

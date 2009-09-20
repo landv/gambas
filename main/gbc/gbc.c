@@ -62,7 +62,7 @@ static struct option Long_options[] =
   { "version", 0, NULL, 'V' },
   { "help", 0, NULL, 'h' },
   { "verbose", 0, NULL, 'v' },
-  { "trans", 0, NULL, 't' },
+  { "translate", 0, NULL, 't' },
   { "public-control", 0, NULL, 'p' },
   { "public-module", 0, NULL, 'm' },
   { "swap", 0, NULL, 's' },
@@ -70,6 +70,8 @@ static struct option Long_options[] =
   /*{ "dump", 0, NULL, 'd' },*/
   { "root", 1, NULL, 'r' },
   { "all", 0, NULL, 'a' },
+	{ "translate-errors", 0, NULL, 'e' },
+	{ "no-old-read-syntax", 0, NULL, 1 },
   { 0 }
 };
 #endif
@@ -81,6 +83,8 @@ static bool main_trans = FALSE;
 static bool main_public = FALSE;
 static bool main_public_module = FALSE;
 static bool main_swap = FALSE;
+static bool main_trans_error = FALSE;
+static bool main_no_old_read_syntax = FALSE;
 //static char *main_class_file = NULL;
 
 static char **_files = NULL;
@@ -96,9 +100,9 @@ static void get_arguments(int argc, char **argv)
   for(;;)
   {
     #if HAVE_GETOPT_LONG
-      opt = getopt_long(argc, argv, "gvaVhtpmsr:", Long_options, &index);
+      opt = getopt_long(argc, argv, "gvaVhtpmser:", Long_options, &index);
     #else
-      opt = getopt(argc, argv, "gvaVhtpmsr:");
+      opt = getopt(argc, argv, "gvaVhtpmser:");
     #endif
     if (opt < 0) break;
 
@@ -143,6 +147,14 @@ static void get_arguments(int argc, char **argv)
       case 'r':
       	COMP_root = STR_copy(optarg);
         break;
+				
+			case 'e':
+				main_trans_error = TRUE;
+				break;
+				
+			case 1:
+				main_no_old_read_syntax = TRUE;
+				break;
       
       case 'h': case '?':
         printf(
@@ -156,13 +168,14 @@ static void get_arguments(int argc, char **argv)
           "  -g  --debug                add debugging information\n"
           "  -v  --verbose              verbose output\n"
           "  -a  --all                  compile all\n"
-          "  -t  --trans                output translation files\n"
+          "  -t  --translate            output translation files\n"
           "  -p  --public-control       form controls are public\n"
           "  -m  --public-module        module symbols are public by default\n"
           "  -s  --swap                 swap endianness\n"
           "  -r  --root <directory>     gives the gambas installation directory\n"
           "  -V  --version              display version\n"
           "  -h  --help                 display this help\n"
+					"  -e  --translate-errors     display translatable error messages\n"
           #else
           " (no long options on this system)\n"
           "  -g                         add debugging information\n"
@@ -175,6 +188,7 @@ static void get_arguments(int argc, char **argv)
           "  -r <directory>             gives the gambas installation directory\n"
           "  -V                         display version\n"
           "  -h                         display this help\n"
+					"  -e                         display translatable error messages\n"
           #endif
           "\n"
           );
@@ -248,6 +262,8 @@ static void compile_file(const char *file)
   JOB->verbose = main_verbose;
   JOB->swap = main_swap;
   JOB->public_module = main_public_module;
+	JOB->trans_error = main_trans_error;
+	JOB->no_old_read_syntax = main_no_old_read_syntax;
   //JOB->class_file = main_class_file;
 
   if (JOB->verbose)

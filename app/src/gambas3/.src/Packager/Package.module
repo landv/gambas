@@ -1391,7 +1391,7 @@ Public Sub Process_Read()
   
   Dim sData As String
   
-  Read #Last, sData, -256
+  sData = Read #Last, -256
   $sOutput &= sData
   FMakeInstall.AddLog(sData, True)
   

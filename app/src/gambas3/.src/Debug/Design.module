@@ -119,7 +119,7 @@ Public Sub Process_Read()
 
   Dim sData As String
   
-  Read #Last, sData, -4096
+  sData = Read #Last, -4096
   Insert(sData)
   
 End
@@ -959,7 +959,7 @@ End
 Public Sub Send(sStr As String)
 
   If $iState <> STATE_RUNNING Then Return
-  Write #$hProcess, sStr, Len(sStr)
+  Write #$hProcess, sStr
 
 End
 

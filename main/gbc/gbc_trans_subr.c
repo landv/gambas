@@ -48,13 +48,13 @@ static void trans_subr(int subr, int nparam)
 {
   static TRANS_SUBR_INFO subr_info[] =
   {
-    { ".Print" }, { ".Input" }, { ".Write" }, { ".Read" },  { ".Open" },
-    { ".Close" }, { "Seek" }, { ".LineInput" }, { ".Flush" }, { ".Exec" },
-    { ".Shell" }, { ".Wait" }, { ".Kill" }, { ".Move" }, { ".Mkdir" },
-    { ".Rmdir" }, { ".Array" }, {".Collection" }, { ".Copy" }, { ".Link" }, 
-    { ".Error" }, { ".Lock" }, { ".Unlock" }, { ".InputFrom" }, { ".OutputTo" }, 
-    { ".Debug" }, { ".Sleep" }, { ".Randomize" }, { ".ErrorTo" }, { "Left" }, 
-    { "Mid" }, { ".OpenMemory" }
+    { ".Print" }, { ".Input" }, { ".Write" }, { ".WriteBytes" }, { ".Read" }, 
+		{ ".ReadBytes" }, { ".Open" },  { ".Close" }, { "Seek" }, { ".LineInput" }, 
+		{ ".Flush" }, { ".Exec" }, { ".Shell" }, { ".Wait" }, { ".Kill" }, 
+		{ ".Move" }, { ".Mkdir" }, { ".Rmdir" }, { ".Array" }, {".Collection" }, 
+		{ ".Copy" }, { ".Link" },  { ".Error" }, { ".Lock" }, { ".Unlock" }, 
+		{ ".InputFrom" }, { ".OutputTo" }, { ".Debug" }, { ".Sleep" }, { ".Randomize" }, 
+		{ ".ErrorTo" }, { "Left" }, { "Mid" }, { ".OpenMemory" }
   };
 
   TRANS_SUBR_INFO *tsi = &subr_info[subr];
@@ -70,25 +70,28 @@ static void trans_subr(int subr, int nparam)
 }
 
 
-static bool trans_stream(int default_stream)
+static bool trans_stream_check(int default_stream, bool check)
 {
   if (TRANS_is(RS_SHARP))
   {
     TRANS_expression(FALSE);
-
-    if (PATTERN_is(*JOB->current, RS_COMMA))
-    {
-      JOB->current++;
-      if (PATTERN_is_newline(*JOB->current))
-        THROW(E_SYNTAX);
-    }
-		else
+		
+		if (check)
 		{
-      if (!PATTERN_is_newline(*JOB->current))
-        THROW(E_SYNTAX);
+			if (PATTERN_is(*JOB->current, RS_COMMA))
+			{
+				JOB->current++;
+				if (PATTERN_is_newline(*JOB->current))
+					THROW(E_SYNTAX);
+			}
+			else
+			{
+				if (!PATTERN_is_newline(*JOB->current))
+					THROW(E_SYNTAX);
+			}
 		}
-
-    return FALSE;
+		
+		return FALSE;
   }
   else
   {
@@ -100,6 +103,8 @@ static bool trans_stream(int default_stream)
   }
 }
 
+#define trans_stream(_default_stream) trans_stream_check(_default_stream, TRUE)
+#define trans_stream_no_check(_default_stream) trans_stream_check(_default_stream, FALSE)
 
 static void trans_print_debug()
 {
@@ -148,8 +153,6 @@ static void trans_print_debug()
 }
 
 
-
-
 void TRANS_print(void)
 {
 	trans_stream(TS_STDOUT);
@@ -194,23 +197,81 @@ void TRANS_error(void)
 	}
 }
 
+static int trans_binary_type(void)
+{
+  int index;
+	bool string = FALSE;
+	int nparam = 0;
+
+  if (PATTERN_is_class(*JOB->current))
+  {
+    index = CLASS_add_class(JOB->class, PATTERN_index(*JOB->current));
+    if (PATTERN_is(JOB->current[1], RS_LSQR))
+    	index = CLASS_get_array_class(JOB->class, T_OBJECT, index);
+   	
+		CODE_push_class(index);
+  }
+  else if (PATTERN_is_type(*JOB->current))
+  {
+    if (PATTERN_is(JOB->current[1], RS_LSQR))
+		{
+			index = CLASS_get_array_class(JOB->class, RES_get_type(PATTERN_index(*JOB->current)), -1);
+			CODE_push_class(index);
+		}
+		else
+		{
+			index = RES_get_type(PATTERN_index(*JOB->current));
+			CODE_push_number(index);
+			string = (index == T_STRING);
+		}
+  }
+  else
+  	THROW(E_SYNTAX);
+
+  JOB->current++;
+	nparam++;
+
+	#if 0
+  if (TRANS_is(RS_LSQR))
+  {
+		TRANS_expression(FALSE);
+		nparam++;
+		TRANS_want(RS_RSQR, NULL);
+	}
+	else if (TRANS_is(RS_STAR))
+	{
+		if (!string)
+			THROW("Syntax error");
+		TRANS_expression(FALSE);
+		nparam++;
+	}
+	#endif
+	
+	return nparam;
+}
+
 
 void TRANS_write(void)
 {
-  int nparam = 1;
-
   trans_stream(TS_STDOUT);
 
   TRANS_expression(FALSE);
-  nparam++;
-
-  if (TRANS_is(RS_COMMA))
-  {
-    TRANS_expression(FALSE);
-    nparam++;
-  }
-
-  trans_subr(TS_SUBR_WRITE, nparam);
+	
+	if (TRANS_is(RS_AS))
+	{
+		trans_binary_type();
+		trans_subr(TS_SUBR_WRITE, 3);
+	}
+	else 
+	{
+		if (TRANS_is(RS_COMMA))
+			TRANS_expression(FALSE);
+		else
+			CODE_push_number(-1);
+		
+		trans_subr(TS_SUBR_WRITE_BYTES, 3);
+	}
+	
   CODE_drop();
 }
 
@@ -274,35 +335,57 @@ void TRANS_input(void)
   }
 }
 
+void TRANS_read_old(void)
+{
+	PATTERN *save_var;
+	PATTERN *save_current;
+	TYPE type;
+		
+	if (JOB->no_old_read_syntax)
+		THROW("Unexpected Read");
+	
+	trans_stream(TS_STDIN);
+	
+	save_var = JOB->current;
+	type = TRANS_variable_get_type();
+	
+	if (TRANS_is(RS_COMMA))
+	{
+		TRANS_expression(FALSE);
+		trans_subr(TS_SUBR_READ_BYTES, 2);
+	}
+	else
+	{
+		int id = TYPE_get_id(type);
+		
+		CODE_push_number(id);
+		trans_subr(TS_SUBR_READ, 2);
+	}
+	
+	save_current = JOB->current;
+	JOB->current = save_var;
+	TRANS_reference();
+	JOB->current = save_current;
+}
 
 void TRANS_read(void)
 {
-  int nparam = 2;
-  PATTERN *save_return;
-  PATTERN *save_current;
+	bool def = trans_stream_no_check(TS_STDIN);
 
-  trans_stream(TS_STDIN);
-
-  save_return = JOB->current;
-
-  TRANS_expression(FALSE);
-  /*trans_calc_type();*/
-
-  if (TRANS_is(RS_COMMA))
-  {
-    TRANS_expression(FALSE);
-    nparam++;
-  }
-
-  trans_subr(TS_SUBR_READ, nparam);
-
-  save_current = JOB->current;
-  JOB->current = save_return;
-  TRANS_reference();
-
-  JOB->current = save_current;
+	if (TRANS_is(RS_AS))
+	{
+		trans_binary_type();
+		trans_subr(TS_SUBR_READ, 2);
+	}
+	else
+	{
+		if (!def)
+			TRANS_want(RS_COMMA, NULL);
+		
+		TRANS_expression(FALSE);
+		trans_subr(TS_SUBR_READ_BYTES, 2);
+	}
 }
-
 
 void TRANS_open(void)
 {

@@ -229,3 +229,12 @@ __VARIANT:
 
 	return T_VARIANT;
 }
+
+TYPE SUBR_get_type(VALUE *param)
+{
+	if (param->type == T_INTEGER)
+		return (TYPE)param->_integer.value;
+	if (param->type == T_CLASS)
+		return (TYPE)param->_class.class;
+	THROW(E_ILLEGAL);
+}

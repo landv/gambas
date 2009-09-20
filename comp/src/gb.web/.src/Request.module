@@ -43,7 +43,7 @@ PRIVATE SUB ReadLine() AS String
       BREAK
     ENDIF
     
-    READ sData, Min(4096, $iMaxLength)
+    sData = Read Min(4096, $iMaxLength)
     $iMaxLength -= Len(sData)
     $sBuffer &= sData
     
@@ -130,7 +130,7 @@ PRIVATE SUB DecodeQueryForm()
   'DEBUG sType
   
   IF sType = "application/x-www-form-urlencoded" THEN 
-    READ sStr, $iMaxLength
+    sStr = READ $iMaxLength
     'LINE INPUT sStr
     DecodeURL(sStr, $cVal)
     RETURN

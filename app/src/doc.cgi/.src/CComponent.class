@@ -303,7 +303,7 @@ Public Sub Load()
   If Not Exist(sPath) And If Name Like "gb.qte*" Then 
     sPath = Main.InfoFilePath &/ Replace(Name, ".qte", ".qt") & ".info"
   Endif
-  Open sPath For Read As #hFile
+  hFile = Open sPath For Read
 
   Repeat
 

@@ -161,7 +161,7 @@ void TRANS_statement(void)
     { RS_PRINT, TRANS_print },
     { RS_INPUT, TRANS_input },
     { RS_WRITE, TRANS_write },
-    { RS_READ, TRANS_read },
+    { RS_READ, TRANS_read_old },
     //{ RS_OPEN, TRANS_open },
     { RS_CLOSE, TRANS_close },
     { RS_SEEK, TRANS_seek },

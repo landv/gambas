@@ -1665,7 +1665,7 @@ Public Sub Process_Read()
 
   Dim sLig As String
 
-  Read #Last, sLig, -4096
+  sLig = Read #Last, -4096
   Print sLig;
 
 End

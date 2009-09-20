@@ -43,12 +43,16 @@
 #define RSF_OP2S      0x61
 #define RSF_OP2SM     0xA1
 
-#define RSF_INF    0x0100
-#define RSF_ILF    0x0200
-#define RSF_ILD    0x0400
-#define RSF_ILT    0x0800
-#define RSF_ILE    0x1000
-#define RSF_IMASK  0xFF00
+enum
+{
+	RSF_INF    = 0x0100,
+	RSF_ILF    = 0x0200,   // last pattern waits for a function name
+	RSF_ILD    = 0x0400,   // last pattern waits for an identifier
+	RSF_ILDD   = 0x0800,   // last pattern waits for an identifier only if the previous one waits for an identifier  too
+	RSF_ILT    = 0x1000,   // last pattern waits for a datatype
+	RSF_ILE    = 0x2000,
+	RSF_IMASK  = 0xFF00
+};
 
 #define RES_is_operator(value) (COMP_res_info[value].flag & RSF_OP)
 #define RES_is_type(value) (COMP_res_info[value].flag & RSF_TYPE)

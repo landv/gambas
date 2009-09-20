@@ -194,7 +194,7 @@ Private Sub ReadConfiguration()
 
   Dim hFile As File
 
-  Open $sRoot &/ ".conf" For Read As #hFile
+  hFile = Open $sRoot &/ ".conf" For Read
   Line Input #hFile, $hConn.Type
   Line Input #hFile, $hConn.Login
   Line Input #hFile, $hConn.Password
@@ -431,6 +431,8 @@ Private Function GetLink(sPath As String, Optional sMyTitle As String, Optional 
   Dim sSuff As String
   Dim sPath2 As String
   Dim sTitle2 As String
+  Dim iPos As Integer
+  Dim sMoreSuff As String
 
   If sClass Then sClass = "class=\"" & sClass & "\" "
 
@@ -440,6 +442,12 @@ Private Function GetLink(sPath As String, Optional sMyTitle As String, Optional 
     Return "<a " & GetLinkClass(sClass, bLTR, sMyTitle) & "href=\"" & sPath & "\" target=\"_blank\">" & EncodeHTML(sMyTitle) & "</a>"
 
   Else
+
+    iPos = RInStr(sPath, "?")
+    If iPos Then
+      sMoreSuff = Mid$(sPath, iPos + 1)
+      sPath = Left(sPath, iPos - 1)
+    Endif
 
     If sPath Like (Replace($sPath, "[", "[[]") &/ "*") Then
       sRelPath = "." &/ Mid$(sPath, Len($sPath) + 1)
@@ -466,7 +474,7 @@ Private Function GetLink(sPath As String, Optional sMyTitle As String, Optional 
       sTitle = sMyTitle
     Endif
     
-    sSuff = $sLangSuff
+    sSuff = AddParam($sLangSuff, sMoreSuff)
     If IsComponentPath(sPath) Then 
       If $sVersion = "3.0" Then sSuff = AddParam(sSuff, "v3")
     Endif
@@ -776,6 +784,7 @@ Private Function Encode(sText As String) As String
   Dim sTitleIndexStamp As String
   Dim iTitleIndex As Integer
   Dim iTitleIndexStart As Integer
+  Dim iLastTitleLevel As Integer
   Dim iTitleLevel As Integer
 
   $sRes = ""
@@ -1207,7 +1216,15 @@ Private Function Encode(sText As String) As String
 
     If sTitle Then
       If bUseThisTitleForIndex Then
-        sTitleIndex &= String$(iTitleLevel, "&nbsp;&nbsp;") & "<a href=\"#t" & iTitleIndex & "\">" & Mid$($sRes, iTitleIndexStart + 1, Len($sRes) - iTitleIndexStart) & "</a><br>\n"
+        While iTitleLevel > iLastTitleLevel
+          sTitleIndex &= "<ul>\n"
+          Inc iLastTitleLevel
+        Wend
+        While iTitleLevel < iLastTitleLevel
+          sTitleIndex &= "</ul>\n"
+          Dec iLastTitleLevel
+        Wend
+        sTitleIndex &= "<li><a href=\"#t" & iTitleIndex & "\">" & Mid$($sRes, iTitleIndexStart + 1, Len($sRes) - iTitleIndexStart) & "</a></li>\n"
       Endif
       $sRes &= sTitle 
     Endif
@@ -1222,7 +1239,7 @@ BREAK_ALL:
   Wend
   
   If bTitleIndex Then
-    sTitleIndex = "<h2>" & ("Index") & "</h2>\n<p>" & sTitleIndex
+    sTitleIndex = "<div class=\"index-border\"><div class=\"index\"><div align=\"center\"><b>" & ("Contents") & "</b></div>\n" & sTitleIndex & "</div></div>"
     $sRes = Replace($sRes, sTitleIndexStamp, sTitleIndex)
   Endif
 
@@ -1657,12 +1674,12 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
   Endif
 
   If sWarn Then
-    Print "<br><div class=\"alert\"><font size=\"-1\">"
-    Print "<b>"; ("Warning!"); "&nbsp;"; sWarn; "</b>&nbsp;"
+    Print "<div class=\"alert\">"
+    Print "<b>"; ("Warning!"); "&nbsp;"; sWarn; "</b>"
     If Not $bWget Then
-      Print "<a href=\"/help" &/ $sPath & "?en\" target=\"_blank\">" & ("See english version") & "</a>&nbsp;"
+      Print "&nbsp;<a href=\"/help" &/ $sPath & "?en\" target=\"_blank\">" & ("See english version") & "</a>&nbsp;"
     Endif
-    Print "</font></div>"
+    Print "</div>"
   Endif
 
   If Not $bEdit Then
@@ -1848,7 +1865,7 @@ Private Sub DisplayPage()
   If Not $bRefresh Then
     rPage = DB.Find("page", "sPath = &1 AND sLang = &2", sPath, $sLang)
     rPageDef = DB.Find("page", "sPath = &1 AND sLang = &2", sPath, DEFAULT_LANG)
-    If rPage!bRefresh Then
+    If rPage.Available And If rPage!bRefresh Then
       bRefresh = True
     Endif
   Endif
@@ -1929,9 +1946,9 @@ Private Function MakePageWithoutHeader(rPage As Result) As String
 
   sFile = Temp$()
   Try Kill sFile
-  Try Open sFile For Create As #hFile
+  Try hFile = Open sFile For Create
   If Error Then
-    Open sFile For Create As #hFile
+    hFile = Open sFile For Create
   Endif
   Output To #hFile
 
@@ -3009,7 +3026,7 @@ Private Sub LoginPage()
 
   MakeHeader("Welcome")
 
-  Print "<h2>"; Subst(("Welcome back &1!"), $sUser); "</h2>"
+  'Print "<h2>"; Subst(("Welcome back &1!"), $sUser); "</h2>"
 
   MakeFooter
 
@@ -3148,6 +3165,8 @@ Private Sub DoAdminPage()
   Dim hProcess As Process
   Dim sSave As String
   Dim rPage As Result
+  Dim hConn As Connection
+  Dim rOther As Result
 
   cForm = GetForm()
 
@@ -3223,11 +3242,40 @@ Private Sub DoAdminPage()
     DB.Begin
     rPage = DB.Edit("page")
     While rPage.Available
-      rPage!bRefresh = True
-      rPage.Update
+      If Left(File.Name(rPage!sPath)) <> ":" Then
+        rPage!bRefresh = True
+        rPage.Update
+      Endif
       rPage.MoveNext
     Wend
     DB.Commit
+
+    ' hConn = New Connection
+    ' hConn.Type = $hConn.Type
+    ' hConn.Login = $hConn.Login
+    ' hConn.Name = "gambas2"
+    ' hConn.Password = $hConn.Password
+    ' hConn.Open
+    ' 
+    ' $hConn.Begin
+    ' rPage = $hConn.Edit("page")
+    ' While rPage.Available
+    '   If Left(File.Name(rPage!sPath)) = ":" Then
+    '     If rPage!sData.Length = 0 Then
+    '       rOther = hConn.Find("page", "sPath = &1 AND sLang = &2", rPage!sPath, rPage!sLang)
+    '       If rOther.Available Then
+    '         rPage!sData = rOther!sData.Data
+    '         rPage.Update
+    '       Endif
+    '     Endif
+    '   Endif
+    '   rPage.MoveNext
+    ' Wend
+    ' $hConn.Commit
+    ' 
+    ' hConn.Close
+
+    MakeHeader(("Clear page cache"))
     Print "<p>"; ("The page cache has been cleared.")
     
   Endif
@@ -3381,6 +3429,8 @@ Private Sub UCaseTitle(sTitle As String) As String
   Dim sRes As String
   Dim sCar As String
   Dim bLastLetter As Boolean
+  
+  If String.UCase(String.Left(sTitle)) = String.Left(sTitle) Then Return sTitle
   
   If $sLang <> "en" Then Return String.UCase(String.Left(sTitle)) & String.Mid$(sTitle, 2)
   
@@ -4041,7 +4091,7 @@ Private Function GetOldData(sOld As String) As String
 
   If Exist(sOld) Then
 
-    Open sOld For Read As #hFic
+    hFic = Open sOld For Read
 
     While Not Eof(hFic)
 
