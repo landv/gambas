@@ -267,7 +267,11 @@ void TRANS_write(void)
 		if (TRANS_is(RS_COMMA))
 			TRANS_expression(FALSE);
 		else
+		{
+			if (JOB->no_old_read_syntax)
+				THROW("Syntax error. As expected");
 			CODE_push_number(-1);
+		}
 		
 		trans_subr(TS_SUBR_WRITE_BYTES, 3);
 	}

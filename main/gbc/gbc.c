@@ -71,7 +71,7 @@ static struct option Long_options[] =
   { "root", 1, NULL, 'r' },
   { "all", 0, NULL, 'a' },
 	{ "translate-errors", 0, NULL, 'e' },
-	{ "no-old-read-syntax", 0, NULL, 1 },
+	{ "no-old-read-write-syntax", 0, NULL, 1 },
   { 0 }
 };
 #endif
