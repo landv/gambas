@@ -83,7 +83,6 @@ static bool main_trans = FALSE;
 static bool main_public = FALSE;
 static bool main_public_module = FALSE;
 static bool main_swap = FALSE;
-static bool main_trans_error = FALSE;
 static bool main_no_old_read_syntax = FALSE;
 //static char *main_class_file = NULL;
 
@@ -149,7 +148,7 @@ static void get_arguments(int argc, char **argv)
         break;
 				
 			case 'e':
-				main_trans_error = TRUE;
+				ERROR_translate = TRUE;
 				break;
 				
 			case 1:
@@ -262,7 +261,6 @@ static void compile_file(const char *file)
   JOB->verbose = main_verbose;
   JOB->swap = main_swap;
   JOB->public_module = main_public_module;
-	JOB->trans_error = main_trans_error;
 	JOB->no_old_read_syntax = main_no_old_read_syntax;
   //JOB->class_file = main_class_file;
 

@@ -476,7 +476,7 @@ void TRANS_new(void)
           break;
 
         if (!PATTERN_is(*JOB->current, RS_COMMA))
-          THROW("Missing ']'");
+          THROW(E_MISSING, "']'");
 
         JOB->current++;
       }
@@ -504,7 +504,7 @@ void TRANS_new(void)
           break;
 
         if (!PATTERN_is(*JOB->current, RS_COMMA))
-          THROW("Missing ')'");
+          THROW(E_MISSING, "')'");
 
         JOB->current++;
       }

@@ -275,7 +275,7 @@ static void analyze_make_array()
     if (collection)
     {
     	if (!PATTERN_is(*current, RS_COLON))
-    		THROW("Missing ':'");
+    		THROW(E_MISSING, "':'");
 			current++;
 			n++;
 			if (n > MAX_PARAM_OP)
@@ -289,7 +289,7 @@ static void analyze_make_array()
   }
 
   if (!PATTERN_is(*current, RS_RSQR))
-    THROW("Missing ']'");
+    THROW(E_MISSING, "']'");
   current++;
 
   add_operator(collection ? RS_COLON : RS_RSQR, n);
@@ -325,7 +325,7 @@ static void analyze_single(int op)
     analyze_expr(0, RS_NONE);
 
     if (!PATTERN_is(*current, RS_RBRA))
-      THROW("Missing ')'");
+      THROW(E_MISSING, "')'");
     current++;
 
     if (tree_length == (old_length + 1))
@@ -467,7 +467,7 @@ static void analyze_call()
 			if (nparam_post > 0)
 			{
 				if (!PATTERN_is(*current, RS_COMMA))
-					THROW("Missing ',' or ')'");
+					THROW(E_MISSING, "',' or ')'");
 				current++;
 			}
 	
@@ -575,7 +575,7 @@ static void analyze_array()
   }
 
   if (!PATTERN_is(*current, RS_RSQR))
-    THROW("Missing comma or ']'");
+		THROW(E_MISSING, "',' or ')'");
   current++;
 
   add_operator(RS_LSQR, i + 2);

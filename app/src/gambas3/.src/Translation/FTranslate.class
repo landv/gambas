@@ -1246,8 +1246,6 @@ Private Sub ShiftToSort(Optional sSortText As String)
     
   End With
   
-  ResizeTable
-  
   Try cvwTranslate.MoveTo(sLastKey)
   If Not cvwTranslate.Available Then 
     cvwTranslate.MoveFirst
@@ -1255,6 +1253,7 @@ Private Sub ShiftToSort(Optional sSortText As String)
   cvwTranslate.item.Selected = True
   cvwTranslate.Item.EnsureVisible()
   DisplayTrans
+  ResizeTable  
   
 End
 

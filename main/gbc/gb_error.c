@@ -30,7 +30,7 @@
 
 
 ERROR_INFO ERROR_info;
-
+bool ERROR_translate = FALSE;
 
 static const char *_message[] =
 {
@@ -40,6 +40,9 @@ static const char *_message[] =
   /*  3 E_READ */ "Cannot read file: &1",
   /*  4 E_SYNTAX */ "Syntax error",
   /*  5 E_UNEXPECTED */ "Unexpected &1",
+	/*  6 E_EXPECTED */ "&1 expected",
+	/*  7 E_MISSING */ "Missing &1",
+	/*  8 E_SYNTAX_MISSING */ "Syntax error. Missing &1",
   NULL
 };
 
@@ -80,7 +83,7 @@ char *ERROR_get(void)
 
 void ERROR_define(const char *pattern, const char *arg[])
 {
-  int n;
+  int i, n;
   uchar c;
   bool subst;
 
@@ -111,40 +114,70 @@ void ERROR_define(const char *pattern, const char *arg[])
 
   n = 0;
 
-  if (arg)
-  {
-    subst = FALSE;
+	subst = FALSE;
 
-    for (;;)
-    {
-      c = *pattern++;
-      if (c == 0)
-        break;
+	if (ERROR_translate)
+	{
+		int nsubst = 0;
+		
+		_add_string(pattern);
 
-      if (subst)
-      {
-        if (c >= '1' && c <= '4')
-          _add_string(arg[c - '1']);
-        else
-        {
-          _add_char('&');
-          _add_char(c);
-        }
-        subst = FALSE;
-      }
-      else
-      {
-        if (c == '&')
-          subst = TRUE;
-        else
-          _add_char(c);
-      }
-    }
-  }
-  else
-  {
-    _add_string(pattern);
-  }
+		for (;;)
+		{
+			c = *pattern++;
+			if (c == 0)
+				break;
+
+			if (subst)
+			{
+				if (c >= '1' && c <= '4')
+				{
+					c -= '0';
+					if (c > nsubst) nsubst = c;
+				}
+				subst = FALSE;
+			}
+			else
+			{
+				if (c == '&')
+					subst = TRUE;
+			}
+		}
+		
+		for (i = 0; i < nsubst; i++)
+		{
+			_add_char('\t');
+			_add_string(arg[i]);
+		}
+	}
+	else
+	{
+		for (;;)
+		{
+			c = *pattern++;
+			if (c == 0)
+				break;
+
+			if (subst)
+			{
+				if (c >= '1' && c <= '4')
+					_add_string(arg[c - '1']);
+				else
+				{
+					_add_char('&');
+					_add_char(c);
+				}
+				subst = FALSE;
+			}
+			else
+			{
+				if (c == '&')
+					subst = TRUE;
+				else
+					_add_char(c);
+			}
+		}
+	}
 
   _add_char(0);
 }

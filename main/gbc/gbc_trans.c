@@ -283,13 +283,13 @@ static PATTERN *trans_square(PATTERN *look, int mode, TRANS_DECL *result)
         break;
 
       if (!PATTERN_is(*look, RS_COMMA))
-        THROW("Missing comma");
+        THROW(E_MISSING, "','");
       look++;
     }
   }
 
   if (!PATTERN_is(*look, RS_RSQR))
-    THROW("Missing ']'");
+    THROW(E_MISSING, "']'");
 
   look++;
   return look;
@@ -356,7 +356,7 @@ bool TRANS_type(int mode, TRANS_DECL *result)
     if (mode & TT_DO_NOT_CHECK_AS)
       return FALSE;
     else
-      THROW("Missing AS");
+      THROW(E_MISSING, "AS");
   }
 
   look++;
@@ -634,10 +634,18 @@ char *TRANS_get_num_desc(int num)
   if (num < 1)
     return NULL;
 
-  if (num < 4)
-    return (char *)num_desc[num - 1];
+	if (ERROR_translate)
+	{
+		snprintf(desc, sizeof(desc), "#%d", num);
+	}
+	else
+	{
+		if (num < 4)
+			return (char *)num_desc[num - 1];
 
-  snprintf(desc, sizeof(desc), "%dth", num);
+		snprintf(desc, sizeof(desc), "%dth", num);
+	}
+	
   return desc;
 }
 

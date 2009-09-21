@@ -84,7 +84,7 @@ static void analyze_function_desc(TRANS_FUNC *func, int flag)
     if (func->nparam > 0)
     {
       if (!PATTERN_is(*look, RS_COMMA))
-        THROW("Syntax error. Missing ',' or ')'");
+        THROW(E_SYNTAX_MISSING, "',' or ')'");
       look++;
     }
 
@@ -341,7 +341,7 @@ static bool header_extern(TRANS_EXTERN *trans)
   else
   {
     if (JOB->default_library == NO_SYMBOL)
-      THROW("IN missing");
+      THROW(E_MISSING, "IN");
 
     index = JOB->default_library;
   }
@@ -463,7 +463,7 @@ static bool header_declaration(TRANS_DECL *decl)
   if (is_const)
   {
     if (!decl->init)
-      THROW("Syntax error. Missing '='");
+      THROW(E_SYNTAX_MISSING, "'='");
 
     JOB->current = decl->init;
 		JOB->current = TRANS_get_constant_value(decl, JOB->current);
@@ -634,7 +634,7 @@ static bool header_function(TRANS_FUNC *func)
     pat = *JOB->current;
     if (PATTERN_is_end(pat) || PATTERN_is_command(pat))
     {
-      THROW("Missing End");
+      THROW(E_MISSING, "END");
     }
 
     if (PATTERN_is_newline(pat))
@@ -656,9 +656,9 @@ static bool header_function(TRANS_FUNC *func)
 				else
 				{
 					if (is_proc && PATTERN_is(JOB->current[2], RS_FUNCTION))
-						THROW("End Sub expected");
+						THROW(E_EXPECTED, "END SUB");
 					else if (!is_proc && PATTERN_is(JOB->current[2], RS_SUB))
-						THROW("End Function expected");
+						THROW(E_EXPECTED, "END FUNCTION");
 				}
       }
 		}
@@ -681,13 +681,13 @@ static bool header_structure(TRANS_STRUCTURE *structure)
   JOB->current++;
   
   if (!PATTERN_is_identifier(*JOB->current))
-  	THROW("Syntax error. STRUCT needs an identifier");
+  	THROW ("Syntax error. STRUCT needs an identifier");
 
   structure->index = PATTERN_index(*JOB->current);
   JOB->current++;
 	
   if (!TRANS_newline())
-    THROW("Syntax error at structure declaration");
+    THROW ("Syntax error at structure declaration");
 	
 	structure->nfield = 0;
 	
@@ -696,41 +696,41 @@ static bool header_structure(TRANS_STRUCTURE *structure)
 		do
 		{
 	    if (PATTERN_is_end(*JOB->current) || PATTERN_is_command(*JOB->current))
-  	    THROW("Missing END STRUCT");
+  	    THROW ("Missing END STRUCT");
 		}
 		while (TRANS_newline());
 		
 		if (PATTERN_is(*JOB->current, RS_END) && PATTERN_is(JOB->current[1], RS_STRUCT))
 		{
   	  if (structure->nfield == 0)
-  	  	THROW("Syntax error. A structure must have one field at least.");
+  	  	THROW ("Syntax error. A structure must have one field at least.");
   	  	
 			JOB->current += 2;
 	    
 	    if (!TRANS_newline())
-  	  	THROW("Syntax error. End of line expected.");
+  	  	THROW ("Syntax error. End of line expected.");
   	  	
   	  break;
 		}
 		
 		if (structure->nfield >= MAX_STRUCT_FIELD)
-			THROW("Too many fields in structure declaration.");
+			THROW ("Too many fields in structure declaration.");
     
     field = &structure->field[structure->nfield];
     
     if (!PATTERN_is_identifier(*JOB->current))
-      THROW("Syntax error. The &1 field is not a valid identifier", TRANS_get_num_desc(structure->nfield + 1));
+      THROW ("Syntax error. The &1 field is not a valid identifier", TRANS_get_num_desc(structure->nfield + 1));
 
     field->index = PATTERN_index(*JOB->current);
     JOB->current++;
 
     if (!TRANS_type(TT_NOTHING, &ttyp))
-      THROW("Syntax error. Invalid type description of &1 field", TRANS_get_num_desc(structure->nfield + 1));
+      THROW ("Syntax error. Invalid type description of &1 field", TRANS_get_num_desc(structure->nfield + 1));
 
     field->type = ttyp.type;
     
     if (!TRANS_newline())
-    	THROW("Syntax error. End of line expected.");
+    	THROW ("Syntax error. End of line expected.");
     
 		structure->nfield++;
 	}
@@ -756,7 +756,7 @@ static bool header_inherits(void)
   JOB->current++;
 
   if (!PATTERN_is_class(*JOB->current))
-    THROW("Syntax error. Inherits needs a class name");
+    THROW("Syntax error. INHERITS needs a class name");
 
   if (JOB->class->parent != NO_SYMBOL)
     THROW("Cannot inherit twice");

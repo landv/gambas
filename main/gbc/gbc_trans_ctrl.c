@@ -248,7 +248,7 @@ static void control_check(int type, const char *msg1, const char *msg2)
     THROW(msg1);
 
   if (current_ctrl->type != type)
-    THROW(msg2);
+    THROW(E_UNEXPECTED, msg2);
 }
 
 static void control_check_two(int type1, int type2, const char *msg1, const char *msg2)
@@ -257,7 +257,7 @@ static void control_check_two(int type1, int type2, const char *msg1, const char
     THROW(msg1);
 
   if (current_ctrl->type != type1 && current_ctrl->type != type2)
-    THROW(msg2);
+    THROW(E_UNEXPECTED, msg2);
 }
 
 static void control_check_loop_var(short var)
@@ -361,20 +361,20 @@ void TRANS_control_exit()
   switch (ctrl_data[ctrl_level - 1].type)
   {
     case RS_IF:
-      THROW("ENDIF missing");
+      THROW(E_MISSING, "ENDIF");
     case RS_FOR:
     case RS_EACH:
-      THROW("NEXT missing");
+      THROW(E_MISSING, "NEXT");
     case RS_DO:
-      THROW("LOOP missing");
+      THROW(E_MISSING, "LOOP");
     case RS_REPEAT:
-      THROW("UNTIL missing");
+      THROW(E_MISSING, "UNTIL");
     case RS_WHILE:
-      THROW("WEND missing");
+      THROW(E_MISSING, "WEND");
     case RS_SELECT:
-      THROW("END SELECT missing");
+      THROW(E_MISSING, "END SELECT");
     case RS_WITH:
-      THROW("END WITH missing");
+      THROW(E_MISSING, "END WITH");
   }
 }
 
@@ -501,7 +501,7 @@ static void trans_if(void)
   if (PATTERN_is(*JOB->current, RS_THEN))
   	JOB->current++;
 	else if (!PATTERN_is_newline(*JOB->current))
-    THROW("Syntax error. THEN expected");
+    THROW(E_EXPECTED, "THEN");
 
   /*control_set_value(CODE_get_current_pos());
   CODE_jump_if_false();*/
@@ -532,10 +532,10 @@ void TRANS_if()
 
 void TRANS_else()
 {
-  control_check(RS_IF, "ELSE without IF", "Unexpected ELSE");
+  control_check(RS_IF, "ELSE without IF", "ELSE");
 
   if (current_ctrl->state)
-    THROW("Unexpected ELSE");
+    THROW(E_UNEXPECTED, "ELSE");
 
   if (TRANS_is(RS_IF))
     trans_else_if();
@@ -546,7 +546,7 @@ void TRANS_else()
 
 void TRANS_endif()
 {
-  control_check(RS_IF, "ENDIF without IF", "Unexpected ENDIF");
+  control_check(RS_IF, "ENDIF without IF", "ENDIF");
   trans_endif();
   control_leave();
 }
@@ -606,11 +606,11 @@ void TRANS_loop(PATTERN type)
   bool is_until;
 
   if (type == RS_LOOP)
-    control_check(RS_DO, "LOOP without DO", "Unexpected LOOP");
+    control_check(RS_DO, "LOOP without DO", "LOOP");
   else if (type == RS_UNTIL)
-    control_check(RS_REPEAT, "UNTIL without REPEAT", "Unexpected UNTIL");
+    control_check(RS_REPEAT, "UNTIL without REPEAT", "UNTIL");
   else if (type == RS_WEND)
-    control_check(RS_WHILE, "WEND without WHILE", "Unexpected WEND");
+    control_check(RS_WHILE, "WEND without WHILE", "WEND");
 
   control_jump_each_pos_with(current_ctrl->pos_continue);
 
@@ -682,7 +682,7 @@ void TRANS_case(void)
   short pos;
   short local;
 
-  control_check(RS_SELECT, "CASE without SELECT", "Unexpected CASE");
+  control_check(RS_SELECT, "CASE without SELECT", "CASE");
 
 	trans_select_break(FALSE);
 
@@ -738,7 +738,7 @@ void TRANS_case(void)
 
 void TRANS_default(void)
 {
-  control_check(RS_SELECT, "DEFAULT without SELECT", "Unexpected DEFAULT");
+  control_check(RS_SELECT, "DEFAULT without SELECT", "DEFAULT");
 
   trans_select_break(FALSE);
 
@@ -748,7 +748,7 @@ void TRANS_default(void)
 
 void TRANS_end_select(void)
 {
-  control_check(RS_SELECT, "END SELECT without SELECT", "Unexpected END SELECT");
+  control_check(RS_SELECT, "END SELECT without SELECT", "END SELECT");
 
   /*
   if (current_ctrl->value)
@@ -768,7 +768,7 @@ void TRANS_break(void)
   TRANS_CTRL *ctrl_inner = control_get_inner();
 
   if (!ctrl_inner)
-    THROW("Unexpected BREAK");
+    THROW(E_UNEXPECTED, "BREAK");
 
   control_add_pos(&ctrl_inner->pos_break, CODE_get_current_pos());
   CODE_jump();
@@ -780,7 +780,7 @@ void TRANS_continue(void)
   TRANS_CTRL *ctrl_inner = control_get_inner();
 
   if (!ctrl_inner)
-    THROW("Unexpected CONTINUE");
+    THROW(E_UNEXPECTED, "CONTINUE");
 
   control_add_pos(&ctrl_inner->pos_continue, CODE_get_current_pos());
   CODE_jump();
@@ -925,7 +925,7 @@ void TRANS_next(void)
 {
   ushort pos;
 
-  control_check_two(RS_FOR, RS_EACH, "`Next' without `For'", "Unexpected `Next'");
+  control_check_two(RS_FOR, RS_EACH, "NEXT without FOR", "NEXT");
 
   /*
   if (current_ctrl->type == RS_FOR)
@@ -983,7 +983,7 @@ void TRANS_finally(void)
   if ((JOB->func->finally != 0)
       || (JOB->func->catch != 0)
       || (pos == 0))
-    THROW("Unexpected FINALLY");
+    THROW(E_UNEXPECTED, "FINALLY");
 
   JOB->func->finally = pos;
 }
@@ -995,7 +995,7 @@ void TRANS_catch(void)
 
   if ((JOB->func->catch != 0)
       || (pos == 0))
-    THROW("Unexpected CATCH");
+    THROW(E_UNEXPECTED, "CATCH");
 
   CODE_catch();
 
@@ -1051,7 +1051,7 @@ void TRANS_use_with(void)
   TRANS_CTRL *ctrl_inner = control_get_inner_with();
 
   if (ctrl_inner == NULL)
-    THROW("Syntax Error. Point syntax used outside of WITH / END WITH");
+    THROW("Syntax error. Point syntax used outside of WITH / END WITH");
 
   CODE_push_local(ctrl_inner->local);
 }
@@ -1059,7 +1059,7 @@ void TRANS_use_with(void)
 
 void TRANS_end_with(void)
 {
-  control_check(RS_WITH, "END WITH without WITH", "Unexpected END WITH");
+  control_check(RS_WITH, "END WITH without WITH", "END WITH");
 
   control_leave();
 }

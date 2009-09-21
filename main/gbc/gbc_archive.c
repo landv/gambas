@@ -211,7 +211,7 @@ static void compress_file_name(const char *src, int lsrc, char **dst, int *ldst)
 	  if (!TABLE_find_symbol(arch_table, tpath, p - tpath, (SYMBOL **)(void *)&sym, &ind))
 	  {
 	  	*p = 0;
-	  	THROW("&1: not in archive!\n", tpath);
+	  	THROW("&1: not in archive", tpath);
 		}
 	
 		len = snprintf(tpath2, sizeof(tpath2), "/%d:%s", ind, p + 1);
@@ -307,7 +307,7 @@ int ARCH_add_file(const char *path)
 
   file = fopen(path, "r");
   if (file == NULL)
-    THROW("Cannot open file '&1'", path);
+    THROW("Cannot open file: &1", path);
 
   fstat(fileno(file), &info);
 
@@ -333,7 +333,7 @@ int ARCH_add_file(const char *path)
 			if (len_read < sizeof(arch_buffer))
 			{
 				if (ferror(file))
-					THROW("Cannot read file '&1': &2", path, strerror(errno));
+					THROW("Cannot read file: &1: &2", path, strerror(errno));
 				else
 					break;
 			}

@@ -96,7 +96,7 @@ static bool trans_stream_check(int default_stream, bool check)
   else
   {
     if (default_stream == TS_NONE)
-      THROW("Syntax error. '#' expected");
+      THROW("Syntax error. &1 expected", "'#'");
 
     CODE_push_number(default_stream);
     return TRUE;
@@ -269,7 +269,7 @@ void TRANS_write(void)
 		else
 		{
 			if (JOB->no_old_read_syntax)
-				THROW("Syntax error. As expected");
+				THROW("Syntax error. &1 expected", "AS");
 			CODE_push_number(-1);
 		}
 		
@@ -346,7 +346,7 @@ void TRANS_read_old(void)
 	TYPE type;
 		
 	if (JOB->no_old_read_syntax)
-		THROW("Unexpected Read");
+		THROW(E_UNEXPECTED, "READ");
 	
 	trans_stream(TS_STDIN);
 	
@@ -656,7 +656,7 @@ static void trans_exec_shell(bool shell)
   else if (TRANS_is(RS_TO))
   {
     if (TRANS_in_affectation)
-      THROW("Syntax error. Cannot use this syntax in affectation.");
+      THROW("Syntax error. Cannot use this syntax in assignment");
 
     mode = TS_EXEC_STRING;
     wait = TRUE;

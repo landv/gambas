@@ -1568,6 +1568,7 @@ Private Sub CompileError(sMsg As String)
   Dim iLine As Integer
   Dim hForm As FEditor
   Dim sErr As String
+  Dim aErr As String[]
 
   iPos = RInStr(sMsg, "\n")
   If iPos Then sMsg = Mid$(sMsg, iPos + 1)
@@ -1595,6 +1596,22 @@ Private Sub CompileError(sMsg As String)
     hForm = OpenFile($cSourceDir[File.Name(sFile)], iLine)
   
     sErr = Trim(Mid$(sMsg, iPos + 1))
+    aErr = Split(sErr, "\t")
+    aErr.Resize(5)
+    If Left(aErr[1]) = "#" Then
+      Select CInt(Mid$(aErr[1], 2))
+        Case 1
+          aErr[1] = ("first")
+        Case 2
+          aErr[2] = ("second")
+        Case 3
+          aErr[1] = ("third")
+        Default
+          aErr[1] = Subst(("&1th"), Mid$(aErr[1], 2))
+      End Select
+    Endif
+    sErr = Subst(Tr$(aErr[0]), aErr[1], aErr[2], aErr[3], aErr[4])
+
     If hForm And If iLine >= hForm.Editor.Lines.Count Then
       SetMessage(File.BaseName(sFile) & ": " & sErr & " " & ("in form definition"))
       sMsg = "<b>" & sErr & "</b><p>" & ("in form definition")
@@ -1700,7 +1717,7 @@ Public Function GetCompileCommand(bAll As Boolean, bNoDebug As Boolean, bIDE As 
 
   Dim sExec As String
 
-  sExec = System.Path &/ "bin/gbc" & System.Version & " "
+  sExec = System.Path &/ "bin/gbc" & System.Version & " -e "
   If bAll Then sExec &= "-a "
   If Not bNoDebug Then sExec &= "-g "
   If Localize Then sExec &= "-t "

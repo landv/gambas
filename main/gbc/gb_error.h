@@ -28,12 +28,15 @@
 
 #include "gb_limit.h"
 
-#define E_UNKNOWN     ((const char *)0)
-#define E_MEMORY      ((const char *)1)
-#define E_OPEN        ((const char *)2)
-#define E_READ        ((const char *)3)
-#define E_SYNTAX      ((const char *)4)
-#define E_UNEXPECTED  ((const char *)5)
+#define E_UNKNOWN            ((const char *)0)
+#define E_MEMORY             ((const char *)1)
+#define E_OPEN               ((const char *)2)
+#define E_READ               ((const char *)3)
+#define E_SYNTAX             ((const char *)4)
+#define E_UNEXPECTED         ((const char *)5)
+#define E_EXPECTED           ((const char *)6)
+#define E_MISSING            ((const char *)7)
+#define E_SYNTAX_MISSING     ((const char *)8)
 
 typedef
   struct {
@@ -52,6 +55,7 @@ typedef
 
 #ifndef __GB_ERROR_C
 EXTERN ERROR_INFO ERROR_info;
+EXTERN bool ERROR_translate;
 #endif
 
 

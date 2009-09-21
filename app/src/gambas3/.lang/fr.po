@@ -555,7 +555,7 @@ msgstr "État"
 msgid "Reports"
 msgstr "États"
 
-#: Design.module:205 Project.module:1603
+#: Design.module:205 Project.module:1620
 msgid "In class &1 at line &2."
 msgstr "Dans la classe &1 à la ligne &2."
 
@@ -2540,7 +2540,7 @@ msgstr "Ouvrir un projet"
 msgid "Save project"
 msgstr "Enregistrer le projet"
 
-#: FMain.class:2369 Project.module:1902
+#: FMain.class:2369 Project.module:1919
 msgid "Save project as"
 msgstr "Enregistrer le projet sous"
 
@@ -2701,7 +2701,7 @@ msgid "Please enter your e-mail address."
 msgstr "Veuillez saisir votre adresse e-mail."
 
 #: FMakeInstall.class:309 FPropertyProject.class:1239 FSave.class:111
-#: Project.module:2526
+#: Project.module:2543
 msgid "Continue"
 msgstr "Continuer"
 
@@ -4111,6 +4111,495 @@ msgstr "Inconnu"
 msgid "Cannot create table '&1'."
 msgstr "Impossible de créer la table « &1 »."
 
+#: MErrorMessage.module:4
+msgid "&1 cannot be static"
+msgstr "&1 ne peut pas être statique"
+
+#: MErrorMessage.module:5
+msgid "&1 declaration does not match"
+msgstr "La déclaration de &1 ne correspond pas"
+
+#: MErrorMessage.module:6
+msgid "&1 expected"
+msgstr "&1 attendu"
+
+#: MErrorMessage.module:7
+msgid "&1 is declared but is not a function"
+msgstr "&1 est déclaré mais n'est pas une fonction"
+
+#: MErrorMessage.module:8
+msgid "&1 is not declared"
+msgstr "&1 n'est pas déclaré"
+
+#: MErrorMessage.module:9
+msgid "&1 must be static"
+msgstr "&1 doit être statique"
+
+#: MErrorMessage.module:10
+msgid "&1: not in archive"
+msgstr "&1: introuvable dans l'archive"
+
+#: MErrorMessage.module:11
+msgid "&1: syntax error"
+msgstr "&1: erreur de syntaxe"
+
+#: MErrorMessage.module:12
+msgid "&1: syntax error in form file"
+msgstr "&1: erreur de syntaxe dans le fichier formulaire"
+
+#: MErrorMessage.module:13
+msgid "&1: too many nested containers"
+msgstr "&1: trop de conteneurs imbriqués"
+
+#: MErrorMessage.module:14
+msgid "'&1' already declared"
+msgstr "'&1' est déjà déclaré"
+
+#: MErrorMessage.module:15
+msgid "A module cannot raise events"
+msgstr "Un module ne peut pas émettre d'evènements"
+
+#: MErrorMessage.module:16
+msgid "A property implementation cannot be public"
+msgstr "Une implémentation de propriété ne peut pas être publique"
+
+#: MErrorMessage.module:17
+msgid "A property must be public"
+msgstr "Une propriété doit être publique"
+
+#: MErrorMessage.module:18
+msgid "Alias name must be a string"
+msgstr "L'alias doit être une chaîne de caractères"
+
+#: MErrorMessage.module:19
+msgid "Ambiguous expression. Please use brackets"
+msgstr "Expression ambigüe. Veuillez utiliser des parenthèses"
+
+#: MErrorMessage.module:20
+msgid "Array declaration is forbidden with typed collection"
+msgstr "La déclaration de tableaux est interdite avec les collection typées"
+
+#: MErrorMessage.module:21
+msgid "Arrays are forbidden here"
+msgstr "Impossible d'utiliser les tableaux ici"
+
+#: MErrorMessage.module:22
+msgid "Bad character constant in string"
+msgstr "Constante de caractère incorrecte au sein de la chaîne"
+
+#: MErrorMessage.module:23
+msgid "Bad constant type"
+msgstr "Type de constante incorrect"
+
+#: MErrorMessage.module:24
+msgid "Bad form file version"
+msgstr "Format du fichier de formulaire incorrect"
+
+#: MErrorMessage.module:25
+msgid "Bad subscript range"
+msgstr "Index de tableau incorrect"
+
+#: MErrorMessage.module:26
+msgid "Cannot create .startup file"
+msgstr "Impossible de créer le fichier .startup"
+
+#: MErrorMessage.module:27
+msgid "Cannot create action file: &1"
+msgstr "Impossible de créer le fichier des actions: &1"
+
+#: MErrorMessage.module:28
+msgid "Cannot create class information: &1: &2"
+msgstr "Impossible de créer le fichier des informations sur la classe: &1: &2"
+
+#: MErrorMessage.module:29
+msgid "Cannot create file: &1"
+msgstr "Impossible de créer le fichier: &1"
+
+#: MErrorMessage.module:30
+msgid "Cannot create temporary archive file: &1"
+msgstr "Impossible de créer le fichier d'archive temporaire: &1"
+
+#: MErrorMessage.module:31
+msgid "Cannot inherit twice"
+msgstr "Impossible d'hériter deux fois"
+
+#: MErrorMessage.module:32
+msgid "Cannot instanciate native types"
+msgstr "Impossible d'instancier les types natifs"
+
+#: MErrorMessage.module:33
+msgid "Cannot make executable: &1"
+msgstr "Impossible de créer l'exécutable: &1"
+
+#: MErrorMessage.module:34
+msgid "Cannot mix NEW and array declaration"
+msgstr "Impossible de mélanger NEW et la déclaration de tableau"
+
+#: MErrorMessage.module:35
+msgid "Cannot open file: &1"
+msgstr "Imposible d'ouvrir le fichier: &1"
+
+#: MErrorMessage.module:36
+msgid "Cannot raise events in static function"
+msgstr "Impossible d'émettre des évènements depuis une fonction statique"
+
+#: MErrorMessage.module:37
+msgid "Cannot read file: &1"
+msgstr "Impossible de lire le fichier: &1"
+
+#: MErrorMessage.module:38
+msgid "Cannot read file: &1: &2"
+msgstr "Impossible de lire le fichier: &1: &2"
+
+#: MErrorMessage.module:39
+msgid "Cannot set file owner: &1: &2"
+msgstr "Impossible de changer le propriétaire du fichier: &1: &2"
+
+#: MErrorMessage.module:40
+msgid "Cannot use NEW operator there"
+msgstr "Impossible d'utiliser l'opérateur NEW ici"
+
+#: MErrorMessage.module:41
+msgid "Cannot use TRY twice"
+msgstr "Impossible d'utiliser TRY deux fois"
+
+#: MErrorMessage.module:42
+msgid "Dynamic symbols cannot be used in static function"
+msgstr "Les symbols dynamiques ne peuvent être utilisées au sein d'une fonction statique"
+
+#: MErrorMessage.module:43
+msgid "Expression too complex"
+msgstr "Expression trop complexe"
+
+#: MErrorMessage.module:44
+msgid "Expression too complex. Too many operands"
+msgstr "Expression trop complexe. Trop d'opérandes"
+
+#: MErrorMessage.module:45
+msgid "Forbidden GOTO"
+msgstr "GOTO interdit"
+
+#: MErrorMessage.module:46
+msgid "Invalid assignment"
+msgstr "Affectation invalide"
+
+#: MErrorMessage.module:47
+msgid "Label '&1' not declared"
+msgstr "L'étiquette '&1' n'est pas déclarée"
+
+#: MErrorMessage.module:48
+msgid "Library name must be a string"
+msgstr "Le nom de la bibliothèque doit être une chaîne de caractères"
+
+#: MErrorMessage.module:49
+msgid "Loop variable already in use"
+msgstr "Variable de boucle déjà utilisée"
+
+#: MErrorMessage.module:50
+msgid "Loop variable must be local"
+msgstr "La variable de boucle doit être une variable locale"
+
+#: MErrorMessage.module:51
+msgid "ME cannot be used in a static function"
+msgstr "ME ne peut être utilisé au sein d'une fonction statique"
+
+#: MErrorMessage.module:52
+msgid "Missing &1"
+msgstr "&1 manquant"
+
+#: MErrorMessage.module:53
+msgid "NEW cannot have arguments passed by reference"
+msgstr "Les arguments de NEW ne peuvent être passés par référence"
+
+#: MErrorMessage.module:54
+msgid "Non terminated string"
+msgstr "Chaîne de caractères non terminée"
+
+#: MErrorMessage.module:55
+msgid "Not enough argument to New()"
+msgstr "Pas assez d'arguments à New()"
+
+#: MErrorMessage.module:56
+msgid "Not enough arguments to &1()"
+msgstr "Pas assez d'arguments à &1()"
+
+#: MErrorMessage.module:57
+msgid "Out of memory"
+msgstr "Mémoire pleine"
+
+#: MErrorMessage.module:58
+msgid "Out of range"
+msgstr "Dépassement de capacité"
+
+#: MErrorMessage.module:59
+msgid "Return value datatype not specified in function declaration"
+msgstr "Le type de la valeur de retour n'a pas été spécifié dans la déclaration de la fonction"
+
+#: MErrorMessage.module:60
+msgid "SUPER cannot be used alone"
+msgstr "SUPER ne peut être utilisé seul"
+
+#: MErrorMessage.module:61
+msgid "Subroutine arguments cannot be passed by reference"
+msgstr "Les arguments des routines prédéfinies ne peuvent être passées par référence"
+
+#: MErrorMessage.module:62
+msgid "Syntax error"
+msgstr "Erreur de syntaxe"
+
+#: MErrorMessage.module:63
+msgid "Syntax error at function declaration"
+msgstr "Erreur de syntaxe dans la déclaration de fonction"
+
+#: MErrorMessage.module:64
+msgid "Syntax error in event name"
+msgstr "Erreur de syntaxe dans le nom d'évènement"
+
+#: MErrorMessage.module:65
+msgid "Syntax error in file open mode"
+msgstr "Erreur de syntaxe dans le mode d'ouverture du fichier"
+
+#: MErrorMessage.module:66
+msgid "Syntax error in return type"
+msgstr "Erreur de syntaxe dans le type de retour"
+
+#: MErrorMessage.module:67
+msgid "Syntax error. &1 expected"
+msgstr "Erreur de syntaxe. &1 attendu"
+
+#: MErrorMessage.module:68
+msgid "Syntax error. '...' must be the last argument"
+msgstr "Erreur de syntaxe. '...' doit être le dernier argument"
+
+#: MErrorMessage.module:69
+msgid "Syntax error. Bad property type"
+msgstr "Erreur de syntaxe. Type de propriété incorrect"
+
+#: MErrorMessage.module:70
+msgid "Syntax error. CASE or DEFAULT expected after SELECT"
+msgstr "Erreur de syntaxe. CASE ou DEFAULT attendu après SELECT"
+
+#: MErrorMessage.module:71
+msgid "Syntax error. CLASS needs an identifier"
+msgstr "Erreur de syntaxe. CLASS doit être suivi d'un identificateur"
+
+#: MErrorMessage.module:72
+msgid "Syntax error. Cannot use this syntax in assignment"
+msgstr "Erreur de syntaxe. Impossible d'utiliser cette syntaxe au sein d'une affection"
+
+#: MErrorMessage.module:73
+msgid "Syntax error. Duplicated array declaration"
+msgstr "Erreur de syntaxe. Déclaration de tableau redondante"
+
+#: MErrorMessage.module:74
+msgid "Syntax error. INHERITS needs a class name"
+msgstr "Erreur de syntaxe. INHERITS doit être suivi d'un nom de classe"
+
+#: MErrorMessage.module:75
+msgid "Syntax error. Invalid identifier in function name"
+msgstr "Erreur de syntaxe. Le nom de fonction est un identificateur invalide"
+
+#: MErrorMessage.module:76
+msgid "Syntax error. Invalid identifier in property name"
+msgstr "Erreur de syntaxe. Le nom de la propriété est un identificateur invalide"
+
+#: MErrorMessage.module:77
+msgid "Syntax error. Invalid optional parameter"
+msgstr "Erreur de syntaxe. Paramètre optionnel invalide"
+
+#: MErrorMessage.module:78
+msgid "Syntax error. Invalid return type"
+msgstr "Erreur de syntaxe. Type de retour invalide"
+
+#: MErrorMessage.module:79
+msgid "Syntax error. Invalid type description of &1 argument"
+msgstr "Erreur de syntaxe. Description du type du &1 argument incorrecte"
+
+#: MErrorMessage.module:80
+msgid "Syntax error. Missing &1"
+msgstr "Erreur de syntaxe. &1 manquant"
+
+#: MErrorMessage.module:81
+msgid "Syntax error. Needless arguments"
+msgstr "Erreur de syntaxe. Argument inutile"
+
+#: MErrorMessage.module:82
+#, fuzzy
+msgid "Syntax error. Point syntax used outside of WITH / END WITH"
+msgstr "Erreur de syntaxe. Expression commençant par un point en dehors d'un bloc WITH / END WITH"
+
+#: MErrorMessage.module:83
+msgid "Syntax error. The &1 argument is not a valid identifier"
+msgstr "Erreur de syntaxe. Le &1 argument n'est pas un identificateur valide."
+
+#: MErrorMessage.module:84
+msgid "Syntax error. VarPtr() takes only one identifier"
+msgstr "Erreur de syntaxe. VarPtr() ne prend qu'un seul identificateur."
+
+#: MErrorMessage.module:85
+msgid "The '!' operator must be followed by an identifier"
+msgstr "L'opérateur '!' doit être suivi d'un identificateur"
+
+#: MErrorMessage.module:86
+msgid "The '.' operator must be followed by an identifier"
+msgstr "L'opérateur '.' doit être suivi d'un identificateur"
+
+#: MErrorMessage.module:87
+msgid "The special method &1 cannot be a function"
+msgstr "La méthode spéciale &1 ne peut être une fonction"
+
+#: MErrorMessage.module:88
+msgid "The special method &1 cannot be implemented"
+msgstr "La méthode spéciale &1 ne peut être implémentée"
+
+#: MErrorMessage.module:89
+msgid "The special method &1 cannot be static"
+msgstr "La méthode spéciale &1 ne peut être statique"
+
+#: MErrorMessage.module:90
+msgid "The special method &1 must be a function"
+msgstr "La méthode spéciale &1 doit être une fonction"
+
+#: MErrorMessage.module:91
+msgid "The special method &1 must be public"
+msgstr "La méthode spéciale &1 doit être publique"
+
+#: MErrorMessage.module:92
+msgid "The special method &1 must be static"
+msgstr "La méthode spéciale &1 doit être statique"
+
+#: MErrorMessage.module:93
+msgid "The special method &1 must take a variable number of arguments only"
+msgstr "La méthode spéciale &1 doit prendre un nombre variable d'arguments"
+
+#: MErrorMessage.module:94
+msgid "The special method &1 must take at least one argument"
+msgstr "La méthode spéciale &1 doit prendre au moins un argument"
+
+#: MErrorMessage.module:95
+msgid "The special method &1 takes no arguments"
+msgstr "La méthode spéciale &1 ne prend pas d'arguments"
+
+#: MErrorMessage.module:96
+msgid "The special method must return an integer"
+msgstr "La méthode spéciale &1 doit retourner un Integer"
+
+#: MErrorMessage.module:97
+msgid "The special method must take exactly one argument"
+msgstr "La méthode spéciale &1 doit prendre un argument et un seul"
+
+#: MErrorMessage.module:98
+msgid "The special method must take exactly two arguments"
+msgstr "La méthode spéciale &1 doit prendre deux arguments exactement"
+
+#: MErrorMessage.module:99
+msgid "The special method signature is incorrect"
+msgstr "La signature de la méthode spéciale &1 est incorrecte"
+
+#: MErrorMessage.module:100
+msgid "This expression cannot be a statement"
+msgstr "Cette expression ne peut être une instruction"
+
+#: MErrorMessage.module:101
+msgid "This expression cannot be passed by reference"
+msgstr "Cette expression ne peut pas être passée par référence"
+
+#: MErrorMessage.module:102
+msgid "Too many arguments"
+msgstr "Trop d'arguments"
+
+#: MErrorMessage.module:103
+msgid "Too many arguments to &1()"
+msgstr "Trop d'arguments à &1()"
+
+#: MErrorMessage.module:104
+msgid "Too many array declarations"
+msgstr "Trop de déclarations de tableaux"
+
+#: MErrorMessage.module:105
+msgid "Too many constants"
+msgstr "Trop de constantes"
+
+#: MErrorMessage.module:106
+msgid "Too many different classes used"
+msgstr "Trop de classes différentes utilisées"
+
+#: MErrorMessage.module:107
+msgid "Too many dimensions"
+msgstr "Trop de dimensions"
+
+#: MErrorMessage.module:108
+msgid "Too many dynamic variables"
+msgstr "Trop de variables dynamiques"
+
+#: MErrorMessage.module:109
+msgid "Too many events"
+msgstr "Trop d'évènements"
+
+#: MErrorMessage.module:110
+msgid "Too many expressions in CASE"
+msgstr "Trop d'expressions dans CASE"
+
+#: MErrorMessage.module:111
+msgid "Too many external functions"
+msgstr "Trop de fonctions externes"
+
+#: MErrorMessage.module:112
+msgid "Too many functions"
+msgstr "Trop de fonctions"
+
+#: MErrorMessage.module:113
+msgid "Too many nested control structures."
+msgstr "Trop de structure de contrôles imbriquées"
+
+#: MErrorMessage.module:114
+msgid "Too many static variables"
+msgstr "Trop de variables statiques"
+
+#: MErrorMessage.module:115
+msgid "Too many unknown symbols"
+msgstr "Trop de symboles inconnus"
+
+#: MErrorMessage.module:116
+msgid "Type mismatch"
+msgstr "Type incorrect"
+
+#: MErrorMessage.module:117
+msgid "Unexpected &1"
+msgstr "&1 inattendu"
+
+#: MErrorMessage.module:118
+msgid "Unknown error"
+msgstr "Erreur inconnue"
+
+#: MErrorMessage.module:119
+msgid "Unknown event"
+msgstr "Evènement inconnu"
+
+#: MErrorMessage.module:120
+msgid "Unknown file extension"
+msgstr "Extension de fichier inconnue"
+
+#: MErrorMessage.module:121
+msgid "Unknown identifier: &1"
+msgstr "Identificateur inconnu: &1"
+
+#: MErrorMessage.module:122
+msgid "Unknown operator"
+msgstr "Opérateur inconnu"
+
+#: MErrorMessage.module:123
+msgid "Useless LOCK"
+msgstr "LOCK inutile"
+
+#: MErrorMessage.module:124
+msgid "VarPtr() argument must be a dynamic, a static or a local variable"
+msgstr "L'argument de VarPtr() doit être une variable dynamique, une variable statique ou bien une variable locale"
+
+#: MErrorMessage.module:125
+msgid "Write error"
+msgstr "Erreur d'écriture"
+
 #: MHelp.module:255
 msgid "No help found."
 msgstr "Aide introuvable."
@@ -4383,15 +4872,31 @@ msgstr "Impossible d'ouvrir le fichier."
 msgid "File not found!"
 msgstr "Fichier introuvable !"
 
-#: Project.module:1579
+#: Project.module:1580
 msgid "Cannot compile the project."
 msgstr "Impossible de compiler le projet."
 
-#: Project.module:1599
+#: Project.module:1604
+msgid "first"
+msgstr "premier"
+
+#: Project.module:1606
+msgid "second"
+msgstr "deuxième"
+
+#: Project.module:1608
+msgid "third"
+msgstr "troisième"
+
+#: Project.module:1610
+msgid "&1th"
+msgstr "&1ème"
+
+#: Project.module:1616
 msgid "in form definition"
 msgstr "dans la définition du formulaire"
 
-#: Project.module:1753
+#: Project.module:1770
 msgid ""
 "Some project source files are in conflict.\n"
 "Please solve them if you want to compile the project."
@@ -4399,151 +4904,151 @@ msgstr ""
 "Certains fichiers sources du projet sont en conflit.\n"
 "Veuillez résoudre ces conflits pour pouvoir compiler le projet."
 
-#: Project.module:1757
+#: Project.module:1774
 msgid "Compiling project"
 msgstr "Compilation du projet"
 
-#: Project.module:1769
+#: Project.module:1786
 msgid "Nothing to do."
 msgstr "Rien à faire."
 
-#: Project.module:1908
+#: Project.module:1925
 msgid "This project already exists."
 msgstr "Ce projet existe déjà."
 
-#: Project.module:1921
+#: Project.module:1938
 msgid "Unable to save the project."
 msgstr "Impossible d'enregistrer le projet."
 
-#: Project.module:1963
+#: Project.module:1980
 msgid "File already exists."
 msgstr "Ce fichier existe déja."
 
-#: Project.module:2008
+#: Project.module:2025
 msgid "Cannot copy template file."
 msgstr "Impossible de copier le fichier modèle."
 
-#: Project.module:2027
+#: Project.module:2044
 msgid "Directory already exists."
 msgstr "Le répertoire existe déja."
 
-#: Project.module:2177
+#: Project.module:2194
 msgid "Making executable..."
 msgstr "Génération de l'exécutable..."
 
-#: Project.module:2221
+#: Project.module:2238
 msgid "Cannot make executable."
 msgstr "Impossible de créer l'exécutable."
 
-#: Project.module:2525
+#: Project.module:2542
 msgid "Some components are missing: &1"
 msgstr "Certains composants ne sont pas installés: &1"
 
-#: Project.module:2726
+#: Project.module:2743
 msgid "Cannot write project file."
 msgstr "Impossible d'écrire le fichier projet."
 
-#: Project.module:2759
+#: Project.module:2776
 msgid "Unable to create desktop shortcut."
 msgstr "Imposible de créer le raccourci sur le bureau."
 
-#: Project.module:2840
+#: Project.module:2857
 msgid "Unable to install component."
 msgstr "Impossible d'installer le composant."
 
-#: Project.module:2878
+#: Project.module:2895
 msgid "Unable to uninstall component."
 msgstr "Impossible de désinstaller le composant."
 
-#: Project.module:3018
+#: Project.module:3035
 msgid "The directory will be removed at the next commit."
 msgstr "Le répertoire sera supprimé au prochain 'commit'."
 
-#: Project.module:3037
+#: Project.module:3054
 msgid "You must define a startup class or form!"
 msgstr "Vous devez définir une classe ou un formulaire de démarrage !"
 
-#: Project.module:3069
+#: Project.module:3086
 msgid "Please type a name."
 msgstr "Veuillez saisir un nom."
 
-#: Project.module:3073
+#: Project.module:3090
 msgid "This name contains a forbidden character:"
 msgstr "Ce nom contient un caractère interdit:"
 
-#: Project.module:3077
+#: Project.module:3094
 msgid "The name cannot begins with a dot."
 msgstr "Le nom ne peut pas commencer par un point."
 
-#: Project.module:3081
+#: Project.module:3098
 msgid "This name is already used. Choose another one."
 msgstr "Ce nom est déjà utilisé. Choisissez-en un autre."
 
-#: Project.module:3112
+#: Project.module:3129
 msgid "A class name must begin with a letter or an underscore, followed by any letter or digit."
 msgstr "Un nom de classe doit commencer par une lettre ou un caractère '_', et être suivi par des lettres ou des chiffres. "
 
-#: Project.module:3299
+#: Project.module:3316
 msgid "Unable to rename '&1'"
 msgstr "Impossible de renommer « &1 »"
 
-#: Project.module:3418
+#: Project.module:3435
 msgid "Please type a project name."
 msgstr "Veuillez saisir un nom de projet."
 
-#: Project.module:3426
+#: Project.module:3443
 msgid "The project name cannot begin with a dot."
 msgstr "Un nom de projet ne peut commencer par un point."
 
-#: Project.module:3429
+#: Project.module:3446
 msgid "Non-ASCII characters are forbidden in a project name."
 msgstr "Un nom de projet ne peut contenir que des caractères ASCII."
 
-#: Project.module:3430
+#: Project.module:3447
 msgid "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr "Les caractères suivants sont interdits dans un nom de projet : ? * / \\ ESPACE"
 
-#: Project.module:3440
+#: Project.module:3457
 msgid "The project directory already exists."
 msgstr "Le répertoire du projet existe déjà."
 
-#: Project.module:3442
+#: Project.module:3459
 msgid "The project directory cannot be created because a file with the same name already exists."
 msgstr "Le répertoire du projet ne peut être créé car un fichier avec le même nom existe déjà."
 
-#: Project.module:3488
+#: Project.module:3505
 msgid "Create source package"
 msgstr "Générer un package des sources du projet"
 
-#: Project.module:3489
+#: Project.module:3506
 msgid "Source packages"
 msgstr "Paquetages sources"
 
-#: Project.module:3761
+#: Project.module:3778
 msgid "Cannot copy file &1."
 msgstr "Impossible de copier le fichier &1."
 
-#: Project.module:3773
+#: Project.module:3790
 msgid "Linking a directory is forbidden."
 msgstr "Créer un lien sur un répertoire est interdit."
 
-#: Project.module:3803
+#: Project.module:3820
 msgid "Cannot create link &1."
 msgstr "Impossible de créer le lien &1."
 
-#: Project.module:3819
+#: Project.module:3836
 msgid "Cannot move a directory inside itself."
 msgstr "Impossible de déplacer un répertoire à l'intérieur de lui-même."
 
-#: Project.module:3886
+#: Project.module:3903
 msgid "Cannot move file &1."
 msgstr "Impossible de déplacer le fichier &1."
 
-#: Project.module:4433
+#: Project.module:4450
 msgid "modified"
 msgstr "modifié"
 
-#: Project.module:4493
+#: Project.module:4510
 msgid "Unable to update all forms."
 msgstr "Impossible de mettre à jour tous les formulaires."
 
@@ -4554,6 +5059,3 @@ msgstr "Auteur"
 #: Save.module:38
 msgid "Cannot save file !"
 msgstr "Impossible d'enregistrer le fichier !"
-
-#~ msgid "at line &1 in &2"
-#~ msgstr "à la ligne &1 dans &2"
