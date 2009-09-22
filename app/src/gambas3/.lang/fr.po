@@ -555,11 +555,11 @@ msgstr "État"
 msgid "Reports"
 msgstr "États"
 
-#: Design.module:205 Project.module:1620
+#: Design.module:215 Project.module:1620
 msgid "In class &1 at line &2."
 msgstr "Dans la classe &1 à la ligne &2."
 
-#: Design.module:309
+#: Design.module:319
 msgid ""
 "The program has stopped unexpectedly\n"
 "by raising signal #&1.\n"
@@ -573,7 +573,7 @@ msgstr ""
 "Veuillez envoyer un rapport d'erreur à\n"
 "gambas@users.sourceforge.net."
 
-#: Design.module:313
+#: Design.module:323
 msgid ""
 "The program has returned\n"
 "the value: &1"
@@ -581,7 +581,7 @@ msgstr ""
 "Le programme a retourné\n"
 "la valeur : &1"
 
-#: Design.module:369 FAbout.class:565 FColorChooser.class:197
+#: Design.module:379 FAbout.class:565 FColorChooser.class:197
 #: FCommit.class:341 FCreateFile.class:879 FFontChooser.class:80
 #: FGotoLine.class:57 FList.class:333 FMain.class:2697
 #: FMakeExecutable.class:136 FMenu.class:1091 FNewConnection.class:586
@@ -592,11 +592,11 @@ msgstr ""
 msgid "OK"
 msgstr "OK"
 
-#: Design.module:764
+#: Design.module:774
 msgid "Output terminal"
 msgstr "Terminal de sortie"
 
-#: Design.module:791
+#: Design.module:801
 msgid "No terminal emulator found."
 msgstr "Aucun émulateur de terminal n'a été trouvé."
 
@@ -2178,7 +2178,7 @@ msgstr "Éditer la liste des propriétés"
 msgid "&Insert"
 msgstr "&Insérer"
 
-#: FList.class:282 FMenu.class:830 FTranslate.class:1653
+#: FList.class:282 FMenu.class:830 FTranslate.class:1652
 msgid "&Delete"
 msgstr "&Supprimer"
 
@@ -3089,7 +3089,7 @@ msgstr "Veuillez saisir le nom de la nouvelle table."
 msgid "Table '&1' already exists."
 msgstr "La table « &1 » existe déjà."
 
-#: FNewTranslation.class:59 FTranslate.class:1638
+#: FNewTranslation.class:59 FTranslate.class:1637
 msgid "New translation"
 msgstr "Nouvelle traduction"
 
@@ -3521,7 +3521,7 @@ msgstr "Les contrôles des formulaires sont publics"
 msgid "Get version from program"
 msgstr "Obtenir la version depuis le programme"
 
-#: FPropertyProject.class:1754 FTranslate.class:1467
+#: FPropertyProject.class:1754 FTranslate.class:1466
 msgid "Translation"
 msgstr "Traduction"
 
@@ -3783,79 +3783,79 @@ msgstr "&1 chaînes (&2 non traduites) - &3 % effectué"
 msgid "The 'msgmerge' command has failed"
 msgstr "La commande 'msgmerge' a échoué"
 
-#: FTranslate.class:1431
+#: FTranslate.class:1430
 msgid "Project translation"
 msgstr "Traduction du projet"
 
-#: FTranslate.class:1508
+#: FTranslate.class:1507
 msgid "Save translation"
 msgstr "Enregistrer la traduction"
 
-#: FTranslate.class:1515
+#: FTranslate.class:1514
 msgid "Clear this translation"
 msgstr "Effacer cette traduction"
 
-#: FTranslate.class:1522
+#: FTranslate.class:1521
 msgid "This string must not be translated"
 msgstr "Cette chaîne ne doit pas être traduite"
 
-#: FTranslate.class:1529
+#: FTranslate.class:1528
 msgid "Copy untranslated string"
 msgstr "Copier la chaîne non traduite"
 
-#: FTranslate.class:1536
+#: FTranslate.class:1535
 msgid "Verify the translation"
 msgstr "Vérifier la traduction"
 
-#: FTranslate.class:1543
+#: FTranslate.class:1542
 msgid "Find next untranslated string"
 msgstr "Rechercher la chaîne non traduite suivante"
 
-#: FTranslate.class:1550
+#: FTranslate.class:1549
 msgid "Find previous untranslated string"
 msgstr "Rechercher la chaîne non traduite précédente"
 
-#: FTranslate.class:1567
+#: FTranslate.class:1566
 msgid "Find a string in translation"
 msgstr "Rechercher une chaine dans la traduction"
 
-#: FTranslate.class:1610
+#: FTranslate.class:1609
 msgid "Statistics"
 msgstr "Statistiques"
 
-#: FTranslate.class:1639
+#: FTranslate.class:1638
 msgid "&New..."
 msgstr "&Nouveau..."
 
-#: FTranslate.class:1645
+#: FTranslate.class:1644
 msgid "Reload translation"
 msgstr "Recharger la traduction"
 
-#: FTranslate.class:1646
+#: FTranslate.class:1645
 msgid "&Reload"
 msgstr "&Recharger"
 
-#: FTranslate.class:1652
+#: FTranslate.class:1651
 msgid "Delete translation"
 msgstr "Supprimer la traduction"
 
-#: FTranslate.class:1659
+#: FTranslate.class:1658
 msgid "Import a translation file"
 msgstr "Importer un fichier de traduction"
 
-#: FTranslate.class:1660
+#: FTranslate.class:1659
 msgid "&Import..."
 msgstr "&Importer..."
 
-#: FTranslate.class:1666
+#: FTranslate.class:1665
 msgid "Export to a translation file"
 msgstr "Exporter vers un fichier de traduction"
 
-#: FTranslate.class:1667
+#: FTranslate.class:1666
 msgid "&Export..."
 msgstr "&Exporter..."
 
-#: FTranslate.class:1678
+#: FTranslate.class:1677
 msgid "&Close"
 msgstr "&Fermer"
 
@@ -4112,491 +4112,290 @@ msgid "Cannot create table '&1'."
 msgstr "Impossible de créer la table « &1 »."
 
 #: MErrorMessage.module:4
-msgid "&1 cannot be static"
-msgstr "&1 ne peut pas être statique"
-
-#: MErrorMessage.module:5
-msgid "&1 declaration does not match"
-msgstr "La déclaration de &1 ne correspond pas"
-
-#: MErrorMessage.module:6
 msgid "&1 expected"
 msgstr "&1 attendu"
 
+#: MErrorMessage.module:5
+msgid "'&1.&2' is badly overridden in class '&3'"
+msgstr "L'héritage de '&1.&2' est effectué de manière incorrecte dans la classe '&3'"
+
+#: MErrorMessage.module:6
+msgid "'&1.&2' is not a property"
+msgstr "'&1.&2' n'est pas une propriété"
+
 #: MErrorMessage.module:7
-msgid "&1 is declared but is not a function"
-msgstr "&1 est déclaré mais n'est pas une fonction"
+msgid "'&1.&2' is not static"
+msgstr "'&1.&2' n'est pas statique"
 
 #: MErrorMessage.module:8
-msgid "&1 is not declared"
-msgstr "&1 n'est pas déclaré"
+msgid "'&1.&2' is read only"
+msgstr "'&1.&2' est en lecture seule"
 
 #: MErrorMessage.module:9
-msgid "&1 must be static"
-msgstr "&1 doit être statique"
+msgid "'&1.&2' is static"
+msgstr "'&1.&2' est statique"
 
 #: MErrorMessage.module:10
-msgid "&1: not in archive"
-msgstr "&1: introuvable dans l'archive"
+msgid "'&1.&2' is write only"
+msgstr "'&1.&2' est en écriture seule"
 
 #: MErrorMessage.module:11
-msgid "&1: syntax error"
-msgstr "&1: erreur de syntaxe"
+msgid "Access forbidden"
+msgstr "Accès interdit"
 
 #: MErrorMessage.module:12
-msgid "&1: syntax error in form file"
-msgstr "&1: erreur de syntaxe dans le fichier formulaire"
+msgid "Argument cannot be passed by reference"
+msgstr "L'argument ne peut être passé en référence"
 
 #: MErrorMessage.module:13
-msgid "&1: too many nested containers"
-msgstr "&1: trop de conteneurs imbriqués"
+msgid "Bad archive: &1: &2"
+msgstr "Archive incorrecte: &1: &2"
 
 #: MErrorMessage.module:14
-msgid "'&1' already declared"
-msgstr "'&1' est déjà déclaré"
+msgid "Bad argument"
+msgstr "Argument incorrect"
 
 #: MErrorMessage.module:15
-msgid "A module cannot raise events"
-msgstr "Un module ne peut pas émettre d'evènements"
+msgid "Bad event handler in &1.&2(): &3"
+msgstr "Gestionnaire d'évènement incorrect dans &1.&2(): &3"
 
 #: MErrorMessage.module:16
-msgid "A property implementation cannot be public"
-msgstr "Une implémentation de propriété ne peut pas être publique"
+msgid "Bad expression: &1"
+msgstr "Expression incorrecte: &1"
 
 #: MErrorMessage.module:17
-msgid "A property must be public"
-msgstr "Une propriété doit être publique"
+msgid "Bad format string"
+msgstr "Chaîne de formatage incorrecte"
 
 #: MErrorMessage.module:18
-msgid "Alias name must be a string"
-msgstr "L'alias doit être une chaîne de caractères"
+msgid "Bad number of dimensions"
+msgstr "Nombre de dimensions incorrect"
 
 #: MErrorMessage.module:19
-msgid "Ambiguous expression. Please use brackets"
-msgstr "Expression ambigüe. Veuillez utiliser des parenthèses"
+msgid "Bad project file: line &1: &2"
+msgstr "Fichier projet incorrect à la ligne &1: &2"
 
 #: MErrorMessage.module:20
-msgid "Array declaration is forbidden with typed collection"
-msgstr "La déclaration de tableaux est interdite avec les collection typées"
+msgid "Bad regular expression: &1"
+msgstr "Expression rationnelle incorrecte: &1"
 
 #: MErrorMessage.module:21
-msgid "Arrays are forbidden here"
-msgstr "Impossible d'utiliser les tableaux ici"
+msgid "Bad string conversion"
+msgstr "Conversion de chaîne impossible"
 
 #: MErrorMessage.module:22
-msgid "Bad character constant in string"
-msgstr "Constante de caractère incorrecte au sein de la chaîne"
+msgid "Bad use of virtual class"
+msgstr "Utilisation de classe virtuelle incorrecte"
 
 #: MErrorMessage.module:23
-msgid "Bad constant type"
-msgstr "Type de constante incorrect"
+msgid "Cannot find dynamic library '&1': &2"
+msgstr "Impossible de trouver la bibliothèque dynamique '&1': &2"
 
 #: MErrorMessage.module:24
-msgid "Bad form file version"
-msgstr "Format du fichier de formulaire incorrect"
+msgid "Cannot find symbol '&2' in dynamic library '&1'"
+msgstr "Impossible de trouver le symbole '&2' dans la bibliothèque dynamque '&1'"
 
 #: MErrorMessage.module:25
-msgid "Bad subscript range"
-msgstr "Index de tableau incorrect"
+msgid "Cannot load class '&1': &2&3"
+msgstr "Impossible de charger la classe '&1': &2&3"
 
 #: MErrorMessage.module:26
-msgid "Cannot create .startup file"
-msgstr "Impossible de créer le fichier .startup"
+msgid "Cannot load component '&1': &2"
+msgstr "Impossible de charger le composant '&1': &2"
 
 #: MErrorMessage.module:27
-msgid "Cannot create action file: &1"
-msgstr "Impossible de créer le fichier des actions: &1"
+msgid "Cannot open file '&1': &2"
+msgstr "Impossible d'ouvrir le fichier '&1': &2"
 
 #: MErrorMessage.module:28
-msgid "Cannot create class information: &1: &2"
-msgstr "Impossible de créer le fichier des informations sur la classe: &1: &2"
-
-#: MErrorMessage.module:29
-msgid "Cannot create file: &1"
-msgstr "Impossible de créer le fichier: &1"
-
-#: MErrorMessage.module:30
-msgid "Cannot create temporary archive file: &1"
-msgstr "Impossible de créer le fichier d'archive temporaire: &1"
-
-#: MErrorMessage.module:31
-msgid "Cannot inherit twice"
-msgstr "Impossible d'hériter deux fois"
-
-#: MErrorMessage.module:32
-msgid "Cannot instanciate native types"
-msgstr "Impossible d'instancier les types natifs"
-
-#: MErrorMessage.module:33
-msgid "Cannot make executable: &1"
-msgstr "Impossible de créer l'exécutable: &1"
-
-#: MErrorMessage.module:34
-msgid "Cannot mix NEW and array declaration"
-msgstr "Impossible de mélanger NEW et la déclaration de tableau"
-
-#: MErrorMessage.module:35
 msgid "Cannot open file: &1"
 msgstr "Imposible d'ouvrir le fichier: &1"
 
-#: MErrorMessage.module:36
-msgid "Cannot raise events in static function"
-msgstr "Impossible d'émettre des évènements depuis une fonction statique"
-
-#: MErrorMessage.module:37
+#: MErrorMessage.module:29
 msgid "Cannot read file: &1"
 msgstr "Impossible de lire le fichier: &1"
 
+#: MErrorMessage.module:30
+msgid "Cannot register class '&1'"
+msgstr "Impossible d'enregistrer la classe '&1'"
+
+#: MErrorMessage.module:31
+msgid "Class '&1' is not creatable"
+msgstr "La classe '&1' n'est pas instanciable"
+
+#: MErrorMessage.module:32
+msgid "Device is full"
+msgstr "Périphérique plein"
+
+#: MErrorMessage.module:33
+msgid "Division by zero"
+msgstr "Division par zéro"
+
+#: MErrorMessage.module:34
+msgid "End of file"
+msgstr "Fin de fichier atteinte"
+
+#: MErrorMessage.module:35
+msgid "File already exists"
+msgstr "Le fichier existe déjà"
+
+#: MErrorMessage.module:36
+msgid "File is a directory"
+msgstr "Le fichier est un répertoire"
+
+#: MErrorMessage.module:37
+msgid "File is locked"
+msgstr "Le fichier est verrouillé"
+
 #: MErrorMessage.module:38
-msgid "Cannot read file: &1: &2"
-msgstr "Impossible de lire le fichier: &1: &2"
+msgid "File name is too long"
+msgstr "Le nom de fichier est trop long"
 
 #: MErrorMessage.module:39
-msgid "Cannot set file owner: &1: &2"
-msgstr "Impossible de changer le propriétaire du fichier: &1: &2"
+msgid "File or directory does not exist"
+msgstr "Le fichier ou le répertoire n'existe pas"
 
 #: MErrorMessage.module:40
-msgid "Cannot use NEW operator there"
-msgstr "Impossible d'utiliser l'opérateur NEW ici"
+msgid "Illegal instruction"
+msgstr "Instruction illégale"
 
 #: MErrorMessage.module:41
-msgid "Cannot use TRY twice"
-msgstr "Impossible d'utiliser TRY deux fois"
+msgid "Invalid date"
+msgstr "Date invalide"
 
 #: MErrorMessage.module:42
-msgid "Dynamic symbols cannot be used in static function"
-msgstr "Les symbols dynamiques ne peuvent être utilisées au sein d'une fonction statique"
+msgid "Invalid object"
+msgstr "Object invalide"
 
 #: MErrorMessage.module:43
-msgid "Expression too complex"
-msgstr "Expression trop complexe"
+msgid "Invalid path"
+msgstr "Chemin invalide"
 
 #: MErrorMessage.module:44
-msgid "Expression too complex. Too many operands"
-msgstr "Expression trop complexe. Trop d'opérandes"
+msgid "Mathematic error"
+msgstr "Erreur mathématique"
 
 #: MErrorMessage.module:45
-msgid "Forbidden GOTO"
-msgstr "GOTO interdit"
-
-#: MErrorMessage.module:46
-msgid "Invalid assignment"
-msgstr "Affectation invalide"
-
-#: MErrorMessage.module:47
-msgid "Label '&1' not declared"
-msgstr "L'étiquette '&1' n'est pas déclarée"
-
-#: MErrorMessage.module:48
-msgid "Library name must be a string"
-msgstr "Le nom de la bibliothèque doit être une chaîne de caractères"
-
-#: MErrorMessage.module:49
-msgid "Loop variable already in use"
-msgstr "Variable de boucle déjà utilisée"
-
-#: MErrorMessage.module:50
-msgid "Loop variable must be local"
-msgstr "La variable de boucle doit être une variable locale"
-
-#: MErrorMessage.module:51
-msgid "ME cannot be used in a static function"
-msgstr "ME ne peut être utilisé au sein d'une fonction statique"
-
-#: MErrorMessage.module:52
 msgid "Missing &1"
 msgstr "&1 manquant"
 
+#: MErrorMessage.module:46
+msgid "No instanciation method"
+msgstr "Constructeur introuvable"
+
+#: MErrorMessage.module:47
+msgid "No parent class"
+msgstr "Classe parente introuvable"
+
+#: MErrorMessage.module:48
+msgid "No return value"
+msgstr "Aucune valeur de retour"
+
+#: MErrorMessage.module:49
+msgid "No startup method"
+msgstr "Méthode de démarrage introuvable"
+
+#: MErrorMessage.module:50
+msgid "Not a directory: &1"
+msgstr "'&1' n'est pas un répertoire"
+
+#: MErrorMessage.module:51
+msgid "Not a function"
+msgstr "Fonction attendue"
+
+#: MErrorMessage.module:52
+msgid "Not an array"
+msgstr "Tableau attendu"
+
 #: MErrorMessage.module:53
-msgid "NEW cannot have arguments passed by reference"
-msgstr "Les arguments de NEW ne peuvent être passés par référence"
+msgid "Not an enumeration"
+msgstr "Enumération attendue"
 
 #: MErrorMessage.module:54
-msgid "Non terminated string"
-msgstr "Chaîne de caractères non terminée"
+msgid "Not an object"
+msgstr "Objet attendu"
 
 #: MErrorMessage.module:55
-msgid "Not enough argument to New()"
-msgstr "Pas assez d'arguments à New()"
+msgid "Not enough arguments"
+msgstr "Pas assez d'arguments"
 
 #: MErrorMessage.module:56
-msgid "Not enough arguments to &1()"
-msgstr "Pas assez d'arguments à &1()"
+msgid "Null object"
+msgstr "Référence d'objet NULL"
 
 #: MErrorMessage.module:57
+msgid "Out of bounds"
+msgstr "Dépassement de tableau"
+
+#: MErrorMessage.module:58
 msgid "Out of memory"
 msgstr "Mémoire pleine"
 
-#: MErrorMessage.module:58
-msgid "Out of range"
+#: MErrorMessage.module:59
+msgid "Overflow"
 msgstr "Dépassement de capacité"
 
-#: MErrorMessage.module:59
-msgid "Return value datatype not specified in function declaration"
-msgstr "Le type de la valeur de retour n'a pas été spécifié dans la déclaration de la fonction"
-
 #: MErrorMessage.module:60
-msgid "SUPER cannot be used alone"
-msgstr "SUPER ne peut être utilisé seul"
+msgid "Read error"
+msgstr "Erreur de lecture"
 
 #: MErrorMessage.module:61
-msgid "Subroutine arguments cannot be passed by reference"
-msgstr "Les arguments des routines prédéfinies ne peuvent être passées par référence"
+msgid "STOP instruction encountered"
+msgstr "Instruction STOP rencontrée"
 
 #: MErrorMessage.module:62
+msgid "Stack overflow"
+msgstr "Débordement de pile"
+
+#: MErrorMessage.module:63
+msgid "Stream is closed"
+msgstr "Flux déjà fermé"
+
+#: MErrorMessage.module:64
 msgid "Syntax error"
 msgstr "Erreur de syntaxe"
 
-#: MErrorMessage.module:63
-msgid "Syntax error at function declaration"
-msgstr "Erreur de syntaxe dans la déclaration de fonction"
-
-#: MErrorMessage.module:64
-msgid "Syntax error in event name"
-msgstr "Erreur de syntaxe dans le nom d'évènement"
-
 #: MErrorMessage.module:65
-msgid "Syntax error in file open mode"
-msgstr "Erreur de syntaxe dans le mode d'ouverture du fichier"
-
-#: MErrorMessage.module:66
-msgid "Syntax error in return type"
-msgstr "Erreur de syntaxe dans le type de retour"
-
-#: MErrorMessage.module:67
-msgid "Syntax error. &1 expected"
-msgstr "Erreur de syntaxe. &1 attendu"
-
-#: MErrorMessage.module:68
-msgid "Syntax error. '...' must be the last argument"
-msgstr "Erreur de syntaxe. '...' doit être le dernier argument"
-
-#: MErrorMessage.module:69
-msgid "Syntax error. Bad property type"
-msgstr "Erreur de syntaxe. Type de propriété incorrect"
-
-#: MErrorMessage.module:70
-msgid "Syntax error. CASE or DEFAULT expected after SELECT"
-msgstr "Erreur de syntaxe. CASE ou DEFAULT attendu après SELECT"
-
-#: MErrorMessage.module:71
-msgid "Syntax error. CLASS needs an identifier"
-msgstr "Erreur de syntaxe. CLASS doit être suivi d'un identificateur"
-
-#: MErrorMessage.module:72
-msgid "Syntax error. Cannot use this syntax in assignment"
-msgstr "Erreur de syntaxe. Impossible d'utiliser cette syntaxe au sein d'une affection"
-
-#: MErrorMessage.module:73
-msgid "Syntax error. Duplicated array declaration"
-msgstr "Erreur de syntaxe. Déclaration de tableau redondante"
-
-#: MErrorMessage.module:74
-msgid "Syntax error. INHERITS needs a class name"
-msgstr "Erreur de syntaxe. INHERITS doit être suivi d'un nom de classe"
-
-#: MErrorMessage.module:75
-msgid "Syntax error. Invalid identifier in function name"
-msgstr "Erreur de syntaxe. Le nom de fonction est un identificateur invalide"
-
-#: MErrorMessage.module:76
-msgid "Syntax error. Invalid identifier in property name"
-msgstr "Erreur de syntaxe. Le nom de la propriété est un identificateur invalide"
-
-#: MErrorMessage.module:77
-msgid "Syntax error. Invalid optional parameter"
-msgstr "Erreur de syntaxe. Paramètre optionnel invalide"
-
-#: MErrorMessage.module:78
-msgid "Syntax error. Invalid return type"
-msgstr "Erreur de syntaxe. Type de retour invalide"
-
-#: MErrorMessage.module:79
-msgid "Syntax error. Invalid type description of &1 argument"
-msgstr "Erreur de syntaxe. Description du type du &1 argument incorrecte"
-
-#: MErrorMessage.module:80
 msgid "Syntax error. Missing &1"
 msgstr "Erreur de syntaxe. &1 manquant"
 
-#: MErrorMessage.module:81
-msgid "Syntax error. Needless arguments"
-msgstr "Erreur de syntaxe. Argument inutile"
+#: MErrorMessage.module:66
+msgid "System error #&1: &2"
+msgstr "Erreur système n°&1: &2"
 
-#: MErrorMessage.module:82
-#, fuzzy
-msgid "Syntax error. Point syntax used outside of WITH / END WITH"
-msgstr "Erreur de syntaxe. Expression commençant par un point en dehors d'un bloc WITH / END WITH"
-
-#: MErrorMessage.module:83
-msgid "Syntax error. The &1 argument is not a valid identifier"
-msgstr "Erreur de syntaxe. Le &1 argument n'est pas un identificateur valide."
-
-#: MErrorMessage.module:84
-msgid "Syntax error. VarPtr() takes only one identifier"
-msgstr "Erreur de syntaxe. VarPtr() ne prend qu'un seul identificateur."
-
-#: MErrorMessage.module:85
-msgid "The '!' operator must be followed by an identifier"
-msgstr "L'opérateur '!' doit être suivi d'un identificateur"
-
-#: MErrorMessage.module:86
-msgid "The '.' operator must be followed by an identifier"
-msgstr "L'opérateur '.' doit être suivi d'un identificateur"
-
-#: MErrorMessage.module:87
-msgid "The special method &1 cannot be a function"
-msgstr "La méthode spéciale &1 ne peut être une fonction"
-
-#: MErrorMessage.module:88
-msgid "The special method &1 cannot be implemented"
-msgstr "La méthode spéciale &1 ne peut être implémentée"
-
-#: MErrorMessage.module:89
-msgid "The special method &1 cannot be static"
-msgstr "La méthode spéciale &1 ne peut être statique"
-
-#: MErrorMessage.module:90
-msgid "The special method &1 must be a function"
-msgstr "La méthode spéciale &1 doit être une fonction"
-
-#: MErrorMessage.module:91
-msgid "The special method &1 must be public"
-msgstr "La méthode spéciale &1 doit être publique"
-
-#: MErrorMessage.module:92
-msgid "The special method &1 must be static"
-msgstr "La méthode spéciale &1 doit être statique"
-
-#: MErrorMessage.module:93
-msgid "The special method &1 must take a variable number of arguments only"
-msgstr "La méthode spéciale &1 doit prendre un nombre variable d'arguments"
-
-#: MErrorMessage.module:94
-msgid "The special method &1 must take at least one argument"
-msgstr "La méthode spéciale &1 doit prendre au moins un argument"
-
-#: MErrorMessage.module:95
-msgid "The special method &1 takes no arguments"
-msgstr "La méthode spéciale &1 ne prend pas d'arguments"
-
-#: MErrorMessage.module:96
-msgid "The special method must return an integer"
-msgstr "La méthode spéciale &1 doit retourner un Integer"
-
-#: MErrorMessage.module:97
-msgid "The special method must take exactly one argument"
-msgstr "La méthode spéciale &1 doit prendre un argument et un seul"
-
-#: MErrorMessage.module:98
-msgid "The special method must take exactly two arguments"
-msgstr "La méthode spéciale &1 doit prendre deux arguments exactement"
-
-#: MErrorMessage.module:99
-msgid "The special method signature is incorrect"
-msgstr "La signature de la méthode spéciale &1 est incorrecte"
-
-#: MErrorMessage.module:100
-msgid "This expression cannot be a statement"
-msgstr "Cette expression ne peut être une instruction"
-
-#: MErrorMessage.module:101
-msgid "This expression cannot be passed by reference"
-msgstr "Cette expression ne peut pas être passée par référence"
-
-#: MErrorMessage.module:102
+#: MErrorMessage.module:67
 msgid "Too many arguments"
 msgstr "Trop d'arguments"
 
-#: MErrorMessage.module:103
-msgid "Too many arguments to &1()"
-msgstr "Trop d'arguments à &1()"
+#: MErrorMessage.module:68
+msgid "Too many simultaneous new strings"
+msgstr "Trop de créations simultanées de chaînes de caractères"
 
-#: MErrorMessage.module:104
-msgid "Too many array declarations"
-msgstr "Trop de déclarations de tableaux"
+#: MErrorMessage.module:69
+msgid "Type mismatch: wanted &1, got &2 instead"
+msgstr "Type incorrect: &1 attendu à la place de &2"
 
-#: MErrorMessage.module:105
-msgid "Too many constants"
-msgstr "Trop de constantes"
-
-#: MErrorMessage.module:106
-msgid "Too many different classes used"
-msgstr "Trop de classes différentes utilisées"
-
-#: MErrorMessage.module:107
-msgid "Too many dimensions"
-msgstr "Trop de dimensions"
-
-#: MErrorMessage.module:108
-msgid "Too many dynamic variables"
-msgstr "Trop de variables dynamiques"
-
-#: MErrorMessage.module:109
-msgid "Too many events"
-msgstr "Trop d'évènements"
-
-#: MErrorMessage.module:110
-msgid "Too many expressions in CASE"
-msgstr "Trop d'expressions dans CASE"
-
-#: MErrorMessage.module:111
-msgid "Too many external functions"
-msgstr "Trop de fonctions externes"
-
-#: MErrorMessage.module:112
-msgid "Too many functions"
-msgstr "Trop de fonctions"
-
-#: MErrorMessage.module:113
-msgid "Too many nested control structures."
-msgstr "Trop de structure de contrôles imbriquées"
-
-#: MErrorMessage.module:114
-msgid "Too many static variables"
-msgstr "Trop de variables statiques"
-
-#: MErrorMessage.module:115
-msgid "Too many unknown symbols"
-msgstr "Trop de symboles inconnus"
-
-#: MErrorMessage.module:116
-msgid "Type mismatch"
-msgstr "Type incorrect"
-
-#: MErrorMessage.module:117
+#: MErrorMessage.module:70
 msgid "Unexpected &1"
 msgstr "&1 inattendu"
 
-#: MErrorMessage.module:118
+#: MErrorMessage.module:71
 msgid "Unknown error"
 msgstr "Erreur inconnue"
 
-#: MErrorMessage.module:119
-msgid "Unknown event"
-msgstr "Evènement inconnu"
+#: MErrorMessage.module:72
+msgid "Unknown symbol '&1' in class '&2'"
+msgstr "Symbole '&1' inconnu dans la classe '&2'"
 
-#: MErrorMessage.module:120
-msgid "Unknown file extension"
-msgstr "Extension de fichier inconnue"
+#: MErrorMessage.module:73
+msgid "Unsupported string conversion"
+msgstr "Conversion de chaîne de caractères non supportée"
 
-#: MErrorMessage.module:121
-msgid "Unknown identifier: &1"
-msgstr "Identificateur inconnu: &1"
+#: MErrorMessage.module:74
+msgid "Void key"
+msgstr "Clef vide"
 
-#: MErrorMessage.module:122
-msgid "Unknown operator"
-msgstr "Opérateur inconnu"
-
-#: MErrorMessage.module:123
-msgid "Useless LOCK"
-msgstr "LOCK inutile"
-
-#: MErrorMessage.module:124
-msgid "VarPtr() argument must be a dynamic, a static or a local variable"
-msgstr "L'argument de VarPtr() doit être une variable dynamique, une variable statique ou bien une variable locale"
-
-#: MErrorMessage.module:125
+#: MErrorMessage.module:75
 msgid "Write error"
 msgstr "Erreur d'écriture"
 
@@ -5059,3 +4858,336 @@ msgstr "Auteur"
 #: Save.module:38
 msgid "Cannot save file !"
 msgstr "Impossible d'enregistrer le fichier !"
+
+#~ msgid "VarPtr() argument must be a dynamic, a static or a local variable"
+#~ msgstr "L'argument de VarPtr() doit être une variable dynamique, une variable statique ou bien une variable locale"
+
+#~ msgid "Useless LOCK"
+#~ msgstr "LOCK inutile"
+
+#~ msgid "Unknown operator"
+#~ msgstr "Opérateur inconnu"
+
+#~ msgid "Unknown identifier: &1"
+#~ msgstr "Identificateur inconnu: &1"
+
+#~ msgid "Unknown file extension"
+#~ msgstr "Extension de fichier inconnue"
+
+#~ msgid "Unknown event"
+#~ msgstr "Evènement inconnu"
+
+#~ msgid "Type mismatch"
+#~ msgstr "Type incorrect"
+
+#~ msgid "Too many unknown symbols"
+#~ msgstr "Trop de symboles inconnus"
+
+#~ msgid "Too many static variables"
+#~ msgstr "Trop de variables statiques"
+
+#~ msgid "Too many nested control structures."
+#~ msgstr "Trop de structure de contrôles imbriquées"
+
+#~ msgid "Too many functions"
+#~ msgstr "Trop de fonctions"
+
+#~ msgid "Too many external functions"
+#~ msgstr "Trop de fonctions externes"
+
+#~ msgid "Too many expressions in CASE"
+#~ msgstr "Trop d'expressions dans CASE"
+
+#~ msgid "Too many events"
+#~ msgstr "Trop d'évènements"
+
+#~ msgid "Too many dynamic variables"
+#~ msgstr "Trop de variables dynamiques"
+
+#~ msgid "Too many dimensions"
+#~ msgstr "Trop de dimensions"
+
+#~ msgid "Too many different classes used"
+#~ msgstr "Trop de classes différentes utilisées"
+
+#~ msgid "Too many constants"
+#~ msgstr "Trop de constantes"
+
+#~ msgid "Too many array declarations"
+#~ msgstr "Trop de déclarations de tableaux"
+
+#~ msgid "Too many arguments to &1()"
+#~ msgstr "Trop d'arguments à &1()"
+
+#~ msgid "This expression cannot be passed by reference"
+#~ msgstr "Cette expression ne peut pas être passée par référence"
+
+#~ msgid "This expression cannot be a statement"
+#~ msgstr "Cette expression ne peut être une instruction"
+
+#~ msgid "The special method signature is incorrect"
+#~ msgstr "La signature de la méthode spéciale &1 est incorrecte"
+
+#~ msgid "The special method must take exactly two arguments"
+#~ msgstr "La méthode spéciale &1 doit prendre deux arguments exactement"
+
+#~ msgid "The special method must take exactly one argument"
+#~ msgstr "La méthode spéciale &1 doit prendre un argument et un seul"
+
+#~ msgid "The special method must return an integer"
+#~ msgstr "La méthode spéciale &1 doit retourner un Integer"
+
+#~ msgid "The special method &1 takes no arguments"
+#~ msgstr "La méthode spéciale &1 ne prend pas d'arguments"
+
+#~ msgid "The special method &1 must take a variable number of arguments only"
+#~ msgstr "La méthode spéciale &1 doit prendre un nombre variable d'arguments"
+
+#~ msgid "The special method &1 must take at least one argument"
+#~ msgstr "La méthode spéciale &1 doit prendre au moins un argument"
+
+#~ msgid "The special method &1 must be static"
+#~ msgstr "La méthode spéciale &1 doit être statique"
+
+#~ msgid "The special method &1 must be public"
+#~ msgstr "La méthode spéciale &1 doit être publique"
+
+#~ msgid "The special method &1 must be a function"
+#~ msgstr "La méthode spéciale &1 doit être une fonction"
+
+#~ msgid "The special method &1 cannot be static"
+#~ msgstr "La méthode spéciale &1 ne peut être statique"
+
+#~ msgid "The special method &1 cannot be implemented"
+#~ msgstr "La méthode spéciale &1 ne peut être implémentée"
+
+#~ msgid "The special method &1 cannot be a function"
+#~ msgstr "La méthode spéciale &1 ne peut être une fonction"
+
+#~ msgid "The '.' operator must be followed by an identifier"
+#~ msgstr "L'opérateur '.' doit être suivi d'un identificateur"
+
+#~ msgid "The '!' operator must be followed by an identifier"
+#~ msgstr "L'opérateur '!' doit être suivi d'un identificateur"
+
+#~ msgid "Syntax error. VarPtr() takes only one identifier"
+#~ msgstr "Erreur de syntaxe. VarPtr() ne prend qu'un seul identificateur."
+
+#~ msgid "Syntax error. The &1 argument is not a valid identifier"
+#~ msgstr "Erreur de syntaxe. Le &1 argument n'est pas un identificateur valide."
+
+#~ msgid "Syntax error. Point syntax used outside of WITH / END WITH"
+#~ msgstr "Erreur de syntaxe. Expression commençant par un point en dehors de WITH / END WITH"
+
+#~ msgid "Syntax error. Needless arguments"
+#~ msgstr "Erreur de syntaxe. Argument inutile"
+
+#~ msgid "Syntax error. '...' must be the last argument"
+#~ msgstr "Erreur de syntaxe. '...' doit être le dernier argument"
+
+#~ msgid "Syntax error. Invalid type description of &1 argument"
+#~ msgstr "Erreur de syntaxe. Description du type du &1 argument incorrecte"
+
+#~ msgid "Syntax error. Invalid return type"
+#~ msgstr "Erreur de syntaxe. Type de retour invalide"
+
+#~ msgid "Syntax error. Invalid optional parameter"
+#~ msgstr "Erreur de syntaxe. Paramètre optionnel invalide"
+
+#~ msgid "Syntax error. Invalid identifier in property name"
+#~ msgstr "Erreur de syntaxe. Le nom de la propriété est un identificateur invalide"
+
+#~ msgid "Syntax error. Invalid identifier in function name"
+#~ msgstr "Erreur de syntaxe. Le nom de fonction est un identificateur invalide"
+
+#~ msgid "Syntax error in return type"
+#~ msgstr "Erreur de syntaxe dans le type de retour"
+
+#~ msgid "Syntax error. INHERITS needs a class name"
+#~ msgstr "Erreur de syntaxe. INHERITS doit être suivi d'un nom de classe"
+
+#~ msgid "Syntax error in file open mode"
+#~ msgstr "Erreur de syntaxe dans le mode d'ouverture du fichier"
+
+#~ msgid "Syntax error in event name"
+#~ msgstr "Erreur de syntaxe dans le nom d'évènement"
+
+#~ msgid "Syntax error. Duplicated array declaration"
+#~ msgstr "Erreur de syntaxe. Déclaration de tableau redondante"
+
+#~ msgid "Syntax error. CLASS needs an identifier"
+#~ msgstr "Erreur de syntaxe. CLASS doit être suivi d'un identificateur"
+
+#~ msgid "Syntax error. CASE or DEFAULT expected after SELECT"
+#~ msgstr "Erreur de syntaxe. CASE ou DEFAULT attendu après SELECT"
+
+#~ msgid "Syntax error. Cannot use this syntax in assignment"
+#~ msgstr "Erreur de syntaxe. Impossible d'utiliser cette syntaxe au sein d'une affection"
+
+#~ msgid "Syntax error. Bad property type"
+#~ msgstr "Erreur de syntaxe. Type de propriété incorrect"
+
+#~ msgid "Syntax error at function declaration"
+#~ msgstr "Erreur de syntaxe dans la déclaration de fonction"
+
+#~ msgid "Syntax error. &1 expected"
+#~ msgstr "Erreur de syntaxe. &1 attendu"
+
+#~ msgid "SUPER cannot be used alone"
+#~ msgstr "SUPER ne peut être utilisé seul"
+
+#~ msgid "Subroutine arguments cannot be passed by reference"
+#~ msgstr "Les arguments des routines prédéfinies ne peuvent être passées par référence"
+
+#~ msgid "Return value datatype not specified in function declaration"
+#~ msgstr "Le type de la valeur de retour n'a pas été spécifié dans la déclaration de la fonction"
+
+#~ msgid "Out of range"
+#~ msgstr "Dépassement de capacité"
+
+#~ msgid "Not enough argument to New()"
+#~ msgstr "Pas assez d'arguments à New()"
+
+#~ msgid "Not enough arguments to &1()"
+#~ msgstr "Pas assez d'arguments à &1()"
+
+#~ msgid "Non terminated string"
+#~ msgstr "Chaîne de caractères non terminée"
+
+#~ msgid "NEW cannot have arguments passed by reference"
+#~ msgstr "Les arguments de NEW ne peuvent être passés par référence"
+
+#~ msgid "ME cannot be used in a static function"
+#~ msgstr "ME ne peut être utilisé au sein d'une fonction statique"
+
+#~ msgid "Loop variable must be local"
+#~ msgstr "La variable de boucle doit être une variable locale"
+
+#~ msgid "Loop variable already in use"
+#~ msgstr "Variable de boucle déjà utilisée"
+
+#~ msgid "Library name must be a string"
+#~ msgstr "Le nom de la bibliothèque doit être une chaîne de caractères"
+
+#~ msgid "Label '&1' not declared"
+#~ msgstr "L'étiquette '&1' n'est pas déclarée"
+
+#~ msgid "Invalid assignment"
+#~ msgstr "Affectation invalide"
+
+#~ msgid "Forbidden GOTO"
+#~ msgstr "GOTO interdit"
+
+#~ msgid "Expression too complex. Too many operands"
+#~ msgstr "Expression trop complexe. Trop d'opérandes"
+
+#~ msgid "Expression too complex"
+#~ msgstr "Expression trop complexe"
+
+#~ msgid "Dynamic symbols cannot be used in static function"
+#~ msgstr "Les symbols dynamiques ne peuvent être utilisées au sein d'une fonction statique"
+
+#~ msgid "Cannot use TRY twice"
+#~ msgstr "Impossible d'utiliser TRY deux fois"
+
+#~ msgid "Cannot use NEW operator there"
+#~ msgstr "Impossible d'utiliser l'opérateur NEW ici"
+
+#~ msgid "Cannot set file owner: &1: &2"
+#~ msgstr "Impossible de changer le propriétaire du fichier: &1: &2"
+
+#~ msgid "Cannot read file: &1: &2"
+#~ msgstr "Impossible de lire le fichier: &1: &2"
+
+#~ msgid "Cannot raise events in static function"
+#~ msgstr "Impossible d'émettre des évènements depuis une fonction statique"
+
+#~ msgid "Cannot mix NEW and array declaration"
+#~ msgstr "Impossible de mélanger NEW et la déclaration de tableau"
+
+#~ msgid "Cannot make executable: &1"
+#~ msgstr "Impossible de créer l'exécutable: &1"
+
+#~ msgid "Cannot instanciate native types"
+#~ msgstr "Impossible d'instancier les types natifs"
+
+#~ msgid "Cannot inherit twice"
+#~ msgstr "Impossible d'hériter deux fois"
+
+#~ msgid "Cannot create temporary archive file: &1"
+#~ msgstr "Impossible de créer le fichier d'archive temporaire: &1"
+
+#~ msgid "Cannot create .startup file"
+#~ msgstr "Impossible de créer le fichier .startup"
+
+#~ msgid "Cannot create file: &1"
+#~ msgstr "Impossible de créer le fichier: &1"
+
+#~ msgid "Cannot create class information: &1: &2"
+#~ msgstr "Impossible de créer le fichier des informations sur la classe: &1: &2"
+
+#~ msgid "Cannot create action file: &1"
+#~ msgstr "Impossible de créer le fichier des actions: &1"
+
+#~ msgid "Bad subscript range"
+#~ msgstr "Index de tableau incorrect"
+
+#~ msgid "Bad form file version"
+#~ msgstr "Format du fichier de formulaire incorrect"
+
+#~ msgid "Bad constant type"
+#~ msgstr "Type de constante incorrect"
+
+#~ msgid "Bad character constant in string"
+#~ msgstr "Constante de caractère incorrecte au sein de la chaîne"
+
+#~ msgid "Arrays are forbidden here"
+#~ msgstr "Impossible d'utiliser les tableaux ici"
+
+#~ msgid "Array declaration is forbidden with typed collection"
+#~ msgstr "La déclaration de tableaux est interdite avec les collection typées"
+
+#~ msgid "A property must be public"
+#~ msgstr "Une propriété doit être publique"
+
+#~ msgid "A property implementation cannot be public"
+#~ msgstr "Une implémentation de propriété ne peut pas être publique"
+
+#~ msgid "A module cannot raise events"
+#~ msgstr "Un module ne peut pas émettre d'evènements"
+
+#~ msgid "Ambiguous expression. Please use brackets"
+#~ msgstr "Expression ambigüe. Veuillez utiliser des parenthèses"
+
+#~ msgid "Alias name must be a string"
+#~ msgstr "L'alias doit être une chaîne de caractères"
+
+#~ msgid "&1: too many nested containers"
+#~ msgstr "&1: trop de conteneurs imbriqués"
+
+#~ msgid "&1: syntax error in form file"
+#~ msgstr "&1: erreur de syntaxe dans le fichier formulaire"
+
+#~ msgid "&1: syntax error"
+#~ msgstr "&1: erreur de syntaxe"
+
+#~ msgid "&1: not in archive"
+#~ msgstr "&1: introuvable dans l'archive"
+
+#~ msgid "&1 must be static"
+#~ msgstr "&1 doit être statique"
+
+#~ msgid "&1 is not declared"
+#~ msgstr "&1 n'est pas déclaré"
+
+#~ msgid "&1 is declared but is not a function"
+#~ msgstr "&1 est déclaré mais n'est pas une fonction"
+
+#~ msgid "&1 declaration does not match"
+#~ msgstr "La déclaration de &1 ne correspond pas"
+
+#~ msgid "&1 cannot be static"
+#~ msgstr "&1 ne peut pas être statique"
+
+#~ msgid "'&1' already declared"
+#~ msgstr "'&1' est déjà déclaré"

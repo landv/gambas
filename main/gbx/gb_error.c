@@ -44,22 +44,22 @@ static const char *_message[66] =
 {
   /*  0 E_UNKNOWN */ "Unknown error",
   /*  1 E_MEMORY */ "Out of memory",
-  /*  2 E_CLASS */ ".Cannot load class '&1': &2&3",
+  /*  2 E_CLASS */ ".3Cannot load class '&1': &2&3",
   /*  3 E_STACK */ "Stack overflow",
   /*  4 E_NEPARAM */ "Not enough arguments",
   /*  5 E_TMPARAM */ "Too many arguments",
-  /*  6 E_TYPE */ ".Type mismatch: wanted &1, got &2 instead",
+  /*  6 E_TYPE */ ".2Type mismatch: wanted &1, got &2 instead",
   /*  7 E_OVERFLOW */ "Overflow",
   /*  8 E_ILLEGAL */ "Illegal instruction",
   /*  9 E_NFUNC */ "Not a function",
-  /* 10 E_CSTATIC */ ".Class '&1' is not creatable",
-  /* 11 E_NSYMBOL */ ".Unknown symbol '&1' in class '&2'",
+  /* 10 E_CSTATIC */ ".1Class '&1' is not creatable",
+  /* 11 E_NSYMBOL */ ".2Unknown symbol '&1' in class '&2'",
   /* 12 E_NOBJECT */ "Not an object",
   /* 13 E_NULL */ "Null object",
-  /* 14 E_STATIC */ ".'&1.&2' is static",
-  /* 15 E_NREAD */ ".'&1.&2' is write only",
-  /* 16 E_NWRITE */ ".'&1.&2' is read only",
-  /* 17 E_NPROPERTY */ ".'&1.&2' is not a property",
+  /* 14 E_STATIC */ ".2'&1.&2' is static",
+  /* 15 E_NREAD */ ".2'&1.&2' is write only",
+  /* 16 E_NWRITE */ ".2'&1.&2' is read only",
+  /* 17 E_NPROPERTY */ ".2'&1.&2' is not a property",
   /* 18 E_NRETURN */ "No return value",
   /* 19 E_MATH*/ "Mathematic error",
   /* 20 E_ARG */ "Bad argument",
@@ -69,43 +69,43 @@ static const char *_message[66] =
   /* 24 E_MAIN */ "No startup method",
   /* 25 E_NNEW */ "No instanciation method",
   /* 26 E_ZERO */ "Division by zero",
-  /* 27 E_LIBRARY */ ".Cannot load component '&1': &2",
-  /* 28 E_EVENT */ ".Bad event handler in &1.&2(): &3",
+  /* 27 E_LIBRARY */ ".2Cannot load component '&1': &2",
+  /* 28 E_EVENT */ ".3Bad event handler in &1.&2(): &3",
   /* 29 E_IOBJECT */ "Invalid object",
   /* 30 E_ENUM */ "Not an enumeration",
   /* 31 E_UCONV */ "Unsupported string conversion",
   /* 32 E_CONV */ "Bad string conversion",
   /* 33 E_DATE */ "Invalid date",
   /* 34 E_BADPATH */ "Invalid path",
-  /* 35 E_OPEN */ ".Cannot open file '&1': &2",
-  /* 36 E_PROJECT */ ".Bad project file: line &1: &2",
+  /* 35 E_OPEN */ ".2Cannot open file '&1': &2",
+  /* 36 E_PROJECT */ ".2Bad project file: line &1: &2",
   /* 37 E_FULL */ "Device is full",
   /* 38 E_EXIST */ "File already exists",  /* &1 */
   /* 39 E_EOF */ "End of file",
   /* 40 E_FORMAT */ "Bad format string",
-  /* 41 E_DYNAMIC */ ".'&1.&2' is not static",
-  /* 42 E_SYSTEM */ ".System error #&1: &2",
+  /* 41 E_DYNAMIC */ ".2'&1.&2' is not static",
+  /* 42 E_SYSTEM */ ".2System error #&1: &2",
   /* 43 E_ACCESS */ "Access forbidden",
   /* 44 E_TOOLONG */ "File name is too long",
   /* 45 E_NEXIST */ "File or directory does not exist", /* &1 */
   /* 46 E_DIR */ "File is a directory", /* &1 */
   /* 47 E_READ */ "Read error",
   /* 48 E_WRITE */ "Write error",
-  /* 49 E_NDIR */ ".Not a directory: &1",
-  /* 50 E_REGEXP */ ".Bad regular expression: &1",
-  /* 51 E_ARCH */ ".Bad archive: &1: &2",
-  /* 52 E_REGISTER */ ".Cannot register class '&1'",
+  /* 49 E_NDIR */ ".1Not a directory: &1",
+  /* 50 E_REGEXP */ ".1Bad regular expression: &1",
+  /* 51 E_ARCH */ ".2Bad archive: &1: &2",
+  /* 52 E_REGISTER */ ".1Cannot register class '&1'",
   /* 53 E_CLOSED */ "Stream is closed",
   /* 54 E_VIRTUAL */ "Bad use of virtual class",
   /* 55 E_STOP */ "STOP instruction encountered",
   /* 56 E_STRING */ "Too many simultaneous new strings",
-  /* 57 E_EVAL */ ".Bad expression: &1",
+  /* 57 E_EVAL */ ".1Bad expression: &1",
   /* 58 E_LOCK */ "File is locked",
   /* 59 E_PARENT */ "No parent class",
-  /* 60 E_EXTLIB */ ".Cannot find dynamic library '&1': &2",
-  /* 61 E_EXTSYM */ ".Cannot find symbol '&2' in dynamic library '&1'",
+  /* 60 E_EXTLIB */ ".2Cannot find dynamic library '&1': &2",
+  /* 61 E_EXTSYM */ ".2Cannot find symbol '&2' in dynamic library '&1'",
   /* 62 E_BYREF */ "Argument cannot be passed by reference",
-  /* 63 E_OVERRIDE */ ".'&1.&2' is badly overridden in class '&3'",
+  /* 63 E_OVERRIDE */ ".3'&1.&2' is badly overridden in class '&3'",
 	/* 64 E_NKEY */ "Void key",
   NULL
 };
@@ -247,35 +247,27 @@ const char *ERROR_get(void)
   return strerror(errno);
 }
 
-static int get_message_length(const char *pattern, char *arg[])
+static int get_message_length(const char *pattern, char *arg[], int narg)
 {
-	uchar c;
-	int len = 0;
+	int len;
+	int i;
 	
-	for(;;)
-	{
-		c = *pattern++;
-		if (!c)
-			break;
-		if (c == '&')
-		{
-			c = *pattern++;
-			if (c >= '1' && c <= '4' && arg[c - '1'])
-				len += strlen(arg[c - '1']);
-		}
-		else
-			len++;
-	}
+	len = strlen(pattern) + narg;
+	for (i = 0; i < narg; i++)
+		len += strlen(arg[i]);
 	
+	if (!EXEC_debug)
+		len -= narg * 3;
+
 	return len;
 }
 
 void ERROR_define(const char *pattern, char *arg[])
 {
   uchar c;
-  bool subst;
   char *msg = NULL;
   int len;
+	int narg = 0;
 
 	ERROR_clear();
 
@@ -283,6 +275,11 @@ void ERROR_define(const char *pattern, char *arg[])
   {
     ERROR_current->info.code = (int)(intptr_t)pattern;
     pattern = _message[(int)(intptr_t)pattern];
+  	if (*pattern == '.')
+		{
+			narg = pattern[1] - '0';
+			pattern += 2;
+		}
   }
   else if ((intptr_t)pattern == E_ABORT)
   {
@@ -290,46 +287,81 @@ void ERROR_define(const char *pattern, char *arg[])
   	pattern = "";
 	}
 	else
+	{
     ERROR_current->info.code = E_CUSTOM;
+		
+		msg = (char *)pattern;
+		for (;;)
+		{
+			c = *msg++;
+			if (c == 0)
+				break;
+				
+			if (c == '&')
+			{
+				c = *pattern++;
+				if (c >= '1' && c <= '4')
+				{
+					c -= '1';
+					if (c > narg)
+						narg = c;
+				}
+			}
+		}
+	}
 
-  if (*pattern == '.' || ERROR_current->info.code == E_CUSTOM) //(arg) //(index(pattern, '&'))
+  if (narg)
   {
-  	if (*pattern == '.')
-    	pattern++;
-    subst = FALSE;
-
-		len = get_message_length(pattern, arg);
+		len = get_message_length(pattern, arg, narg);
     if (len)
     {
 			STRING_new(&msg, NULL, len);
 			ERROR_current->info.msg = msg;
     	ERROR_current->info.free = TRUE;
     
-			for (;;)
+			if (EXEC_debug)
 			{
-				c = *pattern++;
-				if (c == 0)
-					break;
-					
-				if (c == '&')
+				int i;
+				strcpy(msg, pattern);
+				msg += strlen(pattern);
+				for (i = 0; i < narg; i++)
 				{
-					c = *pattern++;
-					if (c >= '1' && c <= '4')
+					*msg++ = '|';
+					if (arg[i])
 					{
-						c -= '1';
-						if (arg[c])
-						{
-							len = strlen(arg[c]);
-							memcpy(msg, arg[c], len);
-							msg += len;
-						}
+						strcpy(msg, arg[i]);
+						msg += strlen(arg[i]);
 					}
 				}
-				else
-					*msg++ = c;
 			}
-			
-			*msg = 0;
+			else
+			{
+				for (;;)
+				{
+					c = *pattern++;
+					if (c == 0)
+						break;
+						
+					if (c == '&')
+					{
+						c = *pattern++;
+						if (c >= '1' && c <= '4')
+						{
+							c -= '1';
+							if (arg[c])
+							{
+								len = strlen(arg[c]);
+								memcpy(msg, arg[c], len);
+								msg += len;
+							}
+						}
+					}
+					else
+						*msg++ = c;
+				}
+				
+				*msg = 0;
+			}
 		}
   }
   else

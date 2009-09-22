@@ -124,6 +124,16 @@ Public Sub Process_Read()
   
 End
 
+Private Sub MakeErrorMessage(sErr As String) As String
+  
+  Dim aErr As String[]
+  
+  aErr = Split(sErr, "|")
+  aErr.Resize(5)
+  Return Subst(Tr$(aErr[0]), aErr[1], aErr[2], aErr[3], aErr[4])
+  
+End
+
 
 Public Sub Debug_Read(Data As String)
   
@@ -202,7 +212,7 @@ Public Sub Debug_Read(Data As String)
 
       If aData[1] And If Not $bError Then 
         '$bError = True
-        $sError = "<b>" & aData[1] & "</b><p>" & Subst(("In class &1 at line &2."), $sPosClass, $iPosLine)
+        $sError = "<b>" & MakeErrorMessage(aData[1]) & "</b><p>" & Subst(("In class &1 at line &2."), $sPosClass, $iPosLine)
         CheckErrorMessage(Project.ActiveForm)
         ' 'Message.Error(aData[1])
         ' Try Project.ActiveForm.ShowMessage(aData[1], "error")
