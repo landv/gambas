@@ -51,6 +51,7 @@ Private Sub DrawBarCode(Optional bPrinter As Boolean)
   
     'DrawingArea1.Refresh
     'Draw.Begin(DrawingArea1)
+    Draw.Clear
     modCrBcode.PrintBarcode(txtBarcode.Text, Val(txtPosX.text), Val(txtPosY.text), Val(txtHeight.text), Val(txtWidth.text), True)
     'Draw.End()
   
@@ -99,6 +100,7 @@ Public Sub btnRun_Click()
       Endif 
     Endif 
 
+    'DrawBarCode
     DrawingArea1.Refresh
 
   Endif 
@@ -146,14 +148,14 @@ Public Sub btnPrint_Click()
 
 End
 
-Public Sub DrawingArea1_Draw()
-
-  DrawBarCode
-
-End
-
 Public Sub btnAbout_Click()
 
   Message.Info("This program was made by Charles Guerin and\nmodified by Benoît Minisini.")
+
+End
+
+Public Sub DrawingArea1_Draw()
+
+  DrawBarCode
 
 End

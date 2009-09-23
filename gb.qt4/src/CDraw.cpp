@@ -1,22 +1,22 @@
 /***************************************************************************
 
-  CDraw.cpp
+	CDraw.cpp
 
-  (c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -93,17 +93,17 @@ void DRAW_init()
 
 static void init_drawing(GB_DRAW *d, QPainter *p, QWidget *init, int w, int h, int dpi = 0)
 {
-  EXTRA(d)->p = p;
-  EXTRA(d)->pm = 0;
-  EXTRA(d)->mask = 0;
-  EXTRA(d)->fg = COLOR_DEFAULT;
-  EXTRA(d)->fillColor = COLOR_DEFAULT;
-  d->width = w;
-  d->height = h;
-  
-  if (init)
-  	p->initFrom(init);
-  
+	EXTRA(d)->p = p;
+	EXTRA(d)->pm = 0;
+	EXTRA(d)->mask = 0;
+	EXTRA(d)->fg = COLOR_DEFAULT;
+	EXTRA(d)->fillColor = COLOR_DEFAULT;
+	d->width = w;
+	d->height = h;
+	
+	if (init)
+		p->initFrom(init);
+	
 	if (dpi)
 		d->resolution = dpi;
 	else
@@ -188,14 +188,14 @@ static int begin(GB_DRAW *d)
 {
 	void *device = d->device;
 	
-  if (GB.Is(device, CLASS_Window))
-  {
-    MyMainWindow *win = (MyMainWindow *)((CWIDGET *)device)->widget;
-    init_drawing(d, new QPainter(win), win, win->width(), win->height()); // How to paint unclip ???
-  }
-  else if (GB.Is(device, CLASS_Picture))
-  {
-    CPICTURE *pict = (CPICTURE *)device;
+	if (GB.Is(device, CLASS_Window))
+	{
+		MyMainWindow *win = (MyMainWindow *)((CWIDGET *)device)->widget;
+		init_drawing(d, new QPainter(win), win, win->width(), win->height()); // How to paint unclip ???
+	}
+	else if (GB.Is(device, CLASS_Picture))
+	{
+		CPICTURE *pict = (CPICTURE *)device;
 
 		if (pict->pixmap->isNull())
 		{
@@ -203,72 +203,75 @@ static int begin(GB_DRAW *d)
 			return TRUE;
 		}
 
-    init_drawing(d, new QPainter(pict->pixmap), NULL, pict->pixmap->width(), pict->pixmap->height());
+		init_drawing(d, new QPainter(pict->pixmap), NULL, pict->pixmap->width(), pict->pixmap->height());
 
-    if (!pict->pixmap->mask().isNull())
-    {
-      QPen pen;
-      QBrush brush;
+		if (!pict->pixmap->mask().isNull())
+		{
+			QPen pen;
+			QBrush brush;
 
-      EXTRA(d)->mask = new QBitmap(pict->pixmap->mask());
-      DPM(d) = new QPainter(EXTRA(d)->mask);
+			EXTRA(d)->mask = new QBitmap(pict->pixmap->mask());
+			DPM(d) = new QPainter(EXTRA(d)->mask);
 
-      pen = DP(d)->pen();
-      DPM(d)->setPen(QPen(Qt::color1, pen.width(), pen.style()));
-      brush = DP(d)->brush();
-      DPM(d)->setBrush(QBrush(Qt::color1, brush.style()));
-    }
-  }
-  else if (GB.Is(device, CLASS_DrawingArea))
-  {
-    MyDrawingArea *wid = (MyDrawingArea *)(((CWIDGET *)device)->widget);
+			pen = DP(d)->pen();
+			DPM(d)->setPen(QPen(Qt::color1, pen.width(), pen.style()));
+			brush = DP(d)->brush();
+			DPM(d)->setBrush(QBrush(Qt::color1, brush.style()));
+		}
+	}
+	else if (GB.Is(device, CLASS_DrawingArea))
+	{
+		MyDrawingArea *wid = (MyDrawingArea *)(((CWIDGET *)device)->widget);
 
-    if (wid->isCached())
-      init_drawing(d, new QPainter(wid->background()), wid, wid->background()->width(), wid->background()->height());
-    else if (wid->cache)
-      init_drawing(d, new QPainter(wid->cache), wid, wid->cache->width(), wid->cache->height());
-    else
-      init_drawing(d, new QPainter(wid), wid, wid->width(), wid->height());
-      
+		if (wid->isCached())
+			init_drawing(d, new QPainter(wid->background()), wid, wid->background()->width(), wid->background()->height());
+		else if (wid->cache)
+			init_drawing(d, new QPainter(wid->cache), wid, wid->cache->width(), wid->cache->height());
+		else
+			init_drawing(d, new QPainter(wid), wid, wid->width(), wid->height());
+			
 		wid->drawn++;
-  }
-  
+	}
+	
 	//DP(d)->setRenderHint(QPainter::Antialiasing, true);
-  
-  return FALSE;
+	
+	return FALSE;
 }
 
 static void end(GB_DRAW *d)
 {
 	void *device = d->device;
-  
-  delete DP(d);
-
-  if (GB.Is(device, CLASS_Picture))
-  {
-    if (DPM(d))
-    {
-      ((CPICTURE *)device)->pixmap->setMask(*(EXTRA(d)->mask));
-      delete DPM(d);
-      delete EXTRA(d)->mask;
-    }
-  }
-  else if (GB.Is(device, CLASS_DrawingArea))
-  {
-    MyDrawingArea *wid =  (MyDrawingArea *)(((CWIDGET *)device)->widget);
+	
+	if (GB.Is(device, CLASS_Picture))
+	{
+		if (DPM(d))
+		{
+			((CPICTURE *)device)->pixmap->setMask(*(EXTRA(d)->mask));
+			delete DPM(d);
+			delete EXTRA(d)->mask;
+		}
+	}
+	else if (GB.Is(device, CLASS_DrawingArea))
+	{
+		MyDrawingArea *wid =  (MyDrawingArea *)(((CWIDGET *)device)->widget);
 
 		if (wid)
 		{
-    	if (wid->isCached())
-    	{
-	      wid->setBackground();
-	      wid->refreshBackground();
-	      //wid->update();
-	    }
-  
-  		wid->drawn--;
+			if (wid->isCached())
+			{
+				//wid->drawFrame(DP(d));
+				//delete DP(d);
+				//DP(d) = 0;
+				wid->setBackground();
+				wid->refreshBackground();
+				//wid->update();
+			}
+	
+			wid->drawn--;
 		}
 	}
+
+	delete DP(d);
 }
 
 static void save(GB_DRAW *d)
@@ -317,11 +320,11 @@ static void set_foreground(GB_DRAW *d, int col)
 
 static void apply_font(QFont &font, void *object = 0)
 {
-  GB_DRAW *d = DRAW.GetCurrent();
+	GB_DRAW *d = DRAW.GetCurrent();
 
-  DP(d)->setFont(font);
-  if (DPM(d))
-    DPM(d)->setFont(font);
+	DP(d)->setFont(font);
+	if (DPM(d))
+		DPM(d)->setFont(font);
 }
 
 static GB_FONT get_font(GB_DRAW *d)
@@ -358,7 +361,7 @@ static void set_transparent(GB_DRAW *d, int transparent)
 
 static void get_picture_info(GB_DRAW *d, GB_PICTURE picture, GB_PICTURE_INFO *info)
 {
-  QPixmap *p = ((CPICTURE *)picture)->pixmap;
+	QPixmap *p = ((CPICTURE *)picture)->pixmap;
 	
 	info->width = p->width();
 	info->height = p->height();
@@ -446,10 +449,10 @@ static void set_fill_origin(GB_DRAW *d, int x, int y)
 static void draw_rect(GB_DRAW *d, int x, int y, int w, int h)
 {
 	FIX_RECT(d, w, h);
-  
-  DP(d)->drawRect(x, y, w, h);
-  if (DPM(d))
-	  DPM(d)->drawRect(x, y, w, h);
+	
+	DP(d)->drawRect(x, y, w, h);
+	if (DPM(d))
+		DPM(d)->drawRect(x, y, w, h);
 }
 
 static void draw_ellipse(GB_DRAW *d, int x, int y, int w, int h, double start, double end)
@@ -492,26 +495,26 @@ static void draw_point(GB_DRAW *d, int x, int y)
 static void draw_picture(GB_DRAW *d, GB_PICTURE picture, int x, int y, int w, int h, int sx, int sy, int sw, int sh)
 {
 	bool xform;
-  QPixmap *p = ((CPICTURE *)picture)->pixmap;
+	QPixmap *p = ((CPICTURE *)picture)->pixmap;
 
-  DRAW_NORMALIZE(x, y, w, h, sx, sy, sw, sh, p->width(), p->height());
+	DRAW_NORMALIZE(x, y, w, h, sx, sy, sw, sh, p->width(), p->height());
 	xform = (w != p->width() || h != p->height());
 
-  DP(d)->save();
-  
-  if (xform)
-  {
-	  DP(d)->translate(x, y);
-	  x = y = 0;
-  	DP(d)->scale((double)w / p->width(), (double)h / p->height());
+	DP(d)->save();
+	
+	if (xform)
+	{
+		DP(d)->translate(x, y);
+		x = y = 0;
+		DP(d)->scale((double)w / p->width(), (double)h / p->height());
 	}
 
-  DP(d)->drawPixmap(x, y, *p, sx, sy, sw, sh);
+	DP(d)->drawPixmap(x, y, *p, sx, sy, sw, sh);
 
-  DP(d)->restore();
+	DP(d)->restore();
 
-  if (DPM(d))
-  {
+	if (DPM(d))
+	{
 		DPM(d)->save();
 		
 		if (xform)
@@ -521,40 +524,40 @@ static void draw_picture(GB_DRAW *d, GB_PICTURE picture, int x, int y, int w, in
 			DPM(d)->scale((double)w / p->width(), (double)h / p->height());
 		}
 
-    if (p->hasAlpha())
-    {
-      //DPM(d)->setCompositionMode(QPainter::CompositionMode_SourceOver);
-      DPM(d)->drawPixmap(x, y, p->mask(), sx, sy, sw, sh);
-    }
-    else
-      DPM(d)->fillRect(x, y, sw, sh, Qt::color1);
+		if (p->hasAlpha())
+		{
+			//DPM(d)->setCompositionMode(QPainter::CompositionMode_SourceOver);
+			DPM(d)->drawPixmap(x, y, p->mask(), sx, sy, sw, sh);
+		}
+		else
+			DPM(d)->fillRect(x, y, sw, sh, Qt::color1);
 
-    DPM(d)->restore();
-  }
+		DPM(d)->restore();
+	}
 }
 
 static void draw_image(GB_DRAW *d, GB_IMAGE image, int x, int y, int w, int h, int sx, int sy, int sw, int sh)
 {
 	bool xform;
-  QImage *img = CIMAGE_get((CIMAGE *)image);
+	QImage *img = CIMAGE_get((CIMAGE *)image);
 
-  DRAW_NORMALIZE(x, y, w, h, sx, sy, sw, sh, img->width(), img->height());
+	DRAW_NORMALIZE(x, y, w, h, sx, sy, sw, sh, img->width(), img->height());
 	xform = (w != img->width() || h != img->height());
 
-  DP(d)->save();
-  
-  if (xform)
-  {
-	  DP(d)->translate(x, y);
-	  x = y = 0;
-  	DP(d)->scale((double)w / img->width(), (double)h / img->height());
+	DP(d)->save();
+	
+	if (xform)
+	{
+		DP(d)->translate(x, y);
+		x = y = 0;
+		DP(d)->scale((double)w / img->width(), (double)h / img->height());
 	}
 
-  if (DPM(d))
-  {
-    QPixmap p = QPixmap::fromImage(*img);
+	if (DPM(d))
+	{
+		QPixmap p = QPixmap::fromImage(*img);
 
-    DP(d)->drawImage(x, y, *img, sx, sy, sw, sh);
+		DP(d)->drawImage(x, y, *img, sx, sy, sw, sh);
 
 		DPM(d)->save();
 		if (xform)
@@ -564,18 +567,18 @@ static void draw_image(GB_DRAW *d, GB_IMAGE image, int x, int y, int w, int h, i
 			DPM(d)->scale((double)w / img->width(), (double)h / img->height());
 		}
 
-    if (p.hasAlpha())
-    {
-      //DPM(d)->setRasterOp(Qt::OrROP);
-      DPM(d)->drawPixmap(x, y, p.mask(), sx, sy, sw, sh);
-    }
-    else
-      DPM(d)->fillRect(x, y, sw, sh, Qt::color1);
+		if (p.hasAlpha())
+		{
+			//DPM(d)->setRasterOp(Qt::OrROP);
+			DPM(d)->drawPixmap(x, y, p.mask(), sx, sy, sw, sh);
+		}
+		else
+			DPM(d)->fillRect(x, y, sw, sh, Qt::color1);
 
 		DPM(d)->restore();
-  }
-  else
-    DP(d)->drawImage(x, y, *img, sx, sy, sw, sh);
+	}
+	else
+		DP(d)->drawImage(x, y, *img, sx, sy, sw, sh);
 
 	DP(d)->restore();
 }
@@ -584,9 +587,9 @@ static void draw_image(GB_DRAW *d, GB_IMAGE image, int x, int y, int w, int h, i
 static void draw_picture(GB_DRAW *d, GB_PICTURE picture, int x, int y, int w, int h, int sx, int sy, int sw, int sh)
 {
 	bool xform;
-  QPixmap *p = ((CPICTURE *)picture)->pixmap;
+	QPixmap *p = ((CPICTURE *)picture)->pixmap;
 
-  DRAW_NORMALIZE(x, y, w, h, sx, sy, sw, sh, p->width(), p->height());
+	DRAW_NORMALIZE(x, y, w, h, sx, sy, sw, sh, p->width(), p->height());
 	xform = (w != sw || h != sh);
 
 	if (!xform)
@@ -643,9 +646,9 @@ static void draw_picture(GB_DRAW *d, GB_PICTURE picture, int x, int y, int w, in
 static void draw_image(GB_DRAW *d, GB_IMAGE image, int x, int y, int w, int h, int sx, int sy, int sw, int sh)
 {
 	bool xform;
-  QImage *p = CIMAGE_get((CIMAGE *)image);
+	QImage *p = CIMAGE_get((CIMAGE *)image);
 
-  DRAW_NORMALIZE(x, y, w, h, sx, sy, sw, sh, p->width(), p->height());
+	DRAW_NORMALIZE(x, y, w, h, sx, sy, sw, sh, p->width(), p->height());
 	xform = (w != sw || h != sh);
 
 	if (!xform)
@@ -703,21 +706,21 @@ static void draw_image(GB_DRAW *d, GB_IMAGE image, int x, int y, int w, int h, i
 
 static void draw_tiled_picture(GB_DRAW *d, GB_PICTURE picture, int x, int y, int w, int h)
 {
-  QPixmap *p = ((CPICTURE *)picture)->pixmap;
+	QPixmap *p = ((CPICTURE *)picture)->pixmap;
 
-  DP(d)->drawTiledPixmap(x, y, w, h, *p, -DP(d)->brushOrigin().x(), -DP(d)->brushOrigin().y());
-  if (DPM(d))
-  {
-    if (p->hasAlpha())
-    {
-      DPM(d)->save();
-      //DPM(d)->setRasterOp(Qt::OrROP);
-      DPM(d)->drawTiledPixmap(x, y, w, h, p->mask(), -DP(d)->brushOrigin().x(), -DP(d)->brushOrigin().y());
-      DPM(d)->restore();
-    }
-    else
-      DPM(d)->fillRect(x, y, w, h, Qt::color1);
-  }
+	DP(d)->drawTiledPixmap(x, y, w, h, *p, -DP(d)->brushOrigin().x(), -DP(d)->brushOrigin().y());
+	if (DPM(d))
+	{
+		if (p->hasAlpha())
+		{
+			DPM(d)->save();
+			//DPM(d)->setRasterOp(Qt::OrROP);
+			DPM(d)->drawTiledPixmap(x, y, w, h, p->mask(), -DP(d)->brushOrigin().x(), -DP(d)->brushOrigin().y());
+			DPM(d)->restore();
+		}
+		else
+			DPM(d)->fillRect(x, y, w, h, Qt::color1);
+	}
 }
 
 static QStringList text_sl;
@@ -726,40 +729,40 @@ static int text_line;
 
 static int get_text_width(QPainter *dp, QString &s)
 {
-  int w, width = 0;
-  int i;
+	int w, width = 0;
+	int i;
 
-  text_sl = s.split('\n', QString::KeepEmptyParts);
+	text_sl = s.split('\n', QString::KeepEmptyParts);
 
-  text_w.resize(text_sl.count());
+	text_w.resize(text_sl.count());
 
-  for (i = 0; i < (int)text_sl.count(); i++)
-  {
-    w = dp->fontMetrics().width(text_sl[i]);
-    if (w > width) width = w;
-    text_w[i] = w;
-  }
+	for (i = 0; i < (int)text_sl.count(); i++)
+	{
+		w = dp->fontMetrics().width(text_sl[i]);
+		if (w > width) width = w;
+		text_w[i] = w;
+	}
 
-  return width;
+	return width;
 }
 
 static int get_text_height(QPainter *dp, QString &s)
 {
-  text_line = dp->fontMetrics().height();
-  return text_line * (1 + s.count('\n'));
+	text_line = dp->fontMetrics().height();
+	return text_line * (1 + s.count('\n'));
 }
 
 static void draw_text(GB_DRAW *d, char *text, int len, int x, int y, int w, int h, int align)
 {
 	QPen pen, penm;
-  QString t;
-  int xx, ww;
-  int tw, th;
-  int i;
+	QString t;
+	int xx, ww;
+	int tw, th;
+	int i;
 
-  t = QString::fromUtf8((const char *)text, len);  
-  tw = get_text_width(DP(d), t);
-  th = get_text_height(DP(d), t);
+	t = QString::fromUtf8((const char *)text, len);  
+	tw = get_text_width(DP(d), t);
+	th = get_text_height(DP(d), t);
 
 	if (w < 0) w = tw;
 	if (h < 0) h = th;
@@ -769,16 +772,16 @@ static void draw_text(GB_DRAW *d, char *text, int len, int x, int y, int w, int 
 
 	align = CCONST_alignment(align, ALIGN_TOP_NORMAL, true);
 
-  y += DP(d)->fontMetrics().ascent();
+	y += DP(d)->fontMetrics().ascent();
 
-  switch(align & Qt::AlignVertical_Mask)
-  {
-    case Qt::AlignBottom: y += h - th; break;
-    case Qt::AlignVCenter: y += (h - th) / 2; break;
-    default: break;
-  }
+	switch(align & Qt::AlignVertical_Mask)
+	{
+		case Qt::AlignBottom: y += h - th; break;
+		case Qt::AlignVCenter: y += (h - th) / 2; break;
+		default: break;
+	}
 
-  align = get_horizontal_alignment((Qt::Alignment)align);
+	align = get_horizontal_alignment((Qt::Alignment)align);
 
 	pen = DP(d)->pen();
 	DP(d)->setPen(QColor(EXTRA(d)->fg));
@@ -788,26 +791,26 @@ static void draw_text(GB_DRAW *d, char *text, int len, int x, int y, int w, int 
 		DPM(d)->setPen(Qt::color1);
 	}
 
-  for (i = 0; i < (int)text_sl.count(); i++)
-  {
-    t = text_sl[i];
-    ww = text_w[i];
+	for (i = 0; i < (int)text_sl.count(); i++)
+	{
+		t = text_sl[i];
+		ww = text_w[i];
 
-    switch(align)
-    {
-      case Qt::AlignRight: xx = x + w - ww; break;
-      case Qt::AlignHCenter: xx = x + (w - ww) / 2; break;
-      default: xx = x; break;
-    }
+		switch(align)
+		{
+			case Qt::AlignRight: xx = x + w - ww; break;
+			case Qt::AlignHCenter: xx = x + (w - ww) / 2; break;
+			default: xx = x; break;
+		}
 
-    DP(d)->drawText(xx, y, t);
-    if (DPM(d)) DPM(d)->drawText(xx, y, t);
+		DP(d)->drawText(xx, y, t);
+		if (DPM(d)) DPM(d)->drawText(xx, y, t);
 
-    y += text_line;
-  }
-  
-  DP(d)->setPen(pen);
-  if (DPM(d)) DPM(d)->setPen(penm);
+		y += text_line;
+	}
+	
+	DP(d)->setPen(pen);
+	if (DPM(d)) DPM(d)->setPen(penm);
 }
 
 static void text_size(GB_DRAW *d, char *text, int len, int *w, int *h)
@@ -819,39 +822,39 @@ static void text_size(GB_DRAW *d, char *text, int len, int *w, int *h)
 
 void DRAW_rich_text(QPainter *p, int x, int y, int w, int h, int align, QString &text, QPainter *p2)
 {
-  QString a;
-  int tw, th;
-  QString t = text;
+	QString a;
+	int tw, th;
+	QString t = text;
 
-  switch(get_horizontal_alignment((Qt::Alignment)align))
-  {
-  	case Qt::AlignRight: a = "right"; break;
-  	case Qt::AlignHCenter: a = "center"; break;
-  	case Qt::AlignJustify: a = "justify"; break;
-  }
-  
-  if (a.length())
-  	t = "<div align=\"" + a + "\">" + t + "</div>";
-  
+	switch(get_horizontal_alignment((Qt::Alignment)align))
+	{
+		case Qt::AlignRight: a = "right"; break;
+		case Qt::AlignHCenter: a = "center"; break;
+		case Qt::AlignJustify: a = "justify"; break;
+	}
+	
+	if (a.length())
+		t = "<div align=\"" + a + "\">" + t + "</div>";
+	
 	QTextDocument rt;
 	rt.setHtml(t);
 	rt.setDefaultFont(p->font()); 
-  
-  if (w > 0)
-  	rt.setTextWidth(w);
-  	
-  tw = rt.idealWidth();
-  th = rt.size().height();
+	
+	if (w > 0)
+		rt.setTextWidth(w);
+		
+	tw = rt.idealWidth();
+	th = rt.size().height();
 
 	if (w < 0) w = tw;
 	if (h < 0) h = th;
 	
-  switch(align & Qt::AlignVertical_Mask)
-  {
-    case Qt::AlignBottom: y += h - th; break;
-    case Qt::AlignVCenter: y += (h - th) / 2; break;
-    default: break;
-  }
+	switch(align & Qt::AlignVertical_Mask)
+	{
+		case Qt::AlignBottom: y += h - th; break;
+		case Qt::AlignVCenter: y += (h - th) / 2; break;
+		default: break;
+	}
 
 	p->translate(x, y);
 	rt.drawContents(p);
@@ -866,8 +869,8 @@ void DRAW_rich_text(QPainter *p, int x, int y, int w, int h, int align, QString 
 
 static void draw_rich_text(GB_DRAW *d, char *text, int len, int x, int y, int w, int h, int align)
 {
-  QString t = QString::fromUtf8((const char *)text, len);
-  
+	QString t = QString::fromUtf8((const char *)text, len);
+	
 	if (align == GB_DRAW_ALIGN_DEFAULT)
 		align = ALIGN_TOP_NORMAL;
 
@@ -925,23 +928,23 @@ static void rich_text_size(GB_DRAW *d, char *text, int len, int sw, int *w, int 
 
 static void draw_poly(GB_DRAW *d, bool fill, int n, int *points)
 {
-  int i, j;
+	int i, j;
 
-  QPolygon p(n);
+	QPolygon p(n);
 
-  for (i = 0, j = 0; i < n; i++, j += 2)
-    p.setPoint(i, points[j], points[j + 1]);
+	for (i = 0, j = 0; i < n; i++, j += 2)
+		p.setPoint(i, points[j], points[j + 1]);
 
-  if (fill)
-  {
-    DP(d)->drawPolygon(p);
-    if (DPM(d)) DPM(d)->drawPolygon(p);
-  }
-  else
-  {
-    DP(d)->drawPolyline(p);
-    if (DPM(d)) DPM(d)->drawPolyline(p);
-  }
+	if (fill)
+	{
+		DP(d)->drawPolygon(p);
+		if (DPM(d)) DPM(d)->drawPolygon(p);
+	}
+	else
+	{
+		DP(d)->drawPolyline(p);
+		if (DPM(d)) DPM(d)->drawPolyline(p);
+	}
 }
 
 static void draw_polyline(GB_DRAW *d, int count, int *points)
@@ -998,21 +1001,21 @@ static void style_arrow(GB_DRAW *d, int x, int y, int w, int h, int type, int st
 	switch (type)
 	{
 		case ALIGN_NORMAL: pe = GB.System.IsRightToLeft() ? QStyle::PE_IndicatorArrowLeft : QStyle::PE_IndicatorArrowRight; break;
-  	case ALIGN_LEFT: pe = QStyle::PE_IndicatorArrowLeft; break;
-  	case ALIGN_RIGHT: pe = QStyle::PE_IndicatorArrowRight; break;
-  	case ALIGN_TOP: pe = QStyle::PE_IndicatorArrowUp; break;
-  	case ALIGN_BOTTOM: pe = QStyle::PE_IndicatorArrowDown; break;
-  	default:
-  		return;
+		case ALIGN_LEFT: pe = QStyle::PE_IndicatorArrowLeft; break;
+		case ALIGN_RIGHT: pe = QStyle::PE_IndicatorArrowRight; break;
+		case ALIGN_TOP: pe = QStyle::PE_IndicatorArrowUp; break;
+		case ALIGN_BOTTOM: pe = QStyle::PE_IndicatorArrowDown; break;
+		default:
+			return;
 	}
 
 	QApplication::style()->drawPrimitive(pe, &opt, DP(d));
 	if (DPM(d)) 
 	{
-    //DPM(d)->setRasterOp(Qt::OrROP);
+		//DPM(d)->setRasterOp(Qt::OrROP);
 		//qDebug("arrow: %p %p %d", DPM(d), DPM(d)->device(), dynamic_cast<QBitmap *>(DPM(d)->device()) != NULL);
 		QApplication::style()->drawPrimitive(pe, &opt, DPM(d));
-    //DPM(d)->setRasterOp(Qt::CopyROP);
+		//DPM(d)->setRasterOp(Qt::CopyROP);
 	}
 }
 
@@ -1032,7 +1035,7 @@ static void style_check(GB_DRAW *d, int x, int y, int w, int h, int value, int s
 	QApplication::style()->drawPrimitive(QStyle::PE_IndicatorCheckBox, &opt, DP(d));
 	if (DPM(d)) 
 	{
-    //DPM(d)->setRasterOp(Qt::OrROP);
+		//DPM(d)->setRasterOp(Qt::OrROP);
 		QApplication::style()->drawPrimitive(QStyle::PE_IndicatorCheckBox, &opt, DPM(d));
 		//DPM(d)->setRasterOp(Qt::CopyROP);
 	}
@@ -1276,20 +1279,20 @@ void DRAW_aligned_pixmap(QPainter *p, const QPixmap &pix, int x, int y, int w, i
 		return;
 	
 	xp = x;
-  switch(get_horizontal_alignment((Qt::Alignment)align))
-  {
-  	case Qt::AlignRight: xp += w - pix.width(); break;
-  	case Qt::AlignHCenter: xp += (w - pix.width()) / 2; break;
-  	default: break;
-  }
-  
-  yp = y;
-  switch(align & Qt::AlignVertical_Mask)
-  {
-    case Qt::AlignBottom: yp += h - pix.height(); break;
-    case Qt::AlignVCenter: yp += (h - pix.height()) / 2; break;
-    default: break;
-  }
+	switch(get_horizontal_alignment((Qt::Alignment)align))
+	{
+		case Qt::AlignRight: xp += w - pix.width(); break;
+		case Qt::AlignHCenter: xp += (w - pix.width()) / 2; break;
+		default: break;
+	}
+	
+	yp = y;
+	switch(align & Qt::AlignVertical_Mask)
+	{
+		case Qt::AlignBottom: yp += h - pix.height(); break;
+		case Qt::AlignVCenter: yp += (h - pix.height()) / 2; break;
+		default: break;
+	}
 	
 	p->drawPixmap(xp, yp, pix);
 }

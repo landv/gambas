@@ -5,7 +5,7 @@
   Text = ("")
   Icon = Picture["barcode.png"]
   Arrangement = Arrange.Vertical
-  Spacing = 8
+  Spacing = True
   Padding = 8
   { Panel1 Panel
     MoveScaled(1,1,85,8)
@@ -67,7 +67,7 @@
   }
   { HBox1 HBox
     MoveScaled(1,56,69,5)
-    Spacing = 8
+    Spacing = True
     { btnRun Button
       MoveScaled(0,0,19,4)
       Text = ("&Refresh Barcode")

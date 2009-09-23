@@ -1,60 +1,80 @@
 ' Gambas class file
 
 'PRIVATE Game AS Boolean[]
-PRIVATE Game AS NEW Image
-PRIVATE MaxX AS Integer
-PRIVATE MaxY AS Integer
-PRIVATE dW AS DrawingArea
-PRIVATE $iZoom AS Integer
+Private Game As New Image
+Private MaxX As Integer
+Private MaxY As Integer
+Private dW As DrawingArea
+Private $iZoom As Integer
 
-PUBLIC FUNCTION Init(bSmall AS Boolean, iLife AS Integer) AS Integer
+Public Function Init(bSmall As Boolean, iLife As Integer, bSymetryH As Boolean, bSymetryV As Boolean) As Integer
   
-  DIM tmp AS NEW Collection
-  DIM i, j AS Integer
+  Dim tmp As New Collection
+  Dim i, j, n, size As Integer
   
-  RANDOMIZE 
+  Randomize 
   
   MaxX = 110 - 1
   MaxY = 110 - 1
   $iZoom = 5
   
   'Game = NEW Boolean[MaxX + 1, MaxY + 1]
-  Game = NEW Image(MaxX + 1, MaxY + 1)
+  Game = New Image(MaxX + 1, MaxY + 1)
   Game.Fill(Color.White)
   
-  IF bSmall THEN 
+  If bSmall Then 
 
-    FOR i = MaxX \ 2 - 5 TO MaxX \ 2 + 5
-      FOR j = MaxY \ 2 - 5 TO MaxY \ 2 + 5
-        IF Rnd(1, 100) >= iLife THEN Game[i, j] = Color.Red
-      NEXT 
-    NEXT
+    For i = MaxX \ 2 - 5 To MaxX \ 2 + 5
+      For j = MaxY \ 2 - 5 To MaxY \ 2 + 5
+        If Rnd(1, 100) >= iLife Then Game[i, j] = Color.Red
+      Next 
+    Next
+    
+    If bSymetryH Then
+      For i = MaxX \ 2 - 5 To MaxX \ 2 + 5
+        n = 11
+        For j = MaxY \ 2 - 5 To MaxY \ 2 
+          Game[i, j] = Game[i, j + n]
+          n -= 2
+        Next 
+      Next
+    Endif
 
-  ELSE
+    If bSymetryV Then
+      For i = MaxX \ 2 - 5 To MaxX \ 2 + 5
+        n = 11
+        For j = MaxY \ 2 - 5 To MaxY \ 2 
+          Game[j, i] = Game[j + n, i]
+          n -= 2
+        Next 
+      Next
+    Endif
+
+  Else
   
-    FOR i = 0 TO MaxX
-      FOR j = 0 TO MaxY
-        IF Rnd(1, 100) >= iLife THEN Game[i, j] = Color.Red
-      NEXT 
-    NEXT
+    For i = 0 To MaxX
+      For j = 0 To MaxY
+        If Rnd(1, 100) >= iLife Then Game[i, j] = Color.Red
+      Next 
+    Next
   
-  ENDIF 
+  Endif 
   
   'PRINT MaxX + 1;; "x";; MaxY + 1; " game"
   
-END
+End
 
-PUBLIC SUB SetDrawArea(pdW AS DrawingArea)
+Public Sub SetDrawArea(pdW As DrawingArea)
   
   dW = pdW
   
-END
+End
 
-PUBLIC SUB DrawGame(bBorder AS Boolean)
+Public Sub DrawGame(bBorder As Boolean)
 
-  DIM SquareSize AS Integer
-  DIM i, j, x, y AS Integer
-  DIM tmp AS Collection
+  Dim SquareSize As Integer
+  Dim i, j, x, y As Integer
+  Dim tmp As Collection
   
   'IF GameRow.Count = 0 OR GameRow[1].Count = 0 THEN RETURN -1
   
@@ -89,44 +109,44 @@ PUBLIC SUB DrawGame(bBorder AS Boolean)
   ' NEXT
   draw.End
   
-END
+End
 
-PRIVATE FUNCTION CountNeighboursOnBorder(x AS Integer, y AS Integer) AS Integer
+Private Function CountNeighboursOnBorder(x As Integer, y As Integer) As Integer
   
-  DIM iTot AS Integer
-  DIM count AS Integer
-  DIM i, j, ti, tj AS Integer
+  Dim iTot As Integer
+  Dim count As Integer
+  Dim i, j, ti, tj As Integer
 
-  FOR i = x - 1 TO x + 1
-    IF i < 0 THEN 
+  For i = x - 1 To x + 1
+    If i < 0 Then 
       ti = MaxX
-    ELSE IF i > MaxX THEN 
+    Else If i > MaxX Then 
       ti = 0
-    ELSE 
+    Else 
       ti = i
-    ENDIF
-    FOR j = y - 1 TO y + 1
-      IF j < 0 THEN 
+    Endif
+    For j = y - 1 To y + 1
+      If j < 0 Then 
         tj = MaxY
-      ELSE IF j > MaxY THEN 
+      Else If j > MaxY Then 
         tj = 0
-      ELSE 
+      Else 
         tj = j
-      ENDIF
+      Endif
       iTot += Game[ti, tj]
       'IF Game[ti, tj] = Color.Red THEN INC count
-    NEXT 
-  NEXT 
+    Next 
+  Next 
 
   iTot = iTot - Game[x, y] - Color.White * 8
 
-  RETURN iTot / (Color.Red - Color.White)
+  Return iTot / (Color.Red - Color.White)
     
-END
+End
 
-PRIVATE FUNCTION CountNeighbours(x AS Integer, y AS Integer) AS Integer
+Private Function CountNeighbours(x As Integer, y As Integer) As Integer
   
-  DIM iTot AS Integer
+  Dim iTot As Integer
 
   iTot = Game[x - 1, y - 1] + Game[x, y - 1] + Game[x + 1, y - 1] +
     Game[x - 1, y] + Game[x + 1, y] +
@@ -134,71 +154,71 @@ PRIVATE FUNCTION CountNeighbours(x AS Integer, y AS Integer) AS Integer
     
   iTot -= Color.White * 8
   'DEBUG iTot / (Color.Red - Color.Background)
-  RETURN iTot / (Color.Red - Color.White)
+  Return iTot / (Color.Red - Color.White)
 
-END
+End
 
-PUBLIC SUB SpawnNextGeneration(Live AS Boolean[], Keep AS Boolean[])
+Public Sub SpawnNextGeneration(Live As Boolean[], Keep As Boolean[])
 
-  DIM x AS Integer
-  DIM y AS Integer
-  DIM i, j AS Integer
-  DIM myCount AS Integer
-  DIM newGame AS Image
+  Dim x As Integer
+  Dim y As Integer
+  Dim i, j As Integer
+  Dim myCount As Integer
+  Dim newGame As Image
   
   newgame = Game.Copy()
   
-  FOR x = 1 TO MaxX - 1
-    FOR y = 1 TO MaxY - 1
+  For x = 1 To MaxX - 1
+    For y = 1 To MaxY - 1
       myCount = CountNeighbours(x, y)
-      IF keep[myCount] THEN CONTINUE
-      IF live[myCount]
+      If keep[myCount] Then Continue
+      If live[myCount]
         newGame[x, y] = Color.Red
-      ELSE 
+      Else 
         newGame[x, y] = Color.White
-      ENDIF
-    NEXT 
-  NEXT
+      Endif
+    Next 
+  Next
   
-  FOR x = 0 TO MaxX
+  For x = 0 To MaxX
     y = 0
     myCount = CountNeighboursOnBorder(x, y)
-    IF NOT keep[myCount] THEN
-      IF live[myCount]
+    If Not keep[myCount] Then
+      If live[myCount]
         newGame[x, y] = Color.Red
-      ELSE 
+      Else 
         newGame[x, y] = Color.White
-      ENDIF
-    ENDIF
+      Endif
+    Endif
     y = MaxY
     myCount = CountNeighboursOnBorder(x, y)
-    IF keep[myCount] THEN CONTINUE
-    IF live[myCount]
+    If keep[myCount] Then Continue
+    If live[myCount]
       newGame[x, y] = Color.Red
-    ELSE 
+    Else 
       newGame[x, y] = Color.White
-    ENDIF
-  NEXT
+    Endif
+  Next
 
-  FOR y = 1 TO MaxY - 1
+  For y = 1 To MaxY - 1
     x = 0
     myCount = CountNeighboursOnBorder(x, y)
-    IF NOT keep[myCount] THEN
-      IF live[myCount]
+    If Not keep[myCount] Then
+      If live[myCount]
         newGame[x, y] = Color.Red
-      ELSE 
+      Else 
         newGame[x, y] = Color.White
-      ENDIF
-    ENDIF
+      Endif
+    Endif
     x = MaxX
     myCount = CountNeighboursOnBorder(x, y)
-    IF keep[myCount] THEN CONTINUE
-    IF live[myCount]
+    If keep[myCount] Then Continue
+    If live[myCount]
       newGame[x, y] = Color.Red
-    ELSE 
+    Else 
       newGame[x, y] = Color.White
-    ENDIF
-  NEXT
+    Endif
+  Next
   ' IF Rnd < 0.1 THEN
   '   x = Int(Rnd(0, MaxX - 30))
   '   y = Int(Rnd(0, MaxY - 30))
@@ -211,5 +231,5 @@ PUBLIC SUB SpawnNextGeneration(Live AS Boolean[], Keep AS Boolean[])
     
   Game = newGame
   
-END
+End
 

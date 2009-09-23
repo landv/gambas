@@ -58,6 +58,8 @@ MyDrawingArea::MyDrawingArea(QWidget *parent) : MyContainer(parent)
 	
 	setAttribute(Qt::WA_KeyCompression, false);
 	setAttribute(Qt::WA_OpaquePaintEvent, true);
+	setAttribute(Qt::WA_NativeWindow, true);
+	setAttribute(Qt::WA_DontCreateNativeAncestors, true);
 	//setAttribute(Qt::WA_PaintOnScreen, true);
 	//setAttribute(Qt::WA_NoSystemBackground, true);
 }
@@ -130,7 +132,9 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 {
 	if (_background)
 	{
-		MyContainer::paintEvent(event);
+		QPainter paint( this );
+		drawFrame(&paint);
+		//MyContainer::paintEvent(event);
 	}
 	else
 	{
@@ -191,51 +195,6 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 }
 #endif
 
-#if 0
-void MyDrawingArea::paintEvent(QPaintEvent *event)
-{
-	QPainter paint( this );
-
-	if ( !contentsRect().contains( event->rect() ) )
-	{
-			paint.save();
-			paint.setClipRegion( event->region().intersect(frameRect()) );
-			drawFrame( &paint );
-			paint.restore();
-	}
-
-	if (!_frozen && !_background)
-	{
-		if (event->rect().intersects(contentsRect()))
-		{
-			void *object = CWidget::get(this);
-			int status;
-
-			QPainter *p = new QPainter(this);
-
-			p->setClipRegion( event->region().intersect( contentsRect() ) );
-
-			//p->translate(-event->rect().x(), -event->rect().y());
-
-			//p->setClipRegion(event->region().intersect(contentsRect()));
-			//p->setBrushOrigin(-event->rect().x(), -event->rect().y());
-
-			status = DRAW_status();
-			DRAW_begin(NULL, p);
-
-			//qDebug("MyDrawingArea::paintEvent %p", CWidget::get(this));
-			GB.Raise(object, EVENT_draw, 0);
-
-			DRAW_restore(status);
-			//delete p;
-
-			//paint.drawPixmap(event->rect().x(), event->rect().y(), cache);
-		}
-	}
-}
-#endif
-
-
 void MyDrawingArea::setBackground()
 {
 	if (_background)
@@ -247,9 +206,6 @@ void MyDrawingArea::setBackground()
 		#else
 		XSetWindowBackgroundPixmap(QX11Info::display(), winId(), _background->handle());
 		#endif
-		//setWFlags(Qt::WNoAutoErase);
-		//setWFlags(Qt::WStaticContents);
-		setAttribute(Qt::WA_StaticContents, true);
 	}
 	else
 	{
@@ -258,22 +214,15 @@ void MyDrawingArea::setBackground()
 		#else
 		XSetWindowBackgroundPixmap(QX11Info::display(), winId(), None);
 		#endif
-		//setWFlags(Qt::WNoAutoErase);
-		//clearWFlags(Qt::WStaticContents);
-		setAttribute(Qt::WA_StaticContents, false);
 	}
 }
 
 void MyDrawingArea::refreshBackground()
 {
-// 	QPainter p(_background);
-// 	p.initFrom(this);
-// 	drawFrame(&p);
-// 	p.end();
-	//setBackground();
 	#ifndef NO_X_WINDOW
 	XClearWindow(QX11Info::display(), winId());
 	#endif
+	repaint();
 }
 
 
@@ -282,7 +231,7 @@ void MyDrawingArea::clearBackground()
 	if (_background)
 	{
 		QPainter p(_background);
-		p.fillRect(0, 0, _background->width(), _background->height(), palette().color(QPalette::Window));
+		p.fillRect(0, 0, _background->width(), _background->height(), palette().color(backgroundRole()));
 		p.end();
 
 		setBackground();
@@ -291,61 +240,6 @@ void MyDrawingArea::clearBackground()
 	else
 		setBackground();
 }
-
-#if 0
-void MyDrawingArea::resizeEvent(QResizeEvent *e)
-{
-	QFrame::resizeEvent(e);
-	
-	if (!drawn && _background && e->size() != e->oldSize())
-	{
-		int w = qMax(e->size().width(), 1);
-		int h = qMax(e->size().height(), 1);
-		int wb, hb;
-
-		QPixmap *pix = new QPixmap(w, h);
-		pix->fill(palette().color(QPalette::Window));
-
-		wb = qMin(w, _background->width());
-		hb = qMin(h, _background->height());
-
-		QPainter p(pix);
-		p.drawPixmap(0, 0, *_background, 0, 0, wb, hb);
-		p.end();
-
-		delete _background;
-		_background = pix;
-
-		setBackground();
-	}
-}
-
-void MyDrawingArea::setCached(bool c)
-{
-	if (_background)
-		delete _background;
-
-	if (c)
-	{
-		_background = new QPixmap(width(), height());
-		_background->fill(palette().color(QPalette::Window));
-		setAttribute(Qt::WA_NoBackground, false);
-	}
-	else
-	{
-		_background = 0;
-		setAttribute(Qt::WA_NoBackground, true);
-	}
-
-	setBackground();
-}
-
-void MyDrawingArea::setPalette(const QPalette &pal)
-{
-	QFrame::setPalette(pal);
-	repaint();
-}
-#endif
 
 bool MyDrawingArea::doResize()
 {
@@ -363,7 +257,7 @@ bool MyDrawingArea::doResize()
 		h = QMAX(height(), 1);
 
 		QPixmap *p = new QPixmap(w, h);
-		p->fill(paletteBackgroundColor());
+		p->fill(palette().color(backgroundRole()));
 
 		wb = QMIN(w, _background->width());
 		hb = QMIN(h, _background->height());
@@ -371,12 +265,14 @@ bool MyDrawingArea::doResize()
 		//bitBlt(p, 0, 0, _background, 0, 0, wb, hb, CopyROP);
 		QPainter pt(p);
 		pt.drawPixmap(0, 0, *_background, 0, 0, wb, hb);
+		//drawFrame(&pt);
 		pt.end();
 
 		delete _background;
 		_background = p;
 
 		setBackground();
+		refreshBackground();
 	}
 	
 	return false;
@@ -398,13 +294,17 @@ void MyDrawingArea::setCached(bool c)
 	if (c)
 	{
 		_background = new QPixmap(width(), height());
-		_background->fill(palette().color(QPalette::Window));
-		setAttribute(Qt::WA_NoBackground, false);
+		_background->fill(palette().color(backgroundRole()));
+		//setAttribute(Qt::WA_NoSystemBackground, true);
+		setAttribute(Qt::WA_StaticContents, true);
+		setAttribute(Qt::WA_PaintOnScreen, true);
 	}
 	else
 	{
 		_background = 0;
-		setAttribute(Qt::WA_NoBackground, true);
+		setAttribute(Qt::WA_PaintOnScreen, false);
+		//setAttribute(Qt::WA_NoSystemBackground, false);
+		setAttribute(Qt::WA_StaticContents, false);
 	}
 
 	setBackground();

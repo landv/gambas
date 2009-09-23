@@ -1,43 +1,43 @@
 ' Gambas class file
 
-PRIVATE Game AS NEW CGameField
+Private Game As New CGameField
 
 
-PRIVATE SUB DrawGame()
+Private Sub DrawGame()
   
   Game.DrawGame(chkBorder.Value)
   
-END
+End
 
 
-PUBLIC SUB Form_Open()
-    Game.Init(chkSmall.Value, Slider2.Value)
-    Game.SetDrawArea(dW)
-    DrawGame
-END
+Public Sub Form_Open()
 
-PUBLIC SUB Button1_Click()
+  Button1_Click
+  
+End
 
-    Game.Init(chkSmall.Value, Slider2.Value)
-    Game.SetDrawArea(dW)
-    DrawGame
+Public Sub Button1_Click()
 
-END
+  Game.Init(chkSmall.Value, Slider2.Value, chkSymetryH.Value, chkSymetryV.Value)
+  Game.SetDrawArea(dW)
+  DrawGame
 
-PUBLIC SUB Button2_Click()
+End
+
+Public Sub Button2_Click()
 
   tmrEvolution_Timer
   'Game.SpawnNextGeneration
   'DrawGame
 
-END
+End
 
-PUBLIC SUB tmrEvolution_Timer()
+Public Sub tmrEvolution_Timer()
 
-  DIM Live AS Boolean[9]
-  DIM Keep AS Boolean[9]
+  Dim Live As Boolean[9]
+  Dim Keep As Boolean[9]
 
-  IF NOT togEvolution.Value THEN RETURN
+  If Not togEvolution.Value Then Return
   
   live[0] = chkZero.Value = CheckBox.False
   live[1] = chkOne.Value = CheckBox.False
@@ -62,26 +62,26 @@ PUBLIC SUB tmrEvolution_Timer()
   Game.SpawnNextGeneration(Live, Keep)
   DrawGame
   
-END
+End
 
-PUBLIC SUB Slider1_Change()
+Public Sub Slider1_Change()
 
   lblDelay.Caption = "Evolution Delay: " & Str(slider1.Value) & "ms"
   tmrEvolution.Delay = slider1.Value    
 
-END
+End
 
-PUBLIC SUB chkBorder_Click()
+Public Sub chkBorder_Click()
 
-  IF NOT togEvolution.Value THEN DrawGame
+  If Not togEvolution.Value Then DrawGame
 
-END
+End
 
-PUBLIC SUB togEvolution_Click()
+Public Sub togEvolution_Click()
 
   tmrEvolution.Enabled = togEvolution.Value
 
-END
+End
 
 ' PUBLIC SUB dW_Draw()
 ' 

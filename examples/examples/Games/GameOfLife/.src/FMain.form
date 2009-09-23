@@ -35,7 +35,7 @@
     }
     { Label8 Label
       MoveScaled(1,14,22,3)
-      Text = ("and Beno\xC3\xAEt Minisini")
+      Text = ("and Benoît Minisini")
       Alignment = Align.Left
     }
     { PictureBox1 PictureBox
@@ -157,12 +157,20 @@
       Alignment = Align.Right
     }
     { chkBorder CheckBox
-      MoveScaled(1,35,24,4)
+      MoveScaled(1,36,24,4)
       Text = ("Draw cell borders")
     }
     { chkSmall CheckBox
-      MoveScaled(1,31,24,4)
+      MoveScaled(1,24,24,4)
       Text = ("Small generation")
+    }
+    { chkSymetryV CheckBox
+      MoveScaled(1,32,24,4)
+      Text = ("Vertical symetry")
+    }
+    { chkSymetryH CheckBox
+      MoveScaled(1,28,24,4)
+      Text = ("Horizontal symetry")
     }
     Index = 0
   }

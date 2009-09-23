@@ -1,22 +1,22 @@
 /***************************************************************************
 
-  CContainer.h
+	CContainer.h
 
-  (c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -36,18 +36,18 @@
 #include "CWidget.h"
 
 typedef
-  struct {
-    unsigned mode : 8;
-    unsigned padding : 8;
-    unsigned spacing : 8;
-    unsigned locked : 1;
-    unsigned user : 1;
-    unsigned dirty : 1;
-    unsigned autoresize : 1;
-    unsigned margin : 1;
+	struct {
+		unsigned mode : 8;
+		unsigned padding : 8;
+		unsigned spacing : 8;
+		unsigned locked : 1;
+		unsigned user : 1;
+		unsigned dirty : 1;
+		unsigned autoresize : 1;
+		unsigned margin : 1;
 		unsigned indent : 3;
-    }
-  CARRANGEMENT;
+		}
+	CARRANGEMENT;
 
 #ifndef __CCONTAINER_CPP
 
@@ -59,20 +59,20 @@ extern GB_DESC CUserContainerDesc[];
 #else
 
 typedef
-  struct {
-    CWIDGET widget;
-    QWidget *container;
-    unsigned mode : 8;
-    unsigned padding : 8;
-    unsigned spacing : 8;
-    unsigned locked : 1;
-    unsigned user : 1;
-    unsigned dirty : 1;
-    unsigned autoresize : 1;
-    unsigned margin : 1;
-    unsigned indent : 3;
-    }
-  CCONTAINER_ARRANGEMENT;
+	struct {
+		CWIDGET widget;
+		QWidget *container;
+		unsigned mode : 8;
+		unsigned padding : 8;
+		unsigned spacing : 8;
+		unsigned locked : 1;
+		unsigned user : 1;
+		unsigned dirty : 1;
+		unsigned autoresize : 1;
+		unsigned margin : 1;
+		unsigned indent : 3;
+		}
+	CCONTAINER_ARRANGEMENT;
 
 typedef
 	struct {
@@ -107,21 +107,21 @@ void CCONTAINER_draw_frame(QPainter *p, int frame, QStyleOptionFrame &opt, QWidg
 
 class MyContainer : public QWidget
 {
-  Q_OBJECT
+	Q_OBJECT
 
 public:
 
-  MyContainer(QWidget *);
+	MyContainer(QWidget *);
 	~MyContainer();
 	int frameStyle() const { return _frame; }
 	void setFrameStyle(int frame);
+	void drawFrame(QPainter *);
 
 protected:
 
-  virtual void showEvent(QShowEvent *);
-  virtual void hideEvent(QHideEvent *);
+	virtual void showEvent(QShowEvent *);
+	virtual void hideEvent(QHideEvent *);
 	virtual void paintEvent(QPaintEvent *);
-	void drawFrame(QPainter *);
 
 private:
 

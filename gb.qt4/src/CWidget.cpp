@@ -22,6 +22,8 @@
 
 #define __CWIDGET_CPP
 
+#undef QT3_SUPPORT
+
 #include "gambas.h"
 
 #include <stdio.h>
