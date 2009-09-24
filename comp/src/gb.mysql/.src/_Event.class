@@ -3,45 +3,33 @@
 Export
 Create Static
 
-' Public Procedure Modify(View As String, Statement As String)
-' 
-'   Add(View, Statement, True)
-' 
-' End
-' 
-' Public Procedure Add(View As String, Statement As String, Optional {Replace} As Boolean)
-' 
-'   If Not {Replace} Then {Replace} = False
-'   'TODO: Quote the Statement parameter
-'   modMain.$Query = "CREATE"
-'   If {Replace} Then modMain.$Query &= " OR REPLACE"
-'   modMain.$Query &= " VIEW `" & View & "` AS " & Statement
-'   modMain.RunQuery(modMain.$Query)
-' 
-' End
-' 
-' Public Procedure Delete(Views As String[], Optional IfExists As Boolean)
-' 
-'   If Not IfExists Then IfExists = False
-'   modMain.$Query = "DROP VIEW "
-'   If IfExists Then modMain.$Query &= "IF EXISTS "
-'   modMain.$Query &= modMain.ArrayToString(Views, True)
-'   modMain.RunQuery(modMain.$Query)
-' 
-' End
+Public Procedure Modify({Event} As String, Schedule As String, Statement As String)
 
-Public Function Info({Event} As String, Optional Database As String) As String
+  Add({Event}, Schedule, Statement, True)
 
-  If Not Database Then Database = modMain.$Connection.Name
+End
+
+Public Procedure Add({Event} As String, Schedule As String, Statement As String, Optional {Replace} As Boolean = False)
+
+  'TODO: Quote the Statement parameter
+  modMain.$Query = IIf({Replace}, "ALTER", "CREATE")
+  modMain.$Query &= " EVENT `" & {Event} & "` ON SCHEDULE " & Schedule & " DO " & Statement
+  modMain.RunQuery(modMain.$Query)
+
+End
+
+Public Procedure Delete({Event} As String, Optional IfExists As Boolean = False)
+
+  modMain.$Query = "DROP EVENT "
+  If IfExists Then modMain.$Query &= "IF EXISTS "
+  modMain.$Query &= {Event}
+  modMain.RunQuery(modMain.$Query)
+
+End
+
+Public Function Info({Event} As String, Optional Database As String = modMain.$Connection.Name) As String
+
   modMain.$Query = "SHOW CREATE EVENT `" & Database & "`.`" & {Event} & "`"
   Return modMain.$Connection.Exec(modMain.$Query)!"Create Event"
 
 End
-
-' Public Function Definition(View As String, Optional Database As String) As String
-' 
-'   If Not Database Then Database = modMain.$Connection.Name
-'   modMain.$Query = "SELECT `VIEW_DEFINITION` FROM `information_schema`.`VIEWS` WHERE `TABLE_SCHEMA` = '" & Database & "' AND `TABLE_NAME` = '" & View & "'"
-'   Return modMain.$Connection.Exec(modMain.$Query)!"VIEW_DEFINITION"
-' 
-' End

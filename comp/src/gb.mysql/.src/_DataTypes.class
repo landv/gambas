@@ -155,7 +155,7 @@ End
 
 Public Function Char(Optional Length As Integer, Optional Charset As String, Optional Collation As String) As String 'Range: 0 to 255
 
-  If Length Then 
+  If Length Then
     Return "CHAR(" & Length & ") " & Charset & " " & Collation
   Else
     Return "CHAR(1) " & Charset & " " & Collation

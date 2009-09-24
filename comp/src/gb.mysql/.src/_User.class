@@ -21,9 +21,9 @@ Public Procedure Add(User As String, Password As String, Host As String)
 
 End
 
-Public Procedure Grant(Privileges As String[], User As String, Password As String, Host As String, Optional Database As String)
+Public Procedure Grant(Privileges As String[], User As String, Password As String, Host As String, Optional Database As String = modMain.$Connection.Name)
 
-  If Not Database Then Database = modMain.$Connection.Name
+  ' If Not Database Then Database = modMain.$Connection.Name
   If Upper(Privileges[0]) = "ALL" Then
     modMain.$Query = "GRANT ALL PRIVILEGES"
   Else

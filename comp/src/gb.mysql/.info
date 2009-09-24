@@ -63,6 +63,10 @@ Routines
 m
 String[]
 [(Database)s]
+Events
+m
+String[]
+[(Database)s]
 #_DataTypes
 
 CA
@@ -261,6 +265,18 @@ s
 #_Event
 
 CA
+Modify
+m
+
+(Event)s(Schedule)s(Statement)s
+Add
+m
+
+(Event)s(Schedule)s(Statement)s[(Replace)b]
+Delete
+m
+
+(Event)s[(IfExists)b]
 Info
 m
 s

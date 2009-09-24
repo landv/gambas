@@ -44,19 +44,22 @@ End
 
 Public Sub Main()
 
-  ' Dim hCon As New Connection
-  ' Dim asText As New String[]
-  ' 
-  ' DB.Debug = True
-  ' hCon.Type = "mysql"
-  ' hCon.Port = "3306"
-  ' hCon.Host = "localhost"
-  ' hCon.User = "root"
-  ' hCon.Password = "david123"
-  ' hCon.Name = "TMP"
-  ' hCon.Open()
-  ' 
-  ' hCon.MySQL.Routines.Delete("BorraVista", True)
-  ' hCon.MySQL.Routines.Add("BorraVista", "BEGIN DECLARE David INT; END;")
+  Dim hCon As New Connection
+  Dim asText As New String[]
+  
+  DB.Debug = True
+  hCon.Type = "mysql"
+  hCon.Port = "3306"
+  hCon.Host = "localhost"
+  hCon.User = "root"
+  hCon.Password = "david123"
+  hCon.Name = "test"
+  hCon.Open()
+  
+  hCon.MySQL.Event.Add("eHistoricoMarcasProfesores", "EVERY 1 DAY STARTS NOW()", "SELECT * FROM mysql.user")
+  ' hCon.MySQL.Event.Add("eHistoricoMarcasProfesores", "EVERY 1 DAY STARTS NOW()", "SELECT * FROM mysql.user", True)
+  ' hCon.MySQL.Event.Modify("eHistoricoMarcasProfesores", "EVERY 1 DAY STARTS NOW()", "SELECT * FROM mysql.user")
+  Print hCon.MySQL.Event.Info("eHistoricoMarcasProfesores")
+  'hCon.MySQL.Event.Delete("eHistoricoMarcasProfesores")
 
 End

@@ -3,9 +3,9 @@
 Export
 Create Static
 
-Public Procedure Add(Routine As String, Statement As String, Optional Parameters As String[], Optional Returns As String, Optional Database As String)
+Public Procedure Add(Routine As String, Statement As String, Optional Parameters As String[], Optional Returns As String, Optional Database As String = modMain.$Connection.Name)
 
-  If Not Database Then Database = modMain.$Connection.Name
+  ' If Not Database Then Database = modMain.$Connection.Name
   modMain.$Query = "CREATE "
   If Returns Then
     modMain.$Query &= "FUNCTION "
@@ -21,10 +21,10 @@ Public Procedure Add(Routine As String, Statement As String, Optional Parameters
 
 End
 
-Public Procedure Delete(Routine As String, Optional IfExists As Boolean, Optional Database As String)
+Public Procedure Delete(Routine As String, Optional IfExists As Boolean = False, Optional Database As String = modMain.$Connection.Name)
 
-  If Not Database Then Database = modMain.$Connection.Name
-  If Not IfExists Then IfExists = False
+  ' If Not Database Then Database = modMain.$Connection.Name
+  ' If Not IfExists Then IfExists = False
   modMain.$Query = "DROP "
   modMain.$hResult = modMain.$Connection.Exec("SELECT `TYPE` FROM `mysql`.`proc` WHERE `db` = '" & Database & "' AND `name` = '" & Routine & "'")
   If Not modMain.$hResult.Available Then Return
@@ -41,9 +41,9 @@ Public Procedure Delete(Routine As String, Optional IfExists As Boolean, Optiona
 
 End
 
-Public Function Info(Routine As String, Optional Database As String) As String
+Public Function Info(Routine As String, Optional Database As String = modMain.$Connection.Name) As String
 
-  If Not Database Then Database = modMain.$Connection.Name
+  ' If Not Database Then Database = modMain.$Connection.Name
   modMain.$hResult = modMain.$Connection.Exec("SELECT `TYPE` FROM `mysql`.`proc` WHERE `db` = '" & Database & "' AND `name` = '" & Routine & "'")
   If Not modMain.$hResult.Available Then Return
   Select (modMain.$hResult!TYPE)
@@ -58,9 +58,9 @@ Public Function Info(Routine As String, Optional Database As String) As String
 
 End
 
-Public Function Definition(Routine As String, Optional Database As String) As String
+Public Function Definition(Routine As String, Optional Database As String = modMain.$Connection.Name) As String
 
-  If Not Database Then Database = modMain.$Connection.Name
+  ' If Not Database Then Database = modMain.$Connection.Name
   modMain.$Query = "SELECT `body` FROM `mysql`.`proc` WHERE `db` = '" & Database & "' AND `name` = '" & Routine & "'"
   Return modMain.$Connection.Exec(modMain.$Query)["body"].Data
 
