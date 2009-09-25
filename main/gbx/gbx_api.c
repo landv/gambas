@@ -839,7 +839,7 @@ const char *GB_GetUnknown(void)
 void GB_Error(const char *error, ...)
 {
   va_list args;
-  char *arg[8];
+  char *arg[4];
   int i;
 
   if (!error)
@@ -850,7 +850,7 @@ void GB_Error(const char *error, ...)
 
   va_start(args, error);
 
-  for (i = 0; i < 8; i++)
+  for (i = 0; i < 4; i++)
     arg[i] = va_arg(args, char *);
 
   ERROR_define(error, arg);

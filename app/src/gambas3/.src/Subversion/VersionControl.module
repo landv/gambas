@@ -30,7 +30,7 @@ Private Sub Insert(sText As String)
 End
 
 
-Private Sub Run(sCmd As String, Optional sRemove As String)
+Private Sub Run(sCmd As String, Optional sRemove As String) As Integer
 
   $bEnd = False
   Shell sCmd & " 2>&1" For Read As "Process" 'TO sOutput
@@ -39,10 +39,13 @@ Private Sub Run(sCmd As String, Optional sRemove As String)
   
   Insert(sCmd & "\n")  
   
-  Repeat
-    Sleep 0.1 
+  Do
     Wait
-  Until $bEnd
+    If $bEnd Then Break
+    Sleep 0.1 
+  Loop
+  
+  Return Process.LastValue
   
 End
 
@@ -135,20 +138,44 @@ Public Sub MoveFile(sOld As String, sNew As String)
 
 End
 
-Public Sub MoveDir(sOld As String, sNew As String)
+Public Sub CheckLockedPaths()
+  
+  Dim sStatus As String
+  Dim iPos As Integer
+
+  Project.LockedPaths = New Collection
+
+  If $bSVN Then
+  
+    Shell "cd " & Shell$(Project.Dir) & "; svn status -q" To sStatus
+    
+    For Each sStatus In Split(sStatus, "\n")
+    
+      If Left(sStatus) = "D" Then
+        Project.LockedPaths[Project.Dir &/ Mid$(sStatus, 9)] = True
+      Endif
+    
+    Next
+  
+  Endif
+  
+End
+
+
+
+Public Sub MoveDir(sOld As String, sNew As String) As Boolean
 
   Dim sDir As String
 
   If $bSVN Then
-    'SHELL "svn move " & Shell$(sOld) & " " & Shell$(sNew) WAIT
+    Run("svn move --force " & Shell$(sOld) & " " & Shell$(sNew))
     'AddFile(sNew)
-    For Each sDir In RDir(sNew, "*", gb.Directory)
-      If File.Name(sDir) <> ".svn" Then Continue
-      Shell "rm -rf " & Shell$(sNew &/ sDir) Wait
-    Next
-    AddFile(sNew, True)
-    RemoveFile(sOld, True)
-    'RemoveFile(sOld)
+    ' For Each sDir In RDir(sNew, "*", gb.Directory)
+    '   If File.Name(sDir) <> ".svn" Then Continue
+    '   Shell "rm -rf " & Shell$(sNew &/ sDir) Wait
+    ' Next
+    ' AddFile(sNew, True)
+    ' RemoveFile(sOld, False)
   Endif
   If $bCVS Then
     'NB: make sure the file is added BEFORE

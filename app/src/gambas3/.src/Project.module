@@ -135,6 +135,8 @@ Private $hCurrentPopup As Menu
 
 Private $hLock As File
 
+Public LockedPaths As Collection
+
 Public Sub _init()
   
   ExampleTitle["Automation"] = ("Automation")
@@ -207,7 +209,7 @@ Public Sub Main()
   'FToolBox.Show
   'FFormStack.Load
 
-  If Settings["/ShowMascot", False] Then FGambas.Show
+  'If Settings["/ShowMascot", False] Then FGambas.Show
 
   FMain.Show
   RefreshActivate
@@ -348,7 +350,7 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
   SourceDir = sDir &/ ".src"
 
   VersionControl.Refresh
-
+  
   If Not Exist(SourceDir) Then 
     If ReadOnly Then
       Message.Error(("This project is read-only.") & " " & ("It cannot be converted."))
@@ -638,6 +640,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
   Dim hConflict As Image
   Dim sModule As String
   Dim sLocalPrefix As String
+  Dim bLocked As Boolean
   
   If iSize Then 
     sPrefix = "icon:/" & iSize
@@ -652,6 +655,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
 
     bLink = .Type = gb.Link
     bConflict = False
+    bLocked = IsLocked(sPath)
     
     If .Type = gb.Directory Then 
     
@@ -733,6 +737,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
     Endif
 
     If bConflict Then hImage = AddEmblem(hImage, "icon:/32/warning")
+    If bLocked Then hImage = AddEmblem(hImage, "icon:/32/lock")
 
     If bLink Then 
       hImage = AddLinkEmblem(hImage)
@@ -746,6 +751,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
     If bLink Then sKey = File.Dir(sKey) &/ File.BaseName(sKey) & "-link" & ".png"
     If bStartup Then sKey = File.Dir(sKey) &/ File.BaseName(sKey) & "-startup" & ".png"
     If bConflict Then sKey = File.Dir(sKey) &/ File.BaseName(sKey) & "-conflict" & ".png"
+    If bLocked Then sKey = File.Dir(sKey) &/ File.BaseName(sKey) & "-locked" & ".png"
     
     'hPict = NULL
     'IF NOT bNoStartup THEN hPict = Picture[sKey]
@@ -765,6 +771,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
       
       If bStartup Then hImage = AddEmblem(hImage, "icon:/32/play")
       If bConflict Then hImage = AddEmblem(hImage, "icon:/32/warning")
+      If bLocked Then hImage = AddEmblem(hImage, "icon:/32/lock")
 
       If iSize Then 
          hImage = hImage.Stretch(hImage.Width * iSize / hImage.Height, iSize)
@@ -973,7 +980,7 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
       Endif
 
       With ProjectTree.Add(sKey, sFile, hPict, sParent)        
-        .Editable = True
+        .Editable = Not IsLocked(sKey)
         If bAfter Then .MoveAfter(sAfter)
         If bShow Then
           ProjectTree.MoveTo(sKey)
@@ -1213,6 +1220,7 @@ Private Sub DoRefresh(Optional bReset As Boolean)
   Endif
   
   RefreshSourceCache
+  VersionControl.CheckLockedPaths()
   
   With ProjectTree
 
@@ -1805,7 +1813,7 @@ Public Function Compile(Optional bAll As Boolean, Optional bNoDebug As Boolean) 
       Endif
 
       'SetMessage(("OK"))
-      FGambas.Animate("Happy")
+      'FGambas.Animate("Happy")
 
     Endif
   Endif
@@ -3138,10 +3146,11 @@ End
 Private Function RenameOneFile(sDir As String, sName As String, sNewName As String, Optional sExt As String) As String
 
   Dim sPath As String
+  Dim sCheck As String
   Dim hForm As Object
   Dim sNewPath As String
   Dim sNewFormPath As String
-  Dim aRename As New Object[]
+  Dim aRename As String[]
 
   sPath = sDir &/ sName
   If sExt Then sPath = sPath & "." & sExt
@@ -3149,10 +3158,18 @@ Private Function RenameOneFile(sDir As String, sName As String, sNewName As Stri
 
   sNewPath = sDir &/ sNewName
   If sExt Then sNewPath = sNewPath & "." & sExt
+  
+  If Exist(sNewPath) Then 
+    Error.Raise(("Destination already exists"))
+  Endif
 
   If IsDir(sPath) Then
-    Move sPath To sNewPath  
-    VersionControl.MoveDir(sPath, sNewPath)
+    If VersionControl.Enabled() Then
+      VersionControl.MoveDir(sPath, sNewPath)
+      If Exist(sPath) Then LockedPaths[sPath] = True
+    Else
+      Move sPath To sNewPath  
+    Endif
   Else If Stat(sPath).Type = gb.Link Then 
     Move sPath To sNewPath  
     VersionControl.MoveFile(sPath, sNewPath)
@@ -3165,33 +3182,36 @@ Private Function RenameOneFile(sDir As String, sName As String, sNewName As Stri
   If sExt Then
     Try Kill sDir &/ ".gambas" &/ UCase(sName)
   Endif
-
-  For Each hForm In Files
-    If hForm.Path = sPath Or If hForm.Path Like (sPath &/ "*") Then aRename.Add(hForm)
+  
+  aRename = New String[]
+  For Each sCheck In $cSourceDir
+    If sCheck = sPath Or If sCheck Like (sPath &/ "*") Then aRename.Add(sCheck)
   Next
 
-  For Each hForm In aRename
+  For Each sCheck In aRename
   
-    Files[hForm.Path] = Null
-    If hForm.Path = sPath Then
-      hForm.Rename(sNewName, sNewPath)
-      Files[sNewPath] = hForm
+    hForm = Files[sCheck]
+    Files[sCheck] = Null
+    
+    If sCheck = sPath Then
       $cSourceDir[File.Name(sPath)] = Null
       $cSourceDir[File.Name(sNewPath)] = sNewPath
-    Else 
-      sNewFormPath = sNewPath &/ Mid$(hForm.Path, Len(sPath) + 1)
-      hForm.Rename(hForm.Name, sNewFormPath)
-      Files[sNewFormPath] = hForm
+      If hForm Then
+        hForm.Rename(sNewName, sNewPath)
+        Files[sNewPath] = hForm
+      Endif
+    Else
+      sNewFormPath = sNewPath &/ Mid$(sCheck, Len(sPath) + 1)
       $cSourceDir[File.Name(sPath)] = Null
       $cSourceDir[File.Name(sNewFormPath)] = sNewFormPath
+      If hForm Then
+        hForm.Rename(hForm.Name, sNewFormPath)
+        Files[sNewFormPath] = hForm
+      Endif
     Endif
   
   Next
 
-  ' hForm = Files[sPath]
-  ' If hForm Then
-  ' Endif
-  
   Return sNewPath
 
 End
@@ -3251,8 +3271,12 @@ Public Sub RefreshKey(sKey As String, Optional sOld As String)
   Endif
 
   AddFile(File.Dir(sKey), File.Name(sKey), True)
-  
   If IsDir(sKey) Then AddDir(sKey)
+  
+  If sOld <> sKey And If Exist(sOld) Then
+    AddFile(File.Dir(sOld), File.Name(sOld), True)
+    If IsDir(sOld) Then AddDir(sOld)
+  Endif
   
 End
 
@@ -3313,7 +3337,7 @@ Catch
 
   sMsg = Error.Text
   RefreshKey(sPath)
-  FGambas.Error(Subst(("Unable to rename '&1'") & "\n\n" & sMsg, File.Name(sPath)))
+  FMain.ShowError(Subst(("Unable to rename '&1'") & "\n\n" & sMsg, File.Name(sPath)), sPath)
 
 End
 
@@ -3817,7 +3841,7 @@ Public Sub LinkFile(sSrc As String, sDst As String)
 
 Catch
 
-  Message.Error(Subst(("Cannot create link &1."), sSrc) & "\n\n" & Error.Text)
+  FMain.ShowError(Subst(("Cannot create link &1."), sSrc) & "\n\n" & Error.Text, sSrc)
 
 End
 
@@ -3832,10 +3856,9 @@ Public Sub MoveFile(sSrc As String, sDst As String, Optional bOther As Boolean)
 
   If sSrc = sDst Then Return
   
-  If Len(sDst) > Len(sSrc) And If Left(sDst, Len(sSrc)) = sSrc Then
-    Message.Error(("Cannot move a directory inside itself."))
-    Return
-  Endif
+  If Exist(sDst) Then Error.Raise(("Destination already exists"))
+  
+  If Len(sDst) > Len(sSrc) And If Left(sDst, Len(sSrc)) = sSrc Then Error.Raise(("Cannot move a directory inside itself."))
 
   bIsDir = IsDir(sSrc)
 
@@ -3867,8 +3890,9 @@ Public Sub MoveFile(sSrc As String, sDst As String, Optional bOther As Boolean)
   End With 
   
   If bIsDir Then
-    Move sSrc To sDst
+    'Move sSrc To sDst
     VersionControl.MoveDir(sSrc, sDst)
+    If Exist(sSrc) Then LockedPaths[sSrc] = True
   Else
     Copy sSrc To sDst
     If Right(sSrc) <> "~" Then VersionControl.MoveFile(sSrc, sDst)
@@ -3900,7 +3924,7 @@ Public Sub MoveFile(sSrc As String, sDst As String, Optional bOther As Boolean)
 
 Catch
 
-  Message.Error(Subst(("Cannot move file &1."), sSrc) & "\n\n" & Error.Text)
+  FMain.ShowError(Subst(("Cannot move file &1."), File.Name(sSrc)) & "\n\n" & Error.Text, sSrc)
 
 End
 
@@ -4475,6 +4499,15 @@ Public Sub IsExported(sPath As String) As Boolean
   Wend 
   
 End
+
+Public Sub IsLocked(sPath As String) As Boolean
+  
+  If LockedPaths.Exist(sPath) Then Return True
+  If sPath = "" Or sPath = "/" Then Return False
+  Return IsLocked(File.Dir(sPath))
+  
+End
+
 
 Public Sub GetCount(sType As String) As Integer
   

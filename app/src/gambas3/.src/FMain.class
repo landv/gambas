@@ -227,7 +227,10 @@ End
 Public Sub tvwProject_Menu()
 
   'mnuPopup.Enabled = TRUE
-  GetCurrent
+  GetCurrent()
+  
+  If $sKey And If Project.IsLocked($sKey) Then Return
+  
   If $sKey = Project.KEY_CONNECTION Or If Project.IsConnectionPath($sKey) Then
     mnuDatabase.Popup
   Else
@@ -245,7 +248,7 @@ Private Function GetCurrent() As String
   If Not tvwProject.Current.Selected Then Return
   $sKey = tvwProject.Key
   If Left$($sKey) = "$" Then Return
-  If IsProject($sKey) Then Return
+  If IsProject($sKey) Or If Project.IsLocked($sKey) Then Return
   Return $sKey
 
 End
@@ -258,7 +261,8 @@ Private Function GetCurrentDir(Optional sKey As String) As String
   Else
     GetCurrent
   Endif
-  If Not $sKey Then Return Project.Dir
+  If Not $sKey Then Return 
+  If Project.IsLocked($sKey) Then Return
   If $sKey = Project.KEY_MISC Then Return Project.Dir
   If $sKey = Project.KEY_PROJECT Then Return Project.Dir &/ ".hidden"
   If Project.SourceDir <> Project.Dir
@@ -828,6 +832,7 @@ End
 
 Public Sub tvwProject_Select()
 
+  Balloon.Hide(tvwProject)
   GetCurrent()
   RefreshMenu
 
@@ -1206,6 +1211,7 @@ Public Sub tvwProject_DragMove()
 
   If Not tvwProject.Find(Drag.X, Drag.Y) Then 
     $sKey = tvwProject.Item.Key
+    If Project.IsLocked($sKey) Then Goto STOP_EVENT
     If Drag.Format = MMime.DATA Then 
       If Not IsDataKey($sKey) Then Goto STOP_EVENT
     Else If Drag.Format = MMime.CLASS Then
@@ -1558,5 +1564,28 @@ End
 Public Sub mnuEditConnection_Click()
   
   tvwProject_Activate
+  
+End
+
+Public Sub ShowMessage(sMsg As String, sIcon As String, Optional sKey As String)
+  
+  Dim X, Y As Integer
+  
+  If Not sKey Then 
+    Y = 8
+  Else
+    Try tvwProject[sKey].Selected = True
+    Wait
+    Try Y = tvwProject.Current.Y + tvwProject.Current.H \ 2
+  Endif
+  X = tvwProject.W \ 2
+  
+  Balloon(sMsg, tvwProject, Picture["icon:/32/" & sIcon], X, Y)
+  
+End
+
+Public Sub ShowError(sMsg As String, Optional sKey As String)
+  
+  ShowMessage(sMsg, "error", sKey)
   
 End

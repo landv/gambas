@@ -51,6 +51,7 @@ Public Sub btnOK_Click()
 
   Inc Application.Busy
   bRes = VersionControl.Commit(Settings["/VersionControlUser"], txtPassword.Text, sChange)
+  If Not bRes Then Project.Refresh
   Dec Application.Busy
   
   If bRes Then
@@ -118,6 +119,7 @@ End
 
 Public Sub tbtClear_Click()
 
-  edtChange.Clear()
+  edtChange.Clear
+  edtChange.SetFocus
 
 End

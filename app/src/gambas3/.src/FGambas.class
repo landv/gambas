@@ -1,13 +1,13 @@
 ' Gambas class file
 
-Static Private $cAnim As New Collection
-Static Private $hPict[8] As Picture
-
-Private $sAnim As String
-Private $iWait As Integer
-Private $MX As Integer
-Private $MY As Integer
-Private $bHide As Boolean
+' Static Private $cAnim As New Collection
+' Static Private $hPict[8] As Picture
+' 
+' Private $sAnim As String
+' Private $iWait As Integer
+' Private $MX As Integer
+' Private $MY As Integer
+' Private $bHide As Boolean
 'PRIVATE $sMessage AS String
 
 ' STATIC PUBLIC SUB _init()
@@ -122,7 +122,7 @@ Public Sub Warning(sMsg As String)
   If Me.Visible Then
     Balloon.Warning(sMsg, Me, panThere.X, panThere.Y)
   Else 
-    Message.Warning(sMsg)
+    FMain.ShowMessage(sMsg, "warning")
   Endif
   
 End
@@ -133,7 +133,7 @@ Public Sub Error(sMsg As String)
     Animate("Depressive")
     Balloon.Error(sMsg, Me, panThere.X, panThere.Y)
   Else
-    Message.Error(sMsg)
+    FMain.ShowMessage(sMsg, "error")
   Endif
   
 End
@@ -143,7 +143,7 @@ Public Sub Info(sMsg As String)
   If Me.Visible Then  
     Balloon.Info(sMsg, Me, panThere.X, panThere.Y)
   Else 
-    Message.Info(sMsg)
+    FMain.ShowMessage(sMsg, "info")
   Endif
   
 End

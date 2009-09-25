@@ -290,21 +290,24 @@ void ERROR_define(const char *pattern, char *arg[])
 	{
     ERROR_current->info.code = E_CUSTOM;
 		
-		msg = (char *)pattern;
-		for (;;)
+		if (arg)
 		{
-			c = *msg++;
-			if (c == 0)
-				break;
-				
-			if (c == '&')
+			msg = (char *)pattern;
+			for (;;)
 			{
-				c = *pattern++;
-				if (c >= '1' && c <= '4')
+				c = *msg++;
+				if (c == 0)
+					break;
+					
+				if (c == '&')
 				{
-					c -= '1';
-					if (c > narg)
-						narg = c;
+					c = *msg++;
+					if (c >= '1' && c <= '4')
+					{
+						c -= '1';
+						if (c > narg)
+							narg = c;
+					}
 				}
 			}
 		}
@@ -364,13 +367,18 @@ void ERROR_define(const char *pattern, char *arg[])
 			}
 		}
   }
-  else
+  else if (ERROR_current->info.code == E_CUSTOM)
+	{
+    STRING_new(&ERROR_current->info.msg, pattern, 0);
+    ERROR_current->info.free = TRUE;
+	}
+	else
   {
     ERROR_current->info.msg = (char *)pattern;
     ERROR_current->info.free = FALSE;
   }
 
-	//fprintf(stderr, "ERROR_define: %p %d %p '%s'\n", ERROR_current, ERROR_current->info.code, ERROR_current->info.msg, ERROR_current->info.msg);
+	//fprintf(stderr, "ERROR_define: %p %d '%s'\n", ERROR_current, ERROR_current->info.code, ERROR_current->info.msg);
 
 	//STRING_add_char(&ERROR_current->info.msg, 0);
 

@@ -24,16 +24,18 @@ Public Function Init(bSmall As Boolean, iLife As Integer, bSymetryH As Boolean, 
   
   If bSmall Then 
 
-    For i = MaxX \ 2 - 5 To MaxX \ 2 + 5
-      For j = MaxY \ 2 - 5 To MaxY \ 2 + 5
+    size = 6
+    
+    For i = MaxX \ 2 - size To MaxX \ 2 + size
+      For j = MaxY \ 2 - size To MaxY \ 2 + size
         If Rnd(1, 100) >= iLife Then Game[i, j] = Color.Red
       Next 
     Next
     
     If bSymetryH Then
-      For i = MaxX \ 2 - 5 To MaxX \ 2 + 5
-        n = 11
-        For j = MaxY \ 2 - 5 To MaxY \ 2 
+      For i = MaxX \ 2 - size To MaxX \ 2 + size
+        n = size * 2 + 1
+        For j = MaxY \ 2 - size To MaxY \ 2 
           Game[i, j] = Game[i, j + n]
           n -= 2
         Next 
@@ -41,9 +43,9 @@ Public Function Init(bSmall As Boolean, iLife As Integer, bSymetryH As Boolean, 
     Endif
 
     If bSymetryV Then
-      For i = MaxX \ 2 - 5 To MaxX \ 2 + 5
-        n = 11
-        For j = MaxY \ 2 - 5 To MaxY \ 2 
+      For i = MaxX \ 2 - size To MaxX \ 2 + size
+        n = size * 2 + 1
+        For j = MaxY \ 2 - size To MaxY \ 2 
           Game[j, i] = Game[j + n, i]
           n -= 2
         Next 
