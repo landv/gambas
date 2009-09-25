@@ -86,12 +86,12 @@ static void my_wait(int duration);
 static void my_post(void);
 static int my_loop();
 static void my_watch(int fd, int type, void *callback, intptr_t param);
-bool post_Check=false;
+static bool post_Check=false;
 
+static bool _application_keypress = false;
+static GB_FUNCTION _application_keypress_func;
 
-int MAIN_scale = 8;
-
-
+int MAIN_scale = 0;
 
 extern "C"
 {
@@ -295,12 +295,24 @@ void my_quit (void)
 
 }
 
+static bool global_key_event_handler(int type)
+{
+	GB.Call(&_application_keypress_func, 0, FALSE);
+	return GB.Stopped();
+}
+
 static void my_main(int *argc, char **argv)
 {
 	gApplication::init(argc, &argv);
 	gApplication::setDefaultTitle(GB.Application.Title());
 	gDesktop::init();
 	MAIN_scale = gDesktop::scale();
+
+	if (GB.GetFunction(&_application_keypress_func, (void *)GB.FindClass(GB.Application.Startup()), "Application_KeyPress", "", "") == 0)
+	{
+		_application_keypress = true;
+		gApplication::onKeyEvent = global_key_event_handler;
+	}
 }
 
 /*static void raise_timer(GB_TIMER *timer)

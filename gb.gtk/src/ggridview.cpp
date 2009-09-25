@@ -833,8 +833,8 @@ gGridView::gGridView(gContainer *parent) : gControl(parent)
 	g_signal_connect_after(G_OBJECT(contents),"event",G_CALLBACK(cb_contents_button_press),this);
 	g_signal_connect(G_OBJECT(contents),"motion-notify-event",G_CALLBACK(tblateral_move),this);
 	
-	g_signal_connect(G_OBJECT(contents),"button-release-event",G_CALLBACK(gcb_button_release),(gpointer)this);
-	g_signal_connect(G_OBJECT(contents),"button-press-event",G_CALLBACK(gcb_button_press),(gpointer)this);
+	//g_signal_connect(G_OBJECT(contents),"button-release-event",G_CALLBACK(gcb_button_release),(gpointer)this);
+	//g_signal_connect(G_OBJECT(contents),"button-press-event",G_CALLBACK(gcb_button_press),(gpointer)this);
 	
 	g_signal_connect(G_OBJECT(contents),"button-press-event",G_CALLBACK(tblateral_press),this);
 	g_signal_connect(G_OBJECT(contents),"button-release-event",G_CALLBACK(tblateral_release),this);

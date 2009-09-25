@@ -62,8 +62,6 @@ gTextBox::gTextBox(gContainer *parent, bool combo) : gControl(parent)
 		initEntry();
 	}
 	
-	no_input_method = true;
-	
 	onChange = NULL;
 	onActivate = NULL;
 }

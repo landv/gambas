@@ -82,7 +82,6 @@ gTextArea::gTextArea(gContainer *parent) : gControl(parent)
 	
 	have_cursor = true;
 	use_base = true;
-	no_input_method = true;
 	
 	onChange = 0;
 	onCursor = 0;

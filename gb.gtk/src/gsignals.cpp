@@ -38,7 +38,7 @@
 #include "gdrag.h"
 #include "gdesktop.h"
 
-static void  sg_destroy (GtkWidget *object,gControl *data)
+static void sg_destroy (GtkWidget *object,gControl *data)
 {
 	//fprintf(stderr, "sg_destroy: %p\n", data);
 	
@@ -47,162 +47,6 @@ static void  sg_destroy (GtkWidget *object,gControl *data)
 		
 	//if (!data->_destroyed)
 	delete data;
-}
-
-
-static gboolean  sg_enter(GtkWidget *widget, GdkEventCrossing *e,gControl *data)
-{
-	if (!gApplication::userEvents()) return false;
-
-	if (data->onEnterLeave)
-	{
-		if (e->type==GDK_ENTER_NOTIFY)
-			data->onEnterLeave(data,gEvent_Enter);
-		else
-			data->onEnterLeave(data,gEvent_Leave);
-	}
-	return false;
-}
-
-/*
-static gboolean sg_configure(GtkWidget *widget,GdkEventConfigure *event,gControl *data)
-{
-	GtkWidget *fr;
-	GList *chd;
-
-	if (!gApplication::allEvents()) return false;
-
-	if ( (event->width!=data->bufW) || (event->height!=data->bufH)  )
-	{
-		data->bufW=event->width;
-		data->bufH=event->height;
-	}
-	
-	if ( data->getClass() != Type_gMainWindow )
-	{
-		data->bufX=event->x;
-		data->bufY=event->y;
-	}
-	
-	if ( data->getClass()==Type_gFrame )
-	{
-		chd=gtk_container_get_children(GTK_CONTAINER(data->widget));
-		fr=(GtkWidget*)chd->data;
-		g_list_free(chd);
-		gtk_widget_set_size_request(fr,event->width,event->height);
-	}
-	
-	
-	return false;
-}
-*/
-
-static bool check_button(gControl *w)
-{
-	return w && w->isVisible() && w->enabled();
-}
-
-gboolean gcb_keypress (GtkWidget *widget, GdkEventKey *event, gControl *data)
-{
-	bool vl = false;
-	
-	if (!gApplication::userEvents()) return false;
-	
-	gKey::enable(widget, event);
-	if (data->onKeyEvent) 
-		vl = data->onKeyEvent(data,gEvent_KeyPress);
-	gKey::disable();
-	
-	if (vl)
-		return true;
-	
-	if (event->keyval == GDK_Escape)
-	{
-		gMainWindow *win = data->window();
-		if (check_button(win->_cancel))
-		{
-			win->_cancel->animateClick(false);
-			vl = true;
-		}
-	}
-	else if (event->keyval == GDK_Return || event->keyval == GDK_KP_Enter)
-	{
-		gMainWindow *win = data->window();
-		if (check_button(win->_default))
-		{
-			win->_default->animateClick(false);
-			vl = true;
-		}
-	}
-	
-	return vl;
-}
-
-gboolean gcb_keyrelease (GtkWidget *widget, GdkEventKey *event, gControl *data)
-{
-	if (!gApplication::userEvents()) return false;
-	
-	gKey::enable(widget, event);
-	if (data->onKeyEvent) 
-		data->onKeyEvent(data,gEvent_KeyRelease);
-	gKey::disable();
-	
-	if (event->keyval == GDK_Escape)
-	{
-		gMainWindow *win = data->window();
-		if (check_button(win->_cancel))
-			win->_cancel->animateClick(true);
-	}
-	else if (event->keyval == GDK_Return || event->keyval == GDK_KP_Enter)
-	{
-		gMainWindow *win = data->window();
-		if (check_button(win->_default))
-			win->_default->animateClick(true);
-	}
-	
-	return false;
-}
-
-gboolean gcb_button_press(GtkWidget *widget,GdkEventButton *event,gControl *data)
-{
-	if (!gApplication::userEvents()) return false;
-
-	if (data->onMouseEvent)
-	{
-		gMouse::validate();
-		gMouse::setStart((int)event->x, (int)event->y);
-		gMouse::setMouse((int)event->x, (int)event->y, event->button, event->state);
-		//gMouse::setValid(1,(int)event->x,(int)event->y,event->button,event->state,data->screenX(),data->screenY());
-		data->onMouseEvent(data,gEvent_MousePress);
-		gMouse::invalidate();
-		
-		if (event->button == 3 && event->type == GDK_BUTTON_PRESS)
-		{
-			return data->onMouseEvent(data, gEvent_MouseMenu);
-		}
-	}
-	
-	return false;
-}
-
-static gboolean sg_motion(GtkWidget *widget, GdkEventMotion *event, gControl *data)
-{
-	if (!gApplication::userEvents()) return false;
-	
-	if ((data->isTracking() || (event->state & (GDK_BUTTON1_MASK | GDK_BUTTON2_MASK | GDK_BUTTON3_MASK))) && data->onMouseEvent)
-	{
-		gMouse::validate();
-		gMouse::setMouse((int)event->x, (int)event->y, 0, event->state);
-		data->onMouseEvent(data, gEvent_MouseMove);
-		//if (data->acceptDrops() && gDrag::checkThreshold(data, gMouse::x(), gMouse::y(), gMouse::startX(), gMouse::startY()))
-		if ((event->state & (GDK_BUTTON1_MASK | GDK_BUTTON2_MASK | GDK_BUTTON3_MASK)) 
-		    //&& (abs(gMouse::x() - gMouse::y()) + abs(gMouse::startX() - gMouse::startY())) > 8)
-		    && gDrag::checkThreshold(data, gMouse::x(), gMouse::y(), gMouse::startX(), gMouse::startY()))
-			data->onMouseEvent(data, gEvent_MouseDrag);
-		gMouse::invalidate();
-	}
-	
-	return FALSE;
 }
 
 static gboolean sg_menu(GtkWidget *widget, gControl *data)
@@ -214,47 +58,6 @@ static gboolean sg_menu(GtkWidget *widget, gControl *data)
 		return false;
 }
 
-gboolean gcb_button_release(GtkWidget *widget,GdkEventButton *event,gControl *data)
-{	
-	if (!gApplication::userEvents()) return false;
-
-	if (data->onMouseEvent)
-	{
-		gMouse::validate();
-		gMouse::setMouse((int)event->x, (int)event->y, 0, event->state);
-		data->onMouseEvent(data,gEvent_MouseRelease);
-		gMouse::invalidate();
-	}
-	
-	return false;
-}
-
-static gboolean sg_scroll(GtkWidget *widget,GdkEventScroll *event,gControl *data)
-{
-	int dt = 0;
-	int ort = 0;
-	
-	if (!gApplication::userEvents()) return false;
-
-	if (data->onMouseEvent)
-	{
-		switch (event->direction)
-		{
-			case GDK_SCROLL_UP: dt=1; ort=1; break;
-			case GDK_SCROLL_DOWN: dt=-1; ort=1; break;
-			case GDK_SCROLL_LEFT: dt=-1; ort=0; break;
-			case GDK_SCROLL_RIGHT:  dt=1; ort=0; break;
-		}
-		
-		gMouse::validate();
-		gMouse::setMouse((int)event->x, (int)event->y, 0, event->state);
-		gMouse::setWheel(dt, ort);
-		data->onMouseEvent(data,gEvent_MouseWheel);
-		gMouse::invalidate();
-	}
-	
-	return false;
-}
 
 gboolean gcb_focus_in(GtkWidget *widget,GdkEventFocus *event,gControl *data)
 {	
@@ -289,19 +92,6 @@ gboolean gcb_focus_out(GtkWidget *widget,GdkEventFocus *event,gControl *data)
 	
 	gKey::setActiveControl(NULL);
 	//gMainWindow::setActiveWindow(NULL);
-	
-	return false;
-}
-
-static gboolean sg_event(GtkWidget *widget, GdkEvent *event,gControl *data)
-{	
-	if (!gApplication::userEvents()) return false;
-	
-	if (event->type==GDK_2BUTTON_PRESS)
-	{
-		if (data->onMouseEvent) data->onMouseEvent(data,gEvent_MouseDblClick);
-		return false;
-	}
 	
 	return false;
 }
@@ -462,8 +252,8 @@ void gControl::borderSignals()
 	g_signal_connect(G_OBJECT(border),"drag-drop",G_CALLBACK(sg_drag_drop),(gpointer)this);
 	g_signal_connect(G_OBJECT(border),"drag-data-get",G_CALLBACK(sg_drag_data_get),(gpointer)this);
 	g_signal_connect(G_OBJECT(border),"drag-end",G_CALLBACK(sg_drag_end),(gpointer)this);
-	g_signal_connect(G_OBJECT(border),"enter-notify-event",G_CALLBACK(sg_enter),(gpointer)this);
-	g_signal_connect(G_OBJECT(border),"leave-notify-event",G_CALLBACK(sg_enter),(gpointer)this);
+	//g_signal_connect(G_OBJECT(border),"enter-notify-event",G_CALLBACK(sg_enter),(gpointer)this);
+	//g_signal_connect(G_OBJECT(border),"leave-notify-event",G_CALLBACK(sg_enter),(gpointer)this);
 	
 	//g_signal_connect_after(G_OBJECT(border),"size-allocate",G_CALLBACK(sg_size),(gpointer)this);
 	
@@ -472,14 +262,14 @@ void gControl::borderSignals()
 
 	if (border != widget && !_scroll)
 	{
-		if (!_no_default_mouse_event)
+		/*if (!_no_default_mouse_event)
 		{
 			g_signal_connect(G_OBJECT(border),"button-release-event",G_CALLBACK(gcb_button_release),(gpointer)this);
 			g_signal_connect(G_OBJECT(border),"button-press-event",G_CALLBACK(gcb_button_press),(gpointer)this);
-		}
+		}*/
 		g_signal_connect(G_OBJECT(border),"popup-menu",G_CALLBACK(sg_menu),(gpointer)this);	
-		g_signal_connect_after(G_OBJECT(border),"motion-notify-event",G_CALLBACK(sg_motion),(gpointer)this);
-		g_signal_connect(G_OBJECT(border),"scroll-event",G_CALLBACK(sg_scroll),(gpointer)this);
+		//g_signal_connect_after(G_OBJECT(border),"motion-notify-event",G_CALLBACK(sg_motion),(gpointer)this);
+		//g_signal_connect(G_OBJECT(border),"scroll-event",G_CALLBACK(sg_scroll),(gpointer)this);
 		
 		g_signal_connect(G_OBJECT(border),"focus-in-event",G_CALLBACK(gcb_focus_in),(gpointer)this);
 		g_signal_connect(G_OBJECT(border),"focus-out-event",G_CALLBACK(gcb_focus_out),(gpointer)this);
@@ -490,21 +280,21 @@ void gControl::widgetSignals()
 {
 	if (!(border != widget && !_scroll))
 	{
-		g_signal_connect(G_OBJECT(widget),"scroll-event",G_CALLBACK(sg_scroll),(gpointer)this);
+		/*g_signal_connect(G_OBJECT(widget),"scroll-event",G_CALLBACK(sg_scroll),(gpointer)this);
 		if (!_no_default_mouse_event)
 		{
 			g_signal_connect(G_OBJECT(widget),"button-release-event",G_CALLBACK(gcb_button_release),(gpointer)this);
 			g_signal_connect(G_OBJECT(widget),"button-press-event",G_CALLBACK(gcb_button_press),(gpointer)this);
 		}
-		g_signal_connect(G_OBJECT(widget),"motion-notify-event",G_CALLBACK(sg_motion),(gpointer)this);
+		g_signal_connect(G_OBJECT(widget),"motion-notify-event",G_CALLBACK(sg_motion),(gpointer)this);*/
 		g_signal_connect(G_OBJECT(widget),"popup-menu",G_CALLBACK(sg_menu),(gpointer)this);
 	}	
 	
-	g_signal_connect(G_OBJECT(widget),"key-press-event",G_CALLBACK(gcb_keypress),(gpointer)this);
-	g_signal_connect(G_OBJECT(widget),"key-release-event",G_CALLBACK(gcb_keyrelease),(gpointer)this);
+	//g_signal_connect(G_OBJECT(widget),"key-press-event",G_CALLBACK(gcb_keypress),(gpointer)this);
+	//g_signal_connect(G_OBJECT(widget),"key-release-event",G_CALLBACK(gcb_keyrelease),(gpointer)this);
 	g_signal_connect(G_OBJECT(widget),"focus-in-event",G_CALLBACK(gcb_focus_in),(gpointer)this);
 	g_signal_connect(G_OBJECT(widget),"focus-out-event",G_CALLBACK(gcb_focus_out),(gpointer)this);
-	g_signal_connect(G_OBJECT(widget),"event",G_CALLBACK(sg_event),(gpointer)this);
+	//g_signal_connect(G_OBJECT(widget),"event",G_CALLBACK(sg_event),(gpointer)this);
 }
 
 void gControl::initSignals()

@@ -40,6 +40,7 @@ public:
 	int mouse();
 	gControl *next();
 	gControl *previous();
+	void getScreenPos(int *x, int *y);
 	int screenX();
 	int screenY();
 	char *toolTip();
@@ -185,6 +186,7 @@ public:
 	void initAll(gContainer *pr);
 	void realize(bool make_frame = false);
 	void realizeScrolledWindow(GtkWidget *wid, bool doNotRealize = false);
+	void registerControl();
 	void updateGeometry();
 	bool mustUpdateCursor() { return mouse() != -1 || have_cursor; }
 	

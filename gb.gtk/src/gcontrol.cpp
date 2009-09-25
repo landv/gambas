@@ -285,6 +285,11 @@ gControl::~gControl()
 
 	controls = g_list_remove(controls, this);
 	controls_destroyed = g_list_remove(controls_destroyed, this);
+
+	if (gApplication::_enter == this)
+		gApplication::_enter = NULL;
+	if (gApplication::_leave == this)
+		gApplication::_leave = NULL;
 }
 
 void gControl::destroy()
@@ -343,25 +348,23 @@ void gControl::setVisible(bool vl)
 POSITION AND SIZE
 
 ******************************************************************/
+
+void gControl::getScreenPos(int *x, int *y)
+{
+	gdk_window_get_origin(border->window, x, y);
+}
+
 int gControl::screenX()
 {
-	gint x,y;
-	
-	if (_dirty_pos)
-		g_debug("gControl::screenX: dirty pos");
-	
-	gdk_window_get_origin(border->window,&x,&y);
+	int x,y;
+	getScreenPos(&x, &y);
 	return x;
 }
 
 int gControl::screenY()
 {
-	gint x,y;
-	
-	if (_dirty_pos)
-		g_debug("gControl::screenX: dirty pos");
-	
-	gdk_window_get_origin(border->window,&x,&y);
+	int x,y;
+	getScreenPos(&x, &y);
 	return y;
 }
 
@@ -1211,6 +1214,11 @@ static void add_container(GtkWidget *parent, GtkWidget *child)
 }
 
 
+void gControl::registerControl()
+{
+	g_object_set_data(G_OBJECT(border), "gambas-control", this);
+}
+
 void gControl::realize(bool make_frame)
 {
 	if (!_scroll)
@@ -1253,6 +1261,8 @@ void gControl::realize(bool make_frame)
 		
 	if (isContainer() && widget != border)
 		g_signal_connect(G_OBJECT(widget), "size-allocate", G_CALLBACK(cb_size_allocate), (gpointer)this);
+	
+	registerControl();
 }
 
 void gControl::realizeScrolledWindow(GtkWidget *wid, bool doNotRealize)
@@ -1268,6 +1278,8 @@ void gControl::realizeScrolledWindow(GtkWidget *wid, bool doNotRealize)
 	
 	if (!doNotRealize)
 		realize(false);
+	else
+		registerControl();
 }
 
 void gControl::updateBorder()
