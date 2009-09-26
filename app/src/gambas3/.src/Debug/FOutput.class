@@ -375,15 +375,9 @@ End
 
 Public Sub edtOutput_GotFocus()
 
-  mnuEditor.Enabled = True
+  Project.SetCurrentPopup(mnuEditor)
   btnFind.Value = False
   
-End
-
-Public Sub edtOutput_LostFocus()
-
-  mnuEditor.Enabled = False
-
 End
 
 Public Sub txtFind_KeyPress()
