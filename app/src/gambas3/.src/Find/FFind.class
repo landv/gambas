@@ -572,7 +572,7 @@ Public Sub Action_Activate(Key As String) As Boolean
   
   If Key = "find-case" Then ShowString()
   
-  If Key = "find-comment" Or If Key = "find-case" Or If Key = "find-word" Or If Key = "find-string" Or If Key Like "find-in-*" Then $iLastTimeStamp = 0
+  If Key = "find-comment" Or If Key = "find-case" Or If Key = "find-word" Or If Key = "find-string" Or If Key Begins "find-in-" Then $iLastTimeStamp = 0
   
   Return True
   

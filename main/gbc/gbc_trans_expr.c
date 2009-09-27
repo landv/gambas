@@ -284,14 +284,14 @@ static void trans_operation(short op, short nparam, PATTERN previous)
 
     case OP_MINUS:
       if (nparam == 1)
-        CODE_op(C_NEG, nparam, TRUE);
+        CODE_op(C_NEG, 0, nparam, TRUE);
       else
-        CODE_op(info->code, nparam, TRUE);
+        CODE_op(info->code, info->subcode, nparam, TRUE);
       break;
       
     default:
 
-      CODE_op(info->code, nparam, (info->flag != RSF_OPN));
+      CODE_op(info->code, info->subcode, nparam, (info->flag != RSF_OPN));
   }
 }
 

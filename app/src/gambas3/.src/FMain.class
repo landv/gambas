@@ -293,7 +293,7 @@ Public Sub mnuPopup_Show()
 
   UpdateMenu
 
-  If $sKey = Project.KEY_SOURCE Or If sCurrent Like (Project.SourceDir &/ "*") Then
+  If $sKey = Project.KEY_SOURCE Or If sCurrent Begins Project.SourceDir &/ "/" Then
   
     mnuRenameFile.Visible = mnuRenameFile.Visible And bCurrent And Not Project.Running
     mnuDeleteFile.Visible = mnuDeleteFile.Visible And CanDelete(sCurrent) And Not Project.Running

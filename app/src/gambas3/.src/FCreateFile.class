@@ -334,7 +334,7 @@ Private Sub ImportDependencies(sName As String, sOrig As String, bLink As Boolea
     If iPos = 0 Then Goto NEXT_LINE
     
     sImg = Scan(sLine, "*Picture\\[\"*\"]")[1]
-    If sImg Like "icon:/*" Then Goto NEXT_LINE
+    If sImg Begins "icon:/" Then Goto NEXT_LINE
     
     sImportDir = Project.Dir &/ "import"
     If Not Exist(sImportDir) Then Project.InsertDirectory(sImportDir)

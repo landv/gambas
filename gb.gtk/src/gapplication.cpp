@@ -779,13 +779,15 @@ void gApplication::exitGroup(GtkWindowGroup *oldGroup)
 	_group = oldGroup;	
 }
 
-void gApplication::enterLoop(void *owner)
+void gApplication::enterLoop(void *owner, bool showIt)
 {
 	void *old_owner = _loop_owner;
 	int l = _loopLevel;
 	GtkWindowGroup *oldGroup;
 	
 	oldGroup = enterGroup();
+	
+	if (showIt) ((gControl *)owner)->show();
 
 	_loopLevel++;
 	_loop_owner = owner;

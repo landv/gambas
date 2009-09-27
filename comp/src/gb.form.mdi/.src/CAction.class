@@ -51,7 +51,7 @@ Public Sub _new(sKey As String, bHasShortcut As Boolean, cSlot As Collection, hM
     IconPath = "control" &/ LCase(Mid$(sPicture, 2)) & ".png"
     Try Icon = Picture[IconPath].Image.Stretch(W, W).Picture
   Else
-    If Not (sPicture Like "icon:/*") Then sPicture = "../" &/ sPicture
+    If Not (sPicture Begins "icon:/") Then sPicture = "../" &/ sPicture
     IconPath = sPicture
     Try Icon = Picture[IconPath]
   Endif

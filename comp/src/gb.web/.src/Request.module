@@ -1,127 +1,127 @@
 ' Gambas module file
 
-EXPORT 
+Export 
 
-PROPERTY READ Fields AS String[]
-PROPERTY READ Cookies AS Collection
-PROPERTY READ Method AS String
-PROPERTY READ Path AS String
-PROPERTY READ Query AS String
-PROPERTY READ Files AS Collection
-PROPERTY Delimiter AS String
-PROPERTY READ InternetExplorer AS Integer
+Property Read Fields As String[]
+Property Read Cookies As Collection
+Property Read Method As String
+Property Read Path As String
+Property Read Query As String
+Property Read Files As Collection
+Property Delimiter As String
+Property Read InternetExplorer As Integer
 
-PRIVATE $cCookies AS Collection
-PRIVATE $cVal AS Collection
-PRIVATE $cFiles AS Collection
-PRIVATE $aField AS NEW String[]
-PRIVATE $iMaxLength AS Integer
-PRIVATE $sBuffer AS String
-PRIVATE $bEOF AS Boolean
-PRIVATE $sDelimiter AS String = "&"
-PRIVATE $iIE AS Integer
+Private $cCookies As Collection
+Private $cVal As Collection
+Private $cFiles As Collection
+Private $aField As New String[]
+Private $iMaxLength As Integer
+Private $sBuffer As String
+Private $bEOF As Boolean
+Private $sDelimiter As String = "&"
+Private $iIE As Integer
 
-PRIVATE SUB ReadLine() AS String
+Private Sub ReadLine() As String
   
-  DIM iPos AS Integer
-  DIM sLine AS String
-  DIM sData AS String
+  Dim iPos As Integer
+  Dim sLine As String
+  Dim sData As String
 
-  DO
+  Do
 
     iPos = InStr($sBuffer, "\r\n")
-    IF iPos THEN 
+    If iPos Then 
       sLine = Left($sBuffer, iPos - 1)
       $sBuffer = Mid$($sBuffer, iPos + 2)
-      BREAK
-    ENDIF
+      Break
+    Endif
     
-    IF $iMaxLength = 0 THEN
-      $bEOF = TRUE
+    If $iMaxLength = 0 Then
+      $bEOF = True
       sLine = $sBuffer
       $sBuffer = ""
-      BREAK
-    ENDIF
+      Break
+    Endif
     
     sData = Read Min(4096, $iMaxLength)
     $iMaxLength -= Len(sData)
     $sBuffer &= sData
     
-  LOOP
+  Loop
 
-  RETURN sLine
+  Return sLine
   
-END
+End
 
 
-PRIVATE SUB DecodeURL(sUrl AS String, cVal AS Collection)
+Private Sub DecodeURL(sUrl As String, cVal As Collection)
   
-  DIM sElt AS String
-  DIM aElt AS String[]
-  DIM sKey AS String
-  DIM sVal AS String
-  DIM iPos AS Integer
-  DIM iPos2 AS Integer
-  DIM sCar AS String
+  Dim sElt As String
+  Dim aElt As String[]
+  Dim sKey As String
+  Dim sVal As String
+  Dim iPos As Integer
+  Dim iPos2 As Integer
+  Dim sCar As String
 
   sUrl = Trim(sUrl)
   
-  FOR EACH sElt IN Split(sUrl, $sDelimiter)
+  For Each sElt In Split(sUrl, $sDelimiter)
   
-    IF NOT sElt THEN CONTINUE
+    If Not sElt Then Continue
   
     aElt = Split(sElt, "=")
-    IF aElt.Count = 2 THEN
+    If aElt.Count = 2 Then
       sKey = CGI.Decode(aElt[0])
-      IF NOT sKey THEN CONTINUE
+      If Not sKey Then Continue
       sVal = CGI.Decode(aElt[1])
-    ELSE 
+    Else 
       sKey = CGI.Decode(aElt[0])
-      IF NOT sKey THEN CONTINUE
+      If Not sKey Then Continue
       sVal = ""
-    ENDIF
+    Endif
     
-    IF NOT $aField.Exist(sKey) THEN
+    If Not $aField.Exist(sKey) Then
       $aField.Add(sKey)
       cVal[sKey] = sVal
-    ELSE IF sVal THEN 
+    Else If sVal Then 
       'IF TypeOf(cVal[sKey]) = gb.String THEN 
       '  cVal[sKey] = [CStr(cVal[sKey]), sVal]
       'ELSE  
       '  cVal[sKey].Add(sVal)
       'ENDIF
       cVal[sKey] &= "\n" & sVal
-    ENDIF
+    Endif
   
-  NEXT  
+  Next  
  
-END
+End
 
 
-PRIVATE SUB DecodeQueryForm()
+Private Sub DecodeQueryForm()
   
-  DIM sStr AS String
-  DIM sType AS String
-  DIM sLine AS String
-  DIM aElt AS String[]
-  DIM sElt AS String
-  DIM sName AS String
-  DIM sFileName AS String
-  DIM sValue AS String
-  DIM iLength AS Integer
-  DIM bFile AS Boolean
-  DIM bFirst AS Boolean
-  DIM hFile AS File
+  Dim sStr As String
+  Dim sType As String
+  Dim sLine As String
+  Dim aElt As String[]
+  Dim sElt As String
+  Dim sName As String
+  Dim sFileName As String
+  Dim sValue As String
+  Dim iLength As Integer
+  Dim bFile As Boolean
+  Dim bFirst As Boolean
+  Dim hFile As File
   
-  $cVal = NEW Collection
-  $cFiles = NEW Collection
+  $cVal = New Collection
+  $cFiles = New Collection
 
-  IF CGI["REQUEST_METHOD"] = "GET" THEN
+  If CGI["REQUEST_METHOD"] = "GET" Then
     DecodeURL(CGI["QUERY_STRING"], $cVal)  
-    RETURN
-  ENDIF
+    Return
+  Endif
 
-  IF CGI["REQUEST_METHOD"] <> "POST" THEN RETURN
+  If CGI["REQUEST_METHOD"] <> "POST" Then Return
   
   File.In.EndOfLine = gb.Windows
   
@@ -129,14 +129,14 @@ PRIVATE SUB DecodeQueryForm()
   $iMaxLength = CGI["CONTENT_LENGTH"]
   'DEBUG sType
   
-  IF sType = "application/x-www-form-urlencoded" THEN 
-    sStr = READ $iMaxLength
+  If sType = "application/x-www-form-urlencoded" Then 
+    sStr = Read $iMaxLength
     'LINE INPUT sStr
     DecodeURL(sStr, $cVal)
-    RETURN
-  ENDIF
+    Return
+  Endif
     
-  IF NOT (sType LIKE "multipart/form-data*") THEN RETURN
+  If Not (sType Begins "multipart/form-data") Then Return
   
   'SHELL "echo MaxLength = " & CStr($iMaxLength) & " >> /var/log/thttpd/debug.log" WAIT
   'sType = Scan(sType, "*boundary=*")[1]
@@ -144,190 +144,190 @@ PRIVATE SUB DecodeQueryForm()
   sType = ReadLine()
   'IF sLine <> sType THEN RETURN
   
-  WHILE NOT $bEOF
+  While Not $bEOF
   
     sLine = ReadLine()
     
-    IF sLine LIKE "Content-Disposition:*" THEN 
-      bFile = FALSE
+    If sLine Begins "Content-Disposition:" Then 
+      bFile = False
       sFileName = ""
       aElt = Split(sLine, ";", Chr$(34))
-      FOR EACH sElt IN aElt
+      For Each sElt In aElt
         sElt = Trim(sElt)
         'SHELL "echo " & Quote.Shell(sElt) & " >> /var/log/thttpd/debug.log" WAIT
-        IF sElt LIKE "name=*" THEN 
+        If sElt Begins "name=" Then 
           sName = Split(sElt, "=", Chr$(34))[1]
-        ELSE IF sElt LIKE "filename=*" THEN
-          bFile = TRUE
+        Else If sElt Begins "filename=" Then
+          bFile = True
           sFileName = Split(sElt, "=", Chr$(34))[1]
-        ENDIF
-      NEXT
-      CONTINUE
-    ENDIF
+        Endif
+      Next
+      Continue
+    Endif
     
-    IF sLine THEN CONTINUE
+    If sLine Then Continue
 
-    IF bFile THEN 
+    If bFile Then 
     
       sValue = sFileName
-      IF sValue THEN
+      If sValue Then
         sFileName = Temp$()
         $cFiles[sName] = sFileName
         
-        hFile = OPEN sFileName FOR CREATE
+        hFile = Open sFileName For Create
   
-        bFirst = TRUE    
-        DO
+        bFirst = True    
+        Do
           sLine = ReadLine()
-          IF Left(sLine, Len(sType)) = sType THEN BREAK
-          IF NOT bFirst THEN PRINT #hFile, "\r\n";
-          PRINT #hFile, sLine;
-          bFirst = FALSE
-        LOOP
+          If Left(sLine, Len(sType)) = sType Then Break
+          If Not bFirst Then Print #hFile, "\r\n";
+          Print #hFile, sLine;
+          bFirst = False
+        Loop
         
-        CLOSE #hFile
-      ELSE
-        DO
+        Close #hFile
+      Else
+        Do
           sLine = ReadLine()
-          IF Left(sLine, Len(sType)) = sType THEN BREAK
-        LOOP
-      ENDIF
+          If Left(sLine, Len(sType)) = sType Then Break
+        Loop
+      Endif
 
       'SHELL "echo filename = " & Quote.Shell(sFileName) & " >> /var/log/thttpd/debug.log" WAIT
 
-    ELSE
+    Else
     
       sValue = ""
-      DO
+      Do
         sLine = ReadLine()
-        IF Left(sLine, Len(sType)) = sType THEN BREAK
-        IF sValue THEN sValue &= "\r\n"
+        If Left(sLine, Len(sType)) = sType Then Break
+        If sValue Then sValue &= "\r\n"
         sValue &= sLine
-      LOOP
+      Loop
       
       'SHELL "echo value = " & Quote.Shell(sValue) & " >> /var/log/thttpd/debug.log" WAIT
 
-    ENDIF
+    Endif
     
-    IF sName THEN 
-      IF NOT $aField.Exist(sName) THEN 
+    If sName Then 
+      If Not $aField.Exist(sName) Then 
         $aField.Add(sName)
         $cVal[sName] = sValue
-      ELSE 
+      Else 
         ' IF TypeOf($cVal[sName]) = gb.String THEN 
         '   $cVal[sName] = [CStr($cVal[sName]), sValue]
         ' ELSE  
         '   $cVal[sName].Add(sValue)
         ' ENDIF
         $cVal[sName] &= "\n" & sValue
-      ENDIF
-    ENDIF
+      Endif
+    Endif
       
-    IF Right(sLine, 2) = "--" THEN BREAK
+    If Right(sLine, 2) = "--" Then Break
 
-  WEND 
+  Wend 
     
   'SHELL "echo =DONE= >> /var/log/thttpd/debug.log" WAIT
 
-END
+End
 
-PUBLIC SUB _init()
+Public Sub _init()
   
-  DIM sAgent AS String = CGI["HTTP_USER_AGENT"]
-  DIM aScan AS String[] = Scan(sAgent, "*; MSIE *;*")
-  TRY $iIE = Val(aScan[1])
+  Dim sAgent As String = CGI["HTTP_USER_AGENT"]
+  Dim aScan As String[] = Scan(sAgent, "*; MSIE *;*")
+  Try $iIE = Val(aScan[1])
   
-END
+End
 
 
-PUBLIC SUB _get(Key AS String) AS String
+Public Sub _get(Key As String) As String
   
-  IF NOT $cVal THEN DecodeQueryForm
-  RETURN $cVal[Key]
+  If Not $cVal Then DecodeQueryForm
+  Return $cVal[Key]
   
-END
+End
 
-PUBLIC SUB _put(Value AS Variant, Key AS String)
+Public Sub _put(Value As Variant, Key As String)
   
-  IF NOT $cVal THEN $cVal = NEW Collection
+  If Not $cVal Then $cVal = New Collection
   $cVal[Key] = Value
   
-END
+End
 
-PRIVATE FUNCTION Fields_Read() AS String[]
+Private Function Fields_Read() As String[]
 
-  IF NOT $cVal THEN DecodeQueryForm
-  RETURN $aField
+  If Not $cVal Then DecodeQueryForm
+  Return $aField
 
-END
+End
 
-PRIVATE FUNCTION Cookies_Read() AS Collection
+Private Function Cookies_Read() As Collection
 
-  DIM sCookie AS String
-  DIM aCookie AS String[]
+  Dim sCookie As String
+  Dim aCookie As String[]
 
-  IF NOT $cCookies THEN
+  If Not $cCookies Then
     
-    $cCookies = NEW Collection
+    $cCookies = New Collection
     
-    FOR EACH sCookie IN Split(CGI["HTTP_COOKIE"], ";")
+    For Each sCookie In Split(CGI["HTTP_COOKIE"], ";")
       sCookie = Trim(sCookie)
       aCookie = Split(sCookie, "=")
       $cCookies[aCookie[0]] = aCookie[1]
-    NEXT
+    Next
  
-  ENDIF
+  Endif
 
-  RETURN $cCookies
+  Return $cCookies
 
-END
+End
 
 
-PRIVATE FUNCTION Method_Read() AS String
+Private Function Method_Read() As String
 
-  RETURN CGI["REQUEST_METHOD"]  
+  Return CGI["REQUEST_METHOD"]  
 
-END
+End
 
-PRIVATE FUNCTION Path_Read() AS String
+Private Function Path_Read() As String
 
-  RETURN CGI["PATH_INFO"]  
+  Return CGI["PATH_INFO"]  
 
-END
+End
 
-PRIVATE FUNCTION Query_Read() AS String
+Private Function Query_Read() As String
 
-  RETURN CGI["QUERY_STRING"]  
+  Return CGI["QUERY_STRING"]  
 
-END
+End
 
-PRIVATE FUNCTION Files_Read() AS Collection
+Private Function Files_Read() As Collection
 
-  RETURN $cFiles  
+  Return $cFiles  
 
-END
+End
 
-PUBLIC SUB Exist(Field AS String) AS Boolean
+Public Sub Exist(Field As String) As Boolean
   
-  RETURN $aField.Find(Field) >= 0
+  Return $aField.Find(Field) >= 0
   
-END
+End
 
 
-PRIVATE FUNCTION Delimiter_Read() AS String
+Private Function Delimiter_Read() As String
 
-  RETURN $sDelimiter  
+  Return $sDelimiter  
 
-END
+End
 
-PRIVATE SUB Delimiter_Write(Value AS String)
+Private Sub Delimiter_Write(Value As String)
 
   $sDelimiter = Value
 
-END
+End
 
-PRIVATE FUNCTION InternetExplorer_Read() AS Integer
+Private Function InternetExplorer_Read() As Integer
 
-  RETURN $iIE  
+  Return $iIE  
 
-END
+End

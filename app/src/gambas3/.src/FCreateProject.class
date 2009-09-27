@@ -48,7 +48,7 @@ Private Sub JumpFile(hFile As File, sBegin As String, sEnd As String, Optional s
       Continue
     Endif
     
-    If sLine Like sBegin & " *" Then 
+    If sLine Begins sBegin & " " Then 
       Inc iLevel
     Else If sLine = sEnd Then 
       If iLevel = 0 Then Return

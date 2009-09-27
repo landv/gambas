@@ -754,7 +754,7 @@ void TRANS_inc(void)
 
   TRANS_expression(FALSE);
   CODE_push_number(1);
-  CODE_op(C_ADD, 2, TRUE);
+  CODE_op(C_ADD, 0, 2, TRUE);
 
   JOB->current = save;
   TRANS_reference();
@@ -766,7 +766,7 @@ void TRANS_dec(void)
 
   TRANS_expression(FALSE);
   CODE_push_number(1);
-  CODE_op(C_SUB, 2, TRUE);
+  CODE_op(C_SUB, 0, 2, TRUE);
 
   JOB->current = save;
   TRANS_reference();
@@ -829,7 +829,7 @@ void TRANS_mid()
 	pos = JOB->current;
 	TRANS_expression(FALSE);
 	CODE_push_number(1);
-	CODE_op(C_SUB, 2, TRUE);
+	CODE_op(C_SUB, 0, 2, TRUE);
 	TRANS_subr(TS_SUBR_LEFT, 2);
 	
 	if (TRANS_is(RS_COMMA))
@@ -857,11 +857,11 @@ void TRANS_mid()
 		TRANS_expression(FALSE);
 		JOB->current = len;
 		TRANS_expression(FALSE);
-		CODE_op(C_ADD, 2, TRUE);
+		CODE_op(C_ADD, 0, 2, TRUE);
 		TRANS_subr(TS_SUBR_MID, 2);
 	}
 	
-	CODE_op(C_CAT, len ? 3 : 2, FALSE);
+	CODE_op(C_CAT, 0, len ? 3 : 2, FALSE);
 	
 	JOB->current = str;
 	TRANS_reference();

@@ -227,14 +227,14 @@ void TRANS_operation(short op, short nparam, boolean output, PATTERN previous)
 
     case OP_MINUS:
       if (nparam == 1)
-        CODE_op(C_NEG, nparam, TRUE);
+        CODE_op(C_NEG, 0, nparam, TRUE);
       else
-        CODE_op(info->code, nparam, TRUE);
+        CODE_op(info->code, info->subcode, nparam, TRUE);
       break;
 
     default:
 
-      CODE_op(info->code, nparam, (info->flag != RSF_OPN));
+      CODE_op(info->code, info->subcode, nparam, (info->flag != RSF_OPN));
   }
 }
 
@@ -467,7 +467,7 @@ void TRANS_reference(void)
 static void trans_operation(short op, short nparam, PATTERN previous)
 {
 	COMP_INFO *info = &COMP_res_info[op];
-	CODE_op(info->code, nparam, (info->flag != RSF_OPN));
+	CODE_op(info->code, info->subcode, nparam, (info->flag != RSF_OPN));
 }
 
 bool TRANS_affectation(void)

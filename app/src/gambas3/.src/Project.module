@@ -1581,7 +1581,7 @@ Private Sub CompileError(sMsg As String)
   iPos = RInStr(sMsg, "\n")
   If iPos Then sMsg = Mid$(sMsg, iPos + 1)
 
-  If sMsg Like "gbc: ERROR: *" Then
+  If sMsg Begins "gbc: ERROR: " Then
   
     sMsg = Mid$(sMsg, Len("gbc: ERROR: ") + 1)
     SetMessage(sMsg)
@@ -3185,7 +3185,7 @@ Private Function RenameOneFile(sDir As String, sName As String, sNewName As Stri
   
   aRename = New String[]
   For Each sCheck In $cSourceDir
-    If sCheck = sPath Or If sCheck Like (sPath &/ "*") Then aRename.Add(sCheck)
+    If sCheck = sPath Or If sCheck Begins sPath &/ "/" Then aRename.Add(sCheck)
   Next
 
   For Each sCheck In aRename
@@ -3617,7 +3617,7 @@ Public Function IsSourcePath(sPath As String) As Boolean
 
   Dim sExt As String
 
-  If SourceDir <> {Dir} Then Return (sPath & "/") Like (SourceDir &/ "*")
+  If SourceDir <> {Dir} Then Return sPath & "/" Begins SourceDir &/ "/"
 
   If Left(sPath) = "/" Then
     If File.Dir(sPath) <> SourceDir Then Return
@@ -3647,7 +3647,7 @@ End
 
 Public Sub IsConnectionPath(sPath As String) As Boolean
   
-  Return sPath Like (Project.Dir &/ ".connection" &/ "*")
+  Return sPath Begins Project.Dir &/ ".connection" &/ "/"
   
 End
 
@@ -3816,7 +3816,7 @@ Public Sub LinkFile(sSrc As String, sDst As String)
   Endif
 
   sDest = File.Dir(sDst) &/ GetUniqueName(File.Dir(sDst), File.Name(sDst), " (&1)")
-  If sSrc Like (Project.Dir & "/*") Then 
+  If sSrc Begins Project.Dir &/ "/" Then 
 
     aDst = Split(File.Dir(Mid$(sDest, Len(Project.Dir) + 2)), "/")
 
@@ -4391,7 +4391,7 @@ Public Sub GetPicture(sPict As String) As Picture
 
   If Not sPict Then Return
   
-  If sPict Like "icon:/*" Then 
+  If sPict Begins "icon:/" Then 
     Return Picture[sPict]
   Else  
     Return Picture.Load(Project.Dir &/ sPict)

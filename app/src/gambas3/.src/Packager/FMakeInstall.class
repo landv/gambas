@@ -121,7 +121,7 @@ Private Sub UpdatePackageName()
 
     sVendor = String.LCase(Trim(txtVendor.Text))
     If Not sVendor Then sVendor = "gb"
-    If LCase(Project.Name) Like sVendor & ".*" Then 
+    If LCase(Project.Name) Begins sVendor & "." Then 
       sVendor = ""
     Else 
       sVendor &= "-"
@@ -383,7 +383,7 @@ Public Sub wizInstall_BeforeChange()
     
     Case TAB_DIR
       Package.Path = dchInstall.SelectedPath
-      If Package.Path = Project.Dir Or If Package.Path Like Project.Dir &/ "/*" Then 
+      If Package.Path = Project.Dir Or If Package.Path Begins Project.Dir &/ "/" Then 
         Message.Warning(("The package cannot be stored inside the project directory."))
         Stop Event 
         Return 

@@ -15,7 +15,7 @@ End
 
 Private Sub FormatPath(sPath As String) As String
   
-  If sPath Like (System.User.Home & "/*") Then   
+  If sPath Begins System.User.Home & "/" Then   
     sPath = "~" &/ Mid$(sPath, Len(System.User.Home) + 2)
   Endif 
   
@@ -135,10 +135,10 @@ Private Sub GetInfo(sPath As String)
     Endif
 
     If sLink Then 
-      If sLink Like (Project.Dir & "/*") Then 
+      If sLink Begins Project.Dir &/ "/" Then 
         sLink = Mid$(sLink, Len(Project.Dir) + 2)
       Endif
-      If sLink Like (System.User.Home &/ "/*") Then 
+      If sLink Begins System.User.Home &/ "/" Then 
         sLink = "~" &/ Mid$(sLink, Len(System.User.Home) + 1)
       Endif
     Endif

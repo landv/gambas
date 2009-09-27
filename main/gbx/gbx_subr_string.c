@@ -103,8 +103,10 @@ void SUBR_file(void)
 		{
 			if (length > 0)
 			{
-				if (!slash && (addr[0] != '/'))
+				if (!slash && addr[0] != '/')
 					length++;
+				else if (slash && addr[0] == '/')
+					length--;
 			}
 
 			slash = addr[len - 1] == '/';
@@ -116,14 +118,24 @@ void SUBR_file(void)
 
 	STRING_new_temp(&str, NULL, length);
 	ptr = str;
+	slash = FALSE;
 
 	for (i = 0; i < NPARAM; i++)
 	{
 		VALUE_get_string(&PARAM[i], &addr, &len);
+		
 		if (len > 0)
 		{
-			if ((ptr > str) && (ptr[-1] != '/') && (*addr != '/'))
-				*ptr++ = '/';
+			if (ptr > str)
+			{
+				if (!slash && *addr != '/')
+					*ptr++ = '/';
+				else if (slash && *addr == '/')
+					ptr--;
+			}
+			
+			slash = addr[len - 1] == '/';
+			
 			memcpy(ptr, addr, len);
 			ptr += len;
 		}
@@ -523,18 +535,42 @@ __FOUND:
 
 void SUBR_like(void)
 {
+	static const void *jump[] = { &&__LIKE, &&__BEGINS, &&__ENDS, &&__RETURN };
 	char *pattern;
 	char *string;
 	int len_pattern, len_string;
-	bool ret;
+	bool ret = FALSE;
 
 	SUBR_ENTER_PARAM(2);
 
 	SUBR_get_string_len(&PARAM[0], &string, &len_string);
 	SUBR_get_string_len(&PARAM[1], &pattern, &len_pattern);
 
+	goto *jump[EXEC_code & 0x3];
+	
+__LIKE:
+	
 	ret = REGEXP_match(pattern, len_pattern, string, len_string) ? -1 : 0;
+	goto __RETURN;
 
+__BEGINS:
+	
+	if (len_pattern == 0)
+		ret = TRUE;
+	else if (len_pattern <= len_string)
+		ret = STRING_equal_same(string, pattern, len_pattern);
+	goto __RETURN;
+
+__ENDS:
+	
+	if (len_pattern == 0)
+		ret = TRUE;
+	else if (len_pattern <= len_string)
+		ret = STRING_equal_same(string + len_string - len_pattern, pattern, len_pattern);
+	goto __RETURN;
+
+__RETURN:
+	
 	RETURN->type = T_BOOLEAN;
 	RETURN->_boolean.value = ret;
 

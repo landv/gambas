@@ -109,7 +109,7 @@ void CODE_push_symbol(short symbol);
 void CODE_push_unknown(short symbol);
 void CODE_push_class(short class);
 
-void CODE_op(short op, short nparam, bool fixed);
+void CODE_op(short op, short subcode, short nparam, bool fixed);
 
 void CODE_push_me(bool);
 void CODE_push_super(bool);

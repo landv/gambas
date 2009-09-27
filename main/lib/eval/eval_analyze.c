@@ -46,6 +46,12 @@ static int get_type(PATTERN *pattern)
     }
     else if (RES_is_type(index))
       type = EVAL_TYPE_DATATYPE;
+		else if (index == RS_WITH && pattern > EVAL->pattern)
+		{
+			index = PATTERN_index(pattern[-1]);
+			if (index == RS_BEGINS || index == RS_ENDS)
+				type = EVAL_TYPE_OPERATOR;
+		}
   }
 
   return type;

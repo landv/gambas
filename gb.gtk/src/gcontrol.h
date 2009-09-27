@@ -241,7 +241,6 @@ public:
 private:
 	gContainer *pr;
 	char *_name;
-	int loopLevel;
 };
 
 #define SIGNAL(_signal) ((void *)_signal)

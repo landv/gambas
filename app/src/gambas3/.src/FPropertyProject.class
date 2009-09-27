@@ -674,33 +674,30 @@ Public Sub cmbComponent_Click()
 
 End
 
-
-Private Sub GetParent(sPath As String) As String
-  
-  Dim hFile As File
-  Dim sLine As String
-  Dim sParent As String
-  
-  hFile = Open sPath
-  While Not Eof(hFile)
-    Line Input #hFile, sLine
-    sLine = Trim(sLine)
-    If Not sLine Then Continue
-    If Left(sLine) = "'" Then Continue
-    If sLine Like "INHERITS *" Then 
-      Try sParent = Trim(Scan(sLine, "INHERITS *")[0])
-      Return sParent
-    Endif
-    If sLine Like "EXPORT" Then Continue
-    If sLine Like "CREATE" Then Continue
-    If sLine Like "EXPORT *" Then Continue
-    If sLine Like "CREATE *" Then Continue
-    Break
-  Wend 
-  
-End
-
-
+' Private Sub GetParent(sPath As String) As String
+'   
+'   Dim hFile As File
+'   Dim sLine As String
+'   Dim sParent As String
+'   
+'   hFile = Open sPath
+'   While Not Eof(hFile)
+'     Line Input #hFile, sLine
+'     sLine = Trim(sLine)
+'     If Not sLine Then Continue
+'     If Left(sLine) = "'" Then Continue
+'     If sLine Like "INHERITS *" Then 
+'       Try sParent = Trim(Scan(sLine, "INHERITS *")[0])
+'       Return sParent
+'     Endif
+'     If sLine Like "EXPORT" Then Continue
+'     If sLine Like "CREATE" Then Continue
+'     If sLine Like "EXPORT *" Then Continue
+'     If sLine Like "CREATE *" Then Continue
+'     Break
+'   Wend 
+'   
+' End
 
 Private Sub ReadComponent()
   
@@ -903,7 +900,7 @@ Public Sub InitComponent()
       If Not IsLetter(Left(sClass)) Then Continue
       CExportInfo.List.Add(sClass)
       hExportInfo = New CExportInfo(sClass)
-      hExportInfo.Parent = GetParent(sPath)
+      hExportInfo.Parent = Project.GetParentClass(sPath)
     Endif 
   Next 
   

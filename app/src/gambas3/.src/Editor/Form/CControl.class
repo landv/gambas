@@ -429,7 +429,7 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
 
       Case "Picture"
 
-        If vRealVal Like "icon:/*" Then 
+        If vRealVal Begins "icon:/" Then 
           hPict = Picture[vRealVal]
         Else
           hPict = Picture.Load(File.Dir(Project.Path) &/ vRealVal)

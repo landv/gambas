@@ -95,11 +95,11 @@ Private Sub LoadAction(sFile As String)
     If Not sLine Then Continue
     If Left(sLine) = "#" Then Continue
     
-    If sLine Like "{ Action *" Then
+    If sLine Begins "{ Action " Then
       cSlot.Clear
       bHasShortcut = False
       sAction = Trim(Mid$(sLine, 10))
-    Else If sLine Like "{ Toolbar *" Then
+    Else If sLine Begins "{ Toolbar " Then
       cSlot.Clear
       sToolbar = Trim(Mid$(sLine, 10))
     Else If sLine = "}" Then

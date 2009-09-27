@@ -164,16 +164,16 @@ Public Sub edtConflict_Highlight()
 
   Highlight.ShowLimit = False
   
-  If sText Like "<<<<<<*" Then 
+  If sText Begins "<<<<<<" Then 
     'iPos = String.InStr(sText, " ")
     Highlight.Add(Highlight.Comment, String.Len(sText))
     'Highlight.Add(Highlight.Keyword, String.Len(sText) - iPos)
     Highlight.State = Highlight.Number
     Highlight.ShowLimit = True
-  Else If sText Like "======*" Then
+  Else If sText Begins "======" Then
     Highlight.Add(Highlight.Comment, String.Len(sText))
     Highlight.State = Highlight.Function
-  Else If sText Like ">>>>>>*" Then
+  Else If sText Begins ">>>>>>" Then
     Highlight.Add(Highlight.Comment, String.Len(sText))
     'iPos = String.InStr(sText, " ")
     'Highlight.Add(Highlight.Comment, iPos)
@@ -214,7 +214,7 @@ Public Sub btnSolve_Click()
   
   For iInd = 0 To edtConflict.Lines.Count - 1
     sText = edtConflict.Lines[iInd].Text
-    If sText Like "<<<<<<*" Or If sText Like "======*" Or If sText Like ">>>>>>*" Then 
+    If sText Begins "<<<<<<" Or If sText Begins "======" Or If sText Begins ">>>>>>" Then 
       edtConflict.Goto(iInd, 0)
       Message.Warning(("Some conflicts are not yet resolved."))
       Return

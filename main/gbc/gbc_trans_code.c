@@ -501,7 +501,7 @@ void TRANS_code(void)
         //CODE_event(TRUE);
       }
 
-      CODE_op(C_RETURN, 0, TRUE);
+      CODE_op(C_RETURN, 0, 0, TRUE);
       if (JOB->verbose)
         CODE_dump(func->code, func->ncode);
       continue;

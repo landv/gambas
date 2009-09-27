@@ -81,7 +81,7 @@ Private Function SearchPathVariable(sFileConfig As String, sDirectory As String)
     sLine = Trim(sLine)
     If Not sLine Then Continue
     If Left(sLine) = "#" Then Continue
-    If sLine Like (sDirectory & "*") Then Break
+    If sLine Begins sDirectory Then Break
     sLine = ""
   Wend
   
@@ -89,7 +89,7 @@ Private Function SearchPathVariable(sFileConfig As String, sDirectory As String)
   If aLine.Count Then
     sLine = aLine[0]
     If Left(sLine) = Chr$(34) Then sLine = Mid$(sLine, 2, -1)
-    If sLine Like "$HOME/*" Then sLine = Replace(sLine, "$HOME", System.User.Home)
+    If sLine Begins "$HOME/" Then sLine = Replace(sLine, "$HOME", System.User.Home)
     Return sLine
   Endif
 

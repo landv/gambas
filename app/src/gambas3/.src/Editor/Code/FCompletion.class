@@ -163,10 +163,8 @@ Private Sub AddClassesAndFill(aClass As String[], Optional sBegin As String)
 
   CComponent.All["gb"].Load
 
-  sBegin &= "*"
-
   For Each sClass In Project.GetClasses()
-    If sClass Like sBegin Then aClass.Add(sClass & " 1")
+    If sClass Begins sBegin Then aClass.Add(sClass & " 1")
     'TRY lvwComp.Add(sClass, sClass)
   Next
 
@@ -178,7 +176,7 @@ Private Sub AddClassesAndFill(aClass As String[], Optional sBegin As String)
     CComponent.All[sLib].Load
     For Each sClass In CComponent.All[sLib].ClassList
       If IsLetter(Left$(sClass)) Then
-        If sClass Like sBegin Then 
+        If sClass Begins sBegin Then 
           If CComponent.Classes[sClass].Properties Then
             aClass.Add(sClass & " 2")
           Else
@@ -317,14 +315,14 @@ Private Sub FillWithIdent(sWord As String)
   sWord = UCase(sWord)
   
   For Each sCar In ["True", "False", "Null", "Last", "Me", "Super"]
-    If sCar Like (sWord & "*") Then 
+    If sCar Begins sWord Then 
       cKey[sCar] = True
       aResult.Add(sCar & " 0")
     Endif
   Next
 
   For Each sCar In System.Keywords
-    If sCar Like (sWord & "*") Then 
+    If sCar Begins sWord Then 
       If cKey.Exist(sCar) Then Continue
       cKey[sCar] = True
       If sCar = UCase(sCar) Then sCar &= " "
@@ -402,7 +400,7 @@ Private Sub FillWithIdent(sWord As String)
     For Each hSymbol In cSymbol
       If Not hSymbol.NotPublic Then Continue
       sCar = hSymbol.Name
-      If Not (sCar Like (sWord & "*")) Then Continue
+      If Not (sCar Begins sWord) Then Continue
       If cKey.Exist(sCar) Then Continue
       aResult.Add(sCar & " 3")
       cKey[sCar] = True
@@ -581,11 +579,11 @@ Private Function FindItem(Optional bNoInsert As Boolean) As Boolean
   Dim nComp As Integer
   Dim sText As String
 
-  sComp = Replace($sText, "[", "[[]") & "*"
+  'sComp = Replace($sText, "[", "[[]") & "*"
 
   lvwComp.MoveFirst
   While lvwComp.Available
-    If UCase(lvwComp.Item.Text) Like sComp Then Break
+    If UCase(lvwComp.Item.Text) Begins sComp Then Break
     lvwComp.MoveNext
   Wend
   
@@ -599,7 +597,7 @@ Private Function FindItem(Optional bNoInsert As Boolean) As Boolean
   While lvwComp.Available
     With lvwComp.Item
       sText = Trim(.Text)
-      If Not (UCase(sText) Like sComp) Then Break
+      If Not (UCase(sText) Begins sComp) Then Break
       If iLevel <= 2 And If .Text = $sText Then
         sKey = .Key
         iLevel = 3

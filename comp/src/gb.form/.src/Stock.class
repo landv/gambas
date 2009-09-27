@@ -121,7 +121,7 @@ Static Private Sub InitTheme()
               While Not Eof(hFile)
                 Line Input #hFile, sLig
                 If Left(sLig) = "[" Then Break
-                If sLig Like "Theme=*" Then 
+                If sLig Begins "Theme=" Then 
                   sStyle = Mid$(sLig, 7)
                   Break
                 Endif 
@@ -168,7 +168,7 @@ Static Private Sub InitTheme()
               While Not Eof(hFile)
                 Line Input #hFile, sLig
                 If Left(sLig) = "[" Then Break
-                If sLig Like "Theme=*" Then 
+                If sLig Begins "Theme=" Then 
                   sStyle = Mid$(sLig, 7)
                   Break
                 Endif 

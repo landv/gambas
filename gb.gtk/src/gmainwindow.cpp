@@ -559,11 +559,11 @@ void gMainWindow::showModal()
 	gtk_window_set_modal(GTK_WINDOW(border), true);
   
   center();
-	show();
+	//show();
 
 	//fprintf(stderr, "showModal: begin %p\n", this);
 
-	gApplication::enterLoop(this);
+	gApplication::enterLoop(this, true);
 	
 	//fprintf(stderr, "showModal: end %p\n", this);
 

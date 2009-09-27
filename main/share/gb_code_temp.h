@@ -692,7 +692,7 @@ void CODE_next(bool drop)
 
 #endif /* PROJECT_COMP */
 
-void CODE_op(short op, short nparam, bool fixed)
+void CODE_op(short op, short subcode, short nparam, bool fixed)
 {
   if (op == C_ADD || op == C_SUB)
   {
@@ -744,7 +744,7 @@ void CODE_op(short op, short nparam, bool fixed)
   #endif
 
   if (fixed)
-    write_ZZxx(op, 0);
+    write_ZZxx(op, subcode);
   else
     write_ZZxx(op, nparam);
 }

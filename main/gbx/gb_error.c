@@ -304,7 +304,7 @@ void ERROR_define(const char *pattern, char *arg[])
 					c = *msg++;
 					if (c >= '1' && c <= '4')
 					{
-						c -= '1';
+						c -= '0';
 						if (c > narg)
 							narg = c;
 					}

@@ -148,6 +148,7 @@ typedef
     RS_ERROR,
     RS_SUPER,
     RS_ENUM,
+		RS_LET,
 
     RS_PRINT,
     RS_INPUT,
@@ -220,6 +221,8 @@ typedef
     RS_MOD,
     RS_IS,
     RS_LIKE,
+    RS_BEGINS,
+    RS_ENDS,
     RS_FILE,
 
     RS_PLUS_EQ,
@@ -275,6 +278,7 @@ typedef
     short value;
     short priority;
     short code;
+		short subcode;
     void (*func)();
     }
   PACKED

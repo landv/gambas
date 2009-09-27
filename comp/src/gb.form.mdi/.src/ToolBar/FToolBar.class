@@ -940,7 +940,7 @@ Private Sub GetIcon(sIcon As String) As Picture
       sSize = "small"
   End Select
 
-  If sIcon Like "icon:/*" Then
+  If sIcon Begins "icon:/" Then
     aIcon = Split(sIcon, "/")
     aIcon[1] = sSize
     hIcon = Picture[aIcon.Join("/")]

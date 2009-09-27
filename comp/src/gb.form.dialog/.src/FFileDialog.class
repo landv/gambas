@@ -54,7 +54,7 @@ Private Sub SetExtension(sPath As String) As String
     Try sExt = Scan(Split(aFilter[iInd], ";")[0], "\\*.*")[0]
     If Not sExt Then Continue
     If sExt = "*" Then Continue
-    If sPath Like ("*." & sExt) Then
+    If sPath Ends "." & sExt Then
       sPath = Left$(sPath, - Len(sExt) - 1)
       bGotIt = True
       Break
@@ -63,7 +63,7 @@ Private Sub SetExtension(sPath As String) As String
   
   If Not bGotIt Then sPath = File.SetExt(sPath, "")
   
-  Try sExt = Scan(Split(aFilter[fchChoose.FilterIndex * 2], ";")[0], "\\*.*")[0]
+  Try sExt = Scan(Split(aFilter[fchChoose.FilterIndex * 2], ";")[0], "[*].*")[0]
   If sExt Then sPath &= "." & sExt
   Return sPath
   

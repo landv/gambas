@@ -31,7 +31,7 @@ Public Sub Form_Open()
   
   tabIcon[1].Visible = Not $bNoStock
   
-  If $sIcon Like "icon:/*" Then 
+  If $sIcon Begins "icon:/" Then 
     $sIcon = Mid$($sIcon, 7)
     iPos = InStr($sIcon, "/")
     icwStock.Clear

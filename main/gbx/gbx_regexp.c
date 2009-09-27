@@ -101,7 +101,7 @@ bool REGEXP_match(const char *pattern, int len_pattern, const char *string, int 
     if (cp == '?')
       continue;
 
-    if (cp == ' ')
+    /*if (cp == ' ')
     {
     	if (cs > ' ')
     		return FALSE;
@@ -115,7 +115,7 @@ bool REGEXP_match(const char *pattern, int len_pattern, const char *string, int 
 				len_string++;
 			}
 			continue;
-    }
+    }*/
 
     if (cp == '[' && len_pattern > 0)
     {
@@ -168,7 +168,7 @@ bool REGEXP_match(const char *pattern, int len_pattern, const char *string, int 
         if (cp == ']')
           break;
         if (len_pattern == 0)
-          THROW(E_REGEXP, "Right square bracket missing");
+          THROW(E_REGEXP, "Missing ']'");
         _next_pattern();
       }
 
@@ -177,6 +177,70 @@ bool REGEXP_match(const char *pattern, int len_pattern, const char *string, int 
 
       return FALSE;
     }
+		
+    if (cp == ' ')
+    {
+    	if (cs > ' ')
+    		return FALSE;
+
+    	while (len_string && cs <= ' ')
+    		_next_string();
+
+			if (cs > ' ')
+			{
+				string--;
+				len_string++;
+			}
+			continue;
+    }
+
+		if (cp == '{' && len_pattern > 0)
+		{
+			const char *save_string;
+			int save_len_string;
+			
+			string--; len_string++;
+			save_string = string;
+			save_len_string = len_string;
+			
+			for(;;)
+			{
+				if (len_pattern == 0)
+					THROW(E_REGEXP, "Missing '}'");
+				
+				_next_pattern();
+				
+				if (cp == ',' || cp == '}')
+					break;
+				
+				if (len_string == 0)
+					return FALSE;
+				_next_string();
+				
+				if (tolower(cp) != tolower(cs))
+				{
+					for(;;)
+					{
+						_next_pattern();
+						if (cp == '}')
+							return FALSE;
+						if (cp == ',' || len_pattern == 0)
+							break;
+					}
+					string = save_string;
+					len_string = save_len_string;
+				}
+			}
+			
+			while (cp != '}')
+			{
+				if (len_pattern == 0)
+					THROW(E_REGEXP, "Missing '}'");
+				_next_pattern();
+			}
+			
+			continue;
+		}
 
     if (cp == '\\')
     {

@@ -704,16 +704,16 @@ void TRANS_case(void)
     if (TRANS_is(RS_TO))
     {
       CODE_push_local(local);
-      CODE_op(C_LE, 2, TRUE);
+      CODE_op(C_LE, 0, 2, TRUE);
       CODE_push_local(local);
       TRANS_expression(FALSE);
-      CODE_op(C_LE, 2, TRUE);
-      CODE_op(C_AND, 2, TRUE);
+      CODE_op(C_LE, 0, 2, TRUE);
+      CODE_op(C_AND, 0, 2, TRUE);
     }
     else
     {
       CODE_push_local(local);
-      CODE_op(C_EQ, 2, TRUE);
+      CODE_op(C_EQ, 0, 2, TRUE);
     }
 
     if (!PATTERN_is(*JOB->current, RS_COMMA))

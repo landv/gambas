@@ -532,6 +532,9 @@ READ_OPERATOR:
 
   current++;
 
+	/*if ((op == RS_BEGINS || op == RS_ENDS) && PATTERN_is(*current, RS_WITH))
+		current++;*/
+
   if (priority)
     prio = priority;
   else if (op_curr == RS_NONE)
