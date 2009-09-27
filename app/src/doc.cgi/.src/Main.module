@@ -982,7 +982,7 @@ Private Function Encode(sText As String) As String
             $sRes &= GetVersion()
             Continue
           
-          Case "only-in"
+          Case "only-in", "only"
             $sRes &= GetOnlyIn(sArg)
             Continue 
           

@@ -550,7 +550,9 @@ static void add_identifier(bool no_res)
     last_type = (flag & RSF_ILT) != 0;
 		if (flag & RSF_ILDD)
 		{
-			if (RES_get_ident_flag(PATTERN_index(get_last_last_pattern())) & RSF_ILD)
+			PATTERN last_last_pattern = get_last_last_pattern();
+			
+			if (PATTERN_is_reserved(last_last_pattern) && RES_get_ident_flag(PATTERN_index(last_last_pattern)) & RSF_ILD)
 				last_declare = TRUE;
 			flag &= ~RSF_ILDD; // flag == 0 means we can read a subroutine!
 		}

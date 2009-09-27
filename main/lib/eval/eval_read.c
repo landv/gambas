@@ -234,6 +234,14 @@ static void add_pattern(int type, int index)
 
 #endif
 
+static PATTERN get_last_last_pattern()
+{
+  if (EVAL->pattern_count > 1)
+    return EVAL->pattern[EVAL->pattern_count - 2];
+  else
+    return NULL_PATTERN;
+}
+
 static PATTERN get_last_pattern()
 {
   if (EVAL->pattern_count > 0)
@@ -446,7 +454,14 @@ static void add_identifier(bool no_res)
     last_func = (flag & RSF_ILF) != 0;
     last_declare = (flag & RSF_ILD) != 0;
     last_type = (flag & RSF_ILT) != 0;
-    //last_event = flag & RSF_ILE;
+		if (flag & RSF_ILDD)
+		{
+			PATTERN last_last_pattern = get_last_last_pattern();
+			
+			if (PATTERN_is_reserved(last_last_pattern) && RES_get_ident_flag(PATTERN_index(last_last_pattern)) & RSF_ILD)
+				last_declare = TRUE;
+			flag &= ~RSF_ILDD; // flag == 0 means we can read a subroutine!
+		}
   }
   else
   {
