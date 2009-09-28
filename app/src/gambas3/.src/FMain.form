@@ -463,6 +463,10 @@
     { Menu24 Menu
       Text = ("")
     }
+    { mnuAddVersion Menu
+      Text = ("&Add to repository")
+      Picture = Picture["icon:/16/add"]
+    }
     { mnuInformation Menu
       Action = "info"
       Text = ("&Properties...")
@@ -489,6 +493,14 @@
       Text = ("&Remove")
       Picture = Picture["icon:/small/delete"]
       Shortcut = "Del"
+    }
+    { Menu25 Menu
+      Text = ("")
+    }
+    { mnuAddVersionConnection Menu mnuAddVersion
+      Name = "mnuAddVersionConnection"
+      Text = ("&Add to repository")
+      Picture = Picture["icon:/16/add"]
     }
     { mnuInfoConnection Menu
       Text = ("&Properties...")

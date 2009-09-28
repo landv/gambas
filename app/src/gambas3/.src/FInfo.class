@@ -224,10 +224,17 @@ Public Sub tabInfo_Click()
       If sDiff Then
         edtChange.Text = sDiff
         edtChange.Show
-        lblNoChange.Hide
+        lblVersioning.Hide
       Else
         edtChange.Hide
-        lblNoChange.Show
+        If Project.IsLocked($sPath) Then
+          lblVersioning.Text = ("This file is locked, and will be deleted on the next commit.")
+        Else If Project.IsAdded($sPath) Then
+          lblVersioning.Text = ("This file is not versioned, and must be added to the repository.")
+        Else
+          lblVersioning.Text = ("This file has not been modified since the last commit.")
+        Endif
+        lblVersioning.Show
       Endif
     Endif
   Endif

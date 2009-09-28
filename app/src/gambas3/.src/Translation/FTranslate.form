@@ -168,53 +168,47 @@
     }
     Index = 0
   }
-  { VBox3 VBox
-    MoveScaled(1,73,118,5)
-    { Panel3 Panel
-      MoveScaled(55,0,4,1)
+  { HBox1 HBox
+    MoveScaled(1,73,117,4)
+    Spacing = True
+    { btnNew Button
+      MoveScaled(0,0,18,4)
+      ToolTip = ("New translation")
+      Text = ("&New...")
+      Picture = Picture["icon:/small/new"]
     }
-    { HBox1 HBox
-      MoveScaled(0,1,117,4)
-      Spacing = True
-      { btnNew Button
-        MoveScaled(0,0,18,4)
-        ToolTip = ("New translation")
-        Text = ("&New...")
-        Picture = Picture["icon:/small/new"]
-      }
-      { btnUndo Button
-        MoveScaled(19,0,18,4)
-        ToolTip = ("Reload translation")
-        Text = ("&Reload")
-        Picture = Picture["icon:/small/undo"]
-      }
-      { btnDelete Button
-        MoveScaled(38,0,18,4)
-        ToolTip = ("Delete translation")
-        Text = ("&Delete")
-        Picture = Picture["icon:/small/delete"]
-      }
-      { btnImport Button
-        MoveScaled(57,0,18,4)
-        ToolTip = ("Import a translation file")
-        Text = ("&Import...")
-        Picture = Picture["icon:/small/open"]
-      }
-      { btnExport Button
-        MoveScaled(76,0,18,4)
-        ToolTip = ("Export to a translation file")
-        Text = ("&Export...")
-        Picture = Picture["icon:/small/save"]
-      }
-      { Panel1 Panel
-        MoveScaled(94,0,1,4)
-        Expand = True
-      }
-      { btnOK Button
-        MoveScaled(98,0,18,4)
-        Text = ("&Close")
-        Cancel = True
-      }
+    { btnUndo Button
+      MoveScaled(19,0,18,4)
+      ToolTip = ("Reload translation")
+      Text = ("&Reload")
+      Picture = Picture["icon:/small/undo"]
+    }
+    { btnDelete Button
+      MoveScaled(38,0,18,4)
+      ToolTip = ("Delete translation")
+      Text = ("&Delete")
+      Picture = Picture["icon:/small/delete"]
+    }
+    { btnImport Button
+      MoveScaled(57,0,18,4)
+      ToolTip = ("Import a translation file")
+      Text = ("&Import...")
+      Picture = Picture["icon:/small/open"]
+    }
+    { btnExport Button
+      MoveScaled(76,0,18,4)
+      ToolTip = ("Export to a translation file")
+      Text = ("&Export...")
+      Picture = Picture["icon:/small/save"]
+    }
+    { Panel1 Panel
+      MoveScaled(94,0,1,4)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(98,0,18,4)
+      Text = ("&Close")
+      Cancel = True
     }
   }
 }

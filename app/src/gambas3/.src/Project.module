@@ -135,7 +135,9 @@ Private $hCurrentPopup As Menu
 
 Private $hLock As File
 
+' Subversion state of files
 Public LockedPaths As Collection
+Public AddedPaths As Collection
 
 Public Sub _init()
   
@@ -641,6 +643,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
   Dim sModule As String
   Dim sLocalPrefix As String
   Dim bLocked As Boolean
+  Dim bAdded As Boolean
   
   If iSize Then 
     sPrefix = "icon:/" & iSize
@@ -656,6 +659,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
     bLink = .Type = gb.Link
     bConflict = False
     bLocked = IsLocked(sPath)
+    bAdded = IsAdded(sPath)
     
     If .Type = gb.Directory Then 
     
@@ -738,6 +742,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
 
     If bConflict Then hImage = AddEmblem(hImage, "icon:/32/warning")
     If bLocked Then hImage = AddEmblem(hImage, "icon:/32/lock")
+    If bAdded Then hImage = AddEmblem(hImage, "icon:/32/add")
 
     If bLink Then 
       hImage = AddLinkEmblem(hImage)
@@ -752,6 +757,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
     If bStartup Then sKey = File.Dir(sKey) &/ File.BaseName(sKey) & "-startup" & ".png"
     If bConflict Then sKey = File.Dir(sKey) &/ File.BaseName(sKey) & "-conflict" & ".png"
     If bLocked Then sKey = File.Dir(sKey) &/ File.BaseName(sKey) & "-locked" & ".png"
+    If bAdded Then sKey = File.Dir(sKey) &/ File.BaseName(sKey) & "-added" & ".png"
     
     'hPict = NULL
     'IF NOT bNoStartup THEN hPict = Picture[sKey]
@@ -772,6 +778,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
       If bStartup Then hImage = AddEmblem(hImage, "icon:/32/play")
       If bConflict Then hImage = AddEmblem(hImage, "icon:/32/warning")
       If bLocked Then hImage = AddEmblem(hImage, "icon:/32/lock")
+      If bAdded Then hImage = AddEmblem(hImage, "icon:/32/add")
 
       If iSize Then 
          hImage = hImage.Stretch(hImage.Width * iSize / hImage.Height, iSize)
@@ -1220,7 +1227,7 @@ Private Sub DoRefresh(Optional bReset As Boolean)
   Endif
   
   RefreshSourceCache
-  VersionControl.CheckLockedPaths()
+  VersionControl.CheckPaths()
   
   With ProjectTree
 
@@ -4504,9 +4511,20 @@ Public Sub IsLocked(sPath As String) As Boolean
   
   If LockedPaths.Exist(sPath) Then Return True
   If sPath = "" Or sPath = "/" Then Return False
+  If IsAdded(sPath) Then Return True
   Return IsLocked(File.Dir(sPath))
   
 End
+
+Public Sub IsAdded(sPath As String, Optional bNoRec As Boolean) As Boolean
+  
+  If AddedPaths.Exist(sPath) Then Return True
+  If bNoRec Then Return False
+  If sPath = "" Or sPath = "/" Then Return False
+  Return IsAdded(File.Dir(sPath))
+  
+End
+
 
 
 Public Sub GetCount(sType As String) As Integer

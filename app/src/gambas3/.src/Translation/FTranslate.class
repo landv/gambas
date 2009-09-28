@@ -133,6 +133,8 @@ Public Sub Form_Open()
 
   Settings.Read(Me)
 
+  $bStatValid = False
+
   cvwLang.Clear
   cmbLang.Clear
   For Each sLang In Language.GetAll()
@@ -147,6 +149,8 @@ Public Sub Form_Open()
   If SetLang() Then 
     Me.Close
   Endif
+  
+  tabTranslate_Click
   
 End
 
@@ -1364,6 +1368,8 @@ Public Sub cvwLang_Compare(Key As String, OtherKey As String)
       Endif
   
   End Select
+
+Finally
 
   cvwLang.Compare = iComp
 

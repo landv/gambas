@@ -138,21 +138,29 @@ Public Sub MoveFile(sOld As String, sNew As String)
 
 End
 
-Public Sub CheckLockedPaths()
+Public Sub CheckPaths()
   
   Dim sStatus As String
   Dim iPos As Integer
+  Dim sFile As String
 
   Project.LockedPaths = New Collection
+  Project.AddedPaths = New Collection
 
   If $bSVN Then
   
-    Shell "cd " & Shell$(Project.Dir) & "; svn status -q" To sStatus
+    Shell "cd " & Shell$(Project.Dir) & "; svn status" To sStatus
     
     For Each sStatus In Split(sStatus, "\n")
     
+      sFile = Mid$(sStatus, 9)
+    
       If Left(sStatus) = "D" Then
-        Project.LockedPaths[Project.Dir &/ Mid$(sStatus, 9)] = True
+        Project.LockedPaths[Project.Dir &/ sFile] = True
+      Else If Left(sStatus) = "?" Then
+        If Left(File.Name(sFile)) = "." Then Continue
+        If sFile = Project.Name & ".gambas" Then Continue
+        Project.AddedPaths[Project.Dir &/ sFile] = True
       Endif
     
     Next
@@ -160,8 +168,6 @@ Public Sub CheckLockedPaths()
   Endif
   
 End
-
-
 
 Public Sub MoveDir(sOld As String, sNew As String) As Boolean
 

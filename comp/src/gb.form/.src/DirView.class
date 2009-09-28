@@ -108,8 +108,8 @@ Private Sub AddDir(sDir As String, sFile As String, Optional bIgnoreHidden As Bo
     .MoveAfter(sAfter)
   End With
   
-  $hTreeView.Add(sDir &/ sFile & "/", "",, sDir &/ sFile).Expanded = False
-  
+  $hTreeView.Add((sDir &/ sFile) & "/", "",, sDir &/ sFile).Expanded = False
+
 End
 
 Public Sub TreeView_Expand()

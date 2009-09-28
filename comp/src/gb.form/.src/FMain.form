@@ -3,6 +3,7 @@
 { Form Form
   MoveScaled(0,0,75,63)
   Text = ("")
+  Arrangement = Arrange.Fill
   Margin = True
   { Menu4 Menu
     Text = ("Menu4")
@@ -19,16 +20,8 @@
       Text = ("Action 3")
     }
   }
-  { MenuButton1 MenuButton
-    MoveScaled(10,8,6,4)
-    Text = ("")
-    Picture = Picture["icon:/16/paste"]
-    Menu = "mnuPopup"
-  }
-  { ToolButton1 ToolButton
-    MoveScaled(6,8,4,4)
-    Background = &H7FFF00&
-    Text = ("")
-    Picture = Picture["icon:/16/earth"]
+  { FileChooser1 FileChooser
+    MoveScaled(7,7,63,46)
+    ShowBookmark = True
   }
 }

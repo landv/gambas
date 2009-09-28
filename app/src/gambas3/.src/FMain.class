@@ -391,6 +391,9 @@ Public Sub mnuPopup_Show()
     Endif
 
   Endif
+  
+  mnuAddVersion.Visible = Project.IsAdded($sKey)
+  
 End
 
 Public Sub mnuDatabase_Show()
@@ -403,6 +406,11 @@ Public Sub mnuDatabase_Show()
   mnuEditConnection.Visible = bVisible
   mnuKillConnection.Visible = bVisible
   mnuInfoConnection.Visible = bVisible
+  If bVisible Then 
+    mnuAddVersionConnection.Visible = Project.IsAdded($sKey)
+  Else
+    mnuAddVersionConnection.Visible = False
+  Endif
   
 End
 
@@ -1218,6 +1226,8 @@ Public Sub tvwProject_DragMove()
       If $sKey <> Project.KEY_SOURCE Then
         If Not Project.IsSourcePath($sKey) Then Goto STOP_EVENT
       Endif
+    Else
+      Goto STOP_EVENT
     Endif
     With tvwProject[$sKey] 
       If .Children Then 
@@ -1228,7 +1238,7 @@ Public Sub tvwProject_DragMove()
       Else  
         timOpen.Enabled = False
       Endif
-      Drag.Show(tvwProject, .X, .Y, Min(.W, tvwProject.W - .X - 4), .H)
+      Drag.Show(tvwProject, .X, .Y, Min(tvwProject.ClientW - .X, tvwProject.Font.Width(.Text) + 8 + .Picture.Width), .H)
       'Drag.Show(tvwProject)
     End With
     Return
@@ -1284,7 +1294,9 @@ End
 
 Public Sub timOpen_Timer()
 
-  If Drag.Pending Then Try tvwProject[$sKeyDrag].Expanded = True
+  If Drag.Pending Then 
+    Try tvwProject[$sKeyDrag].Expanded = True
+  Endif
   timOpen.Enabled = False
 
 End
@@ -1587,5 +1599,16 @@ End
 Public Sub ShowError(sMsg As String, Optional sKey As String)
   
   ShowMessage(sMsg, "error", sKey)
+  
+End
+
+Public Sub mnuAddVersion_Click()
+  
+  If Not Project.IsAdded($sKey, True) Then Return
+  
+  If Message.Question(("Do you really want to add this file to the repository?"), ("Add"), ("Cancel")) = 2 Then Return
+  
+  VersionControl.AddFile($sKey)
+  Project.Refresh
   
 End

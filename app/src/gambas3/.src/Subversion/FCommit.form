@@ -1,14 +1,14 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,91,68)
+  MoveScaled(0,0,84,79)
   Text = ("Project commit")
   Icon = Picture["icon:/small/ok"]
   Arrangement = Arrange.Vertical
   Spacing = True
   Margin = True
   { TabStrip1 TabStrip
-    MoveScaled(1,1,87,60)
+    MoveScaled(1,1,81,71)
     Expand = True
     Arrangement = Arrange.Vertical
     Spacing = True
@@ -21,8 +21,25 @@
       Font = Font["Bold"]
       Text = ("Commit description")
     }
+    { panAdded Panel
+      MoveScaled(1,4,78,6)
+      Visible = False
+      Arrangement = Arrange.Horizontal
+      Spacing = True
+      { PictureBox1 PictureBox
+        MoveScaled(0,0,5,5)
+        Picture = Picture["icon:/large/warning"]
+        AutoResize = True
+      }
+      { TextLabel1 TextLabel
+        MoveScaled(6,0,69,5)
+        Font = Font["Bold"]
+        Expand = True
+        Text = ("Some files are not versioned and should be added manually to the repository.")
+      }
+    }
     { VBox1 Panel
-      MoveScaled(1,4,78,30)
+      MoveScaled(1,14,78,30)
       Expand = True
       Arrangement = Arrange.Vertical
       Border = Border.Plain
@@ -101,12 +118,12 @@
       }
     }
     { Label3 Label
-      MoveScaled(1,37,24,4)
+      MoveScaled(1,47,24,4)
       Font = Font["Bold"]
       Text = ("Authentification")
     }
     { HBox2 HBox
-      MoveScaled(1,40,54,4)
+      MoveScaled(1,50,54,4)
       Spacing = True
       { Label1 Label
         MoveScaled(0,0,16,4)
@@ -119,7 +136,7 @@
       }
     }
     { HBox3 HBox
-      MoveScaled(1,44,54,4)
+      MoveScaled(1,54,54,4)
       Spacing = True
       { Label2 Label
         MoveScaled(0,0,16,4)
@@ -133,7 +150,7 @@
       }
     }
     { chkRemember CheckBox
-      MoveScaled(1,50,51,4)
+      MoveScaled(1,60,51,4)
       Visible = False
       Text = ("Remember password")
     }
@@ -149,7 +166,7 @@
     Index = 0
   }
   { HBox1 HBox
-    MoveScaled(3,63,54,4)
+    MoveScaled(3,73,54,4)
     Spacing = True
     { Panel1 Panel
       MoveScaled(3,0,4,4)

@@ -28,6 +28,8 @@ Public Sub Form_Open()
   FTextEditor.ReadConfigEditor(edtDiff)
   edtDiff.Text = $sDiff
   
+  panAdded.Visible = Project.AddedPaths.Count > 0
+  
 End
 
 
