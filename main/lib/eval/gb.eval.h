@@ -39,6 +39,7 @@ typedef
   struct {
     unsigned state : 4;
     unsigned len : 12;
+		unsigned _reserved : 16;
   }
   EVAL_COLOR;
   

@@ -34,23 +34,11 @@
 typedef
   int CLASS_ID;
 
-/*
-typedef
-  struct {
-    unsigned char flag;
-    unsigned char id;
-    short value;
-    }
-  PACKED
-  CLASS_TYPE;
-*/
-
 typedef
   struct {
     CTYPE type;
     int pos;
     }
-  PACKED
   CLASS_VAR;
 
 typedef
@@ -62,27 +50,24 @@ typedef
 typedef
   union {
     int type;
-    struct { int type; double value; } PACKED _float;
-    struct { int type; int value; } PACKED _integer;
-    struct { int type; int64_t value; } PACKED _long;
-    struct { int type; char *addr; int len; } PACKED _string;
-    struct { int type; int val[2]; } PACKED _swap;
+    struct { int type; double value; } _float;
+    struct { int type; int value; } _integer;
+    struct { int type; int64_t value; } _long;
+    struct { int type; char *addr; int len; } _string;
+    struct { int type; int val[2]; } _swap;
     }
-  PACKED
   CLASS_CONST;
 
 typedef
   struct {
     CTYPE type;
     }
-  PACKED
   CLASS_LOCAL;
 
 typedef
   struct {
     TYPE type;
     }
-  PACKED
   CLASS_PARAM;
 
 typedef
@@ -102,7 +87,6 @@ typedef
     short n_local;
     unsigned short _reserved;
   }
-  PACKED
   FUNC_DEBUG;
 
 typedef
@@ -121,7 +105,6 @@ typedef
     CLASS_LOCAL *local;
     FUNC_DEBUG *debug;
     }
-  PACKED
   FUNCTION;
 
 typedef
@@ -132,7 +115,6 @@ typedef
     CLASS_PARAM *param;
     char *name;
     }
-  PACKED
   CLASS_EVENT;
 
 typedef
@@ -145,7 +127,6 @@ typedef
     char *alias;
     char *library;
     }
-  PACKED
   CLASS_EXTERN;
 
 typedef
@@ -155,7 +136,6 @@ typedef
     uint endian;
     uint flag;
     }
-  PACKED
   CLASS_HEADER;
 
 typedef
@@ -165,7 +145,6 @@ typedef
     int s_static;
     int s_dynamic;
     }
-  PACKED
   CLASS_INFO;
 
 typedef
@@ -215,7 +194,6 @@ typedef
 		FUNC_DEBUG *debug;
     #endif
     }
-  PACKED
   CLASS_LOAD;
 
 enum
@@ -228,7 +206,7 @@ enum
 typedef
   struct _CLASS {
     struct _CLASS *class;     /*   4  Points at the 'Class' class ! */
-    int ref;                  /*   8  Reference count */
+    intptr_t ref;             /*   8  Reference count */
     int count;                /*  12  Number of instanciated objects */
     struct _CLASS *parent;    /*  16  Inherited class */
     COMPONENT *component;     /*  20  The component the class belongs to */
@@ -284,7 +262,6 @@ typedef
     SYMBOL sym;
     CLASS *class;
     }
-  PACKED
   CLASS_SYMBOL;
 
 typedef

@@ -50,7 +50,6 @@ typedef
     ushort len;
     char key[0];
     }
-  PACKED
   HASH_KEY;
 
 typedef

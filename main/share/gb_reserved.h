@@ -272,7 +272,6 @@ typedef
     short code;
     void (*func)();
     }
-  PACKED
   COMP_INFO;
 
 typedef
@@ -283,18 +282,7 @@ typedef
     short min_param;
     short max_param;
     }
-  PACKED
   SUBR_INFO;
-
-/*
-typedef
-  struct {
-    short index;
-    char *name;
-    }
-  PACKED
-  CONST_INFO;
-*/
 
 #ifndef __RESERVED_C
 

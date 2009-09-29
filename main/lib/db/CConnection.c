@@ -147,7 +147,7 @@ BEGIN_METHOD_VOID(CCONNECTION_new)
   char c;*/
 
   THIS->db.handle = NULL;
-  THIS->db.ignore_case = FALSE; // Now case is sensitive by default!
+  THIS->db.flags.ignore_case = FALSE; // Now case is sensitive by default!
 
   if (_current == NULL)
     _current = THIS;
@@ -312,7 +312,7 @@ BEGIN_METHOD_VOID(CCONNECTION_close)
 
 END_METHOD
 
-
+#if 0
 BEGIN_PROPERTY(CCONNECTION_ignore_case)
 
 	CHECK_DB();
@@ -324,17 +324,17 @@ BEGIN_PROPERTY(CCONNECTION_ignore_case)
 	{
 		if (THIS->db.flags.no_case)
 		{
-			if (THIS->db.ignore_case)
+			if (THIS->db.flags.ignore_case)
 				GB.Error("This database driver cannot be case sensitive");
 			else
 				GB.Error("This database driver is always case sensitive");
 			return;
 		}
-		THIS->db.ignore_case = VPROP(GB_BOOLEAN);
+		THIS->db.flags.ignore_case = VPROP(GB_BOOLEAN);
 	}
 
 END_PROPERTY
-
+#endif
 
 BEGIN_METHOD_VOID(CCONNECTION_begin)
 

@@ -50,9 +50,8 @@ typedef
     void (*signal)();
     int (*info)();
     unsigned persistent : 1;
-    unsigned _reserved: 13;
+    unsigned _reserved: 31;
     }
-  PACKED
   LIBRARY;
 
 #ifndef __GBX_LIBRARY_C

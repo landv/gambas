@@ -69,7 +69,6 @@ typedef
     STREAM_COMMON common;
     int _reserved[6];
     }
-  PACKED
   STREAM_RESERVED;
 
 typedef
@@ -81,7 +80,6 @@ typedef
     unsigned is_device : 1;
     unsigned _reserved : 30;
     }
-  PACKED
   STREAM_DIRECT;
 
 typedef
@@ -92,7 +90,6 @@ typedef
     unsigned is_term : 1;
     unsigned _reserved : 31;
     }
-  PACKED
   STREAM_BUFFER;
 
 typedef
@@ -101,7 +98,6 @@ typedef
     void *addr;
     int64_t pos;
     }
-  PACKED
   STREAM_MEMORY;
 
 typedef
@@ -112,7 +108,6 @@ typedef
     int start;
     int pos;
     }
-  PACKED
   STREAM_ARCH;
 
 typedef
@@ -123,7 +118,6 @@ typedef
     unsigned read_something : 1;
     unsigned _reserved : 31;
     }
-  PACKED
   STREAM_PROCESS;
 
 

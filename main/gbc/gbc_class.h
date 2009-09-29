@@ -37,7 +37,6 @@ typedef
     TYPE type;
     int value;
     }
-  PACKED
   CLASS_SYMBOL_INFO;
 
 typedef
@@ -50,7 +49,6 @@ typedef
     unsigned used : 1;
     unsigned _reserved : 31;
     }
-  PACKED
   CLASS_SYMBOL;
 
 typedef
@@ -116,7 +114,6 @@ typedef
 		short finally;        // Where FINALLY is located
 		short catch;          // Where CATCH is located
 		}
-	PACKED
 	FUNCTION;
 
 typedef
@@ -127,7 +124,6 @@ typedef
     short nparam;        /* nombre de param�res */
     short _reserved;
     }
-  PACKED
   EVENT;
 
 typedef
@@ -140,7 +136,6 @@ typedef
     int library;         /* library name index */
     int alias;           /* library function name index */
     }
-  PACKED
   EXTFUNC;
 
 typedef
@@ -152,7 +147,6 @@ typedef
     short read;           /* read function */
     short write;          /* write function */
     }
-  PACKED
   PROPERTY;
 
 typedef

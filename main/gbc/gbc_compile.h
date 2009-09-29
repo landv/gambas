@@ -66,7 +66,6 @@ typedef
     const char *tname;                 /* nom du fichier *.pot */
     int default_library;               /* default library name for extern declarations */
     }
-  PACKED
   COMPILE;
 
 #ifndef __GBC_COMPILE_C

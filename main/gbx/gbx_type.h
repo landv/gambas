@@ -37,7 +37,6 @@ typedef
     unsigned char id;
     short value;
     }
-  PACKED
   CTYPE;
 
 #define CTYPE_is_static(type)     ((type).flag & TF_STATIC)

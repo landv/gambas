@@ -40,6 +40,7 @@ typedef
 		ushort *event;
 		void *object;
 		bool after;
+		char _reserved[3];
 	}
 	COBSERVER;
 

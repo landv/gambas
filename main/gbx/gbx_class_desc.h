@@ -56,7 +56,6 @@ typedef
 		#endif
     struct _CLASS *class;
     }
-  PACKED
   CLASS_DESC_PROPERTY;
 
 typedef
@@ -70,7 +69,6 @@ typedef
 		intptr_t _reserved2[2];
     struct _CLASS *class;
     }
-  PACKED
   CLASS_DESC_VARIABLE;
 
 typedef
@@ -88,7 +86,6 @@ typedef
 		#endif
     struct _CLASS *class;
     }
-  PACKED
   CLASS_DESC_METHOD;
 
 typedef
@@ -106,7 +103,6 @@ typedef
 		#endif
     struct _CLASS *class;
     }
-  PACKED
   CLASS_DESC_EVENT;
 
 typedef
@@ -124,7 +120,6 @@ typedef
 		#endif
     struct _CLASS *class;
     }
-  PACKED
   CLASS_DESC_EXTERN;
 
 typedef
@@ -142,7 +137,6 @@ typedef
 		intptr_t _reserved;
     struct _CLASS *class;
     }
-  PACKED
   CLASS_DESC_CONSTANT;
 
 typedef
@@ -150,7 +144,6 @@ typedef
     char *name;
     void (*func)();
     }
-  PACKED
   CLASS_DESC_HOOK;
 
 typedef
@@ -176,7 +169,6 @@ typedef
     CLASS_DESC_GAMBAS gambas;
     CLASS_DESC_EXTERN ext;
     }
-  PACKED
   CLASS_DESC;
 
 typedef
@@ -186,7 +178,6 @@ typedef
     char *name;
     CLASS_DESC *desc;
     }
-  PACKED
   CLASS_DESC_SYMBOL;
 
 
