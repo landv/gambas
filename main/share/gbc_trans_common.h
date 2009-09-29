@@ -29,8 +29,8 @@ typedef
   struct {
     TYPE type;
     int index;
-    PATTERN *optional;
     int value;
+    PATTERN *optional;
     }
   TRANS_PARAM;  /* must be the same as PARAM in class.h */
 
@@ -56,16 +56,16 @@ typedef
 
 typedef
   struct {
-    int index;               		/* index in symbol table */
-    TYPE type;                		/* data type */
-    int value;               		/* value */
-    TRANS_ARRAY array;        		/* array dimensions */
-    PATTERN *init;            		/* initialization code */
-    int64_t lvalue;         		/* The value of a LONG constant */
-    unsigned is_new : 1;      		/* if something must be instanciated */
-    unsigned is_integer : 1;  		/* if the constant is an integer */
+    int index;                /* index in symbol table */
+    TYPE type;                /* data type */
+    int value;                /* value */
+    TRANS_ARRAY array;        /* array dimensions */
+    PATTERN *init;            /* initialization code */
+    int64_t lvalue;           /* The value of a LONG constant */
+    unsigned is_new : 1;      /* if something must be instanciated */
+    unsigned is_integer : 1;  /* if the constant is an integer */
+		unsigned _reserved : 30;
     }
-  PACKED
   TRANS_DECL;
 
 typedef
@@ -77,8 +77,8 @@ typedef
     PATTERN *start;
     int line;
     unsigned vararg : 1;
+		unsigned _reserved : 31;
     }
-  PACKED
   TRANS_FUNC;
 
 typedef
@@ -126,6 +126,7 @@ typedef
     short local;
     short id;
     short loop_var;
+		short _reserved;
     }
   PACKED
   TRANS_CTRL;
