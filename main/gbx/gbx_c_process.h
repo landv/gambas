@@ -45,6 +45,8 @@ typedef
     CSTREAM ob;
     struct _CPROCESS *prev;
     struct _CPROCESS *next;
+    /*char *param[];*/
+    /*char *cmd;*/
     pid_t pid;
     int in;
     int out;
@@ -52,10 +54,9 @@ typedef
     int status;
     int watch;
     volatile sig_atomic_t running;
+    bool to_string;
     char *result;
     GB_VARIANT_VALUE tag;
-    bool to_string;
-		char _reserved[3];
   }
   CPROCESS;
 
@@ -66,6 +67,7 @@ enum
   PM_TERM = 4,
   PM_STRING = 8,
   PM_SHELL = 128,
+  //PM_IGNORE = 256
 };
 
 CPROCESS *CPROCESS_create(int mode, void *cmd, char *name);

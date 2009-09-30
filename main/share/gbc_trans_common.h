@@ -88,6 +88,7 @@ typedef
     int nparam;
     TRANS_PARAM param[MAX_PARAM_FUNC];
     }
+  PACKED
   TRANS_EVENT;
 
 typedef
@@ -99,6 +100,7 @@ typedef
     bool read;
     bool _reserved[3];
     }
+  PACKED
   TRANS_PROPERTY;
 
 typedef
@@ -110,6 +112,7 @@ typedef
     int library;
     int alias;
     }
+  PACKED
   TRANS_EXTERN;
 
 typedef
@@ -125,6 +128,7 @@ typedef
     short loop_var;
 		short _reserved;
     }
+  PACKED
   TRANS_CTRL;
 
 typedef
@@ -134,6 +138,7 @@ typedef
     ushort pos;
     short ctrl_id;
     }
+  PACKED
   TRANS_GOTO;
 
 typedef
@@ -142,6 +147,7 @@ typedef
     ushort pos;
     short ctrl_id;
     }
+  PACKED
   TRANS_LABEL;
 
 typedef

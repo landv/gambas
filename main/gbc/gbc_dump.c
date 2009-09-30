@@ -262,12 +262,12 @@ static void export_type(TYPE type, bool scomma)
 
   if (id == T_OBJECT && value >= 0)
   {
-    fprintf(_finfo, get_name(JOB->class->class[value].index));
+    fputs(get_name(JOB->class->class[value].index), _finfo);
     if (scomma)
       fputc(';', _finfo);
   }
   else
-    fprintf(_finfo, TYPE_get_short_desc(type));
+    fputs(TYPE_get_short_desc(type), _finfo);
 }
 
 

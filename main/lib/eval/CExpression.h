@@ -4,7 +4,7 @@
 
   The Expression class
 
-  (c) 2000-2005 BenoÃ®t Minisini <gambas@freesurf.fr>
+  (c) 2000-2005 Benoît Minisini <gambas@freesurf.fr>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -41,9 +41,8 @@ typedef
     GB_BASE ob;
     char *text;
     void *env;
-    EXPRESSION expr;
     bool compiled;
-		char _reserved[3];
+    EXPRESSION expr;
     }
   CEXPRESSION;
 

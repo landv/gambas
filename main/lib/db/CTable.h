@@ -51,10 +51,9 @@ typedef
     GB_SUBCOLLECTION fields;
     GB_SUBCOLLECTION indexes;
 
+    bool create;
     DB_FIELD *new_fields; /* linked list of DB_FIELD structures located in the objects stored in fields */
     char **primary;
-    bool create;
-		char _reserved[3];
     }
   CTABLE;
 

@@ -35,6 +35,7 @@ typedef
     unsigned short len;
     char *name;
     }
+  PACKED
   SYMBOL;
 
 typedef

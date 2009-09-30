@@ -165,6 +165,100 @@ typedef
     }
   GLOBAL_SYMBOL_32;
 
+#if 0
+typedef
+  struct {
+    ptr32_t name;
+    TYPE_32 type;
+    ptr32_t read;
+    ptr32_t write;
+    char native;
+    char _reserved[3];
+    ptr32_t class;
+    }
+  PACKED
+  CLASS_DESC_PROPERTY_32;
+
+typedef
+  struct {
+    ptr32_t name;
+    TYPE_32 type;
+    int offset;
+    int _reserved;
+    }
+  PACKED
+  CLASS_DESC_VARIABLE;
+
+typedef
+  struct {
+    ptr32_t name;
+    TYPE_32 type;
+    void (*exec)();             /* m�hode */
+    TYPE *signature;            /* signature */
+    char npmin;                 /* nombre de param�res minimum */
+    char npmax;                 /* nombre de param�res maximum dans la signature */
+    char npvar;                 /* nombre d'arguments variables ? */
+    char native;                /* native method */
+    struct _CLASS *class;
+    }
+  PACKED
+  CLASS_DESC_METHOD;
+
+typedef
+  struct {
+    char *name;
+    TYPE type;                  /* type de la valeur de retour */
+    int *index;                /* num�o de l'��ement */
+    TYPE *signature;            /* signature */
+    char npmin;                 /* nombre de param�res minimum */
+    char npmax;                 /* nombre de param�res maximum dans la signature */
+    char npvar;                 /* nombre d'arguments variables ? */
+    char _reserved;
+    struct _CLASS *class;
+    }
+  PACKED
+  CLASS_DESC_EVENT;
+
+typedef
+  struct {
+    char *name;
+    TYPE type;                  /* type de la valeur de retour */
+    int exec;                  /* Index a ex�uter */
+    TYPE *signature;            /* signature */
+    char npmin;                 /* nombre de param�res minimum */
+    char npmax;                 /* nombre de param�res maximum dans la signature */
+    char npvar;                 /* nombre d'arguments variables ? */
+    char _reserved;
+    struct _CLASS *class;
+    }
+  PACKED
+  CLASS_DESC_EXTERN;
+
+typedef
+  struct {
+    char *name;
+    TYPE type;                  /* type de constante */
+    union {
+      int _integer;
+      double _float;
+      char *_string;
+      int64_t _long;
+      void *_pointer;
+      }
+      value;
+    }
+  PACKED
+  CLASS_DESC_CONSTANT;
+
+typedef
+  struct {
+    char *name;
+    void (*func)();
+    }
+  PACKED
+  CLASS_DESC_HOOK;
+#endif
+
 typedef
   union {
     ptr32_t name;

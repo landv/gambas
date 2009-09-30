@@ -35,7 +35,7 @@
 typedef
   struct _COMPONENT {
     void *class;
-    intptr_t ref;
+    int ref;
     LIST list;
     char *name;
     LIBRARY *library;
@@ -46,6 +46,7 @@ typedef
     unsigned warning : 1;    // Set when the bytecode warning was displayed by the class loader for this component
     unsigned _reserved : 28;
     }
+  PACKED
   COMPONENT;
 
 #ifndef __GBX_COMPONENT_C

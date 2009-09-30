@@ -89,8 +89,8 @@ typedef
     char general_currency[20];
     char intl_currency[20];
     bool rtl;
-		char _reserved2[3];
     }
+  PACKED
   LOCAL_INFO;
 
 #ifndef __GBX_LOCAL_C

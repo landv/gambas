@@ -35,7 +35,6 @@ typedef
 		double dx, dy;
 		unsigned identity : 1;
 		unsigned rotation : 1;
-		unsigned _reserved : 30;
 		struct _GB_MATRIX *next;
 		}
 	GB_MATRIX;
@@ -58,6 +57,7 @@ typedef
 		GB_MATRIX *save;                   // transformation matrix stack
 		char extra[0];                     // data driver-specific
 	}
+	PACKED
 	GB_DRAW;
 
 typedef

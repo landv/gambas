@@ -1004,7 +1004,7 @@ static int open_database(DB_DESC *desc, DB_DATABASE *db){
 	
 	// Apparently idbp is always case unsensitive
 	db->flags.no_case = TRUE;
-	db->flags.ignore_case = TRUE;
+	db->ignore_case = TRUE;
 	
 	db->handle=con;
 	

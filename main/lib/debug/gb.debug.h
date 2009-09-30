@@ -33,15 +33,14 @@
 
 typedef
   struct {
+    unsigned stop : 1;
+    unsigned leave : 1;
     FUNCTION *fp;
     VALUE *bp;
     void *op;
     CLASS *cp;
     PCODE *ec;
     VALUE *ep;
-    unsigned stop : 1;
-    unsigned leave : 1;
-		unsigned _reserved: 30;
     }
   DEBUG_INFO;
 

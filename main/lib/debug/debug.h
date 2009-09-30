@@ -36,7 +36,6 @@ typedef
     PCODE *addr;
     CLASS *class;
     ushort line;
-		short _reserved;
     VALUE *bp;
     FUNCTION *fp;
     }
@@ -57,8 +56,7 @@ typedef
     char *pattern;
     DEBUG_TYPE type;
     void (*func)(const char *);
-    bool loop;
-		char _reserved[3];
+    boolean loop;
     }
   DEBUG_COMMAND;
 

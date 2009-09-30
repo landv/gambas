@@ -35,7 +35,6 @@ typedef
     void *data[4];
     unsigned stop : 1;
     unsigned variant : 1;
-		unsigned _reserved: 30;
     }
   CENUM;
 

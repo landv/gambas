@@ -65,6 +65,7 @@ typedef
     TYPE type;
     int64_t value;
     }
+  PACKED
   VALUE_LONG;
 
 typedef
@@ -72,6 +73,7 @@ typedef
     TYPE type;
     intptr_t value;
     }
+  PACKED
   VALUE_POINTER;
 
 typedef
@@ -79,6 +81,7 @@ typedef
     TYPE type;
     double value;
     }
+  PACKED
   VALUE_SINGLE;
 
 typedef
@@ -86,6 +89,7 @@ typedef
     TYPE type;
     double value;
     }
+  PACKED
   VALUE_FLOAT;
 
 typedef
@@ -113,7 +117,9 @@ typedef
     char kind;
     char defined;
     short index;
+    /*long function;*/
     }
+  PACKED
   VALUE_FUNCTION;
 
 enum
@@ -173,7 +179,6 @@ typedef
     void *addr;
     short index;
     unsigned keep : 1;
-		unsigned _reserved: 15;
     }
   VALUE_ARRAY;
 

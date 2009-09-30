@@ -44,8 +44,8 @@ typedef
     uid_t uid;
     gid_t gid;
     bool hidden;
-		char _reserved[3];
     }
+  PACKED
   FILE_STAT;
 
 #endif

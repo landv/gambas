@@ -36,6 +36,7 @@ typedef
     int ref;
     char data[0];
   }
+  PACKED
   STRING;
 
 #define SC_UNICODE ((char *)-1)

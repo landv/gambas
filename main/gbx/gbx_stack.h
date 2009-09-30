@@ -44,7 +44,7 @@ typedef
     PCODE *tc;        /* Last break in the function */
     VALUE *tp;        /* Stack at the last break in the function */
     }
-  STACK_CONTEXT;
+  PACKED STACK_CONTEXT;
 
 #ifndef __GBX_STACK_C
 

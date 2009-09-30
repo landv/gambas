@@ -68,7 +68,6 @@ typedef
     DELETE_MAP *dmap;
     unsigned available : 1;
     unsigned mode : 2;
-		unsigned _reserved : 29;
     }
   CRESULT;
 
