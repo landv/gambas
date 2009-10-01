@@ -42,9 +42,10 @@ typedef
     CLASS_CONST *cst;
     ushort *code;
     ushort ncode;
+    unsigned analyze : 1;
+    unsigned _reserved : 15;
     TABLE *table;
     TABLE *string;
-    /*TABLE *variable;*/
     CLASS **class;
     char **unknown;
     int *var;
@@ -52,8 +53,6 @@ typedef
     short last_code;
     int stack_usage;
     void *op;
-    unsigned analyze : 1;
-    unsigned _reserved : 31;
     }
   EXPRESSION;
 

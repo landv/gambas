@@ -147,7 +147,7 @@ BEGIN_METHOD_VOID(CCONNECTION_new)
   char c;*/
 
   THIS->db.handle = NULL;
-  THIS->db.ignore_case = FALSE; // Now case is sensitive by default!
+  //THIS->db.flags.ignore_case = FALSE; // Now case is sensitive by default!
 
   if (_current == NULL)
     _current = THIS;
@@ -312,7 +312,7 @@ BEGIN_METHOD_VOID(CCONNECTION_close)
 
 END_METHOD
 
-
+#if 0
 BEGIN_PROPERTY(CCONNECTION_ignore_case)
 
 	CHECK_DB();
@@ -334,7 +334,7 @@ BEGIN_PROPERTY(CCONNECTION_ignore_case)
 	}
 
 END_PROPERTY
-
+#endif
 
 BEGIN_METHOD_VOID(CCONNECTION_begin)
 

@@ -179,6 +179,7 @@ typedef
     void *addr;
     short index;
     unsigned keep : 1;
+		unsigned _reserved : 15;
     }
   VALUE_ARRAY;
 

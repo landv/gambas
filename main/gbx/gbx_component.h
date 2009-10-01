@@ -35,7 +35,7 @@
 typedef
   struct _COMPONENT {
     void *class;
-    int ref;
+    intptr_t ref;
     LIST list;
     char *name;
     LIBRARY *library;

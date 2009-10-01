@@ -54,14 +54,15 @@ typedef
 		char *charset;									/* Charset used by the database */
 		void *data;											/* Can be used by the driver for storing its own private data */
 		int error;                      /* Last SQL error code raise by a query */
-		unsigned ignore_case : 1;			  /* If table, field and index names are case sensitive */
 		struct {
+			unsigned ignore_case : 1;			  /* If table, field and index names are case sensitive */
 			unsigned no_table_type : 1;		/* Tables do not have types */
 			unsigned no_serial : 1;				/* Serial fields are not supported */
 			unsigned no_blob : 1;					/* Blob fields are not supported */
 			unsigned no_seek : 1;					/* Cannot seek anywhere in a Result */
 			unsigned no_nest : 1;  				/* Cannot nest transactions */
 			unsigned no_case : 1;					/* If table, field and index names can be case sensitive or not */
+			unsigned _reserved : 25;
 			}
 			flags;
 		struct {

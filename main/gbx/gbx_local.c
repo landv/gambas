@@ -74,14 +74,15 @@ bool LOCAL_is_UTF8;
 
 /* Default 'C' localization */
 LOCAL_INFO LOCAL_default = {
+  "",
+  "",
   '.', '.',
   0, 0,
   3, 3,
   0,
   '/', ':',
+	FALSE,
   { 0 },
-  "",
-  "",
   { LO_MONTH, LO_DAY, LO_YEAR },
   { LO_HOUR, LO_MINUTE, LO_SECOND },
   "dddd mmmm d yyyy",

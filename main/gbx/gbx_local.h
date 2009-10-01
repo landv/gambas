@@ -65,6 +65,8 @@ enum {
 
 typedef
   struct {
+    char *currency_symbol;
+    char *intl_currency_symbol;
     char decimal_point;
     char currency_decimal_point;
     char thousand_sep;
@@ -74,9 +76,8 @@ typedef
     unsigned char currency_flag;
     char date_sep;
     char time_sep;
-    char _reserved[3];
-    char *currency_symbol;
-    char *intl_currency_symbol;
+    bool rtl;
+    char _reserved[2];
     char date_order[4];
     char time_order[4];
     char long_date[20];
@@ -88,7 +89,6 @@ typedef
     char general_date[20];
     char general_currency[20];
     char intl_currency[20];
-    bool rtl;
     }
   PACKED
   LOCAL_INFO;

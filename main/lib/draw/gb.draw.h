@@ -33,9 +33,10 @@ typedef
 	struct _GB_MATRIX {
 		double m11, m12, m21, m22;
 		double dx, dy;
+		struct _GB_MATRIX *next;
 		unsigned identity : 1;
 		unsigned rotation : 1;
-		struct _GB_MATRIX *next;
+		unsigned _reserved : 30;
 		}
 	GB_MATRIX;
 

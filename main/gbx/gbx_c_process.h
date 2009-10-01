@@ -45,18 +45,17 @@ typedef
     CSTREAM ob;
     struct _CPROCESS *prev;
     struct _CPROCESS *next;
-    /*char *param[];*/
-    /*char *cmd;*/
+    GB_VARIANT_VALUE tag;
     pid_t pid;
+    volatile sig_atomic_t running;
+    char *result;
     int in;
     int out;
     int err;
     int status;
     int watch;
-    volatile sig_atomic_t running;
     bool to_string;
-    char *result;
-    GB_VARIANT_VALUE tag;
+		char _reserved[3];
   }
   CPROCESS;
 

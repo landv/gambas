@@ -40,6 +40,7 @@ typedef
     unsigned state : 4;
     unsigned len : 12;
   }
+	PACKED
   EVAL_COLOR;
   
 typedef

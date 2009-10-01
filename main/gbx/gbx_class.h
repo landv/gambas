@@ -228,7 +228,7 @@ enum
 typedef
   struct _CLASS {
     struct _CLASS *class;     /*   4  Points at the 'Class' class ! */
-    int ref;                  /*   8  Reference count */
+    intptr_t ref;             /*   8  Reference count */
     int count;                /*  12  Number of instanciated objects */
     struct _CLASS *parent;    /*  16  Inherited class */
     COMPONENT *component;     /*  20  The component the class belongs to */
