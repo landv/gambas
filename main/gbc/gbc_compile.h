@@ -54,7 +54,7 @@ typedef
     unsigned public_module : 1;        /* modules symbols are public by default */
 		unsigned trans_error : 1;          /* display error messages in a translatable form */
 		unsigned no_old_read_syntax : 1;   /* do not compile the old read syntax */
-    unsigned _reserved : 20;           /* reserved*/
+    unsigned _reserved : 19;           /* reserved*/
     char *output;                      /* output file */
     PATTERN *pattern;                  /* lexical analyze */
     int pattern_count;                 /* number of patterns */
@@ -66,7 +66,6 @@ typedef
     char *tname;                       /* nom du fichier *.pot */
     int default_library;               /* default library name for extern declarations */
     }
-  PACKED
   COMPILE;
 
 #ifndef __GBC_COMPILE_C

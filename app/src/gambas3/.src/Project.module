@@ -129,11 +129,12 @@ Private $bDoRefresh As Boolean
 
 Private $cImageCache As New Collection
 
-Private $cSourceDir As Collection
-
 Private $hCurrentPopup As Menu
 
 Private $hLock As File
+
+' Path of source files
+Private $cSourceDir As Collection
 
 ' Subversion state of files
 Public LockedPaths As Collection
@@ -3149,6 +3150,28 @@ ALREADY_EXIST:
 
 End
 
+' Private Sub RenamePathCollection(cCol As Collection, sOld As String, sNew As String)
+'   
+'   Dim aRename As New String[]
+'   Dim vVal As Variant
+'   Dim sKey As String
+'   
+'   For Each vVal In cCol
+'     sKey = cCol.Key
+'     If sKey = sOld Or If sKey Begins sOld &/ "/" Then aRename.Add(sKey)
+'   Next
+'   
+'   For Each sKey In aRename
+'     vVal = cCol[sKey]
+'     cCol[sKey] = Null
+'     If sKey <> sOld Then
+'       sKey = sNew &/ Mid$(sKey, Len(sOld) + 1)
+'     Endif
+'     cCol[sNew] = vVal
+'   Next
+'   
+' End
+
 
 Private Function RenameOneFile(sDir As String, sName As String, sNewName As String, Optional sExt As String) As String
 
@@ -3173,7 +3196,7 @@ Private Function RenameOneFile(sDir As String, sName As String, sNewName As Stri
   If IsDir(sPath) Then
     If VersionControl.Enabled() Then
       VersionControl.MoveDir(sPath, sNewPath)
-      If Exist(sPath) Then LockedPaths[sPath] = True
+      'If Exist(sPath) Then LockedPaths[sPath] = True
     Else
       Move sPath To sNewPath  
     Endif
@@ -3190,9 +3213,34 @@ Private Function RenameOneFile(sDir As String, sName As String, sNewName As Stri
     Try Kill sDir &/ ".gambas" &/ UCase(sName)
   Endif
   
+  ' Update source cache
+  
   aRename = New String[]
   For Each sCheck In $cSourceDir
     If sCheck = sPath Or If sCheck Begins sPath &/ "/" Then aRename.Add(sCheck)
+  Next
+  
+  For Each sCheck In aRename
+  
+    If sCheck = sPath Then
+      $cSourceDir[File.Name(sPath)] = Null
+      $cSourceDir[File.Name(sNewPath)] = sNewPath
+    Else
+      sNewFormPath = sNewPath &/ Mid$(sCheck, Len(sPath) + 1)
+      $cSourceDir[File.Name(sPath)] = Null
+      $cSourceDir[File.Name(sNewFormPath)] = sNewFormPath
+    Endif
+  
+  Next
+  
+  ' Update Files collection
+  
+  aRename.Clear  
+  For Each hForm In Files
+    sCheck = hForm.Path
+    If sCheck = sPath Or If sCheck Begins sPath &/ "/" Then
+      If Not aRename.Exist(sCheck) Then aRename.Add(sCheck)
+    Endif
   Next
 
   For Each sCheck In aRename
@@ -3201,24 +3249,19 @@ Private Function RenameOneFile(sDir As String, sName As String, sNewName As Stri
     Files[sCheck] = Null
     
     If sCheck = sPath Then
-      $cSourceDir[File.Name(sPath)] = Null
-      $cSourceDir[File.Name(sNewPath)] = sNewPath
-      If hForm Then
-        hForm.Rename(sNewName, sNewPath)
-        Files[sNewPath] = hForm
-      Endif
+      hForm.Rename(sNewName, sNewPath)
+      Files[sNewPath] = hForm
     Else
       sNewFormPath = sNewPath &/ Mid$(sCheck, Len(sPath) + 1)
-      $cSourceDir[File.Name(sPath)] = Null
-      $cSourceDir[File.Name(sNewFormPath)] = sNewFormPath
-      If hForm Then
-        hForm.Rename(hForm.Name, sNewFormPath)
-        Files[sNewFormPath] = hForm
-      Endif
+      hForm.Rename(hForm.Name, sNewFormPath)
+      Files[sNewFormPath] = hForm
     Endif
   
   Next
-
+  
+  'RenamePathCollection(LockedPaths, sPath, sNewPath)
+  'RenamePathCollection(AddedPaths, sPath, sNewPath)
+  
   Return sNewPath
 
 End
@@ -3631,9 +3674,7 @@ Public Function IsSourcePath(sPath As String) As Boolean
   Endif 
   
   sExt = File.Ext(sPath)
-  If sExt = "class" Then Return True
-  If sExt = "module" Then Return True
-  If sExt = "form" Then Return True
+  If CModule.Ext.Exist(sExt) Then Return True
 
 End
 
@@ -3899,26 +3940,24 @@ Public Sub MoveFile(sSrc As String, sDst As String, Optional bOther As Boolean)
   If bIsDir Then
     'Move sSrc To sDst
     VersionControl.MoveDir(sSrc, sDst)
-    If Exist(sSrc) Then LockedPaths[sSrc] = True
+    'If Exist(sSrc) Then LockedPaths[sSrc] = True
   Else
     Copy sSrc To sDst
     If Right(sSrc) <> "~" Then VersionControl.MoveFile(sSrc, sDst)
     Try Kill sSrc
   Endif
 
+  hForm = Files[sSrc]
+  If hForm Then
+    hForm.Rename(File.BaseName(sDst), sDst)
+    Files[sSrc] = Null
+    Files[sDst] = hForm
+  Endif
+
   If IsSourcePath(sSrc) Then
     If bIsDir Then
-      
       RefreshSourceCache
-
     Else
-      hForm = Files[sSrc]
-      If hForm Then
-        hForm.Rename(File.BaseName(sDst), sDst)
-        Files[sSrc] = Null
-        Files[sDst] = hForm
-      Endif
-  
       $cSourceDir[File.Name(sSrc)] = Null
       $cSourceDir[File.Name(sDst)] = sDst
     Endif

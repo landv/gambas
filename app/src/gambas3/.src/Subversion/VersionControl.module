@@ -101,6 +101,7 @@ Public Sub RemoveFile(sPath As String, Optional bForce As Boolean)
     'NB: For CVS do 'cvs remove file' first then delete file
     Run("cvs remove " & Shell$(sPath))
   Endif
+  UpdatePath([sPath])
   
 End
 
@@ -116,6 +117,7 @@ Public Sub RemoveDir(sPath As String)
     'NB: For CVS do 'cvs remove dirname' first then delete dirname
     Run("cvs remove " & Shell$(sPath))
   Endif
+  UpdatePath([sPath])
 
 End
 
@@ -135,35 +137,69 @@ Public Sub MoveFile(sOld As String, sNew As String)
     'NB: make sure the file deleted AFTER
     RemoveFile(sOld)
   Endif
+  UpdatePath([sOld, sNew])
 
 End
+
+Private Sub UpdatePathFromStatus(sStatus As String)
+  
+  Dim sFile As String
+
+  For Each sStatus In Split(sStatus, "\n")
+
+    sFile = Mid$(sStatus, 9)
+  
+    If Left(sStatus) = "D" Then
+      Project.LockedPaths[Project.Dir &/ sFile] = True
+    Else If Left(sStatus) = "?" Then
+      If Left(File.Name(sFile)) = "." Then Continue
+      If sFile Begins ".lang/" Then Continue
+      If sFile = Project.Name & ".gambas" Then Continue
+      Project.AddedPaths[Project.Dir &/ sFile] = True
+    Endif
+    
+  Next
+  
+End
+
+
+Private Sub UpdatePath(aPath As String[])
+  
+  Dim sStatus As String
+  Dim sCmd As String
+  Dim sPath As String
+  
+  If $bSVN Then
+  
+    ' svn status is automatically recursive!
+    sCmd = "cd " & Shell$(Project.Dir) & "; svn status --no-ignore"
+    For Each sPath In aPath
+      sCmd &= " " & Mid$(sPath, Len(Project.Dir) + 2)
+      Project.LockedPaths.Remove(sPath)
+      Project.AddedPaths.Remove(sPath)
+    Next 
+  
+    Shell sCmd To sStatus
+    
+    UpdatePathFromStatus(sStatus)
+  
+  Endif
+  
+End
+
 
 Public Sub CheckPaths()
   
   Dim sStatus As String
   Dim iPos As Integer
-  Dim sFile As String
 
   Project.LockedPaths = New Collection
   Project.AddedPaths = New Collection
 
   If $bSVN Then
   
-    Shell "cd " & Shell$(Project.Dir) & "; svn status" To sStatus
-    
-    For Each sStatus In Split(sStatus, "\n")
-    
-      sFile = Mid$(sStatus, 9)
-    
-      If Left(sStatus) = "D" Then
-        Project.LockedPaths[Project.Dir &/ sFile] = True
-      Else If Left(sStatus) = "?" Then
-        If Left(File.Name(sFile)) = "." Then Continue
-        If sFile = Project.Name & ".gambas" Then Continue
-        Project.AddedPaths[Project.Dir &/ sFile] = True
-      Endif
-    
-    Next
+    Shell "cd " & Shell$(Project.Dir) & "; svn status --no-ignore" To sStatus
+    UpdatePathFromStatus(sStatus)
   
   Endif
   
@@ -189,6 +225,8 @@ Public Sub MoveDir(sOld As String, sNew As String) As Boolean
     'NB: make sure the file deleted AFTER
     RemoveFile(sOld)
   Endif
+  
+  UpdatePath([sOld, sNew])
 
 End
 

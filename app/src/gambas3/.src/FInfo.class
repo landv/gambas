@@ -161,7 +161,8 @@ Private Sub GetInfo(sPath As String)
 Finally 
 
   lblLink.Text = FormatPath(sLink)
-  lblLink.Parent.Visible = sLink
+  lblLink.Visible = sLink
+  lblLinkLabel.Visible = sLink
   'lblLink.Pos = 0
   lblType.Text = sType
   lblType.Parent.Visible = sType

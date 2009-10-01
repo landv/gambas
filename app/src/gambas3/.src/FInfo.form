@@ -13,8 +13,6 @@
     Arrangement = Arrange.Horizontal
     AutoResize = True
     Spacing = True
-    Padding = 2
-    Border = Border.Sunken
     { picInfo PictureBox
       MoveScaled(0,0,6,5)
     }
@@ -26,118 +24,88 @@
     }
   }
   { tabInfo TabStrip
-    MoveScaled(1,8,43,35)
+    MoveScaled(1,8,58,45)
     Expand = True
     Arrangement = Arrange.Fill
     Margin = True
     Count = 2
     Index = 0
     Text = ("General")
-    { VBox1 VBox
-      MoveScaled(0,0,39,24)
+    { VBox1 HPanel
+      MoveScaled(0,0,56,39)
       Expand = True
-      { HBox5 HBox
-        MoveScaled(1,0,35,4)
-        AutoResize = True
-        Spacing = True
-        { Label5 Label
-          MoveScaled(0,0,16,4)
-          Font = Font["Bold"]
-          Text = ("Link to")
-          Alignment = Align.TopNormal
-        }
-        { lblLink Label
-          MoveScaled(20,0,10,4)
-          Expand = True
-          Text = ("")
-          Alignment = Align.TopNormal
-        }
+      Spacing = True
+      { lblLinkLabel Label
+        MoveScaled(1,1,16,3)
+        Font = Font["Bold"]
+        Text = ("Link to")
+        Alignment = Align.TopNormal
       }
-      { HBox1 HBox
-        MoveScaled(1,4,35,4)
-        AutoResize = True
-        Spacing = True
-        { Label1 Label
-          MoveScaled(0,0,16,4)
-          Font = Font["Bold"]
-          Text = ("Type")
-          Alignment = Align.TopNormal
-        }
-        { lblType Label
-          MoveScaled(16,0,16,4)
-          Expand = True
-          Text = ("")
-          Alignment = Align.TopNormal
-        }
-      }
-      { HBox3 HBox
-        MoveScaled(1,8,35,4)
-        AutoResize = True
-        Spacing = True
-        { Label2 Label
-          MoveScaled(0,0,16,4)
-          Font = Font["Bold"]
-          Text = ("Size")
-          Alignment = Align.TopNormal
-        }
-        { lblSize Label
-          MoveScaled(16,0,16,4)
-          Expand = True
-          Text = ("")
-          Alignment = Align.TopNormal
-        }
-      }
-      { HBox4 HBox
-        MoveScaled(1,12,35,4)
-        AutoResize = True
-        Spacing = True
-        { Label3 Label
-          MoveScaled(0,0,16,4)
-          Font = Font["Bold"]
-          Text = ("Last modified")
-          Alignment = Align.TopNormal
-        }
-        { lblTime Label
-          MoveScaled(18,0,16,4)
-          Expand = True
-          Text = ("")
-          Alignment = Align.TopNormal
-        }
-      }
-      { HBox2 HBox
-        MoveScaled(1,16,35,4)
-        Spacing = True
-        { Label6 Label
-          MoveScaled(0,0,16,4)
-          Font = Font["Bold"]
-          Text = ("Directory")
-          Alignment = Align.TopNormal
-        }
-        { lblDir TextLabel
-          MoveScaled(18,0,14,4)
-          Expand = True
-          Text = ("")
-        }
-      }
-      { HBox6 HBox
-        MoveScaled(1,20,35,4)
+      { lblLink Label
+        MoveScaled(21,1,10,3)
         Expand = True
-        Spacing = True
-        { VBox2 VBox
-          MoveScaled(0,0,16,4)
-          { Label4 Label
-            MoveScaled(0,0,12,4)
-            Font = Font["Bold"]
-            Text = ("Details")
-            Alignment = Align.TopNormal
-          }
-        }
-        { lblInfo TextLabel
-          MoveScaled(18,0,14,4)
-          Expand = True
-          AutoResize = True
-          Text = ("")
-        }
+        Text = ("")
+        Alignment = Align.TopNormal
+      }
+      { Label1 Label
+        MoveScaled(1,5,16,3)
+        Font = Font["Bold"]
+        Text = ("Type")
+        Alignment = Align.TopNormal
+      }
+      { lblType Label
+        MoveScaled(21,5,16,3)
+        Expand = True
+        Text = ("")
+        Alignment = Align.TopNormal
+      }
+      { Label2 Label
+        MoveScaled(1,9,16,3)
+        Font = Font["Bold"]
+        Text = ("Size")
+        Alignment = Align.TopNormal
+      }
+      { lblSize Label
+        MoveScaled(21,9,16,3)
+        Expand = True
+        Text = ("")
+        Alignment = Align.TopNormal
+      }
+      { Label3 Label
+        MoveScaled(1,13,16,3)
+        Font = Font["Bold"]
+        Text = ("Last modified")
+        Alignment = Align.TopNormal
+      }
+      { lblTime Label
+        MoveScaled(20,13,16,3)
+        Expand = True
+        Text = ("")
+        Alignment = Align.TopNormal
+      }
+      { Label6 Label
+        MoveScaled(1,17,16,3)
+        Font = Font["Bold"]
+        Text = ("Directory")
+        Alignment = Align.TopNormal
+      }
+      { lblDir TextLabel
+        MoveScaled(19,17,14,3)
+        Expand = True
+        AutoResize = True
+        Text = ("")
+      }
+      { Label4 Label
+        MoveScaled(1,21,16,3)
+        Font = Font["Bold"]
+        Text = ("Details")
+        Alignment = Align.TopNormal
+      }
+      { lblInfo TextLabel
+        MoveScaled(19,21,14,3)
+        Expand = True
+        AutoResize = True
+        Text = ("")
       }
     }
     Index = 1
@@ -155,7 +123,7 @@
     Index = 0
   }
   { panButton HBox
-    MoveScaled(2,46,36,4)
+    MoveScaled(2,53,36,4)
     { Panel1 Panel
       MoveScaled(5,1,4,3)
       Expand = True
