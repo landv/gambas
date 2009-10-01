@@ -1,12 +1,12 @@
 ' Gambas class file
 
-PUBLIC Connection AS CConnection
+Public Connection As CConnection
 
-PRIVATE $rData AS Result
-PRIVATE $sCharset AS String
-PRIVATE $sPath AS String
+Private $rData As Result
+Private $sCharset As String
+Private $sPath As String
 
-PUBLIC SUB _new(hConn AS CConnection)
+Public Sub _new(hConn As CConnection)
 
   Connection = hConn
   $sCharset = Connection.GetCharset()
@@ -19,44 +19,44 @@ PUBLIC SUB _new(hConn AS CConnection)
 
   splRequest.Layout = "500,500"
 
-END
+End
 
 
-PUBLIC SUB EncodingChange()
+Public Sub EncodingChange()
 
   $sCharset = Connection.GetCharset()
   tbvData.Refresh
 
-END
+End
 
 
-PRIVATE SUB RefreshTitle()
+Private Sub RefreshTitle()
 
-  DIM sTitle AS String
+  Dim sTitle As String
 
-  IF $sPath THEN
+  If $sPath Then
     sTitle = File.Name($sPath)
-  ELSE
+  Else
     sTitle = ("SQL request")
-  ENDIF
+  Endif
 
   sTitle = Connection.Server.Name & " - " & Connection.Name & " - " & sTitle
 
-  ME.Title = sTitle
+  Me.Title = sTitle
 
-END
+End
 
 
-PRIVATE SUB ReadData()
+Private Sub ReadData()
 
-  DIM hField AS ResultField
-  DIM sField AS String
-  DIM iInd AS Integer
-  DIM iLen AS Integer
-  DIM sReq AS String
-  DIM iPos AS Integer
+  Dim hField As ResultField
+  Dim sField As String
+  Dim iInd As Integer
+  Dim iLen As Integer
+  Dim sReq As String
+  Dim iPos As Integer
 
-  INC Application.Busy
+  Inc Application.Busy
 
   lblRequest.Text = ("No records.")
 
@@ -64,103 +64,103 @@ PRIVATE SUB ReadData()
 
   sReq = Trim(txtRequest.Text)
 
-  FOR EACH sReq IN Split(sReq, ";", Chr$(34) & "'")
+  For Each sReq In Split(sReq, ";", Chr$(34) & "'")
 
     sReq = Trim(sReq)
 
-    WHILE InStr("#;'", Left$(sReq))
+    While InStr("#;'", Left$(sReq))
       iPos = InStr(sReq, "\n")
-      IF iPos THEN
+      If iPos Then
         sReq = Trim(Mid$(sReq, iPos + 1))
-      ELSE
+      Else
         sReq = ""
-      ENDIF
-    WEND
+      Endif
+    Wend
 
-    IF NOT sReq THEN CONTINUE
+    If Not sReq Then Continue
 
     'PRINT "Exec: "; sReq
     $rData = Connection.Handle.Exec(sReq)
 
-  NEXT
+  Next
 
-  IF NOT $rData THEN
+  If Not $rData Then
 
-    panData.Visible = FALSE
+    panData.Visible = False
 
-  ELSE
+  Else
 
     tbvData.Columns.Count = $rData.Fields.Count
 
-    FOR EACH hField IN $rData.Fields
+    For Each hField In $rData.Fields
 
-      WITH hField
+      With hField
 
         tbvData.Columns[iInd].Text = .Name
         tbvData.Columns[iInd].Width = Connection.WidthFromType(tbvData, .Type, .Length, .Name)
 
-      END WITH
+      End With
 
-      INC iInd
-    NEXT
+      Inc iInd
+    Next
 
     tbvData.Rows.Count = $rData.Count
 
-    IF $rData.Count = 1 THEN
+    If $rData.Count = 1 Then
       lblCount.Text = ("One record")
-    ELSE IF $rData.Count > 1 THEN
+    Else If $rData.Count > 1 Then
       lblCount.Text = Subst(("&1 records"), $rData.Count)
-    ENDIF
+    Endif
 
     panData.Visible = $rData.Count > 0
 
-  ENDIF
+  Endif
 
-FINALLY
+Finally
 
-  DEC Application.Busy
+  Dec Application.Busy
 
-CATCH
+Catch
 
   lblRequest.Text = ("Cannot exec request.") & "\n\n" & Error.Text
   panData.Hide
 
-END
+End
 
 
-PUBLIC SUB tbvData_Data(Row AS Integer, Column AS Integer)
+Public Sub tbvData_Data(Row As Integer, Column As Integer)
 
   $rData.MoveTo(Row)
 
-  IF $sCharset THEN
+  If $sCharset Then
     tbvData.Data.Text = Conv(Str($rData[tbvData.Columns[Column].Text]), $sCharset, Desktop.Charset)
-  ELSE
+  Else
     tbvData.Data.Text = Str($rData[tbvData.Columns[Column].Text])
-  ENDIF
+  Endif
 
-CATCH
+Catch
 
   tbvData.Data.Text = Str($rData[tbvData.Columns[Column].Text])
 
-END
+End
 
 
-PUBLIC SUB btnNew_Click()
+Public Sub btnNew_Click()
 
   tbvData.Rows.Count = 0
   lblRequest.Text = ("Enter your request...")
   panData.Hide
-  $rData = NULL
+  $rData = Null
   txtRequest.Text = ""
   txtRequest.SetFocus
 
-END
+End
 
-PUBLIC SUB btnRun_Click()
+Public Sub btnRun_Click()
 
   ReadData
 
-END
+End
 
 ' PUBLIC SUB splRequest_Resize()
 '
@@ -171,171 +171,171 @@ END
 '
 ' END
 
-PUBLIC SUB btnLoad_Click()
+Public Sub btnLoad_Click()
 
-  IF $sPath THEN Dialog.Path = $sPath
+  If $sPath Then Dialog.Path = $sPath
   Dialog.Filter = ["*.sql", ("SQL script files"), "*", ("All files")]
-  IF Dialog.OpenFile() THEN RETURN
+  If Dialog.OpenFile() Then Return
 
   $sPath = Dialog.Path
   txtRequest.Text = File.Load($sPath)
   RefreshTitle
 
-CATCH
+Catch
 
   Message.Error(("Cannot load SQL script file.") & "\n\n" & Error.Text)
 
-END
+End
 
-PUBLIC SUB btnSave_Click()
+Public Sub btnSave_Click()
 
-  IF NOT Trim(txtRequest.Text) THEN RETURN
+  If Not Trim(txtRequest.Text) Then Return
 
   Dialog.Filter = ["*.sql", ("SQL script files"), "*", ("All files")]
   Dialog.Path = $sPath
-  IF Dialog.SaveFile() THEN RETURN
+  If Dialog.SaveFile() Then Return
 
   $sPath = Dialog.Path
   File.Save($sPath, txtRequest.Text)
   RefreshTitle
 
-CATCH
+Catch
 
   Message.Error(("Cannot save SQL script file.") & "\n\n" & Error.Text)
 
-END
+End
 
 
-PUBLIC SUB btnClose_Click()
+Public Sub btnClose_Click()
 
-  ME.Close
+  Me.Close
 
-END
+End
 
 
-PUBLIC SUB txtRequest_KeyPress()
+Public Sub txtRequest_KeyPress()
 
-  IF Key.Code = Key["F5"] THEN btnRun_Click
+  If Key.Code = Key["F5"] Then btnRun_Click
 
-END
+End
 
-PRIVATE FUNCTION GetData(sSep AS String) AS String
+Private Function GetData(sSep As String) As String
 
-  DIM sTemp AS String
-  DIM hFile AS File
-  DIM bFirst AS Boolean
-  DIM bAll AS Boolean
-  DIM bOK AS Boolean
-  DIM hField AS ResultField
+  Dim sTemp As String
+  Dim hFile As File
+  Dim bFirst As Boolean
+  Dim bAll As Boolean
+  Dim bOK As Boolean
+  Dim hField As ResultField
 
-  INC Application.Busy
+  Inc Application.Busy
 
   sTemp = Temp$
 
-  OPEN sTemp FOR CREATE AS #hFile
+  hFile = Open sTemp For Create
 
-  FOR EACH hField IN $rData.Fields
+  For Each hField In $rData.Fields
 
-    IF NOT bFirst THEN
-      bFirst = TRUE
-    ELSE
-      PRINT #hFile, sSep;
-    ENDIF
+    If Not bFirst Then
+      bFirst = True
+    Else
+      Print #hFile, sSep;
+    Endif
 
-    PRINT #hFile, Chr$(34); hField.Name; Chr$(34);
+    Print #hFile, Chr$(34); hField.Name; Chr$(34);
 
-  NEXT
+  Next
 
-  PRINT #hFile
+  Print #hFile
 
 RETRY:
 
-  FOR EACH $rData
+  For Each $rData
 
-    IF NOT bAll THEN
-      IF NOT tbvData.Rows[$rData.Index].Selected THEN CONTINUE
-    ENDIF
+    If Not bAll Then
+      If Not tbvData.Rows[$rData.Index].Selected Then Continue
+    Endif
 
-    bOK = TRUE
-    bFirst = FALSE
+    bOK = True
+    bFirst = False
 
-    FOR EACH hField IN $rData.Fields
+    For Each hField In $rData.Fields
 
-      IF NOT bFirst THEN
-        bFirst = TRUE
-      ELSE
-        PRINT #hFile, sSep;
-      ENDIF
+      If Not bFirst Then
+        bFirst = True
+      Else
+        Print #hFile, sSep;
+      Endif
 
-      IF hField.Type = gb.String THEN
-        PRINT #hFile, Chr$(34); Replace(Str($rData[hField.Name]), Chr$(34), Chr$(34) & Chr$(34)); Chr$(34);
-      ELSE
-        PRINT #hFile, Chr$(34); Str($rData[hField.Name]); Chr$(34);
-      ENDIF
+      If hField.Type = gb.String Then
+        Print #hFile, Chr$(34); Replace(Str($rData[hField.Name]), Chr$(34), Chr$(34) & Chr$(34)); Chr$(34);
+      Else
+        Print #hFile, Chr$(34); Str($rData[hField.Name]); Chr$(34);
+      Endif
 
-    NEXT
+    Next
 
-    PRINT #hFile
+    Print #hFile
 
-  NEXT
+  Next
 
-  IF NOT bAll THEN
-    IF NOT bOK THEN
-      bAll = TRUE
-      GOTO RETRY
-    ENDIF
-  ENDIF
+  If Not bAll Then
+    If Not bOK Then
+      bAll = True
+      Goto RETRY
+    Endif
+  Endif
 
-  CLOSE #hFile
+  Close #hFile
 
-  DEC Application.Busy
+  Dec Application.Busy
 
-  RETURN sTemp
+  Return sTemp
 
-END
+End
 
 
-PUBLIC SUB btnSaveData_Click()
+Public Sub btnSaveData_Click()
 
-  DIM sTemp AS String
+  Dim sTemp As String
 
   'Dialog.Path = FMain.Config.ReadString("/Request/Save", "/home/benoit")
   Dialog.Path = Settings["/Request/Save"]
   'DEBUG Dialog.Path
   Dialog.Filter = ["*.csv", ("CSV files"), "*", ("All files")]
 
-  IF Dialog.SaveFile() THEN RETURN
+  If Dialog.SaveFile() Then Return
 
-  IF NOT File.Ext(Dialog.Path) THEN
+  If Not File.Ext(Dialog.Path) Then
     Dialog.Path = File.Dir(Dialog.Path) &/ File.BaseName(Dialog.Path) & ".csv"
-  ENDIF
+  Endif
 
   Settings["/Request/Save"] = Dialog.Path 
 
   sTemp = GetData(Chr$(9))
-  TRY KILL Dialog.Path
-  COPY sTemp TO Dialog.Path
-  KILL sTemp
+  Try Kill Dialog.Path
+  Copy sTemp To Dialog.Path
+  Kill sTemp
 
-CATCH
+Catch
 
   Message.Error(("Cannot export data.") & "\n\n" & Error.Text)
-  TRY KILL sTemp
+  Try Kill sTemp
 
-END
+End
 
-PUBLIC SUB btnCopyData_Click()
+Public Sub btnCopyData_Click()
 
-  DIM sTemp AS String
+  Dim sTemp As String
 
   sTemp = GetData(",")
   Clipboard.Copy(File.Load(sTemp))
-  KILL sTemp
+  Kill sTemp
 
-END
+End
 
-PUBLIC SUB Form_GotFocus()
+Public Sub Form_GotFocus()
 
   txtRequest.SetFocus  
 
-END
+End

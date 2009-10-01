@@ -919,7 +919,7 @@ Static Public Function GetProjectIcon(sPath As String, iSize As Integer) As Pict
   Dim hImage As Image
   Dim hPict As Picture
 
-  Open sPath &/ ".project" For Read As #hFile
+  hFile = Open sPath &/ ".project" For Read
 
   While Not Eof(hFile)
     Line Input #hFile, sLig
