@@ -79,17 +79,11 @@ typedef
     unsigned vararg : 1;
 		unsigned _reserved : 31;
     }
+	PACKED
   TRANS_FUNC;
 
 typedef
-  struct {
-    int index;
-    TYPE type;
-    int nparam;
-    TRANS_PARAM param[MAX_PARAM_FUNC];
-    }
-  PACKED
-  TRANS_EVENT;
+	TRANS_FUNC TRANS_EVENT;
 
 typedef
   struct {
