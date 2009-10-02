@@ -9,6 +9,13 @@ Public $Connection As New Connection
 Public $Process As Process
 Public $hResult As Result
 
+' There varibales are used by the _Result class
+Public $asData As String[]
+Public $asFields As New String[]
+Public $asKeyFields As New String[]
+Public $sResultDatabase As String
+Public $sResultTable As String
+
 Public Sub SetConnection(hCon As Connection)
 
   If hCon.Type <> "mysql" Then Error.Raise("Current connection is not a MySQL connection")
@@ -44,22 +51,27 @@ End
 
 Public Sub Main()
 
-  Dim hCon As New Connection
-  Dim asText As New String[]
-  
-  DB.Debug = True
-  hCon.Type = "mysql"
-  hCon.Port = "3306"
-  hCon.Host = "localhost"
-  hCon.User = "root"
-  hCon.Password = "david123"
-  hCon.Name = "test"
-  hCon.Open()
-  
-  hCon.MySQL.Event.Add("eHistoricoMarcasProfesores", "EVERY 1 DAY STARTS NOW()", "SELECT * FROM mysql.user")
-  ' hCon.MySQL.Event.Add("eHistoricoMarcasProfesores", "EVERY 1 DAY STARTS NOW()", "SELECT * FROM mysql.user", True)
-  ' hCon.MySQL.Event.Modify("eHistoricoMarcasProfesores", "EVERY 1 DAY STARTS NOW()", "SELECT * FROM mysql.user")
-  Print hCon.MySQL.Event.Info("eHistoricoMarcasProfesores")
-  'hCon.MySQL.Event.Delete("eHistoricoMarcasProfesores")
+  ' Dim hCon As New Connection
+  ' Dim iCounter As Integer
+  ' Dim iCounter2 As Integer
+  ' 
+  ' ' DB.Debug = True
+  ' hCon.Type = "mysql"
+  ' hCon.Port = "3306"
+  ' hCon.Host = "localhost"
+  ' hCon.User = "root"
+  ' hCon.Password = "david123"
+  ' hCon.Name = "ExpoING"
+  ' hCon.Open()
+  ' 
+  ' hCon.MySQL.Result.Create("information_schema", "COLUMNS")
+  ' ' Print hCon.MySQL.Result.RowCount
+  ' hCon.MySQL.Result.AddRecord()
+  ' ' Print hCon.MySQL.Result.RowCount
+  ' ' For iCounter = 0 To hCon.MySQL.Result.RowMax
+  ' '   For iCounter2 = 0 To hCon.MySQL.Result.ColumnMax
+  ' '     Print hCon.MySQL.Result.Data(iCounter, 0)
+  ' '   Next
+  ' ' Next
 
 End

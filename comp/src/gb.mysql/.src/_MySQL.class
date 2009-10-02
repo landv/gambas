@@ -17,6 +17,7 @@ Private $User As _User
 Private $Trigger As _Trigger
 Private $Routines As _Routines
 Private $Event As _Event
+Private $Result As _Result
 Private $asEngines As New String[]
 Private $asCollations As New String[]
 Private $asCharsets As New String[]
@@ -42,6 +43,7 @@ Property Read Databases As String[]
 Property Read Users As String[]
 Property Read Query As String
 Property Read {Event} As _Event
+Property Read Result As _Result
 
 Private Function Engine_Read() As String
 
@@ -296,5 +298,12 @@ End
 Public Procedure KillProcess(Process As Integer)
 
    modMain.RunQuery("KILL " & Process)
+
+End
+
+Private Function Result_Read() As _Result
+
+  $Result = New _Result
+  Return $Result
 
 End
