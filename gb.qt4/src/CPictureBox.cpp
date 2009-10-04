@@ -73,7 +73,6 @@ void MyPictureBox::updateSize()
 	p = pixmap();
 	if (p && !p->isNull())
 	{
-		qDebug("resize %d %d", p->width() + frameWidth() * 2, p->height() + frameWidth() * 2);
 		resize(p->width() + frameWidth() * 2, p->height() + frameWidth() * 2);
 	}
 }

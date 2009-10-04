@@ -386,7 +386,7 @@ SUBR_INFO COMP_subr_info[] =
 
   { "TypeOf",            38,  0,  1     },
 
-  { "CBool",             39,  1,  1     },
+  { "CBool",             39,  1,  1     },   /* CODE_CONV */
   { "CByte",             39,  2,  1     },
   { "CShort",            39,  3,  1     },
   { "CInt",              39,  4,  1     },
