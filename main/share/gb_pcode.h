@@ -140,6 +140,7 @@
 #define CODE_RINSTR      (CODE_FIRST_SUBR + 12)
 #define CODE_ABS         (CODE_FIRST_SUBR + 20)
 #define CODE_MAX         (CODE_FIRST_SUBR + 30)
+#define CODE_CONV        (CODE_FIRST_SUBR + 39)
 
 
 typedef

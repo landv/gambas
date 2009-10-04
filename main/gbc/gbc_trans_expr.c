@@ -157,13 +157,10 @@ static void trans_identifier(int index, boolean first, boolean point, PATTERN ne
 
       constant = &JOB->class->constant[sym->global.value];
       type = TYPE_get_id(constant->type);
-      if (type == T_BYTE
-          || type == T_BOOLEAN
-          || type == T_SHORT
-          || type == T_INTEGER)
-      {
+			if (type == T_BOOLEAN)
+				CODE_push_boolean(constant->value);
+			else if (type == T_INTEGER)
         CODE_push_number(constant->value);
-      }
       else
         CODE_push_const(sym->global.value);
     }

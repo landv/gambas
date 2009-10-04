@@ -99,17 +99,32 @@ _PUSH_GENERIC:
 
       if (defined)
       {
-        if (TYPE_is_integer(desc->constant.type)
-            && ((PC[-1] & 0xF800) == C_PUSH_CLASS))
-        {
-          PC[-1] = C_PUSH_LONG;
-          *((int *)PC) = desc->constant.value._integer;
-        }
-        else
-        {
-          *PC |= 1;
-          PC[1] = index;
-        }
+				if ((PC[-1] & 0xF800) == C_PUSH_CLASS)
+				{
+					if (desc->constant.type == T_BOOLEAN)
+					{
+						PC[-1] = C_PUSH_MISC | (desc->constant.value._integer ? CPM_TRUE : CPM_FALSE);
+						PC[0] = C_NOP;
+						PC[1] = C_NOP;
+						goto _PUSH_CONSTANT_2;
+					}
+					else if (desc->constant.type == T_BYTE || desc->constant.type == T_SHORT)
+					{
+						PC[-1] = C_PUSH_INTEGER;
+						PC[0] = desc->constant.value._integer;
+						PC[1] = (CODE_CONV << 8) | desc->constant.type;
+						goto _PUSH_CONSTANT_2;
+					}
+					else if (desc->constant.type == T_INTEGER)
+					{
+						PC[-1] = C_PUSH_LONG;
+						*((int *)PC) = desc->constant.value._integer;
+						goto _PUSH_CONSTANT_2;
+					}
+				}
+				
+				*PC |= 1;
+				PC[1] = index;
       }
 
       goto _PUSH_CONSTANT_2;
