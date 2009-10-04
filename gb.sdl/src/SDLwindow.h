@@ -30,6 +30,8 @@
 #include "SDLapp.h"
 #include "SDLcursor.h"
 
+#include <string>
+
 class SDLwindow
 {
 	friend class SDLgfx;
@@ -46,7 +48,7 @@ public:
 	int GetWidth(void );
 	int GetHeight(void );
 	int GetDepth(void );
-	char* GetTitle(void ) { return (hTitle); };
+	const char* GetTitle(void ) { return (hTitle.c_str()); };
 	SDLcursor* GetCursor(void ) { return (hCursor); }
 
 	void SetX(int );
@@ -84,7 +86,7 @@ private:
 	bool hOpenGL;
 	bool hFullScreen;
 	bool hResizable;
-	char* hTitle;
+	std::string hTitle;
 };
 
 #endif /* __SDLWINDOW_H */

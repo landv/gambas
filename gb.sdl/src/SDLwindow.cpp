@@ -84,7 +84,7 @@ void SDLwindow::Show()
 	/* Set our custom cursor */
 	hCursor->Show();
 
-	SDL_WM_SetCaption(hTitle, hTitle);
+	SDL_WM_SetCaption(hTitle.c_str(), hTitle.c_str());
 
 	if (SDLcore::GetWindow() != this)
 		SDLcore::RegisterWindow(this);
@@ -204,10 +204,10 @@ void SDLwindow::SetResizable(bool choice)
 
 void SDLwindow::SetTitle(char *title)
 {
-	if (!hSurface)
-		hTitle = title;
-	else
-		SDL_WM_SetCaption(hTitle, hTitle);
+      hTitle = title;
+      
+	if (hSurface)
+		SDL_WM_SetCaption(title, title);
 }
 
 void SDLwindow::SetCursor(SDLcursor *cursor)
