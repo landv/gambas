@@ -152,9 +152,9 @@ END_PROPERTY
 BEGIN_PROPERTY(CWINDOW_mouse)
 
 	if (READ_PROPERTY)
-		GB.ReturnInteger(WINDOWID->GetCursor()->GetShape());
+		GB.ReturnInteger(WINDOWID->GetCursorShape());
 	else
-		WINDOWID->GetCursor()->SetShape(VPROP(GB_INTEGER));
+		WINDOWID->SetCursorShape(VPROP(GB_INTEGER));
 
 END_PROPERTY
 

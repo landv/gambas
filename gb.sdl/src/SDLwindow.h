@@ -44,9 +44,11 @@ public:
 	int GetWidth(void );
 	int GetHeight(void );
 	int GetDepth(void );
-	char* GetTitle(void ) { return (hTitle); };
+
+      const char* GetTitle(void ) { return (hTitle.c_str()); };
 	SDL_Surface* GetSdlSurface(void ) { return (hSurface); };
 	SDLcursor* GetCursor(void ) { return (hCursor); }
+      int GetCursorShape(void ) { return (hCursor->GetShape()); }
 
 	void SetX(int );
 	void SetY(int );
@@ -55,7 +57,9 @@ public:
 	void SetFullScreen(bool );
 	void SetResizable(bool );
 	void SetTitle(char* );
-	void SetCursor(SDLcursor *cursor);
+
+      void SetCursor(SDLcursor* );
+      void SetCursorShape(int );
 
 	bool IsFullScreen(void ) {return (hFullScreen); };
 	bool IsResizable(void ) { return (hResizable); };
@@ -81,7 +85,7 @@ private:
 	int hWidth, hHeight;
 	bool hFullScreen;
 	bool hResizable;
-	char* hTitle;
+	std::string hTitle;
 	// context and drawable (for GlxMakeCurrent)
 	GLXContext hCtx;
 	GLXDrawable hDrw;

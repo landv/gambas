@@ -36,7 +36,7 @@ SDLwindow::SDLwindow(void )
 	hHeight = 480;
 	hFullScreen = false;
 	hResizable = false;
-	hTitle = (char *) "Gambas SDL application";
+	hTitle = "Gambas SDL application";
 }
 
 SDLwindow::~SDLwindow()
@@ -71,7 +71,7 @@ void SDLwindow::Show()
 	/* Set our custom cursor */
 	hCursor->Show(SDLapp->CurrentWin());
 
-	SDL_WM_SetCaption(hTitle, hTitle);
+	SDL_WM_SetCaption(hTitle.c_str(), hTitle.c_str());
 
 	if (SDLcore::GetWindow() != this)
 		SDLcore::RegisterWindow(this);
@@ -157,6 +157,17 @@ int SDLwindow::GetDepth()
 		return (0);
 }
 
+void SDLwindow::SetCursorShape(int shape)
+{
+      if (!hCursor)
+            return;
+
+      hCursor->SetShape(shape);
+      
+      if (this->IsShown())
+            hCursor->Show(SDLapp->CurrentWin());
+}
+
 void SDLwindow::SetWidth(int width)
 {
 	hWidth = width;
@@ -203,10 +214,10 @@ void SDLwindow::SetResizable(bool choice)
 
 void SDLwindow::SetTitle(char *title)
 {
-	if (!hSurface)
-		hTitle = title;
-	else
-		SDL_WM_SetCaption(hTitle, hTitle);
+      hTitle = title;
+      
+	if (hSurface)
+		SDL_WM_SetCaption(title, title);
 }
 /*
 void SDLwindow::SetCursor(SDLcursor *cursor)
