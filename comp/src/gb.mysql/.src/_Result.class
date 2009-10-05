@@ -22,6 +22,8 @@ Public Procedure Create(Database As String, Table As String, Optional OrderBy As
 
   modMain.$hResult = modMain.$Connection.Exec("SELECT * FROM `" & Database & "`.`" & Table & "`" & IIf(OrderBy, " ORDER BY " & OrderBy, ""))
 
+  If Not modMain.$hResult.Available Then Error.Raise("Empty set")
+
   modMain.$asData = New String[modMain.$hResult.Count, modMain.$hResult.Fields.Count]
   For Each modMain.$hResult
     iCounter = 0
