@@ -40,6 +40,7 @@
 
 
 //#define DEBUG_TIMER
+//#define DEBUG_WATCH
 
 static fd_set read_fd;
 static fd_set write_fd;
@@ -261,7 +262,9 @@ void WATCH_exit(void)
 
 static void watch_fd(int fd, int flag, bool watch)
 {
-  //fprintf(stderr, "watch_fd: %d -> %d\n", fd, flag);
+	#if DEBUG_WATCH
+  fprintf(stderr, "watch_fd: %d / %d: %d\n", fd, flag, watch);
+	#endif
 
   if (flag == WATCH_READ)
 	{
@@ -314,7 +317,9 @@ static WATCH_CALLBACK *watch_create_callback(int fd)
   int pos;
   WATCH_CALLBACK *wcb;
 
-	//fprintf(stderr, "watch_create_callback: %d\n", fd);
+	#if DEBUG_WATCH
+	fprintf(stderr, "watch_create_callback: %d\n", fd);
+	#endif
 
   pos = watch_find_callback(fd);
   if (pos < 0)
@@ -388,7 +393,9 @@ void WATCH_watch(int fd, int type, void *callback, intptr_t param)
 			watch_fd(fd, WATCH_WRITE, wcb->callback_write != NULL);
 		}
 		
-    //fprintf(stderr, "add watch: %d\n",  watch_find_callback(fd));
+		#if DEBUG_WATCH
+    fprintf(stderr, "add watch: %d\n",  watch_find_callback(fd));
+		#endif
   }
 }
 
@@ -400,7 +407,9 @@ static void raise_callback(fd_set *rfd, fd_set *wfd)
 
 	_do_not_really_delete_callback++;
 
-	//fprintf(stderr, "\nmax_fd = %d\n", max_fd);
+	#if DEBUG_WATCH
+	fprintf(stderr, "\nmax_fd = %d\n", max_fd);
+	#endif
   for (i = 0; i < ARRAY_count(watch_callback); i++)
   {
   	// We copy the callback structure, because the watch_callback array can change during the
@@ -411,10 +420,16 @@ static void raise_callback(fd_set *rfd, fd_set *wfd)
     	continue;
     
     if (FD_ISSET(wcb.fd, rfd))
-      (*(wcb.callback_read))(wcb.fd, WATCH_READ, wcb.param_read);
+		{
+			if (wcb.callback_read)
+				(*(wcb.callback_read))(wcb.fd, WATCH_READ, wcb.param_read);
+		}
 
     if (FD_ISSET(wcb.fd, wfd))
-      (*(wcb.callback_write))(wcb.fd, WATCH_WRITE, wcb.param_write);
+		{
+			if (wcb.callback_write)
+				(*(wcb.callback_write))(wcb.fd, WATCH_WRITE, wcb.param_write);
+		}
   }
 
 	_do_not_really_delete_callback--;
