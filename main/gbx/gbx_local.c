@@ -909,6 +909,7 @@ _FORMAT:
   if (exposant)
     number_exp = number != 0.0;
 
+	// FIXME: Format(0.25, "0.0") -> 0.2, but Format(0.45, "0.0") -> 0.5
   ndigit = snprintf(buf, sizeof(buf), "%.*f", MinMax(after + number_exp, 0, DBL_DIG), number_mant);
 
   // should return "0[.]...", or "1[.]..." if the number is rounded up.

@@ -431,46 +431,49 @@ static void gambas_handle_event(GdkEvent *event)
 					
 					control = gDesktop::activeControl();
 					
-					if (!gKey::enable(control, &event->key))
+					if (control)
 					{
-						if (gApplication::onKeyEvent)
-							cancel = gApplication::onKeyEvent(gEvent_KeyPress);
-						if (!cancel && control->onKeyEvent) 
+						if (!gKey::enable(control, &event->key))
 						{
-							//fprintf(stderr, "gEvent_KeyPress on %p %s\n", control, control->name());
-							cancel = control->onKeyEvent(control, gEvent_KeyPress);
+							if (gApplication::onKeyEvent)
+								cancel = gApplication::onKeyEvent(gEvent_KeyPress);
+							if (!cancel && control->onKeyEvent) 
+							{
+								//fprintf(stderr, "gEvent_KeyPress on %p %s\n", control, control->name());
+								cancel = control->onKeyEvent(control, gEvent_KeyPress);
+							}
 						}
-					}
-					gKey::disable();
-					
-					if (cancel)
-						return;
-					
-					if (event->key.keyval == GDK_Escape)
-					{
-						if (control->_grab)
-						{
-							gApplication::exitLoop(control);
-							return;
-						}
+						gKey::disable();
 						
-						gMainWindow *win = control->window();
-						if (check_button(win->_cancel))
-						{
-							win->_cancel->animateClick(false);
+						if (cancel)
 							return;
+						
+						if (event->key.keyval == GDK_Escape)
+						{
+							if (control->_grab)
+							{
+								gApplication::exitLoop(control);
+								return;
+							}
+							
+							gMainWindow *win = control->window();
+							if (check_button(win->_cancel))
+							{
+								win->_cancel->animateClick(false);
+								return;
+							}
+						}
+						else if (event->key.keyval == GDK_Return || event->key.keyval == GDK_KP_Enter)
+						{
+							gMainWindow *win = control->window();
+							if (check_button(win->_default))
+							{
+								win->_default->animateClick(false);
+								return;
+							}
 						}
 					}
-					else if (event->key.keyval == GDK_Return || event->key.keyval == GDK_KP_Enter)
-					{
-						gMainWindow *win = control->window();
-						if (check_button(win->_default))
-						{
-							win->_default->animateClick(false);
-							return;
-						}
-					}
-					
+
 					break;
 				}
 					
@@ -478,21 +481,24 @@ static void gambas_handle_event(GdkEvent *event)
 					
 					control = gDesktop::activeControl();
 					
-					if (!gKey::enable(control, &event->key))
-						control->emit(SIGNAL(control->onKeyEvent), gEvent_KeyRelease);
-					gKey::disable();
-					
-					if (event->key.keyval == GDK_Escape)
+					if (control)
 					{
-						gMainWindow *win = control->window();
-						if (check_button(win->_cancel))
-							win->_cancel->animateClick(true);
-					}
-					else if (event->key.keyval == GDK_Return || event->key.keyval == GDK_KP_Enter)
-					{
-						gMainWindow *win = control->window();
-						if (check_button(win->_default))
-							win->_default->animateClick(true);
+						if (!gKey::enable(control, &event->key))
+							control->emit(SIGNAL(control->onKeyEvent), gEvent_KeyRelease);
+						gKey::disable();
+						
+						if (event->key.keyval == GDK_Escape)
+						{
+							gMainWindow *win = control->window();
+							if (check_button(win->_cancel))
+								win->_cancel->animateClick(true);
+						}
+						else if (event->key.keyval == GDK_Return || event->key.keyval == GDK_KP_Enter)
+						{
+							gMainWindow *win = control->window();
+							if (check_button(win->_default))
+								win->_default->animateClick(true);
+						}
 					}
 					
 					break;

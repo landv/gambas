@@ -414,6 +414,7 @@ int gPicture::save(const char *path, int quality)
 	GSList *formats = gdk_pixbuf_get_formats();
 	GSList *iter=formats;
 	GdkPixbuf *image = getPixbuf();
+	char arg[16];
 
 	for (b=strlen(path)-1;b>=0;b--)
 		if (path[b]=='.') { buf=path+b+1; break; }
@@ -446,7 +447,10 @@ int gPicture::save(const char *path, int quality)
 	}
 
 	if (quality >= 0)
-		b = gdk_pixbuf_save(image, path, type, NULL, "quality", quality, (void *)NULL);
+	{
+		sprintf(arg, "%d", quality);
+		b = gdk_pixbuf_save(image, path, type, NULL, "quality", arg, (void *)NULL);
+	}
 	else
 		b = gdk_pixbuf_save(image, path, type, NULL, (void *)NULL);
 

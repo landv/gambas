@@ -65,6 +65,9 @@ static void refresh_menubar(CMENU *menu)
 	toplevel = (MyMainWindow *)(menu->toplevel);
 	window = ((CWINDOW *)(menu->parent));
 	menuBar = window->menuBar;
+	if (!menuBar)
+		return;
+	
 	list = menuBar->actions();
 	 
 	for (i = 0; i < list.count(); i++)
@@ -104,9 +107,11 @@ static void delete_menu(CMENU *_object)
 	THIS->deleted = true;
 
 	QAction *action = ACTION;
-	delete action;
   CMenu::dict.remove(action);
+	
+	refresh_menubar(THIS);
 
+	delete action;
 // 	if (ACTION)
 // 	{
 // 		QAction *action = ACTION;
@@ -350,6 +355,7 @@ BEGIN_PROPERTY(CMENU_text)
   	QString text = QSTRING_PROP();
   	ACTION->setText(text);
   	ACTION->setSeparator(text.isNull());
+		refresh_menubar(THIS);
   }
 
 END_PROPERTY

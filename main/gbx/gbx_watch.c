@@ -1,22 +1,22 @@
 /***************************************************************************
 
-  gbx_watch.c
+	watch.c
 
-  (c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2009 Benoit Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -38,6 +38,7 @@
 
 
 //#define DEBUG_TIMER
+//#define DEBUG_WATCH
 
 static fd_set read_fd;
 static fd_set write_fd;
@@ -93,17 +94,17 @@ static struct timeval *time_now(void)
 {
 	static struct timeval current;
 
-  gettimeofday(&current, NULL);
-  if (current.tv_usec < 0 || current.tv_usec >= 1000000)
-  	fprintf(stderr, "gettimeofday: tv_usec = %ld!\n", current.tv_usec);
-  return &current;
+	gettimeofday(&current, NULL);
+	if (current.tv_usec < 0 || current.tv_usec >= 1000000)
+		fprintf(stderr, "gettimeofday: tv_usec = %ld!\n", current.tv_usec);
+	return &current;
 }
 
 
 static void add_timer(GB_TIMER *timer, const struct timeval *timeout)
 {
-  int i;
-  WATCH_TIMER *wt;
+	int i;
+	WATCH_TIMER *wt;
 
 	for (i = 0; i < ARRAY_count(_timers); i++)
 	{
@@ -124,7 +125,7 @@ static void add_timer(GB_TIMER *timer, const struct timeval *timeout)
 
 static void remove_timer(GB_TIMER *timer)
 {
-  int i;
+	int i;
 
 	for (i = 0; i < ARRAY_count(_timers); i++)
 	{
@@ -238,11 +239,11 @@ static bool get_timeout(const struct timeval *wait, struct timeval *tv)
 
 void WATCH_init(void)
 {
-  FD_ZERO(&read_fd);
-  FD_ZERO(&write_fd);
+	FD_ZERO(&read_fd);
+	FD_ZERO(&write_fd);
 
-  ARRAY_create(&watch_callback);
-  ARRAY_create(&_timers);
+	ARRAY_create(&watch_callback);
+	ARRAY_create(&_timers);
 
 	#ifdef DEBUG_TIMER
 	DATE_timer(&_debug_time, FALSE);
@@ -252,16 +253,18 @@ void WATCH_init(void)
 
 void WATCH_exit(void)
 {
-  ARRAY_delete(&watch_callback);
-  ARRAY_delete(&_timers);
+	ARRAY_delete(&watch_callback);
+	ARRAY_delete(&_timers);
 }
 
 
 static void watch_fd(int fd, int flag, bool watch)
 {
-  //fprintf(stderr, "watch_fd: %d -> %d\n", fd, flag);
+	#if DEBUG_WATCH
+	fprintf(stderr, "watch_fd: %d / %d: %d\n", fd, flag, watch);
+	#endif
 
-  if (flag == WATCH_READ)
+	if (flag == WATCH_READ)
 	{
 		if (watch)
 			FD_SET(fd, &read_fd);
@@ -280,53 +283,55 @@ static void watch_fd(int fd, int flag, bool watch)
 
 static int watch_find_callback(int fd)
 {
-  int i;
+	int i;
 
-  for (i = 0; i < ARRAY_count(watch_callback); i++)
-  {
-    if (fd == watch_callback[i].fd)
-      return i;
-  }
+	for (i = 0; i < ARRAY_count(watch_callback); i++)
+	{
+		if (fd == watch_callback[i].fd)
+			return i;
+	}
 
-  return (-1);
+	return (-1);
 }
 
 
 static int find_max_fd(void)
 {
-  int i;
-  int max = -1;
+	int i;
+	int max = -1;
 
-  for (i = 0; i < ARRAY_count(watch_callback); i++)
-  {
-  	if (watch_callback[i].fd > max)
-  		max = watch_callback[i].fd;
-  }
+	for (i = 0; i < ARRAY_count(watch_callback); i++)
+	{
+		if (watch_callback[i].fd > max)
+			max = watch_callback[i].fd;
+	}
 
-  return max;
+	return max;
 }
 
 
 static WATCH_CALLBACK *watch_create_callback(int fd)
 {
-  int pos;
-  WATCH_CALLBACK *wcb;
+	int pos;
+	WATCH_CALLBACK *wcb;
 
-	//fprintf(stderr, "watch_create_callback: %d\n", fd);
+	#if DEBUG_WATCH
+	fprintf(stderr, "watch_create_callback: %d\n", fd);
+	#endif
 
-  pos = watch_find_callback(fd);
-  if (pos < 0)
-  {
-    wcb = ARRAY_add_void(&watch_callback);
-    wcb->fd = fd;
-  }
-  else
-    wcb = &watch_callback[pos];
+	pos = watch_find_callback(fd);
+	if (pos < 0)
+	{
+		wcb = ARRAY_add_void(&watch_callback);
+		wcb->fd = fd;
+	}
+	else
+		wcb = &watch_callback[pos];
 
 	if (fd > max_fd)
 		max_fd = fd;
 		
-  return wcb;
+	return wcb;
 }
 
 
@@ -355,7 +360,7 @@ static void watch_delete_callback(int fd)
 
 void WATCH_watch(int fd, int type, void *callback, intptr_t param)
 {
-  WATCH_CALLBACK *wcb;
+	WATCH_CALLBACK *wcb;
 
 	if (fd < 0 || fd > FD_SETSIZE)
 	{
@@ -363,11 +368,11 @@ void WATCH_watch(int fd, int type, void *callback, intptr_t param)
 		return;
 	}
 
-  if (type == WATCH_NONE)
-  	watch_delete_callback(fd);
-  else
-  {
-    wcb = watch_create_callback(fd);
+	if (type == WATCH_NONE)
+		watch_delete_callback(fd);
+	else
+	{
+		wcb = watch_create_callback(fd);
 		if (type == WATCH_READ)
 		{
 			wcb->callback_read = callback;
@@ -386,34 +391,44 @@ void WATCH_watch(int fd, int type, void *callback, intptr_t param)
 			watch_fd(fd, WATCH_WRITE, wcb->callback_write != NULL);
 		}
 		
-    //fprintf(stderr, "add watch: %d\n",  watch_find_callback(fd));
-  }
+		#if DEBUG_WATCH
+		fprintf(stderr, "add watch: %d\n",  watch_find_callback(fd));
+		#endif
+	}
 }
 
 
 static void raise_callback(fd_set *rfd, fd_set *wfd)
 {
-  int i;
-  WATCH_CALLBACK wcb;
+	int i;
+	WATCH_CALLBACK wcb;
 
 	_do_not_really_delete_callback++;
 
-	//fprintf(stderr, "\nmax_fd = %d\n", max_fd);
-  for (i = 0; i < ARRAY_count(watch_callback); i++)
-  {
-  	// We copy the callback structure, because the watch_callback array can change during the
-  	// execution of the callbacks.
-  	
-    wcb = watch_callback[i];
-    if (wcb.fd < 0)
-    	continue;
-    
-    if (FD_ISSET(wcb.fd, rfd))
-      (*(wcb.callback_read))(wcb.fd, WATCH_READ, wcb.param_read);
+	#if DEBUG_WATCH
+	fprintf(stderr, "\nmax_fd = %d\n", max_fd);
+	#endif
+	for (i = 0; i < ARRAY_count(watch_callback); i++)
+	{
+		// We copy the callback structure, because the watch_callback array can change during the
+		// execution of the callbacks.
+		
+		wcb = watch_callback[i];
+		if (wcb.fd < 0)
+			continue;
+		
+		if (FD_ISSET(wcb.fd, rfd))
+		{
+			if (wcb.callback_read)
+				(*(wcb.callback_read))(wcb.fd, WATCH_READ, wcb.param_read);
+		}
 
-    if (FD_ISSET(wcb.fd, wfd))
-      (*(wcb.callback_write))(wcb.fd, WATCH_WRITE, wcb.param_write);
-  }
+		if (FD_ISSET(wcb.fd, wfd))
+		{
+			if (wcb.callback_write)
+				(*(wcb.callback_write))(wcb.fd, WATCH_WRITE, wcb.param_write);
+		}
+	}
 
 	_do_not_really_delete_callback--;
 	
@@ -436,31 +451,31 @@ static void raise_callback(fd_set *rfd, fd_set *wfd)
 
 static int do_select(fd_set *rfd, fd_set *wfd, struct timeval *timeout)
 {
-  int fd;
+	int fd;
 
-  for (fd = max_fd; fd >= 0; fd--)
-  {
-    if (FD_ISSET(fd, &read_fd) || FD_ISSET(fd, &write_fd))
-      break;
-  }
+	for (fd = max_fd; fd >= 0; fd--)
+	{
+		if (FD_ISSET(fd, &read_fd) || FD_ISSET(fd, &write_fd))
+			break;
+	}
 
-  if (fd < 0 && !timeout)
-    return 0;
+	if (fd < 0 && !timeout)
+		return 0;
 
-  max_fd = fd;
+	max_fd = fd;
 
-  *rfd = read_fd;
-  *wfd = write_fd;
+	*rfd = read_fd;
+	*wfd = write_fd;
 
-  return select(max_fd + 1, rfd, wfd, NULL, timeout);
+	return select(max_fd + 1, rfd, wfd, NULL, timeout);
 }
 
 static bool do_loop(struct timeval *wait)
 {
-  int ret;
-  struct timeval tv;
-  fd_set rfd, wfd;
-  bool something_done = FALSE;
+	int ret;
+	struct timeval tv;
+	fd_set rfd, wfd;
+	bool something_done = FALSE;
 
 	if (get_timeout(wait, &tv))
 		ret = do_select(&rfd, &wfd, NULL);
@@ -503,14 +518,14 @@ bool WATCH_one_loop(int wait)
 		return do_loop(NULL);
 	else
 	{
-  	time_from_ms(&timeout, wait);
+		time_from_ms(&timeout, wait);
 		return do_loop(&timeout);
 	}
 }
 
 void WATCH_loop(void)
 {
-  while (do_loop(NULL));
+	while (do_loop(NULL));
 }
 
 
@@ -519,21 +534,21 @@ void WATCH_wait(int wait)
 	struct timeval *now;
 	struct timeval timeout;
 
-  if (wait == 0)
-  {
-  	timeout.tv_sec = 0;
-  	timeout.tv_usec = 0;
-  	do_loop(&timeout);
-  }
-  else
-  {
-  	now = time_now();
-  	time_from_ms(&timeout, wait);
-  	time_add(&timeout, now);
+	if (wait == 0)
+	{
+		timeout.tv_sec = 0;
+		timeout.tv_usec = 0;
+		do_loop(&timeout);
+	}
+	else
+	{
+		now = time_now();
+		time_from_ms(&timeout, wait);
+		time_add(&timeout, now);
 
 		for(;;)
 		{
-	  	now = time_now();
+			now = time_now();
 			if (time_lower_than(&timeout, now))
 				break;
 			do_loop(&timeout);
@@ -543,32 +558,32 @@ void WATCH_wait(int wait)
 
 int WATCH_process(int fd_end, int fd_output)
 {
-  fd_set rfd;
-  int ret, fd_max;
+	fd_set rfd;
+	int ret, fd_max;
 
-  fd_max = fd_end > fd_output ? fd_end : fd_output;
+	fd_max = fd_end > fd_output ? fd_end : fd_output;
 
-  for(;;)
-  {
-    FD_ZERO(&rfd);
-    FD_SET(fd_end, &rfd);
-    if (fd_output >= 0)
-      FD_SET(fd_output, &rfd);
+	for(;;)
+	{
+		FD_ZERO(&rfd);
+		FD_SET(fd_end, &rfd);
+		if (fd_output >= 0)
+			FD_SET(fd_output, &rfd);
 
-    ret = select(fd_max + 1, &rfd, NULL, NULL, NULL);
+		ret = select(fd_max + 1, &rfd, NULL, NULL, NULL);
 
-    if (ret > 0)
-      break;
-    if (errno != EINTR)
-      break;
-  }
+		if (ret > 0)
+			break;
+		if (errno != EINTR)
+			break;
+	}
 
-  if (FD_ISSET(fd_end, &rfd))
-    return fd_end;
-  else if (FD_ISSET(fd_output, &rfd))
-    return fd_output;
-  else
-    return -1;
+	if (FD_ISSET(fd_end, &rfd))
+		return fd_end;
+	else if (FD_ISSET(fd_output, &rfd))
+		return fd_output;
+	else
+		return -1;
 }
 
 

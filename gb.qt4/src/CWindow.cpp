@@ -1514,8 +1514,9 @@ MyMainWindow::~MyMainWindow()
 	{
 		//CMenu::unrefChildren(THIS->menuBar);
 		//qDebug("delete menuBar");
-		delete THIS->menuBar;
+		QMenuBar *menuBar = THIS->menuBar;
 		THIS->menuBar = 0;
+		delete menuBar;
 	}
 
 	CWindow::removeTopLevel(THIS);
