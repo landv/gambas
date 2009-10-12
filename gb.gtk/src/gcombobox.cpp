@@ -288,6 +288,7 @@ void gComboBox::setItemText(int ind, const char *text)
 	cell = row->get(0);
 	if (!cell) return;
 	
+	//fprintf(stderr, "setItemText: %d %s\n", ind, text);
 	cell->setText(text);
 	
 	updateSort();
@@ -308,7 +309,10 @@ void gComboBox::setReadOnly(bool vl)
 		gtk_widget_show(entry);
 
 		if (count())
+		{
+			//fprintf(stderr, "setReadOnly: gTextBox::setText: %s\n", itemText(index()));
 			gTextBox::setText(itemText(index()));
+		}
 		
 		setBackground(background());
 		setForeground(foreground());
@@ -340,10 +344,16 @@ void gComboBox::setText(const char *vl)
 {
 	int index = find(vl);
 	
+	//fprintf(stderr, "setText: %s\n", vl);
+	
 	if (index >= 0)
 		setIndex(index);
-	else if (entry)
-		gTextBox::setText(vl);
+	else
+	{
+		setIndex(-1);
+		if (entry)
+			gTextBox::setText(vl);
+	}
 }
 
 static gboolean combo_set_model_and_sort(gComboBox *combo)
@@ -352,7 +362,8 @@ static gboolean combo_set_model_and_sort(gComboBox *combo)
 	if (combo->isSorted())
 		combo->tree->sort();
 	combo->_model_dirty = false;
-	combo->checkIndex();
+	if (combo->isReadOnly())
+		combo->checkIndex();
 	return FALSE;
 }
 
