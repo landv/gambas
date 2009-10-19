@@ -28,9 +28,9 @@ Static Private Sub InitComponent(sFile As String, bUser As Boolean)
   Dim sGroup As String
 
   If bUser Then
-    Open Component.UserPath &/ sFile As #hFic
+    hFic = Open Component.UserPath &/ sFile 
   Else
-    Open Component.Path &/ sFile As #hFic
+    hFic = Open Component.Path &/ sFile 
   Endif
 
   Line Input #hFic, sLig

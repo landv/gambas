@@ -51,7 +51,7 @@ static void cb_click(GtkComboBox *widget,gComboBox *data)
 		}
 	}
 
-	if (!data->_no_click)
+	if (!data->_no_click && data->index() >= 0)
 		data->emit(SIGNAL(data->onClick));
 }
 
@@ -337,7 +337,11 @@ void gComboBox::setIndex(int vl)
 void gComboBox::checkIndex()
 {
 	if (index() < 0)
+	{
+		lock();
 		setIndex(0);
+		unlock();
+	}
 }
 
 void gComboBox::setItemText(int ind, const char *text)
@@ -386,7 +390,8 @@ static gboolean combo_set_model_and_sort(gComboBox *combo)
 	if (combo->isSorted())
 		combo->tree->sort();
 	combo->_model_dirty = false;
-	combo->checkIndex();
+	if (combo->isReadOnly())
+		combo->checkIndex();
 	return FALSE;
 }
 

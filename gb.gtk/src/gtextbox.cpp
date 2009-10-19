@@ -162,6 +162,9 @@ void gTextBox::insert(char *txt, int len)
 {
 	if (!entry || !len || !txt) return;
 	
+	lock();
+	gtk_editable_delete_selection(GTK_EDITABLE(entry));
+	unlock();
 	int pos = position();
 	gtk_editable_insert_text(GTK_EDITABLE(entry), txt, len, &pos);
 }
