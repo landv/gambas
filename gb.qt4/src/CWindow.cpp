@@ -2267,6 +2267,7 @@ void MyMainWindow::configure()
 	{
 		h = menuBar->sizeHint().height();
 		menuBar->setGeometry(0, 0, this->width(), h);
+		menuBar->show();
 		THIS->container->setGeometry(0, h, this->width(), this->height() - h);
 	}
 	else

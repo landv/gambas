@@ -73,6 +73,9 @@ static void refresh_menubar(CMENU *menu)
 	for (i = 0; i < list.count(); i++)
 	{
 		action = list.at(i);
+		menu = CMenu::dict[action];
+		if (!menu || menu->deleted)
+			continue;
 		if (action->isVisible() && !action->isSeparator())
 			break;
 	}
@@ -84,6 +87,14 @@ static void refresh_menubar(CMENU *menu)
 static void unregister_menu(CMENU *_object)
 {
 	CACTION_register((CWIDGET *)THIS, NULL);
+}
+
+static void set_menu_visible(void *_object, bool v)
+{
+	THIS->visible = v;
+	ACTION->setVisible(v);
+	refresh_menubar(THIS);
+	//update_accel_recursive(THIS);
 }
 
 static void delete_menu(CMENU *_object)
@@ -105,13 +116,13 @@ static void delete_menu(CMENU *_object)
 		delete THIS->accel;
 
 	THIS->deleted = true;
-
-	QAction *action = ACTION;
-  CMenu::dict.remove(action);
 	
-	refresh_menubar(THIS);
-
-	delete action;
+	if (ACTION)
+	{
+		refresh_menubar(THIS);
+		delete ACTION;
+	}
+	
 // 	if (ACTION)
 // 	{
 // 		QAction *action = ACTION;
@@ -134,7 +145,8 @@ static void clear_menu(CMENU *_object)
 			menu = CMenu::dict[list.at(i)];
 			//GB.Ref(menu);
 			//delete ((QAction *)(menu->widget.widget));
-    	delete_menu(menu);
+			if (menu)
+				delete_menu(menu);
 			//GB.Unref(POINTER(&menu));
 		}
   }
@@ -204,13 +216,6 @@ static void update_check(CMENU *_object)
 		ACTION->setCheckable(false);
 		ACTION->setChecked(false);
 	}
-}
-
-static void set_menu_visible(void *_object, bool v)
-{
-	THIS->visible = v;
-	ACTION->setVisible(v);
-	//update_accel_recursive(THIS);
 }
 
 #if 0
@@ -353,8 +358,8 @@ BEGIN_PROPERTY(CMENU_text)
   else
   {
   	QString text = QSTRING_PROP();
-  	ACTION->setText(text);
   	ACTION->setSeparator(text.isNull());
+  	ACTION->setText(text);
 		refresh_menubar(THIS);
   }
 
@@ -480,10 +485,7 @@ BEGIN_PROPERTY(CMENU_visible)
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(THIS->visible);
 	else
-	{
 		set_menu_visible(THIS, VPROP(GB_BOOLEAN));
-		refresh_menubar(THIS);
-	}
 	
 END_PROPERTY
 
@@ -491,7 +493,6 @@ END_PROPERTY
 BEGIN_METHOD_VOID(CMENU_show)
 
 	set_menu_visible(THIS, true);
-	refresh_menubar(THIS);
 
 END_METHOD
 
@@ -499,7 +500,6 @@ END_METHOD
 BEGIN_METHOD_VOID(CMENU_hide)
 
 	set_menu_visible(THIS, false);
-	refresh_menubar(THIS);
 
 END_METHOD
 
@@ -830,6 +830,7 @@ void CMenu::slotDestroyed(void)
 	if (!_object)
 		return;
 
+  CMenu::dict.remove(ACTION);
 	//qDebug("CMenu::slotDestroyed: (%s %p)", GB.GetClassName(THIS), THIS);
 
 	//if (THIS->menu)
