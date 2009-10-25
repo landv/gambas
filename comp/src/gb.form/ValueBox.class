@@ -247,8 +247,6 @@ PUBLIC SUB TextBox_KeyPress()
   
   DIM iPos AS Integer
   
-  'DEBUG
-  
   IF ME.ReadOnly THEN RETURN
   
   IF Key.Code = Key.Escape THEN 

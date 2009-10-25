@@ -5,6 +5,25 @@
 
 PUBLIC SUB Button1_Click()
 
-  ValueBox1.ReadOnly = NOT ValueBox1.ReadOnly
+  'ValueBox1.ReadOnly = NOT ValueBox1.ReadOnly
+  TextBox1.Insert("7")
+
+END
+
+PUBLIC SUB Form_Open()
+
+  ValueBox1.Value = 999
+
+END
+
+PUBLIC SUB TextBox1_Change()
+
+  DEBUG LAST.Text
+
+END
+
+PUBLIC SUB TextBox1_KeyPress()
+
+  DEBUG LAST.TExt
 
 END

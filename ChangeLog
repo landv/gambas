@@ -1,4 +1,75 @@
 -------------------------------------------------------------------------------
+ gambas2-2.17.0 - 25 Oct 2009
+-------------------------------------------------------------------------------
+
+[DEVELOPMENT ENVIRONMENT]
+* BUG: Fix a possible crash when saving the current cursor position.
+* BUG: Fix the layout of the message displayed when the debugging program segfaults.
+* BUG: Debugging windows can be shrinked to their minimal size normally now.
+* NEW: Greek translation made by Alexandros Prekates.
+
+[DATABASE MANAGER]
+* BUG: Saving and renaming tables having indexes works in all cases now.
+
+[INTERPRETER]
+* BUG: Some structure padding and alignment fixes.
+* BUG: Non-integer constants are correctly optimized and keep their
+  datatype.
+* BUG: Stopping watching a file descriptor inside a watching callback does
+  not crash the interpreter event loop anymore.
+
+[COMPILER]
+* BUG: Prevent the compiler from crashing on ARM architecture and others
+  that do not like misaligned data.
+* BUG: The compiler works correctly again on 64 bits OS.
+* BUG: Non-integer constants are correctly compiled and keep their
+  datatype.
+
+[GB.DB]
+* BUG: Some structure padding and alignment fixes.
+
+[GB.DEBUG]
+* BUG: Some structure padding and alignment fixes.
+
+[GB.DRAW]
+* BUG: Some structure padding and alignment fixes.
+
+[GB.EVAL]
+* BUG: Some structure padding and alignment fixes.
+
+[GB.FORM]
+* BUG: The ColorChoose won't crash anymore when entering an incorrect value
+  in the color text field.
+
+[GB.GTK]
+* BUG: The name property of newly created menus is correctly initialized
+  now.
+* BUG: Changing the value of the Sorted property in TreeView, ColumnView,
+  ListView and ListBox does not crash anymore.
+* BUG: Fix input method handling.
+* BUG: Do not crash when there is a keyboard event and no active control.
+* BUG: Using the quality argument when saving a picture or an image does
+  not crash anymore.
+* BUG: Sorted editable combo-box correctly raise the Click event if their
+  first item is selected.
+* BUG: Fix the behaviour of ComboBox again, so that it behaves the same way
+  as in gb.qt.
+* BUG: TextBox.Insert() correctly deletes the selected text before
+  inserting the new one.
+* BUG: Really fix the initialization of file dialog from Dialog.Path in the
+  Dialog.Save() method.
+* NEW: Thanks to an hack based on a global event handler, disabled controls
+  now answer events like in gb.qt.
+* NEW: Application_KeyPress global event handler has been implemented.
+
+[GB.QT]
+* BUG: Ensure that the text of GridView cells is not wrapped.
+
+[GB.SDL]
+* BUG: Fix potential problem in storage with the window title.
+
+
+-------------------------------------------------------------------------------
  gambas2-2.16.0 - 09 Sep 2009
 -------------------------------------------------------------------------------
 
