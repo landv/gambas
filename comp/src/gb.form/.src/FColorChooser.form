@@ -14,7 +14,7 @@
       Expand = True
       Spacing = True
       { dwgStdColor DrawingArea
-        MoveScaled(0,0,33,3)
+        MoveScaled(0,0,33,4)
         Mouse = Mouse.Pointing
         Border = Border.Plain
       }
@@ -25,9 +25,22 @@
         Border = Border.Plain
       }
     }
-    { dwgValue DrawingArea
-      MoveScaled(50,3,4,23)
-      Mouse = Mouse.Pointing
+    { VBox4 VBox
+      MoveScaled(49,2,4,26)
+      Spacing = True
+      { btnSnap ToolButton
+        MoveScaled(0,0,4,4)
+        ToolTip = ("Follow color grid")
+        Text = ("")
+        Picture = Picture["icon:/small/grid"]
+        Toggle = True
+        Value = True
+      }
+      { dwgValue DrawingArea
+        MoveScaled(0,6,4,20)
+        Mouse = Mouse.Pointing
+        Expand = True
+      }
     }
   }
   { panInfo HBox
@@ -120,7 +133,7 @@
       MoveScaled(34,1,16,19)
       Spacing = True
       { panColor DrawingArea
-        MoveScaled(0,0,11,8)
+        MoveScaled(0,0,11,6)
         Expand = True
         Border = Border.Plain
       }

@@ -32,7 +32,7 @@ The way to do that depends on your distribution.</p>
 <b><i>Gambas</i></b> source package on your machine. For example,
 you can use <tt>wget</tt> in the terminal:</p>
 
-<pre>[linux@home ~]$ wget http://gambas.sourceforge.net/gambas-2.16.0.tar.bz2
+<pre>[linux@home ~]$ wget http://gambas.sourceforge.net/gambas-2.17.0.tar.bz2
 </pre>
 
 <p>Then, you must unpack the downloaded archive in a well chosen place.
@@ -40,18 +40,18 @@ For example, in your home directory.</p>
 
 <pre>[linux@home ~] cd ~
 
-[linux@home ~]$ bunzip2 gambas-2.16.0.tar.bz2
+[linux@home ~]$ bunzip2 gambas-2.17.0.tar.bz2
 
-[linux@home ~]$ tar xf gambas-2.16.0.tar
+[linux@home ~]$ tar xf gambas-2.17.0.tar
 
 [linux@home ~]$ ls
-... gambas-2.16.0 ...
+... gambas-2.17.0 ...
 </pre>
 
 <p>A <i>gambas</i> directory has been created with the contents of the
 archive. Enter it&nbsp;!</p>
 
-<pre>[linux@home ~]$ cd gambas-2.16.0
+<pre>[linux@home ~]$ cd gambas-2.17.0
 </pre>
 
 <p>Then you can launch the compilation of the sources with the two following
@@ -62,7 +62,7 @@ system in order to adapt the compilation process. It is a script located in
 the source directory, so you could be obliged to add "./" before the command
 name to launch it.</p>
 
-<pre>[linux@home gambas-2.16.0]$ ./configure
+<pre>[linux@home gambas-2.17.0]$ ./configure
 ...
 </pre>
 
@@ -89,7 +89,7 @@ following options to <i>configure</i>&nbsp;:</p>
 
 <p>For example&nbsp;:</p>
 
-<pre>[linux@home gambas-2.16.0]$ ./configure --disable-db-component
+<pre>[linux@home gambas-2.17.0]$ ./configure --disable-db-component
 </pre>
 
 <p>Note that if you forgot to install a development package, the components that
@@ -99,7 +99,7 @@ output of the <tt>configure</tt> command.</p>
 <p>When <tt>configure</tt> ends without any error, you can launch the compilation
 with <tt>make</tt>.</p>
 
-<pre>[linux@home gambas-2.16.0]$ make
+<pre>[linux@home gambas-2.17.0]$ make
 ...
 </pre>
 
@@ -113,7 +113,7 @@ to you to go to the mailing-list to carefully expose your problem with
 <i><b>Gambas</b></i>. To do that, you must be <i>root</i>. So we are going
 to use the <i>su</i> command&nbsp;:</p>
 
-<pre>[linux@home gambas-2.16.0]$ su -c "make install"
+<pre>[linux@home gambas-2.17.0]$ su -c "make install"
 Password:
 ...
 </pre>
@@ -126,7 +126,7 @@ Read the <tt>INSTALL</tt> file in the source directory for more details.</p>
 <p>For example, to install <b><i>Gambas</i></b> under <tt>/usr</tt>, just
 type the following:</p>
 
-<pre>[linux@home gambas-2.16.0]$ ./configure --prefix=/usr
+<pre>[linux@home gambas-2.17.0]$ ./configure --prefix=/usr
 </pre>
 
 <p>Note that symbolic links are created in the <tt>/usr/bin</tt> folder so that
@@ -138,7 +138,7 @@ symbolic links are not created.</p>
 
 <p>Once everything is done, you can launch the development environment.</p>
 
-<pre>[linux@home gambas-2.16.0]$ gambas
+<pre>[linux@home gambas-2.17.0]$ gambas
 </pre>
 
 <p>Or for the development version:</p>

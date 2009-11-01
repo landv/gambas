@@ -31,6 +31,8 @@ Private $iValue As Integer
 Private $hZoom As Picture
 Private Const ZOOM_FACTOR As Integer = 6
 
+Private $bSnap As Boolean 
+
 'Private Const NCOLH As Integer = 11
 'Static Private $aHue As Integer[] = [0, 30, 45, 60, 75, 90, 120, 150, 165, 180, 195, 210, 240, 270, 285, 300, 330, 360]
 
@@ -124,14 +126,9 @@ End
 
 Public Sub SetColor(iColor As Integer)
 
-  'IF IsNull(Val(sColor)) THEN
-  '  $sSystem = sColor
-  '  lstSystem.Index = lstSystem.Find($sSystem)
-  '  tabColor.Index = 1
-  'ELSE
-    $iColor = iColor
-  '  tabColor.Index = 0
-  'ENDIF
+  If iColor = $iColor Then Return
+  
+  $iColor = iColor
   RefreshColor
 
 End
@@ -150,7 +147,7 @@ Public Sub Form_Arrange()
 
   $nStdColor = 24
   Repeat
-    If (dwgStdColor.W \ $nStdColor) >= Desktop.Scale * 2 Then Break
+    If (dwgStdColor.W \ $nStdColor) >= Desktop.Scale * 3 Then Break
     $nStdColor \= 2
   Until $nStdColor = 3
   dwgStdColor.Refresh
@@ -194,7 +191,7 @@ Public Sub dwgColorMap_MouseMove()
   $bLock = True
   H = 359 - (Mouse.ScreenX - Last.ScreenX) * 360 / dwgColorMap.ClientW
   S = 255 - (Mouse.ScreenY - Last.ScreenY) * 256 / dwgColorMap.ClientH
-  If Mouse.Normal Then
+  If Not (Mouse.Shift Xor $bSnap) Then
     
     'iCol = Color.HSV($aHue[I], 192 - (J - 5) * 32, 255, iAlpha)
     ' iMax = $aHue.Count - 2
@@ -509,6 +506,7 @@ Public Sub dwgStdColor_Draw()
 
   Dim X, H, W, WC, iStep As Integer
   
+  If $nStdColor = 0 Then Return
   iStep = 360 \ $nStdColor
   Draw.Foreground = Color.Gray
   For H = 0 To 359 Step iStep
@@ -524,7 +522,7 @@ Public Sub dwgStdColor_MouseMove()
 
   Dim iStep As Integer
   iStep = 360 \ $nStdColor
-  SetColor(Color.HSV(360 - Int(Mouse.X / dwgStdColor.W * 360 / iStep) * iStep, 255, 255))
+  SetColor(Color.HSV(360 - Int(Max(0, Min(dwgStdColor.W - 1, Mouse.X)) / dwgStdColor.W * 360 / iStep) * iStep, 255, 255))
 
 End
 
@@ -563,7 +561,7 @@ Public Sub dwgValue_MouseMove()
   Dim V As Integer
   
   V = Mouse.Y / dwgValue.H * 256
-  If Not Mouse.Shift Then V = Int((V + 16) / 32) * 32
+  If Not (Mouse.Shift Xor $bSnap) Then V = Int((V + 16) / 32) * 32
   V = 255 - Min(255, Max(0, V))
   If V = $iVal Then Return
   txtV.Value = V
@@ -599,5 +597,11 @@ Public Sub panGrab_MouseUp()
 
   Dim hPict As Picture = Desktop.Screenshot(Mouse.ScreenX, Mouse.ScreenY, 1, 1)
   SetColor(hPict.Image[0, 0])
+
+End
+
+Public Sub btnSnap_Click()
+
+  $bSnap = Not btnSnap.Value
 
 End
