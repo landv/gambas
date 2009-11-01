@@ -48,6 +48,7 @@ Public Sub btnOK_Click()
   Settings["/VersionControlUser"] = Trim(txtName.Text)
   
   sChange = Trim(edtChange.Text)
+  Project.Config["/FCommit/LastCommit"] = sChange
   iPos = InStr(sChange, "---- " & DELIM_CHANGE)
   If iPos Then sChange = Left(sChange, iPos - 1)
 
@@ -123,5 +124,13 @@ Public Sub tbtClear_Click()
 
   edtChange.Clear
   edtChange.SetFocus
+
+End
+
+Public Sub btnLastDesc_Click()
+
+  Dim sLast As String = Project.Config["/FCommit/LastCommit"]
+  
+  If sLast Then edtChange.Text = sLast
 
 End

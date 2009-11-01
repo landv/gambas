@@ -93,13 +93,18 @@
           Text = ("")
           Picture = Picture["icon:/16/clear"]
         }
+        { btnLastDesc ToolButton
+          MoveScaled(33,0,22,4)
+          AutoResize = True
+          Text = ("Previous description")
+          Picture = Picture["icon:/small/redo"]
+        }
         { Panel2 Panel
-          MoveScaled(44,-1,8,4)
+          MoveScaled(56,0,2,4)
           Expand = True
         }
         { lblCursor Label
           MoveScaled(61,0,5,4)
-          Font = Font["Bold"]
           AutoResize = True
           Text = ("")
         }
