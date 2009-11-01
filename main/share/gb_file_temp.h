@@ -858,19 +858,25 @@ PUBLIC const char *FILE_readlink(const char *link)
 
 }
 
-PUBLIC const char *FILE_find_gambas(void)
+PUBLIC const char *FILE_get_gambas_dir(void)
 {
   const char *path;
+	const char *dir;
+	
+	dir = getenv("GB_DIR");
+	if (dir)
+		return dir;
 
   if (FILE_exist(GAMBAS_LINK_PATH))
   {
     path = FILE_readlink(GAMBAS_LINK_PATH);
     if (!path)
       path = GAMBAS_LINK_PATH;
+		return FILE_get_dir(FILE_get_dir(path));
   }
   else
   {
-    path = GAMBAS_PATH "/gbx" GAMBAS_VERSION_STRING;
+		return GAMBAS_PATH;
   }
 
   return path;

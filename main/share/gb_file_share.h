@@ -94,7 +94,7 @@ PUBLIC const char *FILE_readlink(const char *link);
 PUBLIC bool FILE_is_dir(const char *path);
 #define FILE_isdir FILE_is_dir
 
-PUBLIC const char *FILE_find_gambas(void);
+PUBLIC const char *FILE_get_gambas_dir(void);
 
 PUBLIC bool FILE_exist(const char *path);
 

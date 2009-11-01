@@ -150,7 +150,7 @@ void COMPILE_init(void)
 	if (COMP_root)
 		root = COMP_root;
 	else
-  	root = FILE_get_dir(FILE_get_dir(FILE_find_gambas()));
+  	root = FILE_get_gambas_dir();
 
 	// Component directory
 

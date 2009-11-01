@@ -243,9 +243,7 @@ void PROJECT_init(const char *file)
 
   /* Gambas installation path */
 
-  path = FILE_find_gambas();
-
-  STRING_new(&PROJECT_exec_path, FILE_get_dir(FILE_get_dir(path)), 0);
+  STRING_new(&PROJECT_exec_path, FILE_get_gambas_dir(), 0);
 
 	/* Home directory */
 

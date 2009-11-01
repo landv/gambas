@@ -146,15 +146,8 @@ static void error(bool must_exit, const char *fmt, ...)
 
 static void init(void)
 {
-  const char *path;
-
-  /* chemin d'installation de Gambas */
-
   if (!_root[0])
-  {
-    path = FILE_find_gambas();
-    strncpy(_root, FILE_get_dir(FILE_get_dir(path)), MAX_PATH);
-  }
+    strncpy(_root, FILE_get_gambas_dir(), MAX_PATH);
 
   #ifdef OS_64BITS
   strcpy(_lib_path, FILE_cat(_root, GAMBAS_LIB64_PATH, NULL));
@@ -166,12 +159,6 @@ static void init(void)
 
   if (lt_dlinit())
     error(TRUE, "Cannot initialize plug-in management: %s", lt_dlerror());
-
-  /*if (putenv("LD_BIND_NOW=true"))
-    error2("Cannot set LD_BIND_NOW", strerror(errno));
-
-  if (putenv("KDE_MALLOC=0"))
-    error2("Cannot set KDE_MALLOC", strerror(errno));*/
 }
 
 
