@@ -411,7 +411,7 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
 Catch
 
   If Error.Text Then
-    FGambas.Error(("Cannot open project file :\n") & sDir & "\n\n" & Error.Text & "\n" & Error.Where)
+    Message.Error(("Cannot open project file :\n") & sDir & "\n\n" & Error.Text & "\n" & Error.Where)
   Endif
 
 _CANCEL:
