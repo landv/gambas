@@ -876,7 +876,7 @@ PUBLIC const char *FILE_get_gambas_dir(void)
   }
   else
   {
-		return GAMBAS_PATH;
+		return FILE_get_dir(GAMBAS_PATH);
   }
 
   return path;
