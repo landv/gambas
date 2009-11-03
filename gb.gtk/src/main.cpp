@@ -230,6 +230,11 @@ extern "C"
 
 		GB.LoadComponent("gb.draw");
 		
+		// Thanks again to GTK+ 2.18 :-(
+		#if GTK_MAJOR_VERSION >= 2 && GTK_MINOR_VERSION >= 18
+		putenv("GDK_NATIVE_WINDOWS=1");
+		#endif
+		
 		CWatcher::init();
 
 		return TRUE;
