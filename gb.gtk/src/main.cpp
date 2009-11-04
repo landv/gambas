@@ -226,6 +226,11 @@ extern "C"
 		GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
 		IMAGE.SetDefaultFormat(GB_IMAGE_RGBA);
 		
+		// Thanks again to GTK+ 2.18 :-(
+		#if GTK_MAJOR_VERSION >= 2 && GTK_MINOR_VERSION >= 18
+		putenv("GDK_NATIVE_WINDOWS=1");
+		#endif
+		
 		CWatcher::init();
 
 		return TRUE;
