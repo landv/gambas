@@ -223,6 +223,7 @@ Private Sub MakeSignature(sSign As String) As String
   Dim bOptional As Boolean
   Dim sSym As String
   Dim sType As String
+  Dim sDefault As String
 
   Highlight.Analyze(sSign)
   sSign = ""
@@ -270,6 +271,19 @@ Private Sub MakeSignature(sSign As String) As String
         sType = UCase(Left(sType)) & Mid$(sType, 2) & ";"
       Endif
       sSign &= "(" & sSym & ")" & sType
+      
+      If iInd < Highlight.Symbols.Max Then
+        If Highlight.Symbols[iInd + 1] = "=" Then
+          iInd += 2
+          sDefault = Highlight.Symbols[iInd]
+          If Highlight.Types[iInd] = Highlight.Keyword Then
+            If Not Settings["/Editor/KeywordsUseUpperCase"] Then
+              Mid$(sDefault, 2) = LCase(Mid$(sDefault, 2))
+            Endif
+          Endif
+          sSign &= "=" & sDefault & "\t"
+        Endif
+      Endif
 
     Endif
   
@@ -370,6 +384,15 @@ Public Function GetSignature(Optional iShowArg As Integer = -1) As String
       Continue
 
     Endif
+    
+    If sCar = "=" Then
+    
+      iPos = InStr(sSign, "\t", iInd + 1)
+      If iPos = 0 Then Break
+      $sArgAfter &= " = " & Mid$(sSign, iInd + 1, iPos - iInd - 1)
+      iInd = iPos
+    
+    Endif
 
     If Not bName Then
 
@@ -380,7 +403,7 @@ Public Function GetSignature(Optional iShowArg As Integer = -1) As String
         NextArg
       Endif
 
-      sRes &= $sArgBefore & "? AS " 
+      sRes &= $sArgBefore & "? " & sKeywordAs & " " 
       bName = False
 
     Endif

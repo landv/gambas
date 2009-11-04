@@ -2877,6 +2877,9 @@ End
 
 Public Sub btnProc_MouseDown()
 
+  Dim iCurrent As Integer
+  Dim nRow As Integer
+
   If Not btnProc.Enabled Then Return
 
   If panProc.Visible Then
@@ -2897,6 +2900,11 @@ Public Sub btnProc_MouseDown()
   
     panProc.Show
     gvwProc.SetFocus
+    iCurrent = $aProc.Find(btnProc.Text)
+    If iCurrent >= 0 Then 
+      gvwProc[Min(gvwProc.Rows.Count - 1, iCurrent + (gvwProc.H \ gvwProc.Rows.H) \ 2), 0].EnsureVisible
+      'gvwProc[iCurrent, 0].EnsureVisible
+    Endif
     
   Endif
 
