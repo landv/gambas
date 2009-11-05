@@ -1,4 +1,25 @@
 -------------------------------------------------------------------------------
+ gambas2-2.17.1 - 04 Nov 2009
+-------------------------------------------------------------------------------
+
+[CONFIGURATION]
+* NEW: "GB_DIR" is a new environment variable that allows to define the
+  Gambas installation directory. If this variable is not defined, the
+  Gambas programs will act as usual.
+
+[DEVELOPMENT ENVIRONMENT]
+* NEW: Add support for Ukrainian language.
+
+[GB.DEBUG]
+* BUG: Try to open debugger fifo longer so that the IDE debugger can start
+  on slow systems.
+
+[GB.GTK]
+* BUG: Disable GDK native windows on GTK+ 2.18. It makes gb.gtk fail in
+  many places.
+
+
+-------------------------------------------------------------------------------
  gambas2-2.17.0 - 25 Oct 2009
 -------------------------------------------------------------------------------
 
