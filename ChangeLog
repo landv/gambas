@@ -1,14 +1,18 @@
 -------------------------------------------------------------------------------
- gambas2-2.17.1 - 04 Nov 2009
+ gambas2-2.17.1 - 06 Nov 2009
 -------------------------------------------------------------------------------
 
 [CONFIGURATION]
 * NEW: "GB_DIR" is a new environment variable that allows to define the
   Gambas installation directory. If this variable is not defined, the
   Gambas programs will act as usual.
+* NEW: Update ChangeLog and version number for 2.17.1.
 
 [DEVELOPMENT ENVIRONMENT]
 * NEW: Add support for Ukrainian language.
+
+[INTERPRETER]
+* BUG: Compute the Gambas installation directory correctly in all cases.
 
 [GB.DEBUG]
 * BUG: Try to open debugger fifo longer so that the IDE debugger can start
@@ -17,6 +21,7 @@
 [GB.GTK]
 * BUG: Disable GDK native windows on GTK+ 2.18. It makes gb.gtk fail in
   many places.
+* BUG: Control.Reparent() works correctly now.
 
 
 -------------------------------------------------------------------------------
