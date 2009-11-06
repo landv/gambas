@@ -70,7 +70,7 @@ public:
 	GList *ch_list;
 	int _client_w, _client_h;
 	
-	virtual void insert(gControl *child, int x, int y) { insert(child); move(x, y); }
+	virtual void insert(gControl *child, int x, int y) { insert(child); child->move(x, y); }
 	virtual void insert(gControl *child);
 	virtual void remove(gControl *child);
 	virtual GtkWidget *getContainer();

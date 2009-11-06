@@ -1500,13 +1500,13 @@ void gControl::reparent(gContainer *newpr, int x, int y)
 		return;
 	
 	oldpr = pr;
-	pr = newpr;	
+	pr = newpr;
+	bufX = bufY = 0;
 	
 	if (oldpr == newpr)
 	{
 		gtk_widget_reparent(border, newpr->getContainer());
 		oldpr->performArrange();
-		move(x, y);
 	}
 	else
 	{		
@@ -1517,8 +1517,13 @@ void gControl::reparent(gContainer *newpr, int x, int y)
 			oldpr->performArrange();
 		}
 		
-		newpr->insert(this, x, y);
+		newpr->insert(this);
 	}
+
+	move(x, y);
+	setBackground();
+	setForeground();
+	setFont(pr->font());
 }
 
 int gControl::scrollX()
