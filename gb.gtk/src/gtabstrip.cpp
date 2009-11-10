@@ -388,11 +388,7 @@ void gTabStrip::setIndex(int vl)
 
 int gTabStrip::orientation()
 {
-	switch ( gtk_notebook_get_tab_pos(GTK_NOTEBOOK(border)) )
-	{
-		case GTK_POS_TOP: return 0;
-		default: return 1;
-	}
+	return gtk_notebook_get_tab_pos(GTK_NOTEBOOK(border));
 }
 
 void gTabStrip::destroyTab(int ind)
@@ -461,13 +457,7 @@ bool gTabStrip::setCount(int vl)
 
 void gTabStrip::setOrientation(int vl)
 {
-	switch (vl)
-	{
-		case 0:
-			gtk_notebook_set_tab_pos(GTK_NOTEBOOK(border),GTK_POS_TOP); break;
-		case 1:
-			gtk_notebook_set_tab_pos(GTK_NOTEBOOK(border),GTK_POS_BOTTOM); break;
-	}
+    gtk_notebook_set_tab_pos(GTK_NOTEBOOK(border),GtkPositionType(vl));
 }
 
 gPicture* gTabStrip::tabPicture(int ind)

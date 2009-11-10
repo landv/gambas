@@ -115,10 +115,25 @@ END_METHOD
 BEGIN_PROPERTY(CTABSTRIP_orientation)
 
 	if (READ_PROPERTY)
-		GB.ReturnInteger(TABSTRIP->orientation() ? ALIGN_BOTTOM : ALIGN_TOP);
-	else
-		TABSTRIP->setOrientation(VPROP(GB_BOOLEAN) ? ALIGN_BOTTOM : ALIGN_TOP);
-
+		switch (TABSTRIP->orientation())
+		{ 
+		  case GTK_POS_TOP: GB.ReturnInteger(ALIGN_TOP); break;
+		  case GTK_POS_BOTTOM: GB.ReturnInteger(ALIGN_BOTTOM); break;
+		  case GTK_POS_LEFT: GB.ReturnInteger(ALIGN_LEFT); break;
+		  case GTK_POS_RIGHT: GB.ReturnInteger(ALIGN_RIGHT); break;
+		  default: GB.ReturnInteger(ALIGN_NORMAL); break;
+		}
+		
+	else 
+	      switch (VPROP(GB_INTEGER))
+	      {
+		case ALIGN_TOP: TABSTRIP->setOrientation(GTK_POS_TOP); break;
+		case ALIGN_BOTTOM: TABSTRIP->setOrientation(GTK_POS_BOTTOM); break;
+		case ALIGN_LEFT: TABSTRIP->setOrientation(GTK_POS_LEFT); break;
+		case ALIGN_RIGHT: TABSTRIP->setOrientation(GTK_POS_RIGHT); break;
+		
+	      }
+	      
 END_PROPERTY
 
 

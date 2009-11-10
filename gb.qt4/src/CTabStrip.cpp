@@ -425,10 +425,24 @@ END_METHOD
 
 BEGIN_PROPERTY(CTABSTRIP_orientation)
 
-  if (READ_PROPERTY)
-    GB.ReturnInteger(WIDGET->tabPosition() == QTabWidget::North ? ALIGN_TOP : ALIGN_BOTTOM);
+  if (READ_PROPERTY) 
+    switch(WIDGET->tabPosition())
+    {
+      case QTabWidget::North: GB.ReturnInteger(ALIGN_TOP); break;
+      case QTabWidget::South: GB.ReturnInteger(ALIGN_BOTTOM); break;
+      case QTabWidget::West: GB.ReturnInteger(ALIGN_LEFT); break;
+      case QTabWidget::East: GB.ReturnInteger(ALIGN_RIGHT); break;
+      default: GB.ReturnInteger(ALIGN_NORMAL); break;
+    }
+
   else
-    WIDGET->setTabPosition(VPROP(GB_INTEGER) == ALIGN_BOTTOM ? QTabWidget::South : QTabWidget::North);
+    switch(VPROP(GB_INTEGER))
+    {
+      case ALIGN_TOP: WIDGET->setTabPosition(QTabWidget::North); break;
+      case ALIGN_BOTTOM: WIDGET->setTabPosition(QTabWidget::South); break;
+      case ALIGN_LEFT: WIDGET->setTabPosition(QTabWidget::West); break;
+      case ALIGN_RIGHT: WIDGET->setTabPosition(QTabWidget::East); break;
+    }
 
 END_PROPERTY
 
