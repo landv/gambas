@@ -165,9 +165,9 @@ Public Sub Draw(bSeries As Boolean)
         Draw.FillStyle = Fill.Solid
         'draw.Rect(x, y, SQUARESIZE, SQUARESIZE)
         If Chart._$ColChart[$sidChart].Type = ChartType.LinesSymbols Or Chart._$ColChart[$sidChart].Type = ChartType.AreasSymbols Then
-          MTools.DrawSymbol(i, x + SQUARESIZE / 2, Y + SQUARESIZE / 2)
+          MTools.DrawSymbol($sidChart, i, x + SQUARESIZE / 2, Y + SQUARESIZE / 2)
         Else
-          MTools.DrawSymbol(0, x + SQUARESIZE / 2, Y + SQUARESIZE / 2)
+          MTools.DrawSymbol($sidChart, 0, x + SQUARESIZE / 2, Y + SQUARESIZE / 2)
         Endif
         x += SQUARESIZE + iStaticSpace
         draw.Text(s, x, y)
