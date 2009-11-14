@@ -436,16 +436,28 @@ int gContainer::clientHeight()
 	return height() - getFrameWidth() * 2;
 }
 
-void gContainer::insert(gControl *child)
+void gContainer::insert(gControl *child, bool realize)
 {
 	if (!gtk_widget_get_parent(child->border))
 		gtk_layout_put(GTK_LAYOUT(getContainer()), child->border, 0, 0);
+	child->bufX = child->bufY = 0;
 		
 	ch_list = g_list_append(ch_list, child);
 	
 	//g_debug("gContainer::insert: visible = %d", isReallyVisible());
 	performArrange();
 	updateFocusChain();
+
+	if (realize)
+	{
+    gtk_widget_realize(child->border);
+		gtk_widget_show_all(child->border);
+		child->visible = true;
+	}
+    
+	child->setBackground();
+	child->setForeground();
+  child->setFont(font());
 }
 
 void gContainer::remove(gControl *child)

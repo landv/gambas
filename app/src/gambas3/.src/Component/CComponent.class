@@ -716,7 +716,7 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
     Endif
     
     
-    If aSym.Count = 2 Then
+    If aSym.Count >= 2 Then
       If bCanInherit Then
         If aSym[0] = "INHERITS" Then
           If Highlight.Types[1] = Highlight.Datatype Then

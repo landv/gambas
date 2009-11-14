@@ -1083,21 +1083,7 @@ void gControl::connectParent()
 	{
     gtk_widget_set_redraw_on_allocate(border, false);
     
-  	pr->insert(this);
-    
-    gtk_widget_realize(border);
-		gtk_widget_show_all(border);
-    //show(); 
-		visible = true;
-		/*if (GTK_IS_WIDGET(frame))
-			gtk_widget_show(frame);
-		if (GTK_IS_WIDGET(widget))
-			gtk_widget_show(widget);*/
-    
-		setBackground();
-		setForeground();
-    setFont(pr->font());
-    //gdk_window_process_updates(border->window,true);
+  	pr->insert(this, true);
   }
   
 	// BM: Widget has been created, so we can set its cursor if application is busy
@@ -1504,7 +1490,6 @@ void gControl::reparent(gContainer *newpr, int x, int y)
 	{
 		gtk_widget_reparent(border, newpr->getContainer());
 		oldpr->performArrange();
-		move(x, y);
 	}
 	else
 	{		
@@ -1515,8 +1500,10 @@ void gControl::reparent(gContainer *newpr, int x, int y)
 			oldpr->performArrange();
 		}
 		
-		newpr->insert(this, x, y);
+		newpr->insert(this);
 	}
+
+	move(x, y);
 }
 
 int gControl::scrollX()

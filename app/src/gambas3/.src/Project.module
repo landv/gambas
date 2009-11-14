@@ -818,9 +818,9 @@ Public Sub GetParentClass(sPath As String) As String
     If Not sLine Then Continue
     If Left(sLine) = "'" Then Continue
     If sLine Like "INHERITS *" Then 
-      'Highlight.Analyze(sLine)
-      'RETURN Highlight.Symbols[1]
-      sLine = Scan(sLine, "INHERITS *")[0]
+      Highlight.Analyze(sLine)
+      sLine = Highlight.Symbols[1]
+      'sLine = Scan(sLine, "INHERITS *")[0]
       If Comp(sLine, File.BaseName(sPath), gb.Text) = 0 Then sLine = ""
       Return sLine
     Endif

@@ -1442,6 +1442,7 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
   Dim sLang As String
   Dim rPage As Result
   Dim sSuff As String
+  Dim sUri As String
 
   $sTitle = sTitle
 
@@ -1509,7 +1510,9 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
         Else
           Print "<a class=\"flag\" href=\"/help" &/ $sPath;
         Endif
-        Print "?"; sLang; "\">"; GetImage("lang/" & sLang, "class=\"flag\" alt=\"" & sLang & "\"", "top");
+        Print "?"; sLang; 
+        If IsComponentPath($sPath) And If $sVersion = "3.0" Then Print "&amp;v3";
+        Print "\">"; GetImage("lang/" & sLang, "class=\"flag\" alt=\"" & sLang & "\"", "top");
         Print "</a>";
       Next
       
