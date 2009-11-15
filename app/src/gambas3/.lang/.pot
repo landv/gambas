@@ -10,6 +10,34 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: CComponentBox.class:92
+msgid "Experimental"
+msgstr ""
+
+#: CComponentBox.class:94 FPropertyProject.class:1884
+msgid "Not finished but stable"
+msgstr ""
+
+#: CComponentBox.class:200 ProjectItem.class:62
+msgid "Authors"
+msgstr ""
+
+#: CComponentBox.class:207 FPropertyProject.class:2082
+msgid "Requires"
+msgstr ""
+
+#: CComponentBox.class:209
+msgid "Excludes"
+msgstr ""
+
+#: CComponentBox.class:215
+msgid "Implements"
+msgstr ""
+
+#: CComponentBox.class:228 FPropertyProject.class:2057
+msgid "Provides"
+msgstr ""
+
 #: CComponent.class:63
 msgid "Internal native classes"
 msgstr ""
@@ -262,34 +290,6 @@ msgstr ""
 msgid "Loading information on component &1..."
 msgstr ""
 
-#: CComponentBox.class:92
-msgid "Experimental"
-msgstr ""
-
-#: CComponentBox.class:94 FPropertyProject.class:1884
-msgid "Not finished but stable"
-msgstr ""
-
-#: CComponentBox.class:200 ProjectItem.class:62
-msgid "Authors"
-msgstr ""
-
-#: CComponentBox.class:207 FPropertyProject.class:2082
-msgid "Requires"
-msgstr ""
-
-#: CComponentBox.class:209
-msgid "Excludes"
-msgstr ""
-
-#: CComponentBox.class:215
-msgid "Implements"
-msgstr ""
-
-#: CComponentBox.class:228 FPropertyProject.class:2057
-msgid "Provides"
-msgstr ""
-
 #: CModule.class:28 FCreateFile.class:625 FEditor.class:3376 FForm.class:3519
 #: FInfo.class:88
 msgid "Form"
@@ -349,7 +349,7 @@ msgstr ""
 #: Design.module:379 FAbout.class:565 FColorChooser.class:197
 #: FCommit.class:391 FCreateFile.class:879 FFontChooser.class:80
 #: FGotoLine.class:57 FList.class:333 FMain.class:2767
-#: FMakeExecutable.class:136 FMenu.class:1091 FNewConnection.class:586
+#: FMakeExecutable.class:138 FMenu.class:1091 FNewConnection.class:586
 #: FNewTable.class:161 FNewTranslation.class:64 FOpenProject.class:433
 #: FPasteSpecial.class:273 FPropertyProject.class:252
 #: FSelectExtraFile.class:72 FSelectIcon.class:266 FTableChooser.class:139
@@ -434,15 +434,15 @@ msgstr ""
 
 #: FColorChooser.class:203 FCommit.class:397 FConflict.class:191
 #: FConnectionEditor.class:261 FCreateFile.class:885 FDebugInfo.class:492
-#: FEditor.class:2128 FFind.class:114 FFindList.class:195
+#: FEditor.class:2128 FFindList.class:195 FFind.class:114
 #: FFontChooser.class:86 FForm.class:2821 FGotoLine.class:63
 #: FIconEditor.class:1393 FImportTable.class:38 FList.class:155
-#: FMain.class:203 FMakeExecutable.class:142 FMakeInstall.class:309
+#: FMain.class:203 FMakeExecutable.class:144 FMakeInstall.class:309
 #: FMenu.class:1097 FNewConnection.class:317 FNewTable.class:167
 #: FNewTranslation.class:70 FOpenProject.class:146 FPasteSpecial.class:279
 #: FPropertyProject.class:1236 FSave.class:118 FSelectExtraFile.class:78
-#: FSelectIcon.class:271 FTableChooser.class:145 FText.class:107
-#: FTextEditor.class:462 FTranslate.class:606 Project.module:327
+#: FSelectIcon.class:271 FTableChooser.class:145 FTextEditor.class:462
+#: FText.class:107 FTranslate.class:606 Project.module:327
 msgid "Cancel"
 msgstr ""
 
@@ -1324,16 +1324,24 @@ msgstr ""
 msgid "Procedure list"
 msgstr ""
 
+#: FFindList.class:75
+msgid "Column"
+msgstr ""
+
+#: FFindList.class:238
+msgid "Find list"
+msgstr ""
+
+#: FFindList.class:273 FFind.class:395 FOutput.class:309 FTranslate.class:567
+msgid "Search string cannot be found."
+msgstr ""
+
 #: FFind.class:114
 msgid "Are you sure to want to replace all?"
 msgstr ""
 
 #: FFind.class:114
 msgid "Replace"
-msgstr ""
-
-#: FFind.class:395 FFindList.class:273 FOutput.class:309 FTranslate.class:567
-msgid "Search string cannot be found."
 msgstr ""
 
 #: FFind.class:397
@@ -1390,14 +1398,6 @@ msgstr ""
 
 #: FFind.class:826
 msgid "Search in strings"
-msgstr ""
-
-#: FFindList.class:75
-msgid "Column"
-msgstr ""
-
-#: FFindList.class:238
-msgid "Find list"
 msgstr ""
 
 #: FFontChooser.class:57
@@ -2345,7 +2345,7 @@ msgstr ""
 msgid "Make source archive"
 msgstr ""
 
-#: FMain.class:2503 FMakeExecutable.class:80
+#: FMain.class:2503 FMakeExecutable.class:82
 msgid "Make executable"
 msgstr ""
 
@@ -2425,20 +2425,20 @@ msgstr ""
 msgid "Install in the user component directory"
 msgstr ""
 
-#: FMakeExecutable.class:100
+#: FMakeExecutable.class:26
+msgid "Create a shortcut on the desktop"
+msgstr ""
+
+#: FMakeExecutable.class:102
 msgid "Run this command after"
 msgstr ""
 
-#: FMakeExecutable.class:105
+#: FMakeExecutable.class:107
 msgid "<b>$(FILE)</b> will be replaced by the path of the executable"
 msgstr ""
 
-#: FMakeExecutable.class:116
+#: FMakeExecutable.class:118
 msgid "Keep debugging information in executable"
-msgstr ""
-
-#: FMakeExecutable.class:121
-msgid "Create a shortcut on the desktop"
 msgstr ""
 
 #: FMakeInstall.class:91
@@ -3446,16 +3446,16 @@ msgstr ""
 msgid "Connection"
 msgstr ""
 
+#: FTextEditor.class:764
+msgid "Text editor"
+msgstr ""
+
 #: FText.class:77
 msgid "Edit text property"
 msgstr ""
 
 #: FText.class:96
 msgid "Use a fixed font"
-msgstr ""
-
-#: FTextEditor.class:764
-msgid "Text editor"
 msgstr ""
 
 #: FTips.class:47
@@ -4762,6 +4762,18 @@ msgstr ""
 msgid "'tar' has returned the following error code:"
 msgstr ""
 
+#: ProjectItem.class:62
+msgid "Author"
+msgstr ""
+
+#: .project:1
+msgid "Gambas 3"
+msgstr ""
+
+#: .project:2
+msgid "Integrated Development Environment for Gambas"
+msgstr ""
+
 #: Project.module:145
 msgid "Automation"
 msgstr ""
@@ -4966,109 +4978,105 @@ msgstr ""
 msgid "Unable to uninstall component."
 msgstr ""
 
-#: Project.module:3051
+#: Project.module:3054
 msgid "The directory will be removed at the next commit."
 msgstr ""
 
-#: Project.module:3070
+#: Project.module:3073
 msgid "You must define a startup class or form!"
 msgstr ""
 
-#: Project.module:3102
+#: Project.module:3105
 msgid "Please type a name."
 msgstr ""
 
-#: Project.module:3106
+#: Project.module:3109
 msgid "This name contains a forbidden character:"
 msgstr ""
 
-#: Project.module:3110
+#: Project.module:3113
 msgid "The name cannot begins with a dot."
 msgstr ""
 
-#: Project.module:3114
+#: Project.module:3117
 msgid "This name is already used. Choose another one."
 msgstr ""
 
-#: Project.module:3145
+#: Project.module:3148
 msgid ""
 "A class name must begin with a letter or an underscore, followed by any "
 "letter or digit."
 msgstr ""
 
-#: Project.module:3193
+#: Project.module:3196
 msgid "Destination already exists"
 msgstr ""
 
-#: Project.module:3390
+#: Project.module:3393
 msgid "Unable to rename '&1'"
 msgstr ""
 
-#: Project.module:3509
+#: Project.module:3512
 msgid "Please type a project name."
 msgstr ""
 
-#: Project.module:3517
+#: Project.module:3520
 msgid "The project name cannot begin with a dot."
 msgstr ""
 
-#: Project.module:3520
+#: Project.module:3523
 msgid "Non-ASCII characters are forbidden in a project name."
 msgstr ""
 
-#: Project.module:3521
+#: Project.module:3524
 msgid ""
 "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr ""
 
-#: Project.module:3531
+#: Project.module:3534
 msgid "The project directory already exists."
 msgstr ""
 
-#: Project.module:3533
+#: Project.module:3536
 msgid ""
 "The project directory cannot be created because a file with the same name "
 "already exists."
 msgstr ""
 
-#: Project.module:3579
+#: Project.module:3582
 msgid "Create source package"
 msgstr ""
 
-#: Project.module:3580
+#: Project.module:3583
 msgid "Source packages"
 msgstr ""
 
-#: Project.module:3850
+#: Project.module:3853
 msgid "Cannot copy file &1."
 msgstr ""
 
-#: Project.module:3862
+#: Project.module:3865
 msgid "Linking a directory is forbidden."
 msgstr ""
 
-#: Project.module:3892
+#: Project.module:3895
 msgid "Cannot create link &1."
 msgstr ""
 
-#: Project.module:3909
+#: Project.module:3912
 msgid "Cannot move a directory inside itself."
 msgstr ""
 
-#: Project.module:3973
+#: Project.module:3976
 msgid "Cannot move file &1."
 msgstr ""
 
-#: Project.module:4520
+#: Project.module:4523
 msgid "modified"
 msgstr ""
 
-#: Project.module:4600
+#: Project.module:4603
 msgid "Unable to update all forms."
-msgstr ""
-
-#: ProjectItem.class:62
-msgid "Author"
 msgstr ""
 
 #: Save.module:38

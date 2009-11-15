@@ -64,7 +64,7 @@
 #define CHSPLIT_PROPERTIES "*"
 #define CVSPLIT_PROPERTIES "*"
 #define CFRAME_PROPERTIES "*,Text"
-#define CTABSTRIP_PROPERTIES "*," CARRANGEMENT_PROPERTIES ",Count{Range:1;256}=1,Index,Text,Picture,Orientation{Align.Top;Bottom;Left;Right}"
+#define CTABSTRIP_PROPERTIES "*," CARRANGEMENT_PROPERTIES ",Count{Range:1;256}=1,Index,Text,Picture,Orientation{Align.Top;Bottom;Left;Right}=Top"
 #define CWINDOW_PROPERTIES "*,Action,Text,Icon,Picture,Mask,Persistent,Resizable=True,Border=True,Type{WindowType.*}=Normal,Stacking{Window.Normal;Above;Below}=Normal,Minimized,Maximized,FullScreen,Sticky,SkipTaskbar," CWINDOW_ARRANGEMENT_PROPERTIES
 #define CMOVIEBOX_PROPERTIES "*,Path,Playing,Border{Border.*}"
 #define CPROGRESSBAR_PROPERTIES "*,Action,Label=True"

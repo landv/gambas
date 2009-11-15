@@ -204,7 +204,12 @@ static void add_thousand_sep(int *before)
     group = _currency ? local_current->currency_group_size : local_current->group_size;
 
     if (group > 0 && (*before > 1) && ((*before - 1) == (((*before - 1) / group) * group)))
-      put_char(_currency ? local_current->currency_thousand_sep : local_current->thousand_sep);
+		{
+			if (buffer_pos > 0 && (get_current()[-1] == ' '))
+				put_char(' ');
+			else
+				put_char(_currency ? local_current->currency_thousand_sep : local_current->thousand_sep);
+		}
   }
 
   (*before)--;
@@ -479,7 +484,10 @@ static void fill_local_info(void)
 	
 	lang = LOCAL_get_lang();
 	if (strcmp(lang, "fr") == 0 || strncmp(lang, "fr_", 3) == 0)
+	{
 		LOCAL_local.date_sep = '/';
+		//LOCAL_local.thousand_sep = '~';
+	}
 
   stradd_sep(LOCAL_local.general_date, LOCAL_local.long_time, " ");
   stradd_sep(LOCAL_local.medium_time, "AM/PM", " ");

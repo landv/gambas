@@ -2981,6 +2981,7 @@ Public Sub DeleteFile(sPath As String)
   Dim bProject As Boolean
   Dim sName As String
   Dim hModule As CModule
+  Dim sPathPot As String
 
   If Not Exist(sPath) Then Return
   
@@ -3012,7 +3013,9 @@ Public Sub DeleteFile(sPath As String)
     
     If IsSourcePath(sPath) Then
       Try Kill Project.Dir &/ ".gambas" &/ UCase(sName)
-      Try Kill Project.Dir &/ ".lang" &/ sName & ".pot"
+      sPathPot = Project.Dir &/ ".lang" &/ sName & ".pot"
+      Try Kill sPathPot
+      VersionControl.RemoveFile(sPathPot)
     Endif
 
     DeleteFile(File.Dir(sPath) &/ File.BaseName(sPath) & ".class")
