@@ -17,18 +17,15 @@ class gFrame : public gContainer
 public:
 	gFrame(gContainer *parent);
 
-	//long background();
-	//void setBackground(long vl);
-	//long foreground();
-	//void setForeground(long vl);
 	char* text();
 	void setText(char* vl);
 
 	virtual void setFont(gFont *ft);
+	virtual void setRealForeground(gColor color);
 
 //"Private"
-	void updateLabel();
   GtkWidget *fr;
+	GtkWidget *label;
 };
 
 #endif
