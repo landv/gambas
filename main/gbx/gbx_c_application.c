@@ -364,6 +364,12 @@ BEGIN_PROPERTY(CSYSTEM_backtrace)
 	
 END_PROPERTY
 
+BEGIN_PROPERTY(CSYSTEM_error)
+
+  GB_ReturnInteger(errno);
+
+END_PROPERTY
+
 #endif
 
 GB_DESC NATIVE_AppArgs[] =
@@ -398,10 +404,8 @@ GB_DESC NATIVE_App[] =
   GB_STATIC_PROPERTY_SELF("Args", ".ApplicationArgs"),
   GB_STATIC_PROPERTY_SELF("Env", ".ApplicationEnv"),
   GB_STATIC_PROPERTY_READ("Path", "s", CAPPLICATION_path),
-  //GB_STATIC_PROPERTY_READ("Home", "s", CAPPLICATION_home),
   GB_STATIC_PROPERTY_READ("Name", "s", CAPPLICATION_name),
   GB_STATIC_PROPERTY_READ("Title", "s", CAPPLICATION_title),
-  //GB_STATIC_PROPERTY_READ("User", "s", CAPPLICATION_user),
   GB_STATIC_PROPERTY_READ("Id", "i", CAPPLICATION_id),
   GB_STATIC_PROPERTY_READ("Handle", "i", CAPPLICATION_id),
   GB_STATIC_PROPERTY_READ("Version", "s", CAPPLICATION_version),
@@ -426,6 +430,7 @@ GB_DESC NATIVE_System[] =
   GB_STATIC_PROPERTY_SELF("User", "User"),
   GB_STATIC_PROPERTY_READ("ByteOrder", "i", CSYSTEM_byte_order),
   GB_STATIC_PROPERTY_READ("Backtrace", "String[]", CSYSTEM_backtrace),
+  GB_STATIC_PROPERTY_READ("Error", "i", CSYSTEM_error),
 
   GB_END_DECLARE
 };
