@@ -2667,6 +2667,7 @@ PUBLIC SUB DeleteFile(sPath AS String)
   DIM hForm AS Object
   DIM bLink AS Boolean
   DIM bProject AS Boolean
+  DIM sPathPot AS String
 
   IF NOT Exist(sPath) THEN RETURN
   
@@ -2697,7 +2698,9 @@ PUBLIC SUB DeleteFile(sPath AS String)
 
     IF sExt = "form" OR sExt = "class" OR sExt = "module" THEN
       TRY KILL Project.Dir &/ ".gambas" &/ UCase(File.BaseName(sPath))
-      TRY KILL Project.Dir &/ ".lang" &/ File.BaseName(sPath) & ".pot"
+      sPathPot = Project.Dir &/ ".lang" &/ File.BaseName(sPath) & ".pot"
+      TRY KILL sPathPot
+      VersionControl.RemoveFile(sPathPot)
     ENDIF
 
     IF sExt = "form" THEN

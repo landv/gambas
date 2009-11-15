@@ -22,6 +22,8 @@ PUBLIC SUB Form_Open()
   chkShortcut.Value = Project.CreateShortcut
   IF Project.CreateComponent THEN 
     chkShortcut.Text = ("Install in the user component directory")
+  ELSE 
+    chkShortcut.Text = ("Create a shortcut on the desktop")
   ENDIF
   txtCommand.Text = Project.RunAfterMakingExec
 
