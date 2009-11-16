@@ -262,6 +262,11 @@ Private Sub MakeSignature(sSign As String) As String
         Inc iInd
         sSym = Highlight.Symbols[iInd]
       Endif
+      
+      If UCase(sSym) = "BYREF" Then
+        Inc iInd
+        sSym = "&" & Highlight.Symbols[iInd]
+      Endif
     
       iInd += 2
       sType = Highlight.Symbols[iInd]
@@ -272,7 +277,7 @@ Private Sub MakeSignature(sSign As String) As String
       Endif
       sSign &= "(" & sSym & ")" & sType
       
-      If iInd < Highlight.Symbols.Max Then
+      If bOptional And If iInd < Highlight.Symbols.Max Then
         If Highlight.Symbols[iInd + 1] = "=" Then
           iInd += 2
           sDefault = Highlight.Symbols[iInd]
@@ -308,9 +313,12 @@ Public Function GetSignature(Optional iShowArg As Integer = -1) As String
   Dim bFirst As Boolean
   Dim sSign As String
   Dim sKeywordAs As String
+  Dim sKeywordByRef As String
+  Dim sSym As String
 
   sSign = Signature
   sKeywordAs = If(Settings["/Editor/KeywordsUseUpperCase"], "AS", "As")
+  sKeywordByref = If(Settings["/Editor/KeywordsUseUpperCase"], "BYREF", "ByRef")
   
   If Left$(sSign) = "#" Then
     'sRes = MakeArgBold(Mid$(sSign, 2), iShowArg)
@@ -351,7 +359,16 @@ Public Function GetSignature(Optional iShowArg As Integer = -1) As String
         NextArg
       Endif
 
-      sRes &= $sArgBefore & Mid$(sSign, iInd + 1, iPos - iInd - 1) & " " & sKeywordAs & " "
+      sSym = Mid$(sSign, iInd + 1, iPos - iInd - 1)
+
+      sRes &= $sArgBefore 
+      
+      If Left(sSym) = "&" Then
+        sSym = Mid$(sSym, 2)
+        sRes &= sKeywordByRef & " "
+      Endif
+      
+      sRes &= sSym & " " & sKeywordAs & " "
 
       iInd = iPos
       bName = True
