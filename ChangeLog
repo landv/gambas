@@ -1,27 +1,35 @@
 -------------------------------------------------------------------------------
- gambas2-2.17.1 - 06 Nov 2009
+ gambas2-2.18.0 - 18 Nov 2009
 -------------------------------------------------------------------------------
 
 [CONFIGURATION]
 * NEW: "GB_DIR" is a new environment variable that allows to define the
   Gambas installation directory. If this variable is not defined, the
   Gambas programs will act as usual.
-* NEW: Update ChangeLog and version number for 2.17.1.
 
 [DEVELOPMENT ENVIRONMENT]
+* BUG: The make executable dialog options are correctly refreshed depending
+  on whether the project is a component or not.
+* BUG: Removing a source file removes correctly the translation file from
+  version control too now.
 * NEW: Add support for Ukrainian language.
+
+[EXAMPLES]
+* BUG: The hour hand follows the minutes now in the Clock example.
 
 [INTERPRETER]
 * BUG: Compute the Gambas installation directory correctly in all cases.
+* BUG: The thousand separator is only printed between digits now.
 
 [GB.DEBUG]
 * BUG: Try to open debugger fifo longer so that the IDE debugger can start
   on slow systems.
 
 [GB.GTK]
-* BUG: Disable GDK native windows on GTK+ 2.18. It makes gb.gtk fail in
-  many places.
+* BUG: Disable GDK native windows on GTK+ 2.18, so that gb.gtk works 
+  correctly.
 * BUG: Control.Reparent() works correctly now.
+* BUG: Frame label inherits foreground color correctly.
 
 
 -------------------------------------------------------------------------------
