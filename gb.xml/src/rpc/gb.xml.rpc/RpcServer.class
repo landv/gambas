@@ -201,7 +201,7 @@ PUBLIC SUB miniSrv_ProcessData(Data AS String)
 
   DO WHILE TRUE
 
-    IF Xml.Node.Type = XmlReaderNodeType.EndElement THEN BREAK
+    'IF Xml.Node.Type = XmlReaderNodeType.EndElement THEN BREAK
     IF NOT Tools.Find(Xml, "param") THEN BREAK
     hP = Tools.GetParam(Xml)
     IF hP = NULL THEN
