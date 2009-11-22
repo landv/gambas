@@ -227,7 +227,7 @@ static void save_action()
 	int len;
 	
 	path = FILE_cat(FILE_get_dir(COMP_project), ".action", NULL);
-	mkdir(path, 0777);
+	FILE_set_owner(path, COMP_project);
 	
 	name = STR_copy(FILE_set_ext(FILE_get_name(JOB->form), "action"));
 	path = FILE_cat(FILE_get_dir(COMP_project), ".action", name, NULL);
@@ -253,7 +253,6 @@ static void save_action()
 		THROW("Cannot create action file: &1", path);
 		
 	FILE_set_owner(path, COMP_project);
-	
 	
 	STR_free(name);
 }
