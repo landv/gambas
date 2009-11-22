@@ -79,6 +79,9 @@ Private Sub FillTree(hCtrl As CControl, Optional sParent As String)
     'sImg = "img/32/form.png"
   Endif
 
+  Inc $bNoSelect 
+  Try tvwControl[hCtrl.Name].Delete
+  Dec $bNoSelect
   tvwControl.Add(hCtrl.Name, hCtrl.Name, hPict, sParent)
 
   If Not hCtrl.IsContainer() Then Return
@@ -157,9 +160,6 @@ Public Sub RefreshOne(sKey As String)
   If Not Me.Visible Then Return
   If GetForm() Then Return
   
-  Inc $bNoSelect 
-  tvwControl[sKey].Delete
-  Dec $bNoSelect
   FillTree($hForm.Control[sKey])
   SelectCurrent
   'TRY tvwControl[sKey].Selected = TRUE

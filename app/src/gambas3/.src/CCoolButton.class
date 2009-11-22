@@ -53,7 +53,7 @@ Public Sub Panel_Enter()
   If Object.Type(Last) <> "Panel" Then Return
   $iColor = Last.Foreground
   Last.Background = Color.LightBackground '&88D5FF&
-  'Last.Foreground = Color.SelectedForeground '&88D5FF&
+  Last.Foreground = Color.Foreground '&88D5FF&
   GetPanel().Border = Border.Plain
 
 End
