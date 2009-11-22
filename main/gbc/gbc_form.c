@@ -227,6 +227,7 @@ static void save_action()
 	int len;
 	
 	path = FILE_cat(FILE_get_dir(COMP_project), ".action", NULL);
+	mkdir(path, 0777);
 	FILE_set_owner(path, COMP_project);
 	
 	name = STR_copy(FILE_set_ext(FILE_get_name(JOB->form), "action"));
