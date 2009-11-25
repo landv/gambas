@@ -256,8 +256,14 @@ End
 Public Function CountTableData(Handle As Connection, sTable As String) As Integer
 
   Dim rResult As Result
+  Dim iPos As Integer
 
-  rResult = Handle.Exec("SELECT COUNT(*) AS nRecord FROM " & Handle.Quote(sTable))
+  iPos = InStr(sTable, ".") 
+  If iPos Then
+    rResult = Handle.Exec("SELECT COUNT(*) AS nRecord FROM " & Left(sTable, iPos) & Handle.Quote(Mid$(sTable, iPos + 1)))
+  Else
+    rResult = Handle.Exec("SELECT COUNT(*) AS nRecord FROM " & Handle.Quote(sTable))
+  Endif
   Return rResult!nRecord
 
 End

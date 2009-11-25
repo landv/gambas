@@ -771,3 +771,17 @@ void gMenu::updateFont(gMainWindow *win)
 		item=g_list_next(item);
 	}
 }
+
+/*void gMenu::setTearOff(bool v)
+{
+	if (child)
+		gtk_menu_set_tearoff_state(child, v);
+}
+
+bool gMenu::isTearOff() const
+{
+	if (child)
+		return gtk_menu_get_tearoff_state(child);
+	else
+		return false;
+}*/

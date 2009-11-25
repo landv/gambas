@@ -66,6 +66,8 @@ public:
 	bool action() const { return _action; }
 	void setAction(bool v) { _action = v; }
 	void setFont();
+	//bool isTearOff() const;
+	//void setTearOff(bool v);
 
 //"Methods"
 	void popup();

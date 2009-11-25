@@ -153,6 +153,61 @@ static char *get_quote_string(const char *str, int len, char quote)
 	return res;
 }
 
+/* Quote a table name so that schema work, and return a temporary string */
+
+static char *get_quoted_table(const char *table)
+{
+	int len;
+	char *point;
+	char *res;
+	
+	if (!table || !*table)
+		return "";
+	
+	len = strlen(table);
+	point = index(table, '.');
+	
+	if (!point)
+	{
+		GB.TempString(&res, NULL, len + 2);
+		sprintf(res, "\"%s\"", table);
+	}
+	else
+	{
+		GB.TempString(&res, NULL, len + 2);
+		sprintf(res, "%.*s.\"%s\"", point - table, table, point + 1);
+	}
+	
+	return res;
+}
+
+static bool get_table_schema(const char **table, char **schema)
+{
+	char *point;
+	
+	//fprintf(stderr, "get_table_schema: %s\n", *table);
+	
+	*schema = NULL;
+	
+	if (!*table || !**table)
+	{
+		//fprintf(stderr, "get_table_schema: -> NULL\n");
+		return TRUE;
+	}
+	
+	point = strchr(*table, '.');
+	if (!point)
+	{
+		//fprintf(stderr, "get_table_schema: -> No point\n");
+		return TRUE;
+	}
+	
+	GB.TempString(schema, *table, point - *table);
+	*table = point + 1;
+	//fprintf(stderr, "get_table_schema: -> %s / %s\n", *schema, *table);
+	return FALSE;
+}
+
 /* internal function to quote a value stored as a blob */
 
 static void quote_blob(const char *data, int len, DB_FORMAT_CALLBACK add)
@@ -898,28 +953,30 @@ static int field_index(DB_RESULT Result, const char *name, DB_DATABASE *db)
 
 	char *fld;
 	int index;
-	char *table;
+	char *table = NULL;
 	int numfields, oid;
 	char *qfield =
 		"select oid from pg_class where relname = '&1' "
-		"and (relnamespace not in (select oid from pg_namespace where nspname = 'information_schema'))";
+		"and ((relnamespace not in (select oid from pg_namespace where nspname = 'information_schema')))";
 
-	fld = strchr(name, (int)FLD_SEP);
+	fld = strrchr(name, (int)FLD_SEP);
 
-	if (fld){
+	if (fld)
+	{
 		//Includes table identity.
 		//This feature is only available for 7.4 onwards
 		/* check version */
 
-		if (db->version > 70399){ // version 7.4.?
-				fld[0] = '.';
-				GB.NewString(&table, name, fld - name);
-				fld = fld + 1;
+		if (db->version > 70399)
+		{ // version 7.4.?
+			fld[0] = '.';
+			GB.NewString(&table, name, fld - name);
+			fld = fld + 1;
 
-				/* Need to find the OID for the table */
-				PGresult *oidres;
+			/* Need to find the OID for the table */
+			PGresult *oidres;
 
-				if (do_query(db, "Unable to get OID for table &1", &oidres, qfield, 1, table)){
+			if (do_query(db, "Unable to get OID for table &1", &oidres, qfield, 1, table)){
 			GB.FreeString(&table);
 			return -1;
 				}
@@ -1107,18 +1164,33 @@ static int table_init(DB_DATABASE *db, const char *table, DB_INFO *info)
 				"and pg_attribute.attnum > 0 "
 				"and pg_attribute.attrelid = pg_class.oid ";
 
+	char *qfield_schema =
+		"select pg_attribute.attname, pg_attribute.atttypid::int,pg_attribute.atttypmod "
+			"from pg_class, pg_attribute "
+			"where pg_class.relname = '&1' "
+				"and (pg_class.relnamespace in (select oid from pg_namespace where nspname = '&2')) "
+				"and pg_attribute.attnum > 0 "
+				"and pg_attribute.attrelid = pg_class.oid ";
+
 	PGresult *res;
 	int i, n;
 	DB_FIELD *f;
+	char *schema;
 
 	/* Nom de la table */
 
 	GB.NewString(&info->table, table, 0);
-
-	/* Liste des champs */
-
-	if (do_query(db, "Unable to get table fields: &1", &res, qfield, 1, table))
-		return TRUE;
+	
+	if (get_table_schema(&table, &schema))
+	{
+		if (do_query(db, "Unable to get table fields: &1", &res, qfield, 1, table))
+			return TRUE;
+	}
+	else
+	{
+		if (do_query(db, "Unable to get table fields: &1", &res, qfield_schema, 2, table, schema))
+			return TRUE;
+	}
 
 	info->nfield = n = PQntuples(res);
 	if (n == 0)
@@ -1133,7 +1205,7 @@ static int table_init(DB_DATABASE *db, const char *table, DB_INFO *info)
 	{
 		f = &info->field[i];
 
-		if (field_info(db, table, PQgetvalue(res, i, 0), f))
+		if (field_info(db, info->table, PQgetvalue(res, i, 0), f))
 		{
 			PQclear(res);
 			return TRUE;
@@ -1183,9 +1255,12 @@ static int table_init(DB_DATABASE *db, const char *table, DB_INFO *info)
 static int table_index(DB_DATABASE *db, const char *table, DB_INFO *info)
 {
 	const char *qindex;
+	const char *qindex_schema;
 
 	PGresult *res;
 	int i, j, n;
+	const char *fulltable = table;
+	char *schema;
 
 	/* Index primaire */
 
@@ -1199,28 +1274,53 @@ static int table_index(DB_DATABASE *db, const char *table, DB_INFO *info)
 					"and pg_att1.attrelid = pg_ind.indrelid "
 					"and pg_att1.attnum = pg_ind.indkey[pg_att2.attnum-1] "
 				"order by pg_att2.attnum";
-	}
-	else
-	{
-		qindex = "select pg_att1.attname, pg_att1.atttypid::int, pg_cl.relname "
-		"from pg_attribute pg_att1, pg_attribute pg_att2, pg_class pg_cl, pg_index pg_ind, pg_class pg_table "
-			"where pg_table.relname = '&1' AND pg_table.oid = pg_att1.attrelid AND pg_cl.oid = pg_ind.indexrelid "
-					"and (pg_cl.relnamespace not in (select oid from pg_namespace where nspname = 'information_schema')) "
-					"and pg_ind.indisprimary "
+		qindex_schema = "select pg_att1.attname, pg_att1.atttypid::int, pg_cl.relname "
+			"from pg_attribute pg_att1, pg_attribute pg_att2, pg_class pg_cl, pg_index pg_ind "
+				"where pg_cl.relname = '&1_pkey' AND pg_cl.oid = pg_ind.indexrelid "
+					"and (pg_cl.relnamespace in (select oid from pg_namespace where nspname = '&2')) "
 					"and pg_att2.attrelid = pg_ind.indexrelid "
 					"and pg_att1.attrelid = pg_ind.indrelid "
 					"and pg_att1.attnum = pg_ind.indkey[pg_att2.attnum-1] "
 				"order by pg_att2.attnum";
 	}
+	else
+	{
+		qindex = "select pg_att1.attname, pg_att1.atttypid::int, pg_cl.relname "
+			"from pg_attribute pg_att1, pg_attribute pg_att2, pg_class pg_cl, pg_index pg_ind, pg_class pg_table "
+				"where pg_table.relname = '&1' AND pg_table.oid = pg_att1.attrelid AND pg_cl.oid = pg_ind.indexrelid "
+						"and (pg_cl.relnamespace not in (select oid from pg_namespace where nspname = 'information_schema')) "
+						"and pg_ind.indisprimary "
+						"and pg_att2.attrelid = pg_ind.indexrelid "
+						"and pg_att1.attrelid = pg_ind.indrelid "
+						"and pg_att1.attnum = pg_ind.indkey[pg_att2.attnum-1] "
+					"order by pg_att2.attnum";
+		qindex_schema = "select pg_att1.attname, pg_att1.atttypid::int, pg_cl.relname "
+			"from pg_attribute pg_att1, pg_attribute pg_att2, pg_class pg_cl, pg_index pg_ind, pg_class pg_table "
+				"where pg_table.relname = '&1' AND pg_table.oid = pg_att1.attrelid AND pg_cl.oid = pg_ind.indexrelid "
+						"and (pg_cl.relnamespace in (select oid from pg_namespace where nspname = '&2')) "
+						"and pg_ind.indisprimary "
+						"and pg_att2.attrelid = pg_ind.indexrelid "
+						"and pg_att1.attrelid = pg_ind.indrelid "
+						"and pg_att1.attnum = pg_ind.indkey[pg_att2.attnum-1] "
+					"order by pg_att2.attnum";
+	}
 
-	if (do_query(db, "Unable to get primary index: &1", &res, qindex, 1, table))
-		return TRUE;
+	if (get_table_schema(&table, &schema))
+	{
+		if (do_query(db, "Unable to get primary index: &1", &res, qindex, 1, table))
+			return TRUE;
+	}
+	else
+	{
+		if (do_query(db, "Unable to get primary index: &1", &res, qindex, 2, table, schema))
+			return TRUE;
+	}
 
 	n = info->nindex = PQntuples(res);
 
 	if (n <= 0)
 	{
-		GB.Error("Table '&1' has no primary index", table);
+		GB.Error("Table '&1' has no primary index", fulltable);
 		PQclear(res);
 		return TRUE;
 	}
@@ -1278,37 +1378,32 @@ static void table_release(DB_DATABASE *db, DB_INFO *info)
 
 static int table_exist(DB_DATABASE *db, const char *table)
 {
-	const char *query73 =
+	const char *query =
 		"select relname from pg_class where (relkind = 'r' or relkind = 'v') "
 		"and (relname = '&1') "
 		"and (relnamespace not in (select oid from pg_namespace where nspname = 'information_schema'))";
 
-	/*const char *query74_1 =
-		"select tablename from pg_tables where schemaname <> 'information_schema' and tablename = lower('&1')";
-
-	const char *query74_2 =
-		"select viewname from pg_views where schemaname <> 'information_schema' and viewname = lower('&1')";*/
+	const char *query_schema =
+		"select pg_class.relname,pg_namespace.nspname from pg_class,pg_namespace where (pg_class.relkind = 'r' or pg_class.relkind = 'v') "
+		"and (pg_namespace.oid = pg_class.relnamespace) "
+		"and (pg_class.relname = '&1') "
+		"and (pg_namespace.nspname = '&2') "
+		"and (pg_namespace.oid not in (select oid from pg_namespace where nspname = 'information_schema'))";
 
 	PGresult *res;
 	int exist;
-
-	//if (1) //version < 70400)
-	//{
-		if (do_query(db, "Unable to check table: &1", &res, query73, 1, table))
+	char *schema;
+	
+	if (get_table_schema(&table, &schema))
+	{
+		if (do_query(db, "Unable to check table: &1", &res, query, 1, table))
 			return FALSE;
-	/*}
+	}
 	else
 	{
-		if (do_query(conn, "Unable to check table: &1", &res, query74_1, 1, table))
-			return TRUE;
-
-		if (PQntuples(res) == 0)
-		{
-			PQclear(res);
-			if (do_query(conn, "Unable to check table: &1", &res, query74_2, 1, table))
-				return TRUE;
-		}
-	}*/
+		if (do_query(db, "Unable to check table: &1", &res, query_schema, 2, table, schema))
+			return FALSE;
+	}
 
 	exist = PQntuples(res) == 1;
 
@@ -1338,12 +1433,14 @@ static int table_exist(DB_DATABASE *db, const char *table)
 static int table_list_73(DB_DATABASE *db, char ***tables)
 {
 	const char *query =
-		"select relname from pg_class where (relkind = 'r' or relkind = 'v') "
-		"and (relnamespace not in (select oid from pg_namespace where nspname = 'information_schema'))";
+		"select pg_class.relname,pg_namespace.nspname from pg_class,pg_namespace where (pg_class.relkind = 'r' or pg_class.relkind = 'v') "
+		"and (pg_namespace.oid = pg_class.relnamespace) "
+		"and (pg_namespace.oid not in (select oid from pg_namespace where nspname = 'information_schema'))";
 
 	PGresult *res;
 	int i;
 	int count;
+	char *schema;
 
 	if (do_query(db, "Unable to get tables: &1", &res, query, 0))
 		return -1;
@@ -1353,7 +1450,17 @@ static int table_list_73(DB_DATABASE *db, char ***tables)
 		GB.NewArray(tables, sizeof(char *), PQntuples(res));
 
 		for (i = 0; i < PQntuples(res); i++)
-			GB.NewString(&((*tables)[i]), PQgetvalue(res, i, 0), 0);
+		{
+			schema = PQgetvalue(res, i, 1);
+			if (!strcmp(schema, "public") || !strcmp(schema, "pg_catalog"))
+				GB.NewString(&((*tables)[i]), PQgetvalue(res, i, 0), 0);
+			else
+			{
+				GB.NewString(&((*tables)[i]), schema, 0);
+				GB.AddString(&((*tables)[i]), ".", 1);
+				GB.AddString(&((*tables)[i]), PQgetvalue(res, i, 0), 0);
+			}
+		}
 	}
 
 	count = PQntuples(res);
@@ -1433,8 +1540,10 @@ static int table_list(DB_DATABASE *db, char ***tables)
 static int table_primary_key(DB_DATABASE *db, const char *table, char ***primary)
 {
 	const char *query;
+	const char *query_schema;
 	PGresult *res;
 	int i;
+	char *schema;
 
 	if (db->version < 80200)
 	{
@@ -1442,6 +1551,14 @@ static int table_primary_key(DB_DATABASE *db, const char *table, char ***primary
 			"from pg_attribute pg_att1, pg_attribute pg_att2, pg_class pg_cl, pg_index pg_ind "
 				"where pg_cl.relname = '&1_pkey' AND pg_cl.oid = pg_ind.indexrelid "
 					"and (pg_cl.relnamespace not in (select oid from pg_namespace where nspname = 'information_schema')) "
+					"and pg_att2.attrelid = pg_ind.indexrelid "
+					"and pg_att1.attrelid = pg_ind.indrelid "
+					"and pg_att1.attnum = pg_ind.indkey[pg_att2.attnum-1] "
+				"order by pg_att2.attnum";
+		query_schema = "select pg_att1.attname, pg_att1.atttypid::int, pg_cl.relname "
+			"from pg_attribute pg_att1, pg_attribute pg_att2, pg_class pg_cl, pg_index pg_ind "
+				"where pg_cl.relname = '&1_pkey' AND pg_cl.oid = pg_ind.indexrelid "
+					"and (pg_cl.relnamespace in (select oid from pg_namespace where nspname = '&2')) "
 					"and pg_att2.attrelid = pg_ind.indexrelid "
 					"and pg_att1.attrelid = pg_ind.indrelid "
 					"and pg_att1.attnum = pg_ind.indkey[pg_att2.attnum-1] "
@@ -1458,10 +1575,27 @@ static int table_primary_key(DB_DATABASE *db, const char *table, char ***primary
 					"and pg_att1.attrelid = pg_ind.indrelid "
 					"and pg_att1.attnum = pg_ind.indkey[pg_att2.attnum-1] "
 				"order by pg_att2.attnum";
+		query_schema = "select pg_att1.attname, pg_att1.atttypid::int, pg_cl.relname "
+			"from pg_attribute pg_att1, pg_attribute pg_att2, pg_class pg_cl, pg_index pg_ind, pg_class pg_table "
+				"where pg_table.relname = '&1' AND pg_table.oid = pg_att1.attrelid AND pg_cl.oid = pg_ind.indexrelid "
+					"and (pg_cl.relnamespace in (select oid from pg_namespace where nspname = '&2')) "
+					"and pg_ind.indisprimary "
+					"and pg_att2.attrelid = pg_ind.indexrelid "
+					"and pg_att1.attrelid = pg_ind.indrelid "
+					"and pg_att1.attnum = pg_ind.indkey[pg_att2.attnum-1] "
+				"order by pg_att2.attnum";
 	}
 
-	if (do_query(db, "Unable to get primary key: &1", &res, query, 1, table))
-		return TRUE;
+	if (get_table_schema(&table, &schema))
+	{
+		if (do_query(db, "Unable to get primary key: &1", &res, query, 1, table))
+			return TRUE;
+	}
+	else
+	{
+		if (do_query(db, "Unable to get primary key: &1", &res, query_schema, 2, table, schema))
+			return TRUE;
+	}
 
 	GB.NewArray(primary, sizeof(char *), PQntuples(res));
 
@@ -1493,44 +1627,42 @@ static int table_is_system(DB_DATABASE *db, const char *table)
 	const char *query =
 		"select 1 from pg_class where (relkind = 'r' or relkind = 'v') "
 		"and (relname = '&1') "
-		"and (relnamespace not in (select oid from pg_namespace where nspname <> 'public'))";
+		"and (relnamespace in (select oid from pg_namespace where nspname = 'pg_catalog'))";
 
 	//const char *query1 =
 	//  "select 1 from pg_tables where tablename = lower('&1') and schemaname = 'public'";
 
 	const char *query2 =
-		"select 1 from pg_views where viewname = '&1' and schemaname = 'public'";
+		"select 1 from pg_views where viewname = '&1' and schemaname = 'pg_catalog'";
 
 	PGresult *res;
 	int exist;
+	char *schema;
 
-	/* check version */
-	/*if (version < 70400){ // version 7.3.?
-		if (table[0] == 'p' && table[1] == 'g' && table[2] == '_')
-				return TRUE;
-		else
-				return FALSE;
-	}*/
+	get_table_schema(&table, &schema);
+	
+	if (schema)
+		return !strcmp(schema, "pg_catalog");
 
 	if (do_query(db, "Unable to check table: &1", &res, query, 1, table))
-		return FALSE;
+		return TRUE;
 
 	exist = PQntuples(res) == 1;
 	PQclear(res);
 
 	if (exist)
-		return FALSE;
+		return TRUE;
 
 	if (do_query(db, "Unable to check table: &1", &res, query2, 1, table))
-		return FALSE;
+		return TRUE;
 
 	exist = PQntuples(res) == 1;
 	PQclear(res);
 
 	if (exist)
-		return FALSE;
+		return TRUE;
 
-	return TRUE;
+	return FALSE;
 }
 
 
@@ -1552,7 +1684,7 @@ static int table_delete(DB_DATABASE *db, const char *table)
 {
 	return
 		do_query(db, "Unable to delete table: &1", NULL,
-			"drop table \"&1\"", 1, table);
+			"drop table &1", 1, get_quoted_table(table));
 }
 
 
@@ -1581,9 +1713,9 @@ static int table_create(DB_DATABASE *db, const char *table, DB_FIELD *fields, ch
 
 	DB.Query.Init();
 
-	DB.Query.Add("CREATE TABLE \"");
-	DB.Query.Add(table);
-	DB.Query.Add("\" ( ");
+	DB.Query.Add("CREATE TABLE ");
+	DB.Query.Add(get_quoted_table(table));
+	DB.Query.Add(" ( ");
 
 	comma = FALSE;
 	for (fp = fields; fp; fp = fp->next)
@@ -1688,11 +1820,27 @@ static int field_exist(DB_DATABASE *db, const char *table, const char *field)
 		"and pg_attribute.attnum > 0 "
 		"and pg_attribute.attrelid = pg_class.oid ";
 
+	const char *query_schema = "select pg_attribute.attname from pg_class, pg_attribute "
+		"where pg_class.relname = '&1' "
+		"and (pg_class.relnamespace in (select oid from pg_namespace where nspname = '&3')) "
+		"and pg_attribute.attname = '&2' "
+		"and pg_attribute.attnum > 0 "
+		"and pg_attribute.attrelid = pg_class.oid ";
+
 	PGresult *res;
 	int exist;
+	char *schema;
 
-	if (do_query(db, "Unable to check field: &1", &res, query, 2, table, field))
-		return FALSE;
+	if (get_table_schema(&table, &schema))
+	{
+		if (do_query(db, "Unable to check field: &1", &res, query, 2, table, field))
+			return FALSE;
+	}
+	else
+	{
+		if (do_query(db, "Unable to check field: &1", &res, query_schema, 3, table, field, schema))
+			return FALSE;
+	}
 
 	exist = PQntuples(res) == 1;
 
@@ -1727,12 +1875,27 @@ static int field_list(DB_DATABASE *db, const char *table, char ***fields)
 		"and pg_attribute.attnum > 0 "
 		"and pg_attribute.attrelid = pg_class.oid";
 
+	const char *query_schema = "select pg_attribute.attname from pg_class, pg_attribute "
+		"where pg_class.relname = '&1' "
+		"and (pg_class.relnamespace in (select oid from pg_namespace where nspname = '&2')) "
+		"and pg_attribute.attnum > 0 "
+		"and pg_attribute.attrelid = pg_class.oid";
+
 	PGresult *res;
 	int i;
 	int count;
+	char *schema;
 
-	if (do_query(db, "Unable to get fields: &1", &res, query, 1, table))
-		return -1;
+	if (get_table_schema(&table, &schema))
+	{
+		if (do_query(db, "Unable to get fields: &1", &res, query, 1, table))
+			return -1;
+	}
+	else
+	{
+		if (do_query(db, "Unable to get fields: &1", &res, query_schema, 2, table, schema))
+			return -1;
+	}
 
 	if (fields)
 	{
@@ -1778,17 +1941,38 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 		"and pg_attribute.attnum > 0 "
 		"and pg_attribute.attrelid = pg_class.oid";
 
+	const char *query_schema =
+		"select pg_attribute.attname, pg_attribute.atttypid::int, "
+		"pg_attribute.atttypmod, pg_attribute.attnotnull, pg_attrdef.adsrc "
+		"from pg_class, pg_attribute "
+		"left join pg_attrdef on (pg_attrdef.adrelid = pg_attribute.attrelid and pg_attrdef.adnum = pg_attribute.attnum) "
+		"where pg_class.relname = '&1' "
+		"and (pg_class.relnamespace in (select oid from pg_namespace where nspname = '&3')) "
+		"and pg_attribute.attname = '&2' "
+		"and pg_attribute.attnum > 0 "
+		"and pg_attribute.attrelid = pg_class.oid";
+
 	PGresult *res;
 	Oid type;
 	GB_VARIANT def;
 	char *val;
-
-	if (do_query(db, "Unable to get field info: &1", &res, query, 2, table, field))
-		return TRUE;
+	char *schema;
+	const char *fulltable = table;
+	
+	if (get_table_schema(&table, &schema))
+	{
+		if (do_query(db, "Unable to get field info: &1", &res, query, 2, table, field))
+			return TRUE;
+	}
+	else
+	{
+		if (do_query(db, "Unable to get field info: &1", &res, query_schema, 3, table, field, schema))
+			return TRUE;
+	}
 
 	if (PQntuples(res) != 1)
 	{
-		GB.Error("Unable to find field &1.&2", table, field);
+		GB.Error("Unable to find field &1.&2", fulltable, field);
 		return TRUE;
 	}
 
@@ -1875,15 +2059,32 @@ static int index_exist(DB_DATABASE *db, const char *table, const char *index)
 		"and pg_index.indexrelid = pg_class.oid "
 		"and pg_class.relname = '&2'";
 
+	const char *query_schema =
+		"select pg_class.relname from pg_class, pg_index, pg_class pg_class2 "
+		"where pg_class2.relname = '&1' "
+		"and (pg_class2.relnamespace in (select oid from pg_namespace where nspname = '&3')) "
+		"and pg_index.indrelid = pg_class2.oid "
+		"and pg_index.indexrelid = pg_class.oid "
+		"and pg_class.relname = '&2'";
+
 	/*const char *query = "select relname from pg_class, pg_index "
 		"where pg_class.relname = '&1' "
 		"and pg_index.indexrelid = pg_class.oid ";*/
 
 	PGresult *res;
 	int exist;
-
-	if (do_query(db, "Unable to check index: &1", &res, query, 2, table, index))
-		return FALSE;
+	char *schema;
+	
+	if (get_table_schema(&table, &schema))
+	{
+		if (do_query(db, "Unable to check index: &1", &res, query, 2, table, index))
+			return FALSE;
+	}
+	else
+	{
+		if (do_query(db, "Unable to check index: &1", &res, query_schema, 3, table, index, schema))
+			return FALSE;
+	}
 
 	exist = PQntuples(res) == 1;
 
@@ -1918,12 +2119,27 @@ static int index_list(DB_DATABASE *db, const char *table, char ***indexes)
 		"and pg_index.indrelid = pg_class2.oid "
 		"and pg_index.indexrelid = pg_class.oid ";
 
+	const char *query_schema = "select pg_class.relname from pg_class, pg_index, pg_class pg_class2 "
+		"where pg_class2.relname = '&1' "
+		"and (pg_class2.relnamespace in (select oid from pg_namespace where nspname = '&2')) "
+		"and pg_index.indrelid = pg_class2.oid "
+		"and pg_index.indexrelid = pg_class.oid ";
+
 	PGresult *res;
 	int i;
 	int count;
-
-	if (do_query(db, "Unable to get indexes: &1", &res, query, 1, table))
-		return TRUE;
+	char *schema;
+	
+	if (get_table_schema(&table, &schema))
+	{
+		if (do_query(db, "Unable to get indexes: &1", &res, query, 1, table))
+			return TRUE;
+	}
+	else
+	{
+		if (do_query(db, "Unable to get indexes: &1", &res, query_schema, 2, table, schema))
+			return TRUE;
+	}
 
 	if (indexes)
 	{
@@ -1966,6 +2182,14 @@ static int index_info(DB_DATABASE *db, const char *table, const char *index, DB_
 		"and pg_index.indexrelid = pg_class.oid "
 		"and pg_class.relname = '&2'";
 
+	const char *query_schema =
+		"select indisunique, indisprimary, indexrelid from pg_class, pg_index, pg_class pg_class2 "
+		"where pg_class2.relname = '&1' "
+		"and (pg_class2.relnamespace in (select oid from pg_namespace where nspname = '&3')) "
+		"and pg_index.indrelid = pg_class2.oid "
+		"and pg_index.indexrelid = pg_class.oid "
+		"and pg_class.relname = '&2'";
+
 	const char *query_field =
 		"select pg_att1.attname "
 			"from pg_attribute pg_att1, pg_attribute pg_att2, pg_index pg_ind "
@@ -1978,13 +2202,23 @@ static int index_info(DB_DATABASE *db, const char *table, const char *index, DB_
 	PGresult *res;
 	char indexrelid[16];
 	int i;
+	char *schema;
+	const char *fulltable = table;
 
-	if (do_query(db, "Unable to get index info: &1", &res, query, 2, table, index))
-		return TRUE;
+	if (get_table_schema(&table, &schema))
+	{
+		if (do_query(db, "Unable to get index info: &1", &res, query, 2, table, index))
+			return TRUE;
+	}
+	else
+	{
+		if (do_query(db, "Unable to get index info: &1", &res, query_schema, 3, table, index, schema))
+			return TRUE;
+	}
 
 	if (PQntuples(res) != 1)
 	{
-		GB.Error("Unable to find index &1.&2", table, index);
+		GB.Error("Unable to find index &1.&2", fulltable, index);
 		return TRUE;
 	}
 
@@ -2035,7 +2269,7 @@ static int index_delete(DB_DATABASE *db, const char *table, const char *index)
 {
 	return
 		do_query(db, "Unable to delete index: &1", NULL,
-			"drop index \"&1\"", 1, index);
+			"drop index &1", 1, get_quoted_table(index));
 }
 
 
@@ -2065,7 +2299,7 @@ static int index_create(DB_DATABASE *db, const char *table, const char *index, D
 	DB.Query.Add("INDEX \"");
 	DB.Query.Add(index);
 	DB.Query.Add("\" ON ");
-	DB.Query.Add(table);
+	DB.Query.Add(get_quoted_table(table));
 	DB.Query.Add(" ( ");
 	DB.Query.Add(info->fields);
 	DB.Query.Add(" )");

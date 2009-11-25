@@ -36,6 +36,7 @@ Private $hTable As DataTable
 Private $iIndex As Integer
 Private $bNotVoid As Boolean
 Private $bCheckModified As Boolean
+Private $sError As String
 
 Private Const ACTION_SAVE As Integer = 0
 Private Const ACTION_CONTINUE As Integer = 1
@@ -307,7 +308,10 @@ Private Function Load() As Boolean
   If _Check() Then Goto VOID
   
   Try $hTable = New DataTable($hConn, $sTable, GetFilter())
-  If Error Then Goto VOID
+  If Error Then 
+    $sError = Error.Text
+    Goto VOID
+  Endif
 
   $iIndex = -1
   
@@ -537,8 +541,10 @@ End
 
 Private Sub Table_Write(sTable As String)
   
+  $sError = ""
   $sTable = sTable
   Load
+  If $sError Then Error.Raise($sError)
   
 End
 

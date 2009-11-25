@@ -386,7 +386,19 @@ End
 
 Public Sub btnRunQuery_Click()
 
-  Try datRequest.Table = edtRequest.Text
+  Dim sReq As String = Trim(edtRequest.Text)
+  
+  If Not sReq Then Return
+  
+  If sReq Like "SELECT *" Then
+    Try datRequest.Table = edtRequest.Text
+  Else
+    Try $hConn.Exec(sReq)
+    If Not Error Then 
+      Balloon.Info(("OK"), btnRunQuery)
+      edtRequest.Reset
+    Endif
+  Endif
   If Error Then Balloon.Error(("Unable to run query.") & "\n\n" & Error.Text, btnRunQuery)
 
 End
@@ -1413,5 +1425,11 @@ End
 Public Sub tbvIndex_Change()
 
   UpdateIndexToolbar
+
+End
+
+Public Sub edtRequest_GotFocus()
+
+  Project.SetCurrentPopup(Null)
 
 End

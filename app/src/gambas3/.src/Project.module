@@ -163,7 +163,6 @@ Public Sub Main()
   Dim iTest As Integer
   
   Application.Theme = Settings["/Theme"]
-  'DB.Debug = True
   
   OUTPUT_FILE = Temp$()
   'CLASSES_FILE = Temp$()
@@ -4621,7 +4620,9 @@ End
 
 Public Sub SetCurrentPopup(hMenu As Menu)
   
-  If hMenu = $hCurrentPopup And If hMenu.Enabled Then Return
+  If hMenu = $hCurrentPopup Then
+    If Not hMenu Or If hMenu.Enabled Then Return
+  Endif
   
   'Debug hMenu.Name
   

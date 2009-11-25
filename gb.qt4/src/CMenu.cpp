@@ -605,6 +605,18 @@ BEGIN_PROPERTY(CMENU_window)
 
 END_PROPERTY
 
+/*BEGIN_PROPERTY(CMENU_tear_off)
+
+	if (!THIS->menu)
+		return;
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(THIS->menu->isTearOffEnabled());
+	else
+		THIS->menu->setTearOffEnabled(VPROP(GB_BOOLEAN));
+
+END_PROPERTY*/
+
 
 GB_DESC CMenuChildrenDesc[] =
 {
@@ -647,6 +659,7 @@ GB_DESC CMenuDesc[] =
   GB_PROPERTY("Visible", "b", CMENU_visible),
   GB_PROPERTY("Toggle", "b", CMENU_toggle),
   GB_PROPERTY("Value", "b", CMENU_value),
+  //GB_PROPERTY("TearOff", "b", CMENU_tear_off),
   GB_PROPERTY("Action", "s", CCONTROL_action),
   GB_PROPERTY_READ("Window", "Window", CMENU_window),
 
