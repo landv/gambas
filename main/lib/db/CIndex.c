@@ -197,7 +197,7 @@ BEGIN_METHOD(CINDEX_add, GB_STRING name; GB_STRING fields; GB_BOOLEAN unique)
   char *name = GB.ToZeroString(ARG(name));
   DB_INDEX info;
 
-  if (DB_CheckName(name, "index"))
+  if (DB_CheckNameWith(name, "index", "."))
     return;
 
   if (check_index(table, name, FALSE))
