@@ -391,7 +391,7 @@ BEGIN_METHOD(CTABLE_add, GB_STRING name; GB_STRING type)
   CTABLE *table;
   char *name = GB.ToZeroString(ARG(name));
 
-  if (DB_CheckName(name, "table"))
+  if (DB_CheckNameWith(name, "table", "."))
     return;
 
   table = make_table(conn, name, FALSE);
