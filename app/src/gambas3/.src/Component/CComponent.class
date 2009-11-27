@@ -359,6 +359,7 @@ Public Sub CalcSortKey()
 
       For Each sComp In Require
         hComp = All[sComp]
+        If Not hComp Then Continue
         If hComp <> Me Then hComp.CalcSortKey
       Next
   
