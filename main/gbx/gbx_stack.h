@@ -26,6 +26,7 @@
 #define __GBX_STACK_H
 
 #include "gbx_value.h"
+#include "gbx_object.h"
 #include "gb_pcode.h"
 
 
@@ -35,7 +36,7 @@ typedef
     VALUE *bp;        /* local variables */
     VALUE *pp;        /* local parameters */
     CLASS *cp;        /* current class */
-    char *op;         /* current object */
+    OBJECT *op;       /* current object */
     VALUE *ep;        /* error pointer */
     FUNCTION *fp;     /* current function */
     PCODE *pc;        /* instruction */

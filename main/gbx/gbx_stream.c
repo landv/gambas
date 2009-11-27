@@ -449,12 +449,20 @@ void STREAM_input(STREAM *stream, char **addr)
 
 void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
 {
-  unsigned char data[4];
+	union
+	{
+		unsigned char _byte;
+		short _short;
+		int _int;
+		float _single;
+		unsigned char _data[4];
+	}
+	buffer;
 
 	if (type == T_VARIANT)
 	{
-    STREAM_read(stream, data, 1);
-		type = *data;		
+    STREAM_read(stream, &buffer._byte, 1);
+		type = buffer._byte;		
 	}
 	
 	value->type = type;
@@ -463,22 +471,22 @@ void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
   {
     case T_BOOLEAN:
 
-      STREAM_read(stream, data, 1);
-      value->_integer.value = (*data != 0) ? (-1) : 0;
+      STREAM_read(stream, &buffer._byte, 1);
+      value->_integer.value = (buffer._byte != 0) ? (-1) : 0;
       break;
 
     case T_BYTE:
 
-      STREAM_read(stream, data, 1);
-      value->_integer.value = *data;
+      STREAM_read(stream, &buffer._byte, 1);
+      value->_integer.value = buffer._byte;
       break;
 
     case T_SHORT:
 
-      STREAM_read(stream, data, sizeof(short));
+      STREAM_read(stream, &buffer._short, sizeof(short));
       if (stream->common.swap)
-        SWAP_short((short *)data);
-      value->_integer.value = (int)*((short *)data);
+        SWAP_short(&buffer._short);
+      value->_integer.value = buffer._short;
       break;
 
     case T_INTEGER:
@@ -497,10 +505,10 @@ void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
 
     case T_SINGLE:
 
-      STREAM_read(stream, data, sizeof(float));
+      STREAM_read(stream, &buffer._single, sizeof(float));
       if (stream->common.swap)
-        SWAP_int((int *)data);
-      value->_float.value = (double)*((float *)data);
+        SWAP_float(&buffer._single);
+      value->_float.value = buffer._single;
       break;
 
     case T_FLOAT:
@@ -538,33 +546,33 @@ void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
         }
         else
         {
-          STREAM_read(stream, data, 1);
+          STREAM_read(stream, buffer._data, 1);
 
-          switch (*data >> 6)
+          switch (buffer._data[0] >> 6)
           {
             case 0:
             case 1:
-              len = *data;
+              len = buffer._data[0];
               break;
 
             case 2:
-              STREAM_read(stream, &data[1], 1);
-              *data &= 0x3F;
+              STREAM_read(stream, &buffer._data[1], 1);
+              buffer._data[0] &= 0x3F;
 
               if (!EXEC_big_endian)
-                SWAP_short((short *)data);
+                SWAP_short((short *)buffer._data);
 
-              len = *((short *)data);
+              len = buffer._short;
               break;
 
             case 3:
-              STREAM_read(stream, &data[1], 3);
-              *data &= 0x3F;
+              STREAM_read(stream, &buffer._data[1], 3);
+              buffer._data[0] &= 0x3F;
 
               if (!EXEC_big_endian)
-                SWAP_int((int *)data);
+                SWAP_int((int *)buffer._data);
 
-              len = *((int *)data);
+              len = buffer._int;
               break;
           }
         }
@@ -635,15 +643,26 @@ void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
 
 void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
 {
-  unsigned char data[8];
+	union
+	{
+		unsigned char _byte;
+		short _short;
+		int _int;
+		int64_t _long;
+		float _single;
+		double _float;
+		unsigned char _data[8];
+	}
+	buffer;
+	
   bool write_zero;
 
 	if (type == T_VARIANT)
 	{
 		VARIANT_undo(value);
 		type = value->type;
-		*data = (unsigned char)type;
-		STREAM_write(stream, data, 1);
+		buffer._byte = (unsigned char)type;
+		STREAM_write(stream, &buffer._byte, 1);
 	}
 
   //value->type = type;
@@ -652,67 +671,67 @@ void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
   {
     case T_BOOLEAN:
 
-      *data = value->_integer.value ? 0xFF : 0;
-      STREAM_write(stream, data, 1);
+      buffer._byte = value->_integer.value ? 0xFF : 0;
+      STREAM_write(stream, &buffer._byte, 1);
       break;
 
     case T_BYTE:
 
-      *data = (unsigned char)value->_integer.value;
-      STREAM_write(stream, data, 1);
+      buffer._byte = (unsigned char)value->_integer.value;
+      STREAM_write(stream, &buffer._byte, 1);
       break;
 
     case T_SHORT:
 
-      *((short *)data) = (short)value->_integer.value;
+      buffer._short = (short)value->_integer.value;
       if (stream->common.swap)
-        SWAP_short((short *)data);
-      STREAM_write(stream, data, sizeof(short));
+        SWAP_short((short *)&buffer._short);
+      STREAM_write(stream, &buffer._short, sizeof(short));
       break;
 
     case T_INTEGER:
 
-      *((int *)data) = value->_integer.value;
+      buffer._int = value->_integer.value;
       if (stream->common.swap)
-        SWAP_int((int *)data);
-      STREAM_write(stream, data, sizeof(int));
+        SWAP_int(&buffer._int);
+      STREAM_write(stream, &buffer._int, sizeof(int));
       break;
 
     case T_LONG:
 
-      *((int64_t *)data) = value->_long.value;
+      buffer._long = value->_long.value;
       if (stream->common.swap)
-        SWAP_double((double *)data);
-      STREAM_write(stream, data, sizeof(int64_t));
+        SWAP_int64(&buffer._long);
+      STREAM_write(stream, &buffer._long, sizeof(int64_t));
       break;
 
     case T_SINGLE:
 
-      *((float *)data) = (float)value->_float.value;
+      buffer._single = (float)value->_float.value;
       if (stream->common.swap)
-        SWAP_int((int *)data);
-      STREAM_write(stream, data, sizeof(float));
+        SWAP_float(&buffer._single);
+      STREAM_write(stream, &buffer._single, sizeof(float));
       break;
 
     case T_FLOAT:
 
-      *((double *)data) = value->_float.value;
+      buffer._float = value->_float.value;
       if (stream->common.swap)
-        SWAP_double((double *)data);
-      STREAM_write(stream, data, sizeof(double));
+        SWAP_double(&buffer._float);
+      STREAM_write(stream, &buffer._float, sizeof(double));
       break;
 
     case T_DATE:
 
-      *((int *)data) = value->_date.date;
+      buffer._int = value->_date.date;
       if (stream->common.swap)
-        SWAP_int((int *)data);
-      STREAM_write(stream, data, sizeof(int));
+        SWAP_int(&buffer._int);
+      STREAM_write(stream, &buffer._int, sizeof(int));
 
-      *((int *)data) = value->_date.time;
+      buffer._int = value->_date.time;
       if (stream->common.swap)
-        SWAP_int((int *)data);
-      STREAM_write(stream, data, sizeof(int));
+        SWAP_int(&buffer._int);
+      STREAM_write(stream, &buffer._int, sizeof(int));
 
       break;
 
@@ -729,45 +748,45 @@ void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
         {
           if (len < 0x80)
           {
-            *data = (unsigned char)len;
-            STREAM_write(stream, data, 1);
+            buffer._byte = (unsigned char)len;
+            STREAM_write(stream, &buffer._byte, 1);
           }
           else if (len < 0x4000)
           {
-            *((short *)data) = (short)len | 0x8000;
+            buffer._short = (short)len | 0x8000;
             if (!EXEC_big_endian)
-              SWAP_short((short *)data);
-            STREAM_write(stream, data, 2);
+              SWAP_short(&buffer._short);
+            STREAM_write(stream, &buffer._short, sizeof(short));
           }
           else
           {
-            *((int *)data) = len | 0xC0000000;
+            buffer._int = len | 0xC0000000;
             if (!EXEC_big_endian)
-              SWAP_int((int *)data);
-            STREAM_write(stream, data, 4);
+              SWAP_int(&buffer._int);
+            STREAM_write(stream, &buffer._int, sizeof(int));
           }
         }
       }
 
       STREAM_write(stream, value->_string.addr + value->_string.start, Min(len, value->_string.len));
 
-      *data = 0;
+      buffer._byte = 0;
 
       while (len > value->_string.len)
       {
-        STREAM_write(stream, data, 1);
+        STREAM_write(stream, &buffer._byte, 1);
         len--;
       }
 
       if (write_zero)
-        STREAM_write(stream, data, 1);
+        STREAM_write(stream, &buffer._byte, 1);
 
       break;
       
 		case T_NULL:
 		
-			*data = 0;
-			STREAM_write(stream, data, 1);
+      buffer._byte = 0;
+			STREAM_write(stream, &buffer._byte, 1);
 			break;
 
 		/*case T_OBJECT:

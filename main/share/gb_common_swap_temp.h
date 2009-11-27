@@ -61,6 +61,19 @@ PUBLIC void SWAP_short(short *val)
 }
 
 
+PUBLIC void SWAP_float(float *val)
+{
+  char *p = (char *)val;
+  char t1, t2;
+
+	t1 = p[0];
+	t2 = p[1];
+	p[0] = p[3];
+	p[1] = p[2];
+	p[2] = t2;
+	p[3] = t1;
+}
+
 PUBLIC void SWAP_double(double *val)
 {
   char *p = (char *)val;

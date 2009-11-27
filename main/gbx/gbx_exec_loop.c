@@ -1469,7 +1469,7 @@ _PUSH_DYNAMIC:
     if (OP == NULL)
       THROW(E_ILLEGAL);
 
-    addr = &OP[var->pos];
+    addr = (char *)OP + var->pos;
     goto __READ;
 
 _PUSH_STATIC:
@@ -1493,7 +1493,7 @@ _POP_DYNAMIC:
     if (OP == NULL)
       THROW(E_ILLEGAL);
 
-    addr = &OP[var->pos];
+    addr = (char *)OP + var->pos;
     goto __WRITE;
 
 _POP_STATIC:
