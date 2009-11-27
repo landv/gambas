@@ -167,7 +167,10 @@ PUBLIC SUB CalcSortKey()
 
       FOR EACH sComp IN Require
         hComp = All[sComp]
-        IF NOT hComp THEN ERROR "gbs2: warning: cannot find component "; sComp; " required by "; ME.Name
+        IF NOT hComp THEN 
+          ERROR "gbs2: warning: cannot find component "; sComp; " required by "; ME.Name
+          CONTINUE 
+        ENDIF 
         IF hComp <> ME THEN hComp.CalcSortKey
       NEXT
   

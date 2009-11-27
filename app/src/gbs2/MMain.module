@@ -360,6 +360,8 @@ PUBLIC SUB GetRequiredComp(sComp AS String)
   DIM hComp AS CComponent  
   DIM s AS String
   
+  IF NOT CComponent.All.Exist(sComp) THEN RETURN
+  
   FOR EACH s IN CComponent.All[sComp].Require
     IF NOT $cComponents.Exist(s) THEN      
       $cComponents.Add(s, CComponent.All[s].Sortkey)
@@ -376,6 +378,8 @@ PRIVATE SUB GetNeededComp(sComp AS String)
   DIM s, t AS String
   DIM bExist AS Boolean
   
+  IF NOT CComponent.All.Exist(sComp) THEN RETURN
+
   FOR EACH s IN CComponent.All[sComp].Need
     FOR EACH t IN CComponent.WhoImplement[s]
       IF $cComponents.Exist(t) THEN 
