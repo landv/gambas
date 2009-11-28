@@ -63,7 +63,7 @@ Public Sub Form_Open()
   cmbTable.Text = File.BaseName($sPath)
 
   hFile = Open $sPath
-  sData = Read #hFile, 65536
+  sData = Read #hFile, -65536
   If Not Eof(hFile) Then sData &= "..."
   Close #hFile
   

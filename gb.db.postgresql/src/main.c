@@ -648,6 +648,7 @@ static int open_database(DB_DESC *desc, DB_DATABASE *db)
 
 	db->flags.no_table_type = TRUE;
 	db->flags.no_nest = TRUE;
+	db->flags.schema = TRUE;
 
 	/* encoding */
 

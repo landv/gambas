@@ -37,6 +37,7 @@
 #include "gbx_string.h"
 #include "gbx_stack.h"
 #include "gbx_exec.h"
+#include "gbx_c_array.h"
 
 #include "gbx_c_error.h"
 
@@ -47,15 +48,41 @@ BEGIN_PROPERTY(CERROR_code)
 
 END_PROPERTY
 
+static char **_arg;
+
+static void get_subst(int np, char **str, int *len)
+{
+	*str = _arg[np];
+	*len = STRING_length(_arg[np]);
+}
+
 
 BEGIN_PROPERTY(CERROR_text)
 
 	if (ERROR_last.code)
 	{
-		if (ERROR_last.free)
-  		GB_ReturnString(ERROR_last.msg);
-  	else
-  		GB_ReturnConstZeroString(ERROR_last.msg);
+		if (EXEC_debug)
+		{
+			GB_ARRAY array;
+			char *result;
+			
+			GB_ArrayNew(&array, T_STRING, 0);
+			CARRAY_split(array, ERROR_last.msg, strlen(ERROR_last.msg), "|", "", FALSE, FALSE);
+			_arg = (char **)GB_ArrayGet(array, 0);
+			
+			result = STRING_subst(_arg[0], STRING_length(_arg[0]), get_subst);
+			
+			OBJECT_UNREF(array, "CERROR_text");
+			
+			GB_ReturnNewZeroString(result);
+		}
+		else
+		{
+			if (ERROR_last.free)
+				GB_ReturnString(ERROR_last.msg);
+			else
+				GB_ReturnConstZeroString(ERROR_last.msg);
+		}
   }
 	else
 		GB_ReturnNull();

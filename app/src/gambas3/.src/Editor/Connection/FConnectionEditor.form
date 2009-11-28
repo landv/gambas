@@ -215,7 +215,7 @@
             MoveScaled(10,9,61,24)
             Visible = False
             { tlbData2 ToolBar
-              MoveScaled(0,0,41,4)
+              MoveScaled(0,0,51,4)
               Text = ("")
               Separator = True
               { btnRunQuery ToolButton
@@ -264,6 +264,11 @@
                 ToolTip = ("Redo")
                 Text = ("")
                 Picture = Picture["icon:/small/redo"]
+              }
+              { ToolButton1 ToolButton
+                MoveScaled(38,0,9,4)
+                Visible = False
+                Text = ("Test")
               }
             }
             { edtRequest Editor

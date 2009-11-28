@@ -571,17 +571,41 @@ BEGIN_METHOD(CCONNECTION_edit, GB_STRING table; GB_STRING query; GB_VALUE param[
 END_METHOD
 
 
-BEGIN_METHOD(CCONNECTION_quote, GB_STRING name)
+BEGIN_METHOD(CCONNECTION_quote, GB_STRING name; GB_BOOLEAN is_table)
+
+	char *name = STRING(name);
+	int len = LENGTH(name);
 
   CHECK_DB();
   CHECK_OPEN();
 
-  q_init();
-  q_add(THIS->driver->GetQuote());
-  q_add_length(STRING(name), LENGTH(name));
-  q_add(THIS->driver->GetQuote());
+	if (VARGOPT(is_table, FALSE) && THIS->db.flags.schema)
+		GB.ReturnNewZeroString(DB_GetQuotedTable(THIS->driver, &THIS->db, GB.ToZeroString(ARG(name))));
+	else
+	{
+		q_init();
+		q_add(THIS->driver->GetQuote());
+		q_add_length(name, len);
+		q_add(THIS->driver->GetQuote());
+		GB.ReturnString(q_get());
+	}
 
-  /* q_get() returns a gambas string */
+END_METHOD
+
+
+BEGIN_METHOD(CCONNECTION_format_blob, GB_STRING data)
+
+	DB_BLOB blob;
+
+  CHECK_DB();
+  CHECK_OPEN();
+
+	blob.data = STRING(data);
+	blob.length = LENGTH(data);
+	
+  q_init();
+	DB_CurrentDatabase = &THIS->db;
+	(*THIS->driver->FormatBlob)(&blob, q_add_length);
   GB.ReturnString(q_get());
 
 END_METHOD
@@ -716,7 +740,8 @@ GB_DESC CConnectionDesc[] =
   GB_METHOD("Commit", NULL, CCONNECTION_commit, NULL),
   GB_METHOD("Rollback", NULL, CCONNECTION_rollback, NULL),
 
-  GB_METHOD("Quote", "s", CCONNECTION_quote, "(Name)s"),
+  GB_METHOD("Quote", "s", CCONNECTION_quote, "(Name)s[(Table)b]"),
+  GB_METHOD("FormatBlob", "s", CCONNECTION_format_blob, "(Data)s"),
 
   GB_PROPERTY("Tables", ".ConnectionTables", CCONNECTION_tables),
   GB_PROPERTY("Databases", ".ConnectionDatabases", CCONNECTION_databases),
@@ -767,7 +792,8 @@ GB_DESC CDBDesc[] =
   GB_STATIC_METHOD("Commit", NULL, CCONNECTION_commit, NULL),
   GB_STATIC_METHOD("Rollback", NULL, CCONNECTION_rollback, NULL),
 
-  GB_STATIC_METHOD("Quote", "s", CCONNECTION_quote, "(Name)s"),
+  GB_STATIC_METHOD("Quote", "s", CCONNECTION_quote, "(Name)s[(Table)b]"),
+  GB_STATIC_METHOD("FormatBlob", "s", CCONNECTION_format_blob, "(Data)s"),
 
   GB_STATIC_PROPERTY("Tables", ".ConnectionTables", CCONNECTION_tables),
   //GB_STATIC_PROPERTY("Views", ".ConnectionViews", CCONNECTION_views),

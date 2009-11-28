@@ -360,6 +360,8 @@ Public Sub GetRequiredComp(sComp As String)
   Dim hComp As CComponent  
   Dim s As String
   
+  If Not CComponent.All.Exist(sComp) Then Return
+  
   For Each s In CComponent.All[sComp].Require
     If Not $cComponents.Exist(s) Then      
       $cComponents.Add(s, CComponent.All[s].Sortkey)
@@ -376,6 +378,8 @@ Private Sub GetNeededComp(sComp As String)
   Dim s, t As String
   Dim bExist As Boolean
   
+  If Not CComponent.All.Exist(sComp) Then Return
+
   For Each s In CComponent.All[sComp].Need
     For Each t In CComponent.WhoImplement[s]
       If $cComponents.Exist(t) Then 

@@ -40,6 +40,7 @@ bool DB_Open(DB_DESC *desc, DB_DRIVER **driver, DB_DATABASE *db);
 char *DB_MakeQuery(DB_DRIVER *driver, const char *pattern, int len, int narg, GB_VALUE *arg);
 void DB_Format(DB_DRIVER *driver, GB_VALUE *arg, DB_FORMAT_CALLBACK func);
 void DB_FormatVariant(DB_DRIVER *driver, GB_VARIANT_VALUE *arg, DB_FORMAT_CALLBACK func);
+char *DB_GetQuotedTable(DB_DRIVER *driver, DB_DATABASE *db, const char *table);
 
 void DB_LowerString(char *s);
 int DB_CheckNameWith(const char *name, const char *msg, const char *more);

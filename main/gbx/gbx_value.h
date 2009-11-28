@@ -33,59 +33,34 @@ typedef
 	struct {
 		TYPE type;
 		int value;
-    #if __WORDSIZE == 64
-    int _pad;
-    #endif
-		intptr_t _reserved[2];
 		}
-	PACKED
 	VALUE_BOOLEAN;
 
 typedef
 	struct {
 		TYPE type;
 		int value;
-    #if __WORDSIZE == 64
-    int _pad;
-    #endif
-		intptr_t _reserved[2];
 		}
-	PACKED
 	VALUE_BYTE;
 
 typedef
 	struct {
 		TYPE type;
 		int value;
-    #if __WORDSIZE == 64
-    int _pad;
-    #endif
-		intptr_t _reserved[2];
 		}
-	PACKED
 	VALUE_SHORT;
 
 typedef
 	struct {
 		TYPE type;
 		int value;
-    #if __WORDSIZE == 64
-    int _pad;
-    #endif
-		intptr_t _reserved[2];
 		}
-	PACKED
 	VALUE_INTEGER;
 
 typedef
 	struct {
 		TYPE type;
 		int64_t value;
-    #if __WORDSIZE == 64
-    intptr_t _reserved[2];
-    #else
-    int _reserved;
-    #endif
 		}
 	PACKED
 	VALUE_LONG;
@@ -94,7 +69,6 @@ typedef
 	struct {
 		TYPE type;
 		intptr_t value;
-    intptr_t _reserved[2];
 		}
 	PACKED
 	VALUE_POINTER;
@@ -103,11 +77,6 @@ typedef
 	struct {
 		TYPE type;
 		double value;
-    #if __WORDSIZE == 64
-    intptr_t _reserved[2];
-    #else
-		int _pad;
-    #endif
 		}
 	PACKED
 	VALUE_SINGLE;
@@ -116,11 +85,6 @@ typedef
 	struct {
 		TYPE type;
 		double value;
-    #if __WORDSIZE == 64
-    intptr_t _reserved[2];
-    #else
-		int _pad;
-    #endif
 		}
 	PACKED
 	VALUE_FLOAT;
@@ -130,13 +94,7 @@ typedef
 		TYPE type;
 		int date;  /* number of days */
 		int time;  /* number of milliseconds */
-    #if __WORDSIZE == 64
-    intptr_t _reserved[2];
-    #else
-    int _reserved;
-    #endif
 		}
-	PACKED
 	VALUE_DATE;
 
 typedef
@@ -145,11 +103,7 @@ typedef
 		char *addr;
 		int start;
 		int len;
-		#if __WORDSIZE == 64
-		intptr_t _reserved;
-		#endif
 		}
-	PACKED
 	VALUE_STRING;
 
 typedef
@@ -183,42 +137,28 @@ typedef
 		TYPE ptype;
 		intptr_t value[2];
 		}
-	PACKED
 	VALUE_VOID;
 
-typedef
-	struct {
-		TYPE type;
-		TYPE vtype;
-		/*
+	typedef
+  struct {
+    TYPE type;
+    TYPE vtype;
 		union {
-			char _boolean;
-			char _byte;
-			short _short;
-			double _double;
 			int _int;
-			long long _int64;
-			long long _date;
 			char *_string;
 			void *_object;
+			uint64_t data;
 			}
-			*/
-		char value[8];
-		#if __WORDSIZE == 64
-		intptr_t _reserved;
-		#endif
-		}
-	PACKED
-	VALUE_VARIANT;
+			value;
+    }
+  VALUE_VARIANT;
 
 typedef
 	struct {
 		CLASS *class;
 		void *object;
 		void *super;
-		intptr_t _reserved;
 		}
-	PACKED
 	VALUE_OBJECT;
 
 typedef
@@ -226,9 +166,7 @@ typedef
 		TYPE type;
 		CLASS *class;
 		void *super; // Must be at the same place than VALUE_OBJECT
-		intptr_t _reserved;
 		}
-	PACKED
 	VALUE_CLASS;
 
 typedef
@@ -238,8 +176,8 @@ typedef
 		void *addr;
 		short index;
 		unsigned keep : 1;
+		unsigned _reserved : 15;
 		}
-	PACKED
 	VALUE_ARRAY;
 
 typedef

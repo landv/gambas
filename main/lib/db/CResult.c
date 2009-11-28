@@ -609,9 +609,7 @@ BEGIN_METHOD_VOID(CRESULT_update)
 		case RESULT_CREATE:
 
 			q_add("INSERT INTO ");
-			q_add(THIS->driver->GetQuote());
-			q_add(info->table);
-			q_add(THIS->driver->GetQuote());
+			q_add(DB_GetQuotedTable(THIS->driver, DB_CurrentDatabase, info->table));
 			q_add(" ( ");
 			
 			comma = FALSE;
@@ -664,9 +662,7 @@ BEGIN_METHOD_VOID(CRESULT_update)
 		case RESULT_EDIT:
 
 			q_add("UPDATE ");
-			q_add(THIS->driver->GetQuote());
-			q_add(info->table);
-			q_add(THIS->driver->GetQuote());
+			q_add(DB_GetQuotedTable(THIS->driver, DB_CurrentDatabase, info->table));
 			q_add(" SET ");
 
 			comma = FALSE;
@@ -721,9 +717,7 @@ BEGIN_METHOD(CRESULT_delete, GB_BOOLEAN keep)
 		case RESULT_EDIT:
 
 			q_add("DELETE FROM ");
-			q_add(THIS->driver->GetQuote());
-			q_add(info->table);
-			q_add(THIS->driver->GetQuote());
+			q_add(DB_GetQuotedTable(THIS->driver, DB_CurrentDatabase, info->table));
 			q_add(" WHERE ");
 			q_add(THIS->edit);
 

@@ -565,6 +565,37 @@ DB_DATABASE *DB_GetCurrent()
 	return DB_CurrentDatabase;
 }
 
+char *DB_GetQuotedTable(DB_DRIVER *driver, DB_DATABASE *db, const char *table)
+{
+	int len;
+	char *point = NULL;
+	char *res;
+	const char *quote;
+	
+	if (!table || !*table)
+		return "";
+	
+	len = strlen(table);
+	if (db->flags.schema)
+		point = index(table, '.');
+	
+	quote = (*driver->GetQuote)();
+	
+	if (!point)
+	{
+		GB.TempString(&res, NULL, len + 2);
+		sprintf(res, "%s%s%s", table, quote, quote);
+	}
+	else
+	{
+		GB.TempString(&res, NULL, len + 2);
+		sprintf(res, "%.*s.%s%s%s", point - table, table, quote, point + 1, quote);
+	}
+	
+	return res;
+}
+
+
 GB_DESC *GB_CLASSES [] EXPORT =
 {
   CIndexDesc,

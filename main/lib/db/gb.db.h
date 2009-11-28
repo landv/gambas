@@ -60,6 +60,7 @@ typedef
 			unsigned no_seek : 1;					/* Cannot seek anywhere in a Result */
 			unsigned no_nest : 1;  				/* Cannot nest transactions */
 			unsigned no_case : 1;					/* If table, field and index names can be case sensitive or not */
+			unsigned schema : 1;          /* If table names can be prefixed by a schema name and a dot */
 			}
 			flags;
 		struct {

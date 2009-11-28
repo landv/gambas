@@ -137,7 +137,22 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CINDEX_fields)
 
-  GB.ReturnString(THIS->info.fields);
+	GB_ARRAY array;
+	char *fields;
+	char *name;
+	
+	GB.NewString(&fields, THIS->info.fields, 0);
+	GB.Array.New(&array, GB_T_STRING, 0);
+	
+	name = strtok(fields, ",");
+	while (name)
+	{
+		GB.NewString((char **)GB.Array.Add(array), name, 0);
+		name = strtok(NULL, ",");
+	}
+
+	GB.FreeString(&fields);
+  GB.ReturnObject(array);
 
 END_PROPERTY
 
@@ -174,7 +189,7 @@ GB_DESC CIndexDesc[] =
   GB_PROPERTY_READ("Name", "s", CINDEX_name),
   GB_PROPERTY_READ("Unique", "b", CINDEX_unique),
   GB_PROPERTY_READ("Primary", "b", CINDEX_primary),
-  GB_PROPERTY_READ("Fields", "s", CINDEX_fields),
+  GB_PROPERTY_READ("Fields", "String[]", CINDEX_fields),
 
   GB_PROPERTY_READ("Table", "Table", CINDEX_table),
 
@@ -191,11 +206,13 @@ GB_DESC CIndexDesc[] =
 #undef THIS
 #define THIS ((GB_SUBCOLLECTION)_object)
 
-BEGIN_METHOD(CINDEX_add, GB_STRING name; GB_STRING fields; GB_BOOLEAN unique)
+BEGIN_METHOD(CINDEX_add, GB_STRING name; GB_OBJECT fields; GB_BOOLEAN unique)
 
   CTABLE *table = GB.SubCollection.Container(THIS);
   char *name = GB.ToZeroString(ARG(name));
   DB_INDEX info;
+	int i;
+	GB_ARRAY fields;
 
   if (DB_CheckNameWith(name, "index", "."))
     return;
@@ -204,7 +221,20 @@ BEGIN_METHOD(CINDEX_add, GB_STRING name; GB_STRING fields; GB_BOOLEAN unique)
     return;
 
   info.name = name;
-  info.fields = GB.ToZeroString(ARG(fields));
+	
+	fields = (GB_ARRAY)VARG(fields);
+	q_init();
+	for (i = 0; i < GB.Array.Count(fields); i++)
+	{
+		if (i > 0)
+			q_add(",");
+		
+		q_add(table->driver->GetQuote());
+		q_add(*(char **)GB.Array.Get(fields, i));
+		q_add(table->driver->GetQuote());
+	}
+	
+  info.fields = q_get();
   info.unique = VARGOPT(unique, FALSE);
 
   table->driver->Index.Create(&table->conn->db, table->name, name, &info);
@@ -229,7 +259,7 @@ GB_DESC CTableIndexesDesc[] =
 {
   GB_DECLARE(".TableIndexes", 0), GB_INHERITS(".SubCollection"),
 
-  GB_METHOD("Add", NULL, CINDEX_add, "(Name)s(Fields)s[(Unique)b]"),
+  GB_METHOD("Add", NULL, CINDEX_add, "(Name)s(Fields)String[];[(Unique)b]"),
   GB_METHOD("Remove", NULL, CINDEX_remove, "(Name)s"),
 
   GB_END_DECLARE
