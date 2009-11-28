@@ -79,7 +79,7 @@ Private Sub LoadList(Optional sTable As String)
   Dim hPict As Picture
   Dim sKey As String
   
-  MConnection.FillListViewWithTables(lvwTable, $hConn)
+  MConnection.FillViewWithTables(lvwTable, $hConn)
   
   If Not sTable Then 
     btnRequest_Click
@@ -373,12 +373,25 @@ End
 
 
 
+Public Sub lvwTable_Select()
+
+  Dim sKey As String 
+  
+  Try sKey = lvwTable.Current.Key
+  If Left(sKey) = ">" Then 
+    lvwTable.Current.Expanded = True
+    Return
+  Endif
+
+End
+
 Public Sub lvwTable_MouseUp()
 
   Dim sKey As String 
   
   Try sKey = lvwTable.Current.Key
   If Not sKey Then Return
+  If Left(sKey) = ">" Then Return
   
   If LoadTable(Mid$(sKey, 2)) Then Return
 

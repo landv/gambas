@@ -303,18 +303,34 @@ Finally
   
 End
 
-Public Sub FillListViewWithTables(lvwTable As ListView, hConn As Connection)
+Public Sub FillViewWithTables(lvwTable As TreeView, hConn As Connection)
   
   Dim hTable As Table
+  Dim sName As String
+  Dim sParent As String
+  Dim iPos As Integer
   
   lvwTable.Clear
   
   'lvwTable.Add("$", ("SQL request"), Picture["img/16/sql.png"])
   For Each hTable In hConn.Tables
-    If hTable.System Then
-      lvwTable.Add("S" & hTable.Name, hTable.Name, Picture["img/16/system-table.png"])
+    sName = hTable.Name
+    iPos = InStr(sName, ".")
+    If iPos Then
+      sParent = ">" & Left(sName, iPos - 1)
+      sName = Mid$(sName, iPos + 1)
     Else
-      lvwTable.Add("T" & hTable.Name, hTable.Name, Picture["img/16/table.png"])
+      sParent = ""
+    Endif
+    
+    If sParent And If Not lvwTable.Exist(sParent) Then
+      lvwTable.Add(sParent, Mid$(sParent, 2), Picture["icon:/16/directory"])
+    Endif
+    
+    If hTable.System Then
+      lvwTable.Add("S" & hTable.Name, sName, Picture["img/16/system-table.png"], sParent)
+    Else
+      lvwTable.Add("T" & hTable.Name, sName, Picture["img/16/table.png"], sParent)
     Endif
   Next
   
