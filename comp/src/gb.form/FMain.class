@@ -1,29 +1,27 @@
 ' Gambas class file
 
-
-
-
-PUBLIC SUB Button1_Click()
-
-  'ValueBox1.ReadOnly = NOT ValueBox1.ReadOnly
-  TextBox1.Insert("7")
+PUBLIC SUB _new()
 
 END
 
 PUBLIC SUB Form_Open()
 
-  ValueBox1.Value = 999
-
+  DIM i AS Integer
+  DIM j AS Integer
+  
+  TableView1.Rows.Count = 10
+  TableView1.Columns.Count = 2
+  
+  FOR i = 0 TO 9
+    FOR j = 0 TO 1
+      TableView1[i, J].Text = i
+    NEXT ' j
+  NEXT ' i
+  
 END
 
-PUBLIC SUB TextBox1_Change()
+PUBLIC SUB TableView1_Activate()
 
-  DEBUG LAST.Text
-
-END
-
-PUBLIC SUB TextBox1_KeyPress()
-
-  DEBUG LAST.TExt
+  TableView1.Edit(["Yes", "No", "Maybe"], TRUE)
 
 END

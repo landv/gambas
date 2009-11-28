@@ -36,7 +36,11 @@ END
 
 PRIVATE SUB SaveEditor()
   
-  DIM sText AS String = $hEditor.Text
+  DIM sText AS String 
+  
+  IF NOT $hEditor THEN RETURN
+  
+  sText = $hEditor.Text
   
   IF sText = ME[$iRow, $iCol].Text THEN RETURN
   RAISE Save($iRow, $iCol, sText)
