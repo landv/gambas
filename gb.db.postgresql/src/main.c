@@ -199,7 +199,8 @@ static bool get_table_schema(const char **table, char **schema)
 	if (!point)
 	{
 		//fprintf(stderr, "get_table_schema: -> No point\n");
-		return TRUE;
+		*schema = "public";
+		return FALSE;
 	}
 	
 	GB.TempString(schema, *table, point - *table);
@@ -1385,11 +1386,15 @@ static int table_exist(DB_DATABASE *db, const char *table)
 		"and (relnamespace not in (select oid from pg_namespace where nspname = 'information_schema'))";
 
 	const char *query_schema =
-		"select pg_class.relname,pg_namespace.nspname from pg_class,pg_namespace where (pg_class.relkind = 'r' or pg_class.relkind = 'v') "
+		"select relname from pg_class where (relkind = 'r' or relkind = 'v') "
+		"and (relname = '&1') "
+		"and (relnamespace in (select oid from pg_namespace where nspname = '&2'))";
+
+		/*"select pg_class.relname,pg_namespace.nspname from pg_class,pg_namespace where (pg_class.relkind = 'r' or pg_class.relkind = 'v') "
 		"and (pg_namespace.oid = pg_class.relnamespace) "
 		"and (pg_class.relname = '&1') "
 		"and (pg_namespace.nspname = '&2') "
-		"and (pg_namespace.oid not in (select oid from pg_namespace where nspname = 'information_schema'))";
+		"and (pg_namespace.oid not in (select oid from pg_namespace where nspname = 'information_schema'))";*/
 
 	PGresult *res;
 	int exist;
@@ -1453,7 +1458,7 @@ static int table_list_73(DB_DATABASE *db, char ***tables)
 		for (i = 0; i < PQntuples(res); i++)
 		{
 			schema = PQgetvalue(res, i, 1);
-			if (!strcmp(schema, "public") || !strcmp(schema, "pg_catalog"))
+			if (!strcmp(schema, "public")) // || !strcmp(schema, "pg_catalog"))
 				GB.NewString(&((*tables)[i]), PQgetvalue(res, i, 0), 0);
 			else
 			{

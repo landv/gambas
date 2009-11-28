@@ -407,7 +407,7 @@ Public Sub tbvField_Data(Row As Integer, Column As Integer)
 
   Dim hCField As CField
 
-  hCField = $aField[Row]
+  Try hCField = $aField[Row]
   If Not hCField Then Return
 
   With tbvField.Data
@@ -1250,7 +1250,7 @@ Public Sub btnNewTable_Click()
     aType = ["MyISAM", "MERGE", "HEAP", "InnoDB", "BDB", "ISAM"]
   Endif
 
-  If FNewTable.Run("", "InnoDB", aType) Then Return
+  If FNewTable.Run($hConn, "", "InnoDB", aType) Then Return
   sName = FNewTable.TableName
 
   If MConnection.CreateTable($hConn, sName, FNewTable.Type) Then Return
@@ -1336,7 +1336,7 @@ Public Sub btnRename_Click()
   If $bReadOnly Then Return
   If SaveTable() Then Return
 
-  If FNewTable.Run($sTable, $sType) Then Return
+  If FNewTable.Run($hConn, $sTable, $sType) Then Return
 
   sNewName = FNewTable.TableName
   If Not sNewName Then Return
@@ -1436,13 +1436,7 @@ End
 
 Public Sub ToolButton1_Click()
 
-  Dim sStr As String
-  Dim iInd As Integer
-  
-  For iInd = 0 To 255
-    sStr &= Chr$(iInd)
-  Next
-
-  Print $hConn.FormatBlob(sStr)
+  Print $hConn.Quote("haddock")
+  Print $hConn.Quote("haddock", True)
 
 End

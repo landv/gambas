@@ -584,7 +584,7 @@ char *DB_GetQuotedTable(DB_DRIVER *driver, DB_DATABASE *db, const char *table)
 	if (!point)
 	{
 		GB.TempString(&res, NULL, len + 2);
-		sprintf(res, "%s%s%s", table, quote, quote);
+		sprintf(res, "%s%s%s", quote, table, quote);
 	}
 	else
 	{
