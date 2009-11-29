@@ -497,7 +497,7 @@ PUBLIC void FILE_dir_first(const char *path, const char *pattern, int attr)
     }
 
     file_dir_arch = TRUE;
-    ARCHIVE_dir_first(NULL, path, pattern);
+    ARCHIVE_dir_first(NULL, path, pattern, attr);
     return;
   }
 
@@ -774,12 +774,12 @@ PUBLIC bool FILE_exist(const char *path)
 
   if (FILE_is_relative(path))
   {
-    if (!EXEC_arch)
+    /*if (!EXEC_arch)
     {
       chdir(PROJECT_path);
       if (lstat(path, &buf) == 0)
         return TRUE;
-    }
+    }*/
 
     return ARCHIVE_exist(NULL, path);
   }

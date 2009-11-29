@@ -67,7 +67,7 @@ PUBLIC ARCHIVE *ARCHIVE_create(const char *name);
 PUBLIC void ARCHIVE_delete(ARCHIVE *arch);
 PUBLIC void ARCHIVE_load(ARCHIVE *arch);
 
-PUBLIC bool ARCHIVE_get(ARCHIVE *arch, const char *path, int len_path, ARCHIVE_FIND *find);
+PUBLIC bool ARCHIVE_get(ARCHIVE *arch, const char *path, ARCHIVE_FIND *find);
 
 PUBLIC bool ARCHIVE_read(ARCHIVE *arch, int pos, void *buffer, int len);
 
@@ -75,7 +75,7 @@ PUBLIC bool ARCHIVE_exist(ARCHIVE *arch, const char *path);
 PUBLIC void ARCHIVE_stat(ARCHIVE *arch, const char *path, FILE_STAT *info);
 PUBLIC bool ARCHIVE_is_dir(ARCHIVE *arch, const char *path);
 
-PUBLIC void ARCHIVE_dir_first(ARCHIVE *arch, const char *path, const char *pattern);
+PUBLIC void ARCHIVE_dir_first(ARCHIVE *arch, const char *path, const char *pattern, int attr);
 PUBLIC bool ARCHIVE_dir_next(char **name, int *len, int attr);
 
 PUBLIC bool ARCHIVE_get_current(ARCHIVE **parch);

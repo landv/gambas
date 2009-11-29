@@ -40,6 +40,7 @@
 #include "gbx_regexp.h"
 #include "gbx_exec.h"
 #include "gbx_class.h"
+#include "gbx_project.h"
 
 #include "gbx_archive.h"
 
@@ -245,14 +246,30 @@ bool ARCHIVE_get_current(ARCHIVE **parch)
 }
 
 
-bool ARCHIVE_get(ARCHIVE *arch, const char *path, int len_path, ARCHIVE_FIND *find)
+bool ARCHIVE_get(ARCHIVE *arch, const char *path, ARCHIVE_FIND *find)
 {
   ARCH_FIND f;
+  struct stat buf;
+	
+	if (!path || !*path)
+		return TRUE;
 
   if (get_current(&arch))
-    return TRUE;
+  {
+  	// no archive found, we try a stat
+		chdir(PROJECT_path);
+    if (stat(path, &buf))
+    	return TRUE;
+		
+		find->pos = S_ISDIR(buf.st_mode) ? -1 : 0;
+		find->sym = NULL;
+		find->len = (int)buf.st_size;
+		find->index = -1;
+		find->arch = NULL;
+    return FALSE;
+	}
 
-  if (ARCH_find(arch->arch, path, len_path, &f))
+  if (ARCH_find(arch->arch, path, strlen(path), &f))
     return TRUE;
 
   find->sym = f.sym;
@@ -269,10 +286,10 @@ bool ARCHIVE_exist(ARCHIVE *arch, const char *path)
 {
   ARCHIVE_FIND find;
 
-  if (get_current(&arch))
-    return FALSE;
+  // if (get_current(&arch))
+  //  return FALSE;
 
-  return (!ARCHIVE_get(arch, path, 0, &find));
+  return (!ARCHIVE_get(arch, path, &find));
 }
 
 
@@ -280,7 +297,7 @@ bool ARCHIVE_is_dir(ARCHIVE *arch, const char *path)
 {
   ARCHIVE_FIND find;
 
-	if (ARCHIVE_get(arch, path, 0, &find))
+	if (ARCHIVE_get(arch, path, &find))
 		return FALSE;
 
 	return (find.pos < 0);
@@ -295,7 +312,7 @@ void ARCHIVE_stat(ARCHIVE *arch, const char *path, FILE_STAT *info)
   //if (get_current(&arch))
   //  THROW_SYSTEM(ENOENT, path);
 
-  if (ARCHIVE_get(arch, path, 0, &find))
+  if (ARCHIVE_get(arch, path, &find))
     THROW_SYSTEM(ENOENT, path);
 
   fstat(find.arch->arch->fd, &buf);
@@ -319,7 +336,7 @@ bool ARCHIVE_read(ARCHIVE *arch, int pos, void *buffer, int len)
 }
 
 
-void ARCHIVE_dir_first(ARCHIVE *arch, const char *path, const char *pattern)
+void ARCHIVE_dir_first(ARCHIVE *arch, const char *path, const char *pattern, int attr)
 {
   ARCHIVE_FIND find;
 	char abs_path[MAX_PATH];
@@ -334,9 +351,17 @@ void ARCHIVE_dir_first(ARCHIVE *arch, const char *path, const char *pattern)
     return;
   }
 
-  if (ARCHIVE_get(arch, path, 0, &find))
+  if (ARCHIVE_get(arch, path, &find))
   {
   	arch_dir = NULL;
+  	return;
+  }
+  
+  if (!find.sym)
+  {
+  	// By calling FILE_dir_first() again with an absolute path, we are sure that next calls to 
+  	// FILE_dir_next() will never call ARCHIVE_dir_next().
+  	FILE_dir_first(FILE_cat(PROJECT_path, path, NULL), pattern, attr);
   	return;
   }
   
