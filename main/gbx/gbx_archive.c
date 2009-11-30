@@ -356,7 +356,7 @@ void ARCHIVE_dir_first(ARCHIVE *arch, const char *path, const char *pattern, int
   
   if (!find.sym)
   {
-  	// By calling FILE_dir_first() again, we are sure that next calls to 
+  	// By calling FILE_dir_first() again with an absolute path, we are sure that next calls to 
   	// FILE_dir_next() will never call ARCHIVE_dir_next().
   	FILE_dir_first(FILE_cat(PROJECT_path, path, NULL), pattern, attr);
   	return;
