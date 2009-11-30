@@ -30,7 +30,7 @@ Static Public Sub Add(sExpr As String, sInfo As String)
   If Not sInfo Then Return
 
   If Not $cAll.Exist(sExpr) Then
-    hWin = New FDebugExpr(sExpr, sInfo)
+    hWin = New FDebugExpr(Null, sExpr, sInfo)
     If Object.IsValid(hWin) Then
       $cAll[sExpr] = hWin
       hWin.Show

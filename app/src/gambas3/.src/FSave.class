@@ -6,7 +6,7 @@ Static Public Function Run(Optional bQuit As Boolean) As Boolean
 
   Dim hForm As Form
   
-  hForm = New FSave(bQuit)
+  hForm = New FSave(Null, bQuit)
   Return Not hForm.ShowModal()
 
 End
