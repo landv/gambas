@@ -204,7 +204,7 @@ End
 Private Function FileFilter(Optional All As Boolean = False) As String[]
   Dim filter As New String[]
   If All Then 
-    filter.Add("*.png *.jpeg *.jpg *.bmp *.gif *.xpm")
+    filter.Add("*.png;*.jpeg;*.jpg;*.bmp;*.gif;*.xpm")
     filter.Add("All Graphics")
   End If
   filter.Add("*.png")

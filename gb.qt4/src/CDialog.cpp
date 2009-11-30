@@ -60,7 +60,7 @@ static QString get_filter(void)
       if (s.length())
         s += ";;";
       s += TO_QSTRING(*((char **)GB.Array.Get(dialog_filter, i * 2 + 1)));
-      s += " (" + filter + ")";
+      s += " (" + filter.replace(";", " ") + ")";
     }
     
     s += ";;";

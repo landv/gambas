@@ -140,7 +140,7 @@ gSplitter::gSplitter(gContainer *parent, bool vert) : gContainer(parent)
 	g_signal_connect_after(G_OBJECT(curr), "size-allocate", G_CALLBACK(cb_size_allocate), (gpointer)this);
 }
 
-void gSplitter::insert(gControl *child)
+void gSplitter::insert(gControl *child, bool realize)
 {	
 	GtkWidget *w = child->border;
 	GtkWidget *tmp;
@@ -172,7 +172,7 @@ void gSplitter::insert(gControl *child)
 	
 	unlock();
 	
-	gContainer::insert(child);
+	gContainer::insert(child, realize);
 	//updateVisibility();
 	
 	//emit(SIGNAL(onResize));

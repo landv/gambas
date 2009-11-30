@@ -43,7 +43,7 @@ public:
 	void (*onResize)(gControl *sender);
 
 //"Private"
-	virtual void insert(gControl *child);
+	virtual void insert(gControl *child, bool realize = false);
 	virtual void remove(gControl *child);
 	void updateChild(GtkWidget *wid = 0);
 	void updateVisibility();
