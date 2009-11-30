@@ -204,7 +204,7 @@ END
 PRIVATE FUNCTION FileFilter(OPTIONAL All AS Boolean = FALSE) AS String[]
   DIM filter AS NEW String[]
   IF All THEN 
-    filter.Add("*.png *.jpeg *.jpg *.bmp *.gif *.xpm")
+    filter.Add("*.png;*.jpeg;*.jpg;*.bmp;*.gif;*.xpm")
     filter.Add("All Graphics")
   END IF
   filter.Add("*.png")
