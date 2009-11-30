@@ -449,13 +449,16 @@ Private Function GetLink(sPath As String, Optional sMyTitle As String, Optional 
       sPath = Left(sPath, iPos - 1)
     Endif
 
-    If sPath Like (Replace($sPath, "[", "[[]") &/ "*") Then
-      sRelPath = "." &/ Mid$(sPath, Len($sPath) + 1)
-    Else 
-      sRelPath = sPath
-    Endif 
+    If sPath = "/" Then
+    Else
+      If sPath Like (Replace($sPath, "[", "[[]") &/ "*") Then
+        sRelPath = "." &/ Mid$(sPath, Len($sPath) + 1)
+      Else 
+        sRelPath = sPath
+      Endif 
     
-    sPath = LCase(GetAbsolutePath(GetRealPath($sPath), sRelPath))
+      sPath = LCase(GetAbsolutePath(GetRealPath($sPath), sRelPath))
+    Endif
 
     sTitle = GetTitle(sPath)
     If Not sTitle Then
@@ -1533,6 +1536,8 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
   
     Endif
 
+    If $bHelp Then Print "<a href=\"/help/license\" id=\"license-logo\"><img src=\"/img/license.png\" border=\"0\"></a>"
+
     'Print "<div style=\"height:2px;\"></div>"
     'Print "<div class=\"pathlimit\">&nbsp;</div>";
     
@@ -1783,6 +1788,8 @@ Private Function GetTitle(sPath As String) As String
     '  RETURN GetTitle(File.Dir(sPath)) & "." & rPage!sTitle
     'ELSE
       Return rPage!sTitle
+  Else
+    'Print "<pre>GetTitle: " & $sPath & " " & sPath & " ?</pre>"
     'ENDIF
   Endif
 

@@ -134,6 +134,7 @@ Public Sub Reload()
   $bModify = False
 
   UpdateSnap
+  UpdateBorder
 
   'SetLock($bAfterLock)
   If $bAfterLock Then Stop
@@ -2513,18 +2514,27 @@ End
 Public Sub UpdateBorder()
 
   Dim hCtrl As CControl
-  Dim H As Integer
+  Dim H, HM As Integer
   
   hCtrl = Control[Me.Name]
   If Not hCtrl Then Return
 
   With hCtrl.Control
 
+    ' If AllMenus.Count = 0 Then
+    '   panMenuBar.Hide
+    '   HM = 0
+    ' Else
+    '   panMenuBar.Move(0, panBorder.Y, panBorder.W, Desktop.Scale * 3)
+    '   HM = panMenuBar.H
+    '   panMenuBar.Show
+    ' Endif
+    
     If hCtrl.GetPropertyDefault("Border") = False Then
     
       panTitle.Hide
       H = 0
-      panBorder.Move(0, 0, .Width + 2, .Height + 2)
+      panBorder.Move(0, HM, .Width + 2, .Height + 2 - HM)
       $bBorder = False
       'panBorder.Border = Border.Plain
       hCtrl.Control.Move(1, 1)
@@ -2535,7 +2545,7 @@ Public Sub UpdateBorder()
       btnCloseWindow.W = 18 'H - 4
       btnMaxWindow.W = 17 'H - 4
       imgIcon.W = H - 4
-      panBorder.Move(0, H, .Width + 4, .Height + 2)
+      panBorder.Move(0, H + HM, .Width + 4, .Height + 2 - HM)
       $bBorder = True
       'panBorder.Border = Border.Raised
       panTitle.Resize(panBorder.W, H)
@@ -2549,7 +2559,7 @@ Public Sub UpdateBorder()
     panBorder.Refresh
       
     panRight.Move(panBorder.W - panRight.W / 2, Max(0, ((.Height + H) - panRight.Height) / 2))
-    panDown.Move(Max(0, (.Width - panDown.Width + panDown.H / 2) / 2), panBorder.H + H - panDown.H / 2)
+    panDown.Move(Max(0, (.Width - panDown.Width + panDown.H / 2) / 2), panBorder.H + H + HM - panDown.H / 2)
     panRightDown.Move(panRight.X, panDown.Y)
     
     'panBorder.Lower
@@ -3145,4 +3155,14 @@ Public Sub GetTopLevelMenus() As String[]
   
   Return aMenu.Sort(gb.IgnoreCase)
   
+End
+
+Public Sub panMenuBar_Draw()
+
+  If $bBorder Then
+    Draw.Style.Panel(0, -4, panBorder.W, panBorder.H + 8, Border.Raised)
+  Else
+    Draw.Style.Panel(0, 0, panBorder.W, panBorder.H, Border.Plain)
+  Endif
+
 End

@@ -35,7 +35,7 @@ Private frmChooser As FDirChooser
 
 Public Sub _new()
 
-  frmChooser = New FDirChooser(True, Me) 'AS "frmChooser"
+  frmChooser = New FDirChooser(Me, True) 'AS "frmChooser"
   Object.Attach(frmChooser, Me, "frmChooser")
   'Object.Delegate(frmChooser, ME)
 

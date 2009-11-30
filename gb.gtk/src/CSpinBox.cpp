@@ -105,6 +105,14 @@ BEGIN_METHOD_VOID(CSPINBOX_select_all)
 
 END_METHOD
 
+BEGIN_PROPERTY(CSPINBOX_border)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(SPINBOX->hasBorder());
+	else
+		SPINBOX->setBorder(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
 
 GB_DESC CSpinBoxDesc[] =
 {
@@ -120,6 +128,7 @@ GB_DESC CSpinBoxDesc[] =
   GB_PROPERTY("Step", "i", CSPINBOX_linestep),
 
   GB_PROPERTY("Wrap", "b", CSPINBOX_wrapping),
+  GB_PROPERTY("Border", "b", CSPINBOX_border),
 
   GB_METHOD("SelectAll", 0, CSPINBOX_select_all, 0),
 

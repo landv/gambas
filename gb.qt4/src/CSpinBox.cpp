@@ -49,6 +49,7 @@ BEGIN_METHOD(CSPINBOX_new, GB_OBJECT parent)
 	wid->setMinimum(0);
 	wid->setMaximum(100);
 	wid->setSingleStep(1);
+	wid->setAccelerated(true);
 
   CWIDGET_new(wid, _object);
 
@@ -139,6 +140,15 @@ BEGIN_PROPERTY(CSPINBOX_linestep)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(CSPINBOX_border)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(WIDGET->hasFrame());
+	else
+		WIDGET->setFrame(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
 /*BEGIN_PROPERTY(CSPINBOX_border)
 
 	QLineEdit *lw = (QLineEdit *)WIDGET->child("qt_spinbox_edit", "QLineEdit");
@@ -218,7 +228,7 @@ GB_DESC CSpinBoxDesc[] =
   //GB_PROPERTY("ButtonSymbols", "i<SpinBox,UpDownArrows,PlusMinus>", CSPINBOX_button),
 
   GB_PROPERTY("Wrap", "b", CSPINBOX_wrapping),
-  //GB_PROPERTY("Border", "b", CSPINBOX_border),
+  GB_PROPERTY("Border", "b", CSPINBOX_border),
 
   GB_METHOD("SelectAll", NULL, CSPINBOX_select_all, NULL),
   

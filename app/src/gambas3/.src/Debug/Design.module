@@ -213,7 +213,7 @@ Public Sub Debug_Read(Data As String)
       If aData[1] And If Not $bError Then 
         '$bError = True
         $sError = "<b>" & MakeErrorMessage(aData[1]) & "</b><p>" & Subst(("In class &1 at line &2."), $sPosClass, $iPosLine)
-        CheckErrorMessage(Project.ActiveForm)
+        Try CheckErrorMessage(Project.ActiveForm)
         ' 'Message.Error(aData[1])
         ' Try Project.ActiveForm.ShowMessage(aData[1], "error")
         ' If Error Then Message.Error(aData[1])

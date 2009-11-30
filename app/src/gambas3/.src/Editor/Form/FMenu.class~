@@ -685,7 +685,7 @@ Private Sub SetPicture(sPict As String)
 
   txtPicture.Text = sPict
   hPict = Project.GetPicture(sPict)
-  If hPict Then hPict = hPict.Image.Stretch(btnIcon.W - 16, btnIcon.H - 16, True).Picture
+  If hPict Then hPict = hPict.Image.Stretch(btnIcon.W - 16, btnIcon.H - 16).Picture
   btnIcon.Picture = hPict
   
 Catch

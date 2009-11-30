@@ -48,7 +48,7 @@ Private Function AddToolBar(sToolBar As String, sType As String) As FToolPanel
     tabTool.Index = tabTool.Count - 1
     tabTool.Text = sToolBar
 
-    hToolBar = New FToolPanel(sToolBar, sType, tabTool) As "ToolBar"
+    hToolBar = New FToolPanel(tabTool, sToolBar, sType) As "ToolBar"
     $cToolBar[sToolBar] = hToolBar
 
     If Not $sToolbar Then $sToolbar = sToolBar

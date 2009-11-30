@@ -373,7 +373,7 @@ Private Sub InitLibrary()
       If $bShowUsed Then
         If sLib <> "gb" And If Not Project.Libraries.Exist(hComp.Key) Then Continue
       Endif
-      hCompBox = New CComponentBox(hComp, bDark, lstComponent)
+      hCompBox = New CComponentBox(lstComponent, hComp, bDark)
       bDark = Not bDark
       $cComp[hComp.Key] = hCompBox 
       hCompBox.Locked = sLib = "gb" Or $bShowUsed

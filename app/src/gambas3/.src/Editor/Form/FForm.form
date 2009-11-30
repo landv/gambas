@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,80,66)
+  MoveScaled(0,0,78,66)
   Text = ("")
   Icon = Picture["img/16/form.png"]
   Persistent = True
@@ -559,6 +559,11 @@
         Background = Color.Foreground
         Ignore = True
       }
+    }
+    { panMenuBar DrawingArea
+      MoveScaled(21,7,25,3)
+      Visible = False
+      Background = Color.Background
     }
   }
 }

@@ -1366,16 +1366,16 @@ Public Function LoadFile(sPath As String) As Object
       Select Case File.Ext(sPath)
   
         Case "module", "class"
-          hForm = New FEditor(sPath)
+          hForm = New FEditor(Null, sPath)
   
         Case "form"
           If HasModule("form") Then 
-            hForm = New FForm(sPath)
+            hForm = New FForm(Null, sPath)
           Endif
           
         Case "webpage"
           If HasModule("webpage") Then
-            hForm = New FTextEditor(sPath, True)
+            hForm = New FTextEditor(Null, sPath, True)
           Endif
           
         End Select 
@@ -1386,7 +1386,7 @@ Public Function LoadFile(sPath As String) As Object
         Dec Application.Busy
         Return
       Endif
-      hForm = New FConnectionEditor(sPath)
+      hForm = New FConnectionEditor(Null, sPath)
     
     Endif
 
@@ -1395,10 +1395,10 @@ Public Function LoadFile(sPath As String) As Object
       Select Case Lower(File.Ext(sPath))
   
         Case "png", "gif", "jpg", "jpeg", "bmp", "xpm"          
-          hForm = New FIconEditor(sPath)
+          hForm = New FIconEditor(Null, sPath)
   
         Case Else
-          hForm = New FTextEditor(sPath)
+          hForm = New FTextEditor(Null, sPath)
   
       End Select
       

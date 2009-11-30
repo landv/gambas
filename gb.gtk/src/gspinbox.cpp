@@ -49,42 +49,43 @@ gSpinBox::gSpinBox(gContainer *parent) : gControl(parent)
 	g_signal_connect(G_OBJECT(widget),"value-changed",G_CALLBACK(spin_change),(gpointer)this);
 }
 
-
-long gSpinBox::background()
+/*
+int gSpinBox::background()
 {
 	return get_gdk_base_color(widget);
 }
 
-void gSpinBox::setBackground(long color)
+void gSpinBox::setBackground(int color)
 {
 	set_gdk_base_color(widget,color);	
 	if (!border->window) gtk_widget_realize(border);
 	gdk_window_process_updates(border->window,true);
 }
 
-long gSpinBox::foreground()
+int gSpinBox::foreground()
 {
 	return get_gdk_text_color(widget);
 }
 
-void gSpinBox::setForeground(long color)
+void gSpinBox::setForeground(int color)
 {	
 	set_gdk_text_color(widget,color);
 	if (!border->window) gtk_widget_realize(border);
 	gdk_window_process_updates(border->window,true);
 }
+*/
 
-long gSpinBox::step()
+int gSpinBox::step()
 {
 	gdouble step;
 	
 	gtk_spin_button_get_increments(GTK_SPIN_BUTTON(widget),&step,NULL);
-	return (long)step;
+	return (int)step;
 }
 
-long gSpinBox::value()
+int gSpinBox::value()
 {
-	return (long)gtk_spin_button_get_value(GTK_SPIN_BUTTON(widget));
+	return (int)gtk_spin_button_get_value(GTK_SPIN_BUTTON(widget));
 }
 
 bool gSpinBox::wrap()
@@ -92,25 +93,25 @@ bool gSpinBox::wrap()
 	return gtk_spin_button_get_wrap(GTK_SPIN_BUTTON(widget));
 }
 	
-void gSpinBox::setMaxValue(long vl)
+void gSpinBox::setMaxValue(int vl)
 {
 	_max = vl;
 	gtk_spin_button_set_range(GTK_SPIN_BUTTON(widget),_min, _max);
 }
 
-void gSpinBox::setMinValue(long vl)
+void gSpinBox::setMinValue(int vl)
 {
 	_min = vl;
 	gtk_spin_button_set_range(GTK_SPIN_BUTTON(widget), _min, _max);
 }
 
-void gSpinBox::setStep(long vl)
+void gSpinBox::setStep(int vl)
 {
 	gdouble step = (gdouble)vl;
 	gtk_spin_button_set_increments(GTK_SPIN_BUTTON(widget), step, step);
 }
 
-void gSpinBox::setValue(long vl)
+void gSpinBox::setValue(int vl)
 {
 	if (vl == value())
 		return;
@@ -146,3 +147,14 @@ void gSpinBox::selectAll()
 {
 	gtk_editable_select_region(GTK_EDITABLE(widget), 0, -1);
 }
+
+bool gSpinBox::hasBorder() const
+{
+	return gtk_entry_get_has_frame(GTK_ENTRY(widget));
+}
+
+void gSpinBox::setBorder(bool vl)
+{
+	gtk_entry_set_has_frame(GTK_ENTRY(widget), vl);
+}
+

@@ -288,8 +288,10 @@ Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As
       Else
         hCtrl = New Menu(Parent.Control)
       Endif
-
-      'Object.Attach(hCtrl, hForm, "Menu")
+      
+      ' If Parent.Kind <> "Menu" Then
+      '   hCtrl = New DrawingArea(hForm.GetMenuBar())
+      ' Endif
 
     Case Else
 

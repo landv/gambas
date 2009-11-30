@@ -48,6 +48,8 @@ Private Sub SaveEditor() As Boolean
   Dim sCurrent As String
   Dim bCancel As Boolean
   
+  If Not $hEditor Then Return
+  
   Try sCurrent = Me[$iRow, $iCol].Text 
   If Error Then Return
   
