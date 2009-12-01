@@ -81,7 +81,6 @@ End
 
 Public Function GetIcon() As String
 
-
   Dim bStatic As Boolean
   Dim sIcon As String
 
@@ -302,6 +301,42 @@ Catch
 
 End
 
+Public Function GetNativeSignature() As String
+  
+  If Left(Signature) = "#" Then Return MakeSignature(Mid$(Signature, 2))
+  Return Signature
+  
+End
+
+Private Sub SplitSignature(sSign As String) As String[]
+  
+  Dim iPos As Integer
+  Dim aSign As String[2]
+  
+  iPos = InStr(sSign, "[")
+  If iPos Then
+    aSign[0] = Left(sSign, iPos - 1)
+    aSign[1] = Mid$(sSign, iPos + 1, -1)
+  Else
+    aSign[0] = sSign
+  Endif
+  Return aSign
+  
+End
+
+Private Sub MergeSignature(sSign As String, sParentSign As String) As String
+  
+  Dim aParentSign As String[]
+  Dim aSign As String[]
+
+  aSign = SplitSignature(sSign)
+  aParentSign = SplitSignature(sParentSign)
+  sSign = aParentSign[0] & aSign[0] & "[" & aParentSign[1] & aSign[1] & "]"
+  If sSign Ends "[]" Then sSign = Left(sSign, -2)
+  Return sSign
+  
+End
+
 
 Public Function GetSignature(Optional iShowArg As Integer = -1) As String
 
@@ -315,17 +350,24 @@ Public Function GetSignature(Optional iShowArg As Integer = -1) As String
   Dim sKeywordAs As String
   Dim sKeywordByRef As String
   Dim sSym As String
+  Dim hClass As CClassInfo
+  Dim sParent As String
+  Dim hSym As CSymbolInfo
 
-  sSign = Signature
   sKeywordAs = If(Settings["/Editor/KeywordsUseUpperCase"], "AS", "As")
   sKeywordByref = If(Settings["/Editor/KeywordsUseUpperCase"], "BYREF", "ByRef")
   
-  If Left$(sSign) = "#" Then
-    'sRes = MakeArgBold(Mid$(sSign, 2), iShowArg)
-    'Debug Mid$(sSign, 2)
-    sSign = MakeSignature(Mid$(sSign, 2))
-    If Not sSign Then Return
-    'Debug "--> "; sSign
+  sSign = GetNativeSignature()
+  
+  If Name = "_new" Then
+    hClass = CComponent.GetClassDescription({Class})
+    Do
+      If Not hClass.Parent Then Break
+      hClass = CComponent.GetClassDescription(hClass.Parent)
+      'hClass = CComponent.Classes[hClass.ParentComponent &/ hClass.Parent]
+      hSym = hClass.Symbols["_new"]
+      If hSym Then sSign = MergeSignature(sSign, hClass.Symbols["_new"].GetNativeSignature())
+    Loop
   Endif
   
   bFirst = True

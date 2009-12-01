@@ -31,6 +31,9 @@ Static Private $cName As Collection
 Static Public Features As New Collection
 Static Public Changes As New Collection
 
+Static Private $hDumbClass As CClassInfo
+Static Private $hClass As CClassInfo
+
 Static Private Sub SortComponents()
 
   Dim iMax As Integer
@@ -942,15 +945,23 @@ Static Private Sub MustScan(hEditor As FEditor) As Boolean
   
 End
 
+Static Public Sub GetClassDescription(sClass As String) As CClassInfo
+  
+  GetClassSymbols(sClass)
+  Return $hClass
+  
+End
+
+
 Static Public Function GetClassSymbols(sClass As String) As Collection
 
   Dim hClass As CClassInfo
   Dim sName As String
   Dim sPath As String
-  Dim hPForm As Object
-  Dim hPModule As Object
-  Dim hPClass As Object
-  Dim hModule As Object
+  Dim hPForm As FForm
+  Dim hPModule As FEditor
+  Dim hPClass As FEditor
+  'Dim hModule As Object
   Dim cSymbol As Collection
   Dim hSymbol As CSymbolInfo
   Dim iFind As Integer
@@ -967,6 +978,7 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
 
   If hClass Then
     If hClass.Component <> Project.Name Then
+      $hClass = hClass
       Return hClass.Symbols
     Endif
   Endif
@@ -982,6 +994,7 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
         'GetClassSymbols(Left(sClass, -2))
         hClass = CreateClass(sClass, "", "*")
         hClass.CopyFrom(CComponent.Classes["*[]"], "*", Left(sClass, -2))
+        $hClass = hClass
         Return hClass.Symbols
       Else        
         Debug sClass & " ??"
@@ -1002,6 +1015,10 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
 
   cSymbol = New Collection
 
+  If Not $hDumbClass Then $hDumbClass = New CClassInfo("")
+  $hClass = $hDumbClass
+  $hDumbClass.Name = sClass
+
   If hPModule Then
     cSymbol = hPModule.Scan
     If MustScan(hPModule) Then
@@ -1009,6 +1026,8 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
       hPModule.Scan = cSymbol
       ScanClass(hPModule, cSymbol, True)
     Endif
+    $hDumbClass.Parent = hPModule.ParentClass
+    '$hDumbClass.ParentComponent = hPModule.ParentComponent
   Else If hPClass Then
     cSymbol = hPClass.Scan
     If MustScan(hPClass) Then
@@ -1019,10 +1038,14 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
           cSymbol[hSymbol.Name] = hSymbol
         Next
         ScanForm(hPForm, cSymbol)
+        hPClass.ParentClass = "Form"
       Endif
       ScanClass(hPClass, cSymbol, False, IsNull(hPForm))
     Endif
+    $hDumbClass.Parent = hPClass.ParentClass
   Endif
+  
+  $hDumbClass.Symbols = cSymbol
 
   Return cSymbol
 

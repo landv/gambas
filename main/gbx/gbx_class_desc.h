@@ -44,10 +44,10 @@
 typedef
   struct {
     char *name;
-    TYPE type;                  /* property type */
-    void (*read)();             /* read property */
-    void (*write)();            /* write property */
-    char native;                /* native property ? */
+    TYPE type;                  // property datatype
+    void (*read)();             // read property function
+    void (*write)();            // write property function
+    char native;                // if the property is native
     char _reserved[3];
 		#ifdef OS_64BITS
 		int _reserved2;
@@ -60,8 +60,8 @@ typedef
 typedef
   struct {
     char *name;
-    TYPE type;                  /* variable type */
-    int offset;   	            /* variable offset */
+    TYPE type;                  // variable datatype
+    int offset;   	            // variable offset in object memory
 		#ifdef OS_64BITS
 		int _reserved;
 		#endif
@@ -74,13 +74,13 @@ typedef
 typedef
   struct {
     char *name;
-    TYPE type;                  /* type de la valeur de retour */
-    void (*exec)();             /* m�hode */
-    TYPE *signature;            /* signature */
-    char npmin;                 /* nombre de param�res minimum */
-    char npmax;                 /* nombre de param�res maximum dans la signature */
-    char npvar;                 /* nombre d'arguments variables ? */
-    char native;                /* native method */
+    TYPE type;                  // return value datatype
+    void (*exec)();             // method
+    TYPE *signature;            // signature
+    char npmin;                 // minimum number of arguments
+    char npmax;                 // maximum number of arguments
+    char npvar;                 // if there is a variable number of arguments
+    char native;                // if the method is native
 		#ifdef OS_64BITS
 		int _reserved;
 		#endif
@@ -92,12 +92,12 @@ typedef
 typedef
   struct {
     char *name;
-    TYPE type;                  /* type de la valeur de retour */
-    int *index;                /* num�o de l'��ement */
-    TYPE *signature;            /* signature */
-    char npmin;                 /* nombre de param�res minimum */
-    char npmax;                 /* nombre de param�res maximum dans la signature */
-    char npvar;                 /* nombre d'arguments variables ? */
+    TYPE type;                  // return value datatype - N/A
+    int *index;                 // event index
+    TYPE *signature;            // event signature
+    char npmin;                 // minimum number of arguments
+    char npmax;                 // maximum number of arguments
+    char npvar;                 // if there is a variable number of arguments
     char _reserved;
 		#ifdef OS_64BITS
 		int _reserved2;
@@ -110,12 +110,12 @@ typedef
 typedef
   struct {
     char *name;
-    TYPE type;                  /* type de la valeur de retour */
-    int exec;                  /* Index a ex�uter */
-    TYPE *signature;            /* signature */
-    char npmin;                 /* nombre de param�res minimum */
-    char npmax;                 /* nombre de param�res maximum dans la signature */
-    char npvar;                 /* nombre d'arguments variables ? */
+    TYPE type;                  // return value datatype
+    int exec;                   // extern function index
+    TYPE *signature;            // signature
+    char npmin;                 // minimum number of arguments
+    char npmax;                 // maximum number of arguments
+    char npvar;                 // if there is a variable number of arguments
     char _reserved;
 		#ifdef OS_64BITS
 		int _reserved2;
@@ -128,7 +128,7 @@ typedef
 typedef
   struct {
     char *name;
-    TYPE type;                  /* type de constante */
+    TYPE type;                  // constant datatype
     union {
       int _integer;
       double _float;

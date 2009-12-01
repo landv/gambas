@@ -1560,10 +1560,10 @@ void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int npa
 {
 	CLASS *her[MAX_INHERITANCE];
 	int nher;
-	int i, np;
+	int i, np, npopt, nparam_opt;
 	CLASS_DESC *desc;
 	short index;
-	VALUE *csp;
+	VALUE *arg, *opt;
 
 	if (!class->parent)
 	{
@@ -1580,10 +1580,30 @@ void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int npa
 		return;
 	}
 
-	csp = SP - nparam;
-	
 	nher = CLASS_get_inheritance(class, her);
 
+	for(i = 0, np = 0; i < nher; i++)
+	{
+		class = her[i];
+	
+		index = class->special[special];
+		if (index == NO_SYMBOL)
+			continue;
+		desc = CLASS_get_desc(class, index); //class->special[special];
+		np += desc->method.npmin;
+	}
+
+	if (np > nparam)
+		THROW(E_NEPARAM);
+
+	arg = SP - nparam;
+	opt = arg + np;
+	nparam_opt = nparam - np;
+	nparam = np;
+	
+	// nparam is now the number of mandatory arguments
+	// naram_opt is the number of optional arguments
+	
 	for(;;)
 	{
 		nher--;
@@ -1611,30 +1631,46 @@ void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int npa
 			continue;
 
 		desc = CLASS_get_desc(class, index); // class->special[special];
+
 		if (nher)
 		{
-			np = desc->method.npmax;
+			np = desc->method.npmin;
 			if (np > nparam) np = nparam;
 			nparam -= np;
+			
+			npopt = desc->method.npmax - desc->method.npmin;
+			if (npopt > nparam_opt) npopt = nparam_opt;
+			nparam_opt -= npopt;
 		}
 		else
-			np = nparam;
-
-		if (np > 0)
 		{
-			STACK_check(np);
+			np = nparam;
+			npopt = nparam_opt;
+		}
+
+		if (np > 0 || npopt > 0)
+		{
+			STACK_check(np + npopt);
+			
 			for (i = 0; i < np; i++)
 			{
-				*SP++ = *csp;
-				csp->type = T_NULL;
-				csp++;
+				*SP++ = *arg;
+				arg->type = T_NULL;
+				arg++;
+			}
+
+			for (i = 0; i < npopt; i++)
+			{
+				*SP++ = *opt;
+				opt->type = T_NULL;
+				opt++;
 			}
 		}
 		
-		EXEC_special(special, class, object, np, drop);
+		EXEC_special(special, class, object, np + npopt, drop);
 	}
 	
-	SP -= nparam;
+	SP -= nparam + nparam_opt;
 }
 
 void *EXEC_create_object(CLASS *class, int np, char *event)
