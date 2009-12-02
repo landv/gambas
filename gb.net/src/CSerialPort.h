@@ -80,11 +80,6 @@ typedef  struct
 	struct termios oldtio;
 }  CSERIALPORT;
 
-void CSerialPort_CallBack(long lParam);
-void CSerialPort_AssignCallBack(long t_obj,int t_port);
-void CSerialPort_FreeCallBack(long t_obj);
-void Serial_Signal_Status(serialsignal *sdata,int iPort);
-
 int CSerialPort_stream_read(GB_STREAM *stream, char *buffer, int len);
 int CSerialPort_stream_write(GB_STREAM *stream, char *buffer, int len);
 int CSerialPort_stream_eof(GB_STREAM *stream);
