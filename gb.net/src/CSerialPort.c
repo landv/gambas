@@ -105,7 +105,7 @@ static void CSerialPort_Event(long param)
 	GB.Unref((void**)&eparam->obj);
 }
 
-static void CSerialPort_CallBack(CSERIALPORT *_object)
+static void CSerialPort_CallBack(int fd, int type, CSERIALPORT *_object)
 {
 	int position=0;
 	serialsignal newstatus;
@@ -170,7 +170,7 @@ static void CSerialPort_CallBack(CSERIALPORT *_object)
 	}*/
 }
 
-static void CSerialPort_ReadCallBack(CSERIALPORT *_object)
+static void CSerialPort_ReadCallBack(int fd, int type, CSERIALPORT *_object)
 {
 	GB.Raise(THIS, Serial_Read, 0);
 }
