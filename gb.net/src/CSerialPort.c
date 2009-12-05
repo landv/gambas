@@ -193,7 +193,13 @@ static void CSerialPort_AssignCallBack(CSERIALPORT *_object)
 	ser_portwatch[position]=t_port;
 	
 	GB.Watch (t_port, GB_WATCH_READ, (void *)CSerialPort_ReadCallBack, (intptr_t)mythis);
-	if (mythis->iFlow)
+
+	if (GB.CanRaise(mythis, Serial_DTR)
+	    || GB.CanRaise(mythis, Serial_CTS)
+	    || GB.CanRaise(mythis, Serial_DCD)
+	    || GB.CanRaise(mythis, Serial_DSR)
+	    || GB.CanRaise(mythis, Serial_RNG)
+	    || GB.CanRaise(mythis, Serial_RTS))
 		GB.Watch(t_port, GB_WATCH_WRITE, (void *)CSerialPort_CallBack, (intptr_t)mythis);
 }
 

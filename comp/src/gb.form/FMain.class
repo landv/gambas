@@ -5,23 +5,17 @@ PUBLIC SUB _new()
 END
 
 PUBLIC SUB Form_Open()
-
-  DIM i AS Integer
-  DIM j AS Integer
-  
-  TableView1.Rows.Count = 10
-  TableView1.Columns.Count = 2
-  
-  FOR i = 0 TO 9
-    FOR j = 0 TO 1
-      TableView1[i, J].Text = i
-    NEXT ' j
-  NEXT ' i
-  
+  TableView1.Rows.Count = 40
+  TableView1.Columns.Count = 4
+  TableView1.Edit
 END
 
-PUBLIC SUB TableView1_Activate()
+PUBLIC SUB TableView1_GotFocus()
+  LAST.Edit
+END
 
-  TableView1.Edit(["Yes", "No", "Maybe"], TRUE)
+PUBLIC SUB TableView1_Click()
+
+  LAST.Edit
 
 END
