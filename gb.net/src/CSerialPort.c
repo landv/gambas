@@ -175,13 +175,13 @@ static void CSerialPort_ReadCallBack(CSERIALPORT *_object)
 	GB.Raise(THIS, Serial_Read, 0);
 }
 
-static void CSerialPort_AssignCallBack(long t_obj,int t_port)
+static void CSerialPort_AssignCallBack(CSERIALPORT *_object)
 {
 	int position=0;
-	CSERIALPORT *mythis;
+	CSERIALPORT *mythis = THIS;
+	int t_port = THIS->Port;
 
-	mythis=(CSERIALPORT*)t_obj;
-	position=search_by_integer(ser_objwatch,ser_numwatch,t_obj);
+	position=search_by_integer(ser_objwatch,ser_numwatch,(long)mythis);
 	if (position>=0)
 		GB.Watch (t_port , GB_WATCH_NONE , (void *)CSerialPort_CallBack,0);
 	if (position<0)
@@ -189,7 +189,7 @@ static void CSerialPort_AssignCallBack(long t_obj,int t_port)
 		position=ser_numwatch++;
 		Alloc_CallBack_Pointers(ser_numwatch,&ser_objwatch,&ser_portwatch);
 	}
-	ser_objwatch[position]=t_obj;
+	ser_objwatch[position]=(long)mythis;
 	ser_portwatch[position]=t_port;
 	
 	GB.Watch (t_port, GB_WATCH_READ, (void *)CSerialPort_ReadCallBack, (intptr_t)mythis);
@@ -691,13 +691,13 @@ BEGIN_METHOD_VOID(CSERIALPORT_Open)
 	THIS->e_CTS.obj=THIS;
 	THIS->e_DCD.obj=THIS;
 	THIS->e_RNG.obj=THIS;
-	Serial_Signal_Status(&THIS->ser_status,THIS->Port);
-	CSerialPort_AssignCallBack((long)THIS,THIS->Port);
 	//CSerialPort_stream_init(&THIS->stream,THIS->Port);
 	THIS->stream.desc=&SerialStream;
 	THIS->iStatus=1;
-
 	THIS->stream.tag = THIS;
+
+	Serial_Signal_Status(&THIS->ser_status,THIS->Port);
+	CSerialPort_AssignCallBack(THIS);
 
 END_METHOD
 
