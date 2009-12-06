@@ -19,6 +19,7 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
+
 #ifndef __CSERIALPORT_H
 #define __CSERIALPORT_H
 
@@ -38,50 +39,35 @@ extern GB_STREAM_DESC SerialStream;
 
 GB_STREAM_DESC SerialStream;
 
-typedef struct
-{
-	int nevent;
-	int value;
-	void *obj;
-} serialevent;
+typedef 
+	struct
+	{
+		unsigned DSR : 1;
+		unsigned DTR : 1;
+		unsigned RTS : 1;
+		unsigned CTS : 1;
+		unsigned DCD : 1;
+		unsigned RNG : 1;
+	}
+	SERIAL_SIGNAL;
 
-typedef struct
-{
-	int s_DSR;
-	int s_DTR;
-	int s_RTS;
-	int s_CTS;
-	int s_DCD;
-	int s_RNG;
-
-} serialsignal;
-
-typedef  struct
-{
-	GB_BASE ob;
-	GB_STREAM stream;
-	int Port;
-	int iStatus;
-	char *sPort;
-	int Parity;
-	int Speed;
-	int DataBits;
-	int StopBits;
-	int iFlow;
-	serialevent e_DTR;
-	serialevent e_DSR;
-	serialevent e_RTS;
-	serialevent e_CTS;
-	serialevent e_DCD;
-	serialevent e_RNG;
-	serialsignal ser_status;
-	struct termios oldtio;
-}  CSERIALPORT;
-
-void CSerialPort_CallBack(long lParam);
-void CSerialPort_AssignCallBack(long t_obj,int t_port);
-void CSerialPort_FreeCallBack(long t_obj);
-void Serial_Signal_Status(serialsignal *sdata,int iPort);
+typedef
+	struct
+	{
+		GB_BASE ob;
+		GB_STREAM stream;
+		int port;
+		int status;
+		char *portName;
+		int parity;
+		int speed;
+		int dataBits;
+		int stopBits;
+		int flow;
+		SERIAL_SIGNAL signals;
+		struct termios oldtio;
+	}  
+	CSERIALPORT;
 
 int CSerialPort_stream_read(GB_STREAM *stream, char *buffer, int len);
 int CSerialPort_stream_write(GB_STREAM *stream, char *buffer, int len);
@@ -93,4 +79,5 @@ int CSerialPort_stream_tell(GB_STREAM *stream, int64_t *pos);
 int CSerialPort_stream_flush(GB_STREAM *stream);
 int CSerialPort_stream_close(GB_STREAM *stream);
 int CSerialPort_stream_handle(GB_STREAM *stream);
+
 #endif

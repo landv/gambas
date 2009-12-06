@@ -178,7 +178,8 @@ void* dns_get_name(void* v_obj)
 	sem_post(&mythis->sem_id);
 
 
-	((struct sockaddr*)&sa)->sa_family=AF_INET;
+	//((struct sockaddr*)&sa)->sa_family=AF_INET;
+	sa.sin_family = AF_INET;
 	bzero(host,1024);
 	sa.sin_port=0;
 	inet_aton(mythis->sHostIP, &sa.sin_addr);

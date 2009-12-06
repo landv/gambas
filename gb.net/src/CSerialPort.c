@@ -42,12 +42,8 @@
 #define MAX_SERIAL_BUFFER_SIZE 65536
 
 
-
-long *ser_objwatch=NULL;
-long *ser_portwatch=NULL;
-long ser_numwatch=0;
-
-GB_STREAM_DESC SerialStream = {
+GB_STREAM_DESC SerialStream = 
+{
 	open: CSerialPort_stream_open,
 	close: CSerialPort_stream_close,
 	read: CSerialPort_stream_read,
@@ -60,202 +56,160 @@ GB_STREAM_DESC SerialStream = {
 	handle: CSerialPort_stream_handle
 };
 
+DECLARE_EVENT(EVENT_Read);
+DECLARE_EVENT(EVENT_DTR);
+DECLARE_EVENT(EVENT_DSR);
+DECLARE_EVENT(EVENT_RTS);
+DECLARE_EVENT(EVENT_CTS);
+DECLARE_EVENT(EVENT_DCD);
+DECLARE_EVENT(EVENT_RNG);
 
-DECLARE_EVENT (Serial_Read);
-DECLARE_EVENT (Serial_DTR);
-DECLARE_EVENT (Serial_DSR);
-DECLARE_EVENT (Serial_RTS);
-DECLARE_EVENT (Serial_CTS);
-DECLARE_EVENT (Serial_DCD);
-DECLARE_EVENT (Serial_RNG);
-
-void Serial_Signal_Status(serialsignal *sdata,int iPort)
+static SERIAL_SIGNAL get_signals(CSERIALPORT *_object)
 {
 	int ist = 0;
-	sdata->s_DSR=0;
-	sdata->s_DTR=0;
-	sdata->s_RTS=0;
-	sdata->s_CTS=0;
-	sdata->s_DCD=0;
-	sdata->s_RNG=0;
-	ioctl(iPort,TIOCMGET,&ist);
-	if ( ist & TIOCM_DSR ) sdata->s_DSR=1;
-	if ( ist & TIOCM_DTR ) sdata->s_DTR=1;
-	if ( ist & TIOCM_RTS ) sdata->s_RTS=1;
-	if ( ist & TIOCM_CTS ) sdata->s_CTS=1;
-	if ( ist & TIOCM_CAR ) sdata->s_DCD=1;
-	if ( ist & TIOCM_RNG ) sdata->s_RNG=1;
+	SERIAL_SIGNAL signals = { 0 };
+	
+	ioctl(THIS->port, TIOCMGET, &ist);
+	
+	signals.DSR = (ist & TIOCM_DSR) != 0;
+	signals.DTR = (ist & TIOCM_DTR) != 0;
+	signals.RTS = (ist & TIOCM_RTS) != 0;
+	signals.CTS = (ist & TIOCM_CTS) != 0;
+	signals.DCD = (ist & TIOCM_CAR) != 0;
+	signals.RNG = (ist & TIOCM_RNG) != 0;
+	
+	return signals;
 }
 
-void CSerialPort_Event(long param)
+static void raise_event(CSERIALPORT *_object, intptr_t event)
 {
-	serialevent *eparam;
-	eparam=(serialevent*)param;
-	switch(eparam->nevent)
-	{
-		case 0: GB.Raise(eparam->obj,Serial_DTR,1,GB_T_BOOLEAN,eparam->value); break;
-    		case 1: GB.Raise(eparam->obj,Serial_DSR,1,GB_T_BOOLEAN,eparam->value); break;
-    		case 2: GB.Raise(eparam->obj,Serial_RTS,1,GB_T_BOOLEAN,eparam->value); break;
-    		case 3: GB.Raise(eparam->obj,Serial_CTS,1,GB_T_BOOLEAN,eparam->value); break;
-    		case 4: GB.Raise(eparam->obj,Serial_DCD,1,GB_T_BOOLEAN,eparam->value); break;
-    		case 5: GB.Raise(eparam->obj,Serial_RNG,1,GB_T_BOOLEAN,eparam->value); break;
-	}
-	GB.Unref((void**)&eparam->obj);
+	int val = 0;
+	
+	if (event == EVENT_DSR)
+		val = THIS->signals.DSR;
+	else if (event == EVENT_DTR)
+		val = THIS->signals.DTR;
+	else if (event == EVENT_RTS)
+		val = THIS->signals.RTS;
+	else if (event == EVENT_CTS)
+		val = THIS->signals.CTS;
+	else if (event == EVENT_DCD)
+		val = THIS->signals.DCD;
+	else if (event == EVENT_RNG)
+		val = THIS->signals.RNG;
+	
+	GB.Raise(THIS, (int)event, 1, GB_T_BOOLEAN, val);
+	GB.Unref(POINTER(&_object));
 }
 
-void CSerialPort_CallBack(long lParam)
+#define CHECK_SIGNAL(_signal) \
+if (THIS->signals._signal != new_signals._signal) \
+{ \
+	THIS->signals._signal = new_signals._signal; \
+	GB.Ref(THIS); \
+	GB.Post2(raise_event, (intptr_t)THIS, (intptr_t)EVENT_##_signal); \
+}
+	
+
+static void cb_change(int fd, int type, CSERIALPORT *_object)
 {
-	int position=0;
-	serialsignal newstatus;
-	struct pollfd mypoll;
-	int numpoll;
-	CSERIALPORT *mythis;
-	/*	Just sleeping a bit to reduce CPU waste	*/
+	SERIAL_SIGNAL new_signals;
 	struct timespec mywait;
-	mywait.tv_sec=0;
-	mywait.tv_nsec=1000000;
-	nanosleep(&mywait,NULL);
 
-	if ((position=search_by_integer(ser_portwatch,ser_numwatch,(int)lParam))==-1) return;
+	// Just sleeping a bit to reduce CPU waste
+	mywait.tv_sec = 0;
+	mywait.tv_nsec = 1000000; // 1 ms
+	nanosleep(&mywait, NULL);
 
-	mythis=(CSERIALPORT*)ser_objwatch[position];
 	/* Serial port signals status */
-	Serial_Signal_Status(&newstatus,lParam);
-	mythis->e_DTR.value=newstatus.s_DTR;
-	mythis->e_DSR.value=newstatus.s_DSR;
-	mythis->e_RTS.value=newstatus.s_RTS;
-	mythis->e_CTS.value=newstatus.s_CTS;
-	mythis->e_DCD.value=newstatus.s_DCD;
-	mythis->e_RNG.value=newstatus.s_RNG;
-	if (mythis->ser_status.s_DTR != newstatus.s_DTR ) {
-		mythis->ser_status.s_DTR = newstatus.s_DTR;
-		GB.Ref(mythis);
-		GB.Post(CSerialPort_Event,(long)&mythis->e_DTR);
-	}
-	if (mythis->ser_status.s_DSR != newstatus.s_DSR ) {
-		mythis->ser_status.s_DSR = newstatus.s_DSR;
-		GB.Ref(mythis);
-		GB.Post(CSerialPort_Event,(long)&mythis->e_DSR);
-	}
-	if (mythis->ser_status.s_RTS != newstatus.s_RTS ) {
-		mythis->ser_status.s_RTS = newstatus.s_RTS;
-		GB.Ref(mythis);
-		GB.Post(CSerialPort_Event,(long)&mythis->e_RTS);
-	}
-	if (mythis->ser_status.s_CTS != newstatus.s_CTS ) {
-		mythis->ser_status.s_CTS = newstatus.s_CTS;
-		GB.Ref(mythis);
-		GB.Post(CSerialPort_Event,(long)&mythis->e_CTS);
-	}
-	if (mythis->ser_status.s_DCD != newstatus.s_DCD ) {
-		mythis->ser_status.s_DCD = newstatus.s_DCD;
-		GB.Ref(mythis);
-		GB.Post(CSerialPort_Event,(long)&mythis->e_DCD);
-	}
-	if (mythis->ser_status.s_RNG != newstatus.s_RNG ) {
-		mythis->ser_status.s_RNG = newstatus.s_RNG;
-		GB.Ref(mythis);
-		GB.Post(CSerialPort_Event,(long)&mythis->e_RNG);
-	}
-
-	/* Data Available */
-	mypoll.fd=lParam;
-	mypoll.events=POLLIN;
-	mypoll.revents=0;
-	numpoll=poll(&mypoll,1,0);
-	if (numpoll)
-	{
-		GB.Raise((void*)mythis,Serial_Read,0);
-	}
-
-
+	new_signals = get_signals(THIS);
+	
+	CHECK_SIGNAL(DSR);
+	CHECK_SIGNAL(DTR);
+	CHECK_SIGNAL(RTS);
+	CHECK_SIGNAL(CTS);
+	CHECK_SIGNAL(DCD);
+	CHECK_SIGNAL(RNG);
 }
 
-
-void CSerialPort_AssignCallBack(long t_obj,int t_port)
+static void cb_read(int fd, int type, CSERIALPORT *_object)
 {
-	int position=0;
-	CSERIALPORT *mythis;
-
-	mythis=(CSERIALPORT*)t_obj;
-	position=search_by_integer(ser_objwatch,ser_numwatch,t_obj);
-	if (position>=0)
-		GB.Watch (t_port , GB_WATCH_NONE , (void *)CSerialPort_CallBack,0);
-	if (position<0)
-	{
-		position=ser_numwatch++;
-		Alloc_CallBack_Pointers(ser_numwatch,&ser_objwatch,&ser_portwatch);
-	}
-	ser_objwatch[position]=t_obj;
-	ser_portwatch[position]=t_port;
-	GB.Watch (t_port , GB_WATCH_READ , (void *)CSerialPort_CallBack,0);
+	GB.Raise(THIS, EVENT_Read, 0);
 }
 
-void CSerialPort_FreeCallBack(long t_obj)
+static void assign_callback(CSERIALPORT *_object)
 {
-	int myloop;
-	int position;
+	int port = THIS->port;
 
-	position=search_by_integer(ser_objwatch,ser_numwatch,t_obj);
-	if ( position==-1 ) return;
-	GB.Watch (ser_portwatch[position] , GB_WATCH_NONE , (void *)CSerialPort_CallBack,0);
-	for ( myloop=position;myloop < (ser_numwatch-1);myloop++ )
-	{
-		ser_objwatch[myloop]=ser_objwatch[myloop+1];
-		ser_portwatch[myloop]=ser_portwatch[myloop+1];
-	}
-	ser_numwatch--;
-	Alloc_CallBack_Pointers(ser_numwatch,&ser_objwatch,&ser_portwatch);
+	GB.Watch(port, GB_WATCH_READ, (void *)cb_read, (intptr_t)THIS);
+	if (GB.CanRaise(THIS, EVENT_DTR)
+	    || GB.CanRaise(THIS, EVENT_CTS)
+	    || GB.CanRaise(THIS, EVENT_DCD)
+	    || GB.CanRaise(THIS, EVENT_DSR)
+	    || GB.CanRaise(THIS, EVENT_RNG)
+	    || GB.CanRaise(THIS, EVENT_RTS))
+		GB.Watch(port, GB_WATCH_WRITE, (void *)cb_change, (intptr_t)THIS);
 }
-////////////////////////////////////////////////////////////////////////////////////
-//
-//
-//**********************************************************************************
-//===================================================================================
-//##################STREAM RELATED FUNCTIONS#########################################
-//===================================================================================
-//***********************************************************************************/
-//
-//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-//
-/////////////////////////////////////////////////////////////////////////////////////
+
+static void release_callback(CSERIALPORT *_object)
+{
+	GB.Watch(THIS->port, GB_WATCH_NONE, 0, 0);
+}
+
+static void close_serial_port(CSERIALPORT *_object)
+{
+	if (THIS->status)
+	{
+		release_callback(THIS);
+		THIS->stream.desc = NULL;
+		CloseSerialPort(THIS->port, &THIS->oldtio);
+		THIS->status = 0;
+	}
+}
+
+/****************************************************************************
+ 
+	Stream implementation
+
+****************************************************************************/
 
 int CSerialPort_stream_open(GB_STREAM *stream, const char *path, int mode, void *data)
 {
 	return -1; /* not allowed */
 }
+
 int CSerialPort_stream_seek(GB_STREAM *stream, int64_t pos, int whence)
 {
 	return -1; /* not allowed */
 }
+
 int CSerialPort_stream_tell(GB_STREAM *stream, int64_t *pos)
 {
 	return -1; /* not allowed */
 }
+
 int CSerialPort_stream_flush(GB_STREAM *stream)
 {
 	return 0; /* OK */
 }
+
 int CSerialPort_stream_handle(GB_STREAM *stream)
 {
 	void *_object = stream->tag;
-	return THIS->Port; /* OK */
+	return THIS->port; /* OK */
 }
+
 int CSerialPort_stream_close(GB_STREAM *stream)
 {
 	void *_object = stream->tag;
 
-	if (!_object) return -1;	
+	if (!_object) 
+		return -1;
 	
-	if (THIS->iStatus)
-	{
-		CSerialPort_FreeCallBack((long)THIS);
-		THIS->stream.desc=NULL;
-		CloseSerialPort(THIS->Port,&THIS->oldtio);
-		THIS->iStatus=0;
-	}
+	close_serial_port(THIS);
 	return 0;
 }
+
 int CSerialPort_stream_lof(GB_STREAM *stream, int64_t *len)
 {
 	void *_object = stream->tag;
@@ -264,10 +218,11 @@ int CSerialPort_stream_lof(GB_STREAM *stream, int64_t *len)
 	*len=0;
 	if (!_object) return -1;
 	
-	if (ioctl(THIS->Port,FIONREAD,&bytes)) return -1;
-	*len=bytes;
+	if (ioctl(THIS->port,FIONREAD,&bytes)) return -1;
+	*len = bytes;
 	return 0;
 }
+
 int CSerialPort_stream_eof(GB_STREAM *stream)
 {
 	void *_object = stream->tag;
@@ -275,7 +230,7 @@ int CSerialPort_stream_eof(GB_STREAM *stream)
 
 	if (!_object) return -1;
 	
-	if (ioctl(THIS->Port,FIONREAD,&bytes)) return -1;
+	if (ioctl(THIS->port,FIONREAD,&bytes)) return -1;
 	if (!bytes) return -1;
 	return 0;
 }
@@ -283,421 +238,395 @@ int CSerialPort_stream_eof(GB_STREAM *stream)
 int CSerialPort_stream_read(GB_STREAM *stream, char *buffer, int len)
 {
 	void *_object = stream->tag;
-	int npos=-1;
-	int NoBlock=0;
+	int npos = -1;
+	int no_block = 0;
 	int bytes;
 
-  	if (!_object) return -1;
+ 	if (!_object) 
+		return -1;
 	
-	if (ioctl(THIS->Port,FIONREAD,&bytes)) return -1;
-	if (bytes < len) return -1;
-	ioctl(THIS->Port,FIONBIO,&NoBlock);
-	npos=read(THIS->Port,(void*)buffer,len);
-	NoBlock++;
-  	ioctl(THIS->Port,FIONBIO,&NoBlock);
-  	if (npos==len) return 0;
-  	return -1;
+	if (ioctl(THIS->port, FIONREAD, &bytes)) 
+		return -1;
+	
+	if (bytes < len) 
+		return -1;
+	
+	ioctl(THIS->port, FIONBIO, &no_block);
+	
+	npos = read(THIS->port, (void*)buffer, len);
+	
+	no_block++;
+	ioctl(THIS->port, FIONBIO, &no_block);
+	
+	if (npos != len) 
+		return -1;
+	
+	return 0;
 }
 
 int CSerialPort_stream_write(GB_STREAM *stream, char *buffer, int len)
 {
 	void *_object = stream->tag;
-	int npos=-1;
-	int NoBlock=0;
+	int npos = -1;
+	int no_block = 0;
 
-	if (!_object) return -1;
+	if (!_object) 
+		return -1;
 	
-	ioctl(THIS->Port,FIONBIO,&NoBlock);
-	npos=write(THIS->Port,(void*)buffer,len);
-	NoBlock++;
-	ioctl(THIS->Port,FIONBIO,&NoBlock);
-	if (npos>=0) return 0;
-	return -1;
+	ioctl(THIS->port, FIONBIO, &no_block);
+	
+	npos = write(THIS->port, (void*)buffer, len);
+	
+	no_block++;
+	ioctl(THIS->port, FIONBIO, &no_block);
+	
+	if (npos < 0) 
+		return -1;
+	
+	return 0;
 }
-/************************************************************************
-##########################################################################
-				GAMBAS OBJECT PUBLIC INTERFACE
-##########################################################################
-**************************************************************************/
-/********************************************************************
-Returns current Status of the port (0->Closed, 1 --> Opened)
-*********************************************************************/
-BEGIN_PROPERTY ( CSERIALPORT_Status )
 
-  GB.ReturnInteger(THIS->iStatus);
-
-END_PROPERTY
-
-
-
-/*************************************
- Data Set Ready
- *************************************/
-BEGIN_PROPERTY ( CSERIALPORT_DSR )
-
-  if ( !THIS->iStatus )
-  {
-  	GB.ReturnBoolean(0);
-	return;
-  }
-
-  Serial_Signal_Status(&THIS->ser_status,THIS->Port);
-  GB.ReturnBoolean(THIS->ser_status.s_DSR);
-
-END_PROPERTY
-
-/***************************************
- Data Transmission Ready
- ***************************************/
-BEGIN_PROPERTY ( CSERIALPORT_DTR )
-
-	int ist;
-	if (READ_PROPERTY)
+static bool check_open(CSERIALPORT *_object)
+{
+	if (!THIS->status)
 	{
-		if ( !THIS->iStatus )
-		{
-			GB.ReturnBoolean(0);
-			return;
-		}
-		Serial_Signal_Status(&THIS->ser_status,THIS->Port);
-		GB.ReturnBoolean(THIS->ser_status.s_DTR);
-		return;
+		GB.Error("Port is closed");
+		return TRUE;
 	}
-  
-	if (!THIS->iStatus )
-	{
-		GB.Error ("Port is closed");
-		return;
-	}
-	ioctl(THIS->Port,TIOCMGET,&ist);
-	if (!VPROP(GB_BOOLEAN))
-		ist &= ~TIOCM_DTR;
 	else
-		ist = ist | TIOCM_DTR;
-	ioctl(THIS->Port,TIOCMSET,&ist);
+		return FALSE;
+}
 
+static bool check_close(CSERIALPORT *_object)
+{
+	if (THIS->status)
+	{
+		GB.Error("Port must be closed first");
+		return TRUE;
+	}
+	else
+		return FALSE;
+}
+
+/****************************************************************************
+ 
+	SerialPort
+
+****************************************************************************/
+
+BEGIN_PROPERTY(CSERIALPORT_Status)
+
+  GB.ReturnInteger(THIS->status);
 
 END_PROPERTY
 
-/****************************************
- Ready to send
- ****************************************/
-BEGIN_PROPERTY ( CSERIALPORT_RTS )
+// Data Set Ready
+
+BEGIN_PROPERTY(CSERIALPORT_DSR)
+
+  if (!THIS->status)
+  	GB.ReturnBoolean(0);
+	else
+	{
+		THIS->signals = get_signals(THIS);
+		GB.ReturnBoolean(THIS->signals.DSR);
+	}
+
+END_PROPERTY
+
+// Data Transmission Ready
+
+BEGIN_PROPERTY(CSERIALPORT_DTR)
 
 	int ist;
+
 	if (READ_PROPERTY)
 	{
-		if ( !THIS->iStatus )
-		{
+		if (!THIS->status)
 			GB.ReturnBoolean(0);
-			return;
+		else
+		{
+			THIS->signals = get_signals(THIS);
+			GB.ReturnBoolean(THIS->signals.DSR);
 		}
+	}
+	else
+	{
+		if (check_open(THIS))
+			return;
+
+		ioctl(THIS->port, TIOCMGET, &ist);
+		if (!VPROP(GB_BOOLEAN))
+			ist &= ~TIOCM_DTR;
+		else
+			ist = ist | TIOCM_DTR;
+		ioctl(THIS->port, TIOCMSET, &ist);
+	}
+
+END_PROPERTY
+
+// Ready to send
+
+BEGIN_PROPERTY(CSERIALPORT_RTS)
+
+	int ist;
 	
-		Serial_Signal_Status(&THIS->ser_status,THIS->Port);
-		GB.ReturnBoolean(THIS->ser_status.s_RTS);
-		return;
-	}
-  
-  	if (!THIS->iStatus )
+	if (READ_PROPERTY)
 	{
-		GB.Error ("Port is closed");
-		return;
+		if (!THIS->status)
+			GB.ReturnBoolean(0);
+		else
+		{
+			THIS->signals = get_signals(THIS);
+			GB.ReturnBoolean(THIS->signals.RTS);
+		}
 	}
-	ioctl(THIS->Port,TIOCMGET,&ist);
-	if(!VPROP(GB_BOOLEAN))
-		ist &= ~TIOCM_RTS;
 	else
-		ist = ist | TIOCM_RTS;
-	ioctl(THIS->Port,TIOCMSET,&ist);
+	{
+		if (check_open(THIS))
+			return;
 
+		ioctl(THIS->port, TIOCMGET, &ist);
+		if(!VPROP(GB_BOOLEAN))
+			ist &= ~TIOCM_RTS;
+		else
+			ist = ist | TIOCM_RTS;
+		ioctl(THIS->port, TIOCMSET, &ist);
+	}
 
 END_PROPERTY
 
-/****************************************
- Clear to send
- ****************************************/
-BEGIN_PROPERTY ( CSERIALPORT_CTS )
+// Clear to send
 
-  if ( !THIS->iStatus )
-  {
+BEGIN_PROPERTY(CSERIALPORT_CTS)
+
+  if (!THIS->status)
   	GB.ReturnBoolean(0);
-	return;
-  }
-
-  Serial_Signal_Status(&THIS->ser_status,THIS->Port);
-  GB.ReturnBoolean(THIS->ser_status.s_CTS);
+	else
+	{
+		THIS->signals = get_signals(THIS);
+		GB.ReturnBoolean(THIS->signals.CTS);
+	}
 
 END_PROPERTY
 
-/***************************************
- Data Carrier Detect
- ***************************************/
-BEGIN_PROPERTY ( CSERIALPORT_DCD )
+// Data Carrier Detect
 
-  if ( !THIS->iStatus )
-  {
+BEGIN_PROPERTY(CSERIALPORT_DCD)
+
+  if (!THIS->status)
   	GB.ReturnBoolean(0);
-	return;
-  }
-
-  Serial_Signal_Status(&THIS->ser_status,THIS->Port);
-  GB.ReturnBoolean(THIS->ser_status.s_DCD);
+	else
+	{
+		THIS->signals = get_signals(THIS);
+		GB.ReturnBoolean(THIS->signals.DCD);
+	}
 
 END_PROPERTY
 
-/***************************************
- Ring
- ***************************************/
-BEGIN_PROPERTY ( CSERIALPORT_RNG )
+// Ring
 
-  if ( !THIS->iStatus )
-  {
+BEGIN_PROPERTY(CSERIALPORT_RNG)
+
+  if (!THIS->status)
   	GB.ReturnBoolean(0);
-	return;
-  }
-
-  Serial_Signal_Status(&THIS->ser_status,THIS->Port);
-  GB.ReturnBoolean(THIS->ser_status.s_RNG);
+	else
+	{
+		THIS->signals = get_signals(THIS);
+		GB.ReturnBoolean(THIS->signals.RNG);
+	}
 
 END_PROPERTY
 
-/*********************************************************************
- Gets / Sets serial port name (on Linux /dev/ttyS0, etc)
-**********************************************************************/
-BEGIN_PROPERTY ( CSERIALPORT_Port )
+// Gets / Sets serial port name (on Linux /dev/ttyS0, etc)
+
+BEGIN_PROPERTY(CSERIALPORT_Port)
 
 	if (READ_PROPERTY)
+		GB.ReturnString(THIS->portName);
+	else
 	{
-		GB.ReturnString(THIS->sPort);
-		return;
+		if (check_close(THIS))
+			return;
+		GB.StoreString(PROP(GB_STRING), &THIS->portName);
 	}
-  	if ( THIS->iStatus )
-	{
-		GB.Error("Current port must be closed first");
-		return;
-	}
-	GB.StoreString(PROP(GB_STRING), &THIS->sPort);
 
 END_PROPERTY
 
+// FlowControl : 1->CRTSCTS , 2-> XON/XOFF , 3-> XON/OFF plus CRTSCTS, 0 --> NONE
 
-/*******************************************************************************
- FlowControl : 1->CRTSCTS , 2-> XON/XOFF , 3-> XON/OFF plus CRTSCTS, 4 --> NONE
-********************************************************************************/
-BEGIN_PROPERTY ( CSERIALPORT_FlowControl )
+BEGIN_PROPERTY(CSERIALPORT_FlowControl)
+
+	int flow;
 
 	if (READ_PROPERTY)
+		GB.ReturnInteger(THIS->flow);
+	else
 	{
-		GB.ReturnInteger(THIS->iFlow);
-		return;
+		if (check_close(THIS))
+			return;
+		
+		flow = VPROP(GB_INTEGER);
+		if (flow < 0 || flow > 3)
+		{
+			GB.Error("Invalid flow control value");
+			return;
+		}
+		
+		THIS->flow = VPROP(GB_INTEGER);
 	}
-  	if ( THIS->iStatus )
-	{
-		GB.Error("Current port must be closed first");
-		return;
-	}
-	if ( (VPROP(GB_INTEGER)<0) || (VPROP(GB_INTEGER)>3) )
-	{
-		GB.Error("Invalid flow control value");
-		return;
-	}
-	THIS->iFlow=VPROP(GB_INTEGER);
-
 
 END_PROPERTY
 
-/*********************************************************************
- Gets / Sets serial parity (E,O,N)
-**********************************************************************/
-BEGIN_PROPERTY ( CSERIALPORT_Parity )
+// Gets / Sets serial parity (E,O,N)
+
+BEGIN_PROPERTY(CSERIALPORT_Parity)
 
   int parity;
   
   if (READ_PROPERTY)
-  {
-	GB.ReturnInteger(THIS->Parity);
-  }
+		GB.ReturnInteger(THIS->parity);
   else
   {
-  	if ( THIS->iStatus )
-		GB.Error("Current port must be closed first");
-	else
-	{
-          parity = VPROP(GB_INTEGER);
-          if (parity < 0 || parity > 2)
-            GB.Error("Invalid parity");
-          else
-            THIS->Parity = parity;
-                /*
-		GB.StoreString(PROP(GB_STRING), &tmpstring);
-		if ( GB.StringLength (tmpstring) != 1 )
+		if (check_close(THIS))
+			return;
+
+		parity = VPROP(GB_INTEGER);
+		if (parity < 0 || parity > 2)
 		{
-			myok=0;
+			GB.Error("Invalid parity");
+			return;
 		}
+		
+		THIS->parity = parity;
+	}
+
+END_PROPERTY
+
+// Gets / Sets serial port Speed
+
+BEGIN_PROPERTY(CSERIALPORT_Speed)
+
+	int speed;
+	
+	if (READ_PROPERTY)
+		GB.ReturnInteger(THIS->speed);
+	else
+	{
+		if (check_close(THIS))
+			return;
+		
+		speed = VPROP(GB_INTEGER);
+		
+		if (ConvertBaudRate(speed) == -1)
+			GB.Error("Invalid speed value");
 		else
-		{
-		        if (ConvertParity(tmpstring[0]) == -1) myok=0;
-		}
-		GB.FreeString(&tmpstring);
-		if (!myok)
-			GB.Error("Invalid parity value.");
+			THIS->speed = speed;
+	}
+
+END_PROPERTY
+
+// Gets / Sets serial port Data Bits
+
+BEGIN_PROPERTY(CSERIALPORT_DataBits)
+
+	int value;
+	
+	if (READ_PROPERTY)
+		GB.ReturnInteger(THIS->dataBits);
+	else
+	{
+		if (check_close(THIS))
+			return;
+		
+		value = VPROP(GB_INTEGER);
+		
+		if (ConvertDataBits(value) == -1)
+			GB.Error("Invalid data bits value");
 		else
-			GB.StoreString(PROP(GB_STRING), &THIS->Parity);
-                */
+			THIS->dataBits = value;
 	}
-  }
 
 END_PROPERTY
 
-/*********************************************************************
- Gets / Sets serial port Speed
-**********************************************************************/
-BEGIN_PROPERTY ( CSERIALPORT_Speed )
+// Gets / Sets serial port Stop Bits
 
-	int myok=1;
+BEGIN_PROPERTY(CSERIALPORT_StopBits)
+
+	int value;
+	
 	if (READ_PROPERTY)
-	{
-		GB.ReturnInteger(THIS->Speed);
-		return;
-	}
-  	if ( THIS->iStatus ){ GB.Error("Current port must be closed first");return; }
-	if ( !VPROP(GB_INTEGER) ) myok=0;
-	if ( ConvertBaudRate(VPROP(GB_INTEGER)) == -1) myok=0;
-	if (!myok)
-		GB.Error("Invalid speed value");
+		GB.ReturnInteger(THIS->stopBits);
 	else
-		THIS->Speed=VPROP(GB_INTEGER);
-
-
+	{
+		if (check_close(THIS))
+			return;
+		
+		value = VPROP(GB_INTEGER);
+		
+		if (ConvertStopBits(value) == -1)
+			GB.Error("Invalid stop bits value");
+		else
+			THIS->stopBits = value;
+	}
 
 END_PROPERTY
 
-/*********************************************************************
- Gets / Sets serial port Data Bits
-**********************************************************************/
-BEGIN_PROPERTY ( CSERIALPORT_DataBits )
+// Gambas object "Constructor"
 
-	int myok=1;
-	if (READ_PROPERTY)
-	{
-		GB.ReturnInteger(THIS->DataBits);
-		return;
-	}
-  	if ( THIS->iStatus ) { GB.Error("Current port must be closed first"); return; }
-	if ( ConvertDataBits(VPROP(GB_INTEGER)) == -1) myok=0;
-	if (!myok)
-		GB.Error("Invalid data bits value");
-	else
-		THIS->DataBits=VPROP(GB_INTEGER);
-
-
-
-END_PROPERTY
-
-/*********************************************************************
- Gets / Sets serial port Stop Bits
-**********************************************************************/
-BEGIN_PROPERTY ( CSERIALPORT_StopBits )
-
-	int myok=1;
-	if (READ_PROPERTY)
-	{
-		GB.ReturnInteger(THIS->StopBits);
-		return;
-	}
-  	if ( THIS->iStatus ){GB.Error("Current port must be closed first");return;}
-	if ( ConvertStopBits(VPROP(GB_INTEGER)) == -1) myok=0;
-	if (!myok)
-		GB.Error("Invalid stop bits value");
-	else
-		THIS->StopBits=VPROP(GB_INTEGER);
-
-
-
-END_PROPERTY
-
-/*************************************************
- Gambas object "Constructor"
- *************************************************/
 BEGIN_METHOD_VOID(CSERIALPORT_new)
 
-	THIS->Port=0;
-	THIS->iStatus=0;
-	THIS->sPort=NULL;
-	GB.NewString(&THIS->sPort,"/dev/ttyS0",10);
-	THIS->Speed=19200;
-	THIS->Parity=0;
-	THIS->DataBits=8;
-	THIS->StopBits=1;
-	THIS->iFlow=1;
+	GB.NewString(&THIS->portName, "/dev/ttyS0", 0);
+	THIS->speed = 19200;
+	THIS->parity = 0;
+	THIS->dataBits = 8;
+	THIS->stopBits = 1;
+	THIS->flow = 1;
 
 END_METHOD
 
-/*************************************************
- Gambas object "Destructor"
- *************************************************/
+// Gambas object "Destructor"
+
 BEGIN_METHOD_VOID(CSERIALPORT_free)
 
-	if (THIS->iStatus)
-	{
-		CSerialPort_FreeCallBack((long)THIS);
-		//GB.Stream.Init(&THIS->stream,-1);
-		CloseSerialPort(THIS->Port,&THIS->oldtio);
-		THIS->iStatus=0;
-	}
-	GB.FreeString(&THIS->sPort);
+	close_serial_port(THIS);
+	GB.FreeString(&THIS->portName);
 
 END_METHOD
 
-/*************************************************
- To open the port
- *************************************************/
+// To open the port
+
 BEGIN_METHOD_VOID(CSERIALPORT_Open)
 
 	int err;
 	char buffer[8];
 
-	if (THIS->iStatus)
+	if (THIS->status)
 	{
 		GB.Error("Port is already opened");
 		return;
 	}
-	if ((err = OpenSerialPort(&THIS->Port, THIS->iFlow, &THIS->oldtio, THIS->sPort, THIS->Speed, THIS->Parity, THIS->DataBits, THIS->StopBits)))
+	
+	if ((err = OpenSerialPort(&THIS->port, THIS->flow, &THIS->oldtio, THIS->portName, THIS->speed, THIS->parity, THIS->dataBits, THIS->stopBits)))
 	{
 		sprintf(buffer, "#%d", err);
 		GB.Error("Cannot open serial port (&1)", buffer);
 		return;
 	}
-	THIS->e_DTR.nevent=0;
-	THIS->e_DSR.nevent=1;
-	THIS->e_RTS.nevent=2;
-	THIS->e_CTS.nevent=3;
-	THIS->e_DCD.nevent=4;
-	THIS->e_RNG.nevent=5;
-	THIS->e_DTR.obj=THIS;
-	THIS->e_DSR.obj=THIS;
-	THIS->e_RTS.obj=THIS;
-	THIS->e_CTS.obj=THIS;
-	THIS->e_DCD.obj=THIS;
-	THIS->e_RNG.obj=THIS;
-	Serial_Signal_Status(&THIS->ser_status,THIS->Port);
-	CSerialPort_AssignCallBack((long)THIS,THIS->Port);
-	//CSerialPort_stream_init(&THIS->stream,THIS->Port);
-	THIS->stream.desc=&SerialStream;
-	THIS->iStatus=1;
-
+	
+	THIS->signals = get_signals(THIS);
+	THIS->stream.desc = &SerialStream;
 	THIS->stream.tag = THIS;
+	assign_callback(THIS);
+
+	THIS->status = 1;
 
 END_METHOD
 
+// Here we declare the public interface of SerialPort class
 
-
-/***************************************************************
- Here we declare the public interface of SerialPort class
- ***************************************************************/
 GB_DESC CSerialPortDesc[] =
 {
-
   GB_DECLARE("SerialPort", sizeof(CSERIALPORT)),
 
   GB_INHERITS("Stream"),
@@ -719,18 +648,17 @@ GB_DESC CSerialPortDesc[] =
   GB_CONSTANT("Bits7", "i", 7),
   GB_CONSTANT("Bits8", "i", 8),
   
-  GB_EVENT("Read", NULL, NULL, &Serial_Read),
-  GB_EVENT("DTRChange", NULL, "(CurrentValue)b", &Serial_DTR),
-  GB_EVENT("DSRChange", NULL, "(CurrentValue)b", &Serial_DSR),
-  GB_EVENT("RTSChange", NULL, "(CurrentValue)b", &Serial_RTS),
-  GB_EVENT("CTSChange", NULL, "(CurrentValue)b", &Serial_CTS),
-  GB_EVENT("DCDChange", NULL, "(CurrentValue)b", &Serial_DCD),
-  GB_EVENT("RNGChange", NULL, "(CurrentValue)b", &Serial_RNG),
+  GB_EVENT("Read", NULL, NULL, &EVENT_Read),
+  GB_EVENT("DTRChange", NULL, "(CurrentValue)b", &EVENT_DTR),
+  GB_EVENT("DSRChange", NULL, "(CurrentValue)b", &EVENT_DSR),
+  GB_EVENT("RTSChange", NULL, "(CurrentValue)b", &EVENT_RTS),
+  GB_EVENT("CTSChange", NULL, "(CurrentValue)b", &EVENT_CTS),
+  GB_EVENT("DCDChange", NULL, "(CurrentValue)b", &EVENT_DCD),
+  GB_EVENT("RNGChange", NULL, "(CurrentValue)b", &EVENT_RNG),
 
   GB_METHOD("_new", NULL, CSERIALPORT_new, NULL),
   GB_METHOD("_free", NULL, CSERIALPORT_free, NULL),
   GB_METHOD("Open", NULL, CSERIALPORT_Open, NULL),
-  //GB_METHOD("Close", NULL, CSERIALPORT_Close, NULL),
 
   GB_PROPERTY("FlowControl","i",CSERIALPORT_FlowControl),
   GB_PROPERTY("PortName", "s", CSERIALPORT_Port),
