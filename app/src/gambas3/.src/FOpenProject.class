@@ -164,7 +164,7 @@ Private Sub FillRecent()
   Dim hProjectItem As ProjectItem
   Dim hFirst As ProjectItem
   Dim aRecent As String[]
-  Dim bHighlight As Boolean
+  'Dim bHighlight As Boolean
   Dim fTime As Float
   Dim Y As Integer
   
@@ -181,8 +181,8 @@ Private Sub FillRecent()
     hProjectItem = New ProjectItem(lstRecent)
     hProjectItem.Y = Y
     Y += hProjectItem.H
-    If bHighlight Then hProjectItem.Background = Color.LightBackground
-    bHighlight = Not bHighlight
+    'If bHighlight Then hProjectItem.Background = Color.LightBackground
+    'bHighlight = Not bHighlight
     If Not hFirst Then hFirst = hProjectItem
     hProjectItem.SetPath(sRecent)
   Next
@@ -221,7 +221,7 @@ Private Sub FillExample()
   Dim hDrawingArea As DrawingArea
   Dim hProjectItem As ProjectItem
   Dim hLabel As Label
-  Dim bHighlight As Boolean
+  'Dim bHighlight As Boolean
   
   If lstExample.Children.Count Then Return
 
@@ -236,17 +236,17 @@ Private Sub FillExample()
       With hDrawingArea
         .Enabled = False
         .Tag = Project.ExampleTitle[sDir]
-        .Font = Font["Bold,+2"]
+        .Font = Font["Bold"]
         .H = .Font.Height() + If(sLastDir, 16, 8)
         .Foreground = Color.SelectedBackground
       End With
-      bHighlight = False
+      'bHighlight = False
       sLastDir = sDir
     Endif
     
     hProjectItem = New ProjectItem(lstExample)
-    If bHighlight Then hProjectItem.Background = Color.LightBackground
-    bHighlight = Not bHighlight
+    'If bHighlight Then hProjectItem.Background = Color.LightBackground
+    'bHighlight = Not bHighlight
     hProjectItem.SetPath(Project.EXAMPLES_DIR &/ sExample)
   
   Next

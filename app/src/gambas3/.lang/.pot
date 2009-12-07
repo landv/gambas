@@ -18,7 +18,7 @@ msgstr ""
 msgid "Not finished but stable"
 msgstr ""
 
-#: CComponentBox.class:200 ProjectItem.class:62
+#: CComponentBox.class:200 ProjectItem.class:70
 msgid "Authors"
 msgstr ""
 
@@ -495,7 +495,7 @@ msgstr ""
 
 #: FCommit.class:255 FConflict.class:348 FConnectionEditor.class:1822
 #: FEditor.class:3183 FForm.class:3623 FIconEditor.class:2150
-#: FOption.class:1136 FOutput.class:455 FTextEditor.class:642
+#: FOption.class:1146 FOutput.class:455 FTextEditor.class:642
 msgid "Undo"
 msgstr ""
 
@@ -542,6 +542,10 @@ msgstr ""
 msgid "Changes"
 msgstr ""
 
+#: FCompletion.class:817 MHelp.module:255
+msgid "No help found."
+msgstr ""
+
 #: FConflict.class:25
 msgid ""
 "This file is in conflict with the revision #&1.\n"
@@ -554,7 +558,7 @@ msgstr ""
 
 #: FConflict.class:25 FFindList.class:203 FIconEditor.class:1412
 #: FImportTable.class:656 FInfo.class:427 FMakeInstall.class:260
-#: FOption.class:1157 FTips.class:232
+#: FOption.class:1167 FTips.class:232
 msgid "Close"
 msgstr ""
 
@@ -907,7 +911,7 @@ msgid "Style sheet"
 msgstr ""
 
 #: FCreateFile.class:744 FCreateProject.class:537 FImportTable.class:489
-#: FOption.class:963 FPropertyProject.class:1654
+#: FOption.class:973 FPropertyProject.class:1654
 msgid "Options"
 msgstr ""
 
@@ -1111,7 +1115,7 @@ msgid "Function"
 msgstr ""
 
 #: FDebugInfo.class:52 FFindList.class:73 FIconEditor.class:2278
-#: FOption.class:981
+#: FOption.class:991
 msgid "Line"
 msgstr ""
 
@@ -1144,7 +1148,7 @@ msgstr ""
 msgid "Console"
 msgstr ""
 
-#: FDebugInfo.class:1039
+#: FDebugInfo.class:1039 FOption.class:892
 msgid "Help"
 msgstr ""
 
@@ -1320,7 +1324,7 @@ msgstr ""
 msgid "Paste as comments"
 msgstr ""
 
-#: FEditor.class:3352 FOption.class:944
+#: FEditor.class:3352 FOption.class:954
 msgid "Editor"
 msgstr ""
 
@@ -1917,7 +1921,7 @@ msgstr ""
 msgid "This file has not been modified since the last commit."
 msgstr ""
 
-#: FInfo.class:309 FOption.class:697 FPropertyProject.class:1571
+#: FInfo.class:309 FOption.class:691 FPropertyProject.class:1571
 msgid "General"
 msgstr ""
 
@@ -2333,7 +2337,7 @@ msgstr ""
 msgid "Refresh project"
 msgstr ""
 
-#: FMain.class:2465 FOption.class:654
+#: FMain.class:2465 FOption.class:648
 msgid "Preferences"
 msgstr ""
 
@@ -2939,175 +2943,179 @@ msgstr ""
 msgid "(Default)"
 msgstr ""
 
-#: FOption.class:99
+#: FOption.class:98
 msgid "Define..."
 msgstr ""
 
-#: FOption.class:128
+#: FOption.class:127
 msgid "Gambas highlight theme files"
 msgstr ""
 
-#: FOption.class:129
+#: FOption.class:128
 msgid "Export a theme file"
 msgstr ""
 
-#: FOption.class:273
+#: FOption.class:272
 msgid "Select a theme file"
 msgstr ""
 
-#: FOption.class:303
+#: FOption.class:302
 msgid "You need to restart the application to see your changes."
 msgstr ""
 
-#: FOption.class:666
+#: FOption.class:660
 msgid "Foreground color..."
 msgstr ""
 
-#: FOption.class:670
+#: FOption.class:664
 msgid "Background color..."
 msgstr ""
 
-#: FOption.class:678
+#: FOption.class:672
 msgid "Bold"
 msgstr ""
 
-#: FOption.class:682
+#: FOption.class:676
 msgid "Italic"
 msgstr ""
 
-#: FOption.class:686
+#: FOption.class:680
 msgid "Underline"
 msgstr ""
 
-#: FOption.class:702
+#: FOption.class:696
 msgid "Interface"
 msgstr ""
 
-#: FOption.class:712
+#: FOption.class:706
 msgid "Font size"
 msgstr ""
 
-#: FOption.class:720
+#: FOption.class:714
 msgid "Normal"
 msgstr ""
 
-#: FOption.class:720
+#: FOption.class:714
 msgid "Small"
 msgstr ""
 
-#: FOption.class:731
+#: FOption.class:725
 msgid "Tabstrip font size"
 msgstr ""
 
-#: FOption.class:739
+#: FOption.class:733
 msgid "Tiny"
 msgstr ""
 
-#: FOption.class:750
+#: FOption.class:744
 msgid "Toolbox size"
 msgstr ""
 
-#: FOption.class:769
+#: FOption.class:763
 msgid "Sort properties"
 msgstr ""
 
-#: FOption.class:776 FPropertyProject.class:1708
+#: FOption.class:770 FPropertyProject.class:1708
 msgid "No"
 msgstr ""
 
-#: FOption.class:776 FPropertyProject.class:1708
+#: FOption.class:770 FPropertyProject.class:1708
 msgid "Yes"
 msgstr ""
 
-#: FOption.class:787 FWelcome.class:56
-msgid "Recent projects"
-msgstr ""
-
-#: FOption.class:800
-msgid "Max."
-msgstr ""
-
-#: FOption.class:811
+#: FOption.class:781
 msgid "Quiet external commands"
 msgstr ""
 
-#: FOption.class:829
-msgid "Display property help"
-msgstr ""
-
-#: FOption.class:847
+#: FOption.class:799
 msgid "Minimize at runtime"
 msgstr ""
 
-#: FOption.class:865
-msgid "Show tooltips"
-msgstr ""
-
-#: FOption.class:894
+#: FOption.class:817
 msgid "Icon theme"
 msgstr ""
 
-#: FOption.class:913
+#: FOption.class:832
+msgid "Applications"
+msgstr ""
+
+#: FOption.class:842
 msgid "Browser"
 msgstr ""
 
-#: FOption.class:932
+#: FOption.class:861
 msgid "Terminal"
 msgstr ""
 
-#: FOption.class:949
+#: FOption.class:880
+msgid "Image editor"
+msgstr ""
+
+#: FOption.class:907
+msgid "Display property help"
+msgstr ""
+
+#: FOption.class:925
+msgid "Show tooltips"
+msgstr ""
+
+#: FOption.class:943
+msgid "Show help in automatic completion"
+msgstr ""
+
+#: FOption.class:959
 msgid "Font"
 msgstr ""
 
-#: FOption.class:973
+#: FOption.class:983
 msgid "Procedure separation"
 msgstr ""
 
-#: FOption.class:981 FProperty.class:714
+#: FOption.class:991 FProperty.class:714
 msgid "None"
 msgstr ""
 
-#: FOption.class:981
+#: FOption.class:991
 msgid "Blend"
 msgstr ""
 
-#: FOption.class:992
+#: FOption.class:1002
 msgid "Highlight current line"
 msgstr ""
 
-#: FOption.class:1010
+#: FOption.class:1020
 msgid "Highlight modified lines"
 msgstr ""
 
-#: FOption.class:1028
+#: FOption.class:1038
 msgid "Show line numbers"
 msgstr ""
 
-#: FOption.class:1046
+#: FOption.class:1056
 msgid "Fold procedures by default"
 msgstr ""
 
-#: FOption.class:1064
+#: FOption.class:1074
 msgid "Default tab size"
 msgstr ""
 
-#: FOption.class:1077
+#: FOption.class:1087
 msgid "spaces"
 msgstr ""
 
-#: FOption.class:1088
+#: FOption.class:1098
 msgid "Keywords in upper case"
 msgstr ""
 
-#: FOption.class:1099
+#: FOption.class:1109
 msgid "Theme"
 msgstr ""
 
-#: FOption.class:1122
+#: FOption.class:1132
 msgid "Import theme"
 msgstr ""
 
-#: FOption.class:1129
+#: FOption.class:1139
 msgid "Export theme"
 msgstr ""
 
@@ -3636,6 +3644,10 @@ msgstr ""
 
 #: FWelcome.class:54
 msgid "Open project..."
+msgstr ""
+
+#: FWelcome.class:56
+msgid "Recent projects"
 msgstr ""
 
 #: FWelcome.class:490
@@ -4618,10 +4630,6 @@ msgstr ""
 msgid "Write error"
 msgstr ""
 
-#: MHelp.module:255
-msgid "No help found."
-msgstr ""
-
 #: MMime.module:15
 msgid "Plain text"
 msgstr ""
@@ -4766,7 +4774,7 @@ msgstr ""
 msgid "'tar' has returned the following error code:"
 msgstr ""
 
-#: ProjectItem.class:62
+#: ProjectItem.class:70
 msgid "Author"
 msgstr ""
 
@@ -5020,66 +5028,66 @@ msgstr ""
 msgid "Unable to rename '&1'"
 msgstr ""
 
-#: Project.module:3512
+#: Project.module:3508
 msgid "Please type a project name."
 msgstr ""
 
-#: Project.module:3520
+#: Project.module:3516
 msgid "The project name cannot begin with a dot."
 msgstr ""
 
-#: Project.module:3523
+#: Project.module:3519
 msgid "Non-ASCII characters are forbidden in a project name."
 msgstr ""
 
-#: Project.module:3524
+#: Project.module:3520
 msgid ""
 "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr ""
 
-#: Project.module:3534
+#: Project.module:3530
 msgid "The project directory already exists."
 msgstr ""
 
-#: Project.module:3536
+#: Project.module:3532
 msgid ""
 "The project directory cannot be created because a file with the same name "
 "already exists."
 msgstr ""
 
-#: Project.module:3582
+#: Project.module:3578
 msgid "Create source package"
 msgstr ""
 
-#: Project.module:3583
+#: Project.module:3579
 msgid "Source packages"
 msgstr ""
 
-#: Project.module:3853
+#: Project.module:3849
 msgid "Cannot copy file &1."
 msgstr ""
 
-#: Project.module:3865
+#: Project.module:3861
 msgid "Linking a directory is forbidden."
 msgstr ""
 
-#: Project.module:3895
+#: Project.module:3891
 msgid "Cannot create link &1."
 msgstr ""
 
-#: Project.module:3912
+#: Project.module:3908
 msgid "Cannot move a directory inside itself."
 msgstr ""
 
-#: Project.module:3976
+#: Project.module:3972
 msgid "Cannot move file &1."
 msgstr ""
 
-#: Project.module:4523
+#: Project.module:4519
 msgid "modified"
 msgstr ""
 
-#: Project.module:4603
+#: Project.module:4599
 msgid "Unable to update all forms."
 msgstr ""
 

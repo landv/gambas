@@ -320,9 +320,6 @@ CLASS *CLASS_look(const char *name, int len)
 
 	#if DEBUG_COMP
 	fprintf(stderr, "CLASS_look: %s in %s\n", name, _global ? "global" : "local");
-	
-	if (_global && (!strcmp(name, "CControl[]") || !strcmp(name, "CControl")))
-		BREAKPOINT();
 	#endif
 
 	//if (CP && CP->component && CP->component->archive)

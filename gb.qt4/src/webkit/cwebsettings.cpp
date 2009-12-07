@@ -22,7 +22,30 @@
 
 #define __CWEBSETTINGS_CPP
 
+#include <QNetworkDiskCache>
+
 #include "cwebsettings.h"
+
+//static QNetworkDiskCache *_cache = 0;
+static char *_cache_path = 0;
+
+void WEBSETTINGS_set_cache(QWebView *view, bool on)
+{
+	QNetworkDiskCache *cache;
+	
+	if (!_cache_path)
+		return;
+	
+	if (on)
+	{
+		cache = new QNetworkDiskCache(0);
+		cache->setCacheDirectory(TO_QSTRING(_cache_path));
+		view->page()->networkAccessManager()->setCache(cache);
+	}
+	else
+		view->page()->networkAccessManager()->setCache(0);
+}
+
 
 static QWebSettings *get_settings(void *_object)
 {
@@ -68,6 +91,16 @@ BEGIN_PROPERTY(WebSettingsIconDatabase_Path)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(WebSettingsCache_Path)
+
+	if (READ_PROPERTY)
+		GB.ReturnString(_cache_path);
+	else
+		GB.StoreString(PROP(GB_STRING), &_cache_path);
+
+END_PROPERTY
+
+
 BEGIN_METHOD(WebSettings_get, GB_INTEGER flag)
 
 	QWebSettings *settings = get_settings(_object);
@@ -95,6 +128,11 @@ BEGIN_METHOD(WebSettings_Reset, GB_INTEGER flag)
 
 END_METHOD
 
+BEGIN_METHOD_VOID(WebSettings_exit)
+
+	GB.FreeString(&_cache_path);
+
+END_METHOD
 
 
 /***************************************************************************/
@@ -132,6 +170,15 @@ GB_DESC CWebSettingsIconDatabaseDesc[] =
 	GB_END_DECLARE
 };
 
+GB_DESC CWebSettingsCacheDesc[] =
+{
+  GB_DECLARE(".WebSettingsCache", 0), GB_VIRTUAL_CLASS(),
+	
+	GB_STATIC_PROPERTY("Path", "s", WebSettingsCache_Path),
+	
+	GB_END_DECLARE
+};
+
 GB_DESC CWebSettingsDesc[] =
 {
   GB_DECLARE("WebSettings", 0),
@@ -160,10 +207,13 @@ GB_DESC CWebSettingsDesc[] =
 	
 	GB_STATIC_PROPERTY_SELF("Font", ".WebSettingsFont"),
 	GB_STATIC_PROPERTY_SELF("IconDatabase", ".WebSettingsIconDatabase"),
+	GB_STATIC_PROPERTY_SELF("Cache", ".WebSettingsCache"),
 	GB_STATIC_METHOD("_get", "b", WebSettings_get, "(Flag)i"),
 	GB_STATIC_METHOD("_put", NULL, WebSettings_put, "(Value)b(Flag)i"),
 	
-	GB_END_DECLARE
+	GB_STATIC_METHOD("_exit", NULL, WebSettings_exit, NULL),
+
+GB_END_DECLARE
 };
 
 /***************************************************************************/

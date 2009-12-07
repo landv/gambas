@@ -26,6 +26,7 @@
 #include <QWebPage>
 #include <QWebFrame>
 
+#include "cwebsettings.h"
 #include "cwebframe.h"
 #include "cwebview.h"
 
@@ -40,6 +41,8 @@ DECLARE_EVENT(EVENT_SELECT);
 DECLARE_EVENT(EVENT_STATUS);
 DECLARE_EVENT(EVENT_NEW_WINDOW);
 DECLARE_EVENT(EVENT_AUTH);
+
+//static QNetworkAccessManager *_network_access_manager = 0;
 
 BEGIN_METHOD(WebView_new, GB_OBJECT parent)
 
@@ -58,6 +61,10 @@ BEGIN_METHOD(WebView_new, GB_OBJECT parent)
   
 	QObject::connect(wid->page(), SIGNAL(linkHovered(const QString &, const QString &, const QString &)), &CWebView::manager, 
 										SLOT(linkHovered(const QString &, const QString &, const QString &)));
+	
+	//if (!_network_access_manager)
+	//	_network_access_manager = new QNetworkAccessManager(0);
+	//wid->page()->setNetworkAccessManager(_network_access_manager);
 										
 	QObject::connect(wid->page()->networkAccessManager(), SIGNAL(authenticationRequired(QNetworkReply *, QAuthenticator *)), &CWebView::manager,
 										SLOT(authenticationRequired(QNetworkReply *, QAuthenticator *)));
@@ -71,6 +78,12 @@ BEGIN_METHOD_VOID(WebView_free)
 
 END_METHOD
 
+BEGIN_METHOD_VOID(WebView_exit)
+
+	//delete _network_access_manager;
+	
+END_METHOD
+
 BEGIN_PROPERTY(WebView_Url)
 
 	if (READ_PROPERTY)
@@ -82,7 +95,10 @@ END_PROPERTY
 
 BEGIN_PROPERTY(WebView_HTML)
 
-	GB.ReturnNewZeroString(TO_UTF8(WIDGET->page()->mainFrame()->toHtml()));
+	if (READ_PROPERTY)
+		GB.ReturnNewZeroString(TO_UTF8(WIDGET->page()->mainFrame()->toHtml()));
+	else
+		WIDGET->setHtml(QSTRING_PROP());
 
 END_PROPERTY
 
@@ -247,6 +263,23 @@ BEGIN_PROPERTY(WebViewAuth_Password)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(WebView_Cached)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(THIS->cached);
+	else
+	{
+		bool val = VPROP(GB_BOOLEAN);
+		
+		if (val == THIS->cached)
+			return;
+		
+		THIS->cached = val;
+		WEBSETTINGS_set_cache(WIDGET, val);
+	}
+
+END_PROPERTY
+
 
 GB_DESC CWebViewAuthDesc[] =
 {
@@ -266,11 +299,12 @@ GB_DESC CWebViewDesc[] =
 	
   GB_METHOD("_new", NULL, WebView_new, "(Parent)Container;"),
   GB_METHOD("_free", NULL, WebView_free, NULL),
+  GB_METHOD("_exit", NULL, WebView_exit, NULL),
 	
 	GB_PROPERTY("Url", "s", WebView_Url),
 	GB_PROPERTY("Status", "s", WebView_Status),
 
-	GB_PROPERTY_READ("HTML", "s", WebView_HTML),
+	GB_PROPERTY("HTML", "s", WebView_HTML),
 	GB_PROPERTY_READ("Text", "s", WebView_Text),
 	GB_PROPERTY_READ("Icon", "Picture", WebView_Icon),
 	GB_PROPERTY_READ("SelectedText", "s", WebView_SelectedText),
@@ -296,7 +330,9 @@ GB_DESC CWebViewDesc[] =
 	
 	GB_PROPERTY("NewView", "WebView", WebView_NewView),
 
-	GB_CONSTANT("_Properties", "s", "*"),
+	GB_PROPERTY("Cached", "b", WebView_Cached),
+
+	GB_CONSTANT("_Properties", "s", "*,Cached"),
 	
 	GB_EVENT("Click", NULL, NULL, &EVENT_CLICK),
 	GB_EVENT("Link", NULL, "(Url)s", &EVENT_LINK),

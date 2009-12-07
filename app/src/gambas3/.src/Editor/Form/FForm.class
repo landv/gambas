@@ -165,7 +165,7 @@ Public Sub UpdateSnap()
     Else
       iColor = Color.White
     Endif
-    Draw.ForeColor = iColor
+    Draw.Foreground = iColor
     Draw.Point(0, 0)
     Draw.End
     hCtrl.Control.Picture = hPict

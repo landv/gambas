@@ -306,6 +306,27 @@ Public Function Inherits(sClass As String) As Boolean
 End
 
 
+Public Sub GetHelpURL() As String
+  
+  Dim sRes As String
+  Dim sPath As String
+  Dim sComp As String
+  Dim sName As String
+  
+  If Component Then
+  
+    sPath = "http://gambasdoc.org/help/comp"
+    sComp = Component
+    If sComp = "gb.qt4" Or If sComp = "gb.gtk" Or If sComp = "gb.gui" Then sComp = "gb.qt"
+    sPath &/= LCase(sComp)
+    sPath &/= Replace(LCase(Name), "_", ".")
+    
+    Return sPath
+    
+  Endif
+  
+End
+
 ' PRIVATE FUNCTION IsContainer(hCtrl AS Control) AS Boolean
 ' 
 '   DIM hCont AS Container

@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,75,82)
+  MoveScaled(0,0,75,76)
   Action = "option"
   Text = ("Preferences")
   Icon = Picture["icon:/small/options"]
@@ -32,11 +32,11 @@
     }
   }
   { TabStrip1 TabStrip
-    MoveScaled(1,1,73,75)
+    MoveScaled(1,1,73,69)
     Arrangement = Arrange.Vertical
     Spacing = True
     Margin = True
-    Count = 3
+    Count = 4
     Index = 0
     Text = ("General")
     { Label29 Label
@@ -107,28 +107,8 @@
         List = [("No"), ("Yes")]
       }
     }
-    { HBox9 HBox
-      MoveScaled(2,25,69,4)
-      Spacing = True
-      Indent = True
-      { Label14 Label
-        MoveScaled(0,0,47,4)
-        Text = ("Recent projects")
-      }
-      { txtRecent SpinBox
-        MoveScaled(48,0,8,4)
-        MinValue = 4
-        MaxValue = 64
-        Step = 4
-      }
-      { Label15 Label
-        MoveScaled(57,0,9,4)
-        Expand = True
-        Text = ("Max.")
-      }
-    }
     { HBox10 HBox
-      MoveScaled(2,30,69,4)
+      MoveScaled(2,25,69,4)
       Spacing = True
       Indent = True
       { Label16 Label
@@ -142,23 +122,8 @@
         List = [("No"), ("Yes")]
       }
     }
-    { HBox13 HBox
-      MoveScaled(2,35,69,4)
-      Spacing = True
-      Indent = True
-      { Label32 Label
-        MoveScaled(0,0,47,4)
-        Text = ("Display property help")
-      }
-      { cmbIntegratedHelp ComboBox
-        MoveScaled(48,0,10,4)
-        Text = ("")
-        ReadOnly = True
-        List = [("No"), ("Yes")]
-      }
-    }
     { HBox21 HBox
-      MoveScaled(2,40,69,4)
+      MoveScaled(2,30,69,4)
       Spacing = True
       Indent = True
       { Label21 Label
@@ -172,32 +137,8 @@
         List = [("No"), ("Yes")]
       }
     }
-    { HBox3 HBox
-      MoveScaled(2,45,69,4)
-      Spacing = True
-      Indent = True
-      { Label10 Label
-        MoveScaled(0,0,47,4)
-        Text = ("Show tooltips")
-      }
-      { cmbTooltip ComboBox
-        MoveScaled(48,0,10,4)
-        Text = ("")
-        ReadOnly = True
-        List = [("No"), ("Yes")]
-      }
-    }
-    { Panel2 Panel
-      MoveScaled(52,50,3,1)
-      Expand = True
-    }
-    { Label25 Label
-      MoveScaled(1,51,70,3)
-      Font = Font["Bold"]
-      Text = ("Desktop")
-    }
     { HBox11 HBox
-      MoveScaled(2,55,69,4)
+      MoveScaled(2,35,69,4)
       Spacing = True
       Indent = True
       { Label12 Label
@@ -212,8 +153,13 @@
         List = []
       }
     }
+    { Label25 Label
+      MoveScaled(1,42,70,3)
+      Font = Font["Bold"]
+      Text = ("Applications")
+    }
     { HBox12 HBox
-      MoveScaled(2,60,69,4)
+      MoveScaled(2,46,69,4)
       Spacing = True
       Indent = True
       { Label13 Label
@@ -229,7 +175,7 @@
       }
     }
     { HBox2 HBox
-      MoveScaled(2,65,69,4)
+      MoveScaled(2,51,69,4)
       Spacing = True
       Indent = True
       { Label4 Label
@@ -244,7 +190,75 @@
         List = []
       }
     }
+    { HBox9 HBox
+      MoveScaled(2,56,69,4)
+      Spacing = True
+      Indent = True
+      { Label14 Label
+        MoveScaled(0,0,47,4)
+        Text = ("Image editor")
+      }
+      { cmbImageEditor ComboBox
+        MoveScaled(48,0,17,4)
+        Expand = True
+        Text = ("")
+        ReadOnly = True
+        List = []
+      }
+    }
     Index = 1
+    Text = ("Help")
+    { Label22 Label
+      MoveScaled(1,1,63,3)
+      Font = Font["Bold"]
+      Text = ("Help")
+    }
+    { HBox13 HBox
+      MoveScaled(2,5,69,4)
+      Spacing = True
+      Indent = True
+      { Label32 Label
+        MoveScaled(0,0,47,4)
+        Text = ("Display property help")
+      }
+      { cmbIntegratedHelp ComboBox
+        MoveScaled(48,0,10,4)
+        Text = ("")
+        ReadOnly = True
+        List = [("No"), ("Yes")]
+      }
+    }
+    { HBox3 HBox
+      MoveScaled(2,10,69,4)
+      Spacing = True
+      Indent = True
+      { Label10 Label
+        MoveScaled(0,0,47,4)
+        Text = ("Show tooltips")
+      }
+      { cmbTooltip ComboBox
+        MoveScaled(48,0,10,4)
+        Text = ("")
+        ReadOnly = True
+        List = [("No"), ("Yes")]
+      }
+    }
+    { HBox5 HBox
+      MoveScaled(2,15,69,4)
+      Spacing = True
+      Indent = True
+      { Label23 Label
+        MoveScaled(0,0,47,4)
+        Text = ("Show help in automatic completion")
+      }
+      { cmbHelpCompletion ComboBox
+        MoveScaled(48,0,10,4)
+        Text = ("")
+        ReadOnly = True
+        List = [("No"), ("Yes")]
+      }
+    }
+    Index = 2
     Text = ("Editor")
     { Label9 Label
       MoveScaled(1,1,56,3)
@@ -252,7 +266,7 @@
       Text = ("Font")
     }
     { fntEditor FontChooser
-      MoveScaled(2,5,69,16)
+      MoveScaled(2,5,69,18)
       Expand = True
       ShowStyle = False
       ShowPreview = False
@@ -374,7 +388,7 @@
         List = [("No"), ("Yes")]
       }
     }
-    Index = 2
+    Index = 3
     Text = ("Theme")
     { VBox1 VBox
       MoveScaled(1,2,70,55)
@@ -423,7 +437,7 @@
     Index = 0
   }
   { btnClose Button
-    MoveScaled(59,77,15,4)
+    MoveScaled(59,71,15,4)
     Text = ("Close")
     Default = True
     Cancel = True

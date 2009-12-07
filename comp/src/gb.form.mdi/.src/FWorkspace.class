@@ -565,7 +565,7 @@ Public Sub dwgBorder_Draw()
   Return
   Draw.LineStyle = Line.Solid
   Draw.LineWidth = 4
-  Draw.ForeColor = Color.SelectedBackground
+  Draw.Foreground = Color.SelectedBackground
   Draw.Line(dwgBorder.W - 2, 0, dwgBorder.W - 2, dwgBorder.H)
   Draw.Line(0, dwgBorder.H - 2, dwgBorder.W, dwgBorder.H - 2)
   'Draw.Tile($hTile, dwgBorder.W - 8, 0, 8, dwgBorder.H)

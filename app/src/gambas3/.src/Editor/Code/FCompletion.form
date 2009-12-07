@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2.1429,28,16)
+  MoveScaled(0,2.1429,69,17)
   Text = ("")
   Icon = Picture["img/16/magic.png"]
   Persistent = True
@@ -9,12 +9,43 @@
   SkipTaskbar = True
   Arrangement = Arrange.Fill
   { panComp Panel
-    MoveScaled(0,0,13,9)
-    Arrangement = Arrange.Fill
+    MoveScaled(1,1,67,15)
+    Arrangement = Arrange.Horizontal
     Border = Border.Plain
     { lvwComp ListView
-      MoveScaled(0,0,7,6)
+      MoveScaled(1,1,7,6)
       Border = False
+    }
+    { sepHelp Separator
+      MoveScaled(9,1,0,13)
+    }
+    { webHelp WebView
+      MoveScaled(10,1,54,13)
+      Expand = True
+      Cached = True
+    }
+    { timHelp #Timer
+      #X = 266
+      #Y = 21
+      Delay = 100
+    }
+    { panRight Panel
+      MoveScaled(65,1,1,13)
+      Arrangement = Arrange.Vertical
+      { panResizeTop Panel
+        MoveScaled(0,0,1,2)
+        Background = Color.LightForeground
+        Mouse = Mouse.SizeNESW
+      }
+      { Panel1 Panel
+        MoveScaled(0,4,1,5)
+        Expand = True
+      }
+      { panResizeBottom Panel
+        MoveScaled(0,11,1,2)
+        Background = Color.LightForeground
+        Mouse = Mouse.SizeNWSE
+      }
     }
   }
 }

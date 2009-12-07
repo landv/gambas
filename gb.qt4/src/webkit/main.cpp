@@ -40,6 +40,7 @@ QT_INTERFACE QT;
 GB_DESC *GB_CLASSES[] EXPORT =
 {
 	CWebSettingsIconDatabaseDesc,
+	CWebSettingsCacheDesc,
 	CWebSettingsFontDesc,
 	CWebSettingsDesc,
 	CWebFrameChildrenDesc,

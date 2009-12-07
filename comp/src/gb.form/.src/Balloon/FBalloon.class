@@ -24,7 +24,7 @@ Private Sub DrawRoundRect(X As Integer, Y As Integer, W As Integer, H As Integer
   Dim hRound As Image
   
   If Not $hRound Then $hRound = Image.Load("img/round.png")
-  
+
   hRound = $hRound.Copy()
   Draw.Image(hRound, X, Y)
   hRound.Mirror(True, False)
@@ -42,7 +42,7 @@ Private Sub DrawRoundRect(X As Integer, Y As Integer, W As Integer, H As Integer
   Draw.Rect(X, Y + ROUND_SIZE, W, H - ROUND_SIZE * 2)
   Draw.Rect(X + ROUND_SIZE, Y + H - ROUND_SIZE, W - ROUND_SIZE * 2, ROUND_SIZE)
   Draw.LineStyle = Line.Solid
-  Draw.ForeColor = &H808080& '&H808070&
+  Draw.Foreground = &H808080& '&H808070&
   Draw.Line(X + ROUND_SIZE, Y, X + W - ROUND_SIZE - 1, Y)
   Draw.Line(X + ROUND_SIZE, Y + H - 1, X + W - ROUND_SIZE, Y + H - 1)
   Draw.Line(X, Y + ROUND_SIZE, X, Y + H - ROUND_SIZE - 1)

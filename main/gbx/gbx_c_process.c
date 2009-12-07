@@ -281,8 +281,8 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 	int fd_master = -1;
 	int fd_slave;
 	char *slave = NULL;
-	struct termios termios_stdin;
-	struct termios termios_check;
+	//struct termios termios_stdin;
+	//struct termios termios_check;
 	struct termios termios_master;
 
 	init_child();
@@ -468,7 +468,7 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 	}
 	else /* child */
 	{
-		bool stdin_isatty = isatty(STDIN_FILENO);
+		//bool stdin_isatty = isatty(STDIN_FILENO);
 		
 		sigprocmask(SIG_SETMASK, &old, &sig);
 

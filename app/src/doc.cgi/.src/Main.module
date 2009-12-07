@@ -32,6 +32,8 @@ Private $bComment As Boolean
 Private $bLogin As Boolean
 Private $bFind As Boolean
 Private $bView As Boolean
+Private $bGet As Boolean
+Private $bOnlineHelp As Boolean
 
 Private $bNew As Boolean
 
@@ -74,6 +76,22 @@ Private $eTime As Float
 Private $sOnlyVersion As String
 
 Private PARA As String
+
+Private $aDay As String[] 
+Private $aMonth As String[] 
+
+Public Sub FormatDate(dDate As Date) As String
+  
+  dDate -= Frac(Date(Now)) ' Go to GMT
+
+  If Not $aDay Then 
+    $aDay = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    $aMonth = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+  Endif
+  
+  Return $aDay[WeekDay(dDate)] & ", " & Format(Day(dDate), "00") & " " & $aMonth[Month(dDate) - 1] & " " & Year(dDate) & " " & Format(Time(dDate), "hh:nn:ss") & " GMT"
+  
+End
 
 Private Sub AddParam(sReq As String, sParam As String) As String
   
@@ -166,6 +184,8 @@ Public Sub Main()
     Else 
       SearchPage
     Endif
+  Else If $bGet Then
+    GetPage
   Else
     DisplayPage
   Endif
@@ -282,6 +302,12 @@ Private Sub OpenDatabase()
         $sVersion = "3.0"
       Else If $aLang.Find(sQuery) >= 0 Then
         $sLang = sQuery
+      Else If sQuery = "wiki" Then
+        $bGet = True
+      Else If sQuery = "help" Then
+        $bView = True
+        $bShow = True
+        $bOnlineHelp = True
       Endif
       
     Next
@@ -311,7 +337,10 @@ Private Sub OpenDatabase()
 
   ' Suffixe ?show
 
-  If $bView Then
+  If $bOnlineHelp Then
+    $sUri = AddParam($sUri, "help")
+    $sShowSuff &= "help"
+  Else If $bView Then
     $sUri = AddParam($sUri, "view")
     $sShowSuff = "view"
   Else If $bShow Then 
@@ -1439,7 +1468,7 @@ Private Sub PrintVersion()
   
 End
 
-Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
+Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String, Optional dDate As Date)
 
   Dim iPos As Integer
   Dim sLang As String
@@ -1451,6 +1480,13 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
 
   Print "Content-type: text/html;charset=UTF-8"
   Print "Content-language: "; Replace(System.Language, "_", "-")
+  
+  If dDate Then
+    Print "Expires: "; FormatDate(DateAdd(Now, gb.Month, 1))
+    Print "Cache-Control: max-age=2592000"
+    Print "Last-Modified: "; FormatDate(dDate)
+  Endif
+  
   Print
   Print "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">"
 
@@ -1466,7 +1502,9 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
   MakeTitle(sTitle)
   Print "</head>"
   
-  If $bView Then
+  If $bOnlineHelp Then
+    Print "<body class=\"none\">"
+  Else If $bView Then
     Print "<body class=\"view\">"
   Else
     Print "<body>"
@@ -1911,7 +1949,7 @@ Private Sub DisplayPage()
     Return
   Endif
 
-  MakeHeader(rPage!sTitle, sWarn)
+  MakeHeader(rPage!sTitle, sWarn, rPage!dDate)
 
   If $bImage Then
   
@@ -4472,3 +4510,49 @@ Catch
   Return Error.Where & ": " & Error.Text
   
 End
+
+Private Sub GetPage()
+
+  Dim rPage As Result
+  Dim rPageDef As Result
+  Dim bWarn As Boolean
+  Dim sWarn As String
+  Dim sPath As String
+  Dim sPage As String
+  Dim bRefresh As Boolean
+
+  sPath = GetRealPath($sPath)
+
+  rPage = DB.Find("page", "sPath = &1 AND sLang = &2", sPath, $sLang)
+  rPageDef = DB.Find("page", "sPath = &1 AND sLang = &2", sPath, DEFAULT_LANG)
+
+  If rPageDef.Available Then
+    If Not rPage.Available Then
+      If sPath = $sPath Then
+        sWarn = ("This page is not translated.")
+      Endif
+      rPage = rPageDef
+    Else
+      If rPageDef!dDate > rPage!dDate Then
+        If sPath = $sPath Then sWarn = ("This page is not up to date.")
+      Endif
+    Endif
+  Endif
+
+  If Not rPage.Available Then
+    Return
+  Endif
+
+  Print "Content-type: text/plain;charset=UTF-8"
+  Print
+
+  If $bImage Then
+  
+  Else
+  
+    Print rPage!sDesc
+  
+  Endif
+
+End
+

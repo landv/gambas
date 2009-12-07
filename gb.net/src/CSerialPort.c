@@ -141,7 +141,9 @@ static void assign_callback(CSERIALPORT *_object)
 {
 	int port = THIS->port;
 
-	GB.Watch(port, GB_WATCH_READ, (void *)cb_read, (intptr_t)THIS);
+	if (GB.CanRaise(THIS, EVENT_Read))
+		GB.Watch(port, GB_WATCH_READ, (void *)cb_read, (intptr_t)THIS);
+	
 	if (GB.CanRaise(THIS, EVENT_DTR)
 	    || GB.CanRaise(THIS, EVENT_CTS)
 	    || GB.CanRaise(THIS, EVENT_DCD)

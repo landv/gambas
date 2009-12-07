@@ -28,6 +28,7 @@ void SWAP_ints(int *val, int n);
 void SWAP_short(short *val);
 void SWAP_double(double *val);
 
-#define SWAP_int64(_val) SWAP_double((double *)_val)
+#define SWAP_float(_val) SWAP_int((int *)_val)
+#define SWAP_int64(_val) SWAP_double((double *)(void *)_val)
 
 #endif

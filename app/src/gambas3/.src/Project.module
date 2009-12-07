@@ -66,7 +66,7 @@ Public UseTerminal As Boolean
 Public Running As Boolean
 
 Private Recent As New String[]
-Public Const DEFAULT_MAX_RECENT As Integer = 24
+Public Const DEFAULT_MAX_RECENT As Integer = 64
 
 Public Const FORM_MAGIC As String = "# Gambas Form File 3.0"
 Public Const FORM_MAGIC_1 As String = "# Gambas Form File 1.0"
@@ -3423,10 +3423,8 @@ Private Sub LoadRecent()
   Dim hMenu As Menu
   Dim iInd As Integer
   Dim sPath As String
-  Dim nMax As Integer
 
   nRecent = Settings["/Recent/Count", 0]
-  nMax = Settings["/Recent/Max", DEFAULT_MAX_RECENT]
   
   Recent.Clear
 
@@ -3435,7 +3433,7 @@ Private Sub LoadRecent()
     If sPath Then
       If Exist(sPath) Then
         Recent.Add(sPath)
-        If Recent.Count >= nMax Then Break
+        If Recent.Count >= DEFAULT_MAX_RECENT Then Break
       Endif
     Endif
   Next
@@ -3464,8 +3462,8 @@ Private Sub AddRecent(sPath As String)
 
   Recent.Add(sPath, 0)
 
-  nMax = Settings["/Recent/Max", DEFAULT_MAX_RECENT]
-  While Recent.Count > nMax
+  'nMax = Settings["/Recent/Max", DEFAULT_MAX_RECENT]
+  While Recent.Count > DEFAULT_MAX_RECENT
     Recent.Remove(Recent.Count - 1)
   Wend
 
@@ -3477,12 +3475,10 @@ End
 Private Sub SaveRecent()
 
   Dim iInd As Integer
-  Dim nMax As Variant = Settings["/Recent/Max"]
 
   Settings.Clear("/Recent")
 
   Settings["/Recent/Count"] = Recent.Count
-  Settings["/Recent/Max"] = nMax
 
   For iInd = 0 To Recent.Count - 1
     Settings["/Recent/File[" & CStr(iInd + 1) & "]"] = Recent[iInd]

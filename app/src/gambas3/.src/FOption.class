@@ -73,7 +73,6 @@ Public Sub _new()
     [cmbShowChange, "/Editor/ShowChange", 1],
     [cmbShowCurrent, "/Editor/ShowCurrent", 1],
     [cmbFoldProc, "/Editor/Fold", 0],
-    [txtRecent, "/Recent/Max", Project.DEFAULT_MAX_RECENT],
     [cmbOutput, "/QuietExternalCommands", 0],
     [cmbTooltip, "/ShowTooltip", 0],
     [cmbIntegratedHelp, "/PropertyHelp", 1],
@@ -356,13 +355,6 @@ Public Sub cmbToolbox_Click()
   Settings["/ToolboxSize"] = cmbToolbox.Index
   FToolBox.ReadConfig
 
-End
-
-Public Sub txtRecent_Change()
-
-  Settings["/Recent/Max"] = txtRecent.Value
-  NeedRestart(txtRecent)
-  
 End
 
 Public Sub cmbOutput_Click()

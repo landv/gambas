@@ -426,7 +426,14 @@ static int add_class(CLASS *class, int index, bool used, bool exported)
 		JOB->class->class[num].exported = exported;
 	}
 
-	JOB->class->class[num].used = used;
+	if (used != JOB->class->class[num].used)
+	{
+		if (JOB->verbose)
+			printf("Switching class %.*s to %s\n", sym->symbol.len, sym->symbol.name, used ? "Used" : "Unused");
+		
+		JOB->class->class[num].used = used;
+	}
+	
 	return num;
 }
 

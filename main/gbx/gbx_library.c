@@ -101,11 +101,11 @@ static void *get_symbol(LIBRARY *lib, const char *symbol, bool err)
 }
 
 
-static void copy_interface(intptr_t *src, intptr_t *dst)
+static void copy_interface(void **src, void **dst)
 {
   for(;;)
   {
-    if (*src == (intptr_t)0)
+    if (!*src)
       return;
 
     *dst++ = *src++;
@@ -389,7 +389,7 @@ void LIBRARY_get_interface(LIBRARY *lib, int version, void *iface)
 
   sprintf(&symbol[len], "_%d", version);
   
-  copy_interface((intptr_t *)get_symbol(lib, symbol, TRUE), (intptr_t *)iface);
+  copy_interface((void **)get_symbol(lib, symbol, TRUE), iface);
 }
 
 
@@ -441,7 +441,7 @@ void LIBRARY_delete(LIBRARY *lib)
 void LIBRARY_load(LIBRARY *lib)
 {
   int (*func)();
-  void *iface;
+  void **iface;
   GB_DESC **desc;
   char *path;
 
@@ -481,7 +481,7 @@ void LIBRARY_load(LIBRARY *lib)
 	//else
 	{
 		iface = get_symbol(lib, LIB_GAMBAS, TRUE);
-		copy_interface((intptr_t *)(void *)GAMBAS_Api, (intptr_t *)(void *)iface);
+		copy_interface(GAMBAS_Api, iface);
 	}
 
 	/* Signal function */

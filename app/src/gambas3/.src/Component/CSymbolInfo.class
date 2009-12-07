@@ -360,10 +360,10 @@ Public Function GetSignature(Optional iShowArg As Integer = -1) As String
   sSign = GetNativeSignature()
   
   If Name = "_new" Then
-    hClass = CComponent.GetClassDescription({Class})
+    hClass = CComponent.GetClassDescription({Component} &/ {Class})
     Do
       If Not hClass.Parent Then Break
-      hClass = CComponent.GetClassDescription(hClass.Parent)
+      hClass = CComponent.GetClassDescription(hClass.ParentComponent &/ hClass.Parent)
       'hClass = CComponent.Classes[hClass.ParentComponent &/ hClass.Parent]
       hSym = hClass.Symbols["_new"]
       If hSym Then sSign = MergeSignature(sSign, hClass.Symbols["_new"].GetNativeSignature())
@@ -681,4 +681,22 @@ Static Public Function TransformSignature(sSign As String, bBalise As Boolean) A
 
   Return sRes
 
+End
+
+Public Sub GetHelpURL() As String
+  
+  Dim sPath As String
+  Dim sName As String
+  
+  If Component Then
+  
+    sPath = CComponent.Classes[Component &/ Class].GetHelpURL()
+    sName = LCase(Name)
+    If Kind = ":" Then sName = Replace(sName, "_", ".")
+    sPath &/= sName
+    
+    Return sPath
+    
+  Endif
+  
 End

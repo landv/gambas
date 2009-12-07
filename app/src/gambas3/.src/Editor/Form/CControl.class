@@ -189,6 +189,10 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
       hWindow.Background = Color.Merge(Color.Foreground, Color.Background)
       hCtrl.Add(hWindow)
       
+    Case "webview"
+      hCtrl = New WebView(hParent)
+      hCtrl.Html = "<html><body><h1>" & sName & "</h1></body></html>"
+      
     ' Case "listcontainer"
     '   hCtrl = New ListContainer(hParent)
     '   hLabel = New Label(hCtrl)
@@ -745,6 +749,9 @@ Public Sub UpdateName()
       
     Case "Workspace"
       Control.ActiveWindow.Title = Name
+
+    Case "WebView"
+      Control.Html = "<html><body><h1>" & Name & "</h1></body></html>"
     
     ' Case "ListContainer"
     '   hLabel = Control.Children[0]

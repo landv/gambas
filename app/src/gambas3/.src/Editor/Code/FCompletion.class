@@ -7,6 +7,31 @@ Private $sMode As String
 Private $iLen As Integer
 Private $bUserChoice As Boolean
 Private $iMaxLen As Integer
+Private $sClass As String
+Private $bShowHelp As Boolean
+
+Private $DX As Integer
+Private $DY As Integer
+Private $iMinW As Integer
+Private $iMinH As Integer
+Private $iMaxY As Integer
+
+Static Public Sub _init()
+  
+  Dim sPath As String
+  
+  If Not WebSettings.Cache.Path Then
+    sPath = System.User.Home &/ ".cache"
+    Try Mkdir sPath
+    sPath &/= "gambas3"
+    Try Mkdir sPath
+    sPath &/= "help"
+    Try Mkdir sPath
+    WebSettings.Cache.Path = sPath
+  Endif
+  
+End
+
 
 Public Sub RefreshLibrary()
 
@@ -42,7 +67,7 @@ Public Sub Open(sMode As String, Optional sClass As String, Optional bStatic As 
   Dim iPos As Integer
   Dim hCont As Container
   Dim sText As String
-  Dim H As Integer
+  Dim W, H As Integer
 
   hEditor = GetEditor()
   Me.Font = hEditor.font
@@ -55,6 +80,7 @@ Public Sub Open(sMode As String, Optional sClass As String, Optional bStatic As 
   $iMaxLen = 16
   $iCol = hEditor.Column + 1
   
+  $bShowHelp = False
   Select $sMode
     Case "."
       $sText = ""
@@ -62,10 +88,13 @@ Public Sub Open(sMode As String, Optional sClass As String, Optional bStatic As 
         Dec Application.Busy
         Return
       Endif 
+      $sClass = sClass
       FillWithSymbol(sClass, bStatic, bPrivate)
+      $bShowHelp = True
     Case " "
       $sText = ""
       FillWithClasses
+      $bShowHelp = True
     Case "A"
       $sText = sClass
       $iLen = Len(sClass)
@@ -109,7 +138,24 @@ Public Sub Open(sMode As String, Optional sClass As String, Optional bStatic As 
     lvwComp.Item.EnsureVisible
   Endif 
 
-  Me.Resize(($iMaxLen + 6) * Me.Font.Width("A"), (H * Min(8, lvwComp.Count) + 2))
+  W = $iMaxLen * Me.Font.Width("A") + 16 + 16 + 12
+  
+  If $bShowHelp Then
+    sepHelp.Show
+    webHelp.Show
+    panRight.Show
+    $iMinW = W + 4 + 64
+    $iMinH = Desktop.Scale * 24
+    lvwComp.Expand = False
+    lvwComp.W = W
+    Me.Resize(W + 4 + webHelp.W, Max($iMinH, H * Min(8, lvwComp.Count) + 2))
+  Else
+    sepHelp.Hide
+    webHelp.Hide
+    panRight.Hide
+    lvwComp.Expand = True
+    Me.Resize(W + 4, H * Min(8, lvwComp.Count) + 2)
+  Endif
 
   sText = String.Left(hEditor.Lines[hEditor.Line].Text, $iCol)
   
@@ -125,6 +171,11 @@ Public Sub Open(sMode As String, Optional sClass As String, Optional bStatic As 
 
   If (iY + Me.Height) > (hEditor.Y + hEditor.H) Then
     iY = hEditor.Y + hEditor.CursorY - Me.Height
+    panResizeBottom.Hide
+    panResizeTop.Show
+  Else
+    panResizeBottom.Show
+    panResizeTop.Hide
   Endif
 
   hCont = hEditor.Parent
@@ -702,4 +753,126 @@ Private Sub CompleteItem() As Boolean
   
   Return True
   
+End
+
+Private Sub GetHelpLang() As String
+  
+  Dim sLang As String = System.Language
+  Dim iPos As Integer
+  Dim sCar As String
+  
+  For iPos = 1 To Len(sLang)
+    If Not IsLower(Mid$(sLang, iPos, 1)) Then Break
+  Next
+  
+  Return Left$(sLang, iPos - 1)
+  
+End
+
+
+Public Sub timHelp_Timer()
+  
+  Dim cSymbol As Collection
+  Dim hSymbol As CSymbolInfo
+  Dim hClass As CClassInfo
+  Dim sSymbol As String
+  Dim sUrl As String
+  Dim sHtml As String
+  Dim sLang As String
+  
+  Try sSymbol = lvwComp.Current.Text
+  If sSymbol Then 
+  
+    Select Case $sMode
+    
+      Case "."
+      
+        Try hSymbol = CComponent.GetClassSymbols($sClass)[sSymbol]
+        If hSymbol Then 
+          sUrl = hSymbol.GetHelpURL()
+          If Not sUrl Then
+            sHtml = "<html><body><pre>" & hSymbol.GetSignature() & "</pre></body></html>"
+          Endif
+        Endif
+  
+      Case " "
+      
+        Try hClass = CComponent.Classes[sSymbol]
+        If hClass Then sUrl = hClass.GetHelpURL()
+      
+      Case "A", "<"
+        'FillWithIdent(sClass)
+      Case "_"
+        'FillWithSpecial()
+    
+    End Select
+  
+    webHelp.Stop
+    If sUrl Then
+      sUrl &= "?help&v3&" & GetHelpLang()
+      webHelp.Url = sUrl
+    Else If sHtml Then
+      webHelp.Html = sHtml
+    Else
+      webHelp.HTML = "<html><body><h2>" & ("No help found.") & "</h2></body></html>"
+    Endif
+    webHelp.TextZoom = 0.7
+    
+  Endif
+
+  timHelp.Stop
+  
+End
+
+
+Public Sub lvwComp_Select()
+
+  If Not $bShowHelp Then Return
+  timHelp.Stop
+  timHelp.Start
+  
+End
+
+
+Public Sub webHelp_GotFocus()
+
+  lvwComp.SetFocus
+
+End
+
+Public Sub panResizeBottom_MouseDown()
+
+  $DX = Me.W - Mouse.ScreenX
+  $DY = Me.H - Mouse.ScreenY
+
+End
+
+Public Sub panResizeBottom_MouseMove()
+
+  Dim W, H As Integer
+  
+  W = Max($iMinW, $DX + Mouse.ScreenX)
+  H = Max($iMinH, $DY + Mouse.ScreenY)
+  
+  Me.Resize(W, H)
+
+End
+
+Public Sub panResizeTop_MouseDown()
+
+  $DX = Me.W - Mouse.ScreenX
+  $DY = Me.Y - Mouse.ScreenY
+  $iMaxY = Me.Y + Me.H - $iMinH
+
+End
+
+Public Sub panResizeTop_MouseMove()
+
+  Dim W, Y As Integer
+  
+  W = Max($iMinW, $DX + Mouse.ScreenX)
+  Y = Min($iMaxY, $DY + Mouse.ScreenY)
+  
+  Me.Move(Me.X, Y, W, Me.H + Me.Y - Y)
+
 End

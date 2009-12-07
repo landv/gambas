@@ -1563,7 +1563,8 @@ void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int npa
 	int i, np, npopt, nparam_opt;
 	CLASS_DESC *desc;
 	short index;
-	VALUE *arg, *opt;
+	int arg, opt;
+	VALUE *base;
 
 	if (!class->parent)
 	{
@@ -1596,7 +1597,7 @@ void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int npa
 	if (np > nparam)
 		THROW(E_NEPARAM);
 
-	arg = SP - nparam;
+	arg = - nparam;
 	opt = arg + np;
 	nparam_opt = nparam - np;
 	nparam = np;
@@ -1652,17 +1653,19 @@ void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int npa
 		{
 			STACK_check(np + npopt);
 			
+			base = SP;
+			
 			for (i = 0; i < np; i++)
 			{
-				*SP++ = *arg;
-				arg->type = T_NULL;
+				*SP++ = base[arg];
+				base[arg].type = T_NULL;
 				arg++;
 			}
 
 			for (i = 0; i < npopt; i++)
 			{
-				*SP++ = *opt;
-				opt->type = T_NULL;
+				*SP++ = base[opt];
+				base[opt].type = T_NULL;
 				opt++;
 			}
 		}

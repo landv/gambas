@@ -1138,8 +1138,8 @@ GB_DESC CDrawDesc[] =
 	
 	GB_STATIC_PROPERTY("Background", "i", CDRAW_background),
 	GB_STATIC_PROPERTY("Foreground", "i", CDRAW_foreground),
-	GB_STATIC_PROPERTY("BackColor", "i", CDRAW_background),
-	GB_STATIC_PROPERTY("ForeColor", "i", CDRAW_foreground),
+	//GB_STATIC_PROPERTY("BackColor", "i", CDRAW_background),
+	//GB_STATIC_PROPERTY("ForeColor", "i", CDRAW_foreground),
 	
 	GB_STATIC_PROPERTY("Invert", "b", CDRAW_invert),
 	GB_STATIC_PROPERTY("Transparent", "b", CDRAW_transparent),

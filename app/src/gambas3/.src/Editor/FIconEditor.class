@@ -182,7 +182,7 @@ Public Sub dwgIcon_Draw()
 
   If $iScale > 5 Then
     Draw.LineStyle = Line.Solid
-    Draw.ForeColor = &H989898
+    Draw.Foreground = &H989898
   Else
     Draw.LineStyle = Line.None
   Endif
@@ -224,7 +224,7 @@ Public Sub dwgPaste_Draw()
 
   If $iScale > 5 Then
     Draw.LineStyle = Line.Solid
-    Draw.ForeColor = &H989898
+    Draw.Foreground = &H989898
     W = $iScale1
   Else
     Draw.LineStyle = LINE.None
@@ -749,7 +749,7 @@ Private Sub DrawEllipse(X As Integer, Y As Integer, W As Integer, H As Integer, 
 
       Case 0
         Draw.LineStyle = LINE.Solid
-        Draw.ForeColor = 1
+        Draw.Foreground = 1
         Draw.FillStyle = Fill.None
 
       Case 1
@@ -759,7 +759,7 @@ Private Sub DrawEllipse(X As Integer, Y As Integer, W As Integer, H As Integer, 
 
       Case 2
         Draw.LineStyle = LINE.Solid
-        Draw.ForeColor = 1
+        Draw.Foreground = 1
         Draw.FillStyle = Fill.Solid
         Draw.FillColor = 2
 
@@ -815,7 +815,7 @@ Private Sub DrawGhost(Optional bNoBegin As Boolean)
         Draw.LineStyle = Line.Solid
         Draw.LineWidth = 3
         Draw.FillStyle = Fill.None
-        Draw.ForeColor = Color.White
+        Draw.Foreground = Color.White
         Draw.Line($X * $iScale + iS2, $Y * $iScale + iS2, $X2 * $iScale + iS2, $Y2 * $iScale + iS2)
         Draw.Rect($X * $iScale, $Y * $iScale - 1, $iScale1, $iScale1)
         Draw.Rect($X2 * $iScale, $Y2 * $iScale - 1, $iScale1, $iScale1)
@@ -826,7 +826,7 @@ Private Sub DrawGhost(Optional bNoBegin As Boolean)
         Draw.LineStyle = Line.Solid
         Draw.LineWidth = 3
         Draw.FillStyle = Fill.None
-        Draw.ForeColor = Color.White
+        Draw.Foreground = Color.White
         Draw.Rect(Min($X, $X2) * $iScale, Min($Y, $Y2) * $iScale, (Abs($X - $X2) + 1) * $iScale + 1, (Abs($Y - $Y2) + 1) * $iScale + 1)
 
       Case "rect"
@@ -835,7 +835,7 @@ Private Sub DrawGhost(Optional bNoBegin As Boolean)
         Draw.LineStyle = Line.Solid
         Draw.LineWidth = 3
         Draw.FillStyle = Fill.None
-        Draw.ForeColor = Color.White
+        Draw.Foreground = Color.White
         Draw.Rect(Min($X, $X2) * $iScale, Min($Y, $Y2) * $iScale, (Abs($X - $X2) + 1) * $iScale + 1, (Abs($Y - $Y2) + 1) * $iScale + 1)
         If $iMode = 0 Then
           If Abs($X - $X2) > 1 And Abs($Y - $Y2) > 1 Then
@@ -849,7 +849,7 @@ Private Sub DrawGhost(Optional bNoBegin As Boolean)
         Draw.LineStyle = LINE.Solid
         Draw.LineWidth = 3
         Draw.FillStyle = Fill.None
-        Draw.ForeColor = Color.White
+        Draw.Foreground = Color.White
         Draw.Ellipse(Min($X, $X2) * $iScale, Min($Y, $Y2) * $iScale, (Abs($X - $X2) + 1) * $iScale + 1, (Abs($Y - $Y2) + 1) * $iScale + 1)
         If $iMode = 0 Then
           If Abs($X - $X2) > 1 And Abs($Y - $Y2) > 1 Then
@@ -1517,7 +1517,7 @@ Private Sub RedrawColor(iColor As Integer, X As Integer, Y As Integer, W As Inte
 
   Draw.LineStyle = Line.Solid
   Draw.FillStyle = Fill.None
-  Draw.ForeColor = Color.Gray
+  Draw.Foreground = Color.Gray
 
   Draw.Rect(X, Y, W, H)
 

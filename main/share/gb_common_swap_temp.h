@@ -43,8 +43,6 @@ void SWAP_ints(int *val, int n)
 	}
 }
 
-
-
 void SWAP_short(short *val)
 {
   char *p = (char *)val;
@@ -54,7 +52,6 @@ void SWAP_short(short *val)
   p[0] = p[1];
   p[1] = t;
 }
-
 
 void SWAP_double(double *val)
 {

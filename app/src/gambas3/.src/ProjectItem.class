@@ -10,9 +10,14 @@ Private $hIcon As Picture
 Private Const ICON_SIZE As Integer = 32
 Private Const PADDING As Integer = 6
 
+Private $bHighlight As Boolean
+
+Property Background As Integer
+
 Public Sub _new()
   
   $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
+  '$hDrawingArea.Mouse = Mouse.Pointing
   Me.H = ICON_SIZE + PADDING * 2
   
 End
@@ -47,8 +52,11 @@ Public Sub DrawingArea_Draw()
   Dim sTitle As String
   Dim X, W As Integer
   Dim sPath As String
+  Dim bSelected As Boolean
   
   If Not $hProjectInfo Then Return
+  
+  bSelected = Me.Background = Color.SelectedBackground
   
   With $hProjectInfo
     
@@ -56,7 +64,7 @@ Public Sub DrawingArea_Draw()
     sTitle = .Title
     If Not sTitle Then sTitle = .Name
     sTitle = "<b>" & .Name & "</b> " & .Version
-    sTitle &= "<br><font size=\"-1\" color=\"gray\">" & .Title
+    sTitle &= Subst("<br><font size=\"-1\" color=\"&1\">", If(bSelected, "white", "gray")) & .Title
     If .Authors And If .Authors.Count Then
       If .Title Then sTitle &= " - "
       sTitle &= "<i>" & If(.Authors.Count = 1, ("Author"), ("Authors")) & " : " & .Authors.Join(", ") & "</i>"
@@ -65,20 +73,40 @@ Public Sub DrawingArea_Draw()
     'Draw.Font.Bold = True
     W = Draw.RichTextWidth(sTitle)
     X = ICON_SIZE + PADDING * 2
+    If bSelected Then Draw.Foreground = Color.SelectedForeground
     Draw.RichText(sTitle, X, 0, W, Desktop.Scale * 4, Align.TopLeft)
-    'Draw.Font.Bold = False
-
-    ' Draw.Font.Grade = -1
-    ' Draw.Foreground = Color.DarkGray
-    ' If .Authors And If .Authors.Count Then
-    '   X += W + 8
-    '   Draw.Text(("Author(s)") & " : " & .Authors.Join(", "), X, PADDING, Draw.W - X - PADDING, Desktop.Scale * 2, Align.TopLeft)
-    ' Endif
-
-    'sPath = Replace($sPath, System.User.Home, "~")
-    'X = ICON_SIZE + PADDING * 3
-    'Draw.Text(sPath, X, PADDING + 2 + Desktop.Scale * 2, Draw.W - X - PADDING, Desktop.Scale * 3, Align.TopLeft)
     
   End With
   
+End
+
+Public Sub DrawingArea_Enter()
+  
+  'If Me.Parent Is ListContainer Then
+    If Me.Background = Color.Default Then 
+      $hDrawingArea.Background = Color.LightBackground
+      $bHighlight = True
+    Endif
+  'Endif
+  
+End
+
+Public Sub DrawingArea_Leave()
+  
+  If $bHighlight Then $hDrawingArea.Background = Color.Default
+  
+End
+
+
+Private Function Background_Read() As Integer
+
+  Return Super.Background
+
+End
+
+Private Sub Background_Write(Value As Integer)
+
+  Super.Background = Value
+  $hDrawingArea.Background = Color.Default
+
 End

@@ -71,13 +71,11 @@ Static Public Sub _init()
   $cRedirect["Menu.Visible"] = False
   $cRedirect["Menu.Enabled"] = True
   $cRedirect["Menu.Shortcut"] = True
-
   $cRedirect["DrawingArea.Cached"] = True
-  
   $cRedirect["Timer.Enabled"] = True
+  $cRedirect["WebView.Cached"] = True
   
   $cRedirect["*.AutoResize"] = True
-
   $cRedirect["*.Connection"] = True
 
   $cTranslate["Text"] = True
