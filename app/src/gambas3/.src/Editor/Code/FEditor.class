@@ -46,8 +46,8 @@ Private Const TYPE_ARRAY As Integer = 2
 'PRIVATE $iSymbolType AS Integer
 Private $bLastStatic As Boolean
 
-Public frmCompletion As FCompletion
-Public frmSignature As FSignature
+Static Private frmCompletion As FCompletion
+Static Private frmSignature As FSignature
 
 Private $iViewMode As Integer
 Private VIEWMODE_NORMAL As Integer = 0 
@@ -94,10 +94,12 @@ Public Sub _new(sPath As String)
   edtEditor.Flags[Editor.HighlightBraces] = True
   edtEditor.Highlight = Highlight.Gambas
 
-  frmCompletion = New FCompletion(Me)
-  frmCompletion.Hide
-  frmSignature = New FSignature(Me)
-  frmSignature.Hide
+  If Not frmCompletion Then
+    frmCompletion = New FCompletion(Me)
+    frmCompletion.Hide
+    frmSignature = New FSignature(Me)
+    frmSignature.Hide
+  Endif
 
   ReadConfig
   Refresh
@@ -1844,7 +1846,7 @@ Private Sub CheckCompletion(sMode As String)
   If sMode = " " Then
     If UCase(Right$(sLine, 3)) = " AS" Or UCase(Right$(sLine, 4)) = " NEW" Or UCase(Right$(sLine, 3)) = " IS" Then
       HideCompletion
-      frmCompletion.Open(sMode)
+      frmCompletion.Open(Me, sMode)
     Endif
   Else If sMode = "." Then
     Highlight.Analyze(sLine & ".")
@@ -1855,21 +1857,21 @@ Private Sub CheckCompletion(sMode As String)
     sType = GetExpressionType(aSymbols, aTypes, True)
     If sType Then
       'PRINT "Type: "; sType
-      frmCompletion.Open(sMode, sType, $bLastStatic, False) 'LCase(sType) = LCase(ME.Name))
+      frmCompletion.Open(Me, sMode, sType, $bLastStatic, False) 'LCase(sType) = LCase(ME.Name))
     Endif
   Else If sMode = "A" Then
     If Not frmCompletion.Visible Then 
       sWord = GetIdentifier(sLine & Key.Text, Editor.Column + 1)
-      If Len(sWord) >= 3 Then frmCompletion.Open(sMode, sWord)
+      If Len(sWord) >= 3 Then frmCompletion.Open(Me, sMode, sWord)
       'IF Len(sWord) >= 3 THEN DEBUG FindCompletion(sWord).Join(" ")
     Endif
   Else If sMode = "_" Then 
     If Not frmCompletion.Visible Then 
       sWord = GetIdentifier(sLine, Editor.Column)
       If Not sWord Then 
-        frmCompletion.Open(sMode)
+        frmCompletion.Open(Me, sMode)
       Else If Len(sWord) >= 3 Then 
-        frmCompletion.Open("A", sWord & "_")
+        frmCompletion.Open(Me, "A", sWord & "_")
       Endif
       'IF Len(sWord) >= 3 THEN DEBUG FindCompletion(sWord).Join(" ")
     Endif
@@ -1885,7 +1887,7 @@ Private Sub CheckCompletion(sMode As String)
         Editor.Goto(Editor.Line, iPos)
         Return 
       Endif      
-      If Len(sWord) >= 3 Then frmCompletion.Open(sMode, sWord)
+      If Len(sWord) >= 3 Then frmCompletion.Open(Me, sMode, sWord)
       'IF Len(sWord) >= 3 THEN DEBUG FindCompletion(sWord).Join(" ")
     Endif
   Else
@@ -2054,7 +2056,7 @@ Private Sub CheckSignature(Optional sText As String)
 
     If hSymbol Then
       If LCase(hSymbol.Kind) = "m" Then
-        frmSignature.Open($iPosSignature, hSymbol, $iArgSignature, Not sText)
+        frmSignature.Open(Me, $iPosSignature, hSymbol, $iArgSignature, Not sText)
         If frmCompletion.Visible Then frmCompletion.Raise
       Endif
       Return

@@ -1,5 +1,7 @@
 ' Gambas module file
 
+Private Const ROOT_URL As String = "http://gambasdoc.org/help"
+
 Public $PopupHelpCache As Collection
 
 Private Sub GetPath(sPath As String) As String
@@ -259,3 +261,45 @@ Finally
   
 End
 
+Public Sub GetURL(sPath As String) As String
+  
+  Return ROOT_URL &/ sPath
+  
+End
+
+
+Public Sub GetClassURL(sComponent As String, sClass As String) As String
+  
+  Dim sRes As String
+  Dim sPath As String
+  Dim sComp As String
+  
+  sPath = GetURL("comp")
+  sComp = sComponent
+  If sComp = "gb.qt4" Or If sComp = "gb.gtk" Or If sComp = "gb.gui" Then sComp = "gb.qt"
+  sPath &/= LCase(sComp)
+  sPath &/= Replace(LCase(sClass), "_", ".")
+  
+  Return sPath
+  
+End
+
+Public Sub GetSymbolURL(sComponent As String, sClass As String, sSymbol As String) As String
+  
+  Dim sPath As String
+  Dim sName As String
+  
+  sPath = GetClassURL(sComponent, sClass)
+  sName = LCase(sSymbol)
+  sName = Replace(sName, "_", ".")
+  sPath &/= sName
+    
+  Return sPath
+    
+End
+
+Public Sub GetLangURL(sSymbol As String) As String
+  
+  Return GetURL("lang") &/ LCase(sSymbol)
+  
+End

@@ -1,45 +1,17 @@
 ' Gambas class file
 
+Private $hEditor As Editor
 
-Private Function GetEditor() As Editor
-  
-  Dim hForm As FEditor
-  
-  hForm = Me.Parent.Window
-  Return hForm.Editor
-  
-End
-
-
-' PUBLIC SUB OnMove()
-' 
-'   DIM iX AS Integer
-'   DIM iY AS Integer
-'   
-'   iX = $iDX + $hEditor.Window.X  
-'   iY = $iDY + $hEditor.Window.Y  
-'   
-'   iX = Max(0, Min(Desktop.Width - ME.Width, iX))
-'    
-'   IF (iY + ME.Height) > Desktop.Height THEN
-'     iY = iY - $hEditor.LineHeight - ME.Height
-'   ENDIF
-'   
-'   ME.Move(iX, iY)
-'   
-' END
-
-
-Public Sub Open(iX As Integer, hSymbol As CSymbolInfo, iArg As Integer, Optional bDoNotUseKey As Boolean)
+Public Sub Open(hForm As FEditor, iX As Integer, hSymbol As CSymbolInfo, iArg As Integer, Optional bDoNotUseKey As Boolean)
   
   Dim sSign As String
-  Dim hEditor As Editor
+  Dim $hEditor As Editor
   Dim iY As Integer
   Dim hCont As Container
   Dim sName As String
 
-  hEditor = GetEditor() 
-  Me.Font = hEditor.Font
+  $hEditor = hForm.Editor
+  Me.Font = $hEditor.Font
   
   sSign = hSymbol.GetSignature(iArg)
   If Not sSign Then Return
@@ -48,7 +20,7 @@ Public Sub Open(iX As Integer, hSymbol As CSymbolInfo, iArg As Integer, Optional
   If Left$(sName) = "_" Then sName = hSymbol.Class
   sSign = "<b>" & sName & "</b>" & sSign 
   
-  lblNewSignature.W = Max(64, hEditor.W - 64)
+  lblNewSignature.W = Max(64, $hEditor.W - 64)
   lblNewSignature.Text = sSign
   lblNewSignature.Adjust
   'lblSignature.AutoResize = FALSE
@@ -61,13 +33,13 @@ Public Sub Open(iX As Integer, hSymbol As CSymbolInfo, iArg As Integer, Optional
   
   Me.Resize(lblSignature.W, lblSignature.H)
 
-  iY = hEditor.Y + hEditor.CursorY + hEditor.LineHeight
+  iY = $hEditor.Y + $hEditor.CursorY + $hEditor.LineHeight
   
-  If (iY + Me.Height) > (hEditor.Y + hEditor.H) Then
-    iY = hEditor.Y + hEditor.CursorY - Me.Height
+  If (iY + Me.Height) > ($hEditor.Y + $hEditor.H) Then
+    iY = $hEditor.Y + $hEditor.CursorY - Me.Height
   Endif
 
-  hCont = hEditor.Parent
+  hCont = $hEditor.Parent
   Do
     If hCont Is Form Then Break
     iX += hCont.X
@@ -75,14 +47,14 @@ Public Sub Open(iX As Integer, hSymbol As CSymbolInfo, iArg As Integer, Optional
     hCont = hCont.Parent
   Loop
   
-  iX = Max(0, Min(iX, hEditor.W - Me.Width))
+  iX = Max(0, Min(iX, $hEditor.W - Me.Width))
 
-  If iX = Me.X And iY = Me.Y And Me.Visible Then Return
+  If Me.Parent = hForm And If iX = Me.X And iY = Me.Y And Me.Visible Then Return
 
-  Me.Move(iX, iY)
+  Me.Reparent(hForm, iX, iY)
   Me.Show
   Me.Raise
-  hEditor.SetFocus
+  $hEditor.SetFocus
   
 End
 

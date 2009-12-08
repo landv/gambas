@@ -16,6 +16,15 @@ Private $iMinW As Integer
 Private $iMinH As Integer
 Private $iMaxY As Integer
 
+Private $hEditor As Editor
+
+Private Const TYPE_NATIVE As Integer = 0
+Private Const TYPE_CLASS As Integer = 1
+Private Const TYPE_CONTROL As Integer = 2
+Private Const TYPE_SYMBOL As Integer = 3
+Private Const TYPE_EVENT As Integer = 4
+Private Const TYPE_SPECIAL As Integer = 5
+
 Static Public Sub _init()
   
   Dim sPath As String
@@ -39,17 +48,6 @@ Public Sub RefreshLibrary()
 
 End
 
-
-Private Function GetEditor() As Editor
-
-  Dim hForm As FEditor
-
-  hForm = Me.Parent.Window
-  Return hForm.Editor
-
-End
-
-
 Private Function GetClass() As String
   
   Dim hForm As FEditor
@@ -59,9 +57,8 @@ Private Function GetClass() As String
   
 End
 
-Public Sub Open(sMode As String, Optional sClass As String, Optional bStatic As Boolean, Optional bPrivate As Boolean)
+Public Sub Open(hForm As FEditor, sMode As String, Optional sClass As String, Optional bStatic As Boolean, Optional bPrivate As Boolean)
 
-  Dim hEditor As Editor
   Dim iX As Integer
   Dim iY As Integer
   Dim iPos As Integer
@@ -69,8 +66,8 @@ Public Sub Open(sMode As String, Optional sClass As String, Optional bStatic As 
   Dim sText As String
   Dim W, H As Integer
 
-  hEditor = GetEditor()
-  Me.Font = hEditor.font
+  $hEditor = hForm.Editor
+  Me.Font = $hEditor.font
 
   Inc Application.Busy
 
@@ -78,7 +75,7 @@ Public Sub Open(sMode As String, Optional sClass As String, Optional bStatic As 
   $sMode = sMode
   $iLen = 0
   $iMaxLen = 16
-  $iCol = hEditor.Column + 1
+  $iCol = $hEditor.Column + 1
   
   $bShowHelp = False
   Select $sMode
@@ -122,6 +119,8 @@ Public Sub Open(sMode As String, Optional sClass As String, Optional bStatic As 
     Return
   Endif
   
+  If Settings["/ShowHelpInPopup", 1] = 0 Then $bShowHelp = False
+  
   'PRINT "Open: $hEditor = "; $hEditor
 
   lvwComp.MoveFirst
@@ -157,20 +156,20 @@ Public Sub Open(sMode As String, Optional sClass As String, Optional bStatic As 
     Me.Resize(W + 4, H * Min(8, lvwComp.Count) + 2)
   Endif
 
-  sText = String.Left(hEditor.Lines[hEditor.Line].Text, $iCol)
+  sText = String.Left($hEditor.Lines[$hEditor.Line].Text, $iCol)
   
   If InStr(" .", sMode) And If Key.Code <> Key.Backspace Then 
     sText &= Key.Text
   Endif
 
-  iX = hEditor.X + hEditor.ToPosX(0) + hEditor.Font.Width(sText)
+  iX = $hEditor.X + $hEditor.ToPosX(0) + $hEditor.Font.Width(sText)
 
   iX = Max(0, Min(iX, Me.Parent.Window.ClientW - Me.Width))
 
-  iY = hEditor.Y + hEditor.CursorY + hEditor.LineHeight
+  iY = $hEditor.Y + $hEditor.CursorY + $hEditor.LineHeight
 
-  If (iY + Me.Height) > (hEditor.Y + hEditor.H) Then
-    iY = hEditor.Y + hEditor.CursorY - Me.Height
+  If (iY + Me.Height) > ($hEditor.Y + $hEditor.H) Then
+    iY = $hEditor.Y + $hEditor.CursorY - Me.Height
     panResizeBottom.Hide
     panResizeTop.Show
   Else
@@ -178,7 +177,7 @@ Public Sub Open(sMode As String, Optional sClass As String, Optional bStatic As 
     panResizeTop.Hide
   Endif
 
-  hCont = hEditor.Parent
+  hCont = $hEditor.Parent
   Do
     If hCont Is Form Then Break
     iX += hCont.X
@@ -186,12 +185,14 @@ Public Sub Open(sMode As String, Optional sClass As String, Optional bStatic As 
     hCont = hCont.Parent
   Loop
   
-  Me.Move(iX, iY)
+  Dec Application.Busy
+
+  If Me.Parent = hForm And If iX = Me.X And iY = Me.Y And Me.Visible Then Return
+  
+  Me.Reparent(hForm, iX, iY)
   Me.Show
   Me.Raise
-  hEditor.SetFocus
-
-  Dec Application.Busy
+  $hEditor.SetFocus
 
 End
 
@@ -251,7 +252,7 @@ Private Sub AddClassesAndFill(aClass As String[], Optional sBegin As String)
   For Each sClass In aClass
     iType = Val(Right$(sClass))
     sClass = Left$(sClass, -2)
-    Try lvwComp.Add(sClass, sClass, hPic[iType])
+    Try lvwComp.Add(CStr(iType) & sClass, sClass, hPic[iType])
     $iMaxLen = Max($iMaxLen, Len(sClass))
   Next
   
@@ -298,7 +299,7 @@ Public Sub FillWithSymbol(sClass As String, bStatic As Boolean, bPrivate As Bool
 
   For Each sSymbol In aSymbol
     hSymbol = cSymbol[sSymbol]
-    Try lvwComp.Add(sSymbol, sSymbol, Picture[hSymbol.GetIcon()])
+    Try lvwComp.Add(CStr(TYPE_SYMBOL) & sSymbol, sSymbol, Picture[hSymbol.GetIcon()])
     $iMaxLen = Max($iMaxLen, Len(sSymbol))
   Next
 
@@ -341,7 +342,6 @@ End
 
 Private Sub FillWithIdent(sWord As String)
 
-  Dim hEditor As Editor
   Dim iInd As Integer
   Dim sLine As String
   Dim iPos As Integer
@@ -359,8 +359,6 @@ Private Sub FillWithIdent(sWord As String)
   Dim sUCaseLine As String
 
   lvwComp.Clear
-
-  hEditor = GetEditor()
 
   sOrg = sWord
   sWord = UCase(sWord)
@@ -387,11 +385,11 @@ Private Sub FillWithIdent(sWord As String)
   iLine = -1
   Do
   
-    iLine = hEditor.FindNextWord(sWord, iLine + 1)
+    iLine = $hEditor.FindNextWord(sWord, iLine + 1)
     If iLine < 0 Then Break 
-    If iLine = hEditor.Line Then Continue
+    If iLine = $hEditor.Line Then Continue
 
-    sLine = Highlight.Purge(hEditor.Lines[iLine].Text)
+    sLine = Highlight.Purge($hEditor.Lines[iLine].Text)
     sUCaseLine = UCase(sLine) ' Only ASCII characters are interesting there...
   
     iPos = 0
@@ -415,36 +413,6 @@ Private Sub FillWithIdent(sWord As String)
     Loop
   
   Loop 
-
-
-  'ENDIF
-  
-  ' sText = hEditor.Text
-  ' DO
-  '   INC iPos
-  '   iPos = InStr(sText, sWord, iPos, gb.Text)
-  '   IF iPos = 0 THEN BREAK 
-  '   
-  '   iPos2 = RInStr(sText, "\n", iPos) + 1
-  '   iPos3 = InStr(sText, "\n", iPos)
-  '   IF iPos3 = 0 THEN iPos3 = Len(sText) + 1
-  '   sLine = Mid$(sText, iPos2, iPos3 - iPos2)
-  '   
-  '   iUPos = String.Index(sLine, iPos - iPos2 + 1)
-  '   IF iUPos > 1 THEN
-  '     sCar = String.Mid$(sLine, iUPos - 1, 1)
-  '     IF InStr(FEditor.IDENT_CAR, sCar) THEN CONTINUE
-  '   ENDIF
-  '   FOR iPos2 = iUPos + String.Len(sWord) TO String.Len(sLine)
-  '     sCar = String.Mid$(sLine, iPos2, 1)
-  '     IF String.InStr(FEditor.IDENT_CAR, sCar) = 0 THEN BREAK
-  '   NEXT
-  '   sCar = String.Mid$(sLine, iUPos, iPos2 - iUPos)
-  '   IF IsDigit(Left$(sCar)) THEN CONTINUE 
-  '   IF cKey.Exist(sCar) THEN CONTINUE
-  '   aResult.Add(sCar & " 3")
-  '   cKey[sCar] = TRUE
-  ' LOOP 
 
   cSymbol = CComponent.GetClassSymbols(GetClass())
   If cSymbol Then
@@ -474,7 +442,7 @@ Private Sub FillWithSpecial()
   lvwComp.Clear
   
   For Each sName In ["_call", "_compare", "_exit", "_get", "_init", "_new", "_next", "_put", "_unknown"]
-    Try lvwComp.Add(sName, sName, hPict)
+    Try lvwComp.Add(CStr(TYPE_SPECIAL) & sName, sName, hPict)
   Next
   
 End
@@ -679,7 +647,6 @@ End
 Private Function InsertItem(Optional bNoSpace As Boolean) As Boolean
 
   Dim sText As String
-  Dim hEditor As Editor
 
   Try sText = lvwComp.Current.Text
   If Not lvwComp.Current.Selected Then Return
@@ -689,8 +656,7 @@ Private Function InsertItem(Optional bNoSpace As Boolean) As Boolean
     If Right(sText) = " " Then sText = Left$(sText, -1)
   Endif
 
-  hEditor = GetEditor()
-  With hEditor
+  With $hEditor
     .Select(.Line, $iCol, .Line, .Column)
     .Insert(sText)
   End With
@@ -707,14 +673,12 @@ End
 
 Public Sub lvwComp_KeyPress()
 
-  Dim hEditor As Editor
   Dim hForm As FEditor
 
   'IF Key.Code = Key.Escape THEN ME.Hide
 
-  hEditor = GetEditor()
-  hEditor.SetFocus
-  hForm = hEditor.Window
+  $hEditor.SetFocus
+  hForm = $hEditor.Window
   hForm.Editors_KeyPress
 
 End
@@ -725,7 +689,6 @@ Private Sub CompleteItem() As Boolean
   Dim sNext As String
   Dim sText As String
   Dim iPos As Integer
-  Dim hEditor As Editor
   
   sCurrent = lvwComp.Current.Text
   lvwComp.MoveCurrent
@@ -742,8 +705,7 @@ Private Sub CompleteItem() As Boolean
   Else  
     $sText = sText
 
-    hEditor = GetEditor()
-    With hEditor
+    With $hEditor
       .Select(.Line, $iCol, .Line, .Column)
       .Insert($sText)
     End With
@@ -779,33 +741,44 @@ Public Sub timHelp_Timer()
   Dim sUrl As String
   Dim sHtml As String
   Dim sLang As String
+  Dim iType As Integer
   
   Try sSymbol = lvwComp.Current.Text
   If sSymbol Then 
   
-    Select Case $sMode
-    
-      Case "."
-      
-        Try hSymbol = CComponent.GetClassSymbols($sClass)[sSymbol]
-        If hSymbol Then 
-          sUrl = hSymbol.GetHelpURL()
-          If Not sUrl Then
-            sHtml = "<html><body><pre>" & hSymbol.GetSignature() & "</pre></body></html>"
-          Endif
-        Endif
+    iType = CInt(Left(lvwComp.Key))
   
-      Case " "
-      
-        Try hClass = CComponent.Classes[sSymbol]
-        If hClass Then sUrl = hClass.GetHelpURL()
-      
-      Case "A", "<"
-        'FillWithIdent(sClass)
-      Case "_"
-        'FillWithSpecial()
+    If iType = TYPE_NATIVE Then
     
-    End Select
+      sUrl = MHelp.GetLangURL("type" &/ sSymbol)
+    
+    Else
+  
+      Select Case $sMode
+      
+        Case "."
+        
+          Try hSymbol = CComponent.GetClassSymbols($sClass)[sSymbol]
+          If hSymbol Then 
+            sUrl = hSymbol.GetHelpURL()
+            If Not sUrl Then
+              sHtml = "<html><body><pre>" & hSymbol.GetSignature() & "</pre></body></html>"
+            Endif
+          Endif
+    
+        Case " "
+        
+          Try hClass = CComponent.Classes[sSymbol]
+          If hClass Then sUrl = hClass.GetHelpURL()
+        
+        Case "A", "<"
+          'FillWithIdent(sClass)
+        Case "_"
+          'FillWithSpecial()
+      
+      End Select
+      
+    Endif
   
     webHelp.Stop
     If sUrl Then
@@ -874,5 +847,11 @@ Public Sub panResizeTop_MouseMove()
   Y = Min($iMaxY, $DY + Mouse.ScreenY)
   
   Me.Move(Me.X, Y, W, Me.H + Me.Y - Y)
+
+End
+
+Public Sub Form_Close()
+
+  $hEditor = Null
 
 End

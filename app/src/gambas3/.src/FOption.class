@@ -4,6 +4,7 @@ Static Private $aTheme As String[] = ["amethyst", "amber", "emerald", "ruby", "s
 Static Private $aThemeName As String[] = [("Amethyst"), ("Amber"), ("Emerald"), ("Ruby"), ("Sapphire"), ("Visual"), ("Obsidian"), ("Quest"), ("Quick")]
 Static Private $aBrowser As String[] = ["konqueror", "firefox", "epiphany", "seamonkey", "opera"]
 Static Private $aTerminal As String[] = ["konsole", "gnome-terminal", "Terminal", "xterm"]
+Static Private $aImageEditor As String[] = ["gimp", "kolourpaint", "krita"]
 
 Private $cLast As Collection
 Private $cCurrent As Collection
@@ -57,6 +58,7 @@ Public Sub _new()
   cmbIconTheme.List = [("Desktop"), "Gnome", "KDE", "KDE4"]
   cmbBrowser.List = [("(Default)"), "Konqueror", "Firefox", "Epiphany", "SeaMonkey", "Opera"]
   cmbTerminal.List = [("(Default)"), "Konsole", "Gnome Terminal", "XFCE Terminal", "XTerm"]
+  cmbImageEditor.List = [("(Default)"), "GIMP", "Kolour Paint", "Krita"]
   
   $cLast = MTheme.ReadSettings(Settings, "/Highlight", True)
   $cCurrent = MTheme.Copy($cLast)
@@ -76,6 +78,7 @@ Public Sub _new()
     [cmbOutput, "/QuietExternalCommands", 0],
     [cmbTooltip, "/ShowTooltip", 0],
     [cmbIntegratedHelp, "/PropertyHelp", 1],
+    [cmbHelpCompletion, "/ShowHelpInPopup", 1],
     [cmbMinimize, "/MinimizeOnRun", 0],
     [cmbUpperCaseKeywords, "/Editor/KeywordsUseUpperCase", 0]]
   
@@ -84,6 +87,7 @@ Public Sub _new()
   cmbIconTheme.Index = ["gnome", "kde"].Find(Settings["/Theme"]) + 1
   cmbBrowser.Index = $aBrowser.Find(Settings["/Browser"]) + 1
   cmbTerminal.Index = $aTerminal.Find(Settings["/Terminal"]) + 1
+  cmbImageEditor.Index = $aImageEditor.Find(Settings["/ImageEditor"]) + 1
   $bNoChange = False
   
   For iInd = 0 To MTheme.ColorKeys.Max
@@ -338,6 +342,16 @@ Public Sub cmbTerminal_Click()
   
 End
 
+Public Sub cmbImageEditor_Click()
+
+  If cmbImageEditor.Index > 0 Then 
+    Settings["/ImageEditor"] = $aTerminal[cmbImageEditor.Index - 1]
+  Else   
+    Settings["/ImageEditor"] = ""
+  Endif
+  
+End
+
 ' PUBLIC SUB cmbImageEditor_Click()
 ' 
 '   IF cmbImageEditor.Index > 0 THEN 
@@ -380,6 +394,12 @@ Public Sub cmbIntegratedHelp_Click()
 
   Settings["/PropertyHelp"] = cmbIntegratedHelp.Index = 1
   FProperty.CheckIntegratedHelpSetting
+  
+End
+
+Public Sub cmbHelpCompletion_Click()
+
+  Settings["/ShowHelpInPopup"] = cmbHelpCompletion.Index = 1
   
 End
 

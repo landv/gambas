@@ -685,18 +685,6 @@ End
 
 Public Sub GetHelpURL() As String
   
-  Dim sPath As String
-  Dim sName As String
-  
-  If Component Then
-  
-    sPath = CComponent.Classes[Component &/ Class].GetHelpURL()
-    sName = LCase(Name)
-    If Kind = ":" Then sName = Replace(sName, "_", ".")
-    sPath &/= sName
-    
-    Return sPath
-    
-  Endif
+  If Component Then Return MHelp.GetSymbolURL(Component, Class, Name)
   
 End
