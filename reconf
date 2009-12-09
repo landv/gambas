@@ -3,4 +3,6 @@
 rm -f config.cache
 rm -f acconfig.cache
 
+libtoolize --force
 autoreconf -v $@
+
