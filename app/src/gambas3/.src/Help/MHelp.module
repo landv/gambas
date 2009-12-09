@@ -300,12 +300,14 @@ Public Sub GetSymbolURL(sComponent As String, sClass As String, Optional sSymbol
   sPath = GetURL("comp")
   sComp = sComponent
   If sComp = "gb.qt4" Or If sComp = "gb.gtk" Or If sComp = "gb.gui" Then sComp = "gb.qt"
+  'If sComp = "gb.qt4.ext" Then sComp = "gb.qt.ext"
   sPath &/= LCase(sComp)
   sPath &/= Replace(LCase(sClass), "_", ".")
   
   If sSymbol Then
     sName = LCase(sSymbol)
     sName = Replace(sName, "_", ".")
+    sName = Replace(sName, ":", ".")
     sPath &/= sName
   Endif
     
@@ -343,6 +345,7 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
   Dim sUrl As String
   Dim sHtml As String
   Dim sLang As String
+  Dim iPos As Integer
   
   If iType = TYPE_NATIVE Then
   
@@ -352,8 +355,12 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
   
     sUrl = MHelp.GetLangURL(sSymbol)
     
-  Else If iType = TYPE_SYMBOL Then
+  Else If iType = TYPE_SYMBOL Or If iType = TYPE_EVENT Then
 
+    If iType = TYPE_EVENT Then
+      iPos = InStr(sSymbol, "_")
+      If iPos Then sSymbol = ":" & Mid$(sSymbol, iPos + 1)
+    Endif
     Try hSymbol = CComponent.GetClassSymbols(sClass)[sSymbol]
     If hSymbol Then 
       sUrl = hSymbol.GetHelpURL()
@@ -364,10 +371,10 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
     Try hClass = CComponent.Classes[sSymbol]
     If hClass Then sUrl = hClass.GetHelpURL()
     
-  Else If iType = TYPE_SPECIAL
+  Else If iType = TYPE_SPECIAL Then
       
     sUrl = MHelp.GetSpecialURL(sSymbol)
-
+    
   Endif
   
   If sUrl And If hWebView.Url = sUrl Then Return

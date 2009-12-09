@@ -317,6 +317,7 @@ Private Sub AddEvents(aResult As String[], sCtrl As String)
   If Not aEvent Then Return
   
   For Each sName In aEvent
+    If aResult.Exist(sCtrl & "_" & sName & " " & CStr(MHelp.TYPE_SYMBOL), gb.IgnoreCase) Then Continue
     aResult.Add(sCtrl & "_" & sName & " " & CStr(MHelp.TYPE_EVENT))
   Next
   
@@ -710,11 +711,14 @@ Public Sub timHelp_Timer()
   
   Dim sSymbol As String
   Dim iType As Integer
+  Dim sClass As String
   
   Try sSymbol = lvwComp.Current.Text
   If sSymbol Then   
     iType = CInt(Left(lvwComp.Key))
-    MHelp.InitWebViewWith(webHelp, iType, sSymbol, $sClass)
+    sClass = $sClass
+    If Not sClass Then sClass = GetClass()
+    MHelp.InitWebViewWith(webHelp, iType, sSymbol, sClass)
   Endif
 
   timHelp.Stop
