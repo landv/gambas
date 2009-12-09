@@ -23,7 +23,8 @@ Private Const TYPE_CLASS As Integer = 1
 Private Const TYPE_CONTROL As Integer = 2
 Private Const TYPE_SYMBOL As Integer = 3
 Private Const TYPE_EVENT As Integer = 4
-Private Const TYPE_SPECIAL As Integer = 5
+Private Const TYPE_KEYWORD As Integer = 5
+Private Const TYPE_SPECIAL As Integer = 6
 
 Static Public Sub _init()
   
@@ -97,6 +98,7 @@ Public Sub Open(hForm As FEditor, sMode As String, Optional sClass As String, Op
       $iLen = Len(sClass)
       $iCol -= Len(sClass)
       FillWithIdent(sClass)
+      $bShowHelp = True
     Case "_"
       $sText = "_"
       $iLen = 1
@@ -112,6 +114,7 @@ Public Sub Open(hForm As FEditor, sMode As String, Optional sClass As String, Op
       Endif
       $iCol -= Len(sClass) + 2
       FillWithIdent(Left$(sClass, $iLen))
+      $bShowHelp = True
   End Select
 
   If lvwComp.Count = 0 Then
@@ -210,7 +213,7 @@ Private Sub AddClassesAndFill(aClass As String[], Optional sBegin As String)
   Dim sClass As String
   Dim sLib As String
   Dim iType As Integer
-  Dim hPic As New Object[5]
+  Dim hPic As Picture[6]
   Dim aLib As String[]
 
   CComponent.All["gb"].Load
@@ -246,6 +249,7 @@ Private Sub AddClassesAndFill(aClass As String[], Optional sBegin As String)
   hPic[2] = Picture["img/16/control.png"]
   hPic[3] = Picture["img/16/point.png"]
   hPic[4] = Picture["img/16/event.png"]
+  hPic[5] = hPic[0]
 
   lvwComp.Clear
 
@@ -258,15 +262,13 @@ Private Sub AddClassesAndFill(aClass As String[], Optional sBegin As String)
   
 End
 
-Public Sub FillWithClasses()
+Private Sub FillWithClasses()
 
   AddClassesAndFill(["Boolean 0", "Byte 0", "Short 0", "Integer 0", "Long 0", "Single 0", "Float 0", "Date 0", "String 0", "Object 0", "Variant 0", "Pointer 0"])
 
 End
 
-
-
-Public Sub FillWithSymbol(sClass As String, bStatic As Boolean, bPrivate As Boolean)
+Private Sub FillWithSymbol(sClass As String, bStatic As Boolean, bPrivate As Boolean)
 
   Dim cSymbol As Collection
   Dim hSymbol As CSymbolInfo
@@ -366,7 +368,7 @@ Private Sub FillWithIdent(sWord As String)
   For Each sCar In ["True", "False", "Null", "Last", "Me", "Super"]
     If sCar Like sWord & "*" Then 
       cKey[sCar] = True
-      aResult.Add(sCar & " 0")
+      aResult.Add(sCar & " 5")
     Endif
   Next
 
@@ -375,7 +377,7 @@ Private Sub FillWithIdent(sWord As String)
       If cKey.Exist(sCar) Then Continue
       cKey[sCar] = True
       If sCar = UCase(sCar) Then sCar &= " "
-      aResult.Add(sCar & " 0")
+      aResult.Add(sCar & " 5")
     Endif
   Next
 
@@ -751,7 +753,11 @@ Public Sub timHelp_Timer()
     If iType = TYPE_NATIVE Then
     
       sUrl = MHelp.GetLangURL("type" &/ sSymbol)
+      
+    Else If iType = TYPE_KEYWORD Then
     
+      sUrl = MHelp.GetLangURL(sSymbol)
+      
     Else
   
       Select Case $sMode

@@ -300,6 +300,9 @@ End
 
 Public Sub GetLangURL(sSymbol As String) As String
   
-  Return GetURL("lang") &/ LCase(sSymbol)
+  sSymbol = LCase(sSymbol)
+  sSymbol = Replace(sSymbol, "$", "")
+  
+  Return GetURL("lang") &/ sSymbol
   
 End
