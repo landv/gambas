@@ -1,0 +1,65 @@
+' Gambas class file
+
+Public Sub Form_Open()
+
+  Settings.Read(Me)
+  If Not webHelp.Url Then 
+    webHelp.Url = MHelp.GetURL() & "?help&" & MHelp.GetHelpLanguage()
+    webHelp.TextZoom = 0.8
+  Endif
+
+End
+
+Public Sub Form_Close()
+  
+  Settings.Write(Me)
+  
+End
+
+Public Sub btnHome_Click()
+
+  webHelp.Url = MHelp.GetURL() & "?help&" & MHelp.GetHelpLanguage()
+
+End
+
+Public Sub btnBack_Click()
+
+  webHelp.Back
+
+End
+
+Public Sub btnForward_Click()
+
+  webHelp.Forward
+
+End
+
+Public Sub btnStop_Click()
+
+  webHelp.Stop
+
+End
+
+Public Sub btnReload_Click()
+
+  webHelp.Reload
+
+End
+
+Public Sub btnZoomIn_Click()
+
+  webHelp.Zoom = Round(webHelp.Zoom * 1.25, -2)
+
+End
+
+Public Sub btnZoomOut_Click()
+
+  webHelp.Zoom = Round(webHelp.Zoom / 1.25, -2)
+
+End
+
+Public Sub btnZoomNormal_Click()
+
+  webHelp.Zoom = 0.8
+
+End

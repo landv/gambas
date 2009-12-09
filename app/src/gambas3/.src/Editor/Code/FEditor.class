@@ -46,8 +46,8 @@ Private Const TYPE_ARRAY As Integer = 2
 'PRIVATE $iSymbolType AS Integer
 Private $bLastStatic As Boolean
 
-Static Private frmCompletion As FCompletion
-Static Private frmSignature As FSignature
+'Static Public frmCompletion As FCompletion
+'Static Public frmSignature As FSignature
 
 Private $iViewMode As Integer
 Private VIEWMODE_NORMAL As Integer = 0 
@@ -94,12 +94,12 @@ Public Sub _new(sPath As String)
   edtEditor.Flags[Editor.HighlightBraces] = True
   edtEditor.Highlight = Highlight.Gambas
 
-  If Not frmCompletion Then
-    frmCompletion = New FCompletion(Me)
-    frmCompletion.Hide
-    frmSignature = New FSignature(Me)
-    frmSignature.Hide
-  Endif
+  ' If Not frmCompletion Then
+  '   frmCompletion = New FCompletion(Me)
+  '   frmCompletion.Hide
+  '   frmSignature = New FSignature(Me)
+  '   frmSignature.Hide
+  ' Endif
 
   ReadConfig
   Refresh
@@ -394,7 +394,7 @@ Private Sub RefreshLineInfo(Optional bForce As Boolean)
     ' Action["break"].Enabled = CanSetBreakpoint(edtEditor.Line)
     If IsModified() Then {Scan} = Null
     'DEBUG Format((Timer - eTime) * 1000, "#.###")
-  Else If $bCheckSignature Or If frmSignature.VisibleFrom(Editor) Then
+  Else If $bCheckSignature Or If FSignature.VisibleFrom(Editor) Then
     $bCheckSignature = False
     CheckSignature
   Endif
@@ -750,12 +750,12 @@ Public Sub Editors_KeyPress()
 
     iLine = Editor.Line
 
-    If frmCompletion.VisibleFrom(Editor) Then
-      bStop = frmCompletion.ManageKey()
+    If FCompletion.VisibleFrom(Editor) Then
+      bStop = FCompletion.ManageKey()
     Endif
 
-    If frmSignature.VisibleFrom(Editor) Then
-      bStop = bStop Or frmSignature.ManageKey()
+    If FSignature.VisibleFrom(Editor) Then
+      bStop = bStop Or FSignature.ManageKey()
       'IF Key.Text THEN CheckSignature(Key.Text)
     Endif
 
@@ -1846,7 +1846,7 @@ Private Sub CheckCompletion(sMode As String)
   If sMode = " " Then
     If UCase(Right$(sLine, 3)) = " AS" Or UCase(Right$(sLine, 4)) = " NEW" Or UCase(Right$(sLine, 3)) = " IS" Then
       HideCompletion
-      frmCompletion.Open(Me, sMode)
+      FCompletion.Open(Me, sMode)
     Endif
   Else If sMode = "." Then
     Highlight.Analyze(sLine & ".")
@@ -1857,37 +1857,37 @@ Private Sub CheckCompletion(sMode As String)
     sType = GetExpressionType(aSymbols, aTypes, True)
     If sType Then
       'PRINT "Type: "; sType
-      frmCompletion.Open(Me, sMode, sType, $bLastStatic, False) 'LCase(sType) = LCase(ME.Name))
+      FCompletion.Open(Me, sMode, sType, $bLastStatic, False) 'LCase(sType) = LCase(ME.Name))
     Endif
   Else If sMode = "A" Then
-    If Not frmCompletion.VisibleFrom(Editor) Then 
+    If Not FCompletion.VisibleFrom(Editor) Then 
       sWord = GetIdentifier(sLine & Key.Text, Editor.Column + 1)
-      If Len(sWord) >= 3 Then frmCompletion.Open(Me, sMode, sWord)
+      If Len(sWord) >= 3 Then FCompletion.Open(Me, sMode, sWord)
       'IF Len(sWord) >= 3 THEN DEBUG FindCompletion(sWord).Join(" ")
     Endif
   Else If sMode = "_" Then 
-    If Not frmCompletion.VisibleFrom(Editor) Then 
+    If Not FCompletion.VisibleFrom(Editor) Then 
       sWord = GetIdentifier(sLine, Editor.Column)
       If Not sWord Then 
-        frmCompletion.Open(Me, sMode)
+        FCompletion.Open(Me, sMode)
       Else If Len(sWord) >= 3 Then 
-        frmCompletion.Open(Me, "A", sWord & "_")
+        FCompletion.Open(Me, "A", sWord & "_")
       Endif
       'IF Len(sWord) >= 3 THEN DEBUG FindCompletion(sWord).Join(" ")
     Endif
   Else If sMode = "<" Then
-    If Not Editor.Selected And If Editor.Column >= 1 And If Not frmCompletion.VisibleFrom(Editor) Then 
+    If Not Editor.Selected And If Editor.Column >= 1 And If Not FCompletion.VisibleFrom(Editor) Then 
       sLine = Left(sLine, -1)
       sWord = GetIdentifier(sLine, Editor.Column - 1)
       If Right(sLine) <> "." And If Len(sLine) > Len(sWord) And If Mid$(sLine, Len(sLine) - Len(sWord), 1) = "." Then
         iPos = Editor.Column
         Editor.Goto(Editor.Line, Editor.Column - String.Len(sWord) - 2)
         CheckCompletion(".")
-        frmCompletion.SetText(sWord)
+        FCompletion.SetText(sWord)
         Editor.Goto(Editor.Line, iPos)
         Return 
       Endif      
-      If Len(sWord) >= 3 Then frmCompletion.Open(Me, sMode, sWord)
+      If Len(sWord) >= 3 Then FCompletion.Open(Me, sMode, sWord)
       'IF Len(sWord) >= 3 THEN DEBUG FindCompletion(sWord).Join(" ")
     Endif
   Else
@@ -1898,7 +1898,7 @@ End
 
 Private Sub HideCompletion()
 
-  frmCompletion.HideFrom(Editor)
+  FCompletion.HideFrom(Editor)
 
 End
 
@@ -2052,7 +2052,7 @@ Private Sub CheckSignature(Optional sText As String)
 
     If hSymbol Then
       If LCase(hSymbol.Kind) = "m" Then
-        frmSignature.Open(Me, $iPosSignature, hSymbol, $iArgSignature, Not sText)
+        FSignature.Open(Me, $iPosSignature, hSymbol, $iArgSignature, Not sText)
       Endif
       Return
     Endif
@@ -2066,7 +2066,7 @@ End
 
 Private Sub HideSignature()
 
-  frmSignature.HideFrom(Editor)
+  FSignature.HideFrom(Editor)
 
 End
 

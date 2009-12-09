@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,75,76)
+  MoveScaled(0,0,75,73)
   Action = "option"
   Text = ("Preferences")
   Icon = Picture["icon:/small/options"]
@@ -32,7 +32,7 @@
     }
   }
   { TabStrip1 TabStrip
-    MoveScaled(1,1,73,69)
+    MoveScaled(1,1,73,66)
     Arrangement = Arrange.Vertical
     Spacing = True
     Margin = True
@@ -266,19 +266,19 @@
       Text = ("Font")
     }
     { fntEditor FontChooser
-      MoveScaled(2,5,69,18)
+      MoveScaled(2,5,69,15)
       Expand = True
       ShowStyle = False
       ShowPreview = False
       ShowLabel = False
     }
     { Label18 Label
-      MoveScaled(1,25,56,3)
+      MoveScaled(1,22,56,3)
       Font = Font["Bold"]
       Text = ("Options")
     }
     { HBox18 HBox
-      MoveScaled(2,29,69,4)
+      MoveScaled(2,26,69,4)
       Spacing = True
       Indent = True
       { Label5 Label
@@ -294,7 +294,7 @@
       }
     }
     { HBox17 HBox
-      MoveScaled(2,34,69,4)
+      MoveScaled(2,31,69,4)
       Spacing = True
       Indent = True
       { Label6 Label
@@ -309,7 +309,7 @@
       }
     }
     { HBox16 HBox
-      MoveScaled(2,39,69,4)
+      MoveScaled(2,36,69,4)
       Spacing = True
       Indent = True
       { Label7 Label
@@ -324,7 +324,7 @@
       }
     }
     { HBox15 HBox
-      MoveScaled(2,44,69,4)
+      MoveScaled(2,41,69,4)
       Spacing = True
       Indent = True
       { Label8 Label
@@ -339,7 +339,7 @@
       }
     }
     { HBox4 HBox
-      MoveScaled(2,49,69,4)
+      MoveScaled(2,46,69,4)
       Spacing = True
       Indent = True
       { Label17 Label
@@ -354,7 +354,7 @@
       }
     }
     { HBox14 HBox
-      MoveScaled(2,54,69,4)
+      MoveScaled(2,51,69,4)
       Spacing = True
       Indent = True
       { Label40 Label
@@ -374,7 +374,7 @@
       }
     }
     { HBox20 HBox
-      MoveScaled(2,59,69,4)
+      MoveScaled(2,56,69,4)
       Spacing = True
       Indent = True
       { Label20 Label
@@ -437,7 +437,7 @@
     Index = 0
   }
   { btnClose Button
-    MoveScaled(59,71,15,4)
+    MoveScaled(59,68,15,4)
     Text = ("Close")
     Default = True
     Cancel = True

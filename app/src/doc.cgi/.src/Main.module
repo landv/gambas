@@ -95,27 +95,38 @@ End
 
 Private Sub AddParam(sReq As String, sParam As String) As String
   
+  Dim aParam As String[]
+  Dim iPos As Integer
+  
   If Not sParam Then Return sReq
   
-  If InStr(sReq, "?") = 0 Then 
-    Return sReq & "?" & sParam
-  Else 
-    Return sReq & "&" & sParam
-  Endif
+  iPos = InStr(sReq, "?")
+  If iPos = 0 Then Return sReq & "?" & sParam
+  
+  aParam = Split(Mid$(sReq, iPos + 1), "&")
+  If aParam.Find(sParam) >= 0 Then Return sReq
+  
+  Return sReq & "&" & sParam
   
 End
 
 Private Sub RemoveParam(sReq As String, sParam As String) As String
   
+  Dim aParam As String[]
   Dim iPos As Integer
+  Dim iInd As Integer
   
-  iPos = InStr(sReq, "?" & sParam)
-  If iPos = 0 Then iPos = InStr(sReq, "&" & sParam)
-  If iPos Then
-    sReq = Left(sReq, iPos - 1) & Mid$(sReq, iPos + 1 + Len(sParam))
-  Endif
-  If sReq = "?" Then sReq = ""
-  Return sReq
+  iPos = InStr(sReq, "?")
+  If iPos = 0 Then Return sReq
+  
+  aParam = Split(Mid$(sReq, iPos + 1), "&")
+  iInd = aParam.Find(sParam)
+  If iInd < 0 Then Return sReq
+  
+  aParam.Remove(iInd)
+  If aParam.Count = 0 Then Return Left$(sReq, iPos - 1)
+  
+  Return Left$(sReq, iPos - 1) & "?" & aParam.Join("&")
   
 End
 
@@ -1482,8 +1493,8 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String, Opti
   Print "Content-language: "; Replace(System.Language, "_", "-")
   
   If dDate Then
-    Print "Expires: "; FormatDate(DateAdd(Now, gb.Month, 1))
-    Print "Cache-Control: max-age=2592000"
+    Print "Expires: "; FormatDate(DateAdd(Now, gb.Day, 1))
+    'Print "Cache-Control: max-age=2592000"
     Print "Last-Modified: "; FormatDate(dDate)
   Endif
   
@@ -1723,7 +1734,9 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String, Opti
     Print "<div class=\"alert\">"
     Print "<b>"; ("Warning!"); "&nbsp;"; sWarn; "</b>"
     If Not $bWget Then
-      Print "&nbsp;<a href=\"/help" &/ $sPath & "?en\" target=\"_blank\">" & ("See english version") & "</a>&nbsp;"
+      Print "&nbsp;<a href=\"/help" &/ AddParam(RemoveParam($sUri, $sLang), "en") & "\""; 
+      If Not $bOnlineHelp Then Print " target=\"_blank\""; 
+      Print ">" & ("See english version") & "</a>&nbsp;"
     Endif
     Print "</div>"
   Endif

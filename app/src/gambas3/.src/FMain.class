@@ -42,6 +42,7 @@ Public Sub _new()
   'PRINT 1 / 0
   
   FOption.Load
+  FHelpBrowser.Load
   
   'tvwProject.Columns.Count = 1
   
@@ -1110,9 +1111,6 @@ Public Sub Action_Activate(Key As String) As Boolean
     Case "find-all"
       FFind.FindAll
     
-    Case "help"
-      MHelp.Open
-      
     Case "console"
       If Action["console"].Value Then Try FOutput.SetFocus
       'FOutput.Toggle(Action["console"].Value)

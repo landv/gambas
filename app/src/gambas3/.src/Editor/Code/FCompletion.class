@@ -31,7 +31,7 @@ Private Function GetClass() As String
   
   Dim hForm As FEditor
 
-  hForm = Me.Parent.Window
+  hForm = $hEditor.Window
   Return hForm.Name  
   
 End
@@ -143,7 +143,7 @@ Public Sub Open(hForm As FEditor, sMode As String, Optional sClass As String, Op
 
   iX = $hEditor.X + $hEditor.ToPosX(0) + $hEditor.Font.Width(sText)
 
-  iX = Max(0, Min(iX, Me.Parent.Window.ClientW - Me.Width))
+  iX = Max(0, Min(iX, $hEditor.Window.ClientW - Me.Width))
 
   iY = $hEditor.Y + $hEditor.CursorY + $hEditor.LineHeight
 
