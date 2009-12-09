@@ -157,6 +157,23 @@ Public Sub _init()
   
 End
 
+Private Sub InitWebView()
+  
+  Dim sPath As String
+  
+  If Not WebSettings.Cache.Path Then
+    sPath = System.User.Home &/ ".cache"
+    Try Mkdir sPath
+    sPath &/= "gambas3"
+    Try Mkdir sPath
+    sPath &/= "help"
+    Try Mkdir sPath
+    WebSettings.Cache.Path = sPath
+  Endif
+  
+End
+
+
 Public Sub Main()
 
   Dim sPath As String
@@ -175,6 +192,8 @@ Public Sub Main()
   Application.Tooltip.Enabled = Settings["/ShowTooltip", True]
 
   RefreshBreakpointPicture
+  InitWebView
+  
   InitVersion
   LoadRecent
   'CModule.Init

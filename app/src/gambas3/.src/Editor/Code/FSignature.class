@@ -1,20 +1,29 @@
 ' Gambas class file
 
 Private $hEditor As Editor
+Private $bShowHelp As Boolean
+
+Private $DX As Integer
+Private $DY As Integer
+Private $iMinW As Integer
+Private $iMinH As Integer
+Private $iMaxY As Integer
 
 Public Sub Open(hForm As FEditor, iX As Integer, hSymbol As CSymbolInfo, iArg As Integer, Optional bDoNotUseKey As Boolean)
   
   Dim sSign As String
-  Dim $hEditor As Editor
   Dim iY As Integer
   Dim hCont As Container
   Dim sName As String
 
+  If hForm.Editor <> $hEditor Then HideFrom($hEditor)
   $hEditor = hForm.Editor
-  Me.Font = $hEditor.Font
-  
+
   sSign = hSymbol.GetSignature(iArg)
   If Not sSign Then Return
+  
+  Me.Font = $hEditor.Font
+  $bShowHelp = Settings["/ShowHelpInPopup", 1]
   
   sName = hSymbol.Name
   If Left$(sName) = "_" Then sName = hSymbol.Class
@@ -24,19 +33,44 @@ Public Sub Open(hForm As FEditor, iX As Integer, hSymbol As CSymbolInfo, iArg As
   lblNewSignature.Text = sSign
   lblNewSignature.Adjust
   'lblSignature.AutoResize = FALSE
-  lblSignature.W = lblNewSignature.W
+  'lblSignature.W = lblNewSignature.W
   'DEBUG lblSignature.W;; hEditor.W
-  lblSignature.Text = sSign
-  'lblSignature.AutoResize = TRUE
-  'DEBUG "->";; lblSignature.W
-  lblSignature.Adjust
   
-  Me.Resize(lblSignature.W, lblSignature.H)
+  If $bShowHelp Then
+    MHelp.InitWebViewWith(webHelp, MHelp.TYPE_SYMBOL, hSymbol.Name, hSymbol.Class)
+    sepHelp.Show
+    webHelp.Show
+    panRight.Show
+    $iMinW = Max(128, lblNewSignature.W + 2 + panRight.W)
+    $iMinH = Desktop.Scale * 24
+    Me.Resize(Max(Me.W, $iMinW), Max(Me.H, $iMinH))
+  Else
+    sepHelp.Hide
+    webHelp.Hide
+    panRight.Hide
+    Me.Resize(lblNewSignature.W + 2, lblSignature.H + 2)
+  Endif
 
+  lblSignature.Text = sSign
+  'lblSignature.Adjust
+  
   iY = $hEditor.Y + $hEditor.CursorY + $hEditor.LineHeight
   
   If (iY + Me.Height) > ($hEditor.Y + $hEditor.H) Then
     iY = $hEditor.Y + $hEditor.CursorY - Me.Height
+    If iY < 0 Then
+      Me.Height += iY
+      iY = 0
+    Endif
+    panResizeBottom.Hide
+    panResizeTop.Show
+    sepHelp.Raise
+    lblSignature.Raise
+  Else
+    panResizeBottom.Show
+    panResizeTop.Hide
+    sepHelp.Raise
+    panHelp.Raise
   Endif
 
   hCont = $hEditor.Parent
@@ -82,3 +116,61 @@ Public Sub lblSignature_MouseDown()
   Me.Hide
 
 End
+
+Public Sub panResizeBottom_MouseDown()
+
+  $DX = Me.W - Mouse.ScreenX
+  $DY = Me.H - Mouse.ScreenY
+
+End
+
+Public Sub panResizeBottom_MouseMove()
+
+  Dim W, H As Integer
+  
+  W = Max($iMinW, $DX + Mouse.ScreenX)
+  H = Max($iMinH, $DY + Mouse.ScreenY)
+  
+  Me.Resize(W, H)
+
+End
+
+Public Sub panResizeTop_MouseDown()
+
+  $DX = Me.W - Mouse.ScreenX
+  $DY = Me.Y - Mouse.ScreenY
+  $iMaxY = Me.Y + Me.H - $iMinH
+
+End
+
+Public Sub panResizeTop_MouseMove()
+
+  Dim W, Y As Integer
+  
+  W = Max($iMinW, $DX + Mouse.ScreenX)
+  Y = Min($iMaxY, $DY + Mouse.ScreenY)
+  
+  Me.Move(Me.X, Y, W, Me.H + Me.Y - Y)
+
+End
+
+Public Sub Form_Close()
+
+  $hEditor = Null
+
+End
+
+Public Sub HideFrom(hEditor As Editor)
+  
+  If $hEditor <> hEditor Then Return
+  $hEditor = Null
+  Me.Hide
+  
+End
+
+Public Sub VisibleFrom(hEditor As Editor) As Boolean
+
+  Return $hEditor = hEditor And Me.Visible
+  
+End
+

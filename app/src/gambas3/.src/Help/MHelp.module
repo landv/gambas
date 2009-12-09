@@ -1,5 +1,13 @@
 ' Gambas module file
 
+Public Const TYPE_NATIVE As Integer = 0
+Public Const TYPE_CLASS As Integer = 1
+Public Const TYPE_CONTROL As Integer = 2
+Public Const TYPE_SYMBOL As Integer = 3
+Public Const TYPE_EVENT As Integer = 4
+Public Const TYPE_KEYWORD As Integer = 5
+Public Const TYPE_SPECIAL As Integer = 6
+
 Private Const ROOT_URL As String = "http://gambasdoc.org/help"
 
 Public $PopupHelpCache As Collection
@@ -268,10 +276,25 @@ Public Sub GetURL(sPath As String) As String
 End
 
 
-Public Sub GetClassURL(sComponent As String, sClass As String) As String
+Public Sub GetHelpLanguage() As String
   
-  Dim sRes As String
+  Dim sLang As String = System.Language
+  Dim iPos As Integer
+  Dim sCar As String
+  
+  For iPos = 1 To Len(sLang)
+    If Not IsLower(Mid$(sLang, iPos, 1)) Then Break
+  Next
+  
+  Return Left$(sLang, iPos - 1)
+  
+End
+
+Public Sub GetSymbolURL(sComponent As String, sClass As String, Optional sSymbol As String) As String
+  
   Dim sPath As String
+  Dim sName As String
+  Dim sRes As String
   Dim sComp As String
   
   sPath = GetURL("comp")
@@ -280,29 +303,83 @@ Public Sub GetClassURL(sComponent As String, sClass As String) As String
   sPath &/= LCase(sComp)
   sPath &/= Replace(LCase(sClass), "_", ".")
   
-  Return sPath
-  
+  If sSymbol Then
+    sName = LCase(sSymbol)
+    sName = Replace(sName, "_", ".")
+    sPath &/= sName
+  Endif
+    
+  Return sPath & "?help&v3&" & GetHelpLanguage()
+    
 End
 
-Public Sub GetSymbolURL(sComponent As String, sClass As String, sSymbol As String) As String
+Public Sub GetClassURL(sComponent As String, sClass As String) As String
   
-  Dim sPath As String
-  Dim sName As String
+  Return GetSymbolURL(sComponent, sClass)
   
-  sPath = GetClassURL(sComponent, sClass)
-  sName = LCase(sSymbol)
-  sName = Replace(sName, "_", ".")
-  sPath &/= sName
-    
-  Return sPath
-    
 End
 
 Public Sub GetLangURL(sSymbol As String) As String
   
   sSymbol = LCase(sSymbol)
   sSymbol = Replace(sSymbol, "$", "")
+  If Right(sSymbol) = "?" Then sSymbol = "is" & Left(sSymbol, -1)
   
-  Return GetURL("lang") &/ sSymbol
+  Return GetURL("lang") &/ sSymbol & "?help&v3&" & GetHelpLanguage()
   
+End
+
+Public Sub GetSpecialURL(sSymbol As String) As String
+  
+  Return GetURL("lang") &/ "special" &/ Mid$(sSymbol, 2) & "?help&v3&" & GetHelpLanguage()
+  
+End
+
+Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As String, Optional sClass As String)
+  
+  Dim cSymbol As Collection
+  Dim hSymbol As CSymbolInfo
+  Dim hClass As CClassInfo
+  Dim sUrl As String
+  Dim sHtml As String
+  Dim sLang As String
+  
+  If iType = TYPE_NATIVE Then
+  
+    sUrl = MHelp.GetLangURL("type" &/ sSymbol)
+    
+  Else If iType = TYPE_KEYWORD Then
+  
+    sUrl = MHelp.GetLangURL(sSymbol)
+    
+  Else If iType = TYPE_SYMBOL Then
+
+    Try hSymbol = CComponent.GetClassSymbols(sClass)[sSymbol]
+    If hSymbol Then 
+      sUrl = hSymbol.GetHelpURL()
+    Endif
+    
+  Else If iType = TYPE_CLASS Or If iType = TYPE_CONTROL Then
+  
+    Try hClass = CComponent.Classes[sSymbol]
+    If hClass Then sUrl = hClass.GetHelpURL()
+    
+  Else If iType = TYPE_SPECIAL
+      
+    sUrl = MHelp.GetSpecialURL(sSymbol)
+
+  Endif
+  
+  If sUrl And If hWebView.Url = sUrl Then Return
+
+  hWebView.Stop
+  If sUrl Then
+    hWebView.Url = sUrl
+  Else If sHtml Then
+    hWebView.Html = sHtml
+  Else
+    hWebView.HTML = "<html><body><h2>" & ("No help found.") & "</h2></body></html>"
+  Endif
+  hWebView.TextZoom = 0.8
+    
 End

@@ -1,5 +1,8 @@
 ' Gambas class file
 
+  ' 0 = MHelp.TYPE_NATIVE
+Static Private $aNativeDatatypes As String[] = ["Boolean 0", "Byte 0", "Short 0", "Integer 0", "Long 0", "Single 0", "Float 0", "Date 0", "String 0", "Object 0", "Variant 0", "Pointer 0"]
+
 Private $iCol As Integer
 Private $sText As String
 Private $bLoaded As Boolean
@@ -17,31 +20,6 @@ Private $iMinH As Integer
 Private $iMaxY As Integer
 
 Private $hEditor As Editor
-
-Private Const TYPE_NATIVE As Integer = 0
-Private Const TYPE_CLASS As Integer = 1
-Private Const TYPE_CONTROL As Integer = 2
-Private Const TYPE_SYMBOL As Integer = 3
-Private Const TYPE_EVENT As Integer = 4
-Private Const TYPE_KEYWORD As Integer = 5
-Private Const TYPE_SPECIAL As Integer = 6
-
-Static Public Sub _init()
-  
-  Dim sPath As String
-  
-  If Not WebSettings.Cache.Path Then
-    sPath = System.User.Home &/ ".cache"
-    Try Mkdir sPath
-    sPath &/= "gambas3"
-    Try Mkdir sPath
-    sPath &/= "help"
-    Try Mkdir sPath
-    WebSettings.Cache.Path = sPath
-  Endif
-  
-End
-
 
 Public Sub RefreshLibrary()
 
@@ -67,6 +45,8 @@ Public Sub Open(hForm As FEditor, sMode As String, Optional sClass As String, Op
   Dim sText As String
   Dim W, H As Integer
 
+  If hForm.Editor <> $hEditor Then HideFrom($hEditor)
+
   $hEditor = hForm.Editor
   Me.Font = $hEditor.font
 
@@ -77,8 +57,8 @@ Public Sub Open(hForm As FEditor, sMode As String, Optional sClass As String, Op
   $iLen = 0
   $iMaxLen = 16
   $iCol = $hEditor.Column + 1
+  $sClass = ""
   
-  $bShowHelp = False
   Select $sMode
     Case "."
       $sText = ""
@@ -88,17 +68,14 @@ Public Sub Open(hForm As FEditor, sMode As String, Optional sClass As String, Op
       Endif 
       $sClass = sClass
       FillWithSymbol(sClass, bStatic, bPrivate)
-      $bShowHelp = True
     Case " "
       $sText = ""
       FillWithClasses
-      $bShowHelp = True
     Case "A"
       $sText = sClass
       $iLen = Len(sClass)
       $iCol -= Len(sClass)
       FillWithIdent(sClass)
-      $bShowHelp = True
     Case "_"
       $sText = "_"
       $iLen = 1
@@ -114,7 +91,6 @@ Public Sub Open(hForm As FEditor, sMode As String, Optional sClass As String, Op
       Endif
       $iCol -= Len(sClass) + 2
       FillWithIdent(Left$(sClass, $iLen))
-      $bShowHelp = True
   End Select
 
   If lvwComp.Count = 0 Then
@@ -122,7 +98,7 @@ Public Sub Open(hForm As FEditor, sMode As String, Optional sClass As String, Op
     Return
   Endif
   
-  If Settings["/ShowHelpInPopup", 1] = 0 Then $bShowHelp = False
+  $bShowHelp = Settings["/ShowHelpInPopup", 1] 
   
   'PRINT "Open: $hEditor = "; $hEditor
 
@@ -146,11 +122,11 @@ Public Sub Open(hForm As FEditor, sMode As String, Optional sClass As String, Op
     sepHelp.Show
     webHelp.Show
     panRight.Show
-    $iMinW = W + 4 + 64
+    $iMinW = W + 4 + 128
     $iMinH = Desktop.Scale * 24
     lvwComp.Expand = False
     lvwComp.W = W
-    Me.Resize(W + 4 + webHelp.W, Max($iMinH, H * Min(8, lvwComp.Count) + 2))
+    Me.Resize(Max($iMinW, Me.W), Max(Me.H, Max($iMinH, H * Min(8, lvwComp.Count) + 2)))
   Else
     sepHelp.Hide
     webHelp.Hide
@@ -173,6 +149,10 @@ Public Sub Open(hForm As FEditor, sMode As String, Optional sClass As String, Op
 
   If (iY + Me.Height) > ($hEditor.Y + $hEditor.H) Then
     iY = $hEditor.Y + $hEditor.CursorY - Me.Height
+    If iY < 0 Then
+      Me.Height += iY
+      iY = 0
+    Endif
     panResizeBottom.Hide
     panResizeTop.Show
   Else
@@ -219,7 +199,7 @@ Private Sub AddClassesAndFill(aClass As String[], Optional sBegin As String)
   CComponent.All["gb"].Load
 
   For Each sClass In Project.GetClasses()
-    If sClass Like sBegin & "*" Then aClass.Add(sClass & " 1")
+    If sClass Like sBegin & "*" Then aClass.Add(sClass & " " & MHelp.TYPE_CLASS)
     'TRY lvwComp.Add(sClass, sClass)
   Next
 
@@ -233,9 +213,9 @@ Private Sub AddClassesAndFill(aClass As String[], Optional sBegin As String)
       If IsLetter(Left$(sClass)) Then
         If sClass Like sBegin & "*" Then 
           If CComponent.Classes[sClass].Properties Then
-            aClass.Add(sClass & " 2")
+            aClass.Add(sClass & " " & MHelp.TYPE_CONTROL)
           Else
-            aClass.Add(sClass & " 1")
+            aClass.Add(sClass & " " & MHelp.TYPE_CLASS)
           Endif
         Endif 
       Endif
@@ -264,7 +244,7 @@ End
 
 Private Sub FillWithClasses()
 
-  AddClassesAndFill(["Boolean 0", "Byte 0", "Short 0", "Integer 0", "Long 0", "Single 0", "Float 0", "Date 0", "String 0", "Object 0", "Variant 0", "Pointer 0"])
+  AddClassesAndFill($aNativeDatatypes.Copy())
 
 End
 
@@ -301,7 +281,7 @@ Private Sub FillWithSymbol(sClass As String, bStatic As Boolean, bPrivate As Boo
 
   For Each sSymbol In aSymbol
     hSymbol = cSymbol[sSymbol]
-    Try lvwComp.Add(CStr(TYPE_SYMBOL) & sSymbol, sSymbol, Picture[hSymbol.GetIcon()])
+    Try lvwComp.Add(CStr(MHelp.TYPE_SYMBOL) & sSymbol, sSymbol, Picture[hSymbol.GetIcon()])
     $iMaxLen = Max($iMaxLen, Len(sSymbol))
   Next
 
@@ -337,7 +317,7 @@ Private Sub AddEvents(aResult As String[], sCtrl As String)
   If Not aEvent Then Return
   
   For Each sName In aEvent
-    aResult.Add(sCtrl & "_" & sName & " 4")
+    aResult.Add(sCtrl & "_" & sName & " " & CStr(MHelp.TYPE_EVENT))
   Next
   
 End
@@ -368,7 +348,14 @@ Private Sub FillWithIdent(sWord As String)
   For Each sCar In ["True", "False", "Null", "Last", "Me", "Super"]
     If sCar Like sWord & "*" Then 
       cKey[sCar] = True
-      aResult.Add(sCar & " 5")
+      aResult.Add(sCar & " " & MHelp.TYPE_KEYWORD)
+    Endif
+  Next
+  
+  For Each sCar In $aNativeDatatypes
+    If sCar Like sWord & "*" Then 
+      cKey[Left(sCar, -2)] = True
+      aResult.Add(sCar)
     Endif
   Next
 
@@ -377,7 +364,7 @@ Private Sub FillWithIdent(sWord As String)
       If cKey.Exist(sCar) Then Continue
       cKey[sCar] = True
       If sCar = UCase(sCar) Then sCar &= " "
-      aResult.Add(sCar & " 5")
+      aResult.Add(sCar & " " & MHelp.TYPE_KEYWORD)
     Endif
   Next
 
@@ -410,7 +397,7 @@ Private Sub FillWithIdent(sWord As String)
       sCar = String.Mid$(sLine, iPos, iPos2 - iPos)
       If IsDigit(Left$(sCar)) Then Continue 
       If cKey.Exist(sCar) Then Continue
-      aResult.Add(sCar & " 3")
+      aResult.Add(sCar & " " & MHelp.TYPE_SYMBOL)
       cKey[sCar] = True
     Loop
   
@@ -423,7 +410,7 @@ Private Sub FillWithIdent(sWord As String)
       sCar = hSymbol.Name
       If Not (sCar Like sWord & "*") Then Continue
       If cKey.Exist(sCar) Then Continue
-      aResult.Add(sCar & " 3")
+      aResult.Add(sCar & " " & MHelp.TYPE_SYMBOL)
       cKey[sCar] = True
     Next
   Endif
@@ -443,8 +430,8 @@ Private Sub FillWithSpecial()
   
   lvwComp.Clear
   
-  For Each sName In ["_call", "_compare", "_exit", "_get", "_init", "_new", "_next", "_put", "_unknown"]
-    Try lvwComp.Add(CStr(TYPE_SPECIAL) & sName, sName, hPict)
+  For Each sName In ["_call", "_compare", "_get", "_init", "_new", "_next", "_put", "_unknown"]
+    Try lvwComp.Add(CStr(MHelp.TYPE_SPECIAL) & sName, sName, hPict)
   Next
   
 End
@@ -719,90 +706,20 @@ Private Sub CompleteItem() As Boolean
   
 End
 
-Private Sub GetHelpLang() As String
-  
-  Dim sLang As String = System.Language
-  Dim iPos As Integer
-  Dim sCar As String
-  
-  For iPos = 1 To Len(sLang)
-    If Not IsLower(Mid$(sLang, iPos, 1)) Then Break
-  Next
-  
-  Return Left$(sLang, iPos - 1)
-  
-End
-
-
 Public Sub timHelp_Timer()
   
-  Dim cSymbol As Collection
-  Dim hSymbol As CSymbolInfo
-  Dim hClass As CClassInfo
   Dim sSymbol As String
-  Dim sUrl As String
-  Dim sHtml As String
-  Dim sLang As String
   Dim iType As Integer
   
   Try sSymbol = lvwComp.Current.Text
-  If sSymbol Then 
-  
+  If sSymbol Then   
     iType = CInt(Left(lvwComp.Key))
-  
-    If iType = TYPE_NATIVE Then
-    
-      sUrl = MHelp.GetLangURL("type" &/ sSymbol)
-      
-    Else If iType = TYPE_KEYWORD Then
-    
-      sUrl = MHelp.GetLangURL(sSymbol)
-      
-    Else
-  
-      Select Case $sMode
-      
-        Case "."
-        
-          Try hSymbol = CComponent.GetClassSymbols($sClass)[sSymbol]
-          If hSymbol Then 
-            sUrl = hSymbol.GetHelpURL()
-            If Not sUrl Then
-              sHtml = "<html><body><pre>" & hSymbol.GetSignature() & "</pre></body></html>"
-            Endif
-          Endif
-    
-        Case " "
-        
-          Try hClass = CComponent.Classes[sSymbol]
-          If hClass Then sUrl = hClass.GetHelpURL()
-        
-        Case "A", "<"
-          'FillWithIdent(sClass)
-        Case "_"
-          'FillWithSpecial()
-      
-      End Select
-      
-    Endif
-  
-    webHelp.Stop
-    If sUrl Then
-      sUrl &= "?help&v3&" & GetHelpLang()
-      webHelp.Url = sUrl
-    Else If sHtml Then
-      webHelp.Html = sHtml
-    Else
-      webHelp.HTML = "<html><body><h2>" & ("No help found.") & "</h2></body></html>"
-    Endif
-    webHelp.TextZoom = 0.7
-    
+    MHelp.InitWebViewWith(webHelp, iType, sSymbol, $sClass)
   Endif
 
   timHelp.Stop
   
 End
-
 
 Public Sub lvwComp_Select()
 
@@ -811,7 +728,6 @@ Public Sub lvwComp_Select()
   timHelp.Start
   
 End
-
 
 Public Sub webHelp_GotFocus()
 
@@ -861,3 +777,18 @@ Public Sub Form_Close()
   $hEditor = Null
 
 End
+
+Public Sub HideFrom(hEditor As Editor)
+  
+  If $hEditor <> hEditor Then Return
+  $hEditor = Null
+  Me.Hide
+  
+End
+
+Public Sub VisibleFrom(hEditor As Editor) As Boolean
+  
+  Return Me.Visible And $hEditor = hEditor
+  
+End
+

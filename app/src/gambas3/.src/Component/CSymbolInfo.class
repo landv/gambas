@@ -685,6 +685,12 @@ End
 
 Public Sub GetHelpURL() As String
   
-  If Component Then Return MHelp.GetSymbolURL(Component, Class, Name)
+  If Component Then 
+    If Component = "gb" And If Class = "." Then
+      Return MHelp.GetLangURL(Name)
+    Else
+      Return MHelp.GetSymbolURL(Component, Class, Name)
+    Endif
+  Endif
   
 End
