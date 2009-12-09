@@ -174,3 +174,9 @@ Public Sub VisibleFrom(hEditor As Editor) As Boolean
   
 End
 
+
+Public Sub webHelp_GotFocus()
+
+  $hEditor.SetFocus
+
+End

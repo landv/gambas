@@ -64,7 +64,7 @@ Public Function _get(sTable As String, sField As String, Optional bCreate As Boo
 
     hInfo = New DataField
     hInfo.FromField(hField, hTable)
-    If bCreate Then hInfo.ReadOnly = False
+    If bCreate And If Not hInfo.Serial Then hInfo.ReadOnly = False
     
     cInfoTable[sKey] = hInfo
     

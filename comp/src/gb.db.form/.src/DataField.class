@@ -6,6 +6,7 @@ Public ReadOnly As Boolean
 Public Length As Integer
 Public Key As Boolean
 Public {Default} As Variant
+Public Serial As Boolean
 
 Public Function GetWidth(hCtrl As Control) As Integer
 
@@ -51,6 +52,7 @@ Public Sub FromField(hField As Object, Optional hTable As Table)
   
   iType = hField.Type
   Name = hField.Name
+  Serial = False
   If hTable Then 
     Key = hTable.PrimaryKey.Exist(Name)
     {Default} = hField.Default
@@ -58,6 +60,7 @@ Public Sub FromField(hField As Object, Optional hTable As Table)
     If iType = db.Serial Then
       iType = db.Long
       bReadOnly = True
+      Serial = True
     Else
       bReadOnly = Key
     Endif

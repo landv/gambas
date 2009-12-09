@@ -46,7 +46,7 @@ Public Sub cmbConnection_Click()
   $hConn.Close
   MConnection.InitFrom($hConn, hConfig, sName, True)
   $hConn.Open
-  MConnection.FillListViewWithTables(lvwTable, $hConn)
+  MConnection.FillViewWithTables(lvwTable, $hConn)
   Try lvwTable["T" & Table].Selected = True 
   Try lvwTable["S" & Table].Selected = True 
   Try lvwTable.Current.EnsureVisible

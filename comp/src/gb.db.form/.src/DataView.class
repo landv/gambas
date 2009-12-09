@@ -313,6 +313,15 @@ End
 '     
 ' END
 
+Public Sub TableView_Click()
+  
+  If $bNoActivate Then Return
+  If Not $bCreate Then Return
+  
+  TableView_Change
+  
+End
+
 
 Public Sub TableView_Change()
 

@@ -77,7 +77,7 @@ Private Sub UpdateConnection() As Boolean
       Balloon.Warning(sMsg, txtName)
       Return True
     Endif
-    Try Mkdir sDir
+    If Not Exist(sDir) Then Project.InsertDirectory(sDir)
   Endif
 
   If Not Trim(txtDatabase.Text) Then
