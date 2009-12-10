@@ -1,174 +1,176 @@
 ' Gambas module file
 
-EXPORT
+Export
 
-PROPERTY Buffered AS Boolean
-PROPERTY ContentType AS String
-PROPERTY Status AS String
+Property Buffered As Boolean
+Property ContentType As String
+Property Status As String
 
-PRIVATE $bBuffered AS Boolean
-PRIVATE $sHeader AS String
-PRIVATE $sRedirect AS String
-PRIVATE $hFile AS File
-PRIVATE $sContentType AS String = "text/html"
-PRIVATE $sStatus AS String
-PRIVATE $bBegin AS Boolean
+Private $bBuffered As Boolean
+Private $sHeader As String
+Private $sRedirect As String
+Private $hFile As File
+Private $sContentType As String = "text/html"
+Private $sStatus As String
+Private $iBegin As Integer
 
-PUBLIC SUB AddHeader(Name AS String, Value AS String)
+Public Sub AddHeader(Name As String, Value As String)
 
-  IF NOT Value THEN RETURN  
+  If Not Value Then Return  
   $sHeader &= Name & ": " & Value & "\r\n"
   
-END
+End
 
-PUBLIC SUB Redirect(URL AS String)
+Public Sub Redirect(URL As String)
   
-  IF $bBegin THEN RETURN
+  If $iBegin Then Return
   
-  IF URL LIKE "*://*" THEN 
+  If URL Like "*://*" Then 
     AddHeader("Location", URL)
-  ELSE 
+  Else 
     AddHeader("Location", Application.Protocol & "://" & CGI["HTTP_HOST"] &/ URL)
-  ENDIF
+  Endif
   
   Response.Begin
   Response.End
   
-END
+End
 
-PUBLIC SUB SetCookie(Cookie AS String, Value AS String, OPTIONAL Domain AS String, OPTIONAL Path AS String, OPTIONAL Expires AS Date)
+Public Sub SetCookie(Cookie As String, Value As String, Optional Domain As String, Optional Path As String, Optional Expires As Date)
   
-  DIM sVal AS String
+  Dim sVal As String
   
   sVal = Cookie & "=" & Value
-  IF Domain THEN sVal &= ";domain=" & Domain
-  IF Expires THEN sVal &= ";expires=" & CGI.FormatDate(Expires)
-  IF Path THEN sVal &= ";path=" & Path
+  If Domain Then sVal &= ";domain=" & Domain
+  If Expires Then sVal &= ";expires=" & CGI.FormatDate(Expires)
+  If Path Then sVal &= ";path=" & Path
   
   AddHeader("Set-Cookie", sVal)
   
-END
+End
 
-PUBLIC SUB RemoveCookie(Cookie AS String, Value AS String, OPTIONAL Domain AS String, OPTIONAL Path AS String)
+Public Sub RemoveCookie(Cookie As String, Value As String, Optional Domain As String, Optional Path As String)
   
-  DIM sVal AS String
+  Dim sVal As String
   
   sVal = Cookie & "=" & Value
-  IF Domain THEN sVal &= ";domain=" & Domain
+  If Domain Then sVal &= ";domain=" & Domain
   sVal &= ";expires=" & CGI.FormatDate(Now - 1)
-  IF Path THEN sVal &= ";path=" & Path
+  If Path Then sVal &= ";path=" & Path
   
   AddHeader("Set-Cookie", sVal)
   
-END
+End
 
-PUBLIC SUB Begin()
+Public Sub Begin()
 
-  IF $bBegin THEN RETURN 
+  Inc $iBegin
+  If $iBegin <> 1 Then Return 
   
-  IF $sStatus THEN AddHeader("Status", $sStatus)
+  If $sStatus Then AddHeader("Status", $sStatus)
   AddHeader("Content-type", $sContentType)
   'AddHeader("Cache-control", "private")
   
-  IF $bBuffered THEN
+  If $bBuffered Then
   
-    $hFile = OPEN Temp$("response") FOR CREATE
-    OUTPUT TO #$hFile
+    $hFile = Open Temp$("response") For Create
+    Output To #$hFile
     
-  ELSE
+  Else
   
-    PRINT $sHeader
+    Print $sHeader
     
-  ENDIF
+  Endif
   
-  $bBegin = TRUE
-  
-END
+End
 
-PUBLIC SUB End()
+Public Sub End()
   
-  DIM sBuffer AS String
+  Dim sBuffer As String
 
-  IF $bBuffered THEN
+  Dec $iBegin
+  If $iBegin <> 0 Then Return
+
+  If $bBuffered Then
   
-    CLOSE #$hFile
-    OUTPUT TO DEFAULT 
+    Close #$hFile
+    Output To Default 
     
-    $hFile = OPEN Temp$("response") FOR READ 
+    $hFile = Open Temp$("response") For Read 
     AddHeader("Content-Length", Lof($hFile))
     
-    PRINT $sHeader
+    Print $sHeader
   
-    WHILE NOT Eof($hFile)
-      sBuffer = READ #$hFile, -4096
-      PRINT sBuffer;
-    WEND
-    CLOSE #$hFile
+    While Not Eof($hFile)
+      sBuffer = Read #$hFile, -4096
+      Print sBuffer;
+    Wend
+    Close #$hFile
     
-  ENDIF
+  Endif
   
-END
+End
 
-PUBLIC SUB SendFile(Path AS String, OPTIONAL ContentType AS String)
+Public Sub SendFile(Path As String, Optional ContentType As String)
   
-  DIM sBuffer AS String
+  Dim sBuffer As String
 
-  IF NOT Exist(Path) THEN
-    PRINT "Status: 404 Not Found"
-    PRINT
-    RETURN
-  ENDIF
+  If Not Exist(Path) Then
+    Print "Status: 404 Not Found"
+    Print
+    Return
+  Endif
 
-  IF NOT ContentType THEN ContentType = $sContentType
-  PRINT "Content-type: "; ContentType
-  PRINT $sHeader;
+  If Not ContentType Then ContentType = $sContentType
+  Print "Content-type: "; ContentType
+  Print $sHeader;
   'IF Name THEN PRINT "Content-location: "; "/" & CGI.Encode(Name)
   
-  $hFile = OPEN Path FOR READ 
+  $hFile = Open Path For Read 
 
-  PRINT "Content-length: "; Lof($hFile)
-  PRINT
-  WHILE NOT Eof($hFile)
-    sBuffer = READ #$hFile, -4096
-    PRINT sBuffer;
-  WEND
-  CLOSE #$hFile
+  Print "Content-length: "; Lof($hFile)
+  Print
+  While Not Eof($hFile)
+    sBuffer = Read #$hFile, -4096
+    Print sBuffer;
+  Wend
+  Close #$hFile
   
-END
+End
 
 
-PRIVATE FUNCTION Buffered_Read() AS Boolean
+Private Function Buffered_Read() As Boolean
 
-  RETURN $bBuffered  
+  Return $bBuffered  
 
-END
+End
 
-PRIVATE SUB Buffered_Write(Value AS Boolean)
+Private Sub Buffered_Write(Value As Boolean)
 
   $bBuffered = Value
 
-END
+End
 
-PRIVATE FUNCTION ContentType_Read() AS String
+Private Function ContentType_Read() As String
 
-  RETURN $sContentType  
+  Return $sContentType  
 
-END
+End
 
-PRIVATE SUB ContentType_Write(Value AS String)
+Private Sub ContentType_Write(Value As String)
 
   $sContentType = Value  
 
-END
+End
 
-PRIVATE FUNCTION Status_Read() AS String
+Private Function Status_Read() As String
 
-  RETURN $sStatus
+  Return $sStatus
 
-END
+End
 
-PRIVATE SUB Status_Write(Value AS String)
+Private Sub Status_Write(Value As String)
 
   $sStatus = Value
 
-END
+End

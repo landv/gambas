@@ -1,94 +1,94 @@
 ' Gambas module file
 
-EXPORT 
+Export 
 
-PRIVATE $cCache AS NEW Collection
-PRIVATE $cVal AS Collection
+Private $cCache As New Collection
+Private $cVal As Collection
 
-PRIVATE $aDay AS String[] 
-PRIVATE $aMonth AS String[] 
+Private $aDay As String[] 
+Private $aMonth As String[] 
 
-PUBLIC SUB FormatDate(dDate AS Date) AS String
+Public Sub FormatDate(dDate As Date) As String
   
   dDate -= Frac(Date(Now)) ' Go to GMT
 
-  IF NOT $aDay THEN 
+  If Not $aDay Then 
     $aDay = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
     $aMonth = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-  ENDIF
+  Endif
   
-  RETURN $aDay[WeekDay(dDate)] & ", " & Format(Day(dDate), "00") & " " & $aMonth[Month(dDate) - 1] & " " & Year(dDate) & " " & Format(Time(dDate), "hh:nn:ss") & " GMT"
+  Return $aDay[WeekDay(dDate)] & ", " & Format(Day(dDate), "00") & " " & $aMonth[Month(dDate) - 1] & " " & Year(dDate) & " " & Format(Time(dDate), "hh:nn:ss") & " GMT"
   
-END
+End
 
-PUBLIC FUNCTION _get(sVar AS String) AS String
+Public Function _get(sVar As String) As String
 
-  DIM sVal AS String
+  Dim sVal As String
 
   sVal = $cCache[sVar]
-  IF NOT sVal THEN
+  If Not sVal Then
     sVal = Application.Env[sVar]
     $cCache[sVar] = sVal
-  ENDIF
-  RETURN sVal
+  Endif
+  Return sVal
 
-END
+End
 
-PUBLIC SUB _put(sVal AS String, sVar AS String)
+Public Sub _put(sVal As String, sVar As String)
 
   $cCache[sVar] = sVal
 
-END
+End
 
 
 
-PUBLIC SUB Encode(URL AS String) AS String
+Public Sub Encode(URL As String) As String
   
-  DIM iInd AS Integer
-  DIM sRes AS String
-  DIM sCar AS String
+  Dim iInd As Integer
+  Dim sRes As String
+  Dim sCar As String
   
-  FOR iInd = 1 TO Len(URL)
+  For iInd = 1 To Len(URL)
     sCar = Mid$(URL, iInd, 1)
-    IF sCar = " " THEN 
+    If sCar = " " Then 
       sCar = "+"
-    ELSE IF IsLetter(sCar) OR IF IsDigit(sCar) OR IF InStr("*-._", sCar) THEN 
-    ELSE 
+    Else If IsLetter(sCar) Or If IsDigit(sCar) Or If InStr("*-._", sCar) Then 
+    Else 
       sCar = "%" & Hex$(Asc(sCar), 2)
-    ENDIF
+    Endif
     sRes &= sCar
-  NEXT
+  Next
 
-  RETURN sRes
+  Return sRes
   
-END
+End
 
-PUBLIC SUB Decode(URL AS String) AS String
+Public Sub Decode(URL As String) As String
   
-  DIM iInd AS Integer
-  DIM sRes AS String
-  DIM sCar AS String
+  Dim iInd As Integer
+  Dim sRes As String
+  Dim sCar As String
   
-  FOR iInd = 1 TO Len(URL)
+  For iInd = 1 To Len(URL)
     sCar = Mid$(URL, iInd, 1)
-    IF sCar = "%" THEN 
+    If sCar = "%" Then 
       sCar = Chr$(Val("&H" & Mid$(URL, iInd + 1, 2)))
       iInd += 2
-    ELSE IF sCar = "+" THEN 
+    Else If sCar = "+" Then 
       sCar = " "
-    ENDIF
+    Endif
     sRes &= sCar
-  NEXT
+  Next
 
-  RETURN sRes  
+  Return sRes  
   
-END
+End
 
 
 
-PUBLIC SUB _init()
+Public Sub _init()
   
-  DIM sRoot AS String
+  Dim sRoot As String
   
   'DIM sLang AS String
   'sLang = Trim(Split(_get("HTTP_ACCEPT_LANGUAGE"), ",")[0])
@@ -99,20 +99,21 @@ PUBLIC SUB _init()
   File.Out.EndOfLine = gb.Windows
   
   sRoot = CGI["SCRIPT_NAME"]
-  IF Right(sRoot) = "/" THEN sRoot = Left$(sRoot, -1)
-  IF NOT sRoot THEN sRoot = "/"
+  If Right(sRoot) = "/" Then sRoot = Left$(sRoot, -1)
+  If Not sRoot Then sRoot = "/"
   CGI["SCRIPT_NAME"] = sRoot
   
-END
+End
 
-PUBLIC SUB Error(Text AS String)
+Public Sub Error(Text As String)
   
-  OUTPUT TO DEFAULT
+  Output To Default
 
+  Response.Buffered = False
   Response.Begin  
-  PRINT "<h1>"; ("Error in CGI script"); "</h1>"
-  PRINT "<pre>"; Text; "</pre>"
+  Print "<h1>"; ("Error in CGI script"); "</h1>"
+  Print "<pre>"; Text; "</pre>"
   Response.End
-  QUIT 
+  Quit 
   
-END
+End
