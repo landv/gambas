@@ -29,9 +29,9 @@ PUBLIC void SWAP_int(int *val);
 PUBLIC void SWAP_ints(int *val, int n);
 
 PUBLIC void SWAP_short(short *val);
-PUBLIC void SWAP_float(float *val);
 PUBLIC void SWAP_double(double *val);
 
+#define SWAP_float(_val) SWAP_int((int *)_val)
 #define SWAP_int64(_val) SWAP_double((double *)_val)
 
 #endif

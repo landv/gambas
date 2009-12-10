@@ -56,11 +56,11 @@
 
 static bool read_integer(int base, int64_t *result)
 {
-  uint64_t nbr2, nbr;
-  int d, n, c, nmax;
+	uint64_t nbr2, nbr;
+	int d, n, c, nmax;
 
-  n = 0;
-  nbr = 0;
+	n = 0;
+	nbr = 0;
 	
 	switch (base)
 	{
@@ -69,40 +69,40 @@ static bool read_integer(int base, int64_t *result)
 		case 16: nmax = 16; break;
 	}
 
-  c = last_char();
+	c = last_char();
 
-  for(;;)
-  {
-    if (c >= '0' && c <= '9')
-      d = c - '0';
-    else if (c >= 'A' && c <='Z')
-      d = c - 'A' + 10;
-    else if (c >= 'a' && c <='z')
-      d = c - 'a' + 10;
-    else
-      break;
+	for(;;)
+	{
+		if (c >= '0' && c <= '9')
+			d = c - '0';
+		else if (c >= 'A' && c <='Z')
+			d = c - 'A' + 10;
+		else if (c >= 'a' && c <='z')
+			d = c - 'a' + 10;
+		else
+			break;
 
-    if (d >= base)
-      break;
+		if (d >= base)
+			break;
 
-    n++;
-    
-    nbr2 = nbr * base;
-    
+		n++;
+		
+		nbr2 = nbr * base;
+		
 		//if (n >= nmax)
 		//{
 			if (((int64_t)nbr2 / base) != (int64_t)nbr)
 				return TRUE;
 		//}
 		
-    nbr = nbr2 + d;
+		nbr = nbr2 + d;
 
-    c = get_char();
-    if (c < 0)
-      break;
-  }
+		c = get_char();
+		if (c < 0)
+			break;
+	}
 
- 	c = last_char();
+	c = last_char();
 	
 	if (base != 10)
 	{
@@ -118,11 +118,11 @@ static bool read_integer(int base, int64_t *result)
 	if (c > 0 && !isspace(c))
 		return TRUE;
 	
-  if (n == 0)
-    return TRUE;
+	if (n == 0)
+		return TRUE;
 
-  *((int64_t *)result) = nbr;  
-  return FALSE;
+	*((int64_t *)result) = nbr;  
+	return FALSE;
 }
 
 
