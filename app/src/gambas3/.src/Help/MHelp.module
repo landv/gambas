@@ -337,7 +337,7 @@ Public Sub GetSpecialURL(sSymbol As String) As String
   
 End
 
-Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As String, Optional sClass As String)
+Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As String, Optional sClass As String, Optional sMore As String)
   
   Dim cSymbol As Collection
   Dim hSymbol As CSymbolInfo
@@ -346,6 +346,11 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
   Dim sHtml As String
   Dim sLang As String
   Dim iPos As Integer
+  
+  If Not hWebView Then 
+    If Not FHelpBrowser.Visible Then Return
+    hWebView = FHelpBrowser.webHelp
+  Endif
   
   If iType = TYPE_NATIVE Then
   
@@ -377,7 +382,10 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
     
   Endif
   
-  If sUrl And If hWebView.Url = sUrl Then Return
+  If sUrl Then
+    If sMore Then sUrl &= "&" & sMore
+    If hWebView.Url = sUrl Then Return
+  Endif
 
   hWebView.Stop
   If sUrl Then

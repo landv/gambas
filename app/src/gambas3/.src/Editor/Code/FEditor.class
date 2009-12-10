@@ -2373,17 +2373,17 @@ Public Sub Editors_GotFocus()
 
 End
 
-Public Sub Editors_MouseMove()
-  
-  If Not Project.Running Then
-    If FDebugInfo.IsHelpVisible() Or $bShowPopupHelp Then
-        timShowHelp.Enabled = True
-    Endif
-    $X = Mouse.X
-    $Y = Mouse.Y
-  Endif
-  
-End
+' Public Sub Editors_MouseMove()
+'   
+'   If Not Project.Running Then
+'     If FDebugInfo.IsHelpVisible() Or $bShowPopupHelp Then
+'         timShowHelp.Enabled = True
+'     Endif
+'     $X = Mouse.X
+'     $Y = Mouse.Y
+'   Endif
+'   
+' End
 
 
 Public Sub Editors_MouseUp()

@@ -63,3 +63,11 @@ Public Sub btnZoomNormal_Click()
   webHelp.Zoom = 0.8
 
 End
+
+Public Sub Form_Resize()
+
+  Dim bVisible As Boolean = Me.Height > Desktop.Scale * 30 And Me.Width > Desktop.Scale * 30
+  panToolbar.Visible = bVisible
+  sepToolbar.Visible = bVisible
+
+End

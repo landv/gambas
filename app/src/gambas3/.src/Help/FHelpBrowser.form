@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,70,47)
+  MoveScaled(0,0,43,27)
   Action = "help"
   Text = ("Help browser")
   Icon = Picture["icon:/small/help"]
@@ -9,30 +9,35 @@
   Type = WindowType.Utility
   SkipTaskbar = True
   Arrangement = Arrange.Vertical
-  { HBox2 HBox
-    MoveScaled(0,0,55,4)
+  { panToolbar HBox
+    MoveScaled(0,0,39,4)
     { btnHome ToolButton
       MoveScaled(0,0,4,4)
+      ToolTip = ("Index")
       Text = ("")
       Picture = Picture["icon:/small/home"]
     }
     { btnBack ToolButton
       MoveScaled(4,0,4,4)
+      ToolTip = ("Go back")
       Text = ("")
       Picture = Picture["icon:/small/left"]
     }
     { btnForward ToolButton
       MoveScaled(8,0,4,4)
+      ToolTip = ("Go forward")
       Text = ("")
       Picture = Picture["icon:/small/right"]
     }
     { btnStop ToolButton
       MoveScaled(12,0,4,4)
+      ToolTip = ("Cancel")
       Text = ("")
       Picture = Picture["icon:/small/delete"]
     }
     { btnReload ToolButton
       MoveScaled(16,0,4,4)
+      ToolTip = ("Reload")
       Text = ("")
       Picture = Picture["icon:/small/refresh"]
     }
@@ -41,25 +46,29 @@
     }
     { btnZoomIn ToolButton
       MoveScaled(23,0,4,4)
+      ToolTip = ("Zoom in")
       Text = ("")
       Picture = Picture["icon:/small/zoom-in"]
     }
     { btnZoomOut ToolButton
       MoveScaled(27,0,4,4)
+      ToolTip = ("Zoom out")
       Text = ("")
       Picture = Picture["icon:/small/zoom-out"]
     }
     { btnZoomNormal ToolButton
       MoveScaled(31,0,4,4)
+      ToolTip = ("No zoom")
       Text = ("")
       Picture = Picture["icon:/small/zoom-normal"]
     }
   }
-  { Separator2 Separator
-    MoveScaled(12,8,20,0)
+  { sepToolbar Separator
+    MoveScaled(12,5,20,0)
   }
-  { webHelp WebView
-    MoveScaled(21,17,32,24)
+  { !webHelp WebView
+    MoveScaled(6,6,29,15)
+    #Public = True
     Expand = True
     Cached = True
   }

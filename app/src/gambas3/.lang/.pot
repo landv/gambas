@@ -436,14 +436,14 @@ msgstr ""
 #: FConnectionEditor.class:261 FCreateFile.class:885 FDebugInfo.class:492
 #: FEditor.class:2125 FFindList.class:195 FFind.class:114
 #: FFontChooser.class:86 FForm.class:2831 FGotoLine.class:63
-#: FIconEditor.class:1393 FImportTable.class:38 FList.class:155
-#: FMain.class:204 FMakeExecutable.class:144 FMakeInstall.class:309
-#: FMenu.class:1098 FNewConnection.class:317 FNewTable.class:168
-#: FNewTranslation.class:70 FOpenProject.class:146 FOption.class:576
-#: FPasteSpecial.class:279 FPropertyProject.class:1236 FSave.class:118
-#: FSelectExtraFile.class:78 FSelectIcon.class:271 FTableChooser.class:145
-#: FTextEditor.class:462 FText.class:107 FTranslate.class:606
-#: Project.module:346
+#: FHelpBrowser.class:130 FIconEditor.class:1393 FImportTable.class:38
+#: FList.class:155 FMain.class:204 FMakeExecutable.class:144
+#: FMakeInstall.class:309 FMenu.class:1098 FNewConnection.class:317
+#: FNewTable.class:168 FNewTranslation.class:70 FOpenProject.class:146
+#: FOption.class:576 FPasteSpecial.class:279 FPropertyProject.class:1236
+#: FSave.class:118 FSelectExtraFile.class:78 FSelectIcon.class:271
+#: FTableChooser.class:145 FTextEditor.class:462 FText.class:107
+#: FTranslate.class:606 Project.module:346
 msgid "Cancel"
 msgstr ""
 
@@ -639,7 +639,7 @@ msgstr ""
 msgid "Default value"
 msgstr ""
 
-#: FConnectionEditor.class:58 FDebugExpr.class:425
+#: FConnectionEditor.class:58 FDebugExpr.class:425 FHelpBrowser.class:109
 msgid "Index"
 msgstr ""
 
@@ -782,7 +782,8 @@ msgid "Connection editor"
 msgstr ""
 
 #: FConnectionEditor.class:1547 FEditor.class:2125 FForm.class:2831
-#: FIconEditor.class:2032 FTextEditor.class:462 FTranslate.class:700
+#: FHelpBrowser.class:137 FIconEditor.class:2032 FTextEditor.class:462
+#: FTranslate.class:700
 msgid "Reload"
 msgstr ""
 
@@ -1237,7 +1238,7 @@ msgstr ""
 msgid "Find definition"
 msgstr ""
 
-#: FEditor.class:3132
+#: FEditor.class:3132 FHelpBrowser.class:116
 msgid "Go back"
 msgstr ""
 
@@ -1616,8 +1617,24 @@ msgstr ""
 msgid "Go to line"
 msgstr ""
 
-#: FHelpBrowser.class:89
+#: FHelpBrowser.class:97
 msgid "Help browser"
+msgstr ""
+
+#: FHelpBrowser.class:123
+msgid "Go forward"
+msgstr ""
+
+#: FHelpBrowser.class:148 FIconEditor.class:2225
+msgid "Zoom in"
+msgstr ""
+
+#: FHelpBrowser.class:155 FIconEditor.class:2234
+msgid "Zoom out"
+msgstr ""
+
+#: FHelpBrowser.class:162
+msgid "No zoom"
 msgstr ""
 
 #: FIconEditor.class:1393
@@ -1632,14 +1649,6 @@ msgstr ""
 
 #: FIconEditor.class:2159
 msgid "Clear all"
-msgstr ""
-
-#: FIconEditor.class:2225
-msgid "Zoom in"
-msgstr ""
-
-#: FIconEditor.class:2234
-msgid "Zoom out"
 msgstr ""
 
 #: FIconEditor.class:2243
@@ -2422,7 +2431,7 @@ msgstr ""
 msgid "Show menu bar"
 msgstr ""
 
-#: FMain.class:2711 FProperty.class:1120
+#: FMain.class:2711 FProperty.class:1128
 msgid "Properties"
 msgstr ""
 
@@ -3080,7 +3089,7 @@ msgstr ""
 msgid "Procedure separation"
 msgstr ""
 
-#: FOption.class:1034 FProperty.class:733
+#: FOption.class:1034 FProperty.class:739
 msgid "None"
 msgstr ""
 
@@ -3176,19 +3185,19 @@ msgstr ""
 msgid "Clipboard contents"
 msgstr ""
 
-#: FProperty.class:348
+#: FProperty.class:349
 msgid "Forbidden characters in control name."
 msgstr ""
 
-#: FProperty.class:353
+#: FProperty.class:354
 msgid "This name is already in use."
 msgstr ""
 
-#: FProperty.class:363
+#: FProperty.class:364
 msgid "Forbidden characters in control group."
 msgstr ""
 
-#: FProperty.class:421
+#: FProperty.class:422
 msgid "Incorrect property value."
 msgstr ""
 
@@ -3196,28 +3205,34 @@ msgstr ""
 msgid "The name of the control."
 msgstr ""
 
-#: FProperty.class:584
+#: FProperty.class:582
 msgid "The event group that the control belongs to."
 msgstr ""
 
-#: FProperty.class:599
+#: FProperty.class:596
 msgid ""
 "If the form and controls dimensions must follow the size of the default font."
 msgstr ""
 
-#: FProperty.class:603
+#: FProperty.class:600
 msgid "If the control is public."
 msgstr ""
 
-#: FProperty.class:906
+#: FProperty.class:620
+msgid ""
+"This property is virtual: it is only implemented in the IDE, and has no "
+"existence at runtime."
+msgstr ""
+
+#: FProperty.class:912
 msgid "Edit field list"
 msgstr ""
 
-#: FProperty.class:1130
+#: FProperty.class:1138
 msgid "Click on a form or a control to modify its properties..."
 msgstr ""
 
-#: FProperty.class:1146
+#: FProperty.class:1154
 msgid "Lock property"
 msgstr ""
 

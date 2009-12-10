@@ -20,7 +20,7 @@ Private $bIgnoreHide As Boolean
 Private $bIgnoreCancel As Boolean
 Private $bSort As Boolean
 Private $bDisableIntegratedHelp As Boolean
-
+Private $hWebView As WebView
 
 Public Sub _new()
   
@@ -131,11 +131,12 @@ Public Sub RefreshAll()
   Next
   
   UpdateLabel
-  If Not $bDisableIntegratedHelp Then 
-    webHelp.HTML = ""
-  Endif 
 
   If bDiff Then sClass = "Control"
+
+  'If Not $bDisableIntegratedHelp Then 
+  MHelp.InitWebViewWith($hWebView, MHelp.TYPE_CLASS, sClass,, "noimage")
+  'Endif 
 
   'PRINT "Kind = "; sClass
   'cProp = CControl.PropertiesInOrder[sClass]
@@ -567,11 +568,9 @@ Private Sub ShowProperty(Optional sFocus As String)
     sProp = "Name"
     sType = "Name"
 
-    If Not $bDisableIntegratedHelp Then 
-      sHelp = ("The name of the control.")
-      sHelpType = "String"
-      sHelpLcType = "string"
-    Endif 
+    sHelp = ("The name of the control.")
+    sHelpType = "String"
+    sHelpLcType = "string"
     
   Else If grdProperty.Row = 2 Then
 
@@ -580,11 +579,9 @@ Private Sub ShowProperty(Optional sFocus As String)
     sProp = CPropertyInfo.EVENT_NAME
     sType = "Group"
 
-    If Not $bDisableIntegratedHelp Then 
-      sHelp = ("The event group that the control belongs to.")
-      sHelpType = "String"
-      sHelpLcType = "string"
-    Endif 
+    sHelp = ("The event group that the control belongs to.")
+    sHelpType = "String"
+    sHelpLcType = "string"
 
   Else
 
@@ -593,7 +590,7 @@ Private Sub ShowProperty(Optional sFocus As String)
     sType = hProp.Type
     sOption = hProp.Argument
 
-    If Not $bDisableIntegratedHelp Then 
+    'If Not $bDisableIntegratedHelp Then 
       
       If hProp.Name = CPropertyInfo.SCALE_NAME Then
         sHelp = ("If the form and controls dimensions must follow the size of the default font.")
@@ -607,10 +604,10 @@ Private Sub ShowProperty(Optional sFocus As String)
         sHelp = ""
       Else
         hSymbol = CComponent.Classes[$hObject.Kind].Symbols[hProp.Name]    
-        MHelp.InitWebViewWith(webHelp, MHelp.TYPE_SYMBOL, hSymbol.Name, hSymbol.Class)
+        MHelp.InitWebViewWith($hWebView, MHelp.TYPE_SYMBOL, hSymbol.Name, hSymbol.Class, If($hWebView, "notitle", ""))
       Endif
       
-    Endif 
+    'Endif 
   Endif
 
   If sHelp Then 
@@ -620,7 +617,16 @@ Private Sub ShowProperty(Optional sFocus As String)
     sHTML = Replace(sHTML, "$(help)", Html(sHelp))
     sHTML = Replace(sHTML, "$(type)", sHelpType)
     sHTML = Replace(sHTML, "$(lctype)", sHelpLcType)
-    webHelp.HTML = sHTML
+    sHTML = Replace(sHTML, "$(warning)", ("This property is virtual: it is only implemented in the IDE, and has no existence at runtime."))
+    If Not $hWebView Then
+      If FHelpBrowser.Visible Then
+        sHTML = Replace(sHTML, "$(hide-title)", "")
+        FHelpBrowser.webHelp.HTML = sHTML
+      Endif
+    Else
+      sHTML = Replace(sHTML, "$(hide-title)", "style=\"display:none;\"")
+      $hWebView.HTML = sHTML
+    Endif
   Endif
 
   $sLast = sProp
@@ -1007,8 +1013,10 @@ Public Sub CheckIntegratedHelpSetting()
     webHelp.Stop
     webHelp.HTML = ""
     spnHelp.Hide
+    $hWebView = Null
   Else 
     spnHelp.Show
+    $hWebView = webHelp
   Endif 
   
 End
