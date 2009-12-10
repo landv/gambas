@@ -12,7 +12,6 @@
     Spacing = True
     Margin = True
     Count = 7
-    Orientation = Align.Top
     Index = 0
     Text = ("General")
     { Panel1 Panel
@@ -351,6 +350,7 @@
       }
       { tvwArg TableView
         MoveScaled(2,10,46,16)
+        Expand = True
         Header = GridView.Vertical
       }
       { VBox3 VBox

@@ -80,10 +80,9 @@
     Arrangement = Arrange.Fill
     Orientation = Align.Bottom
     Border = True
-    { lblHelp TextLabel
-      MoveScaled(1,1,22,10)
-      Padding = 1
-      Text = ("")
+    { webHelp WebView
+      MoveScaled(2,2,21,9)
+      Cached = True
     }
   }
 }

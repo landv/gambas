@@ -14,7 +14,7 @@ msgstr ""
 msgid "Experimental"
 msgstr ""
 
-#: CComponentBox.class:94 FPropertyProject.class:1884
+#: CComponentBox.class:94 FPropertyProject.class:1883
 msgid "Not finished but stable"
 msgstr ""
 
@@ -439,10 +439,11 @@ msgstr ""
 #: FIconEditor.class:1393 FImportTable.class:38 FList.class:155
 #: FMain.class:204 FMakeExecutable.class:144 FMakeInstall.class:309
 #: FMenu.class:1098 FNewConnection.class:317 FNewTable.class:168
-#: FNewTranslation.class:70 FOpenProject.class:146 FPasteSpecial.class:279
-#: FPropertyProject.class:1236 FSave.class:118 FSelectExtraFile.class:78
-#: FSelectIcon.class:271 FTableChooser.class:145 FTextEditor.class:462
-#: FText.class:107 FTranslate.class:606 Project.module:346
+#: FNewTranslation.class:70 FOpenProject.class:146 FOption.class:576
+#: FPasteSpecial.class:279 FPropertyProject.class:1236 FSave.class:118
+#: FSelectExtraFile.class:78 FSelectIcon.class:271 FTableChooser.class:145
+#: FTextEditor.class:462 FText.class:107 FTranslate.class:606
+#: Project.module:346
 msgid "Cancel"
 msgstr ""
 
@@ -462,7 +463,7 @@ msgstr ""
 msgid "Project commit"
 msgstr ""
 
-#: FCommit.class:195 FMakeInstall.class:1272 FPropertyProject.class:1631
+#: FCommit.class:195 FMakeInstall.class:1272 FPropertyProject.class:1630
 msgid "Description"
 msgstr ""
 
@@ -495,7 +496,7 @@ msgstr ""
 
 #: FCommit.class:255 FConflict.class:348 FConnectionEditor.class:1822
 #: FEditor.class:3180 FForm.class:3623 FIconEditor.class:2150
-#: FOption.class:1166 FOutput.class:455 FTextEditor.class:642
+#: FOption.class:1189 FOutput.class:455 FTextEditor.class:642
 msgid "Undo"
 msgstr ""
 
@@ -554,7 +555,7 @@ msgstr ""
 
 #: FConflict.class:25 FFindList.class:203 FIconEditor.class:1412
 #: FImportTable.class:656 FInfo.class:427 FMakeInstall.class:260
-#: FOption.class:1187 FTips.class:232
+#: FOption.class:1210 FTips.class:232
 msgid "Close"
 msgstr ""
 
@@ -907,7 +908,7 @@ msgid "Style sheet"
 msgstr ""
 
 #: FCreateFile.class:744 FCreateProject.class:537 FImportTable.class:489
-#: FOption.class:993 FPropertyProject.class:1654
+#: FOption.class:1016 FPropertyProject.class:1653
 msgid "Options"
 msgstr ""
 
@@ -1061,7 +1062,7 @@ msgstr ""
 msgid "Identification"
 msgstr ""
 
-#: FCreateProject.class:651 FPropertyProject.class:1620
+#: FCreateProject.class:651 FPropertyProject.class:1619
 msgid "Title"
 msgstr ""
 
@@ -1111,7 +1112,7 @@ msgid "Function"
 msgstr ""
 
 #: FDebugInfo.class:52 FFindList.class:73 FIconEditor.class:2278
-#: FOption.class:1011
+#: FOption.class:1034
 msgid "Line"
 msgstr ""
 
@@ -1124,7 +1125,7 @@ msgid "Do you want to clear the expression list ?"
 msgstr ""
 
 #: FDebugInfo.class:492 FIconEditor.class:1393 FList.class:155
-#: FOutput.class:494
+#: FOption.class:576 FOutput.class:494
 msgid "Clear"
 msgstr ""
 
@@ -1144,7 +1145,7 @@ msgstr ""
 msgid "Console"
 msgstr ""
 
-#: FDebugInfo.class:1039 FOption.class:912
+#: FDebugInfo.class:1039 FOption.class:923
 msgid "Help"
 msgstr ""
 
@@ -1185,7 +1186,7 @@ msgid "Remove current expression"
 msgstr ""
 
 #: FDebugInfo.class:1139 FMain.class:2369 FMakeInstall.class:1564
-#: FPropertyProject.class:1955
+#: FPropertyProject.class:1954
 msgid "&Remove"
 msgstr ""
 
@@ -1320,7 +1321,7 @@ msgstr ""
 msgid "Paste as comments"
 msgstr ""
 
-#: FEditor.class:3349 FOption.class:974
+#: FEditor.class:3349 FOption.class:997
 msgid "Editor"
 msgstr ""
 
@@ -1921,7 +1922,7 @@ msgstr ""
 msgid "This file has not been modified since the last commit."
 msgstr ""
 
-#: FInfo.class:309 FOption.class:711 FPropertyProject.class:1571
+#: FInfo.class:309 FOption.class:722 FPropertyProject.class:1570
 msgid "General"
 msgstr ""
 
@@ -1953,7 +1954,7 @@ msgstr ""
 msgid "Edit list property"
 msgstr ""
 
-#: FList.class:276 FMenu.class:826 FPropertyProject.class:1949
+#: FList.class:276 FMenu.class:826 FPropertyProject.class:1948
 msgid "&Insert"
 msgstr ""
 
@@ -2337,7 +2338,7 @@ msgstr ""
 msgid "Refresh project"
 msgstr ""
 
-#: FMain.class:2464 FOption.class:668
+#: FMain.class:2464 FOption.class:679
 msgid "Preferences"
 msgstr ""
 
@@ -2421,7 +2422,7 @@ msgstr ""
 msgid "Show menu bar"
 msgstr ""
 
-#: FMain.class:2711 FProperty.class:1104
+#: FMain.class:2711 FProperty.class:1120
 msgid "Properties"
 msgstr ""
 
@@ -2963,159 +2964,167 @@ msgstr ""
 msgid "You need to restart the application to see your changes."
 msgstr ""
 
-#: FOption.class:680
+#: FOption.class:576
+msgid "Do you really want to clear the documentation cache?"
+msgstr ""
+
+#: FOption.class:691
 msgid "Foreground color..."
 msgstr ""
 
-#: FOption.class:684
+#: FOption.class:695
 msgid "Background color..."
 msgstr ""
 
-#: FOption.class:692
+#: FOption.class:703
 msgid "Bold"
 msgstr ""
 
-#: FOption.class:696
+#: FOption.class:707
 msgid "Italic"
 msgstr ""
 
-#: FOption.class:700
+#: FOption.class:711
 msgid "Underline"
 msgstr ""
 
-#: FOption.class:716
+#: FOption.class:727
 msgid "Interface"
 msgstr ""
 
-#: FOption.class:726
+#: FOption.class:737
 msgid "Font size"
 msgstr ""
 
-#: FOption.class:734
+#: FOption.class:745
 msgid "Normal"
 msgstr ""
 
-#: FOption.class:734
+#: FOption.class:745
 msgid "Small"
 msgstr ""
 
-#: FOption.class:745
+#: FOption.class:756
 msgid "Tabstrip font size"
 msgstr ""
 
-#: FOption.class:753
+#: FOption.class:764
 msgid "Tiny"
 msgstr ""
 
-#: FOption.class:764
+#: FOption.class:775
 msgid "Toolbox size"
 msgstr ""
 
-#: FOption.class:783
+#: FOption.class:794
 msgid "Sort properties"
 msgstr ""
 
-#: FOption.class:790 FPropertyProject.class:1708
+#: FOption.class:801 FPropertyProject.class:1707
 msgid "No"
 msgstr ""
 
-#: FOption.class:790 FPropertyProject.class:1708
+#: FOption.class:801 FPropertyProject.class:1707
 msgid "Yes"
 msgstr ""
 
-#: FOption.class:801
+#: FOption.class:812
 msgid "Quiet external commands"
 msgstr ""
 
-#: FOption.class:819
+#: FOption.class:830
 msgid "Minimize at runtime"
 msgstr ""
 
-#: FOption.class:837
+#: FOption.class:848
 msgid "Icon theme"
 msgstr ""
 
-#: FOption.class:852
+#: FOption.class:863
 msgid "Applications"
 msgstr ""
 
-#: FOption.class:862
+#: FOption.class:873
 msgid "Browser"
 msgstr ""
 
-#: FOption.class:881
+#: FOption.class:892
 msgid "Terminal"
 msgstr ""
 
-#: FOption.class:900
+#: FOption.class:911
 msgid "Image editor"
 msgstr ""
 
-#: FOption.class:927
+#: FOption.class:938
 msgid "Display property help"
 msgstr ""
 
-#: FOption.class:945
+#: FOption.class:956
 msgid "Show tooltips"
 msgstr ""
 
-#: FOption.class:963
+#: FOption.class:974
 msgid "Show documentation in popups"
 msgstr ""
 
-#: FOption.class:979
+#: FOption.class:992
+msgid "Clear documentation cache"
+msgstr ""
+
+#: FOption.class:1002
 msgid "Font"
 msgstr ""
 
-#: FOption.class:1003
+#: FOption.class:1026
 msgid "Procedure separation"
 msgstr ""
 
-#: FOption.class:1011 FProperty.class:714
+#: FOption.class:1034 FProperty.class:733
 msgid "None"
 msgstr ""
 
-#: FOption.class:1011
+#: FOption.class:1034
 msgid "Blend"
 msgstr ""
 
-#: FOption.class:1022
+#: FOption.class:1045
 msgid "Highlight current line"
 msgstr ""
 
-#: FOption.class:1040
+#: FOption.class:1063
 msgid "Highlight modified lines"
 msgstr ""
 
-#: FOption.class:1058
+#: FOption.class:1081
 msgid "Show line numbers"
 msgstr ""
 
-#: FOption.class:1076
+#: FOption.class:1099
 msgid "Fold procedures by default"
 msgstr ""
 
-#: FOption.class:1094
+#: FOption.class:1117
 msgid "Default tab size"
 msgstr ""
 
-#: FOption.class:1107
+#: FOption.class:1130
 msgid "spaces"
 msgstr ""
 
-#: FOption.class:1118
+#: FOption.class:1141
 msgid "Keywords in upper case"
 msgstr ""
 
-#: FOption.class:1129
+#: FOption.class:1152
 msgid "Theme"
 msgstr ""
 
-#: FOption.class:1152
+#: FOption.class:1175
 msgid "Import theme"
 msgstr ""
 
-#: FOption.class:1159
+#: FOption.class:1182
 msgid "Export theme"
 msgstr ""
 
@@ -3167,48 +3176,48 @@ msgstr ""
 msgid "Clipboard contents"
 msgstr ""
 
-#: FProperty.class:346
+#: FProperty.class:348
 msgid "Forbidden characters in control name."
 msgstr ""
 
-#: FProperty.class:351
+#: FProperty.class:353
 msgid "This name is already in use."
 msgstr ""
 
-#: FProperty.class:361
+#: FProperty.class:363
 msgid "Forbidden characters in control group."
 msgstr ""
 
-#: FProperty.class:419
+#: FProperty.class:421
 msgid "Incorrect property value."
 msgstr ""
 
-#: FProperty.class:568
+#: FProperty.class:571
 msgid "The name of the control."
 msgstr ""
 
-#: FProperty.class:579
+#: FProperty.class:584
 msgid "The event group that the control belongs to."
 msgstr ""
 
-#: FProperty.class:592
+#: FProperty.class:599
 msgid ""
 "If the form and controls dimensions must follow the size of the default font."
 msgstr ""
 
-#: FProperty.class:594
+#: FProperty.class:603
 msgid "If the control is public."
 msgstr ""
 
-#: FProperty.class:887
+#: FProperty.class:906
 msgid "Edit field list"
 msgstr ""
 
-#: FProperty.class:1114
+#: FProperty.class:1130
 msgid "Click on a form or a control to modify its properties..."
 msgstr ""
 
-#: FProperty.class:1130
+#: FProperty.class:1146
 msgid "Lock property"
 msgstr ""
 
@@ -3264,115 +3273,115 @@ msgstr ""
 msgid "You are going to cancel your changes!"
 msgstr ""
 
-#: FPropertyProject.class:1598
+#: FPropertyProject.class:1597
 msgid "Version"
 msgstr ""
 
-#: FPropertyProject.class:1644
+#: FPropertyProject.class:1643
 msgid "Author(s)"
 msgstr ""
 
-#: FPropertyProject.class:1659
+#: FPropertyProject.class:1658
 msgid "Edition"
 msgstr ""
 
-#: FPropertyProject.class:1670
+#: FPropertyProject.class:1669
 msgid "Tab size"
 msgstr ""
 
-#: FPropertyProject.class:1682
+#: FPropertyProject.class:1681
 msgid "space(s)"
 msgstr ""
 
-#: FPropertyProject.class:1690
+#: FPropertyProject.class:1689
 msgid "Compilation"
 msgstr ""
 
-#: FPropertyProject.class:1701
+#: FPropertyProject.class:1700
 msgid "Module symbols are public by default"
 msgstr ""
 
-#: FPropertyProject.class:1719
+#: FPropertyProject.class:1718
 msgid "Form controls are public"
 msgstr ""
 
-#: FPropertyProject.class:1737
+#: FPropertyProject.class:1736
 msgid "Get version from program"
 msgstr ""
 
-#: FPropertyProject.class:1751 FTranslate.class:1470
+#: FPropertyProject.class:1750 FTranslate.class:1470
 msgid "Translation"
 msgstr ""
 
-#: FPropertyProject.class:1762
+#: FPropertyProject.class:1761
 msgid "Project is translatable"
 msgstr ""
 
-#: FPropertyProject.class:1780
+#: FPropertyProject.class:1779
 msgid "Default language"
 msgstr ""
 
-#: FPropertyProject.class:1795
+#: FPropertyProject.class:1794
 msgid "Execution"
 msgstr ""
 
-#: FPropertyProject.class:1806
+#: FPropertyProject.class:1805
 msgid "Dump stack on error"
 msgstr ""
 
-#: FPropertyProject.class:1821
+#: FPropertyProject.class:1820
 msgid "Debugging"
 msgstr ""
 
-#: FPropertyProject.class:1832
+#: FPropertyProject.class:1831
 msgid "Use a terminal emulator"
 msgstr ""
 
-#: FPropertyProject.class:1847
+#: FPropertyProject.class:1846
 msgid "Component"
 msgstr ""
 
-#: FPropertyProject.class:1858
+#: FPropertyProject.class:1857
 msgid "This project is a component"
 msgstr ""
 
-#: FPropertyProject.class:1876
+#: FPropertyProject.class:1875
 msgid "Component advancement"
 msgstr ""
 
-#: FPropertyProject.class:1884
+#: FPropertyProject.class:1883
 msgid "Finished and stable"
 msgstr ""
 
-#: FPropertyProject.class:1884
+#: FPropertyProject.class:1883
 msgid "Beta version"
 msgstr ""
 
-#: FPropertyProject.class:1888
+#: FPropertyProject.class:1887
 msgid "Components"
 msgstr ""
 
-#: FPropertyProject.class:1892
+#: FPropertyProject.class:1891
 msgid "Show only components used in project"
 msgstr ""
 
-#: FPropertyProject.class:1898
+#: FPropertyProject.class:1897
 msgid "Show components in beta version"
 msgstr ""
 
-#: FPropertyProject.class:1911
+#: FPropertyProject.class:1910
 msgid "About &component..."
 msgstr ""
 
-#: FPropertyProject.class:1922
+#: FPropertyProject.class:1921
 msgid "&Reset"
 msgstr ""
 
-#: FPropertyProject.class:1927
+#: FPropertyProject.class:1926
 msgid "Environment"
 msgstr ""
 
-#: FPropertyProject.class:1940
+#: FPropertyProject.class:1939
 msgid "Arguments"
 msgstr ""
 

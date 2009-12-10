@@ -28,6 +28,7 @@
 #include <ctype.h>
 #include <errno.h>
 #include <math.h>
+#include <float.h>
 
 #include "gb_common.h"
 #include "gb_error.h"
@@ -37,6 +38,8 @@
 #include "gbc_trans.h"
 #include "gb_reserved.h"
 #include "gb_code.h"
+
+#define IS_PURE_INTEGER(_int64_val) ((_int64_val) == ((int)(_int64_val)))
 
 int TRANS_in_affectation = 0;
 //int TRANS_in_expression = 0;
@@ -61,171 +64,251 @@ bool TRANS_newline(void)
   return FALSE;
 }
 
-static bool read_integer(char **number, int base, int64_t *result)
+static bool read_integer(char *number, int base, int64_t *result)
 {
-  uint64_t nbr2, nbr;
-  int d, n;
-  unsigned char c;
+	uint64_t nbr2, nbr;
+	int d, n, nmax;
+	unsigned char c;
 
-  n = 0;
-  nbr = 0;
+	n = 0;
+	nbr = 0;
+	
+	switch (base)
+	{
+		case 2: nmax = 64; break;
+		case 10: nmax = 19; break;
+		case 16: nmax = 16; break;
+	}
 
-  for(;;)
-  {
-	  c = (unsigned char)**number;
+	c = *number++;
 
-    if (c >= '0' && c <= '9')
-      d = c - '0';
-    else if (c >= 'A' && c <='Z')
-      d = c - 'A' + 10;
-    else if (c >= 'a' && c <='z')
-      d = c - 'a' + 10;
-    else
-      break;
+	for(;;)
+	{
+		if (c >= '0' && c <= '9')
+			d = c - '0';
+		else if (c >= 'A' && c <='Z')
+			d = c - 'A' + 10;
+		else if (c >= 'a' && c <='z')
+			d = c - 'a' + 10;
+		else
+			break;
 
-    if (d >= base)
-      break;
+		if (d >= base)
+			break;
 
-	  (*number)++;
-    n++;
-    
-    nbr2 = nbr * base + d;
-    
-		if (nbr2 < nbr || nbr2 > INT64_MAX)
+		n++;
+		
+		nbr2 = nbr * base;
+		
+		if (((int64_t)nbr2 / base) != (int64_t)nbr)
 			return TRUE;
-    
-    nbr = nbr2;
-  }
+		
+		nbr = nbr2 + d;
 
-  if (n == 0)
-    return TRUE;
+		c = *number++;
+		if (!c)
+			break;
+	}
 
-  *result = nbr;
-  return FALSE;
+	if (base != 10)
+	{
+		if ((c == '&' || c == 'u' || c == 'U') && base != 10)
+			c = *number++;
+		else
+		{
+			if (nbr >= 0x8000L && nbr <= 0xFFFFL)
+				nbr |= INT64_C(0xFFFFFFFFFFFF0000);
+		}
+	}
+	
+	if (c)
+		return TRUE;
+	
+	if (n == 0)
+		return TRUE;
+
+	*((int64_t *)result) = nbr;  
+	return FALSE;
 }
 
 
+static bool read_float(char *number, double *result)
+{
+	unsigned char c;
+  double nint;
+  double nfrac, n;
+  int nexp;
+  bool nexp_minus;
+
+  nint = 0.0;
+  nfrac = 0.0;
+  nexp = 0;
+  nexp_minus = FALSE;
+
+	c = *number++;
+	
+  /* Integer part */
+
+  for(;;)
+  {
+    if (c == '.')
+    {
+      c = *number++;
+      break;
+    }
+
+    if (!c || !isdigit(c))
+      return TRUE;
+
+    nint = nint * 10 + (c - '0');
+
+    c = *number++;
+
+    if (c == 'e' || c == 'E')
+      break;
+
+    if (!c || isspace(c))
+      goto __END;
+  }
+
+  /* Decimal part */
+
+	n = 0.1;
+	for(;;)
+	{
+		if (!c || !isdigit(c))
+			break;
+
+		nfrac += n * (c - '0');
+		n /= 10;
+
+		c = *number++;
+	}
+
+  /* Exponent */
+
+  if (c == 'e' || c == 'E')
+  {
+    c = *number++;
+
+    if (c == '+' || c == '-')
+    {
+      if (c == '-')
+        nexp_minus = TRUE;
+
+      c = *number++;
+    }
+
+    if (!c || !isdigit(c))
+      return TRUE;
+
+    for(;;)
+    {
+      nexp = nexp * 10 + (c - '0');
+      if (nexp > DBL_MAX_10_EXP)
+        return TRUE;
+
+      c = *number++;
+      if (!c || !isdigit(c))
+        break;
+    }
+  }
+
+  if (c)
+    return TRUE;
+
+__END:
+	
+  *result = (nint + nfrac) * pow(10, nexp_minus ? (-nexp) : nexp);
+
+  return FALSE;
+}
+
 bool TRANS_get_number(int index, TRANS_NUMBER *result)
 {
-  char car;
-  int64_t val = 0;
-  double dval = 0;
-  char *end;
-  int pos;
-  bool long_int = FALSE;
-
-  int base = 0;
   char *number = (char *)TABLE_get_symbol_name(JOB->class->table, index);
+  unsigned char c;
+  int64_t val = 0;
+  double dval = 0.0;
+  int type;
+  int base = 10;
   bool minus = FALSE;
-  bool is_unsigned = FALSE;
 
-  //fprintf(stderr, "TRANS_get_number: '%s'\n", number);
+  c = *number++;
 
-  car = *number;
-
-  if (car == '+' || car == '-')
+  if (c == '+' || c == '-')
   {
-    minus = (car == '-');
-    car = *(++number);
+    minus = (c == '-');
+    c = *number++;
   }
 
-  if (car == '&')
-  {
-    car = *(++number);
-    car = toupper(car);
+	if (c == '&')
+	{
+		c = *number++;
 
-    if (car == 'H')
-    {
-      base = 16;
-      car = *(++number);
-    }
-    else if (car == 'X')
-    {
-      base = 2;
-      car = *(++number);
-    }
-    else
-      base = 16;
-  }
-  else if (car == '%')
-  {
-    base = 2;
-    car = *(++number);
-  }
+		if (c == 'H' || c == 'h')
+		{
+			base = 16;
+			c = *number++;
+		}
+		else if (c == 'X' || c == 'x')
+		{
+			base = 2;
+			c = *number++;
+		}
+		else
+			base = 16;
+	}
+	else if (c == '%')
+	{
+		base = 2;
+		c = *number++;
+	}
 
-  if (!car)
+  if (!c)
     return TRUE;
 
-  if (car == '-' || car == '+')
+  if (c == '-' || c == '+')
     return TRUE;
-
-  if (car == '0' && toupper(number[1]) == 'X')
-    return TRUE;
-
-  pos = strlen(number) - 1;
-  if (number[pos] == '&')
-  {
-    number[pos] = 0;
-    is_unsigned = TRUE;
-  }
 
   errno = 0;
+	number--;
 
-  if (base)
-  {
-    if (read_integer(&number, base, &val) || *number)
-    	return TRUE;
-    
-    long_int = (uint64_t)val != (uint)val;
-
-    if (!is_unsigned)
-    {
-			if (val >= 0x8000L && val <= 0xFFFFL)
-				val |= INT64_C(0xFFFFFFFFFFFF0000);
-    }
-  }
-  else
-  {
-		if (is_unsigned)
-			return TRUE;
-    
-    end = number;
-    if (read_integer(&end, 10, &val) || *end)
-    {
-      errno = 0;
-      base = 0;
-      dval = strtod(number, &end);
-      
-      if (*end || errno)
-      	return TRUE;
+	if (!read_integer(number, base, &val))
+	{
+		if (IS_PURE_INTEGER(val))
+		{
+			type = T_INTEGER;
+			goto __END;
 		}
 		else
 		{
-			base = 10;
-			long_int = (uint64_t)val != (uint)val;
+      type = T_LONG;
+      goto __END;
 		}
+	}
+
+  if (base == 10)
+  {
+    if (!read_float(number, &dval))
+    {
+      type = T_FLOAT;
+      goto __END;
+    }
   }
 
-  if (!base)
-  {
-    result->type = T_FLOAT;
-    result->dval = minus ? (-dval) : dval;
-  }
-  else if (long_int)
-  {
-    result->type = T_LONG;
+  return TRUE;
+
+__END:
+
+  result->type = type;
+
+  if (type == T_INTEGER)
+    result->lval = result->ival = minus ? (-val) : val;
+  else if (type == T_LONG)
     result->lval = minus ? (-val) : val;
-    //fprintf(stderr, "TRANS_get_number: LONG: %lld\n", result->lval);
-  }
   else
-  {
-    result->type = T_INTEGER;
-    result->ival = (int)(minus ? (-val) : val);
-    result->lval = result->ival;
-    //fprintf(stderr, "TRANS_get_number: INT: %ld\n", result->ival);
-  }
-
-  //fprintf(stderr, "TRANS_get_number: => %d\n", result->type);
+    result->dval = minus ? (-dval) : dval;
 
   return FALSE;
 }

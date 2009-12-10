@@ -306,7 +306,7 @@ Public Sub GetSymbolURL(sComponent As String, sClass As String, Optional sSymbol
   
   If sSymbol Then
     sName = LCase(sSymbol)
-    sName = Replace(sName, "_", ".")
+    sName = Left(sName) & Replace(Mid$(sName, 2), "_", ".")
     sName = Replace(sName, ":", ".")
     sPath &/= sName
   Endif

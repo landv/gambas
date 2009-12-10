@@ -131,11 +131,13 @@ Public Sub RefreshAll()
   Next
   
   UpdateLabel
+  If Not $bDisableIntegratedHelp Then 
+    webHelp.HTML = ""
+  Endif 
 
   If bDiff Then sClass = "Control"
 
   'PRINT "Kind = "; sClass
-
   'cProp = CControl.PropertiesInOrder[sClass]
   Try aProp = CComponent.Classes[sClass].PropertyList
   If Not aProp Then
@@ -451,7 +453,7 @@ Public Sub HideProperty() As Boolean
     $sLast = ""
     $iLast = -1
     $hEditor = Null
-    
+
   Endif
 
 End
@@ -538,7 +540,8 @@ Private Sub ShowProperty(Optional sFocus As String)
   Dim aArg As String[]
   Dim hEditor As Object
   Dim hSymbol As CSymbolInfo
-  Dim sHelp As String
+  Dim sHelp, sHelpType, sHelpLcType As String
+  Dim sHTML As String
   Dim iRow As Integer
 
   If Project.Running Then Return
@@ -566,6 +569,8 @@ Private Sub ShowProperty(Optional sFocus As String)
 
     If Not $bDisableIntegratedHelp Then 
       sHelp = ("The name of the control.")
+      sHelpType = "String"
+      sHelpLcType = "string"
     Endif 
     
   Else If grdProperty.Row = 2 Then
@@ -577,6 +582,8 @@ Private Sub ShowProperty(Optional sFocus As String)
 
     If Not $bDisableIntegratedHelp Then 
       sHelp = ("The event group that the control belongs to.")
+      sHelpType = "String"
+      sHelpLcType = "string"
     Endif 
 
   Else
@@ -590,19 +597,31 @@ Private Sub ShowProperty(Optional sFocus As String)
       
       If hProp.Name = CPropertyInfo.SCALE_NAME Then
         sHelp = ("If the form and controls dimensions must follow the size of the default font.")
+        sHelpType = "Boolean"
+        sHelpLcType = "boolean"
       Else If hProp.Name = CPropertyInfo.PUBLIC_NAME Then
         sHelp = ("If the control is public.")
+        sHelpType = "Boolean"
+        sHelpLcType = "boolean"
       Else If hProp.Virtual Then 
         sHelp = ""
       Else
         hSymbol = CComponent.Classes[$hObject.Kind].Symbols[hProp.Name]    
-        sHelp = MHelp.GetSymbolHelpText(MHelp.GetSymbolHelpPath(hSymbol))
+        MHelp.InitWebViewWith(webHelp, MHelp.TYPE_SYMBOL, hSymbol.Name, hSymbol.Class)
       Endif
       
     Endif 
   Endif
 
-  If sHelp Then lblHelp.Text = "<b>" & grdProperty[grdProperty.Row, 0].Text & "</b><br>" & sHelp
+  If sHelp Then 
+    sHTML = File.Load("help/property-help.html")
+    sHTML = Replace(sHTML, "$(class)", "Control")
+    sHTML = Replace(sHTML, "$(name)", grdProperty[grdProperty.Row, 0].Text)
+    sHTML = Replace(sHTML, "$(help)", Html(sHelp))
+    sHTML = Replace(sHTML, "$(type)", sHelpType)
+    sHTML = Replace(sHTML, "$(lctype)", sHelpLcType)
+    webHelp.HTML = sHTML
+  Endif
 
   $sLast = sProp
   $iLast = grdProperty.Row
@@ -985,7 +1004,8 @@ Public Sub CheckIntegratedHelpSetting()
   
   $bDisableIntegratedHelp = Not Settings["/PropertyHelp", True]
   If $bDisableIntegratedHelp Then 
-    lblHelp.Text = ""
+    webHelp.Stop
+    webHelp.HTML = ""
     spnHelp.Hide
   Else 
     spnHelp.Show
@@ -1021,10 +1041,6 @@ Private Sub UpdateLabel()
   If Not hObject Then hObject = $hForm.Control[$hForm.Name]
   lblName.Text = "<b>" & hObject.Name & "</b> " & hObject.Kind
   
-  If Not $bDisableIntegratedHelp Then 
-    lblHelp.Text = ""
-  Endif 
-
 End
 
 Public Sub spnHelp_Resize()

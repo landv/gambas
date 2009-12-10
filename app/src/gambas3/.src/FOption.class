@@ -570,3 +570,12 @@ Public Sub Form_Open()
 
 End
 
+
+Public Sub btnClearCache_Click()
+
+  If Message.Question(("Do you really want to clear the documentation cache?"), ("Clear"), ("Cancel")) <> 1 Then Return
+  Inc Application.Busy
+  Shell "rm -rf " & Shell$(WebSettings.Cache.Path) &/ "*" Wait
+  Dec Application.Busy
+
+End
