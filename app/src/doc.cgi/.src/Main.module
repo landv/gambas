@@ -34,6 +34,8 @@ Private $bFind As Boolean
 Private $bView As Boolean
 Private $bGet As Boolean
 Private $bOnlineHelp As Boolean
+Private $bNoTitle As Boolean
+Private $bNoImage As Boolean
 
 Private $bNew As Boolean
 
@@ -79,6 +81,9 @@ Private PARA As String
 
 Private $aDay As String[] 
 Private $aMonth As String[] 
+
+Private $sTemp As String
+Private $hTemp As File
 
 Public Sub FormatDate(dDate As Date) As String
   
@@ -319,6 +324,10 @@ Private Sub OpenDatabase()
         $bView = True
         $bShow = True
         $bOnlineHelp = True
+      Else If sQuery = "notitle" Then
+        $bNoTitle = True
+      Else If sQuery = "noimage" Then
+        $bNoImage = True
       Endif
       
     Next
@@ -526,6 +535,8 @@ Private Function GetLink(sPath As String, Optional sMyTitle As String, Optional 
       
       If Left(File.Name(sPath)) = ":" And Not bNoImage Then
     
+        If $bNoImage Then Return ""
+        
         If sMyTitle Then sTitle = sMyTitle
         Return "<img src=\"/image" &/ sPath & sSuff & "\" alt=\"" & EncodeHTML(sTitle) & "\">"
       
@@ -1479,7 +1490,7 @@ Private Sub PrintVersion()
   
 End
 
-Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String, Optional dDate As Date)
+Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
 
   Dim iPos As Integer
   Dim sLang As String
@@ -1489,14 +1500,9 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String, Opti
 
   $sTitle = sTitle
 
-  Print "Content-type: text/html;charset=UTF-8"
-  Print "Content-language: "; Replace(System.Language, "_", "-")
-  
-  If dDate Then
-    Print "Expires: "; FormatDate(DateAdd(Now, gb.Day, 1))
-    'Print "Cache-Control: max-age=2592000"
-    Print "Last-Modified: "; FormatDate(dDate)
-  Endif
+  $sTemp = Temp$()
+  $hTemp = Open $sTemp For Create
+  Output To #$hTemp
   
   Print
   Print "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">"
@@ -1510,6 +1516,13 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String, Opti
   Print "<head>"
   Print "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">"
   Print "<link rel=\"stylesheet\" href=\"/style.css\">"
+  If $bNoTitle Then
+  Print "<style>"
+  Print "<!--"
+  Print "  .title { display: none; }"
+  Print "-->"
+  Print "</style>"
+  Endif
   MakeTitle(sTitle)
   Print "</head>"
   
@@ -1758,6 +1771,7 @@ End
 Private Sub MakeFooter(Optional dDate As Date)
 
   Dim sEnv As String
+  Dim sData As String
 
   Print "</div>"
 
@@ -1789,6 +1803,23 @@ Private Sub MakeFooter(Optional dDate As Date)
   Print "</body>"
   Print "</html>"
   Print
+  
+  Close #$hTemp
+  Output To Default
+  sData = File.Load($sTemp)
+  
+  Print "Content-type: text/html;charset=UTF-8"
+  Print "Content-language: "; Replace(System.Language, "_", "-")
+  Print "Content-length: "; Len(sData)
+  If $bOnlineHelp Then
+    Print "Cache-Control: max-age=86400"
+    If dDate Then
+      Print "Last-Modified: "; FormatDate(dDate)
+    Endif
+  Endif
+  
+  Print
+  Print sData;
 
 End
 
@@ -1902,8 +1933,9 @@ Private Sub DisplayImage()
   'PRINT #File.Err, rPage.Fields["sData"].Type; "/"; Len(rPage["sData"].Data)
   'DEBUG rPage!sData.Length
 
-  Print rPage!sHtml
+  Print rPage!sHtml ' Content-Type
   Print "Content-Length: "; rPage["sData"].Length
+  Print "Last-Modified: "; FormatDate(rPage!dDate)
   Print
   Print rPage!sData.Data;
 
@@ -1962,7 +1994,7 @@ Private Sub DisplayPage()
     Return
   Endif
 
-  MakeHeader(rPage!sTitle, sWarn, rPage!dDate)
+  MakeHeader(rPage!sTitle, sWarn)
 
   If $bImage Then
   
@@ -1971,7 +2003,6 @@ Private Sub DisplayPage()
   Else If $bShow Then
   
     Print MakePageWithoutHeader(rPage)
-    MakeFooter
   
   Else
 
@@ -1986,15 +2017,15 @@ Private Sub DisplayPage()
 
     If rPage!sHTML Then
       Print rPage!sHTML
-      MakeFooter(rPage!dDate)
     Else
       If Not sPage Then sPage = MakePageWithoutHeader(rPage)
       Print sPage
-      MakeFooter
     Endif
     
   Endif
 
+  MakeFooter(rPage!dDate)
+  
 End
 
 Private Function MakePageWithoutHeader(rPage As Result) As String
