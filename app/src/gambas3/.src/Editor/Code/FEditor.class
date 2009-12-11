@@ -2247,30 +2247,30 @@ Private Sub FindDefinition(bPopupHelp As Boolean, Optional iX As Integer, Option
         Endif
       Endif
 
-      If bPopupHelp Then
-        FHelp.ShowKeywordHelp(Editor, sKeyword, sKeyword2, iX, iY)
-      Else
+      'If bPopupHelp Then
+        'FHelp.ShowKeywordHelp(Editor, sKeyword, sKeyword2, iX, iY)
+      'Else
         MHelp.GotoKeyword(sKeyword, sKeyword2)
-      Endif
+      'Endif
       Return
 
     Else If Highlight.Types[iCpt] = Highlight.DataType Then 
       sKeyword = Highlight.Symbols[iCpt]
-      If bPopupHelp Then
-        If FHelp.ShowDatatypeHelp(Editor, sKeyword, ix, iy) Then
-          hClass = CComponent.Classes[sKeyword]
-          If hClass Then 
-            FHelp.ShowClassHelp(Editor, hClass.Component, hClass.Name, iX, iY)
-          Endif 
-        Endif
-      Else
+      'If bPopupHelp Then
+      '  If FHelp.ShowDatatypeHelp(Editor, sKeyword, ix, iy) Then
+      '    hClass = CComponent.Classes[sKeyword]
+      '    If hClass Then 
+      '      FHelp.ShowClassHelp(Editor, hClass.Component, hClass.Name, iX, iY)
+      '    Endif 
+      '  Endif
+      'Else
         If MHelp.GotoDataType(sKeyword) Then
           hClass = CComponent.Classes[sKeyword]
           If hClass Then 
             MHelp.GotoClass(hClass.Component, hClass.Name)
           Endif 
         Endif
-      Endif
+      'Endif
       Return
     Endif
   Endif
@@ -2281,15 +2281,15 @@ Private Sub FindDefinition(bPopupHelp As Boolean, Optional iX As Integer, Option
 
   'PRINT hSymbol.Class
 
-  If hSymbol.LineNumber And If Not bPopupHelp Then
+  If hSymbol.LineNumber Then 'And If Not bPopupHelp Then
     Project.SavePosition()
     Project.OpenFile(hSymbol.Class, hSymbol.LineNumber)
-  Else
-    If bPopupHelp Then
-      FHelp.ShowSymbolHelp(Editor, hSymbol, iX, iY)
+  'Else
+  '  If bPopupHelp Then
+  '    FHelp.ShowSymbolHelp(Editor, hSymbol, iX, iY)
     Else
       MHelp.GotoSymbol(hSymbol)
-    Endif
+  '  Endif
   Endif
 
 End
@@ -2857,13 +2857,13 @@ Public Sub Editors_DblClick()
 End
 
 
-Public Sub timShowHelp_Timer()
-  'Print $X, $Y, Editor.PosToColumn($X, $Y)
-  If FHelp.MouseOver Then Return
-  If Editor.PosToColumn($X, $Y) >= 0 Then FindDefinition(True, $X, $Y)
-  timShowHelp.Enabled = False
-  
-End
+' Public Sub timShowHelp_Timer()
+'   'Print $X, $Y, Editor.PosToColumn($X, $Y)
+'   If FHelp.MouseOver Then Return
+'   If Editor.PosToColumn($X, $Y) >= 0 Then FindDefinition(True, $X, $Y)
+'   timShowHelp.Enabled = False
+'   
+' End
 
 Private Sub ResizeProcList()
   

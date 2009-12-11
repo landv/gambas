@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2.1429,115,47)
+  MoveScaled(0,2,115,47)
   Text = ("Debug")
   Persistent = True
   Arrangement = Arrange.Fill
@@ -11,7 +11,7 @@
       MoveScaled(1,2,88,41)
       Expand = True
       Arrangement = Arrange.Vertical
-      Count = 6
+      Count = 5
       Index = 0
       Text = ("Console")
       Picture = Picture["icon:/small/terminal"]
@@ -21,14 +21,6 @@
         Arrangement = Arrange.Fill
       }
       Index = 1
-      Text = ("Help")
-      Picture = Picture["icon:/small/help"]
-      { panHelp Panel
-        MoveScaled(8,7,54,25)
-        Expand = True
-        Arrangement = Arrange.Fill
-      }
-      Index = 2
       Text = ("Local variables")
       Picture = Picture["img/16/local.png"]
       { HBox4 HBox
@@ -53,7 +45,7 @@
         Border = False
         NoKeyboard = True
       }
-      Index = 3
+      Index = 2
       Text = ("Current object")
       Picture = Picture["img/16/current.png"]
       { HBox2 HBox
@@ -86,7 +78,7 @@
         Border = False
         NoKeyboard = True
       }
-      Index = 4
+      Index = 3
       Text = ("Watch")
       Picture = Picture["icon:/small/watch"]
       { HBox1 HBox
@@ -127,7 +119,7 @@
         Border = False
         ScrollBar = Scroll.Vertical
       }
-      Index = 5
+      Index = 4
       Text = ("Breakpoints")
       Picture = Picture["icon:/small/flag"]
       { VBox1 HBox

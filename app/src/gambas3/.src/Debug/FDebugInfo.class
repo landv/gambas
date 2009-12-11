@@ -3,11 +3,10 @@
 Public Shown As Boolean
 
 Private Const TAB_CONSOLE As Integer = 0
-Private Const TAB_HELP As Integer = 1
-Private Const TAB_LOCAL As Integer = 2
-Private Const TAB_ME As Integer = 3
-Private Const TAB_WATCH As Integer = 4
-Private Const TAB_BREAK As Integer = 5
+Private Const TAB_LOCAL As Integer = 1
+Private Const TAB_ME As Integer = 2
+Private Const TAB_WATCH As Integer = 3
+Private Const TAB_BREAK As Integer = 4
 
 Private $cRefresh As New Collection
 
@@ -62,8 +61,8 @@ Public Sub Form_Open()
 
   FOutput.Load(panConsole)
   UpdateView
-  FHelp.Load(panHelp)
-  UpdateHelpView
+  
+  
   
 End
 
@@ -764,41 +763,6 @@ Public Sub UpdateView()
   
 End
 
-Public Sub UpdateHelpView()
-  
-  Dim bHelpUnDock As Boolean = Settings["/FHelp/Undock"]
-  Dim bVisible As Boolean
-  
-  If bHelpUndock Then  
-    If FHelp.Parent Then 
-      FHelp.Reparent(Null)
-      Settings.Read(FHelp)
-      FHelp.Show
-    Endif
-  Endif
-  
-  Try tabDebug[TAB_HELP].Visible = Not bHelpUnDock
-        
-  If Not bHelpUnDock Then 
-    If Not FHelp.Parent Then 
-      bVisible = FHelp.Visible
-      'DEBUG "Write: "; FOutput.X;; FOutput.Y
-      Settings.Write(FHelp)
-      FHelp.Reparent(panHelp, 0, 0)
-      FHelp.Show
-      'Action["console"].Value = TRUE
-      'Action["console"].Visible = FALSE
-      'If bVisible Then FMain.ShowDebug(True)
-    Endif
-    
-    'Try tabDebug.Index = TAB_HELP
-    
-  Endif 
-  
-  FMain.UpdateConsoleAction(Project.Running)
-  
-End
-
 
 Public Sub btnShowMe_Click()
 
@@ -874,18 +838,6 @@ Public Sub GetBreakpoints() As String[]
   
 End
 
-Public Function IsHelpVisible() As Boolean
-  
-  Return tabDebug.Index = TAB_HELP And Me.Parent.Visible
-  
-End
-
-Public Sub SetHelpVisible()
-  
-  tabDebug.Index = TAB_HELP
-  tabDebug_Click
-  
-End
 
 Public Sub tbvLocal_Data(Row As Integer, Column As Integer)
 
