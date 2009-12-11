@@ -1484,7 +1484,6 @@ Private Function GetSymbolType(sSymbol As String, Optional bPoint As Boolean) As
               .Class = Me.Name
               .Kind = "v"
               .LineNumber = iLine + 1
-              .HelpLineNumber = GetHelpLine(iLine)
               .NotPublic = True
               '.Type = sType
             End With
@@ -1509,7 +1508,6 @@ Private Function GetSymbolType(sSymbol As String, Optional bPoint As Boolean) As
         .Class = Me.Name
         .Kind = "v"
         .LineNumber = iLine + 1
-        .HelpLineNumber = GetHelpLine(iLine)
         .NotPublic = True
         .Type = sType
       End With
@@ -1571,31 +1569,6 @@ Private Function GetSymbolType(sSymbol As String, Optional bPoint As Boolean) As
   Endif
 
 End
-
-Private Function GetHelpLine(iLine As Integer) As Integer
-  Dim aSym As String[]
-  
-  Inc iLine
-  
-  Do
-    Dec iLine
-    If iLine < 0 Then Return 0
-    aSym = Highlight.Analyze(Editor.Lines[iLine].Text)
-    
-    If aSym.Count = 1 Then
-      
-      If Left(aSym[0], 1) = "'" Then
-        If Left(asym[0], 3) = "'/#" Then Return iLine
-      Else
-        Return 0
-      Endif
-    
-    Endif
-  Loop
-  
-  
-End
-
 
 Private Sub GetSymbolWith(aExpr As String[], aType As Integer[], Optional iInd As Integer = -1)
 
