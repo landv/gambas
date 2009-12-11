@@ -547,7 +547,7 @@ Public Function GetDescription(Optional bBalise As Boolean) As String
       sDesc &= "(...)"
     Endif
   Else
-    If Type Then sDesc &= " AS " & GetType(Type, False)
+    If Type Then sDesc &= " AS " & GetType(Type, bBalise)
   Endif
   
   Return sDesc
@@ -683,7 +683,7 @@ Static Public Function TransformSignature(sSign As String, bBalise As Boolean) A
 
 End
 
-Public Sub GetHelpURL() As String
+Public Function GetHelpURL() As String
   
   If Component Then 
     If Component = "gb" And If Class = "." Then
@@ -694,3 +694,71 @@ Public Sub GetHelpURL() As String
   Endif
   
 End
+
+Public Function GetHelpHTML() As String
+  
+  Dim hForm As Object
+  Dim hEdit As Editor
+  Dim sHTML, s As String
+  Dim iLine, i As Integer
+  Dim sSyntax As String
+  
+  hForm = Project.LoadFile(Project.FindPath(Me.Class))
+  Try hEdit = hForm.Editor
+  If Not hEdit Then Return  
+  iLine = Me.LineNumber - 1
+  
+  'Essais de trouver de l'aide sur la même ligne que la declaration
+  'Print hEdit.Lines[iLine].Text, iline
+  If InStr(hEdit.Lines[iLine].Text, "''", 0) Then 
+    s = Trim(Mid(hEdit.Lines[iLine].Text, InStr(hEdit.Lines[iLine].Text, "''", 0) + 2))
+  Endif
+  
+  'trouve l'aide au dessus
+  For i = iLine - 1 To 0 Step -1
+    If Left(Trim(hEdit.Lines[i].Text), 2) = "''" Then 
+      s = Trim(Mid(hEdit.Lines[i].Text, 3)) & "<BR>" & s
+    Else
+      If Trim(hEdit.Lines[i].Text) = "" Then Continue
+      Break
+    Endif
+  Next
+  If Not s Then s = ("No help found.")
+  
+  sHTML = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" & 
+            "<link rel=\"stylesheet\" href=\"" & File.Dir(MHelp.GetURL()) & "/style.css\"></head><body class=\"none\">"
+  sHTML &= "<div class\"frame\">"
+  sHTML &= "<div class=\"title\">" & Me.Name & "</div>"
+  sHTML &= "<pre class=\"syntax\">"
+ 
+  If Me.IsStatic() Then sHTML &= "<font color=\"blue\">STATIC </font>"
+
+  sSyntax &= Me.GetDescription(False)
+  sSyntax = Replace(Replace(sSyntax, "</b>", ""), "<b>", "")
+  
+  Highlight.Analyze(sSyntax)
+  
+  For i = 0 To Highlight.Symbols.Max
+    Select Case Highlight.Types[i]
+      Case Highlight.Symbol
+        shtml &= "<b>" & Highlight.Symbols[i] & " </b>"
+      Case Highlight.Operator
+        shtml &= "<font color=\"blue\">" & Highlight.Symbols[i] & " </font>"
+      Case Highlight.DataType
+        shtml &= "<font color=\"#0080FF\">" & Highlight.Symbols[i] & " </font>"
+      Case Highlight.Keyword
+        shtml &= "<font color=\"blue\">" & Highlight.Symbols[i] & " </font>"
+      Case Else
+        shtml &= Highlight.Symbols[i]
+    End Select
+  Next
+  
+  sHTML &= "</pre><p>"
+  sHTML &= s 
+  sHTML &= "</div></body></html>"
+  
+  Return sHTML
+  
+
+End
+

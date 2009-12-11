@@ -346,7 +346,7 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
   Dim sHtml As String
   Dim sLang As String
   Dim iPos As Integer
-  
+
   If Not hWebView Then 
     If Not FHelpBrowser.Visible Then Return
     hWebView = FHelpBrowser.webHelp
@@ -368,7 +368,11 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
     Endif
     Try hSymbol = CComponent.GetClassSymbols(sClass)[sSymbol]
     If hSymbol Then 
-      sUrl = hSymbol.GetHelpURL()
+      If hSymbol.LineNumber Then 
+        sHtml = hSymbol.GetHelpHTML()
+      Else
+        sUrl = hSymbol.GetHelpURL()
+      Endif
     Endif
     
   Else If iType = TYPE_CLASS Or If iType = TYPE_CONTROL Then
@@ -381,6 +385,8 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
     sUrl = MHelp.GetSpecialURL(sSymbol)
     
   Endif
+  
+  
   
   If sUrl Then
     If sMore Then sUrl &= "&" & sMore
