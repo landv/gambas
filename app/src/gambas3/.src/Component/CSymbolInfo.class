@@ -12,7 +12,6 @@ Public Class As String
 Public Component As String
 Public NotPublic As Boolean
 Public LineNumber As Integer
-Public HelpLineNumber As Integer
 
 Private $sArgBefore As String
 Private $sArgAfter As String
@@ -709,7 +708,7 @@ Public Function GetHelpHTML() As String
   iLine = Me.LineNumber - 1
   
   'Essais de trouver de l'aide sur la même ligne que la declaration
-  'Print hEdit.Lines[iLine].Text, iline
+
   If InStr(hEdit.Lines[iLine].Text, "''", 0) Then 
     s = Trim(Mid(hEdit.Lines[iLine].Text, InStr(hEdit.Lines[iLine].Text, "''", 0) + 2))
   Endif

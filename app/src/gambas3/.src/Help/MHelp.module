@@ -378,8 +378,11 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
   Else If iType = TYPE_CLASS Or If iType = TYPE_CONTROL Then
   
     Try hClass = CComponent.Classes[sSymbol]
-    If hClass Then sUrl = hClass.GetHelpURL()
-    
+    If hclass Then 
+      sUrl = hClass.GetHelpURL()
+    Else If Project.GetClasses().Exist(sSymbol) Then
+      sHtml = GetProjectClassHelpHTML(sSymbol)
+    Endif
   Else If iType = TYPE_SPECIAL Then
       
     sUrl = MHelp.GetSpecialURL(sSymbol)
@@ -403,4 +406,29 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
   Endif
   hWebView.TextZoom = 0.8
     
+End
+
+
+Public Function GetProjectClassHelpHTML(sClass As String) As String
+  
+  Dim sResult, sHTML As String
+  Dim hForm As FEditor
+  Dim hedit As Editor
+  'recuprerer l'aide
+  hForm = Project.LoadFile(Project.FindPath(sClass))
+  Try hEdit = hForm.Editor
+  If Not hEdit Then Return  
+  
+  'demain j'inplante la suite
+  sResult = hedit.Lines[0].Text
+  
+  sHTML = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" & 
+          "<link rel=\"stylesheet\" href=\"" & File.Dir(MHelp.GetURL()) & "/style.css\"></head><body class=\"none\">"
+  sHTML &= "<div class\"frame\">"
+  sHTML &= "<div class=\"title\">" & sClass & "</div>"
+  sHTML &= "<pre class=\"syntax\">"
+  sHTML &= "</pre><p>"
+  sHTML &= sResult
+  sHTML &= "</div></body></html>"
+  Return sHTML
 End
