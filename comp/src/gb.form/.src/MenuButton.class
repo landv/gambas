@@ -8,6 +8,10 @@ Inherits UserControl
 Public Const _Properties As String = "*,Action,Text,Picture,Menu"
 
 Event Click
+Event MouseDown
+Event MouseUp
+Event MouseWheel
+Event MouseDrag
 
 Property Picture As Picture
 Property Text As String
@@ -88,6 +92,31 @@ Public Sub Button_Click()
   Raise Click
   
 End
+
+Public Sub Button_MouseDown()
+  
+  Raise MouseDown
+  
+End
+
+Public Sub Button_MouseUp()
+  
+  Raise MouseUp
+  
+End
+
+Public Sub Button_MouseWheel()
+  
+  Raise MouseWheel
+  
+End
+
+Public Sub Button_MouseDrag()
+  
+  Raise MouseDrag
+  
+End
+
 
 Private Sub FindMenu(hWindow As Window) As Menu
   
