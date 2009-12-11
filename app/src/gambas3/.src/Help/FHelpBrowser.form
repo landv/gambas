@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,43,27)
+  MoveScaled(0,0,50,27)
   Action = "help"
   Text = ("Help browser")
   Icon = Picture["icon:/small/help"]
@@ -10,54 +10,60 @@
   SkipTaskbar = True
   Arrangement = Arrange.Vertical
   { panToolbar HBox
-    MoveScaled(0,0,39,4)
+    MoveScaled(0,0,44,4)
     { btnHome ToolButton
       MoveScaled(0,0,4,4)
       ToolTip = ("Index")
       Text = ("")
       Picture = Picture["icon:/small/home"]
     }
-    { btnBack ToolButton
+    { btnWebSite ToolButton
       MoveScaled(4,0,4,4)
+      ToolTip = ("Index")
+      Text = ("")
+      Picture = Picture["icon:/small/gambas"]
+    }
+    { btnBack ToolButton
+      MoveScaled(9,0,4,4)
       ToolTip = ("Go back")
       Text = ("")
       Picture = Picture["icon:/small/left"]
     }
     { btnForward ToolButton
-      MoveScaled(8,0,4,4)
+      MoveScaled(13,0,4,4)
       ToolTip = ("Go forward")
       Text = ("")
       Picture = Picture["icon:/small/right"]
     }
     { btnStop ToolButton
-      MoveScaled(12,0,4,4)
+      MoveScaled(17,0,4,4)
       ToolTip = ("Cancel")
       Text = ("")
       Picture = Picture["icon:/small/delete"]
     }
     { btnReload ToolButton
-      MoveScaled(16,0,4,4)
+      MoveScaled(21,0,4,4)
       ToolTip = ("Reload")
       Text = ("")
       Picture = Picture["icon:/small/refresh"]
     }
     { Separator1 Separator
-      MoveScaled(21,0,1,4)
+      MoveScaled(26,0,1,4)
     }
     { btnZoomIn ToolButton
-      MoveScaled(23,0,4,4)
+      MoveScaled(28,0,4,4)
       ToolTip = ("Zoom in")
       Text = ("")
       Picture = Picture["icon:/small/zoom-in"]
     }
     { btnZoomOut ToolButton
-      MoveScaled(27,0,4,4)
+      MoveScaled(32,0,4,4)
       ToolTip = ("Zoom out")
       Text = ("")
       Picture = Picture["icon:/small/zoom-out"]
     }
     { btnZoomNormal ToolButton
-      MoveScaled(31,0,4,4)
+      MoveScaled(36,0,4,4)
       ToolTip = ("No zoom")
       Text = ("")
       Picture = Picture["icon:/small/zoom-normal"]
@@ -70,6 +76,7 @@
     MoveScaled(6,6,29,15)
     #Public = True
     Expand = True
+    Url = "http://gambas.sourceforge.net"
     Cached = True
   }
 }

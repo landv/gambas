@@ -28,6 +28,8 @@
 #include <QUrl>
 #include <QAuthenticator>
 #include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QWebFrame>
 #include <QWebView>
 
 #ifndef __CWEBVIEW_CPP
@@ -80,7 +82,7 @@ public:
 public slots:
 
 	void iconChanged();
-	void linkClicked(const QUrl &url);
+	//void linkClicked(const QUrl &url);
 	void loadFinished(bool ok);
 	void loadProgress(int progress);
 	void loadStarted();
@@ -88,7 +90,10 @@ public slots:
 	void statusBarMessage(const QString &text);
 	void titleChanged(const QString &title);
 	void linkHovered(const QString &link, const QString &title, const QString &textContent);
+	//void downloadRequested(const QNetworkRequest &);
+	void frameCreated(QWebFrame *);
 	void authenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator);
+	void urlChanged(const QUrl &);
 };
 
 #endif

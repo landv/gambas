@@ -19,6 +19,7 @@ End
 Public Sub btnHome_Click()
 
   webHelp.Url = MHelp.GetURL() & "?help&" & MHelp.GetHelpLanguage()
+  webHelp.TextZoom = 0.8
 
 End
 
@@ -48,19 +49,19 @@ End
 
 Public Sub btnZoomIn_Click()
 
-  webHelp.Zoom = Round(webHelp.Zoom * 1.25, -2)
+  webHelp.TextZoom = Round(webHelp.TextZoom * 1.25, -2)
 
 End
 
 Public Sub btnZoomOut_Click()
 
-  webHelp.Zoom = Round(webHelp.Zoom / 1.25, -2)
+  webHelp.TextZoom = Round(webHelp.TextZoom / 1.25, -2)
 
 End
 
 Public Sub btnZoomNormal_Click()
 
-  webHelp.Zoom = 0.8
+  webHelp.TextZoom = 0.8
 
 End
 
@@ -69,5 +70,13 @@ Public Sub Form_Resize()
   Dim bVisible As Boolean = Me.Height > Desktop.Scale * 30 And Me.Width > Desktop.Scale * 30
   panToolbar.Visible = bVisible
   sepToolbar.Visible = bVisible
+
+End
+
+
+Public Sub btnWebSite_Click()
+
+  webHelp.Url = "http://gambas.sourceforge.net"
+  webHelp.TextZoom = 0.8
 
 End

@@ -190,8 +190,10 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
       hCtrl.Add(hWindow)
       
     Case "webview"
-      hCtrl = New WebView(hParent)
-      hCtrl.Html = "<html><body><h2>" & sName & "</h2></body></html>"
+      hCtrl = New TextLabel(hParent)
+      hCtrl.Padding = 4
+      hCtrl.Background = Color.TextBackground
+      hCtrl.Text = "<html><body><h2>" & sName & "</h2></body></html>"
       
     ' Case "listcontainer"
     '   hCtrl = New ListContainer(hParent)
@@ -751,7 +753,7 @@ Public Sub UpdateName()
       Control.ActiveWindow.Title = Name
 
     Case "WebView"
-      Control.Html = "<html><body><h2>" & Name & "</h2></body></html>"
+      Control.Text = "<html><body><h2>" & Name & "</h2></body></html>"
     
     ' Case "ListContainer"
     '   hLabel = Control.Children[0]

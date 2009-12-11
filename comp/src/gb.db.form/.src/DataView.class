@@ -269,9 +269,9 @@ Public Sub TableView_Data(Row As Integer, Column As Integer)
         .Text = "BLOB"
         .Font.Bold = True
         If $bHighlight And If Row And 1 Then 
-          .Background = Color.Mix($iHighlight, Color.LightGray)
+          .Background = Color.Merge($iHighlight, Color.LightGray)
         Else
-          .Background = Color.Mix(Color.TextBackground, Color.LightGray)
+          .Background = Color.Merge(Color.TextBackground, Color.LightGray)
         Endif
       Case db.String
         If Not $sCharset Then

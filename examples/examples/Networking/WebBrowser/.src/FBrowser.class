@@ -5,6 +5,7 @@
 Private $sStatus As String
 Private $iZoom As Integer
 Private $iHidden As Integer
+Private $sLastLink As String
 
 ' Static Public Sub _init()
 '   
@@ -21,7 +22,7 @@ Private $iHidden As Integer
 Public Sub Form_Open()
 
   WebSettings.IconDatabase.Path = File.Dir(File.Dir(Temp$()))
-  WebSettings.Font[WebSettings.FixedFont] = "Inconsolata"
+  WebSettings.Font[WebSettings.FixedFont] = "Monospace"
   WebSettings[WebSettings.PluginsEnabled] = True
   WebSettings[WebSettings.JavascriptEnabled] = True
   WebSettings[WebSettings.JavaEnabled] = True
@@ -51,6 +52,7 @@ End
 Public Sub WebView_Link(Url As String)
 
   If Not IsLastCurrentView() Then Return
+  $sLastLink = Url
   lblStatus.Text = Url
 
 End
@@ -75,7 +77,7 @@ End
 
 Public Sub WebView_Error()
 
-  GetView().Status = "Unable to load page"
+  GetView().Status = "Unable to load page: " & $sLastLink
   If Not IsLastCurrentView() Then Return
 
   lblStatus.Text = GetView().Status
@@ -86,14 +88,16 @@ End
 Public Sub WebView_Load()
 
   Dim iInd As Integer
+  Dim hView As WebView = GetView()
 
-  GetView().Status = ""
+  hView.Status = ""
   If Not IsLastCurrentView() Then Return
 
   lblStatus.Text = ""
-  txtURL.Text = GetView().Url
+  txtURL.Text = hView.Url
   pgbLoad.Hide
   
+  tabBrowser[hView.Tag].Picture = hView.Icon
   ' Debug GetView().Frame
   ' For iInd = 0 To GetView().Frame.Children.Count - 1
   '   Debug "["; iInd; "] "; GetView().Frame.Children[iInd]
@@ -170,10 +174,10 @@ End
 
 Public Sub WebView_Icon()
 
-  Dim hView As WebView = Last
-  tabBrowser[hView.Tag].Picture = hView.Icon
-  If Not IsLastCurrentView() Then Return
-  Me.Icon = hView.Icon
+  ' Dim hView As WebView = Last
+  ' tabBrowser[hView.Tag].Picture = hView.Icon
+  ' If Not IsLastCurrentView() Then Return
+  ' Me.Icon = hView.Icon
 
 End
 
@@ -274,5 +278,17 @@ Public Sub WebView_Auth()
     'Debug hView.Auth.Url;; hView.Auth.User;; hView.Auth.Password
     
   Endif 
+  
+End
+
+Public Sub WebView_Click(Frame As WebFrame)
+  
+  Debug Frame.Name;; Frame.Url
+  
+End
+
+Public Sub WebView_NewFrame(Frame As WebFrame)
+  
+  Debug Frame.Name
   
 End

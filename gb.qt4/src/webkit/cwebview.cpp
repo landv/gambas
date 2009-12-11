@@ -40,6 +40,7 @@ DECLARE_EVENT(EVENT_TITLE);
 DECLARE_EVENT(EVENT_SELECT);
 DECLARE_EVENT(EVENT_STATUS);
 DECLARE_EVENT(EVENT_NEW_WINDOW);
+DECLARE_EVENT(EVENT_NEW_FRAME);
 DECLARE_EVENT(EVENT_AUTH);
 
 //static QNetworkAccessManager *_network_access_manager = 0;
@@ -50,8 +51,7 @@ BEGIN_METHOD(WebView_new, GB_OBJECT parent)
 
   QT.InitWidget(wid, _object);
 
-  QObject::connect(wid, SIGNAL(iconChanged()), &CWebView::manager, SLOT(iconChanged()));
-  QObject::connect(wid, SIGNAL(linkClicked(const QUrl &)), &CWebView::manager, SLOT(linkClicked(const QUrl &)));
+  //QObject::connect(wid, SIGNAL(linkClicked(const QUrl &)), &CWebView::manager, SLOT(linkClicked(const QUrl &)));
   QObject::connect(wid, SIGNAL(loadFinished(bool)), &CWebView::manager, SLOT(loadFinished(bool)));
   QObject::connect(wid, SIGNAL(loadProgress(int)), &CWebView::manager, SLOT(loadProgress(int)));
   QObject::connect(wid, SIGNAL(loadStarted()), &CWebView::manager, SLOT(loadStarted()));
@@ -62,12 +62,13 @@ BEGIN_METHOD(WebView_new, GB_OBJECT parent)
 	QObject::connect(wid->page(), SIGNAL(linkHovered(const QString &, const QString &, const QString &)), &CWebView::manager, 
 										SLOT(linkHovered(const QString &, const QString &, const QString &)));
 	
-	//if (!_network_access_manager)
-	//	_network_access_manager = new QNetworkAccessManager(0);
-	//wid->page()->setNetworkAccessManager(_network_access_manager);
-										
+	QObject::connect(wid->page(), SIGNAL(frameCreated(QWebFrame *)), &CWebView::manager, SLOT(frameCreated(QWebFrame *)));
+	
 	QObject::connect(wid->page()->networkAccessManager(), SIGNAL(authenticationRequired(QNetworkReply *, QAuthenticator *)), &CWebView::manager,
 										SLOT(authenticationRequired(QNetworkReply *, QAuthenticator *)));
+	
+  QObject::connect(wid->page()->mainFrame(), SIGNAL(iconChanged()), &CWebView::manager, SLOT(iconChanged()));
+	QObject::connect(wid->page()->mainFrame(), SIGNAL(urlChanged(const QUrl &)), &CWebView::manager, SLOT(urlChanged(const QUrl &)));
 
 END_METHOD
 
@@ -109,6 +110,13 @@ BEGIN_PROPERTY(WebView_Text)
 END_PROPERTY
 
 BEGIN_PROPERTY(WebView_Icon)
+
+	if (!THIS->icon)
+	{
+		QIcon icon = WIDGET->icon();
+		THIS->icon = QT.CreatePicture(icon.pixmap(16, 16));
+		GB.Ref(THIS->icon);
+	}
 
 	GB.ReturnObject(THIS->icon);
 
@@ -332,9 +340,9 @@ GB_DESC CWebViewDesc[] =
 
 	GB_PROPERTY("Cached", "b", WebView_Cached),
 
-	GB_CONSTANT("_Properties", "s", "*,Cached"),
+	GB_CONSTANT("_Properties", "s", "*,Url,Cached"),
 	
-	GB_EVENT("Click", NULL, NULL, &EVENT_CLICK),
+	GB_EVENT("Click", NULL, "(Frame)WebFrame", &EVENT_CLICK),
 	GB_EVENT("Link", NULL, "(Url)s", &EVENT_LINK),
 	GB_EVENT("Progress", NULL, NULL, &EVENT_PROGRESS),
 	GB_EVENT("Load", NULL, NULL, &EVENT_LOAD),
@@ -344,6 +352,7 @@ GB_DESC CWebViewDesc[] =
 	GB_EVENT("Select", NULL, NULL, &EVENT_SELECT),
 	GB_EVENT("Status", NULL, NULL, &EVENT_STATUS),
 	GB_EVENT("NewWindow", NULL, "(Modal)b", &EVENT_NEW_WINDOW),
+	GB_EVENT("NewFrame", NULL, "(Frame)WebFrame", &EVENT_NEW_FRAME),
 	GB_EVENT("Auth", NULL, NULL, &EVENT_AUTH),
 
 	GB_END_DECLARE
@@ -375,21 +384,13 @@ QWebView *MyWebView::createWindow(QWebPage::WebWindowType type)
 
 CWebView CWebView::manager;
 
-void CWebView::iconChanged()
-{
-	GET_SENDER();
-	QIcon icon = WIDGET->icon();
-	GB.Unref(POINTER(&THIS->icon));
-	THIS->icon = QT.CreatePicture(icon.pixmap(16, 16));
-	GB.Ref(THIS->icon);
-	GB.Raise(THIS, EVENT_ICON, 0);
-}
-
-void CWebView::linkClicked(const QUrl &url)
-{
-	GET_SENDER();
-	GB.Raise(THIS, EVENT_CLICK, 0);
-}
+// void CWebView::linkClicked(const QUrl &url)
+// {
+// 	GET_SENDER();
+// 	WIDGET->page()->currentFrame()->setUrl(url);
+// 	//WIDGET->setUrl(url);
+// 	GB.Raise(THIS, EVENT_CLICK, 0);
+// }
 
 void CWebView::loadFinished(bool ok)
 {
@@ -442,6 +443,13 @@ void CWebView::linkHovered(const QString &link, const QString &title, const QStr
 	GB.Raise(THIS, EVENT_LINK, 1, GB_T_STRING, str, strlen(str));
 }
 
+void CWebView::frameCreated(QWebFrame *frame)
+{
+	QObject::connect(frame, SIGNAL(urlChanged(const QUrl &)), &CWebView::manager, SLOT(urlChanged(const QUrl &)));
+	void *_object = QT.GetObject(((QWebPage*)sender())->view());
+	GB.Raise(THIS, EVENT_NEW_FRAME, 1, GB_T_OBJECT, CWEBFRAME_get(frame));
+}
+
 void CWebView::authenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator)
 {
 	void *_object = QT.GetObject((QWidget *)((QNetworkAccessManager*)sender())->parent());
@@ -457,3 +465,18 @@ void CWebView::authenticationRequired(QNetworkReply *reply, QAuthenticator *auth
 	THIS->authenticator = 0;
 }
 
+void CWebView::iconChanged()
+{
+	void *_object = QT.GetObject(((QWebFrame *)sender())->page()->view());
+	GB.Unref(POINTER(&THIS->icon));
+	THIS->icon = NULL;
+	qDebug("iconChanged");
+	GB.Raise(THIS, EVENT_ICON, 0);
+}
+
+void CWebView::urlChanged(const QUrl &)
+{
+	QWebFrame *frame = (QWebFrame *)sender();
+	void *_object = QT.GetObject(frame->page()->view());
+	GB.Raise(THIS, EVENT_CLICK, 1, GB_T_OBJECT, CWEBFRAME_get(frame));
+}

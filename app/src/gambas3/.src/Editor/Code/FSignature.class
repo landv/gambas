@@ -37,7 +37,7 @@ Public Sub Open(hForm As FEditor, iX As Integer, hSymbol As CSymbolInfo, iArg As
   'DEBUG lblSignature.W;; hEditor.W
   
   If $bShowHelp Then
-    MHelp.InitWebViewWith(webHelp, MHelp.TYPE_SYMBOL, hSymbol.Name, hSymbol.Class)
+    MHelp.InitWebViewWith(webHelp, MHelp.TYPE_SYMBOL, hSymbol.Name, hSymbol.Class, "noimage")
     sepHelp.Show
     webHelp.Show
     panRight.Show

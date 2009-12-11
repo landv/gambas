@@ -36,6 +36,7 @@ Private $bGet As Boolean
 Private $bOnlineHelp As Boolean
 Private $bNoTitle As Boolean
 Private $bNoImage As Boolean
+Private $bNoCache As Boolean
 
 Private $bNew As Boolean
 
@@ -138,6 +139,13 @@ End
 Private Sub DeleteTempFile()
   
   Shell "rm -rf " & File.Dir(Temp$()) & " > /dev/null 2>&1" Wait
+  
+End
+
+Private Sub AddRedirect(sSrc As String, sDest As String)
+  
+  If Not $cCompRedirect Then $cCompRedirect = New Collection
+  $cCompRedirect[sSrc] = sDest
   
 End
 
@@ -328,6 +336,8 @@ Private Sub OpenDatabase()
         $bNoTitle = True
       Else If sQuery = "noimage" Then
         $bNoImage = True
+      Else If sQuery = "nocache" Then
+        $bNoCache = True
       Endif
       
     Next
@@ -510,16 +520,16 @@ Private Function GetLink(sPath As String, Optional sMyTitle As String, Optional 
     Endif
 
     sTitle = GetTitle(sPath)
-    If Not sTitle Then
-      If sPath Like "/comp/gb.qt4*/*/*" Then
-        sPath2 = Replace(sPath, "/gb.qt4", "/gb.qt")
-        sTitle2 = GetTitle(sPath2)
-        If sTitle2 Then 
-          sPath = sPath2
-          sTitle = sTitle2
-        Endif
-      Endif
-    Endif
+    ' If Not sTitle Then
+    '   If sPath Like "/comp/gb.qt4*/*/*" Then
+    '     sPath2 = Replace(sPath, "/gb.qt4", "/gb.qt")
+    '     sTitle2 = GetTitle(sPath2)
+    '     If sTitle2 Then 
+    '       sPath = sPath2
+    '       sTitle = sTitle2
+    '     Endif
+    '   Endif
+    ' Endif
 
     If sMyTitle <> ("Cancel") Then 
     Else
@@ -555,7 +565,7 @@ Private Function GetLink(sPath As String, Optional sMyTitle As String, Optional 
         If sMyTitle Then
           Return "<i>" & EncodeHTML(sMyTitle) & "</i>"
         Else
-          Return "<i>" & EncodeHTML(sPath) & "</i>"
+          Return "<i>" & EncodeHTML(sRelPath) & "</i>"
         Endif
         
       Else
@@ -997,10 +1007,7 @@ Private Function Encode(sText As String) As String
 
           Case "redirect"
             iPos = InStr(sArg, " ")
-            If iPos Then
-              If Not $cCompRedirect Then $cCompRedirect = New Collection
-              $cCompRedirect[Trim(Left(sArg, iPos - 1))] = Trim(Mid$(sArg, iPos + 1))
-            Endif
+            If iPos Then AddRedirect(Trim(Left(sArg, iPos - 1)), Trim(Mid$(sArg, iPos + 1)))
             Continue             
 
           ' @index /path prefix
@@ -1517,11 +1524,17 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
   Print "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">"
   Print "<link rel=\"stylesheet\" href=\"/style.css\">"
   If $bNoTitle Then
-  Print "<style>"
-  Print "<!--"
-  Print "  .title { display: none; }"
-  Print "-->"
-  Print "</style>"
+    Print "<style>"
+    Print "<!--"
+    Print "  .title { display: none; }"
+    Print "-->"
+    Print "</style>"
+  Else If $bOnlineHelp Then
+    Print "<style>"
+    Print "<!--"
+    Print "  .title { font-size: large; letter-spacing: 1px; }"
+    Print "-->"
+    Print "</style>"
   Endif
   MakeTitle(sTitle)
   Print "</head>"
@@ -1863,6 +1876,7 @@ End
 Private Function GetTitle(sPath As String) As String
 
   Dim rPage As Result
+  Dim sNewPath As String
 
   rPage = FindPage(sPath)
   If rPage.Available Then
@@ -1871,6 +1885,8 @@ Private Function GetTitle(sPath As String) As String
     'ELSE
       Return rPage!sTitle
   Else
+    sNewPath = SubstitutePath(sPath)
+    If sNewPath <> sPath Then Return GetTitle(sNewPath)
     'Print "<pre>GetTitle: " & $sPath & " " & sPath & " ?</pre>"
     'ENDIF
   Endif
@@ -1941,6 +1957,28 @@ Private Sub DisplayImage()
 
 End
 
+Private Function SubstitutePath(sPath As String) As String
+  
+  If $bOnlineHelp Then 
+    
+    If sPath Like "/comp/gb.qt4*" Then
+      If sPath = $sPath Then AddRedirect("/comp/gb.qt", "/comp/gb.qt4")
+      sPath = Replace(sPath, "/comp/gb.qt4", "/comp/gb.qt")
+    Else If sPath Like "/comp/gb.gtk*" Then
+      If sPath = $sPath Then AddRedirect("/comp/gb.qt4", "/comp/gb.gtk")
+      sPath = Replace(sPath, "/comp/gb.gtk", "/comp/gb.qt4")
+    Else If $sPath Like "/comp/gb.gui*" Then
+      If sPath = $sPath Then AddRedirect("/comp/gb.qt4", "/comp/gb.gui")
+      sPath = Replace(sPath, "/comp/gb.gui", "/comp/gb.qt4")
+    Endif
+    
+  Endif
+  
+  Return sPath
+  
+End
+
+
 Private Sub DisplayPage()
 
   Dim rPage As Result
@@ -1984,6 +2022,16 @@ Private Sub DisplayPage()
   Endif
 
   If Not rPage.Available Then
+  
+    'If HandleUnavailablePage($sPath) Then
+    sPath = SubstitutePath($sPath)
+    If sPath <> $sPath Then
+      $sPath = sPath
+      $bNoCache = True
+      DisplayPage
+      Return
+    Endif
+  
     MakeHeader()
     If $bComment Then
       Print "<h3>" & ("There is no comment on this page yet.") & "</h3>"
@@ -2015,12 +2063,13 @@ Private Sub DisplayPage()
       Endif
     Endif
 
-    If rPage!sHTML Then
-      Print rPage!sHTML
-    Else
+    If $bNoCache Or IsNull(rPage!sHTML) Then
       If Not sPage Then sPage = MakePageWithoutHeader(rPage)
       Print sPage
+    Else
+      Print rPage!sHTML
     Endif
+    
     
   Endif
 
@@ -3002,7 +3051,7 @@ Private Sub HistoryPage()
   sBefore = Temp$()
   sNext = Temp$()
 
-  iWidth = 80
+  iWidth = 120
 
   rPage = DB.Find("archive", "sPath = &1 AND sLang = &2 ORDER BY dDate DESC", $sPath, $sLang)
   If Not rPage.Available Then rPage = DB.Find("page", "sPath = &1 AND sLang = &2", $sPath, $sLang)
@@ -3728,7 +3777,12 @@ Private Function GetSymbolLink(hSym As CSymbolInfo, hClass As CClassInfo, Option
   Dim sRes As String
   Dim sComp As String
   
-  If $cCompRedirect Then sComp = $cCompRedirect[hSym.Component]
+  If $cCompRedirect Then 
+    sComp = hSym.Component
+    While $cCompRedirect.Exist(sComp)
+      sComp = $cCompRedirect[sComp]
+    Wend
+  Endif
   If Not sComp Then sComp = hSym.Component
 
   'If hSym.Class <> hClass.Name Then sRes &= "<font color=\"#808080\">"
