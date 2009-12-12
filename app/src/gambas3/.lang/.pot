@@ -10,12 +10,32 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: .project:1
-msgid "Gambas 3"
+#: CComponentBox.class:92
+msgid "Experimental"
 msgstr ""
 
-#: .project:2
-msgid "Integrated Development Environment for Gambas"
+#: CComponentBox.class:94 FPropertyProject.class:1883
+msgid "Not finished but stable"
+msgstr ""
+
+#: CComponentBox.class:200 ProjectItem.class:70
+msgid "Authors"
+msgstr ""
+
+#: CComponentBox.class:207 FPropertyProject.class:2082
+msgid "Requires"
+msgstr ""
+
+#: CComponentBox.class:209
+msgid "Excludes"
+msgstr ""
+
+#: CComponentBox.class:215
+msgid "Implements"
+msgstr ""
+
+#: CComponentBox.class:228 FPropertyProject.class:2057
+msgid "Provides"
 msgstr ""
 
 #: CComponent.class:66
@@ -270,34 +290,6 @@ msgstr ""
 msgid "Loading information on component &1..."
 msgstr ""
 
-#: CComponentBox.class:92
-msgid "Experimental"
-msgstr ""
-
-#: CComponentBox.class:94 FPropertyProject.class:1883
-msgid "Not finished but stable"
-msgstr ""
-
-#: CComponentBox.class:200 ProjectItem.class:70
-msgid "Authors"
-msgstr ""
-
-#: CComponentBox.class:207 FPropertyProject.class:2082
-msgid "Requires"
-msgstr ""
-
-#: CComponentBox.class:209
-msgid "Excludes"
-msgstr ""
-
-#: CComponentBox.class:215
-msgid "Implements"
-msgstr ""
-
-#: CComponentBox.class:228 FPropertyProject.class:2057
-msgid "Provides"
-msgstr ""
-
 #: CModule.class:28 FCreateFile.class:625 FEditor.class:3351 FForm.class:3540
 #: FInfo.class:88
 msgid "Form"
@@ -442,7 +434,7 @@ msgstr ""
 
 #: FColorChooser.class:203 FCommit.class:397 FConflict.class:191
 #: FConnectionEditor.class:261 FCreateFile.class:885 FDebugInfo.class:491
-#: FEditor.class:2098 FFind.class:114 FFindList.class:195
+#: FEditor.class:2098 FFindList.class:195 FFind.class:114
 #: FFontChooser.class:86 FForm.class:2831 FGotoLine.class:63
 #: FHelpBrowser.class:186 FIconEditor.class:1393 FImportTable.class:38
 #: FList.class:155 FMain.class:204 FMakeExecutable.class:144
@@ -450,7 +442,7 @@ msgstr ""
 #: FNewTable.class:168 FNewTranslation.class:70 FOpenProject.class:146
 #: FOption.class:576 FPasteSpecial.class:279 FPropertyProject.class:1236
 #: FSave.class:118 FSelectExtraFile.class:78 FSelectIcon.class:271
-#: FTableChooser.class:145 FText.class:107 FTextEditor.class:462
+#: FTableChooser.class:145 FTextEditor.class:462 FText.class:107
 #: FTranslate.class:606 Project.module:346
 msgid "Cancel"
 msgstr ""
@@ -1334,16 +1326,24 @@ msgstr ""
 msgid "Procedure list"
 msgstr ""
 
+#: FFindList.class:75
+msgid "Column"
+msgstr ""
+
+#: FFindList.class:238
+msgid "Find list"
+msgstr ""
+
+#: FFindList.class:273 FFind.class:395 FOutput.class:309 FTranslate.class:567
+msgid "Search string cannot be found."
+msgstr ""
+
 #: FFind.class:114
 msgid "Are you sure to want to replace all?"
 msgstr ""
 
 #: FFind.class:114
 msgid "Replace"
-msgstr ""
-
-#: FFind.class:395 FFindList.class:273 FOutput.class:309 FTranslate.class:567
-msgid "Search string cannot be found."
 msgstr ""
 
 #: FFind.class:397
@@ -1400,14 +1400,6 @@ msgstr ""
 
 #: FFind.class:826
 msgid "Search in strings"
-msgstr ""
-
-#: FFindList.class:75
-msgid "Column"
-msgstr ""
-
-#: FFindList.class:238
-msgid "Find list"
 msgstr ""
 
 #: FFontChooser.class:57
@@ -3494,16 +3486,16 @@ msgstr ""
 msgid "Connection"
 msgstr ""
 
+#: FTextEditor.class:764
+msgid "Text editor"
+msgstr ""
+
 #: FText.class:77
 msgid "Edit text property"
 msgstr ""
 
 #: FText.class:96
 msgid "Use a fixed font"
-msgstr ""
-
-#: FTextEditor.class:764
-msgid "Text editor"
 msgstr ""
 
 #: FTips.class:47
@@ -4814,6 +4806,18 @@ msgstr ""
 msgid "'tar' has returned the following error code:"
 msgstr ""
 
+#: ProjectItem.class:70
+msgid "Author"
+msgstr ""
+
+#: .project:1
+msgid "Gambas 3"
+msgstr ""
+
+#: .project:2
+msgid "Integrated Development Environment for Gambas"
+msgstr ""
+
 #: Project.module:145
 msgid "Automation"
 msgstr ""
@@ -5117,10 +5121,6 @@ msgstr ""
 
 #: Project.module:4619
 msgid "Unable to update all forms."
-msgstr ""
-
-#: ProjectItem.class:70
-msgid "Author"
 msgstr ""
 
 #: Save.module:38
