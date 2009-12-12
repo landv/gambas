@@ -2969,7 +2969,7 @@ Public Sub RenameControl(sOld As String, sNew As String)
   Dim sCar As String
   
   Editor.Begin
-  
+
   For iLine = 0 To Editor.Lines.Count - 1
     sLine = Editor.Lines[iLine].Text
     sComp = Highlight.Purge(sLine)

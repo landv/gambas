@@ -415,26 +415,30 @@ Public Sub ShowWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
 End
 
 
+''Return the formated help of the local class if it exist
 Public Function GetProjectClassHelpHTML(sClass As String) As String
   
-  Dim sResult, sHTML As String
+  Dim sHelp, sHTML, sLine As String
   Dim hForm As FEditor
   Dim hedit As Editor
-  'recuprerer l'aide
+  Dim i As Integer
+  'Getting help
   hForm = Project.LoadFile(Project.FindPath(sClass))
   Try hEdit = hForm.Editor
   If Not hEdit Then Return  
   
-  'demain j'inplante la suite
-  sResult = hedit.Lines[0].Text
+  For i = 0 To hedit.Lines.Count - 1
+    sLine = Trim(hedit.Lines[i].Text)
+    If sLine Begins "''" Then
+      sHelp &= Trim(Mid(sLine, 3)) & "<br>"
+    Else
+      If sLine Begins "'" Or sline = "" Then Continue
+      Break
+    Endif
+  Next
   
-  sHTML = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" & 
-          "<link rel=\"stylesheet\" href=\"" & File.Dir(MHelp.GetURL()) & "/style.css\"></head><body class=\"none\">"
-  sHTML &= "<div class\"frame\">"
-  sHTML &= "<div class=\"title\">" & sClass & "</div>"
-  sHTML &= "<pre class=\"syntax\">"
-  sHTML &= "</pre><p>"
-  sHTML &= sResult
-  sHTML &= "</div></body></html>"
+  sHTML = File.Load("help/class-help.html")
+  sHTML = Replace(sHtml, "$(class)", sClass)
+  sHTML = Replace(sHtml, "$(help)", sHelp)
   Return sHTML
 End

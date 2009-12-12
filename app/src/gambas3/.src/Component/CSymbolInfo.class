@@ -723,8 +723,9 @@ Public Function GetHelpHTML() As String
   i = Highlight.Symbols.Max
   If i >= 1 Then
     If Highlight.Types[i] = Highlight.Comment Then
-      If Highlight.Symbols[i] Begins "''" Then
-        sHelp = Trim(Mid$(Highlight.Symbols[i], 3))
+      sLine = Trim(Highlight.Symbols[i])
+      If sLine Begins "''" Then
+        sHelp = Trim(Mid$(sline, 3))
       Endif
     Endif
   Endif
