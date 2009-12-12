@@ -52,11 +52,11 @@ Component=gb.gtk.ext
 Component=gb.form
   @ENDIF
   @IF QT
-Component=gb.qt
-Component=gb.qt.ext
+Component=gb.qt4
+Component=gb.qt4.ext
 Component=gb.form
     @IF OPENGL
-Component=gb.qt.opengl
+Component=gb.qt4.opengl
     @ENDIF
   @ENDIF
   @IF GUI
