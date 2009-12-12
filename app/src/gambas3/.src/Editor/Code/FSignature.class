@@ -8,6 +8,8 @@ Private $DY As Integer
 Private $iMinW As Integer
 Private $iMinH As Integer
 Private $iMaxY As Integer
+Private $sLastUrl As String
+
 
 Public Sub Open(hForm As FEditor, iX As Integer, hSymbol As CSymbolInfo, iArg As Integer, Optional bDoNotUseKey As Boolean)
   
@@ -174,9 +176,23 @@ Public Sub VisibleFrom(hEditor As Editor) As Boolean
   
 End
 
-
 Public Sub webHelp_GotFocus()
 
   $hEditor.SetFocus
+
+End
+
+Public Sub webHelp_Link(Url As String)
+
+  $sLastUrl = Url
+
+End
+
+Public Sub webHelp_Error()
+
+  If $sLastUrl Begins "gambas://" Then 
+    webHelp.Stop
+    MHelp.ManageSpecialLink($sLastUrl)
+  Endif
 
 End

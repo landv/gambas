@@ -418,10 +418,11 @@ End
 ''Return the formated help of the local class if it exist
 Public Function GetProjectClassHelpHTML(sClass As String) As String
   
-  Dim sHelp, sHTML, sLine As String
+  Dim sHelp, sHTML, sLine, sWhere As String
   Dim hForm As FEditor
   Dim hedit As Editor
   Dim i As Integer
+  
   'Getting help
   hForm = Project.LoadFile(Project.FindPath(sClass))
   Try hEdit = hForm.Editor
@@ -437,8 +438,29 @@ Public Function GetProjectClassHelpHTML(sClass As String) As String
     Endif
   Next
   
+  sWhere = "gambas://project/" & sClass
+  
   sHTML = File.Load("help/class-help.html")
   sHTML = Replace(sHtml, "$(class)", sClass)
   sHTML = Replace(sHtml, "$(help)", sHelp)
+  sHTML = Replace(sHtml, "$(where)", sWhere)
+  
+  
   Return sHTML
+End
+
+Public Sub ManageSpecialLink(sUrl As String)
+  
+  Dim sClass As String
+  Dim iLine As Integer
+  sClass = File.BaseName(surl)
+  
+  If InStr(sClass, "#") Then
+    iLine = Split(sClass, "#")[1]
+    sClass = Split(sClass, "#")[0]
+   
+  Endif
+  
+  Project.OpenFile(Project.FindPath(sClass), iLine)
+  
 End

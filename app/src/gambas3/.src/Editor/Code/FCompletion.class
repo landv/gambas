@@ -12,6 +12,7 @@ Private $bUserChoice As Boolean
 Private $iMaxLen As Integer
 Private $sClass As String
 Private $bShowHelp As Boolean
+Private $sLastUrl As String
 
 Private $DX As Integer
 Private $DY As Integer
@@ -796,3 +797,18 @@ Public Sub VisibleFrom(hEditor As Editor) As Boolean
   
 End
 
+
+Public Sub webHelp_Link(Url As String)
+
+  $sLastUrl = Url
+
+End
+
+Public Sub webHelp_Error()
+
+  If $sLastUrl Begins "gambas://" Then 
+    webHelp.Stop
+    MHelp.ManageSpecialLink($sLastUrl)
+  Endif
+
+End

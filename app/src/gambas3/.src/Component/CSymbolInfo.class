@@ -709,6 +709,7 @@ Public Function GetHelpHTML() As String
   Dim iLine, i As Integer
   Dim sSyntax As String
   Dim sLine As String
+  Dim sWhere As String
   
   If Component Then Return
   
@@ -776,8 +777,14 @@ Public Function GetHelpHTML() As String
     End Select
   Next
   
+  
+  sWhere = "gambas://project/" & {Class} & "#" & Me.LineNumber
+  
   sHTML = Replace(sHTML, "$(syntax)", sSyntax)
   sHTML = Replace(sHTML, "$(help)", sHelp)
+  sHTML = Replace(sHTML, "$(where)", sWhere)
+  
+  
   
   Return sHTML
 
