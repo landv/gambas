@@ -2207,62 +2207,65 @@ Private Sub FindDefinition(bPopupHelp As Boolean, Optional iX As Integer, Option
   
   'IF IsCurrentProc() THEN RETURN
 
-  iCpt = Highlight.Types.Count - 1
+  iCpt = Highlight.Types.Max
+  sKeyword = ""
 
   If iCpt >= 0 Then
+    sKeyword = Highlight.Symbols[iCpt]
+    
     If IsKeyword(iCpt) Then
 
-      sKeyword = Highlight.Symbols[iCpt]
-      If iCpt > 0 Then
-        Dec iCpt
-        If IsKeyword(iCpt) Then
-          sKeyword2 = Highlight.Symbols[iCpt] & sKeyword
-        Endif
-      Endif
-
-      'If bPopupHelp Then
-        'FHelp.ShowKeywordHelp(Editor, sKeyword, sKeyword2, iX, iY)
-      'Else
-        MHelp.GotoKeyword(sKeyword, sKeyword2)
+      ' If iCpt > 0 Then
+      '   Dec iCpt
+      '   If IsKeyword(iCpt) Then
+      '     sKeyword2 = Highlight.Symbols[iCpt] & sKeyword
+      '   Endif
+      ' Endif
+      ' 
+      ' If sKeyword2 Then
+      '   MHelp.ShowWebViewWith(Null, MHelp.TYPE_KEYWORD, sKeyword2)
+      '   If FHelpBrowser.Error Then 
+      '     MHelp.ShowWebViewWith(Null, MHelp.TYPE_KEYWORD, sKeyword)
+      '   Endif
+      ' Else
+      MHelp.ShowWebViewWith(Null, MHelp.TYPE_KEYWORD, sKeyword)
       'Endif
       Return
 
     Else If Highlight.Types[iCpt] = Highlight.DataType Then 
-      sKeyword = Highlight.Symbols[iCpt]
-      'If bPopupHelp Then
-      '  If FHelp.ShowDatatypeHelp(Editor, sKeyword, ix, iy) Then
-      '    hClass = CComponent.Classes[sKeyword]
-      '    If hClass Then 
-      '      FHelp.ShowClassHelp(Editor, hClass.Component, hClass.Name, iX, iY)
-      '    Endif 
-      '  Endif
-      'Else
-        If MHelp.GotoDataType(sKeyword) Then
-          hClass = CComponent.Classes[sKeyword]
-          If hClass Then 
-            MHelp.GotoClass(hClass.Component, hClass.Name)
-          Endif 
-        Endif
-      'Endif
+    
+      If System.Datatypes.Exist(sKeyword, gb.IgnoreCase) Then
+        MHelp.ShowWebViewWith(Null, MHelp.TYPE_NATIVE, sKeyword)
+      Else
+        hClass = CComponent.Classes[sKeyword]
+        If hClass Then 
+          'MHelp.GotoClass(hClass.Component, hClass.Name)
+          MHelp.ShowWebViewWith(Null, MHelp.TYPE_CLASS, hClass.Name)
+        Endif 
+      Endif
       Return
+      
     Endif
   Endif
 
   'Editor.Analyze(Left$(sLig, iCol - 1))
   hSymbol = GetExpressionSymbol(Highlight.Symbols, Highlight.Types)
-  If Not hSymbol Then Return
+  If Not hSymbol Then 
+    If sKeyword Then
+      If CComponent.Classes.Exist(sKeyword) Then
+        MHelp.ShowWebViewWith(Null, MHelp.TYPE_CLASS, sKeyword)
+      Endif
+    Endif
+    Return
+  Endif
 
   'PRINT hSymbol.Class
 
   If hSymbol.LineNumber Then 'And If Not bPopupHelp Then
     Project.SavePosition()
     Project.OpenFile(hSymbol.Class, hSymbol.LineNumber)
-  'Else
-  '  If bPopupHelp Then
-  '    FHelp.ShowSymbolHelp(Editor, hSymbol, iX, iY)
-    Else
-      MHelp.GotoSymbol(hSymbol)
-  '  Endif
+  Else
+    MHelp.ShowWebViewWith(Null, MHelp.TYPE_SYMBOL, hSymbol.Name, hSymbol.Class)
   Endif
 
 End
@@ -2368,7 +2371,7 @@ Public Sub Editors_MouseUp()
   Endif
   
   If Not Project.Running Then
-    FindDefinition(True, Mouse.X, Mouse.Y)
+    'FindDefinition(True, Mouse.X, Mouse.Y)
     Return 
   Endif
   
@@ -2954,6 +2957,8 @@ Public Sub gvwProc_KeyPress()
 
 End
 
+'' Update a control name and its event handler in the source code when it is renamed
+
 Public Sub RenameControl(sOld As String, sNew As String)
 
   Dim iLine As Integer
@@ -2962,7 +2967,7 @@ Public Sub RenameControl(sOld As String, sNew As String)
   Dim bChange As Boolean
   Dim iPos, iPos2 As Integer
   Dim sCar As String
-    
+  
   Editor.Begin
   
   For iLine = 0 To Editor.Lines.Count - 1

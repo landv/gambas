@@ -383,13 +383,12 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
     Else If Project.GetClasses().Exist(sSymbol) Then
       sHtml = GetProjectClassHelpHTML(sSymbol)
     Endif
+    
   Else If iType = TYPE_SPECIAL Then
       
     sUrl = MHelp.GetSpecialURL(sSymbol)
     
   Endif
-  
-  
   
   If sUrl Then
     If sMore Then sUrl &= "&" & sMore
@@ -406,6 +405,13 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
   Endif
   hWebView.TextZoom = 0.8
     
+End
+
+Public Sub ShowWebViewWith(hWebView As WebView, iType As Integer, sSymbol As String, Optional sClass As String, Optional sMore As String)
+  
+  FHelpBrowser.Show
+  InitWebViewWith(hWebView, iType, sSymbol, sClass, sMore)
+  
 End
 
 

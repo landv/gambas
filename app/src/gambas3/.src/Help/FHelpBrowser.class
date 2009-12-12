@@ -1,5 +1,9 @@
 ' Gambas class file
 
+Property Read {Error} As Boolean
+
+Private $bError As Boolean
+
 Public Sub Form_Open()
 
   Settings.Read(Me)
@@ -78,5 +82,38 @@ Public Sub btnWebSite_Click()
 
   webHelp.Url = "http://gambas.sourceforge.net"
   webHelp.TextZoom = 0.8
+
+End
+
+Public Sub webHelp_Error()
+
+  $bError = True
+  btnModify.Enabled = False
+
+End
+
+Public Sub webHelp_Load()
+
+  $bError = False
+  btnModify.Enabled = webHelp.Url Begins "http://gambasdoc.org"
+
+End
+
+Private Function Error_Read() As Boolean
+
+  Return $bError
+
+End
+
+Public Sub btnModify_Click()
+
+  Dim sUrl As String
+  
+  sUrl = webHelp.Url
+  If Not (sUrl Begins "http://gambasdoc.org") Then Return
+  
+  sUrl = Replace(sUrl, "http://gambasdoc.org/help/", "http://gambasdoc.org/edit/")
+  
+  Project.OpenWebPage(sUrl)
 
 End

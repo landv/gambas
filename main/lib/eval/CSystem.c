@@ -28,6 +28,7 @@
 #include "CSystem.h"
 
 static GB_ARRAY _keywords = 0;
+static GB_ARRAY _datatypes = 0;
 
 BEGIN_PROPERTY(CSYSTEM_keywords)
 
@@ -61,9 +62,35 @@ BEGIN_PROPERTY(CSYSTEM_keywords)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(CSYSTEM_datatypes)
+
+	COMP_INFO *info;
+	char *str;
+
+	if (!_datatypes)
+	{
+	  GB.Array.New(&_datatypes, GB_T_STRING, 0);
+
+	  for (info = &COMP_res_info[1]; info->name; info++)
+	  {
+	  	if (info->flag & RSF_TYPE)
+	  	{
+      	GB.NewString(&str, info->name, 0);
+      	*((char **)GB.Array.Add(_datatypes)) = str;
+			}
+		}
+
+		GB.Ref(_datatypes);
+	}
+
+	GB.ReturnObject(_datatypes);
+
+END_PROPERTY
+
 BEGIN_METHOD_VOID(CSYSTEM_exit)
 
 	GB.Unref((void **)&_keywords);
+	GB.Unref((void **)&_datatypes);
 
 END_METHOD
 
@@ -75,6 +102,7 @@ GB_DESC CSystemDesc[] =
 	GB_STATIC_METHOD("_exit", NULL, CSYSTEM_exit, NULL),
 
   GB_STATIC_PROPERTY_READ("Keywords", "String[]", CSYSTEM_keywords),
+  GB_STATIC_PROPERTY_READ("Datatypes", "String[]", CSYSTEM_datatypes),
 
   GB_END_DECLARE
 };

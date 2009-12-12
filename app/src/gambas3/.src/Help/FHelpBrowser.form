@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,50,27)
+  MoveScaled(0,0,73,27)
   Action = "help"
   Text = ("Help browser")
   Icon = Picture["icon:/small/help"]
@@ -10,7 +10,7 @@
   SkipTaskbar = True
   Arrangement = Arrange.Vertical
   { panToolbar HBox
-    MoveScaled(0,0,44,4)
+    MoveScaled(0,0,70,4)
     { btnHome ToolButton
       MoveScaled(0,0,4,4)
       ToolTip = ("Index")
@@ -68,6 +68,15 @@
       Text = ("")
       Picture = Picture["icon:/small/zoom-normal"]
     }
+    { Separator2 Separator
+      MoveScaled(41,0,1,4)
+    }
+    { btnModify ToolButton
+      MoveScaled(42,0,25,4)
+      AutoResize = True
+      Text = ("Modify documentation...")
+      Picture = Picture["icon:/small/edit"]
+    }
   }
   { sepToolbar Separator
     MoveScaled(12,5,20,0)
@@ -76,7 +85,6 @@
     MoveScaled(6,6,29,15)
     #Public = True
     Expand = True
-    Url = "http://gambas.sourceforge.net"
     Cached = True
   }
 }

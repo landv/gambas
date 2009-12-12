@@ -507,30 +507,38 @@ End
 Public Function GetDescription(Optional bBalise As Boolean) As String
 
   Dim bStatic As Boolean
+  Dim sAccess As String
+  Dim sStatic As String
   Dim sDesc As String
   Dim sSign As String
 
   bStatic = UCase(Kind) = Kind
+  sStatic = If(bStatic, "Static ", "")
+  sAccess = If(NotPublic, "Private ", "Public ")
 
   Select LCase(Kind)
   
     Case "r"
-      sDesc = If(bStatic, "STATIC ", "") & "PROPERTY READ"
+      sDesc = sStatic & "Property Read"
     Case "p"
-      sDesc = If(bStatic, "STATIC ", "") & "PROPERTY"
+      sDesc = sStatic & "Property"
     'CASE "v"
     '  sIcon = "img/16" &/ If(bStatic, "s-variable.png", "variable.png")
     Case "c"
-      sDesc = "CONST"
+      sDesc = sAccess & "Const"
     Case ":"
-      sDesc = "EVENT"
+      sDesc = "Event"
     'CASE "t"
     '  sIcon = "img/16/control.png"
     Case "m"
-      sDesc = If(bStatic, "STATIC ", "") & If(Type, "FUNCTION", "SUB")
+      sDesc = sStatic & sAccess & " " & If(Type, "Function", "Sub")
+    Case "v"
+      sDesc = sStatic & sAccess
 
   End Select  
   
+  If Settings["/Editor/KeywordsUseUpperCase"] Then sDesc = UCase(sDesc)
+
   If Kind = ":" Then
     sDesc &= " " & Mid$(Name, 2) & " "
   Else
@@ -545,7 +553,7 @@ Public Function GetDescription(Optional bBalise As Boolean) As String
       sDesc &= "(...)"
     Endif
   Else
-    If Type Then sDesc &= " AS " & GetType(Type, bBalise)
+    If Type Then sDesc &= " " & If(Settings["/Editor/KeywordsUseUpperCase"], "AS", "As") & " " & GetType(Type, bBalise)
   Endif
   
   Return sDesc
@@ -566,7 +574,7 @@ Static Private Function GetType(sType As String, Optional bBalise As Boolean) As
   Endif
 
   If bBalise Then
-    Return "<B>" & sType & "</B>"
+    Return "<b>" & sType & "</b>"
   Else
     Return sType
   Endif
@@ -697,66 +705,80 @@ Public Function GetHelpHTML() As String
   
   Dim hForm As Object
   Dim hEdit As Editor
-  Dim sHTML, s As String
+  Dim sHTML, sHelp As String
   Dim iLine, i As Integer
   Dim sSyntax As String
+  Dim sLine As String
+  
+  If Component Then Return
   
   hForm = Project.LoadFile(Project.FindPath(Me.Class))
   Try hEdit = hForm.Editor
   If Not hEdit Then Return  
   iLine = Me.LineNumber - 1
   
-  'Essais de trouver de l'aide sur la même ligne que la declaration
+  ' Try to find help on the line of the declaration
+  
+  Highlight.Analyze(hEdit.Lines[iLine].Text)
+  i = Highlight.Symbols.Max
+  If i >= 1 Then
+    If Highlight.Types[i] = Highlight.Comment Then
+      If Highlight.Symbols[i] Begins "''" Then
+        sHelp = Trim(Mid$(Highlight.Symbols[i], 3))
+      Endif
+    Endif
+  Endif
 
-  If InStr(hEdit.Lines[iLine].Text, "''", 0) Then 
-    s = Trim(Mid(hEdit.Lines[iLine].Text, InStr(hEdit.Lines[iLine].Text, "''", 0) + 2))
+  ' Find help just above
+  
+  If Not sHelp Then
+  
+    For i = iLine - 1 To 0 Step -1
+      sLine = Trim(hEdit.Lines[i].Text)
+      If sLine Begins "''" Then 
+        sHelp = Trim(Mid(sLine, 3)) & "<br>" & sHelp
+      Else
+        If Trim(sLine) = "" Then Continue
+        Break
+      Endif
+    Next
+    
   Endif
   
-  'trouve l'aide au dessus
-  For i = iLine - 1 To 0 Step -1
-    If Left(Trim(hEdit.Lines[i].Text), 2) = "''" Then 
-      s = Trim(Mid(hEdit.Lines[i].Text, 3)) & "<BR>" & s
-    Else
-      If Trim(hEdit.Lines[i].Text) = "" Then Continue
-      Break
-    Endif
-  Next
-  If Not s Then s = ("No help found.")
+  'If Not s Then s = ("No help found.")
   
-  sHTML = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" & 
-            "<link rel=\"stylesheet\" href=\"" & File.Dir(MHelp.GetURL()) & "/style.css\"></head><body class=\"none\">"
-  sHTML &= "<div class\"frame\">"
-  sHTML &= "<div class=\"title\">" & Me.Name & "</div>"
-  sHTML &= "<pre class=\"syntax\">"
- 
-  If Me.IsStatic() Then sHTML &= "<font color=\"blue\">STATIC </font>"
+  sHTML = File.Load("help/symbol-help.html")
+  sHTML = Replace(sHTML, "$(hide-title)", "")
+  sHTML = Replace(sHTML, "$(class)", {Class})
+  sHTML = Replace(sHTML, "$(name)", Name)
+  
+  'If Me.IsStatic() Then sHTML &= "<font color=\"blue\">STATIC </font>"
 
   sSyntax &= Me.GetDescription(False)
   sSyntax = Replace(Replace(sSyntax, "</b>", ""), "<b>", "")
   
   Highlight.Analyze(sSyntax)
+  sSyntax = ""
   
   For i = 0 To Highlight.Symbols.Max
     Select Case Highlight.Types[i]
       Case Highlight.Symbol
-        shtml &= "<b>" & Highlight.Symbols[i] & " </b>"
+        sSyntax &= "<b>" & Highlight.Symbols[i] & " </b>"
       Case Highlight.Operator
-        shtml &= "<font color=\"blue\">" & Highlight.Symbols[i] & " </font>"
+        sSyntax &= "<font color=\"blue\">" & Highlight.Symbols[i] & " </font>"
       Case Highlight.DataType
-        shtml &= "<font color=\"#0080FF\">" & Highlight.Symbols[i] & " </font>"
+        sSyntax &= "<font color=\"#0080FF\">" & Highlight.Symbols[i] & " </font>"
       Case Highlight.Keyword
-        shtml &= "<font color=\"blue\">" & Highlight.Symbols[i] & " </font>"
+        sSyntax &= "<font color=\"blue\">" & Highlight.Symbols[i] & " </font>"
       Case Else
-        shtml &= Highlight.Symbols[i]
+        sSyntax &= Highlight.Symbols[i]
     End Select
   Next
   
-  sHTML &= "</pre><p>"
-  sHTML &= s 
-  sHTML &= "</div></body></html>"
+  sHTML = Replace(sHTML, "$(syntax)", sSyntax)
+  sHTML = Replace(sHTML, "$(help)", sHelp)
   
   Return sHTML
-  
 
 End
 
