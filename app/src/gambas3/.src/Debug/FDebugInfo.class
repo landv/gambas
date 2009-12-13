@@ -732,11 +732,12 @@ Public Sub UpdateView()
   tabDebug[TAB_ME].Visible = Project.Running
   tabDebug[TAB_WATCH].Visible = Project.Running
   tabDebug[TAB_BREAK].Visible = True 'Project.Running
-
+  
   If panStack.Visible <> Project.Running Then
     If Project.Running Then
       panStack.Visible = True
-      Settings.Read(splDebug,, "4,1")
+      Settings.Read(splDebug,, [500, 100])
+      
     Else 
       Settings.Write(splDebug)
       panStack.Visible = False

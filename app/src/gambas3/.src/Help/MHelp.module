@@ -449,6 +449,7 @@ Public Function GetProjectClassHelpHTML(sClass As String) As String
   Return sHTML
 End
 
+''Manage the gambas:// links
 Public Sub ManageSpecialLink(sUrl As String)
   
   Dim sClass As String
