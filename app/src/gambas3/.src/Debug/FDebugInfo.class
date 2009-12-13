@@ -51,19 +51,18 @@ Public Sub _new()
     .Columns[2].Text = ("Line")
   End With
   
+  ReadConfig
   
 End
 
 
 Public Sub Form_Open()
 
-  ReadConfig
 
   FOutput.Load(panConsole)
   UpdateView
   
-  
-  
+
 End
 
 Private Sub ClearView(hView As TableView)
@@ -524,6 +523,7 @@ Public Sub ReadConfig()
 
   Dim hButton As ToolButton
 
+  Settings.Read(splDebug,, [4, 1])
   tabDebug.Font.Grade = - Settings["/TabStripFont", 0]
   tbvLocal.Font.Grade = - Settings["/GlobalFont", 0]
   tbvObject.Font = tbvLocal.Font
@@ -736,8 +736,7 @@ Public Sub UpdateView()
   If panStack.Visible <> Project.Running Then
     If Project.Running Then
       panStack.Visible = True
-      Settings.Read(splDebug,, [500, 100])
-      
+      Settings.Read(splDebug,, [4, 1])
     Else 
       Settings.Write(splDebug)
       panStack.Visible = False
