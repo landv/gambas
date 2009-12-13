@@ -10,12 +10,32 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: .project:1
-msgid "Gambas 3"
+#: CComponentBox.class:92
+msgid "Experimental"
 msgstr ""
 
-#: .project:2
-msgid "Integrated Development Environment for Gambas"
+#: CComponentBox.class:94 FPropertyProject.class:1883
+msgid "Not finished but stable"
+msgstr ""
+
+#: CComponentBox.class:200 ProjectItem.class:70
+msgid "Authors"
+msgstr ""
+
+#: CComponentBox.class:207 FPropertyProject.class:2082
+msgid "Requires"
+msgstr ""
+
+#: CComponentBox.class:209
+msgid "Excludes"
+msgstr ""
+
+#: CComponentBox.class:215
+msgid "Implements"
+msgstr ""
+
+#: CComponentBox.class:228 FPropertyProject.class:2057
+msgid "Provides"
 msgstr ""
 
 #: CComponent.class:66
@@ -270,35 +290,7 @@ msgstr ""
 msgid "Loading information on component &1..."
 msgstr ""
 
-#: CComponentBox.class:92
-msgid "Experimental"
-msgstr ""
-
-#: CComponentBox.class:94 FPropertyProject.class:1883
-msgid "Not finished but stable"
-msgstr ""
-
-#: CComponentBox.class:200 ProjectItem.class:70
-msgid "Authors"
-msgstr ""
-
-#: CComponentBox.class:207 FPropertyProject.class:2082
-msgid "Requires"
-msgstr ""
-
-#: CComponentBox.class:209
-msgid "Excludes"
-msgstr ""
-
-#: CComponentBox.class:215
-msgid "Implements"
-msgstr ""
-
-#: CComponentBox.class:228 FPropertyProject.class:2057
-msgid "Provides"
-msgstr ""
-
-#: CModule.class:28 FCreateFile.class:625 FEditor.class:3351 FForm.class:3540
+#: CModule.class:28 FCreateFile.class:625 FEditor.class:3364 FForm.class:3539
 #: FInfo.class:88
 msgid "Form"
 msgstr ""
@@ -442,7 +434,7 @@ msgstr ""
 
 #: FColorChooser.class:203 FCommit.class:397 FConflict.class:191
 #: FConnectionEditor.class:261 FCreateFile.class:885 FDebugInfo.class:490
-#: FEditor.class:2098 FFind.class:114 FFindList.class:195
+#: FEditor.class:2111 FFindList.class:195 FFind.class:114
 #: FFontChooser.class:86 FForm.class:2830 FGotoLine.class:63
 #: FHelpBrowser.class:186 FIconEditor.class:1393 FImportTable.class:38
 #: FList.class:155 FMain.class:204 FMakeExecutable.class:144
@@ -450,7 +442,7 @@ msgstr ""
 #: FNewTable.class:168 FNewTranslation.class:70 FOpenProject.class:146
 #: FOption.class:576 FPasteSpecial.class:279 FPropertyProject.class:1236
 #: FSave.class:118 FSelectExtraFile.class:78 FSelectIcon.class:271
-#: FTableChooser.class:145 FText.class:107 FTextEditor.class:462
+#: FTableChooser.class:145 FTextEditor.class:462 FText.class:107
 #: FTranslate.class:606 Project.module:346
 msgid "Cancel"
 msgstr ""
@@ -485,40 +477,40 @@ msgid ""
 msgstr ""
 
 #: FCommit.class:234 FConflict.class:327 FConnectionEditor.class:1790
-#: FEditor.class:3175 FForm.class:3380 FIconEditor.class:2168
+#: FEditor.class:3188 FForm.class:3380 FIconEditor.class:2168
 #: FOutput.class:473 FTextEditor.class:660
 msgid "Cut"
 msgstr ""
 
 #: FCommit.class:241 FConflict.class:334 FConnectionEditor.class:1688
-#: FEditor.class:3181 FForm.class:3387 FIconEditor.class:2177
+#: FEditor.class:3194 FForm.class:3387 FIconEditor.class:2177
 #: FOutput.class:480 FTextEditor.class:667
 msgid "Copy"
 msgstr ""
 
 #: FCommit.class:248 FConflict.class:341 FConnectionEditor.class:1814
-#: FEditor.class:3188 FForm.class:3394 FIconEditor.class:2186
+#: FEditor.class:3201 FForm.class:3394 FIconEditor.class:2186
 #: FOutput.class:487 FTextEditor.class:674
 msgid "Paste"
 msgstr ""
 
 #: FCommit.class:255 FConflict.class:348 FConnectionEditor.class:1822
-#: FEditor.class:3158 FForm.class:3622 FIconEditor.class:2150
+#: FEditor.class:3171 FForm.class:3622 FIconEditor.class:2150
 #: FOption.class:1189 FOutput.class:455 FTextEditor.class:642
 msgid "Undo"
 msgstr ""
 
 #: FCommit.class:262 FConflict.class:355 FConnectionEditor.class:1830
-#: FEditor.class:3165 FForm.class:3633 FOutput.class:462 FTextEditor.class:649
+#: FEditor.class:3178 FForm.class:3633 FOutput.class:462 FTextEditor.class:649
 msgid "Redo"
 msgstr ""
 
-#: FCommit.class:269 FConflict.class:362 FEditor.class:3409
+#: FCommit.class:269 FConflict.class:362 FEditor.class:3422
 #: FTextEditor.class:841
 msgid "Indent"
 msgstr ""
 
-#: FCommit.class:276 FConflict.class:369 FEditor.class:3418
+#: FCommit.class:276 FConflict.class:369 FEditor.class:3431
 #: FTextEditor.class:849
 msgid "Unindent"
 msgstr ""
@@ -667,7 +659,7 @@ msgstr ""
 msgid "The table '&1' has been modified. Do you want to save it?"
 msgstr ""
 
-#: FConnectionEditor.class:261 FEditor.class:3299 FForm.class:3525
+#: FConnectionEditor.class:261 FEditor.class:3312 FForm.class:3525
 #: FIconEditor.class:1412 FTextEditor.class:755
 msgid "Save"
 msgstr ""
@@ -789,7 +781,7 @@ msgstr ""
 msgid "Connection editor"
 msgstr ""
 
-#: FConnectionEditor.class:1547 FEditor.class:2098 FForm.class:2830
+#: FConnectionEditor.class:1547 FEditor.class:2111 FForm.class:2830
 #: FHelpBrowser.class:193 FIconEditor.class:2032 FTextEditor.class:462
 #: FTranslate.class:700
 msgid "Reload"
@@ -1219,119 +1211,131 @@ msgstr ""
 msgid "Stack backtrace"
 msgstr ""
 
-#: FEditor.class:2098 FIconEditor.class:2032 FTextEditor.class:462
+#: FEditor.class:2111 FIconEditor.class:2032 FTextEditor.class:462
 msgid ""
 "The file has been modified.\n"
 "\n"
 "All your changes will be lost."
 msgstr ""
 
-#: FEditor.class:2495
+#: FEditor.class:2508
 msgid "(Declarations)"
 msgstr ""
 
-#: FEditor.class:3092
+#: FEditor.class:3105
 msgid "Go to"
 msgstr ""
 
-#: FEditor.class:3097 FTextEditor.class:632
+#: FEditor.class:3110 FTextEditor.class:632
 msgid "Go to line..."
 msgstr ""
 
-#: FEditor.class:3103
+#: FEditor.class:3116
 msgid "Find definition"
 msgstr ""
 
-#: FEditor.class:3110 FHelpBrowser.class:172
+#: FEditor.class:3123 FHelpBrowser.class:172
 msgid "Go back"
 msgstr ""
 
-#: FEditor.class:3117
+#: FEditor.class:3130
 msgid "Open form"
 msgstr ""
 
-#: FEditor.class:3124 FForm.class:3308 FMain.class:2328
+#: FEditor.class:3137 FForm.class:3308 FMain.class:2328
 msgid "&Startup class"
 msgstr ""
 
-#: FEditor.class:3133
+#: FEditor.class:3146
 msgid "Run &until current line"
 msgstr ""
 
-#: FEditor.class:3140
+#: FEditor.class:3153
 msgid "Toggle &breakpoint"
 msgstr ""
 
-#: FEditor.class:3147
+#: FEditor.class:3160
 msgid "&Watch expression..."
 msgstr ""
 
-#: FEditor.class:3195
+#: FEditor.class:3208
 msgid "Paste special..."
 msgstr ""
 
-#: FEditor.class:3205 FTextEditor.class:685
+#: FEditor.class:3218 FTextEditor.class:685
 msgid "Select &All"
 msgstr ""
 
-#: FEditor.class:3215
+#: FEditor.class:3228
 msgid "Comment"
 msgstr ""
 
-#: FEditor.class:3222
+#: FEditor.class:3235
 msgid "Uncomment"
 msgstr ""
 
-#: FEditor.class:3233 FTextEditor.class:695
+#: FEditor.class:3246 FTextEditor.class:695
 msgid "Find..."
 msgstr ""
 
-#: FEditor.class:3239 FTextEditor.class:701
+#: FEditor.class:3252 FTextEditor.class:701
 msgid "Replace..."
 msgstr ""
 
-#: FEditor.class:3246 FTextEditor.class:708
+#: FEditor.class:3259 FTextEditor.class:708
 msgid "Find Next"
 msgstr ""
 
-#: FEditor.class:3253 FTextEditor.class:715
+#: FEditor.class:3266 FTextEditor.class:715
 msgid "Find Previous"
 msgstr ""
 
-#: FEditor.class:3263 FTextEditor.class:725
+#: FEditor.class:3276 FTextEditor.class:725
 msgid "View"
 msgstr ""
 
-#: FEditor.class:3267 FTextEditor.class:729
+#: FEditor.class:3280 FTextEditor.class:729
 msgid "No split"
 msgstr ""
 
-#: FEditor.class:3274 FTextEditor.class:736
+#: FEditor.class:3287 FTextEditor.class:736
 msgid "Horizontal split"
 msgstr ""
 
-#: FEditor.class:3281 FTextEditor.class:743
+#: FEditor.class:3294 FTextEditor.class:743
 msgid "Vertical split"
 msgstr ""
 
-#: FEditor.class:3310 FPasteSpecial.class:253
+#: FEditor.class:3323 FPasteSpecial.class:253
 msgid "Paste as string"
 msgstr ""
 
-#: FEditor.class:3315 FPasteSpecial.class:258
+#: FEditor.class:3328 FPasteSpecial.class:258
 msgid "Paste as multi-line string"
 msgstr ""
 
-#: FEditor.class:3320 FPasteSpecial.class:243
+#: FEditor.class:3333 FPasteSpecial.class:243
 msgid "Paste as comments"
 msgstr ""
 
-#: FEditor.class:3327 FOption.class:997
+#: FEditor.class:3340 FOption.class:997
 msgid "Editor"
 msgstr ""
 
-#: FEditor.class:3476
+#: FEditor.class:3489
 msgid "Procedure list"
+msgstr ""
+
+#: FFindList.class:75
+msgid "Column"
+msgstr ""
+
+#: FFindList.class:238
+msgid "Find list"
+msgstr ""
+
+#: FFindList.class:273 FFind.class:395 FOutput.class:309 FTranslate.class:567
+msgid "Search string cannot be found."
 msgstr ""
 
 #: FFind.class:114
@@ -1340,10 +1344,6 @@ msgstr ""
 
 #: FFind.class:114
 msgid "Replace"
-msgstr ""
-
-#: FFind.class:395 FFindList.class:273 FOutput.class:309 FTranslate.class:567
-msgid "Search string cannot be found."
 msgstr ""
 
 #: FFind.class:397
@@ -1400,14 +1400,6 @@ msgstr ""
 
 #: FFind.class:826
 msgid "Search in strings"
-msgstr ""
-
-#: FFindList.class:75
-msgid "Column"
-msgstr ""
-
-#: FFindList.class:238
-msgid "Find list"
 msgstr ""
 
 #: FFontChooser.class:57
@@ -3494,16 +3486,16 @@ msgstr ""
 msgid "Connection"
 msgstr ""
 
+#: FTextEditor.class:764
+msgid "Text editor"
+msgstr ""
+
 #: FText.class:77
 msgid "Edit text property"
 msgstr ""
 
 #: FText.class:96
 msgid "Use a fixed font"
-msgstr ""
-
-#: FTextEditor.class:764
-msgid "Text editor"
 msgstr ""
 
 #: FTips.class:47
@@ -4814,6 +4806,18 @@ msgstr ""
 msgid "'tar' has returned the following error code:"
 msgstr ""
 
+#: ProjectItem.class:70
+msgid "Author"
+msgstr ""
+
+#: .project:1
+msgid "Gambas 3"
+msgstr ""
+
+#: .project:2
+msgid "Integrated Development Environment for Gambas"
+msgstr ""
+
 #: Project.module:145
 msgid "Automation"
 msgstr ""
@@ -5117,10 +5121,6 @@ msgstr ""
 
 #: Project.module:4619
 msgid "Unable to update all forms."
-msgstr ""
-
-#: ProjectItem.class:70
-msgid "Author"
 msgstr ""
 
 #: Save.module:38
