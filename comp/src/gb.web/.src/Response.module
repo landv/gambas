@@ -5,8 +5,8 @@ Export
 Property Buffered As Boolean
 Property ContentType As String
 Property Status As String
-Property LastModified As Date
-Property Cache As _ResponseCache
+'Property LastModified As Date
+'Property Read Cache As _ResponseCache
 
 Private $bBuffered As Boolean
 Private $sHeader As String
@@ -15,7 +15,7 @@ Private $hFile As File
 Private $sContentType As String = "text/html"
 Private $sStatus As String
 Private $iBegin As Integer
-Private $dLastModified As Date
+'Private $dLastModified As Date
 
 Public Sub AddHeader(Name As String, Value As String)
 
@@ -177,27 +177,21 @@ Private Sub Status_Write(Value As String)
   $sStatus = Value
 
 End
-
-Private Function LastModified_Read() As Date
-
-  
-
-End
-
-Private Sub LastModified_Write(Value As Date)
-
-  
-
-End
-
-Private Function CacheControl_Read() As String
-
-  
-
-End
-
-Private Sub CacheControl_Write(Value As String)
-
-  
-
-End
+' 
+' Private Function Cache_Read() As _ResponseCache
+' 
+'   Return _ResponseCache
+' 
+' End
+' 
+' Private Function LastModified_Read() As Date
+' 
+'   Return $dLastModified
+' 
+' End
+' 
+' Private Sub LastModified_Write(Value As Date)
+' 
+'   $dLastModified = Value
+' 
+' End

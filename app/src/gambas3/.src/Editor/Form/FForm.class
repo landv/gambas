@@ -1389,8 +1389,6 @@ Private Sub SelectIn(hParent As CControl, X As Integer, Y As Integer, W As Integ
 
   Endif
 
-  bFirst = True
-
   For Each hChild In hParent.Control.Children
 
     hCtrl = Control[hChild.Tag]
@@ -1406,6 +1404,7 @@ Private Sub SelectIn(hParent As CControl, X As Integer, Y As Integer, W As Integ
 
   Next
   
+  bFirst = True
   For Each hCtrl In aSelect
     hCtrl.Select(Me, bFirst)
     bFirst = False

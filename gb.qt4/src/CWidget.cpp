@@ -1066,13 +1066,14 @@ END_PROPERTY
 
 static QWidget *get_color_widget(QWidget *w)
 {
-	if (qobject_cast<QAbstractScrollArea *>(w))
-		return ((QAbstractScrollArea *)w)->viewport();
+	QWidget *view = get_viewport(w);
+	if (view)
+		return view;
 	else
 		return w;
 }
 
-int get_real_background(CWIDGET *_object)
+/*int get_real_background(CWIDGET *_object)
 {
 	CWIDGET *parent = (CWIDGET *)CWIDGET_get_parent(THIS);
 	if (THIS->bg == COLOR_DEFAULT && parent)
@@ -1088,7 +1089,7 @@ int get_real_foreground(CWIDGET *_object)
 		return get_real_foreground(parent);
 	else
 		return THIS->fg;
-}
+}*/
 
 void CWIDGET_reset_color(CWIDGET *_object)
 {
@@ -1101,47 +1102,30 @@ void CWIDGET_reset_color(CWIDGET *_object)
 	
 	if (THIS->bg == COLOR_DEFAULT && THIS->fg == COLOR_DEFAULT)
 	{
-		CWIDGET *parent = (CWIDGET *)CWIDGET_get_parent(THIS);
-		if (parent)
-			w->setPalette(parent->widget->palette());
-		else
-			w->setPalette(QPalette());
+		//CWIDGET *parent = (CWIDGET *)CWIDGET_get_parent(THIS);
+		//if (parent)
+		//	w->setPalette(parent->widget->palette());
+		//else
+		WIDGET->setPalette(QPalette());
 	}
 	else
 	{
-		palette = QPalette(); //w->palette();
+		palette = QPalette(); //w->palette());
 		bg = THIS->bg;
 		fg = THIS->fg;
 		
-		if (bg == COLOR_DEFAULT)
-			bg = get_real_background(THIS);
-	
-		if (fg == COLOR_DEFAULT)
-			fg = get_real_foreground(THIS);
-	
 		if (bg != COLOR_DEFAULT)
-		{
 			palette.setColor(w->backgroundRole(), QColor((QRgb)bg));
-			/*if (GB.Is(THIS, CLASS_Container))
-			{
-				palette.setColor(QPalette::Window, QColor((QRgb)bg));
-				palette.setColor(QPalette::Base, QColor((QRgb)bg));
-				palette.setColor(QPalette::Button, QColor((QRgb)bg));
-			}*/
-		}
 		
 		if (fg != COLOR_DEFAULT)
 		{
 			palette.setColor(w->foregroundRole(), QColor((QRgb)fg));
-			/*if (GB.Is(THIS, CLASS_Container))
-			{
-				palette.setColor(QPalette::WindowText, QColor((QRgb)fg));
-				palette.setColor(QPalette::Text, QColor((QRgb)fg));
-				palette.setColor(QPalette::ButtonText, QColor((QRgb)fg));
-			}*/
+			/*palette.setColor(QPalette::WindowText, QColor((QRgb)fg));
+			palette.setColor(QPalette::Text, QColor((QRgb)fg));
+			palette.setColor(QPalette::ButtonText, QColor((QRgb)fg));*/
 		}
 			
-		w->setPalette(palette);
+		WIDGET->setPalette(palette);
 	}	
 	
 	w->setAutoFillBackground(THIS->flag.fillBackground || THIS->bg != COLOR_DEFAULT);
@@ -1153,7 +1137,7 @@ void CWIDGET_reset_color(CWIDGET *_object)
 	if (GB.Is(THIS, CLASS_Window))
 		CWINDOW_define_mask((CWINDOW *)THIS);
 	
-	QWidget *container = ((CCONTAINER *)THIS)->container;
+	/*QWidget *container = ((CCONTAINER *)THIS)->container;
 	if (!container)
 		return;
 	
@@ -1168,7 +1152,7 @@ void CWIDGET_reset_color(CWIDGET *_object)
 			continue;
 		if (widget->fg == COLOR_DEFAULT || widget->bg == COLOR_DEFAULT)
 			CWIDGET_reset_color(widget);
-	}
+	}*/
 }
 
 void CWIDGET_set_color(CWIDGET *_object, int bg, int fg)

@@ -21,7 +21,7 @@ Public Sub Open(hForm As FEditor, iX As Integer, hSymbol As CSymbolInfo, iArg As
   If hForm.Editor <> $hEditor Then HideFrom($hEditor)
   $hEditor = hForm.Editor
 
-  sSign = hSymbol.GetSignature(iArg)
+  sSign = hSymbol.GetSignature(True, iArg)
   If Not sSign Then Return
   
   Me.Font = $hEditor.Font

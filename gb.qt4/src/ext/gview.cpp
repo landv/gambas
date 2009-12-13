@@ -106,12 +106,15 @@ GEditor::GEditor(QWidget *parent)
 	setNumCols(1);
 	setKeyCompression(true);
 	setFocusPolicy(Qt::WheelFocus);
-	setPaletteBackgroundColor(defaultColors[GLine::Background]);
 	setAttribute(Qt::WA_InputMethodEnabled, true);
 	
 	setMouseTracking(true);
 	viewport()->setMouseTracking(true);
 	viewport()->setCursor(Qt::ibeamCursor);
+  //setBackgroundRole(QPalette::Base);
+  viewport()->setBackgroundRole(QPalette::Base);
+  viewport()->setAutoFillBackground(true);
+	viewport()->setPaletteBackgroundColor(defaultColors[GLine::Background]);
 	//viewport()->setWFlags(WRepaintNoErase);
 
 	x = y = xx = 0;
@@ -1723,7 +1726,7 @@ void GEditor::setStyle(int index, GHighlightStyle *style)
 
 	if (index == 0)
 	{
-		setPaletteBackgroundColor(style->color);
+		viewport()->setPaletteBackgroundColor(style->color);
 		redrawContents();
 	}
 	else

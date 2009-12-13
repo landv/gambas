@@ -336,7 +336,7 @@ Private Sub MergeSignature(sSign As String, sParentSign As String) As String
 End
 
 
-Public Function GetSignature(Optional iShowArg As Integer = -1) As String
+Public Function GetSignature(bBalise As Boolean, Optional iShowArg As Integer = -1) As String
 
   Dim iInd As Integer
   Dim sRes As String
@@ -428,7 +428,8 @@ Public Function GetSignature(Optional iShowArg As Integer = -1) As String
 
     If sCar = "[" Then
 
-      sRes &= $sArgAfter & "<font color=#808080>"
+      sRes &= $sArgAfter
+      If bBalise Then sRes &= "<font color=#808080>"
       $sArgAfter = ""
       Continue
 
@@ -436,7 +437,8 @@ Public Function GetSignature(Optional iShowArg As Integer = -1) As String
 
     If sCar = "]" Then
 
-      sRes &= $sArgAfter & "</font>"
+      sRes &= $sArgAfter 
+      If bBalise Then sRes &= "</font>"
       $sArgAfter = ""
       Continue
 
@@ -468,9 +470,9 @@ Public Function GetSignature(Optional iShowArg As Integer = -1) As String
     If sCar = "." Then
       sRes &= $sArgAfter & ", " 
       NextArg
-      If $iShowArg >= 0 And If $iShowArg > $iArg Then sRes &= "<u>"
+      If bBalise And If $iShowArg >= 0 And If $iShowArg > $iArg Then sRes &= "<u>"
       sRes &= $sArgBefore & "..."
-      If $iShowArg >= 0 And If $iShowArg > $iArg Then sRes &= "</u>"
+      If bBalise And If $iShowArg >= 0 And If $iShowArg > $iArg Then sRes &= "</u>"
       Continue
     Endif
 
@@ -493,9 +495,9 @@ Public Function GetSignature(Optional iShowArg As Integer = -1) As String
   sRes &= $sArgAfter
     
   If Name = "_get" Or Name = "_put" Then
-    sRes = "<b>[</b>" & sRes & "<b>]</b>"
+    sRes = If(bBalise, "<b>[</b>", "[") & sRes & If(bBalise, "<b>]</b>", "]")
   Else
-    sRes = "<b>(</b>" & sRes & "<b>)</b>"
+    sRes = If(bBalise, "<b>(</b>", "(") & sRes & If(bBalise, "<b>)</b>", ")")
   Endif
   
   If Type Then sRes &= " " & sKeywordAs & " " & GetType(Type)
@@ -546,7 +548,7 @@ Public Function GetDescription(Optional bBalise As Boolean) As String
   Endif
   
   If InStr(":m", LCase(Kind)) Then 
-    sSign = GetSignature()
+    sSign = GetSignature(False)
     If sSign Then
       sDesc &= sSign
     Else
@@ -777,14 +779,11 @@ Public Function GetHelpHTML() As String
     End Select
   Next
   
-  
   sWhere = "gambas://project/" & {Class} & "#" & Me.LineNumber
   
   sHTML = Replace(sHTML, "$(syntax)", sSyntax)
   sHTML = Replace(sHTML, "$(help)", sHelp)
   sHTML = Replace(sHTML, "$(where)", sWhere)
-  
-  
   
   Return sHTML
 
