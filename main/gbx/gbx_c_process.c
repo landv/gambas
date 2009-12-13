@@ -517,39 +517,48 @@ static void callback_child(int fd, int type, void *data)
 {
   int status;
   CPROCESS *process, *next;
-  int buffer;
+  char buffer;
 
   /*old = signal(SIGCHLD, signal_child);*/
 
-  read(fd, (char *)&buffer, 1);
+  read(fd, &buffer, 1);
 
   #ifdef DEBUG_ME
   fprintf(stderr, "<< callback_child\n");
   #endif
 
-  for (process = RunningProcessList; process; )
-  {
-    next = process->next;
+	for(;;)
+	{
+		process = RunningProcessList;
+		
+		while (process)
+		{
+			next = process->next;
 
-    if (wait4(process->pid, &status, WNOHANG, NULL) == process->pid)
-    {
-      process->status = status;
-      _last_status = status;
+			if (wait4(process->pid, &status, WNOHANG, NULL) == process->pid)
+			{
+				process->status = status;
+				_last_status = status;
 
-      #ifdef DEBUG_ME
-      fprintf(stderr, "Process %d has returned %d\n", process->pid, status);
-      #endif
+				#ifdef DEBUG_ME
+				fprintf(stderr, "Process %d has returned %d\n", process->pid, status);
+				#endif
 
-      /*printf("** signal_child\n");*/
+				/*printf("** signal_child\n");*/
 
-      //GB_Ref(process);
-      stop_process(process);
-      //stop_process_after(process);
-      //break; // one exit at a time // why ?
-    }
+				//GB_Ref(process);
+				stop_process(process);
+				break;
+				//stop_process_after(process);
+				//break; // one exit at a time // why ?
+			}
 
-    process = next;
-  }
+			process = next;
+		}
+		
+		if (!process)
+			break;
+	}
 
   #ifdef DEBUG_ME
   fprintf(stderr, ">> callback_child\n");
