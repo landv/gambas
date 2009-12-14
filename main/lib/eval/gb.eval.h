@@ -33,13 +33,13 @@ typedef
 typedef
 	void *EVAL_EXPRESSION;
 
-#define EVAL_COLOR_MAX_LEN (1 << 11)	
+#define EVAL_COLOR_MAX_LEN (1 << 10)	
 
 typedef
 	struct {
-		unsigned state : 4;
+		unsigned state : 5;
 		unsigned alternate : 1;
-		unsigned len : 11;
+		unsigned len : 10;
 	}
 	EVAL_COLOR;
 	
@@ -75,7 +75,8 @@ enum {
 	EVAL_TYPE_OPERATOR = 11,
 	EVAL_TYPE_DATATYPE = 12,
 	EVAL_TYPE_ERROR = 13,
-	EVAL_TYPE_ALTERNATE = 14
+	EVAL_TYPE_ALTERNATE = 14,
+	EVAL_TYPE_HELP = 15
 	};
 
 typedef
@@ -98,6 +99,7 @@ typedef
 		HIGHLIGHT_LINE,
 		HIGHLIGHT_ERROR,
 		HIGHLIGHT_ALTERNATE,
+		HIGHLIGHT_HELP,
 		HIGHLIGHT_NUM_COLOR
 	}
 	HIGHLIGHT_COLOR;

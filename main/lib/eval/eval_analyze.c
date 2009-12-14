@@ -309,6 +309,8 @@ static void analyze(EVAL_ANALYZE *result)
       case EVAL_TYPE_COMMENT:
         //state = Commentary;
         space_before = *symbol != ' ';
+				if (len >= 2 && symbol[1] == '\'')
+					type = EVAL_TYPE_HELP;
         break;
 
       case EVAL_TYPE_OPERATOR:

@@ -28,9 +28,9 @@
 
 struct GHighlight
 {
-	unsigned state : 4;
+	unsigned state : 5;
 	unsigned alternate : 1;
-	unsigned len : 11;
+	unsigned len : 10;
 };
 
 typedef
@@ -46,7 +46,7 @@ public:
 		Operator, Symbol, Number, String,
 		Comment, Breakpoint, Current, Datatype,
 		Selection, Highlight, Line, Error, 
-		Alternate,
+		Alternate, Help,
 		NUM_STATE
 	};
 

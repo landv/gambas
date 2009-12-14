@@ -144,6 +144,7 @@ static int convState(int state)
     case EVAL_TYPE_DATATYPE: return HIGHLIGHT_DATATYPE;
     case EVAL_TYPE_ERROR: return HIGHLIGHT_ERROR;
 		case EVAL_TYPE_ALTERNATE: return HIGHLIGHT_ALTERNATE;
+		case EVAL_TYPE_HELP: return HIGHLIGHT_HELP;
     default: return HIGHLIGHT_NORMAL;
   }
 }
@@ -290,6 +291,7 @@ GB_DESC CHighlightDesc[] =
   GB_CONSTANT("CurrentLine", "i", HIGHLIGHT_LINE),
   GB_CONSTANT("Error", "i", HIGHLIGHT_ERROR),
   GB_CONSTANT("Alternate", "i", HIGHLIGHT_ALTERNATE),
+  GB_CONSTANT("Help", "i", HIGHLIGHT_HELP),
   
   GB_STATIC_METHOD("_exit", NULL, CHIGHLIGHT_exit, NULL),
   GB_STATIC_METHOD("Analyze", "String[]", CHIGHLIGHT_analyze, "(Code)s[(Rewrite)b(State)i]"),

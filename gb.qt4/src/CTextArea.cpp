@@ -235,44 +235,66 @@ BEGIN_PROPERTY(CTEXTAREA_max_length)
 END_PROPERTY
 */
 
-/*
-BEGIN_PROPERTY(CTEXTAREA_line)
-
-  int line, col;
-
-  WIDGET->getCursorPosition(&line, &col);
-
-  if (READ_PROPERTY)
-    GB.ReturnInteger(line);
-  else
-  {
-    line = VPROP(GB_INTEGER);
-    look_pos(WIDGET, &line, &col);
-
-    WIDGET->setCursorPosition(line, col);
-  }
-
-END_PROPERTY
-
+static int get_column(CTEXTAREA *_object)
+{
+ 	QTextCursor cursor = WIDGET->textCursor();
+	return cursor.position() - cursor.block().position();
+}
 
 BEGIN_PROPERTY(CTEXTAREA_column)
 
-  int line, col;
-
-  WIDGET->getCursorPosition(&line, &col);
-
+ 	QTextCursor cursor = WIDGET->textCursor();
+	
   if (READ_PROPERTY)
-    GB.ReturnInteger(col);
+    //GB.ReturnInteger(WIDGET->textCursor().columnNumber());
+		GB.ReturnInteger(get_column(THIS));
   else
   {
-    col = VPROP(GB_INTEGER);
-    look_pos(WIDGET, &line, &col);
-
-    WIDGET->setCursorPosition(line, col);
+    int col = VPROP(GB_INTEGER);
+		
+		if (col <= 0)
+			cursor.movePosition(QTextCursor::QTextCursor::StartOfBlock);
+		else if (col >= cursor.block().length())
+			cursor.movePosition(QTextCursor::QTextCursor::EndOfBlock);
+		else
+			cursor.setPosition(cursor.block().position() + col);
+		
+  	WIDGET->setTextCursor(cursor);
   }
 
 END_PROPERTY
-*/
+
+BEGIN_PROPERTY(CTEXTAREA_line)
+
+ 	QTextCursor cursor = WIDGET->textCursor();
+	
+  if (READ_PROPERTY)
+		GB.ReturnInteger(cursor.blockNumber());
+  else
+  {
+		int col = get_column(THIS);
+    int line = VPROP(GB_INTEGER);
+		
+		if (line < 0)
+			cursor.movePosition(QTextCursor::Start);
+		else if (line >= WIDGET->document()->blockCount())
+			cursor.movePosition(QTextCursor::End);
+		else
+		{
+			cursor.setPosition(WIDGET->document()->findBlockByNumber(line).position());
+			if (col > 0)
+			{
+				if (col >= cursor.block().length())
+					cursor.movePosition(QTextCursor::QTextCursor::EndOfBlock);
+				else
+					cursor.setPosition(cursor.block().position() + col);
+			}
+		}
+		
+  	WIDGET->setTextCursor(cursor);
+  }
+
+END_PROPERTY
 
 BEGIN_PROPERTY(CTEXTAREA_pos)
 
@@ -567,8 +589,8 @@ GB_DESC CTextAreaDesc[] =
   GB_PROPERTY("Wrap", "b", CTEXTAREA_wrap),
   GB_PROPERTY("Border", "b", CWIDGET_border_simple),
 
-  //GB_PROPERTY("Line", "i", CTEXTAREA_line),
-  //GB_PROPERTY("Column", "i", CTEXTAREA_column),
+  GB_PROPERTY("Line", "i", CTEXTAREA_line),
+  GB_PROPERTY("Column", "i", CTEXTAREA_column),
   GB_PROPERTY("Pos", "i", CTEXTAREA_pos),
 
   GB_PROPERTY_SELF("Selection", ".TextAreaSelection"),

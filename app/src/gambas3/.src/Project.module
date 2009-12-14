@@ -178,6 +178,7 @@ Public Sub Main()
 
   Dim sPath As String
   Dim iTest As Integer
+  Dim iInd As Integer
   
   Application.Theme = Settings["/Theme"]
   'DB.Debug = True
@@ -200,9 +201,12 @@ Public Sub Main()
 
   FMain.Load 
 
-  If Application.Args.Count >= 2 Then
-    sPath = Application.Args[1]
-  Endif
+  For iInd = 1 To Application.Args.Count - 1
+    If Left(Application.Args[iInd]) <> "-" Then
+      sPath = Application.Args[iInd]
+      Break
+    Endif
+  Next
 
   'FMain.Close
   'Return
@@ -4202,6 +4206,9 @@ Public Function CheckProgram(sProg As String) As Boolean
   
 End
 
+
+'' Open a URL inside an external browser.
+'' <li><u>sLink</u> is the URL to open.
 
 Public Sub OpenWebPage(sLink As String)
 

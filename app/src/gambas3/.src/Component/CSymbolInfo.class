@@ -703,6 +703,109 @@ Public Function GetHelpURL() As String
   
 End
 
+'' Transform one line of help into HTML by decoding some sort of light wiki syntax.
+'' - #sLine# is the line of help text
+'' The HTML is returned.
+
+Private Sub DecodeHelpLine(sLine As String) As String
+  
+  Dim iPos As Integer
+  Dim iLen As Integer = String.Len(sLine)
+  Dim sChar As String
+  Dim sHTML As String
+  Dim sWait As String
+  Dim bBold, bItalic, bMonospace, bUnderline As Boolean
+  Dim iSavePos As Integer
+  Dim sLink As String
+  Dim iPoint As Integer
+  Dim hClass As CClassInfo
+  Dim hSymbol As CSymbolInfo
+  
+  sLine = RTrim(sLine)
+  If Not sLine Then Return "<p>"
+  If sLine = "--" Then Return "<hr>"
+  
+  If sLine Begins "-" Then 
+    sHtml = "<li>"
+    sLine = Mid$(sLine, 2)
+  Endif
+  
+  Do
+  
+    Inc iPos
+    If iPos > iLen Then Break
+    sChar = String.Mid(sLine, iPos, 1)
+    
+    If sWait = ">" Then
+      sHTML &= sChar
+      If sChar = ">" Then sWait = ""
+      Continue
+    Else If sWait = "]" Then
+      If sChar <> "]" Then Continue
+      sWait = ""
+      sLink = String.Mid$(sLine, iSavePos, iPos - iSavePos)
+      sChar = sLink
+      If sLink Like "*://*" Then
+      Else
+        iPoint = RInStr(sLink, ".")
+        If iPoint = 0 Then
+          hClass = Null
+          Try hClass = CComponent.Classes[sLink]
+          If hClass Then
+            sLink = hClass.GetHelpURL()
+          Else
+            sLink = ""
+          Endif
+        Else
+          hSymbol = Null
+          Try hSymbol = CComponent.Classes[Trim(Left(sLink, iPoint - 1))].Symbols[Trim(Mid$(sLink, iPoint + 1))]
+          If hSymbol Then
+            sLink = hSymbol.GetHelpURL()
+          Else
+            sLink = ""
+          Endif
+        Endif
+      Endif
+      If sLink Then
+        sHTML &= "<a href=\"" & sLink & "\">" & Html(sChar) & "</a>"
+      Else
+        sHTML &= "<i>" & Html(sChar) & "?</i>"
+      Endif
+      Continue
+    Endif
+    
+    If sChar = "\\" Then
+      sHTML &= Html(String.Mid$(sLine, iPos + 1, 1))
+      Inc iPos
+    Else If sChar = "<" Then
+      sHTML &= sChar
+      sWait = ">"
+    Else If sChar = "*" Then
+      bBold = Not bBold
+      sHTML &= If(bBold, "<b>", "</b>")
+    Else If sChar = "=" Then
+      bMonospace = Not bMonospace
+      sHTML &= If(bMonospace, "<tt>", "</tt>")
+    Else If sChar = "'" Then
+      bItalic = Not bItalic
+      sHTML &= If(bItalic, "<i>", "</i>")
+    Else If sChar = "#" Then
+      bUnderline = Not bUnderline
+      sHTML &= If(bUnderline, "<u>", "</u>")
+    Else If sChar = "[" Then
+      sWait = "]"
+      iSavePos = iPos + 1
+    Else
+      sHTML &= Html(sChar)
+    Endif
+  
+  Loop
+  
+  Return sHTML
+  
+End
+
+
 Public Function GetHelpHTML() As String
   
   Dim hForm As Object
@@ -728,7 +831,7 @@ Public Function GetHelpHTML() As String
     If Highlight.Types[i] = Highlight.Comment Then
       sLine = Trim(Highlight.Symbols[i])
       If sLine Begins "''" Then
-        sHelp = Trim(Mid$(sline, 3))
+        sHelp = DecodeHelpLine(Trim(Mid$(sLine, 3)))
       Endif
     Endif
   Endif
@@ -740,7 +843,7 @@ Public Function GetHelpHTML() As String
     For i = iLine - 1 To 0 Step -1
       sLine = Trim(hEdit.Lines[i].Text)
       If sLine Begins "''" Then 
-        sHelp = Trim(Mid(sLine, 3)) & "<br>" & sHelp
+        sHelp = DecodeHelpLine(Trim(Mid(sLine, 3))) & "\n" & sHelp
       Else
         If Trim(sLine) = "" Then Continue
         Break

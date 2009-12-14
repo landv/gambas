@@ -26,7 +26,7 @@
 #include <qstring.h>
 #include <qcolor.h>
 #include <qpixmap.h>
-#include <q3gridview.h>
+#include <q3scrollview.h>
 #include <qtimer.h>
 //Added by qt3to4:
 #include <QResizeEvent>
@@ -55,7 +55,7 @@ struct GFoldedProc
 	int end;
 };
 
-class GEditor : public Q3GridView
+class GEditor : public Q3ScrollView
 {
 	Q_OBJECT
 
@@ -85,6 +85,8 @@ private:
 	bool _showStringIgnoreCase;
 	int _showRow, _showCol, _showLen;
 	bool _posOutside;
+	int _cellw, _cellh;
+	int _nrows;
 	
 	int lastx;
 	bool left;
@@ -119,6 +121,7 @@ private:
 	void paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int h, int x1, int x2, int row);
 	void paintShowString(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int h, int row);
 	void paintDottedSpaces(QPainter &p, int row, int ps, int ls);
+	void paintEmptyArea(QPainter *p, int cx, int cy, int cw, int ch);
 	
 	void docTextChanged();
 	void redrawContents();
@@ -128,6 +131,8 @@ private:
 	int checkCursor(int y);	
 	bool isCursorVisible();
 	void clearLineWidthCache() { lineWidthCache.clear(); lineWidthCacheY = -1; }
+
+	void updateViewport();
 
 	//static void updateBreakpoint(uint bg, uint fg);
 
@@ -211,7 +216,8 @@ public:
 	bool getFlag(int f) const { return flags & (1 << f); }
 	void setFlag(int f, bool v);
 
-	int getLineHeight() const { return cellHeight(); }
+	int rowAt(int y) const { return y / _cellh; }
+	int getLineHeight() const { return _cellh; }
 	int getCharWidth() const;
 	void cursorToPos(int y, int x, int *px, int *py);
 	bool isPosOutside() const { return _posOutside; }
@@ -221,9 +227,10 @@ public:
 	int lastVisibleRow(int y) const { return rowAt(y + visibleHeight() - 1); }
 	int lastVisibleRow() const { return lastVisibleRow(contentsY()); }
 	void updateLine(int y);
-
-	virtual void setNumRows(int);
-
+	void setNumRows(int);
+	
+	virtual void resizeContents(int w, int h);
+	
 	void checkMatching();
 	void flash();
 	void showString(GString s, bool ignoreCase);

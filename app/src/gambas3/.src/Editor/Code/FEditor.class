@@ -1352,12 +1352,12 @@ End
 ' 
 ' END
 
-
 '' Read the type of a symbol declared globally, or as a method argument, from an analyzed line of code.
-'' <li><u>aSym</u> is an array of symbols (like Highlight.Symbols).
-'' <li><u>iIndex</u> is the index of the first symbol to take into account into <u>aSym</u>.
-'' <li><u>sSymbol</u> is the name of the local symbol. If specified, it must be the first symbol to read.
-'' <p>This function returns the datatype of the symbol.
+'' - #aSym# is an array of symbols (like [Highlight.Symbols]).
+'' - #iIndex# is the index of the first symbol to take into account into #aSym#.
+'' - #sSymbol# is the name of the local symbol. If specified, it must be the first symbol to read.
+''
+'' This function returns the datatype of the symbol.
 
 Static Public Function ReadSymbolType(aSym As String[], iIndex As Integer, Optional sSymbol As String) As String
 
@@ -1388,11 +1388,12 @@ Catch
 End
 
 '' Get information about a local symbol declared with DIM from an analyzed line of code.
-'' <li><u>aSym</u> is an array of symbols (like Highlight.Symbols).
-'' <li><u>iIndex</u> is the index of the first symbol to take into account into <u>aSym</u>.
-'' <li><u>sSymbol</u> is the name of the local symbol to search for.
-'' <li><u>hSymbol</u> is a CSymbolInfo object that will be filled with the type information.
-'' <p>This function returns TRUE if the symbol has been found, FALSE otherwise.
+'' - #aSym# is an array of symbols (like [Highlight.Symbols]).
+'' - #iIndex# is the index of the first symbol to take into account into #aSym#.
+'' - #sSymbol# is the name of the local symbol to search for.
+'' - #hSymbol# is a CSymbolInfo object that will be filled with the type information.
+'' 
+'' This function returns =TRUE= if the symbol has been found, =FALSE= otherwise.
 
 Static Function ReadLocalSymbolType(aSym As String[], iIndex As Integer, sSymbol As String, hSymbol As CSymbolInfo) As Boolean
 
