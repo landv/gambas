@@ -847,11 +847,11 @@ Public Function GetHelpHTML() As String
   Highlight.Analyze(hEdit.Lines[iLine].Text)
   i = Highlight.Symbols.Max
   If i >= 1 Then
-    If Highlight.Types[i] = Highlight.Comment Then
+    If Highlight.Types[i] = Highlight.Help Then
       sLine = Trim(Highlight.Symbols[i])
-      If sLine Begins "''" Then
+      'If sLine Begins "''" Then
         sHelp = DecodeHelpLine(Trim(Mid$(sLine, 3)))
-      Endif
+      'Endif
     Endif
   Endif
 
