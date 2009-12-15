@@ -176,6 +176,19 @@ static int get_indent(bool *empty)
   return i;
 }
 
+static int get_symbol_indent(const char *symbol, int len)
+{
+	int i;
+	
+	for (i = 0; i < len; i++)
+	{
+		if (!(symbol[i] > 0 && symbol[i] < 33))
+			return i;
+	}
+	
+	return len;
+}
+
 
 static int get_utf8_length(const char *s, int l)
 {
@@ -202,7 +215,7 @@ static void analyze(EVAL_ANALYZE *result)
   const char *symbol;
   bool space_before, space_after, in_quote;
   //bool me = FALSE;
-  int len;
+  int len, i;
 
   pattern = EVAL->pattern;
   src = EVAL->source;
@@ -309,7 +322,8 @@ static void analyze(EVAL_ANALYZE *result)
       case EVAL_TYPE_COMMENT:
         //state = Commentary;
         space_before = *symbol != ' ';
-				if (len >= 2 && symbol[1] == '\'')
+				i = get_symbol_indent(symbol, len);
+				if (i <= (len - 2) && symbol[i + 1] == '\'')
 					type = EVAL_TYPE_HELP;
         break;
 

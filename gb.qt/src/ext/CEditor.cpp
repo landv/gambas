@@ -1200,6 +1200,7 @@ GB_DESC CEditorDesc[] =
   GB_PROPERTY_READ("CharWidth", "i", CEDITOR_char_width),
 
   GB_PROPERTY("Border", "b", CEDITOR_border),
+  //GB_PROPERTY("Background", "i", CEDITOR_background),
 
   GB_PROPERTY("Text", "s", CEDITOR_text),
   GB_PROPERTY_READ("Length", "i", CEDITOR_length),

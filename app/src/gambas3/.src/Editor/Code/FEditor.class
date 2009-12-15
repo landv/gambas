@@ -1352,11 +1352,13 @@ End
 ' 
 ' END
 
+'' +Description
 '' Read the type of a symbol declared globally, or as a method argument, from an analyzed line of code.
+'' +Arguments
 '' - #aSym# is an array of symbols (like [Highlight.Symbols]).
 '' - #iIndex# is the index of the first symbol to take into account into #aSym#.
 '' - #sSymbol# is the name of the local symbol. If specified, it must be the first symbol to read.
-''
+'' +Return value
 '' This function returns the datatype of the symbol.
 
 Static Public Function ReadSymbolType(aSym As String[], iIndex As Integer, Optional sSymbol As String) As String
@@ -1387,13 +1389,15 @@ Catch
 
 End
 
+'' +Description
 '' Get information about a local symbol declared with DIM from an analyzed line of code.
+'' +Arguments
 '' - #aSym# is an array of symbols (like [Highlight.Symbols]).
 '' - #iIndex# is the index of the first symbol to take into account into #aSym#.
 '' - #sSymbol# is the name of the local symbol to search for.
 '' - #hSymbol# is a CSymbolInfo object that will be filled with the type information.
-'' 
-'' This function returns =TRUE= if the symbol has been found, =FALSE= otherwise.
+'' +Return value
+'' This function returns [TRUE] if the symbol has been found, [FALSE] otherwise.
 
 Static Function ReadLocalSymbolType(aSym As String[], iIndex As Integer, sSymbol As String, hSymbol As CSymbolInfo) As Boolean
 
@@ -1455,8 +1459,22 @@ Catch
 
 End
 
+Public Sub GetLastSymbolDesc() As CSymbolInfo
+  
+  Return $hSymbol
+  
+End
 
-Private Function GetSymbolType(sSymbol As String, Optional bPoint As Boolean) As String
+
+'' +Description
+'' Return the datatype of a symbol in the context of the current line.
+'' +Arguments
+'' -#sSymbol# is the symbol to analyze.
+'' -#bPoint# tells if there is point just after the symbol.
+'' +Return value
+'' The datatype of the symbol is returned, or [NULL] if the symbol is not found.
+
+Public Function GetSymbolType(sSymbol As String, Optional bPoint As Boolean) As String
 
   Dim iLine As Integer
   Dim iInd As Integer
@@ -1468,8 +1486,8 @@ Private Function GetSymbolType(sSymbol As String, Optional bPoint As Boolean) As
   Dim hForm As Object
 
   'sSymbol = UCase(sSymbol)
-
   $bLastStatic = False
+  $hSymbol = Null
 
   If sSymbol = "ME" Then Return Me.Name
 
@@ -1477,6 +1495,8 @@ Private Function GetSymbolType(sSymbol As String, Optional bPoint As Boolean) As
     CComponent.GetClassSymbols(Me.Name)
     Return ParentClass
   Endif
+
+  If Left(sSymbol) = "{" And If Right(sSymbol) = "}" Then sSymbol = Mid$(sSymbol, 2, -1)
 
   ' Look for local variables
 
@@ -1496,7 +1516,7 @@ Private Function GetSymbolType(sSymbol As String, Optional bPoint As Boolean) As
             With $hVirtualSymbol
               '.Name = aSym[1]
               .Class = Me.Name
-              .Kind = "v"
+              .Kind = "l"
               .LineNumber = iLine + 1
               .NotPublic = True
               '.Type = sType
@@ -1520,7 +1540,7 @@ Private Function GetSymbolType(sSymbol As String, Optional bPoint As Boolean) As
       With $hVirtualSymbol
         .Name = aSym[0]
         .Class = Me.Name
-        .Kind = "v"
+        .Kind = "l"
         .LineNumber = iLine + 1
         .NotPublic = True
         .Type = sType
@@ -2242,19 +2262,19 @@ Private Sub FindDefinition(bPopupHelp As Boolean, Optional iX As Integer, Option
       '     MHelp.ShowWebViewWith(Null, MHelp.TYPE_KEYWORD, sKeyword)
       '   Endif
       ' Else
-      MHelp.ShowWebViewWith(Null, MHelp.TYPE_KEYWORD, sKeyword)
+      MHelp.ShowHelpBrowserWith(Null, MHelp.TYPE_KEYWORD, sKeyword)
       'Endif
       Return
 
     Else If Highlight.Types[iCpt] = Highlight.DataType Then 
     
       If System.Datatypes.Exist(sKeyword, gb.IgnoreCase) Then
-        MHelp.ShowWebViewWith(Null, MHelp.TYPE_NATIVE, sKeyword)
+        MHelp.ShowHelpBrowserWith(Null, MHelp.TYPE_NATIVE, sKeyword)
       Else
         hClass = CComponent.Classes[sKeyword]
         If hClass Then 
           'MHelp.GotoClass(hClass.Component, hClass.Name)
-          MHelp.ShowWebViewWith(Null, MHelp.TYPE_CLASS, hClass.Name)
+          MHelp.ShowHelpBrowserWith(Null, MHelp.TYPE_CLASS, hClass.Name)
         Endif 
       Endif
       Return
@@ -2267,7 +2287,7 @@ Private Sub FindDefinition(bPopupHelp As Boolean, Optional iX As Integer, Option
   If Not hSymbol Then 
     If sKeyword Then
       If CComponent.Classes.Exist(sKeyword) Then
-        MHelp.ShowWebViewWith(Null, MHelp.TYPE_CLASS, sKeyword)
+        MHelp.ShowHelpBrowserWith(Null, MHelp.TYPE_CLASS, sKeyword)
       Endif
     Endif
     Return
@@ -2279,7 +2299,7 @@ Private Sub FindDefinition(bPopupHelp As Boolean, Optional iX As Integer, Option
     Project.SavePosition()
     Project.OpenFile(hSymbol.Class, hSymbol.LineNumber)
   Else
-    MHelp.ShowWebViewWith(Null, MHelp.TYPE_SYMBOL, hSymbol.Name, hSymbol.Class)
+    MHelp.ShowHelpBrowserWith(Null, MHelp.TYPE_SYMBOL, hSymbol.Name, hSymbol.Class)
   Endif
 
 End

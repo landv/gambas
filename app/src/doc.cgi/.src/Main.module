@@ -1825,7 +1825,7 @@ Private Sub MakeFooter(Optional dDate As Date)
   Print "Content-language: "; Replace(System.Language, "_", "-")
   Print "Content-length: "; Len(sData)
   If $bOnlineHelp Then
-    Print "Cache-Control: max-age=86400"
+    Print "Cache-Control: max-age=604800" ' one week
     If dDate Then
       Print "Last-Modified: "; FormatDate(dDate)
     Endif

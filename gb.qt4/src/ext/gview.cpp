@@ -129,7 +129,6 @@ GEditor::GEditor(QWidget *parent)
 	lineNumberLength = 0;
 	doc = 0;
 	center = false;
-	setDocument(NULL);
 	largestLine = 0;
 	flashed = false;
 	painting = false;
@@ -158,6 +157,8 @@ GEditor::GEditor(QWidget *parent)
 
 	flags = 0;
 	
+	setDocument(NULL);
+
 	setFont(QFont("monospace", QApplication::font().pointSize()));
 	updateHeight();
 
@@ -216,10 +217,10 @@ int GEditor::getCharWidth() const
 
 void GEditor::updateCache()
 {
-	if (cache->width() < visibleWidth() || cache->height() < _cellh)
+	if (cache->width() < _cellw || cache->height() < _cellh)
 	{
-		int nw = QMAX(cache->width(), visibleWidth());
-		int nh = _cellh; //QMAX(cache->height(), _cellh);
+		int nw = QMAX(cache->width(), _cellw);
+		int nh = QMAX(cache->height(), _cellh); //QMAX(cache->height(), _cellh);
 		cache->resize(nw, nh);
 	}
 }
@@ -319,7 +320,6 @@ UPDATE_WIDTH:
 	if (w != _cellw)
 	{
 		_cellw = w;
-		updateCache();
 		updateViewport();
 		//qDebug("setCellWidth: %d (largestLine = %d)", w, largestLine);
 	}
@@ -1746,6 +1746,7 @@ void GEditor::setNumRows(int n)
 	_nrows = realToView(n - 1) + 1;
 	//Q3GridView::setNumRows(n);
 	updateViewport();
+	updateContents();
 	//Q3ScrollView::updateScrollBars();
 	//if (contentsHeight() < visibleHeight())
 	//	repaintContents(contentsX(), contentsHeight(), visibleWidth(), visibleHeight() - contentsHeight() + contentsX(), true);
@@ -2374,6 +2375,8 @@ void GEditor::updateViewport()
 	
 	if (vw != contentsWidth() || vh != contentsHeight())
 		Q3ScrollView::resizeContents(vw, vh);
+
+	updateCache();
 }
 
 void GEditor::resizeContents(int w, int h)

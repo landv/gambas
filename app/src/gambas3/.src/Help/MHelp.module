@@ -337,8 +337,27 @@ Public Sub GetSpecialURL(sSymbol As String) As String
   
 End
 
-Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As String, Optional sClass As String, Optional sMore As String)
-  
+'' +Description
+'' Initialize a web browser view with the help on a specific symbol.
+'' +Arguments
+'' - #hWebView# is the WebView control to initialize.
+'' - #iType# is the type of the symbol.
+'' - #sSymbol# is the symbol.
+'' - #sClass# is the class if the symbol is a member of this class.
+'' - #sMore# is a suffix that will be added to the URL of the help page.
+'' - #hEditor# is the source code editor that the symbol comes from.
+'' +Symbol types
+'' The #iType# argument can be one of the following constants, defined in the MHelp module:
+'' - =TYPE_NATIVE= for a native datatype.
+'' - =TYPE_CLASS= for a class.
+'' - =TYPE_CONTROL= for a control name.
+'' - =TYPE_SYMBOL= for a class symbol, a local or a global variable.
+'' - =TYPE_EVENT= for an event.
+'' - =TYPE_KEYWORD= for a language keyword.
+'' - =TYPE_SPECIAL= for a special method.
+
+Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As String, Optional sClass As String, Optional sMore As String, Optional hEditor As FEditor)
+
   Dim cSymbol As Collection
   Dim hSymbol As CSymbolInfo
   Dim hClass As CClassInfo
@@ -367,6 +386,10 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
       If iPos Then sSymbol = ":" & Mid$(sSymbol, iPos + 1)
     Endif
     Try hSymbol = CComponent.GetClassSymbols(sClass)[sSymbol]
+    If Not hSymbol Then 
+      hEditor.GetSymbolType(sSymbol)
+      hSymbol = hEditor.GetLastSymbolDesc()
+    Endif
     If hSymbol Then 
       If hSymbol.LineNumber Then 
         sHtml = hSymbol.GetHelpHTML()
@@ -407,7 +430,25 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
     
 End
 
-Public Sub ShowWebViewWith(hWebView As WebView, iType As Integer, sSymbol As String, Optional sClass As String, Optional sMore As String)
+'' +Description
+'' Initialize the help browser with the help on a specific symbol, and show it automatically.
+'' +Arguments
+'' - #hWebView# is the WebView control to initialize.
+'' - #iType# is the type of the symbol.
+'' - #sSymbol# is the symbol.
+'' - #sClass# is the class if the symbol is a member of this class.
+'' - #sMore# is a suffix that will be added to the URL of the help page.
+'' +Symbol types
+'' The #iType# argument can be one of the following constants, defined in the MHelp module:
+'' - =TYPE_NATIVE= for a native datatype.
+'' - =TYPE_CLASS= for a class.
+'' - =TYPE_CONTROL= for a control name.
+'' - =TYPE_SYMBOL= for a class symbol, a local or a global variable.
+'' - =TYPE_EVENT= for an event.
+'' - =TYPE_KEYWORD= for a language keyword.
+'' - =TYPE_SPECIAL= for a special method.
+
+Public Sub ShowHelpBrowserWith(hWebView As WebView, iType As Integer, sSymbol As String, Optional sClass As String, Optional sMore As String)
   
   FHelpBrowser.Show
   InitWebViewWith(hWebView, iType, sSymbol, sClass, sMore)

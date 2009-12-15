@@ -33,7 +33,7 @@ Private Function GetClass() As String
   Dim hForm As FEditor
 
   hForm = $hEditor.Window
-  Return hForm.Name  
+  Return hForm.Name
   
 End
 
@@ -714,12 +714,14 @@ Public Sub timHelp_Timer()
   Dim iType As Integer
   Dim sClass As String
   
+  If Not $hEditor Then Return
+  
   Try sSymbol = lvwComp.Current.Text
   If sSymbol Then   
     iType = CInt(Left(lvwComp.Key))
     sClass = $sClass
     If Not sClass Then sClass = GetClass()
-    MHelp.InitWebViewWith(webHelp, iType, sSymbol, sClass, "noimage")
+    MHelp.InitWebViewWith(webHelp, iType, sSymbol, sClass, "noimage", $hEditor.Window)
   Endif
 
   timHelp.Stop

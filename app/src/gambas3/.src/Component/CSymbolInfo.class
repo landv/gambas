@@ -536,6 +536,8 @@ Public Function GetDescription(Optional bBalise As Boolean) As String
       sDesc = sStatic & sAccess & " " & If(Type, "Function", "Sub")
     Case "v"
       sDesc = sStatic & sAccess
+    Case "l"
+      sDesc = "Dim"
 
   End Select  
   
@@ -704,7 +706,9 @@ Public Function GetHelpURL() As String
 End
 
 '' Transform one line of help into HTML by decoding some sort of light wiki syntax.
-'' - #sLine# is the line of help text
+''
+'' - #sLine# is the line of help text.
+''
 '' The HTML is returned.
 
 Private Sub DecodeHelpLine(sLine As String) As String
@@ -712,7 +716,7 @@ Private Sub DecodeHelpLine(sLine As String) As String
   Dim iPos As Integer
   Dim iLen As Integer = String.Len(sLine)
   Dim sChar As String
-  Dim sHTML As String
+  Dim sHtml As String
   Dim sWait As String
   Dim bBold, bItalic, bMonospace, bUnderline As Boolean
   Dim iSavePos As Integer
@@ -720,6 +724,7 @@ Private Sub DecodeHelpLine(sLine As String) As String
   Dim iPoint As Integer
   Dim hClass As CClassInfo
   Dim hSymbol As CSymbolInfo
+  Dim sHtmlAfter As String
   
   sLine = RTrim(sLine)
   If Not sLine Then Return "<p>"
@@ -727,7 +732,16 @@ Private Sub DecodeHelpLine(sLine As String) As String
   
   If sLine Begins "-" Then 
     sHtml = "<li>"
+    sHtmlAfter = "</li>"
     sLine = Mid$(sLine, 2)
+  Else If sLine Begins "+" Then
+    iPoint = 2
+    While Left(sLine) = "+" 
+      sLine = Mid$(sLine, 2)
+      Inc iPoint
+    Wend
+    sHtml = "<h" & iPoint & ">"
+    sHtmlAfter &= "</h" & iPoint & ">"
   Endif
   
   Do
@@ -737,7 +751,7 @@ Private Sub DecodeHelpLine(sLine As String) As String
     sChar = String.Mid(sLine, iPos, 1)
     
     If sWait = ">" Then
-      sHTML &= sChar
+      sHtml &= sChar
       If sChar = ">" Then sWait = ""
       Continue
     Else If sWait = "]" Then
@@ -749,12 +763,16 @@ Private Sub DecodeHelpLine(sLine As String) As String
       Else
         iPoint = RInStr(sLink, ".")
         If iPoint = 0 Then
-          hClass = Null
-          Try hClass = CComponent.Classes[sLink]
-          If hClass Then
-            sLink = hClass.GetHelpURL()
+          If UCase(sLink) = sLink Then
+            sLink = MHelp.GetLangURL(sLink)
           Else
-            sLink = ""
+            hClass = Null
+            Try hClass = CComponent.Classes[sLink]
+            If hClass Then
+              sLink = hClass.GetHelpURL()
+            Else
+              sLink = ""
+            Endif
           Endif
         Else
           hSymbol = Null
@@ -767,41 +785,42 @@ Private Sub DecodeHelpLine(sLine As String) As String
         Endif
       Endif
       If sLink Then
-        sHTML &= "<a href=\"" & sLink & "\">" & Html(sChar) & "</a>"
+        sHtml &= "<a href=\"" & sLink & "\">" & Html(sChar) & "</a>"
       Else
-        sHTML &= "<i>" & Html(sChar) & "?</i>"
+        sHtml &= "<i>" & Html(sChar) & "?</i>"
       Endif
       Continue
     Endif
     
     If sChar = "\\" Then
-      sHTML &= Html(String.Mid$(sLine, iPos + 1, 1))
+      sHtml &= Html(String.Mid$(sLine, iPos + 1, 1))
       Inc iPos
     Else If sChar = "<" Then
-      sHTML &= sChar
+      sHtml &= sChar
       sWait = ">"
     Else If sChar = "*" Then
       bBold = Not bBold
-      sHTML &= If(bBold, "<b>", "</b>")
+      sHtml &= If(bBold, "<b>", "</b>")
     Else If sChar = "=" Then
       bMonospace = Not bMonospace
-      sHTML &= If(bMonospace, "<tt>", "</tt>")
+      sHtml &= If(bMonospace, "<tt>", "</tt>")
     Else If sChar = "'" Then
       bItalic = Not bItalic
-      sHTML &= If(bItalic, "<i>", "</i>")
+      sHtml &= If(bItalic, "<i>", "</i>")
     Else If sChar = "#" Then
       bUnderline = Not bUnderline
-      sHTML &= If(bUnderline, "<u>", "</u>")
+      sHtml &= If(bUnderline, "<u>", "</u>")
     Else If sChar = "[" Then
       sWait = "]"
       iSavePos = iPos + 1
     Else
-      sHTML &= Html(sChar)
+      sHtml &= Html(sChar)
     Endif
   
   Loop
   
-  Return sHTML
+  sHtml &= sHtmlAfter
+  Return sHtml
   
 End
 
