@@ -58,6 +58,6 @@ BEGIN_METHOD(GLUPICKMATRIX, GB_FLOAT x; GB_FLOAT y; GB_FLOAT width; GB_FLOAT hei
       for (i=0; i<count; i++)
             iparams[i] = *((GLint *)GB.Array.Get(viewport,i));
 
-      GluPickMatrix(VARG(x), VARG(y), VARG(width), VARG(height), iparams);
+      gluPickMatrix(VARG(x), VARG(y), VARG(width), VARG(height), iparams);
       
 END_METHOD
