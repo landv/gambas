@@ -1399,7 +1399,7 @@ End
 '' +Return value
 '' This function returns [TRUE] if the symbol has been found, [FALSE] otherwise.
 
-Static Function ReadLocalSymbolType(aSym As String[], iIndex As Integer, sSymbol As String, hSymbol As CSymbolInfo) As Boolean
+Static Public Function ReadLocalSymbolType(aSym As String[], iIndex As Integer, sSymbol As String, hSymbol As CSymbolInfo) As Boolean
 
   Dim sType As String
   Dim sWait As String

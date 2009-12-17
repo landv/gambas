@@ -720,7 +720,9 @@ Public Sub timHelp_Timer()
   If sSymbol Then   
     iType = CInt(Left(lvwComp.Key))
     sClass = $sClass
-    If Not sClass Then sClass = GetClass()
+    If Not sClass Then 
+      sClass = GetClass()
+    Endif
     MHelp.InitWebViewWith(webHelp, iType, sSymbol, sClass, "noimage", $hEditor.Window)
   Endif
 

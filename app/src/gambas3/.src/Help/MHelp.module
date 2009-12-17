@@ -457,12 +457,15 @@ End
 
 
 ''Return the formated help of the local class if it exist
-Public Function GetProjectClassHelpHTML(sClass As String) As String
+Public Function GetProjectClassHelpHTML(sClass As String, Optional hWebView As WebView) As String
   
-  Dim sHelp, sHTML, sLine, sWhere As String
+  Dim sHelp, sHTML, sLine, sWhere, sSymbols As String
   Dim hForm As FEditor
   Dim hedit As Editor
   Dim i As Integer
+  Dim hSymbol As CSymbolInfo
+  Dim cClassSymbols As Collection
+  Dim aProperties, aEvents, aMethod, aConst As New String[]
   
   'Getting help
   hForm = Project.LoadFile(Project.FindPath(sClass))
@@ -478,6 +481,23 @@ Public Function GetProjectClassHelpHTML(sClass As String) As String
       Break
     Endif
   Next
+  cClassSymbols = CComponent.GetClassSymbols(sClass)
+  If cClassSymbols.Count > 0 Then
+    For Each hsymbol In cClassSymbols
+      If hsymbol.Kind = ":" Then aEvents.Add("<a class=\"none\" href=\"gambas://Project/help\">" & Mid(hSymbol.Name, 2) & "</a>")
+      If hsymbol.Kind = "m" Then aMethod.Add("<a class=\"none\" href=\"gambas://Project/help\">" & hsymbol.Name & "</a>")
+      If hSymbol.Kind = "p" Or hsymbol.Kind = "r" Then aProperties.Add("<a class=\"none\" href=\"gambas://Project/help\">" & hsymbol.Name & "</a>")
+      If hSymbol.Kind = "C" Then aConst.Add("<a class=\"none\" href=\"gambas://Project/help\">" & hsymbol.Name & "</a>")
+    Next
+  
+  sSymbols = "<td dir=\"ltr\">" & aProperties.Join(" ") & "</td><td width=\"32\">&nbsp;</td> "
+  sSymbols &= "<td dir=\"ltr\">" & aMethod.Join(" ") & "</td><td width=\"32\">&nbsp;</td> "
+  sSymbols &= "<td dir=\"ltr\">" & aEvents.Join(" ") & "</td>"
+  
+  Endif
+  
+  
+  
   
   sWhere = "gambas://project/" & sClass
   
@@ -485,7 +505,7 @@ Public Function GetProjectClassHelpHTML(sClass As String) As String
   sHTML = Replace(sHtml, "$(class)", sClass)
   sHTML = Replace(sHtml, "$(help)", sHelp)
   sHTML = Replace(sHtml, "$(where)", sWhere)
-  
+  sHTML = Replace(sHtml, "$(Symbols)", sSymbols)
   
   Return sHTML
 End

@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,73,27)
+  MoveScaled(0,0,104,36)
   Action = "help"
   Text = ("Help browser")
   Icon = Picture["icon:/small/help"]
@@ -10,7 +10,7 @@
   SkipTaskbar = True
   Arrangement = Arrange.Vertical
   { panToolbar HBox
-    MoveScaled(0,0,70,4)
+    MoveScaled(0,0,105,4)
     { btnHome ToolButton
       MoveScaled(0,0,4,4)
       ToolTip = ("Index")
@@ -47,32 +47,39 @@
       Text = ("")
       Picture = Picture["icon:/small/refresh"]
     }
+    { btnShowpnl ToolButton
+      MoveScaled(26,0,4,4)
+      ToolTip = ("Reload")
+      Text = ("")
+      Picture = Picture["icon:/small/view-split-h"]
+      Toggle = True
+    }
     { Separator1 Separator
-      MoveScaled(26,0,1,4)
+      MoveScaled(31,0,1,4)
     }
     { btnZoomIn ToolButton
-      MoveScaled(28,0,4,4)
+      MoveScaled(32,0,4,4)
       ToolTip = ("Zoom in")
       Text = ("")
       Picture = Picture["icon:/small/zoom-in"]
     }
     { btnZoomOut ToolButton
-      MoveScaled(32,0,4,4)
+      MoveScaled(36,0,4,4)
       ToolTip = ("Zoom out")
       Text = ("")
       Picture = Picture["icon:/small/zoom-out"]
     }
     { btnZoomNormal ToolButton
-      MoveScaled(36,0,4,4)
+      MoveScaled(40,0,4,4)
       ToolTip = ("No zoom")
       Text = ("")
       Picture = Picture["icon:/small/zoom-normal"]
     }
     { Separator2 Separator
-      MoveScaled(41,0,1,4)
+      MoveScaled(45,0,1,4)
     }
     { btnModify ToolButton
-      MoveScaled(42,0,25,4)
+      MoveScaled(46,0,25,4)
       AutoResize = True
       Text = ("Modify documentation...")
       Picture = Picture["icon:/small/edit"]
@@ -81,11 +88,24 @@
   { sepToolbar Separator
     MoveScaled(12,5,20,0)
   }
-  { !webHelp WebView
-    MoveScaled(6,6,29,15)
-    #Public = True
+  { splHelp HSplit
+    MoveScaled(1,5,101,29)
     Expand = True
-    Cached = True
+    { hbHelp VBox
+      MoveScaled(2,1,34,27)
+      Visible = False
+      Expand = True
+      { tvClasses TreeView
+        MoveScaled(1,1,31,27)
+        Expand = True
+      }
+    }
+    { !webHelp WebView
+      MoveScaled(43,3,29,15)
+      #Public = True
+      Expand = True
+      Cached = True
+    }
   }
 }
 

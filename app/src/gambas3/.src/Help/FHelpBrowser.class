@@ -3,10 +3,12 @@
 Property Read {Error} As Boolean
 
 Private $bError As Boolean
+Private $sLastUrl As String
 
 Public Sub Form_Open()
 
   Settings.Read(Me)
+  splHelp.Layout = [1, 4]
   If Not webHelp.Url Then 
     webHelp.Url = MHelp.GetURL() & "?help&" & MHelp.GetHelpLanguage()
     webHelp.TextZoom = 0.8
@@ -86,7 +88,13 @@ Public Sub btnWebSite_Click()
 End
 
 Public Sub webHelp_Error()
-
+  
+  If $sLastUrl Begins "gambas://" Then 
+    webHelp.Stop
+    MHelp.ManageSpecialLink($sLastUrl)
+    Return
+  Endif
+  
   $bError = True
   btnModify.Enabled = False
 
@@ -96,6 +104,12 @@ Public Sub webHelp_Load()
 
   $bError = False
   btnModify.Enabled = webHelp.Url Begins "http://gambasdoc.org"
+
+End
+
+Public Sub webHelp_Link(Url As String)
+
+  $sLastUrl = Url
 
 End
 
@@ -115,5 +129,59 @@ Public Sub btnModify_Click()
   sUrl = Replace(sUrl, "http://gambasdoc.org/help/", "http://gambasdoc.org/edit/")
   
   Project.OpenWebPage(sUrl)
+
+End
+
+Public Sub btnShowpnl_Click()
+
+  hbHelp.Visible = Last.Value
+  If Last.value Then FillTree
+End
+
+''Fill the TreeView with Project components and classes
+Private Sub FillTree()
+  Dim hComp As CComponent
+  Dim hClass As CClassInfo
+  Dim sComponent As String
+  Dim sClass As String
+  
+  tvClasses.Clear
+
+   tvClasses.Add("Project", "Project", Picture["img/16/gambas.png"])
+   For Each sClass In Project.GetClasses()
+   
+    tvClasses.Add("Project" &/ sClass, sClass,, "Project")
+   
+   Next
+   tvClasses["Project"].Expanded = True
+   
+   For Each hClass In CComponent.Classes
+     
+     If hClass.Name = "." Then Continue
+     If hClass.Component = Null Then 
+       sComponent = "gb"
+     Else 
+       sComponent = hClass.Component
+     Endif
+     sClass = hClass.Name
+
+     If Not tvClasses.Exist(sComponent) Then 
+      tvClasses.Add(sComponent, sComponent, Picture["img/16/component.png"])
+     Endif
+     
+     Try tvClasses.Add(sComponent &/ sClass, sClass,, sComponent)
+ 
+  Next
+End
+
+
+Public Sub tvClasses_Click()
+  Dim ars As String[]
+  Dim iType As Integer
+  
+  ars = Split(tvClasses.Current.Key, "/")
+  If ars.count < 2 Then Return
+  
+  MHelp.InitWebViewWith(webHelp, 1, ars[1])
 
 End
