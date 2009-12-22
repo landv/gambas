@@ -753,22 +753,6 @@ __VARIANT:
   /*goto *jump[Min(T_OBJECT, type)];*/
   goto __CONV;
 
-  /*
-  {
-    VARIANT *var = ((VARIANT *)addr);
-
-    VARIANT_free(var);
-
-    var->type = value->_variant.vtype;
-    VARIANT_copy(value->_variant.value, var->value);
-
-    if (TYPE_is_object(var->type))
-      OBJECT_$ref(*((void **)var->value));
-
-    return;
-  }
-  */
-
 __VOID:
 __ARRAY:
 __FUNCTION:
@@ -870,12 +854,10 @@ __VARIANT:
   value->_variant.type = T_VARIANT;
   value->_variant.vtype = ((VARIANT *)addr)->type;
 
-  /*if (value->_variant.vtype == T_STRING)
-    value->_variant.vtype = T_STRING;
-  else*/ if (value->_variant.vtype == T_VOID)
+  if (value->_variant.vtype == T_VOID)
     value->_variant.vtype = T_NULL;
 
-  VARIANT_copy(&((VARIANT *)addr)->value.data, &value->_variant.value.data);
+	value->_variant.value.data = ((VARIANT *)addr)->value.data;
 
   return;
 

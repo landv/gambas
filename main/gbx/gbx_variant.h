@@ -43,8 +43,6 @@ typedef
   }
   VARIANT;
 
-#define VARIANT_copy(src, dst)  *dst = *src
-
 static INLINE void VARIANT_undo(VALUE *val)
 {
   if (val->type == T_VARIANT)

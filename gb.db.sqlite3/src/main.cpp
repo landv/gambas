@@ -111,15 +111,15 @@ static void conv_data(const char *data, GB_VARIANT_VALUE * val, fType type)
 	{
 		case ft_Boolean:
 
-			val->_boolean.type = GB_T_BOOLEAN;
+			val->type = GB_T_BOOLEAN;
 			/*GB.NumberFromString(GB_NB_READ_INTEGER, data, strlen(data), &conv); */
 			if (data[0] == 't' || data[0] == 'T')
 			{
-				val->_boolean.value = 1;
+				val->value._boolean = 1;
 			}
 			else
 			{
-				val->_boolean.value = atoi(data);	// != 0;
+				val->value._boolean = atoi(data);	// != 0;
 			}
 			break;
 
@@ -130,8 +130,8 @@ static void conv_data(const char *data, GB_VARIANT_VALUE * val, fType type)
 
 			GB.NumberFromString(GB_NB_READ_INTEGER, data, strlen(data), &conv);
 
-			val->_integer.type = GB_T_INTEGER;
-			val->_integer.value = ((GB_INTEGER *) & conv)->value;
+			val->type = GB_T_INTEGER;
+			val->value._integer = ((GB_INTEGER *) & conv)->value;
 
 			break;
 
@@ -140,8 +140,8 @@ static void conv_data(const char *data, GB_VARIANT_VALUE * val, fType type)
 
 			GB.NumberFromString(GB_NB_READ_FLOAT, data, strlen(data), &conv);
 
-			val->_float.type = GB_T_FLOAT;
-			val->_float.value = ((GB_FLOAT *) & conv)->value;
+			val->type = GB_T_FLOAT;
+			val->value._float = ((GB_FLOAT *) & conv)->value;
 
 			break;
 
@@ -150,7 +150,7 @@ static void conv_data(const char *data, GB_VARIANT_VALUE * val, fType type)
 			GB.NumberFromString(GB_NB_READ_LONG, data, strlen(data), &conv);
 
 			val->type = GB_T_LONG;
-			val->_long.value = ((GB_LONG *) & conv)->value;
+			val->value._long = ((GB_LONG *) & conv)->value;
 
 			break;
 
@@ -222,9 +222,9 @@ static void conv_data(const char *data, GB_VARIANT_VALUE * val, fType type)
 
 			GB.MakeDate(&date, (GB_DATE *) & conv);
 
-			val->_date.type = GB_T_DATE;
-			val->_date.date = ((GB_DATE *) & conv)->value.date;
-			val->_date.time = ((GB_DATE *) & conv)->value.time;
+			val->type = GB_T_DATE;
+			val->value._date.date = ((GB_DATE *) & conv)->value.date;
+			val->value._date.time = ((GB_DATE *) & conv)->value.time;
 
 			break;
 
@@ -238,8 +238,8 @@ static void conv_data(const char *data, GB_VARIANT_VALUE * val, fType type)
 		case ft_Char:
 		case ft_WChar:
 		default:
-			val->_string.type = GB_T_CSTRING;
-			val->_string.value = (char *)data;
+			val->type = GB_T_CSTRING;
+			val->value._string = (char *)data;
 	}
 }
 
@@ -926,7 +926,7 @@ static int query_fill(DB_DATABASE *db, DB_RESULT result, int pos, GB_VARIANT_VAL
 		//fprintf(stderr, "query_fill: %d.%d %s\n", pos, i, data);
 
 		value.type = GB_T_VARIANT;
-		value.value._object.type = GB_T_NULL;
+		value.value.type = GB_T_NULL;
 
 		//if (field->type != FIELD_TYPE_NULL)
 		if (data)
@@ -1862,12 +1862,12 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 
 	//fprintf(stderr, "field_info: type = %d  length = %d\n", info->type, info->length);
 
-	info->def._object.type = GB_T_NULL;
+	info->def.type = GB_T_NULL;
 
 	if (_fieldNotNull)
 	{
 		def.type = GB_T_VARIANT;
-		def.value._object.type = GB_T_NULL;
+		def.value.type = GB_T_NULL;
 
 		val = DB.UnquoteString(_defaultValue, strlen(_defaultValue), '\'');
 

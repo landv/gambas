@@ -259,16 +259,16 @@ static void conv_data(int version, const char *data, long data_length, GB_VARIAN
 
       if (len == 1)
       {
-         val->_boolean.type = GB_T_BOOLEAN;
+         val->type = GB_T_BOOLEAN;
          /*GB.NumberFromString(GB_NB_READ_INTEGER, data, strlen(data), &conv);*/
-         val->_boolean.value = atoi(data) != 0;
+         val->value._boolean = atoi(data) != 0;
       }
       else
       {
         GB.NumberFromString(GB_NB_READ_INTEGER, data, strlen(data), &conv);
 
-        val->_integer.type = GB_T_INTEGER;
-        val->_integer.value = conv._integer.value;
+        val->type = GB_T_INTEGER;
+        val->value._integer = conv._integer.value;
       }
 
       break;
@@ -282,7 +282,7 @@ static void conv_data(int version, const char *data, long data_length, GB_VARIAN
       GB.NumberFromString(GB_NB_READ_INTEGER, data, strlen(data), &conv);
 
       val->type = GB_T_INTEGER;
-      val->_integer.value = conv._integer.value;
+      val->value._integer = conv._integer.value;
 
       break;
 
@@ -291,7 +291,7 @@ static void conv_data(int version, const char *data, long data_length, GB_VARIAN
       GB.NumberFromString(GB_NB_READ_LONG, data, strlen(data), &conv);
 
       val->type = GB_T_LONG;
-      val->_long.value = conv._long.value;
+      val->value._long = conv._long.value;
 
       break;
 
@@ -301,8 +301,8 @@ static void conv_data(int version, const char *data, long data_length, GB_VARIAN
 
       GB.NumberFromString(GB_NB_READ_FLOAT, data, strlen(data), &conv);
 
-      val->_float.type = GB_T_FLOAT;
-      val->_float.value = conv._float.value;
+      val->type = GB_T_FLOAT;
+      val->value._float = conv._float.value;
 
       break;
 
@@ -374,9 +374,9 @@ static void conv_data(int version, const char *data, long data_length, GB_VARIAN
 
       GB.MakeDate(&date, (GB_DATE *)&conv);
 
-      val->_date.type = GB_T_DATE;
-      val->_date.date = conv._date.value.date;
-      val->_date.time = conv._date.value.time;
+      val->type = GB_T_DATE;
+      val->value._date.date = conv._date.value.date;
+      val->value._date.time = conv._date.value.time;
 
       break;
 
@@ -402,8 +402,8 @@ static void conv_data(int version, const char *data, long data_length, GB_VARIAN
     case FIELD_TYPE_SET:
     case FIELD_TYPE_ENUM:
     default:
-      val->_string.type = GB_T_CSTRING;
-      val->_string.value = (char *)data;
+      val->type = GB_T_CSTRING;
+      val->value._string = (char *)data;
       //val->_string.start = 0;
       //if (data && data_length == 0)
       //	data_length = strlen(data);
@@ -1795,7 +1795,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
   else
     info->length = 0;
 
-  info->def._object.type = GB_T_NULL;
+  info->def.type = GB_T_NULL;
 
 	if ((info->type == GB_T_INTEGER || info->type == GB_T_LONG) && strstr(row[5], "auto_increment"))
 		info->type = DB_T_SERIAL;
@@ -1804,7 +1804,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 		if (!*row[2] || row[2][0] != 'Y')
 		{
 			def.type = GB_T_VARIANT;
-			def.value._object.type = GB_T_NULL;
+			def.value.type = GB_T_NULL;
 
 			val = row[4];
 

@@ -155,18 +155,18 @@ BEGIN_METHOD(CCLIPBOARD_copy, GB_VARIANT data; GB_STRING format)
 				goto _BAD_FORMAT;
 		}
 		
-		gClipboard::setText(VARG(data)._string.value, format);
+		gClipboard::setText(VARG(data).value._string, format);
 		return;
 	}
 	
-	if (VARG(data).type >= GB_T_OBJECT && GB.Is(VARG(data)._object.value, GB.FindClass("Image")))
+	if (VARG(data).type >= GB_T_OBJECT && GB.Is(VARG(data).value._object, GB.FindClass("Image")))
 	{
 		CIMAGE *img;
 		
 		if (!MISSING(format))
 			goto _BAD_FORMAT;
 		
-		img = (CIMAGE *)VARG(data)._object.value;
+		img = (CIMAGE *)VARG(data).value._object;
 		gClipboard::setImage(img->picture);
 		return;
 	}
@@ -260,14 +260,14 @@ void CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, char *format)
         goto _BAD_FORMAT;
     }
     
-    gDrag::dragText(source->widget, data->_string.value, format);
+    gDrag::dragText(source->widget, data->value._string, format);
   }
-  else if (data->type >= GB_T_OBJECT && GB.Is(data->_object.value, GB.FindClass("Image")))
+  else if (data->type >= GB_T_OBJECT && GB.Is(data->value._object, GB.FindClass("Image")))
   {
     if (format && *format)
       goto _BAD_FORMAT;
 
-		gDrag::dragImage(source->widget, ((CIMAGE *)data->_object.value)->picture);
+		gDrag::dragImage(source->widget, ((CIMAGE *)data->value._object)->picture);
   }
   else
     goto _BAD_FORMAT;

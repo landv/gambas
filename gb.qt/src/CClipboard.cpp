@@ -198,7 +198,7 @@ BEGIN_METHOD(CCLIPBOARD_copy, GB_VARIANT data; GB_STRING format)
 	{
 		if (VARG(data).type == GB_T_STRING)
 		{
-			QString text = TO_QSTRING(VARG(data)._string.value);
+			QString text = TO_QSTRING(VARG(data).value._string);
 			QTextDrag *drag = new QTextDrag(text);
 
 			if (MISSING(format))
@@ -218,14 +218,14 @@ BEGIN_METHOD(CCLIPBOARD_copy, GB_VARIANT data; GB_STRING format)
 
 			QApplication::clipboard()->setData(drag, QClipboard::Clipboard);
 		}
-		else if (VARG(data).type >= GB_T_OBJECT && GB.Is(VARG(data)._object.value, CLASS_Image))
+		else if (VARG(data).type >= GB_T_OBJECT && GB.Is(VARG(data).value._object, CLASS_Image))
 		{
 			CIMAGE *img;
 
 			if (!MISSING(format))
 				goto _BAD_FORMAT;
 
-			img = (CIMAGE *)VARG(data)._object.value;
+			img = (CIMAGE *)VARG(data).value._object;
 
 			QApplication::clipboard()->setImage(*(img->image), QClipboard::Clipboard);
 		}
@@ -412,17 +412,17 @@ void CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, GB_STRING *fmt)
         goto _BAD_FORMAT;
     }
 
-    ((QTextDrag *)drag)->setText(data->_string.value);
+    ((QTextDrag *)drag)->setText(data->value._string);
     ((QTextDrag *)drag)->setSubtype(format);
   }
-  else if (data->type >= GB_T_OBJECT && GB.Is(data->_object.value, CLASS_Image))
+  else if (data->type >= GB_T_OBJECT && GB.Is(data->value._object, CLASS_Image))
   {
     if (fmt)
       goto _BAD_FORMAT;
 
     drag = new QImageDrag(source->widget);
 
-    img = (CIMAGE *)data->_object.value;
+    img = (CIMAGE *)data->value._object;
 
     ((QImageDrag *)drag)->setImage(*(img->image));
   }

@@ -101,7 +101,7 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
   #endif
   class->is_virtual = *class->name == '.';
 
-  size_dynamic = gambas->val1;
+  size_dynamic = (gambas->val1 + 3) & ~3;
 
   class->n_desc = 0;
   class->n_event = 0;

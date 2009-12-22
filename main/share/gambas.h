@@ -108,30 +108,6 @@ typedef
   GB_BASE;
 
 
-/* Gambas VARIANT datatype definition */
-
-typedef
-  struct {
-    GB_TYPE vtype;
-		union {
-			int _int;
-			char *_string;
-			void *_object;
-			int64_t data;
-			}
-			value;
-		}
-	PACKED
-  GB_VARIANT_VALUE;
-
-typedef
-  struct {
-    GB_TYPE type;
-		GB_VARIANT_VALUE value;
-    }
-  GB_VARIANT;
-
-
 /* Gambas STRING datatype definition */
 
 typedef
@@ -250,6 +226,38 @@ typedef
     intptr_t _reserved[2];
     }
   GB_OBJECT;
+
+
+/* Gambas VARIANT datatype definition */
+
+typedef
+  struct {
+    GB_TYPE type;
+		union {
+			char _boolean;
+			unsigned char _byte;
+			short _short;
+			int _integer;
+			int64_t _long;
+			float _single;
+			double _float;
+			GB_DATE_VALUE _date;
+			char *_string;
+			void *_object;
+			int64_t data;
+			}
+			value;
+		}
+	PACKED
+  GB_VARIANT_VALUE;
+
+typedef
+  struct {
+    GB_TYPE type;
+		GB_VARIANT_VALUE value;
+    }
+	PACKED
+  GB_VARIANT;
 
 
 /* Gambas common value definition */

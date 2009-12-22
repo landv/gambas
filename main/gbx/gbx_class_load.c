@@ -639,7 +639,7 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
 			#endif
 			pos += sizeof_ctype(class, var->type);
 		}
-		info->s_static = pos;
+		info->s_static = (pos + 3) & ~3;
   
 		pos = 0;
 		for (i = 0; i < class->load->n_dyn; i++)
@@ -650,7 +650,7 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
 			#endif
 			pos += sizeof_ctype(class, var->type);
 		}
-		info->s_dynamic = pos;
+		info->s_dynamic = (pos + 3) & ~3;
 	}
 
 

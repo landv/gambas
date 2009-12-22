@@ -156,10 +156,16 @@ typedef
     TYPE type;
     TYPE vtype;
 		union {
+			char _boolean;
+			unsigned char _byte;
+			short _short;
 			int _int;
+			int64_t _long;
+			float _single;
+			double _float;
 			char *_string;
 			void *_object;
-			uint64_t data;
+			int64_t data;
 			}
 			value;
     }

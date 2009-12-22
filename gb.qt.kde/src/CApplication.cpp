@@ -799,7 +799,7 @@ static bool call_method(CAPPLICATION *_object, const char *object, const char *n
 
       value.type = GB_T_VARIANT;
       value.value.type = GB_T_STRING;
-      value.value._string.value = (char *)data;
+      value.value.value._string = (char *)data;
 
       GB.Collection.Set(col, key, 0, &value);
 
@@ -835,7 +835,7 @@ static bool call_method(CAPPLICATION *_object, const char *object, const char *n
 
       value.type = GB_T_VARIANT;
       value.value.type = GB_T_STRING;
-      value.value._string.value = data;
+      value.value.value._string = data;
 
       GB.Collection.Set(col, key, 0, &value);
 
@@ -892,7 +892,7 @@ static bool call_method(CAPPLICATION *_object, const char *object, const char *n
       value.value.type = GB_T_OBJECT;
       ref = make_dcopref(it.data());
       //GB.Ref(ref);
-      value.value._object.value = ref;
+      value.value.value._object = ref;
 
       GB.Collection.Set(col, key, 0, &value);
     }
@@ -921,7 +921,7 @@ static bool call_method(CAPPLICATION *_object, const char *object, const char *n
       value.value.type = GB_T_OBJECT;
       ref = make_dcopref(it.data());
       //GB.Ref(ref);
-      value.value._object.value = ref;
+      value.value.value._object = ref;
 
       //qDebug("key: %s  ref: %p", key, ref);
       GB.Collection.Set(col, key, 0, &value);
