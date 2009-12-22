@@ -634,7 +634,9 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
 		for (i = 0; i < class->load->n_stat; i++)
 		{
 			var = &class->load->stat[i];
+    	#ifdef OS_64BITS
 			var->pos = pos;
+			#endif
 			pos += sizeof_ctype(class, var->type);
 		}
 		info->s_static = pos;
@@ -643,7 +645,9 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
 		for (i = 0; i < class->load->n_dyn; i++)
 		{
 			var = &class->load->dyn[i];
+    	#ifdef OS_64BITS
 			var->pos = pos;
+			#endif
 			pos += sizeof_ctype(class, var->type);
 		}
 		info->s_dynamic = pos;
