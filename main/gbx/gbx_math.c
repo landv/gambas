@@ -212,6 +212,10 @@ double exp2(double x)
 	return pow(2, x);
 }
 
+#endif
+
+#if defined(OS_FREEBSD) || defined(OS_OPENBSD) || defined(ARCH_ARM)
+
 long double log10l(long double x)
 {
 	return log10((double) x);
@@ -227,7 +231,15 @@ long double powl(long double x, long double y)
 	return pow((double) x, (double) y);
 }
 
+long double modfl(long double x, long double *iptr)
+{
+	double val;
+	return modf((double)x, &val);
+	*iptr = val;
+}
+
 #endif
+
 
 void MATH_init(void)
 {

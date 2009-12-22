@@ -230,33 +230,33 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CFILE_atime)
 
-  GB_DATE date;
+  VALUE date;
 
-  DATE_from_time(THIS_STAT->info.atime, 0, (VALUE *)&date);
+  DATE_from_time(THIS_STAT->info.atime, 0, &date);
 
-  GB_ReturnDate(&date);
+  GB_ReturnDate((GB_DATE *)&date);
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CFILE_ctime)
 
-  GB_DATE date;
+  VALUE date;
 
-  DATE_from_time(THIS_STAT->info.ctime, 0, (VALUE *)&date);
+  DATE_from_time(THIS_STAT->info.ctime, 0, &date);
 
-  GB_ReturnDate(&date);
+  GB_ReturnDate((GB_DATE *)&date);
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CFILE_mtime)
 
-  GB_DATE date;
+  VALUE date;
 
-  DATE_from_time(THIS_STAT->info.mtime, 0, (VALUE *)&date);
+  DATE_from_time(THIS_STAT->info.mtime, 0, &date);
 
-  GB_ReturnDate(&date);
+  GB_ReturnDate((GB_DATE *)&date);
 
 END_PROPERTY
 

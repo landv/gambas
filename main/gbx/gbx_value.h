@@ -63,6 +63,9 @@ typedef
 typedef
   struct {
     TYPE type;
+		#ifndef OS_64BITS
+		int _padding;
+		#endif
     int64_t value;
     }
   PACKED
@@ -79,6 +82,9 @@ typedef
 typedef
   struct {
     TYPE type;
+		#ifndef OS_64BITS
+		int _padding;
+		#endif
     double value;
     }
   PACKED
@@ -87,6 +93,9 @@ typedef
 typedef
   struct {
     TYPE type;
+		#ifndef OS_64BITS
+		int _padding;
+		#endif
     double value;
     }
   PACKED

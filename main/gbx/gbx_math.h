@@ -48,9 +48,13 @@ double rnd(void);
 double exp10(double x);
 double log2(double x);
 double exp2(double x);
+#endif
+
+#if defined(OS_FREEBSD) || defined(OS_OPENBSD) || defined(ARCH_ARM)
 long double log10l(long double x);
 long double fabsl(long double x);
 long double powl(long double x, long double y);
+long double modfl(long double x, long double *iptr);
 #endif
 
 #endif

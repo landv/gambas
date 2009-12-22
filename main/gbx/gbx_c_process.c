@@ -133,7 +133,7 @@ static void init_process(CPROCESS *process)
   process->watch = GB_WATCH_NONE;
   process->in = process->out = process->err = -1;
   update_stream(process);
-  process->tag.type = GB_T_NULL;
+  process->tag.vtype = GB_T_NULL;
 }
 
 static void exit_process(CPROCESS *_object)

@@ -56,6 +56,10 @@
 #define EXPORT
 #endif
 
+#ifndef PACKED
+#define PACKED __attribute__((packed))
+#endif
+
 #if defined(__cplusplus)
 #define __null ((intptr_t)0)
 #endif
@@ -107,27 +111,23 @@ typedef
 /* Gambas VARIANT datatype definition */
 
 typedef
-  union {
-    GB_TYPE type;
-		intptr_t _reserved[3];
-    struct { GB_TYPE type; int value; } _boolean;
-    struct { GB_TYPE type; int value; } _byte;
-    struct { GB_TYPE type; int value; } _short;
-    struct { GB_TYPE type; int value; } _integer;
-    struct { GB_TYPE type; int64_t value; } _long;
-    struct { GB_TYPE type; double value; } _single;
-    struct { GB_TYPE type; double value; } _float;
-    struct { GB_TYPE type; int date; int time; } _date;
-    struct { GB_TYPE type; char *value; } _string;
-    struct { GB_TYPE type; void *value; } _object;
-    }
+  struct {
+    GB_TYPE vtype;
+		union {
+			int _int;
+			char *_string;
+			void *_object;
+			int64_t data;
+			}
+			value;
+		}
+	PACKED
   GB_VARIANT_VALUE;
-
 
 typedef
   struct {
     GB_TYPE type;
-    GB_VARIANT_VALUE value;
+		GB_VARIANT_VALUE value;
     }
   GB_VARIANT;
 
@@ -168,11 +168,12 @@ typedef
 typedef
   struct {
     GB_TYPE type;
+		#if __WORDSIZE == 32
+		int _pad;
+		#endif
     int64_t value;
     #if __WORDSIZE == 64
     intptr_t _reserved[2];
-    #else
-    int _reserved;
     #endif
     }
   GB_LONG;
@@ -207,11 +208,12 @@ typedef
 typedef
   struct {
     GB_TYPE type;
+    #if __WORDSIZE == 32
+		int _pad;
+		#endif
     double value;
     #if __WORDSIZE == 64
     intptr_t _reserved[2];
-    #else
-    int _reserved;
     #endif
     }
   GB_FLOAT;
@@ -229,7 +231,7 @@ typedef
 typedef
   struct {
     GB_TYPE type;
-    GB_DATE_VALUE value;
+		GB_DATE_VALUE value;
     #if __WORDSIZE == 64
     intptr_t _reserved[2];
     #else

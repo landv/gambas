@@ -124,6 +124,7 @@ AC_DEFUN([GB_INIT],
   dnl AC_TYPE_SIZE_T
   dnl AC_HEADER_TIME
   dnl AC_STRUCT_TM
+  AC_C_LONG_DOUBLE
 
   dnl ---- Checks for library functions.
 
@@ -357,7 +358,29 @@ AC_DEFUN([GB_SYSTEM],
       ;;
   esac
 
-  AC_MSG_RESULT($SYSTEM)
+	AC_MSG_RESULT($SYSTEM)
+
+  AC_MSG_CHECKING(target architecture)
+	
+	case "${host}" in
+    i*86-*-*-* )
+      ARCH=X86
+      AC_DEFINE(ARCH_X86, 1, [Target architecture is x86])
+      ;;
+    x86_64-*-*-* )
+      ARCH=X86_64
+      AC_DEFINE(ARCH_X86, 1, [Target architecture is x86_64])
+      ;;
+    arm*-*-*-* )
+      ARCH=ARM
+      AC_DEFINE(ARCH_ARM, 1, [Target architecture is ARM])
+      ;;
+    *)
+      ARCH=UNKNOWN
+      ;;
+  esac
+
+	AC_MSG_RESULT($ARCH)
 ])
 
 

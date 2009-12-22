@@ -118,7 +118,8 @@ _PUSH_GENERIC:
 					else if (desc->constant.type == T_INTEGER)
 					{
 						PC[-1] = C_PUSH_LONG;
-						*((int *)PC) = desc->constant.value._integer;
+						PC[0] = desc->constant.value._integer & 0xFFFF;
+						PC[1] = desc->constant.value._integer >> 16;
 						goto _PUSH_CONSTANT_2;
 					}
 				}

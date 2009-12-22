@@ -34,8 +34,8 @@
 #include "gbx_stack.h"
 
 size_t STACK_size = 1024 * sizeof(VALUE);
-char *STACK_base = NULL;
-char *STACK_limit = NULL;
+VALUE *STACK_base = NULL;
+VALUE *STACK_limit = NULL;
 STACK_CONTEXT *STACK_frame;
 int STACK_frame_count;
 
@@ -44,11 +44,11 @@ void STACK_init(void)
 	//fprintf(stderr, "STACK_size = %ld\n", STACK_size);
   ALLOC_ZERO(&STACK_base, STACK_size, "STACK_init");
 
-  STACK_limit = (STACK_base + STACK_size);
+  STACK_limit = (STACK_base + STACK_size / sizeof(VALUE));
   STACK_frame = (STACK_CONTEXT *)STACK_limit;
   STACK_frame_count = 0;
 
-  SP = (VALUE *)STACK_base;
+  SP = STACK_base;
 }
 
 
@@ -70,20 +70,20 @@ void STACK_check(int need)
   }
 #endif
 
-  if ((char *)(SP + need + 8) >= STACK_limit)
+  if ((SP + need + 8) >= STACK_limit)
     THROW(E_STACK);
 }
 
 
 void STACK_push_frame(STACK_CONTEXT *context)
 {
-  if (((char *)SP + sizeof(STACK_CONTEXT) * 2) >= (char *)STACK_frame)
+  if (((STACK_CONTEXT *)SP + 2) >= (STACK_CONTEXT *)STACK_frame)
     THROW(E_STACK);
 
   STACK_frame--;
   *STACK_frame = *context;
   STACK_frame_count++;
-  STACK_limit = (char *)STACK_frame;
+  STACK_limit = (VALUE *)STACK_frame;
 
   //fprintf(stderr, "STACK_push_frame: [%d]  PC = %p  FP = %p (%s)\n", STACK_frame_count, context->pc, context->fp,
   //  context->fp ? (context->fp->debug ? context->fp->debug->name : 0) : 0);
@@ -98,7 +98,7 @@ void STACK_pop_frame(STACK_CONTEXT *context)
   *context = *STACK_frame;
   STACK_frame++;
   STACK_frame_count--;
-  STACK_limit = (char *)STACK_frame;
+  STACK_limit = (VALUE *)STACK_frame;
 
   //fprintf(stderr, "STACK_pop_frame: [%d] PC = %p  FP = %p (%s)\n", STACK_frame_count, context->pc, context->fp,
   //  context->fp ? (context->fp->debug ? context->fp->debug->name : 0) : 0);

@@ -1068,8 +1068,9 @@ void GB_ReturnFloat(double val)
 
 void GB_ReturnDate(GB_DATE *date)
 {
-  TEMP = *((VALUE *)date);
   TEMP.type = T_DATE;
+	TEMP._date.date = date->value.date;
+	TEMP._date.time = date->value.time;
 }
 
 

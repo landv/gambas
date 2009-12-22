@@ -397,6 +397,7 @@ void ARCHIVE_dir_first(ARCHIVE *arch, const char *path, const char *pattern, int
 
 bool ARCHIVE_dir_next(char **name, int *len, int attr)
 {
+	ARCH_SYMBOL *asym;
   SYMBOL *sym;
   char *s = NULL;
   int l = 0;
@@ -415,15 +416,16 @@ bool ARCHIVE_dir_next(char **name, int *len, int attr)
     if (arch_index >= arch_dir->header.n_symbol)
       return TRUE;
 
-    sym = (SYMBOL *)&arch_dir->symbol[arch_index];
-    sym = (SYMBOL *)&arch_dir->symbol[sym->sort];
+    sym = &arch_dir->symbol[arch_index].sym;
+    asym = &arch_dir->symbol[sym->sort];
+		sym = &asym->sym;
 
     if (arch_pattern == NULL)
       break;
 
     arch_index++;
 
-		if (attr == GB_STAT_DIRECTORY && (((ARCH_SYMBOL *)sym)->pos >= 0))
+		if (attr == GB_STAT_DIRECTORY && (asym->pos >= 0))
 			continue;
 
 		if (sym->len < lenp)

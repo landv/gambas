@@ -87,7 +87,7 @@ static CSTREAM *pop_stream(void **list)
 
 static STREAM *get_default(intptr_t val)
 {
-  static STREAM_MEMORY memory_stream;
+  static STREAM memory_stream = { 0 };
   STREAM *stream;
 
   switch(val)
@@ -111,9 +111,9 @@ static STREAM *get_default(intptr_t val)
       	stream = CSTREAM_stream(CFILE_err);
       break;
     default:
-      memory_stream.common.type = &STREAM_memory;
-      memory_stream.addr = (void *)val;
-      memory_stream.pos = 0;
+      memory_stream.memory.common.type = &STREAM_memory;
+      memory_stream.memory.addr = (void *)val;
+      memory_stream.memory.pos = 0;
       stream = (STREAM *)&memory_stream;
       break;
   }
