@@ -9,7 +9,7 @@ Private $sText As String
 Private $iLineStyle As Integer
 Private $iLineWidth As Integer
 Private $iColor As Integer
-Private $iBackground As Integer
+Private $iBackGround As Integer
 Private $iTile As Picture
 
 Property Count As Integer
@@ -18,7 +18,7 @@ Property Values As Float[]
 Property LineStyle As Integer
 Property LineWidth As Integer
 Property Color As Integer
-Property Background As Integer
+Property BackGround As Integer
 Private $sidChart As String
 
 
@@ -154,13 +154,13 @@ Private Sub Color_Write(Value As Integer)
 
 End
 
-Private Function Background_Read() As Integer
+Private Function BackGround_Read() As Integer
 
   
 
 End
 
-Private Sub Background_Write(Value As Integer)
+Private Sub BackGround_Write(Value As Integer)
 
   
 

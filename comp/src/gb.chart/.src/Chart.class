@@ -26,12 +26,12 @@ Private $iType As Integer
 Private $iWidth As Integer
 Private $iHeight As Integer
 Private $oHeaders As _CHeaders
-Private $iBackground As Integer = Color.White
+Private $iBackGround As Integer = Color.White
 Private $iBorder As Boolean = True
 Private $bShowLabels As Boolean = False
 
 Property Border As Boolean
-Property Background As Integer
+Property BackGround As Integer
 
 Property Height As Integer
 Property Width As Integer
@@ -185,7 +185,7 @@ Public Sub Draw()
   
   
   If Not IsNull(Me.Title.Text) And Me.Title.Visible Then 
-    Draw.ForeColor = Color.Black
+    Draw.ForeGround = Color.Black
     Draw.Font.Size = Me.Title.Font.Size * _fProportionnal
     Draw.Text(Me.Title.Text, iStaticSpace, iStaticSpace, iClientWidth, iTitleHeight, Align.Center)
   Endif
@@ -327,15 +327,15 @@ Private Function XAxe_Read() As _CXAxe
 
 End
 
-Private Function Background_Read() As Integer
+Private Function BackGround_Read() As Integer
 
-  Return $iBackground  
+  Return $iBackGround  
 
 End
 
-Private Sub Background_Write(Value As Integer)
+Private Sub BackGround_Write(Value As Integer)
 
-  $iBackground = Value
+  $iBackGround = Value
 
 End
 

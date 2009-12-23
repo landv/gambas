@@ -80,7 +80,7 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
       'aroPolyLines[j][i * 2] = hRect.Left + (hUnits.X * i)
       'aroPolyLines[j][i * 2 + 1] = hRect.Bottom - f * hUnits.Y + (hUnits.Y * fMinVal)
       Draw.FillColor = Chart._$ColChart[$sidChart].Colors[j]
-      Draw.ForeColor = Color.DarkGray
+      Draw.ForeGround = Color.DarkGray
       MTools.DrawSymbol($sidChart, j, hRect.Left + (hUnits.X * i), hRect.Bottom - f * hUnits.Y + (hUnits.Y * fMinVal))
     Next
     

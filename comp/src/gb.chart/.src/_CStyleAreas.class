@@ -123,7 +123,7 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
       For j = 0 To aroPolyGones[i].Max - 4 Step 2
         Draw.LineWidth = 1
         Draw.FillColor = Chart._$ColChart[$sidChart].Colors[i]
-        Draw.ForeColor = Color.DarkGray
+        Draw.ForeGround = Color.DarkGray
         MTools.DrawSymbol($sidChart, i, aroPolyGones[i][j], aroPolyGones[i][j + 1])
       
       Next

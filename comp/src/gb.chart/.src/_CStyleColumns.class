@@ -72,7 +72,7 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
       fTabPos = hRect.Left + hUnits.x / 2
       For Each oSerie In Chart._$ColChart[$sidChart]
         For i = 0 To Chart._$ColChart[$sidChart].Count - 1
-          draw.ForeColor = Color.DarkGray
+          draw.ForeGround = Color.DarkGray
           Draw.FillStyle = Fill.Solid
           Draw.FillColor = Chart._$ColChart[$sidChart].Colors[i]
           draw.Rect(fTabPos + i * (hUnits.X - 1), hRect.Bottom + (fMinVal * hUnits.y), hUnits.X, oSerie[i] * - hUnits.y)
@@ -97,7 +97,7 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
           Else 
             f = (oSerie[i] * - hUnits.y) - 1
           Endif
-          draw.ForeColor = Color.DarkGray
+          draw.ForeGround = Color.DarkGray
           Draw.FillStyle = Fill.Solid
           Draw.FillColor = Chart._$ColChart[$sidChart].Colors[i]
           draw.Rect(fTabPos, fCumul, hUnits.X, f)

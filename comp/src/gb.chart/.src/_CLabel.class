@@ -1,6 +1,6 @@
 ' Gambas class file
 Property {Font} As Font
-Property ForeColor As Integer
+Property ForeGround As Integer
 Property BackGround As Integer
 
 
@@ -16,13 +16,13 @@ Private Sub Font_Write(Value As Font)
 
 End
 
-Private Function ForeColor_Read() As Integer
+Private Function ForeGround_Read() As Integer
 
   
 
 End
 
-Private Sub ForeColor_Write(Value As Integer)
+Private Sub ForeGround_Write(Value As Integer)
 
   
 

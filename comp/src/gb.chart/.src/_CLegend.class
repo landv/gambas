@@ -122,7 +122,7 @@ Public Sub Draw(bSeries As Boolean)
       h = TitleH + iStaticSpace + arsInt.Count * (draw.Font.Height() + iStaticSpace)
       x = Chart._$ColChart[$sidChart].Width - w - iStaticSpace
       y = (Chart._$ColChart[$sidChart].Height - h) / 2
-      draw.ForeColor = Color.Black
+      draw.ForeGround = Color.Black
       Draw.Rect(x, Y, w, h)
       Draw.Text(Chart._$ColChart[$sidChart].Legend.Title, x + iStaticSpace + (w - cnt) / 2, Y)
       draw.Font.Size = $oFont.Size * Chart._$ColChart[$sidChart]._fProportionnal

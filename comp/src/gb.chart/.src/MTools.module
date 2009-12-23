@@ -127,10 +127,10 @@ Public Function DrawChartAxes(sidChart As String, hChartRect As CRect, fMinValue
   
   'Draw the background
   
-  Draw.FillColor = Chart._$ColChart[sidChart].Background
+  Draw.FillColor = Chart._$ColChart[sidChart].BackGround
   Draw.FillStyle = Fill.Solid
   Draw.Rect(hChartRect.Left, hChartRect.Top, hChartRect.Right - hChartRect.Left, hChartRect.Bottom - hChartRect.Top + 1)
-  Draw.ForeColor = Color.Black
+  Draw.ForeGround = Color.Black
   
   fYUnit = 1
   Try fYUnit = (hChartRect.Bottom - hChartRect.Top) / (fMaxValue - fMinValue)

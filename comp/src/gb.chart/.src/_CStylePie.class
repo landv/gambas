@@ -52,7 +52,7 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
    
     For i = 0 To Chart._$ColChart[$sidChart].Count - 1
     f = Chart._$ColChart[$sidChart][j][i]
-    Draw.Forecolor = color.DarkGray
+    Draw.ForeGround = color.DarkGray
     draw.FillColor = Chart._$ColChart[$sidChart].Colors[i]
     draw.FillStyle = fill.Solid
     fNewPos = fCumul + Rad(f * frapport)
@@ -93,7 +93,7 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
     
     Next
     If $iType = ChartType.PieRings Then 
-      Draw.FillColor = Draw.Device.Background
+      Draw.FillColor = Draw.Device.BackGround
       fRayon = fRayonUnit
       draw.Circle(CX + CW / 2, CY + Ch / 2, fRayon)
     Endif

@@ -97,7 +97,7 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
   
   For i = 0 To aroPolyLines.Max 'TO 0 STEP -1
   Draw.LineWidth = 2
-  Draw.ForeColor = Chart._$ColChart[$sidChart].Colors[i]
+  Draw.ForeGround = Chart._$ColChart[$sidChart].Colors[i]
   Draw.LineStyle = Line.Solid
     draw.Polyline(aroPolyLines[i])  
   Next
@@ -109,7 +109,7 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
       For j = 0 To aroPolyLines[i].Max Step 2
         Draw.LineWidth = 1
         Draw.FillColor = Chart._$ColChart[$sidChart].Colors[i]
-        Draw.ForeColor = Color.DarkGray
+        Draw.ForeGround = Color.DarkGray
         MTools.DrawSymbol($sidChart, i, aroPolyLines[i][j], aroPolyLines[i][j + 1])
       
       Next
