@@ -139,7 +139,7 @@ typedef
   GB_INTEGER;
 
 
-/* Gambas INTEGER datatype definition */
+/* Gambas LONG datatype definition */
 
 typedef
   struct {
@@ -255,6 +255,9 @@ typedef
   struct {
     GB_TYPE type;
 		GB_VARIANT_VALUE value;
+		#if __WORDSIZE == 64
+		int64_t _pad;
+		#endif
     }
 	PACKED
   GB_VARIANT;

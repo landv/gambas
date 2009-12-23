@@ -76,6 +76,16 @@ static void SWAP_type(CTYPE *p)
 	SWAP_short(&p->value);
 }
 
+static int align_pos(int pos, int size)
+{
+	if (size >= 4)
+		return (pos + 3) & ~3;
+	else if (size == 2)
+		return (pos + 1) & ~1;
+	else
+		return pos;
+}
+
 static char *get_section(char *sec_name, char **section, short *pcount, const char *desc)
 {
 	static void *jump_swap[] = { &&__SWAP_END, &&__SWAP_BYTE, &&__SWAP_SHORT, &&__SWAP_INT, &&__SWAP_POINTER, &&__SWAP_CTYPE, &&__SWAP_TYPE };
@@ -628,29 +638,38 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
   
 	{
 		int pos;
+		int size;
 		CLASS_VAR *var;
 		
 		pos = 0;
 		for (i = 0; i < class->load->n_stat; i++)
 		{
 			var = &class->load->stat[i];
-    	#ifdef OS_64BITS
+			size = sizeof_ctype(class, var->type);
+			pos = align_pos(pos, size);
 			var->pos = pos;
-			#endif
-			pos += sizeof_ctype(class, var->type);
+			pos += size;
 		}
-		info->s_static = (pos + 3) & ~3;
+		#ifdef OS_64BITS
+		info->s_static = (pos + 7) & ~7;
+		#else
+		info->s_static = align_pos(pos, 4);
+		#endif
   
 		pos = 0;
 		for (i = 0; i < class->load->n_dyn; i++)
 		{
 			var = &class->load->dyn[i];
-    	#ifdef OS_64BITS
+			size = sizeof_ctype(class, var->type);
+			pos = align_pos(pos, size);
 			var->pos = pos;
-			#endif
-			pos += sizeof_ctype(class, var->type);
+			pos += size;
 		}
-		info->s_dynamic = (pos + 3) & ~3;
+		#ifdef OS_64BITS
+		info->s_dynamic = (pos + 7) & ~7;
+		#else
+		info->s_dynamic = align_pos(pos, 4);
+		#endif
 	}
 
 
