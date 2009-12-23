@@ -26,7 +26,6 @@
 
 ***************************************************************************/
 
-
 #define __CGRIDVIEW_CPP
 
 #include "CWidget.h"
@@ -759,11 +758,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CGRIDVIEW_clear)
 
-	int bx,by;
-
-	for (bx=0; bx<GRIDVIEW->rowCount(); bx++)
-		for (by=0; by<GRIDVIEW->columnCount(); by++)
-			GRIDVIEW->setItemText(by,bx,"");
+	GRIDVIEW->clear();
 
 END_METHOD
 

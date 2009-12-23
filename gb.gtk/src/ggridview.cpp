@@ -1958,4 +1958,3 @@ void gGridView::stopScrollTimer()
                 scroll_timer = 0;
         }
 }
-

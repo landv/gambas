@@ -93,6 +93,8 @@ public:
   
   void moveCell(int srow, int scol, int drow, int dcol);
 	
+	void clear();
+	
 	void          (*voidCell)       (gTableData *fill, int row, int col, void *user);
 	void          *userData;
 };
@@ -134,7 +136,7 @@ public:
 
   void removeRows(int start, int length);
   void insertRows(int start, int length);
-	void          clearSelection    ();
+	void          clearSelection();
 	void selectRows(int start, int length, bool value);
 	void          queryUpdate       (int row,int col);
 	void          setDrawGrid       (bool vl);
@@ -151,6 +153,7 @@ public:
 	void          setFieldSelected  (int col,int row,bool value);
 	void setFieldPicture(int col, int row, gPicture *value);
 	void setFieldFont(int col, int row, gFont *value);
+	void clear();
 };
 
 #endif

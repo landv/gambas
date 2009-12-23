@@ -33,14 +33,22 @@ typedef
   struct 
 	{
     TYPE type;
-		union
-		{
+		union {
+			char _boolean;
+			unsigned char _byte;
+			short _short;
+			int _integer;
+			int64_t _long;
+			float _single;
+			double _float;
+			GB_DATE_VALUE _date;
 			char *_string;
 			void *_object;
 			int64_t data;
-		}
+			}
 		value;
   }
+	PACKED
   VARIANT;
 
 static INLINE void VARIANT_undo(VALUE *val)

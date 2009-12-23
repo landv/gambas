@@ -138,6 +138,16 @@ gTable::~gTable()
 	g_free(colpos);
 }
 
+void gTable::clear()
+{
+	g_hash_table_destroy(data);
+	g_hash_table_destroy(seldata);
+	seldata=g_hash_table_new_full((GHashFunc)g_int_hash,(GEqualFunc)gTable_equal,
+                         (GDestroyNotify)gTable_ekey,NULL);
+	data=g_hash_table_new_full((GHashFunc)g_int_hash,(GEqualFunc)gTable_equal,
+                         (GDestroyNotify)gTable_ekey,(GDestroyNotify)gTable_edata);
+}
+
 
 int gTable::columnCount()
 {
@@ -1271,3 +1281,8 @@ void gTableRender::removeRows(int start, int length)
 	setRowCount(rowCount() - length);
 }
 
+void gTableRender::clear()
+{
+	gTable::clear();
+	queryUpdate(-1, -1);
+}

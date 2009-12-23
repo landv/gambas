@@ -313,7 +313,7 @@ AC_DEFUN([GB_MATH],
 
 ## ---------------------------------------------------------------------------
 ## GB_SYSTEM
-## Detects the target system
+## Detects the target system and its architecture
 ## ---------------------------------------------------------------------------
 
 AC_DEFUN([GB_SYSTEM],
@@ -358,18 +358,18 @@ AC_DEFUN([GB_SYSTEM],
       ;;
   esac
 
-	AC_MSG_RESULT($SYSTEM)
+  AC_MSG_RESULT($SYSTEM)
 
   AC_MSG_CHECKING(target architecture)
-	
-	case "${host}" in
+
+  case "${host}" in
     i*86-*-*-* )
       ARCH=X86
       AC_DEFINE(ARCH_X86, 1, [Target architecture is x86])
       ;;
     x86_64-*-*-* )
       ARCH=X86_64
-      AC_DEFINE(ARCH_X86, 1, [Target architecture is x86_64])
+      AC_DEFINE(ARCH_X86_64, 1, [Target architecture is x86_64])
       ;;
     arm*-*-*-* )
       ARCH=ARM

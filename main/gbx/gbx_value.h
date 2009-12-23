@@ -23,7 +23,6 @@
 
 ***************************************************************************/
 
-
 #ifndef __GBX_VALUE_H
 #define __GBX_VALUE_H
 
@@ -159,7 +158,7 @@ typedef
 			char _boolean;
 			unsigned char _byte;
 			short _short;
-			int _int;
+			int _integer;
 			int64_t _long;
 			float _single;
 			double _float;
