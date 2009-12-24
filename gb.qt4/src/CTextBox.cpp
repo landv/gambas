@@ -20,7 +20,6 @@
 
 ***************************************************************************/
 
-
 #define __CTEXTBOX_CPP
 
 #include <qapplication.h>
@@ -333,6 +332,9 @@ END_METHOD
 
 static void setCurrentItem(void *_object, int item)
 {
+	if (item == COMBOBOX->currentIndex())
+		return;
+	
 	if (item < COMBOBOX->count())
 		COMBOBOX->setCurrentIndex(item);
 	if (item >= 0)
@@ -419,7 +421,7 @@ BEGIN_PROPERTY(CCOMBOBOX_text)
 
 		pos = CTextBox::find(COMBOBOX, text);
 		if (pos >= 0)
-			COMBOBOX->setCurrentIndex(pos);
+			setCurrentItem(_object, pos);
 		
 		if (COMBOBOX->isEditable())
 			COMBOBOX->lineEdit()->setText(text);
