@@ -70,6 +70,14 @@ BEGIN_METHOD(CGLAREA_new, GB_OBJECT parent)
 
 	QT.InitWidget(area, _object);
 	area->show();
+	
+	GLenum err = glewInit();
+	if (GLEW_OK != err)
+	{
+		/* Problem: glewInit failed, something is seriously wrong. */
+		qDebug("Error: Failed to init GLEW \n%s\n", glewGetErrorString(err));
+		return;
+	}
 
 END_METHOD
 
