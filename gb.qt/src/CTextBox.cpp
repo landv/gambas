@@ -335,6 +335,9 @@ END_METHOD
 
 static void setCurrentItem(void *_object, int item)
 {
+	if (item == COMBOBOX->currentItem())
+		return;
+	
   if (item < COMBOBOX->count())
   	COMBOBOX->setCurrentItem(item);
   if (item >= 0)
@@ -423,7 +426,8 @@ BEGIN_PROPERTY(CCOMBOBOX_text)
       COMBOBOX->lineEdit()->setText(text);
 
     pos = CTextBox::find(COMBOBOX, text);
-    COMBOBOX->setCurrentItem(pos);
+		qDebug("CCOMBOBOX_text: %d", pos);
+    setCurrentItem(_object, pos);
   }
 
 END_PROPERTY
