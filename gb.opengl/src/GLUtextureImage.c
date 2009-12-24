@@ -22,9 +22,7 @@
 
 #define __GLUTEXTUREIMAGE_C
 
-#include "main.h"
-
-#include <GL/glu.h>
+#include "GLU.h"
 
 BEGIN_METHOD(GLUBUILD1DMIPMAPS, GB_OBJECT Image)
 

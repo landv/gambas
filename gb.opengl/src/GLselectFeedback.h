@@ -26,10 +26,7 @@
 #ifndef __GLSELECTPIXMAP_H
 #define __GLSELECTPIXMAP_H
 
-#include "gambas.h"
 #include "main.h"
-
-#include <GL/gl.h>
 
 DECLARE_METHOD(GLFEEDBACKBUFFER);
 DECLARE_METHOD(GLINITNAMES);

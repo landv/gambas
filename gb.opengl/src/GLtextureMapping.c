@@ -22,11 +22,7 @@
 
 #define __GLTEXTUREMAPPING_C
 
-#include "gambas.h"
-#include "gb_common.h"
-#include "main.h"
-
-#include <GL/gl.h>
+#include "GL.h"
 
 BEGIN_METHOD(GLBINDTEXTURE, GB_INTEGER target; GB_INTEGER texture)
 

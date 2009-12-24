@@ -22,11 +22,7 @@
 
 #define __GLU_C
 
-#include "gambas.h"
-#include "gb_common.h"
-#include "main.h"
-
-#include <GL/glu.h>
+#include "GLU.h"
 
 #include "GLUcoordTransf.h"
 #include "GLUtextureImage.h"

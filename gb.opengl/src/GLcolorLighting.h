@@ -23,10 +23,7 @@
 #ifndef __GLCOLORLIGHTING_H
 #define __GLCOLORLIGHTING_H
 
-#include "gambas.h"
 #include "main.h"
-
-#include <GL/gl.h>
 
 DECLARE_METHOD(GLCOLOR3F);
 DECLARE_METHOD(GLCOLORF);

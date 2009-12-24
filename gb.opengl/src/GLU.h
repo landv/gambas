@@ -23,10 +23,9 @@
 #ifndef __GLU_H
 #define __GLU_H
 
-#include "gambas.h"
 #include "main.h"
 
-#include <GL/glu.h>
+#include <glu.h>
 
 #ifndef __GLU_C
 extern GB_DESC Cglu[];

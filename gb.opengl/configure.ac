@@ -13,17 +13,17 @@ AC_CHECK_HEADER(GL/glx.h,
     [ AC_MSG_WARN([glx.h not found. Check 'config.log' for more details.])
     touch DISABLED])
 
-GB_COMPONENT_SEARCH(
+GB_COMPONENT(
   opengl,
   OPENGL,
   [OpenGL support component],
   [src],
-  gl glu,
-  [GB_FIND(gl.h glu.h, /usr /usr/X11R6 /usr/local, include include/GL)],
-  [GB_FIND(libGL.$SHLIBEXT libGLU.$SHLIBEXT, /usr /usr/X11R6 /usr/local, lib)],
-  [-lGL -lGLU])
+  [GB_FIND(gl.h glu.h glew.h, /usr /usr/X11R6 /usr/local, include include/GL)],
+  [GB_FIND(libGL.$SHLIBEXT libGLU.$SHLIBEXT libGLEW.$SHLIBEXT, /usr /usr/X11R6 /usr/local, lib)],
+  [-lGL -lGLU -lGLEW])
 
 AC_OUTPUT( \
 Makefile \
 src/Makefile \
+src/glsl/Makefile \
 )

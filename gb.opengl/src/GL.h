@@ -23,10 +23,9 @@
 #ifndef __GL_H
 #define __GL_H
 
-#include "gambas.h"
 #include "main.h"
 
-#include <GL/gl.h>
+#include <glew.h>
 
 #ifndef __GL_C
 extern GB_DESC Cgl[];

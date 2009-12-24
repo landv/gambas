@@ -23,11 +23,7 @@
 #ifndef __GLUTEXTUREIMAGE_H
 #define __GLUTEXTUREIMAGE_H
 
-#include "gambas.h"
-#include "gb_common.h"
 #include "main.h"
-
-#include <GL/glu.h>
 
 DECLARE_METHOD(GLUBUILD1DMIPMAPS);
 DECLARE_METHOD(GLUBUILD2DMIPMAPS);

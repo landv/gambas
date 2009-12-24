@@ -1,8 +1,8 @@
 /***************************************************************************
 
-  GLUcoordTransf.h
+  main.h
 
-  (c) 2005-2007 Laurent Carlier <lordheavy@users.sourceforge.net>
+  (c) 2009 Laurent Carlier <lordheavy@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,14 +20,19 @@
 
 ***************************************************************************/
 
-#ifndef __GLUCOORDTRANSF_H
-#define __GLUCOORDTRANSF_H
+#ifndef __MAIN_H
+#define __MAIN_H
 
-#include "main.h"
+#include "gb_common.h"
+#include "gambas.h"
 
-DECLARE_METHOD(GLULOOKAT);
-DECLARE_METHOD(GLUORTHO2D);
-DECLARE_METHOD(GLUPERSPECTIVE);
-DECLARE_METHOD(GLUPICKMATRIX);
+#ifndef __MAIN_C
+extern GB_INTERFACE GB;
+#endif
 
-#endif /* __GLUCOORDTRANSF_H */
+#ifndef WARNING
+#define WARNING(c) printf("WARNING: " c)
+#endif /* WARNING */
+
+#endif
+

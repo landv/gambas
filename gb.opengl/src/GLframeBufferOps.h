@@ -23,10 +23,7 @@
 #ifndef __GLFRAMEBUFFEROPS_H
 #define __GLFRAMEBUFFEROPS_H
 
-#include "gambas.h"
 #include "main.h"
-
-#include <GL/gl.h>
 
 DECLARE_METHOD(GLACCUM);
 DECLARE_METHOD(GLALPHAFUNC);

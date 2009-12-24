@@ -22,10 +22,7 @@
 
 #define __GLUCOORDTRANSF_C
 
-#include "gambas.h"
-#include "main.h"
-
-#include <GL/glu.h>
+#include "GLU.h"
 
 /**************************************************************************/
 

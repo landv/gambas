@@ -23,7 +23,6 @@
 #ifndef __GLPRIMITIVES_H
 #define __GLPRIMITIVES_H
 
-#include "gambas.h"
 #include "main.h"
 
 DECLARE_METHOD(GLBEGIN);

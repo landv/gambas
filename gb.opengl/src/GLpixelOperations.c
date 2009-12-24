@@ -22,11 +22,7 @@
 
 #define __GLPIXELOPERATIONS_C
 
-#include "gambas.h"
-#include "gb_common.h"
-#include "main.h"
-
-#include <GL/gl.h>
+#include "GL.h"
 
 BEGIN_METHOD(GLCOPYPIXELS, GB_INTEGER x; GB_INTEGER y; GB_INTEGER width; GB_INTEGER height; GB_INTEGER type)
 

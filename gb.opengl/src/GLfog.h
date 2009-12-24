@@ -23,10 +23,7 @@
 #ifndef __GLFOG_H
 #define __GLFOG_H
 
-#include "gambas.h"
 #include "main.h"
-
-#include <GL/gl.h>
 
 DECLARE_METHOD(GLFOGF);
 DECLARE_METHOD(GLFOGI);

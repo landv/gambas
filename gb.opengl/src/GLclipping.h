@@ -23,10 +23,7 @@
 #ifndef __GLCLIPPING_H
 #define __GLCLIPPING_H
 
-#include "gambas.h"
 #include "main.h"
-
-#include <GL/gl.h>
 
 DECLARE_METHOD(GLCLIPPLANE);
 DECLARE_METHOD(GLGETCLIPPLANE);

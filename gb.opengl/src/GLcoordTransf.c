@@ -22,11 +22,7 @@
 
 #define __GLCOORDTRANSF_C
 
-#include "gambas.h"
-#include "gb_common.h"
-#include "main.h"
-
-#include <GL/gl.h>
+#include "GL.h"
 
 BEGIN_METHOD(GLDEPTHRANGE, GB_FLOAT near; GB_FLOAT far)
 

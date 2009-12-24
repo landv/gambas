@@ -23,7 +23,6 @@
 #ifndef __GLPIXELOPERATIONS_H
 #define __GLPIXELOPERATIONS_H
 
-#include "gambas.h"
 #include "main.h"
 
 DECLARE_METHOD(GLCOPYPIXELS);

@@ -22,11 +22,7 @@
 
 #define __GLFOG_C
 
-#include "gambas.h"
-#include "gb_common.h"
-#include "main.h"
-
-#include <GL/gl.h>
+#include "GL.h"
 
 BEGIN_METHOD(GLFOGF, GB_INTEGER pname; GB_FLOAT param)
 

@@ -23,10 +23,7 @@
 #ifndef __GLDISPLAYLIST_H
 #define __GLDISPLAYLIST_H
 
-#include "gambas.h"
 #include "main.h"
-
-#include <GL/gl.h>
 
 DECLARE_METHOD(GLCALLLIST);
 DECLARE_METHOD(GLCALLLISTS);

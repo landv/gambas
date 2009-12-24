@@ -1,8 +1,8 @@
 /***************************************************************************
 
-  GLmodesExec.c
+  GLprogram.c
 
-  (c) 2005-2007 Laurent Carlier <lordheavy@users.sourceforge.net>
+  (c) 2009 Laurent Carlier <lordheavy@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,44 +20,57 @@
 
 ***************************************************************************/
 
-#define __GLMODESEXEC_C
+#define __GLPROGRAM_C
 
 #include "GL.h"
 
-/**************************************************************************/
+BEGIN_METHOD_VOID(GLCREATEPROGRAM)
 
-BEGIN_METHOD(GLDISABLE, GB_INTEGER capacity)
+	GLuint prog;
+	prog = glCreateProgram();
+	GB.ReturnInteger(prog);
 
-	glDisable(VARG(capacity));
-  
 END_METHOD
 
-BEGIN_METHOD(GLENABLE, GB_INTEGER capacity)
+BEGIN_METHOD(GLDELETEPROGRAM, GB_INTEGER program)
 
-	glEnable(VARG(capacity));
-  
+	glDeleteProgram(VARG(program));
+
 END_METHOD
 
-BEGIN_METHOD_VOID(GLFLUSH)
+BEGIN_METHOD(GLGETPROGRAMIV, GB_INTEGER program; GB_INTEGER pname)
 
-	glFlush();
-  
+	GLint value;
+	GB_ARRAY iArray;
+	
+	glGetProgramiv(VARG(program), VARG(pname), &value);
+
+	GB.Array.New(&iArray , GB_T_INTEGER , 1);
+	*((int *)GB.Array.Get(iArray, 0)) = value;
+	GB.ReturnObject(iArray);
+
 END_METHOD
 
-BEGIN_METHOD_VOID(GLFINISH)
+BEGIN_METHOD(GLISPROGRAM, GB_INTEGER program)
 
-	glFinish();
-  
+	GB.ReturnBoolean(glIsProgram(VARG(program)));
+
 END_METHOD
 
-BEGIN_METHOD(GLHINT, GB_INTEGER target; GB_INTEGER mode)
+BEGIN_METHOD(GLLINKPROGRAM, GB_INTEGER program)
 
-	glHint(VARG(target), VARG(mode));
-  
+	glLinkProgram(VARG(program));
+
 END_METHOD
 
-BEGIN_METHOD(GLISENABLED, GB_INTEGER capacity)
+BEGIN_METHOD(GLUSEPROGRAM, GB_INTEGER program)
 
-	GB.ReturnBoolean(glIsEnabled(VARG(capacity)));
-  
+	glUseProgram(VARG(program));
+
+END_METHOD
+
+BEGIN_METHOD(GLVALIDATEPROGRAM, GB_INTEGER program)
+
+	glValidateProgram(VARG(program));
+
 END_METHOD

@@ -23,11 +23,7 @@
 #ifndef __GLTEXTUREMAPPING_H
 #define __GLTEXTUREMAPPING_H
 
-#include "gambas.h"
-#include "gb_common.h"
 #include "main.h"
-
-#include <GL/gl.h>
 
 DECLARE_METHOD(GLBINDTEXTURE);
 DECLARE_METHOD(GLCOPYTEXIMAGE1D);

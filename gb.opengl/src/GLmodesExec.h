@@ -23,11 +23,7 @@
 #ifndef __GLMODESEXEC_H
 #define __GLMODESEXEC_H
 
-#include "gambas.h"
-#include "gb_common.h"
 #include "main.h"
-
-#include <GL/gl.h>
 
 DECLARE_METHOD(GLDISABLE);
 DECLARE_METHOD(GLENABLE);

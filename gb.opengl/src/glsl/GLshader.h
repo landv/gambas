@@ -1,8 +1,8 @@
 /***************************************************************************
 
-  GLUcoordTransf.h
+  GLshader.h
 
-  (c) 2005-2007 Laurent Carlier <lordheavy@users.sourceforge.net>
+  (c) 2009 Laurent Carlier <lordheavy@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,14 +20,21 @@
 
 ***************************************************************************/
 
-#ifndef __GLUCOORDTRANSF_H
-#define __GLUCOORDTRANSF_H
+#ifndef __GLSHADER_H
+#define __GLSHADER_H
 
 #include "main.h"
 
-DECLARE_METHOD(GLULOOKAT);
-DECLARE_METHOD(GLUORTHO2D);
-DECLARE_METHOD(GLUPERSPECTIVE);
-DECLARE_METHOD(GLUPICKMATRIX);
+DECLARE_METHOD(GLATTACHSHADER);
+DECLARE_METHOD(GLCOMPILESHADER);
+DECLARE_METHOD(GLCREATESHADER);
+DECLARE_METHOD(GLDELETESHADER);
+DECLARE_METHOD(GLDETACHSHADER);
+DECLARE_METHOD(GLGETATTACHEDSHADERS);
+DECLARE_METHOD(GLGETSHADERINFOLOG);
+DECLARE_METHOD(GLGETSHADERIV);
+DECLARE_METHOD(GLGETSHADERSOURCE);
+DECLARE_METHOD(GLISSHADER);
+DECLARE_METHOD(GLSHADERSOURCE);
 
-#endif /* __GLUCOORDTRANSF_H */
+#endif /* __GLSHADER_H */

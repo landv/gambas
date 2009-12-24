@@ -23,11 +23,7 @@
 #ifndef __GLCOORDTRANSF_H
 #define __GLCOORDTRANSF_H
 
-#include "gambas.h"
-#include "gb_common.h"
 #include "main.h"
-
-#include <GL/gl.h>
 
 DECLARE_METHOD(GLDEPTHRANGE);
 DECLARE_METHOD(GLFRUSTUM);

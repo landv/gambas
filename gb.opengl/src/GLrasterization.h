@@ -23,7 +23,6 @@
 #ifndef __GLRASTERIZATION_H
 #define __GLRASTERIZATION_H
 
-#include "gambas.h"
 #include "main.h"
 
 // TODO

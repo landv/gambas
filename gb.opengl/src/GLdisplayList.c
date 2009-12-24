@@ -22,13 +22,7 @@
 
 #define __GLDISPLAYLIST_C
 
-#include "gambas.h"
-#include "gb_common.h"
-#include "main.h"
-
-#include "GLdisplayList.h"
-
-#include <GL/gl.h>
+#include "GL.h"
 
 BEGIN_METHOD(GLCALLLIST, GB_INTEGER index)
 

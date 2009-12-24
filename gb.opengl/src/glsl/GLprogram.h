@@ -1,8 +1,8 @@
 /***************************************************************************
 
-  GLUcoordTransf.h
+  GLprogram.h
 
-  (c) 2005-2007 Laurent Carlier <lordheavy@users.sourceforge.net>
+  (c) 2009 Laurent Carlier <lordheavy@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,14 +20,17 @@
 
 ***************************************************************************/
 
-#ifndef __GLUCOORDTRANSF_H
-#define __GLUCOORDTRANSF_H
+#ifndef __GLPROGRAM_H
+#define __GLPROGRAM_H
 
 #include "main.h"
 
-DECLARE_METHOD(GLULOOKAT);
-DECLARE_METHOD(GLUORTHO2D);
-DECLARE_METHOD(GLUPERSPECTIVE);
-DECLARE_METHOD(GLUPICKMATRIX);
+DECLARE_METHOD(GLCREATEPROGRAM);
+DECLARE_METHOD(GLDELETEPROGRAM);
+DECLARE_METHOD(GLGETPROGRAMIV);
+DECLARE_METHOD(GLISPROGRAM);
+DECLARE_METHOD(GLLINKPROGRAM);
+DECLARE_METHOD(GLUSEPROGRAM);
+DECLARE_METHOD(GLVALIDATEPROGRAM);
 
-#endif /* __GLUCOORDTRANSF_H */
+#endif /* __GLPROGRAM_H */

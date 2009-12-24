@@ -25,11 +25,7 @@
 
 #define __GLSELECTPIXMAP_C
 
-#include "gambas.h"
-#include "gb_common.h"
-#include "main.h"
-
-#include <GL/gl.h>
+#include "GL.h"
 
 #define MAX_BUFFER_SIZE 2048
 

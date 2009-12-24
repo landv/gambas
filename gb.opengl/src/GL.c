@@ -22,13 +22,7 @@
 
 #define __GL_C
 
-#include "gambas.h"
-#include "gb_common.h"
-#include "main.h"
-
 #include "GL.h"
-
-#include <GL/gl.h>
 
 #include "GLclipping.h"
 #include "GLcolorLighting.h"
@@ -77,14 +71,14 @@ GB_DESC Cgl[] =
 	GB_STATIC_METHOD("End", NULL, GLEND, NULL),
 	GB_STATIC_METHOD("Rectf", NULL, GLRECTF, "(X1)f(Y1)f(X2)f(Y2)f"),
 	GB_STATIC_METHOD("Recti", NULL, GLRECTI, "(X1)i(Y1)i(X2)i(Y2)i"),
-      GB_STATIC_METHOD("Vertex2f", NULL, GLVERTEX2F, "(X)f(Y)f"),
-      GB_STATIC_METHOD("Vertex3f", NULL, GLVERTEX3F, "(X)f(Y)f(Z)f"),
-      GB_STATIC_METHOD("Vertex4f", NULL, GLVERTEXF, "(X)f(Y)f(Z)f(W)f"),
-      GB_STATIC_METHOD("Vertexf", NULL, GLVERTEXF, "(X)f(Y)f[(Z)f(W)f]"),
-      GB_STATIC_METHOD("Vertex2i", NULL, GLVERTEX2I, "(X)i(Y)i"),
-      GB_STATIC_METHOD("Vertex3i", NULL, GLVERTEX3I, "(X)i(Y)i(Z)i"),
-      GB_STATIC_METHOD("Vertex4i", NULL, GLVERTEXI, "(X)i(Y)i(Z)i(W)i"),
-      GB_STATIC_METHOD("Vertexi", NULL, GLVERTEXI, "(X)i(Y)i[(Z)i(W)i]"),
+	GB_STATIC_METHOD("Vertex2f", NULL, GLVERTEX2F, "(X)f(Y)f"),
+	GB_STATIC_METHOD("Vertex3f", NULL, GLVERTEX3F, "(X)f(Y)f(Z)f"),
+	GB_STATIC_METHOD("Vertex4f", NULL, GLVERTEXF, "(X)f(Y)f(Z)f(W)f"),
+	GB_STATIC_METHOD("Vertexf", NULL, GLVERTEXF, "(X)f(Y)f[(Z)f(W)f]"),
+	GB_STATIC_METHOD("Vertex2i", NULL, GLVERTEX2I, "(X)i(Y)i"),
+	GB_STATIC_METHOD("Vertex3i", NULL, GLVERTEX3I, "(X)i(Y)i(Z)i"),
+	GB_STATIC_METHOD("Vertex4i", NULL, GLVERTEXI, "(X)i(Y)i(Z)i(W)i"),
+	GB_STATIC_METHOD("Vertexi", NULL, GLVERTEXI, "(X)i(Y)i[(Z)i(W)i]"),
 	GB_STATIC_METHOD("Vertexfv", NULL, GLVERTEXFV, "(Coords)Float[]"),
 	GB_STATIC_METHOD("Vertexiv", NULL, GLVERTEXIV, "(Coords)Integer[]"),
 
@@ -114,12 +108,12 @@ GB_DESC Cgl[] =
 	GB_STATIC_METHOD("Viewport", NULL, GLVIEWPORT, "(X)i(Y)i(Width)i(Height)i"),
 
 	/* Coloring and Lighting - see GLcolorLighting.h */
-      GB_STATIC_METHOD("Color3f", NULL, GLCOLOR3F, "(Red)f(Green)f(Blue)f"),
-      GB_STATIC_METHOD("Color4f", NULL, GLCOLORF, "(Red)f(Green)f(Blue)f(Alpha)f"),
-      GB_STATIC_METHOD("Colorf", NULL, GLCOLORF, "(Red)f(Green)f(Blue)f[(Alpha)f]"),
-      GB_STATIC_METHOD("Color3i", NULL, GLCOLOR3I, "(Red)i(Green)i(Blue)i"),
-      GB_STATIC_METHOD("Color4i", NULL, GLCOLORI, "(Red)i(Green)i(Blue)i(Alpha)i"),
-      GB_STATIC_METHOD("Colori", NULL, GLCOLORI, "(Red)i(Green)i(Blue)i[(Alpha)i]"),
+	GB_STATIC_METHOD("Color3f", NULL, GLCOLOR3F, "(Red)f(Green)f(Blue)f"),
+	GB_STATIC_METHOD("Color4f", NULL, GLCOLORF, "(Red)f(Green)f(Blue)f(Alpha)f"),
+	GB_STATIC_METHOD("Colorf", NULL, GLCOLORF, "(Red)f(Green)f(Blue)f[(Alpha)f]"),
+	GB_STATIC_METHOD("Color3i", NULL, GLCOLOR3I, "(Red)i(Green)i(Blue)i"),
+	GB_STATIC_METHOD("Color4i", NULL, GLCOLORI, "(Red)i(Green)i(Blue)i(Alpha)i"),
+	GB_STATIC_METHOD("Colori", NULL, GLCOLORI, "(Red)i(Green)i(Blue)i[(Alpha)i]"),
 	GB_STATIC_METHOD("Colorfv", NULL, GLCOLORFV, "(Colors)Float[]"),
 	GB_STATIC_METHOD("Coloriv", NULL, GLCOLORIV, "(Colors)Integer[]"),
 	GB_STATIC_METHOD("ColorMaterial", NULL, GLCOLORMATERIAL, "(Face)i(Mode)i"),
@@ -161,14 +155,14 @@ GB_DESC Cgl[] =
 	GB_STATIC_METHOD("PointSize", NULL, GLPOINTSIZE, "(Size)f"),
 	GB_STATIC_METHOD("PolygonMode", NULL, GLPOLYGONMODE, "(Face)i(Mode)i"),
 	//GB_STATIC_METHOD("PolygonStipple", NULL, GLPOLYGONSTIPPLE, "(Mask)i"), //TODO
-      GB_STATIC_METHOD("RasterPos2f", NULL, GLRASTERPOS2F, "(X)f(Y)f"),
-      GB_STATIC_METHOD("RasterPos3f", NULL, GLRASTERPOS3F, "(X)f(Y)f(Z)f"),
-      GB_STATIC_METHOD("RasterPos4f", NULL, GLRASTERPOSF, "(X)f(Y)f(Z)f(W)f"),
-      GB_STATIC_METHOD("RasterPosf", NULL, GLRASTERPOSF, "(X)f(Y)f[(Z)f(W)f]"),
-      GB_STATIC_METHOD("RasterPos2i", NULL, GLRASTERPOS2I, "(X)i(Y)i"),
-      GB_STATIC_METHOD("RasterPos3i", NULL, GLRASTERPOS3I, "(X)i(Y)i(Z)i"),
-      GB_STATIC_METHOD("RasterPos4i", NULL, GLRASTERPOSI, "(X)i(Y)i(Z)i(W)i"),
-      GB_STATIC_METHOD("RasterPosi", NULL, GLRASTERPOSI, "(X)i(Y)i[(Z)i(W)i]"),
+	GB_STATIC_METHOD("RasterPos2f", NULL, GLRASTERPOS2F, "(X)f(Y)f"),
+	GB_STATIC_METHOD("RasterPos3f", NULL, GLRASTERPOS3F, "(X)f(Y)f(Z)f"),
+	GB_STATIC_METHOD("RasterPos4f", NULL, GLRASTERPOSF, "(X)f(Y)f(Z)f(W)f"),
+	GB_STATIC_METHOD("RasterPosf", NULL, GLRASTERPOSF, "(X)f(Y)f[(Z)f(W)f]"),
+	GB_STATIC_METHOD("RasterPos2i", NULL, GLRASTERPOS2I, "(X)i(Y)i"),
+	GB_STATIC_METHOD("RasterPos3i", NULL, GLRASTERPOS3I, "(X)i(Y)i(Z)i"),
+	GB_STATIC_METHOD("RasterPos4i", NULL, GLRASTERPOSI, "(X)i(Y)i(Z)i(W)i"),
+	GB_STATIC_METHOD("RasterPosi", NULL, GLRASTERPOSI, "(X)i(Y)i[(Z)i(W)i]"),
 	GB_STATIC_METHOD("RasterPosfv", NULL, GLRASTERPOSFV, "(Coords)Float[]"),
 	GB_STATIC_METHOD("RasterPosiv", NULL, GLRASTERPOSIV, "(Coords)Integer[]"),
 	
@@ -204,16 +198,16 @@ GB_DESC Cgl[] =
 	GB_STATIC_METHOD("DeleteTextures", NULL, GLDELETETEXTURES, "(Textures)Integer[]"),
 	GB_STATIC_METHOD("GenTextures", "Integer[]", GLGENTEXTURES, "(Count)i"),
 	GB_STATIC_METHOD("IsTexture", "b", GLISTEXTURE, "(Texture)i"),
-      GB_STATIC_METHOD("TexCoord1f", NULL, GLTEXCOORD1F, "(S)f"),
-      GB_STATIC_METHOD("TexCoord2f", NULL, GLTEXCOORD2F, "(S)f(T)f"),
-      GB_STATIC_METHOD("TexCoord3f", NULL, GLTEXCOORD3F, "(S)f(T)f(R)f"),
-      GB_STATIC_METHOD("TexCoord4f", NULL, GLTEXCOORDF, "(S)f(T)f(R)f(Q)f"),
-      GB_STATIC_METHOD("TexCoordf", NULL, GLTEXCOORDF, "(S)f[(T)f(R)f(Q)f]"),
-      GB_STATIC_METHOD("TexCoord1i", NULL, GLTEXCOORD1I, "(S)i"),
-      GB_STATIC_METHOD("TexCoord2i", NULL, GLTEXCOORD2I, "(S)i(T)i"),
-      GB_STATIC_METHOD("TexCoord3i", NULL, GLTEXCOORD3I, "(S)i(T)i(R)i"),
-      GB_STATIC_METHOD("TexCoord4i", NULL, GLTEXCOORDI, "(S)i(T)i(R)i(Q)i"),
-      GB_STATIC_METHOD("TexCoordi", NULL, GLTEXCOORDI, "(S)i[(T)i(R)i(Q)i]"),
+	GB_STATIC_METHOD("TexCoord1f", NULL, GLTEXCOORD1F, "(S)f"),
+	GB_STATIC_METHOD("TexCoord2f", NULL, GLTEXCOORD2F, "(S)f(T)f"),
+	GB_STATIC_METHOD("TexCoord3f", NULL, GLTEXCOORD3F, "(S)f(T)f(R)f"),
+	GB_STATIC_METHOD("TexCoord4f", NULL, GLTEXCOORDF, "(S)f(T)f(R)f(Q)f"),
+	GB_STATIC_METHOD("TexCoordf", NULL, GLTEXCOORDF, "(S)f[(T)f(R)f(Q)f]"),
+	GB_STATIC_METHOD("TexCoord1i", NULL, GLTEXCOORD1I, "(S)i"),
+	GB_STATIC_METHOD("TexCoord2i", NULL, GLTEXCOORD2I, "(S)i(T)i"),
+	GB_STATIC_METHOD("TexCoord3i", NULL, GLTEXCOORD3I, "(S)i(T)i(R)i"),
+	GB_STATIC_METHOD("TexCoord4i", NULL, GLTEXCOORDI, "(S)i(T)i(R)i(Q)i"),
+	GB_STATIC_METHOD("TexCoordi", NULL, GLTEXCOORDI, "(S)i[(T)i(R)i(Q)i]"),
 	GB_STATIC_METHOD("TexEnvf", NULL, GLTEXENVF, "(Target)i(Pname)i(Param)f"),
 	GB_STATIC_METHOD("TexEnvfv", NULL, GLTEXENVFV, "(Target)i(Pname)i(Params)Float[]"),
 	GB_STATIC_METHOD("TexEnvi", NULL, GLTEXENVI, "(Target)i(Pname)i(Param)i"),
@@ -247,23 +241,31 @@ GB_DESC Cgl[] =
 	GB_STATIC_METHOD("StencilOp", NULL, GLSTENCILOP, "(Fail)i(Zfail)i(Zpass)i"),
 
 	/* Selection and Feedback - see GLselectPixmap.h  */
-      GB_STATIC_METHOD("FeedbackBuffer", NULL, GLFEEDBACKBUFFER, "(Type)i"),
-      GB_STATIC_METHOD("InitNames", NULL, GLINITNAMES, NULL),
-      GB_STATIC_METHOD("LoadName", NULL, GLLOADNAME, "(Name)i"),
-      GB_STATIC_METHOD("PassThrough", NULL, GLPASSTHROUGH, "(Token)f"),
-      GB_STATIC_METHOD("PopName", NULL, GLPOPNAME, NULL),
-      GB_STATIC_METHOD("PushName", NULL, GLPUSHNAME, "(Name)i"),
+	GB_STATIC_METHOD("FeedbackBuffer", NULL, GLFEEDBACKBUFFER, "(Type)i"),
+	GB_STATIC_METHOD("InitNames", NULL, GLINITNAMES, NULL),
+	GB_STATIC_METHOD("LoadName", NULL, GLLOADNAME, "(Name)i"),
+	GB_STATIC_METHOD("PassThrough", NULL, GLPASSTHROUGH, "(Token)f"),
+	GB_STATIC_METHOD("PopName", NULL, GLPOPNAME, NULL),
+	GB_STATIC_METHOD("PushName", NULL, GLPUSHNAME, "(Name)i"),
 	GB_STATIC_METHOD("RenderMode", "Array", GLRENDERMODE, "(Mode)i"),
-      GB_STATIC_METHOD("SelectBuffer", NULL, GLSELECTBUFFER, NULL),
+	GB_STATIC_METHOD("SelectBuffer", NULL, GLSELECTBUFFER, NULL),
 
 	/* glGetxxxx calls - see GLinfo.h/c   */
-	GB_STATIC_METHOD("GetBooleanv", "Boolean[];", GLGETBOOLEANV, "(Parameter)i[(Size)i]"),
-	GB_STATIC_METHOD("GetFloatv", "Float[];", GLGETFLOATV, "(Parameter)i[(Size)i]"),
-	GB_STATIC_METHOD("GetIntegerv", "Integer[];", GLGETINTEGERV, "(Parameter)i[(Size)i]"),
+	GB_STATIC_METHOD("GetBooleanv", "Boolean[]", GLGETBOOLEANV, "(Parameter)i[(Size)i]"),
+	GB_STATIC_METHOD("GetFloatv", "Float[]", GLGETFLOATV, "(Parameter)i[(Size)i]"),
+	GB_STATIC_METHOD("GetIntegerv", "Integer[]", GLGETINTEGERV, "(Parameter)i[(Size)i]"),
+	GB_STATIC_METHOD("GetString", "s", GLGETSTRING, "(Name)i"),
 
 	/********************/
 	/* opengl constants */
 	/********************/
+	
+	/* GetString */
+	GB_CONSTANT("GL_EXTENSIONS", "i", GL_EXTENSIONS),
+	GB_CONSTANT("GL_VENDOR", "i", GL_VENDOR),
+	GB_CONSTANT("GL_RENDERER", "i", GL_RENDERER),
+	GB_CONSTANT("GL_VERSION", "i", GL_VERSION),
+	GB_CONSTANT("GL_SHADING_LANGUAGE_VERSION", "i", GL_SHADING_LANGUAGE_VERSION),
 
 	/* Primitives */
 	GB_CONSTANT("GL_POINTS", "i", GL_POINTS),
@@ -286,8 +288,8 @@ GB_DESC Cgl[] =
 	/* Points */
 	GB_CONSTANT("GL_POINT_SMOOTH", "i", GL_POINT_SMOOTH),
 	GB_CONSTANT("GL_POINT_SIZE", "i", GL_POINT_SIZE),
-	GB_CONSTANT("GL_POINT_SIZE_GRANULARITY", "i", GL_POINT_SIZE_GRANULARITY),
-	GB_CONSTANT("GL_POINT_SIZE_RANGE", "i", GL_POINT_SIZE_RANGE),
+	GB_CONSTANT("GL_SMOOTH_POINT_SIZE_GRANULARITY", "i", GL_SMOOTH_POINT_SIZE_GRANULARITY),
+	GB_CONSTANT("GL_SMOOTH_POINT_SIZE_RANGE", "i", GL_SMOOTH_POINT_SIZE_RANGE),
 
 	/* Display Lists */
 	GB_CONSTANT("GL_COMPILE", "i", GL_COMPILE),
@@ -391,8 +393,8 @@ GB_DESC Cgl[] =
 	GB_CONSTANT("GL_LINE_STIPPLE_PATTERN", "i", GL_LINE_STIPPLE_PATTERN),
 	GB_CONSTANT("GL_LINE_STIPPLE_REPEAT", "i", GL_LINE_STIPPLE_REPEAT),
 	GB_CONSTANT("GL_LINE_WIDTH", "i", GL_LINE_WIDTH),
-	GB_CONSTANT("GL_LINE_WIDTH_GRANULARITY", "i", GL_LINE_WIDTH_GRANULARITY),
-	GB_CONSTANT("GL_LINE_WIDTH_RANGE", "i", GL_LINE_WIDTH_RANGE),
+	GB_CONSTANT("GL_SMOOTH_LINE_WIDTH_GRANULARITY", "i", GL_SMOOTH_LINE_WIDTH_GRANULARITY),
+	GB_CONSTANT("GL_SMOOTH_LINE_WIDTH_RANGE", "i", GL_SMOOTH_LINE_WIDTH_RANGE),
 
 	/* Render Mode */
 	GB_CONSTANT("GL_FEEDBACK", "i", GL_FEEDBACK),

@@ -25,5 +25,6 @@
 
 #include "gambas.h"
 
+void init_gl(void );
 
 #endif

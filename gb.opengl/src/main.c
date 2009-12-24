@@ -22,14 +22,10 @@
 
 #define __MAIN_C
 
-#include "gambas.h"
-#include "main.h"
-
-#include <GL/gl.h>
-#include <GL/glu.h>
-
 #include "GL.h"
 #include "GLU.h"
+
+#include "GLinit.h"
 
 GB_INTERFACE GB EXPORT;
 IMAGE_INTERFACE IMAGE EXPORT;
@@ -79,8 +75,8 @@ bool IMAGE_get(GB_OBJECT *arg, GB_IMG **img, int *format)
 int EXPORT GB_INIT(void)
 {
 	GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
-	
-  return FALSE;
+
+	return FALSE;
 }
 
 void EXPORT GB_EXIT()
