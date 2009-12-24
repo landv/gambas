@@ -35,7 +35,7 @@ BEGIN_METHOD(CEMBEDDER_new, GB_OBJECT parent)
 
   QObject::connect(wid, SIGNAL(clientIsEmbedded()), &CEmbedder::manager, SLOT(embedded()));
   QObject::connect(wid, SIGNAL(clientClosed()), &CEmbedder::manager, SLOT(closed()));
-  QObject::connect(wid, SIGNAL(error(int)), &CEmbedder::manager, SLOT(error()));
+  QObject::connect(wid, SIGNAL(error(QX11EmbedContainer::Error)), &CEmbedder::manager, SLOT(error()));
   
   CWIDGET_new(wid, (void *)_object);
   
