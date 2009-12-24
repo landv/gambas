@@ -426,7 +426,6 @@ BEGIN_PROPERTY(CCOMBOBOX_text)
       COMBOBOX->lineEdit()->setText(text);
 
     pos = CTextBox::find(COMBOBOX, text);
-		qDebug("CCOMBOBOX_text: %d", pos);
     setCurrentItem(_object, pos);
   }
 
