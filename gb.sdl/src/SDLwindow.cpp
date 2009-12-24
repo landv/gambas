@@ -64,6 +64,14 @@ void SDLwindow::Show()
 		return;
 	}
 
+	GLenum err = glewInit();
+	if (GLEW_OK != err)
+	{
+		/* Problem: glewInit failed, something is seriously wrong. */
+		fprintf(stderr, "Error: Failed to init GLEW \n%s\n", glewGetErrorString(err));
+		return;
+	}
+
 	hCtx = glXGetCurrentContext();
 	hDrw = glXGetCurrentDrawable();
 	hDpy = glXGetCurrentDisplay();
