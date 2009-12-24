@@ -53,7 +53,7 @@ SDLapplication::SDLapplication(int &argc, char **argv)
 	// if audio is defined, sdl was init by gb.sdl.sound component !
 	if (sysInit & SDL_INIT_AUDIO)
 	{
-		if (SDL_InitSubSystem(SDL_INIT_VIDEO | SDL_INIT_EVENTTHREAD)<0)
+		if (SDL_InitSubSystem(SDL_INIT_VIDEO)<0)
 		{
 			sMsg =+ SDL_GetError();
 			goto _error;
@@ -61,7 +61,7 @@ SDLapplication::SDLapplication(int &argc, char **argv)
 	}
 	else
 	{
- 		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_EVENTTHREAD | SDL_INIT_NOPARACHUTE)<0)
+ 		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_NOPARACHUTE)<0)
 		{
 			sMsg =+ SDL_GetError();
 			goto _error;
