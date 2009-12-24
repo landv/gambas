@@ -73,6 +73,17 @@ static void SWAP_type(CTYPE *p)
 }
 
 
+static int align_pos(int pos, int size)
+{
+	if (size >= 4)
+		return (pos + 3) & ~3;
+	else if (size == 2)
+		return (pos + 1) & ~1;
+	else
+		return pos;
+}
+
+
 static int sizeof_ctype(CLASS *class, CTYPE ctype)
 {
 	size_t size;
@@ -333,6 +344,7 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
   int i, j, pos;
   int offset;
   short n_desc, n_class_ref, n_unknown, n_array;
+	int size;
 	
   ALLOC_ZERO(&class->load, sizeof(CLASS_LOAD), "CLASS_load");
 
@@ -575,7 +587,8 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
     }
   }
 
-  /* Computes variable position. Really needed for 64 bits, but ctype must be converted anyway... */
+  // Computes and align the position of each static and dynamic variables.
+	// Computes the total size needed accordingly.
   
   #ifdef DEBUG
   fprintf(stderr, "Compute variable position for %s\n", class->name);
@@ -586,26 +599,38 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
 	{
 		var = &class->load->stat[i];
 		conv_ctype(&var->type);
+		size = sizeof_ctype(class, var->type);
+		pos = align_pos(pos, size);
 		var->pos = pos;
 		#ifdef DEBUG
 		fprintf(stderr, "Static #%d: %d\n", i, var->pos);
 		#endif
-		pos += sizeof_ctype(class, var->type);
+		pos += size;
 	}
-	info->s_static = pos;
+	#ifdef OS_64BITS
+	info->s_static = (pos + 7) & ~7;
+	#else
+	info->s_static = align_pos(pos, 4);
+	#endif
 
 	pos = 0;
 	for (i = 0; i < class->load->n_dyn; i++)
 	{
 		var = &class->load->dyn[i];
 		conv_ctype(&var->type);
+		size = sizeof_ctype(class, var->type);
+		pos = align_pos(pos, size);
 		var->pos = pos;
 		#ifdef DEBUG
 		fprintf(stderr, "Dynamic #%d: %d\n", i, var->pos);
 		#endif
 		pos += sizeof_ctype(class, var->type);
 	}
-	info->s_dynamic = pos;
+	#ifdef OS_64BITS
+	info->s_dynamic = (pos + 7) & ~7;
+	#else
+	info->s_dynamic = align_pos(pos, 4);
+	#endif
 
   /* String relocation */
 

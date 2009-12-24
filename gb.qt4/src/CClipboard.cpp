@@ -22,7 +22,6 @@
 
 #define __CCLIPBOARD_CPP
 
-
 #include "gambas.h"
 
 #include <qapplication.h>
@@ -206,17 +205,17 @@ BEGIN_METHOD(CCLIPBOARD_copy, GB_VARIANT data; GB_STRING format)
         goto _BAD_FORMAT;
     }
 
-    data->setData(format, QByteArray(VARG(data)._string.value, GB.StringLength(VARG(data)._string.value)));
+    data->setData(format, QByteArray(VARG(data).value._string, GB.StringLength(VARG(data).value._string)));
     QApplication::clipboard()->setMimeData(data);
   }
-  else if (VARG(data).type >= GB_T_OBJECT && GB.Is(VARG(data)._object.value, CLASS_Image))
+  else if (VARG(data).type >= GB_T_OBJECT && GB.Is(VARG(data).value._object, CLASS_Image))
   {
     CIMAGE *img;
 
     if (!MISSING(format))
       goto _BAD_FORMAT;
 
-    img = (CIMAGE *)VARG(data)._object.value;
+    img = (CIMAGE *)VARG(data).value._object;
 
     QApplication::clipboard()->setImage(*CIMAGE_get(img));
   }
@@ -401,14 +400,14 @@ void *CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, GB_STRING *fmt)
         goto _BAD_FORMAT;
     }
     
-    mimeData->setData(format, QByteArray(data->_string.value, GB.StringLength(data->_string.value)));
+    mimeData->setData(format, QByteArray(data->value._string, GB.StringLength(data->value._string)));
   }
-  else if (data->type >= GB_T_OBJECT && GB.Is(data->_object.value, CLASS_Image))
+  else if (data->type >= GB_T_OBJECT && GB.Is(data->value._object, CLASS_Image))
   {
     if (fmt)
       goto _BAD_FORMAT;
 
-    img = (CIMAGE *)data->_object.value;
+    img = (CIMAGE *)data->value._object;
 
 		mimeData->setImageData(*CIMAGE_get(img));
   }

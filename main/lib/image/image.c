@@ -834,10 +834,10 @@ void IMAGE_colorize(GB_IMG *img, GB_COLOR color)
 	uint col;
 	int h, s, v;
 	int r, g, b;
-	int hcol, scol;
+	int hcol, scol, vcol;
 	
 	col = from_GB_COLOR(color, img->format);
-	COLOR_rgb_to_hsv(RED(col), GREEN(col), BLUE(col), &hcol, &scol, &v);
+	COLOR_rgb_to_hsv(RED(col), GREEN(col), BLUE(col), &hcol, &scol, &vcol);
 
 	while (p != pm) 
 	{

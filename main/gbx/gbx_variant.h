@@ -31,17 +31,24 @@ typedef
   struct 
 	{
     TYPE type;
-		union
-		{
+		union {
+			char _boolean;
+			unsigned char _byte;
+			short _short;
+			int _integer;
+			int64_t _long;
+			float _single;
+			double _float;
+			GB_DATE_VALUE _date;
 			char *_string;
 			void *_object;
 			int64_t data;
-		}
+			}
 		value;
   }
+	PACKED
   VARIANT;
 
-//#define VARIANT_copy_value(_dst, _src) (*((int64_t *)((_dst)->value)) = *((int64_t *)((_src)->value)))
 #define VARIANT_copy_value(_dst, _src) (_dst)->value.data = (_src)->value.data
 
 static INLINE void VARIANT_undo(VALUE *val)

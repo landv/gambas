@@ -297,7 +297,7 @@ BEGIN_METHOD(CFIELD_add, GB_STRING name; GB_INTEGER type; GB_INTEGER length; GB_
   info->type = new_field.type;
   info->length = new_field.length;
 
-  info->def._object.type = GB_T_NULL;
+  info->def.type = GB_T_NULL;
   if (!MISSING(def))
     GB.StoreVariant(ARG(def), &info->def);
 

@@ -107,159 +107,159 @@ typedef
 	GB_BASE;
 
 
-/* Gambas VARIANT datatype definition */
-
-typedef
-	union {
-		GB_TYPE type;
-		intptr_t _reserved[3];
-		struct { GB_TYPE type; int value; } PACKED _boolean;
-		struct { GB_TYPE type; int value; } PACKED _byte;
-		struct { GB_TYPE type; int value; } PACKED _short;
-		struct { GB_TYPE type; int value; } PACKED _integer;
-		struct { GB_TYPE type; int64_t value; } PACKED _long;
-		struct { GB_TYPE type; double value; } PACKED _single;
-		struct { GB_TYPE type; double value; } PACKED _float;
-		struct { GB_TYPE type; int date; int time; } PACKED _date;
-		struct { GB_TYPE type; char *value; } PACKED _string;
-		struct { GB_TYPE type; void *value; } PACKED _object;
-		}
-	GB_VARIANT_VALUE;
-
-
-typedef
-	struct {
-		GB_TYPE type;
-		GB_VARIANT_VALUE value;
-		}
-	GB_VARIANT;
-
-
 /* Gambas STRING datatype definition */
 
 typedef
-	struct {
-		GB_TYPE type;
-		struct {
-			char *addr;
-			int start;
-			int len;
-			} value;
-		#if __WORDSIZE == 64
+  struct {
+    GB_TYPE type;
+    struct {
+      char *addr;
+      int start;
+      int len;
+      } value;
+    #if __WORDSIZE == 64
 		intptr_t _reserved;
 		#endif
-		}
-	PACKED
-	GB_STRING;
+    }
+  GB_STRING;
 
 
 /* Gambas INTEGER datatype definition */
 
 typedef
-	struct {
-		GB_TYPE type;
-		int value;
-		#if __WORDSIZE == 64
+  struct {
+    GB_TYPE type;
+    int value;
+    #if __WORDSIZE == 64
+    int _pad;
+    #endif
+		intptr_t _reserved[2];
+    }
+  GB_INTEGER;
+
+
+/* Gambas LONG datatype definition */
+
+typedef
+  struct {
+    GB_TYPE type;
+		#if __WORDSIZE == 32
 		int _pad;
 		#endif
-		intptr_t _reserved[2];
-		}
-	PACKED
-	GB_INTEGER;
-
-
-/* Gambas INTEGER datatype definition */
-
-typedef
-	struct {
-		GB_TYPE type;
-		int64_t value;
-		#if __WORDSIZE == 64
-		intptr_t _reserved[2];
-		#else
-		int _reserved;
-		#endif
-		}
-	PACKED
-	GB_LONG;
-
+    int64_t value;
+    #if __WORDSIZE == 64
+    intptr_t _reserved[2];
+    #endif
+    }
+  GB_LONG;
 
 /* Gambas POINTER datatype definition */
 
 typedef
-	struct {
-		GB_TYPE type;
-		intptr_t value;
-		intptr_t _reserved[2];
-		}
-	PACKED
-	GB_POINTER;
+  struct {
+    GB_TYPE type;
+    intptr_t value;
+    intptr_t _reserved[2];
+    }
+  GB_POINTER;
 
 
 /* Gambas BOOLEAN datatype definition */
 
 typedef
-	struct {
-		GB_TYPE type;
-		int value;
-		#if __WORDSIZE == 64
-		int _pad;
-		#endif
+  struct {
+    GB_TYPE type;
+    int value;
+    #if __WORDSIZE == 64
+    int _pad;
+    #endif
 		intptr_t _reserved[2];
-		}
-	PACKED
-	GB_BOOLEAN;
+    }
+  GB_BOOLEAN;
 
 
 /* Gambas FLOAT datatype definition */
 
 typedef
-	struct {
-		GB_TYPE type;
-		double value;
-		#if __WORDSIZE == 64
-		intptr_t _reserved[2];
-		#else
+  struct {
+    GB_TYPE type;
+    #if __WORDSIZE == 32
 		int _pad;
 		#endif
-		}
-	PACKED
-	GB_FLOAT;
+    double value;
+    #if __WORDSIZE == 64
+    intptr_t _reserved[2];
+    #endif
+    }
+  GB_FLOAT;
 
 
 /* Gambas DATE datatype definition */
 
 typedef
-	struct {
-		int date;
-		int time;
-		}
-	GB_DATE_VALUE;
+  struct {
+    int date;
+    int time;
+    }
+  GB_DATE_VALUE;
 
 typedef
-	struct {
-		GB_TYPE type;
+  struct {
+    GB_TYPE type;
 		GB_DATE_VALUE value;
-		#if __WORDSIZE == 64
-		intptr_t _reserved[2];
-		#else
-		int _reserved;
-		#endif
-		}
-	PACKED
-	GB_DATE;
+    #if __WORDSIZE == 64
+    intptr_t _reserved[2];
+    #else
+    int _reserved;
+    #endif
+    }
+  GB_DATE;
 
 
 /* Gambas OBJECT datatype definition */
 
 typedef
-	struct {
-		GB_TYPE type;
-		void *value;
-		intptr_t _reserved[2];
+  struct {
+    GB_TYPE type;
+    void *value;
+    intptr_t _reserved[2];
+    }
+  GB_OBJECT;
+
+
+/* Gambas VARIANT datatype definition */
+
+typedef
+  struct {
+    GB_TYPE type;
+		union {
+			char _boolean;
+			unsigned char _byte;
+			short _short;
+			int _integer;
+			int64_t _long;
+			float _single;
+			double _float;
+			GB_DATE_VALUE _date;
+			char *_string;
+			void *_object;
+			int64_t data;
+			}
+			value;
 		}
 	PACKED
-	GB_OBJECT;
+  GB_VARIANT_VALUE;
+
+typedef
+  struct {
+    GB_TYPE type;
+		GB_VARIANT_VALUE value;
+		#if __WORDSIZE == 64
+		int64_t _pad;
+		#endif
+    }
+	PACKED
+  GB_VARIANT;
 
 
 /* Gambas common value definition */

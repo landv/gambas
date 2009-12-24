@@ -20,7 +20,6 @@
 
 ***************************************************************************/
 
-
 #ifndef __GBX_VALUE_H
 #define __GBX_VALUE_H
 
@@ -30,177 +29,191 @@
 #include "gbx_class.h"
 
 typedef
-	struct {
-		TYPE type;
-		int value;
-		}
-	VALUE_BOOLEAN;
+  struct {
+    TYPE type;
+    int value;
+    }
+  VALUE_BOOLEAN;
 
 typedef
-	struct {
-		TYPE type;
-		int value;
-		}
-	VALUE_BYTE;
+  struct {
+    TYPE type;
+    int value;
+    }
+  VALUE_BYTE;
 
 typedef
-	struct {
-		TYPE type;
-		int value;
-		}
-	VALUE_SHORT;
+  struct {
+    TYPE type;
+    int value;
+    }
+  VALUE_SHORT;
 
 typedef
-	struct {
-		TYPE type;
-		int value;
-		}
-	VALUE_INTEGER;
+  struct {
+    TYPE type;
+    int value;
+    }
+  VALUE_INTEGER;
 
 typedef
-	struct {
-		TYPE type;
-		int64_t value;
-		}
-	PACKED
-	VALUE_LONG;
+  struct {
+    TYPE type;
+		#ifndef OS_64BITS
+		int _padding;
+		#endif
+    int64_t value;
+    }
+  PACKED
+  VALUE_LONG;
 
 typedef
-	struct {
-		TYPE type;
-		intptr_t value;
-		}
-	PACKED
-	VALUE_POINTER;
+  struct {
+    TYPE type;
+    intptr_t value;
+    }
+  PACKED
+  VALUE_POINTER;
 
 typedef
-	struct {
-		TYPE type;
-		double value;
-		}
-	PACKED
-	VALUE_SINGLE;
+  struct {
+    TYPE type;
+		#ifndef OS_64BITS
+		int _padding;
+		#endif
+    double value;
+    }
+  PACKED
+  VALUE_SINGLE;
 
 typedef
-	struct {
-		TYPE type;
-		double value;
-		}
-	PACKED
-	VALUE_FLOAT;
+  struct {
+    TYPE type;
+		#ifndef OS_64BITS
+		int _padding;
+		#endif
+    double value;
+    }
+  PACKED
+  VALUE_FLOAT;
 
 typedef
-	struct {
-		TYPE type;
-		int date;  /* number of days */
-		int time;  /* number of milliseconds */
-		}
-	VALUE_DATE;
+  struct {
+    TYPE type;
+    int date;  /* number of days */
+    int time;  /* number of milliseconds */
+    }
+  VALUE_DATE;
 
 typedef
-	struct {
-		TYPE type;
-		char *addr;
-		int start;
-		int len;
-		}
-	VALUE_STRING;
+  struct {
+    TYPE type;
+    char *addr;
+    int start;
+    int len;
+    }
+  VALUE_STRING;
 
 typedef
-	struct {
-		TYPE type;
-		CLASS *class;
-		void *object;
-		char kind;
-		char defined;
-		short index;
-		/*long function;*/
-		}
-	PACKED
-	VALUE_FUNCTION;
+  struct {
+    TYPE type;
+    CLASS *class;
+    void *object;
+    char kind;
+    char defined;
+    short index;
+    }
+  PACKED
+  VALUE_FUNCTION;
 
 enum
 {
-	FUNCTION_NULL = 0,
-	FUNCTION_NATIVE = 1,
-	FUNCTION_PRIVATE = 2,
-	FUNCTION_PUBLIC = 3,
-	FUNCTION_EVENT = 4,
-	FUNCTION_EXTERN = 5,
-	FUNCTION_UNKNOWN = 6,
-	FUNCTION_CALL = 7,
+  FUNCTION_NULL = 0,
+  FUNCTION_NATIVE = 1,
+  FUNCTION_PRIVATE = 2,
+  FUNCTION_PUBLIC = 3,
+  FUNCTION_EVENT = 4,
+  FUNCTION_EXTERN = 5,
+  FUNCTION_UNKNOWN = 6,
+  FUNCTION_CALL = 7,
 };
 
 typedef
-	struct {
-		TYPE type;
-		TYPE ptype;
-		intptr_t value[2];
-		}
-	VALUE_VOID;
+  struct {
+    TYPE type;
+    TYPE ptype;
+    intptr_t value[2];
+    }
+  VALUE_VOID;
 
-	typedef
+typedef
   struct {
     TYPE type;
     TYPE vtype;
 		union {
-			int _int;
+			char _boolean;
+			unsigned char _byte;
+			short _short;
+			int _integer;
+			int64_t _long;
+			float _single;
+			double _float;
 			char *_string;
 			void *_object;
-			uint64_t data;
+			int64_t data;
 			}
 			value;
     }
   VALUE_VARIANT;
 
 typedef
-	struct {
-		CLASS *class;
-		void *object;
-		void *super;
-		}
-	VALUE_OBJECT;
+  struct {
+    CLASS *class;
+    void *object;
+    void *super;
+    }
+  VALUE_OBJECT;
 
 typedef
-	struct {
-		TYPE type;
-		CLASS *class;
-		void *super; // Must be at the same place than VALUE_OBJECT
-		}
-	VALUE_CLASS;
+  struct {
+    TYPE type;
+    CLASS *class;
+    void *super;
+    }
+  VALUE_CLASS;
 
 typedef
-	struct {
-		TYPE type;
-		CLASS *class;
-		void *addr;
-		short index;
-		unsigned keep : 1;
+  struct {
+    TYPE type;
+    CLASS *class;
+    void *addr;
+    short index;
+    unsigned keep : 1;
 		unsigned _reserved : 15;
-		}
-	VALUE_ARRAY;
+    }
+  VALUE_ARRAY;
 
 typedef
-	union value {
-		TYPE type;
-		VALUE_BOOLEAN _boolean;
-		VALUE_BYTE _byte;
-		VALUE_SHORT _short;
-		VALUE_INTEGER _integer;
-		VALUE_LONG _long;
-		VALUE_SINGLE _single;
-		VALUE_FLOAT _float;
-		VALUE_DATE _date;
-		VALUE_STRING _string;
-		VALUE_FUNCTION _function;
-		VALUE_VARIANT _variant;
-		VALUE_CLASS _class;
-		VALUE_OBJECT _object;
-		VALUE_ARRAY _array;
-		VALUE_VOID _void;
-		VALUE_POINTER _pointer;
-		}
-	VALUE;
+  union value {
+    TYPE type;
+    VALUE_BOOLEAN _boolean;
+    VALUE_BYTE _byte;
+    VALUE_SHORT _short;
+    VALUE_INTEGER _integer;
+    VALUE_LONG _long;
+    VALUE_SINGLE _single;
+    VALUE_FLOAT _float;
+    VALUE_DATE _date;
+    VALUE_STRING _string;
+    VALUE_FUNCTION _function;
+    VALUE_VARIANT _variant;
+    VALUE_CLASS _class;
+    VALUE_OBJECT _object;
+    VALUE_ARRAY _array;
+    VALUE_VOID _void;
+    VALUE_POINTER _pointer;
+    }
+  VALUE;
 
 #define VALUE_copy(_dst, _src) \
 	(_dst)->_void.type = (_src)->_void.type; \

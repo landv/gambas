@@ -99,8 +99,11 @@ typedef
 	
 /* Pixel color: the color is not premultiplied, and the alpha component is inverted (0 = solid / 255 = transparent) */
 
+#ifndef __GB_COLOR_DEFINED
+#define __GB_COLOR_DEFINED
 typedef
 	unsigned int GB_COLOR;
+#endif
 
 /* Gambas image component interface */
 

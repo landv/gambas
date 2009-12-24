@@ -114,35 +114,33 @@ class FBResult{
 
     void SetData(int l,int c,int data){
       gb_table[l][c].type = GB_T_VARIANT;
-      gb_table[l][c].value._integer.type = GB_T_INTEGER;
+      gb_table[l][c].value.type = GB_T_INTEGER;
       if(!IsNull(c+1)){
-        gb_table[l][c].value._integer.value = data;
+        gb_table[l][c].value.value._integer = data;
       };
     };
 
     void SetData(int l,int c,int64_t data){
       gb_table[l][c].type = GB_T_VARIANT;
-      gb_table[l][c].value._long.type = GB_T_LONG;
+      gb_table[l][c].value.type = GB_T_LONG;
       if(!IsNull(c+1)){
-        gb_table[l][c].value._long.value = data;
+        gb_table[l][c].value.value._long = data;
       };
     };
 
     void SetData(int l,int c,float data){
       gb_table[l][c].type = GB_T_VARIANT;
-      gb_table[l][c].value._object.type = GB_T_NULL;
-      gb_table[l][c].value._float.type = GB_T_FLOAT;
+      gb_table[l][c].value.type = GB_T_FLOAT;
       if(!IsNull(c+1)){
-        gb_table[l][c].value._float.value = data;
+        gb_table[l][c].value.value._float = data;
       };
     };
 
     void SetData(int l,int c,double data){
       gb_table[l][c].type = GB_T_VARIANT;
-      gb_table[l][c].value._object.type = GB_T_NULL;
-      gb_table[l][c].value._float.type = GB_T_FLOAT;
+      gb_table[l][c].value.type = GB_T_FLOAT;
       if(!IsNull(c+1)){
-        gb_table[l][c].value._float.value = data;
+        gb_table[l][c].value.value._float = data;
       };
     };
 
@@ -151,8 +149,7 @@ class FBResult{
       GB_DATE dt2;
       int hour,min,sec;
       gb_table[l][c].type = GB_T_VARIANT;
-      gb_table[l][c].value._object.type = GB_T_NULL;
-      gb_table[l][c].value._date.type = GB_T_DATE;
+      gb_table[l][c].value.type = GB_T_DATE;
       if(!IsNull(c+1)){
         data.GetTime(hour,min,sec);
         memset(&dt1, 0, sizeof(dt1));
@@ -160,7 +157,8 @@ class FBResult{
         dt1.min=min;
         dt1.sec=sec;
         GB.MakeDate(&dt1,&dt2);
-        gb_table[l][c].value._date.time = dt2.value.time;
+        gb_table[l][c].value.value._date.date = 0;
+        gb_table[l][c].value.value._date.time = dt2.value.time;
       };
     };
 
@@ -169,8 +167,7 @@ class FBResult{
       GB_DATE dt2;
       int year,month,day,hour,min,sec;
       gb_table[l][c].type = GB_T_VARIANT;
-      gb_table[l][c].value._object.type = GB_T_NULL;
-      gb_table[l][c].value._date.type = GB_T_DATE;
+      gb_table[l][c].value.type = GB_T_DATE;
       if(!IsNull(c+1)){
         data.GetDate(year,month,day);
         data.GetTime(hour,min,sec);
@@ -182,8 +179,8 @@ class FBResult{
         dt1.min=min;
         dt1.sec=sec;
         GB.MakeDate(&dt1,&dt2);
-        gb_table[l][c].value._date.date = dt2.value.date;
-        gb_table[l][c].value._date.time = dt2.value.time;
+        gb_table[l][c].value.value._date.date = dt2.value.date;
+        gb_table[l][c].value.value._date.time = dt2.value.time;
       };
     };
 
@@ -192,8 +189,7 @@ class FBResult{
       GB_DATE dt2;
       int year,month,day;
       gb_table[l][c].type = GB_T_VARIANT;
-      gb_table[l][c].value._object.type = GB_T_NULL;
-      gb_table[l][c].value._date.type = GB_T_DATE;
+      gb_table[l][c].value.type = GB_T_DATE;
       if(!IsNull(c+1)){
         data.GetDate(year,month,day);
         memset(&dt1, 0, sizeof(dt1));
@@ -201,16 +197,16 @@ class FBResult{
         dt1.month=month;
         dt1.day=day+1;
         GB.MakeDate(&dt1,&dt2);
-        gb_table[l][c].value._date.date = dt2.value.date;
+        gb_table[l][c].value.value._date.date = dt2.value.date;
+        gb_table[l][c].value.value._date.time = 0;
       };
     };
 
     void SetData(int l,int c,std::string data){
       gb_table[l][c].type = GB_T_VARIANT;
-      gb_table[l][c].value._object.type = GB_T_NULL;
-      gb_table[l][c].value._string.type = GB_T_CSTRING;
+      gb_table[l][c].value.type = GB_T_CSTRING;
       if(!IsNull(c+1))
-        GB.NewString(&gb_table[l][c].value._string.value, data.c_str(), 0);
+        GB.NewString(&gb_table[l][c].value.value._string, data.c_str(), 0);
     };
 
     IBPP::STT GetType(void){
@@ -293,8 +289,8 @@ class FBResult{
     void ClearResult(void){
       for(unsigned i=0;i<gb_table.size();i++){
         for(unsigned j=0;j<gb_table[i].size();j++){
-          if(gb_table[i][j].value._string.type == GB_T_CSTRING){
-            GB.FreeString(&gb_table[i][j].value._string.value);
+          if(gb_table[i][j].value.type == GB_T_CSTRING){
+            GB.FreeString(&gb_table[i][j].value.value._string);
           }
         }
         gb_table[i].clear();
@@ -1213,10 +1209,8 @@ static int query_fill(DB_DATABASE *db, DB_RESULT result, int pos, GB_VARIANT_VAL
   if(res->GetnRecord()>0){
     for (i=0; i < res->Columns(); i++){
       if(res->ColumnType(i+1)==IBPP::sdBlob){
-	fantom.type = GB_T_VARIANT;
-        fantom.value._object.type = GB_T_NULL;
-        fantom.value._string.type = GB_T_NULL;
-	fantom.value._string.value=NULL;
+				fantom.type = GB_T_VARIANT;
+        fantom.value.type = GB_T_NULL;
 	//res->GetData(pos,i).value._string.type = GB_T_NULL;
 	//fantom.value._string.value=res->GetData(pos,i).value._string.value;
         GB.StoreVariant(&fantom, &buffer[i]);
@@ -1252,7 +1246,7 @@ static void blob_read(DB_RESULT result, int pos, int field, DB_BLOB *blob)
   char *data;
   int len;
 
-	data = res->GetData(pos,field).value._string.value;	//PQgetvalue(res, pos, field);
+	data = res->GetData(pos,field).value.value._string;	//PQgetvalue(res, pos, field);
 	len = strlen(data);
 
   DB.Query.Init();
@@ -1454,11 +1448,11 @@ static int table_init(DB_DATABASE *db, const char *table, DB_INFO *info){
   GB.Alloc(POINTER(&info->field), sizeof(DB_FIELD) * n);
   for (i = 0; i < n; i++){
     f = &info->field[i];
-    GB.NewString(&f->name, res->GetData(i,0).value._string.value, 0);
-    f->type = conv_type(res->GetData(i,1).value._integer.value);
+    GB.NewString(&f->name, res->GetData(i,0).value.value._string, 0);
+    f->type = conv_type(res->GetData(i,1).value.value._integer);
     f->length = 0;
     if (f->type == GB_T_STRING){
-      f->length = res->GetData(i,2).value._integer.value;
+      f->length = res->GetData(i,2).value.value._integer;
       if (f->length < 0)
         f->length = 0;
       else
@@ -1510,7 +1504,7 @@ static int table_index(DB_DATABASE *db, const char *table, DB_INFO *info){
   GB.Alloc(POINTER(&info->index), sizeof(int) * n);
   for (i = 0; i < n; i++){
     for (j = 0; j < info->nfield; j++){
-      if(strcmp(info->field[j].name, res->GetData(j,1).value._string.value) == 0){
+      if(strcmp(info->field[j].name, res->GetData(j,1).value.value._string) == 0){
         info->index[i] = j;
         break;
       }
@@ -1596,7 +1590,7 @@ static int table_list(DB_DATABASE *db, char ***tables){
   if (tables){
     GB.NewArray(tables, sizeof(char *), res->GetnRecord());
     for (i = 0; i < res->GetnRecord(); i++)
-      GB.NewString(&((*tables)[i]), res->GetData(i,0).value._string.value, 0);
+      GB.NewString(&((*tables)[i]), res->GetData(i,0).value.value._string, 0);
   }
   count = res->GetnRecord();
   delete res;
@@ -1631,7 +1625,7 @@ static int table_primary_key(DB_DATABASE *db, const char *table, char ***primary
   }
   GB.NewArray(primary, sizeof(char *), res->GetnRecord());
   for (i = 0; i < res->GetnRecord(); i++)
-    GB.NewString(&((*primary)[i]), res->GetData(i,1).value._string.value, 0);
+    GB.NewString(&((*primary)[i]), res->GetData(i,1).value.value._string, 0);
   delete res;
   return FALSE;
 }
@@ -1660,7 +1654,7 @@ static int table_is_system(DB_DATABASE *db, const char *table){
     delete res;
     return FALSE;
   }
-  if(res->GetData(0,0).value._integer.value == 1)
+  if(res->GetData(0,0).value.value._integer == 1)
     retour=TRUE;
   delete res;
   return retour;
@@ -1852,7 +1846,7 @@ static int field_list(DB_DATABASE *db, const char *table, char ***fields){
   if (fields){
     GB.NewArray(fields, sizeof(char *), res->GetnRecord());
     for (i = 0; i < res->GetnRecord(); i++)
-      GB.NewString(&((*fields)[i]), res->GetData(i,0).value._string.value, 0);
+      GB.NewString(&((*fields)[i]), res->GetData(i,0).value.value._string, 0);
   }
   count = res->GetnRecord();
   delete res;
@@ -1890,23 +1884,23 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
     GB.Error("Unable to find field &1.&2", table, field);
     return TRUE;
   }
-  if (strcmp(res->GetData(0,0).value._string.value, field)){
+  if (strcmp(res->GetData(0,0).value.value._string, field)){
     delete res;
     GB.Error("Unable to find field &1.&2", table, field);
     return TRUE;
   }
   info->name = NULL;
-  type = res->GetData(0,1).value._integer.value;
+  type = res->GetData(0,1).value.value._integer;
   info->type = conv_type(type);
   if (info->type == GB_T_STRING){
-  info->length = res->GetData(0,4).value._integer.value;
+  info->length = res->GetData(0,4).value.value._integer;
   }
-  info->def._object.type = GB_T_NULL;
-  if(res->GetData(0,3).value._string.value){
-    str1=res->GetData(0,3).value._string.value;
+  info->def.type = GB_T_NULL;
+  if(res->GetData(0,3).value.value._string){
+    str1=res->GetData(0,3).value.value._string;
   if(str1!="")
     str2=str1.assign(str1,8,str1.length()-8);
-  GB.FreeString(&res->GetData(0,3).value._string.value);
+  GB.FreeString(&res->GetData(0,3).value.value._string);
   res->SetData(0,3,str2);
   GB.StoreVariant(&res->GetData(0,3), &info->def);
   }
@@ -1975,7 +1969,7 @@ static int index_list(DB_DATABASE *db, const char *table, char ***indexes){
   if (indexes){
     GB.NewArray(indexes, sizeof(char *), res->GetnRecord());
     for (i = 0; i < res->GetnRecord(); i++)
-      GB.NewString(&((*indexes)[i]), res->GetData(i,0).value._string.value, 0);
+      GB.NewString(&((*indexes)[i]), res->GetData(i,0).value.value._string, 0);
     count = res->GetnRecord();
   }
   delete res;
@@ -2015,8 +2009,8 @@ static int index_info(DB_DATABASE *db, const char *table, const char *index, DB_
       return TRUE;
     }
   info->name = NULL;
-  info->unique = res->GetData(0,2).value._integer.value;
-  if(strncmp(res->GetData(0,0).value._string.value,"RDB$PRIMARY",11))
+  info->unique = res->GetData(0,2).value.value._integer;
+  if(strncmp(res->GetData(0,0).value.value._string,"RDB$PRIMARY",11))
     info->primary = FALSE;
   else
     info->primary = TRUE;
@@ -2029,7 +2023,7 @@ static int index_info(DB_DATABASE *db, const char *table, const char *index, DB_
   for (i = 0; i < res->GetnRecord(); i++){
     if (i > 0)
       DB.Query.Add(",");
-    DB.Query.Add(res->GetData(i,0).value._string.value);
+    DB.Query.Add(res->GetData(i,0).value.value._string);
   }
   delete res;
   info->fields = DB.Query.GetNew();

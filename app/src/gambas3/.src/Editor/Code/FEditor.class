@@ -2957,6 +2957,10 @@ Public Sub gvwProc_Data(Row As Integer, Column As Integer)
     gvwProc.Data.Font.Italic = True
   Endif
   
+  If sName = btnProc.Text Then 
+    gvwProc.Data.Background = Color.LightBackground
+  Endif
+  
 End
 
 Public Sub gvwProc_Click()

@@ -322,12 +322,12 @@ GB_DESC NATIVE_Collection[] =
 
 void GB_CollectionNew(GB_COLLECTION *col, int mode)
 {
-  GB_INTEGER param;
+  VALUE param;
 
-  param.type = GB_T_INTEGER;
-  param.value = mode;
+  param._integer.type = GB_T_INTEGER;
+  param._integer.value = mode;
 
-  OBJECT_create_native((void **)col, CLASS_Collection, (VALUE *)&param);
+  OBJECT_create_native((void **)col, CLASS_Collection, &param);
 }
 
 int GB_CollectionCount(GB_COLLECTION col)
@@ -360,7 +360,7 @@ int GB_CollectionGet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *va
   {
     value->type = GB_T_VARIANT;
     value->value.type = var->type;
-		value->value._long.value = var->value.data;
+		value->value.value.data = var->value.data;
     return FALSE;
   }
   else
@@ -387,7 +387,7 @@ int GB_CollectionEnum(GB_COLLECTION col, GB_VARIANT *value, char **key, int *len
   	return TRUE;
 
   value->type = GB_T_VARIANT;
-	value->value._long.value = val->value.data;
+	value->value.value.data = val->value.data;
 
 	HASH_TABLE_get_last_key(hash_table, key, len);
 	return FALSE;

@@ -367,8 +367,8 @@ static void conv_data(const char *data, int len, GB_VARIANT_VALUE *val, Oid type
 	{
 		case BOOLOID:
 
-			val->_boolean.type = GB_T_BOOLEAN;
-			val->_boolean.value = conv_boolean(data);
+			val->type = GB_T_BOOLEAN;
+			val->value._boolean = conv_boolean(data) ? -1 : 0;
 			break;
 
 		case INT2OID:
@@ -376,8 +376,8 @@ static void conv_data(const char *data, int len, GB_VARIANT_VALUE *val, Oid type
 
 			GB.NumberFromString(GB_NB_READ_INTEGER, data, strlen(data), &conv);
 
-			val->_integer.type = GB_T_INTEGER;
-			val->_integer.value = ((GB_INTEGER *)&conv)->value;
+			val->type = GB_T_INTEGER;
+			val->value._integer = conv._integer.value;
 
 			break;
 
@@ -386,7 +386,7 @@ static void conv_data(const char *data, int len, GB_VARIANT_VALUE *val, Oid type
 			GB.NumberFromString(GB_NB_READ_LONG, data, strlen(data), &conv);
 
 			val->type = GB_T_LONG;
-			val->_long.value = ((GB_LONG *)&conv)->value;
+			val->value._long = conv._long.value;
 
 			break;
 
@@ -396,8 +396,8 @@ static void conv_data(const char *data, int len, GB_VARIANT_VALUE *val, Oid type
 
 			GB.NumberFromString(GB_NB_READ_FLOAT, data, strlen(data), &conv);
 
-			val->_float.type = GB_T_FLOAT;
-			val->_float.value = ((GB_FLOAT *)&conv)->value;
+			val->type = GB_T_FLOAT;
+			val->value._float = conv._float.value;
 
 			break;
 
@@ -455,9 +455,9 @@ static void conv_data(const char *data, int len, GB_VARIANT_VALUE *val, Oid type
 
 			GB.MakeDate(&date, (GB_DATE *)&conv);
 
-			val->_date.type = GB_T_DATE;
-			val->_date.date = ((GB_DATE *)&conv)->value.date;
-			val->_date.time = ((GB_DATE *)&conv)->value.time;
+			val->type = GB_T_DATE;
+			val->value._date.date = conv._date.value.date;
+			val->value._date.time = conv._date.value.time;
 
 			break;
 
@@ -475,8 +475,8 @@ static void conv_data(const char *data, int len, GB_VARIANT_VALUE *val, Oid type
 		case CASHOID:
 		default:
 
-			val->_string.type = GB_T_CSTRING;
-			val->_string.value = (char *)data;
+			val->type = GB_T_CSTRING;
+			val->value._string = (char *)data;
 			//val->_string.len = len;
 
 			break;
@@ -869,7 +869,7 @@ static int query_fill(DB_DATABASE *db, DB_RESULT result, int pos, GB_VARIANT_VAL
 		data = PQgetvalue(res, pos, i);
 
 		value.type = GB_T_VARIANT;
-		value.value._object.type = GB_T_NULL;
+		value.value.type = GB_T_NULL;
 
 		if (!PQgetisnull(res, pos, i))
 			conv_data(data, PQgetlength(res, pos, i), &value.value, PQftype(res, i));
@@ -1997,12 +1997,12 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 			info->length -= 4;
 	}
 
-	info->def._object.type = GB_T_NULL;
+	info->def.type = GB_T_NULL;
 
 	if (conv_boolean(PQgetvalue(res, 0, 3)))
 	{
 		def.type = GB_T_VARIANT;
-		def.value._object.type = GB_T_NULL;
+		def.value.type = GB_T_NULL;
 
 		val = PQgetvalue(res, 0, 4);
 		if (val && *val)
@@ -2017,8 +2017,8 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 				switch(info->type)
 				{
 					case GB_T_BOOLEAN:
-						def.value._boolean.value = (val[1] == 't');
-						def.value._boolean.type = GB_T_BOOLEAN;
+						def.value.type = GB_T_BOOLEAN;
+						def.value.value._boolean = (val[1] == 't');
 						break;
 
 					default:

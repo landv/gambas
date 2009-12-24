@@ -416,7 +416,7 @@ static void check_blob(CRESULT *_object, int field)
 	{
 		val.type = GB_T_VARIANT;
 		val.value.type = (GB_TYPE)CLASS_Blob;
-		val.value._object.value = make_blob(THIS, field);
+		val.value.value._object = make_blob(THIS, field);
 
 		GB.StoreVariant(&val, &THIS->buffer[field]);
 	}
@@ -476,8 +476,8 @@ BEGIN_METHOD(CRESULT_put, GB_VARIANT value; GB_STRING field)
 
 		if (VARG(value).type == (GB_TYPE)CLASS_Blob)
 		{
-			CBLOB *src = VARG(value)._object.value;
-			set_blob((CBLOB *)THIS->buffer[index]._object.value, src->data, src->length);
+			CBLOB *src = VARG(value).value._object;
+			set_blob((CBLOB *)THIS->buffer[index].value._object, src->data, src->length);
 		}
 		else
 		{
@@ -486,7 +486,7 @@ BEGIN_METHOD(CRESULT_put, GB_VARIANT value; GB_STRING field)
 			if (GB.Conv((GB_VALUE *)(void *)ARG(value), GB_T_STRING))
 				return;
 
-			set_blob((CBLOB *)THIS->buffer[index]._object.value, str->value.addr + str->value.start, str->value.len);
+			set_blob((CBLOB *)THIS->buffer[index].value._object, str->value.addr + str->value.start, str->value.len);
 		}
 
 		BARRAY_set(THIS->changed, index);

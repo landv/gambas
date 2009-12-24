@@ -35,8 +35,8 @@ typedef
 typedef
   int (*ARRAY_COMP_FUNC)(const void *, const void *);
 
-#define DATA_TO_ARRAY(data) ((ARRAY *)((char *)data - sizeof(ARRAY)))
-#define ARRAY_TO_DATA(array) ((char *)array + sizeof(ARRAY))
+#define DATA_TO_ARRAY(data) ((ARRAY *)(data) - 1)
+#define ARRAY_TO_DATA(array) ((char *)((ARRAY *)(array) + 1))
 
 #define ARRAY_create(data) ARRAY_create_with_size((data), sizeof(**(data)), 32)
 #define ARRAY_create_inc(data, inc) ARRAY_create_with_size((data), sizeof(**(data)), (inc))

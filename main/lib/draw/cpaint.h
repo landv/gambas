@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  gbx_math.h
+  cpaint.h
 
   (c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
 
@@ -20,42 +20,20 @@
 
 ***************************************************************************/
 
-#ifndef __GBX_MATH_H
-#define __GBX_MATH_H
+#ifndef __CPAINT_H
+#define __CPAINT_H
 
-#include "config.h"
+#include "gambas.h"
+#include "gb.draw.h"
 
-void MATH_init(void);
+#ifndef __CPAINT_C
 
-int lsgn(int x);
-int llsgn(int64_t x);
-//int64_t llabs(int64_t x);
+extern GB_DESC CPaintDesc[];
 
-double frac(double x);
-int fsgn(double x);
-double deg(double x);
-double rad(double x);
-double fix(double x);
-double frexp10(double x, int *exp);
-double ang(double x, double y);
-
-void randomize(bool set, uint seed);
-double rnd(void);
-
-#if defined(OS_FREEBSD) || defined(OS_OPENBSD) || defined(OS_CYGWIN)
-double exp10(double x);
-#ifdef log2
-#undef log2
-#endif
-double log2(double x);
-double exp2(double x);
 #endif
 
-#if defined(OS_FREEBSD) || defined(OS_OPENBSD) || defined(OS_CYGWIN) || defined(ARCH_ARM)
-long double log10l(long double x);
-long double fabsl(long double x);
-long double powl(long double x, long double y);
-long double modfl(long double x, long double *p);
-#endif
+GB_PAINT *PAINT_get_current();
+bool PAINT_begin(void *device);
+void PAINT_end();
 
 #endif

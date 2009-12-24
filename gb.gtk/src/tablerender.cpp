@@ -145,8 +145,8 @@ gTable::gTable()
 {
 	colpos = colsize = NULL;
 	rowpos = rowsize = NULL;
-	columns=0;
-	rows=0;
+	columns = 0;
+	rows = 0;
 	doNotInvalidate = false;
 	seldata = g_hash_table_new_full((GHashFunc)g_int_hash, (GEqualFunc)gTable_equal, (GDestroyNotify)gTable_ekey, NULL);
 	spanHash = g_hash_table_new_full((GHashFunc)g_int_hash, (GEqualFunc)gTable_equal, (GDestroyNotify)gTable_ekey, NULL);
@@ -164,6 +164,16 @@ gTable::~gTable()
 	g_free(colpos);
 }
 
+
+void gTable::clear()
+{
+	g_hash_table_destroy(data);
+	g_hash_table_destroy(seldata);
+	g_hash_table_destroy(spanHash);
+	seldata = g_hash_table_new_full((GHashFunc)g_int_hash, (GEqualFunc)gTable_equal, (GDestroyNotify)gTable_ekey, NULL);
+	spanHash = g_hash_table_new_full((GHashFunc)g_int_hash, (GEqualFunc)gTable_equal, (GDestroyNotify)gTable_ekey, NULL);
+	data = g_hash_table_new_full((GHashFunc)g_int_hash, (GEqualFunc)gTable_equal, (GDestroyNotify)gTable_ekey, (GDestroyNotify)gTable_edata);
+}
 
 int gTable::columnCount()
 {
@@ -1537,3 +1547,8 @@ void gTableRender::removeRows(int start, int length)
 	setRowCount(rowCount() - length);
 }
 
+void gTableRender::clear()
+{
+	gTable::clear();
+	queryUpdate(-1, -1);
+}

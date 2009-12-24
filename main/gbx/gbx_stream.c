@@ -770,7 +770,7 @@ void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
 							buffer._data[0] &= 0x3F;
 
 							if (!EXEC_big_endian)
-								SWAP_short((short *)buffer._data);
+								SWAP_short(&buffer._short);
 
 							len = buffer._short;
 							break;
@@ -780,7 +780,7 @@ void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
 							buffer._data[0] &= 0x3F;
 
 							if (!EXEC_big_endian)
-								SWAP_int((int *)buffer._data);
+								SWAP_int(&buffer._int);
 
 							len = buffer._int;
 							break;

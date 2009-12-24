@@ -884,9 +884,7 @@ __VARIANT:
   value->_variant.type = T_VARIANT;
   value->_variant.vtype = ((VARIANT *)addr)->type;
 
-  /*if (value->_variant.vtype == T_STRING)
-    value->_variant.vtype = T_STRING;
-  else*/ if (value->_variant.vtype == T_VOID)
+  if (value->_variant.vtype == T_VOID)
     value->_variant.vtype = T_NULL;
 
   VARIANT_copy_value(&value->_variant, ((VARIANT *)addr));

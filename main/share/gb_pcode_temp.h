@@ -263,7 +263,8 @@ short PCODE_dump(FILE *out, short addr, PCODE *code)
           break;
 
         case C_PUSH_LONG:
-          value = *((int *)&code[1]);
+          // FIXME: endianness
+					value = code[0] | (code[1] << 16); //*((int *)&code[1]);
           fprintf(out, "PUSH INTEGER %d", value);
           break;
 

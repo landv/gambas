@@ -324,65 +324,55 @@ static void conv_data(char *data, GB_VARIANT_VALUE * val, int type)
 
 	switch (type)
 	{
-
-
 		//case SQL_NUMERIC:
 		case SQL_DECIMAL:
 		case SQL_INTEGER:
 		case SQL_SMALLINT:
 	
-			GB.NumberFromString(GB_NB_READ_INTEGER, data, strlen(data), &conv);
-			val->_integer.type = GB_T_INTEGER;
-			val->_integer.value = ((GB_INTEGER *) & conv)->value;
-			if (strlen(data) == 0)
-				val->_integer.value = 0;
+			val->type = GB_T_INTEGER;
+			
+			if (GB.NumberFromString(GB_NB_READ_INTEGER, data, strlen(data), &conv))
+				val->value._integer = 0;
+			else
+				val->value._integer = conv._integer.value;
 
 			break;
+			
 		case SQL_NUMERIC:
 		case SQL_FLOAT:
 		case SQL_REAL:
-			if (strlen(data) == 0) {
-			
-			val->_float.type = GB_T_FLOAT;
-			val->_float.value = 0;
-			}else 
-			{
-			GB.NumberFromString(GB_NB_READ_FLOAT, data, strlen(data), &conv);
-			val->_float.type = GB_T_FLOAT;
-			val->_float.value = ((GB_FLOAT *) & conv)->value;
-			}
-			break;
 		case SQL_DOUBLE:
 			
-			if (strlen(data) == 0) {
+			val->type = GB_T_FLOAT;
 			
-			val->_float.type = GB_T_FLOAT;
-			val->_float.value = 0;
-			}else 
-			{
-			GB.NumberFromString(GB_NB_READ_FLOAT, data, strlen(data), &conv);
-			val->_float.type = GB_T_FLOAT;
-			val->_float.value = ((GB_FLOAT *) & conv)->value;
-			}
+			if (GB.NumberFromString(GB_NB_READ_FLOAT, data, strlen(data), &conv))
+				val->value._float = 0;
+			else
+				val->value._float = conv._float.value;
+			
 			break;
-
+			
+			
 // Data type bigint 64 bits
 		case SQL_BIGINT:
 
-			GB.NumberFromString(GB_NB_READ_LONG, data, strlen(data), &conv);
-
 			val->type = GB_T_LONG;
-			val->_long.value = ((GB_LONG *) & conv)->value;
+			
+			if (GB.NumberFromString(GB_NB_READ_LONG, data, strlen(data), &conv))
+				val->value._long = 0;
+			else
+				val->value._long = conv._long.value;
 
 			break;
 
 // Data type BLOB 
-   		case SQL_LONGVARCHAR:
+   	case SQL_LONGVARCHAR:
 		case SQL_VARBINARY:
 		case SQL_LONGVARBINARY:
-    		// The BLOB are read by the blob_read() driver function
-    		// You must set NULL there.
-				val->type = GB_T_NULL;
+			
+			// The BLOB are read by the blob_read() driver function
+			// You must set NULL there.
+			val->type = GB_T_NULL;
 			break;
 
 // Data type for Time
@@ -413,24 +403,17 @@ static void conv_data(char *data, GB_VARIANT_VALUE * val, int type)
 
 				GB.MakeDate(&date, (GB_DATE *) & conv);
 
-				val->_date.type = GB_T_DATE;
-				val->_date.date = ((GB_DATE *) & conv)->value.date;
-				val->_date.time = ((GB_DATE *) & conv)->value.time;
+				val->type = GB_T_DATE;
+				val->value._date.date = conv._date.value.date;
+				val->value._date.time = conv._date.value.time;
 				break;
 			}
 
-
-
 		case SQL_CHAR:
-		//case SQL_NUMERIC:
-		
-		
 		default:
 
-			//val->_string.type = GB_T_STRING;
-			//GB.NewString(&val->_string.value, data, 0);
-			val->_string.type = GB_T_CSTRING;
-			val->_string.value = data;
+			val->type = GB_T_CSTRING;
+			val->value._string = data;
 
 			break;
 	}
@@ -1208,7 +1191,7 @@ if (displaysize>0)
 }
 
 	value.type = GB_T_VARIANT;
-	value.value._object.type = GB_T_NULL;
+	value.value.type = GB_T_NULL;
 	if(current==NULL)GB.Error("ODBC internal error 4");
 //fprintf(stderr,"Lunghezza letta = %d\n",read);
 	if (current)
@@ -2595,7 +2578,7 @@ fflush(stderr);
 		info->length = atol((char *) precision);
 if (auton==SQL_TRUE) info->type = DB_T_SERIAL;
 
-	info->def._object.type = GB_T_NULL;
+	info->def.type = GB_T_NULL;
 
 	SQLFreeHandle(SQL_HANDLE_STMT, statHandle);
 

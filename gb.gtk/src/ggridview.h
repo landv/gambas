@@ -132,6 +132,7 @@ public:
 	void    setCursor(int row,int col);
   void removeRows(int start, int length = 1) { render->removeRows(start, length); }
   void insertRows(int start, int length = 1) { render->insertRows(start, length); }
+	void clear() { render->clear(); }
 
 //"Events"
 	void (*onChange)(gGridView *sender);

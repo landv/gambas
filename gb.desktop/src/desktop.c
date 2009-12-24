@@ -275,7 +275,7 @@ BEGIN_METHOD(CDESKTOP_set_window_property, GB_STRING name; GB_STRING type; GB_VA
 		case GB_T_STRING:
 		case GB_T_CSTRING:
 			format = 8;
-			data = VARG(value)._string.value;
+			data = VARG(value).value._string;
 			count = GB.StringLength(data);
 			break;
 			
@@ -285,10 +285,10 @@ BEGIN_METHOD(CDESKTOP_set_window_property, GB_STRING name; GB_STRING type; GB_VA
 		case GB_T_INTEGER:
 			format = 32;
 			#if OS_64BITS
-			padded_data = VARG(value)._integer.value;
+			padded_data = VARG(value).value._integer;
 			data = &padded_data;
 			#else
-			data = &VARG(value)._integer.value;
+			data = &VARG(value).value._integer;
 			#endif
 			count = 1;
 			break;
@@ -296,7 +296,7 @@ BEGIN_METHOD(CDESKTOP_set_window_property, GB_STRING name; GB_STRING type; GB_VA
 		default:
 			if (VARG(value).type >= GB_T_OBJECT)
 			{
-				object = VARG(value)._object.value;
+				object = VARG(value).value._object;
 				if (GB.Is(object, GB.FindClass("Array")))
 				{
 					data = GB.Array.Get((GB_ARRAY)object, 0);

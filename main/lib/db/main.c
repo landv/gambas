@@ -314,19 +314,19 @@ void DB_FormatVariant(DB_DRIVER *driver, GB_VARIANT_VALUE *arg, DB_FORMAT_CALLBA
     case GB_T_CSTRING:
       {
         GB_STRING *val = (GB_STRING *)(void *)&value;
-        val->value.addr = arg->_string.value;
+        val->value.addr = arg->value._string;
         val->value.start = 0;
         if (arg->type == GB_T_STRING)
-          val->value.len = GB.StringLength(arg->_string.value);
+          val->value.len = GB.StringLength(arg->value._string);
         else
-          val->value.len = strlen(arg->_string.value);
+          val->value.len = strlen(arg->value._string);
       }
       break;
 
     default:
-    	// WARNING: That works only if the data value is stored just after the type 
-    	// inside the GB_VALUE structure! Yet another stupid hack I should fix...
-      memcpy(&value, arg, sizeof(GB_VARIANT_VALUE));
+			value.type = GB_T_VARIANT;
+			value._variant.value = *arg;
+			GB.Conv(&value, arg->type);
       break;
   }
 

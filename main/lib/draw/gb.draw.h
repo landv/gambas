@@ -61,6 +61,12 @@ typedef
 	void *GB_IMAGE;
 #endif
 	
+#ifndef __GB_COLOR_DEFINED
+#define __GB_COLOR_DEFINED
+typedef
+	unsigned int GB_COLOR;
+#endif
+
 typedef
 	void *GB_FONT;
 

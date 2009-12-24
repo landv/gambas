@@ -117,6 +117,7 @@ public:
 	void setFieldPicture(int col, int row, gPicture *value);
 	gFont *getFieldFont(int col, int row);
 	void setFieldFont(int col, int row, gFont *value);
+	void clear();
 	
 	bool getFieldWordWrap(int col, int row);
 	void setFieldWordWrap(int col, int row, bool value);
@@ -188,6 +189,7 @@ public:
 	void setFieldPicture(int col, int row, gPicture *value);
 	void setFieldFont(int col, int row, gFont *value);
 	void setFieldWordWrap(int col, int row, bool value);
+	void clear();
 };
 
 #endif
