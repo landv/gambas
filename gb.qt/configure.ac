@@ -36,9 +36,9 @@ GB_COMPONENT(
   QTOPENGL,
   [QT OpenGL component],
   [opengl],
-  [GB_FIND(gl.h glu.h, /usr /usr/X11R6 /usr/local, include/GL)],
-  [GB_FIND(libGL.$SHLIBEXT libGLU.$SHLIBEXT, /usr /usr/X11R6 /usr/local, lib)],
-  [-lGL -lGLU])
+  [GB_FIND(gl.h glu.h glew.h, /usr /usr/X11R6 /usr/local, include/GL)],
+  [GB_FIND(libGL.$SHLIBEXT libGLU.$SHLIBEXT libGLEW.$SHLIBEXT, /usr /usr/X11R6 /usr/local, lib)],
+  [-lGL -lGLU -lGLEW])
 
 AC_OUTPUT( \
 Makefile \
