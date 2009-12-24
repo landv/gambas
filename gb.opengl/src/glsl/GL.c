@@ -48,6 +48,7 @@ GB_DESC Cgl[] =
 	/* GLprogram.c */
 	GB_STATIC_METHOD("CreateProgram", "i", GLCREATEPROGRAM, NULL),
 	GB_STATIC_METHOD("DeleteProgram", NULL, GLDELETEPROGRAM, "(Program)i"),
+	GB_STATIC_METHOD("GetProgramInfoLog", "s", GLGETPROGRAMINFOLOG, "(Program)i"),
 	GB_STATIC_METHOD("GetProgramiv", "Integer[]", GLGETPROGRAMIV, "(Program)i(Pname)i"),
 	GB_STATIC_METHOD("IsProgram", "b", GLISPROGRAM, "(Program)i"),
 	GB_STATIC_METHOD("LinkProgram", NULL, GLLINKPROGRAM, "(Program)i"),

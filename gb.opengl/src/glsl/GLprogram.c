@@ -38,6 +38,27 @@ BEGIN_METHOD(GLDELETEPROGRAM, GB_INTEGER program)
 
 END_METHOD
 
+BEGIN_METHOD(GLGETPROGRAMINFOLOG, GB_INTEGER program)
+
+	GLint length;
+	
+	glGetProgramiv(VARG(program), GL_INFO_LOG_LENGTH, &length);
+	
+	if (!length)
+	{
+		GB.ReturnNull();
+		return;
+	}
+	else
+	{
+		GLchar log[length];
+
+		glGetProgramInfoLog(VARG(program), length, NULL, log);
+		GB.ReturnNewZeroString((const char *)log);
+	}
+
+END_METHOD
+
 BEGIN_METHOD(GLGETPROGRAMIV, GB_INTEGER program; GB_INTEGER pname)
 
 	GLint value;
