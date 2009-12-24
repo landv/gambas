@@ -901,7 +901,9 @@ void CLASS_make_description(CLASS *class, CLASS_DESC *desc, int n_desc, int *fir
 						
 						if (check_override(parent_type, type))
 						{
+							#if DEBUG_DESC
 							fprintf(stderr, "type = '%c' parent_type = '%c'\n", type, parent_type);
+							#endif
 							THROW(E_OVERRIDE, parent->name, cds->name, class->name);
 						}
 					}

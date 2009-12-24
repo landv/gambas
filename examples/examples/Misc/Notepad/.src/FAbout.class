@@ -1,25 +1,25 @@
 ' Gambas class file
 
 
-STATIC PUBLIC SUB Run()
+Static Public Sub Run()
   
-  DIM hForm AS Form
+  Dim hForm As Form
   
-  hForm = NEW FAbout
+  hForm = New FAbout
   hForm.ShowModal
   
-END
+End
 
 
-PUBLIC SUB _new()
+Public Sub _new()
   
-  ME.Center
+  Me.Center
   
-END
+End
 
 
-PUBLIC SUB btnOK_Click()
+Public Sub btnOK_Click()
   
-  ME.Close
+  Me.Close
   
-END
+End

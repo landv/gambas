@@ -1,224 +1,225 @@
 ' Gambas class file
 
-PRIVATE $sPath AS String
-PRIVATE $bModify AS Boolean
+Private $sPath As String
+Private $bModify As Boolean
 
-STATIC PUBLIC SUB Main()
+Static Public Sub Main()
 
-  DIM hForm AS Form
+  Dim hForm As Form
 
-  hForm = NEW FNotepad
+  hForm = New FNotepad
   hForm.Show
 
-END
+End
 
 
-PUBLIC SUB _new()
+Public Sub _new()
 
   txtNotepad.Text = ""
-  $bModify = FALSE
+  $bModify = False
   RefreshTitle
   txtNotePad.SetFocus
 
-END
+End
 
 
-PRIVATE FUNCTION GetName() AS String
+Private Function GetName() As String
 
-  IF $sPath THEN RETURN $sPath
+  If $sPath Then Return $sPath
 
-  RETURN "(New document)"
+  Return "(New document)"
 
-END
+End
 
 
-PRIVATE SUB RefreshTitle()
+Private Sub RefreshTitle()
 
-  DIM sTitle AS String
+  Dim sTitle As String
 
-  IF $bModify THEN sTitle = "*"
+  If $bModify Then sTitle = "*"
   sTitle = sTitle & GetName()
 
-  ME.Title = sTitle
+  Me.Title = sTitle
 
-END
+End
 
 
-PRIVATE SUB SetPath(sPath AS String)
+Private Sub SetPath(sPath As String)
 
   $sPath = sPath
   RefreshTitle
 
-END
+End
 
-PRIVATE SUB SetModify(bModify AS Boolean)
+Private Sub SetModify(bModify As Boolean)
 
-  IF $bModify = bModify THEN RETURN
+  If $bModify = bModify Then Return
   $bModify = bModify
   RefreshTitle
 
-END
+End
 
 
-PRIVATE FUNCTION CloseDoc() AS Boolean
+Private Function CloseDoc() As Boolean
 
-  IF $bModify THEN
-    SELECT CASE Message.Question(GetName() & "\n\nFile has been modified. Do you want to save it ?", "Yes", "No", "Cancel")
-      CASE 1
+  If $bModify Then
+    Select Case Message.Question(GetName() & "\n\nFile has been modified. Do you want to save it ?", "Yes", "No", "Cancel")
+      Case 1
         Save
-      CASE 3
-        RETURN TRUE
-    END SELECT
-  ENDIF
+      Case 3
+        Return True
+    End Select
+  Endif
 
   $sPath = ""
   txtNotepad.Text = ""
-  $bModify = FALSE
+  $bModify = False
   RefreshTitle
 
-END
+End
 
 
 
-PUBLIC SUB Load(sPath AS String)
+Public Sub LoadFile(sPath As String)
 
-  DIM sData AS String
+  Dim sData As String
 
-  IF CloseDoc() THEN RETURN
+  If CloseDoc() Then Return
 
   sData = File.Load(sPath)
-  txtNotepad.Text = Conv(sData, System.Charset, Desktop.Charset)
-  $bModify = FALSE
+  Try txtNotepad.Text = Conv(sData, System.Charset, Desktop.Charset)
+  If Error Then txtNotepad.Text = Conv(sData, "ISO_8859-1", Desktop.Charset)
+  $bModify = False
   SetPath(sPath)
 
-CATCH
+Catch
 
   Message.Error(sPath & "\nUnable to load file.\n" & Error.Text)
 
-END
+End
 
 
-PUBLIC SUB Save(OPTIONAL bSaveAs AS Boolean)
+Public Sub Save(Optional bSaveAs As Boolean)
   
-  IF bSaveAs OR NOT $sPath THEN
-    IF Dialog.SaveFile() THEN RETURN
+  If bSaveAs Or Not $sPath Then
+    If Dialog.SaveFile() Then Return
     SetPath(Dialog.Path)
-  ENDIF
+  Endif
   
   File.Save($sPath, txtNotepad.Text)
   
-END
+End
 
 
-PUBLIC SUB mnuOpen_Click()
+Public Sub mnuOpen_Click()
   
-  DIM sPath AS String
+  Dim sPath As String
 
   Dialog.Filter = ["*", "All files", "*.{c;cpp;h}", "C/C++ files", "*.txt", "Text files", "*.desktop", "Desktop files"]
 
-  IF Dialog.OpenFile() THEN RETURN
-  Load(Dialog.Path)
+  If Dialog.OpenFile() Then Return
+  LoadFile(Dialog.Path)
   
-END
+End
 
 
-PUBLIC SUB mnuSave_Click()
+Public Sub mnuSave_Click()
   
   Save
   
-END
+End
 
 
-PUBLIC SUB mnuSaveAs_Click()
+Public Sub mnuSaveAs_Click()
   
-  Save(TRUE)
+  Save(True)
   
-END
+End
 
 
-PUBLIC SUB mnuQuit_Click()
+Public Sub mnuQuit_Click()
   
-  ME.Close
+  Me.Close
   
-END
+End
 
 
-PUBLIC SUB txtNotepad_Change()
+Public Sub txtNotepad_Change()
   
-  SetModify(TRUE)
+  SetModify(True)
   
-END
+End
 
 
-PUBLIC SUB mnuClose_Click()
+Public Sub mnuClose_Click()
   
   CloseDoc
   
-END
+End
 
 
-PUBLIC SUB Form_Close() 
+Public Sub Form_Close() 
   
-  IF CloseDoc() THEN STOP EVENT 
+  If CloseDoc() Then Stop Event 
   
-END
+End
 
 
-PUBLIC SUB mnuAbout_Click()
+Public Sub mnuAbout_Click()
 
-  INC Application.Busy
+  'Inc Application.Busy
   FAbout.Run
-  DEC Application.Busy
+  'Dec Application.Busy
   
-END
+End
 
 
-PUBLIC SUB mnuCopy_Click()
+Public Sub mnuCopy_Click()
   
   txtNotepad.Copy
   
-END
+End
 
 
-PUBLIC SUB mnuPaste_Click()
+Public Sub mnuPaste_Click()
   
   txtNotepad.Paste
   
-END
+End
 
 
-PUBLIC SUB mnuCut_Click()
+Public Sub mnuCut_Click()
   
   txtNotepad.Cut
   
-END
+End
 
 
-PUBLIC SUB mnuUndo_Click()
+Public Sub mnuUndo_Click()
   
   txtNotepad.Undo
   
-END
+End
 
 
-PUBLIC SUB mnuRedo_Click()
+Public Sub mnuRedo_Click()
   
   txtNotepad.Redo
   
-END
+End
 
 
-PUBLIC SUB mnuFont_Click()
+Public Sub mnuFont_Click()
   
   Dialog.Font = txtNotepad.Font
-  IF Dialog.SelectFont() THEN RETURN
+  If Dialog.SelectFont() Then Return
   txtNotepad.Font = Dialog.Font
   
-END
+End
 
-PUBLIC SUB mnuWrap_Click()
+Public Sub mnuWrap_Click()
 
-  mnuWrap.Checked = NOT mnuWrap.Checked
+  mnuWrap.Checked = Not mnuWrap.Checked
   txtNotePad.Wrap = mnuWrap.Checked
 
-END
+End

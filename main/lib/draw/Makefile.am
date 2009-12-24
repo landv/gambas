@@ -7,10 +7,11 @@ gb_draw_la_LDFLAGS = -module @LD_FLAGS@
 gb_draw_la_CFLAGS = -I$(top_srcdir)/share @INCLTDL@ $(AM_CFLAGS)
 
 gb_draw_la_SOURCES = \
- gb.draw.h \
+ gb.draw.h gb.paint.h \
  gb_list.c \
  matrix.h matrix.c \
  CDraw.h CDraw.c \
+ cpaint.h cpaint.c \
  main.h main.c
 
 

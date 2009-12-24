@@ -30,6 +30,7 @@
 
 #include "gb_common.h"
 #include "CDraw.h"
+#include "cpaint.h"
 #include "main.h"
 
 

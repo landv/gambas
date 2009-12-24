@@ -57,7 +57,7 @@
 
 #include "gbx_library.h"
 
-/*#define DEBUG*/
+//#define DEBUG
 //#define DEBUG_PRELOAD
 
 // Maximum size of a project or startup file
@@ -445,13 +445,13 @@ void LIBRARY_load(LIBRARY *lib)
   GB_DESC **desc;
   char *path;
 
+  if (lib->handle)
+    return;
+
 #ifdef DEBUG
   clock_t t = clock();
   fprintf(stderr, "Loading library %s\n", lib->name);
 #endif
-
-  if (lib->handle)
-    return;
 
   path = FILE_buffer();
   sprintf(path, LIB_PATTERN, COMPONENT_path, lib->name);

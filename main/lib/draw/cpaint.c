@@ -30,6 +30,10 @@ static GB_PAINT *_current = NULL;
 #define THIS _current
 #define PAINT _current->desc
 
+#define THIS_EXTENTS ((PAINT_EXTENTS *)_object)
+#define THIS_BRUSH ((PAINT_BRUSH *)_object)
+#define THIS_MATRIX ((PAINT_MATRIX *)_object)
+
 static bool check_device()
 {
 	if (!_current)
@@ -71,7 +75,7 @@ bool PAINT_begin(void *device)
 	paint->device = device;
 	_current = paint;
 	
-	if (paint->desc->Begin(paint))
+	if (PAINT->Begin(paint))
 		return TRUE;
 	
 	//DRAW->SetBackground(draw, GB_PAINT_COLOR_DEFAULT);
@@ -80,96 +84,60 @@ bool PAINT_begin(void *device)
 	return FALSE;
 }
 
-
-BEGIN_METHOD(Paint_begin, GB_OBJECT device)
-
-	void *device = VARG(device);
-
-	if (GB.CheckObject(device))
-		return;
-
-	DRAW_begin(device);
-
-END_METHOD
-
-
-void DRAW_end()
+void PAINT_end()
 {
-	GB_PAINT *draw;
+	GB_PAINT *paint;
 
 	if (!_current)
 		return;
 		
-	draw = _current;
+	paint = _current;
 	_current = _current->previous;
 	
-	draw->desc->End(draw);
+	PAINT->End(paint);
 	
-	GB.Unref(POINTER(&draw->device));
-	GB.Free(POINTER(&draw));
+	GB.Unref(POINTER(&paint->device));
+	GB.Free(POINTER(&paint));
 }
 
 
-BEGIN_METHOD_VOID(Paint_end)
+/**** PaintExtents *********************************************************/
 
-	DRAW_end();
-	
-END_METHOD
+#define IMPLEMENT_EXTENTS_PROPERTY(_method, _field) \
+BEGIN_PROPERTY(_method) \
+	GB.ReturnFloat(THIS_EXTENTS->ext._field); \
+END_PROPERTY
 
+IMPLEMENT_EXTENTS_PROPERTY(PaintExtents_X, x1)
+IMPLEMENT_EXTENTS_PROPERTY(PaintExtents_Y, y1)
+IMPLEMENT_EXTENTS_PROPERTY(PaintExtents_X2, x2)
+IMPLEMENT_EXTENTS_PROPERTY(PaintExtents_Y2, y2)
 
-BEGIN_METHOD_VOID(Paint_exit)
+BEGIN_PROPERTY(PaintExtents_Width)
 
-	while (_current)
-		DRAW_end();
-
-END_METHOD
-
-
-BEGIN_METHOD_VOID(Paint_save)
-
-	CHECK_DEVICE();
-	DRAW->Save(THIS);
-	
-END_METHOD
-
-
-BEGIN_METHOD_VOID(Paint_restore)
-
-	CHECK_DEVICE();
-	DRAW->Restore(THIS);
-	
-END_METHOD
-
-BEGIN_PROPERTY(Paint_device)
-	
-	CHECK_DEVICE();
-	GB.ReturnObject(THIS->device);
+	GB.ReturnFloat(THIS_EXTENTS->ext.x2 - THIS_EXTENTS->ext.x1);
 
 END_PROPERTY
 
-BEGIN_PROPERTY(Paint_width)
+BEGIN_PROPERTY(PaintExtents_Height)
 
-	CHECK_DEVICE();
-	GB.ReturnInteger(THIS->width);
-
-END_PROPERTY
-
-
-BEGIN_PROPERTY(Paint_height)
-
-	CHECK_DEVICE();
-	GB.ReturnInteger(THIS->height);
+	GB.ReturnFloat(THIS_EXTENTS->ext.y2 - THIS_EXTENTS->ext.y1);
 
 END_PROPERTY
 
+BEGIN_METHOD(PaintExtents_Merge, GB_OBJECT extents)
 
-BEGIN_PROPERTY(Paint_resolution)
+	PAINT_EXTENTS *extents = VARG(extents);
+	
+	if (GB.CheckObject(extents))
+		return;
+		
+	if (extents->ext.x1 < THIS_EXTENTS->ext.x1) THIS_EXTENTS->ext.x1 = extents->ext.x1;
+	if (extents->ext.y1 < THIS_EXTENTS->ext.y1) THIS_EXTENTS->ext.y1 = extents->ext.y1;
+	if (extents->ext.x2 > THIS_EXTENTS->ext.x2) THIS_EXTENTS->ext.x2 = extents->ext.x2;
+	if (extents->ext.y2 > THIS_EXTENTS->ext.y2) THIS_EXTENTS->ext.y2 = extents->ext.y2;
 
-	CHECK_DEVICE();
-	GB.ReturnInteger(THIS->resolution);
-
-END_PROPERTY
-
+END_METHOD
 
 GB_DESC PaintExtentsDesc[] = 
 {
@@ -187,32 +155,269 @@ GB_DESC PaintExtentsDesc[] =
 	GB_END_DECLARE
 };
 
+/**** PaintMatrix **********************************************************/
+
+static GB_PAINT_DESC *handle_matrix(void *_object, bool set, GB_TRANSFORM *pmatrix)
+{
+	if (!_object)
+	{
+		PAINT->Matrix(THIS, set, pmatrix);
+		return PAINT;
+	}
+	else
+	{
+		THIS_BRUSH->desc->Brush.Matrix(THIS_BRUSH->brush, set, pmatrix);
+		return THIS_BRUSH->desc;
+	}
+}
+
+#define IMPLEMENT_MATRIX_METHOD_VOID(_method, _code) \
+BEGIN_METHOD_VOID(_method) \
+	GB_TRANSFORM matrix; \
+	handle_matrix(_object, FALSE, &matrix)->Transform._code; \
+	handle_matrix(_object, TRUE, &matrix); \
+	RETURN_SELF(); \
+END_METHOD
+
+#define IMPLEMENT_MATRIX_METHOD(_method, _arg, _code) \
+BEGIN_METHOD(_method, _arg) \
+	GB_TRANSFORM matrix; \
+	handle_matrix(_object, FALSE, &matrix)->Transform._code; \
+	handle_matrix(_object, TRUE, &matrix); \
+	RETURN_SELF(); \
+END_METHOD
+
+IMPLEMENT_MATRIX_METHOD_VOID(PaintMatrix_Reset, Init(matrix, 1, 0, 0, 1, 0, 0))
+IMPLEMENT_MATRIX_METHOD(PaintMatrix_Translate, GB_FLOAT tx; GB_FLOAT ty, Translate(matrix, VARG(tx), VARG(ty)))
+IMPLEMENT_MATRIX_METHOD(PaintMatrix_Scale, GB_FLOAT sx; GB_FLOAT sy, Scale(matrix, VARG(sx), VARG(sy)))
+IMPLEMENT_MATRIX_METHOD(PaintMatrix_Rotate, GB_FLOAT angle, Rotate(matrix, VARG(angle)))
+
+BEGIN_METHOD_VOID(PaintMatrix_Invert)
+	
+	GB_TRANSFORM matrix;
+	if (handle_matrix(_object, FALSE, &matrix)->Transform.Invert(matrix))
+	{
+		GB.ReturnNull();
+		return;
+	}
+	handle_matrix(_object, TRUE, &matrix);
+	RETURN_SELF();
+	
+END_METHOD
+
+BEGIN_METHOD(PaintMatrix_Multiply, GB_OBJECT matrix2)
+
+	GB_TRANSFORM matrix;
+	PAINT_MATRIX *matrix2 = (PAINT_MATRIX *)VARG(matrix2);
+	
+	if (GB.CheckObject(matrix2))
+		return;
+	
+	handle_matrix(_object, FALSE, &matrix)->Transform.Multiply(matrix, matrix2->matrix);
+	handle_matrix(_object, TRUE, &matrix);
+	RETURN_SELF();
+
+END_METHOD
+
+
+GB_DESC PaintMatrixDesc[] = 
+{
+	GB_DECLARE(".PaintMatrix", 0), GB_VIRTUAL_CLASS(),
+
+	//GB_METHOD("_new", NULL, PaintMatrix_new, "[(XX)f(YX)f(XY)f(YY)f(X0)f(Y0)f]"),
+	//GB_STATIC_METHOD("_call", "PaintMatrix", PaintMatrix_call, "[(XX)f(YX)f(XY)f(YY)f(X0)f(Y0)f]"),
+	GB_METHOD("Reset", ".PaintMatrix", PaintMatrix_Reset, NULL),
+	GB_METHOD("Translate", ".PaintMatrix", PaintMatrix_Translate, "(TX)f(TY)f"),
+	GB_METHOD("Scale", ".PaintMatrix", PaintMatrix_Scale, "(SX)f(SY)f"),
+	GB_METHOD("Rotate", ".PaintMatrix", PaintMatrix_Rotate, "(Angle)f"),
+	GB_METHOD("Invert", ".PaintMatrix", PaintMatrix_Invert, NULL),
+	GB_METHOD("Multiply", ".PaintMatrix", PaintMatrix_Multiply, "(Matrix)PaintMatrix;"),	
+
+	GB_END_DECLARE	
+};
+
+
+/**** PaintBrush ***********************************************************/
+
+BEGIN_METHOD_VOID(PaintBrush_free)
+
+	THIS_BRUSH->desc->Brush.Free(THIS_BRUSH->brush);
+
+END_METHOD
+
 GB_DESC PaintBrushDesc[] = 
 {
 	GB_DECLARE("PaintBrush", sizeof(PAINT_BRUSH)), GB_NOT_CREATABLE(),
 
 	GB_METHOD("_free", NULL, PaintBrush_free, NULL),
 	
-	GB_PROPERTY("Matrix", "PaintMatrix", PaintBrush_Matrix),
+	GB_PROPERTY_SELF("Matrix", ".PaintMatrix"),
 
 	GB_END_DECLARE
 };
 
-GB_DESC PaintMatrixDesc[] = 
-{
-	GB_DECLARE("PaintMatrix", sizeof(PAINT_MATRIX)),
 
-	GB_METHOD("_new", NULL, PaintMatrix_new, "[(XX)f(YX)f(XY)f(YY)f(X0)f(Y0)f]"),
-	GB_STATIC_METHOD("_call", "PaintMatrix", PaintMatrix_call, "[(XX)f(YX)f(XY)f(YY)f(X0)f(Y0)f]"),
-	GB_METHOD("Translate", "PaintMatrix", PaintMatrix_translate, "(TX)f(TY)f"),
-	GB_METHOD("Scale", "PaintMatrix", PaintMatrix_scale, "(SX)f(SY)f"),
-	GB_METHOD("Rotate", "PaintMatrix", PaintMatrix_rotate, "(Angle)f"),
-	GB_METHOD("Invert", "PaintMatrix", PaintMatrix_invert, NULL),
-	GB_METHOD("Multiply", "PaintMatrix", PaintMatrix_multiply, "(Matrix)PaintMatrix;"),	
+/**** Paint ****************************************************************/
 
-	GB_END_DECLARE	
-};
+BEGIN_METHOD(Paint_begin, GB_OBJECT device)
 
+	void *device = VARG(device);
+
+	if (GB.CheckObject(device))
+		return;
+
+	PAINT_begin(device);
+
+END_METHOD
+
+
+BEGIN_METHOD_VOID(Paint_end)
+
+	PAINT_end();
+	
+END_METHOD
+
+
+BEGIN_METHOD_VOID(Paint_exit)
+
+	while (_current)
+		PAINT_end();
+
+END_METHOD
+
+BEGIN_PROPERTY(Paint_Device)
+	
+	CHECK_DEVICE();
+	GB.ReturnObject(THIS->device);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Paint_Width)
+
+	CHECK_DEVICE();
+	GB.ReturnInteger(THIS->width);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Paint_Height)
+
+	CHECK_DEVICE();
+	GB.ReturnInteger(THIS->height);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Paint_Resolution)
+
+	CHECK_DEVICE();
+	GB.ReturnInteger(THIS->resolution);
+
+END_PROPERTY
+
+#define IMPLEMENT_METHOD(_method, _api) \
+BEGIN_METHOD_VOID(_method) \
+	CHECK_DEVICE(); \
+	PAINT->_api(THIS); \
+END_METHOD
+
+#define IMPLEMENT_METHOD_PRESERVE(_method, _api) \
+BEGIN_METHOD(_method, GB_BOOLEAN preserve) \
+	CHECK_DEVICE(); \
+	PAINT->_api(THIS, VARGOPT(preserve, FALSE)); \
+END_METHOD
+
+#define IMPLEMENT_PROPERTY_EXTENTS(_property, _api) \
+BEGIN_PROPERTY(_property) \
+	PAINT_EXTENTS *extents; \
+	CHECK_DEVICE(); \
+	GB.New(POINTER(&extents), GB.FindClass("PaintExtents"), NULL, NULL); \
+	PAINT->_api(THIS, &extents->ext); \
+	GB.ReturnObject(extents); \
+END_METHOD
+
+#define IMPLEMENT_PROPERTY_INTEGER(_property, _api) \
+BEGIN_PROPERTY(_property) \
+	int value; \
+	CHECK_DEVICE(); \
+	if (READ_PROPERTY) \
+	{ \
+		PAINT->_api(THIS, FALSE, &value); \
+		GB.ReturnInteger(value); \
+	} \
+	else \
+	{ \
+		value = VPROP(GB_INTEGER); \
+		PAINT->_api(THIS, TRUE, &value); \
+	} \
+END_METHOD
+
+#define IMPLEMENT_PROPERTY_FLOAT(_property, _api) \
+BEGIN_PROPERTY(_property) \
+	double value; \
+	CHECK_DEVICE(); \
+	if (READ_PROPERTY) \
+	{ \
+		PAINT->_api(THIS, FALSE, &value); \
+		GB.ReturnFloat(value); \
+	} \
+	else \
+	{ \
+		value = VPROP(GB_FLOAT); \
+		PAINT->_api(THIS, TRUE, &value); \
+	} \
+END_METHOD
+
+IMPLEMENT_METHOD(Paint_Save, Save)
+IMPLEMENT_METHOD(Paint_Restore, Restore)
+IMPLEMENT_METHOD_PRESERVE(Paint_Clip, Clip)
+IMPLEMENT_METHOD(Paint_ResetClip, ResetClip)
+IMPLEMENT_PROPERTY_EXTENTS(Paint_ClipExtents, ClipExtents)
+IMPLEMENT_METHOD_PRESERVE(Paint_Fill, Fill)
+IMPLEMENT_METHOD_PRESERVE(Paint_Stroke, Stroke)
+IMPLEMENT_PROPERTY_EXTENTS(Paint_PathExtents, PathExtents)
+IMPLEMENT_PROPERTY_INTEGER(Paint_FillRule, FillRule)
+IMPLEMENT_PROPERTY_INTEGER(Paint_LineCap, LineCap)
+IMPLEMENT_PROPERTY_INTEGER(Paint_LineJoin, LineJoin)
+IMPLEMENT_PROPERTY_INTEGER(Paint_Operator, Operator)
+IMPLEMENT_PROPERTY_FLOAT(Paint_LineWidth, LineWidth)
+IMPLEMENT_PROPERTY_FLOAT(Paint_MiterLimit, MiterLimit)
+IMPLEMENT_PROPERTY_FLOAT(Paint_DashOffset, DashOffset)
+IMPLEMENT_METHOD(Paint_NewPath, NewPath)
+IMPLEMENT_METHOD(Paint_ClosePath, ClosePath)
+
+BEGIN_METHOD(Paint_Arc, GB_FLOAT xc; GB_FLOAT yc; GB_FLOAT radius; GB_FLOAT angle1; GB_FLOAT angle2)
+
+	CHECK_DEVICE();
+	PAINT->Arc(THIS, VARG(xc), VARG(yc), VARG(radius), VARGOPT(angle1, 0.0), VARGOPT(angle2, M_PI * 2));
+
+END_METHOD
+
+BEGIN_METHOD(Paint_CurveTo, GB_FLOAT x1; GB_FLOAT y1; GB_FLOAT x2; GB_FLOAT y2; GB_FLOAT x3; GB_FLOAT y3)
+
+	CHECK_DEVICE();
+	PAINT->CurveTo(THIS, VARG(x1), VARG(y1), VARG(x2), VARG(y2), VARG(x3), VARG(y3));
+
+END_METHOD
+
+BEGIN_METHOD(Paint_LineTo, GB_FLOAT x; GB_FLOAT y)
+
+	CHECK_DEVICE();
+	PAINT->LineTo(THIS, VARG(x), VARG(y));
+
+END_METHOD
+
+BEGIN_METHOD(Paint_MoveTo, GB_FLOAT x; GB_FLOAT y)
+
+	CHECK_DEVICE();
+	PAINT->MoveTo(THIS, VARG(x), VARG(y));
+
+END_METHOD
+
+BEGIN_METHOD(Paint_Rectangle, GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_FLOAT h)
+
+	CHECK_DEVICE();
+	PAINT->Rectangle(THIS, VARG(x), VARG(y), VARG(w), VARG(h));
+
+END_METHOD
 
 GB_DESC CPaintDesc[] =
 {
@@ -253,10 +458,15 @@ GB_DESC CPaintDesc[] =
 	GB_STATIC_METHOD("Begin", NULL, Paint_begin, "(Device)o"),
 	GB_STATIC_METHOD("End", NULL, Paint_end, NULL),
 	
-	GB_STATIC_PROPERTY_READ("Device", "o", Paint_device),
+	GB_STATIC_PROPERTY_READ("Device", "o", Paint_Device),
+	GB_STATIC_PROPERTY_READ("W", "i", Paint_Width),
+	GB_STATIC_PROPERTY_READ("H", "i", Paint_Height),
+	GB_STATIC_PROPERTY_READ("Width", "i", Paint_Width),
+	GB_STATIC_PROPERTY_READ("Height", "i", Paint_Height),
+	GB_STATIC_PROPERTY_READ("Resolution", "i", Paint_Resolution),
 
-	GB_STATIC_METHOD("Save", NULL, Paint_save, NULL),
-	GB_STATIC_METHOD("Restore", NULL, Paint_restore, NULL),
+	GB_STATIC_METHOD("Save", NULL, Paint_Save, NULL),
+	GB_STATIC_METHOD("Restore", NULL, Paint_Restore, NULL),
 	
 	GB_STATIC_METHOD("Clip", NULL, Paint_Clip, "[(Preserve)b]"),
 	GB_STATIC_METHOD("ResetClip", NULL, Paint_ResetClip, NULL),
@@ -275,11 +485,10 @@ GB_DESC CPaintDesc[] =
 	//GB_STATIC_METHOD("InStroke", "b", Paint_InStroke, "(X)f(Y)f"),
 
 	GB_STATIC_PROPERTY_READ("PathExtents", "PaintExtents", Paint_PathExtents),
-	GB_STATIC_METHOD("PathContains", "b", Paint_InPath, "(X)f(Y)f"),
+	//GB_STATIC_METHOD("PathContains", "b", Paint_InPath, "(X)f(Y)f"),
 	
-	GB_STATIC_PROPERTY("Brush", "PaintBrush", Paint_Brush),
-	//GB_STATIC_PROPERTY("AntiAlias", "i", CAIRO_anti_alias),
-	GB_STATIC_PROPERTY("Dash", "Float[]", Paint_Dash),
+	//GB_STATIC_PROPERTY("Brush", "PaintBrush", Paint_Brush),
+	//GB_STATIC_PROPERTY("Dash", "Float[]", Paint_Dash),
 	GB_STATIC_PROPERTY("DashOffset", "f", Paint_DashOffset),
 	GB_STATIC_PROPERTY("FillRule", "i", Paint_FillRule),
 	GB_STATIC_PROPERTY("LineCap", "i", Paint_LineCap),
@@ -300,22 +509,18 @@ GB_DESC CPaintDesc[] =
 	GB_STATIC_METHOD("MoveTo", NULL, Paint_MoveTo, "(X)f(Y)f"),
 	GB_STATIC_METHOD("Rectangle", NULL, Paint_Rectangle, "(X)f(Y)f(Width)f(Height)f"),
 
-	GB_STATIC_PROPERTY("Font", "PaintFont", Paint_Font),
-	GB_STATIC_METHOD("Text", NULL, Paint_Text, "(Text)s(X)f(Y)f[(Width)f(Height)f(Alignment)i)]"),
+	#if 0
+	GB_STATIC_PROPERTY("Font", "Font", Paint_Font),
+	GB_STATIC_METHOD("Text", NULL, Paint_Text, "(Text)s[(X)f(Y)f(Width)f(Height)f(Alignment)i)]"),
 	GB_STATIC_METHOD("TextExtents", "TextExtents", Paint_TextExtents, "(Text)s"),
-	//GB_STATIC_METHOD("RelCurveTo", NULL, CAIRO_rel_curve_to, "(DX1)f(DY1)f(DX2)f(DY2)f(DX3)f(DY3)f"),
-	//GB_STATIC_METHOD("RelLineTo", NULL, CAIRO_rel_line_to, "(DX)f(DY)f"),
-	//GB_STATIC_METHOD("RelMoveTo", NULL, CAIRO_rel_move_to, "(DX)f(DY)f"),
 	
 	GB_STATIC_METHOD("ColorBrush", "PaintBrush", Paint_ColorBrush, "(Color)i"),
 	GB_STATIC_METHOD("ImageBrush", "PaintBrush", Paint_ImageBrush, "(Image)Image;[(X)f(Y)f(Extend)i]"),
 	GB_STATIC_METHOD("LinearGradient", "PaintBrush", Paint_LinearGradient, "(X0)f(Y0)f(X1)f(Y1)f(Colors)Float[][];"),
 	GB_STATIC_METHOD("RadialGradient", "PaintBrush", Paint_RadialGradient, "(CX0)f(CY0)f(Radius0)f(CX1)f(CY1)f(Radius1)f(Colors)Float[][];"),
 
-	GB_STATIC_METHOD("Translate", NULL, Paint_Translate, "(TX)f(TY)f"),
-	GB_STATIC_METHOD("Scale", NULL, Paint_Scale, "(SX)f(SY)f"),
-	GB_STATIC_METHOD("Rotate", NULL, Paint_Rotate, "(Angle)f"),
-	GB_STATIC_PROPERTY("Matrix", "PaintMatrix", Paint_Matrix),
+	GB_STATIC_PROPERTY_SELF("Matrix", ".PaintMatrix"),
+	#endif
 
 	GB_END_DECLARE
 };

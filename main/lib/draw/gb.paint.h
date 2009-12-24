@@ -60,16 +60,18 @@ enum {
 	GB_PAINT_OPERATOR_DEST,
 	GB_PAINT_OPERATOR_DEST_OVER,
 	GB_PAINT_OPERATOR_DEST_IN,
-	GB_PAINT_OPERATOR_DEST_OUT
+	GB_PAINT_OPERATOR_DEST_OUT,
 	GB_PAINT_OPERATOR_DEST_ATOP,
 	GB_PAINT_OPERATOR_XOR,
 	GB_PAINT_OPERATOR_ADD,
 	GB_PAINT_OPERATOR_SATURATE
 };
 
+struct GB_PAINT_DESC;
+
 typedef
 	struct {
-		double x1, x2, y1, y2;
+		double x1, y1, x2, y2;
 	}
 	GB_EXTENTS;
 
@@ -89,6 +91,7 @@ typedef
 typedef
 	struct {
 		GB_BASE ob;
+		struct GB_PAINT_DESC *desc;        // drawing driver
 		GB_TRANSFORM matrix;
 	}
 	PAINT_MATRIX;
@@ -96,14 +99,15 @@ typedef
 typedef
 	struct {
 		GB_BASE ob;
+		struct GB_PAINT_DESC *desc;        // drawing driver
 		GB_BRUSH brush;
 	}
 	PAINT_BRUSH;
 
 typedef
 	struct GB_PAINT {
-		struct GB_PAINT_DESC *desc;         // drawing driver
-		struct GB_PAINT *previous;          // previous drawing context
+		struct GB_PAINT_DESC *desc;        // drawing driver
+		struct GB_PAINT *previous;         // previous drawing context
 		void *device;                      // drawing object
 		int width;                         // device width in device coordinates
 		int height;                        // device height in device coordinates
@@ -156,21 +160,36 @@ typedef
 		void (*LineTo)(GB_PAINT *d, double x, double y);
 		void (*CurveTo)(GB_PAINT *d, double x1, double y1, double x2, double y2, double x3, double y3);
 	
-		void (*Text)(GB_PAINT *d, const char *text, double x, double y);
+		void (*Text)(GB_PAINT *d, const char *text);
 		void (*TextExtents)(GB_PAINT *d, const char *text, GB_EXTENTS *ext);
-		
-		void (*SetBrush)(GB_PAINT *d, GB_BRUSH brush);
-		void (*FreeBrush)(GB_PAINT *d, GB_BRUSH brush);
-		GB_BRUSH (*ColorBrush)(GB_PAINT *d, GB_COLOR color);
-		GB_BRUSH (*ImageBrush)(GB_PAINT *d, GB_IMAGE image, double x, double y, int extend);
-		GB_BRUSH (*LinearGradient)(GB_PAINT *d, double x0, double y0, double x1, double y1);
-		GB_BRUSH (*RadialGradient)(GB_PAINT *d, double cx0, double cy0, double r0, double cx1, double cy1, double r1);
-		void (*SetColorStop)(GB_PAINT *d, GB_BRUSH *brush, int nstop, double *pos, GB_COLOR *color);
 		
 		void (*Translate)(GB_PAINT *d, double tx, double ty);
 		void (*Scale)(GB_PAINT *d, double sx, double sy);
 		void (*Rotate)(GB_PAINT *d, double angle);
 		void (*Matrix)(GB_PAINT *d, bool set, GB_TRANSFORM *matrix);
+		
+		void (*SetBrush)(GB_PAINT *d, GB_BRUSH brush);
+		
+		struct {
+			void (*Free)(GB_BRUSH brush);
+			void (*Color)(GB_BRUSH *brush, GB_COLOR color);
+			void (*Image)(GB_BRUSH *brush, GB_IMAGE image, double x, double y, int extend);
+			void (*LinearGradient)(GB_BRUSH *brush, double x0, double y0, double x1, double y1);
+			void (*RadialGradient)(GB_BRUSH *brush, double cx0, double cy0, double r0, double cx1, double cy1, double r1);
+			void (*SetColorStop)(GB_BRUSH brush, int nstop, double *pos, GB_COLOR *color);
+			void (*Matrix)(GB_BRUSH brush, bool set, GB_TRANSFORM *matrix);
+			}
+			Brush;
+		
+		struct {
+			void (*Init)(GB_TRANSFORM matrix, double xx, double yx, double xy, double yy, double x0, double y0);
+			void (*Translate)(GB_TRANSFORM matrix, double tx, double ty);
+			void (*Scale)(GB_TRANSFORM matrix, double sx, double sy);
+			void (*Rotate)(GB_TRANSFORM matrix, double angle);
+			bool (*Invert)(GB_TRANSFORM matrix);
+			void (*Multiply)(GB_TRANSFORM matrix, GB_TRANSFORM matrix2);
+			}
+			Transform;
 	}
 	GB_PAINT_DESC;
 
@@ -182,20 +201,6 @@ typedef
 		void (*End)();
 		}
 	PAINT_INTERFACE;
-
-#define DRAW_NORMALIZE(x, y, w, h, sx, sy, sw, sh, width, height) \
-	if (w < 0) w = width; \
-	if (h < 0) h = height; \
-	if (sw < 0) sw = width; \
-	if (sh < 0) sh = height; \
-  if (sx >= (width) || sy >= (height) || sw <= 0 || sh <= 0) \
-    return; \
-  if (sx < 0) x -= sx, sx = 0; \
-  if (sy < 0) y -= sy, sy = 0; \
-  if (sw > ((width) - sx)) \
-    sw = ((width) - sx); \
-  if (sh > ((height) - sy)) \
-    sh = ((height) - sy);
 
 #endif
 

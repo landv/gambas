@@ -24,11 +24,13 @@
 #define __CPAINT_H
 
 #include "gambas.h"
-#include "gb.draw.h"
+#include "gb.paint.h"
 
 #ifndef __CPAINT_C
 
-extern GB_DESC CPaintDesc[];
+extern GB_DESC PaintExtentsDesc[];
+extern GB_DESC PaintBrushDesc[];
+extern GB_DESC PaintDesc[];
 
 #endif
 
