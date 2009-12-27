@@ -71,7 +71,7 @@ struct GB_PAINT_DESC;
 
 typedef
 	struct {
-		double x1, y1, x2, y2;
+		float x1, y1, x2, y2;
 	}
 	GB_EXTENTS;
 
@@ -138,34 +138,35 @@ typedef
 		void (*Stroke)(GB_PAINT *d, bool preserve);
 		
 		void (*PathExtents)(GB_PAINT *d, GB_EXTENTS *ext);
-		bool (*PathContains)(GB_PAINT *d, double x, double y);
+		bool (*PathContains)(GB_PAINT *d, float x, float y);
 		
-		void (*Dash)(GB_PAINT *d, bool set, double **dash, int *count);
-		void (*DashOffset)(GB_PAINT *d, bool set, double *offset);
+		void (*Dash)(GB_PAINT *d, bool set, float **dash, int *count);
+		void (*DashOffset)(GB_PAINT *d, bool set, float *offset);
 		
 		void (*FillRule)(GB_PAINT *d, bool set, int *value);
 		void (*LineCap)(GB_PAINT *d, bool set, int *value);
 		void (*LineJoin)(GB_PAINT *d, bool set, int *value);
-		void (*LineWidth)(GB_PAINT *d, bool set, double *value);
-		void (*MiterLimit)(GB_PAINT *d, bool set, double *value);
+		void (*LineWidth)(GB_PAINT *d, bool set, float *value);
+		void (*MiterLimit)(GB_PAINT *d, bool set, float *value);
 		
 		void (*Operator)(GB_PAINT *d, bool set, int *value);
 
 		void (*NewPath)(GB_PAINT *d);
 		void (*ClosePath)(GB_PAINT *d);
 		
-		void (*Arc)(GB_PAINT *d, double xc, double yc, double radius, double a1, double a2);
-		void (*Rectangle)(GB_PAINT *d, double x, double y, double width, double height);
-		void (*MoveTo)(GB_PAINT *d, double x, double y);
-		void (*LineTo)(GB_PAINT *d, double x, double y);
-		void (*CurveTo)(GB_PAINT *d, double x1, double y1, double x2, double y2, double x3, double y3);
+		void (*Arc)(GB_PAINT *d, float xc, float yc, float radius, float a1, float a2);
+		void (*Rectangle)(GB_PAINT *d, float x, float y, float width, float height);
+		void (*GetCurrentPoint)(GB_PAINT *d, float *x, float *y);
+		void (*MoveTo)(GB_PAINT *d, float x, float y);
+		void (*LineTo)(GB_PAINT *d, float x, float y);
+		void (*CurveTo)(GB_PAINT *d, float x1, float y1, float x2, float y2, float x3, float y3);
 	
-		void (*Text)(GB_PAINT *d, const char *text);
-		void (*TextExtents)(GB_PAINT *d, const char *text, GB_EXTENTS *ext);
+		void (*Text)(GB_PAINT *d, const char *text, int len);
+		void (*TextExtents)(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext);
 		
-		void (*Translate)(GB_PAINT *d, double tx, double ty);
-		void (*Scale)(GB_PAINT *d, double sx, double sy);
-		void (*Rotate)(GB_PAINT *d, double angle);
+		void (*Translate)(GB_PAINT *d, float tx, float ty);
+		void (*Scale)(GB_PAINT *d, float sx, float sy);
+		void (*Rotate)(GB_PAINT *d, float angle);
 		void (*Matrix)(GB_PAINT *d, bool set, GB_TRANSFORM *matrix);
 		
 		void (*SetBrush)(GB_PAINT *d, GB_BRUSH brush);
@@ -173,19 +174,19 @@ typedef
 		struct {
 			void (*Free)(GB_BRUSH brush);
 			void (*Color)(GB_BRUSH *brush, GB_COLOR color);
-			void (*Image)(GB_BRUSH *brush, GB_IMAGE image, double x, double y, int extend);
-			void (*LinearGradient)(GB_BRUSH *brush, double x0, double y0, double x1, double y1);
-			void (*RadialGradient)(GB_BRUSH *brush, double cx0, double cy0, double r0, double cx1, double cy1, double r1);
-			void (*SetColorStop)(GB_BRUSH brush, int nstop, double *pos, GB_COLOR *color);
+			void (*Image)(GB_BRUSH *brush, GB_IMAGE image, float x, float y, int extend);
+			void (*LinearGradient)(GB_BRUSH *brush, float x0, float y0, float x1, float y1);
+			void (*RadialGradient)(GB_BRUSH *brush, float cx0, float cy0, float r0, float cx1, float cy1, float r1);
+			void (*SetColorStops)(GB_BRUSH brush, int nstop, double *pos, GB_COLOR *color);
 			void (*Matrix)(GB_BRUSH brush, bool set, GB_TRANSFORM *matrix);
 			}
 			Brush;
 		
 		struct {
-			void (*Init)(GB_TRANSFORM matrix, double xx, double yx, double xy, double yy, double x0, double y0);
-			void (*Translate)(GB_TRANSFORM matrix, double tx, double ty);
-			void (*Scale)(GB_TRANSFORM matrix, double sx, double sy);
-			void (*Rotate)(GB_TRANSFORM matrix, double angle);
+			void (*Init)(GB_TRANSFORM matrix, float xx, float yx, float xy, float yy, float x0, float y0);
+			void (*Translate)(GB_TRANSFORM matrix, float tx, float ty);
+			void (*Scale)(GB_TRANSFORM matrix, float sx, float sy);
+			void (*Rotate)(GB_TRANSFORM matrix, float angle);
 			bool (*Invert)(GB_TRANSFORM matrix);
 			void (*Multiply)(GB_TRANSFORM matrix, GB_TRANSFORM matrix2);
 			}
