@@ -25,6 +25,8 @@
 
 #include "gambas.h"
 
+#define GL_INTERFACE_VERSION 1
+
 typedef
   struct {
     intptr_t version;
