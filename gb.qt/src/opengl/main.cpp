@@ -32,6 +32,7 @@ extern "C" {
 
 GB_INTERFACE GB EXPORT;
 QT_INTERFACE QT;
+GL_INTERFACE GL;
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {
@@ -42,6 +43,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
 int EXPORT GB_INIT(void)
 {
   GB.GetInterface("gb.qt", QT_INTERFACE_VERSION, &QT);
+  GB.GetInterface("gb.opengl", GL_INTERFACE_VERSION, &GL);
 
   return FALSE;
 }

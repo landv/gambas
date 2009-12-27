@@ -25,10 +25,12 @@
 
 #include "gambas.h"
 #include "../gb.qt.h"
+#include "gb.gl.h"
 
 #ifndef __MAIN_CPP
 extern GB_INTERFACE GB;
 extern QT_INTERFACE QT;
+extern GL_INTERFACE GL;
 #endif
 
 #endif
