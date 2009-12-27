@@ -22,9 +22,7 @@
 
 #define __MAIN_CPP
 
-#include "gambas.h"
 #include "main.h"
-#include "../gb.qt.h"
 
 #include "CGLarea.h"
 
@@ -32,6 +30,7 @@ extern "C" {
 
 GB_INTERFACE GB EXPORT;
 QT_INTERFACE QT;
+GL_INTERFACE GL;
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {
@@ -42,6 +41,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
 int EXPORT GB_INIT(void)
 {
   GB.GetInterface("gb.qt4", QT_INTERFACE_VERSION, &QT);
+  GB.GetInterface("gb.opengl", GL_INTERFACE_VERSION, &GL);
 
   return FALSE;
 }

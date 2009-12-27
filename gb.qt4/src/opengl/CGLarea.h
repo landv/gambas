@@ -23,11 +23,8 @@
 #ifndef __CGLAREA_H
 #define __CGLAREA_H
 
-#include "gambas.h"
 #include "main.h"
-#include "../gb.qt.h"
 
-#include <GL/glew.h>
 #include <qgl.h>
 
 typedef
