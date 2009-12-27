@@ -63,8 +63,14 @@ GB_DESC Cgl[] =
 	GB_STATIC_METHOD("Uniform2i", NULL, GLUNIFORM2I, "(Location)i(V0)i(V1)i"),
 	GB_STATIC_METHOD("Uniform3i", NULL, GLUNIFORM3I, "(Location)i(V0)i(V1)i(V2)i"),
 	GB_STATIC_METHOD("Uniform4i", NULL, GLUNIFORM4I, "(Location)i(V0)i(V1)i(V3)i(V3)i"),
-//	GB_STATIC_METHOD("Uniform1fv", NULL, GLUNIFORMFV, "(Location)i(Values)Float[]"),
-//	GB_STATIC_METHOD("Uniformiv", NULL, GLUNIFORMIV, "(Location)i(Values)Integer[]"),
+	GB_STATIC_METHOD("Uniform1fv", NULL, GLUNIFORM1FV, "(Location)i(Values)Float[]"),
+	GB_STATIC_METHOD("Uniform2fv", NULL, GLUNIFORM2FV, "(Location)i(Values)Float[]"),
+	GB_STATIC_METHOD("Uniform3fv", NULL, GLUNIFORM3FV, "(Location)i(Values)Float[]"),
+	GB_STATIC_METHOD("Uniform4fv", NULL, GLUNIFORM4FV, "(Location)i(Values)Float[]"),
+	GB_STATIC_METHOD("Uniform1iv", NULL, GLUNIFORM1IV, "(Location)i(Values)Integer[]"),
+	GB_STATIC_METHOD("Uniform2iv", NULL, GLUNIFORM2IV, "(Location)i(Values)Integer[]"),
+	GB_STATIC_METHOD("Uniform3iv", NULL, GLUNIFORM3IV, "(Location)i(Values)Integer[]"),
+	GB_STATIC_METHOD("Uniform4iv", NULL, GLUNIFORM4IV, "(Location)i(Values)Integer[]"),
 
 	/* Contants */
 	GB_CONSTANT("GL_ACTIVE_ATTRIBUTES", "i", GL_ACTIVE_ATTRIBUTES),

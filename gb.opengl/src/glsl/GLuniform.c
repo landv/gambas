@@ -71,3 +71,193 @@ BEGIN_METHOD(GLUNIFORM4I, GB_INTEGER location; GB_INTEGER v0; GB_INTEGER v1; GB_
 	glUniform4i(VARG(location), VARG(v0), VARG(v1), VARG(v2), VARG(v3));
 
 END_METHOD
+
+BEGIN_METHOD(GLUNIFORM1FV, GB_INTEGER location; GB_OBJECT array)
+
+	GB_ARRAY fArray = VARG(array);
+	int count = GB.Array.Count(fArray);
+	
+	if (!count)
+		return;
+
+	GLfloat values[count];
+	int i;
+	
+	for (i=0; i<count; i++)
+		values[i] = *((GLfloat *)GB.Array.Get(fArray, i));
+	
+	glUniform1fv(VARG(location), count, values);
+
+END_METHOD
+
+BEGIN_METHOD(GLUNIFORM2FV, GB_INTEGER location; GB_OBJECT array)
+
+	GB_ARRAY fArray = VARG(array);
+	int count = GB.Array.Count(fArray);
+	int fill = count & 1; // fill=1 if number isn't pair, first bit = 1
+	
+	if (!count)
+		return;
+
+	GLfloat values[count+fill];
+	int i;
+	
+	for (i=0; i<count; i++)
+		values[i] = *((GLfloat *)GB.Array.Get(fArray, i));
+	
+	if (fill)
+		values[count+1] = 0;
+
+	count = (count/2)+fill;
+	glUniform2fv(VARG(location), count, values);
+
+END_METHOD
+
+BEGIN_METHOD(GLUNIFORM3FV, GB_INTEGER location; GB_OBJECT array)
+
+	GB_ARRAY fArray = VARG(array);
+	int count = GB.Array.Count(fArray);
+	int fill = count%3 ? (3-(count%3)) : 0;
+	
+	if (!count)
+		return;
+
+	GLfloat values[count+fill];
+	int i;
+	
+	for (i=0; i<count; i++)
+		values[i] = *((GLfloat *)GB.Array.Get(fArray, i));
+	
+	if (fill)
+	{
+		for (i=1; i<=fill; i++)
+			values[count+i] = 0;
+		fill = 1;
+	}
+
+	count = (count/3)+fill;
+	glUniform3fv(VARG(location), count, values);
+
+END_METHOD
+
+BEGIN_METHOD(GLUNIFORM4FV, GB_INTEGER location; GB_OBJECT array)
+
+	GB_ARRAY fArray = VARG(array);
+	int count = GB.Array.Count(fArray);
+	int fill = count%4 ? (4-(count%4)) : 0;
+	
+	if (!count)
+		return;
+
+	GLfloat values[count+fill];
+	int i;
+	
+	for (i=0; i<count; i++)
+		values[i] = *((GLfloat *)GB.Array.Get(fArray, i));
+	
+	if (fill)
+	{
+		for (i=1; i<=fill; i++)
+			values[count+i] = 0;
+		fill = 1;
+	}
+
+	count = (count/4)+fill;
+	glUniform4fv(VARG(location), count, values);
+
+END_METHOD
+
+BEGIN_METHOD(GLUNIFORM1IV, GB_INTEGER location; GB_OBJECT array)
+
+	GB_ARRAY iArray = VARG(array);
+	int count = GB.Array.Count(iArray);
+	
+	if (!count)
+		return;
+
+	GLint values[count];
+	int i;
+	
+	for (i=0; i<count; i++)
+		values[i] = *((GLint *)GB.Array.Get(iArray, i));
+	
+	glUniform1iv(VARG(location), count, values);
+
+END_METHOD
+
+BEGIN_METHOD(GLUNIFORM2FI, GB_INTEGER location; GB_OBJECT array)
+
+	GB_ARRAY iArray = VARG(array);
+	int count = GB.Array.Count(iArray);
+	int fill = count & 1; // fill=1 if number isn't pair, first bit = 1
+	
+	if (!count)
+		return;
+
+	GLint values[count+fill];
+	int i;
+	
+	for (i=0; i<count; i++)
+		values[i] = *((GLint *)GB.Array.Get(iArray, i));
+	
+	if (fill)
+		values[count+1] = 0;
+
+	count = (count/2)+fill;
+	glUniform2iv(VARG(location), count, values);
+
+END_METHOD
+
+BEGIN_METHOD(GLUNIFORM3IV, GB_INTEGER location; GB_OBJECT array)
+
+	GB_ARRAY iArray = VARG(array);
+	int count = GB.Array.Count(iArray);
+	int fill = count%3 ? (3-(count%3)) : 0;
+	
+	if (!count)
+		return;
+
+	GLint values[count+fill];
+	int i;
+	
+	for (i=0; i<count; i++)
+		values[i] = *((GLint *)GB.Array.Get(iArray, i));
+	
+	if (fill)
+	{
+		for (i=1; i<=fill; i++)
+			values[count+i] = 0;
+		fill = 1;
+	}
+
+	count = (count/3)+fill;
+	glUniform3iv(VARG(location), count, values);
+
+END_METHOD
+
+BEGIN_METHOD(GLUNIFORM4IV, GB_INTEGER location; GB_OBJECT array)
+
+	GB_ARRAY iArray = VARG(array);
+	int count = GB.Array.Count(iArray);
+	int fill = count%4 ? (4-(count%4)) : 0;
+	
+	if (!count)
+		return;
+
+	GLint values[count+fill];
+	int i;
+	
+	for (i=0; i<count; i++)
+		values[i] = *((GLint *)GB.Array.Get(iArray, i));
+	
+	if (fill)
+	{
+		for (i=1; i<=fill; i++)
+			values[count+i] = 0;
+		fill = 1;
+	}
+
+	count = (count/4)+fill;
+	glUniform4iv(VARG(location), count, values);
+
+END_METHOD
