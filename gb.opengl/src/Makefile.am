@@ -10,9 +10,8 @@ gb_opengl_la_LIBADD = @OPENGL_LIB@
 gb_opengl_la_LDFLAGS = -module @LD_FLAGS@ @OPENGL_LDFLAGS@
 
 gb_opengl_la_SOURCES = \
- main.h main.c gb.gl.h gb.gl.c \
+ main.h main.c gb.gl.h \
  GL.h GL.c \
- GLinit.c GLinit.h \
  GLinfo.h GLinfo.c \
  GLclipping.c GLclipping.h \
  GLcolorLighting.h GLcolorLighting.c \

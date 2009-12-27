@@ -25,12 +25,15 @@
 
 #include "gambas.h"
 
-
 typedef
   struct {
-    long version;
+    intptr_t version;
+    // Must be called after the context is init !
+    //** Perhaps too when context is changed but not tested **
+    void (*Init)(void);
+
     void *_null;
-    }
+  }
   GL_INTERFACE;
 
 #endif

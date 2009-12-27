@@ -25,10 +25,12 @@
 #include "GL.h"
 #include "GLU.h"
 
-#include "GLinit.h"
+#include "gb.gl.h"
 
 GB_INTERFACE GB EXPORT;
 IMAGE_INTERFACE IMAGE EXPORT;
+
+void Init(void );
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {
@@ -36,6 +38,14 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	Cgl,
 /* GLU */
 	Cglu,
+
+	NULL
+};
+
+void *GB_OPENGL[] EXPORT = {
+
+	(void *)1,
+	(void *)Init,
 
 	NULL
 };
@@ -81,4 +91,14 @@ int EXPORT GB_INIT(void)
 
 void EXPORT GB_EXIT()
 {
+}
+
+void Init()
+{
+	GLenum err = glewInit();
+	if (GLEW_OK != err)
+	{
+		/* Problem: glewInit failed, something is seriously wrong. */
+		GB.Error("Failed to init GLEW: &1\n", glewGetErrorString(err));
+	}
 }
