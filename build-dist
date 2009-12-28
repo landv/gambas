@@ -1,7 +1,7 @@
 #!/bin/sh
 
 dirs="gb.* app comp examples main"
-files="config.guess config.sub install-sh"
+files="config.guess config.sub install-sh ltmain.sh"
 
 #--reconf file--
 rm -f config.cache
@@ -19,8 +19,8 @@ for subdirs in $dirs; do
   echo Directory $subdirs
 
   for cfiles in $files; do
-#     rm $subdirs/$cfiles
-    ln -fs $cfiles $subdirs/$cfiles
+    rm -f $subdirs/$cfiles
+    ln -s $cfiles $subdirs/$cfiles
   done
 
 done
