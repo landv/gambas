@@ -27,7 +27,6 @@
 #include <qpalette.h>
 
 #include "gambas.h"
-#include "gb.image.h"
 
 #include "CWidget.h"
 #include "CColor.h"
@@ -39,6 +38,16 @@ static int _v = 0;
 QColor CCOLOR_merge(const QColor &colorA, const QColor &colorB, int factor)
 {
 	return QColor(IMAGE.MergeColor(colorA.rgba(), colorB.rgba(), factor / 100.0));
+}
+
+QColor CCOLOR_make(GB_COLOR color)
+{
+	int b = color & 0xFF;
+	int g = (color >> 8) & 0xFF;
+	int r = (color >> 16) & 0xFF;
+	int a = (color >> 24) ^ 0xFF;
+	
+	return QColor(r, g, b, a);
 }
 
 static void get_hsv(int col)

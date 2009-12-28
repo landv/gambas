@@ -25,14 +25,16 @@
 
 #include "gambas.h"
 
-#include <qwidget.h>
-#include <qfont.h>
-#include <qstring.h>
-#include <qpixmap.h>
-#include <qimage.h>
-#include <qmime.h>
-#include <qevent.h>
-#include <qpainter.h>
+#include <QWidget>
+#include <QFont>
+#include <QString>
+#include <QPixmap>
+#include <QImage>
+#include <QEvent>
+#include <QPainter>
+#include <QPainterPath>
+#include <QBrush>
+#include <QPen>
 
 #define QT_INTERFACE_VERSION 1
 
@@ -100,6 +102,14 @@ typedef
 		}
 	QT_DRAW_EXTRA;
 
+typedef
+	struct {
+		QPainter *painter;
+		QPainterPath *path;
+		int fillRule;
+	}
+	QT_PAINT_EXTRA;
+	
 typedef
   void (*QT_FONT_FUNC)(QFont &, void *);
 

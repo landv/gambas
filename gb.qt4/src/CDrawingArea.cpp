@@ -28,6 +28,7 @@
 #include <QPainter>
 
 #include "CDraw.h"
+#include "cpaint_impl.h"
 #include "CDrawingArea.h"
 
 #ifndef NO_X_WINDOW
@@ -51,6 +52,7 @@ MyDrawingArea::MyDrawingArea(QWidget *parent) : MyContainer(parent)
 	_background = 0;
 	_frozen = false;
 	_event_mask = 0;
+	_use_paint = false;
 	setMerge(false);
 	setCached(false);
 	setBackground();
@@ -159,10 +161,18 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 
 			//status = DRAW_status();
 			//DRAW_begin(NULL, p, width(), height());
-			DRAW_begin(object);
-
-			p = DRAW_get_current();
 			
+			if (_use_paint)
+			{
+				PAINT_begin(object);
+				p = PAINT_get_current();
+			}
+			else
+			{
+				DRAW_begin(object);
+				p = DRAW_get_current();
+			}
+				
 			p->translate(-r.x(), -r.y());
 			p->setClipRect(r);
 			//p->setClipRegion(event->region().intersect(contentsRect()));
@@ -170,9 +180,9 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 			
 			if (frame)
 				p->save();
-			//qDebug("MyDrawingArea::paintEvent %p", CWidget::get(this));
-			GB.Raise(object, EVENT_draw, 0);
 			
+			GB.Raise(object, EVENT_draw, 0);
+				
 			if (!contentsRect().contains(event->rect()))
 			{
 				p->restore();
@@ -180,12 +190,11 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 				p->setRenderHint(QPainter::Antialiasing, false);
 				drawFrame(p);
 			}
-			
-			//DRAW_restore(status);
-			DRAW_end();
-			//delete p;
-
-			//paint.setClipRegion( event->region().intersect( contentsRect() ) );
+				
+			if (_use_paint)
+				PAINT_end();
+			else
+				DRAW_end();
 			
 			paint.drawPixmap(r.x(), r.y(), *cache);
 			delete cache;
@@ -399,6 +408,14 @@ BEGIN_PROPERTY(CDRAWINGAREA_focus)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(CDRAWINGAREA_paint)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(WIDGET->isPaint());
+	else
+		WIDGET->setPaint(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
 
 GB_DESC CDrawingAreaDesc[] =
 {
@@ -414,12 +431,14 @@ GB_DESC CDrawingAreaDesc[] =
 	
 	GB_PROPERTY("Focus", "b", CDRAWINGAREA_focus),
 	GB_PROPERTY("Enabled", "b", CDRAWINGAREA_enabled),
+	GB_PROPERTY("Painted", "b", CDRAWINGAREA_paint),
 
 	GB_METHOD("Clear", NULL, CDRAWINGAREA_clear, NULL),
 
 	GB_EVENT("Draw", NULL, NULL, &EVENT_draw),
 
 	GB_INTERFACE("Draw", &DRAW_Interface),
+	GB_INTERFACE("Paint", &PAINT_Interface),
 
 	DRAWINGAREA_DESCRIPTION,
 

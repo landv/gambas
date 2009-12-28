@@ -92,7 +92,7 @@ typedef
 	struct {
 		GB_BASE ob;
 		struct GB_PAINT_DESC *desc;        // drawing driver
-		GB_TRANSFORM matrix;
+		GB_TRANSFORM transform;
 	}
 	PAINT_MATRIX;
 	
@@ -100,7 +100,8 @@ typedef
 	struct {
 		GB_BASE ob;
 		struct GB_PAINT_DESC *desc;        // drawing driver
-		GB_BRUSH brush;
+		GB_BRUSH brush;                    // brush
+		float x, y;                        // brush origin
 	}
 	PAINT_BRUSH;
 
@@ -111,10 +112,11 @@ typedef
 		void *device;                      // drawing object
 		int width;                         // device width in device coordinates
 		int height;                        // device height in device coordinates
-		int resolution;                    // device resolution in DPI
-		char extra[0];                     // driver-specific state
+		int resolutionX;                   // device horizontal resolution in DPI
+		int resolutionY;                   // device vertical resolution in DPI
+		PAINT_BRUSH *brush;                // current brush
+		void *extra;                       // driver-specific state
 	}
-	PACKED
 	GB_PAINT;
 
 typedef
@@ -128,33 +130,33 @@ typedef
 		void (*Save)(GB_PAINT *d);
 		void (*Restore)(GB_PAINT *d);
 		
-		void (*Font)(GB_PAINT *d, bool set, GB_FONT *font);
+		void (*Font)(GB_PAINT *d, int set, GB_FONT *font);
 		
-		void (*Clip)(GB_PAINT *d, bool preserve);
+		void (*Clip)(GB_PAINT *d, int preserve);
 		void (*ResetClip)(GB_PAINT *d);
 		void (*ClipExtents)(GB_PAINT *d, GB_EXTENTS *ext);
 	
-		void (*Fill)(GB_PAINT *d, bool preserve);
-		void (*Stroke)(GB_PAINT *d, bool preserve);
+		void (*Fill)(GB_PAINT *d, int preserve);
+		void (*Stroke)(GB_PAINT *d, int preserve);
 		
 		void (*PathExtents)(GB_PAINT *d, GB_EXTENTS *ext);
-		bool (*PathContains)(GB_PAINT *d, float x, float y);
+		int (*PathContains)(GB_PAINT *d, float x, float y);
 		
-		void (*Dash)(GB_PAINT *d, bool set, float **dash, int *count);
-		void (*DashOffset)(GB_PAINT *d, bool set, float *offset);
+		void (*Dash)(GB_PAINT *d, int set, float **dash, int *count);
+		void (*DashOffset)(GB_PAINT *d, int set, float *offset);
 		
-		void (*FillRule)(GB_PAINT *d, bool set, int *value);
-		void (*LineCap)(GB_PAINT *d, bool set, int *value);
-		void (*LineJoin)(GB_PAINT *d, bool set, int *value);
-		void (*LineWidth)(GB_PAINT *d, bool set, float *value);
-		void (*MiterLimit)(GB_PAINT *d, bool set, float *value);
+		void (*FillRule)(GB_PAINT *d, int set, int *value);
+		void (*LineCap)(GB_PAINT *d, int set, int *value);
+		void (*LineJoin)(GB_PAINT *d, int set, int *value);
+		void (*LineWidth)(GB_PAINT *d, int set, float *value);
+		void (*MiterLimit)(GB_PAINT *d, int set, float *value);
 		
-		void (*Operator)(GB_PAINT *d, bool set, int *value);
+		void (*Operator)(GB_PAINT *d, int set, int *value);
 
 		void (*NewPath)(GB_PAINT *d);
 		void (*ClosePath)(GB_PAINT *d);
 		
-		void (*Arc)(GB_PAINT *d, float xc, float yc, float radius, float a1, float a2);
+		void (*Arc)(GB_PAINT *d, float xc, float yc, float radius, float angle, float length);
 		void (*Rectangle)(GB_PAINT *d, float x, float y, float width, float height);
 		void (*GetCurrentPoint)(GB_PAINT *d, float *x, float *y);
 		void (*MoveTo)(GB_PAINT *d, float x, float y);
@@ -164,44 +166,33 @@ typedef
 		void (*Text)(GB_PAINT *d, const char *text, int len);
 		void (*TextExtents)(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext);
 		
-		void (*Translate)(GB_PAINT *d, float tx, float ty);
-		void (*Scale)(GB_PAINT *d, float sx, float sy);
-		void (*Rotate)(GB_PAINT *d, float angle);
-		void (*Matrix)(GB_PAINT *d, bool set, GB_TRANSFORM *matrix);
+		void (*Matrix)(GB_PAINT *d, int set, GB_TRANSFORM matrix);
 		
-		void (*SetBrush)(GB_PAINT *d, GB_BRUSH brush);
+		void (*SetBrush)(GB_PAINT *d, GB_BRUSH brush, float x, float y);
 		
 		struct {
 			void (*Free)(GB_BRUSH brush);
 			void (*Color)(GB_BRUSH *brush, GB_COLOR color);
-			void (*Image)(GB_BRUSH *brush, GB_IMAGE image, float x, float y, int extend);
-			void (*LinearGradient)(GB_BRUSH *brush, float x0, float y0, float x1, float y1);
-			void (*RadialGradient)(GB_BRUSH *brush, float cx0, float cy0, float r0, float cx1, float cy1, float r1);
-			void (*SetColorStops)(GB_BRUSH brush, int nstop, double *pos, GB_COLOR *color);
-			void (*Matrix)(GB_BRUSH brush, bool set, GB_TRANSFORM *matrix);
+			void (*Image)(GB_BRUSH *brush, GB_IMAGE image);
+			void (*LinearGradient)(GB_BRUSH *brush, float x0, float y0, float x1, float y1, int nstop, double *positions, GB_COLOR *colors, int extend);
+			void (*RadialGradient)(GB_BRUSH *brush, float cx0, float cy0, float r0, float cx1, float cy1, float r1, int nstop, double *positions, GB_COLOR *colors, int extend);
+			void (*Matrix)(GB_BRUSH brush, int set, GB_TRANSFORM matrix);
 			}
 			Brush;
 		
 		struct {
+			void (*Create)(GB_TRANSFORM *matrix);
+			void (*Delete)(GB_TRANSFORM *matrix);
 			void (*Init)(GB_TRANSFORM matrix, float xx, float yx, float xy, float yy, float x0, float y0);
 			void (*Translate)(GB_TRANSFORM matrix, float tx, float ty);
 			void (*Scale)(GB_TRANSFORM matrix, float sx, float sy);
 			void (*Rotate)(GB_TRANSFORM matrix, float angle);
-			bool (*Invert)(GB_TRANSFORM matrix);
+			int (*Invert)(GB_TRANSFORM matrix);
 			void (*Multiply)(GB_TRANSFORM matrix, GB_TRANSFORM matrix2);
 			}
 			Transform;
 	}
 	GB_PAINT_DESC;
-
-typedef
-	struct {
-		int version;
-		GB_PAINT *(*GetCurrent)();
-		void (*Begin)(void *);
-		void (*End)();
-		}
-	PAINT_INTERFACE;
 
 #endif
 

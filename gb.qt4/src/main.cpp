@@ -1012,6 +1012,7 @@ int EXPORT GB_INIT(void)
 	CLASS_DrawingArea = GB.FindClass("DrawingArea");
 	CLASS_Printer = GB.FindClass("Printer");
 	CLASS_ScrollView = GB.FindClass("ScrollView");
+	CLASS_Image = GB.FindClass("Image");
 
 	QT_InitEventLoop();
 

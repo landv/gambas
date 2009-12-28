@@ -83,6 +83,9 @@ public:
 
   void setAllowFocus(bool f);
   bool isAllowFocus() { return focusPolicy() != Qt::NoFocus; }
+	
+	bool isPaint() { return _use_paint; }
+	void setPaint(bool on) { _use_paint = on; }
 
 protected:
 
@@ -98,6 +101,7 @@ private:
   bool _merge;
   bool _focus;
   int _event_mask;
+	bool _use_paint;
 
   bool doResize();
 };

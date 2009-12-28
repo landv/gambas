@@ -42,6 +42,10 @@ GB_DESC *GB_CLASSES [] EXPORT =
 	CDrawClipDesc,
 	CDrawStyleDesc,
 	CDrawDesc,
+	PaintExtentsDesc,
+	PaintMatrixDesc,
+	PaintBrushDesc,
+	PaintDesc,
   NULL
 };
 
@@ -51,6 +55,9 @@ void *GB_DRAW_1[] EXPORT =
 	(void *)DRAW_get_current,
 	(void *)DRAW_begin,
 	(void *)DRAW_end,
+	(void *)PAINT_get_current,
+	(void *)PAINT_begin,
+	(void *)PAINT_end,
 	NULL
 };
 

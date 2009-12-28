@@ -25,6 +25,7 @@
 #include <qapplication.h>
 #include <qlabel.h>
 #include <qpixmap.h>
+#include <QResizeEvent>
 
 #include "gambas.h"
 

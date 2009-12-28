@@ -29,6 +29,7 @@
 #ifndef __CPAINT_C
 
 extern GB_DESC PaintExtentsDesc[];
+extern GB_DESC PaintMatrixDesc[];
 extern GB_DESC PaintBrushDesc[];
 extern GB_DESC PaintDesc[];
 

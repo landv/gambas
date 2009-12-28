@@ -44,6 +44,7 @@
 #include "CScreen.h"
 #include "CPicture.h"
 #include "CDraw.h"
+#include "cpaint_impl.h"
 #include "CImage.h"
 
 const char *CIMAGE_get_format(QString path)
@@ -335,7 +336,8 @@ GB_DESC CImageDesc[] =
   GB_METHOD("Draw", NULL, CIMAGE_draw, "(Image)Image;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
 
   GB_PROPERTY_READ("Picture", "Picture", CIMAGE_picture),
-
+	GB_INTERFACE("Paint", &PAINT_Interface),
+	
   GB_END_DECLARE
 };
 

@@ -339,12 +339,12 @@ static void set_font(GB_DRAW *d, GB_FONT font)
 
 static int is_inverted(GB_DRAW *d)
 {
-	return DP(d)->compositionMode() == QPainter::CompositionMode_Xor;
+	return DP(d)->compositionMode() == QPainter::RasterOp_SourceXorDestination; //QPainter::CompositionMode_Xor;
 }
 
 static void set_inverted(GB_DRAW *d, int inverted)
 {
-	DP(d)->setCompositionMode(inverted ? QPainter::CompositionMode_Xor : QPainter::CompositionMode_SourceOver);
+	DP(d)->setCompositionMode(inverted ? QPainter::RasterOp_SourceXorDestination : QPainter::CompositionMode_SourceOver);
 }
 
 static int is_transparent(GB_DRAW *d)

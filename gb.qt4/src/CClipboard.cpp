@@ -45,8 +45,6 @@ CDRAG_INFO CDRAG_info = { 0 };
 bool CDRAG_dragging = false;
 void *CDRAG_destination = 0;
 
-static GB_CLASS CLASS_Image;
-
 static CPICTURE *_picture = 0;
 static int _picture_x = -1;
 static int _picture_y = -1;
@@ -149,12 +147,6 @@ static void paste(const QMimeData *data, const char *fmt)
 
 ***************************************************************************/
 
-BEGIN_METHOD_VOID(CCLIPBOARD_init)
-
-  CLASS_Image = GB.FindClass("Image");
-
-END_METHOD
-
 BEGIN_METHOD_VOID(CCLIPBOARD_clear)
 
   QApplication::clipboard()->clear();
@@ -244,8 +236,6 @@ GB_DESC CClipboardDesc[] =
   GB_CONSTANT("None", "i", 0),
   GB_CONSTANT("Text", "i", 1),
   GB_CONSTANT("Image", "i", 2),
-
-  GB_STATIC_METHOD("_init", NULL, CCLIPBOARD_init, NULL),
 
   GB_STATIC_METHOD("Clear", NULL, CCLIPBOARD_clear, NULL),
 

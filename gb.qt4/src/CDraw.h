@@ -32,6 +32,7 @@
 #ifndef __CDRAW_C
 
 extern GB_DRAW_DESC DRAW_Interface;
+extern DRAW_INTERFACE DRAW;
 
 #endif
 

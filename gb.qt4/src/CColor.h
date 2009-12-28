@@ -24,11 +24,13 @@
 #define __CCOLOR_H
 
 #include "gambas.h"
+#include "gb.image.h"
 
 #ifndef __CCOLOR_CPP
 extern GB_DESC CColorDesc[];
 #endif
 
 QColor CCOLOR_merge(const QColor &colorA, const QColor &colorB, int factor = 50);
+QColor CCOLOR_make(GB_COLOR color);
 
 #endif

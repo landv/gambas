@@ -71,6 +71,7 @@ GB_CLASS CLASS_Drawing;
 GB_CLASS CLASS_DrawingArea;
 GB_CLASS CLASS_Printer;
 GB_CLASS CLASS_ScrollView;
+GB_CLASS CLASS_Image;
 
 #ifndef NO_X_WINDOW
 static QMap<int, int> _x11_to_qt_keycode;

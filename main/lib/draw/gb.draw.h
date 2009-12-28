@@ -169,7 +169,6 @@ typedef
 			void (*Handle)(GB_DRAW *d, int x, int y, int w, int h, int vertical, int state);
 			}
 			Style;
-		// Cairo drawing model? I must look at QT Arthur painting model first!
 	}
 	GB_DRAW_DESC;
 
@@ -181,6 +180,12 @@ typedef
 		GB_DRAW *(*GetCurrent)();
 		void (*Begin)(void *);
 		void (*End)();
+		struct {
+			void *(*GetCurrent)();
+			void (*Begin)(void *);
+			void (*End)();
+			}
+			Paint;
 		}
 	DRAW_INTERFACE;
 

@@ -51,7 +51,7 @@
 #define CCHECKBOX_PROPERTIES "*,Action,Text,Tristate,Value{CheckBox.False;True;None}"
 #define CRADIOBUTTON_PROPERTIES "*,Text,Value"
 #define CSPINBOX_PROPERTIES "*,Action,MinValue=0,MaxValue=100,Step=1,Wrap,Value,Border=True"
-#define CDRAWINGAREA_PROPERTIES "*,Cached,Tracking,Focus,Merge,Border{Border.*}"
+#define CDRAWINGAREA_PROPERTIES "*,Cached,Painted,Tracking,Focus,Merge,Border{Border.*}"
 #define CTREEVIEW_PROPERTIES "*,Mode{Select.*}=Single,Sorted,Editable,Border=True,ScrollBar{Scroll.*}=Both"
 #define CLISTVIEW_PROPERTIES "*,Mode{Select.*}=Single,Sorted,Editable,Border=True,ScrollBar{Scroll.*}=Both"
 #define CCOLUMNVIEW_PROPERTIES "*,Mode{Select.*}=Single,Sorted,Editable,Header=True,Resizable=False,AutoResize=True,Border=True,ScrollBar{Scroll.*}=Both"
