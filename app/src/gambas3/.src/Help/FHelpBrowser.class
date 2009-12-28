@@ -126,7 +126,7 @@ Public Sub btnModify_Click()
   sUrl = webHelp.Url
   If Not (sUrl Begins "http://gambasdoc.org") Then Return
   
-  sUrl = Replace(sUrl, "http://gambasdoc.org/help/", "http://gambasdoc.org/edit/")
+  sUrl = Replace(sUrl, "http://gambasdoc.org/help", "http://gambasdoc.org/edit")
   
   Project.OpenWebPage(sUrl)
 

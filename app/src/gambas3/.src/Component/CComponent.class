@@ -34,6 +34,8 @@ Static Public Changes As New Collection
 Static Private $hDumbClass As CClassInfo
 Static Private $hClass As CClassInfo
 
+Private $bCalcKey As Boolean
+
 Static Private Sub SortComponents()
 
   Dim iMax As Integer
@@ -354,9 +356,11 @@ Public Sub CalcSortKey()
   Dim sNeed As String
   Dim hComp As CComponent
 
-  'DEBUG ">>>";; Key
-
   If SortKey = 0 Then 
+
+    if $bCalcKey Then Return
+
+    $bCalcKey = True
 
     If Require.Count Or If Need.Count Then
 
@@ -378,11 +382,12 @@ Public Sub CalcSortKey()
     
     Inc $iKey
     SortKey = $iKey
+    'DEBUG Key;; "=";; SortKey
+
+    $bCalcKey = False
 
   Endif
   
-  'DEBUG "<<<";; Key;; "=";; SortKey
-
 End
 
 Static Private Sub CreateClass(sClass As String, sParent As String, sComp As String) As CClassInfo
