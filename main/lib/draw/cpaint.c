@@ -178,6 +178,12 @@ static PAINT_MATRIX *create_matrix(GB_PAINT_DESC *desc, GB_TRANSFORM *transform)
 	return matrix;
 }
 
+BEGIN_METHOD_VOID(PaintMatrix_free)
+
+	MPAINT->Transform.Delete(&MTHIS->transform);
+
+END_METHOD
+
 BEGIN_METHOD_VOID(PaintMatrix_Reset)
 
 	MPAINT->Transform.Init(MTHIS->transform, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
@@ -230,6 +236,8 @@ END_METHOD
 GB_DESC PaintMatrixDesc[] = 
 {
 	GB_DECLARE("PaintMatrix", sizeof(PAINT_MATRIX)), GB_NOT_CREATABLE(),
+
+	GB_METHOD("_free", NULL, PaintMatrix_free, NULL),
 
 	GB_METHOD("Reset", "PaintMatrix", PaintMatrix_Reset, NULL),
 	GB_METHOD("Translate", "PaintMatrix", PaintMatrix_Translate, "(TX)f(TY)f"),
@@ -547,7 +555,7 @@ END_PROPERTY
 BEGIN_METHOD(Paint_Arc, GB_FLOAT xc; GB_FLOAT yc; GB_FLOAT radius; GB_FLOAT angle; GB_FLOAT length)
 
 	CHECK_DEVICE();
-	PAINT->Arc(THIS, VARG(xc), VARG(yc), VARG(radius), VARGOPT(angle, 0.0), VARGOPT(length, M_PI * 2));
+	PAINT->Arc(THIS, VARG(xc), VARG(yc), VARG(radius), VARGOPT(angle, 0.0), VARGOPT(length, MISSING(angle) ? M_PI * 2 : 0.0));
 
 END_METHOD
 
@@ -846,17 +854,17 @@ GB_DESC PaintDesc[] =
 	//GB_STATIC_PROPERTY("Tolerance", "f", CAIRO_tolerance),
 	
 	GB_STATIC_METHOD("NewPath", NULL, Paint_NewPath, NULL),
-	//GB_STATIC_METHOD("NewSubPath", NULL, CAIRO_new_sub_path, NULL),
 	GB_STATIC_METHOD("ClosePath", NULL, Paint_ClosePath, NULL),
 	
 	GB_STATIC_PROPERTY_READ("X", "f", Paint_X),
 	GB_STATIC_PROPERTY_READ("Y", "f", Paint_Y),
+
+	GB_STATIC_METHOD("Rectangle", NULL, Paint_Rectangle, "(X)f(Y)f(Width)f(Height)f"),
 	GB_STATIC_METHOD("Arc", NULL, Paint_Arc, "(XC)f(YC)f(Radius)f[(Angle)f(Length)f]"),
-	//GB_STATIC_METHOD("ArcNegative", NULL, CAIRO_arc_negative, "(XC)f(YC)f(Radius)f[(Angle1)f(Angle2)f]"),
+
 	GB_STATIC_METHOD("CurveTo", NULL, Paint_CurveTo, "(X1)f(Y1)f(X2)f(Y2)f(X3)f(Y3)f"),
 	GB_STATIC_METHOD("LineTo", NULL, Paint_LineTo, "(X)f(Y)f"),
 	GB_STATIC_METHOD("MoveTo", NULL, Paint_MoveTo, "(X)f(Y)f"),
-	GB_STATIC_METHOD("Rectangle", NULL, Paint_Rectangle, "(X)f(Y)f(Width)f(Height)f"),
 
 	GB_STATIC_PROPERTY("Font", "Font", Paint_Font),
 	GB_STATIC_METHOD("Text", NULL, Paint_Text, "(Text)s[(X)f(Y)f(Width)f(Height)f(Alignment)i)]"),
