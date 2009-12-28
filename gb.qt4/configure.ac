@@ -42,15 +42,6 @@ GB_COMPONENT_PKG_CONFIG(
   QtCore ">= 4.3.4" QtGui QtNetwork QtDBus QtXml QtWebKit ">= 4.5.0"
 )
 
-GB_COMPONENT(
-  opengl,
-  OPENGL,
-  [OpenGL libraries],
-  [],
-  [GB_FIND(gl.h glu.h, /usr /usr/X11R6 /usr/local, include/GL)],
-  [GB_FIND(libGL.$SHLIBEXT libGLU.$SHLIBEXT, /usr /usr/X11R6 /usr/local, lib)],
-  [-lGL -lGLU])
-
 GB_COMPONENT_PKG_CONFIG(
   qtopengl,
   QTOPENGL,
