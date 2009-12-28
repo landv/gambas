@@ -40,13 +40,6 @@
 
 /**************************************************************************/
 
-BEGIN_METHOD_VOID(GL_exit)
-
-	// free reserved memories
-	freeGetsAllocs();
-
-END_METHOD
-
 BEGIN_METHOD_VOID(GLCHECKERROR)
 
 	GB.ReturnInteger(glGetError());
@@ -59,9 +52,6 @@ GB_DESC Cgl[] =
 {
 	GB_DECLARE("Gl",0), GB_NOT_CREATABLE(),
 	
-//	GB_STATIC_METHOD("_init", NULL, GL_init, NULL),
-	GB_STATIC_METHOD("_exit", NULL, GL_exit, NULL),
-
 	/* Check errors */
 	GB_STATIC_METHOD("GetError", "i", GLCHECKERROR, NULL),
 

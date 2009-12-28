@@ -24,63 +24,16 @@
 
 #include "GL.h"
 
-/* Special cases (TODO):
-- GL_COMPRESSED_TEXTURE_FORMATS
-*/
-
-// max size of an array
-#define MAXSIZE 16
-
-// Arrays returned with glGet calls
-static GLboolean *boolArray;
-static int boolSize = 0;
-static GLdouble *floatArray;
-static int floatSize = 0;
-static GLint *intArray;
-static int intSize = 0;
-
-static void resizeBool(int size)
-{
-	if (size < boolSize)
-		return;
-
-	if (!boolSize)
-		GB.Alloc(POINTER(&boolArray), sizeof(GLboolean)*size);
-	else
-		GB.Realloc(POINTER(&boolArray), sizeof(GLboolean)*size);
-
-	boolSize = size;
-}
-
-static void resizeFloat(int size)
-{
-	if (size < floatSize)
-		return;
-
-	if (!floatSize)
-		GB.Alloc(POINTER(&floatArray), sizeof(GLdouble)*size);
-	else
-		GB.Realloc(POINTER(&floatArray), sizeof(GLdouble)*size);
-
-	floatSize = size;
-}
-
-static void resizeInt(int size)
-{
-	if (size < intSize)
-		return;
-
-	if (!intSize)
-		GB.Alloc(POINTER(&intArray), sizeof(GLint)*size);
-	else
-		GB.Realloc(POINTER(&intArray), sizeof(GLint)*size);
-
-	intSize = size;
-}
-
 static int checkSize(GLenum value)
 {
 	int retSize = 0;
+	
+	if (value == GL_COMPRESSED_TEXTURE_FORMATS)
+	{
+		GLint size;
+		glGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS, &size);
+		return size;
+	}
 
 	switch(value)
 	{
@@ -454,24 +407,8 @@ static int checkSize(GLenum value)
 			retSize = 16;
 			break;
 	}
-
+	
 	return retSize;
-}
-
-void freeGetsAllocs(void )
-{
-	if (boolSize)
-		GB.Free(POINTER(&boolArray));
-
-	if (floatSize)
-		GB.Free(POINTER(&floatArray));
-
-	if (intSize)
-		GB.Free(POINTER(&intArray));
-
-	boolSize = 0;
-	floatSize = 0;
-	intSize = 0;
 }
 
 /**************************************************************************/
@@ -481,7 +418,6 @@ void freeGetsAllocs(void )
    If not (0 is returned), we check the size method parameter.
    If size is always 0 (size parameter is equal to 0 or is missing)
    we return a null object.
-   If size is too big (see MAXSIZE) an error is raised.
 
    Finally we return an object of the defined size.
 */
@@ -490,17 +426,10 @@ void freeGetsAllocs(void )
 BEGIN_METHOD(GLGETBOOLEANV, GB_INTEGER parameter; GB_INTEGER size)
 
 	GB_ARRAY bArray;
-	int i;
 	int size = checkSize(VARG(parameter));
 
 	if (!size)
 		size = VARGOPT(size, 0);
-
-	if (size >= MAXSIZE)
-	{
-		GB.Error("Parameter size is too big");
-		return;
-	}
 
 	if (!size)
 	{
@@ -508,8 +437,9 @@ BEGIN_METHOD(GLGETBOOLEANV, GB_INTEGER parameter; GB_INTEGER size)
 		return;
 	}
 
-	resizeBool(size);
-
+	int i;
+	GLboolean boolArray[size];
+	
 	GB.Array.New(&bArray , GB_T_BOOLEAN , size);
 	glGetBooleanv(VARG(parameter), boolArray);
 	
@@ -518,24 +448,15 @@ BEGIN_METHOD(GLGETBOOLEANV, GB_INTEGER parameter; GB_INTEGER size)
 	
 	GB.ReturnObject(bArray);
 
-
-
 END_METHOD
 
 BEGIN_METHOD(GLGETFLOATV, GB_INTEGER parameter; GB_INTEGER size)
 
 	GB_ARRAY fArray;
-	int i;
 	int size = checkSize(VARG(parameter));
 
 	if (!size)
 		size = VARGOPT(size, 0);
-
-	if (size >= MAXSIZE)
-	{
-		GB.Error("Parameter size is too big");
-		return;
-	}
 
 	if (!size)
 	{
@@ -543,7 +464,8 @@ BEGIN_METHOD(GLGETFLOATV, GB_INTEGER parameter; GB_INTEGER size)
 		return;
 	}
 
-	resizeFloat(size);
+	int i;
+	GLdouble floatArray[size];
 
 	GB.Array.New(&fArray , GB_T_FLOAT , size);
 	glGetDoublev(VARG(parameter), floatArray);
@@ -558,17 +480,10 @@ END_METHOD
 BEGIN_METHOD(GLGETINTEGERV, GB_INTEGER parameter; GB_INTEGER size)
 
 	GB_ARRAY iArray;
-	int i;
 	int size = checkSize(VARG(parameter));
 
 	if (!size)
 		size = VARGOPT(size, 0);
-
-	if (size >= MAXSIZE)
-	{
-		GB.Error("Parameter size is too big");
-		return;
-	}
 
 	if (!size)
 	{
@@ -576,7 +491,8 @@ BEGIN_METHOD(GLGETINTEGERV, GB_INTEGER parameter; GB_INTEGER size)
 		return;
 	}
 
-	resizeInt(size);
+	int i;
+	GLint intArray[size];
 
 	GB.Array.New(&iArray , GB_T_INTEGER , size);
 	glGetIntegerv(VARG(parameter), intArray);
