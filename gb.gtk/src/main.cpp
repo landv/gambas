@@ -72,6 +72,12 @@
 #include <gtk/gtk.h>
 #include <string.h>
 
+GB_CLASS CLASS_Picture;
+GB_CLASS CLASS_Image;
+GB_CLASS CLASS_DrawingArea;
+GB_CLASS CLASS_Menu;
+GB_CLASS CLASS_Window;
+
 static void my_lang(char *lang,int rtl1);
 static void my_error(int code,char *error,char *where);
 static void my_quit (void);
@@ -222,17 +228,31 @@ extern "C"
 		GB.Hook(GB_HOOK_ERROR,(void*)my_error);
 		GB.Hook(GB_HOOK_LANG,(void*)my_lang);
 
-		GB.LoadComponent("gb.draw");
-		GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
-		IMAGE.SetDefaultFormat(GB_IMAGE_RGBA);
-		
 		// Thanks again to GTK+ 2.18 :-(
 		#if GTK_MAJOR_VERSION >= 2 && GTK_MINOR_VERSION >= 18
 		putenv((char *)"GDK_NATIVE_WINDOWS=1");
 		#endif
 		
+		GB.LoadComponent("gb.draw");
+		GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
+		IMAGE.SetDefaultFormat(GB_IMAGE_RGBA);
+		DRAW_init();
+		
 		CWatcher::init();
 
+		//CLASS_Control = GB.FindClass("Control");
+		//CLASS_Container = GB.FindClass("Container");
+		//CLASS_UserControl = GB.FindClass("UserControl");
+		//CLASS_UserContainer = GB.FindClass("UserContainer");
+		CLASS_Window = GB.FindClass("Window");
+		CLASS_Menu = GB.FindClass("Menu");
+		CLASS_Picture = GB.FindClass("Picture");
+		//CLASS_Drawing = GB.FindClass("Drawing");
+		CLASS_DrawingArea = GB.FindClass("DrawingArea");
+		//CLASS_Printer = GB.FindClass("Printer");
+		//CLASS_ScrollView = GB.FindClass("ScrollView");
+		CLASS_Image = GB.FindClass("Image");
+		
 		return TRUE;
 	}
 

@@ -1,8 +1,8 @@
 /***************************************************************************
 
-  CDraw.h
+  cpaint_impl.h
 
-  (c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
+  (c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,32 +20,20 @@
 
 ***************************************************************************/
 
-#ifndef __CDRAW_H
-#define __CDRAW_H
+#ifndef __CPAINT_IMPL_H
+#define __CPAINT_IMPL_H
 
-#include "main.h"
-#include "gdraw.h"
-#include "gb.draw.h"
+#include "gambas.h"
+#include "gb.paint.h"
 
-#ifndef __CDRAW_C
+#ifndef __CPAINT_IMPL_C
 
-extern GB_DRAW_DESC DRAW_Interface;
-extern DRAW_INTERFACE DRAW;
-
-void DRAW_init();
-void DRAW_begin(void *device);
-void DRAW_end();
-gDraw *DRAW_get_current();
-void* DRAW_get_drawable(void *);
-void* DRAW_get_style(void *);
-int   DRAW_get_state(void *);
-int   DRAW_get_shadow(void *);
-void  DRAW_set_state(void *,int);
-void DRAW_set_shadow(void *,int);
+extern GB_PAINT_DESC PAINT_Interface;
 
 #endif
 
-
+void PAINT_begin(void *device);
+void PAINT_end();
+void PAINT_clip(int x, int y, int w, int h);
 
 #endif
-

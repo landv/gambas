@@ -31,6 +31,13 @@
 #ifndef __MAIN_C
 extern GB_INTERFACE GB;
 extern IMAGE_INTERFACE IMAGE;
+
+extern GB_CLASS CLASS_Picture;
+extern GB_CLASS CLASS_Image;
+extern GB_CLASS CLASS_DrawingArea;
+extern GB_CLASS CLASS_Menu;
+extern GB_CLASS CLASS_Window;
+
 #endif
 
 void do_iteration(bool do_not_block, bool do_not_sleep = false);

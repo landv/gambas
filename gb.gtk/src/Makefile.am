@@ -30,6 +30,7 @@ gb_gtk_la_SOURCES = \
 	CScreen.h CScreen.cpp \
 	CMessage.h CMessage.cpp CDialog.h CDialog.cpp \
 	CDraw.h CDraw.cpp \
+	cpaint_impl.h cpaint_impl.cpp \
 	CImage.h CImage.cpp \
 	CPicture.h CPicture.cpp \
 	CClipboard.h CClipboard.cpp \

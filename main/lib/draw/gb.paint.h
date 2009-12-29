@@ -101,7 +101,6 @@ typedef
 		GB_BASE ob;
 		struct GB_PAINT_DESC *desc;        // drawing driver
 		GB_BRUSH brush;                    // brush
-		float x, y;                        // brush origin
 	}
 	PAINT_BRUSH;
 
@@ -168,7 +167,7 @@ typedef
 		
 		void (*Matrix)(GB_PAINT *d, int set, GB_TRANSFORM matrix);
 		
-		void (*SetBrush)(GB_PAINT *d, GB_BRUSH brush, float x, float y);
+		void (*SetBrush)(GB_PAINT *d, GB_BRUSH brush);
 		
 		struct {
 			void (*Free)(GB_BRUSH brush);

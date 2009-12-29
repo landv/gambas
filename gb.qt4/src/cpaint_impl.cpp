@@ -94,7 +94,7 @@ static bool init_painting(GB_PAINT *d, QPaintDevice *device)
 static int Begin(GB_PAINT *d)
 {
 	void *device = d->device;
-	QPaintDevice *target;
+	QPaintDevice *target = NULL;
 	
 	if (GB.Is(device, CLASS_Picture))
 	{
@@ -107,7 +107,6 @@ static int Begin(GB_PAINT *d)
 		}
 		
 		target = pixmap;
-
 	}
 	else if (GB.Is(device, CLASS_Image))
 	{
@@ -220,7 +219,7 @@ static void init_path(GB_PAINT *d)
 static void Clip(GB_PAINT *d, int preserve)
 {
 	CHECK_PATH(d);
-	PAINTER(d)->setClipPath(*PATH(d));
+	PAINTER(d)->setClipPath(*PATH(d), Qt::IntersectClip);
 	PAINTER(d)->setClipping(true);
 	PRESERVE_PATH(d, preserve);
 }
@@ -492,6 +491,7 @@ static void Arc(GB_PAINT *d, float xc, float yc, float radius, float angle, floa
 	QRectF rect;
 	rect.setCoords((qreal)(xc - radius), (qreal)(yc - radius), (qreal)(xc + radius), (qreal)(yc + radius));
 	
+	PATH(d)->arcMoveTo(rect, (qreal)angle);
 	PATH(d)->arcTo(rect, (qreal)angle, (qreal)length);
 }
 
@@ -567,7 +567,7 @@ static void Matrix(GB_PAINT *d, int set, GB_TRANSFORM matrix)
 }
 
 		
-static void SetBrush(GB_PAINT *d, GB_BRUSH brush, float x, float y)
+static void SetBrush(GB_PAINT *d, GB_BRUSH brush)
 {
 	QBrush *b = (QBrush *)brush;
 	PAINTER(d)->setBrush(*b);
@@ -575,8 +575,7 @@ static void SetBrush(GB_PAINT *d, GB_BRUSH brush, float x, float y)
 	QPen p = PAINTER(d)->pen();
 	p.setBrush(*b);
 	PAINTER(d)->setPen(p);
-
-	PAINTER(d)->setBrushOrigin(QPointF((qreal)x, (qreal)y));
+	//PAINTER(d)->setBrushOrigin(QPointF((qreal)x, (qreal)y));
 }
 
 		

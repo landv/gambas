@@ -274,6 +274,8 @@ Public Sub Load()
 
   If $bLoaded Then Return
 
+  $bLoaded = True
+
   'DEBUG "Loading "; Name
 
   ClassList = New String[]
@@ -410,7 +412,6 @@ Public Sub Load()
 
   ClassList.Sort
 
-  $bLoaded = True
 
 'CATCH
 

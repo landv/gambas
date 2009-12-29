@@ -476,7 +476,7 @@ BEGIN_PROPERTY(Paint_Brush)
 		if (new_brush)
 		{
 			GB.Ref(new_brush);
-			PAINT->SetBrush(THIS, new_brush->brush, new_brush->x, new_brush->y);
+			PAINT->SetBrush(THIS, new_brush->brush);
 		}
 		GB.Unref(POINTER(&old_brush));
 		THIS->brush = new_brush;
@@ -629,7 +629,6 @@ static PAINT_BRUSH *make_brush(GB_PAINT *d, GB_BRUSH brush)
 	GB.New(POINTER(&that), GB.FindClass("PaintBrush"), NULL, NULL);
 	that->desc = d->desc;
 	that->brush = brush;
-	that->x = that->y = 0;
 	GB.ReturnObject(that);
 	return that;
 }
@@ -657,8 +656,15 @@ BEGIN_METHOD(Paint_Image, GB_OBJECT image; GB_FLOAT x; GB_FLOAT y)
 	
 	PAINT->Brush.Image(&brush, (GB_IMAGE)VARG(image));
 	pb = make_brush(THIS, brush);
-	pb->x = (float)VARGOPT(x, 0);
-	pb->y = (float)VARGOPT(y, 0);
+	
+	if (!MISSING(x) || !MISSING(y))
+	{
+		GB_TRANSFORM transform;
+		PAINT->Transform.Create(&transform);
+		PAINT->Transform.Translate(transform, -VARGOPT(x, 0.0), -VARGOPT(y, 0.0));
+		PAINT->Brush.Matrix(brush, TRUE, transform);
+		PAINT->Transform.Delete(&transform);
+	}
 
 END_METHOD
 

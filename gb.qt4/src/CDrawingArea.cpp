@@ -408,7 +408,7 @@ BEGIN_PROPERTY(CDRAWINGAREA_focus)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CDRAWINGAREA_paint)
+BEGIN_PROPERTY(CDRAWINGAREA_painted)
 
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(WIDGET->isPaint());
@@ -431,7 +431,7 @@ GB_DESC CDrawingAreaDesc[] =
 	
 	GB_PROPERTY("Focus", "b", CDRAWINGAREA_focus),
 	GB_PROPERTY("Enabled", "b", CDRAWINGAREA_enabled),
-	GB_PROPERTY("Painted", "b", CDRAWINGAREA_paint),
+	GB_PROPERTY("Painted", "b", CDRAWINGAREA_painted),
 
 	GB_METHOD("Clear", NULL, CDRAWINGAREA_clear, NULL),
 

@@ -27,6 +27,7 @@
 #include "widgets.h"
 #include "ggambastag.h"
 #include "CDraw.h"
+#include "cpaint_impl.h"
 #include "CScreen.h"
 #include "CImage.h"
 #include "CPicture.h"
@@ -330,6 +331,7 @@ GB_DESC CPictureDesc[] =
   GB_PROPERTY_READ("Image", "Image", CPICTURE_image),
 
   GB_INTERFACE("Draw", &DRAW_Interface),
+  GB_INTERFACE("Paint", &PAINT_Interface),
 
   GB_END_DECLARE
 };

@@ -22,15 +22,16 @@
 
 #define __CDRAWINGAREA_CPP
 
+#include <stdio.h>
+
 #include "main.h"
 #include "gambas.h"
 #include "widgets.h"
 #include "CDraw.h"
+#include "cpaint_impl.h"
 #include "CDrawingArea.h"
 #include "CWidget.h"
 #include "CContainer.h"
-
-#include <stdio.h>
 
 DECLARE_EVENT(EVENT_draw);
 
@@ -44,14 +45,28 @@ static void Darea_Expose(gDrawingArea *sender,int x,int y,int w,int h)
 {
 	CWIDGET *_object = GetObject(sender);
 	
+	fprintf(stderr, "expose: %d %d %d %d\n", x, y, w, h);
+	
 	if (GB.CanRaise(THIS, EVENT_draw))
 	{
-		DRAW_begin(THIS);
-		DRAW_get_current()->setClip(x, y, w, h);
-		
-		GB.Raise(THIS, EVENT_draw, 0);
-		
-		DRAW_end();
+		if (THIS->painted)
+		{
+			PAINT_begin(THIS);
+			PAINT_clip(x, y, w, h);
+			
+			GB.Raise(THIS, EVENT_draw, 0);
+			
+			PAINT_end();
+		}
+		else
+		{
+			DRAW_begin(THIS);
+			DRAW_get_current()->setClip(x, y, w, h);
+			
+			GB.Raise(THIS, EVENT_draw, 0);
+			
+			DRAW_end();
+		}
 	}
 }
 
@@ -97,7 +112,6 @@ BEGIN_PROPERTY(CDRAWINGAREA_focus)
 
 END_PROPERTY
 
-
 BEGIN_PROPERTY(CDRAWINGAREA_track_mouse)
 
 	if (READ_PROPERTY)
@@ -107,15 +121,20 @@ BEGIN_PROPERTY(CDRAWINGAREA_track_mouse)
 
 END_PROPERTY
 
-
-
 BEGIN_METHOD_VOID(CDRAWINGAREA_clear)
 
 	DRAWING->clear();
 
 END_METHOD
 
+BEGIN_PROPERTY(CDRAWINGAREA_painted)
 
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(THIS->painted);
+	else
+		THIS->painted = VPROP(GB_BOOLEAN);
+
+END_PROPERTY
 
 
 GB_DESC CDrawingAreaDesc[] =
@@ -129,12 +148,14 @@ GB_DESC CDrawingAreaDesc[] =
   GB_PROPERTY("Tracking", "b", CDRAWINGAREA_track_mouse),
   GB_PROPERTY("Merge","b",CDRAWINGAREA_merge),
   GB_PROPERTY("Focus","b",CDRAWINGAREA_focus),
+	GB_PROPERTY("Painted", "b", CDRAWINGAREA_painted),
 
   GB_METHOD("Clear", 0, CDRAWINGAREA_clear, 0),
 
   GB_EVENT("Draw", 0, 0, &EVENT_draw),
   
   GB_INTERFACE("Draw", &DRAW_Interface),
+  GB_INTERFACE("Paint", &PAINT_Interface),
   
   DRAWINGAREA_DESCRIPTION,
 

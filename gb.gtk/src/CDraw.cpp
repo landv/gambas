@@ -41,28 +41,15 @@ typedef
  
 DRAW_INTERFACE DRAW EXPORT;
 
-static bool _init = FALSE;
-static GB_CLASS CLASS_Window;
-static GB_CLASS CLASS_Picture;
-static GB_CLASS CLASS_DrawingArea;
-
-static void init()
+void DRAW_init()
 {
-	if (_init)
-		return;
-		
 	GB.GetInterface("gb.draw", DRAW_INTERFACE_VERSION, &DRAW);
-	CLASS_Window = GB.FindClass("Window");
-	CLASS_Picture = GB.FindClass("Picture");
-	CLASS_DrawingArea = GB.FindClass("DrawingArea");
-	_init = TRUE;
 }
 
 static int begin(GB_DRAW *d)
 {
 	gDraw *dr;
 	
-	init();
 	EXTRA(d)->dr = dr = new gDraw();
 	EXTRA(d)->font = NULL;
 	
@@ -564,13 +551,11 @@ GB_DRAW_DESC DRAW_Interface = {
 
 void DRAW_begin(void *device)
 {
-	init();
 	DRAW.Begin(device);
 }
 
 void DRAW_end()
 {
-	init();
 	DRAW.End();
 }
 

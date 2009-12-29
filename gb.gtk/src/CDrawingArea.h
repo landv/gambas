@@ -41,9 +41,8 @@ typedef
 	{
 		CWIDGET ob;
 	  bool merge;
+		bool painted;
 	} 
 	CDRAWINGAREA;
-
-
 
 #endif
