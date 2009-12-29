@@ -294,6 +294,7 @@ BEGIN_METHOD(PaintBrush_Translate, GB_FLOAT tx; GB_FLOAT ty)
 	BPAINT->Brush.Matrix(BTHIS->brush, FALSE, transform);
 	BPAINT->Transform.Translate(transform, (float)VARG(tx), (float)VARG(ty));
 	BPAINT->Brush.Matrix(BTHIS->brush, TRUE, transform);
+	BPAINT->Transform.Delete(&transform);
 
 END_METHOD
 
@@ -305,6 +306,7 @@ BEGIN_METHOD(PaintBrush_Scale, GB_FLOAT sx; GB_FLOAT sy)
 	BPAINT->Brush.Matrix(BTHIS->brush, FALSE, transform);
 	BPAINT->Transform.Scale(transform, (float)VARG(sx), (float)VARG(sy));
 	BPAINT->Brush.Matrix(BTHIS->brush, TRUE, transform);
+	BPAINT->Transform.Delete(&transform);
 
 END_METHOD
 
@@ -316,6 +318,7 @@ BEGIN_METHOD(PaintBrush_Rotate, GB_FLOAT angle)
 	BPAINT->Brush.Matrix(BTHIS->brush, FALSE, transform);
 	BPAINT->Transform.Rotate(transform, (float)VARG(angle));
 	BPAINT->Brush.Matrix(BTHIS->brush, TRUE, transform);
+	BPAINT->Transform.Delete(&transform);
 
 END_METHOD
 
@@ -752,6 +755,7 @@ BEGIN_METHOD(Paint_Translate, GB_FLOAT tx; GB_FLOAT ty)
 	PAINT->Matrix(THIS, FALSE, transform);
 	PAINT->Transform.Translate(transform, (float)VARG(tx), (float)VARG(ty));
 	PAINT->Matrix(THIS, TRUE, transform);
+	PAINT->Transform.Delete(&transform);
 
 END_METHOD
 
@@ -764,6 +768,7 @@ BEGIN_METHOD(Paint_Scale, GB_FLOAT sx; GB_FLOAT sy)
 	PAINT->Matrix(THIS, FALSE, transform);
 	PAINT->Transform.Scale(transform, (float)VARG(sx), (float)VARG(sy));
 	PAINT->Matrix(THIS, TRUE, transform);
+	PAINT->Transform.Delete(&transform);
 
 END_METHOD
 
@@ -776,6 +781,7 @@ BEGIN_METHOD(Paint_Rotate, GB_FLOAT angle)
 	PAINT->Matrix(THIS, FALSE, transform);
 	PAINT->Transform.Rotate(transform, (float)VARG(angle));
 	PAINT->Matrix(THIS, TRUE, transform);
+	PAINT->Transform.Delete(&transform);
 
 END_METHOD
 
