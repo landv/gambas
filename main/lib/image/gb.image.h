@@ -112,7 +112,7 @@ typedef
 	_b = (_color) & 0xFF; \
 	_g = ((_color) >> 8) & 0xFF; \
 	_r = ((_color) >> 16) & 0xFF; \
-	_a = ((_color) >> 24) & 0xFF; \
+	_a = ((_color) >> 24) ^ 0xFF; \
 }
 
 
