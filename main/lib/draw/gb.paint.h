@@ -164,7 +164,7 @@ typedef
 	
 		void (*Text)(GB_PAINT *d, const char *text, int len, float w, float h, int align);
 		//void (*RichText)(GB_PAINT *d, const char *text, int len, float w, float h, int align);
-		void (*TextExtents)(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext);
+		//void (*TextExtents)(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext);
 		
 		void (*Matrix)(GB_PAINT *d, int set, GB_TRANSFORM matrix);
 		
@@ -175,7 +175,7 @@ typedef
 			void (*Color)(GB_BRUSH *brush, GB_COLOR color);
 			void (*Image)(GB_BRUSH *brush, GB_IMAGE image);
 			void (*LinearGradient)(GB_BRUSH *brush, float x0, float y0, float x1, float y1, int nstop, double *positions, GB_COLOR *colors, int extend);
-			void (*RadialGradient)(GB_BRUSH *brush, float cx0, float cy0, float r0, float cx1, float cy1, float r1, int nstop, double *positions, GB_COLOR *colors, int extend);
+			void (*RadialGradient)(GB_BRUSH *brush, float cx, float cy, float r, float fx, float fy, int nstop, double *positions, GB_COLOR *colors, int extend);
 			void (*Matrix)(GB_BRUSH brush, int set, GB_TRANSFORM matrix);
 			}
 			Brush;

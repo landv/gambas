@@ -395,14 +395,18 @@ Private Sub OpenDatabase()
     $iType = $aPath.Count - 2
     If $aPath.Count > 2 Then
     
-      CComponent.Init
-      $hComp = CComponent.All[$aPath[2]]
-      If $hComp Then
-        $hComp.Load
-        If $aPath.Count > 3 Then $hClass = CComponent.All[$aPath[2]][$aPath[3]]
-        If $hClass Then
-          If $aPath.Count > 4 Then
-            $hSym = $hClass.Symbols[Replace($aPath[4], ".", ":")]
+      If Left($aPath[$aPath.Count - 1]) = "~" Then
+        $iType = TYPE_COMMON
+      Else
+        CComponent.Init
+        $hComp = CComponent.All[$aPath[2]]
+        If $hComp Then
+          $hComp.Load
+          If $aPath.Count > 3 Then $hClass = CComponent.All[$aPath[2]][$aPath[3]]
+          If $hClass Then
+            If $aPath.Count > 4 Then
+              $hSym = $hClass.Symbols[Replace($aPath[4], ".", ":")]
+            Endif
           Endif
         Endif
       Endif

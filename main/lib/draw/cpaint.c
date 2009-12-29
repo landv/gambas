@@ -616,7 +616,7 @@ BEGIN_METHOD(Paint_RichText, GB_STRING text; GB_FLOAT x; GB_FLOAT y; GB_FLOAT w;
 END_METHOD
 */
 
-BEGIN_METHOD(Paint_TextExtents, GB_STRING text)
+/*BEGIN_METHOD(Paint_TextExtents, GB_STRING text)
 
 	PAINT_EXTENTS *extents;
 	
@@ -627,7 +627,7 @@ BEGIN_METHOD(Paint_TextExtents, GB_STRING text)
 	
 	GB.ReturnObject(extents);
 
-END_METHOD
+END_METHOD*/
 
 static PAINT_BRUSH *make_brush(GB_PAINT *d, GB_BRUSH brush)
 {
@@ -696,7 +696,7 @@ BEGIN_METHOD(Paint_LinearGradient, GB_FLOAT x0; GB_FLOAT y0; GB_FLOAT x1; GB_FLO
 
 END_METHOD
 
-BEGIN_METHOD(Paint_RadialGradient, GB_FLOAT cx0; GB_FLOAT cy0; GB_FLOAT radius0; GB_FLOAT cx1; GB_FLOAT cy1; GB_FLOAT radius1; GB_OBJECT colors; GB_OBJECT positions; GB_INTEGER extend)
+BEGIN_METHOD(Paint_RadialGradient, GB_FLOAT cx; GB_FLOAT cy; GB_FLOAT radius; GB_FLOAT fx; GB_FLOAT fy; GB_OBJECT colors; GB_OBJECT positions; GB_INTEGER extend)
 
 	GB_BRUSH brush;
 	GB_ARRAY positions, colors;
@@ -711,7 +711,7 @@ BEGIN_METHOD(Paint_RadialGradient, GB_FLOAT cx0; GB_FLOAT cy0; GB_FLOAT radius0;
 	
 	nstop = Min(GB.Array.Count(positions), GB.Array.Count(colors));
 	
-	PAINT->Brush.RadialGradient(&brush, (float)VARG(cx0), (float)VARG(cy0), (float)VARG(radius0), (float)VARG(cx1), (float)VARG(cy1), (float)VARG(radius1),
+	PAINT->Brush.RadialGradient(&brush, (float)VARG(cx), (float)VARG(cy), (float)VARG(radius), (float)VARG(fx), (float)VARG(fy),
 		nstop, (double *)GB.Array.Get(positions, 0), (GB_COLOR *)GB.Array.Get(colors, 0), VARGOPT(extend, GB_PAINT_EXTEND_PAD));
 	
 	make_brush(THIS, brush);
@@ -884,12 +884,12 @@ GB_DESC PaintDesc[] =
 	GB_STATIC_PROPERTY("Font", "Font", Paint_Font),
 	GB_STATIC_METHOD("Text", NULL, Paint_Text, "(Text)s[(X)f(Y)f(Width)f(Height)f(Alignment)i)]"),
 	//GB_STATIC_METHOD("RichText", NULL, Paint_RichText, "(Text)s[(X)f(Y)f(Width)f(Height)f(Alignment)i)]"),
-	GB_STATIC_METHOD("TextExtents", "TextExtents", Paint_TextExtents, "(Text)s"),
+	//GB_STATIC_METHOD("TextExtents", "TextExtents", Paint_TextExtents, "(Text)s"),
 	
 	GB_STATIC_METHOD("Color", "PaintBrush", Paint_Color, "(Color)i"),
 	GB_STATIC_METHOD("Image", "PaintBrush", Paint_Image, "(Image)Image;[(X)f(Y)f]"),
 	GB_STATIC_METHOD("LinearGradient", "PaintBrush", Paint_LinearGradient, "(X0)f(Y0)f(X1)f(Y1)f(Colors)Integer[];(Positions)Float[];[(Extend)i]"),
-	GB_STATIC_METHOD("RadialGradient", "PaintBrush", Paint_RadialGradient, "(CX0)f(CY0)f(Radius0)f(CX1)f(CY1)f(Radius1)f(Colors)Integer[];(Positions)Float[];[(Extend)i]"),
+	GB_STATIC_METHOD("RadialGradient", "PaintBrush", Paint_RadialGradient, "(CX)f(CY)f(Radius)f(FX)f(FY)f(Colors)Integer[];(Positions)Float[];[(Extend)i]"),
 
 	GB_STATIC_PROPERTY("Matrix", "PaintMatrix", Paint_Matrix),
 

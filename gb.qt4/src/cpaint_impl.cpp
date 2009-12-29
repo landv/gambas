@@ -563,7 +563,7 @@ static void Text(GB_PAINT *d, const char *text, int len, float w, float h, int a
 	DRAW_text_with(PAINTER(d), text, len, pos.x(), pos.y(), w, h, align, draw_text_cb);
 }
 
-static void TextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext)
+/*static void TextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext)
 {
 	QRectF rect = PAINTER(d)->boundingRect(QRectF(0, 0, d->width, d->height), Qt::AlignLeft | Qt::AlignTop | Qt::TextSingleLine | Qt::TextIncludeTrailingSpaces, QString::fromUtf8(text, len));
 	
@@ -571,7 +571,7 @@ static void TextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext)
 	ext->y1 = 0;
 	ext->x2 = (float)rect.width();
 	ext->y2 = (float)rect.height();
-}
+}*/
 
 		
 static void Matrix(GB_PAINT *d, int set, GB_TRANSFORM matrix)
@@ -647,14 +647,14 @@ static void BrushLinearGradient(GB_BRUSH *brush, float x0, float y0, float x1, f
 	*brush = br;
 }
 
-static void BrushRadialGradient(GB_BRUSH *brush, float cx0, float cy0, float r0, float cx1, float cy1, float r1, int nstop, double *positions, GB_COLOR *colors, int extend)
+static void BrushRadialGradient(GB_BRUSH *brush, float cx, float cy, float r, float fx, float fy, int nstop, double *positions, GB_COLOR *colors, int extend)
 {
 	QRadialGradient gradient;
 	int i;
 	
-	gradient.setCenter((qreal)cx0, (qreal)cy0);
-	gradient.setRadius((qreal)r0);
-	gradient.setFocalPoint((qreal)cx1, (qreal)cy1);
+	gradient.setCenter((qreal)cx, (qreal)cy);
+	gradient.setRadius((qreal)r);
+	gradient.setFocalPoint((qreal)fx, (qreal)fy);
 	
 	for (i = 0; i < nstop; i++)
 		gradient.setColorAt((qreal)positions[i], CCOLOR_make(colors[i]));
@@ -782,7 +782,6 @@ GB_PAINT_DESC PAINT_Interface = {
 	LineTo,
 	CurveTo,
 	Text,
-	TextExtents,
 	Matrix,
 	SetBrush,
 	{

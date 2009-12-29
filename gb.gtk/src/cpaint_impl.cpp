@@ -28,6 +28,7 @@
 #include "gambas.h"
 #include "gb_common.h"
 #include "widgets.h"
+#include "gdesktop.h"
 
 #include "CWindow.h"
 #include "CDrawingArea.h"
@@ -136,8 +137,8 @@ static int Begin(GB_PAINT *d)
 		
 		d->width = w;
 		d->height = h;
-		d->resolutionX = 96; //device->physicalDpiX();
-		d->resolutionY = 96; //device->physicalDpiY();
+		d->resolutionX = gDesktop::resolution(); //device->physicalDpiX();
+		d->resolutionY = gDesktop::resolution(); //device->physicalDpiY();
 		
 		EXTRA(d)->context = gdk_cairo_create(dr);
 		EXTRA(d)->font = NULL;
@@ -550,11 +551,11 @@ static void Text(GB_PAINT *d, const char *text, int len, float w, float h, int a
 /*static void RichText(GB_PAINT *d, const char *text, int len, float w, float h, int align)
 {
 	draw_text(d, TRUE, text, len, w, h, align);
-}*/
+}
 
 static void TextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext)
 {
-}
+}*/
 
 		
 static void Matrix(GB_PAINT *d, int set, GB_TRANSFORM matrix)
@@ -734,11 +735,12 @@ static void BrushLinearGradient(GB_BRUSH *brush, float x0, float y0, float x1, f
 	*brush = (GB_BRUSH)pattern;
 }
 
-static void BrushRadialGradient(GB_BRUSH *brush, float cx0, float cy0, float r0, float cx1, float cy1, float r1, int nstop, double *positions, GB_COLOR *colors, int extend)
+static void BrushRadialGradient(GB_BRUSH *brush, float cx, float cy, float r, float fx, float fy, int nstop, double *positions, GB_COLOR *colors, int extend)
 {
 	cairo_pattern_t *pattern;
 		
-	pattern = cairo_pattern_create_radial(cx0, cy0, r0, cx1, cy1, r1);
+	// I know that from librsvg sources
+	pattern = cairo_pattern_create_radial(fx, fy, 0.0, cx, cy, r);
 
 	handle_color_stop(pattern, nstop, positions, colors);
 	set_pattern_extend(pattern, extend);
@@ -848,7 +850,7 @@ GB_PAINT_DESC PAINT_Interface = {
 	CurveTo,
 	Text,
 	//RichText,
-	TextExtents,
+	//TextExtents,
 	Matrix,
 	SetBrush,
 	{

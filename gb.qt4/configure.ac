@@ -23,7 +23,7 @@ GB_COMPONENT_PKG_CONFIG(
   QT,
   [QT4 toolkit],
   [src],
-  QtCore ">= 4.3.4" QtGui Qt3Support
+  QtCore ">= 4.3.4" QtGui Qt3Support QtSvg
 )
 
 GB_COMPONENT_PKG_CONFIG(
