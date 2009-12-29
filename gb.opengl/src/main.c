@@ -42,7 +42,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	NULL
 };
 
-void *GB_OPENGL[] EXPORT = {
+void *GB_OPENGL_1[] EXPORT = {
 
 	(void *)1,
 	(void *)Init,
