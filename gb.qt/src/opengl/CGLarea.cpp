@@ -70,7 +70,6 @@ BEGIN_METHOD(CGLAREA_new, GB_OBJECT parent)
 
 	QT.InitWidget(area, _object);
 	area->show();
-	GL.Init();
 
 END_METHOD
 
@@ -165,6 +164,7 @@ GLarea::GLarea(QWidget *parent,CGLAREA *object, QGLWidget *sharing): QGLWidget(p
 
 void GLarea::initializeGL()
 {
+	GL.Init();
 	// clear to avoid garbage
 	qglClearColor(black);
 	GB.Raise(_area, EVENT_Open, 0);
