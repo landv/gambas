@@ -105,6 +105,17 @@ typedef
 	unsigned int GB_COLOR;
 #endif
 
+/* Split a color into its component. Uninvert the alpha component */
+
+#define GB_COLOR_SPLIT(_color, _r, _g, _b, _a) \
+{ \
+	_b = (_color) & 0xFF; \
+	_g = ((_color) >> 8) & 0xFF; \
+	_r = ((_color) >> 16) & 0xFF; \
+	_a = ((_color) >> 24) & 0xFF; \
+}
+
+
 /* Gambas image component interface */
 
 #define IMAGE_INTERFACE_VERSION 1

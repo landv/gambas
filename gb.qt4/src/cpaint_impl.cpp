@@ -66,6 +66,11 @@
 static void set_foreground(GB_DRAW *d, int col);
 static void set_fill_color(GB_DRAW *d, int col);*/
 
+static inline qreal to_deg(float angle)
+{
+	return (qreal)(angle * 180 / M_PI);
+}
+
 static bool init_painting(GB_PAINT *d, QPaintDevice *device)
 {
 	d->width = device->width();
@@ -491,8 +496,8 @@ static void Arc(GB_PAINT *d, float xc, float yc, float radius, float angle, floa
 	QRectF rect;
 	rect.setCoords((qreal)(xc - radius), (qreal)(yc - radius), (qreal)(xc + radius), (qreal)(yc + radius));
 	
-	PATH(d)->arcMoveTo(rect, (qreal)angle);
-	PATH(d)->arcTo(rect, (qreal)angle, (qreal)length);
+	PATH(d)->arcMoveTo(rect, to_deg(angle));
+	PATH(d)->arcTo(rect, to_deg(angle), to_deg(length));
 }
 
 static void Rectangle(GB_PAINT *d, float x, float y, float width, float height)
@@ -534,7 +539,13 @@ static void CurveTo(GB_PAINT *d, float x1, float y1, float x2, float y2, float x
 }
 
 	
-static void Text(GB_PAINT *d, const char *text, int len)
+static void Text(GB_PAINT *d, const char *text, int len, float w, float h, int align)
+{
+	CREATE_PATH(d);
+	PATH(d)->addText(PATH(d)->currentPosition(), PAINTER(d)->font(), QString::fromUtf8(text, len));
+}
+
+static void RichText(GB_PAINT *d, const char *text, int len, float w, float h, int align)
 {
 	CREATE_PATH(d);
 	PATH(d)->addText(PATH(d)->currentPosition(), PAINTER(d)->font(), QString::fromUtf8(text, len));
@@ -701,7 +712,7 @@ static void TransformScale(GB_TRANSFORM matrix, float sx, float sy)
 static void TransformRotate(GB_TRANSFORM matrix, float angle)
 {
 	QTransform *t = (QTransform *)matrix;
-	t->rotate((qreal)(angle * 180 / M_PI));
+	t->rotate(to_deg(angle));
 }
 
 static int TransformInvert(GB_TRANSFORM matrix)
@@ -759,6 +770,7 @@ GB_PAINT_DESC PAINT_Interface = {
 	LineTo,
 	CurveTo,
 	Text,
+	RichText,
 	TextExtents,
 	Matrix,
 	SetBrush,

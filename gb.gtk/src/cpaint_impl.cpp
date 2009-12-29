@@ -510,7 +510,28 @@ static void CurveTo(GB_PAINT *d, float x1, float y1, float x2, float y2, float x
 	cairo_curve_to(CONTEXT(d), x1, y1, x2, y2, x3, y3);
 }
 
-static void Text(GB_PAINT *d, const char *text, int len)
+static void Text(GB_PAINT *d, const char *text, int len, float w, float h, int align)
+{
+  PangoLayout *layout;
+	CFONT *font;
+	float tw, th, offx, offy;
+
+  layout = pango_cairo_create_layout(CONTEXT(d));
+  
+	pango_layout_set_text(layout, text, len);
+	
+	Paint_Font(d, FALSE, (GB_FONT *)&font);
+	gt_add_layout_from_font(layout, font->font);
+	
+	gt_layout_alignment(layout, w, h, &tw, &th, align, &offx, &offy);
+
+	cairo_rel_move_to(CONTEXT(d), offx, offy);
+  pango_cairo_layout_path(CONTEXT(d), layout);
+
+	g_object_unref(layout);	
+}
+
+static void RichText(GB_PAINT *d, const char *text, int len, float w, float h, int align)
 {
 }
 
@@ -549,14 +570,9 @@ static void BrushFree(GB_BRUSH brush)
 
 static void BrushColor(GB_BRUSH *brush, GB_COLOR color)
 {
-	double r, g, b, a;
-	
-	a = ((color >> 24) ^ 0xFF) / 255.0;
-	r = ((color >> 16) & 0xFF) / 255.0;
-	g = ((color >> 8) & 0xFF) / 255.0;
-	b = (color & 0xFF) / 255.0;
-	
-	*brush = (GB_BRUSH)cairo_pattern_create_rgba(r, g, b, a);
+	int r, g, b, a;
+	GB_COLOR_SPLIT(color, r, g, b, a);
+	*brush = (GB_BRUSH)cairo_pattern_create_rgba(r / 255.0, g / 255.0, b / 255.0, a / 255.0);
 }
 
 static cairo_surface_t *gdk_cairo_create_surface_from_pixbuf(const GdkPixbuf *pixbuf)
@@ -654,9 +670,6 @@ static void BrushImage(GB_BRUSH *brush, GB_IMAGE image)
 
 	surface = gdk_cairo_create_surface_from_pixbuf(picture->getPixbuf());
 	
-	/*surface =	cairo_image_surface_create_for_data(img->data, CAIRO_FORMAT_ARGB32, img->width, img->height, 
-		cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, img->width));*/
-				
 	pattern = cairo_pattern_create_for_surface(surface);
 	cairo_surface_destroy(surface);
 
@@ -665,61 +678,53 @@ static void BrushImage(GB_BRUSH *brush, GB_IMAGE image)
 	*brush = (GB_BRUSH)pattern;
 }
 
-static void BrushLinearGradient(GB_BRUSH *brush, float x0, float y0, float x1, float y1, int nstop, double *positions, GB_COLOR *colors, int extend)
+static void handle_color_stop(cairo_pattern_t *pattern, int nstop, const double *positions, const GB_COLOR *colors)
 {
-	/*
-	QLinearGradient gradient;
-	int i;
-	
-	gradient.setStart((qreal)x0, (qreal)y0);
-	gradient.setFinalStop((qreal)x1, (qreal)y1);
+	int i, r, g, b, a;
 	
 	for (i = 0; i < nstop; i++)
-		gradient.setColorAt((qreal)positions[i], CCOLOR_make(colors[i]));
+	{
+		GB_COLOR_SPLIT(colors[i], r, g, b, a);
+		cairo_pattern_add_color_stop_rgba(pattern, positions[i], r / 255.0, g / 255.0, b / 255.0, a / 255.0);
+	}
+}
+
+static void set_pattern_extend(cairo_pattern_t *pattern, int extend)
+{
+	cairo_extend_t cext;
 
 	switch (extend)
 	{
-		case GB_PAINT_EXTEND_REPEAT:
-			gradient.setSpread(QGradient::RepeatSpread); break;
-		case GB_PAINT_EXTEND_REFLECT:
-			gradient.setSpread(QGradient::ReflectSpread); break;
-		case GB_PAINT_EXTEND_PAD:
-		default:
-			gradient.setSpread(QGradient::PadSpread);
+		case GB_PAINT_EXTEND_REPEAT: cext = CAIRO_EXTEND_REPEAT; break;
+		case GB_PAINT_EXTEND_REFLECT: cext = CAIRO_EXTEND_REFLECT; break;
+		case GB_PAINT_EXTEND_PAD: default: cext = CAIRO_EXTEND_PAD;
 	}
+	
+	cairo_pattern_set_extend(pattern, cext);
+}
 
-	QBrush *br = new QBrush(gradient);
-	*brush = br;
-	*/
+static void BrushLinearGradient(GB_BRUSH *brush, float x0, float y0, float x1, float y1, int nstop, double *positions, GB_COLOR *colors, int extend)
+{
+	cairo_pattern_t *pattern;
+		
+	pattern = cairo_pattern_create_linear(x0, y0, x1, y1);
+	
+	handle_color_stop(pattern, nstop, positions, colors);
+	set_pattern_extend(pattern, extend);
+
+	*brush = (GB_BRUSH)pattern;
 }
 
 static void BrushRadialGradient(GB_BRUSH *brush, float cx0, float cy0, float r0, float cx1, float cy1, float r1, int nstop, double *positions, GB_COLOR *colors, int extend)
 {
-	/*
-	QRadialGradient gradient;
-	int i;
-	
-	gradient.setCenter((qreal)cx0, (qreal)cy0);
-	gradient.setRadius((qreal)r0);
-	gradient.setFocalPoint((qreal)cx1, (qreal)cy1);
-	
-	for (i = 0; i < nstop; i++)
-		gradient.setColorAt((qreal)positions[i], CCOLOR_make(colors[i]));
+	cairo_pattern_t *pattern;
+		
+	pattern = cairo_pattern_create_radial(cx0, cy0, r0, cx1, cy1, r1);
 
-	switch (extend)
-	{
-		case GB_PAINT_EXTEND_REPEAT:
-			gradient.setSpread(QGradient::RepeatSpread); break;
-		case GB_PAINT_EXTEND_REFLECT:
-			gradient.setSpread(QGradient::ReflectSpread); break;
-		case GB_PAINT_EXTEND_PAD:
-		default:
-			gradient.setSpread(QGradient::PadSpread);
-	}
+	handle_color_stop(pattern, nstop, positions, colors);
+	set_pattern_extend(pattern, extend);
 
-	QBrush *br = new QBrush(gradient);
-	*brush = br;
-	*/
+	*brush = (GB_BRUSH)pattern;
 }
 
 static void BrushMatrix(GB_BRUSH brush, int set, GB_TRANSFORM matrix)
@@ -818,6 +823,7 @@ GB_PAINT_DESC PAINT_Interface = {
 	LineTo,
 	CurveTo,
 	Text,
+	RichText,
 	TextExtents,
 	Matrix,
 	SetBrush,

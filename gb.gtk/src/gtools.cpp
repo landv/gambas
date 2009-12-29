@@ -1431,3 +1431,85 @@ void gt_add_layout_from_font(PangoLayout *layout, gFont *font)
 	set_layout_from_font(layout, font, true);
 }
 
+void gt_layout_alignment(PangoLayout *layout, float w, float h, float *tw, float *th, int align, float *offX, float *offY)
+{
+	int ptw, pth;
+	pango_layout_get_size(layout, &ptw, &pth);
+	*tw = (float)ptw / PANGO_SCALE;
+	*th = (float)pth / PANGO_SCALE;
+	
+	if (w < 0) w = *tw;
+	if (h < 0) h = *th;
+
+	switch (align)
+	{
+		case ALIGN_BOTTOM_NORMAL:
+			align = gDesktop::rightToLeft() ? ALIGN_BOTTOM_RIGHT : ALIGN_BOTTOM_LEFT;
+			break;
+		
+		case ALIGN_NORMAL:
+			align = gDesktop::rightToLeft() ? ALIGN_RIGHT : ALIGN_LEFT;
+			break;
+			
+		case ALIGN_TOP_NORMAL:
+			align = gDesktop::rightToLeft() ? ALIGN_TOP_RIGHT : ALIGN_TOP_LEFT;
+			break;
+	}
+	
+	switch (align)
+	{
+		case ALIGN_BOTTOM: 	 
+			pango_layout_set_alignment(layout, PANGO_ALIGN_CENTER);	
+			*offX = (w - *tw) / 2;
+			*offY = h - *th; 
+			break;
+		
+		case ALIGN_BOTTOM_LEFT: 		
+			pango_layout_set_alignment(layout, PANGO_ALIGN_LEFT);
+			*offX = 0;
+			*offY = h - *th;
+			break;
+			
+		case ALIGN_BOTTOM_RIGHT: 
+			pango_layout_set_alignment(layout, PANGO_ALIGN_RIGHT);
+			*offX = w - *tw;
+			*offY = h - *th;
+			break;
+			
+		case ALIGN_CENTER: 
+			pango_layout_set_alignment(layout, PANGO_ALIGN_CENTER);
+			*offX = (w - *tw) / 2;
+			*offY = (h - *th) / 2;
+			break;
+			
+		case ALIGN_LEFT:
+			pango_layout_set_alignment(layout, PANGO_ALIGN_LEFT);
+			*offX = 0;
+			*offY = (h - *th) / 2;
+			break;
+			
+		case ALIGN_RIGHT:
+			pango_layout_set_alignment(layout, PANGO_ALIGN_RIGHT);
+			*offX = w - *tw;
+			*offY = (h - *th) / 2;
+			break;
+			
+		case ALIGN_TOP:
+			pango_layout_set_alignment(layout, PANGO_ALIGN_CENTER);
+			*offX = (w - *tw) / 2;
+			*offY = 0;
+			break;
+			
+		case ALIGN_TOP_LEFT:
+			pango_layout_set_alignment(layout, PANGO_ALIGN_LEFT);
+			*offX = 0;
+			*offY = 0;
+			break;
+			
+		case ALIGN_TOP_RIGHT:
+			pango_layout_set_alignment(layout, PANGO_ALIGN_RIGHT);
+			*offX = w - *tw;
+			*offY = 0; 
+			break;
+	}
+}

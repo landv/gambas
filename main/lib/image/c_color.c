@@ -37,7 +37,7 @@ static uint gt_rgb_to_color(int r, int g, int b)
 	return (uint)(b | (g << 8) | (r << 16));
 }*/
 
-static void gt_color_to_rgba(uint color, int *r, int *g, int *b, int *a)
+void gt_color_to_rgba(uint color, int *r, int *g, int *b, int *a)
 {
 	*b = color & 0xFF;
 	*g = (color >> 8) & 0xFF;

@@ -1006,98 +1006,29 @@ int gDraw::textHeight(char *txt, int len)
 
 void gDraw::drawLayout(PangoLayout *ly, int x, int y, int w, int h, int align)
 {
-	int OffX = 0, OffY = 0;
+	int offx = 0, offy = 0;
+	float foffx, foffy;
 	int tw, th;
+	float ftw, fth;
 
-	pango_layout_get_pixel_size(ly, &tw, &th);
+	gt_add_layout_from_font(ly, font());
 	
-	if (w < 0) w = tw;
-	if (h < 0) h = th;
+	gt_layout_alignment(ly, (float)w, (float)h, &ftw, &fth, align, &foffx, &foffy);
+	tw = (int)ftw;
+	th = (int)fth;
+	offx = (int)foffx;
+	offy = (int)foffy;
 
-	switch (align)
-	{
-		case ALIGN_BOTTOM_NORMAL:
-			align = gDesktop::rightToLeft() ? ALIGN_BOTTOM_RIGHT : ALIGN_BOTTOM_LEFT;
-			break;
-		
-		case ALIGN_NORMAL:
-			align = gDesktop::rightToLeft() ? ALIGN_RIGHT : ALIGN_LEFT;
-			break;
-			
-		case ALIGN_TOP_NORMAL:
-			align = gDesktop::rightToLeft() ? ALIGN_TOP_RIGHT : ALIGN_TOP_LEFT;
-			break;
-	}
-	
-	switch (align)
-	{
-		case ALIGN_BOTTOM: 	 
-			pango_layout_set_alignment(ly, PANGO_ALIGN_CENTER);	
-			OffX = (w - tw) / 2;
-			OffY = h - th; 
-			break;
-		
-		case ALIGN_BOTTOM_LEFT: 		
-			pango_layout_set_alignment(ly, PANGO_ALIGN_LEFT);
-			OffX = 0;
-			OffY = h - th;
-			break;
-			
-		case ALIGN_BOTTOM_RIGHT: 
-			pango_layout_set_alignment(ly, PANGO_ALIGN_RIGHT);
-			OffX = w - tw;
-			OffY = h - th;
-			break;
-			
-		case ALIGN_CENTER: 
-			pango_layout_set_alignment(ly, PANGO_ALIGN_CENTER);
-			OffX = (w - tw) / 2;
-			OffY = (h - th) / 2;
-			break;
-			
-		case ALIGN_LEFT:
-			pango_layout_set_alignment(ly, PANGO_ALIGN_LEFT);
-			OffX = 0;
-			OffY = (h - th) / 2;
-			break;
-			
-		case ALIGN_RIGHT:
-			pango_layout_set_alignment(ly, PANGO_ALIGN_RIGHT);
-			OffX = w - tw;
-			OffY = (h - th) / 2;
-			break;
-			
-		case ALIGN_TOP:
-			pango_layout_set_alignment(ly, PANGO_ALIGN_CENTER);
-			OffX = (w - tw) / 2;
-			OffY = 0;
-			break;
-			
-		case ALIGN_TOP_LEFT:
-			pango_layout_set_alignment(ly, PANGO_ALIGN_LEFT);
-			OffX = 0;
-			OffY = 0;
-			break;
-			
-		case ALIGN_TOP_RIGHT:
-			pango_layout_set_alignment(ly, PANGO_ALIGN_RIGHT);
-			OffX = w - tw;
-			OffY = 0; 
-			break;
-	}
-	
 	if (!_transparent)
 	{
 		gColor buf = foreground();
 		setForeground(background());
-		gdk_draw_rectangle (dr, gc, true, x + OffX, y + OffY, tw, th);	
-		if (drm) gdk_draw_rectangle (drm, gcm, true, x + OffX, y + OffY, tw, th);	
+		gdk_draw_rectangle (dr, gc, true, x + offx, y + offy, tw, th);	
+		if (drm) gdk_draw_rectangle (drm, gcm, true, x + offx, y + offy, tw, th);	
 		setForeground(buf);
 	}
 	
-	gt_add_layout_from_font(ly, font());
-	
-	gdk_draw_layout(dr, gc, x + OffX, y + OffY, ly);
+	gdk_draw_layout(dr, gc, x + offx, y + offy, ly);
 	
 	if (drm && _transparent)
 	{
@@ -1106,7 +1037,7 @@ void gDraw::drawLayout(PangoLayout *ly, int x, int y, int w, int h, int align)
 		mask = gt_make_text_mask(dr, tw, th, ly, 0, 0);
 		
 		gdk_gc_set_function(gcm, GDK_OR);
-		gdk_draw_drawable(drm, gcm, mask, 0, 0, x + OffX, y + OffY, tw, th);
+		gdk_draw_drawable(drm, gcm, mask, 0, 0, x + offx, y + offy, tw, th);
 		gdk_gc_set_function(gcm, GDK_COPY);
 		
 		g_object_unref(mask);

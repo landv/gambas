@@ -596,21 +596,22 @@ BEGIN_METHOD(Paint_Text, GB_STRING text; GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_
 
 	CHECK_DEVICE();
 	
-	if (MISSING(x) || MISSING(y))
-	{
-		PAINT->Text(THIS, STRING(text), LENGTH(text));
-		return;
-	}
-	
-	if (MISSING(w) || MISSING(h))
-	{
+	if (!MISSING(x) && !MISSING(y))
 		PAINT->MoveTo(THIS, (float)VARG(x), (float)VARG(y));
-		PAINT->Text(THIS, STRING(text), LENGTH(text));
-		return;
-	}
+	
+	PAINT->Text(THIS, STRING(text), LENGTH(text), VARGOPT(w, -1), VARGOPT(h, -1), VARGOPT(align, GB_DRAW_ALIGN_DEFAULT));
+	
+END_METHOD
 
-	fprintf(stderr, "Paint.Text: Not yet implemented\n");
+BEGIN_METHOD(Paint_RichText, GB_STRING text; GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_FLOAT h; GB_INTEGER align)
 
+	CHECK_DEVICE();
+	
+	if (!MISSING(x) && !MISSING(y))
+		PAINT->MoveTo(THIS, (float)VARG(x), (float)VARG(y));
+	
+	PAINT->RichText(THIS, STRING(text), LENGTH(text), VARGOPT(w, -1), VARGOPT(h, -1), VARGOPT(align, GB_DRAW_ALIGN_DEFAULT));
+	
 END_METHOD
 
 BEGIN_METHOD(Paint_TextExtents, GB_STRING text)
@@ -880,6 +881,7 @@ GB_DESC PaintDesc[] =
 
 	GB_STATIC_PROPERTY("Font", "Font", Paint_Font),
 	GB_STATIC_METHOD("Text", NULL, Paint_Text, "(Text)s[(X)f(Y)f(Width)f(Height)f(Alignment)i)]"),
+	GB_STATIC_METHOD("RichText", NULL, Paint_RichText, "(Text)s[(X)f(Y)f(Width)f(Height)f(Alignment)i)]"),
 	GB_STATIC_METHOD("TextExtents", "TextExtents", Paint_TextExtents, "(Text)s"),
 	
 	GB_STATIC_METHOD("Color", "PaintBrush", Paint_Color, "(Color)i"),
