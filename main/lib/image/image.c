@@ -848,6 +848,34 @@ void IMAGE_colorize(GB_IMG *img, GB_COLOR color)
 	}
 }
 
+void IMAGE_mask(GB_IMG *img, GB_COLOR color)
+{
+	GET_POINTER(img, p, pm);
+	uint col;
+	unsigned char red[256], blue[256], green[256], alpha[256];
+	int i, r, g, b, a;
+	
+	col = from_GB_COLOR(color, img->format);
+	r = RED(col);
+	g = GREEN(col);
+	b = BLUE(col);
+	a = ALPHA(col);
+	
+	for (i = 0; i < 256; i++)
+	{
+		red[i] = i * r / 255;
+		green[i] = i * g / 255;
+		blue[i] = i * b / 255;
+		alpha[i] = i * a / 255;
+	}
+
+	while (p != pm) 
+	{
+		col = BGRA_from_format(*p, img->format);
+		*p++ = BGRA_to_format(RGBA(red[RED(col)], green[GREEN(col)], blue[BLUE(col)], alpha[ALPHA(col)]), img->format);
+	}
+}
+
 void IMAGE_mirror(GB_IMG *src, GB_IMG *dst, bool horizontal, bool vertical)
 {
 	if (dst->width != src->width || dst->height != src->height || dst->format != src->format)

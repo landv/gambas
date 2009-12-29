@@ -123,6 +123,12 @@ BEGIN_METHOD(CIMAGE_colorize, GB_INTEGER color)
 
 END_METHOD
 
+BEGIN_METHOD(CIMAGE_mask, GB_INTEGER color)
+
+	IMAGE_mask(THIS_IMAGE, VARG(color));
+	GB.ReturnObject(THIS);
+
+END_METHOD
 
 BEGIN_METHOD(CIMAGE_copy, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
 
@@ -233,6 +239,7 @@ GB_DESC CImageDesc[] =
   GB_METHOD("Transparent", "Image", CIMAGE_transparent, "[(Color)i]"),
   GB_METHOD("Replace", "Image", CIMAGE_replace, "(OldColor)i(NewColor)i[(NotEqual)b]"),
   GB_METHOD("Colorize", "Image", CIMAGE_colorize, "(Color)i"),
+	GB_METHOD("Mask", "Image", CIMAGE_mask, "(Color)i"),
   
   GB_METHOD("Copy", "Image", CIMAGE_copy, "[(X)i(Y)i(Width)i(Height)i]"),
   GB_METHOD("Resize", "Image", CIMAGE_resize, "(Width)i(Height)i"),
