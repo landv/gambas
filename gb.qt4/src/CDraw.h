@@ -36,6 +36,9 @@ extern DRAW_INTERFACE DRAW;
 
 #endif
 
+typedef
+	void (*DRAW_TEXT_CB)(float, float, QString &);
+
 //bool DRAW_must_resize_font();
 //int DRAW_status(void);
 //void DRAW_restore(int status);
@@ -45,5 +48,6 @@ void DRAW_end();
 QPainter *DRAW_get_current();
 void DRAW_rich_text(QPainter *p, int x, int y, int w, int h, int align, QString &text, QPainter *p2 = 0);
 void DRAW_aligned_pixmap(QPainter *p, const QPixmap &pix, int x, int y, int w, int h, int align);
+void DRAW_text_with(QPainter *painter, const char *text, int len, int x, int y, int w, int h, int align, DRAW_TEXT_CB callback);
 
 #endif

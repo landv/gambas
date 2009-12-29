@@ -73,6 +73,8 @@ static inline qreal to_deg(float angle)
 
 static bool init_painting(GB_PAINT *d, QPaintDevice *device)
 {
+	QPen pen;
+	
 	d->width = device->width();
 	d->height = device->height();
 	d->resolutionX = device->physicalDpiX();
@@ -90,7 +92,11 @@ static bool init_painting(GB_PAINT *d, QPaintDevice *device)
 	PAINTER(d)->setRenderHints(QPainter::TextAntialiasing, true);
 	PAINTER(d)->setRenderHints(QPainter::SmoothPixmapTransform, true);
 	
-	// TODO: Must init pen cap style to Qt::FlatCap
+	pen = PAINTER(d)->pen();
+	pen.setCapStyle(Qt::FlatCap);
+	pen.setMiterLimit(10.0);
+	pen.setWidthF(2.0);
+	PAINTER(d)->setPen(pen);
 	
 	return FALSE;
 }
@@ -538,17 +544,23 @@ static void CurveTo(GB_PAINT *d, float x1, float y1, float x2, float y2, float x
 	PATH(d)->cubicTo(QPointF((qreal)x1, (qreal)y1), QPointF((qreal)x2, (qreal)y2), QPointF((qreal)x3, (qreal)y3));
 }
 
+static GB_PAINT *_draw_text_p;
+
+static void draw_text_cb(float x, float y, QString &text)
+{
+	PATH(_draw_text_p)->addText(x, y, PAINTER(_draw_text_p)->font(), text);
+}
 	
 static void Text(GB_PAINT *d, const char *text, int len, float w, float h, int align)
 {
+	QPointF pos;
+	
 	CREATE_PATH(d);
-	PATH(d)->addText(PATH(d)->currentPosition(), PAINTER(d)->font(), QString::fromUtf8(text, len));
-}
+	
+	pos = PATH(d)->currentPosition();
+	_draw_text_p = d;
 
-static void RichText(GB_PAINT *d, const char *text, int len, float w, float h, int align)
-{
-	CREATE_PATH(d);
-	PATH(d)->addText(PATH(d)->currentPosition(), PAINTER(d)->font(), QString::fromUtf8(text, len));
+	DRAW_text_with(PAINTER(d), text, len, pos.x(), pos.y(), w, h, align, draw_text_cb);
 }
 
 static void TextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext)
@@ -770,7 +782,6 @@ GB_PAINT_DESC PAINT_Interface = {
 	LineTo,
 	CurveTo,
 	Text,
-	RichText,
 	TextExtents,
 	Matrix,
 	SetBrush,

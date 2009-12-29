@@ -74,8 +74,10 @@ bool DRAW_begin(void *device)
 		return TRUE;
 	}
 
+	GB.Alloc(POINTER(&draw), sizeof(GB_DRAW));
+	GB.Alloc(POINTER(&draw->extra), desc->size);
+	memset(draw->extra, 0, desc->size);
 
-	GB.Alloc(POINTER(&draw), sizeof(GB_DRAW) + desc->size);
 	draw->desc = desc;
 	draw->previous = _current;
 	GB.Ref(device);
@@ -123,6 +125,7 @@ void DRAW_end()
 	draw->desc->End(draw);
 	
 	GB.Unref(POINTER(&draw->device));
+	GB.Free(POINTER(&draw->extra));
 	GB.Free(POINTER(&draw));
 }
 

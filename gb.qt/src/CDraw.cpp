@@ -58,7 +58,7 @@
 typedef
 	QT_DRAW_EXTRA GB_DRAW_EXTRA;
 
-#define EXTRA(d) ((GB_DRAW_EXTRA *)(&(d->extra)))
+#define EXTRA(d) ((GB_DRAW_EXTRA *)(d->extra))
 #define DP(d) (EXTRA(d)->p)
 #define DPM(d) (EXTRA(d)->pm)
 

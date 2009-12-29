@@ -36,7 +36,7 @@ typedef
 		}
 	GB_DRAW_EXTRA;
 
-#define EXTRA(d) ((GB_DRAW_EXTRA *)(&(d->extra)))
+#define EXTRA(d) ((GB_DRAW_EXTRA *)(d->extra))
 #define DR(d) (EXTRA(d)->dr)
  
 DRAW_INTERFACE DRAW EXPORT;

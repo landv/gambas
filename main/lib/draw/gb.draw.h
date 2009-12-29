@@ -83,7 +83,7 @@ typedef
 		int xform;                         // if the matrix must be used
 		GB_MATRIX matrix;                  // transformation matrix (do not manage rotations)
 		GB_MATRIX *save;                   // transformation matrix stack
-		char extra[0];                     // driver-specific state
+		void *extra;                       // driver-specific state
 	}
 	PACKED
 	GB_DRAW;

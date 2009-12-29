@@ -67,7 +67,7 @@
 typedef
 	QT_DRAW_EXTRA GB_DRAW_EXTRA;
 
-#define EXTRA(d) ((GB_DRAW_EXTRA *)(&(d->extra)))
+#define EXTRA(d) ((GB_DRAW_EXTRA *)(d->extra))
 #define DP(d) (EXTRA(d)->p)
 #define DPM(d) (EXTRA(d)->pm)
 
@@ -752,7 +752,7 @@ static int get_text_height(QPainter *dp, QString &s)
 	return text_line * (1 + s.count('\n'));
 }
 
-static void draw_text(GB_DRAW *d, char *text, int len, int x, int y, int w, int h, int align)
+void DRAW_text_with(QPainter *painter, const char *text, int len, int x, int y, int w, int h, int align, DRAW_TEXT_CB callback)
 {
 	QPen pen, penm;
 	QString t;
@@ -761,8 +761,8 @@ static void draw_text(GB_DRAW *d, char *text, int len, int x, int y, int w, int 
 	int i;
 
 	t = QString::fromUtf8((const char *)text, len);  
-	tw = get_text_width(DP(d), t);
-	th = get_text_height(DP(d), t);
+	tw = get_text_width(painter, t);
+	th = get_text_height(painter, t);
 
 	if (w < 0) w = tw;
 	if (h < 0) h = th;
@@ -772,7 +772,7 @@ static void draw_text(GB_DRAW *d, char *text, int len, int x, int y, int w, int 
 
 	align = CCONST_alignment(align, ALIGN_TOP_NORMAL, true);
 
-	y += DP(d)->fontMetrics().ascent();
+	y += painter->fontMetrics().ascent();
 
 	switch(align & Qt::AlignVertical_Mask)
 	{
@@ -783,13 +783,13 @@ static void draw_text(GB_DRAW *d, char *text, int len, int x, int y, int w, int 
 
 	align = get_horizontal_alignment((Qt::Alignment)align);
 
-	pen = DP(d)->pen();
+	/*pen = DP(d)->pen();
 	DP(d)->setPen(QColor(EXTRA(d)->fg));
 	if (DPM(d))
 	{
 		penm = DPM(d)->pen();
 		DPM(d)->setPen(Qt::color1);
-	}
+	}*/
 
 	for (i = 0; i < (int)text_sl.count(); i++)
 	{
@@ -803,11 +803,43 @@ static void draw_text(GB_DRAW *d, char *text, int len, int x, int y, int w, int 
 			default: xx = x; break;
 		}
 
-		DP(d)->drawText(xx, y, t);
-		if (DPM(d)) DPM(d)->drawText(xx, y, t);
+		(*callback)(xx, y, t);
+		/*DP(d)->drawText(xx, y, t);
+		if (DPM(d)) DPM(d)->drawText(xx, y, t);*/
 
 		y += text_line;
 	}
+	
+	/*DP(d)->setPen(pen);
+	if (DPM(d)) DPM(d)->setPen(penm);*/
+}
+
+
+static QPainter *_draw_text_p, *_draw_text_pm;
+
+static void draw_text_cb(float x, float y, QString &text)
+{
+	_draw_text_p->drawText(x, y, text);
+	if (_draw_text_pm) 
+		_draw_text_pm->drawText(x, y, text);
+}
+
+static void draw_text(GB_DRAW *d, char *text, int len, int x, int y, int w, int h, int align)
+{
+	QPen pen, penm;
+
+	pen = DP(d)->pen();
+	DP(d)->setPen(QColor(EXTRA(d)->fg));
+	if (DPM(d))
+	{
+		penm = DPM(d)->pen();
+		DPM(d)->setPen(Qt::color1);
+	}
+
+	_draw_text_p = DP(d);
+	_draw_text_pm = DPM(d);
+
+	DRAW_text_with(DP(d), text, len, x, y, w, h, align, draw_text_cb);
 	
 	DP(d)->setPen(pen);
 	if (DPM(d)) DPM(d)->setPen(penm);
@@ -877,39 +909,6 @@ static void draw_rich_text(GB_DRAW *d, char *text, int len, int x, int y, int w,
 	align = CCONST_alignment(align, ALIGN_TOP_NORMAL, true);
 
 	DRAW_rich_text(DP(d), x, y, w, h, align, t, DPM(d));
-
-//   switch(qApp->horizontalAlignment(align))
-//   {
-//   	case Qt::AlignRight: a = "right"; break;
-//   	case Qt::AlignCenter: a = "center"; break;
-//   	case Qt::AlignJustify: a = "justify"; break;
-//   }
-//   
-//   if (a.length())
-//   	t = "<div align=\"" + a + "\">" + t + "</div>";
-//   
-// 	QSimpleRichText rt(t, DP(d)->font()); 
-//   
-//   if (w > 0)
-//   	rt.setWidth(w);
-//   	
-//   tw = rt.widthUsed();
-//   th = rt.height();
-// 
-// 	if (w < 0) w = tw;
-// 	if (h < 0) h = th;
-// 	
-//   //y += DP(d)->fontMetrics().ascent();
-// 
-//   switch(align & Qt::AlignVertical_Mask)
-//   {
-//     case Qt::AlignBottom: y += h - th; break;
-//     case Qt::AlignVCenter: y += (h - th) / 2; break;
-//     default: break;
-//   }
-// 
-// 	rt.draw(DP(d), x, y, clip, cg);
-// 	if (DPM(d)) rt.draw(DPM(d), x, y, clip, cg);
 }
 
 static void rich_text_size(GB_DRAW *d, char *text, int len, int sw, int *w, int *h)

@@ -163,7 +163,7 @@ typedef
 		void (*CurveTo)(GB_PAINT *d, float x1, float y1, float x2, float y2, float x3, float y3);
 	
 		void (*Text)(GB_PAINT *d, const char *text, int len, float w, float h, int align);
-		void (*RichText)(GB_PAINT *d, const char *text, int len, float w, float h, int align);
+		//void (*RichText)(GB_PAINT *d, const char *text, int len, float w, float h, int align);
 		void (*TextExtents)(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext);
 		
 		void (*Matrix)(GB_PAINT *d, int set, GB_TRANSFORM matrix);

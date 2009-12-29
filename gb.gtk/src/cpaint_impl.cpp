@@ -476,9 +476,9 @@ static void Arc(GB_PAINT *d, float xc, float yc, float radius, float angle, floa
 {
 	cairo_new_sub_path(CONTEXT(d));
 	if (length >= 0.0)
-		cairo_arc(CONTEXT(d), xc, yc, radius, angle, angle + length);
+		cairo_arc_negative(CONTEXT(d), xc, yc, radius, angle, angle - length);
 	else
-		cairo_arc_negative(CONTEXT(d), xc, yc, radius, angle, angle + length);
+		cairo_arc(CONTEXT(d), xc, yc, radius, angle, angle - length);
 }
 
 static void Rectangle(GB_PAINT *d, float x, float y, float width, float height)
@@ -510,15 +510,24 @@ static void CurveTo(GB_PAINT *d, float x1, float y1, float x2, float y2, float x
 	cairo_curve_to(CONTEXT(d), x1, y1, x2, y2, x3, y3);
 }
 
-static void Text(GB_PAINT *d, const char *text, int len, float w, float h, int align)
+static void draw_text(GB_PAINT *d, bool rich, const char *text, int len, float w, float h, int align)
 {
+	char *html;
   PangoLayout *layout;
 	CFONT *font;
 	float tw, th, offx, offy;
 
   layout = pango_cairo_create_layout(CONTEXT(d));
   
-	pango_layout_set_text(layout, text, len);
+	if (rich)
+	{
+		html = gt_html_to_pango_string(text, len, false);
+		pango_layout_set_markup(layout, html, -1);
+		if (w > 0)
+			pango_layout_set_width(layout, (int)(w * PANGO_SCALE));
+	}
+	else
+		pango_layout_set_text(layout, text, len);
 	
 	Paint_Font(d, FALSE, (GB_FONT *)&font);
 	gt_add_layout_from_font(layout, font->font);
@@ -529,11 +538,19 @@ static void Text(GB_PAINT *d, const char *text, int len, float w, float h, int a
   pango_cairo_layout_path(CONTEXT(d), layout);
 
 	g_object_unref(layout);	
+	if (rich)
+		g_free(html);
 }
 
-static void RichText(GB_PAINT *d, const char *text, int len, float w, float h, int align)
+static void Text(GB_PAINT *d, const char *text, int len, float w, float h, int align)
 {
+	draw_text(d, FALSE, text, len, w, h, align);
 }
+
+/*static void RichText(GB_PAINT *d, const char *text, int len, float w, float h, int align)
+{
+	draw_text(d, TRUE, text, len, w, h, align);
+}*/
 
 static void TextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext)
 {
@@ -564,7 +581,7 @@ static void SetBrush(GB_PAINT *d, GB_BRUSH brush)
 		
 static void BrushFree(GB_BRUSH brush)
 {
-	// Should I release the surface associated with an image brush?
+	// Should I release the surface associated with an image brush? Apparently no.
 	cairo_pattern_destroy((cairo_pattern_t *)brush);
 }
 
@@ -574,6 +591,8 @@ static void BrushColor(GB_BRUSH *brush, GB_COLOR color)
 	GB_COLOR_SPLIT(color, r, g, b, a);
 	*brush = (GB_BRUSH)cairo_pattern_create_rgba(r / 255.0, g / 255.0, b / 255.0, a / 255.0);
 }
+
+// Function partially taken from the GTK+ source code.
 
 static cairo_surface_t *gdk_cairo_create_surface_from_pixbuf(const GdkPixbuf *pixbuf)
 {
@@ -727,6 +746,8 @@ static void BrushRadialGradient(GB_BRUSH *brush, float cx0, float cy0, float r0,
 	*brush = (GB_BRUSH)pattern;
 }
 
+// Matrix must be inverted, so that it behaves the same way as in Qt4
+
 static void BrushMatrix(GB_BRUSH brush, int set, GB_TRANSFORM matrix)
 {
 	cairo_matrix_t *t = (cairo_matrix_t *)matrix;
@@ -746,7 +767,10 @@ static void BrushMatrix(GB_BRUSH brush, int set, GB_TRANSFORM matrix)
 		cairo_pattern_set_matrix(pattern, &actual);
 	}
 	else
+	{
 		cairo_pattern_get_matrix(pattern, t);
+		cairo_matrix_invert(t);
+	}
 }
 
 static void TransformCreate(GB_TRANSFORM *matrix)
@@ -823,7 +847,7 @@ GB_PAINT_DESC PAINT_Interface = {
 	LineTo,
 	CurveTo,
 	Text,
-	RichText,
+	//RichText,
 	TextExtents,
 	Matrix,
 	SetBrush,

@@ -733,7 +733,7 @@ static void add_space(GString *str)
 		g_string_append_c(str, ' ');
 }
 
-char *gt_html_to_pango_string(char *html, int len_html, bool newline)
+char *gt_html_to_pango_string(const char *html, int len_html, bool newline)
 {
 	static const char *title[] =
 	{
