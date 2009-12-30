@@ -41,7 +41,6 @@ GB_DESC Cgl[] =
 	GB_STATIC_METHOD("GetAttachedShaders", "Integer[]", GLGETATTACHEDSHADERS, "(Program)i"),
 	GB_STATIC_METHOD("GetShaderInfoLog", "s", GLGETSHADERINFOLOG, "(Shader)i"),
 	GB_STATIC_METHOD("GetShaderiv", "Integer[]", GLGETSHADERIV, "(Shader)i(Pname)i"),
-	GB_STATIC_METHOD("GetShaders", "Integer[]", GLGETATTACHEDSHADERS, "(Program)i"),
 	GB_STATIC_METHOD("GetShaderSource", "s", GLGETSHADERSOURCE, "(Shader)i"),
 	GB_STATIC_METHOD("IsShader", "b", GLISSHADER, "(Shader)i"),
 	GB_STATIC_METHOD("ShaderSource", NULL, GLSHADERSOURCE, "(Shader)i(Source)s"),
