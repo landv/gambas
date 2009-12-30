@@ -38,6 +38,41 @@
 #include "CDraw.h"
 #include "cpaint_impl.h"
 
+/**** Cairo image management *********************************************/
+
+static void free_image(GB_IMG *img, void *image)
+{
+	cairo_surface_destroy((cairo_surface_t *)image);
+}
+
+static void *temp_image(GB_IMG *img)
+{
+	cairo_surface_t *image;
+
+	if (!img->data)
+		image = NULL; // TODO: use a static small image surface
+	else
+		image = cairo_image_surface_create_for_data(img->data, CAIRO_FORMAT_ARGB32, img->width, img->height, 
+		                                            cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, img->width));
+	return image;
+}
+
+static GB_IMG_OWNER _image_owner = {
+	"gb.gtk.cairo",
+	GB_IMAGE_BGRP,
+	free_image,
+	free_image,
+	temp_image
+	};
+
+static cairo_surface_t *check_image(void *img)
+{
+	// TODO: format is endian-dependent
+	return (cairo_surface_t *)IMAGE.Check((GB_IMG *)img, &_image_owner);
+}
+
+/**** Paint implementation ***********************************************/
+
 typedef
 	struct {
 		cairo_t *context;
@@ -96,7 +131,7 @@ static int Begin(GB_PAINT *d)
 	}
 	else if (GB.Is(device, CLASS_Image))
 	{
-		gPicture *picture = CIMAGE_get(((CIMAGE *)device));
+		/*gPicture *picture = CIMAGE_get(((CIMAGE *)device));
 		GdkPixbuf *pixbuf;
 		
 		if (picture->isVoid())
@@ -111,7 +146,16 @@ static int Begin(GB_PAINT *d)
 		
 		target = 
 			cairo_image_surface_create_for_data(picture->data(), CAIRO_FORMAT_ARGB32, w, h, 
-				cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, w));
+				cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, w));*/
+		target = check_image(device);
+		cairo_surface_reference(target);
+		w = ((GB_IMG *)device)->width;
+		h = ((GB_IMG *)device)->height;
+		if (!target)
+		{
+			GB.Error("Bad image");
+			return TRUE;
+		}
 	}
 	else if (GB.Is(device, CLASS_DrawingArea))
 	{
@@ -529,11 +573,6 @@ static void LineTo(GB_PAINT *d, float x, float y)
 	cairo_line_to(CONTEXT(d), x, y);
 }
 
-static void RelLineTo(GB_PAINT *d, float x, float y)
-{
-        cairo_rel_line_to(CONTEXT(d), x, y);
-}
-
 static void CurveTo(GB_PAINT *d, float x1, float y1, float x2, float y2, float x3, float y3)
 {
 	cairo_curve_to(CONTEXT(d), x1, y1, x2, y2, x3, y3);
@@ -875,11 +914,8 @@ GB_PAINT_DESC PAINT_Interface = {
 	GetCurrentPoint,
 	MoveTo,
 	LineTo,
-	RelLineTo,
 	CurveTo,
 	Text,
-	//RichText,
-	//TextExtents,
 	Matrix,
 	SetBrush,
 	{

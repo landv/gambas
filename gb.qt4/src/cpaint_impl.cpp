@@ -532,14 +532,6 @@ static void LineTo(GB_PAINT *d, float x, float y)
 	PATH(d)->lineTo((qreal)x, (qreal)y);
 }
 
-static void RelLineTo(GB_PAINT *d, float x, float y)
-{
-        QPointF pos;
-        CREATE_PATH(d);
-	pos = PATH(d)->currentPosition();
-	PATH(d)->lineTo(pos.x() + (qreal)x, pos.y() + (qreal)y);
-}
-
 static void CurveTo(GB_PAINT *d, float x1, float y1, float x2, float y2, float x3, float y3)
 {
 	CREATE_PATH(d);
@@ -782,7 +774,6 @@ GB_PAINT_DESC PAINT_Interface = {
 	GetCurrentPoint,
 	MoveTo,
 	LineTo,
-	RelLineTo,
 	CurveTo,
 	Text,
 	Matrix,

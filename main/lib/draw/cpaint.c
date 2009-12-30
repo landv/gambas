@@ -587,8 +587,10 @@ END_METHOD
 
 BEGIN_METHOD(Paint_RelLineTo, GB_FLOAT x; GB_FLOAT y)
 
+	float fx, fy;
 	CHECK_DEVICE();
-	PAINT->RelLineTo(THIS, VARG(x), VARG(y));
+	PAINT->GetCurrentPoint(THIS, &fx, &fy);
+	PAINT->LineTo(THIS, fx + VARG(x), fy + VARG(y));
 
 END_METHOD
 
@@ -907,7 +909,7 @@ GB_DESC PaintDesc[] =
 	GB_STATIC_METHOD("LineTo", NULL, Paint_LineTo, "(X)f(Y)f"),
 	GB_STATIC_METHOD("RelLineTo", NULL, Paint_RelLineTo, "(X)f(Y)f"),
 	GB_STATIC_METHOD("MoveTo", NULL, Paint_MoveTo, "(X)f(Y)f"),
-        GB_STATIC_METHOD("RelMoveTo", NULL, Paint_RelMoveTo, "(X)f(Y)f"),
+	GB_STATIC_METHOD("RelMoveTo", NULL, Paint_RelMoveTo, "(X)f(Y)f"),
 	GB_STATIC_PROPERTY("Font", "Font", Paint_Font),
 	GB_STATIC_METHOD("Text", NULL, Paint_Text, "(Text)s[(X)f(Y)f(Width)f(Height)f(Alignment)i)]"),
 	//GB_STATIC_METHOD("RichText", NULL, Paint_RichText, "(Text)s[(X)f(Y)f(Width)f(Height)f(Alignment)i)]"),

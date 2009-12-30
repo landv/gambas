@@ -1231,6 +1231,8 @@ void gControl::realize(bool make_frame)
 			frame = 0;
 	}
 
+	resize(40, 40);
+	
 	connectParent();
 	initSignals();
 	
@@ -1241,7 +1243,6 @@ void gControl::realize(bool make_frame)
 		g_signal_connect(G_OBJECT(widget), "size-allocate", G_CALLBACK(cb_size_allocate), (gpointer)this);
 	
 	registerControl();
-	resize(10, 10);
 }
 
 void gControl::realizeScrolledWindow(GtkWidget *wid, bool doNotRealize)
