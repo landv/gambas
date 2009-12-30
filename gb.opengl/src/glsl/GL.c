@@ -35,10 +35,10 @@ GB_DESC Cgl[] =
 	/* GLshader.c */
 	GB_STATIC_METHOD("AttachShader", NULL, GLATTACHSHADER, "(Program)i(Shader)i"),
 	GB_STATIC_METHOD("CompileShader", NULL, GLCOMPILESHADER, "(Shader)i"),
-	GB_STATIC_METHOD("CreateShader", "i", GLCREATESHADER, "(Type)i"),
+	GB_STATIC_METHOD("CreateShader", "i", GLCREATESHADER, "(ShaderType)i"),
 	GB_STATIC_METHOD("DeleteShader", NULL, GLDELETESHADER, "(Shader)i"),
 	GB_STATIC_METHOD("DetachShader", NULL, GLDETACHSHADER, "(Program)i(Shader)i"),
-	GB_STATIC_METHOD("GetAttachedShader", "Integer[]", GLGETATTACHEDSHADERS, "(Program)i"),
+	GB_STATIC_METHOD("GetAttachedShaders", "Integer[]", GLGETATTACHEDSHADERS, "(Program)i"),
 	GB_STATIC_METHOD("GetShaderInfoLog", "s", GLGETSHADERINFOLOG, "(Shader)i"),
 	GB_STATIC_METHOD("GetShaderiv", "Integer[]", GLGETSHADERIV, "(Shader)i(Pname)i"),
 	GB_STATIC_METHOD("GetShaders", "Integer[]", GLGETATTACHEDSHADERS, "(Program)i"),
