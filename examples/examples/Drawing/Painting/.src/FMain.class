@@ -248,12 +248,23 @@ End
 
 Public Sub DrawingArea1_Draw()
 
-  'Dim hImage As New Picture(512, 512) 'Image(512, 512, Color.White)
-  
-  'hImage.Fill(Color.White)
-  'Paint.Begin(hImage)
+  Paint.Scale(sldScale.Value / 100, sldScale.Value / 100)
+  Paint.Translate(128, 128)
+  Paint.Rotate(Rad(sldRotate.Value))
+  Paint.Translate(-128, -128)
   Object.Call(Me, $sFunctionName)
-  'Paint.End()
-  'Draw.Picture(hImage, 0, 0)
+  
+
+End
+
+Public Sub sldRotate_Change()
+
+  DrawingArea1.Refresh
+
+End
+
+Public Sub sldScale_Change()
+
+  DrawingArea1.Refresh
 
 End

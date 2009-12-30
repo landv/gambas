@@ -1,11 +1,11 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,119,77)
+  MoveScaled(0,0,98,77)
   Text = ("")
   Arrangement = Arrange.Fill
   { HSplit1 HSplit
-    MoveScaled(1,1,113,74)
+    MoveScaled(1,1,96,74)
     { VBox1 VBox
       MoveScaled(1,1,35,71)
       Spacing = True
@@ -59,16 +59,33 @@
         Tag = "8"
         Text = ("Fill and stroke")
       }
+      { Label1 Label
+        MoveScaled(2,36,19,2)
+        Text = ("Rotate")
+      }
+      { sldRotate Slider
+        MoveScaled(1,39,31,3)
+        MaxValue = 360
+      }
+      { Label2 Label
+        MoveScaled(2,43,19,2)
+        Text = ("Scale")
+      }
+      { sldScale Slider
+        MoveScaled(1,47,31,3)
+        MinValue = 100
+        MaxValue = 400
+      }
     }
     { TabStrip1 TabStrip
-      MoveScaled(37,1,72,72)
+      MoveScaled(37,1,55,72)
       Arrangement = Arrange.Fill
       Margin = True
       Count = 2
       Index = 0
       Text = ("Preview")
       { DrawingArea1 DrawingArea
-        MoveScaled(2,1,62,45)
+        MoveScaled(2,1,38,45)
         Background = &HFFFFFF&
         Painted = True
         Border = Border.Plain
