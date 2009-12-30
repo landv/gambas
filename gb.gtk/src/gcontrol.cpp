@@ -1081,7 +1081,7 @@ void gControl::connectParent()
 {
 	if (pr)
 	{
-    gtk_widget_set_redraw_on_allocate(border, false);
+    //gtk_widget_set_redraw_on_allocate(border, false);
     
   	pr->insert(this, true);
   }
@@ -1231,16 +1231,14 @@ void gControl::realize(bool make_frame)
 			frame = 0;
 	}
 
-	resize(40, 40);
-	
 	connectParent();
 	initSignals();
 	
   if (frame)
 		g_signal_connect_after(G_OBJECT(frame), "expose-event", G_CALLBACK(cb_frame_expose), (gpointer)this);
 		
-	if (isContainer() && widget != border)
-		g_signal_connect(G_OBJECT(widget), "size-allocate", G_CALLBACK(cb_size_allocate), (gpointer)this);
+	//if (isContainer() && widget != border)
+	//	g_signal_connect(G_OBJECT(widget), "size-allocate", G_CALLBACK(cb_size_allocate), (gpointer)this);
 	
 	registerControl();
 }

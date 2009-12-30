@@ -46,7 +46,7 @@ static void cb_notify(GtkPaned *paned, GParamSpec *arg1, gSplitter *data)
 
 static void cb_size_allocate(GtkPaned *widget, GtkAllocation *allocation, gSplitter *data)
 {
-	//g_debug("gSplitter: cb_size_allocate");
+	//g_debug("gSplitter: cb_size_allocate: %s", data->name());
 	//data->performArrange();
 	data->updateChild(gtk_paned_get_child1(widget));
 }
@@ -365,6 +365,8 @@ void gSplitter::updateChild(GtkWidget *w)
 	int bucle, nchd;
 	gControl *chd;
 
+	//g_debug("updateChild: %p", w);
+	
 	nchd = childCount();
 	for (bucle = 0; bucle < nchd; bucle++)
 	{
@@ -373,12 +375,19 @@ void gSplitter::updateChild(GtkWidget *w)
 		if (w && chd->border != w)
 			continue;
 		
+		chd->_dirty_pos = false;
+		chd->_dirty_size = false;
+		
+		if (chd->bufX == chd->border->allocation.x
+		    && chd->bufY == chd->border->allocation.y
+		    && chd->bufW == chd->border->allocation.width
+		    && chd->bufH == chd->border->allocation.height)
+			continue;
+		
 		chd->bufX = chd->border->allocation.x;
 		chd->bufY = chd->border->allocation.y;
 		chd->bufW = chd->border->allocation.width;
 		chd->bufH = chd->border->allocation.height;
-		chd->_dirty_pos = false;
-		chd->_dirty_size = false;
 		//chd->resize(chd->border->allocation.width, chd->border->allocation.height);
 		//gApplication::setDirty();
 		//g_debug("gSplitter::updateChild: %s -> (%d %d %d %d)", chd->name(), chd->x(), chd->y(), chd->width(), chd->height());
@@ -389,6 +398,7 @@ void gSplitter::updateChild(GtkWidget *w)
 
 void gSplitter::performArrange()
 {
+	//g_debug("performArrange");
 	updateChild();
 	updateVisibility();
 }
