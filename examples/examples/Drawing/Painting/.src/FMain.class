@@ -402,6 +402,29 @@ Public Sub Example16()
   
 End
 
+Public Sub Example17()
+  
+  Dim sText As String = "paint"
+  
+  Dim x, y As Float
+  
+  Paint.Font = Font["Sans,100"]
+  x = 25
+  y = 150
+  
+  Paint.MoveTo(x, y)
+  Paint.Text(sText)
+  Paint.Fill
+  
+  Paint.Brush = Paint.Color(Color.RGB(255, 31, 31, 93))
+  Paint.LineWidth = 6
+  Paint.Arc(x, y, 10, 0, Pi(2))
+  Paint.RelLineTo(0, - Paint.Font.Height(sText))
+  Paint.RelLineTo(Paint.Font.Width(sText), 0)
+  'Paint.RelLineTo(
+  Paint.stroke
+End
+
 
 Public Sub optExample_Click()
 
