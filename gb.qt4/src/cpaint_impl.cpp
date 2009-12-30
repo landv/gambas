@@ -57,6 +57,7 @@
 
 #define PAINTER(d) EXTRA(d)->painter
 #define PATH(d) EXTRA(d)->path
+#define CLIP(d) EXTRA(d)->clip
 
 static inline qreal to_deg(float angle)
 {
@@ -80,6 +81,7 @@ static bool init_painting(GB_PAINT *d, QPaintDevice *device)
 	
 	EXTRA(d)->painter = new QPainter(device);
 	EXTRA(d)->path = 0;
+	EXTRA(d)->clip = 0;
 	PAINTER(d)->setRenderHints(QPainter::Antialiasing, true);
 	PAINTER(d)->setRenderHints(QPainter::TextAntialiasing, true);
 	PAINTER(d)->setRenderHints(QPainter::SmoothPixmapTransform, true);
@@ -163,6 +165,7 @@ static void End(GB_PAINT *d)
 	}
 
 	delete EXTRA(d)->path;
+	delete EXTRA(d)->clip;
 	delete EXTRA(d)->painter;
 }
 
@@ -224,54 +227,90 @@ static void init_path(GB_PAINT *d)
 static void Clip(GB_PAINT *d, int preserve)
 {
 	CHECK_PATH(d);
-	PAINTER(d)->setClipPath(*PATH(d), Qt::IntersectClip);
-	PAINTER(d)->setClipping(true);
+	
+	QPainterPath path = PAINTER(d)->worldTransform().map(*PATH(d));
+	
+	if (CLIP(d))
+		path = CLIP(d)->intersected(path);
+	
+	delete EXTRA(d)->clip;
+	EXTRA(d)->clip = new QPainterPath(path);
+	
 	PRESERVE_PATH(d, preserve);
 }
 
 static void ResetClip(GB_PAINT *d)
 {
-	PAINTER(d)->setClipping(false);
+	delete CLIP(d);
+	EXTRA(d)->clip = 0;
 }
 
-static void ClipExtents(GB_PAINT *d, GB_EXTENTS *ext)
+static void get_path_extents(QPainterPath *path, GB_EXTENTS *ext)
 {
-	QRectF rect = PAINTER(d)->clipPath().boundingRect();
+	if (!path)
+	{
+		ext->x1 = ext->x2 = ext->y1 = ext->y2 = 0.0;
+		return;
+	}
+	
+	QRectF rect = path->boundingRect();
 	
 	ext->x1 = (float)rect.left();
 	ext->y1 = (float)rect.top();
 	ext->x2 = (float)rect.right();
 	ext->y2 = (float)rect.bottom();
 }
+
+static void ClipExtents(GB_PAINT *d, GB_EXTENTS *ext)
+{
+	get_path_extents(CLIP(d), ext);
+}
 	
 static void Fill(GB_PAINT *d, int preserve)
 {
 	CHECK_PATH(d);
-	PAINTER(d)->fillPath(*PATH(d), PAINTER(d)->brush());
+	
+	if (!CLIP(d))
+		PAINTER(d)->fillPath(*PATH(d), PAINTER(d)->brush());
+	else
+	{
+		QPainterPath path = PAINTER(d)->worldTransform().inverted().map(*CLIP(d));
+		path = path.intersected(*PATH(d));
+		PAINTER(d)->fillPath(path, PAINTER(d)->brush());
+	}
+	
 	PRESERVE_PATH(d, preserve);
 }
 
 static void Stroke(GB_PAINT *d, int preserve)
 {
 	CHECK_PATH(d);
-	PAINTER(d)->strokePath(*PATH(d), PAINTER(d)->pen());
+	
+	if (!CLIP(d))
+		PAINTER(d)->strokePath(*PATH(d), PAINTER(d)->pen());
+	else
+	{
+		QPainterPathStroker stroker;
+		QPen pen = PAINTER(d)->pen();
+		
+		stroker.setCapStyle(pen.capStyle());
+		stroker.setDashOffset(pen.dashOffset());
+		stroker.setDashPattern(pen.dashPattern());
+		stroker.setJoinStyle(pen.joinStyle());
+		stroker.setMiterLimit(pen.miterLimit());
+		stroker.setWidth(pen.widthF());
+		
+		QPainterPath path = PAINTER(d)->worldTransform().inverted().map(*CLIP(d));
+		path = path.intersected(stroker.createStroke(*PATH(d)));
+		PAINTER(d)->fillPath(path, PAINTER(d)->brush());
+	}
+	
 	PRESERVE_PATH(d, preserve);
 }
 		
 static void PathExtents(GB_PAINT *d, GB_EXTENTS *ext)
 {
-	if (!PATH(d))
-	{
-		ext->x1 = ext->x2 = ext->y1 = ext->y2 = 0.0;
-		return;
-	}
-	
-	QRectF rect = PATH(d)->boundingRect();
-	
-	ext->x1 = (float)rect.left();
-	ext->y1 = (float)rect.top();
-	ext->x2 = (float)rect.right();
-	ext->y2 = (float)rect.bottom();
+	get_path_extents(PATH(d), ext);
 }
 
 static int PathContains(GB_PAINT *d, float x, float y)

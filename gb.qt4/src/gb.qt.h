@@ -106,6 +106,7 @@ typedef
 	struct {
 		QPainter *painter;
 		QPainterPath *path;
+		QPainterPath *clip;
 		int fillRule;
 	}
 	QT_PAINT_EXTRA;

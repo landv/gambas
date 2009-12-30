@@ -75,7 +75,7 @@ End
 
 Public Sub Example3()
   
-  Paint.Arc(128.0, 128.0, 76.8, 0, Pi(2))
+  Paint.Arc(128.0, 128.0, 76.8)
   Paint.Clip
   Paint.Rectangle(0, 0, 256, 256)
   Paint.Fill
@@ -93,9 +93,8 @@ Public Sub Example4()
   
   Dim hImg As Image
     
-  Paint.Arc(128.0, 128.0, 76.8, 0, Pi(2))
+  Paint.Arc(128.0, 128.0, 76.8)
   Paint.Clip
-  Paint.NewPath
   hImg = Image.Load("image.png")
   Paint.Scale(256 / hImg.Width, 256 / hImg.Height)
   Paint.Brush = Paint.Image(hImg, 0, 0)
