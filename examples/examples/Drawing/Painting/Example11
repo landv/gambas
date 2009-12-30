@@ -1,10 +1,14 @@
-Dim hImg As Image
-hImg = Image.Load("image.png")
+Public Sub Example11()
+  
+  Dim hImg As Image
+  hImg = Image.Load(IMAGE_NAME)
 
-Paint.Translate(128, 128)
-Paint.Rotate(Rad(45))
-Paint.Scale(256.0 / hImg.W, 256.0 / hImg.H)
-Paint.Translate(-0.5 * hImg.W, -0.5 * hImg.H)
-Paint.Brush = Paint.Image(hImg, 0, 0)
-Paint.Rectangle(0, 0, 256, 256)
-Paint.Fill
+  Paint.Translate(128, 128)
+  Paint.Rotate(Rad(45))
+  Paint.Scale(256.0 / hImg.W, 256.0 / hImg.H)
+  Paint.Translate(-0.5 * hImg.W, -0.5 * hImg.H)
+  Paint.Brush = Paint.Image(hImg, 0, 0)
+  Paint.Rectangle(0, 0, 256, 256)
+  Paint.Fill
+  
+End

@@ -243,6 +243,7 @@ Public Sub TableView_Timer()
   $bAdjust = True
   While $aAdjust.Count
     iRow = $aAdjust.Pop()
+    ' TODO: gb.gtk does not auto adjusting row height => the timer is raised again and again!
     Try $hCtrl.Rows[iRow].H = -1
     If Not Error Then
       If $hCtrl.Rows[iRow].H > 256 Then $hCtrl.Rows[iRow].H = 256

@@ -593,6 +593,9 @@ static void Text(GB_PAINT *d, const char *text, int len, float w, float h, int a
 	pos = PATH(d)->currentPosition();
 	_draw_text_p = d;
 
+	if (w <= 0 || h <= 0)
+		pos.ry() -= PAINTER(d)->fontMetrics().ascent();
+	
 	DRAW_text_with(PAINTER(d), text, len, pos.x(), pos.y(), w, h, align, draw_text_cb);
 }
 

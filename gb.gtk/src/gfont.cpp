@@ -309,6 +309,14 @@ int gFont::ascent()
 	return gt_pango_to_pixel(pango_font_metrics_get_ascent(metric));
 }
 
+float gFont::ascentF()
+{
+	PangoFontDescription *desc=pango_context_get_font_description(ct);
+	PangoFontMetrics *metric=pango_context_get_metrics(ct,desc,NULL);
+	
+	return gt_pango_to_pixel((float)pango_font_metrics_get_ascent(metric));
+}
+
 int gFont::descent()
 {
 	PangoFontDescription *desc=pango_context_get_font_description(ct);

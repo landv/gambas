@@ -1,0 +1,32 @@
+' Gambas module file
+
+Private Const ROOT As String = "~/gambas/3.0/trunk/examples/examples/Drawing/Painting/"
+
+Public Sub Main()
+  
+  Dim hFile As File
+  Dim sLine As String
+  Dim sName As String
+  Dim sSource As String
+  
+  hFile = Open ROOT &/ ".src/FMain.class"
+  While Not Eof(hFile)
+    Line Input #hFile, sLine
+    If Trim(sLine) Like "Public Sub Example*" Then
+      sName = Scan(sLine, "Public Sub *()")[0]
+      sSource = sLine & "\n"
+      Continue
+    Else If sName Then
+      If Trim(sLine) = "End" Then
+        sSource &= sLine & "\n"
+        File.Save(ROOT &/ sName, sSource)
+        Print sName
+        sName = ""
+      Else
+        sSource &= sLine & "\n"
+      Endif
+    Endif
+  Wend
+  Close hFile
+  
+End

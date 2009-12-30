@@ -584,8 +584,14 @@ static void draw_text(GB_PAINT *d, bool rich, const char *text, int len, float w
 	Paint_Font(d, FALSE, (GB_FONT *)&font);
 	gt_add_layout_from_font(layout, font->font);
 	
-	gt_layout_alignment(layout, w, h, &tw, &th, align, &offx, &offy);
-
+	if (w > 0 && h > 0)
+		gt_layout_alignment(layout, w, h, &tw, &th, align, &offx, &offy);
+	else
+	{
+		offx = 0;
+		offy = -(font->font->ascentF());
+	}
+	
 	cairo_rel_move_to(CONTEXT(d), offx, offy);
   pango_cairo_layout_path(CONTEXT(d), layout);
 

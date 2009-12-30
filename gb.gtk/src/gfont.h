@@ -43,6 +43,7 @@ public:
 	void copyTo(gFont *dst);
 	void mergeFrom(gFont *src);
 	int ascent();
+	float ascentF();
 	int descent();
 	bool fixed();
 	bool scalable();

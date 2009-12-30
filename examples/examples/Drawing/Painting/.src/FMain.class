@@ -196,7 +196,6 @@ Public Sub Example6()
   
 End
 
-
 Public Sub Example7()
   
   Dim Dashes As Float[] = [5.0,  'ink
@@ -239,6 +238,7 @@ Public Sub Example8()
 End
 
 Public Sub Example9()
+
   Paint.LineWidth = 6
   Paint.Rectangle(12, 12, 232, 70)
   Paint.Arc(64, 64, 40, 0, Pi(2))
@@ -258,6 +258,7 @@ Public Sub Example9()
   Paint.Fill(True)
   Paint.Brush = Paint.Color(0)
   Paint.Stroke
+
 End
 
 Public Sub Example10()
@@ -267,7 +268,7 @@ Public Sub Example10()
   Paint.Fill
   
   Paint.Brush = Paint.RadialGradient(102.4, 102.4, 128.0, 115.2, 102.4, [Color.Black, Color.White], [1.0, 0.1])
-  Paint.Arc(128, 128, 76.8, 0, Pi(2))
+  Paint.Arc(128, 128, 76.8)
   Paint.Fill
   
 End
@@ -284,7 +285,6 @@ Public Sub Example11()
   Paint.Brush = Paint.Image(hImg, 0, 0)
   Paint.Rectangle(0, 0, 256, 256)
   Paint.Fill
-  
   
 End
 
@@ -304,6 +304,24 @@ Public Sub Example12()
   Paint.Brush = hBrush
   Paint.Rectangle(0, 0, 256, 256)
   Paint.Fill
+  
+End
+
+Public Sub Example20()
+  
+  Dim eWidth As Float
+  Dim Y As Float
+  
+  Y = 20.5
+  For eWidth = 0 To 5 Step 0.25
+    Paint.LineWidth = eWidth
+    Paint.MoveTo(50, Y)
+    Paint.RelLineTo(200, 0)
+    Paint.Stroke
+    Paint.Text(eWidth, 0, Y - 10, 40, 20, Align.Right)
+    Paint.Fill
+    Y += 20
+  Next
   
 End
 
@@ -394,11 +412,10 @@ Public Sub Example16()
   
   'Draw helping lines
   Paint.Brush = Paint.Color(Color.RGB(255, 31, 31, 93))
-  Paint.Arc(10, 135, 5.12, 0, Pi(2))
+  Paint.Arc(10, 135, 5.12)
   Paint.ClosePath
-  Paint.Arc(70, 165, 5.12, 0, Pi(2))
+  Paint.Arc(70, 165, 5.12)
   Paint.Fill
-  
   
 End
 
@@ -406,11 +423,11 @@ Public Sub Example17()
   
   Dim sText As String = "paint"
   
-  Dim x, y As Float
+  Dim X, Y As Float
   
   Paint.Font = Font["Sans,100"]
-  x = 25
-  y = 150
+  X = 25
+  Y = 150
   
   Paint.MoveTo(x, y)
   Paint.Text(sText)
@@ -418,18 +435,19 @@ Public Sub Example17()
   
   Paint.Brush = Paint.Color(Color.RGB(255, 31, 31, 93))
   Paint.LineWidth = 6
-  Paint.Arc(x, y, 10, 0, Pi(2))
+  Paint.Arc(X, Y, 10)
   Paint.RelLineTo(0, - Paint.Font.Height(sText))
   Paint.RelLineTo(Paint.Font.Width(sText), 0)
-  'Paint.RelLineTo(
-  Paint.stroke
+  Paint.Stroke
+  
 End
 
 
 Public Sub optExample_Click()
 
   $sFunctionName = "Example" & Last.tag
-  Editor1.text = File.Load($sFunctionName)
+  Try Editor1.text = File.Load($sFunctionName)
+  If Error Then Editor1.Text = Error.Text
   DrawingArea1.Refresh
 
 End
@@ -441,7 +459,6 @@ Public Sub DrawingArea1_Draw()
   Paint.Rotate(Rad(sldRotate.Value))
   Paint.Translate(-128, -128)
   Object.Call(Me, $sFunctionName)
-  
 
 End
 
