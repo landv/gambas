@@ -266,16 +266,16 @@ BEGIN_PROPERTY(PaintBrush_Matrix)
 	if (READ_PROPERTY)
 	{
 		BPAINT->Transform.Create(&transform);
-		BPAINT->Brush.Matrix(BTHIS, FALSE, transform);
+		BPAINT->Brush.Matrix(BTHIS->brush, FALSE, transform);
 		GB.ReturnObject(create_matrix(BPAINT, transform));
 	}
 	else
 	{
 		matrix = (PAINT_MATRIX *)VPROP(GB_OBJECT);
 		if (!matrix)
-			BPAINT->Brush.Matrix(BTHIS, TRUE, NULL);
+			BPAINT->Brush.Matrix(BTHIS->brush, TRUE, NULL);
 		else
-			BPAINT->Brush.Matrix(BTHIS, TRUE, matrix->transform);
+			BPAINT->Brush.Matrix(BTHIS->brush, TRUE, matrix->transform);
 	}
 
 END_PROPERTY

@@ -651,7 +651,7 @@ static void BrushImage(GB_BRUSH *brush, GB_IMAGE image)
 	QImage *img = CIMAGE_get((CIMAGE *)image);
 	
 	QBrush *br = new QBrush(*img);
-	*brush = br;
+	*brush = (GB_BRUSH)br;
 }
 
 static void BrushLinearGradient(GB_BRUSH *brush, float x0, float y0, float x1, float y1, int nstop, double *positions, GB_COLOR *colors, int extend)
