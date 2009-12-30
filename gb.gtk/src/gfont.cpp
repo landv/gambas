@@ -206,6 +206,7 @@ void gFont::reset()
 void gFont::realize()
 {
   ct = NULL;
+	_height = 0;
 
 	reset();
 	
@@ -371,6 +372,7 @@ void gFont::setName(char *nm)
 	pango_font_description_set_family (desc,nm);
 	
 	_name_set = true;
+	_height = 0;
 }
 
 double gFont::size()
@@ -396,6 +398,7 @@ void gFont::setSize(double sz)
 	pango_font_description_set_size (desc,(int)(sz*PANGO_SCALE));
 	
 	_size_set = true;
+	_height = 0;
 }
 
 void gFont::setGrade(int grade)
@@ -474,18 +477,20 @@ int gFont::height(const char *text, int len)
 	int h;
 	
 	if (len == 0 || !text || !*text) text = " ";
-	
+
 	ly=pango_layout_new(ct);
 	pango_layout_set_text(ly,text,len);
 	pango_layout_get_size(ly,NULL,&h);
 	g_object_unref(G_OBJECT(ly));
-	
+
 	return gt_pango_to_pixel(h);
 }
 
 int gFont::height()
 {
-	return height(" ", 1);
+	if (!_height)
+		_height = height(" ", 1);
+	return _height;
 }
 
 bool gFont::scalable()

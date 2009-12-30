@@ -25,29 +25,14 @@
 #include "gapplication.h"
 #include "gsplitter.h"
 
-// static gboolean notify_later(gSplitter *data)
-// {
-// 	data->performArrange();
-// 	data->emit(SIGNAL(data->onResize));
-// 	data->_notify = false;
-// 	return false;
-// }
-
 static void cb_notify(GtkPaned *paned, GParamSpec *arg1, gSplitter *data)
 {
-	if (!strcmp(arg1->name, "position")) // && !data->_notify)
-	{
-		//data->performArrange();
+	if (!strcmp(arg1->name, "position"))
 		data->emit(SIGNAL(data->onResize));
-		//data->_notify = true;
-		//g_timeout_add(0, (GSourceFunc)notify_later, data);
-	}
 }
 
 static void cb_size_allocate(GtkPaned *widget, GtkAllocation *allocation, gSplitter *data)
 {
-	//g_debug("gSplitter: cb_size_allocate: %s", data->name());
-	//data->performArrange();
 	data->updateChild(gtk_paned_get_child1(widget));
 }
 

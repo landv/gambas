@@ -131,22 +131,6 @@ static int Begin(GB_PAINT *d)
 	}
 	else if (GB.Is(device, CLASS_Image))
 	{
-		/*gPicture *picture = CIMAGE_get(((CIMAGE *)device));
-		GdkPixbuf *pixbuf;
-		
-		if (picture->isVoid())
-		{
-			GB.Error("Bad picture");
-			return TRUE;
-		}
-		
-		pixbuf = picture->getPixbuf();
-		w = picture->width();
-		h = picture->height();
-		
-		target = 
-			cairo_image_surface_create_for_data(picture->data(), CAIRO_FORMAT_ARGB32, w, h, 
-				cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, w));*/
 		target = check_image(device);
 		cairo_surface_reference(target);
 		w = ((GB_IMG *)device)->width;

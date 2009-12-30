@@ -92,6 +92,7 @@ private:
 	bool uline;
 	bool strike;
 	void realize();
+	int _height;
 };
 
 #endif
