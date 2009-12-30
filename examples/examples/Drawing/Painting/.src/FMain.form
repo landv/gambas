@@ -1,13 +1,13 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,98,77)
+  MoveScaled(0,0,98,83)
   Text = ("")
   Arrangement = Arrange.Fill
   { HSplit1 HSplit
-    MoveScaled(1,1,96,74)
+    MoveScaled(1,1,96,81)
     { VBox1 VBox
-      MoveScaled(1,1,35,71)
+      MoveScaled(1,1,35,79)
       Spacing = True
       Padding = 10
       { Label3 Label
@@ -88,22 +88,40 @@
         Tag = "12"
         Text = ("Image pattern")
       }
+      { Exemple13 RadioButton optExample
+        Name = "Exemple13"
+        MoveScaled(2,42,31,3)
+        Tag = "13"
+        Text = ("Multi segment caps")
+      }
+      { Exemple14 RadioButton optExample
+        Name = "Exemple14"
+        MoveScaled(2,45,31,3)
+        Tag = "14"
+        Text = ("Set line cap")
+      }
+      { Exemple15 RadioButton optExample
+        Name = "Exemple15"
+        MoveScaled(2,49,31,3)
+        Tag = "15"
+        Text = ("Set line join")
+      }
       { Label1 Label
-        MoveScaled(2,48,19,3)
+        MoveScaled(2,61,19,3)
         Font = Font["Bold"]
         Text = ("Rotate")
       }
       { sldRotate Slider
-        MoveScaled(2,52,31,4)
+        MoveScaled(2,65,31,4)
         MaxValue = 360
       }
       { Label2 Label
-        MoveScaled(2,56,19,3)
+        MoveScaled(2,69,19,3)
         Font = Font["Bold"]
         Text = ("Scale")
       }
       { sldScale Slider
-        MoveScaled(2,60,31,4)
+        MoveScaled(2,73,31,4)
         MinValue = 100
         MaxValue = 400
       }
