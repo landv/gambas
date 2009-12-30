@@ -576,6 +576,13 @@ BEGIN_METHOD(Paint_LineTo, GB_FLOAT x; GB_FLOAT y)
 
 END_METHOD
 
+BEGIN_METHOD(Paint_RelLineTo, GB_FLOAT x; GB_FLOAT y)
+
+	CHECK_DEVICE();
+	PAINT->RelLineTo(THIS, VARG(x), VARG(y));
+
+END_METHOD
+
 BEGIN_METHOD(Paint_MoveTo, GB_FLOAT x; GB_FLOAT y)
 
 	CHECK_DEVICE();
@@ -879,6 +886,7 @@ GB_DESC PaintDesc[] =
 
 	GB_STATIC_METHOD("CurveTo", NULL, Paint_CurveTo, "(X1)f(Y1)f(X2)f(Y2)f(X3)f(Y3)f"),
 	GB_STATIC_METHOD("LineTo", NULL, Paint_LineTo, "(X)f(Y)f"),
+	GB_STATIC_METHOD("RelLineTo", NULL, Paint_RelLineTo, "(X)f(Y)f"),
 	GB_STATIC_METHOD("MoveTo", NULL, Paint_MoveTo, "(X)f(Y)f"),
 
 	GB_STATIC_PROPERTY("Font", "Font", Paint_Font),

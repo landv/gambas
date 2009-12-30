@@ -529,6 +529,11 @@ static void LineTo(GB_PAINT *d, float x, float y)
 	cairo_line_to(CONTEXT(d), x, y);
 }
 
+static void RelLineTo(GB_PAINT *d, float x, float y)
+{
+        cairo_rel_line_to(CONTEXT(d), x, y);
+}
+
 static void CurveTo(GB_PAINT *d, float x1, float y1, float x2, float y2, float x3, float y3)
 {
 	cairo_curve_to(CONTEXT(d), x1, y1, x2, y2, x3, y3);
@@ -870,6 +875,7 @@ GB_PAINT_DESC PAINT_Interface = {
 	GetCurrentPoint,
 	MoveTo,
 	LineTo,
+	RelLineTo,
 	CurveTo,
 	Text,
 	//RichText,

@@ -160,6 +160,7 @@ typedef
 		void (*GetCurrentPoint)(GB_PAINT *d, float *x, float *y);
 		void (*MoveTo)(GB_PAINT *d, float x, float y);
 		void (*LineTo)(GB_PAINT *d, float x, float y);
+		void (*RelLineTo)(GB_PAINT *d, float x, float y);
 		void (*CurveTo)(GB_PAINT *d, float x1, float y1, float x2, float y2, float x3, float y3);
 	
 		void (*Text)(GB_PAINT *d, const char *text, int len, float w, float h, int align);
