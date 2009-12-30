@@ -267,6 +267,10 @@ static int PathContains(GB_PAINT *d, float x, float y)
 static void Dash(GB_PAINT *d, int set, float **dashes, int *count)
 {
 	int i;
+	double lw;
+	
+	lw = cairo_get_line_width(CONTEXT(d));
+	if (lw == 0) lw = 1;
 	
 	if (set)
 	{
@@ -277,7 +281,7 @@ static void Dash(GB_PAINT *d, int set, float **dashes, int *count)
 			double dd[*count];
 			
 			for (i = 0; i < *count; i++)
-				dd[i] = (*dashes)[i];
+				dd[i] = (*dashes)[i] * lw;
 			
 			cairo_set_dash(CONTEXT(d), dd, *count, 0.0);
 		}
@@ -293,7 +297,7 @@ static void Dash(GB_PAINT *d, int set, float **dashes, int *count)
 			
 			GB.Alloc(POINTER(dashes), sizeof(float) * *count);
 			for (int i = 0; i < *count; i++)
-				(*dashes)[i] = (float)dd[i];
+				(*dashes)[i] = (float)dd[i] / lw;
 		}
 		else
 		{
@@ -304,18 +308,23 @@ static void Dash(GB_PAINT *d, int set, float **dashes, int *count)
 
 static void DashOffset(GB_PAINT *d, int set, float *offset)
 {
+	double lw;
+	
+	lw = cairo_get_line_width(CONTEXT(d));
+	if (lw == 0) lw = 1;
+
 	if (set)
 	{
 		int count = cairo_get_dash_count(CONTEXT(d));
 		double dashes[count];
 		cairo_get_dash(CONTEXT(d), dashes, NULL);
-		cairo_set_dash(CONTEXT(d), dashes, count, (double)*offset);
+		cairo_set_dash(CONTEXT(d), dashes, count, (double)*offset * lw);
 	}
 	else
 	{
 		double v;
 		cairo_get_dash(CONTEXT(d), NULL, &v);
-		*offset = (float)v;
+		*offset = (float)v / lw;
 	}
 }
 
@@ -399,7 +408,20 @@ static void LineJoin(GB_PAINT *d, int set, int *value)
 static void LineWidth(GB_PAINT *d, int set, float *value)
 {
 	if (set)
+	{
+		float *dashes;
+		int count;
+		float offset;
+		
+		Dash(d, FALSE, &dashes, &count);
+		DashOffset(d, FALSE, &offset);
+		
 		cairo_set_line_width(CONTEXT(d), (double)*value);
+		
+		Dash(d, TRUE, &dashes, &count);
+		DashOffset(d, TRUE, &offset);
+		GB.Free(POINTER(&dashes));
+	}
 	else
 		*value = (float)cairo_get_line_width(CONTEXT(d));
 }
@@ -732,7 +754,7 @@ static void BrushLinearGradient(GB_BRUSH *brush, float x0, float y0, float x1, f
 	
 	handle_color_stop(pattern, nstop, positions, colors);
 	set_pattern_extend(pattern, extend);
-
+	
 	*brush = (GB_BRUSH)pattern;
 }
 

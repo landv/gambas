@@ -76,33 +76,30 @@ typedef
 
 DRAW_INTERFACE DRAW EXPORT;
 
-static bool _init = FALSE;
-
 static void set_background(GB_DRAW *d, int col);
 static void set_foreground(GB_DRAW *d, int col);
 static void set_fill_color(GB_DRAW *d, int col);
 
 void DRAW_init()
 {
-	if (_init)
-		return;
-		
 	GB.GetInterface("gb.draw", DRAW_INTERFACE_VERSION, &DRAW);
-	_init = TRUE;
 }
 
-static void init_drawing(GB_DRAW *d, QPainter *p, QWidget *init, int w, int h, int dpi = 0)
+static bool init_drawing(GB_DRAW *d, QPaintDevice *device, int w, int h, int dpi = 0)
 {
-	EXTRA(d)->p = p;
+	if (device->paintingActive())
+	{
+		GB.Error("Device already being painted");
+		return true;
+	}
+	
+	EXTRA(d)->p = new QPainter(device);
 	EXTRA(d)->pm = 0;
 	EXTRA(d)->mask = 0;
 	EXTRA(d)->fg = COLOR_DEFAULT;
 	EXTRA(d)->fillColor = COLOR_DEFAULT;
 	d->width = w;
 	d->height = h;
-	
-	if (init)
-		p->initFrom(init);
 	
 	if (dpi)
 		d->resolution = dpi;
@@ -112,6 +109,8 @@ static void init_drawing(GB_DRAW *d, QPainter *p, QWidget *init, int w, int h, i
 		#else
 			d->resolution = QX11Info::appDpiY();
 		#endif
+	
+	return FALSE;
 }
 
 // bool DRAW_must_resize_font(void)
@@ -191,7 +190,9 @@ static int begin(GB_DRAW *d)
 	if (GB.Is(device, CLASS_Window))
 	{
 		MyMainWindow *win = (MyMainWindow *)((CWIDGET *)device)->widget;
-		init_drawing(d, new QPainter(win), win, win->width(), win->height()); // How to paint unclip ???
+		 // How to paint unclip ???
+		if (init_drawing(d, win, win->width(), win->height()))
+			return TRUE;
 	}
 	else if (GB.Is(device, CLASS_Picture))
 	{
@@ -203,7 +204,8 @@ static int begin(GB_DRAW *d)
 			return TRUE;
 		}
 
-		init_drawing(d, new QPainter(pict->pixmap), NULL, pict->pixmap->width(), pict->pixmap->height());
+		if (init_drawing(d, pict->pixmap, pict->pixmap->width(), pict->pixmap->height()))
+			return TRUE;
 
 		if (!pict->pixmap->mask().isNull())
 		{
@@ -222,14 +224,18 @@ static int begin(GB_DRAW *d)
 	else if (GB.Is(device, CLASS_DrawingArea))
 	{
 		MyDrawingArea *wid = (MyDrawingArea *)(((CWIDGET *)device)->widget);
+		bool ret;
 
 		if (wid->isCached())
-			init_drawing(d, new QPainter(wid->background()), wid, wid->background()->width(), wid->background()->height());
+			ret = init_drawing(d, wid->background(), wid->background()->width(), wid->background()->height());
 		else if (wid->cache)
-			init_drawing(d, new QPainter(wid->cache), wid, wid->cache->width(), wid->cache->height());
+			ret = init_drawing(d, wid->cache, wid->cache->width(), wid->cache->height());
 		else
-			init_drawing(d, new QPainter(wid), wid, wid->width(), wid->height());
+			ret = init_drawing(d, wid, wid->width(), wid->height());
 			
+		if (ret)
+			return TRUE;
+		
 		wid->drawn++;
 	}
 	

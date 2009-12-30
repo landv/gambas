@@ -86,6 +86,7 @@ static bool init_painting(GB_PAINT *d, QPaintDevice *device)
 	
 	pen = PAINTER(d)->pen();
 	pen.setCapStyle(Qt::FlatCap);
+	pen.setJoinStyle(Qt::MiterJoin);
 	pen.setMiterLimit(10.0);
 	pen.setWidthF(2.0);
 	PAINTER(d)->setPen(pen);
