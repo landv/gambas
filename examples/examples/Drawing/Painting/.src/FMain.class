@@ -1,0 +1,261 @@
+' Gambas class file
+
+Private $sFunctionName As String = "Example1"
+
+Public Sub _new()
+
+  Editor1.Text = File.Load($sFunctionName)
+  
+End
+
+Public Sub Form_Open()
+
+End
+
+Public Sub Example1()
+
+  Dim XC As Float = 128
+  Dim YC As Float = 128
+  Dim Radius As Float = 100
+  Dim Angle1 As Float = Rad(-45)
+  Dim Angle2 As Float = Rad(-180)
+  Dim X, Y As Float
+  
+  Paint.LineWidth = 10
+  Paint.Arc(XC, YC, Radius, Angle1, Angle2 - Angle1)
+  Paint.Stroke
+  
+  'Draw helping Lines
+  Paint.LineWidth = 6.0
+  Paint.Brush = Paint.Color(Color.RGB(255, 0.2 * 255, 0.2 * 255, 0.6 * 255))
+  
+  Paint.Arc(XC, YC, 10.0)
+  Paint.Fill
+  
+  Paint.Arc(XC, YC, Radius, Angle1, 0)
+  X = Paint.X
+  Y = Paint.Y
+  Paint.Arc(XC, YC, Radius, Angle2, 0)
+  Paint.LineTo(XC, YC)
+  Paint.LineTo(X, Y)
+  Paint.Stroke
+
+End
+
+
+Public Sub Example2()
+  
+  Dim XC As Float = 128
+  Dim YC As Float = 128
+  Dim Radius As Float = 100
+  Dim Angle1 As Float = Rad(-45)
+  Dim Angle2 As Float = Rad(180)
+  Dim X, Y As Float
+  
+  Paint.LineWidth = 10
+  Paint.Arc(XC, YC, Radius, Angle1, Angle2 - Angle1)
+  Paint.Stroke
+  
+  'Draw helping Lines
+  Paint.LineWidth = 6.0
+  Paint.Brush = Paint.Color(Color.RGB(255, 0.2 * 255, 0.2 * 255, 0.6 * 255))
+  
+  Paint.Arc(XC, YC, 10.0)
+  Paint.Fill
+  
+  Paint.Arc(XC, YC, Radius, Angle1, 0)
+  X = Paint.X
+  Y = Paint.Y
+  Paint.Arc(XC, YC, Radius, Angle2, 0)
+  Paint.LineTo(XC, YC)
+  Paint.LineTo(X, Y)
+  Paint.Stroke
+  
+End
+
+Public Sub Example3()
+  
+  Paint.Arc(128.0, 128.0, 76.8, 0, Pi(2))
+  Paint.Clip
+  Paint.Rectangle(0, 0, 256, 256)
+  Paint.Fill
+  Paint.Brush = Paint.Color(Color.RGB(0, 255, 0))
+  Paint.MoveTo(0, 0)
+  Paint.LineTo(256, 256)
+  Paint.MoveTo(256, 0)
+  Paint.LineTo(0, 256)
+  Paint.LineWidth = 10.0
+  Paint.Stroke
+  
+End
+
+Public Sub Example4()
+  
+  Dim hImg As Image
+    
+  Paint.Arc(128.0, 128.0, 76.8, 0, Pi(2))
+  Paint.Clip
+  Paint.NewPath
+  hImg = Image.Load("image.png")
+  Paint.Scale(256 / hImg.Width, 256 / hImg.Height)
+  Paint.Brush = Paint.Image(hImg, 0, 0)
+  Paint.Rectangle(0, 0, 512, 512)
+  Paint.Fill()
+  
+End
+
+Public Sub Example5()
+  
+  ' A custom shape that could be wrapped in a function
+  Dim X0 As Float = 25.6
+  Dim Y0 As Float = 25.6
+  Dim RectWidth As Float = 204.8
+  Dim RectHeight As Float = 204.8
+  
+  Dim Radius As Float = 102.4
+  
+  Dim X1, Y1 As Float
+  
+  X1 = X0 + RectWidth
+  Y1 = Y0 + RectHeight
+  
+  If Not (RectWidth > 0.0) Or Not (RectHeight > 0.0) Then Return
+  
+  If RectWidth / 2 < Radius Then
+    If RectHeight / 2 < Radius Then
+      Paint.MoveTo(X0, (Y0 + Y1) / 2)
+      Paint.CurveTo(X0, Y0, X0, Y0, (X0 + X1) / 2, Y0)
+      Paint.CurveTo(X1, Y0, X1, Y0, X1, (Y0 + Y1) / 2)
+      Paint.CurveTo(X1, Y1, X1, Y1, (X1 + X0) / 2, Y1)
+      Paint.CurveTo(X0, Y1, X0, Y1, X0, (Y0 + Y1) / 2)
+    Else
+      Paint.MoveTo(X0, Y0 + Radius)
+      Paint.CurveTo(X0, Y0, X0, Y0, (X0 + X1) / 2, Y0)
+      Paint.CurveTo(X1, Y0, X1, Y0, X1, Y0 + Radius)
+      Paint.LineTo(X1, Y1 - Radius)
+      Paint.CurveTo(X1, Y1, X1, Y1, (X1 + X0) / 2, Y1)
+      Paint.CurveTo(X0, Y1, X0, Y1, X0, Y1 - Radius)
+    Endif
+  Else
+    If (RectHeight / 2 < Radius) Then 
+      Paint.MoveTo(X0, (Y0 + Y1) / 2)
+      Paint.CurveTo(X0, Y0, X0, Y0, X0 + Radius, Y0)
+      Paint.LineTo(X1 - Radius, Y0)
+      Paint.CurveTo(X1, Y0, X1, Y0, X1, (Y0 + Y1) / 2)
+      Paint.CurveTo(X1, Y1, X1, Y1, X1 - Radius, Y1)
+      Paint.LineTo(X0 + Radius, Y1)
+      Paint.CurveTo(X0, Y1, X0, Y1, X0, (Y0 + Y1) / 2)
+    Else
+      Paint.MoveTo(X0, Y0 + Radius)
+      Paint.CurveTo(X0, Y0, X0, Y0, X0 + Radius, Y0)
+      Paint.LineTo(X1 - Radius, Y0)
+      Paint.CurveTo(X1, Y0, X1, Y0, X1, Y0 + Radius)
+      Paint.LineTo(X1, Y1 - Radius)
+      Paint.CurveTo(X1, Y1, X1, Y1, X1 - Radius, Y1)
+      Paint.LineTo(X0 + Radius, Y1)
+      Paint.CurveTo(X0, Y1, X0, Y1, X0, Y1 - Radius)
+    Endif
+  Endif
+
+  Paint.ClosePath
+  Paint.Brush = Paint.Color(Color.RGB(128, 128, 255))
+  Paint.Fill(True)
+  Paint.Brush = Paint.Color(Color.RGB(128, 0, 0, 128))
+  Paint.LineWidth = 10.0
+  Paint.Stroke
+  
+End
+
+Public Sub Example6()
+  
+  Dim X As Float = 25.6
+  Dim Y As Float = 128.0
+  Dim X1 As Float = 102.4
+  Dim Y1 As Float = 230.4
+  Dim X2 As Float = 153.6
+  Dim Y2 As Float = 25.6
+  Dim X3 As Float = 230.4
+  Dim Y3 As Float = 128.0
+
+  Paint.MoveTo(X, Y)
+  Paint.CurveTo(X1, Y1, X2, Y2, X3, Y3)
+
+  Paint.LineWidth = 10
+  Paint.Stroke
+
+  Paint.Brush = Paint.Color(Color.RGB(255, 255 * 0.2, 255 * 0.2, 255 * 0.6))
+  Paint.LineWidth = 6
+
+  Paint.MoveTo(X, Y)
+  Paint.LineTo(X1, Y1)
+  Paint.MoveTo(X2, Y2)
+  Paint.LineTo(X3, Y3)
+  Paint.Stroke
+  
+End
+
+
+Public Sub Example7()
+  
+  Dim Dashes As Float[] = [5.0,  'ink
+                           1.0,  'skip
+                           1.0,  'ink
+                           1.0]  'skip
+  
+  Paint.Dash = Dashes
+  Paint.DashOffset = -5
+  Paint.LineWidth = 10.0
+  Paint.MoveTo(128.0, 25.6)
+  Paint.LineTo(230.4, 230.4)
+  Paint.LineTo(230.4 + -102.4, 230.4)
+  Paint.CurveTo(51.2, 230.4, 51.2, 128.0, 128.0, 128.0)
+  Paint.Stroke
+  
+End
+
+Public Sub Example8()
+  
+  Paint.MoveTo(128.0, 25.6)
+  Paint.LineTo(230.4, 230.4)
+  Paint.LineTo(Paint.X - 102.4, Paint.Y)
+  Paint.CurveTo(51.2, 230.4, 51.2, 128.0, 128.0, 128.0)
+  Paint.ClosePath
+
+  Paint.MoveTo(64.0, 25.6)
+  Paint.LineTo(Paint.X + 51.2, Paint.Y + 51.2)
+  Paint.LineTo(Paint.X - 51.2, Paint.Y + 51.2)
+  Paint.LineTo(Paint.X - 51.2, Paint.Y - 51.2)
+  Paint.ClosePath
+  
+  Paint.LineWidth = 10
+  Paint.Brush = Paint.Color(Color.Blue)
+  Paint.Fill(True)
+
+  Paint.Brush = Paint.Color(Color.Black)
+  Paint.Stroke
+  
+End
+
+
+
+Public Sub optExample_Click()
+
+  $sFunctionName = "Example" & Last.tag
+  Editor1.text = File.Load($sFunctionName)
+  DrawingArea1.Refresh
+
+End
+
+Public Sub DrawingArea1_Draw()
+
+  'Dim hImage As New Picture(512, 512) 'Image(512, 512, Color.White)
+  
+  'hImage.Fill(Color.White)
+  'Paint.Begin(hImage)
+  Object.Call(Me, $sFunctionName)
+  'Paint.End()
+  'Draw.Picture(hImage, 0, 0)
+
+End
+
+

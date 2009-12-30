@@ -86,6 +86,8 @@ Private $aMonth As String[]
 Private $sTemp As String
 Private $hTemp As File
 
+Private $sError As String
+
 Public Sub FormatDate(dDate As Date) As String
   
   dDate -= Frac(Date(Now)) ' Go to GMT
@@ -1557,6 +1559,8 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
   '  PRINT "<body>"
   'ENDIF 
 
+  If $sError Then Print "<pre>"; EncodeHTML($sError); "</pre><hr>"
+
   $bHeader = True
 
   'PRINT "<p>&nbsp;<p>&nbsp;<p>"
@@ -1760,7 +1764,7 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
 
   Endif
 
-  If sWarn Then
+  If sWarn And If Not $bOnlineHelp Then
     Print "<div class=\"alert\">"
     Print "<b>"; ("Warning!"); "&nbsp;"; sWarn; "</b>"
     If Not $bWget Then
@@ -1971,7 +1975,7 @@ Private Function SubstitutePath(sPath As String) As String
     Else If sPath Like "/comp/gb.gtk*" Then
       If sPath = $sPath Then AddRedirect("/comp/gb.qt4", "/comp/gb.gtk")
       sPath = Replace(sPath, "/comp/gb.gtk", "/comp/gb.qt4")
-    Else If $sPath Like "/comp/gb.gui*" Then
+    Else If sPath Like "/comp/gb.gui*" Then
       If sPath = $sPath Then AddRedirect("/comp/gb.qt4", "/comp/gb.gui")
       sPath = Replace(sPath, "/comp/gb.gui", "/comp/gb.qt4")
     Endif

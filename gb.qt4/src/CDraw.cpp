@@ -113,26 +113,6 @@ static bool init_drawing(GB_DRAW *d, QPaintDevice *device, int w, int h, int dpi
 	return FALSE;
 }
 
-// bool DRAW_must_resize_font(void)
-// {
-//   GB_DRAW *d = DRAW.GetCurrent();
-//   return (d->device != CLASS_Printer);
-// }
-// 
-// int DRAW_status(void)
-// {
-//   if (!THIS)
-//     return -1;
-//   else
-//     return (THIS - draw_stack);
-// // }
-// 
-// void DRAW_restore(int status)
-// {
-//   while (DRAW_status() != status)
-//     DRAW_end();
-// }
-
 static QWidget *get_widget(GB_DRAW *d)
 {
 	if (!GB.Is(d->device, CLASS_Control))
