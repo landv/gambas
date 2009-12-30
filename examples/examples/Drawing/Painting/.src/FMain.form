@@ -76,9 +76,20 @@
         Tag = "10"
         Text = ("Gradient")
       }
+      { Exemple11 RadioButton optExample
+        Name = "Exemple11"
+        MoveScaled(1,42,31,3)
+        Tag = "11"
+        Text = ("Image")
+      }
+      { Exemple12 RadioButton optExample
+        Name = "Exemple12"
+        MoveScaled(1,46,31,3)
+        Tag = "12"
+        Text = ("Image pattern")
+      }
       { Label1 Label
-        MoveScaled(3,49,19,3)
-        Font = Font["Bold"]
+        MoveScaled(2.6667,49.6667,19,2)
         Text = ("Rotate")
       }
       { sldRotate Slider
@@ -86,8 +97,7 @@
         MaxValue = 360
       }
       { Label2 Label
-        MoveScaled(3,56,19,3)
-        Font = Font["Bold"]
+        MoveScaled(2.6667,56.6667,19,2)
         Text = ("Scale")
       }
       { sldScale Slider
