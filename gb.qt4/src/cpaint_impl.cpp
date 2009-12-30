@@ -760,7 +760,7 @@ static void TransformScale(GB_TRANSFORM matrix, float sx, float sy)
 static void TransformRotate(GB_TRANSFORM matrix, float angle)
 {
 	QTransform *t = (QTransform *)matrix;
-	t->rotate(to_deg(angle));
+	t->rotate(to_deg(-angle));
 }
 
 static int TransformInvert(GB_TRANSFORM matrix)

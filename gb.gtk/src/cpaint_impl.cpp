@@ -860,7 +860,7 @@ static void TransformScale(GB_TRANSFORM matrix, float sx, float sy)
 
 static void TransformRotate(GB_TRANSFORM matrix, float angle)
 {
-	cairo_matrix_rotate((cairo_matrix_t *)matrix, angle);
+	cairo_matrix_rotate((cairo_matrix_t *)matrix, -angle);
 }
 
 static int TransformInvert(GB_TRANSFORM matrix)
