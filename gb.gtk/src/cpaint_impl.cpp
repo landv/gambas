@@ -476,6 +476,7 @@ static void ClosePath(GB_PAINT *d)
 static void Arc(GB_PAINT *d, float xc, float yc, float radius, float angle, float length)
 {
 	cairo_new_sub_path(CONTEXT(d));
+	angle = - angle;
 	if (length >= 0.0)
 		cairo_arc_negative(CONTEXT(d), xc, yc, radius, angle, angle - length);
 	else

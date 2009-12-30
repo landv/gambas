@@ -58,14 +58,6 @@
 #define PAINTER(d) EXTRA(d)->painter
 #define PATH(d) EXTRA(d)->path
 
-//DRAW_INTERFACE DRAW EXPORT;
-
-//static bool _init = FALSE;
-
-/*static void set_background(GB_DRAW *d, int col);
-static void set_foreground(GB_DRAW *d, int col);
-static void set_fill_color(GB_DRAW *d, int col);*/
-
 static inline qreal to_deg(float angle)
 {
 	return (qreal)(angle * 180 / M_PI);
@@ -97,6 +89,7 @@ static bool init_painting(GB_PAINT *d, QPaintDevice *device)
 	pen.setMiterLimit(10.0);
 	pen.setWidthF(2.0);
 	PAINTER(d)->setPen(pen);
+	PAINTER(d)->setBrush(Qt::black);
 	
 	return FALSE;
 }
