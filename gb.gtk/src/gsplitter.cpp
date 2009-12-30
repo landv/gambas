@@ -150,6 +150,7 @@ void gSplitter::insert(gControl *child, bool realize)
 	if (!gtk_paned_get_child1(curr))
 	{
 		gtk_paned_pack1(curr, w, TRUE, TRUE);
+		gtk_paned_set_position(curr, child->width());
 	}
 	else
 	{	
@@ -162,6 +163,7 @@ void gSplitter::insert(gControl *child, bool realize)
 		gtk_paned_pack2(curr, tmp, TRUE, TRUE);
 		curr=GTK_PANED(tmp);
 		gtk_paned_pack1(curr, w, TRUE, TRUE);	
+		gtk_paned_set_position(curr, child->width());
 		//g_signal_connect_after(G_OBJECT(curr),"notify",G_CALLBACK(slt_notify),(gpointer)this);
   	g_signal_connect_after(G_OBJECT(curr), "size-allocate", G_CALLBACK(cb_size_allocate), (gpointer)this);
 		g_signal_connect_after(G_OBJECT(curr), "notify", G_CALLBACK(cb_notify), (gpointer)this);
@@ -170,12 +172,10 @@ void gSplitter::insert(gControl *child, bool realize)
 	g_signal_connect_after(G_OBJECT(w), "show", G_CALLBACK(cb_child_visibility), (gpointer)this);
 	g_signal_connect_after(G_OBJECT(w), "hide", G_CALLBACK(cb_child_visibility), (gpointer)this);
 	
-	unlock();
-	
 	gContainer::insert(child, realize);
 	//updateVisibility();
 	
-	//emit(SIGNAL(onResize));
+	unlock();
 }
 
 void gSplitter::remove(gControl *child)
@@ -213,8 +213,6 @@ void gSplitter::setLayout(int *array, int count)
 	if (count <= 0)
 		return;
 	
-	//fprintf(stderr, "setLayout: %s\n", vl);
-  
   gtk_widget_style_get (border,
 			"handle-size", &shandle,
 			(void *)NULL);

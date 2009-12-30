@@ -1,9 +1,10 @@
-Dim Dashes As Float[] = [50.0,  'ink
-                         10.0,  'skip
-                         10.0,  'ink
-                         10.0]  'skip
+Dim Dashes As Float[] = [5.0,  'ink
+                         1.0,  'skip
+                         1.0,  'ink
+                         1.0]  'skip
+
 Paint.Dash = Dashes
-Paint.DashOffset = -50
+Paint.DashOffset = -5
 Paint.LineWidth = 10.0
 Paint.MoveTo(128.0, 25.6)
 Paint.LineTo(230.4, 230.4)

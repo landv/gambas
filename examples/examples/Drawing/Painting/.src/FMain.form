@@ -1,82 +1,86 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,134,76)
+  MoveScaled(0,0,119,77)
   Text = ("")
-  Arrangement = Arrange.Horizontal
-  { VBox1 VBox
-    MoveScaled(0,2,35,71)
-    Spacing = True
-    Padding = 10
-    { Exemple1 RadioButton optExample
-      Name = "Exemple1"
-      MoveScaled(1,2,31,3)
-      Tag = "1"
-      Text = ("Arc")
-      Value = True
+  Arrangement = Arrange.Fill
+  { HSplit1 HSplit
+    MoveScaled(1,1,113,74)
+    { VBox1 VBox
+      MoveScaled(1,1,35,71)
+      Spacing = True
+      Padding = 10
+      { Exemple1 RadioButton optExample
+        Name = "Exemple1"
+        MoveScaled(1,2,31,3)
+        Tag = "1"
+        Text = ("Arc")
+        Value = True
+      }
+      { Exemple2 RadioButton optExample
+        Name = "Exemple2"
+        MoveScaled(1,6,31,3)
+        Tag = "2"
+        Text = ("Arc negative")
+      }
+      { Exemple3 RadioButton optExample
+        Name = "Exemple3"
+        MoveScaled(1,10,31,3)
+        Tag = "3"
+        Text = ("Clip")
+      }
+      { Exemple4 RadioButton optExample
+        Name = "Exemple4"
+        MoveScaled(1,14,31,3)
+        Tag = "4"
+        Text = ("Clip image")
+      }
+      { Exemple5 RadioButton optExample
+        Name = "Exemple5"
+        MoveScaled(1,18,31,3)
+        Tag = "5"
+        Text = ("Curve rectangle")
+      }
+      { Exemple6 RadioButton optExample
+        Name = "Exemple6"
+        MoveScaled(1,22,31,3)
+        Tag = "6"
+        Text = ("Curve to")
+      }
+      { Exemple7 RadioButton optExample
+        Name = "Exemple7"
+        MoveScaled(1,26,31,3)
+        Tag = "7"
+        Text = ("Dash")
+      }
+      { Exemple8 RadioButton optExample
+        Name = "Exemple8"
+        MoveScaled(1,30,31,3)
+        Tag = "8"
+        Text = ("Fill and stroke")
+      }
     }
-    { Exemple2 RadioButton optExample
-      Name = "Exemple2"
-      MoveScaled(1,6,31,3)
-      Tag = "2"
-      Text = ("Arc negative")
+    { TabStrip1 TabStrip
+      MoveScaled(37,1,72,72)
+      Arrangement = Arrange.Fill
+      Margin = True
+      Count = 2
+      Index = 0
+      Text = ("Preview")
+      { DrawingArea1 DrawingArea
+        MoveScaled(2,1,62,45)
+        Background = &HFFFFFF&
+        Painted = True
+        Border = Border.Plain
+      }
+      Index = 1
+      Text = ("Source")
+      { Editor1 TextArea
+        MoveScaled(8,2,32,37)
+        Font = Font["Monospace"]
+        Text = ("TextArea1")
+      }
+      Index = 0
     }
-    { Exemple3 RadioButton optExample
-      Name = "Exemple3"
-      MoveScaled(1,10,31,3)
-      Tag = "3"
-      Text = ("Clip")
-    }
-    { Exemple4 RadioButton optExample
-      Name = "Exemple4"
-      MoveScaled(1,14,31,3)
-      Tag = "4"
-      Text = ("Clip image")
-    }
-    { Exemple5 RadioButton optExample
-      Name = "Exemple5"
-      MoveScaled(1,18,31,3)
-      Tag = "5"
-      Text = ("Curve rectangle")
-    }
-    { Exemple6 RadioButton optExample
-      Name = "Exemple6"
-      MoveScaled(1,22,31,3)
-      Tag = "6"
-      Text = ("Curve to")
-    }
-    { Exemple7 RadioButton optExample
-      Name = "Exemple7"
-      MoveScaled(1,26,31,3)
-      Tag = "7"
-      Text = ("Dash")
-    }
-    { Exemple8 RadioButton optExample
-      Name = "Exemple8"
-      MoveScaled(1,30,31,3)
-      Tag = "8"
-      Text = ("Fill and stroke")
-    }
-  }
-  { TabStrip1 TabStrip
-    MoveScaled(36,1,97,72)
-    Expand = True
-    Arrangement = Arrange.Fill
-    Count = 2
-    Index = 0
-    Text = ("Preview")
-    { DrawingArea1 DrawingArea
-      MoveScaled(1,1,94,64)
-      Background = &HFFFFFF&
-      Painted = True
-    }
-    Index = 1
-    Text = ("Source")
-    { Editor1 TextArea
-      MoveScaled(8,2,29,63)
-      Font = Font["Monospace"]
-      Text = ("TextArea1")
-    }
-    Index = 0
   }
 }
