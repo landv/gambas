@@ -1,5 +1,6 @@
 ' Gambas class file
 
+Private Const IMAGE_NAME As String = "clovis.jpg"
 Private $sFunctionName As String = "Example1"
 
 Public Sub _new()
@@ -95,7 +96,7 @@ Public Sub Example4()
     
   Paint.Arc(128.0, 128.0, 76.8)
   Paint.Clip
-  hImg = Image.Load("image.png")
+  hImg = Image.Load(IMAGE_NAME)
   Paint.Scale(256 / hImg.Width, 256 / hImg.Height)
   Paint.Brush = Paint.Image(hImg, 0, 0)
   Paint.Rectangle(0, 0, 512, 512)
@@ -272,7 +273,7 @@ End
 Public Sub Example11()
   
   Dim hImg As Image
-  hImg = Image.Load("image.png")
+  hImg = Image.Load(IMAGE_NAME)
 
   Paint.Translate(128, 128)
   Paint.Rotate(Rad(45))
@@ -289,7 +290,7 @@ Public Sub Example12()
   
   Dim hImg As Image
   Dim hBrush As PaintBrush
-  hImg = Image.Load("image.png")
+  hImg = Image.Load(IMAGE_NAME)
   
  
   Paint.Translate(128, 128)
