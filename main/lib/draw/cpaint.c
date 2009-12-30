@@ -569,6 +569,15 @@ BEGIN_METHOD(Paint_CurveTo, GB_FLOAT x1; GB_FLOAT y1; GB_FLOAT x2; GB_FLOAT y2; 
 
 END_METHOD
 
+BEGIN_METHOD(Paint_RelCurveTo, GB_FLOAT x1; GB_FLOAT y1; GB_FLOAT x2; GB_FLOAT y2; GB_FLOAT x3; GB_FLOAT y3)
+
+	float x, y;
+	CHECK_DEVICE();
+	PAINT->GetCurrentPoint(THIS, &x, &y);
+	PAINT->CurveTo(THIS, x + VARG(x1), y + VARG(y1), x + VARG(x2), y + VARG(y2), x + VARG(x3), y + VARG(y3));
+
+END_METHOD
+
 BEGIN_METHOD(Paint_LineTo, GB_FLOAT x; GB_FLOAT y)
 
 	CHECK_DEVICE();
@@ -587,6 +596,15 @@ BEGIN_METHOD(Paint_MoveTo, GB_FLOAT x; GB_FLOAT y)
 
 	CHECK_DEVICE();
 	PAINT->MoveTo(THIS, VARG(x), VARG(y));
+
+END_METHOD
+
+BEGIN_METHOD(Paint_RelMoveTo, GB_FLOAT x; GB_FLOAT y)
+
+	float fx, fy;
+	CHECK_DEVICE();
+	PAINT->GetCurrentPoint(THIS, &fx, &fy);
+	PAINT->MoveTo(THIS, fx + VARG(x), fy + VARG(y));
 
 END_METHOD
 
@@ -885,10 +903,11 @@ GB_DESC PaintDesc[] =
 	GB_STATIC_METHOD("Arc", NULL, Paint_Arc, "(XC)f(YC)f(Radius)f[(Angle)f(Length)f]"),
 
 	GB_STATIC_METHOD("CurveTo", NULL, Paint_CurveTo, "(X1)f(Y1)f(X2)f(Y2)f(X3)f(Y3)f"),
+	GB_STATIC_METHOD("RelCurveTo", NULL, Paint_RelCurveTo, "(X1)f(Y1)f(X2)f(Y2)f(X3)f(Y3)f"),
 	GB_STATIC_METHOD("LineTo", NULL, Paint_LineTo, "(X)f(Y)f"),
 	GB_STATIC_METHOD("RelLineTo", NULL, Paint_RelLineTo, "(X)f(Y)f"),
 	GB_STATIC_METHOD("MoveTo", NULL, Paint_MoveTo, "(X)f(Y)f"),
-
+        GB_STATIC_METHOD("RelMoveTo", NULL, Paint_RelMoveTo, "(X)f(Y)f"),
 	GB_STATIC_PROPERTY("Font", "Font", Paint_Font),
 	GB_STATIC_METHOD("Text", NULL, Paint_Text, "(Text)s[(X)f(Y)f(Width)f(Height)f(Alignment)i)]"),
 	//GB_STATIC_METHOD("RichText", NULL, Paint_RichText, "(Text)s[(X)f(Y)f(Width)f(Height)f(Alignment)i)]"),
