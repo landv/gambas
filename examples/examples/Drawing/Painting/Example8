@@ -5,9 +5,9 @@ Paint.CurveTo(51.2, 230.4, 51.2, 128.0, 128.0, 128.0)
 Paint.ClosePath
 
 Paint.MoveTo(64.0, 25.6)
-Paint.LineTo(Paint.X + 51.2, Paint.Y + 51.2)
-Paint.LineTo(Paint.X - 51.2, Paint.Y + 51.2)
-Paint.LineTo(Paint.X - 51.2, Paint.Y - 51.2)
+Paint.RelLineTo(51.2, 51.2)
+Paint.RelLineTo(-51.2, 51.2)
+Paint.RelLineTo(-51.2, -51.2)
 Paint.ClosePath
 
 Paint.LineWidth = 10

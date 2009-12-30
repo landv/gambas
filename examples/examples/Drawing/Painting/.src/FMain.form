@@ -7,7 +7,7 @@
   { HSplit1 HSplit
     MoveScaled(1,1,96,74)
     { VBox1 VBox
-      MoveScaled(1,1,35,71)
+      MoveScaled(-2,0,35,71)
       Spacing = True
       Padding = 10
       { Exemple1 RadioButton optExample
@@ -55,24 +55,30 @@
       }
       { Exemple8 RadioButton optExample
         Name = "Exemple8"
-        MoveScaled(1,30,31,3)
+        MoveScaled(1,32,31,3)
         Tag = "8"
         Text = ("Fill and stroke")
       }
+      { Exemple9 RadioButton optExample
+        Name = "Exemple9"
+        MoveScaled(2,37,31,3)
+        Tag = "10"
+        Text = ("Gradient")
+      }
       { Label1 Label
-        MoveScaled(2,36,19,2)
+        MoveScaled(2.8333,49.8333,19,2)
         Text = ("Rotate")
       }
       { sldRotate Slider
-        MoveScaled(1,39,31,3)
+        MoveScaled(2,53,31,3)
         MaxValue = 360
       }
       { Label2 Label
-        MoveScaled(2,43,19,2)
+        MoveScaled(2.8333,56.8333,19,2)
         Text = ("Scale")
       }
       { sldScale Slider
-        MoveScaled(1,47,31,3)
+        MoveScaled(1.8333,60.8333,31,3)
         MinValue = 100
         MaxValue = 400
       }

@@ -207,7 +207,7 @@ Public Sub Example7()
   Paint.LineWidth = 10.0
   Paint.MoveTo(128.0, 25.6)
   Paint.LineTo(230.4, 230.4)
-  Paint.LineTo(230.4 + -102.4, 230.4)
+  Paint.RelLineTo(-102.4, 0)
   Paint.CurveTo(51.2, 230.4, 51.2, 128.0, 128.0, 128.0)
   Paint.Stroke
   
@@ -222,9 +222,9 @@ Public Sub Example8()
   Paint.ClosePath
 
   Paint.MoveTo(64.0, 25.6)
-  Paint.LineTo(Paint.X + 51.2, Paint.Y + 51.2)
-  Paint.LineTo(Paint.X - 51.2, Paint.Y + 51.2)
-  Paint.LineTo(Paint.X - 51.2, Paint.Y - 51.2)
+  Paint.RelLineTo(51.2, 51.2)
+  Paint.RelLineTo(-51.2, 51.2)
+  Paint.RelLineTo(-51.2, -51.2)
   Paint.ClosePath
   
   Paint.LineWidth = 10
@@ -233,6 +233,18 @@ Public Sub Example8()
 
   Paint.Brush = Paint.Color(Color.Black)
   Paint.Stroke
+  
+End
+
+Public Sub Example10()
+  
+  Paint.Brush = Paint.LinearGradient(0, 0, 0, 256, [&H0, &HFFFFFF], [1.0, 0.0])
+  Paint.Rectangle(0, 0, 256, 256)
+  Paint.Fill
+  
+  Paint.Brush = Paint.RadialGradient(102.4, 102.4, 128.0, 115.2, 102.4, [&H0, &HFFFFFF], [1.0, 0.0])
+  Paint.Arc(128, 128, 76.8, 0, Pi(2))
+  Paint.Fill
   
 End
 
