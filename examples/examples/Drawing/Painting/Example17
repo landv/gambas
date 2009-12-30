@@ -3,20 +3,30 @@ Public Sub Example17()
   Dim sText As String = "gambas"
   
   Dim X, Y As Float
+  Dim hExt As PaintExtents
   
   Paint.Font = Font["Sans,100"]
   X = 25
   Y = 150
   
-  Paint.MoveTo(x, y)
+  Paint.MoveTo(X, Y)
+  Paint.Save
+  Paint.Reset
+  Paint.Text(sText)
+  hExt = Paint.PathExtents
+  Paint.Restore
+  Paint.NewPath
+  Paint.MoveTo(X, Y)
   Paint.Text(sText)
   Paint.Fill
   
   Paint.Brush = Paint.Color(Color.RGB(255, 31, 31, 93))
   Paint.LineWidth = 6
   Paint.Arc(X, Y, 10)
-  Paint.RelLineTo(0, - Paint.Font.Height(sText))
-  Paint.RelLineTo(Paint.Font.Width(sText), 0)
+  Paint.Fill
+  Paint.MoveTo(X, Y)
+  Paint.RelLineTo(0, Paint.Font.Descent - hExt.Height)
+  Paint.RelLineTo(hExt.Width, 0)
   Paint.Stroke
   
 End
