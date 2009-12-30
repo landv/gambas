@@ -241,9 +241,9 @@ GB_DESC Cgl[] =
 	GB_STATIC_METHOD("SelectBuffer", NULL, GLSELECTBUFFER, NULL),
 
 	/* glGetxxxx calls - see GLinfo.h/c   */
-	GB_STATIC_METHOD("GetBooleanv", "Boolean[]", GLGETBOOLEANV, "(Parameter)i[(Size)i]"),
-	GB_STATIC_METHOD("GetFloatv", "Float[]", GLGETFLOATV, "(Parameter)i[(Size)i]"),
-	GB_STATIC_METHOD("GetIntegerv", "Integer[]", GLGETINTEGERV, "(Parameter)i[(Size)i]"),
+	GB_STATIC_METHOD("GetBooleanv", "Boolean[]", GLGETBOOLEANV, "(Parameter)i"),
+	GB_STATIC_METHOD("GetFloatv", "Float[]", GLGETFLOATV, "(Parameter)i"),
+	GB_STATIC_METHOD("GetIntegerv", "Integer[]", GLGETINTEGERV, "(Parameter)i]"),
 	GB_STATIC_METHOD("GetString", "s", GLGETSTRING, "(Name)i"),
 
 	/********************/

@@ -24,7 +24,7 @@
 
 #include "GL.h"
 
-static int checkSize(GLenum value)
+int checkSize(GLenum value)
 {
 	int retSize = 0;
 	
@@ -413,27 +413,14 @@ static int checkSize(GLenum value)
 
 /**************************************************************************/
 
-/*
-   First, we check if the parameter is of a known size.
-   If not (0 is returned), we check the size method parameter.
-   If size is always 0 (size parameter is equal to 0 or is missing)
-   we return a null object.
-
-   Finally we return an object of the defined size.
-*/
-
-
-BEGIN_METHOD(GLGETBOOLEANV, GB_INTEGER parameter; GB_INTEGER size)
+BEGIN_METHOD(GLGETBOOLEANV, GB_INTEGER parameter)
 
 	GB_ARRAY bArray;
 	int size = checkSize(VARG(parameter));
 
 	if (!size)
-		size = VARGOPT(size, 0);
-
-	if (!size)
 	{
-		GB.ReturnNull();
+		GB.Error("Unknown parameter !");
 		return;
 	}
 
@@ -450,17 +437,14 @@ BEGIN_METHOD(GLGETBOOLEANV, GB_INTEGER parameter; GB_INTEGER size)
 
 END_METHOD
 
-BEGIN_METHOD(GLGETFLOATV, GB_INTEGER parameter; GB_INTEGER size)
+BEGIN_METHOD(GLGETFLOATV, GB_INTEGER parameter)
 
 	GB_ARRAY fArray;
 	int size = checkSize(VARG(parameter));
 
 	if (!size)
-		size = VARGOPT(size, 0);
-
-	if (!size)
 	{
-		GB.ReturnNull();
+		GB.Error("Unknown parameter !");
 		return;
 	}
 
@@ -477,17 +461,14 @@ BEGIN_METHOD(GLGETFLOATV, GB_INTEGER parameter; GB_INTEGER size)
 
 END_METHOD
 
-BEGIN_METHOD(GLGETINTEGERV, GB_INTEGER parameter; GB_INTEGER size)
+BEGIN_METHOD(GLGETINTEGERV, GB_INTEGER parameter)
 
 	GB_ARRAY iArray;
 	int size = checkSize(VARG(parameter));
 
 	if (!size)
-		size = VARGOPT(size, 0);
-
-	if (!size)
 	{
-		GB.ReturnNull();
+		GB.Error("Unknown parameter !");
 		return;
 	}
 
