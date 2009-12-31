@@ -16,6 +16,24 @@ PRIVATE $aAppArgs AS NEW String[]
 PRIVATE $bNoCache AS Boolean
 PRIVATE $bVerbose AS Boolean
 
+PRIVATE SUB CheckSubMain(aSym AS String[]) AS Boolean
+  
+  DIM iSym AS Integer
+  
+  IF aSym[0] = "PUBLIC" THEN INC iSym
+  IF aSym[iSym] <> "SUB" AND IF aSym[iSym] <> "PROCEDURE" THEN RETURN
+  INC iSym
+  IF UCase(aSym[iSym]) <> "MAIN" THEN RETURN
+  INC iSym
+  IF aSym[iSym] <> "(" THEN RETURN
+  INC iSym
+  IF aSym[iSym] <> ")" THEN RETURN
+  RETURN TRUE
+  
+CATCH
+  
+END
+
 PUBLIC SUB Main()
 
   DIM s AS Integer
@@ -294,8 +312,8 @@ PRIVATE SUB GenerateFiles(Path AS String)
     ENDIF
     
     'Control if the user have not done a Main Sub itself
-    IF aSym.Count = 4 AND IF (aSym[0] = "SUB" OR aSym[0] = "PROCEDURE") AND IF aSym[1] = "Main" AND IF aSym[2] = "(" AND IF aSym[3] = ")" THEN 
-      IF $bVerbose THEN PRINT "gbs: Main procedure already defined"
+    IF CheckSubMain(aSym) THEN
+      IF $bVerbose THEN PRINT "gbs: Main procedure defined in script"
       bAutoMain = FALSE
     ENDIF
     
