@@ -100,10 +100,10 @@ PUBLIC SUB Main()
     
   ENDIF
   
-  
   'Execute it
   $aAppArgs.Add(sCacheDir &/ $sMd5, 0)
-  EXEC $aAppArgs
+  EXEC $aAppArgs WAIT 
+  Application.Return = Process.LastValue
   
 END
 

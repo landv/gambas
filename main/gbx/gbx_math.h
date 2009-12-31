@@ -44,17 +44,20 @@ double ang(double x, double y);
 void randomize(bool set, uint seed);
 double rnd(void);
 
-#if defined(OS_FREEBSD) || defined(OS_OPENBSD)
+#if defined(OS_FREEBSD) || defined(OS_OPENBSD) || defined(OS_CYGWIN)
 double exp10(double x);
+#ifdef log2
+#undef log2
+#endif
 double log2(double x);
 double exp2(double x);
 #endif
 
-#if defined(OS_FREEBSD) || defined(OS_OPENBSD) || defined(ARCH_ARM)
+#if defined(OS_FREEBSD) || defined(OS_OPENBSD) || defined(OS_CYGWIN) || defined(ARCH_ARM)
 long double log10l(long double x);
 long double fabsl(long double x);
 long double powl(long double x, long double y);
-long double modfl(long double x, long double *iptr);
+long double modfl(long double x, long double *p);
 #endif
 
 #endif
