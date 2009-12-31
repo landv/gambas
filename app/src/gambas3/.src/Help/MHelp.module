@@ -459,7 +459,7 @@ End
 ''Return the formated help of the local class if it exist
 Public Function GetProjectClassHelpHTML(sClass As String, Optional hWebView As WebView) As String
   
-  Dim sHelp, sHTML, sLine, sWhere, sSymbols, sParSymbols As String
+  Dim sHelp, sHTML, sLine, sWhere, sSymbols, sParSymbols, sInfo, sInherit As String
   Dim hForm As FEditor
   Dim hedit As Editor
   Dim i As Integer
@@ -485,7 +485,7 @@ Public Function GetProjectClassHelpHTML(sClass As String, Optional hWebView As W
   Next
   hClassInfo = CComponent.GetClassDescription(sClass)
   cClassSymbols = CComponent.GetClassSymbols(sClass)
-  
+  If hClassInfo.Name = sClass Then hClassInfo.Name = hClassInfo.Parent
   If cClassSymbols.Count > 0 Then
     For Each hsymbol In cClassSymbols
       If Not hsymbol.IsHidden() Then 
@@ -493,12 +493,12 @@ Public Function GetProjectClassHelpHTML(sClass As String, Optional hWebView As W
           If hsymbol.Kind = ":" Then aEvents.Add("<a class=\"none\" href=\"gambas://Project/help\">" & Mid(hSymbol.Name, 2) & "</a>")
           If hsymbol.Kind = "m" Then aMethod.Add("<a class=\"none\" href=\"gambas://Project/help\">" & hsymbol.Name & "</a>")
           If hSymbol.Kind = "p" Or hsymbol.Kind = "r" Then aProperties.Add("<a class=\"none\" href=\"gambas://Project/help\">" & hsymbol.Name & "</a>")
-          If hSymbol.Kind = "C" Then aConst.Add("<a class=\"none\" href=\"gambas://Project/help\">" & hsymbol.Name & "</a>")
+          If hSymbol.Kind = "C" Then aConst.Add("<b><a class=\"none\" href=\"gambas://Project/help\">" & hsymbol.Name & "</a></b>")
         Else
           If hsymbol.Kind = ":" Then aParEvents.Add("<a class=\"none\" href=\"gambas://Project/help\">" & Mid(hSymbol.Name, 2) & "</a>")
           If hsymbol.Kind = "m" Then aParMethod.Add("<a class=\"none\" href=\"gambas://Project/help\">" & hsymbol.Name & "</a>")
           If hSymbol.Kind = "p" Or hsymbol.Kind = "r" Then aParProperties.Add("<a class=\"none\" href=\"gambas://Project/help\">" & hsymbol.Name & "</a>")
-          If hSymbol.Kind = "C" Then aParConst.Add("<a class=\"none\" href=\"gambas://Project/help\">" & hsymbol.Name & "</a>")
+          If hSymbol.Kind = "C" Then aParConst.Add("<b><a class=\"none\" href=\"gambas://Project/help\">" & hsymbol.Name & "</a></b>")
         Endif
       Endif
     Next
@@ -513,8 +513,8 @@ Public Function GetProjectClassHelpHTML(sClass As String, Optional hWebView As W
   sSymbols &= "<td dir=\"ltr\">" & aEvents.Join(" ") & "</td>"
   
   Endif
-  
-  
+  If hClassInfo.AutoCreatable Then sInfo = "This class can be used like an object by creating an hidden instance on demand.<br>"
+  If hClassInfo.Creatable Then sInfo &= "This class is creatable.<br>"
   
   
   sWhere = "gambas://project/" & sClass
@@ -522,14 +522,26 @@ Public Function GetProjectClassHelpHTML(sClass As String, Optional hWebView As W
   sHTML = File.Load("help/class-help.html")
   sHTML = Replace(sHtml, "$(class)", sClass)
   sHTML = Replace(sHtml, "$(help)", sHelp)
+  
+  If sInfo Then 
+  
+     sHTML = Replace(sHtml, "<!--$(Info)-->", sInfo & "<hr class=\"border\">")
+  
+  Endif
+  
+  
   If hClassInfo.Name <> sClass Then 
+    If aParConst.Count > 0 Then 
+      sHTML = Replace(Replace(sHtml, "$(ShowParConst)-->", ""), "<!--$(ShowParConst)", "")
+      sHTML = Replace(sHTML, "$(ParConst)", aParConst.Join(" "))
+    Endif
     sHTML = Replace(Replace(sHtml, "$(showinherits)-->", ""), "<!--$(showinherits)", "This class inherits " & hClassInfo.Name)
     sHtml = Replace(sHtml, "$(ParSymbols)", sParSymbols)
   Endif
   
   If aConst.Count > 0 Then 
   
-    sHTML = Replace(Replace(sHtml, "$(showconst)-->", ""), "<!--$(showconst)", "")
+    sHTML = Replace(Replace(sHtml, "$(ShowConst)-->", ""), "<!--$(ShowConst)", "")
     sHTML = Replace(sHTML, "$(Const)", aConst.Join(" "))
   Endif
   
