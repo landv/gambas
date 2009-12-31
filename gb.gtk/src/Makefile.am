@@ -56,6 +56,7 @@ gb_gtk_la_SOURCES = \
 	CTabStrip.h CTabStrip.cpp \
 	CScrollView.h CScrollView.cpp \
 	CMenu.h CMenu.cpp CTrayIcon.h CTrayIcon.cpp CWindow.h CWindow.cpp \
+	cprinter.h cprinter.cpp \
 	main.h main.cpp \
 	gkey.h \
 	gcursor.h \
@@ -98,4 +99,5 @@ gb_gtk_la_SOURCES = \
 	gclipboard.h \
 	gdrag.h gdrag.cpp \
 	gtools.h kentities.h \
+	gprinter.h gprinter.cpp \
 	x11.h x11.c

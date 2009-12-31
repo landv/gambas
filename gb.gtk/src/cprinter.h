@@ -1,8 +1,8 @@
 /***************************************************************************
 
-  main.h
+  cprinter.h
 
-  (c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
+  (c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,28 +20,32 @@
 
 ***************************************************************************/
 
-#ifndef __MAIN_H
-#define __MAIN_H
+#ifndef __CPRINTER_H
+#define __CPRINTER_H
 
 #include "gambas.h"
-#include "gb.image.h"
 #include "widgets.h"
-#include "CWidget.h"
+#include "gprinter.h"
 
-#ifndef __MAIN_C
-extern GB_INTERFACE GB;
-extern IMAGE_INTERFACE IMAGE;
+typedef 
+  struct 
+  {
+    GB_BASE ob;
+		gPrinter *printer;
+		int current;
+		GtkPrintContext *context;
+  }
+  CPRINTER;
 
-extern GB_CLASS CLASS_Picture;
-extern GB_CLASS CLASS_Image;
-extern GB_CLASS CLASS_DrawingArea;
-extern GB_CLASS CLASS_Menu;
-extern GB_CLASS CLASS_Window;
-extern GB_CLASS CLASS_Printer;
+#ifndef __CPRINTER_CPP
+
+extern GB_DESC PrinterDesc[];
+
+#else
+
+#define THIS ((CPRINTER *)_object)
+#define PRINTER THIS->printer
 
 #endif
 
-void do_iteration(bool do_not_block, bool do_not_sleep = false);
-
 #endif
-

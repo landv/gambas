@@ -211,7 +211,7 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
 
         If Len(sName) Then
           hCtrl = New Button(hParent)
-          hPict = GetIcon(sClass, hClass.Component, Desktop.Scale * 6) 'Picture["img/control" &/ LCase(sClass) & ".png"]
+          hPict = GetIcon(sClass, hClass.Component, 32) 'Picture["img/control" &/ LCase(sClass) & ".png"]
           hCtrl.Picture = hPict
           hCtrl.Design = True
         Else
@@ -308,7 +308,7 @@ Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As
         'PRINT sName; " is virtual"
         hCtrl = CreateControl(sName, sClass, Parent.Control)
         'hCtrl.Resize(5 * Desktop.Scale, 5 * Desktop.Scale)
-        iDim = 8 '(40 + Desktop.Scale - 1) Div Desktop.Scale
+        iDim = 2 + (32 + Desktop.Scale - 1) \ Desktop.Scale '(40 + Desktop.Scale - 1) Div Desktop.Scale
         hCtrl.ResizeScaled(iDim, iDim)
 
       Else

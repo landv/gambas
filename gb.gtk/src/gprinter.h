@@ -1,8 +1,8 @@
 /***************************************************************************
 
-  main.h
+  gprinter.h
 
-  (c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
+  (c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,28 +20,36 @@
 
 ***************************************************************************/
 
-#ifndef __MAIN_H
-#define __MAIN_H
+#ifndef __GPRINTER_H
+#define __GPRINTER_H
 
-#include "gambas.h"
-#include "gb.image.h"
-#include "widgets.h"
-#include "CWidget.h"
+class gPrinter
+{
+public:
+	gPrinter();
+	virtual ~gPrinter();
+	void *tag;
 
-#ifndef __MAIN_C
-extern GB_INTERFACE GB;
-extern IMAGE_INTERFACE IMAGE;
+	bool run(bool configure);
+	void cancel();
+	
+	void setPageCount(int v);
+	int pageCount() const { return _page_count; }
+	bool isPageCountSet() const { return _page_count_set; }
+	
+// Signals
 
-extern GB_CLASS CLASS_Picture;
-extern GB_CLASS CLASS_Image;
-extern GB_CLASS CLASS_DrawingArea;
-extern GB_CLASS CLASS_Menu;
-extern GB_CLASS CLASS_Window;
-extern GB_CLASS CLASS_Printer;
+	void (*onBegin)(gPrinter *me);
+	void (*onEnd)(gPrinter *me);
+	void (*onDraw)(gPrinter *me, GtkPrintContext *context, int page);
+	void (*onPaginate)(gPrinter *me);
+	
+private:
+	GtkPrintOperation *_operation;
+	GtkPrintSettings *_settings;
+	GtkPageSetup *_page;
+	int _page_count;
+	bool _page_count_set;
+};
 
 #endif
-
-void do_iteration(bool do_not_block, bool do_not_sleep = false);
-
-#endif
-

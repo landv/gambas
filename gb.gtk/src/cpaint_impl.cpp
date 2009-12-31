@@ -34,6 +34,7 @@
 #include "CDrawingArea.h"
 #include "CPicture.h"
 #include "CImage.h"
+#include "cprinter.h"
 #include "CFont.h"
 #include "CDraw.h"
 #include "cpaint_impl.h"
@@ -83,12 +84,12 @@ typedef
 #define EXTRA(d) ((GB_PAINT_EXTRA *)d->extra)
 #define CONTEXT(d) EXTRA(d)->context
 
-static bool init_painting(GB_PAINT *d, cairo_surface_t *target, int w, int h)
+static bool init_painting(GB_PAINT *d, cairo_surface_t *target, int w, int h, int rx, int ry)
 {
 	d->width = w;
 	d->height = h;
-	d->resolutionX = 96; //device->physicalDpiX();
-	d->resolutionY = 96; //device->physicalDpiY();
+	d->resolutionX = rx; //device->physicalDpiX();
+	d->resolutionY = ry; //device->physicalDpiY();
 	
 	/*if (device->paintingActive())
 	{
@@ -96,8 +97,12 @@ static bool init_painting(GB_PAINT *d, cairo_surface_t *target, int w, int h)
 		return TRUE;
 	}*/
 	
-	EXTRA(d)->context = cairo_create(target);
-	cairo_surface_destroy(target);
+	if (target)
+	{
+		EXTRA(d)->context = cairo_create(target);
+		cairo_surface_destroy(target);
+	}
+	
 	EXTRA(d)->font = NULL;
 	
 	return FALSE;
@@ -108,7 +113,7 @@ static int Begin(GB_PAINT *d)
 {
 	void *device = d->device;
 	cairo_surface_t *target = NULL;
-	int w, h;
+	int w, h, rx = 96, ry = 96;
 	
 	if (GB.Is(device, CLASS_Picture))
 	{
@@ -163,20 +168,26 @@ static int Begin(GB_PAINT *d)
 			cairo_xlib_surface_create(gdk_x11_drawable_get_xdisplay(dr), gdk_x11_drawable_get_xid(dr), 
 				gdk_x11_visual_get_xvisual(gdk_drawable_get_visual(dr)), w, h);*/
 		
-		d->width = w;
-		d->height = h;
 		d->resolutionX = gDesktop::resolution(); //device->physicalDpiX();
 		d->resolutionY = gDesktop::resolution(); //device->physicalDpiY();
 		
 		EXTRA(d)->context = gdk_cairo_create(dr);
-		EXTRA(d)->font = NULL;
+	}
+	else if (GB.Is(device, CLASS_Printer))
+	{
+		GtkPrintContext *context = ((CPRINTER *)device)->context;
 		
-		return FALSE;
+		EXTRA(d)->context = gtk_print_context_get_cairo_context(context);
+		cairo_reference(CONTEXT(d));
+		w = gtk_print_context_get_width(context);
+		h = gtk_print_context_get_height(context);
+		rx = (int)gtk_print_context_get_dpi_x(context);
+		ry = (int)gtk_print_context_get_dpi_y(context);
 	}
 	else
 		return TRUE;
 	
-	return init_painting(d, target, w, h);
+	return init_painting(d, target, w, h, rx, ry);
 }
 
 static void End(GB_PAINT *d)
@@ -184,6 +195,7 @@ static void End(GB_PAINT *d)
 	void *device = d->device;
 
 	GB.Unref(POINTER(&EXTRA(d)->font));
+	
 	cairo_destroy(EXTRA(d)->context);
 
 	if (GB.Is(device, CLASS_DrawingArea))

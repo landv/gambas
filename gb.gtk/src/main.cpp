@@ -68,6 +68,7 @@
 #include "CIconView.h"
 #include "CGridView.h"
 #include "CSeparator.h"
+#include "cprinter.h"
 
 #include <gtk/gtk.h>
 #include <string.h>
@@ -77,6 +78,7 @@ GB_CLASS CLASS_Image;
 GB_CLASS CLASS_DrawingArea;
 GB_CLASS CLASS_Menu;
 GB_CLASS CLASS_Window;
+GB_CLASS CLASS_Printer;
 
 static void my_lang(char *lang,int rtl1);
 static void my_error(int code,char *error,char *where);
@@ -193,7 +195,7 @@ extern "C"
 		CGridViewRowsDesc,
 		CGridViewDesc,
 		CStockDesc,
-
+		PrinterDesc,
 		NULL
 	};
 
@@ -249,7 +251,7 @@ extern "C"
 		CLASS_Picture = GB.FindClass("Picture");
 		//CLASS_Drawing = GB.FindClass("Drawing");
 		CLASS_DrawingArea = GB.FindClass("DrawingArea");
-		//CLASS_Printer = GB.FindClass("Printer");
+		CLASS_Printer = GB.FindClass("Printer");
 		//CLASS_ScrollView = GB.FindClass("ScrollView");
 		CLASS_Image = GB.FindClass("Image");
 		
