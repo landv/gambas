@@ -14,9 +14,18 @@ GB_COMPONENT_PKG_CONFIG(
   [src],
   gtk+-2.0 ">= 2.10"
 )
+
+GB_COMPONENT_PKG_CONFIG(
+  gtkopengl,
+  GTKOPENGL,
+  [GTKglext toolkit],
+  [opengl],
+  gtkglext-1.0
+)
   
 AC_OUTPUT( \
 Makefile \
 src/Makefile \
-src/ext/Makefile
+src/ext/Makefile \
+src/opengl/Makefile
 )

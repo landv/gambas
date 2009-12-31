@@ -202,6 +202,7 @@ extern "C"
 	void *GB_GTK_1[] EXPORT =
 	{
 		(void *)GTK_INTERFACE_VERSION,
+		(void *)my_main,
 		(void *)GTK_GetPicture,
 		(void *)GTK_GetImage,
 		(void *)CGRIDVIEW_footer,
@@ -326,6 +327,11 @@ static bool global_key_event_handler(int type)
 
 static void my_main(int *argc, char **argv)
 {
+	static bool init = false;
+	
+	if (init)
+		return;
+	
 	gApplication::init(argc, &argv);
 	gApplication::setDefaultTitle(GB.Application.Title());
 	gDesktop::init();
@@ -339,6 +345,8 @@ static void my_main(int *argc, char **argv)
 		_application_keypress = true;
 		gApplication::onKeyEvent = global_key_event_handler;
 	}
+
+	init = true;
 }
 
 /*static void raise_timer(GB_TIMER *timer)
@@ -495,4 +503,3 @@ void do_iteration(bool do_not_block, bool do_not_sleep)
 	if (post_Check) { post_Check=false; GB.CheckPost(); }
 	gControl::cleanRemovedControls();
 }
-
