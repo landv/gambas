@@ -35,6 +35,7 @@
 #include "CPicture.h"
 #include "CImage.h"
 #include "cprinter.h"
+#include "csvgimage.h"
 #include "CFont.h"
 #include "CDraw.h"
 #include "cpaint_impl.h"
@@ -190,6 +191,14 @@ static int Begin(GB_PAINT *d)
 		rx = (int)gtk_print_context_get_dpi_x(context);
 		ry = (int)gtk_print_context_get_dpi_y(context);
 	}
+	else if (GB.Is(device, CLASS_SvgImage))
+	{
+		CSVGIMAGE *svgimage = ((CSVGIMAGE *)device);
+		target = svgimage->surface;
+		cairo_surface_reference(target);
+		w = svgimage->width;
+		h = svgimage->height;
+	}
 	else
 		return TRUE;
 	
@@ -209,6 +218,11 @@ static void End(GB_PAINT *d)
 		gDrawingArea *wid = (gDrawingArea *)((CWIDGET *)device)->widget;
 		if (wid->cached())
 			wid->setCache();
+	}
+	else if (GB.Is(device, CLASS_SvgImage))
+	{
+		CSVGIMAGE *svgimage = ((CSVGIMAGE *)device);
+		cairo_surface_finish(svgimage->surface);
 	}
 }
 

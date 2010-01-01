@@ -165,7 +165,9 @@ void *GAMBAS_Api[] =
   (void *)GB_LoadFile,
   (void *)STREAM_unmap,
   (void *)FILE_exist,
-  (void *)GB_GetTempDir,
+  (void *)GB_TempDir,
+  (void *)GB_TempFile,
+  (void *)GB_CopyFile,
 
   (void *)GB_Store,
   (void *)GB_StoreString,
@@ -1639,9 +1641,33 @@ int GB_toupper(int c)
   return toupper(c);
 }
 
-char *GB_GetTempDir(void)
+char *GB_TempDir(void)
 {
   return FILE_make_temp(NULL, NULL);
+}
+
+char *GB_TempFile(const char *pattern)
+{
+	int len;
+	return FILE_make_temp(&len, pattern);
+}
+
+int GB_CopyFile(const char *src, const char *dst)
+{
+	int ret = 0;
+	
+	TRY
+	{
+		FILE_copy(src, dst);
+	}
+	CATCH
+	{
+		ret = 1;
+    GAMBAS_Error = TRUE;
+	}
+	END_TRY
+	
+	return ret;
 }
 
 char *GB_RealFileName(const char *name, int len)

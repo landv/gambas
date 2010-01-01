@@ -116,7 +116,7 @@ void FILE_copy(const char *src, const char *dst);
 bool FILE_access(const char *path, int mode);
 void FILE_link(const char *src, const char *dst);
 
-char *FILE_make_temp(int *len, char *pattern);
+char *FILE_make_temp(int *len, const char *pattern);
 
 void FILE_recursive_dir(const char *dir, void (*found)(const char *), void (*afterfound)(const char *), int attr);
 

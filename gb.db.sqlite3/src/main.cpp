@@ -469,7 +469,7 @@ static char *FindDatabase(const char *name, const char *hostName)
 	}
 #endif
 
-	GB.NewString(&fullpath, GB.GetTempDir(), 0);
+	GB.NewString(&fullpath, GB.TempDir(), 0);
 	GB.AddString(&fullpath, "/sqlite/", 0);
 	GB.AddString(&fullpath, name, 0);
 
@@ -507,7 +507,7 @@ static char *GetDatabaseHome()
 		   }
 		 */
 
-		sprintf(dbhome, "%s/sqlite", GB.GetTempDir());
+		sprintf(dbhome, "%s/sqlite", GB.TempDir());
 	}
 	else
 	{

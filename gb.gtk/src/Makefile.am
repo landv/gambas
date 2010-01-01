@@ -57,6 +57,7 @@ gb_gtk_la_SOURCES = \
 	CScrollView.h CScrollView.cpp \
 	CMenu.h CMenu.cpp CTrayIcon.h CTrayIcon.cpp CWindow.h CWindow.cpp \
 	cprinter.h cprinter.cpp \
+	csvgimage.h csvgimage.cpp \
 	main.h main.cpp \
 	gkey.h \
 	gcursor.h \

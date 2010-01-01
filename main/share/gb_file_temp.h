@@ -78,343 +78,343 @@ static bool _last_is_dir;
 #ifdef PROJECT_EXEC
 
 typedef
-  struct _path {
-    struct _path *next;
-    char *path;
-    }
-  FILE_PATH;
+	struct _path {
+		struct _path *next;
+		char *path;
+		}
+	FILE_PATH;
 
 
 static void push_path(void **list, const char *path)
 {
-  FILE_PATH *slot;
+	FILE_PATH *slot;
 
-  ALLOC(&slot, sizeof(FILE_PATH), "push_path");
-  STRING_new(&slot->path, path, 0);
+	ALLOC(&slot, sizeof(FILE_PATH), "push_path");
+	STRING_new(&slot->path, path, 0);
 
-  slot->next = *list;
-  *list = slot;
+	slot->next = *list;
+	*list = slot;
 
-  //printf("push_path: %s\n", path);
+	//printf("push_path: %s\n", path);
 }
 
 
 static char *pop_path(void **list)
 {
-  char *path;
-  FILE_PATH *slot;
+	char *path;
+	FILE_PATH *slot;
 
-  if (!*list)
-    return NULL;
+	if (!*list)
+		return NULL;
 
-  path = ((FILE_PATH *)*list)->path;
-  slot = *list;
-  *list = ((FILE_PATH *)*list)->next;
-  FREE(&slot, "pop_path");
+	path = ((FILE_PATH *)*list)->path;
+	slot = *list;
+	*list = ((FILE_PATH *)*list)->next;
+	FREE(&slot, "pop_path");
 
-  //printf("pop_path: %s\n", path);
-  return path;
+	//printf("pop_path: %s\n", path);
+	return path;
 }
 
 
 static void dir_exit(void)
 {
-  if (file_dir != NULL)
-  {
-    closedir(file_dir);
-    file_dir = NULL;
-  }
+	if (file_dir != NULL)
+	{
+		closedir(file_dir);
+		file_dir = NULL;
+	}
 
-  STRING_free(&file_pattern);
-  STRING_free(&file_path);
+	STRING_free(&file_pattern);
+	STRING_free(&file_path);
 }
 
 
-char *FILE_make_temp(int *len, char *pattern)
+char *FILE_make_temp(int *len, const char *pattern)
 {
-  static int count = 0;
+	static int count = 0;
 
-  if (len)
-  {
-    if (pattern)
-      *len = snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_PATTERN, (int)getuid(), (int)getpid(), pattern);
-     else
-    {
-      count++;
-      *len = snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_FILE, (int)getuid(), (int)getpid(), count);
-    }
-  }
-  else
-    snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_DIR, (int)getuid(), (int)getpid());
+	if (len)
+	{
+		if (pattern)
+			*len = snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_PATTERN, (int)getuid(), (int)getpid(), pattern);
+		else
+		{
+			count++;
+			*len = snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_FILE, (int)getuid(), (int)getpid(), count);
+		}
+	}
+	else
+		snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_DIR, (int)getuid(), (int)getpid());
 
-  return file_buffer;
+	return file_buffer;
 }
 
 static void remove_temp_file(const char *path)
 {
-  if (FILE_is_dir(path))
-  {
-	  //fprintf(stderr, "rmdir: %s\n", path);
-    rmdir(path);
+	if (FILE_is_dir(path))
+	{
+		//fprintf(stderr, "rmdir: %s\n", path);
+		rmdir(path);
 	}
-  else
-  {
-	  //fprintf(stderr, "unlink: %s\n", path);
-    unlink(path);
+	else
+	{
+		//fprintf(stderr, "unlink: %s\n", path);
+		unlink(path);
 	}
 }
 
 void FILE_remove_temp_file(void)
 {
-  FILE_recursive_dir(FILE_make_temp(NULL, NULL), NULL, remove_temp_file, 0);
-  rmdir(FILE_make_temp(NULL, NULL));
+	FILE_recursive_dir(FILE_make_temp(NULL, NULL), NULL, remove_temp_file, 0);
+	rmdir(FILE_make_temp(NULL, NULL));
 }
 
 void FILE_init(void)
 {
 	FILE_remove_temp_file();
-  
-  snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_PREFIX, (int)getuid());
-  mkdir(file_buffer, S_IRWXU);
-  snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_DIR, (int)getuid(), (int)getpid());
-  mkdir(file_buffer, S_IRWXU);
+	
+	snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_PREFIX, (int)getuid());
+	mkdir(file_buffer, S_IRWXU);
+	snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_DIR, (int)getuid(), (int)getpid());
+	mkdir(file_buffer, S_IRWXU);
 }
 
 void FILE_exit(void)
 {
 	FILE_remove_temp_file();
-  STRING_free(&file_rdir_path);
-  dir_exit();
+	STRING_free(&file_rdir_path);
+	dir_exit();
 }
 
 #endif
 
 #define stradd(d, s) \
 ({ \
-  char *_d = (d); \
-  const char *_s = (s); \
-  \
-  for(;;) \
-  { \
-    if ((*_d = *_s) == 0) \
-      break; \
-    \
-    _d++; \
-    _s++; \
-  } \
-  \
-  _d; \
+	char *_d = (d); \
+	const char *_s = (s); \
+	\
+	for(;;) \
+	{ \
+		if ((*_d = *_s) == 0) \
+			break; \
+		\
+		_d++; \
+		_s++; \
+	} \
+	\
+	_d; \
 })
 
 const char *FILE_cat(const char *path, ...)
 {
-  char *p;
-  va_list args;
-  int len;
-  bool end_slash = FALSE;
-  bool add_slash = FALSE;
+	char *p;
+	va_list args;
+	int len;
+	bool end_slash = FALSE;
+	bool add_slash = FALSE;
 
-  va_start(args, path);
+	va_start(args, path);
 
-  p = file_buffer;
+	p = file_buffer;
 
-  if (path != file_buffer)
-    *p = 0;
+	if (path != file_buffer)
+		*p = 0;
 
-  for(;;)
-  {
-    if (*path == '/' && p != file_buffer)
-      path++;
+	for(;;)
+	{
+		if (*path == '/' && p != file_buffer)
+			path++;
 
-    len = strlen(path);
-    if (add_slash)
-      len++;
+		len = strlen(path);
+		if (add_slash)
+			len++;
 
-    if (len > 0)
-    {
-      if ((p + len) > &file_buffer[MAX_PATH])
-        return NULL;
+		if (len > 0)
+		{
+			if ((p + len) > &file_buffer[MAX_PATH])
+				return NULL;
 
-      if (p != path)
-      {
-        if (add_slash)
-          p = stradd(p, "/");
+			if (p != path)
+			{
+				if (add_slash)
+					p = stradd(p, "/");
 
-        p = stradd(p, path);
-      }
-      else
-        p += len;
+				p = stradd(p, path);
+			}
+			else
+				p += len;
 
-      end_slash = (p[-1] == '/');
-    }
+			end_slash = (p[-1] == '/');
+		}
 
-    path = va_arg(args, char *);
-    if (path == NULL)
-      break;
+		path = va_arg(args, char *);
+		if (path == NULL)
+			break;
 
-    add_slash = ((!end_slash) && (*path != 0) && (*path != '/'));
-  }
+		add_slash = ((!end_slash) && (*path != 0) && (*path != '/'));
+	}
 
-  file_buffer_length = p - file_buffer;
-  return file_buffer;
+	file_buffer_length = p - file_buffer;
+	return file_buffer;
 }
 
 
 char *FILE_buffer(void)
 {
-  return file_buffer;
+	return file_buffer;
 }
 
 
 int FILE_buffer_length(void)
 {
-  if (file_buffer_length < 0)
-    file_buffer_length = strlen(file_buffer);
+	if (file_buffer_length < 0)
+		file_buffer_length = strlen(file_buffer);
 
-  return file_buffer_length;
+	return file_buffer_length;
 }
 
 const char *FILE_get_dir(const char *path)
 {
-  char *p;
+	char *p;
 
-  if (path == NULL || path[0] == 0)
-    return NULL;
+	if (path == NULL || path[0] == 0)
+		return NULL;
 
-  if (path[0] == '/' && path[1] == 0)
-    return "/";
+	if (path[0] == '/' && path[1] == 0)
+		return "/";
 
-  if (file_buffer != path)
-    strcpy(file_buffer, path);
+	if (file_buffer != path)
+		strcpy(file_buffer, path);
 
-  p = rindex(file_buffer, '/');
+	p = rindex(file_buffer, '/');
 
-  if (p == NULL)
-    *file_buffer = 0;
-  else
-  {
-    *p = 0;
+	if (p == NULL)
+		*file_buffer = 0;
+	else
+	{
+		*p = 0;
 
-    if (file_buffer[0] == 0 && path[0] == '/')
-      strcpy(file_buffer, "/");
-  }
+		if (file_buffer[0] == 0 && path[0] == '/')
+			strcpy(file_buffer, "/");
+	}
 
-  file_buffer_length = -1;
-  return file_buffer;
+	file_buffer_length = -1;
+	return file_buffer;
 }
 
 
 const char *FILE_get_name(const char *path)
 {
-  const char *p;
+	const char *p;
 
-  p = rindex(path, '/');
-  if (p)
-    return &p[1];
-  else
-    return path;
+	p = rindex(path, '/');
+	if (p)
+		return &p[1];
+	else
+		return path;
 }
 
 
 const char *FILE_get_ext(const char *path)
 {
-  const char *p;
+	const char *p;
 
-  p = rindex(path, '/');
-  if (p)
-    path = &p[1];
+	p = rindex(path, '/');
+	if (p)
+		path = &p[1];
 
-  p = rindex(path, '.');
-  if (p == NULL)
-    return &path[strlen(path)];
-  else
-    return p + 1;
+	p = rindex(path, '.');
+	if (p == NULL)
+		return &path[strlen(path)];
+	else
+		return p + 1;
 }
 
 
 const char *FILE_set_ext(const char *path, const char *ext)
 {
-  char *p;
+	char *p;
 
-  if (path != file_buffer)
-  {
-    strcpy(file_buffer, path);
-    path = file_buffer;
-  }
+	if (path != file_buffer)
+	{
+		strcpy(file_buffer, path);
+		path = file_buffer;
+	}
 
-  p = (char *)FILE_get_ext(path);
+	p = (char *)FILE_get_ext(path);
 
-  if (!ext)
-  {
-    if (p > file_buffer && p[-1] == '.')
-      p[-1] = 0;
-    else
-      *p = 0;
-    return path;
-  }
+	if (!ext)
+	{
+		if (p > file_buffer && p[-1] == '.')
+			p[-1] = 0;
+		else
+			*p = 0;
+		return path;
+	}
 
-  if (&p[strlen(ext)] >= &file_buffer[MAX_PATH])
-    return path;
+	if (&p[strlen(ext)] >= &file_buffer[MAX_PATH])
+		return path;
 
-  if (p == path || p[-1] != '.')
-    *p++ = '.';
+	if (p == path || p[-1] != '.')
+		*p++ = '.';
 
-  if (*ext == '.')
-    ext++;
+	if (*ext == '.')
+		ext++;
 
-  strcpy(p, ext);
+	strcpy(p, ext);
 
-  file_buffer_length = -1;
-  return path;
+	file_buffer_length = -1;
+	return path;
 }
 
 
 const char *FILE_get_basename(const char *path)
 {
-  char *p;
+	char *p;
 
-  path = FILE_get_name(path);
+	path = FILE_get_name(path);
 
-  if (file_buffer != path)
-    strcpy(file_buffer, path);
+	if (file_buffer != path)
+		strcpy(file_buffer, path);
 
-  p = rindex(file_buffer, '.');
-  if (p)
-    *p = 0;
+	p = rindex(file_buffer, '.');
+	if (p)
+		*p = 0;
 
-  file_buffer_length = -1;
+	file_buffer_length = -1;
 
-  return file_buffer;
+	return file_buffer;
 }
 
 bool FILE_is_dir(const char *path)
 {
-  struct stat buf;
+	struct stat buf;
 
 #ifdef PROJECT_EXEC
 
-  if (FILE_is_relative(path))
-  {
-  	/*if (!EXEC_arch)
-  	{
-      chdir(PROJECT_path);
-      if (lstat(path, &buf) == 0)
-        goto __OK;
-  	}*/
+	if (FILE_is_relative(path))
+	{
+		/*if (!EXEC_arch)
+		{
+			chdir(PROJECT_path);
+			if (lstat(path, &buf) == 0)
+				goto __OK;
+		}*/
 
-    return ARCHIVE_is_dir(NULL, path);
+		return ARCHIVE_is_dir(NULL, path);
 	}
 
 #endif
 
-  if (stat(path, &buf))
-    return FALSE;
+	if (stat(path, &buf))
+		return FALSE;
 
 /*#ifdef PROJECT_EXEC
 __OK:
 #endif*/
 
-  return (S_ISDIR(buf.st_mode));
+	return (S_ISDIR(buf.st_mode));
 }
 
 
@@ -422,200 +422,200 @@ __OK:
 
 bool FILE_exist_real(const char *path)
 {
-  struct stat buf;
+	struct stat buf;
 
-  chdir(PROJECT_path);
-  return (stat(path, &buf) == 0);
+	chdir(PROJECT_path);
+	return (stat(path, &buf) == 0);
 }
 
 void FILE_stat(const char *path, FILE_STAT *info, bool follow)
 {
-  struct stat buf;
-  int ret;
+	struct stat buf;
+	int ret;
 
-  if (FILE_is_relative(path))
-  {
-    /*if (!EXEC_arch)
-    {
-      chdir(PROJECT_path);
-      if (lstat(path, &buf) == 0)
-        goto _OK;
-    }*/
+	if (FILE_is_relative(path))
+	{
+		/*if (!EXEC_arch)
+		{
+			chdir(PROJECT_path);
+			if (lstat(path, &buf) == 0)
+				goto _OK;
+		}*/
 
-    ARCHIVE_stat(NULL, path, info);
-    return;
-  }
+		ARCHIVE_stat(NULL, path, info);
+		return;
+	}
 
 	if (follow)
 		ret = stat(path, &buf);
 	else
 		ret = lstat(path, &buf);
 		
-  if (ret)
-    THROW_SYSTEM(errno, path);
+	if (ret)
+		THROW_SYSTEM(errno, path);
 
 //_OK:
 
-  if (S_ISREG(buf.st_mode))
-    info->type = GB_STAT_FILE;
-  else if (S_ISDIR(buf.st_mode))
-    info->type = GB_STAT_DIRECTORY;
-  else if (S_ISCHR(buf.st_mode) || S_ISBLK(buf.st_mode))
-    info->type = GB_STAT_DEVICE;
-  else if (S_ISFIFO(buf.st_mode))
-    info->type = GB_STAT_PIPE;
-  else if (S_ISSOCK(buf.st_mode))
-    info->type = GB_STAT_SOCKET;
-  else if (S_ISLNK(buf.st_mode))
-    info->type = GB_STAT_LINK;
+	if (S_ISREG(buf.st_mode))
+		info->type = GB_STAT_FILE;
+	else if (S_ISDIR(buf.st_mode))
+		info->type = GB_STAT_DIRECTORY;
+	else if (S_ISCHR(buf.st_mode) || S_ISBLK(buf.st_mode))
+		info->type = GB_STAT_DEVICE;
+	else if (S_ISFIFO(buf.st_mode))
+		info->type = GB_STAT_PIPE;
+	else if (S_ISSOCK(buf.st_mode))
+		info->type = GB_STAT_SOCKET;
+	else if (S_ISLNK(buf.st_mode))
+		info->type = GB_STAT_LINK;
 
-  info->mode = buf.st_mode & 07777;
-  info->size = buf.st_size;
-  info->atime = (int)buf.st_atime;
-  info->mtime = (int)buf.st_mtime;
-  info->ctime = (int)buf.st_ctime;
-  info->hidden = (*FILE_get_name(path) == '.');
-  info->uid = buf.st_uid;
-  info->gid = buf.st_gid;
+	info->mode = buf.st_mode & 07777;
+	info->size = buf.st_size;
+	info->atime = (int)buf.st_atime;
+	info->mtime = (int)buf.st_mtime;
+	info->ctime = (int)buf.st_ctime;
+	info->hidden = (*FILE_get_name(path) == '.');
+	info->uid = buf.st_uid;
+	info->gid = buf.st_gid;
 }
 
 
 void FILE_dir_first(const char *path, const char *pattern, int attr)
 {
-  dir_exit();
+	dir_exit();
 
-  if (!path || *path == 0)
-    path = ".";
+	if (!path || *path == 0)
+		path = ".";
 
-  if (attr == (GB_STAT_FILE | GB_STAT_DIRECTORY))
-    attr = 0;
-  file_attr = attr;
+	if (attr == (GB_STAT_FILE | GB_STAT_DIRECTORY))
+		attr = 0;
+	file_attr = attr;
 
-  if (FILE_is_relative(path))
-  {
-    /*if (!EXEC_arch)
-    {
-      chdir(PROJECT_path);
-      if (lstat(path, &buf) == 0)
-        goto _OK;
-    }*/
+	if (FILE_is_relative(path))
+	{
+		/*if (!EXEC_arch)
+		{
+			chdir(PROJECT_path);
+			if (lstat(path, &buf) == 0)
+				goto _OK;
+		}*/
 
-    file_dir_arch = TRUE;
-    ARCHIVE_dir_first(NULL, path, pattern, attr);
-    return;
-  }
+		file_dir_arch = TRUE;
+		ARCHIVE_dir_first(NULL, path, pattern, attr);
+		return;
+	}
 
-  file_dir_arch = FALSE;
-  file_dir = opendir(path);
-  if (file_dir == NULL)
-    THROW_SYSTEM(errno, path);
+	file_dir_arch = FALSE;
+	file_dir = opendir(path);
+	if (file_dir == NULL)
+		THROW_SYSTEM(errno, path);
 
-  STRING_new(&file_pattern, pattern, 0);
-  STRING_new(&file_path, path, 0);
+	STRING_new(&file_pattern, pattern, 0);
+	STRING_new(&file_path, path, 0);
 }
 
 
 bool FILE_dir_next(char **path, int *len)
 {
-  struct dirent *entry;
-  int len_entry;
-  bool ret;
+	struct dirent *entry;
+	int len_entry;
+	bool ret;
 	#ifdef _DIRENT_HAVE_D_TYPE
 	#else
-  struct stat info;
-  char *p = file_buffer;
+	struct stat info;
+	char *p = file_buffer;
 	#endif
 
-  if (file_dir_arch)
-  {
-    ret = ARCHIVE_dir_next(path, len, file_attr);
-    if (ret)
-      file_dir_arch = FALSE;
-    return ret;
-  }
+	if (file_dir_arch)
+	{
+		ret = ARCHIVE_dir_next(path, len, file_attr);
+		if (ret)
+			file_dir_arch = FALSE;
+		return ret;
+	}
 
-  if (file_dir == NULL)
-    return TRUE;
+	if (file_dir == NULL)
+		return TRUE;
 
 	#ifdef _DIRENT_HAVE_D_TYPE
 	#else
-  if (file_attr)
-  {
-    strcpy(p, file_path);
-    p += strlen(file_path);
-    if (p[-1] != '/' && (file_buffer[1] || file_buffer[0] != '/'))
-      *p++ = '/';
-  }
+	if (file_attr)
+	{
+		strcpy(p, file_path);
+		p += strlen(file_path);
+		if (p[-1] != '/' && (file_buffer[1] || file_buffer[0] != '/'))
+			*p++ = '/';
+	}
 	#endif
 
-  for(;;)
-  {
-    entry = readdir(file_dir);
-    if (entry == NULL)
-    {
-      dir_exit();
-      return TRUE;
-    }
+	for(;;)
+	{
+		entry = readdir(file_dir);
+		if (entry == NULL)
+		{
+			dir_exit();
+			return TRUE;
+		}
 		
-    if ((strcmp(entry->d_name, ".") == 0) || (strcmp(entry->d_name, "..") == 0))
-      continue;
+		if ((strcmp(entry->d_name, ".") == 0) || (strcmp(entry->d_name, "..") == 0))
+			continue;
 
-    if (file_attr)
-    {
+		if (file_attr)
+		{
 			#ifdef _DIRENT_HAVE_D_TYPE
-      if ((file_attr == GB_STAT_DIRECTORY) ^ (entry->d_type == DT_DIR))
-        continue;
+			if ((file_attr == GB_STAT_DIRECTORY) ^ (entry->d_type == DT_DIR))
+				continue;
 			#else
-      strcpy(p, entry->d_name);
-      stat(file_buffer, &info);
-      if ((file_attr == GB_STAT_DIRECTORY) ^ (S_ISDIR(info.st_mode) != 0))
-        continue;
+			strcpy(p, entry->d_name);
+			stat(file_buffer, &info);
+			if ((file_attr == GB_STAT_DIRECTORY) ^ (S_ISDIR(info.st_mode) != 0))
+				continue;
 			#endif
-    }
+		}
 
-    len_entry = strlen(entry->d_name);
+		len_entry = strlen(entry->d_name);
 
-    if (file_pattern == NULL)
-      break;
+		if (file_pattern == NULL)
+			break;
 
-    if (REGEXP_match(file_pattern, STRING_length(file_pattern), entry->d_name, len_entry))
-      break;
-  }
+		if (REGEXP_match(file_pattern, STRING_length(file_pattern), entry->d_name, len_entry))
+			break;
+	}
 
-  *path = entry->d_name;
-  *len = len_entry;
+	*path = entry->d_name;
+	*len = len_entry;
 	#ifdef _DIRENT_HAVE_D_TYPE
 	_last_is_dir = entry->d_type == DT_DIR;
 	#endif
 
-  return FALSE;
+	return FALSE;
 }
 
 //#undef _DIRENT_HAVE_D_TYPE
 
 void FILE_recursive_dir(const char *dir, void (*found)(const char *), void (*afterfound)(const char *), int attr)
 {
-  void *list = NULL;
+	void *list = NULL;
 	void *dir_list = NULL;
-  char *file;
-  int len;
-  char *path;
-  //struct stat buf;
+	char *file;
+	int len;
+	char *path;
+	//struct stat buf;
 	#ifdef _DIRENT_HAVE_D_TYPE
 	#else
-  FILE_STAT info;
+	FILE_STAT info;
 	#endif
-  char *temp;
+	char *temp;
 	bool is_dir;
 
-  if (!FILE_is_dir(dir))
-    return;
+	if (!FILE_is_dir(dir))
+		return;
 
-  if (!dir || *dir == 0)
-  	dir = ".";
+	if (!dir || *dir == 0)
+		dir = ".";
 
-  STRING_free(&file_rdir_path);
-  STRING_new(&file_rdir_path, dir, 0);
+	STRING_free(&file_rdir_path);
+	STRING_new(&file_rdir_path, dir, 0);
 
 	FILE_dir_first(dir, NULL, attr);
 	while (!FILE_dir_next(&file, &len))
@@ -635,9 +635,9 @@ void FILE_recursive_dir(const char *dir, void (*found)(const char *), void (*aft
 			push_path(&list, path);
 	}
 
-  while (dir_list)
-  {
-    path = pop_path(&dir_list);
+	while (dir_list)
+	{
+		path = pop_path(&dir_list);
 		//fprintf(stderr, "%s\n", path);
 
 		TRY
@@ -652,12 +652,12 @@ void FILE_recursive_dir(const char *dir, void (*found)(const char *), void (*aft
 		}
 		END_TRY
 
-    STRING_free((char **)&path);
-  }
+		STRING_free((char **)&path);
+	}
 
-  while (list)
-  {
-    path = pop_path(&list);
+	while (list)
+	{
+		path = pop_path(&list);
 		//fprintf(stderr, "%s\n", path);
 
 		TRY
@@ -671,148 +671,148 @@ void FILE_recursive_dir(const char *dir, void (*found)(const char *), void (*aft
 		}
 		END_TRY
 
-    STRING_free((char **)&path);
-  }
+		STRING_free((char **)&path);
+	}
 }
 
 
 void FILE_unlink(const char *path)
 {
-  if (FILE_is_relative(path))
-    THROW(E_ACCESS);
+	if (FILE_is_relative(path))
+		THROW(E_ACCESS);
 
-  if (unlink(path) != 0)
-    THROW_SYSTEM(errno, path);
+	if (unlink(path) != 0)
+		THROW_SYSTEM(errno, path);
 }
 
 
 void FILE_rmdir(const char *path)
 {
-  if (FILE_is_relative(path))
-    THROW(E_ACCESS);
+	if (FILE_is_relative(path))
+		THROW(E_ACCESS);
 
-  if (rmdir(path) != 0)
-    THROW_SYSTEM(errno, path);
+	if (rmdir(path) != 0)
+		THROW_SYSTEM(errno, path);
 }
 
 
 void FILE_mkdir(const char *path)
 {
-  if (FILE_is_relative(path))
-    THROW(E_ACCESS);
+	if (FILE_is_relative(path))
+		THROW(E_ACCESS);
 
-  if (mkdir(path, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) != 0)
-    THROW_SYSTEM(errno, path);
+	if (mkdir(path, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) != 0)
+		THROW_SYSTEM(errno, path);
 }
 
 
 void FILE_make_path_dir(const char *path)
 {
-  int i;
-  char c;
+	int i;
+	char c;
 
-  if (FILE_is_relative(path))
-    return;
+	if (FILE_is_relative(path))
+		return;
 
-  if (path != file_buffer)
-    strcpy(file_buffer, path);
+	if (path != file_buffer)
+		strcpy(file_buffer, path);
 
-  for (i = 1;; i++)
-  {
-    c = file_buffer[i];
-    if (c == 0)
-      break;
-    if (c == '/')
-    {
-      file_buffer[i] = 0;
-      mkdir(file_buffer, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
-      file_buffer[i] = c;
-    }
-    c++;
-  }
+	for (i = 1;; i++)
+	{
+		c = file_buffer[i];
+		if (c == 0)
+			break;
+		if (c == '/')
+		{
+			file_buffer[i] = 0;
+			mkdir(file_buffer, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+			file_buffer[i] = c;
+		}
+		c++;
+	}
 }
 
 
 void FILE_rename(const char *src, const char *dst)
 {
-  if (FILE_is_relative(src) || FILE_is_relative(dst))
-    THROW(E_ACCESS);
+	if (FILE_is_relative(src) || FILE_is_relative(dst))
+		THROW(E_ACCESS);
 
-  if (FILE_exist(dst))
-    THROW(E_EXIST, dst);
+	if (FILE_exist(dst))
+		THROW(E_EXIST, dst);
 
-  if (rename(src, dst) != 0)
-    THROW_SYSTEM(errno, dst);
+	if (rename(src, dst) != 0)
+		THROW_SYSTEM(errno, dst);
 }
 
 void FILE_copy(const char *src, const char *dst)
 {
-  STREAM stream_src;
-  STREAM stream_dst;
-  int64_t len;
-  int64_t n;
-  char *buf = NULL;
+	STREAM stream_src;
+	STREAM stream_dst;
+	int64_t len;
+	int64_t n;
+	char *buf = NULL;
 
-  CLEAR(&stream_src);
-  CLEAR(&stream_dst);
+	CLEAR(&stream_src);
+	CLEAR(&stream_dst);
 
-  if (FILE_exist(dst))
-    THROW(E_EXIST, dst);
+	if (FILE_exist(dst))
+		THROW(E_EXIST, dst);
 
-  ALLOC(&buf, MAX_IO, "FILE_copy");
+	ALLOC(&buf, MAX_IO, "FILE_copy");
 
-  TRY
-  {
-    STREAM_open(&stream_src, src, ST_READ);
-    STREAM_open(&stream_dst, dst, ST_CREATE);
+	TRY
+	{
+		STREAM_open(&stream_src, src, ST_READ);
+		STREAM_open(&stream_dst, dst, ST_CREATE);
 
-    STREAM_lof(&stream_src, &len);
+		STREAM_lof(&stream_src, &len);
 
-    while (len)
-    {
-      n = len > MAX_IO ? MAX_IO : len;
-      STREAM_read(&stream_src, buf, n);
-      STREAM_write(&stream_dst, buf, n);
-      len -= n;
-    }
+		while (len)
+		{
+			n = len > MAX_IO ? MAX_IO : len;
+			STREAM_read(&stream_src, buf, n);
+			STREAM_write(&stream_dst, buf, n);
+			len -= n;
+		}
 
-    STREAM_close(&stream_src);
-    STREAM_close(&stream_dst);
+		STREAM_close(&stream_src);
+		STREAM_close(&stream_dst);
 
-    FREE(&buf, "FILE_copy");
-  }
-  CATCH
-  {
-    if (stream_src.type)
-      STREAM_close(&stream_src);
-    if (stream_dst.type)
-      STREAM_close(&stream_dst);
-    FREE(&buf, "FILE_copy");
+		FREE(&buf, "FILE_copy");
+	}
+	CATCH
+	{
+		if (stream_src.type)
+			STREAM_close(&stream_src);
+		if (stream_dst.type)
+			STREAM_close(&stream_dst);
+		FREE(&buf, "FILE_copy");
 
-    PROPAGATE();
-  }
-  END_TRY
+		PROPAGATE();
+	}
+	END_TRY
 }
 
 
 bool FILE_access(const char *path, int mode)
 {
-  if (FILE_is_relative(path))
-  {
-    if (mode & (W_OK | X_OK))
-      return FALSE;
+	if (FILE_is_relative(path))
+	{
+		if (mode & (W_OK | X_OK))
+			return FALSE;
 
-    /*if (!EXEC_arch)
-    {
-      chdir(PROJECT_path);
-      if (access(path, mode) == 0)
-        return TRUE;
-    }*/
+		/*if (!EXEC_arch)
+		{
+			chdir(PROJECT_path);
+			if (access(path, mode) == 0)
+				return TRUE;
+		}*/
 
-    return ARCHIVE_exist(NULL, path);
-  }
+		return ARCHIVE_exist(NULL, path);
+	}
 
-  return (access(path, mode) == 0);
+	return (access(path, mode) == 0);
 }
 
 
@@ -820,107 +820,107 @@ bool FILE_exist(const char *path)
 {
 	struct stat buf;
 
-  if (FILE_is_relative(path))
-  {
-    /*if (!EXEC_arch)
-    {
-      chdir(PROJECT_path);
-      if (lstat(path, &buf) == 0)
-        return TRUE;
-    }*/
+	if (FILE_is_relative(path))
+	{
+		/*if (!EXEC_arch)
+		{
+			chdir(PROJECT_path);
+			if (lstat(path, &buf) == 0)
+				return TRUE;
+		}*/
 
-    return ARCHIVE_exist(NULL, path);
-  }
+		return ARCHIVE_exist(NULL, path);
+	}
 
-  return lstat(path, &buf) == 0;
+	return lstat(path, &buf) == 0;
 }
 
 
 void FILE_link(const char *src, const char *dst)
 {
-  /* src can be relative */
-  if (FILE_is_relative(dst))
-    THROW(E_ACCESS);
+	/* src can be relative */
+	if (FILE_is_relative(dst))
+		THROW(E_ACCESS);
 
-  if (FILE_exist(dst))
-    THROW(E_EXIST, dst);
+	if (FILE_exist(dst))
+		THROW(E_EXIST, dst);
 
-  if (symlink(src, dst) != 0)
-    THROW_SYSTEM(errno, dst);
+	if (symlink(src, dst) != 0)
+		THROW_SYSTEM(errno, dst);
 }
 
 int64_t FILE_free(const char *path)
 {
-  struct statfs info;
+	struct statfs info;
 
-  if (FILE_is_relative(path))
-    return 0;
+	if (FILE_is_relative(path))
+		return 0;
 
-  statfs(path, &info);
-  return (int64_t)(getuid() == 0 ? info.f_bfree : info.f_bavail) * info.f_bsize;
+	statfs(path, &info);
+	return (int64_t)(getuid() == 0 ? info.f_bfree : info.f_bavail) * info.f_bsize;
 }
 
 #else
 
 bool FILE_exist(const char *path)
 {
-  return (access(path, F_OK) == 0);
+	return (access(path, F_OK) == 0);
 }
 
 time_t FILE_get_time(const char *path)
 {
-  struct stat info;
+	struct stat info;
 
-  if (stat(path, &info) == 0)
-    return info.st_mtime;
-  else
-    return (time_t)-1L;
+	if (stat(path, &info) == 0)
+		return info.st_mtime;
+	else
+		return (time_t)-1L;
 }
 
 #endif
 
 const char *FILE_getcwd(const char *subdir)
 {
-  if (getcwd(file_buffer, PATH_MAX) == NULL)
-    return NULL;
+	if (getcwd(file_buffer, PATH_MAX) == NULL)
+		return NULL;
 
-  file_buffer_length = strlen(file_buffer);
+	file_buffer_length = strlen(file_buffer);
 
-  if (subdir != NULL)
-    return FILE_cat(file_buffer, subdir, NULL);
-  else
-    return file_buffer;
+	if (subdir != NULL)
+		return FILE_cat(file_buffer, subdir, NULL);
+	else
+		return file_buffer;
 }
 
 
 const char *FILE_readlink(const char *link)
 {
-  int len = readlink(link, file_buffer, MAX_PATH);
+	int len = readlink(link, file_buffer, MAX_PATH);
 
-  if (len < 0)
-    return NULL;
+	if (len < 0)
+		return NULL;
 
-  file_buffer[len] = 0;
-  file_buffer_length = len;
-  return file_buffer;
+	file_buffer[len] = 0;
+	file_buffer_length = len;
+	return file_buffer;
 
 }
 
 const char *FILE_find_gambas(void)
 {
-  const char *path;
+	const char *path;
 
-  if (FILE_exist(GAMBAS_LINK_PATH))
-  {
-    path = FILE_readlink(GAMBAS_LINK_PATH);
-    if (!path)
-      path = GAMBAS_LINK_PATH;
-  }
-  else
-  {
-    path = GAMBAS_PATH "/gbx" GAMBAS_VERSION_STRING;
-  }
+	if (FILE_exist(GAMBAS_LINK_PATH))
+	{
+		path = FILE_readlink(GAMBAS_LINK_PATH);
+		if (!path)
+			path = GAMBAS_LINK_PATH;
+	}
+	else
+	{
+		path = GAMBAS_PATH "/gbx" GAMBAS_VERSION_STRING;
+	}
 
-  return path;
+	return path;
 }
 

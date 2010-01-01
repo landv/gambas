@@ -69,6 +69,7 @@
 #include "CGridView.h"
 #include "CSeparator.h"
 #include "cprinter.h"
+#include "csvgimage.h"
 
 #include <gtk/gtk.h>
 #include <string.h>
@@ -79,6 +80,7 @@ GB_CLASS CLASS_DrawingArea;
 GB_CLASS CLASS_Menu;
 GB_CLASS CLASS_Window;
 GB_CLASS CLASS_Printer;
+GB_CLASS CLASS_SvgImage;
 
 static void my_lang(char *lang,int rtl1);
 static void my_error(int code,char *error,char *where);
@@ -196,6 +198,7 @@ extern "C"
 		CGridViewDesc,
 		CStockDesc,
 		PrinterDesc,
+		SvgImageDesc,
 		NULL
 	};
 
@@ -253,8 +256,8 @@ extern "C"
 		//CLASS_Drawing = GB.FindClass("Drawing");
 		CLASS_DrawingArea = GB.FindClass("DrawingArea");
 		CLASS_Printer = GB.FindClass("Printer");
-		//CLASS_ScrollView = GB.FindClass("ScrollView");
 		CLASS_Image = GB.FindClass("Image");
+		CLASS_SvgImage = GB.FindClass("SvgImage");
 		
 		return TRUE;
 	}

@@ -129,7 +129,7 @@ static char *FindDatabase(char *name, char *hostName)
 		}
 	}
 
-	GB.NewString(&fullpath, GB.GetTempDir(), 0);
+	GB.NewString(&fullpath, GB.TempDir(), 0);
 	GB.AddString(&fullpath, "/sqlite/", 0);
 	GB.AddString(&fullpath, name, 0);
 

@@ -85,8 +85,10 @@ char *GB_ToZeroString(GB_STRING *src);
 int GB_LoadFile(const char *path, int lenp, char **addr, int *len);
 //void GB_ReleaseFile(char **addr, int len);
 #define GB_ReleaseFile STREAM_unmap
-char *GB_GetTempDir(void);
 char *GB_RealFileName(const char *path, int len);
+char *GB_TempDir(void);
+char *GB_TempFile(const char *pattern);
+int GB_CopyFile(const char *src, const char *dst);
 
 int GB_IsMissing(int param);
 

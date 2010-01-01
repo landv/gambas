@@ -825,7 +825,9 @@ typedef
 		int (*LoadFile)(const char *, int, char **, int *);
 		void (*ReleaseFile)(char *, int);
 		int (*ExistFile)(char *);
-		char *(*GetTempDir)(void);
+		char *(*TempDir)(void);
+		char *(*TempFile)(const char *);
+		int (*CopyFile)(const char *, const char *);
 
 		void (*Store)(GB_TYPE, GB_VALUE *, void *);
 		void (*StoreString)(GB_STRING *, char **);

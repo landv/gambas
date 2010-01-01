@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  main.h
+  csvgimage.h
 
   (c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
 
@@ -20,29 +20,33 @@
 
 ***************************************************************************/
 
-#ifndef __MAIN_H
-#define __MAIN_H
+#ifndef __CSVGIMAGE_H
+#define __CSVGIMAGE_H
 
 #include "gambas.h"
-#include "gb.image.h"
 #include "widgets.h"
-#include "CWidget.h"
+#include <cairo.h>
 
-#ifndef __MAIN_C
-extern GB_INTERFACE GB;
-extern IMAGE_INTERFACE IMAGE;
+typedef 
+  struct 
+  {
+    GB_BASE ob;
+    cairo_surface_t *surface;
+		char *file;
+		int width;
+		int height;
+  } 
+  CSVGIMAGE;
 
-extern GB_CLASS CLASS_Picture;
-extern GB_CLASS CLASS_Image;
-extern GB_CLASS CLASS_DrawingArea;
-extern GB_CLASS CLASS_Menu;
-extern GB_CLASS CLASS_Window;
-extern GB_CLASS CLASS_Printer;
-extern GB_CLASS CLASS_SvgImage;
+#ifndef __CSVGIMAGE_CPP
+
+extern GB_DESC SvgImageDesc[];
+
+#else
+
+#define THIS OBJECT(CSVGIMAGE)
+#define SURFACE (THIS->surface)
 
 #endif
 
-void do_iteration(bool do_not_block, bool do_not_sleep = false);
-
 #endif
-
