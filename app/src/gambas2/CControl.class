@@ -1308,7 +1308,7 @@ PUBLIC FUNCTION GetEachProperty(DX AS Integer, DY AS Integer, OPTIONAL bNoScale 
             NEXT
           
             sLine &= "]"
-            IF iInd >= 32 THEN sLine &= ")"
+            IF iInd > 32 THEN sLine &= ")"
           
           ENDIF
 
