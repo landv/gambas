@@ -61,7 +61,7 @@ static void cb_paginate(gPrinter *printer)
 static void cb_draw(gPrinter *printer, GtkPrintContext *context, int page)
 {
 	void *_object = printer->tag;
-	THIS->current = page;
+	THIS->current = page + 1;
 	THIS->context = context;
 	PAINT_begin(THIS);
 	GB.Raise(THIS, EVENT_Draw, 0);

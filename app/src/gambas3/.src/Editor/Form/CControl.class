@@ -222,7 +222,7 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
 
         If bExist Then
           Try hCtrl = New (sClass, hParent)
-          'IF ERROR THEN DEBUG sClass; ": "; Error.Text
+          If Error Then Debug sClass; ": "; Error.Text
           'ENDIF
           'hCtrl = NEW (sClass, hParent)
         Endif

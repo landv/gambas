@@ -770,6 +770,7 @@ void EXEC_function_real()
 	}
 	CATCH
 	{
+		//RELEASE_MANY(SP, EXEC.nparam);
 		STACK_pop_frame(&EXEC_current);
 		PROPAGATE();	
 	}

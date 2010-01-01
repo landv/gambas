@@ -70,18 +70,18 @@ static bool run_printer(CPRINTER *_object, bool configure)
 	
 	if (printer->fromPage() == 0)
 	{
-		firstPage = 0;
-		lastPage = THIS->page_count - 1;
+		firstPage = 1;
+		lastPage = THIS->page_count;
 	}
 	else if (printer->toPage() == 0)
 	{
-		firstPage = printer->fromPage() - 1;
-		lastPage = THIS->page_count - 1;
+		firstPage = printer->fromPage();
+		lastPage = THIS->page_count;
 	}
 	else
 	{
-		firstPage = printer->fromPage() - 1;
-		lastPage = printer->toPage() - 1;
+		firstPage = printer->fromPage();
+		lastPage = printer->toPage();
 	}
 	
 	if (firstPage >= THIS->page_count)

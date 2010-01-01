@@ -1422,7 +1422,7 @@ End
 Private Sub PrintTab(sText As String, bOn As Boolean, sClass As String, sPath As String, Optional sLink As String)
 
   If bOn Then
-    Print "<td class=\"tabon\" width=\"1\"><font size=\"-1\"><b>"; sText; "</font></b></td>"
+    Print "<td class=\"tabon\" width=\"1\"><font size=\"-1\"><b>"; sText; "</b></font></td>"
   Else
     Print "<td class=\"taboff\" width=\"1\"><div style=\"height: 4px;\"></div>"
     Print "<table cellspacing=\"0\"><tr><td class=\""; sClass; "\">";
