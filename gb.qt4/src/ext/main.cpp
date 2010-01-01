@@ -40,7 +40,6 @@
 #include "CEditor.h"
 #include "CDraw.h"
 #include "CDrawing.h"
-#include "CPrinter.h"
 #include "CTextEdit.h"
 
 extern "C" {
@@ -65,8 +64,6 @@ GB_DESC *GB_CLASSES[] EXPORT =
   CEditorDesc,
   
   CDrawingDesc,
-  
-  CPrinterDesc,
   
   CDrawDesc,
   

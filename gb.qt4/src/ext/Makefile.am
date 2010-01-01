@@ -20,5 +20,4 @@ gb_qt4_ext_la_SOURCES = \
  CEditor.h CEditor_moc.cpp CEditor.cpp \
  CDraw.h CDraw.cpp \
  CDrawing.h CDrawing_moc.cpp CDrawing.cpp \
- CPrinter.h CPrinter_moc.cpp CPrinter.cpp \
  CTextEdit.h CTextEdit_moc.cpp CTextEdit.cpp

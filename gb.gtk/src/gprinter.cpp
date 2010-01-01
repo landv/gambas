@@ -25,6 +25,7 @@
 #include "widgets.h"
 #include "gdesktop.h"
 #include "gmainwindow.h"
+#include "gb.form.print.h"
 #include "gprinter.h"
 
 static void cb_begin(GtkPrintOperation *operation, GtkPrintContext *context, gPrinter *printer)
@@ -64,6 +65,9 @@ gPrinter::gPrinter()
 	_page_count = 1;
 	_page_count_set = false;
 	
+	setPaperModel(GB_PRINT_A4);
+	setUseFullPage(false);
+	
 	onBegin = NULL;
 	onEnd = NULL;
 	onDraw = NULL;
@@ -84,9 +88,10 @@ bool gPrinter::run(bool configure)
 	
   _operation = gtk_print_operation_new();
 	gtk_print_operation_set_n_pages(_operation, _page_count);
+	gtk_print_operation_set_use_full_page(_operation, _use_full_page);
   
 	gtk_print_operation_set_print_settings(_operation, _settings);
-	gtk_print_operation_set_default_page_setup(_operation, _page);
+	//gtk_print_operation_set_default_page_setup(_operation, _page);
   
 	g_signal_connect(_operation, "begin_print", G_CALLBACK(cb_begin), this);
 	g_signal_connect(_operation, "end_print", G_CALLBACK(cb_end), this);
@@ -109,6 +114,7 @@ bool gPrinter::run(bool configure)
 	}
 
 	g_object_unref(G_OBJECT(_operation));
+	_operation = NULL;
 	_page_count_set = false;
 	
 	return res != GTK_PRINT_OPERATION_RESULT_APPLY;
@@ -133,4 +139,186 @@ void gPrinter::setPageCount(int v)
 		gtk_print_operation_set_n_pages(_operation, _page_count);
 }
 
+int gPrinter::orientation() const
+{
+	switch(gtk_print_settings_get_orientation(_settings))
+	{
+		case GTK_PAGE_ORIENTATION_PORTRAIT: return GB_PRINT_PORTRAIT;
+		case GTK_PAGE_ORIENTATION_LANDSCAPE: return GB_PRINT_LANDSCAPE;
+		case GTK_PAGE_ORIENTATION_REVERSE_PORTRAIT: return GB_PRINT_PORTRAIT;
+		case GTK_PAGE_ORIENTATION_REVERSE_LANDSCAPE: return GB_PRINT_LANDSCAPE;
+	}
+}
 
+void gPrinter::setOrientation(int v)
+{
+	GtkPageOrientation orient;
+	
+	switch(v)
+	{
+		case GB_PRINT_LANDSCAPE: orient = GTK_PAGE_ORIENTATION_LANDSCAPE; break;
+		//case GB_PRINT_REVERSE_PORTRAIT: orient = GTK_PAGE_ORIENTATION_REVERSE_PORTRAIT; break;
+		//case GB_PRINT_REVERSE_LANDSCAPE: orient = GTK_PAGE_ORIENTATION_REVERSE_LANDSCAPE; break;	
+		case GB_PRINT_PORTRAIT: default: orient = GTK_PAGE_ORIENTATION_PORTRAIT; break;
+	}
+	
+	gtk_print_settings_set_orientation(_settings, orient);
+}
+
+void gPrinter::setPaperModel(int v)
+{
+	GtkPaperSize *paper;
+	const char *name;
+	
+	switch(v)
+	{
+		case GB_PRINT_A3: name = GTK_PAPER_NAME_A3; break;
+		case GB_PRINT_A4: name = GTK_PAPER_NAME_A4; break;
+		case GB_PRINT_A5: name = GTK_PAPER_NAME_A5; break;
+		case GB_PRINT_B5: name = GTK_PAPER_NAME_B5; break;
+		case GB_PRINT_LETTER: name = GTK_PAPER_NAME_LETTER; break;
+		case GB_PRINT_EXECUTIVE: name = GTK_PAPER_NAME_EXECUTIVE; break;
+		case GB_PRINT_LEGAL: name = GTK_PAPER_NAME_LEGAL; break;
+		default: name = GTK_PAPER_NAME_A4; v = GB_PRINT_A4;
+	}
+	
+	_paper_size = v;
+	
+	paper = gtk_paper_size_new(name);
+	gtk_print_settings_set_paper_size(_settings, paper);
+	gtk_paper_size_free(paper);
+}
+
+void gPrinter::getPaperSize(double *width, double *height) const
+{
+	*width = gtk_print_settings_get_paper_width(_settings, GTK_UNIT_MM);
+	*height = gtk_print_settings_get_paper_height(_settings, GTK_UNIT_MM);
+}
+
+void gPrinter::setPaperSize(double width, double height)
+{
+	_paper_size = GB_PRINT_CUSTOM;
+	gtk_print_settings_set_paper_width(_settings, width, GTK_UNIT_MM);
+	gtk_print_settings_set_paper_height(_settings, height, GTK_UNIT_MM);
+}
+
+bool gPrinter::collateCopies() const
+{
+	return gtk_print_settings_get_collate(_settings);
+}
+
+void gPrinter::setCollateCopies(bool v)
+{
+	gtk_print_settings_set_collate(_settings, v);
+}
+
+bool gPrinter::reverserOrder() const
+{
+	return gtk_print_settings_get_reverse(_settings);
+}
+
+void gPrinter::setReverseOrder(bool v)
+{
+	gtk_print_settings_set_reverse(_settings, v);
+}
+
+int gPrinter::duplex() const
+{
+	switch (gtk_print_settings_get_duplex(_settings))
+	{
+		case GTK_PRINT_DUPLEX_SIMPLEX: return GB_PRINT_SIMPLEX;
+		case GTK_PRINT_DUPLEX_HORIZONTAL: return GB_PRINT_DUPLEX_HORIZONTAL;
+		case GTK_PRINT_DUPLEX_VERTICAL: return GB_PRINT_DUPLEX_VERTICAL;
+		default: return GB_PRINT_SIMPLEX;
+	}
+}
+
+void gPrinter::setDuplex(int v)
+{
+	GtkPrintDuplex duplex;
+	
+	switch(v)
+	{
+		case GB_PRINT_SIMPLEX: duplex = GTK_PRINT_DUPLEX_SIMPLEX; break;
+		case GB_PRINT_DUPLEX_HORIZONTAL: duplex = GTK_PRINT_DUPLEX_HORIZONTAL; break;
+		case GB_PRINT_DUPLEX_VERTICAL: duplex = GTK_PRINT_DUPLEX_VERTICAL; break;
+		default:  duplex = GTK_PRINT_DUPLEX_SIMPLEX; break;
+	}
+	
+	gtk_print_settings_set_duplex(_settings, duplex);
+}
+	
+bool gPrinter::useColor() const
+{
+	return gtk_print_settings_get_use_color(_settings);
+}
+
+void gPrinter::setUseColor(bool v)
+{
+	gtk_print_settings_set_use_color(_settings, v);
+}
+	
+int gPrinter::numCopies() const
+{
+	return gtk_print_settings_get_n_copies(_settings);
+}
+
+void gPrinter::setNumCopies(int v)
+{
+	gtk_print_settings_set_n_copies(_settings, v);
+}
+	
+int gPrinter::resolution() const
+{
+	return gtk_print_settings_get_resolution(_settings);
+}
+
+void gPrinter::setResolution(int v)
+{
+	gtk_print_settings_set_resolution(_settings, v);
+}
+	
+void gPrinter::getPrintPages(int *from, int *to) const
+{
+	GtkPageRange *range;
+	int nrange;
+	
+	range = gtk_print_settings_get_page_ranges(_settings, &nrange);
+	
+	if (nrange <= 0)
+		*from = *to = -1;
+	else
+	{
+		*from = range->start;
+		*to = range->end;
+		g_free(range);
+	}
+}
+
+void gPrinter::setPrintPages(int from, int to)
+{
+	GtkPageRange range = { from, to };
+	
+	gtk_print_settings_set_page_ranges(_settings, &range, 1);
+	if (from < 0)
+		gtk_print_settings_set_print_pages(_settings, GTK_PRINT_PAGES_ALL);
+	else
+		gtk_print_settings_set_print_pages(_settings, GTK_PRINT_PAGES_RANGES);
+}
+
+void gPrinter::setUseFullPage(bool v)
+{
+	_use_full_page = v;
+	if (_operation)
+		gtk_print_operation_set_use_full_page(_operation, v);
+}
+
+const char *gPrinter::name() const
+{
+	return gtk_print_settings_get_printer(_settings);
+}
+
+void gPrinter::setName(const char *name)
+{
+	gtk_print_settings_set_printer(_settings, name);
+}

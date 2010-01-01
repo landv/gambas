@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  CPrinter.h
+  gb.form.print.h
 
   (c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
 
@@ -20,31 +20,35 @@
 
 ***************************************************************************/
 
-#ifndef __CPRINTER_H
-#define __CPRINTER_H
+#ifndef __GB_FORM_PRINT_H
+#define __GB_FORM_PRINT_H
 
-#include "main.h"
+enum {
+	GB_PRINT_PORTRAIT,
+  GB_PRINT_LANDSCAPE
+  //GB_PRINT_REVERSE_PORTRAIT,
+  //GB_PRINT_REVERSE_LANDSCAPE
+};
 
-#include <qprinter.h>
+enum {
+	GB_PRINT_CUSTOM,
+	GB_PRINT_A3,
+	GB_PRINT_A4,
+	GB_PRINT_A5,
+	GB_PRINT_B5,
+	GB_PRINT_LETTER,
+	GB_PRINT_EXECUTIVE,
+	GB_PRINT_LEGAL
+};
 
-#ifndef __CPRINTER_CPP
+enum {
+	GB_PRINT_SIMPLEX,
+	GB_PRINT_DUPLEX_HORIZONTAL,
+	GB_PRINT_DUPLEX_VERTICAL
+};
 
-extern GB_DESC CPrinterDesc[];
-extern QPrinter *CPRINTER_printer;
 
-#else
-
-#define PRINTER  CPRINTER_printer
-
-typedef
-  struct {
-    const char *paper;
-    QPrinter::PageSize value;
-    }
-  PRINTER_SIZE;
 
 #endif
 
-void CPRINTER_init(void);
 
-#endif

@@ -96,6 +96,7 @@
 #include "CSpinBox.h"
 #include "CSplitter.h"
 #include "CWatcher.h"
+#include "cprinter.h"
 
 #ifndef NO_X_WINDOW
 #include "CEmbedder.h"
@@ -926,6 +927,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	CEmbedderDesc, CTrayIconDesc, CTrayIconsDesc,
 	#endif
 	CWatcherDesc,
+	PrinterDesc,
 	NULL
 };
 

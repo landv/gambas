@@ -455,7 +455,6 @@ Public Sub ShowHelpBrowserWith(hWebView As WebView, iType As Integer, sSymbol As
   
 End
 
-
 ''Return the formated help of the local class if it exist
 Public Function GetProjectClassHelpHTML(sClass As String, Optional hWebView As WebView) As String
   
@@ -528,7 +527,6 @@ Public Function GetProjectClassHelpHTML(sClass As String, Optional hWebView As W
      sHTML = Replace(sHtml, "<!--$(Info)-->", sInfo & "<hr class=\"border\">")
   
   Endif
-  
   
   If hClassInfo.Name <> sClass Then 
     If aParConst.Count > 0 Then 

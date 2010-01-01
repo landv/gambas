@@ -177,6 +177,12 @@ static int Begin(GB_PAINT *d)
 	{
 		GtkPrintContext *context = ((CPRINTER *)device)->context;
 		
+		if (!context)
+		{
+			GB.Error("Printer is not printing");
+			return TRUE;
+		}
+		
 		EXTRA(d)->context = gtk_print_context_get_cairo_context(context);
 		cairo_reference(CONTEXT(d));
 		w = gtk_print_context_get_width(context);

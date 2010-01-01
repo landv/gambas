@@ -40,7 +40,6 @@
 #include <qbitmap.h>
 
 #include "CDrawing.h"
-#include "CPrinter.h"
 #include "CDraw.h"
 
 GB_DRAW_DESC DRAW_Interface;
@@ -52,7 +51,7 @@ DRAW_INTERFACE DRAW;
 
 static bool _init = FALSE;
 
-static GB_CLASS CLASS_Printer, CLASS_Drawing;
+static GB_CLASS CLASS_Drawing;
 
 static void init()
 {
@@ -60,7 +59,6 @@ static void init()
 		return;
 		
 	GB.GetInterface("gb.draw", DRAW_INTERFACE_VERSION, &DRAW);
-	CLASS_Printer = GB.FindClass("Printer");
 	CLASS_Drawing = GB.FindClass("Drawing");
 	_init = TRUE;
 }
@@ -89,14 +87,7 @@ static int begin(GB_DRAW *d)
 	
 	init();
 
-  if ((GB_CLASS)device == CLASS_Printer)
-  {
-    CPRINTER_init();
-    QPrinter *printer = CPRINTER_printer;
-		Q3PaintDeviceMetrics pdm(printer);
-    init_drawing(d, new QPainter(printer), pdm.width(), pdm.height(), printer->resolution());
-  }
-  else if (GB.Is(device, CLASS_Drawing))
+  if (GB.Is(device, CLASS_Drawing))
   {
     CDRAWING *drawing = (CDRAWING *)device;
     init_drawing(d, new QPainter(drawing->picture), drawing->picture->boundingRect().width(), drawing->picture->boundingRect().height());

@@ -310,7 +310,7 @@ Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As
         'hCtrl.Resize(5 * Desktop.Scale, 5 * Desktop.Scale)
         iDim = 2 + (32 + Desktop.Scale - 1) \ Desktop.Scale '(40 + Desktop.Scale - 1) Div Desktop.Scale
         hCtrl.ResizeScaled(iDim, iDim)
-
+        
       Else
 
         hCtrl = CreateControl(sName, sClass, Parent.Control)

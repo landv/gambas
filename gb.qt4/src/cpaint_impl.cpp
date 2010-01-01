@@ -48,6 +48,7 @@
 #include "CDrawingArea.h"
 #include "CColor.h"
 #include "CDraw.h"
+#include "cprinter.h"
 #include "cpaint_impl.h"
 
 #define EXTRA(d) ((QT_PAINT_EXTRA *)d->extra)
@@ -139,6 +140,18 @@ static int Begin(GB_PAINT *d)
 			target = wid;
 			
 		wid->drawn++;
+	}
+	else if (GB.Is(device, CLASS_Printer))
+	{
+		CPRINTER *printer = (CPRINTER *)device;
+		
+		if (!printer->printing)
+		{
+			GB.Error("Printer is not printing");
+			return TRUE;
+		}
+		
+		target = printer->printer;
 	}
 	
 	return init_painting(d, target);

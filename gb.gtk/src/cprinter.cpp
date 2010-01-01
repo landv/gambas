@@ -26,13 +26,13 @@
 #include "gambas.h"
 #include "widgets.h"
 #include "cpaint_impl.h"
+#include "gb.form.print.h"
 #include "cprinter.h"
 
 DECLARE_EVENT(EVENT_Begin);
 DECLARE_EVENT(EVENT_End);
 DECLARE_EVENT(EVENT_Paginate);
 DECLARE_EVENT(EVENT_Draw);
-DECLARE_EVENT(EVENT_Error);
 
 static void cb_begin(gPrinter *printer)
 {
@@ -112,9 +112,170 @@ BEGIN_PROPERTY(Printer_Current)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Printer_Name)
+
+	if (READ_PROPERTY)
+		GB.ReturnNewZeroString(PRINTER->name());
+	else
+		PRINTER->setName(GB.ToZeroString(PROP(GB_STRING)));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Printer_Orientation)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(PRINTER->orientation());
+	else
+		PRINTER->setOrientation(VPROP(GB_INTEGER));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Printer_Paper)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(PRINTER->paperModel());
+	else
+		PRINTER->setPaperModel(VPROP(GB_INTEGER));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Printer_PaperWidth)
+
+	double w, h;
+	
+	PRINTER->getPaperSize(&w, &h);
+
+	if (READ_PROPERTY)
+		GB.ReturnFloat(w);
+	else
+		PRINTER->setPaperSize(VPROP(GB_FLOAT), h);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Printer_PaperHeight)
+
+	double w, h;
+	
+	PRINTER->getPaperSize(&w, &h);
+
+	if (READ_PROPERTY)
+		GB.ReturnFloat(h);
+	else
+		PRINTER->setPaperSize(w, VPROP(GB_FLOAT));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Printer_CollateCopies)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(PRINTER->collateCopies());
+	else
+		PRINTER->setCollateCopies(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Printer_ReverseOrder)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(PRINTER->reverserOrder());
+	else
+		PRINTER->setReverseOrder(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Printer_Duplex)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(PRINTER->duplex());
+	else
+		PRINTER->setDuplex(VPROP(GB_INTEGER));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Printer_GrayScale)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(!PRINTER->useColor());
+	else
+		PRINTER->setUseColor(!VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Printer_NumCopies)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(PRINTER->numCopies());
+	else
+		PRINTER->setNumCopies(VPROP(GB_INTEGER));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Printer_Resolution)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(PRINTER->resolution());
+	else
+		PRINTER->setResolution(VPROP(GB_INTEGER));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Printer_FirstPage)
+
+	int from, to;
+	
+	PRINTER->getPrintPages(&from, &to);
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(from + 1);
+	else
+		PRINTER->setPrintPages(VPROP(GB_INTEGER) - 1, to);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Printer_LastPage)
+
+	int from, to;
+	
+	PRINTER->getPrintPages(&from, &to);
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(to + 1);
+	else
+		PRINTER->setPrintPages(from, VPROP(GB_INTEGER) - 1);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Printer_FullPage)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(PRINTER->useFullPage());
+	else
+		PRINTER->setUseFullPage(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
+
 GB_DESC PrinterDesc[] =
 {
   GB_DECLARE("Printer", sizeof(CPRINTER)),
+
+	GB_CONSTANT("Portrait", "i", GB_PRINT_PORTRAIT),
+	GB_CONSTANT("Landscape", "i", GB_PRINT_LANDSCAPE),
+	//GB_CONSTANT("ReversePortrait", "i", GB_PRINT_REVERSE_PORTRAIT),
+	//GB_CONSTANT("ReverseLandscape", "i", GB_PRINT_REVERSE_LANDSCAPE),
+
+	GB_CONSTANT("Custom", "i", GB_PRINT_CUSTOM),
+	GB_CONSTANT("A3", "i", GB_PRINT_A3),
+	GB_CONSTANT("A4", "i", GB_PRINT_A4),
+	GB_CONSTANT("A5", "i", GB_PRINT_A5),
+	GB_CONSTANT("B5", "i", GB_PRINT_B5),
+	GB_CONSTANT("Letter", "i", GB_PRINT_LETTER),
+	GB_CONSTANT("Executive", "i", GB_PRINT_EXECUTIVE),
+	GB_CONSTANT("Legal", "i", GB_PRINT_LEGAL),
+
+	GB_CONSTANT("Simplex", "i", GB_PRINT_SIMPLEX),
+	GB_CONSTANT("Horizontal", "i", GB_PRINT_DUPLEX_HORIZONTAL),
+	GB_CONSTANT("Vertical", "i", GB_PRINT_DUPLEX_VERTICAL),
 
 	GB_METHOD("_new", NULL, Printer_new, NULL),
 	GB_METHOD("_free", NULL, Printer_free, NULL),
@@ -125,11 +286,25 @@ GB_DESC PrinterDesc[] =
 	GB_PROPERTY("Count", "i", Printer_Count),
 	GB_PROPERTY_READ("Page", "i", Printer_Current),
 	
+	GB_PROPERTY("Name", "s", Printer_Name),
+	GB_PROPERTY("Orientation", "i", Printer_Orientation),
+	GB_PROPERTY("Paper", "i", Printer_Paper),
+	GB_PROPERTY("PaperWidth", "f", Printer_PaperWidth),
+	GB_PROPERTY("PaperHeight", "f", Printer_PaperHeight),
+	GB_PROPERTY("CollateCopies", "b", Printer_CollateCopies),
+	GB_PROPERTY("ReverseOrder", "b", Printer_ReverseOrder),
+	GB_PROPERTY("Duplex", "i", Printer_Duplex),
+	GB_PROPERTY("GrayScale", "b", Printer_GrayScale),
+	GB_PROPERTY("NumCopies", "i", Printer_NumCopies),
+	GB_PROPERTY("Resolution", "i", Printer_Resolution),
+	GB_PROPERTY("FirstPage", "i", Printer_FirstPage),
+	GB_PROPERTY("LastPage", "i", Printer_LastPage),
+	GB_PROPERTY("FullPage", "b", Printer_FullPage),
+	
 	GB_EVENT("Begin", NULL, NULL, &EVENT_Begin),
 	GB_EVENT("End", NULL, NULL, &EVENT_End),
 	GB_EVENT("Paginate", NULL, NULL, &EVENT_Paginate),
 	GB_EVENT("Draw", NULL, NULL, &EVENT_Draw),
-	GB_EVENT("Error", NULL, NULL, &EVENT_Error),
 
   GB_INTERFACE("Paint", &PAINT_Interface),
 
