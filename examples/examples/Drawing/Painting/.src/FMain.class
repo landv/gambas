@@ -307,24 +307,6 @@ Public Sub Example12()
   
 End
 
-Public Sub Example20()
-  
-  Dim eWidth As Float
-  Dim Y As Float
-  
-  Y = 20.5
-  For eWidth = 0 To 5 Step 0.25
-    Paint.LineWidth = eWidth
-    Paint.MoveTo(50, Y)
-    Paint.RelLineTo(200, 0)
-    Paint.Stroke
-    Paint.Text(eWidth, 0, Y - 10, 40, 20, Align.Right)
-    Paint.Fill
-    Y += 20
-  Next
-  
-End
-
 Public Sub Example13()
   
   Paint.MoveTo(50, 75)
@@ -449,6 +431,33 @@ Public Sub Example17()
   Paint.RelLineTo(0, Paint.Font.Descent - hExt.Height)
   Paint.RelLineTo(hExt.Width, 0)
   Paint.Stroke
+  
+End
+
+Public Sub Example20()
+  
+  Dim eWidth As Float
+  Dim Y As Float
+  
+  Y = 20.5
+  For eWidth = 0 To 5 Step 0.25
+    Paint.LineWidth = eWidth
+    Paint.MoveTo(50, Y)
+    Paint.RelLineTo(200, 0)
+    Paint.Stroke
+    Paint.Text(eWidth, 0, Y - 10, 40, 20, Align.Right)
+    Paint.Fill
+    Y += 20
+  Next
+  
+End
+
+Public Sub Example21()
+  
+  Dim hSvgImage As SvgImage
+  
+  hSvgImage = SvgImage.Load("gambas.svg")
+  hSvgImage.Paint
   
 End
 

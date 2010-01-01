@@ -5,9 +5,9 @@
   Text = ("")
   Arrangement = Arrange.Fill
   { HSplit1 HSplit
-    MoveScaled(1,1,96,81)
+    MoveScaled(1,1,96,84)
     { VBox1 VBox
-      MoveScaled(1,1,35,79)
+      MoveScaled(1,1,35,82)
       Spacing = True
       Padding = 10
       { Label3 Label
@@ -16,7 +16,7 @@
         Text = ("Example")
       }
       { VBox2 VBox
-        MoveScaled(2,4,32,57)
+        MoveScaled(2,4,32,61)
         AutoResize = True
         { Exemple1 RadioButton optExample
           Name = "Exemple1"
@@ -115,35 +115,41 @@
           Tag = "15"
           Text = ("Set line join")
         }
+        { Exemple21 RadioButton optExample
+          Name = "Exemple21"
+          MoveScaled(0,48,31,3)
+          Tag = "21"
+          Text = ("SVG image")
+        }
         { Exemple16 RadioButton optExample
           Name = "Exemple16"
-          MoveScaled(0,48,31,3)
+          MoveScaled(0,51,31,3)
           Tag = "16"
           Text = ("Text")
         }
         { Exemple17 RadioButton optExample
           Name = "Exemple17"
-          MoveScaled(0,51,31,3)
+          MoveScaled(0,54,31,3)
           Tag = "17"
           Text = ("Text extend")
         }
       }
       { Label1 Label
-        MoveScaled(2,63,19,3)
+        MoveScaled(2,66,19,3)
         Font = Font["Bold"]
         Text = ("Rotate")
       }
       { sldRotate Slider
-        MoveScaled(2,67,31,4)
+        MoveScaled(2,70,31,4)
         MaxValue = 360
       }
       { Label2 Label
-        MoveScaled(2,71,19,3)
+        MoveScaled(2,74,19,3)
         Font = Font["Bold"]
         Text = ("Scale")
       }
       { sldScale Slider
-        MoveScaled(2,75,31,4)
+        MoveScaled(2,78,31,4)
         MinValue = 100
         MaxValue = 400
       }

@@ -36,13 +36,19 @@
 
 static void release(CSVGIMAGE *_object)
 {
-	if (!SURFACE)
-		return;
+	if (HANDLE)
+	{
+		rsvg_handle_free(HANDLE);
+		HANDLE = NULL;
+	}
 	
-	cairo_surface_destroy(SURFACE);
-	THIS->surface = NULL;
-	unlink(THIS->file);
-	GB.FreeString(&THIS->file);
+	if (SURFACE)
+	{
+		cairo_surface_destroy(SURFACE);
+		THIS->surface = NULL;
+		unlink(THIS->file);
+		GB.FreeString(&THIS->file);
+	}
 }
 
 cairo_surface_t *SVGIMAGE_init(CSVGIMAGE *_object)
@@ -105,20 +111,104 @@ BEGIN_METHOD_VOID(SvgImage_Clear)
 
 END_METHOD
 
+BEGIN_METHOD(SvgImage_Load, GB_STRING path)
+
+	CSVGIMAGE *svgimage;
+	RsvgHandle *handle = NULL;
+	char *addr;
+	int len;
+	int len_read;
+
+	if (GB.LoadFile(STRING(path), LENGTH(path), &addr, &len))
+	{
+		GB.Error("Unable to load SVG file");
+		return;
+	}
+
+	/*if (!len) 
+	{
+		GB.ReleaseFile(addr,len); 
+		GB.Error("Invalid format");
+		GB.ReturnNull(); 
+		return; 
+	}*/
+
+	handle = rsvg_handle_new();
+	if (!handle) 
+	{
+		GB.Error("Unable to load SVG file: unable to create SVG handle"); 
+		goto __RETURN;
+	}
+	
+	rsvg_handle_set_dpi(handle, 72);
+	
+	len_read = 1024;
+	while (len)
+	{
+		if (len < len_read)
+			len_read = len;
+
+		len -= len_read;	
+
+		if (!rsvg_handle_write(handle, (const guchar*)addr, len_read, NULL))
+		{
+			GB.Error("Unable to load SVG file: invalid format");
+			goto __RETURN;
+		}
+		
+		addr += len_read;
+	}
+
+	if (!rsvg_handle_close(handle, NULL))
+	{
+		GB.Error("Unable to load SVG file: invalid format");
+		goto __RETURN;
+	}
+	
+	GB.New (POINTER(&svgimage), CLASS_SvgImage, NULL, NULL);
+	svgimage->handle = handle;
+	handle = NULL;
+	GB.ReturnObject(svgimage);
+
+__RETURN:
+
+	if (handle)
+		rsvg_handle_free(handle);
+	
+	GB.ReleaseFile(addr,len);
+	return;
+	
+END_METHOD
+
+BEGIN_METHOD_VOID(SvgImage_Paint)
+
+	cairo_t *context = PAINT_get_current_context();
+	
+	if (!context)
+		return;
+	
+	if (!HANDLE)
+		return;
+	
+	rsvg_handle_render_cairo(HANDLE, context);
+
+END_METHOD
+
 GB_DESC SvgImageDesc[] =
 {
   GB_DECLARE("SvgImage", sizeof(CSVGIMAGE)),
 
-  GB_METHOD("_new", 0, SvgImage_new, "[(Width)f(Height)f]"),
-  GB_METHOD("_free", 0, SvgImage_free, 0),
+  GB_METHOD("_new", NULL, SvgImage_new, "[(Width)f(Height)f]"),
+  GB_METHOD("_free", NULL, SvgImage_free, NULL),
 
   GB_PROPERTY("Width", "f", SvgImage_Width),
   GB_PROPERTY("Height", "f", SvgImage_Height),
 
-  //GB_STATIC_METHOD("Load", "Picture", CPICTURE_load, "(Path)s"),
-  GB_METHOD("Save", 0, SvgImage_Save, "(Path)s"),
+  GB_STATIC_METHOD("Load", "SvgImage", SvgImage_Load, "(Path)s"),
+  GB_METHOD("Save", NULL, SvgImage_Save, "(Path)s"),
+	GB_METHOD("Paint", NULL, SvgImage_Paint, NULL),
 
-  GB_METHOD("Clear", 0, SvgImage_Clear, 0),
+  GB_METHOD("Clear", NULL, SvgImage_Clear, NULL),
 
   GB_INTERFACE("Paint", &PAINT_Interface),
 

@@ -35,5 +35,6 @@ extern GB_PAINT_DESC PAINT_Interface;
 void PAINT_begin(void *device);
 void PAINT_end();
 void PAINT_clip(int x, int y, int w, int h);
+cairo_t *PAINT_get_current_context();
 
 #endif

@@ -26,17 +26,20 @@
 #include "gambas.h"
 #include "widgets.h"
 #include <cairo.h>
+#include <librsvg/rsvg.h>
+#include <librsvg/rsvg-cairo.h>
 
 typedef 
-  struct 
-  {
-    GB_BASE ob;
-    cairo_surface_t *surface;
+	struct 
+	{
+		GB_BASE ob;
+		cairo_surface_t *surface;
+		RsvgHandle *handle;
 		char *file;
 		double width;
 		double height;
-  } 
-  CSVGIMAGE;
+	} 
+	CSVGIMAGE;
 
 #ifndef __CSVGIMAGE_CPP
 
@@ -45,7 +48,8 @@ extern GB_DESC SvgImageDesc[];
 #else
 
 #define THIS OBJECT(CSVGIMAGE)
-#define SURFACE (THIS->surface)
+#define SURFACE THIS->surface
+#define HANDLE THIS->handle
 
 #endif
 

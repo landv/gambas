@@ -663,10 +663,12 @@ static void TextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext)
 	pango_layout_set_text(layout, text, len);
 	pango_layout_get_extents(layout, &rect, &logrect);
 	
-	ext->x2 = rect.width;
-	ext->y2 = rect.height;
+	ext->x1 = (float)rect.x;
+	ext->y1 = (float)rect.y;
+	ext->x2 = ext->x1 + (float)rect.width;
+	ext->y2 = ext->y1 + (float)rect.height;
+	
 	g_object_unref(layout);
-
 }
 
 
@@ -1000,5 +1002,15 @@ void PAINT_clip(int x, int y, int w, int h)
 	GB_PAINT *d = (GB_PAINT *)DRAW.Paint.GetCurrent();
 	cairo_rectangle(CONTEXT(d), x, y, w, h);
 	cairo_clip(CONTEXT(d));
+}
+
+cairo_t *PAINT_get_current_context()
+{
+	GB_PAINT *d = (GB_PAINT *)DRAW.Paint.GetCurrent();
+	if (d)
+		return CONTEXT(d);
+	
+	GB.Error("No current device");
+	return NULL;
 }
 
