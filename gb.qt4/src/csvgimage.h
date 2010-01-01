@@ -24,14 +24,13 @@
 #define __CSVGIMAGE_H
 
 #include "gambas.h"
-#include "widgets.h"
-#include <cairo.h>
+#include <QSvgGenerator>
 
 typedef 
   struct 
   {
     GB_BASE ob;
-    cairo_surface_t *surface;
+    QSvgGenerator *generator;
 		char *file;
 		double width;
 		double height;
@@ -45,10 +44,10 @@ extern GB_DESC SvgImageDesc[];
 #else
 
 #define THIS OBJECT(CSVGIMAGE)
-#define SURFACE (THIS->surface)
+#define GENERATOR (THIS->generator)
 
 #endif
 
-cairo_surface_t *SVGIMAGE_init(CSVGIMAGE *_object);
+QSvgGenerator *SVGIMAGE_init(CSVGIMAGE *_object);
 
 #endif

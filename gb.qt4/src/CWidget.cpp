@@ -60,19 +60,6 @@
 #include <Q3ScrollView>
 #include <QProgressBar>
 
-GB_CLASS CLASS_Control;
-GB_CLASS CLASS_Container;
-GB_CLASS CLASS_UserControl;
-GB_CLASS CLASS_UserContainer;
-GB_CLASS CLASS_Window;
-GB_CLASS CLASS_Menu;
-GB_CLASS CLASS_Picture;
-GB_CLASS CLASS_Drawing;
-GB_CLASS CLASS_DrawingArea;
-GB_CLASS CLASS_Printer;
-GB_CLASS CLASS_ScrollView;
-GB_CLASS CLASS_Image;
-
 #ifndef NO_X_WINDOW
 static QMap<int, int> _x11_to_qt_keycode;
 #endif

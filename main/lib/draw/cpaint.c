@@ -377,14 +377,14 @@ END_PROPERTY
 BEGIN_PROPERTY(Paint_Width)
 
 	CHECK_DEVICE();
-	GB.ReturnInteger(THIS->width);
+	GB.ReturnFloat(THIS->width);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Paint_Height)
 
 	CHECK_DEVICE();
-	GB.ReturnInteger(THIS->height);
+	GB.ReturnFloat(THIS->height);
 
 END_PROPERTY
 
@@ -855,10 +855,10 @@ GB_DESC PaintDesc[] =
 	GB_STATIC_METHOD("End", NULL, Paint_end, NULL),
 	
 	GB_STATIC_PROPERTY_READ("Device", "o", Paint_Device),
-	GB_STATIC_PROPERTY_READ("W", "i", Paint_Width),
-	GB_STATIC_PROPERTY_READ("H", "i", Paint_Height),
-	GB_STATIC_PROPERTY_READ("Width", "i", Paint_Width),
-	GB_STATIC_PROPERTY_READ("Height", "i", Paint_Height),
+	GB_STATIC_PROPERTY_READ("W", "f", Paint_Width),
+	GB_STATIC_PROPERTY_READ("H", "f", Paint_Height),
+	GB_STATIC_PROPERTY_READ("Width", "f", Paint_Width),
+	GB_STATIC_PROPERTY_READ("Height", "f", Paint_Height),
 	GB_STATIC_PROPERTY_READ("ResolutionX", "i", Paint_ResolutionX),
 	GB_STATIC_PROPERTY_READ("ResolutionY", "i", Paint_ResolutionY),
 

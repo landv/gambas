@@ -97,6 +97,7 @@
 #include "CSplitter.h"
 #include "CWatcher.h"
 #include "cprinter.h"
+#include "csvgimage.h"
 
 #ifndef NO_X_WINDOW
 #include "CEmbedder.h"
@@ -122,6 +123,20 @@ int MAIN_scale = 6;
 #ifndef NO_X_WINDOW
 int MAIN_x11_last_key_code = 0;
 #endif
+
+GB_CLASS CLASS_Control;
+GB_CLASS CLASS_Container;
+GB_CLASS CLASS_UserControl;
+GB_CLASS CLASS_UserContainer;
+GB_CLASS CLASS_Window;
+GB_CLASS CLASS_Menu;
+GB_CLASS CLASS_Picture;
+GB_CLASS CLASS_Drawing;
+GB_CLASS CLASS_DrawingArea;
+GB_CLASS CLASS_Printer;
+GB_CLASS CLASS_ScrollView;
+GB_CLASS CLASS_Image;
+GB_CLASS CLASS_SvgImage;
 
 static bool in_event_loop = false;
 static int _no_destroy = 0;
@@ -928,6 +943,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	#endif
 	CWatcherDesc,
 	PrinterDesc,
+	SvgImageDesc,
 	NULL
 };
 
@@ -1015,6 +1031,7 @@ int EXPORT GB_INIT(void)
 	CLASS_Printer = GB.FindClass("Printer");
 	CLASS_ScrollView = GB.FindClass("ScrollView");
 	CLASS_Image = GB.FindClass("Image");
+	CLASS_SvgImage = GB.FindClass("SvgImage");
 
 	QT_InitEventLoop();
 

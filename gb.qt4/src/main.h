@@ -44,6 +44,21 @@ extern int MAIN_scale;
 #ifndef NO_X_WINDOW
 extern int MAIN_x11_last_key_code;
 #endif
+
+extern GB_CLASS CLASS_Control;
+extern GB_CLASS CLASS_Container;
+extern GB_CLASS CLASS_UserControl;
+extern GB_CLASS CLASS_UserContainer;
+extern GB_CLASS CLASS_Window;
+extern GB_CLASS CLASS_Menu;
+extern GB_CLASS CLASS_Picture;
+extern GB_CLASS CLASS_Drawing;
+extern GB_CLASS CLASS_DrawingArea;
+extern GB_CLASS CLASS_Printer;
+extern GB_CLASS CLASS_ScrollView;
+extern GB_CLASS CLASS_Image;
+extern GB_CLASS CLASS_SvgImage;
+
 #endif
 
 class MyPostCheck: public QObject

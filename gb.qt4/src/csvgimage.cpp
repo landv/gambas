@@ -22,12 +22,8 @@
 
 #define __CSVGIMAGE_CPP
 
-#include <cairo.h>
-#include <cairo-svg.h>
-
 #include "main.h"
 #include "gambas.h"
-#include "widgets.h"
 #include "cpaint_impl.h"
 #include "csvgimage.h"
 
@@ -36,27 +32,30 @@
 
 static void release(CSVGIMAGE *_object)
 {
-	if (!SURFACE)
+	if (!GENERATOR)
 		return;
 	
-	cairo_surface_destroy(SURFACE);
-	THIS->surface = NULL;
+	delete GENERATOR;
+	THIS->generator = NULL;
 	unlink(THIS->file);
 	GB.FreeString(&THIS->file);
 }
 
-cairo_surface_t *SVGIMAGE_init(CSVGIMAGE *_object)
+QSvgGenerator *SVGIMAGE_init(CSVGIMAGE *_object)
 {
-	if (!SURFACE)
+	if (!GENERATOR)
 	{
 		if (THIS->width <= 0 || THIS->height <= 0)
 			return NULL;
 		
 		GB.NewString(&THIS->file, GB.TempFile(NULL), 0);
-		THIS->surface = cairo_svg_surface_create(THIS->file, THIS->width, THIS->height);
+		THIS->generator = new QSvgGenerator();
+		GENERATOR->setSize(QSize(THIS->width, THIS->height));
+		GENERATOR->setViewBox(QRectF(0, 0, THIS->width, THIS->height));
+		GENERATOR->setFileName(THIS->file);
 	}
 	
-	return SURFACE;
+	return GENERATOR;
 }
 
 BEGIN_METHOD(SvgImage_new, GB_FLOAT width; GB_FLOAT height)

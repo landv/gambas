@@ -49,6 +49,7 @@
 #include "CColor.h"
 #include "CDraw.h"
 #include "cprinter.h"
+#include "csvgimage.h"
 #include "cpaint_impl.h"
 
 #define EXTRA(d) ((QT_PAINT_EXTRA *)d->extra)
@@ -152,6 +153,16 @@ static int Begin(GB_PAINT *d)
 		}
 		
 		target = printer->printer;
+	}
+	else if (GB.Is(device, CLASS_SvgImage))
+	{
+		CSVGIMAGE *svgimage = (CSVGIMAGE *)device;
+		target = SVGIMAGE_init(svgimage);
+		if (!target)
+		{
+			GB.Error("SvgImage size is not defined");
+			return TRUE;
+		}
 	}
 	
 	return init_painting(d, target);

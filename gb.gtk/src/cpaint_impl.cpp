@@ -85,7 +85,7 @@ typedef
 #define EXTRA(d) ((GB_PAINT_EXTRA *)d->extra)
 #define CONTEXT(d) EXTRA(d)->context
 
-static bool init_painting(GB_PAINT *d, cairo_surface_t *target, int w, int h, int rx, int ry)
+static bool init_painting(GB_PAINT *d, cairo_surface_t *target, double w, double h, int rx, int ry)
 {
 	d->width = w;
 	d->height = h;
@@ -114,7 +114,8 @@ static int Begin(GB_PAINT *d)
 {
 	void *device = d->device;
 	cairo_surface_t *target = NULL;
-	int w, h, rx = 96, ry = 96;
+	double w, h;
+	int rx = 96, ry = 96;
 	
 	if (GB.Is(device, CLASS_Picture))
 	{
@@ -194,10 +195,16 @@ static int Begin(GB_PAINT *d)
 	else if (GB.Is(device, CLASS_SvgImage))
 	{
 		CSVGIMAGE *svgimage = ((CSVGIMAGE *)device);
-		target = svgimage->surface;
+		target = SVGIMAGE_init(svgimage);
+		if (!target)
+		{
+			GB.Error("SvgImage size is not defined");
+			return TRUE;
+		}
 		cairo_surface_reference(target);
 		w = svgimage->width;
 		h = svgimage->height;
+		rx = ry = 72;
 	}
 	else
 		return TRUE;
