@@ -100,20 +100,6 @@ static void exit_class(CLASS *class, bool native)
 		return;
 
 	EXEC_public(class, NULL, "_exit", 0);
-
-	/*desc = CLASS_get_symbol_desc_kind(class, "_exit", CD_STATIC_METHOD, 0);
-	if (!desc)
-		return;
-
-	EXEC.desc = &desc->method;
-	EXEC.native = CLASS_is_native(class);
-	EXEC.class = class;
-	EXEC.object = NULL;
-	EXEC.nparam = 0;
-	EXEC.drop = TRUE;
-	EXEC.use_stack = FALSE;
-
-	EXEC_native();*/
 }
 
 static void unload_class(CLASS *class)

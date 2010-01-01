@@ -429,8 +429,10 @@ void CCONTAINER_insert_child(void *_object)
 ***************************************************************************/
 
 MyContainer::MyContainer(QWidget *parent)
-: QWidget(parent),_frame(0)
+: QWidget(parent),_frame(0),_pixmap(0)
 {
+	setAttribute(Qt::WA_StaticContents);
+	setAttribute(Qt::WA_OpaquePaintEvent); //, _pixmap != 0);
 }
 
 MyContainer::~MyContainer()
@@ -438,6 +440,11 @@ MyContainer::~MyContainer()
 	CWIDGET *_object = CWidget::getReal(this);
 	if (THIS)
 		CWIDGET_set_flag(THIS, WF_DELETED);
+}
+
+void MyContainer::setPixmap(QPixmap *pixmap)
+{
+	_pixmap = pixmap;
 }
 
 void MyContainer::showEvent(QShowEvent *e)
@@ -630,10 +637,14 @@ void MyContainer::drawFrame(QPainter *p)
 }
 #endif
 
-void MyContainer::paintEvent(QPaintEvent *)
+void MyContainer::paintEvent(QPaintEvent *e)
 {
-	QPainter paint(this);
-	drawFrame(&paint);
+	QPainter painter(this);
+	if (_pixmap)
+		painter.drawTiledPixmap(0, 0, width(), height(), *_pixmap);
+	else
+		painter.eraseRect(e->rect());
+	drawFrame(&painter);
 }
 
 /*void MyContainer::childEvent(QChildEvent *e)

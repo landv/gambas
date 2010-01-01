@@ -885,6 +885,7 @@ Public Sub Control_MouseDown()
       $XS = X
       $YS = Y
 
+      'Debug
       $iMode = MODE_SELECT
 
       $W = 0
@@ -906,6 +907,7 @@ Public Sub Control_MouseDown()
 
       If $bReadOnly Then Return
 
+      'Debug
       $iMode = MODE_MOVE
 
     Endif
@@ -929,6 +931,7 @@ Public Sub Control_MouseDown()
     '   ENDIF
     ' ENDIF
 
+    'Debug
     $iMode = MODE_CREATE
 
     $X = X
@@ -974,6 +977,8 @@ Public Sub Control_MouseMove()
   If $iMode = MODE_CREATE Then
 
     If Last.Mouse <> Mouse.Cross Then
+
+      Debug
 
       Last.Mouse = Mouse.Cross
 
@@ -1154,6 +1159,7 @@ Public Sub Control_MouseUp()
 
   Last.Mouse = Mouse.Arrow
   $hCurrent = Null
+  'Debug 
   $iMode = MODE_NOTHING
 
   RefreshProperty

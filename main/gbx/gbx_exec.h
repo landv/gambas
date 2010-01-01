@@ -157,9 +157,9 @@ void EXEC_function_loop();
 #define EXEC_function_keep() EXEC_function_real()
 
 void EXEC_public(CLASS *class, void *object, const char *name, int nparam);
+void EXEC_public_desc(CLASS *class, void *object, CLASS_DESC_METHOD *desc, int nparam);
 
-bool EXEC_spec(int spec, CLASS *class, void *object, int nparam, bool drop);
-#define EXEC_special EXEC_spec
+bool EXEC_special(int spec, CLASS *class, void *object, int nparam, bool drop);
 
 void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int nparam, bool drop);
 

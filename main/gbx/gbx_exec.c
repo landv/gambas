@@ -400,6 +400,7 @@ __NULL:
   ERROR_panic("VALUE_default: Unknown default type");
 }
 
+// EXEC.nparam must be set to the amount of stack that must be freed if an exception is raised during EXEC_enter()
 
 void EXEC_enter(void)
 {
@@ -470,6 +471,8 @@ void EXEC_enter(void)
 				SP->_void.ptype = func->param[i].type;
 				SP++;
 			}
+			
+			EXEC.nparam = func->n_param;
 		}
 	}
 
@@ -770,7 +773,7 @@ void EXEC_function_real()
 	}
 	CATCH
 	{
-		//RELEASE_MANY(SP, EXEC.nparam);
+		RELEASE_MANY(SP, EXEC.nparam);
 		STACK_pop_frame(&EXEC_current);
 		PROPAGATE();	
 	}
@@ -1073,53 +1076,23 @@ void EXEC_native(void)
 
 	//printf("EXEC_native: nparam = %d desc->npvar = %d\n", nparam, desc->npvar);
 
-	if (nparam < desc->npmin)
-		THROW(E_NEPARAM);
-
-	if (!desc->npvar)
+	TRY
 	{
-		if (nparam > desc->npmax)
-			THROW(E_TMPARAM);
+		if (nparam < desc->npmin)
+			THROW(E_NEPARAM);
 
-		value = &SP[-nparam];
-		sign = desc->signature;
-
-		for (i = 0; i < desc->npmin; i++, value++, sign++)
-			VALUE_conv(value, *sign);
-
-		if (desc->npmin < desc->npmax)
+		if (!desc->npvar)
 		{
-			for (; i < nparam; i++, value++, sign++)
-			{
-				if (value->type != T_VOID)
-					VALUE_conv(value, *sign);
-			}
+			if (nparam > desc->npmax)
+				THROW(E_TMPARAM);
 
-			n = desc->npmax - nparam;
+			value = &SP[-nparam];
+			sign = desc->signature;
 
-			if (STACK_check(n))
-			{
-				STACK_RELOCATE(value);
-			}
-			
-			SP += n;
-			nparam = desc->npmax;
+			for (i = 0; i < desc->npmin; i++, value++, sign++)
+				VALUE_conv(value, *sign);
 
-			for (; i < nparam; i++, value++)
-				value->type = T_VOID;
-		}
-	}
-	else
-	{
-		value = &SP[-nparam];
-		sign = desc->signature;
-
-		for (i = 0; i < desc->npmin; i++, value++, sign++)
-			VALUE_conv(value, *sign);
-
-		if (desc->npmin < desc->npmax)
-		{
-			if (nparam < desc->npmax)
+			if (desc->npmin < desc->npmax)
 			{
 				for (; i < nparam; i++, value++, sign++)
 				{
@@ -1140,26 +1113,65 @@ void EXEC_native(void)
 				for (; i < nparam; i++, value++)
 					value->type = T_VOID;
 			}
-			else
+		}
+		else
+		{
+			value = &SP[-nparam];
+			sign = desc->signature;
+
+			for (i = 0; i < desc->npmin; i++, value++, sign++)
+				VALUE_conv(value, *sign);
+
+			if (desc->npmin < desc->npmax)
 			{
-				for (; i < desc->npmax; i++, value++, sign++)
+				if (nparam < desc->npmax)
 				{
-					if (value->type != T_VOID)
-						VALUE_conv(value, *sign);
+					for (; i < nparam; i++, value++, sign++)
+					{
+						if (value->type != T_VOID)
+							VALUE_conv(value, *sign);
+					}
+
+					n = desc->npmax - nparam;
+
+					if (STACK_check(n))
+					{
+						STACK_RELOCATE(value);
+					}
+					
+					SP += n;
+					nparam = desc->npmax;
+
+					for (; i < nparam; i++, value++)
+						value->type = T_VOID;
+				}
+				else
+				{
+					for (; i < desc->npmax; i++, value++, sign++)
+					{
+						if (value->type != T_VOID)
+							VALUE_conv(value, *sign);
+					}
 				}
 			}
+
+			if (desc->npmax < nparam)
+				EXEC.nparvar = nparam - desc->npmax;
+			else
+				EXEC.nparvar = 0;
+
+			for (; i < nparam; i++, value++)
+				VARIANT_undo(value);
+
+			//printf("EXEC_native: nparvar = %d\n", EXEC.nparvar);
 		}
-
-		if (desc->npmax < nparam)
-			EXEC.nparvar = nparam - desc->npmax;
-		else
-			EXEC.nparvar = 0;
-
-		for (; i < nparam; i++, value++)
-			VARIANT_undo(value);
-
-		//printf("EXEC_native: nparvar = %d\n", EXEC.nparvar);
 	}
+	CATCH
+	{
+		RELEASE_MANY(SP, nparam);
+		PROPAGATE();	
+	}
+	END_TRY
 
 	error = EXEC_call_native(desc->exec, object, desc->type, &SP[-nparam]);
 	COPY_VALUE(&ret, &TEMP);
@@ -1366,6 +1378,31 @@ __RETURN:
 }
 
 
+void EXEC_public_desc(CLASS *class, void *object, CLASS_DESC_METHOD *desc, int nparam)
+{
+  EXEC.object = object;
+  EXEC.class = class;
+  EXEC.nparam = nparam; /*desc->npmin;*/
+  EXEC.drop = FALSE;
+
+  if (FUNCTION_is_native(desc))
+  {
+    EXEC.native = TRUE;
+    EXEC.use_stack = FALSE;
+    EXEC.desc = desc;
+    EXEC_native();
+    SP--;
+    *RP = *SP;
+    SP->type = T_VOID;
+  }
+  else
+  {
+    EXEC.native = FALSE;
+    EXEC.index = (int)(intptr_t)desc->exec;
+    EXEC_function_keep();
+  }
+}
+
 void EXEC_public(CLASS *class, void *object, const char *name, int nparam)
 {
 	CLASS_DESC *desc;
@@ -1374,7 +1411,11 @@ void EXEC_public(CLASS *class, void *object, const char *name, int nparam)
 
 	if (desc == NULL)
 		return;
-
+	
+	EXEC_public_desc(class, object, &desc->method, nparam);
+	EXEC_release_return_value();
+	
+	#if 0
 	EXEC.class = desc->method.class;
 	EXEC.object = object;
 	EXEC.nparam = nparam;
@@ -1392,11 +1433,12 @@ void EXEC_public(CLASS *class, void *object, const char *name, int nparam)
 		//EXEC.func = &class->load->func[(long)desc->method.exec]
 		EXEC_function();
 	}
+	#endif
 }
 
 
 
-bool EXEC_spec(int special, CLASS *class, void *object, int nparam, bool drop)
+bool EXEC_special(int special, CLASS *class, void *object, int nparam, bool drop)
 {
 	CLASS_DESC *desc;
 	short index = class->special[special];

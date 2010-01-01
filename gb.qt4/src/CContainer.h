@@ -116,6 +116,7 @@ public:
 	int frameStyle() const { return _frame; }
 	void setFrameStyle(int frame);
 	void drawFrame(QPainter *);
+	void setPixmap(QPixmap *pixmap);
 
 protected:
 
@@ -126,6 +127,7 @@ protected:
 private:
 
 	int _frame;
+	QPixmap *_pixmap;
 };
 
 #endif

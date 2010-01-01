@@ -33,6 +33,9 @@ EXTERN int MEMORY_count;
 
 #if DEBUG_MEMORY
 
+#undef OPTIMIZE_MEMORY
+#define OPTIMIZE_MEMORY 0
+
 typedef
   struct ALLOC {
     int _void;

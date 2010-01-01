@@ -179,7 +179,8 @@ void CWINDOW_define_mask(CWINDOW *_object)
 	{
 		clear_mask(THIS);
 		THIS->reallyMasked = false;
-		THIS->container->setPalette(WINDOW->palette());
+		THIS->container->setPixmap(0);
+		//THIS->container->setPalette(WINDOW->palette());
 	}
 	else
 	{
@@ -194,10 +195,10 @@ void CWINDOW_define_mask(CWINDOW *_object)
 			THIS->reallyMasked = false;
 		}
 
-		palette = WINDOW->palette();
-		palette.setBrush(WINDOW->backgroundRole(), QBrush(background));
-		THIS->container->setPalette(palette);
+		THIS->container->setPixmap(THIS->picture->pixmap);
 	}
+	
+	THIS->container->update();
 }
 
 static bool emit_open_event(void *_object)
@@ -309,7 +310,7 @@ static void show_later(CWINDOW *_object)
 BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent)
 
 	MyMainWindow *win = 0;
-	QWidget *container;
+	MyContainer *container;
 	#ifndef NO_X_WINDOW
 	QX11EmbedWidget *client = 0;
 	#endif
@@ -369,7 +370,6 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent)
 		return;
 	}*/
 
-	container->setAutoFillBackground(true);
 	THIS->container = container;
 	CWIDGET_new(win, (void *)_object, true);
 	//container->setPaletteBackgroundColor(Qt::yellow);

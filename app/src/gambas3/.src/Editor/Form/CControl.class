@@ -1374,7 +1374,7 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
             Next
           
             sLine &= "]"
-            If iInd >= 32 Then sLine &= ")"
+            If iInd > 32 Then sLine &= ")"
           
           Endif
 

@@ -345,7 +345,10 @@ int main(int argc, char **argv)
 
   TRY
   {
-    EXEC.class = PROJECT_class;
+		EXEC_public_desc(PROJECT_class, NULL, startup, 0);
+		EXEC_release_return_value();
+		
+    /*EXEC.class = PROJECT_class;
     EXEC.object = NULL;
     EXEC.drop = TRUE;
     EXEC.nparam = 0;
@@ -364,7 +367,7 @@ int main(int argc, char **argv)
       EXEC.index = (int)(intptr_t)startup->exec;
 
       EXEC_function();
-    }
+    }*/
 
     HOOK_DEFAULT(loop, WATCH_loop)();
 

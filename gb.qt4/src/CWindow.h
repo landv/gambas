@@ -48,7 +48,7 @@
 typedef
 	struct CWINDOW {
 		CWIDGET widget;
-		QWidget *container;
+		MyContainer *container;
 		CARRANGEMENT arrangement;
 		QMenuBar *menuBar;
 		int ret;
@@ -154,9 +154,6 @@ private:
 
 	QSizeGrip *sg;
 	QMenuBar *mb;
-	//bool shown;
-	//int border;
-	//int state;
 	bool mustCenter;
 	bool _activate;
 	bool _border;
@@ -168,7 +165,6 @@ private:
 
 protected:
 
-	//bool event(QEvent *);
 	virtual void showEvent(QShowEvent *);
 	//void hideEvent(QHideEvent *);
 	virtual void resizeEvent(QResizeEvent *);

@@ -384,44 +384,6 @@ void GB_Push(int nval, ...)
 }
 
 
-static void call_method(void *object, CLASS_DESC_METHOD *desc, int nparam)
-{
-  if (OBJECT_is_class(object))
-  {
-    EXEC.object = NULL;
-    //EXEC.class = (CLASS *)object;
-  }
-  else
-  {
-    EXEC.object = object;
-    //EXEC.class = OBJECT_class(object);
-  }
-
-  EXEC.class = desc->class;
-  EXEC.nparam = nparam; /*desc->npmin;*/
-  EXEC.drop = FALSE;
-
-  if (FUNCTION_is_native(desc))
-  {
-    EXEC.native = TRUE;
-    EXEC.use_stack = FALSE;
-    EXEC.desc = desc;
-    EXEC_native();
-    SP--;
-    *RP = *SP;
-    SP->type = T_VOID;
-  }
-  else
-  {
-    EXEC.native = FALSE;
-    EXEC.index = (int)(intptr_t)desc->exec;
-    EXEC_function_keep();
-  }
-
-}
-
-
-
 int GB_CanRaise(void *object, int event_id)
 {
   ushort *event_tab;
@@ -469,13 +431,14 @@ static bool raise_event(OBJECT *observer, void *object, int func_id, int nparam)
   void *old_last;
   bool result;
 	
-	class = OBJECT_class(object);	
 	func_id--;
 
 	if (OBJECT_is_class(observer))
-		desc = &(((CLASS *)observer)->table[func_id].desc->method);
+		class = (CLASS *)observer; //OBJECT_class(object);	
 	else
-		desc = &(observer->class->table[func_id].desc->method);
+		class = OBJECT_class(observer);
+
+	desc = &class->table[func_id].desc->method;
 
 	old_last = EVENT_Last;
 	EVENT_Last = object;
@@ -494,7 +457,7 @@ static bool raise_event(OBJECT *observer, void *object, int func_id, int nparam)
 	stop_event = GAMBAS_StopEvent;	
 	GAMBAS_StopEvent = FALSE;
 
-	call_method(observer, desc, nparam);
+	EXEC_public_desc(class, observer, desc, nparam);
 
 	if (RP->type == T_VOID)
 		result = FALSE;
@@ -776,7 +739,7 @@ GB_VALUE *GB_Call(GB_FUNCTION *_func, int nparam, int release)
 	else
 	{
 		stop_event = GAMBAS_StopEvent;
-		call_method(func->object, func->desc, nparam);
+		EXEC_public_desc(func->desc->class, func->object, func->desc, nparam);
 		_event_stopped = GAMBAS_StopEvent;
 		GAMBAS_StopEvent = stop_event;
 		
