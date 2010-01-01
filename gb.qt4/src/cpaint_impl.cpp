@@ -623,7 +623,7 @@ static void Text(GB_PAINT *d, const char *text, int len, float w, float h, int a
 	DRAW_text_with(PAINTER(d), text, len, pos.x(), pos.y(), w, h, align, draw_text_cb);
 }
 
-/*static void TextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext)
+static void TextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext)
 {
 	QRectF rect = PAINTER(d)->boundingRect(QRectF(0, 0, d->width, d->height), Qt::AlignLeft | Qt::AlignTop | Qt::TextSingleLine | Qt::TextIncludeTrailingSpaces, QString::fromUtf8(text, len));
 	
@@ -631,7 +631,7 @@ static void Text(GB_PAINT *d, const char *text, int len, float w, float h, int a
 	ext->y1 = 0;
 	ext->x2 = (float)rect.width();
 	ext->y2 = (float)rect.height();
-}*/
+}
 
 		
 static void Matrix(GB_PAINT *d, int set, GB_TRANSFORM matrix)
@@ -842,6 +842,7 @@ GB_PAINT_DESC PAINT_Interface = {
 	LineTo,
 	CurveTo,
 	Text,
+	TextExtents,
 	Matrix,
 	SetBrush,
 	{

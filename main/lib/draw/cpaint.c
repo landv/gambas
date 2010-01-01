@@ -643,7 +643,7 @@ BEGIN_METHOD(Paint_RichText, GB_STRING text; GB_FLOAT x; GB_FLOAT y; GB_FLOAT w;
 END_METHOD
 */
 
-/*BEGIN_METHOD(Paint_TextExtents, GB_STRING text)
+BEGIN_METHOD(Paint_TextExtents, GB_STRING text)
 
 	PAINT_EXTENTS *extents;
 	
@@ -654,7 +654,7 @@ END_METHOD
 	
 	GB.ReturnObject(extents);
 
-END_METHOD*/
+END_METHOD
 
 static PAINT_BRUSH *make_brush(GB_PAINT *d, GB_BRUSH brush)
 {
@@ -913,7 +913,7 @@ GB_DESC PaintDesc[] =
 	GB_STATIC_PROPERTY("Font", "Font", Paint_Font),
 	GB_STATIC_METHOD("Text", NULL, Paint_Text, "(Text)s[(X)f(Y)f(Width)f(Height)f(Alignment)i)]"),
 	//GB_STATIC_METHOD("RichText", NULL, Paint_RichText, "(Text)s[(X)f(Y)f(Width)f(Height)f(Alignment)i)]"),
-	//GB_STATIC_METHOD("TextExtents", "TextExtents", Paint_TextExtents, "(Text)s"),
+	GB_STATIC_METHOD("TextExtents", "PaintExtents", Paint_TextExtents, "(Text)s"),
 	
 	GB_STATIC_METHOD("Color", "PaintBrush", Paint_Color, "(Color)i"),
 	GB_STATIC_METHOD("Image", "PaintBrush", Paint_Image, "(Image)Image;[(X)f(Y)f]"),
