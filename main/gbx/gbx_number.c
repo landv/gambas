@@ -102,15 +102,23 @@ static bool read_integer(int base, int64_t *result)
 
 	if (base != 10)
 	{
-		if ((c == '&' || c == 'u' || c == 'U'))
+		if ((c == '&' || c == 'u' || c == 'U') && base != 10)
 			c = get_char();
 		else
 		{
-			if (nbr >= 0x8000L && nbr <= 0xFFFFL)
-				nbr |= INT64_C(0xFFFFFFFFFFFF0000);
+			if ((base == 16 && n == 4) || (base == 2 && n == 16))
+			{
+				if (nbr >= 0x8000L && nbr <= 0xFFFFL)
+					nbr |= INT64_C(0xFFFFFFFFFFFF0000);
+			}
+			else if ((base == 16 && n == 8) || (base == 2 && n == 32))
+			{
+				if (nbr >= 0x80000000L && nbr <= 0xFFFFFFFFL)
+					nbr |= INT64_C(0xFFFFFFFF00000000);
+			}
 		}
 	}
-	
+
 	if (c > 0 && !isspace(c))
 		return TRUE;
 	
