@@ -75,13 +75,17 @@ static bool init_painting(GB_PAINT *d, QPaintDevice *device)
 	d->resolutionX = device->physicalDpiX();
 	d->resolutionY = device->physicalDpiY();
 	
-	if (device->paintingActive())
+	if (!PAINTER(d)) 
 	{
-		GB.Error("Device already being painted");
-		return TRUE;
+		if (device->paintingActive())
+		{
+			GB.Error("Device already being painted");
+			return TRUE;
+		}
+		
+		EXTRA(d)->painter = new QPainter(device);
 	}
 	
-	EXTRA(d)->painter = new QPainter(device);
 	EXTRA(d)->path = 0;
 	EXTRA(d)->clip = 0;
 	PAINTER(d)->setRenderHints(QPainter::Antialiasing, true);
@@ -157,7 +161,7 @@ static int Begin(GB_PAINT *d)
 	else if (GB.Is(device, CLASS_SvgImage))
 	{
 		CSVGIMAGE *svgimage = (CSVGIMAGE *)device;
-		target = SVGIMAGE_init(svgimage);
+		target = SVGIMAGE_begin(svgimage, &EXTRA(d)->painter);
 		if (!target)
 		{
 			GB.Error("SvgImage size is not defined");
@@ -186,6 +190,10 @@ static void End(GB_PAINT *d)
 	
 			wid->drawn--;
 		}
+	}
+	else if (GB.Is(device, CLASS_SvgImage))
+	{
+		PAINTER(d)->end(); // ??
 	}
 
 	delete EXTRA(d)->path;
@@ -627,10 +635,10 @@ static void TextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext)
 {
 	QRectF rect = PAINTER(d)->boundingRect(QRectF(0, 0, d->width, d->height), Qt::AlignLeft | Qt::AlignTop | Qt::TextSingleLine | Qt::TextIncludeTrailingSpaces, QString::fromUtf8(text, len));
 	
-	ext->x1 = 0;
-	ext->y1 = 0;
-	ext->x2 = (float)rect.width();
-	ext->y2 = (float)rect.height();
+	ext->x1 = (float)rect.left();
+	ext->y1 = (float)rect.top();
+	ext->x2 = (float)rect.right();
+	ext->y2 = (float)rect.bottom();
 }
 
 		
@@ -881,3 +889,10 @@ QPainter *PAINT_get_current()
 	return d ? PAINTER(d) : NULL;
 }
 
+void PAINT_get_current_point(float *x, float *y)
+{
+	GB_PAINT *d = (GB_PAINT *)DRAW.Paint.GetCurrent();
+	if (!d)
+		return;
+	GetCurrentPoint(d, x, y);
+}

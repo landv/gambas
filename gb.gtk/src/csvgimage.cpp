@@ -34,19 +34,14 @@
 #define MM_TO_PT(_mm) ((_mm) * 72 / 25.4)
 #define PT_TO_MM(_pt) ((_pt) / 72 * 25.4)
 
-static void release_handle(CSVGIMAGE *_object)
+static void release(CSVGIMAGE *_object)
 {
 	if (HANDLE)
 	{
 		rsvg_handle_free(HANDLE);
 		HANDLE = NULL;
 	}
-}
 
-static void release(CSVGIMAGE *_object)
-{
-	release_handle(THIS);
-	
 	if (SURFACE)
 	{
 		cairo_surface_destroy(SURFACE);
@@ -186,7 +181,7 @@ __RETURN:
 	if (handle)
 		rsvg_handle_free(handle);
 	
-	GB.ReleaseFile(addr,len);
+	GB.ReleaseFile(addr, len);
 	return ret;
 }
 
@@ -238,7 +233,9 @@ BEGIN_METHOD(SvgImage_Save, GB_STRING file)
 	}
 	
 	cairo_surface_finish(SURFACE);
-	GB.CopyFile(THIS->file, GB.FileName(STRING(file), LENGTH(file)));
+	if (GB.CopyFile(THIS->file, GB.FileName(STRING(file), LENGTH(file))))
+		return;
+	
 	load_file(THIS, THIS->file, GB.StringLength(THIS->file));
 
 END_METHOD

@@ -25,12 +25,14 @@
 
 #include "gambas.h"
 #include <QSvgGenerator>
+#include <QSvgRenderer>
 
 typedef 
   struct 
   {
     GB_BASE ob;
     QSvgGenerator *generator;
+		QSvgRenderer *renderer;
 		char *file;
 		double width;
 		double height;
@@ -44,10 +46,11 @@ extern GB_DESC SvgImageDesc[];
 #else
 
 #define THIS OBJECT(CSVGIMAGE)
-#define GENERATOR (THIS->generator)
+#define GENERATOR THIS->generator
+#define RENDERER THIS->renderer
 
 #endif
 
-QSvgGenerator *SVGIMAGE_init(CSVGIMAGE *_object);
+QSvgGenerator *SVGIMAGE_begin(CSVGIMAGE *_object, QPainter **painter);
 
 #endif
