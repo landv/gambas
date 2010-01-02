@@ -1,6 +1,8 @@
 ' Gambas class file
 
 Private Const IMAGE_NAME As String = "clovis.jpg"
+Private Const SVG_EXPORT As String = "~/gambas with red ballon.svg"
+
 Private $sFunctionName As String = "Example1"
 
 Public Sub _new()
@@ -292,9 +294,9 @@ Public Sub Example12()
   
   Dim hImg As Image
   Dim hBrush As PaintBrush
+  
   hImg = Image.Load(IMAGE_NAME)
   
- 
   Paint.Translate(128, 128)
   Paint.Rotate(Pi / 4)
   Paint.Scale(1 / Sqr(2), 1 / Sqr(2))
@@ -457,6 +459,12 @@ Public Sub Example21()
   Dim hSvgImage As SvgImage
   
   hSvgImage = SvgImage.Load("gambas.svg")
+  Paint.Begin(hSvgImage)
+  Paint.Brush = Paint.RadialGradient(200, 140, 40, 215, 115, [Color.RGB(255, 0, 0, 64), Color.White], [1.0, 0.1])
+  Paint.Arc(200, 140, 40)
+  Paint.Fill
+  Paint.End
+  
   hSvgImage.Paint
   
 End

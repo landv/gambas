@@ -34,13 +34,18 @@
 #define MM_TO_PT(_mm) ((_mm) * 72 / 25.4)
 #define PT_TO_MM(_pt) ((_pt) / 72 * 25.4)
 
-static void release(CSVGIMAGE *_object)
+static void release_handle(CSVGIMAGE *_object)
 {
 	if (HANDLE)
 	{
 		rsvg_handle_free(HANDLE);
 		HANDLE = NULL;
 	}
+}
+
+static void release(CSVGIMAGE *_object)
+{
+	release_handle(THIS);
 	
 	if (SURFACE)
 	{
@@ -49,26 +54,42 @@ static void release(CSVGIMAGE *_object)
 		unlink(THIS->file);
 		GB.FreeString(&THIS->file);
 	}
+	
+	THIS->width = THIS->height = 0;
 }
 
-cairo_surface_t *SVGIMAGE_init(CSVGIMAGE *_object)
+cairo_surface_t *SVGIMAGE_begin(CSVGIMAGE *_object)
 {
 	if (!SURFACE)
 	{
 		if (THIS->width <= 0 || THIS->height <= 0)
+		{
+			GB.Error("SvgImage size is not defined");
 			return NULL;
+		}
 		
 		GB.NewString(&THIS->file, GB.TempFile(NULL), 0);
-		THIS->surface = cairo_svg_surface_create(THIS->file, THIS->width, THIS->height);
+		SURFACE = cairo_svg_surface_create(THIS->file, THIS->width, THIS->height);
+		
+		if (HANDLE)
+		{
+			cairo_t *context = cairo_create(SURFACE);
+			rsvg_handle_render_cairo(HANDLE, context);
+			cairo_destroy(context);
+		}
 	}
 	
 	return SURFACE;
 }
 
+void SVGIMAGE_end(CSVGIMAGE *_object)
+{
+}
+
 BEGIN_METHOD(SvgImage_new, GB_FLOAT width; GB_FLOAT height)
 
-	THIS->width = MM_TO_PT(VARGOPT(width, 0));
-	THIS->height = MM_TO_PT(VARGOPT(height, 0));
+	THIS->width = VARGOPT(width, 0);
+	THIS->height = VARGOPT(height, 0);
 
 END_METHOD
 
@@ -81,48 +102,34 @@ END_METHOD
 BEGIN_PROPERTY(SvgImage_Width)
 
 	if (READ_PROPERTY)
-		GB.ReturnFloat(PT_TO_MM(THIS->width));
+		GB.ReturnFloat(THIS->width);
 	else
-		THIS->width = MM_TO_PT(VPROP(GB_FLOAT));
+		THIS->width = VPROP(GB_FLOAT);
 	
 END_PROPERTY
 
 BEGIN_PROPERTY(SvgImage_Height)
 	
 	if (READ_PROPERTY)
-		GB.ReturnFloat(PT_TO_MM(THIS->height));
+		GB.ReturnFloat(THIS->height);
 	else
-		THIS->height = MM_TO_PT(VPROP(GB_FLOAT));
+		THIS->height = VPROP(GB_FLOAT);
 	
 END_PROPERTY
 
-BEGIN_METHOD(SvgImage_Save, GB_STRING file)
-	
-	if (!THIS->file)
-		GB.Error("Void image");
-	else
-		GB.CopyFile(THIS->file, GB.FileName(STRING(file), LENGTH(file)));
-
-END_METHOD
-
-BEGIN_METHOD_VOID(SvgImage_Clear)
-
-	release(THIS);
-
-END_METHOD
-
-BEGIN_METHOD(SvgImage_Load, GB_STRING path)
-
-	CSVGIMAGE *svgimage;
+static bool load_file(CSVGIMAGE *_object, const char *path, int len_path)
+{
 	RsvgHandle *handle = NULL;
+	RsvgDimensionData dim;
 	char *addr;
 	int len;
 	int len_read;
+	bool ret = true;
 
-	if (GB.LoadFile(STRING(path), LENGTH(path), &addr, &len))
+	if (GB.LoadFile(path, len_path, &addr, &len))
 	{
 		GB.Error("Unable to load SVG file");
-		return;
+		return true;
 	}
 
 	/*if (!len) 
@@ -139,7 +146,7 @@ BEGIN_METHOD(SvgImage_Load, GB_STRING path)
 		GB.Error("Unable to load SVG file: unable to create SVG handle"); 
 		goto __RETURN;
 	}
-	
+
 	rsvg_handle_set_dpi(handle, 72);
 	
 	len_read = 1024;
@@ -165,10 +172,14 @@ BEGIN_METHOD(SvgImage_Load, GB_STRING path)
 		goto __RETURN;
 	}
 	
-	GB.New (POINTER(&svgimage), CLASS_SvgImage, NULL, NULL);
-	svgimage->handle = handle;
+	release(THIS);
+	THIS->handle = handle;
+	rsvg_handle_get_dimensions(handle, &dim);
+	THIS->width = dim.width;
+	THIS->height = dim.height;
+
 	handle = NULL;
-	GB.ReturnObject(svgimage);
+	ret = false;
 
 __RETURN:
 
@@ -176,8 +187,23 @@ __RETURN:
 		rsvg_handle_free(handle);
 	
 	GB.ReleaseFile(addr,len);
-	return;
+	return ret;
+}
+
+BEGIN_METHOD(SvgImage_Load, GB_STRING path)
+
+	CSVGIMAGE *svgimage;
+
+	GB.New(POINTER(&svgimage), CLASS_SvgImage, NULL, NULL);
+
+	if (load_file(svgimage, STRING(path), LENGTH(path)))
+	{
+		GB.Unref(POINTER(&svgimage));
+		return;
+	}
 	
+	GB.ReturnObject(svgimage);
+
 END_METHOD
 
 BEGIN_METHOD_VOID(SvgImage_Paint)
@@ -187,10 +213,39 @@ BEGIN_METHOD_VOID(SvgImage_Paint)
 	if (!context)
 		return;
 	
+	if (THIS->file)
+	{
+		cairo_surface_finish(SURFACE);
+		load_file(THIS, THIS->file, GB.StringLength(THIS->file));
+	}
+	
 	if (!HANDLE)
 		return;
 	
 	rsvg_handle_render_cairo(HANDLE, context);
+
+END_METHOD
+
+BEGIN_METHOD(SvgImage_Save, GB_STRING file)
+	
+	if (!THIS->file)
+	{
+		if (!SVGIMAGE_begin(THIS))
+		{
+			GB.Error("Void image");
+			return;
+		}
+	}
+	
+	cairo_surface_finish(SURFACE);
+	GB.CopyFile(THIS->file, GB.FileName(STRING(file), LENGTH(file)));
+	load_file(THIS, THIS->file, GB.StringLength(THIS->file));
+
+END_METHOD
+
+BEGIN_METHOD_VOID(SvgImage_Clear)
+
+	release(THIS);
 
 END_METHOD
 

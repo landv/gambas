@@ -53,6 +53,7 @@ extern GB_DESC SvgImageDesc[];
 
 #endif
 
-cairo_surface_t *SVGIMAGE_init(CSVGIMAGE *_object);
+cairo_surface_t *SVGIMAGE_begin(CSVGIMAGE *_object);
+void SVGIMAGE_end(CSVGIMAGE *_object);
 
 #endif

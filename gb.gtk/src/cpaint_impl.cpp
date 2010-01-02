@@ -195,12 +195,10 @@ static int Begin(GB_PAINT *d)
 	else if (GB.Is(device, CLASS_SvgImage))
 	{
 		CSVGIMAGE *svgimage = ((CSVGIMAGE *)device);
-		target = SVGIMAGE_init(svgimage);
+		target = SVGIMAGE_begin(svgimage);
 		if (!target)
-		{
-			GB.Error("SvgImage size is not defined");
 			return TRUE;
-		}
+		
 		cairo_surface_reference(target);
 		w = svgimage->width;
 		h = svgimage->height;
@@ -229,7 +227,7 @@ static void End(GB_PAINT *d)
 	else if (GB.Is(device, CLASS_SvgImage))
 	{
 		CSVGIMAGE *svgimage = ((CSVGIMAGE *)device);
-		cairo_surface_finish(svgimage->surface);
+		SVGIMAGE_end(svgimage);
 	}
 }
 
