@@ -88,8 +88,8 @@ void CSocket_post_hostfound(void *_object);
 void CSocket_post_connected(void *_object);
 void CSocket_post_data_available(void *_object);
 //
-int CSocket_connect_unix(void *_object,char *sPath,int lenpath);
-int CSocket_connect_socket(void *_object,char *sHost,int lenhost,int myport);
+int CSocket_connect_unix(void *_object, char *sPath, int lenpath);
+int CSocket_connect_socket(void *_object, char *sHost,int lenhost,int myport);
 int CSocket_peek_data(void *_object,char **buf,int MaxLen);
 //
 void CSocket_stream_internal_error(void *_object,int ncode, bool post);

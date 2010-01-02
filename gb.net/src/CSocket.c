@@ -431,7 +431,15 @@ int CSocket_stream_write(GB_STREAM *stream, char *buffer, int len)
 	if (!THIS) return -1;
 
 	//ioctl(THIS->socket,FIONBIO,&NoBlock);
-	USE_MSG_NOSIGNAL(npos=send(THIS->socket,(void*)buffer,len*sizeof(char),MSG_NOSIGNAL));
+	while (len > 0)
+	{
+		USE_MSG_NOSIGNAL(npos=send(THIS->socket,(void*)buffer,len*sizeof(char),MSG_NOSIGNAL));
+		fprintf(stderr, "npos = %d\n", npos);
+		if (npos <= 0)
+			break;
+		len -= npos;
+		buffer += npos;
+	}
 	//NoBlock++;
 	//ioctl(THIS->socket,FIONBIO,&NoBlock);
 
@@ -459,9 +467,9 @@ int CSocket_stream_write(GB_STREAM *stream, char *buffer, int len)
 /**************************************************************************
  To start a UNIX connection
  **************************************************************************/
-int CSocket_connect_unix(void *_object,char *sPath,int lenpath)
+int CSocket_connect_unix(void *_object,char *sPath, int lenpath)
 {
-	int doNotBlock = 1;
+	int doNotBlock = 0;
 
 	if ( THIS->iStatus > 0 ) return 1;
 	if (!sPath) return 7;
@@ -502,7 +510,7 @@ int CSocket_connect_unix(void *_object,char *sPath,int lenpath)
 		return 0;
  	}
 	
-	// Set socket to non-blocking mode, after the connect() call!
+	// Set socket to blocking mode, after the connect() call!
 	ioctl(THIS->socket, FIONBIO, &doNotBlock);
   	
 	/* Error */
@@ -522,7 +530,7 @@ int CSocket_connect_unix(void *_object,char *sPath,int lenpath)
  **************************************************************************/
 int CSocket_connect_socket(void *_object,char *sHost,int lenhost,int myport)
 {
-	int doNotBlock = 1;
+	int doNotBlock = 0;
 	
 	if ( THIS->iStatus > 0 ) return 1;
 	if (!lenhost) return 9;

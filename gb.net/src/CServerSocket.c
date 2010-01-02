@@ -533,6 +533,8 @@ BEGIN_METHOD_VOID(CSERVERSOCKET_Accept)
 	}
 
 	CSOCKET_init_connected(cli_obj);
+	// Socket returned by accept is non-blocking by default
+	GB.Stream.Block(&cli_obj->stream, FALSE);
 	//cli_obj->stream._free[0]=(intptr_t)cli_obj;
 
 	CServerSocket_NewChild(THIS,cli_obj);
