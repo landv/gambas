@@ -1,4 +1,76 @@
 -------------------------------------------------------------------------------
+ gambas2-2.19.0 - 03 Jan 2010
+-------------------------------------------------------------------------------
+
+[CONFIGURATION]
+* BUG: Some fixes in architecture detection.
+* NEW: Detect architecture between x86, x86_64 and ARM.
+
+[DEVELOPMENT ENVIRONMENT]
+* BUG: Correctly save ListBox having exactly 31 items defined from the IDE.
+* NEW: Do not close the menu editor with the ENTER or the ESC key.
+
+[EXAMPLES]
+* BUG: Fix the use of Dialog.Filter in the PictureDatabase example.
+
+[INTERPRETER]
+* BUG: Try to stop break strict aliasing rules, and other fixes. This way
+  the interpreter should behave better on ARM architecture.
+* BUG: Exist() now checks relative paths in the current archive only.
+* BUG: Backport fixes from Gambas 3 for Dir() operating inside archives.
+* BUG: Try to prevent a possible crash when children processes are stopped
+  recursively.
+* BUG: Alignment fixes for ARM and 64 bits architectures.
+
+[COMPILER]
+* BUG: Long integer constants are now compiled correctly in all cases.
+
+[SCRIPTER]
+* BUG: Do not crash if a specific component is missing.
+* BUG: The script now correctly returns the Application.Return value.
+* BUG: Correctly detect the Main procedure in all cases.
+
+[GB.DB]
+* BUG: Fixes for ARM.
+
+[GB.FORM]
+* BUG: TableView cannot raise a spurious "Null object" error anymore when
+  calling the Edit() method.
+
+[GB.GTK]
+* BUG: Fixes for ARM.
+* BUG: GridView.Clear is now correctly implemented.
+
+[GB.NET]
+* BUG: When the property SerialPort.FlowControl value is None, there is no
+  polling and only the Read event is raised. If the FlowControl property is
+  not None, then the serial port is polled, and all Change signals can be
+  raised.
+* BUG: Try to fix the crash in the read callback.
+* BUG: SerialPort should work correctly again.
+* BUG: Do not watch the SerialPort file descriptor for reading if there is
+  no Read event handler.
+* NEW: SerialPort watched for status change only if at least one of the
+  change event is implemented.
+
+f[GB.NET.SMTP]
+* BUG: The COPYING file is actually the LICENCE file. So remove the LICENCE
+  file, and make the COPYING file be the LGPL 2.1.
+
+[GB.QT]
+* BUG: Fixes for ARM.
+* BUG: The ComboBox Click event now is raised correctly when setting the
+  Text property.
+* BUG: Remove a debugging message.
+
+[GB.QT.KDE]
+* BUG: Fixes for ARM.
+
+[GB.SDL]
+* BUG: Remove running SDL events in a separate thread, as it give instability.
+
+
+-------------------------------------------------------------------------------
  gambas2-2.18.0 - 18 Nov 2009
 -------------------------------------------------------------------------------
 
