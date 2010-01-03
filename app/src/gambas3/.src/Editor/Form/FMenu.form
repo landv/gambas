@@ -67,7 +67,7 @@
     { frmMenu HBox
       MoveScaled(0,0,72,37)
       Spacing = True
-      { VBox2 VBox
+      { panMenu VBox
         MoveScaled(1,1,57,35)
         Expand = True
         { HPanel1 HPanel
@@ -75,7 +75,8 @@
           Expand = True
           { Label1 Label
             MoveScaled(0,0,13,4)
-            Text = ("Name")
+            Tag = "Name"
+            Text = ("")
           }
           { txtName TextBox
             MoveScaled(13,0,35,4)
@@ -88,7 +89,8 @@
           Expand = True
           { Label6 Label
             MoveScaled(0,0,13,4)
-            Text = ("Group")
+            Tag = "Group"
+            Text = ("")
           }
           { txtGroup TextBox
             MoveScaled(13,0,35,4)
@@ -101,7 +103,8 @@
           Expand = True
           { Label2 Label
             MoveScaled(0,0,13,4)
-            Text = ("Caption")
+            Tag = "Caption"
+            Text = ("")
           }
           { txtCaption TextBox
             MoveScaled(13,0,35,4)
@@ -114,7 +117,8 @@
           Expand = True
           { Label8 Label
             MoveScaled(0,0,13,4)
-            Text = ("Action")
+            Tag = "Action"
+            Text = ("")
           }
           { txtAction TextBox
             MoveScaled(13,0,35,4)
@@ -127,7 +131,8 @@
           Expand = True
           { Label7 Label
             MoveScaled(0,0,13,4)
-            Text = ("Tag")
+            Tag = "Tag"
+            Text = ("")
           }
           { txtTag TextBox
             MoveScaled(13,0,35,4)
@@ -140,7 +145,8 @@
           Expand = True
           { Label3 Label
             MoveScaled(0,0,13,4)
-            Text = ("Shortcut")
+            Tag = "Shortcut"
+            Text = ("")
           }
           { HBox3 HBox
             MoveScaled(13,0,42,4)
@@ -176,7 +182,8 @@
           Expand = True
           { Label5 Label
             MoveScaled(0,0,13,4)
-            Text = ("Picture")
+            Tag = "Picture"
+            Text = ("")
           }
           { HBox4 HBox
             MoveScaled(13,0,37,4)
@@ -230,7 +237,7 @@
       }
     }
     { lblCreate Label
-      MoveScaled(1,1,46,4)
+      MoveScaled(4,1,46,4)
       Text = ("Click on Insert to add a new menu.")
       Alignment = Align.TopNormal
     }

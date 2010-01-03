@@ -281,7 +281,7 @@ Public Sub Example11()
   hImg = Image.Load(IMAGE_NAME)
 
   Paint.Translate(128, 128)
-  Paint.Rotate(Rad(45))
+  'Paint.Rotate(Rad(45))
   Paint.Scale(256.0 / hImg.W, 256.0 / hImg.H)
   Paint.Translate(-0.5 * hImg.W, -0.5 * hImg.H)
   Paint.Brush = Paint.Image(hImg, 0, 0)
@@ -298,7 +298,7 @@ Public Sub Example12()
   hImg = Image.Load(IMAGE_NAME)
   
   Paint.Translate(128, 128)
-  Paint.Rotate(Pi / 4)
+  'Paint.Rotate(Pi / 4)
   Paint.Scale(1 / Sqr(2), 1 / Sqr(2))
   Paint.Translate(-128, -128)
   hBrush = Paint.Image(himg, 0, 0)
@@ -426,13 +426,16 @@ Public Sub Example17()
   Paint.Fill
   
   Paint.Brush = Paint.Color(Color.RGB(255, 31, 31, 93))
-  Paint.LineWidth = 6
+  Paint.LineWidth = 1
   Paint.Arc(X, Y, 10)
   Paint.Fill
-  Paint.MoveTo(X, Y)
-  Paint.RelLineTo(0, Paint.Font.Descent - hExt.Height)
-  Paint.RelLineTo(hExt.Width, 0)
-  Paint.Stroke
+  'Paint.MoveTo(X, Y)
+  'Paint.RelLineTo(0, Paint.Font.Descent - hExt.Height)
+  'Paint.RelLineTo(hExt.Width, 0)
+  'Paint.Stroke
+  Paint.Brush = Paint.Color(Color.RGB(255, 31, 31, 192))
+  Paint.Rectangle(hExt.X, hExt.Y, hExt.Width, hExt.Height)
+  Paint.Fill
   
 End
 

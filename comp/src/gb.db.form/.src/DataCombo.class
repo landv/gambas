@@ -114,6 +114,8 @@ Public Sub Refresh(Optional bReload As Boolean)
   If Not $sKey Then Return
   
   hSource = Common.GetSource(Me)
+  If Not hSource Then Return
+  
   If hSource._Check() Then 
     Reload
   Else

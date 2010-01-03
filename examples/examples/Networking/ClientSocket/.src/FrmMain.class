@@ -20,6 +20,7 @@ Public Sub MySock_Ready()
   ' When connection proccess has finished
   ' successfully, "Connected" event will raise
   '***********************************
+  
   Timer1.Enabled = False
   If CurProtocol = 1 Then
     Label3.Text = "Connected to path " & MySock.Path
@@ -105,7 +106,11 @@ Private Sub Set_Interface(bState As Boolean)
   'TextArea1.Enabled=bState
   Button3.Enabled = bState
   TextArea2.Enabled = bState
-  If bState = True Then TextArea1.Text = ""
+  
+  If bState Then
+    TextArea1.Text = ""
+    TextArea1.SetFocus
+  Endif
   
 End
 

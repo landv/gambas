@@ -358,7 +358,7 @@ Public Sub CalcSortKey()
 
   If SortKey = 0 Then 
 
-    if $bCalcKey Then Return
+    If $bCalcKey Then Return
 
     $bCalcKey = True
 
@@ -947,7 +947,6 @@ Static Public Sub GetClassDescription(sClass As String) As CClassInfo
   Return $hClass
   
 End
-
 
 Static Public Function GetClassSymbols(sClass As String) As Collection
 

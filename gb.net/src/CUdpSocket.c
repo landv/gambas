@@ -38,7 +38,6 @@
 
 #include "CUdpSocket.h"
 
-
 GB_STREAM_DESC UdpSocketStream = {
 	open: CUdpSocket_stream_open,
 	close: CUdpSocket_stream_close,
@@ -93,11 +92,11 @@ static void fill_buffer(CUDPSOCKET *_object)
 	
 	host_len = sizeof(THIS->addr);
 
-	block = GB.Stream.Block(&THIS->stream, TRUE);
-	USE_MSG_NOSIGNAL(ret = recvfrom(THIS->Socket, (void*)buffer, sizeof(char), MSG_PEEK | MSG_NOSIGNAL, (struct sockaddr*)&THIS->addr, &host_len));
-	GB.Stream.Block(&THIS->stream, block);
+	block = GB.Stream.Block(&SOCKET->stream, TRUE);
+	USE_MSG_NOSIGNAL(ret = recvfrom(SOCKET->socket, (void*)buffer, sizeof(char), MSG_PEEK | MSG_NOSIGNAL, (struct sockaddr*)&THIS->addr, &host_len));
+	GB.Stream.Block(&SOCKET->stream, block);
 	
-	if (ioctl(THIS->Socket, FIONREAD, &THIS->buffer_len))
+	if (ioctl(SOCKET->socket, FIONREAD, &THIS->buffer_len))
 		return;
 	
 	//fprintf(stderr, "buffer_len = %d\n", THIS->buffer_len);
@@ -105,13 +104,13 @@ static void fill_buffer(CUDPSOCKET *_object)
 	if (THIS->buffer_len)
 		GB.Alloc(POINTER(&THIS->buffer), THIS->buffer_len);
 	
-	USE_MSG_NOSIGNAL(ret = recvfrom(THIS->Socket, (void *)THIS->buffer, THIS->buffer_len, MSG_NOSIGNAL, (struct sockaddr*)&THIS->addr, &host_len));
+	USE_MSG_NOSIGNAL(ret = recvfrom(SOCKET->socket, (void *)THIS->buffer, THIS->buffer_len, MSG_NOSIGNAL, (struct sockaddr*)&THIS->addr, &host_len));
 
 	//fprintf(stderr, "recvfrom() -> %d\n", ret);
 	
 	if (ret < 0)
 	{
-		CUdpSocket_stream_close(&THIS->stream);
+		CUdpSocket_stream_close(&SOCKET->stream);
 		THIS->iStatus=-4;
 		return;
 	}
@@ -164,7 +163,7 @@ int CUdpSocket_stream_flush(GB_STREAM *stream)
 int CUdpSocket_stream_handle(GB_STREAM *stream)
 {
 	void *_object = stream->tag;
-	return THIS->Socket;
+	return SOCKET->socket;
 }
 
 int CUdpSocket_stream_close(GB_STREAM *stream)
@@ -175,8 +174,8 @@ int CUdpSocket_stream_close(GB_STREAM *stream)
 	stream->desc=NULL;
 	if (THIS->iStatus > 0)
 	{
-		GB.Watch (THIS->Socket,GB_WATCH_NONE,(void *)CUdpSocket_CallBack,(intptr_t)THIS);
-		close(THIS->Socket);
+		GB.Watch (SOCKET->socket,GB_WATCH_NONE,(void *)CUdpSocket_CallBack,(intptr_t)THIS);
+		close(SOCKET->socket);
 		THIS->iStatus=0;
 	}
 	GB.FreeString(&THIS->thost);
@@ -260,7 +259,7 @@ int CUdpSocket_stream_write(GB_STREAM *stream, char *buffer, int len)
 		//bzero(&(THIS->addr.in.sin_zero), 8);
 	}
 
-	USE_MSG_NOSIGNAL(retval = sendto(THIS->Socket, (void*)buffer, len, MSG_NOSIGNAL, (struct sockaddr*)&dest, size));
+	USE_MSG_NOSIGNAL(retval = sendto(SOCKET->socket, (void*)buffer, len, MSG_NOSIGNAL, (struct sockaddr*)&dest, size));
 
 	if (retval >= 0) 
 		return 0;
@@ -278,10 +277,10 @@ int CUdpSocket_stream_write(GB_STREAM *stream, char *buffer, int len)
 
 static bool update_broadcast(CUDPSOCKET *_object)
 {
-	if (THIS->Socket == 0)
+	if (SOCKET->socket == 0)
 		return FALSE;
 
-	if (setsockopt(THIS->Socket, SOL_SOCKET, SO_BROADCAST, (char *)&THIS->broadcast, sizeof(int)) < 0)
+	if (setsockopt(SOCKET->socket, SOL_SOCKET, SO_BROADCAST, (char *)&THIS->broadcast, sizeof(int)) < 0)
 	{
 		GB.Error("Cannot set broadcast socket option");
 		return TRUE;
@@ -321,7 +320,7 @@ static void dgram_start(CUDPSOCKET *_object)
 		}
 	}
 
-	if ((THIS->Socket = socket(domain, SOCK_DGRAM, 0)) < 0)
+	if ((SOCKET->socket = socket(domain, SOCK_DGRAM, 0)) < 0)
 	{
 		THIS->iStatus = -2;
 		GB.Ref(THIS);
@@ -329,7 +328,7 @@ static void dgram_start(CUDPSOCKET *_object)
 		return;
 	}
 
-	if (update_broadcast(THIS))
+	if (update_broadcast(THIS) || SOCKET_update_timeout(SOCKET))
 	{
 		THIS->iStatus = -2;
 		GB.Ref(THIS);
@@ -356,9 +355,9 @@ static void dgram_start(CUDPSOCKET *_object)
 		//bzero(&(THIS->addr.in.sin_zero), 8);
 	}
 	
-	if (bind(THIS->Socket, (struct sockaddr*)&THIS->addr, size) < 0)
+	if (bind(SOCKET->socket, (struct sockaddr*)&THIS->addr, size) < 0)
 	{
-		close(THIS->Socket);
+		close(SOCKET->socket);
 		THIS->iStatus = -10;
 		GB.Ref(THIS);
 		GB.Post(CUdpSocket_post_error, (intptr_t)THIS);
@@ -366,10 +365,10 @@ static void dgram_start(CUDPSOCKET *_object)
 	}
 
 	THIS->iStatus = 1;
-	THIS->stream.desc = &UdpSocketStream;
-	GB.Stream.SetSwapping(&THIS->stream, htons(0x1234) != 0x1234);
+	SOCKET->stream.desc = &UdpSocketStream;
+	GB.Stream.SetSwapping(&SOCKET->stream, htons(0x1234) != 0x1234);
 	
-	GB.Watch(THIS->Socket, GB_WATCH_READ, (void *)CUdpSocket_CallBack, (intptr_t)THIS);
+	GB.Watch(SOCKET->socket, GB_WATCH_READ, (void *)CUdpSocket_CallBack, (intptr_t)THIS);
 }
 
 
@@ -474,7 +473,7 @@ Gambas object "Constructor"
 *************************************************/
 BEGIN_METHOD_VOID(CUDPSOCKET_new)
 
-	THIS->stream.tag = _object;
+	SOCKET->stream.tag = _object;
 
 END_METHOD
 
@@ -483,7 +482,7 @@ Gambas object "Destructor"
 *************************************************/
 BEGIN_METHOD_VOID(CUDPSOCKET_free)
 
-	CUdpSocket_stream_close(&THIS->stream);
+	CUdpSocket_stream_close(&SOCKET->stream);
 
 END_METHOD
 
@@ -505,25 +504,25 @@ BEGIN_METHOD_VOID (CUDPSOCKET_Peek)
 
 	peeking = MSG_NOSIGNAL | MSG_PEEK;
 
-	ioctl(THIS->Socket,FIONREAD,&bytes);
+	ioctl(SOCKET->socket,FIONREAD,&bytes);
 	if (bytes)
 	{
 		GB.Alloc( POINTER(&sData),bytes*sizeof(char) );
 		host_len = sizeof(THIS->addr);
-		//ioctl(THIS->Socket,FIONBIO,&NoBlock);
-		USE_MSG_NOSIGNAL(retval=recvfrom(THIS->Socket,(void*)sData,1024*sizeof(char) \
+		//ioctl(SOCKET->socket,FIONBIO,&NoBlock);
+		USE_MSG_NOSIGNAL(retval=recvfrom(SOCKET->socket,(void*)sData,1024*sizeof(char) \
 					,peeking,(struct sockaddr*)&THIS->addr, &host_len));
 		if (retval<0)
 		{
 			GB.Free(POINTER(&sData));
-			CUdpSocket_stream_close(&THIS->stream);
+			CUdpSocket_stream_close(&SOCKET->stream);
 			THIS->iStatus=-4;
 			GB.Raise(THIS,CUDPSOCKET_SocketError,0);
 			GB.ReturnNewString(NULL,0);
 			return;
 		}
 		//NoBlock++;
-		//ioctl(THIS->Socket,FIONBIO,&NoBlock);
+		//ioctl(SOCKET->socket,FIONBIO,&NoBlock);
 		if (retval>0)
 			GB.ReturnNewString(sData,retval);
 		else
@@ -626,6 +625,7 @@ GB_DESC CUdpSocketDesc[] =
 	GB_PROPERTY("Path", "s", CUDPSOCKET_Path),
 	
 	GB_PROPERTY("Broadcast", "b", CUDPSOCKET_broadcast),
+	GB_PROPERTY("Timeout", "i", CSOCKET_Timeout),
 
 	GB_CONSTANT("_Properties", "s", "Port{Range:0;65535},Path,TargetHost,TargetPort,Broadcast"),
 	GB_CONSTANT("_DefaultEvent", "s", "Read"),

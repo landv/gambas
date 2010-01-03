@@ -930,6 +930,8 @@ Private Sub UpdateMenu()
     Action[sAction].Visible = bVisible
     Action[sAction].Enabled = bEnabled
   Next
+  
+  Action["version-control"].Visible = VersionControl.CanControlProject()
 
   mnuStartup.Visible = bVisible
   mnuRenameFile.Visible = bVisible
@@ -1099,6 +1101,9 @@ Public Sub Action_Activate(Key As String) As Boolean
       Project.MakeInstall
     Case "shortcut"
       Action.Configure
+    Case "version-control"
+      VersionControl.ControlProject
+      UpdateMenu
       
     Case "find-next"
       FFind.FindNext

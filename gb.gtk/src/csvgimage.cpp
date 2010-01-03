@@ -118,7 +118,6 @@ static bool load_file(CSVGIMAGE *_object, const char *path, int len_path)
 	RsvgDimensionData dim;
 	char *addr;
 	int len;
-	int len_read;
 	bool ret = true;
 
 	if (GB.LoadFile(path, len_path, &addr, &len))
@@ -127,45 +126,14 @@ static bool load_file(CSVGIMAGE *_object, const char *path, int len_path)
 		return true;
 	}
 
-	/*if (!len) 
-	{
-		GB.ReleaseFile(addr,len); 
-		GB.Error("Invalid format");
-		GB.ReturnNull(); 
-		return; 
-	}*/
-
-	handle = rsvg_handle_new();
+	handle = rsvg_handle_new_from_data((const guint8 *)addr, len / sizeof(guint8), NULL);
 	if (!handle) 
 	{
-		GB.Error("Unable to load SVG file: unable to create SVG handle"); 
+		GB.Error("Unable to load SVG file: invalid format"); 
 		goto __RETURN;
 	}
 
 	rsvg_handle_set_dpi(handle, 72);
-	
-	len_read = 1024;
-	while (len)
-	{
-		if (len < len_read)
-			len_read = len;
-
-		len -= len_read;	
-
-		if (!rsvg_handle_write(handle, (const guchar*)addr, len_read, NULL))
-		{
-			GB.Error("Unable to load SVG file: invalid format");
-			goto __RETURN;
-		}
-		
-		addr += len_read;
-	}
-
-	if (!rsvg_handle_close(handle, NULL))
-	{
-		GB.Error("Unable to load SVG file: invalid format");
-		goto __RETURN;
-	}
 	
 	release(THIS);
 	THIS->handle = handle;

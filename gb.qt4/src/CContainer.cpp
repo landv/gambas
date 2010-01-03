@@ -474,6 +474,8 @@ void MyContainer::setFrameStyle(int frame)
 	int margin;
 	_frame = frame;
 	
+	setAttribute(Qt::WA_StaticContents, frame == BORDER_NONE);
+
 	if (_frame == BORDER_NONE)
 		margin = 0;
 	else if (_frame == BORDER_PLAIN)

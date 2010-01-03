@@ -368,3 +368,24 @@ Public Sub Diff(sPath As String) As String
   Endif
   
 End
+
+Public Sub CanControlProject() As Boolean
+
+  If $bSVN Or $bCVS Then Return
+  If Exist(Project.Dir &/ "../.svn") Then Return True
+  If Exist(Project.Dir &/ "../CVS") Or Exist(Project.Dir &/ "../CVSROOT") Then Return True
+  
+End
+
+Public Sub ControlProject()
+  
+  If Exist(Project.Dir &/ "../.svn") Then
+    Project.CleanUp
+    Try Kill Project.Dir &/ ".settings"
+    Run("svn add " & Shell$(Project.Dir))
+    Project.Config.Save
+    Refresh
+    Project.Refresh
+  Endif
+  
+End

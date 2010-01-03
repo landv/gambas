@@ -91,7 +91,7 @@ Private Sub GetTransCount(sLang As String) As Integer
   hFile = Open GetLangPath(sLang, "mo")
   
   iVal = Read #hFile As Integer
-  If (iVal = &h950412DE) Xor (System.ByteOrder = gb.BigEndian) Then
+  If (iVal = &H950412DE) Xor (System.ByteOrder = gb.BigEndian) Then
     hFile.ByteOrder = gb.LittleEndian
   Else 
     hFile.ByteOrder = gb.BigEndian

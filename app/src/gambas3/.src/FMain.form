@@ -116,6 +116,12 @@
       Text = ("&Refresh")
       Picture = Picture["icon:/small/refresh"]
     }
+    { mnuVersionControl Menu
+      Action = "version-control"
+      Text = ("Put on &version control")
+      Picture = Picture["icon:/small/add"]
+      Visible = False
+    }
     { Menu1 Menu
       Text = ("")
     }
@@ -1122,6 +1128,11 @@
     Text = "&Update all forms"
     Shortcut = ""
     Picture = "icon:/small/refresh"
+  }
+  { Action version-control
+    Text = "Put on &version control"
+    Shortcut = ""
+    Picture = "icon:/small/add"
   }
   { Action watch
     Text = "&Watch expression"

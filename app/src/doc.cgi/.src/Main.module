@@ -554,7 +554,22 @@ Private Function GetLink(sPath As String, Optional sMyTitle As String, Optional 
         If $bNoImage Then Return ""
         
         If sMyTitle Then sTitle = sMyTitle
-        Return "<img src=\"/image" &/ sPath & sSuff & "\" alt=\"" & EncodeHTML(sTitle) & "\">"
+        
+        sMoreSuff = ""
+        iPos = InStr(sTitle, "|")
+        If iPos Then
+          sMoreSuff = Mid$(sTitle, iPos + 1)
+          sTitle = Left(sTitle, iPos - 1)
+          If sMoreSuff = "<" Then
+            sMoreSuff = " align=\"left\""
+          Else If sMoreSuff = ">" Then
+            sMoreSuff = " align=\"right\""
+          Else
+            sMoreSuff = ""
+          Endif
+        Endif
+        
+        Return "<img src=\"/image" &/ sPath & sSuff & "\" alt=\"" & EncodeHTML(sTitle) & "\"" & sMoreSuff & ">"
       
       Else
 
@@ -829,6 +844,7 @@ Private Function Encode(sText As String) As String
 
   Dim iPos As Integer
   Dim iPos2 As Integer
+  Dim iPos3 As Integer
   Dim sCar As String
   Dim bBold As Boolean
   Dim bItalic As Boolean
@@ -1239,21 +1255,19 @@ Private Function Encode(sText As String) As String
           While iPos2 <= Len(sStr)
             sCar = Mid$(sStr, iPos2, 1)
             If sCar = "]" Then Break
-            If sCar = "|" Then
-              bLinkTitle = True
-            Else
-              If sCar = "\\" Then
-                Inc iPos2
-                sCar = Mid$(sStr, iPos2, 1)
-              Endif
-              If bLinkTitle Then
-                sLinkTitle &= sCar
-              Else
-                sLink &= sCar
-              Endif
+            If sCar = "\\" Then
+              Inc iPos2
+              sCar = Mid$(sStr, iPos2, 1)
             Endif
+            sLink &= sCar
             Inc iPos2
           Wend
+          
+          iPos3 = InStr(sLink, "|")
+          If iPos3 Then
+            sLinkTitle = Mid$(sLink, iPos3 + 1)
+            sLink = Left$(sLink, iPos3 - 1)
+          Endif
 
           sCar = "["
 
@@ -1407,8 +1421,6 @@ Private Sub PrintTitle(sTitle As String)
   Endif
   
 End
-
-
 
 Private Sub MakeTitle(sTitle As String)
 
@@ -3303,6 +3315,10 @@ Private Sub AdminPage()
   Print "<input type=\"submit\" value=\"" & ("Clear page cache") & "\"></input>"
   Print "</form>"
 
+  'Print "<form action=\"" & "/admin/special" & $sLangSuff & "\" method=\"post\" name=\"clear\">"
+  'Print "<input type=\"submit\" value=\"" & ("Copy gb.qt to gb.qt4") & "\"></input>"
+  'Print "</form>"
+
   MakeFooter
 
 End
@@ -3313,7 +3329,8 @@ Private Sub DoAdminPage()
   Dim cForm As Collection
   Dim hProcess As Process
   Dim sSave As String
-  Dim rPage As Result
+  Dim rPage, rCopy As Result
+  Dim hField As ResultField
   Dim hConn As Connection
   Dim rOther As Result
 
@@ -3426,7 +3443,28 @@ Private Sub DoAdminPage()
 
     MakeHeader(("Clear page cache"))
     Print "<p>"; ("The page cache has been cleared.")
-    
+
+  ' Else If $sPath = "/special" Then
+  ' 
+  '   DB.Begin
+  '   
+  '   rPage = DB.Find("page", "sPath like &1", "/comp/gb.qt/%")
+  '   While rPage.Available
+  '     rCopy = DB.Create("page")
+  '     For Each hField In rPage.Fields
+  '       rCopy[hField.Name] = rPage[hField.Name]
+  '     Next
+  '     rCopy!sPath = Replace(rPage!sPath, "/comp/gb.qt/", "/comp/gb.qt4/")
+  '     rCopy!bRefresh = True
+  '     Try rCopy.Update
+  '     rPage.MoveNext
+  '   Wend
+  '   
+  '   DB.Commit
+  ' 
+  '   MakeHeader(("Copy gb.qt to gb.qt4"))
+  '   Print "<p>"; ("The copy is finished.")
+
   Endif
 
   Print "<p><a href=\"/admin" & $sLangSuff & "\">"; ("Return to administration page"); "</a>"

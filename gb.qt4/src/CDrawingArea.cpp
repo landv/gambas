@@ -152,7 +152,7 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 			if (!object)
 				return;
 			
-			bool frame = !contentsRect().contains(event->rect());
+			bool frame = true; //!contentsRect().contains(event->rect());
 			
 			cache = new QPixmap(r.width(), r.height());
 			cache->fill(this, r.x(), r.y());
@@ -183,7 +183,7 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 			
 			GB.Raise(object, EVENT_draw, 0);
 				
-			if (!contentsRect().contains(event->rect()))
+			if (frame)
 			{
 				p->restore();
 				//paint.setClipRegion( event->region().intersect(frameRect()) );

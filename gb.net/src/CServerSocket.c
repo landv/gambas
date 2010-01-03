@@ -339,7 +339,7 @@ void close_server(CSERVERSOCKET *mythis)
 	while(mythis->nchildren)
 	{
 		chd=(CSOCKET*)mythis->children[0];
-		if (chd->stream.desc) CSocket_stream_close(&chd->stream);
+		if (chd->common.stream.desc) CSocket_stream_close(&chd->common.stream);
 		CServerSocket_DeleteChild(mythis,(void*)chd);
 	}
 
@@ -503,7 +503,7 @@ BEGIN_METHOD_VOID(CSERVERSOCKET_Accept)
 	if ( THIS->iStatus != 2){ GB.Error("No connection to accept");return; }
 
 	GB.New(POINTER(&cli_obj),GB.FindClass("Socket"),"Socket",NULL);
-	cli_obj->socket=THIS->Client;
+	cli_obj->common.socket = THIS->Client;
 	cli_obj->iStatus=7;
 	cli_obj->c_parent=(void*)THIS;
 	cli_obj->OnClose=CServerSocket_OnClose;
@@ -519,7 +519,7 @@ BEGIN_METHOD_VOID(CSERVERSOCKET_Accept)
 		GB.NewString ( &cli_obj->sRemoteHostIP , inet_ntoa(THIS->so_client.in.sin_addr) ,0);
 		GB.NewString ( &cli_obj->Host, inet_ntoa(THIS->so_client.in.sin_addr) ,0);
 		mylen=sizeof(struct sockaddr);
-		getsockname (cli_obj->socket,(struct sockaddr*)&myhost,&mylen);
+		getsockname (cli_obj->common.socket,(struct sockaddr*)&myhost,&mylen);
 		GB.NewString ( &cli_obj->sLocalHostIP , inet_ntoa(myhost.sin_addr) ,0);
 		cli_obj->iLocalPort=ntohs(myhost.sin_port);
 		cli_obj->iPort=ntohs(THIS->so_client.in.sin_port);
@@ -534,7 +534,7 @@ BEGIN_METHOD_VOID(CSERVERSOCKET_Accept)
 
 	CSOCKET_init_connected(cli_obj);
 	// Socket returned by accept is non-blocking by default
-	GB.Stream.Block(&cli_obj->stream, FALSE);
+	GB.Stream.Block(&cli_obj->common.stream, FALSE);
 	//cli_obj->stream._free[0]=(intptr_t)cli_obj;
 
 	CServerSocket_NewChild(THIS,cli_obj);

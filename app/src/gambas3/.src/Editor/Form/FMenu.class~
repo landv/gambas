@@ -19,6 +19,27 @@ Static Public Sub Run(hForm As FForm)
 
 End
 
+Public Sub _new()
+  
+  Dim hCont As Container
+  Dim hCtrl As Control
+  Dim hLabel As Label
+  
+  For Each hCont In panMenu.Children
+    For Each hCtrl In hCont.Children
+      Try hLabel = hCtrl
+      If Not Error Then
+        If hLabel.Tag Then
+          hLabel.Text = hLabel.Tag
+          hLabel.Tag = Null
+        Endif
+      Endif
+    Next
+  Next
+  
+End
+
+
 Public Sub Form_Open()
 
   Settings.Read(Me)
@@ -203,6 +224,8 @@ Static Private Sub SaveAllMenu()
     End With
   
   Next
+  
+  $hForm.UpdateBorder
 
 End
 

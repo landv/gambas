@@ -4,7 +4,7 @@ Export
 Inherits UserControl
 
 Public Const _Properties As String = "*,Mode{Select.None;Single;Multiple}=None,Header{TableView.None;Horizontal;Vertical;Both}=Both,Grid,Highlight=True,Columns{Field[]},Border=True"
-'Public Const _DrawWith As String = "GridView"
+Public Const _DrawWith As String = "GridView"
 
 Event Activate
 
@@ -68,8 +68,11 @@ Private Sub RefreshColumns()
   Dim iInd As Integer
   Dim sTable As String
   Dim aFields As String[]
+  Dim hSrc As DataSource
   
-  If Common.GetSource(Me)._Check() Then Return
+  hSrc = Common.GetSource(Me)
+  If Not hSrc Then Return
+  If hSrc._Check() Then Return
   If Not $hTable Then Return
   
   sTable = $hTable.Name
@@ -118,6 +121,7 @@ Private Sub Load()
   Dim bReset As Boolean
   
   hSrc = Common.GetSource(Me)
+  If Not hSrc Then Return
   If hSrc._Check() Then Return
   
   If hSrc._GetDB().IgnoreCharset

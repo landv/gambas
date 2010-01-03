@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(34,23.5714,49,60)
+  MoveScaled(34,23.4286,49,60)
   Text = ("Client socket example ")
   Resizable = False
   { Button1 Button
@@ -12,11 +12,6 @@
     MoveScaled(1,44,47,15)
     Text = ("")
     ReadOnly = True
-  }
-  { Timer1 #Timer
-    #X = 320
-    #Y = 128
-    Delay = 10
   }
   { Button2 Button
     MoveScaled(31,12,17,4)
@@ -68,9 +63,10 @@
     List = [("TCP"), ("UNIX")]
   }
   { MySock #Socket
-    #X = 198
-    #Y = 288
+    #X = 147
+    #Y = 329
     Port = 7
+    Timeout = 1000
   }
   { Label3 TextLabel
     MoveScaled(1,17,47,6)
@@ -78,5 +74,10 @@
     Text = ("")
     Alignment = Align.Center
     Border = Border.Sunken
+  }
+  { Timer1 #Timer
+    #X = 231
+    #Y = 350
+    Delay = 10
   }
 }

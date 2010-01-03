@@ -42,17 +42,23 @@ extern GB_STREAM_DESC SocketStream;
 #else
 
 #define THIS ((CSOCKET *)_object)
+#define SOCKET (&THIS->common)
 
 #endif
 
-#define SOCKET_BUFFER_SIZE 1024
+typedef
+	struct {
+		GB_BASE ob;
+		GB_STREAM stream;
+		int socket;
+		int timeout;
+	}
+	CSOCKET_COMMON;
 
 typedef
 	struct
 	{
-		GB_BASE ob;
-		GB_STREAM stream;
-		int socket;
+		CSOCKET_COMMON common;
 		struct sockaddr_in Server;  /* struct for TCP connections  */
 		struct sockaddr_un UServer; /* struct for UNIX connections */
 		int iStatus;
@@ -66,7 +72,6 @@ typedef
 		char *Host;
 		char *Path;
 		CDNSCLIENT *DnsTool;
-		int timeout;
 		void *c_parent;
 		void (*OnClose)(void *sck);
 		bool watch_write;
@@ -101,4 +106,9 @@ int CSocket_stream_tell(GB_STREAM *stream, int64_t *pos);
 int CSocket_stream_flush(GB_STREAM *stream);
 int CSocket_stream_close(GB_STREAM *stream);
 int CSocket_stream_handle(GB_STREAM *stream);
+
+bool SOCKET_update_timeout(CSOCKET_COMMON *socket);
+
+DECLARE_METHOD(CSOCKET_Timeout);
+
 #endif

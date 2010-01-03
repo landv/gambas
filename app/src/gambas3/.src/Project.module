@@ -4145,7 +4145,7 @@ End
 Public Sub CleanUp()
 
   Dim iInd As Integer
-  Dim aClear As String[] = [".gambas", ".lock", ".xvpics", "*~", "*.pot", "*.gambas", "core.*", ".kdbg*"]
+  Dim aClear As String[] = [".gambas", ".lock", ".xvpics", "*~", "*.pot", "*.gambas", "core.*", "vgcore.*", ".kdbg*"]
   Dim sClear As String
   
   For iInd = 0 To aClear.Max

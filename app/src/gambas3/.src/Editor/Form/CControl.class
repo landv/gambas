@@ -89,6 +89,8 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
   Dim hWindow As Window
   Dim hClass As CClassInfo
   Dim hLabel As Label
+  Dim hProp As CPropertyInfo
+  Dim sProp As String
   'DIM iInd AS Integer
 
   'PRINT "> CreateControl "; sClass
@@ -258,6 +260,8 @@ End
 
 Private Sub InitControl(hCtrl As Object)
 
+  Dim hProp As CPropertyInfo
+
   Try SetProperty("X", hCtrl.X)
   Try SetProperty("Y", hCtrl.Y)
   Try SetProperty("Width", hCtrl.Width)
@@ -265,6 +269,12 @@ Private Sub InitControl(hCtrl As Object)
   Try SetProperty("Text", hCtrl.Text)
   SetProperty("Visible", True)
   SetProperty("Tag", Null)
+
+  If DrawWith Then
+    For Each hProp In CComponent.Classes[Kind].Properties
+      If Not hProp.Coord Then SetProperty(hProp.Name, hProp.DefaultValue)
+    Next
+  Endif
 
 End
 
@@ -395,11 +405,12 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
   Endif
   If bDoNotApply Then Goto _DO_NOT_APPLY
   If Unknown Then 
-    If Not hProp.Coord Then 
-      If sProp <> "Background" And sProp <> "Foreground" Then 
-        Goto _DO_NOT_APPLY
-      Endif
-    Endif
+    If Not CComponent.Classes[Object.Type(Control)].Properties.Exist(sProp) Then Goto _DO_NOT_APPLY
+    ' If Not hProp.Coord Then 
+    '   If sProp <> "Background" And sProp <> "Foreground" Then 
+    '     Goto _DO_NOT_APPLY
+    '   Endif
+    ' Endif
   Endif
 
   If IsNull(vVal) Then

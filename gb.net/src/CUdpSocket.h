@@ -24,6 +24,7 @@
 
 #include "gambas.h"
 #include "CNet.h"
+#include "CSocket.h"
 
 #ifndef __CUDPSOCKET_C
 
@@ -33,15 +34,14 @@ extern GB_STREAM_DESC UdpSocketStream;
 #else
 
 #define THIS ((CUDPSOCKET *)_object)
+#define SOCKET (&THIS->common)
 
 #endif
 
 typedef	
 	struct
 	{
-		GB_BASE ob;
-		GB_STREAM stream;
-		int Socket;
+		CSOCKET_COMMON common;
 		NET_ADDRESS addr;
 		int iStatus;
 		int iPort;
