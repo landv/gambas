@@ -54,6 +54,7 @@ GB_DESC Cgl[] =
 	GB_STATIC_METHOD("UseProgram", NULL, GLUSEPROGRAM, "(Program)i"),
 	GB_STATIC_METHOD("ValidateProgram", NULL, GLVALIDATEPROGRAM, "(Program)i"),
 	/* GLuniform.c */
+	GB_STATIC_METHOD("GetUniformLocation", NULL, GLGETUNIFORMLOCATION, "(Program)i(Name)s"),
 	GB_STATIC_METHOD("Uniform1f", NULL, GLUNIFORM1F, "(Location)i(V0)f"),
 	GB_STATIC_METHOD("Uniform2f", NULL, GLUNIFORM2F, "(Location)i(V0)f(V1)f"),
 	GB_STATIC_METHOD("Uniform3f", NULL, GLUNIFORM3F, "(Location)i(V0)f(V1)f(V2)f"),
@@ -70,6 +71,15 @@ GB_DESC Cgl[] =
 	GB_STATIC_METHOD("Uniform2iv", NULL, GLUNIFORM2IV, "(Location)i(Values)Integer[]"),
 	GB_STATIC_METHOD("Uniform3iv", NULL, GLUNIFORM3IV, "(Location)i(Values)Integer[]"),
 	GB_STATIC_METHOD("Uniform4iv", NULL, GLUNIFORM4IV, "(Location)i(Values)Integer[]"),
+	GB_STATIC_METHOD("UniformMatrix2fv", NULL, GLUNIFORMMATRIX2FV, "(Location)i(Transpose)b(Values)Float[]"),
+	GB_STATIC_METHOD("UniformMatrix3fv", NULL, GLUNIFORMMATRIX3FV, "(Location)i(Transpose)b(Values)Float[]"),
+	GB_STATIC_METHOD("UniformMatrix4fv", NULL, GLUNIFORMMATRIX4FV, "(Location)i(Transpose)b(Values)Float[]"),
+	GB_STATIC_METHOD("UniformMatrix2x3fv", NULL, GLUNIFORMMATRIX2X3FV, "(Location)i(Transpose)b(Values)Float[]"),
+	GB_STATIC_METHOD("UniformMatrix3x2fv", NULL, GLUNIFORMMATRIX3X2FV, "(Location)i(Transpose)b(Values)Float[]"),
+	GB_STATIC_METHOD("UniformMatrix2x4fv", NULL, GLUNIFORMMATRIX2X4FV, "(Location)i(Transpose)b(Values)Float[]"),
+	GB_STATIC_METHOD("UniformMatrix4x2fv", NULL, GLUNIFORMMATRIX4X2FV, "(Location)i(Transpose)b(Values)Float[]"),
+	GB_STATIC_METHOD("UniformMatrix3x4fv", NULL, GLUNIFORMMATRIX3X4FV, "(Location)i(Transpose)b(Values)Float[]"),
+	GB_STATIC_METHOD("UniformMatrix4x3fv", NULL, GLUNIFORMMATRIX4X3FV, "(Location)i(Transpose)b(Values)Float[]"),
 
 	/* Contants */
 	GB_CONSTANT("GL_ACTIVE_ATTRIBUTES", "i", GL_ACTIVE_ATTRIBUTES),
