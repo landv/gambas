@@ -71,6 +71,31 @@ GB_STREAM_DESC SocketStream =
 };
 
 
+static bool update_timeout(CSOCKET *_object)
+{
+	struct timeval timeout;
+	
+	if (THIS->socket < 0)
+		return TRUE;
+	
+	timeout.tv_sec = THIS->timeout / 1000;
+	timeout.tv_usec = (THIS->timeout % 1000) * 1000;
+	
+	if (setsockopt(THIS->socket, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout)) < 0)
+	{
+		GB.Error("Cannot set sending timeout");
+		return TRUE;
+	}
+		
+	if (setsockopt(THIS->socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0)
+	{
+		GB.Error("Cannot set receiving timeout");
+		return TRUE;
+	}
+		
+	return FALSE;
+}
+
 
 /**********************************
  Routines to call events
@@ -121,6 +146,7 @@ static void CSocket_close(CSOCKET *_object)
 		GB.Watch (THIS->socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
 		THIS->stream.desc=NULL;
   	close(THIS->socket);
+		THIS->socket = -1;
   	THIS->iStatus = 0;
   }
   
@@ -196,6 +222,7 @@ void CSOCKET_init_connected(CSOCKET *_object)
 {
 	GB.Watch(THIS->socket, GB_WATCH_READ, (void *)CSocket_CallBack, (intptr_t)THIS);
 	THIS->stream.desc = &SocketStream;
+	update_timeout(THIS);
 }
 
 /*******************************************************************
@@ -803,6 +830,7 @@ BEGIN_METHOD_VOID(CSOCKET_new)
 
   THIS->stream.tag = THIS;
   THIS->iUsePort = 80;
+	THIS->socket = -1;
 
 END_METHOD
 
@@ -917,6 +945,20 @@ BEGIN_METHOD(CSOCKET_Connect,GB_STRING HostOrPath;GB_INTEGER Port;)
 
 END_METHOD
 
+BEGIN_PROPERTY(CSOCKET_Timeout)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(THIS->timeout);
+	else
+	{
+		int val = VPROP(GB_INTEGER);
+		if (val < 0)
+			val = 0;
+		THIS->timeout = val;
+		update_timeout(THIS);
+	}
+
+END_PROPERTY
 
 /**********************************************************
  Here we declare public structure of Socket Class
@@ -945,12 +987,14 @@ GB_DESC CSocketDesc[] =
   GB_PROPERTY_READ("LocalPort", "i", CSOCKET_LocalPort),
   GB_PROPERTY_READ("RemoteHost", "s", CSOCKET_RemoteHost),
   GB_PROPERTY_READ("LocalHost","s",CSOCKET_LocalHost),
+	
+	GB_PROPERTY("Timeout", "i", CSOCKET_Timeout),
 
   GB_PROPERTY("Host","s",CSOCKET_Host),
   GB_PROPERTY("Path","s",CSOCKET_Path),
   GB_PROPERTY("Port","i",CSOCKET_Port),
 
-  GB_CONSTANT("_Properties", "s", "Host,Path,Port=80"),
+  GB_CONSTANT("_Properties", "s", "Host,Path,Port=80,Timeout{Range:0;3600000;10;ms}"),
   GB_CONSTANT("_DefaultEvent", "s", "Read"),
 
   GB_END_DECLARE

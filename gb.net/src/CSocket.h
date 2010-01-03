@@ -63,14 +63,11 @@ typedef
 		char *sPath;
 		char *sLocalHostIP;
 		char *sRemoteHostIP;
-		// $BM
-		//char *HostOrPath;
 		char *Host;
 		char *Path;
 		CDNSCLIENT *DnsTool;
-		//
+		int timeout;
 		void *c_parent;
-		//
 		void (*OnClose)(void *sck);
 		bool watch_write;
 	}  
