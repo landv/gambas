@@ -279,6 +279,12 @@ Private Sub IsComponentPath(sPath As String) As Boolean
   
 End
 
+Public Sub GetVersion() As String
+  
+  Return $sVersion
+  
+End
+
 
 Private Sub OpenDatabase()
 
@@ -1062,7 +1068,7 @@ Private Function Encode(sText As String) As String
             Continue
           
           Case "version"
-            $sRes &= GetVersion()
+            $sRes &= GetGambasVersion()
             Continue
           
           Case "only-in", "only"
@@ -4586,7 +4592,7 @@ Private Function GetClassVariableName(sClass As String) As String
 
 End
 
-Private Function GetVersion() As String
+Private Function GetGambasVersion() As String
 
   Dim sVer As String
 

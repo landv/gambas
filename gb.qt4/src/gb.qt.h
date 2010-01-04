@@ -137,6 +137,7 @@ typedef
     int (*Alignment)(int, int, bool);
 		void (*Link)(QObject *, void *);
 		void *(*GetLink)(QObject *);
+		QPainter *(*GetCurrentPainter)();
     void *_null;
     }
   QT_INTERFACE;

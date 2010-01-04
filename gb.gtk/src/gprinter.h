@@ -30,7 +30,8 @@ public:
 	virtual ~gPrinter();
 	void *tag;
 
-	bool run(bool configure);
+	bool configure() { return run(true); }
+	bool print() { return run(false); }
 	void cancel();
 	
 	void setPageCount(int v);
@@ -73,6 +74,9 @@ public:
 	const char *name() const;
 	void setName(const char *name);
 	
+	const char *outputFileName() const;
+	void setOutputFileName(const char *file);
+	
 // Signals
 
 	void (*onBegin)(gPrinter *me);
@@ -81,6 +85,8 @@ public:
 	void (*onPaginate)(gPrinter *me);
 	
 private:
+	bool run(bool configure);
+	
 	GtkPrintOperation *_operation;
 	GtkPrintSettings *_settings;
 	GtkPageSetup *_page;

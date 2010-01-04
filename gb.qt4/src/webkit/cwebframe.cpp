@@ -27,6 +27,7 @@
 #include <QWebFrame>
 
 #include "cwebframe.h"
+#include "../cprinter.h"
 
 CWEBFRAME *CWEBFRAME_get(QWebFrame *frame)
 {
@@ -96,6 +97,17 @@ BEGIN_METHOD(WebFrameChildren_get, GB_INTEGER index)
 
 END_METHOD
 
+BEGIN_METHOD(WebFrame_Print, GB_OBJECT printer)
+
+	CPRINTER *printer = (CPRINTER *)VARG(printer);
+	
+	if (GB.CheckObject(printer))
+		return;
+	
+	FRAME->print(printer->printer);
+
+END_METHOD
+
 #if 0
 BEGIN_METHOD(WebFrame_EvalJavaScript, GB_STRING javascript)
 
@@ -141,6 +153,7 @@ GB_DESC CWebFrameDesc[] =
 	GB_PROPERTY_SELF("Children", ".WebFrameChildren"),
 	GB_PROPERTY_READ("Parent", "WebFrame", WebFrame_Parent),
 	GB_PROPERTY("Url", "s", WebFrame_Url),
+	GB_METHOD("Print", NULL, WebFrame_Print, "(Printer)Printer;"),
 	//GB_METHOD("EvalJavaScript", NULL, WebFrame_EvalJavaScript, "(JavaScript)s"),
 	
 	GB_END_DECLARE

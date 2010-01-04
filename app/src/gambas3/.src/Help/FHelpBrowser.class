@@ -4,6 +4,7 @@ Property Read {Error} As Boolean
 
 Private $bError As Boolean
 Private $sLastUrl As String
+Private $bPrint As Boolean
 
 Public Sub Form_Open()
 
@@ -184,4 +185,28 @@ Public Sub tvClasses_Click()
   
   MHelp.InitWebViewWith(webHelp, 1, ars[1])
 
+End
+
+Public Sub btnPrint_Click()
+
+  Printer1.OutputFile = "~/print.pdf"
+  $bPrint = False
+  Printer1.Run
+  If $bPrint Then webHelp.Current.Print(Printer1)
+  'Printer1.Run
+
+End
+
+Public Sub Printer1_Begin()
+  
+  $bPrint = True
+  Printer1.Cancel
+  
+End
+
+
+Public Sub Printer1_Draw()
+  
+  Debug
+  
 End

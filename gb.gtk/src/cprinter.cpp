@@ -85,9 +85,15 @@ BEGIN_METHOD_VOID(Printer_free)
 
 END_METHOD
 
-BEGIN_METHOD(Printer_Run, GB_BOOLEAN configure)
+BEGIN_METHOD_VOID(Printer_Configure)
 
-	GB.ReturnBoolean(PRINTER->run(!VARGOPT(configure, FALSE)));
+	GB.ReturnBoolean(PRINTER->configure());
+
+END_METHOD
+
+BEGIN_METHOD_VOID(Printer_Print)
+
+	GB.ReturnBoolean(PRINTER->print());
 
 END_METHOD
 
@@ -254,6 +260,15 @@ BEGIN_PROPERTY(Printer_FullPage)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Printer_OutputFile)
+
+	if (READ_PROPERTY)
+		GB.ReturnNewZeroString(PRINTER->outputFileName());
+	else
+		PRINTER->setOutputFileName(GB.FileName(PSTRING(), PLENGTH()));
+
+END_PROPERTY
+
 
 GB_DESC PrinterDesc[] =
 {
@@ -280,7 +295,8 @@ GB_DESC PrinterDesc[] =
 	GB_METHOD("_new", NULL, Printer_new, NULL),
 	GB_METHOD("_free", NULL, Printer_free, NULL),
 	
-	GB_METHOD("Run", "b", Printer_Run, "[(DoNotConfigure)b]"),
+	GB_METHOD("Configure", "b", Printer_Configure, NULL),
+	GB_METHOD("Print", "b", Printer_Print, NULL),
 	GB_METHOD("Cancel", NULL, Printer_Cancel, NULL),
 	
 	GB_PROPERTY("Count", "i", Printer_Count),
@@ -300,6 +316,7 @@ GB_DESC PrinterDesc[] =
 	GB_PROPERTY("FirstPage", "i", Printer_FirstPage),
 	GB_PROPERTY("LastPage", "i", Printer_LastPage),
 	GB_PROPERTY("FullPage", "b", Printer_FullPage),
+	GB_PROPERTY("OutputFile", "s", Printer_OutputFile),
 	
 	GB_EVENT("Begin", NULL, NULL, &EVENT_Begin),
 	GB_EVENT("End", NULL, NULL, &EVENT_End),

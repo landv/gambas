@@ -51,6 +51,7 @@ typedef
 		GB_BASE ob;
 		GB_STREAM stream;
 		int socket;
+		int status;
 		int timeout;
 	}
 	CSOCKET_COMMON;
@@ -61,7 +62,6 @@ typedef
 		CSOCKET_COMMON common;
 		struct sockaddr_in Server;  /* struct for TCP connections  */
 		struct sockaddr_un UServer; /* struct for UNIX connections */
-		int iStatus;
 		int iUsePort;
 		int iPort;
 		int iLocalPort;

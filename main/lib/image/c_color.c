@@ -479,7 +479,7 @@ GB_DESC CColorDesc[] =
   GB_STATIC_METHOD("Blend", "i", CCOLOR_blend, "(Source)i(Destination)i"),
 
   GB_STATIC_METHOD("_get", "ColorInfo", CCOLOR_get, "(Color)i"),
-  GB_STATIC_METHOD("_call", "ColorInfo", CCOLOR_get, "(Color)i"),
+  //GB_STATIC_METHOD("_call", "ColorInfo", CCOLOR_get, "(Color)i"),
 	
   GB_END_DECLARE
 };

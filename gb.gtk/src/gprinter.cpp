@@ -28,6 +28,11 @@
 #include "gb.form.print.h"
 #include "gprinter.h"
 
+static void cb_begin_cancel(GtkPrintOperation *operation, GtkPrintContext *context, gPrinter *printer)
+{
+	printer->cancel();
+}
+
 static void cb_begin(GtkPrintOperation *operation, GtkPrintContext *context, gPrinter *printer)
 {
 	if (printer->onBegin)
@@ -82,25 +87,37 @@ gPrinter::~gPrinter()
 
 bool gPrinter::run(bool configure)
 {
+	GtkPrintOperation *operation;
   GtkPrintOperationResult res;
 	gMainWindow *active;
 	GError *error;
 	
-  _operation = gtk_print_operation_new();
-	gtk_print_operation_set_n_pages(_operation, _page_count);
-	gtk_print_operation_set_use_full_page(_operation, _use_full_page);
+  operation = gtk_print_operation_new();
+	if (!configure)
+		_operation = operation;
+	
+	gtk_print_operation_set_n_pages(operation, _page_count);
+	gtk_print_operation_set_use_full_page(operation, _use_full_page);
   
-	gtk_print_operation_set_print_settings(_operation, _settings);
+	gtk_print_operation_set_print_settings(operation, _settings);
 	//gtk_print_operation_set_default_page_setup(_operation, _page);
   
-	g_signal_connect(_operation, "begin_print", G_CALLBACK(cb_begin), this);
-	g_signal_connect(_operation, "end_print", G_CALLBACK(cb_end), this);
-  g_signal_connect(_operation, "paginate", G_CALLBACK(cb_paginate), this);
-  g_signal_connect(_operation, "draw_page", G_CALLBACK(cb_draw), this);
+	if (configure)
+	{
+		g_signal_connect(operation, "begin_print", G_CALLBACK(cb_begin_cancel), this);
+	}
+	else
+	{
+		g_signal_connect(operation, "begin_print", G_CALLBACK(cb_begin), this);
+		g_signal_connect(operation, "end_print", G_CALLBACK(cb_end), this);
+		g_signal_connect(operation, "paginate", G_CALLBACK(cb_paginate), this);
+		g_signal_connect(operation, "draw_page", G_CALLBACK(cb_draw), this);
+	}
 	
 	active = gDesktop::activeWindow();
 	
-  res = gtk_print_operation_run(_operation, configure ? GTK_PRINT_OPERATION_ACTION_PRINT_DIALOG : GTK_PRINT_OPERATION_ACTION_PRINT,
+  res = gtk_print_operation_run(operation, 
+		configure ? GTK_PRINT_OPERATION_ACTION_PRINT_DIALOG : GTK_PRINT_OPERATION_ACTION_PRINT,	
 		active ? GTK_WINDOW(active->border) : NULL, &error);
 	
 	if (res == GTK_PRINT_OPERATION_RESULT_ERROR)
@@ -110,12 +127,18 @@ bool gPrinter::run(bool configure)
 	else if (res == GTK_PRINT_OPERATION_RESULT_APPLY)
 	{
 		g_object_unref(G_OBJECT(_settings));
-		_settings = GTK_PRINT_SETTINGS(g_object_ref(gtk_print_operation_get_print_settings(_operation)));
+		_settings = GTK_PRINT_SETTINGS(g_object_ref(gtk_print_operation_get_print_settings(operation)));
 	}
 
-	g_object_unref(G_OBJECT(_operation));
-	_operation = NULL;
-	_page_count_set = false;
+	g_object_unref(G_OBJECT(operation));
+	
+	if (!configure)
+	{
+		_operation = NULL;
+		_page_count_set = false;
+	}
+	//else
+	//	gtk_print_settings_to_file(_settings, "/home/benoit/settings.txt", NULL);
 	
 	return res != GTK_PRINT_OPERATION_RESULT_APPLY;
 }
@@ -321,4 +344,43 @@ const char *gPrinter::name() const
 void gPrinter::setName(const char *name)
 {
 	gtk_print_settings_set_printer(_settings, name);
+}
+
+const char *gPrinter::outputFileName() const
+{
+	const char *uri;
+	
+	uri = gtk_print_settings_get(_settings, "output-uri");
+	
+	if (!uri)
+		return NULL;
+	
+	if (strncmp(uri, "file://", 7))
+		return NULL;
+	
+	return &uri[7];
+}
+
+void gPrinter::setOutputFileName(const char *file)
+{
+	char uri[strlen(file) + 7];
+	const char *format;
+	
+	strcpy(uri, "file://");
+	strcat(uri, file);
+	
+	gtk_print_settings_set(_settings, GTK_PRINT_SETTINGS_OUTPUT_URI, uri);	
+
+	if (g_str_has_suffix(uri, ".ps"))
+		format = "ps";
+	else if (g_str_has_suffix(uri, ".pdf"))
+		format = "pdf";
+	else if (g_str_has_suffix(uri, ".svg"))
+		format = "svg";
+	else
+		format = NULL;
+
+	// It does not work!!!
+	// if (format)
+	//	 gtk_print_settings_set(_settings, GTK_PRINT_SETTINGS_OUTPUT_FILE_FORMAT, format);
 }

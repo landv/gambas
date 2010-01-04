@@ -24,44 +24,49 @@
 
 #include "gambas.h"
 #include "CNet.h"
+#include "CSocket.h"
 
 #ifndef __CSERVERSOCKET_C
+
 extern GB_DESC CServerSocketDesc[];
 
 #else
 
 #define THIS ((CSERVERSOCKET *)_object)
+#define SOCKET (&THIS->common)
 
 #endif
 
 
-typedef union
-{
-	struct sockaddr_in in;
-	struct sockaddr_un un;
-} st_so_sock;
+typedef 
+	union
+	{
+		struct sockaddr_in in;
+		struct sockaddr_un un;
+	} 
+	st_so_sock;
 
-typedef  struct
-{
-    GB_BASE ob;
-    int iSockType;
-    int iPort;
-    char *sPath;
-    int ServerSocket;
-    int iStatus;
-    int iPause;
-    int iMaxConn;
-    int iCurConn;
-    //struct sockaddr_in Server; /* Struct for TCP connections */
-    //struct sockaddr_un UServer; /* Struct for UNIX connections */
-    st_so_sock so_server;
-    st_so_sock so_client;
-    int Client;
-    void **children;
-    int nchildren;
-}  CSERVERSOCKET;
+typedef
+	struct
+	{
+		CSOCKET_COMMON common;
+		int type;
+		int iPort;
+		char *sPath;
+		int iPause;
+		int iMaxConn;
+		int iCurConn;
+		//struct sockaddr_in Server; /* Struct for TCP connections */
+		//struct sockaddr_un UServer; /* Struct for UNIX connections */
+		st_so_sock so_server;
+		st_so_sock so_client;
+		int Client;
+		void **children;
+		int nchildren;
+	}  
+	CSERVERSOCKET;
 
-int srvsock_listen(CSERVERSOCKET* mythis,int mymax);
+int srvsock_listen(CSERVERSOCKET* mythis, int mymax);
 void srvsock_post_error(CSERVERSOCKET* mythis);
 
 #endif

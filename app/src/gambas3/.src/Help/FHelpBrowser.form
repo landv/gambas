@@ -84,6 +84,13 @@
       Text = ("Modify documentation...")
       Picture = Picture["icon:/small/edit"]
     }
+    { btnPrint ToolButton
+      MoveScaled(71,0,15,4)
+      Visible = False
+      AutoResize = True
+      Text = ("Print")
+      Picture = Picture["icon:/small/print"]
+    }
   }
   { sepToolbar Separator
     MoveScaled(12,5,20,0)
@@ -105,6 +112,10 @@
       #Public = True
       Expand = True
       Cached = True
+    }
+    { Printer1 #Printer
+      #X = 588
+      #Y = 77
     }
   }
 }

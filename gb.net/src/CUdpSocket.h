@@ -43,7 +43,6 @@ typedef
 	{
 		CSOCKET_COMMON common;
 		NET_ADDRESS addr;
-		int iStatus;
 		int iPort;
 		char *thost;
 		int tport;

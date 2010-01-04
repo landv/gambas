@@ -255,7 +255,8 @@ void gTabStripPage::setVisible(bool v)
 		gtk_widget_show_all(widget);
 		gtk_widget_show_all(fix);
 		//gtk_container_resize_children(GTK_CONTAINER(gtk_widget_get_parent(widget)));
-		gtk_container_resize_children(GTK_CONTAINER(gtk_widget_get_parent(gtk_widget_get_parent(widget))));
+		if (parent->isVisible())
+			gtk_container_resize_children(GTK_CONTAINER(gtk_widget_get_parent(gtk_widget_get_parent(widget))));
 	}
 	else
 	{

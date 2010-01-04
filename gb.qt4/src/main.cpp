@@ -98,6 +98,7 @@
 #include "CWatcher.h"
 #include "cprinter.h"
 #include "csvgimage.h"
+#include "cpaint_impl.h"
 
 #ifndef NO_X_WINDOW
 #include "CEmbedder.h"
@@ -971,6 +972,7 @@ void *GB_QT4_1[] EXPORT = {
 	(void *)CCONST_alignment,
 	(void *)QT_Link,
 	(void *)QT_GetLink,
+	(void *)PAINT_get_current,
 	NULL
 };
 

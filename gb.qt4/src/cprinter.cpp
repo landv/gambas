@@ -34,7 +34,15 @@ DECLARE_EVENT(EVENT_End);
 DECLARE_EVENT(EVENT_Paginate);
 DECLARE_EVENT(EVENT_Draw);
 
-static bool run_printer(CPRINTER *_object, bool configure)
+static bool configure_printer(CPRINTER *_object)
+{
+	QPrinter *printer = THIS->printer;
+	
+	QPrintDialog dialog(printer, qApp->activeWindow());
+	return (dialog.exec() != QDialog::Accepted);
+}
+
+static bool run_printer(CPRINTER *_object)
 {
 	QPrinter *printer = THIS->printer;
 	QEventLoop loop;
@@ -45,14 +53,6 @@ static bool run_printer(CPRINTER *_object, bool configure)
 	int num_copies_out, num_copies_in, repeat_out, repeat_in;
 	
 	THIS->cancel = false;
-	
-	if (configure)
-	{
-		QPrintDialog dialog(printer, qApp->activeWindow());
-	
-		if (dialog.exec() != QDialog::Accepted)
-			goto __EXIT;
-	}
 	
 	GB.Raise(THIS, EVENT_Begin, 0);
 	
@@ -84,9 +84,9 @@ static bool run_printer(CPRINTER *_object, bool configure)
 		lastPage = printer->toPage();
 	}
 	
-	if (firstPage >= THIS->page_count)
+	if (firstPage > THIS->page_count)
 		goto __EXIT;
-	if (lastPage >= THIS->page_count)
+	if (lastPage > THIS->page_count)
 		lastPage = THIS->page_count;
 	
 	reverse = PRINTER->pageOrder() == QPrinter::LastPageFirst;
@@ -175,9 +175,15 @@ BEGIN_METHOD_VOID(Printer_free)
 
 END_METHOD
 
-BEGIN_METHOD(Printer_Run, GB_BOOLEAN configure)
+BEGIN_METHOD_VOID(Printer_Print)
 
-	GB.ReturnBoolean(run_printer(THIS, !VARGOPT(configure, false)));
+	GB.ReturnBoolean(run_printer(THIS));
+
+END_METHOD
+
+BEGIN_METHOD_VOID(Printer_Configure)
+
+	GB.ReturnBoolean(configure_printer(THIS));
 
 END_METHOD
 
@@ -401,6 +407,15 @@ BEGIN_PROPERTY(Printer_FullPage)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Printer_OutputFile)
+
+	if (READ_PROPERTY)
+		GB.ReturnNewZeroString(PRINTER->outputFileName());
+	else
+		PRINTER->setOutputFileName(TO_QSTRING(GB.FileName(PSTRING(), PLENGTH())));
+
+END_PROPERTY
+
 
 GB_DESC PrinterDesc[] =
 {
@@ -427,7 +442,8 @@ GB_DESC PrinterDesc[] =
 	GB_METHOD("_new", NULL, Printer_new, NULL),
 	GB_METHOD("_free", NULL, Printer_free, NULL),
 	
-	GB_METHOD("Run", "b", Printer_Run, "[(DoNotConfigure)b]"),
+	GB_METHOD("Print", "b", Printer_Print, NULL),
+	GB_METHOD("Configure", "b", Printer_Configure, NULL),
 	GB_METHOD("Cancel", NULL, Printer_Cancel, NULL),
 	
 	GB_PROPERTY("Count", "i", Printer_Count),
@@ -447,6 +463,7 @@ GB_DESC PrinterDesc[] =
 	GB_PROPERTY("FirstPage", "i", Printer_FirstPage),
 	GB_PROPERTY("LastPage", "i", Printer_LastPage),
 	GB_PROPERTY("FullPage", "b", Printer_FullPage),
+	GB_PROPERTY("OutputFile", "s", Printer_OutputFile),
 	
 	GB_EVENT("Begin", NULL, NULL, &EVENT_Begin),
 	GB_EVENT("End", NULL, NULL, &EVENT_End),

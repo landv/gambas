@@ -41,48 +41,48 @@
 
 
 
-DECLARE_EVENT (Connection);
-DECLARE_EVENT (CSERVERSOCKET_Error);
+DECLARE_EVENT(EVENT_Connection);
+DECLARE_EVENT(EVENT_Error);
 
-void srvsock_post_error(CSERVERSOCKET* mythis)
+void srvsock_post_error(CSERVERSOCKET *_object)
 {
-	GB.Raise((void*)mythis,CSERVERSOCKET_Error,0);
-	GB.Unref(POINTER(&mythis));
+	GB.Raise(THIS, EVENT_Error, 0);
+	GB.Unref(POINTER(&_object));
 }
 
 // BM: Fix bug in allocations
 
-void CServerSocket_NewChild(CSERVERSOCKET *mythis,void *cli_obj)
+void CServerSocket_NewChild(CSERVERSOCKET *_object, void *cli_obj)
 {
-	if (mythis->nchildren++)
-		GB.Realloc ( POINTER(&mythis->children),mythis->nchildren * sizeof(*mythis->children));
+	if (THIS->nchildren++)
+		GB.Realloc ( POINTER(&THIS->children),THIS->nchildren * sizeof(*THIS->children));
 	else
-		GB.Alloc   ( POINTER(&mythis->children),mythis->nchildren * sizeof(*mythis->children));
+		GB.Alloc   ( POINTER(&THIS->children),THIS->nchildren * sizeof(*THIS->children));
 
-	mythis->children[mythis->nchildren-1]=cli_obj;
+	THIS->children[THIS->nchildren-1]=cli_obj;
 }
 
-void CServerSocket_DeleteChild(CSERVERSOCKET *mythis,void *cli_obj)
+void CServerSocket_DeleteChild(CSERVERSOCKET *_object, void *cli_obj)
 {
 	int myloop;
 	int myloop2;
 
-	if (!mythis->nchildren) return;
+	if (!THIS->nchildren) return;
 
-	for (myloop=0;myloop<mythis->nchildren;myloop++)
+	for (myloop=0;myloop<THIS->nchildren;myloop++)
 	{
-		if (mythis->children[myloop]==cli_obj)
+		if (THIS->children[myloop]==cli_obj)
 		{
-			for (myloop2=myloop;myloop2<(mythis->nchildren-1);myloop2++)
-				mythis->children[myloop2]=mythis->children[myloop2+1];
-			if ( --mythis->nchildren)
+			for (myloop2=myloop;myloop2<(THIS->nchildren-1);myloop2++)
+				THIS->children[myloop2]=THIS->children[myloop2+1];
+			if ( --THIS->nchildren)
 			{
-				GB.Realloc ( POINTER(&mythis->children),mythis->nchildren * sizeof(*mythis->children));
+				GB.Realloc ( POINTER(&THIS->children),THIS->nchildren * sizeof(*THIS->children));
 			}
 			else
 			{
-				GB.Free (POINTER(&mythis->children));
-				mythis->children=NULL;
+				GB.Free (POINTER(&THIS->children));
+				THIS->children=NULL;
 			}
 			return;
 		}
@@ -92,67 +92,65 @@ void CServerSocket_DeleteChild(CSERVERSOCKET *mythis,void *cli_obj)
 void CServerSocket_OnClose(void *sck)
 {
 	CSOCKET *chd=(CSOCKET*)sck;
-	CSERVERSOCKET *mythis;
+	CSERVERSOCKET *_object;
 
 	if (!chd) return;
 	if (!chd->c_parent) return;
 	CServerSocket_DeleteChild(chd->c_parent,sck);
-	mythis=(CSERVERSOCKET*)chd->c_parent;
-	mythis->iCurConn--;
+	_object=(CSERVERSOCKET*)chd->c_parent;
+	THIS->iCurConn--;
 
 }
 
-void CServerSocket_CallBack(int fd,int type,intptr_t lParam)
+void CServerSocket_CallBack(int fd, int type, intptr_t lParam)
 {
 	int okval=0;
 	char *rem_ip_buf;
 	unsigned int ClientLen;
-	CSERVERSOCKET *mythis;
+	CSERVERSOCKET *_object = (CSERVERSOCKET*)lParam;
+	
+	if ( SOCKET->status != 1) return;
 
-	mythis=(CSERVERSOCKET*)lParam;
-	if ( mythis->iStatus != 1) return;
-
-	mythis->iStatus=2;
+	SOCKET->status=2;
 	ClientLen=sizeof(struct sockaddr_in);
-	mythis->Client=accept(mythis->ServerSocket,(struct sockaddr*)&mythis->so_client.in,&ClientLen);
-	if (mythis->Client == -1)
+	THIS->Client=accept(SOCKET->socket,(struct sockaddr*)&THIS->so_client.in,&ClientLen);
+	if (THIS->Client == -1)
 	{
-		close(mythis->Client);
-		mythis->iStatus=1;
+		close(THIS->Client);
+		SOCKET->status=1;
 		return;
 	}
-	rem_ip_buf=inet_ntoa(mythis->so_client.in.sin_addr);
-	if ( (!mythis->iMaxConn) || (mythis->iCurConn < mythis->iMaxConn) ) okval=1;
-	if ( (!mythis->iPause) && (okval) )
-		GB.Raise(mythis,Connection,1,GB_T_STRING,rem_ip_buf,0);
-	if  ( mythis->iStatus == 2) close(mythis->Client);
-	mythis->iStatus=1;
+	rem_ip_buf=inet_ntoa(THIS->so_client.in.sin_addr);
+	if ( (!THIS->iMaxConn) || (THIS->iCurConn < THIS->iMaxConn) ) okval=1;
+	if ( (!THIS->iPause) && (okval) )
+		GB.Raise(THIS,EVENT_Connection,1,GB_T_STRING,rem_ip_buf,0);
+	if  ( SOCKET->status == 2) close(THIS->Client);
+	SOCKET->status=1;
 }
 
-void CServerSocket_CallBackUnix(int fd,int type,intptr_t lParam)
+void CServerSocket_CallBackUnix(int fd, int type, intptr_t lParam)
 {
 	//int position=0;
 	int okval=0;
 	unsigned int ClientLen;
-	CSERVERSOCKET *mythis;
+	CSERVERSOCKET *_object = (CSERVERSOCKET*)lParam;
+	
+	if ( SOCKET->status != 1) return;
 
-	mythis=(CSERVERSOCKET*)lParam;
-	if ( mythis->iStatus != 1) return;
-
-	mythis->iStatus=2;
+	SOCKET->status=2;
 	ClientLen=sizeof(struct sockaddr_un);
-	mythis->Client=accept(mythis->ServerSocket,(struct sockaddr*)&mythis->so_client.un,&ClientLen);
-	if (mythis->Client == -1)
+	THIS->Client=accept(SOCKET->socket,(struct sockaddr*)&THIS->so_client.un,&ClientLen);
+	if (THIS->Client == -1)
 	{
-		close(mythis->Client);
-		mythis->iStatus=1;
+		close(THIS->Client);
+		SOCKET->status=1;
 		return;
 	}
-	if ( (!mythis->iMaxConn) || (mythis->iCurConn < mythis->iMaxConn) ) okval=1;
-	if ( (!mythis->iPause) && (okval) )
-		GB.Raise(mythis,Connection,1,GB_T_STRING,NULL,0);
-	if  ( mythis->iStatus == 2) close(mythis->Client);
-	mythis->iStatus=1;
+	if ( (!THIS->iMaxConn) || (THIS->iCurConn < THIS->iMaxConn) ) okval=1;
+	if ( (!THIS->iPause) && (okval) )
+		GB.Raise(THIS,EVENT_Connection,1,GB_T_STRING,NULL,0);
+	if  ( SOCKET->status == 2) close(THIS->Client);
+	SOCKET->status=1;
 
 }
 
@@ -163,7 +161,7 @@ void CServerSocket_CallBackUnix(int fd,int type,intptr_t lParam)
  ***************************************************/
 BEGIN_PROPERTY ( CSERVERSOCKET_Status )
 
-	GB.ReturnInteger(THIS->iStatus);
+	GB.ReturnInteger(SOCKET->status);
 
 END_PROPERTY
 
@@ -177,7 +175,7 @@ BEGIN_PROPERTY ( CSERVERSOCKET_Port )
 		GB.ReturnInteger(THIS->iPort);
 		return;
 	}
-	if (THIS->iStatus>0)
+	if (SOCKET->status>0)
 	{
 		GB.Error("Port value can not be changed when socket is active");
 		return;
@@ -204,7 +202,7 @@ BEGIN_PROPERTY ( CSERVERSOCKET_Path )
 		GB.ReturnString(THIS->sPath);
 		return;
 	}
-	if (THIS->iStatus>0)
+	if (SOCKET->status>0)
 	{
 		GB.Error("Path value can not be changed when socket is active");
 		return;
@@ -227,10 +225,10 @@ BEGIN_PROPERTY ( CSERVERSOCKET_Type )
 
 	if (READ_PROPERTY)
 	{
-		GB.ReturnInteger(THIS->iSockType);
+		GB.ReturnInteger(THIS->type);
 		return;
 	}
-	if (THIS->iStatus>0)
+	if (SOCKET->status>0)
 	{
 		GB.Error("Socket Type can not be changed when socket is active");
 		return;
@@ -240,7 +238,7 @@ BEGIN_PROPERTY ( CSERVERSOCKET_Type )
 		GB.Error("Invalid Socket Type Value");
 		return;
 	}
-	THIS->iSockType=VPROP(GB_INTEGER);
+	THIS->type=VPROP(GB_INTEGER);
 
 END_PROPERTY
 /***********************************************
@@ -254,12 +252,12 @@ BEGIN_METHOD(CSERVERSOCKET_new,GB_STRING sPath;GB_INTEGER iMaxConn;)
 	int iMax=0;
 
 	THIS->iPort=0;
-	THIS->iStatus=0;
+	SOCKET->status=0;
 	THIS->sPath=NULL;
 	THIS->iPause=0;
 	THIS->iMaxConn=0;
 	THIS->iCurConn=0;
-	THIS->iSockType=1;
+	THIS->type=1;
 	THIS->children=NULL;
 	THIS->nchildren=0;
 
@@ -275,7 +273,7 @@ BEGIN_METHOD(CSERVERSOCKET_new,GB_STRING sPath;GB_INTEGER iMaxConn;)
 	}
 	if (retval==2)
 	{
-		THIS->iSockType=0;
+		THIS->type=0;
 		buf=GB.ToZeroString ( (GB_STRING*)STRING(sPath) );
 		if ( (strlen(buf)<1) || (strlen(buf)>NET_UNIX_PATH_MAX) )
 		{
@@ -299,7 +297,7 @@ BEGIN_METHOD(CSERVERSOCKET_new,GB_STRING sPath;GB_INTEGER iMaxConn;)
 			return;
 		}
 
-		THIS->iSockType=1;
+		THIS->type=1;
 		THIS->iPort=nport;
 	}
 
@@ -324,23 +322,23 @@ END_METHOD
 
 
 
-void close_server(CSERVERSOCKET *mythis)
+void close_server(CSERVERSOCKET *_object)
 {
 	CSOCKET *chd;
 
-	if (mythis->iStatus <= 0) return;
+	if (SOCKET->status <= 0) return;
 
-	GB.Watch (mythis->ServerSocket , GB_WATCH_NONE , (void *)CServerSocket_CallBack,0);
-	close(mythis->ServerSocket);
-	mythis->iStatus=0;
+	GB.Watch (SOCKET->socket , GB_WATCH_NONE , (void *)CServerSocket_CallBack,0);
+	close(SOCKET->socket);
+	SOCKET->status=0;
 
-	if (!mythis->nchildren) return;
+	if (!THIS->nchildren) return;
 
-	while(mythis->nchildren)
+	while(THIS->nchildren)
 	{
-		chd=(CSOCKET*)mythis->children[0];
+		chd=(CSOCKET*)THIS->children[0];
 		if (chd->common.stream.desc) CSocket_stream_close(&chd->common.stream);
-		CServerSocket_DeleteChild(mythis,(void*)chd);
+		CServerSocket_DeleteChild(THIS,(void*)chd);
 	}
 
 }
@@ -386,83 +384,84 @@ END_METHOD
 /*********************************************************
  Starts listening (TCP/UDP/UNIX)
  **********************************************************/
-int srvsock_listen(CSERVERSOCKET* mythis,int mymax)
+int srvsock_listen(CSERVERSOCKET* _object,int mymax)
 {
 	int NoBlock=1;
 	int retval;
 	int auth = 1;
 
-	if ( (!mythis->iPort) && (mythis->iSockType) ) return 8;
+	if ( (!THIS->iPort) && (THIS->type) ) return 8;
 
-	if ( mythis->iStatus >0 ) return 1;
+	if ( SOCKET->status >0 ) return 1;
 
 	if (mymax<0) return 13;
 
-	if ( (!mythis->iSockType) && (!mythis->sPath) ) return 7;
+	if ( (!THIS->type) && (!THIS->sPath) ) return 7;
 
 
-	if (mythis->iSockType)
+	if (THIS->type)
 	{
-		mythis->so_server.in.sin_family=AF_INET;
-		mythis->so_server.in.sin_addr.s_addr=INADDR_ANY;
-		mythis->so_server.in.sin_port=htons(mythis->iPort);
-		mythis->ServerSocket=socket(PF_INET,SOCK_STREAM,0);
+		THIS->so_server.in.sin_family=AF_INET;
+		THIS->so_server.in.sin_addr.s_addr=INADDR_ANY;
+		THIS->so_server.in.sin_port=htons(THIS->iPort);
+		SOCKET->socket=socket(PF_INET,SOCK_STREAM,0);
 	}
 	else
 	{
-		unlink(mythis->sPath);
-		mythis->so_server.un.sun_family=AF_UNIX;
-		strcpy(mythis->so_server.un.sun_path,mythis->sPath);
-		mythis->ServerSocket=socket(AF_UNIX,SOCK_STREAM,0);
+		unlink(THIS->sPath);
+		THIS->so_server.un.sun_family=AF_UNIX;
+		strcpy(THIS->so_server.un.sun_path,THIS->sPath);
+		SOCKET->socket=socket(AF_UNIX,SOCK_STREAM,0);
 	}
 
-	if ( mythis->ServerSocket==-1 )
+	if ( SOCKET->socket==-1 )
 	{
-		mythis->iStatus=-2;
-		GB.Ref(mythis);
-		GB.Post(srvsock_post_error,(intptr_t)mythis);
+		SOCKET->status=-2;
+		GB.Ref(THIS);
+		GB.Post(srvsock_post_error,(intptr_t)THIS);
 		return 2;
 	}
 	// thanks to Benoit : this option allows non-root users to reuse the
 	// port after closing it and reopening it in a short interval of time.
 	// However, If you are porting this component to other O.S., be careful,
 	// as this is not a standard unix option
-	setsockopt(mythis->ServerSocket, SOL_SOCKET, SO_REUSEADDR, &auth, sizeof(int));
+	setsockopt(SOCKET->socket, SOL_SOCKET, SO_REUSEADDR, &auth, sizeof(int));
+	SOCKET_update_timeout(SOCKET);
 	//
-	if (mythis->iSockType)
-		retval=bind(mythis->ServerSocket,(struct sockaddr*)&mythis->so_server.in, \
+	if (THIS->type)
+		retval=bind(SOCKET->socket,(struct sockaddr*)&THIS->so_server.in, \
 			sizeof(struct sockaddr_in));
 	else
-		retval=bind(mythis->ServerSocket,(struct sockaddr*)&mythis->so_server.un, \
+		retval=bind(SOCKET->socket,(struct sockaddr*)&THIS->so_server.un, \
 			sizeof(struct sockaddr_un));
 	if (retval==-1)
 	{
-		close(mythis->ServerSocket);
-		mythis->iStatus=-10;
-		GB.Ref(mythis);
-		GB.Post(srvsock_post_error,(intptr_t)mythis);
+		close(SOCKET->socket);
+		SOCKET->status=-10;
+		GB.Ref(THIS);
+		GB.Post(srvsock_post_error,(intptr_t)THIS);
 		return 10;
 	}
 
-	ioctl(mythis->ServerSocket,FIONBIO,&NoBlock);
+	ioctl(SOCKET->socket,FIONBIO,&NoBlock);
 
-	if ( listen(mythis->ServerSocket,mymax) == -1 )
+	if ( listen(SOCKET->socket,mymax) == -1 )
 	{
-		close(mythis->ServerSocket);
-		mythis->iStatus=-14;
-		GB.Ref(mythis);
-		GB.Post(srvsock_post_error,(intptr_t)mythis);
+		close(SOCKET->socket);
+		SOCKET->status=-14;
+		GB.Ref(THIS);
+		GB.Post(srvsock_post_error,(intptr_t)THIS);
 		return 14;
 	}
-	mythis->iCurConn=0;
-	mythis->iMaxConn=mymax;
-	mythis->iStatus=1;
+	THIS->iCurConn=0;
+	THIS->iMaxConn=mymax;
+	SOCKET->status=1;
 
-	//CServerSocket_AssignCallBack((intptr_t)mythis,mythis->ServerSocket);
-	if (mythis->iSockType)
-		GB.Watch (mythis->ServerSocket , GB_WATCH_READ , (void *)CServerSocket_CallBack,(intptr_t)mythis);
+	//CServerSocket_AssignCallBack((intptr_t)THIS,SOCKET->socket);
+	if (THIS->type)
+		GB.Watch (SOCKET->socket , GB_WATCH_READ , (void *)CServerSocket_CallBack,(intptr_t)THIS);
 	else
-		GB.Watch (mythis->ServerSocket , GB_WATCH_READ , (void *)CServerSocket_CallBackUnix,(intptr_t)mythis);
+		GB.Watch (SOCKET->socket , GB_WATCH_READ , (void *)CServerSocket_CallBackUnix,(intptr_t)THIS);
 	return 0;
 }
 
@@ -500,11 +499,11 @@ BEGIN_METHOD_VOID(CSERVERSOCKET_Accept)
 	struct sockaddr_in myhost;
 	unsigned int mylen;
 
-	if ( THIS->iStatus != 2){ GB.Error("No connection to accept");return; }
+	if ( SOCKET->status != 2){ GB.Error("No connection to accept");return; }
 
 	GB.New(POINTER(&cli_obj),GB.FindClass("Socket"),"Socket",NULL);
 	cli_obj->common.socket = THIS->Client;
-	cli_obj->iStatus=7;
+	cli_obj->common.status=7;
 	cli_obj->c_parent=(void*)THIS;
 	cli_obj->OnClose=CServerSocket_OnClose;
 	THIS->iCurConn++;
@@ -514,7 +513,7 @@ BEGIN_METHOD_VOID(CSERVERSOCKET_Accept)
 	cli_obj->iLocalPort=0;
 	cli_obj->iPort=0;
 	cli_obj->conn_type=0;
-	if (THIS->iSockType)
+	if (THIS->type)
 	{
 		GB.NewString ( &cli_obj->sRemoteHostIP , inet_ntoa(THIS->so_client.in.sin_addr) ,0);
 		GB.NewString ( &cli_obj->Host, inet_ntoa(THIS->so_client.in.sin_addr) ,0);
@@ -541,7 +540,7 @@ BEGIN_METHOD_VOID(CSERVERSOCKET_Accept)
 
 	GB.Ref(cli_obj);
 	GB.Post(CSocket_post_connected,(intptr_t)cli_obj);
-	THIS->iStatus=3;
+	SOCKET->status=3;
 	GB.ReturnObject((void*)cli_obj);
 
 END_METHOD
@@ -576,8 +575,8 @@ GB_DESC CServerSocketDesc[] =
 {
   GB_DECLARE("ServerSocket", sizeof(CSERVERSOCKET)),
 
-  GB_EVENT("Connection", NULL, "(RemoteHostIP)s", &Connection),
-  GB_EVENT("Error", NULL,NULL, &CSERVERSOCKET_Error),
+  GB_EVENT("Connection", NULL, "(RemoteHostIP)s", &EVENT_Connection),
+  GB_EVENT("Error", NULL,NULL, &EVENT_Error),
 
   GB_METHOD("_new", NULL, CSERVERSOCKET_new,"[(Path)s(MaxConn)i]"),
   GB_METHOD("_free", NULL, CSERVERSOCKET_free, NULL),
@@ -594,6 +593,8 @@ GB_DESC CServerSocketDesc[] =
 
   GB_METHOD("_next", "Socket", CSERVERSOCKET_next, NULL),
   GB_PROPERTY_READ("Count", "i", CSERVERSOCKET_count),
+
+	GB_PROPERTY("Timeout", "i", CSOCKET_Timeout),
 
   GB_CONSTANT("_Properties", "s", "Type=0,Path,Port"),
   GB_CONSTANT("_DefaultEvent", "s", "Connection"),
