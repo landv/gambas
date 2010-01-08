@@ -161,7 +161,7 @@ COMPONENT *COMPONENT_create(const char *name)
   sprintf(path, LIB_PATTERN, COMPONENT_path, name);
 
   if (FILE_exist(path))
-    comp->library = LIBRARY_create(name);
+    comp->library = LIBRARY_create(comp->name);
 
 	if (can_archive)
 	{
@@ -181,7 +181,7 @@ COMPONENT *COMPONENT_create(const char *name)
   sprintf(path, LIB_PATTERN, COMPONENT_user_path, name);
 
   if (FILE_exist(path))
-    comp->library = LIBRARY_create(name);
+    comp->library = LIBRARY_create(comp->name);
 
 	if (can_archive)
 	{

@@ -487,10 +487,6 @@ void LIBRARY_unload(LIBRARY *lib)
   if (lib->handle == NULL)
     return;
 
-  /* Pas de lib�ation des classes pr�harg� ! */
-
-  /* V�ification qu'aucune classe de la librairie n'est instanci� ! */
-
   gambas_exit = lt_dlsym(lib->handle, LIB_EXIT);
   if (gambas_exit != NULL)
     (*gambas_exit)();

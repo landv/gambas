@@ -42,18 +42,12 @@
 * BUG: GridView.Clear is now correctly implemented.
 
 [GB.NET]
-* BUG: When the property SerialPort.FlowControl value is None, there is no
-  polling and only the Read event is raised. If the FlowControl property is
-  not None, then the serial port is polled, and all Change signals can be
-  raised.
-* BUG: Try to fix the crash in the read callback.
-* BUG: SerialPort should work correctly again.
 * BUG: Do not watch the SerialPort file descriptor for reading if there is
   no Read event handler.
 * NEW: SerialPort watched for status change only if at least one of the
   change event is implemented.
 
-f[GB.NET.SMTP]
+[GB.NET.SMTP]
 * BUG: The COPYING file is actually the LICENCE file. So remove the LICENCE
   file, and make the COPYING file be the LGPL 2.1.
 
@@ -61,13 +55,13 @@ f[GB.NET.SMTP]
 * BUG: Fixes for ARM.
 * BUG: The ComboBox Click event now is raised correctly when setting the
   Text property.
-* BUG: Remove a debugging message.
 
 [GB.QT.KDE]
 * BUG: Fixes for ARM.
 
 [GB.SDL]
-* BUG: Remove running SDL events in a separate thread, as it give instability.
+* BUG: Remove running SDL events in a separate thread, as it give 
+  instability.
 
 
 -------------------------------------------------------------------------------
