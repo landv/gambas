@@ -1,31 +1,31 @@
 ' Gambas class file
 
-CREATE STATIC
-EXPORT
-INHERITS ReportVBox
+Create Static
+Export
+Inherits ReportVBox
 
 'Public Constants
-PUBLIC CONST Portrait AS Integer = 0
-PUBLIC CONST Landscape AS Integer = 1
-PUBLIC {Debug} AS Boolean = FALSE
+Public Const Portrait As Integer = 0
+Public Const Landscape As Integer = 1
+Public {Debug} As Boolean = False
 
-PRIVATE iCurPage AS Integer = 0
-PRIVATE $iCount AS Integer = -1
-PRIVATE $iResolution AS Integer = 72
-PRIVATE $bLayoutIsDirty AS Boolean = TRUE
-PRIVATE $fZoom AS Float = 1.0
-PRIVATE $iOrientation AS Integer = Portrait
-PRIVATE $sSize AS String = "A4"
-PRIVATE $hReportTControl AS NEW TControl
-PRIVATE hData AS Object
+Private iCurPage As Integer = 0
+Private $iCount As Integer = -1
+Private $iResolution As Integer = 72
+Private $bLayoutIsDirty As Boolean = True
+Private $fZoom As Float = 1.0
+Private $iOrientation As Integer = Portrait
+Private $sSize As String = "A4"
+Private $hReportTControl As New TControl
+Private hData As Object
 
-PROPERTY READ count AS Integer
-PROPERTY Height AS String
-PROPERTY Width AS String
-PROPERTY Resolution AS Integer
-PROPERTY Zoom AS Float
-PROPERTY Orientation AS Integer
-PROPERTY Size AS String
+Property Read count As Integer
+Property Height As String
+Property Width As String
+Property Resolution As Integer
+Property Zoom As Float
+Property Orientation As Integer
+Property Size As String
 
 
 
@@ -34,127 +34,129 @@ PROPERTY Size AS String
 
 'EVENT Data()
 
-PUBLIC SUB _New()
-  object.Attach(ME, ME, "Report")
+Public Sub _New()
+  object.Attach(Me, Me, "Report")
   
   'ME.Width = 600
   'ME.Height = 600
   $hReportTControl.RelPage = 0
-  ReportControl._ObjectFromId[ME.id] = ME
+  ReportControl._ObjectFromId[Me.id] = Me
   
-END
+End
 
-PUBLIC SUB Layout()
-  IF NOT $bLayoutIsDirty THEN RETURN 
+Public Sub Layout()
+  Dim hprinter As New Printer
+  
+  If Not $bLayoutIsDirty Then Return 
   MRTools.ReportResolution = $iResolution
-  MRTools.ResolutionAffichage = printer.Resolution / $iResolution
+  MRTools.ResolutionAffichage = hprinter.Resolution / $iResolution
   MRTools.ReportZoom = $fZoom
   SetReportSize()
-  $hReportTControl.ctrl = ME
-  $iCount = $hReportTControl._SetGeometry(0, 0, ME.Width, ME.Height) + 1
+  $hReportTControl.ctrl = Me
+  $iCount = $hReportTControl._SetGeometry(0, 0, Me.Width, Me.Height) + 1
   MRTools.PageCount = $iCount
-  $bLayoutIsDirty = FALSE
+  $bLayoutIsDirty = False
   
-END
+End
 
 
-PUBLIC SUB Draw(Page AS Integer)
+Public Sub Draw(Page As Integer)
    
-   IF $bLayoutIsDirty THEN Layout()
+   If $bLayoutIsDirty Then Layout()
    
-    IF page < 1 OR page > $iCount THEN 
+    If page < 1 Or page > $iCount Then 
       Error.Raise("This page does not exist")
-    ENDIF
-    DEC page
-    ME._DrawBefore(Page, 0, 0, $hReportTControl, -1)
-    ME._Draw(Page, 0, 0, $hReportTControl, -1)
-    ME._DrawAfter(Page, 0, 0, $hReportTControl, -1)
+    Endif
+    Dec page
+    Me._DrawBefore(Page, 0, 0, $hReportTControl, -1)
+    Me._Draw(Page, 0, 0, $hReportTControl, -1)
+    Me._DrawAfter(Page, 0, 0, $hReportTControl, -1)
     
-END
+End
 
-PRIVATE SUB FillPages(ctrl AS ReportContainer)
+Private Sub FillPages(ctrl As ReportContainer)
 
-  DIM hChild AS Object
-  DIM relHeight AS Integer
-  FOR EACH hChild IN ctrl.Children
+  Dim hChild As Object
+  Dim relHeight As Integer
+  For Each hChild In ctrl.Children
     hChild._Draw(ctrl._Left, ctrl._Top)
-    IF hChild IS ReportContainer THEN FillPages(hChild)
-  NEXT 
+    If hChild Is ReportContainer Then FillPages(hChild)
+  Next 
 
-END
+End
 
 
-PRIVATE FUNCTION count_Read() AS Integer
+Private Function count_Read() As Integer
   
-  IF $bLayoutIsDirty THEN Layout() '$iCount = -1
+  If $bLayoutIsDirty Then Layout() '$iCount = -1
   
-  RETURN $iCount
+  Return $iCount
 
-END
+End
 
-PRIVATE FUNCTION Height_Read() AS String
+Private Function Height_Read() As String
 
-  RETURN SUPER.Height
+  Return Super.Height
 
-END
+End
 
-PRIVATE SUB Height_Write(Value AS String)
-  IF SUPER.Height <> Value THEN 
-    SUPER.Height = Value
-    $bLayoutIsDirty = TRUE
-  ENDIF
+Private Sub Height_Write(Value As String)
+  If Super.Height <> Value Then 
+    Super.Height = Value
+    $bLayoutIsDirty = True
+  Endif
 
-END
+End
 
-PRIVATE FUNCTION Width_Read() AS String
+Private Function Width_Read() As String
 
-  RETURN SUPER.Width
+  Return Super.Width
 
-END
+End
 
-PRIVATE SUB Width_Write(Value AS String)
-IF SUPER.Width <> Value THEN
-  SUPER.Width = Value
-  $bLayoutIsDirty = TRUE
-ENDIF
+Private Sub Width_Write(Value As String)
+If Super.Width <> Value Then
+  Super.Width = Value
+  $bLayoutIsDirty = True
+Endif
 
-END
+End
 
 
-PRIVATE FUNCTION Resolution_Read() AS Integer
+Private Function Resolution_Read() As Integer
 
-  RETURN $iResolution
+  Return $iResolution
 
-END
+End
 
-PRIVATE SUB Resolution_Write(Value AS Integer)
-  IF $iResolution <> Value THEN
+Private Sub Resolution_Write(Value As Integer)
+  If $iResolution <> Value Then
     $iResolution = Value
-    $bLayoutIsDirty = TRUE
-  ENDIF
+    $bLayoutIsDirty = True
+  Endif
 
-END
+End
 
-PRIVATE FUNCTION Zoom_Read() AS Float
+Private Function Zoom_Read() As Float
 
-  RETURN $fZoom
+  Return $fZoom
 
-END
+End
 
-PRIVATE SUB Zoom_Write(Value AS Float)
+Private Sub Zoom_Write(Value As Float)
 
   $fZoom = Value
   MRTools.ReportZoom = $fZoom
-END
+End
 
-PUBLIC SUB Mosaic(Range AS String, Spacing AS String)
+Public Sub Mosaic(Range As String, Spacing As String)
 
-  DIM $fTempZ AS Float
+  Dim $fTempZ As Float
   $fTempZ = $fZoom
   
   
   
-END
+End
 
 ' PUBLIC SUB _Data()
 '   
@@ -174,75 +176,75 @@ END
 ' 
 ' END
 
-PRIVATE FUNCTION Size_Read() AS String
+Private Function Size_Read() As String
 
-  RETURN $sSize
+  Return $sSize
 
-END
+End
 
-PRIVATE SUB Size_Write(Value AS String)
+Private Sub Size_Write(Value As String)
 
   $sSize = Value
 
-END
+End
 
-PRIVATE SUB SetReportSize()
-  DIM w AS Float
-  DIM h AS Float
-  IF $sSize = "Custom" THEN RETURN 
-  SELECT CASE $sSize
-    CASE "A4"
+Private Sub SetReportSize()
+  Dim w As Float
+  Dim h As Float
+  If $sSize = "Custom" Then Return 
+  Select Case $sSize
+    Case "A4"
       w = 21
       h = 29.7
-    CASE "A3"
+    Case "A3"
       w = 29.7
       h = 42
       
-    CASE "A5"
+    Case "A5"
     
-    CASE "A6"
-    CASE "Letter"
-    CASE ELSE 
-  END SELECT
+    Case "A6"
+    Case "Letter"
+    Case Else 
+  End Select
   
-  IF ME.Orientation = Portrait THEN 
-    ME.Width = w & " cm"
-    ME.Height = h & " cm"
-  ELSE 
-    ME.Width = h & " cm"
-    ME.Height = w & " cm"
+  If Me.Orientation = Portrait Then 
+    Me.Width = w & " cm"
+    Me.Height = h & " cm"
+  Else 
+    Me.Width = h & " cm"
+    Me.Height = w & " cm"
   
-  ENDIF
+  Endif
   
-END
+End
 
 
-PRIVATE FUNCTION Orientation_Read() AS Integer
+Private Function Orientation_Read() As Integer
 
-  RETURN $iOrientation
+  Return $iOrientation
 
-END
+End
 
-PRIVATE SUB Orientation_Write(Value AS Integer)
+Private Sub Orientation_Write(Value As Integer)
 
   $iOrientation = Value
 
-END
+End
 
-PUBLIC SUB Clear()
+Public Sub Clear()
   
-  SUPER._Free
+  Super._Free
   iCurPage = 0
   $iCount = -1
   $iResolution = 72
-  $bLayoutIsDirty = TRUE
+  $bLayoutIsDirty = True
   $fZoom = 1.0
   $iOrientation = Portrait
   $sSize = "A4"
-END
+End
 
-PUBLIC FUNCTION Preview()
+Public Function Preview()
   
-  frmPreview.Run(ME)
+  frmPreview.Run(Me)
   
-END
+End

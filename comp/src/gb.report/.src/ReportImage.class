@@ -1,61 +1,66 @@
 ' Gambas class file
 
-INHERITS ReportControl
-EXPORT 
+Inherits ReportControl
+Export 
 
-PRIVATE $hPic AS picture
-PRIVATE $sPath AS String
+Private $hPic As Image
+Private $sPath As String
 
-PROPERTY Path AS String
+Property Path As String
 
-PRIVATE FUNCTION Path_Read() AS String
+Private Function Path_Read() As String
 
-  RETURN $sPath
+  Return $sPath
 
-END
+End
 
-PRIVATE SUB Path_Write(Value AS String)
+Private Sub Path_Write(Value As String)
 
-  IF Exist(Value) THEN
+  If Exist(Value) Then
     $sPath = Value
-    $hPic = Picture[Value]
-  ELSE 
+    $hPic = Image.Load(Value)
+  Else 
     Error.Raise("Cannot find this file !")
-  ENDIF
+  Endif
   
-END
+End
 
-PUBLIC SUB _GetSizeHints(AvailableW AS Float, AvailableH AS Float, TotalWidth AS Float, TotalHeight AS Float) AS TSizeHint
+Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float) As TSizeHint
 
-  DIM hMyHints AS NEW TSizeHint
-  DIM h AS Float = ME._Height
-  DIM w AS Float = ME._Width
-  DIM Scale AS Float
-  IF h > 0 OR w > 0 THEN
+  Dim hMyHints As New TSizeHint
+  Dim h As Float = Me._Height
+  Dim w As Float = Me._Width
+  Dim Scale As Float
+  If h > 0 Or w > 0 Then
     
-    IF h > w THEN 
+    If h > w Then 
       Scale = $hpic.Width / $hpic.Height
-      hMyHints.Width = (h * Scale) + (2 * ME._Padding)
-      hMyHints.Height = h + (2 * ME._Padding)
-    ELSE 
+      hMyHints.Width = (h * Scale) + (2 * Me._Padding)
+      hMyHints.Height = h + (2 * Me._Padding)
+    Else 
       Scale = $hpic.Height / $hpic.Width
-      hMyHints.Height = (w * Scale) + (2 * ME._Padding)
-      hMyHints.Width = w + (2 * ME._Padding)
-    ENDIF
-  ELSE 
-    hMyHints.Height = AvailableH + (2 * ME._Padding)
-    hMyHints.Width = AvailableW + (2 * ME._Padding)
-  ENDIF
+      hMyHints.Height = (w * Scale) + (2 * Me._Padding)
+      hMyHints.Width = w + (2 * Me._Padding)
+    Endif
+  Else 
+    hMyHints.Height = AvailableH + (2 * Me._Padding)
+    hMyHints.Width = AvailableW + (2 * Me._Padding)
+  Endif
   
-  RETURN hMyHints
+  Return hMyHints
   
-END
+End
 
-PUBLIC SUB _Draw(Page AS Integer, X AS Integer, Y AS Integer, hControl AS TControl, VirtualId AS Integer)
+Public Sub _Draw(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
     
-    $hPic = $hPic.Image.Stretch(hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom, TRUE).Picture
-    Draw.Picture($hPic, (x + hControl.RealLeft + MRTools.UnitsToPixels(ME.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(ME.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
+    $hPic = $hPic.Stretch(hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
+    Paint.Brush = Paint.Image($hpic, 0, 0)
+    
+    Paint.Rectangle((x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
+    Paint.Fill
+    
+    'Draw.Picture($hPic, (x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
 
-END
+End
 
 

@@ -6,6 +6,7 @@ Private hPic As Picture
 Private fZoom As Integer
 Private hCon As New connection
 Private hResult As Result
+Private hPrinter As New Printer
 Private $aFirstNames As String[] = ["Leo", "Mario", "Nathan", "Thomas", "Fabien", "Laurent", "Benoit", "Charles", "Rob", "Ron"]
 Private $aBornDates As String[] = ["1/12/1978", "24/10/1983", "18/04/1969", "15/05/1953", "12/12/1974", "16/11/1968", "30/06/1976", "3/11/1986", "05/08/1982", "23/10/1953"]
 Public Sub _New()
@@ -16,6 +17,9 @@ Public Sub _New()
   ' hResult = hcon.Find("test", "active=&1", TRUE)
   ' 'hcon.Open
   ComboBox1_Click
+  hprinter.Paper = printer.A4
+  
+  
   'Test1()
   
 End
@@ -278,13 +282,13 @@ Public Sub SpinBox1_Change()
   Dim zoomFactor As Float
   DrawingArea1.Clear
   
-  Draw.Begin(DrawingArea1)
+  Paint.Begin(DrawingArea1)
   report.Layout
-  draw.End
+  Paint.End
   SpinBox1.MaxValue = Report.Count
   zoomFactor = fZoom / 100
-  DrawingArea1.Resize(printer.Width, printer.Height)
-  Draw.Begin(DrawingArea1)
+  DrawingArea1.Resize(Units.UnitsConverter(hPrinter.PaperWidth, "mm", "in") * Desktop.Resolution, Units.UnitsConverter(hprinter.PaperHeight, "mm", "in") * Desktop.Resolution)
+  Paint.Begin(DrawingArea1)
   If SpinBox1.Value > Report.count Then Return 
   
   
@@ -295,7 +299,7 @@ Public Sub SpinBox1_Change()
     'Draw.Scale(zoomFactor, zoomFactor)
     Report.Draw(SpinBox1.Value)
     'Draw.Picture(hPic, 0, 0)
-  Draw.End
+  Paint.End
   
 End
 

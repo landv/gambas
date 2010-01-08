@@ -1,100 +1,106 @@
 ' Gambas class file
 
-EXPORT
-INHERITS ReportControl
+Export
+Inherits ReportControl
 
-PRIVATE $sText AS String
-PRIVATE $iAlignment AS Integer '= Align.Center
+Private $sText As String
+Private $iAlignment As Integer '= Align.Center
 
-PROPERTY Text AS String
-PROPERTY Alignment AS Integer
+Property Text As String
+Property Alignment As Integer
 
 
-PUBLIC SUB _New()
+Public Sub _New()
   
-  ME.Height = "100 px"
+  Me.Height = "100 px"
   
-END
+End
 
 
-PRIVATE FUNCTION Text_Read() AS String
+Private Function Text_Read() As String
 
-  RETURN $sText
+  Return $sText
 
-END
+End
 
-PRIVATE SUB Text_Write(Value AS String)
+Private Sub Text_Write(Value As String)
 
   $sText = Value
 
-END
+End
 
-PRIVATE FUNCTION Alignment_Read() AS Integer
+Private Function Alignment_Read() As Integer
 
-  RETURN $iAlignment
+  Return $iAlignment
 
-END
+End
 
-PRIVATE SUB Alignment_Write(Value AS Integer)
+Private Sub Alignment_Write(Value As Integer)
 
   $iAlignment = Value
 
-END
+End
 
 
-PUBLIC SUB _GetSizeHints(AvailableW AS Float, AvailableH AS Float, TotalWidth AS Float, TotalHeight AS Float) AS TSizeHint
+Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float) As TSizeHint
 
-  DIM hMyHints AS NEW TSizeHint
-  DIM fTextHeight AS Float
-  DIM fTextWidth AS Float
-  hMyHints.Height = ME._Height + (2 * ME._Padding)
+  Dim hMyHints As New TSizeHint
+  Dim fTextHeight As Float
+  Dim fTextWidth As Float
+  Dim hext As PaintExtents
   
-  IF NOT IsNull(ME.Font) THEN draw.Font = ME.Font
-  draw.Font.size = draw.Font.size '* MRTools.ResolutionAffichage
+  hMyHints.Height = Me._Height + (2 * Me._Padding)
+  
+  If Not IsNull(Me.Font) Then Paint.Font = Me.Font
+  'draw.Font.size = draw.Font.size '* MRTools.ResolutionAffichage
 
   'if the size choosed by the user is less than the font height, set the object to the font height
-  fTextHeight = MRTools.PixelsToUnits(Draw.TextHeight($sText))
-  fTextWidth = MRTools.PixelsToUnits(Draw.TextWidth($sText))
+  hext = Paint.TextExtents($sText)
+  fTextHeight = MRTools.PixelsToUnits(hext.Height)
+  fTextWidth = MRTools.PixelsToUnits(hext.Width)
   
-  IF hMyHints.Height < fTextHeight THEN hMyHints.Height = fTextHeight + (2 * ME._Padding)
-  IF ME._RelativeHeight THEN hMyHints.Height = TotalHeight * ME._Height / 100
-  IF ME._Width > 0 AND NOT ME.Autoresize THEN 
-    hMyHints.Width = ME._Width
-  ELSE 
-    hMyHints.Width = Draw.TextWidth(DecodeText($sText,, TRUE)) + (2 * ME._Padding)
-    IF hMyHints.Width < ME._Width THEN hMyHints.Width = ME._Width
-  ENDIF 
-  IF ME._RelativeWidth THEN hMyHints.Width = AvailableW * ME._Width / 100
-  IF hMyHints.Width > AvailableW THEN hMyHints.Width = AvailableW
-  RETURN hMyHints
+  If hMyHints.Height < fTextHeight Then hMyHints.Height = fTextHeight + (2 * Me._Padding)
+  If Me._RelativeHeight Then hMyHints.Height = TotalHeight * Me._Height / 100
+  If Me._Width > 0 And Not Me.Autoresize Then 
+    hMyHints.Width = Me._Width
+  Else 
+    hMyHints.Width = Paint.TextExtents(DecodeText($sText,, True)).Width + (2 * Me._Padding)
+    If hMyHints.Width < Me._Width Then hMyHints.Width = Me._Width
+  Endif 
+  If Me._RelativeWidth Then hMyHints.Width = AvailableW * Me._Width / 100
+  If hMyHints.Width > AvailableW Then hMyHints.Width = AvailableW
+  Return hMyHints
   
-END
+End
 
-PUBLIC SUB _Draw(Page AS Integer, X AS Integer, Y AS Integer, hControl AS TControl, VirtualId AS Integer)
+Public Sub _Draw(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
 
-    Draw.ForeColor = ME.ForeColor
-    IF NOT IsNull(ME.Font) THEN Draw.Font = ME.Font
-    draw.Font.size = draw.Font.size * MRTools.ReportZoom '* MRTools.ResolutionAffichage
-    draw.Clip((x + hControl.RealLeft + MRTools.UnitsToPixels(ME.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(ME.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
-    Draw.Text(DecodeText($sText, Page + 1), (x + hControl.RealLeft + MRTools.UnitsToPixels(ME.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(ME.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom, $iAlignment)
-    Draw.Clip.Enabled = FALSE
-END
+    'Draw.ForeColor = Me.ForeColor
+    Paint.Brush = Paint.Color(Me.ForeColor)
+    If Not IsNull(Me.Font) Then Paint.Font = Me.Font
+    Paint.Font.size = Paint.Font.size * MRTools.ReportZoom '* MRTools.ResolutionAffichage
+    'draw.Clip((x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
+    'Draw.Text(DecodeText($sText, Page + 1), (x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom, $iAlignment)
+    Paint.Text(DecodeText($sText, Page + 1), (x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom, $iAlignment)
+    Paint.Fill
+    'Draw.Clip.Enabled = False
+End
 
 
 
-PRIVATE FUNCTION DecodeText(sText AS String, OPTIONAL Page AS Integer, OPTIONAL ForSize AS Boolean = FALSE) AS String
+Private Function DecodeText(sText As String, Optional Page As Integer, Optional ForSize As Boolean = False) As String
   
-  IF ForSize THEN 
-    IF InStr(sText, "$PAGE") THEN sText = Replace(sText, "$PAGE", "999")
-    IF InStr(sText, "$NPAGE") THEN sText = Replace(sText, "$NPAGE", "999")
-  ELSE
-    IF InStr(sText, "$PAGE") THEN sText = Replace(sText, "$PAGE", Str(Page))
-    IF InStr(sText, "$NPAGE") THEN sText = Replace(sText, "$NPAGE", Str(MRTools.PageCount))
-  ENDIF
+  If ForSize Then 
+    If InStr(sText, "$PAGE") Then sText = Replace(sText, "$PAGE", "999")
+    If InStr(sText, "$NPAGE") Then sText = Replace(sText, "$NPAGE", "999")
+  Else
+    If InStr(sText, "$PAGE") Then sText = Replace(sText, "$PAGE", Str(Page))
+    If InStr(sText, "$NPAGE") Then sText = Replace(sText, "$NPAGE", Str(MRTools.PageCount))
+  Endif
   
-  RETURN sText
+  Return sText
   
-END
+End
 
 
 

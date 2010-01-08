@@ -278,20 +278,29 @@ Public Sub _DrawBefore(Page As Integer, X As Integer, Y As Integer, hControl As 
 
   If Report.Debug Then
 
-      Draw.LineStyle = Line.Dot
-      Draw.ForeColor = Color.Black
-      Draw.FillStyle = fill.None
-      Draw.Rect(X1, Y1, X2 - X1 + 2, Y2 - Y1 + 2)
-
+      'Draw.LineStyle = Line.Dot
+      'Draw.ForeColor = Color.Black
+      'Draw.FillStyle = fill.None
+      'Draw.Rect(X1, Y1, X2 - X1 + 2, Y2 - Y1 + 2)
+      Paint.Brush = Paint.Color(0)
+      Paint.Dash = [1.0, 1.0]
+      Paint.Rectangle(X1, Y1, X2 - X1 + 2, Y2 - Y1 + 2)
+      Paint.Stroke
+      
   Else 
     
     If Me.FillStyle = fill.None Then Return 
-    Draw.FillStyle = $iFillStyle
-    Draw.BackGround = $iBackGround
-    Draw.ForeColor = $iForeColor
-    Draw.FillColor = $iFillColor
-    Draw.LineStyle = $iLineStyle 'Line.Solid
-    Draw.Rect(X1, Y1, X2 - X1 + 2, Y2 - Y1 + 2)
+    Paint.Brush = Paint.Color($iFillColor)
+    Paint.Rectangle(X1, Y1, X2 - X1 + 2, Y2 - Y1 + 2)
+    Paint.Fill
+    'Paint.Brush = Paint.Color($iForeColor)
+    'Paint.Stroke
+    'Draw.FillStyle = $iFillStyle
+    'Draw.BackGround = $iBackGround
+    'Draw.ForeColor = $iForeColor
+    'Draw.FillColor = $iFillColor
+    'Draw.LineStyle = $iLineStyle 'Line.Solid
+    'Draw.Rect(X1, Y1, X2 - X1 + 2, Y2 - Y1 + 2)
   Endif 
   
   
@@ -316,12 +325,16 @@ Public Sub _DrawAfter(Page As Integer, X As Integer, Y As Integer, hControl As T
   Y2 = (y + hControl.RealTop + hControl.RealHeight - 1) * MRTools.ReportZoom
 
     If Me.LineStyle <> Line.None Then 
-      Draw.LineStyle = $iLineStyle
-      Draw.LineWidth = $iLineWidth
-      Draw.ForeColor = $iForeColor
-      draw.FillStyle = Fill.None
+      Paint.LineWidth = $iLineWidth
+      'Draw.LineStyle = $iLineStyle
+      'Draw.LineWidth = $iLineWidth
+      Paint.Brush = Paint.Color($iForeColor)
+      
+      'Draw.ForeColor = $iForeColor
+      'draw.FillStyle = Fill.None
 
-      Draw.Rect(X1, Y1, X2 - X1 + 2, Y2 - Y1 + 2)
+      paint.Rectangle(X1, Y1, X2 - X1 + 2, Y2 - Y1 + 2)
+      paint.Stroke
     Endif
   
 End
