@@ -129,6 +129,7 @@ GB_CLASS CLASS_Control;
 GB_CLASS CLASS_Container;
 GB_CLASS CLASS_UserControl;
 GB_CLASS CLASS_UserContainer;
+GB_CLASS CLASS_TabStrip;
 GB_CLASS CLASS_Window;
 GB_CLASS CLASS_Menu;
 GB_CLASS CLASS_Picture;
@@ -1025,6 +1026,7 @@ int EXPORT GB_INIT(void)
 	CLASS_Container = GB.FindClass("Container");
 	CLASS_UserControl = GB.FindClass("UserControl");
 	CLASS_UserContainer = GB.FindClass("UserContainer");
+	CLASS_TabStrip = GB.FindClass("TabStrip");
 	CLASS_Window = GB.FindClass("Window");
 	CLASS_Menu = GB.FindClass("Menu");
 	CLASS_Picture = GB.FindClass("Picture");
@@ -1037,7 +1039,7 @@ int EXPORT GB_INIT(void)
 
 	QT_InitEventLoop();
 
-	return TRUE;
+	return 0;
 }
 
 void EXPORT GB_EXIT()

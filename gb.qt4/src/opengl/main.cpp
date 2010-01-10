@@ -43,7 +43,7 @@ int EXPORT GB_INIT(void)
   GB.GetInterface("gb.qt4", QT_INTERFACE_VERSION, &QT);
   GB.GetInterface("gb.opengl", GL_INTERFACE_VERSION, &GL);
 
-  return FALSE;
+  return 0;
 }
 
 void EXPORT GB_EXIT()

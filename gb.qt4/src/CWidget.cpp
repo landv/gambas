@@ -263,7 +263,7 @@ void CWIDGET_new(QWidget *w, void *_object, bool no_show, bool no_filter, bool n
 
 	if (!no_show)
 	{
-		w->setGeometry(-16, -16, 16, 16);
+		w->setGeometry(-32, -32, 32, 32);
 		CWIDGET_set_visible(THIS, true);
 		w->raise();
 	}

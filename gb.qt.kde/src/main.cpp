@@ -239,7 +239,7 @@ int EXPORT GB_INIT(void)
   GB.Hook(GB_HOOK_MAIN, (void *)hook_main);
   old_hook_lang = GB.Hook(GB_HOOK_LANG, (void *)hook_lang);
 
-  return TRUE;
+  return -1;
 }
 
 void EXPORT GB_EXIT()

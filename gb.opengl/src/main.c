@@ -86,7 +86,7 @@ int EXPORT GB_INIT(void)
 {
 	GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
 
-	return FALSE;
+	return 0;
 }
 
 void EXPORT GB_EXIT()

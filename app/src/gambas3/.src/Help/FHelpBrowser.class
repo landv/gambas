@@ -191,22 +191,7 @@ Public Sub btnPrint_Click()
 
   Printer1.OutputFile = "~/print.pdf"
   $bPrint = False
-  Printer1.Run
-  If $bPrint Then webHelp.Current.Print(Printer1)
-  'Printer1.Run
+  If Printer1.Configure() Then Return
+  webHelp.Current.Print(Printer1)
 
-End
-
-Public Sub Printer1_Begin()
-  
-  $bPrint = True
-  Printer1.Cancel
-  
-End
-
-
-Public Sub Printer1_Draw()
-  
-  Debug
-  
 End

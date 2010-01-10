@@ -41,7 +41,7 @@ int EXPORT GB_INIT(void)
 {
   GB.GetInterface("gb.qt", QT_INTERFACE_VERSION, &QT);
 
-  return TRUE;
+  return -1;
 }
 
 void EXPORT GB_EXIT()

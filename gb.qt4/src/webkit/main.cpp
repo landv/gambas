@@ -54,7 +54,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
 int EXPORT GB_INIT(void)
 {
   GB.GetInterface("gb.qt4", QT_INTERFACE_VERSION, &QT);
-  return FALSE;
+  return 0;
 }
 
 void EXPORT GB_EXIT()

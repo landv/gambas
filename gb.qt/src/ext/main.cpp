@@ -82,7 +82,7 @@ int EXPORT GB_INIT(void)
   GB.GetInterface("gb.qt", QT_INTERFACE_VERSION, &QT);
   DRAW_init();
 
-  return FALSE;
+  return 0;
 }
 
 void EXPORT GB_EXIT()

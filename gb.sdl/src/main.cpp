@@ -88,7 +88,7 @@ extern "C"
 		CLASS_Image = GB.FindClass("Image");
 		CLASS_Font = GB.FindClass("Font");
 
-		return true;
+		return -1;
 	}
 
 	void EXPORT GB_EXIT()

@@ -318,23 +318,26 @@ static void Stroke(GB_PAINT *d, int preserve)
 {
 	CHECK_PATH(d);
 	
-	if (!CLIP(d))
-		PAINTER(d)->strokePath(*PATH(d), PAINTER(d)->pen());
-	else
+	if (PAINTER(d)->pen().widthF() > 0.0)
 	{
-		QPainterPathStroker stroker;
-		QPen pen = PAINTER(d)->pen();
-		
-		stroker.setCapStyle(pen.capStyle());
-		stroker.setDashOffset(pen.dashOffset());
-		stroker.setDashPattern(pen.dashPattern());
-		stroker.setJoinStyle(pen.joinStyle());
-		stroker.setMiterLimit(pen.miterLimit());
-		stroker.setWidth(pen.widthF());
-		
-		QPainterPath path = PAINTER(d)->worldTransform().inverted().map(*CLIP(d));
-		path = path.intersected(stroker.createStroke(*PATH(d)));
-		PAINTER(d)->fillPath(path, PAINTER(d)->brush());
+		if (!CLIP(d))
+			PAINTER(d)->strokePath(*PATH(d), PAINTER(d)->pen());
+		else
+		{
+			QPainterPathStroker stroker;
+			QPen pen = PAINTER(d)->pen();
+			
+			stroker.setCapStyle(pen.capStyle());
+			stroker.setDashOffset(pen.dashOffset());
+			stroker.setDashPattern(pen.dashPattern());
+			stroker.setJoinStyle(pen.joinStyle());
+			stroker.setMiterLimit(pen.miterLimit());
+			stroker.setWidth(pen.widthF());
+			
+			QPainterPath path = PAINTER(d)->worldTransform().inverted().map(*CLIP(d));
+			path = path.intersected(stroker.createStroke(*PATH(d)));
+			PAINTER(d)->fillPath(path, PAINTER(d)->brush());
+		}
 	}
 	
 	PRESERVE_PATH(d, preserve);

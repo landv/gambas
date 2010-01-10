@@ -38,11 +38,12 @@ typedef
     char *name;
     LIBRARY *library;
     ARCHIVE *archive;
+		char order;
     unsigned preload : 1;
     unsigned loaded : 1;
     unsigned user : 1;
     unsigned warning : 1;    // Set when the bytecode warning was displayed by the class loader for this component
-    unsigned _reserved : 28;
+    unsigned _reserved : 20;
     }
   PACKED
   COMPONENT;

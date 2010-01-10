@@ -84,7 +84,7 @@ extern "C" {
 
 
 
-		return true;
+		return -1;
 	}
 
 	void EXPORT GB_EXIT()

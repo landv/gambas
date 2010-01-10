@@ -71,7 +71,7 @@ void *GB_IMAGE_1[] EXPORT =
 
 int EXPORT GB_INIT(void)
 {
-	return FALSE;
+	return 0;
 }
 
 void EXPORT GB_EXIT()

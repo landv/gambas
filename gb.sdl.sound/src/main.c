@@ -74,7 +74,7 @@ int EXPORT GB_INIT(void)
 
 	SOUND_init();
 
-	return 1;
+	return -1;
 }
 
 

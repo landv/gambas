@@ -42,6 +42,11 @@ DECLARE_METHOD(CCONTAINER_y);
 
 DECLARE_EVENT(EVENT_Click);
 
+void CTABSTRIP_arrange(void *_object)
+{
+	WIDGET->forceLayout();
+}
+
 /** CTab *****************************************************************/
 
 class CTab
@@ -335,7 +340,6 @@ BEGIN_METHOD(CTABSTRIP_new, GB_OBJECT parent)
 
   CWIDGET_new(wid, (void *)_object, true);
   set_tab_count(THIS, 1);
-  wid->show();
 
   //wid->updateLayout();
 
@@ -726,15 +730,13 @@ void CTabStrip::currentChanged(int index)
 
 	wid = WIDGET->currentWidget();
 
-  //qDebug("CTabStrip::currentChanged: %d %p -> %p", index, THIS->container, wid);
-
 	if (wid != THIS->container)
 	{
+		//qDebug("CTabStrip::currentChanged: %d %p -> %p", index, THIS->container, wid);
 		if (THIS->container)
 			THIS->container->hide();
 		THIS->container = wid;
 		wid->show();
-		WIDGET->forceLayout();
 		CCONTAINER_arrange(THIS);
 
 		//if (wid->isVisible() && !THIS->lock)
@@ -789,14 +791,12 @@ GB_DESC CTabStripDesc[] =
   GB_PROPERTY("Orientation", "i", CTABSTRIP_orientation),
   GB_PROPERTY("Enabled", "b", CTABSTRIP_enabled),
 
-	#ifdef GB_QT_COMPONENT
   GB_PROPERTY_READ("ClientX", "i", CTABSTRIP_client_x),
   GB_PROPERTY_READ("ClientY", "i", CTABSTRIP_client_y),
   GB_PROPERTY_READ("ClientW", "i", CTABSTRIP_client_width),
   GB_PROPERTY_READ("ClientWidth", "i", CTABSTRIP_client_width),
   GB_PROPERTY_READ("ClientH", "i", CTABSTRIP_client_height),
   GB_PROPERTY_READ("ClientHeight", "i", CTABSTRIP_client_height),
-  #endif
 
   GB_PROPERTY("Arrangement", "i", CCONTAINER_arrangement),
   GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),

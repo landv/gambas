@@ -41,11 +41,11 @@ GB_INTERFACE GB EXPORT;
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {
-	CGridViewColumnDesc,
-	CGridViewColumnsDesc,
-	CGridViewDesc,
-	CPaintDesc,
-    CDrawDesc,
+  CGridViewColumnDesc,
+  CGridViewColumnsDesc,
+  CGridViewDesc,
+  CPaintDesc,
+  CDrawDesc,
   NULL
 };
 
@@ -53,7 +53,7 @@ int EXPORT GB_INIT(void)
 {
   GB.GetInterface("gb.gtk", GTK_INTERFACE_VERSION, &GTK);
   GB.GetInterface("gb.draw", DRAW_INTERFACE_VERSION, &DRAW);	
-  return FALSE;
+  return 0;
 }
 
 void EXPORT GB_EXIT()

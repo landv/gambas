@@ -362,6 +362,7 @@ GB_DESC CWebViewDesc[] =
 
 MyWebView::MyWebView(QWidget *parent) : QWebView(parent)
 {
+	//settings()->setFontFamily(QWebSettings::FixedFont, "monospace");
 }
 
 QWebView *MyWebView::createWindow(QWebPage::WebWindowType type)

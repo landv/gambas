@@ -38,6 +38,7 @@
 #include "CWindow.h"
 #include "CConst.h"
 #include "CScrollView.h"
+#include "CTabStrip.h"
 #include "CColor.h"
 
 #include "CContainer.h"
@@ -204,7 +205,22 @@ static void flush_cache()
 	_cache.clear();
 }
 
+#else
+#if 0
 
+static void get_widget_contents(QWidget *wid, int &x, int &y, int &w, int &h)
+{
+	QRect wc;
+	
+	wc = wid->contentsRect();
+	
+	x = wc.x();
+	y = wc.y();
+	w = wc.width();
+	h = wc.height();
+	
+}
+#endif
 #endif
 
 static void resize_container(void *_object, QWidget *cont, int w, int h)
@@ -249,6 +265,7 @@ static void resize_container(void *_object, QWidget *cont, int w, int h)
 
 #else
 
+//#define GET_WIDGET_CONTENTS(_widget, _x, _y, _w, _h) get_widget_contents(_widget, _x, _y, _w, _h)
 #define GET_WIDGET_CONTENTS(_widget, _x, _y, _w, _h) \
 	_x = (_widget)->contentsRect().x(); \
 	_y = (_widget)->contentsRect().y(); \
@@ -276,6 +293,8 @@ static void resize_container(void *_object, QWidget *cont, int w, int h)
 
 #define GET_OBJECT_FROM_WIDGET(_widget) CWidget::getRealExisting(_widget)
 
+#define GET_OBJECT_NAME(_object) (((CWIDGET *)_object)->name)
+
 #define RAISE_ARRANGE_EVENT(_object) \
 { \
 	GB.Raise(_object, EVENT_Arrange, 0); \
@@ -296,6 +315,8 @@ void CCONTAINER_arrange(void *_object)
 {
 	if (GB.Is(THIS, CLASS_ScrollView))
 		CSCROLLVIEW_arrange(THIS);
+	else if (GB.Is(THIS, CLASS_TabStrip))
+		CTABSTRIP_arrange(THIS);
 
 	#if DEBUG_CONTAINER
 	static int level = 0;
@@ -452,9 +473,12 @@ void MyContainer::showEvent(QShowEvent *e)
 	void *_object = CWidget::get(this);
 	QWidget::showEvent(e);
 	THIS->widget.flag.shown = TRUE;
+	// 	if (!qstrcmp(GB.GetClassName(THIS), "TabStrip"))
+	// 	{
+	// 		qDebug("MyContainer::showEvent: %s %p: SHOWN = 1 (%d %d)", THIS->widget.name, THIS, THIS->widget.widget->isVisible() , !THIS->widget.widget->isHidden());
+	// 		BREAKPOINT();
+	// 	}
 	CCONTAINER_arrange(THIS);
-	//if (!qstrcmp(GB.GetClassName(THIS), "ListContainer"))
-	//	qDebug("MyContainer::showEvent: %s %p: SHOWN = 1 (%d %d)", THIS->widget.name, THIS, THIS->widget.widget->isVisible() , !THIS->widget.widget->isHidden());
 }
 
 void MyContainer::hideEvent(QHideEvent *e)

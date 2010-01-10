@@ -438,15 +438,16 @@ void LIBRARY_delete(LIBRARY *lib)
 }
 
 
-void LIBRARY_load(LIBRARY *lib)
+int LIBRARY_load(LIBRARY *lib)
 {
   int (*func)();
   void **iface;
   GB_DESC **desc;
   char *path;
+	int order = 0;
 
   if (lib->handle)
-    return;
+    return 0;
 
 #ifdef DEBUG
   clock_t t = clock();
@@ -489,8 +490,9 @@ void LIBRARY_load(LIBRARY *lib)
 	lib->info = (int(*)())get_symbol(lib, LIB_INFO, FALSE);
 
   /* Initialisation */
-  lib->persistent = (bool)(*func)();
-
+  order = (*func)();
+	lib->persistent = order < 0;
+	
   /* Déclaration des classes */
   desc = get_symbol(lib, LIB_CLASS, FALSE);
   if (desc)
@@ -500,6 +502,8 @@ void LIBRARY_load(LIBRARY *lib)
   fprintf(stderr, "Library %s loaded ", lib->name);
   fprintf(stderr, "in %g s\n", ((double)(clock() - t) / CLOCKS_PER_SEC));
 #endif
+
+	return order;
 }
 
 

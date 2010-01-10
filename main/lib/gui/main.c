@@ -64,7 +64,7 @@ int EXPORT GB_INIT(void)
 	if (GB.LoadComponent(comp))
 		fprintf(stderr, "gb.gui: unable to load '%s' component\n", comp);
   
-  return FALSE;
+  return 0;
 }
 
 void EXPORT GB_EXIT()

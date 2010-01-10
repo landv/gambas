@@ -43,7 +43,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
 int EXPORT GB_INIT(void)
 {
 	CLASS_DBusVariant = GB.FindClass("DBusVariant");
-	return FALSE;
+	return 0;
 }
 
 void EXPORT GB_EXIT()

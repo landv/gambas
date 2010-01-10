@@ -49,6 +49,7 @@ extern GB_CLASS CLASS_Control;
 extern GB_CLASS CLASS_Container;
 extern GB_CLASS CLASS_UserControl;
 extern GB_CLASS CLASS_UserContainer;
+extern GB_CLASS CLASS_TabStrip;
 extern GB_CLASS CLASS_Window;
 extern GB_CLASS CLASS_Menu;
 extern GB_CLASS CLASS_Picture;

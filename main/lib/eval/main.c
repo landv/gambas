@@ -65,7 +65,7 @@ int EXPORT GB_INIT(void)
 {
   EVAL_init();
 
-  return FALSE;
+  return 0;
 }
 
 void EXPORT GB_EXIT()

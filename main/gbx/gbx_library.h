@@ -64,7 +64,7 @@ void LIBRARY_exit(void);
 LIBRARY *LIBRARY_create(const char *path);
 void LIBRARY_delete(LIBRARY *lib);
 
-void LIBRARY_load(LIBRARY *lib);
+int LIBRARY_load(LIBRARY *lib);
 void LIBRARY_unload(LIBRARY *lib);
 
 void LIBRARY_declare(GB_DESC **desc);

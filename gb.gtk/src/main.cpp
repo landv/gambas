@@ -259,7 +259,7 @@ extern "C"
 		CLASS_Image = GB.FindClass("Image");
 		CLASS_SvgImage = GB.FindClass("SvgImage");
 		
-		return TRUE;
+		return -1;
 	}
 
 	void EXPORT GB_EXIT()

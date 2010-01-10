@@ -99,4 +99,6 @@ public slots:
   void currentChanged(int);
 };
 
+void CTABSTRIP_arrange(void *_object);
+
 #endif

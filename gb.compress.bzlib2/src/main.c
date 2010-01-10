@@ -574,7 +574,7 @@ int EXPORT GB_INIT(void)
   GB.GetInterface("gb.compress", COMPRESS_INTERFACE_VERSION, &COMPRESSION);
   COMPRESSION.Register(&_driver);
 
-  return FALSE;
+  return 0;
 }
 
 void EXPORT GB_EXIT()

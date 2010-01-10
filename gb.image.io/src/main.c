@@ -41,7 +41,7 @@ int EXPORT GB_INIT(void)
 	// Bug in the gdk-pixbuf documentation: the following is mandatory.
 	g_type_init();
 	
-	return FALSE;
+	return 0;
 }
 
 void EXPORT GB_EXIT()

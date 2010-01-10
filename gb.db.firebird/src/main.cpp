@@ -2390,7 +2390,7 @@ extern "C" {
     GB.GetInterface("gb.db", DB_INTERFACE_VERSION, &DB);
     DB.Register(&_driver);
 
-    return FALSE;
+    return 0;
   }
 
   void EXPORT GB_EXIT()

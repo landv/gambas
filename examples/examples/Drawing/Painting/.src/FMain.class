@@ -277,17 +277,28 @@ End
 
 Public Sub Example11()
   
-  Dim hImg As Image
-  hImg = Image.Load(IMAGE_NAME)
+  Dim X, Y, W, H As Float
+  Dim hBrush As PaintBrush
+  Dim hImage As Image
+  
+  hImage = Image.Load(IMAGE_NAME)
 
-  Paint.Translate(128, 128)
-  'Paint.Rotate(Rad(45))
-  Paint.Scale(256.0 / hImg.W, 256.0 / hImg.H)
-  Paint.Translate(-0.5 * hImg.W, -0.5 * hImg.H)
-  Paint.Brush = Paint.Image(hImg, 0, 0)
-  Paint.Rectangle(0, 0, 256, 256)
+  X = 16
+  Y = 40
+  W = 200
+  H = 200
+  
+  hBrush = Paint.Image(hImage)
+  hBrush.Translate(X, Y)
+  hBrush.Scale(W / hImage.W, H / hImage.H)
+  Paint.Brush = hBrush
+  Paint.Rectangle(X, Y, W, H)
   Paint.Fill
   
+  Paint.Brush = Paint.Color(Color.RGB(255, 127, 127, 153))
+  Paint.Arc(X, Y, 10)
+  Paint.Fill
+
 End
 
 Public Sub Example12()
@@ -344,7 +355,7 @@ Public Sub Example14()
   
   'Draw helping lines
   Paint.Brush = Paint.Color(Color.RGB(255, 31, 31))
-  Paint.LineWidth = 2.56
+  Paint.LineWidth = 6
   Paint.MoveTo(64, 50)
   Paint.LineTo(64, 200)
   Paint.MoveTo(128, 50)
@@ -352,6 +363,7 @@ Public Sub Example14()
   Paint.MoveTo(192, 50)
   Paint.LineTo(192, 200)
   Paint.Stroke
+  
 End
 
 Public Sub Example15()
@@ -457,18 +469,20 @@ Public Sub Example20()
   
 End
 
+Private $hSvgImage As SvgImage
+  
 Public Sub Example21()
   
-  Dim hSvgImage As SvgImage
+  If Not $hSvgImage Then 
+    $hSvgImage = SvgImage.Load("gambas.svg")
+    Paint.Begin($hSvgImage)
+    Paint.Brush = Paint.RadialGradient(200, 140, 40, 215, 115, [Color.RGB(255, 0, 0, 64), Color.White], [1.0, 0.1])
+    Paint.Arc(200, 140, 40)
+    Paint.Fill
+    Paint.End
+  Endif
   
-  hSvgImage = SvgImage.Load("gambas.svg")
-  Paint.Begin(hSvgImage)
-  Paint.Brush = Paint.RadialGradient(200, 140, 40, 215, 115, [Color.RGB(255, 0, 0, 64), Color.White], [1.0, 0.1])
-  Paint.Arc(200, 140, 40)
-  Paint.Fill
-  Paint.End
-  
-  hSvgImage.Paint
+  $hSvgImage.Paint
   
 End
 

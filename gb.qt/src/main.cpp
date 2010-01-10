@@ -925,7 +925,7 @@ int EXPORT GB_INIT(void)
 
   QT_InitEventLoop();
 
-  return TRUE;
+  return -1;
 }
 
 void EXPORT GB_EXIT()

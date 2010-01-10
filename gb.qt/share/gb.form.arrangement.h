@@ -217,7 +217,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 			wc -= padding * 2;
 			hc -= padding * 2;
 
-			//if (!strcmp(GET_OBJECT_NAME(_object), "HBox1"))
+			//if (!strcmp(GET_OBJECT_NAME(_object), "TabStrip1"))
 			//	fprintf(stderr, "#0: %d %d %d %d\n", xc, yc, wc, hc);
 				
 			if (indent)

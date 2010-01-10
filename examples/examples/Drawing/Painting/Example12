@@ -6,7 +6,7 @@ Public Sub Example12()
   hImg = Image.Load(IMAGE_NAME)
   
   Paint.Translate(128, 128)
-  Paint.Rotate(Pi / 4)
+  'Paint.Rotate(Pi / 4)
   Paint.Scale(1 / Sqr(2), 1 / Sqr(2))
   Paint.Translate(-128, -128)
   hBrush = Paint.Image(himg, 0, 0)

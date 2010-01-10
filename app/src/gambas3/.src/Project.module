@@ -4492,7 +4492,7 @@ Public Sub MakeDirectoryIcon(Optional sDir As String)
   
   If sIcon Then 
     Try hIcon = StretchIcon(sIcon, 16)
-    If hIcon Then hDirIcon.Draw(hIcon, 26, 47)
+    If hIcon Then hDirIcon.Draw(hIcon, 40, 34)
   Endif
   
   hDirIcon.Save(sDir &/ ".icon.png")

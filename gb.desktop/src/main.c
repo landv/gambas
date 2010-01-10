@@ -39,7 +39,8 @@ GB_DESC *GB_CLASSES[] EXPORT =
 int EXPORT GB_INIT(void)
 {
 	GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);	
-  return 0;
+	// Must be not be unloaded, because libxtst registers some exit procedure called at XCloseDisplay()
+  return -1;
 }
 
 void EXPORT GB_EXIT(void)

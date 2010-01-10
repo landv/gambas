@@ -694,7 +694,7 @@ BEGIN_METHOD(Paint_Image, GB_OBJECT image; GB_FLOAT x; GB_FLOAT y)
 	{
 		GB_TRANSFORM transform;
 		PAINT->Transform.Create(&transform);
-		PAINT->Transform.Translate(transform, -VARGOPT(x, 0.0), -VARGOPT(y, 0.0));
+		PAINT->Transform.Translate(transform, VARGOPT(x, 0.0), VARGOPT(y, 0.0));
 		PAINT->Brush.Matrix(brush, TRUE, transform);
 		PAINT->Transform.Delete(&transform);
 	}

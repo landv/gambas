@@ -47,7 +47,7 @@ int EXPORT GB_INIT(void)
 	GB.GetInterface("gb.gtk", GTK_INTERFACE_VERSION, &GTK);
 	GB.GetInterface("gb.opengl", GL_INTERFACE_VERSION, &GL);
 
-	return FALSE;
+	return 0;
 }
 
 void EXPORT GB_EXIT()

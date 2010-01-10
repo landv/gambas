@@ -54,7 +54,7 @@
 #include "gbx_component.h"
 
 
-/*#define DEBUG*/
+//#define DEBUG_COMP
 /*#define DEBUG_PRELOAD*/
 
 COMPONENT *COMPONENT_current = NULL;
@@ -76,9 +76,29 @@ void COMPONENT_init(void)
 void COMPONENT_exit(void)
 {
   COMPONENT *comp;
+	int order;
+	int max_order = 0;
 
   LIST_for_each(comp, _component_list)
-    COMPONENT_unload(comp);
+  {
+		if (comp->order > max_order)
+			max_order = comp->order;
+	}
+	
+	for (order = 0; order <= max_order; order++)
+	{
+		LIST_for_each(comp, _component_list)
+		{
+			if (comp->order == order)
+				COMPONENT_unload(comp);
+		}
+	}
+
+	LIST_for_each(comp, _component_list)
+	{
+		if (comp->loaded)
+			COMPONENT_unload(comp);
+	}
 
   while (_component_list)
     COMPONENT_delete(_component_list);
@@ -245,7 +265,7 @@ void COMPONENT_load(COMPONENT *comp)
   COMPONENT_current = comp;
 
   if (comp->library)
-    LIBRARY_load(comp->library);
+    comp->order = LIBRARY_load(comp->library);
   if (comp->archive)
     ARCHIVE_load(comp->archive);
 
@@ -256,12 +276,21 @@ void COMPONENT_load(COMPONENT *comp)
 
 void COMPONENT_unload(COMPONENT *comp)
 {
+  if (!comp->loaded)
+    return;
+
+  #if DEBUG_COMP
+    fprintf(stderr, "Unloading component %s [%d]\n", comp->name, comp->order);
+  #endif
+
   if (comp->library)
     LIBRARY_unload(comp->library);
 
   /* Do not exist yet */
   //if (comp->archive)
   //  ARCHIVE_unload(comp->archive);
+
+	comp->loaded = FALSE;
 }
 
 
