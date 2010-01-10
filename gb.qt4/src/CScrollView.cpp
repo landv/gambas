@@ -39,7 +39,7 @@
 
 #include "CScrollView.h"
 
-//#define DEBUG
+//#define DEBUG 1
 
 DECLARE_EVENT(EVENT_Scroll);
 
@@ -99,7 +99,9 @@ void MyContents::autoResize(void)
   int i;
 	int x, y;
 
-	//qDebug("autoResize: (%s %p)", THIS->widget.name, THIS);
+	#ifdef DEBUG
+	qDebug("autoResize: (%s %p)", THIS->widget.name, THIS);
+	#endif
 	
 	locked = THIS->arrangement.locked;
 	THIS->arrangement.locked = true;
@@ -128,7 +130,7 @@ void MyContents::autoResize(void)
 		resize(ww, hh);
 		//sw->updateScrollBars();
 	}
-	else if (_mustfind)
+	else //if (_mustfind)  // _mustfind is not set to true if we unhide a scrollview child control
 	{
 		findRightBottom();
 	}

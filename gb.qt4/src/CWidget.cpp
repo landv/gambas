@@ -40,6 +40,7 @@
 #include "CMenu.h"
 #include "CScrollView.h"
 #include "CProgress.h"
+#include "CDrawingArea.h"
 
 #include <QApplication>
 #include <QObject>
@@ -353,6 +354,8 @@ static void CWIDGET_after_geometry_change(void *_object, bool arrange)
 	{
 		if (GB.Is(THIS, CLASS_Container))
 			CCONTAINER_arrange(THIS);
+		if (GB.Is(THIS, CLASS_DrawingArea))
+			((MyDrawingArea *)((CWIDGET *)_object)->widget)->updateBackground();
 	}
 	
   arrange_parent(THIS);

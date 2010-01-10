@@ -250,14 +250,20 @@ void MyDrawingArea::clearBackground()
 		setBackground();
 }
 
-bool MyDrawingArea::doResize()
+void MyDrawingArea::resizeEvent(QResizeEvent *e)
+{
+	MyContainer::resizeEvent(e);
+	updateBackground();
+}
+
+void MyDrawingArea::updateBackground()
 {
 	int wb, hb, w, h;
 
 	if (drawn)
 	{
 		GB.Error("DrawingArea is being drawn");
-		return true;
+		return;
 	}
 
 	if (_background)
@@ -265,35 +271,26 @@ bool MyDrawingArea::doResize()
 		w = QMAX(width(), 1);
 		h = QMAX(height(), 1);
 
-		QPixmap *p = new QPixmap(w, h);
-		p->fill(palette().color(backgroundRole()));
+		if (w != _background->width() && h != _background->height())
+		{		
+			QPixmap *p = new QPixmap(w, h);
+			p->fill(palette().color(backgroundRole()));
 
-		wb = QMIN(w, _background->width());
-		hb = QMIN(h, _background->height());
+			wb = QMIN(w, _background->width());
+			hb = QMIN(h, _background->height());
 
-		//bitBlt(p, 0, 0, _background, 0, 0, wb, hb, CopyROP);
-		QPainter pt(p);
-		pt.drawPixmap(0, 0, *_background, 0, 0, wb, hb);
-		//drawFrame(&pt);
-		pt.end();
+			QPainter pt(p);
+			pt.drawPixmap(0, 0, *_background, 0, 0, wb, hb);
+			pt.end();
 
-		delete _background;
-		_background = p;
+			delete _background;
+			_background = p;
 
-		setBackground();
-		refreshBackground();
+			setBackground();
+			refreshBackground();
+		}
 	}
-	
-	return false;
 }
-
-void MyDrawingArea::resizeEvent(QResizeEvent *e)
-{
-	MyContainer::resizeEvent(e);
-	if (e->oldSize() != e->size())
-		doResize();
-}
-
 
 void MyDrawingArea::setCached(bool c)
 {

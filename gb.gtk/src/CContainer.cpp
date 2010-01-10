@@ -62,7 +62,7 @@ static CWIDGET *get_child(gContainer *container, int index)
 		return NULL;
 }
 
-BEGIN_METHOD_VOID(CCONTAINER_next)
+BEGIN_METHOD_VOID(ContainerChildren_next)
 
 	gContainer *cont = WIDGET->proxy();
 	int *ct;
@@ -88,7 +88,7 @@ BEGIN_METHOD_VOID(CCONTAINER_next)
 END_METHOD
 
 
-BEGIN_METHOD(CCONTAINER_get, GB_INTEGER index)
+BEGIN_METHOD(ContainerChildren_get, GB_INTEGER index)
 
 	gContainer *cont = WIDGET->proxy();	
 	int ct = VARG(index);
@@ -104,12 +104,23 @@ BEGIN_METHOD(CCONTAINER_get, GB_INTEGER index)
 END_METHOD
 
 
-BEGIN_PROPERTY(CCONTAINER_count)
+BEGIN_PROPERTY(ContainerChildren_Count)
 
 	gContainer *cont = WIDGET->proxy();
 	GB.ReturnInteger(cont->childCount());
 
 END_PROPERTY
+
+
+BEGIN_METHOD_VOID(ContainerChildren_Clear)
+
+	gContainer *cont = WIDGET->proxy();
+	int i;
+	
+	for (i = 0; i < cont->childCount(); i++)
+		cont->child(i)->destroy();
+
+END_METHOD
 
 
 BEGIN_PROPERTY(CCONTAINER_x)
@@ -206,9 +217,10 @@ GB_DESC CChildrenDesc[] =
 {
   GB_DECLARE(".ContainerChildren", sizeof(CCONTAINER)), GB_VIRTUAL_CLASS(),
 
-  GB_METHOD("_next", "Control", CCONTAINER_next, 0),
-  GB_METHOD("_get", "Control", CCONTAINER_get, "(Index)i"),
-  GB_PROPERTY_READ("Count", "i", CCONTAINER_count),
+  GB_METHOD("_next", "Control", ContainerChildren_next, NULL),
+  GB_METHOD("_get", "Control", ContainerChildren_get, "(Index)i"),
+  GB_PROPERTY_READ("Count", "i", ContainerChildren_Count),
+  GB_METHOD("Clear", NULL, ContainerChildren_Clear, NULL),
 
   GB_END_DECLARE
 };
@@ -231,9 +243,9 @@ GB_DESC CContainerDesc[] =
 
   GB_METHOD("Find", "Control", CCONTAINER_find, "(X)i(Y)i"),
 
-  GB_EVENT("BeforeArrange", 0, 0, &EVENT_BeforeArrange),
-  GB_EVENT("Arrange", 0, 0, &EVENT_Arrange),
-  GB_EVENT("Insert", 0, "(Control)Control", &EVENT_Insert),
+  GB_EVENT("BeforeArrange", NULL, NULL, &EVENT_BeforeArrange),
+  GB_EVENT("Arrange", NULL, NULL, &EVENT_Arrange),
+  GB_EVENT("Insert", NULL, "(Control)Control", &EVENT_Insert),
   
   GB_END_DECLARE
 };
@@ -275,7 +287,7 @@ BEGIN_PROPERTY(CUSERCONTROL_container)
 	if (!ct)
 	{
 		THIS_UC->container = THIS;
-		WIDGET->setProxy(0);
+		WIDGET->setProxy(NULL);
 		return;
 	}
 	
@@ -409,7 +421,7 @@ GB_DESC CUserControlDesc[] =
   GB_DECLARE("UserControl", sizeof(CUSERCONTROL)), GB_INHERITS("Container"),
   GB_NOT_CREATABLE(),
 
-  GB_METHOD("_new", 0, CUSERCONTROL_new, "(Parent)Container;"),
+  GB_METHOD("_new", NULL, CUSERCONTROL_new, "(Parent)Container;"),
   GB_PROPERTY("_Container", "Container", CUSERCONTROL_container),
   GB_PROPERTY("_AutoResize", "b", CCONTAINER_auto_resize),
   
@@ -423,7 +435,7 @@ GB_DESC CUserContainerDesc[] =
   GB_DECLARE("UserContainer", sizeof(CUSERCONTROL)), GB_INHERITS("Container"),
   GB_NOT_CREATABLE(),
 
-  GB_METHOD("_new", 0, CUSERCONTROL_new, "(Parent)Container;"),
+  GB_METHOD("_new", NULL, CUSERCONTROL_new, "(Parent)Container;"),
 
   GB_PROPERTY("_Container", "Container", CUSERCONTAINER_container),
 

@@ -74,6 +74,7 @@ public:
   void clearBackground(void);
   QPixmap *background() const { return _background; }
   void refreshBackground();
+	void updateBackground();
 
   void setFrozen(bool f);
   bool isFrozen() { return _frozen; }
@@ -102,8 +103,6 @@ private:
   bool _focus;
   int _event_mask;
 	bool _use_paint;
-
-  bool doResize();
 };
 
 #endif

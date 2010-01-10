@@ -83,7 +83,7 @@ static GB_DESC NATIVE_GambasLanguage[] =
   GB_METHOD("Replace$", "s", NULL, "(String)s(Find)s(Replace)s[(Mode)i]"),
   GB_METHOD("Replace", "s", NULL, "(String)s(Find)s(Replace)s[(Mode)i]"),
 
-  GB_METHOD("Split", "String[]", NULL, "(String)s[(Separator)s(Escape)s(IgnoreVoid)b(KeepEscape)b]"),
+  GB_METHOD("Split", "String[]", NULL, "(String)s[(Separators)s(Escape)s(IgnoreVoid)b(KeepEscape)b]"),
   GB_METHOD("Scan", "String[]", NULL, "(String)s(Pattern)s"),
 
   GB_METHOD("Comp", "i", NULL, "(String1)s(String2)s[(Mode)i]"),
@@ -302,14 +302,12 @@ EXTERN GB_DESC NATIVE_Gambas[];
 EXTERN GB_DESC NATIVE_Param[];
 EXTERN GB_DESC NATIVE_Enum[];
 EXTERN GB_DESC NATIVE_Symbol[];
-EXTERN GB_DESC NATIVE_ClassSymbols[];
 EXTERN GB_DESC NATIVE_Class[];
 EXTERN GB_DESC NATIVE_Classes[];
 EXTERN GB_DESC NATIVE_Component[];
 EXTERN GB_DESC NATIVE_Components[];
 EXTERN GB_DESC NATIVE_Object[];
 EXTERN GB_DESC NATIVE_Collection[];
-//EXTERN GB_DESC NATIVE_List[];
 EXTERN GB_DESC NATIVE_Error[];
 EXTERN GB_DESC NATIVE_Stream[];
 EXTERN GB_DESC NATIVE_FilePerm[];
@@ -348,7 +346,6 @@ GB_DESC *GB_CLASSES[] EXPORT =
   NATIVE_Param,
   NATIVE_Enum,
   NATIVE_Symbol,
-  NATIVE_ClassSymbols,
   NATIVE_Class,
   NATIVE_Classes,
   NATIVE_Component,

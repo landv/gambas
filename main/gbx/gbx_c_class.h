@@ -27,7 +27,6 @@
 
 #ifndef __GBX_C_CLASS_C
 
-EXTERN GB_DESC NATIVE_ClassSymbols[];
 EXTERN GB_DESC NATIVE_Component[];
 EXTERN GB_DESC NATIVE_Components[];
 EXTERN GB_DESC NATIVE_Class[];
@@ -36,7 +35,5 @@ EXTERN GB_DESC NATIVE_Object[];
 EXTERN GB_DESC NATIVE_Symbol[];
 
 #endif
-
-#define SYMBOL_TO_CDS(object)  ((CLASS_DESC_SYMBOL *)((char *)object - (long)&(((CLASS_DESC_SYMBOL *)0)->ref)))
 
 #endif

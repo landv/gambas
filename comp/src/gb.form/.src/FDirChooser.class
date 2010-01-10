@@ -558,7 +558,9 @@ Private Sub FillBookmark()
   $iMaxWidth = 0
   
   AddBookmark("$" & System.User.Home, ("Home"), "icon:/small/home")
-  AddBookmark("$" & System.User.Home &/ "Desktop", ("Desktop"), "icon:/small/desktop")
+  If Component.IsLoaded("gb.desktop") Then
+    AddBookmark("$" & Desktop.Path, ("Desktop"), "icon:/small/desktop")
+  Endif
   AddBookmark("$/", ("System"), "icon:/small/system")
 
   If $aBookmark Then

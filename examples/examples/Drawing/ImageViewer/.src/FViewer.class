@@ -1,49 +1,41 @@
 ' Gambas class file
 
-PUBLIC SUB Form_Resize()
+Public Sub mnuOpen_Click()
 
-  svwImage.Move(0, 0, ME.ClientW, ME.ClientH)
-
-END
-
-PUBLIC SUB mnuOpen_Click()
-
-  DIM hImage AS Image
+  Dim hImage As Image
 
   Dialog.Path = "/usr/share/wallpapers"
-  IF NOT Exist(Dialog.Path) THEN
+  If Not Exist(Dialog.Path) Then
     Dialog.Path = User.Home
-  ENDIF
+  Endif
 
   Dialog.Filter = ["*.jpg; *.jpeg; *.png; *.bmp", "Picture files"]
 
-  IF Dialog.OpenFile() THEN RETURN
+  If Dialog.OpenFile() Then Return
 
   hImage = Image.Load(Dialog.Path)
 
-  dwgImage.Resize(hImage.Width, hImage.Height)
   dwgImage.Clear()
+  dwgImage.Resize(hImage.Width, hImage.Height)
 
   Draw.Begin(dwgImage)
-  Draw.Fillcolor = Color.Gray
-  Draw.FillStyle = Fill.Solid
-  Draw.Rect(0, 0, hImage.Width, hImage.Height)
+  Draw.FillRect(0, 0, hImage.Width, hImage.Height, Color.Gray)
   Draw.Image(hImage, 0, 0)
   Draw.End
 
-  dwgImage.Visible = TRUE
+  dwgImage.Visible = True
 
-CATCH
+Catch
 
   Message.Warning(Error.Text & " !")
 
-END
+End
 
-PUBLIC SUB mnuQuit_Click()
+Public Sub mnuQuit_Click()
 
-  ME.Close
+  Me.Close
 
-END
+End
 
 'PUBLIC SUB dwgImage_Draw()
 '
@@ -51,75 +43,67 @@ END
 '
 'END
 
-PUBLIC SUB mnuStart_Click()
+Public Sub mnuStart_Click()
 
-  timDraw.Enabled = NOT timDraw.Enabled
+  timDraw.Enabled = Not timDraw.Enabled
 
-  IF timDraw.Enabled THEN
+  If timDraw.Enabled Then
     mnuStart.Text = "&Stop"
-  ELSE
+  Else
     mnuStart.Text = "&Start"
-  ENDIF
+  Endif
 
-END
+End
 
-PUBLIC SUB timDraw_Timer()
+Public Sub timDraw_Timer()
 
-  DIM iInd AS Integer
-  DIM X1 AS Integer
-  DIM Y1 AS Integer
-  DIM X2 AS Integer
-  DIM Y2 AS Integer
-  DIM W AS Integer
-  DIM H AS Integer
-  DIM eTime AS Float
+  Dim iInd As Integer
+  Dim X1 As Float
+  Dim Y1 As Float
+  Dim X2 As Float
+  Dim Y2 As Float
+  Dim W As Float
+  Dim H As Float
+  Dim eTime As Float
 
-  Draw.Begin(dwgImage)
+  Paint.Begin(dwgImage)
+  
+  Paint.LineWidth = 1
 
-  FOR iInd = 1 TO 16
+  For iInd = 1 To 16
 
-    Draw.FillColor = Int(Rnd(&HFFFFFF&))
-    'Draw.ForeColor = Int(Rnd(&HFFFFFF&))
-    Draw.FillStyle = Fill.Solid
+    Paint.Brush = Paint.Color(Color.RGB(Int(Rnd(256)), Int(Rnd(256)), Int(Rnd(256)), 128))
 
-    X1 = Int(Rnd(dwgImage.Width))
-    Y1 = Int(Rnd(dwgImage.Height))
-    W = Int(Rnd(8, 16))
-    H = Int(Rnd(8, 16))
+    X1 = Rnd(dwgImage.Width)
+    Y1 = Rnd(dwgImage.Height)
+    W = Rnd(16, 32)
+    H = Rnd(16, 32)
+    
+    Paint.Rectangle(X1, Y1, W, H)
+    Paint.Fill()
+    
+    Paint.Rotate(Pi(0.125))
 
-    'REPEAT
-    '  X2 = Int(Rnd(dwgImage.Width))
-    'UNTIL X2 <> X1
+    'Paint.Brush = Paint.Color(Color.Black)
+    'Paint.Stroke
 
-    'REPEAT
-    '  Y2 = Int(Rnd(dwgImage.Height))
-    'UNTIL Y2 <> Y1
+  Next
 
-    'IF (X1 > X2) THEN SWAP X1, X2
-    'IF (Y1 > Y2) THEN SWAP Y1, Y2
-
-    'Draw.Ellipse(X1, Y1, X2 - X1 + 1, Y2 - Y1 + 1)
-    Draw.Rect(X1 - W, Y1 - H, W + W, H + H)
-    'Draw.Polyline([X1 + W / 2, Y1, X1 + W - 1, Y1 + H - 1, X1, Y1 + H - 1])
-    'Draw.Point(X1, Y1)
-
-  NEXT
-
-  Draw.End
+  Paint.End
 
   'dwgImage.Refresh
 
-END
+End
 
 
-PUBLIC SUB mnuAbout_Click()
+Public Sub mnuAbout_Click()
 
   Message.Info("A simple image viewer example by\nBenoit Minisini (gambas@users.sourceforge.net)")
 
-END
+End
 
-PUBLIC SUB timUpdate_Timer()
+Public Sub timUpdate_Timer()
 
   dwgImage.Refresh
 
-END
+End
