@@ -636,14 +636,13 @@ static void Text(GB_PAINT *d, const char *text, int len, float w, float h, int a
 
 static void TextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext)
 {
-	QRectF rect = PAINTER(d)->boundingRect(QRectF(0, 0, d->width, d->height), Qt::AlignLeft | Qt::AlignTop | Qt::TextSingleLine | Qt::TextIncludeTrailingSpaces, QString::fromUtf8(text, len));
+	QPainterPath path;
+	float x, y;
 	
-	ext->x1 = (float)rect.left();
-	ext->y1 = (float)rect.top();
-	ext->x2 = (float)rect.right();
-	ext->y2 = (float)rect.bottom();
+	GetCurrentPoint(d, &x, &y);
+	path.addText(x, y, PAINTER(d)->font(), QString::fromUtf8(text, len));
+	get_path_extents(&path, ext);
 }
-
 		
 static void Matrix(GB_PAINT *d, int set, GB_TRANSFORM matrix)
 {

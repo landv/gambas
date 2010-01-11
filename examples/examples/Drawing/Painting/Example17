@@ -10,13 +10,9 @@ Public Sub Example17()
   Y = 150
   
   Paint.MoveTo(X, Y)
-  Paint.Save
-  Paint.Reset
-  Paint.Text(sText)
-  hExt = Paint.PathExtents
-  Paint.Restore
-  Paint.NewPath
-  Paint.MoveTo(X, Y)
+  
+  hExt = Paint.TextExtents(sText)
+  
   Paint.Text(sText)
   Paint.Fill
   
@@ -24,11 +20,8 @@ Public Sub Example17()
   Paint.LineWidth = 1
   Paint.Arc(X, Y, 10)
   Paint.Fill
-  'Paint.MoveTo(X, Y)
-  'Paint.RelLineTo(0, Paint.Font.Descent - hExt.Height)
-  'Paint.RelLineTo(hExt.Width, 0)
-  'Paint.Stroke
-  Paint.Brush = Paint.Color(Color.RGB(255, 31, 31, 192))
+
+  Paint.Brush = Paint.Color(Color.RGB(255, 31, 31, 224))
   Paint.Rectangle(hExt.X, hExt.Y, hExt.Width, hExt.Height)
   Paint.Fill
   

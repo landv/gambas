@@ -654,6 +654,7 @@ static void TextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext)
 	CFONT *font;
 	PangoRectangle rect;
 	PangoRectangle logrect;
+	float x, y;
 	
 	layout = pango_cairo_create_layout(CONTEXT(d));
 	Paint_Font(d, FALSE, (GB_FONT *)&font);
@@ -661,10 +662,12 @@ static void TextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext)
 	pango_layout_set_text(layout, text, len);
 	pango_layout_get_extents(layout, &rect, &logrect);
 	
-	ext->x1 = (float)rect.x;
-	ext->y1 = (float)rect.y;
-	ext->x2 = ext->x1 + (float)rect.width;
-	ext->y2 = ext->y1 + (float)rect.height;
+	GetCurrentPoint(d, &x, &y);
+	
+	ext->x1 = (float)rect.x / PANGO_SCALE + x;
+	ext->y1 = (float)rect.y / PANGO_SCALE + y - font->font->ascentF();
+	ext->x2 = ext->x1 + (float)rect.width / PANGO_SCALE;
+	ext->y2 = ext->y1 + (float)rect.height / PANGO_SCALE;
 	
 	g_object_unref(layout);
 }
