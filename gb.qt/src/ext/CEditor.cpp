@@ -41,10 +41,11 @@ DECLARE_EVENT(EVENT_Margin);
 enum
 {
 	HIGHLIGHT_CUSTOM = GDocument::Custom,
-	HIGHLIGHT_HTML = GDocument::Custom + 1,
-	HIGHLIGHT_CSS = GDocument::Custom + 2,
-	HIGHLIGHT_WEBPAGE = GDocument::Custom + 3,
-	HIGHLIGHT_DIFF = GDocument::Custom + 4
+	HIGHLIGHT_HTML,
+	HIGHLIGHT_CSS,
+	HIGHLIGHT_WEBPAGE,
+	HIGHLIGHT_DIFF,
+	HIGHLIGHT_JAVASCRIPT
 };
 
 typedef
@@ -59,6 +60,7 @@ static HIGHLIGHT_NAME _highlight_name[] = {
 	{ HIGHLIGHT_CSS, "_DoCss" },
 	{ HIGHLIGHT_WEBPAGE, "_DoWebpage" },
 	{ HIGHLIGHT_DIFF, "_DoDiff" },
+	{ HIGHLIGHT_JAVASCRIPT, "_DoJavascript" },
 	{ HIGHLIGHT_CUSTOM, NULL }
 };
 
@@ -1042,6 +1044,7 @@ GB_DESC CHighlightDesc[] =
   GB_CONSTANT("CSS", "i", HIGHLIGHT_CSS),
   GB_CONSTANT("WebPage", "i", HIGHLIGHT_WEBPAGE),
   GB_CONSTANT("Diff", "i", HIGHLIGHT_DIFF),
+  GB_CONSTANT("JavaScript", "i", HIGHLIGHT_JAVASCRIPT),
 
   GB_CONSTANT("Background", "i", HIGHLIGHT_BACKGROUND),
   GB_CONSTANT("Normal", "i", HIGHLIGHT_NORMAL),
@@ -1060,6 +1063,7 @@ GB_DESC CHighlightDesc[] =
   GB_CONSTANT("CurrentLine", "i", HIGHLIGHT_LINE),
   GB_CONSTANT("Error", "i", HIGHLIGHT_ERROR),
   GB_CONSTANT("Alternate", "i", HIGHLIGHT_ALTERNATE),
+  GB_CONSTANT("Help", "i", HIGHLIGHT_HELP),
 
   GB_STATIC_PROPERTY("State", "i", CHIGHLIGHT_state),
   GB_STATIC_PROPERTY("Tag", "i", CHIGHLIGHT_tag),
@@ -1240,7 +1244,7 @@ GB_DESC CEditorDesc[] =
   GB_EVENT("Margin", NULL, "(LineNumber)i", &EVENT_Margin),
   
   GB_CONSTANT("_DefaultEvent", "s", "KeyPress"),
-  GB_CONSTANT("_Properties", "s", "*,Font{Font:Fixed},Border=True,Highlight{Highlight.None;Custom;Gambas;HTML;CSS;WebPage;Diff}=None,ReadOnly=False,TabSize{Range:1;16}=2"),
+  GB_CONSTANT("_Properties", "s", "*,Font{Font:Fixed},Border=True,Highlight{Highlight.None;Custom;Gambas;HTML;CSS;WebPage;Diff;JavaScript}=None,ReadOnly=False,TabSize{Range:1;16}=2"),
 
   GB_END_DECLARE
 };

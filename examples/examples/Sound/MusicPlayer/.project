@@ -1,11 +1,13 @@
 # Gambas Project File 3.0
+# Compiled with Gambas 2.99.0 (r2606)
 Title=Gambas Music Player
 Startup=FSoundPlayer
 Icon=sound.png
 Version=0.0.1
-Library=gb.gui
-Library=gb.form
-Library=gb.sdl.sound
+Component=gb.image
+Component=gb.gui
+Component=gb.form
+Component=gb.sdl.sound
 TabSize=2
 Translate=1
 Language=fr
@@ -18,3 +20,5 @@ Systems=mandrake
 Menus=Multimedia/Sound
 Categories=
 Groups=Sound
+ExtraDependencies=
+ExtraFiles=

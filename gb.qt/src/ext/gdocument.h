@@ -58,14 +58,14 @@ public:
 
 	GString s;
 	GHighlightArray highlight;
-	unsigned state : 4;
+	unsigned state : 5;
 	unsigned alternate : 1;
 	unsigned modified : 1;
 	unsigned changed : 1;
 	unsigned flag : 2;
 	unsigned proc : 1;
 	unsigned baptized : 1;
-	unsigned _reserved : 5;
+	unsigned _reserved : 4;
 	signed tag : 16;
 
 	GLine();

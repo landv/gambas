@@ -5,17 +5,17 @@
   Text = ("Drag & Drop")
   Icon = Picture["drop.png"]
   Arrangement = Arrange.Horizontal
-  Spacing = 8
+  Spacing = True
   Padding = 8
   { VBox2 VBox Test
     Name = "VBox2"
     MoveScaled(1,3,10,42)
     Visible = False
     Drop = True
-    Spacing = 8
+    Spacing = True
     { Button1 Button Test
       Name = "Button1"
-      MoveScaled(1,2,7,4)
+      MoveScaled(0,2,10,4)
       Drop = True
       Text = ("Button1")
     }
@@ -44,7 +44,7 @@
   }
   { VBox1 VBox
     MoveScaled(36,2,6,44)
-    Spacing = 8
+    Spacing = True
     { PictureBox1 PictureBox imgIcon
       Name = "PictureBox1"
       MoveScaled(0,0,6,6)

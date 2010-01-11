@@ -1,11 +1,14 @@
 # Gambas Project File 3.0
+# Compiled with Gambas 2.99.0 (r2606)
 Title=3DWebCam
 Startup=Mmain
 Icon=webcam.png
 Version=0.0.1
-Library=gb.sdl
-Library=gb.opengl
-Library=gb.v4l
+Component=gb.image
+Component=gb.image.io
+Component=gb.sdl
+Component=gb.opengl
+Component=gb.v4l
 TabSize=2
 Maintainer=Benoît Minisini
 Vendor=ASAP

@@ -9,56 +9,56 @@
 ' Thank You
 
 
-PUBLIC total AS Integer
-PUBLIC value AS Float[]
+Public total As Integer
+Public value As Float[]
 
-PUBLIC SUB btnClose_Click()
+Public Sub btnClose_Click()
 
-  ME.Close
+  Me.Close
 
-END
+End
 
-PUBLIC SUB _new()
+Public Sub _new()
   
-  ME.Center
+  Me.Center
   
-END
+End
 
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
   Draw_Chart
 
-END
+End
 
-PUBLIC SUB Draw_Chart()
+Public Sub Draw_Chart()
 
-  DIM i AS Integer
+  Dim i As Integer
 
-  DIM skala_1 AS Integer
-  DIM skala_2 AS Integer
+  Dim skala_1 As Integer
+  Dim skala_2 As Integer
 
-  DIM distance_x AS Float
-  DIM distance_y AS Float
+  Dim distance_x As Float
+  Dim distance_y As Float
 
-  DIM width_draw AS Integer
-  DIM tot AS Integer
-  DIM colors AS Integer[]
-  DIM bottom AS Integer
-  DIM sumdata AS Integer
+  Dim width_draw As Integer
+  Dim tot As Integer
+  Dim colors As Integer[]
+  Dim bottom As Integer
+  Dim sumdata As Integer
 
-  colors = NEW Integer[]
+  colors = New Integer[]
   colors.Resize(total + 1)
 
-  FOR i = 1 TO total
+  For i = 1 To total
     sumdata = sumdata + value[i]
-  NEXT
+  Next
 
-  IF sumdata = 0 THEN sumdata = 1
+  If sumdata = 0 Then sumdata = 1
 
-  FOR i = 1 TO total
+  For i = 1 To total
     value[i] = (value[i] / sumdata) * 10
-  NEXT
+  Next
 
   drwchart.Clear
 
@@ -68,12 +68,12 @@ PUBLIC SUB Draw_Chart()
   distance_y = drwchart.ClientH - skala_1
   bottom = distance_y + 8
 
-  FOR i = 0 TO 100 STEP 10
-    draw.ForeColor = color.black
+  For i = 0 To 100 Step 10
+    draw.Foreground = color.black
     draw.Text(i, 0, distance_y)
     draw.Line(25, distance_y + 8, drwchart.clientw, distance_y + 8)
     distance_y = distance_y - skala_1
-  NEXT
+  Next
 
   draw.Line(30, 0, 30, drwchart.ClientH)
 
@@ -81,26 +81,26 @@ PUBLIC SUB Draw_Chart()
   distance_x = skala_2 + 30
   width_draw = skala_2 / 2
 
-  FOR i = 1 TO Total
+  For i = 1 To Total
        draw.LineWidth = 1
-       draw.ForeColor = color.Black
+       draw.Foreground = color.Black
        draw.Text(i, distance_x - (width_draw / 2) - 4, drwchart.ClientH - 20)
        draw.Line(distance_x - (width_draw / 2), 0, distance_x - (width_draw / 2), drwchart.ClientH - skala_1 + 8)
        draw.LineWidth = width_draw
-       draw.ForeColor = color.RGB(i * 100, i * 10, i * 50)
-       colors[i] = draw.ForeColor
+       draw.Foreground = color.RGB(i * 100, i * 10, i * 50)
+       colors[i] = draw.Foreground
        tot = skala_1 * value[i] + skala_1 - 8
        draw.Line(distance_x - (width_draw / 2), bottom, distance_x - (width_draw / 2), drwchart.ClientH - tot)
        distance_x = distance_x + skala_2
-  NEXT
+  Next
 
   DRAW.End
 
-END
+End
 
-PUBLIC SUB btnAbout_Click()
+Public Sub btnAbout_Click()
 
-  DIM i AS String
+  Dim i As String
   i = "<h2>Example to make bar chart</h2>\n"
   i = i & "This example has made by : " & Chr(10)
   i = i & "   Yudi Astira" & Chr(10)
@@ -109,4 +109,4 @@ PUBLIC SUB btnAbout_Click()
   i = i & "Thank You"
   message.Info(i, "&Close")
   
-END
+End

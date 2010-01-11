@@ -5,15 +5,13 @@ Public Editor As Editor
 
 Property Read ReadOnly As Boolean
 
-Static Private $aExt As String[] = ["htm", "html", "xml", "svg", "css", "webpage"]
+Static Private $aExt As String[] = ["htm", "html", "xml", "svg", "css", "webpage", "js"]
 
-Private Const STYLE_HTML As Integer = 1
-Private Const STYLE_CSS As Integer = 2
-Private Const STYLE_WEB As Integer = 3
-
-Private Const TAG_HTML As Integer = 0
-Private Const TAG_CODE As Integer = 1
-
+' Private Const STYLE_HTML As Integer = 1
+' Private Const STYLE_CSS As Integer = 2
+' Private Const STYLE_WEB As Integer = 3
+' Private Const STYLE_JAVASCRIPT As Integer = 4
+' 
 Private $bModify As Boolean
 Private $iStyle As Integer
 
@@ -56,6 +54,8 @@ Public Sub LoadFile() As Boolean
         edtEditor.Highlight = Highlight.CSS
       Case "webpage"
         edtEditor.Highlight = Highlight.WebPage
+      Case "js"
+        edtEditor.Highlight = Highlight.JavaScript
       Case Else 
         edtEditor.Highlight = Highlight.HTML
     End Select 

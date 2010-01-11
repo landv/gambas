@@ -1144,7 +1144,7 @@ void GDocument::colorize(int y)
 
 		l->modified = false;
 
-		state &= 0xF;
+		state &= 0x1F;
 		tag &= 0xFFFF;
 
 		if (l->state == state && l->tag == tag)

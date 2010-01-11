@@ -146,7 +146,7 @@ GEditor::GEditor(QWidget *parent)
 		styles[i].bold = i == GLine::Keyword || i == GLine::Help;
 		styles[i].italic = i == GLine::Comment;
 		styles[i].underline = i == GLine::Error;
-		if (i == GLine::Comment || i == GLine::Help || i == GLine::Help)
+		if (i == GLine::Comment || i == GLine::Help)
 		{
 			styles[i].background = true;
 			styles[i].backgroundColor = QColor(0xE8, 0xE8, 0xE8);
@@ -597,13 +597,13 @@ static void highlight_text(QPainter &p, int x, int y, int x2, int yy, QString s,
 {
 	//int i, j;
 	
-	p.setPen(color);
+	//p.setPen(color);
 	
 	/*for (i = -1; i <= 1; i++)
 		for (j = -1; j <= 1; j++)
 			p.drawText(x + i, y + j, s);*/
 		
-	p.drawRect(x, 0, x2 - x - 1, yy - 1);
+	p.fillRect(x, 0, x2 - x, yy - 1, color);
 }
 
 void GEditor::paintCell(QPainter *painter, int row, int)
@@ -748,7 +748,7 @@ void GEditor::paintCell(QPainter *painter, int row, int)
 		//highlight_text(p, x1m * charWidth + margin, fm.ascent(), l->s.getString().mid(x1m, 1), styles[GLine::Highlight].color);
 		//highlight_text(p, x2m * charWidth + margin, fm.ascent(), l->s.getString().mid(x2m, 1), styles[GLine::Highlight].color);
 		highlight_text(p, lineWidth(ym, x1m), fm.ascent(), lineWidth(ym, x1m + 1), _cellh, l->s.getString().mid(x1m, 1), styles[GLine::Highlight].color);
-		highlight_text(p, lineWidth(ym, x2m), fm.ascent(), lineWidth(ym, x2m + 1), _cellh, l->s.getString().mid(x2m, 1), styles[GLine::Highlight].color);
+		//highlight_text(p, lineWidth(ym, x2m), fm.ascent(), lineWidth(ym, x2m + 1), _cellh, l->s.getString().mid(x2m, 1), styles[GLine::Highlight].color);
 		/*p.fillRect(x1m * charWidth + margin, 0, charWidth, _cellh, styles[GLine::Highlight].color);
 		p.fillRect(x2m * charWidth + margin, 0, charWidth, _cellh, styles[GLine::Highlight].color);*/
 	}

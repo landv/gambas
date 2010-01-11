@@ -1,199 +1,199 @@
 ' Gambas class file
 
-arrtable[2] AS String
+arrtable[2] As String
 
-hFile AS File
-flname AS String
+hFile As File
+flname As String
 
-PUBLIC SUB show_data()
+Public Sub show_data()
   'create the header's view
-  WITH GridView1
+  With GridView1
     .rows.count = 0
     .columns.count = 2
     .columns[0].text = "User's Id"
     .columns[1].text = "User's Name"
-  END WITH
+  End With
   Mglobal.fill_view(GridView1, "select * from user order by id")
-END
+End
 
-PUBLIC SUB clear()
+Public Sub clear()
   textbox1.text = ""
   textbox2.text = ""
-END
+End
 
-PUBLIC SUB Form_Open()
-DIM i AS Float
+Public Sub Form_Open()
+Dim i As Float
   flname = User.home & "/gbDataReportExample.htm"
 
-  ME.center
+  Me.center
   show_data()
-END
+End
 
-PUBLIC SUB Form_Close()
+Public Sub Form_Close()
   'delete the report when the form closed
-  IF Exist(flname) THEN KILL flname
-END
+  If Exist(flname) Then Kill flname
+End
 
-PUBLIC SUB ginput_KeyPress()
-DIM a AS Integer
+Public Sub ginput_KeyPress()
+Dim a As Integer
 
-  WITH mglobal
-  SELECT CASE LAST.tag
-    CASE 1 'textbox ID
+  With mglobal
+  Select Case Last.tag
+    Case 1 'textbox ID
       a = .chk(textbox1, Key.code, "num")
-      SELECT CASE a
-        CASE 1
-          ME.close
-        CASE 2
-          STOP EVENT
-      END SELECT
+      Select Case a
+        Case 1
+          Me.close
+        Case 2
+          Stop Event
+      End Select
 
-      IF Key.code = Key.enter OR Key.code = Key.return THEN
+      If Key.code = Key.enter Or Key.code = Key.return Then
         .rs = .db.exec("select name from user where id='" & textbox1.text & "'")
-        IF .rs.count <> 0 THEN
+        If .rs.count <> 0 Then
           textbox2.text = .rs!name
-        ELSE
+        Else
           textbox2.text = ""
-        END IF
+        End If
         textbox2.setfocus
-      END IF
+      End If
 
-    CASE 2 'textbox Name
+    Case 2 'textbox Name
       a = .chk(textbox2, Key.code)
-      SELECT CASE a
-        CASE 1
-          ME.close
-        CASE 2
-          STOP EVENT
-      END SELECT
+      Select Case a
+        Case 1
+          Me.close
+        Case 2
+          Stop Event
+      End Select
 
-      IF Key.code = Key.enter OR Key.code = Key.return THEN
+      If Key.code = Key.enter Or Key.code = Key.return Then
         textbox1.setfocus
         .rs = .db.exec("select * from user where id='" & textbox1.text & "'")
-        IF .rs.count = 0 THEN
+        If .rs.count = 0 Then
           'there's no record, then we'll do insert query here!
           .rs = .db.exec("insert into user values('" & textbox1.text & "', '" & textbox2.text & "')")
-        ELSE
+        Else
           'there's a record, then asked the user if (s)he wants to update the record or not ?
-          IF Message.question("Record Already Exist!\n Wanna to Update it ?", .btnok, .btnno) = 1 THEN
+          If Message.question("Record Already Exist!\n Wanna to Update it ?", .btnok, .btnno) = 1 Then
             .rs = .db.exec("update user set name='" & textbox2.text & "' where id='" & textbox1.text & "'")
-          ELSE
+          Else
             'if the user don't want to update, then asked if (s)he want to delete that record or not ?
-            IF Message.question("You want to Delete it ?", .btnok, .btnno) = 1 THEN
+            If Message.question("You want to Delete it ?", .btnok, .btnno) = 1 Then
               .rs = .db.exec("delete from user where id='" & textbox1.text & "'")
-            ENDIF
-          ENDIF
-        ENDIF
+            Endif
+          Endif
+        Endif
         clear()
         show_data()
-      END IF
+      End If
 
-  END SELECT
-  END WITH
+  End Select
+  End With
 
-CATCH
+Catch
   Message.Error(Error.Text)
-END
+End
 
-PUBLIC SUB GridView1_Data(Row AS Integer, Column AS Integer)
+Public Sub GridView1_Data(Row As Integer, Column As Integer)
   'the array's field name's
   arrtable[0] = "id"
   arrtable[1] = "name"
-  WITH Mglobal
+  With Mglobal
     .rs1.MoveTo(Row)
     GridView1.data.Text = Str(.rs1[arrtable[Column]])
-  END WITH
-END
+  End With
+End
 
-PUBLIC SUB GridView1_Click()
+Public Sub GridView1_Click()
   textbox1.text = GridView1[GridView1.row, 0].text
   textbox2.text = GridView1[GridView1.row, 1].text
   textbox1.setfocus
-CATCH
-END
+Catch
+End
 
-PUBLIC SUB GridView1_KeyRelease()
-  SELECT CASE Key.code
-    CASE Key.Enter, Key.Return
+Public Sub GridView1_KeyRelease()
+  Select Case Key.code
+    Case Key.Enter, Key.Return
       GridView1_click()
 
-    CASE Key.Escape
-      ME.close
-  END SELECT
-END
+    Case Key.Escape
+      Me.close
+  End Select
+End
 
-PUBLIC SUB gbtn_Click()
-  SELECT CASE LAST.tag
-    CASE 1 'print to screen
-      printit(FALSE)
+Public Sub gbtn_Click()
+  Select Case Last.tag
+    Case 1 'print to screen
+      printit(False)
 
-    CASE 2 'print to printer
-      printit(TRUE)
+    Case 2 'print to printer
+      printit(True)
 
-    CASE 3 'about
+    Case 3 'about
       Fabout.ShowModal
-  END SELECT
-END
+  End Select
+End
 
-PUBLIC SUB gbtn_KeyPress()
-  IF Key.code = Key.escape THEN ME.close
-END
+Public Sub gbtn_KeyPress()
+  If Key.code = Key.escape Then Me.close
+End
 
-PUBLIC SUB header(prn AS Boolean)
-  PRINT #hFile, "<html>"
-  PRINT #hFile, "<head><title>gbDataReportExample - by Rizky Tahara Shita</title></head>"
-  PRINT #hFile, "<body topmargin='0' leftmargin='0'"
-    IF prn = TRUE THEN PRINT #hFile, " onload='window.print()'"
-  PRINT #hFile, ">"
-  PRINT #hFile, "<table border='1' width='500' cellpadding='4' cellspacing='0'>"
-  PRINT #hFile, "  <tr>"
-  PRINT #hFile, "    <td colspan='2' align='center'>"
-  PRINT #hFile, "      <h3>User's Lists</h3>"
-  PRINT #hFile, "    </td>"
-  PRINT #hFile, "  </tr>"
-  PRINT #hFile, "  <tr><td colspan='2'>&nbsp;</td></tr>"
-  PRINT #hFile, "  <tr>"
-  PRINT #hFile, "    <td width='15%' align='center'>User's Id</td>"
-  PRINT #hFile, "    <td align='center'>User's Name</td>"
-  PRINT #hFile, "  </tr>"
-END
+Public Sub header(prn As Boolean)
+  Print #hFile, "<html>"
+  Print #hFile, "<head><title>gbDataReportExample - by Rizky Tahara Shita</title></head>"
+  Print #hFile, "<body topmargin='0' leftmargin='0'"
+    If prn = True Then Print #hFile, " onload='window.print()'"
+  Print #hFile, ">"
+  Print #hFile, "<table border='1' width='500' cellpadding='4' cellspacing='0'>"
+  Print #hFile, "  <tr>"
+  Print #hFile, "    <td colspan='2' align='center'>"
+  Print #hFile, "      <h3>User's Lists</h3>"
+  Print #hFile, "    </td>"
+  Print #hFile, "  </tr>"
+  Print #hFile, "  <tr><td colspan='2'>&nbsp;</td></tr>"
+  Print #hFile, "  <tr>"
+  Print #hFile, "    <td width='15%' align='center'>User's Id</td>"
+  Print #hFile, "    <td align='center'>User's Name</td>"
+  Print #hFile, "  </tr>"
+End
 
-PUBLIC SUB content(p1 AS String, p2 AS String)
-  PRINT #hFile, "  <tr>"
-  PRINT #hFile, "    <td>" & p1 & "</td>"
-  PRINT #hFile, "    <td>" & p2 & "</td>"
-  PRINT #hFile, "  </tr>"
-END
+Public Sub content(p1 As String, p2 As String)
+  Print #hFile, "  <tr>"
+  Print #hFile, "    <td>" & p1 & "</td>"
+  Print #hFile, "    <td>" & p2 & "</td>"
+  Print #hFile, "  </tr>"
+End
 
-PUBLIC SUB footer()
-  PRINT #hFile, "</table>"
-  PRINT #hFile, "</body>"
-  PRINT #hFile, "</html>"
-END
+Public Sub footer()
+  Print #hFile, "</table>"
+  Print #hFile, "</body>"
+  Print #hFile, "</html>"
+End
 
-PUBLIC SUB printit(prn AS Boolean)
-DIM i AS Float
+Public Sub printit(prn As Boolean)
+Dim i As Float
 
-  WITH mglobal
+  With mglobal
     .rs = .db.exec("select * from user order by id")
-    IF .rs.count <> 0 THEN
-      IF Exist(flname) THEN KILL flname
-      OPEN flname FOR WRITE CREATE AS #hFile
+    If .rs.count <> 0 Then
+      If Exist(flname) Then Kill flname
+      hFile = Open flname For Write Create
         'print headers here
         header(prn)
         i = 0
-        WHILE i < .rs.count
+        While i < .rs.count
           'print all data here
           content(CStr(.rs!id), CStr(.rs!name))
           i = i + 1
           .rs.MoveNext
-        WEND
+        Wend
         'print footer here
         footer
-      CLOSE #hFile
+      Close #hFile
       'show the report !
       Fpreview.SetPath(flname)
       Fpreview.ShowModal
-    ENDIF
-  END WITH
-END
+    Endif
+  End With
+End

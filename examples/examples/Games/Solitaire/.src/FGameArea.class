@@ -1,35 +1,35 @@
 ' Gambas class file
 
-PUBLIC board AS NEW Object[]
+Public board As New Object[]
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
   
-  DIM i AS Byte
-  DIM j AS Byte
+  Dim i As Byte
+  Dim j As Byte
 
   Global.POW2 = [64, 32, 16, 8, 4, 2, 1]
   Global.Ball = Picture.Load("ball.png")
 
   board.Resize(49)
 
-  FGameArea.Border = window.Resizable
+  'FGameArea.Border = window.Resizable
   FGameArea.Resize((8 * 2) + (48 * 7), (8 * 2) + (48 * 8) + panToolBar.Height)
-  FGameArea.Border = window.Fixed
+  'FGameArea.Border = window.Fixed
   Global.selectedlayout = 0
 
   ' Create master geometry (7 x 7 grid)
-  FOR i = 0 TO 6
-    FOR j = 0 TO 6
-      WAIT
-      board[(i * 7) + j] = NEW PictureBox(ME) AS "GameBoard"
+  For i = 0 To 6
+    For j = 0 To 6
+      Wait
+      board[(i * 7) + j] = New PictureBox(Me) As "GameBoard"
       board[(i * 7) + j].Alignment = Align.Center
       board[(i * 7) + j].Border = Border.Plain
       board[(i * 7) + j].height = 48
       board[(i * 7) + j].width = 48
       board[(i * 7) + j].x = 8 + (48 * j)
       board[(i * 7) + j].y = 8 + (48 * i) + panToolBar.Height
-    NEXT
-  NEXT
+    Next
+  Next
 
   ' Create board layouts
   MBoards.make_boards()
@@ -37,254 +37,254 @@ PUBLIC SUB Form_Open()
 
   reset_board()
 
-END
+End
 
-PRIVATE SUB set_row(row_value AS Byte, row_no AS Byte)
+Private Sub set_row(row_value As Byte, row_no As Byte)
   
-  DIM i AS Byte
+  Dim i As Byte
 
   ' Just to be sure
-  IF row_value > 127 THEN row_value = 127
+  If row_value > 127 Then row_value = 127
   
-  FOR i = 0 TO 6
-    IF row_value >= global.POW2[i] THEN
-      board[(row_no * 7) + i].visible = TRUE
+  For i = 0 To 6
+    If row_value >= global.POW2[i] Then
+      board[(row_no * 7) + i].visible = True
       board[(row_no * 7) + i].border = border.Raised
       row_value = row_value - global.POW2[i]
       board[(row_no * 7) + i].Tag = (row_no * 7) + i
-    ELSE
-      board[(row_no * 7) + i].visible = FALSE
-    ENDIF
-  NEXT
+    Else
+      board[(row_no * 7) + i].visible = False
+    Endif
+  Next
   
-END
+End
 
-PRIVATE SUB place_balls(row_value AS Byte, row_no AS Byte)
+Private Sub place_balls(row_value As Byte, row_no As Byte)
   
-  DIM i AS Byte
+  Dim i As Byte
 
   ' Just to be sure
-  IF row_value > 127 THEN row_value = 127
+  If row_value > 127 Then row_value = 127
   
-  FOR i = 0 TO 6
-    IF row_value >= global.POW2[i] THEN
-      IF board[(row_no * 7) + i].visible = TRUE THEN
+  For i = 0 To 6
+    If row_value >= global.POW2[i] Then
+      If board[(row_no * 7) + i].visible = True Then
         board[(row_no * 7) + i].picture = Global.Ball
         row_value = row_value - global.POW2[i]
         Global.BallCount = Global.BallCount + 1
-      ENDIF
-    ELSE
-      board[(row_no * 7) + i].picture = ""
-    ENDIF
-  NEXT
+      Endif
+    Else
+      board[(row_no * 7) + i].picture = Null
+    Endif
+  Next
   
-END
+End
 
-PUBLIC SUB GameBoard_MouseUp()
+Public Sub GameBoard_MouseUp()
 
   ' If not enough balls left then return
-  IF Global.BallCount <= 1 THEN RETURN
+  If Global.BallCount <= 1 Then Return
   ' If a ball is not already selected then select it
-  IF LAST.Picture = global.Ball THEN
-    global.Selected = TRUE
-    IF global.ClickedBall <> NULL THEN
+  If Last.Picture = global.Ball Then
+    global.Selected = True
+    If global.ClickedBall <> Null Then
       board[global.ClickedBall].background = 15658726
-    ENDIF
-    global.ClickedBall = CByte(LAST.Tag)
-    LAST.background = &HFF0000&
-  ELSE
-    IF global.Selected = TRUE THEN
-      try_take(global.ClickedBall, CByte(LAST.tag))
-    ENDIF
-  ENDIF
+    Endif
+    global.ClickedBall = CByte(Last.Tag)
+    Last.background = &HFF0000&
+  Else
+    If global.Selected = True Then
+      try_take(global.ClickedBall, CByte(Last.tag))
+    Endif
+  Endif
   
-END
+End
 
-PRIVATE SUB try_take(source_cell AS Byte, target_cell AS Byte)
+Private Sub try_take(source_cell As Byte, target_cell As Byte)
   
-  DIM current_row AS Byte
-  DIM target_row AS Byte
-  DIM current_col AS Byte
-  DIM target_col AS Byte
-  DIM i AS Byte
+  Dim current_row As Byte
+  Dim target_row As Byte
+  Dim current_col As Byte
+  Dim target_col As Byte
+  Dim i As Byte
   
 
-  IF board[target_cell].visible = FALSE THEN RETURN
+  If board[target_cell].visible = False Then Return
   
   current_row = source_cell \ 7
   target_row = target_cell \ 7
 
   ' Are both cells on the same row
-  IF current_row = target_row THEN
+  If current_row = target_row Then
     ' (YES) Check that they are close enough and have a ball in between
     ' Check to the right
-    IF source_cell + 2 < 49 THEN
-      IF source_cell + 2 = target_cell THEN
+    If source_cell + 2 < 49 Then
+      If source_cell + 2 = target_cell Then
         ' In range
-        IF board[source_cell + 1].picture = global.Ball THEN
+        If board[source_cell + 1].picture = global.Ball Then
           ' Ah good! A move can be made
           ' Record move
           set_move(Global.totalballs - Global.ballcount, source_cell, target_cell, source_cell + 1)
           
           ' clean up move recorder to make undo/redo work correctly
-          FOR i = (Global.totalballs - Global.ballcount) + 1 TO Global.totalballs - 1
+          For i = (Global.totalballs - Global.ballcount) + 1 To Global.totalballs - 1
             set_move(i, 0, 0, 0)
-          NEXT
+          Next
 
           ' Move pieces
-          board[source_cell].picture = ""
+          board[source_cell].picture = Null
           board[source_cell].background = 15658726
-          board[source_cell + 1].picture = ""
+          board[source_cell + 1].picture = Null
           board[target_cell].picture = global.Ball
           global.BallCount = global.BallCount - 1
           
           ' Finally activate Undo seeing as a move has been made
-          tbtnUndo.Enabled = TRUE
-          tbtnRedo.Enabled = FALSE
+          tbtnUndo.Enabled = True
+          tbtnRedo.Enabled = False
 
-          RETURN
-        ENDIF
-      ENDIF
-    ENDIF
+          Return
+        Endif
+      Endif
+    Endif
 
     ' Then to the left
-    IF source_cell - 2 >= 0 THEN
-      IF source_cell - 2 = target_cell THEN
+    If source_cell - 2 >= 0 Then
+      If source_cell - 2 = target_cell Then
         ' In range
-        IF board[source_cell - 1].picture = global.Ball THEN
+        If board[source_cell - 1].picture = global.Ball Then
           ' Ah good! A move can be made
           ' Record move
           set_move(Global.totalballs - Global.ballcount, source_cell, target_cell, source_cell - 1)
           
           ' clean up move recorder to make undo/redo work correctly
-          FOR i = (Global.totalballs - Global.ballcount) + 1 TO Global.totalballs - 1
+          For i = (Global.totalballs - Global.ballcount) + 1 To Global.totalballs - 1
             set_move(i, 0, 0, 0)
-          NEXT
+          Next
 
           ' Move pieces
-          board[source_cell].picture = ""
+          board[source_cell].picture = Null
           board[source_cell].background = 15658726
-          board[source_cell - 1].picture = ""
+          board[source_cell - 1].picture = Null
           board[target_cell].picture = global.Ball
           global.BallCount = global.BallCount - 1
           
           ' Finally activate Undo seeing as a move has been made
-          tbtnUndo.Enabled = TRUE
-          tbtnRedo.Enabled = FALSE
+          tbtnUndo.Enabled = True
+          tbtnRedo.Enabled = False
 
-          RETURN
-        ENDIF
-      ENDIF
-    ENDIF
-  ENDIF
+          Return
+        Endif
+      Endif
+    Endif
+  Endif
   
   ' Ok, so not on the same row ... how about the same column?
-  current_col = source_cell MOD 7
-  target_col = target_cell MOD 7
+  current_col = source_cell Mod 7
+  target_col = target_cell Mod 7
 
-  IF current_col = target_col THEN
-    IF source_cell + 14 < 49 THEN
-      IF source_cell + 14 = target_cell THEN
-        IF board[source_cell + 7].picture = global.Ball THEN
+  If current_col = target_col Then
+    If source_cell + 14 < 49 Then
+      If source_cell + 14 = target_cell Then
+        If board[source_cell + 7].picture = global.Ball Then
           ' Record move
           set_move(Global.totalballs - Global.ballcount, source_cell, target_cell, source_cell + 7)
           
           ' clean up move recorder to make undo/redo work correctly
-          FOR i = (Global.totalballs - Global.ballcount) + 1 TO Global.totalballs - 1
+          For i = (Global.totalballs - Global.ballcount) + 1 To Global.totalballs - 1
             set_move(i, 0, 0, 0)
-          NEXT
+          Next
 
           ' Move pieces
-          board[source_cell].picture = ""
+          board[source_cell].Picture = Null
           board[source_cell].background = 15658726
-          board[source_cell + 7].picture = ""
+          board[source_cell + 7].Picture = Null
           board[target_cell].picture = global.Ball
           global.BallCount = global.BallCount - 1
           
           ' Finally activate Undo seeing as a move has been made
-          tbtnUndo.Enabled = TRUE
-          tbtnRedo.Enabled = FALSE
+          tbtnUndo.Enabled = True
+          tbtnRedo.Enabled = False
 
-          RETURN
-        ENDIF
-      ENDIF
-    ENDIF
+          Return
+        Endif
+      Endif
+    Endif
     
-    IF source_cell - 14 >= 0 THEN
-      IF source_cell - 14 = target_cell THEN
-        IF board[source_cell - 7].picture = global.Ball THEN
+    If source_cell - 14 >= 0 Then
+      If source_cell - 14 = target_cell Then
+        If board[source_cell - 7].picture = global.Ball Then
           ' Record move
           set_move(Global.totalballs - Global.ballcount, source_cell, target_cell, source_cell - 7)
           
           ' clean up move recorder to make undo/redo work correctly
-          FOR i = (Global.totalballs - Global.ballcount) + 1 TO Global.totalballs - 1
+          For i = (Global.totalballs - Global.ballcount) + 1 To Global.totalballs - 1
             set_move(i, 0, 0, 0)
-          NEXT
+          Next
 
           ' Move pieces
-          board[source_cell].picture = ""
+          board[source_cell].picture = Null
           board[source_cell].background = 15658726
-          board[source_cell - 7].picture = ""
+          board[source_cell - 7].picture = Null
           board[target_cell].picture = global.Ball
           global.BallCount = global.BallCount - 1
           
           ' Finally activate Undo seeing as a move has been made
-          tbtnUndo.Enabled = TRUE
-          tbtnRedo.Enabled = FALSE
+          tbtnUndo.Enabled = True
+          tbtnRedo.Enabled = False
 
-          RETURN
-        ENDIF
-      ENDIF
-    ENDIF
-  ENDIF
+          Return
+        Endif
+      Endif
+    Endif
+  Endif
   
-END
+End
 
-PUBLIC SUB mnuQuit_Click()
+Public Sub mnuQuit_Click()
   
-  ME.Close
+  Me.Close
   
-END
+End
 
-PUBLIC SUB mnuNew_Click()
+Public Sub mnuNew_Click()
 
   reset_board()
 
-END
+End
 
-PUBLIC SUB mnuAbout_Click()
+Public Sub mnuAbout_Click()
   
-  DIM About AS String
+  Dim About As String
   
   About = "Solitaire v0.3\nBy: Grahame White <grahame@regress.homelinux.org>\nWritten for Gambas http://gambas.sf.net"
   Message(About)
   
-END
+End
 
-PUBLIC SUB tbtnQuit_Click()
+Public Sub tbtnQuit_Click()
 
-  ME.Close
+  Me.Close
 
-END
+End
 
-PUBLIC SUB tbtnNewGame_Click()
+Public Sub tbtnNewGame_Click()
 
   reset_board()
 
-END
+End
 
-PUBLIC SUB reset_board()
+Public Sub reset_board()
   
-  DIM j AS Byte
+  Dim j As Byte
   
   ' Clear ball count
   Global.BallCount = 0
 
   ' Display the board layout
-  FOR j = 0 TO 6
+  For j = 0 To 6
     set_row(Global.boarddesign[Global.selectedlayout].Row[j], j)
     place_balls(Global.boarddesign[Global.selectedlayout].Placed[j], j)
-  NEXT
+  Next
   
   Global.totalballs = Global.ballcount
   
@@ -292,77 +292,77 @@ PUBLIC SUB reset_board()
   Global.gamemove.Resize(Global.ballcount)
 
   ' Reset the move recorder
-  FOR j = 0 TO Global.ballcount - 1
-    Global.gamemove[j] = NEW CMove
+  For j = 0 To Global.ballcount - 1
+    Global.gamemove[j] = New CMove
     set_move(j, 0, 0, 0)
-  NEXT
+  Next
   
   ' Disable Undo/Redo buttons
-  tbtnUndo.Enabled = FALSE
-  tbtnRedo.Enabled = FALSE
+  tbtnUndo.Enabled = False
+  tbtnRedo.Enabled = False
   
-END
+End
 
-PRIVATE SUB set_move(movenumber AS Byte, source AS Byte, target AS Byte, capture AS Byte)
+Private Sub set_move(movenumber As Byte, source As Byte, target As Byte, capture As Byte)
   
-  WITH Global.gamemove[movenumber]
+  With Global.gamemove[movenumber]
     .Source = Source
     .Target = Target
     .Captured = capture
-  END WITH
+  End With
   
-END
+End
 
-PRIVATE SUB undo_move(movenumber AS Byte)
+Private Sub undo_move(movenumber As Byte)
   
-  tbtnUndo.Enabled = FALSE
+  tbtnUndo.Enabled = False
 
   ' Put balls in correct places
-  board[Global.gamemove[movenumber].target].picture = ""
+  board[Global.gamemove[movenumber].target].Picture = Null
   board[Global.gamemove[movenumber].captured].picture = Global.ball
   board[Global.gamemove[movenumber].source].picture = Global.ball
   
   ' update ball counter
   global.ballcount = global.ballcount + 1
 
-  IF global.ballcount < global.totalballs THEN tbtnUndo.Enabled = TRUE
-  tbtnRedo.Enabled = TRUE
+  If global.ballcount < global.totalballs Then tbtnUndo.Enabled = True
+  tbtnRedo.Enabled = True
   
-END
+End
 
-PUBLIC SUB tbtnUndo_Click()
+Public Sub tbtnUndo_Click()
 
   undo_move((global.totalballs - global.ballcount) - 1)
 
-END
+End
 
-PRIVATE SUB redo_move(movenumber AS Byte)
+Private Sub redo_move(movenumber As Byte)
   
-  tbtnRedo.Enabled = FALSE
+  tbtnRedo.Enabled = False
   
   ' Put balls in correct places
   board[Global.gamemove[movenumber].target].picture = Global.ball
-  board[Global.gamemove[movenumber].captured].picture = ""
-  board[Global.gamemove[movenumber].source].picture = ""
+  board[Global.gamemove[movenumber].captured].Picture = Null
+  board[Global.gamemove[movenumber].source].Picture = Null
 
   ' Update ball counter
   global.ballcount = global.ballcount - 1
 
-  IF movenumber + 1 < global.totalballs THEN
-    IF global.gamemove[movenumber + 1].target <> global.gamemove[movenumber + 1].source THEN tbtnRedo.Enabled = TRUE
-  ENDIF
-  tbtnUndo.Enabled = TRUE
+  If movenumber + 1 < global.totalballs Then
+    If global.gamemove[movenumber + 1].target <> global.gamemove[movenumber + 1].source Then tbtnRedo.Enabled = True
+  Endif
+  tbtnUndo.Enabled = True
   
-END
+End
 
-PUBLIC SUB tbtnRedo_Click()
+Public Sub tbtnRedo_Click()
 
   redo_move(global.totalballs - global.ballcount)
 
-END
+End
 
-PUBLIC SUB mnuBoardSelect_Click()
+Public Sub mnuBoardSelect_Click()
 
   FBoardSelect.ShowModal
 
-END
+End
