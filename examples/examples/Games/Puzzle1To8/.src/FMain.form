@@ -10,22 +10,22 @@
     Text = ("Game")
     { MnuReiniciar Menu
       Text = ("Clear")
-      Picture = Picture["icon:/32/refresh"]
+      Picture = Picture["icon:/small/refresh"]
     }
     { MnuSalir Menu
       Text = ("Quit")
-      Picture = Picture["icon:/32/quit"]
+      Picture = Picture["icon:/small/quit"]
     }
   }
   { Mnuayuda Menu
     Text = ("Help")
     { MnuComoJugar Menu
       Text = ("How to play?")
-      Picture = Picture["icon:/32/help"]
+      Picture = Picture["icon:/small/help"]
     }
     { MnuAutor Menu
       Text = ("About...")
-      Picture = Picture["icon:/32/gambas"]
+      Picture = Picture["icon:/small/gambas"]
     }
   }
   { TextBox1 TextBox TXT
@@ -33,7 +33,6 @@
     MoveScaled(25,5,12,9)
     Font = Font["Bitstream Charter,+8"]
     Tag = "1"
-    Tracking = True
     Text = ("")
     Alignment = Align.Center
     MaxLength = 1
