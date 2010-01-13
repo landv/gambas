@@ -393,7 +393,7 @@ int OpenSerialPort(int *fd,int iflow,struct termios *oldtio,char *sName,int nBau
 	}
 	// cleaning default options
 	newtio.c_cflag &= ~(CSIZE | CSTOPB | PARENB | PARODD | CRTSCTS);
-	newtio.c_iflag &= ~( INPCK | ISTRIP | IGNPAR | IXON | IXOFF | IXANY );
+	newtio.c_iflag &= ~( INPCK | ISTRIP | IGNPAR | IXON | IXOFF | IXANY | ICRNL | INLCR );
 	newtio.c_lflag &= ~( ICANON | ECHO | ECHOE | ISIG );
 	// setting options
 	newtio.c_cflag=  Of_Bits | Of_Stop | Of_Par | CLOCAL | CREAD | HUPCL | HardFlow;

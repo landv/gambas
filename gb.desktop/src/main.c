@@ -38,7 +38,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
 
 int EXPORT GB_INIT(void)
 {
-  return 1;
+  return TRUE;
 }
 
 void EXPORT GB_EXIT(void)
