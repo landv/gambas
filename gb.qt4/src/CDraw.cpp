@@ -327,12 +327,20 @@ static void set_font(GB_DRAW *d, GB_FONT font)
 
 static int is_inverted(GB_DRAW *d)
 {
+	#if QT_VERSION >= QT_VERSION_CHECK(4, 5, 0)
 	return DP(d)->compositionMode() == QPainter::RasterOp_SourceXorDestination; //QPainter::CompositionMode_Xor;
+	#else
+	return false;
+	#endif
 }
 
 static void set_inverted(GB_DRAW *d, int inverted)
 {
+	#if QT_VERSION >= QT_VERSION_CHECK(4, 5, 0)
 	DP(d)->setCompositionMode(inverted ? QPainter::RasterOp_SourceXorDestination : QPainter::CompositionMode_SourceOver);
+	#else
+	fprintf(stderr, "gb.qt4: warning: Draw.Invert needs Qt 4.5\n");
+	#endif
 }
 
 static int is_transparent(GB_DRAW *d)
