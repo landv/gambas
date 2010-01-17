@@ -1532,24 +1532,28 @@ void MyMainWindow::afterShow()
 void MyMainWindow::showActivate()
 {
   CWIDGET *_object = CWidget::get(this);
-  CWINDOW *parent;
-  QWidget *newParentWidget;
+  
+	if (!isVisible())
+	{
+		CWINDOW *parent;
+		QWidget *newParentWidget;
 
-  //qDebug(">> Show %d %d %d %d", x(), y(), width(), height());
+		//qDebug(">> Show %d %d %d %d", x(), y(), width(), height());
 
-	// Reparent the window if, for example, there is an already modal window displayed
-	
-	parent = CWINDOW_Current;
-	if (!parent && THIS != CWINDOW_Main)
-		parent = CWINDOW_Main;
+		// Reparent the window if, for example, there is an already modal window displayed
 		
-	if (parent)
-		newParentWidget = parent->widget.widget;
-	else
-		newParentWidget = 0;
-		
-	if (parent != THIS && parentWidget() != newParentWidget)
-		doReparent(newParentWidget, getWFlags(), pos());
+		parent = CWINDOW_Current;
+		if (!parent && THIS != CWINDOW_Main)
+			parent = CWINDOW_Main;
+			
+		if (parent)
+			newParentWidget = parent->widget.widget;
+		else
+			newParentWidget = 0;
+			
+		if (parent != THIS && parentWidget() != newParentWidget)
+			doReparent(newParentWidget, getWFlags(), pos());
+	}
 
   //qDebug("showActivate %p", _object);
 
@@ -2166,6 +2170,9 @@ void MyMainWindow::doReparent(QWidget *parent, WFlags f, const QPoint &pos, bool
   bool hasIcon;
   QPixmap p;
 
+	CWINDOW *parentControl = (CWINDOW *)CWidget::get(parent);
+	qDebug("doReparent: (%s %p): (%s %p): (%d %d) -> (%d %d)", THIS->widget.name, THIS, parentControl->widget.name, parentControl, pos.x(), pos.y(), WIDGET->x(), WIDGET->y());
+  
   hasIcon = icon() != 0;
   if (hasIcon)
     p = *icon();
@@ -2186,7 +2193,6 @@ void MyMainWindow::doReparent(QWidget *parent, WFlags f, const QPoint &pos, bool
 
   reparent(parent, f, pos, showIt);
   move(pos);
-  //qDebug("doReparent: (%s %p) (%d %d) -> (%d %d)", GB.GetClassName(THIS), THIS, pos.x(), pos.y(), WIDGET->x(), WIDGET->y());
   
  	#ifndef NO_X_WINDOW
 	initProperties();

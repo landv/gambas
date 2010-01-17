@@ -44,24 +44,29 @@ static void free_movie(void *_object)
   GB.ReleaseFile(&THIS->addr, THIS->len);
   
   GB.StoreString(NULL, &THIS->path);
+	
+	WIDGET->setText("");
 }
 
 static bool load_movie(void *_object, char *path, int len)
 {
   free_movie(THIS);
   
-  //qDebug("load_movie: %.*s", (int)len, path);
-  if (GB.LoadFile(path, len, &THIS->addr, &THIS->len))
-    return true;
+	if (len > 0)
+	{
+		//qDebug("load_movie: %.*s", (int)len, path);
+		if (GB.LoadFile(path, len, &THIS->addr, &THIS->len))
+			return true;
 
-  THIS->ba = new QByteArray();    
-  THIS->ba->setRawData((const char *)THIS->addr, THIS->len);
-  THIS->movie = new QMovie(*(THIS->ba));
-  
-  GB.NewString(&THIS->path, path, len);
-  
-  //qDebug("setMovie");
-  WIDGET->setMovie(*THIS->movie);
+		THIS->ba = new QByteArray();    
+		THIS->ba->setRawData((const char *)THIS->addr, THIS->len);
+		THIS->movie = new QMovie(*(THIS->ba));
+		
+		GB.NewString(&THIS->path, path, len);
+		
+		//qDebug("setMovie");
+		WIDGET->setMovie(*THIS->movie);
+	}
   
   return false;
 }
@@ -98,7 +103,7 @@ BEGIN_PROPERTY(CMOVIEBOX_path)
     if (load_movie(THIS, PSTRING(), PLENGTH()))
       return;
           
-    if (!playing)
+    if (!playing && THIS->movie)
       THIS->movie->pause();
   }
 
