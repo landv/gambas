@@ -2170,8 +2170,8 @@ void MyMainWindow::doReparent(QWidget *parent, WFlags f, const QPoint &pos, bool
   bool hasIcon;
   QPixmap p;
 
-	CWINDOW *parentControl = (CWINDOW *)CWidget::get(parent);
-	qDebug("doReparent: (%s %p): (%s %p): (%d %d) -> (%d %d)", THIS->widget.name, THIS, parentControl->widget.name, parentControl, pos.x(), pos.y(), WIDGET->x(), WIDGET->y());
+	//CWINDOW *parentControl = (CWINDOW *)CWidget::get(parent);
+	//qDebug("doReparent: (%s %p): (%s %p): (%d %d) -> (%d %d)", THIS->widget.name, THIS, parentControl->widget.name, parentControl, pos.x(), pos.y(), WIDGET->x(), WIDGET->y());
   
   hasIcon = icon() != 0;
   if (hasIcon)

@@ -372,11 +372,11 @@ PRIVATE SUB FromString(sData AS String, OPTIONAL hParent AS CControl)
 
         cCoord = Split(Mid$(sLine, 12, -1))
         'TRY PRINT cCoord[0]; ","; cCoord[1]; ","; cCoord[2]; ","; cCoord[3]
-        TRY hCtrl.Move(CFloat(cCoord[0]) * Desktop.Scale, CFloat(cCoord[1]) * Desktop.Scale, TRUE)
+        TRY hCtrl.Move(Round(CFloat(cCoord[0]) * Desktop.Scale), Round(CFloat(cCoord[1]) * Desktop.Scale), TRUE)
         'TRY hCtrl.SetProperty("X", Val(cCoord[0]))
         'TRY hCtrl.SetProperty("Y", Val(cCoord[1]))
         IF cCoord.Count >= 2 THEN
-          TRY hCtrl.Resize(CFloat(cCoord[2]) * Desktop.Scale, CFloat(cCoord[3]) * Desktop.Scale, TRUE)
+          TRY hCtrl.Resize(Round(CFloat(cCoord[2]) * Desktop.Scale), Round(CFloat(cCoord[3]) * Desktop.Scale), TRUE)
         ENDIF
 
         IF ERROR THEN PRINT "Error: Syntax error: "; sLine
