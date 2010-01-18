@@ -97,7 +97,8 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CIMAGE_free)
 
-	IMAGE->unref();
+	// All constructors may fail before being called. Then IMAGE is null!
+	if (IMAGE) IMAGE->unref();
 
 END_METHOD
 
@@ -477,7 +478,8 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CPICTURE_free)
 
-	PICTURE->unref();
+	if (PICTURE)
+		PICTURE->unref();
 
 END_METHOD
 
