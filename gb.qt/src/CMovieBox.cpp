@@ -45,7 +45,8 @@ static void free_movie(void *_object)
   
   GB.StoreString(NULL, &THIS->path);
 	
-	WIDGET->setText("");
+	if (WIDGET)
+		WIDGET->setText("");
 }
 
 static bool load_movie(void *_object, char *path, int len)
