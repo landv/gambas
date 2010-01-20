@@ -234,7 +234,11 @@ AC_DEFUN([GB_INIT],
 
   AM_CONDITIONAL(OPTIMIZE, test "$gambas_optimization" = yes)
 
-  AM_CFLAGS="$AM_CFLAGS -pipe -Wall -Wno-unused-value -fsigned-char -fnested-functions"
+  AM_CFLAGS="$AM_CFLAGS -pipe -Wall -Wno-unused-value -fsigned-char"
+  if test $SYSTEM = "MACOSX"; then
+    AM_CFLAGS="$AM_CFLAGS -fnested-functions"
+  fi
+
   AM_CXXFLAGS="$AM_CXXFLAGS -pipe -Wall -fno-exceptions -Wno-unused-value -fsigned-char"
 
   dnl ---- Check for gcc visibility flag
@@ -822,6 +826,7 @@ AC_DEFUN([GB_COMPONENT],
     $2_INC=""
     $2_LIB=""
     $2_DIR=""
+    $2_LDFLAGS=""
     if test x"$9" = x; then
       AC_MSG_WARN([*** $3 is disabled])
     else
