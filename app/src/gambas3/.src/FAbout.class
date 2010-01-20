@@ -439,3 +439,21 @@ Public Sub timAuthor_Timer()
   Endif
 
 End
+
+Public Sub tabAbout_Click()
+
+  Dim sTemp As String
+
+  If tabAbout.Index = 2 And If Not txtInfo.Text Then
+    sTemp = Temp$("report-ng")
+    Try Mkdir sTemp
+    sTemp &/= "report-ng.sh"
+    Try Kill sTemp
+    Copy "report-ng.sh" To sTemp
+    Shell "chmod a+x " & Shell$(sTemp) Wait
+    Exec [sTemp] To txtInfo.Text
+    Clipboard.Copy(txtInfo.Text)
+  Endif
+
+End
+

@@ -6,9 +6,9 @@
   Text = ("About Gambas...")
   Icon = Picture["img/logo/logo-32-head.png"]
   Resizable = False
-  { TabStrip1 TabStrip
+  { tabAbout TabStrip
     MoveScaled(1,18,80,48)
-    Count = 2
+    Count = 3
     Index = 0
     Text = ("About")
     { svwAuthor ScrollView
@@ -79,11 +79,19 @@
       Enabled = True
       Delay = 20
     }
+    Index = 2
+    Text = ("System information")
+    { txtInfo TextArea
+      MoveScaled(1,1,77,42)
+      Font = Font["Monospace"]
+      Text = ("")
+      ReadOnly = True
+    }
     Index = 0
   }
   { btnClose Button
     MoveScaled(34,67,14,4)
-    Text = ("OK")
+    Text = ("Close")
     Default = True
     Cancel = True
   }
