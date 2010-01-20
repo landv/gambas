@@ -75,7 +75,7 @@ if test x"$GB_SUMMARY" = x; then
   echo "ALL COMPONENTS WILL BE COMPILED"
 else
   echo "THESE COMPONENTS ARE DISABLED:"
-  echo -e $GB_SUMMARY
+  echo $GB_SUMMARY
 fi
 echo
 echo "************************************************************"

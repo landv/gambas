@@ -27,10 +27,10 @@
 #include <ctype.h>
 
 #include "gb_buffer.h"
-#include "gb_error.h"
 #include "gbx_debug.h"
 #include "gbx_exec.h"
 #include "gbx_api.h"
+#include "gb_error.h"
 
 //#define DEBUG_ERROR 1
 

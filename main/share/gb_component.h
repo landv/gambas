@@ -43,7 +43,9 @@ typedef
 //#define LIB_GAMBAS_PTR   "GB_PTR"
 
 #ifdef DONT_USE_LTDL
- #ifdef OS_OPENBSD
+ #ifdef OS_MACOSX
+ #define LIB_PATTERN    "%s/%s.so"
+ #elif OS_OPENBSD
  #define LIB_PATTERN    "%s/%s." SHARED_LIBRARY_EXT ".0.0"
  #else
  #define LIB_PATTERN    "%s/%s." SHARED_LIBRARY_EXT

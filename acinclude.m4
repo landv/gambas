@@ -91,7 +91,7 @@ AC_DEFUN([GB_LIBTOOL],
   AC_SUBST(INCLTDL)
   AC_SUBST(LIBLTDL)
 
-  LD_FLAGS="-Wl,-O1"
+  dnl LD_FLAGS="-Wl,-O1"
   AC_SUBST(LD_FLAGS)
 ])
 
@@ -141,8 +141,8 @@ AC_DEFUN([GB_INIT],
 
   dnl ---- Checks for libraries
 
-  AC_CHECK_LIB(m, main, echo -n)
-  AC_CHECK_LIB(z, main, echo -n)
+  dnl AC_CHECK_LIB(m, main, echo)
+  dnl AC_CHECK_LIB(z, main, echo)
 
   C_LIB=-lc
 
@@ -234,7 +234,7 @@ AC_DEFUN([GB_INIT],
 
   AM_CONDITIONAL(OPTIMIZE, test "$gambas_optimization" = yes)
 
-  AM_CFLAGS="$AM_CFLAGS -pipe -Wall -Wno-unused-value -fsigned-char"
+  AM_CFLAGS="$AM_CFLAGS -pipe -Wall -Wno-unused-value -fsigned-char -fnested-functions"
   AM_CXXFLAGS="$AM_CXXFLAGS -pipe -Wall -fno-exceptions -Wno-unused-value -fsigned-char"
 
   dnl ---- Check for gcc visibility flag
@@ -289,7 +289,7 @@ AC_DEFUN([GB_INIT],
 AC_DEFUN([GB_THREAD],
 [
   case "${host}" in
-    *-*-freebsd* )
+    *-*-freebsd* | *-*-darwin* )
       THREAD_LIB=""
       THREAD_INC="-pthread -D_REENTRANT"
       GBX_THREAD_LIB=""
@@ -396,15 +396,15 @@ AC_DEFUN([GB_SYSTEM],
   AC_MSG_CHECKING(target architecture)
 
   case "${host}" in
-    i*86-*-*-* )
+    i*86-*-* )
       ARCH=X86
       AC_DEFINE(ARCH_X86, 1, [Target architecture is x86])
       ;;
-    x86_64-*-*-* )
+    x86_64-*-* )
       ARCH=X86_64
       AC_DEFINE(ARCH_X86_64, 1, [Target architecture is x86_64])
       ;;
-    arm*-*-*-* )
+    arm*-*-* )
       ARCH=ARM
       AC_DEFINE(ARCH_ARM, 1, [Target architecture is ARM])
       ;;
