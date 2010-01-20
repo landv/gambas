@@ -56,6 +56,15 @@ FILE *log_file;
 
 static bool _welcome = FALSE;
 
+static void my_exit(int ret)
+{
+  LOCAL_exit();
+  COMPONENT_exit();
+  EXTERN_exit();
+	//fclose(log_file);
+  exit(ret);
+}
+
 static void init(const char *file)
 {
   COMPONENT_init();
@@ -69,7 +78,13 @@ static void init(const char *file)
   DEBUG_init();
 
 	if (file)
-		PROJECT_load(); // Call STACK_init()
+	{
+		if (PROJECT_load()) // Call STACK_init()
+		{
+      fprintf(stderr, "gbx" GAMBAS_VERSION_STRING ": no project file in %s.\n", strcmp(file, ".") ? file : "current directory");
+			my_exit(1);
+		}
+	}
 	else
 		STACK_init();
 		
@@ -84,18 +99,12 @@ static void init(const char *file)
 }
 
 
-static void my_exit(int ret)
-{
-  LOCAL_exit();
-  COMPONENT_exit();
-  EXTERN_exit();
-	//fclose(log_file);
-  exit(ret);
-}
-
-
 static void main_exit(bool silent)
 {
+	// If the stack has not been initialized because the project could not be started, do it know
+	if (!SP)
+		STACK_init();
+	
   STREAM_exit();
   OBJECT_exit();
 	CLASS_clean_up(silent);

@@ -407,11 +407,10 @@ _PANIC:
 }
 
 
-void PROJECT_load()
+bool PROJECT_load()
 {
 	const char *file;
 	int len;
-	//bool failed;
 
 	/* Project file analyze */
 
@@ -420,35 +419,21 @@ void PROJECT_load()
   else
     file = FILE_cat(PROJECT_path, ".startup", NULL);
 
-	#if 0
 	TRY
 	{
-		failed = FALSE;
-  	STREAM_load(file, &project_buffer, &len);
-  	project_analyze_startup(project_buffer, len);
-  }
-  CATCH
-  {
-  	failed = TRUE;
-  }
-  END_TRY
-  
-  if (failed)
-  {
-		if (EXEC_arch)
-			file = ".project";
-		else
-			file = FILE_cat(PROJECT_path, ".project", NULL);
-
-  	STREAM_load(file, &project_buffer, &len);
-	  project_analyze(project_buffer, len);
+		STREAM_load(file, &project_buffer, &len);
+		project_analyze_startup(project_buffer, len);
 	}
-	#else
-	STREAM_load(file, &project_buffer, &len);
- 	project_analyze_startup(project_buffer, len);
-	#endif
-
+	CATCH
+	{
+		len = -1;
+	}
+	END_TRY
+	
   STACK_init();
+	
+	if (len < 0)
+		return TRUE;
 
 	/* Loads all component */
 	COMPONENT_load_all();
@@ -459,6 +444,7 @@ void PROJECT_load()
   /* Startup class */
   // we make the class global, because some components may look for event handler in it!
   PROJECT_class = CLASS_find_global(PROJECT_startup);
+	return FALSE;
 }
 
 
