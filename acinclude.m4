@@ -261,10 +261,12 @@ AC_DEFUN([GB_INIT],
   if test "x$gambas_optimization" = "xyes"; then
     AM_CFLAGS_OPT="$AM_CFLAGS -O3"
     AM_CFLAGS="$AM_CFLAGS -Os"
+    AM_CXXFLAGS_OPT="$AM_CXXFLAGS -O3 -fno-omit-frame-pointer"
     AM_CXXFLAGS="$AM_CXXFLAGS -Os -fno-omit-frame-pointer"
   else
     AM_CFLAGS_OPT="$AM_CFLAGS -O0"
     AM_CFLAGS="$AM_CFLAGS -O0"
+    AM_CXXFLAGS_OPT="$AM_CXXFLAGS -O0"
     AM_CXXFLAGS="$AM_CXXFLAGS -O0"
   fi
 
@@ -274,6 +276,7 @@ AC_DEFUN([GB_INIT],
   AC_SUBST(AM_CFLAGS)
   AC_SUBST(AM_CFLAGS_OPT)
   AC_SUBST(AM_CXXFLAGS)
+  AC_SUBST(AM_CXXFLAGS_OPT)
   
   rm -f DISABLED
 ])

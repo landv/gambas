@@ -176,7 +176,8 @@ Public Sub SetFont(sFont As String)
 
   If Bold Then iStyle += 1
   If Italic Then iStyle += 2
-  lstStyle[iStyle].Selected = True
+  'lstStyle[iStyle].Selected = True
+  lstStyle.Index = iStyle
 
   chkUnderline.Value = UnderLine
   chkStrikeout.Value = StrikeOut

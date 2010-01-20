@@ -1,18 +1,18 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(3,26,71.1667,44.1667)
+  MoveScaled(3,26,71.1429,44.1429)
   Text = ("")
   Arrangement = Arrange.Vertical
-  Spacing = 8
+  Spacing = True
   { HBox1 HBox
     MoveScaled(1,1,68,32)
     Expand = True
-    Spacing = 8
+    Spacing = True
     { VBox1 VBox
       MoveScaled(2,2,24,27)
       Expand = True
-      Spacing = 8
+      Spacing = True
       { lblFamily Label
         MoveScaled(2,1,20,3)
         Text = ("Family")
@@ -24,7 +24,7 @@
     }
     { panStyle VBox
       MoveScaled(28,2,13,28)
-      Spacing = 8
+      Spacing = True
       { lblStyle Label
         MoveScaled(2,1,9,3)
         Text = ("Style")
@@ -35,13 +35,14 @@
         List = [("Normal"), ("Bold"), ("Italic"), ("Bold Italic")]
       }
       { VBox2 VBox
-        MoveScaled(1,20,11,7)
+        MoveScaled(0,19,13,8)
+        AutoResize = True
         { chkUnderline CheckBox
-          MoveScaled(0,0,10,4)
+          MoveScaled(0,0,13,4)
           Text = ("Underline")
         }
         { chkStrikeOut CheckBox
-          MoveScaled(0,3,10,4)
+          MoveScaled(0,3,13,4)
           Text = ("Strikeout")
         }
       }

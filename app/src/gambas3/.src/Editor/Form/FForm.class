@@ -409,7 +409,7 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
 
         cCoord = Split(Mid$(sLine, 12, -1))
         'TRY PRINT cCoord[0]; ","; cCoord[1]; ","; cCoord[2]; ","; cCoord[3]
-        Try hCtrl.Move(CFloat(cCoord[0]) * Desktop.Scale, CFloat(cCoord[1]) * Desktop.Scale, True)
+        Try hCtrl.Move(Round(CFloat(cCoord[0]) * Desktop.Scale), Round(CFloat(cCoord[1]) * Desktop.Scale), True)
         'TRY hCtrl.SetProperty("X", Val(cCoord[0]))
         'TRY hCtrl.SetProperty("Y", Val(cCoord[1]))
         If cCoord.Count >= 2 Then
@@ -422,12 +422,12 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
           If eW = 0 Then
             iW = 1
           Else
-            iW = eW * Desktop.Scale
+            iW = Round(eW * Desktop.Scale)
           Endif
           If eH = 0 Then
             iH = 1
           Else
-            iH = eH * Desktop.Scale
+            iH = Round(eH * Desktop.Scale)
           Endif
           Try hCtrl.Resize(iW, iH, True)
         Endif

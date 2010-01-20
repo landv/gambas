@@ -6,7 +6,7 @@ gblib_LTLIBRARIES = gb.image.effect.la
 
 libimageeffect_la_LIBADD =
 libimageeffect_la_LDFLAGS = -module @LD_FLAGS@
-libimageeffect_la_CXXFLAGS = -I$(top_srcdir)/share $(AM_CFLAGS_OPT)
+libimageeffect_la_CXXFLAGS = -I$(top_srcdir)/share $(AM_CXXFLAGS_OPT)
 
 libimageeffect_la_SOURCES = \
  kimageeffect.h kimageeffect.cpp \
@@ -14,7 +14,7 @@ libimageeffect_la_SOURCES = \
 
 gb_image_effect_la_LIBADD = libimageeffect.la
 gb_image_effect_la_LDFLAGS = -module @LD_FLAGS@
-gb_image_effect_la_CXXFLAGS = -I$(top_srcdir)/share $(AM_CFLAGS)
+gb_image_effect_la_CXXFLAGS = -I$(top_srcdir)/share $(AM_CXXFLAGS)
 
 gb_image_effect_la_SOURCES = \
 main.cpp main.h qt.h \

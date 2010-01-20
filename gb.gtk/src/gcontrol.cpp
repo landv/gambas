@@ -1634,19 +1634,23 @@ void gControl::setTracking(bool v)
 {
 	if (v != _tracking)
 	{
+		uint event_mask = gtk_widget_get_events(widget);
 		_tracking = v;
 		if (v)
 		{
-			uint event_mask = gtk_widget_get_events(widget);
 			_old_tracking = event_mask & GDK_POINTER_MOTION_MASK;
-			gtk_widget_set_events(widget, event_mask | GDK_POINTER_MOTION_MASK);
+			event_mask |= GDK_POINTER_MOTION_MASK;
 		}
 		else
 		{
-			if (_old_tracking)
-				gtk_widget_set_events(widget, gtk_widget_get_events(widget) | GDK_POINTER_MOTION_MASK);
-			else
-				gtk_widget_set_events(widget, gtk_widget_get_events(widget) & ~GDK_POINTER_MOTION_MASK);
+			event_mask &= ~GDK_POINTER_MOTION_MASK;
+		}
+		
+		if (!_old_tracking)
+		{
+			gtk_widget_unrealize(widget);
+			gtk_widget_set_events(widget, event_mask);
+			gtk_widget_realize(widget);
 		}
 	}
 }

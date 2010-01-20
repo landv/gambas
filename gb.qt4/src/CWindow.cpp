@@ -1583,10 +1583,13 @@ void MyMainWindow::showActivate(QWidget *transient)
 	{
 		newParentWidget = CWINDOW_Current->widget.widget;
 		
-		if (newParentWidget && parentWidget() != newParentWidget)
+		if (!isVisible())
 		{
-			//qDebug("showActivate");
-			doReparent(newParentWidget, windowFlags(), pos());
+			if (newParentWidget && parentWidget() != newParentWidget)
+			{
+				//qDebug("showActivate");
+				doReparent(newParentWidget, windowFlags(), pos());
+			}
 		}
 	}
 
