@@ -5,6 +5,8 @@ STATIC PRIVATE $hHandleV AS Picture
 
 PRIVATE $iOrientation AS Integer
 PRIVATE $bFixed AS Boolean
+PRIVATE $X AS Integer
+PRIVATE $Y AS Integer
 PRIVATE $W AS Integer
 PRIVATE $H AS Integer
 PRIVATE $bVisible AS Boolean
@@ -250,14 +252,20 @@ PRIVATE SUB RefreshAll()
   
   IF $bVisible THEN
     panSide.Show 'Enabled = TRUE
-    IF $W AND IF $H THEN ME.Parent.Resize($W, $H)
+    IF $W AND IF $H THEN ME.Parent.Move($X, $Y, $W, $H)
   ELSE
     'DEBUG ME.Parent.W;; ME.CLientW
     panSide.Hide 'Enabled = FALSE
     SELECT CASE $iOrientation
-      CASE Align.Top, Align.Bottom
+      CASE Align.Top
         ME.Parent.H = BUTTON_H
-      CASE ELSE
+      CASE Align.Bottom
+        ME.Parent.Y += ME.Parent.H - BUTTON_H
+        ME.Parent.H = BUTTON_H
+      CASE Align.Left
+        ME.Parent.W = BUTTON_H
+      CASE Align.Right
+        ME.Parent.X += ME.Parent.W - BUTTON_H
         ME.Parent.W = BUTTON_H
     END SELECT
   ENDIF
@@ -276,8 +284,12 @@ PUBLIC SUB btnSide_Click()
 
     GetParent()._Hide
 
-    $W = ME.Parent.Width
-    $H = ME.Parent.Height
+    WITH ME.Parent
+      $X = .X
+      $Y = .Y
+      $W = .Width
+      $H = .Height
+    END WITH
     $bVisible = FALSE
     RefreshAll
     Action.Raise(ME.Parent)    

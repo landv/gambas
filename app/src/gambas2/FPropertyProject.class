@@ -645,10 +645,12 @@ PUBLIC SUB btnHelp_Click()
   DIM hCompBox AS CComponentBox
   DIM sKey AS String
   
-  hCompBox = CComponentBox(lstComponent.Current)
-  TRY sKey = hCompBox.Key
+  hCompBox = lstComponent.Current
+  sKey = hCompBox.Key
   IF NOT sKey THEN RETURN 
   MHelp.GotoComponent(sKey)
+  
+CATCH 
 
 END
 

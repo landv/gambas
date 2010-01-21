@@ -370,6 +370,4 @@ GB_CLASS DEBUG_find_class(const char *name)
 	CP = save;
 	
 	return class;
-	
-	
 }
