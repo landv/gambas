@@ -29,6 +29,43 @@ DECLARE_EVENT(EVENT_Close);
 DECLARE_EVENT(EVENT_Error);
 
 
+#ifdef NO_X_WINDOW
+
+BEGIN_METHOD(CEMBEDDER_new, GB_OBJECT parent)
+
+  QWidget *wid = new QWidget(QCONTAINER(VARG(parent)));
+
+  //QObject::connect(wid, SIGNAL(clientIsEmbedded()), &CEmbedder::manager, SLOT(embedded()));
+  //QObject::connect(wid, SIGNAL(clientClosed()), &CEmbedder::manager, SLOT(closed()));
+  //QObject::connect(wid, SIGNAL(error(QX11EmbedContainer::Error)), &CEmbedder::manager, SLOT(error()));
+  
+  CWIDGET_new(wid, (void *)_object);
+  
+END_METHOD
+
+
+BEGIN_PROPERTY(CEMBEDDER_client)
+
+  GB.ReturnInteger(0);
+
+END_PROPERTY
+
+
+BEGIN_METHOD(CEMBEDDER_embed, GB_INTEGER client)
+
+  //WIDGET->embedClient(VARG(client));
+
+END_METHOD
+
+
+BEGIN_METHOD_VOID(CEMBEDDER_discard)
+
+  //WIDGET->discardClient();
+
+END_METHOD
+
+#else
+
 BEGIN_METHOD(CEMBEDDER_new, GB_OBJECT parent)
 
   QX11EmbedContainer *wid = new QX11EmbedContainer(QCONTAINER(VARG(parent)));
@@ -62,6 +99,26 @@ BEGIN_METHOD_VOID(CEMBEDDER_discard)
 
 END_METHOD
 
+/*--- CEmbedder -----------------------------------------------------------------------------------------*/
+
+CEmbedder CEmbedder::manager;
+
+void CEmbedder::embedded()
+{
+  RAISE_EVENT(EVENT_Embed);
+}
+
+void CEmbedder::closed()
+{
+  RAISE_EVENT(EVENT_Close);
+}
+
+void CEmbedder::error()
+{
+  RAISE_EVENT(EVENT_Error);
+}
+
+#endif
 
 GB_DESC CEmbedderDesc[] =
 {
@@ -84,21 +141,3 @@ GB_DESC CEmbedderDesc[] =
 };
 
 
-/*--- CEmbedder -----------------------------------------------------------------------------------------*/
-
-CEmbedder CEmbedder::manager;
-
-void CEmbedder::embedded()
-{
-  RAISE_EVENT(EVENT_Embed);
-}
-
-void CEmbedder::closed()
-{
-  RAISE_EVENT(EVENT_Close);
-}
-
-void CEmbedder::error()
-{
-  RAISE_EVENT(EVENT_Error);
-}

@@ -24,26 +24,26 @@
 #define __CEMBEDDER_H
 
 #include "gambas.h"
-
-#include <QX11EmbedWidget>
-#include <QX11EmbedContainer>
-
 #include "CWidget.h"
 
 #ifndef __CEMBEDDER_CPP
 extern GB_DESC CEmbedderDesc[];
 #else
 
-#define THIS  ((CEMBEDDER *)_object)
-#define WIDGET ((QX11EmbedContainer *)((CWIDGET *)_object)->widget)
-
-#endif
-
 typedef
   struct {
     CWIDGET widget;
     }
   CEMBEDDER;
+
+#define THIS  ((CEMBEDDER *)_object)
+
+#ifndef NO_X_WINDOW
+
+#include <QX11EmbedWidget>
+#include <QX11EmbedContainer>
+
+#define WIDGET ((QX11EmbedContainer *)((CWIDGET *)_object)->widget)
 
 class CEmbedder : public QObject
 {
@@ -60,5 +60,8 @@ public slots:
   void closed(void);
 
 };
+#endif
+
+#endif
 
 #endif

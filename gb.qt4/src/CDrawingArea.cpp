@@ -101,12 +101,12 @@ void MyDrawingArea::setMerge(bool m)
 
 void MyDrawingArea::setFrozen(bool f)
 {
-	XWindowAttributes attr;
-
 	if (f == _frozen)
 		return;
 
 	#ifndef NO_X_WINDOW
+	XWindowAttributes attr;
+
 	if (f)
 	{
 		//setBackgroundMode(Qt::NoBackground);

@@ -25,6 +25,10 @@
 
 #include "gambas.h"
 
+#ifdef OS_MACOSX
+#define NO_X_WINDOW
+#endif
+
 #include <QWidget>
 #include <QFont>
 #include <QString>

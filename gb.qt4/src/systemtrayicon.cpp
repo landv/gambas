@@ -56,6 +56,12 @@
 **
 ****************************************************************************/
 
+#define __SYSTEMTRAYICON_CPP
+
+#include "gb.qt.h"
+
+#ifndef NO_X_WINDOW
+
 #include <QLabel>
 #include <QX11Info>
 #include <QPainter>
@@ -223,3 +229,5 @@ bool SystemTrayIcon::x11Event(XEvent *event)
     }
     return QWidget::x11Event(event);
 }
+
+#endif

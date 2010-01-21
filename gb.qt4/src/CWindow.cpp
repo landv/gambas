@@ -1689,8 +1689,10 @@ void MyMainWindow::showModal(void)
 
 	mustCenter = true;
 
+	#ifndef NO_X_WINDOW
 	if (CWINDOW_Active)
 		X11_set_transient_for(winId(), CWINDOW_Active->widget.widget->winId());
+	#endif
 
 	setWindowModality(Qt::ApplicationModal);
 

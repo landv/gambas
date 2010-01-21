@@ -10,8 +10,8 @@ GB_COMPONENT(
   MYSQL,
   [MySQL driver],
   [src],
-  [GB_FIND(mysql.h my_config.h, /usr/local/lib /usr/local /opt /usr/lib /usr, include mysql*/include)],
-  [GB_FIND(libmysqlclient.$SHLIBEXT, /usr/local /opt /usr, lib mysql*/lib)],
+  [GB_FIND(mysql.h my_config.h, /opt/local /opt /usr/local/lib /usr/local /usr/lib /usr, include mysql*/include)],
+  [GB_FIND(libmysqlclient.$SHLIBEXT, /opt/local /opt /usr/local /usr, lib mysql*/lib)],
   [$C_LIB -lmysqlclient -lz])
  
 AC_OUTPUT( \

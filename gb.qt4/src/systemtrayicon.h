@@ -59,6 +59,14 @@
 #ifndef SYSTEMTRAYICON_H
 #define SYSTEMTRAYICON_H
 
+#include "gb.qt.h"
+
+#ifdef NO_X_WINDOW
+
+#define SystemTrayIcon QWidget
+
+#else
+
 //
 //  W A R N I N G
 //  -------------
@@ -123,6 +131,8 @@ protected:
 private:
     QPixmap background;
 };
+
+#endif
 
 #endif // SYSTEMTRAYICON_H
 

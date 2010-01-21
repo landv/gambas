@@ -170,7 +170,6 @@ END_METHOD
 static void define_mask(CTRAYICON *_object)
 {
 	QPixmap *p;
-	XSizeHints hints;
 
 	if (!WIDGET)
 		return;
@@ -190,12 +189,15 @@ static void define_mask(CTRAYICON *_object)
 
 	if (!THIS->icon)
 		delete p;
-
+	
+	#ifndef NO_X_WINDOW
 	// Needed, otherwise the icon does not appear in Gnome orf XFCE notification area!
+	XSizeHints hints;
 	hints.flags = PMinSize;
 	hints.min_width = WIDGET->width();
 	hints.min_height = WIDGET->height();
 	XSetWMNormalHints(WIDGET->x11Display(), WIDGET->winId(), &hints);
+	#endif
 }
 
 static void define_tooltip(CTRAYICON *_object)
@@ -268,8 +270,10 @@ BEGIN_METHOD_VOID(CTRAYICON_show)
 			destroy_widget(THIS);
 			return;
 		}*/
-
+		
+		#ifndef NO_X_WINDOW
 		WIDGET->addToTray();
+		#endif
 		define_mask(THIS);
 		define_tooltip(THIS);
 	}
