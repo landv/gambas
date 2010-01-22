@@ -568,7 +568,11 @@ void MAIN_update_scale(void)
 {
 	//QFontMetrics fm(qApp->desktop()->font());
 	//MAIN_scale = GET_DESKTOP_SCALE(fm.height());
+	#if NO_X_WINDOW
+	MAIN_scale = GET_DESKTOP_SCALE(qApp->desktop()->font().pointSize(), 96);
+	#else
 	MAIN_scale = GET_DESKTOP_SCALE(qApp->desktop()->font().pointSize(), QX11Info::appDpiY());
+	#endif
 }
 
 static void QT_InitEventLoop(void)

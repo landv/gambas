@@ -24,7 +24,6 @@
 
 #include <QApplication>
 #include <QDesktopWidget>
-#include <QX11Info>
 #include <QToolTip>
 
 #include "gambas.h"
@@ -36,6 +35,7 @@
 #include "CScreen.h"
 
 #ifndef NO_X_WINDOW
+#include <QX11Info>
 #include "x11.h"
 #endif
 

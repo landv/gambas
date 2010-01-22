@@ -37,6 +37,7 @@ typedef
   CEMBEDDER;
 
 #define THIS  ((CEMBEDDER *)_object)
+#endif
 
 #ifndef NO_X_WINDOW
 
@@ -60,8 +61,6 @@ public slots:
   void closed(void);
 
 };
-#endif
-
 #endif
 
 #endif
