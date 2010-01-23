@@ -28,6 +28,8 @@
 
 #ifndef GBX_INFO
 
+#include <limits.h>
+
 #include "gb_common.h"
 #include "gb_error.h"
 #include "gb_array.h"
@@ -284,96 +286,101 @@ void CARRAY_get_value(CARRAY *_object, int index, VALUE *value)
 
 BEGIN_METHOD(CARRAY_new, GB_INTEGER size)
 
-  TYPE type;
-  CLASS *klass;
-  int size;
-  int inc;
-  GB_INTEGER *sizes = ARG(size);
-  int nsize = GB_NParam() + 1;
-  int i;
+	TYPE type;
+	CLASS *klass;
+	uint64_t size;
+	int max_size;
+	int inc;
+	GB_INTEGER *sizes = ARG(size);
+	int nsize = GB_NParam() + 1;
+	int i;
 
-  klass = OBJECT_class(THIS);
+	klass = OBJECT_class(THIS);
 
-  if (klass == CLASS_IntegerArray)
-    type = T_INTEGER;
-  else if (klass == CLASS_ShortArray)
-    type = T_SHORT;
-  else if (klass == CLASS_BooleanArray)
-    type = T_BOOLEAN;
-  else if (klass == CLASS_ByteArray)
-    type = T_BYTE;
-  else if (klass == CLASS_LongArray)
-    type = T_LONG;
-  else if (klass == CLASS_SingleArray)
-    type = T_SINGLE;
-  else if (klass == CLASS_FloatArray)
-    type = T_FLOAT;
-  else if (klass == CLASS_DateArray)
-    type = T_DATE;
-  else if (klass == CLASS_StringArray)
-    type = T_STRING;
-  else if (klass == CLASS_VariantArray)
-    type = T_VARIANT;
-	else if (klass == CLASS_ObjectArray)
-		type = T_OBJECT;
+	if (klass == CLASS_IntegerArray)
+		type = T_INTEGER;
+	else if (klass == CLASS_ShortArray)
+		type = T_SHORT;
+	else if (klass == CLASS_BooleanArray)
+		type = T_BOOLEAN;
+	else if (klass == CLASS_ByteArray)
+		type = T_BYTE;
+	else if (klass == CLASS_LongArray)
+		type = T_LONG;
+	else if (klass == CLASS_SingleArray)
+		type = T_SINGLE;
+	else if (klass == CLASS_FloatArray)
+		type = T_FLOAT;
+	else if (klass == CLASS_DateArray)
+		type = T_DATE;
+	else if (klass == CLASS_StringArray)
+		type = T_STRING;
+	else if (klass == CLASS_VariantArray)
+		type = T_VARIANT;
 	else if (klass == CLASS_PointerArray)
 		type = T_POINTER;
+	else if (klass == CLASS_ObjectArray)
+		type = T_OBJECT;
 	else
 	{
 		GB_Error("Bad array type");
 		return;
 	}
 
-  //printf("CARRAY_new: type = %d nsize = %d\n", type, nsize);
+	//printf("CARRAY_new: type = %d nsize = %d\n", type, nsize);
 
-  THIS->type = type;
+	THIS->type = type;
+	max_size = INT_MAX / TYPE_sizeof_memory(type);
 
-  if (nsize <= 1)
-  {
-    size = VARGOPT(size, 0);
-    if (size < 0)
-      size = 0;
+	if (nsize <= 1)
+	{
+		size = VARGOPT(size, 0);
+		if (size > max_size)
+			THROW(E_MEMORY);
+		if (size < 0)
+			size = 0;
 
-    inc = (size / 8) & ~7;
-    if (inc < 8)
-      inc = 8;
+		inc = (size / 8) & ~7;
+		if (inc < 8)
+			inc = 8;
 
-    ARRAY_create_with_size(&THIS->data, TYPE_sizeof_memory(type), inc);
-    if (size > 0)
-      ARRAY_add_many_void(&THIS->data, size);
-  }
-  else
-  {
-    if (nsize > MAX_ARRAY_DIM)
-    {
-      GB_Error("Too many dimensions");
-      return;
-    }
+		ARRAY_create_with_size(&THIS->data, TYPE_sizeof_memory(type), inc);
+		if (size > 0)
+			ARRAY_add_many_void(&THIS->data, size);
+	}
+	else
+	{
+		if (nsize > MAX_ARRAY_DIM)
+		{
+			GB_Error("Too many dimensions");
+			return;
+		}
 
-    size = 1;
-    for (i = 0; i < nsize; i++)
-    {
-      VALUE_conv((VALUE *)&sizes[i], T_INTEGER);
-      if (sizes[i].value < 1)
-      {
-        GB_Error("Bad dimension");
-        return;
-      }
-      size *= sizes[i].value;
-    }
+		size = 1;
+		for (i = 0; i < nsize; i++)
+		{
+			VALUE_conv((VALUE *)&sizes[i], T_INTEGER);
+			if (sizes[i].value < 1)
+			{
+				GB_Error("Bad dimension");
+				return;
+			}
+			size *= sizes[i].value;
+			if (size > max_size)
+				THROW(E_MEMORY);
+		}
 
-    ALLOC_ZERO(&THIS->dim, nsize * sizeof(int), "CARRAY_new");
+		ALLOC_ZERO(&THIS->dim, nsize * sizeof(int), "CARRAY_new");
 
-    for (i = 0; i < nsize; i++)
-      THIS->dim[i] = sizes[i].value;
-    THIS->dim[nsize - 1] = (-THIS->dim[nsize - 1]);
+		for (i = 0; i < nsize; i++)
+			THIS->dim[i] = sizes[i].value;
+		THIS->dim[nsize - 1] = (-THIS->dim[nsize - 1]);
 
-    ARRAY_create_with_size(&THIS->data, TYPE_sizeof_memory(type), 8);
-    ARRAY_add_many_void(&THIS->data, size);
-  }
-
+		ARRAY_create_with_size(&THIS->data, TYPE_sizeof_memory(type), 8);
+		ARRAY_add_many_void(&THIS->data, (int)size);
+	}
+	
 END_METHOD
-
 
 BEGIN_PROPERTY(CARRAY_type)
 
