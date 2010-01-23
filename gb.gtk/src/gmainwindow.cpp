@@ -74,7 +74,9 @@ static void cb_hide (GtkWidget *widget, gMainWindow *data)
 
 static gboolean win_close(GtkWidget *widget,GdkEvent  *event,gMainWindow *data)
 {
-	data->doClose();
+	if (!gMainWindow::_current || data == gMainWindow::_current)
+		data->doClose();
+	
 	return true;
 }
 
@@ -454,8 +456,8 @@ void gMainWindow::setVisible(bool vl)
 		{
 			if (!_title || !*_title)
 				gtk_window_set_title(GTK_WINDOW(border), gApplication::defaultTitle());
-			gtk_window_present(GTK_WINDOW(border));
 			gtk_window_move(GTK_WINDOW(border), bufX, bufY);
+			gtk_window_present(GTK_WINDOW(border));
 		}
 		else 
 		{
