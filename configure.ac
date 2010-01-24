@@ -17,22 +17,22 @@ GB_CONFIG_SUBDIRS(postgresql, gb.db.postgresql)
 GB_CONFIG_SUBDIRS(sqlite2, gb.db.sqlite2)
 GB_CONFIG_SUBDIRS(sqlite3, gb.db.sqlite3)
 GB_CONFIG_SUBDIRS(firebird, gb.db.firebird)
-GB_CONFIG_SUBDIRS(gtk, gb.gtk)
-GB_CONFIG_SUBDIRS(pdf, gb.pdf)
 GB_CONFIG_SUBDIRS(net, gb.net)
 GB_CONFIG_SUBDIRS(curl, gb.net.curl)
 GB_CONFIG_SUBDIRS(smtp, gb.net.smtp)
 GB_CONFIG_SUBDIRS(pcre, gb.pcre)
-GB_CONFIG_SUBDIRS(qt, gb.qt)
 GB_CONFIG_SUBDIRS(sdl, gb.sdl)
 GB_CONFIG_SUBDIRS(sdlsound, gb.sdl.sound)
 GB_CONFIG_SUBDIRS(xml, gb.xml)
 GB_CONFIG_SUBDIRS(v4l, gb.v4l)
 GB_CONFIG_SUBDIRS(crypt, gb.crypt)
-GB_CONFIG_SUBDIRS(opengl, gb.opengl)
 GB_CONFIG_SUBDIRS(corba, gb.corba)
-GB_CONFIG_SUBDIRS(desktop, gb.desktop)
 GB_CONFIG_SUBDIRS(qt4, gb.qt4)
+GB_CONFIG_SUBDIRS(gtk, gb.gtk)
+GB_CONFIG_SUBDIRS(qt, gb.qt)
+GB_CONFIG_SUBDIRS(opengl, gb.opengl)
+GB_CONFIG_SUBDIRS(desktop, gb.desktop)
+GB_CONFIG_SUBDIRS(pdf, gb.pdf)
 GB_CONFIG_SUBDIRS(cairo, gb.cairo)
 GB_CONFIG_SUBDIRS(imageio, gb.image.io)
 GB_CONFIG_SUBDIRS(imageimlib, gb.image.imlib)
@@ -64,7 +64,7 @@ AC_OUTPUT(Makefile)
 GB_SUMMARY=""
 for comp in gb.*; do
   if test -e $comp/DISABLED; then
-    GB_SUMMARY="$GB_SUMMARY\n- $comp"   
+    GB_SUMMARY="$GB_SUMMARY$'\n'- $comp"   
   fi
 done
 

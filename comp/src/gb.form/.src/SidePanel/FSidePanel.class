@@ -5,6 +5,8 @@ Static Private $hHandleV As Picture
 
 Private $iOrientation As Integer
 Private $bFixed As Boolean
+Private $X As Integer
+Private $Y As Integer
 Private $W As Integer
 Private $H As Integer
 Private $bVisible As Boolean
@@ -260,18 +262,24 @@ Private Sub RefreshAll()
   
   If $bVisible Then
     panSide.Show 'Enabled = TRUE
-    If $W And If $H Then Me.Parent.Resize($W, $H)
+    If $W And If $H Then Me.Parent.Move($X, $Y, $W, $H)
   Else
     'DEBUG ME.Parent.W;; ME.CLientW
     panSide.Hide 'Enabled = FALSE
     Select Case $iOrientation
-      Case Align.Top, Align.Bottom
+      Case Align.Top
         Me.Parent.H = BUTTON_H
-      Case Else
+      Case Align.Bottom
+        Me.Parent.Y += Me.Parent.H - BUTTON_H
+        Me.Parent.H = BUTTON_H
+      Case Align.Left
+        Me.Parent.W = BUTTON_H
+      Case Align.Right
+        Me.Parent.X += Me.Parent.W - BUTTON_H
         Me.Parent.W = BUTTON_H
     End Select
   Endif
-  
+
   RefreshArrow
   RefreshPanel
   
@@ -285,9 +293,13 @@ Private Sub TogglePanel()
   If $bVisible Then
 
     GetParent()._Hide
-
-    $W = Me.Parent.Width
-    $H = Me.Parent.Height
+    
+    With Me.Parent
+      $X = .X
+      $Y = .Y
+      $W = .Width
+      $H = .Height
+    End With
     $bVisible = False
     RefreshAll
     Action.Raise(Me.Parent)    

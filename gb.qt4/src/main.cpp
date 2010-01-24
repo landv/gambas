@@ -49,7 +49,6 @@
 #include <QImageReader>
 #include <QEventLoop>
 #include <QDesktopWidget>
-#include <QX11Info>
 #include <QPaintDevice>
 
 #include "gb.image.h"
@@ -101,6 +100,7 @@
 #include "cpaint_impl.h"
 
 #ifndef NO_X_WINDOW
+#include <QX11Info>
 #include "CEmbedder.h"
 #include "CTrayIcon.h"
 #include "x11.h"
@@ -579,7 +579,7 @@ static void QT_InitEventLoop(void)
 {
 }
 
-extern void qt_x11_set_global_double_buffer(bool);
+//extern void qt_x11_set_global_double_buffer(bool);
 
 static void QT_Init(void)
 {

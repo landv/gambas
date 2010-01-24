@@ -489,9 +489,20 @@ void ERROR_print_at(FILE *where, bool msgonly, bool newline)
 			fprintf(where, "%ld:", ERROR_current->info.code);*/
 		if (ERROR_current->info.code > 0)
 			fprintf(where, "#%d: ", ERROR_current->info.code);
+		fprintf(where, "%s", ERROR_current->info.msg);
+	}
+	else
+	{
+		char *p = ERROR_current->info.msg;
+		char c;
+		
+		while ((c = *p++))
+		{
+			if (c == '\n') c = ' ';
+				fputc(c, where);
+		}
 	}
 
-  fprintf(where, "%s", ERROR_current->info.msg);
   if (newline)
   	fputc('\n', where);
 }

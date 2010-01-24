@@ -1,4 +1,35 @@
-SUBDIRS = main @bzlib2_dir@ @zlib_dir@ @mysql_dir@ @odbc_dir@ @postgresql_dir@ @sqlite3_dir@ @sqlite2_dir@ @firebird_dir@ @gtk_dir@ @net_dir@ @curl_dir@ @smtp_dir@ @pcre_dir@ @qt_dir@ @sdl_dir@ @sdlsound_dir@ @xml_dir@ @v4l_dir@ @crypt_dir@ @opengl_dir@ @corba_dir@ @pdf_dir@ @desktop_dir@ @qt4_dir@ @cairo_dir@ @imageio_dir@ @imageimlib_dir@ comp app examples
+SUBDIRS = \
+ main \
+ @bzlib2_dir@ \
+ @zlib_dir@ \
+ @mysql_dir@ \
+ @odbc_dir@ \
+ @postgresql_dir@ \
+ @sqlite2_dir@ \
+ @sqlite3_dir@ \
+ @firebird_dir@ \
+ @net_dir@ \
+ @curl_dir@ \
+ @smtp_dir@ \
+ @pcre_dir@ \
+ @sdl_dir@ \
+ @sdlsound_dir@ \
+ @xml_dir@ \
+ @v4l_dir@ \
+ @crypt_dir@ \
+ @corba_dir@ \
+ @qt4_dir@ \
+ @gtk_dir@ \
+ @qt_dir@ \
+ @opengl_dir@ \
+ @desktop_dir@ \
+ @pdf_dir@ \
+ @cairo_dir@ \
+ @imageio_dir@ \
+ @imageimlib_dir@ \
+ comp \
+ app \
+ examples
 
 EXTRA_DIST = component.am README README.*[^~] TODO TEMPLATE reconf reconf-all
 

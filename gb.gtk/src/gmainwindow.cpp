@@ -67,7 +67,9 @@ static void cb_hide (GtkWidget *widget, gMainWindow *data)
 
 static gboolean win_close(GtkWidget *widget,GdkEvent  *event,gMainWindow *data)
 {
-	data->doClose();
+	if (!gMainWindow::_current || data == gMainWindow::_current)
+		data->doClose();
+	
 	return true;
 }
 
