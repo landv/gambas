@@ -322,6 +322,7 @@ Public Sub TableView_Click()
   
   If $bNoActivate Then Return
   If Not $bCreate Then Return
+  If $hCtrl.Rows.Count = 0 Then Return
   
   TableView_Change
   
