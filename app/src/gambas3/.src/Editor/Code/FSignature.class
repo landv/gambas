@@ -1,6 +1,7 @@
 ' Gambas class file
 
 Private $hEditor As Editor
+Private $bUseHelp As Boolean
 Private $bShowHelp As Boolean
 
 Private $DX As Integer
@@ -9,52 +10,33 @@ Private $iMinW As Integer
 Private $iMinH As Integer
 Private $iMaxY As Integer
 Private $sLastUrl As String
+Private $hSymbol As CSymbolInfo
+Private $X As Integer
 
-
-Public Sub Open(hForm As FEditor, iX As Integer, hSymbol As CSymbolInfo, iArg As Integer, Optional bDoNotUseKey As Boolean)
+Private Sub UpdateSignature(Optional hForm As FEditor)
   
-  Dim sSign As String
-  Dim iY As Integer
+  Dim iX, iY As Integer
   Dim hCont As Container
-  Dim sName As String
+  Dim sIcon As String
 
-  If hForm.Editor <> $hEditor Then HideFrom($hEditor)
-  $hEditor = hForm.Editor
-
-  sSign = hSymbol.GetSignature(True, iArg)
-  If Not sSign Then Return
-  
-  Me.Font = $hEditor.Font
-  $bShowHelp = Settings["/ShowHelpInPopup", 1]
-  
-  sName = hSymbol.Name
-  If Left$(sName) = "_" Then sName = hSymbol.Class
-  sSign = "<b>" & sName & "</b>" & sSign 
-  
-  lblNewSignature.W = Max(64, $hEditor.W - 64)
-  lblNewSignature.Text = sSign
-  lblNewSignature.Adjust
-  'lblSignature.AutoResize = FALSE
-  'lblSignature.W = lblNewSignature.W
-  'DEBUG lblSignature.W;; hEditor.W
-  
-  If $bShowHelp Then
-    MHelp.InitWebViewWith(webHelp, MHelp.TYPE_SYMBOL, hSymbol.Name, hSymbol.Class, "noimage")
+  If $bShowHelp And $bUseHelp Then
+    MHelp.InitWebViewWith(webHelp, MHelp.TYPE_SYMBOL, $hSymbol.Name, $hSymbol.Class, "noimage")
     sepHelp.Show
-    webHelp.Show
+    panHelp.Show
     panRight.Show
-    $iMinW = Max(128, lblNewSignature.W + 2 + panRight.W)
+    $iMinW = Max(128, lblNewSignature.W + 2 + panRight.W + btnHelp.W)
     $iMinH = Desktop.Scale * 24
     Me.Resize(Max(Me.W, $iMinW), Max(Me.H, $iMinH))
   Else
     sepHelp.Hide
-    webHelp.Hide
+    panHelp.Hide
     panRight.Hide
-    Me.Resize(lblNewSignature.W + 2, lblSignature.H + 2)
+    If hForm Then
+      Me.Resize(lblNewSignature.W + 2 + If($bUseHelp, btnHelp.W + panRight.W, 0), lblSignature.H + 2)
+    Else
+      Me.H = lblSignature.H + 2
+    Endif
   Endif
-
-  lblSignature.Text = sSign
-  'lblSignature.Adjust
   
   iY = $hEditor.Y + $hEditor.CursorY + $hEditor.LineHeight
   
@@ -67,15 +49,20 @@ Public Sub Open(hForm As FEditor, iX As Integer, hSymbol As CSymbolInfo, iArg As
     panResizeBottom.Hide
     panResizeTop.Show
     sepHelp.Raise
-    lblSignature.Raise
+    panSignature.Raise
+    sIcon = If($bShowHelp, "down", "up")
   Else
     panResizeBottom.Show
     panResizeTop.Hide
     sepHelp.Raise
     panHelp.Raise
+    sIcon = If($bShowHelp, "up", "down")
   Endif
 
+  If $bUseHelp Then btnHelp.Picture = Picture["icon:/small/" & sIcon]
+
   hCont = $hEditor.Parent
+  iX = $X
   Do
     If hCont Is Form Then Break
     iX += hCont.X
@@ -84,13 +71,73 @@ Public Sub Open(hForm As FEditor, iX As Integer, hSymbol As CSymbolInfo, iArg As
   Loop
   
   iX = Max(0, Min(iX, $hEditor.W - Me.Width))
-
+  
+  If Not hForm Then 
+    Me.Move(iX, iY)
+    Return
+  Endif
+  
   If Me.Parent = hForm And If iX = Me.X And iY = Me.Y And Me.Visible Then Return
 
   Me.Reparent(hForm, iX, iY)
   Me.Show
   Me.Raise
   $hEditor.SetFocus
+  
+End
+
+
+Public Sub Open(hForm As FEditor, iX As Integer, hSymbol As CSymbolInfo, iArg As Integer, Optional bDoNotUseKey As Boolean)
+  
+  Dim sSign As String
+  Dim sName As String
+
+  If hForm.Editor <> $hEditor Then HideFrom($hEditor)
+  $hEditor = hForm.Editor
+
+  sSign = hSymbol.GetSignature(True, iArg)
+  If Not sSign Then Return
+  
+  lblSignature.Font = $hEditor.Font
+  lblNewSignature.Font = $hEditor.Font
+  $bShowHelp = False 
+  $bUseHelp = Settings["/ShowHelpInPopup", 1]
+  btnHelp.Visible = $bUseHelp
+  
+  sName = hSymbol.Name
+  If Left$(sName) = "_" Then sName = hSymbol.Class
+  sSign = "<b>" & sName & "</b>" & sSign 
+  
+  lblNewSignature.W = Max(64, $hEditor.W - 64)
+  lblNewSignature.Text = sSign
+  lblNewSignature.Adjust
+  'lblSignature.AutoResize = FALSE
+  'lblSignature.W = lblNewSignature.W
+  'DEBUG lblSignature.W;; hEditor.W
+  
+  $hSymbol = hSymbol
+  $X = iX
+  
+  UpdateSignature(hForm)
+  
+  ' If $bShowHelp Then
+  '   MHelp.InitWebViewWith(webHelp, MHelp.TYPE_SYMBOL, hSymbol.Name, hSymbol.Class, "noimage")
+  '   sepHelp.Show
+  '   webHelp.Show
+  '   panRight.Show
+  '   $iMinW = Max(128, lblNewSignature.W + 2 + panRight.W + btnHelp.W)
+  '   $iMinH = Desktop.Scale * 24
+  '   Me.Resize(Max(Me.W, $iMinW), Max(Me.H, $iMinH))
+  ' Else
+  '   sepHelp.Hide
+  '   webHelp.Hide
+  '   panRight.Hide
+  '   Me.Resize(lblNewSignature.W + 2 + btnHelp.W, lblSignature.H + 2)
+  ' Endif
+
+  lblSignature.Text = sSign
+  'lblSignature.Adjust
+  
   
 End
 
@@ -194,5 +241,12 @@ Public Sub webHelp_Error()
     webHelp.Stop
     MHelp.ManageSpecialLink($sLastUrl)
   Endif
+
+End
+
+Public Sub btnHelp_Click()
+
+  $bShowHelp = Not $bShowHelp
+  UpdateSignature
 
 End

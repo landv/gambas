@@ -11,19 +11,23 @@
     MoveScaled(1,1,39,30)
     Arrangement = Arrange.Vertical
     Border = Border.Plain
-    { lblSignature TextLabel
-      MoveScaled(1,1,33,4)
-      Background = Color.TextBackground
-      Foreground = &H000000&
-      Padding = 2
-      Text = ("")
-      Alignment = Align.Normal
-    }
-    { tmrHideHelp #Timer
-      #X = 120
-      #Y = 18
-      Enabled = True
-      Delay = 2000
+    { panSignature HBox
+      MoveScaled(1,1,36,4)
+      { lblSignature TextLabel
+        MoveScaled(0,0,24,4)
+        Background = Color.TextBackground
+        Foreground = &H000000&
+        Expand = True
+        Padding = 2
+        Text = ("")
+        Alignment = Align.Normal
+      }
+      { btnHelp ToolButton
+        MoveScaled(30,0,4,4)
+        Background = Color.TextBackground
+        Text = ("")
+        Border = True
+      }
     }
     { sepHelp Separator
       MoveScaled(2,7,24,0)
@@ -56,7 +60,7 @@
       }
     }
     { lblNewSignature TextLabel
-      MoveScaled(2,1,33,4)
+      MoveScaled(2,21,33,4)
       Visible = False
       Foreground = &H000000&
       Ignore = True
