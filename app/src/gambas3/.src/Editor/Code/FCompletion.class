@@ -223,7 +223,7 @@ Private Sub AddClassesAndFill(aClass As String[], Optional sBegin As String)
     Next
   Next
 
-  aClass.Sort(gb.Text)
+  aClass.Sort(gb.IgnoreCase)
 
   hPic[0] = Picture["img/16/gambas.png"]
   hPic[1] = Picture["img/16/class.png"]
@@ -278,7 +278,7 @@ Private Sub FillWithSymbol(sClass As String, bStatic As Boolean, bPrivate As Boo
     aSymbol.Add(hSymbol.Name)
   Next
 
-  aSymbol.Sort(gb.Text)
+  aSymbol.Sort(gb.IgnoreCase)
 
   For Each sSymbol In aSymbol
     hSymbol = cSymbol[sSymbol]
@@ -687,11 +687,11 @@ Private Sub CompleteItem() As Boolean
   Try sNext = lvwComp.Item.Text
   
   For iPos = Len($sText) + 1 To Min(Len(sCurrent), Len(sNext))
-    If Comp(Mid$(sCurrent, iPos, 1), Mid$(sNext, iPos, 1), gb.Text) Then Break
+    If Comp(Mid$(sCurrent, iPos, 1), Mid$(sNext, iPos, 1), gb.IgnoreCase) Then Break
   Next
 
   sText = Left$(sCurrent, iPos - 1)    
-  If Comp(sText, $sText, gb.Text) = 0 Or Not sText Then 
+  If Comp(sText, $sText, gb.IgnoreCase) = 0 Or Not sText Then 
     InsertItem
   Else  
     $sText = sText

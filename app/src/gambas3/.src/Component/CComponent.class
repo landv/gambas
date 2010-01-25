@@ -979,7 +979,7 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
   Endif
 
   aClass = Project.GetClasses()
-  iFind = aClass.Find(sClass, gb.Text)
+  iFind = aClass.Find(sClass, gb.IgnoreCase)
 
   If iFind < 0 Then
     If hClass Then
@@ -1017,7 +1017,7 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
   If hPModule Then
     cSymbol = hPModule.Scan
     If MustScan(hPModule) Then
-      cSymbol = New Collection(gb.Text)
+      cSymbol = New Collection(gb.IgnoreCase)
       hPModule.Scan = cSymbol
       ScanClass(hPModule, cSymbol, True)
     Endif
@@ -1026,7 +1026,7 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
   Else If hPClass Then
     cSymbol = hPClass.Scan
     If MustScan(hPClass) Then
-      cSymbol = New Collection(gb.Text)
+      cSymbol = New Collection(gb.IgnoreCase)
       hPClass.Scan = cSymbol
       If hPForm Then
         For Each hSymbol In CComponent.Classes["Form"].Symbols
@@ -1055,7 +1055,7 @@ Static Public Sub Reset()
     hComponent.Loaded = False
   Next
 
-  Classes = New Collection(gb.Text)
+  Classes = New Collection(gb.IgnoreCase)
 
   All["gb"].Load
 

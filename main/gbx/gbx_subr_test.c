@@ -662,9 +662,16 @@ void SUBR_strcomp(void)
 	{
 		SUBR_get_string_len(&PARAM[0], &s1, &l1);
 		SUBR_get_string_len(&PARAM[1], &s2, &l2);
-	
-		ret = COMPARE_string_lang(s1, l1, s2, l2, mode, FALSE);
-  }
+		
+		if (mode & GB_COMP_NATURAL)
+			ret = COMPARE_string_natural(s1, l1, s2, l2, mode & GB_COMP_TEXT, mode & GB_COMP_LANG);
+		else if (mode & GB_COMP_LIKE)
+			ret = COMPARE_string_like(s1, l1, s2, l2);
+		else if (mode & GB_COMP_LANG)
+			ret = COMPARE_string_lang(s1, l1, s2, l2, mode & GB_COMP_TEXT, FALSE);
+		else
+			THROW(E_ARG);
+	}
   
 	RETURN->_integer.type = T_INTEGER;
 	RETURN->_integer.value = ret;

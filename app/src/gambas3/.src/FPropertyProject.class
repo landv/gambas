@@ -1114,7 +1114,7 @@ Private Sub ReadFeatures(hCont As Container, aFeature As String[])
   Dim hCtrl As CheckBox
   
   For Each hCtrl In hCont.Children
-    hCtrl.Value = aFeature.Find(hCtrl.Tag, gb.Text) >= 0
+    hCtrl.Value = aFeature.Find(hCtrl.Tag, gb.IgnoreCase) >= 0
   Next
   
 End

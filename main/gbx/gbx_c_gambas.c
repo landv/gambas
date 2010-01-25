@@ -23,7 +23,6 @@
 #define __GBX_C_GAMBAS_C
 
 #include "gbx_info.h"
-
 #include "gbx_local.h"
 #include "gbx_compare.h"
 #include "gb_type_common.h"
@@ -32,6 +31,7 @@
 
 #ifndef GBX_INFO
 
+#include "gb_error.h"
 #include "gbx_api.h"
 #include "gbx_class.h"
 #include "gbx_exec.h"
@@ -164,6 +164,13 @@ BEGIN_METHOD_VOID(COBSERVER_free)
 
 END_METHOD
 
+BEGIN_PROPERTY(gb_Text)
+
+	ERROR_deprecated("gb.Text");
+	GB_ReturnInteger(GB_COMP_TEXT);
+
+END_PROPERTY
+
 #endif
 
 GB_DESC NATIVE_Param[] =
@@ -212,12 +219,11 @@ GB_DESC NATIVE_Gambas[] =
   GB_DECLARE("gb", 0), GB_VIRTUAL_CLASS(),
 
   GB_CONSTANT("Binary", "i", GB_COMP_BINARY),
-  GB_CONSTANT("Text", "i", GB_COMP_TEXT),
-  //GB_CONSTANT("Case", "i", GB_COMP_TEXT),
+  GB_STATIC_PROPERTY_READ("Text", "i", gb_Text),
   GB_CONSTANT("IgnoreCase", "i", GB_COMP_TEXT),
   GB_CONSTANT("Language", "i", GB_COMP_LANG),
-  //GB_CONSTANT("UseLanguage", "i", GB_COMP_LANG),
 	GB_CONSTANT("Like","i",GB_COMP_LIKE),
+	GB_CONSTANT("Natural","i",GB_COMP_NATURAL),
 
   GB_CONSTANT("Ascent", "i", GB_COMP_ASCENT),
   GB_CONSTANT("Descent", "i", GB_COMP_DESCENT),

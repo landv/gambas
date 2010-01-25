@@ -559,3 +559,8 @@ void ERROR_set_last(void)
 	fprintf(stderr, "ERROR_set_last: DEBUG_copy_backtrace: <<%p>>\n", ERROR_last.backtrace);
 	#endif
 }
+
+void ERROR_deprecated(const char *msg)
+{
+	fprintf(stderr, "%s: %s\n", DEBUG_get_current_position(), msg);
+}

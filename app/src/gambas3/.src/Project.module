@@ -844,7 +844,7 @@ Public Sub GetParentClass(sPath As String) As String
       Highlight.Analyze(sLine)
       sLine = Highlight.Symbols[1]
       'sLine = Scan(sLine, "INHERITS *")[0]
-      If Comp(sLine, File.BaseName(sPath), gb.Text) = 0 Then sLine = ""
+      If Comp(sLine, File.BaseName(sPath), gb.IgnoreCase) = 0 Then sLine = ""
       Return sLine
     Endif
     If sLine Like "CREATE" Then Continue 
@@ -1002,7 +1002,7 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
             Wend
           Endif
           While .Available
-            If String.Comp(.Item.Text, sFile, gb.Text) > 0 Then Break
+            If String.Comp(.Item.Text, sFile, gb.IgnoreCase) > 0 Then Break
             If bDir And If Not IsDir(.Item.Key) Then Break
             sAfter = .Item.Key
             .MoveNext
@@ -3421,7 +3421,7 @@ End
 
 Public Function Exist(sName As String) As Boolean
 
-  Return Project.GetClasses().Find(sName, gb.Text) >= 0
+  Return Project.GetClasses().Find(sName, gb.IgnoreCase) >= 0
 
 End
 

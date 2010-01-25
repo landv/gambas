@@ -5,7 +5,7 @@ Public FormType As String
 
 Public Master As CControl
 Public Selection As New Collection
-Public Control As New Collection(gb.Text)
+Public Control As New Collection(gb.IgnoreCase)
 Public AllMenus As New CControl[]
 
 Public Container As Container
@@ -1898,7 +1898,7 @@ Private Sub CreateMenu()
 
   mnuSelect.Enabled = cCtrl.Count
 
-  cCtrl.Sort(gb.Text)
+  cCtrl.Sort(gb.IgnoreCase)
 
   For Each sName In cCtrl
 

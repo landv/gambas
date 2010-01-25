@@ -208,6 +208,7 @@ void ERROR_reset(ERROR_INFO *info);
 void ERROR_lock();
 void ERROR_unlock();
 void ERROR_set_last();
+void ERROR_deprecated(const char *msg);
 
 #define ERROR_exit() ERROR_reset(&ERROR_last)
 

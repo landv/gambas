@@ -191,7 +191,7 @@ Public Function GetSymbolHelpText(SymbolHelpPath As String) As String
   'Check cache
   If Not $PopupHelpCache Then 
     'Create cache collection
-    $PopupHelpCache = New Collection(gb.Text)
+    $PopupHelpCache = New Collection(gb.IgnoreCase)
   Endif 
   
   If $PopupHelpCache.Exist(SymbolHelpPath) Then 

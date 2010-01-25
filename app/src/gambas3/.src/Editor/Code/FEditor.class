@@ -30,7 +30,7 @@ Static Private $hVirtualSymbol As New CSymbolInfo
 Static Private $bPublic As Boolean
 Static Private $bStatic As Boolean
 Static Private $sName As String
-Static Private $cType As New Collection(gb.Text)
+Static Private $cType As New Collection(gb.IgnoreCase)
 
 Private $iStartLine As Integer
 Private $iEndLine As Integer
@@ -510,7 +510,7 @@ Private Sub CreateMenu()
 
   Next
 
-  cFunc.Sort(gb.Text)
+  cFunc.Sort(gb.IgnoreCase)
   hParent = mnuGoto
 
   'hPoint = Picture["img/16/point.png"]
@@ -3017,7 +3017,7 @@ Public Sub RenameControl(sOld As String, sNew As String)
     bChange = False
     iPos = 0
     Do
-      iPos2 = InStr(sComp, sOld, iPos + 1, gb.Text)
+      iPos2 = InStr(sComp, sOld, iPos + 1, gb.IgnoreCase)
       If iPos2 Then
         iPos = iPos2
         If iPos > 1 Then

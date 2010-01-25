@@ -60,27 +60,10 @@ static const char _char_length[256] =
   3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,6,6,1,1
 };
 
-
-#if 0
-static int get_char_length(const char *s)
+int STRING_get_utf8_char_length(unsigned char c)
 {
-  int n = 1;
-  unsigned char c = *((unsigned char *)s);
-
-  if (c & 0x80)
-  {
-    for (;;)
-    {
-      c <<= 1;
-      if (!(c & 0x80))
-        break;
-      n++;
-    }
-  }
-
-  return n;
+	return _char_length[c];
 }
-#endif
 
 static void init_conv(const char *str, int len)
 {

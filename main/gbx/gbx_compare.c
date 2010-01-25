@@ -36,6 +36,7 @@
 #include "gbx_class.h"
 #include "gbx_exec.h"
 #include "gbx_regexp.h"
+#include "gbx_c_string.h"
 
 static bool _descent = FALSE;
 
@@ -164,32 +165,7 @@ int compare_date(DATE *a, DATE *b)
   return comp;
 }
 
-#define IMPLEMENT_COMPARE_STRING(_name, _func) \
-int compare_string_##_name(char **pa, char **pb) \
-{ \
-  char *a; \
-  char *b; \
-  int comp; \
-  \
-  a = *pa; \
-  if (!a) \
-    a = ""; \
-  \
-  b = *pb; \
-  if (!b) \
-    b = ""; \
-  \
-  comp = _func(a, b); \
-  if (_descent) \
-    comp = -comp; \
-  return comp; \
-}
-
-IMPLEMENT_COMPARE_STRING(binary, strcmp)
-IMPLEMENT_COMPARE_STRING(text, strcasecmp)
-//IMPLEMENT_COMPARE_STRING(lang, strcoll)
-
-int COMPARE_string_lang(char *s1, int l1, char *s2, int l2, bool nocase, bool throw)
+int COMPARE_string_lang(const char *s1, int l1, const char *s2, int l2, bool nocase, bool throw)
 {
   wchar_t *t1 = NULL;
   wchar_t *t2 = NULL;
@@ -230,12 +206,194 @@ int COMPARE_string_lang(char *s1, int l1, char *s2, int l2, bool nocase, bool th
 	errno = 0;
 	cmp = wcscoll(t1, t2);
 	if (!errno)
-		return cmp;
+		return (cmp < 0) ? - 1 : (cmp > 0) ? 1 : 0;
 		
 __FAILED:
 	
 	return nocase ? TABLE_compare_ignore_case(s1, l1, s2, l2) : TABLE_compare(s1, l1, s2, l2);
 }
+
+/*
+	Natural sort order.
+	Based on the algorithm made by Martin Pol (http://sourcefrog.net/projects/natsort/)
+*/
+
+static int strnatcmp_compare_right(const char *a, int la, const char *b, int lb)
+{
+	int bias = 0;
+	unsigned char ca, cb;
+     
+	/* The longest run of digits wins.  That aside, the greatest
+	value wins, but we can't know that it will until we've scanned
+	both numbers to know that they have the same magnitude, so we
+	remember it in BIAS. */
+  
+	for (;; a++, b++, la--, lb--) 
+	{
+		ca = (la > 0) ? *a : 0;
+		cb = (lb > 0) ? *b : 0;
+		
+	  if (!isdigit(ca) && !isdigit(cb))
+			return bias;
+	  else if (!isdigit(ca))
+			return -1;
+		else if (!isdigit(cb))
+			return +1;
+		else if (ca < cb) 
+		{
+			if (!bias)
+				bias = -1;
+		} 
+		else if (ca > cb) 
+		{
+			if (!bias)
+				bias = +1;
+		} 
+		else if (!ca  &&  !cb)
+			return bias;
+	}
+
+	return 0;
+}
+
+
+static int strnatcmp_compare_left(const char *a, int la, const char *b, int lb)
+{
+	unsigned char ca, cb;
+
+	/* Compare two left-aligned numbers: the first to have a
+		different value wins. */
+	for (;; a++, b++, la--, lb--) 
+	{
+		ca = (la > 0) ? *a : 0;
+		cb = (lb > 0) ? *b : 0;
+		
+		if (!isdigit(ca) && !isdigit(cb))
+			return 0;
+		else if (!isdigit(ca))
+			return -1;
+		else if (!isdigit(cb))
+			return +1;
+		else if (ca < cb)
+			return -1;
+		else if (ca > cb)
+			return +1;
+	}
+
+	return 0;
+}
+
+int COMPARE_string_natural(const char *a, int la, const char *b, int lb, bool nocase, bool lang)
+{
+	int ai, bi, lca, lcb;
+	unsigned char ca, cb;
+	int fractional, result;
+		
+	ai = bi = 0;
+	
+	for(;;)
+	{
+		for(;;)
+		{
+			if (ai >= la)
+			{
+				ca = 0;
+				break;
+			}
+			ca = a[ai];
+			if (!isspace(ca))
+				break;
+			ai++;
+		}
+		
+		for(;;)
+		{
+			if (bi >= lb)
+			{
+				cb = 0;
+				break;
+			}
+			cb = b[bi];
+			if (!isspace(cb))
+				break;
+			bi++;
+		}
+		
+		/* process run of digits */
+		if (isdigit(ca) && isdigit(cb)) 
+		{
+			fractional = (ca == '0' || cb == '0');
+
+			if (fractional) 
+			{
+				if ((result = strnatcmp_compare_left(a+ai, la-ai, b+bi, lb-bi)) != 0)
+					return result;
+			} 
+			else
+			{
+				if ((result = strnatcmp_compare_right(a+ai, la-ai, b+bi, lb-bi)) != 0)
+					return result;
+			}
+		}	
+
+		if (!ca && !cb) 
+		{
+			/* The strings compare the same.  Perhaps the caller will want to call strcmp to break the tie. */
+			return 0;
+		}
+
+		if (lang)
+		{
+			lca = STRING_get_utf8_char_length(ca);
+			lcb = STRING_get_utf8_char_length(cb);
+			if (lca > 1 || lcb > 1)
+			{
+				if ((result = COMPARE_string_lang(&a[ai], lca, &b[bi], lcb, nocase, FALSE)))
+					return result;
+				ai += lca;
+				bi += lcb;
+				continue;
+			}
+		}
+
+		if (nocase)
+		{
+			ca = toupper(ca);
+			cb = toupper(cb);
+		}
+	
+		if (ca < cb)
+			return -1;
+		else if (ca > cb)
+			return +1;
+		++ai; ++bi;
+	}
+}
+
+
+#define IMPLEMENT_COMPARE_STRING(_name, _func) \
+int compare_string_##_name(char **pa, char **pb) \
+{ \
+  char *a; \
+  char *b; \
+  int comp; \
+  \
+  a = *pa; \
+  if (!a) \
+    a = ""; \
+  \
+  b = *pb; \
+  if (!b) \
+    b = ""; \
+  \
+  comp = _func(a, b); \
+  if (_descent) \
+    comp = -comp; \
+  return comp; \
+}
+
+IMPLEMENT_COMPARE_STRING(binary, strcmp)
+IMPLEMENT_COMPARE_STRING(case, strcasecmp)
 
 static int compare_string_lang(char **pa, char **pb)
 {
@@ -249,12 +407,31 @@ static int compare_string_lang_case(char **pa, char **pb)
 	return _descent ? (-diff) : diff;
 }
 
+int COMPARE_string_like(const char *s1, int l1, const char *s2, int l2)
+{
+	return REGEXP_match(s2, l2, s1, l1) ? 0 : TABLE_compare_ignore_case(s1, l1, s2, l2);
+}
+
 static int compare_string_like(char **pa, char **pb)
 {
 	int la = *pa ? strlen(*pa) : 0;
 	int lb = *pb ? strlen(*pb) : 0;
-	return REGEXP_match(*pb, lb, *pa, la) ? 0 : TABLE_compare_ignore_case(*pa, la, *pb, lb);
+	return COMPARE_string_like(*pa, la, *pb, lb);
+	//return REGEXP_match(*pb, lb, *pa, la) ? 0 : TABLE_compare_ignore_case(*pa, la, *pb, lb);
 }
+
+#define IMPLEMENT_COMPARE_STRING_NATURAL(_name, _nocase, _lang) \
+static int compare_string_##_name(char **pa, char **pb) \
+{ \
+	int la = *pa ? strlen(*pa) : 0; \
+	int lb = *pb ? strlen(*pb) : 0; \
+	return COMPARE_string_natural(*pa, la, *pb, lb, _nocase, _lang); \
+}
+
+IMPLEMENT_COMPARE_STRING_NATURAL(natural, FALSE, FALSE)
+IMPLEMENT_COMPARE_STRING_NATURAL(natural_case, TRUE, FALSE)
+IMPLEMENT_COMPARE_STRING_NATURAL(natural_lang, FALSE, TRUE)
+IMPLEMENT_COMPARE_STRING_NATURAL(natural_lang_case, TRUE, TRUE)
 
 int COMPARE_object(void **a, void **b)
 {
@@ -333,8 +510,12 @@ COMPARE_FUNC COMPARE_get(TYPE type, int mode)
       {
         case GB_COMP_LANG | GB_COMP_TEXT: return (COMPARE_FUNC)compare_string_lang_case;
         case GB_COMP_LANG: return (COMPARE_FUNC)compare_string_lang;
-        case GB_COMP_TEXT: return (COMPARE_FUNC)compare_string_text;
+        case GB_COMP_TEXT: return (COMPARE_FUNC)compare_string_case;
 				case GB_COMP_LIKE: return (COMPARE_FUNC)compare_string_like;
+				case GB_COMP_NATURAL: return (COMPARE_FUNC)compare_string_natural;
+				case GB_COMP_NATURAL | GB_COMP_TEXT: return (COMPARE_FUNC)compare_string_natural_case;
+				case GB_COMP_NATURAL | GB_COMP_LANG: return (COMPARE_FUNC)compare_string_natural_lang;
+				case GB_COMP_NATURAL | GB_COMP_LANG | GB_COMP_TEXT: return (COMPARE_FUNC)compare_string_natural_lang_case;
         default: return (COMPARE_FUNC)compare_string_binary;
       }
 

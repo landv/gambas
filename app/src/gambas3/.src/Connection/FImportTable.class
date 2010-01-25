@@ -261,7 +261,7 @@ Private Sub MakeFields(aField As String[]) As String[]
     Else
       iCount = 1
       Do 
-        iPos = aField.Find(sField, gb.Text)
+        iPos = aField.Find(sField, gb.IgnoreCase)
         If iPos < 0 Or If iPos >= I Then Break
         Inc iCount
         If iCount > 2 Then

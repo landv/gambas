@@ -27,7 +27,7 @@ Property Settings As Variant[]
 Property Read Count As Integer
 
 Static Private $aImgExt As String[] = ["png", "jpeg", "jpg", "gif", "xpm"]
-Static Private $cExt As New Collection(gb.Text)
+Static Private $cExt As New Collection(gb.IgnoreCase)
 
 Private $sDir As String
 Private $bShowHidden As Boolean
@@ -423,7 +423,7 @@ Public Sub View_Compare(Key As String, OtherKey As String)
 
     End Select
 
-    If iComp = 0 Then iComp = Comp(Key, OtherKey, gb.Text + gb.Language)
+    If iComp = 0 Then iComp = Comp(Key, OtherKey, gb.IgnoreCase + gb.Language)
 
     'IF NOT $bAsc THEN iComp = (- iComp)
 

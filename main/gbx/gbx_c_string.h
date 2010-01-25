@@ -31,4 +31,6 @@ EXTERN GB_DESC NATIVE_String[];
 
 #endif
 
+int STRING_get_utf8_char_length(unsigned char c);
+
 #endif
