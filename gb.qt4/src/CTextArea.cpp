@@ -24,7 +24,7 @@
 
 #include <qapplication.h>
 #include <qpalette.h>
-#include <QTextEdit>
+#include <QPlainTextEdit>
 #include <QTextBlock>
 
 #include "gambas.h"
@@ -38,10 +38,28 @@ DECLARE_EVENT(EVENT_Change);
 DECLARE_EVENT(EVENT_Cursor);
 DECLARE_EVENT(EVENT_Link);
 
-#if 0
+static int get_length(void *_object)
+{
+	if (THIS->length < 0)
+	{
+		QTextBlock block = WIDGET->document()->begin();
+		int len = 0;
+		
+		while (block.isValid())
+		{
+			len += block.length();
+			block = block.next();
+		}
+
+		THIS->length = len - 1;
+	}
+	
+	return THIS->length;
+}
+
 static void to_pos(QTextEdit *wid, int par, int car, int *pos)
 {
-	QTextCursor cursor(wid);
+	QTextCursor cursor = wid->textCursor();
 	QTextBlock block = cursor.block();
   int p = 0;
 
@@ -58,44 +76,19 @@ static void to_pos(QTextEdit *wid, int par, int car, int *pos)
 }
 
 
-static void from_pos(QTextEdit *wid, int pos, int *par, int *car)
+static void from_pos(CTEXTAREA *_object, int pos, int *par, int *car)
 {
-	QTextCursor cursor(wid);
-	QTextBlock block = cursor.block();
-  int i;
-  int l;
-
-  for (i = 0;; i++)
-  {
-  	if (!block.isValid())
-  	{
-      pos = wid->length();
-      i--;
-  		break;
-  	}
-  		
-    l = block.length();
-    
-    if (pos <= l)
-      break;
-    
-    pos -= l + 1;
-  }
-
-  *par = i;
-  *car = pos;
+	QTextCursor cursor = WIDGET->textCursor();
+	
+	if (pos >= get_length(THIS))
+		cursor.movePosition(QTextCursor::End);
+	else
+		cursor.setPosition(pos);
+	
+  *par = cursor.blockNumber();
+	*car = cursor.position() - cursor.block().position();
 }
 
-
-static void look_pos(QTextEdit *wid, int *line, int *col)
-{
-  if (*line == -1)
-    *line = wid->paragraphs();
-
-  if (*col == -1)
-    *col = wid->paragraphLength(*line);
-}
-#endif
 
 static void get_selection(QTextEdit *wid, int *start, int *length)
 {
@@ -108,8 +101,9 @@ static void get_selection(QTextEdit *wid, int *start, int *length)
 
 /** MyTextEdit *************************************************************/
 
-MyTextEdit::MyTextEdit(QWidget *parent) : QTextEdit( parent)
+MyTextEdit::MyTextEdit(QWidget *parent) : QPlainTextEdit( parent)
 {
+	setTabChangesFocus(true);
   //viewport()->setMouseTracking(true);
 }
 
@@ -134,7 +128,6 @@ BEGIN_METHOD(CTEXTAREA_new, GB_OBJECT parent)
   QObject::connect(wid, SIGNAL(textChanged()), &CTextArea::manager, SLOT(changed()));
   QObject::connect(wid, SIGNAL(cursorPositionChanged()), &CTextArea::manager, SLOT(cursor()));
 
-  //wid->setTextFormat(Qt::PlainText);
   wid->setLineWrapMode(QTextEdit::NoWrap);
 	
 	THIS->widget.flag.fillBackground = true;
@@ -167,25 +160,6 @@ BEGIN_PROPERTY(CTEXTAREA_alignment)
 
 END_PROPERTY
 */
-
-static int get_length(void *_object)
-{
-	if (THIS->length < 0)
-	{
-		QTextBlock block = WIDGET->document()->begin();
-		int len = 0;
-		
-		while (block.isValid())
-		{
-			len += block.length() + 1;
-			block = block.next();
-		}
-
-		THIS->length = len - 1;
-	}
-	
-	return THIS->length;
-}
 
 BEGIN_PROPERTY(CTEXTAREA_length)
 
@@ -445,7 +419,6 @@ BEGIN_METHOD_VOID(CTEXTAREA_sel_all) //, GB_BOOLEAN sel)
 END_METHOD
 
 
-#if 0
 BEGIN_METHOD(CTEXTAREA_to_pos, GB_INTEGER line; GB_INTEGER col)
 
   int pos;
@@ -461,7 +434,7 @@ BEGIN_METHOD(CTEXTAREA_to_line, GB_INTEGER pos)
 
   int line, col;
 
-  from_pos(WIDGET, VARG(pos), &line, &col);
+  from_pos(THIS, VARG(pos), &line, &col);
 
   GB.ReturnInteger(line);
 
@@ -472,12 +445,11 @@ BEGIN_METHOD(CTEXTAREA_to_col, GB_INTEGER pos)
 
   int line, col;
 
-  from_pos(WIDGET, VARG(pos), &line, &col);
+  from_pos(THIS, VARG(pos), &line, &col);
 
   GB.ReturnInteger(col);
 
 END_METHOD
-#endif
 
 
 BEGIN_METHOD_VOID(CTEXTAREA_copy)
@@ -608,9 +580,9 @@ GB_DESC CTextAreaDesc[] =
   GB_METHOD("Undo", NULL, CTEXTAREA_undo, NULL),
   GB_METHOD("Redo", NULL, CTEXTAREA_redo, NULL),
 
-  //GB_METHOD("ToPos", "i", CTEXTAREA_to_pos, "(Line)i(Column)i"),
-  //GB_METHOD("ToLine", "i", CTEXTAREA_to_line, "(Pos)i"),
-  //GB_METHOD("ToColumn", "i", CTEXTAREA_to_col, "(Pos)i"),
+  GB_METHOD("ToPos", "i", CTEXTAREA_to_pos, "(Line)i(Column)i"),
+  GB_METHOD("ToLine", "i", CTEXTAREA_to_line, "(Pos)i"),
+  GB_METHOD("ToColumn", "i", CTEXTAREA_to_col, "(Pos)i"),
 
   GB_METHOD("EnsureVisible", NULL, CTEXTAREA_ensure_visible, NULL),
 

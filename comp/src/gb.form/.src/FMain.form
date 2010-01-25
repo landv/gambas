@@ -19,16 +19,20 @@
       Text = ("Action 3")
     }
   }
-  { TextBox1 TextBox
-    MoveScaled(9,6,39,6)
-    Text = ("TextBox1")
-  }
   { Button1 Button
     MoveScaled(33,1,12,5)
     Font = Font["Bold"]
     Text = ("Button1")
   }
-  { FontChooser1 FontChooser
-    MoveScaled(1,15,71,38)
+  { TextBox1 ButtonBox
+    MoveScaled(9,6,48,4)
+    Text = ("TextBox1")
+  }
+  { DatePicker1 DatePicker
+    MoveScaled(4,15,43,6)
+  }
+  { ValueBox1 ValueBox
+    MoveScaled(16,28,25,5)
+    Type = ValueBox.Date
   }
 }

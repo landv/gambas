@@ -4,7 +4,7 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Text,Picture,ReadOnly"
+Public Const _Properties As String = "*,Text,Picture,ReadOnly,Border=True"
 Public Const _DefaultEvent As String = "Click"
 
 Event Click
@@ -14,6 +14,7 @@ Property Picture As Picture
 Property Text As String
 Property Read Length As Integer
 Property ReadOnly As Boolean
+Property Border As Boolean
 
 Private $hPanel As Panel
 Private $hBackground As TextBox
@@ -45,7 +46,7 @@ Public Sub _new()
   
   $hButton = New Button($hPanel) As "Button"
   $hButton.W = Desktop.Scale * 4
-  $hButton.Picture = Picture["img/select.png"]
+  $hButton.Picture = Picture["./img/select.png"]
   
   $hTextBox.SetFocus
   
@@ -130,5 +131,18 @@ End
 Private Function Length_Read() As Integer
 
   Return $hTextBox.Length
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $hBackground.Border
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $hBackground.Border = Value
+  $hPanel.Padding = If(Value, 3, 0)
 
 End

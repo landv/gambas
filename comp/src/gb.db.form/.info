@@ -25,10 +25,14 @@ Adjust
 p
 b
 
+Editable
+p
+b
+
 _Properties
 C
 s
-*,Control=True,Adjust,Columns{Field[]},Header=True,Orientation{Align.Bottom;Left;Right;Top}=Bottom
+*,Control=True,Adjust,Columns{Field[]},Editable,Header=True,Orientation{Align.Bottom;Left;Right;Top}=Bottom
 _new
 m
 
@@ -385,10 +389,26 @@ Create
 m
 
 [(bRefresh)b]
+_EditCurrent
+m
+Result
+
+_UpdateCurrent
+m
+
+(rData)Result;
+_CreateCurrent
+m
+Result
+
 _GetInfo
 m
 DataField
 (Key)s
+_DeleteCurrent
+m
+
+
 Remove
 m
 b
@@ -419,7 +439,7 @@ C
 _Properties
 C
 s
-*,Mode{Select.None;Single;Multiple}=None,Header{TableView.None;Horizontal;Vertical;Both}=Both,Grid,Highlight=True,Columns{Field[]},Border=True
+*,Mode{Select.None;Single;Multiple}=None,Editable,Header{TableView.None;Horizontal;Vertical;Both}=Both,Grid,Highlight=True,Columns{Field[]},Border=True
 _DrawWith
 C
 s
@@ -448,6 +468,10 @@ Border
 p
 b
 
+Editable
+p
+b
+
 Columns
 p
 String[]
@@ -472,11 +496,11 @@ _new
 m
 
 
-Create
+Refresh
 m
 
 
-Refresh
+Create
 m
 
 
@@ -484,6 +508,10 @@ MoveTo
 m
 
 (Index)i
+TableView_Scroll
+m
+
+
 TableView_Timer
 m
 
@@ -500,6 +528,10 @@ TableView_Change
 m
 
 
+TableView_Save
+m
+
+(Row)i(Column)i(Value)s
 MoveFirst
 m
 
@@ -513,6 +545,18 @@ m
 
 
 MovePrevious
+m
+
+
+Save
+m
+b
+
+CreateTimer_Timer
+m
+
+
+TableView_Insert
 m
 
 

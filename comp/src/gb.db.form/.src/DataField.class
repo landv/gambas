@@ -16,7 +16,7 @@ Public Function GetWidth(hCtrl As Control) As Integer
   Select Case Type
 
     Case db.Boolean
-      iWidth = hCtrl.Font.Width(Str(False))
+      iWidth = hCtrl.Font.Width("False") + 32
 
     Case db.Integer
       iWidth = hCtrl.Font.Width("9") * 8
@@ -28,7 +28,7 @@ Public Function GetWidth(hCtrl As Control) As Integer
       iWidth = hCtrl.Font.Width("9") * 16
 
     Case db.Date
-      iWidth = hCtrl.Font.Width("9") * 20
+      iWidth = hCtrl.Font.Width("9") * 20 + 12
 
     Case db.String
       iLen = Length

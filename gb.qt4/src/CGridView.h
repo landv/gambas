@@ -57,6 +57,7 @@ typedef
     CWIDGET widget;
     int row;
     int col;
+		unsigned scroll_event : 1;
     }
   CGRIDVIEW;
 

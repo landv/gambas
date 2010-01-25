@@ -51,7 +51,7 @@ C
 _Properties
 C
 s
-*,Text,Picture,ReadOnly
+*,Text,Picture,ReadOnly,Border=True
 _DefaultEvent
 C
 s
@@ -77,6 +77,10 @@ r
 i
 
 ReadOnly
+p
+b
+
+Border
 p
 b
 
@@ -1367,7 +1371,7 @@ Editor_KeyPress
 m
 
 
-Editor_LostFocus
+Timer_Timer
 m
 
 

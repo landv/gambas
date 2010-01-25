@@ -21,6 +21,8 @@ Private $iCol As Integer
 Private $iRow As Integer
 Private $hWatcher As Watcher
 Private $bNoKeyboard As Boolean
+Private $hTimer As Timer
+Private $bDoNotHideEditor As Boolean
 
 Public Sub _new()
   
@@ -39,6 +41,8 @@ Public Sub _new()
   $hTextBox.Border = False
   $hTextBox.Background = Color.TextBackground
   $hTextBox.Hide
+  
+  $hTimer = New Timer As "Timer"
 
 End
 
@@ -65,7 +69,8 @@ End
 
 Public Sub Save() As Boolean
   
-  Return HideEditor()
+  If SaveEditor() Then Return True
+  HideEditor(True)
   
 End
 
@@ -79,7 +84,7 @@ Private Sub HideEditor(Optional bNoSave As Boolean) As Boolean
   
   Dim bCancel As Boolean
   
-  If $hEditor Then
+  If $hEditor And If Not $bDoNotHideEditor Then
     If Not bNoSave Then 
       bCancel = SaveEditor()
     Endif
@@ -150,7 +155,11 @@ End
 
 Public Sub GridView_Scroll()
   
-  HideEditor
+  If $bDoNotHideEditor Then
+    MoveEditor
+  Else
+    HideEditor
+  Endif
   
 End
 
@@ -205,6 +214,8 @@ End
 
 Public Sub EditWith(Editor As Control)
   
+  Dim hObs As Observer
+
   HideEditor
   
   $iCol = Me.Column
@@ -214,6 +225,9 @@ Public Sub EditWith(Editor As Control)
   
   $hEditor = Editor
   $bTextBox = False
+  If Editor Is TextArea Or If Editor Is TextBox Or If Editor Is ButtonBox Then
+    $bTextBox = True
+  Endif
   
   Try $hEditor.Text = Me[$iRow, $iCol].Text
   If Error Then
@@ -221,6 +235,8 @@ Public Sub EditWith(Editor As Control)
     Error.Raise("The TableView editor must have a Text public property")
   Endif
     
+  hObs = New Observer($hEditor) As "Editor"
+
   Try $hEditor.SelectAll
   MoveEditor
   Try $hEditor.SetFocus
@@ -242,7 +258,6 @@ End
 
 Public Sub Editor_KeyPress()
 
-  
   Select Case Key.Code
   
     Case Key.Escape
@@ -255,6 +270,13 @@ Public Sub Editor_KeyPress()
 
     Case Key.Up
       If $bNoKeyboard Then Return
+      If $hEditor Is TextArea And If $hEditor.Line > 0 Then Return
+
+      If SaveEditor() Then
+        Stop Event
+        Return
+      Endif
+      
       While Me.Row > 0
         Dec Me.Row
         Raise Click
@@ -262,10 +284,18 @@ Public Sub Editor_KeyPress()
           Stop Event
           Break
         Endif
+        Break
       Wend
 
     Case Key.Down
       If $bNoKeyboard Then Return
+      If $hEditor Is TextArea And If $hEditor.Line < $hEditor.ToLine($hEditor.Length) Then Return
+
+      If SaveEditor() Then
+        Stop Event
+        Return
+      Endif
+
       While Me.Row < (Me.Rows.Count - 1)
         Inc Me.Row
         Raise Click
@@ -273,11 +303,18 @@ Public Sub Editor_KeyPress()
           Stop Event
           Break
         Endif
+        Break
       Wend
 
     Case Key.Left
       If $bNoKeyboard Then Return
       If $bTextBox And If $hEditor.Pos > 0 Then Return
+      
+      If SaveEditor() Then
+        Stop Event
+        Return
+      Endif
+      
       Do
         If Me.Column > 0 Then 
           Dec Me.Column
@@ -298,6 +335,12 @@ Public Sub Editor_KeyPress()
     Case Key.Right
       If $bNoKeyboard Then Return
       If $bTextBox And If $hEditor.Pos < $hEditor.Length Then Return
+
+      If SaveEditor() Then
+        Stop Event
+        Return
+      Endif
+      
       Do
         If Me.Column < (Me.Columns.Count - 1) Then 
           Inc Me.Column
@@ -316,11 +359,19 @@ Public Sub Editor_KeyPress()
       Loop
       
     Case Key.Enter, Key.Return
+      
+      If Key.Control Or Key.Shift Then Return
+      
       If $bNoKeyboard Then 
         If $hEditor Then 
           HideEditor
           Stop Event
         Endif
+        Return
+      Endif
+      
+      If SaveEditor() Then
+        Stop Event
         Return
       Endif
       
@@ -345,11 +396,17 @@ Public Sub Editor_KeyPress()
 
   End Select 
   
+  If Not $bDoNotHideEditor Then
+    $bDoNotHideEditor = Not IsNull($hEditor)
+    If $bDoNotHideEditor Then $hTimer.Trigger
+  Endif
+  If Not $hEditor Then Me.SetFocus
+  
 End
 
-Public Sub Editor_LostFocus()
+Public Sub Timer_Timer()
   
-  Stop
+  $bDoNotHideEditor = False
   
 End
 

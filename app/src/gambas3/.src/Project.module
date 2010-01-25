@@ -4009,13 +4009,24 @@ Public Function GetNewName(sPrefix As String, Optional sDir As String) As String
 
   Dim iInd As Integer
   Dim sName As String
+  Dim aFile As String[]
+  Dim iFile As Integer
 
   Do
     Inc iInd
     sName = sPrefix & iInd
     If sDir Then
       If Not Exist(sDir) Then Return sName
-      If Dir(sDir, sName & ".*").Count = 0 And If Not Exist(sDir &/ sName) Then Return sName
+      aFile = Dir(sDir, sName & ".*")
+      iFile = 0
+      While iFile < aFile.Count
+        If Right(aFile[iFile]) = "~" Then
+          aFile.Remove(iFile)
+        Else
+          Inc iFile
+        Endif
+      Wend
+      If aFile.Count = 0 And If Not Exist(sDir &/ sName) Then Return sName
     Else
       If Not Project.Exist(sName) Then Return sName
     Endif

@@ -771,7 +771,8 @@ void MyTable::updateRow(int row)
 	QRect r(contentsToViewport( QPoint( contentsX(), cg.y() - 2 ) ),
 		QSize( contentsWidth(), cg.height()) );
 
-	QApplication::postEvent(viewport(), new QPaintEvent(r));
+	//QApplication::postEvent(viewport(), new QPaintEvent(r));
+	viewport()->update(r);
 }
 
 
@@ -794,7 +795,8 @@ void MyTable::updateColumn(int col)
 	QRect r(contentsToViewport( QPoint( cg.x() - 2, contentsY() ) ),
 		QSize( cg.width(), contentsHeight() ) );
 
-	QApplication::postEvent(viewport(), new QPaintEvent(r));
+	//QApplication::postEvent(viewport(), new QPaintEvent(r));
+	viewport()->update(r);
 }
 
 void MyTable::setCurrentCell(int row, int col)
@@ -1991,10 +1993,10 @@ BEGIN_METHOD(CGRIDVIEW_refresh, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INT
 		y = VARG(y);
 		w = VARGOPT(w, WIDGET->width());
 		h = VARGOPT(h, WIDGET->height());
-		WIDGET->viewport()->repaint(x, y, w, h);
+		WIDGET->viewport()->update(x, y, w, h);
 	}
 	else
-		WIDGET->viewport()->repaint();
+		WIDGET->viewport()->update();
 
 END_METHOD
 
@@ -2381,16 +2383,21 @@ void CGridView::clicked(void)
 	GB.Raise(THIS, EVENT_Click, 0);
 }
 
-static void send_scroll(void *param)
+static void send_scroll(void *_object)
 {
-	GB.Raise(param, EVENT_Scroll, 0);
-	GB.Unref(&param);
+	THIS->scroll_event = FALSE;
+	GB.Raise(THIS, EVENT_Scroll, 0);
+	GB.Unref(&_object);
 }
 
 void CGridView::scrolled(void)
 {
 	GET_SENDER();
 
+	if (THIS->scroll_event)
+		return;
+	
+	THIS->scroll_event = TRUE;
 	GB.Ref(THIS);
 	GB.Post((void (*)())send_scroll, (intptr_t)THIS);
 }

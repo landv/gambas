@@ -65,6 +65,7 @@ Public Sub btnSave_Click()
 
   'DIM hSrc AS DataSource = Common.GetSource(ME)  
   'IF NOT hSrc THEN RETURN
+  dvwBrowser.Save
   $hSrc.Save
 
 End

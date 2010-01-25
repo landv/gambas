@@ -24,6 +24,7 @@
         MoveScaled(2,2,59,18)
         Expand = True
         Columns = ["id", "active", "color", "firstname", "salary"]
+        Editable = True
         Orientation = Align.Top
       }
       { HBox1 HBox
@@ -56,13 +57,15 @@
             MoveScaled(1,23,9,4)
             Text = ("Active")
           }
-          { Label6 Label
-            MoveScaled(1,27,9,4)
-            Text = ("Salary")
-          }
           { Label8 Label
-            MoveScaled(1,31,9,4)
+            MoveScaled(1,27,9,4)
+            Expand = True
             Text = ("Comment")
+            Alignment = Align.TopNormal
+          }
+          { Label6 Label
+            MoveScaled(1,31,9,4)
+            Text = ("Salary")
           }
         }
         { VBox1 VBox
@@ -95,14 +98,14 @@
             MoveScaled(1,23,30,4)
             Field = "active"
           }
-          { DataControl6 DataControl
-            MoveScaled(1,27,30,4)
-            Field = "salary"
-          }
           { DataControl7 DataControl
-            MoveScaled(1,31,42,4)
+            MoveScaled(1,27,42,4)
             Expand = True
             Field = "comment"
+          }
+          { DataControl6 DataControl
+            MoveScaled(1,31,30,4)
+            Field = "salary"
           }
         }
       }

@@ -970,17 +970,20 @@ Static Private Function IsCurrentProc() As Boolean
     Break
 
   Next
+  
+  If Not bProc Then Return
 
-  If bProc Then
+  Inc iPos
+  If iPos >= aLine.Count Then Return
 
+  $sName = aLine[iPos]
+  If $sName = "{" Then 
     Inc iPos
     If iPos >= aLine.Count Then Return
-
-    $sName = aLine[iPos]
-
+    $sName = aLine[iPos + 1]
   Endif
-
-  Return bProc
+  
+  Return True
 
 End
 

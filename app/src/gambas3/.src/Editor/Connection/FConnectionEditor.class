@@ -1398,6 +1398,8 @@ Public Sub btnRemoveData_Click()
 
   If Message.Warning(("Do you really want to remove the selected rows?"), ("Remove"), ("Cancel")) = 2 Then Return
 
+  dvwData.Remove
+
 End
 
 Public Sub btnCopyFieldList_Click()
@@ -1451,5 +1453,29 @@ Public Sub ToolButton1_Click()
 
   Print $hConn.Quote("haddock")
   Print $hConn.Quote("haddock", True)
+
+End
+
+Public Sub btnExportData_Click()
+
+  
+
+End
+
+Public Sub btnAddData_Click()
+
+  dvwData.Create
+
+End
+
+Public Sub btnSaveData_Click()
+
+  dvwData.Save
+
+End
+
+Public Sub btnExportData2_Click()
+
+  
 
 End

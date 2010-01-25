@@ -1,6 +1,7 @@
 ' Gambas class file
 
 Private Const ROUND_SIZE As Integer = 8
+Private Const PADDING As Integer = 8
 
 Static Private $iDelay As Integer = 5000
 
@@ -252,15 +253,15 @@ Public Sub Run(sMsg As String, hCtrl As Control, hIcon As Picture, DX As Integer
     imgIcon.Picture = hIcon
     imgIcon.Resize(hIcon.Width, hIcon.Height)
     imgIcon.Show
-    W = txtMessage.W + 24 + imgIcon.W + 8
-    H = Max(txtMessage.H, imgIcon.H) + 24 + ARROW_HEIGHT * 2
-    imgIcon.Move(12, 12 + ARROW_HEIGHT)
-    txtMessage.Move(imgIcon.X + imgIcon.W + 8, ARROW_HEIGHT + 12) ', ME.W - 32 - imgIcon.W - 8)
+    W = txtMessage.W + imgIcon.W + 8 + PADDING * 2
+    H = Max(txtMessage.H, imgIcon.H) + PADDING * 2 + ARROW_HEIGHT * 2
+    imgIcon.Move(PADDING, PADDING + ARROW_HEIGHT)
+    txtMessage.Move(imgIcon.X + imgIcon.W + 8, PADDING + ARROW_HEIGHT) ', ME.W - 32 - imgIcon.W - 8)
   Else
     imgIcon.Hide
-    W = txtMessage.W + 24
-    H = txtMessage.H + 24 + ARROW_HEIGHT * 2
-    txtMessage.Move(12, ARROW_HEIGHT + 12) ', ME.W - 32)
+    W = txtMessage.W + PADDING * 2
+    H = txtMessage.H + PADDING * 2 + ARROW_HEIGHT * 2
+    txtMessage.Move(PADDING, PADDING + ARROW_HEIGHT) ', ME.W - 32)
   Endif
 
   MakeBorder(W, H)

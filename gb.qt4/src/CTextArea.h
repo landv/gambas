@@ -27,7 +27,7 @@
 
 #include "CWidget.h"
 
-#include <QTextEdit>
+#include <QPlainTextEdit>
 
 #ifndef __CTEXTAREA_CPP
 extern GB_DESC CTextAreaDesc[];
@@ -47,7 +47,7 @@ typedef
     }
   CTEXTAREA;
 
-class MyTextEdit: public QTextEdit
+class MyTextEdit: public QPlainTextEdit
 {
   Q_OBJECT
   

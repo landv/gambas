@@ -10,11 +10,15 @@
     Spacing = True
     { Button1 Button
       MoveScaled(0,0,13,4)
-      Text = ("Clear")
+      Text = ("Create")
     }
     { Button2 Button
       MoveScaled(14,0,13,4)
       Text = ("Refresh")
+    }
+    { Button3 Button
+      MoveScaled(28,0,13,4)
+      Text = ("Remove")
     }
   }
   { DataSource1 DataSource
@@ -24,7 +28,8 @@
     Table = "color"
     { DataView1 DataView
       MoveScaled(11,10,42,34)
-      Mode = Select.Single
+      Mode = Select.Multiple
+      Editable = True
       Grid = True
     }
   }

@@ -116,6 +116,7 @@ Public Sub dwgMonth_Draw()
   Dim iForeground As Integer
   Dim iBackground As Integer
   Dim sKey As String
+  Dim bToday As Boolean
   
   iForeground = dwgMonth.Foreground 'Draw.Foreground
   iBackground = dwgMonth.Background 'Draw.Background
@@ -188,11 +189,12 @@ Public Sub dwgMonth_Draw()
 
       Draw.Rect(X + 1, Y + 1, W - 2, H - 2)
 
-      Draw.Font.Bold = CInt(Now) = CInt(dDate)
+      bToday = CInt(Date(Now)) = CInt(Date(dDate))
+      Draw.Font.Bold = bToday
 
       Draw.Text(Day(dDate), X, Y, W, H, Align.Center)
       
-      If CInt(Now) = CInt(dDate) Then 
+      If bToday Then 
         Draw.LineStyle = Line.Solid
         Draw.FillStyle = Fill.None
         Draw.Foreground = iForeground

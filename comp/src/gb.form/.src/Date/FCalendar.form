@@ -5,7 +5,6 @@
   Text = ("")
   Resizable = False
   Arrangement = Arrange.Vertical
-  Spacing = True
   { panToolbar HBox
     MoveScaled(1,1,55,4)
     Spacing = True
@@ -42,12 +41,14 @@
       MaxValue = 9999
     }
   }
+  { Separator1 Separator
+    MoveScaled(10,6,30,0)
+  }
   { dwgMonth DrawingArea
     MoveScaled(1,7,56,29)
     Background = Color.TextBackground
     Foreground = Color.TextForeground
     Expand = True
     Focus = True
-    Border = Border.Sunken
   }
 }

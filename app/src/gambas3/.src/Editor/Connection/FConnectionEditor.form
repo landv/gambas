@@ -285,7 +285,7 @@
           MoveScaled(2,39,72,31)
           Arrangement = Arrange.Fill
           { datData DataSource
-            MoveScaled(1,4,66,26)
+            MoveScaled(1,3,66,26)
             Arrangement = Arrange.Vertical
             { tlbData ToolBar
               MoveScaled(2,2,61,4)
@@ -293,15 +293,12 @@
               Separator = True
               { btnSaveData ToolButton
                 MoveScaled(0,0,9,4)
-                Visible = False
-                Enabled = False
                 AutoResize = True
                 Text = ("Save")
                 Picture = Picture["icon:/small/save"]
               }
               { btnAddData ToolButton
                 MoveScaled(9,0,8,4)
-                Enabled = False
                 AutoResize = True
                 Text = ("Add")
                 Picture = Picture["icon:/small/add"]
@@ -315,6 +312,7 @@
               { btnExportData ToolButton
                 MoveScaled(34,0,12,4)
                 Visible = False
+                Enabled = False
                 AutoResize = True
                 Text = ("Export...")
                 Picture = Picture["icon:/small/save-as"]
@@ -324,12 +322,13 @@
               MoveScaled(4,8,46,17)
               Expand = True
               Mode = Select.Multiple
+              Editable = True
               Grid = True
               Border = False
             }
           }
           { datRequest DataSource
-            MoveScaled(2,1,66,26)
+            MoveScaled(4,6,66,26)
             Visible = False
             Arrangement = Arrange.Vertical
             { tlbData3 ToolBar

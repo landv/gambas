@@ -342,11 +342,60 @@ Public Sub Create(Optional bRefresh As Boolean)
   
 End
 
+Public Sub _EditCurrent() As Result
+  
+  Dim aKey As String[]
+  Dim aVal As Variant[]
+  Dim hSrc As DataSource
+  Dim sKey As String
+  Dim iPos As Integer
+
+  aKey = $hTable.Keys
+  aVal = Me.Current
+  
+  hSrc = Common.GetSource(Me)
+  If hSrc Then
+    For Each sKey In hSrc.GetKeys()
+      iPos = aKey.Find(sKey)
+      If iPos >= 0 Then aVal[iPos] = hSrc[sKey]
+    Next
+  Endif
+
+  Return _GetDB().Edit($sTable, Replace(Common.MakeWhere(aKey, aVal), "&", "&&"))
+
+End
+
+Public Sub _UpdateCurrent(rData As Result)
+  
+  rData.Update
+  $hTable.Refresh
+
+  Redraw(True)
+    
+End
+
+Public Sub _CreateCurrent() As Result
+  
+  Dim rData As Result
+  Dim hSrc As DataSource
+  Dim sKey As String
+  
+  rData = _GetDB().Create($sTable)
+
+  hSrc = Common.GetSource(Me)
+  If hSrc Then
+    For Each sKey In hSrc.GetKeys()
+      Try rData[sKey] = hSrc[sKey]
+    Next
+  Endif
+
+  Return rData
+  
+End
 
 Public Function Save(Optional bMessage As Boolean = True) As Boolean
   
-  Dim aKey As String[]
-  
+  Dim aKey As String[]  
   Dim hChild As Object
   Dim bModified As Boolean
   Dim rData As Result
@@ -355,7 +404,6 @@ Public Function Save(Optional bMessage As Boolean = True) As Boolean
   Dim sKey As String
   Dim iInd As Integer
   Dim aVal As Variant[]
-  Dim iPos As Integer
 
   Inc Application.Busy
   
@@ -374,14 +422,7 @@ Public Function Save(Optional bMessage As Boolean = True) As Boolean
   
   If $bCreate Then
 
-    rData = _GetDB().Create($sTable)
-
-    hSrc = Common.GetSource(Me)
-    If hSrc Then
-      For Each sKey In hSrc.GetKeys()
-        Try rData[sKey] = hSrc[sKey]
-      Next
-    Endif
+    rData = _CreateCurrent()
 
     For Each hChild In GetChildren()
       If Common.IsControl(hChild) Then
@@ -411,18 +452,19 @@ Public Function Save(Optional bMessage As Boolean = True) As Boolean
 
   Else
 
-    aVal = Me.Current
-    
-    hSrc = Common.GetSource(Me)
-    If hSrc Then
-      For Each sKey In hSrc.GetKeys()
-        iPos = aKey.Find(sKey)
-        If iPos >= 0 Then aVal[iPos] = hSrc[sKey]
-      Next
-    Endif
-
-    rData = _GetDB().Edit($sTable, Replace(Common.MakeWhere(aKey, aVal), "&", "&&"))
-    'rData = $hTable[$iIndex]
+    ' aVal = Me.Current
+    ' 
+    ' hSrc = Common.GetSource(Me)
+    ' If hSrc Then
+    '   For Each sKey In hSrc.GetKeys()
+    '     iPos = aKey.Find(sKey)
+    '     If iPos >= 0 Then aVal[iPos] = hSrc[sKey]
+    '   Next
+    ' Endif
+    ' 
+    ' rData = _GetDB().Edit($sTable, Replace(Common.MakeWhere(aKey, aVal), "&", "&&"))
+    ' 'rData = $hTable[$iIndex]
+    rData = _EditCurrent()
     If Not rData.Available Then Return True
 
     For Each hChild In GetChildren()
@@ -431,11 +473,7 @@ Public Function Save(Optional bMessage As Boolean = True) As Boolean
       Endif
     Next
     
-    rData.Update
-    $hTable.Refresh
-
-    Redraw(True)
-    
+    _UpdateCurrent(rData)
     If $iIndex >= $hTable.Count Then
       Create(True)
     Endif
@@ -455,8 +493,8 @@ Catch
   
 End
 
-Public Function Remove() As Boolean
-
+Public Sub _DeleteCurrent()
+  
   Dim aVal As Variant[]
   Dim aKey As String[]
   Dim hSrc As DataSource
@@ -464,11 +502,6 @@ Public Function Remove() As Boolean
   Dim iPos As Integer
   Dim sReq As String
 
-  If $bCreate Then
-    Create()
-    Return
-  Endif
-  
   aKey = $hTable.Keys
   aVal = Me.Current
   
@@ -482,6 +515,17 @@ Public Function Remove() As Boolean
 
   _GetDB().Exec(Request.Delete().From($sTable).Where(Common.MakeWhere(aKey, aVal)).Get())
   
+End
+
+
+Public Function Remove() As Boolean
+
+  If $bCreate Then
+    Create()
+    Return
+  Endif
+  
+  _DeleteCurrent()
   Create(True)
   
 End
