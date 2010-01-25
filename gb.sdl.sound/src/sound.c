@@ -400,13 +400,18 @@ static double get_music_pos(void)
 {
   double time;
 
-  if (Mix_PlayingMusic() && !Mix_PausedMusic())
-  {
-    GB.GetTime(&time, FALSE);
-    return music_ref_pos + time - music_ref_time;
-  }
-  else
-    return music_ref_pos;
+  if (Mix_PlayingMusic())
+	{
+		if (!Mix_PausedMusic())
+		{
+			GB.GetTime(&time, FALSE);
+			return music_ref_pos + time - music_ref_time;
+		}
+		else
+			return music_ref_pos;
+	}
+	else
+		return 0;
 }
 
 
