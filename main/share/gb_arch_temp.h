@@ -262,7 +262,7 @@ PUBLIC bool ARCH_find(ARCH *arch, const char *path, int len_path, ARCH_FIND *fin
   if (arch->header.version == 2)
   {
 		char *p;
-		char tpath2[len_tpath + 1];
+		char tpath2[len_tpath + 8];
 	
 		for(;;)
 		{
