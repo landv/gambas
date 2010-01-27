@@ -848,6 +848,7 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
         If iPos Then sLine = Trim(Left(sLine, iPos - 1))
         If Len(sLine) = 3 And If UCase(sLine) = "END" Then Break
         If Len(sLine) = 7 And If UCase(sLine) = "END SUB" Then Break
+        If Len(sLine) = 12 And If UCase(sLine) = "END FUNCTION" Then Break
         'aSym = Highlight.Analyze(hEditor.Lines[iLine])
         'IF aSym.Count = 1 AND IF aSym[0] = "END" THEN BREAK
       Loop
