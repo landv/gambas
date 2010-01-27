@@ -76,8 +76,8 @@
 /* Maximum number of dimensions in an array */
 #define MAX_ARRAY_DIM       8
 
-/* Maximum length of a file path */
-#define MAX_PATH            512
+/* Maximum length of a file path inside an archive */
+#define MAX_ARCH_PATH       512
 
 /* Maximum level of controls imbrication in a form */
 #define MAX_FORM_PARENT     32

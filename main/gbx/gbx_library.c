@@ -160,7 +160,7 @@ void LIBRARY_preload(const char *file, char **argv)
 {
 #if DO_PRELOADING
   const char *path;
-  char dir[MAX_PATH];
+  char dir[PATH_MAX];
   /*char libdir[MAX_PATH];*/
   FILE *fd;
   char *p;
@@ -227,7 +227,7 @@ void LIBRARY_preload(const char *file, char **argv)
   if (EXEC_arch)
     fseek(fd, 32 + sizeof(ARCH_HEADER), SEEK_SET);
 
-  read_line(fd, dir, MAX_PATH);
+  read_line(fd, dir, PATH_MAX);
 
   if (strncasecmp(dir, PROJECT_MAGIC, strlen(PROJECT_MAGIC)))
   {
@@ -240,7 +240,7 @@ void LIBRARY_preload(const char *file, char **argv)
 
   for(;;)
   {
-    if (read_line(fd, dir, MAX_PATH))
+    if (read_line(fd, dir, PATH_MAX))
       break;
 
     if (strncasecmp(dir, "library=", 8) == 0)

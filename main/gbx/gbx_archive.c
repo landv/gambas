@@ -339,7 +339,7 @@ bool ARCHIVE_read(ARCHIVE *arch, int pos, void *buffer, int len)
 void ARCHIVE_dir_first(ARCHIVE *arch, const char *path, const char *pattern, int attr)
 {
   ARCHIVE_FIND find;
-	char abs_path[MAX_PATH];
+	char abs_path[PATH_MAX];
 	int abs_len;
 
   if (pattern == NULL)

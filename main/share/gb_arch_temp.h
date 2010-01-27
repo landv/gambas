@@ -243,7 +243,7 @@ PUBLIC bool ARCH_find(ARCH *arch, const char *path, int len_path, ARCH_FIND *fin
 {
   int ind;
   ARCH_SYMBOL *sym;
-  char tpath[MAX_PATH];
+  char tpath[PATH_MAX];
   int len_tpath;
 
   if (len_path <= 0)
@@ -262,7 +262,7 @@ PUBLIC bool ARCH_find(ARCH *arch, const char *path, int len_path, ARCH_FIND *fin
   if (arch->header.version == 2)
   {
 		char *p;
-		char tpath2[MAX_PATH];
+		char tpath2[len_tpath + 1];
 	
 		for(;;)
 		{
@@ -275,7 +275,7 @@ PUBLIC bool ARCH_find(ARCH *arch, const char *path, int len_path, ARCH_FIND *fin
 				break;
 
 			sym = &arch->symbol[ind];
-			len_tpath = snprintf(tpath2, sizeof(tpath2),"/%d:%s", ind, p + 1);
+			len_tpath = sprintf(tpath2, "/%d:%s", ind, p + 1);
 			strcpy(tpath, tpath2);
 		}
 		

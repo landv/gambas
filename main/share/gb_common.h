@@ -45,6 +45,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/param.h>
 
 #if defined(__GNU_LIBRARY__) || defined(OS_FREEBSD) 
 #include <getopt.h>

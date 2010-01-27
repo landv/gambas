@@ -159,7 +159,7 @@ static boolean calc_position_from_line(CLASS *class, ushort line, FUNCTION **fun
 
 PUBLIC DEBUG_INFO *DEBUG_init(GB_DEBUG_INTERFACE *debug, bool fifo)
 {
-  char path[MAX_PATH];
+  char path[128];
 
   //if (!EXEC_debug)
   //  return;

@@ -65,10 +65,10 @@
 
 #include "gb_arch_temp.h"
 
-static char _root[MAX_PATH + 1] = { 0 };
-static char _lib_path[MAX_PATH + 1];
-static char _info_path[MAX_PATH + 1];
-static char _buffer[MAX_PATH + 1];
+static char _root[PATH_MAX + 1] = { 0 };
+static char _lib_path[PATH_MAX + 1];
+static char _info_path[PATH_MAX + 1];
+static char _buffer[PATH_MAX + 1];
 
 static FILE *out_info;
 static FILE *out_list;
@@ -147,7 +147,7 @@ static void error(bool must_exit, const char *fmt, ...)
 static void init(void)
 {
   if (!_root[0])
-    strncpy(_root, FILE_get_gambas_dir(), MAX_PATH);
+    strncpy(_root, FILE_get_gambas_dir(), PATH_MAX);
 
   #ifdef OS_64BITS
   strcpy(_lib_path, FILE_cat(_root, GAMBAS_LIB64_PATH, NULL));
@@ -609,7 +609,7 @@ int main(int argc, char **argv)
         break;
 
       case 'r':
-        strncpy(_root, optarg, MAX_PATH);
+        strncpy(_root, optarg, PATH_MAX);
         _root_set = TRUE;
         break;
 
