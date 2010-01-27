@@ -82,10 +82,15 @@
     Index = 2
     Text = ("System information")
     { txtInfo TextArea
-      MoveScaled(1,1,77,42)
+      MoveScaled(1,6,77,37)
       Font = Font["Monospace"]
       Text = ("")
       ReadOnly = True
+    }
+    { btnCopy Button
+      MoveScaled(1,1,15,4)
+      Text = ("&Copy")
+      Picture = Picture["icon:/small/copy"]
     }
     Index = 0
   }

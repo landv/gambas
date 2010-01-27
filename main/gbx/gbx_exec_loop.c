@@ -1578,7 +1578,7 @@ _END_TRY:
   fprintf(stderr, "exec END TRY %p\n", PC);
   #endif
 
-  /* If EP was reset to null, then there was an error */
+  // If EP was reset to null, then an error occurred
  	EXEC_got_error = (EP == NULL);
   EP = NULL;
   EC = ET;

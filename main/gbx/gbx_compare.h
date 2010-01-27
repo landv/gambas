@@ -46,7 +46,7 @@ COMPARE_FUNC COMPARE_get(TYPE type, int mode);
 int COMPARE_object(void **a, void **b);
 int COMPARE_string_lang(const char *s1, int l1, const char *s2, int l2, bool nocase, bool throw);
 int COMPARE_string_like(const char *s1, int l1, const char *s2, int l2);
-int COMPARE_string_natural(const char *a, int la, const char *b, int lb, bool nocase, bool lang);
+int COMPARE_string_natural(const char *a, int la, const char *b, int lb, bool nocase);
 #endif
 
 #endif

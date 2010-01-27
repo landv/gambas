@@ -64,7 +64,7 @@ AC_OUTPUT(Makefile)
 GB_SUMMARY=""
 for comp in gb.*; do
   if test -e $comp/DISABLED; then
-    GB_SUMMARY="$GB_SUMMARY$'\n'- $comp"   
+    GB_SUMMARY="$GB_SUMMARY"$'\n'"- $comp"   
   fi
 done
 

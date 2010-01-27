@@ -452,8 +452,13 @@ Public Sub tabAbout_Click()
     Copy "report-ng.sh" To sTemp
     Shell "chmod a+x " & Shell$(sTemp) Wait
     Exec [sTemp] To txtInfo.Text
-    Clipboard.Copy(txtInfo.Text)
   Endif
 
 End
 
+
+Public Sub btnCopy_Click()
+
+  Clipboard.Copy(txtInfo.Text)
+
+End

@@ -1,149 +1,32 @@
 WELCOME TO GAMBAS!
 
-GAMBAS is a free implementation of a graphical development
-environment based on a BASIC interpreter. It is very
+GAMBAS is a free implementation of a graphical development environment 
+based on a BASIC interpreter and a full development platform. It is very 
 inspired by Visual Basic and Java.
 
-More information on http://gambas.sourceforge.net
+Go to http://gambas.sourceforge.net to get more information: how to compile 
+and install it, where to find binary packages, how to report a bug...
 
+Go to http://gambasdoc.org for language documentation.
 
-** IMPORTANT NOTES
+The following pieces of code were borrowed and adapted:
 
-Before downloading Gambas, compiling it and then complaining, please read the
-following remarks CAREFULLY! 
+- The natural string comparison algorithme was adapted from the algorithm 
+  made by Martin Pol. See http://sourcefrog.net/projects/natsort/ for more 
+  details.
 
-To compile Gambas, you must install the following libraries on your system :
- 
-+=================================+==========================================+
-| COMPONENTS                      | LIBRARIES                                |
-+=================================+==========================================+
-| gb.compress.bzlib2              | libbz2.so                                |
-+---------------------------------+------------------------------------------+
-| gb.compress.zlib                | libz.so                                  |
-+---------------------------------+------------------------------------------+
-| gb.corba                        | libACE.so libomniORB4.so                 |
-|                                 | libomniDynamic4.so                       |
-+---------------------------------+------------------------------------------+
-| gb.crypt                        | libcrypt.so                              |
-+---------------------------------+------------------------------------------+
-| gb.db.firebird                  | libibpp.so libfbclient.so                |
-+---------------------------------+------------------------------------------+
-| gb.db.mysql                     | libmysqlclient.so libz.so                |
-+---------------------------------+------------------------------------------+
-| gb.db.odbc                      | libodbc.so                               |
-+---------------------------------+------------------------------------------+
-| gb.db.postgresql                | libpq.so                                 |
-+---------------------------------+------------------------------------------+
-| gb.db.sqlite                    | libsqlite.so                             |
-+---------------------------------+------------------------------------------+
-| gb.db.sqlite3                   | libsqlite3.so                            |
-+---------------------------------+------------------------------------------+
-| gb.gtk                          | All GTK+ libraries                       |
-+---------------------------------+------------------------------------------+
-| gb.ldap                         | libldap.so                               |
-+---------------------------------+------------------------------------------+
-| gb.net                          | -                                        |
-+---------------------------------+------------------------------------------+
-| gb.net.curl                     | libcurl.so                               |
-+---------------------------------+------------------------------------------+
-| gb.opengl                       | libGL.so libGLU.so                       |
-+---------------------------------+------------------------------------------+
-| gb.pcre                         | libpcre.so                               |
-+---------------------------------+------------------------------------------+
-| gb.qt                           | libqt-mt.so.3                            |
-+---------------------------------+------------------------------------------+
-| gb.qt.kde                       | All KDE libraries                        |
-+---------------------------------+------------------------------------------+
-| gb.sdl                          | libSDL.so                                |
-+---------------------------------+------------------------------------------+
-| gb.sdl.sound                    | libSDL.so libSDL_mixer.so                |
-+---------------------------------+------------------------------------------+
-| gb.sdl.image                    | libSDL.so libSDL_image.so libSDL_gfx.so  |
-|                                 | libSDL_ttf.so                            |
-+---------------------------------+------------------------------------------+
-| gb.sdl.opengl                   | libSDL.so libGL.so libGLU.so             |
-+---------------------------------+------------------------------------------+
-| gb.v4l                          | libjpeg.so libpng.so video4linux >= 2.0  |
-+---------------------------------+------------------------------------------+
-| gb.xml                          | libxml-2.0                               |
-+---------------------------------+------------------------------------------+
-| gb.xml.xslt                     | libxslt                                  |
-+---------------------------------+------------------------------------------+
+- The hash table implementation was adapted from the glib one.
 
-And you must install all related development packages. 
+- The HTML entities parsing in gb.gtk comes from KHTML sources.
 
-Try to always use a recent version of these libraries.
+- The gb.net.smtp component is a debugged and reworked version of an 
+  unmaintained library made by Kevin Read <obsidian@berlios.de> in 2002.
 
-You must of course install the GCC compiler.
+- The gb.image.effect sources are adapted from KDE 3 image effect routines.
 
-You must compile gb.qt and gb.qt.ext components to have a working development
-environment.
+If I forget some borrowed code in the list above, just tell me.
 
-Qt 3.2 is now required because of one Qt function that was missing in older
-versions of Qt. Gambas will compile with Qt 3.1, but the function Picture.Copy()
-will fail in some case. Gambas does not compile with previous versions of Qt. 
+Enjoy Gambas!
 
-You must have the right to write to /tmp, otherwise Gambas will not work. 
-
-This package was done with the following versions of GNU tools: 
- - automake 1.9.4 
- - autoconf 2.59 
- - libtool 1.5.12 (this tool is not required as it is included in the package) 
-
-Each sub-directory of this source package is actually independent. You can 
-configure, make and install each of them independently.
-
- 
-** DISTRIBUTION SPECIFIC PROBLEMS
-
-Read the README.REDHAT or README.FEDORA files.
-
-
-** HOW TO COMPILE GAMBAS ?
-
-1) First, check that you installed all the needed development packages
-
-2) When done, type the following magic sentences in a shell.
-   '#' represents your shell prompt, and "..." are the
-   messages printed during the configuration and compilation.
-
-  This command analyzes the system and configure the package:
-
-     # ./configure -C
-     ...
-
-   This command compiles the programs:
-
-     # make
-     ...
-
-   And finally this command installs everything:
-
-     # su -c "make install"
-     Password: <Type the root password here>
-     ...
-
-   If something fails during this process, try to type the
-   following command before ./configure :
-
-     # ./reconf
-
-   If it does not work, I need to know what happened exactly.
-   To do so, type the following command :
-
-     # ( ./configure; make; make install ) > output.txt 2>&1
-
-   And send me the file "output.txt" by mail, with every other
-   detail about your computer and your distribution you find
-   useful.
-
-3) If everything was fine, type "gambas2" to run the development
-   environment. There are a few examples in the "examples"
-   directory.
-
-4) There are more 'configure' specific explanations in the "INSTALL" file.
-   I invite you to read them.
-
-Enjoy it !
-
-Benoît.
+--
+Benoît

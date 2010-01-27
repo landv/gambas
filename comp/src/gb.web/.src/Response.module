@@ -82,6 +82,7 @@ Public Sub Begin()
   Else
   
     Print $sHeader
+    $sHeader = ""
     
   Endif
   
@@ -103,6 +104,7 @@ Public Sub End()
     AddHeader("Content-Length", Lof($hFile))
     
     Print $sHeader
+    $sHeader = ""
   
     While Not Eof($hFile)
       sBuffer = Read #$hFile, -4096

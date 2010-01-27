@@ -283,7 +283,7 @@ static int strnatcmp_compare_left(const char *a, int la, const char *b, int lb)
 	return 0;
 }
 
-int COMPARE_string_natural(const char *a, int la, const char *b, int lb, bool nocase, bool lang)
+int COMPARE_string_natural(const char *a, int la, const char *b, int lb, bool nocase)
 {
 	int ai, bi, lca, lcb;
 	unsigned char ca, cb;
@@ -342,31 +342,29 @@ int COMPARE_string_natural(const char *a, int la, const char *b, int lb, bool no
 			return 0;
 		}
 
-		if (lang)
+		lca = STRING_get_utf8_char_length(ca);
+		lcb = STRING_get_utf8_char_length(cb);
+		if (lca > 1 || lcb > 1)
 		{
-			lca = STRING_get_utf8_char_length(ca);
-			lcb = STRING_get_utf8_char_length(cb);
-			if (lca > 1 || lcb > 1)
+			if ((result = COMPARE_string_lang(&a[ai], lca, &b[bi], lcb, nocase, FALSE)))
+				return result;
+			ai += lca;
+			bi += lcb;
+		}
+		else
+		{
+			if (nocase)
 			{
-				if ((result = COMPARE_string_lang(&a[ai], lca, &b[bi], lcb, nocase, FALSE)))
-					return result;
-				ai += lca;
-				bi += lcb;
-				continue;
+				ca = toupper(ca);
+				cb = toupper(cb);
 			}
+		
+			if (ca < cb)
+				return -1;
+			else if (ca > cb)
+				return +1;
+			++ai; ++bi;
 		}
-
-		if (nocase)
-		{
-			ca = toupper(ca);
-			cb = toupper(cb);
-		}
-	
-		if (ca < cb)
-			return -1;
-		else if (ca > cb)
-			return +1;
-		++ai; ++bi;
 	}
 }
 
@@ -409,7 +407,12 @@ static int compare_string_lang_case(char **pa, char **pb)
 
 int COMPARE_string_like(const char *s1, int l1, const char *s2, int l2)
 {
-	return REGEXP_match(s2, l2, s1, l1) ? 0 : TABLE_compare_ignore_case(s1, l1, s2, l2);
+	int result;
+	
+	if (REGEXP_match(s2, l2, s1, l1))
+		return 0;
+	result = TABLE_compare_ignore_case(s1, l1, s2, l2);
+	return (result < 0) ? -1 : (result > 0) ? 1 : 0;
 }
 
 static int compare_string_like(char **pa, char **pb)
@@ -420,18 +423,16 @@ static int compare_string_like(char **pa, char **pb)
 	//return REGEXP_match(*pb, lb, *pa, la) ? 0 : TABLE_compare_ignore_case(*pa, la, *pb, lb);
 }
 
-#define IMPLEMENT_COMPARE_STRING_NATURAL(_name, _nocase, _lang) \
+#define IMPLEMENT_COMPARE_STRING_NATURAL(_name, _nocase) \
 static int compare_string_##_name(char **pa, char **pb) \
 { \
 	int la = *pa ? strlen(*pa) : 0; \
 	int lb = *pb ? strlen(*pb) : 0; \
-	return COMPARE_string_natural(*pa, la, *pb, lb, _nocase, _lang); \
+	return COMPARE_string_natural(*pa, la, *pb, lb, _nocase); \
 }
 
-IMPLEMENT_COMPARE_STRING_NATURAL(natural, FALSE, FALSE)
-IMPLEMENT_COMPARE_STRING_NATURAL(natural_case, TRUE, FALSE)
-IMPLEMENT_COMPARE_STRING_NATURAL(natural_lang, FALSE, TRUE)
-IMPLEMENT_COMPARE_STRING_NATURAL(natural_lang_case, TRUE, TRUE)
+IMPLEMENT_COMPARE_STRING_NATURAL(natural, FALSE)
+IMPLEMENT_COMPARE_STRING_NATURAL(natural_case, TRUE)
 
 int COMPARE_object(void **a, void **b)
 {
@@ -506,18 +507,15 @@ COMPARE_FUNC COMPARE_get(TYPE type, int mode)
       return (COMPARE_FUNC)compare_date;
 
     case T_STRING:
-      switch(mode)
-      {
-        case GB_COMP_LANG | GB_COMP_TEXT: return (COMPARE_FUNC)compare_string_lang_case;
-        case GB_COMP_LANG: return (COMPARE_FUNC)compare_string_lang;
-        case GB_COMP_TEXT: return (COMPARE_FUNC)compare_string_case;
-				case GB_COMP_LIKE: return (COMPARE_FUNC)compare_string_like;
-				case GB_COMP_NATURAL: return (COMPARE_FUNC)compare_string_natural;
-				case GB_COMP_NATURAL | GB_COMP_TEXT: return (COMPARE_FUNC)compare_string_natural_case;
-				case GB_COMP_NATURAL | GB_COMP_LANG: return (COMPARE_FUNC)compare_string_natural_lang;
-				case GB_COMP_NATURAL | GB_COMP_LANG | GB_COMP_TEXT: return (COMPARE_FUNC)compare_string_natural_lang_case;
-        default: return (COMPARE_FUNC)compare_string_binary;
-      }
+			
+			if (mode & GB_COMP_NATURAL)
+				return (COMPARE_FUNC)((mode & GB_COMP_TEXT) ? compare_string_natural_case : compare_string_natural);
+			else if (mode & GB_COMP_LIKE)
+				return (COMPARE_FUNC)compare_string_like;
+			else if (mode & GB_COMP_LANG)
+				return (COMPARE_FUNC)((mode & GB_COMP_TEXT) ? compare_string_lang_case : compare_string_lang);
+			else
+				return (COMPARE_FUNC)((mode & GB_COMP_TEXT) ? compare_string_case : compare_string_binary);
 
     default:
       return (COMPARE_FUNC)compare_nothing;

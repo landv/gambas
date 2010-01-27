@@ -776,7 +776,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CTREEVIEW_count)
 
-  GB.ReturnInteger(WIDGET->childCount());
+  GB.ReturnInteger(THIS->dict->count());
 
 END_PROPERTY
 

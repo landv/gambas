@@ -213,8 +213,11 @@ void ERROR_leave(ERROR_CONTEXT *err)
 		#if DEBUG_ERROR
 		fprintf(stderr, "ERROR_leave: (%p)\n", ERROR_current);
 		#endif
-		ERROR_reset(&ERROR_current->info);
-		ERROR_current->info = err->info;
+		if (err->info.code)
+		{
+			ERROR_reset(&ERROR_current->info);
+			ERROR_current->info = err->info;
+		}
 	}
 	else
 		ERROR_reset(&err->info);

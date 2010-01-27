@@ -664,7 +664,7 @@ void SUBR_strcomp(void)
 		SUBR_get_string_len(&PARAM[1], &s2, &l2);
 		
 		if (mode & GB_COMP_NATURAL)
-			ret = COMPARE_string_natural(s1, l1, s2, l2, mode & GB_COMP_TEXT, mode & GB_COMP_LANG);
+			ret = COMPARE_string_natural(s1, l1, s2, l2, mode & GB_COMP_TEXT);
 		else if (mode & GB_COMP_LIKE)
 			ret = COMPARE_string_like(s1, l1, s2, l2);
 		else if (mode & GB_COMP_LANG)

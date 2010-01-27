@@ -385,7 +385,9 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(CTEXTAREA_sel_clear)
 
-  WIDGET->textCursor().clearSelection();	
+	QTextCursor cursor = WIDGET->textCursor();
+  cursor.clearSelection();	
+	WIDGET->setTextCursor(cursor);
 
 END_METHOD
 
@@ -407,6 +409,8 @@ BEGIN_METHOD(CTEXTAREA_sel_select, GB_INTEGER start; GB_INTEGER length)
 		
 		cursor.setPosition(VARG(start));
 		cursor.setPosition(VARG(start) + VARG(length), QTextCursor::KeepAnchor);
+		
+		WIDGET->setTextCursor(cursor);
 	}
 
 END_METHOD
@@ -414,7 +418,9 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CTEXTAREA_sel_all) //, GB_BOOLEAN sel)
 
-  WIDGET->textCursor().select(QTextCursor::Document);
+	QTextCursor cursor = WIDGET->textCursor();
+  cursor.select(QTextCursor::Document);
+	WIDGET->setTextCursor(cursor);
 
 END_METHOD
 

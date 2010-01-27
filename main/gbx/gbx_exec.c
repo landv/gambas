@@ -848,9 +848,11 @@ void EXEC_function_loop()
 					fprintf(stderr, "#3\n");
 					fprintf(stderr, "NOTHING\n");
 					#endif
+					//ERROR_INFO save = { 0 };
+					//ERROR_save(&save);
 
 					ERROR_set_last();
-					
+
 					if (EXEC_debug && !STACK_has_error_handler())
 					{
 						if (TP && TC)
@@ -882,11 +884,10 @@ void EXEC_function_loop()
 						{
 							/*printf("try to propagate\n");*/
 							STACK_pop_frame(&EXEC_current);
+							
+							//ERROR_restore(&save);
+							//ERROR_set_last();
 							PROPAGATE();
-
-							/*ERROR_print();
-							exit(1);*/
-							/*retry = FALSE;*/
 						}
 
 						if (EP != NULL)
@@ -909,6 +910,9 @@ void EXEC_function_loop()
 
 						retry = TRUE;
 					}
+					
+					//ERROR_restore(&save);
+					//ERROR_set_last();
 				}
 
 				while (SP < EXEC_super)
