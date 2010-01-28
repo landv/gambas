@@ -510,7 +510,7 @@ static void add_identifier(bool no_res)
   boolean can_be_reserved;
   boolean can_be_subr;
   boolean is_type;
-  boolean last_func, last_declare, last_type;
+  boolean last_func, last_declare, last_type, last_class;
   
 	type = RT_IDENTIFIER;
 
@@ -541,35 +541,20 @@ static void add_identifier(bool no_res)
     not_first = (flag & RSF_INF) != 0;
     last_func = (flag & RSF_ILF) != 0;
     last_declare = (flag & RSF_ILD) != 0;
-    last_type = (flag & RSF_ILT) != 0;
-    //last_event = flag & RSF_ILE;
+    last_class = (flag & RSF_ILC) != 0;
+    last_type = last_class || (flag & RSF_ILT) != 0;
   }
   else
   {
     flag = 0;
-    not_first = last_func = last_declare = last_type = FALSE;
+    not_first = last_func = last_declare = last_type = last_class = FALSE;
   }
 
-  /*
-  if (not_first != (PATTERN_is(last_pattern, RS_PT) || PATTERN_is(last_pattern, RS_EXCL)))
-    printf("not_first = %d\n", not_first);
-  if (last_func != (PATTERN_is(last_pattern, RS_PROCEDURE) || PATTERN_is(last_pattern, RS_SUB) 
-              || PATTERN_is(last_pattern, RS_FUNCTION)))
-    printf("last_func = %d\n", last_func);
-  if (last_declare != (PATTERN_is(last_pattern, RS_PUBLIC) || PATTERN_is(last_pattern, RS_PRIVATE)
-                 || PATTERN_is(last_pattern, RS_DIM) || PATTERN_is(last_pattern, RS_PROPERTY)
-                 || PATTERN_is(last_pattern, RS_READ) || PATTERN_is(last_pattern, RS_INHERITS)))
-    printf("last_declare = %d\n", last_declare);
-  if (last_type != (PATTERN_is(last_pattern, RS_AS) || PATTERN_is(last_pattern, RS_NEW) 
-              || PATTERN_is(last_pattern, RS_IS) || PATTERN_is(last_pattern, RS_INHERITS)))
-    printf("last_type = %d\n", last_type);
-  */
-  
   car = get_char();
 
   //can_be_reserved = !not_first && TABLE_find_symbol(COMP_res_table, &comp->source[start], len, NULL, &index);
   
-  can_be_reserved = !not_first;
+  can_be_reserved = !not_first && !last_class;
   
   if (can_be_reserved)
   {
