@@ -42,6 +42,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/param.h>
 
 #ifdef OS_MACOSX
 #define OS_FREEBSD

@@ -64,11 +64,11 @@
 
 #include "gb_arch_temp.h"
 
-static char _root[MAX_PATH + 1] = { 0 };
-static char _lib_path[MAX_PATH + 1];
-static char _info_path[MAX_PATH + 1];
-static char _buffer[MAX_PATH + 1];
-static char _env[MAX_PATH + 16];
+static char _root[PATH_MAX + 1] = { 0 };
+static char _lib_path[PATH_MAX + 1];
+static char _info_path[PATH_MAX + 1];
+static char _buffer[PATH_MAX + 1];
+static char _env[PATH_MAX + 16];
 
 static FILE *out_info;
 static FILE *out_list;
@@ -160,7 +160,7 @@ static void init(void)
 	if (!_root[0])
 	{
 		path = FILE_find_gambas();
-		strncpy(_root, FILE_get_dir(FILE_get_dir(path)), MAX_PATH);
+		strncpy(_root, FILE_get_dir(FILE_get_dir(path)), PATH_MAX);
 	}
 
 	#ifdef OS_64BITS
@@ -710,7 +710,7 @@ int main(int argc, char **argv)
 				break;
 
 			case 'r':
-				strncpy(_root, optarg, MAX_PATH);
+				strncpy(_root, optarg, PATH_MAX);
 				_root_set = TRUE;
 				break;
 				

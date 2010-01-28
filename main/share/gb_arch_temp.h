@@ -249,7 +249,7 @@ bool ARCH_find(ARCH *arch, const char *path, int len_path, ARCH_FIND *find)
 {
   int ind;
   ARCH_SYMBOL *sym;
-  char tpath[MAX_PATH];
+  char tpath[PATH_MAX];
   int len_tpath;
 
   if (len_path <= 0)
@@ -268,7 +268,7 @@ bool ARCH_find(ARCH *arch, const char *path, int len_path, ARCH_FIND *find)
   //if (arch->header.version == 2)
   //{
 		char *p;
-		char tpath2[MAX_PATH];
+		char tpath2[len_tpath + 8];
 	
 		for(;;)
 		{

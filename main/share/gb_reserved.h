@@ -48,9 +48,9 @@ enum
 	RSF_INF    = 0x0100,
 	RSF_ILF    = 0x0200,   // last pattern waits for a function name
 	RSF_ILD    = 0x0400,   // last pattern waits for an identifier
-	RSF_ILDD   = 0x0800,   // last pattern waits for an identifier only if the previous one waits for an identifier  too
+	RSF_ILDD   = 0x0800,   // last pattern waits for an identifier only if the previous one waits for an identifier too
 	RSF_ILT    = 0x1000,   // last pattern waits for a datatype
-	RSF_ILE    = 0x2000,
+	RSF_ILC    = 0x2000,   // last pattern waits for a class
 	RSF_IMASK  = 0xFF00
 };
 

@@ -287,7 +287,7 @@ END_PROPERTY
 
 static void init_again(int old_pid)
 {
-	char old[MAX_PATH];
+	char old[PATH_MAX];
 	
 	FILE_remove_temp_file();
 	snprintf(old, sizeof(old),FILE_TEMP_DIR, getuid(), old_pid);

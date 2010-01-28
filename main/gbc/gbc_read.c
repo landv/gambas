@@ -537,7 +537,7 @@ static void add_identifier(bool no_res)
   bool can_be_reserved;
   bool can_be_subr;
   bool is_type;
-  bool last_func, last_declare, last_type;
+  bool last_func, last_declare, last_type, last_class;
   
   last_pattern = get_last_pattern();
   
@@ -547,7 +547,8 @@ static void add_identifier(bool no_res)
     not_first = (flag & RSF_INF) != 0;
     last_func = (flag & RSF_ILF) != 0;
     last_declare = (flag & RSF_ILD) != 0;
-    last_type = (flag & RSF_ILT) != 0;
+    last_class = (flag & RSF_ILC) != 0;
+    last_type = last_class || (flag & RSF_ILT) != 0;
 		if (flag & RSF_ILDD)
 		{
 			PATTERN last_last_pattern = get_last_last_pattern();
@@ -556,12 +557,11 @@ static void add_identifier(bool no_res)
 				last_declare = TRUE;
 			flag &= ~RSF_ILDD; // flag == 0 means we can read a subroutine!
 		}
-    //last_event = flag & RSF_ILE;
   }
   else
   {
     flag = 0;
-    not_first = last_func = last_declare = last_type = FALSE;
+    not_first = last_func = last_declare = last_type = last_class = FALSE;
   }
 
 	type = RT_IDENTIFIER;
@@ -617,7 +617,7 @@ static void add_identifier(bool no_res)
 
   //can_be_reserved = !not_first && TABLE_find_symbol(COMP_res_table, &comp->source[start], len, NULL, &index);
   
-  can_be_reserved = !not_first;
+  can_be_reserved = !not_first && !last_class;
   
   if (can_be_reserved)
   {

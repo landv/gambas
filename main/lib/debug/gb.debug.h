@@ -97,5 +97,6 @@ typedef
 	DEBUG_INTERFACE;
 
 #define DEBUG_OUTPUT_MAX_SIZE 65536
-	
+#define DEBUG_FIFO_PATH_MAX 64
+
 #endif

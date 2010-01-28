@@ -128,7 +128,7 @@ static char *output_fifo(char *path)
 
 BEGIN_METHOD_VOID(CDEBUG_begin)
 
-  char path[MAX_PATH];
+  char path[PATH_MAX];
 	char name[16];
   
   signal(SIGPIPE, SIG_IGN);
@@ -157,7 +157,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CDEBUG_start) 
   
-  char path[MAX_PATH];
+  char path[DEBUG_FIFO_PATH_MAX];
   int i;
   
   if (_started)
@@ -213,7 +213,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CDEBUG_end)
 
-  char path[MAX_PATH];
+  char path[DEBUG_FIFO_PATH_MAX];
   
   CALL_METHOD_VOID(CDEBUG_stop);
   

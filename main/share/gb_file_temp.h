@@ -32,11 +32,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/mman.h>
-
-#include <sys/param.h>
 #include <sys/stat.h>
-
-
 #include <dirent.h>
 
 #ifdef PROJECT_EXEC
@@ -232,7 +228,7 @@ const char *FILE_cat(const char *path, ...)
 
 		if (len > 0)
 		{
-			if ((p + len) > &file_buffer[MAX_PATH])
+			if ((p + len) > &file_buffer[PATH_MAX])
 				return NULL;
 
 			if (p != path)
@@ -353,7 +349,7 @@ const char *FILE_set_ext(const char *path, const char *ext)
 		return path;
 	}
 
-	if (&p[strlen(ext)] >= &file_buffer[MAX_PATH])
+	if (&p[strlen(ext)] >= &file_buffer[PATH_MAX])
 		return path;
 
 	if (p == path || p[-1] != '.')
@@ -895,7 +891,7 @@ const char *FILE_getcwd(const char *subdir)
 
 const char *FILE_readlink(const char *link)
 {
-	int len = readlink(link, file_buffer, MAX_PATH);
+	int len = readlink(link, file_buffer, PATH_MAX);
 
 	if (len < 0)
 		return NULL;

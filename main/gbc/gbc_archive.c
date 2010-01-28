@@ -189,8 +189,8 @@ void ARCH_init(void)
 static void compress_file_name(const char *src, int lsrc, char **dst, int *ldst)
 {
   char *p;
-  char tpath[MAX_PATH];
-  char tpath2[MAX_PATH];
+  char tpath[PATH_MAX];
+  char tpath2[PATH_MAX];
   int len;
   int ind;
   ARCH_SYMBOL *sym;
