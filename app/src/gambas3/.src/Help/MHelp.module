@@ -455,7 +455,11 @@ Public Sub ShowHelpBrowserWith(hWebView As WebView, iType As Integer, sSymbol As
   
 End
 
+''+Description
 ''Return the formated help of the local class if it exist
+''+Arguments
+'' - #sClass# is the class to analyze
+'' - #hWebView# is the WebView control to use (by default.
 Public Function GetProjectClassHelpHTML(sClass As String, Optional hWebView As WebView) As String
   
   Dim sHelp, sHTML, sLine, sWhere, sSymbols, sParSymbols, sInfo, sInherit As String
@@ -512,8 +516,8 @@ Public Function GetProjectClassHelpHTML(sClass As String, Optional hWebView As W
   sSymbols &= "<td dir=\"ltr\">" & aEvents.Join(" ") & "</td>"
   
   Endif
-  If hClassInfo.AutoCreatable Then sInfo = "This class can be used like an object by creating an hidden instance on demand.<br>"
-  If hClassInfo.Creatable Then sInfo &= "This class is creatable.<br>"
+  If hClassInfo.AutoCreatable Then sInfo = ("This class can be used like an object by creating an hidden instance on demand.<br>")
+  If hClassInfo.Creatable Then sInfo &= ("This class is creatable.<br>")
   
   
   sWhere = "gambas://project/" & sClass
