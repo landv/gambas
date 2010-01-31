@@ -64,7 +64,7 @@ Private Sub SetDate(Optional iYear As Integer, Optional iMonth As Integer, Optio
     Try dDate = Date(iYear, iMonth, iDay)
     If Not Error Then Break 
     Dec iDay
-    If iDay < 29 Then Return
+    If iDay < 28 Then Return
   Loop
 
   $dDate = dDate

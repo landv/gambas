@@ -264,69 +264,14 @@ static void add_end()
 }
 
 
-static bool is_number()
-{
-  int pos = 0;
-  unsigned char car;
-  unsigned char car2;
-
-  car = get_char_offset(pos);
-
-  if (car == '-' || car == '+')
-  {
-    pos++;
-    car = get_char_offset(pos);
-  }
-
-  if (isdigit(car))
-    return TRUE;
-
-  car2 = toupper(get_char_offset(pos + 1));
-
-  if (car == '&')
-  {
-    if (car2 == 'H')
-    {
-      pos += 2;
-      goto __HEX;
-    }
-
-    if (car2 == 'X')
-    {
-      pos += 2;
-      goto __BIN;
-    }
-
-    pos++;
-    goto __HEX;
-  }
-  else if (car == '%')
-  {
-    pos ++;
-    goto __BIN;
-  }
-  else
-    return FALSE;
-
-__HEX:
-
-  car = get_char_offset(pos);
-  return (isdigit(car) || index("abcdefABCDEF", car) != NULL);
-
-__BIN:
-
-  car = get_char_offset(pos);
-  return (car == '0' || car == '1');
-}
-
-
-static void add_number()
+static bool add_number()
 {
   unsigned char car;
   const char *start;
   int index;
   char sign;
   PATTERN last_pattern;
+	bool has_digit;
 
   start = source_ptr;
   car = get_char();
@@ -355,34 +300,44 @@ static void add_number()
   }
   else if (car == '%')
     goto READ_BINARY;
-  else
+  else if (isdigit(car))
     goto READ_NUMBER;
+	else
+		goto NOT_A_NUMBER;
 
 READ_BINARY:
 
+	has_digit = FALSE;
   for (;;)
   {
     car = next_char();
     if (car != '0' && car != '1')
       break;
+		has_digit = TRUE;
   }
-
-  if (car == '&')
-    car = next_char();
-
-  goto END;
+  
+  goto END_BINARY_HEXA;
 
 READ_HEXA:
 
+	has_digit = FALSE;
   for (;;)
   {
     car = next_char();
     if (!isxdigit(car))
       break;
+		has_digit = TRUE;
   }
+
+END_BINARY_HEXA:
+
+  if (!has_digit)
+		goto NOT_A_NUMBER;
 
   if (car == '&')
     car = next_char();
+	else if (first_car[car] == GOTO_IDENT)
+		goto NOT_A_NUMBER;
 
   goto END;
 
@@ -427,6 +382,13 @@ END:
     TABLE_add_symbol(EVAL->table, start, source_ptr - start, NULL, &index);
     add_pattern(RT_NUMBER, index);
   }
+
+	return FALSE;
+	
+NOT_A_NUMBER:
+	
+	source_ptr = start;
+	return TRUE;
 }
 
 
@@ -1051,10 +1013,9 @@ PUBLIC void EVAL_read(void)
 			goto __BIG_COMMENT;
 #endif
 
-		if (is_number())
-			goto __NUMBER;
-
-    add_operator();
+		if (add_number())
+			add_operator();
+		
     begin_line = FALSE;
 		continue;
 	

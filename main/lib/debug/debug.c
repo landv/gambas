@@ -301,7 +301,7 @@ static bool init_breakpoint(DEBUG_BREAK *brk)
 
   if (calc_position_from_line(brk->class, brk->line, &func, &addr))
   {
-  	WARNING("Cannot set breakpoint: cannot calc position");
+  	WARNING("Cannot set breakpoint: cannot calculate position");
     //fprintf(_out, "Cannot calc position from line number\n");
     return TRUE;
   }
