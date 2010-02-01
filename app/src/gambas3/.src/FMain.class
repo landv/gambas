@@ -905,6 +905,8 @@ Public Sub ReadConfig()
   panMessage.Visible = bShow
   mnuStatusBar.Value = bShow
 
+  MTheme.InitControl(tvwProject)
+
   'panTabProperty.H = tabProperty.ClientY - 2
 
 End

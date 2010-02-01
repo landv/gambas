@@ -563,11 +563,11 @@ static void ClosePath(GB_PAINT *d)
 static void Arc(GB_PAINT *d, float xc, float yc, float radius, float angle, float length)
 {
 	cairo_new_sub_path(CONTEXT(d));
-	angle = - angle;
-	if (length >= 0.0)
-		cairo_arc_negative(CONTEXT(d), xc, yc, radius, angle, angle - length);
+	//angle = - angle;
+	if (length < 0.0)
+		cairo_arc_negative(CONTEXT(d), xc, yc, radius, angle, angle + length);
 	else
-		cairo_arc(CONTEXT(d), xc, yc, radius, angle, angle - length);
+		cairo_arc(CONTEXT(d), xc, yc, radius, angle, angle + length);
 }
 
 static void Rectangle(GB_PAINT *d, float x, float y, float width, float height)

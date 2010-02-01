@@ -91,7 +91,7 @@ Public Sub ShowPathContent(sPath As String, sBus As String, sApplication As Stri
       tvDbus.Add(sAppPath &/ s, s)
     Endif
     tvDbus.Add(sAppPath &/ s & "|child", "child",, sAppPath &/ s)
-    tvDbus[sAppPath &/ s].Picture = Picture["icon:/medium/directory"]
+    tvDbus[sAppPath &/ s].Picture = Picture["icon:/small/directory"]
    
   Next
 

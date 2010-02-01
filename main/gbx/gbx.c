@@ -130,10 +130,10 @@ int main(int argc, char **argv)
 {
   //CLASS *class = NULL;
   CLASS_DESC_METHOD *startup = NULL;
-
   int i, n;
   char *file = ".";
   bool nopreload = FALSE;
+	const char *prog;
 
  	//char log_path[256];
  	//sprintf(log_path, "/tmp/gambas-%d.log", getuid());
@@ -144,171 +144,150 @@ int main(int argc, char **argv)
   COMMON_init();
   //STRING_init();
 
-	if (strcmp(argv[0], "gbr" GAMBAS_VERSION_STRING) == 0)
+	prog = argv[0];
+	EXEC_arch = (strcmp(prog, "gbr" GAMBAS_VERSION_STRING) == 0);
+
+	if (argc == 2)
 	{
-    if (argc == 1)
-    {
-      fprintf(stderr, "gbr" GAMBAS_VERSION_STRING ": no archive file.\n");
-      my_exit(1);
-    }
+		if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help"))
+		{
+			if (EXEC_arch)
+			{
+				printf(
+					"Usage: gbr" GAMBAS_VERSION_STRING " [options] [<executable file>] [-- <arguments>]\n\n"
+					"Options:\n"
+					"  -V --version   display version\n"
+					"  -h --help      display this help\n"
+					"  -L --license   display license\n"
+					"  -g             enter debugging mode\n"
+	#if DO_PRELOADING          
+					"  -p             disable preloading\n"
+	#endif
+					"  -k             do not unload shared libraries\n"
+					"  -x             execute an archive\n"
+					"\n"
+					);
+			}
+			else
+			{
+				printf(
+					"Usage: gbx" GAMBAS_VERSION_STRING " [options] [<project file>] [-- <arguments>]\n"
+					"       gbx" GAMBAS_VERSION_STRING " -e <expression>\n\n"
+					"Options:\n"
+					"  -V --version   display version\n"
+					"  -h --help      display this help\n"
+					"  -L --license   display license\n"
+					"  -e             evaluate an expression\n"
+					"  -g             enter debugging mode\n"
+	#if DO_PRELOADING          
+					"  -p             disable preloading\n"
+	#endif
+					"  -k             do not unload shared libraries\n"
+					"  -x             execute an archive\n"
+					"\n"
+					);
+			}
 
-    EXEC_arch = TRUE;
-
-    if (strcmp(argv[1], "-p") == 0)
-      n = 2;
-    else
-      n = 1;
-
-    file = argv[n];
-    if (n == 1)
-      LIBRARY_preload(file, argv);
-
-    for (i = 0; i < (argc - n); i++)
-      argv[i] = argv[i + n];
-
-    argc -= n;
+			my_exit(0);
+		}
+		else if (!strcmp(argv[1], "-V") || !strcmp(argv[1], "--version"))
+		{
+			printf(VERSION "\n");
+			my_exit(0);
+		}
+		else if (!strcmp(argv[1], "-L") || !strcmp(argv[1], "--license"))
+		{
+			printf(
+				"Gambas interpreter version " VERSION " " __DATE__ " " __TIME__ "\n"
+				COPYRIGHT
+				);
+			my_exit(0);
+		}
 	}
-  /*else if (argc >= 2 && strcmp(argv[1], "-x") == 0)
-  {
-    if (argc == 2)
-    {
-      fprintf(stderr, "gbx: no archive file.\n");
-      my_exit(1);
-    }
+	else
+	
+	if (!EXEC_arch && argc == 3 && !strcmp(argv[1], "-e"))
+	{
+		TRY
+		{
+			init(NULL);
+			EVAL_string(argv[2]);
+		}
+		CATCH
+		{
+			if (ERROR_current->info.code && ERROR_current->info.code != E_ABORT)
+				ERROR_print_at(stderr, TRUE, TRUE);
+			main_exit(TRUE);
+			_exit(1);
+		}
+		END_TRY
+		
+		main_exit(FALSE);
+		_exit(0);	
+	}
+	
+	for (i = 1; i < argc; i++)
+	{
+		if (strcmp(argv[i], "-g") == 0)
+		{
+			EXEC_debug = TRUE;
+		}
+		else if (strcmp(argv[i], "-f") == 0)
+		{
+			EXEC_fifo = TRUE;
+			if (i < (argc - 1) && *argv[i + 1] && *argv[i + 1] != '-')
+			{
+				EXEC_fifo_name = argv[i + 1];
+				i++;
+			}
+		}
+		else if (strcmp(argv[i], "-p") == 0)
+		{
+			nopreload = TRUE;
+		}
+		else if (strcmp(argv[i], "-k") == 0)
+		{
+			EXEC_keep_library = TRUE;
+		}
+		else
+		{
+			if (strcmp(argv[i], "--"))
+			{
+				file = argv[i];
+				i++;
+			}
+			break;
+		}
+	}
 
-    EXEC_arch = TRUE;
+	if (i < argc)
+	{
+		if (file && strcmp(argv[i], "--"))
+		{
+			if (EXEC_arch)
+				fprintf(stderr, "gbr" GAMBAS_VERSION_STRING ": too many executable files.\n");
+			else
+				fprintf(stderr, "gbx" GAMBAS_VERSION_STRING ": too many project files.\n");
+			my_exit(1);
+		}
 
-    if (strcmp(argv[2], "-p") == 0)
-      n = 3;
-    else
-      n = 2;
+		i++;
+	}
 
-    file = argv[n];
-    if (n == 2)
-      LIBRARY_preload(file, argv);
+	n = i;
 
-    for (i = 1; i < (argc - n); i++)
-      argv[i] = argv[i + n];
+	if (!nopreload)
+		LIBRARY_preload(file, argv);
 
-    argc -= n;
-  }*/
-  else
-  {
-  	if (argc == 2)
-  	{
-  		if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help"))
-  		{
-        printf(
-          "\n"
-          "GAMBAS Interpreter version " VERSION " " __DATE__ " " __TIME__ "\n"
-          COPYRIGHT
-          "Usage: gbx" GAMBAS_VERSION_STRING " [options] [<project file>] -- ...\n"
-          "       gbx" GAMBAS_VERSION_STRING " -e <expression>\n\n"
-          "Options:\n"
-          "  -V --version   display version\n"
-          "  -h --help      display this help\n"
-          "  -e             evaluate an expression\n"
-          "  -g             enter debugging mode\n"
-#if DO_PRELOADING          
-          "  -p             disable preloading\n"
-#endif
-          "  -k             do not unload shared libraries\n"
-          "  -x             execute an archive\n"
-          "\n"
-          );
+	for (i = 1; i <= (argc - n); i++)
+		argv[i] = argv[i + n - 1];
 
-        my_exit(0);
-  		}
-      else if (!strcmp(argv[1], "-V") || !strcmp(argv[1], "--version"))
-      {
-        printf(VERSION "\n");
-        my_exit(0);
-      }
-  	}
-  	else
-  	
-  	if (argc == 3 && !strcmp(argv[1], "-e"))
-  	{
-  		TRY
-  		{
-  			init(NULL);
-  			EVAL_string(argv[2]);
-  		}
-  		CATCH
-  		{
-				if (ERROR_current->info.code && ERROR_current->info.code != E_ABORT)
-					ERROR_print_at(stderr, TRUE, TRUE);
-				main_exit(TRUE);
-				_exit(1);
-  		}
-  		END_TRY
-  		
-  		main_exit(FALSE);
-  		_exit(0);	
-  	}
-  	
-    for (i = 1; i < argc; i++)
-    {
-      if (strcmp(argv[i], "-g") == 0)
-      {
-        EXEC_debug = TRUE;
-      }
-      else if (strcmp(argv[i], "-f") == 0)
-      {
-        EXEC_fifo = TRUE;
-				if (i < (argc - 1) && *argv[i + 1] && *argv[i + 1] != '-')
-				{
-					EXEC_fifo_name = argv[i + 1];
-					i++;
-				}
-      }
-      else if (strcmp(argv[i], "-p") == 0)
-      {
-        nopreload = TRUE;
-      }
-      else if (strcmp(argv[i], "-k") == 0)
-      {
-        EXEC_keep_library = TRUE;
-      }
-      else
-      {
-        if (strcmp(argv[i], "--"))
-        {
-          file = argv[i];
-          i++;
-        }
-        break;
-      }
-    }
+	argc -= n - 1;
 
-    if (i < argc)
-    {
-      if (file && strcmp(argv[i], "--"))
-      {
-        fprintf(stderr, "gbx" GAMBAS_VERSION_STRING ": too many project files.\n");
-        my_exit(1);
-      }
-
-      i++;
-    }
-
-    n = i;
-
-    if (!nopreload)
-      LIBRARY_preload(file, argv);
-
-    for (i = 1; i <= (argc - n); i++)
-      argv[i] = argv[i + n - 1];
-
-    argc -= n - 1;
-
-    //printf("argc = %d\n", argc);
-    /*for (i = 0; i < argc; i++)
-      fprintf(stderr, "argv[%d] = '%s'\n", i, argv[i]);
-    fprintf(stderr, "\n");*/
-
-  }
-
+	//printf("argc = %d\n", argc);
+	/*for (i = 0; i < argc; i++)
+		fprintf(stderr, "argv[%d] = '%s'\n", i, argv[i]);
+	fprintf(stderr, "\n");*/
 
   TRY
   {

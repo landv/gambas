@@ -113,3 +113,20 @@ Public Sub InitEditor(hEditor As Editor)
   Next
   
 End
+
+Public Sub GetColor(sStyle As String) As Integer
+  
+  Dim hStyle As New CStyle
+  
+  hStyle.FromString(Settings["Highlight" &/ sStyle, $cDefault[sStyle]])
+  Return hStyle.Foreground
+  
+End
+
+
+Public Sub InitControl(hControl As Control)
+  
+  hControl.Background = GetColor("Background")
+  hControl.Foreground = GetColor("Normal")
+  
+End

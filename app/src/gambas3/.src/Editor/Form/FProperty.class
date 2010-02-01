@@ -22,6 +22,8 @@ Private $bSort As Boolean
 Private $bDisableIntegratedHelp As Boolean
 Private $hWebView As WebView
 
+Private $iHighlightColor As Integer
+
 Public Sub _new()
   
   Settings.Read(Me)
@@ -200,12 +202,12 @@ Public Sub RefreshAll()
     grdProperty[iRow, 1].Alignment = Align.TopNormal
 
     If CControl.WasDefaultValue Then 
-      grdProperty[iRow, 0].Background = Color.TextBackground
-      grdProperty[iRow, 1].Background = Color.TextBackground
+      grdProperty[iRow, 0].Background = grdProperty.Background 'Color.Default 'Color.TextBackground
+      grdProperty[iRow, 1].Background = grdProperty.Background 'Color.Default 'Color.TextBackground
       grdProperty[iRow, 0].Font.Bold = False
     Else
-      grdProperty[iRow, 0].Background = Color.LightBackground
-      grdProperty[iRow, 1].Background = Color.LightBackground
+      grdProperty[iRow, 0].Background = $iHighlightColor 'Color.LightBackground
+      grdProperty[iRow, 1].Background = $iHighlightColor 'Color.LightBackground
       grdProperty[iRow, 0].Font.Bold = True
     Endif
 
@@ -1001,6 +1003,12 @@ Public Sub ReadConfig()
   cmbProperty.Font = grdProperty.Font
   spnProperty.Font = grdProperty.Font
   panProperty.Font = grdProperty.Font
+  MTheme.InitControl(grdProperty)
+  MTheme.InitControl(cmbProperty)
+  MTheme.InitControl(spnProperty)
+  MTheme.InitControl(txtProperty)
+  MTheme.InitControl(btnProperty)
+  $iHighlightColor = MTheme.GetColor("Selection")
   MoveProperty
   RefreshAll
 

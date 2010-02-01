@@ -25,6 +25,9 @@
 
 #include "gambas.h"
 #include "gb.qt.h"
+#include "CWidget.h"
+
+//#include <QSpinBox>
 
 #ifndef __CSPINBOX_CPP
 
@@ -39,10 +42,17 @@ extern GB_DESC CSpinBoxDesc[];
 
 typedef
   struct {
-    QT_WIDGET widget;
+    CWIDGET widget;
     }
   CSPINBOX;
 
+/*class MySpinBox : public QSpinBox
+{
+public:
+  MySpinBox(QWidget *parent = 0);
+  ~MySpinBox();
+};*/
+	
 class CSpinBox : public QObject
 {
   Q_OBJECT

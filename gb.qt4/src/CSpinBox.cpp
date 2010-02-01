@@ -33,6 +33,16 @@
 
 DECLARE_EVENT(EVENT_Change);
 
+/*
+MySpinBox::MySpinBox(QWidget *parent) : QSpinBox(parent)
+{
+	setAccelerated(true);
+	lineEdit()->setAutoFillBackground(false);
+}
+
+MySpinBox::~MySpinBox()
+{
+}*/
 
 BEGIN_METHOD(CSPINBOX_new, GB_OBJECT parent)
 
