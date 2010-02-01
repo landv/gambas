@@ -172,7 +172,7 @@ bool MyTabWidget::eventFilter(QObject *o, QEvent *e)
 		int id = tabBar->currentTab();
 		
 		if (id >= 0)
-		{
+		/*{
 			if (event->delta() < 0)
 				tab = tabBar->tabAt(tabBar->indexOf(id) + 1);
 			else
@@ -180,8 +180,26 @@ bool MyTabWidget::eventFilter(QObject *o, QEvent *e)
 			
 			if (tab)
 				tabBar->setCurrentTab(tab);
+		}*/
+		{
+			for(;;)
+			{
+				if (event->delta() < 0)
+					id++;
+				else
+					id--;
+					
+				if (id < 0 || id >= tabBar->count())
+					break;
+				
+				if (tabBar->isTabEnabled(id))
+				{
+					tabBar->setCurrentTab(id);
+					break;
+				}
+			}
 		}
-			
+
 		return true;
 	}
 
