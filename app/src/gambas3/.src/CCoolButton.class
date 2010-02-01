@@ -83,6 +83,7 @@ End
 
 Public Sub Panel_MouseDown()
 
+  'If Last Is Panel Then Return
   With GetPanel()
     .Background = Color.SelectedBackground
     .Foreground = Color.SelectedForeground
@@ -97,6 +98,7 @@ Public Sub Panel_MouseUp()
   Dim X As Integer
   Dim Y As Integer
 
+  'If Last Is Panel Then Return
   hPanel = GetPanel()
   hPanel.Background = Color.LightBackground
   hPanel.Foreground = $iColor
@@ -115,7 +117,8 @@ Public Sub Panel_MouseUp()
 
   If (X >= 0 And Y >= 0 And X < hPanel.W And Y < hPanel.H) Then
 
-    Raise Click()
+    Raise Click
+    Stop Event
 
   Else
 

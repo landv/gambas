@@ -65,8 +65,8 @@ Public UseTerminal As Boolean
 
 Public Running As Boolean
 
-Private Recent As New String[]
-Public Const DEFAULT_MAX_RECENT As Integer = 64
+'Private Recent As New String[]
+'Private RecentDate As New Date[]
 
 Public Const FORM_MAGIC As String = "# Gambas Form File 3.0"
 Public Const FORM_MAGIC_1 As String = "# Gambas Form File 1.0"
@@ -196,7 +196,7 @@ Public Sub Main()
   InitWebView
   
   InitVersion
-  LoadRecent
+  CRecentFile.Load
   'CModule.Init
 
   FMain.Load 
@@ -219,6 +219,7 @@ Public Sub Main()
     If sPath Then
       Project.Open(sPath)
     Else
+      Project.Exit
       FMain.Close
       Return
     Endif
@@ -409,7 +410,7 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
   
   DefineStartup(Startup, True)
   
-  AddRecent(sDir)
+  CRecentFile.Add(sDir)
   
   Positions.Clear
 
@@ -589,6 +590,7 @@ End
 
 Public Sub Exit()
 
+  CRecentFile.Exit
   CModule.Exit
   CComponent.Exit
 
@@ -3441,83 +3443,90 @@ Private Sub UnLockIt()
 End
 
 
-Private Sub LoadRecent()
-
-  Dim nRecent As Integer
-  Dim hMenu As Menu
-  Dim iInd As Integer
-  Dim sPath As String
-
-  nRecent = Settings["/Recent/Count", 0]
-  
-  Recent.Clear
-
-  For iInd = 1 To nRecent
-    sPath = Settings["/Recent/File[" & CStr(iInd) & "]"]
-    If sPath Then
-      If Exist(sPath) Then
-        Recent.Add(sPath)
-        If Recent.Count >= DEFAULT_MAX_RECENT Then Break
-      Endif
-    Endif
-  Next
-
-End
-
-
-Private Sub AddRecent(sPath As String)
-
-  Dim iInd As Integer
-  Dim nMax As Integer
-
-  If Right$(sPath) = "/" Then sPath = Left$(sPath, -1)
-
-  'sPath = "(" & File.BaseName(sPath) & ") " & File.Dir(sPath)
-
-  While iInd < Recent.Count
-
-    If Recent[iInd] = sPath Then
-      Recent.Remove(iInd)
-    Else
-      Inc iind
-    Endif
-
-  Wend
-
-  Recent.Add(sPath, 0)
-
-  'nMax = Settings["/Recent/Max", DEFAULT_MAX_RECENT]
-  While Recent.Count > DEFAULT_MAX_RECENT
-    Recent.Remove(Recent.Count - 1)
-  Wend
-
-  SaveRecent
-
-End
+' Private Sub LoadRecent()
+' 
+'   Dim nRecent As Integer
+'   Dim hMenu As Menu
+'   Dim iInd As Integer
+'   Dim sPath As String
+' 
+'   nRecent = Settings["/Recent/Count", 0]
+'   
+'   Recent.Clear
+'   RecentDate.Clear
+' 
+'   For iInd = 1 To nRecent
+'     sPath = Settings["/Recent/File[" & CStr(iInd) & "]"]
+'     If sPath Then
+'       If Exist(sPath) Then
+'         Recent.Add(sPath)
+'         RecentDate.Add(CDate(Settings["/Recent/Date[" & CStr(iInd) & "]"]))
+'         If Recent.Count >= DEFAULT_MAX_RECENT Then Break
+'       Endif
+'     Endif
+'   Next
+' 
+' End
 
 
-Private Sub SaveRecent()
+' Private Sub AddRecent(sPath As String)
+' 
+'   Dim iInd As Integer
+'   Dim nMax As Integer
+' 
+'   If Right$(sPath) = "/" Then sPath = Left$(sPath, -1)
+' 
+'   'sPath = "(" & File.BaseName(sPath) & ") " & File.Dir(sPath)
+' 
+'   While iInd < Recent.Count
+' 
+'     If Recent[iInd] = sPath Then
+'       Recent.Remove(iInd)
+'       RecentDate.Remove(iInd)
+'     Else
+'       Inc iind
+'     Endif
+' 
+'   Wend
+' 
+'   Recent.Add(sPath, 0)
+'   RecentDate.Add(CStr(Date(Now)), 0)
+' 
+'   'nMax = Settings["/Recent/Max", DEFAULT_MAX_RECENT]
+'   While Recent.Count > DEFAULT_MAX_RECENT
+'     Recent.Remove(Recent.Max)
+'     RecentDate.Remove(RecentDate.Max)
+'   Wend
+' 
+'   SaveRecent
+' 
+' End
 
-  Dim iInd As Integer
 
-  Settings.Clear("/Recent")
+' Private Sub SaveRecent()
+' 
+'   Dim iInd As Integer
+' 
+'   Settings.Clear("/Recent")
+' 
+'   Settings["/Recent/Count"] = Recent.Count
+' 
+'   For iInd = 0 To Recent.Count - 1
+'     Settings["/Recent/File[" & CStr(iInd + 1) & "]"] = Recent[iInd]
+'     Settings["/Recent/Date[" & CStr(iInd + 1) & "]"] = CStr(RecentDate[iInd])
+'   Next
+' 
+'   Settings.Save
+' 
+' End
 
-  Settings["/Recent/Count"] = Recent.Count
-
-  For iInd = 0 To Recent.Count - 1
-    Settings["/Recent/File[" & CStr(iInd + 1) & "]"] = Recent[iInd]
-  Next
-
-  Settings.Save
-
-End
-
-Public Sub ClearRecent()
-  
-  Recent.Clear
-  SaveRecent
-  
-End
+' Public Sub ClearRecent()
+'   
+'   Recent.Clear
+'   RecentDate.Clear
+'   SaveRecent
+'   
+' End
 
 
 
@@ -4518,21 +4527,6 @@ Public Sub RefreshBreakpointPicture()
   
   iSize = Font[Settings["/Editor/Font"]].Height("")
   Try Editor.BreakpointPicture = Picture["icon:/small/flag"].Image.Stretch(iSize, iSize).Picture 
-  
-End
-
-Public Sub GetRecentFiles(Optional bSort As Boolean) As String[]
-  
-  Dim aList As String[]
-  
-  aList = Recent.Copy()
-
-  If aList.Count Then
-    If aList[0] = Project.Dir Then aList.Remove(0)
-    If bSort Then aList.Sort()
-  Endif
-  
-  Return aList
   
 End
 

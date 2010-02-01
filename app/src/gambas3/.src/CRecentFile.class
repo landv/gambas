@@ -1,0 +1,155 @@
+' Gambas class file
+
+Static Public All As CRecentFile[]
+Static Public SortByDate As Boolean
+
+Public Const MAX_RECENT As Integer = 64
+
+Public Path As String
+Public Date As Date
+
+Public Sub _new(sPath As String, dDate As Date)
+  
+  Path = sPath
+  If IsNull(dDate) Then dDate = Stat(sPath &/ ".project").LastModified
+  {Date} = dDate
+  
+End
+
+Public Sub _compare(hRecentFile As CRecentFile) As Integer
+  
+  If SortByDate Then
+    Return Sgn({Date} - hRecentFile.Date)
+  Else
+    Return Comp(Path, hRecentFile.Path, gb.Natural + gb.IgnoreCase)
+  Endif
+  
+End
+
+Public Sub GetSlot() As String
+  
+  Dim dToday As Date = Date(Now)
+  Dim dDate As Date = Date({Date})
+  Dim sText As String
+  
+  If dDate = dToday Then
+    Return ("Today")
+  Else If DateDiff(dDate, dToday, gb.Day) = 1 Then
+    Return ("Yesterday")
+  Else If DateDiff(dDate, dToday, gb.Day) <= 7 Then
+    Return ("This week")
+  Else If Year(dToday) = Year(dDate) And If Month(dToday) = Month(dDate) Then
+    Return ("This month")
+  Else
+    sText = Format(dDate, "mmmm yyyy")
+    Return String.UCase(String.Left(sText)) & String.Mid$(sText, 2)
+  Endif
+  
+End
+
+
+Static Public Sub Clear()
+  
+  All.Clear
+  Save
+  
+End
+
+Static Public Sub Load()
+
+  Dim nRecent As Integer
+  Dim iInd As Integer
+  Dim sPath As String
+  Dim hRecentFile As CRecentFile
+
+  nRecent = Settings["/Recent/Count", 0]
+  
+  All = New CRecentFile[]
+
+  For iInd = 1 To nRecent
+    sPath = Settings["/Recent/File[" & CStr(iInd) & "]"]
+    If sPath Then
+      If Exist(sPath) Then
+        hRecentFile = New CRecentFile(sPath, CDate(Settings["/Recent/Date[" & CStr(iInd) & "]"]))
+        All.Add(hRecentFile)
+        If All.Count >= MAX_RECENT Then Break
+      Endif
+    Endif
+  Next
+
+End
+
+Static Public Sub Save()
+
+  Dim iInd As Integer
+
+  Settings.Clear("/Recent")
+
+  Settings["/Recent/Count"] = All.Count
+
+  SortByDate = True
+  All.Sort(gb.Descent)
+
+  For iInd = 0 To All.Max
+    Settings["/Recent/File[" & CStr(iInd + 1) & "]"] = All[iInd].Path
+    Settings["/Recent/Date[" & CStr(iInd + 1) & "]"] = CStr(All[iInd].Date)
+  Next
+
+  Settings.Save
+
+End
+
+Static Public Sub Add(sPath As String)
+
+  Dim iInd As Integer
+  Dim nMax As Integer
+  Dim hRecentFile As CRecentFile
+
+  If Right$(sPath) = "/" Then sPath = Left$(sPath, -1)
+
+  'sPath = "(" & File.BaseName(sPath) & ") " & File.Dir(sPath)
+  SortByDate = True
+  All.Sort(gb.Descent)
+
+  While iInd < All.Count
+
+    If All[iInd].Path = sPath Then
+      All.Remove(iInd)
+    Else
+      Inc iInd
+    Endif
+
+  Wend
+
+  hRecentFile = New CRecentFile(sPath, CStr(Now))
+  All.Add(hRecentFile, 0)
+
+  'nMax = Settings["/Recent/Max", DEFAULT_MAX_RECENT]
+  While All.Count > MAX_RECENT
+    All.Remove(All.Max)
+  Wend
+
+  Save
+
+End
+
+Static Public Sub Get(Optional bSort As Boolean) As CRecentFile[]
+  
+  If bSort Then
+    SortByDate = False
+    All.Sort(gb.Ascent)
+  Else
+    SortByDate = True
+    All.Sort(gb.Descent)
+  Endif
+  
+  Return All
+  
+End
+
+Static Public Sub Exit()
+  
+  All = Null
+  
+End
+

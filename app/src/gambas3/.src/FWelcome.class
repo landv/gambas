@@ -68,7 +68,7 @@ Public Sub Form_Open()
   lblVersion.Text = Project.Version
   lblVersion.Move(lblGambas.X + lblGambas.Font.Width(lblGambas.Text) + 4, lblGambas.Y)
 
-  If Project.GetRecentFiles().Count Then
+  If CRecentFile.All.Count Then
     Toggle(LIST_RECENT)
   Else
     Toggle(LIST_EXAMPLE)
@@ -91,7 +91,7 @@ End
 
 Public Sub cvwRecent_Click()
 
-  $sPath = Project.Recent[Val(Last.Key)]
+  $sPath = CRecentFile.All[Val(Last.Key)].Path
   Me.Close
 
 End
@@ -124,6 +124,7 @@ End
 
 Public Sub btnOpen_Click()
 
+  Debug
   $sPath = FOpenProject.Run()
   If $sPath Then Me.Close
 
@@ -340,16 +341,19 @@ End
 
 Private Sub FillRecent()
 
-  Dim aList As String[]
+  Dim aList As CRecentFile[]
   Dim hChild As Control
   Dim iInd As Integer
   Dim hButton As CCoolButton
   Dim hProjectInfo As CProjectInfo
   Dim sTitle As String
+  Dim sLastTitle As String
+  Dim hDrawingArea As DrawingArea
+  Dim Y As Integer
 
   Inc Application.Busy
   
-  aList = Project.GetRecentFiles(chkSortRecent.Value)
+  aList = CRecentFile.Get(chkSortRecent.Value)
   
   svwRecent.Arrangement = Arrange.None
   
@@ -358,12 +362,29 @@ Private Sub FillRecent()
   Next
 
   For iInd = 0 To aList.Count - 1
-    hProjectInfo = New CProjectInfo(aList[iInd])
+    hProjectInfo = New CProjectInfo(aList[iInd].Path)
+    If Not chkSortRecent.Value Then
+      sTitle = aList[iInd].GetSlot()
+      If sTitle <> sLastTitle Then
+        sLastTitle = sTitle
+        hDrawingArea = New DrawingArea(svwRecent) As "dwgExample"
+        'hLabel = NEW Label()
+        With hDrawingArea
+          .Move(0, Y, 64, Desktop.Scale * 4)
+          .Tag = sTitle
+          .Font = Font["Bold"]
+          .Foreground = Color.SelectedBackground
+          '.Background = Color.TextBackground
+          Y = Y + .H
+        End With
+      Endif
+    Endif
     With hProjectInfo
-      hButton = New CCoolButton(svwRecent, 0, iInd * Desktop.Scale * 6, svwRecent.ClientW, Desktop.Scale * 6, GetTitle(hProjectInfo), Project.StretchIcon(.Icon, 24).Picture) As "btnOpenRecent"
-      hButton.Tag = aList[iInd]
-      hButton.ToolTip = File.Dir(aList[iInd])
+      hButton = New CCoolButton(svwRecent, 0, Y, svwRecent.ClientW, Desktop.Scale * 6, GetTitle(hProjectInfo), Project.StretchIcon(.Icon, 24).Picture) As "btnOpenRecent"
+      hButton.Tag = aList[iInd].Path
+      hButton.ToolTip = File.Dir(aList[iInd].Path)
     End With
+    Y += Desktop.Scale * 6
   Next
 
   If aList.Count = 0 Then btnRecent.Enabled = False

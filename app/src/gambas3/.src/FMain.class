@@ -435,13 +435,17 @@ Public Sub UpdateRecentMenu()
 
   Dim hMenu As Menu
   Dim sPath As String
-  Dim aList As String[]
+  Dim aList As CRecentFile[]
   Dim bSort As Boolean
+  Dim hRecentFile As CRecentFile
+  Dim sTitle As String
+  Dim sLastTitle As String
+  Dim hMenuTitle As Menu
 
   Inc Application.Busy
 
   mnuOpenRecent.Children.Clear
-  mnuOpenRecent.Enabled = Project.GetRecentFiles().Count > 0
+  mnuOpenRecent.Enabled = CRecentFile.All.Count > 0
 
   If mnuOpenRecent.Enabled Then
 
@@ -459,16 +463,37 @@ Public Sub UpdateRecentMenu()
     Object.Unlock(hMenu)
     'hMenu.Picture = Picture["icon:/small/trash"]
   
-    aList = Project.GetRecentFiles(bSort)
-  
     hMenu = New Menu(mnuOpenRecent)
+    
+    aList = CRecentFile.Get(bSort)
   
-    For Each sPath In aList
-      hMenu = New Menu(mnuOpenRecent) As "mnuOpenRecentFile"
-      hMenu.Tag = sPath
-      hMenu.Text = FormatFile(sPath)
-      hMenu.Picture = Project.GetIcon(hMenu.Tag, 16)
-    Next
+    If bSort Then
+  
+      For Each hRecentFile In aList
+        hMenu = New Menu(mnuOpenRecent) As "mnuOpenRecentFile"
+        sPath = hRecentFile.Path
+        hMenu.Tag = sPath
+        hMenu.Text = FormatFile(sPath)
+        hMenu.Picture = Project.GetIcon(hMenu.Tag, 16)
+      Next
+      
+    Else
+    
+      For Each hRecentFile In aList
+        sPath = hRecentFile.Path
+        sTitle = hRecentFile.GetSlot()
+        If sTitle <> sLastTitle Then
+          hMenuTitle = New Menu(mnuOpenRecent)
+          hMenuTitle.Text = sTitle
+          sLastTitle = sTitle
+        Endif
+        hMenu = New Menu(hMenuTitle) As "mnuOpenRecentFile"
+        hMenu.Tag = sPath
+        hMenu.Text = FormatFile(sPath)
+        hMenu.Picture = Project.GetIcon(hMenu.Tag, 16)
+      Next
+
+    Endif
     
   Endif
 

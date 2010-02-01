@@ -11,7 +11,12 @@ Private frmProjectItem As ProjectItem
 Public Sub Run(Optional bAnother As Boolean) As String
 
   $bAnother = bAnother
-  If Me.ShowModal() Then Return $sPath
+  'Debug
+  If Me.ShowModal() Then 
+    'Debug
+    Return $sPath
+  Endif
+  'Debug
 
 End
 
@@ -160,13 +165,16 @@ End
 
 Private Sub FillRecent()
   
-  Dim sRecent As String
   Dim hProjectItem As ProjectItem
   Dim hFirst As ProjectItem
-  Dim aRecent As String[]
+  Dim aRecent As CRecentFile[]
+  Dim hRecent As CRecentFile
   'Dim bHighlight As Boolean
   Dim fTime As Float
+  Dim sTitle As String
+  Dim sLastTitle As String
   Dim Y As Integer
+  Dim hDrawingArea As DrawingArea
   
   If lstRecent.Children.Count Then Return
 
@@ -175,16 +183,31 @@ Private Sub FillRecent()
   'panRecent.Hide
   lstRecent.Lock
 
-  aRecent = Project.GetRecentFiles(chkSortRecent.Value)
+  aRecent = CRecentFile.Get(chkSortRecent.Value)
 
-  For Each sRecent In aRecent
+  For Each hRecent In aRecent
+    If Not chkSortRecent.Value Then
+      sTitle = hRecent.GetSlot()
+      If sTitle <> sLastTitle Then
+        hDrawingArea = New DrawingArea(lstRecent) As "dwgExample"
+        With hDrawingArea
+          .Enabled = False
+          .Tag = sTitle 
+          .Font = Font["Bold"]
+          .H = .Font.Height() + If(sLastTitle, 16, 8)
+          .Foreground = Color.SelectedBackground
+          Y += .H
+        End With
+        sLastTitle = sTitle
+      Endif
+    Endif
     hProjectItem = New ProjectItem(lstRecent)
     hProjectItem.Y = Y
     Y += hProjectItem.H
     'If bHighlight Then hProjectItem.Background = Color.LightBackground
     'bHighlight = Not bHighlight
     If Not hFirst Then hFirst = hProjectItem
-    hProjectItem.SetPath(sRecent)
+    hProjectItem.SetPath(hRecent.Path)
   Next
   
   If hFirst Then lstRecent.Select(hFirst)
