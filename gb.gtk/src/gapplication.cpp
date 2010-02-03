@@ -545,6 +545,7 @@ GtkWindowGroup *gApplication::_group = NULL;
 gControl *gApplication::_enter = NULL;
 gControl *gApplication::_leave = NULL;
 bool (*gApplication::onKeyEvent)(int) = NULL;
+guint32 gApplication::_event_time = 0;
 
 GtkTooltips* gApplication::tipHandle()
 {
