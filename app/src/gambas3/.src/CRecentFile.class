@@ -10,6 +10,7 @@ Public Date As Date
 
 Public Sub _new(sPath As String, dDate As Date)
   
+  If Not Exist(sPath &/ ".project") Then Return
   Path = sPath
   If IsNull(dDate) Then dDate = Stat(sPath &/ ".project").LastModified
   {Date} = dDate
@@ -25,6 +26,13 @@ Public Sub _compare(hRecentFile As CRecentFile) As Integer
   Endif
   
 End
+
+Public Sub IsValid() As Boolean
+  
+  Return Path
+  
+End
+
 
 Public Sub GetSlot() As String
   
@@ -69,8 +77,8 @@ Static Public Sub Load()
   For iInd = 1 To nRecent
     sPath = Settings["/Recent/File[" & CStr(iInd) & "]"]
     If sPath Then
-      If Exist(sPath) Then
-        hRecentFile = New CRecentFile(sPath, CDate(Settings["/Recent/Date[" & CStr(iInd) & "]"]))
+      hRecentFile = New CRecentFile(sPath, CDate(Settings["/Recent/Date[" & CStr(iInd) & "]"]))
+      If hRecentFile.IsValid() Then
         All.Add(hRecentFile)
         If All.Count >= MAX_RECENT Then Break
       Endif
@@ -122,6 +130,8 @@ Static Public Sub Add(sPath As String)
   Wend
 
   hRecentFile = New CRecentFile(sPath, CStr(Now))
+  If Not hRecentFile.IsValid() Then Return
+  
   All.Add(hRecentFile, 0)
 
   'nMax = Settings["/Recent/Max", DEFAULT_MAX_RECENT]

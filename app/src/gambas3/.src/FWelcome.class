@@ -124,7 +124,6 @@ End
 
 Public Sub btnOpen_Click()
 
-  Debug
   $sPath = FOpenProject.Run()
   If $sPath Then Me.Close
 
