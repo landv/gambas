@@ -125,6 +125,18 @@ static void main_exit(bool silent)
 	//fclose(log_file);
 }
 
+static bool is_option(const char *arg, char option)
+{
+	return (arg[0] == '-' && arg[1] == option && arg[2] == 0);
+}
+
+static bool is_long_option(const char *arg, char option, char *long_option)
+{
+	if (is_option(arg, option))
+		return TRUE;
+	else
+		return (arg[0] == '-' && arg[1] == '-' && !strcmp(&arg[2], long_option));
+}
 
 int main(int argc, char **argv)
 {
@@ -149,23 +161,12 @@ int main(int argc, char **argv)
 
 	if (argc == 2)
 	{
-		if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help"))
+		if (is_long_option(argv[1], 'h', "help"))
 		{
 			if (EXEC_arch)
 			{
 				printf(
 					"Usage: gbr" GAMBAS_VERSION_STRING " [options] [<executable file>] [-- <arguments>]\n\n"
-					"Options:\n"
-					"  -V --version   display version\n"
-					"  -h --help      display this help\n"
-					"  -L --license   display license\n"
-					"  -g             enter debugging mode\n"
-	#if DO_PRELOADING          
-					"  -p             disable preloading\n"
-	#endif
-					"  -k             do not unload shared libraries\n"
-					"  -x             execute an archive\n"
-					"\n"
 					);
 			}
 			else
@@ -173,29 +174,32 @@ int main(int argc, char **argv)
 				printf(
 					"Usage: gbx" GAMBAS_VERSION_STRING " [options] [<project file>] [-- <arguments>]\n"
 					"       gbx" GAMBAS_VERSION_STRING " -e <expression>\n\n"
-					"Options:\n"
-					"  -V --version   display version\n"
-					"  -h --help      display this help\n"
-					"  -L --license   display license\n"
-					"  -e             evaluate an expression\n"
-					"  -g             enter debugging mode\n"
-	#if DO_PRELOADING          
-					"  -p             disable preloading\n"
-	#endif
-					"  -k             do not unload shared libraries\n"
-					"  -x             execute an archive\n"
-					"\n"
 					);
+			}
+			printf(
+				"Options:\n"
+				"  -V --version   display version\n"
+				"  -h --help      display this help\n"
+				"  -L --license   display license\n"
+				"  -g             enter debugging mode\n"
+	#if DO_PRELOADING          
+				"  -p             disable preloading\n"
+	#endif
+				"  -k             do not unload shared libraries\n"
+				);
+			if (!EXEC_arch)
+			{
+				printf("  -e             evaluate an expression\n");
 			}
 
 			my_exit(0);
 		}
-		else if (!strcmp(argv[1], "-V") || !strcmp(argv[1], "--version"))
+		else if (is_long_option(argv[1], 'V', "version"))
 		{
 			printf(VERSION "\n");
 			my_exit(0);
 		}
-		else if (!strcmp(argv[1], "-L") || !strcmp(argv[1], "--license"))
+		else if (is_long_option(argv[1], 'L', "license"))
 		{
 			printf(
 				"Gambas interpreter version " VERSION " " __DATE__ " " __TIME__ "\n"
@@ -206,7 +210,7 @@ int main(int argc, char **argv)
 	}
 	else
 	
-	if (!EXEC_arch && argc == 3 && !strcmp(argv[1], "-e"))
+	if (!EXEC_arch && argc == 3 && is_option(argv[1], 'e'))
 	{
 		TRY
 		{
@@ -228,11 +232,11 @@ int main(int argc, char **argv)
 	
 	for (i = 1; i < argc; i++)
 	{
-		if (strcmp(argv[i], "-g") == 0)
+		if (is_option(argv[i], 'g'))
 		{
 			EXEC_debug = TRUE;
 		}
-		else if (strcmp(argv[i], "-f") == 0)
+		else if (is_option(argv[i], 'f'))
 		{
 			EXEC_fifo = TRUE;
 			if (i < (argc - 1) && *argv[i + 1] && *argv[i + 1] != '-')
@@ -241,17 +245,17 @@ int main(int argc, char **argv)
 				i++;
 			}
 		}
-		else if (strcmp(argv[i], "-p") == 0)
+		else if (is_option(argv[i], 'p'))
 		{
 			nopreload = TRUE;
 		}
-		else if (strcmp(argv[i], "-k") == 0)
+		else if (is_option(argv[i], 'k'))
 		{
 			EXEC_keep_library = TRUE;
 		}
 		else
 		{
-			if (strcmp(argv[i], "--"))
+			if (is_option(argv[i], '-'))
 			{
 				file = argv[i];
 				i++;
@@ -262,7 +266,7 @@ int main(int argc, char **argv)
 
 	if (i < argc)
 	{
-		if (file && strcmp(argv[i], "--"))
+		if (file && !is_option(argv[i], '-'))
 		{
 			if (EXEC_arch)
 				fprintf(stderr, "gbr" GAMBAS_VERSION_STRING ": too many executable files.\n");

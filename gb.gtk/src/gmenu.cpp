@@ -23,6 +23,7 @@
 #include "widgets.h"
 #include "widgets_private.h"
 #include "gmainwindow.h"
+#include "gapplication.h"
 #include "gmenu.h"
 
 typedef
@@ -565,16 +566,6 @@ void gMenu::destroy()
 		delete this;
 }
 
-void gMenu::popup()
-{
-	guint32 time = gtk_get_current_event_time();
-	
-	if (!child)
-		return;
-		
-	gtk_menu_popup(child, NULL, NULL, NULL, NULL, 0, time);
-}
-
 static void position_menu(GtkMenu *menu, gint *x, gint *y, gboolean *push_in, MenuPosition *pos)
 {
 	*x = pos->x;
@@ -583,20 +574,33 @@ static void position_menu(GtkMenu *menu, gint *x, gint *y, gboolean *push_in, Me
 	delete pos;
 }
 
-void gMenu::popup(int x, int y)
+void gMenu::doPopup(bool move, int x, int y)
 {
-	guint32 time = gtk_get_current_event_time();
-	MenuPosition *pos;
+	MenuPosition *pos = NULL;
 	
 	if (!child)
 		return;
 	
-	pos = new MenuPosition;
-	pos->x = x;
-	pos->y = y;
+	if (move)
+	{
+		pos = new MenuPosition;
+		pos->x = x;
+		pos->y = y;
+	}
 	
-	gtk_menu_popup(child, NULL, NULL, (GtkMenuPositionFunc)position_menu, (gpointer)pos, 0, time);
+	gtk_menu_popup(child, NULL, NULL, move ? (GtkMenuPositionFunc)position_menu : NULL, (gpointer)pos, 0, gApplication::lastEventTime());
 }
+
+void gMenu::popup(int x, int y)
+{
+	doPopup(true, x, y);
+}
+
+void gMenu::popup()
+{
+	doPopup(false);
+}
+
 
 int gMenu::winChildCount(gMainWindow *par)
 {

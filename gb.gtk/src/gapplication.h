@@ -62,6 +62,7 @@ public:
 	static bool hasLoop(void *owner) { return _loop_owner == owner; }
 	static GtkWindowGroup *enterGroup();
 	static void exitGroup(GtkWindowGroup *oldGroup);
+	static guint32 lastEventTime() { return _event_time; }
 
 	static bool (*onKeyEvent)(int type);
 
@@ -77,6 +78,7 @@ public:
 	//static void dispatchEnterLeave(gControl *enter);
 	static gControl *_enter;
 	static gControl *_leave;
+	static guint32 _event_time;
 };
 
 #endif
