@@ -73,6 +73,7 @@ public:
 
 	static void embedMenuBar(gMainWindow *win, GtkWidget *border);
 	static void checkMenuBar(gMainWindow *win);
+
 private:
 
 	gMenuStyle _style, _oldstyle;
@@ -88,6 +89,7 @@ private:
 	unsigned _action : 1;
 	unsigned _visible : 1;
   
+	void doPopup(bool move, int x = 0, int y = 0);
   void update();
   void updateVisible();
 };
