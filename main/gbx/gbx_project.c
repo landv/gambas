@@ -366,11 +366,12 @@ void PROJECT_init(const char *file)
       if (path == NULL)
         goto _PANIC;
 
-      chdir(path);
-
-      path = FILE_getcwd(NULL);
-      if (path == NULL)
-        goto _PANIC;
+      if (!chdir(path))
+			{
+				path = FILE_getcwd(NULL);
+				if (path == NULL)
+					goto _PANIC;
+			}
     }
   }
 

@@ -361,37 +361,45 @@ AC_DEFUN([GB_SYSTEM],
     *-*-linux* )
       SYSTEM=LINUX
       AC_DEFINE(OS_LINUX, 1, [Target system is Linux])
+      AC_DEFINE(SYSTEM, "Linux", [Operating system])
       ;;
     *-*-freebsd* )
       SYSTEM=FREEBSD
       AC_DEFINE(OS_BSD, 1, [Target system is of BSD family])
       AC_DEFINE(OS_FREEBSD, 1, [Target system is FreeBSD])
+      AC_DEFINE(SYSTEM, "FreeBSD", [Operating system])
       ;;
     *-*-netbsd* )
       SYSTEM=NETBSD
       AC_DEFINE(OS_BSD, 1, [Target system is of BSD family])
       AC_DEFINE(OS_NETBSD, 1, [Target system is NetBSD])
+      AC_DEFINE(SYSTEM, "NetBSD", [Operating system])
       ;;
     *-*-openbsd* )
       SYSTEM=OPENBSD
       AC_DEFINE(OS_BSD, 1, [Target system is of BSD family])
       AC_DEFINE(OS_OPENBSD, 1, [Target system is OpenBSD])
+      AC_DEFINE(SYSTEM, "OpenBSD", [Operating system])
       ;;
     *-*-cygwin* )
       SYSTEM=CYGWIN
       AC_DEFINE(OS_CYGWIN, 1, [Target system is Cygwin/Windows])
+      AC_DEFINE(SYSTEM, "Cygwin", [Operating system])
       ;;
     *-*-darwin* | *-*-rhapsody* )
       SYSTEM=MACOSX
       AC_DEFINE(OS_BSD, 1, [Target system is of BSD family])
       AC_DEFINE(OS_MACOSX, 1, [Target system is MacOS X])
+      AC_DEFINE(SYSTEM, "MacOSX", [Operating system])
       ;;
     *-*-solaris* )
       SYSTEM=SOLARIS
       AC_DEFINE(OS_SOLARIS, 1, [Target system is Solaris])
+      AC_DEFINE(SYSTEM, "Solaris", [Operating system])
       ;;
     *)
       SYSTEM=UNKNOWN
+      AC_DEFINE(SYSTEM, "unknown", [Operating system])
       ;;
   esac
 
@@ -403,14 +411,17 @@ AC_DEFUN([GB_SYSTEM],
     i*86-*-* )
       ARCH=X86
       AC_DEFINE(ARCH_X86, 1, [Target architecture is x86])
+      AC_DEFINE(ARCHITECTURE, "x86", [Architecture])
       ;;
     x86_64-*-* )
       ARCH=X86_64
       AC_DEFINE(ARCH_X86_64, 1, [Target architecture is x86_64])
+      AC_DEFINE(ARCHITECTURE, "x86_64", [Architecture])
       ;;
     arm*-*-* )
       ARCH=ARM
       AC_DEFINE(ARCH_ARM, 1, [Target architecture is ARM])
+      AC_DEFINE(ARCHITECTURE, "ARM", [Architecture])
       ;;
     *)
       ARCH=UNKNOWN

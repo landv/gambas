@@ -29,6 +29,7 @@
 #include "gb_error.h"
 
 #include <dlfcn.h>
+#include <stdarg.h>
 
 #include "gbx_class.h"
 #include "gbx_exec.h"
@@ -56,7 +57,7 @@ FILE *log_file;
 
 static bool _welcome = FALSE;
 
-static void my_exit(int ret)
+static void NORETURN my_exit(int ret)
 {
   LOCAL_exit();
   COMPONENT_exit();
@@ -64,6 +65,19 @@ static void my_exit(int ret)
 	//fclose(log_file);
   exit(ret);
 }
+
+static void NORETURN fatal(const char *msg, ...)
+{
+	va_list args;
+
+	va_start(args, msg);
+	fputs(EXEC_arch ? "gbr" GAMBAS_VERSION_STRING : "gbx" GAMBAS_VERSION_STRING, stderr);
+	fputs(": ", stderr);
+	vfprintf(stderr, msg, args);
+	va_end(args);
+	putc('\n', stderr);
+	my_exit(1);
+} 
 
 static void init(const char *file)
 {
@@ -81,8 +95,10 @@ static void init(const char *file)
 	{
 		if (PROJECT_load()) // Call STACK_init()
 		{
-      fprintf(stderr, "gbx" GAMBAS_VERSION_STRING ": no project file in %s.\n", strcmp(file, ".") ? file : "current directory");
-			my_exit(1);
+			if (!strcmp(file, "."))
+				fatal("no project file in current directory.");
+			else
+				fatal("no project file in '%s'.", file);
 		}
 	}
 	else
@@ -143,7 +159,7 @@ int main(int argc, char **argv)
   //CLASS *class = NULL;
   CLASS_DESC_METHOD *startup = NULL;
   int i, n;
-  char *file = ".";
+  char *file = NULL;
   bool nopreload = FALSE;
 	const char *prog;
 
@@ -208,10 +224,12 @@ int main(int argc, char **argv)
 			my_exit(0);
 		}
 	}
-	else
 	
-	if (!EXEC_arch && argc == 3 && is_option(argv[1], 'e'))
+	if (!EXEC_arch && argc >= 2 && is_option(argv[1], 'e'))
 	{
+		if (argc < 3)
+			fatal("-e option needs an expression.");
+		
 		TRY
 		{
 			init(NULL);
@@ -253,32 +271,24 @@ int main(int argc, char **argv)
 		{
 			EXEC_keep_library = TRUE;
 		}
-		else
+		else if (is_option(argv[i], '-'))
 		{
-			if (is_option(argv[i], '-'))
-			{
-				file = argv[i];
-				i++;
-			}
 			break;
 		}
-	}
-
-	if (i < argc)
-	{
-		if (file && !is_option(argv[i], '-'))
+		else
 		{
-			if (EXEC_arch)
-				fprintf(stderr, "gbr" GAMBAS_VERSION_STRING ": too many executable files.\n");
-			else
-				fprintf(stderr, "gbx" GAMBAS_VERSION_STRING ": too many project files.\n");
-			my_exit(1);
+			if (file)
+			{
+				fatal("too many %s.", EXEC_arch ? "executable files" : "project directories");
+				my_exit(1);
+			}
+			file = argv[i];
 		}
-
-		i++;
 	}
 
 	n = i;
+	if (!file)
+		file = ".";
 
 	if (!nopreload)
 		LIBRARY_preload(file, argv);

@@ -134,7 +134,7 @@ BEGIN_PROPERTY(CAPPLICATION_title)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CSYSTEM_language)
+BEGIN_PROPERTY(System_Language)
 
   if (READ_PROPERTY)
     GB_ReturnNewZeroString(LOCAL_get_lang());
@@ -144,14 +144,14 @@ BEGIN_PROPERTY(CSYSTEM_language)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CSYSTEM_charset)
+BEGIN_PROPERTY(System_Charset)
 
   GB_ReturnString(LOCAL_encoding);
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CSYSTEM_rtl)
+BEGIN_PROPERTY(System_Rtl)
 
   GB_ReturnBoolean(LOCAL_local.rtl);
 
@@ -316,21 +316,22 @@ BEGIN_PROPERTY(CAPPLICATION_daemon)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CSYSTEM_path)
+BEGIN_PROPERTY(System_Path)
 
   GB_ReturnString(PROJECT_exec_path);
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CSYSTEM_version)
+BEGIN_PROPERTY(System_Version)
 
+	//ERROR_deprecated("System.Version");
   GB_ReturnInteger(GAMBAS_VERSION);
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CSYSTEM_host)
+BEGIN_PROPERTY(System_Host)
 
   char buffer[256];
 
@@ -340,7 +341,7 @@ BEGIN_PROPERTY(CSYSTEM_host)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CSYSTEM_domain)
+BEGIN_PROPERTY(System_Domain)
 
   char buffer[256];
 
@@ -349,13 +350,13 @@ BEGIN_PROPERTY(CSYSTEM_domain)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CSYSTEM_byte_order)
+BEGIN_PROPERTY(System_ByteOrder)
 
   GB_ReturnInteger(EXEC_big_endian);
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CSYSTEM_backtrace)
+BEGIN_PROPERTY(System_Backtrace)
 
 	DEBUG_BACKTRACE *bt = DEBUG_backtrace();
 	
@@ -364,9 +365,21 @@ BEGIN_PROPERTY(CSYSTEM_backtrace)
 	
 END_PROPERTY
 
-BEGIN_PROPERTY(CSYSTEM_error)
+BEGIN_PROPERTY(System_Error)
 
   GB_ReturnInteger(errno);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(System_Family)
+
+  GB_ReturnConstZeroString(SYSTEM);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(System_Architecture)
+
+  GB_ReturnConstZeroString(ARCHITECTURE);
 
 END_PROPERTY
 
@@ -420,17 +433,19 @@ GB_DESC NATIVE_System[] =
 {
   GB_DECLARE("System", 0), GB_VIRTUAL_CLASS(),
 
-  GB_STATIC_PROPERTY("Language", "s", CSYSTEM_language),
-  GB_STATIC_PROPERTY_READ("RightToLeft", "b", CSYSTEM_rtl),
-  GB_STATIC_PROPERTY_READ("Charset", "s", CSYSTEM_charset),
-  GB_STATIC_PROPERTY_READ("Path", "s", CSYSTEM_path),
-  GB_STATIC_PROPERTY_READ("Version", "s", CSYSTEM_version),
-  GB_STATIC_PROPERTY_READ("Host", "s", CSYSTEM_host),
-  GB_STATIC_PROPERTY_READ("Domain", "s", CSYSTEM_domain),
+  GB_STATIC_PROPERTY("Language", "s", System_Language),
+  GB_STATIC_PROPERTY_READ("RightToLeft", "b", System_Rtl),
+  GB_STATIC_PROPERTY_READ("Charset", "s", System_Charset),
+  GB_STATIC_PROPERTY_READ("Path", "s", System_Path),
+  GB_STATIC_PROPERTY_READ("Version", "s", System_Version),
+  GB_STATIC_PROPERTY_READ("Host", "s", System_Host),
+  GB_STATIC_PROPERTY_READ("Domain", "s", System_Domain),
   GB_STATIC_PROPERTY_SELF("User", "User"),
-  GB_STATIC_PROPERTY_READ("ByteOrder", "i", CSYSTEM_byte_order),
-  GB_STATIC_PROPERTY_READ("Backtrace", "String[]", CSYSTEM_backtrace),
-  GB_STATIC_PROPERTY_READ("Error", "i", CSYSTEM_error),
+  GB_STATIC_PROPERTY_READ("ByteOrder", "i", System_ByteOrder),
+  GB_STATIC_PROPERTY_READ("Backtrace", "String[]", System_Backtrace),
+  GB_STATIC_PROPERTY_READ("Error", "i", System_Error),
+  GB_STATIC_PROPERTY_READ("Family", "s", System_Family),
+  GB_STATIC_PROPERTY_READ("Architecture", "s", System_Architecture),
 
   GB_END_DECLARE
 };
