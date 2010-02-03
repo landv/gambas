@@ -392,6 +392,8 @@ static void gambas_handle_event(GdkEvent *event)
 						
 					case GDK_MOTION_NOTIFY:
 
+						gApplication::_event_time = event->motion.time;
+						
 						if (control->onMouseEvent && (control->isTracking() || (event->motion.state & (GDK_BUTTON1_MASK | GDK_BUTTON2_MASK | GDK_BUTTON3_MASK))))
 						{
 							control->getScreenPos(&xc, &yc);
@@ -414,13 +416,15 @@ static void gambas_handle_event(GdkEvent *event)
 						
 					case GDK_SCROLL:
 						
+						gApplication::_event_time = event->scroll.time;
+						
 						if (control->onMouseEvent)
 						{
 							int dt, ort;
 							
 							control->getScreenPos(&xc, &yc);
-							x = (int)event->motion.x_root - xc;
-							y = (int)event->motion.y_root - yc;
+							x = (int)event->scroll.x_root - xc;
+							y = (int)event->scroll.y_root - yc;
 
 							switch (event->scroll.direction)
 							{
@@ -442,6 +446,7 @@ static void gambas_handle_event(GdkEvent *event)
 					{
 						bool cancel = false;
 						
+						gApplication::_event_time = event->key.time;						
 						control = gDesktop::activeControl();
 						
 						if (control)
@@ -492,6 +497,7 @@ static void gambas_handle_event(GdkEvent *event)
 						
 					case GDK_KEY_RELEASE:
 						
+						gApplication::_event_time = event->key.time;						
 						control = gDesktop::activeControl();
 						
 						if (control)
