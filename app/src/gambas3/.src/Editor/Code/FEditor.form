@@ -275,7 +275,7 @@
       Picture = Picture["icon:/small/redo"]
     }
     { btnIndent ToolButton
-      MoveScaled(35,0,4,4)
+      MoveScaled(34,0,4,4)
       Visible = False
       ToolTip = ("Indent")
       Action = ".indent"
@@ -283,7 +283,7 @@
       Picture = Picture["icon:/small/indent"]
     }
     { btnUnindent ToolButton
-      MoveScaled(39,0,4,4)
+      MoveScaled(37,0,4,4)
       Visible = False
       ToolTip = ("Unindent")
       Action = ".unindent"
@@ -292,7 +292,7 @@
     }
     { btnComment ToolButton mnuComment
       Name = "btnComment"
-      MoveScaled(43,0,4,4)
+      MoveScaled(40,0,4,4)
       ToolTip = ("Comment")
       Action = ".comment"
       Text = ("")
@@ -300,7 +300,7 @@
     }
     { btnUncomment ToolButton mnuUncomment
       Name = "btnUncomment"
-      MoveScaled(47,0,4,4)
+      MoveScaled(43,0,4,4)
       ToolTip = ("Uncomment")
       Action = ".uncomment"
       Text = ("")
@@ -308,7 +308,7 @@
     }
     { btnNoSplit ToolButton mnuNoSplit
       Name = "btnNoSplit"
-      MoveScaled(51,0,4,4)
+      MoveScaled(46,0,4,4)
       ToolTip = ("No split")
       Action = ".view-nosplit"
       Text = ("")
@@ -316,7 +316,7 @@
     }
     { btnHorizontalSplit ToolButton mnuHorizontalSplit
       Name = "btnHorizontalSplit"
-      MoveScaled(55,0,4,4)
+      MoveScaled(49,0,4,4)
       ToolTip = ("Horizontal split")
       Action = ".view-hsplit"
       Text = ("")
@@ -324,24 +324,24 @@
     }
     { btnVerticalSplit ToolButton mnuVerticalSplit
       Name = "btnVerticalSplit"
-      MoveScaled(59,0,4,4)
+      MoveScaled(52,0,4,4)
       ToolTip = ("Vertical split")
       Action = ".view-vsplit"
       Text = ("")
       Picture = Picture["icon:/small/view-split-v"]
     }
     { Separator1 Separator
-      MoveScaled(63,0,1,4)
+      MoveScaled(56,0,1,4)
     }
     { btnProc ToolButton
-      MoveScaled(64,0,37,4)
+      MoveScaled(57,0,46,4)
       Action = ".proc"
       Text = ("Procedure list")
       Picture = Picture["img/16/procedure.png"]
     }
     { btnDefinition ToolButton mnuDefinition
       Name = "btnDefinition"
-      MoveScaled(100,0,4,4)
+      MoveScaled(103,0,4,4)
       Visible = False
       ToolTip = ("Find definition")
       Action = ".find-definition"
@@ -350,7 +350,7 @@
     }
     { btnLastPosition ToolButton mnuLastPosition
       Name = "btnLastPosition"
-      MoveScaled(104,0,4,4)
+      MoveScaled(106,0,4,4)
       Visible = False
       ToolTip = ("Go back")
       Action = ".go-back"
@@ -358,19 +358,19 @@
       Picture = Picture["icon:/16/left"]
     }
     { HBox1 HBox
-      MoveScaled(108,0,16,4)
+      MoveScaled(110,0,14,4)
       Expand = True
       { Panel1 Panel
         MoveScaled(2,0,1,4)
         Expand = True
       }
       { lblEditor Label
-        MoveScaled(3,0,10,4)
+        MoveScaled(4,0,6,4)
         AutoResize = True
         Text = ("")
       }
       { Panel2 Panel
-        MoveScaled(14,0,1,4)
+        MoveScaled(12,0,1,4)
       }
     }
   }

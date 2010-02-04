@@ -11,6 +11,8 @@ Private $iFirst As Integer
 
 Private Const NSTEP As Integer = 100
 
+Private $hWelcome As CWelcome
+
 Static Public Sub Run()
 
   Dim hForm As FAbout
@@ -25,9 +27,10 @@ Public Sub Form_Open()
 
   Dim sText As String
 
+  $hWelcome = New CWelcome(dwgWelcome)
+
   txtAuthor.Background = svwAuthor.Background
 
-  GetVersion
   GetAuthor
   GetSupport
 
@@ -36,16 +39,8 @@ Public Sub Form_Open()
   $hBack = New Picture(dwgAbout.W, dwgAbout.H)
   $hBack.Fill(Color.White)
 
-  lblMessage.Text = "© 2000-" & Year(Now) & " Benoît Minisini"
+  'lblMessage.Text = "© 2000-" & Year(Now) & " Benoît Minisini"
   
-End
-
-
-Private Sub GetVersion()
-
-  lblVersion.Text = Project.Version
-  lblVersion.X = lblGambas.X + lblGambas.Font.Width(lblGambas.Text)
-
 End
 
 

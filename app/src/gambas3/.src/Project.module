@@ -331,7 +331,7 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
   Dim hLock As Stream
 
   If Not Exist(sDir &/ ".project") Then 
-    FGambas.Error(("This project does not exist.") & "\n\n" & sDir)
+    FMain.ShowError(("This project does not exist.") & "\n\n" & sDir)
     Return True
   Endif
   

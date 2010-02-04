@@ -583,6 +583,18 @@ void MyContainer::drawFrame(QPainter *p)
 	CCONTAINER_draw_frame(p, _frame, opt, this);
 }
 
+int MyContainer::frameWidth()
+{
+	switch (_frame)
+	{
+		case BORDER_PLAIN: return 1;
+		case BORDER_SUNKEN:
+		case BORDER_RAISED:
+		case BORDER_ETCHED:  return 2;
+		default: return 0;
+	}
+}
+
 #if 0
 	Q_D(QFrame);
 	QPoint      p1, p2;

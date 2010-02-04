@@ -50,20 +50,28 @@ End
 
 Public Sub Panel_Enter()
 
-  If Object.Type(Last) <> "Panel" Then Return
-  $iColor = Last.Foreground
-  Last.Background = Color.LightBackground '&88D5FF&
-  Last.Foreground = Color.Foreground '&88D5FF&
-  GetPanel().Border = Border.Plain
+  Dim hPanel As Panel
+
+  Try hPanel = Last
+  If Not hPanel Then Return
+
+  $iColor = hPanel.Foreground
+  hPanel.Background = Color.LightBackground '&88D5FF&
+  hPanel.Foreground = Color.Foreground '&88D5FF&
+  hPanel.Border = Border.Plain
 
 End
 
 Public Sub Panel_Leave()
 
-  If Object.Type(Last) <> "Panel" Then Return
-  Last.Background = Last.Parent.Background
-  Last.Foreground = $iColor
-  GetPanel().Border = Border.None
+  Dim hPanel As Panel
+
+  Try hPanel = Last
+  If Not hPanel Then Return
+
+  hPanel.Background = Color.Default 'Last.Parent.Background
+  hPanel.Foreground = $iColor
+  hPanel.Border = Border.None
 
 End
 

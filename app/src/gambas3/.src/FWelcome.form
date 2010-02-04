@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2,88,74)
+  MoveScaled(0,2,71,74)
   Background = Color.TextBackground
   Foreground = Color.TextForeground
   Text = ("Welcome to Gambas 3")
@@ -9,60 +9,17 @@
   Arrangement = Arrange.Vertical
   Spacing = True
   Margin = True
-  { panBackground Panel
-    MoveScaled(1,1,67,19)
+  { dwgWelcome DrawingArea
+    MoveScaled(1,1,66,20)
     Background = Color.SelectedBackground
-    Arrangement = Arrange.Horizontal
-    Margin = True
+    Painted = True
     Border = Border.Plain
-    { panLeft VBox
-      MoveScaled(1,2,44,16)
-      Expand = True
-      Spacing = True
-      { lblGambas Label
-        MoveScaled(0,0,32,10)
-        Font = Font["Bold,+10"]
-        Foreground = Color.SelectedForeground
-        AutoResize = True
-        Text = ("Gambas")
-        Alignment = Align.TopNormal
-      }
-      { HBox2 HBox
-        MoveScaled(1,8,35,3)
-        { lblWebSite Label
-          MoveScaled(0,0,32,3)
-          Font = Font["Underline"]
-          Mouse = Mouse.Pointing
-          AutoResize = True
-          Text = ("http://gambas.sourceforge.net")
-        }
-      }
-      { lblMessage TextLabel
-        MoveScaled(1,11,38,5)
-        Font = Font["Italic"]
-        Foreground = Color.SelectedForeground
-        AutoResize = True
-        Text = ("This program is published under the GNU General Public Licence.")
-      }
-      { lblVersion TextLabel
-        MoveScaled(24,1,17,5)
-        Font = Font["Bold,+6"]
-        Background = Color.SelectedBackground
-        Foreground = Color.SelectedForeground
-        Ignore = True
-        AutoResize = True
-        Text = ("")
-      }
-    }
-    { dwgLogo DrawingArea
-      MoveScaled(48,1,17,14)
-    }
   }
   { HBox1 HBox
     MoveScaled(1,23,66,44)
     Expand = True
     { panButton Panel
-      MoveScaled(1,5,35,19)
+      MoveScaled(1,5,33,35)
       Foreground = Color.TextForeground
     }
     { panList Panel
@@ -108,11 +65,6 @@
         Border = False
         ScrollBar = Scroll.Vertical
       }
-    }
-    { timMadeIn #Timer
-      #X = 308
-      #Y = 238
-      Delay = 50
     }
   }
 }

@@ -283,6 +283,12 @@ int main(int argc, char **argv)
 				my_exit(1);
 			}
 			file = argv[i];
+			
+			if (EXEC_arch)
+			{
+				i++;
+				break;
+			}
 		}
 	}
 
@@ -350,27 +356,6 @@ int main(int argc, char **argv)
 		EXEC_public_desc(PROJECT_class, NULL, startup, 0);
 		EXEC_release_return_value();
 		
-    /*EXEC.class = PROJECT_class;
-    EXEC.object = NULL;
-    EXEC.drop = TRUE;
-    EXEC.nparam = 0;
-
-    if (FUNCTION_is_native(startup))
-    {
-      EXEC.native = TRUE;
-      EXEC.use_stack = FALSE;
-      EXEC.desc = startup;
-
-      EXEC_native();
-    }
-    else
-    {
-      EXEC.native = FALSE;
-      EXEC.index = (int)(intptr_t)startup->exec;
-
-      EXEC_function();
-    }*/
-
     HOOK_DEFAULT(loop, WATCH_loop)();
 
     EVENT_check_post();

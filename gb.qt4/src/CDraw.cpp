@@ -246,14 +246,7 @@ static void end(GB_DRAW *d)
 		if (wid)
 		{
 			if (wid->isCached())
-			{
-				//wid->drawFrame(DP(d));
-				//delete DP(d);
-				//DP(d) = 0;
-				wid->setBackground();
 				wid->refreshBackground();
-				//wid->update();
-			}
 	
 			wid->drawn--;
 		}
@@ -763,11 +756,8 @@ void DRAW_text_with(QPainter *painter, const char *text, int len, int x, int y, 
 	if (w < 0) w = tw;
 	if (h < 0) h = th;
 	
-	if (align == GB_DRAW_ALIGN_DEFAULT)
-		align = ALIGN_TOP_NORMAL;
-
 	align = CCONST_alignment(align, ALIGN_TOP_NORMAL, true);
-
+	
 	y += painter->fontMetrics().ascent();
 
 	switch(align & Qt::AlignVertical_Mask)

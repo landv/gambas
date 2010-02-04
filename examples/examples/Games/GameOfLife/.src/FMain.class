@@ -12,6 +12,9 @@ End
 
 Public Sub Form_Open()
 
+  Draw.Begin(dw)
+  Draw.FillRect(0, 0, Draw.W, Draw.H, Color.White)
+  Draw.End
   Button1_Click
   
 End

@@ -1622,7 +1622,17 @@ Public Sub ShowMessage(sMsg As String, sIcon As String, Optional sKey As String)
   Endif
   X = tvwProject.W \ 2
   
-  Balloon(sMsg, tvwProject, Picture["icon:/32/" & sIcon], X, Y)
+  If FMain.Visible Then
+    Balloon(sMsg, tvwProject, Picture["icon:/32/" & sIcon], X, Y)
+  Else
+    If sIcon = "error" Then
+      Message.Error(sMsg)
+    Else If sIcon = "warning" Then
+      Message.Warning(sMsg)
+    Else
+      Message(sMsg)
+    Endif
+  Endif
   
 End
 

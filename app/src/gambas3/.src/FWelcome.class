@@ -20,15 +20,8 @@ Private Const LIST_EXAMPLE As Integer = 2
 Private Const POS_BUTTON As Integer = 0
 Private HEIGHT_BUTTON As Integer = Desktop.Scale * 8
 
-Private Const SCALE_DRAWING As Float = 2
-Private $hLogo As Image
-Private $hMadeIn As Image
-Private $hDraw As Picture
+Private $hWelcome As CWelcome
 
-Private $eAng As Float
-Private $eIncAng As Float = 1.4
-
-'PRIVATE $aExample as String[] = [ ("Automation"),("Basic"),("Database"),
 Static Public Function Run() As String
 
   'DIM hForm AS Form
@@ -45,6 +38,7 @@ Public Sub Form_Open()
   Dim W As Integer
   Dim sFont As String
   Dim hImage As Image
+  Dim hLogo As SvgImage
 
   sFont = "Bold"
   W = panButton.ClientW + 4
@@ -65,27 +59,16 @@ Public Sub Form_Open()
   chkSortRecent.Value = Settings["/FWelcome/SortRecent", False]
   FillRecent
 
-  lblVersion.Text = Project.Version
-  lblVersion.Move(lblGambas.X + lblGambas.Font.Width(lblGambas.Text) + 4, lblGambas.Y)
-
   If CRecentFile.All.Count Then
     Toggle(LIST_RECENT)
   Else
     Toggle(LIST_EXAMPLE)
   Endif
 
-  $hLogo = Image.Load("img/logo/logo.png")
-  hImage = New Image($hLogo.W * SCALE_DRAWING, $hLogo.H * SCALE_DRAWING, Color.Transparent)
-  $hLogo = $hLogo.Stretch(($hLogo.W * SCALE_DRAWING * 2) / 3, ($hLogo.H * SCALE_DRAWING * 2) / 3)
-  hImage.Draw($hLogo, hImage.W / 6 + SCALE_DRAWING * 4, hImage.H / 6)
-  $hLogo = hImage
-
-  $hMadeIn = Image.Load("img/logo/made-with-gambas.png").Stretch(hImage.W, hImage.H)
+  $hWelcome = New CWelcome(dwgWelcome)
 
   Settings.Read(Me)
   
-  timMadeIn_Timer
-
 End
 
 
@@ -400,81 +383,80 @@ Public Sub chkSortRecent_Click()
 
 End
 
-Public Sub lblWebsite_MouseDown()
+Public Sub lblWebSite_MouseDown()
 
-  lblWebSite.Foreground = Color.LightBackground
+  Last.Foreground = Color.LightBackground
 
 End
 
-Public Sub lblWebsite_MouseUp()
+Public Sub lblWebSite_MouseUp()
   
-  lblWebSite.Foreground = Color.TextBackground
-  If Mouse.X >= 0 And If Mouse.Y >= 0 And If Mouse.X < lblWebSite.W And If Mouse.Y < lblWebSite.H Then
+  Last.Foreground = Color.TextBackground
+  If Mouse.X >= 0 And If Mouse.Y >= 0 And If Mouse.X < Last.W And If Mouse.Y < Last.H Then
     Wait
-    Desktop.Open(lblWebsite.Text)
+    Desktop.Open(Last.Text)
   Endif
   
 End
 
 Public Sub Form_Resize()
 
-  panBackground.H = lblMessage.Y + lblMessage.H + Desktop.Scale * 2
+  'panBackground.H = lblMessage.Y + lblMessage.H + Desktop.Scale * 2
 
 End
 
 
-Public Sub timMadeIn_Timer()
-
-  Dim hImage As Image
-  Dim hMadeIn As Image
-  Dim SCALE_DRAWING As Integer = 4
-
-  $eAng += $eIncAng
-  If $eAng >= 360 Then $eAng -= 360
-  
-  'If Me.Minimized Then Return
-  
-  hImage = $hLogo.Copy()
-  If $eIncAng < 0 Then hImage.Mirror(True, False)
-  hMadeIn = $hMadeIn.Rotate(Rad($eAng))
-  hImage.Draw(hMadeIn, - (hMadeIn.W - hImage.W) / 2, - (hMadeIn.H - hImage.H) / 2)
-  $hDraw = hImage.Picture
-  dwgLogo.Refresh
-  
-End
-
-Public Sub dwgLogo_MouseUp()
-
-  $eIncAng = - $eIncAng
-
-End
-
-Public Sub dwgLogo_Draw()
-
-  If $hDraw Then Draw.Picture($hDraw, 0, 0, Draw.W, Draw.W)
-
-End
+' Public Sub timMadeIn_Timer()
+' 
+'   Dim hBrush As PaintBrush
+'   Dim hImage As Image
+' 
+'   $eAng += $eIncAng
+'   If $eAng >= 360 Then $eAng -= 360
+' 
+'   'If Me.Minimized Then Return
+'   
+'   hImage = $hLogo.Copy()
+'   If $eIncAng < 0 Then hImage = hImage.Mirror(True, False)
+' 
+'   Paint.Begin(hImage)
+'   Paint.Translate(Paint.W / 2, Paint.H / 2)
+'   Paint.Rotate(Rad($eAng))
+'   Paint.Translate(- Paint.W / 2, - Paint.H / 2)
+'   hBrush = Paint.Image($hMadeIn)
+'   hBrush.Scale(Paint.W / $hMadeIn.W, Paint.H / $hMadeIn.H)
+'   Paint.Brush = hBrush
+'   Paint.Rectangle(0, 0, Paint.W, Paint.H)
+'   Paint.Fill
+'   Paint.End
+'   
+'   $hDraw = hImage.Picture
+'   
+'   dwgLogo.Refresh
+'   
+' End
+' 
+' Public Sub dwgLogo_MouseUp()
+' 
+'   $eIncAng = - $eIncAng
+' 
+' End
+' 
+' Public Sub dwgLogo_Draw()
+' 
+'   If $hDraw Then Draw.Picture($hDraw, 0, 0, Draw.W, Draw.W)
+' 
+' End
 
 Public Sub lblWebSite_Enter()
 
-  lblWebSite.Foreground = Color.LightBackground
+  Last.Foreground = Color.LightBackground
 
 End
 
 Public Sub lblWebSite_Leave()
 
-  lblWebSite.Foreground = Color.Default
+  Last.Foreground = Color.Default
 
 End
 
-Public Sub dwgLogo_Enter()
-
-  timMadeIn.Start
-
-End
-
-Public Sub dwgLogo_Leave()
-
-  timMadeIn.Stop
-
-End

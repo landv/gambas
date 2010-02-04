@@ -53,9 +53,9 @@ MyDrawingArea::MyDrawingArea(QWidget *parent) : MyContainer(parent)
 	_frozen = false;
 	_event_mask = 0;
 	_use_paint = false;
+	_set_background = false;
 	setMerge(false);
 	setCached(false);
-	setBackground();
 	setAllowFocus(false);
 	
 	setAttribute(Qt::WA_KeyCompression, false);
@@ -134,6 +134,11 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 {
 	if (_background)
 	{
+		if (_set_background)
+		{
+			XSetWindowBackgroundPixmap(QX11Info::display(), winId(), _background->handle());
+			_set_background = false;
+		}
 		QPainter paint( this );
 		drawFrame(&paint);
 		//MyContainer::paintEvent(event);
@@ -213,25 +218,32 @@ void MyDrawingArea::setBackground()
 		#ifdef NO_X_WINDOW
 		setErasePixmap(*_background);
 		#else
-		XSetWindowBackgroundPixmap(QX11Info::display(), winId(), _background->handle());
-		#endif
-	}
-	else
-	{
-		#ifdef NO_X_WINDOW
-		setBackgroundMode(Qt::NoBackground);
-		#else
-		XSetWindowBackgroundPixmap(QX11Info::display(), winId(), None);
+		//if (isVisible())
+		//	XSetWindowBackgroundPixmap(QX11Info::display(), winId(), _background->handle());
+		//else
+		_set_background = true;
+		refreshBackground();
 		#endif
 	}
 }
 
 void MyDrawingArea::refreshBackground()
 {
-	#ifndef NO_X_WINDOW
-	XClearWindow(QX11Info::display(), winId());
-	#endif
-	repaint();
+	if (_background)
+	{
+		#ifdef NO_X_WINDOW
+		update();
+		#else
+		int fw = frameWidth();
+		if (fw == 0)
+			XClearWindow(QX11Info::display(), winId());
+		else
+		{
+			XClearArea(QX11Info::display(), winId(), fw, fw, 0, 0, False);
+			repaint();
+		}
+		#endif
+	}
 }
 
 
@@ -242,12 +254,8 @@ void MyDrawingArea::clearBackground()
 		QPainter p(_background);
 		p.fillRect(0, 0, _background->width(), _background->height(), palette().color(backgroundRole()));
 		p.end();
-
 		setBackground();
-		refreshBackground();
 	}
-	else
-		setBackground();
 }
 
 void MyDrawingArea::resizeEvent(QResizeEvent *e)
@@ -285,9 +293,8 @@ void MyDrawingArea::updateBackground()
 
 			delete _background;
 			_background = p;
-
+			
 			setBackground();
-			refreshBackground();
 		}
 	}
 }
@@ -300,20 +307,23 @@ void MyDrawingArea::setCached(bool c)
 	if (c)
 	{
 		_background = new QPixmap(width(), height());
-		_background->fill(palette().color(backgroundRole()));
-		//setAttribute(Qt::WA_NoSystemBackground, true);
-		setAttribute(Qt::WA_StaticContents, true);
+		clearBackground();
+
 		setAttribute(Qt::WA_PaintOnScreen, true);
+		setAttribute(Qt::WA_StaticContents, true);
 	}
 	else
 	{
 		_background = 0;
 		setAttribute(Qt::WA_PaintOnScreen, false);
-		//setAttribute(Qt::WA_NoSystemBackground, false);
 		setAttribute(Qt::WA_StaticContents, false);
+		#ifdef NO_X_WINDOW
+		setBackgroundMode(Qt::NoBackground);
+		#else
+		XSetWindowBackgroundPixmap(QX11Info::display(), winId(), None);
+		XClearArea(QX11Info::display(), winId(), 0, 0, 0, 0, True);
+		#endif
 	}
-
-	setBackground();
 }
 
 void MyDrawingArea::setPalette(const QPalette &pal)

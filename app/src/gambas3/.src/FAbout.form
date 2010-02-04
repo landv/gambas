@@ -1,13 +1,13 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(3,6,82,72)
+  MoveScaled(3,6,82,71)
   Background = Color.TextBackground
   Text = ("About Gambas...")
   Icon = Picture["img/logo/logo-32-head.png"]
   Resizable = False
   { tabAbout TabStrip
-    MoveScaled(1,18,80,48)
+    MoveScaled(1,22,80,48)
     Count = 3
     Index = 0
     Text = ("About")
@@ -30,6 +30,7 @@
       { Image1 PictureBox
         MoveScaled(24,66,20,17)
         Background = &HFFFFFF&
+        Picture = Picture["img/logo/logo.png"]
         Alignment = Align.Center
       }
       { TextLabel2 TextLabel
@@ -94,56 +95,10 @@
     }
     Index = 0
   }
-  { btnClose Button
-    MoveScaled(34,67,14,4)
-    Text = ("Close")
-    Default = True
-    Cancel = True
-  }
-  { panBackground Panel
-    MoveScaled(1,1,80,16)
+  { dwgWelcome DrawingArea
+    MoveScaled(1,1,80,20)
     Background = Color.SelectedBackground
-    Foreground = Color.Background
-    { panTitle Panel
-      MoveScaled(1,1,62,14)
-      { lblGambas Label
-        MoveScaled(0,0,32,7)
-        Font = Font["Bold,+10"]
-        Foreground = Color.SelectedForeground
-        AutoResize = True
-        Text = ("Gambas")
-        Alignment = Align.TopNormal
-      }
-      { lblVersion Label
-        MoveScaled(32,0,30,7)
-        Font = Font["Bold,+6"]
-        Background = Color.SelectedBackground
-        Foreground = Color.SelectedForeground
-        Ignore = True
-        Text = ("")
-        Alignment = Align.TopNormal
-      }
-      { Label1 Label
-        MoveScaled(1,7,35,4)
-        Font = Font["Underline"]
-        Text = ("http://gambas.sourceforge.net")
-      }
-      { lblMessage TextLabel
-        MoveScaled(1,10,41,4)
-        Font = Font["Bold"]
-        AutoResize = True
-        Text = ("(c) 2000-2007 Benoît Minisini")
-      }
-      { Panel1 Panel
-        MoveScaled(3,15,6,2)
-      }
-    }
-    { imgGambas PictureBox
-      MoveScaled(64,0,15,15)
-      Background = Color.SelectedBackground
-      Picture = Picture["img/logo/logo.png"]
-      Stretch = True
-      Alignment = Align.TopRight
-    }
+    Painted = True
+    Border = Border.Plain
   }
 }

@@ -183,10 +183,7 @@ static void End(GB_PAINT *d)
 		if (wid)
 		{
 			if (wid->isCached())
-			{
-				wid->setBackground();
 				wid->refreshBackground();
-			}
 	
 			wid->drawn--;
 		}

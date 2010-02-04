@@ -83,33 +83,18 @@ Public Sub DrawGame(bBorder As Boolean)
   SquareSize = 4 'dw.Height / GameRow.Count
   draw.Begin(dw) 
 
-  Draw.FillStyle = Fill.Solid
-  Draw.LineStyle = Line.None
-  Draw.FillColor = Color.LightBackground
-  Draw.Rect(4, 4, Game.Width * $iZoom, Game.Height * $iZoom)
+  'Draw.FillStyle = Fill.Solid
+  'Draw.LineStyle = Line.None
+  'Draw.FillColor = Color.LightBackground
+  'Draw.Rect(4, 4, Game.Width * $iZoom, Game.Height * $iZoom)
   
   Draw.LineStyle = If(bBorder, Line.Solid, Line.None)
   Draw.FillColor = Color.red
   Draw.Foreground = Color.LightBackground
 
   Draw.Zoom(Game, $iZoom, 4, 4)
-
-  ' x = 4
-  ' FOR i = 0 TO MaxX
-  '   y = 4
-  '   FOR j = 0 TO MaxY
-  '     IF Game[i, j] THEN 
-  '         draw.Rect(x, y, 5, 5) ', i * SquareSize + SquareSize, j * SquareSize + SquareSize)
-  '       'draw.FillColor = color.LightGray
-  '       'draw.FillStyle = 0
-  '     ELSE 
-  '       'draw.Ellipse(i * SquareSize, j * SquareSize, 5, 5) ', i * SquareSize + SquareSize, j * SquareSize + SquareSize)
-  '     END IF
-  '     y += SquareSize
-  '   NEXT 
-  '   x += SquareSize
-  ' NEXT
-  draw.End
+  
+  Draw.End
   
 End
 

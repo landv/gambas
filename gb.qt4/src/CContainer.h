@@ -117,6 +117,7 @@ public:
 	void setFrameStyle(int frame);
 	void drawFrame(QPainter *);
 	void setPixmap(QPixmap *pixmap);
+	int frameWidth();
 
 protected:
 
