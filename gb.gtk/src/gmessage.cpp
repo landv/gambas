@@ -485,25 +485,32 @@ void gDialog::setFilter(char** filter, int nfilter)
     g_ptr_array_add(_filter, (gpointer)g_strdup(filter[i]));
 }
 
-static void init_file_chooser(GtkFileChooser *msg, bool multi = false)
+static void init_file_chooser(GtkFileChooser *msg, bool save)
 {
 	if (DIALOG_path)
 	{
-		char *dirname = g_path_get_dirname(DIALOG_path);
-		char *filename = g_path_get_basename(DIALOG_path);
-		
-		if (g_file_test(DIALOG_path, G_FILE_TEST_EXISTS))
-			gtk_file_chooser_select_filename (msg, DIALOG_path);
+		if (g_file_test(DIALOG_path, G_FILE_TEST_IS_DIR))
+			gtk_file_chooser_set_current_folder(msg, DIALOG_path);
 		else
 		{
-			if (g_file_test(dirname, G_FILE_TEST_IS_DIR))
-				gtk_file_chooser_set_current_folder(msg, dirname);
-		}
-		if (!multi)
-			gtk_file_chooser_set_current_name (msg, filename);
+			char *dirname = g_path_get_dirname(DIALOG_path);
+			char *filename = g_path_get_basename(DIALOG_path);
 		
-		g_free(dirname);
-		g_free(filename);
+			if (g_file_test(DIALOG_path, G_FILE_TEST_EXISTS))
+				gtk_file_chooser_select_filename (msg, DIALOG_path);
+			else
+			{
+				if (g_file_test(dirname, G_FILE_TEST_IS_DIR))
+					gtk_file_chooser_set_current_folder(msg, dirname);
+			}
+
+			if (save)
+				gtk_file_chooser_set_current_name (msg, filename);		
+			
+			g_free(dirname);
+			g_free(filename);
+		}
+		
 	}
 }
 
@@ -520,12 +527,12 @@ bool gDialog::openFile(bool multi)
 		GTK_STOCK_OPEN, GTK_RESPONSE_OK,
 		(void *)NULL);
 
-	gtk_file_chooser_set_local_only((GtkFileChooser*)msg,true);
-	gtk_file_chooser_set_select_multiple((GtkFileChooser*)msg,multi);
+	gtk_file_chooser_set_local_only((GtkFileChooser*)msg, true);
+	gtk_file_chooser_set_select_multiple((GtkFileChooser*)msg, multi);
 	gtk_widget_show(GTK_WIDGET(msg));
 	gtk_file_chooser_unselect_all((GtkFileChooser*)msg);
 	
-	init_file_chooser((GtkFileChooser *)msg, multi);
+	init_file_chooser((GtkFileChooser *)msg, false);
 	
 	return gDialog_runFile(msg);
 }
@@ -548,7 +555,7 @@ bool gDialog::saveFile()
 	gtk_widget_show(GTK_WIDGET(msg));
 	gtk_file_chooser_unselect_all((GtkFileChooser*)msg);
 
-	init_file_chooser((GtkFileChooser *)msg);
+	init_file_chooser((GtkFileChooser *)msg, true);
 	
 	return gDialog_runFile(msg);
 }
