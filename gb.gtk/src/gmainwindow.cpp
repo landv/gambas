@@ -437,6 +437,8 @@ void gMainWindow::afterShow()
 
 void gMainWindow::setVisible(bool vl)
 {
+  gMainWindow *active;
+
 	if (vl)
 	{
 		emitOpen();
@@ -456,6 +458,11 @@ void gMainWindow::setVisible(bool vl)
 		{
 			if (!_title || !*_title)
 				gtk_window_set_title(GTK_WINDOW(border), gApplication::defaultTitle());
+
+			active = gDesktop::activeWindow();
+			if (active && active != this)
+				gtk_window_set_transient_for(GTK_WINDOW(border), GTK_WINDOW(active->border));
+			
 			gtk_window_move(GTK_WINDOW(border), bufX, bufY);
 			gtk_window_present(GTK_WINDOW(border));
 		}
@@ -543,7 +550,6 @@ bool gMainWindow::modal()
 void gMainWindow::showModal()
 {
   gMainWindow *save;
-  gMainWindow *active;
 	
 	if (!isTopLevel()) return;
 	if (modal()) return;
@@ -551,12 +557,10 @@ void gMainWindow::showModal()
 	save = _current;
 	_current = this;
 	
-	active = gDesktop::activeWindow();
-	if (active && active != this)
-    gtk_window_set_transient_for(GTK_WINDOW(border), GTK_WINDOW(active->border));
 	gtk_window_set_modal(GTK_WINDOW(border), true);
   
   center();
+	//show();
 
 	//fprintf(stderr, "showModal: begin %p\n", this);
 
@@ -572,7 +576,6 @@ void gMainWindow::showModal()
 		destroyNow();
 	else
 		hide();
-	
 }
 
 void gMainWindow::raise()
@@ -871,6 +874,9 @@ bool gMainWindow::doClose()
 
 	if (opened)
 	{
+		if (modal() && !gApplication::hasLoop(this))
+			return true;
+
 		_closing = true;
 		if (onClose) 
 		{

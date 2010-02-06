@@ -85,19 +85,21 @@ int _fill_style[] =
 	FILL_CROSS_DIAGONAL, Qt::DiagCrossPattern,
 	CONST_MAGIC
 };
-
 int CCONST_convert(int *tab, int value, int def, bool to_qt)
 {
 	int *p = tab;
+	int ret;
 	
 	if (to_qt)
 	{
+		ret = p[1];
+		
 		for(;;)
 		{
 			if (*p == CONST_MAGIC)
-				return def;
+				return ret;
 			else if (*p == def)
-				def = p[1];
+				ret = p[1];
 			else if (*p == value)
 				return p[1];
 			p += 2;
