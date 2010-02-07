@@ -162,8 +162,6 @@ GLarea::GLarea(QWidget *parent,CGLAREA *object, QGLWidget *sharing): QGLWidget(p
 void GLarea::initializeGL()
 {
 	GL.Init();
-	// clear to avoid garbage
-	qglClearColor(Qt::black);
 	GB.Raise(_area, EVENT_Open, 0);
 }
 
@@ -173,7 +171,9 @@ void GLarea::paintGL()
 	
 	if (!CleanupOnFirstShow)
 	{
+		// clear to avoid garbage
 		CleanupOnFirstShow = true;
+		qglClearColor(Qt::black);
 		glClear(GL_COLOR_BUFFER_BIT);
 	}
 	
