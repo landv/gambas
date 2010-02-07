@@ -47,6 +47,7 @@ GB_DESC Cglu[] =
 	GB_STATIC_METHOD("LookAt", NULL, GLULOOKAT, "(EyeX)f(EyeY)f(EyeZ)f(CenterX)f(CenterY)f(CenterZ)f(UpX)f(UpY)f(UpZ)f"),
 	GB_STATIC_METHOD("Ortho2D", NULL, GLUORTHO2D, "(Left)f(Right)f(Bottom)f(Top)f"),
 	GB_STATIC_METHOD("Perspective", NULL, GLUPERSPECTIVE, "(Fovy)f(Aspect)f(ZNear)f(ZFar)f"),
+	GB_STATIC_METHOD("PickMatrix", NULL, GLUPICKMATRIX, "(X)f(Y)f(DelX)f(DelY)f(Viewport)Integer;"),
 
 	/* Texture Image - see GLUtextureImage.h */
 	GB_STATIC_METHOD("Build1DMipmaps", "i", GLUBUILD1DMIPMAPS, "(Image)Image;"),
