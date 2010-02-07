@@ -1,7 +1,7 @@
 COMPONENT = gb.gtk
 include $(top_srcdir)/component.am
 
-SUBDIRS = ext @GTKOPENGL_DIR@
+SUBDIRS = @GTKOPENGL_DIR@
 
 INCLUDES = @GTK_INC@ -I$(top_srcdir)/share
 

@@ -1170,7 +1170,7 @@ BEGIN_METHOD (PDFPAGE_find,GB_STRING Text; GB_BOOLEAN Sensitive;)
 	bool sensitive=false;
 
 	// TODO: Use UCS-4BE on big endian systems?
-	if (GB.ConvString ((char **)(void *)&block,STRING(Text),LENGTH(Text),"UTF-8","UCS-4LE"))
+	if (GB.ConvString ((char **)(void *)&block,STRING(Text),LENGTH(Text),"UTF-8",GB_SC_UNICODE))
 	{	
 		GB.Error("Invalid UTF-8 string"); 
 		return;

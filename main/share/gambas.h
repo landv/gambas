@@ -682,7 +682,12 @@ typedef
 /* Constants used by the GB.Collection.New() and GB.HashTable.New() API function */
 
 #define GB_COMP_BINARY      0
-#define GB_COMP_TEXT        1
+#define GB_COMP_NOCASE      1
+
+
+/* Constant used by GB.ConvString to convert to 32 bits Unicode (that needs some special processing) */
+
+#define GB_SC_UNICODE ((char *)-1)
 
 
 /* Opaque type for a SubCollection object */

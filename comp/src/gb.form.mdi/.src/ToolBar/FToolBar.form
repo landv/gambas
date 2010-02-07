@@ -9,9 +9,6 @@
     Visible = False
     Mouse = Mouse.Pointing
   }
-  { panToolBar Panel
-    MoveScaled(6,1,51,3)
-  }
   { panWhere Panel
     MoveScaled(30,5,3,1)
     Visible = False
@@ -22,8 +19,12 @@
     MoveScaled(46,9,24,5)
     Visible = False
   }
+  { panToolbar Panel
+    MoveScaled(9,1,40,3)
+  }
   { sepToolbar Separator
     MoveScaled(54,4,9,1)
     Visible = False
+    Ignore = True
   }
 }

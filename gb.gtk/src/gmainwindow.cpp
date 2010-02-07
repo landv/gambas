@@ -577,7 +577,6 @@ void gMainWindow::showModal()
 		destroyNow();
 	else
 		hide();
-	
 }
 
 void gMainWindow::raise()

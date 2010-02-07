@@ -26,6 +26,5 @@ GB_COMPONENT_PKG_CONFIG(
 AC_OUTPUT( \
 Makefile \
 src/Makefile \
-src/ext/Makefile \
 src/opengl/Makefile
 )

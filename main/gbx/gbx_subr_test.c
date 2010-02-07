@@ -656,7 +656,7 @@ void SUBR_strcomp(void)
 	
 	if (mode == GB_COMP_BINARY)
 		ret = STRING_compare(PARAM[0]._string.addr + PARAM[0]._string.start, PARAM[0]._string.len, PARAM[1]._string.addr + PARAM[1]._string.start, PARAM[1]._string.len);
-	else if (mode == GB_COMP_TEXT)
+	else if (mode == GB_COMP_NOCASE)
 		ret = STRING_compare_ignore_case(PARAM[0]._string.addr + PARAM[0]._string.start, PARAM[0]._string.len, PARAM[1]._string.addr + PARAM[1]._string.start, PARAM[1]._string.len);
 	else
 	{
@@ -664,11 +664,11 @@ void SUBR_strcomp(void)
 		SUBR_get_string_len(&PARAM[1], &s2, &l2);
 		
 		if (mode & GB_COMP_NATURAL)
-			ret = COMPARE_string_natural(s1, l1, s2, l2, mode & GB_COMP_TEXT);
+			ret = COMPARE_string_natural(s1, l1, s2, l2, mode & GB_COMP_NOCASE);
 		else if (mode & GB_COMP_LIKE)
 			ret = COMPARE_string_like(s1, l1, s2, l2);
 		else if (mode & GB_COMP_LANG)
-			ret = COMPARE_string_lang(s1, l1, s2, l2, mode & GB_COMP_TEXT, FALSE);
+			ret = COMPARE_string_lang(s1, l1, s2, l2, mode & GB_COMP_NOCASE, FALSE);
 		else
 			THROW(E_ARG);
 	}

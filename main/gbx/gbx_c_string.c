@@ -356,9 +356,13 @@ END_METHOD
 
 BEGIN_METHOD(string_comp, GB_STRING str1; GB_STRING str2; GB_INTEGER mode)
 
-	bool mode = VARGOPT(mode, GB_COMP_BINARY) != GB_COMP_BINARY;
+	int mode = VARGOPT(mode, GB_COMP_BINARY) | GB_COMP_LANG;
+	bool nocase = (mode & GB_COMP_NOCASE) != 0;
 
-	GB_ReturnInteger(COMPARE_string_lang(STRING(str1), LENGTH(str1), STRING(str2), LENGTH(str2), mode, TRUE));
+	if (mode & GB_COMP_NATURAL)
+		GB_ReturnInteger(COMPARE_string_natural(STRING(str1), LENGTH(str1), STRING(str2), LENGTH(str2), nocase));
+	else
+		GB_ReturnInteger(COMPARE_string_lang(STRING(str1), LENGTH(str1), STRING(str2), LENGTH(str2), nocase, TRUE));
 
 END_METHOD
 

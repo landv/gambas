@@ -517,7 +517,7 @@ void SUBR_instr(void)
 		is = SUBR_get_integer(&PARAM[2]);
 	
 	if (NPARAM == 4)
-		nocase = SUBR_get_integer(&PARAM[3]) == GB_COMP_TEXT;
+		nocase = SUBR_get_integer(&PARAM[3]) == GB_COMP_NOCASE;
 
 	ps = PARAM->_string.addr + PARAM->_string.start;
 	pp = PARAM[1]._string.addr + PARAM[1]._string.start;
@@ -640,7 +640,7 @@ void SUBR_replace(void)
 	SUBR_get_string_len(&PARAM[2], &pr, &lr);
 
 	if (NPARAM == 4)
-		nocase = SUBR_get_integer(&PARAM[3]) == GB_COMP_TEXT;
+		nocase = SUBR_get_integer(&PARAM[3]) == GB_COMP_NOCASE;
 
 	STRING_start_len(ls);
 	

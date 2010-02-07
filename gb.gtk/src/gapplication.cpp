@@ -263,263 +263,253 @@ static void gambas_handle_event(GdkEvent *event)
 	int x, y, xc, yc;
 	bool real;
 	
-	if ((event->type >= GDK_MOTION_NOTIFY && event->type <= GDK_LEAVE_NOTIFY) || event->type == GDK_SCROLL)
+	if (!((event->type >= GDK_MOTION_NOTIFY && event->type <= GDK_LEAVE_NOTIFY) || event->type == GDK_SCROLL))
+		goto __HANDLE_EVENT;
+	
+	widget = gtk_get_event_widget(event);
+	real = true;
+	
+	while (widget)
 	{
-		/*if ((event->type == GDK_ENTER_NOTIFY || event->type == GDK_LEAVE_NOTIFY) && event->crossing.subwindow)
-		{
-			GdkWindow *save = event->any.window;
-			event->any.window = event->crossing.subwindow;
-			widget = gtk_get_event_widget(event);
-			event->any.window = save;
-		}
-		else*/
-		{
-			widget = gtk_get_event_widget(event);
-		}
+		control = (gControl *)g_object_get_data(G_OBJECT(widget), "gambas-control");
+		if (control)
+			break;
+		widget = widget->parent;
+		real = false;
+	}
+
+	if (!widget || !control)
+		goto __HANDLE_EVENT;
+	
+	/*switch ((int)event->type)
+	{
+		case GDK_ENTER_NOTIFY:
+			fprintf(stderr, "ENTER: %p %s\n", control, control ? control->name() : 0);
+			break;
 		
-		real = true;
+		case GDK_LEAVE_NOTIFY:
+			fprintf(stderr, "LEAVE: %p %s\n", control, control ? control->name() : 0);
+			break;
+	}*/
 		
-		for (;;)
+	grab = gtk_grab_get_current();
+	if (grab && grab != widget)
+		goto __HANDLE_EVENT;
+	
+	group = get_window_group(widget);
+	if (group != gApplication::currentGroup())
+		goto __HANDLE_EVENT;
+	
+	if (event->type != GDK_ENTER_NOTIFY)
+	{
+		if (gApplication::_leave)
 		{
-			control = (gControl *)g_object_get_data(G_OBJECT(widget), "gambas-control");
-			if (control)
-				break;
-			widget = widget->parent;
-			real = false;
-			if (!widget)
-				break;
-		}
-		
-		/*switch ((int)event->type)
-		{
-			case GDK_ENTER_NOTIFY:
-				fprintf(stderr, "ENTER: %p %s\n", control, control ? control->name() : 0);
-				break;
-			
-			case GDK_LEAVE_NOTIFY:
-				fprintf(stderr, "LEAVE: %p %s\n", control, control ? control->name() : 0);
-				break;
-		}*/
-			
-		grab = gtk_grab_get_current();
-		
-		if (!grab || grab == widget)
-		{
-			group = get_window_group(widget);
-			
-			if (control && group == gApplication::currentGroup())
-			{
-				if (event->type != GDK_ENTER_NOTIFY)
-				{
-					if (gApplication::_leave)
-					{
-						if (event->type != GDK_LEAVE_NOTIFY || gApplication::_leave != control)
-							gApplication::_leave->emit(SIGNAL(gApplication::_leave->onEnterLeave), gEvent_Leave);
-						gApplication::_leave = NULL;
-					}
-				}
-				
-				switch ((int)event->type)
-				{
-					case GDK_ENTER_NOTIFY:
-						
-						//gApplication::dispatchEnterLeave(control);
-						if (gApplication::_leave == control)
-							gApplication::_leave = NULL;
-						else if (gApplication::_enter != control)
-						{
-							gApplication::_enter = control;
-							control->emit(SIGNAL(control->onEnterLeave), gEvent_Enter);
-						}
-						break;
-					
-					case GDK_LEAVE_NOTIFY:
-						if (gdk_events_pending())
-							gApplication::_leave = control;
-						else
-						{
-							if (gApplication::_enter == control)
-								gApplication::_enter = NULL;
-							control->emit(SIGNAL(control->onEnterLeave), gEvent_Leave);
-						}
-						break;
-						
-					case GDK_BUTTON_PRESS:
-					case GDK_2BUTTON_PRESS:
-					case GDK_BUTTON_RELEASE:
-						
-						gApplication::_event_time = event->button.time;
-
-						if (control->onMouseEvent)
-						{
-							control->getScreenPos(&xc, &yc);
-							x = (int)event->button.x_root - xc;
-							y = (int)event->button.y_root - yc;
-							
-							gMouse::validate();
-							gMouse::setStart(x, y);
-							gMouse::setMouse(x, y, event->button.button, event->button.state);
-							//gMouse::setValid(1,(int)event->x,(int)event->y,event->button,event->state,data->screenX(),data->screenY());
-							switch ((int)event->type)
-							{
-								case GDK_BUTTON_PRESS: 
-									control->onMouseEvent(control, gEvent_MousePress); 
-									break;
-								
-								case GDK_2BUTTON_PRESS: 
-									control->onMouseEvent(control, gEvent_MouseDblClick); 
-									break;
-								
-								case GDK_BUTTON_RELEASE: 
-									control->onMouseEvent(control, gEvent_MouseRelease); 
-									if (control->_grab)
-										gApplication::exitLoop(control);
-									break;
-							}
-							
-							gMouse::invalidate();
-							
-							if (event->button.button == 3 && event->type == GDK_BUTTON_PRESS)
-								control->onMouseEvent(control, gEvent_MouseMenu);
-						}
-						break;
-						
-					case GDK_MOTION_NOTIFY:
-
-						gApplication::_event_time = event->motion.time;
-
-						if (control->onMouseEvent && (control->isTracking() || (event->motion.state & (GDK_BUTTON1_MASK | GDK_BUTTON2_MASK | GDK_BUTTON3_MASK))))
-						{
-							control->getScreenPos(&xc, &yc);
-							x = (int)event->motion.x_root - xc;
-							y = (int)event->motion.y_root - yc;
-							
-							gMouse::validate();
-							gMouse::setMouse(x, y, 0, event->motion.state);
-							control->onMouseEvent(control, gEvent_MouseMove);
-							//if (data->acceptDrops() && gDrag::checkThreshold(data, gMouse::x(), gMouse::y(), gMouse::startX(), gMouse::startY()))
-							if ((event->motion.state & (GDK_BUTTON1_MASK | GDK_BUTTON2_MASK | GDK_BUTTON3_MASK)) 
-									//&& (abs(gMouse::x() - gMouse::y()) + abs(gMouse::startX() - gMouse::startY())) > 8)
-									&& gDrag::checkThreshold(control, gMouse::x(), gMouse::y(), gMouse::startX(), gMouse::startY()))
-							{
-								control->onMouseEvent(control, gEvent_MouseDrag);
-							}
-							gMouse::invalidate();
-						}
-						break;
-						
-					case GDK_SCROLL:
-						
-						gApplication::_event_time = event->scroll.time;
-						
-						if (control->onMouseEvent)
-						{
-							int dt, ort;
-							
-							control->getScreenPos(&xc, &yc);
-							x = (int)event->scroll.x_root - xc;
-							y = (int)event->scroll.y_root - yc;
-
-							switch (event->scroll.direction)
-							{
-								case GDK_SCROLL_DOWN: dt = -1; ort = 1; break;
-								case GDK_SCROLL_LEFT: dt = -1; ort = 0; break;
-								case GDK_SCROLL_RIGHT:  dt = 1; ort = 0; break;
-								case GDK_SCROLL_UP: default: dt = 1; ort = 1; break;
-							}
-							
-							gMouse::validate();
-							gMouse::setMouse(x, y, 0, event->scroll.state);
-							gMouse::setWheel(dt, ort);
-							control->onMouseEvent(control, gEvent_MouseWheel);
-							gMouse::invalidate();
-						}
-						break;
-
-					case GDK_KEY_PRESS:
-					{
-						bool cancel = false;
-						
-						gApplication::_event_time = event->key.time;
-						control = gDesktop::activeControl();
-						
-						if (control)
-						{
-							if (!gKey::enable(control, &event->key))
-							{
-								if (gApplication::onKeyEvent)
-									cancel = gApplication::onKeyEvent(gEvent_KeyPress);
-								if (!cancel && control->onKeyEvent) 
-								{
-									//fprintf(stderr, "gEvent_KeyPress on %p %s\n", control, control->name());
-									cancel = control->onKeyEvent(control, gEvent_KeyPress);
-								}
-							}
-							gKey::disable();
-							
-							if (cancel)
-								return;
-							
-							if (event->key.keyval == GDK_Escape)
-							{
-								if (control->_grab)
-								{
-									gApplication::exitLoop(control);
-									return;
-								}
-								
-								gMainWindow *win = control->window();
-								if (check_button(win->_cancel))
-								{
-									win->_cancel->animateClick(false);
-									return;
-								}
-							}
-							else if (event->key.keyval == GDK_Return || event->key.keyval == GDK_KP_Enter)
-							{
-								gMainWindow *win = control->window();
-								if (check_button(win->_default))
-								{
-									win->_default->animateClick(false);
-									return;
-								}
-							}
-						}
-
-						break;
-					}
-						
-					case GDK_KEY_RELEASE:
-						
-						gApplication::_event_time = event->key.time;
-						control = gDesktop::activeControl();
-						
-						if (control)
-						{
-							if (!gKey::enable(control, &event->key))
-								control->emit(SIGNAL(control->onKeyEvent), gEvent_KeyRelease);
-							gKey::disable();
-							
-							if (event->key.keyval == GDK_Escape)
-							{
-								gMainWindow *win = control->window();
-								if (check_button(win->_cancel))
-									win->_cancel->animateClick(true);
-							}
-							else if (event->key.keyval == GDK_Return || event->key.keyval == GDK_KP_Enter)
-							{
-								gMainWindow *win = control->window();
-								if (check_button(win->_default))
-									win->_default->animateClick(true);
-							}
-						}
-						
-						break;
-				}
-			}
+			if (event->type != GDK_LEAVE_NOTIFY || gApplication::_leave != control)
+				gApplication::_leave->emit(SIGNAL(gApplication::_leave->onEnterLeave), gEvent_Leave);
+			gApplication::_leave = NULL;
 		}
 	}
 	
+	switch ((int)event->type)
+	{
+		case GDK_ENTER_NOTIFY:
+			
+			//gApplication::dispatchEnterLeave(control);
+			if (gApplication::_leave == control)
+				gApplication::_leave = NULL;
+			else if (gApplication::_enter != control)
+			{
+				gApplication::_enter = control;
+				control->emit(SIGNAL(control->onEnterLeave), gEvent_Enter);
+			}
+			break;
+		
+		case GDK_LEAVE_NOTIFY:
+			if (gdk_events_pending())
+				gApplication::_leave = control;
+			else
+			{
+				if (gApplication::_enter == control)
+					gApplication::_enter = NULL;
+				control->emit(SIGNAL(control->onEnterLeave), gEvent_Leave);
+			}
+			break;
+			
+		case GDK_BUTTON_PRESS:
+		case GDK_2BUTTON_PRESS:
+		case GDK_BUTTON_RELEASE:
+			
+			gApplication::_event_time = event->button.time;
+
+			if (control->onMouseEvent)
+			{
+				control->getScreenPos(&xc, &yc);
+				x = (int)event->button.x_root - xc;
+				y = (int)event->button.y_root - yc;
+				
+				gMouse::validate();
+				gMouse::setStart(x, y);
+				gMouse::setMouse(x, y, event->button.button, event->button.state);
+				//gMouse::setValid(1,(int)event->x,(int)event->y,event->button,event->state,data->screenX(),data->screenY());
+				switch ((int)event->type)
+				{
+					case GDK_BUTTON_PRESS: 
+						control->onMouseEvent(control, gEvent_MousePress); 
+						break;
+					
+					case GDK_2BUTTON_PRESS: 
+						control->onMouseEvent(control, gEvent_MouseDblClick); 
+						break;
+					
+					case GDK_BUTTON_RELEASE: 
+						control->onMouseEvent(control, gEvent_MouseRelease); 
+						if (control->_grab)
+							gApplication::exitLoop(control);
+						break;
+				}
+				
+				gMouse::invalidate();
+				
+				if (event->button.button == 3 && event->type == GDK_BUTTON_PRESS)
+					control->onMouseEvent(control, gEvent_MouseMenu);
+			}
+			break;
+			
+		case GDK_MOTION_NOTIFY:
+
+			gApplication::_event_time = event->motion.time;
+
+			if (control->onMouseEvent && (control->isTracking() || (event->motion.state & (GDK_BUTTON1_MASK | GDK_BUTTON2_MASK | GDK_BUTTON3_MASK))))
+			{
+				control->getScreenPos(&xc, &yc);
+				x = (int)event->motion.x_root - xc;
+				y = (int)event->motion.y_root - yc;
+				
+				gMouse::validate();
+				gMouse::setMouse(x, y, 0, event->motion.state);
+				control->onMouseEvent(control, gEvent_MouseMove);
+				//if (data->acceptDrops() && gDrag::checkThreshold(data, gMouse::x(), gMouse::y(), gMouse::startX(), gMouse::startY()))
+				if ((event->motion.state & (GDK_BUTTON1_MASK | GDK_BUTTON2_MASK | GDK_BUTTON3_MASK)) 
+						//&& (abs(gMouse::x() - gMouse::y()) + abs(gMouse::startX() - gMouse::startY())) > 8)
+						&& gDrag::checkThreshold(control, gMouse::x(), gMouse::y(), gMouse::startX(), gMouse::startY()))
+				{
+					control->onMouseEvent(control, gEvent_MouseDrag);
+				}
+				gMouse::invalidate();
+			}
+			break;
+			
+		case GDK_SCROLL:
+			
+			gApplication::_event_time = event->scroll.time;
+			
+			if (control->onMouseEvent)
+			{
+				int dt, ort;
+				
+				control->getScreenPos(&xc, &yc);
+				x = (int)event->scroll.x_root - xc;
+				y = (int)event->scroll.y_root - yc;
+
+				switch (event->scroll.direction)
+				{
+					case GDK_SCROLL_DOWN: dt = -1; ort = 1; break;
+					case GDK_SCROLL_LEFT: dt = -1; ort = 0; break;
+					case GDK_SCROLL_RIGHT:  dt = 1; ort = 0; break;
+					case GDK_SCROLL_UP: default: dt = 1; ort = 1; break;
+				}
+				
+				gMouse::validate();
+				gMouse::setMouse(x, y, 0, event->scroll.state);
+				gMouse::setWheel(dt, ort);
+				control->onMouseEvent(control, gEvent_MouseWheel);
+				gMouse::invalidate();
+			}
+			break;
+
+		case GDK_KEY_PRESS:
+		{
+			bool cancel = false;
+			
+			gApplication::_event_time = event->key.time;
+			control = gDesktop::activeControl();
+			
+			if (control)
+			{
+				if (!gKey::enable(control, &event->key))
+				{
+					if (gApplication::onKeyEvent)
+						cancel = gApplication::onKeyEvent(gEvent_KeyPress);
+					if (!cancel && control->onKeyEvent) 
+					{
+						//fprintf(stderr, "gEvent_KeyPress on %p %s\n", control, control->name());
+						cancel = control->onKeyEvent(control, gEvent_KeyPress);
+					}
+				}
+				gKey::disable();
+				
+				if (cancel)
+					return;
+				
+				if (event->key.keyval == GDK_Escape)
+				{
+					if (control->_grab)
+					{
+						gApplication::exitLoop(control);
+						return;
+					}
+					
+					gMainWindow *win = control->window();
+					if (check_button(win->_cancel))
+					{
+						win->_cancel->animateClick(false);
+						return;
+					}
+				}
+				else if (event->key.keyval == GDK_Return || event->key.keyval == GDK_KP_Enter)
+				{
+					gMainWindow *win = control->window();
+					if (check_button(win->_default))
+					{
+						win->_default->animateClick(false);
+						return;
+					}
+				}
+			}
+
+			break;
+		}
+			
+		case GDK_KEY_RELEASE:
+			
+			gApplication::_event_time = event->key.time;
+			control = gDesktop::activeControl();
+			
+			if (control)
+			{
+				if (!gKey::enable(control, &event->key))
+					control->emit(SIGNAL(control->onKeyEvent), gEvent_KeyRelease);
+				gKey::disable();
+				
+				if (event->key.keyval == GDK_Escape)
+				{
+					gMainWindow *win = control->window();
+					if (check_button(win->_cancel))
+						win->_cancel->animateClick(true);
+				}
+				else if (event->key.keyval == GDK_Return || event->key.keyval == GDK_KP_Enter)
+				{
+					gMainWindow *win = control->window();
+					if (check_button(win->_default))
+						win->_default->animateClick(true);
+				}
+			}
+			
+			break;
+	}
+	
+__HANDLE_EVENT:
+
 	gtk_main_do_event(event);
 }
 

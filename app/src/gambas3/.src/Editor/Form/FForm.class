@@ -1898,7 +1898,7 @@ Private Sub CreateMenu()
 
   mnuSelect.Enabled = cCtrl.Count
 
-  cCtrl.Sort(gb.IgnoreCase)
+  cCtrl.Sort(gb.IgnoreCase + gb.Natural)
 
   For Each sName In cCtrl
 
@@ -3158,7 +3158,7 @@ Public Sub GetTopLevelMenus() As String[]
     Endif
   Next
   
-  Return aMenu.Sort(gb.IgnoreCase)
+  Return aMenu.Sort(gb.IgnoreCase + gb.Natural)
   
 End
 

@@ -740,7 +740,7 @@ Private Sub ShowProperty(Optional sFocus As String)
       cmbProperty.Clear
       cmbProperty.Add("(" & ("None") & ")")
       
-      For Each sCtrl In $hForm.FindControlFromType($sType).Sort()
+      For Each sCtrl In $hForm.FindControlFromType($sType).Sort(gb.Natural + gb.IgnoreCase)
         cmbProperty.Add(sCtrl)
       Next
 

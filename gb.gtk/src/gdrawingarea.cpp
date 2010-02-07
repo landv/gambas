@@ -78,7 +78,8 @@ gDrawingArea::gDrawingArea(gContainer *parent) : gContainer(parent)
 		| GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK
 		| GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_POINTER_MOTION_MASK);
 	
-	GTK_WIDGET_SET_FLAGS (widget, GTK_CAN_FOCUS);
+	GTK_WIDGET_UNSET_FLAGS(border, GTK_APP_PAINTABLE);
+	GTK_WIDGET_SET_FLAGS(widget, GTK_CAN_FOCUS);
 		
 	_event_mask = gtk_widget_get_events(widget);
 	

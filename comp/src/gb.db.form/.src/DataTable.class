@@ -33,9 +33,11 @@ Public Sub _new(hConn As DataConnection, Table As String, Filter As String)
   $sTable = Table
   $sFilter = Filter
   
-  $hConn.CheckTable(Table)
-  
-  If $sTable Like "SELECT *" Then $bRequest = True
+  If $sTable Like "SELECT *" Then 
+    $bRequest = True
+  Else
+    $hConn.CheckTable(Table)
+  Endif
   
   RefreshKey
 

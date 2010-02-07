@@ -510,7 +510,7 @@ Private Sub CreateMenu()
 
   Next
 
-  cFunc.Sort(gb.IgnoreCase)
+  cFunc.Sort(gb.IgnoreCase + gb.Natural)
   hParent = mnuGoto
 
   'hPoint = Picture["img/16/point.png"]
@@ -2588,7 +2588,7 @@ Private Sub FillProcCombo()
 
   Next
 
-  $aProc.Sort(gb.IgnoreCase)
+  $aProc.Sort(gb.IgnoreCase + gb.Natural)
 
   For Each sName In $aProc
 
@@ -2863,11 +2863,11 @@ Public Sub panToolBar_Configure()
 
 End
 
-Public Sub Editors_DblClick()
-
-  If Mouse.Control Then FindDefinition
-  'If Mouse.Shift Then ShowHelp
-End
+' Public Sub Editors_DblClick()
+' 
+'   If Mouse.Control Then FindDefinition(False)
+' 
+' End
 
 
 ' Public Sub timShowHelp_Timer()

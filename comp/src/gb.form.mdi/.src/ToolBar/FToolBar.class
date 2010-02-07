@@ -15,6 +15,7 @@ Private $hWatcherParent As Watcher
 Private $bLock As Boolean
 Private $bHidden As Boolean
 Private $bVertical As Boolean
+Private $bReallyVertical As Boolean
 Private $bAutoResize As Boolean
 Private $bConfigure As Boolean
 Private $bInside As Boolean
@@ -33,13 +34,6 @@ Private $iLock As Integer
 
 Private $aHidden As Control[]
 
-Static Public Sub GetToolbarFromKey(sKey As String) As FToolBar
-  
-  
-  
-End
-
-
 Public Sub _new()
   
   $iHandleSize = Max(4, Desktop.Scale / 2)
@@ -53,13 +47,13 @@ End
 
 Public Sub IsVertical() As Boolean
   
-  Return $bVertical
+  Return $bReallyVertical
   
 End
 
 Public Sub SetVertical(bVertical As Boolean)
   
-  $bVertical = bVertical
+  $bReallyVertical = bVertical
   Update
   
 End
@@ -70,54 +64,73 @@ Public Function GetContainer() As Container
   
 End
 
-Private Function GetToolBarWidth() As Integer
+Private Function GetToolBarWidth(Optional bPadding As Boolean) As Integer
   
   Dim hCtrl As Control
   Dim W As Integer
-  Dim HT As Integer
+  Dim WH As Integer
   
-  If $bVertical Then 
-  
-    If dwgHandle.Visible Then HT = dwgHandle.H * 2
+  If $bReallyVertical Then 
   
     For Each hCtrl In panToolBar.Children
-      If hCtrl.Visible Then 
-        If hCtrl.Expand Then Return GetFreeWidth() - HT
-        W += hCtrl.H
-      Endif
+      If Not hCtrl.Visible Then Continue
+      W = Max(W, hCtrl.W)
     Next
+    
+    ' For Each hCtrl In panToolBar.Children
+    '   If hCtrl.Visible Then 
+    '     If hCtrl.Expand Then Return GetFreeWidth()
+    '     W += hCtrl.H
+    '   Endif
+    ' Next
     
   Else 
   
-    If dwgHandle.Visible Then HT = dwgHandle.W * 2
+    If dwgHandle.Visible Then WH = dwgHandle.W
   
     For Each hCtrl In panToolBar.Children
       If hCtrl.Visible Then 
-        If hCtrl.Expand Then Return GetFreeWidth() - HT
+        If hCtrl.Expand Then Return GetFreeWidth() - WH
         W += hCtrl.W
       Endif
     Next
     
   Endif
   
-  Return W + panToolBar.Padding * 2 
+  If bPadding Then W += panToolBar.Padding * 2 
+  Return W 
   
 End
 
 Private Sub GetToolBarHeight(Optional bPadding As Boolean) As Integer
   
   Dim hCtrl As Control
-  Dim H As Integer
+  Dim X, Y, W, H As Integer
 
-  If $bVertical Then
+  If $bReallyVertical Then
+  
+    If dwgHandle.Visible Then Y = dwgHandle.H * 2
   
     For Each hCtrl In panToolBar.Children
-      H = Max(H, hCtrl.W)
+      If hCtrl.Visible Then 
+        If X >= GetFreeWidth() Then
+          X = 0
+          Y += H
+          H = 0
+        Endif
+        W += hCtrl.W
+        H = Max(H, hCtrl.H)
+        If hCtrl.Expand Then W = GetFreeWidth()
+        X += W
+      Endif
     Next
+    
+    H = Y
     
   Else
   
     For Each hCtrl In panToolBar.Children
+      If Not hCtrl.Visible Then Continue
       H = Max(H, hCtrl.H)
     Next
     
@@ -132,12 +145,13 @@ End
 
 Private Function GetFreeWidth() As Integer
   
-  'DEBUG ME.Parent.Parent.ClientW;; ME.Parent.Parent.W
-  If $bVertical Then
-    Return Me.Parent.Parent.ClientH
-  Else 
-    Return Me.Parent.Parent.ClientW
-  Endif
+  Return Me.Parent.Parent.ClientW
+  
+End
+
+Private Function GetFreeHeight() As Integer
+  
+  Return Me.Parent.Parent.ClientH
   
 End
 
@@ -147,15 +161,15 @@ Private Sub SetArrangement()
   
   If $bDesign Then Return
   hToolBar.Padding = 0
-  hToolbar.Arrangement = If($bVertical, Arrange.Column, Arrange.Row)
+  hToolbar.Arrangement = Arrange.Row 'If($bVertical, Arrange.Column, Arrange.Row)
   
 End
 
 Private Sub Update()
 
   Dim W, H As Integer
-  Dim XH, XP As Integer 
-  Dim WH As Integer
+  Dim XH, YH, WH, HH As Integer 
+  Dim XP, YP, WP, HP As Integer 
 
   If Not Object.IsValid(Me.Parent.Parent) Then Return
   If $iLock Then Return
@@ -164,128 +178,93 @@ Private Sub Update()
   
   SetArrangement
 
-  If System.RightToLeft Then 
-    If Not $bVertical Then
+  If Not $bReallyVertical Then
+  
+    If System.RightToLeft Then
       XH = Me.W - $iHandleSize
-    Else 
-      XH = Me.H - $iHandleSize
-    Endif
-    XP = 0
-  Else 
-    XH = 0
-    If dwgHandle.Visible Then
-      XP = $iHandleSize
-    Else
+      YH = 0
       XP = 0
-    Endif
-  Endif 
-  
-  If Not $bVertical Then
-  
-    If $bDesign Then
-    
-      If dwgHandle.Visible Then
-        dwgHandle.Move(XH, 0, $iHandleSize, Me.H)
-        panToolBar.Move(XP, 0, Me.W - $iHandleSize, Me.H)
-      Else
-        panToolBar.Move(XP, 0, Me.W, Me.H)
-      Endif
-    
-    Else If $bHidden Then
-    
-      panToolBar.Hide
-      If dwgHandle.Visible Then
-        dwgHandle.Move(0, 0, $iHandleSize, GetToolBarHeight(True))
-        Me.Parent.Resize($iHandleSize, dwgHandle.H)
-      Endif
-    
     Else
-    
-      panToolBar.Show
-      
-      If dwgHandle.Visible Then WH = $iHandleSize 'dwgHandle.W
-      
-      If $bAutoResize Then
-        W = Max($iHandleSize, Min(GetToolBarWidth() + WH, GetFreeWidth()))
-        'W = Max(8, Min(GetToolBarWidth(), GetFreeWidth()))
-      Else 
-        W = Max($iHandleSize, GetToolBarWidth() + WH)
-        'W = Max(W, GetFreeWidth())
-        'W = Max(8, GetToolBarWidth())
-      Endif
-      W += $iHandleSize
-      
-      If dwgHandle.Visible Then
-        panToolBar.Move(XP, 0, W - $iHandleSize)
-        dwgHandle.Move(XH, 0, $iHandleSize, panToolBar.H)
-      Else
-        panToolBar.Move(XP, 0, W)
-      Endif
-      
-      If $bAutoResize Then
-        H = Max(GetToolBarHeight(True), panToolBar.H)
-      Else 
-        H = GetToolBarHeight(True)
-      Endif
-      If sepToolbar.Visible Then Inc H
-      Me.Parent.Resize(W, H)
-      
+      XH = 0
+      YH = 0
+      XP = $iHandleSize
     Endif
-    
-  Else 
+    YP = 0
+    WH = $iHandleSize
+    HH = Me.H
   
-    If $bDesign Then
-    
-      If dwgHandle.Visible Then
-        dwgHandle.Move(0, XH, Me.W, $iHandleSize)
-        panToolBar.Move(0, XP, Me.W, Me.H - $iHandleSize)
-      Else
-        panToolBar.Move(0, XP, Me.W, Me.H)
-      Endif
-    
-    Else If $bHidden Then
-    
-      panToolBar.Hide
-      If dwgHandle.Visible Then
-        dwgHandle.Move(0, 0, GetToolBarHeight(True), $iHandleSize)
-        Me.Parent.Resize(dwgHandle.W, $iHandleSize)
-      Endif
-    
-    Else
-    
-      panToolBar.Show
-
-      If dwgHandle.Visible Then WH = $iHandleSize 'dwgHandle.H
-
-      If $bAutoResize Then
-        W = Max(Min(GetToolBarWidth() + WH, GetFreeWidth()), $iHandleSize)
-        'W = Max(Min(GetToolBarWidth(), GetFreeWidth()), 8)
-      Else 
-        W = Max(GetToolBarWidth() + WH, $iHandleSize)
-        'W = Max(GetToolBarWidth(), 8)
-      Endif
-      W += $iHandleSize
-
-      If dwgHandle.Visible Then
-        panToolBar.Move(0, XP, panToolBar.W, W - $iHandleSize)
-        dwgHandle.Move(0, XH, panToolBar.W, $iHandleSize)
-      Else
-        panToolBar.Move(0, XP, panToolBar.W, W)
-      Endif
-    
-      If $bAutoResize Then
-        H = Max(GetToolBarHeight(True), panToolBar.H)
-      Else 
-        H = GetToolBarHeight(True)
-      Endif
-      If sepToolbar.Visible Then Inc H
-      Me.Parent.Resize(H, W)
-
-    Endif
-    
+  Else
+  
+    XH = 0
+    YH = 0
+    WH = Me.W
+    HH = $iHandleSize
+    XP = 0
+    YP = $iHandleSize
+  
   Endif
   
-  If Not $bVertical Then
+  If Not dwgHandle.Visible Then
+    WH = 0
+    HH = 0
+    XP = 0
+    YP = 0
+  Endif
+
+  If $bDesign Then
+  
+    If dwgHandle.Visible Then
+      dwgHandle.Move(XH, YH, WH, HH)
+      If Not $bReallyVertical Then
+        panToolBar.Move(XP, YP, Me.W - WH, Me.H)
+      Else
+        panToolBar.Move(XP, YP, Me.W, Me.H - HH)
+      Endif
+    Else
+      panToolBar.Move(XP, YP, Me.W, Me.H)
+    Endif
+    
+  Else
+
+    panToolBar.Show
+    
+    If Not $bReallyVertical Then
+      If $bAutoResize Then
+        W = Max($iHandleSize, Min(GetToolBarWidth() + WH, GetFreeWidth()))
+        'H = Max(GetToolBarHeight(True), panToolBar.H)
+      Else 
+        W = Max($iHandleSize, GetToolBarWidth() + WH)
+      Endif
+      H = GetToolBarHeight(True)
+      If sepToolbar.Visible Then Inc H
+    Else
+      If $bAutoResize Then
+        W = Max(GetToolBarWidth(True), panToolBar.W)
+        H = Max($iHandleSize, Min(GetToolBarHeight(True), GetFreeHeight()))
+      Else 
+        W = GetToolBarWidth(True)
+        H = Max($iHandleSize, GetToolBarHeight() + HH)
+      Endif
+      If sepToolbar.Visible Then Inc W
+    Endif
+    'W += $iHandleSize
+    
+    If dwgHandle.Visible Then
+      dwgHandle.Move(XH, YH, WH, HH)
+      If Not $bReallyVertical Then
+        panToolBar.Move(XP, YP, W - WH)
+      Else
+        panToolBar.Move(XP, YP, panToolBar.W, H - HH)
+      Endif
+    Else
+      'panToolBar.Move(XP, YP, W, H)
+    Endif
+
+    Me.Parent.Resize(W, H)
+        
+  Endif
+  
+  If Not $bReallyVertical Then
     sepToolbar.Move(0, Me.H - 1, Me.W, 1)
   Else
     sepToolbar.Move(Me.W - 1, 0, 1, Me.H)

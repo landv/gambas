@@ -268,58 +268,6 @@ static void gDialog_filters(GtkFileChooser* ch)
 	}
 }
 	
-#if 0
-	for (bucle=0;bucle<DIALOG_nfilter;bucle++)
-	{
-		if (!strchr(DIALOG_filter[bucle],'('))
-		{
-			buf=NULL;
-			nm=g_strstrip(DIALOG_filter[bucle]);
-			data=NULL;
-		}
-		else
-		{
-			buf=g_strsplit(DIALOG_filter[bucle],"(",2);
-			nm=g_strstrip(buf[0]);
-			data=buf[1];
-			if (strchr(data,')')) (strchr(data,')'))[0]=0;
-		}	
-		
-		ft=gtk_file_filter_new();
-		gtk_file_filter_set_name(ft,nm);
-		
-		if (buf)
-		{
-		
-			if (strchr(data,';'))
-			{
-				b2=0;
-				bdata=g_strsplit(data,";",0);
-				while(bdata[b2])
-				{
-					bdata[b2]=g_strstrip(bdata[b2]);
-					gtk_file_filter_add_pattern(ft,bdata[b2]);
-					g_free(bdata[b2]);
-					b2++;
-				}
-				g_free(bdata);
-			}
-			else
-			{
-				data=g_strstrip(data);
-				gtk_file_filter_add_pattern(ft,data);
-			}
-		
-			g_free(buf[0]);
-			g_free(buf[1]);
-			g_free(buf);
-		}
-		
-		gtk_file_chooser_add_filter(ch,ft);
-	}
-#endif
-
-
 static bool gDialog_runFile(GtkFileChooserDialog *msg)
 {
 	GSList *names,*iter;
@@ -348,9 +296,7 @@ static bool gDialog_runFile(GtkFileChooserDialog *msg)
 		DIALOG_paths=NULL;
 	}
 	
-	
 	names=gtk_file_chooser_get_filenames((GtkFileChooser*)msg);
-	
 	
 	if (names)
 	{
@@ -505,6 +451,7 @@ bool gDialog::openFile(bool multi)
 	gtk_file_chooser_set_select_multiple((GtkFileChooser*)msg,multi);
 	gtk_widget_show(GTK_WIDGET(msg));
 	gtk_file_chooser_unselect_all((GtkFileChooser*)msg);
+	
 	if (DIALOG_path)
 	{
 		gtk_file_chooser_select_filename ((GtkFileChooser*)msg, DIALOG_path);
@@ -531,10 +478,10 @@ bool gDialog::saveFile()
 	gtk_file_chooser_set_select_multiple((GtkFileChooser*)msg,false);
 	gtk_widget_show(GTK_WIDGET(msg));
 	gtk_file_chooser_unselect_all((GtkFileChooser*)msg);
+	
 	if (DIALOG_path)
 	{
 		gtk_file_chooser_select_filename ((GtkFileChooser*)msg,DIALOG_path);
-		//gtk_file_chooser_set_current_name ((GtkFileChooser*)msg,DIALOG_path);
 	}
 		
 	return gDialog_runFile(msg);

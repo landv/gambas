@@ -58,6 +58,7 @@ typedef
 	}
 	STRING_MAKE;
 
+// NOTE: Defined in gambas.h too
 #define SC_UNICODE ((char *)-1)
 
 #ifndef __STRING_C

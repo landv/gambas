@@ -181,7 +181,7 @@ Public Function GetAll() As String[]
     aLang.Add(Name.Key)
   Next
 
-  aLang.Sort
+  aLang.Sort(gb.Language)
 
   Return aLang
 

@@ -509,13 +509,13 @@ COMPARE_FUNC COMPARE_get(TYPE type, int mode)
     case T_STRING:
 			
 			if (mode & GB_COMP_NATURAL)
-				return (COMPARE_FUNC)((mode & GB_COMP_TEXT) ? compare_string_natural_case : compare_string_natural);
+				return (COMPARE_FUNC)((mode & GB_COMP_NOCASE) ? compare_string_natural_case : compare_string_natural);
 			else if (mode & GB_COMP_LIKE)
 				return (COMPARE_FUNC)compare_string_like;
 			else if (mode & GB_COMP_LANG)
-				return (COMPARE_FUNC)((mode & GB_COMP_TEXT) ? compare_string_lang_case : compare_string_lang);
+				return (COMPARE_FUNC)((mode & GB_COMP_NOCASE) ? compare_string_lang_case : compare_string_lang);
 			else
-				return (COMPARE_FUNC)((mode & GB_COMP_TEXT) ? compare_string_case : compare_string_binary);
+				return (COMPARE_FUNC)((mode & GB_COMP_NOCASE) ? compare_string_case : compare_string_binary);
 
     default:
       return (COMPARE_FUNC)compare_nothing;

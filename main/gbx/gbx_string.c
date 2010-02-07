@@ -289,7 +289,7 @@ int STRING_get_free_index(void)
 
 /*void STRING_init(void)
 {
-	HASH_TABLE_create(&_intern, 0, GB_COMP_TEXT);
+	HASH_TABLE_create(&_intern, 0, GB_COMP_NOCASE);
 }*/
 
 void STRING_exit(void)
@@ -756,7 +756,7 @@ int STRING_conv(char **result, const char *str, int len, const char *src, const 
 				break;
 			}
 		}
-	
+		
 		iconv_close(handle);
 	
 		if (unicode)

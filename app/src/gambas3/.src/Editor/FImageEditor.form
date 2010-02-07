@@ -1,0 +1,249 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,95,64)
+  Text = ("")
+  Arrangement = Arrange.Vertical
+  { panToolBar ToolBar
+    MoveScaled(0,0,84,4)
+    Key = "image"
+    Text = ("Text editor")
+    Separator = True
+    { btnSave ToolButton mnuSave
+      Name = "btnSave"
+      MoveScaled(0,0,4,4)
+      ToolTip = ("Save")
+      Action = ".save"
+      Text = ("")
+      Picture = Picture["icon:/small/save"]
+    }
+    { btnReload ToolButton mnuReload
+      Name = "btnReload"
+      MoveScaled(4,0,4,4)
+      ToolTip = ("Reload")
+      Action = ".reload"
+      Text = ("")
+      Picture = Picture["icon:/small/refresh"]
+    }
+    { btnCut ToolButton mnuCut
+      Name = "btnCut"
+      MoveScaled(8,0,4,4)
+      Visible = False
+      ToolTip = ("Cut")
+      Action = ".cut"
+      Text = ("")
+      Picture = Picture["icon:/small/cut"]
+    }
+    { btnCopy ToolButton mnuCopy
+      Name = "btnCopy"
+      MoveScaled(12,0,4,4)
+      Visible = False
+      ToolTip = ("Copy")
+      Action = ".copy"
+      Text = ("")
+      Picture = Picture["icon:/small/copy"]
+    }
+    { btnPaste MenuButton mnuPaste
+      Name = "btnPaste"
+      MoveScaled(16,0,6,4)
+      Visible = False
+      ToolTip = ("Paste")
+      Action = ".paste"
+      Text = ("")
+      Picture = Picture["icon:/small/paste"]
+      Menu = "mnuPasteAs"
+    }
+    { btnUndo ToolButton mnuUndo
+      Name = "btnUndo"
+      MoveScaled(22,0,4,4)
+      ToolTip = ("Undo")
+      Action = ".undo"
+      Text = ("")
+      Picture = Picture["icon:/small/undo"]
+    }
+    { btnRedo ToolButton mnuRedo
+      Name = "btnRedo"
+      MoveScaled(26,0,4,4)
+      ToolTip = ("Redo")
+      Action = ".redo"
+      Text = ("")
+      Picture = Picture["icon:/small/redo"]
+    }
+    { Separator1 Separator
+      MoveScaled(30,0,2,4)
+    }
+    { btnZoomIn ToolButton
+      MoveScaled(32,0,4,4)
+      Tag = "zoom-in"
+      ToolTip = ("Zoom in")
+      Text = ("")
+      Picture = Picture["icon:/small/zoom-in"]
+    }
+    { cmbZoom ComboBox
+      MoveScaled(36,0,12,4)
+      Text = ("ComboBox1")
+      ReadOnly = True
+    }
+    { btnZoomOut ToolButton
+      MoveScaled(48,0,4,4)
+      Tag = "zoom-out"
+      ToolTip = ("Zoom out")
+      Text = ("")
+      Picture = Picture["icon:/small/zoom-out"]
+    }
+    { HBox1 HBox
+      MoveScaled(66,0,16,4)
+      Expand = True
+      { Panel1 Panel
+        MoveScaled(2,0,1,4)
+        Expand = True
+      }
+      { lblEditor Label
+        MoveScaled(3,0,10,4)
+        AutoResize = True
+        Text = ("")
+      }
+      { Panel2 Panel
+        MoveScaled(14,0,1,4)
+      }
+    }
+  }
+  { HBox2 HBox
+    MoveScaled(0,5,94,58)
+    Expand = True
+    { ToolBar1 ToolBar
+      MoveScaled(0,0,8,45)
+      AutoResize = False
+      Text = ("ToolBar1")
+      Orientation = ToolBar.Vertical
+      Separator = True
+      { ToolButton14 ToolButton
+        MoveScaled(0,0,4,4)
+        Text = ("")
+        Picture = Picture["img/draw/draw-freehand.png"]
+      }
+      { ToolButton15 ToolButton
+        MoveScaled(4,0,4,4)
+        Text = ("")
+        Picture = Picture["img/draw/draw-path.png"]
+      }
+      { ToolButton1 ToolButton
+        MoveScaled(0,4,4,4)
+        Text = ("")
+        Picture = Picture["img/draw/draw-rectangle.png"]
+      }
+      { ToolButton2 ToolButton
+        MoveScaled(4,4,4,4)
+        Text = ("")
+        Picture = Picture["img/draw/draw-ellipse.png"]
+      }
+      { ToolButton3 ToolButton
+        MoveScaled(0,8,4,4)
+        Text = ("")
+        Picture = Picture["img/draw/draw-line.png"]
+      }
+      { ToolButton5 ToolButton
+        MoveScaled(4,8,4,4)
+        Text = ("")
+        Picture = Picture["img/draw/draw-text.png"]
+      }
+      { Separator3 Separator
+        MoveScaled(0,12,8,1)
+      }
+      { ToolButton7 ToolButton
+        MoveScaled(0,13,4,4)
+        Text = ("")
+        Picture = Picture["img/draw/draw-brush.png"]
+      }
+      { ToolButton8 ToolButton
+        MoveScaled(4,13,4,4)
+        Text = ("")
+        Picture = Picture["icon:/small/fill"]
+      }
+      { ToolButton10 ToolButton
+        MoveScaled(0,17,4,4)
+        Text = ("")
+        Picture = Picture["icon:/small/cut"]
+      }
+      { ToolButton11 ToolButton
+        MoveScaled(4,17,4,4)
+        Text = ("")
+        Picture = Picture["icon:/small/filter"]
+      }
+      { Separator2 Separator
+        MoveScaled(0,21,8,1)
+      }
+      { ToolButton9 ToolButton
+        MoveScaled(0,22,4,4)
+        Text = ("")
+        Picture = Picture["img/draw/pen.png"]
+      }
+      { ToolButton4 ToolButton
+        MoveScaled(4,22,4,4)
+        Text = ("")
+        Picture = Picture["icon:/small/color"]
+      }
+      { Panel3 Panel
+        MoveScaled(0,27,8,8)
+        Arrangement = Arrange.Fill
+        Margin = True
+        { dwgBrush DrawingArea
+          MoveScaled(0,0,6,6)
+          Border = Border.Plain
+        }
+      }
+    }
+    { svwImage ScrollView
+      MoveScaled(22,6,55,40)
+      Background = &H7F7F7F&
+      Expand = True
+      Border = False
+      { dwgImage DrawingArea
+        MoveScaled(11,8,33,26)
+        Background = &HFFFFFF&
+        Mouse = Mouse.Cross
+      }
+    }
+  }
+}
+
+# Gambas Action File 3.0
+
+{ Actions
+  { Action copy
+    Text = "Copy"
+    Picture = "icon:/small/copy"
+  }
+  { Action cut
+    Text = "Cut"
+    Picture = "icon:/small/cut"
+  }
+  { Action paste
+    Text = "Paste"
+    Picture = "icon:/small/paste"
+  }
+  { Action redo
+    Text = "Redo"
+    Picture = "icon:/small/redo"
+  }
+  { Action reload
+    Text = "Reload"
+    Picture = "icon:/small/refresh"
+  }
+  { Action save
+    Text = "Save"
+    Picture = "icon:/small/save"
+  }
+  { Action undo
+    Text = "Undo"
+    Picture = "icon:/small/undo"
+  }
+}
+
+{ Toolbars
+  { Toolbar image
+    Text = "Text editor"
+    List = "save,reload,cut,copy,paste,undo,redo"
+    Default = "save,reload,undo,redo,|,$btnZoomIn,$cmbZoom,$btnZoomOut,$HBox1"
+  }
+}

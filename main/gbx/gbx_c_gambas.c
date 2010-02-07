@@ -167,7 +167,7 @@ END_METHOD
 BEGIN_PROPERTY(gb_Text)
 
 	ERROR_deprecated("gb.Text");
-	GB_ReturnInteger(GB_COMP_TEXT);
+	GB_ReturnInteger(GB_COMP_NOCASE);
 
 END_PROPERTY
 
@@ -220,7 +220,7 @@ GB_DESC NATIVE_Gambas[] =
 
   GB_CONSTANT("Binary", "i", GB_COMP_BINARY),
   GB_STATIC_PROPERTY_READ("Text", "i", gb_Text),
-  GB_CONSTANT("IgnoreCase", "i", GB_COMP_TEXT),
+  GB_CONSTANT("IgnoreCase", "i", GB_COMP_NOCASE),
   GB_CONSTANT("Language", "i", GB_COMP_LANG),
 	GB_CONSTANT("Like","i",GB_COMP_LIKE),
 	GB_CONSTANT("Natural","i",GB_COMP_NATURAL),

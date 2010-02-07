@@ -1004,7 +1004,7 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
             Wend
           Endif
           While .Available
-            If String.Comp(.Item.Text, sFile, gb.IgnoreCase) > 0 Then Break
+            If String.Comp(.Item.Text, sFile, gb.IgnoreCase + gb.Natural) > 0 Then Break
             If bDir And If Not IsDir(.Item.Key) Then Break
             sAfter = .Item.Key
             .MoveNext
@@ -1099,7 +1099,7 @@ Private Procedure AddDir(Optional sDir As String)
       If Not IsDir(sDir &/ sFile) Then aFile.Add("F" & sFile)
     Next
   
-    aFile.Sort
+    aFile.Sort(gb.Natural)
   
     $aRefreshAfter.Clear
   
@@ -2307,7 +2307,7 @@ Public Function GetClasses(Optional bFullPath As Boolean) As String[]
   
   Next
 
-  aClass.Sort(gb.IgnoreCase)
+  aClass.Sort(gb.IgnoreCase + gb.Natural)
 
   'If Not bFullPath Then aModule.Sort
 
@@ -3308,7 +3308,7 @@ Public Sub GetClassesOnly() As String[]
     aClass.Add(File.BaseName(sFile))
   Next
   
-  Return aClass.Sort()
+  Return aClass.Sort(gb.Natural)
   
 End
 
@@ -3795,7 +3795,7 @@ Public Function GetExamples(Optional sParent As String) As String[]
     
   Endif
 
-  aList.Sort
+  aList.Sort(gb.Natural)
 
 'Finally
 
