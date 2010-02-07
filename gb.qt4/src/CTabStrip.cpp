@@ -338,7 +338,7 @@ BEGIN_METHOD(CTABSTRIP_new, GB_OBJECT parent)
   THIS->container = NULL;
   THIS->index = -1;
 
-  CWIDGET_new(wid, (void *)_object, true);
+  CWIDGET_new(wid, (void *)_object);
   set_tab_count(THIS, 1);
 
   //wid->updateLayout();
