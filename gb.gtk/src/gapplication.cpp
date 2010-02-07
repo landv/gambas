@@ -108,9 +108,20 @@ bool gKey::shift()
 
 int gKey::fromString(char *str)
 {
-	char *lstr = g_ascii_strdown(str, -1);
-	int key = gdk_keyval_from_name(lstr);
+	char *lstr;
+	int key;
+	
+	lstr = g_ascii_strup(str, -1);
+	key = gdk_keyval_from_name(lstr);
 	g_free(lstr);
+	if (key) return key;
+	
+	lstr = g_ascii_strdown(str, -1);
+	key = gdk_keyval_from_name(lstr);
+	g_free(lstr);
+	if (key) return key;
+
+	key = gdk_keyval_from_name(str);
 	return key;
 }
 

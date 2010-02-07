@@ -765,12 +765,7 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(CWIDGET_grab)
 
-	CPICTURE *img;
-
-	GB.New(POINTER(&img), GB.FindClass("Picture"), 0, 0);
-	if (img->picture) delete img->picture;
-	img->picture=CONTROL->grab();
-	GB.ReturnObject((void*)img);
+	GB.ReturnObject(CPICTURE_create(CONTROL->grab()));
 
 END_METHOD
 
