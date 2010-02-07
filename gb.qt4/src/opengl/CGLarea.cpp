@@ -169,6 +169,14 @@ void GLarea::initializeGL()
 
 void GLarea::paintGL()
 {
+	static bool CleanupOnFirstShow = 0;
+	
+	if (!CleanupOnFirstShow)
+	{
+		CleanupOnFirstShow = true;
+		glClear(GL_COLOR_BUFFER_BIT);
+	}
+	
 	GB.Raise(_area, EVENT_Draw, 0);
 }
 
