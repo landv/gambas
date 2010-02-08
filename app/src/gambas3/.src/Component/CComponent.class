@@ -554,8 +554,6 @@ Public Sub Load()
 
   'PRINT "Initializing controls..."
 
-  hForm = New Form
-
   'IF Key = "gb.qt" THEN
   If Type = "Form" Then
     'IF Key = "gb.gtk" THEN
@@ -565,7 +563,7 @@ Public Sub Load()
     'ELSE
       For Each sClass In ["Control", "Form", "Menu"]
         If Classes.Exist(sClass) Then
-          Classes[sClass].InitControl(hForm)
+          Classes[sClass].InitControl()
         Endif
       Next
     'ENDIF
@@ -574,13 +572,11 @@ Public Sub Load()
   For Each sClass In Controls
     If Left(sClass) = "@" Then Continue
     If Classes.Exist(sClass) Then
-      Classes[sClass].InitControl(hForm)
+      Classes[sClass].InitControl()
     Else
       Debug "Control "; sClass; " not found"
     Endif
   Next
-
-  hForm.Close
 
   ClassList.Sort
 

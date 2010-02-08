@@ -2,10 +2,10 @@
 
 Private $sKey As String
 Private $bCtrl As Boolean
-Private $bTool As Boolean
 Private $bLock As Boolean
 Private $sKeyDrag As String
 Private $sDeleteKey As String
+Private $bNeedProperty As Boolean
 
 Private $bUpdateRecentMenu As Boolean
 Private $bInTreeView As Boolean
@@ -942,6 +942,14 @@ End
 ' 
 ' END
 
+Private Sub UpdateProperty()
+  
+  Action["property"].Visible = (Not Project.ReadOnly) And $bNeedProperty
+  Action["property"].Enabled = Not Project.Running
+  
+End
+
+
 Private Sub UpdateMenu()
 
   Dim bVisible As Boolean
@@ -953,10 +961,12 @@ Private Sub UpdateMenu()
 
   UpdateTranslate
 
-  For Each sAction In ["exec", "install", "compile", "compile-all", "property"]
+  For Each sAction In ["exec", "install", "compile", "compile-all"]
     Action[sAction].Visible = bVisible
     Action[sAction].Enabled = bEnabled
   Next
+  
+  UpdateProperty
   
   Action["version-control"].Visible = VersionControl.CanControlProject()
 
@@ -1008,12 +1018,14 @@ End
 
 Public Sub ShowTool(bShow As Boolean)
 
-  If bShow <> panProperty.Hidden Then Return
+  $bNeedProperty = bShow
+  UpdateProperty
 
-  If Not bShow Then $bTool = Not panTool.Hidden
-  
-  Action["property"].Value = bShow
-  'Action["control"].Value = bShow And $bTool
+  ' If bShow <> panProperty.Hidden Then Return
+  ' 
+  ' If Not bShow Then $bTool = Not panTool.Hidden
+  ' 
+  ' Action["property"].Value = bShow
   
 End
 

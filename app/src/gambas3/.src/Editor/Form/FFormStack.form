@@ -12,8 +12,9 @@
     Text = ("Click on a form to display the hierarchy of its controls...")
   }
   { panControl ToolBar
-    MoveScaled(1,12,22,4)
+    MoveScaled(1,15,22,4)
     Text = ("")
+    Separator = True
     { btnTop ToolButton
       MoveScaled(0,0,4,4)
       ToolTip = ("Move top")
@@ -38,9 +39,6 @@
       Text = ("")
       Picture = Picture["icon:/small/bottom"]
     }
-  }
-  { sepControl Separator
-    MoveScaled(3,18,15,0.1429)
   }
   { tvwControl TreeView
     MoveScaled(2,23,20,19)

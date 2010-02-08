@@ -3,7 +3,7 @@
 Inherits ReportControl
 
 
-Private $hDrw As Drawing
+Private $hDrw As Object 'Drawing
 Private $sPath As String
 
 Property Path As String
@@ -19,7 +19,7 @@ Private Sub Path_Write(Value As String)
 
   If Exist(Value) Then
     $sPath = Value
-    $hDrw = Drawing.Load($sPath)
+    '$hDrw = Drawing.Load($sPath)
   Else 
     Error.Raise("Cannot find this file !")
   Endif

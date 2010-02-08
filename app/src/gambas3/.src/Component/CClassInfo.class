@@ -72,7 +72,7 @@ Public Sub CopyFrom(hClass As CClassInfo, sType As String, sNewType As String)
 End
 
 
-Public Sub InitControl(hWin As Form)
+Public Sub InitControl()
 
   Dim aProp As String[]
   Dim sProp As String
@@ -252,9 +252,9 @@ Public Sub InitControl(hWin As Form)
 
   If VirtualControl Then
 
-    Properties["Y"] = New CPropertyInfo("", Name, "Y", "", hWin, True)
+    Properties["Y"] = New CPropertyInfo("", Name, "Y", "", Null, True)
     PropertyList.Add("Y", 0)
-    Properties["X"] = New CPropertyInfo("", Name, "X", "", hWin, True)
+    Properties["X"] = New CPropertyInfo("", Name, "X", "", Null, True)
     PropertyList.Add("X", 0)
 
   Endif

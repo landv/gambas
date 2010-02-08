@@ -121,6 +121,7 @@ Public Sub RefreshToolbar(Optional bForce As Boolean)
   Dim bExist As Boolean
   Dim sOldTab As String
   Dim iInd As Integer
+  Dim sType As String
 
   If Project.Libraries Then
 
@@ -213,7 +214,11 @@ Public Sub RefreshToolbar(Optional bForce As Boolean)
               Break
             Endif
           Next
-          If Not bExist Then $cToolBar[sGroup].Add(sCtrl, hComp.Key)
+          If Not bExist Then 
+            sType = hComp.Type
+            If hComp.Virtuals.Exist(sCtrl) Then sType = "*"
+            $cToolBar[sGroup].Add(sCtrl, hComp.Key, sType)
+          Endif
         Next
 
       End With
@@ -326,4 +331,15 @@ Public Sub tabTool_Click()
 
   SelectToolbar(tabTool.Text)
 
+End
+
+Public Sub OnProjectActivate()
+
+  Dim hForm As FForm
+  
+  Try hForm = Project.ActiveForm
+  If Not hForm Then Return
+  
+  
+  
 End

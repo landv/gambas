@@ -249,15 +249,11 @@ Private Sub Update()
     Endif
     'W += $iHandleSize
     
-    If dwgHandle.Visible Then
-      dwgHandle.Move(XH, YH, WH, HH)
-      If Not $bReallyVertical Then
-        panToolBar.Move(XP, YP, W - WH)
-      Else
-        panToolBar.Move(XP, YP, panToolBar.W, H - HH)
-      Endif
+    If dwgHandle.Visible Then dwgHandle.Move(XH, YH, WH, HH)
+    If Not $bReallyVertical Then
+      panToolBar.Move(XP, YP, W - WH)
     Else
-      'panToolBar.Move(XP, YP, W, H)
+      panToolBar.Move(XP, YP, panToolBar.W, H - HH)
     Endif
 
     Me.Parent.Resize(W, H)
@@ -493,6 +489,7 @@ Public Sub SetConfigureMode(bConfigure As Boolean)
   Dim hChild As Control
   Dim hObs As Observer
   Dim hToolButton As ToolButton
+  Dim hColor As ColorInfo
 
   If $bConfigure = bConfigure Then Return
   
@@ -507,6 +504,13 @@ Public Sub SetConfigureMode(bConfigure As Boolean)
   Me.Drop = $bConfigure
   
   panToolBar.Enabled = Not $bConfigure
+  If $bConfigure Then
+    hColor = Color[Color.LightBackground]
+    hColor.Saturation /= 2
+    Me.Background = hColor.Color
+  Else
+    Me.Background = Color.Default
+  Endif
   dwgHandle.Enabled = Not $bConfigure
 
   Lock()

@@ -33,17 +33,17 @@ Public Sub _new(sName As String, sType As String)
 End
 
 
-Public Sub Add(sControl As String, Optional sComp As String)
+Public Sub Add(sControl As String, Optional sComp As String, Optional sType As String = "*")
 
   Dim hCtrl As ToolButton
   Dim hPict As Picture
 
   hCtrl = New ToolButton(panTool) As "btnControl"
   hCtrl.Move(0, 0, $iSize + 8, $iSize + 8)
-  hCtrl.Tag = sControl
+  hCtrl.Tag = [sControl, sType]
   hCtrl.Border = False
   hCtrl.Toggle = True
-  hCtrl.ToolTip = sControl
+  hCtrl.ToolTip = sType & "." & sControl
   hCtrl.Design = True
 
   hPict = CControl.GetIcon(sControl, sComp)
@@ -53,7 +53,7 @@ Public Sub Add(sControl As String, Optional sComp As String)
     hCtrl.Picture = hPict
   Endif
 
-  $cButton[hCtrl.Tag] = hCtrl
+  $cButton[sControl] = hCtrl
 
 End
 
@@ -122,7 +122,7 @@ Public Sub SetTool(Optional hButton As ToolButton)
   Endif
 
   hButton.Value = True
-  $sTool = hButton.Tag
+  $sTool = hButton.Tag[0]
   
   $bNoEvent = False
 
@@ -147,11 +147,11 @@ Public Procedure btnControl_MouseUp()
 
   If Mouse.Right Then
   
-    MHelp.GotoClass(CComponent.Classes[Last.Tag].Component, Last.Tag)
+    MHelp.GotoClass(CComponent.Classes[Last.Tag[0]].Component, Last.Tag[0])
 
   Else
 
-    If Last.Tag = $sTool Then
+    If Last.Tag[0] = $sTool Then
       SetTool
     Else
       SetTool(Last)
@@ -175,7 +175,7 @@ End
 Public Sub btnControl_MouseDrag()
   
   Dim hTool As Object = Last
-  Dim sTool As String = hTool.Tag
+  Dim sTool As String = hTool.Tag[0]
   
   If sTool = SELECT_TOOL Then Return 
 

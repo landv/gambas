@@ -139,7 +139,7 @@ Public Sub RefreshAll(Optional sKey As String, Optional bForce As Boolean)
   tvwControl.Clear
   FillTree($hForm.Control[$hForm.Name])
   tvwControl.Show
-  sepControl.Show
+  'sepControl.Show
   lblMessage.Hide
   RefreshReadOnly
   SelectCurrent
@@ -172,7 +172,7 @@ Public Sub HideAll()
 
   tvwControl.Hide
   panControl.Hide
-  sepControl.Hide
+  'sepControl.Hide
   lblMessage.Show
 
 End

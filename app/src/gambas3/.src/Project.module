@@ -2151,7 +2151,8 @@ Public Sub Activate(hForm As Object)
   Action["watch"].Visible = bEditor
   Action["until"].Visible = bEditor
 
-  FFind.OnProjectActivate()
+  FFind.OnProjectActivate
+  FToolBox.OnProjectActivate
 
   Try ActiveForm.SetFocus
   
