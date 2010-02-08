@@ -36,7 +36,8 @@ Public CurrentPage As Integer
 Public CurrentZoom As Float  
 
 Public Sub BtOpen_Click()
-
+  
+  Dialog.Filter = ["*.pdf", ("Pdf documents")]
   If Dialog.OpenFile(False) Then Return 
   
   hPdf.Close()
@@ -80,7 +81,7 @@ Public Function AddIndex(nItem As Integer, pItem As String) As Integer
     iPage = 1
     Try iPage = hPdf.Index.Data.Page
     pR = nItem & "-" & iPage
-    tvIndex.Add(nItem & "-" & iPage, hPdf.Index.Title, "", pItem)
+    tvIndex.Add(nItem & "-" & iPage, hPdf.Index.Title, Null, pItem)
     Inc nItem
     If hPdf.Index.HasChildren Then 
      hPdf.Index.MoveChild()
@@ -118,19 +119,23 @@ Public Sub RenderPage()
   If TxtFind.Text <> "" Then 
   
     hPdf[CurrentPage].Find(TxtFind.Text)
-    Draw.Begin(hPic)
-    Draw.FillColor = Color.Red 
-    Draw.FillStyle = Fill.Dense50
+    Paint.Begin(hPic)
+    Paint.Brush = Paint.Color(Color.RGB(0, 0, 255, 192))
     For Bc = 0 To hPdf[CurrentPage].Result.Count - 1
-      Draw.Rect(hPdf[CurrentPage].Result[Bc].Left, hPdf[CurrentPage].Result[Bc].Top, hPdf[CurrentPage].Result[Bc].Width, hPdf[CurrentPage].Result[Bc].Height)
+      Paint.Rectangle(hPdf[CurrentPage].Result[Bc].Left, hPdf[CurrentPage].Result[Bc].Top, hPdf[CurrentPage].Result[Bc].Width, hPdf[CurrentPage].Result[Bc].Height)
     Next 
-    Draw.End()
+    Paint.Fill
+    Paint.End
   
   End If
 
   PBox.Picture = hPic 
   PBox.Resize(hPdf[CurrentPage].Width, hPdf[CurrentPage].Height)
   Form_Resize()
+  
+Catch
+
+  Balloon.Error(Error.Text, TxtFind)
   
 End
 

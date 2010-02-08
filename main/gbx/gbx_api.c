@@ -1551,7 +1551,7 @@ void GB_FreeString(char **str)
   *str = NULL;
 }
 
-bool GB_ConvString(char **result, const char *str, int len, const char *src, const char *dst)
+int GB_ConvString(char **result, const char *str, int len, const char *src, const char *dst)
 {
   bool err = FALSE;
 
@@ -1561,6 +1561,7 @@ bool GB_ConvString(char **result, const char *str, int len, const char *src, con
   }
   CATCH
   {
+		fprintf(stderr, "GB_ConvString: %d\n", ERROR_current->info.code);
     err = TRUE;
     GAMBAS_Error = TRUE;
   }
