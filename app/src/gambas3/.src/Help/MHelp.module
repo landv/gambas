@@ -493,7 +493,7 @@ Public Function GetProjectClassHelpHTML(sClass As String, Optional hWebView As W
     For Each hsymbol In cClassSymbols
       If Not hsymbol.IsHidden() Then 
         If hsymbol.Class = sClass Then
-          If hsymbol.Kind = ":" Then aEvents.Add("<a class=\"none\" href=\"gambas://Project/help\">" & Mid(hSymbol.Name, 2) & "</a>")
+          If hsymbol.Kind = ":" Then aEvents.Add("<a class=\"none\" href=\"gambas://Project/help\">" & Mid(hSymbol.Name, 1) & "</a>")
           If hsymbol.Kind = "m" Then aMethod.Add("<a class=\"none\" href=\"gambas://Project/help\">" & hsymbol.Name & "</a>")
           If hSymbol.Kind = "p" Or hsymbol.Kind = "r" Then aProperties.Add("<a class=\"none\" href=\"gambas://Project/help\">" & hsymbol.Name & "</a>")
           If hSymbol.Kind = "C" Then aConst.Add("<b><a class=\"none\" href=\"gambas://Project/help\">" & hsymbol.Name & "</a></b>")

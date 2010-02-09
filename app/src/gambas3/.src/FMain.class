@@ -68,7 +68,7 @@ Public Sub Form_Open()
 
   tvwProject_Select
   'tabProperty_Click
-  btnShowMenu_Click
+  'btnShowMenu_Click
   
   mnuOpenExample.Tag = "."
 
@@ -930,6 +930,10 @@ Public Sub ReadConfig()
   panMessage.Visible = bShow
   mnuStatusBar.Value = bShow
 
+  Me.Menus.Visible = Settings["/ShowMenus", True]
+  btnShowMenu.Visible = Not Me.Menus.Visible
+  
+
   MTheme.InitControl(tvwProject)
 
   'panTabProperty.H = tabProperty.ClientY - 2
@@ -1581,6 +1585,7 @@ Public Sub mnuHideMenu_Click()
 
   Me.Menus.Hide
   btnShowMenu.Show
+  Settings["/ShowMenus"] = Me.Menus.Visible
 
 End
 
@@ -1588,6 +1593,7 @@ Public Sub btnShowMenu_Click()
 
   Me.Menus.Show
   btnShowMenu.Hide
+  Settings["/ShowMenus"] = Me.Menus.Visible
 
 End
 
