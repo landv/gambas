@@ -12,6 +12,7 @@ Public Key As String
 Public Name As String
 Public Authors As New String[]
 Public Type As String
+Public Hiddens As New String[]
 Public Controls As New String[]
 Public Containers As New String[]
 Public MultiContainers As New String[]
@@ -152,6 +153,38 @@ Static Public Sub GetChanges(sKind As String) As String[]
   
 End
 
+Private Sub InsertNew(aCtrl As String[], aInsert As String[])
+  
+  Dim sCtrl As String
+  
+  For Each sCtrl In aInsert
+    If aCtrl.Exist(sCtrl) Then Continue
+    aCtrl.Add(sCtrl)
+  Next
+  
+End
+
+
+Public Sub AddControls(sGroup As String, aCtrl As String[])
+  
+  Dim sCtrl As String
+  
+  If Controls.Count = 0 Or If Controls[Controls.Max] <> ("@" & sGroup) Then 
+    Controls.Add("@" & sGroup)
+  Endif
+  
+  InsertNew(Controls, aCtrl)
+  
+End
+
+Public Sub AddContainers(sGroup As String, aCtrl As String[])
+  
+  AddControls(sGroup, aCtrl)
+  InsertNew(Containers, aCtrl)
+  
+End
+
+
 
 Static Private Sub InitComponent(sFile As String, bUser As Boolean)
   
@@ -251,14 +284,17 @@ Static Private Sub InitComponent(sFile As String, bUser As Boolean)
             .Type = sLig
           Else If sKey = "Group" Then
             sGroup = sLig
+          Else If sKey = "Hidden" Then
+            .Hiddens = Split(sLig)
           Else If sKey = "Control" Or If sKey = "Controls" Then
-            .Controls.Add("@" & sGroup)
-            .Controls.Insert(Split(sLig))
+            .AddControls(sGroup, Split(sLig))
           Else If sKey = "Container" Then
-            .Containers.Insert(Split(sLig))
+            .AddContainers(sGroup, Split(sLig))
           Else If sKey = "MultiContainer" Then
+            .AddContainers(sGroup, Split(sLig))
             .MultiContainers.Insert(Split(sLig))
           Else If sKey = "Virtual" Then
+            .AddControls(sGroup, Split(sLig))
             .Virtuals.Insert(Split(sLig))
           Else If sKey = "Require" Or sKey = "Requires" Then
             .Require = Split(sLig)
@@ -554,20 +590,19 @@ Public Sub Load()
 
   'PRINT "Initializing controls..."
 
-  'IF Key = "gb.qt" THEN
-  If Type = "Form" Then
-    'IF Key = "gb.gtk" THEN
-    '  FOR EACH sClass IN ["Control", "Form"]
-    '    Classes[sClass].InitControl(hForm)
-    '  NEXT
-    'ELSE
-      For Each sClass In ["Control", "Form", "Menu"]
-        If Classes.Exist(sClass) Then
-          Classes[sClass].InitControl()
-        Endif
-      Next
-    'ENDIF
-  Endif
+  ' If Type = "Form" Then
+  '   For Each sClass In ["Control", "Form", "Menu"]
+  '     If Classes.Exist(sClass) Then
+  '       Classes[sClass].InitControl()
+  '     Endif
+  '   Next
+  ' Endif
+
+  For Each sClass In Hiddens
+    If Classes.Exist(sClass) Then
+      Classes[sClass].InitControl()
+    Endif
+  Next
 
   For Each sClass In Controls
     If Left(sClass) = "@" Then Continue

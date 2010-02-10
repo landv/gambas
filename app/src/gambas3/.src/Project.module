@@ -1661,7 +1661,11 @@ Private Sub CompileError(sMsg As String)
       sMsg = "<b>" & sErr & "</b><p>" & Subst(("In class &1 at line &2."), File.Name(sFile), CStr(iLine))
     Endif
     
-    hForm.ShowErrorMessage(sMsg, "make")
+    If hForm Then
+      hForm.ShowErrorMessage(sMsg, "make")
+    Else
+      FMain.ShowError(sMsg, "make")
+    Endif
     
   Endif
 

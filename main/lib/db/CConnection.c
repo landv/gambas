@@ -487,7 +487,7 @@ static char *get_query(char *prefix, CCONNECTION *_object, char *table, int len_
   if (query && len_query > 0)
   {
   	q_add(" ");
-  	if (strncmp(query, "WHERE ", 6))
+  	if (strncasecmp(query, "WHERE ", 6) && strncasecmp(query, "ORDER BY ", 9))
     	q_add("WHERE ");
     q_add_length(query, len_query);
 	}

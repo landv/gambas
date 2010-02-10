@@ -1,1 +1,0 @@
-../../gb.qt/share/gb.form.properties.h

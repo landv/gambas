@@ -20,7 +20,6 @@ SUBDIRS = \
  @corba_dir@ \
  @qt4_dir@ \
  @gtk_dir@ \
- @qt_dir@ \
  @opengl_dir@ \
  @desktop_dir@ \
  @pdf_dir@ \
