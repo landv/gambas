@@ -60,7 +60,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   hMyHints.Height = Me._Height + (2 * Me._Padding)
   
   
-  If Not IsNull(Me.Font) Then draw.Font = Me.Font
+  If Not IsNull(Me.Font) Then Paint.Font = Me.Font
   draw.Font.size = draw.Font.size
  
   If Me._Width = 0 Then 
@@ -72,7 +72,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   If Me._RelativeWidth Then hMyHints.Width = TotalWidth * Me._Width / 100
   If hMyHints.Width > AvailableW Then hMyHints.Width = AvailableW
 
-  fTextHeight = MRTools.PixelsToUnits(draw.RichTextHeight($sText, MRTools.UnitsToPixels(hMyHints.Width)))
+  fTextHeight = MRTools.PixelsToUnits(Paint.RichTextHeight($sText, MRTools.UnitsToPixels(hMyHints.Width)))
   
   If hMyHints.Height < fTextHeight Then hMyHints.Height = fTextHeight + (2 * Me._Padding)
   
