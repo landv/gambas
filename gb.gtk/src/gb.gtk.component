@@ -1,14 +1,10 @@
 [Component]
 Key=gb.gtk
-Name=Graphical GTK+ toolkit component
-Name[fr]=Composant graphique du toolkit GTK+
-Name[pl]=Kontrolki GTK+
-Name[es]=Componente gráfico basado en GTK+
-Name[tr]=GTK+ grafiksel bileşenleri
 Author=Daniel Campos Fernández,Benoît Minisini
-Type=Form
 Implements=Form,EventLoop,ImageIO
 Requires=gb.image
+Type=Form
+Hidden=Control,Form,Menu
 
 [Form]
 Control=Label,TextLabel,Separator,PictureBox,MovieBox,ProgressBar
@@ -17,12 +13,11 @@ Control=ListBox,ComboBox,TextBox,SpinBox,TextArea
 Control=ListView,TreeView,IconView,ColumnView,GridView
 
 [Container]
-Control=HBox,VBox,HPanel,VPanel,HSplit,VSplit,Panel,Frame,TabStrip,ScrollView,DrawingArea
-Container=HBox,VBox,HPanel,VPanel,HSplit,VSplit,Panel,Frame,TabStrip,ScrollView,DrawingArea
+Container=HBox,VBox,HPanel,VPanel,HSplit,VSplit,Panel,Frame,ScrollView,DrawingArea
 MultiContainer=TabStrip
 
 [Special]
-Control=Embedder,TrayIcon,Printer
+Control=Embedder
 Virtual=TrayIcon,Printer
 
 [Change]
