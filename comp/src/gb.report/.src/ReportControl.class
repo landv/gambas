@@ -271,10 +271,10 @@ Public Sub _DrawBefore(Page As Integer, X As Integer, Y As Integer, hControl As 
   
   
 
-  X1 = (x + hControl.RealLeft) * MRTools.ReportZoom
-  Y1 = (y + hControl.RealTop) * MRTools.ReportZoom
-  X2 = (x + hControl.RealLeft + hControl.RealWidth - 1) * MRTools.ReportZoom
-  Y2 = (y + hControl.RealTop + hControl.RealHeight - 1) * MRTools.ReportZoom
+  X1 = (x + hControl.RealLeft) ' * MRTools.ReportZoom
+  Y1 = (y + hControl.RealTop) '* MRTools.ReportZoom
+  X2 = (x + hControl.RealLeft + hControl.RealWidth - 1) '* MRTools.ReportZoom
+  Y2 = (y + hControl.RealTop + hControl.RealHeight - 1) ' * MRTools.ReportZoom
 
   If Report.Debug Then
 
@@ -319,10 +319,10 @@ Public Sub _DrawAfter(Page As Integer, X As Integer, Y As Integer, hControl As T
   
   Dim X1, Y1, X2, Y2 As Integer
 
-  X1 = (x + hControl.RealLeft) * MRTools.ReportZoom
-  Y1 = (y + hControl.RealTop) * MRTools.ReportZoom
-  X2 = (x + hControl.RealLeft + hControl.RealWidth - 1) * MRTools.ReportZoom
-  Y2 = (y + hControl.RealTop + hControl.RealHeight - 1) * MRTools.ReportZoom
+  X1 = (x + hControl.RealLeft) ' * MRTools.ReportZoom
+  Y1 = (y + hControl.RealTop) ' * MRTools.ReportZoom
+  X2 = (x + hControl.RealLeft + hControl.RealWidth - 1) ' * MRTools.ReportZoom
+  Y2 = (y + hControl.RealTop + hControl.RealHeight - 1) ' * MRTools.ReportZoom
 
     If Me.LineStyle <> Line.None Then 
       Paint.LineWidth = $iLineWidth

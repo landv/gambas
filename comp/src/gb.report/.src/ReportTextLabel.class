@@ -1,94 +1,95 @@
 ' Gambas class file
 
-EXPORT
-INHERITS ReportControl
-PRIVATE $bWordWrap AS Boolean
-PROPERTY WordWrap AS Boolean
-PRIVATE $sText AS String
-PRIVATE $iAlignment AS Integer '= Align.Center
-PRIVATE $fZoom AS Float
-PROPERTY Text AS String
+Export
+Inherits ReportControl
+Private $bWordWrap As Boolean
+Property WordWrap As Boolean
+Private $sText As String
+Private $iAlignment As Integer '= Align.Center
+Private $fZoom As Float
+Property Text As String
 
-PROPERTY Alignment AS Integer
+Property Alignment As Integer
 
 
-PRIVATE FUNCTION WordWrap_Read() AS Boolean
+Private Function WordWrap_Read() As Boolean
 
-  RETURN $bWordWrap
+  Return $bWordWrap
 
-END
+End
 
-PRIVATE SUB WordWrap_Write(Value AS Boolean)
+Private Sub WordWrap_Write(Value As Boolean)
 
   $bWordWrap = Value
 
-END
+End
 
 
-PRIVATE FUNCTION Text_Read() AS String
+Private Function Text_Read() As String
 
-  RETURN $sText
+  Return $sText
 
-END
+End
 
-PRIVATE SUB Text_Write(Value AS String)
+Private Sub Text_Write(Value As String)
 
   $sText = Value
 
-END
+End
 
-PRIVATE FUNCTION Alignment_Read() AS Integer
+Private Function Alignment_Read() As Integer
 
-  RETURN $iAlignment
+  Return $iAlignment
 
-END
+End
 
-PRIVATE SUB Alignment_Write(Value AS Integer)
+Private Sub Alignment_Write(Value As Integer)
 
   $iAlignment = Value
 
-END
+End
 
 
-PUBLIC SUB _GetSizeHints(AvailableW AS Float, AvailableH AS Float, TotalWidth AS Float, TotalHeight AS Float) AS TSizeHint
+Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float) As TSizeHint
 
-  DIM hMyHints AS NEW TSizeHint
-  DIM fTextHeight AS Float
-  DIM fTextWidth AS Float
+  Dim hMyHints As New TSizeHint
+  Dim fTextHeight As Float
+  Dim fTextWidth As Float
   $fZoom = 1.0
   
-  hMyHints.Height = ME._Height + (2 * ME._Padding)
+  hMyHints.Height = Me._Height + (2 * Me._Padding)
   
   
-  IF NOT IsNull(ME.Font) THEN draw.Font = ME.Font
+  If Not IsNull(Me.Font) Then draw.Font = Me.Font
   draw.Font.size = draw.Font.size
  
-  IF ME._Width = 0 THEN 
+  If Me._Width = 0 Then 
     hMyHints.Width = AvailableW
-  ELSE  
-    hMyHints.Width = ME._Width 
-  ENDIF
+  Else  
+    hMyHints.Width = Me._Width 
+  Endif
 
-  IF ME._RelativeWidth THEN hMyHints.Width = TotalWidth * ME._Width / 100
-  IF hMyHints.Width > AvailableW THEN hMyHints.Width = AvailableW
+  If Me._RelativeWidth Then hMyHints.Width = TotalWidth * Me._Width / 100
+  If hMyHints.Width > AvailableW Then hMyHints.Width = AvailableW
 
   fTextHeight = MRTools.PixelsToUnits(draw.RichTextHeight($sText, MRTools.UnitsToPixels(hMyHints.Width)))
   
-  IF hMyHints.Height < fTextHeight THEN hMyHints.Height = fTextHeight + (2 * ME._Padding)
+  If hMyHints.Height < fTextHeight Then hMyHints.Height = fTextHeight + (2 * Me._Padding)
   
-  RETURN hMyHints
+  Return hMyHints
   
-END
+End
 
-PUBLIC SUB _Draw(Page AS Integer, X AS Integer, Y AS Integer, hControl AS TControl, VirtualId AS Integer)
-  $fZoom = MRTools.ReportZoom
-  Draw.ForeColor = ME.ForeColor
+Public Sub _Draw(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
+  '$fZoom = MRTools.ReportZoom
+  Paint.Brush = Paint.Color(Me.ForeColor)
   
   'Set the Font if it is initialized
-  IF NOT IsNull(ME.Font) THEN Draw.Font = ME.Font
-  draw.Font.size = draw.Font.size * MRTools.ReportZoom '* MRTools.ResolutionAffichage
+  If Not IsNull(Me.Font) Then Paint.Font = Me.Font
+  'draw.Font.size = draw.Font.size * MRTools.ReportZoom '* MRTools.ResolutionAffichage
   
-  Draw.Clip((x + hControl.RealLeft + MRTools.UnitsToPixels(ME.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(ME.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
-    Draw.RichText($sText, (x + hControl.RealLeft + MRTools.UnitsToPixels(ME.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(ME.Padding)) * MRTools.ReportZoom, (hControl.RealWidth - 2 * MRTools.UnitsToPixels(ME.Padding)) * MRTools.ReportZoom, (hControl.RealHeight - 2 * MRTools.UnitsToPixels(ME.Padding)) * MRTools.ReportZoom) ', $iAlignment)
-  Draw.Clip.Enabled = FALSE
-END
+  'Draw.Clip((x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
+    Paint.Text($sText, (x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)), (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)), (hControl.RealWidth - 2 * MRTools.UnitsToPixels(Me.Padding)), (hControl.RealHeight - 2 * MRTools.UnitsToPixels(Me.Padding))) ', $iAlignment)
+    'Draw.RichText($sText, (x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (hControl.RealWidth - 2 * MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (hControl.RealHeight - 2 * MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom) ', $iAlignment)
+  'Draw.Clip.Enabled = False
+End

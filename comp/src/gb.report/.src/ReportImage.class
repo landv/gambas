@@ -53,10 +53,16 @@ End
 
 Public Sub _Draw(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
     
-    $hPic = $hPic.Stretch(hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
-    Paint.Brush = Paint.Image($hpic, 0, 0)
+    Dim ix, iy As Integer
     
-    Paint.Rectangle((x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
+    ix = x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)
+    iy = y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)
+    
+    $hPic = $hPic.Stretch(hControl.RealWidth, hControl.RealHeight)
+    
+    Paint.Brush = Paint.Image($hpic, ix, iy)
+    Paint.Rectangle((x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)), (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)), hControl.RealWidth, hControl.RealHeight)
+    
     Paint.Fill
     
     'Draw.Picture($hPic, (x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)

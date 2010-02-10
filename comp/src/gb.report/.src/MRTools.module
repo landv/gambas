@@ -1,52 +1,52 @@
 ' Gambas module file
 
-PUBLIC PageCount AS Integer = 0
-PUBLIC ResolutionAffichage AS Float '= 72
-PUBLIC ReportZoom AS Float '= 1
-PUBLIC ReportResolution AS Float '= 72
+Public PageCount As Integer = 0
+Public ResolutionAffichage As Float '= 72
+'Public ReportZoom As Float '= 1
+Public ReportResolution As Float '= 72
 
 
-PUBLIC FUNCTION UnitsToPixels(Value AS Float) AS Integer
+Public Function UnitsToPixels(Value As Float) As Integer
   
-  DIM f AS Float
+  Dim f As Float
   
   f = Units.GetFactorUnitToInch("cm") * ReportResolution
   
-  RETURN Value * f 
-END
+  Return Value * f 
+End
 
-PUBLIC FUNCTION PixelsToUnits(Value AS Integer) AS Float
-  DIM f AS Float
+Public Function PixelsToUnits(Value As Integer) As Float
+  Dim f As Float
   
   f = Units.GetFactorUnitToInch("cm") * ReportResolution
     
-  RETURN (Value) / f
-END
-PUBLIC FUNCTION ScanValue(sText AS String) AS TSizeParse
+  Return (Value) / f
+End
+Public Function ScanValue(sText As String) As TSizeParse
   
-  DIM i AS Integer
-  DIM s AS String
-  DIM sVal AS String 
-  DIM sUnit AS String
-  DIM hTSP AS NEW TSizeParse
-  IF NOT sText THEN sText = "0 px"
+  Dim i As Integer
+  Dim s As String
+  Dim sVal As String 
+  Dim sUnit As String
+  Dim hTSP As New TSizeParse
+  If Not sText Then sText = "0 px"
   
-  FOR i = 1 TO Len(sText)
+  For i = 1 To Len(sText)
     s = Mid(sText, i, 1)
-    IF IsDigit(s) OR s = "." THEN 
+    If IsDigit(s) Or s = "." Then 
       sVal &= s
-      CONTINUE
-    ENDIF 
-    IF IsLetter(s) OR s = "%" THEN 
+      Continue
+    Endif 
+    If IsLetter(s) Or s = "%" Then 
       sUnit &= s
-    ENDIF
-  NEXT 
+    Endif
+  Next 
   
   hTSP.Value = CFloat(Trim(sVal))
 
   hTsp.Unit = sUnit
-  RETURN hTSP
+  Return hTSP
   
-  END
+  End
 
 

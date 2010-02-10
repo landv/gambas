@@ -21,7 +21,7 @@ Dim i As Integer
 Dim fZoom As Float = 0.1
 'da.Resize(MRTools.UnitsToPixels($hReport.Width) * fZoom, MRTools.UnitsToPixels($hReport.Height) * fZoom)
 $hReport.Resolution = Desktop.Resolution
-Draw.Begin(da)
+paint.Begin(da)
 $hReport.Zoom = fZoom
 'MRTools.ReportZoom = fZoom
 $hReport.layout()
@@ -33,6 +33,7 @@ For i = 1 To $hReport.count
   
   da = New DrawingArea(pan) As "daThumbs"
   da.Resize(MRTools.UnitsToPixels($hReport.Width) * fZoom, MRTools.UnitsToPixels($hReport.Height) * fZoom)
+  da.Painted = True
   pan.Height = da.Height + 10
   da.Move((pan.Width - da.w) / 2, 5)
   da.Show
@@ -47,7 +48,7 @@ For i = 1 To $hReport.count
   PageLabel.Border = Border.Plain
   draw.Begin(da)
     $hReport.draw(i)
-  draw.end
+  Paint.End
   'da.Tag = i
   'colDa.Add(da)
 Next  
@@ -71,10 +72,11 @@ Public Sub ListContainer1_Click()
   darep.Resize(MRTools.UnitsToPixels($hReport.Width) * fZoom, MRTools.UnitsToPixels($hReport.Height) * fzoom)
   darep.Cached = True
   darep.BackGround = color.White
+  darep.Painted = True
   $hReport.Zoom = fZoom
-  draw.Begin(darep)
+  Paint.Begin(darep)
     $hReport.Draw(ListContainer1.Index + 1)
-  draw.end
+  Paint.end
   txtCurPage.Text = ListContainer1.Index + 1
 
 End

@@ -13,7 +13,7 @@ Private iCurPage As Integer = 0
 Private $iCount As Integer = -1
 Private $iResolution As Integer = 72
 Private $bLayoutIsDirty As Boolean = True
-Private $fZoom As Float = 1.0
+Private $fScale As Float = 1.0
 Private $iOrientation As Integer = Portrait
 Private $sSize As String = "A4"
 Private $hReportTControl As New TControl
@@ -23,7 +23,7 @@ Property Read count As Integer
 Property Height As String
 Property Width As String
 Property Resolution As Integer
-Property Zoom As Float
+Property Scale As Float
 Property Orientation As Integer
 Property Size As String
 
@@ -50,7 +50,7 @@ Public Sub Layout()
   If Not $bLayoutIsDirty Then Return 
   MRTools.ReportResolution = $iResolution
   MRTools.ResolutionAffichage = hprinter.Resolution / $iResolution
-  MRTools.ReportZoom = $fZoom
+  'MRTools.ReportZoom = $fZoom
   SetReportSize()
   $hReportTControl.ctrl = Me
   $iCount = $hReportTControl._SetGeometry(0, 0, Me.Width, Me.Height) + 1
@@ -68,6 +68,7 @@ Public Sub Draw(Page As Integer)
       Error.Raise("This page does not exist")
     Endif
     Dec page
+    Paint.Scale($fScale, $fScale)
     Me._DrawBefore(Page, 0, 0, $hReportTControl, -1)
     Me._Draw(Page, 0, 0, $hReportTControl, -1)
     Me._DrawAfter(Page, 0, 0, $hReportTControl, -1)
@@ -137,22 +138,22 @@ Private Sub Resolution_Write(Value As Integer)
 
 End
 
-Private Function Zoom_Read() As Float
+Private Function Scale_Read() As Float
 
-  Return $fZoom
+  Return $fScale
 
 End
 
-Private Sub Zoom_Write(Value As Float)
+Private Sub Scale_Write(Value As Float)
 
-  $fZoom = Value
-  MRTools.ReportZoom = $fZoom
+  $fScale = Value
+  'MRTools.ReportZoom = $fZoom
 End
 
 Public Sub Mosaic(Range As String, Spacing As String)
 
   Dim $fTempZ As Float
-  $fTempZ = $fZoom
+  '$fTempZ = $fZoom
   
   
   
@@ -238,7 +239,7 @@ Public Sub Clear()
   $iCount = -1
   $iResolution = 72
   $bLayoutIsDirty = True
-  $fZoom = 1.0
+  $fScale = 1.0
   $iOrientation = Portrait
   $sSize = "A4"
 End

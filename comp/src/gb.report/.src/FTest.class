@@ -4,8 +4,8 @@
 'PRIVATE Pdf AS NEW PdfDocument 
 Private hPic As Picture
 Private fZoom As Integer
-Private hCon As New connection
-Private hResult As Result
+'Private hCon As New connection
+'Private hResult As Result
 Private hPrinter As New Printer
 Private $aFirstNames As String[] = ["Leo", "Mario", "Nathan", "Thomas", "Fabien", "Laurent", "Benoit", "Charles", "Rob", "Ron"]
 Private $aBornDates As String[] = ["1/12/1978", "24/10/1983", "18/04/1969", "15/05/1953", "12/12/1974", "16/11/1968", "30/06/1976", "3/11/1986", "05/08/1982", "23/10/1953"]
@@ -295,7 +295,8 @@ Public Sub SpinBox1_Change()
   
     'Report.Calculate
     'Message(Report.count) 'draw.Scale(0.1, 0.1)
-    MRTools.ReportZoom = zoomFactor
+    report.Scale = zoomFactor
+    'MRTools.ReportZoom = zoomFactor
     'Draw.Scale(zoomFactor, zoomFactor)
     Report.Draw(SpinBox1.Value)
     'Draw.Picture(hPic, 0, 0)
@@ -412,25 +413,25 @@ End
 ' END
 
 
-Public Sub ReportTable_Data(Row As Integer, Column As Integer)
-  Dim hlbl As ReportLabel
-  Dim hPic As ReportImage
-  If column = 1 Then 
-  hPIc = New ReportImage(Last.Data)
-  hPic.Path = "printer1.png"
-  hPic.Height = "1 cm"
-  Endif
-  hlbl = New ReportLabel(Last.data)
-  
-  If Row Mod 2 > 0 Then 
-    
-    Last.Data.FillColor = &hC0C0FF
-    Last.dATA.FillStyle = fILL.Solid
-  Endif
-  hResult.MoveTo(Row)  
-  hlbl.Text = hResult[Last.Columns[column].Text]
-  
-End
+' Public Sub ReportTable_Data(Row As Integer, Column As Integer)
+'   Dim hlbl As ReportLabel
+'   Dim hPic As ReportImage
+'   If column = 1 Then 
+'   hPIc = New ReportImage(Last.Data)
+'   hPic.Path = "printer1.png"
+'   hPic.Height = "1 cm"
+'   Endif
+'   hlbl = New ReportLabel(Last.data)
+'   
+'   If Row Mod 2 > 0 Then 
+'     
+'     Last.Data.FillColor = &hC0C0FF
+'     Last.dATA.FillStyle = fILL.Solid
+'   Endif
+'   hResult.MoveTo(Row)  
+'   hlbl.Text = hResult[Last.Columns[column].Text]
+'   
+' End
 
 Public Sub Test3()
   
@@ -579,109 +580,109 @@ Public Sub TField_Data()
   
 End
 
-Private Sub Test5()
-  
-  Dim hrep As ReportCloner
-  Dim hlab As ReportLabel
-  Dim hfi As ReportField
-  Dim hHb As ReportHBox
-  Dim vCon As ReportVBox
-  Dim spe As ReportSpecialField
-  
-  report.width = "21 cm"
-  report.Height = "29.7 cm"
-  report.LineStyle = line.Solid
-  Report.Padding = "1 cm"
-  report.Resolution = Desktop.Resolution
-  'report.Debug = TRUE
-  hLab = New ReportLabel(Report)
-  hLab.Text = "REPETOR TEST"
-  hLab.Height = "2.5 cm"
-  
-  hLab.Alignment = Align.Center
-  hLab.Font.Size = 25
-  hLab.LineStyle = Line.Solid
-  hLab.FillColor = Color.LightGray
-  hLab.FillStyle = fill.Solid
-  
-  vcon = New ReportVBox(Report)
-  vCon.Height = "1 cm"
-  
-  hrep = New ReportCloner(report)
-  hRep.Expand = True
-  hRep.Count = hResult.Count
-  hRep.Tag = "repetor"
-  hRep.Spacing = "0.2 cm"
-  
-  vCon = New ReportVBox(hrep)
-  vCon.Height = "1.5 cm"
-  vCon.Padding = "0.2 cm"
-  vCon.LineStyle = line.Solid
+' Private Sub Test5()
+'   
+'   Dim hrep As ReportCloner
+'   Dim hlab As ReportLabel
+'   Dim hfi As ReportField
+'   Dim hHb As ReportHBox
+'   Dim vCon As ReportVBox
+'   Dim spe As ReportSpecialField
+'   
+'   report.width = "21 cm"
+'   report.Height = "29.7 cm"
+'   report.LineStyle = line.Solid
+'   Report.Padding = "1 cm"
+'   report.Resolution = Desktop.Resolution
+'   'report.Debug = TRUE
+'   hLab = New ReportLabel(Report)
+'   hLab.Text = "REPETOR TEST"
+'   hLab.Height = "2.5 cm"
+'   
+'   hLab.Alignment = Align.Center
+'   hLab.Font.Size = 25
+'   hLab.LineStyle = Line.Solid
+'   hLab.FillColor = Color.LightGray
+'   hLab.FillStyle = fill.Solid
+'   
+'   vcon = New ReportVBox(Report)
+'   vCon.Height = "1 cm"
+'   
+'   hrep = New ReportCloner(report)
+'   hRep.Expand = True
+'   hRep.Count = hResult.Count
+'   hRep.Tag = "repetor"
+'   hRep.Spacing = "0.2 cm"
+'   
+'   vCon = New ReportVBox(hrep)
+'   vCon.Height = "1.5 cm"
+'   vCon.Padding = "0.2 cm"
+'   vCon.LineStyle = line.Solid
+' 
+'   vCon.Tag = "vcon"
+'   hHb = New ReportHBox(vcon)
+'   
+'   hHb.Height = "0.5 cm"
+'   hHb.Tag = "hHb"
+'   hlab = New ReportLabel(hHb)
+'   hLab.Text = "Name :"
+'   'hLab.Width = "2 cm"
+'   
+'   hLab.Font.Bold = True
+'   hlab.Tag = "hLab"
+'   hfi = New ReportField(hHb) As "FieldName"
+'   hfi.tag = "FieldName"
+'   hFi.LineStyle = Line.Solid
+'   'hFi.Padding = "0.1 cm"
+'   hFi.Width = "4 cm"
+'   hFi.Font.Bold = True
+' 
+'   hHb = New ReportHBox(vCon)
+'   hHb.Height = "0.5 cm"
+'   
+'   hlab = New ReportLabel(hHb)
+'   hLab.Text = "Firstname :"
+'   'hLab.Width = "2 cm"
+'   hLab.ForeColor = color.Gray
+'   hfi = New ReportField(hHb) As "FieldFirstName"
+'   hfi.Tag = "FieldFirstName"
+'   hFi.Width = "2 cm"
+'   hFi.Font.Italic = True
+'   hFi.ForeColor = color.Gray
+'   ' hHb = NEW ReportHBox(hrep)
+'   ' hHb.Height = "1 cm"
+'   
+'   ' vcon = NEW ReportVBox(Report)
+'   ' vCon.Height = "1 cm"
+'   
+'   spe = New ReportSpecialField(Report)
+'   
+'   spe.Text = "$PAGE/$NPAGE"
+'   spe.Height = "1 cm"
+'   spe.Alignment = align.Center
+'   
+' End
 
-  vCon.Tag = "vcon"
-  hHb = New ReportHBox(vcon)
-  
-  hHb.Height = "0.5 cm"
-  hHb.Tag = "hHb"
-  hlab = New ReportLabel(hHb)
-  hLab.Text = "Name :"
-  'hLab.Width = "2 cm"
-  
-  hLab.Font.Bold = True
-  hlab.Tag = "hLab"
-  hfi = New ReportField(hHb) As "FieldName"
-  hfi.tag = "FieldName"
-  hFi.LineStyle = Line.Solid
-  'hFi.Padding = "0.1 cm"
-  hFi.Width = "4 cm"
-  hFi.Font.Bold = True
+' Public Sub FieldName_Data()
+' 'PRINT Index
+'   hResult.MoveTo(Last.Index - 1)
+'   Last.Data = hResult!name
+'   If Index Mod 2 > 0 Then 
+'     Last.parent.parent.fillcolor = color.Yellow
+'     Last.parent.parent.fillstyle = fill.Solid
+'   Else 
+'     Last.parent.parent.fillstyle = fill.none
+'   Endif
+'   
+'   Catch
+' End
 
-  hHb = New ReportHBox(vCon)
-  hHb.Height = "0.5 cm"
-  
-  hlab = New ReportLabel(hHb)
-  hLab.Text = "Firstname :"
-  'hLab.Width = "2 cm"
-  hLab.ForeColor = color.Gray
-  hfi = New ReportField(hHb) As "FieldFirstName"
-  hfi.Tag = "FieldFirstName"
-  hFi.Width = "2 cm"
-  hFi.Font.Italic = True
-  hFi.ForeColor = color.Gray
-  ' hHb = NEW ReportHBox(hrep)
-  ' hHb.Height = "1 cm"
-  
-  ' vcon = NEW ReportVBox(Report)
-  ' vCon.Height = "1 cm"
-  
-  spe = New ReportSpecialField(Report)
-  
-  spe.Text = "$PAGE/$NPAGE"
-  spe.Height = "1 cm"
-  spe.Alignment = align.Center
-  
-End
-
-Public Sub FieldName_Data()
-'PRINT Index
-  hResult.MoveTo(Last.Index - 1)
-  Last.Data = hResult!name
-  If Index Mod 2 > 0 Then 
-    Last.parent.parent.fillcolor = color.Yellow
-    Last.parent.parent.fillstyle = fill.Solid
-  Else 
-    Last.parent.parent.fillstyle = fill.none
-  Endif
-  
-  Catch
-End
-
-Public Sub FieldFirstName_Data()
-  
-  hResult.MoveTo(Last.Index - 1)
-  Last.Data = hResult!firstname
-  Catch
-End
+' Public Sub FieldFirstName_Data()
+'   
+'   hResult.MoveTo(Last.Index - 1)
+'   Last.Data = hResult!firstname
+'   Catch
+' End
 
 Public Sub Button1_Click()
 
@@ -703,7 +704,7 @@ Dim hSField As New ReportSpecialField   'A variable for ReportSpecialField
 Report.Resolution = Desktop.Resolution  'Resolution to show at screen
 Report.Padding = "2 cm"                 'Margins
 Report.Spacing = "2 cm"
-Report.Zoom = 1                         'Zoom
+'Report.Zoom = 1                         'Zoom
 'report.DEBUG = TRUE
 
 '* Add a Label to Make the title

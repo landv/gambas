@@ -78,10 +78,10 @@ Public Sub _Draw(Page As Integer, X As Integer, Y As Integer, hControl As TContr
     'Draw.ForeColor = Me.ForeColor
     Paint.Brush = Paint.Color(Me.ForeColor)
     If Not IsNull(Me.Font) Then Paint.Font = Me.Font
-    Paint.Font.size = Paint.Font.size * MRTools.ReportZoom '* MRTools.ResolutionAffichage
+    'Paint.Font.size = Paint.Font.size * MRTools.ReportZoom '* MRTools.ResolutionAffichage
     'draw.Clip((x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
     'Draw.Text(DecodeText($sText, Page + 1), (x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom, $iAlignment)
-    Paint.Text(DecodeText($sText, Page + 1), (x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom, $iAlignment)
+    Paint.Text(DecodeText($sText, Page + 1), (x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)), (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)), hControl.RealWidth, hControl.RealHeight, $iAlignment)
     Paint.Fill
     'Draw.Clip.Enabled = False
 End

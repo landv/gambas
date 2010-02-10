@@ -7,7 +7,7 @@
   Padding = 5
   { HBox2 HBox
     MoveScaled(1,0,76,6)
-    Spacing = 5
+    Spacing = True
     { ToolButton1 ToolButton
       MoveScaled(1,0,6,6)
       ToolTip = ("Printer Setting")
@@ -55,9 +55,10 @@
     { ScrollView2 ScrollView
       MoveScaled(23,1,52,60)
       Expand = True
-      Spacing = 5
+      Spacing = True
       { darep DrawingArea
         MoveScaled(1,1,50,61)
+        Painted = True
       }
     }
   }
