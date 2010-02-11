@@ -242,10 +242,12 @@ Public Sub Clear()
   $fScale = 1.0
   $iOrientation = Portrait
   $sSize = "A4"
+  Me.Spacing = "0 cm"
+  Me.Padding = "0 cm"
 End
-
-Public Function Preview()
-  
-  frmPreview.Run(Me)
-  
-End
+' 
+' Public Function Preview()
+'   
+'   frmPreview.Run(Me)
+'   
+' End

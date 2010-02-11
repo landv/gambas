@@ -53,17 +53,17 @@ Public Function ScanValue(sText As String) As TSizeParse
   
   End
 
-Public Sub GetLineStyle(iStyle As Integer) As Float[]
+Public Sub GetBorder(iStyle As Integer) As Float[]
   
   Select Case iStyle
   
-    Case Line.Dash
+    Case ReportBorder.Dash
       Return Dash
-    Case Line.Dot
+    Case ReportBorder.Dot
       Return Dot
-    Case Line.DashDot
+    Case ReportBorder.DashDot
       Return DashDot
-    Case Line.DashDotDot
+    Case ReportBorder.DashDotDot
       Return DashDotDot
   End Select
   

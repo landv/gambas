@@ -1,7 +1,7 @@
 ' Gambas class file
 
 Export
-Inherits ReportControl
+Inherits ReportFrame
 
 Private $sText As String = ""
 Private $iAlignment As Integer '= Align.Center
@@ -99,8 +99,8 @@ Public Sub _Draw(Page As Integer, X As Integer, Y As Integer, hControl As TContr
   $iIndex = VirtualId
   Raise Data 
     
-  'Draw.ForeColor = Me.ForeColor
-  Paint.Brush = Paint.Color(Me.ForeColor)
+  'Draw.Foreground = Me.Foreground
+  Paint.Brush = Paint.Color(Me.BorderColor)
   'Set the Font if it is initialized
   If Not IsNull(Me.Font) Then Paint.Font = Me.Font
   Paint.Font.size = Paint.Font.size  '* MRTools.ResolutionAffichage

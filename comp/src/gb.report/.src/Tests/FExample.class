@@ -1,0 +1,443 @@
+' Gambas class file
+Private $sCurDemo As String
+
+Private $aFirstNames As String[] = ["Leo", "Mario", "Nathan", "Thomas", "Fabien", "Laurent", "Benoit", "Charles", "Rob", "Ron"]
+Private $aBornDates As String[] = ["1/12/1978", "24/10/1983", "18/04/1969", "15/05/1953", "12/12/1974", "16/11/1968", "30/06/1976", "3/11/1986", "05/08/1982", "23/10/1953"]
+
+Public Sub rbDemo_Click()
+  Report.Clear
+  $sCurDemo = "Test" & Last.Tag
+  Object.Call(Me, $sCurDemo)
+  DrawingArea1.Width = UnitsToPixels(Report._Width)
+  DrawingArea1.Height = UnitsToPixels(Report._Height)
+
+  DrawingArea1.Refresh
+End
+
+Public Sub Test1()
+  
+  Dim hHBox As ReportHBox
+  Dim lblcoucou As ReportLabel
+
+  Report.Padding = "2 cm"
+  hHBox = New ReportHBox(Report)
+  hHBox.Border = ReportBorder.Solid
+  hHBox.BorderWidth = 1
+  hHBox.Height = "30 mm"
+  
+  hHBox = New ReportHBox(Report)
+  hHBox.Border = ReportBorder.Solid
+  hHBox.BorderWidth = 1
+  hHBox.Height = "30 %"
+  
+  
+  hHBox = New ReportHBox(Report)
+  hHBox.Border = ReportBorder.Solid
+  hHBox.BorderWidth = 6
+  hHBox.Expand = True
+  hHBox.Border = ReportBorder.Solid
+  
+  lblcoucou = New ReportLabel(hHBox)
+  lblcoucou.Text = "coucou"
+  lblcoucou.Color = Color.Yellow
+  lblcoucou.BorderColor = Color.Red
+  lblcoucou.Style = ReportStyle.Solid
+  lblcoucou.Font.Size = 15
+  lblcoucou.Expand = True
+  lblcoucou.Alignment = Align.Center
+  
+End
+
+Public Sub Test2()
+  
+  Dim hHBox As ReportHBox
+  Dim hCloner As ReportCloner
+  
+  Report.Padding = "2cm"
+  hCloner = New ReportCloner(Report)
+  hCloner.Expand = True
+  hHBox = New ReportHBox(hCloner)
+  
+  hHBox.Height = "2cm"
+  hHBox.Border = ReportBorder.Solid
+  
+  hCloner.Count = 3
+  
+  
+End
+
+
+Public Sub Test3()
+  
+  
+Dim hLab As ReportLabel                 ''A variable for ReportLabel
+Dim hHBox As ReportHBox                 ''A variable for ReportHBox
+Dim hVBox As ReportVBox                 ''A variable for ReportVBox
+Dim hCloner As ReportCloner             ''A variable for ReportCloner
+Dim hField As New ReportField           ''A variable for ReportField
+Dim hSField As New ReportSpecialField   ''A variable for ReportSpecialField
+Dim hLine As ReportLine
+Report.Padding = "2 cm"                 'Margins
+Report.Spacing = "2 cm"
+
+'* Add a Label to Make the title
+hLab = New ReportLabel(Report)
+hLab.Text = "MY FRIENDS FIRST NAME"     'Set the text
+hLab.Font = Font["Arial,+8,"]           'Set The Font
+hLab.Alignment = Align.Center           'Set The aligment
+hLab.Border = ReportBorder.Solid
+hLab.Color = Color.LightGray
+hLab.Style = ReportStyle.Solid
+
+'* Add a Cloner to list what i want
+hCloner = New ReportCloner(Report)
+'hCloner.Padding = "3 mm"                'Set the space arround the component
+hCloner.Spacing = "3 mm"                'Set the space between the children
+hCloner.Expand = True                   'Allow the Cloner to take all it's needed space
+
+'* Put some components in the cloner
+
+'* A VBox to contain the whole element information
+hVBox = New ReportVBox(hCloner)
+'hVBox.Height = "2 cm"                   'Force the height of the hBox
+hVBox.Spacing = "2 mm"
+hVBox.Padding = "1 mm"
+hVBox.Border = ReportBorder.None
+hVBox.Autoresize = True
+'* An HBox to arrange the components horizontaly (for firstnames)
+hHBox = New ReportHBox(hVBox)
+hHBox.Height = "0.5 cm"                   'Force the height of the hBox
+hHBox.Spacing = "2 mm"
+
+
+'* A Label in the HBox
+hLab = New ReportLabel(hHBox)
+hlab.Text = "FirstName:"                'Set the Label Text
+hLab.Font.Bold = True                   'Set the font bold
+'hlab.Width = "20 %"
+
+'* A Field in the HBox
+hField = New ReportField(hHBox) As "MyFieldFirstName"         'An handle is needed to get the datas
+hField.Font.Italic = True               'Set the Field font italic
+hField.Expand = True                    'Allow the Field to take all the space 
+
+'* An HBox to arrange the components horizontaly (for BornDates)
+hHBox = New ReportHBox(hVBox)
+hHBox.Height = "0.5 cm"                   'Force the height of the hBox
+hHBox.Spacing = "2 mm"
+
+'* A Label in the HBox
+hLab = New ReportLabel(hHBox)
+hlab.Text = "BornDate:"                'Set the Label Text
+hLab.Font.Bold = True                   'Set the font bold
+
+'* A Field in the HBox
+hField = New ReportField(hHBox) As "MyFieldBornDate"         'An handle is needed to get the datas
+hField.Font.Italic = True               'Set the Field font italic
+hField.Expand = True                    'Allow the Field to take all the space 
+
+hLine = New ReportLine(hVBox)
+hLine.LineStyle = Line.Solid
+
+
+'* Add a SpecialField to show the page number
+hSField = New ReportSpecialField(Report)
+hSField.BorderColor = color.Gray          'Set the TextColor
+hSField.Alignment = Align.Right         'Set the text alignment to the right
+hSField.Text = "Page $PAGE/$NPAGE"      'Set the text containing macro keywords
+
+
+hCloner.Count = $aFirstNames.Count      'Set the number of clone to make
+'frmPreview.Run(report)
+  
+End
+
+
+Public Sub MyFieldFirstName_Data()
+  
+  Last.Data = $aFirstNames[Last.Index - 1]
+  
+End
+
+Public Sub MyFieldBornDate_Data()
+  
+  Last.Data = $aBornDates[Last.Index - 1]
+  
+End
+
+
+
+
+
+
+
+Public Sub DrawingArea1_Draw()
+  
+
+   Report.Draw(1)
+
+End
+
+
+Public Function UnitsToPixels(Value As Float) As Integer
+  
+  Dim f As Float
+  
+  f = Units.GetFactorUnitToInch("cm") * Report.Resolution
+  
+  Return Value * f 
+End
+
+Public Sub Form_Open()
+
+  
+
+End
+
+Public Sub Test4()
+  'DIM hReport 
+  
+  Dim hCont As ReportHBox
+  Dim vCont As ReportVBox
+  Dim txt As ReportLabel
+  Dim spetxt As ReportSpecialField
+  Dim img As ReportFrame
+  Dim i, j As Integer
+  Dim hCont2 As ReportContainer
+  Dim vRef As ReportVBox
+  Dim vDes As ReportVBox
+  Dim vPU As ReportVBox
+  Dim vQt As ReportVBox
+  Dim vTot As ReportVBox
+  Dim fPrix As Float
+  Dim qte As Integer
+  
+  'hc = NEW Report(NULL)
+  'Marges
+  
+
+  
+  Report.Resolution = Desktop.Resolution
+  report.size = "A4"
+  report.orientation = report.Portrait
+  'Report.Units = Units.cm 
+  Report.Padding = "1 cm"
+  Object.Attach(report, Me, "Report")
+  Report.Spacing = "0.2 cm"
+  Report.Border = ReportBorder.Solid
+  Report.Tag = "Report"
+  'Entete
+    
+  hCont = New ReportHBox(Report)
+  hCont.Height = "3 cm"
+  img = New ReportFrame(hCont)
+  img.Image = Image.Load("new-logo.png")
+  img.Width = "3 cm"
+  img.Style = ReportStyle.Image
+  'img.Height = "3 cm"
+  img.Tag = "Image"
+  
+  txt = New ReportLabel(hcont)
+  txt.Text = "Gambas Facture"
+  txt.Alignment = Align.Center
+  txt.Font = Font["32"]
+  txt.Expand = True
+  txt.Tag = "Titre"
+  
+  hCont = New ReportHBox(Report)
+  hCont.Height = "5 cm"
+  ' 
+  vCont = New ReportVBox(hCont)
+  vCont.Expand = True
+  vCont = New ReportVBox(hCont)
+  vCont.Width = "10 cm"
+  vCont.Tag = "Container adresse"
+  
+  txt = New ReportLabel(vCont)
+  txt.Text = "Gambas & Co"
+  txt.Font.Size = "12 cm"
+  txt.Font.Bold = True
+  
+  txt = New ReportLabel(vCont)
+  txt.Text = "This Street"
+  txt.Font.Size = "12 cm"
+  txt.Font.Bold = True
+  
+  txt = New ReportLabel(vCont)
+  txt.Text = "A City in France"
+  txt.Font.Size = "12 cm"
+  txt.Font.Bold = True
+  ' 
+  txt = New ReportLabel(vCont)
+  txt.Text = "Tel/Fax: 00 000 000 000"
+  txt.Font.Size = "12 cm"
+  txt.Font.Bold = True
+  ' 
+  vCont = New ReportVBox(Report)
+  vcont.Height = "2 cm"
+  vCont.Tag = "Container n°fact/client"
+  
+  txt = New ReportLabel(vCont)
+  txt.Text = "Client N° 0001"
+  
+  txt = New ReportLabel(vCont)
+  txt.Text = "Facture N° 0001"
+  
+  ' vCont = NEW ReportVBox(Report)
+  ' vCont.Height = "2 cm"
+  ' vCont.Tag = "Container vide d'espacement"
+  
+  hCont = New ReportHBox(Report)
+  hCont.Expand = True
+  hCont.Spacing = "0.05 cm"
+  hCont.Height = "10 cm"
+  
+  vCont = New ReportVBox(hCont)
+  vCont.Width = "4.5 cm"
+  'vCont.BorderStyle = line.Solid
+  'vCont.Foreground = color.Red
+  'vCont.FillStyle = Fill.Solid
+  'vCont.FillColor = color.Red
+  'vCont.Background = color.Red
+  vCont.Spacing = "0.05 cm"
+  vCont.Tag = "Container De colonne Ref"
+  
+    txt = New ReportLabel(vCont)
+    txt.Text = "Ref"
+    txt.Alignment = Align.Center
+    txt.Font.Italic = True
+    txt.Style = ReportStyle.Gradient
+    txt.Gradient = [Color.Black, Color.Yellow]
+
+
+    'txt.Width = 2
+    txt.Border = ReportBorder.Solid
+    txt.Color = Color.LightGray
+    'txt.FillStyle = fill.Solid
+    
+    vRef = New ReportVBox(vCont)
+    vRef.Expand = True
+    
+'    vRef = NEW ReportVBox(vcont)
+    vRef.Border = ReportBorder.Solid
+    vRef.Padding = "0.1 cm"
+    vRef.Spacing = "0.1 cm"
+    'vRef.Height = 5
+     vRef.Tag = "Reference"
+     VRef.Tag = "Container de donnée de ref"
+    
+  vCont = New ReportVBox(hCont)
+  VcONT.Expand = True
+   vCont.Spacing = "0.05 cm"
+  ' 
+    txt = New ReportLabel(vCont)
+    txt.Text = "Designation"
+    txt.Alignment = Align.Center
+    txt.Font.Italic = True
+    txt.Border = ReportBorder.Solid
+    txt.Color = Color.LightGray
+    txt.Style = ReportStyle.Solid
+    
+    vDes = New ReportVBox(vCont)
+    vDes.Expand = True
+    vDes.Border = ReportBorder.Solid
+    vDes.Padding = "0.1 cm"
+    vDes.Spacing = "0.1 cm"
+    vDes.Tag = "* des"
+    
+  vCont = New ReportVBox(hCont)
+  vCont.Width = "2.5 cm"
+  vCont.Spacing = "0.05 cm"
+  
+    txt = New ReportLabel(vCont)
+    txt.Text = "Quantitée"
+    txt.Alignment = Align.Center
+    txt.Font.Italic = True
+    'txt.Width = "3,5 cm"
+    txt.Border = ReportBorder.Solid
+    txt.Color = Color.LightGray
+    txt.Style = ReportStyle.Solid
+    
+    vQt = New ReportVBox(vCont)
+     vQt.Expand = True
+    vQt.Border = ReportBorder.Solid
+    vQt.Padding = "0.1 cm"
+    vQt.Spacing = "0.1 cm"
+    vQt.Tag = "* Qt"
+  vCont = New ReportVBox(hCont)
+  vCont.Width = "2.5 cm"
+  vCont.Spacing = "0.05 cm"
+  
+    txt = New ReportLabel(vCont)
+    txt.Text = "Prix Unitaire"
+    txt.Alignment = Align.Center
+    txt.Font.Italic = True
+    'txt.Width = "3,5 cm"
+    txt.Border = ReportBorder.Solid
+    txt.Color = Color.LightGray
+    txt.Style = ReportStyle.Solid
+    
+    vPU = New ReportVBox(vCont)
+    vPU.Expand = True
+    vPU.Border = ReportBorder.Solid
+    vPu.Padding = "0.1 cm"
+    vPU.Spacing = "0.1 cm"
+  
+  vCont = New ReportVBox(hCont)
+  vCont.Width = "2.5 cm"
+  vCont.Spacing = "0.05 cm"
+  
+    txt = New ReportLabel(vCont)
+    txt.Text = "Prix HT"
+    txt.Alignment = Align.Center
+    txt.Font.Italic = True
+    'txt.Width = "3,5 cm"
+    txt.Border = ReportBorder.Solid
+    txt.Color = Color.LightGray
+    txt.Style = ReportStyle.Solid
+    
+    vTot = New ReportVBox(vCont)
+    vTot.Expand = True
+    vTot.Border = ReportBorder.Solid
+    vTot.Padding = "0.1 cm"
+    vTot.Spacing = "0.1 cm"
+    vTot.Tag = "Total"
+    
+  hCont = New ReportHBox(Report)
+  hCont.Height = "1 cm"
+  hCont.Color = Color.LightGray
+  hCont.Border = ReportBorder.Solid
+  hCont.Tag = "Container de total"
+  
+  spetxt = New ReportSpecialField(hCont)
+  spetxt.Text = "Bas de facture $PAGE/$NPAGE"
+  spetxt.Expand = True
+  spetxt.Alignment = Align.Center
+  
+  For i = 1 To 50
+  
+    txt = New ReportLabel(vRef)
+    txt.Alignment = Align.Right
+    txt.Text = i
+    
+    txt = New ReportLabel(vDes)
+    txt.Text = "Ma designation"
+    txt.Alignment = Align.Left
+    txt = New ReportLabel(vQt)
+    qte = Rnd(1, 10)
+    txt.text = qte
+    txt.Alignment = Align.Right
+    
+    txt = New ReportLabel(vPU)
+    fPrix = Round(Rnd(1, 100), -2)
+    txt.text = fPrix
+    txt.Alignment = Align.Right
+    
+    txt = New ReportLabel(vTot)
+    txt.text = Str(qte * fPrix) & " €"
+    txt.Alignment = Align.Right
+    
+      
+  Next
+  
+End

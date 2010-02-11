@@ -31,12 +31,7 @@ Private $sLeftUnit As String = "cm"
 Private $sWidthUnit As String = "cm"
 Private $sTopUnit As String = "cm"
 Private $sPadding As String = "cm"
-Private $iForeColor As Integer = Color.Black
-Private $iBackGround As Integer = Color.White
-Private $iFillColor As Integer = Color.Black
-Private $iFillStyle As Integer = Fill.None
-Private $iLineWidth As Integer = 1
-Private $iLineStyle As Integer = Line.None
+
 Private $iVisible As Boolean = True
 Private $hFont As New Font
 Private $iExpand As Integer
@@ -58,12 +53,7 @@ Property Left As String
 Property Top As String
 Property Width As String
 Property Height As String
-Property ForeColor As Integer
-Property BackGround As Integer
-Property FillColor As Integer
-Property FillStyle As Integer
-Property LineWidth As Integer
-Property LineStyle As Integer
+
 Property Visible As Boolean
 Property {Font} As Font
 Property Expand As Integer
@@ -174,77 +164,6 @@ Private Sub Height_Write(Value As String)
   
 End
 
-Private Function ForeColor_Read() As Integer
-
-  Return $iForeColor
-
-End
-
-Private Sub ForeColor_Write(Value As Integer)
-
-  $iForeColor = Value
-
-End
-
-Private Function BackGround_Read() As Integer
-
-  Return $iBackGround
-
-End
-
-Private Sub BackGround_Write(Value As Integer)
-
-  $iBackGround = Value
-
-End
-
-Private Function FillColor_Read() As Integer
-
-  Return $iFillColor
-
-End
-
-Private Sub FillColor_Write(Value As Integer)
-
-  $iFillColor = Value
-
-End
-
-Private Function FillStyle_Read() As Integer
-
-  Return $iFillStyle
-
-End
-
-Private Sub FillStyle_Write(Value As Integer)
-
-  $iFillStyle = Value
-
-End
-
-Private Function LineWidth_Read() As Integer
-
-  Return $iLineWidth
-
-End
-
-Private Sub LineWidth_Write(Value As Integer)
-
-  $iLineWidth = Value
-
-End
-
-Private Function LineStyle_Read() As Integer
-
-  Return $iLineStyle
-
-End
-
-Private Sub LineStyle_Write(Value As Integer)
-
-  $iLineStyle = Value
-
-End
 
 Private Function Expand_Read() As Integer
 
@@ -267,70 +186,14 @@ End
 
 Public Sub _DrawBefore(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
 
-  Dim X1, Y1, X2, Y2 As Integer
-  
-  
-
-  X1 = (x + hControl.RealLeft) 
-  Y1 = (y + hControl.RealTop) 
-  X2 = (x + hControl.RealLeft + hControl.RealWidth - 1) 
-  Y2 = (y + hControl.RealTop + hControl.RealHeight - 1) 
-
-  If Report.Debug Then
-
-
-      Paint.Brush = Paint.Color(0)
-      Paint.Dash = MRTools.GetLineStyle(Line.Dot)
-      Paint.Rectangle(X1, Y1, X2 - X1 + 2, Y2 - Y1 + 2)
-      Paint.Stroke
-      
-  Else 
-    
-    If Me.FillStyle = fill.None Then Return 
-    Paint.Brush = Paint.Color($iFillColor)
-    Paint.Rectangle(X1, Y1, X2 - X1 + 2, Y2 - Y1 + 2)
-    Paint.Fill
-    
-
-  Endif 
-  
-  
-  
-    
 End
 
 Public Sub _Draw(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
   
-
-    
-  
 End
 
 Public Sub _DrawAfter(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
-  
-Dim X1, Y1, X2, Y2 As Integer
-  
-  X1 = (x + hControl.RealLeft) 
-  Y1 = (y + hControl.RealTop) 
-  X2 = (x + hControl.RealLeft + hControl.RealWidth - 1) 
-  Y2 = (y + hControl.RealTop + hControl.RealHeight - 1) 
-  
-    If Me.LineStyle <> Line.None Then 
-      Paint.LineWidth = $iLineWidth
-      If Me.LineStyle <> Line.Solid Then paint.Dash = MRTools.GetLineStyle(Me.LineStyle)
-      'Draw.LineStyle = $iLineStyle
-      'Draw.LineWidth = $iLineWidth
-      Paint.Brush = Paint.Color($iForeColor)
-      
-      'Draw.ForeColor = $iForeColor
-      'draw.FillStyle = Fill.None
-        
-     paint.Rectangle(X1, Y1, X2 - X1 + 2, Y2 - Y1 + 2)
-      
-      paint.Stroke
-      
-    Endif
-  
+
 End
 
 Private Function Visible_Read() As Boolean

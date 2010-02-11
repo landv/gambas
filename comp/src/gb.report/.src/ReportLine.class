@@ -1,0 +1,74 @@
+' Gambas class file
+
+Export
+Inherits ReportControl
+
+Private $fLineWidth As Float = 1.0
+Private $iLineColor As Integer
+Private $iLineStyle As Integer = Line.solid
+Property LineWidth As Float 
+Property LineStyle As Integer
+Property LineColor As Integer
+
+
+Private Function LineWidth_Read() As Float
+
+  Return $fLineWidth
+
+End
+
+Private Sub LineWidth_Write(Value As Float)
+
+  $fLineWidth = Value
+
+End
+
+
+Public Sub _GetSizeHints(AvailableW As Integer, AvailableH As Integer, TotalWidth As Integer, TotalHeight As Integer) As TSizeHint
+    Dim hMyHints As New TSizeHint
+    
+    hMyHints.Height = Me._Height
+    hMyHints.Width = Me._Width
+    Return hMyHints
+  
+End
+
+Public Sub _Draw(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
+  
+  If Me.LineStyle = Line.None Then Return
+  If Me.LineStyle <> Line.Solid Then Paint.Dash = MRTools.GetBorder(Me.LineStyle)
+  Paint.Brush = Paint.Color($iLineColor)
+  Paint.MoveTo(x, y)
+  Paint.MoveTo((x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)), (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)))
+  Paint.RelLineTo(hControl.RealWidth, hControl.RealHeight)
+  
+  
+  Paint.Stroke
+   
+  
+End
+
+
+Private Function LineStyle_Read() As Integer
+
+  Return $iLineStyle  
+
+End
+
+Private Sub LineStyle_Write(Value As Integer)
+
+  $iLineStyle = Value
+
+End
+
+Private Function LineColor_Read() As Integer
+
+  Return $iLineColor  
+
+End
+
+Private Sub LineColor_Write(Value As Integer)
+
+  $iLineColor = Value
+
+End

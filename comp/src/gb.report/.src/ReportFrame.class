@@ -1,0 +1,211 @@
+' Gambas class file
+
+Export
+Inherits ReportControl
+Private $iBorderColor As Integer = Color.Black
+Private $iBackGround As Integer = Color.White
+Private $iColor As Integer = Color.Black
+Private $iStyle As Integer = ReportStyle.None
+Private $fBorderWidth As Float = 1.0
+Private $iBorder As Integer = ReportBorder.None
+Private $hImage As Image
+Private $sGradient As String
+Private $aGradient As New Integer[]
+
+Property BorderColor As Integer
+Property BackGround As Integer
+Property Color As Integer
+Property Style As Integer
+Property BorderWidth As Float
+Property Border As Integer
+Property {Image} As Image
+Property Gradient As Integer[]
+
+
+
+Private Function BorderColor_Read() As Integer
+
+  Return $iBorderColor
+
+End
+
+Private Sub BorderColor_Write(Value As Integer)
+
+  $iBorderColor = Value
+
+End
+
+Private Function BackGround_Read() As Integer
+
+  Return $iBackGround
+
+End
+
+Private Sub BackGround_Write(Value As Integer)
+
+  $iBackGround = Value
+
+End
+
+Private Function Color_Read() As Integer
+
+  Return $iColor
+
+End
+
+Private Sub Color_Write(Value As Integer)
+
+  $iColor = Value
+
+End
+
+Private Function Style_Read() As Integer
+
+  Return $iStyle
+
+End
+
+Private Sub Style_Write(Value As Integer)
+
+  $iStyle = Value
+
+End
+
+Private Function BorderWidth_Read() As Float
+
+  Return $fBorderWidth
+
+End
+
+Private Sub BorderWidth_Write(Value As Float)
+
+  $fBorderWidth = Value
+
+End
+
+Private Function Border_Read() As Integer
+
+  Return $iBorder
+
+End
+
+Private Sub Border_Write(Value As Integer)
+
+  $iBorder = Value
+
+End
+Public Sub _DrawBefore(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
+
+  Dim X1, Y1, X2, Y2 As Integer
+  Dim hImage As Picture
+  
+
+  X1 = (x + hControl.RealLeft) 
+  Y1 = (y + hControl.RealTop) 
+  X2 = (x + hControl.RealLeft + hControl.RealWidth - 1) 
+  Y2 = (y + hControl.RealTop + hControl.RealHeight - 1) 
+
+  If Report.Debug Then
+
+
+      Paint.Brush = Paint.Color(0)
+      Paint.Dash = MRTools.GetBorder(ReportBorder.Dot)
+      Paint.Rectangle(X1, Y1, X2 - X1 + 2, Y2 - Y1 + 2)
+      Paint.Stroke
+      
+  Else 
+    'si pas de fond alors on ne le dessine pas !
+    
+    Select Case Me.Style
+      Case ReportStyle.None
+        Return
+      Case ReportStyle.Solid
+        Paint.Brush = Paint.Color($iColor)
+        
+      Case ReportStyle.Gradient
+        Paint.Brush = paint.LinearGradient(X1, Y1, X1, Y2, Me.Gradient, [0.0, 1])
+      Case ReportStyle.Image
+        
+        Paint.Brush = paint.Image($hImage, X1, Y1)
+      End Select
+      
+      
+    
+    Paint.Rectangle(X1, Y1, X2 - X1 + 2, Y2 - Y1 + 2)
+    Paint.Fill
+    
+
+  Endif 
+  
+  
+  
+    
+End
+
+Public Sub _Draw(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
+  
+
+    
+  
+End
+
+Public Sub _DrawAfter(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
+  
+Dim X1, Y1, X2, Y2 As Integer
+  
+  X1 = (x + hControl.RealLeft) 
+  Y1 = (y + hControl.RealTop) 
+  X2 = (x + hControl.RealLeft + hControl.RealWidth - 1) 
+  Y2 = (y + hControl.RealTop + hControl.RealHeight - 1) 
+  
+    If Me.Border <> ReportBorder.None Then 
+      Paint.LineWidth = $fBorderWidth
+      If Me.Border <> ReportBorder.Solid Then paint.Dash = MRTools.GetBorder(Me.Border)
+      'Draw.BorderStyle = $iBorderStyle
+      'Draw.BorderWidth = $iBorderWidth
+      Paint.Brush = Paint.Color($iBorderColor)
+      
+      'Draw.Foreground = $iForeground
+      'draw.FillStyle = Fill.None
+        
+     paint.Rectangle(X1, Y1, X2 - X1 + 2, Y2 - Y1 + 2)
+      
+      paint.Stroke
+      
+    Endif
+  
+End
+
+Private Function Image_Read() As Image
+
+  Return $hImage
+
+End
+
+Private Sub Image_Write(Value As Image)
+
+  $hImage = Value
+
+End
+
+Private Function Gradient_Read() As Integer[]
+
+  Return $aGradient
+
+End
+
+Private Sub Gradient_Write(Value As Integer[])
+
+  $aGradient = Value
+
+End
+
+Public Sub _GetSizeHints(AvailableW As Integer, AvailableH As Integer, TotalWidth As Integer, TotalHeight As Integer) As TSizeHint
+    Dim hMyHints As New TSizeHint
+    
+    hMyHints.Height = Me._Height
+    hMyHints.Width = Me._Width
+    Return hMyHints
+  
+End
+
