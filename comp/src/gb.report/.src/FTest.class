@@ -788,3 +788,28 @@ Public Sub MyFieldBornDate_Data()
   Last.Data = $aBornDates[Last.Index - 1]
   
 End
+
+Public Sub RadioButton2_Click()
+
+    Report.Clear()
+  Test7
+  SpinBox1_Change()
+
+End
+
+
+Public Sub test7()
+  
+  Dim hHBox As ReportHBox
+  report.Size = "A4"
+  report.Orientation = report.Portrait
+  report.Spacing = "1%"
+  hHBox = New ReportHBox(report)
+  hHBox.Height = "30%"
+  
+  hHBox.LineWidth = 3
+  hHBox.LineStyle = line.Solid
+  
+  
+  
+End

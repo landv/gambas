@@ -5,6 +5,10 @@ Public ResolutionAffichage As Float '= 72
 'Public ReportZoom As Float '= 1
 Public ReportResolution As Float '= 72
 
+Private Dash As Float[] = [2.0, 1.0]
+Private Dot As Float[] = [1.0, 1.0]
+Private DashDot As Float[] = [2.0, 1.0, 1.0, 1.0]
+Private DashDotDot As Float[] = [2.0, 1.0, 1.0, 1.0, 1.0, 1.0]
 
 Public Function UnitsToPixels(Value As Float) As Integer
   
@@ -49,4 +53,19 @@ Public Function ScanValue(sText As String) As TSizeParse
   
   End
 
+Public Sub GetLineStyle(iStyle As Integer) As Float[]
+  
+  Select Case iStyle
+  
+    Case Line.Dash
+      Return Dash
+    Case Line.Dot
+      Return Dot
+    Case Line.DashDot
+      Return DashDot
+    Case Line.DashDotDot
+      Return DashDotDot
+  End Select
+  
+End
 

@@ -167,7 +167,7 @@ Private Sub Height_Write(Value As String)
     $fHeight = hSizeParse.Value
     $bRelativeHeight = True
   Else 
-    $fHeight = Units.UnitToCm(Value, hSizeParse.Unit)
+    $fHeight = Units.UnitToCm(hSizeParse.Value, hSizeParse.Unit)
     $bRelativeHeight = False
   Endif
   $sHeightUnit = hSizeParse.Unit
@@ -271,19 +271,16 @@ Public Sub _DrawBefore(Page As Integer, X As Integer, Y As Integer, hControl As 
   
   
 
-  X1 = (x + hControl.RealLeft) ' * MRTools.ReportZoom
-  Y1 = (y + hControl.RealTop) '* MRTools.ReportZoom
-  X2 = (x + hControl.RealLeft + hControl.RealWidth - 1) '* MRTools.ReportZoom
-  Y2 = (y + hControl.RealTop + hControl.RealHeight - 1) ' * MRTools.ReportZoom
+  X1 = (x + hControl.RealLeft) 
+  Y1 = (y + hControl.RealTop) 
+  X2 = (x + hControl.RealLeft + hControl.RealWidth - 1) 
+  Y2 = (y + hControl.RealTop + hControl.RealHeight - 1) 
 
   If Report.Debug Then
 
-      'Draw.LineStyle = Line.Dot
-      'Draw.ForeColor = Color.Black
-      'Draw.FillStyle = fill.None
-      'Draw.Rect(X1, Y1, X2 - X1 + 2, Y2 - Y1 + 2)
+
       Paint.Brush = Paint.Color(0)
-      Paint.Dash = [1.0, 1.0]
+      Paint.Dash = MRTools.GetLineStyle(Line.Dot)
       Paint.Rectangle(X1, Y1, X2 - X1 + 2, Y2 - Y1 + 2)
       Paint.Stroke
       
@@ -293,14 +290,8 @@ Public Sub _DrawBefore(Page As Integer, X As Integer, Y As Integer, hControl As 
     Paint.Brush = Paint.Color($iFillColor)
     Paint.Rectangle(X1, Y1, X2 - X1 + 2, Y2 - Y1 + 2)
     Paint.Fill
-    'Paint.Brush = Paint.Color($iForeColor)
-    'Paint.Stroke
-    'Draw.FillStyle = $iFillStyle
-    'Draw.BackGround = $iBackGround
-    'Draw.ForeColor = $iForeColor
-    'Draw.FillColor = $iFillColor
-    'Draw.LineStyle = $iLineStyle 'Line.Solid
-    'Draw.Rect(X1, Y1, X2 - X1 + 2, Y2 - Y1 + 2)
+    
+
   Endif 
   
   
@@ -317,24 +308,27 @@ End
 
 Public Sub _DrawAfter(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
   
-  Dim X1, Y1, X2, Y2 As Integer
-
-  X1 = (x + hControl.RealLeft) ' * MRTools.ReportZoom
-  Y1 = (y + hControl.RealTop) ' * MRTools.ReportZoom
-  X2 = (x + hControl.RealLeft + hControl.RealWidth - 1) ' * MRTools.ReportZoom
-  Y2 = (y + hControl.RealTop + hControl.RealHeight - 1) ' * MRTools.ReportZoom
-
+Dim X1, Y1, X2, Y2 As Integer
+  
+  X1 = (x + hControl.RealLeft) 
+  Y1 = (y + hControl.RealTop) 
+  X2 = (x + hControl.RealLeft + hControl.RealWidth - 1) 
+  Y2 = (y + hControl.RealTop + hControl.RealHeight - 1) 
+  
     If Me.LineStyle <> Line.None Then 
       Paint.LineWidth = $iLineWidth
+      If Me.LineStyle <> Line.Solid Then paint.Dash = MRTools.GetLineStyle(Me.LineStyle)
       'Draw.LineStyle = $iLineStyle
       'Draw.LineWidth = $iLineWidth
       Paint.Brush = Paint.Color($iForeColor)
       
       'Draw.ForeColor = $iForeColor
       'draw.FillStyle = Fill.None
-
-      paint.Rectangle(X1, Y1, X2 - X1 + 2, Y2 - Y1 + 2)
+        
+     paint.Rectangle(X1, Y1, X2 - X1 + 2, Y2 - Y1 + 2)
+      
       paint.Stroke
+      
     Endif
   
 End
@@ -400,7 +394,7 @@ Private Sub Padding_Write(Value As String)
     $fPadding = hSizeParse.Value
     $bRelativePadding = True
   Else 
-    $fPadding = Units.UnitToCm(Value, hSizeParse.Unit)
+    $fPadding = Units.UnitToCm(hSizeParse.Value, hSizeParse.Unit)
     $sPadding = hSizeParse.Unit
     $bRelativePadding = False
   Endif

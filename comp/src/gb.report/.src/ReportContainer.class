@@ -1,78 +1,78 @@
 ' Gambas class file
 
-EXPORT
-CREATE PRIVATE 
-INHERITS ReportControl
+Export
+Create Private 
+Inherits ReportControl
 
-PRIVATE $aChild AS NEW Object[]
-PRIVATE $fSpacing AS Float
+Private $aChild As New Object[]
+Private $fSpacing As Float
 'PRIVATE $fPadding AS Float
-PRIVATE $sSpacingUnit AS String
+Private $sSpacingUnit As String
 'PRIVATE $sPaddingUnit AS String
-PRIVATE $bRelativeSpacing AS Boolean
-PROPERTY READ Children AS Object[]
-PROPERTY Spacing AS String
+Private $bRelativeSpacing As Boolean
+Property Read Children As Object[]
+Property Spacing As String
 'PROPERTY Padding AS String
-PROPERTY READ _Spacing AS Float
+Property Read _Spacing As Float
 'PROPERTY READ _Padding AS Float
-PROPERTY READ _RelativeSpacing AS Boolean
+Property Read _RelativeSpacing As Boolean
 
-PUBLIC _RealSpacing AS Integer
+Public _RealSpacing As Integer
 
-PUBLIC FUNCTION _Add(cControl AS ReportControl) AS TControl
-  DIM hTControl AS NEW TControl
+Public Function _Add(cControl As ReportControl) As TControl
+  Dim hTControl As New TControl
   
   hTControl.Ctrl = cControl
   $aChild.Add(hTControl)
   ReportControl._ObjectFromId[cControl.Id] = cControl
-  RETURN hTControl
-END
+  Return hTControl
+End
 
-PUBLIC SUB _Remove(id AS Integer)
+Public Sub _Remove(id As Integer)
   
   $aChild.Remove($aChild.Find(ReportControl._ObjectFromId[id]))
   
-END
+End
 
 
-PUBLIC SUB _Free()
+Public Sub _Free()
   
-  DIM hCtrl AS Object
-  FOR EACH hCtrl IN $aChild
-    TRY ReportControl._ObjectFromId.Remove(hCtrl.Ctrl.Id)
+  Dim hCtrl As Object
+  For Each hCtrl In $aChild
+    Try ReportControl._ObjectFromId.Remove(hCtrl.Ctrl.Id)
     'hctrl = NULL
-  NEXT 
+  Next 
   $aChild.Clear
     
-END
+End
 
-PRIVATE FUNCTION Children_Read() AS Object[]
+Private Function Children_Read() As Object[]
 
-  RETURN $aChild
+  Return $aChild
 
-END
+End
 
 
-PRIVATE FUNCTION Spacing_Read() AS String
+Private Function Spacing_Read() As String
 
-  RETURN Units.CmToUnit($fSpacing, $sSpacingUnit) & " " & $sSpacingUnit
+  Return Units.CmToUnit($fSpacing, $sSpacingUnit) & " " & $sSpacingUnit
 
-END
+End
 
-PRIVATE SUB Spacing_Write(Value AS String)
+Private Sub Spacing_Write(Value As String)
 
-  DIM hSizeParse AS TSizeParse
+  Dim hSizeParse As TSizeParse
   hSizeParse = MRTools.ScanValue(value)
-  IF Units.AllowedUnits.Find(hSizeParse.Unit) = -1 AND IF hSizeParse.Unit <> "%" THEN error.Raise("Unknown unit")
-  IF hSizeParse.Unit = "%" THEN 
+  If Units.AllowedUnits.Find(hSizeParse.Unit) = -1 And If hSizeParse.Unit <> "%" Then error.Raise("Unknown unit")
+  If hSizeParse.Unit = "%" Then 
     $fSpacing = hSizeParse.Value
-    $bRelativeSpacing = TRUE
-  ELSE 
-    $fSpacing = Units.UnitToCm(Value, hSizeParse.Unit)
+    $bRelativeSpacing = True
+  Else 
+    $fSpacing = Units.UnitToCm(hSizeParse.Value, hSizeParse.Unit)
     $sSpacingUnit = hSizeParse.Unit
-    $bRelativeSpacing = FALSE
-  ENDIF
-END
+    $bRelativeSpacing = False
+  Endif
+End
 
 ' PRIVATE FUNCTION Padding_Read() AS String
 ' 
@@ -89,65 +89,65 @@ END
 ' ' 
 ' END
 
-PUBLIC SUB _DrawBefore(Page AS Integer, X AS Integer, Y AS Integer, hControl AS TControl, VirtualId AS Integer)
-  DIM hChild AS Object
-  DIM vi AS Integer
+Public Sub _DrawBefore(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
+  Dim hChild As Object
+  Dim vi As Integer
   
-  SUPER._DrawBefore(Page, X, Y, hControl, VirtualId)
-  FOR EACH hChild IN ME.Children
+  Super._DrawBefore(Page, X, Y, hControl, VirtualId)
+  For Each hChild In Me.Children
     
     vi = VirtualId
-    IF hControl.VirtualId > -1 THEN vi = hControl.VirtualId
+    If hControl.VirtualId > -1 Then vi = hControl.VirtualId
     'Draw Before
-    IF hChild.RelPage = -1 THEN        
+    If hChild.RelPage = -1 Then        
      hChild.ctrl._DrawBefore(Page, X + hControl.RealLeft, Y + hControl.RealTop, hChild, vi)
-    ELSE IF hChild.RelPage + hControl.RealPage = Page THEN 
+    Else If hChild.RelPage + hControl.RealPage = Page Then 
       hChild.ctrl._DrawBefore(Page, X + hControl.RealLeft, Y + hControl.RealTop, hChild, vi)
-    ENDIF 
+    Endif 
   
-  NEXT
+  Next
   
-END
+End
 
-PUBLIC SUB _Draw(Page AS Integer, X AS Integer, Y AS Integer, hControl AS TControl, VirtualId AS Integer)
-  DIM hChild AS Object
-  DIM vi AS Integer
+Public Sub _Draw(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
+  Dim hChild As Object
+  Dim vi As Integer
 
-  FOR EACH hChild IN ME.Children
+  For Each hChild In Me.Children
   vi = VirtualId
-  IF hControl.VirtualId > -1 THEN vi = hControl.VirtualId
+  If hControl.VirtualId > -1 Then vi = hControl.VirtualId
   
-    IF hChild.RelPage = -1 THEN        
+    If hChild.RelPage = -1 Then        
      hChild.ctrl._Draw(Page, X + hControl.RealLeft, Y + hControl.RealTop, hChild, vi)
-    ELSE IF hChild.RelPage + hControl.RealPage = Page THEN 
+    Else If hChild.RelPage + hControl.RealPage = Page Then 
       hChild.ctrl._Draw(Page, X + hControl.RealLeft, Y + hControl.RealTop, hChild, vi)
-    ENDIF 
-  NEXT 
+    Endif 
+  Next 
   
-END
+End
 
-PUBLIC SUB _DrawAfter(Page AS Integer, X AS Integer, Y AS Integer, hControl AS TControl, VirtualId AS Integer)
-  DIM hChild AS TControl
-  DIM vi AS Integer
-  SUPER._DrawAfter(Page, X, Y, hControl, VirtualId)
-  FOR EACH hChild IN ME.Children
+Public Sub _DrawAfter(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
+  Dim hChild As TControl
+  Dim vi As Integer
+  Super._DrawAfter(Page, X, Y, hControl, VirtualId)
+  For Each hChild In Me.Children
     'Draw After
-    IF hChild.RelPage = -1 THEN        
+    If hChild.RelPage = -1 Then        
      hChild.ctrl._DrawAfter(Page, X + hControl.RealLeft, Y + hControl.RealTop, hChild, vi)
-    ELSE IF hChild.RelPage + hControl.RealPage = Page THEN 
+    Else If hChild.RelPage + hControl.RealPage = Page Then 
       hChild.ctrl._DrawAfter(Page, X + hControl.RealLeft, Y + hControl.RealTop, hChild, vi)
-    ENDIF 
-  NEXT
+    Endif 
+  Next
   
-END
+End
 
 
 
-PRIVATE FUNCTION _Spacing_Read() AS Float
+Private Function _Spacing_Read() As Float
 
-  RETURN $fSpacing
+  Return $fSpacing
 
-END
+End
 
 ' ' PRIVATE FUNCTION _Padding_Read() AS Float
 ' ' 
@@ -155,8 +155,8 @@ END
 ' ' 
 ' END
 
-PRIVATE FUNCTION _RelativeSpacing_Read() AS Boolean
+Private Function _RelativeSpacing_Read() As Boolean
 
-  RETURN $bRelativeSpacing
+  Return $bRelativeSpacing
 
-END
+End

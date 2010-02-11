@@ -84,7 +84,7 @@ Public Sub _Draw(Page As Integer, X As Integer, Y As Integer, hControl As TContr
   Paint.Brush = Paint.Color(Me.ForeColor)
   'Set the Font if it is initialized
   If Not IsNull(Me.Font) Then Paint.Font = Me.Font
-  'Paint.Font.size = Paint.Font.size ' * MRTools.ReportZoom '* MRTools.ResolutionAffichage
+  'Paint.Font.size = Paint.Font.size  '* MRTools.ResolutionAffichage
   
   'Draw.Clip((x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
     'Draw.Text($sText, (x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom, $iAlignment)
