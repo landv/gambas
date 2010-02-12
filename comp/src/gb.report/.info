@@ -57,6 +57,18 @@ Clear
 m
 
 
+Image
+m
+CReportBrush
+(Value)s(X)s(Y)s
+Gradient
+m
+CReportBrush
+(Colors)Integer[];(Positions)float[];
+Color
+m
+CReportBrush
+(iColor)i
 #ReportBorder
 
 C
@@ -311,19 +323,7 @@ f
 #ReportFrame
 ReportControl
 C
-Color
-p
-i
-
-Image
-p
-Image
-
 BorderColor
-p
-i
-
-BackGround
 p
 i
 
@@ -339,9 +339,9 @@ Border
 p
 i
 
-Gradient
+Brush
 p
-Integer[]
+CReportBrush
 
 _DrawBefore
 m

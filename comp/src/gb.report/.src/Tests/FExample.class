@@ -39,7 +39,7 @@ Public Sub Test1()
   
   lblcoucou = New ReportLabel(hHBox)
   lblcoucou.Text = "coucou"
-  lblcoucou.Color = Color.Yellow
+  lblcoucou.Brush = report.Color(Color.Yellow)
   lblcoucou.BorderColor = Color.Red
   lblcoucou.Style = ReportStyle.Solid
   lblcoucou.Font.Size = 15
@@ -86,7 +86,8 @@ hLab.Text = "MY FRIENDS FIRST NAME"     'Set the text
 hLab.Font = Font["Arial,+8,"]           'Set The Font
 hLab.Alignment = Align.Center           'Set The aligment
 hLab.Border = ReportBorder.Solid
-hLab.Color = Color.LightGray
+'hLab.Color = Color.LightGray
+hlab.Brush = report.Color(Color.Gray)
 hLab.Style = ReportStyle.Solid
 
 '* Add a Cloner to list what i want
@@ -231,7 +232,7 @@ Public Sub Test4()
   hCont = New ReportHBox(Report)
   hCont.Height = "3 cm"
   img = New ReportFrame(hCont)
-  img.Image = Image.Load("new-logo.png")
+  img.Brush = report.Image("new-logo.png", "1", "1")
   img.Width = "3 cm"
   img.Style = ReportStyle.Image
   'img.Height = "3 cm"
@@ -307,12 +308,12 @@ Public Sub Test4()
     txt.Alignment = Align.Center
     txt.Font.Italic = True
     txt.Style = ReportStyle.Gradient
-    txt.Gradient = [Color.Black, Color.Yellow]
+    txt.Brush = report.Gradient([Color.Black, Color.Yellow], [0.0, 1.0])
 
 
     'txt.Width = 2
     txt.Border = ReportBorder.Solid
-    txt.Color = Color.LightGray
+    'txt.Brush = Report.Color(Color.LightGray)
     'txt.FillStyle = fill.Solid
     
     vRef = New ReportVBox(vCont)
@@ -335,7 +336,7 @@ Public Sub Test4()
     txt.Alignment = Align.Center
     txt.Font.Italic = True
     txt.Border = ReportBorder.Solid
-    txt.Color = Color.LightGray
+    txt.Brush = report.Color(Color.LightGray)
     txt.Style = ReportStyle.Solid
     
     vDes = New ReportVBox(vCont)
@@ -355,7 +356,7 @@ Public Sub Test4()
     txt.Font.Italic = True
     'txt.Width = "3,5 cm"
     txt.Border = ReportBorder.Solid
-    txt.Color = Color.LightGray
+    txt.Brush = report.Color(Color.Gray)
     txt.Style = ReportStyle.Solid
     
     vQt = New ReportVBox(vCont)
@@ -374,7 +375,7 @@ Public Sub Test4()
     txt.Font.Italic = True
     'txt.Width = "3,5 cm"
     txt.Border = ReportBorder.Solid
-    txt.Color = Color.LightGray
+    txt.Brush = report.Color(Color.Gray)
     txt.Style = ReportStyle.Solid
     
     vPU = New ReportVBox(vCont)
@@ -393,7 +394,7 @@ Public Sub Test4()
     txt.Font.Italic = True
     'txt.Width = "3,5 cm"
     txt.Border = ReportBorder.Solid
-    txt.Color = Color.LightGray
+    txt.Brush = report.Color(Color.LightGray)
     txt.Style = ReportStyle.Solid
     
     vTot = New ReportVBox(vCont)
@@ -405,7 +406,7 @@ Public Sub Test4()
     
   hCont = New ReportHBox(Report)
   hCont.Height = "1 cm"
-  hCont.Color = Color.LightGray
+  hCont.Brush = report.Color(Color.LightGray)
   hCont.Border = ReportBorder.Solid
   hCont.Tag = "Container de total"
   

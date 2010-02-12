@@ -251,3 +251,38 @@ End
 '   frmPreview.Run(Me)
 '   
 ' End
+
+
+Public Function Image(Value As String, X As String, Y As String) As CReportBrush
+  
+  Dim hBrush As New CReportBrush
+  hBrush.Type = 1
+  hBrush.X = MRTools.ScanValue(X)
+  hBrush.Y = MRTools.ScanValue(Y)
+  hBrush.Image = Image.Load(Value)
+  Return hBrush
+  
+End
+
+
+Public Function Gradient(Colors As Integer[], Positions As float[]) As CReportBrush
+  
+  Dim hBrush As New CReportBrush
+  hBrush.Type = 2
+  'hBrush.X = MRTools.ScanValue(X)
+  'hBrush.Y = MRTools.ScanValue(Y)
+  
+  hBrush.Color = Colors
+  hBrush.Pos = Positions
+  Return hBrush
+  
+  
+End
+
+Public Sub {Color}(iColor As Integer) As CReportBrush
+  Dim hBrush As New CReportBrush
+  hBrush.Type = 0
+  hBrush.iValue = iColor
+  Return hBrush
+  
+End
