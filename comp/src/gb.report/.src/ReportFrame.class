@@ -10,7 +10,7 @@ Private $fBorderWidth As Float = 1.0
 Private $iBorder As Integer = ReportBorder.None
 'Private $hImage As Image
 
-Private $hBrush As CReportBrush
+Private $hBrush As ReportBrush
 
 Property BorderColor As Integer
 'Property BackGround As Integer
@@ -19,7 +19,7 @@ Property Style As Integer
 Property BorderWidth As Float
 Property Border As Integer
 
-Property Brush As CReportBrush
+Property Brush As ReportBrush
 
 
 
@@ -93,14 +93,14 @@ Public Sub _DrawBefore(Page As Integer, X As Integer, Y As Integer, hControl As 
   Else 
     'si pas de fond alors on ne le dessine pas !
     If Me.Brush = Null Then Return
-    Select Case Me.Brush.Type
+    Select Case Me.Brush._Type
       Case 0
-        Paint.Brush = Paint.Color(Me.Brush.iValue)
+        Paint.Brush = Paint.Color(Me.Brush._iValue)
       Case 1
-        Paint.Brush = paint.Image(Me.Brush.Image, X1, Y1)
+        Paint.Brush = paint.Image(Me.Brush._Image, X1, Y1)
         
       Case 2
-        Paint.Brush = paint.LinearGradient(X1, Y1, X1, Y2, Me.Brush.Color, Me.Brush.Pos)
+        Paint.Brush = paint.LinearGradient(X1, Y1, X1, Y2, Me.Brush._Color, Me.Brush._Pos)
       Case 3
         
         'Paint.Brush = paint.Image($hImage, X1, Y1)
@@ -154,13 +154,13 @@ Dim X1, Y1, X2, Y2 As Integer
 End
 
 
-Private Function Brush_Read() As CReportBrush
+Private Function Brush_Read() As ReportBrush
 
   Return $hBrush
 
 End
 
-Private Sub Brush_Write(Value As CReportBrush)
+Private Sub Brush_Write(Value As ReportBrush)
 
   $hBrush = Value
 
