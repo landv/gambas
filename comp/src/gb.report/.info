@@ -61,7 +61,11 @@ Image
 m
 ReportBrush
 (Value)s(X)s(Y)s
-Gradient
+LinearGradient
+m
+ReportBrush
+(Colors)Integer[];(Positions)float[];
+RadialGradient
 m
 ReportBrush
 (Colors)Integer[];(Positions)float[];
@@ -330,10 +334,6 @@ BorderColor
 p
 i
 
-Style
-p
-i
-
 BorderWidth
 p
 f
@@ -453,25 +453,6 @@ _Draw
 m
 
 (Page)i(X)i(Y)i(hControl)TControl;(VirtualId)i
-#ReportStyle
-
-C
-None
-C
-i
-0
-Solid
-C
-i
-1
-Image
-C
-i
-2
-Gradient
-C
-i
-3
 #ReportTextLabel
 ReportFrame
 C

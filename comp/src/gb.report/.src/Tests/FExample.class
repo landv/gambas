@@ -8,10 +8,9 @@ Public Sub rbDemo_Click()
   Report.Clear
   $sCurDemo = "Test" & Last.Tag
   Object.Call(Me, $sCurDemo)
-  DrawingArea1.Width = UnitsToPixels(Report._Width)
-  DrawingArea1.Height = UnitsToPixels(Report._Height)
+  Slider1_Change
 
-  DrawingArea1.Refresh
+  
 End
 
 Public Sub Test1()
@@ -41,7 +40,7 @@ Public Sub Test1()
   lblcoucou.Text = "coucou"
   lblcoucou.Brush = report.Color(Color.Yellow)
   lblcoucou.BorderColor = Color.Red
-  lblcoucou.Style = ReportStyle.Solid
+  'lblcoucou.Style = ReportStyle.Solid
   lblcoucou.Font.Size = 15
   lblcoucou.Expand = True
   lblcoucou.Alignment = Align.Center
@@ -88,7 +87,7 @@ hLab.Alignment = Align.Center           'Set The aligment
 hLab.Border = ReportBorder.Solid
 'hLab.Color = Color.LightGray
 hlab.Brush = report.Color(Color.Gray)
-hLab.Style = ReportStyle.Solid
+
 
 '* Add a Cloner to list what i want
 hCloner = New ReportCloner(Report)
@@ -174,7 +173,7 @@ End
 
 Public Sub DrawingArea1_Draw()
   
-
+  report.Scale = Slider1.Value / 100.0
    Report.Draw(1)
 
 End
@@ -234,7 +233,7 @@ Public Sub Test4()
   img = New ReportFrame(hCont)
   img.Brush = report.Image("new-logo.png", "1", "1")
   img.Width = "3 cm"
-  img.Style = ReportStyle.Image
+
   'img.Height = "3 cm"
   img.Tag = "Image"
   
@@ -307,8 +306,8 @@ Public Sub Test4()
     txt.Text = "Ref"
     txt.Alignment = Align.Center
     txt.Font.Italic = True
-    txt.Style = ReportStyle.Gradient
-    txt.Brush = report.Gradient([Color.Black, Color.Yellow], [0.0, 1.0])
+
+    'txt.Brush = report.RadialGradient([Color.Black, Color.Yellow], [0.1, 0.9])
 
 
     'txt.Width = 2
@@ -337,7 +336,7 @@ Public Sub Test4()
     txt.Font.Italic = True
     txt.Border = ReportBorder.Solid
     txt.Brush = report.Color(Color.LightGray)
-    txt.Style = ReportStyle.Solid
+
     
     vDes = New ReportVBox(vCont)
     vDes.Expand = True
@@ -357,7 +356,7 @@ Public Sub Test4()
     'txt.Width = "3,5 cm"
     txt.Border = ReportBorder.Solid
     txt.Brush = report.Color(Color.Gray)
-    txt.Style = ReportStyle.Solid
+
     
     vQt = New ReportVBox(vCont)
      vQt.Expand = True
@@ -376,7 +375,7 @@ Public Sub Test4()
     'txt.Width = "3,5 cm"
     txt.Border = ReportBorder.Solid
     txt.Brush = report.Color(Color.Gray)
-    txt.Style = ReportStyle.Solid
+
     
     vPU = New ReportVBox(vCont)
     vPU.Expand = True
@@ -395,7 +394,7 @@ Public Sub Test4()
     'txt.Width = "3,5 cm"
     txt.Border = ReportBorder.Solid
     txt.Brush = report.Color(Color.LightGray)
-    txt.Style = ReportStyle.Solid
+
     
     vTot = New ReportVBox(vCont)
     vTot.Expand = True
@@ -441,4 +440,12 @@ Public Sub Test4()
       
   Next
   
+End
+
+Public Sub Slider1_Change()
+   DrawingArea1.Width = UnitsToPixels(Report._Width) * Slider1.Value / 100
+  DrawingArea1.Height = UnitsToPixels(Report._Height) * Slider1.Value / 100
+  DrawingArea1.Refresh
+  Me.Title = "gb.Report Example [" & Slider1.Value & "%]"
+
 End

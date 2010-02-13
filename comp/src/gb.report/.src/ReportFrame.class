@@ -5,7 +5,7 @@ Inherits ReportControl
 Private $iBorderColor As Integer = Color.Black
 'Private $iBackGround As Integer = Color.White
 'Private $iColor As Integer = Color.Black
-Private $iStyle As Integer = ReportStyle.None
+
 Private $fBorderWidth As Float = 1.0
 Private $iBorder As Integer = ReportBorder.None
 'Private $hImage As Image
@@ -15,7 +15,7 @@ Private $hBrush As ReportBrush
 Property BorderColor As Integer
 'Property BackGround As Integer
 'Property Color As Integer
-Property Style As Integer
+
 Property BorderWidth As Float
 Property Border As Integer
 
@@ -36,17 +36,6 @@ Private Sub BorderColor_Write(Value As Integer)
 End
 
 
-Private Function Style_Read() As Integer
-
-  Return $iStyle
-
-End
-
-Private Sub Style_Write(Value As Integer)
-
-  $iStyle = Value
-
-End
 
 Private Function BorderWidth_Read() As Float
 
@@ -75,7 +64,7 @@ Public Sub _DrawBefore(Page As Integer, X As Integer, Y As Integer, hControl As 
 
   Dim X1, Y1, X2, Y2 As Integer
   Dim hImage As Picture
-  
+  Dim fradius As Float
 
   X1 = (x + hControl.RealLeft) 
   Y1 = (y + hControl.RealTop) 
@@ -102,8 +91,8 @@ Public Sub _DrawBefore(Page As Integer, X As Integer, Y As Integer, hControl As 
       Case 2
         Paint.Brush = paint.LinearGradient(X1, Y1, X1, Y2, Me.Brush._Color, Me.Brush._Pos)
       Case 3
-        
-        'Paint.Brush = paint.Image($hImage, X1, Y1)
+        fradius = If((X2 - X1) > (Y2 - Y1), X2 - X1, Y2 - Y1)
+        Paint.Brush = paint.RadialGradient(X1, Y1, fradius, X1, Y1, Me.Brush._Color, Me.Brush._Pos)
       End Select
       
       

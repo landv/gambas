@@ -36,7 +36,7 @@ Property Size As String
 
 Public Sub _New()
   object.Attach(Me, Me, "Report")
-
+  $iResolution = Desktop.Resolution
   'ME.Width = 600
   'ME.Height = 600
   $hReportTControl.RelPage = 0
@@ -237,7 +237,7 @@ Public Sub Clear()
   Super._Free
   iCurPage = 0
   $iCount = -1
-  $iResolution = 72
+  $iResolution = Desktop.Resolution
   $bLayoutIsDirty = True
   $fScale = 1.0
   $iOrientation = Portrait
@@ -265,10 +265,24 @@ Public Function Image(Value As String, X As String, Y As String) As ReportBrush
 End
 
 
-Public Function Gradient(Colors As Integer[], Positions As float[]) As ReportBrush
+Public Function LinearGradient(Colors As Integer[], Positions As float[]) As ReportBrush
   
   Dim hBrush As New ReportBrush
   hBrush._Type = 2
+  'hBrush.X = MRTools.ScanValue(X)
+  'hBrush.Y = MRTools.ScanValue(Y)
+  
+  hBrush._Color = Colors
+  hBrush._Pos = Positions
+  Return hBrush
+  
+  
+End
+
+Public Function RadialGradient(Colors As Integer[], Positions As float[]) As ReportBrush
+  
+  Dim hBrush As New ReportBrush
+  hBrush._Type = 3
   'hBrush.X = MRTools.ScanValue(X)
   'hBrush.Y = MRTools.ScanValue(Y)
   
