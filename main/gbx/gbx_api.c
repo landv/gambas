@@ -1530,7 +1530,7 @@ void GB_FreeString(char **str)
   *str = NULL;
 }
 
-bool GB_ConvString(char **result, const char *str, int len, const char *src, const char *dst)
+int GB_ConvString(char **result, const char *str, int len, const char *src, const char *dst)
 {
   bool err = FALSE;
 

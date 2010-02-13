@@ -215,7 +215,9 @@ END
 
 PUBLIC SUB txtRequest_KeyPress()
 
-  IF Key.Code = Key["F5"] THEN btnRun_Click
+  IF Key.Code = Key["F5"] THEN 
+    btnRun_Click
+  ENDIF
 
 END
 

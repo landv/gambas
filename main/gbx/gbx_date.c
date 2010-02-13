@@ -686,8 +686,9 @@ void DATE_add(VALUE *date, int period, int val)
 
     case DP_MONTH:
       y = ((ds.year * 12) + (ds.month - 1) + val) / 12;
-      m = (ds.month - 1) + val;
-      m = ((m < 0) ? (m % 12) + 12 : (m % 12)) + 1;
+      m = ((ds.month - 1) + val) % 12;
+			if (m < 0) m += 12;
+			m++;
       d = days_in_months[date_is_leap_year(y)][m];
       d = ds.day > d ? d : ds.day;
       ds.day = d;

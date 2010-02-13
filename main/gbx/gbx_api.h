@@ -135,7 +135,7 @@ void GB_Realloc(void **addr, int len);
 
 void GB_FreeString(char **str);
 int GB_StringLength(const char *str);
-bool GB_ConvString(char **result, const char *str, int len, const char *src, const char *dst);
+int GB_ConvString(char **result, const char *str, int len, const char *src, const char *dst);
 
 int GB_Conv(GB_VALUE *, GB_TYPE);
 
