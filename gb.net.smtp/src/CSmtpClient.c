@@ -667,6 +667,9 @@ GB_DESC CSmtpClientDesc[] =
  
   GB_METHOD("Send", NULL, CSMTPCLIENT_send, NULL),
 
+  GB_CONSTANT("_IsControl", "b", TRUE),
+  GB_CONSTANT("_IsVirtual", "b", TRUE),
+  GB_CONSTANT("_Group", "s", "Network"),
   GB_CONSTANT("_Properties", "s", "Host,Port"),
 
   GB_END_DECLARE

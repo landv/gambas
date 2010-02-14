@@ -741,24 +741,21 @@ static int get_text_height(QPainter *dp, QString &s)
 	return text_line * (1 + s.count('\n'));
 }
 
-void DRAW_text_with(QPainter *painter, const char *text, int len, int x, int y, int w, int h, int align, DRAW_TEXT_CB callback)
+void DRAW_text(QPainter *p, const QString &text, float x, float y, float w, float h, int align, QPainter *p2)
 {
 	QPen pen, penm;
-	QString t;
+	QString t = text;
 	int xx, ww;
 	int tw, th;
 	int i;
 
-	t = QString::fromUtf8((const char *)text, len);  
-	tw = get_text_width(painter, t);
-	th = get_text_height(painter, t);
+	tw = get_text_width(p, t);
+	th = get_text_height(p, t);
 
 	if (w < 0) w = tw;
 	if (h < 0) h = th;
 	
-	align = CCONST_alignment(align, ALIGN_TOP_NORMAL, true);
-	
-	y += painter->fontMetrics().ascent();
+	y += p->fontMetrics().ascent();
 
 	switch(align & Qt::AlignVertical_Mask)
 	{
@@ -768,6 +765,7 @@ void DRAW_text_with(QPainter *painter, const char *text, int len, int x, int y, 
 	}
 
 	align = get_horizontal_alignment((Qt::Alignment)align);
+	
 
 	/*pen = DP(d)->pen();
 	DP(d)->setPen(QColor(EXTRA(d)->fg));
@@ -789,9 +787,10 @@ void DRAW_text_with(QPainter *painter, const char *text, int len, int x, int y, 
 			default: xx = x; break;
 		}
 
-		(*callback)(xx, y, t);
-		/*DP(d)->drawText(xx, y, t);
-		if (DPM(d)) DPM(d)->drawText(xx, y, t);*/
+		//(*callback)(xx, y, t);
+		p->drawText(xx, y, t);
+		if (p2) 
+			p2->drawText(xx, y, t);
 
 		y += text_line;
 	}
@@ -800,15 +799,6 @@ void DRAW_text_with(QPainter *painter, const char *text, int len, int x, int y, 
 	if (DPM(d)) DPM(d)->setPen(penm);*/
 }
 
-
-static QPainter *_draw_text_p, *_draw_text_pm;
-
-static void draw_text_cb(float x, float y, QString &text)
-{
-	_draw_text_p->drawText(x, y, text);
-	if (_draw_text_pm) 
-		_draw_text_pm->drawText(x, y, text);
-}
 
 static void draw_text(GB_DRAW *d, char *text, int len, int x, int y, int w, int h, int align)
 {
@@ -822,10 +812,8 @@ static void draw_text(GB_DRAW *d, char *text, int len, int x, int y, int w, int 
 		DPM(d)->setPen(Qt::color1);
 	}
 
-	_draw_text_p = DP(d);
-	_draw_text_pm = DPM(d);
-
-	DRAW_text_with(DP(d), text, len, x, y, w, h, align, draw_text_cb);
+	align = CCONST_alignment(align, ALIGN_TOP_NORMAL, true);
+	DRAW_text(DP(d), QString::fromUtf8(text, len), x, y, w, h, align, DPM(d));
 	
 	DP(d)->setPen(pen);
 	if (DPM(d)) DPM(d)->setPen(penm);
@@ -838,10 +826,10 @@ static void text_size(GB_DRAW *d, char *text, int len, int *w, int *h)
 	if (h) *h = get_text_height(DP(d), s);
 }
 
-void DRAW_rich_text(QPainter *p, int x, int y, int w, int h, int align, QString &text, QPainter *p2)
+void DRAW_rich_text(QPainter *p, const QString &text, float x, float y, float w, float h, int align, QPainter *p2)
 {
 	QString a;
-	int tw, th;
+	float tw, th;
 	QString t = text;
 
 	switch(get_horizontal_alignment((Qt::Alignment)align))
@@ -894,7 +882,7 @@ static void draw_rich_text(GB_DRAW *d, char *text, int len, int x, int y, int w,
 
 	align = CCONST_alignment(align, ALIGN_TOP_NORMAL, true);
 
-	DRAW_rich_text(DP(d), x, y, w, h, align, t, DPM(d));
+	DRAW_rich_text(DP(d), t, x, y, w, h, align, DPM(d));
 }
 
 static void rich_text_size(GB_DRAW *d, char *text, int len, int sw, int *w, int *h)

@@ -572,6 +572,9 @@ GB_DESC CDnsClientDesc[] =
   GB_PROPERTY("Async", "b", CDNSCLIENT_Async),
   GB_PROPERTY_READ("Status", "i", CDNSCLIENT_Status),
   
+  GB_CONSTANT("_IsControl", "b", TRUE),
+  GB_CONSTANT("_IsVirtual", "b", TRUE),
+  GB_CONSTANT("_Group", "s", "Network"),
   GB_CONSTANT("_Properties", "s", "HostName,HostIP,Async=TRUE"),
   GB_CONSTANT("_DefaultEvent", "s", "Finished"),
 

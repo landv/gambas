@@ -630,7 +630,6 @@ BEGIN_METHOD(Paint_Text, GB_STRING text; GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_
 	
 END_METHOD
 
-/*
 BEGIN_METHOD(Paint_RichText, GB_STRING text; GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_FLOAT h; GB_INTEGER align)
 
 	CHECK_DEVICE();
@@ -641,7 +640,6 @@ BEGIN_METHOD(Paint_RichText, GB_STRING text; GB_FLOAT x; GB_FLOAT y; GB_FLOAT w;
 	PAINT->RichText(THIS, STRING(text), LENGTH(text), VARGOPT(w, -1), VARGOPT(h, -1), VARGOPT(align, GB_DRAW_ALIGN_DEFAULT));
 	
 END_METHOD
-*/
 
 BEGIN_METHOD(Paint_TextExtents, GB_STRING text)
 
@@ -651,6 +649,19 @@ BEGIN_METHOD(Paint_TextExtents, GB_STRING text)
 
 	GB.New(POINTER(&extents), GB.FindClass("PaintExtents"), NULL, NULL);
 	PAINT->TextExtents(THIS, STRING(text), LENGTH(text), &extents->ext);
+	
+	GB.ReturnObject(extents);
+
+END_METHOD
+
+BEGIN_METHOD(Paint_RichTextExtents, GB_STRING text)
+
+	PAINT_EXTENTS *extents;
+	
+	CHECK_DEVICE();
+
+	GB.New(POINTER(&extents), GB.FindClass("PaintExtents"), NULL, NULL);
+	PAINT->RichTextExtents(THIS, STRING(text), LENGTH(text), &extents->ext);
 	
 	GB.ReturnObject(extents);
 
@@ -912,8 +923,9 @@ GB_DESC PaintDesc[] =
 	GB_STATIC_METHOD("RelMoveTo", NULL, Paint_RelMoveTo, "(X)f(Y)f"),
 	GB_STATIC_PROPERTY("Font", "Font", Paint_Font),
 	GB_STATIC_METHOD("Text", NULL, Paint_Text, "(Text)s[(X)f(Y)f(Width)f(Height)f(Alignment)i)]"),
-	//GB_STATIC_METHOD("RichText", NULL, Paint_RichText, "(Text)s[(X)f(Y)f(Width)f(Height)f(Alignment)i)]"),
+	GB_STATIC_METHOD("RichText", NULL, Paint_RichText, "(Text)s[(X)f(Y)f(Width)f(Height)f(Alignment)i)]"),
 	GB_STATIC_METHOD("TextExtents", "PaintExtents", Paint_TextExtents, "(Text)s"),
+	GB_STATIC_METHOD("RichTextExtents", "PaintExtents", Paint_RichTextExtents, "(Text)s"),
 	
 	GB_STATIC_METHOD("Color", "PaintBrush", Paint_Color, "(Color)i"),
 	GB_STATIC_METHOD("Image", "PaintBrush", Paint_Image, "(Image)Image;[(X)f(Y)f]"),

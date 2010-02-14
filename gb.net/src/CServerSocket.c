@@ -596,6 +596,9 @@ GB_DESC CServerSocketDesc[] =
 
 	GB_PROPERTY("Timeout", "i", CSOCKET_Timeout),
 
+  GB_CONSTANT("_IsControl", "b", TRUE),
+  GB_CONSTANT("_IsVirtual", "b", TRUE),
+  GB_CONSTANT("_Group", "s", "Network"),
   GB_CONSTANT("_Properties", "s", "Type=0,Path,Port"),
   GB_CONSTANT("_DefaultEvent", "s", "Connection"),
 

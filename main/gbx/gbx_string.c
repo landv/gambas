@@ -896,7 +896,7 @@ int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool r
 
 	if (lp == 1)
 	{
-		uchar cp = *pp;
+		char cp = *pp;
 		
 		if (nocase)
 		{

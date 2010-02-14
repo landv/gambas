@@ -1404,9 +1404,7 @@ GB_DESC CWindowDesc[] =
 	GB_PROPERTY_SELF("Menus", ".WindowMenus"),
 	GB_PROPERTY_SELF("Controls", ".WindowControls"),
 
-	GB_CONSTANT("_Properties", "s", CWINDOW_PROPERTIES),
-	GB_CONSTANT("_DefaultEvent", "s", "Open"),
-	GB_CONSTANT("_Arrangement", "i", ARRANGE_FILL),
+	WINDOW_DESCRIPTION,
 
 	GB_EVENT("Close", "b", NULL, &EVENT_Close),
 	GB_EVENT("Open", NULL, NULL, &EVENT_Open),
@@ -1445,6 +1443,8 @@ GB_DESC CFormDesc[] =
 	GB_STATIC_METHOD("Main", NULL, CFORM_main, NULL),
 	GB_STATIC_METHOD("Load", NULL, CFORM_load, "[(Parent)Control;]"),
 	GB_METHOD("_new", NULL, CFORM_new, NULL),
+	
+	FORM_DESCRIPTION,
 
 	GB_END_DECLARE
 };

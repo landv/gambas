@@ -325,6 +325,8 @@ GB_DESC PrinterDesc[] =
 
   GB_INTERFACE("Paint", &PAINT_Interface),
 
+	PRINTER_DESCRIPTION,
+
   GB_END_DECLARE
 };
 

@@ -612,38 +612,75 @@ static void CurveTo(GB_PAINT *d, float x1, float y1, float x2, float y2, float x
 	PATH(d)->cubicTo(QPointF((qreal)x1, (qreal)y1), QPointF((qreal)x2, (qreal)y2), QPointF((qreal)x3, (qreal)y3));
 }
 
-static GB_PAINT *_draw_text_p;
+static QPainterPath *_draw_path;
+static float _draw_x, _draw_y;
 
-static void draw_text_cb(float x, float y, QString &text)
-{
-	PATH(_draw_text_p)->addText(x, y, PAINTER(_draw_text_p)->font(), text);
-}
-	
-static void Text(GB_PAINT *d, const char *text, int len, float w, float h, int align)
+static void draw_text(GB_PAINT *d, bool rich, const char *text, int len, float w, float h, int align)
 {
 	QPointF pos;
 	
 	CREATE_PATH(d);
 	
-	pos = PATH(d)->currentPosition();
-	_draw_text_p = d;
+	GetCurrentPoint(d, &_draw_x, &_draw_y);
+	_draw_path = PATH(d);
 
 	if (w <= 0 || h <= 0)
-		pos.ry() -= PAINTER(d)->fontMetrics().ascent();
+		_draw_y -= PAINTER(d)->fontMetrics().ascent();
 	
-	DRAW_text_with(PAINTER(d), text, len, pos.x(), pos.y(), w, h, align, draw_text_cb);
+	MyPaintDevice device;
+	QPainter p(&device);
+	
+	p.setFont(PAINTER(d)->font());
+	
+	if (rich)
+		DRAW_rich_text(&p, QString::fromUtf8(text, len), 0, 0, w, h, CCONST_alignment(align, ALIGN_TOP_NORMAL, true));	
+	else
+		DRAW_text(&p, QString::fromUtf8(text, len), 0, 0, w, h, CCONST_alignment(align, ALIGN_TOP_NORMAL, true));	
+	
+	p.end();
+}
+
+static void Text(GB_PAINT *d, const char *text, int len, float w, float h, int align)
+{
+	draw_text(d, false, text, len, w, h, align);
+}
+
+static void RichText(GB_PAINT *d, const char *text, int len, float w, float h, int align)
+{
+	draw_text(d, true, text, len, w, h, align);
+}
+
+static void get_text_extents(GB_PAINT *d, bool rich, const char *text, int len, GB_EXTENTS *ext)
+{
+	QPainterPath path;
+	MyPaintDevice device;
+	QPainter p(&device);
+	
+	p.setFont(PAINTER(d)->font());
+	_draw_path = &path;
+	GetCurrentPoint(d, &_draw_x, &_draw_y);
+	_draw_y -= PAINTER(d)->fontMetrics().ascent();
+	
+	if (rich)
+		DRAW_rich_text(&p, QString::fromUtf8(text, len), 0, 0, -1, -1, CCONST_alignment(ALIGN_TOP_NORMAL, ALIGN_TOP_NORMAL, true));	
+	else
+		DRAW_text(&p, QString::fromUtf8(text, len), 0, 0, -1, -1, CCONST_alignment(ALIGN_TOP_NORMAL, ALIGN_TOP_NORMAL, true));	
+	
+	p.end();
+	
+	get_path_extents(&path, ext);
 }
 
 static void TextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext)
 {
-	QPainterPath path;
-	float x, y;
-	
-	GetCurrentPoint(d, &x, &y);
-	path.addText(x, y, PAINTER(d)->font(), QString::fromUtf8(text, len));
-	get_path_extents(&path, ext);
+	get_text_extents(d, false, text, len, ext);
 }
-		
+
+static void RichTextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext)
+{
+	get_text_extents(d, true, text, len, ext);
+}
+
 static void Matrix(GB_PAINT *d, int set, GB_TRANSFORM matrix)
 {
 	QTransform *t = (QTransform *)matrix;
@@ -853,6 +890,8 @@ GB_PAINT_DESC PAINT_Interface = {
 	CurveTo,
 	Text,
 	TextExtents,
+	RichText,
+	RichTextExtents,
 	Matrix,
 	SetBrush,
 	{
@@ -897,4 +936,65 @@ void PAINT_get_current_point(float *x, float *y)
 	if (!d)
 		return;
 	GetCurrentPoint(d, x, y);
+}
+
+/*************************************************************************/
+
+MyPaintEngine::MyPaintEngine() : QPaintEngine(0) {}
+MyPaintEngine::~MyPaintEngine() {}
+
+bool MyPaintEngine::begin(QPaintDevice *pdev) 
+{
+	setActive(true);
+	return true; 
+}
+
+bool MyPaintEngine::end() 
+{
+	setActive(false);
+	return true;
+}
+
+void MyPaintEngine::updateState(const QPaintEngineState &state) {}
+
+void MyPaintEngine::drawRects(const QRectF *rects, int rectCount) {}
+
+void MyPaintEngine::drawLines(const QLineF *lines, int lineCount) {}
+
+void MyPaintEngine::drawEllipse(const QRectF &r) {}
+
+void MyPaintEngine::drawPath(const QPainterPath &path) {}
+
+void MyPaintEngine::drawPoints(const QPointF *points, int pointCount) {}
+
+void MyPaintEngine::drawPolygon(const QPointF *points, int pointCount, PolygonDrawMode mode) {}
+
+void MyPaintEngine::drawPixmap(const QRectF &r, const QPixmap &pm, const QRectF &sr) {}
+void MyPaintEngine::drawTiledPixmap(const QRectF &r, const QPixmap &pixmap, const QPointF &s) {}
+void MyPaintEngine::drawImage(const QRectF &r, const QImage &pm, const QRectF &sr, Qt::ImageConversionFlags flags) {}
+
+//QPoint MyPaintEngine::coordinateOffset() const;
+
+MyPaintEngine::Type MyPaintEngine::type() const
+{
+	return QPaintEngine::User;
+}
+
+void MyPaintEngine::drawTextItem(const QPointF &p, const QTextItem &textItem)
+{
+	//qDebug("drawTextItem: %g %g [%s] '%s'", p.x() + _draw_x, p.y() + _draw_y, (const char *)textItem.font().toString().toUtf8(), (const char *)textItem.text().toUtf8());
+	_draw_path->addText(p.x() + _draw_x, p.y() + _draw_y, textItem.font(), textItem.text());
+}
+
+/*************************************************************************/
+
+MyPaintEngine MyPaintDevice::engine;
+
+MyPaintDevice::MyPaintDevice() : QImage(1, 1, QImage::Format_ARGB32)
+{
+}
+
+QPaintEngine *MyPaintDevice::paintEngine() const
+{ 
+	return &engine; 
 }

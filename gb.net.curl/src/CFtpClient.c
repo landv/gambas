@@ -298,6 +298,9 @@ GB_DESC CFtpClientDesc[] =
   GB_METHOD("Get", NULL, CFTPCLIENT_Get, "[(TargetFile)s]"),
   GB_METHOD("Put", NULL, CFTPCLIENT_Put, "(LocalFile)s"),
   
+  GB_CONSTANT("_IsControl", "b", TRUE),
+  GB_CONSTANT("_IsVirtual", "b", TRUE),
+  GB_CONSTANT("_Group", "s", "Network"),
   GB_CONSTANT("_Properties", "s", FTP_PROPERTIES),
   GB_CONSTANT("_DefaultEvent", "s", "Read"),
   

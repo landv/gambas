@@ -26,6 +26,9 @@
 #include "gambas.h"
 #include "gb.paint.h"
 
+#include <QPaintEngine>
+#include <QPaintDevice>
+#include <QImage>
 #include <QPainter>
 #include <QString>
 
@@ -39,5 +42,43 @@ void PAINT_begin(void *device);
 void PAINT_end();
 QPainter *PAINT_get_current();
 void PAINT_get_current_point(float *x, float *y);
+
+class MyPaintEngine: public QPaintEngine
+{
+public:
+	MyPaintEngine();
+  virtual ~MyPaintEngine();
+
+	virtual bool begin(QPaintDevice *pdev);
+	virtual bool end();
+
+	virtual void updateState(const QPaintEngineState &state);
+
+	virtual void drawRects(const QRectF *rects, int rectCount);
+	virtual void drawLines(const QLineF *lines, int lineCount);
+	virtual void drawEllipse(const QRectF &r);
+	virtual void drawPath(const QPainterPath &path);
+	virtual void drawPoints(const QPointF *points, int pointCount);
+	virtual void drawPolygon(const QPointF *points, int pointCount, PolygonDrawMode mode);
+	virtual void drawPixmap(const QRectF &r, const QPixmap &pm, const QRectF &sr);
+	virtual void drawTextItem(const QPointF &p, const QTextItem &textItem);
+	virtual void drawTiledPixmap(const QRectF &r, const QPixmap &pixmap, const QPointF &s);
+	virtual void drawImage(const QRectF &r, const QImage &pm, const QRectF &sr, Qt::ImageConversionFlags flags = Qt::AutoColor);
+
+	//virtual QPoint coordinateOffset() const;
+
+	virtual Type type() const;
+};
+
+class MyPaintDevice: public QImage
+{
+public:
+	MyPaintDevice();
+	virtual QPaintEngine *paintEngine() const;
+
+private:
+	static MyPaintEngine engine;
+};
+
 
 #endif

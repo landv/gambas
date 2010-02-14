@@ -130,6 +130,9 @@ GB_DESC NATIVE_Timer[] =
 
   GB_METHOD("Trigger", NULL, CTIMER_trigger, NULL),
   
+  GB_CONSTANT("_IsControl", "b", TRUE),
+  GB_CONSTANT("_IsVirtual", "b", TRUE),
+  GB_CONSTANT("_Group", "s", "Special"),
   GB_CONSTANT("_Properties", "s", "Enabled,Delay{Range:0;86400000;10;ms}=1000"),
   GB_CONSTANT("_DefaultEvent", "s", "Timer"),
 

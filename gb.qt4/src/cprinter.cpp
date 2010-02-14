@@ -26,6 +26,7 @@
 #include <QPrintDialog>
 
 #include "gb.form.print.h"
+#include "gb.form.properties.h"
 #include "cpaint_impl.h"
 #include "cprinter.h"
 
@@ -472,6 +473,8 @@ GB_DESC PrinterDesc[] =
 
   GB_INTERFACE("Paint", &PAINT_Interface),
 
-  GB_END_DECLARE
+	PRINTER_DESCRIPTION,
+
+	GB_END_DECLARE
 };
 

@@ -1,10 +1,19 @@
 ' Gambas class file
 
-Static Private $hLogo As SvgImage
+Static Private $hLogo As Image
 
 Public Sub _new(hDrawingArea As DrawingArea)
   
-  If Not $hLogo Then $hLogo = SvgImage.Load("img/logo/gambas.svg")
+  Dim hSvgLogo As SvgImage
+  
+  If Not $hLogo Then 
+    hSvgLogo = SvgImage.Load("img/logo/gambas.svg")
+    $hLogo = New Image(hSvgLogo.Width, 256, Color.Transparent)
+    Paint.Begin($hLogo)
+    Paint.Scale(1.1, 1.1)
+    hSvgLogo.Paint
+    Paint.End
+  Endif
 
   Object.Attach(hDrawingArea, Me, "dwgWelcome")
   
@@ -40,9 +49,10 @@ Public Sub dwgWelcome_Draw()
 
   Dim X As Integer
 
+  Paint.Brush = Paint.Image($hLogo)
   Paint.Translate(Last.W - $hLogo.Width, -20)
-  Paint.Scale(1.1, 1.1)
-  $hLogo.Paint
+  Paint.Rectangle(0, 0, $hLogo.Width, $hLogo.Height)
+  Paint.Fill
   Paint.Reset
 
   Paint.Font = Font["+12,Bold"]

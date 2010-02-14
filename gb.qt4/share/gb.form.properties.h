@@ -30,57 +30,54 @@
   "SizeE;SizeNWSE;SizeNESW;SplitH;SplitV;Pointing}=Default,ToolTip,Drop,Expand,Ignore"
 #define CARRANGEMENT_PROPERTY "Arrangement{Arrange.None;Horizontal;Vertical;Row;Column;Fill}"
 #define CPADDING_PROPERTIES "Spacing,Margin,Padding{Range:0;63},Indent"
-#define CWINDOWS_PADDING_PROPERTIES "Spacing,Margin,Padding{Range:0;63}"
+#define CWINDOW_PADDING_PROPERTIES "Spacing,Margin,Padding{Range:0;63}"
 #define CARRANGEMENT_PROPERTIES CARRANGEMENT_PROPERTY ",AutoResize," CPADDING_PROPERTIES
-#define CWINDOW_ARRANGEMENT_PROPERTIES CARRANGEMENT_PROPERTY ",AutoResize," CWINDOWS_PADDING_PROPERTIES
+#define CWINDOW_ARRANGEMENT_PROPERTIES CARRANGEMENT_PROPERTY ",AutoResize," CWINDOW_PADDING_PROPERTIES
 #define CUSERCONTROL_PROPERTIES "*"
 #define CUSERCONTAINER_PROPERTIES "*," CARRANGEMENT_PROPERTIES
 
-#define CLABEL_PROPERTIES "*,Padding{Range:0;63},AutoResize,Text,Alignment{Align.*}=Normal,Border{Border.*},Transparent"
-#define CSEPARATOR_PROPERTIES "*"
-#define CTEXTLABEL_PROPERTIES "*,Padding{Range:0;63},AutoResize,Text,Alignment{Align.*}=TopNormal,Border{Border.*},Transparent"
-#define CPICTUREBOX_PROPERTIES "*,Picture,Stretch,AutoResize,Alignment{Align.*}=TopLeft,Border{Border.*}"
-#define CTEXTBOX_PROPERTIES "*,Action,Text,Alignment{Align.Normal;Left;Center;Right}=Normal,ReadOnly,Password,MaxLength,Border=True"
-#define CTEXTAREA_PROPERTIES "*,Text,ReadOnly,Wrap,Border=True,ScrollBar{Scroll.*}=Both"
-#define CTEXTEDIT_PROPERTIES "*,ReadOnly,ScrollBar{Scroll.*}=Both,Border=True"
-#define CLISTBOX_PROPERTIES "*,List,Mode{Select.*}=Single,Sorted"
-#define CCOMBOBOX_PROPERTIES "*,Action,Text,ReadOnly,Password,MaxLength,List,Sorted"
 #define CBUTTON_PROPERTIES "*,Action,AutoResize,Text,Picture,Border=True,Default,Cancel"
+#define CCHECKBOX_PROPERTIES "*,Action,Text,Tristate,Value{CheckBox.False;True;None}"
+#define CCOLUMNVIEW_PROPERTIES "*,Mode{Select.*}=Single,Sorted,Editable,Header=True,Resizable=False,AutoResize=True,Border=True,ScrollBar{Scroll.*}=Both"
+#define CCOMBOBOX_PROPERTIES "*,Action,Text,ReadOnly,Password,MaxLength,List,Sorted"
+#define CDRAWINGAREA_PROPERTIES "*,Cached,Painted,Tracking,Focus,Merge,Border{Border.*}"
+#define CFRAME_PROPERTIES "*,Text"
+#define CGRIDVIEW_PROPERTIES "*,Mode{Select.None;Single;Multiple}=None,Grid=True,Header{GridView.None;Vertical;Horizontal;Both}=None,Scrollbar{Scroll.*}=Both,Border=True,AutoResize=True,Resizable=True"
+#define CHBOX_PROPERTIES "*,AutoResize," CPADDING_PROPERTIES
+#define CHSPLIT_PROPERTIES "*"
+#define CICONVIEW_PROPERTIES "*,Mode{Select.*}=Single,Sorted,Editable,GridWidth{Range:0;64}=0,Border=True,ScrollBar{Scroll.*}=Both"
+#define CLABEL_PROPERTIES "*,Padding{Range:0;63},AutoResize,Text,Alignment{Align.*}=Normal,Border{Border.*},Transparent"
+#define CLISTBOX_PROPERTIES "*,List,Mode{Select.*}=Single,Sorted"
+#define CLISTVIEW_PROPERTIES "*,Mode{Select.*}=Single,Sorted,Editable,Border=True,ScrollBar{Scroll.*}=Both"
+#define CMENU_PROPERTIES "Action,Text,Picture,Enabled=True,Toggle,Checked,Visible=True,Tag,Shortcut"
+#define CMOVIEBOX_PROPERTIES "*,Path,Playing,Border{Border.*}"
+#define CPANEL_PROPERTIES "*," CARRANGEMENT_PROPERTIES ",Border{Border.*}"
+#define CPICTUREBOX_PROPERTIES "*,Picture,Stretch,AutoResize,Alignment{Align.*}=TopLeft,Border{Border.*}"
+#define CPRINTER_PROPERTIES "Orientation{Printer.Portrait;Landscape}=Portrait,Paper{Printer.A3;A4;A5;B5;Letter;Executive}=A4,CollateCopies,ReverseOrder,Duplex{Printer.Simplex;Horizontal;Vertical}=Simplex,GrayScale,FullPage"
+#define CPROGRESSBAR_PROPERTIES "*,Action,Label=True"
+#define CRADIOBUTTON_PROPERTIES "*,Text,Value"
+#define CSCROLLBAR_PROPERTIES "*,MinValue=0,MaxValue=100,Step=1,PageStep=10,Tracking=True"
+#define CSCROLLVIEW_PROPERTIES "*," CARRANGEMENT_PROPERTY "," CPADDING_PROPERTIES ",Border=True,ScrollBar{Scroll.*}=Both"
+#define CSEPARATOR_PROPERTIES "*"
+#define CSLIDER_PROPERTIES "*,Action,MinValue=0,MaxValue=100,Step=1,PageStep=10,Tracking=True,Mark,Value"
+#define CSPINBOX_PROPERTIES "*,Action,MinValue=0,MaxValue=100,Step=1,Wrap,Value,Border=True"
+#define CTABSTRIP_PROPERTIES "*," CARRANGEMENT_PROPERTIES ",Count{Range:1;256}=1,Index,Text,Picture,Orientation{Align.Top;Bottom;Left;Right}=Top"
+#define CTEXTAREA_PROPERTIES "*,Text,ReadOnly,Wrap,Border=True,ScrollBar{Scroll.*}=Both"
+#define CTEXTBOX_PROPERTIES "*,Action,Text,Alignment{Align.Normal;Left;Center;Right}=Normal,ReadOnly,Password,MaxLength,Border=True"
+#define CTEXTEDIT_PROPERTIES "*,ReadOnly,ScrollBar{Scroll.*}=Both,Border=True"
+#define CTEXTLABEL_PROPERTIES "*,Padding{Range:0;63},AutoResize,Text,Alignment{Align.*}=TopNormal,Border{Border.*},Transparent"
 #define CTOGGLEBUTTON_PROPERTIES "*,Action,AutoResize,Text,Picture,Border=True,Radio,Value"
 #define CTOOLBUTTON_PROPERTIES "*,Action,AutoResize,Text,Picture,Border,Radio,Toggle,Value"
-#define CCHECKBOX_PROPERTIES "*,Action,Text,Tristate,Value{CheckBox.False;True;None}"
-#define CRADIOBUTTON_PROPERTIES "*,Text,Value"
-#define CSPINBOX_PROPERTIES "*,Action,MinValue=0,MaxValue=100,Step=1,Wrap,Value,Border=True"
-#define CDRAWINGAREA_PROPERTIES "*,Cached,Painted,Tracking,Focus,Merge,Border{Border.*}"
-#define CTREEVIEW_PROPERTIES "*,Mode{Select.*}=Single,Sorted,Editable,Border=True,ScrollBar{Scroll.*}=Both"
-#define CLISTVIEW_PROPERTIES "*,Mode{Select.*}=Single,Sorted,Editable,Border=True,ScrollBar{Scroll.*}=Both"
-#define CCOLUMNVIEW_PROPERTIES "*,Mode{Select.*}=Single,Sorted,Editable,Header=True,Resizable=False,AutoResize=True,Border=True,ScrollBar{Scroll.*}=Both"
-#define CICONVIEW_PROPERTIES "*,Mode{Select.*}=Single,Sorted,Editable,GridWidth{Range:0;64}=0,Border=True,ScrollBar{Scroll.*}=Both"
-#define CSCROLLVIEW_PROPERTIES "*," CARRANGEMENT_PROPERTY "," CPADDING_PROPERTIES ",Border=True,ScrollBar{Scroll.*}=Both"
-#define CGRIDVIEW_PROPERTIES "*,Mode{Select.None;Single;Multiple}=None,Grid=True,Header{GridView.None;Vertical;Horizontal;Both}=None,Scrollbar{Scroll.*}=Both,Border=True,AutoResize=True,Resizable=True"
-#define CPANEL_PROPERTIES "*," CARRANGEMENT_PROPERTIES ",Border{Border.*}"
-#define CHBOX_PROPERTIES "*,AutoResize," CPADDING_PROPERTIES
-#define CVBOX_PROPERTIES CHBOX_PROPERTIES
-#define CHSPLIT_PROPERTIES "*"
-#define CVSPLIT_PROPERTIES "*"
-#define CFRAME_PROPERTIES "*,Text"
-#define CTABSTRIP_PROPERTIES "*," CARRANGEMENT_PROPERTIES ",Count{Range:1;256}=1,Index,Text,Picture,Orientation{Align.Top;Bottom;Left;Right}=Top"
-#define CWINDOW_PROPERTIES "*,Action,Text,Icon,Picture,Mask,Persistent,Resizable=True,Border=True,Type{WindowType.*}=Normal,Stacking{Window.Normal;Above;Below}=Normal,Minimized,Maximized,FullScreen,Sticky,SkipTaskbar," CWINDOW_ARRANGEMENT_PROPERTIES
-#define CMOVIEBOX_PROPERTIES "*,Path,Playing,Border{Border.*}"
-#define CPROGRESSBAR_PROPERTIES "*,Action,Label=True"
-#define CSCROLLBAR_PROPERTIES "*,MinValue=0,MaxValue=100,Step=1,PageStep=10,Tracking=True"
-#define CSLIDER_PROPERTIES "*,Action,MinValue=0,MaxValue=100,Step=1,PageStep=10,Tracking=True,Mark,Value"
 #define CTRAYICON_PROPERTIES "Visible=False,Tag,Tooltip,Picture"
-#define CMENU_PROPERTIES "Action,Text,Picture,Enabled=True,Toggle,Checked,Visible=True,Tag,Shortcut"
+#define CTREEVIEW_PROPERTIES "*,Mode{Select.*}=Single,Sorted,Editable,Border=True,ScrollBar{Scroll.*}=Both"
+#define CVBOX_PROPERTIES CHBOX_PROPERTIES
+#define CVSPLIT_PROPERTIES "*"
+#define CWINDOW_PROPERTIES "*,Action,Text,Icon,Picture,Mask,Persistent,Resizable=True,Border=True,Type{WindowType.*}=Normal,Stacking{Window.Normal;Above;Below}=Normal,Minimized,Maximized,FullScreen,Sticky,SkipTaskbar," CWINDOW_ARRANGEMENT_PROPERTIES
 
 #define DESCRIBE_CONTROL(_prop, _event, _size) \
   GB_CONSTANT("_Properties", "s", _prop), \
   GB_CONSTANT("_DefaultEvent", "s", _event), \
   GB_CONSTANT("_DefaultSize", "s", _size)
-
-#define DESCRIBE_CONTROL_NO_SIZE(_prop, _event) \
-  GB_CONSTANT("_Properties", "s", _prop), \
-  GB_CONSTANT("_DefaultEvent", "s", _event)
 
 #define DESCRIBE_CONTAINER(_prop, _event, _arr) \
   GB_CONSTANT("_Properties", "s", _prop), \
@@ -88,11 +85,23 @@
   GB_CONSTANT("_DefaultSize", "s", "24,24"), \
   GB_CONSTANT("_Arrangement", "i", _arr)
 
+#define DESCRIBE_MULTI_CONTAINER(_prop, _event, _arr) \
+	GB_CONSTANT("_IsMultiContainer", "b", TRUE), \
+	DESCRIBE_CONTAINER(_prop, _event, _arr)
+
+#define CONTROL_DESCRIPTION \
+	DESCRIBE_CONTROL(CCONTROL_PROPERTIES, "MouseDown", "16,16"), \
+	GB_CONSTANT("_IsControl", "b", TRUE), \
+	GB_CONSTANT("_Family", "s", "Form") \
+	
+#define CONTAINER_DESCRIPTION \
+	GB_CONSTANT("_IsContainer", "b", TRUE), \
+	GB_CONSTANT("_Group", "s", "Container") \
+	
 #define BUTTON_DESCRIPTION DESCRIBE_CONTROL(CBUTTON_PROPERTIES, "Click", "16,4")
 #define CHECKBOX_DESCRIPTION DESCRIBE_CONTROL(CCHECKBOX_PROPERTIES, "Click", "24,4")
 #define COLUMNVIEW_DESCRIPTION DESCRIBE_CONTROL(CCOLUMNVIEW_PROPERTIES, "Click", "16,16")
 #define COMBOBOX_DESCRIPTION DESCRIBE_CONTROL(CCOMBOBOX_PROPERTIES, "Click", "24,4")
-#define CONTROL_DESCRIPTION DESCRIBE_CONTROL(CCONTROL_PROPERTIES, "MouseDown", "16,16")
 #define DRAWINGAREA_DESCRIPTION DESCRIBE_CONTAINER(CDRAWINGAREA_PROPERTIES, "Draw", ARRANGE_NONE)
 #define EMBEDDER_DESCRIPTION DESCRIBE_CONTROL("*", "Embed", "24,24")
 #define FRAME_DESCRIPTION DESCRIBE_CONTAINER(CFRAME_PROPERTIES, "MouseDown", ARRANGE_NONE)
@@ -107,20 +116,20 @@
 #define MOVIEBOX_DESCRIPTION DESCRIBE_CONTROL(CMOVIEBOX_PROPERTIES, "MouseDown", "16,16")
 #define PANEL_DESCRIPTION DESCRIBE_CONTAINER(CPANEL_PROPERTIES, "MouseDown", ARRANGE_FILL)
 #define PICTUREBOX_DESCRIPTION DESCRIBE_CONTROL(CPICTUREBOX_PROPERTIES, "MouseDown", "16,16")
-#define PROGRESSBAR_DESCRIPTION DESCRIBE_CONTROL(CPROGRESSBAR_PROPERTIES, "MouseDown", "36,4")
+#define PROGRESSBAR_DESCRIPTION DESCRIBE_CONTROL(CPROGRESSBAR_PROPERTIES, "MouseDown", "24,4")
 #define RADIOBUTTON_DESCRIPTION DESCRIBE_CONTROL(CRADIOBUTTON_PROPERTIES, "Click", "24,4")
 #define SCROLLBAR_DESCRIPTION DESCRIBE_CONTROL(CSCROLLBAR_PROPERTIES, "Change", "36,4")
 #define SCROLLVIEW_DESCRIPTION DESCRIBE_CONTAINER(CSCROLLVIEW_PROPERTIES, "MouseDown", ARRANGE_FILL)
 #define SEPARATOR_DESCRIPTION DESCRIBE_CONTROL(CSEPARATOR_PROPERTIES, "MouseDown", "1,4")
-#define SLIDER_DESCRIPTION DESCRIBE_CONTROL(CSLIDER_PROPERTIES, "Change", "36,4")
+#define SLIDER_DESCRIPTION DESCRIBE_CONTROL(CSLIDER_PROPERTIES, "Change", "24,4")
 #define SPINBOX_DESCRIPTION DESCRIBE_CONTROL(CSPINBOX_PROPERTIES, "Change", "9,4")
-#define TABSTRIP_DESCRIPTION DESCRIBE_CONTAINER(CTABSTRIP_PROPERTIES, "Click", ARRANGE_FILL)
+#define TABSTRIP_DESCRIPTION DESCRIBE_MULTI_CONTAINER(CTABSTRIP_PROPERTIES, "Click", ARRANGE_FILL)
 #define TEXTAREA_DESCRIPTION DESCRIBE_CONTROL(CTEXTAREA_PROPERTIES, "KeyPress", "16,16")
 #define TEXTBOX_DESCRIPTION DESCRIBE_CONTROL(CTEXTBOX_PROPERTIES, "KeyPress", "24,4")
 #define TEXTEDIT_DESCRIPTION DESCRIBE_CONTROL(CTEXTEDIT_PROPERTIES, "Change", "16,16")
 #define TEXTLABEL_DESCRIPTION DESCRIBE_CONTROL(CTEXTLABEL_PROPERTIES, "MouseDown", "24,4")
 #define TOGGLEBUTTON_DESCRIPTION DESCRIBE_CONTROL(CTOGGLEBUTTON_PROPERTIES, "Click", "16,4")
-#define TOOLBUTTON_DESCRIPTION DESCRIBE_CONTROL(CTOOLBUTTON_PROPERTIES, "Click", "3,4")
+#define TOOLBUTTON_DESCRIPTION DESCRIBE_CONTROL(CTOOLBUTTON_PROPERTIES, "Click", "4,4")
 #define TRAYICON_DESCRIPTION DESCRIBE_CONTROL(CTRAYICON_PROPERTIES, "Menu", "4,4")
 #define TREEVIEW_DESCRIPTION DESCRIBE_CONTROL(CTREEVIEW_PROPERTIES, "Click", "16,16")
 #define USERCONTROL_DESCRIPTION DESCRIBE_CONTROL(CUSERCONTROL_PROPERTIES, "MouseDown", "16,16")
@@ -128,7 +137,23 @@
 #define VBOX_DESCRIPTION DESCRIBE_CONTAINER(CVBOX_PROPERTIES, "MouseDown", ARRANGE_VERTICAL)
 #define VPANEL_DESCRIPTION DESCRIBE_CONTAINER(CVBOX_PROPERTIES, "MouseDown", ARRANGE_COLUMN)
 #define VSPLIT_DESCRIPTION DESCRIBE_CONTAINER(CVSPLIT_PROPERTIES, "Resize", ARRANGE_VERTICAL)
-#define MENU_DESCRIPTION DESCRIBE_CONTROL_NO_SIZE(CMENU_PROPERTIES, "Click")
+#define WINDOW_DESCRIPTION DESCRIBE_CONTAINER(CWINDOW_PROPERTIES, "Open", ARRANGE_FILL)
+
+#define MENU_DESCRIPTION \
+	GB_CONSTANT("_IsControl", "b", TRUE), \
+	GB_CONSTANT("_Family", "s", "Form"), \
+  GB_CONSTANT("_Properties", "s", CMENU_PROPERTIES), \
+  GB_CONSTANT("_DefaultEvent", "s", "Click") \
+
+#define FORM_DESCRIPTION \
+	GB_CONSTANT("_IsForm", "b", TRUE), \
+  GB_CONSTANT("_HiddenControls", "s", "Control,Menu")
+
+#define PRINTER_DESCRIPTION \
+	GB_CONSTANT("_IsControl", "b", TRUE), \
+	GB_CONSTANT("_IsVirtual", "b", TRUE), \
+  GB_CONSTANT("_Properties", "s", CPRINTER_PROPERTIES), \
+  GB_CONSTANT("_DefaultEvent", "s", "Draw") \
 
 #endif
 

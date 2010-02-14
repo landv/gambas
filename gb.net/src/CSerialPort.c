@@ -677,6 +677,9 @@ GB_DESC CSerialPortDesc[] =
   GB_PROPERTY_READ("DCD", "b", CSERIALPORT_DCD),
   GB_PROPERTY_READ("RNG", "b", CSERIALPORT_RNG),
   
+  GB_CONSTANT("_IsControl", "b", TRUE),
+  GB_CONSTANT("_IsVirtual", "b", TRUE),
+  GB_CONSTANT("_Group", "s", "Network"),
   GB_CONSTANT("_Properties", "s", "FlowControl{SerialPort.None;Hardware;Software;Both}=Hardware,PortName,Parity{SerialPort.None;Even;Odd}=None,Speed=19200,DataBits{SerialPort.Bits5;Bits6;Bits7;Bits8}=Bits8,StopBits{SerialPort.Bits1;Bits2}=Bits1"),
   GB_CONSTANT("_DefaultEvent", "s", "Read"),
 

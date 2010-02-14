@@ -627,6 +627,9 @@ GB_DESC CHttpClientDesc[] =
   GB_PROPERTY_READ("Code","i",CHttpClient_ReturnCode),
   GB_PROPERTY_READ("Reason","s",CHttpClient_ReturnString),
   
+  GB_CONSTANT("_IsControl", "b", TRUE),
+  GB_CONSTANT("_IsVirtual", "b", TRUE),
+  GB_CONSTANT("_Group", "s", "Network"),
   GB_CONSTANT("_Properties", "s", HTTP_PROPERTIES),
   GB_CONSTANT("_DefaultEvent", "s", "Read"),
 

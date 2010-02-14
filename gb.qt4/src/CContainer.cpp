@@ -1228,6 +1228,8 @@ GB_DESC CContainerDesc[] =
 	GB_PROPERTY_READ("ClientHeight", "i", CCONTAINER_height),
 	
 	GB_METHOD("Find", "Control", CCONTAINER_find, "(X)i(Y)i"),
+	
+	CONTAINER_DESCRIPTION,
 
 	GB_EVENT("BeforeArrange", NULL, NULL, &EVENT_BeforeArrange),
 	GB_EVENT("Arrange", NULL, NULL, &EVENT_Arrange),

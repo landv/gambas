@@ -601,7 +601,7 @@ static void CurveTo(GB_PAINT *d, float x1, float y1, float x2, float y2, float x
 
 static void draw_text(GB_PAINT *d, bool rich, const char *text, int len, float w, float h, int align)
 {
-	char *html;
+	char *html = NULL;
   PangoLayout *layout;
 	CFONT *font;
 	float tw, th, offx, offy;
@@ -633,8 +633,8 @@ static void draw_text(GB_PAINT *d, bool rich, const char *text, int len, float w
   pango_cairo_layout_path(CONTEXT(d), layout);
 
 	g_object_unref(layout);	
-	if (rich)
-		g_free(html);
+	
+	if (html) g_free(html);
 }
 
 static void Text(GB_PAINT *d, const char *text, int len, float w, float h, int align)
@@ -642,14 +642,15 @@ static void Text(GB_PAINT *d, const char *text, int len, float w, float h, int a
 	draw_text(d, FALSE, text, len, w, h, align);
 }
 
-/*static void RichText(GB_PAINT *d, const char *text, int len, float w, float h, int align)
+static void RichText(GB_PAINT *d, const char *text, int len, float w, float h, int align)
 {
 	draw_text(d, TRUE, text, len, w, h, align);
-}*/
+}
 
 
-static void TextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext)
+static void get_text_extents(GB_PAINT *d, bool rich, const char *text, int len, GB_EXTENTS *ext)
 {
+	char *html = NULL;
 	PangoLayout *layout;
 	CFONT *font;
 	PangoRectangle rect;
@@ -659,7 +660,15 @@ static void TextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext)
 	layout = pango_cairo_create_layout(CONTEXT(d));
 	Paint_Font(d, FALSE, (GB_FONT *)&font);
 	gt_add_layout_from_font(layout, font->font);
-	pango_layout_set_text(layout, text, len);
+	
+	if (rich)
+	{
+		html = gt_html_to_pango_string(text, len, false);
+		pango_layout_set_markup(layout, html, -1);
+	}
+	else
+		pango_layout_set_text(layout, text, len);
+
 	pango_layout_get_extents(layout, &rect, &logrect);
 	
 	GetCurrentPoint(d, &x, &y);
@@ -670,10 +679,19 @@ static void TextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext)
 	ext->y2 = ext->y1 + (float)rect.height / PANGO_SCALE;
 	
 	g_object_unref(layout);
+	if (html) g_free(html);
 }
 
+static void TextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext)
+{
+	get_text_extents(d, FALSE, text, len, ext);
+}
 
-		
+static void RichTextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext)
+{
+	get_text_extents(d, TRUE, text, len, ext);
+}
+
 static void Matrix(GB_PAINT *d, int set, GB_TRANSFORM matrix)
 {
 	cairo_matrix_t *t = (cairo_matrix_t *)matrix;
@@ -966,6 +984,8 @@ GB_PAINT_DESC PAINT_Interface = {
 	CurveTo,
 	Text,
 	TextExtents,
+	RichText,
+	RichTextExtents,
 	Matrix,
 	SetBrush,
 	{

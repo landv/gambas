@@ -993,6 +993,9 @@ GB_DESC CSocketDesc[] =
   GB_PROPERTY("Path","s",CSOCKET_Path),
   GB_PROPERTY("Port","i",CSOCKET_Port),
 
+  GB_CONSTANT("_IsControl", "b", TRUE),
+  GB_CONSTANT("_IsVirtual", "b", TRUE),
+  GB_CONSTANT("_Group", "s", "Network"),
   GB_CONSTANT("_Properties", "s", "Host,Path,Port=80,Timeout{Range:0;3600000;10;ms}"),
   GB_CONSTANT("_DefaultEvent", "s", "Read"),
 

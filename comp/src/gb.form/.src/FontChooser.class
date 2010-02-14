@@ -1,37 +1,37 @@
 ' Gambas class file
 
-EXPORT
-INHERITS UserControl
+Export
+Inherits UserControl
 
-EVENT Change
-EVENT Activate
+Event Change
+Event Activate
 
-PUBLIC CONST _Properties AS String = "*,FixedOnly,ShowStyle=True,ShowPreview=True,ShowLabel=True"
-PUBLIC CONST _DefaultEvent AS String = "Change"
-PUBLIC CONST _DefaultSize AS String = "36,36"
-'PUBLIC CONST _DrawWith AS String = "-"
+Public Const _Properties As String = "*,FixedOnly,ShowStyle=True,ShowPreview=True,ShowLabel=True"
+Public Const _DefaultEvent As String = "Change"
+Public Const _DefaultSize As String = "36,36"
+Public Const _Group As String = "Chooser"
 
-PROPERTY SelectedFont AS String
-PROPERTY Value AS String
-PROPERTY FixedOnly AS Boolean
-PROPERTY ShowStyle AS Boolean
-PROPERTY ShowPreview AS Boolean
-PROPERTY ShowLabel AS Boolean
+Property SelectedFont As String
+Property Value As String
+Property FixedOnly As Boolean
+Property ShowStyle As Boolean
+Property ShowPreview As Boolean
+Property ShowLabel As Boolean
 
-PRIVATE frmChooser AS FFontChooser
+Private frmChooser As FFontChooser
 
-PUBLIC SUB _new()
+Public Sub _new()
 
-  frmChooser = NEW FFontChooser(ME)
+  frmChooser = New FFontChooser(Me)
   'Object.Attach(frmChooser, ME, "frmChooser")
 
-END
+End
 
-PUBLIC SUB _Change()
+Public Sub _Change()
 
-  RAISE Change
+  Raise Change
 
-END
+End
 
 ' PUBLIC SUB frmChooser_Open()
 ' 
@@ -46,82 +46,82 @@ END
 ' END
 
 
-PRIVATE FUNCTION SelectedFont_Read() AS String
+Private Function SelectedFont_Read() As String
 
-  RETURN frmChooser.GetFont()
+  Return frmChooser.GetFont()
 
-END
+End
 
-PRIVATE SUB SelectedFont_Write(sFont AS String)
+Private Sub SelectedFont_Write(sFont As String)
 
   frmChooser.SetFont(sFont)
 
-END
+End
 
-PUBLIC SUB _Activate()
+Public Sub _Activate()
 
-  RAISE Activate
+  Raise Activate
 
-END
+End
 
 
-PRIVATE FUNCTION FixedOnly_Read() AS Boolean
+Private Function FixedOnly_Read() As Boolean
 
-  RETURN frmChooser.ShowFixed
+  Return frmChooser.ShowFixed
 
-END
+End
 
-PRIVATE SUB FixedOnly_Write(bFixedOnly AS Boolean)
+Private Sub FixedOnly_Write(bFixedOnly As Boolean)
 
   frmChooser.ShowFixed = bFixedOnly
   frmChooser.RefreshFamily
 
-END
+End
 
-PRIVATE FUNCTION ShowStyle_Read() AS Boolean
+Private Function ShowStyle_Read() As Boolean
 
-  RETURN frmChooser.StylePanel.Visible
+  Return frmChooser.StylePanel.Visible
 
-END
+End
 
-PRIVATE SUB ShowStyle_Write(Value AS Boolean)
+Private Sub ShowStyle_Write(Value As Boolean)
 
   frmChooser.StylePanel.Visible = Value
 
-END
+End
 
-PRIVATE FUNCTION Value_Read() AS String
+Private Function Value_Read() As String
 
-  RETURN frmChooser.GetFont()  
+  Return frmChooser.GetFont()  
 
-END
+End
 
-PRIVATE SUB Value_Write(Value AS String)
+Private Sub Value_Write(Value As String)
 
   frmChooser.SetFont(Value)
 
-END
+End
 
-PRIVATE FUNCTION ShowPreview_Read() AS Boolean
+Private Function ShowPreview_Read() As Boolean
 
-  RETURN frmChooser.Preview.Visible
+  Return frmChooser.Preview.Visible
 
-END
+End
 
-PRIVATE SUB ShowPreview_Write(Value AS Boolean)
+Private Sub ShowPreview_Write(Value As Boolean)
 
   frmChooser.Preview.Visible = Value
 
-END
+End
 
-PRIVATE FUNCTION ShowLabel_Read() AS Boolean
+Private Function ShowLabel_Read() As Boolean
 
-  RETURN frmChooser.IsShowLabel()  
+  Return frmChooser.IsShowLabel()  
 
-END
+End
 
-PRIVATE SUB ShowLabel_Write(Value AS Boolean)
+Private Sub ShowLabel_Write(Value As Boolean)
 
   frmChooser.SetShowLabel(Value)
 
-END
+End

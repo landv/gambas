@@ -748,27 +748,20 @@ char *gt_html_to_pango_string(const char *html, int len_html, bool newline)
 	
 	static const char *accept[] = { "b", "big", "i", "s", "sub", "sup", "small", "tt", "u", NULL };
 	
-	static const char *size[] = 
-	{
-		"\"7\"", "xx-large",
-		"\"6\"", "x-large",
-		"\"5\"", "large",
-		"\"4\"", "medium",
-		"\"3\"", "small",
-		"\"2\"", "x-small",
-		"\"1\"", "xx-small",
-		"\"+1\"", "larger",
-		"\"-1\"", "smaller",
-		NULL, NULL
-	};
+	static const char *size_name[] = { "xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large" };
+	static const int size_stack_len = 16;
 	
 	GString *pango = g_string_new("");
 	const char *p, *p_end, *p_markup;
 	char c;
 	char *token, *markup, **attr;
+	const char *pp;
 	gsize len;
 	bool end_token = false;
-	const char **pt, **ps;
+	const char **pt;
+	int size = 3; // medium
+	char size_stack[size_stack_len];
+	int size_stack_ptr = 0;
 	
 	p_end = &html[len_html < 0 ? strlen(html) : len_html];
 	p_markup = NULL;
@@ -859,9 +852,21 @@ char *gt_html_to_pango_string(const char *html, int len_html, bool newline)
 			if (!strcasecmp(token, "font"))
 			{
 				if (end_token)
+				{
+					if (size_stack_ptr > 0)
+					{
+						size_stack_ptr--;
+						if (size_stack_ptr < size_stack_len)
+							size = size_stack[size_stack_ptr];
+					}
 					g_string_append(pango, "</span>");
+				}
 				else
 				{
+					if (size_stack_ptr < size_stack_len)
+						size_stack[size_stack_ptr] = size;
+					size_stack_ptr++;
+
 					g_string_append(pango, "<span");
 					for (pt = (const char **)attr; *pt; pt++)
 					{
@@ -878,16 +883,33 @@ char *gt_html_to_pango_string(const char *html, int len_html, bool newline)
 						else if (!strncasecmp(*pt, "size=", 5))
 						{
 							g_string_append(pango, " size=");
-							for (ps = size; *ps; ps += 2)
+							pp = *pt + 6;
+							if (*pp == '"')
+								pp++;
+							if (isdigit(*pp))
 							{
-								if (!strcasecmp(*ps, *pt + 5))
-								{
-									g_string_append_printf(pango, "\"%s\"", ps[1]);
-									break;
-								}
+								size = *pp - '1';
+								pp++;
 							}
-							if (!*ps)
-								g_string_append(pango, *pt + 5);
+							else if (*pp == '+' && isdigit(pp[1]))
+							{
+								size += p[1] - '0';
+								pp += 2;
+							}
+							else if (*pp == '-' && isdigit(pp[1]))
+							{
+								size -= pp[1] - '0';
+								pp += 2;
+							}
+							
+							if (size < 0)
+								size = 0;
+							else if (size > 6)
+								size = 6;
+							
+							g_string_append(pango, "\"");
+							g_string_append(pango, size_name[size]);
+							g_string_append(pango, "\"");
 						}
 					}
 					g_string_append(pango, ">");

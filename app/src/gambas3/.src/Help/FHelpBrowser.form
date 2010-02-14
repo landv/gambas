@@ -78,17 +78,17 @@
     { Separator2 Separator
       MoveScaled(45,0,1,4)
     }
-    { btnModify ToolButton
-      MoveScaled(46,0,25,4)
-      AutoResize = True
-      Text = ("Modify documentation...")
-      Picture = Picture["icon:/small/edit"]
-    }
     { btnPrint ToolButton
-      MoveScaled(71,0,15,4)
+      MoveScaled(47,0,15,4)
       AutoResize = True
       Text = ("Print")
       Picture = Picture["icon:/small/print"]
+    }
+    { btnModify ToolButton
+      MoveScaled(61,0,25,4)
+      AutoResize = True
+      Text = ("Modify documentation...")
+      Picture = Picture["icon:/small/edit"]
     }
   }
   { sepToolbar Separator
@@ -113,8 +113,8 @@
       Cached = True
     }
     { Printer1 #Printer
-      #X = 588
-      #Y = 77
+      #X = 560
+      #Y = 63
     }
   }
 }

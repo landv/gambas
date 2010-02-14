@@ -627,6 +627,9 @@ GB_DESC CUdpSocketDesc[] =
 	GB_PROPERTY("Broadcast", "b", CUDPSOCKET_broadcast),
 	GB_PROPERTY("Timeout", "i", CSOCKET_Timeout),
 
+  GB_CONSTANT("_IsControl", "b", TRUE),
+  GB_CONSTANT("_IsVirtual", "b", TRUE),
+  GB_CONSTANT("_Group", "s", "Network"),
 	GB_CONSTANT("_Properties", "s", "Port{Range:0;65535},Path,TargetHost,TargetPort,Broadcast"),
 	GB_CONSTANT("_DefaultEvent", "s", "Read"),
 
