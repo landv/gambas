@@ -25,6 +25,7 @@
 #include "gambas.h"
 #include "CContainer.h"
 #include "gframe.h"
+#include "gmainwindow.h"
 
 /***************************************************************************
 
@@ -415,6 +416,15 @@ BEGIN_PROPERTY(CUSERCONTAINER_indent)
 	
 END_PROPERTY
 
+BEGIN_METHOD_VOID(UserControl_SetFocus)
+
+	gMainWindow *win = WIDGET->window();
+	
+	WIDGET->setFocus();
+  gtk_widget_child_focus(GTK_WIDGET(WIDGET->widget), GTK_DIR_TAB_FORWARD);
+
+END_METHOD
+
 
 GB_DESC CUserControlDesc[] =
 {
@@ -425,9 +435,11 @@ GB_DESC CUserControlDesc[] =
   GB_PROPERTY("_Container", "Container", CUSERCONTROL_container),
   GB_PROPERTY("_AutoResize", "b", CCONTAINER_auto_resize),
   
-   USERCONTROL_DESCRIPTION,
+	GB_METHOD("SetFocus", NULL, UserControl_SetFocus, NULL),
 
-  GB_END_DECLARE
+	USERCONTROL_DESCRIPTION,
+
+	GB_END_DECLARE
 };
 
 GB_DESC CUserContainerDesc[] =

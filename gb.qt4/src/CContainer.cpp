@@ -1200,6 +1200,24 @@ BEGIN_METHOD(CCONTAINER_find, GB_INTEGER x; GB_INTEGER y)
 END_METHOD
 
 
+BEGIN_METHOD_VOID(UserControl_SetFocus)
+
+	QWidget *w = WIDGET;
+	
+	for(;;)
+	{
+		w = w->nextInFocusChain();
+		if (!w)
+			break;
+		if (w->focusPolicy() != Qt::NoFocus)
+		{
+			w->setFocus();
+			break;
+		}
+	}
+
+END_METHOD
+
 GB_DESC CChildrenDesc[] =
 {
 	GB_DECLARE(".ContainerChildren", sizeof(CCONTAINER)), GB_VIRTUAL_CLASS(),
@@ -1249,6 +1267,8 @@ GB_DESC CUserControlDesc[] =
 	GB_PROPERTY("_Container", "Container", CUSERCONTROL_container),
 	GB_PROPERTY("_AutoResize", "b", CCONTAINER_auto_resize),
 	GB_PROPERTY("_Arrangement", "b", CCONTAINER_arrangement),
+	
+	GB_METHOD("SetFocus", NULL, UserControl_SetFocus, NULL),
 
 	USERCONTROL_DESCRIPTION,
 	

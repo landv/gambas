@@ -279,6 +279,7 @@ static void reparent_window(CWINDOW *_object, void *parent, bool move, int x = 0
 	{
 		//qDebug("reparent_window: -> %s %p", parent ? ((CWIDGET *)parent)->name : "", parent);
 		WINDOW->doReparent(newParentWidget, p);
+		WINDOW->setResizable(WINDOW->isResizable(), true);
 	}
 	else
 		CWIDGET_move(THIS, p.x(), p.y());
