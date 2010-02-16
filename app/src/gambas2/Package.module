@@ -411,7 +411,7 @@ PRIVATE FUNCTION MakeDebPackage(sSys AS String)
   'debian/menu
   IF NOT Project.CreateComponent THEN
       hFile = OPEN sPackagePath &/ "debian/menu" FOR CREATE 
-      PRINT #hFile, "?package(controlaula):needs=\""; IIf(IsConsoleProject(), "text", "X11"); "\" section \"Apps/" & Project.Groups[sSys]; "\"\\"
+      PRINT #hFile, "?package("; $sPackageName; "):needs=\""; IIf(IsConsoleProject(), "text", "X11"); "\" section \""; Project.Menus[sSys]; "\"\\"
       PRINT #hFile, "title=\""; IIf(Project.Title <> "", Project.Title, Project.Name); "\"\\" 
       PRINT #hFile, "command=\"/usr/bin/"; $sPackageName; ".gambas\"\\"
       PRINT #hFile, "icon=\"/usr/share/pixmaps/"; sIcon; "\""
@@ -443,7 +443,7 @@ PRIVATE FUNCTION MakeDebPackage(sSys AS String)
   'debian/control
   hFile = OPEN sPackagePath &/ "debian/control" FOR CREATE
   PRINT #hFile, "Source: "; $sPackageName
-  PRINT #hFIle, "Section: "; Split(Project.Groups[sSys], "/")[0]
+  PRINT #hFIle, "Section: contrib/"; Project.Groups[sSys] 'Split(Project.Groups[sSys], "/")[0]
   PRINT #hFile, "Priority: optional"
   PRINT #hFile, "Maintainer: "; Project.Maintainer; " <"; Project.Address; ">"
   PRINT #hFile, "Build-Depends: debhelper (>= 5.0.0), gambas2-dev (>= "; MIN_VERSION; "), gambas2-dev (<< "; MAX_VERSION; ")";
