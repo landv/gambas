@@ -82,10 +82,6 @@ public:
 
   static CTextBox manager;
 
-  static void getAll(QComboBox *list, GB_ARRAY array);
-  static void setAll(QComboBox *list, GB_ARRAY array);
-  static int find(QComboBox *list, const QString& elt);
-
 public slots:
 
   void event_change(void);
