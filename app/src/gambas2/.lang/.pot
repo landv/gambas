@@ -10,34 +10,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: CComponentBox.class:87 FPropertyProject.class:1640
-msgid "Beta version"
-msgstr ""
-
-#: CComponentBox.class:89 FPropertyProject.class:1640
-msgid "Not finished but stable"
-msgstr ""
-
-#: CComponentBox.class:192
-msgid "Authors"
-msgstr ""
-
-#: CComponentBox.class:199 FPropertyProject.class:1997
-msgid "Requires"
-msgstr ""
-
-#: CComponentBox.class:201
-msgid "Excludes"
-msgstr ""
-
-#: CComponentBox.class:207
-msgid "Implements"
-msgstr ""
-
-#: CComponentBox.class:220 FPropertyProject.class:1944
-msgid "Provides"
-msgstr ""
-
 #: CComponent.class:62
 msgid "Internal native classes"
 msgstr ""
@@ -258,6 +230,34 @@ msgstr ""
 msgid "Loading information on component &1..."
 msgstr ""
 
+#: CComponentBox.class:87 FPropertyProject.class:1640
+msgid "Beta version"
+msgstr ""
+
+#: CComponentBox.class:89 FPropertyProject.class:1640
+msgid "Not finished but stable"
+msgstr ""
+
+#: CComponentBox.class:192
+msgid "Authors"
+msgstr ""
+
+#: CComponentBox.class:199 FPropertyProject.class:1997
+msgid "Requires"
+msgstr ""
+
+#: CComponentBox.class:201
+msgid "Excludes"
+msgstr ""
+
+#: CComponentBox.class:207
+msgid "Implements"
+msgstr ""
+
+#: CComponentBox.class:220 FPropertyProject.class:1944
+msgid "Provides"
+msgstr ""
+
 #: Design.module:283
 msgid ""
 "The program has stopped unexpectedly\n"
@@ -366,12 +366,12 @@ msgstr ""
 
 #: FColorChooser.class:203 FCommit.class:306 FConflict.class:192
 #: FCreateFile.class:828 FDebugInfo.class:344 FEditor.class:2067
-#: FFindList.class:159 FFind.class:114 FFontChooser.class:86 FForm.class:2565
+#: FFind.class:114 FFindList.class:159 FFontChooser.class:86 FForm.class:2565
 #: FGotoLine.class:62 FIconEditor.class:1393 FList.class:107 FMain.class:207
-#: FMakeExecutable.class:154 FMakeInstall.class:280 FMenu.class:1093
+#: FMakeExecutable.class:154 FMakeInstall.class:285 FMenu.class:1093
 #: FNewTranslation.class:70 FOpenProject.class:409 FPasteSpecial.class:204
 #: FProjectEnv.class:331 FPropertyProject.class:1177 FSave.class:125
-#: FSelectIcon.class:271 FTextEditor.class:591 FText.class:107
+#: FSelectIcon.class:271 FText.class:107 FTextEditor.class:591
 #: FTranslate.class:561 Project.module:277
 msgid "Cancel"
 msgstr ""
@@ -459,7 +459,7 @@ msgid "&Edit"
 msgstr ""
 
 #: FConflict.class:25 FFindList.class:167 FIconEditor.class:1412
-#: FInfo.class:408 FMakeInstall.class:231 FOption.class:1161 FTips.class:232
+#: FInfo.class:408 FMakeInstall.class:236 FOption.class:1161 FTips.class:232
 msgid "Close"
 msgstr ""
 
@@ -973,18 +973,6 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-#: FFindList.class:47 FIconEditor.class:2275 FOption.class:831
-msgid "Line"
-msgstr ""
-
-#: FFindList.class:49
-msgid "Column"
-msgstr ""
-
-#: FFindList.class:197 FFind.class:670
-msgid "Search list"
-msgstr ""
-
 #: FFind.class:114
 msgid "Are you sure to want to replace all?"
 msgstr ""
@@ -1017,6 +1005,10 @@ msgstr ""
 msgid "Find previous"
 msgstr ""
 
+#: FFind.class:670 FFindList.class:197
+msgid "Search list"
+msgstr ""
+
 #: FFind.class:693
 msgid "Replace all"
 msgstr ""
@@ -1047,6 +1039,14 @@ msgstr ""
 
 #: FFind.class:773
 msgid "Search in strings"
+msgstr ""
+
+#: FFindList.class:47 FIconEditor.class:2275 FOption.class:831
+msgid "Line"
+msgstr ""
+
+#: FFindList.class:49
+msgid "Column"
 msgstr ""
 
 #: FFontChooser.class:57
@@ -1771,7 +1771,7 @@ msgstr ""
 msgid "Make executable"
 msgstr ""
 
-#: FMain.class:2129 FMakeInstall.class:809
+#: FMain.class:2129 FMakeInstall.class:814
 msgid "Make installation package"
 msgstr ""
 
@@ -1867,200 +1867,200 @@ msgstr ""
 msgid "Keep debugging information in executable"
 msgstr ""
 
-#: FMakeInstall.class:231 Package.module:164
+#: FMakeInstall.class:236 Package.module:164
 msgid "The packages have been successfully created."
 msgstr ""
 
-#: FMakeInstall.class:231
+#: FMakeInstall.class:236
 msgid "Retry"
 msgstr ""
 
-#: FMakeInstall.class:264
+#: FMakeInstall.class:269
 msgid "Please enter your name."
 msgstr ""
 
-#: FMakeInstall.class:269
+#: FMakeInstall.class:274
 msgid "Please enter your e-mail address."
 msgstr ""
 
-#: FMakeInstall.class:280
+#: FMakeInstall.class:285
 msgid "There is no CHANGELOG entry for this release."
 msgstr ""
 
-#: FMakeInstall.class:280 FPropertyProject.class:1177 FSave.class:118
+#: FMakeInstall.class:285 FPropertyProject.class:1177 FSave.class:118
 #: FTranslate.class:693 Project.module:2234
 msgid "Continue"
 msgstr ""
 
-#: FMakeInstall.class:287
+#: FMakeInstall.class:292
 msgid "Please enter the first CHANGELOG entry."
 msgstr ""
 
-#: FMakeInstall.class:297
+#: FMakeInstall.class:302
 msgid "Please choose at least one target distribution."
 msgstr ""
 
-#: FMakeInstall.class:315
+#: FMakeInstall.class:320
 msgid "Please choose the package group for each target distribution."
 msgstr ""
 
-#: FMakeInstall.class:317
+#: FMakeInstall.class:322
 msgid "Please choose a package group."
 msgstr ""
 
-#: FMakeInstall.class:326
+#: FMakeInstall.class:331
 msgid "Please choose the menu location for each target distribution."
 msgstr ""
 
-#: FMakeInstall.class:328
+#: FMakeInstall.class:333
 msgid "Please choose a menu location."
 msgstr ""
 
-#: FMakeInstall.class:347
+#: FMakeInstall.class:352
 msgid "The package cannot be stored inside the project directory."
 msgstr ""
 
-#: FMakeInstall.class:363
+#: FMakeInstall.class:368
 msgid "Initial release"
 msgstr ""
 
-#: FMakeInstall.class:599
+#: FMakeInstall.class:604
 msgid "Menus"
 msgstr ""
 
-#: FMakeInstall.class:667
+#: FMakeInstall.class:672
 msgid "Groups"
 msgstr ""
 
-#: FMakeInstall.class:821
+#: FMakeInstall.class:826
 msgid "1. Package information"
 msgstr ""
 
-#: FMakeInstall.class:827
+#: FMakeInstall.class:832
 msgid "Package name"
 msgstr ""
 
-#: FMakeInstall.class:844
+#: FMakeInstall.class:849
 msgid "Prefix package name with the vendor name"
 msgstr ""
 
-#: FMakeInstall.class:849
+#: FMakeInstall.class:854
 msgid "Insert release number in package version"
 msgstr ""
 
-#: FMakeInstall.class:857
+#: FMakeInstall.class:862
 msgid "Maintainer information"
 msgstr ""
 
-#: FMakeInstall.class:867
+#: FMakeInstall.class:872
 msgid "Your name"
 msgstr ""
 
-#: FMakeInstall.class:883
+#: FMakeInstall.class:888
 msgid "Your e-mail address"
 msgstr ""
 
-#: FMakeInstall.class:899
+#: FMakeInstall.class:904
 msgid "Vendor name"
 msgstr ""
 
-#: FMakeInstall.class:912 FPropertyProject.class:1524
+#: FMakeInstall.class:917 FPropertyProject.class:1524
 msgid "Description"
 msgstr ""
 
-#: FMakeInstall.class:926
+#: FMakeInstall.class:931
 msgid "Licence"
 msgstr ""
 
-#: FMakeInstall.class:933
+#: FMakeInstall.class:938
 msgid "General Public Licence"
 msgstr ""
 
-#: FMakeInstall.class:933
+#: FMakeInstall.class:938
 msgid "Freeware"
 msgstr ""
 
-#: FMakeInstall.class:933
+#: FMakeInstall.class:938
 msgid "Public Domain"
 msgstr ""
 
-#: FMakeInstall.class:933
+#: FMakeInstall.class:938
 msgid "Lesser General Public Licence"
 msgstr ""
 
-#: FMakeInstall.class:933
+#: FMakeInstall.class:938
 msgid "Other Licence(s)"
 msgstr ""
 
-#: FMakeInstall.class:933
+#: FMakeInstall.class:938
 msgid "Non-free Licence"
 msgstr ""
 
-#: FMakeInstall.class:937
+#: FMakeInstall.class:942
 msgid "2. Changelog"
 msgstr ""
 
-#: FMakeInstall.class:942
+#: FMakeInstall.class:947
 msgid "Please enter the changes of your project."
 msgstr ""
 
-#: FMakeInstall.class:966
+#: FMakeInstall.class:971
 msgid "3. Target distribution"
 msgstr ""
 
-#: FMakeInstall.class:990
+#: FMakeInstall.class:995
 msgid "Debian"
 msgstr ""
 
-#: FMakeInstall.class:1011
+#: FMakeInstall.class:1016
 msgid "Fedora"
 msgstr ""
 
-#: FMakeInstall.class:1032
+#: FMakeInstall.class:1037
 msgid "Mandriva Linux"
 msgstr ""
 
-#: FMakeInstall.class:1053
+#: FMakeInstall.class:1058
 msgid "OpenSUSE"
 msgstr ""
 
-#: FMakeInstall.class:1074
+#: FMakeInstall.class:1079
 msgid "Slackware"
 msgstr ""
 
-#: FMakeInstall.class:1095
+#: FMakeInstall.class:1100
 msgid "Ubuntu"
 msgstr ""
 
-#: FMakeInstall.class:1116
+#: FMakeInstall.class:1121
 msgid "Autotools"
 msgstr ""
 
-#: FMakeInstall.class:1121
+#: FMakeInstall.class:1126
 msgid "4. Package group"
 msgstr ""
 
-#: FMakeInstall.class:1142
+#: FMakeInstall.class:1147
 msgid "5. Menu entry"
 msgstr ""
 
-#: FMakeInstall.class:1165
+#: FMakeInstall.class:1170
 msgid "Categories"
 msgstr ""
 
-#: FMakeInstall.class:1175
+#: FMakeInstall.class:1180
 msgid "6. Destination directory"
 msgstr ""
 
-#: FMakeInstall.class:1185
+#: FMakeInstall.class:1190
 msgid "Create directories for each distribution"
 msgstr ""
 
-#: FMakeInstall.class:1188
+#: FMakeInstall.class:1193
 msgid "7. Create package"
 msgstr ""
 
-#: FMakeInstall.class:1193
+#: FMakeInstall.class:1198
 msgid ""
 "All needed information have been collected. You can now create the "
 "installation packages for your application...\n"
@@ -3243,14 +3243,6 @@ msgstr ""
 
 #: Package.module:1173
 msgid "'tar' has returned the following error code:"
-msgstr ""
-
-#: .project:1
-msgid "Gambas 2"
-msgstr ""
-
-#: .project:2
-msgid "Integrated Development Environment for Gambas"
 msgstr ""
 
 #: Project.module:124

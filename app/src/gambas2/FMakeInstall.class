@@ -26,6 +26,13 @@ PRIVATE SUB MakeChangeLog() AS String
   
 END
 
+PUBLIC SUB _new()
+  
+  cmbCategories.List = Split(File.Load("install/categories"), "\n", "", TRUE)
+
+END
+
+
 PUBLIC SUB Form_Open()
   
   IF Project.Maintainer THEN
@@ -62,8 +69,6 @@ PUBLIC SUB Form_Open()
   InitSystems
 
   UpdatePackageName
-
-  cmbCategories.List = Split(File.Load("install/categories"), "\n", "", TRUE)
 
   txtLicense.List = ["General Public Licence", "Freeware", "Public Domain", "Lesser General Public Licence", "Other Licence(s)", "Non-Free Licence"]
   
