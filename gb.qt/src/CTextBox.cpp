@@ -344,7 +344,7 @@ static void combo_set_current_item(void *_object, int item)
 		return;
 	
   if (item < COMBOBOX->count())
-  	combo_set_current_item(THIS, item);
+  	COMBOBOX->setCurrentItem(item);
   if (item >= 0)
     GB.Raise(THIS, EVENT_Click, 0);
 }
