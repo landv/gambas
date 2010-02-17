@@ -169,25 +169,33 @@ static LinkDest *get_dest(LinkAction *act)
 
 static uint32_t aux_get_page_from_action(void *_object, LinkAction *act)
 {
-	// TODO: NamedDest
-
-	Ref pref;	
+	Ref pref;       
 	LinkDest *dest = get_dest(act);
+	GooString *name;
+
+	if (!dest)
+	{
+		// try to use NamedDest to get dest
+		if (!act)
+			return 0;
+		if (act->getKind () == actionGoTo)
+		{
+			name = ((LinkGoTo*)act)->getNamedDest();
+			if (name)
+				dest = THIS->doc->findDest(name);
+		}
+	}
+
 	if (!dest)
 		return 0;
 
-	if (dest->isPageRef())
+	if (dest->isPageRef() )
 	{
-		if (dest->isPageRef() )
-		{
-			pref= dest->getPageRef();
-			return THIS->doc->findPage(pref.num, pref.gen);
-		}
-		else
-			return dest->getPageNum();
+		pref= dest->getPageRef();
+		return THIS->doc->findPage(pref.num, pref.gen);
 	}
 	else
-		return 0;
+		return dest->getPageNum();
 }
 
 static void aux_get_dimensions_from_action(LinkAction *act,int *left, int32_t *right, int32_t *top, int32_t *bottom)
