@@ -901,7 +901,7 @@ Public Function GetHelpHTML() As String
     End Select
   Next
   
-  sWhere = "gambas://project/" & {Class} & "#" & Me.LineNumber
+  sWhere = "gambas://project/" & {Class} & "#" & Me.LineNumber & "?showfile"
   
   sHTML = Replace(sHTML, "$(syntax)", sSyntax)
   sHTML = Replace(sHTML, "$(help)", sHelp)

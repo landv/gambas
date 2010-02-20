@@ -471,10 +471,12 @@ Public Function GetProjectClassHelpHTML(sClass As String, Optional hWebView As W
   Dim hClassInfo As CClassInfo
   Dim aProperties, aEvents, aMethod, aConst As New String[]
   Dim aParProperties, aParEvents, aParMethod, aParConst As New String[]
-  
+  Dim sComp, sSymbolName As String
   'Getting help
   hForm = Project.LoadFile(Project.FindPath(sClass))
+  
   Try hEdit = hForm.Editor
+  
   If Not hEdit Then Return  
   
   For i = 0 To hedit.Lines.Count - 1
@@ -486,50 +488,59 @@ Public Function GetProjectClassHelpHTML(sClass As String, Optional hWebView As W
       Break
     Endif
   Next
+  
   hClassInfo = CComponent.GetClassDescription(sClass)
   cClassSymbols = CComponent.GetClassSymbols(sClass)
+  
   If hClassInfo.Name = sClass Then hClassInfo.Name = hClassInfo.Parent
+  
   If cClassSymbols.Count > 0 Then
     For Each hsymbol In cClassSymbols
+      'sComp = If(hsymbol.Component, hsymbol.Component, "Project")
+      sSymbolName = If(hsymbol.Kind = ":", Mid(hsymbol.Name, 2), hsymbol.Name) 
+      If hsymbol.Component Then
+        sComp = Subst("<a class=\"none\" href=\"&1\">&2</a>", GetSymbolURL(hsymbol.Component, hsymbol.Class, sSymbolName), sSymbolName)
+      Else
+        sComp = Subst("<a class=\"none\" href=\"gambas://project/&1/&2#&3?showfile\">&2</a>", hsymbol.Class, sSymbolName, hsymbol.LineNumber)
+      Endif
+      
       If Not hsymbol.IsHidden() Then 
         If hsymbol.Class = sClass Then
-          If hsymbol.Kind = ":" Then aEvents.Add("<a class=\"none\" href=\"gambas://Project/help\">" & Mid(hSymbol.Name, 1) & "</a>")
-          If hsymbol.Kind = "m" Then aMethod.Add("<a class=\"none\" href=\"gambas://Project/help\">" & hsymbol.Name & "</a>")
-          If hSymbol.Kind = "p" Or hsymbol.Kind = "r" Then aProperties.Add("<a class=\"none\" href=\"gambas://Project/help\">" & hsymbol.Name & "</a>")
-          If hSymbol.Kind = "C" Then aConst.Add("<b><a class=\"none\" href=\"gambas://Project/help\">" & hsymbol.Name & "</a></b>")
+          If hsymbol.Kind = ":" Then aEvents.Add(sComp)
+          If hsymbol.Kind = "m" Then aMethod.Add(sComp)
+          If hSymbol.Kind = "p" Or hsymbol.Kind = "r" Then aProperties.Add(sComp)
+          If hSymbol.Kind = "C" Then aConst.Add("<b>" & sComp & "</b>")
         Else
-          If hsymbol.Kind = ":" Then aParEvents.Add("<a class=\"none\" href=\"gambas://Project/help\">" & Mid(hSymbol.Name, 2) & "</a>")
-          If hsymbol.Kind = "m" Then aParMethod.Add("<a class=\"none\" href=\"gambas://Project/help\">" & hsymbol.Name & "</a>")
-          If hSymbol.Kind = "p" Or hsymbol.Kind = "r" Then aParProperties.Add("<a class=\"none\" href=\"gambas://Project/help\">" & hsymbol.Name & "</a>")
-          If hSymbol.Kind = "C" Then aParConst.Add("<b><a class=\"none\" href=\"gambas://Project/help\">" & hsymbol.Name & "</a></b>")
+          If hsymbol.Kind = ":" Then aParEvents.Add(sComp)
+          If hsymbol.Kind = "m" Then aParMethod.Add(sComp)
+          If hSymbol.Kind = "p" Or hsymbol.Kind = "r" Then aParProperties.Add(sComp)
+          If hSymbol.Kind = "C" Then aParConst.Add("<b>" & sComp & "</b>")
         Endif
       Endif
     Next
   
   
-  sParSymbols = "<td dir=\"ltr\">" & aParProperties.Join(" ") & "</td><td width=\"32\">&nbsp;</td> "
-  sParSymbols &= "<td dir=\"ltr\">" & aParMethod.Join(" ") & "</td><td width=\"32\">&nbsp;</td> "
-  sParSymbols &= "<td dir=\"ltr\">" & aParEvents.Join(" ") & "</td>"
-
-  sSymbols = "<td dir=\"ltr\">" & aProperties.Join(" ") & "</td><td width=\"32\">&nbsp;</td> "
-  sSymbols &= "<td dir=\"ltr\">" & aMethod.Join(" ") & "</td><td width=\"32\">&nbsp;</td> "
-  sSymbols &= "<td dir=\"ltr\">" & aEvents.Join(" ") & "</td>"
-  
+    sParSymbols = "<td dir=\"ltr\">" & aParProperties.Join(" ") & "</td><td width=\"32\">&nbsp;</td> "
+    sParSymbols &= "<td dir=\"ltr\">" & aParMethod.Join(" ") & "</td><td width=\"32\">&nbsp;</td> "
+    sParSymbols &= "<td dir=\"ltr\">" & aParEvents.Join(" ") & "</td>"
+    
+    sSymbols = "<td dir=\"ltr\">" & aProperties.Join(" ") & "</td><td width=\"32\">&nbsp;</td> "
+    sSymbols &= "<td dir=\"ltr\">" & aMethod.Join(" ") & "</td><td width=\"32\">&nbsp;</td> "
+    sSymbols &= "<td dir=\"ltr\">" & aEvents.Join(" ") & "</td>"
+    
   Endif
+  
   If hClassInfo.AutoCreatable Then sInfo = ("This class can be used like an object by creating an hidden instance on demand.<br>")
   If hClassInfo.Creatable Then sInfo &= ("This class is creatable.<br>")
-  
-  
-  sWhere = "gambas://project/" & sClass
+
+  sWhere = "gambas://project/" & sClass & "?showfile"
   
   sHTML = File.Load("help/class-help.html")
   sHTML = Replace(sHtml, "$(class)", sClass)
   sHTML = Replace(sHtml, "$(help)", sHelp)
   
   If sInfo Then 
-  
      sHTML = Replace(sHtml, "<!--$(Info)-->", sInfo & "<hr class=\"border\">")
-  
   Endif
   
   If hClassInfo.Name <> sClass Then 
@@ -542,7 +553,6 @@ Public Function GetProjectClassHelpHTML(sClass As String, Optional hWebView As W
   Endif
   
   If aConst.Count > 0 Then 
-  
     sHTML = Replace(Replace(sHtml, "$(ShowConst)-->", ""), "<!--$(ShowConst)", "")
     sHTML = Replace(sHTML, "$(Const)", aConst.Join(" "))
   Endif
@@ -554,18 +564,45 @@ Public Function GetProjectClassHelpHTML(sClass As String, Optional hWebView As W
 End
 
 ''Manage the gambas:// links
-Public Sub ManageSpecialLink(sUrl As String)
+Public Sub ManageSpecialLink(hWebView As WebView, sUrl As String)
   
   Dim sClass As String
+  Dim sSymbol As String
+  Dim sComp As String 
   Dim iLine As Integer
-  sClass = File.BaseName(surl)
-  
-  If InStr(sClass, "#") Then
-    iLine = Split(sClass, "#")[1]
-    sClass = Split(sClass, "#")[0]
-   
+  Dim aValues As String[]
+  Dim bShowFile As Boolean
+
+  If InStr(sUrl, "?showfile") Then
+    sUrl = Replace(sUrl, "?showfile", "")
+    bShowFile = True
   Endif
   
-  Project.OpenFile(Project.FindPath(sClass), iLine)
+  aValues = Split(sUrl, "/")
+  sClass = aValues[3]
+  
+  If InStr(sUrl, "project") Then 
+
+      If InStr(sClass, "#") Then
+        iLine = Split(sClass, "#")[1]
+        sClass = Split(sClass, "#")[0]
+      Endif
+      If bShowFile Then 
+        Project.OpenFile(Project.FindPath(sClass), iLine)
+      Else
+        If aValues.Count = 4 Then
+          InitWebViewWith(hWebView, TYPE_CLASS, aValues[3])
+        Else
+          InitWebViewWith(hWebView, TYPE_SYMBOL, aValues[4])
+        Endif
+      Endif 
+  
+  Else
+
+    sSymbol = aValues[3]
+    sClass = File.Name(File.Dir(sUrl))
+    InitWebViewWith(hWebView, TYPE_SYMBOL, sSymbol, sClass)
+  
+  Endif 
   
 End

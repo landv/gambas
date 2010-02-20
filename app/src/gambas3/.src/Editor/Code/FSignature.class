@@ -239,7 +239,7 @@ Public Sub webHelp_Error()
 
   If $sLastUrl Begins "gambas://" Then 
     webHelp.Stop
-    MHelp.ManageSpecialLink($sLastUrl)
+    MHelp.ManageSpecialLink(webHelp, $sLastUrl)
   Endif
 
 End

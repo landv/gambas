@@ -9,7 +9,8 @@ Private $bPrint As Boolean
 Public Sub Form_Open()
 
   Settings.Read(Me)
-  splHelp.Layout = [1, 4]
+  splHelp.Layout = Settings["/ExplorerPnlLayout", [1, 4]]
+  btnShowpnl.Value = Settings["/frmExplorerPan", False]
   If Not webHelp.Url Then 
     webHelp.Url = MHelp.GetURL() & "?help&" & MHelp.GetHelpLanguage()
     webHelp.TextZoom = 0.8
@@ -20,7 +21,8 @@ End
 Public Sub Form_Close()
   
   Settings.Write(Me)
-  
+  Settings["/ExplorerPnlLayout"] = splHelp.Layout
+  Settings["/frmExplorerPan"] = btnShowpnl.Value
 End
 
 Public Sub btnHome_Click()
@@ -92,7 +94,7 @@ Public Sub webHelp_Error()
   
   If $sLastUrl Begins "gambas://" Then 
     webHelp.Stop
-    MHelp.ManageSpecialLink($sLastUrl)
+    MHelp.ManageSpecialLink(webHelp, $sLastUrl)
     Return
   Endif
   
@@ -111,7 +113,7 @@ End
 Public Sub webHelp_Link(Url As String)
 
   $sLastUrl = Url
-
+Print Url
 End
 
 Private Function Error_Read() As Boolean
@@ -135,6 +137,7 @@ End
 
 Public Sub btnShowpnl_Click()
 
+  
   hbHelp.Visible = Last.Value
   If Last.value Then FillTree
 End

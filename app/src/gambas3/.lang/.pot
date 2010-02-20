@@ -10,34 +10,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: CComponentBox.class:92
-msgid "Experimental"
-msgstr ""
-
-#: CComponentBox.class:94 FPropertyProject.class:1883
-msgid "Not finished but stable"
-msgstr ""
-
-#: CComponentBox.class:200 ProjectItem.class:70
-msgid "Authors"
-msgstr ""
-
-#: CComponentBox.class:207 FPropertyProject.class:2082
-msgid "Requires"
-msgstr ""
-
-#: CComponentBox.class:209
-msgid "Excludes"
-msgstr ""
-
-#: CComponentBox.class:215
-msgid "Implements"
-msgstr ""
-
-#: CComponentBox.class:228 FPropertyProject.class:2057
-msgid "Provides"
-msgstr ""
-
 #: CComponent.class:69
 msgid "Internal native classes"
 msgstr ""
@@ -270,6 +242,34 @@ msgstr ""
 msgid "Loading information on component &1..."
 msgstr ""
 
+#: CComponentBox.class:92
+msgid "Experimental"
+msgstr ""
+
+#: CComponentBox.class:94 FPropertyProject.class:1883
+msgid "Not finished but stable"
+msgstr ""
+
+#: CComponentBox.class:200 ProjectItem.class:70
+msgid "Authors"
+msgstr ""
+
+#: CComponentBox.class:207 FPropertyProject.class:2082
+msgid "Requires"
+msgstr ""
+
+#: CComponentBox.class:209
+msgid "Excludes"
+msgstr ""
+
+#: CComponentBox.class:215
+msgid "Implements"
+msgstr ""
+
+#: CComponentBox.class:228 FPropertyProject.class:2057
+msgid "Provides"
+msgstr ""
+
 #: CModule.class:28 FCreateFile.class:625 FEditor.class:3392 FForm.class:3547
 #: FInfo.class:88
 msgid "Form"
@@ -432,15 +432,15 @@ msgstr ""
 
 #: FColorChooser.class:203 FCommit.class:397 FConflict.class:191
 #: FConnectionEditor.class:261 FCreateFile.class:885 FDebugInfo.class:490
-#: FEditor.class:2135 FFindList.class:195 FFind.class:114
+#: FEditor.class:2135 FFind.class:114 FFindList.class:195
 #: FFontChooser.class:86 FForm.class:2838 FGotoLine.class:63
-#: FHelpBrowser.class:270 FIconEditor.class:1393 FImportTable.class:38
+#: FHelpBrowser.class:273 FIconEditor.class:1393 FImportTable.class:38
 #: FList.class:155 FMain.class:204 FMakeExecutable.class:144
 #: FMakeInstall.class:309 FMenu.class:1128 FNewConnection.class:317
 #: FNewTable.class:168 FNewTranslation.class:70 FOpenProject.class:151
 #: FOption.class:579 FPasteSpecial.class:279 FPropertyProject.class:1236
 #: FSave.class:118 FSelectExtraFile.class:78 FSelectIcon.class:271
-#: FTableChooser.class:145 FTextEditor.class:462 FText.class:107
+#: FTableChooser.class:145 FText.class:107 FTextEditor.class:462
 #: FTranslate.class:606 Project.module:351
 msgid "Cancel"
 msgstr ""
@@ -638,7 +638,7 @@ msgstr ""
 msgid "Default value"
 msgstr ""
 
-#: FConnectionEditor.class:58 FDebugExpr.class:425 FHelpBrowser.class:242
+#: FConnectionEditor.class:58 FDebugExpr.class:425 FHelpBrowser.class:245
 msgid "Index"
 msgstr ""
 
@@ -781,7 +781,7 @@ msgid "Connection editor"
 msgstr ""
 
 #: FConnectionEditor.class:1573 FEditor.class:2135 FForm.class:2838
-#: FHelpBrowser.class:277 FIconEditor.class:2032 FImageEditor.class:70
+#: FHelpBrowser.class:280 FIconEditor.class:2032 FImageEditor.class:70
 #: FTextEditor.class:462 FTranslate.class:700
 msgid "Reload"
 msgstr ""
@@ -1229,7 +1229,7 @@ msgstr ""
 msgid "Find definition"
 msgstr ""
 
-#: FEditor.class:3151 FHelpBrowser.class:256
+#: FEditor.class:3151 FHelpBrowser.class:259
 msgid "Go back"
 msgstr ""
 
@@ -1321,24 +1321,16 @@ msgstr ""
 msgid "Procedure list"
 msgstr ""
 
-#: FFindList.class:75
-msgid "Column"
-msgstr ""
-
-#: FFindList.class:238
-msgid "Find list"
-msgstr ""
-
-#: FFindList.class:273 FFind.class:395 FOutput.class:309 FTranslate.class:567
-msgid "Search string cannot be found."
-msgstr ""
-
 #: FFind.class:114
 msgid "Are you sure to want to replace all?"
 msgstr ""
 
 #: FFind.class:114
 msgid "Replace"
+msgstr ""
+
+#: FFind.class:395 FFindList.class:273 FOutput.class:309 FTranslate.class:567
+msgid "Search string cannot be found."
 msgstr ""
 
 #: FFind.class:397
@@ -1395,6 +1387,14 @@ msgstr ""
 
 #: FFind.class:826
 msgid "Search in strings"
+msgstr ""
+
+#: FFindList.class:75
+msgid "Column"
+msgstr ""
+
+#: FFindList.class:238
+msgid "Find list"
 msgstr ""
 
 #: FFontChooser.class:57
@@ -1608,31 +1608,31 @@ msgstr ""
 msgid "Go to line"
 msgstr ""
 
-#: FHelpBrowser.class:230
+#: FHelpBrowser.class:233
 msgid "Help browser"
 msgstr ""
 
-#: FHelpBrowser.class:263
+#: FHelpBrowser.class:266
 msgid "Go forward"
 msgstr ""
 
-#: FHelpBrowser.class:296 FIconEditor.class:2225 FImageEditor.class:132
+#: FHelpBrowser.class:299 FIconEditor.class:2225 FImageEditor.class:132
 msgid "Zoom in"
 msgstr ""
 
-#: FHelpBrowser.class:303 FIconEditor.class:2234 FImageEditor.class:146
+#: FHelpBrowser.class:306 FIconEditor.class:2234 FImageEditor.class:146
 msgid "Zoom out"
 msgstr ""
 
-#: FHelpBrowser.class:310
+#: FHelpBrowser.class:313
 msgid "No zoom"
 msgstr ""
 
-#: FHelpBrowser.class:322
+#: FHelpBrowser.class:325
 msgid "Print"
 msgstr ""
 
-#: FHelpBrowser.class:329
+#: FHelpBrowser.class:332
 msgid "Modify documentation..."
 msgstr ""
 
@@ -4653,13 +4653,13 @@ msgstr ""
 msgid "No help found."
 msgstr ""
 
-#: MHelp.module:519
+#: MHelp.module:533
 msgid ""
 "This class can be used like an object by creating an hidden instance on "
 "demand.<br>"
 msgstr ""
 
-#: MHelp.module:520
+#: MHelp.module:534
 msgid "This class is creatable.<br>"
 msgstr ""
 
@@ -4805,18 +4805,6 @@ msgstr ""
 
 #: Package.module:1291
 msgid "'tar' has returned the following error code:"
-msgstr ""
-
-#: ProjectItem.class:70
-msgid "Author"
-msgstr ""
-
-#: .project:1
-msgid "Gambas 3"
-msgstr ""
-
-#: .project:2
-msgid "Integrated Development Environment for Gambas"
 msgstr ""
 
 #: Project.module:145
@@ -5122,6 +5110,10 @@ msgstr ""
 
 #: Project.module:4636
 msgid "Unable to update all forms."
+msgstr ""
+
+#: ProjectItem.class:70
+msgid "Author"
 msgstr ""
 
 #: Save.module:38
