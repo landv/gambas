@@ -1,10 +1,14 @@
 ' Gambas class file
+
 Inherits UserControl
 Export 
+
 Public Const _Properties As String = "*,Tag,Filter,Fields,Display,DataField,Table,Header,ReadOnly=True,Value,MaxLine=8,WidthList,FormatString"
 Public Const _DefaultEvent As String = "Change"
 Public Const _DefaultSize As String = "20,4"
 Public Const _DrawWith As String = "ComboBox"
+Public Const _Group As String = "Data"
+
 Private $hForm As Form
 Private $htvw As ColumnView
 Private $hObserver As Observer

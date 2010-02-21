@@ -18,6 +18,8 @@ Public Form As Boolean
 Public MultiContainer As Boolean
 Public DefaultWidth As Short
 Public DefaultHeight As Short
+Public Group As String
+Public Family As String
 
 Public Sub _new(sName As String, Optional sParent As String)
 
@@ -101,7 +103,7 @@ Public Sub InitControl()
 
   'IF NOT hCtrl THEN
 
-    VirtualControl = CComponent.All[Component].Virtuals.Find(Name) >= 0
+    'VirtualControl = CComponent.All[Component].Virtuals.Find(Name) >= 0
 
     'IF Component LIKE "gb.qt*" THEN
 
@@ -129,11 +131,31 @@ Public Sub InitControl()
 
   'ENDIF
 
-  aCont = CComponent.All[Component].Containers
-  Container = aCont.Find(Name) >= 0 Or Name = "Form" Or Name = "Menu"
-  Form = Name = "Form"
+  hSym = Symbols["_Family"]
+  If hSym Then Family = hSym.Value
 
-  MultiContainer = CComponent.All[Component].MultiContainers.Find(Name) >= 0 Or Name = "TabStrip"
+  hSym = Symbols["_Group"]
+  If hSym Then Group = hSym.Value
+  If Not Group Then Group = Family
+
+  hSym = Symbols["_Form"]
+  If hSym Then Form = hSym.Value
+
+  hSym = Symbols["_IsVirtual"]
+  If hSym Then VirtualControl = hSym.Value
+
+  'aCont = CComponent.All[Component].Containers
+  'Container = aCont.Find(Name) >= 0 Or Name = "Form" Or Name = "Menu"
+  hSym = Symbols["_IsContainer"]
+  If hSym Then 
+    Container = hSym.Value
+  Endif
+  
+  'Form = Name = "Form"
+
+  'MultiContainer = CComponent.All[Component].MultiContainers.Find(Name) >= 0 Or Name = "TabStrip"
+  hSym = Symbols["_IsMultiContainer"]
+  If hSym Then MultiContainer = hSym.Value
 
   hSym = Symbols["_Properties"]
   If hSym Then

@@ -1,22 +1,22 @@
 /***************************************************************************
 
-  gb.form.properties.h
+	gb.form.properties.h
 
-  (c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -24,10 +24,10 @@
 #define __GB_FORM_PROPERTIES_H
 
 #define CCONTROL_PROPERTIES \
-  "X{Position},Y{Position},Width{Dimension},Height{Dimension},Visible=True,Enabled=True,Font{Font}," \
-  "Background{Color}=-1,Foreground{Color}=-1," \
-  "Tag,Tracking,Mouse{Mouse.Default;Blank;Arrow;Cross;Wait;Text;SizeAll;SizeH;SizeV;SizeN;SizeS;SizeW;" \
-  "SizeE;SizeNWSE;SizeNESW;SplitH;SplitV;Pointing}=Default,ToolTip,Drop,Expand,Ignore"
+	"X{Position},Y{Position},Width{Dimension},Height{Dimension},Visible=True,Enabled=True,Font{Font}," \
+	"Background{Color}=-1,Foreground{Color}=-1," \
+	"Tag,Tracking,Mouse{Mouse.Default;Blank;Arrow;Cross;Wait;Text;SizeAll;SizeH;SizeV;SizeN;SizeS;SizeW;" \
+	"SizeE;SizeNWSE;SizeNESW;SplitH;SplitV;Pointing}=Default,ToolTip,Drop,Expand,Ignore"
 #define CARRANGEMENT_PROPERTY "Arrangement{Arrange.None;Horizontal;Vertical;Row;Column;Fill}"
 #define CPADDING_PROPERTIES "Spacing,Margin,Padding{Range:0;63},Indent"
 #define CWINDOW_PADDING_PROPERTIES "Spacing,Margin,Padding{Range:0;63}"
@@ -75,15 +75,19 @@
 #define CWINDOW_PROPERTIES "*,Action,Text,Icon,Picture,Mask,Persistent,Resizable=True,Border=True,Type{WindowType.*}=Normal,Stacking{Window.Normal;Above;Below}=Normal,Minimized,Maximized,FullScreen,Sticky,SkipTaskbar," CWINDOW_ARRANGEMENT_PROPERTIES
 
 #define DESCRIBE_CONTROL(_prop, _event, _size) \
-  GB_CONSTANT("_Properties", "s", _prop), \
-  GB_CONSTANT("_DefaultEvent", "s", _event), \
-  GB_CONSTANT("_DefaultSize", "s", _size)
+	GB_CONSTANT("_Properties", "s", _prop), \
+	GB_CONSTANT("_DefaultEvent", "s", _event), \
+	GB_CONSTANT("_DefaultSize", "s", _size)
+
+#define DESCRIBE_SPECIAL_CONTROL(_prop, _event, _size) \
+	DESCRIBE_CONTROL(_prop, _event, _size), \
+	GB_CONSTANT("_Group", "s", "Special")
 
 #define DESCRIBE_CONTAINER(_prop, _event, _arr) \
-  GB_CONSTANT("_Properties", "s", _prop), \
-  GB_CONSTANT("_DefaultEvent", "s", _event), \
-  GB_CONSTANT("_DefaultSize", "s", "24,24"), \
-  GB_CONSTANT("_Arrangement", "i", _arr)
+	GB_CONSTANT("_Properties", "s", _prop), \
+	GB_CONSTANT("_DefaultEvent", "s", _event), \
+	GB_CONSTANT("_DefaultSize", "s", "24,24"), \
+	GB_CONSTANT("_Arrangement", "i", _arr)
 
 #define DESCRIBE_MULTI_CONTAINER(_prop, _event, _arr) \
 	GB_CONSTANT("_IsMultiContainer", "b", TRUE), \
@@ -103,7 +107,7 @@
 #define COLUMNVIEW_DESCRIPTION DESCRIBE_CONTROL(CCOLUMNVIEW_PROPERTIES, "Click", "16,16")
 #define COMBOBOX_DESCRIPTION DESCRIBE_CONTROL(CCOMBOBOX_PROPERTIES, "Click", "24,4")
 #define DRAWINGAREA_DESCRIPTION DESCRIBE_CONTAINER(CDRAWINGAREA_PROPERTIES, "Draw", ARRANGE_NONE)
-#define EMBEDDER_DESCRIPTION DESCRIBE_CONTROL("*", "Embed", "24,24")
+#define EMBEDDER_DESCRIPTION DESCRIBE_SPECIAL_CONTROL("*", "Embed", "24,24")
 #define FRAME_DESCRIPTION DESCRIBE_CONTAINER(CFRAME_PROPERTIES, "MouseDown", ARRANGE_NONE)
 #define GRIDVIEW_DESCRIPTION DESCRIBE_CONTROL(CGRIDVIEW_PROPERTIES, "Click", "16,16")
 #define HBOX_DESCRIPTION DESCRIBE_CONTAINER(CHBOX_PROPERTIES, "MouseDown", ARRANGE_HORIZONTAL)
@@ -130,9 +134,8 @@
 #define TEXTLABEL_DESCRIPTION DESCRIBE_CONTROL(CTEXTLABEL_PROPERTIES, "MouseDown", "24,4")
 #define TOGGLEBUTTON_DESCRIPTION DESCRIBE_CONTROL(CTOGGLEBUTTON_PROPERTIES, "Click", "16,4")
 #define TOOLBUTTON_DESCRIPTION DESCRIBE_CONTROL(CTOOLBUTTON_PROPERTIES, "Click", "4,4")
-#define TRAYICON_DESCRIPTION DESCRIBE_CONTROL(CTRAYICON_PROPERTIES, "Menu", "4,4")
+#define TRAYICON_DESCRIPTION DESCRIBE_SPECIAL_CONTROL(CTRAYICON_PROPERTIES, "Menu", "4,4")
 #define TREEVIEW_DESCRIPTION DESCRIBE_CONTROL(CTREEVIEW_PROPERTIES, "Click", "16,16")
-#define USERCONTROL_DESCRIPTION DESCRIBE_CONTROL(CUSERCONTROL_PROPERTIES, "MouseDown", "16,16")
 #define USERCONTAINER_DESCRIPTION DESCRIBE_CONTAINER(CUSERCONTAINER_PROPERTIES, "MouseDown", ARRANGE_FILL)
 #define VBOX_DESCRIPTION DESCRIBE_CONTAINER(CVBOX_PROPERTIES, "MouseDown", ARRANGE_VERTICAL)
 #define VPANEL_DESCRIPTION DESCRIBE_CONTAINER(CVBOX_PROPERTIES, "MouseDown", ARRANGE_COLUMN)
@@ -142,18 +145,26 @@
 #define MENU_DESCRIPTION \
 	GB_CONSTANT("_IsControl", "b", TRUE), \
 	GB_CONSTANT("_Family", "s", "Form"), \
-  GB_CONSTANT("_Properties", "s", CMENU_PROPERTIES), \
-  GB_CONSTANT("_DefaultEvent", "s", "Click") \
+	GB_CONSTANT("_Properties", "s", CMENU_PROPERTIES), \
+	GB_CONSTANT("_DefaultEvent", "s", "Click")
 
 #define FORM_DESCRIPTION \
 	GB_CONSTANT("_IsForm", "b", TRUE), \
-  GB_CONSTANT("_HiddenControls", "s", "Control,Menu")
+	GB_CONSTANT("_HiddenControls", "s", "Form,Control,Menu,Container,UserControl,UserContainer,Window")
 
 #define PRINTER_DESCRIPTION \
 	GB_CONSTANT("_IsControl", "b", TRUE), \
+	GB_CONSTANT("_Family", "s", "Form"), \
 	GB_CONSTANT("_IsVirtual", "b", TRUE), \
-  GB_CONSTANT("_Properties", "s", CPRINTER_PROPERTIES), \
-  GB_CONSTANT("_DefaultEvent", "s", "Draw") \
+	GB_CONSTANT("_Group", "s", "Special"), \
+	GB_CONSTANT("_Properties", "s", CPRINTER_PROPERTIES), \
+	GB_CONSTANT("_DefaultEvent", "s", "Draw")
+
+#define USERCONTROL_DESCRIPTION \
+	DESCRIBE_CONTROL(CUSERCONTROL_PROPERTIES, "MouseDown", "16,16"), \
+	GB_CONSTANT("_Group", "s", ""), \
+	GB_CONSTANT("_IsContainer", "b", FALSE)
+
 
 #endif
 

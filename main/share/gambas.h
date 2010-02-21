@@ -935,6 +935,12 @@ typedef
 			void (*Add)(const char *src, int len);
 			}
 		String;
+		
+		struct {
+			char *(*GetCurrentPosition)();
+			}
+		Debug;
+		
 		}
 	GB_INTERFACE;
 

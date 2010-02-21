@@ -61,6 +61,7 @@ static struct option Long_options[] =
   { "debug", 0, NULL, 'g' },
   { "version", 0, NULL, 'V' },
   { "help", 0, NULL, 'h' },
+  { "license", 0, NULL, 'L' },
   { "verbose", 0, NULL, 'v' },
   { "translate", 0, NULL, 't' },
   { "public-control", 0, NULL, 'p' },
@@ -99,9 +100,9 @@ static void get_arguments(int argc, char **argv)
   for(;;)
   {
     #if HAVE_GETOPT_LONG
-      opt = getopt_long(argc, argv, "gvaVhtpmser:", Long_options, &index);
+      opt = getopt_long(argc, argv, "gvaVhLtpmser:", Long_options, &index);
     #else
-      opt = getopt(argc, argv, "gvaVhtpmser:");
+      opt = getopt(argc, argv, "gvaVhLtpmser:");
     #endif
     if (opt < 0) break;
 
@@ -155,11 +156,15 @@ static void get_arguments(int argc, char **argv)
 				main_no_old_read_syntax = TRUE;
 				break;
       
-      case 'h': case '?':
+			case 'L':
         printf(
-          "\n"
           "GAMBAS Compiler version " VERSION " " __DATE__ " " __TIME__ "\n"
           COPYRIGHT
+          );
+				exit(0);
+				
+      case 'h': case '?':
+        printf(
           "Usage: gbc" GAMBAS_VERSION_STRING " [options] [<project directory>]\n\n"
           "Options:"
           #if HAVE_GETOPT_LONG
@@ -174,6 +179,7 @@ static void get_arguments(int argc, char **argv)
           "  -r  --root <directory>     gives the gambas installation directory\n"
           "  -V  --version              display version\n"
           "  -h  --help                 display this help\n"
+          "  -L  --license              display license\n"
 					"  -e  --translate-errors     display translatable error messages\n"
           #else
           " (no long options on this system)\n"
@@ -187,6 +193,7 @@ static void get_arguments(int argc, char **argv)
           "  -r <directory>             gives the gambas installation directory\n"
           "  -V                         display version\n"
           "  -h                         display this help\n"
+          "  -L                         display license\n"
 					"  -e                         display translatable error messages\n"
           #endif
           "\n"

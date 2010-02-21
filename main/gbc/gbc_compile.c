@@ -114,7 +114,9 @@ static void add_list_file(char *library)
 	*/
   if (!fi)
   {
-	  fprintf(stderr, "warning: cannot read component list file: %s.list\n", library);
+		// Do not print a warning if a component self-reference is not found
+		if (strcmp(library, COMP_project))
+			fprintf(stderr, "warning: cannot read component list file: %s.list\n", library);
 	  return;
   }
 

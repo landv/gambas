@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,104,36)
+  MoveScaled(0,0,26,20)
   Action = "help"
   Text = ("Help browser")
   Icon = Picture["icon:/small/help"]
@@ -10,7 +10,7 @@
   SkipTaskbar = True
   Arrangement = Arrange.Vertical
   { panToolbar HBox
-    MoveScaled(0,0,105,4)
+    MoveScaled(0,0,82,4)
     { btnHome ToolButton
       MoveScaled(0,0,4,4)
       ToolTip = ("Index")
@@ -86,7 +86,7 @@
       Picture = Picture["icon:/small/print"]
     }
     { btnModify ToolButton
-      MoveScaled(61,0,25,4)
+      MoveScaled(56,0,25,4)
       AutoResize = True
       Text = ("Modify documentation...")
       Picture = Picture["icon:/small/edit"]
@@ -96,7 +96,7 @@
     MoveScaled(12,5,20,0)
   }
   { splHelp HSplit
-    MoveScaled(1,5,101,29)
+    MoveScaled(1,5,80,29)
     Expand = True
     { hbHelp VBox
       MoveScaled(2,1,34,27)
@@ -114,8 +114,8 @@
       Cached = True
     }
     { Printer1 #Printer
-      #X = 560
-      #Y = 63
+      #X = 315
+      #Y = 140
     }
   }
 }

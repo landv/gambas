@@ -29,7 +29,7 @@ Public Sub Form_Open()
   Dim iInd As Integer
   Dim hCtrl As Control
 
-  $aOrder = ["Form", "Dialog", "Container", "Data", "Network", "Special"]
+  $aOrder = ["Form", "Dialog", "Chooser", "Container", "Data", "Network", "Special"]
 
   ReadConfig
   SetTool
@@ -113,6 +113,7 @@ Public Sub RefreshToolbar(Optional bForce As Boolean)
   Dim sNewLib As String
   Dim aLib As String[]
   Dim hComp As CComponent
+  Dim hClass As CClassInfo
   Dim sGroup As String
   Dim aToolBar As New String[]
   Dim cToolBar As New Collection
@@ -121,7 +122,7 @@ Public Sub RefreshToolbar(Optional bForce As Boolean)
   Dim bExist As Boolean
   Dim sOldTab As String
   Dim iInd As Integer
-  Dim sType As String
+  'Dim sType As String
 
   If Project.Libraries Then
 
@@ -166,12 +167,8 @@ Public Sub RefreshToolbar(Optional bForce As Boolean)
 
         If .Key <> "gb" And If Project.Libraries.Find(.Key) < 0 Then Continue
 
-        sGroup = "?"
         For Each sCtrl In .Controls
-          If Left(sCtrl) = "@" Then
-            sGroup = Mid$(sCtrl, 2)
-            Continue
-          Endif
+          sGroup = CComponent.Classes[sCtrl].Group
           cToolBar[sGroup] = sGroup
         Next
 
@@ -201,12 +198,9 @@ Public Sub RefreshToolbar(Optional bForce As Boolean)
 
         If .Key <> "gb" And If Project.Libraries.Find(.Key) < 0 Then Continue
 
-        sGroup = "?"
         For Each sCtrl In .Controls
-          If Left(sCtrl) = "@" Then
-            sGroup = Mid$(sCtrl, 2)
-            Continue
-          Endif
+          hClass = CComponent.Classes[sCtrl]
+          sGroup = hClass.Group
           bExist = False
           For Each hToolBar In $cToolBar
             If hToolBar.Exist(sCtrl) Then 
@@ -215,9 +209,8 @@ Public Sub RefreshToolbar(Optional bForce As Boolean)
             Endif
           Next
           If Not bExist Then 
-            sType = hComp.Type
-            If hComp.Virtuals.Exist(sCtrl) Then sType = "*"
-            $cToolBar[sGroup].Add(sCtrl, hComp.Key, sType)
+            If Not $cToolBar[sGroup] Then Stop
+            $cToolBar[sGroup].Add(sCtrl, hComp.Key, hClass.Family)
           Endif
         Next
 

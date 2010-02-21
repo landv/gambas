@@ -14,9 +14,9 @@ Public Authors As New String[]
 Public Type As String
 Public Hiddens As New String[]
 Public Controls As New String[]
-Public Containers As New String[]
-Public MultiContainers As New String[]
-Public Virtuals As New String[]
+'Public Containers As New String[]
+'Public MultiContainers As New String[]
+'Public Virtuals As New String[]
 Public Require As New String[]
 Public Exclude As New String[]
 Public Implement As New String[]
@@ -148,38 +148,36 @@ Static Public Sub GetChanges(sKind As String) As String[]
   
 End
 
-Private Sub InsertNew(aCtrl As String[], aInsert As String[])
-  
-  Dim sCtrl As String
-  
-  For Each sCtrl In aInsert
-    If aCtrl.Exist(sCtrl) Then Continue
-    aCtrl.Add(sCtrl)
-  Next
-  
-End
+' Private Sub InsertNew(aCtrl As String[], aInsert As String[])
+'   
+'   Dim sCtrl As String
+'   
+'   For Each sCtrl In aInsert
+'     If aCtrl.Exist(sCtrl) Then Continue
+'     aCtrl.Add(sCtrl)
+'   Next
+'   
+' End
 
 
-Public Sub AddControls(sGroup As String, aCtrl As String[])
-  
-  Dim sCtrl As String
-  
-  If Controls.Count = 0 Or If Controls[Controls.Max] <> ("@" & sGroup) Then 
-    Controls.Add("@" & sGroup)
-  Endif
-  
-  InsertNew(Controls, aCtrl)
-  
-End
+' Public Sub AddControls(sGroup As String, aCtrl As String[])
+'   
+'   Dim sCtrl As String
+'   
+'   If Controls.Count = 0 Or If Controls[Controls.Max] <> ("@" & sGroup) Then 
+'     Controls.Add("@" & sGroup)
+'   Endif
+'   
+'   InsertNew(Controls, aCtrl)
+'   
+' End
 
-Public Sub AddContainers(sGroup As String, aCtrl As String[])
-  
-  AddControls(sGroup, aCtrl)
-  InsertNew(Containers, aCtrl)
-  
-End
-
-
+' Public Sub AddContainers(sGroup As String, aCtrl As String[])
+'   
+'   AddControls(sGroup, aCtrl)
+'   InsertNew(Containers, aCtrl)
+'   
+' End
 
 Static Private Sub InitComponent(sFile As String, bUser As Boolean)
   
@@ -277,20 +275,20 @@ Static Private Sub InitComponent(sFile As String, bUser As Boolean)
             .Authors = Split(sLig)
           Else If sKey = "Type" Then
             .Type = sLig
-          Else If sKey = "Group" Then
-            sGroup = sLig
-          Else If sKey = "Hidden" Then
-            .Hiddens = Split(sLig)
-          Else If sKey = "Control" Or If sKey = "Controls" Then
-            .AddControls(sGroup, Split(sLig))
-          Else If sKey = "Container" Then
-            .AddContainers(sGroup, Split(sLig))
-          Else If sKey = "MultiContainer" Then
-            .AddContainers(sGroup, Split(sLig))
-            .MultiContainers.Insert(Split(sLig))
-          Else If sKey = "Virtual" Then
-            .AddControls(sGroup, Split(sLig))
-            .Virtuals.Insert(Split(sLig))
+          ' Else If sKey = "Group" Then
+          '   sGroup = sLig
+          ' Else If sKey = "Hidden" Then
+          '   .Hiddens = Split(sLig)
+          ' Else If sKey = "Control" Or If sKey = "Controls" Then
+          '   .AddControls(sGroup, Split(sLig))
+          ' Else If sKey = "Container" Then
+          '   .AddContainers(sGroup, Split(sLig))
+          ' Else If sKey = "MultiContainer" Then
+          '   .AddContainers(sGroup, Split(sLig))
+          '   .MultiContainers.Insert(Split(sLig))
+          ' Else If sKey = "Virtual" Then
+          '   .AddControls(sGroup, Split(sLig))
+          '   .Virtuals.Insert(Split(sLig))
           Else If sKey = "Require" Or sKey = "Requires" Then
             .Require = Split(sLig)
           Else If sKey = "Exclude" Or sKey = "Excludes" Then
@@ -592,20 +590,32 @@ Public Sub Load()
   '     Endif
   '   Next
   ' Endif
+  
+  For Each sClass In ClassList
+    hClass = Classes[sClass]
+
+    hSym = hClass.Symbols["_IsControl"]
+    If hSym And If hSym.Value Then
+      Controls.Add(hClass.Name)
+    Endif
+    
+    hSym = hClass.Symbols["_IsForm"]
+    If hSym And If hSym.Value Then
+      hSym = hClass.Symbols["_HiddenControls"]
+      If hSym Then Hiddens = Split(hSym.Value, ",")
+    Endif
+    
+  Next
 
   For Each sClass In Hiddens
     If Classes.Exist(sClass) Then
       Classes[sClass].InitControl()
+      Controls.Remove(Controls.Find(sClass))
     Endif
   Next
-
+  
   For Each sClass In Controls
-    If Left(sClass) = "@" Then Continue
-    If Classes.Exist(sClass) Then
-      Classes[sClass].InitControl()
-    Else
-      Debug "Control "; sClass; " not found"
-    Endif
+    Classes[sClass].InitControl()
   Next
 
   ClassList.Sort

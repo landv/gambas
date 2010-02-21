@@ -241,6 +241,11 @@ static void dump_value(const char *type, intptr_t value)
 				p++;
 			}
 			break;
+			
+		case 'b':
+			print("%s", value ? "T" : "");
+			break;
+			
 
 		default:
 			print("?");

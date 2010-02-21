@@ -52,6 +52,7 @@
 #include "gbx_c_timer.h"
 #include "gbx_component.h"
 #include "gbx_c_gambas.h"
+#include "gbx_debug.h"
 
 #include "gambas.h"
 #include "gbx_api.h"
@@ -246,6 +247,8 @@ void *GAMBAS_Api[] =
   (void *)STRING_start_len,
   (void *)STRING_end,
   (void *)STRING_make,
+  
+  (void *)DEBUG_get_current_position,
 
   NULL
 };
