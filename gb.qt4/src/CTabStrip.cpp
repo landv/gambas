@@ -198,7 +198,11 @@ void MyTabWidget::setEnabled(bool e)
 void MyTabWidget::layoutContainer()
 {
 	CWIDGET *_object = CWidget::get(this);
+	#if QT_VERSION >= 0x040600
   QStyleOptionTabWidgetFrameV2 option;
+	#else
+  QStyleOptionTabWidgetFrame option;
+	#endif
 
 	initStyleOption(&option);
   QRect contentsRect = style()->subElementRect(QStyle::SE_TabWidgetTabContents, &option, this);
