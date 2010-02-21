@@ -376,6 +376,8 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent)
 	//container->setPaletteBackgroundColor(Qt::yellow);
 	//container->setBackgroundOrigin(QWidget::WindowOrigin);
 
+	//qDebug("CWINDOW_new: %p: %s", THIS, GB.Debug.GetCurrentPosition());
+	
 	if (win)
 	{
 		win->_object = THIS;
@@ -1485,7 +1487,7 @@ MyMainWindow::~MyMainWindow()
 	CWINDOW *_object = (CWINDOW *)CWidget::get(this);
 
 	#if DEBUG_WINDOW
-	qDebug("~MyMainWindow: %s %p", GB.GetClassName(THIS), THIS);
+	qDebug("~MyMainWindow: %s %s %p", GB.GetClassName(THIS), THIS->widget.name, THIS);
 	#endif
 	
 	do_close(THIS, 0, true);
@@ -1501,14 +1503,6 @@ MyMainWindow::~MyMainWindow()
 	if (sg)
 		delete sg;
 		
-	/*if (THIS == NULL)
-	{
-		qWarning("~MyMainWindow: ob == NULL");
-		return;
-	}*/
-
-	//do_close(ob, 0, true);
-
 	GB.Detach(THIS);
 
 	if (THIS->menuBar)

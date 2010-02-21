@@ -79,11 +79,7 @@ public:
 	MyTabWidget(QWidget *parent);
 	virtual ~MyTabWidget();
 	virtual void setEnabled(bool e);
-	void forceLayout();
-
-protected:
-  
-  virtual bool eventFilter(QObject *, QEvent *);
+	void layoutContainer();
 };
 
 class CTabStrip : public QObject

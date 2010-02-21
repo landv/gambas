@@ -27,6 +27,7 @@
 #include <QShowEvent>
 #include <QWheelEvent>
 #include <QEvent>
+#include <QStackedWidget>
 #include <QTabWidget>
 
 #include "gb_common.h"
@@ -44,7 +45,7 @@ DECLARE_EVENT(EVENT_Click);
 
 void CTABSTRIP_arrange(void *_object)
 {
-	WIDGET->forceLayout();
+	WIDGET->layoutContainer();
 }
 
 /** CTab *****************************************************************/
@@ -63,7 +64,7 @@ public:
 	~CTab();
 	
 	int index() const { return WIDGET->indexOf(widget); }
-	void ensureVisible() const { WIDGET->setCurrentIndex(index()); }
+	void ensureVisible();
 	void setEnabled(bool e) { enabled = e; WIDGET->setTabEnabled(index(), e && WIDGET->isEnabled()); }
 	bool isEnabled() const { return enabled; }
 	bool isVisible() const { return visible; }
@@ -92,6 +93,13 @@ CTab::CTab(CTABSTRIP *parent, QWidget *page)
 CTab::~CTab()
 {
 	GB.Unref(POINTER(&icon));
+}
+
+void CTab::ensureVisible()
+{
+	WIDGET->setCurrentIndex(index());
+	if (!WIDGET->isVisible())
+		WIDGET->layoutContainer();
 }
 
 int CTab::count() const
@@ -162,7 +170,7 @@ void CTab::updateIcon()
 
 MyTabWidget::MyTabWidget(QWidget *parent) : QTabWidget(parent)
 {
-	tabBar()->installEventFilter(this);
+	//tabBar()->installEventFilter(this);
 }
 
 MyTabWidget::~MyTabWidget()
@@ -187,19 +195,22 @@ void MyTabWidget::setEnabled(bool e)
 		WIDGET->stack.at(i)->widget->setEnabled(e);
 }
 
-void MyTabWidget::forceLayout()
+void MyTabWidget::layoutContainer()
 {
-	bool b = isVisible();
-	QShowEvent e;
-		
-	setAttribute(Qt::WA_WState_Visible, true);
-	qApp->sendEvent(this, &e);
-	if (!b)
-		setAttribute(Qt::WA_WState_Visible, false);
-		
-	//qDebug("Y = %d", tabBar()->height());
+	CWIDGET *_object = CWidget::get(this);
+  QStyleOptionTabWidgetFrameV2 option;
+
+	initStyleOption(&option);
+  QRect contentsRect = style()->subElementRect(QStyle::SE_TabWidgetTabContents, &option, this);
+
+	QWidget *w = findChild<QStackedWidget *>();
+
+	w->setGeometry(contentsRect);
+	if (THIS->container)
+		THIS->container->setGeometry(0, 0, contentsRect.width(), contentsRect.height());
 }
 
+#if 0
 bool MyTabWidget::eventFilter(QObject *o, QEvent *e)
 {
 	if (e->type() == QEvent::Wheel && qobject_cast<QTabBar *>(o))
@@ -233,7 +244,7 @@ bool MyTabWidget::eventFilter(QObject *o, QEvent *e)
 
   return QObject::eventFilter(o, e);
 }
-
+#endif
 
 /***************************************************************************
 
@@ -686,7 +697,6 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CTABSTRIP_client_x)
 
-	WIDGET->forceLayout();
 	CCONTAINER_x(_object, _param);
 
 END_PROPERTY
@@ -695,7 +705,6 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CTABSTRIP_client_y)
 
-	WIDGET->forceLayout();
 	CCONTAINER_y(_object, _param);
 
 END_PROPERTY
@@ -703,7 +712,6 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CTABSTRIP_client_width)
 
-	WIDGET->forceLayout();
   GB.ReturnInteger(THIS->container->width());
 
 END_PROPERTY
@@ -711,7 +719,6 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CTABSTRIP_client_height)
 
-	WIDGET->forceLayout();
   GB.ReturnInteger(THIS->container->height());
 
 END_PROPERTY
