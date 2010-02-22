@@ -135,18 +135,21 @@ Public Sub _new(sComponent As String, sClass As String, sName As String, sKind A
     Type = hSym.Type
     sSign = hSym.Signature
   Else
-    If Name = "X" Or Name = "Y" Then
-      Type = "Position"
+    If Name = "X" Or If Name = "Y" Then
+      Type = "i"
+      sKind = "Position"
     Endif
   Endif
   'sClass = hSym.Class
 
+  Required = sKind = "Position"
+
   If Len(Type) = 1 Then
     'IF Name = "Visible" THEN
     '  DefaultValue = TRUE
-    If Name = "X" Or Name = "Y" Or Name = "Width" Or Name = "Height" Or Name = "Text" Then
-      Required = True
-    Else If Name = "Tag" Then
+    'If Name = "X" Or Name = "Y" Or Name = "Width" Or Name = "Height" Or Name = "Text" Then
+    '  Required = True
+    If Name = "Tag" Then
       Type = "s"
     'ELSE IF Name = "List" THEN
     '  Type = "List"
@@ -264,7 +267,7 @@ Public Sub _new(sComponent As String, sClass As String, sName As String, sKind A
 
   If Type = "Color" Then DefaultValue = Color.Default
 
-  Coord = Name = "X" Or Name = "Y" Or Name = "Width" Or Name = "Height"
+  Coord = Name = "#X" Or Name = "#Y" Or Name = "#Width" Or Name = "#Height"
   If Coord Then DefaultValue = Null
   'AlwaysRead = Name = "Font"
 

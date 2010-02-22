@@ -30,12 +30,13 @@ Public Function Error() As Boolean
   Dim sError As String
   
   sError = Error.Text & " (" & Error.Where & ")"
+  Debug sError
   
   If $bRename Then 
     Try Move $sPath & "~" To $sPath
   Endif
   
-  FGambas.Error(("Cannot save file !") & "\n\n" & $sPath & "\n\n" & sError)
+  FMain.ShowError(("Cannot save file !") & "\n\n" & $sPath & "\n\n" & sError, $sPath)
   Save.End
   Return True
   

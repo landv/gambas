@@ -566,6 +566,7 @@ void MyTable::drawContents(QPainter *p, int cx, int cy, int cw, int ch)
 						r == curRow && c == curCol )
 					selected = false;*/
 			paintCell(p, rs, cs, QRect(colp, rowp, colw, rowh), isRowReallySelected(rs), colorGroup());
+			//p->drawText(0, 16, QString("[%1:%2]").arg(rowspan).arg(colspan));
 			p->translate(-colp, -rowp);
 
 			rowp = oldrp;

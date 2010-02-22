@@ -101,7 +101,7 @@ Public Sub InitControl()
   If hSym Then Group = hSym.Value
   If Not Group Then Group = Family
 
-  hSym = Symbols["_Form"]
+  hSym = Symbols["_IsForm"]
   If hSym Then Form = hSym.Value
 
   hSym = Symbols["_IsVirtual"]
@@ -239,18 +239,22 @@ Public Sub InitControl()
     PropertyList.Add(hProp.Name)
   Next
 
-  If VirtualControl Then
+  'If VirtualControl Then
 
-    Properties["Y"] = New CPropertyInfo("", Name, "Y", "", Null, True)
-    PropertyList.Add("Y", 0)
-    Properties["X"] = New CPropertyInfo("", Name, "X", "", Null, True)
-    PropertyList.Add("X", 0)
-
+  Properties["#X"] = New CPropertyInfo("", Name, "#X", "", Null, True, True)
+  Properties["#Y"] = New CPropertyInfo("", Name, "#Y", "", Null, True, True)
+  If Not VirtualControl Then
+    Properties["#Width"] = New CPropertyInfo("", Name, "#Width", "", Null, True, True)
+    Properties["#Height"] = New CPropertyInfo("", Name, "#Height", "", Null, True, True)
   Endif
 
+  'Endif
+
   If {Form} Then 
-    Properties[CPropertyInfo.SCALE_NAME] = New CPropertyInfo(Component, Name, CPropertyInfo.SCALE_NAME, "", Null)
-    PropertyList.Add(CPropertyInfo.SCALE_NAME, 0)
+    If Family = "Form" Then
+      Properties[CPropertyInfo.SCALE_NAME] = New CPropertyInfo(Component, Name, CPropertyInfo.SCALE_NAME, "", Null)
+      PropertyList.Add(CPropertyInfo.SCALE_NAME, 0)
+    Endif
   Else
     Properties[CPropertyInfo.PUBLIC_NAME] = New CPropertyInfo(Component, Name, CPropertyInfo.PUBLIC_NAME, "", Null)
     PropertyList.Add(CPropertyInfo.PUBLIC_NAME, 0)

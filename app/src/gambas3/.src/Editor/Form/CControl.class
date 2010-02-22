@@ -16,6 +16,7 @@ Public Unknown As Boolean
 Public Tag As Variant
 Public DrawWith As String
 Public {Public} As Boolean
+Public VirtualCoord As Boolean
 
 'STATIC PUBLIC Properties AS NEW Collection
 'STATIC PUBLIC PropertiesInOrder AS NEW Collection
@@ -262,10 +263,11 @@ Private Sub InitControl(hCtrl As Object)
 
   Dim hProp As CPropertyInfo
 
-  Try SetProperty("X", hCtrl.X)
-  Try SetProperty("Y", hCtrl.Y)
-  Try SetProperty("Width", hCtrl.Width)
-  Try SetProperty("Height", hCtrl.Height)
+  $cValue["#X"] = 0
+  $cValue["#Y"] = 0
+  $cValue["#Width"] = 0
+  $cValue["#Height"] = 0
+
   Try SetProperty("Text", hCtrl.Text)
   SetProperty("Visible", True)
   SetProperty("Tag", Null)
@@ -283,10 +285,13 @@ Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As
 
   Dim hCtrl As Object
   Dim iDim As Integer
+  Dim hClass As CClassInfo
 
   Name = sName
   Kind = sClass
   Parent = hParent
+  
+  hClass = CComponent.Classes[sClass]
 
   Select Kind
 
@@ -311,7 +316,7 @@ Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As
 
     Case Else
 
-      Try Virtual = CComponent.Classes[sClass].VirtualControl
+      Try Virtual = hClass.VirtualControl
 
       If Virtual Then
 
@@ -340,6 +345,8 @@ Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As
   Else
     Object.Attach(hCtrl, hForm, "Control")
   Endif
+
+  VirtualCoord = hClass.Family <> "Form"
 
   InitControl(hCtrl)
 
@@ -390,11 +397,13 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
 
   'IF sProp = "Background" THEN STOP
 
-  If Not IsNull(vDefault) Then
-    If Not IsNull(vVal) Then
-       If vVal = vDefault Then
-        vVal = Null
-        'PRINT "Default !"
+  If Not hProp.Required Then
+    If Not IsNull(vDefault) Then
+      If Not IsNull(vVal) Then
+        If vVal = vDefault Then
+          vVal = Null
+          'PRINT "Default !"
+        Endif
       Endif
     Endif
   Endif
@@ -486,6 +495,22 @@ _DO_NOT_APPLY:
   '    vVal = NULL
   '  ENDIF
   'ENDIF
+  
+  If hProp.Coord Then
+    If VirtualCoord Then
+      $cValue[sProp] = vVal
+      Modify
+    Else
+      SetProperty(Mid$(sProp, 2), vVal, bDoNotApply)
+    Endif
+    Return
+  Endif
+  
+  If Not VirtualCoord Then
+    If sProp = "X" Or If sProp = "Y" Or If sProp = "Width" Or If sProp = "Height" Then
+      $cValue["#" & sProp] = vVal
+    Endif
+  Endif
 
   If $cValue[sProp] <> vVal Then
     $cValue[sProp] = vVal
@@ -547,18 +572,6 @@ Public Function GetProperty(sProp As String) As Variant
   Endif
 
   Return $cValue[sProp]
-
-  'IF $cRedirect.Exist(Kind) THEN
-  '  IF $cRedirect[Kind][sProp] THEN
-  '    RETURN $cDefaultValue[Kind][sProp]
-  '  ENDIF
-  'ENDIF
-  '
-  'IF IsNull(Parent) THEN
-  '  RETURN OBJECT.GetProperty(Control.Parent, sProp)
-  'ELSE
-  '  RETURN OBJECT.GetProperty(Control, sProp)
-  'ENDIF
 
 End
 
@@ -994,8 +1007,8 @@ Public Sub Move(X As Integer, Y As Integer, Optional bFree As Boolean)
 
   $bDoNotMoveHandle = True
 
-  SetProperty("X", X)
-  SetProperty("Y", Y)
+  SetProperty("#X", X)
+  SetProperty("#Y", Y)
 
   $bDoNotMoveHandle = False
 
@@ -1020,8 +1033,8 @@ Public Sub Resize(W As Integer, H As Integer, Optional bFree As Boolean)
 
   $bDoNotMoveHandle = True
 
-  SetProperty("Width", W)
-  SetProperty("Height", H)
+  SetProperty("#Width", W)
+  SetProperty("#Height", H)
 
   $bDoNotMoveHandle = False
 
@@ -1057,10 +1070,10 @@ Public Sub MoveAndResize(X As Integer, Y As Integer, W As Integer, H As Integer,
 
   $bDoNotMoveHandle = True
 
-  SetProperty("X", X)
-  SetProperty("Y", Y)
-  SetProperty("Width", W)
-  SetProperty("Height", H)
+  SetProperty("#X", X)
+  SetProperty("#Y", Y)
+  SetProperty("#Width", W)
+  SetProperty("#Height", H)
 
   $bDoNotMoveHandle = False
 
@@ -1294,9 +1307,10 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
   Dim hProp As CPropertyInfo
   Dim sLine As String
   Dim sVal As String
-  Dim cCoord As New Collection
   Dim aVal As String[]
   Dim iInd As Integer
+  Dim X, Y, W, H As Integer
+  Dim bHasSize As Boolean
 
   cProp = CComponent.Classes[Kind].Properties
 
@@ -1309,12 +1323,10 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
     hProp = cProp[sProp]
 
     If hProp.Exclude Then Continue
-
-    'IF sProp = "X" THEN
-    '  IF IsNull(GetProperty(sProp)) THEN
-    '    STOP
-    '  ENDIF
-    'ENDIF
+    
+    If Not VirtualCoord Then
+      If sProp = "X" Or If sProp = "Y" Or If sProp = "Width" Or If sProp = "Height" Then Continue
+    Endif
 
     vVal = GetProperty(sProp)
     'PRINT "-> "; vVal
@@ -1329,123 +1341,113 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
     Endif
     'ENDIF
 
-    If sProp = "X" Then
-      'IF IsNull(vVal) THEN STOP
-      vVal = vVal - DX
-    Else If sProp = "Y" Then
-      vVal = vVal - DY
-    Else If Right(hProp.Type, 2) <> "[]" Then
+    If Right(hProp.Type, 2) <> "[]" Then
       vVal = ConvertToString(vVal, hProp)
     Endif
 
-    If hProp.Coord And Not hProp.Virtual Then
+    sLine = sProp & " = "
 
-      cCoord[sProp] = vVal
+    Select Case hProp.Type
 
-    Else
+      Case "s", "List", "Path", "Table", "Menu"
+        vVal = Quote(vVal)
 
-      sLine = sProp & " = "
-
-      Select Case hProp.Type
-
-        Case "s", "List", "Path", "Table", "Menu"
-          vVal = Quote(vVal)
-
-          If hProp.Translate Then
-            sLine = sLine & "(" & vVal & ")"
-          Else
-            sLine = sLine & vVal
-          Endif
-          
-        Case "String[]", "Field[]"
+        If hProp.Translate Then
+          sLine = sLine & "(" & vVal & ")"
+        Else
+          sLine = sLine & vVal
+        Endif
         
-          aVal = vVal.Copy()
+      Case "String[]", "Field[]"
+      
+        aVal = vVal.Copy()
+        
+        If Not aVal Then
+        
+          sLine &= "NULL"
           
-          If Not aVal Then
-          
-            sLine &= "NULL"
-            
-          Else
-          
-            sLine &= "["
-          
-            For iInd = 0 To aVal.Max
-              sVal = Quote(aVal[iInd])
-              If hProp.Translate Then sVal = "(" & sVal & ")"
-              If iInd Mod 32 = 0 Then
-                If iInd Then 
-                  sLine &= "]"
-                  If iInd > 32 Then sLine &= ")"
-                  sLine &= ".Insert([" 
-                Endif
-              Else
-                sLine &= ", "
+        Else
+        
+          sLine &= "["
+        
+          For iInd = 0 To aVal.Max
+            sVal = Quote(aVal[iInd])
+            If hProp.Translate Then sVal = "(" & sVal & ")"
+            If iInd Mod 32 = 0 Then
+              If iInd Then 
+                sLine &= "]"
+                If iInd > 32 Then sLine &= ")"
+                sLine &= ".Insert([" 
               Endif
-              sLine &= sVal
-            Next
-          
-            sLine &= "]"
-            If iInd > 32 Then sLine &= ")"
-          
-          Endif
+            Else
+              sLine &= ", "
+            Endif
+            sLine &= sVal
+          Next
+        
+          sLine &= "]"
+          If iInd > 32 Then sLine &= ")"
+        
+        Endif
 
-        Case "Font"
-          sLine = sLine & "Font[" & Chr$(34) & vVal & Chr$(34) & "]"
+      Case "Font"
+        sLine = sLine & "Font[" & Chr$(34) & vVal & Chr$(34) & "]"
 
-        Case "Color"
-          If Not IsNull(Val(vVal)) Then
-            sLine = sLine & vVal
-          Else
-            sLine = sLine & "Color." & vVal
-          Endif
+      Case "Color"
+        If Not IsNull(Val(vVal)) Then
+          sLine = sLine & vVal
+        Else
+          sLine = sLine & "Color." & vVal
+        Endif
 
-        Case "Picture"
-          sLine = sLine & "Picture[" & Chr$(34) & vVal & Chr$(34) & "]"
+      Case "Picture"
+        sLine = sLine & "Picture[" & Chr$(34) & vVal & Chr$(34) & "]"
 
-        Case "Connection"
-          sLine = sLine & "Connections[" & Chr$(34) & vVal & Chr$(34) & "]"
+      Case "Connection"
+        sLine = sLine & "Connections[" & Chr$(34) & vVal & Chr$(34) & "]"
 
-        Case "Constant"
-          sLine = sLine & hProp.ConstantClass & "." & vVal
+      Case "Constant"
+        sLine = sLine & hProp.ConstantClass & "." & vVal
 
-        Case "d"
+      Case "d"
 
-          sLine = sLine & "CDate(" & Chr$(34) & CStr(vVal) & Chr$(34) & ")"
+        sLine = sLine & "CDate(" & Chr$(34) & CStr(vVal) & Chr$(34) & ")"
 
-        Case Else
+      Case Else
 
-          sLine = sLine & CStr(vVal)
+        sLine = sLine & CStr(vVal)
 
-      End Select
+    End Select
 
-      If hProp.Virtual Then sLine = "#" & sLine
+    If hProp.Virtual Then sLine = "#" & sLine
 
-      cLine.Add(sLine)
+    cLine.Add(sLine)
 
-    Endif
-
-'_SUIVANT:
   Next
 
-  If cCoord.Count Then
+  X = GetProperty("#X") - DX
+  Y = GetProperty("#Y") - DY
+  Try W = GetProperty("#Width")
+  Try H = GetProperty("#Height")
+  bHasSize = W > 0 And H > 0
 
-    If bNoScale Then 
-    
-      sLine = "Move(" & cCoord["X"] & "," & cCoord["Y"]
-      If cCoord.Count > 2 Then sLine = sLine & "," & cCoord["Width"] & "," & cCoord["Height"]
-      sLine = sLine & ")"
+  If bNoScale Then 
   
-    Else
+    sLine = "Move(" & X & "," & Y
+    If bHasSize Then sLine = sLine & "," & W & "," & H
+    sLine = sLine & ")"
 
-      sLine = "MoveScaled(" & GetCoord(cCoord["X"]) & "," & GetCoord(cCoord["Y"])
-      If cCoord.Count > 2 Then sLine = sLine & "," & GetCoord(cCoord["Width"], True) & "," & GetCoord(cCoord["Height"], True)
-      sLine = sLine & ")"
+  Else
 
-    Endif
-
-    cLine.Add(sLine, 0)
+    sLine = "MoveScaled(" & GetCoord(X) & "," & GetCoord(Y)
+    If bHasSize Then sLine = sLine & "," & GetCoord(W, True) & "," & GetCoord(H, True)
+    sLine = sLine & ")"
 
   Endif
+
+  If VirtualCoord Then sLine = "#" & sLine
+
+  cLine.Add(sLine, 0)
 
   Return cLine
 

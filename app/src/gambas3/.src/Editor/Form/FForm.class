@@ -394,27 +394,29 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
           If Not $bNoWarning Then Print "Error: "; hCtrl.Kind; "."; sProperty; " = "; sValue
         Endif
 
-      Else If Left$(sLine, 5) = "Move(" Then
+      Else If sLine Begins "Move(" Or If sLine Begins "#Move(" Then
 
+        If Left(sLine) = "#" Then sLine = Mid$(sLine, 2)
         cCoord = Split(Mid$(sLine, 6, -1))
         'TRY PRINT cCoord[0]; ","; cCoord[1]; ","; cCoord[2]; ","; cCoord[3]
         Try hCtrl.Move(CInt(cCoord[0]) / Project.Snap * Desktop.Scale, CInt(cCoord[1]) / Project.Snap * Desktop.Scale, True)
         'TRY hCtrl.SetProperty("X", Val(cCoord[0]))
         'TRY hCtrl.SetProperty("Y", Val(cCoord[1]))
-        If cCoord.Count >= 2 Then
+        If cCoord.Count = 4 Then
           Try hCtrl.Resize(CInt(cCoord[2]) / Project.Snap * Desktop.Scale, CInt(cCoord[3]) / Project.Snap * Desktop.Scale, True)
         Endif
 
         If Error Then Print "Error: Syntax error: "; sLine
 
-      Else If Left$(sLine, 11) = "MoveScaled(" Then
+      Else If sLine Begins "MoveScaled(" Or If sLine Begins "#MoveScaled(" Then
 
+        If Left(sLine) = "#" Then sLine = Mid$(sLine, 2)
         cCoord = Split(Mid$(sLine, 12, -1))
         'TRY PRINT cCoord[0]; ","; cCoord[1]; ","; cCoord[2]; ","; cCoord[3]
         Try hCtrl.Move(Round(CFloat(cCoord[0]) * Desktop.Scale), Round(CFloat(cCoord[1]) * Desktop.Scale), True)
         'TRY hCtrl.SetProperty("X", Val(cCoord[0]))
         'TRY hCtrl.SetProperty("Y", Val(cCoord[1]))
-        If cCoord.Count >= 2 Then
+        If cCoord.Count = 4 Then
           eW = CFloat(cCoord[2])
           eH = CFloat(cCoord[3])
           If $bConvert Then
@@ -810,8 +812,8 @@ Public Sub Control_Resize()
 
   With Control[Me.Name]
     If hCtrl <> .Control Then Return
-    If hCtrl.Width <> .GetProperty("Width") Then .SetProperty("Width", hCtrl.Width)
-    If hCtrl.Height <> .GetProperty("Height") Then .SetProperty("Height", hCtrl.Height)
+    If hCtrl.Width <> .GetProperty("#Width") Then .SetProperty("#Width", hCtrl.Width)
+    If hCtrl.Height <> .GetProperty("#Height") Then .SetProperty("#Height", hCtrl.Height)
   End With
 
 End
