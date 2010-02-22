@@ -1,56 +1,60 @@
 ' Gambas class file
 
-EXPORT 
+Export 
 
-INHERITS ReportContainer
+Inherits ReportContainer
 
-PUBLIC SUB _GetSizeHints(AvailableW AS Float, AvailableH AS Float, TotalWidth AS Float, TotalHeight AS Float) AS TSizeHint
+Public Const _Properties As String = "*"
+Public Const _IsControl As Boolean = True
+Public Const _IsContainer As Boolean = True
 
-  DIM hChild AS Object
-  DIM hMyHints AS NEW TSizeHint
-  DIM hChildHints AS TSizeHint
-  DIM fSpacing AS Float
+Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float) As TSizeHint
+
+  Dim hChild As Object
+  Dim hMyHints As New TSizeHint
+  Dim hChildHints As TSizeHint
+  Dim fSpacing As Float
   
-  fSpacing = IIf(ME._RelativeSpacing, TotalWidth * ME._Spacing / 100, ME._Spacing)
+  fSpacing = IIf(Me._RelativeSpacing, TotalWidth * Me._Spacing / 100, Me._Spacing)
   
-  FOR EACH hChild IN ME.Children
+  For Each hChild In Me.Children
     'PRINT "GetSizeHint  : " & Object.Type(hchild.Ctrl)
     'Obtention des volontées des enfants
     hChildHints = hChild.ctrl._GetSizeHints(AvailableW - hMyHints.Width, AvailableH, AvailableW, AvailableH)
     hMyHints.Width += hChildHints.Width + fSpacing 'ME._Spacing
-    IF hMyHints.Height < hChildHints.Height THEN hMyHints.Height = hChildHints.Height
-  NEXT 
+    If hMyHints.Height < hChildHints.Height Then hMyHints.Height = hChildHints.Height
+  Next 
     hMyHints.Width -= fSpacing 'ME._Spacing
-    hMyHints.Width += 2 * ME._Padding
-    IF ME._RelativeWidth THEN hMyHints.Width = AvailableW * ME._Width / 100
+    hMyHints.Width += 2 * Me._Padding
+    If Me._RelativeWidth Then hMyHints.Width = AvailableW * Me._Width / 100
   'je veut ma hauteur !
-  IF NOT ME.Autoresize THEN 
-    hMyHints.Height = ME._Height
-    IF ME._RelativeHeight THEN hMyHints.Height = AvailableH * ME._Height / 100
-  ENDIF
+  If Not Me.Autoresize Then 
+    hMyHints.Height = Me._Height
+    If Me._RelativeHeight Then hMyHints.Height = AvailableH * Me._Height / 100
+  Endif
     
   
-  RETURN hMyHints
-END
+  Return hMyHints
+End
 
 
-PUBLIC FUNCTION _SetChildGeometry(X AS Float, Y AS Float, W AS Float, H AS Float, ContPage AS Integer) AS Float
+Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer) As Float
   
-  DIM hChildHints AS TSizeHint
-  DIM hChild AS Object
-  DIM fChildrenH AS Float
-  DIM PagePos AS NEW Integer[]
-  DIM iPage AS Integer
-  DIM aPage AS NEW Object[]
-  DIM aChild AS NEW Object[]
-  DIM iNExp AS Integer
-  DIM fSExp AS Float
-  DIM fSpc AS Float
-  DIM fPdg AS Float
-  DIM bFirst AS Boolean
-  DIM fH AS Float
-  DIM fW AS Float
-  DIM nbPage AS Integer
+  Dim hChildHints As TSizeHint
+  Dim hChild As Object
+  Dim fChildrenH As Float
+  Dim PagePos As New Integer[]
+  Dim iPage As Integer
+  Dim aPage As New Object[]
+  Dim aChild As New Object[]
+  Dim iNExp As Integer
+  Dim fSExp As Float
+  Dim fSpc As Float
+  Dim fPdg As Float
+  Dim bFirst As Boolean
+  Dim fH As Float
+  Dim fW As Float
+  Dim nbPage As Integer
   'PRINT "Set HBox Geometry = ", x, y, w, h
     'PRINT Subst("_SetGeometry(&1,&2,&3,&4)", X, Y, W, H)
   
@@ -58,8 +62,8 @@ PUBLIC FUNCTION _SetChildGeometry(X AS Float, Y AS Float, W AS Float, H AS Float
   'IF X = ME.RealLeft AND IF Y = ME.RealTop AND IF W = ME.RealWidth AND IF H = ME.RealHeight THEN RETURN
   
   
-  fSpc = IIf(ME._RelativeSpacing, W * ME._Spacing / 100, ME._Spacing) 'ME._Spacing
-  fPdg = ME._Padding
+  fSpc = IIf(Me._RelativeSpacing, W * Me._Spacing / 100, Me._Spacing) 'ME._Spacing
+  fPdg = Me._Padding
   
   'SUPER._SetGeometry(X, Y, W, H)
     
@@ -68,54 +72,54 @@ PUBLIC FUNCTION _SetChildGeometry(X AS Float, Y AS Float, W AS Float, H AS Float
   W -= fPdg * 2
   H -= fPdg * 2
   
-  FOR EACH hChild IN ME.Children
+  For Each hChild In Me.Children
     
     hChildHints = hChild.ctrl._GetSizeHints(W - fSExp, H, W, H)
     
-    IF hChild.ctrl.Expand THEN 
-      INC iNExp
-    ELSE 
+    If hChild.ctrl.Expand Then 
+      Inc iNExp
+    Else 
       fSExp += hChildHints.Width
-    ENDIF
+    Endif
     
     fSExp += fSpc
     
-  NEXT
+  Next
   
   fSExp -= fSpc
   fSExp = W - fSExp
   
-  bFirst = TRUE
+  bFirst = True
   
   
-  FOR EACH hChild IN ME.Children
+  For Each hChild In Me.Children
   
     hChildHints = hChild.ctrl._GetSizeHints(W - X, H, W, H)
     
-    IF NOT bFirst THEN 
+    If Not bFirst Then 
       X += fSpc
-    ENDIF
+    Endif
     
-    bFirst = FALSE
+    bFirst = False
     
-    IF hChild.ctrl.Expand THEN 
+    If hChild.ctrl.Expand Then 
       fW = fSExp / iNExp 
-    ELSE 
+    Else 
       fW = hChildHints.Width
-    ENDIF 
+    Endif 
     
     nbPage = hChild._SetGeometry(X, Y, fW, h)
 
-    IF nbPage > iPage THEN iPage = nbPage
+    If nbPage > iPage Then iPage = nbPage
     X += fW
     
-  NEXT
+  Next
   
-  RETURN iPage
-END 
+  Return iPage
+End 
 
-PUBLIC SUB _Free()
+Public Sub _Free()
   
-  SUPER._Free
+  Super._Free
   
-END
+End

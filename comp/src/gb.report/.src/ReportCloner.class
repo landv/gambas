@@ -1,87 +1,91 @@
 ' Gambas class file
 
-EXPORT
-INHERITS ReportVBox
+Export
+Inherits ReportVBox
 
-PRIVATE $iCount AS Integer
-PROPERTY Count AS Integer
-PRIVATE $aContent AS Object[]
-PRIVATE $bIsSet AS Boolean = FALSE
+Public Const _Properties As String = "*"
+Public Const _IsControl As Boolean = True
+Public Const _IsContainer As Boolean = True
+
+Private $iCount As Integer
+Property Count As Integer
+Private $aContent As Object[]
+Private $bIsSet As Boolean = False
 
 
-PRIVATE FUNCTION Count_Read() AS Integer
+Private Function Count_Read() As Integer
 
-  RETURN $iCount
+  Return $iCount
 
-END
+End
 
-PRIVATE SUB Count_Write(Value AS Integer)
+Private Sub Count_Write(Value As Integer)
   
   ReInit
   $iCount = Value
 
-END
+End
 
-PUBLIC SUB ReInit()
-  DIM hChild AS Object
-  IF $aContent = NULL THEN RETURN 
-  ME.Children.Clear
-  FOR EACH hChild IN $aContent
-    ME._add(hChild.Ctrl)
-  NEXT
-  $aContent = NULL
+Public Sub ReInit()
+  Dim hChild As Object
+  If $aContent = Null Then Return 
+  Me.Children.Clear
+  For Each hChild In $aContent
+    Me._add(hChild.Ctrl)
+  Next
+  $aContent = Null
   
     
-END
+End
 
 
-PRIVATE SUB GenerateChilds()
+Private Sub GenerateChilds()
   
-  DIM i AS Integer
-  DIM hChild AS Object
-  DIM nChild AS Object
-  DIM hClass AS Class
-  DIM s AS String
-  $aContent = ME.Children.Copy()
-  ME.Children.Clear
+  Dim i As Integer
+  Dim hChild As Object
+  Dim nChild As Object
+  Dim hClass As Class
+  Dim s As String
+  $aContent = Me.Children.Copy()
+  Me.Children.Clear
 
-  FOR i = 1 TO $iCount
-    FOR EACH hChild IN $aContent   
-      nChild = ME._add(hChild.ctrl)
+  For i = 1 To $iCount
+    For Each hChild In $aContent   
+      nChild = Me._add(hChild.ctrl)
       nChild.VirtualId = i
-    NEXT
-  NEXT
+    Next
+  Next
 
-  $bIsSet = TRUE
-END
+  $bIsSet = True
+End
 
 
-PUBLIC SUB _GetSizeHints(AvailableW AS Float, AvailableH AS Float, TotalWidth AS Float, TotalHeight AS Float) AS TSizeHint
+Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float) As TSizeHint
   
-  IF NOT $bIsSet THEN GenerateChilds
-  RETURN SUPER._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight)
+  If Not $bIsSet Then GenerateChilds
+  Return Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight)
   
-END
+End
 
-PUBLIC FUNCTION _SetChildGeometry(X AS Float, Y AS Float, W AS Float, H AS Float, ContPage AS Integer) AS Float
-  DIM f AS Float
+Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer) As Float
+  Dim f As Float
 
-  SUPER._SetChildGeometry(X, Y, W, H, ContPage)  
-  RETURN f
+  Super._SetChildGeometry(X, Y, W, H, ContPage)  
+  Return f
   
-END
+End
 
 
-PRIVATE SUB CopyObject(aroChild AS Object[], hParent AS Object, VirtualId AS Integer)
+Private Sub CopyObject(aroChild As Object[], hParent As Object, VirtualId As Integer)
   
-END
+End
 
 
-PUBLIC SUB _free()
+Public Sub _free()
   
-  SUPER._free
+  Super._free
   
-END
+End
 
 
 

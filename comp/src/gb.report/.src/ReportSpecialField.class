@@ -3,6 +3,9 @@
 Export
 Inherits ReportFrame
 
+Public Const _Properties As String = "*"
+Public Const _IsControl As Boolean = True
+
 Private $sText As String
 Private $iAlignment As Integer '= Align.Center
 
@@ -56,8 +59,8 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
 
   'if the size choosed by the user is less than the font height, set the object to the font height
   'hext = Paint.TextExtents($sText)
-  fTextHeight = MRTools.PixelsToUnits(Me.Font.Height($sText)) 'hext.Height)
-  fTextWidth = MRTools.PixelsToUnits(Me.Font.Width($sText)) 'hext.Width)
+  fTextHeight = MTools.PixelsToUnits(Me.Font.Height($sText)) 'hext.Height)
+  fTextWidth = MTools.PixelsToUnits(Me.Font.Width($sText)) 'hext.Width)
   
   If hMyHints.Height < fTextHeight Then hMyHints.Height = fTextHeight + (2 * Me._Padding)
   If Me._RelativeHeight Then hMyHints.Height = TotalHeight * Me._Height / 100
@@ -81,7 +84,7 @@ Public Sub _Draw(Page As Integer, X As Integer, Y As Integer, hControl As TContr
     'Paint.Font.size = Paint.Font.size * MRTools.ReportZoom '* MRTools.ResolutionAffichage
     'draw.Clip((x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
     'Draw.Text(DecodeText($sText, Page + 1), (x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom, $iAlignment)
-    Paint.Text(DecodeText($sText, Page + 1), (x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)), (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)), hControl.RealWidth, hControl.RealHeight, $iAlignment)
+    Paint.Text(DecodeText($sText, Page + 1), (x + hControl.RealLeft + MTools.UnitsToPixels(Me.Padding)), (y + hControl.RealTop + MTools.UnitsToPixels(Me.Padding)), hControl.RealWidth, hControl.RealHeight, $iAlignment)
     Paint.Fill
     'Draw.Clip.Enabled = False
 End
@@ -95,7 +98,7 @@ Private Function DecodeText(sText As String, Optional Page As Integer, Optional 
     If InStr(sText, "$NPAGE") Then sText = Replace(sText, "$NPAGE", "999")
   Else
     If InStr(sText, "$PAGE") Then sText = Replace(sText, "$PAGE", Str(Page))
-    If InStr(sText, "$NPAGE") Then sText = Replace(sText, "$NPAGE", Str(MRTools.PageCount))
+    If InStr(sText, "$NPAGE") Then sText = Replace(sText, "$NPAGE", Str(MTools.PageCount))
   Endif
   
   Return sText

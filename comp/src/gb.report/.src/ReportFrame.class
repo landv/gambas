@@ -75,7 +75,7 @@ Public Sub _DrawBefore(Page As Integer, X As Integer, Y As Integer, hControl As 
 
 
       Paint.Brush = Paint.Color(0)
-      Paint.Dash = MRTools.GetBorder(ReportBorder.Dot)
+      Paint.Dash = MTools.GetBorder(ReportBorder.Dot)
       Paint.Rectangle(X1, Y1, X2 - X1 + 2, Y2 - Y1 + 2)
       Paint.Stroke
       
@@ -126,7 +126,7 @@ Dim X1, Y1, X2, Y2 As Integer
   
     If Me.Border <> ReportBorder.None Then 
       Paint.LineWidth = $fBorderWidth
-      If Me.Border <> ReportBorder.Solid Then paint.Dash = MRTools.GetBorder(Me.Border)
+      If Me.Border <> ReportBorder.Solid Then paint.Dash = MTools.GetBorder(Me.Border)
       'Draw.BorderStyle = $iBorderStyle
       'Draw.BorderWidth = $iBorderWidth
       Paint.Brush = Paint.Color($iBorderColor)

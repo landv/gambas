@@ -3,6 +3,9 @@
 Export
 Inherits ReportFrame
 
+Public Const _Properties As String = "*"
+Public Const _IsControl As Boolean = True
+
 Private $sText As String = ""
 Private $iAlignment As Integer '= Align.Center
 Private $iMaxLength As Integer = 10
@@ -68,8 +71,8 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   'if the size choosed by the user is less than the font height, set the object to the font height
   
   'hext = Paint.TextExtents($sTmpText)
-  fTextHeight = MRTools.PixelsToUnits(Me.Font.Height($sTmpText)) 'hext.Height)
-  fTextWidth = MRTools.PixelsToUnits(Me.Font.Width($sTmpText)) 'hext.Width)
+  fTextHeight = MTools.PixelsToUnits(Me.Font.Height($sTmpText)) 'hext.Height)
+  fTextWidth = MTools.PixelsToUnits(Me.Font.Width($sTmpText)) 'hext.Width)
   
   If hMyHints.Height < fTextHeight Then hMyHints.Height = fTextHeight + (2 * Me._Padding)
   If Me._RelativeHeight Then hMyHints.Height = TotalHeight * Me._Height / 100
@@ -107,7 +110,7 @@ Public Sub _Draw(Page As Integer, X As Integer, Y As Integer, hControl As TContr
   
   'Draw.Clip((x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
     'Draw.Text(Left($sText, $iMaxLength), (x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom, $iAlignment)
-    paint.Text(Left($sText, $iMaxLength), (x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)), (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)), hControl.RealWidth, hControl.RealHeight, $iAlignment)
+    paint.Text(Left($sText, $iMaxLength), (x + hControl.RealLeft + MTools.UnitsToPixels(Me.Padding)), (y + hControl.RealTop + MTools.UnitsToPixels(Me.Padding)), hControl.RealWidth, hControl.RealHeight, $iAlignment)
     paint.Fill
   'Draw.Clip.Enabled = False
   
@@ -117,10 +120,10 @@ Public Function _SetGeometry(X As Float, Y As Float, W As Float, H As Float) As 
   
   Dim X1, Y1, X2, Y2 As Float
   
-  X1 = MRTools.UnitsToPixels(X)
-  Y1 = MRTools.UnitsToPixels(Y)
-  X2 = MRTools.UnitsToPixels(X + W)
-  Y2 = MRTools.UnitsToPixels(Y + H)
+  X1 = MTools.UnitsToPixels(X)
+  Y1 = MTools.UnitsToPixels(Y)
+  X2 = MTools.UnitsToPixels(X + W)
+  Y2 = MTools.UnitsToPixels(Y + H)
   
   Me.RealLeft = X1
   Me.RealTop = Y1

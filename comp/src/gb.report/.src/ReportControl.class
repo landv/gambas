@@ -3,7 +3,6 @@
 Export
 Create Private 
 'Object Management
-
 Static Public _ObjectFromId As New Collection
 Static Public _iCurPagePos As Integer
 Static Private $iLastId As Integer
@@ -93,7 +92,7 @@ End
 
 Private Sub Left_Write(Value As String)
   Dim hSizeParse As TSizeParse
-  hSizeParse = MRTools.ScanValue(value)
+  hSizeParse = MTools.ScanValue(value)
   If Units.AllowedUnits.Find(hSizeParse.Unit) = -1 Then error.Raise("Unknown unit")
   $fLeft = Units.UnitToCm(Value, hSizeParse.Unit)
   $sLeftUnit = hSizeParse.Unit
@@ -108,7 +107,7 @@ End
 
 Private Sub Top_Write(Value As String)
   Dim hSizeParse As TSizeParse
-  hSizeParse = MRTools.ScanValue(value)
+  hSizeParse = MTools.ScanValue(value)
   If Units.AllowedUnits.Find(hSizeParse.Unit) = -1 Then error.Raise("Unknown unit")
   $fTop = Units.UnitToCm(Value, hSizeParse.Unit)
   $sTopUnit = hSizeParse.Unit
@@ -127,7 +126,7 @@ End
 
 Private Sub Width_Write(Value As String)
   Dim hSizeParse As TSizeParse
-  hSizeParse = MRTools.ScanValue(value)
+  hSizeParse = MTools.ScanValue(value)
   If Units.AllowedUnits.Find(hSizeParse.Unit) = -1 And If hSizeParse.Unit <> "%" Then error.Raise("Unknown unit")
   If hSizeParse.Unit = "%" Then 
     $fWidth = hSizeParse.Value
@@ -151,7 +150,7 @@ End
 
 Private Sub Height_Write(Value As String)
   Dim hSizeParse As TSizeParse
-  hSizeParse = MRTools.ScanValue(value)
+  hSizeParse = MTools.ScanValue(value)
   If Units.AllowedUnits.Find(hSizeParse.Unit) = -1 And If hSizeParse.Unit <> "%" Then error.Raise("Unknown unit")
   If hSizeParse.Unit = "%" Then 
     $fHeight = hSizeParse.Value
@@ -251,7 +250,7 @@ End
 Private Sub Padding_Write(Value As String)
   Dim hSizeParse As TSizeParse
   $bRelativePadding = False
-  hSizeParse = MRTools.ScanValue(value)
+  hSizeParse = MTools.ScanValue(value)
   If Units.AllowedUnits.Find(hSizeParse.Unit) = -1 Then error.Raise("Unknown unit")
   If hSizeParse.Unit = "%" Then 
     $fPadding = hSizeParse.Value

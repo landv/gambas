@@ -3,6 +3,9 @@
 Export
 Inherits ReportControl
 
+Public Const _Properties As String = "*"
+Public Const _IsControl As Boolean = True
+
 Private $fLineWidth As Float = 1.0
 Private $iLineColor As Integer
 Private $iLineStyle As Integer = Line.solid
@@ -36,10 +39,10 @@ End
 Public Sub _Draw(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
   
   If Me.LineStyle = Line.None Then Return
-  If Me.LineStyle <> Line.Solid Then Paint.Dash = MRTools.GetBorder(Me.LineStyle)
+  If Me.LineStyle <> Line.Solid Then Paint.Dash = MTools.GetBorder(Me.LineStyle)
   Paint.Brush = Paint.Color($iLineColor)
   Paint.MoveTo(x, y)
-  Paint.MoveTo((x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)), (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)))
+  Paint.MoveTo((x + hControl.RealLeft + MTools.UnitsToPixels(Me.Padding)), (y + hControl.RealTop + MTools.UnitsToPixels(Me.Padding)))
   Paint.RelLineTo(hControl.RealWidth, hControl.RealHeight)
   
   

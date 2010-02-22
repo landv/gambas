@@ -188,9 +188,12 @@ Public Function UnitsToPixels(Value As Float) As Integer
   Return Value * f 
 End
 
-Public Sub Form_Open()
-
-  
+Public Sub Form_show()
+'   report.Size = "A4"
+report.Layout
+  RadioButton1.Value = True
+  Test1
+  Slider1_Change
 
 End
 

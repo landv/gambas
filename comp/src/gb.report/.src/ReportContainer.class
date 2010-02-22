@@ -62,7 +62,7 @@ End
 Private Sub Spacing_Write(Value As String)
 
   Dim hSizeParse As TSizeParse
-  hSizeParse = MRTools.ScanValue(value)
+  hSizeParse = MTools.ScanValue(value)
   If Units.AllowedUnits.Find(hSizeParse.Unit) = -1 And If hSizeParse.Unit <> "%" Then error.Raise("Unknown unit")
   If hSizeParse.Unit = "%" Then 
     $fSpacing = hSizeParse.Value

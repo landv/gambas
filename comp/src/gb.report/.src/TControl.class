@@ -1,51 +1,51 @@
 ' Gambas class file
 
 'PUBLIC Ctrl AS Object
-PRIVATE $iCtrl AS Integer
-PUBLIC RealPage AS Integer
-PUBLIC RelPage AS Integer = -1
-PUBLIC RealLeft AS Integer
-PUBLIC RealTop AS Integer
-PUBLIC RealWidth AS Integer
-PUBLIC RealHeight AS Integer 
-PUBLIC _RealPadding AS Integer
-PUBLIC VirtualId AS Integer = -1
-PROPERTY Ctrl AS ReportControl
+Private $iCtrl As Integer
+Public RealPage As Integer
+Public RelPage As Integer = -1
+Public RealLeft As Integer
+Public RealTop As Integer
+Public RealWidth As Integer
+Public RealHeight As Integer 
+Public _RealPadding As Integer
+Public VirtualId As Integer = -1
+Property Ctrl As ReportControl
 
 
-PUBLIC FUNCTION _SetGeometry(X AS Float, Y AS Float, W AS Float, H AS Float) AS Float
+Public Function _SetGeometry(X As Float, Y As Float, W As Float, H As Float) As Float
   
-  DIM X1, Y1, X2, Y2 AS Float
+  Dim X1, Y1, X2, Y2 As Float
   
-  X1 = MRTools.UnitsToPixels(X)
-  Y1 = MRTools.UnitsToPixels(Y)
-  X2 = MRTools.UnitsToPixels(X + W)
-  Y2 = MRTools.UnitsToPixels(Y + H)
+  X1 = MTools.UnitsToPixels(X)
+  Y1 = MTools.UnitsToPixels(Y)
+  X2 = MTools.UnitsToPixels(X + W)
+  Y2 = MTools.UnitsToPixels(Y + H)
   
   
-  ME.RealLeft = X1
-  ME.RealTop = Y1
-  ME.RealWidth = X2 - X1
-  ME.RealHeight = Y2 - Y1
+  Me.RealLeft = X1
+  Me.RealTop = Y1
+  Me.RealWidth = X2 - X1
+  Me.RealHeight = Y2 - Y1
   
-  RETURN ME.ctrl._SetChildGeometry(X, Y, W, H, RealPage)
+  Return Me.ctrl._SetChildGeometry(X, Y, W, H, RealPage)
   
-END
+End
 
-PUBLIC SUB _free()
+Public Sub _free()
  
   
   
-END
+End
 
-PRIVATE FUNCTION Ctrl_Read() AS ReportControl
+Private Function Ctrl_Read() As ReportControl
 
-  RETURN ReportControl._ObjectFromId[$iCtrl]
+  Return ReportControl._ObjectFromId[$iCtrl]
 
-END
+End
 
-PRIVATE SUB Ctrl_Write(Value AS ReportControl)
+Private Sub Ctrl_Write(Value As ReportControl)
 
  $iCtrl = Value.id
 
-END
+End
