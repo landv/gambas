@@ -1243,9 +1243,8 @@ GB_DESC CEditorDesc[] =
   GB_EVENT("Highlight", NULL, NULL, &EVENT_Highlight),
   GB_EVENT("Margin", NULL, "(LineNumber)i", &EVENT_Margin),
   
-  GB_CONSTANT("_DefaultEvent", "s", "KeyPress"),
-  GB_CONSTANT("_Properties", "s", "*,Font{Font:Fixed},Border=True,Highlight{Highlight.None;Custom;Gambas;HTML;CSS;WebPage;Diff;JavaScript}=None,ReadOnly=False,TabSize{Range:1;16}=2"),
-
+  EDITOR_DESCRIPTION,
+  
   GB_END_DECLARE
 };
 

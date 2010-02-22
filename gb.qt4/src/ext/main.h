@@ -27,6 +27,7 @@
 #include "../gb.qt.h"
 #include "gb.draw.h"
 #include "gb.eval.h"
+#include "gb.form.properties.h"
 
 #ifndef __MAIN_C
 extern "C" GB_INTERFACE GB;

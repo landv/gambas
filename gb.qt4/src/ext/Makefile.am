@@ -18,6 +18,4 @@ gb_qt4_ext_la_SOURCES = \
  gdocument.h gdocument.cpp \
  gview.h gview_moc.cpp gview.cpp \
  CEditor.h CEditor_moc.cpp CEditor.cpp \
- CDraw.h CDraw.cpp \
- CDrawing.h CDrawing_moc.cpp CDrawing.cpp \
  CTextEdit.h CTextEdit_moc.cpp CTextEdit.cpp

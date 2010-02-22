@@ -28,9 +28,10 @@ Public SortKey As Integer
 Public User As Boolean
 Public Version As String
 
-Static Private $cName As Collection
 Static Public Features As New Collection
-Static Public Changes As New Collection
+
+Static Private $cName As Collection
+Static Private Similars As New Collection
 
 Static Private $hDumbClass As CClassInfo
 Static Private $hClass As CClassInfo
@@ -128,56 +129,53 @@ Static Private Sub InitComponentNames()
 
 End
 
-Static Public Sub GetChanges(sKind As String) As String[]
+Static Public Sub AddSimilar(sCtrl As String, sSimilar As String)
   
-  Dim sGroup As String
-  Dim aChange As New String[]
-  Dim aGroup As String[]
-  Dim sChange As String
+  Dim aSimilar As String[]
   
-  aGroup = Changes[sKind]
-  If aGroup Then
-    For Each sGroup In aGroup
-      For Each sChange In Changes[sGroup]
-        If Not aChange.Exist(sChange) Then aChange.Add(sChange)
-      Next
-    Next
+  aSimilar = Similars[sSimilar]
+  If Not aSimilar Then
+    aSimilar = New String[]
+    Similars[sSimilar] = aSimilar
   Endif
-
-  Return aChange
+  aSimilar.Add(sCtrl)
   
 End
 
-' Private Sub InsertNew(aCtrl As String[], aInsert As String[])
-'   
-'   Dim sCtrl As String
-'   
-'   For Each sCtrl In aInsert
-'     If aCtrl.Exist(sCtrl) Then Continue
-'     aCtrl.Add(sCtrl)
-'   Next
-'   
-' End
+Static Public Sub GetSimilars(sCtrl As String) As String[]
+  
+  Dim aSimilar As String[] = Similars[sCtrl]
+  
+  If Not aSimilar Then aSimilar = New String[]
+  
+  Return aSimilar
+  
+End
 
 
-' Public Sub AddControls(sGroup As String, aCtrl As String[])
+
+
+
+' Static Public Sub GetChanges(sKind As String) As String[]
 '   
-'   Dim sCtrl As String
+'   Dim sGroup As String
+'   Dim aChange As New String[]
+'   Dim aGroup As String[]
+'   Dim sChange As String
 '   
-'   If Controls.Count = 0 Or If Controls[Controls.Max] <> ("@" & sGroup) Then 
-'     Controls.Add("@" & sGroup)
+'   aGroup = Changes[sKind]
+'   If aGroup Then
+'     For Each sGroup In aGroup
+'       For Each sChange In Changes[sGroup]
+'         If Not aChange.Exist(sChange) Then aChange.Add(sChange)
+'       Next
+'     Next
 '   Endif
-'   
-'   InsertNew(Controls, aCtrl)
+' 
+'   Return aChange
 '   
 ' End
 
-' Public Sub AddContainers(sGroup As String, aCtrl As String[])
-'   
-'   AddControls(sGroup, aCtrl)
-'   InsertNew(Containers, aCtrl)
-'   
-' End
 
 Static Private Sub InitComponent(sFile As String, bUser As Boolean)
   
@@ -239,32 +237,32 @@ Static Private Sub InitComponent(sFile As String, bUser As Boolean)
 
       With hComponent
       
-        If sGroup = "Change" Then
-        
-          aChange = Changes["." & sKey]
-          If Not aChange Then
-            aChange = New String[]
-            Changes["." & sKey] = aChange
-          Endif
-          
-          aStr = Split(sLig, ",")
-          aStr.Add(sKey)
-          aChange.Insert(aStr)
-          aChange.Sort()
-        
-          For Each sChange In aStr
-
-            aChange = Changes[sChange]
-            If Not aChange Then
-              aChange = New String[]
-              Changes[sChange] = aChange
-            Endif
-            
-            aChange.Add("." & sKey)
-            
-          Next
-        
-        Else
+        ' If sGroup = "Change" Then
+        ' 
+        '   aChange = Changes["." & sKey]
+        '   If Not aChange Then
+        '     aChange = New String[]
+        '     Changes["." & sKey] = aChange
+        '   Endif
+        '   
+        '   aStr = Split(sLig, ",")
+        '   aStr.Add(sKey)
+        '   aChange.Insert(aStr)
+        '   aChange.Sort()
+        ' 
+        '   For Each sChange In aStr
+        ' 
+        '     aChange = Changes[sChange]
+        '     If Not aChange Then
+        '       aChange = New String[]
+        '       Changes[sChange] = aChange
+        '     Endif
+        '     
+        '     aChange.Add("." & sKey)
+        '     
+        '   Next
+        ' 
+        ' Else
 
           ' IF sKey = "Key" THEN
           '   .Key = sLig
@@ -305,7 +303,7 @@ Static Private Sub InitComponent(sFile As String, bUser As Boolean)
             .Version = sLig
           Endif
           
-        Endif
+        ' Endif
 
       End With
 
@@ -610,7 +608,8 @@ Public Sub Load()
   For Each sClass In Hiddens
     If Classes.Exist(sClass) Then
       Classes[sClass].InitControl()
-      Controls.Remove(Controls.Find(sClass))
+      iPos = Controls.Find(sClass)
+      If iPos >= 0 Then Controls.Remove(iPos)
     Endif
   Next
   

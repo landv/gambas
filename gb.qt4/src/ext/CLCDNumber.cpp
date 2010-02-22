@@ -165,8 +165,7 @@ GB_DESC CLCDNumberDesc[] =
   GB_PROPERTY("Border", "i", CLCDNUMBER_border),
   GB_PROPERTY("Style", "i", CLCDNUMBER_segmentStyle),
 
-  GB_CONSTANT("_Properties", "s", "*,Value,Digits{Range:1;64}=1,SmallDecimalPoint,Style{LCDNumber.Outline;Filled;Flat}=Outline,Mode{LCDNumber.Decimal;Hexadecimal;Binary}=Decimal,Border{Border.*}"),
-  GB_CONSTANT("_DefaultSize", "s", "12,6"),
+	LCDNUMBER_DESCRIPTION,
 
   GB_END_DECLARE
 };

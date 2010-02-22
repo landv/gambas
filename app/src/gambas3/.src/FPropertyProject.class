@@ -669,7 +669,7 @@ Public Sub cmbComponent_Click()
   If bComp Then InitComponent
 
   tabProject[COMPONENT_TAB].Visible = bComp
-  tabProject[COMPONENT_TAB + 1].Visible = bComp
+  'tabProject[COMPONENT_TAB + 1].Visible = bComp
   cmbComponentState.Enabled = bComp
 
 End
@@ -737,58 +737,50 @@ Private Sub ReadComponent()
     sKey = LCase(Left(sLine, iPos - 1))
     sLine = Mid$(sLine, iPos + 1)
     
-    If sGroup = "Change" Then
-    
-      CExportInfo.All[sKey].Similar = sLine
-    
-    Else
-    
-      Select Case sKey
-        Case "need", "needs"
-          $aNeed = Split(sLine, ",")
-        Case "require", "requires"
-          $aRequire = Split(sLine, ",")
-        Case "implement", "implements"
-          $aImplement = Split(sLine, ",")
-        Case "control", "controls"
-          For Each sKey In Split(sLine, ",")
-            If CExportInfo.All.Exist(sKey) Then
-              CExportInfo.All[sKey].Control = True
-              CExportInfo.All[sKey].Group = sGroup
-            Else 
-              Debug "Control="; sKey; "?"
-            Endif
-          Next
-        Case "virtual"
-          For Each sKey In Split(sLine, ",")
-            If CExportInfo.All.Exist(sKey) Then
-              CExportInfo.All[sKey].Virtual = True
-            Else 
-              Debug "Virtual="; sKey; "?"
-            Endif 
-          Next
-        Case "container"
-          For Each sKey In Split(sLine, ",")
-            If CExportInfo.All.Exist(sKey) Then
-              CExportInfo.All[sKey].Container = True
-            Else 
-              Debug "Container="; sKey; "?"
-            Endif
-          Next
-        Case "multicontainer"
-          For Each sKey In Split(sLine, ",")
-            If CExportInfo.All.Exist(sKey) Then
-              CExportInfo.All[sKey].MultiContainer = True
-            Else 
-              Debug "MultiContainer="; sKey; "?"
-            Endif
-          Next
-        Case "type"
-          Try CExportInfo.All[sLine].Form = True
-          
-      End Select 
-      
-    Endif
+    Select Case sKey
+      Case "need", "needs"
+        $aNeed = Split(sLine, ",")
+      Case "require", "requires"
+        $aRequire = Split(sLine, ",")
+      Case "implement", "implements"
+        $aImplement = Split(sLine, ",")
+      ' Case "control", "controls"
+      '   For Each sKey In Split(sLine, ",")
+      '     If CExportInfo.All.Exist(sKey) Then
+      '       CExportInfo.All[sKey].Control = True
+      '       CExportInfo.All[sKey].Group = sGroup
+      '     Else 
+      '       Debug "Control="; sKey; "?"
+      '     Endif
+      '   Next
+      ' Case "virtual"
+      '   For Each sKey In Split(sLine, ",")
+      '     If CExportInfo.All.Exist(sKey) Then
+      '       CExportInfo.All[sKey].Virtual = True
+      '     Else 
+      '       Debug "Virtual="; sKey; "?"
+      '     Endif 
+      '   Next
+      ' Case "container"
+      '   For Each sKey In Split(sLine, ",")
+      '     If CExportInfo.All.Exist(sKey) Then
+      '       CExportInfo.All[sKey].Container = True
+      '     Else 
+      '       Debug "Container="; sKey; "?"
+      '     Endif
+      '   Next
+      ' Case "multicontainer"
+      '   For Each sKey In Split(sLine, ",")
+      '     If CExportInfo.All.Exist(sKey) Then
+      '       CExportInfo.All[sKey].MultiContainer = True
+      '     Else 
+      '       Debug "MultiContainer="; sKey; "?"
+      '     Endif
+      '   Next
+      ' Case "type"
+      '   Try CExportInfo.All[sLine].Form = True
+        
+    End Select 
     
   Wend
   
@@ -805,14 +797,14 @@ Private Sub WriteComponent() As Boolean
   Dim hFile As File
   Dim cGroup As New Collection
   Dim sGroup As String
-  Dim hExportInfo As CExportInfo
+  'Dim hExportInfo As CExportInfo
   Dim sClass As String
   Dim aControl As String[]
   Dim aVirtual As String[]
   Dim aContainer As String[]
   Dim aMultiContainer As String[]
 
-  HideEditor
+  'HideEditor
   WriteFeatures(panNeed, $aNeed)
 
   hFile = Open Temp$("component") For Create 
@@ -822,44 +814,43 @@ Private Sub WriteComponent() As Boolean
   Print #hFile, "Version="; Project.MajorVersion; "."; Project.MinorVersion; "."; Project.ReleaseVersion
   If cmbComponentState.Index Then Print #hFile, "State="; cmbComponentState.Index
   If Project.Authors Then Print #hFile, "Authors="; Replace(Project.Authors, "\n", ",")
-  If GetForm() Then Print #hFile, "Type="; GetForm()
   If $aImplement.Count Then Print #hFile, "Implements="; $aImplement.Join(",")
   If $aNeed.Count Then Print #hFile, "Needs="; $aNeed.Join(",")
   If $aRequire.Count Then Print #hFile, "Requires="; $aRequire.Join(",")
   Print #hFile
   
-  For Each sGroup In GetGroups()
-    cGroup[sGroup] = New String[]
-    
-    Print #hFile, "["; sGroup; "]"
-    
-    aControl = New String[]
-    aVirtual = New String[]
-    aContainer = New String[]
-    aMultiContainer = New String[]
-    
-    For Each sClass In CExportInfo.List
-      hExportInfo = CExportInfo.All[sClass]
-      If hExportInfo.Group <> sGroup Then Continue
-      If hExportInfo.Control Then aControl.Add(sClass)
-      If hExportInfo.Virtual Then aVirtual.Add(sClass)
-      If hExportInfo.Container Then aContainer.Add(sClass)
-      If hExportInfo.MultiContainer Then aMultiContainer.Add(sClass)
-    Next
-    
-    If aControl.Count Then Print #hFile, "Control="; aControl.Join(",")
-    If aContainer.Count Then Print #hFile, "Container="; aContainer.Join(",")
-    If aMultiContainer.Count Then Print #hFile, "MultiContainer="; aMultiContainer.Join(",")
-    If aVirtual.Count Then Print #hFile, "Virtual="; aVirtual.Join(",")
-    Print #hFile
-    
-  Next
-  
-  Print #hFile, "[Change]"
-  For Each sClass In CExportInfo.List
-    hExportInfo = CExportInfo.All[sClass]
-    If hExportInfo.Similar Then Print #hFile, sClass; "="; hExportInfo.Similar
-  Next
+  ' For Each sGroup In GetGroups()
+  '   cGroup[sGroup] = New String[]
+  '   
+  '   Print #hFile, "["; sGroup; "]"
+  '   
+  '   aControl = New String[]
+  '   aVirtual = New String[]
+  '   aContainer = New String[]
+  '   aMultiContainer = New String[]
+  '   
+  '   For Each sClass In CExportInfo.List
+  '     hExportInfo = CExportInfo.All[sClass]
+  '     If hExportInfo.Group <> sGroup Then Continue
+  '     If hExportInfo.Control Then aControl.Add(sClass)
+  '     If hExportInfo.Virtual Then aVirtual.Add(sClass)
+  '     If hExportInfo.Container Then aContainer.Add(sClass)
+  '     If hExportInfo.MultiContainer Then aMultiContainer.Add(sClass)
+  '   Next
+  '   
+  '   If aControl.Count Then Print #hFile, "Control="; aControl.Join(",")
+  '   If aContainer.Count Then Print #hFile, "Container="; aContainer.Join(",")
+  '   If aMultiContainer.Count Then Print #hFile, "MultiContainer="; aMultiContainer.Join(",")
+  '   If aVirtual.Count Then Print #hFile, "Virtual="; aVirtual.Join(",")
+  '   Print #hFile
+  '   
+  ' Next
+  ' 
+  ' Print #hFile, "[Change]"
+  ' For Each sClass In CExportInfo.List
+  '   hExportInfo = CExportInfo.All[sClass]
+  '   If hExportInfo.Similar Then Print #hFile, sClass; "="; hExportInfo.Similar
+  ' Next
 
   Close #hFile    
   
@@ -881,33 +872,33 @@ Public Sub InitComponent()
   Dim hComp As CComponent
   Dim aComp As New String[]
   Dim sComp As String
-  Dim hExportInfo As CExportInfo
+  'Dim hExportInfo As CExportInfo
 
-  tvwControl.Columns.Count = 4
-  tvwControl.Columns[0].Text = ("Class")
-  tvwControl.Columns[0].Width = Desktop.Scale * 24
-  tvwControl.Columns[1].Text = ("Type")
-  tvwControl.Columns[1].Width = Desktop.Scale * 16
-  tvwControl.Columns[2].Text = ("Group")
-  tvwControl.Columns[2].Width = Desktop.Scale * 16
-  tvwControl.Columns[3].Text = ("Similar")
+  ' tvwControl.Columns.Count = 4
+  ' tvwControl.Columns[0].Text = ("Class")
+  ' tvwControl.Columns[0].Width = Desktop.Scale * 24
+  ' tvwControl.Columns[1].Text = ("Type")
+  ' tvwControl.Columns[1].Width = Desktop.Scale * 16
+  ' tvwControl.Columns[2].Text = ("Group")
+  ' tvwControl.Columns[2].Width = Desktop.Scale * 16
+  ' tvwControl.Columns[3].Text = ("Similar")
 
-  CExportInfo.Reset
+  'CExportInfo.Reset
 
-  For Each sPath In Project.GetClasses(True)
-    If Project.IsExported(sPath) Then 
-      sClass = File.BaseName(sPath)
-      If Not IsLetter(Left(sClass)) Then Continue
-      CExportInfo.List.Add(sClass)
-      hExportInfo = New CExportInfo(sClass)
-      hExportInfo.Parent = Project.GetParentClass(sPath)
-    Endif 
-  Next 
-  
-  CExportInfo.Sort
-  
-  tvwControl.Rows.Count = CExportInfo.List.Count
-  tvwControl.Rows.Height = Desktop.Scale * 5
+  ' For Each sPath In Project.GetClasses(True)
+  '   If Project.IsExported(sPath) Then 
+  '     sClass = File.BaseName(sPath)
+  '     If Not IsLetter(Left(sClass)) Then Continue
+  '     CExportInfo.List.Add(sClass)
+  '     hExportInfo = New CExportInfo(sClass)
+  '     hExportInfo.Parent = Project.GetParentClass(sPath)
+  '   Endif 
+  ' Next 
+  ' 
+  ' CExportInfo.Sort
+  ' 
+  ' tvwControl.Rows.Count = CExportInfo.List.Count
+  ' tvwControl.Rows.Height = Desktop.Scale * 5
 
   ReadComponent
   
@@ -928,186 +919,186 @@ Public Sub InitComponent()
 
 End
 
-Public Sub tvwControl_Data(Row As Integer, Column As Integer)
+' Public Sub tvwControl_Data(Row As Integer, Column As Integer)
+' 
+'   Dim hExportInfo As CExportInfo
+'   Dim hPict As Picture
+' 
+'   Try hExportInfo = CExportInfo.All[CExportInfo.List[Row]]
+'   If Error Then Return
+'   
+'   Select Case Column
+'     Case 0
+'       tvwControl.Data.Text = hExportInfo.Name
+'       If hExportInfo.Control Then 
+'         Try hPict = Project.GetPicture(".hidden/control" &/ LCase(hExportInfo.Name) & ".png")
+'         If Not hPict Then hPict = Picture["img/control/unknown.png"]
+'         hPict = hPict.Image.Stretch(24, 24).Picture
+'       Else
+'         hPict = hExportInfo.Icon
+'       Endif
+'       tvwControl.Data.Picture = hPict
+'     Case 1
+'       tvwControl.Data.Text = hExportInfo.Type
+'     Case 2
+'       tvwControl.Data.Text = hExportInfo.Group
+'     Case 3
+'       tvwControl.Data.Text = hExportInfo.Similar
+'   End Select 
+'   
+'   tvwControl.Data.Background = If(Row And 1, Color.LightBackground, Color.TextBackground)
+' 
+' End
 
-  Dim hExportInfo As CExportInfo
-  Dim hPict As Picture
+' Private Sub MoveEditor()
+'   
+'   With tvwControl.Current
+'     cmbControl.Move(tvwControl.X + .Left, tvwControl.Y + .Top, .W, .H)
+'   End With
+'   
+' End
+' 
+' Private Sub HideEditor()
+' 
+'   If Not cmbControl.Visible Then Return 
+'   SaveEditor  
+'   cmbControl.Hide
+'   
+' End
 
-  Try hExportInfo = CExportInfo.All[CExportInfo.List[Row]]
-  If Error Then Return
-  
-  Select Case Column
-    Case 0
-      tvwControl.Data.Text = hExportInfo.Name
-      If hExportInfo.Control Then 
-        Try hPict = Project.GetPicture(".hidden/control" &/ LCase(hExportInfo.Name) & ".png")
-        If Not hPict Then hPict = Picture["img/control/unknown.png"]
-        hPict = hPict.Image.Stretch(24, 24).Picture
-      Else
-        hPict = hExportInfo.Icon
-      Endif
-      tvwControl.Data.Picture = hPict
-    Case 1
-      tvwControl.Data.Text = hExportInfo.Type
-    Case 2
-      tvwControl.Data.Text = hExportInfo.Group
-    Case 3
-      tvwControl.Data.Text = hExportInfo.Similar
-  End Select 
-  
-  tvwControl.Data.Background = If(Row And 1, Color.LightBackground, Color.TextBackground)
+' Private Sub GetGroups() As String[]
+'   
+'   Dim aGroup As New String[]
+'   Dim hOther As CExportInfo
+' 
+'   'aGroup.Add(("(None)"))
+' 
+'   For Each hOther In CExportInfo.All
+'     If Not hOther.Group Then Continue
+'     If aGroup.Find(hOther.Group) >= 0 Then Continue
+'     aGroup.Add(hOther.Group)
+'   Next
+'   
+'   Return aGroup
+'   
+' End
 
-End
+' Private Sub SaveEditor()
+'   
+'   Dim hExportInfo As CExportInfo
+'   
+'   If Not cmbControl.Visible Then Return
+'   
+'   hExportInfo = CExportInfo.All[CExportInfo.List[$iRow]]
+'   
+'   Select Case $iCol
+'   
+'     Case 1
+'       hExportInfo.Type = cmbControl.Text
+'     
+'     Case 2
+'       hExportInfo.Group = cmbControl.Text
+'       
+'     Case 3
+'       hExportInfo.Similar = cmbControl.Text
+'   
+'   End Select 
+'   
+'   tvwControl.Rows[$iRow].Refresh
+'   
+' End
 
-Private Sub MoveEditor()
-  
-  With tvwControl.Current
-    cmbControl.Move(tvwControl.X + .Left, tvwControl.Y + .Top, .W, .H)
-  End With
-  
-End
-
-Private Sub HideEditor()
-
-  If Not cmbControl.Visible Then Return 
-  SaveEditor  
-  cmbControl.Hide
-  
-End
-
-Private Sub GetGroups() As String[]
-  
-  Dim aGroup As New String[]
-  Dim hOther As CExportInfo
-
-  'aGroup.Add(("(None)"))
-
-  For Each hOther In CExportInfo.All
-    If Not hOther.Group Then Continue
-    If aGroup.Find(hOther.Group) >= 0 Then Continue
-    aGroup.Add(hOther.Group)
-  Next
-  
-  Return aGroup
-  
-End
-
-Private Sub SaveEditor()
-  
-  Dim hExportInfo As CExportInfo
-  
-  If Not cmbControl.Visible Then Return
-  
-  hExportInfo = CExportInfo.All[CExportInfo.List[$iRow]]
-  
-  Select Case $iCol
-  
-    Case 1
-      hExportInfo.Type = cmbControl.Text
-    
-    Case 2
-      hExportInfo.Group = cmbControl.Text
-      
-    Case 3
-      hExportInfo.Similar = cmbControl.Text
-  
-  End Select 
-  
-  tvwControl.Rows[$iRow].Refresh
-  
-End
-
-Private Sub GetForm() As String
-  
-  Dim hExportInfo As CExportInfo
-  
-  For Each hExportInfo In CExportInfo.All
-    If hExportInfo.Form Then Return hExportInfo.Name
-  Next
-  
-End
-
-
-
-Private Sub ShowEditor()
-  
-  Dim hExportInfo As CExportInfo = CExportInfo.All[CExportInfo.List[tvwControl.Row]]  
-  Dim aList As String[]
-  Dim sIcon As String
-  
-  HideEditor
-  
-  Select Case tvwControl.Column
-  
-    Case 0
-      Return 
-      
-    Case 1
-      aList = ["Class", "Control", "Virtual", "Container", "MultiContainer"]
-      If Not GetForm() Or GetForm() = hExportInfo.Name Then aList.Add("Form")
-      cmbControl.List = aList
-      cmbControl.ReadOnly = True
-      cmbControl.Text = hExportInfo.Type
-      
-    ' CASE 2
-    '   IF hExportInfo.Control THEN
-    '     sIcon = FSelectIcon.Run(hExportInfo.ControlIcon, TRUE)
-    '     IF sIcon THEN hExportInfo.ControlIcon = sIcon
-    '     tvwControl.Current.Refresh
-    '   ENDIF
-    '   RETURN
-      
-    Case 2
-      If Not hExportInfo.Control Then Return
-      cmbControl.ReadOnly = False
-      cmbControl.List = GetGroups()
-      cmbControl.Text = hExportInfo.Group
-  
-    Case 3
-      If Not hExportInfo.Control Then Return
-      cmbControl.ReadOnly = False
-      cmbControl.List = CExportInfo.List
-      cmbControl.Text = hExportInfo.Similar
-  
-  End Select
-  
-  $iRow = tvwControl.Row
-  $iCol = tvwControl.Column
-  
-  MoveEditor
-  cmbControl.Show
-  cmbControl.SetFocus
-  
-End
+' Private Sub GetForm() As String
+'   
+'   Dim hExportInfo As CExportInfo
+'   
+'   For Each hExportInfo In CExportInfo.All
+'     If hExportInfo.Form Then Return hExportInfo.Name
+'   Next
+'   
+' End
 
 
-Public Sub tvwControl_MouseUp()
 
-  ShowEditor
+' Private Sub ShowEditor()
+'   
+'   Dim hExportInfo As CExportInfo = CExportInfo.All[CExportInfo.List[tvwControl.Row]]  
+'   Dim aList As String[]
+'   Dim sIcon As String
+'   
+'   HideEditor
+'   
+'   Select Case tvwControl.Column
+'   
+'     Case 0
+'       Return 
+'       
+'     Case 1
+'       aList = ["Class", "Control", "Virtual", "Container", "MultiContainer"]
+'       If Not GetForm() Or GetForm() = hExportInfo.Name Then aList.Add("Form")
+'       cmbControl.List = aList
+'       cmbControl.ReadOnly = True
+'       cmbControl.Text = hExportInfo.Type
+'       
+'     ' CASE 2
+'     '   IF hExportInfo.Control THEN
+'     '     sIcon = FSelectIcon.Run(hExportInfo.ControlIcon, TRUE)
+'     '     IF sIcon THEN hExportInfo.ControlIcon = sIcon
+'     '     tvwControl.Current.Refresh
+'     '   ENDIF
+'     '   RETURN
+'       
+'     Case 2
+'       If Not hExportInfo.Control Then Return
+'       cmbControl.ReadOnly = False
+'       cmbControl.List = GetGroups()
+'       cmbControl.Text = hExportInfo.Group
+'   
+'     Case 3
+'       If Not hExportInfo.Control Then Return
+'       cmbControl.ReadOnly = False
+'       cmbControl.List = CExportInfo.List
+'       cmbControl.Text = hExportInfo.Similar
+'   
+'   End Select
+'   
+'   $iRow = tvwControl.Row
+'   $iCol = tvwControl.Column
+'   
+'   MoveEditor
+'   cmbControl.Show
+'   cmbControl.SetFocus
+'   
+' End
 
-End
 
-Public Sub tvwControl_Scroll()
-
-  HideEditor
-
-End
-
-Public Sub cmbControl_Click()
-
-  Dim hExportInfo As CExportInfo = CExportInfo.All[CExportInfo.List[$iRow]]
-  Dim sVal As String
-
-  If $iCol = 3 Then
-    sVal = hExportInfo.Similar
-    If sVal Then sVal &= ","
-    sVal &= cmbControl.Text 
-    cmbControl.Text = sVal
-  Endif
-
-  SaveEditor
-
-End
+' Public Sub tvwControl_MouseUp()
+' 
+'   ShowEditor
+' 
+' End
+' 
+' Public Sub tvwControl_Scroll()
+' 
+'   HideEditor
+' 
+' End
+' 
+' Public Sub cmbControl_Click()
+' 
+'   Dim hExportInfo As CExportInfo = CExportInfo.All[CExportInfo.List[$iRow]]
+'   Dim sVal As String
+' 
+'   If $iCol = 3 Then
+'     sVal = hExportInfo.Similar
+'     If sVal Then sVal &= ","
+'     sVal &= cmbControl.Text 
+'     cmbControl.Text = sVal
+'   Endif
+' 
+'   SaveEditor
+' 
+' End
 
 Private Sub ReadFeatures(hCont As Container, aFeature As String[])
   
@@ -1167,12 +1158,6 @@ End
 ' 
 ' END
 
-
-Public Sub Form_Close()
-
-  CExportInfo.Reset  
-
-End
 
 ' PUBLIC SUB chkVersion_Click()
 ' 

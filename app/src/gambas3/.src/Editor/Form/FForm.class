@@ -1883,9 +1883,10 @@ Private Sub CreateMenu()
   Dim cCtrl As New String[]
   Dim sName As String
   Dim cSymbol As Collection
+  Dim hClass As CClassInfo
   Dim hSymbol As CSymbolInfo
   Dim sGroup As String
-  Dim aChange As String[]
+  Dim aSimilar As String[]
 
   mnuSelect.Children.Clear
 
@@ -1955,16 +1956,16 @@ Private Sub CreateMenu()
     
     If Selection.Count = 1 Then
     
-      aChange = CComponent.GetChanges(Master.Kind)
-      If aChange Then
-        For Each sName In aChange
-          If sName = Master.Kind Then Continue
-          hMenu = New Menu(mnuChange) As "mnuChange"
-          hMenu.Text = sName
-          hMenu.Picture = FFormStack.GetControlIcon(sName)
-          mnuChange.Show
-        Next
-      Endif
+      hClass = CComponent.Classes[Master.Kind]
+      For Each sName In hClass.GetSimilars()
+        If sName = Master.Kind Then Continue
+        hMenu = New Menu(mnuChange) As "mnuChange"
+        hMenu.Text = sName
+        'hMenu.Picture = FFormStack.GetControlIcon(sName)
+        hClass = CComponent.Classes[sName]
+        hMenu.Picture = CControl.GetIcon(sName, hClass.Component, 16)
+        mnuChange.Show
+      Next
     
     Endif
 

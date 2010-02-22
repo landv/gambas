@@ -191,9 +191,7 @@ GB_DESC CDialDesc[] =
   GB_PROPERTY("Wrap", "b", CDIAL_wrapping),
   GB_PROPERTY("PageStep", "i", CDIAL_pagestep),
 
-  GB_CONSTANT("_Properties", "s", "*,MinValue=0,MaxValue=100,Step=1,PageStep=10,Wrap,Mark=True"),
-  GB_CONSTANT("_DefaultEvent", "s", "Change"),
-  GB_CONSTANT("_DefaultSize", "s", "6,6"),
+	DIAL_DESCRIPTION,
 
   GB_EVENT("Change", NULL, NULL, &EVENT_Change),
 
