@@ -38,7 +38,7 @@ Private $sPadding As String = "cm"
 
 Private $iVisible As Boolean = True
 Private $hFont As New Font
-Private $iExpand As Integer
+Private $bExpand As Boolean
 Private $bAutoresize As Boolean = False
 Private $bRelativeWidth As Boolean
 Private $bRelativeHeight As Boolean
@@ -60,7 +60,7 @@ Property Height As String
 
 Property Visible As Boolean
 Property {Font} As Font
-Property Expand As Integer
+Property Expand As Boolean
 Property Autoresize As Boolean
 
 
@@ -169,15 +169,15 @@ Private Sub Height_Write(Value As String)
 End
 
 
-Private Function Expand_Read() As Integer
+Private Function Expand_Read() As Boolean
 
-  Return $iExpand 
+  Return $bExpand 
 
 End
 
-Private Sub Expand_Write(Value As Integer)
+Private Sub Expand_Write(Value As Boolean)
 
-  $iExpand = Value
+  $bExpand = Value
 
 End
 
