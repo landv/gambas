@@ -292,50 +292,44 @@ Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As
   Parent = hParent
   
   hClass = CComponent.Classes[sClass]
-
-  Select Kind
-
-    Case "Form"
-
-      hCtrl = New Form(hForm.Container)
-      hCtrl.Drop = True
-      'hCtrl.Reparent(hForm.Container, 0, 0) 'AS "Form"'Panel(hForm)
-      'hCtrl.BackColor = hForm.BackColor
-
-    Case "Menu"
-
-      If Parent.Kind <> "Menu" Then
-        hCtrl = New Menu(hForm.Control[hForm.Name].Control)
-      Else
-        hCtrl = New Menu(Parent.Control)
-      Endif
+  
+  If hClass.Form Then
+  
+    hCtrl = New Form(hForm.Container)
+    hCtrl.Drop = True
+    
+  Else If Kind = "Menu" Then
+  
+    If Parent.Kind <> "Menu" Then
+      hCtrl = New Menu(hForm.Control[hForm.Name].Control)
+    Else
+      hCtrl = New Menu(Parent.Control)
+    Endif
+    
+  Else
       
-      ' If Parent.Kind <> "Menu" Then
-      '   hCtrl = New DrawingArea(hForm.GetMenuBar())
-      ' Endif
+    Try Virtual = hClass.VirtualControl
 
-    Case Else
+    If Virtual Then
 
-      Try Virtual = hClass.VirtualControl
+      'PRINT sName; " is virtual"
+      hCtrl = CreateControl(sName, sClass, Parent.Control)
+      'hCtrl.Resize(5 * Desktop.Scale, 5 * Desktop.Scale)
+      iDim = 2 + (32 + Desktop.Scale - 1) \ Desktop.Scale '(40 + Desktop.Scale - 1) Div Desktop.Scale
+      hCtrl.ResizeScaled(iDim, iDim)
+      
+    Else
 
-      If Virtual Then
+      If Not Parent Then Stop
 
-        'PRINT sName; " is virtual"
-        hCtrl = CreateControl(sName, sClass, Parent.Control)
-        'hCtrl.Resize(5 * Desktop.Scale, 5 * Desktop.Scale)
-        iDim = 2 + (32 + Desktop.Scale - 1) \ Desktop.Scale '(40 + Desktop.Scale - 1) Div Desktop.Scale
-        hCtrl.ResizeScaled(iDim, iDim)
-        
-      Else
+      hCtrl = CreateControl(sName, sClass, Parent.Control)
+      Unknown = Object.Type(hCtrl) <> sClass
 
-        hCtrl = CreateControl(sName, sClass, Parent.Control)
-        Unknown = Object.Type(hCtrl) <> sClass
+    Endif
 
-      Endif
+    hCtrl.Drop = True
 
-      hCtrl.Drop = True
-
-  End Select
+  Endif
 
   Control = hCtrl
   Control.Tag = sName
@@ -497,32 +491,35 @@ _DO_NOT_APPLY:
   'ENDIF
   
   If hProp.Coord Then
+
     If VirtualCoord Then
       $cValue[sProp] = vVal
       Modify
     Else
       SetProperty(Mid$(sProp, 2), vVal, bDoNotApply)
     Endif
-    Return
-  Endif
+    
+    MoveAllHandle
   
-  If Not VirtualCoord Then
-    If sProp = "X" Or If sProp = "Y" Or If sProp = "Width" Or If sProp = "Height" Then
-      $cValue["#" & sProp] = vVal
+  Else
+  
+    If Not VirtualCoord Then
+      If sProp = "X" Or If sProp = "Y" Or If sProp = "Width" Or If sProp = "Height" Then
+        $cValue["#" & sProp] = vVal
+      Endif
     Endif
+  
+    If $cValue[sProp] <> vVal Then
+      $cValue[sProp] = vVal
+      FProperty.RefreshOne(Me, sProp)
+      Modify
+    Endif
+  
   Endif
-
-  If $cValue[sProp] <> vVal Then
-    $cValue[sProp] = vVal
-    FProperty.RefreshOne(Me, sProp)
-    Modify
-  Endif
-
-  If hProp.Coord Then MoveAllHandle
 
   If IsNull(Parent) Then
     Select Case sProp
-      Case "Width", "W", "Height", "H"
+      Case "#Width", "#W", "#Height", "#H"
         GetForm().UpdateBorder
       Case "Background"
         GetForm().UpdateSnap
@@ -1431,23 +1428,27 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
   Try H = GetProperty("#Height")
   bHasSize = W > 0 And H > 0
 
-  If bNoScale Then 
+  If bHasSize Or If Abs(X) + Abs(Y) Then
+
+    If bNoScale Then 
+    
+      sLine = "Move(" & X & "," & Y
+      If bHasSize Then sLine = sLine & "," & W & "," & H
+      sLine = sLine & ")"
   
-    sLine = "Move(" & X & "," & Y
-    If bHasSize Then sLine = sLine & "," & W & "," & H
-    sLine = sLine & ")"
-
-  Else
-
-    sLine = "MoveScaled(" & GetCoord(X) & "," & GetCoord(Y)
-    If bHasSize Then sLine = sLine & "," & GetCoord(W, True) & "," & GetCoord(H, True)
-    sLine = sLine & ")"
-
+    Else
+  
+      sLine = "MoveScaled(" & GetCoord(X) & "," & GetCoord(Y)
+      If bHasSize Then sLine = sLine & "," & GetCoord(W, True) & "," & GetCoord(H, True)
+      sLine = sLine & ")"
+  
+    Endif
+  
+    If VirtualCoord Then sLine = "#" & sLine
+  
+    cLine.Add(sLine, 0)
+    
   Endif
-
-  If VirtualCoord Then sLine = "#" & sLine
-
-  cLine.Add(sLine, 0)
 
   Return cLine
 

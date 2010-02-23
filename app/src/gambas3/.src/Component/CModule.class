@@ -60,7 +60,7 @@ Public Sub _new(sKey As String, sName As String, sNamePlural As String, sNameFil
 
 End
 
-Static Public Sub InitFromProject()
+Static Public Sub Reset()
   
   Dim hModule As CModule
   Dim sComp As String
@@ -70,14 +70,14 @@ Static Public Sub InitFromProject()
     hModule.Used = False
   Next
   
-  For Each sComp In Project.Libraries
-    With CComponent.All[sComp]
-      If .Type Then 
-        All[.Type].Component = sComp
-        All[.Type].Used = True
-      Endif
-    End With
-  Next
+End
+
+
+Static Public Sub Activate(sFamily As String)
+  
+  Dim hModule As CModule = All[sFamily]
+  
+  If hModule Then hModule.Used = True
   
 End
 

@@ -2,6 +2,11 @@
 
 Export
 Create Private 
+
+Public Const _IsControl As Boolean = True
+Public Const _Properties As String = "Left,Top,Width,Height,Visible,Font,Padding,Expand,AutoResize,Tag"
+Public Const _Family As String = "Report"
+
 'Object Management
 Static Public _ObjectFromId As New Collection
 Static Public _iCurPagePos As Integer

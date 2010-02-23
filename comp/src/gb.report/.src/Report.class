@@ -4,10 +4,9 @@ Create Static
 Export
 Inherits ReportVBox
 
-Public Const _Properties As String = "*"
-Public Const _IsControl As Boolean = True
+Public Const _Properties As String = "*,Resolution,Orientation,Size"
+Public Const _HiddenControls As String = "Report,ReportControl,ReportContainer"
 Public Const _IsForm As Boolean = True
-Public Const _IsContainer As Boolean = True
 
 'Public Constants
 Public Const Portrait As Integer = 0

@@ -464,7 +464,7 @@ Private Sub CheckComponentConfig() As Boolean
       bFound = False
       For Each hComp In CComponent.All
         If hComp.Implement.Exist(sNeed) Then
-          aNeed.Add(hComp.Key)
+          If Not aNeed.Exist(hComp.Key) Then aNeed.Add(hComp.Key)
           If aComp.Exist(hComp.Key) Then bFound = True
         Endif
       Next
@@ -648,16 +648,35 @@ Public Sub chkShowBeta_Click()
 
 End
 
-
-Public Sub btnHelp_Click()
-
+Private Sub AboutComponent()
+  
   Dim hCompBox As CComponentBox
   Dim sKey As String
   
   hCompBox = CComponentBox(lstComponent.Current)
   Try sKey = hCompBox.Key
   If Not sKey Then Return 
-  MHelp.GotoComponent(sKey)
+  'MHelp.GotoComponent(sKey)
+  MHelp.InitWebViewWith(webAboutComponent, MHelp.TYPE_COMPONENT, sKey)
+  
+End
+
+
+Public Sub btnHelp_Click()
+
+  If panAboutComponent.Visible Then
+    
+    panAboutComponent.Hide
+    btnHelp.Picture = Picture["icon:/small/up"]
+  
+  Else
+  
+    AboutComponent
+    panAboutComponent.Show
+    lstComponent.EnsureVisible
+    btnHelp.Picture = Picture["icon:/small/down"]
+    
+  Endif
 
 End
 
@@ -1428,4 +1447,10 @@ Private Sub UpdateIcon()
   btnIcon.Picture = Project.StretchIcon(Project.Dir &/ $sIcon, btnIcon.Width - 16).Picture
   btnIcon.ToolTip = $sIcon
   
+End
+
+Public Sub lstComponent_Click()
+
+  If panAboutComponent.Visible Then AboutComponent
+
 End

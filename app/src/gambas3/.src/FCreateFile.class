@@ -91,8 +91,14 @@ Public Sub Form_Open()
   
   For Each hPanel In lstType.Children
     If Not hPanel.Tag Then Continue
-    If Not CModule.All.Exist(hPanel.Tag) Then Continue
-    hPanel.Visible = CModule[hPanel.Tag].Used
+    hPictureBox = hPanel.Children[0]
+    'hPictureBox.W = hPictureBox.H
+    hModule = CModule[hPanel.Tag]
+    If Not hModule Then Continue
+    hPanel.Visible = hModule.Used
+    If hPanel.Visible Then
+      If Not hPictureBox.Picture Then hPictureBox.Picture = Project.MakeModuleIcon(hPanel.Tag, 32).Picture
+    Endif
   Next
   
   If Not $sType Then $sType = "module"
@@ -222,7 +228,7 @@ Private Sub CreateFile() As Boolean
       
       Project.InsertSource(sName, sType, $sDir, sTemp)
   
-    Case "form"
+    Case "form", "report"
     
       sTemp = "' Gambas class file\n\n"
       
@@ -241,38 +247,42 @@ Private Sub CreateFile() As Boolean
       Project.InsertSource(sName, "class", $sDir, sTemp, True, True)
       
       sTemp = Project.FORM_MAGIC & "\n\n" &   
-              "{ " & sName & " Form\n" &   
-              "  MoveScaled(0, 0, 68, 64)\n"
+              "{ " & sName & " " & UCase(Left(sType)) & Mid$(sType, 2) & "\n" &   
+              "  MoveScaled(0, 0, 64, 64)\n"
       
-      If chkDialog.Value Then
-        sTemp &= "  Resizable = False\n"
-                 "  Arrangement = Arrangement.Vertical\n"
-                 "  Spacing = True\n"
-                 "  Margin = True\n"
-        sTemp &= "{ HBox1 HBox\n"
-                 "  MoveScaled(1,59,66,4)\n"
-                 "  Spacing = True\n"
-                 "  { Panel1 Panel\n"
-                 "    MoveScaled(4,0,4,4)\n"
-                 "    'Move(24,0,24,24)\n"
-                 "    Expand = True\n"
-                 "  }\n"
-                 "  { btnOK Button\n"
-                 "    MoveScaled(31,0,16,4)\n"
-                 "    Text = (\"OK\")\n"
-                 "    Default = True\n"
-                 "  }\n"
-                 "  { btnCancel Button\n"
-                 "    MoveScaled(48,0,16,4)\n"
-                 "    Text = (\"Cancel\")\n"
-                 "    Cancel = True\n"
-                 "  }\n"
-                 "}\n"
+      If sType = "form" Then
+      
+        If chkDialog.Value Then
+          sTemp &= "  Resizable = False\n"
+                   "  Arrangement = Arrangement.Vertical\n"
+                   "  Spacing = True\n"
+                   "  Margin = True\n"
+          sTemp &= "{ HBox1 HBox\n"
+                   "  MoveScaled(1,59,66,4)\n"
+                   "  Spacing = True\n"
+                   "  { Panel1 Panel\n"
+                   "    MoveScaled(4,0,4,4)\n"
+                   "    'Move(24,0,24,24)\n"
+                   "    Expand = True\n"
+                   "  }\n"
+                   "  { btnOK Button\n"
+                   "    MoveScaled(31,0,16,4)\n"
+                   "    Text = (\"OK\")\n"
+                   "    Default = True\n"
+                   "  }\n"
+                   "  { btnCancel Button\n"
+                   "    MoveScaled(48,0,16,4)\n"
+                   "    Text = (\"Cancel\")\n"
+                   "    Cancel = True\n"
+                   "  }\n"
+                   "}\n"
+        Endif
+        
       Endif
       
       sTemp &= "}\n"
       
-      Project.InsertSource(sName, "form", $sDir, sTemp)
+      Project.InsertSource(sName, sType, $sDir, sTemp)
       
     Case "webpage"
 
@@ -477,5 +487,12 @@ Public Sub fchExisting_Icon(Path As String)
   If Exist(Path &/ ".project") Then 
     fchExisting.Icon = Project.GetIcon(Path)    
   Endif
+
+End
+
+Public Sub panType_Arrange()
+
+  Dim hPictureBox As PictureBox = Last.Children[0]
+  hPictureBox.W = hPictureBox.H
 
 End

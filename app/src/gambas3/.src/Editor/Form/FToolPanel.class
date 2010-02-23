@@ -7,6 +7,7 @@ Private Const SELECT_TOOL As String = "Select"
 Private $iSize As Integer
 
 Public Key As String
+Public Container As Container
 
 Private $sType As String
 Private $cButton As New Collection
@@ -24,26 +25,29 @@ Public Sub _new(sName As String, sType As String)
 
   Key = sName
   $sType = sType
-  btnTool.Text = sName
-  btnTool.Height = 20
+  'btnTool.Text = sName
+  'btnTool.Height = 20
 
   Add(SELECT_TOOL)
   SetTool
+  Container = panTool
 
 End
 
 
-Public Sub Add(sControl As String, Optional sComp As String, Optional sType As String = "*")
+Public Sub Add(sControl As String, Optional sComp As String, Optional sType As String)
 
   Dim hCtrl As ToolButton
   Dim hPict As Picture
+
+  If Not sType Then sType = "*"
 
   hCtrl = New ToolButton(panTool) As "btnControl"
   hCtrl.Move(0, 0, $iSize + 8, $iSize + 8)
   hCtrl.Tag = [sControl, sType]
   hCtrl.Border = False
   hCtrl.Toggle = True
-  hCtrl.ToolTip = sType & "." & sControl
+  hCtrl.ToolTip = sControl
   hCtrl.Design = True
 
   hPict = CControl.GetIcon(sControl, sComp)
@@ -192,5 +196,4 @@ Public Sub ShowToolBar(bShow As Boolean)
   'IF bShow THEN $cButton["Select"].SetFocus
 
 End
-
 

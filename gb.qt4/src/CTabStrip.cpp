@@ -1,22 +1,22 @@
 /***************************************************************************
 
-  CTabStrip.cpp
+	CTabStrip.cpp
 
-  (c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -70,6 +70,7 @@ public:
 	bool isVisible() const { return visible; }
 	void setVisible(bool v);
 	void updateIcon();
+	void updateText();
 	int count() const;
 	bool isEmpty() const { return count() == 0; }
 
@@ -84,7 +85,7 @@ CTab::CTab(CTABSTRIP *parent, QWidget *page)
 	icon = 0; 
 	id = WIDGET->stack.count();
 	visible = true; 
-  setEnabled(true);
+	setEnabled(true);
 	
 	page->setAutoFillBackground(true);
 	page->hide();
@@ -148,7 +149,7 @@ void CTab::setVisible(bool v)
 			ind++;
 		}
 		WIDGET->insertTab(ind, widget, text);
-	  setEnabled(enabled);
+		setEnabled(enabled);
 		updateIcon();
 		if (WIDGET->count() == 1)
 			ensureVisible();
@@ -164,6 +165,11 @@ void CTab::updateIcon()
 		CWIDGET_iconset(iconset, *(icon->pixmap));
 	
 	WIDGET->setTabIcon(index(), iconset);
+}
+
+void CTab::updateText()
+{
+	WIDGET->setTabText(index(), text);
 }
 
 /** MyTabWidget **********************************************************/
@@ -199,13 +205,13 @@ void MyTabWidget::layoutContainer()
 {
 	CWIDGET *_object = CWidget::get(this);
 	#if QT_VERSION >= 0x040600
-  QStyleOptionTabWidgetFrameV2 option;
+	QStyleOptionTabWidgetFrameV2 option;
 	#else
-  QStyleOptionTabWidgetFrame option;
+	QStyleOptionTabWidgetFrame option;
 	#endif
 
 	initStyleOption(&option);
-  QRect contentsRect = style()->subElementRect(QStyle::SE_TabWidgetTabContents, &option, this);
+	QRect contentsRect = style()->subElementRect(QStyle::SE_TabWidgetTabContents, &option, this);
 
 	QWidget *w = findChild<QStackedWidget *>();
 
@@ -246,13 +252,13 @@ bool MyTabWidget::eventFilter(QObject *o, QEvent *e)
 		return true;
 	}
 
-  return QObject::eventFilter(o, e);
+	return QObject::eventFilter(o, e);
 }
 #endif
 
 /***************************************************************************
 
-  TabStrip
+	TabStrip
 
 ***************************************************************************/
 
@@ -278,85 +284,85 @@ static bool remove_page(void *_object, int i)
 
 static bool set_tab_count(void *_object, int new_count)
 {
-  int count = WIDGET->stack.count();
-  int i;
-  int index;
-  QString label;
-  CTab *tab;
+	int count = WIDGET->stack.count();
+	int i;
+	int index;
+	QString label;
+	CTab *tab;
 
-  if (new_count < 1 || new_count > 256)
-  {
-    GB.Error(GB_ERR_ARG);
-    return true;
-  }
+	if (new_count < 1 || new_count > 256)
+	{
+		GB.Error(GB_ERR_ARG);
+		return true;
+	}
 
-  if (new_count == count)
-    return false;
+	if (new_count == count)
+		return false;
 
-  if (new_count > count)
-  {
-    for (i = count; i < new_count; i++)
-    {
-    	tab = new CTab(THIS, new MyContainer(WIDGET));
+	if (new_count > count)
+	{
+		for (i = count; i < new_count; i++)
+		{
+			tab = new CTab(THIS, new MyContainer(WIDGET));
 
-      label.sprintf("Tab %d", i);
-      WIDGET->addTab(tab->widget, label);
-      
-      WIDGET->stack.append(tab);
-    }
+			label.sprintf("Tab %d", i);
+			WIDGET->addTab(tab->widget, label);
+			
+			WIDGET->stack.append(tab);
+		}
 
-    index = new_count - 1;
+		index = new_count - 1;
 
 		WIDGET->stack.at(index)->ensureVisible();
 		THIS->container = WIDGET->stack.at(index)->widget;    
-  }
-  else
-  {
-    index = WIDGET->currentIndex();
-    //same = (id == PARAM(index));
+	}
+	else
+	{
+		index = WIDGET->currentIndex();
+		//same = (id == PARAM(index));
 
-    for (i = new_count; i < count; i++)
-    {
-      if (!WIDGET->stack.at(i)->isEmpty())
-      {
-        GB.Error("Tab is not empty");
-        return true;
-      }
-    }
+		for (i = new_count; i < count; i++)
+		{
+			if (!WIDGET->stack.at(i)->isEmpty())
+			{
+				GB.Error("Tab is not empty");
+				return true;
+			}
+		}
 
 		if (index >= new_count)
 			index = new_count - 1;
 	
 		WIDGET->stack.at(index)->ensureVisible();
 		THIS->container = WIDGET->stack.at(index)->widget;
-    
-    for (i = count - 1; i >= new_count; i--)
-    {
+		
+		for (i = count - 1; i >= new_count; i--)
+		{
 			remove_page(THIS, i);
-    }
+		}
 
-    //WIDGET->stack.resize(new_count);
-    //THIS->icon->resize(new_count);
-  }
+		//WIDGET->stack.resize(new_count);
+		//THIS->icon->resize(new_count);
+	}
 
-  return false;
+	return false;
 }
 
 
 BEGIN_METHOD(CTABSTRIP_new, GB_OBJECT parent)
 
-  MyTabWidget *wid = new MyTabWidget(QCONTAINER(VARG(parent))); //, 0, Qt::WNoMousePropagation);
+	MyTabWidget *wid = new MyTabWidget(QCONTAINER(VARG(parent))); //, 0, Qt::WNoMousePropagation);
 
-  QObject::connect(wid, SIGNAL(currentChanged(int)), &CTabStrip::manager, SLOT(currentChanged(int)));
+	QObject::connect(wid, SIGNAL(currentChanged(int)), &CTabStrip::manager, SLOT(currentChanged(int)));
 
 	THIS->widget.flag.fillBackground = TRUE;
-  THIS->container = NULL;
-  THIS->index = -1;
+	THIS->container = NULL;
+	THIS->index = -1;
 
-  CWIDGET_new(wid, (void *)_object);
-  set_tab_count(THIS, 1);
+	CWIDGET_new(wid, (void *)_object);
+	set_tab_count(THIS, 1);
 
-  //wid->updateLayout();
+	//wid->updateLayout();
 
 END_METHOD
 
@@ -364,23 +370,23 @@ END_METHOD
 
 BEGIN_PROPERTY(CTABSTRIP_count)
 
-  if (READ_PROPERTY)
-    GB.ReturnInteger(WIDGET->stack.count());
-  else
-    set_tab_count(THIS, VPROP(GB_INTEGER));
+	if (READ_PROPERTY)
+		GB.ReturnInteger(WIDGET->stack.count());
+	else
+		set_tab_count(THIS, VPROP(GB_INTEGER));
 
 END_PROPERTY
 
 
 static bool check_index(CTABSTRIP *_object, int index)
 {
-  if (index < 0 || index >= (int)WIDGET->stack.count())
-  {
-    GB.Error("Bad index");
-    return true;
-  }
-  else
-    return false;
+	if (index < 0 || index >= (int)WIDGET->stack.count())
+	{
+		GB.Error("Bad index");
+		return true;
+	}
+	else
+		return false;
 }
 
 static int get_real_index(CTABSTRIP *_object)
@@ -399,106 +405,96 @@ static int get_real_index(CTABSTRIP *_object)
 
 BEGIN_PROPERTY(CTABSTRIP_index)
 
-  if (READ_PROPERTY)
-  {
-    GB.ReturnInteger(get_real_index(THIS));
+	if (READ_PROPERTY)
+	{
+		GB.ReturnInteger(get_real_index(THIS));
 	}
-  else
-  {
-    int index = VPROP(GB_INTEGER);
+	else
+	{
+		int index = VPROP(GB_INTEGER);
 
-    if (check_index(THIS, index))
-      return;
+		if (check_index(THIS, index))
+			return;
 
-    if (index == get_real_index(THIS))
-      return;
+		if (index == get_real_index(THIS))
+			return;
 
 		if (!WIDGET->stack.at(index)->isVisible())
 			return;
 			
-    WIDGET->stack.at(index)->ensureVisible();
-  }
+		WIDGET->stack.at(index)->ensureVisible();
+	}
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CTABSTRIP_current)
 
-  THIS->index = get_real_index(THIS);
-  RETURN_SELF();
+	THIS->index = get_real_index(THIS);
+	RETURN_SELF();
 
 END_PROPERTY
 
 
 BEGIN_METHOD(CTABSTRIP_get, GB_INTEGER index)
 
-  int index = VARG(index);
+	int index = VARG(index);
 
-  if (check_index(THIS, index))
-    return;
+	if (check_index(THIS, index))
+		return;
 
-  THIS->index = index;
-  RETURN_SELF();
+	THIS->index = index;
+	RETURN_SELF();
 
 END_METHOD
 
 
 BEGIN_PROPERTY(CTABSTRIP_orientation)
 
-  if (READ_PROPERTY) 
-    switch(WIDGET->tabPosition())
-    {
-      case QTabWidget::North: GB.ReturnInteger(ALIGN_TOP); break;
-      case QTabWidget::South: GB.ReturnInteger(ALIGN_BOTTOM); break;
-      case QTabWidget::West: GB.ReturnInteger(ALIGN_LEFT); break;
-      case QTabWidget::East: GB.ReturnInteger(ALIGN_RIGHT); break;
-      default: GB.ReturnInteger(ALIGN_NORMAL); break;
-    }
-
-  else
-    switch(VPROP(GB_INTEGER))
-    {
-      case ALIGN_TOP: WIDGET->setTabPosition(QTabWidget::North); break;
-      case ALIGN_BOTTOM: WIDGET->setTabPosition(QTabWidget::South); break;
-      case ALIGN_LEFT: WIDGET->setTabPosition(QTabWidget::West); break;
-      case ALIGN_RIGHT: WIDGET->setTabPosition(QTabWidget::East); break;
-    }
-
+	if (READ_PROPERTY) 
+	{
+		switch(WIDGET->tabPosition())
+		{
+			case QTabWidget::North: GB.ReturnInteger(ALIGN_TOP); break;
+			case QTabWidget::South: GB.ReturnInteger(ALIGN_BOTTOM); break;
+			case QTabWidget::West: GB.ReturnInteger(ALIGN_LEFT); break;
+			case QTabWidget::East: GB.ReturnInteger(ALIGN_RIGHT); break;
+			default: GB.ReturnInteger(ALIGN_NORMAL); break;
+		}
+	}
+	else
+	{
+		switch(VPROP(GB_INTEGER))
+		{
+			case ALIGN_TOP: WIDGET->setTabPosition(QTabWidget::North); break;
+			case ALIGN_BOTTOM: WIDGET->setTabPosition(QTabWidget::South); break;
+			case ALIGN_LEFT: WIDGET->setTabPosition(QTabWidget::West); break;
+			case ALIGN_RIGHT: WIDGET->setTabPosition(QTabWidget::East); break;
+		}
+	}
+	
 END_PROPERTY
 
 
 
 /***************************************************************************
 
-  .Tab
+	.Tab
 
 ***************************************************************************/
 
-static int get_page_index(CTABSTRIP *_object)
-{
-  int index = THIS->index;
-
-  if (index < 0)
-    return get_real_index(THIS);
-
-  return WIDGET->stack.at(index)->index();
-}
-
 BEGIN_PROPERTY(CTAB_text)
 
-  int index = get_page_index(THIS);
+	int index = THIS->index;
+	if (index < 0)
+		index = get_real_index(THIS);
 
-  if (READ_PROPERTY)
-  {
-  	if (index >= 0)
-    	GB.ReturnNewZeroString(TO_UTF8(WIDGET->tabText(index)));
-		else
-			GB.ReturnNull();
-	}
-  else
-  {
-  	if (index >= 0)
-    	WIDGET->setTabText(index, QSTRING_PROP());
+	if (READ_PROPERTY)
+		GB.ReturnNewZeroString(TO_UTF8(WIDGET->stack.at(index)->text));
+	else
+	{
+		WIDGET->stack.at(index)->text = QSTRING_PROP();
+		WIDGET->stack.at(index)->updateText();
 	}
 
 END_PROPERTY
@@ -506,95 +502,95 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CTAB_picture)
 
-  int index;
+	int index;
 
-  index = THIS->index;
-  if (index < 0)
-    index = get_real_index(THIS);
-    
-  if (READ_PROPERTY)
-  {
-  	if (index < 0)
-  		GB.ReturnNull();
+	index = THIS->index;
+	if (index < 0)
+		index = get_real_index(THIS);
+		
+	if (READ_PROPERTY)
+	{
+		if (index < 0)
+			GB.ReturnNull();
 		else
-    	GB.ReturnObject(WIDGET->stack.at(index)->icon);
+			GB.ReturnObject(WIDGET->stack.at(index)->icon);
 	}
-  else if (index >= 0)
-  {
-    CPICTURE *pict;
+	else if (index >= 0)
+	{
+		CPICTURE *pict;
 
-    GB.StoreObject(PROP(GB_OBJECT), POINTER(&(WIDGET->stack.at(index))->icon));
-    pict = (CPICTURE *)VPROP(GB_OBJECT);
+		GB.StoreObject(PROP(GB_OBJECT), POINTER(&(WIDGET->stack.at(index))->icon));
+		pict = (CPICTURE *)VPROP(GB_OBJECT);
 		WIDGET->stack.at(index)->updateIcon();
-  }
+	}
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CTAB_enabled)
 
-  CTab *tab = WIDGET->stack.at(THIS->index);
+	CTab *tab = WIDGET->stack.at(THIS->index);
 
-  if (READ_PROPERTY)
-    GB.ReturnBoolean(tab->isEnabled());
-  else
-    tab->setEnabled(VPROP(GB_BOOLEAN));
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(tab->isEnabled());
+	else
+		tab->setEnabled(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CTAB_visible)
 
-  CTab *tab = WIDGET->stack.at(THIS->index);
+	CTab *tab = WIDGET->stack.at(THIS->index);
 
-  if (READ_PROPERTY)
-    GB.ReturnBoolean(tab->isVisible());
-  else
-    tab->setVisible(VPROP(GB_BOOLEAN));
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(tab->isVisible());
+	else
+		tab->setVisible(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
 
 BEGIN_METHOD_VOID(CTAB_next)
 
-  CTABSTRIP_ENUM *iter;
-  QWidget *page;
-  QObjectList list;
-  int child;
-  CWIDGET *widget;
+	CTABSTRIP_ENUM *iter;
+	QWidget *page;
+	QObjectList list;
+	int child;
+	CWIDGET *widget;
 
-  iter = (CTABSTRIP_ENUM *)GB.GetEnum();
-  if (!iter->init)
-  {
-    iter->child = 0;
-    iter->index = THIS->index;
-    iter->init = true;
-  }
+	iter = (CTABSTRIP_ENUM *)GB.GetEnum();
+	if (!iter->init)
+	{
+		iter->child = 0;
+		iter->index = THIS->index;
+		iter->init = true;
+	}
 
-  //qDebug("CTAB_next: iter = (%d, %d, %d)", iter->init, iter->index, iter->child);
+	//qDebug("CTAB_next: iter = (%d, %d, %d)", iter->init, iter->index, iter->child);
 
-  page = WIDGET->stack.at(iter->index)->widget;
-  list = page->children();
+	page = WIDGET->stack.at(iter->index)->widget;
+	list = page->children();
 
-  for(;;)
-  {
-    child = iter->child;
+	for(;;)
+	{
+		child = iter->child;
 
-    if (child >= list.count())
-    {
-      GB.StopEnum();
-      return;
-    }
+		if (child >= list.count())
+		{
+			GB.StopEnum();
+			return;
+		}
 
-    iter->child = child + 1;
+		iter->child = child + 1;
 
-    widget = CWidget::getRealExisting(list.at(child));
-    if (widget)
-    {
-      GB.ReturnObject(widget);
-      return;
-    }
-  }
+		widget = CWidget::getRealExisting(list.at(child));
+		if (widget)
+		{
+			GB.ReturnObject(widget);
+			return;
+		}
+	}
 
 END_METHOD
 
@@ -650,51 +646,51 @@ BEGIN_METHOD_VOID(CTAB_delete)
 	if (index >= (int)WIDGET->stack.count())
 		index = WIDGET->stack.count() - 1;
 
-  WIDGET->stack.at(index)->ensureVisible();
+	WIDGET->stack.at(index)->ensureVisible();
 
-  THIS->index = -1;
+	THIS->index = -1;
 
 END_METHOD
 
 
 BEGIN_PROPERTY(CTABSTRIP_enabled)
 
-  int i;
+	int i;
 
-  if (READ_PROPERTY)
-    GB.ReturnBoolean(WIDGET->isEnabled());
-  else
-  {
-    WIDGET->setEnabled(VPROP(GB_BOOLEAN));
-    for (i = 0; i < WIDGET->stack.count(); i++)
-      WIDGET->stack.at(i)->setEnabled(VPROP(GB_BOOLEAN));
-  }
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(WIDGET->isEnabled());
+	else
+	{
+		WIDGET->setEnabled(VPROP(GB_BOOLEAN));
+		for (i = 0; i < WIDGET->stack.count(); i++)
+			WIDGET->stack.at(i)->setEnabled(VPROP(GB_BOOLEAN));
+	}
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CTABSTRIP_text)
 
-  THIS->index = -1;
-  CTAB_text(_object, _param);
+	THIS->index = -1;
+	CTAB_text(_object, _param);
 
-  /*if (READ_PROPERTY)
-    GB.ReturnNewZeroString(TO_UTF8(WIDGET->tabLabel(WIDGET->currentPage())));
-  else
-    WIDGET->changeTab(WIDGET->currentPage(), QSTRING_PROP());*/
+	/*if (READ_PROPERTY)
+		GB.ReturnNewZeroString(TO_UTF8(WIDGET->tabLabel(WIDGET->currentPage())));
+	else
+		WIDGET->changeTab(WIDGET->currentPage(), QSTRING_PROP());*/
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CTABSTRIP_picture)
 
-  THIS->index = -1;
-  CTAB_picture(_object, _param);
+	THIS->index = -1;
+	CTAB_picture(_object, _param);
 
-  /*if (READ_PROPERTY)
-    GB.ReturnNewZeroString(TO_UTF8(WIDGET->tabLabel(WIDGET->currentPage())));
-  else
-    WIDGET->changeTab(WIDGET->currentPage(), QSTRING_PROP());*/
+	/*if (READ_PROPERTY)
+		GB.ReturnNewZeroString(TO_UTF8(WIDGET->tabLabel(WIDGET->currentPage())));
+	else
+		WIDGET->changeTab(WIDGET->currentPage(), QSTRING_PROP());*/
 
 END_PROPERTY
 
@@ -716,14 +712,14 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CTABSTRIP_client_width)
 
-  GB.ReturnInteger(THIS->container->width());
+	GB.ReturnInteger(THIS->container->width());
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CTABSTRIP_client_height)
 
-  GB.ReturnInteger(THIS->container->height());
+	GB.ReturnInteger(THIS->container->height());
 
 END_PROPERTY
 
@@ -737,7 +733,7 @@ CTabStrip CTabStrip::manager;
 void CTabStrip::currentChanged(int index)
 {
 	QWidget *wid;
-  GET_SENDER();
+	GET_SENDER();
 
 	wid = WIDGET->currentWidget();
 
@@ -761,67 +757,67 @@ void CTabStrip::currentChanged(int index)
 
 GB_DESC CTabChildrenDesc[] =
 {
-  GB_DECLARE(".TabChildren", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".TabChildren", 0), GB_VIRTUAL_CLASS(),
 
-  GB_METHOD("_next", "Control", CTAB_next, NULL),
-  GB_PROPERTY_READ("Count", "i", CTAB_count),
+	GB_METHOD("_next", "Control", CTAB_next, NULL),
+	GB_PROPERTY_READ("Count", "i", CTAB_count),
 	GB_METHOD("_get", "Control", CTAB_get, "(Index)i"),
 
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
 
 
 GB_DESC CTabDesc[] =
 {
-  GB_DECLARE(".Tab", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".Tab", 0), GB_VIRTUAL_CLASS(),
 
-  GB_PROPERTY("Text", "s", CTAB_text),
-  GB_PROPERTY("Picture", "Picture", CTAB_picture),
-  GB_PROPERTY("Caption", "s", CTAB_text),
-  GB_PROPERTY("Enabled", "b", CTAB_enabled),
-  GB_PROPERTY("Visible", "b", CTAB_visible),
-  GB_PROPERTY_SELF("Children", ".TabChildren"),
-  GB_METHOD("Delete", NULL, CTAB_delete, NULL),
+	GB_PROPERTY("Text", "s", CTAB_text),
+	GB_PROPERTY("Picture", "Picture", CTAB_picture),
+	GB_PROPERTY("Caption", "s", CTAB_text),
+	GB_PROPERTY("Enabled", "b", CTAB_enabled),
+	GB_PROPERTY("Visible", "b", CTAB_visible),
+	GB_PROPERTY_SELF("Children", ".TabChildren"),
+	GB_METHOD("Delete", NULL, CTAB_delete, NULL),
 
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
 
 
 GB_DESC CTabStripDesc[] =
 {
-  GB_DECLARE("TabStrip", sizeof(CTABSTRIP)), GB_INHERITS("Container"),
+	GB_DECLARE("TabStrip", sizeof(CTABSTRIP)), GB_INHERITS("Container"),
 
-  GB_METHOD("_new", NULL, CTABSTRIP_new, "(Parent)Container;"),
+	GB_METHOD("_new", NULL, CTABSTRIP_new, "(Parent)Container;"),
 
-  GB_PROPERTY("Count", "i", CTABSTRIP_count),
-  GB_PROPERTY("Text", "s", CTABSTRIP_text),
-  GB_PROPERTY("Picture", "Picture", CTABSTRIP_picture),
-  GB_PROPERTY("Caption", "s", CTABSTRIP_text),
-  GB_PROPERTY_READ("Current", ".Tab", CTABSTRIP_current),
-  GB_PROPERTY("Index", "i", CTABSTRIP_index),
-  GB_PROPERTY("Orientation", "i", CTABSTRIP_orientation),
-  GB_PROPERTY("Enabled", "b", CTABSTRIP_enabled),
+	GB_PROPERTY("Count", "i", CTABSTRIP_count),
+	GB_PROPERTY("Text", "s", CTABSTRIP_text),
+	GB_PROPERTY("Picture", "Picture", CTABSTRIP_picture),
+	GB_PROPERTY("Caption", "s", CTABSTRIP_text),
+	GB_PROPERTY_READ("Current", ".Tab", CTABSTRIP_current),
+	GB_PROPERTY("Index", "i", CTABSTRIP_index),
+	GB_PROPERTY("Orientation", "i", CTABSTRIP_orientation),
+	GB_PROPERTY("Enabled", "b", CTABSTRIP_enabled),
 
-  GB_PROPERTY_READ("ClientX", "i", CTABSTRIP_client_x),
-  GB_PROPERTY_READ("ClientY", "i", CTABSTRIP_client_y),
-  GB_PROPERTY_READ("ClientW", "i", CTABSTRIP_client_width),
-  GB_PROPERTY_READ("ClientWidth", "i", CTABSTRIP_client_width),
-  GB_PROPERTY_READ("ClientH", "i", CTABSTRIP_client_height),
-  GB_PROPERTY_READ("ClientHeight", "i", CTABSTRIP_client_height),
+	GB_PROPERTY_READ("ClientX", "i", CTABSTRIP_client_x),
+	GB_PROPERTY_READ("ClientY", "i", CTABSTRIP_client_y),
+	GB_PROPERTY_READ("ClientW", "i", CTABSTRIP_client_width),
+	GB_PROPERTY_READ("ClientWidth", "i", CTABSTRIP_client_width),
+	GB_PROPERTY_READ("ClientH", "i", CTABSTRIP_client_height),
+	GB_PROPERTY_READ("ClientHeight", "i", CTABSTRIP_client_height),
 
-  GB_PROPERTY("Arrangement", "i", CCONTAINER_arrangement),
-  GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
-  GB_PROPERTY("Padding", "i", CCONTAINER_padding),
-  GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
-  GB_PROPERTY("Margin", "b", CCONTAINER_margin),
-  GB_PROPERTY("Indent", "b", CCONTAINER_indent),
+	GB_PROPERTY("Arrangement", "i", CCONTAINER_arrangement),
+	GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
+	GB_PROPERTY("Padding", "i", CCONTAINER_padding),
+	GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
+	GB_PROPERTY("Margin", "b", CCONTAINER_margin),
+	GB_PROPERTY("Indent", "b", CCONTAINER_indent),
 
-  GB_METHOD("_get", ".Tab", CTABSTRIP_get, "(Index)i"),
+	GB_METHOD("_get", ".Tab", CTABSTRIP_get, "(Index)i"),
 
 	TABSTRIP_DESCRIPTION,
 
-  GB_EVENT("Click", NULL, NULL, &EVENT_Click),
+	GB_EVENT("Click", NULL, NULL, &EVENT_Click),
 
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
 

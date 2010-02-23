@@ -2,7 +2,6 @@
 
 { Form Form
   MoveScaled(0,0,129,86)
-  Text = ("")
   Icon = Picture["img/logo/logo-32-head.png"]
   Arrangement = Arrange.Vertical
   { mnuFile Menu
@@ -22,17 +21,14 @@
     { mnuOpenRecent Menu
       Text = ("Open &recent")
       { Menu4 Menu
-        Text = ("")
       }
     }
     { mnuOpenExample Menu
       Text = ("Open &example")
       { Menu16 Menu
-        Text = ("")
       }
     }
     { Menu5 Menu
-      Text = ("")
     }
     { mnuSave Menu
       Action = "save-project"
@@ -47,7 +43,6 @@
       Shortcut = "Ctrl+Shift+Alt+S"
     }
     { mnuSepSave Menu
-      Text = ("")
     }
     { mnuQuit Menu
       Action = "quit"
@@ -71,7 +66,6 @@
       Shortcut = "Alt+F7"
     }
     { mnuSepCompile Menu
-      Text = ("")
     }
     { mnuTranslate Menu
       Action = "translate"
@@ -80,7 +74,6 @@
       Shortcut = "Ctrl+T"
     }
     { mnuSepTranslate Menu
-      Text = ("")
     }
     { Menu22 Menu
       Text = ("Make")
@@ -104,7 +97,6 @@
       }
     }
     { Menu15 Menu
-      Text = ("")
     }
     { mnuClean Menu
       Action = "clean-up-project"
@@ -123,7 +115,6 @@
       Visible = False
     }
     { Menu1 Menu
-      Text = ("")
     }
     { mnuProperty Menu
       Action = "project-property"
@@ -141,7 +132,6 @@
       Shortcut = "F5"
     }
     { Menu14 Menu
-      Text = ("")
     }
     { mnuPause Menu
       Action = "pause"
@@ -180,7 +170,6 @@
       Shortcut = "Shift+F5"
     }
     { Menu9 Menu
-      Text = ("")
     }
     { Menu3 Menu
       Action = "break"
@@ -194,7 +183,6 @@
       Text = ("Clear &all breakpoints")
     }
     { Menu21 Menu
-      Text = ("")
     }
     { Menu12 Menu
       Action = "watch"
@@ -238,7 +226,6 @@
       Shortcut = "F11"
     }
     { Menu11 Menu
-      Text = ("")
     }
     { mnuStatusBar Menu
       Text = ("Status bar")
@@ -266,7 +253,6 @@
       Shortcut = "Ctrl+F"
     }
     { Menu10 Menu
-      Text = ("")
     }
     { mnuBrowse Menu
       Action = "browse-project"
@@ -286,7 +272,6 @@
       Picture = Picture["icon:/small/refresh"]
     }
     { Menu20 Menu
-      Text = ("")
     }
     { mnuShortcut Menu
       Action = "shortcut"
@@ -316,7 +301,6 @@
       Picture = Picture["img/16/tip.png"]
     }
     { Menu8 Menu
-      Text = ("")
     }
     { mnuAbout Menu
       Action = "about"
@@ -324,7 +308,6 @@
     }
   }
   { mnuPopup Menu
-    Text = ("")
     Enabled = False
     Visible = False
     { mnuNew Menu
@@ -335,7 +318,6 @@
         Picture = Picture["icon:/small/directory"]
       }
       { Menu19 Menu
-        Text = ("")
       }
       { mnuNewModule Menu mnuNewFile
         Name = "mnuNewModule"
@@ -365,7 +347,7 @@
         Picture = Picture["img/16/webpage.png"]
         Tag = "webpage"
       }
-      { mnuNewReport Menu mnuNewFile_OFF
+      { mnuNewReport Menu mnuNewFile
         Name = "mnuNewReport"
         Action = "new-report"
         Text = ("&Report...")
@@ -373,7 +355,6 @@
         Tag = "report"
       }
       { Menu18 Menu
-        Text = ("")
       }
       { mnuNewImage Menu mnuNewFile
         Name = "mnuNewImage"
@@ -403,7 +384,6 @@
       }
     }
     { Menu2 Menu
-      Text = ("")
     }
     { mnuEditFile Menu
       Text = ("&Edit")
@@ -415,11 +395,9 @@
     { mnuEditWith Menu
       Text = ("Edit with")
       { Menu23 Menu
-        Text = ("")
       }
     }
     { Menu7 Menu
-      Text = ("")
     }
     { mnuCut Menu
       Action = ".cut"
@@ -452,7 +430,6 @@
       Shortcut = "Del"
     }
     { mnuCopyPathSep Menu
-      Text = ("")
     }
     { mnuCopyPath Menu
       Action = "copy-file-path"
@@ -460,7 +437,6 @@
       Shortcut = "Ctrl+Shift+C"
     }
     { mnuSepDeleteFile Menu
-      Text = ("")
     }
     { mnuStartup Menu
       Action = "startup-class"
@@ -468,7 +444,6 @@
       Picture = Picture["icon:/small/play"]
     }
     { Menu24 Menu
-      Text = ("")
     }
     { mnuAddVersion Menu
       Text = ("&Add to repository")
@@ -482,14 +457,12 @@
     }
   }
   { mnuDatabase Menu
-    Text = ("")
     Enabled = False
     { mnuNewConnection Menu
       Text = ("&New connection...")
       Picture = Picture["icon:/small/new"]
     }
     { Menu17 Menu
-      Text = ("")
     }
     { mnuEditConnection Menu
       Text = ("&Open")
@@ -502,7 +475,6 @@
       Shortcut = "Del"
     }
     { Menu25 Menu
-      Text = ("")
     }
     { mnuAddVersionConnection Menu mnuAddVersion
       Name = "mnuAddVersionConnection"
@@ -523,14 +495,13 @@
     MoveScaled(0,0,127,4)
     AutoResize = False
     Key = "main"
-    Text = ("")
+    Text = ("ToolBar1")
     Separator = True
     { ToolButton10 ToolButton
       MoveScaled(59.1429,-0.1429,4,4)
       Visible = False
       ToolTip = ("Toolbox")
       Action = "control"
-      Text = ("")
       Picture = Picture["icon:/small/tools"]
       Toggle = True
     }
@@ -538,35 +509,30 @@
       MoveScaled(0,0,4,4)
       ToolTip = ("New project")
       Action = "new-project"
-      Text = ("")
       Picture = Picture["icon:/small/new"]
     }
     { ToolButton2 ToolButton
       MoveScaled(4,0,4,4)
       ToolTip = ("Open project")
       Action = "open-project"
-      Text = ("")
       Picture = Picture["icon:/small/open"]
     }
     { btnSave ToolButton
       MoveScaled(8,0,4,4)
       ToolTip = ("Save project")
       Action = "save-project"
-      Text = ("")
       Picture = Picture["icon:/small/save"]
     }
     { ToolButton15 ToolButton
       MoveScaled(12,0,4,4)
       ToolTip = ("Save project as")
       Action = "save-project-as"
-      Text = ("")
       Picture = Picture["icon:/small/save-as"]
     }
     { btnProperty ToolButton
       MoveScaled(16,0,4,4)
       ToolTip = ("Project properties")
       Action = "project-property"
-      Text = ("")
       Picture = Picture["icon:/small/properties"]
     }
     { ToolButton7 ToolButton
@@ -574,14 +540,12 @@
       Visible = False
       ToolTip = ("Refresh project")
       Action = "refresh-project"
-      Text = ("")
       Picture = Picture["icon:/small/refresh"]
     }
     { ToolButton12 ToolButton
       MoveScaled(24,0,4,4)
       ToolTip = ("Preferences")
       Action = "option"
-      Text = ("")
       Picture = Picture["icon:/small/options"]
       Toggle = True
     }
@@ -590,7 +554,6 @@
       Visible = False
       ToolTip = ("Shortcuts")
       Action = "shortcut"
-      Text = ("")
       Picture = Picture["icon:/small/shortcut"]
     }
     { Separator3 Separator
@@ -600,7 +563,6 @@
       MoveScaled(34,0,4,4)
       ToolTip = ("Translate")
       Action = "translate"
-      Text = ("")
       Picture = Picture["icon:/small/language"]
     }
     { ToolButton4 ToolButton
@@ -608,14 +570,12 @@
       Visible = False
       ToolTip = ("Make source archive")
       Action = "archive"
-      Text = ("")
       Picture = Picture["icon:/small/archive"]
     }
     { ToolButton5 ToolButton
       MoveScaled(42,0,4,4)
       ToolTip = ("Make executable")
       Action = "exec"
-      Text = ("")
       Picture = Picture["icon:/small/exec"]
     }
     { ToolButton14 ToolButton
@@ -623,7 +583,6 @@
       Visible = False
       ToolTip = ("Make installation package")
       Action = "install"
-      Text = ("")
       Picture = Picture["icon:/small/package"]
     }
     { Separator2 Separator
@@ -634,7 +593,6 @@
       Visible = False
       ToolTip = ("Project")
       Action = "project"
-      Text = ("")
       Picture = Picture["img/16/gambas.png"]
       Toggle = True
       Value = True
@@ -644,7 +602,6 @@
       Visible = False
       ToolTip = ("Properties sheet")
       Action = "property"
-      Text = ("")
       Picture = Picture["icon:/small/edit"]
       Toggle = True
     }
@@ -653,7 +610,6 @@
       Visible = False
       ToolTip = ("Console")
       Action = "console"
-      Text = ("")
       Picture = Picture["icon:/small/terminal"]
       Toggle = True
     }
@@ -661,7 +617,6 @@
       MoveScaled(70,0,4,4)
       ToolTip = ("Find & replace")
       Action = "find"
-      Text = ("")
       Picture = Picture["icon:/small/find"]
       Toggle = True
     }
@@ -672,56 +627,48 @@
       MoveScaled(75,0,4,4)
       ToolTip = ("Compile")
       Action = "compile"
-      Text = ("")
       Picture = Picture["icon:/small/make"]
     }
     { btnCompileAll ToolButton
       MoveScaled(79,0,4,4)
       ToolTip = ("Compile all")
       Action = "compile-all"
-      Text = ("")
       Picture = Picture["icon:/small/make-all"]
     }
     { btnGo ToolButton
       MoveScaled(83,0,4,4)
       ToolTip = ("Run")
       Action = "start"
-      Text = ("")
       Picture = Picture["icon:/small/play"]
     }
     { btnPause ToolButton
       MoveScaled(87,0,4,4)
       ToolTip = ("Pause")
       Action = "pause"
-      Text = ("")
       Picture = Picture["icon:/small/pause"]
     }
     { btnStop ToolButton
       MoveScaled(91,0,4,4)
       ToolTip = ("Stop")
       Action = "stop"
-      Text = ("")
       Picture = Picture["icon:/small/stop"]
     }
     { btnStep ToolButton
       MoveScaled(95,0,4,4)
       ToolTip = ("Step")
       Action = "step"
-      Text = ("")
       Picture = Picture["icon:/small/end"]
     }
     { btnForward ToolButton
       MoveScaled(99,0,4,4)
       ToolTip = ("Forward")
       Action = "forward"
-      Text = ("")
       Picture = Picture["icon:/small/forward"]
     }
     { btnFrom ToolButton
       MoveScaled(103,0,4,4)
       ToolTip = ("Finish current function")
       Action = "return"
-      Text = ("")
       Picture = Picture["icon:/small/eject"]
     }
     { btnUntil ToolButton mnuUntil
@@ -729,7 +676,6 @@
       MoveScaled(107,0,4,4)
       ToolTip = ("Run until current line")
       Action = "until"
-      Text = ("")
       Picture = Picture["icon:/small/start"]
     }
     { btnWatch ToolButton mnuWatch
@@ -737,14 +683,12 @@
       MoveScaled(111,0,4,4)
       ToolTip = ("Watch expression")
       Action = "watch"
-      Text = ("")
       Picture = Picture["icon:/small/watch"]
     }
     { btnBreakpoint ToolButton
       MoveScaled(115,0,4,4)
       ToolTip = ("Toggle breakpoint")
       Action = "break"
-      Text = ("")
       Picture = Picture["icon:/small/flag"]
       Toggle = True
     }
@@ -752,7 +696,6 @@
       MoveScaled(119,0,4,4)
       ToolTip = ("Show menu bar")
       Action = "hide-menubar"
-      Text = ("")
       Picture = Picture["img/16/menu.png"]
     }
   }
@@ -827,14 +770,12 @@
       }
     }
   }
-  { timMessage #Timer
-    #X = 665
-    #Y = 84
-    Delay = 2000
-  }
   { timOpen #Timer
-    #X = 658
-    #Y = 154
+    #MoveScaled(96,11)
+  }
+  { timMessage #Timer
+    #MoveScaled(96,21)
+    Delay = 2000
   }
   { panMessage Panel
     MoveScaled(1,77,53,5)
@@ -1143,7 +1084,7 @@
 
 { Toolbars
   { Toolbar main
-    Text = ""
+    Text = "ToolBar1"
     List = "control,new-project,open-project,save-project,save-project-as,project-property,refresh-project,option,shortcut,translate,archive,exec,install,project,property,console,find,compile,compile-all,start,pause,stop,step,forward,return,until,watch,break,hide-menubar"
     Default = "new-project,open-project,save-project,save-project-as,project-property,option,|,translate,exec,|,find,|,compile,compile-all,start,pause,stop,step,forward,return,until,watch,break,hide-menubar"
   }

@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,92,74)
+  MoveScaled(0,0,92,82)
   Text = ("New file")
   Icon = Picture["icon:/small/new"]
   Persistent = True
@@ -23,131 +23,156 @@
       Spacing = True
       { lstType ListContainer
         MoveScaled(1,1,32,52)
-        { panModule HBox
-          MoveScaled(0,0,39,6)
+        { panModule HBox panType
+          Name = "panModule"
+          MoveScaled(0,0,39,5)
           Tag = "module"
           Spacing = True
-          Margin = True
+          Padding = 4
           { PictureBox2 PictureBox
-            MoveScaled(1,1,4,4)
+            MoveScaled(1,1,3,3)
             Picture = Picture["img/32/module.png"]
             Stretch = True
             Alignment = Align.Center
           }
           { Label6 Label
-            MoveScaled(7,1,25,4)
+            MoveScaled(5,1,25,3)
             Text = ("Module")
           }
         }
-        { HBox1 HBox
-          MoveScaled(0,6,39,6)
+        { HBox1 HBox panType
+          Name = "HBox1"
+          MoveScaled(0,5,39,5)
           Tag = "class"
           Spacing = True
-          Margin = True
+          Padding = 4
           { PictureBox1 PictureBox
-            MoveScaled(1,1,4,4)
+            MoveScaled(1,1,3,3)
             Picture = Picture["img/32/class.png"]
             Stretch = True
             Alignment = Align.Center
           }
           { Label1 Label
-            MoveScaled(7,1,25,4)
+            MoveScaled(5,1,25,3)
             Text = ("Class")
           }
         }
-        { panForm HBox
-          MoveScaled(0,12,39,6)
+        { panForm HBox panType
+          Name = "panForm"
+          MoveScaled(0,10,39,5)
           Tag = "form"
           Spacing = True
-          Margin = True
+          Padding = 4
           { PictureBox3 PictureBox
-            MoveScaled(1,1,4,4)
+            MoveScaled(1,1,3,3)
             Picture = Picture["img/32/form.png"]
             Stretch = True
             Alignment = Align.Center
           }
           { Label2 Label
-            MoveScaled(7,1,25,4)
+            MoveScaled(5,1,25,3)
             Text = ("Form")
           }
         }
-        { panWebPage HBox
-          MoveScaled(0,18,39,6)
+        { panWebPage HBox panType
+          Name = "panWebPage"
+          MoveScaled(0,15,39,5)
           Tag = "webpage"
           Spacing = True
-          Margin = True
+          Padding = 4
           { PictureBox8 PictureBox
-            MoveScaled(1,1,4,4)
-            Picture = Picture["icon:/48/html"]
+            MoveScaled(1,1,3,3)
+            Picture = Picture["icon:/large/html"]
             Stretch = True
             Alignment = Align.Center
           }
           { Label15 Label
-            MoveScaled(7,1,25,4)
+            MoveScaled(5,1,25,3)
             Text = ("WebPage")
           }
         }
-        { HBox5 HBox
-          MoveScaled(0,25,30,6)
+        { panWebPage2 HBox panType
+          Name = "panWebPage2"
+          MoveScaled(0,20,39,5)
+          Tag = "report"
+          Spacing = True
+          Padding = 4
+          { PictureBox9 PictureBox
+            MoveScaled(1,1,3,3)
+            Picture = Picture["icon:/large/print"]
+            Stretch = True
+            Alignment = Align.Center
+          }
+          { Label16 Label
+            MoveScaled(5,1,25,3)
+            Text = ("Report")
+          }
+        }
+        { HBox5 HBox panType
+          Name = "HBox5"
+          MoveScaled(0,27,31,5)
           Tag = "image"
           Spacing = True
-          Margin = True
+          Padding = 4
           { PictureBox4 PictureBox
-            MoveScaled(1,1,4,4)
-            Picture = Picture["icon:/48/image"]
+            MoveScaled(1,1,3,3)
+            Picture = Picture["icon:/large/image"]
             Stretch = True
             Alignment = Align.Center
           }
           { Label3 Label
-            MoveScaled(7,1,16,4)
+            MoveScaled(6,1,16,3)
             Text = ("Image")
           }
         }
-        { HBox4 HBox
-          MoveScaled(0,31,39,6)
+        { HBox4 HBox panType
+          Name = "HBox4"
+          MoveScaled(0,32,39,5)
           Tag = "text"
           Spacing = True
-          Margin = True
+          Padding = 4
           { PictureBox5 PictureBox
-            MoveScaled(1,1,4,4)
-            Picture = Picture["icon:/48/text"]
+            MoveScaled(1,1,3,3)
+            Picture = Picture["icon:/large/text"]
             Stretch = True
             Alignment = Align.Center
           }
           { Label4 Label
-            MoveScaled(7,1,25,4)
+            MoveScaled(5,1,25,3)
             Text = ("Text")
           }
         }
-        { HBox7 HBox
-          MoveScaled(0,37,39,6)
+        { HBox7 HBox panType
+          Name = "HBox7"
+          MoveScaled(0,37,39,5)
           Tag = "html"
           Spacing = True
-          Margin = True
+          Padding = 4
           { PictureBox6 PictureBox
-            MoveScaled(1,1,4,4)
-            Picture = Picture["icon:/48/html"]
+            MoveScaled(1,1,3,3)
+            Picture = Picture["icon:/large/html"]
             Stretch = True
             Alignment = Align.Center
           }
           { Label5 Label
-            MoveScaled(7,1,25,4)
+            MoveScaled(5,1,25,3)
             Text = ("HTML file")
           }
         }
-        { HBox2 HBox
-          MoveScaled(0,44,39,6)
+        { HBox2 HBox panType
+          Name = "HBox2"
+          MoveScaled(0,42,39,5)
           Tag = "css"
           Spacing = True
-          Margin = True
+          Padding = 4
           { PictureBox7 PictureBox
-            MoveScaled(1,1,4,4)
-            Picture = Picture["icon:/48/html"]
+            MoveScaled(1,1,3,3)
+            Picture = Picture["icon:/large/html"]
             Stretch = True
             Alignment = Align.Center
           }
           { Label12 Label
-            MoveScaled(7,1,25,4)
+            MoveScaled(5,1,25,3)
             Text = ("Style sheet")
           }
         }
@@ -163,7 +188,7 @@
         }
         { txtName TextBox
           MoveScaled(0,3,26,4)
-          Text = ("")
+          Text = ("txtName")
         }
         { lblOption Label
           MoveScaled(0,7,25,4)
@@ -197,7 +222,7 @@
           }
           { btnLinked ToggleButton
             MoveScaled(27,0,3,9)
-            Text = ("")
+            Text = ("btnLinked")
             Picture = Picture["img/32/linked.png"]
             Value = True
           }
@@ -207,7 +232,7 @@
           }
           { cmbImageType ComboBox
             MoveScaled(13,10,17,4)
-            Text = ("")
+            Text = ("cmbImageType")
             ReadOnly = True
             List = [("PNG"), ("XPM"), ("GIF")]
           }
@@ -237,7 +262,7 @@
           }
           { cmbParent ComboBox
             MoveScaled(17,0,25,4)
-            Text = ("")
+            Text = ("cmbParent")
             ReadOnly = True
           }
           { chkExported CheckBox

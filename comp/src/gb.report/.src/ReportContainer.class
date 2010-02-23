@@ -4,6 +4,10 @@ Export
 Create Private 
 Inherits ReportFrame
 
+Public Const _IsContainer As Boolean = True
+Public Const _Group As String = "Container"
+Public Const _Properties As String = "*,Spacing"
+
 Private $aChild As New Object[]
 Private $fSpacing As Float
 'PRIVATE $fPadding AS Float

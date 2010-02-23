@@ -290,15 +290,15 @@
       Text = ("Show components in beta version")
     }
     { lstComponent ListContainer
-      Move(7,35,588,434)
+      Move(7,35,560,245)
       Expand = True
     }
     { HBox14 HBox
-      Move(7,490,588,28)
+      Move(7,287,588,28)
       { btnHelp Button
         Move(0,0,245,28)
         Text = ("About &component...")
-        Picture = Picture["icon:/small/help"]
+        Picture = Picture["icon:/small/up"]
       }
       { Panel3 Panel
         Move(273,0,49,28)
@@ -308,6 +308,17 @@
         Move(448,0,105,28)
         Text = ("&Reset")
         Picture = Picture["icon:/small/undo"]
+      }
+    }
+    { panAboutComponent Panel
+      Move(7,322,588,196)
+      Visible = False
+      Expand = True
+      Arrangement = Arrange.Vertical
+      Border = Border.Plain
+      { webAboutComponent WebView
+        Move(14,49,168,133)
+        Expand = True
       }
     }
     Index = 3

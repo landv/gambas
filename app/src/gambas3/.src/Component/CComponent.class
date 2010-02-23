@@ -11,7 +11,7 @@ Public Const UNSTABLE As Integer = 2
 Public Key As String
 Public Name As String
 Public Authors As New String[]
-Public Type As String
+'Public Type As String
 Public Hiddens As New String[]
 Public Controls As New String[]
 'Public Containers As New String[]
@@ -27,6 +27,7 @@ Public State As Integer
 Public SortKey As Integer
 Public User As Boolean
 Public Version As String
+Public Family As String
 
 Static Public Features As New Collection
 
@@ -271,8 +272,8 @@ Static Private Sub InitComponent(sFile As String, bUser As Boolean)
           '   .Name = sLig
           If sKey = "Author" Or sKey = "Authors" Then
             .Authors = Split(sLig)
-          Else If sKey = "Type" Then
-            .Type = sLig
+          'Else If sKey = "Type" Then
+          '  .Type = sLig
           ' Else If sKey = "Group" Then
           '   sGroup = sLig
           ' Else If sKey = "Hidden" Then
@@ -430,7 +431,7 @@ Static Private Sub CreateClass(sClass As String, sParent As String, sComp As Str
 
   hComp = All[sComp]
   If hComp Then  
-    If hComp.Type Then Classes[hComp.Type &/ sClass] = hClass
+    'If hComp.Type Then Classes[hComp.Type &/ sClass] = hClass
     If sClass <> "." Then hComp.ClassList.Add(sClass)
   End If
   
@@ -637,6 +638,7 @@ Static Public Sub Exit()
 
   All = Null
   Classes = Null
+  CModule.Exit
 
 End
 
@@ -1065,11 +1067,11 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
       cSymbol = New Collection(gb.IgnoreCase)
       hPClass.Scan = cSymbol
       If hPForm Then
-        For Each hSymbol In CComponent.Classes["Form"].Symbols
+        For Each hSymbol In CComponent.Classes[hPForm.Family].Symbols
           cSymbol[hSymbol.Name] = hSymbol
         Next
         ScanForm(hPForm, cSymbol)
-        hPClass.ParentClass = "Form"
+        hPClass.ParentClass = hPForm.Family
       Endif
       ScanClass(hPClass, cSymbol, False, IsNull(hPForm))
     Endif
@@ -1090,6 +1092,8 @@ Static Public Sub Reset()
   For Each hComponent In All
     hComponent.Loaded = False
   Next
+  
+  CModule.Reset
 
   Classes = New Collection(gb.IgnoreCase)
 

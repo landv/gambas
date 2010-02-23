@@ -152,6 +152,7 @@
 
 #define MENU_DESCRIPTION \
 	GB_CONSTANT("_IsControl", "b", TRUE), \
+	GB_CONSTANT("_IsContainer", "b", TRUE), \
 	GB_CONSTANT("_Family", "s", "Form"), \
 	GB_CONSTANT("_Properties", "s", CMENU_PROPERTIES), \
 	GB_CONSTANT("_DefaultEvent", "s", "Click")

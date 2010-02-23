@@ -591,7 +591,6 @@ End
 Public Sub Exit()
 
   CRecentFile.Exit
-  CModule.Exit
   CComponent.Exit
 
 End
@@ -699,7 +698,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
       sExt = File.Ext(sPath)
       Select Case sExt
       
-        Case "form", "class", "module", "webpage"
+        Case "form", "class", "module", "webpage", "report"
           If IsSourcePath(sPath) Then 
             sModule = sExt
             sIcon = sExt & "-" & iSize
@@ -1370,6 +1369,7 @@ Public Function LoadFile(sPath As String) As Object
 
   Dim hForm As Object
   Dim bError As Boolean
+  Dim sType As String
   'DIM hActive AS Object
 
   hForm = Files[sPath]
@@ -1388,13 +1388,15 @@ Public Function LoadFile(sPath As String) As Object
 
     If IsSourcePath(sPath) Then
 
-      Select Case File.Ext(sPath)
+      sType = File.Ext(sPath)
+
+      Select Case sType
   
         Case "module", "class"
           hForm = New FEditor(sPath)
   
-        Case "form"
-          If HasModule("form") Then 
+        Case "form", "report"
+          If HasModule(sType) Then 
             hForm = New FForm(sPath)
           Endif
           
@@ -2864,7 +2866,6 @@ End
 Public Sub InstallComponent()
   
   Dim sDir As String = Component.UserPath
-  Dim hExportInfo As CExportInfo
   Dim sClass As String
   Dim sIcon As String
   
@@ -3684,8 +3685,6 @@ Public Sub RefreshLibrary(Optional bForce As Boolean)
     For Each sLib In Libraries
       CComponent.All[sLib].Load
     Next
-    
-    CModule.InitFromProject()
     
     FToolBox.RefreshToolbar(bForce)
     FCompletion.RefreshLibrary

@@ -7,6 +7,7 @@ Public Const TYPE_SYMBOL As Integer = 3
 Public Const TYPE_EVENT As Integer = 4
 Public Const TYPE_KEYWORD As Integer = 5
 Public Const TYPE_SPECIAL As Integer = 6
+Public Const TYPE_COMPONENT As Integer = 7
 
 Private Const ROOT_URL As String = "http://gambasdoc.org/help"
 
@@ -95,6 +96,7 @@ Public Sub GotoComponent(sComp As String)
   
   sLink = "help/comp" &/ FormatName(sComp)
   Project.OpenWebPage(GetPath(sLink) & ".html")
+  FHelpBrowser.Main
   
 End
 
@@ -361,6 +363,7 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
   Dim cSymbol As Collection
   Dim hSymbol As CSymbolInfo
   Dim hClass As CClassInfo
+  Dim hComp As CComponent
   Dim sUrl As String
   Dim sHtml As String
   Dim sLang As String
@@ -401,7 +404,7 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
   Else If iType = TYPE_CLASS Or If iType = TYPE_CONTROL Then
   
     Try hClass = CComponent.Classes[sSymbol]
-    If hclass Then 
+    If hClass Then 
       sUrl = hClass.GetHelpURL()
     Else If Project.GetClasses().Exist(sSymbol) Then
       sHtml = GetProjectClassHelpHTML(sSymbol)
@@ -410,6 +413,11 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
   Else If iType = TYPE_SPECIAL Then
       
     sUrl = MHelp.GetSpecialURL(sSymbol)
+    
+  Else If iType = TYPE_COMPONENT
+  
+    Try hComp = CComponent.All[sSymbol]
+    If hComp Then sUrl = GetClassURL(sSymbol, "")
     
   Endif
   
@@ -447,6 +455,7 @@ End
 '' - =TYPE_EVENT= for an event.
 '' - =TYPE_KEYWORD= for a language keyword.
 '' - =TYPE_SPECIAL= for a special method.
+'' - =TYPE_COMPONENT= for a component help page.
 
 Public Sub ShowHelpBrowserWith(hWebView As WebView, iType As Integer, sSymbol As String, Optional sClass As String, Optional sMore As String)
   

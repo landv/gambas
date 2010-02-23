@@ -1,7 +1,7 @@
 ' Gambas class file
 
 Public Path As String
-Public FormType As String
+Public Family As String
 
 Public Master As CControl
 Public Selection As New Collection
@@ -91,7 +91,8 @@ Public Sub _new(sPath As String)
   Path = sPath
   Me.Name = File.BaseName(sPath)
 
-  FormType = "Form" 'File.Ext(sPath)
+  Family = File.Ext(sPath)
+  Mid$(Family, 1, 1) = UCase(Left(Family))
   
   Container = panBorder
 
@@ -436,7 +437,9 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
           Try hCtrl.Resize(iW, iH, True)
         Endif
 
-        If Error Then Print "Error: Syntax error: "; sLine
+        If Error Then 
+          Print "Error: Syntax error: "; sLine
+        Endif
 
       Else 
       
@@ -673,7 +676,7 @@ Private Sub SaveOne(hCtrl As CControl)
   If IsNull(hCtrl) Then Return
 
   sName = hCtrl.Name
-  If sName = Me.Name Then sName = FormType
+  If sName = Me.Name Then sName = Family
 
   sGroup = hCtrl.GetProperty(CPropertyInfo.EVENT_NAME)
   bPublic = hCtrl.Public
@@ -1921,8 +1924,8 @@ Private Sub CreateMenu()
       cCtrl = CComponent.Classes[Master.Kind].Events
       sGroup = Master.GetGroup()
     Else
-      cCtrl = CComponent.Classes[FormType].Events
-      sGroup = FormType
+      cCtrl = CComponent.Classes[Family].Events
+      sGroup = Family
     Endif
 
     If cCtrl Then
