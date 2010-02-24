@@ -964,6 +964,13 @@ void CLASS_make_description(CLASS *class, CLASS_DESC *desc, int n_desc, int *fir
 
 void CLASS_calc_info(CLASS *class, int n_event, int size_dynamic, bool all, int size_static)
 {
+	// If the class is native and static, then size_dynamic == 0. But if we want to inherit 
+	// the static class, and make the inherited class dynamic, then class->off_event must 
+	// start after the object header. So we fix size_dynamic accordingly.
+	
+	if (all && size_dynamic == 0)
+		size_dynamic = sizeof(OBJECT);
+	
 	if (class->parent)
 	{
 		if (all)

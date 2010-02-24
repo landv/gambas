@@ -624,7 +624,7 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
 		#ifdef DEBUG
 		fprintf(stderr, "Dynamic #%d: %d\n", i, var->pos);
 		#endif
-		pos += sizeof_ctype(class, var->type);
+		pos += size; //sizeof_ctype(class, var->type);
 	}
 	#ifdef OS_64BITS
 	info->s_dynamic = (pos + 7) & ~7;

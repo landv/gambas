@@ -303,6 +303,8 @@ Static Public Function _get(Key As String) As Picture
       Endif 
       
       sImagePath = Subst(sTemplate, iSize)
+      If Not Exist(File.Dir(sImagePath)) Then Continue
+      
       Try hPict = Picture[sImagePath]
       If hPict Then Return hPict
       
