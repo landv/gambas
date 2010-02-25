@@ -20,21 +20,21 @@ Public Sub Test1()
 
   Report.Padding = "2 cm"
   hHBox = New ReportHBox(Report)
-  hHBox.Border = ReportBorder.Solid
+  hHBox.Border = Line.Solid
   hHBox.BorderWidth = 1
   hHBox.Height = "30 mm"
   
   hHBox = New ReportHBox(Report)
-  hHBox.Border = ReportBorder.Solid
+  hHBox.Border = Line.Solid
   hHBox.BorderWidth = 1
   hHBox.Height = "30 %"
   
   
   hHBox = New ReportHBox(Report)
-  hHBox.Border = ReportBorder.Solid
+  hHBox.Border = Line.Solid
   hHBox.BorderWidth = 6
   hHBox.Expand = True
-  hHBox.Border = ReportBorder.Solid
+  hHBox.Border = Line.Solid
   
   lblcoucou = New ReportLabel(hHBox)
   lblcoucou.Text = "coucou"
@@ -58,7 +58,7 @@ Public Sub Test2()
   hHBox = New ReportHBox(hCloner)
   
   hHBox.Height = "2cm"
-  hHBox.Border = ReportBorder.Solid
+  hHBox.Border = Line.Solid
   
   hCloner.Count = 3
   
@@ -84,7 +84,7 @@ hLab = New ReportLabel(Report)
 hLab.Text = "MY FRIENDS FIRST NAME"     'Set the text
 hLab.Font = Font["Arial,+8,"]           'Set The Font
 hLab.Alignment = Align.Center           'Set The aligment
-hLab.Border = ReportBorder.Solid
+hLab.Border = Line.Solid
 'hLab.Color = Color.LightGray
 hlab.Brush = report.Color(Color.Gray)
 
@@ -102,7 +102,7 @@ hVBox = New ReportVBox(hCloner)
 'hVBox.Height = "2 cm"                   'Force the height of the hBox
 hVBox.Spacing = "2 mm"
 hVBox.Padding = "1 mm"
-hVBox.Border = ReportBorder.None
+hVBox.Border = Line.None
 hVBox.Autoresize = True
 '* An HBox to arrange the components horizontaly (for firstnames)
 hHBox = New ReportHBox(hVBox)
@@ -174,7 +174,7 @@ End
 Public Sub DrawingArea1_Draw()
   
   report.Scale = Slider1.Value / 100.0
-   Report.Draw(1)
+   Report.Paint(1)
 
 End
 
@@ -183,14 +183,14 @@ Public Function UnitsToPixels(Value As Float) As Integer
   
   Dim f As Float
   
-  f = Units.GetFactorUnitToInch("cm") * Report.Resolution
+  f = Units.GetFactorUnitToInch("cm") * Desktop.Resolution
   
   Return Value * f 
 End
 
 Public Sub Form_show()
 '   report.Size = "A4"
-report.Layout
+'report.Layout
   RadioButton1.Value = True
   Test1
   Slider1_Change
@@ -204,7 +204,7 @@ Public Sub Test4()
   Dim vCont As ReportVBox
   Dim txt As ReportLabel
   Dim spetxt As ReportSpecialField
-  Dim img As ReportFrame
+  Dim img As ReportImage
   Dim i, j As Integer
   Dim hCont2 As ReportContainer
   Dim vRef As ReportVBox
@@ -220,21 +220,21 @@ Public Sub Test4()
   
 
   
-  Report.Resolution = Desktop.Resolution
+  'Report.Resolution = Desktop.Resolution
   report.size = "A4"
   report.orientation = report.Portrait
   'Report.Units = Units.cm 
   Report.Padding = "1 cm"
   Object.Attach(report, Me, "Report")
   Report.Spacing = "0.2 cm"
-  Report.Border = ReportBorder.Solid
+  Report.Border = Line.Solid
   Report.Tag = "Report"
   'Entete
     
   hCont = New ReportHBox(Report)
   hCont.Height = "3 cm"
-  img = New ReportFrame(hCont)
-  img.Brush = report.Image("new-logo.png", "1", "1")
+  img = New ReportImage(hCont)
+  img.Path = "new-logo.png"
   img.Width = "3 cm"
 
   'img.Height = "3 cm"
@@ -314,7 +314,7 @@ Public Sub Test4()
 
 
     'txt.Width = 2
-    txt.Border = ReportBorder.Solid
+    txt.Border = Line.Solid
     'txt.Brush = Report.Color(Color.LightGray)
     'txt.FillStyle = fill.Solid
     
@@ -322,7 +322,7 @@ Public Sub Test4()
     vRef.Expand = True
     
 '    vRef = NEW ReportVBox(vcont)
-    vRef.Border = ReportBorder.Solid
+    vRef.Border = Line.Solid
     vRef.Padding = "0.1 cm"
     vRef.Spacing = "0.1 cm"
     'vRef.Height = 5
@@ -337,13 +337,13 @@ Public Sub Test4()
     txt.Text = "Designation"
     txt.Alignment = Align.Center
     txt.Font.Italic = True
-    txt.Border = ReportBorder.Solid
+    txt.Border = Line.Solid
     txt.Brush = report.Color(Color.LightGray)
 
     
     vDes = New ReportVBox(vCont)
     vDes.Expand = True
-    vDes.Border = ReportBorder.Solid
+    vDes.Border = Line.Solid
     vDes.Padding = "0.1 cm"
     vDes.Spacing = "0.1 cm"
     vDes.Tag = "* des"
@@ -357,13 +357,13 @@ Public Sub Test4()
     txt.Alignment = Align.Center
     txt.Font.Italic = True
     'txt.Width = "3,5 cm"
-    txt.Border = ReportBorder.Solid
+    txt.Border = Line.Solid
     txt.Brush = report.Color(Color.Gray)
 
     
     vQt = New ReportVBox(vCont)
      vQt.Expand = True
-    vQt.Border = ReportBorder.Solid
+    vQt.Border = Line.Solid
     vQt.Padding = "0.1 cm"
     vQt.Spacing = "0.1 cm"
     vQt.Tag = "* Qt"
@@ -376,13 +376,13 @@ Public Sub Test4()
     txt.Alignment = Align.Center
     txt.Font.Italic = True
     'txt.Width = "3,5 cm"
-    txt.Border = ReportBorder.Solid
+    txt.Border = Line.Solid
     txt.Brush = report.Color(Color.Gray)
 
     
     vPU = New ReportVBox(vCont)
     vPU.Expand = True
-    vPU.Border = ReportBorder.Solid
+    vPU.Border = Line.Solid
     vPu.Padding = "0.1 cm"
     vPU.Spacing = "0.1 cm"
   
@@ -395,13 +395,13 @@ Public Sub Test4()
     txt.Alignment = Align.Center
     txt.Font.Italic = True
     'txt.Width = "3,5 cm"
-    txt.Border = ReportBorder.Solid
+    txt.Border = Line.Solid
     txt.Brush = report.Color(Color.LightGray)
 
     
     vTot = New ReportVBox(vCont)
     vTot.Expand = True
-    vTot.Border = ReportBorder.Solid
+    vTot.Border = Line.Solid
     vTot.Padding = "0.1 cm"
     vTot.Spacing = "0.1 cm"
     vTot.Tag = "Total"
@@ -409,7 +409,7 @@ Public Sub Test4()
   hCont = New ReportHBox(Report)
   hCont.Height = "1 cm"
   hCont.Brush = report.Color(Color.LightGray)
-  hCont.Border = ReportBorder.Solid
+  hCont.Border = Line.Solid
   hCont.Tag = "Container de total"
   
   spetxt = New ReportSpecialField(hCont)
@@ -446,7 +446,7 @@ Public Sub Test4()
 End
 
 Public Sub Slider1_Change()
-   DrawingArea1.Width = UnitsToPixels(Report._Width) * Slider1.Value / 100
+  DrawingArea1.Width = UnitsToPixels(Report._Width) * Slider1.Value / 100
   DrawingArea1.Height = UnitsToPixels(Report._Height) * Slider1.Value / 100
   DrawingArea1.Refresh
   Me.Title = "gb.Report Example [" & Slider1.Value & "%]"

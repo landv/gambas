@@ -49,6 +49,33 @@ Bottom
 C
 i
 35
+#Line
+
+CO
+None
+C
+i
+0
+Solid
+C
+i
+1
+Dash
+C
+i
+2
+Dot
+C
+i
+3
+DashDot
+C
+i
+4
+DashDotDot
+C
+i
+5
 #Report
 ReportVBox
 CA
@@ -84,10 +111,6 @@ Width
 p
 s
 
-Resolution
-p
-i
-
 Scale
 p
 f
@@ -108,14 +131,10 @@ Layout
 m
 
 
-Draw
+Paint
 m
 
 (Page)i
-Mosaic
-m
-
-(Range)s(Spacing)s
 Clear
 m
 
@@ -136,33 +155,6 @@ Color
 m
 ReportBrush
 (iColor)i
-#ReportBorder
-
-C
-None
-C
-i
-0
-Solid
-C
-i
-1
-Dash
-C
-i
-2
-DashDot
-C
-i
-4
-DashDotDot
-C
-i
-5
-Dot
-C
-i
-3
 #ReportBrush
 
 C
@@ -236,15 +228,15 @@ _Free
 m
 
 
-_DrawBefore
+_PaintBefore
 m
 
 (Page)i(X)i(Y)i(hControl)TControl;(VirtualId)i
-_Draw
+_Paint
 m
 
 (Page)i(X)i(Y)i(hControl)TControl;(VirtualId)i
-_DrawAfter
+_PaintAfter
 m
 
 (Page)i(X)i(Y)i(hControl)TControl;(VirtualId)i
@@ -351,15 +343,15 @@ _GetSizeHints
 m
 i
 (AvailableW)i(AvailableH)i(TotalWidth)i(TotalHeight)i
-_DrawBefore
+_PaintBefore
 m
 
 (Page)i(X)i(Y)i(hControl)TControl;(VirtualId)i
-_Draw
+_Paint
 m
 
 (Page)i(X)i(Y)i(hControl)TControl;(VirtualId)i
-_DrawAfter
+_PaintAfter
 m
 
 (Page)i(X)i(Y)i(hControl)TControl;(VirtualId)i
@@ -410,11 +402,11 @@ _GetSizeHints
 m
 TSizeHint
 (AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f
-_DrawBefore
+_PaintBefore
 m
 
 (Page)i(X)i(Y)i(hControl)TControl;(VirtualId)i
-_Draw
+_Paint
 m
 
 (Page)i(X)i(Y)i(hControl)TControl;(VirtualId)i
@@ -424,7 +416,7 @@ f
 (X)f(Y)f(W)f(H)f
 #ReportFrame
 ReportControl
-C
+
 _Properties
 C
 s
@@ -445,15 +437,15 @@ Brush
 p
 ReportBrush
 
-_DrawBefore
+_PaintBefore
 m
 
 (Page)i(X)i(Y)i(hControl)TControl;(VirtualId)i
-_Draw
+_Paint
 m
 
 (Page)i(X)i(Y)i(hControl)TControl;(VirtualId)i
-_DrawAfter
+_PaintAfter
 m
 
 (Page)i(X)i(Y)i(hControl)TControl;(VirtualId)i
@@ -480,6 +472,21 @@ _Free
 m
 
 
+#ReportImage
+ReportControl
+C
+Path
+p
+s
+
+_GetSizeHints
+m
+TSizeHint
+(AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f
+_Paint
+m
+
+(Page)i(X)i(Y)i(hControl)TControl;(VirtualId)i
 #ReportLabel
 ReportFrame
 C
@@ -503,7 +510,7 @@ _GetSizeHints
 m
 TSizeHint
 (AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f
-_Draw
+_Paint
 m
 
 (Page)i(X)i(Y)i(hControl)TControl;(VirtualId)i
@@ -534,7 +541,7 @@ _GetSizeHints
 m
 TSizeHint
 (AvailableW)i(AvailableH)i(TotalWidth)i(TotalHeight)i
-_Draw
+_Paint
 m
 
 (Page)i(X)i(Y)i(hControl)TControl;(VirtualId)i
@@ -568,6 +575,21 @@ _GetSizeHints
 m
 TSizeHint
 (AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f
+_Paint
+m
+
+(Page)i(X)i(Y)i(hControl)TControl;(VirtualId)i
+#ReportSvgImage
+ReportControl
+C
+Path
+p
+s
+
+_GetSizeHints
+m
+TSizeHint
+(AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f
 _Draw
 m
 
@@ -595,7 +617,7 @@ _GetSizeHints
 m
 TSizeHint
 (AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f
-_Draw
+_Paint
 m
 
 (Page)i(X)i(Y)i(hControl)TControl;(VirtualId)i

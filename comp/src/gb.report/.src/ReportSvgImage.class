@@ -1,5 +1,5 @@
 ' Gambas class file
-
+Export
 Inherits ReportControl
 
 
@@ -52,7 +52,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   
 End
 
-Public Sub _Paint(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
+Public Sub _Draw(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
     
       Paint.MoveTo(x + hControl.RealLeft + Me.Padding, y + hControl.RealTop + Me.Padding)
       $hSvgImage.Width = hControl.RealWidth

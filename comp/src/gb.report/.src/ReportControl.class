@@ -188,15 +188,15 @@ Public Sub _GetSizeHints(AvailableW As Integer, AvailableH As Integer, TotalWidt
 End
 
 
-Public Sub _DrawBefore(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
+Public Sub _PaintBefore(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
 
 End
 
-Public Sub _Draw(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
+Public Sub _Paint(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
   
 End
 
-Public Sub _DrawAfter(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
+Public Sub _PaintAfter(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
 
 End
 

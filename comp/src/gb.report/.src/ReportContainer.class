@@ -93,27 +93,27 @@ End
 ' ' 
 ' END
 
-Public Sub _DrawBefore(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
+Public Sub _PaintBefore(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
   Dim hChild As Object
   Dim vi As Integer
   
-  Super._DrawBefore(Page, X, Y, hControl, VirtualId)
+  Super._PaintBefore(Page, X, Y, hControl, VirtualId)
   For Each hChild In Me.Children
     
     vi = VirtualId
     If hControl.VirtualId > -1 Then vi = hControl.VirtualId
     'Draw Before
     If hChild.RelPage = -1 Then        
-     hChild.ctrl._DrawBefore(Page, X + hControl.RealLeft, Y + hControl.RealTop, hChild, vi)
+     hChild.ctrl._PaintBefore(Page, X + hControl.RealLeft, Y + hControl.RealTop, hChild, vi)
     Else If hChild.RelPage + hControl.RealPage = Page Then 
-      hChild.ctrl._DrawBefore(Page, X + hControl.RealLeft, Y + hControl.RealTop, hChild, vi)
+      hChild.ctrl._PaintBefore(Page, X + hControl.RealLeft, Y + hControl.RealTop, hChild, vi)
     Endif 
   
   Next
   
 End
 
-Public Sub _Draw(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
+Public Sub _Paint(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
   Dim hChild As Object
   Dim vi As Integer
 
@@ -122,24 +122,24 @@ Public Sub _Draw(Page As Integer, X As Integer, Y As Integer, hControl As TContr
   If hControl.VirtualId > -1 Then vi = hControl.VirtualId
   
     If hChild.RelPage = -1 Then        
-     hChild.ctrl._Draw(Page, X + hControl.RealLeft, Y + hControl.RealTop, hChild, vi)
+     hChild.ctrl._Paint(Page, X + hControl.RealLeft, Y + hControl.RealTop, hChild, vi)
     Else If hChild.RelPage + hControl.RealPage = Page Then 
-      hChild.ctrl._Draw(Page, X + hControl.RealLeft, Y + hControl.RealTop, hChild, vi)
+      hChild.ctrl._Paint(Page, X + hControl.RealLeft, Y + hControl.RealTop, hChild, vi)
     Endif 
   Next 
   
 End
 
-Public Sub _DrawAfter(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
+Public Sub _PaintAfter(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
   Dim hChild As TControl
   Dim vi As Integer
-  Super._DrawAfter(Page, X, Y, hControl, VirtualId)
+  Super._PaintAfter(Page, X, Y, hControl, VirtualId)
   For Each hChild In Me.Children
     'Draw After
     If hChild.RelPage = -1 Then        
-     hChild.ctrl._DrawAfter(Page, X + hControl.RealLeft, Y + hControl.RealTop, hChild, vi)
+     hChild.ctrl._PaintAfter(Page, X + hControl.RealLeft, Y + hControl.RealTop, hChild, vi)
     Else If hChild.RelPage + hControl.RealPage = Page Then 
-      hChild.ctrl._DrawAfter(Page, X + hControl.RealLeft, Y + hControl.RealTop, hChild, vi)
+      hChild.ctrl._PaintAfter(Page, X + hControl.RealLeft, Y + hControl.RealTop, hChild, vi)
     Endif 
   Next
   

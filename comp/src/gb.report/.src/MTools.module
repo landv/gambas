@@ -1,7 +1,6 @@
 ' Gambas module file
 
 Public PageCount As Integer = 0
-Public ResolutionAffichage As Float '= 72
 'Public ReportZoom As Float '= 1
 Public ReportResolution As Float '= 72
 
@@ -57,13 +56,13 @@ Public Sub GetBorder(iStyle As Integer) As Float[]
   
   Select Case iStyle
   
-    Case ReportBorder.Dash
+    Case Line.Dash
       Return Dash
-    Case ReportBorder.Dot
+    Case Line.Dot
       Return Dot
-    Case ReportBorder.DashDot
+    Case Line.DashDot
       Return DashDot
-    Case ReportBorder.DashDotDot
+    Case Line.DashDotDot
       Return DashDotDot
   End Select
   

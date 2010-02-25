@@ -83,7 +83,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   
 End
 
-Public Sub _Draw(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
+Public Sub _Paint(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
   '$fZoom = MRTools.ReportZoom
   Paint.Brush = Paint.Color(Me.BorderColor)
   

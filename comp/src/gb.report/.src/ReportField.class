@@ -90,14 +90,14 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   
 End
 
-Public Sub _DrawBefore(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
+Public Sub _PaintBefore(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
   $iIndex = VirtualId
   Raise Data
-  Super._DrawBefore(Page, X, Y, hControl, VirtualId)
+  Super._PaintBefore(Page, X, Y, hControl, VirtualId)
   
 End
 
-Public Sub _Draw(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
+Public Sub _Paint(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
   $iIndex = VirtualId
   Raise Data 
     

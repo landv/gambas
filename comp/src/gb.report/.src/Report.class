@@ -15,7 +15,6 @@ Public {Debug} As Boolean = False
 
 Private iCurPage As Integer = 0
 Private $iCount As Integer = -1
-Private $iResolution As Integer = 72
 Private $bLayoutIsDirty As Boolean = True
 Private $fScale As Float = 1.0
 Private $iOrientation As Integer = Portrait
@@ -26,7 +25,6 @@ Private hData As Object
 Property Read Count As Integer
 Property Height As String
 Property Width As String
-Property Resolution As Integer
 Property Scale As Float
 Property Orientation As Integer
 Property Size As String
@@ -34,22 +32,19 @@ Property Size As String
 'EVENT Data()
 
 Public Sub _New()
+
   object.Attach(Me, Me, "Report")
-  $iResolution = Desktop.Resolution
-  'ME.Width = 600
-  'ME.Height = 600
+  SetReportSize
   $hReportTControl.RelPage = 0
   ReportControl._ObjectFromId[Me.id] = Me
   
 End
 
 Public Sub Layout()
-  Dim hprinter As New Printer
   
   If Not $bLayoutIsDirty Then Return 
-  MTools.ReportResolution = $iResolution
-  MTools.ResolutionAffichage = hprinter.Resolution / $iResolution
-  'MRTools.ReportZoom = $fZoom
+  
+  MTools.ReportResolution = Paint.ResolutionX
   SetReportSize()
   $hReportTControl.ctrl = Me
   $iCount = $hReportTControl._SetGeometry(0, 0, Me.Width, Me.Height) + 1
@@ -59,7 +54,7 @@ Public Sub Layout()
 End
 
 
-Public Sub Draw(Page As Integer)
+Public Sub Paint(Page As Integer)
    
    If $bLayoutIsDirty Then Layout()
    
@@ -68,9 +63,9 @@ Public Sub Draw(Page As Integer)
     Endif
     Dec page
     Paint.Scale($fScale, $fScale)
-    Me._DrawBefore(Page, 0, 0, $hReportTControl, -1)
-    Me._Draw(Page, 0, 0, $hReportTControl, -1)
-    Me._DrawAfter(Page, 0, 0, $hReportTControl, -1)
+    Me._PaintBefore(Page, 0, 0, $hReportTControl, -1)
+    Me._Paint(Page, 0, 0, $hReportTControl, -1)
+    Me._PaintAfter(Page, 0, 0, $hReportTControl, -1)
     
 End
 
@@ -79,7 +74,7 @@ Private Sub FillPages(ctrl As ReportContainer)
   Dim hChild As Object
   Dim relHeight As Integer
   For Each hChild In ctrl.Children
-    hChild._Draw(ctrl._Left, ctrl._Top)
+    hChild._Paint(ctrl._Left, ctrl._Top)
     If hChild Is ReportContainer Then FillPages(hChild)
   Next 
 
@@ -122,21 +117,6 @@ Endif
 
 End
 
-
-Private Function Resolution_Read() As Integer
-
-  Return $iResolution
-
-End
-
-Private Sub Resolution_Write(Value As Integer)
-  If $iResolution <> Value Then
-    $iResolution = Value
-    $bLayoutIsDirty = True
-  Endif
-
-End
-
 Private Function Scale_Read() As Float
 
   Return $fScale
@@ -146,35 +126,18 @@ End
 Private Sub Scale_Write(Value As Float)
 
   $fScale = Value
-  'MRTools.ReportZoom = $fZoom
+
 End
 
-Public Sub Mosaic(Range As String, Spacing As String)
-
-  Dim $fTempZ As Float
-  '$fTempZ = $fZoom
-  
-  
-  
-End
-
-' PUBLIC SUB _Data()
+' Public Sub Mosaic(Range As String, Spacing As String)
+' 
+'   Dim $fTempZ As Float
+'   '$fTempZ = $fZoom
 '   
-'   RAISE Data
 '   
-' END
+'   
+' End
 
-' PRIVATE FUNCTION Units_Read() AS Integer
-' 
-'   RETURN $iUnits
-' 
-' END
-' 
-' PRIVATE SUB Units_Write(Value AS Integer)
-' 
-'   $iUnits = Value
-' 
-' END
 
 Private Function Size_Read() As String
 
@@ -236,7 +199,7 @@ Public Sub Clear()
   Super._Free
   iCurPage = 0
   $iCount = -1
-  $iResolution = Desktop.Resolution
+  '$iResolution = Desktop.Resolution
   $bLayoutIsDirty = True
   $fScale = 1.0
   $iOrientation = Portrait
