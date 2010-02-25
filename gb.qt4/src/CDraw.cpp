@@ -208,8 +208,8 @@ static int begin(GB_DRAW *d)
 
 		if (wid->isCached())
 			ret = init_drawing(d, wid->background(), wid->background()->width(), wid->background()->height());
-		//else if (wid->cache)
-		//	ret = init_drawing(d, wid->cache, wid->cache->width(), wid->cache->height());
+		else if (wid->cache)
+			ret = init_drawing(d, wid->cache, wid->cache->width(), wid->cache->height());
 		else
 			ret = init_drawing(d, wid, wid->width(), wid->height());
 			

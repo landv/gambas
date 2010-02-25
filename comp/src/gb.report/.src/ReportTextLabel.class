@@ -3,16 +3,16 @@
 Export
 Inherits ReportFrame
 
-Public Const _Properties As String = "*,Alignment{Align.*}"
+Public Const _Properties As String = "*,Text,Alignment{Align.*}"
+
+Property Text As String
+Property Alignment As Integer
+Property WordWrap As Boolean
 
 Private $bWordWrap As Boolean
-Property WordWrap As Boolean
 Private $sText As String
 Private $iAlignment As Integer = Align.TopNormal
 Private $fZoom As Float
-Property Text As String
-
-Property Alignment As Integer
 
 
 Private Function WordWrap_Read() As Boolean
@@ -92,7 +92,7 @@ Public Sub _Draw(Page As Integer, X As Integer, Y As Integer, hControl As TContr
   'draw.Font.size = draw.Font.size * MRTools.ReportZoom '* MRTools.ResolutionAffichage
   
   'Draw.Clip((x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
-    Paint.Text($sText, (x + hControl.RealLeft + MTools.UnitsToPixels(Me.Padding)), (y + hControl.RealTop + MTools.UnitsToPixels(Me.Padding)), (hControl.RealWidth - 2 * MTools.UnitsToPixels(Me.Padding)), (hControl.RealHeight - 2 * MTools.UnitsToPixels(Me.Padding))) ', $iAlignment)
+    Paint.RichText($sText, (x + hControl.RealLeft + MTools.UnitsToPixels(Me.Padding)), (y + hControl.RealTop + MTools.UnitsToPixels(Me.Padding)), (hControl.RealWidth - 2 * MTools.UnitsToPixels(Me.Padding)), (hControl.RealHeight - 2 * MTools.UnitsToPixels(Me.Padding))) ', $iAlignment)
     'Draw.RichText($sText, (x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (hControl.RealWidth - 2 * MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (hControl.RealHeight - 2 * MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom) ', $iAlignment)
   'Draw.Clip.Enabled = False
 End

@@ -11,6 +11,7 @@ End
 Public Sub IsPainted(hCtrl As CControl) As Boolean
 
   If hCtrl.Kind = "ReportLabel" Then Return True
+  If hCtrl.Kind = "ReportTextLabel" Then Return True
   If hCtrl.Kind = "ReportLine" Then Return True
   
 End
@@ -34,6 +35,12 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
     
       Try Paint.Font = Font[hCtrl["Font"]]
       Paint.Text(hCtrl["Text"], 0, 0, hCtrl.Width, hCtrl.Height, Classes["Align"][hCtrl["Alignment"]].Value)
+      Paint.Fill
+      
+    Case "ReportTextLabel"
+    
+      Try Paint.Font = Font[hCtrl["Font"]]
+      Paint.RichText(hCtrl["Text"], 0, 0, hCtrl.Width, hCtrl.Height, Classes["Align"][hCtrl["Alignment"]].Value)
       Paint.Fill
       
     Case "ReportLine"

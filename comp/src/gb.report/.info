@@ -55,7 +55,7 @@ CA
 _Properties
 C
 s
-*,Resolution,Orientation,Size
+*,Resolution{Range:1;600}=72,Orientation{Report.Portait;Landscape},Size
 _HiddenControls
 C
 s
@@ -72,7 +72,7 @@ Landscape
 C
 i
 1
-count
+Count
 r
 i
 
@@ -578,11 +578,7 @@ C
 _Properties
 C
 s
-*,Alignment{Align.*}
-WordWrap
-p
-b
-
+*,Text,Alignment{Align.*}
 Text
 p
 s
@@ -590,6 +586,10 @@ s
 Alignment
 p
 i
+
+WordWrap
+p
+b
 
 _GetSizeHints
 m

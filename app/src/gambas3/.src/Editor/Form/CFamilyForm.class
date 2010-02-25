@@ -7,6 +7,8 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
   Dim iBorder As Integer
   Dim hCtrl As Control = hCCtrl.Control
   
+  'Debug hCCtrl.Name
+  
   Select hCCtrl.Kind
   
     Case "HBox"

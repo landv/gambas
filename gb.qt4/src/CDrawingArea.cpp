@@ -48,7 +48,7 @@ DECLARE_EVENT(EVENT_draw);
 MyDrawingArea::MyDrawingArea(QWidget *parent) : MyContainer(parent)
 {
 	drawn = 0;
-	//cache = 0;
+	cache = 0;
 	_background = 0;
 	_frozen = false;
 	_event_mask = 0;
@@ -64,7 +64,6 @@ MyDrawingArea::MyDrawingArea(QWidget *parent) : MyContainer(parent)
 	setAttribute(Qt::WA_KeyCompression, false);
 	setAttribute(Qt::WA_NativeWindow, true);
 	setAttribute(Qt::WA_DontCreateNativeAncestors, true);
-	setAttribute(Qt::WA_OpaquePaintEvent, false);
 	
 	//setAttribute(Qt::WA_NoSystemBackground, true);
 	
@@ -134,7 +133,6 @@ void MyDrawingArea::setFrozen(bool f)
 }
 
 
-#if 1
 void MyDrawingArea::paintEvent(QPaintEvent *event)
 {
 	if (_background)
@@ -164,8 +162,11 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 			
 			bool frame = true; //!contentsRect().contains(event->rect());
 			
-			//cache = new QPixmap(r.width(), r.height());
-			//cache->fill(this, r.x(), r.y());
+			if (!isTransparent())
+			{
+				cache = new QPixmap(r.width(), r.height());
+				cache->fill(this, r.x(), r.y());
+			}
 
 			//qDebug("paint: %d %d %d %d", event->rect().x(), event->rect().y(), event->rect().width(), event->rect().height());
 
@@ -183,8 +184,14 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 				p = DRAW_get_current();
 			}
 				
-			//p->translate(-r.x(), -r.y());
+			if (!isTransparent())
+			{
+				p->translate(-r.x(), -r.y());
+			  p->setBrushOrigin(-r.x(), -r.y());
+			}
+			
 			p->setClipRect(r);
+			
 			//p->setClipRegion(event->region().intersect(contentsRect()));
 			//p->setBrushOrigin(-r.x(), -r.y());
 			
@@ -206,13 +213,15 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 			else
 				DRAW_end();
 			
-			//paint.drawPixmap(r.x(), r.y(), *cache);
-			//delete cache;
-			//cache = 0;
+			if (!isTransparent())
+			{
+				paint.drawPixmap(r.x(), r.y(), *cache);
+				delete cache;
+				cache = 0;
+			}
 		}
 	}
 }
-#endif
 
 void MyDrawingArea::setBackground()
 {
@@ -346,6 +355,7 @@ void MyDrawingArea::setPalette(const QPalette &pal)
 void MyDrawingArea::setTransparent(bool on)
 {
 	_transparent = on;
+	setAttribute(Qt::WA_OpaquePaintEvent, !on);
 	updateCache();
 }
 
@@ -362,7 +372,7 @@ BEGIN_METHOD(CDRAWINGAREA_new, GB_OBJECT parent)
 
 	//THIS->widget.background = QColorGroup::Base;
 	THIS->container = wid;
-	THIS->widget.flag.fillBackground = true;
+	THIS->widget.flag.fillBackground = false;
 
 	CWIDGET_new(wid, (void *)_object);
 
@@ -450,8 +460,8 @@ BEGIN_PROPERTY(CDRAWINGAREA_transparent)
 	else
 	{
 		WIDGET->setTransparent(VPROP(GB_BOOLEAN));
-		THIS->widget.flag.fillBackground = !WIDGET->isTransparent();
-		CWIDGET_reset_color((CWIDGET *)THIS);
+		//THIS->widget.flag.fillBackground = !WIDGET->isTransparent();
+		//CWIDGET_reset_color((CWIDGET *)THIS);
 	}
 
 END_PROPERTY

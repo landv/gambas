@@ -1475,6 +1475,7 @@ MyMainWindow::MyMainWindow(QWidget *parent, const char *name, bool embedded) :
 	setAttribute(Qt::WA_KeyCompression, true);
 	setAttribute(Qt::WA_InputMethodEnabled, true);
 	setAttribute(Qt::WA_QuitOnClose, false);
+	setAttribute(Qt::WA_StaticContents, true);
 	setObjectName(name);
 	//setFocusPolicy(ClickFocus);
 

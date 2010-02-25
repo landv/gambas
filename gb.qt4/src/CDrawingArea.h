@@ -60,7 +60,7 @@ public:
 	~MyDrawingArea();
 
 	int drawn;
-	//QPixmap *cache;
+	QPixmap *cache;
 	
 	//void setTransparent(bool);
 	//bool isTransparent(void) { return transparent; }

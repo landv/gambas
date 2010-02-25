@@ -6,41 +6,26 @@
   Icon = Picture["glob2-icon-48x48.png"]
   Resizable = False
   { Panel1 Panel
-    MoveScaled(1,1,29,21)
+    MoveScaled(1,1,29,23)
     Border = Border.Plain
     { Label3 Label
       MoveScaled(1,1,16,4)
       Font = Font["Bold,+2"]
       Text = ("GameOfLife")
     }
-    { Label4 Label
-      MoveScaled(1,8,19,4)
-      Text = ("Written in Gambas")
-      Alignment = Align.Left
-    }
-    { Label5 Label
-      MoveScaled(1,11,24,3)
-      Text = ("by Iman Karim")
-      Alignment = Align.Left
-    }
-    { Label6 Label
-      MoveScaled(1,17,25,3)
-      Font = Font["-1"]
-      Text = ("Thanks to the Gambas team!")
-    }
     { Label7 Label
       MoveScaled(1,4,18,4)
       Text = ("The Game of Life")
       Alignment = Align.Left
     }
-    { Label8 Label
-      MoveScaled(1,14,22,3)
-      Text = ("and Benoît Minisini")
-      Alignment = Align.Left
-    }
     { PictureBox1 PictureBox
       MoveScaled(20,1,8,8)
       Picture = Picture["glob2-icon-48x48.png"]
+    }
+    { Label4 TextLabel
+      MoveScaled(1,10,26,12)
+      Font = Font["-1"]
+      Text = ("Written in Gambas<br>\nby <b>Iman Karim</b><br>\nand <b>Benoît Minisini</b>\n<p>\n<i>Thanks to the Gambas team!</i>")
     }
   }
   { dW DrawingArea
@@ -61,8 +46,7 @@
     Value = 500
   }
   { tmrEvolution #Timer
-    #X = 665
-    #Y = 490
+    #MoveScaled(39,20)
     Delay = 300
   }
   { togEvolution ToggleButton

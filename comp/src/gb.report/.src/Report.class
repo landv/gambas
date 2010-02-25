@@ -4,7 +4,7 @@ Create Static
 Export
 Inherits ReportVBox
 
-Public Const _Properties As String = "*,Resolution,Orientation,Size"
+Public Const _Properties As String = "*,Resolution{Range:1;600}=72,Orientation{Report.Portait;Landscape},Size"
 Public Const _HiddenControls As String = "Report,ReportControl,ReportContainer"
 Public Const _IsForm As Boolean = True
 
@@ -23,18 +23,13 @@ Private $sSize As String = "A4"
 Private $hReportTControl As New TControl
 Private hData As Object
 
-Property Read count As Integer
+Property Read Count As Integer
 Property Height As String
 Property Width As String
 Property Resolution As Integer
 Property Scale As Float
 Property Orientation As Integer
 Property Size As String
-
-
-
-
-
 
 'EVENT Data()
 
@@ -91,7 +86,7 @@ Private Sub FillPages(ctrl As ReportContainer)
 End
 
 
-Private Function count_Read() As Integer
+Private Function Count_Read() As Integer
   
   If $bLayoutIsDirty Then Layout() '$iCount = -1
   

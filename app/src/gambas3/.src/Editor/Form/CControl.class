@@ -500,33 +500,37 @@ _DO_NOT_APPLY:
   '  ENDIF
   'ENDIF
   
-  If hProp.Coord Then
+  If $cValue[sProp] <> vVal Then
 
-    If VirtualCoord Then
-      $cValue[sProp] = vVal
-      Modify
-    Else
-      SetProperty(Mid$(sProp, 2), vVal, bDoNotApply)
-    Endif
-    
-    MoveAllHandle
+    If hProp.Coord Then
   
-  Else
-  
-    If Not VirtualCoord Then
-      If sProp = "X" Or If sProp = "Y" Or If sProp = "Width" Or If sProp = "Height" Then
-        $cValue["#" & sProp] = vVal
+      If VirtualCoord Then
+        $cValue[sProp] = vVal
+        Modify
+      Else
+        SetProperty(Mid$(sProp, 2), vVal, bDoNotApply)
       Endif
-    Endif
-  
-    If $cValue[sProp] <> vVal Then
-      $cValue[sProp] = vVal
-      FProperty.RefreshOne(Me, sProp)
-      Modify
+      
+      MoveAllHandle
+    
+    Else
+    
+        $cValue[sProp] = vVal
+        FProperty.RefreshOne(Me, sProp)
+        Modify
+        
+        If Not VirtualCoord Then
+          If sProp = "X" Or If sProp = "Y" Or If sProp = "Width" Or If sProp = "Height" Then
+            $cValue["#" & sProp] = vVal
+            Object.SetProperty(Control, sProp, vVal)
+            MoveAllHandle
+          Endif
+        Endif
+        
     Endif
   
   Endif
-
+  
   If IsNull(Parent) Then
     Select Case sProp
       Case "#Width", "#W", "#Height", "#H"
