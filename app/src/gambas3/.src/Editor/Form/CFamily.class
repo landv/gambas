@@ -27,14 +27,18 @@ Static Public Sub Exit()
   
 End
 
+'' If a control must be drawn with a painted DrawingArea
 Public Sub IsPainted(hCtrl As CControl) As Boolean
   
 End
 
+'' If a control must be drawn with a transparent DrawingArea
 Public Sub IsTransparent(hCtrl As CControl) As Boolean
   
 End
 
+'' Draw event implementation of a specific control
+'' Return TRUE if the control is not managed: then a default frame with the control icon and the control name will be drawn.
 Public Sub DrawControl(hCtrl As CControl) As Boolean
 
   Return True
