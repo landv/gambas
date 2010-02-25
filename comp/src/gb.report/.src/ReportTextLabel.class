@@ -3,12 +3,12 @@
 Export
 Inherits ReportFrame
 
-Public Const _Properties As String = "*,Alignment"
+Public Const _Properties As String = "*,Alignment{Align.*}"
 
 Private $bWordWrap As Boolean
 Property WordWrap As Boolean
 Private $sText As String
-Private $iAlignment As Integer '= Align.Center
+Private $iAlignment As Integer = Align.TopNormal
 Private $fZoom As Float
 Property Text As String
 

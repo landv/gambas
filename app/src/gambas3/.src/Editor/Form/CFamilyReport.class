@@ -1,0 +1,113 @@
+' Gambas class file
+
+Inherits CFamily
+
+Public Sub _new()
+  
+  Me.Background = Color.White
+  
+End
+
+Public Sub IsPainted(hCtrl As CControl) As Boolean
+
+  If hCtrl.Kind = "ReportLabel" Then Return True
+  If hCtrl.Kind = "ReportLine" Then Return True
+  
+End
+
+Public Sub IsTransparent(hCtrl As CControl) As Boolean
+
+  Return True
+  If hCtrl.Kind = "ReportLabel" Then Return True
+  If hCtrl.Kind = "ReportLine" Then Return True
+  
+End
+
+Public Sub DrawControl(hCtrl As CControl) As Boolean
+  
+  Dim sAlign As String
+  Dim X, Y, W, H, W2, H2 As Float
+  
+  Select Case hCtrl.Kind
+  
+    Case "ReportLabel"
+    
+      Try Paint.Font = Font[hCtrl["Font"]]
+      Paint.Text(hCtrl["Text"], 0, 0, hCtrl.Width, hCtrl.Height, Classes["Align"][hCtrl["Alignment"]].Value)
+      Paint.Fill
+      
+    Case "ReportLine"
+    
+      Paint.LineWidth = 1
+      Paint.Brush = Paint.Color(Color.Black)
+      Try Paint.LineWidth = hCtrl["LineWidth"]
+      'Try Paint.Brush = Paint.Color(hCtrl["LineColor"])
+      X = Paint.LineWidth
+      Y = X
+      W = hCtrl.Width - X
+      H = hCtrl.Height - X
+      W2 = (X + W) / 2
+      H2 = (Y + H) / 2
+      Select Case hCtrl["Direction"]
+        Case "TopLeft"
+          Paint.MoveTo(W, H)
+          Paint.LineTo(X, Y)
+        Case "Top"
+          Paint.MoveTo(W2, H)
+          Paint.LineTo(W2, Y)
+        Case "TopRight"
+          Paint.MoveTo(X, H)
+          Paint.LineTo(W, Y)
+        Case "Left"
+          Paint.MoveTo(W, H2)
+          Paint.LineTo(X, H2)
+        Case "Right"
+          Paint.MoveTo(X, H2)
+          Paint.LineTo(W, H2)
+        Case "BottomLeft"
+          Paint.MoveTo(W, Y)
+          Paint.LineTo(X, H)
+        Case "Bottom"
+          Paint.MoveTo(W2, Y)
+          Paint.LineTo(W2, H)
+        Case "BottomRight"
+          Paint.MoveTo(X, Y)
+          Paint.LineTo(W, H)
+      End Select
+      Paint.Stroke
+
+    Case "ReportHBox"
+    
+      Draw.FillX = 0
+      Draw.FillY = 0
+      If hCtrl.H >= 32 Then
+        Draw.Tile(Picture["img/16/red-arrow-h.png"], 4, 4, hCtrl.W - 8, 8)
+        Draw.Tile(Picture["img/16/red-arrow-h.png"], 4, hCtrl.H - 12, hCtrl.W - 8, 8)
+      Else 
+        Draw.Tile(Picture["img/16/red-arrow-h.png"], 4, hCtrl.H / 2 - 4, hCtrl.W - 8, 8)
+      Endif
+      Draw.Foreground = &HFF8080&
+      Draw.LineStyle = Line.Dash
+      Draw.Rect(0, 0, hCtrl.W, hCtrl.H)
+    
+    Case "ReportVBox"
+
+      Draw.FillX = 0
+      Draw.FillY = 0
+      If hCtrl.W >= 32 Then
+        Draw.Tile(Picture["img/16/red-arrow-v.png"], 4, 4, 8, hCtrl.H - 8)
+        Draw.Tile(Picture["img/16/red-arrow-v.png"], hCtrl.W - 12, 4, 8, hCtrl.H - 8)
+      Else 
+        Draw.Tile(Picture["img/16/red-arrow-v.png"], hCtrl.W / 2 - 4, 4, 8, hCtrl.H - 8)
+      Endif
+      Draw.Foreground = &HFF8080&
+      Draw.LineStyle = Line.Dash
+      Draw.Rect(0, 0, hCtrl.W, hCtrl.H)
+
+    Case Else
+    
+      Return True
+  
+  End Select
+  
+End

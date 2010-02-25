@@ -18,6 +18,13 @@ Public DrawWith As String
 Public {Public} As Boolean
 Public VirtualCoord As Boolean
 
+Property Read X As Integer
+Property Read Y As Integer
+Property Read Width As Integer
+Property Read Height As Integer
+Property Read W As Integer
+Property Read H As Integer
+
 'STATIC PUBLIC Properties AS NEW Collection
 'STATIC PUBLIC PropertiesInOrder AS NEW Collection
 'STATIC PUBLIC ControlLibrary AS NEW Collection
@@ -81,7 +88,7 @@ End
 
 
 
-Private Function CreateControl(sName As String, sClass As String, hParent As Object) As Object
+Private Function CreateControl(sName As String, sClass As String, hParent As Object, hFamily As CFamily) As Object
 
   Dim hCtrl As Object
   Dim hPict As Picture
@@ -225,7 +232,7 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
 
         If bExist Then
           Try hCtrl = New (sClass, hParent)
-          If Error Then Debug sClass; ": "; Error.Text
+          If Error And If hClass.Family = "Form" Then Debug sClass; ": "; Error.Text
           'ENDIF
           'hCtrl = NEW (sClass, hParent)
         Endif
@@ -236,6 +243,8 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
           hCtrl.Merge = True
           'hCtrl.Text = sClass & " ?"
           hCtrl.Design = True
+          hCtrl.Painted = hFamily.IsPainted(Me)
+          hCtrl.Transparent = hFamily.IsTransparent(Me)
         Else
           hCtrl.Design = Not IsContainer()
           If Not IsMultiContainer() Then
@@ -281,7 +290,7 @@ Private Sub InitControl(hCtrl As Object)
 End
 
 
-Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As FForm)
+Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As FForm, hFamily As CFamily)
 
   Dim hCtrl As Object
   Dim iDim As Integer
@@ -297,6 +306,7 @@ Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As
   
     hCtrl = New Form(hForm.Container)
     hCtrl.Drop = True
+    hCtrl.Background = CFamily.Get(hForm.Family).Background
     
   Else If Kind = "Menu" Then
   
@@ -313,7 +323,7 @@ Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As
     If Virtual Then
 
       'PRINT sName; " is virtual"
-      hCtrl = CreateControl(sName, sClass, Parent.Control)
+      hCtrl = CreateControl(sName, sClass, Parent.Control, hFamily)
       'hCtrl.Resize(5 * Desktop.Scale, 5 * Desktop.Scale)
       iDim = 2 + (32 + Desktop.Scale - 1) \ Desktop.Scale '(40 + Desktop.Scale - 1) Div Desktop.Scale
       hCtrl.ResizeScaled(iDim, iDim)
@@ -322,7 +332,7 @@ Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As
 
       If Not Parent Then Stop
 
-      hCtrl = CreateControl(sName, sClass, Parent.Control)
+      hCtrl = CreateControl(sName, sClass, Parent.Control, hFamily)
       Unknown = Object.Type(hCtrl) <> sClass
 
     Endif
@@ -1629,4 +1639,47 @@ Public Sub AddAction(cActionSet As Collection)
   SetAction(cAction, "Shortcut")
   If Kind = "Menu" Then cAction["Menu"] = True
   
+End
+
+Public Sub _get(sProperty As String) As Variant
+  
+  Return GetPropertyDefault(sProperty)
+  
+End
+
+
+Private Function X_Read() As Integer
+
+  Try Return $cValue["#X"]
+
+End
+
+Private Function Y_Read() As Integer
+
+  Try Return $cValue["#Y"]
+
+End
+
+Private Function Width_Read() As Integer
+
+  Try Return $cValue["#Width"]
+
+End
+
+Private Function Height_Read() As Integer
+
+  Try Return $cValue["#Height"]
+
+End
+
+Private Function W_Read() As Integer
+
+  Try Return $cValue["#Width"]
+
+End
+
+Private Function H_Read() As Integer
+
+  Try Return $cValue["#Height"]
+
 End

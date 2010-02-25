@@ -47,6 +47,7 @@ Private Function AddToolBar(sToolBar As String, sType As String) As FToolPanel
 
     If $cToolBar.Count Then Inc tabTool.Count
     tabTool.Index = tabTool.Count - 1
+    'Debug tabTool.Count;; tabTool.Index
     tabTool.Text = sToolBar
 
     hToolBar = New FToolPanel(sToolBar, sType, tabTool) As "ToolBar"
@@ -151,7 +152,9 @@ Public Sub RefreshToolbar(Optional bForce As Boolean)
   Next
   
   $cToolBar.Clear
+  'Debug tabTool.Index
   tabTool.Count = 1
+  'Debug "->";; tabTool.Index
 
   $sToolBar = ""
   $sFamily = ""
@@ -220,19 +223,20 @@ Public Sub RefreshToolbar(Optional bForce As Boolean)
 
     Next
 
-    Try SelectToolbar($sToolBar)
+    'Try SelectToolbar($sToolBar)
+    'tabTool.Index = 0
     'IF ERROR THEN MoveToolbar
 
   Endif
 
   tabTool.Index = 0
   
-  For iInd = 0 To tabTool.Count - 1
-    If tabTool[iInd].Text = sOldTab Then 
-      tabTool.Index = iInd
-      Break 
-    Endif
-  Next
+  ' For iInd = 0 To tabTool.Count - 1
+  '   If tabTool[iInd].Text = sOldTab Then 
+  '     tabTool.Index = iInd
+  '     Break 
+  '   Endif
+  ' Next
   
   OnProjectActivate
   

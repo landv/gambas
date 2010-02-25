@@ -1,0 +1,43 @@
+' Gambas class file
+
+Static Public All As New Collection(gb.IgnoreCase)
+
+Public Background As Integer = Color.Background
+
+Static Public Sub Get(sFamily As String) As CFamily
+  
+  Dim hFamily As CFamily
+  
+  hFamily = All[sFamily]
+  If Not hFamily Then 
+    Try hFamily = Object.New("CFamily" & sFamily)
+    If Not hFamily Then 
+      Debug "Family "; sFamily; " not implemented: "; Error.Where; ": "; Error.Text
+      Return Get("Form")
+    Endif
+    All[sFamily] = hFamily
+  Endif
+  Return hFamily
+  
+End
+
+Static Public Sub Exit()
+  
+  All = Null
+  
+End
+
+Public Sub IsPainted(hCtrl As CControl) As Boolean
+  
+End
+
+Public Sub IsTransparent(hCtrl As CControl) As Boolean
+  
+End
+
+Public Sub DrawControl(hCtrl As CControl) As Boolean
+
+  Return True
+
+End
+

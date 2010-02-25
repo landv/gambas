@@ -60,18 +60,19 @@ public:
 	~MyDrawingArea();
 
 	int drawn;
-	QPixmap *cache;
+	//QPixmap *cache;
 	
 	//void setTransparent(bool);
 	//bool isTransparent(void) { return transparent; }
 
+	void updateCache();
 	void setCached(bool);
-	bool isCached(void) { return _background != 0; }
+	bool isCached() { return _background != 0; }
 	//QPixmap *getCache(void) { return cache; }
 	//void refreshCache(void) { if (cache) setBackgroundPixmap(*cache); }
 
-	void setBackground(void);
-	void clearBackground(void);
+	void setBackground();
+	void clearBackground();
 	QPixmap *background() const { return _background; }
 	void refreshBackground();
 	void updateBackground();
@@ -87,6 +88,9 @@ public:
 	
 	bool isPaint() { return _use_paint; }
 	void setPaint(bool on) { _use_paint = on; }
+	
+	bool isTransparent() { return _transparent; }
+	void setTransparent(bool on);
 
 protected:
 
@@ -104,6 +108,8 @@ private:
 	int _event_mask;
 	bool _use_paint;
 	bool _set_background;
+	bool _cached;
+	bool _transparent;
 };
 
 #endif

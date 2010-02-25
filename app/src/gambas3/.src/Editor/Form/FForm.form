@@ -1,13 +1,11 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,78,66)
-  Text = ("")
+  MoveScaled(0,0,81,75)
   Icon = Picture["img/16/form.png"]
   Persistent = True
   Arrangement = Arrange.Vertical
   { mnuForm Menu
-    Text = ("")
     Enabled = False
     { mnuSelect Menu
       Text = ("Select")
@@ -34,13 +32,11 @@
       Picture = Picture["icon:/small/play"]
     }
     { Menu3 Menu
-      Text = ("")
     }
     { mnuShowTab Menu
       Text = ("Show tab")
       Picture = Picture["img/16/tabstrip.png"]
       { Menu1 Menu
-        Text = ("")
       }
     }
     { mnuMoveTab Menu
@@ -72,7 +68,6 @@
       }
     }
     { mnuSep1 Menu
-      Text = ("")
     }
     { mnuSelectAll Menu
       Action = ".select-all"
@@ -85,7 +80,6 @@
       Shortcut = "Esc"
     }
     { Menu2 Menu
-      Text = ("")
     }
     { mnuCut Menu
       Action = ".cut"
@@ -112,7 +106,6 @@
       Shortcut = "Del"
     }
     { mnuSep2 Menu
-      Text = ("")
     }
     { mnuArrange Menu
       Text = ("Arrangement")
@@ -129,7 +122,6 @@
         Shortcut = "End"
       }
       { mnuArrangeSep Menu
-        Text = ("")
       }
       { mnuArrangeHor Menu
         Action = ".arrange-horizontal"
@@ -177,7 +169,6 @@
         Picture = Picture["img/16/align-bottom.png"]
       }
       { Menu5 Menu
-        Text = ("")
       }
       { mnuAlignWidth Menu
         Action = ".same-width"
@@ -191,7 +182,6 @@
       }
     }
     { mnuSep3 Menu
-      Text = ("")
     }
     { mnuMenu Menu
       Action = ".menu"
@@ -200,7 +190,6 @@
       Shortcut = "Ctrl+E"
     }
     { mnuSep4 Menu
-      Text = ("")
     }
     { mnuReload Menu
       Action = ".reload"
@@ -227,7 +216,6 @@
         MoveScaled(0,0,4,4)
         ToolTip = ("Save")
         Action = ".save"
-        Text = ("")
         Picture = Picture["icon:/small/save"]
       }
       { ToolButton11 ToolButton mnuReload
@@ -235,7 +223,6 @@
         MoveScaled(4,0,4,4)
         ToolTip = ("Reload")
         Action = ".reload"
-        Text = ("")
         Picture = Picture["icon:/small/refresh"]
       }
       { ToolButton12 ToolButton mnuShowCode
@@ -243,14 +230,12 @@
         MoveScaled(8,0,4,4)
         ToolTip = ("Code")
         Action = ".show-class"
-        Text = ("")
         Picture = Picture["img/16/class.png"]
       }
       { ToolButton7 ToolButton
         MoveScaled(12,0,4,4)
         ToolTip = ("Lock form")
         Action = ".lock"
-        Text = ("")
         Picture = Picture["icon:/small/lock"]
         Toggle = True
       }
@@ -260,7 +245,6 @@
         Visible = False
         ToolTip = ("Cut")
         Action = ".cut"
-        Text = ("")
         Picture = Picture["icon:/small/cut"]
       }
       { ToolButton15 ToolButton mnuCopy
@@ -269,7 +253,6 @@
         Visible = False
         ToolTip = ("Copy")
         Action = ".copy"
-        Text = ("")
         Picture = Picture["icon:/small/copy"]
       }
       { ToolButton16 ToolButton mnuPaste
@@ -278,7 +261,6 @@
         Visible = False
         ToolTip = ("Paste")
         Action = ".paste"
-        Text = ("")
         Picture = Picture["icon:/small/paste"]
       }
       { ToolButton1 ToolButton mnuPaste
@@ -287,7 +269,6 @@
         Visible = False
         ToolTip = ("Delete")
         Action = ".delete"
-        Text = ("")
         Picture = Picture["icon:/small/delete"]
       }
       { ToolButton17 ToolButton mnuUndo
@@ -297,7 +278,6 @@
         Enabled = False
         ToolTip = ("Undo")
         Action = ".undo"
-        Text = ("")
         Picture = Picture["icon:/small/undo"]
       }
       { ToolButton18 ToolButton mnuRedo
@@ -307,21 +287,18 @@
         Enabled = False
         ToolTip = ("Redo")
         Action = ".redo"
-        Text = ("")
         Picture = Picture["icon:/small/redo"]
       }
       { ToolButton31 ToolButton
         MoveScaled(40,0,4,4)
         ToolTip = ("Menu editor")
         Action = ".menu"
-        Text = ("")
         Picture = Picture["img/16/menu.png"]
       }
       { ToolButton2 ToolButton
         MoveScaled(44,0,4,4)
         ToolTip = ("Toggle grid")
         Action = ".grid"
-        Text = ("")
         Picture = Picture["img/16/grid.png"]
         Toggle = True
         Value = True
@@ -335,56 +312,48 @@
         MoveScaled(0,0,4,4)
         ToolTip = ("Bring to foreground")
         Action = ".raise"
-        Text = ("")
         Picture = Picture["img/16/raise.png"]
       }
       { ToolButton20 ToolButton
         MoveScaled(4,0,4,4)
         ToolTip = ("Send to background")
         Action = ".lower"
-        Text = ("")
         Picture = Picture["img/16/lower.png"]
       }
       { ToolButton21 ToolButton
         MoveScaled(8,0,4,4)
         ToolTip = ("Align to top")
         Action = ".align-top"
-        Text = ("")
         Picture = Picture["img/16/align-top.png"]
       }
       { ToolButton22 ToolButton
         MoveScaled(12,0,4,4)
         ToolTip = ("Align to bottom")
         Action = ".align-bottom"
-        Text = ("")
         Picture = Picture["img/16/align-bottom.png"]
       }
       { ToolButton23 ToolButton
         MoveScaled(16,0,4,4)
         ToolTip = ("Align to left")
         Action = ".align-left"
-        Text = ("")
         Picture = Picture["img/16/align-left.png"]
       }
       { ToolButton24 ToolButton
         MoveScaled(20,0,4,4)
         ToolTip = ("Align to right")
         Action = ".align-right"
-        Text = ("")
         Picture = Picture["img/16/align-right.png"]
       }
       { ToolButton29 ToolButton
         MoveScaled(24,0,4,4)
         ToolTip = ("Same width")
         Action = ".same-width"
-        Text = ("")
         Picture = Picture["img/16/same-width.png"]
       }
       { ToolButton30 ToolButton
         MoveScaled(28,0,4,4)
         ToolTip = ("Same height")
         Action = ".same-height"
-        Text = ("")
         Picture = Picture["img/16/same-height.png"]
       }
       { ToolButton25 ToolButton
@@ -392,7 +361,6 @@
         Visible = False
         ToolTip = ("Vertical")
         Action = ".arrange-vertical"
-        Text = ("")
         Picture = Picture["img/16/arrange-v.png"]
       }
       { ToolButton26 ToolButton
@@ -400,7 +368,6 @@
         Visible = False
         ToolTip = ("Horizontal")
         Action = ".arrange-horizontal"
-        Text = ("")
         Picture = Picture["img/16/arrange-h.png"]
       }
       { ToolButton27 ToolButton
@@ -408,7 +375,6 @@
         Visible = False
         ToolTip = ("Columns")
         Action = ".arrange-column"
-        Text = ("")
         Picture = Picture["img/16/arrange-tb.png"]
       }
       { ToolButton28 ToolButton
@@ -416,7 +382,6 @@
         Visible = False
         ToolTip = ("Rows")
         Action = ".arrange-row"
-        Text = ("")
         Picture = Picture["img/16/arrange-lr.png"]
       }
     }
@@ -429,34 +394,29 @@
         MoveScaled(0,0,4,4)
         ToolTip = ("Move tab first")
         Action = ".move-tab-first"
-        Text = ("")
         Picture = Picture["icon:/small/first"]
       }
       { ToolButton4 ToolButton
         MoveScaled(4,0,4,4)
         ToolTip = ("Move tab left")
         Action = ".move-tab-previous"
-        Text = ("")
         Picture = Picture["icon:/small/left"]
       }
       { ToolButton5 ToolButton
         MoveScaled(8,0,4,4)
         ToolTip = ("Move tab right")
         Action = ".move-tab-next"
-        Text = ("")
         Picture = Picture["icon:/small/right"]
       }
       { ToolButton6 ToolButton
         MoveScaled(12,0,4,4)
         ToolTip = ("Move tab last")
         Action = ".move-tab-last"
-        Text = ("")
         Picture = Picture["icon:/small/last"]
       }
       { btnTabMenu ToolButton
         MoveScaled(16,0,4,4)
         ToolTip = ("Show tab")
-        Text = ("")
         Picture = Picture["img/16/tabstrip.png"]
       }
     }
@@ -514,7 +474,7 @@
             Foreground = Color.SelectedForeground
             Expand = True
             Padding = 2
-            Text = ("")
+            Text = ("lblTitle")
           }
           { btnMaxWindow PictureBox
             MoveScaled(36,0,3,3)

@@ -83,6 +83,8 @@ Private $bNoWarning As Boolean ' Do not warn if a property does not exist in Fro
 
 Private $bBorder As Boolean
 
+Private $hFamily As CFamily
+
 Public Sub _new(sPath As String)
 
   btnCloseWindow.Design = True
@@ -93,6 +95,7 @@ Public Sub _new(sPath As String)
 
   Family = File.Ext(sPath)
   Mid$(Family, 1, 1) = UCase(Left(Family))
+  $hFamily = CFamily.Get(Family)
   
   Container = panBorder
 
@@ -1231,9 +1234,9 @@ Public Function CreateControl(sClass As String, hParent As CControl, Optional sN
   ' If the component is not loaded, then return null
   If Not CComponent.Classes.Exist(sClass) Then
     FGambas.Error("Component missing")
-    hCtrl = New CControl(sName, "DrawingArea", hParent, Me)
+    hCtrl = New CControl(sName, "DrawingArea", hParent, Me, $hFamily)
   Else
-    hCtrl = New CControl(sName, sClass, hParent, Me)
+    hCtrl = New CControl(sName, sClass, hParent, Me, $hFamily)
   Endif
 
   Control[sName] = hCtrl
@@ -2125,104 +2128,23 @@ Public Sub Control_Draw(Optional iIndex As Integer)
   
   If Not hCCtrl Then Return
 
-  Select hCCtrl.Kind
+  If $hFamily.DrawControl(hCCtrl) Then
+
+    hPict = Picture[".control" &/ LCase(hCCtrl.Kind)]
+    'Draw.ForeColor = Control[Name].Control.Foreground
+    If hPict Then
+      Draw.Picture(hPict, 4, 4)
+      Draw.Text(hCtrl.Tag, 8 + hPict.Width, 4)
+    Else
+      Draw.Text(hCtrl.Tag, 4, 4)
+    Endif
+    Draw.Foreground = Color.Merge(Color.Background, &H808080&)
+      
+    Draw.LineStyle = Line.Dash
+    Draw.Rect(0, 0, hCtrl.W, hCtrl.H)
+    Draw.LineStyle = Line.None
   
-    Case "HBox"
-    
-      Draw.FillX = 0
-      Draw.FillY = 0
-      If hCtrl.H >= 32 Then
-        Draw.Tile(Picture["img/16/red-arrow-h.png"], 4, 4, hCtrl.W - 8, 8)
-        Draw.Tile(Picture["img/16/red-arrow-h.png"], 4, hCtrl.H - 12, hCtrl.W - 8, 8)
-      Else 
-        Draw.Tile(Picture["img/16/red-arrow-h.png"], 4, hCtrl.H / 2 - 4, hCtrl.W - 8, 8)
-      Endif
-      Draw.Foreground = &HFF8080&
-    
-    Case "VBox"
-
-      Draw.FillX = 0
-      Draw.FillY = 0
-      If hCtrl.W >= 32 Then
-        Draw.Tile(Picture["img/16/red-arrow-v.png"], 4, 4, 8, hCtrl.H - 8)
-        Draw.Tile(Picture["img/16/red-arrow-v.png"], hCtrl.W - 12, 4, 8, hCtrl.H - 8)
-      Else 
-        Draw.Tile(Picture["img/16/red-arrow-v.png"], hCtrl.W / 2 - 4, 4, 8, hCtrl.H - 8)
-      Endif
-      Draw.Foreground = &HFF8080&
-    
-    Case "HPanel"
-    
-      Draw.FillX = 0
-      Draw.FillY = 0
-      If hCtrl.H >= 32 Then
-        Draw.Tile(Picture["img/16/red-arrow-r.png"], 4, 4, hCtrl.W - 8, 8)
-        Draw.Tile(Picture["img/16/red-arrow-r.png"], 4, hCtrl.H - 12, hCtrl.W - 8, 8)
-      Else 
-        Draw.Tile(Picture["img/16/red-arrow-r.png"], 4, hCtrl.H / 2 - 4, hCtrl.W - 8, 8)
-      Endif
-      Draw.Foreground = &HFF8080&
-    
-    Case "VPanel"
-
-      Draw.FillX = 0
-      Draw.FillY = 0
-      If hCtrl.W >= 32 Then
-        Draw.Tile(Picture["img/16/red-arrow-c.png"], 4, 4, 8, hCtrl.H - 8)
-        Draw.Tile(Picture["img/16/red-arrow-c.png"], hCtrl.W - 12, 4, 8, hCtrl.H - 8)
-      Else 
-        Draw.Tile(Picture["img/16/red-arrow-c.png"], hCtrl.W / 2 - 4, 4, 8, hCtrl.H - 8)
-      Endif
-      Draw.Foreground = &HFF8080&
-      
-    Case "Panel"
-    
-      Select Case hCCtrl.GetProperty("Border")
-        Case "Raised"
-          iBorder = Border.Raised
-        Case "Sunken"
-          iBorder = Border.Sunken
-        Case "Etched"
-          iBorder = Border.Etched
-        Case "Plain"
-          iBorder = Border.Plain
-        Default
-          iBorder = Border.None
-      End Select
-      
-      If iBorder Then
-        Draw.Style.Panel(0, 0, hCtrl.W, hCtrl.H, iBorder)
-        Return
-      Endif
-      If hCCtrl.GetProperty("Background") Then Return
-      Draw.Foreground = Color.Merge(Color.Background, &H808080&)
-    
-    Case Else 
-
-      'hPict = Picture["img/control" &/ "draw-" & LCase(hCCtrl.Kind) & ".png"]
-      'IF NOT hPict THEN hPict = Picture["img/control" &/ LCase(hCCtrl.Kind) & ".png"]
-      hPict = Picture[".control" &/ LCase(hCCtrl.Kind)]
-      'Draw.ForeColor = Control[Name].Control.Foreground
-      If hPict Then
-        Draw.Picture(hPict, 4, 4)
-        Draw.Text(hCtrl.Tag, 8 + hPict.Width, 4)
-      Else
-        Draw.Text(hCtrl.Tag, 4, 4)
-      Endif
-      Draw.Foreground = Color.Merge(Color.Background, &H808080&)
-      
-  End Select
-
-  Draw.LineStyle = Line.Dash
-  Draw.Rect(0, 0, hCtrl.W, hCtrl.H)
-  Draw.LineStyle = Line.None
-
-  ' Draw.FillStyle = Fill.Solid
-  ' Draw.FillColor = Draw.Foreground 'Color.White
-  ' Draw.Rect(0, 0, hCtrl.W, W)
-  ' Draw.Rect(hCtrl.W - W, 0, W, hCtrl.H)
-  ' Draw.Rect(0, W, W, hCtrl.H - W)
-  ' Draw.Rect(W, hCtrl.H - W, hCtrl.W - W * 2, W)
+  Endif
 
 End
 

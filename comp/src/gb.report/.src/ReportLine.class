@@ -3,11 +3,15 @@
 Export
 Inherits ReportControl
 
-Public Const _Properties As String = "*"
+Public Const _Properties As String = "*,Direction{Align.TopLeft;Top;TopRight;Left;Right;BottomLeft;Bottom;BottomRight}=BottomRight,LineWidth,LineColor{Color}"
+
+Property Direction As Integer
 
 Private $fLineWidth As Float = 1.0
 Private $iLineColor As Integer
 Private $iLineStyle As Integer = Line.solid
+Private $iDirection As Integer = Align.BottomRight
+
 Property LineWidth As Float 
 Property LineStyle As Integer
 Property LineColor As Integer
@@ -72,5 +76,18 @@ End
 Private Sub LineColor_Write(Value As Integer)
 
   $iLineColor = Value
+
+End
+
+
+Private Function Direction_Read() As Integer
+
+  Return $iDirection
+
+End
+
+Private Sub Direction_Write(Value As Integer)
+
+  $iDirection = Value
 
 End

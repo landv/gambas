@@ -139,8 +139,8 @@ static int Begin(GB_PAINT *d)
 
 		if (wid->isCached())
 			target = wid->background();
-		else if (wid->cache)
-			target = wid->cache;
+		//else if (wid->cache)
+		//	target = wid->cache;
 		else
 			target = wid;
 			

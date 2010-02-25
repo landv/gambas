@@ -48,22 +48,27 @@ DECLARE_EVENT(EVENT_draw);
 MyDrawingArea::MyDrawingArea(QWidget *parent) : MyContainer(parent)
 {
 	drawn = 0;
-	cache = 0;
+	//cache = 0;
 	_background = 0;
 	_frozen = false;
 	_event_mask = 0;
 	_use_paint = false;
 	_set_background = false;
+	_cached = false;
+	_transparent = false;
+	
 	setMerge(false);
 	setCached(false);
 	setAllowFocus(false);
 	
 	setAttribute(Qt::WA_KeyCompression, false);
-	setAttribute(Qt::WA_OpaquePaintEvent, true);
 	setAttribute(Qt::WA_NativeWindow, true);
 	setAttribute(Qt::WA_DontCreateNativeAncestors, true);
-	//setAttribute(Qt::WA_PaintOnScreen, true);
+	setAttribute(Qt::WA_OpaquePaintEvent, false);
+	
 	//setAttribute(Qt::WA_NoSystemBackground, true);
+	
+	setTransparent(false);
 }
 
 
@@ -159,8 +164,8 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 			
 			bool frame = true; //!contentsRect().contains(event->rect());
 			
-			cache = new QPixmap(r.width(), r.height());
-			cache->fill(this, r.x(), r.y());
+			//cache = new QPixmap(r.width(), r.height());
+			//cache->fill(this, r.x(), r.y());
 
 			//qDebug("paint: %d %d %d %d", event->rect().x(), event->rect().y(), event->rect().width(), event->rect().height());
 
@@ -178,10 +183,10 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 				p = DRAW_get_current();
 			}
 				
-			p->translate(-r.x(), -r.y());
+			//p->translate(-r.x(), -r.y());
 			p->setClipRect(r);
 			//p->setClipRegion(event->region().intersect(contentsRect()));
-			p->setBrushOrigin(-r.x(), -r.y());
+			//p->setBrushOrigin(-r.x(), -r.y());
 			
 			if (frame)
 				p->save();
@@ -201,9 +206,9 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 			else
 				DRAW_end();
 			
-			paint.drawPixmap(r.x(), r.y(), *cache);
-			delete cache;
-			cache = 0;
+			//paint.drawPixmap(r.x(), r.y(), *cache);
+			//delete cache;
+			//cache = 0;
 		}
 	}
 }
@@ -299,12 +304,12 @@ void MyDrawingArea::updateBackground()
 	}
 }
 
-void MyDrawingArea::setCached(bool c)
+void MyDrawingArea::updateCache()
 {
 	if (_background)
 		delete _background;
 
-	if (c)
+	if (_cached && !_transparent)
 	{
 		_background = new QPixmap(width(), height());
 		clearBackground();
@@ -312,7 +317,7 @@ void MyDrawingArea::setCached(bool c)
 		setAttribute(Qt::WA_PaintOnScreen, true);
 		setAttribute(Qt::WA_StaticContents, true);
 	}
-	else
+	else //if (_background)
 	{
 		_background = 0;
 		setAttribute(Qt::WA_PaintOnScreen, false);
@@ -326,11 +331,24 @@ void MyDrawingArea::setCached(bool c)
 	}
 }
 
+void MyDrawingArea::setCached(bool c)
+{
+	_cached = c;
+	updateCache();
+}
+
 void MyDrawingArea::setPalette(const QPalette &pal)
 {
 	MyContainer::setPalette(pal);
 	repaint();
 }
+
+void MyDrawingArea::setTransparent(bool on)
+{
+	_transparent = on;
+	updateCache();
+}
+
 
 /***************************************************************************
 
@@ -344,6 +362,7 @@ BEGIN_METHOD(CDRAWINGAREA_new, GB_OBJECT parent)
 
 	//THIS->widget.background = QColorGroup::Base;
 	THIS->container = wid;
+	THIS->widget.flag.fillBackground = true;
 
 	CWIDGET_new(wid, (void *)_object);
 
@@ -424,6 +443,19 @@ BEGIN_PROPERTY(CDRAWINGAREA_painted)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(CDRAWINGAREA_transparent)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(WIDGET->isTransparent());
+	else
+	{
+		WIDGET->setTransparent(VPROP(GB_BOOLEAN));
+		THIS->widget.flag.fillBackground = !WIDGET->isTransparent();
+		CWIDGET_reset_color((CWIDGET *)THIS);
+	}
+
+END_PROPERTY
+
 GB_DESC CDrawingAreaDesc[] =
 {
 	GB_DECLARE("DrawingArea", sizeof(CDRAWINGAREA)), GB_INHERITS("Container"),
@@ -439,6 +471,7 @@ GB_DESC CDrawingAreaDesc[] =
 	GB_PROPERTY("Focus", "b", CDRAWINGAREA_focus),
 	GB_PROPERTY("Enabled", "b", CDRAWINGAREA_enabled),
 	GB_PROPERTY("Painted", "b", CDRAWINGAREA_painted),
+	GB_PROPERTY("Transparent", "b", CDRAWINGAREA_transparent),
 
 	GB_METHOD("Clear", NULL, CDRAWINGAREA_clear, NULL),
 

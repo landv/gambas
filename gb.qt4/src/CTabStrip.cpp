@@ -65,7 +65,7 @@ public:
 	
 	int index() const { return WIDGET->indexOf(widget); }
 	void ensureVisible();
-	void setEnabled(bool e) { enabled = e; WIDGET->setTabEnabled(index(), e && WIDGET->isEnabled()); }
+	void setEnabled(bool e);
 	bool isEnabled() const { return enabled; }
 	bool isVisible() const { return visible; }
 	void setVisible(bool v);
@@ -98,9 +98,14 @@ CTab::~CTab()
 
 void CTab::ensureVisible()
 {
-	WIDGET->setCurrentIndex(index());
-	if (!WIDGET->isVisible())
-		WIDGET->layoutContainer();
+	setVisible(true);
+	int i = index();
+	if (i >= 0)
+	{
+		WIDGET->setCurrentIndex(i);
+		if (!WIDGET->isVisible())
+			WIDGET->layoutContainer();
+	}
 }
 
 int CTab::count() const
@@ -132,9 +137,12 @@ void CTab::setVisible(bool v)
 	
 	if (!visible)
 	{
-		text = WIDGET->tabText(index());
-		WIDGET->removeTab(index());
-		//widget->hide();
+		i = index();
+		if (i >= 0)
+		{
+			text = WIDGET->tabText(i);
+			WIDGET->removeTab(i);
+		}
 	}
 	else
 	{
@@ -156,20 +164,31 @@ void CTab::setVisible(bool v)
 	}
 }
 
+void CTab::setEnabled(bool e)
+{ 
+	int i = index();
+	enabled = e;
+	if (i >= 0)
+		WIDGET->setTabEnabled(i, e && WIDGET->isEnabled()); 
+}
 
 void CTab::updateIcon()
 {
+	int i = index();
 	QIcon iconset;
 	
 	if (icon)
 		CWIDGET_iconset(iconset, *(icon->pixmap));
-	
-	WIDGET->setTabIcon(index(), iconset);
+
+	if (i >= 0)
+		WIDGET->setTabIcon(i, iconset);
 }
 
 void CTab::updateText()
 {
-	WIDGET->setTabText(index(), text);
+	int i = index();
+	if (i >= 0)
+		WIDGET->setTabText(i, text);
 }
 
 /** MyTabWidget **********************************************************/
@@ -273,13 +292,32 @@ static bool remove_page(void *_object, int i)
 	}
 
 	THIS->lock = true;
-	WIDGET->removeTab(tab->index());
+	WIDGET->stack.removeAt(i);
+	
+	i = tab->index();
+	if (i >= 0)
+		WIDGET->removeTab(i);
+	
 	delete tab->widget;
 	delete tab;
-	WIDGET->stack.removeAt(i);
 	THIS->lock = false;
 
 	return false;
+}
+
+static void set_current_index(void *_object, int index)
+{
+	if (index < 0)
+		return;
+	
+	if (index >= (int)WIDGET->stack.count())
+		index = WIDGET->stack.count() - 1;
+
+	while (index > 0 && !WIDGET->stack.at(index)->isVisible())
+		index--;
+
+	WIDGET->stack.at(index)->ensureVisible();
+	THIS->container = WIDGET->stack.at(index)->widget;
 }
 
 static bool set_tab_count(void *_object, int new_count)
@@ -313,8 +351,7 @@ static bool set_tab_count(void *_object, int new_count)
 
 		index = new_count - 1;
 
-		WIDGET->stack.at(index)->ensureVisible();
-		THIS->container = WIDGET->stack.at(index)->widget;    
+		set_current_index(THIS, index);
 	}
 	else
 	{
@@ -333,8 +370,7 @@ static bool set_tab_count(void *_object, int new_count)
 		if (index >= new_count)
 			index = new_count - 1;
 	
-		WIDGET->stack.at(index)->ensureVisible();
-		THIS->container = WIDGET->stack.at(index)->widget;
+		set_current_index(THIS, index);
 		
 		for (i = count - 1; i >= new_count; i--)
 		{
@@ -346,6 +382,31 @@ static bool set_tab_count(void *_object, int new_count)
 	}
 
 	return false;
+}
+
+static bool check_index(CTABSTRIP *_object, int index)
+{
+	if (index < 0 || index >= (int)WIDGET->stack.count())
+	{
+		GB.Error("Bad index");
+		return true;
+	}
+	else
+		return false;
+}
+
+static int get_real_index(CTABSTRIP *_object)
+{
+	int i;
+	QWidget *current = WIDGET->currentWidget();
+
+	for (i = 0; i < (int)WIDGET->stack.count(); i++)
+	{
+		if (WIDGET->stack.at(i)->widget == current)
+			return i;
+	}
+	
+	return -1;
 }
 
 
@@ -378,31 +439,6 @@ BEGIN_PROPERTY(CTABSTRIP_count)
 END_PROPERTY
 
 
-static bool check_index(CTABSTRIP *_object, int index)
-{
-	if (index < 0 || index >= (int)WIDGET->stack.count())
-	{
-		GB.Error("Bad index");
-		return true;
-	}
-	else
-		return false;
-}
-
-static int get_real_index(CTABSTRIP *_object)
-{
-	int i;
-	QWidget *current = WIDGET->currentWidget();
-
-	for (i = 0; i < (int)WIDGET->stack.count(); i++)
-	{
-		if (WIDGET->stack.at(i)->widget == current)
-			return i;
-	}
-	
-	return -1;
-}
-
 BEGIN_PROPERTY(CTABSTRIP_index)
 
 	if (READ_PROPERTY)
@@ -431,7 +467,10 @@ END_PROPERTY
 BEGIN_PROPERTY(CTABSTRIP_current)
 
 	THIS->index = get_real_index(THIS);
-	RETURN_SELF();
+	if (THIS->index < 0)
+		GB.ReturnNull();
+	else
+		RETURN_SELF();
 
 END_PROPERTY
 
@@ -643,11 +682,8 @@ BEGIN_METHOD_VOID(CTAB_delete)
 	if (remove_page(THIS, THIS->index))
 		return;
 
-	if (index >= (int)WIDGET->stack.count())
-		index = WIDGET->stack.count() - 1;
-
-	WIDGET->stack.at(index)->ensureVisible();
-
+	set_current_index(THIS, index);
+	
 	THIS->index = -1;
 
 END_METHOD
@@ -735,7 +771,7 @@ void CTabStrip::currentChanged(int index)
 	QWidget *wid;
 	GET_SENDER();
 
-	wid = WIDGET->currentWidget();
+	wid = WIDGET->currentWidget(); // wid can be null!
 
 	if (wid != THIS->container)
 	{
@@ -743,7 +779,10 @@ void CTabStrip::currentChanged(int index)
 		if (THIS->container)
 			THIS->container->hide();
 		THIS->container = wid;
-		wid->show();
+		
+		if (wid)
+			wid->show();
+		
 		CCONTAINER_arrange(THIS);
 
 		//if (wid->isVisible() && !THIS->lock)
