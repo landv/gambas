@@ -190,7 +190,10 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 			  p->setBrushOrigin(-r.x(), -r.y());
 			}
 			
-			p->setClipRect(r);
+			if (_use_paint)
+				PAINT_clip(r.x(), r.y(), r.width(), r.height());
+			else
+				DRAW_clip(r.x(), r.y(), r.width(), r.height());
 			
 			//p->setClipRegion(event->region().intersect(contentsRect()));
 			//p->setBrushOrigin(-r.x(), -r.y());

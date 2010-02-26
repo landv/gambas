@@ -1556,13 +1556,13 @@ Public Sub GetSelection(Optional bAbsolute As Boolean) As String
 
   If Not bAbsolute Then
 
-    $iSaveX = Master.GetProperty("X")
-    $iSaveY = Master.GetProperty("Y")
+    $iSaveX = Master.GetProperty("#X")
+    $iSaveY = Master.GetProperty("#Y")
   
     For Each hCtrl In Selection
   
-      $iSaveX = Min($iSaveX, hCtrl.GetProperty("X"))
-      $iSaveY = Min($iSaveY, hCtrl.GetProperty("Y"))
+      $iSaveX = Min($iSaveX, hCtrl.GetProperty("#X"))
+      $iSaveY = Min($iSaveY, hCtrl.GetProperty("#Y"))
   
     Next
     

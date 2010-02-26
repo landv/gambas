@@ -938,6 +938,20 @@ void PAINT_get_current_point(float *x, float *y)
 	GetCurrentPoint(d, x, y);
 }
 
+void PAINT_clip(int x, int y, int w, int h)
+{
+	GB_PAINT *d = (GB_PAINT *)DRAW.Paint.GetCurrent();
+	if (d)
+	{
+		QPainterPath path;
+		
+		path.addRect((qreal)x, (qreal)y, (qreal)w, (qreal)h);
+	
+		delete EXTRA(d)->clip;
+		EXTRA(d)->clip = new QPainterPath(path);
+	}
+}
+
 /*************************************************************************/
 
 MyPaintEngine::MyPaintEngine() : QPaintEngine(0) {}

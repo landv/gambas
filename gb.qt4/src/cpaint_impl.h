@@ -42,6 +42,7 @@ void PAINT_begin(void *device);
 void PAINT_end();
 QPainter *PAINT_get_current();
 void PAINT_get_current_point(float *x, float *y);
+void PAINT_clip(int x, int y, int w, int h);
 
 class MyPaintEngine: public QPaintEngine
 {

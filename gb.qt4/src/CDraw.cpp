@@ -1269,3 +1269,9 @@ void DRAW_aligned_pixmap(QPainter *p, const QPixmap &pix, int x, int y, int w, i
 	
 	p->drawPixmap(xp, yp, pix);
 }
+
+void DRAW_clip(int x, int y, int w, int h)
+{
+	GB_DRAW *d = DRAW.GetCurrent();
+	if (d) set_clipping(d, x, y, w, h);
+}
