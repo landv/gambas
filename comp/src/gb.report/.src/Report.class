@@ -62,6 +62,7 @@ Public Sub Paint(Page As Integer)
       Error.Raise("This page does not exist")
     Endif
     Dec page
+    Paint.Clip
     Paint.Scale($fScale, $fScale)
     Me._PaintBefore(Page, 0, 0, $hReportTControl, -1)
     Me._Paint(Page, 0, 0, $hReportTControl, -1)

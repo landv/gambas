@@ -9,6 +9,7 @@ Public RealTop As Integer
 Public RealWidth As Integer
 Public RealHeight As Integer 
 Public _RealPadding As Integer
+Public _SkipPainting As Boolean = False
 Public VirtualId As Integer = -1
 Property Ctrl As ReportControl
 

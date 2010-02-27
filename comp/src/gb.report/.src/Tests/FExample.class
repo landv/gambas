@@ -452,3 +452,9 @@ Public Sub Slider1_Change()
   Me.Title = "gb.Report Example [" & Slider1.Value & "%]"
 
 End
+
+Public Sub ScrollView1_Scroll()
+
+  DrawingArea1.Refresh
+
+End
