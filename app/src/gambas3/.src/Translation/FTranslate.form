@@ -46,20 +46,17 @@
           MoveScaled(3,1,82,4)
           Spacing = True
           { cmbLang ComboBox
-            MoveScaled(0,0,25,4)
-            Text = ("")
+            MoveScaled(0,0,35,4)
             ReadOnly = True
             Sorted = True
           }
           { cbxFileChoice ComboBox
-            MoveScaled(32,0,31,4)
-            Text = ("")
+            MoveScaled(35,0,33,4)
             ReadOnly = True
           }
           { lblInfo Label
-            MoveScaled(65,0,16,4)
+            MoveScaled(69,0,12,4)
             Expand = True
-            Text = ("")
             Alignment = Align.Right
           }
         }
@@ -68,43 +65,36 @@
           { btnSave ToolButton
             MoveScaled(0,0,4,4)
             ToolTip = ("Save translation")
-            Text = ("")
             Picture = Picture["icon:/small/save"]
           }
           { btnClear ToolButton
             MoveScaled(4,0,4,4)
             ToolTip = ("Clear this translation")
-            Text = ("")
             Picture = Picture["icon:/small/clear"]
           }
           { btnDoNotTranslate ToolButton
             MoveScaled(10,0,4,4)
             ToolTip = ("This string must not be translated")
-            Text = ("")
             Picture = Picture["icon:/small/warning"]
           }
           { btnCopy ToolButton
             MoveScaled(14,0,4,4)
             ToolTip = ("Copy untranslated string")
-            Text = ("")
             Picture = Picture["icon:/small/paste"]
           }
           { btnVerify ToolButton
             MoveScaled(18,0,4,4)
             ToolTip = ("Verify the translation")
-            Text = ("")
             Picture = Picture["icon:/small/watch"]
           }
           { btnNext ToolButton
             MoveScaled(22,0,4,4)
             ToolTip = ("Find next untranslated string")
-            Text = ("")
             Picture = Picture["icon:/small/down"]
           }
           { btnPrevious ToolButton
             MoveScaled(26,0,4,4)
             ToolTip = ("Find previous untranslated string")
-            Text = ("")
             Picture = Picture["icon:/small/up"]
           }
           { Panel2 Panel
@@ -113,12 +103,10 @@
           { txtFind TextBox
             MoveScaled(33,0,31,4)
             Expand = True
-            Text = ("")
           }
           { btnFind ToolButton
             MoveScaled(65,0,4,4)
             ToolTip = ("Find a string in translation")
-            Text = ("")
             Picture = Picture["icon:/small/find"]
           }
         }
@@ -136,20 +124,17 @@
         Spacing = True
         { lblComment Label
           MoveScaled(2,1,35,3)
-          Text = ("")
         }
         { txtOrig TextArea
           MoveScaled(2,4,37,5)
           Background = Color.Background
           Expand = True
-          Text = ("")
           ReadOnly = True
           Wrap = True
         }
         { txtTranslate TextArea
           MoveScaled(2,10,39,5)
           Expand = True
-          Text = ("")
           Wrap = True
         }
       }

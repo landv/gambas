@@ -1223,6 +1223,8 @@ void STREAM_blocking(STREAM *stream, bool block)
 	if (fd < 0)
 		return;
 	
+	stream->common.blocking = block;
+	
 	if (block)
 		fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) & ~O_NONBLOCK);
 	else
@@ -1231,10 +1233,11 @@ void STREAM_blocking(STREAM *stream, bool block)
 
 bool STREAM_is_blocking(STREAM *stream)
 {
-	int fd = STREAM_handle(stream);
+	return stream->common.blocking;
+	/*int fd = STREAM_handle(stream);
 	
 	if (fd < 0)
 		return TRUE;
 		
-	return (fcntl(fd, F_GETFL) & O_NONBLOCK) == 0;
+	return (fcntl(fd, F_GETFL) & O_NONBLOCK) == 0;*/
 }

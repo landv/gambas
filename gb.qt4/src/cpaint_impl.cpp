@@ -145,6 +145,13 @@ static int Begin(GB_PAINT *d)
 			target = wid;
 			
 		wid->drawn++;
+		
+		if (init_painting(d, target))
+			return TRUE;
+		
+		d->width = wid->width();
+		d->height = wid->height();
+		return FALSE;
 	}
 	else if (GB.Is(device, CLASS_Printer))
 	{

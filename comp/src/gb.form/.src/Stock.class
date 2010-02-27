@@ -8,8 +8,8 @@ Static Private $bInit As Boolean
 Static Private $aIconPath As String[]
 Static Private $cIconMap As Collection
 Static Private $aList As String[]
-Static Private $aSizeDec As Integer[] = [192, 128, 96, 72, 64, 48, 36, 32, 24, 22, 20, 16, 12]
-Static Private $aSizeInc As Integer[] = [12, 16, 20, 22, 24, 32, 36, 48, 64, 72, 96, 128, 192]
+Static Private $aSizeDec As Integer[] = [256, 128, 64, 48, 32, 24, 16]
+Static Private $aSizeInc As Integer[] = [16, 24, 32, 48, 64, 128, 256]
 
 Static Private Sub SearchDesktop()
 
@@ -292,7 +292,7 @@ Static Public Function _get(Key As String) As Picture
       sFile = Key & ".png"
     Endif
   
-    'If File.Dir(sFile) = "filesystems" Then sFile &= ";places" &/ File.Name(sFile)
+    If Not Exist(sPath) Then Continue
   
     For Each sFile In Split(sFile, ";")
   
@@ -303,7 +303,6 @@ Static Public Function _get(Key As String) As Picture
       Endif 
       
       sImagePath = Subst(sTemplate, iSize)
-      If Not Exist(File.Dir(sImagePath)) Then Continue
       
       Try hPict = Picture[sImagePath]
       If hPict Then Return hPict
@@ -336,8 +335,6 @@ Static Public Function _get(Key As String) As Picture
 
   Next
   
-  'Debug "Cannot find: "; Key
-
 End
 
 

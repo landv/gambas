@@ -280,13 +280,11 @@ Public Sub dwgExample_Draw()
   
   Dim hDrawingArea As DrawingArea = Last
   
-  With hDrawingArea
-    Draw.Font = .Font
-    'Draw.Line(0, .H / 2 - 1, .W - 1, .H / 2 - 1)
-    'Draw.Transparent = FALSE
-    Draw.Text(.Tag, 4, 0, .W - 16, .H - 4, Align.BottomNormal)
-    Draw.Line(4, .H - 4, .W - 9, .H - 4)
-  End With
+  'Draw.FillRect(Draw.Clip.X, Draw.Clip.Y, Draw.Clip.Width, Draw.Clip.Height, Int(Rnd(0, &H1000000)))
+  
+  Draw.Font = hDrawingArea.Font
+  Draw.Text(hDrawingArea.Tag, 4, 0, Draw.W - 16, Draw.H - 4, Align.BottomNormal)
+  Draw.Line(4, Draw.H - 4, Draw.W - 9, Draw.H - 4)
   
 End
 

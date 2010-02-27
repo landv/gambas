@@ -184,6 +184,8 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 				p = DRAW_get_current();
 			}
 				
+			//qDebug("%d %d %d %d", r.x(), r.y(), r.width(), r.height());
+			
 			if (!isTransparent())
 			{
 				p->translate(-r.x(), -r.y());

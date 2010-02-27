@@ -2,13 +2,10 @@
 
 { Form Form
   MoveScaled(0,0,69,74)
-  Text = ("")
   { mnuWindow Menu
-    Text = ("")
     Visible = False
   }
   { mnuMove Menu
-    Text = ("")
     { mnuPreviousTab Menu
       Action = "workspace-previous-tab"
       Text = ("Previous tab")
@@ -47,11 +44,9 @@
       Font = Font["Bold"]
       Foreground = Color.SelectedForeground
       Expand = True
-      Text = ("")
     }
     { btnClose Button
       MoveScaled(65,0,3,3)
-      Text = ("")
       Picture = Picture["img/close.png"]
     }
   }
@@ -95,11 +90,9 @@
     Name = "btnTabClose"
     MoveScaled(10,59,9,8)
     ToolTip = ("Close current tab")
-    Text = ("")
   }
   { timCheck #Timer
-    #X = 427
-    #Y = 462
+    #MoveScaled(57,14)
     Delay = 0
   }
 }
