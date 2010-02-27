@@ -1,69 +1,69 @@
 ' Gambas class file
 
-STATIC PUBLIC All AS NEW Object[]
+Static Public All As New Object[]
 
-PUBLIC Name AS String
-PUBLIC LastName AS String
-PUBLIC Mail AS String
-PUBLIC Country AS String
-PUBLIC Works AS NEW String[]
-PUBLIC Translator AS Boolean
-PUBLIC Developer AS Boolean
-PUBLIC Translation AS NEW String[]
+Public Name As String
+Public LastName As String
+Public Mail As String
+Public Country As String
+Public Works As New String[]
+Public Translator As Boolean
+Public Developer As Boolean
+Public Translation As New String[]
 
-PUBLIC SUB _new(hFile AS File)
+Public Sub _new(hFile As File)
   
-  DIM sLine AS String
-  DIM iPos AS Integer
+  Dim sLine As String
+  Dim iPos As Integer
   
-  LINE INPUT #hFile, sLine
-  IF Left(sLine) = "-" THEN LINE INPUT #hFile, sLine
+  Line Input #hFile, sLine
+  If Left(sLine) = "-" Then Line Input #hFile, sLine
   Name = Trim(sLine)
-  LINE INPUT #hFile, Mail
-  LINE INPUT #hFile, Country
+  Line Input #hFile, Mail
+  Line Input #hFile, Country
 
-  WHILE NOT Eof(hFile)
-    LINE INPUT #hFile, sLine
+  While Not Eof(hFile)
+    Line Input #hFile, sLine
     sLine = Trim(sLine)
-    IF NOT sLine THEN CONTINUE
-    IF Left(sLine) = "-" THEN BREAK 
-    IF Right(sLine) = "." THEN sLine = Left(sLine, -1)
-    IF InStr(sLine, "translation") THEN 
-      Translator = TRUE
+    If Not sLine Then Continue
+    If Left(sLine) = "-" Then Break 
+    If Right(sLine) = "." Then sLine = Left(sLine, -1)
+    If InStr(sLine, "translation") Then 
+      Translator = True
       Translation.Add(Trim(Replace(sLine, "translation", "")))
-    ELSE 
+    Else 
       Works.Add(sLine)
-      Developer = TRUE
-    ENDIF
-  WEND 
+      Developer = True
+    Endif
+  Wend 
   
   iPos = InStr(Name, " ")
-  IF iPos THEN 
+  If iPos Then 
     LastName = Mid$(Name, iPos + 1)
-  ELSE 
+  Else 
     LastName = Name
-  ENDIF
+  Endif
   
-  All.Add(ME)
+  All.Add(Me)
   
-END
+End
 
-PUBLIC SUB _compare(hAuthor AS CAuthor) AS Integer
+Public Sub _compare(hAuthor As CAuthor) As Integer
   
-  RETURN String.Comp(LastName, hAuthor.LastName, gb.Language + gb.Text)
+  Return String.Comp(LastName, hAuthor.LastName, gb.Language + gb.IgnoreCase)
   
-END
+End
 
-PRIVATE SUB GetMail(sMail AS String) AS String
+Private Sub GetMail(sMail As String) As String
   
   sMail = Replace(sMail, "@", "_AT_")
   sMail = Replace(sMail, ".", "_DOT_")
-  RETURN sMail
+  Return sMail
   
-END
+End
 
-PUBLIC SUB GetLink() AS String
+Public Sub GetLink() As String
   
-  RETURN "<a href=\"mailto:" & GetMail(Mail) & "\">" & Name & "</a>"
+  Return "<a href=\"mailto:" & GetMail(Mail) & "\">" & Name & "</a>"
   
-END
+End
