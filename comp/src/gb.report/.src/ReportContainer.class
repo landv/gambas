@@ -8,13 +8,13 @@ Public Const _IsContainer As Boolean = True
 Public Const _Group As String = "Container"
 Public Const _Properties As String = "*,Spacing"
 
-Private $aChild As New Object[]
+Private $aChild As New TControl[]
 Private $fSpacing As Float
 'PRIVATE $fPadding AS Float
 Private $sSpacingUnit As String
 'PRIVATE $sPaddingUnit AS String
 Private $bRelativeSpacing As Boolean
-Property Read Children As Object[]
+Property Read Children As TControl[]
 Property Spacing As String
 'PROPERTY Padding AS String
 Property Read _Spacing As Float
@@ -50,7 +50,7 @@ Public Sub _Free()
     
 End
 
-Private Function Children_Read() As Object[]
+Private Function Children_Read() As TControl[]
 
   Return $aChild
 
@@ -94,73 +94,100 @@ End
 ' END
 
 Public Sub _PaintBefore(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
-  Dim hChild As Object
+  Dim hChild As TControl
   Dim vi As Integer
   Dim hExt As PaintExtents
+  Dim fFrameWidth As Float
   
   hExt = Paint.ClipExtents
   
   Super._PaintBefore(Page, X, Y, hControl, VirtualId)
+  
+  X += hControl.RealLeft
+  Y += hControl.RealTop
+  
   For Each hChild In Me.Children
     vi = VirtualId
     If hControl.VirtualId > -1 Then vi = hControl.VirtualId
     
     'Evaluate if the object need to be painted
     
+    'Debug hChild.Ctrl;; X + hChild.RealLeft;; Y + hChild.RealTop;; "->";; X + hChild.RealLeft + hChild.RealWidth;; Y + hChild.RealTop + hChild.RealHeight; " DANS "; hExt.X;; hExt.Y;; "->";; hExt.X2;; hExt.Y2; " ?"
+    
     'reset the Painting flag
     hChild._SkipPainting = False
     'Test the painting Position
-    If Object.Type(Paint.Device) <> "Printer" Then 
-      If X + hControl.RealLeft > hExt.X2 Then hChild._SkipPainting = True
-      If Y + hControl.RealTop > hExt.Y2 Then hChild._SkipPainting = True
-      If Y + hControl.RealTop + hControl.RealWidth < hExt.Y Then hChild._SkipPainting = True
-      If X + hControl.RealLeft + hControl.RealWidth < hExt.X Then hChild._SkipPainting = True
-      If hChild._SkipPainting Then Continue
+    fFrameWidth = hChild.Ctrl._FrameWidth
+    If Not Paint.Device Is Printer And If hExt.Width > 0 And If hExt.Height > 0 Then 
+      If (X + hChild.RealLeft - fFrameWidth) > hExt.X2 Then 
+        hChild._SkipPainting = True
+        Continue
+      Endif
+      If (X + hChild.RealLeft + hChild.RealWidth + fFrameWidth) < hExt.X Then 
+        hChild._SkipPainting = True
+        Continue
+      Endif
+      If (Y + hChild.RealTop - fFrameWidth) > hExt.Y2 Then 
+        hChild._SkipPainting = True
+        Continue
+      Endif
+      If (Y + hChild.RealTop + hChild.RealHeight + fFrameWidth) < hExt.Y Then 
+        hChild._SkipPainting = True
+        Continue
+      Endif
     Endif
-      
-   
+    
+    If hChild.RelPage >= 0 And If (hChild.RelPage + hControl.RealPage) <> Page Then
+      hChild._SkipPainting = True
+      Continue
+    Endif
+    
+    'Debug "-> YES"
+    
     'Draw Before
-    If hChild.RelPage = -1 Then        
-     hChild.ctrl._PaintBefore(Page, X + hControl.RealLeft, Y + hControl.RealTop, hChild, vi)
-    Else If hChild.RelPage + hControl.RealPage = Page Then 
-      hChild.ctrl._PaintBefore(Page, X + hControl.RealLeft, Y + hControl.RealTop, hChild, vi)
-    Endif 
+    hChild.Ctrl._PaintBefore(Page, X, Y, hChild, vi)
   
   Next
   
 End
 
 Public Sub _Paint(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
-  Dim hChild As Object
+  
+  Dim hChild As TControl
   Dim vi As Integer
   
+  X += hControl.RealLeft
+  Y += hControl.RealTop
   
   For Each hChild In Me.Children
-  If hChild._SkipPainting Then Continue
-  vi = VirtualId
-  If hControl.VirtualId > -1 Then vi = hControl.VirtualId
+
+    If hChild._SkipPainting Then Continue
+    
+    Inc MTools.DrawCount
+    
+    vi = VirtualId
+    If hControl.VirtualId > -1 Then vi = hControl.VirtualId
   
-    If hChild.RelPage = -1 Then        
-     hChild.ctrl._Paint(Page, X + hControl.RealLeft, Y + hControl.RealTop, hChild, vi)
-    Else If hChild.RelPage + hControl.RealPage = Page Then 
-      hChild.ctrl._Paint(Page, X + hControl.RealLeft, Y + hControl.RealTop, hChild, vi)
-    Endif 
+    hChild.Ctrl._Paint(Page, X, Y, hChild, vi)
+    
   Next 
   
 End
 
 Public Sub _PaintAfter(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
+  
   Dim hChild As TControl
   Dim vi As Integer
+  
   Super._PaintAfter(Page, X, Y, hControl, VirtualId)
+  
+  X += hControl.RealLeft
+  Y += hControl.RealTop
+  
   For Each hChild In Me.Children
     If hChild._SkipPainting Then Continue
     'Draw After
-    If hChild.RelPage = -1 Then        
-     hChild.ctrl._PaintAfter(Page, X + hControl.RealLeft, Y + hControl.RealTop, hChild, vi)
-    Else If hChild.RelPage + hControl.RealPage = Page Then 
-      hChild.ctrl._PaintAfter(Page, X + hControl.RealLeft, Y + hControl.RealTop, hChild, vi)
-    Endif 
+    hChild.Ctrl._PaintAfter(Page, X, Y, hChild, vi)
   Next
   
 End

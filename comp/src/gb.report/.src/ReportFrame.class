@@ -25,6 +25,8 @@ Property Border As Integer
 
 Property Brush As ReportBrush
 
+Property Read _FrameWidth As Float
+
 
 
 Private Function BorderColor_Read() As Integer
@@ -72,15 +74,15 @@ Public Sub _PaintBefore(Page As Integer, X As Integer, Y As Integer, hControl As
 
   X1 = (x + hControl.RealLeft) 
   Y1 = (y + hControl.RealTop) 
-  X2 = (x + hControl.RealLeft + hControl.RealWidth - 1) 
-  Y2 = (y + hControl.RealTop + hControl.RealHeight - 1) 
+  X2 = (x + hControl.RealLeft + hControl.RealWidth) 
+  Y2 = (y + hControl.RealTop + hControl.RealHeight) 
 
   If Report.Debug Then
 
 
       Paint.Brush = Paint.Color(0)
       Paint.Dash = MTools.GetBorder(Line.Dot)
-      Paint.Rectangle(X1, Y1, X2 - X1 + 2, Y2 - Y1 + 2)
+      Paint.Rectangle(X1, Y1, X2 - X1, Y2 - Y1)
       Paint.Stroke
       
   Else 
@@ -101,7 +103,7 @@ Public Sub _PaintBefore(Page As Integer, X As Integer, Y As Integer, hControl As
       
       
     
-    Paint.Rectangle(X1, Y1, X2 - X1 + 2, Y2 - Y1 + 2)
+    Paint.Rectangle(X1, Y1, X2 - X1, Y2 - Y1)
     Paint.Fill
     
 
@@ -125,8 +127,8 @@ Dim X1, Y1, X2, Y2 As Integer
   
   X1 = (x + hControl.RealLeft) 
   Y1 = (y + hControl.RealTop) 
-  X2 = (x + hControl.RealLeft + hControl.RealWidth - 1) 
-  Y2 = (y + hControl.RealTop + hControl.RealHeight - 1) 
+  X2 = (x + hControl.RealLeft + hControl.RealWidth) 
+  Y2 = (y + hControl.RealTop + hControl.RealHeight) 
   
     If Me.Border <> Line.None Then 
       Paint.LineWidth = $fBorderWidth
@@ -138,7 +140,7 @@ Dim X1, Y1, X2, Y2 As Integer
       'Draw.Foreground = $iForeground
       'draw.FillStyle = Fill.None
         
-     paint.Rectangle(X1, Y1, X2 - X1 + 2, Y2 - Y1 + 2)
+     paint.Rectangle(X1, Y1, X2 - X1, Y2 - Y1)
       
       paint.Stroke
       
@@ -168,3 +170,9 @@ Public Sub _GetSizeHints(AvailableW As Integer, AvailableH As Integer, TotalWidt
   
 End
 
+
+Private Function _FrameWidth_Read() As Float
+
+  Return $fBorderWidth / 2 + 1
+
+End

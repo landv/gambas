@@ -155,12 +155,10 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 		if (r.isValid())
 		{
 			QPainter *p;
-			void *object = CWidget::getReal(this);
+			void *_object = CWidget::getReal(this);
 			
-			if (!object)
+			if (!_object)
 				return;
-			
-			bool frame = true; //!contentsRect().contains(event->rect());
 			
 			if (!isTransparent())
 			{
@@ -170,48 +168,38 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 
 			//qDebug("paint: %d %d %d %d", event->rect().x(), event->rect().y(), event->rect().width(), event->rect().height());
 
-			//status = DRAW_status();
-			//DRAW_begin(NULL, p, width(), height());
-			
 			if (_use_paint)
 			{
-				PAINT_begin(object);
+				PAINT_begin(THIS);
 				p = PAINT_get_current();
 			}
 			else
 			{
-				DRAW_begin(object);
+				DRAW_begin(THIS);
 				p = DRAW_get_current();
 			}
 				
-			//qDebug("%d %d %d %d", r.x(), r.y(), r.width(), r.height());
-			
 			if (!isTransparent())
 			{
 				p->translate(-r.x(), -r.y());
 			  p->setBrushOrigin(-r.x(), -r.y());
 			}
 			
-			if (_use_paint)
-				PAINT_clip(r.x(), r.y(), r.width(), r.height());
-			else
+			if (!_use_paint)
 				DRAW_clip(r.x(), r.y(), r.width(), r.height());
+			else
+				PAINT_clip(r.x(), r.y(), r.width(), r.height());
 			
 			//p->setClipRegion(event->region().intersect(contentsRect()));
 			//p->setBrushOrigin(-r.x(), -r.y());
 			
-			if (frame)
-				p->save();
+			p->save();
 			
-			GB.Raise(object, EVENT_draw, 0);
+			GB.Raise(THIS, EVENT_draw, 0);
 				
-			if (frame)
-			{
-				p->restore();
-				//paint.setClipRegion( event->region().intersect(frameRect()) );
-				p->setRenderHint(QPainter::Antialiasing, false);
-				drawFrame(p);
-			}
+			p->restore();
+			p->setRenderHint(QPainter::Antialiasing, false);
+			drawFrame(p);
 				
 			if (_use_paint)
 				PAINT_end();

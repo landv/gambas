@@ -5,12 +5,12 @@ Private $aFirstNames As String[] = ["Leo", "Mario", "Nathan", "Thomas", "Fabien"
 Private $aBornDates As String[] = ["1/12/1978", "24/10/1983", "18/04/1969", "15/05/1953", "12/12/1974", "16/11/1968", "30/06/1976", "3/11/1986", "05/08/1982", "23/10/1953"]
 
 Public Sub rbDemo_Click()
+  
   Report.Clear
   $sCurDemo = "Test" & Last.Tag
   Object.Call(Me, $sCurDemo)
   Slider1_Change
 
-  
 End
 
 Public Sub Test1()
@@ -32,7 +32,7 @@ Public Sub Test1()
   
   hHBox = New ReportHBox(Report)
   hHBox.Border = Line.Solid
-  hHBox.BorderWidth = 6
+  hHBox.BorderWidth = 6.5
   hHBox.Expand = True
   hHBox.Border = Line.Solid
   
@@ -188,14 +188,14 @@ Public Function UnitsToPixels(Value As Float) As Integer
   Return Value * f 
 End
 
-Public Sub Form_show()
-'   report.Size = "A4"
-'report.Layout
-  RadioButton1.Value = True
-  Test1
-  Slider1_Change
-
-End
+' Public Sub Form_show()
+' '   report.Size = "A4"
+' 'report.Layout
+'   RadioButton1.Value = True
+'   Test1
+'   Slider1_Change
+' 
+' End
 
 Public Sub Test4()
   'DIM hReport 
@@ -446,15 +446,31 @@ Public Sub Test4()
 End
 
 Public Sub Slider1_Change()
+
+  'Report.Debug = True
+
   DrawingArea1.Width = UnitsToPixels(Report._Width) * Slider1.Value / 100
   DrawingArea1.Height = UnitsToPixels(Report._Height) * Slider1.Value / 100
+  
   DrawingArea1.Refresh
+  
+  ' DrawingArea1.Clear
+  ' Paint.Begin(DrawingArea1)
+  ' Report.Paint(1)
+  ' Paint.End
+  
   Me.Title = "gb.Report Example [" & Slider1.Value & "%]"
 
 End
 
-Public Sub ScrollView1_Scroll()
+' Public Sub ScrollView1_Scroll()
+' 
+'   DrawingArea1.Refresh
+' 
+' End
 
-  DrawingArea1.Refresh
+Public Sub Form_Open()
+
+  RadioButton1.Value = True
 
 End

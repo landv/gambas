@@ -39,7 +39,7 @@ End
 Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer) As Float
   
   Dim hChildHints As TSizeHint
-  Dim hChild As Object
+  Dim hChild As TControl
   Dim fChildrenH As Float
   Dim PagePos As New Integer[]
   Dim iPage As Integer

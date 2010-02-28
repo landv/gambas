@@ -300,6 +300,28 @@ static void get_path_extents(QPainterPath *path, GB_EXTENTS *ext)
 static void ClipExtents(GB_PAINT *d, GB_EXTENTS *ext)
 {
 	get_path_extents(CLIP(d), ext);
+	if (EXTRA(d)->w > 0 && EXTRA(d)->h > 0)
+	{
+		int x1 = EXTRA(d)->x;
+		int x2 = x1 + EXTRA(d)->w;
+		int y1 = EXTRA(d)->y;
+		int y2 = y1 + EXTRA(d)->h;
+			
+		if (ext->x2 > ext->x1 && ext->y2 > ext->y1)
+		{
+			if (x1 < ext->x1) ext->x1 = x1;
+			if (x2 > ext->x2) ext->x2 = x2;
+			if (y1 < ext->y1) ext->y1 = y1;
+			if (y2 > ext->y2) ext->y2 = y2;
+		}
+		else
+		{
+			ext->x1 = x1;
+			ext->x2 = x2;
+			ext->y1 = y1;
+			ext->y2 = y2;
+		}
+	}
 }
 	
 static void Fill(GB_PAINT *d, int preserve)
@@ -950,12 +972,11 @@ void PAINT_clip(int x, int y, int w, int h)
 	GB_PAINT *d = (GB_PAINT *)DRAW.Paint.GetCurrent();
 	if (d)
 	{
-		QPainterPath path;
-		
-		path.addRect((qreal)x, (qreal)y, (qreal)w, (qreal)h);
-	
-		delete EXTRA(d)->clip;
-		EXTRA(d)->clip = new QPainterPath(path);
+		PAINTER(d)->setClipRect(x, y, w, h);
+		EXTRA(d)->x = x;
+		EXTRA(d)->y = y;
+		EXTRA(d)->w = w;
+		EXTRA(d)->h = h;
 	}
 }
 

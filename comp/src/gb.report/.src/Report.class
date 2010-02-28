@@ -56,17 +56,25 @@ End
 
 Public Sub Paint(Page As Integer)
    
-   If $bLayoutIsDirty Then Layout()
+  If $bLayoutIsDirty Then Layout()
    
-    If page < 1 Or page > $iCount Then 
-      Error.Raise("This page does not exist")
-    Endif
-    Dec page
-    Paint.Clip
-    Paint.Scale($fScale, $fScale)
-    Me._PaintBefore(Page, 0, 0, $hReportTControl, -1)
-    Me._Paint(Page, 0, 0, $hReportTControl, -1)
-    Me._PaintAfter(Page, 0, 0, $hReportTControl, -1)
+  If page < 1 Or page > $iCount Then 
+    Error.Raise("This page does not exist")
+  Endif
+  Dec page
+  
+  'Paint.Clip
+  With Paint.ClipExtents
+    Debug .X;; .Y;; .Width;; .Height
+  End With
+  MTools.DrawCount = 0
+  
+  Paint.Scale($fScale, $fScale)
+  Me._PaintBefore(Page, 0, 0, $hReportTControl, -1)
+  Me._Paint(Page, 0, 0, $hReportTControl, -1)
+  Me._PaintAfter(Page, 0, 0, $hReportTControl, -1)
+  
+  Debug "DrawCount = "; MTools.DrawCount
     
 End
 

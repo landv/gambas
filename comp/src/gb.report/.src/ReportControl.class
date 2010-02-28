@@ -52,6 +52,7 @@ Property Read _Padding As Float
 Property Read _RelativeWidth As Boolean
 Property Read _RelativeHeight As Boolean
 Property Read _RelativePadding As Boolean
+Property Read _FrameWidth As Float
 
 Property Left As String
 Property Top As String
@@ -337,5 +338,9 @@ End
 Private Function _RelativePadding_Read() As Boolean
 
   Return $bRelativePadding
+
+End
+
+Private Function _FrameWidth_Read() As Float
 
 End

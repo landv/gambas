@@ -112,6 +112,7 @@ typedef
 		QPainterPath *path;
 		QPainterPath *clip;
 		int fillRule;
+		int x, y, w, h;
 	}
 	QT_PAINT_EXTRA;
 	
