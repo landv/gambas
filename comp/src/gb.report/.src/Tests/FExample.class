@@ -221,8 +221,8 @@ Public Sub Test4()
 
   
   'Report.Resolution = Desktop.Resolution
-  report.size = "A4"
-  report.orientation = report.Portrait
+  'report.size = "A4"
+  'report.orientation = report.Portrait
   'Report.Units = Units.cm 
   Report.Padding = "1 cm"
   Object.Attach(report, Me, "Report")
@@ -449,7 +449,7 @@ Public Sub Slider1_Change()
 
   'Report.Debug = True
 
-  DrawingArea1.Resize(UnitsToPixels(Report._Width) * Slider1.Value / 100, UnitsToPixels(Report._Height) * Slider1.Value / 100)
+  DrawingArea1.Resize((21 * Desktop.Resolution / 2.54) * Slider1.Value / 100, (29.7 * Desktop.Resolution / 2.54) * Slider1.Value / 100)
   
   DrawingArea1.Refresh
   

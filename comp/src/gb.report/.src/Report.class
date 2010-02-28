@@ -4,21 +4,17 @@ Create Static
 Export
 Inherits ReportVBox
 
-Public Const _Properties As String = "*,Orientation{Report.Portrait;Landscape},Size"
+Public Const _Properties As String = "*"
 Public Const _HiddenControls As String = "Report,ReportControl,ReportContainer"
 Public Const _IsForm As Boolean = True
 
 'Public Constants
-Public Const Portrait As Integer = 0
-Public Const Landscape As Integer = 1
 Public {Debug} As Boolean = False
 
 Private iCurPage As Integer = 0
 Private $iCount As Integer = -1
 Private $bLayoutIsDirty As Boolean = True
 Private $fScale As Float = 1.0
-Private $iOrientation As Integer = Portrait
-Private $sSize As String = "A4"
 Private $hReportTControl As New TControl
 Private hData As Object
 
@@ -26,15 +22,13 @@ Property Read Count As Integer
 Property Height As String
 Property Width As String
 Property Scale As Float
-Property Orientation As Integer
-Property Size As String
 
 'EVENT Data()
 
 Public Sub _New()
 
   object.Attach(Me, Me, "Report")
-  SetReportSize
+  
   $hReportTControl.RelPage = 0
   ReportControl._ObjectFromId[Me.id] = Me
   
@@ -43,9 +37,11 @@ End
 Public Sub Layout()
   
   If Not $bLayoutIsDirty Then Return 
-  
   MTools.ReportResolution = Paint.ResolutionX
-  SetReportSize()
+  Me.Width = MTools.PixelsToUnits(Paint.Width) & " cm"
+  Me.Height = MTools.PixelsToUnits(Paint.Height) & " cm"
+  
+  
   $hReportTControl.ctrl = Me
   $iCount = $hReportTControl._SetGeometry(0, 0, Me.Width, Me.Height) + 1
   MTools.PageCount = $iCount
@@ -148,62 +144,6 @@ End
 '   
 ' End
 
-
-Private Function Size_Read() As String
-
-  Return $sSize
-
-End
-
-Private Sub Size_Write(Value As String)
-
-  $sSize = Value
-
-End
-
-Private Sub SetReportSize()
-  Dim w As Float
-  Dim h As Float
-  If $sSize = "Custom" Then Return 
-  Select Case $sSize
-    Case "A4"
-      w = 21
-      h = 29.7
-    Case "A3"
-      w = 29.7
-      h = 42
-      
-    Case "A5"
-    
-    Case "A6"
-    Case "Letter"
-    Case Else 
-  End Select
-  
-  If Me.Orientation = Portrait Then 
-    Me.Width = w & " cm"
-    Me.Height = h & " cm"
-  Else 
-    Me.Width = h & " cm"
-    Me.Height = w & " cm"
-  
-  Endif
-  
-End
-
-
-Private Function Orientation_Read() As Integer
-
-  Return $iOrientation
-
-End
-
-Private Sub Orientation_Write(Value As Integer)
-
-  $iOrientation = Value
-
-End
-
 Public Sub Clear()
   
   Super._Free
@@ -212,8 +152,8 @@ Public Sub Clear()
   '$iResolution = Desktop.Resolution
   $bLayoutIsDirty = True
   $fScale = 1.0
-  $iOrientation = Portrait
-  $sSize = "A4"
+
+
   Me.Spacing = "0 cm"
   Me.Padding = "0 cm"
 End
