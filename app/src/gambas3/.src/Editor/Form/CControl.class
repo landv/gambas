@@ -247,9 +247,9 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
           hCtrl.Transparent = hFamily.IsTransparent(Me)
         Else
           hCtrl.Design = Not IsContainer()
-          If Not IsMultiContainer() Then
-            Try hCtrl.Text = sName
-          Endif
+          ' If Not IsMultiContainer() Then
+          '   Try hCtrl.Text = sName
+          ' Endif
         Endif
 
       Endif
@@ -277,9 +277,11 @@ Private Sub InitControl(hCtrl As Object)
   $cValue["#Width"] = 0
   $cValue["#Height"] = 0
 
-  Try SetProperty("Text", hCtrl.Text)
-  SetProperty("Visible", True)
-  SetProperty("Tag", Null)
+  
+
+  'Try SetProperty("Text", hCtrl.Text)
+  'SetProperty("Visible", True)
+  'SetProperty("Tag", Null)
 
   If DrawWith Then
     For Each hProp In CComponent.Classes[Kind].Properties

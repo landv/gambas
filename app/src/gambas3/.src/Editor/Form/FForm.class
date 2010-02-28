@@ -993,7 +993,7 @@ Public Sub Control_MouseMove()
       Last.Mouse = Mouse.Cross
 
       hParent = $hCurrent
-      $hCurrent = CreateControl($sTool, hParent)
+      $hCurrent = CreateControl($sTool, hParent,, True)
 
       FindContainer(hParent, $X, $Y, COORD_INSIDE_TO_CONTROL)
       $X = $iContX
@@ -1218,7 +1218,7 @@ End
 ' END
 
 
-Public Function CreateControl(sClass As String, hParent As CControl, Optional sName As String) As CControl
+Public Function CreateControl(sClass As String, hParent As CControl, Optional sName As String, Optional bSetText As Boolean) As CControl
 
   Dim hCtrl As CControl
 
@@ -1240,6 +1240,7 @@ Public Function CreateControl(sClass As String, hParent As CControl, Optional sN
   Endif
 
   Control[sName] = hCtrl
+  If bSetText Then Try hCtrl.SetProperty("Text", sName)
 
   If sClass = "Menu" Then
     If hParent.Name = Me.Name Then
@@ -1284,7 +1285,7 @@ Public Sub AddControl(sClass As String, Optional hParent As CControl, Optional X
     
   Endif
 
-  hCtrl = CreateControl(sClass, hParent)
+  hCtrl = CreateControl(sClass, hParent,, True)
 
   If X <> 0 Or Y <> 0 Then hCtrl.Move(X, Y)
 
@@ -2836,7 +2837,7 @@ Public Sub Control_Drop()
     ' X -= hParent.Control.ClientX
     ' Y -= hParent.Control.ClientY
   
-    hCtrl = CreateControl("PictureBox", hParent)
+    hCtrl = CreateControl("PictureBox", hParent,, True)
     hCtrl.Move(Max(0, X - hImage.Width / 2), Max(0, Y - hImage.Height / 2))
     hCtrl.Resize(hImage.Width, hImage.Height)
     hCtrl.SetProperty("Picture", Mid$(sPath, Len(Project.Dir) + 2))
