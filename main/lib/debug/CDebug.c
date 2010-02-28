@@ -66,7 +66,10 @@ static void callback_read(int fd, int type, intptr_t param)
       n = read(_fdr, _buffer, BUFFER_SIZE);
 
     if (n <= 0)
+		{
+			usleep(10000); // the callback is called again and again even if there is nothing to read, why?
       break;
+		}
     
     p = 0;
     for (i = 0; i < n; i++)

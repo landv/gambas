@@ -76,6 +76,10 @@ static void exit_child(void);
 
 static void callback_write(int fd, int type, CPROCESS *process)
 {
+	#ifdef DEBUG_ME
+	fprintf(stderr, "callback_write: %d %p\n", fd, process);
+	#endif
+	
 	if (process->to_string)
 	{
 		int n = read(fd, COMMON_buffer, 256);
@@ -83,9 +87,9 @@ static void callback_write(int fd, int type, CPROCESS *process)
 		{
 			STRING_add(&process->result, COMMON_buffer, n);
 			CSTREAM_stream(process)->process.read_something = TRUE;
-			#ifdef DEBUG_ME
-			fprintf(stderr, "callback_write: result = '%s'\n", process->result);
-			#endif
+			//#ifdef DEBUG_ME
+			//fprintf(stderr, "callback_write: result = '%s'\n", process->result);
+			//#endif
 		}
 	}
 	else if (!STREAM_eof(CSTREAM_stream(process))) //process->running &&
@@ -98,6 +102,10 @@ static int callback_error(int fd, int type, CPROCESS *process)
 	/*fprintf(stderr, ">> Write\n"); fflush(stderr);*/
 	char buffer[1024];
 	int n;
+
+	#ifdef DEBUG_ME
+	fprintf(stderr, "callback_error: %d %p\n", fd, process);
+	#endif
 
 	n = read(fd, buffer, sizeof(buffer));
 

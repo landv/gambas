@@ -75,7 +75,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   
 End
 
-Public Sub _Paint(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
+Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
 
     'Draw.Foreground = Me.Foreground
     Paint.Brush = Paint.Color(Me.BorderColor)

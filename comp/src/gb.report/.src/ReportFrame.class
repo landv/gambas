@@ -66,7 +66,8 @@ Private Sub Border_Write(Value As Integer)
   $iBorder = Value
 
 End
-Public Sub _PaintBefore(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
+
+Public Sub _PaintBefore(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
 
   Dim X1, Y1, X2, Y2 As Integer
   Dim hImage As Picture
@@ -114,14 +115,7 @@ Public Sub _PaintBefore(Page As Integer, X As Integer, Y As Integer, hControl As
     
 End
 
-Public Sub _Paint(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
-  
-
-    
-  
-End
-
-Public Sub _PaintAfter(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
+Public Sub _PaintAfter(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
   
 Dim X1, Y1, X2, Y2 As Integer
   

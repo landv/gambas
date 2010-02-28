@@ -93,15 +93,21 @@ End
 ' ' 
 ' END
 
-Public Sub _PaintBefore(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
+Public Sub _ClipChildren(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer, fScale As Float)
+  
   Dim hChild As TControl
   Dim vi As Integer
   Dim hExt As PaintExtents
   Dim fFrameWidth As Float
+  Dim CX1, CX2, CY1, CY2 As Float
+  Dim hCont As ReportContainer
   
-  hExt = Paint.ClipExtents
-  
-  Super._PaintBefore(Page, X, Y, hControl, VirtualId)
+  With Paint.ClipExtents
+    CX1 = .X / fScale
+    CY1 = .Y / fScale
+    CX2 = .X2 / fScale
+    CY2 = .Y2 / fScale
+  End With
   
   X += hControl.RealLeft
   Y += hControl.RealTop
@@ -112,26 +118,26 @@ Public Sub _PaintBefore(Page As Integer, X As Integer, Y As Integer, hControl As
     
     'Evaluate if the object need to be painted
     
-    'Debug hChild.Ctrl;; X + hChild.RealLeft;; Y + hChild.RealTop;; "->";; X + hChild.RealLeft + hChild.RealWidth;; Y + hChild.RealTop + hChild.RealHeight; " DANS "; hExt.X;; hExt.Y;; "->";; hExt.X2;; hExt.Y2; " ?"
+    'Debug hChild.Ctrl;; X + hChild.RealLeft;; Y + hChild.RealTop;; "->";; X + hChild.RealLeft + hChild.RealWidth;; Y + hChild.RealTop + hChild.RealHeight; " DANS "; CX1;; CY1;; "->";; CX2;; CY2; " ?"
     
     'reset the Painting flag
     hChild._SkipPainting = False
     'Test the painting Position
     fFrameWidth = hChild.Ctrl._FrameWidth
-    If Not Paint.Device Is Printer And If hExt.Width > 0 And If hExt.Height > 0 Then 
-      If (X + hChild.RealLeft - fFrameWidth) > hExt.X2 Then 
+    If Not Paint.Device Is Printer And If CX2 > CX1 And If CY2 > CY1 Then 
+      If (X + hChild.RealLeft - fFrameWidth) > CX2 Then 
         hChild._SkipPainting = True
         Continue
       Endif
-      If (X + hChild.RealLeft + hChild.RealWidth + fFrameWidth) < hExt.X Then 
+      If (X + hChild.RealLeft + hChild.RealWidth + fFrameWidth) < CX1 Then 
         hChild._SkipPainting = True
         Continue
       Endif
-      If (Y + hChild.RealTop - fFrameWidth) > hExt.Y2 Then 
+      If (Y + hChild.RealTop - fFrameWidth) > CY2 Then 
         hChild._SkipPainting = True
         Continue
       Endif
-      If (Y + hChild.RealTop + hChild.RealHeight + fFrameWidth) < hExt.Y Then 
+      If (Y + hChild.RealTop + hChild.RealHeight + fFrameWidth) < CY1 Then 
         hChild._SkipPainting = True
         Continue
       Endif
@@ -144,14 +150,41 @@ Public Sub _PaintBefore(Page As Integer, X As Integer, Y As Integer, hControl As
     
     'Debug "-> YES"
     
-    'Draw Before
+    If hChild.Ctrl Is ReportContainer Then
+      hCont = hChild.Ctrl
+      hCont._ClipChildren(Page, X, Y, hChild, vi, fScale)
+    Endif
+    
+  Next
+  
+End
+
+
+Public Sub _PaintBefore(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
+  
+  Dim hChild As TControl
+  Dim vi As Integer
+  Dim hExt As PaintExtents
+  Dim fFrameWidth As Float
+  
+  Super._PaintBefore(Page, X, Y, hControl, VirtualId)
+  
+  X += hControl.RealLeft
+  Y += hControl.RealTop
+  
+  For Each hChild In Me.Children
+    If hChild._SkipPainting Then Continue
+    
+    vi = VirtualId
+    If hControl.VirtualId > -1 Then vi = hControl.VirtualId
+    
     hChild.Ctrl._PaintBefore(Page, X, Y, hChild, vi)
   
   Next
   
 End
 
-Public Sub _Paint(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
+Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
   
   Dim hChild As TControl
   Dim vi As Integer
@@ -174,7 +207,7 @@ Public Sub _Paint(Page As Integer, X As Integer, Y As Integer, hControl As TCont
   
 End
 
-Public Sub _PaintAfter(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
+Public Sub _PaintAfter(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
   
   Dim hChild As TControl
   Dim vi As Integer

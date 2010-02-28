@@ -24,6 +24,8 @@ Private $hWebView As WebView
 
 Private $iHighlightColor As Integer
 
+Static Private $aFieldUseDelete As String[] = ["Font", "Picture", "String[]", "Path", "Color", "Field[]", "Image"]
+
 Public Sub _new()
   
   Settings.Read(Me)
@@ -386,7 +388,7 @@ Public Function SaveProperty() As Boolean
 
       If Not IsNull(Val(vVal)) Then vVal = Val(vVal)
 
-    Case "s", "Font", "Picture", "Constant", "List", "Path"
+    Case "s", "Font", "Picture", "Constant", "List", "Path", "Image"
     
     Case "String[]", "Field[]"
     
@@ -675,7 +677,7 @@ Private Sub ShowProperty(Optional sFocus As String)
       cmbProperty.Add("False")
       cmbProperty.Add("True")
 
-    Case "Font", "Picture", "Path", "Color"
+    Case "Font", "Picture", "Path", "Color", "Image"
       
       bButton = True
       txtProperty.ReadOnly = True
@@ -807,7 +809,7 @@ End
 Public Sub txtProperty_KeyPress()
 
   If txtProperty.ReadOnly Then
-    If $sType = "Font" Or If $sType = "Picture" Or If $sType = "String[]" Or If $sType = "Path" Or If $sType = "Color" Or If $sType = "Field[]" Then
+    If $aFieldUseDelete.Exist($sType) Then
       If Key.Code = Key.Delete Or Key.Code = Key.Backspace Then
 
         txtProperty.Text = ""
@@ -894,9 +896,9 @@ Public Sub btnProperty_Click()
       If FColorChooser.Run(sColor) Then Goto _EXIT
       $hEditor.Text = FColorChooser.Color
 
-    Case "Picture"
+    Case "Picture", "Image"
 
-      sDest = FSelectIcon.Run($sOldVal) 'GetPicture()
+      sDest = FSelectIcon.Run($sOldVal, $sType = "Image") 'GetPicture()
       If Not sDest Then Goto _EXIT
       $hEditor.Text = sDest
 

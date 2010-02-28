@@ -378,14 +378,82 @@ Public Sub HasProperty(sProp As String) As Boolean
 End
 
 
+Private Function GetRealValue(sProp As String, vVal As Variant) As Variant
+  
+  Dim vRealVal As Variant
+  Dim hProp As CPropertyInfo
+  Dim vConstVal As Variant
+  
+  Try hProp = CComponent.Classes[Kind].Properties[sProp]
+  If IsNull(hProp) Then Return
+
+  If IsNull(vVal) Then
+    vRealVal = hProp.DefaultValue
+  Else
+    vRealVal = vVal
+  Endif
+
+  If IsNull(vRealVal) Then Return
+
+  Select hProp.Type
+
+    Case "Font"
+
+      'IF NOT IsNull(vRealVal) THEN
+      vRealVal = Font[vRealVal]
+      'ENDIF
+
+    Case "Color"
+
+      If IsString(vRealVal) Then
+        If Not IsNull(Val(vRealVal)) Then
+          vRealVal = Val(vRealVal)
+        Else
+          vRealVal = Object.GetProperty(Color, vRealVal)
+        Endif
+      Endif
+
+    Case "Picture"
+
+      If vRealVal Begins "icon:/" Then 
+        vRealVal = Picture[vRealVal]
+      Else
+        vRealVal = Picture.Load(File.Dir(Project.Path) &/ vRealVal)
+      Endif
+
+    Case "Constant"
+
+      'IF IsNumber(vRealVal) THEN
+      vConstVal = hProp.ConstantList["#" & CStr(vRealVal)]
+      If IsNull(vConstVal) Then vConstVal = vRealVal
+      'ENDIF
+
+      If Not IsNull(vConstVal) Then
+        vRealVal = CInt(CComponent.Classes[hProp.ConstantClass].Symbols[vConstVal].Value)
+      Else 
+        vRealVal = Null
+      Endif
+      
+  End Select
+  
+  Return vRealVal
+
+End
+
+Public Function GetPropertyReal(sProp As String) As Variant
+  
+  Return GetRealValue(sProp, $cValue[sProp])
+  
+End
+
+
 Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApply As Boolean) As Boolean
 
   Dim vDefault As Variant
   Dim hProp As CPropertyInfo
   Dim vRealVal As Variant
-  Dim vConstVal As Variant
   Dim bDoNotRedirect As Boolean
-  Dim hPict As Picture
+  Dim bApply As Boolean
 
   If $cSynonymous.Exist(sProp) Then sProp = $cSynonymous[sProp]
 
@@ -426,65 +494,19 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
     ' Endif
   Endif
 
-  If IsNull(vVal) Then
-    vRealVal = vDefault
-  Else
-    vRealVal = vVal
-  Endif
-
   'IF Kind = "TabStrip" THEN
   If IsMultiContainer() Then
     If sProp = "Picture" Then
+      If IsNull(vVal) Then
+        vRealVal = vDefault
+      Else
+        vRealVal = vVal
+      Endif
       Tag[Control.Index] = vRealVal
     Endif
   Endif
 
-  If Not IsNull(vRealVal) Then
-
-    Select hProp.Type
-
-      Case "Font"
-
-        'IF NOT IsNull(vRealVal) THEN
-        vRealVal = Font[vRealVal]
-        'ENDIF
-
-      Case "Color"
-
-        If IsString(vRealVal) Then
-          If Not IsNull(Val(vRealVal)) Then
-            vRealVal = Val(vRealVal)
-          Else
-            vRealVal = Object.GetProperty(Color, vRealVal)
-          Endif
-        Endif
-
-      Case "Picture"
-
-        If vRealVal Begins "icon:/" Then 
-          hPict = Picture[vRealVal]
-        Else
-          hPict = Picture.Load(File.Dir(Project.Path) &/ vRealVal)
-        Endif
-
-        vRealVal = hPict
-        
-      Case "Constant"
-
-        'IF IsNumber(vRealVal) THEN
-        vConstVal = hProp.ConstantList["#" & CStr(vRealVal)]
-        If IsNull(vConstVal) Then vConstVal = vRealVal
-        'ENDIF
-
-        If Not IsNull(vConstVal) Then
-          vRealVal = CInt(CComponent.Classes[hProp.ConstantClass].Symbols[vConstVal].Value)
-        Else 
-          vRealVal = Null
-        Endif
-        
-    End Select
-
-  Endif
+  vRealVal = GetRealValue(sProp, vVal)
 
   'PRINT "SetProperty: "; Object.Type(Control); "."; sProp; " = "; Str(vRealVal)
 

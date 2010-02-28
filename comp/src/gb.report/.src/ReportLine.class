@@ -3,7 +3,7 @@
 Export
 Inherits ReportControl
 
-Public Const _Properties As String = "*,Direction{Align.TopLeft;Top;TopRight;Left;Right;BottomLeft;Bottom;BottomRight}=BottomRight,LineWidth,LineColor{Color}"
+Public Const _Properties As String = "*,Direction{Align.TopLeft;Top;TopRight;Left;Right;BottomLeft;Bottom;BottomRight}=BottomRight,LineWidth=1,LineColor{Color}"
 
 Property Direction As Integer
 
@@ -39,7 +39,7 @@ Public Sub _GetSizeHints(AvailableW As Integer, AvailableH As Integer, TotalWidt
   
 End
 
-Public Sub _Paint(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
+Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
   Dim iX, iY, W, H, W2, H2 As Integer
   If Me.LineStyle = Line.None Then Return
   If Me.LineStyle <> Line.Solid Then Paint.Dash = MTools.GetBorder(Me.LineStyle)

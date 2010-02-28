@@ -2,28 +2,11 @@
 Export
 Inherits ReportControl
 
+Public Const _Properties As String = "*,Image{Image}"
 
 Private $hPic As Image
-Private $sPath As String
 
-Property Path As String
-
-Private Function Path_Read() As String
-
-  Return $sPath
-
-End
-
-Private Sub Path_Write(Value As String)
-
-  If Exist(Value) Then
-    $sPath = Value
-    $hPic = Image.Load(Value)
-  Else 
-    Error.Raise("Cannot find this file !")
-  Endif
-  
-End
+Property Image As Image
 
 Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float) As TSizeHint
 
@@ -51,21 +34,36 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   
 End
 
-Public Sub _Paint(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
+Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
     
-    Dim ix, iy As Integer
+    Dim ix, iy As Float
+    Dim hBrush As PaintBrush
     
     ix = x + hControl.RealLeft + MTools.UnitsToPixels(Me.Padding)
     iy = y + hControl.RealTop + MTools.UnitsToPixels(Me.Padding)
     
-    $hPic = $hPic.Stretch(hControl.RealWidth, hControl.RealHeight)
+    '$hPic = $hPic.Stretch(hControl.RealWidth, hControl.RealHeight)
     
-    Paint.Brush = Paint.Image($hpic, ix, iy)
-    Paint.Rectangle((x + hControl.RealLeft + MTools.UnitsToPixels(Me.Padding)), (y + hControl.RealTop + MTools.UnitsToPixels(Me.Padding)), hControl.RealWidth, hControl.RealHeight)
-    
+    hBrush = Paint.Image($hpic)
+    hBrush.Translate(ix, iy)
+    hBrush.Scale(hControl.RealWidth / $hPic.Width, hControl.RealHeight / $hPic.Height)
+    Paint.Brush = hBrush
+    Paint.Rectangle(ix, iy, hControl.RealWidth, hControl.RealHeight)
     Paint.Fill
     
     'Draw.Picture($hPic, (x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
 
 End
 
+
+Private Function Image_Read() As Image
+
+  Return $hPic
+
+End
+
+Private Sub Image_Write(Value As Image)
+
+  $hPic = Value
+
+End

@@ -234,7 +234,7 @@ Public Sub Test4()
   hCont = New ReportHBox(Report)
   hCont.Height = "3 cm"
   img = New ReportImage(hCont)
-  img.Path = "new-logo.png"
+  img.Image = Image.Load("new-logo.png")
   img.Width = "3 cm"
 
   'img.Height = "3 cm"
@@ -449,8 +449,7 @@ Public Sub Slider1_Change()
 
   'Report.Debug = True
 
-  DrawingArea1.Width = UnitsToPixels(Report._Width) * Slider1.Value / 100
-  DrawingArea1.Height = UnitsToPixels(Report._Height) * Slider1.Value / 100
+  DrawingArea1.Resize(UnitsToPixels(Report._Width) * Slider1.Value / 100, UnitsToPixels(Report._Height) * Slider1.Value / 100)
   
   DrawingArea1.Refresh
   

@@ -4,11 +4,11 @@
 Private $iCtrl As Integer
 Public RealPage As Integer
 Public RelPage As Integer = -1
-Public RealLeft As Integer
-Public RealTop As Integer
-Public RealWidth As Integer
-Public RealHeight As Integer 
-Public _RealPadding As Integer
+Public RealLeft As Float
+Public RealTop As Float
+Public RealWidth As Float
+Public RealHeight As Float
+Public _RealPadding As Float
 Public _SkipPainting As Boolean = False
 Public VirtualId As Integer = -1
 Property Ctrl As ReportControl

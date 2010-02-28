@@ -10,8 +10,8 @@ End
 
 Public Sub IsPainted(hCtrl As CControl) As Boolean
 
-  If hCtrl.Kind = "ReportLabel" Then Return True
-  If hCtrl.Kind = "ReportTextLabel" Then Return True
+  'If hCtrl.Kind = "ReportLabel" Then Return True
+  'If hCtrl.Kind = "ReportTextLabel" Then Return True
   If hCtrl.Kind = "ReportLine" Then Return True
   
 End
@@ -33,23 +33,23 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
   
     Case "ReportLabel"
     
-      Try Paint.Font = Font[hCtrl["Font"]]
-      Paint.Text(hCtrl["Text"], 0, 0, hCtrl.Width, hCtrl.Height, Classes["Align"][hCtrl["Alignment"]].Value)
-      Paint.Fill
+      Try Draw.Font = Font[hCtrl["Font"]]
+      Draw.Text(hCtrl["Text"], 0, 0, hCtrl.Width, hCtrl.Height, Classes["Align"][hCtrl["Alignment"]].Value)
+      'Paint.Fill
       
     Case "ReportTextLabel"
     
-      Try Paint.Font = Font[hCtrl["Font"]]
-      Paint.RichText(hCtrl["Text"], 0, 0, hCtrl.Width, hCtrl.Height, Classes["Align"][hCtrl["Alignment"]].Value)
-      Paint.Fill
+      Try Draw.Font = Font[hCtrl["Font"]]
+      Draw.RichText(hCtrl["Text"], 0, 0, hCtrl.Width, hCtrl.Height, Classes["Align"][hCtrl["Alignment"]].Value)
+      'Paint.Fill
       
     Case "ReportLine"
     
       Paint.LineWidth = 1
       Paint.Brush = Paint.Color(Color.Black)
       Try Paint.LineWidth = hCtrl["LineWidth"]
-      'Try Paint.Brush = Paint.Color(hCtrl["LineColor"])
-      X = Paint.LineWidth
+      Try Paint.Brush = Paint.Color(hCtrl.GetPropertyReal("LineColor"))
+      X = Paint.LineWidth / 2
       Y = X
       W = hCtrl.Width - X
       H = hCtrl.Height - X

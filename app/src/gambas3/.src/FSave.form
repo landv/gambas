@@ -3,17 +3,17 @@
 { Form Form
   MoveScaled(18,23,81,46)
   Text = ("Save modified files")
-  Icon = Picture["icon:/16/quit"]
+  Icon = Picture["icon:/16/save"]
   Resizable = False
   { btnQuit Button
-    MoveScaled(63,7,17,5)
+    MoveScaled(63,1,17,5)
     Enabled = False
     Text = ("Continue")
     Picture = Picture["icon:/medium/play"]
     Default = True
   }
   { btnCancel Button
-    MoveScaled(63,1,17,5)
+    MoveScaled(63,6,17,5)
     Text = ("Cancel")
     Picture = Picture["icon:/medium/close"]
     Cancel = True
