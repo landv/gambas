@@ -1,4 +1,96 @@
 -------------------------------------------------------------------------------
+ gambas2-2.20.0 - 01 Mar 2010
+-------------------------------------------------------------------------------
+
+[DEVELOPMENT ENVIRONMENT]
+* BUG: Always correctly round control coordinates in the form editor when
+  the form Scaled property is set.
+* BUG: Clicking on the "About component" button in the project property
+  dialog cannot crash anymore.
+* BUG: Fix the packager for Debian and Ubuntu distributions.
+
+[INTERPRETER]
+* BUG: Never display newlines inside error message, the debugger does not
+  like them.
+* BUG: Correctly detect out of memory errors when creating big arrays.
+* BUG: Use the system maximum path length constant, not ours.
+* BUG: Do not crash if a RDir() finds a too long path.
+* BUG: Fix string charset conversion routine API.
+* BUG: DateAdd() now does not fail anymore when substracting months up to
+  January.
+* BUG: Allow a dynamic class to inherit a native static class without
+  crashing.
+
+[COMPILER]
+* BUG: Use the system maximum path length constant, not ours.
+* BUG: Allow INHERITS to be followed by any identifier.
+
+[INFORMER]
+* BUG: Use the system maximum path length constant, not ours.
+
+[GB.DEBUG]
+* BUG: Use the system maximum path length constant, not ours.
+
+[GB.DESKTOP]
+* BUG: Prevent gb.desktop from being unloaded by the interpreter. Otherwise
+  there is a risk that the libxtst library is unloaded before the libx11
+  library, which leads to a crash.
+
+[GB.FORM]
+* BUG: Clicking inside the FontChooser style ListBox now always works
+  correctly.
+* BUG: Right and bottom SidePanels now shrink as expected when their parent
+  container has no arrangement.
+* BUG: In DateChooser, switching to February works now, when there is 28
+  days in February and the current day is greater or equal than 29.
+
+[GB.GTK]
+* BUG: Prevent a crash when creating an Image or a Picture with incorrect
+  constructor arguments.
+* BUG: Move the window before showing it, so that it does not flicker.
+* BUG: When a modal window is running, only it can be closing from the
+  window manager close button.
+* BUG: Popup menus now grab events correctly.
+* BUG: Store last event time for all low-level events, not just for mouse
+  events.
+* BUG: Dialog.OpenFile does not use Dialog.Path as default file anymore if
+  Dialog.Path is a directory.
+* BUG: Modal windows are really modal.
+* BUG: Try to prevent a possible crash in event management.
+* BUG: Fix the Key[] array accessor, so that it (almost) works like gb.qt.
+
+[GB.NET]
+* BUG: Clear the CR / NL input conversion flags when initializing a serial
+  port.
+
+[GB.PDF]
+* BUG: PdfDocument.Find() now works correctly.
+* BUG: PDF indexes should be read correctly now.
+
+[GB.QT]
+* BUG: Setting MovieBox Path property to NULL does not fail anymore.
+* BUG: Do not try to reparent a window in its Show() method when it is
+  already visible.
+* BUG: Remove debugging messages.
+* BUG: Fix a possible crash in the MovieBox class due to the previous
+  changes.
+* BUG: TreeView.Count and ColumnView.Count now return the number of items
+  in the view like in gb.gtk, not just the number of root items.
+* BUG: Ignore disabled tab when using the mouse wheel on TabStrip.
+* BUG: Some text alignment flags were not correctly detected.
+* BUG: The ComboBox now raises its click event when it gets its first
+  element, because that element is automatically selected.
+* BUG: Fix an infinite recursion in previous commit.
+
+[GB.SDL.SOUND]
+* BUG: Music.Pos now returns 0 when the music is stopped, and not the
+  position of the last pause.
+
+[GB.XML.RPC]
+* BUG: Use CR+LF as end-of-line in the XML/RPC server.
+
+
+-------------------------------------------------------------------------------
  gambas2-2.19.0 - 03 Jan 2010
 -------------------------------------------------------------------------------
 
