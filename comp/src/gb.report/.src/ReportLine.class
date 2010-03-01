@@ -11,23 +11,35 @@ Private $fLineWidth As Float = 1.0
 Private $iLineColor As Integer
 Private $iLineStyle As Integer = Line.solid
 Private $iDirection As Integer = Align.BottomRight
-
-Property LineWidth As Float 
+Private $sLineWidth As String = "2 px"
+Property LineWidth As String 
 Property LineStyle As Integer
 Property LineColor As Integer
 
 
-Private Function LineWidth_Read() As Float
+Private Function LineWidth_Read() As String
 
-  Return $fLineWidth
+  Return $sLineWidth
+
+End
+
+Private Sub LineWidth_Write(Value As String)
+
+  $sLineWidth = Value
 
 End
 
-Private Sub LineWidth_Write(Value As Float)
 
-  $fLineWidth = Value
-
+Public Sub _SetUnifiedValues()
+  Dim hSizeParse As TSizeParse
+  Super._SetUnifiedValues
+  hSizeParse = MTools.ScanValue($sLineWidth)
+    If Units.AllowedUnits.Exist(hSizeParse.Unit) = -1 Then error.Raise("Unknown unit")
+    
+      $fLineWidth = Units.UnitToCm(hSizeParse.Value, hSizeParse.Unit)
+    
 End
+
 
 
 Public Sub _GetSizeHints(AvailableW As Integer, AvailableH As Integer, TotalWidth As Integer, TotalHeight As Integer) As TSizeHint
@@ -43,7 +55,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   Dim iX, iY, W, H, W2, H2 As Integer
   If Me.LineStyle = Line.None Then Return
   If Me.LineStyle <> Line.Solid Then Paint.Dash = MTools.GetBorder(Me.LineStyle)
-
+  Paint.LineWidth = MTools.UnitsToPixels($fLineWidth)
   Paint.Brush = Paint.Color($iLineColor)
 
     iX = (x + hControl.RealLeft + MTools.UnitsToPixels(Me.Padding))

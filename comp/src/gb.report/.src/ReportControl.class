@@ -30,11 +30,11 @@ Private $fLeft As Float = 0.0
 Private $fTop As Float = 0.0
 Private $fWidth As Float = 0.0
 Private $fHeight As Float = 0.0
-Private $sHeightUnit As String = "cm"
-Private $sLeftUnit As String = "cm"
-Private $sWidthUnit As String = "cm"
-Private $sTopUnit As String = "cm"
-Private $sPadding As String = "cm"
+Private $sHeight As String = "0 cm"
+Private $sLeft As String = "0 cm"
+Private $sWidth As String = "0 cm"
+Private $sTop As String = "0 cm"
+Private $sPadding As String = "0 cm"
 
 Private $iVisible As Boolean = True
 Private $hFont As New Font
@@ -92,80 +92,49 @@ End
 
 Private Function Left_Read() As String
 
-  Return Units.CmToUnit($fLeft, $sLeftUnit) & " " & $sLeftUnit
+  Return $sLeft
 
 End
 
 Private Sub Left_Write(Value As String)
-  Dim hSizeParse As TSizeParse
-  hSizeParse = MTools.ScanValue(value)
-  If Units.AllowedUnits.Find(hSizeParse.Unit) = -1 Then error.Raise("Unknown unit")
-  $fLeft = Units.UnitToCm(Value, hSizeParse.Unit)
-  $sLeftUnit = hSizeParse.Unit
+  
+  $sLeft = Value
 
 End
 
 Private Function Top_Read() As String
 
-  Return Units.CmToUnit($fTop, $sTopUnit) & " " & $sTopUnit
+  Return $sTop
 
 End
 
 Private Sub Top_Write(Value As String)
-  Dim hSizeParse As TSizeParse
-  hSizeParse = MTools.ScanValue(value)
-  If Units.AllowedUnits.Find(hSizeParse.Unit) = -1 Then error.Raise("Unknown unit")
-  $fTop = Units.UnitToCm(Value, hSizeParse.Unit)
-  $sTopUnit = hSizeParse.Unit
-
+ 
+ $sTop = Value
+ 
 End
 
 Private Function Width_Read() As String
-  If $sWidthUnit = "%" Then 
-    Return $fWidth & " " & $sWidthUnit
-  Else 
-    Return Units.CmToUnit($fWidth, $sLeftUnit) & " " & $sWidthUnit
-  Endif 
-  
+ 
+  Return $sWidth
 
 End
 
 Private Sub Width_Write(Value As String)
-  Dim hSizeParse As TSizeParse
-  hSizeParse = MTools.ScanValue(value)
-  If Units.AllowedUnits.Find(hSizeParse.Unit) = -1 And If hSizeParse.Unit <> "%" Then error.Raise("Unknown unit")
-  If hSizeParse.Unit = "%" Then 
-    $fWidth = hSizeParse.Value
-    $bRelativeWidth = True
-  Else
-    $fWidth = Units.UnitToCm(Value, hSizeParse.Unit)
-    $bRelativeWidth = False
-  Endif
-  $sWidthUnit = hSizeParse.Unit
+  
+  $sWidth = Value
+  
 End
 
 Private Function Height_Read() As String
   
-  If $sHeightUnit = "%" Then
-    Return $fHeight & " " & $sHeightUnit
-  Else 
-    Return Units.CmToUnit($fHeight, $sHeightUnit) & " " & $sHeightUnit
-  Endif
+  Return $sHeight
 
 End
 
 Private Sub Height_Write(Value As String)
-  Dim hSizeParse As TSizeParse
-  hSizeParse = MTools.ScanValue(value)
-  If Units.AllowedUnits.Find(hSizeParse.Unit) = -1 And If hSizeParse.Unit <> "%" Then error.Raise("Unknown unit")
-  If hSizeParse.Unit = "%" Then 
-    $fHeight = hSizeParse.Value
-    $bRelativeHeight = True
-  Else 
-    $fHeight = Units.UnitToCm(hSizeParse.Value, hSizeParse.Unit)
-    $bRelativeHeight = False
-  Endif
-  $sHeightUnit = hSizeParse.Unit
+  
+  $sHeight = Value
   
 End
 
@@ -249,23 +218,14 @@ End
 
 Private Function Padding_Read() As String
 
-  Return Units.CmToUnit($fPadding, $sPadding) & " " & $sPadding
+  Return $sPadding
   
 End
 
 Private Sub Padding_Write(Value As String)
-  Dim hSizeParse As TSizeParse
-  $bRelativePadding = False
-  hSizeParse = MTools.ScanValue(value)
-  If Units.AllowedUnits.Find(hSizeParse.Unit) = -1 Then error.Raise("Unknown unit")
-  If hSizeParse.Unit = "%" Then 
-    $fPadding = hSizeParse.Value
-    $bRelativePadding = True
-  Else 
-    $fPadding = Units.UnitToCm(hSizeParse.Value, hSizeParse.Unit)
-    $sPadding = hSizeParse.Unit
-    $bRelativePadding = False
-  Endif
+  
+  $sPadding = Value
+  
 End
 
 Private Function _Top_Read() As Float
@@ -344,3 +304,54 @@ End
 Private Function _FrameWidth_Read() As Float
 
 End
+
+''Convert recursively string values to unified values in cm
+Public Sub _SetUnifiedValues()
+  
+  Dim aSizeParse As TSizeParse[]
+  Dim hSizeParse As TSizeParse
+  'Left
+  hSizeParse = MTools.ScanValue($sLeft)
+   If Units.AllowedUnits.Exist(hSizeParse.Unit) = -1 Then error.Raise("Unknown unit")
+
+      $fLeft = Units.UnitToCm(hSizeParse.Value, hSizeParse.Unit)
+
+  'Right
+  hSizeParse = MTools.ScanValue($sTop)
+    If Units.AllowedUnits.Exist(hSizeParse.Unit) = -1 Then error.Raise("Unknown unit")
+
+      $fTop = Units.UnitToCm(hSizeParse.Value, hSizeParse.Unit)
+
+  'Width
+  hSizeParse = MTools.ScanValue($sWidth)
+    If Units.AllowedUnits.Exist(hSizeParse.Unit) = -1 And If hSizeParse.Unit <> "%" Then error.Raise("Unknown unit")
+    If hSizeParse.Unit = "%" Then 
+      $fWidth = hSizeParse.Value
+      $bRelativeWidth = True
+    Else 
+      $fWidth = Units.UnitToCm(hSizeParse.Value, hSizeParse.Unit)
+      $bRelativeWidth = False
+    Endif
+  'Height
+  hSizeParse = MTools.ScanValue($sHeight)
+    If Units.AllowedUnits.Exist(hSizeParse.Unit) = -1 And If hSizeParse.Unit <> "%" Then error.Raise("Unknown unit")
+    If hSizeParse.Unit = "%" Then 
+      $fHeight = hSizeParse.Value
+      $bRelativeHeight = True
+    Else 
+      $fHeight = Units.UnitToCm(hSizeParse.Value, hSizeParse.Unit)
+      $bRelativeHeight = False
+    Endif
+  
+  'Padding
+  hSizeParse = MTools.ScanValue($sPadding)
+    If Units.AllowedUnits.Exist(hSizeParse.Unit) = -1 And hSizeParse.Unit <> "%" Then error.Raise("Unknown unit")
+    If hSizeParse.Unit = "%" Then 
+      $fPadding = hSizeParse.Value
+      $bRelativePadding = True
+    Else 
+      $fPadding = Units.UnitToCm(hSizeParse.Value, hSizeParse.Unit)
+      $bRelativePadding = False
+    Endif
+End
+

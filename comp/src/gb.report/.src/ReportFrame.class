@@ -10,7 +10,8 @@ Private $iBorderColor As Integer = Color.Black
 'Private $iBackGround As Integer = Color.White
 'Private $iColor As Integer = Color.Black
 
-Private $fBorderWidth As Float = 1.0
+Private $fBorderWidth As Float
+Private $sBorderWidth As String = "1 px"
 Private $iBorder As Integer = Line.None
 'Private $hImage As Image
 
@@ -20,7 +21,7 @@ Property BorderColor As Integer
 'Property BackGround As Integer
 'Property Color As Integer
 
-Property BorderWidth As Float
+Property BorderWidth As String
 Property Border As Integer
 
 Property Brush As ReportBrush
@@ -43,15 +44,15 @@ End
 
 
 
-Private Function BorderWidth_Read() As Float
+Private Function BorderWidth_Read() As String
 
-  Return $fBorderWidth
+  Return $sBorderWidth
 
 End
 
-Private Sub BorderWidth_Write(Value As Float)
+Private Sub BorderWidth_Write(Value As String)
 
-  $fBorderWidth = Value
+  $sBorderWidth = Value
 
 End
 
@@ -125,7 +126,7 @@ Dim X1, Y1, X2, Y2 As Integer
   Y2 = (y + hControl.RealTop + hControl.RealHeight) 
   
     If Me.Border <> Line.None Then 
-      Paint.LineWidth = $fBorderWidth
+      Paint.LineWidth = MTools.UnitsToPixels($fBorderWidth)
       If Me.Border <> Line.Solid Then paint.Dash = MTools.GetBorder(Me.Border)
       'Draw.BorderStyle = $iBorderStyle
       'Draw.BorderWidth = $iBorderWidth
@@ -154,6 +155,17 @@ Private Sub Brush_Write(Value As ReportBrush)
   $hBrush = Value
 
 End
+
+Public Sub _SetUnifiedValues()
+  Dim hSizeParse As TSizeParse
+  Super._SetUnifiedValues
+  hSizeParse = MTools.ScanValue($sBorderWidth)
+    If Units.AllowedUnits.Exist(hSizeParse.Unit) = -1 Then error.Raise("Unknown unit")
+    
+      $fBorderWidth = Units.UnitToCm(hSizeParse.Value, hSizeParse.Unit)
+  
+End
+
 
 Public Sub _GetSizeHints(AvailableW As Integer, AvailableH As Integer, TotalWidth As Integer, TotalHeight As Integer) As TSizeHint
     Dim hMyHints As New TSizeHint

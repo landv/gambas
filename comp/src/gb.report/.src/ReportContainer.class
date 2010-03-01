@@ -10,15 +10,11 @@ Public Const _Properties As String = "*,Spacing"
 
 Private $aChild As New TControl[]
 Private $fSpacing As Float
-'PRIVATE $fPadding AS Float
-Private $sSpacingUnit As String
-'PRIVATE $sPaddingUnit AS String
+Private $sSpacing As String
 Private $bRelativeSpacing As Boolean
 Property Read Children As TControl[]
 Property Spacing As String
-'PROPERTY Padding AS String
 Property Read _Spacing As Float
-'PROPERTY READ _Padding AS Float
 Property Read _RelativeSpacing As Boolean
 
 Public _RealSpacing As Integer
@@ -59,23 +55,14 @@ End
 
 Private Function Spacing_Read() As String
 
-  Return Units.CmToUnit($fSpacing, $sSpacingUnit) & " " & $sSpacingUnit
+  Return $sSpacing
 
 End
 
 Private Sub Spacing_Write(Value As String)
 
-  Dim hSizeParse As TSizeParse
-  hSizeParse = MTools.ScanValue(value)
-  If Units.AllowedUnits.Find(hSizeParse.Unit) = -1 And If hSizeParse.Unit <> "%" Then error.Raise("Unknown unit")
-  If hSizeParse.Unit = "%" Then 
-    $fSpacing = hSizeParse.Value
-    $bRelativeSpacing = True
-  Else 
-    $fSpacing = Units.UnitToCm(hSizeParse.Value, hSizeParse.Unit)
-    $sSpacingUnit = hSizeParse.Unit
-    $bRelativeSpacing = False
-  Endif
+  $sSpacing = Value
+
 End
 
 ' PRIVATE FUNCTION Padding_Read() AS String
@@ -243,4 +230,27 @@ Private Function _RelativeSpacing_Read() As Boolean
 
   Return $bRelativeSpacing
 
+End
+
+Public Sub _SetUnifiedValues()
+  Dim hChild As TControl
+  Dim hSizeParse As TSizeParse
+  
+  Super._SetUnifiedValues()
+
+  hSizeParse = MTools.ScanValue($sSpacing)
+  If Units.AllowedUnits.Find(hSizeParse.Unit) = -1 And If hSizeParse.Unit <> "%" Then error.Raise("Unknown unit")
+  If hSizeParse.Unit = "%" Then 
+    $fSpacing = hSizeParse.Value
+    $bRelativeSpacing = True
+  Else 
+    $fSpacing = Units.UnitToCm(hSizeParse.Value, hSizeParse.Unit)
+    $bRelativeSpacing = False
+  Endif
+  
+  For Each hChild In $aChild
+    hChild.Ctrl._SetUnifiedValues()
+  Next
+  
+  
 End

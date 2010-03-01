@@ -41,6 +41,7 @@ Public Sub Layout()
   Me.Width = MTools.PixelsToUnits(Paint.Width) & " cm"
   Me.Height = MTools.PixelsToUnits(Paint.Height) & " cm"
   
+  Me._SetUnifiedValues()
   
   $hReportTControl.ctrl = Me
   $iCount = $hReportTControl._SetGeometry(0, 0, Me.Width, Me.Height) + 1

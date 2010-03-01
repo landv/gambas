@@ -18,21 +18,22 @@ Public Sub Test1()
   Dim hHBox As ReportHBox
   Dim lblcoucou As ReportLabel
 
-  Report.Padding = "2 cm"
+  Report.Padding = "1 px"
+  report.Spacing = "2 px"
   hHBox = New ReportHBox(Report)
   hHBox.Border = Line.Solid
-  hHBox.BorderWidth = 1
+  hHBox.BorderWidth = "1 px"
   hHBox.Height = "30 mm"
   
   hHBox = New ReportHBox(Report)
   hHBox.Border = Line.Solid
-  hHBox.BorderWidth = 1
+  hHBox.BorderWidth = "1 px"
   hHBox.Height = "30 %"
   
   
   hHBox = New ReportHBox(Report)
   hHBox.Border = Line.Solid
-  hHBox.BorderWidth = 6.5
+  hHBox.BorderWidth = "6 px"
   hHBox.Expand = True
   hHBox.Border = Line.Solid
   
