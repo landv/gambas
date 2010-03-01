@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(7,15,120,80)
+  MoveScaled(7,15,109,80)
   Text = ("Project translation")
   Icon = Picture["icon:/small/language"]
   Persistent = True
@@ -28,11 +28,11 @@
     }
   }
   { tabTranslate TabStrip
-    MoveScaled(1,8,115,64)
+    MoveScaled(1,8,107,64)
     Expand = True
     Arrangement = Arrange.Fill
     Margin = True
-    Count = 2
+    Count = 3
     Index = 0
     Text = ("Translation")
     { VSplit1 VSplit
@@ -151,10 +151,47 @@
       Resizable = True
       ScrollBar = Scroll.Vertical
     }
+    Index = 2
+    Text = ("Import")
+    { HBox2 HBox
+      MoveScaled(1,1,102,56)
+      Spacing = True
+      { dchImport DirChooser
+        MoveScaled(1,1,51,50)
+        Expand = True
+        ShowSplitter = False
+      }
+      { VBox1 VBox
+        MoveScaled(54,1,47,54)
+        Expand = True
+        Spacing = True
+        { HBox4 HBox
+          MoveScaled(0,0,45,4)
+          Spacing = True
+          { chkBrowse CheckBox
+            MoveScaled(0,0,24,4)
+            Expand = True
+            Text = ("Browse recursively")
+          }
+          { btnImport Button
+            MoveScaled(27,0,18,4)
+            ToolTip = ("Import a translation file")
+            AutoResize = True
+            Text = ("&Import...")
+            Picture = Picture["icon:/small/open"]
+          }
+        }
+        { fvwImport FileView
+          MoveScaled(2,5,44,47)
+          Expand = True
+          ShowDetailed = True
+        }
+      }
+    }
     Index = 0
   }
   { HBox1 HBox
-    MoveScaled(1,73,117,4)
+    MoveScaled(1,73,107,4)
     Spacing = True
     { btnNew Button
       MoveScaled(0,0,18,4)
@@ -174,24 +211,18 @@
       Text = ("&Delete")
       Picture = Picture["icon:/small/delete"]
     }
-    { btnImport Button
-      MoveScaled(57,0,18,4)
-      ToolTip = ("Import a translation file")
-      Text = ("&Import...")
-      Picture = Picture["icon:/small/open"]
-    }
     { btnExport Button
-      MoveScaled(76,0,18,4)
+      MoveScaled(57,0,18,4)
       ToolTip = ("Export to a translation file")
       Text = ("&Export...")
       Picture = Picture["icon:/small/save"]
     }
     { Panel1 Panel
-      MoveScaled(94,0,1,4)
+      MoveScaled(77,0,1,4)
       Expand = True
     }
     { btnOK Button
-      MoveScaled(98,0,18,4)
+      MoveScaled(81,0,18,4)
       Text = ("&Close")
       Cancel = True
     }

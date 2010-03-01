@@ -128,6 +128,7 @@ Public Sub Form_Open()
 
   Dim sLang As String
   Dim iIndex As Integer
+  Dim sPath As String
 
   Inc Application.Busy
 
@@ -143,6 +144,16 @@ Public Sub Form_Open()
       cmbLang.Add(Language.ToName(sLang))
     Endif
   Next
+
+  sPath = Settings["/FTranslate/ImportPath"]
+  If Not sPath Then sPath = System.User.Home
+  If IsDir(sPath) Then
+    dchImport.SelectedPath = sPath
+  Else
+    dchImport.SelectedPath = File.Dir(sPath)
+    fvwImport.Current = File.Name(sPath)
+  Endif
+  fvwImport.Filter = ["*.po", ""]
 
   Dec Application.Busy
 
@@ -875,15 +886,23 @@ End
 Public Sub btnImport_Click()
 
   Dim sPath As String
+  Dim sTransDir, sTrans As String
   Dim nTrans As Integer
 
-  Dialog.Title = ("Import a translation")
-  Dialog.Path = Settings["/FTranslate/ImportPath", System.User.Home]  
-  Dialog.Filter = ["*.po", ("Translation files")]
-  If Dialog.OpenFile() Then Return
+  'Dialog.Title = ("Import a translation")
+  'Dialog.Path = Settings["/FTranslate/ImportPath", System.User.Home]  
+  'Dialog.Filter = ["*.po", ("Translation files")]
+  'If Dialog.OpenFile() Then Return
   
-  Settings["/FTranslate/ImportPath"] = Dialog.Path
+  sTransDir = dchImport.SelectedPath
+  If Not chkBrowse.Value Then sTrans = fvwImport.Current
+  
+  Settings["/FTranslate/ImportPath"] = sTransDir &/ sTrans
 
+  'If IsDir(Dialog.Path) Then
+  '  If Message.Warning("You have selected a directory. Do you want to browse it recursively and import all found translation files?", ("Cancel"), ("Browse")) = 1 Then Return
+  'Endif
+  
   ' If Not (File.BaseName(Dialog.Path) Like (Project.Name & "-" & $sLang & "-*")) Then
   '   If Message.Warning(("Warning ! The translation file does not match the current language."), ("Continue"), ("Cancel")) <> 1 Then
   '     Return
@@ -896,7 +915,14 @@ Public Sub btnImport_Click()
 
   'SHELL "msgmerge -o " & Project.Quote(sPath & ".new") & " " & Project.Quote(Dialog.Path) & " " & Project.Quote(sPath) & " 2>/dev/null" WAIT
   'MergeMessage(sPath, "-o " & Quote.Shell(sPath & ".new") & " " & Quote.Shell(Dialog.Path) & " " & Quote.Shell(sPath))
-  nTrans = ImportMessage(Dialog.Path)
+  If Not sTrans Then
+    For Each sTrans In RDir(sTransDir, "*.po")
+      nTrans += ImportMessage(sTransDir &/ sTrans)
+    Next
+  Else
+    nTrans = ImportMessage(sTransDir &/ sTrans)
+  Endif
+  
   DisplayTrans
   $bModify = True
   SaveTranslate
@@ -1384,5 +1410,17 @@ End
 Public Sub tabTranslate_Click()
 
   If tabTranslate.Index = 1 Then UpdateStat
+
+End
+
+Public Sub chkBrowse_Click()
+
+  fvwImport.Enabled = chkBrowse.Value = 0
+
+End
+
+Public Sub dchImport_Change()
+
+  Try fvwImport.Dir = dchImport.SelectedPath
 
 End

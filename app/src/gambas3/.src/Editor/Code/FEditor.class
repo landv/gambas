@@ -2904,7 +2904,7 @@ Public Sub btnProc_MouseDown()
     gvwProc.Rows.Count = $aProc.Count
     gvwProc.Rows.Unselect
     gvwProc.Columns.Count = 1
-    gvwProc.Rows.H = gvwProc.Font.Height()
+    gvwProc.Rows.H = gvwProc.Font.Height() + 1
     panProc.Move(btnProc.ScreenX - panProc.Parent.ScreenX, btnProc.ScreenY - panProc.Parent.ScreenY + btnProc.H)
     ResizeProcList
   
@@ -2993,6 +2993,9 @@ Public Sub gvwProc_KeyPress()
 
   If Key.Code = Key.Return Or If Key.Code = Key.Enter Or If Key.Code = Key.Space Then
     gvwProc_Click
+    Stop Event
+  Else If Key.Code = Key.F6 Then
+    btnProc_MouseDown
     Stop Event
   Endif
 

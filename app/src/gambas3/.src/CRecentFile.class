@@ -44,6 +44,8 @@ Public Sub GetSlot() As String
     Return ("Today")
   Else If DateDiff(dDate, dToday, gb.Day) = 1 Then
     Return ("Yesterday")
+  Else If DateDiff(dDate, dToday, gb.Day) = 2 Then
+    Return ("Two days ago")
   Else If DateDiff(dDate, dToday, gb.Day) <= 7 Then
     Return ("This week")
   Else If Year(dToday) = Year(dDate) And If Month(dToday) = Month(dDate) Then
