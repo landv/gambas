@@ -53,6 +53,7 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
   Dim fH As Float
   Dim fW As Float
   Dim nbPage As Integer
+  Dim aIgnore As New TControl[]
   'PRINT "Set HBox Geometry = ", x, y, w, h
     'PRINT Subst("_SetGeometry(&1,&2,&3,&4)", X, Y, W, H)
   
@@ -71,7 +72,7 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
   H -= fPdg * 2
   
   For Each hChild In Me.Children
-    
+    If hChild.Ctrl.Ignore Then Continue
     hChildHints = hChild.ctrl._GetSizeHints(W - fSExp, H, W, H)
     
     If hChild.ctrl.Expand Then 
@@ -91,7 +92,10 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
   
   
   For Each hChild In Me.Children
-  
+     If hChild.Ctrl.Ignore Then 
+        aIgnore.Add(hChild)
+        Continue
+      Endif
     hChildHints = hChild.ctrl._GetSizeHints(W - X, H, W, H)
     
     If Not bFirst Then 
@@ -112,6 +116,11 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
     X += fW
     
   Next
+  
+  For Each hChild In aIgnore
+    hchild._SetGeometry(hchild.Ctrl._Left, hchild.Ctrl._Top, hchild.Ctrl._Width, hchild.Ctrl._Height)
+  Next
+  
   
   Return iPage
 End 

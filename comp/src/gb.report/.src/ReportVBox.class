@@ -51,7 +51,7 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
   Dim PageSExp As New Float[]
   Dim PageNExp As New Integer[]
   Dim iPage As Integer
-  Dim aPage As New Object[]
+  Dim aPage As New CPageInfo[]
   Dim aPageItems As New CPageInfo
   Dim iNExp As Integer
   Dim fSExp As Float
@@ -61,7 +61,7 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
   Dim fH, hW As Float
   Dim i As Integer
   Dim tmpX As Float
-  
+  Dim aIgnored As New TControl[]
   'If there is no change then do nothing
   ' IF MRTools.UnitsToPixels(X) = ME._RealLeft THEN 
   '   IF MRTools.UnitsToPixels(Y) = ME._RealTop THEN 
@@ -91,7 +91,7 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
   'repartition des controles par pages
    
    For Each hChild In Me.Children
-   
+    
     hChildHints = hChild.ctrl._GetSizeHints(W, H - fSExp, W, H)
     If hChild.ctrl.Expand Then Inc iNExp
     ' PRINT ME.Tag
@@ -138,6 +138,10 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
      bFirst = True
     
     For Each hChild In aPage[i].Children
+      If hChild.Ctrl.Ignore Then 
+        aIgnored.Add(hchild)
+        Continue
+      Endif
       hChildHints = hChild.ctrl._GetSizeHints(W, H - Y, W, H)
       ' PRINT Object.Class(hChild)
       ' PRINT W, H - Y
@@ -173,7 +177,9 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
     Next
     
   Next 
-  
+  For Each hchild In aIgnored
+    hchild._SetGeometry(hchild.Ctrl._Left, hchild.Ctrl._Top, hchild.Ctrl._Width, hchild.Ctrl._Height)
+  Next 
   'IF aPage.Count > 1 THEN .RelPage = -1
   
   Return aPage.Max + iPage

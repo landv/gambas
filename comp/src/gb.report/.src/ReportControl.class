@@ -43,6 +43,7 @@ Private $bAutoresize As Boolean = False
 Private $bRelativeWidth As Boolean
 Private $bRelativeHeight As Boolean
 Private $bRelativePadding As Boolean
+Private $bIgnore As Boolean = False
 
 Property Read _Top As Float
 Property Read _Height As Float
@@ -62,6 +63,8 @@ Property Height As String
 Property Visible As Boolean
 Property {Font} As Font
 Property Expand As Boolean
+Property Ignore As Boolean
+
 Property Autoresize As Boolean
 
 
@@ -355,3 +358,15 @@ Public Sub _SetUnifiedValues()
     Endif
 End
 
+
+Private Function Ignore_Read() As Boolean
+
+  Return $bIgnore
+
+End
+
+Private Sub Ignore_Write(Value As Boolean)
+
+  $bIgnore = Value
+
+End
