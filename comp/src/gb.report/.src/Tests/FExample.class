@@ -20,10 +20,7 @@ Public Sub Test1()
 
   Report.Padding = "1 px"
   report.Spacing = "2 px"
-  hHBox = New ReportHBox(Report)
-  hHBox.Border = Line.Solid
-  hHBox.BorderWidth = "1 px"
-  hHBox.Height = "30 mm"
+
   
   hHBox = New ReportHBox(Report)
   hHBox.Border = Line.Solid
@@ -46,6 +43,15 @@ Public Sub Test1()
   lblcoucou.Expand = True
   lblcoucou.Alignment = Align.Center
   
+  hHBox = New ReportHBox(Report)
+  hHBox.Border = Line.Solid
+  hHBox.BorderWidth = "1 px"
+  hHBox.Brush = report.RadialGradient([Color.gray, Color.Green], [0.0, 1.0])
+  hHBox.Top = "7 cm"
+  hHBox.Left = "8cm"
+  hHBox.Height = "30 mm"
+  hHBox.Width = "20 cm"
+  hHBox.Ignore = True
 End
 
 Public Sub Test2()
@@ -473,4 +479,18 @@ Public Sub Form_Open()
 
   RadioButton1.Value = True
 
+End
+
+Public Sub Test5()
+  
+  Dim hReport1 As Report
+  Dim hlab As ReportLabel
+  hReport1 = New Report(report)
+  
+  hlab = New ReportLabel(hReport1)
+  hlab.Text = "coucou"
+  report.Brush = report.Color(Color.Yellow)
+  report.Padding = "2cm"
+  hReport1.Brush = report.LinearGradient([Color.white, Color.black], [0.0, 1.0])
+  hReport1.Expand = True
 End

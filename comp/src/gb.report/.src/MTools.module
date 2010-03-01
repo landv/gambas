@@ -33,7 +33,7 @@ Public Function ScanValue(sText As String) As TSizeParse
   Dim s As String
   Dim sVal As String 
   Dim sUnit As String
-  Dim hTSP As New TSizeParse
+  Dim hTSizeParse As New TSizeParse
   If Not sText Then sText = "0 px"
   
   For i = 1 To Len(sText)
@@ -47,10 +47,10 @@ Public Function ScanValue(sText As String) As TSizeParse
     Endif
   Next 
   
-  hTSP.Value = CFloat(Trim(sVal))
+  hTSizeParse.Value = CFloat(Trim(sVal))
 
-  hTsp.Unit = sUnit
-  Return hTSP
+  hTSizeParse.Unit = sUnit
+  Return hTSizeParse
   
   End
 

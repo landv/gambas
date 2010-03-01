@@ -38,13 +38,14 @@ Public Sub Layout()
   
   If Not $bLayoutIsDirty Then Return 
   MTools.ReportResolution = Paint.ResolutionX
-  Me.Width = MTools.PixelsToUnits(Paint.Width) & " cm"
-  Me.Height = MTools.PixelsToUnits(Paint.Height) & " cm"
-  
+  If Me.Parent = Null Then 
+    Me.Width = Paint.Width & " px"
+    Me.Height = Paint.Height & " px"
+  Endif
   Me._SetUnifiedValues()
   
   $hReportTControl.ctrl = Me
-  $iCount = $hReportTControl._SetGeometry(0, 0, Me.Width, Me.Height) + 1
+  $iCount = $hReportTControl._SetGeometry(0, 0, Me._Width, Me._Height) + 1
   MTools.PageCount = $iCount
   $bLayoutIsDirty = False
   
@@ -153,8 +154,10 @@ Public Sub Clear()
   '$iResolution = Desktop.Resolution
   $bLayoutIsDirty = True
   $fScale = 1.0
-
-
+  Me.Brush = Null
+  Me.BorderWidth = "1 px"
+  Me.Border = Line.Solid
+  Me.BorderColor = Color.Black
   Me.Spacing = "0 cm"
   Me.Padding = "0 cm"
 End
