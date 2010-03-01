@@ -16,7 +16,7 @@ Private $iCount As Integer = -1
 Private $bLayoutIsDirty As Boolean = True
 Private $fScale As Float = 1.0
 Private $hReportTControl As New TControl
-Private hData As Object
+
 
 Property Read Count As Integer
 Property Height As String
@@ -77,16 +77,16 @@ Public Sub Paint(Page As Integer)
     
 End
 
-Private Sub FillPages(ctrl As ReportContainer)
-
-  Dim hChild As Object
-  Dim relHeight As Integer
-  For Each hChild In ctrl.Children
-    hChild._Paint(ctrl._Left, ctrl._Top)
-    If hChild Is ReportContainer Then FillPages(hChild)
-  Next 
-
-End
+' Private Sub FillPages(ctrl As ReportContainer)
+' 
+'   Dim hChild As TControl
+'   Dim relHeight As Integer
+'   For Each hChild In ctrl.Children
+'     hChild._Paint(ctrl._Left, ctrl._Top)
+'     If hChild Is ReportContainer Then FillPages(hChild)
+'   Next 
+' 
+' End
 
 
 Private Function Count_Read() As Integer

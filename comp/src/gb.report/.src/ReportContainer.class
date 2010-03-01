@@ -37,7 +37,7 @@ End
 
 Public Sub _Free()
   
-  Dim hCtrl As Object
+  Dim hCtrl As TControl
   For Each hCtrl In $aChild
     Try ReportControl._ObjectFromId.Remove(hCtrl.Ctrl.Id)
     'hctrl = NULL

@@ -8,7 +8,7 @@ Public Const _Properties As String = "*"
 
 Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float) As TSizeHint
 
-  Dim hChild As Object
+  Dim hChild As TControl
   Dim hMyHints As New TSizeHint
   Dim hChildHints As TSizeHint
   Dim fSpacing As Float
@@ -43,8 +43,8 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
   Dim fChildrenH As Float
   Dim PagePos As New Integer[]
   Dim iPage As Integer
-  Dim aPage As New Object[]
-  Dim aChild As New Object[]
+  Dim aPage As New TControl[]
+  Dim aChild As New TControl[]
   Dim iNExp As Integer
   Dim fSExp As Float
   Dim fSpc As Float

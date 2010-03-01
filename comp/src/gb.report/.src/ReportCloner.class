@@ -25,7 +25,7 @@ Private Sub Count_Write(Value As Integer)
 End
 
 Public Sub ReInit()
-  Dim hChild As Object
+  Dim hChild As TControl
   If $aContent = Null Then Return 
   Me.Children.Clear
   For Each hChild In $aContent
@@ -40,8 +40,8 @@ End
 Private Sub GenerateChilds()
   
   Dim i As Integer
-  Dim hChild As Object
-  Dim nChild As Object
+  Dim hChild As TControl
+  Dim nChild As TControl
   Dim hClass As Class
   Dim s As String
   $aContent = Me.Children.Copy()
