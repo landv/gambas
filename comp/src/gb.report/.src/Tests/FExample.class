@@ -45,15 +45,15 @@ Public Sub Test1()
   lblcoucou.Expand = True
   lblcoucou.Alignment = Align.Center
   
-  ' hHBox = New ReportHBox(Report)
-  ' hHBox.Border = Line.Solid
-  ' hHBox.BorderWidth = "1 px"
-  ' hHBox.Brush = report.RadialGradient([Color.gray, Color.Green], [0.0, 1.0])
-  ' hHBox.Top = "7 cm"
-  ' hHBox.Left = "8cm"
-  ' hHBox.Height = "30 mm"
-  ' hHBox.Width = "20 cm"
-  ' hHBox.Ignore = True
+  hHBox = New ReportHBox(Report)
+  hHBox.Border.Style = Line.Solid
+  hHBox.Border.Width = "1 px"
+  hHBox.Brush = report.RadialGradient([Color.gray, Color.Green], [0.0, 1.0])
+  hHBox.Top = "7 cm"
+  hHBox.Left = "8cm"
+  hHBox.Height = "30 mm"
+  hHBox.Width = "10 cm"
+  hHBox.Ignore = True
 End
 
 Public Sub Test2()

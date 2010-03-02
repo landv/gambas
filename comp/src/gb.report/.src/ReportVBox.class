@@ -20,7 +20,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
     'Obtention des volontées des enfants
     'PRINT "GetSizeHint  : " & Object.Type(hchild.Ctrl)
     hChildHints = hChild.ctrl._GetSizeHints(AvailableW, AvailableH - hMyHints.Height, AvailableW, AvailableH)
-    hMyHints.Height += hChildHints.Height + fSpacing 'ME._Spacing
+    If Not hchild.Ctrl.Ignore Then hMyHints.Height += hChildHints.Height + fSpacing 'ME._Spacing
     If hMyHints.Width < hChildHints.Width Then hMyHints.Width = hChildHints.Width
   Next 
     hMyHints.Height -= fSpacing 'ME._Spacing
@@ -93,6 +93,12 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
    For Each hChild In Me.Children
     
     hChildHints = hChild.ctrl._GetSizeHints(W, H - fSExp, W, H)
+    
+      If hChild.Ctrl.Ignore Then 
+        aIgnored.Add(hchild)
+        Continue
+      Endif
+    
     If hChild.ctrl.Expand Then Inc iNExp
     ' PRINT ME.Tag
     ' PRINT H
@@ -138,10 +144,7 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
      bFirst = True
     
     For Each hChild In aPage[i].Children
-      If hChild.Ctrl.Ignore Then 
-        aIgnored.Add(hchild)
-        Continue
-      Endif
+      If hchild.Ctrl.Ignore Then Continue
       hChildHints = hChild.ctrl._GetSizeHints(W, H - Y, W, H)
       ' PRINT Object.Class(hChild)
       ' PRINT W, H - Y

@@ -146,30 +146,30 @@ Public Sub _ClipChildren(Page As Integer, X As Float, Y As Float, hControl As TC
   
 End
 
-
-Public Sub _PaintBefore(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
-  
-  Dim hChild As TControl
-  Dim vi As Integer
-  Dim hExt As PaintExtents
-  Dim fFrameWidth As Float
-  
-  Super._PaintBefore(Page, X, Y, hControl, VirtualId)
-  
-  X += hControl.RealLeft
-  Y += hControl.RealTop
-  
-  For Each hChild In Me.Children
-    If hChild._SkipPainting Then Continue
-    
-    vi = VirtualId
-    If hControl.VirtualId > -1 Then vi = hControl.VirtualId
-    
-    hChild.Ctrl._PaintBefore(Page, X, Y, hChild, vi)
-  
-  Next
-  
-End
+' 
+' Public Sub _PaintBefore(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
+'   
+'   Dim hChild As TControl
+'   Dim vi As Integer
+'   Dim hExt As PaintExtents
+'   Dim fFrameWidth As Float
+'   
+'   Super._PaintBefore(Page, X, Y, hControl, VirtualId)
+'   
+'   X += hControl.RealLeft
+'   Y += hControl.RealTop
+'   
+'   For Each hChild In Me.Children
+'     If hChild._SkipPainting Then Continue
+'     
+'     vi = VirtualId
+'     If hControl.VirtualId > -1 Then vi = hControl.VirtualId
+'     
+'     hChild.Ctrl._PaintBefore(Page, X, Y, hChild, vi)
+'   
+'   Next
+'   
+' End
 
 Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
   
@@ -188,29 +188,29 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
     vi = VirtualId
     If hControl.VirtualId > -1 Then vi = hControl.VirtualId
   
-    hChild.Ctrl._Paint(Page, X, Y, hChild, vi)
+    hChild.Ctrl._Paintframe(Page, X, Y, hChild, vi)
     
   Next 
   
 End
 
-Public Sub _PaintAfter(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
-  
-  Dim hChild As TControl
-  Dim vi As Integer
-  
-  Super._PaintAfter(Page, X, Y, hControl, VirtualId)
-  
-  X += hControl.RealLeft
-  Y += hControl.RealTop
-  
-  For Each hChild In Me.Children
-    If hChild._SkipPainting Then Continue
-    'Draw After
-    hChild.Ctrl._PaintAfter(Page, X, Y, hChild, vi)
-  Next
-  
-End
+' Public Sub _PaintAfter(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
+'   
+'   Dim hChild As TControl
+'   Dim vi As Integer
+'   
+'   Super._PaintAfter(Page, X, Y, hControl, VirtualId)
+'   
+'   X += hControl.RealLeft
+'   Y += hControl.RealTop
+'   
+'   For Each hChild In Me.Children
+'     If hChild._SkipPainting Then Continue
+'     'Draw After
+'     hChild.Ctrl._PaintAfter(Page, X, Y, hChild, vi)
+'   Next
+'   
+' End
 
 
 

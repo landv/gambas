@@ -169,6 +169,10 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   
 End
 
+Public Sub _PaintFrame(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
+  Me._Paint(Page, X, Y, hControl, VirtualId)
+End
+
 Public Sub _PaintAfter(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
 
 End
@@ -370,3 +374,4 @@ Private Sub Ignore_Write(Value As Boolean)
   $bIgnore = Value
 
 End
+

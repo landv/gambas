@@ -116,6 +116,15 @@ Public Sub _PaintBefore(Page As Integer, X As Float, Y As Float, hControl As TCo
     
 End
 
+
+Public Sub _PaintFrame(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
+  _PaintBefore(Page, X, Y, hControl, VirtualId)
+  Me._Paint(Page, X, Y, hControl, VirtualId)
+  _PaintAfter(Page, X, Y, hControl, VirtualId)
+End
+
+
+
 Public Sub _PaintAfter(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
   
 Dim X1, Y1, X2, Y2 As Integer

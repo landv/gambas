@@ -19,7 +19,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
     'PRINT "GetSizeHint  : " & Object.Type(hchild.Ctrl)
     'Obtention des volontées des enfants
     hChildHints = hChild.ctrl._GetSizeHints(AvailableW - hMyHints.Width, AvailableH, AvailableW, AvailableH)
-    hMyHints.Width += hChildHints.Width + fSpacing 'ME._Spacing
+    If Not hchild.Ctrl.Ignore Then hMyHints.Width += hChildHints.Width + fSpacing 'ME._Spacing
     If hMyHints.Height < hChildHints.Height Then hMyHints.Height = hChildHints.Height
   Next 
     hMyHints.Width -= fSpacing 'ME._Spacing
