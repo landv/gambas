@@ -23,7 +23,7 @@ Public Sub Test1()
 
   
   hHBox = New ReportHBox(Report)
-  hHBox.Border = ReportBorder["NONE,TOP,LEFT,BOTTOM,RIGHT,1px,[&H00FF00]"]
+  hHBox.Border = ReportBorder["solid,TOP,LEFT,BOTTOM,RIGHT,8 px,[&H00FF00]"]
   'hHBox.Border = Line.Solid
   'hHBox.BorderWidth = "1 px"
   hHBox.Height = "30 %"
@@ -67,7 +67,7 @@ Public Sub Test2()
   hHBox = New ReportHBox(hCloner)
   
   hHBox.Height = "2cm"
-  hHBox.Border = Line.Solid
+  hHBox.Border.Style = Line.Solid
   
   hCloner.Count = 3
   
@@ -93,7 +93,7 @@ hLab = New ReportLabel(Report)
 hLab.Text = "MY FRIENDS FIRST NAME"     'Set the text
 hLab.Font = Font["Arial,+8,"]           'Set The Font
 hLab.Alignment = Align.Center           'Set The aligment
-hLab.Border = Line.Solid
+hLab.Border.Style = Line.Solid
 'hLab.Color = Color.LightGray
 hlab.Brush = report.Color(Color.Gray)
 
@@ -111,7 +111,7 @@ hVBox = New ReportVBox(hCloner)
 'hVBox.Height = "2 cm"                   'Force the height of the hBox
 hVBox.Spacing = "2 mm"
 hVBox.Padding = "1 mm"
-hVBox.Border = Line.None
+hVBox.Border.Style = Line.None
 hVBox.Autoresize = True
 '* An HBox to arrange the components horizontaly (for firstnames)
 hHBox = New ReportHBox(hVBox)
@@ -151,7 +151,7 @@ hLine.LineStyle = Line.Solid
 
 '* Add a SpecialField to show the page number
 hSField = New ReportSpecialField(Report)
-hSField.BorderColor = color.Gray          'Set the TextColor
+hSField.Border.Color = color.Gray          'Set the TextColor
 hSField.Alignment = Align.Right         'Set the text alignment to the right
 hSField.Text = "Page $PAGE/$NPAGE"      'Set the text containing macro keywords
 
@@ -236,7 +236,7 @@ Public Sub Test4()
   Report.Padding = "1 cm"
   Object.Attach(report, Me, "Report")
   Report.Spacing = "0.2 cm"
-  Report.Border = Line.Solid
+  Report.Border.Style = Line.Solid
   Report.Tag = "Report"
   'Entete
     
@@ -323,7 +323,7 @@ Public Sub Test4()
 
 
     'txt.Width = 2
-    txt.Border = Line.Solid
+    txt.Border.Style = Line.Solid
     'txt.Brush = Report.Color(Color.LightGray)
     'txt.FillStyle = fill.Solid
     
@@ -331,7 +331,7 @@ Public Sub Test4()
     vRef.Expand = True
     
 '    vRef = NEW ReportVBox(vcont)
-    vRef.Border = Line.Solid
+    vRef.Border.Style = Line.Solid
     vRef.Padding = "0.1 cm"
     vRef.Spacing = "0.1 cm"
     'vRef.Height = 5
@@ -346,13 +346,13 @@ Public Sub Test4()
     txt.Text = "Designation"
     txt.Alignment = Align.Center
     txt.Font.Italic = True
-    txt.Border = Line.Solid
+    txt.Border.Style = Line.Solid
     txt.Brush = report.Color(Color.LightGray)
 
     
     vDes = New ReportVBox(vCont)
     vDes.Expand = True
-    vDes.Border = Line.Solid
+    vDes.Border.Style = Line.Solid
     vDes.Padding = "0.1 cm"
     vDes.Spacing = "0.1 cm"
     vDes.Tag = "* des"
@@ -366,13 +366,13 @@ Public Sub Test4()
     txt.Alignment = Align.Center
     txt.Font.Italic = True
     'txt.Width = "3,5 cm"
-    txt.Border = Line.Solid
+    txt.Border.Style = Line.Solid
     txt.Brush = report.Color(Color.Gray)
 
     
     vQt = New ReportVBox(vCont)
      vQt.Expand = True
-    vQt.Border = Line.Solid
+    vQt.Border.Style = Line.Solid
     vQt.Padding = "0.1 cm"
     vQt.Spacing = "0.1 cm"
     vQt.Tag = "* Qt"
@@ -385,13 +385,13 @@ Public Sub Test4()
     txt.Alignment = Align.Center
     txt.Font.Italic = True
     'txt.Width = "3,5 cm"
-    txt.Border = Line.Solid
+    txt.Border.Style = Line.Solid
     txt.Brush = report.Color(Color.Gray)
 
     
     vPU = New ReportVBox(vCont)
     vPU.Expand = True
-    vPU.Border = Line.Solid
+    vPU.Border.Style = Line.Solid
     vPu.Padding = "0.1 cm"
     vPU.Spacing = "0.1 cm"
   
@@ -404,13 +404,13 @@ Public Sub Test4()
     txt.Alignment = Align.Center
     txt.Font.Italic = True
     'txt.Width = "3,5 cm"
-    txt.Border = Line.Solid
+    txt.Border.Style = Line.Solid
     txt.Brush = report.Color(Color.LightGray)
 
     
     vTot = New ReportVBox(vCont)
     vTot.Expand = True
-    vTot.Border = Line.Solid
+    vTot.Border.Style = Line.Solid
     vTot.Padding = "0.1 cm"
     vTot.Spacing = "0.1 cm"
     vTot.Tag = "Total"
@@ -418,7 +418,7 @@ Public Sub Test4()
   hCont = New ReportHBox(Report)
   hCont.Height = "1 cm"
   hCont.Brush = report.Color(Color.LightGray)
-  hCont.Border = Line.Solid
+  hCont.Border.Style = Line.Solid
   hCont.Tag = "Container de total"
   
   spetxt = New ReportSpecialField(hCont)

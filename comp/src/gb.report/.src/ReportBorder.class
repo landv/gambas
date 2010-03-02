@@ -5,12 +5,12 @@ Export
 Static Public Const None As Integer = 0
 Static Public Const Solid As Integer = 1
 
-Public Top As Boolean
-Public {Left} As Boolean
-Public Bottom As Boolean
-Public {Right} As Boolean
+Public Top As Boolean = True
+Public {Left} As Boolean = True
+Public Bottom As Boolean = True
+Public {Right} As Boolean = True
 Public Width As String = "1 px"
-Public Color As Integer
+Public Color As Integer 
 Public Style As Integer
 
 Static Public Function _Get(sValue As String) As ReportBorder
@@ -35,7 +35,7 @@ Dim hReportBorder As New ReportBorder
         If Left(s, 1) = "[" Then 
           hReportBorder.Color = Val(Mid(s, 2, -1))
         Endif
-        If IsNumber(Left(s, 1)) Then 
+        If IsDigit(Left(s, 1)) Then 
           hReportBorder.Width = s
         Endif
         
