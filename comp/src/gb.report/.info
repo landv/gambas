@@ -123,10 +123,6 @@ Clear
 m
 
 
-Color
-m
-ReportBrush
-(iColor)i
 Image
 m
 ReportBrush
@@ -139,6 +135,29 @@ RadialGradient
 m
 ReportBrush
 (Colors)Integer[];(Positions)float[];
+Color
+m
+ReportBrush
+(iColor)i
+#ReportBorder
+
+C
+None
+C
+i
+0
+Solid
+C
+i
+1
+_Get
+M
+ReportBorder
+(sValue)s
+BorderToString
+m
+s
+
 #ReportBrush
 
 C
@@ -425,17 +444,9 @@ _Properties
 C
 s
 *,BorderColor,BorderWidth,Border
-BorderColor
-p
-i
-
-BorderWidth
-p
-s
-
 Border
 p
-i
+ReportBorder
 
 Brush
 p

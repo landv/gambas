@@ -23,35 +23,37 @@ Public Sub Test1()
 
   
   hHBox = New ReportHBox(Report)
-  hHBox.Border = Line.Solid
-  hHBox.BorderWidth = "1 px"
+  hHBox.Border = ReportBorder["NONE,TOP,LEFT,BOTTOM,RIGHT,1px,[&H00FF00]"]
+  'hHBox.Border = Line.Solid
+  'hHBox.BorderWidth = "1 px"
   hHBox.Height = "30 %"
   
   
   hHBox = New ReportHBox(Report)
-  hHBox.Border = Line.Solid
-  hHBox.BorderWidth = "6 px"
+  'hHBox.Border.Style = ReportBorder.Solid
+  hHBox.Border.Width = "6 px"
   hHBox.Expand = True
-  hHBox.Border = Line.Solid
+  hHBox.Border.Style = ReportBorder.Solid
+  'hHBox.Border = Line.Solid
   
   lblcoucou = New ReportLabel(hHBox)
   lblcoucou.Text = "coucou"
   lblcoucou.Brush = report.Color(Color.Yellow)
-  lblcoucou.BorderColor = Color.Red
+  'lblcoucou.BorderColor = Color.Red
   'lblcoucou.Style = ReportStyle.Solid
   lblcoucou.Font.Size = 15
   lblcoucou.Expand = True
   lblcoucou.Alignment = Align.Center
   
-  hHBox = New ReportHBox(Report)
-  hHBox.Border = Line.Solid
-  hHBox.BorderWidth = "1 px"
-  hHBox.Brush = report.RadialGradient([Color.gray, Color.Green], [0.0, 1.0])
-  hHBox.Top = "7 cm"
-  hHBox.Left = "8cm"
-  hHBox.Height = "30 mm"
-  hHBox.Width = "20 cm"
-  hHBox.Ignore = True
+  ' hHBox = New ReportHBox(Report)
+  ' hHBox.Border = Line.Solid
+  ' hHBox.BorderWidth = "1 px"
+  ' hHBox.Brush = report.RadialGradient([Color.gray, Color.Green], [0.0, 1.0])
+  ' hHBox.Top = "7 cm"
+  ' hHBox.Left = "8cm"
+  ' hHBox.Height = "30 mm"
+  ' hHBox.Width = "20 cm"
+  ' hHBox.Ignore = True
 End
 
 Public Sub Test2()

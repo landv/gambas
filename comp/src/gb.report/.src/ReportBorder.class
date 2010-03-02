@@ -1,0 +1,61 @@
+' Gambas class file
+Export
+
+
+Static Public Const None As Integer = 0
+Static Public Const Solid As Integer = 1
+
+Public Top As Boolean
+Public {Left} As Boolean
+Public Bottom As Boolean
+Public {Right} As Boolean
+Public Width As String = "1 px"
+Public Color As Integer
+Public Style As Integer
+
+Static Public Function _Get(sValue As String) As ReportBorder
+Dim s As String
+Dim hReportBorder As New ReportBorder
+  For Each s In Split(sValue)
+    Select Case UCase(s)
+      Case "TOP"
+        hReportBorder.Top = True
+      Case "BOTTOM"
+        hReportBorder.Bottom = True
+      Case "LEFT"
+        hReportBorder.Left = True
+      Case "RIGHT"
+        hReportBorder.Right = True
+      Case "NONE"
+        hReportBorder.Style = ReportBorder.None
+      Case "SOLID"
+        hReportBorder.Style = ReportBorder.Solid
+      
+      Case Else
+        If Left(s, 1) = "[" Then 
+          hReportBorder.Color = Val(Mid(s, 2, -1))
+        Endif
+        If IsNumber(Left(s, 1)) Then 
+          hReportBorder.Width = s
+        Endif
+        
+    End Select
+  Next
+  Return hReportBorder
+End
+
+Public Function BorderToString() As String
+  
+  Dim aValue As New String[]
+  
+  If Me.Style = ReportBorder.None Then aValue.Add("None")
+  If Me.Style = ReportBorder.Solid Then aValue.Add("Solid")
+  aValue.Add(Me.Width)
+  If Me.Top Then aValue.Add("Top")
+  If Me.Bottom Then aValue.Add("Bottom")
+  If Me.Left Then aValue.Add("Left")
+  If Me.Right Then aValue.Add("Right")
+  aValue.Add("[&H" & Hex(Me.Color, 6) & "]")
+  Return aValue.Join()
+  
+End

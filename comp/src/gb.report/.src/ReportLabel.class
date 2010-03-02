@@ -83,7 +83,7 @@ End
 Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
 
   'Draw.Foreground = Me.Foreground
-  Paint.Brush = Paint.Color(Me.BorderColor)
+  Paint.Brush = Paint.Color(Me.Border.Color)
   'Set the Font if it is initialized
   If Not IsNull(Me.Font) Then Paint.Font = Me.Font
   'Paint.Font.size = Paint.Font.size  '* MRTools.ResolutionAffichage
@@ -93,6 +93,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
     
     Paint.Text($sText, (x + hControl.RealLeft + MTools.UnitsToPixels(Me.Padding)), (y + hControl.RealTop + MTools.UnitsToPixels(Me.Padding)), hControl.RealWidth, hControl.RealHeight, $iAlignment)
     Paint.Fill
+    Print Me.Font.ToString()
   'Draw.Clip.Enabled = False
 End
 

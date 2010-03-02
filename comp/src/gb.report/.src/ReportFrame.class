@@ -6,23 +6,23 @@ Inherits ReportControl
 
 Public Const _Properties As String = "*,BorderColor,BorderWidth,Border"
 
-Private $iBorderColor As Integer = Color.Black
+'Private $iBorderColor As Integer = Color.Black
 'Private $iBackGround As Integer = Color.White
 'Private $iColor As Integer = Color.Black
 
 Private $fBorderWidth As Float
-Private $sBorderWidth As String = "1 px"
-Private $iBorder As Integer = Line.None
+'Private $sBorderWidth As String = "1 px"
+Private $hBorder As New ReportBorder
 'Private $hImage As Image
 
 Private $hBrush As ReportBrush
 
-Property BorderColor As Integer
+'Property BorderColor As Integer
 'Property BackGround As Integer
 'Property Color As Integer
 
-Property BorderWidth As String
-Property Border As Integer
+'Property BorderWidth As String
+Property Border As ReportBorder
 
 Property Brush As ReportBrush
 
@@ -30,41 +30,41 @@ Property Read _FrameWidth As Float
 
 
 
-Private Function BorderColor_Read() As Integer
+' Private Function BorderColor_Read() As Integer
+' 
+'   Return $iBorderColor
+' 
+' End
+' 
+' Private Sub BorderColor_Write(Value As Integer)
+' 
+'   $iBorderColor = Value
+' 
+' End
+' 
 
-  Return $iBorderColor
+
+' Private Function BorderWidth_Read() As String
+' 
+'   Return $sBorderWidth
+' 
+' End
+' 
+' Private Sub BorderWidth_Write(Value As String)
+' 
+'   $sBorderWidth = Value
+' 
+' End
+
+Private Function Border_Read() As ReportBorder
+
+  Return $hBorder
 
 End
 
-Private Sub BorderColor_Write(Value As Integer)
+Private Sub Border_Write(Value As ReportBorder)
 
-  $iBorderColor = Value
-
-End
-
-
-
-Private Function BorderWidth_Read() As String
-
-  Return $sBorderWidth
-
-End
-
-Private Sub BorderWidth_Write(Value As String)
-
-  $sBorderWidth = Value
-
-End
-
-Private Function Border_Read() As Integer
-
-  Return $iBorder
-
-End
-
-Private Sub Border_Write(Value As Integer)
-
-  $iBorder = Value
+  $hBorder = Value
 
 End
 
@@ -125,12 +125,13 @@ Dim X1, Y1, X2, Y2 As Integer
   X2 = (x + hControl.RealLeft + hControl.RealWidth) 
   Y2 = (y + hControl.RealTop + hControl.RealHeight) 
   
-    If Me.Border <> Line.None Then 
+    If $hBorder.Style <> Line.None Then 
       Paint.LineWidth = MTools.UnitsToPixels($fBorderWidth)
-      If Me.Border <> Line.Solid Then paint.Dash = MTools.GetBorder(Me.Border)
+      If $hBorder.Style <> Line.Solid Then paint.Dash = MTools.GetBorder(Me.Border)
+      
       'Draw.BorderStyle = $iBorderStyle
       'Draw.BorderWidth = $iBorderWidth
-      Paint.Brush = Paint.Color($iBorderColor)
+      Paint.Brush = Paint.Color($hBorder.Color)
       
       'Draw.Foreground = $iForeground
       'draw.FillStyle = Fill.None
@@ -159,7 +160,7 @@ End
 Public Sub _SetUnifiedValues()
   Dim hSizeParse As TSizeParse
   Super._SetUnifiedValues
-  hSizeParse = MTools.ScanValue($sBorderWidth)
+  hSizeParse = MTools.ScanValue($hBorder.Width)
     If Units.AllowedUnits.Exist(hSizeParse.Unit) = -1 Then error.Raise("Unknown unit")
     
       $fBorderWidth = Units.UnitToCm(hSizeParse.Value, hSizeParse.Unit)

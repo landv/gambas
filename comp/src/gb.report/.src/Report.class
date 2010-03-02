@@ -155,9 +155,7 @@ Public Sub Clear()
   $bLayoutIsDirty = True
   $fScale = 1.0
   Me.Brush = Null
-  Me.BorderWidth = "1 px"
-  Me.Border = Line.Solid
-  Me.BorderColor = Color.Black
+  Me.Border = New ReportBorder
   Me.Spacing = "0 cm"
   Me.Padding = "0 cm"
 End
