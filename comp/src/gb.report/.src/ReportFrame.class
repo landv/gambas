@@ -26,7 +26,7 @@ Property Border As ReportBorder
 
 Property Brush As ReportBrush
 
-Property Read _FrameWidth As Float
+
 
 
 
@@ -190,8 +190,3 @@ Public Sub _GetSizeHints(AvailableW As Integer, AvailableH As Integer, TotalWidt
 End
 
 
-Private Function _FrameWidth_Read() As Float
-
-  Return $fBorderWidth / 2 + 1
-
-End

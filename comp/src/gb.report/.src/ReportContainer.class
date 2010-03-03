@@ -12,8 +12,12 @@ Private $aChild As New TControl[]
 Private $fSpacing As Float
 Private $sSpacing As String
 Private $bRelativeSpacing As Boolean
+Private $bRepeat As Boolean
 Property Read Children As TControl[]
 Property Spacing As String
+Property {Repeat} As Boolean
+
+
 Property Read _Spacing As Float
 Property Read _RelativeSpacing As Boolean
 
@@ -253,4 +257,16 @@ Public Sub _SetUnifiedValues()
   Next
   
   
+End
+
+Private Function Repeat_Read() As Boolean
+
+  Return $bRepeat
+
+End
+
+Private Sub Repeat_Write(Value As Boolean)
+
+  $bRepeat = Value
+
 End
