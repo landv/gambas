@@ -16,6 +16,14 @@ Public Style As Integer
 Static Public Function _Get(sValue As String) As ReportBorder
 Dim s As String
 Dim hReportBorder As New ReportBorder
+  
+  hReportBorder.Bottom = False
+  hReportBorder.Top = False
+  hReportBorder.Left = False
+  hReportBorder.Right = False
+  
+  
+  
   For Each s In Split(sValue)
     Select Case UCase(s)
       Case "TOP"

@@ -110,21 +110,21 @@ Public Sub _ClipChildren(Page As Integer, X As Float, Y As Float, hControl As TC
     'reset the Painting flag
     hChild._SkipPainting = False
     'Test the painting Position
-    fFrameWidth = hChild.Ctrl._FrameWidth
+    'fFrameWidth = hChild.Ctrl._FrameWidth
     If Not Paint.Device Is Printer And If CX2 > CX1 And If CY2 > CY1 Then 
-      If (X + hChild.RealLeft - fFrameWidth) > CX2 Then 
+      If (X + hChild.RealLeft) > CX2 Then 
         hChild._SkipPainting = True
         Continue
       Endif
-      If (X + hChild.RealLeft + hChild.RealWidth + fFrameWidth) < CX1 Then 
+      If (X + hChild.RealLeft + hChild.RealWidth) < CX1 Then 
         hChild._SkipPainting = True
         Continue
       Endif
-      If (Y + hChild.RealTop - fFrameWidth) > CY2 Then 
+      If (Y + hChild.RealTop) > CY2 Then 
         hChild._SkipPainting = True
         Continue
       Endif
-      If (Y + hChild.RealTop + hChild.RealHeight + fFrameWidth) < CY1 Then 
+      If (Y + hChild.RealTop + hChild.RealHeight) < CY1 Then 
         hChild._SkipPainting = True
         Continue
       Endif

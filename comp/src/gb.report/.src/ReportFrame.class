@@ -128,15 +128,15 @@ End
 Public Sub _PaintAfter(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
   
 Dim X1, Y1, X2, Y2 As Integer
-  
+Dim fWidth As Float
   X1 = (x + hControl.RealLeft) 
   Y1 = (y + hControl.RealTop) 
   X2 = (x + hControl.RealLeft + hControl.RealWidth) 
   Y2 = (y + hControl.RealTop + hControl.RealHeight) 
   
     If $hBorder.Style <> Line.None Then 
-      Paint.LineWidth = MTools.UnitsToPixels($fBorderWidth)
-      If $hBorder.Style <> Line.Solid Then paint.Dash = MTools.GetBorder(Me.Border)
+      fWidth = MTools.UnitsToPixels($fBorderWidth)
+      'If $hBorder.Style <> Line.Solid Then paint.Dash = MTools.GetBorder(Me.Border)
       
       'Draw.BorderStyle = $iBorderStyle
       'Draw.BorderWidth = $iBorderWidth
@@ -145,9 +145,12 @@ Dim X1, Y1, X2, Y2 As Integer
       'Draw.Foreground = $iForeground
       'draw.FillStyle = Fill.None
         
-     paint.Rectangle(X1, Y1, X2 - X1, Y2 - Y1)
+     If $hBorder.Top Then paint.Rectangle(X1, Y1, X2 - X1, fWidth)
+     If $hBorder.Right Then paint.Rectangle(X2 - fWidth, Y1, fWidth, Y2 - Y1)
+     If $hBorder.Bottom Then paint.Rectangle(X1, Y2 - fWidth, X2 - X1, fWidth)
+     If $hBorder.Left Then paint.Rectangle(X1, Y1, fWidth, Y2 - Y1)
       
-      paint.Stroke
+      paint.Fill
       
     Endif
   

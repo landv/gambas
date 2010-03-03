@@ -19,11 +19,11 @@ Public Sub Test1()
   Dim lblcoucou As ReportLabel
 
   Report.Padding = "1 px"
-  report.Spacing = "2 px"
+  report.Spacing = "1 px"
 
   
   hHBox = New ReportHBox(Report)
-  hHBox.Border = ReportBorder["solid,TOP,LEFT,BOTTOM,RIGHT,8 px,[&H00FF00]"]
+  hHBox.Border = ReportBorder["solid,TOP,LEFT,RIGHT,8 px,[&H00FF00]"]
   'hHBox.Border = Line.Solid
   'hHBox.BorderWidth = "1 px"
   hHBox.Height = "30 %"
@@ -65,7 +65,8 @@ Public Sub Test2()
   hCloner = New ReportCloner(Report)
   hCloner.Expand = True
   hHBox = New ReportHBox(hCloner)
-  
+  hHBox.Border.Bottom = False
+  hHBox.Border.Left = False
   hHBox.Height = "2cm"
   hHBox.Border.Style = Line.Solid
   
