@@ -171,7 +171,11 @@ static uint32_t aux_get_page_from_action(void *_object, LinkAction *act)
 {
 	Ref pref;       
 	LinkDest *dest = get_dest(act);
+	#if POPPLER_VERSION_0_6
 	GooString *name;
+	#else
+	UGooString *name;
+	#endif
 
 	if (!dest)
 	{
