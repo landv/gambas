@@ -126,6 +126,7 @@ Public Sub tvwProject_Activate()
   sKey = tvwProject.Key
 
   If sKey Then
+    tvwProject[sKey].Expanded = True
     If CanEdit(sKey) Then
       If $bCtrl Then
         If File.Ext(sKey) <> "module" Then

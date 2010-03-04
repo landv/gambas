@@ -460,11 +460,11 @@ Public Sub Slider1_Change()
   'Report.Debug = True
 
   DrawingArea1.Resize((21 * Desktop.Resolution / 2.54) * Slider1.Value / 100, (29.7 * Desktop.Resolution / 2.54) * Slider1.Value / 100)
-  
   DrawingArea1.Refresh
   
   ' DrawingArea1.Clear
   ' Paint.Begin(DrawingArea1)
+  ' Report.Scale = Slider1.Value / 100.0
   ' Report.Paint(1)
   ' Paint.End
   
@@ -480,7 +480,7 @@ End
 
 Public Sub Form_Open()
 
-  RadioButton1.Value = True
+  RadioButton5.Value = True
 
 End
 

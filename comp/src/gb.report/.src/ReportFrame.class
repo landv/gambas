@@ -70,7 +70,7 @@ End
 
 Public Sub _PaintBefore(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
 
-  Dim X1, Y1, X2, Y2 As Integer
+  Dim X1, Y1, X2, Y2 As Float
   Dim hImage As Picture
   Dim fradius As Float
 
@@ -102,8 +102,6 @@ Public Sub _PaintBefore(Page As Integer, X As Float, Y As Float, hControl As TCo
         fradius = If((X2 - X1) > (Y2 - Y1), X2 - X1, Y2 - Y1)
         Paint.Brush = paint.RadialGradient(X1, Y1, fradius, X1, Y1, Me.Brush._Color, Me.Brush._Pos)
       End Select
-      
-      
     
     Paint.Rectangle(X1, Y1, X2 - X1, Y2 - Y1)
     Paint.Fill

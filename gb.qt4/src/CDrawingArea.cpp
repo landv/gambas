@@ -182,11 +182,13 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 			if (!isTransparent())
 			{
 				p->translate(-r.x(), -r.y());
-			  p->setBrushOrigin(-r.x(), -r.y());
 			}
 			
 			if (!_use_paint)
+			{
+			  p->setBrushOrigin(-r.x(), -r.y());
 				DRAW_clip(r.x(), r.y(), r.width(), r.height());
+			}
 			else
 				PAINT_clip(r.x(), r.y(), r.width(), r.height());
 			

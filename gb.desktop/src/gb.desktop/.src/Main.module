@@ -16,15 +16,15 @@ Public Sub RunXdgUtil(sProg As String, aArg As String[])
   sCmd = $cTool[sProg]
   
   If Not sCmd Then 
-    Shell "which " & sProg & " 2>&1" To sCmd
-    If Process.LastValue Then 
+    'Shell "which " & sProg & " 2>&1" To sCmd
+    'If Process.LastValue Then 
       sDir = Temp$("xdg-utils")
       sDir = File.Dir(sDir) &/ File.BaseName(sDir)
       Try Mkdir sDir
       sCmd = sDir &/ sProg
-      Copy "xdg-utils-1.0.2/scripts" &/ sProg To sCmd
+      Copy "xdg-utils" &/ sProg To sCmd
       Shell "chmod a+x " & Shell$(sCmd) Wait
-    Endif
+    'Endif
     sCmd = Trim(sCmd)
     $cTool[sProg] = sCmd
   Endif
