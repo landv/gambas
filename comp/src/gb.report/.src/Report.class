@@ -39,12 +39,13 @@ Public Sub Layout()
   If Not $bLayoutIsDirty Then Return 
   MTools.ReportResolution = Paint.ResolutionX
   If Me.Parent = Null Then 
-    Me.Width = Paint.Width & " px"
-    Me.Height = Paint.Height & " px"
+    Me.Width = (Paint.Width / $fScale) & " px"
+    Me.Height = (Paint.Height / $fScale) & " px"
   Endif
   Me._SetUnifiedValues()
   
   $hReportTControl.ctrl = Me
+  
   $iCount = $hReportTControl._SetGeometry(0, 0, Me._Width, Me._Height) + 1
   MTools.PageCount = $iCount
   $bLayoutIsDirty = False

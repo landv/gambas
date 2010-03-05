@@ -69,20 +69,6 @@ Private Sub Spacing_Write(Value As String)
 
 End
 
-' PRIVATE FUNCTION Padding_Read() AS String
-' 
-'   RETURN Units.CmToUnit($fPadding, $sPaddingUnit) & " " & $sPaddingUnit
-' 
-' END
-
-' ' PRIVATE SUB Padding_Write(Value AS String)
-' ' DIM hSizeParse AS TSizeParse
-' '   hSizeParse = MRTools.ScanValue(value)
-' '   IF NOT Units.AllowedUnits.Find(hSizeParse.Unit) = -1 THEN error.Raise("Unknown unit")
-' '   $fPadding = Units.UnitToCm(Value, hSizeParse.Unit)
-' '   $sPaddingUnit = hSizeParse.Unit
-' ' 
-' END
 
 Public Sub _ClipChildren(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer, fScale As Float)
   
@@ -270,3 +256,24 @@ Private Sub Repeat_Write(Value As Boolean)
   $bRepeat = Value
 
 End
+
+Public Sub _GenerateClones()
+  
+  Dim hTControl As New TControl
+    
+  Do
+   hTControl = Me.Parent._Add(Me)
+  Loop While True 'trouver comment stoper la boucle !
+  
+  
+  For Each hTControl In $aChild
+  
+    If hTControl.Ctrl Is ReportContainer Then 
+      If hTControl.Ctrl.Repeat Then hTControl.Ctrl._GenerateClones()
+    Endif
+  
+  Next
+  
+  
+End
+
