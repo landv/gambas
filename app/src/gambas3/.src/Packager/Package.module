@@ -197,7 +197,7 @@ Private Function IsConsoleProject() As Boolean
   Dim sLib As String
 
   For Each sLib In Project.Libraries
-    If CComponent.All[sLib].Type = "Form" Then Return False
+    If CComponent.All[sLib].Faimily = "Form" Then Return False
   Next
 
   Return True
