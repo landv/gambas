@@ -791,8 +791,7 @@ int main(int argc, char **argv)
 		}
 		else
 		{
-		#if HAVE_GETOPT_LONG
-		if (!getenv("GB_PRELOAD"))
+			if (!getenv("GB_PRELOAD"))
 			{
 				for (ind = optind; ind < argc; ind++)
 				{
@@ -810,7 +809,6 @@ int main(int argc, char **argv)
 				//analyze(name, FALSE);
 				run_myself(argv[0], name);
 			}
-		#endif
 		}
 	}
 
