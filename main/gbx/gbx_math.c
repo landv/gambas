@@ -212,7 +212,7 @@ double exp2(double x)
 
 #endif
 
-#if defined(OS_FREEBSD) || defined(OS_OPENBSD) || defined(ARCH_ARM)
+#if defined(OS_FREEBSD) || defined(OS_OPENBSD) || defined(ARCH_ARM) || defined(OS_CYGWIN)
 
 long double log10l(long double x)
 {

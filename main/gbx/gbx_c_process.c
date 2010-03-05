@@ -263,8 +263,10 @@ static void init_child_tty(int fd)
 	tcgetattr(fd, &terminal);
 	
 	terminal.c_iflag |= ICRNL | IXON | IXOFF;
+	#ifdef IUTF8
 	if (LOCAL_is_UTF8) 
 		terminal.c_iflag |= IUTF8;
+	#endif
 	
 	terminal.c_oflag |= OPOST;
 	
