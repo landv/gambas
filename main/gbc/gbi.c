@@ -41,7 +41,7 @@
 
 #include <dlfcn.h>
 
-#if defined(OS_LINUX) || defined(OS_OPENBSD) || defined(OS_FREEBSD)
+#if defined(OS_LINUX) || defined(OS_OPENBSD) || defined(OS_FREEBSD) || defined(OS_CYGWIN)
 	#define lt_dlinit() (0)
 	#define lt_dlhandle void *
 	#define lt_dlopenext(_path) dlopen(_path, RTLD_LAZY)

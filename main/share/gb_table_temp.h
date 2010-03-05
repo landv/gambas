@@ -546,11 +546,11 @@ void TABLE_print(TABLE *table, bool sort)
 void TABLE_copy_symbol_with_prefix(TABLE *table, int ind_src, char prefix, SYMBOL **symbol, int *index)
 {
 	SYMBOL *sym;
-	char *ptr;
+	unsigned char *ptr;
 
 	sym = TABLE_get_symbol(table, ind_src);
 
-	ptr = (char *)sym->name - 1;
+	ptr = (unsigned char *)sym->name - 1;
 
 	if (!isspace(*ptr))
 		ERROR_panic("Cannot add prefix to symbol");

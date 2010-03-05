@@ -449,7 +449,7 @@ static void ss_get_param(int index, char **str, int *len)
 char *DB_SubstString(const char *pattern, int len_pattern, DB_SUBST_CALLBACK add)
 {
 	int i;
-	char last_c, c;
+	unsigned char last_c, c;
 	int n;
 	char quote[20] = {0};
 	

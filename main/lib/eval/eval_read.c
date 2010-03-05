@@ -108,7 +108,7 @@ PUBLIC char *READ_get_pattern(PATTERN *pattern)
     case RT_RESERVED:
       //snprintf(COMMON_buffer, COMMON_BUF_MAX, "%s%s%s", before, TABLE_get_symbol_name(COMP_res_table, index), after);
       str = TABLE_get_symbol_name(COMP_res_table, index);
-      if (ispunct(*str))
+      if (ispunct((unsigned char)*str))
         snprintf(_buffer, BUF_MAX, "%s%s%s", before, str, after);
       else
         strcpy(_buffer, str);

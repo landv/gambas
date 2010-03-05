@@ -92,12 +92,16 @@ AC_DEFUN([GB_LIBTOOL],
   AC_SUBST(LIBLTDL)
 
   dnl LD_FLAGS="-Wl,-O1"
+  if test $SYSTEM == "CYGWIN"; then
+		LD_FLAGS="$LD_FLAGS -no-undefined"
+	fi
   AC_SUBST(LD_FLAGS)
 ])
 
 AC_DEFUN([GB_INIT],
 [
   GB_INIT_SHORT($1)
+  GB_SYSTEM
   GB_LIBTOOL
   
   AC_DEFINE(GAMBAS_VERSION, 3, Gambas version)
@@ -153,10 +157,6 @@ AC_DEFUN([GB_INIT],
 
   AC_SUBST(CXX_LIB)
 
-  dnl ---- Check for system type
-  
-  GB_SYSTEM()
-  
   dnl ---- Check for shared library extension
   
   GB_SHARED_LIBRARY_EXT()
