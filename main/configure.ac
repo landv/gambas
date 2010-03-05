@@ -59,7 +59,7 @@ GB_COMPONENT_SEARCH(
   [],
   libffi,
   [GB_FIND(ffi.h, /usr/local /usr/local/lib /usr /usr/lib /usr/lib/gcc/*/*, include ffi/include)],
-  [GB_FIND(libffi.$SHLIBEXT, /usr/local /usr, lib)],
+  [GB_FIND(libffi.$SHLIBEXT, /usr/local /usr /usr/lib/gcc/*/*, lib .)],
   [-lffi])
 
 if test -z "$FFI_LIB"; then
