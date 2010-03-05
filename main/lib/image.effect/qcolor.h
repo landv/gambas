@@ -134,8 +134,8 @@ public:
     bool   operator==( const QColor &c ) const;
     bool   operator!=( const QColor &c ) const;
 
-    uint   alloc();
-    uint   pixel()  const;
+    //uint   alloc();
+    //uint   pixel()  const;
 
 #if defined(Q_WS_X11)
     // ### in 4.0, make this take a default argument of -1 for default screen?
@@ -143,13 +143,13 @@ public:
     uint pixel( int screen ) const;
 #endif
 
-    static int  maxColors();
-    static int  numBitPlanes();
+    //static int  maxColors();
+    //static int  numBitPlanes();
 
-    static int  enterAllocContext();
-    static void leaveAllocContext();
-    static int  currentAllocContext();
-    static void destroyAllocContext( int );
+    //static int  enterAllocContext();
+    //static void leaveAllocContext();
+    //static int  currentAllocContext();
+    //static void destroyAllocContext( int );
 
 #if defined(Q_WS_WIN)
     static const QRgb* palette( int* numEntries = 0 );

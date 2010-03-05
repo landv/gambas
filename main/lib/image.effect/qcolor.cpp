@@ -900,21 +900,6 @@ QColor QColor::dark( int factor ) const
 
     \sa alloc()
 */
-uint QColor::pixel() const
-{
-    if ( isDirty() )
-	return ((QColor*)this)->alloc();
-    else if ( colormodel == d8 )
-#ifdef Q_WS_WIN
-	// since d.d8.pix is uchar we have to use the PALETTEINDEX
-	// macro to get the respective palette entry index.
-	return (0x01000000 | (int)(short)(d.d8.pix));
-#else
-	return d.d8.pix;
-#endif
-    else
-	return d.d32.pix;
-}
 
 /*!
     \fn QStringList QColor::colorNames()
