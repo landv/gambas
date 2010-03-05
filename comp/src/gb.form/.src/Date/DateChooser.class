@@ -8,6 +8,7 @@ Property Year As Integer
 Property Month As Integer
 Property Day As Integer
 Property Font As Font
+Property Read Colors As _DateChooserColors
 
 Event Change
 Event Activate
@@ -107,8 +108,9 @@ Private Sub Font_Write(Value As Font)
   
 End
 
-Public Sub SetDateColor({Date} As Date, Color As Integer)
-  
-  $hCal.SetDateColor({Date}, Color)
-  
+Private Function Colors_Read() As _DateChooserColors
+
+  _DateChooserColors._Calendar = $hCal
+  Return _DateChooserColors
+
 End

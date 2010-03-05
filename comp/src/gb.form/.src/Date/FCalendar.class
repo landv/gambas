@@ -323,7 +323,15 @@ Public Sub UpdateFont()
   
 End
 
-Public Sub SetDateColor(dDate As Date, iColor As Integer)
+Public Sub ClearColors()
+  
+  $cDateColor.Clear
+  dwgMonth.Refresh
+  
+End
+
+
+Public Sub SetColor(dDate As Date, iColor As Integer)
   
   Dim sKey As String = CStr(Date(dDate))
   
@@ -332,11 +340,18 @@ Public Sub SetDateColor(dDate As Date, iColor As Integer)
   Else 
     $cDateColor[sKey] = iColor
   Endif
+  dwgMonth.Refresh
   
 End
 
-Public Sub Form_Open()
-
+Public Sub GetColor(dDate As Date) As Integer
   
-
+  Dim sKey As String = CStr(Date(dDate))
+  Dim iColor As Integer
+  
+  Try iColor = $cDateColor[sKey]
+  If Error Then iColor = Color.Default
+  Return iColor
+  
 End
+

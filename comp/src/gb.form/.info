@@ -233,6 +233,10 @@ Font
 p
 Font
 
+Colors
+r
+_DateChooserColors
+
 :Change
 :
 
@@ -269,10 +273,6 @@ _Activate
 m
 
 
-SetDateColor
-m
-
-(Date)d(Color)i
 #DatePicker
 UserControl
 C
@@ -1712,3 +1712,18 @@ Wizard_Cancel
 m
 
 
+#_DateChooserColors
+
+CA
+Clear
+m
+
+
+_put
+m
+
+(Color)i(Date)d
+_get
+m
+i
+(Date)d

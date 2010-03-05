@@ -772,9 +772,11 @@ Public Sub btnSort_Click()
   Dim aTitle As New String[]
   Dim aWindow As CWindow[]
 
-  Dim hWin As CWindow
+  Dim hWin As Window
   Dim hMenu As Menu
   Dim sTitle As String
+  
+  hWin = GetActiveWindow()
   
   For iInd = 0 To tabWorkspace.Count - 1
     aTitle.Add(tabWorkspace[iInd].Text & "\t" & Format(iInd, "000"))
@@ -794,7 +796,7 @@ Public Sub btnSort_Click()
     UpdateTitleFromIndex(iInd)
   Next
   
-  Activate
+  Activate(hWin)
   
 End
 
