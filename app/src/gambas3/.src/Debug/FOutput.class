@@ -64,8 +64,12 @@ End
 Public Sub ReadConfig()
 
   FTextEditor.ReadConfigEditor(edtOutput)
+  edtOutput.Font = Font[Settings["/ConsoleFont", Project.DEFAULT_FONT]]
+
+  MTheme.InitEditor(edtOutput)
+
+  edtOutput.Flags[Editor.ShowCurrentLine] = False 'Settings["/Editor/ShowCurrent", True]
   edtOutput.Flags[Editor.ShowModifiedLines] = False
-  edtOutput.Flags[Editor.ShowLineNumbers] = False
 
 End
 

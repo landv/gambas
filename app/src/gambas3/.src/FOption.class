@@ -36,6 +36,8 @@ Private Sub ReadConfig()
         Endif
       Case "SpinBox"
         hCtrl.Value = vVal
+      Case "ButtonBox"
+        hCtrl.Text = vVal
       Default 
         Debug "Unmanaged type: "; Object.Type(hCtrl)
     
@@ -64,7 +66,8 @@ Public Sub _new()
   $cCurrent = MTheme.Copy($cLast)
   
   $aConfig = [
-    [fntEditor, "/Editor/Font", Project.DEFAULT_FONT],
+    [txtEditorFont, "/Editor/Font", Project.DEFAULT_FONT],
+    [txtConsoleFont, "/ConsoleFont", Project.DEFAULT_FONT],
     [cmbGlobalFont, "/GlobalFont", 0],
     [cmbTabStripFont, "/TabStripFont", 0],
     [cmbToolbox, "/ToolboxSize", 0],
@@ -161,7 +164,7 @@ Private Sub RefreshEditor()
   RefreshStyle
   
   MTheme.WriteSettings(Settings, "Highlight", $cCurrent)
-  Settings["/Editor/Font"] = fntEditor.SelectedFont
+  Settings["/Editor/Font"] = txtEditorFont.Text
   
   Project.RefreshBreakpointPicture
   
@@ -169,7 +172,6 @@ Private Sub RefreshEditor()
     If hFile Is FEditor Or hFile Is FTextEditor Then hFile.ReadConfig()
   Next  
   
-  FOutput.ReadConfig
   FFindList.ReadConfig
   FMain.ReadConfig
   FProperty.ReadConfig
@@ -177,16 +179,20 @@ Private Sub RefreshEditor()
 
 End
 
+Private Sub RefreshConsole()
+  
+  If $bNoChange Then Return
+  
+  Settings["/ConsoleFont"] = txtConsoleFont.Text
+  FOutput.ReadConfig
+  
+End
+
+
 Public Sub btnUndo_Click()
 
   $cCurrent = MTheme.Copy($cLast)
   cmbTheme.Index = 0
-  RefreshEditor
-
-End
-
-Public Sub fntEditor_Change()
-
   RefreshEditor
 
 End
@@ -424,7 +430,7 @@ Public Sub dwgStyle_Draw()
 
   sName = MTheme.ColorNames[MTheme.ColorKeys.Find(sKey)]
 
-  Draw.Font = Font[fntEditor.SelectedFont]
+  Draw.Font = Font[txtEditorFont.Text]
   If hStyle.Underline Then Draw.Font.Underline = True
   If hStyle.Italic Then Draw.Font.Italic = True
   
@@ -580,5 +586,33 @@ Public Sub btnClearCache_Click()
   Inc Application.Busy
   Shell "rm -rf " & Shell$(WebSettings.Cache.Path) &/ "*" Wait
   Dec Application.Busy
+
+End
+
+Public Sub txtEditorFont_Click()
+
+  Dim sFont As String
+
+  sFont = FFontChooser.Run(txtEditorFont.Text)
+  If Not sFont Then Return
+  txtEditorFont.Text = sFont
+  RefreshEditor
+
+End
+
+Public Sub txtConsoleFont_Click()
+
+  Dim sFont As String
+
+  sFont = FFontChooser.Run(txtConsoleFont.Text)
+  If Not sFont Then Return
+  txtConsoleFont.Text = sFont
+  RefreshConsole
+
+End
+
+Public Sub svwOption_Arrange()
+
+  panOption.Width = svwOption.ClientWidth - Desktop.Scale
 
 End
