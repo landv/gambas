@@ -677,9 +677,7 @@ int main(int argc, char **argv)
 	char *name;
 	int opt;
 	int save_fd;
-	#if HAVE_GETOPT_LONG
 	int ind = 0;
-	#endif
 
 	/*#ifdef __FreeBSD__
 	optind = 1;

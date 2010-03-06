@@ -83,7 +83,6 @@ bool STREAM_in_archive(const char *path)
 static int STREAM_get_readable(STREAM *stream, int *len)
 {
 	int fd;
-	int ret;
 	off_t off;
 	off_t end;
 
@@ -95,8 +94,7 @@ static int STREAM_get_readable(STREAM *stream, int *len)
 
 	if (!stream->common.no_fionread)
 	{
-		ret = ioctl(fd, FIONREAD, len);
-		if (ret >= 0)
+		if (ioctl(fd, FIONREAD, len) >= 0)
 			return 0;
 		
 		stream->common.no_fionread = TRUE;

@@ -28,6 +28,7 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
   
   Dim sAlign As String
   Dim X, Y, W, H, W2, H2 As Float
+  Dim sPath As String
   
   Select Case hCtrl.Kind
   
@@ -110,6 +111,16 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
       Draw.Foreground = &HFF8080&
       Draw.LineStyle = Line.Dash
       Draw.Rect(0, 0, hCtrl.W, hCtrl.H)
+
+    Case "ReportImage"
+    
+      sPath = hCtrl["Image"]
+      If Not sPath Then Return True
+      If hCtrl["#Image"] <> sPath Then
+        hCtrl["#Image"] = sPath
+        hCtrl["#ImageObject"] = Image.Load(Project.Dir &/ sPath)
+      Endif
+      Try Draw.Image(hCtrl["#ImageObject"], 0, 0, Draw.Width, Draw.Height)
 
     Case Else
     

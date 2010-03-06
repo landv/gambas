@@ -3,7 +3,7 @@
 Export
 Inherits ReportControl
 
-Public Const _Properties As String = "*,Direction{Align.TopLeft;Top;TopRight;Left;Right;BottomLeft;Bottom;BottomRight}=BottomRight,LineWidth=1,LineColor{Color}"
+Public Const _Properties As String = "*,Direction{Align.TopLeft;Top;TopRight;Left;Right;BottomLeft;Bottom;BottomRight}=BottomRight,LineWidth{ReportCoord}=2 px,LineColor{Color}"
 
 Property Direction As Integer
 

@@ -33,7 +33,11 @@ Public Sub CheckProgram()
   
   If Not Project.CheckProgram("dh_install") Then DKPG_PROG = "dh_install"
   If Not Project.CheckProgram("rpmbuild") Then RPMBUILD_PROG = "rpmbuild"
-  If Not Project.CheckProgram("tar-1.13") Then TAR_1_13_PROG = "tar-1.13"
+  If Not Project.CheckProgram("tar-1.13") Then 
+    TAR_1_13_PROG = "tar-1.13"
+  Else If Not Project.CheckProgram("tar") Then 
+    TAR_1_13_PROG = "tar"
+  Endif
   If Not Project.CheckProgram("autoconf") Then AUTOCONF_PROG = "autoconf"
   If Not Project.CheckProgram("automake") Then AUTOMAKE_PROG = "automake"
   

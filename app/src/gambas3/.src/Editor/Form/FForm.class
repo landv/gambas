@@ -349,17 +349,19 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
               iPos = iPos2 + 1
             Loop
             vValue = aVal '.Join("\n")
-          Else If Left$(sValue, 5) = "Font[" Then
-            vValue = Mid$(sValue, 7, -2)
-          Else If Left$(sValue, 8) = "Picture[" Then
-            vValue = Mid$(sValue, 10, -2)
-          Else If Left$(sValue, 12) = "Connections[" Then
-            vValue = Mid$(sValue, 14, -2)
+          Else If sValue Begins "Font[" Then
+            vValue = Unquote$(Mid$(sValue, 7, -2))
+          Else If sValue Begins "Picture[" Then
+            vValue = Unquote$(Mid$(sValue, 10, -2))
+          Else If sValue Begins "Image.Load(" Then
+            vValue = Unquote$(Mid$(sValue, 13, -2))
+          Else If sValue Begins "Connections[" Then
+            vValue = Unquote$(Mid$(sValue, 14, -2))
           Else If UCase(sValue) = "TRUE" Then
             vValue = True
           Else If UCase(sValue) = "FALSE" Then
             vValue = False
-          Else If Left$(sValue, 6) = "CDate(" Then
+          Else If sValue Begins "CDate(" Then
             vValue = CDate(Mid$(sValue, 8, -2))
           Else
 
@@ -2466,7 +2468,7 @@ Public Sub UpdateBorder()
     '   panMenuBar.Show
     ' Endif
     
-    If hCtrl.GetPropertyDefault("Border") = False Then
+    If hCtrl.GetPropertyDefault("Border") = False Or If Family <> "Form" Then
     
       panTitle.Hide
       H = 0

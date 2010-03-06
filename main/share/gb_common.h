@@ -56,6 +56,7 @@
 #if defined(OS_CYGWIN)
 
 typedef void (*sighandler_t) (int);
+typedef unsigned long ulong;
 
 #endif
 

@@ -1,7 +1,6 @@
 ' Gambas class file
 Export
 
-
 Static Public Const None As Integer = 0
 Static Public Const Solid As Integer = 1
 
@@ -13,19 +12,20 @@ Public Width As String = "1 px"
 Public Color As Integer 
 Public Style As Integer
 
-Static Public Function _Get(sValue As String) As ReportBorder
-Dim s As String
-Dim hReportBorder As New ReportBorder
+Static Public Function _get(sValue As String) As ReportBorder
+
+  Dim s As String
+  Dim hReportBorder As New ReportBorder
   
   hReportBorder.Bottom = False
   hReportBorder.Top = False
   hReportBorder.Left = False
   hReportBorder.Right = False
   
-  
-  
   For Each s In Split(sValue)
+  
     Select Case UCase(s)
+    
       Case "TOP"
         hReportBorder.Top = True
       Case "BOTTOM"
@@ -48,11 +48,14 @@ Dim hReportBorder As New ReportBorder
         Endif
         
     End Select
+    
   Next
+  
   Return hReportBorder
+  
 End
 
-Public Function BorderToString() As String
+Public Function ToString() As String
   
   Dim aValue As New String[]
   

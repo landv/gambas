@@ -24,7 +24,7 @@ Private $hWebView As WebView
 
 Private $iHighlightColor As Integer
 
-Static Private $aFieldUseDelete As String[] = ["Font", "Picture", "String[]", "Path", "Color", "Field[]", "Image"]
+Static Private $aFieldUseDelete As String[] = ["Font", "Picture", "String[]", "Path", "Color", "Field[]", "Image", "ReportCoord", "ReportBorder"]
 
 Public Sub _new()
   
@@ -388,7 +388,7 @@ Public Function SaveProperty() As Boolean
 
       If Not IsNull(Val(vVal)) Then vVal = Val(vVal)
 
-    Case "s", "Font", "Picture", "Constant", "List", "Path", "Image"
+    Case "s", "Font", "Picture", "Constant", "List", "Path", "Image", "ReportCoord", "ReportBorder"
     
     Case "String[]", "Field[]"
     
@@ -649,7 +649,7 @@ Private Sub ShowProperty(Optional sFocus As String)
     Case "s"
       bButton = True
 
-    Case "String[]", "Field[]"
+    Case "String[]", "Field[]", "ReportCoord"
       bButton = True
       txtProperty.ReadOnly = True
 
@@ -677,7 +677,7 @@ Private Sub ShowProperty(Optional sFocus As String)
       cmbProperty.Add("False")
       cmbProperty.Add("True")
 
-    Case "Font", "Picture", "Path", "Color", "Image"
+    Case "Font", "Picture", "Path", "Color", "Image", "ReportBorder"
       
       bButton = True
       txtProperty.ReadOnly = True
@@ -909,12 +909,16 @@ Public Sub btnProperty_Click()
       
     Case "Table"
       FTableChooser.Table = $sOldVal
-      If FTableChooser.Run() Then Goto _exit
+      If FTableChooser.Run() Then Goto _EXIT
       $hEditor.Text = FTableChooser.Table
 
     Case "Field[]"
       If FList.Run(Split($sOldVal, "\n"), ("Edit field list")) Then Goto _EXIT
       $hEditor.Text = FList.Value.Join("\n")
+      
+    Case "ReportCoord"
+      If FReportCoordChooser.Run($sOldVal) Then Goto _EXIT
+      $hEditor.Text = FReportCoordChooser.Coord
 
   End Select
 

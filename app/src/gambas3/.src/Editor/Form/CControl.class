@@ -29,7 +29,7 @@ Property Read H As Integer
 'STATIC PUBLIC PropertiesInOrder AS NEW Collection
 'STATIC PUBLIC ControlLibrary AS NEW Collection
 
-Static Private $cSynonymous As New Collection
+'Static Private $cSynonymous As New Collection
 Static Private $cLibRef As New Collection
 
 Private $cValue As New Collection
@@ -51,12 +51,12 @@ Static Private $bDoNotMoveHandle As Boolean
 
 Static Public Sub _init()
 
-  $cSynonymous["Left"] = "X"
-  $cSynonymous["Top"] = "Y"
-  $cSynonymous["W"] = "Width"
-  $cSynonymous["H"] = "Height"
-  $cSynonymous["Caption"] = "Text"
-  $cSynonymous["Title"] = "Text"
+  ' $cSynonymous["Left"] = "X"
+  ' $cSynonymous["Top"] = "Y"
+  ' $cSynonymous["W"] = "Width"
+  ' $cSynonymous["H"] = "Height"
+  ' $cSynonymous["Caption"] = "Text"
+  ' $cSynonymous["Title"] = "Text"
 
   RefreshHandleSize
 
@@ -457,7 +457,7 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
   Dim bDoNotRedirect As Boolean
   Dim bApply As Boolean
 
-  If $cSynonymous.Exist(sProp) Then sProp = $cSynonymous[sProp]
+  'If $cSynonymous.Exist(sProp) Then sProp = $cSynonymous[sProp]
 
   Try hProp = CComponent.Classes[Kind].Properties[sProp]
   'IF ERROR THEN STOP
@@ -584,26 +584,26 @@ Public Function GetProperty(sProp As String) As Variant
   Dim hProp As CPropertyInfo
   Dim vVal As Variant
 
-  If $cSynonymous.Exist(sProp) Then sProp = $cSynonymous[sProp]
+  'If $cSynonymous.Exist(sProp) Then sProp = $cSynonymous[sProp]
 
   Try hProp = CComponent.Classes[Kind].Properties[sProp]
   'If Error Then Stop
-  If IsNull(hProp) Then Return
-
-  If hProp.AlwaysRead Then
-
-    vVal = Object.GetProperty(Control, sProp)
-
-    If Not IsNull(vVal) Then
-      If hProp.Type = "Font" Then vVal = vVal.ToString()
+  If hProp Then 
+    If hProp.AlwaysRead Then
+  
+      vVal = Object.GetProperty(Control, sProp)
+  
+      If Not IsNull(vVal) Then
+        If hProp.Type = "Font" Then vVal = vVal.ToString()
+      Endif
+  
+      If vVal = hProp.DefaultValue Then
+        $cValue[sProp] = Null
+      Else
+        $cValue[sProp] = vVal
+      Endif
+  
     Endif
-
-    If vVal = hProp.DefaultValue Then
-      $cValue[sProp] = Null
-    Else
-      $cValue[sProp] = vVal
-    Endif
-
   Endif
 
   Return $cValue[sProp]
@@ -642,7 +642,7 @@ Private Function ConvertToString(vVal As Variant, hProp As CPropertyInfo) As Str
 
       Return CStr(vVal)
 
-    Case "List", "Path", "Picture", "Font", "Table", "Menu"
+    Case "List", "Path", "Picture", "Font", "Table", "Menu", "Image", "ReportCoord"
 
       Return CStr(vVal)
       
@@ -1384,7 +1384,7 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
 
     Select Case hProp.Type
 
-      Case "s", "List", "Path", "Table", "Menu"
+      Case "s", "List", "Path", "Table", "Menu", "ReportCoord"
         vVal = Quote(vVal)
 
         If hProp.Translate Then
@@ -1426,7 +1426,7 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
         Endif
 
       Case "Font"
-        sLine = sLine & "Font[" & Chr$(34) & vVal & Chr$(34) & "]"
+        sLine = sLine & "Font[" & Quote(vVal) & "]"
 
       Case "Color"
         If Not IsNull(Val(vVal)) Then
@@ -1436,17 +1436,20 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
         Endif
 
       Case "Picture"
-        sLine = sLine & "Picture[" & Chr$(34) & vVal & Chr$(34) & "]"
+        sLine &= "Picture[" & Quote$(vVal) & "]"
+        
+      Case "Image"
+        sLine &= "Image.Load(" & Quote$(vVal) & ")"
 
       Case "Connection"
-        sLine = sLine & "Connections[" & Chr$(34) & vVal & Chr$(34) & "]"
+        sLine = sLine & "Connections[" & Quote$(vVal) & "]"
 
       Case "Constant"
         sLine = sLine & hProp.ConstantClass & "." & vVal
 
       Case "d"
 
-        sLine = sLine & "CDate(" & Chr$(34) & CStr(vVal) & Chr$(34) & ")"
+        sLine = sLine & "CDate(" & Quote$(CStr(vVal)) & ")"
 
       Case Else
 
@@ -1672,6 +1675,12 @@ End
 Public Sub _get(sProperty As String) As Variant
   
   Return GetPropertyDefault(sProperty)
+  
+End
+
+Public Sub _put(vValue As Variant, sProperty As String)
+  
+  $cValue[sProperty] = vValue
   
 End
 

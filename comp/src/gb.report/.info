@@ -150,11 +150,11 @@ Solid
 C
 i
 1
-_Get
+_get
 M
 ReportBorder
 (sValue)s
-BorderToString
+ToString
 m
 s
 
@@ -202,7 +202,7 @@ Container
 _Properties
 C
 s
-*,Spacing
+*,Spacing{ReportCoord}
 Children
 r
 TControl[]
@@ -261,7 +261,7 @@ b
 _Properties
 C
 s
-Left,Top,Width,Height,Visible=True,Font,Padding,Expand,AutoResize,Tag
+Left{ReportCoord},Top{ReportCoord},Width{ReportCoord},Height{ReportCoord},Visible=True,Font,Padding{ReportCoord},Expand,AutoResize,Tag
 _Family
 C
 s
@@ -443,7 +443,7 @@ ReportControl
 _Properties
 C
 s
-*,BorderColor,BorderWidth,Border
+*,Border
 Border
 p
 ReportBorder
@@ -543,7 +543,7 @@ C
 _Properties
 C
 s
-*,Direction{Align.TopLeft;Top;TopRight;Left;Right;BottomLeft;Bottom;BottomRight}=BottomRight,LineWidth=1,LineColor{Color}
+*,Direction{Align.TopLeft;Top;TopRight;Left;Right;BottomLeft;Bottom;BottomRight}=BottomRight,LineWidth{ReportCoord}=2 px,LineColor{Color}
 Direction
 p
 i

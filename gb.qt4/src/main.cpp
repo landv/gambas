@@ -1043,7 +1043,11 @@ int EXPORT GB_INIT(void)
 
 	QT_InitEventLoop();
 
-	return 0;
+	#ifdef OS_CYGWIN
+		return 1;
+	#else
+		return 0;
+	#endif
 }
 
 void EXPORT GB_EXIT()

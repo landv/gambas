@@ -1,0 +1,46 @@
+' Gambas class file
+
+Static Public Coord As String
+
+Public Sub Run(sCoord As String) As Boolean
+
+  Coord = sCoord
+
+  Return Not Me.ShowModal()
+
+End
+
+Public Sub btnOK_Click()
+
+  If Trim(txtCoord.Text) Then
+    Try Coord = CStr(CFloat(Replace(Trim(txtCoord.Text), ",", "."))) & " " & cmbUnit.Text
+    If Error Then
+      Balloon.Error(("Incorrect value."), txtCoord)
+      Return
+    Endif
+  Else
+    Coord = ""
+  Endif
+  
+  Me.Close(True)
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+
+Public Sub Form_Open()
+
+  Dim aCoord As String[] = Split(Coord, " ")
+  
+  Try txtCoord.Text = Str(CFloat(Replace(aCoord[0], ",", ".")))
+  Try cmbUnit.Text = aCoord[1]
+  
+  txtCoord.SelectAll
+  txtCoord.SetFocus
+
+End

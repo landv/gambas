@@ -381,7 +381,7 @@ void LIBRARY_get_interface(LIBRARY *lib, int version, void *iface)
   for (i = 0; i < len; i++)
   {
     c = toupper(lib->name[i]);
-    if (!isalnum(c))
+    if (!isalnum((unsigned char)c))
       c = '_';
 
     symbol[i] = c;

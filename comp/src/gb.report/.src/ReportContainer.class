@@ -6,7 +6,7 @@ Inherits ReportFrame
 
 Public Const _IsContainer As Boolean = True
 Public Const _Group As String = "Container"
-Public Const _Properties As String = "*,Spacing"
+Public Const _Properties As String = "*,Spacing{ReportCoord}"
 
 Private $aChild As New TControl[]
 Private $fSpacing As Float
