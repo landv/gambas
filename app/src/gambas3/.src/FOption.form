@@ -43,7 +43,7 @@
       Border = False
       ScrollBar = Scroll.Vertical
       { panOption VBox
-        MoveScaled(0,0,68,134)
+        MoveScaled(0,0,68,121)
         Expand = True
         Spacing = True
         { Label29 Label
@@ -61,9 +61,9 @@
             Text = ("Font size")
           }
           { cmbGlobalFont ComboBox
-            MoveScaled(48,0,17,4)
+            MoveScaled(48,0,18,4)
             ReadOnly = True
-            List = [("Normal"), ("Small")]
+            List = [("Normal"), ("Small"), ("Tiny")]
           }
         }
         { HBox19 HBox
@@ -76,7 +76,7 @@
             Text = ("Tabstrip font size")
           }
           { cmbTabStripFont ComboBox
-            MoveScaled(48,0,17,4)
+            MoveScaled(48,0,18,4)
             ReadOnly = True
             List = [("Normal"), ("Small"), ("Tiny")]
           }
@@ -91,7 +91,7 @@
             Text = ("Toolbox size")
           }
           { cmbToolbox ComboBox
-            MoveScaled(48,0,17,4)
+            MoveScaled(48,0,18,4)
             ReadOnly = True
             List = [("Normal"), ("Small")]
           }
@@ -110,6 +110,9 @@
             ReadOnly = True
             List = [("No"), ("Yes")]
           }
+          { Panel2 Panel
+            MoveScaled(59,0,7,4)
+          }
         }
         { HBox21 HBox
           MoveScaled(1,24,66,4)
@@ -125,6 +128,9 @@
             ReadOnly = True
             List = [("No"), ("Yes")]
           }
+          { Panel3 Panel
+            MoveScaled(59,0,7,4)
+          }
         }
         { HBox11 HBox
           MoveScaled(1,29,66,4)
@@ -136,271 +142,13 @@
             Text = ("Icon theme")
           }
           { cmbIconTheme ComboBox
-            MoveScaled(48,0,17,4)
+            MoveScaled(48,0,18,4)
             ReadOnly = True
             List = []
-          }
-        }
-        { Label25 Label
-          MoveScaled(0,35,62,3)
-          Font = Font["Bold"]
-          Text = ("Applications")
-        }
-        { HBox12 HBox
-          MoveScaled(1,39,66,4)
-          Spacing = True
-          Indent = True
-          { Label13 Label
-            MoveScaled(0,0,47,4)
-            Expand = True
-            Text = ("Browser")
-          }
-          { cmbBrowser ComboBox
-            MoveScaled(48,0,17,4)
-            ReadOnly = True
-            List = []
-          }
-        }
-        { HBox2 HBox
-          MoveScaled(1,44,66,4)
-          Spacing = True
-          Indent = True
-          { Label4 Label
-            MoveScaled(0,0,47,4)
-            Expand = True
-            Text = ("Terminal")
-          }
-          { cmbTerminal ComboBox
-            MoveScaled(48,0,17,4)
-            ReadOnly = True
-            List = []
-          }
-        }
-        { HBox9 HBox
-          MoveScaled(1,49,66,4)
-          Spacing = True
-          Indent = True
-          { Label14 Label
-            MoveScaled(0,0,47,4)
-            Expand = True
-            Text = ("Image editor")
-          }
-          { cmbImageEditor ComboBox
-            MoveScaled(48,0,17,4)
-            ReadOnly = True
-            List = []
-          }
-        }
-        { Label22 Label
-          MoveScaled(0,54,63,3)
-          Font = Font["Bold"]
-          Text = ("Help")
-        }
-        { HBox13 HBox
-          MoveScaled(1,58,66,4)
-          Spacing = True
-          Indent = True
-          { Label32 Label
-            MoveScaled(0,0,47,4)
-            Expand = True
-            Text = ("Display property help")
-          }
-          { cmbIntegratedHelp ComboBox
-            MoveScaled(48,0,10,4)
-            ReadOnly = True
-            List = [("No"), ("Yes")]
-          }
-        }
-        { HBox3 HBox
-          MoveScaled(1,63,66,4)
-          Spacing = True
-          Indent = True
-          { Label10 Label
-            MoveScaled(0,0,47,4)
-            Expand = True
-            Text = ("Show tooltips")
-          }
-          { cmbTooltip ComboBox
-            MoveScaled(48,0,10,4)
-            ReadOnly = True
-            List = [("No"), ("Yes")]
-          }
-        }
-        { HBox5 HBox
-          MoveScaled(1,68,66,4)
-          Spacing = True
-          Indent = True
-          { Label23 Label
-            MoveScaled(0,0,47,4)
-            Expand = True
-            Text = ("Show documentation in popups")
-          }
-          { cmbHelpCompletion ComboBox
-            MoveScaled(48,0,10,4)
-            ReadOnly = True
-            List = [("No"), ("Yes")]
-          }
-        }
-        { HBox22 HBox
-          MoveScaled(1,73,66,4)
-          Spacing = True
-          Indent = True
-          { btnClearCache Button
-            MoveScaled(0,0,39,4)
-            AutoResize = True
-            Text = ("Clear documentation cache")
-            Picture = Picture["icon:/small/trash"]
-          }
-        }
-        { Label9 Label
-          MoveScaled(0,79,56,3)
-          Font = Font["Bold"]
-          Text = ("Editor")
-        }
-        { HBox23 HBox
-          MoveScaled(1,82,66,4)
-          Spacing = True
-          Indent = True
-          { Label26 Label
-            MoveScaled(0,0,25,4)
-            Expand = True
-            Text = ("Font")
-          }
-          { txtEditorFont ButtonBox
-            MoveScaled(26,0,39,4)
-          }
-        }
-        { HBox14 HBox
-          MoveScaled(1,87,66,4)
-          Spacing = True
-          Indent = True
-          { Label40 Label
-            MoveScaled(0,0,47,4)
-            Expand = True
-            Text = ("Default tab size")
-          }
-          { txtTabSize SpinBox
-            MoveScaled(47,0,8,4)
-            MinValue = 1
-            MaxValue = 16
-            Value = 2
-          }
-          { Label3 Label
-            MoveScaled(56,0,9,4)
-            AutoResize = True
-            Text = ("space(s)")
-          }
-        }
-        { HBox18 HBox
-          MoveScaled(1,92,66,4)
-          Spacing = True
-          Indent = True
-          { Label5 Label
-            MoveScaled(0,0,46,4)
-            Expand = True
-            Text = ("Procedure separation")
-          }
-          { cmbProcLimit ComboBox
-            MoveScaled(47,0,18,4)
-            ReadOnly = True
-            List = [("None"), ("Line"), ("Blend")]
-          }
-        }
-        { HBox17 HBox
-          MoveScaled(1,97,66,4)
-          Spacing = True
-          Indent = True
-          { Label6 Label
-            MoveScaled(0,0,47,4)
-            Expand = True
-            Text = ("Highlight current line")
-          }
-          { cmbShowCurrent ComboBox
-            MoveScaled(48,0,10,4)
-            ReadOnly = True
-            List = [("No"), ("Yes")]
-          }
-        }
-        { HBox16 HBox
-          MoveScaled(1,102,66,4)
-          Spacing = True
-          Indent = True
-          { Label7 Label
-            MoveScaled(0,0,47,4)
-            Expand = True
-            Text = ("Highlight modified lines")
-          }
-          { cmbShowChange ComboBox
-            MoveScaled(48,0,10,4)
-            ReadOnly = True
-            List = [("No"), ("Yes")]
-          }
-        }
-        { HBox15 HBox
-          MoveScaled(1,107,66,4)
-          Spacing = True
-          Indent = True
-          { Label8 Label
-            MoveScaled(0,0,47,4)
-            Expand = True
-            Text = ("Show line numbers")
-          }
-          { cmbLineNumber ComboBox
-            MoveScaled(48,0,10,4)
-            ReadOnly = True
-            List = [("No"), ("Yes")]
-          }
-        }
-        { HBox4 HBox
-          MoveScaled(1,112,66,4)
-          Spacing = True
-          Indent = True
-          { Label17 Label
-            MoveScaled(0,0,47,4)
-            Expand = True
-            Text = ("Fold procedures by default")
-          }
-          { cmbFoldProc ComboBox
-            MoveScaled(48,0,10,4)
-            ReadOnly = True
-            List = [("No"), ("Yes")]
-          }
-        }
-        { HBox20 HBox
-          MoveScaled(1,117,66,4)
-          Spacing = True
-          Indent = True
-          { Label20 Label
-            MoveScaled(0,0,47,4)
-            Expand = True
-            Text = ("Keywords in upper case")
-          }
-          { cmbUpperCaseKeywords ComboBox
-            MoveScaled(48,0,10,4)
-            ReadOnly = True
-            List = [("No"), ("Yes")]
-          }
-        }
-        { Label15 Label
-          MoveScaled(0,122,56,3)
-          Font = Font["Bold"]
-          Text = ("Console")
-        }
-        { HBox24 HBox
-          MoveScaled(1,125,66,4)
-          Spacing = True
-          Indent = True
-          { Label18 Label
-            MoveScaled(0,0,25,4)
-            Expand = True
-            Text = ("Font")
-          }
-          { txtConsoleFont ButtonBox
-            MoveScaled(26,0,39,4)
           }
         }
         { HBox10 HBox
-          MoveScaled(1,130,66,4)
+          MoveScaled(1,34,66,4)
           Spacing = True
           Indent = True
           { Label16 Label
@@ -413,16 +161,305 @@
             ReadOnly = True
             List = [("No"), ("Yes")]
           }
+          { Panel12 Panel
+            MoveScaled(59,0,7,4)
+          }
+        }
+        { Label9 Label
+          MoveScaled(0,39,56,3)
+          Font = Font["Bold"]
+          Text = ("Editor")
+        }
+        { HBox14 HBox
+          MoveScaled(1,43,66,4)
+          Spacing = True
+          Indent = True
+          { Label40 Label
+            MoveScaled(0,0,47,4)
+            Expand = True
+            Text = ("Default tab size")
+          }
+          { txtTabSize SpinBox
+            MoveScaled(48,0,7,4)
+            MinValue = 1
+            MaxValue = 16
+            Value = 2
+          }
+          { Label3 Label
+            MoveScaled(56,0,10,4)
+            Text = ("space(s)")
+          }
+        }
+        { HBox18 HBox
+          MoveScaled(1,48,66,4)
+          Spacing = True
+          Indent = True
+          { Label5 Label
+            MoveScaled(0,0,46,4)
+            Expand = True
+            Text = ("Procedure separation")
+          }
+          { cmbProcLimit ComboBox
+            MoveScaled(48,0,18,4)
+            ReadOnly = True
+            List = [("None"), ("Line"), ("Blend")]
+          }
+        }
+        { HBox17 HBox
+          MoveScaled(1,53,66,4)
+          Spacing = True
+          Indent = True
+          { Label6 Label
+            MoveScaled(0,0,47,4)
+            Expand = True
+            Text = ("Highlight current line")
+          }
+          { cmbShowCurrent ComboBox
+            MoveScaled(48,0,10,4)
+            ReadOnly = True
+            List = [("No"), ("Yes")]
+          }
+          { Panel7 Panel
+            MoveScaled(59,0,7,4)
+          }
+        }
+        { HBox16 HBox
+          MoveScaled(1,58,66,4)
+          Spacing = True
+          Indent = True
+          { Label7 Label
+            MoveScaled(0,0,47,4)
+            Expand = True
+            Text = ("Highlight modified lines")
+          }
+          { cmbShowChange ComboBox
+            MoveScaled(48,0,10,4)
+            ReadOnly = True
+            List = [("No"), ("Yes")]
+          }
+          { Panel8 Panel
+            MoveScaled(59,0,7,4)
+          }
+        }
+        { HBox15 HBox
+          MoveScaled(1,63,66,4)
+          Spacing = True
+          Indent = True
+          { Label8 Label
+            MoveScaled(0,0,47,4)
+            Expand = True
+            Text = ("Show line numbers")
+          }
+          { cmbLineNumber ComboBox
+            MoveScaled(48,0,10,4)
+            ReadOnly = True
+            List = [("No"), ("Yes")]
+          }
+          { Panel9 Panel
+            MoveScaled(59,0,7,4)
+          }
+        }
+        { HBox4 HBox
+          MoveScaled(1,68,66,4)
+          Spacing = True
+          Indent = True
+          { Label17 Label
+            MoveScaled(0,0,47,4)
+            Expand = True
+            Text = ("Fold procedures by default")
+          }
+          { cmbFoldProc ComboBox
+            MoveScaled(48,0,10,4)
+            ReadOnly = True
+            List = [("No"), ("Yes")]
+          }
+          { Panel10 Panel
+            MoveScaled(59,0,7,4)
+          }
+        }
+        { HBox20 HBox
+          MoveScaled(1,73,66,4)
+          Spacing = True
+          Indent = True
+          { Label20 Label
+            MoveScaled(0,0,47,4)
+            Expand = True
+            Text = ("Keywords in upper case")
+          }
+          { cmbUpperCaseKeywords ComboBox
+            MoveScaled(48,0,10,4)
+            ReadOnly = True
+            List = [("No"), ("Yes")]
+          }
+          { Panel11 Panel
+            MoveScaled(59,0,7,4)
+          }
+        }
+        { Label25 Label
+          MoveScaled(0,78,62,3)
+          Font = Font["Bold"]
+          Text = ("Applications")
+        }
+        { HBox12 HBox
+          MoveScaled(1,82,66,4)
+          Spacing = True
+          Indent = True
+          { Label13 Label
+            MoveScaled(0,0,47,4)
+            Expand = True
+            Text = ("Browser")
+          }
+          { cmbBrowser ComboBox
+            MoveScaled(48,0,18,4)
+            ReadOnly = True
+            List = []
+          }
+        }
+        { HBox2 HBox
+          MoveScaled(1,87,66,4)
+          Spacing = True
+          Indent = True
+          { Label4 Label
+            MoveScaled(0,0,47,4)
+            Expand = True
+            Text = ("Terminal")
+          }
+          { cmbTerminal ComboBox
+            MoveScaled(48,0,18,4)
+            ReadOnly = True
+            List = []
+          }
+        }
+        { HBox9 HBox
+          MoveScaled(1,92,66,4)
+          Spacing = True
+          Indent = True
+          { Label14 Label
+            MoveScaled(0,0,47,4)
+            Expand = True
+            Text = ("Image editor")
+          }
+          { cmbImageEditor ComboBox
+            MoveScaled(48,0,18,4)
+            ReadOnly = True
+            List = []
+          }
+        }
+        { Label22 Label
+          MoveScaled(0,97,63,3)
+          Font = Font["Bold"]
+          Text = ("Help")
+        }
+        { HBox13 HBox
+          MoveScaled(1,101,66,4)
+          Spacing = True
+          Indent = True
+          { Label32 Label
+            MoveScaled(0,0,47,4)
+            Expand = True
+            Text = ("Display property help")
+          }
+          { cmbIntegratedHelp ComboBox
+            MoveScaled(48,0,10,4)
+            ReadOnly = True
+            List = [("No"), ("Yes")]
+          }
+          { Panel4 Panel
+            MoveScaled(59,0,7,4)
+          }
+        }
+        { HBox3 HBox
+          MoveScaled(1,106,66,4)
+          Spacing = True
+          Indent = True
+          { Label10 Label
+            MoveScaled(0,0,47,4)
+            Expand = True
+            Text = ("Show tooltips")
+          }
+          { cmbTooltip ComboBox
+            MoveScaled(48,0,10,4)
+            ReadOnly = True
+            List = [("No"), ("Yes")]
+          }
+          { Panel5 Panel
+            MoveScaled(59,0,7,4)
+          }
+        }
+        { HBox5 HBox
+          MoveScaled(1,111,66,4)
+          Spacing = True
+          Indent = True
+          { Label23 Label
+            MoveScaled(0,0,47,4)
+            Expand = True
+            Text = ("Show documentation in popups")
+          }
+          { cmbHelpCompletion ComboBox
+            MoveScaled(48,0,10,4)
+            ReadOnly = True
+            List = [("No"), ("Yes")]
+          }
+          { Panel6 Panel
+            MoveScaled(59,0,7,4)
+          }
+        }
+        { HBox22 HBox
+          MoveScaled(1,116,66,4)
+          Spacing = True
+          Indent = True
+          { btnClearCache Button
+            MoveScaled(0,0,39,4)
+            AutoResize = True
+            Text = ("Clear documentation cache")
+            Picture = Picture["icon:/small/trash"]
+          }
         }
       }
     }
     Index = 1
-    Text = ("Theme")
+    Text = ("Style")
     { VBox1 VBox
       MoveScaled(1,2,70,55)
       Spacing = True
+      { Label24 Label
+        MoveScaled(0,0,63,3)
+        Font = Font["Bold"]
+        Text = ("Fonts")
+      }
+      { HBox23 HBox
+        MoveScaled(2,3,66,4)
+        Spacing = True
+        Indent = True
+        { Label26 Label
+          MoveScaled(0,0,25,4)
+          Expand = True
+          Text = ("Editor")
+        }
+        { txtEditorFont ButtonBox
+          MoveScaled(30,0,35,4)
+        }
+      }
+      { HBox24 HBox
+        MoveScaled(2,8,66,4)
+        Spacing = True
+        Indent = True
+        { Label18 Label
+          MoveScaled(0,0,25,4)
+          Expand = True
+          Text = ("Console")
+        }
+        { txtConsoleFont ButtonBox
+          MoveScaled(30,0,35,4)
+        }
+      }
+      { Label27 Label
+        MoveScaled(0,13,63,3)
+        Font = Font["Bold"]
+        Text = ("Theme")
+      }
       { HBox1 HBox
-        MoveScaled(1,1,48,4)
+        MoveScaled(1,18,65,4)
         { cmbTheme ComboBox
           MoveScaled(0,0,29,4)
           Expand = True
@@ -448,7 +485,7 @@
         }
       }
       { svwTheme ScrollView
-        MoveScaled(2,6,50,43)
+        MoveScaled(2,24,64,26)
         Background = Color.TextBackground
         Foreground = Color.TextForeground
         Expand = True

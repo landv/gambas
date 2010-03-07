@@ -93,6 +93,11 @@
       Picture = Picture["icon:/small/copy"]
       Shortcut = "Ctrl+C"
     }
+    { mnuCopyAt Menu
+      Action = ".copy-same"
+      Text = ("Copy at the same place")
+      Shortcut = "Ctrl+Shift+C"
+    }
     { mnuPaste Menu
       Action = ".paste"
       Text = ("Paste")
@@ -579,6 +584,10 @@
     Text = "Copy"
     Shortcut = "Ctrl+C"
     Picture = "icon:/small/copy"
+  }
+  { Action copy-same
+    Text = "Copy at the same place"
+    Shortcut = "Ctrl+Shift+C"
   }
   { Action cut
     Text = "Cut"

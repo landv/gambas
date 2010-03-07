@@ -25,6 +25,8 @@ Public Sub _new()
   Dim hCtrl As Control
   Dim hLabel As Label
   
+  ' Hack for having non-translatable labels
+  
   For Each hCont In panMenu.Children
     For Each hCtrl In hCont.Children
       Try hLabel = hCtrl

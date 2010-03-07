@@ -1604,11 +1604,11 @@ Public Sub GetSelection(Optional bAbsolute As Boolean) As String
 
 End
 
-Public Sub CopySelection()
+Public Sub CopySelection(Optional bAbsolute As Boolean)
 
   Dim sStr As String
   
-  sStr = GetSelection()
+  sStr = GetSelection(bAbsolute)
 
   If sStr Then Clipboard.Copy(sStr, MMime.FORM)
 
@@ -1640,7 +1640,7 @@ Public Sub PutSelection(sData As String, hParent As CControl)
 End
 
 
-Public Sub PasteSelection()
+Public Sub PasteSelection(bSameCoord As Boolean)
 
   Dim hParent As CControl
 
@@ -2034,14 +2034,11 @@ End
 Sub RefreshMenu()
 
   Dim bOn As Boolean
+  Dim bEnabled As Boolean
 
   bOn = Not IsNull(Master)
 
-  Action[".cut", Me].Enabled = bOn
-  Action[".copy", Me].Enabled = bOn
-  Action[".delete", Me].Enabled = bOn
-  Action[".lower", Me].Enabled = bOn
-  Action[".raise", Me].Enabled = bOn
+  Action[".cut,.copy,.copy-same,.delete,.lower,.raise", Me].Enabled = bOn
 
   bOn = Selection.Count >= 2
 
@@ -2726,8 +2723,12 @@ Public Sub Action_Activate(Key As String) As Boolean
       CopySelection
       UnSelectAll
     
+    Case ".copy-same"
+      CopySelection(True)
+      UnSelectAll
+
     Case ".paste"
-      PasteSelection
+      PasteSelection(False)
 
     Case ".cut"
       CopySelection
