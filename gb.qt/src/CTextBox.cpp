@@ -22,7 +22,6 @@
 
 ***************************************************************************/
 
-
 #define __CTEXTBOX_CPP
 
 #include <qapplication.h>
@@ -333,6 +332,15 @@ END_METHOD
 #undef THIS
 #define THIS OBJECT(CCOMBOBOX)
 
+static void combo_raise_click(void *_object)
+{
+	/*if (THIS->click)
+		return;
+	THIS->click = true;*/
+	GB.Raise(THIS, EVENT_Click, 0);
+	//THIS->click = false;
+}
+
 static int combo_get_current_item(void *_object)
 {
 	return COMBOBOX->count() == 0 ? -1 : COMBOBOX->currentItem();
@@ -347,7 +355,7 @@ static void combo_set_current_item(void *_object, int item)
 	}
 	
   if (item >= 0 && !COMBOBOX->signalsBlocked())
-    GB.Raise(THIS, EVENT_Click, 0);
+		combo_raise_click(THIS);
 }
 
 
@@ -480,7 +488,9 @@ BEGIN_PROPERTY(CCOMBOBOX_text)
       COMBOBOX->lineEdit()->setText(text);
 
     pos = combo_find_item(THIS, text);
+		//COMBOBOX->blockSignals(true);
     combo_set_current_item(_object, pos);
+		//COMBOBOX->blockSignals(false);
   }
 
 END_PROPERTY
@@ -558,9 +568,6 @@ BEGIN_METHOD(CCOMBOBOX_add, GB_STRING item; GB_INTEGER pos)
 	
   COMBOBOX->blockSignals(false);
 	
-	//if (index < 0)
-	//	GB.Raise(THIS, EVENT_Click, 0);
-
 END_METHOD
 
 
@@ -710,7 +717,8 @@ void CTextBox::event_activate(void)
 
 void CTextBox::event_click()
 {
-  RAISE_EVENT(EVENT_Click);
+	GET_SENDER(_object);
+	combo_raise_click(THIS);
 }
 
 /***************************************************************************
