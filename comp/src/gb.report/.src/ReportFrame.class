@@ -171,7 +171,7 @@ Public Sub _SetUnifiedValues()
   Dim hSizeParse As TSizeParse
   Super._SetUnifiedValues
   hSizeParse = MTools.ScanValue($hBorder.Width)
-    If Units.AllowedUnits.Exist(hSizeParse.Unit) = -1 Then error.Raise("Unknown unit")
+    If Not Units.AllowedUnits.Exist(hSizeParse.Unit) Then error.Raise("Unknown unit")
     
       $fBorderWidth = Units.UnitToCm(hSizeParse.Value, hSizeParse.Unit)
   
