@@ -1942,19 +1942,23 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 
 		/*if (type == QEvent::MouseButtonPress)
 		{
-			qDebug("mouse event on [%s %p] (%s %p) %s%s%s", widget->className(), widget, control ? GB.GetClassName(control) : "-", control, real ? "REAL " : "", 
-				design ? "DESIGN " : "", original ? "ORIGINAL ": "");
-			getDesignDebug(widget);
+			qDebug("mouse event on [%s %s %p] (%s %p) %s%s%s", widget->metaObject()->className(), qPrintable(widget->objectName()), widget, 
+						 control ? GB.GetClassName(control) : "-", control, real ? "REAL " : "", design ? "DESIGN " : "", original ? "ORIGINAL ": "");
+			//getDesignDebug(widget);
 		}*/
 		
 		if (!real)
 		{
-			CCONTAINER *cont = (CCONTAINER *)CWidget::get(widget);
+			CWIDGET *cont = CWidget::get(widget);
 			if (CWIDGET_test_flag(cont, WF_SCROLLVIEW))
 			{
-				//if (widget != ((QAbstractScrollArea *)QWIDGET(cont))->viewport() && !widget->objectName().isNull())
-				if (widget != get_viewport(QWIDGET(cont)) && !widget->objectName().isNull())
+				if (qobject_cast<QScrollBar *>(widget))
 					goto _STANDARD;
+				/*if (widget != get_viewport(QWIDGET(cont)))
+				{
+					if (!widget->objectName().isNull())
+						goto _STANDARD;
+				}*/
 			}
 		}
 		
