@@ -434,7 +434,7 @@ void gControl::move(int x, int y, int w, int h)
 
 void gControl::move(int x, int y)
 {
-	GtkLayout *fx;
+	//GtkLayout *fx;
 	
 	if (pr && pr->getClass() == Type_gSplitter) 
 		return;
@@ -449,9 +449,9 @@ void gControl::move(int x, int y)
 	_dirty_pos = true;
 	if (pr)
 	{
-    fx = GTK_LAYOUT(gtk_widget_get_parent(border));
+    //fx = GTK_LAYOUT(gtk_widget_get_parent(border));
 	  //gtk_layout_move(fx, border, x, y);
-	  if ((GtkWidget *)fx == pr->getContainer())
+	  if (gtk_widget_get_parent(border) == pr->getContainer())
 	  	pr->performArrange();
   }
 	
@@ -542,8 +542,9 @@ void gControl::updateGeometry()
 		//g_debug("move-resize: %s: %d %d %d %d", this->name(), x(), y(), width(), height());
 		if (_dirty_pos)
 		{
-			GtkLayout *fx = GTK_LAYOUT(gtk_widget_get_parent(border));
-			gtk_layout_move(fx, border, x(), y());
+			if (pr)
+				pr->moveChild(this, x(), y());
+			
 			_dirty_pos = false;
 		}
 		if (_dirty_size)
@@ -955,7 +956,9 @@ void gControl::lower()
 				y=Br->top();
 				g_object_ref(G_OBJECT(Br->border));
 				gtk_container_remove(GTK_CONTAINER(pr->getContainer()),Br->border);
-				gtk_layout_put(GTK_LAYOUT(pr->getContainer()),Br->border,x,y);
+				gtk_container_add(GTK_CONTAINER(pr->getContainer()),Br->border);
+				pr->moveChild(Br, x, y);
+				//gtk_layout_put(GTK_LAYOUT(pr->getContainer()),Br->border,x,y);
 				g_object_unref(G_OBJECT(Br->border));
 			}
 			
@@ -989,7 +992,8 @@ void gControl::raise()
 		y=top();
 		g_object_ref(G_OBJECT(border));
 		gtk_container_remove(GTK_CONTAINER(pr->getContainer()),border);
-		gtk_layout_put(GTK_LAYOUT(pr->getContainer()),border,x,y);
+		gtk_container_add(GTK_CONTAINER(pr->getContainer()),border);
+		pr->moveChild(this, x, y);
 		g_object_unref(G_OBJECT(border));
 	}
 	
@@ -1106,6 +1110,11 @@ void gControl::drawBorder(GdkDrawable *win)
 	if (getFrameBorder() == BORDER_NONE)
     return;
 	
+	x = 0;
+	y = 0;
+  w = width();
+  h = height();
+  
 	if (!win)
 	{
 		GtkWidget *wid;
@@ -1119,13 +1128,11 @@ void gControl::drawBorder(GdkDrawable *win)
 			win = GTK_LAYOUT(wid)->bin_window;
 		else
 			win = wid->window;
+		
+		x = wid->allocation.x;
+		y = wid->allocation.y;
 	}
 	
-	x = 0;
-	y = 0;
-  w = width();
-  h = height();
-  
   if (w < 1 || h < 1)
   	return;
   
@@ -1324,7 +1331,7 @@ void gControl::setFrameBorder(int border)
   updateBorder();
 }
 
-bool gControl::hasBorder()
+bool gControl::hasBorder() const
 {
 	if (_scroll)
 		return gtk_scrolled_window_get_shadow_type(_scroll) != GTK_SHADOW_NONE;

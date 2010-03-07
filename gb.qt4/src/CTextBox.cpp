@@ -330,17 +330,25 @@ END_METHOD
 #undef THIS
 #define THIS OBJECT(CCOMBOBOX)
 
-static void setCurrentItem(void *_object, int item)
+static int combo_get_current_item(void *_object)
 {
-	if (item == COMBOBOX->currentIndex())
-		return;
-	
-	if (item < COMBOBOX->count())
-		COMBOBOX->setCurrentIndex(item);
-	if (item >= 0)
-		GB.Raise(_object, EVENT_Click, 0);
+	COMBOBOX->sort();
+	return COMBOBOX->count() == 0 ? -1 : COMBOBOX->currentItem();
 }
 
+static void combo_set_current_item(void *_object, int item)
+{
+	COMBOBOX->sort();
+	
+	if (item != combo_get_current_item(THIS))
+	{
+		if (item < COMBOBOX->count())
+			COMBOBOX->setCurrentItem(item);
+	}
+	
+  if (item >= 0 && !COMBOBOX->signalsBlocked())
+    GB.Raise(THIS, EVENT_Click, 0);
+}
 
 static void combo_set_editable(void *_object, bool ed)
 {
@@ -372,6 +380,55 @@ static void combo_set_editable(void *_object, bool ed)
 		COMBOBOX->setFocusPolicy(Qt::NoFocus);
 
 	//COMBOBOX->calcMinimumHeight();
+}
+
+static int combo_find_item(void *_object, const QString& s)
+{
+	COMBOBOX->sort();
+  for (int i = 0; i < (int)COMBOBOX->count(); i++)
+  {
+    if (COMBOBOX->text(i) == s)
+      return i;
+  }
+
+  return (-1);
+}
+
+
+static void combo_get_list(void *_object, GB_ARRAY array)
+{
+	int i;
+	char *str;
+	
+	COMBOBOX->sort();
+	for (i = 0; i < COMBOBOX->count(); i++)
+	{
+		GB.NewString(&str, TO_UTF8(COMBOBOX->text(i)), 0);
+		*((char **)GB.Array.Get(array, i)) = str;
+	}
+}
+
+
+static void combo_set_list(void *_object, GB_ARRAY array)
+{
+	int i;
+	
+  COMBOBOX->blockSignals(true);
+  COMBOBOX->clear();
+
+	if (array)
+	{
+		for (i = 0; i < GB.Array.Count(array); i++)
+		{
+			COMBOBOX->insertItem(TO_QSTRING(*((char **)GB.Array.Get(array, i))));
+		}
+	}
+
+	COMBOBOX->setDirty();
+  COMBOBOX->blockSignals(false);
+	
+	//if (COMBOBOX->count())
+	//	GB.Raise(THIS, EVENT_Click, 0);
 }
 
 
@@ -419,9 +476,8 @@ BEGIN_PROPERTY(CCOMBOBOX_text)
 	{
 		QString text = QSTRING_PROP();
 
-		pos = CTextBox::find(COMBOBOX, text);
-		if (pos >= 0)
-			setCurrentItem(_object, pos);
+    pos = combo_find_item(THIS, text);
+    combo_set_current_item(_object, pos);
 		
 		if (COMBOBOX->isEditable())
 			COMBOBOX->lineEdit()->setText(text);
@@ -485,22 +541,26 @@ BEGIN_METHOD(CCOMBOBOX_add, GB_STRING item; GB_INTEGER pos)
 	int index;
 	int pos = VARGOPT(pos, -1);
 
-	COMBOBOX->blockSignals(true);
-	index = COMBOBOX->currentIndex();
+  COMBOBOX->blockSignals(true);
+	index = combo_get_current_item(THIS);
 	
-	if (pos < 0 || pos >= COMBOBOX->count())
-		pos = -1;
-			
+  if (pos < 0 || pos >= COMBOBOX->count())
+  	pos = -1;
+	
 	if (pos < 0)
 		COMBOBOX->addItem(QSTRING_ARG(item));
 	else
 		COMBOBOX->insertItem(pos, QSTRING_ARG(item));
-	//if (THIS->sorted)
-	//  COMBOBOX->view()->sort();
-	COMBOBOX->setDirty();
-	COMBOBOX->setCurrentIndex(index);
-	COMBOBOX->blockSignals(false);
 
+	COMBOBOX->setDirty();
+
+	if (index >= 0)
+		combo_set_current_item(THIS, index);
+	else
+		combo_set_current_item(THIS, 0);
+	
+  COMBOBOX->blockSignals(false);
+	
 END_METHOD
 
 
@@ -533,17 +593,17 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CCOMBOBOX_index)
 
-	if (READ_PROPERTY)
-		GB.ReturnInteger(COMBOBOX->currentIndex());
-	else
-		setCurrentItem(_object, VPROP(GB_INTEGER));
+  if (READ_PROPERTY)
+    GB.ReturnInteger(combo_get_current_item(THIS));
+  else
+    combo_set_current_item(THIS, VPROP(GB_INTEGER));
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CCOMBOBOX_current)
 
-	THIS->index = COMBOBOX->currentIndex();
+  THIS->index = combo_get_current_item(THIS);
 
 	if (THIS->index < 0)
 		GB.ReturnNull();
@@ -571,27 +631,25 @@ END_METHOD
 
 BEGIN_METHOD(CCOMBOBOX_find, GB_STRING item)
 
-	GB.ReturnInteger(CTextBox::find(COMBOBOX, QSTRING_ARG(item)));
+  GB.ReturnInteger(combo_find_item(THIS, QSTRING_ARG(item)));
 
 END_METHOD
 
 
 BEGIN_PROPERTY(CCOMBOBOX_list)
 
-	GB_ARRAY array;
-	
-	if (READ_PROPERTY)
-	{
-		GB.Array.New(&array, GB_T_STRING, COMBOBOX->count());
-		CTextBox::getAll(COMBOBOX, array);
-		GB.ReturnObject(array);
+ 	GB_ARRAY array;
+ 	
+  if (READ_PROPERTY)
+  {
+  	GB.Array.New(&array, GB_T_STRING, COMBOBOX->count());
+    combo_get_list(THIS, array);
+    GB.ReturnObject(array);
 	}
-	else
-	{
-		CTextBox::setAll(COMBOBOX, (GB_ARRAY)VPROP(GB_OBJECT));
-		//if (THIS->sorted)
-		//  COMBOBOX->view()->sort();
-	}
+  else
+  {
+    combo_set_list(THIS, (GB_ARRAY)VPROP(GB_OBJECT));
+  }
 
 END_PROPERTY
 
@@ -628,14 +686,18 @@ void MyComboBox::calcMinimumHeight()
 		setMinimumHeight(fm.lineSpacing() + 2);
 }
 
-
-void MyComboBox::showPopup()
+void MyComboBox::sort()
 {
 	if (_sorted && _dirty)
 	{
 		model()->sort(0);
 		_dirty = false;
 	}
+}
+
+void MyComboBox::showPopup()
+{
+	sort();
 	QComboBox::showPopup();
 }
 
@@ -662,50 +724,6 @@ void CTextBox::onActivate(void)
 void CTextBox::onClick()
 {
 	RAISE_EVENT(EVENT_Click);
-}
-
-int CTextBox::find(MyComboBox *list, const QString& s)
-{
-	for (int i = 0; i < (int)list->count(); i++)
-	{
-		if (list->itemText(i) == s)
-			return i;
-	}
-
-	return (-1);
-}
-
-
-void CTextBox::getAll(MyComboBox *list, GB_ARRAY array)
-{
-	int i;
-	char *str;
-	
-	for (i = 0; i < list->count(); i++)
-	{
-		GB.NewString(&str, TO_UTF8(list->itemText(i)), 0);
-		*((char **)GB.Array.Get(array, i)) = str;
-	}
-}
-
-
-void CTextBox::setAll(MyComboBox *list, GB_ARRAY array)
-{
-	int i;
-	
-	list->clear();
-	list->blockSignals(true);
-
-	if (array)
-	{
-		for (i = 0; i < GB.Array.Count(array); i++)
-		{
-			list->addItem(TO_QSTRING(*((char **)GB.Array.Get(array, i))));
-		}
-	}
-
-	list->setDirty();
-	list->blockSignals(false);
 }
 
 

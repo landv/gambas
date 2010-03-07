@@ -163,6 +163,7 @@ void gDraw::connect(gControl *wid)
 	
 	ft = wid->font()->copy(); //ft = new gFont(wid->widget); 
 	
+	_x = _y = 0;
 	_width = wid->width();
 	_height = wid->height();
 	
@@ -193,7 +194,10 @@ void gDraw::connect(gControl *wid)
 			}
 			else
 			{
-				dr=GTK_LAYOUT(wid->widget)->bin_window; 
+				GtkAllocation *a = &wid->widget->allocation;
+				dr = wid->widget->window;
+				_x = a->x;
+				_y = a->y;
 			}
 
 			break;
@@ -722,6 +726,8 @@ void gDraw::endFill()
 
 void gDraw::rect(int x,int y,int width,int height)
 {
+	x += _x;
+	y += _y;
 	if (width<0) { x+=width; width=-width; }
 	if (height<0) { y+=height; height=-height; }
 	

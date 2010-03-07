@@ -358,7 +358,7 @@ msgstr ""
 #: FMakeExecutable.class:138 FMenu.class:1123 FNewConnection.class:586
 #: FNewTable.class:162 FNewTranslation.class:64 FOpenProject.class:455
 #: FPasteSpecial.class:273 FPropertyProject.class:252
-#: FReportBorderChooser.class:215 FReportCoordChooser.class:118
+#: FReportBorderChooser.class:215 FReportCoordChooser.class:120
 #: FSelectExtraFile.class:72 FSelectIcon.class:266 FTableChooser.class:139
 #: FText.class:101
 msgid "OK"
@@ -444,7 +444,7 @@ msgstr ""
 #: FMakeInstall.class:309 FMenu.class:1128 FNewConnection.class:317
 #: FNewTable.class:168 FNewTranslation.class:70 FOpenProject.class:151
 #: FOption.class:585 FPasteSpecial.class:279 FPropertyProject.class:1240
-#: FReportBorderChooser.class:209 FReportCoordChooser.class:112
+#: FReportBorderChooser.class:209 FReportCoordChooser.class:114
 #: FSave.class:118 FSelectExtraFile.class:78 FSelectIcon.class:271
 #: FTableChooser.class:145 FTextEditor.class:462 FText.class:107
 #: FTranslate.class:617 Project.module:351
@@ -768,7 +768,7 @@ msgstr ""
 msgid "CSV files"
 msgstr ""
 
-#: FConnectionEditor.class:1377 FTranslate.class:1234
+#: FConnectionEditor.class:1377 FTranslate.class:1240
 msgid "All files"
 msgstr ""
 
@@ -931,7 +931,7 @@ msgstr ""
 msgid "GIF"
 msgstr ""
 
-#: FCreateFile.class:843 FReportCoordChooser.class:107
+#: FCreateFile.class:843 FReportCoordChooser.class:109
 msgid "px"
 msgstr ""
 
@@ -1733,7 +1733,7 @@ msgstr ""
 msgid "Text editor"
 msgstr ""
 
-#: FImportTable.class:41 FTranslate.class:1655
+#: FImportTable.class:41 FTranslate.class:1661
 msgid "Import"
 msgstr ""
 
@@ -1977,7 +1977,7 @@ msgstr ""
 msgid "&Insert"
 msgstr ""
 
-#: FList.class:282 FMenu.class:855 FTranslate.class:1722
+#: FList.class:282 FMenu.class:855 FTranslate.class:1728
 msgid "&Delete"
 msgstr ""
 
@@ -2867,7 +2867,7 @@ msgstr ""
 msgid "Table '&1' already exists."
 msgstr ""
 
-#: FNewTranslation.class:59 FTranslate.class:1707
+#: FNewTranslation.class:59 FTranslate.class:1713
 msgid "New translation"
 msgstr ""
 
@@ -3314,7 +3314,7 @@ msgstr ""
 msgid "Get version from program"
 msgstr ""
 
-#: FPropertyProject.class:1760 FTranslate.class:1514
+#: FPropertyProject.class:1760 FTranslate.class:1520
 msgid "Translation"
 msgstr ""
 
@@ -3438,19 +3438,19 @@ msgstr ""
 msgid "Incorrect value."
 msgstr ""
 
-#: FReportCoordChooser.class:98
+#: FReportCoordChooser.class:100
 msgid "Select a dimension"
 msgstr ""
 
-#: FReportCoordChooser.class:107
+#: FReportCoordChooser.class:109
 msgid "cm"
 msgstr ""
 
-#: FReportCoordChooser.class:107
+#: FReportCoordChooser.class:109
 msgid "mm"
 msgstr ""
 
-#: FReportCoordChooser.class:107
+#: FReportCoordChooser.class:109
 msgid "in"
 msgstr ""
 
@@ -3564,115 +3564,119 @@ msgstr ""
 msgid "Translation files"
 msgstr ""
 
-#: FTranslate.class:933
+#: FTranslate.class:901
+msgid "Please select the translation file to import."
+msgstr ""
+
+#: FTranslate.class:939
 msgid "No translation were picked up."
 msgstr ""
 
-#: FTranslate.class:935
+#: FTranslate.class:941
 msgid "One translation was picked up."
 msgstr ""
 
-#: FTranslate.class:937
+#: FTranslate.class:943
 msgid "&1 translations were picked up."
 msgstr ""
 
-#: FTranslate.class:946
+#: FTranslate.class:952
 msgid "Cannot import translation file."
 msgstr ""
 
-#: FTranslate.class:998
+#: FTranslate.class:1004
 msgid "Translated string symbols do not match untranslated string ones."
 msgstr ""
 
-#: FTranslate.class:1011
+#: FTranslate.class:1017
 msgid "Everything seems to be correct."
 msgstr ""
 
-#: FTranslate.class:1029
+#: FTranslate.class:1035
 msgid "&1 strings (&2 not translated) - &3 % done"
 msgstr ""
 
-#: FTranslate.class:1152
+#: FTranslate.class:1158
 msgid "The 'msgmerge' command has failed"
 msgstr ""
 
-#: FTranslate.class:1478
+#: FTranslate.class:1484
 msgid "Project translation"
 msgstr ""
 
-#: FTranslate.class:1552
+#: FTranslate.class:1558
 msgid "Save translation"
 msgstr ""
 
-#: FTranslate.class:1558
+#: FTranslate.class:1564
 msgid "Clear this translation"
 msgstr ""
 
-#: FTranslate.class:1564
+#: FTranslate.class:1570
 msgid "This string must not be translated"
 msgstr ""
 
-#: FTranslate.class:1570
+#: FTranslate.class:1576
 msgid "Copy untranslated string"
 msgstr ""
 
-#: FTranslate.class:1576
+#: FTranslate.class:1582
 msgid "Verify the translation"
 msgstr ""
 
-#: FTranslate.class:1582
+#: FTranslate.class:1588
 msgid "Find next untranslated string"
 msgstr ""
 
-#: FTranslate.class:1588
+#: FTranslate.class:1594
 msgid "Find previous untranslated string"
 msgstr ""
 
-#: FTranslate.class:1603
+#: FTranslate.class:1609
 msgid "Find a string in translation"
 msgstr ""
 
-#: FTranslate.class:1642
+#: FTranslate.class:1648
 msgid "Statistics"
 msgstr ""
 
-#: FTranslate.class:1679
+#: FTranslate.class:1685
 msgid "Browse recursively"
 msgstr ""
 
-#: FTranslate.class:1684
+#: FTranslate.class:1690
 msgid "Import a translation file"
 msgstr ""
 
-#: FTranslate.class:1686
+#: FTranslate.class:1692
 msgid "&Import..."
 msgstr ""
 
-#: FTranslate.class:1708
+#: FTranslate.class:1714
 msgid "&New..."
 msgstr ""
 
-#: FTranslate.class:1714
+#: FTranslate.class:1720
 msgid "Reload translation"
 msgstr ""
 
-#: FTranslate.class:1715
+#: FTranslate.class:1721
 msgid "&Reload"
 msgstr ""
 
-#: FTranslate.class:1721
+#: FTranslate.class:1727
 msgid "Delete translation"
 msgstr ""
 
-#: FTranslate.class:1728
+#: FTranslate.class:1734
 msgid "Export to a translation file"
 msgstr ""
 
-#: FTranslate.class:1729
+#: FTranslate.class:1735
 msgid "&Export..."
 msgstr ""
 
-#: FTranslate.class:1740
+#: FTranslate.class:1746
 msgid "&Close"
 msgstr ""
 

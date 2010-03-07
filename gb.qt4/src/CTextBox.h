@@ -72,6 +72,7 @@ public:
 	bool isSortingEnabled() const { return _sorted; }
 	void setSortingEnabled(bool v) { _sorted = v; if (v) setDirty(); }
 	void setDirty() { _dirty = true; }
+	void sort();
 	
 	virtual void showPopup();
 	
@@ -88,10 +89,6 @@ class CTextBox : public QObject
 public:
 
   static CTextBox manager;
-
-  static void getAll(MyComboBox *list, GB_ARRAY array);
-  static void setAll(MyComboBox *list, GB_ARRAY array);
-  static int find(MyComboBox *list, const QString& elt);
 
 public slots:
 

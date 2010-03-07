@@ -33,7 +33,7 @@ static gboolean cb_expose(GtkWidget *wid, GdkEventExpose *e, gDrawingArea *data)
 {
 	if (data->cached())
 	{
-		gdk_window_clear(GTK_LAYOUT(wid)->bin_window);
+		gdk_window_clear(GTK_WIDGET(wid)->window);
 	}
 	else
 	{
@@ -66,9 +66,11 @@ gDrawingArea::gDrawingArea(gContainer *parent) : gContainer(parent)
 	buffer = NULL;
 	_old_bg_id = 0;
 	_resize_cache = false;
+	_transparent = false;
 	
 	border = gtk_event_box_new();
-	widget = gtk_layout_new(0,0);
+	widget = gtk_fixed_new();
+	//widget = border; //gtk_layout_new(0,0);
 		
   realize(false);
   
@@ -78,7 +80,7 @@ gDrawingArea::gDrawingArea(gContainer *parent) : gContainer(parent)
 		| GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK
 		| GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_POINTER_MOTION_MASK);
 	
-	GTK_WIDGET_UNSET_FLAGS(border, GTK_APP_PAINTABLE);
+	//GTK_WIDGET_UNSET_FLAGS(border, GTK_APP_PAINTABLE);
 	GTK_WIDGET_SET_FLAGS(widget, GTK_CAN_FOCUS);
 		
 	_event_mask = gtk_widget_get_events(widget);
@@ -103,7 +105,7 @@ void gDrawingArea::resize(int w, int h)
 	//updateCache();
 }
 
-bool gDrawingArea::canFocus()
+bool gDrawingArea::canFocus() const
 {
 	return GTK_WIDGET_CAN_FOCUS(widget);
 }
@@ -159,7 +161,7 @@ void gDrawingArea::resizeCache()
 	GdkGC *gc2;
 	GdkWindow *win;
 	
-	win = GTK_LAYOUT(widget)->bin_window;
+	win = GTK_WIDGET(widget)->window;
 	if (!win)
 		return;
 	
@@ -198,7 +200,7 @@ void gDrawingArea::setCache()
 {
 	GdkWindow *win;
 	
-	win = GTK_LAYOUT(widget)->bin_window;
+	win = GTK_WIDGET(widget)->window;
 	if (!win)
 		return;
 	
@@ -253,7 +255,14 @@ void gDrawingArea::refreshCache()
 {
 	if (_cached)
 	{
-		if (GTK_LAYOUT(widget)->bin_window)
-			gdk_window_clear(GTK_LAYOUT(widget)->bin_window);
+		if (GTK_WIDGET(widget)->window)
+			gdk_window_clear(GTK_WIDGET(widget)->window);
 	}
+}
+
+void gDrawingArea::setTransparent(bool vl)
+{
+	_transparent = vl;
+	//gtk_widget_set_double_buffered(widget, !_transparent);
+	//gtk_widget_set_app_paintable(border, _transparent);
 }

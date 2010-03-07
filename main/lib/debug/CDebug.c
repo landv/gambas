@@ -51,7 +51,9 @@ static void callback_read(int fd, int type, intptr_t param)
 {
   int n, i, p;
 
-  for(;;)
+	fcntl(_fdr, F_SETFL, fcntl(_fdr, F_GETFL) | O_NONBLOCK);
+
+	for(;;)
   {
     if (_buffer_left)
     {
@@ -67,7 +69,7 @@ static void callback_read(int fd, int type, intptr_t param)
 
     if (n <= 0)
 		{
-			usleep(10000); // the callback is called again and again even if there is nothing to read, why?
+			//usleep(10000); // the callback is called again and again even if there is nothing to read, why?
       break;
 		}
     
@@ -88,7 +90,7 @@ static void callback_read(int fd, int type, intptr_t param)
     {
       GB.Raise(_debug_object, EVENT_Read, 1, GB_T_STRING, _buffer, BUFFER_SIZE);
       if (!_buffer)
-        return;
+        break;
       _buffer_left = 0;
     }
     else
@@ -98,6 +100,8 @@ static void callback_read(int fd, int type, intptr_t param)
         memmove(_buffer, &_buffer[p], _buffer_left);
     }
   }  
+  
+	fcntl(_fdr, F_SETFL, fcntl(_fdr, F_GETFL) & ~O_NONBLOCK);
 }
 
 // static void callback_read(int fd, int type, intptr_t param)
@@ -181,7 +185,8 @@ BEGIN_METHOD_VOID(CDEBUG_start)
 	}
 	
   _fdr = open(input_fifo(path), O_RDONLY | O_NONBLOCK);
-  
+	fcntl(_fdr, F_SETFL, fcntl(_fdr, F_GETFL) & ~O_NONBLOCK);
+
   GB.New(POINTER(&_debug_object), GB.FindClass("Debug"), "Debug", NULL);
   GB.Ref(_debug_object);
   

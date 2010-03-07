@@ -895,7 +895,13 @@ Public Sub btnImport_Click()
   'If Dialog.OpenFile() Then Return
   
   sTransDir = dchImport.SelectedPath
-  If Not chkBrowse.Value Then sTrans = fvwImport.Current
+  If Not chkBrowse.Value Then 
+    sTrans = fvwImport.Current
+    If Not sTrans Then 
+      Message.Warning(("Please select the translation file to import."))
+      Return
+    Endif
+  Endif
   
   Settings["/FTranslate/ImportPath"] = sTransDir &/ sTrans
 
@@ -915,7 +921,7 @@ Public Sub btnImport_Click()
 
   'SHELL "msgmerge -o " & Project.Quote(sPath & ".new") & " " & Project.Quote(Dialog.Path) & " " & Project.Quote(sPath) & " 2>/dev/null" WAIT
   'MergeMessage(sPath, "-o " & Quote.Shell(sPath & ".new") & " " & Quote.Shell(Dialog.Path) & " " & Quote.Shell(sPath))
-  If Not sTrans Then
+  If chkBrowse.Value Then
     For Each sTrans In RDir(sTransDir, "*.po")
       nTrans += ImportMessage(sTransDir &/ sTrans)
     Next
@@ -1373,8 +1379,8 @@ Public Sub cvwLang_Compare(Key As String, OtherKey As String)
   Select Case cvwLang.Columns.Sort
   
     Case 1
-      iVal = Val(Replace(cvwLang[Key][1], "%", ""))
-      iOtherVal = Val(Replace(cvwLang[OtherKey][1], "%", ""))
+      iVal = CInt(Replace(cvwLang[Key][1], "%", ""))
+      iOtherVal = CInt(Replace(cvwLang[OtherKey][1], "%", ""))
       If iVal < iOtherVal Then 
         iComp = 1
       Else If iVal > iOtherVal Then 

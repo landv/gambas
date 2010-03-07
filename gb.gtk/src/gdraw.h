@@ -125,6 +125,7 @@ private:
 	int _resolution;
 	int _shadow;
 	int _state;
+	int _x, _y;
 	gColor _default_fg;
 	gColor _default_bg;
 	gColor _save_fg;

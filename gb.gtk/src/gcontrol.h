@@ -218,11 +218,11 @@ public:
 	bool noInputMethod() { return no_input_method; }
 	
 	virtual void updateBorder();
-	int getFrameBorder() { return frame_border; }
+	int getFrameBorder() const { return frame_border; }
 	void setFrameBorder(int border);
 	void setBorder(bool b);
-	bool hasBorder();
-	int getFramePadding() { return frame_padding; }
+	bool hasBorder() const;
+	int getFramePadding() const { return frame_padding; }
 	void setFramePadding(int padding);
 	virtual int getFrameWidth();
 	void drawBorder(GdkDrawable *win = 0);

@@ -439,7 +439,10 @@ int gContainer::clientHeight()
 void gContainer::insert(gControl *child, bool realize)
 {
 	if (!gtk_widget_get_parent(child->border))
-		gtk_layout_put(GTK_LAYOUT(getContainer()), child->border, 0, 0);
+	{
+		//gtk_layout_put(GTK_LAYOUT(getContainer()), child->border, 0, 0);
+		gtk_container_add(GTK_CONTAINER(getContainer()), child->border);
+	}
 	child->bufX = child->bufY = 0;
 		
 	ch_list = g_list_append(ch_list, child);
@@ -625,4 +628,14 @@ void gContainer::setFont(gFont *ft)
 			child->setFont(child->font());
 		iter = iter->next;
 	}	
+}
+
+void gContainer::moveChild(gControl *child, int x, int y)
+{
+	GtkWidget *parent = getContainer();
+	
+	if (GTK_IS_LAYOUT(parent))
+		gtk_layout_move(GTK_LAYOUT(parent), child->border, x, y);
+	else
+		gtk_fixed_move(GTK_FIXED(parent), child->border, x, y);
 }

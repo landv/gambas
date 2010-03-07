@@ -43,9 +43,9 @@ Static Private Sub HasBorder(sBorder As String, sSide As String) As Boolean
   Dim bBorder As Boolean
   
   For Each sTest In ["left", "right", "top", "bottom"]
-    If aBorder.Exist(sTest) Then
+    If aBorder.Exist(sTest, gb.IgnoreCase) Then
       bBorder = True
-      If sTest = sSide Then Return True
+      If UCase(sTest) = UCase(sSide) Then Return True
     Endif
   Next
   
@@ -131,17 +131,19 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
   Dim X, Y, W, H, W2, H2 As Float
   Dim fVal As Float
   Dim sPath As String
-  Dim fBorderWidth As Float
   
   X = 0
   Y = 0
   W = hCtrl.Width
   H = hCtrl.Height
   
-  fBorderWidth = PaintBorder(hCtrl["Border"])
+  fVal = PaintBorder(hCtrl["Border"])
   
-  If hCtrl["Padding"] Or If fBorderWidth > 0 Then
-    fVal = Max(ToPixel(hCtrl["Padding"]), fBorderWidth)
+  If Not hCtrl.IsContainer() And If hCtrl["Padding"] Then
+    fVal = Max(ToPixel(hCtrl["Padding"]), fVal)
+  Endif
+  
+  If fVal > 0 Then
     X += fVal
     Y += fVal
     W -= fVal * 2

@@ -28,13 +28,15 @@ public:
 	gDrawingArea(gContainer *parent);
 	~gDrawingArea();
 
-	int getBorder() { return getFrameBorder(); }
-	bool cached() { return _cached; }
-	bool canFocus();
+	int getBorder() const { return getFrameBorder(); }
+	bool cached() const { return _cached; }
+	bool canFocus() const;
+	bool isTransparent() const { return _transparent; }
 
 	void setBorder(int vl) { setFrameBorder(vl); }
 	void setCached(bool vl);
 	void setCanFocus(bool vl);
+	void setTransparent(bool vl);
 
 //"Methods"
 	void clear();
@@ -55,6 +57,7 @@ public:
 	uint _old_bg_id;
 	unsigned _cached : 1;
 	unsigned _resize_cache : 1;
+	unsigned _transparent;
 };
 
 #endif

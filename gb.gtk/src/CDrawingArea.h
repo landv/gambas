@@ -32,7 +32,7 @@ extern GB_DESC CDrawingAreaDesc[];
 #else
 
 #define THIS    ((CDRAWINGAREA *)_object)
-#define DRAWING ((gDrawingArea*)THIS->ob.widget)
+#define WIDGET ((gDrawingArea*)THIS->ob.widget)
 
 #endif
 

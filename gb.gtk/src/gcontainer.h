@@ -99,6 +99,7 @@ public:
 	
 	virtual void insert(gControl *child, bool realize = false);
 	virtual void remove(gControl *child);
+	virtual void moveChild(gControl *child, int x, int y);
 	virtual GtkWidget *getContainer();
 	gControl *findFirstFocus();	
 	void updateFocusChain();

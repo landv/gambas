@@ -54,8 +54,15 @@ static bool read_integer(int base, int64_t *result, bool local)
   uint64_t nbr2, nbr;
   int d, n, c, nmax;
 	char thsep;
+	int ndigit_thsep;
+	bool first_thsep;
 
-  thsep = LOCAL_get(local)->thousand_sep;
+	if (local)
+	{
+		thsep = LOCAL_get(local)->thousand_sep;
+		ndigit_thsep = 0;
+		first_thsep = FALSE;
+	}
 
 	n = 0;
   nbr = 0;
@@ -72,11 +79,22 @@ static bool read_integer(int base, int64_t *result, bool local)
 
   for(;;)
   {
-    if (c == thsep)
-      c = get_char();
+		if (local && base == 10)
+		{
+			if (c == thsep && (ndigit_thsep == 3 || !first_thsep))
+			{
+				c = get_char();
+				first_thsep = TRUE;
+				ndigit_thsep = 0;
+			}
+		}
 
 		if (c >= '0' && c <= '9')
+		{
       d = c - '0';
+			if (local && base == 10)
+				ndigit_thsep++;
+		}
     else if (c >= 'A' && c <='Z')
       d = c - 'A' + 10;
     else if (c >= 'a' && c <='z')
@@ -106,7 +124,12 @@ static bool read_integer(int base, int64_t *result, bool local)
 
  	c = last_char();
 
-	if (base != 10)
+	if (base == 10)
+	{
+		if (local && first_thsep && ndigit_thsep != 3)
+			return TRUE;
+	}
+	else
 	{
 		if ((c == '&' || c == 'u' || c == 'U') && base != 10)
 			c = get_char();
@@ -141,6 +164,8 @@ static bool read_float(double *result, bool local)
   LOCAL_INFO *local_info;
   char point;
   char thsep;
+	int ndigit_thsep;
+	bool first_thsep;
 	int c;
 
   double nint;
@@ -148,9 +173,14 @@ static bool read_float(double *result, bool local)
   int nexp;
   bool nexp_minus;
 
-  local_info = LOCAL_get(local);
-  point = local_info->decimal_point;
-  thsep = local_info->thousand_sep;
+	local_info = LOCAL_get(local);
+	point = local_info->decimal_point;
+	if (local)
+	{
+		thsep = local_info->thousand_sep;
+		ndigit_thsep = 0;
+		first_thsep = FALSE;
+	}
 
   nint = 0.0;
   nfrac = 0.0;
@@ -173,14 +203,24 @@ static bool read_float(double *result, bool local)
       return TRUE;
 
     nint = nint * 10 + (c - '0');
+		
+		if (local)
+			ndigit_thsep++;
 
     c = get_char();
 
     if (c == 'e' || c == 'E')
       break;
 
-    if (c == thsep)
-      c = get_char();
+		if (local)
+		{
+			if (c == thsep && (ndigit_thsep == 3 || !first_thsep))
+			{
+				c = get_char();
+				first_thsep = TRUE;
+				ndigit_thsep = 0;
+			}
+		}
     
     if ((c < 0) || isspace(c))
       goto __END;
@@ -234,7 +274,10 @@ static bool read_float(double *result, bool local)
 
 __END:
 	
-  *result = (nint + nfrac) * pow(10, nexp_minus ? (-nexp) : nexp);
+	if (local && first_thsep && ndigit_thsep != 3)
+		return TRUE;
+
+	*result = (nint + nfrac) * pow(10, nexp_minus ? (-nexp) : nexp);
 
   return FALSE;
 }

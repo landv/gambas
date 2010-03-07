@@ -74,14 +74,14 @@ static void Darea_Expose(gDrawingArea *sender,int x,int y,int w,int h)
 BEGIN_METHOD(CDRAWINGAREA_new, GB_OBJECT parent)
 
 	InitControl(new gDrawingArea(CONTAINER(VARG(parent))), (CWIDGET*)THIS);
-	DRAWING->onExpose = Darea_Expose;
+	WIDGET->onExpose = Darea_Expose;
 
 END_METHOD
 
 BEGIN_PROPERTY(CDRAWINGAREA_border)
 
-	if (READ_PROPERTY) { GB.ReturnInteger(DRAWING->getBorder()); return; }
-	DRAWING->setBorder(VPROP(GB_INTEGER));
+	if (READ_PROPERTY) { GB.ReturnInteger(WIDGET->getBorder()); return; }
+	WIDGET->setBorder(VPROP(GB_INTEGER));
 
 END_PROPERTY
 
@@ -100,30 +100,30 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CDRAWINGAREA_cached)
 
-	if (READ_PROPERTY) { GB.ReturnBoolean(DRAWING->cached()); return; }
-	DRAWING->setCached(VPROP(GB_BOOLEAN));
+	if (READ_PROPERTY) { GB.ReturnBoolean(WIDGET->cached()); return; }
+	WIDGET->setCached(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CDRAWINGAREA_focus)
 
-	if (READ_PROPERTY) { GB.ReturnBoolean(DRAWING->canFocus()); return; }
-	DRAWING->setCanFocus(VPROP(GB_BOOLEAN));
+	if (READ_PROPERTY) { GB.ReturnBoolean(WIDGET->canFocus()); return; }
+	WIDGET->setCanFocus(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CDRAWINGAREA_track_mouse)
 
 	if (READ_PROPERTY)
-		GB.ReturnBoolean(DRAWING->isTracking());
+		GB.ReturnBoolean(WIDGET->isTracking());
 	else
-		DRAWING->setTracking(VPROP(GB_BOOLEAN));
+		WIDGET->setTracking(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
 BEGIN_METHOD_VOID(CDRAWINGAREA_clear)
 
-	DRAWING->clear();
+	WIDGET->clear();
 
 END_METHOD
 
@@ -133,6 +133,15 @@ BEGIN_PROPERTY(CDRAWINGAREA_painted)
 		GB.ReturnBoolean(THIS->painted);
 	else
 		THIS->painted = VPROP(GB_BOOLEAN);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CDRAWINGAREA_transparent)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(WIDGET->isTransparent());
+	else
+		WIDGET->setTransparent(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
@@ -149,6 +158,7 @@ GB_DESC CDrawingAreaDesc[] =
   GB_PROPERTY("Merge","b",CDRAWINGAREA_merge),
   GB_PROPERTY("Focus","b",CDRAWINGAREA_focus),
 	GB_PROPERTY("Painted", "b", CDRAWINGAREA_painted),
+	GB_PROPERTY("Transparent", "b", CDRAWINGAREA_transparent),
 
   GB_METHOD("Clear", 0, CDRAWINGAREA_clear, 0),
 
