@@ -12,39 +12,52 @@ Public Width As String = "1 px"
 Public Color As Integer 
 Public Style As Integer
 
+Static Private Sub ResetBorder(hReportBorder As ReportBorder) As Boolean
+  
+  With hReportBorder
+    .Bottom = False
+    .Top = False
+    .Left = False
+    .Right = False
+  End With
+  
+  Return True
+  
+End
+
+
 Static Public Function _get(sValue As String) As ReportBorder
 
-  Dim s As String
+  Dim sElt As String
   Dim hReportBorder As New ReportBorder
+  Dim bReset As Boolean
   
-  hReportBorder.Bottom = False
-  hReportBorder.Top = False
-  hReportBorder.Left = False
-  hReportBorder.Right = False
+  If Not sValue Then Return hReportBorder
   
-  For Each s In Split(sValue)
+  For Each sElt In Split(sValue, ",", "[]", True, True)
   
-    Select Case UCase(s)
+    Select Case UCase(sElt)
     
       Case "TOP"
+        If Not bReset Then bReset = ResetBorder(hReportBorder)
         hReportBorder.Top = True
       Case "BOTTOM"
+        If Not bReset Then bReset = ResetBorder(hReportBorder)
         hReportBorder.Bottom = True
       Case "LEFT"
+        If Not bReset Then bReset = ResetBorder(hReportBorder)
         hReportBorder.Left = True
       Case "RIGHT"
+        If Not bReset Then bReset = ResetBorder(hReportBorder)
         hReportBorder.Right = True
-      Case "NONE"
-        hReportBorder.Style = ReportBorder.None
       Case "SOLID"
         hReportBorder.Style = ReportBorder.Solid
       
       Case Else
-        If Left(s, 1) = "[" Then 
-          hReportBorder.Color = Val(Mid(s, 2, -1))
-        Endif
-        If IsDigit(Left(s, 1)) Then 
-          hReportBorder.Width = s
+        If sElt Begins "&H" Then
+          hReportBorder.Color = Val(sElt)
+        Else If IsDigit(Left$(sElt)) Then 
+          hReportBorder.Width = sElt
         Endif
         
     End Select
@@ -66,7 +79,7 @@ Public Function ToString() As String
   If Me.Bottom Then aValue.Add("Bottom")
   If Me.Left Then aValue.Add("Left")
   If Me.Right Then aValue.Add("Right")
-  aValue.Add("[&H" & Hex(Me.Color, 6) & "]")
+  aValue.Add("&H" & Hex(Me.Color, 6))
   Return aValue.Join()
   
 End

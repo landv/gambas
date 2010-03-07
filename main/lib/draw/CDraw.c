@@ -162,8 +162,10 @@ END_METHOD
 
 BEGIN_PROPERTY(CDRAW_device)
 	
-	CHECK_DEVICE();
-	GB.ReturnObject(THIS->device);
+	if (THIS)
+		GB.ReturnObject(THIS->device);
+	else
+		GB.ReturnNull();
 
 END_PROPERTY
 

@@ -833,7 +833,7 @@ BEGIN_METHOD(CARRAY_string_exist, GB_STRING value; GB_INTEGER mode)
 
 	char *str = GB_ToZeroString(ARG(value));
 
-	GB_ReturnInteger(find(THIS, VARGOPT(mode, 0), &str, 0) >= 0);
+	GB_ReturnBoolean(find(THIS, VARGOPT(mode, 0), &str, 0) >= 0);
 
 END_METHOD
 

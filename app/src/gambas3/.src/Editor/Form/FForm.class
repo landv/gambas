@@ -158,10 +158,16 @@ Public Sub UpdateSnap()
   Dim hPict As Picture
   Dim hCtrl As CControl = Control[Me.Name]
   Dim iColor As Integer
+  Dim X, Y As Integer
+  Dim nPts As Integer
 
   If Action[".grid", Me].Value Then
 
-    hPict = New Picture(Project.Snap, Project.Snap)
+    While nPts * Project.Snap < 32
+      Inc nPts
+    Wend
+
+    hPict = New Picture(Project.Snap * nPts, Project.Snap * nPts)
     iColor = hCtrl.Control.Background
     If iColor = Color.Default Then iColor = Color.Background
     hPict.Fill(iColor)
@@ -172,15 +178,22 @@ Public Sub UpdateSnap()
       iColor = Color.White
     Endif
     Draw.Foreground = iColor
-    Draw.Point(0, 0)
+    For X = 0 To Project.Snap * nPts - 1 Step Project.Snap
+     For Y = 0 To Project.Snap * nPts - 1 Step Project.Snap
+        Draw.Point(X, Y)
+      Next
+    Next
     Draw.End
-    hCtrl.Control.Picture = hPict
-    
-  Else
-  
-    hCtrl.Control.Picture = Null
     
   Endif
+  
+  If hCtrl.Control Is Form Then
+    hCtrl.Control.Picture = hPict
+  Else
+    hCtrl["#Grid"] = hPict
+    hCtrl.Control.Refresh
+  Endif
+  
   
 End
 
@@ -207,6 +220,7 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
   Dim iW, iH As Integer
   Dim bFirst As Boolean
   Dim bPublic As Boolean
+  Dim sProp As String
 
   hCtrl = hParent
   bFirst = True
@@ -349,14 +363,6 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
               iPos = iPos2 + 1
             Loop
             vValue = aVal '.Join("\n")
-          Else If sValue Begins "Font[" Then
-            vValue = Unquote$(Mid$(sValue, 7, -2))
-          Else If sValue Begins "Picture[" Then
-            vValue = Unquote$(Mid$(sValue, 10, -2))
-          Else If sValue Begins "Image.Load(" Then
-            vValue = Unquote$(Mid$(sValue, 13, -2))
-          Else If sValue Begins "Connections[" Then
-            vValue = Unquote$(Mid$(sValue, 14, -2))
           Else If UCase(sValue) = "TRUE" Then
             vValue = True
           Else If UCase(sValue) = "FALSE" Then
@@ -364,32 +370,46 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
           Else If sValue Begins "CDate(" Then
             vValue = CDate(Mid$(sValue, 8, -2))
           Else
-
-            iPos = InStr(sValue, ".")
-            If iPos Then
-              vValue = Mid$(sValue, iPos + 1)
-            Else
-              Print "Bad property value "; sValue
-              ' This is an object !
-            Endif
+          
+            For Each sProp In CControl.COMPLEX_STRING_PROPERTIES
             
-            If sClass = "Form" Then
-            
-              If sProperty = "Border" Then
-            
-                Select Case vValue
-                  Case "None"
-                    vValue = False
-                  Case "Resizable"
-                    vValue = True
-                    hCtrl.SetProperty("Resizable", True)
-                  Case "Fixed"
-                    vValue = True
-                    hCtrl.SetProperty("Resizable", False)
-                End Select
-                
+              If sValue Begins sProp Then
+                vValue = Unquote$(Mid$(sValue, Len(sProp) + 2, -2))
+                sProp = ""
+                Break
               Endif
             
+            Next
+            
+            If sProp Then
+            
+              iPos = InStr(sValue, ".")
+              If iPos Then
+                vValue = Mid$(sValue, iPos + 1)
+              Else
+                Print "Bad property value "; sValue
+                ' This is an object !
+              Endif
+              
+              If sClass = "Form" Then
+              
+                If sProperty = "Border" Then
+              
+                  Select Case vValue
+                    Case "None"
+                      vValue = False
+                    Case "Resizable"
+                      vValue = True
+                      hCtrl.SetProperty("Resizable", True)
+                    Case "Fixed"
+                      vValue = True
+                      hCtrl.SetProperty("Resizable", False)
+                  End Select
+                  
+                Endif
+              
+              Endif
+              
             Endif
 
           Endif
@@ -2131,6 +2151,12 @@ Public Sub Control_Draw(Optional iIndex As Integer)
   
   If Not hCCtrl Then Return
 
+  If Not hCCtrl.Parent And If hCCtrl["#Grid"] Then
+    Draw.FillX = 0
+    Draw.FillY = 0
+    Draw.Tile(hCCtrl["#Grid"], 0, 0, hCtrl.W, hCtrl.H)
+  Endif
+
   If $hFamily.DrawControl(hCCtrl) Then
 
     hPict = Picture[".control" &/ LCase(hCCtrl.Kind)]
@@ -2515,6 +2541,8 @@ Public Sub UpdateTitle()
   Dim sPict As String
   Dim hPict As Picture
   
+  If Family <> "Form" Then Return
+  
   hCtrl = Control[Me.Name]
   If Not hCtrl Then Return
 
@@ -2667,9 +2695,9 @@ Public Sub Handle_MouseMove()
     
     'PRINT #File.Err, "(";; W;; H;; ")"
     
-    .Resize(W, H)
-  
   End With
+    
+  Control[Me.Name].Resize(W, H)
   
   '$bMove = FALSE
   'UpdateBorder

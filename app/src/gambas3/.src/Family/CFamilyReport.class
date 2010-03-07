@@ -1,0 +1,252 @@
+' Gambas class file
+
+Inherits CFamily
+
+Public Const Name As String = "Report"
+
+Static Private Function GetFactor(Unit As String) As Float
+
+  Select Case Unit
+    Case "cm"
+      Return 0.3937
+    Case "ft"
+      Return 12
+    Case "in"
+      Return 1
+    Case "m"
+      Return 39.37
+    Case "mm"
+      Return 0.03937
+    Case Else
+      Return 1 / 96
+  End Select
+
+End
+
+Static Public Function ToPixel(sSize As String) As Float
+  
+  Dim aSize As String[] = Split(sSize, " ")
+  Dim fValue As Float
+  Dim sUnit As String
+  
+  Try sUnit = aSize[1]
+  Try fValue = CFloat(aSize[0])
+  
+  Return fValue * GetFactor(sUnit) / GetFactor("px")
+  
+End
+
+Static Private Sub HasBorder(sBorder As String, sSide As String) As Boolean
+  
+  Dim aBorder As String[] = Split(LCase(sBorder))
+  Dim sTest As String
+  Dim bBorder As Boolean
+  
+  For Each sTest In ["left", "right", "top", "bottom"]
+    If aBorder.Exist(sTest) Then
+      bBorder = True
+      If sTest = sSide Then Return True
+    Endif
+  Next
+  
+  Return Not bBorder
+  
+End
+
+
+
+Static Public Sub PaintBorder(sBorder As String) As Float
+  
+  Dim sElt As String
+  Dim fWidth As Float 
+  Dim cBorder As New Collection
+  Dim iColor As Integer
+  
+  If Not sBorder Then Return
+  
+  For Each sElt In Split(sBorder)
+  
+    If IsDigit(Left(sElt)) Then
+      fWidth = ToPixel(sElt)
+    Else If sElt Begins "&H" Then
+      Try iColor = Val(sElt)
+    Endif
+    
+  Next
+  
+  If Draw.Device Then
+  
+    Draw.LineStyle = Line.None
+    If HasBorder(sBorder, "Left") Then Draw.FillRect(0, 0, fWidth, Draw.Height, iColor)
+    If HasBorder(sBorder, "Right") Then Draw.FillRect(Draw.Width - fWidth, 0, fWidth, Draw.Height, iColor)
+    If HasBorder(sBorder, "Top") Then Draw.FillRect(0, 0, Draw.Width, fWidth, iColor)
+    If HasBorder(sBorder, "Bottom") Then Draw.FillRect(0, Draw.Height - fWidth, Draw.Width, fWidth, iColor)
+
+  Else
+  
+    Paint.Brush = Paint.Color(iColor)
+  
+    If HasBorder(sBorder, "Left") Then Paint.Rectangle(0, 0, fWidth, Paint.Height)
+    If HasBorder(sBorder, "Right") Then Paint.Rectangle(Paint.Width - fWidth, 0, fWidth, Paint.Height)
+    If HasBorder(sBorder, "Top") Then Paint.Rectangle(0, 0, Paint.Width, fWidth)
+    If HasBorder(sBorder, "Bottom") Then Paint.Rectangle(0, Paint.Height - fWidth, Paint.Width, fWidth)
+    
+    Paint.Fill
+    
+  Endif
+  
+  Return fWidth
+  
+End
+
+Public Sub _new()
+  
+  Me.Background = Color.White
+  
+End
+
+Public Sub IsPainted(hCtrl As CControl) As Boolean
+
+  If hCtrl.Kind = "ReportLabel" Then Return True
+  'If hCtrl.Kind = "ReportTextLabel" Then Return True
+  If hCtrl.Kind = "ReportLine" Then Return True
+  
+End
+
+Public Sub IsTransparent(hCtrl As CControl) As Boolean
+
+  If hCtrl.Kind = "Report" Then Return False
+  If hCtrl.Kind = "ReportHBox" Then Return False
+  If hCtrl.Kind = "ReportVBox" Then Return False
+  Return True
+  If hCtrl.Kind = "ReportLabel" Then Return True
+  If hCtrl.Kind = "ReportTextLabel" Then Return True
+  If hCtrl.Kind = "ReportLine" Then Return True
+  
+End
+
+Public Sub DrawControl(hCtrl As CControl) As Boolean
+  
+  Dim sAlign As String
+  Dim X, Y, W, H, W2, H2 As Float
+  Dim fVal As Float
+  Dim sPath As String
+  Dim fBorderWidth As Float
+  
+  X = 0
+  Y = 0
+  W = hCtrl.Width
+  H = hCtrl.Height
+  
+  fBorderWidth = PaintBorder(hCtrl["Border"])
+  
+  If hCtrl["Padding"] Or If fBorderWidth > 0 Then
+    fVal = Max(ToPixel(hCtrl["Padding"]), fBorderWidth)
+    X += fVal
+    Y += fVal
+    W -= fVal * 2
+    H -= fVal * 2
+  Endif
+  
+  If W <= 0 Or If H <= 0 Then Return
+  
+  Select Case hCtrl.Kind
+  
+    Case "ReportLabel"
+    
+      Try Paint.Font = Font[hCtrl["Font"]]
+      Paint.Text(hCtrl["Text"], X, Y, W, H, Classes["Align"][hCtrl["Alignment"]].Value)
+      Paint.Fill
+      
+    Case "ReportTextLabel"
+    
+      Try Draw.Font = Font[hCtrl["Font"]]
+      Draw.RichText(hCtrl["Text"], X, Y, W, H, Classes["Align"][hCtrl["Alignment"]].Value)
+      'Paint.Fill
+      
+    Case "ReportLine"
+    
+      Paint.LineWidth = 1
+      Paint.Brush = Paint.Color(Color.Black)
+      Try Paint.LineWidth = hCtrl["LineWidth"]
+      Try Paint.Brush = Paint.Color(hCtrl.GetPropertyReal("LineColor"))
+      X += Paint.LineWidth / 2
+      Y += Paint.LineWidth / 2
+      W = X + W - Paint.LineWidth
+      H = Y + H - Paint.LineWidth
+      W2 = (X + W) / 2
+      H2 = (Y + H) / 2
+      Select Case hCtrl["Direction"]
+        Case "TopLeft"
+          Paint.MoveTo(W, H)
+          Paint.LineTo(X, Y)
+        Case "Top"
+          Paint.MoveTo(W2, H)
+          Paint.LineTo(W2, Y)
+        Case "TopRight"
+          Paint.MoveTo(X, H)
+          Paint.LineTo(W, Y)
+        Case "Left"
+          Paint.MoveTo(W, H2)
+          Paint.LineTo(X, H2)
+        Case "Right"
+          Paint.MoveTo(X, H2)
+          Paint.LineTo(W, H2)
+        Case "BottomLeft"
+          Paint.MoveTo(W, Y)
+          Paint.LineTo(X, H)
+        Case "Bottom"
+          Paint.MoveTo(W2, Y)
+          Paint.LineTo(W2, H)
+        Case "BottomRight"
+          Paint.MoveTo(X, Y)
+          Paint.LineTo(W, H)
+      End Select
+      Paint.Stroke
+
+    Case "ReportHBox"
+    
+      Draw.FillX = 0
+      Draw.FillY = 0
+      If H >= 32 Then
+        Draw.Tile(Picture["img/16/red-arrow-h.png"], X + 4, Y + 4, W - 8, 8)
+        Draw.Tile(Picture["img/16/red-arrow-h.png"], X + 4, Y + H - 12, W - 8, 8)
+      Else 
+        Draw.Tile(Picture["img/16/red-arrow-h.png"], X + 4, H / 2 - 4, W - 8, 8)
+      Endif
+      Draw.Foreground = &HFF8080&
+      Draw.LineStyle = Line.Dash
+      Draw.Rect(0, 0, hCtrl.W, hCtrl.H)
+    
+    Case "ReportVBox", "Report"
+
+      Draw.FillX = 0
+      Draw.FillY = 0
+      If W >= 32 Then
+        Draw.Tile(Picture["img/16/red-arrow-v.png"], X + 4, Y + 4, 8, H - 8)
+        Draw.Tile(Picture["img/16/red-arrow-v.png"], X + W - 12, Y + 4, 8, H - 8)
+      Else 
+        Draw.Tile(Picture["img/16/red-arrow-v.png"], W / 2 - 4, Y + 4, 8, H - 8)
+      Endif
+      Draw.Foreground = &HFF8080&
+      Draw.LineStyle = Line.Dash
+      Draw.Rect(0, 0, hCtrl.W, hCtrl.H)
+
+    Case "ReportImage"
+    
+      sPath = hCtrl["Image"]
+      If Not sPath Then Return True
+      If hCtrl["#Image"] <> sPath Then
+        hCtrl["#Image"] = sPath
+        hCtrl["#ImageObject"] = Image.Load(Project.Dir &/ sPath)
+      Endif
+      Try Draw.Image(hCtrl["#ImageObject"], X, Y, W, H)
+
+    Case Else
+    
+      Return True
+  
+  End Select
+  
+End
+

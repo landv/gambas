@@ -49,12 +49,15 @@
 #define IS_PURE_INTEGER(_int64_val) ((_int64_val) == ((int)(_int64_val)))
 
 
-static bool read_integer(int base, int64_t *result)
+static bool read_integer(int base, int64_t *result, bool local)
 {
   uint64_t nbr2, nbr;
   int d, n, c, nmax;
+	char thsep;
 
-  n = 0;
+  thsep = LOCAL_get(local)->thousand_sep;
+
+	n = 0;
   nbr = 0;
 	
 	switch (base)
@@ -69,7 +72,10 @@ static bool read_integer(int base, int64_t *result)
 
   for(;;)
   {
-    if (c >= '0' && c <= '9')
+    if (c == thsep)
+      c = get_char();
+
+		if (c >= '0' && c <= '9')
       d = c - '0';
     else if (c >= 'A' && c <='Z')
       d = c - 'A' + 10;
@@ -298,7 +304,7 @@ bool NUMBER_from_string(int option, const char *str, int len, VALUE *value)
   errno = 0;
 	pos = COMMON_pos - 1;
 
-	if (!read_integer(base, &val))
+	if (!read_integer(base, &val, (option & NB_LOCAL) != 0))
 	{
 		if ((option & NB_READ_INTEGER) && IS_PURE_INTEGER(val))
 		{

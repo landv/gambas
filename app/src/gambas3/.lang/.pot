@@ -270,7 +270,7 @@ msgstr ""
 msgid "Loading information on component &1..."
 msgstr ""
 
-#: CModule.class:28 FCreateFile.class:648 FEditor.class:3395 FForm.class:3467
+#: CModule.class:28 FCreateFile.class:648 FEditor.class:3395 FForm.class:3495
 #: FInfo.class:88
 msgid "Form"
 msgstr ""
@@ -352,14 +352,15 @@ msgid ""
 "the value: &1"
 msgstr ""
 
-#: Design.module:384 FColorChooser.class:197 FCommit.class:391
+#: Design.module:384 FColorChooser.class:201 FCommit.class:391
 #: FConnectionEditor.class:411 FCreateFile.class:923 FFontChooser.class:79
 #: FGotoLine.class:57 FList.class:333 FMain.class:2778
 #: FMakeExecutable.class:138 FMenu.class:1123 FNewConnection.class:586
 #: FNewTable.class:162 FNewTranslation.class:64 FOpenProject.class:455
 #: FPasteSpecial.class:273 FPropertyProject.class:252
-#: FReportCoordChooser.class:81 FSelectExtraFile.class:72
-#: FSelectIcon.class:266 FTableChooser.class:139 FText.class:101
+#: FReportBorderChooser.class:215 FReportCoordChooser.class:118
+#: FSelectExtraFile.class:72 FSelectIcon.class:266 FTableChooser.class:139
+#: FText.class:101
 msgid "OK"
 msgstr ""
 
@@ -422,30 +423,31 @@ msgstr ""
 msgid "&Copy"
 msgstr ""
 
-#: FColorChooser.class:157
+#: FColorChooser.class:161
 msgid "Select a color"
 msgstr ""
 
-#: FColorChooser.class:170
+#: FColorChooser.class:174
 msgid "System"
 msgstr ""
 
-#: FColorChooser.class:176
+#: FColorChooser.class:180
 msgid "Free"
 msgstr ""
 
-#: FColorChooser.class:203 FCommit.class:397 FConflict.class:191
+#: FColorChooser.class:207 FCommit.class:397 FConflict.class:191
 #: FConnectionEditor.class:261 FCreateFile.class:929 FDebugInfo.class:490
 #: FEditor.class:2135 FFindList.class:195 FFind.class:114
-#: FFontChooser.class:85 FForm.class:2769 FGotoLine.class:63
+#: FFontChooser.class:85 FForm.class:2797 FGotoLine.class:63
 #: FHelpBrowser.class:273 FIconEditor.class:1393 FImportTable.class:38
 #: FList.class:155 FMain.class:205 FMakeExecutable.class:144
 #: FMakeInstall.class:309 FMenu.class:1128 FNewConnection.class:317
 #: FNewTable.class:168 FNewTranslation.class:70 FOpenProject.class:151
 #: FOption.class:585 FPasteSpecial.class:279 FPropertyProject.class:1240
-#: FReportCoordChooser.class:75 FSave.class:118 FSelectExtraFile.class:78
-#: FSelectIcon.class:271 FTableChooser.class:145 FTextEditor.class:462
-#: FText.class:107 FTranslate.class:617 Project.module:351
+#: FReportBorderChooser.class:209 FReportCoordChooser.class:112
+#: FSave.class:118 FSelectExtraFile.class:78 FSelectIcon.class:271
+#: FTableChooser.class:145 FTextEditor.class:462 FText.class:107
+#: FTranslate.class:617 Project.module:351
 msgid "Cancel"
 msgstr ""
 
@@ -479,32 +481,32 @@ msgid ""
 msgstr ""
 
 #: FCommit.class:234 FConflict.class:327 FConnectionEditor.class:1816
-#: FEditor.class:3219 FForm.class:3313 FIconEditor.class:2168
+#: FEditor.class:3219 FForm.class:3341 FIconEditor.class:2168
 #: FImageEditor.class:77 FOutput.class:477 FTextEditor.class:660
 msgid "Cut"
 msgstr ""
 
 #: FCommit.class:241 FConflict.class:334 FConnectionEditor.class:1714
-#: FEditor.class:3225 FForm.class:3320 FIconEditor.class:2177
+#: FEditor.class:3225 FForm.class:3348 FIconEditor.class:2177
 #: FImageEditor.class:86 FOutput.class:484 FTextEditor.class:667
 msgid "Copy"
 msgstr ""
 
 #: FCommit.class:248 FConflict.class:341 FConnectionEditor.class:1840
-#: FEditor.class:3232 FForm.class:3327 FIconEditor.class:2186
+#: FEditor.class:3232 FForm.class:3355 FIconEditor.class:2186
 #: FImageEditor.class:95 FOutput.class:491 FTextEditor.class:674
 msgid "Paste"
 msgstr ""
 
 #: FCommit.class:255 FConflict.class:348 FConnectionEditor.class:1848
-#: FEditor.class:3202 FForm.class:3542 FIconEditor.class:2150
-#: FImageEditor.class:104 FOption.class:1252 FOutput.class:459
+#: FEditor.class:3202 FForm.class:3570 FIconEditor.class:2150
+#: FImageEditor.class:104 FOption.class:1253 FOutput.class:459
 #: FTextEditor.class:642
 msgid "Undo"
 msgstr ""
 
 #: FCommit.class:262 FConflict.class:355 FConnectionEditor.class:1856
-#: FEditor.class:3209 FForm.class:3552 FImageEditor.class:112
+#: FEditor.class:3209 FForm.class:3580 FImageEditor.class:112
 #: FOutput.class:466 FTextEditor.class:649
 msgid "Redo"
 msgstr ""
@@ -660,7 +662,7 @@ msgstr ""
 msgid "The table '&1' has been modified. Do you want to save it?"
 msgstr ""
 
-#: FConnectionEditor.class:261 FEditor.class:3343 FForm.class:3453
+#: FConnectionEditor.class:261 FEditor.class:3343 FForm.class:3481
 #: FIconEditor.class:1412 FImageEditor.class:60 FTextEditor.class:755
 msgid "Save"
 msgstr ""
@@ -749,7 +751,7 @@ msgstr ""
 msgid "Do you really want to delete table '&1'?"
 msgstr ""
 
-#: FConnectionEditor.class:1330 FForm.class:3334 FMain.class:205
+#: FConnectionEditor.class:1330 FForm.class:3362 FMain.class:205
 #: FNewConnection.class:317 FTranslate.class:617
 msgid "Delete"
 msgstr ""
@@ -782,7 +784,7 @@ msgstr ""
 msgid "Connection editor"
 msgstr ""
 
-#: FConnectionEditor.class:1573 FEditor.class:2135 FForm.class:2769
+#: FConnectionEditor.class:1573 FEditor.class:2135 FForm.class:2797
 #: FHelpBrowser.class:280 FIconEditor.class:2032 FImageEditor.class:68
 #: FTextEditor.class:462 FTranslate.class:711
 msgid "Reload"
@@ -909,7 +911,7 @@ msgstr ""
 msgid "Options"
 msgstr ""
 
-#: FCreateFile.class:800
+#: FCreateFile.class:800 FReportBorderChooser.class:237
 msgid "Width"
 msgstr ""
 
@@ -929,7 +931,7 @@ msgstr ""
 msgid "GIF"
 msgstr ""
 
-#: FCreateFile.class:843 FReportCoordChooser.class:70
+#: FCreateFile.class:843 FReportCoordChooser.class:107
 msgid "px"
 msgstr ""
 
@@ -1109,7 +1111,7 @@ msgid "Function"
 msgstr ""
 
 #: FDebugInfo.class:51 FFindList.class:73 FIconEditor.class:2278
-#: FOption.class:1083
+#: FOption.class:1084
 msgid "Line"
 msgstr ""
 
@@ -1138,7 +1140,7 @@ msgstr ""
 msgid "Debug"
 msgstr ""
 
-#: FDebugInfo.class:981 FMain.class:2571 FOption.class:1180
+#: FDebugInfo.class:981 FMain.class:2571 FOption.class:1181
 msgid "Console"
 msgstr ""
 
@@ -1238,7 +1240,7 @@ msgstr ""
 msgid "Open form"
 msgstr ""
 
-#: FEditor.class:3168 FForm.class:3245 FMain.class:2373
+#: FEditor.class:3168 FForm.class:3273 FMain.class:2373
 msgid "&Startup class"
 msgstr ""
 
@@ -1406,178 +1408,178 @@ msgstr ""
 msgid "Bad form file"
 msgstr ""
 
-#: FForm.class:2769
+#: FForm.class:2797
 msgid ""
 "The form has been modified.\n"
 "\n"
 "All your changes will be lost."
 msgstr ""
 
-#: FForm.class:3221 FIconEditor.class:2258
+#: FForm.class:3249 FIconEditor.class:2258
 msgid "Select"
 msgstr ""
 
-#: FForm.class:3226
+#: FForm.class:3254
 msgid "Event"
 msgstr ""
 
-#: FForm.class:3232
+#: FForm.class:3260
 msgid "Change into"
 msgstr ""
 
-#: FForm.class:3238
+#: FForm.class:3266
 msgid "Open code"
 msgstr ""
 
-#: FForm.class:3253
+#: FForm.class:3281
 msgid "Show tab"
 msgstr ""
 
-#: FForm.class:3261
+#: FForm.class:3289
 msgid "Move tab"
 msgstr ""
 
-#: FForm.class:3266
+#: FForm.class:3294
 msgid "&First"
 msgstr ""
 
-#: FForm.class:3273 FTips.class:220
+#: FForm.class:3301 FTips.class:220
 msgid "&Previous"
 msgstr ""
 
-#: FForm.class:3280 FMenu.class:843 FTips.class:226
+#: FForm.class:3308 FMenu.class:843 FTips.class:226
 msgid "&Next"
 msgstr ""
 
-#: FForm.class:3287
+#: FForm.class:3315
 msgid "&Last"
 msgstr ""
 
-#: FForm.class:3298
+#: FForm.class:3326
 msgid "Select all"
 msgstr ""
 
-#: FForm.class:3304
+#: FForm.class:3332
 msgid "Unselect all"
 msgstr ""
 
-#: FForm.class:3343
+#: FForm.class:3371
 msgid "Arrangement"
 msgstr ""
 
-#: FForm.class:3347
+#: FForm.class:3375
 msgid "Bring to foreground"
 msgstr ""
 
-#: FForm.class:3354
+#: FForm.class:3382
 msgid "Send to background"
 msgstr ""
 
-#: FForm.class:3364
+#: FForm.class:3392
 msgid "Horizontal"
 msgstr ""
 
-#: FForm.class:3371
+#: FForm.class:3399
 msgid "Rows"
 msgstr ""
 
-#: FForm.class:3377
+#: FForm.class:3405
 msgid "Vertical"
 msgstr ""
 
-#: FForm.class:3384
+#: FForm.class:3412
 msgid "Columns"
 msgstr ""
 
-#: FForm.class:3390
+#: FForm.class:3418
 msgid "Alignment"
 msgstr ""
 
-#: FForm.class:3394
+#: FForm.class:3422
 msgid "Align to &left"
 msgstr ""
 
-#: FForm.class:3400
+#: FForm.class:3428
 msgid "Align to &right"
 msgstr ""
 
-#: FForm.class:3406
+#: FForm.class:3434
 msgid "Align to &top"
 msgstr ""
 
-#: FForm.class:3412
+#: FForm.class:3440
 msgid "Align to &bottom"
 msgstr ""
 
-#: FForm.class:3421
+#: FForm.class:3449
 msgid "Same &width"
 msgstr ""
 
-#: FForm.class:3427
+#: FForm.class:3455
 msgid "Same &height"
 msgstr ""
 
-#: FForm.class:3437
+#: FForm.class:3465
 msgid "Menu editor..."
 msgstr ""
 
-#: FForm.class:3488 FTextEditor.class:788
+#: FForm.class:3516 FTextEditor.class:788
 msgid "Code"
 msgstr ""
 
-#: FForm.class:3495
+#: FForm.class:3523
 msgid "Lock form"
 msgstr ""
 
-#: FForm.class:3559 FMenu.class:49
+#: FForm.class:3587 FMenu.class:49
 msgid "Menu editor"
 msgstr ""
 
-#: FForm.class:3566
+#: FForm.class:3594
 msgid "Toggle grid"
 msgstr ""
 
-#: FForm.class:3595
+#: FForm.class:3623
 msgid "Align to top"
 msgstr ""
 
-#: FForm.class:3602
+#: FForm.class:3630
 msgid "Align to bottom"
 msgstr ""
 
-#: FForm.class:3609
+#: FForm.class:3637
 msgid "Align to left"
 msgstr ""
 
-#: FForm.class:3616
+#: FForm.class:3644
 msgid "Align to right"
 msgstr ""
 
-#: FForm.class:3623
+#: FForm.class:3651
 msgid "Same width"
 msgstr ""
 
-#: FForm.class:3630
+#: FForm.class:3658
 msgid "Same height"
 msgstr ""
 
-#: FForm.class:3671
+#: FForm.class:3699
 msgid "Tabstrip"
 msgstr ""
 
-#: FForm.class:3676
+#: FForm.class:3704
 msgid "Move tab first"
 msgstr ""
 
-#: FForm.class:3683
+#: FForm.class:3711
 msgid "Move tab left"
 msgstr ""
 
-#: FForm.class:3690
+#: FForm.class:3718
 msgid "Move tab right"
 msgstr ""
 
-#: FForm.class:3697
+#: FForm.class:3725
 msgid "Move tab last"
 msgstr ""
 
@@ -2439,7 +2441,7 @@ msgstr ""
 msgid "Show menu bar"
 msgstr ""
 
-#: FMain.class:2722 FProperty.class:1142
+#: FMain.class:2722 FProperty.class:1146
 msgid "Properties"
 msgstr ""
 
@@ -3077,55 +3079,55 @@ msgstr ""
 msgid "Default tab size"
 msgstr ""
 
-#: FOption.class:1065
-msgid "spaces"
+#: FOption.class:1066 FPropertyProject.class:1691
+msgid "space(s)"
 msgstr ""
 
-#: FOption.class:1077
+#: FOption.class:1078
 msgid "Procedure separation"
 msgstr ""
 
-#: FOption.class:1083 FProperty.class:743
+#: FOption.class:1084 FProperty.class:743
 msgid "None"
 msgstr ""
 
-#: FOption.class:1083
+#: FOption.class:1084
 msgid "Blend"
 msgstr ""
 
-#: FOption.class:1095
+#: FOption.class:1096
 msgid "Highlight current line"
 msgstr ""
 
-#: FOption.class:1113
+#: FOption.class:1114
 msgid "Highlight modified lines"
 msgstr ""
 
-#: FOption.class:1131
+#: FOption.class:1132
 msgid "Show line numbers"
 msgstr ""
 
-#: FOption.class:1149
+#: FOption.class:1150
 msgid "Fold procedures by default"
 msgstr ""
 
-#: FOption.class:1167
+#: FOption.class:1168
 msgid "Keywords in upper case"
 msgstr ""
 
-#: FOption.class:1207
+#: FOption.class:1208
 msgid "Quiet external commands"
 msgstr ""
 
-#: FOption.class:1219
+#: FOption.class:1220
 msgid "Theme"
 msgstr ""
 
-#: FOption.class:1240
+#: FOption.class:1241
 msgid "Import theme"
 msgstr ""
 
-#: FOption.class:1246
+#: FOption.class:1247
 msgid "Export theme"
 msgstr ""
 
@@ -3220,15 +3222,15 @@ msgstr ""
 msgid "Edit field list"
 msgstr ""
 
-#: FProperty.class:1152
+#: FProperty.class:1156
 msgid "Click on a form or a control to modify its properties..."
 msgstr ""
 
-#: FProperty.class:1168
+#: FProperty.class:1172
 msgid "Lock property"
 msgstr ""
 
-#: FProperty.class:1223
+#: FProperty.class:1227
 msgid "..."
 msgstr ""
 
@@ -3294,10 +3296,6 @@ msgstr ""
 
 #: FPropertyProject.class:1679
 msgid "Tab size"
-msgstr ""
-
-#: FPropertyProject.class:1691
-msgid "space(s)"
 msgstr ""
 
 #: FPropertyProject.class:1699
@@ -3424,28 +3422,36 @@ msgstr ""
 msgid "Remove All"
 msgstr ""
 
+#: FReportBorderChooser.class:203
+msgid "Select a border"
+msgstr ""
+
+#: FReportBorderChooser.class:221
+msgid "Draw a border"
+msgstr ""
+
+#: FReportBorderChooser.class:243
+msgid "Color"
+msgstr ""
+
 #: FReportCoordChooser.class:18
 msgid "Incorrect value."
 msgstr ""
 
-#: FReportCoordChooser.class:62
+#: FReportCoordChooser.class:98
 msgid "Select a dimension"
 msgstr ""
 
-#: FReportCoordChooser.class:70
+#: FReportCoordChooser.class:107
 msgid "cm"
 msgstr ""
 
-#: FReportCoordChooser.class:70
+#: FReportCoordChooser.class:107
 msgid "mm"
 msgstr ""
 
-#: FReportCoordChooser.class:70
+#: FReportCoordChooser.class:107
 msgid "in"
-msgstr ""
-
-#: FReportCoordChooser.class:70
-msgid "pt"
 msgstr ""
 
 #: FSave.class:30 FWelcome.class:54

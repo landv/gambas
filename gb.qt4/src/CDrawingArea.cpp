@@ -319,12 +319,14 @@ void MyDrawingArea::updateCache()
 		clearBackground();
 
 		setAttribute(Qt::WA_PaintOnScreen, true);
+		setAttribute(Qt::WA_OpaquePaintEvent, true);
 		setAttribute(Qt::WA_StaticContents, true);
 	}
 	else //if (_background)
 	{
 		_background = 0;
 		setAttribute(Qt::WA_PaintOnScreen, false);
+		setAttribute(Qt::WA_OpaquePaintEvent, false);
 		setAttribute(Qt::WA_StaticContents, false);
 		#ifdef NO_X_WINDOW
 		setBackgroundMode(Qt::NoBackground);
@@ -350,7 +352,6 @@ void MyDrawingArea::setPalette(const QPalette &pal)
 void MyDrawingArea::setTransparent(bool on)
 {
 	_transparent = on;
-	setAttribute(Qt::WA_OpaquePaintEvent, !on);
 	updateCache();
 }
 

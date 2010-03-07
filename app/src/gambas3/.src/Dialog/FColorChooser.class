@@ -24,7 +24,11 @@ Static Public Function Run(Optional sColor As String, Optional bAlpha As Boolean
       If Error Then 
         Value = Object.GetProperty(Classes["Color"], $sColor)
       Else 
-        Color = "&H" & Hex$(Value, 8) & "&"
+        If $bAlpha Then
+          Color = "&H" & Hex$(Value, 8) & "&"
+        Else
+          Color = "&H" & Hex$(Value, 6) & "&"
+        Endif
       Endif
     Else
       Value = -1

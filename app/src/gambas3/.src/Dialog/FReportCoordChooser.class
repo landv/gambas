@@ -44,3 +44,39 @@ Public Sub Form_Open()
   txtCoord.SetFocus
 
 End
+
+Public Sub cmbUnit_Click()
+
+  txtCoord.SetFocus
+
+End
+
+Public Sub txtCoord_MouseWheel()
+
+  Dim fVal As Float
+  Dim fInc As Float
+
+  If Mouse.Shift Then 
+    fInc = 0.1
+  Else
+    fInc = 1
+  Endif
+  
+  Try fVal = CFloat(txtCoord.Text)
+  If Mouse.Delta > 0 Then
+    fVal += fInc
+  Else
+    fVal -= fInc
+  Endif
+  
+  If fVal > 0 Then txtCoord.Text = CStr(fVal)
+  
+  Stop Event
+  
+End
+
+Public Sub btnClear_Click()
+
+  txtCoord.Clear
+
+End

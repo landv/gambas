@@ -91,6 +91,7 @@ Public Sub InitControl()
   Dim bRemove As Boolean
   Dim aCont As String[]
   Dim sKind As String
+  Dim bDoNotApply As Boolean
 
   'DEBUG Component;; Name
 
@@ -203,7 +204,13 @@ Public Sub InitControl()
         Endif
       Endif
 
-      hProp = New CPropertyInfo(Component, Name, sProp, sKind, Null, False, VirtualControl, sDefVal)
+      If Family <> "Form" Then 
+        bDoNotApply = True
+      Else
+        bDoNotApply = VirtualControl
+      Endif
+      
+      hProp = New CPropertyInfo(Component, Name, sProp, sKind, Null, False, bDoNotApply, sDefVal)
       Properties[sProp] = hProp
     Endif
 
@@ -309,18 +316,27 @@ End
 
 Public Sub GetSimilars() As String[]
   
-  Dim aSimilar As New String[]
+  Dim cSimilar As New Collection(gb.IgnoreCase)
   Dim sSimilar As String
+  Dim aSimilar As New String[]
   
-  aSimilar.Insert(CComponent.GetSimilars(Name))
+  For Each sSimilar In CComponent.GetSimilars(Name)
+    cSimilar[sSimilar] = True
+  Next
   
   If Similars Then
     For Each sSimilar In Similars
-      aSimilar.Insert(CComponent.GetSimilars(sSimilar))
-      aSimilar.Add(sSimilar)
+      cSimilar[sSimilar] = True
+      For Each sSimilar In CComponent.GetSimilars(sSimilar)
+        If sSimilar <> Name Then cSimilar[sSimilar] = True
+      Next
     Next
-    aSimilar.Sort
   Endif
+  
+  For Each sSimilar In cSimilar
+    aSimilar.Add(cSimilar.Key)
+  Next
+  aSimilar.Sort(gb.IgnoreCase)
   
   Return aSimilar
   

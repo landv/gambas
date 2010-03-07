@@ -88,6 +88,7 @@ static struct option LongOptions[] =
 	{ "version", 0, NULL, 'V' },
 	{ "verbose", 0, NULL, 'v' },
 	{ "help", 0, NULL, 'h' },
+	{ "license", 0, NULL, 'L' },
 	{ "root", 1, NULL, 'r' },
 	{ 0 }
 };
@@ -692,9 +693,9 @@ int main(int argc, char **argv)
 	for(;;)
 	{
 		#if HAVE_GETOPT_LONG
-			opt = getopt_long(argc, argv, "vVhpar:", LongOptions, &ind);
+			opt = getopt_long(argc, argv, "vVhLpar:", LongOptions, &ind);
 		#else
-			opt = getopt(argc, argv, "vVhpar:");
+			opt = getopt(argc, argv, "vVhLpar:");
 		#endif
 		if (opt < 0) break;
 
@@ -720,24 +721,30 @@ int main(int argc, char **argv)
 			case 'a':
 				_analyze = TRUE;
 				break;
+				
+			case 'L':
+				printf(
+					"GAMBAS Component Informer version " VERSION " " __DATE__ " " __TIME__ "\n"
+					COPYRIGHT
+					);
+				exit(0);
 
 			case 'h':
 				printf(
-					"\n"
-					"GAMBAS Component Informer version " VERSION " " __DATE__ " " __TIME__ "\n"
-					COPYRIGHT
 					"Usage: gbi" GAMBAS_VERSION_STRING " [options] [components]\n"
 					"Options:"
 					#if HAVE_GETOPT_LONG
 					"\n"
 					"  -V  --version              display version\n"
 					"  -h  --help                 display this help\n"
+          "  -L  --license              display license\n"
 					"  -p                         disable preloading\n"
 					"  -r  --root <directory>     gives the gambas installation directory\n"
 					#else
 					" (no long options on this system)\n"
 					"  -V                         display version\n"
 					"  -h                         display this help\n"
+          "  -L                         display license\n"
 					"  -p                         disable preloading\n"
 					"  -r <directory>             gives the gambas installation directory\n"
 					#endif

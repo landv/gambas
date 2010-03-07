@@ -1,0 +1,49 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,59,36)
+  Text = ("Select a border")
+  Persistent = True
+  Resizable = False
+  { btnCancel Button
+    MoveScaled(42,6,16,4)
+    Text = ("Cancel")
+    Cancel = True
+  }
+  { btnOK Button
+    MoveScaled(42,1,16,4)
+    Text = ("OK")
+    Default = True
+  }
+  { chkBorder CheckBox
+    MoveScaled(1,1,36,1)
+    Text = ("Draw a border")
+    Value = CheckBox.True
+  }
+  { panBorder Panel
+    MoveScaled(1,5,39,30)
+    { dwgBorder DrawingArea
+      MoveScaled(0,11,39,19)
+      Background = &HFFFFFF&
+      Painted = True
+      Border = Border.Plain
+    }
+    { Label1 Label
+      MoveScaled(0,0,13,4)
+      Text = ("Width")
+      Transparent = True
+    }
+    { Label2 Label
+      MoveScaled(0,5,13,4)
+      Text = ("Color")
+      Transparent = True
+    }
+    { txtWidth ButtonBox
+      MoveScaled(15,0,24,4)
+      ReadOnly = True
+    }
+    { btnColor ColorButton
+      MoveScaled(15,5,24,4)
+    }
+  }
+}

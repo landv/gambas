@@ -649,7 +649,7 @@ Private Sub ShowProperty(Optional sFocus As String)
     Case "s"
       bButton = True
 
-    Case "String[]", "Field[]", "ReportCoord"
+    Case "String[]", "Field[]", "ReportCoord", "ReportBorder"
       bButton = True
       txtProperty.ReadOnly = True
 
@@ -919,6 +919,10 @@ Public Sub btnProperty_Click()
     Case "ReportCoord"
       If FReportCoordChooser.Run($sOldVal) Then Goto _EXIT
       $hEditor.Text = FReportCoordChooser.Coord
+
+    Case "ReportBorder"
+      If FReportBorderChooser.Run($sOldVal) Then Goto _EXIT
+      $hEditor.Text = FReportBorderChooser.Value
 
   End Select
 

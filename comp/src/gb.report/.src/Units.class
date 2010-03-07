@@ -3,6 +3,7 @@
 Static Public AllowedUnits As String[] = ["m", "cm", "mm", "in", "pt", "px"]
 
 Static Public Function GetFactorUnitToInch(Unit As String) As Float
+
   Select Case Unit
     Case "cm"
       Return 0.3937
@@ -16,11 +17,8 @@ Static Public Function GetFactorUnitToInch(Unit As String) As Float
       Return 0.03937
     Case "px", "pt"
       Return 1 / Paint.ResolutionX
-    Case 7
-     Return
-    Case 8
-      Return
   End Select
+
 End
 
 Static Public Function UnitsConverter(Value As Float, Unit1 As String, Unit2 As String) As Float

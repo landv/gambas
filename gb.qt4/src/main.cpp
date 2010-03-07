@@ -614,6 +614,8 @@ static void QT_Init(void)
 	//Q3StyleSheet::defaultSheet()->item("tt")->setFontFamily("Monospace");
 	//Q3StyleSheet::defaultSheet()->item("pre")->setFontFamily("Monospace");
 
+	qApp->setQuitOnLastWindowClosed(false);
+	
 	init = true;
 }
 

@@ -234,7 +234,7 @@ BEGIN_METHOD_VOID(CDIALOG_get_color)
 
   QColor color;
 
-  color = QColorDialog::getColor(dialog_color, qApp->activeWindow());
+  color = QColorDialog::getColor(dialog_color); //, qApp->activeWindow());
 
   if (!color.isValid())
     GB.ReturnBoolean(true);
