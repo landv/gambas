@@ -384,7 +384,11 @@ void gComboBox::setText(const char *vl)
 	int index = find(vl);
 	
 	if (index >= 0)
+	{
+		lock();
 		setIndex(index);
+		unlock();
+	}
 	else if (entry)
 		gTextBox::setText(vl);
 }
