@@ -383,9 +383,9 @@ BEGIN_PROPERTY(CCOMBOBOX_list)
 				COMBOBOX->add(*((char **)GB.Array.Get(array, i)));
 		}
 		COMBOBOX->setIndex(-1);
-		COMBOBOX->unlock();
 		if (array)
 			COMBOBOX->setIndex(0);
+		COMBOBOX->unlock();
 	}
 
 END_PROPERTY

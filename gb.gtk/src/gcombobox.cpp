@@ -53,7 +53,7 @@ static void cb_click(GtkComboBox *widget,gComboBox *data)
 		data->emit(SIGNAL(data->onChange));
 	}
 	
-	if (!data->_no_click && data->index() >= 0)
+	if (data->index() >= 0)
 		data->emit(SIGNAL(data->onClick));
 }
 
@@ -144,7 +144,7 @@ gComboBox::gComboBox(gContainer *parent) : gTextBox(parent, true)
 	onClick = NULL;
 	onActivate = NULL;
 	
-	_no_click = false;
+	//_no_click = false;
 	_last_key = 0;
 	_model_dirty = false;
 	sort = false;
@@ -264,7 +264,13 @@ void gComboBox::setIndex(int vl)
 		vl = -1;
 	else if (vl >= count()) 
 		return;
-		
+	
+	if (vl == index())
+	{
+		emit(SIGNAL(onClick));
+		return;
+	}
+	
 	updateModel();
 	gtk_combo_box_set_active(GTK_COMBO_BOX(widget), vl);
 }

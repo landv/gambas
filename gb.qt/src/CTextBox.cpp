@@ -340,12 +340,13 @@ static int combo_get_current_item(void *_object)
 
 static void combo_set_current_item(void *_object, int item)
 {
-	if (item == combo_get_current_item(THIS))
-		return;
+	if (item != combo_get_current_item(THIS))
+	{
+		if (item < COMBOBOX->count())
+			COMBOBOX->setCurrentItem(item);
+	}
 	
-  if (item < COMBOBOX->count())
-  	COMBOBOX->setCurrentItem(item);
-  if (item >= 0)
+  if (item >= 0 && !COMBOBOX->signalsBlocked())
     GB.Raise(THIS, EVENT_Click, 0);
 }
 
@@ -427,8 +428,8 @@ static void combo_set_list(void *_object, GB_ARRAY array)
 
   COMBOBOX->blockSignals(false);
 	
-	if (COMBOBOX->count())
-		GB.Raise(THIS, EVENT_Click, 0);
+	//if (COMBOBOX->count())
+	//	GB.Raise(THIS, EVENT_Click, 0);
 }
 
 
@@ -557,8 +558,8 @@ BEGIN_METHOD(CCOMBOBOX_add, GB_STRING item; GB_INTEGER pos)
 	
   COMBOBOX->blockSignals(false);
 	
-	if (index < 0)
-		GB.Raise(THIS, EVENT_Click, 0);
+	//if (index < 0)
+	//	GB.Raise(THIS, EVENT_Click, 0);
 
 END_METHOD
 

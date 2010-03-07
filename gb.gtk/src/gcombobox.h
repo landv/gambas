@@ -46,7 +46,7 @@ public:
 	bool sort;
 	GtkCellRenderer *cell;
 	virtual int minimumHeight();
-	bool _no_click;
+	//bool _no_click;
 	gTree *tree;
 	bool _model_dirty;
 	int _last_key;
