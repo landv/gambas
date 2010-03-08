@@ -121,6 +121,7 @@ public:
 
 protected:
 
+	virtual void setStaticContents(bool on);
 	virtual void showEvent(QShowEvent *);
 	virtual void hideEvent(QHideEvent *);
 	virtual void paintEvent(QPaintEvent *);

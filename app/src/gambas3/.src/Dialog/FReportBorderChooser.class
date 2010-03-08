@@ -100,10 +100,10 @@ Public Sub dwgBorder_Draw()
   
   Paint.Brush = Paint.Color($iColor)
   
-  If HasBorder("Left") Then Paint.Rectangle(0, 0, fWidth, Paint.Height)
-  If HasBorder("Right") Then Paint.Rectangle(Paint.Width - fWidth, 0, fWidth, Paint.Height)
-  If HasBorder("Top") Then Paint.Rectangle(0, 0, Paint.Width, fWidth)
-  If HasBorder("Bottom") Then Paint.Rectangle(0, Paint.Height - fWidth, Paint.Width, fWidth)
+  If HasBorder("Left") Then Paint.Rectangle(1, 1, fWidth, Paint.Height - 2)
+  If HasBorder("Right") Then Paint.Rectangle(Paint.Width - fWidth - 1, 1, fWidth, Paint.Height - 2)
+  If HasBorder("Top") Then Paint.Rectangle(1, 1, Paint.Width - 2, fWidth)
+  If HasBorder("Bottom") Then Paint.Rectangle(1, Paint.Height - fWidth - 1, Paint.Width - 2, fWidth)
   
   Paint.Fill
 
@@ -174,8 +174,6 @@ Public Sub dwgBorder_MouseDown()
       sWhere = "Top"
     Endif
   Endif
-  
-  Debug sWhere
   
   SetBorder(sWhere, Not HasBorder(sWhere))
   dwgBorder.Refresh

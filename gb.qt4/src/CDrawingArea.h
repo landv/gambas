@@ -88,14 +88,17 @@ public:
 	
 	bool isPaint() { return _use_paint; }
 	void setPaint(bool on) { _use_paint = on; }
+	void redraw(QRect &r, bool frame = false);
 	
 	bool isTransparent() { return _transparent; }
 	void setTransparent(bool on);
 
 protected:
 
+	virtual void setStaticContents(bool on);
 	virtual void resizeEvent(QResizeEvent *);
 	virtual void paintEvent(QPaintEvent *);
+	virtual void hideEvent(QHideEvent *);
 	//virtual void drawContents(QPainter *p);
 	virtual void setPalette(const QPalette &);
 

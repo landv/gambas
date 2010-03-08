@@ -159,7 +159,7 @@ Public Sub RefreshAll()
 
   grdProperty.Rows.Count = aProp.Count + 2
   grdProperty.Clear
-  grdProperty.Rows.Height = -1
+  grdProperty.Rows.Height = grdProperty.Font.Height() + 6
 
   grdProperty.Columns.Count = 2
 

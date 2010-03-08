@@ -132,6 +132,60 @@ void MyDrawingArea::setFrozen(bool f)
 	_frozen = f;
 }
 
+void MyDrawingArea::redraw(QRect &r, bool frame)
+{
+	QPainter *p;
+	void *_object = CWidget::getReal(this);
+	
+	if (!_object)
+		return;
+			
+	//qDebug("paint: %d %d %d %d", event->rect().x(), event->rect().y(), event->rect().width(), event->rect().height());
+
+	if (_use_paint)
+	{
+		PAINT_begin(THIS);
+		p = PAINT_get_current();
+	}
+	else
+	{
+		DRAW_begin(THIS);
+		p = DRAW_get_current();
+	}
+		
+	if (!isTransparent())
+	{
+		p->translate(-r.x(), -r.y());
+	}
+	
+	if (!_use_paint)
+	{
+		//p->setBrushOrigin(-r.x(), -r.y());
+		DRAW_clip(r.x(), r.y(), r.width(), r.height());
+	}
+	else
+		PAINT_clip(r.x(), r.y(), r.width(), r.height());
+	
+	//p->setClipRegion(event->region().intersect(contentsRect()));
+	//p->setBrushOrigin(-r.x(), -r.y());
+	
+	p->save();
+	
+	GB.Raise(THIS, EVENT_draw, 0);
+		
+	p->restore();
+	
+	if (frame)
+	{
+		p->setRenderHint(QPainter::Antialiasing, false);
+		drawFrame(p);
+	}
+		
+	if (_use_paint)
+		PAINT_end();
+	else
+		DRAW_end();
+}
 
 void MyDrawingArea::paintEvent(QPaintEvent *event)
 {
@@ -154,60 +208,14 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 		r = event->rect().intersect(rect());
 		if (r.isValid())
 		{
-			QPainter *p;
-			void *_object = CWidget::getReal(this);
-			
-			if (!_object)
-				return;
-			
 			if (!isTransparent())
 			{
 				cache = new QPixmap(r.width(), r.height());
 				cache->fill(this, r.x(), r.y());
 			}
+			
+			redraw(r, true);
 
-			//qDebug("paint: %d %d %d %d", event->rect().x(), event->rect().y(), event->rect().width(), event->rect().height());
-
-			if (_use_paint)
-			{
-				PAINT_begin(THIS);
-				p = PAINT_get_current();
-			}
-			else
-			{
-				DRAW_begin(THIS);
-				p = DRAW_get_current();
-			}
-				
-			if (!isTransparent())
-			{
-				p->translate(-r.x(), -r.y());
-			}
-			
-			if (!_use_paint)
-			{
-			  p->setBrushOrigin(-r.x(), -r.y());
-				DRAW_clip(r.x(), r.y(), r.width(), r.height());
-			}
-			else
-				PAINT_clip(r.x(), r.y(), r.width(), r.height());
-			
-			//p->setClipRegion(event->region().intersect(contentsRect()));
-			//p->setBrushOrigin(-r.x(), -r.y());
-			
-			p->save();
-			
-			GB.Raise(THIS, EVENT_draw, 0);
-				
-			p->restore();
-			p->setRenderHint(QPainter::Antialiasing, false);
-			drawFrame(p);
-				
-			if (_use_paint)
-				PAINT_end();
-			else
-				DRAW_end();
-			
 			if (!isTransparent())
 			{
 				paint.drawPixmap(r.x(), r.y(), *cache);
@@ -308,6 +316,11 @@ void MyDrawingArea::updateBackground()
 	}
 }
 
+void MyDrawingArea::setStaticContents(bool on)
+{
+}
+
+
 void MyDrawingArea::updateCache()
 {
 	if (_background)
@@ -355,6 +368,12 @@ void MyDrawingArea::setTransparent(bool on)
 	updateCache();
 }
 
+void MyDrawingArea::hideEvent(QHideEvent *e)
+{
+	if (_background)
+		_set_background = true;
+	MyContainer::hideEvent(e);
+}
 
 /***************************************************************************
 
@@ -462,6 +481,24 @@ BEGIN_PROPERTY(CDRAWINGAREA_transparent)
 
 END_PROPERTY
 
+BEGIN_METHOD(DrawingArea_Refresh, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
+
+	if (WIDGET->isCached())
+	{
+		QRect r;
+		
+		if (!MISSING(x) && !MISSING(y))
+			r.setRect(VARG(x), VARG(y), VARGOPT(w, WIDGET->width()), VARGOPT(h, WIDGET->height()));
+		else
+			r.setRect(0, 0, WIDGET->width(), WIDGET->height());
+		
+		WIDGET->redraw(r, false);
+	}
+	
+	CCONTROL_refresh(_object, _param);
+
+END_METHOD
+
 GB_DESC CDrawingAreaDesc[] =
 {
 	GB_DECLARE("DrawingArea", sizeof(CDRAWINGAREA)), GB_INHERITS("Container"),
@@ -480,6 +517,7 @@ GB_DESC CDrawingAreaDesc[] =
 	GB_PROPERTY("Transparent", "b", CDRAWINGAREA_transparent),
 
 	GB_METHOD("Clear", NULL, CDRAWINGAREA_clear, NULL),
+	GB_METHOD("Refresh", NULL, DrawingArea_Refresh, "[(X)i(Y)i(Width)i(Height)i]"),
 
 	GB_EVENT("Draw", NULL, NULL, &EVENT_draw),
 

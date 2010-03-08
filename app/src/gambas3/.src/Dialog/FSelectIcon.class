@@ -126,7 +126,9 @@ Private Sub SetSize(sSize As String) As Boolean
   Endif
   
   $sSize = sSize
+  Object.Lock(cmbSize)
   cmbSize.Text = sSize
+  Object.Unlock(cmbSize)
   RefreshStock
   
 End

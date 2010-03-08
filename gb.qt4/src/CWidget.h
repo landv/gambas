@@ -104,6 +104,7 @@ extern CWIDGET *CWIDGET_active_control;
 #define QCONTAINER(_ob) CWidget::getContainerWidget((CCONTAINER *)_ob)
 
 DECLARE_METHOD(CCONTROL_delete);
+DECLARE_METHOD(CCONTROL_refresh);
 DECLARE_PROPERTY(CCONTROL_tag);
 DECLARE_PROPERTY(CWIDGET_border_full);
 DECLARE_PROPERTY(CWIDGET_border_simple);

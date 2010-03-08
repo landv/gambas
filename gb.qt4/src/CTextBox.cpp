@@ -480,9 +480,7 @@ BEGIN_PROPERTY(CCOMBOBOX_text)
 			COMBOBOX->lineEdit()->setText(text);
 
 		pos = combo_find_item(THIS, text);
-		COMBOBOX->blockSignals(true);
     combo_set_current_item(_object, pos);
-		COMBOBOX->blockSignals(false);
 	}
 
 END_PROPERTY

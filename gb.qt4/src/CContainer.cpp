@@ -493,21 +493,22 @@ void MyContainer::hideEvent(QHideEvent *e)
 	}*/
 }
 
+void MyContainer::setStaticContents(bool on)
+{
+	setAttribute(Qt::WA_StaticContents, on && _frame == BORDER_NONE);
+}
+
 void MyContainer::setFrameStyle(int frame)
 {
 	int margin;
-	_frame = frame;
-	
-	setAttribute(Qt::WA_StaticContents, frame == BORDER_NONE);
 
-	if (_frame == BORDER_NONE)
-		margin = 0;
-	else if (_frame == BORDER_PLAIN)
-		margin = 1;
-	else
-		margin = 2;
+	_frame = frame;
+
+	setStaticContents(true);
 	
+	margin = frameWidth();
 	setContentsMargins(margin, margin, margin, margin);
+	
 	update();
 }
 
