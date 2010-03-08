@@ -50,11 +50,11 @@ typedef
 		char *sContentType;
 		char *sPostData;
 		char *sUserAgent;
-		char **buf_header;
-		int len_header;
-		int ReturnCode;
-		char *ReturnString;
 		char *encoding;
+		GB_ARRAY headers;
+		GB_ARRAY sent_headers;
+		int return_code;
+		char *return_string;
 		}
 	CHTTPCLIENT;
 
