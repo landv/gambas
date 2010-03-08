@@ -36,6 +36,12 @@
 #include "CHttpClient.h"
 #include "CProxy.h"
 
+#define ERR_STILL_ACTIVE "Still active"
+#define ERR_INVALID_CONTENT_TYPE "Invalid content type"
+#define ERR_INVALID_DATA "Invalid data"
+
+#define SEND_POST 1
+#define SEND_PUT 2
 
 /*****************************************************
  CURLM : a pointer to use curl_multi interface,
@@ -164,9 +170,24 @@ int http_header_curl(void *buffer, size_t size, size_t nmemb, void *_object)
 	return size * nmemb;
 }
 
+static size_t http_read_curl(void *ptr, size_t size, size_t nmemb, void *_object)
+{
+	size *= nmemb;
+	
+	if (size > (THIS_HTTP->len_data - THIS_HTTP->len_sent))
+		size = THIS_HTTP->len_data - THIS_HTTP->len_sent;
+	
+	if (size > 0)
+	{
+		memcpy(ptr, THIS_HTTP->data + THIS_HTTP->len_sent, size);
+		THIS_HTTP->len_sent += size;
+	}
+	
+	return size;
+}
 
 
-int http_write_curl(void *buffer, size_t size, size_t nmemb, void *_object)
+static int http_write_curl(void *buffer, size_t size, size_t nmemb, void *_object)
 {
 	if (!THIS_HTTP->return_code) 
 		http_parse_header(THIS_HTTP);
@@ -194,7 +215,34 @@ int http_write_curl(void *buffer, size_t size, size_t nmemb, void *_object)
 	return nmemb;
 }
 
-void http_initialize_curl_handle(void *_object)
+static void http_reset(void *_object)
+{
+	if (THIS->buf_data)
+	{
+		GB.Free((void**)POINTER(&THIS->buf_data));
+		THIS->buf_data=NULL;
+	}
+
+	GB.Unref(&THIS_HTTP->headers);
+	GB.Unref(&THIS_HTTP->sent_headers);
+	
+	if (THIS_HTTP->sContentType)
+	{
+		GB.Free((void**)POINTER(&THIS_HTTP->sContentType));
+		THIS_HTTP->sContentType=NULL;
+	}
+	
+	if (THIS_HTTP->data)
+	{
+		GB.Free((void**)POINTER(&THIS_HTTP->data));
+		THIS_HTTP->data =NULL;
+	}
+	
+	THIS->len_data=0;
+}
+
+
+static void http_initialize_curl_handle(void *_object)
 {
 	if (THIS_CURL)
 	{
@@ -244,16 +292,14 @@ void http_initialize_curl_handle(void *_object)
 	CCURL_init_stream(THIS);
 }
 
-/*************************************************
- GET HTTP method
- *************************************************/
-int http_get (void *_object)
+static int http_get (void *_object)
 {
 	if (THIS_STATUS > 0) return 1;
 
 	THIS->iMethod=0;
 	http_initialize_curl_handle(_object);
-	curl_easy_setopt(THIS_CURL,CURLOPT_HTTPGET,1);
+	
+	curl_easy_setopt(THIS_CURL, CURLOPT_HTTPGET, 1);
 	
 	if (THIS->async)
 	{
@@ -266,24 +312,51 @@ int http_get (void *_object)
 	return 0;
 }
 
-/*************************************************
- POST HTTP method
- *************************************************/
-int http_post(void *_object, char *sContent, char *sData, int lendata, GB_ARRAY custom_headers)
+
+static bool check_request(void *_object, char *contentType, char *data, int len)
+{
+	int i;
+	unsigned char c;
+	
+	if (THIS_STATUS > 0)
+	{ 
+		GB.Error(ERR_STILL_ACTIVE); 
+		return TRUE; 
+	}
+	
+	if (!contentType)
+	{ 
+		GB.Error(ERR_INVALID_CONTENT_TYPE);
+		return TRUE;
+	}
+	
+	for (i = 0; i < strlen(contentType); i++)
+	{
+		c = contentType[i];
+		if (isalnum(c) || c == '-' || c == '+' || c == '.' || c == '/')
+			continue;
+		GB.Error(ERR_INVALID_CONTENT_TYPE);
+		return TRUE;
+	}
+
+	if (!data || !len)
+	{ 
+		GB.Error(ERR_INVALID_DATA); 
+		return TRUE; 
+	};
+	
+	return FALSE;
+}
+
+
+static void http_send(void *_object, int type, char *sContent, char *sData, int lendata, GB_ARRAY custom_headers)
 {
 	int mylen;
 	struct curl_slist *headers = NULL;
 	int i;
-
-	if (THIS_STATUS > 0) return 1;
-	if (!sContent) return 2;
-	if (!sData) return 3;
 	
-	for (i = 0; i < strlen(sContent); i++)
-	{
-		if (sContent[i] < 32) 
-			return 1;
-	}
+	if (check_request(_object, sContent, sData, lendata))
+		return;
 
 	if (custom_headers)
 	{
@@ -296,12 +369,12 @@ int http_post(void *_object, char *sContent, char *sData, int lendata, GB_ARRAY 
 
 	mylen=strlen(sContent) + strlen("Content-Type: ") + 1;
 	GB.Alloc((void*)&THIS_HTTP->sContentType,mylen);
-	GB.Alloc((void*)&THIS_HTTP->sPostData,lendata+1);
-	strncpy(THIS_HTTP->sPostData,sData,lendata);
+	GB.Alloc((void*)&THIS_HTTP->data,lendata+1);
+	strncpy(THIS_HTTP->data,sData,lendata);
 	THIS_HTTP->sContentType[0]=0;
 	strcpy(THIS_HTTP->sContentType,"Content-Type: ");
 	strcat(THIS_HTTP->sContentType,sContent);
-
+	
 	THIS->iMethod=1;
 	headers = curl_slist_append(headers,THIS_HTTP->sContentType );
 	
@@ -311,32 +384,36 @@ int http_post(void *_object, char *sContent, char *sData, int lendata, GB_ARRAY 
 			headers = curl_slist_append(headers, *(char **)GB.Array.Get(THIS_HTTP->sent_headers, i));
 	}
 	
-	curl_easy_setopt(THIS_CURL,CURLOPT_POSTFIELDS,THIS_HTTP->sPostData);
-	curl_easy_setopt(THIS_CURL,CURLOPT_POSTFIELDSIZE,lendata);
-	curl_easy_setopt(THIS_CURL,CURLOPT_HTTPHEADER,headers);
+	curl_easy_setopt(THIS_CURL, CURLOPT_HTTPHEADER, headers);
+	
+	curl_easy_setopt(THIS_CURL, CURLOPT_READFUNCTION, http_read_curl);
+	curl_easy_setopt(THIS_CURL, CURLOPT_READDATA, _object);
+	
+	THIS_HTTP->len_data = lendata;
+	THIS_HTTP->len_sent = 0;
+
+	if (type == SEND_PUT)
+	{
+		curl_easy_setopt(THIS_CURL, CURLOPT_INFILESIZE_LARGE, (curl_off_t)lendata);
+		curl_easy_setopt(THIS_CURL, CURLOPT_UPLOAD, 1);
+	}
+	else // SEND_POST
+	{
+		curl_easy_setopt(THIS_CURL, CURLOPT_POSTFIELDS, NULL);
+		curl_easy_setopt(THIS_CURL, CURLOPT_POSTFIELDSIZE, lendata);
+	}
 
 	if (THIS->async)
 	{
 		curl_multi_add_handle(CCURL_multicurl,THIS_CURL);
 		CCURL_init_post();
-		return 0;
+		return;
 	}
 	
 	CCURL_Manage_ErrCode(_object,curl_easy_perform(THIS_CURL));
-	return 0;
 }
 
-////////////////////////////////////////////////////////////////////////
-//########################## Other properties ##########################
-////////////////////////////////////////////////////////////////////////
-/*****************************************************************
- URL to work with
- *****************************************************************/
 
-
-////////////////////////////////////////////////////////////////////////
-//########################## Cookies ###################################
-////////////////////////////////////////////////////////////////////////
 BEGIN_PROPERTY ( HttpClient_UpdateCookies )
 
 	if (READ_PROPERTY)
@@ -533,9 +610,7 @@ BEGIN_METHOD(HttpClient_Get,GB_STRING TargetHost;)
 
 END_METHOD
 
-
-
-BEGIN_METHOD(HttpClient_Post,GB_STRING sContentType; GB_STRING sData; GB_OBJECT headers;)
+BEGIN_METHOD(HttpClient_Post, GB_STRING contentType; GB_STRING data; GB_OBJECT headers)
 
 // 	if (!MISSING(TargetHost))
 // 	{
@@ -552,50 +627,15 @@ BEGIN_METHOD(HttpClient_Post,GB_STRING sContentType; GB_STRING sData; GB_OBJECT 
 // 		}
 // 	}
 
-	switch(http_post(THIS, GB.ToZeroString(ARG(sContentType)), STRING(sData), LENGTH(sData), VARG(headers)))
-	{
-		case 1:
-			GB.Error("Still active");
-			return;
-		case 2:
-			GB.Error("Invalid content type");
-			return;
-		case 3:
-			GB.Error("Invalid data");
-			return;
-	}
+	http_send(THIS, SEND_POST, GB.ToZeroString(ARG(contentType)), STRING(data), LENGTH(data), VARGOPT(headers, NULL));
 
 END_METHOD
 
+BEGIN_METHOD(HttpClient_Put, GB_STRING contentType; GB_STRING data; GB_OBJECT headers)
 
+	http_send(THIS, SEND_PUT, GB.ToZeroString(ARG(contentType)), STRING(data), LENGTH(data), VARG(headers));
 
-
-void http_reset(void *_object)
-{
-	if (THIS->buf_data)
-	{
-		GB.Free((void**)POINTER(&THIS->buf_data));
-		THIS->buf_data=NULL;
-	}
-
-	GB.Unref(&THIS_HTTP->headers);
-	GB.Unref(&THIS_HTTP->sent_headers);
-	
-	if (THIS_HTTP->sContentType)
-	{
-		GB.Free((void**)POINTER(&THIS_HTTP->sContentType));
-		THIS_HTTP->sContentType=NULL;
-	}
-	
-	if (THIS_HTTP->sPostData)
-	{
-		GB.Free((void**)POINTER(&THIS_HTTP->sPostData));
-		THIS_HTTP->sPostData =NULL;
-	}
-	
-	THIS->len_data=0;
-}
-
+END_METHOD
 
 
 BEGIN_METHOD_VOID(HttpClient_Stop)
@@ -620,6 +660,7 @@ GB_DESC CHttpClientDesc[] =
   GB_METHOD("Stop", NULL, HttpClient_Stop, NULL),
   GB_METHOD("Get", NULL, HttpClient_Get, "[(TargetFile)s]"),
   GB_METHOD("Post", NULL, HttpClient_Post, "(ContentType)s(Data)s[(Headers)String[];]"),
+  GB_METHOD("Put", NULL, HttpClient_Post, "(ContentType)s(Data)s[(Headers)String[];]"),
 
   GB_PROPERTY("Auth", "i", HttpClient_Auth),
   GB_PROPERTY("CookiesFile", "s",HttpClient_CookiesFile),

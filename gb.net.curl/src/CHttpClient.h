@@ -48,23 +48,25 @@ typedef
 		char *cookiesfile;
 		int updatecookies;
 		char *sContentType;
-		char *sPostData;
 		char *sUserAgent;
 		char *encoding;
 		GB_ARRAY headers;
 		GB_ARRAY sent_headers;
 		int return_code;
 		char *return_string;
+		char *data;
+		size_t len_data;
+		size_t len_sent;
 		}
 	CHTTPCLIENT;
 
 
-int http_find_info (CURL *curlfind);
+/*int http_find_info (CURL *curlfind);
 int http_header_curl(void *buffer, size_t size, size_t nmemb, void *c_handle);
 int http_write_curl(void *buffer, size_t size, size_t nmemb, void *c_handle);
 void http_parse_header(CHTTPCLIENT *mythis);
 void http_reset(void *_object);
-void http_stop(void *_object);
+void http_stop(void *_object);*/
 
 #define HTTP_PROPERTIES "URL=127.0.0.1:80,User,Password,Auth=0,Async=TRUE,Timeout=0,CookiesFile,UpdateCookies=FALSE,UserAgent=Gambas (gb.net.curl) HTTP/1.0"
 

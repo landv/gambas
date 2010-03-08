@@ -26,7 +26,7 @@
 #include <curl/curl.h>
 
 #include "CNet.h"
-#define CURLGB(x) (-1)*(1000+x)
+#define CURLGB(x) (-(1000+x))
 
 /***************************************************************
  Here we declare the public interface of NetCode class
@@ -49,15 +49,15 @@ GB_DESC CNetDesc[] =
   #ifdef CURLAUTH_NONE
   GB_CONSTANT ("AuthNone","i",CURLAUTH_NONE),
   GB_CONSTANT ("AuthBasic","i",CURLAUTH_BASIC),
-  GB_CONSTANT ("AuthNTLM","i",CURLAUTH_NTLM),
-  GB_CONSTANT ("AuthDIGEST","i",CURLAUTH_DIGEST),
-  GB_CONSTANT ("AuthGSSNEGOTIATE","i",CURLAUTH_GSSNEGOTIATE),
+  GB_CONSTANT ("AuthNtlm","i",CURLAUTH_NTLM),
+  GB_CONSTANT ("AuthDigest","i",CURLAUTH_DIGEST),
+  GB_CONSTANT ("AuthGssNegotiate","i",CURLAUTH_GSSNEGOTIATE),
   #else
   GB_CONSTANT ("AuthNone","i",0),
   GB_CONSTANT ("AuthBasic","i",1),
-  GB_CONSTANT ("AuthNTLM","i",2),
-  GB_CONSTANT ("AuthDIGEST","i",3),
-  GB_CONSTANT ("AuthGSSNEGOTIATE","i",4),
+  GB_CONSTANT ("AuthNtlm","i",2),
+  GB_CONSTANT ("AuthDigest","i",3),
+  GB_CONSTANT ("AuthGssNegotiate","i",4),
   #endif
   /* net-curl error codes */
   GB_CONSTANT ("UnsupportedProtocol","i",CURLGB(CURLE_UNSUPPORTED_PROTOCOL)),
