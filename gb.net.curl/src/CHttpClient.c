@@ -3,6 +3,7 @@
   CHttpClient.c
 
   (c) 2003-2008 Daniel Campos Fernández <dcamposf@gmail.com>
+  (c) 2009-2010 Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -19,6 +20,7 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
+
 #define __CHTTPCLIENT_C
 
 #include <stdio.h>
@@ -46,18 +48,14 @@
 /*****************************************************
  CURLM : a pointer to use curl_multi interface,
  allowing asynchrnous work without using threads
- in this class. Here also a pipe will be stablished
+ in this class. Here also a pipe will be established
  to link with Gambas watching interface
  ******************************************************/
+
 extern CURLM *CCURL_multicurl;
-////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////
-/*******************************************************************
-####################################################################
-	CALLBACKS FROM CURL LIBRARY
-####################################################################
-********************************************************************/
-void http_parse_header(CHTTPCLIENT *_object)
+
+
+static void http_parse_header(CHTTPCLIENT *_object)
 {
 	char *header;
 	int len;
@@ -88,54 +86,10 @@ void http_parse_header(CHTTPCLIENT *_object)
 	THIS_HTTP->return_code = ret;
 	//GB.FreeString(&THIS_HTTP->return_string);
 	GB.NewString(&THIS_HTTP->return_string, p, header + len - p);
-	
-	/*for (myloop=4;myloop<len;myloop++)
-	{
-		if (buf[myloop]==' ')
-		{
-			mypos=myloop+1;
-			break;
-		}
-	}
-	if (!mypos) return;
-
-	for (myloop=mypos;myloop<len;myloop++)
-	{
-		if (buf[myloop]==' ')
-		{
-			if (npos)
-			{
-				npos=myloop+1;
-				break;
-			}
-		}
-		else
-		{
-			if ( !((buf[myloop]>='0') && (buf[myloop]<='9')) )
-			{
-				if (buf[myloop] != 13)
-					return;
-				else
-					return;
-			}
-			else
-			{
-				npos++;
-				if (npos>3) return;
-				THIS_HTTP->ReturnCode*=10;
-				THIS_HTTP->ReturnCode+=(buf[myloop]-'0');
-
-			}
-		}
-	}
-
-	GB.Alloc(POINTER(&THIS_HTTP->ReturnString),(nposend+1)*sizeof(char));
-	THIS_HTTP->ReturnString[nposend]=0;
-	for (myloop=npos;myloop<(nposend+npos);myloop++)
-		THIS_HTTP->ReturnString[myloop-npos]=buf[myloop];*/
 }
 
-int http_header_curl(void *buffer, size_t size, size_t nmemb, void *_object)
+
+static int http_header_curl(void *buffer, size_t size, size_t nmemb, void *_object)
 {
 	if (!THIS_HTTP->headers)
 	{
@@ -146,20 +100,6 @@ int http_header_curl(void *buffer, size_t size, size_t nmemb, void *_object)
 	if (nmemb > 2)
 		GB.NewString((char **)GB.Array.Add(THIS_HTTP->headers), buffer, (nmemb - 2) * size);
 	
-	/*if (!THIS_HTTP->len_header)
-	{
-		GB.Alloc((void**)POINTER(&THIS_HTTP->buf_header),sizeof(char*));
-		GB.Alloc((void**)&THIS_HTTP->buf_header[0],nmemb+1);
-	}
-	else
-	{
-		GB.Realloc((void**)POINTER(&THIS_HTTP->buf_header),sizeof(char*)*(1+THIS_HTTP->len_header));
-		GB.Alloc((void**)&(THIS_HTTP->buf_header[THIS_HTTP->len_header]),nmemb+1);
-	}
-	THIS_HTTP->buf_header[THIS_HTTP->len_header][nmemb]=0;
-	strncpy(THIS_HTTP->buf_header[THIS_HTTP->len_header],buffer,nmemb);
-	THIS_HTTP->len_header++;*/
-
 	if ( (THIS_STATUS==6) && THIS->async )
 	{
 		THIS_STATUS=4;
@@ -169,6 +109,7 @@ int http_header_curl(void *buffer, size_t size, size_t nmemb, void *_object)
 
 	return size * nmemb;
 }
+
 
 static size_t http_read_curl(void *ptr, size_t size, size_t nmemb, void *_object)
 {
@@ -215,6 +156,7 @@ static int http_write_curl(void *buffer, size_t size, size_t nmemb, void *_objec
 	return nmemb;
 }
 
+
 static void http_reset(void *_object)
 {
 	if (THIS->buf_data)
@@ -242,7 +184,7 @@ static void http_reset(void *_object)
 }
 
 
-static void http_initialize_curl_handle(void *_object)
+static void http_initialize_curl_handle(void *_object, GB_ARRAY custom_headers)
 {
 	if (THIS_CURL)
 	{
@@ -256,7 +198,6 @@ static void http_initialize_curl_handle(void *_object)
 	else
 	{
 		THIS_CURL=curl_easy_init();
-		
 	}
 	
 	if (!THIS->async)
@@ -289,27 +230,14 @@ static void http_initialize_curl_handle(void *_object)
 	http_reset(_object);
 	THIS_STATUS=6;
 	
-	CCURL_init_stream(THIS);
-}
-
-static int http_get (void *_object)
-{
-	if (THIS_STATUS > 0) return 1;
-
-	THIS->iMethod=0;
-	http_initialize_curl_handle(_object);
-	
-	curl_easy_setopt(THIS_CURL, CURLOPT_HTTPGET, 1);
-	
-	if (THIS->async)
+	if (custom_headers)
 	{
-		curl_multi_add_handle(CCURL_multicurl,THIS_CURL);
-		CCURL_init_post();
-		return 0;
+		GB.Unref(&THIS_HTTP->sent_headers);
+		THIS_HTTP->sent_headers = custom_headers;
+		GB.Ref(custom_headers);
 	}
 	
-	CCURL_Manage_ErrCode(_object,curl_easy_perform(THIS_CURL));
-	return 0;
+	CCURL_init_stream(THIS);
 }
 
 
@@ -349,7 +277,54 @@ static bool check_request(void *_object, char *contentType, char *data, int len)
 }
 
 
-static void http_send(void *_object, int type, char *sContent, char *sData, int lendata, GB_ARRAY custom_headers)
+static void http_get(void *_object, GB_ARRAY custom_headers, char *target)
+{
+	struct curl_slist *headers = NULL;
+	int i;
+
+	if (THIS_STATUS > 0)
+	{ 
+		GB.Error(ERR_STILL_ACTIVE); 
+		return; 
+	}
+
+	if (target)
+	{
+		target = GB.FileName(target, 0);
+		THIS_FILE = fopen(target, "w");
+		if (!THIS_FILE)
+		{
+			GB.Error("Unable to open file for writing: &1", target);
+			return;
+		}
+	}
+
+	THIS->iMethod=0;
+	
+	http_initialize_curl_handle(_object, custom_headers);
+	
+	curl_easy_setopt(THIS_CURL, CURLOPT_HTTPGET, 1);
+	
+	if (THIS_HTTP->sent_headers)
+	{
+		for(i = 0; i < GB.Array.Count(THIS_HTTP->sent_headers); i++)
+			headers = curl_slist_append(headers, *(char **)GB.Array.Get(THIS_HTTP->sent_headers, i));
+	}
+	
+	curl_easy_setopt(THIS_CURL, CURLOPT_HTTPHEADER, headers);
+
+	if (THIS->async)
+	{
+		curl_multi_add_handle(CCURL_multicurl,THIS_CURL);
+		CCURL_init_post();
+		return;
+	}
+	
+	CCURL_Manage_ErrCode(_object,curl_easy_perform(THIS_CURL));
+}
+
+
+static void http_send(void *_object, int type, char *sContent, char *sData, int lendata, GB_ARRAY custom_headers, char *target)
 {
 	int mylen;
 	struct curl_slist *headers = NULL;
@@ -358,14 +333,18 @@ static void http_send(void *_object, int type, char *sContent, char *sData, int 
 	if (check_request(_object, sContent, sData, lendata))
 		return;
 
-	if (custom_headers)
+	if (target)
 	{
-		GB.Unref(&THIS_HTTP->sent_headers);
-		THIS_HTTP->sent_headers = custom_headers;
-		GB.Ref(custom_headers);
+		target = GB.FileName(target, 0);
+		THIS_FILE = fopen(target, "w");
+		if (!THIS_FILE)
+		{
+			GB.Error("Unable to open file for writing: &1", target);
+			return;
+		}
 	}
-	
-	http_initialize_curl_handle(_object);
+
+	http_initialize_curl_handle(_object, custom_headers);
 
 	mylen=strlen(sContent) + strlen("Content-Type: ") + 1;
 	GB.Alloc((void*)&THIS_HTTP->sContentType,mylen);
@@ -414,7 +393,7 @@ static void http_send(void *_object, int type, char *sContent, char *sData, int 
 }
 
 
-BEGIN_PROPERTY ( HttpClient_UpdateCookies )
+BEGIN_PROPERTY(HttpClient_UpdateCookies)
 
 	if (READ_PROPERTY)
 	{
@@ -424,7 +403,7 @@ BEGIN_PROPERTY ( HttpClient_UpdateCookies )
 
 	if (THIS_STATUS > 0)
 	{
-		GB.Error ("UpdateCookies property can not be changed while working");
+		GB.Error ("UpdateCookies property can not be changed if the client is active");
 		return;
   	}
 
@@ -435,31 +414,30 @@ BEGIN_PROPERTY ( HttpClient_UpdateCookies )
 
 END_PROPERTY
 
-BEGIN_PROPERTY ( HttpClient_CookiesFile )
+
+BEGIN_PROPERTY(HttpClient_CookiesFile)
+
+	const char *file;
 
 	if (READ_PROPERTY)
 	{
-		GB.ReturnNewString(THIS_HTTP->cookiesfile,0);
+		GB.ReturnString(THIS_HTTP->cookiesfile);
 		return;
 	}
 
 	if (THIS_STATUS > 0)
 	{
-		GB.Error ("CookiesFile property can not be changed while working");
+		GB.Error("CookiesFile property can not be changed if the client is active");
 		return;
   	}
 
 	if (THIS_HTTP->cookiesfile)
-	{
-		GB.Free((void**)POINTER(&THIS_HTTP->cookiesfile));
-		THIS_HTTP->cookiesfile=NULL;
-	}
-	if ( strlen(GB.ToZeroString(PROP(GB_STRING))) )
-	{
-		GB.Alloc( (void**)POINTER(&THIS_HTTP->cookiesfile), \
-		          (strlen(GB.ToZeroString(PROP(GB_STRING)))+1)*sizeof(char));
-		strcpy(THIS_HTTP->cookiesfile,GB.ToZeroString(PROP(GB_STRING)));
-	}
+		GB.FreeString(&THIS_HTTP->cookiesfile);
+	
+	file = GB.FileName(PSTRING(), PLENGTH());
+	
+	if (file)
+		GB.NewString(&THIS_HTTP->cookiesfile, file, 0);
 
 END_PROPERTY
 
@@ -488,26 +466,22 @@ BEGIN_PROPERTY (HttpClient_Auth)
 
 
 END_PROPERTY
-/*********************************************
- User Agent string to be sent to the server
- *********************************************/
-BEGIN_PROPERTY ( HttpClient_UserAgent )
+
+
+BEGIN_PROPERTY(HttpClient_UserAgent)
 
 	if (READ_PROPERTY)
-	{
 		GB.ReturnString(THIS_HTTP->sUserAgent);
-		return;
+	else
+	{
+		if (THIS_STATUS > 0)
+			GB.Error("UserAgent property can not be changed if the client is active");
+		else
+			GB.StoreString(PROP(GB_STRING), &THIS_HTTP->sUserAgent);
 	}
 
-	if (THIS_STATUS > 0)
-	{
-		GB.Error ("UserAgent property can not be changed while working");
-		return;
-  	}
-	GB.StoreString(PROP(GB_STRING), &THIS_HTTP->sUserAgent);
-
-
 END_PROPERTY
+
 
 BEGIN_PROPERTY(HttpClient_Encoding)
 
@@ -516,12 +490,13 @@ BEGIN_PROPERTY(HttpClient_Encoding)
 	else
 	{
 		if (THIS_STATUS > 0)
-			GB.Error("Encoding property can not be changed while working");
+			GB.Error("Encoding property can not be changed if the client is active");
 		else
 			GB.StoreString(PROP(GB_STRING), &THIS_HTTP->encoding);
 	}
 
 END_PROPERTY
+
 
 BEGIN_PROPERTY(HttpClient_ReturnCode)
 
@@ -529,24 +504,20 @@ BEGIN_PROPERTY(HttpClient_ReturnCode)
 
 END_PROPERTY
 
+
 BEGIN_PROPERTY(HttpClient_ReturnString)
 
 	GB.ReturnString(THIS_HTTP->return_string);
 
 END_PROPERTY
 
+
 BEGIN_PROPERTY(HttpClient_Headers)
 
-	//if (READ_PROPERTY)
-		GB.ReturnObject(THIS_HTTP->headers);
-	//else
-	//	GB.StoreObject(PROP(GB_OBJECT), POINTER(&THIS_HTTP->headers));
+	GB.ReturnObject(THIS_HTTP->headers);
 
 END_PROPERTY
 
-//*************************************************************************
-//#################### INITIALIZATION AND DESTRUCTION #####################
-//*************************************************************************
 
 BEGIN_METHOD_VOID(HttpClient_new)
 
@@ -566,74 +537,36 @@ BEGIN_METHOD_VOID(HttpClient_new)
 
 END_METHOD
 
+
 BEGIN_METHOD_VOID(HttpClient_free)
 
 	http_reset(THIS);
 	
 	GB.FreeString(&THIS_HTTP->sUserAgent);
 	GB.FreeString(&THIS_HTTP->encoding);
-	GB.Free(POINTER(&THIS_HTTP->cookiesfile));
+	GB.FreeString(&THIS_HTTP->cookiesfile);
 	GB.FreeString(&THIS_HTTP->return_string);
 
 END_METHOD
 
 
+BEGIN_METHOD(HttpClient_Get, GB_OBJECT headers; GB_STRING target)
 
-//*************************************************************************
-//#################### METHODS ############################################
-//*************************************************************************
-
-
-
-BEGIN_METHOD(HttpClient_Get,GB_STRING TargetHost;)
-
-	if (!MISSING(TargetHost))
-	{
-		if (THIS_STATUS > 0)
-		{
-			GB.Error("Still active");
-			return;
-		}
-		THIS_FILE=fopen(GB.ToZeroString(ARG(TargetHost)),"w");
-		if (!THIS_FILE)
-		{
-			GB.Error("Unable to open file for writing");
-			return;
-		}
-	}
-
-	if (http_get(THIS))
-	{
-		GB.Error("Still active");
-		return;
-	}
+	http_get(THIS, VARGOPT(headers, 0), MISSING(target) ? NULL : GB.ToZeroString(ARG(target)));
 
 END_METHOD
 
-BEGIN_METHOD(HttpClient_Post, GB_STRING contentType; GB_STRING data; GB_OBJECT headers)
 
-// 	if (!MISSING(TargetHost))
-// 	{
-// 		if (THIS_STATUS > 0)
-// 		{
-// 			GB.Error("Still active");
-// 			return;
-// 		}
-// 		THIS_FILE=fopen(GB.ToZeroString(ARG(TargetHost)),"w");
-// 		if (!THIS_FILE)
-// 		{
-// 			GB.Error("Unable to open file for writing");
-// 			return;
-// 		}
-// 	}
+BEGIN_METHOD(HttpClient_Post, GB_STRING contentType; GB_STRING data; GB_OBJECT headers; GB_STRING target)
 
-	http_send(THIS, SEND_POST, GB.ToZeroString(ARG(contentType)), STRING(data), LENGTH(data), VARGOPT(headers, NULL));
+	http_send(THIS, SEND_POST, GB.ToZeroString(ARG(contentType)), STRING(data), LENGTH(data), VARGOPT(headers, NULL), MISSING(target) ? NULL : GB.ToZeroString(ARG(target)));
 
 END_METHOD
 
-BEGIN_METHOD(HttpClient_Put, GB_STRING contentType; GB_STRING data; GB_OBJECT headers)
 
-	http_send(THIS, SEND_PUT, GB.ToZeroString(ARG(contentType)), STRING(data), LENGTH(data), VARG(headers));
+BEGIN_METHOD(HttpClient_Put, GB_STRING contentType; GB_STRING data; GB_OBJECT headers; GB_STRING target)
+
+	http_send(THIS, SEND_PUT, GB.ToZeroString(ARG(contentType)), STRING(data), LENGTH(data), VARG(headers), MISSING(target) ? NULL : GB.ToZeroString(ARG(target)));
 
 END_METHOD
 
@@ -645,12 +578,9 @@ BEGIN_METHOD_VOID(HttpClient_Stop)
 
 END_METHOD
 
-//*************************************************************************
-//#################### GAMBAS INTERFACE ###################################
-//*************************************************************************
+
 GB_DESC CHttpClientDesc[] =
 {
-
   GB_DECLARE("HttpClient", sizeof(CHTTPCLIENT)),
 
   GB_INHERITS("Curl"),
@@ -658,9 +588,9 @@ GB_DESC CHttpClientDesc[] =
   GB_METHOD("_new", NULL, HttpClient_new, NULL),
   GB_METHOD("_free", NULL, HttpClient_free, NULL),
   GB_METHOD("Stop", NULL, HttpClient_Stop, NULL),
-  GB_METHOD("Get", NULL, HttpClient_Get, "[(TargetFile)s]"),
-  GB_METHOD("Post", NULL, HttpClient_Post, "(ContentType)s(Data)s[(Headers)String[];]"),
-  GB_METHOD("Put", NULL, HttpClient_Post, "(ContentType)s(Data)s[(Headers)String[];]"),
+  GB_METHOD("Get", NULL, HttpClient_Get, "[(Headers)String[];(TargetFile)s]"),
+  GB_METHOD("Post", NULL, HttpClient_Post, "(ContentType)s(Data)s[(Headers)String[];(TargetFile)s]"),
+  GB_METHOD("Put", NULL, HttpClient_Post, "(ContentType)s(Data)s[(Headers)String[];(TargetFile)s]"),
 
   GB_PROPERTY("Auth", "i", HttpClient_Auth),
   GB_PROPERTY("CookiesFile", "s",HttpClient_CookiesFile),
