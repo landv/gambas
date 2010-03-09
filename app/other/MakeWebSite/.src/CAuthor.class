@@ -1,0 +1,69 @@
+' Gambas class file
+
+Static Public All As New Object[]
+
+Public Name As String
+Public LastName As String
+Public Mail As String
+Public Country As String
+Public Works As New String[]
+Public Translator As Boolean
+Public Developer As Boolean
+Public Translation As New String[]
+
+Public Sub _new(hFile As File)
+  
+  Dim sLine As String
+  Dim iPos As Integer
+  
+  Line Input #hFile, sLine
+  If Left(sLine) = "-" Then Line Input #hFile, sLine
+  Name = Trim(sLine)
+  Line Input #hFile, Mail
+  Line Input #hFile, Country
+
+  While Not Eof(hFile)
+    Line Input #hFile, sLine
+    sLine = Trim(sLine)
+    If Not sLine Then Continue
+    If Left(sLine) = "-" Then Break 
+    If Right(sLine) = "." Then sLine = Left(sLine, -1)
+    If InStr(sLine, "translation") Then 
+      Translator = True
+      Translation.Add(Trim(Replace(sLine, "translation", "")))
+    Else 
+      Works.Add(sLine)
+      Developer = True
+    Endif
+  Wend 
+  
+  iPos = InStr(Name, " ")
+  If iPos Then 
+    LastName = Mid$(Name, iPos + 1)
+  Else 
+    LastName = Name
+  Endif
+  
+  All.Add(Me)
+  
+End
+
+Public Sub _compare(hAuthor As CAuthor) As Integer
+  
+  Return String.Comp(LastName, hAuthor.LastName, gb.Language + gb.IgnoreCase)
+  
+End
+
+Private Sub GetMail(sMail As String) As String
+  
+  sMail = Replace(sMail, "@", "_AT_")
+  sMail = Replace(sMail, ".", "_DOT_")
+  Return sMail
+  
+End
+
+Public Sub GetLink() As String
+  
+  Return "<a href=\"mailto:" & GetMail(Mail) & "\">" & Name & "</a>"
+  
+End

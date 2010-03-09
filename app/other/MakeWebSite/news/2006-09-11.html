@@ -1,0 +1,26 @@
+Release of Gambas 1.9.42
+
+<b>WARNING!</b> This release has many changes in the <tt>gb.qt</tt> component 
+and <tt>gb.settings</tt> that will break your projects:
+<ul>
+  <li>The Dialog.Filter syntax is now the same as the gb.form FileChooser
+  control.
+  <li>All Mode properties now uses the constants from the Select class. 
+  Other selection mode constants have been removed.
+  <li>IconView GridX and GridY properties have been replaced by the 
+  GridWidth and GridHeight properties.
+  <li>HBox, VBox, HPanel and VPanel have an AutoResize property now, which
+  is not set by default, contrary to the old behaviour.
+  <li>The Settings class now stores Window and SidePanel settings 
+  differently. This will mainly break the saved positions of IDE windows.
+</ul>
+Otherwise, there are some enhancements in the IDE:
+<ul>
+  <li>Optimizations in project loading.
+  <li>Support for symbolic links.
+  <li>A better translation dialog, thanks to Charlie Reinl.
+</ul>
+And you get a new DateChooser calendar control!
+<p>
+See the <a href="changelog2.html">ChangeLog</a> for other changes and bug fixes.
+

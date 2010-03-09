@@ -1,0 +1,26 @@
+Release of Gambas 1.9.40
+
+<b>WARNING!</b>
+Many changes in this release will break your projects:
+<ul>
+  <li>The <tt>Extended</tt> selection mode was removed. Now the <tt>Select</tt> class holds 
+  the constants for selection modes.
+  <li><tt>ListBox.List</tt> and <tt>ComboBox.List</tt> are now <tt>String[]</tt> properties.
+  <li>The <tt>TreeView.Root</tt> and <tt>ColumnView.Root</tt> properties have been removed.
+  <li><tt>Move*</tt> methods of <tt>TreeView</tt>, <tt>ListView</tt> and <tt>ColumnView</tt> 
+  items have been removed.
+</ul>
+<p>
+You will have to load and save the forms affected by this changes in the IDE and/or fix your
+code by hand. A temporary "Update all forms" entry was added in the IDE Project menu that
+does that automatically.
+<p>
+The other important changes are:
+<ul>
+  <li>Drag &amp; Drop support in the IDE.
+  <li>More clever auto-completion.
+  <li>Updated <tt>gb.sdl</tt>, <tt>gb.opengl</tt> and <tt>gb.gtk</tt> components.
+</ul>
+
+See the <a href="changelog2.html">ChangeLog</a> for other changes and more details.
+

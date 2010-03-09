@@ -1,0 +1,12 @@
+Release of Gambas 2.6
+<p>
+Subversion conflicts support was added to the development environment. 
+Otherwise the main bug fixes in this release are:
+<ul>
+  <li>Evaluating expressions in the IDE output console works again.</li>
+  <li>Symbol polymorphism is now correctly handled when the inheritance depth is greater than two!</li>
+  <li>The evaluation of Eval() expressions is handled the same way as any other code now, to prevent stack leaks.</li>
+  <li>Reading floating point values from a SQLite database does not depend on the locale anymore.</li>
+  <li>Clipboard.Copy() from <tt>gb.qt</tt> component now correctly sends UTF-8 strings to the clipboard.</li>
+</ul>
+Read the <a href="changelog2.html">ChangeLog</a> for more details.
