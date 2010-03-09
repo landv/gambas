@@ -22,8 +22,8 @@ Private $sVersion As String
 Private $sDescription As String
 Private $sSavePath As String
 
-Private Const MIN_VERSION As String = "1.9.48"
-Private Const MAX_VERSION As String = "2.90"
+Private Const MIN_VERSION As String = "2.90.0"
+Private Const MAX_VERSION As String = "3.0.90"
 
 Public Sub CheckProgram()
   
@@ -336,14 +336,16 @@ End
   If Not hComponent.Version Then Return [MIN_VERSION, MAX_VERSION]
        
   aMinVersion = Split(hComponent.Version, ".")
-  aMinVersion[0] = CStr(CInt(aMinVersion[0]) - 1)
-  aMinVersion[1] = "90"
-  aMinVersion[2] = "1"
+  If aMinVersion[1] = "0" Then
+    aMinVersion[0] = CStr(CInt(aMinVersion[0]) - 1)
+    aMinVersion[1] = "90"
+  Else
+    aMinVersion[1] = CStr(CInt(aMinVersion[1]) - 1)
+  Endif
+  aMinVersion[2] = "0"
   
   aMaxVersion = Split(hComponent.Version, ".")
-  'aMaxVersion[0] = CStr(CInt(aVersion[0]) - 1)
-  aMaxVersion[1] = "90"
-  aMaxVersion[2] = "0"
+  aMaxVersion[2] = "90"
   
   Return [aMinVersion.Join("."), aMaxVersion.Join(".")]
 

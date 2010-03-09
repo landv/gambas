@@ -170,6 +170,8 @@ Public Sub ReadConfig()
   
   $bShowPopupHelp = Settings["/Editor/ShowPopupHelp", True]
 
+  panProc.Font.Grade = - Settings["/GlobalFont", 0]
+
 End
 
 Public Function Save(Optional bReset As Boolean) As Boolean
