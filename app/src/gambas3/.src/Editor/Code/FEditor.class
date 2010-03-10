@@ -171,6 +171,7 @@ Public Sub ReadConfig()
   $bShowPopupHelp = Settings["/Editor/ShowPopupHelp", True]
 
   panProc.Font.Grade = - Settings["/GlobalFont", 0]
+  gvwProc.Rows.H = panProc.Font.Height() + 1
 
 End
 
@@ -2906,7 +2907,6 @@ Public Sub btnProc_MouseDown()
     gvwProc.Rows.Count = $aProc.Count
     gvwProc.Rows.Unselect
     gvwProc.Columns.Count = 1
-    gvwProc.Rows.H = gvwProc.Font.Height() + 1
     panProc.Move(btnProc.ScreenX - panProc.Parent.ScreenX, btnProc.ScreenY - panProc.Parent.ScreenY + btnProc.H)
     ResizeProcList
   

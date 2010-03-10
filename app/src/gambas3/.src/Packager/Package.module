@@ -201,7 +201,7 @@ Private Function IsConsoleProject() As Boolean
   Dim sLib As String
 
   For Each sLib In Project.Libraries
-    If CComponent.All[sLib].Faimily = "Form" Then Return False
+    If CComponent.All[sLib].Family = "Form" Then Return False
   Next
 
   Return True
@@ -343,9 +343,11 @@ End
   Else
     aMinVersion[1] = CStr(CInt(aMinVersion[1]) - 1)
   Endif
+  aMinVersion.Resize(3)
   aMinVersion[2] = "0"
   
   aMaxVersion = Split(sVersion, ".")
+  aMaxVersion.Resize(3)
   aMaxVersion[2] = "90"
   
   Return [aMinVersion.Join("."), aMaxVersion.Join(".")]
@@ -572,7 +574,7 @@ Private Function MakeDebPackage(sSys As String)
   Print #hFile
   Print #hFile, "Package: "; $sPackageName
   Print #hFile, "Architecture: all"
-  Print #hFile, "Depends: gambas2-runtime (>= "; MIN_VERSION; "), gambas2-runtime (<< "; MAX_VERSION; ")";
+  Print #hFile, "Depends: gambas"; System.Version; "-runtime (>= "; MIN_VERSION; "), gambas"; System.Version; "-runtime (<< "; MAX_VERSION; ")";
   If Not Project.CreateComponent Then
     For Each sLib In GetDependencies()
       aVer = GetComponentMinMaxVersion(sLib)
@@ -802,7 +804,7 @@ Private Function MakeRpmPackage(sSys As String)
     'PRINT #hFile, "BuildRequires: gambas2-ide"
   Print #hFile, "BuildArch: noarch"
 
-  Print #hFile, "Requires: gambas2-runtime >= "; MIN_VERSION; ",gambas2-runtime < "; MAX_VERSION;
+  Print #hFile, "Requires: gambas"; System.Version; "-runtime >= "; MIN_VERSION; ",gambas"; System.Version; "-runtime < "; MAX_VERSION;
 
   If Not Project.CreateComponent Then 
   
@@ -1260,8 +1262,8 @@ Private Sub MakeTgzPackage(sSys As String)
   
   hFile = Open sBuildDir &/ "/install/slack-required" For Create
   
-  Print #hFile, "gambas2-runtime >= "; MIN_VERSION
-  Print #hFile, "gambas2-runtime < "; MAX_VERSION
+  Print #hFile, "gambas"; System.Version; "-runtime >= "; MIN_VERSION
+  Print #hFile, "gambas"; System.Version; "-runtime < "; MAX_VERSION
 
   If Not Project.CreateComponent Then
 
