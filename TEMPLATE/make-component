@@ -20,7 +20,7 @@ cp -R template ../$1
 pushd . > /dev/null
 cd ../$1
 rm -f `find . -name \*~`
-for i in ../acinclude.m4 ../component.am ../config.guess ../config.sub ../main/share/gambas.h ../main/share/gb_common.h ../ltmain.sh ../reconf ../INSTALL ../COPYING; do
+for i in ../acinclude.m4 ../component.am ../config.guess ../config.sub ../main/share/gambas.h ../main/share/gb_common.h ../ltmain.sh ../reconf ../INSTALL ../COPYING ../missing ../install-sh; do
 	ln -s $i;
 done
 popd > /dev/null

@@ -3,5 +3,6 @@
 rm -f config.cache
 rm -f acconfig.cache
 
-autoreconf -v $@
+libtoolize --force --copy
+autoreconf -v --install $@
 
