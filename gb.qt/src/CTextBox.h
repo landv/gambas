@@ -58,7 +58,7 @@ typedef
     CWIDGET widget;
     int index;
     bool sorted;
-		//bool click;
+		bool click;
     }
   CCOMBOBOX;
 

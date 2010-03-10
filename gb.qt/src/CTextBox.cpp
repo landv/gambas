@@ -334,11 +334,11 @@ END_METHOD
 
 static void combo_raise_click(void *_object)
 {
-	/*if (THIS->click)
+	if (THIS->click)
 		return;
-	THIS->click = true;*/
+	THIS->click = true;
 	GB.Raise(THIS, EVENT_Click, 0);
-	//THIS->click = false;
+	THIS->click = false;
 }
 
 static int combo_get_current_item(void *_object)
