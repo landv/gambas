@@ -2,7 +2,6 @@
 
 { Form Form
   MoveScaled(30,14,96,73)
-  Text = ("")
   Resizable = False
   { Button1 Button
     MoveScaled(1,6,14,4)
@@ -10,7 +9,6 @@
   }
   { TextArea1 TextArea
     MoveScaled(1,11,63,14)
-    Text = ("")
   }
   { Navigator TextEdit
     MoveScaled(1,26,94,46)
@@ -30,7 +28,6 @@
     Background = &H0055FF&
     Foreground = &HFFFF00&
     Padding = 2
-    Text = ("")
     Alignment = Align.Normal
   }
   { BtnStop Button
@@ -60,8 +57,7 @@
     List = [("Basic"), ("NTLM"), ("DIGEST"), ("GSS")]
   }
   { MyHttp #HttpClient
-    #X = 414
-    #Y = 186
+    #MoveScaled(29,36)
   }
   { mnuOptions Button
     MoveScaled(66,1,29,4)

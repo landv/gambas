@@ -69,7 +69,9 @@ AC_DEFUN([GB_INIT_SHORT],
   
   GAMBAS_VERSION=3
   AC_SUBST(GAMBAS_VERSION)
-  
+  GAMBAS_MINOR_VERSION=0
+  AC_SUBST(GAMBAS_MINOR_VERSION)
+
   gbbindir=$bindir/gambas$GAMBAS_VERSION
   AC_SUBST(gbbindir)
   gblibdir=$libdir/gambas$GAMBAS_VERSION
@@ -93,8 +95,8 @@ AC_DEFUN([GB_LIBTOOL],
 
   dnl LD_FLAGS="-Wl,-O1"
   if test $SYSTEM == "CYGWIN"; then
-		LD_FLAGS="$LD_FLAGS -no-undefined"
-	fi
+    LD_FLAGS="$LD_FLAGS -no-undefined"
+  fi
   AC_SUBST(LD_FLAGS)
 ])
 
@@ -105,7 +107,9 @@ AC_DEFUN([GB_INIT],
   GB_LIBTOOL
   
   AC_DEFINE(GAMBAS_VERSION, 3, Gambas version)
+  AC_DEFINE(GAMBAS_MINOR_VERSION, 0, Gambas minor version)
   AC_DEFINE(GAMBAS_VERSION_STRING, "3", Gambas version string)
+  AC_DEFINE(GAMBAS_FULL_VERSION_STRING, "3.0", Gambas full version string)
 
   dnl ---- Checks for programs
 

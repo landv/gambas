@@ -188,7 +188,7 @@ Public Sub Main()
 
   'EXAMPLES_DIR = "Ceci est une très longue phrase dont j'ai l'espoir qu'elle soit correctement coupée par le ballon affiché par la fenêtre de débogage"
   'EXAMPLES_DIR = Replace(EXAMPLES_DIR, " ", "0")
-  EXAMPLES_DIR = System.Path &/ "share/gambas" & System.Version & "/examples"
+  EXAMPLES_DIR = System.Path &/ "share/gambas" & Split(System.Version,".")[0] & "/examples"
 
   Application.Tooltip.Enabled = Settings["/ShowTooltip", True]
 

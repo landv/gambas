@@ -134,30 +134,6 @@ BEGIN_PROPERTY(CAPPLICATION_title)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(System_Language)
-
-  if (READ_PROPERTY)
-    GB_ReturnNewZeroString(LOCAL_get_lang());
-  else
-    LOCAL_set_lang(GB_ToZeroString(PROP(GB_STRING)));
-
-END_PROPERTY
-
-
-BEGIN_PROPERTY(System_Charset)
-
-  GB_ReturnString(LOCAL_encoding);
-
-END_PROPERTY
-
-
-BEGIN_PROPERTY(System_Rtl)
-
-  GB_ReturnBoolean(LOCAL_local.rtl);
-
-END_PROPERTY
-
-
 BEGIN_PROPERTY(CAPPLICATION_id)
 
   GB_ReturnInt(getpid());
@@ -316,17 +292,33 @@ BEGIN_PROPERTY(CAPPLICATION_daemon)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(System_Path)
+BEGIN_PROPERTY(System_Language)
 
-  GB_ReturnString(PROJECT_exec_path);
+  if (READ_PROPERTY)
+    GB_ReturnNewZeroString(LOCAL_get_lang());
+  else
+    LOCAL_set_lang(GB_ToZeroString(PROP(GB_STRING)));
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(System_Version)
+BEGIN_PROPERTY(System_Charset)
 
-	//ERROR_deprecated("System.Version");
-  GB_ReturnInteger(GAMBAS_VERSION);
+  GB_ReturnString(LOCAL_encoding);
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(System_Rtl)
+
+  GB_ReturnBoolean(LOCAL_local.rtl);
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(System_Path)
+
+  GB_ReturnString(PROJECT_exec_path);
 
 END_PROPERTY
 
@@ -350,11 +342,13 @@ BEGIN_PROPERTY(System_Domain)
 
 END_PROPERTY
 
+
 BEGIN_PROPERTY(System_ByteOrder)
 
   GB_ReturnInteger(EXEC_big_endian);
 
 END_PROPERTY
+
 
 BEGIN_PROPERTY(System_Backtrace)
 
@@ -365,21 +359,10 @@ BEGIN_PROPERTY(System_Backtrace)
 	
 END_PROPERTY
 
+
 BEGIN_PROPERTY(System_Error)
 
   GB_ReturnInteger(errno);
-
-END_PROPERTY
-
-BEGIN_PROPERTY(System_Family)
-
-  GB_ReturnConstZeroString(SYSTEM);
-
-END_PROPERTY
-
-BEGIN_PROPERTY(System_Architecture)
-
-  GB_ReturnConstZeroString(ARCHITECTURE);
 
 END_PROPERTY
 
@@ -433,19 +416,23 @@ GB_DESC NATIVE_System[] =
 {
   GB_DECLARE("System", 0), GB_VIRTUAL_CLASS(),
 
-  GB_STATIC_PROPERTY("Language", "s", System_Language),
+  GB_STATIC_PROPERTY_READ("Path", "s", System_Path),
+  GB_CONSTANT("Version", "s", GAMBAS_VERSION_STRING),
+  GB_CONSTANT("FullVersion", "s", GAMBAS_FULL_VERSION_STRING),
+  GB_STATIC_PROPERTY_READ("Backtrace", "String[]", System_Backtrace),
+
+	GB_STATIC_PROPERTY("Language", "s", System_Language),
   GB_STATIC_PROPERTY_READ("RightToLeft", "b", System_Rtl),
   GB_STATIC_PROPERTY_READ("Charset", "s", System_Charset),
-  GB_STATIC_PROPERTY_READ("Path", "s", System_Path),
-  GB_STATIC_PROPERTY_READ("Version", "s", System_Version),
   GB_STATIC_PROPERTY_READ("Host", "s", System_Host),
   GB_STATIC_PROPERTY_READ("Domain", "s", System_Domain),
-  GB_STATIC_PROPERTY_SELF("User", "User"),
   GB_STATIC_PROPERTY_READ("ByteOrder", "i", System_ByteOrder),
-  GB_STATIC_PROPERTY_READ("Backtrace", "String[]", System_Backtrace),
   GB_STATIC_PROPERTY_READ("Error", "i", System_Error),
-  GB_STATIC_PROPERTY_READ("Family", "s", System_Family),
-  GB_STATIC_PROPERTY_READ("Architecture", "s", System_Architecture),
+  
+  GB_CONSTANT("Family", "s", SYSTEM),
+  GB_CONSTANT("Architecture", "s", ARCHITECTURE),
+  
+  GB_STATIC_PROPERTY_SELF("User", "User"),
 
   GB_END_DECLARE
 };

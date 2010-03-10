@@ -1,104 +1,101 @@
 ' Gambas class file
-PUBLIC P AS HttpClient
+Public P As HttpClient
 
-PUBLIC SUB P_Error()
+Public Sub P_Error()
   
-  LblInfo.Text="Error " & P.Status
+  LblInfo.Text = "Error " & P.Status
   
-END
+End
 
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
-  TextArea1.Text=""
-  P=NEW HttpClient AS "P"
+  TextArea1.Text = ""
+  P = New HttpClient As "P"
 
-END
+End
 
 
-PUBLIC SUB P_Connect()
+Public Sub P_Connect()
   
-  LblInfo.Text="Waiting for reply..."
+  LblInfo.Text = "Waiting for reply..."
   
-END
+End
 
 
 
-PUBLIC SUB P_Finished()
+Public Sub P_Finished()
 
-  DIM sBuf AS String   
-  DIM MyLoop AS Integer
-  LblInfo.Text="OK"
+  Dim sBuf As String   
+  Dim MyLoop As Integer
+
+  LblInfo.Text = "OK"
   
-  FOR MyLoop=0 TO P.Headers.Count-1
-    TextArea2.Text=TextArea2.Text & P.Headers[MyLoop]
-  NEXT 
+  TextArea2.Insert(P.Headers.Join("\n") & "\n")
   
-  IF Lof(P) THEN READ #P,sBuf,Lof(P)
-  TextArea1.Text=sBuf
+  If Lof(P) Then TextArea1.Text = Read #P, Lof(P)
 
-  IF (Instr(sBuf,"<value><int>")) THEN
-    sBuf=Mid(sBuf,Instr(sBuf,"<value><int>")+12)
-    MyLoop=1
+  If (InStr(sBuf, "<value><int>")) Then
+    sBuf = Mid(sBuf, InStr(sBuf, "<value><int>") + 12)
+    MyLoop = 1
     Label6.Text = TextBox1.Text & " + " & TextBox2.Text & " = "
-    DO WHILE Mid(sBuf, MyLoop, 1) <> "<"
+    Do While Mid(sBuf, MyLoop, 1) <> "<"
       Label6.Text = Label6.Text & Mid(sBuf, MyLoop, 1)
       MyLoop = MyLoop + 1
-    LOOP
-    IF (InStr(sBuf, "<value><int>")) THEN
+    Loop
+    If (InStr(sBuf, "<value><int>")) Then
       sBuf = Mid(sBuf, InStr(sBuf, "<value><int>") + 12)
       MyLoop = 1
       Label7.Text = TextBox1.Text & " - " & TextBox2.Text & " = "
-      DO WHILE Mid(sBuf, MyLoop, 1) <> "<"
+      Do While Mid(sBuf, MyLoop, 1) <> "<"
         Label7.Text = Label7.Text & Mid(sBuf, MyLoop, 1)
         MyLoop = MyLoop + 1
-      LOOP
-    ELSE
+      Loop
+    Else
       Message.Error("Error")
-    END IF
-  ELSE
+    End If
+  Else
     Message.Error("Error")
-  END IF  
+  End If  
   
   
-END
+End
 
 
-PUBLIC SUB Button1_Click()
+Public Sub Button1_Click()
 
-  DIM sCad AS String 
+  Dim sCad As String 
   LblInfo.Text = "Connecting..."
   TextBox1.Text = Val(Trim(TextBox1.Text))
   TextBox2.Text = Val(Trim(TextBox2.Text))
-  WAIT
+  Wait
   TextArea1.Text = ""
   sCad = "<?xml version=" & Chr(34) & "1.0" & Chr(34) & "?>" & Chr(13) & Chr(10)
   sCad = sCad & "<methodCall>" '& Chr(13) & Chr(10)
   sCad = sCad & "<methodName>sample.sumAndDifference</methodName>" '& Chr(13) & Chr(10)
   sCad = sCad & "<params>" 
-  sCad=sCad & "<PARAM>" 
-  sCad=sCad & "<value><i4>" & TextBox1.Text & "</i4></value>" 
-  sCad=sCad & "</PARAM>" 
-  sCad=sCad & "<PARAM>" 
-  sCad=sCad & "<value><i4>" & TextBox2.Text & "</i4></value>" 
-  sCad=sCad & "</PARAM>"
-  sCad=sCad & "</params>" 
-  sCad=sCad & "</methodCall>" 
-  IF ChkProxy.Value THEN
-    P.Proxy.Host=TxtProxy.Text
-  ELSE
-    P.Proxy.Host=""
-  END IF
-  P.URL="xmlrpc-c.sourceforge.net/api/sample.php"
+  sCad = sCad & "<PARAM>" 
+  sCad = sCad & "<value><i4>" & TextBox1.Text & "</i4></value>" 
+  sCad = sCad & "</PARAM>" 
+  sCad = sCad & "<PARAM>" 
+  sCad = sCad & "<value><i4>" & TextBox2.Text & "</i4></value>" 
+  sCad = sCad & "</PARAM>"
+  sCad = sCad & "</params>" 
+  sCad = sCad & "</methodCall>" 
+  If ChkProxy.Value Then
+    P.Proxy.Host = TxtProxy.Text
+  Else
+    P.Proxy.Host = ""
+  End If
+  P.URL = "xmlrpc-c.sourceforge.net/api/sample.php"
+
+  P.Post("text/xml", sCad)
+
+End
 
 
-  P.Post("text/xml",sCad)
+Public Sub ChkProxy_Click()
 
-END
+  TxtProxy.Enabled = ChkProxy.Value
 
-
-PUBLIC SUB ChkProxy_Click()
-
-  TxtProxy.Enabled=ChkProxy.Value
-
-END
+End
