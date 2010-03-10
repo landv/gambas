@@ -1,22 +1,22 @@
 /***************************************************************************
 
-  CTextBox.cpp
+	CTextBox.cpp
 
-  (c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -330,6 +330,16 @@ END_METHOD
 #undef THIS
 #define THIS OBJECT(CCOMBOBOX)
 
+static void raise_click_event(void *_object)
+{
+	if (THIS->click)
+		return;
+	THIS->click = true;
+	GB.Raise(THIS, EVENT_Click, 0);
+	THIS->click = false;
+	
+}
+
 static int combo_get_current_item(void *_object)
 {
 	COMBOBOX->sort();
@@ -346,8 +356,8 @@ static void combo_set_current_item(void *_object, int item)
 			COMBOBOX->setCurrentItem(item);
 	}
 	
-  if (item >= 0 && !COMBOBOX->signalsBlocked())
-    GB.Raise(THIS, EVENT_Click, 0);
+	if (item >= 0 && !COMBOBOX->signalsBlocked())
+		raise_click_event(THIS);
 }
 
 static void combo_set_editable(void *_object, bool ed)
@@ -385,13 +395,13 @@ static void combo_set_editable(void *_object, bool ed)
 static int combo_find_item(void *_object, const QString& s)
 {
 	COMBOBOX->sort();
-  for (int i = 0; i < (int)COMBOBOX->count(); i++)
-  {
-    if (COMBOBOX->text(i) == s)
-      return i;
-  }
+	for (int i = 0; i < (int)COMBOBOX->count(); i++)
+	{
+		if (COMBOBOX->text(i) == s)
+			return i;
+	}
 
-  return (-1);
+	return (-1);
 }
 
 
@@ -413,8 +423,8 @@ static void combo_set_list(void *_object, GB_ARRAY array)
 {
 	int i;
 	
-  COMBOBOX->blockSignals(true);
-  COMBOBOX->clear();
+	COMBOBOX->blockSignals(true);
+	COMBOBOX->clear();
 
 	if (array)
 	{
@@ -425,7 +435,7 @@ static void combo_set_list(void *_object, GB_ARRAY array)
 	}
 
 	COMBOBOX->setDirty();
-  COMBOBOX->blockSignals(false);
+	COMBOBOX->blockSignals(false);
 	
 	//if (COMBOBOX->count())
 	//	GB.Raise(THIS, EVENT_Click, 0);
@@ -439,8 +449,6 @@ BEGIN_METHOD(CCOMBOBOX_new, GB_OBJECT parent)
 
 	QObject::connect(wid, SIGNAL(editTextChanged(const QString &)), &CTextBox::manager, SLOT(onChange()));
 	QObject::connect(wid, SIGNAL(activated(int)), &CTextBox::manager, SLOT(onClick()));
-
-	//QObject::connect(wid, SIGNAL(highlighted(int)), &CTextBox::manager, SLOT(event_click()));
 
 	wid->setInsertPolicy(QComboBox::NoInsert);
 
@@ -480,7 +488,7 @@ BEGIN_PROPERTY(CCOMBOBOX_text)
 			COMBOBOX->lineEdit()->setText(text);
 
 		pos = combo_find_item(THIS, text);
-    combo_set_current_item(_object, pos);
+		combo_set_current_item(_object, pos);
 	}
 
 END_PROPERTY
@@ -541,11 +549,11 @@ BEGIN_METHOD(CCOMBOBOX_add, GB_STRING item; GB_INTEGER pos)
 	int index;
 	int pos = VARGOPT(pos, -1);
 
-  COMBOBOX->blockSignals(true);
+	COMBOBOX->blockSignals(true);
 	index = combo_get_current_item(THIS);
 	
-  if (pos < 0 || pos >= COMBOBOX->count())
-  	pos = -1;
+	if (pos < 0 || pos >= COMBOBOX->count())
+		pos = -1;
 	
 	if (pos < 0)
 		COMBOBOX->addItem(QSTRING_ARG(item));
@@ -559,7 +567,7 @@ BEGIN_METHOD(CCOMBOBOX_add, GB_STRING item; GB_INTEGER pos)
 	else
 		combo_set_current_item(THIS, 0);
 	
-  COMBOBOX->blockSignals(false);
+	COMBOBOX->blockSignals(false);
 	
 END_METHOD
 
@@ -593,17 +601,17 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CCOMBOBOX_index)
 
-  if (READ_PROPERTY)
-    GB.ReturnInteger(combo_get_current_item(THIS));
-  else
-    combo_set_current_item(THIS, VPROP(GB_INTEGER));
+	if (READ_PROPERTY)
+		GB.ReturnInteger(combo_get_current_item(THIS));
+	else
+		combo_set_current_item(THIS, VPROP(GB_INTEGER));
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CCOMBOBOX_current)
 
-  THIS->index = combo_get_current_item(THIS);
+	THIS->index = combo_get_current_item(THIS);
 
 	if (THIS->index < 0)
 		GB.ReturnNull();
@@ -631,25 +639,25 @@ END_METHOD
 
 BEGIN_METHOD(CCOMBOBOX_find, GB_STRING item)
 
-  GB.ReturnInteger(combo_find_item(THIS, QSTRING_ARG(item)));
+	GB.ReturnInteger(combo_find_item(THIS, QSTRING_ARG(item)));
 
 END_METHOD
 
 
 BEGIN_PROPERTY(CCOMBOBOX_list)
 
- 	GB_ARRAY array;
- 	
-  if (READ_PROPERTY)
-  {
-  	GB.Array.New(&array, GB_T_STRING, COMBOBOX->count());
-    combo_get_list(THIS, array);
-    GB.ReturnObject(array);
+	GB_ARRAY array;
+	
+	if (READ_PROPERTY)
+	{
+		GB.Array.New(&array, GB_T_STRING, COMBOBOX->count());
+		combo_get_list(THIS, array);
+		GB.ReturnObject(array);
 	}
-  else
-  {
-    combo_set_list(THIS, (GB_ARRAY)VPROP(GB_OBJECT));
-  }
+	else
+	{
+		combo_set_list(THIS, (GB_ARRAY)VPROP(GB_OBJECT));
+	}
 
 END_PROPERTY
 
@@ -723,7 +731,8 @@ void CTextBox::onActivate(void)
 
 void CTextBox::onClick()
 {
-	RAISE_EVENT(EVENT_Click);
+	GET_SENDER();
+	raise_click_event(THIS);
 }
 
 

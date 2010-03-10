@@ -56,6 +56,7 @@ typedef
   struct {
     CWIDGET widget;
     int index;
+		bool click;
     }
   CCOMBOBOX;
 

@@ -60,7 +60,7 @@ Public Sub Form_Open()
   If Project.License Then
     txtLicense.Text = Project.License
   Else 
-    txtLicense.Text = "General Public Licence"
+    txtLicense.Text = "General Public License"
   Endif
   
   txtDescribe.Text = Project.Description
@@ -78,7 +78,7 @@ Public Sub Form_Open()
 
   cmbCategories.List = Split(File.Load("install/categories"), "\n", "", True)
 
-  txtLicense.List = ["General Public Licence", "Freeware", "Public Domain", "Lesser General Public Licence", "Other Licence(s)", "Non-Free Licence"]
+  txtLicense.List = ["General Public License", "Freeware", "Public Domain", "Lesser General Public License", "Other License(s)", "Non-Free License"]
   
   If Project.CreateComponent Then 
     chkPrefix.Value = True

@@ -54,12 +54,6 @@ static void txt_raise_activate(gTextBox *sender)
 	GB.Raise(THIS, EVENT_Activate, 0);
 }
 
-static void cmb_raise_click(gComboBox *sender)
-{
-	CWIDGET *_object = GetObject((gControl*)sender);
-	GB.Raise(THIS, EVENT_Click, 0);
-}
-
 /***************************************************************************
 
   TextBox
@@ -233,6 +227,16 @@ END_METHOD
 
 #undef THIS
 #define THIS ((CCOMBOBOX *)_object)
+
+static void cmb_raise_click(gComboBox *sender)
+{
+	CWIDGET *_object = GetObject((gControl*)sender);
+	if (THIS->click)
+		return;
+	THIS->click = true;
+	GB.Raise(THIS, EVENT_Click, 0);
+	THIS->click = false;
+}
 
 
 BEGIN_METHOD(CCOMBOBOX_new, GB_OBJECT parent)

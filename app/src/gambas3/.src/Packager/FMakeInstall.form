@@ -26,7 +26,6 @@
       MoveScaled(1,5,70,4)
       Font = Font["Bold,+2"]
       AutoResize = True
-      Text = ("")
       Border = Border.Sunken
     }
     { VBox1 VBox
@@ -57,7 +56,6 @@
       { txtName TextBox
         MoveScaled(24,0,44,4)
         Expand = True
-        Text = ("")
       }
     }
     { HBox2 HBox
@@ -70,7 +68,6 @@
       { txtMail TextBox
         MoveScaled(24,0,44,4)
         Expand = True
-        Text = ("")
       }
     }
     { HBox8 HBox
@@ -83,7 +80,6 @@
       { txtVendor TextBox
         MoveScaled(24,0,44,4)
         Expand = True
-        Text = ("")
       }
     }
     { Label6 Label
@@ -95,19 +91,17 @@
     { txtDescribe TextArea
       MoveScaled(1,42,71,14)
       Expand = True
-      Text = ("")
       Wrap = True
     }
     { Label5 Label
       MoveScaled(1,56,70,4)
       Font = Font["Bold"]
-      Text = ("Licence")
+      Text = ("License")
       Alignment = Align.BottomNormal
     }
     { txtLicense ComboBox
       MoveScaled(1,61,71,4)
-      Text = ("")
-      List = [("General Public Licence"), ("Freeware"), ("Public Domain"), ("Lesser General Public Licence"), ("Other Licence(s)"), ("Non-free Licence")]
+      List = [("General Public License"), ("Freeware"), ("Public Domain"), ("Lesser General Public License"), ("Other License(s)"), ("Non-free License")]
       Sorted = True
     }
     Index = 1
@@ -121,17 +115,14 @@
       MoveScaled(1,5,68,4)
       Font = Font["Bold"]
       AutoResize = True
-      Text = ("")
     }
     { txtChange TextArea
       MoveScaled(1,10,68,11)
-      Text = ("")
       Wrap = True
     }
     { txtChangeLog TextArea
       MoveScaled(1,22,68,27)
       Expand = True
-      Text = ("")
       ReadOnly = True
       Wrap = True
     }
@@ -148,7 +139,6 @@
         Padding = 4
         { ToolButton3 ToolButton
           MoveScaled(0,0,8,8)
-          Text = ("")
           Picture = Picture["img/logo/debian.png"]
           Toggle = True
         }
@@ -165,7 +155,6 @@
         Padding = 4
         { ToolButton4 ToolButton
           MoveScaled(0,0,8,8)
-          Text = ("")
           Picture = Picture["img/logo/fedora.png"]
           Toggle = True
         }
@@ -182,7 +171,6 @@
         Padding = 4
         { ToolButton2 ToolButton
           MoveScaled(0,0,8,8)
-          Text = ("")
           Picture = Picture["img/logo/mandriva.png"]
           Toggle = True
         }
@@ -199,7 +187,6 @@
         Padding = 4
         { ToolButton5 ToolButton
           MoveScaled(0,0,8,8)
-          Text = ("")
           Picture = Picture["img/logo/suse.png"]
           Toggle = True
         }
@@ -216,7 +203,6 @@
         Padding = 4
         { ToolButton1 ToolButton
           MoveScaled(0,0,8,8)
-          Text = ("")
           Picture = Picture["img/logo/slackware.png"]
           Toggle = True
         }
@@ -233,7 +219,6 @@
         Padding = 4
         { ToolButton6 ToolButton
           MoveScaled(0,0,8,8)
-          Text = ("")
           Picture = Picture["img/logo/ubuntu.png"]
           Toggle = True
         }
@@ -250,7 +235,6 @@
         Padding = 4
         { ToolButton7 ToolButton
           MoveScaled(0,0,8,8)
-          Text = ("")
           Picture = Picture["img/logo/package-gnu.png"]
           Toggle = True
         }
@@ -276,7 +260,6 @@
     }
     { txtGroup TextBox
       MoveScaled(1,47,68,4)
-      Text = ("")
       ReadOnly = True
     }
     Index = 4
@@ -293,7 +276,6 @@
     }
     { txtMenu TextBox
       MoveScaled(1,39,68,4)
-      Text = ("")
       ReadOnly = True
     }
     { Label4 Label
@@ -304,7 +286,6 @@
     }
     { cmbCategories ComboBox
       MoveScaled(1,48,68,4)
-      Text = ("")
       Sorted = True
     }
     Index = 5
@@ -418,7 +399,6 @@
     { txtTests TextArea
       MoveScaled(1,15,71,49)
       Expand = True
-      Text = ("")
     }
     Index = 8
     Text = ("Destination directory")
@@ -442,7 +422,6 @@
       MoveScaled(1,21,68,33)
       Font = Font["Monospace"]
       Expand = True
-      Text = ("")
       ReadOnly = True
       Wrap = True
     }

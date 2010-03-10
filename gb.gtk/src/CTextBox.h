@@ -54,6 +54,7 @@ typedef
 	{
 		CWIDGET ob;
 		int index;
+		bool click;
 	} 
 	CCOMBOBOX;
 
