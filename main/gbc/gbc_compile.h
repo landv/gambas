@@ -75,6 +75,7 @@ EXTERN char *COMP_root;
 EXTERN char *COMP_project;
 EXTERN char *COMP_info_path;
 EXTERN char *COMP_classes;
+EXTERN const char *COMP_form_families[];
 
 #endif
 

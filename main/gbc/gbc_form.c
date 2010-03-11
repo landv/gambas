@@ -261,19 +261,24 @@ static void save_action()
 char *FORM_get_file(const char *file)
 {
 	char *form;
+	const char **p;
 
 	if (strcmp(FILE_get_ext(file), "class"))
 		return NULL;
 
-	/*form = STR_cat(file, ".desc", NULL);*/
-	form = STR_copy(FILE_set_ext(file, "form"));
-	if (!FILE_exist(form))
+	p = COMP_form_families;
+	
+	while (*p)
 	{
+		form = STR_copy(FILE_set_ext(file, *p));
+		if (FILE_exist(form))
+			break;
 		STR_free(form);
-		return NULL;
+		form = NULL;
+		p++;
 	}
-	else
-		return form;
+
+	return form;
 }
 
 

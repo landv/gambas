@@ -157,6 +157,7 @@ static void analyze_function_desc(TRANS_FUNC *func, int flag)
 static void header_module_type(void)
 {
   const char *ext;
+	const char **p;
 
   /*JOB->class->name = STR_copy(FILE_get_name(JOB->name));*/
 
@@ -172,13 +173,23 @@ static void header_module_type(void)
     JOB->is_module = FALSE;
     JOB->is_form = FALSE;
   }
-  else if (strcasecmp(ext, "form") == 0)
-  {
-    JOB->is_module = FALSE;
-    JOB->is_form = TRUE;
-  }
   else
-    THROW("Unknown file extension");
+	{
+		p = COMP_form_families;
+		while (*p)
+		{
+			if (strcasecmp(ext, *p) == 0)
+			{
+				JOB->is_module = FALSE;
+				JOB->is_form = TRUE;
+				break;
+			}
+			p++;
+		}
+		
+		if (!*p)
+			THROW("Unknown file extension");
+	}
 
   JOB->declared = TRUE;
 }

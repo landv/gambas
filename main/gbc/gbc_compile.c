@@ -61,6 +61,8 @@ char *COMP_classes = NULL;
 
 COMPILE COMP_current;
 
+const char *COMP_form_families[] = { "form", "report", NULL };
+
 static bool read_line(FILE *f, char *dir, int max)
 {
   char *p;
