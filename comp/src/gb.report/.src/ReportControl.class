@@ -311,51 +311,31 @@ End
 ''Convert recursively string values to unified values in cm
 Public Sub _SetUnifiedValues()
   
-  Dim aSizeParse As TSizeParse[]
   Dim hSizeParse As TSizeParse
-  'Left
-  hSizeParse = MTools.ScanValue($sLeft)
-   If Not Units.AllowedUnits.Exist(hSizeParse.Unit) Then error.Raise("Unknown unit")
 
-      $fLeft = Units.UnitToCm(hSizeParse.Value, hSizeParse.Unit)
+  'Left
+  hSizeParse = New TSizeParse($sLeft)
+  $fLeft = hSizeParse.GetValue()
 
   'Right
-  hSizeParse = MTools.ScanValue($sTop)
-    If Not Units.AllowedUnits.Exist(hSizeParse.Unit) Then error.Raise("Unknown unit")
-
-      $fTop = Units.UnitToCm(hSizeParse.Value, hSizeParse.Unit)
+  hSizeParse = New TSizeParse($sTop)
+   $fTop = hSizeParse.GetValue()
 
   'Width
-  hSizeParse = MTools.ScanValue($sWidth)
-    If Not Units.AllowedUnits.Exist(hSizeParse.Unit) And If hSizeParse.Unit <> "%" Then error.Raise("Unknown unit")
-    If hSizeParse.Unit = "%" Then 
-      $fWidth = hSizeParse.Value
-      $bRelativeWidth = True
-    Else 
-      $fWidth = Units.UnitToCm(hSizeParse.Value, hSizeParse.Unit)
-      $bRelativeWidth = False
-    Endif
+  hSizeParse = New TSizeParse($sWidth, True)
+  $fWidth = hSizeParse.GetValue()
+  $bRelativeWidth = hSizeParse.IsRelative()
+  
   'Height
-  hSizeParse = MTools.ScanValue($sHeight)
-    If Not Units.AllowedUnits.Exist(hSizeParse.Unit) And If hSizeParse.Unit <> "%" Then error.Raise("Unknown unit")
-    If hSizeParse.Unit = "%" Then 
-      $fHeight = hSizeParse.Value
-      $bRelativeHeight = True
-    Else 
-      $fHeight = Units.UnitToCm(hSizeParse.Value, hSizeParse.Unit)
-      $bRelativeHeight = False
-    Endif
+  hSizeParse = New TSizeParse($sHeight, True)
+  $fHeight = hSizeParse.GetValue()
+  $bRelativeHeight = hSizeParse.IsRelative()
   
   'Padding
-  hSizeParse = MTools.ScanValue($sPadding)
-    If Not Units.AllowedUnits.Exist(hSizeParse.Unit) And hSizeParse.Unit <> "%" Then error.Raise("Unknown unit")
-    If hSizeParse.Unit = "%" Then 
-      $fPadding = hSizeParse.Value
-      $bRelativePadding = True
-    Else 
-      $fPadding = Units.UnitToCm(hSizeParse.Value, hSizeParse.Unit)
-      $bRelativePadding = False
-    Endif
+  hSizeParse = New TSizeParse($sPadding, True)
+  $fPadding = hSizeParse.GetValue()
+  $bRelativePadding = hSizeParse.IsRelative()
+
 End
 
 

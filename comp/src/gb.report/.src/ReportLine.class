@@ -31,13 +31,14 @@ End
 
 
 Public Sub _SetUnifiedValues()
+  
   Dim hSizeParse As TSizeParse
-  Super._SetUnifiedValues
-  hSizeParse = MTools.ScanValue($sLineWidth)
-    If Not Units.AllowedUnits.Exist(hSizeParse.Unit) Then error.Raise("Unknown unit")
-    
-      $fLineWidth = Units.UnitToCm(hSizeParse.Value, hSizeParse.Unit)
-    
+  
+  Super._SetUnifiedValues()
+  
+  hSizeParse = New TSizeParse($sLineWidth)
+  $fLineWidth = hSizeParse.GetValue()
+  
 End
 
 

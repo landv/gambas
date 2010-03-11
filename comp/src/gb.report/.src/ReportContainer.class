@@ -228,15 +228,9 @@ Public Sub _SetUnifiedValues()
   
   Super._SetUnifiedValues()
 
-  hSizeParse = MTools.ScanValue($sSpacing)
-  If Units.AllowedUnits.Find(hSizeParse.Unit) = -1 And If hSizeParse.Unit <> "%" Then error.Raise("Unknown unit")
-  If hSizeParse.Unit = "%" Then 
-    $fSpacing = hSizeParse.Value
-    $bRelativeSpacing = True
-  Else 
-    $fSpacing = Units.UnitToCm(hSizeParse.Value, hSizeParse.Unit)
-    $bRelativeSpacing = False
-  Endif
+  hSizeParse = New TSizeParse($sSpacing, True)
+  $fSpacing = hSizeParse.GetValue()
+  $bRelativeSpacing = hSizeParse.IsRelative()
   
   For Each hChild In $aChild
     hChild.Ctrl._SetUnifiedValues()

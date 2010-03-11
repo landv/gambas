@@ -27,32 +27,6 @@ Public Function PixelsToUnits(Value As Integer) As Float
     
   Return (Value) / f
 End
-Public Function ScanValue(sText As String) As TSizeParse
-  
-  Dim i As Integer
-  Dim s As String
-  Dim sVal As String 
-  Dim sUnit As String
-  Dim hTSizeParse As New TSizeParse
-  If Not sText Then sText = "0 px"
-  
-  For i = 1 To Len(sText)
-    s = Mid(sText, i, 1)
-    If IsDigit(s) Or s = "." Then 
-      sVal &= s
-      Continue
-    Endif 
-    If IsLetter(s) Or s = "%" Then 
-      sUnit &= s
-    Endif
-  Next 
-  
-  hTSizeParse.Value = CFloat(Trim(sVal))
-
-  hTSizeParse.Unit = sUnit
-  Return hTSizeParse
-  
-  End
 
 Public Sub GetBorder(iStyle As Integer) As Float[]
   

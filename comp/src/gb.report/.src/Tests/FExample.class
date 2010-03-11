@@ -18,8 +18,8 @@ Public Sub Test1()
   Dim hHBox As ReportHBox
   Dim lblcoucou As ReportLabel
 
-  Report.Padding = "1 px"
-  report.Spacing = "1 px"
+  Report.Padding = "2 px"
+  Report.Spacing = "2 px"
 
   
   hHBox = New ReportHBox(Report)
@@ -38,6 +38,7 @@ Public Sub Test1()
   
   lblcoucou = New ReportLabel(hHBox)
   lblcoucou.Text = "coucou"
+  'lblcoucou.Brush = report.RadialGradient([Color.gray, Color.Green], [0.0, 1.0])
   lblcoucou.Brush = report.Color(Color.Yellow)
   'lblcoucou.BorderColor = Color.Red
   'lblcoucou.Style = ReportStyle.Solid
@@ -51,9 +52,10 @@ Public Sub Test1()
   hHBox.Brush = report.RadialGradient([Color.gray, Color.Green], [0.0, 1.0])
   hHBox.Top = "7 cm"
   hHBox.Left = "8cm"
-  hHBox.Height = "30 mm"
+  hHBox.Height = "3 cm"
   hHBox.Width = "10 cm"
-  hHBox.Ignore = True
+  'hHBox.Ignore = True
+  
 End
 
 Public Sub Test2()
@@ -92,7 +94,7 @@ Report.Spacing = "2 cm"
 '* Add a Label to Make the title
 hLab = New ReportLabel(Report)
 hLab.Text = "MY FRIENDS FIRST NAME"     'Set the text
-hLab.Font = Font["Arial,+8,"]           'Set The Font
+hLab.Font = Font["Arial,+8"]           'Set The Font
 hLab.Alignment = Align.Center           'Set The aligment
 hLab.Border.Style = Line.Solid
 'hLab.Color = Color.LightGray
@@ -480,7 +482,7 @@ End
 
 Public Sub Form_Open()
 
-  RadioButton5.Value = True
+  RadioButton1.Value = True
 
 End
 

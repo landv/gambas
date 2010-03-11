@@ -172,8 +172,8 @@ Public Function Image(Value As String, X As String, Y As String) As ReportBrush
   
   Dim hBrush As New ReportBrush
   hBrush._Type = 1
-  hBrush._X = MTools.ScanValue(X)
-  hBrush._Y = MTools.ScanValue(Y)
+  hBrush._X = New TSizeParse(X)
+  hBrush._Y = New TSizeParse(Y)
   hBrush._Image = Image.Load(Value)
   Return hBrush
   
