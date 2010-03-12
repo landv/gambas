@@ -139,6 +139,8 @@ static void collection_remove_key(CCOLLECTION *col, const char *key, int len)
   VARIANT_free(value);
 	if (!col->locked)
 		HASH_TABLE_remove(col->hash_table, key, len);
+	else
+		((VARIANT *)value)->type = T_NULL;
 }
 
 BEGIN_METHOD(CCOLLECTION_new, GB_INTEGER mode)
