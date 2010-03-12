@@ -227,6 +227,9 @@ void CLASS_clean_up(bool silent)
 			if (class->count == 0 && !CLASS_is_native(class) && class->state && !class->exit)
 			{
 				/*printf("Freeing %s\n", class->name);*/
+				#if DEBUG_LOAD
+				fprintf(stderr, "Freeing %s\n", class->name);
+				#endif
 				OBJECT_release(class, NULL);
 				class->exit = TRUE;
 				n++;
@@ -590,12 +593,16 @@ void CLASS_free(void *object)
 {
 	CLASS *class = OBJECT_class(object);
 
+	//fprintf(stderr, "> CLASS_free: %s %p\n", class->name, object);
+	
 	((OBJECT *)object)->ref = 1; /* Prevents anybody from freeing the object ! */
 	//fprintf(stderr, "CLASS_free: %s %p\n", class->name, object);
 	EXEC_special_inheritance(SPEC_FREE, class, object, 0, TRUE);
 	((OBJECT *)object)->ref = 0;
 
 	OBJECT_release(class, object);
+
+	//fprintf(stderr, "< CLASS_free: %s %p\n", class->name, object);
 }
 
 #if DEBUG_REF

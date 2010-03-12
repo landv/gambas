@@ -130,8 +130,11 @@ static void collection_remove_key(CCOLLECTION *col, const char *key, int len)
   //col->hash_table->last = last;
 
   VARIANT_free(value);
+	
 	if (!col->locked)
 		HASH_TABLE_remove(col->hash_table, key, len);
+	else // Prevent the freed variant to be freed twice if the collection is locked (i.e. being destroyed)
+		((VARIANT *)value)->type = T_NULL;
 }
 
 
