@@ -114,19 +114,31 @@ static void destroy_widget(CTRAYICON *_object)
 
 void CTRAYICON_close_all(void)
 {
-  //qDebug("CTRAYICON_close_all");
+	CTRAYICON *_object, *last = 0;
+	uint i;
 
-  QListIterator<CTRAYICON> it(_list);
-  CTRAYICON *_object;
-
-  GB.StopAllEnum(GB.FindClass("TrayIcons"));
-  
-  while ((_object = it.current()))
-  {
-    ++it;
-    destroy_widget(THIS);
-    GB.Unref(POINTER(&_object));
-  }
+	GB.StopAllEnum((void *)GB.FindClass("TrayIcons"));
+	
+	i = 0;
+	for (;;)
+	{
+		if (i >= _list.count())
+			break;
+		
+		_object = _list.at(i);
+		
+		if (_object == last)
+		{
+			i++;
+			continue;
+		}
+		
+		destroy_widget(THIS);
+		last = _object;
+		GB.Unref(POINTER(&_object));
+	}
+	
+	_list.clear();
 }
 
 

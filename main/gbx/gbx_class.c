@@ -652,9 +652,6 @@ bool CLASS_unref(void *ob, boolean can_free)
 	#endif
 	fflush(stdout);
 
-	/*if (strcmp(OBJECT_class(object)->name, "Class") == 0)
-		fprintf(stderr, "Class ?\n");*/
-
 	if ((--(object->ref) <= 0) && can_free)
 	{
 		#if DEBUG_MEMORY

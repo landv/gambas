@@ -439,13 +439,15 @@ static bool must_quit(void)
 
 static void check_quit_now(intptr_t param)
 {
-  if (must_quit())
+	static bool _exit_called = false;
+  if (must_quit() && !_exit_called)
   {
   	#ifndef NO_X_WINDOW
     	CTRAYICON_close_all();
     	qApp->syncX();
 		#endif
     qApp->exit();
+		_exit_called = true;
   }
 }
 void MAIN_check_quit(void)
