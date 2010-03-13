@@ -115,8 +115,6 @@ static void destroy_widget(CTRAYICON *_object)
 
 void CTRAYICON_close_all(void)
 {
-	//qDebug("CTRAYICON_close_all");
-
 	CTRAYICON *_object, *last = 0;
 	int i;
 
@@ -140,6 +138,8 @@ void CTRAYICON_close_all(void)
 		destroy_widget(THIS);
 		GB.Unref(POINTER(&_object));
 	}
+	
+	_list.clear();
 }
 
 

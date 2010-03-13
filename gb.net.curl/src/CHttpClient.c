@@ -133,18 +133,15 @@ static int http_write_curl(void *buffer, size_t size, size_t nmemb, void *_objec
 	if (!THIS_HTTP->return_code) 
 		http_parse_header(THIS_HTTP);
 
+	nmemb *= size;
+	
 	if (THIS_FILE)
 	{
 		return fwrite(buffer,size,nmemb,THIS_FILE);
 	}
 	else
 	{
-		if (!THIS->len_data)
-			GB.Alloc((void**)POINTER(&THIS->buf_data),nmemb);
-		else
-			GB.Realloc((void**)POINTER(&THIS->buf_data),nmemb+THIS->len_data);
-		memcpy(THIS->buf_data+THIS->len_data,buffer,nmemb);
-		THIS->len_data+=nmemb;
+		GB.AddString(&THIS->data, buffer, nmemb);
 	}
 
 	if (THIS->async)
@@ -159,12 +156,7 @@ static int http_write_curl(void *buffer, size_t size, size_t nmemb, void *_objec
 
 static void http_reset(void *_object)
 {
-	if (THIS->buf_data)
-	{
-		GB.Free((void**)POINTER(&THIS->buf_data));
-		THIS->buf_data=NULL;
-	}
-
+	GB.FreeString(&THIS->data);
 	GB.Unref(&THIS_HTTP->headers);
 	GB.Unref(&THIS_HTTP->sent_headers);
 	
@@ -177,10 +169,8 @@ static void http_reset(void *_object)
 	if (THIS_HTTP->data)
 	{
 		GB.Free((void**)POINTER(&THIS_HTTP->data));
-		THIS_HTTP->data =NULL;
+		THIS_HTTP->data = NULL;
 	}
-	
-	THIS->len_data=0;
 }
 
 
@@ -206,6 +196,7 @@ static void http_initialize_curl_handle(void *_object, GB_ARRAY custom_headers)
 		curl_easy_setopt(THIS_CURL, CURLOPT_TIMEOUT,THIS->TimeOut);
 	}
 	
+	curl_easy_setopt(THIS_CURL, CURLOPT_VERBOSE, THIS->debug);
 	curl_easy_setopt(THIS_CURL, CURLOPT_PRIVATE,(char*)_object);
 	curl_easy_setopt(THIS_CURL, CURLOPT_USERAGENT, THIS_HTTP->sUserAgent);
 	curl_easy_setopt(THIS_CURL, CURLOPT_ENCODING, THIS_HTTP->encoding);

@@ -63,12 +63,12 @@ typedef
 		char* protocol;
 		CPROXY proxy;
 		Adv_user user;
-		int len_data;
-		char *buf_data;
 		GB_VARIANT_VALUE tag;
 		bool async;
 		int TimeOut;
 		int iMethod; // 0->Get, 1->Put
+		bool debug;
+		char *data;
 	}
 	CCURL;
 

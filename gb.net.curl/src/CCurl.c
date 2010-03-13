@@ -88,7 +88,7 @@ int CCURL_stream_lof(GB_STREAM *stream, int64_t *len)
 	if ((THIS_STATUS !=4 ) && (THIS_STATUS != 0)) 
 		return -1;
 		
-	*len = THIS->len_data;
+	*len = GB.StringLength(THIS->data);
 	return 0;
 }
 
@@ -97,29 +97,33 @@ int CCURL_stream_eof(GB_STREAM *stream)
 	void *_object = STREAM_TO_OBJECT(stream);
 	
 	if ((THIS_STATUS !=4 ) && (THIS_STATUS != 0)) return -1;
-	if (!THIS->len_data) return -1;
+	if (!GB.StringLength(THIS->data)) return -1;
 	return 0;
 }
 
 int CCURL_stream_read(GB_STREAM *stream, char *buffer, int len)
 {
 	void *_object = STREAM_TO_OBJECT(stream);
+	int len_data;
+	char *new_data;
 	
 	if ((THIS_STATUS !=4 ) && (THIS_STATUS != 0)) return -1;
-	if (THIS->len_data < len) return -1;
+	
+	len_data = GB.StringLength(THIS->data);
+	
+	if (len_data < len) return -1;
 
-	memcpy(buffer,THIS->buf_data,len);
+	memcpy(buffer, THIS->data, len);
 
-	if (THIS->len_data == len)
-	{
-		THIS->len_data=0;
-		GB.Free(POINTER(&THIS->buf_data));
-		return 0;
-	}
-
-	THIS->len_data-=len;
-	memmove(THIS->buf_data,len+THIS->buf_data,THIS->len_data);
-	GB.Realloc(POINTER(&THIS->buf_data),THIS->len_data);
+	len_data -= len;
+	
+	if (len_data > 0)
+		GB.NewString(&new_data, THIS->data + len, len_data);
+	else
+		new_data = NULL;
+	
+	GB.FreeString(&THIS->data);
+	THIS->data = new_data;
 
 	return 0;
 }
@@ -499,14 +503,18 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CCURL_Peek)
 
-	if ( (THIS->len_data) && (THIS->buf_data) )
-	{
-		GB.ReturnNewString(THIS->buf_data,THIS->len_data);
-		return;
-	}
-	GB.ReturnNewString(NULL,0);
+	GB.ReturnString(THIS->data);
 
 END_METHOD
+
+BEGIN_PROPERTY(Curl_Debug)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(THIS->debug);
+	else
+		THIS->debug = VPROP(GB_BOOLEAN);
+
+END_PROPERTY
 
 //*************************************************************************
 //#################### GAMBAS INTERFACE ###################################
@@ -538,6 +546,7 @@ GB_DESC CCurlDesc[] =
   GB_PROPERTY("Timeout","i",CCURL_TimeOut),
   GB_PROPERTY_SELF("Proxy",".CurlProxy"),
   GB_PROPERTY_READ("Status","i",CCURL_Status),
+  GB_PROPERTY("Debug", "b", Curl_Debug),
 
   GB_END_DECLARE
 };

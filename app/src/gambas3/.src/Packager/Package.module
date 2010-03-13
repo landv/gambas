@@ -443,7 +443,7 @@ Private Function MakeDebPackage(sSys As String)
       
   Inc Application.Busy
   
-  $sName = Replace$($sName, "_", "-")
+  '$sName = Replace$($sName, "_", "-")
   sIcon = $sPackageName & ".png"
 
   ' Step 1. Create the build directory

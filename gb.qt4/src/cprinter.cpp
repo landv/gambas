@@ -55,6 +55,9 @@ static bool run_printer(CPRINTER *_object)
 	
 	THIS->cancel = false;
 	
+	THIS->printing = true;
+	PAINT_begin(THIS);
+	
 	GB.Raise(THIS, EVENT_Begin, 0);
 	
 	if (GB.CanRaise(THIS, EVENT_Paginate))
@@ -67,7 +70,7 @@ static bool run_printer(CPRINTER *_object)
 	}
 	
 	if (THIS->cancel)
-		goto __EXIT;
+		goto __CANCEL;
 	
 	if (printer->fromPage() == 0)
 	{
@@ -102,9 +105,6 @@ static bool run_printer(CPRINTER *_object)
 		num_copies_out = 1;
 	}
 	
-	THIS->printing = true;
-	PAINT_begin(THIS);
-	
 	for(repeat_out = 0; repeat_out < num_copies_out; repeat_out++)
 	{
 		for (page = firstPage; page <= lastPage; page++)
@@ -130,10 +130,10 @@ static bool run_printer(CPRINTER *_object)
 
 __CANCEL:
 
-	PAINT_end();
-	
 	GB.Raise(THIS, EVENT_End, 0);
 
+	PAINT_end();
+	
 	THIS->page_count_set = false;
 
 __EXIT:

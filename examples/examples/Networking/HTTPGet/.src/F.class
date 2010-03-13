@@ -9,27 +9,27 @@
 ' This is a buffer I use when
 ' a link is clicked (ugly hack:)
 '///////////////////////////////
-PRIVATE CurHost AS String
+Private CurHost As String
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
   '///////////////////////////////////
   ' We set Default configuration values
   '///////////////////////////////////
-  ClsParams.ProxyHost="127.0.0.1:3128"
-  ClsParams.ProxyUser=""
-  ClsParams.ProxyPwd=""
-  ClsParams.ProxyAuth=Net.AuthNone
-  ClsParams.CookiesFile=User.Home & "/gbcookies.txt"
+  ClsParams.ProxyHost = "127.0.0.1:3128"
+  ClsParams.ProxyUser = ""
+  ClsParams.ProxyPwd = ""
+  ClsParams.ProxyAuth = Net.AuthNone
+  ClsParams.CookiesFile = User.Home & "/gbcookies.txt"
   '////////////////////////////////////
   ' Now we create the HttpClient object
   '////////////////////////////////////
   'MyHTTP=NEW HttpClient AS "MyHTTP"
  
 
-END
+End
 
-PUBLIC SUB Button1_Click()
+Public Sub Button1_Click()
   '/////////////////////////////////////////////////
   ' When we press 'Get' button we start 'getting'
   ' proccess
@@ -40,33 +40,33 @@ PUBLIC SUB Button1_Click()
   ' If user has configured a proxy, we set
   ' that values in HttpClient object
   '/////////////////////////////////////////////
-  IF ClsParams.UseProxy AND ClsParams.ProxyHost<>"" THEN
+  If ClsParams.UseProxy And ClsParams.ProxyHost <> "" Then
     '//////////////////////////////////
     ' Host address and port 
     '//////////////////////////////////
-    MyHTTP.Proxy.Host=ClsParams.ProxyHost
-    MyHTTP.Proxy.Type=Net.ProxyHTTP
+    MyHTTP.Proxy.Host = ClsParams.ProxyHost
+    MyHTTP.Proxy.Type = Net.ProxyHTTP
     '//////////////////////////////////
     ' If Proxy needs authentication,
     ' we set it
     '//////////////////////////////////
-    IF ClsParams.ProxyUser<>"" OR ClsParams.ProxyPwd<>"" THEN
-      MyHTTP.Proxy.User=ClsParams.ProxyUser
-      MyHTTP.Proxy.Password=ClsParams.ProxyPwd
-      MyHTTP.Proxy.Auth=ClsParams.ProxyAuth    
-    ELSE
+    If ClsParams.ProxyUser <> "" Or ClsParams.ProxyPwd <> "" Then
+      MyHTTP.Proxy.User = ClsParams.ProxyUser
+      MyHTTP.Proxy.Password = ClsParams.ProxyPwd
+      MyHTTP.Proxy.Auth = ClsParams.ProxyAuth    
+    Else
       '///////////////////////////////////
       ' No authentication needed
       '///////////////////////////////////
-      MyHTTP.Proxy.Auth=Net.AuthNone
-    END IF
-  ELSE
+      MyHTTP.Proxy.Auth = Net.AuthNone
+    End If
+  Else
     '//////////////////////////////////////
     ' No proxy selected (direct connection) 
     '//////////////////////////////////////
-    MyHTTP.Proxy.Host=""
+    MyHTTP.Proxy.Host = ""
     ' todo authnone
-  END IF
+  End If
     
   '/////////////////////////////////////////////////
   ' User and Password settings to access to that
@@ -74,54 +74,54 @@ PUBLIC SUB Button1_Click()
   ' not a Proxy authorization)
   '/////////////////////////////////////////////////
   ' 1º User and password
-  IF ChkPassword.Value THEN
-    MyHTTP.User=TxtUser.Text 
-    MyHTTP.Password=TxtPassword.Text
+  If ChkPassword.Value Then
+    MyHTTP.User = TxtUser.Text 
+    MyHTTP.Password = TxtPassword.Text
     ' 2º Authorization type
-    SELECT CASE CmbAuth.Index
-      CASE 0
-        MyHTTP.Auth=Net.AuthBasic
-      CASE 1
-        MyHTTP.Auth=Net.AuthNTLM
-      CASE 2
-        MyHTTP.Auth=Net.AuthDigest
-      CASE 3
-        MyHTTP.Auth=Net.AuthGSSNEGOTIATE
-    END SELECT
-  ELSE
-    MyHTTP.User=""
-    MyHTTP.Auth=Net.AuthNone
-  END IF
+    Select Case CmbAuth.Index
+      Case 0
+        MyHTTP.Auth = Net.AuthBasic
+      Case 1
+        MyHTTP.Auth = Net.AuthNTLM
+      Case 2
+        MyHTTP.Auth = Net.AuthDigest
+      Case 3
+        MyHTTP.Auth = Net.AuthGSSNEGOTIATE
+    End Select
+  Else
+    MyHTTP.User = ""
+    MyHTTP.Auth = Net.AuthNone
+  End If
   
   
   '//////////////////////////////////
   ' A bit of feedback for user...
   '//////////////////////////////////
-  TextArea1.Text=""
-  TxtInfo.Text="Connecting..."
-  Navigator.Text=""
+  TextArea1.Text = ""
+  TxtInfo.Text = "Connecting..."
+  Navigator.Text = ""
   
   '////////////////////////////////////
   ' URL to Get
   '//////////////////////////////////// 
-  MyHTTP.Url=TxtHost.Text  
+  MyHTTP.Url = TxtHost.Text  
   
   '////////////////////////////////////
   ' a little buffer for me
   '////////////////////////////////////
-  CurHost=Mid(MyHTTP.Url,8) 
+  CurHost = Mid(MyHTTP.Url, 8) 
   
   '////////////////////////////////////
   ' Cookies
   '////////////////////////////////////
-  MyHTTP.CookiesFile=ClsParams.CookiesFile
-  MyHTTP.UpdateCookies=ClsParams.UpdateCookies
+  MyHTTP.CookiesFile = ClsParams.CookiesFile
+  MyHTTP.UpdateCookies = ClsParams.UpdateCookies
   
   '////////////////////////////////////
   ' Let's get it!
   '////////////////////////////////////
-  PRINT MyHTTP.Proxy.Auth
-  MyHTTP.Get ()
+  Print MyHTTP.Proxy.Auth
+  MyHTTP.Get()
   
   '///////////////////////////////////////////
   ' If we'd want to download remote document
@@ -130,41 +130,39 @@ PUBLIC SUB Button1_Click()
   ' MyHTTP.Get( "FilePath" )
   '///////////////////////////////////////////
 
-END
+End
 
-PUBLIC SUB MyHTTP_Connect()
+Public Sub MyHTTP_Connect()
   
   '///////////////////////////////////////////////
   ' This event from HttpClient raises when 
   ' we connect successfully with remote server
   ' and allows us to give more feed-back to user
   '/////////////////////////////////////////////// 
-  TxtInfo.Text="Connected, waiting for reply..."
+  TxtInfo.Text = "Connected, waiting for reply..."
   
-END
+End
 
-PUBLIC SUB MyHTTP_Read()
+Public Sub MyHTTP_Read()
   '///////////////////////////////////////////
   ' This event raises when a new piece of data
   ' arrives to us from server, so we read that
   ' part of the document
   '///////////////////////////////////////////
-  DIM sBuf AS String
-  DIM MyLoop AS Integer
+  Dim sBuf As String
+  Dim MyLoop As Integer
   '/////////////////////////////////
   ' more feedback...
   '/////////////////////////////////
-  TxtInfo.Text="Receiving data..."
+  TxtInfo.Text = "Receiving data..."
   
   '/////////////////////////////////
   ' Header of HTTP document received
   ' from server
   '///////////////////////////////// 
-  IF TextArea1.Text="" THEN
-    FOR MyLoop=0 TO MyHTTP.Headers.Count-1
-      TextArea1.Text=TextArea1.Text & MyHTTP.Headers[MyLoop]
-    NEXT 
-  END IF
+  If TextArea1.Text = "" Then
+    TextArea1.Text = MyHTTP.Headers.Join("\n")
+  End If
   
  
   '/////////////////////////////////
@@ -172,63 +170,61 @@ PUBLIC SUB MyHTTP_Read()
   ' we read it and place it in our
   ' "navigator" screen
   '//////////////////////////////////
-  IF Lof(MyHTTP) THEN 
-    READ #MyHTTP,sBuf,Lof(MyHTTP)
-    Navigator.Text=Navigator.Text & sBuf
-  END IF
+  If Lof(MyHTTP) Then 
+    Read #MyHTTP, sBuf, Lof(MyHTTP)
+    Navigator.Text = Navigator.Text & sBuf
+  End If
   
-END
+End
 
-PUBLIC SUB MyHTTP_Error()
+Public Sub MyHTTP_Error()
 
   '////////////////////////////
   ' If something fails, this
   ' event raises and connection
   ' is stopped
   '//////////////////////////// 
-  CurHost="" 
-  TxtInfo.Text="Error " & MyHTTP.Status
+  CurHost = "" 
+  TxtInfo.Text = "Error " & MyHTTP.Status
   
-END
+End
 
-PUBLIC SUB MyHTTP_Finished()
+Public Sub MyHTTP_Finished()
 
   '/////////////////////////////////////
   ' When all document has been received,
   ' this event raises
   '/////////////////////////////////////
-  DIM sBuf AS String
-  DIM MyLoop AS Integer
+  Dim sBuf As String
+  Dim MyLoop As Integer
   '//////////////////////////////
   ' feeback...
   '//////////////////////////////
-  TxtInfo.Text="OK"
-  IF TextArea1.Text="" THEN
-    FOR MyLoop=0 TO MyHTTP.Headers.Count-1
-      TextArea1.Text=TextArea1.Text & MyHTTP.Headers[MyLoop]
-    NEXT 
-  END IF
+  TxtInfo.Text = "OK"
+  If TextArea1.Text = "" Then
+    TextArea1.Text = MyHTTP.Headers.Join("\n") 
+  End If
   
   '///////////////////////////////////
   ' we extract all possible data
   ' buffered in HttpClient
   '///////////////////////////////////
-  IF Lof(MyHTTP) THEN
-    READ #MyHTTP,sBuf,Lof(MyHTTP)
-    Navigator.Text=Navigator.Text & sBuf
-  END IF
+  If Lof(MyHTTP) Then
+    Read #MyHTTP, sBuf, Lof(MyHTTP)
+    Navigator.Text = Navigator.Text & sBuf
+  End If
   
-END
+End
 
-PUBLIC SUB mnuOptions_Click()
+Public Sub mnuOptions_Click()
   '////////////////////////////////////
   ' If user wants to modify parameters
   '////////////////////////////////////
   FConfig.ShowModal
   
-END
+End
 
-PUBLIC SUB Form_Close()
+Public Sub Form_Close()
 
   '//////////////////////////////////////
   ' When program finishes, we must ensure
@@ -236,58 +232,56 @@ PUBLIC SUB Form_Close()
   '///////////////////////////////////////
   MyHTTP.Stop()
   
-END
+End
 
-PUBLIC SUB BtnStop_Click()
+Public Sub BtnStop_Click()
 
   '///////////////////////////////////////
   ' If user wants to close the
   ' connection...
   '///////////////////////////////////////
-  IF MyHttp.Status > 0 THEN TxtInfo.Text="Cancelled by user"
+  If MyHttp.Status > 0 Then TxtInfo.Text = "Cancelled by user"
   MyHTTP.Stop()
   
   
-END
+End
 
-PUBLIC FUNCTION Correct_Url(sCad AS String) AS String
+Public Function Correct_Url(sCad As String) As String
   
-  DIM MyLoop AS Integer
+  Dim MyLoop As Integer
   
-  IF Instr(sCad,"://") THEN RETURN sCad
+  If InStr(sCad, "://") Then Return sCad
   
-  IF Left(sCad,1)="/" THEN
-    IF Instr(CurHost,"/") THEN  CurHost=Left(CurHost,Instr(CurHost,"/")-1)
-    RETURN CurHost & sCad
-  ELSE
-    IF Right(CurHost,1)="/" THEN RETURN CurHost & sCad
-    RETURN CurHost & "/" & sCad
-  END IF
+  If Left(sCad, 1) = "/" Then
+    If InStr(CurHost, "/") Then CurHost = Left(CurHost, InStr(CurHost, "/") - 1)
+    Return CurHost & sCad
+  Else
+    If Right(CurHost, 1) = "/" Then Return CurHost & sCad
+    Return CurHost & "/" & sCad
+  End If
    
-END
+End
 
 
-PUBLIC SUB Navigator_Link(Path AS String)
+Public Sub Navigator_Link(Path As String)
  
-  IF MyHTTP.Status>0 THEN MyHTTP.Stop()
-  TxtHost.Text=Correct_Url(Path)
+  If MyHTTP.Status > 0 Then MyHTTP.Stop()
+  TxtHost.Text = Correct_Url(Path)
   Button1_Click()
 
-END
+End
 
 
-PUBLIC SUB ChkPassword_Click()
+Public Sub ChkPassword_Click()
 
-  IF ChkPassword.Value THEN
-    TxtUser.Enabled=TRUE
-    TxtPassword.Enabled=TRUE
-    CmbAuth.Enabled=TRUE
-  ELSE
-    TxtUser.Enabled=FALSE
-    TxtPassword.Enabled=FALSE
-    CmbAuth.Enabled=FALSE
-  END IF
+  If ChkPassword.Value Then
+    TxtUser.Enabled = True
+    TxtPassword.Enabled = True
+    CmbAuth.Enabled = True
+  Else
+    TxtUser.Enabled = False
+    TxtPassword.Enabled = False
+    CmbAuth.Enabled = False
+  End If
 
-END
-
-
+End

@@ -540,7 +540,9 @@ static bool must_quit(void)
 
 static void check_quit_now(intptr_t param)
 {
-	if (must_quit())
+	static bool exit_called = false;
+	
+	if (must_quit() && !exit_called)
 	{
 		if (QApplication::instance())
 		{
@@ -549,6 +551,7 @@ static void check_quit_now(intptr_t param)
 				qApp->syncX();
 			#endif
 			qApp->exit();
+			exit_called = true;
 		}
 	}
 	else

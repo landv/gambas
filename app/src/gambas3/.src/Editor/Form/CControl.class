@@ -357,8 +357,8 @@ Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As
   Else
     Object.Attach(hCtrl, hForm, "Control")
   Endif
-
-  VirtualCoord = hClass.Family <> "Form"
+  
+  VirtualCoord = hClass.Family <> "Form" Or Virtual
 
   InitControl(hCtrl)
 

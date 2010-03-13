@@ -19,11 +19,13 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
+
+#ifndef __GB_CURL_H
+#define __GB_CURL_H
+
 #include <curl/curl.h>
 #include "main.h"
 
-#ifndef GB_CURL
-#define GB_CURL
 typedef void** Adv_ARRAY;
 
 typedef struct
@@ -44,16 +46,6 @@ typedef struct
 	int auth;
 } Adv_user;
 
-/*typedef struct 
-{
-	int   status;
-	CURL* curl;
-	char* url;
-	FILE* file;
-	char* protocol;
-} curlData;*/
-
-
 void Adv_correct_url(char **buf,char *protocol);
 
 void Adv_add_info      (Adv_ARRAY *Array, int *narray, void *Obj);
@@ -71,6 +63,13 @@ void Adv_user_NEW      (Adv_user *user);
 void Adv_user_CLEAR    (Adv_user *user);
 void Adv_user_SET      (Adv_user *user,CURL *curl);
 int  Adv_user_SETAUTH  (Adv_user *user,int auth);
+
+enum {
+	STATUS_INACTIVE = 0,
+	STATUS_RECEIVING_DATA = 4,
+	STATUS_CONNECTING = 6
+};
+
 #endif
 
 

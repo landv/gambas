@@ -1994,7 +1994,11 @@ Private Sub CreateMenu()
         hMenu.Text = sName
         'hMenu.Picture = FFormStack.GetControlIcon(sName)
         hClass = CComponent.Classes[sName]
-        hMenu.Picture = CControl.GetIcon(sName, hClass.Component, 16)
+        If hClass Then
+          hMenu.Picture = CControl.GetIcon(sName, hClass.Component, 16)
+        Else
+          Debug sName;; "?"
+        Endif
         mnuChange.Show
       Next
     

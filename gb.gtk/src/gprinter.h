@@ -79,7 +79,7 @@ public:
 	
 // Signals
 
-	void (*onBegin)(gPrinter *me);
+	void (*onBegin)(gPrinter *me, GtkPrintContext *context);
 	void (*onEnd)(gPrinter *me);
 	void (*onDraw)(gPrinter *me, GtkPrintContext *context, int page);
 	void (*onPaginate)(gPrinter *me);

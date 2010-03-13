@@ -34,10 +34,12 @@ DECLARE_EVENT(EVENT_End);
 DECLARE_EVENT(EVENT_Paginate);
 DECLARE_EVENT(EVENT_Draw);
 
-static void cb_begin(gPrinter *printer)
+static void cb_begin(gPrinter *printer, GtkPrintContext *context)
 {
 	void *_object = printer->tag;
 	THIS->current = 0;
+	THIS->context = context;
+	PAINT_begin(THIS);
 	GB.Raise(THIS, EVENT_Begin, 0);
 }
 
@@ -46,6 +48,7 @@ static void cb_end(gPrinter *printer)
 	void *_object = printer->tag;
 	THIS->current = 0;
 	GB.Raise(THIS, EVENT_End, 0);
+	PAINT_end();
 }
 
 static void cb_paginate(gPrinter *printer)
@@ -62,10 +65,7 @@ static void cb_draw(gPrinter *printer, GtkPrintContext *context, int page)
 {
 	void *_object = printer->tag;
 	THIS->current = page + 1;
-	THIS->context = context;
-	PAINT_begin(THIS);
 	GB.Raise(THIS, EVENT_Draw, 0);
-	PAINT_end();
 }
 
 BEGIN_METHOD_VOID(Printer_new)

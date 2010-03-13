@@ -44,15 +44,9 @@ extern GB_STREAM_DESC FtpStream;
 typedef
 	struct {
 		CCURL curl;
+		GB_ARRAY commands;
 	}
 	CFTPCLIENT;
-
-int ftp_find_info (CURL *curlfind);
-int ftp_header_curl(void *buffer, size_t size, size_t nmemb, void *c_handle);
-int ftp_write_curl(void *buffer, size_t size, size_t nmemb, void *c_handle);
-void ftp_parse_header(CFTPCLIENT *mythis);
-void ftp_reset(CFTPCLIENT *mythis);
-void ftp_stop(void *_object);
 
 #define FTP_PROPERTIES "URL=127.0.0.1:21,Async=TRUE,Timeout=0,User,Password"
 

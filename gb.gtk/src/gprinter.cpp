@@ -36,7 +36,7 @@ static void cb_begin_cancel(GtkPrintOperation *operation, GtkPrintContext *conte
 static void cb_begin(GtkPrintOperation *operation, GtkPrintContext *context, gPrinter *printer)
 {
 	if (printer->onBegin)
-		(*printer->onBegin)(printer);
+		(*printer->onBegin)(printer, context);
 }
 
 static void cb_end(GtkPrintOperation *operation, GtkPrintContext *context, gPrinter *printer)

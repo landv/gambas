@@ -19,6 +19,7 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
+
 #define __CFTPCLIENT_C
 
 #include <stdio.h>
@@ -36,23 +37,29 @@
 #include "CFtpClient.h"
 #include "CProxy.h"
 
+#define EXEC_GET 0
+#define EXEC_PUT 1
+#define EXEC_CMD 2
+
 /*****************************************************
  CURLM : a pointer to use curl_multi interface,
  allowing asynchrnous work without using threads
  in this class. Here also a pipe will be stablished
  to link with Gambas watching interface
  ******************************************************/
+
 extern CURLM *CCURL_multicurl;
+
 /*******************************************************************
 ####################################################################
 	CALLBACKS FROM CURL LIBRARY
 ####################################################################
 ********************************************************************/
 
-int ftp_read_curl (void *buffer, size_t size, size_t nmemb, void *_object)
+static int ftp_read_curl (void *buffer, size_t size, size_t nmemb, void *_object)
 {
-/* BM */
-        FILE *file = THIS_FILE;
+	/* BM */
+	FILE *file = THIS_FILE;
 	THIS_STATUS=4;
 	
 	if (!feof(file))
@@ -63,10 +70,10 @@ int ftp_read_curl (void *buffer, size_t size, size_t nmemb, void *_object)
 	return nmemb;
 }
 
-int ftp_write_curl(void *buffer, size_t size, size_t nmemb, void *_object)
+static int ftp_write_curl(void *buffer, size_t size, size_t nmemb, void *_object)
 {
-
 	THIS_STATUS=4;
+	nmemb *= size;
 
 	if (THIS_FILE)
 	{
@@ -74,12 +81,7 @@ int ftp_write_curl(void *buffer, size_t size, size_t nmemb, void *_object)
 	}
 	else
 	{
-		if (!THIS->len_data)
-			GB.Alloc((void**)POINTER(&THIS->buf_data),nmemb);
-		else
-			GB.Realloc((void**)POINTER(&THIS->buf_data),nmemb+THIS->len_data);
-		memcpy(THIS->buf_data+THIS->len_data,buffer,nmemb);
-		THIS->len_data+=nmemb;
+		GB.AddString(&THIS->data, buffer, nmemb);
 	}
 
 	if (THIS->async)
@@ -91,18 +93,13 @@ int ftp_write_curl(void *buffer, size_t size, size_t nmemb, void *_object)
 	return nmemb;
 }
 
-void ftp_reset(CFTPCLIENT *mythis)
+static void ftp_reset(void *_object)
 {
-	if (mythis->curl.buf_data)
-	{
-		GB.Free((void**)POINTER(&mythis->curl.buf_data));
-		mythis->curl.buf_data=NULL;
-	}
-	
-	mythis->curl.len_data=0;
+	GB.FreeString(&THIS->data);
+	GB.Unref(&THIS_FTP->commands);
 }
 
-void ftp_initialize_curl_handle(void *_object)
+static void ftp_initialize_curl_handle(void *_object)
 {
 	if (THIS_CURL)
 	{
@@ -130,7 +127,7 @@ void ftp_initialize_curl_handle(void *_object)
 		curl_easy_setopt(THIS_CURL, CURLOPT_TIMEOUT,THIS->TimeOut);
 	}
 	
-	curl_easy_setopt(THIS_CURL, CURLOPT_VERBOSE,1);
+	curl_easy_setopt(THIS_CURL, CURLOPT_VERBOSE, THIS->debug);
 	curl_easy_setopt(THIS_CURL, CURLOPT_PRIVATE,(char*)_object);
 
 	Adv_proxy_SET (&THIS->proxy.proxy,THIS_CURL);
@@ -144,17 +141,53 @@ void ftp_initialize_curl_handle(void *_object)
 }
 
 
-int ftp_get (void *_object)
+static int ftp_exec(void *_object, int what, GB_ARRAY commands)
 {
+	struct curl_slist *list;
+	int i;
+
 	if (THIS_STATUS > 0) return 1;
 
-	THIS->iMethod=0;
+	THIS->iMethod = what == EXEC_PUT ? 1 : 0;
 	
 	ftp_initialize_curl_handle(THIS);
 	
-	curl_easy_setopt(THIS_CURL, CURLOPT_WRITEFUNCTION , ftp_write_curl);
-	curl_easy_setopt(THIS_CURL, CURLOPT_WRITEDATA     , _object);
-	curl_easy_setopt(THIS_CURL, CURLOPT_UPLOAD        , 0);
+	switch(what)
+	{
+		case EXEC_GET:
+			
+			curl_easy_setopt(THIS_CURL, CURLOPT_WRITEFUNCTION , (curl_write_callback)ftp_write_curl);
+			curl_easy_setopt(THIS_CURL, CURLOPT_WRITEDATA     , _object);
+			curl_easy_setopt(THIS_CURL, CURLOPT_UPLOAD        , 0);
+			
+			break;
+			
+		case EXEC_PUT:
+			
+			curl_easy_setopt(THIS_CURL, CURLOPT_READFUNCTION , (curl_read_callback)ftp_read_curl);
+			curl_easy_setopt(THIS_CURL, CURLOPT_READDATA     , _object);
+			curl_easy_setopt(THIS_CURL, CURLOPT_UPLOAD       , 1);
+			
+			break;
+			
+		case EXEC_CMD:
+			
+			curl_easy_setopt(THIS_CURL, CURLOPT_NOBODY, 1);
+			
+			if (commands)
+			{
+				GB.Unref(&THIS_FTP->commands);
+				THIS_FTP->commands = commands;
+				GB.Ref(commands);
+				
+				list = NULL;
+				for (i = 0; i < GB.Array.Count(commands); i++)
+					list = curl_slist_append(list, *(char **)GB.Array.Get(commands, i));
+				curl_easy_setopt(THIS_CURL, CURLOPT_QUOTE, list);
+			}
+			
+			break;
+	}
 	
 	if (THIS->async)
 	{
@@ -170,43 +203,18 @@ int ftp_get (void *_object)
 	return 0;
 }
 
-int ftp_put (void *_object)
-{
-	if (THIS_STATUS > 0) return 1;
+BEGIN_METHOD(FtpClient_Get, GB_STRING target)
 
-	THIS->iMethod=1;
-	
-	ftp_initialize_curl_handle(THIS);
-	
-	curl_easy_setopt(THIS_CURL, CURLOPT_READFUNCTION , ftp_read_curl);
-	curl_easy_setopt(THIS_CURL, CURLOPT_READDATA     , _object);
-	curl_easy_setopt(THIS_CURL, CURLOPT_UPLOAD       , 1);
-	
-	
-	if (THIS->async)
-	{
-		#if DEBUG
-		fprintf(stderr, "-- [%p] curl_multi_add_handle(%p)\n", THIS, THIS_CURL);
-		#endif
-		curl_multi_add_handle(CCURL_multicurl,THIS_CURL);
-		CCURL_init_post();
-		return 0;
-	}
-	
-	CCURL_Manage_ErrCode(_object,curl_easy_perform(THIS_CURL));
-	return 0;
-}
-
-BEGIN_METHOD(CFTPCLIENT_Get,GB_STRING TargetHost;)
-
-	if (!MISSING(TargetHost))
+	if (!MISSING(target))
 	{
 		if (THIS_STATUS > 0)
 		{
 			GB.Error("Still active");
 			return;
 		}
-		THIS_FILE=fopen(GB.ToZeroString(ARG(TargetHost)),"w");
+		
+		THIS_FILE = fopen(GB.FileName(STRING(target), LENGTH(target)), "w");
+		
 		if (!THIS_FILE)
 		{
 			GB.Error("Unable to open file for writing");
@@ -214,51 +222,55 @@ BEGIN_METHOD(CFTPCLIENT_Get,GB_STRING TargetHost;)
 		}
 	}
 
-	if (ftp_get(THIS)) GB.Error("Still active");
-	
+	if (ftp_exec(THIS, EXEC_GET, NULL)) 
+		GB.Error("Still active");
 
 END_METHOD
 
-/*************************************************
- PUT FTP method
- *************************************************/
 
-
-BEGIN_METHOD(CFTPCLIENT_Put,GB_STRING SourceFile;)
-
+BEGIN_METHOD(FtpClient_Put,GB_STRING SourceFile)
 	
 	if (THIS_STATUS > 0)
 	{
 		GB.Error("Still active");
 		return;
 	}
-	if (!LENGTH(SourceFile))
-	{
-		GB.Error("Invalid File Name\n");
-		return;
-	}
 	
-	THIS_FILE=fopen(GB.ToZeroString(ARG(SourceFile)),"r");
+	THIS_FILE = fopen(GB.FileName(STRING(SourceFile), LENGTH(SourceFile)),"r");
 	if (!THIS_FILE)
 	{
 		GB.Error("Unable to open file for reading");
 		return;
 	}
-	
 
-	if (ftp_put (THIS) ) GB.Error("Still active");
-
+	if (ftp_exec(THIS, EXEC_PUT, NULL)) 
+		GB.Error("Still active");
 
 END_METHOD
 
-BEGIN_METHOD_VOID(CFTPCLIENT_Stop)
+
+BEGIN_METHOD(FtpClient_Exec, GB_OBJECT commands)
+
+	if (THIS_STATUS > 0)
+	{
+		GB.Error("Still active");
+		return;
+	}
+	
+	ftp_exec(THIS, EXEC_CMD, VARG(commands));
+
+END_METHOD
+
+
+BEGIN_METHOD_VOID(FtpClient_Stop)
 
 	CCURL_stop(_object);
 	ftp_reset(_object);
 	
 END_METHOD
 
-BEGIN_METHOD_VOID(CFTPCLIENT_new)
+
+BEGIN_METHOD_VOID(FtpClient_new)
 
 	char *tmp=NULL;	
 	
@@ -270,11 +282,12 @@ BEGIN_METHOD_VOID(CFTPCLIENT_new)
 	strcpy(tmp,"ftp://");
 	THIS_PROTOCOL=tmp;
 	Adv_user_SETAUTH (&THIS->user,CURLAUTH_BASIC);
-
+	GB.NewString(&THIS->user.user, "anonymous", 0);
 
 END_METHOD
 
-BEGIN_METHOD_VOID(CFTPCLIENT_free)
+
+BEGIN_METHOD_VOID(FtpClient_free)
 
 	ftp_reset(THIS_FTP);
 
@@ -286,17 +299,17 @@ END_METHOD
 //*************************************************************************
 GB_DESC CFtpClientDesc[] =
 {
-
   GB_DECLARE("FtpClient", sizeof(CFTPCLIENT)),
 
   GB_INHERITS("Curl"),
 
-  GB_METHOD("_new", NULL, CFTPCLIENT_new, NULL),
-  GB_METHOD("_free", NULL, CFTPCLIENT_free, NULL),
+  GB_METHOD("_new", NULL, FtpClient_new, NULL),
+  GB_METHOD("_free", NULL, FtpClient_free, NULL),
 
-  GB_METHOD("Stop", NULL, CFTPCLIENT_Stop, NULL),
-  GB_METHOD("Get", NULL, CFTPCLIENT_Get, "[(TargetFile)s]"),
-  GB_METHOD("Put", NULL, CFTPCLIENT_Put, "(LocalFile)s"),
+  GB_METHOD("Stop", NULL, FtpClient_Stop, NULL),
+  GB_METHOD("Get", NULL, FtpClient_Get, "[(TargetFile)s]"),
+  GB_METHOD("Exec", NULL, FtpClient_Exec, "(Commands)String[]"),
+  GB_METHOD("Put", NULL, FtpClient_Put, "(LocalFile)s"),
   
   GB_CONSTANT("_IsControl", "b", TRUE),
   GB_CONSTANT("_IsVirtual", "b", TRUE),

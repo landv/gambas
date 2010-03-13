@@ -33,7 +33,10 @@ Public Sub P_Finished()
   
   TextArea2.Insert(P.Headers.Join("\n") & "\n")
   
-  If Lof(P) Then TextArea1.Text = Read #P, Lof(P)
+  If Lof(P) Then 
+    sBuf = Read #P, Lof(P)
+    TextArea1.Text = sBuf
+  Endif
 
   If (InStr(sBuf, "<value><int>")) Then
     sBuf = Mid(sBuf, InStr(sBuf, "<value><int>") + 12)
