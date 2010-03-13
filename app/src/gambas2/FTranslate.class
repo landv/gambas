@@ -76,7 +76,7 @@ PRIVATE SUB GetTransCount(sLang AS String) AS Integer
   hFile = OPEN Project.Dir &/ ".lang" &/ sLang & ".mo"
   
   READ #hFile, iVal
-  IF (iVal = &h950412DE) XOR (System.ByteOrder = gb.BigEndian) THEN
+  IF (iVal = &h950412DE&) XOR (System.ByteOrder = gb.BigEndian) THEN
     hFile.ByteOrder = gb.LittleEndian
   ELSE 
     hFile.ByteOrder = gb.BigEndian

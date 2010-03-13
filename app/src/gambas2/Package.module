@@ -329,7 +329,7 @@ PRIVATE FUNCTION MakeDebPackage(sSys AS String)
       
   INC Application.Busy
   
-  $sName = Replace$($sName, "_", "-")
+  '$sName = Replace$($sName, "_", "-")
   sIcon = $sPackageName & ".png"
 
   ' Step 1. Create the build directory

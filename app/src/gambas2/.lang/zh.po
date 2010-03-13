@@ -290,11 +290,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: CComponentBox.class:87 FPropertyProject.class:1641
+#: CComponentBox.class:87 FPropertyProject.class:1640
 msgid "Beta version"
 msgstr "测试版"
 
-#: CComponentBox.class:89 FPropertyProject.class:1641
+#: CComponentBox.class:89 FPropertyProject.class:1640
 msgid "Not finished but stable"
 msgstr "稳定非最终版"
 
@@ -302,7 +302,7 @@ msgstr "稳定非最终版"
 msgid "Authors"
 msgstr "作者"
 
-#: CComponentBox.class:199 FPropertyProject.class:1998
+#: CComponentBox.class:199 FPropertyProject.class:1997
 msgid "Requires"
 msgstr "需要"
 
@@ -314,7 +314,7 @@ msgstr "排除"
 msgid "Implements"
 msgstr "实施"
 
-#: CComponentBox.class:220 FPropertyProject.class:1945
+#: CComponentBox.class:220 FPropertyProject.class:1944
 msgid "Provides"
 msgstr "提供"
 
@@ -518,23 +518,23 @@ msgstr "基于libxslt的XSLT工具"
 msgid "Web applications tools"
 msgstr "Web应用程序工具"
 
-#: CComponent.class:113 FPropertyProject.class:1969
+#: CComponent.class:113 FPropertyProject.class:1968
 msgid "Graphical form management"
 msgstr "图形化表单管理"
 
-#: CComponent.class:114 FPropertyProject.class:1975
+#: CComponent.class:114 FPropertyProject.class:1974
 msgid "Event loop management"
 msgstr "事件循环管理"
 
-#: CComponent.class:115 FPropertyProject.class:1981
+#: CComponent.class:115 FPropertyProject.class:1980
 msgid "Image provider"
 msgstr "图像供应程序"
 
-#: CComponent.class:116 FPropertyProject.class:1987
+#: CComponent.class:116 FPropertyProject.class:1986
 msgid "OpenGL display"
 msgstr "OpenGL显示"
 
-#: CComponent.class:342
+#: CComponent.class:338
 msgid "Loading information on component &1..."
 msgstr "正在加载&1组件信息..."
 
@@ -552,7 +552,13 @@ msgstr ""
 "请发送错误报告至:\n"
 "gambas@users.sourceforge.net."
 
-#: Design.module:287
+#: Design.module:284
+msgid ""
+"Do not forget to specify the Gambas version used, your distribution name and "
+"version, and every other information you find useful."
+msgstr ""
+
+#: Design.module:288
 msgid ""
 "The program has returned\n"
 "the value: &1"
@@ -560,13 +566,13 @@ msgstr ""
 "程序返回\n"
 "的值为:&1"
 
-#: Design.module:341 FAbout.class:303 FColorChooser.class:197
+#: Design.module:342 FAbout.class:303 FColorChooser.class:197
 #: FCommit.class:300 FCreateFile.class:822 FFontChooser.class:80
-#: FGotoLine.class:56 FList.class:167 FMain.class:2402
-#: FMakeExecutable.class:146 FMenu.class:1088 FNewTranslation.class:64
+#: FGotoLine.class:56 FList.class:167 FMain.class:2399
+#: FMakeExecutable.class:148 FMenu.class:1088 FNewTranslation.class:64
 #: FOpenProject.class:403 FPasteSpecial.class:198 FProjectEnv.class:325
-#: FPropertyProject.class:242 FSelectIcon.class:266 FText.class:101
-#: Project.module:2654
+#: FPropertyProject.class:242 FSelectIcon.class:268 FText.class:101
+#: Project.module:2656
 msgid "OK"
 msgstr "确定"
 
@@ -660,11 +666,11 @@ msgstr "自定义"
 #: FCreateFile.class:828 FDebugInfo.class:344 FEditor.class:2067
 #: FFindList.class:159 FFind.class:114 FFontChooser.class:86 FForm.class:2565
 #: FGotoLine.class:62 FIconEditor.class:1393 FList.class:107 FMain.class:207
-#: FMakeExecutable.class:152 FMakeInstall.class:280 FMenu.class:1094
+#: FMakeExecutable.class:154 FMakeInstall.class:285 FMenu.class:1093
 #: FNewTranslation.class:70 FOpenProject.class:409 FPasteSpecial.class:204
-#: FProjectEnv.class:331 FPropertyProject.class:1178 FSave.class:125
-#: FSelectIcon.class:271 FTextEditor.class:591 FText.class:107
-#: FTranslate.class:554 Project.module:276
+#: FProjectEnv.class:331 FPropertyProject.class:1177 FSave.class:125
+#: FSelectIcon.class:273 FTextEditor.class:591 FText.class:107
+#: FTranslate.class:561 Project.module:277
 msgid "Cancel"
 msgstr "取消"
 
@@ -748,12 +754,12 @@ msgstr ""
 "该文件与版本#&1冲突。\n"
 "为了使用该文件，必须解决冲突。"
 
-#: FConflict.class:25 FMain.class:1950
+#: FConflict.class:25 FMain.class:1947
 msgid "&Edit"
 msgstr "(&E)编辑"
 
 #: FConflict.class:25 FFindList.class:167 FIconEditor.class:1412
-#: FInfo.class:408 FMakeInstall.class:231 FOption.class:1161 FTips.class:232
+#: FInfo.class:408 FMakeInstall.class:236 FOption.class:1161 FTips.class:232
 msgid "Close"
 msgstr "关闭"
 
@@ -785,7 +791,7 @@ msgstr ""
 "文件已被修改。\n"
 "确定打开另一个文件吗？"
 
-#: FConflict.class:255 FOpenProject.class:320 Project.module:276
+#: FConflict.class:255 FOpenProject.class:320 Project.module:277
 msgid "Open"
 msgstr "打开"
 
@@ -857,7 +863,7 @@ msgstr "无法添加文件。"
 msgid "New file"
 msgstr "新建文件"
 
-#: FCreateFile.class:524 FMain.class:1894
+#: FCreateFile.class:524 FMain.class:1891
 msgid "New"
 msgstr "新建"
 
@@ -866,7 +872,7 @@ msgid "Module"
 msgstr "模块"
 
 #: FCreateFile.class:568 FFindList.class:45 FInfo.class:86
-#: FPropertyProject.class:866
+#: FPropertyProject.class:868
 msgid "Class"
 msgstr "类"
 
@@ -887,8 +893,8 @@ msgstr "样式表"
 msgid "Name"
 msgstr "名称"
 
-#: FCreateFile.class:687 FCreateProject.class:526 FMakeExecutable.class:98
-#: FOption.class:723 FPropertyProject.class:1595
+#: FCreateFile.class:687 FCreateProject.class:526 FMakeExecutable.class:100
+#: FOption.class:723 FPropertyProject.class:1594
 msgid "Options"
 msgstr "选项"
 
@@ -901,7 +907,7 @@ msgid "Height"
 msgstr "高度"
 
 #: FCreateFile.class:729 FCreateProject.class:355 FInfo.class:307
-#: FPropertyProject.class:868
+#: FPropertyProject.class:870
 msgid "Type"
 msgstr "类型"
 
@@ -961,7 +967,7 @@ msgstr "请输入存储的位置。"
 msgid "The project has been successfully created."
 msgstr "创建工程成功。"
 
-#: FCreateProject.class:324 FMain.class:2047
+#: FCreateProject.class:324 FMain.class:2044
 msgid "New project"
 msgstr "新建工程"
 
@@ -1043,7 +1049,7 @@ msgstr "3.工程信息"
 msgid "Identification"
 msgstr "识别标识"
 
-#: FCreateProject.class:646 FPropertyProject.class:1519
+#: FCreateProject.class:646 FPropertyProject.class:1518
 msgid "Title"
 msgstr "标题"
 
@@ -1068,24 +1074,24 @@ msgstr ""
 msgid "not available"
 msgstr "不可用"
 
-#: FDebugExpr.class:391
+#: FDebugExpr.class:387
 msgid "Index"
 msgstr "索引"
 
-#: FDebugExpr.class:393 FDebugInfo.class:21 FProjectEnv.class:59
+#: FDebugExpr.class:389 FDebugInfo.class:21 FProjectEnv.class:59
 #: FPropertyProject.class:125
 msgid "Value"
 msgstr "值"
 
-#: FDebugExpr.class:397
+#: FDebugExpr.class:393
 msgid "Key"
 msgstr ""
 
-#: FDebugExpr.class:403
+#: FDebugExpr.class:399
 msgid "Symbol"
 msgstr "符号"
 
-#: FDebugExpr.class:653
+#: FDebugExpr.class:654
 msgid "Show hidden symbols"
 msgstr "显示隐藏符号"
 
@@ -1114,59 +1120,59 @@ msgstr "确定要清除表达式列表？"
 msgid "Clear"
 msgstr "清除"
 
-#: FDebugInfo.class:662 FMain.class:2337
+#: FDebugInfo.class:668 FMain.class:2334
 msgid "Debug"
 msgstr "调试"
 
-#: FDebugInfo.class:677 FMain.class:2182
+#: FDebugInfo.class:683 FMain.class:2179
 msgid "Console"
 msgstr "控制台"
 
-#: FDebugInfo.class:686
+#: FDebugInfo.class:692
 msgid "Local variables"
 msgstr "局部变量"
 
-#: FDebugInfo.class:698
+#: FDebugInfo.class:704
 msgid "Sort local variables"
 msgstr "排序局部变量"
 
-#: FDebugInfo.class:701
+#: FDebugInfo.class:707
 msgid "Current object"
 msgstr "当前对象"
 
-#: FDebugInfo.class:718
+#: FDebugInfo.class:724
 msgid "Sort object variables"
 msgstr "排序对象变量"
 
-#: FDebugInfo.class:728
+#: FDebugInfo.class:734
 msgid "Watch"
 msgstr "监视"
 
-#: FDebugInfo.class:736
+#: FDebugInfo.class:742
 msgid "Remove all expressions"
 msgstr "删除所有表达式"
 
-#: FDebugInfo.class:743
+#: FDebugInfo.class:749
 msgid "Remove current expression"
 msgstr "删除当前表达式"
 
-#: FDebugInfo.class:750
+#: FDebugInfo.class:756
 msgid "Add expression"
 msgstr "添加表达式"
 
-#: FDebugInfo.class:772 FOption.class:1060
+#: FDebugInfo.class:778 FOption.class:1060
 msgid "Breakpoints"
 msgstr "断点"
 
-#: FDebugInfo.class:786
+#: FDebugInfo.class:792
 msgid "Remove current breakpoint"
 msgstr "删除当前断点"
 
-#: FDebugInfo.class:793
+#: FDebugInfo.class:799
 msgid "Remove all breakpoints"
 msgstr "删除所有断点"
 
-#: FDebugInfo.class:825
+#: FDebugInfo.class:831
 msgid "Stack backtrace"
 msgstr "堆栈回溯"
 
@@ -1181,7 +1187,7 @@ msgstr ""
 "将会丢弃所有改变。"
 
 #: FEditor.class:2067 FForm.class:2565 FIconEditor.class:2032
-#: FTextEditor.class:591 FTranslate.class:648
+#: FTextEditor.class:591 FTranslate.class:655
 msgid "Reload"
 msgstr "重载"
 
@@ -1209,7 +1215,7 @@ msgstr "后退"
 msgid "Open form"
 msgstr "打开窗体"
 
-#: FEditor.class:2753 FForm.class:2928 FMain.class:2021
+#: FEditor.class:2753 FForm.class:2928 FMain.class:2018
 msgid "&Startup class"
 msgstr "(&S)启动类"
 
@@ -1298,7 +1304,7 @@ msgstr "确认全部替换？"
 msgid "Replace"
 msgstr "替换"
 
-#: FFind.class:387 FOutput.class:321 FTranslate.class:523
+#: FFind.class:387 FOutput.class:321 FTranslate.class:530
 msgid "Search string cannot be found."
 msgstr "查找的字符串未找到。"
 
@@ -1412,7 +1418,7 @@ msgstr "全选"
 msgid "Unselect all"
 msgstr "取消所选"
 
-#: FForm.class:3011 FMain.class:207 FTranslate.class:554
+#: FForm.class:3011 FMain.class:207 FTranslate.class:561
 msgid "Delete"
 msgstr "删除"
 
@@ -1532,7 +1538,7 @@ msgstr ""
 msgid "Move tab last"
 msgstr ""
 
-#: FFormStack.class:269 FMain.class:2360
+#: FFormStack.class:269 FMain.class:2357
 msgid "Hierarchy"
 msgstr "层次"
 
@@ -1664,15 +1670,15 @@ msgstr "-"
 msgid "Gambas project"
 msgstr "Gambas工程"
 
-#: FInfo.class:66 Project.module:1033
+#: FInfo.class:66 Project.module:1035
 msgid "Modules"
 msgstr "模块"
 
-#: FInfo.class:67 Project.module:1034
+#: FInfo.class:67 Project.module:1036
 msgid "Classes"
 msgstr "类"
 
-#: FInfo.class:68 Project.module:1036
+#: FInfo.class:68 Project.module:1038
 msgid "Forms"
 msgstr "窗体"
 
@@ -1716,7 +1722,7 @@ msgstr "-"
 msgid "Link to"
 msgstr "连接到"
 
-#: FInfo.class:325 FSelectIcon.class:235
+#: FInfo.class:325 FSelectIcon.class:237
 msgid "Size"
 msgstr "大小"
 
@@ -1733,11 +1739,11 @@ msgid "Edit list property"
 msgstr "编辑列表属性"
 
 #: FList.class:179 FMenu.class:823 FProjectEnv.class:248
-#: FPropertyProject.class:1843
+#: FPropertyProject.class:1842
 msgid "&Insert"
 msgstr "(&I)插入"
 
-#: FList.class:197 FMenu.class:828 FTranslate.class:1417
+#: FList.class:197 FMenu.class:828 FTranslate.class:1430
 msgid "&Delete"
 msgstr "(&D)删除"
 
@@ -1775,384 +1781,384 @@ msgstr ""
 "\n"
 "请安装它们以便进行翻译。"
 
-#: FMain.class:1030
+#: FMain.class:1027
 msgid "Do you really want to update all forms?"
 msgstr "确定更新所有窗体？"
 
-#: FMain.class:1030
+#: FMain.class:1027
 msgid "Update"
 msgstr "更新"
 
-#: FMain.class:1045
+#: FMain.class:1042
 msgid "Unable to update all forms."
 msgstr "无法更新所有窗体。"
 
-#: FMain.class:1204
+#: FMain.class:1201
 msgid ""
 "All backup or generated files will be removed from the project directory."
 msgstr "从工程目录中删除所有备份文件和生成的文件。"
 
-#: FMain.class:1204
+#: FMain.class:1201
 msgid "Clean"
 msgstr "清理"
 
-#: FMain.class:1543
+#: FMain.class:1540
 msgid "&File"
 msgstr "(&F)文件"
 
-#: FMain.class:1547
+#: FMain.class:1544
 msgid "&New project..."
 msgstr "(&N)新建工程..."
 
-#: FMain.class:1554
+#: FMain.class:1551
 msgid "&Open project..."
 msgstr "(&O)打开工程..."
 
-#: FMain.class:1560
+#: FMain.class:1557
 msgid "Open &recent"
 msgstr "打开最近的..."
 
-#: FMain.class:1568
+#: FMain.class:1565
 msgid "Open &example"
 msgstr "(&E)打开示例"
 
-#: FMain.class:1581
+#: FMain.class:1578
 msgid "&Save project"
 msgstr "(&S)保存工程"
 
-#: FMain.class:1588
+#: FMain.class:1585
 msgid "Save project &as..."
 msgstr "(&A)另存工程为..."
 
-#: FMain.class:1598
+#: FMain.class:1595
 msgid "&Quit"
 msgstr "(&Q)退出"
 
-#: FMain.class:1605
+#: FMain.class:1602
 msgid "&Project"
 msgstr "(&P)工程"
 
-#: FMain.class:1609
+#: FMain.class:1606
 msgid "&Compile"
 msgstr "(&C)编译"
 
-#: FMain.class:1616
+#: FMain.class:1613
 msgid "Compile &All"
 msgstr "(&A)全部编译"
 
-#: FMain.class:1627
+#: FMain.class:1624
 msgid "&Translate..."
 msgstr "(&T)翻译..."
 
-#: FMain.class:1637
+#: FMain.class:1634
 msgid "Make"
 msgstr "生成"
 
-#: FMain.class:1641
+#: FMain.class:1638
 msgid "E&xecutable..."
 msgstr "(&X)可执行文件..."
 
-#: FMain.class:1648
+#: FMain.class:1645
 msgid "&Source archive..."
 msgstr "(&S)源归档文件..."
 
-#: FMain.class:1655
+#: FMain.class:1652
 msgid "&Installation package..."
 msgstr "(&I)安装包..."
 
-#: FMain.class:1666
+#: FMain.class:1663
 msgid "&Clean up"
 msgstr "(&C)清理"
 
-#: FMain.class:1672
+#: FMain.class:1669
 msgid "&Refresh"
 msgstr "(&R)刷新"
 
-#: FMain.class:1682
+#: FMain.class:1679
 msgid "&Properties..."
 msgstr "(&P)属性..."
 
-#: FMain.class:1689
+#: FMain.class:1686
 msgid "&Debug"
 msgstr "(&D)调试"
 
-#: FMain.class:1693
+#: FMain.class:1690
 msgid "&Run"
 msgstr "(&R)运行"
 
-#: FMain.class:1704
+#: FMain.class:1701
 msgid "&Pause"
 msgstr "(&P)暂停"
 
-#: FMain.class:1711
+#: FMain.class:1708
 msgid "&Stop"
 msgstr "(&S)停止"
 
-#: FMain.class:1718
+#: FMain.class:1715
 msgid "St&ep"
 msgstr "(&E)步进"
 
-#: FMain.class:1725
+#: FMain.class:1722
 msgid "&Forward"
 msgstr "(&F)前进"
 
-#: FMain.class:1732
+#: FMain.class:1729
 msgid "Finis&h"
 msgstr "(&H)结束"
 
-#: FMain.class:1739
+#: FMain.class:1736
 msgid "Run &until"
 msgstr "(&U)运行到当前行"
 
-#: FMain.class:1750
+#: FMain.class:1747
 msgid "&Toggle breakpoint"
 msgstr "(&T)设置断点"
 
-#: FMain.class:1757
+#: FMain.class:1754
 msgid "Clear &all breakpoints"
 msgstr "(&A)清除全部断点"
 
-#: FMain.class:1766
+#: FMain.class:1763
 msgid "&Watch expression"
 msgstr "(&W)监视表达式"
 
-#: FMain.class:1771
+#: FMain.class:1768
 msgid "Close all &debug windows"
 msgstr "(&D)关闭所有调试窗口"
 
-#: FMain.class:1776
+#: FMain.class:1773
 msgid "&View"
 msgstr "(&V)视图"
 
-#: FMain.class:1780
+#: FMain.class:1777
 msgid "Pro&ject"
 msgstr "(&J)工程"
 
-#: FMain.class:1789
+#: FMain.class:1786
 msgid "&Properties"
 msgstr "(&P)属性页"
 
-#: FMain.class:1797
+#: FMain.class:1794
 msgid "&Toolbox"
 msgstr "(&T)工具箱"
 
-#: FMain.class:1805
+#: FMain.class:1802
 msgid "&Console"
 msgstr "(&C)控制台"
 
-#: FMain.class:1816
+#: FMain.class:1813
 msgid "Close &all windows"
 msgstr "(&A)关闭所有窗口"
 
-#: FMain.class:1822
+#: FMain.class:1819
 msgid "&Tools"
 msgstr "(&T)工具"
 
-#: FMain.class:1825
+#: FMain.class:1822
 msgid "&Find && replace"
 msgstr "(&F)查找和替换"
 
-#: FMain.class:1835
+#: FMain.class:1832
 msgid "&Browse project..."
 msgstr "(&B)浏览工程..."
 
-#: FMain.class:1840
+#: FMain.class:1837
 msgid "&Update all forms"
 msgstr "(&U)更新所有窗体"
 
-#: FMain.class:1845
+#: FMain.class:1842
 msgid "&Database manager..."
 msgstr "(&D)数据库管理器..."
 
-#: FMain.class:1855
+#: FMain.class:1852
 msgid "&Preferences..."
 msgstr "(&P)首选项..."
 
-#: FMain.class:1863
+#: FMain.class:1860
 msgid "&?"
 msgstr "(&H)帮助"
 
-#: FMain.class:1867
+#: FMain.class:1864
 msgid "&Help browser"
 msgstr "(&H)帮助浏览器"
 
-#: FMain.class:1873
+#: FMain.class:1870
 msgid "&Tips of the day"
 msgstr "(&T)今日提示"
 
-#: FMain.class:1882
+#: FMain.class:1879
 msgid "&About Gambas..."
 msgstr "(&A)关于Gambas..."
 
-#: FMain.class:1889
+#: FMain.class:1886
 msgid "Popup"
 msgstr "弹出"
 
-#: FMain.class:1897
+#: FMain.class:1894
 msgid "&Directory"
 msgstr "(&D)目录"
 
-#: FMain.class:1907
+#: FMain.class:1904
 msgid "&Module..."
 msgstr "(&M)模块..."
 
-#: FMain.class:1914
+#: FMain.class:1911
 msgid "&Class..."
 msgstr "(&C)类..."
 
-#: FMain.class:1921
+#: FMain.class:1918
 msgid "&Form..."
 msgstr "(&F)窗体..."
 
-#: FMain.class:1932
+#: FMain.class:1929
 msgid "&Image..."
 msgstr "(&I)图像..."
 
-#: FMain.class:1939
+#: FMain.class:1936
 msgid "&Other..."
 msgstr "(&O)其它..."
 
-#: FMain.class:1956
+#: FMain.class:1953
 msgid "Edit &form"
 msgstr "(&F)编辑窗体"
 
-#: FMain.class:1961
+#: FMain.class:1958
 msgid "Edit &class"
 msgstr "(&C)编辑类"
 
-#: FMain.class:1966
+#: FMain.class:1963
 msgid "Edit with"
 msgstr ""
 
-#: FMain.class:1978
+#: FMain.class:1975
 msgid "&Cut"
 msgstr "(&C)剪切"
 
-#: FMain.class:1984
+#: FMain.class:1981
 msgid "&Copy"
 msgstr "(&C)复制"
 
-#: FMain.class:1990
+#: FMain.class:1987
 msgid "&Paste"
 msgstr "(&P)粘贴"
 
-#: FMain.class:1996
+#: FMain.class:1993
 msgid "&Rename..."
 msgstr "(&R)重命名..."
 
-#: FMain.class:2002
+#: FMain.class:1999
 msgid "&Delete..."
 msgstr "(&D)删除..."
 
-#: FMain.class:2012
+#: FMain.class:2009
 msgid "Copy file pat&h"
 msgstr "(&H)复制文件路径"
 
-#: FMain.class:2055
+#: FMain.class:2052
 msgid "Open project"
 msgstr "打开工程"
 
-#: FMain.class:2063
+#: FMain.class:2060
 msgid "Save project"
 msgstr "保存工程"
 
-#: FMain.class:2071 Project.module:1686
+#: FMain.class:2068 Project.module:1688
 msgid "Save project as"
 msgstr "另存工程"
 
-#: FMain.class:2079 FPropertyProject.class:50
+#: FMain.class:2076 FPropertyProject.class:50
 msgid "Project properties"
 msgstr "工程属性"
 
-#: FMain.class:2087
+#: FMain.class:2084
 msgid "Refresh project"
 msgstr "刷新工程"
 
-#: FMain.class:2095 FOption.class:499
+#: FMain.class:2092 FOption.class:499
 msgid "Preferences"
 msgstr "首选项"
 
-#: FMain.class:2108
+#: FMain.class:2105
 msgid "Translate"
 msgstr "翻译"
 
-#: FMain.class:2116
+#: FMain.class:2113
 msgid "Make source archive"
 msgstr "生成源归档文件"
 
-#: FMain.class:2124 FMakeExecutable.class:81
+#: FMain.class:2121 FMakeExecutable.class:83
 msgid "Make executable"
 msgstr "生成可执行文件"
 
-#: FMain.class:2132 FMakeInstall.class:809
+#: FMain.class:2129 FMakeInstall.class:814
 msgid "Make installation package"
 msgstr "生成安装包"
 
-#: FMain.class:2144 FSelectIcon.class:214
+#: FMain.class:2141 FSelectIcon.class:216
 msgid "Project"
 msgstr "工程"
 
-#: FMain.class:2154
+#: FMain.class:2151
 msgid "Properties sheet"
 msgstr "属性页"
 
-#: FMain.class:2164
+#: FMain.class:2161
 msgid "Form hierarchy"
 msgstr "窗题层级"
 
-#: FMain.class:2173
+#: FMain.class:2170
 msgid "Toolbox"
 msgstr "工具箱"
 
-#: FMain.class:2191
+#: FMain.class:2188
 msgid "Find & replace"
 msgstr "查找和替换"
 
-#: FMain.class:2204
+#: FMain.class:2201
 msgid "Compile"
 msgstr "编译"
 
-#: FMain.class:2212
+#: FMain.class:2209
 msgid "Compile all"
 msgstr "全部编译"
 
-#: FMain.class:2220
+#: FMain.class:2217
 msgid "Run"
 msgstr "运行"
 
-#: FMain.class:2228
+#: FMain.class:2225
 msgid "Pause"
 msgstr "暂停"
 
-#: FMain.class:2236
+#: FMain.class:2233
 msgid "Stop"
 msgstr "停止"
 
-#: FMain.class:2244
+#: FMain.class:2241
 msgid "Step"
 msgstr "步进"
 
-#: FMain.class:2252
+#: FMain.class:2249
 msgid "Forward"
 msgstr "前进"
 
-#: FMain.class:2260
+#: FMain.class:2257
 msgid "Finish current function"
 msgstr "结束当前函数或过程"
 
-#: FMain.class:2269
+#: FMain.class:2266
 msgid "Run until current line"
 msgstr "运行到当前行"
 
-#: FMain.class:2277
+#: FMain.class:2274
 msgid "Toggle breakpoint"
 msgstr "设置断点"
 
-#: FMain.class:2287
+#: FMain.class:2284
 msgid "Watch expression"
 msgstr "监视表达式"
 
-#: FMain.class:2346 FProperty.class:962
+#: FMain.class:2343 FProperty.class:962
 msgid "Properties"
 msgstr "属性"
 
@@ -2164,217 +2170,217 @@ msgstr "Gambas应用程序"
 msgid "Install in the user component directory"
 msgstr "安装到用户组件目录"
 
-#: FMakeExecutable.class:109
-msgid "Run this command after"
-msgstr "然后运行命令："
-
-#: FMakeExecutable.class:114
-msgid "<b>$(FILE)</b> will be replaced by the path of the executable"
-msgstr "<b>$(FILE)</b> 将被可执行文件的路径替换"
-
-#: FMakeExecutable.class:125
-msgid "Keep debugging information in executable"
-msgstr "在可执行文件中保留调试信息"
-
-#: FMakeExecutable.class:130
+#: FMakeExecutable.class:26
 msgid "Create a shortcut on the desktop"
 msgstr "创建桌面快捷方式"
 
-#: FMakeInstall.class:231 Package.module:164
+#: FMakeExecutable.class:111
+msgid "Run this command after"
+msgstr "然后运行命令："
+
+#: FMakeExecutable.class:116
+msgid "<b>$(FILE)</b> will be replaced by the path of the executable"
+msgstr "<b>$(FILE)</b> 将被可执行文件的路径替换"
+
+#: FMakeExecutable.class:127
+msgid "Keep debugging information in executable"
+msgstr "在可执行文件中保留调试信息"
+
+#: FMakeInstall.class:236 Package.module:164
 msgid "The packages have been successfully created."
 msgstr "源代码包创建成功。"
 
-#: FMakeInstall.class:231
+#: FMakeInstall.class:236
 msgid "Retry"
 msgstr "重试"
 
-#: FMakeInstall.class:264
+#: FMakeInstall.class:269
 msgid "Please enter your name."
 msgstr "请输入你的姓名"
 
-#: FMakeInstall.class:269
+#: FMakeInstall.class:274
 msgid "Please enter your e-mail address."
 msgstr "请输入你的电子邮件地址"
 
-#: FMakeInstall.class:280
+#: FMakeInstall.class:285
 msgid "There is no CHANGELOG entry for this release."
 msgstr "本次发布没有更新日志。"
 
-#: FMakeInstall.class:280 FPropertyProject.class:1178 FSave.class:118
-#: FTranslate.class:686 Project.module:2232
+#: FMakeInstall.class:285 FPropertyProject.class:1177 FSave.class:118
+#: FTranslate.class:693 Project.module:2234
 msgid "Continue"
 msgstr "继续"
 
-#: FMakeInstall.class:287
+#: FMakeInstall.class:292
 msgid "Please enter the first CHANGELOG entry."
 msgstr "请输入第一个更改记录项."
 
-#: FMakeInstall.class:297
+#: FMakeInstall.class:302
 msgid "Please choose at least one target distribution."
 msgstr "请选择至少一个分派目标。"
 
-#: FMakeInstall.class:315
+#: FMakeInstall.class:320
 msgid "Please choose the package group for each target distribution."
 msgstr "请为每个分派目标选择包所属的组。"
 
-#: FMakeInstall.class:317
+#: FMakeInstall.class:322
 msgid "Please choose a package group."
 msgstr "请选择包所属的组。"
 
-#: FMakeInstall.class:326
+#: FMakeInstall.class:331
 msgid "Please choose the menu location for each target distribution."
 msgstr "请为每个分派目标选择菜单位置。"
 
-#: FMakeInstall.class:328
+#: FMakeInstall.class:333
 msgid "Please choose a menu location."
 msgstr "请选择菜单位置。"
 
-#: FMakeInstall.class:347
+#: FMakeInstall.class:352
 msgid "The package cannot be stored inside the project directory."
 msgstr "包无法保存在工程目录。"
 
-#: FMakeInstall.class:363
+#: FMakeInstall.class:368
 msgid "Initial release"
 msgstr "首次发布"
 
-#: FMakeInstall.class:599
+#: FMakeInstall.class:604
 msgid "Menus"
 msgstr "菜单"
 
-#: FMakeInstall.class:667
+#: FMakeInstall.class:672
 msgid "Groups"
 msgstr "组"
 
-#: FMakeInstall.class:821
+#: FMakeInstall.class:826
 msgid "1. Package information"
 msgstr "1. 安装包信息"
 
-#: FMakeInstall.class:827
+#: FMakeInstall.class:832
 msgid "Package name"
 msgstr "安装包名称"
 
-#: FMakeInstall.class:844
+#: FMakeInstall.class:849
 msgid "Prefix package name with the vendor name"
 msgstr "安装包名称前缀销售商名称"
 
-#: FMakeInstall.class:849
+#: FMakeInstall.class:854
 msgid "Insert release number in package version"
 msgstr "在安装包版本中插入发布号"
 
-#: FMakeInstall.class:857
+#: FMakeInstall.class:862
 msgid "Maintainer information"
 msgstr "维护者信息"
 
-#: FMakeInstall.class:867
+#: FMakeInstall.class:872
 msgid "Your name"
 msgstr "您的姓名"
 
-#: FMakeInstall.class:883
+#: FMakeInstall.class:888
 msgid "Your e-mail address"
 msgstr "您的电子邮件地址"
 
-#: FMakeInstall.class:899
+#: FMakeInstall.class:904
 msgid "Vendor name"
 msgstr "销售商名称"
 
-#: FMakeInstall.class:912 FPropertyProject.class:1525
+#: FMakeInstall.class:917 FPropertyProject.class:1524
 msgid "Description"
 msgstr "描述"
 
-#: FMakeInstall.class:926
+#: FMakeInstall.class:931
 msgid "Licence"
 msgstr "许可协议"
 
-#: FMakeInstall.class:933
+#: FMakeInstall.class:938
 msgid "General Public Licence"
 msgstr "公共协议"
 
-#: FMakeInstall.class:933
+#: FMakeInstall.class:938
 msgid "Freeware"
 msgstr "自由软件"
 
-#: FMakeInstall.class:933
+#: FMakeInstall.class:938
 msgid "Public Domain"
 msgstr "不受版权保护"
 
-#: FMakeInstall.class:933
+#: FMakeInstall.class:938
 msgid "Lesser General Public Licence"
 msgstr "次要公共协议"
 
-#: FMakeInstall.class:933
+#: FMakeInstall.class:938
 msgid "Other Licence(s)"
 msgstr "其他协议"
 
-#: FMakeInstall.class:933
+#: FMakeInstall.class:938
 msgid "Non-free Licence"
 msgstr "非自由协议"
 
-#: FMakeInstall.class:937
+#: FMakeInstall.class:942
 msgid "2. Changelog"
 msgstr "2. 变更日志"
 
-#: FMakeInstall.class:942
+#: FMakeInstall.class:947
 msgid "Please enter the changes of your project."
 msgstr "请输入工程的变化。"
 
-#: FMakeInstall.class:966
+#: FMakeInstall.class:971
 msgid "3. Target distribution"
 msgstr "3. 分派目标"
 
-#: FMakeInstall.class:990
+#: FMakeInstall.class:995
 msgid "Debian"
 msgstr "-"
 
-#: FMakeInstall.class:1011
+#: FMakeInstall.class:1016
 msgid "Fedora"
 msgstr "-"
 
-#: FMakeInstall.class:1032
+#: FMakeInstall.class:1037
 msgid "Mandriva Linux"
 msgstr "-"
 
-#: FMakeInstall.class:1053
+#: FMakeInstall.class:1058
 msgid "OpenSUSE"
 msgstr "-"
 
-#: FMakeInstall.class:1074
+#: FMakeInstall.class:1079
 msgid "Slackware"
 msgstr "-"
 
-#: FMakeInstall.class:1095
+#: FMakeInstall.class:1100
 msgid "Ubuntu"
 msgstr "-"
 
-#: FMakeInstall.class:1116
+#: FMakeInstall.class:1121
 msgid "Autotools"
 msgstr "自动工具"
 
-#: FMakeInstall.class:1121
+#: FMakeInstall.class:1126
 msgid "4. Package group"
 msgstr "4. 安装包组"
 
-#: FMakeInstall.class:1142
+#: FMakeInstall.class:1147
 msgid "5. Menu entry"
 msgstr "5. 菜单条目"
 
-#: FMakeInstall.class:1165
+#: FMakeInstall.class:1170
 msgid "Categories"
 msgstr "分类"
 
-#: FMakeInstall.class:1175
+#: FMakeInstall.class:1180
 msgid "6. Destination directory"
 msgstr "6. 目的目录"
 
-#: FMakeInstall.class:1185
+#: FMakeInstall.class:1190
 #, fuzzy
 msgid "Create directories for each distribution"
 msgstr "请为每个分派目标选择菜单位置。"
 
-#: FMakeInstall.class:1188
+#: FMakeInstall.class:1193
 msgid "7. Create package"
 msgstr "7. 创建安装包"
 
-#: FMakeInstall.class:1193
+#: FMakeInstall.class:1198
 msgid ""
 "All needed information have been collected. You can now create the "
 "installation packages for your application...\n"
@@ -2405,7 +2411,7 @@ msgstr "错误的组名"
 msgid "This menu is too deep !"
 msgstr "此菜单太深！"
 
-#: FMenu.class:897 FPropertyProject.class:870
+#: FMenu.class:897 FPropertyProject.class:872
 msgid "Group"
 msgstr "组"
 
@@ -2457,7 +2463,7 @@ msgstr "勾选"
 msgid "Click on Insert to add a new menu."
 msgstr "点击插入添加新菜单."
 
-#: FNewTranslation.class:59 FTranslate.class:1402
+#: FNewTranslation.class:59 FTranslate.class:1415
 msgid "New translation"
 msgstr "新建翻译"
 
@@ -2529,7 +2535,7 @@ msgstr "选择主题文件"
 msgid "You need to restart the application to see your changes."
 msgstr "需要重启应用程序使改变生效。"
 
-#: FOption.class:511 FPropertyProject.class:1514
+#: FOption.class:511 FPropertyProject.class:1513
 msgid "General"
 msgstr "通用"
 
@@ -2585,11 +2591,11 @@ msgstr "界面"
 msgid "Show tooltips"
 msgstr "显示工具提示"
 
-#: FOption.class:574 FPropertyProject.class:1658
+#: FOption.class:574 FPropertyProject.class:1657
 msgid "No"
 msgstr "否"
 
-#: FOption.class:574 FPropertyProject.class:1658
+#: FOption.class:574 FPropertyProject.class:1657
 msgid "Yes"
 msgstr "是"
 
@@ -2818,19 +2824,19 @@ msgstr "变量"
 msgid "Project environment"
 msgstr "工程环境"
 
-#: FProjectEnv.class:239 FPropertyProject.class:1834
+#: FProjectEnv.class:239 FPropertyProject.class:1833
 msgid "Arguments"
 msgstr "参数"
 
-#: FProjectEnv.class:253 FPropertyProject.class:1848
+#: FProjectEnv.class:253 FPropertyProject.class:1847
 msgid "&Remove"
 msgstr "(&R)删除"
 
-#: FProjectEnv.class:284 FPropertyProject.class:1876
+#: FProjectEnv.class:284 FPropertyProject.class:1875
 msgid "Environment variables"
 msgstr "环境变量"
 
-#: FProjectItem.class:20 FPropertyProject.class:1542
+#: FProjectItem.class:20 FPropertyProject.class:1541
 msgid "Author(s)"
 msgstr "作者"
 
@@ -2897,139 +2903,139 @@ msgstr " &1组件需要下列组件之一 :<br>&2。"
 msgid "The &1 component needs the &2 component."
 msgstr "&1组件需要&2组件。"
 
-#: FPropertyProject.class:850
+#: FPropertyProject.class:852
 msgid "Cannot write component description file."
 msgstr "无法写组件描述文件。"
 
-#: FPropertyProject.class:1178
+#: FPropertyProject.class:1177
 msgid "You are going to cancel your changes!"
 msgstr "改变将被取消！"
 
-#: FPropertyProject.class:1576
+#: FPropertyProject.class:1575
 msgid "Version"
 msgstr "版本"
 
-#: FPropertyProject.class:1600
+#: FPropertyProject.class:1599
 msgid "Edition"
 msgstr "版本"
 
-#: FPropertyProject.class:1606
+#: FPropertyProject.class:1605
 msgid "Compilation"
 msgstr "编译"
 
-#: FPropertyProject.class:1612
+#: FPropertyProject.class:1611
 msgid "Execution"
 msgstr "执行"
 
-#: FPropertyProject.class:1618
+#: FPropertyProject.class:1617
 msgid "Component"
 msgstr "组件"
 
-#: FPropertyProject.class:1624
+#: FPropertyProject.class:1623
 msgid "Translation"
 msgstr "翻译成:"
 
-#: FPropertyProject.class:1633
+#: FPropertyProject.class:1632
 msgid "Component advancement"
 msgstr "组件升级"
 
-#: FPropertyProject.class:1641
+#: FPropertyProject.class:1640
 msgid "Finished and stable"
 msgstr "稳定的最终版"
 
-#: FPropertyProject.class:1651
+#: FPropertyProject.class:1650
 msgid "This project is a component"
 msgstr "该工程是一个组件"
 
-#: FPropertyProject.class:1668
+#: FPropertyProject.class:1667
 msgid "Stack size"
 msgstr "堆栈大小"
 
-#: FPropertyProject.class:1684
+#: FPropertyProject.class:1683
 msgid "Default language"
 msgstr "缺省语言"
 
-#: FPropertyProject.class:1701
+#: FPropertyProject.class:1700
 msgid "Project is translatable"
 msgstr "工程是可翻译的"
 
-#: FPropertyProject.class:1718
+#: FPropertyProject.class:1717
 msgid "Get version from program"
 msgstr "从程序获得版本"
 
-#: FPropertyProject.class:1734
+#: FPropertyProject.class:1733
 msgid "Form controls are public"
 msgstr "窗体控件是公用的"
 
-#: FPropertyProject.class:1751
+#: FPropertyProject.class:1750
 msgid "Module symbols are public by default"
 msgstr "模块符号缺省是公用的"
 
-#: FPropertyProject.class:1768
+#: FPropertyProject.class:1767
 msgid "Tab size"
 msgstr "制表符大小"
 
-#: FPropertyProject.class:1780
+#: FPropertyProject.class:1779
 msgid "space(s)"
 msgstr "个空格"
 
-#: FPropertyProject.class:1784
+#: FPropertyProject.class:1783
 msgid "Components"
 msgstr "组件"
 
-#: FPropertyProject.class:1789
+#: FPropertyProject.class:1788
 msgid "Show components in beta version"
 msgstr "在beta版本中显示组件"
 
-#: FPropertyProject.class:1794
+#: FPropertyProject.class:1793
 msgid "Show only components used in project"
 msgstr "只显示工程使用的组件"
 
-#: FPropertyProject.class:1806
+#: FPropertyProject.class:1805
 msgid "About &component..."
 msgstr "(&C)关于组件..."
 
-#: FPropertyProject.class:1817
+#: FPropertyProject.class:1816
 msgid "&Reset"
 msgstr "(&R)复位"
 
-#: FPropertyProject.class:1822
+#: FPropertyProject.class:1821
 msgid "Environment"
 msgstr "环境"
 
-#: FPropertyProject.class:1903
+#: FPropertyProject.class:1902
 msgid "Versioning"
 msgstr "版本"
 
-#: FPropertyProject.class:1918
+#: FPropertyProject.class:1917
 msgid "Changes since last commit"
 msgstr "自最近提交以来的变更"
 
-#: FPropertyProject.class:1928
+#: FPropertyProject.class:1927
 msgid "&Update"
 msgstr "(&U)升级"
 
-#: FPropertyProject.class:1934
+#: FPropertyProject.class:1933
 msgid "&Revert..."
 msgstr "(&R)还原..."
 
-#: FPropertyProject.class:1940
+#: FPropertyProject.class:1939
 msgid "&Commit..."
 msgstr "(&C)提交..."
 
-#: FPropertyProject.class:1995
+#: FPropertyProject.class:1994
 msgid "Exported classes"
 msgstr "导出类"
 
-#: FPropertyProject.class:2009
+#: FPropertyProject.class:2008
 msgid "Features"
 msgstr "特征"
 
-#: FPropertyProject.class:2069
+#: FPropertyProject.class:2068
 msgid "&Add"
 msgstr "(&A)添加"
 
-#: FPropertyProject.class:2081
+#: FPropertyProject.class:2080
 msgid "Remove All"
 msgstr "全部删除"
 
@@ -3057,11 +3063,11 @@ msgstr ""
 msgid "&None"
 msgstr "(&N)不保存"
 
-#: FSelectIcon.class:201
+#: FSelectIcon.class:203
 msgid "Select a picture"
 msgstr "选择一个图片"
 
-#: FSelectIcon.class:222
+#: FSelectIcon.class:224
 msgid "Stock"
 msgstr "库存"
 
@@ -3101,135 +3107,135 @@ msgstr "未翻译的"
 msgid "Language"
 msgstr "语言"
 
-#: FTranslate.class:316
+#: FTranslate.class:323
 msgid "Cannot read translation file for language '&1'"
 msgstr "无法读取'&1'语言的翻译文件"
 
-#: FTranslate.class:464
+#: FTranslate.class:471
 msgid "Cannot save translation."
 msgstr "无法保存翻译。"
 
-#: FTranslate.class:554
+#: FTranslate.class:561
 msgid "Do you really want to delete this translation ?"
 msgstr "确定删除此翻译？"
 
-#: FTranslate.class:648
+#: FTranslate.class:655
 msgid "Do you really want to reload this translation ?"
 msgstr "确定重载此翻译？"
 
-#: FTranslate.class:662
+#: FTranslate.class:669
 msgid "Export a translation"
 msgstr "导出翻译"
 
-#: FTranslate.class:664
+#: FTranslate.class:671
 msgid "Translation files"
 msgstr "翻译文件"
 
-#: FTranslate.class:678
+#: FTranslate.class:685
 msgid "Import a translation"
 msgstr "导入翻译"
 
-#: FTranslate.class:686
+#: FTranslate.class:693
 msgid "Warning ! The translation file does not match the current language."
 msgstr "警告！该翻译文件与当前语言不匹配。"
 
-#: FTranslate.class:702
+#: FTranslate.class:709
 msgid "Cannot import translation file."
 msgstr "无法导入翻译文件。"
 
-#: FTranslate.class:754
+#: FTranslate.class:761
 msgid "Translated string symbols do not match untranslated string ones."
 msgstr "翻译后的字符串符号与未翻译的字符串不匹配。"
 
-#: FTranslate.class:767
+#: FTranslate.class:774
 msgid "Everything seems to be correct."
 msgstr "看起来一切正常。"
 
-#: FTranslate.class:785
+#: FTranslate.class:793
 msgid "&1 strings (&2 not translated) - &3 % done"
 msgstr "共&1个字符串(&2个未翻译)-&3%己完成"
 
-#: FTranslate.class:914
+#: FTranslate.class:925
 msgid "The 'msgmerge' command has failed"
 msgstr "'msgmerge'命令失败"
 
-#: FTranslate.class:997
+#: FTranslate.class:1008
 msgid "All files"
 msgstr "所有文件"
 
-#: FTranslate.class:1207
+#: FTranslate.class:1220
 msgid "Project translation"
 msgstr "翻译工程"
 
-#: FTranslate.class:1256
+#: FTranslate.class:1269
 msgid "Show statistics"
 msgstr "显示统计信息"
 
-#: FTranslate.class:1288
+#: FTranslate.class:1301
 msgid "Save translation"
 msgstr "保存翻译"
 
-#: FTranslate.class:1295
+#: FTranslate.class:1308
 msgid "Clear this translation"
 msgstr "清除该翻译"
 
-#: FTranslate.class:1302
+#: FTranslate.class:1315
 msgid "This string must not be translated"
 msgstr "该字符串不必翻译"
 
-#: FTranslate.class:1309
+#: FTranslate.class:1322
 msgid "Copy untranslated string"
 msgstr "复制未翻译字符串"
 
-#: FTranslate.class:1316
+#: FTranslate.class:1329
 msgid "Verify the translation"
 msgstr "校验翻译"
 
-#: FTranslate.class:1323
+#: FTranslate.class:1336
 msgid "Find next untranslated string"
 msgstr "查找下一个未翻译字符串"
 
-#: FTranslate.class:1330
+#: FTranslate.class:1343
 msgid "Find previous untranslated string"
 msgstr "查找上一个未翻译字符串"
 
-#: FTranslate.class:1347
+#: FTranslate.class:1360
 msgid "Find a string in translation"
 msgstr "在翻译中查找字符串"
 
-#: FTranslate.class:1403
+#: FTranslate.class:1416
 msgid "&New..."
 msgstr "(&N)新建..."
 
-#: FTranslate.class:1409
+#: FTranslate.class:1422
 msgid "Reload translation"
 msgstr "重载翻译"
 
-#: FTranslate.class:1410
+#: FTranslate.class:1423
 msgid "&Reload"
 msgstr "(&R)重载"
 
-#: FTranslate.class:1416
+#: FTranslate.class:1429
 msgid "Delete translation"
 msgstr "删除翻译"
 
-#: FTranslate.class:1423
+#: FTranslate.class:1436
 msgid "Import a translation file"
 msgstr "导入翻译文件"
 
-#: FTranslate.class:1424
+#: FTranslate.class:1437
 msgid "&Import..."
 msgstr "(&I)导入..."
 
-#: FTranslate.class:1430
+#: FTranslate.class:1443
 msgid "Export to a translation file"
 msgstr "导出到翻译文件"
 
-#: FTranslate.class:1431
+#: FTranslate.class:1444
 msgid "&Export..."
 msgstr "(&E)导出..."
 
-#: FTranslate.class:1442
+#: FTranslate.class:1455
 msgid "&Close"
 msgstr "(&C)关闭"
 
@@ -3463,22 +3469,27 @@ msgid "Turkish (Turkey)"
 msgstr "土耳其语(土耳其)"
 
 #: Language.module:102
+#, fuzzy
+msgid "Ukrainian (Ukrain)"
+msgstr "加利西亚语(西班牙)"
+
+#: Language.module:104
 msgid "Vietnamese (Vietnam)"
 msgstr "越语(越南)"
 
-#: Language.module:104
+#: Language.module:106
 msgid "Wallon (Belgium)"
 msgstr "瓦隆语(比利时)"
 
-#: Language.module:106
+#: Language.module:108
 msgid "Simplified chinese (China)"
 msgstr "简体中文(中华人民共和国)"
 
-#: Language.module:107
+#: Language.module:109
 msgid "Traditional chinese (Taiwan)"
 msgstr "繁体中文(中华人民共和国台湾省)"
 
-#: Language.module:154
+#: Language.module:156
 msgid "Unknown"
 msgstr "未知的"
 
@@ -3627,11 +3638,11 @@ msgstr "视频"
 msgid "Controls"
 msgstr "控件"
 
-#: Project.module:267
+#: Project.module:268
 msgid "This project does not exist."
 msgstr "该工程不存在。"
 
-#: Project.module:276
+#: Project.module:277
 msgid ""
 "This is a Gambas 1.0 project.\n"
 "\n"
@@ -3641,11 +3652,11 @@ msgstr ""
 "\n"
 "继续打开吗？"
 
-#: Project.module:282
+#: Project.module:283
 msgid "This is not a Gambas 2 project."
 msgstr "非Gambas2工程。"
 
-#: Project.module:288
+#: Project.module:289
 msgid ""
 "This project seems to be already opened.\n"
 "\n"
@@ -3655,59 +3666,59 @@ msgstr ""
 "\n"
 "两次打开同一工程将导致数据丢失。"
 
-#: Project.module:288
+#: Project.module:289
 msgid "Open after all"
 msgstr "继续打开"
 
-#: Project.module:288
+#: Project.module:289
 msgid "Do not open"
 msgstr "不要打开"
 
-#: Project.module:332
+#: Project.module:334
 msgid "This project is read-only."
 msgstr "此工程是只读的。"
 
-#: Project.module:340
+#: Project.module:342
 msgid "Cannot open project file :\n"
 msgstr "无法打开工程文件:\n"
 
-#: Project.module:883
+#: Project.module:885
 msgid "The following classes have circular inheritance:"
 msgstr "下列类存在循环继承:"
 
-#: Project.module:1038
+#: Project.module:1040
 msgid "Data"
 msgstr "数据"
 
-#: Project.module:1072
+#: Project.module:1074
 msgid "read-only"
 msgstr "只读"
 
-#: Project.module:1138
+#: Project.module:1140
 msgid "Loading &1..."
 msgstr "加载&1..."
 
-#: Project.module:1186
+#: Project.module:1188
 msgid "Cannot open file."
 msgstr "无法打开文件。"
 
-#: Project.module:1256
+#: Project.module:1258
 msgid "File not found!"
 msgstr "文件未找到！"
 
-#: Project.module:1369
+#: Project.module:1371
 msgid "in form definition"
 msgstr "在窗体内"
 
-#: Project.module:1373
+#: Project.module:1375
 msgid "at line &1 in &2"
 msgstr "第 &1 行,第 &2 列"
 
-#: Project.module:1504
+#: Project.module:1506
 msgid "This component has no exported class."
 msgstr ""
 
-#: Project.module:1534
+#: Project.module:1536
 msgid ""
 "Some project source files are in conflict.\n"
 "Please solve them if you want to compile the project."
@@ -3715,148 +3726,148 @@ msgstr ""
 "工程某些源文件冲突。\n"
 "请解决这个问题，以便编译工程。"
 
-#: Project.module:1538
+#: Project.module:1540
 msgid "Compiling project"
 msgstr "编译工程"
 
-#: Project.module:1550
+#: Project.module:1552
 msgid "Nothing to do."
 msgstr "没事可干"
 
-#: Project.module:1692
+#: Project.module:1694
 msgid "This project already exists."
 msgstr "该工程己存在。"
 
-#: Project.module:1705
+#: Project.module:1707
 msgid "Unable to save the project."
 msgstr "无法保存工程。"
 
-#: Project.module:1718
+#: Project.module:1720
 msgid "File already exists."
 msgstr "文件己存在。"
 
-#: Project.module:1759
+#: Project.module:1761
 msgid "Cannot copy template file."
 msgstr "无法复制模板文件。"
 
-#: Project.module:1778
+#: Project.module:1780
 msgid "Directory already exists."
 msgstr "目录己存在。"
 
-#: Project.module:1931
+#: Project.module:1933
 msgid "Making executable..."
 msgstr "生成可执行文件..."
 
-#: Project.module:1973
+#: Project.module:1975
 msgid "Cannot make executable."
 msgstr "无法生成可执行文件。"
 
-#: Project.module:2231
+#: Project.module:2233
 msgid "Some components are missing: &1"
 msgstr "部份组件缺失:&1"
 
-#: Project.module:2377
+#: Project.module:2379
 msgid "Cannot write project file."
 msgstr "无法写入工程文件。"
 
-#: Project.module:2478
+#: Project.module:2480
 msgid "Unable to create desktop shortcut."
 msgstr "无法创建桌面快捷方式。"
 
-#: Project.module:2559
+#: Project.module:2561
 msgid "Unable to install component."
 msgstr "无法安装组件。"
 
-#: Project.module:2597
+#: Project.module:2599
 msgid "Unable to uninstall component."
 msgstr "无法卸载组件。"
 
-#: Project.module:2732
+#: Project.module:2737
 msgid "The directory will be removed at the next commit."
 msgstr "目录在下一次提交时删除。"
 
-#: Project.module:2751
+#: Project.module:2756
 msgid "You must define a startup class or form!"
 msgstr "必须定义一个启动类或启动窗体！"
 
-#: Project.module:2778
+#: Project.module:2783
 msgid "Please type a name."
 msgstr "请输入一个名字。"
 
-#: Project.module:2782
+#: Project.module:2787
 msgid "This name contains a forbidden character:"
 msgstr "该名称包含禁用字符:"
 
-#: Project.module:2786
+#: Project.module:2791
 msgid "This name is already used. Choose another one."
 msgstr "该名称已经使用，请另选项一个。"
 
-#: Project.module:2816
+#: Project.module:2821
 msgid ""
 "A class name must begin with a letter or an underscore, followed by any "
 "letter or digit."
 msgstr "类的名字必须用字母或者下划线开头，由字母和数字组成。"
 
-#: Project.module:2996
+#: Project.module:3001
 msgid "Unable to rename '&1'"
 msgstr "无法重命名'&1'"
 
-#: Project.module:3115
+#: Project.module:3120
 msgid "Please type a project name."
 msgstr "请输入一个工程名。"
 
-#: Project.module:3123
+#: Project.module:3128
 msgid "The project name cannot begin with a dot."
 msgstr "工程名称不能用“.”开头。"
 
-#: Project.module:3126
+#: Project.module:3131
 msgid "Non-ASCII characters are forbidden in a project name."
 msgstr "工程名称禁止使用非ASCII字符。"
 
-#: Project.module:3127
+#: Project.module:3132
 msgid ""
 "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr "下列字符禁止用于工程名称: ? * / \\ SPACE"
 
-#: Project.module:3137
+#: Project.module:3142
 msgid "The project directory already exists."
 msgstr "工程目录已经存在。"
 
-#: Project.module:3139
+#: Project.module:3144
 msgid ""
 "The project directory cannot be created because a file with the same name "
 "already exists."
 msgstr "由于有同名的文件存在，无法创建工程目录。"
 
-#: Project.module:3186
+#: Project.module:3191
 msgid "Create source package"
 msgstr "创建源代码包"
 
-#: Project.module:3187
+#: Project.module:3192
 msgid "Source packages"
 msgstr "源代码包"
 
-#: Project.module:3435
+#: Project.module:3440
 msgid "Cannot copy file &1."
 msgstr "无法复制文件&1。"
 
-#: Project.module:3447
+#: Project.module:3452
 msgid "Linking a directory is forbidden."
 msgstr "禁止连接目录。"
 
-#: Project.module:3477
+#: Project.module:3482
 msgid "Cannot create link &1."
 msgstr "无法创建连接&1。"
 
-#: Project.module:3489
+#: Project.module:3494
 msgid "Cannot move a directory inside itself."
 msgstr "无法将目录移动进它自己。"
 
-#: Project.module:3533
+#: Project.module:3538
 msgid "Cannot move file &1."
 msgstr "无法移动文件&1。"
 
-#: Project.module:4069
+#: Project.module:4074
 msgid "modified"
 msgstr "修改过"
 
