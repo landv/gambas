@@ -265,6 +265,12 @@ static GtkWindowGroup *get_window_group(GtkWidget *widget)
     return gtk_window_get_group(NULL);
 }
 
+/*static gboolean close_dialog(GtkButton *button)
+{
+	gtk_button_clicked(button);
+	return FALSE;
+}*/
+
 static void gambas_handle_event(GdkEvent *event)
 {
   GtkWidget *widget;
@@ -274,6 +280,25 @@ static void gambas_handle_event(GdkEvent *event)
 	int x, y, xc, yc;
 	bool real;
 	
+	if (gApplication::_close_next_window && event->type == GDK_EXPOSE)
+	{
+		widget = gtk_get_event_widget(event);
+		if (widget)
+		{
+			//fprintf(stderr, "type: %s\n", G_OBJECT_TYPE_NAME(widget));
+			if (!strcmp(G_OBJECT_TYPE_NAME(gtk_widget_get_toplevel(widget)), "GtkPrintUnixDialog"))
+			{
+				widget = gtk_window_get_default_widget(GTK_WINDOW(gtk_widget_get_toplevel(widget)));
+				if (widget && GTK_IS_BUTTON(widget))
+				{
+					gApplication::_close_next_window = false;
+					gtk_button_clicked(GTK_BUTTON(widget));
+					//g_timeout_add(0, (GSourceFunc)close_dialog, GTK_BUTTON(widget));
+				}
+			}
+		}
+	}
+
 	if (!((event->type >= GDK_MOTION_NOTIFY && event->type <= GDK_LEAVE_NOTIFY) || event->type == GDK_SCROLL))
 		goto __HANDLE_EVENT;
 	
@@ -547,6 +572,7 @@ gControl *gApplication::_enter = NULL;
 gControl *gApplication::_leave = NULL;
 bool (*gApplication::onKeyEvent)(int) = NULL;
 guint32 gApplication::_event_time = 0;
+bool gApplication::_close_next_window = false;
 
 GtkTooltips* gApplication::tipHandle()
 {

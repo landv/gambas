@@ -163,7 +163,7 @@ static int Begin(GB_PAINT *d)
 		}
 		else
 		{
-			dr = GTK_LAYOUT(wid->widget)->bin_window; 
+			dr = wid->widget->window;
 		}
 
 		/*target = 
@@ -1021,8 +1021,11 @@ void PAINT_end()
 void PAINT_clip(int x, int y, int w, int h)
 {
 	GB_PAINT *d = (GB_PAINT *)DRAW.Paint.GetCurrent();
-	cairo_rectangle(CONTEXT(d), x, y, w, h);
-	cairo_clip(CONTEXT(d));
+	if (d)
+	{
+		cairo_rectangle(CONTEXT(d), (double)x, (double)y, (double)w, (double)h);
+		cairo_clip(CONTEXT(d));
+	}
 }
 
 cairo_t *PAINT_get_current_context()

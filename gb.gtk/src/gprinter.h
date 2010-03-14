@@ -23,6 +23,8 @@
 #ifndef __GPRINTER_H
 #define __GPRINTER_H
 
+#include <gtkprinter.h>
+
 class gPrinter
 {
 public:
@@ -83,6 +85,12 @@ public:
 	void (*onEnd)(gPrinter *me);
 	void (*onDraw)(gPrinter *me, GtkPrintContext *context, int page);
 	void (*onPaginate)(gPrinter *me);
+	
+	void defineSettings();
+	void storeSettings();
+	
+	bool _preview;
+	GtkPrinter *_printer;
 	
 private:
 	bool run(bool configure);

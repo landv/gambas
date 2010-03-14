@@ -79,6 +79,7 @@ public:
 	static gControl *_enter;
 	static gControl *_leave;
 	static guint32 _event_time;
+	static bool _close_next_window;
 };
 
 #endif

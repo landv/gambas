@@ -22,31 +22,59 @@
 
 #define __GPRINTER_CPP
 
+#include <unistd.h>
+
 #include "widgets.h"
 #include "gdesktop.h"
 #include "gmainwindow.h"
+#include "gapplication.h"
 #include "gb.form.print.h"
 #include "gprinter.h"
 
+//#define DEBUG_ME 1
+
 static void cb_begin_cancel(GtkPrintOperation *operation, GtkPrintContext *context, gPrinter *printer)
 {
+	if (printer->_preview)
+	{
+		if (printer->onBegin)
+			(*printer->onBegin)(printer, context);
+		return;
+	}
+	
+	#if DEBUG_ME
+	fprintf(stderr, "cb_begin_cancel: %d\n", cairo_surface_get_type(cairo_get_target(gtk_print_context_get_cairo_context(context))));
+	#endif
+	printer->storeSettings();
 	printer->cancel();
 }
 
 static void cb_begin(GtkPrintOperation *operation, GtkPrintContext *context, gPrinter *printer)
 {
+	#if DEBUG_ME
+	fprintf(stderr, "cb_begin\n");
+	#endif
+	printer->defineSettings();
+	//gtk_print_settings_to_file(gtk_print_operation_get_print_settings(operation), "/home/benoit/settings-begin-before.txt", NULL);
 	if (printer->onBegin)
 		(*printer->onBegin)(printer, context);
+	//gtk_print_settings_to_file(gtk_print_operation_get_print_settings(operation), "/home/benoit/settings-begin-after.txt", NULL);
 }
 
 static void cb_end(GtkPrintOperation *operation, GtkPrintContext *context, gPrinter *printer)
 {
+	#if DEBUG_ME
+	fprintf(stderr, "cb_end\n");
+	#endif
 	if (printer->onEnd)
 		(*printer->onEnd)(printer);
 }
 
 static bool cb_paginate(GtkPrintOperation *operation, GtkPrintContext *context, gPrinter *printer)
 {
+	#if DEBUG_ME
+	fprintf(stderr, "cb_paginate\n");
+	#endif
 	if (printer->onPaginate)
 	{
 		(*printer->onPaginate)(printer);
@@ -58,8 +86,34 @@ static bool cb_paginate(GtkPrintOperation *operation, GtkPrintContext *context, 
 
 static void cb_draw(GtkPrintOperation *operation, GtkPrintContext *context, int page, gPrinter *printer)
 {
+	#if DEBUG_ME
+	fprintf(stderr, "cb_draw\n");
+	#endif
 	if (printer->onDraw)
 		(*printer->onDraw)(printer, context, page);
+}
+
+static gboolean cb_preview(GtkPrintOperation *operation, GtkPrintOperationPreview *preview,GtkPrintContext *context, GtkWindow *parent, gPrinter *printer)
+{
+	#if DEBUG_ME
+	fprintf(stderr, "cb_preview\n");
+	#endif
+	printer->_preview = true;
+	return FALSE;
+}
+
+static gboolean find_default_printer(GtkPrinter *gtk_printer, gPrinter *printer)
+{
+	if (!printer->name())
+		printer->setName(gtk_printer_get_name(gtk_printer));
+	
+	if (gtk_printer_is_default(gtk_printer))
+	{
+		printer->setName(gtk_printer_get_name(gtk_printer));
+		return TRUE;
+	}
+	
+	return FALSE;
 }
 
 gPrinter::gPrinter()
@@ -70,6 +124,8 @@ gPrinter::gPrinter()
 	_page_count = 1;
 	_page_count_set = false;
 	
+	gtk_enumerate_printers((GtkPrinterFunc)find_default_printer, this, NULL, TRUE);
+
 	setPaperModel(GB_PRINT_A4);
 	setUseFullPage(false);
 	
@@ -85,16 +141,39 @@ gPrinter::~gPrinter()
 	g_object_unref(G_OBJECT(_page));
 }
 
+void gPrinter::storeSettings()
+{
+	if (!_operation)
+		return;
+	
+	g_object_unref(G_OBJECT(_settings));
+	_settings = GTK_PRINT_SETTINGS(g_object_ref(gtk_print_operation_get_print_settings(_operation)));
+	//gtk_print_settings_to_file(_settings, "/home/benoit/settings.txt", NULL);
+}
+
+void gPrinter::defineSettings()
+{
+	if (!_operation)
+		return;
+	
+	gtk_print_operation_set_print_settings(_operation, _settings);
+}
+
 bool gPrinter::run(bool configure)
 {
 	GtkPrintOperation *operation;
   GtkPrintOperationResult res;
+	GtkPrintOperationAction action;
 	gMainWindow *active;
 	GError *error;
+	const char *file;
 	
-  operation = gtk_print_operation_new();
-	if (!configure)
-		_operation = operation;
+	#if DEBUG_ME
+	fprintf(stderr, "gPrinter::run\n");
+	#endif
+
+	operation = gtk_print_operation_new();
+	_operation = operation;
 	
 	gtk_print_operation_set_n_pages(operation, _page_count);
 	gtk_print_operation_set_use_full_page(operation, _use_full_page);
@@ -104,7 +183,12 @@ bool gPrinter::run(bool configure)
   
 	if (configure)
 	{
+		_preview = false;
 		g_signal_connect(operation, "begin_print", G_CALLBACK(cb_begin_cancel), this);
+		g_signal_connect(operation, "preview", G_CALLBACK(cb_preview), this);
+		g_signal_connect(operation, "end_print", G_CALLBACK(cb_end), this);
+		g_signal_connect(operation, "paginate", G_CALLBACK(cb_paginate), this);
+		g_signal_connect(operation, "draw_page", G_CALLBACK(cb_draw), this);
 	}
 	else
 	{
@@ -116,29 +200,45 @@ bool gPrinter::run(bool configure)
 	
 	active = gDesktop::activeWindow();
 	
-  res = gtk_print_operation_run(operation, 
-		configure ? GTK_PRINT_OPERATION_ACTION_PRINT_DIALOG : GTK_PRINT_OPERATION_ACTION_PRINT,	
-		active ? GTK_WINDOW(active->border) : NULL, &error);
+	action = GTK_PRINT_OPERATION_ACTION_PRINT_DIALOG;
+	if (!configure)
+	{
+		file = outputFileName();
+		if (file) unlink(file);
+		gApplication::_close_next_window = true;
+	}
 	
+	//gtk_print_settings_to_file(gtk_print_operation_get_print_settings(operation), "/home/benoit/settings-run-before.txt", NULL);
+
+	res = gtk_print_operation_run(operation, action, active ? GTK_WINDOW(active->border) : NULL, &error);
+	
+	//gtk_print_settings_to_file(gtk_print_operation_get_print_settings(operation), "/home/benoit/settings-run-after.txt", NULL);
+	
+	if (_preview)
+	{
+		_preview = false;
+		res = GTK_PRINT_OPERATION_RESULT_CANCEL;
+	}
+
 	if (res == GTK_PRINT_OPERATION_RESULT_ERROR)
 	{
+		#if DEBUG_ME
+		fprintf(stderr, "error: %s\n", error->message);
+		#endif
 		g_error_free(error);
 	}
-	else if (res == GTK_PRINT_OPERATION_RESULT_APPLY)
+	else if (res == GTK_PRINT_OPERATION_RESULT_CANCEL)
 	{
-		g_object_unref(G_OBJECT(_settings));
-		_settings = GTK_PRINT_SETTINGS(g_object_ref(gtk_print_operation_get_print_settings(operation)));
+		#if DEBUG_ME
+		fprintf(stderr, "cancel\n");
+		#endif
 	}
 
 	g_object_unref(G_OBJECT(operation));
+	_operation = NULL;
 	
 	if (!configure)
-	{
-		_operation = NULL;
 		_page_count_set = false;
-	}
-	//else
-	//	gtk_print_settings_to_file(_settings, "/home/benoit/settings.txt", NULL);
 	
 	return res != GTK_PRINT_OPERATION_RESULT_APPLY;
 }
@@ -148,6 +248,9 @@ void gPrinter::cancel()
 	if (!_operation)
 		return;
 	
+	#if DEBUG_ME
+	fprintf(stderr, "gPrinter::cancel\n");
+	#endif
 	gtk_print_operation_cancel(_operation);
 }
 
@@ -350,7 +453,7 @@ const char *gPrinter::outputFileName() const
 {
 	const char *uri;
 	
-	uri = gtk_print_settings_get(_settings, "output-uri");
+	uri = gtk_print_settings_get(_settings, GTK_PRINT_SETTINGS_OUTPUT_URI);
 	
 	if (!uri)
 		return NULL;
@@ -369,8 +472,6 @@ void gPrinter::setOutputFileName(const char *file)
 	strcpy(uri, "file://");
 	strcat(uri, file);
 	
-	gtk_print_settings_set(_settings, GTK_PRINT_SETTINGS_OUTPUT_URI, uri);	
-
 	if (g_str_has_suffix(uri, ".ps"))
 		format = "ps";
 	else if (g_str_has_suffix(uri, ".pdf"))
@@ -381,6 +482,8 @@ void gPrinter::setOutputFileName(const char *file)
 		format = NULL;
 
 	// It does not work!!!
-	// if (format)
-	//	 gtk_print_settings_set(_settings, GTK_PRINT_SETTINGS_OUTPUT_FILE_FORMAT, format);
+	if (format)
+		gtk_print_settings_set(_settings, GTK_PRINT_SETTINGS_OUTPUT_FILE_FORMAT, format);
+
+	gtk_print_settings_set(_settings, GTK_PRINT_SETTINGS_OUTPUT_URI, uri);	
 }
