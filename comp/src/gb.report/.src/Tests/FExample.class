@@ -60,21 +60,34 @@ End
 
 Public Sub Test2()
   
-  Dim hHBox As ReportHBox
-  Dim hCloner As ReportCloner
+  Dim hHBox As ReportPanel
+  Dim himg As ReportImage
+  Dim hline As ReportLine
+  Report.Padding = "2 cm"
   
-  Report.Padding = "2cm"
-  hCloner = New ReportCloner(Report)
-  hCloner.Expand = True
-  hHBox = New ReportHBox(hCloner)
-  hHBox.Border.Bottom = False
-  hHBox.Border.Left = False
-  hHBox.Height = "2cm"
+  hHBox = New ReportPanel(report)
+  hHBox.Arrangement = Arrange.Fill
+  himg = New ReportImage(hhBox)
+  hline = New Reportline(hHBox)
+  hline.LineColor = color.Red
+  
+  hline = New Reportline(hHBox)
+  hline.LineColor = color.Red
+  hline.Direction = Align.TopRight
+  hHBox.Height = "5 cm"
+    'himg.Width = "2 cm"
+  'hHBox.Border.Bottom = False
+  'hHBox.Border.Left = False
+  'hHBox.Height = "2cm"
+  'hHBox.Border.Width = "2 mm"
   hHBox.Border.Style = Line.Solid
   
-  hCloner.Count = 3
+  himg.Image = Image.Load("new-logo.png")
   
-  
+  hHBox.Padding = "2 mm"
+  hHBox = New ReportPanel(hHBox)
+  hHBox.Expand = True
+  hHBox.Border.Style = Line.Solid
 End
 
 
@@ -482,7 +495,7 @@ End
 
 Public Sub Form_Open()
 
-  RadioButton1.Value = True
+  RadioButton2.Value = True
 
 End
 

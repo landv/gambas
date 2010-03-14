@@ -8,6 +8,8 @@ Public Const _IsContainer As Boolean = True
 Public Const _Group As String = "Container"
 Public Const _Properties As String = "*,Spacing{ReportCoord}"
 
+Public _Arrangement As Integer
+
 Private $aChild As New TControl[]
 Private $fSpacing As Float
 Private $sSpacing As String
@@ -270,4 +272,331 @@ Public Sub _GenerateClones()
   
   
 End
+
+
+Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer) As Float
+  Dim hChildHints As TSizeHint
+  Dim hChild As TControl
+  Dim iChildrenH As Float
+  Dim PageSExp As New Float[]
+  Dim PageNExp As New Integer[]
+  Dim iPage, nbPage As Integer
+  Dim aPage As New CPageInfo[]
+  Dim aPageItems As New CPageInfo
+  Dim iNExp As Integer
+  Dim fSExp As Float
+  Dim fSpc As Float
+  Dim fPdg As Float
+  Dim bFirst As Boolean
+  Dim fH, hW, fW As Float
+  Dim i As Integer
+  Dim tmpX As Float
+  Dim aIgnored As New TControl[]  
+  
+  If _Arrangement = Arrange.Vertical Then 
+
+  
+    fSpc = IIf(Me._RelativeSpacing, H * Me._Spacing / 100, Me._Spacing) 'ME._Spacing
+    fPdg = Me._Padding
+    
+  
+    
+    X = fPdg
+    Y = fPdg
+    W -= fPdg * 2
+    H -= fPdg * 2
+    tmpX = X
+   
+    'Calcul des zone libres pour l'extention et 
+    'repartition des controles par pages
+     
+     For Each hChild In Me.Children
+      
+      hChildHints = hChild.ctrl._GetSizeHints(W, H - fSExp, W, H)
+      
+        If hChild.Ctrl.Ignore Then 
+          aIgnored.Add(hchild)
+          Continue
+        Endif
+      
+      If hChild.ctrl.Expand Then Inc iNExp
+  
+      If fSExp + hChildHints.Height > H And Not Me Is Report Then 
+        fSExp -= fSpc
+        aPageItems.SExp = H - fsExp
+        aPageItems.NExp = iNExp
+        aPage.Add(aPageItems)
+        aPageItems = New CPageInfo
+        fsExp = 0
+        iNExp = 0
+  
+      Endif
+        
+        fSExp += hChildHints.Height
+  
+        hChild.RelPage = aPage.Count
+        hChild.RealPage = ContPage + aPage.Count
+        aPageItems.Children.Add(hChild)
+        fSExp += fSpc
+    Next
+    
+    fSExp -= fSpc '* 2 ' * iNExp
+    fSExp = H - fSExp
+    aPage.Add(aPageItems)
+    aPageItems.SExp = fSExp
+    aPageItems.NExp = iNExp
+    
+    If aPage.Count = 1 Then 
+      For Each hChild In aPage[0].Children
+        hChild.RelPage = -1
+      Next 
+    Endif
+    
+    For i = 0 To aPage.Max
+    
+       X = fPdg
+       Y = fPdg
+       'W -= fPdg * 2
+       'H -= fPdg * 2
+       bFirst = True
+      
+      For Each hChild In aPage[i].Children
+        If hchild.Ctrl.Ignore Then Continue
+        hChildHints = hChild.ctrl._GetSizeHints(W, H - Y, W, H)
+        ' PRINT Object.Class(hChild)
+        ' PRINT W, H - Y
+        ' PRINT hChildHints.Width, hChildHints.Height
+        
+  
+        
+        If Not bFirst Then 
+          Y += fSpc
+        Endif
+        
+        bFirst = False
+        
+        If hChild.ctrl.Expand Then 
+          Try fH = hChildHints.Height + (aPage[i].SExp / aPage[i].NExp) '- fSpc
+        Else 
+          fH = hChildHints.Height '- fSpc
+        Endif 
+        
+        iPage = iPage + hChild._SetGeometry(X, Y, W, fH)
+        
+            ' If Left(hchild.ctrl.tag, 1) = "*" Then 
+            ' 
+            '   ' PRINT "SetGeometry(" & X & ", " & Y & ", " & W & ", " & fH & ")"
+            '   ' PRINT hChild.RealTop
+            '   ' PRINT "page sexp:" & aPage[i].sExp, aPage[i].Nexp
+            '   ' PRINT hChildHints.Height
+            '   ' PRINT H
+            ' End If
+        Y += fH
+  
+      Next
+      
+    Next 
+    For Each hchild In aIgnored
+      hchild._SetGeometry(hchild.Ctrl._Left, hchild.Ctrl._Top, hchild.Ctrl._Width, hchild.Ctrl._Height)
+    Next 
+  
+    
+    Return aPage.Max + iPage
+  
+  
+  
+  
+  Endif
+  
+  '*******************************
+  '*   Horizontal arrangement    *
+  '*******************************
+  
+  If _Arrangement = Arrange.Horizontal Then
+  
+    fSpc = IIf(Me._RelativeSpacing, W * Me._Spacing / 100, Me._Spacing) 'ME._Spacing
+    fPdg = Me._Padding
+    
+    'SUPER._SetGeometry(X, Y, W, H)
+      
+    X = fPdg
+    Y = fPdg
+    W -= fPdg * 2
+    H -= fPdg * 2
+    
+    For Each hChild In Me.Children
+      If hChild.Ctrl.Ignore Then Continue
+      hChildHints = hChild.ctrl._GetSizeHints(W - fSExp, H, W, H)
+      
+      If hChild.ctrl.Expand Then 
+        Inc iNExp
+      Else 
+        fSExp += hChildHints.Width
+      Endif
+      
+      fSExp += fSpc
+      
+    Next
+    
+    fSExp -= fSpc
+    fSExp = W - fSExp
+    
+    bFirst = True
+    
+    
+    For Each hChild In Me.Children
+       If hChild.Ctrl.Ignore Then 
+          aIgnored.Add(hChild)
+          Continue
+        Endif
+      hChildHints = hChild.ctrl._GetSizeHints(W - X, H, W, H)
+      
+      If Not bFirst Then 
+        X += fSpc
+      Endif
+      
+      bFirst = False
+      
+      If hChild.ctrl.Expand Then 
+        fW = fSExp / iNExp 
+      Else 
+        fW = hChildHints.Width
+      Endif 
+      
+      nbPage = hChild._SetGeometry(X, Y, fW, h)
+  
+      If nbPage > iPage Then iPage = nbPage
+      X += fW
+      
+    Next
+    
+    For Each hChild In aIgnored
+      hchild._SetGeometry(hchild.Ctrl._Left, hchild.Ctrl._Top, hchild.Ctrl._Width, hchild.Ctrl._Height)
+    Next
+    
+    
+    Return iPage
+  Endif
+  
+  '*******************************
+  '*       Fill arrangement      *
+  '*******************************
+  
+  If _Arrangement = Arrange.Fill Then
+      fPdg = Me._Padding
+    
+    'SUPER._SetGeometry(X, Y, W, H)
+      
+      X = fPdg
+      Y = fPdg
+      W -= fPdg * 2
+      H -= fPdg * 2
+      
+      For Each hChild In Me.Children
+        If hChild.Ctrl.Ignore Then 
+          aIgnored.Add(hChild)
+          Continue
+        Endif
+        hChildHints = hChild.ctrl._GetSizeHints(W - X, H, W, H)
+        hchild._SetGeometry(X, Y, W, H)
+      Next
+    
+    For Each hChild In aIgnored
+      hchild._SetGeometry(hchild.Ctrl._Left, hchild.Ctrl._Top, hchild.Ctrl._Width, hchild.Ctrl._Height)
+    Next
+  
+  Endif
+  
+End
+
+Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float) As TSizeHint
+  
+    'DIM aChildHints AS Integer[]
+  Dim hChild As TControl
+  'DIM iChildrenH AS Integer
+  Dim fHeight As Float
+  Dim hChildHints As TSizeHint
+  Dim hMyHints As New TSizeHint
+  Dim fSpacing As Float
+  Dim fPadding As Float
+  
+  '*******************************
+  '*    Vertical arrangement     *
+  '*******************************
+  If _Arrangement = Arrange.Vertical Then
+  
+    fSpacing = IIf(Me._RelativeSpacing, TotalHeight * Me._Spacing / 100, Me._Spacing)
+    
+    For Each hChild In Me.Children
+      'Obtention des volontées des enfants
+      'PRINT "GetSizeHint  : " & Object.Type(hchild.Ctrl)
+      hChildHints = hChild.ctrl._GetSizeHints(AvailableW, AvailableH - hMyHints.Height, AvailableW, AvailableH)
+      If Not hchild.Ctrl.Ignore Then hMyHints.Height += hChildHints.Height + fSpacing 'ME._Spacing
+      If hMyHints.Width < hChildHints.Width Then hMyHints.Width = hChildHints.Width
+    Next 
+      hMyHints.Height -= fSpacing 'ME._Spacing
+      hMyHints.Height += 2 * Me._Padding
+    'Je dit que moi je veux toute la largeur
+    fHeight = Me._Height 'MRTools.RealHeight(ME)
+    
+    If hMyHints.Height < fHeight And Not Me.Autoresize Then hMyHints.Height = fHeight
+    If Me._RelativeHeight Then hMyHints.Height = AvailableH * Me._Height / 100
+    If hMyHints.Height > AvailableH And Me.Expand Then hMyHints.Height = AvailableH
+    
+    If Not Me.Autoresize Then 
+      If Me._RelativeWidth Then hMyHints.Width = AvailableW * Me._Width / 100
+      hMyHints.Width = Me._Width 'MRTools.RealWidth(ME)
+    Endif
+    
+    Return hMyHints
+
+  Endif
+  
+  '*******************************
+  '*   Horizontal arrangement    *
+  '*******************************
+  If _Arrangement = Arrange.Horizontal Then
+      
+    fSpacing = IIf(Me._RelativeSpacing, TotalWidth * Me._Spacing / 100, Me._Spacing)
+    
+    For Each hChild In Me.Children
+      'PRINT "GetSizeHint  : " & Object.Type(hchild.Ctrl)
+      'Obtention des volontées des enfants
+      hChildHints = hChild.ctrl._GetSizeHints(AvailableW - hMyHints.Width, AvailableH, AvailableW, AvailableH)
+      If Not hchild.Ctrl.Ignore Then hMyHints.Width += hChildHints.Width + fSpacing 'ME._Spacing
+      If hMyHints.Height < hChildHints.Height Then hMyHints.Height = hChildHints.Height
+    Next 
+      hMyHints.Width -= fSpacing 'ME._Spacing
+      hMyHints.Width += 2 * Me._Padding
+      If Me._RelativeWidth Then hMyHints.Width = AvailableW * Me._Width / 100
+    'je veut ma hauteur !
+    If Not Me.Autoresize Then 
+      hMyHints.Height = Me._Height
+      If Me._RelativeHeight Then hMyHints.Height = AvailableH * Me._Height / 100
+    Endif
+      
+    
+    Return hMyHints
+  Endif
+  
+  
+  '*******************************
+  '*       Fill arrangement      *
+  '*******************************
+  If _Arrangement = Arrange.Fill Then
+  
+    'For Each hChild In Me.Children
+      'PRINT "GetSizeHint  : " & Object.Type(hchild.Ctrl)
+      'Obtention des volontées des enfants
+      'hChildHints = hChild.ctrl._GetSizeHints(AvailableW - hMyHints.Width, AvailableH, AvailableW, AvailableH)
+      'If Not hchild.Ctrl.Ignore Then hMyHints.Width += hChildHints.Width + fSpacing 'ME._Spacing
+      'If hMyHints.Height < hChildHints.Height Then hMyHints.Height = hChildHints.Height
+      hMyHints.Width = Me._Height
+      hMyHints.Height = Me._Height
+      
+    'Next 
+    Return hMyHints
+  Endif
+End
+
 

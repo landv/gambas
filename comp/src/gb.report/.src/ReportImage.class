@@ -65,5 +65,8 @@ End
 Private Sub Image_Write(Value As Image)
 
   $hPic = Value
+  Me.Width = $hpic.Width & " px"
+  Me.Height = $hpic.Height & " px"
+  
 
 End

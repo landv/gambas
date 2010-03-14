@@ -49,6 +49,25 @@ Bottom
 C
 i
 35
+#Arrange
+
+CO
+None
+C
+i
+0
+Horizontal
+C
+i
+1
+Vertical
+C
+i
+2
+Full
+C
+i
+5
 #Line
 
 CO
@@ -251,6 +270,14 @@ _GenerateClones
 m
 
 
+_SetChildGeometry
+m
+f
+(X)f(Y)f(W)f(H)f(ContPage)i
+_GetSizeHints
+m
+TSizeHint
+(AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f
 #ReportControl
 
 
@@ -475,14 +502,10 @@ _Properties
 C
 s
 *
-_GetSizeHints
+_new
 m
-TSizeHint
-(AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f
-_SetChildGeometry
-m
-f
-(X)f(Y)f(W)f(H)f(ContPage)i
+
+
 _Free
 m
 
@@ -568,6 +591,17 @@ _Paint
 m
 
 (Page)i(X)f(Y)f(hControl)TControl;(VirtualId)i
+#ReportPanel
+ReportContainer
+C
+Arrangement
+p
+i
+
+_new
+m
+
+
 #ReportSection
 ReportContainer
 C
@@ -651,14 +685,10 @@ _Properties
 C
 s
 *
-_GetSizeHints
+_new
 m
-TSizeHint
-(AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f
-_SetChildGeometry
-m
-f
-(X)f(Y)f(W)f(H)f(ContPage)i
+
+
 _Free
 m
 
