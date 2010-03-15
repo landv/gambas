@@ -38,7 +38,7 @@ Public Sub Layout()
   
   If Not $bLayoutIsDirty And $sOldDeviceName = Paint.Device.Name Then Return 
   $sOldDeviceName = Paint.Device.Name
-  MTools.ReportResolution = Paint.ResolutionX
+  'MTools.ReportResolution = Paint.ResolutionX
   If Me.Parent = Null Then 
     Me.Width = (Paint.Width / $fScale) & " px"
     Me.Height = (Paint.Height / $fScale) & " px"
@@ -48,7 +48,7 @@ Public Sub Layout()
   $hReportTControl.ctrl = Me
   
   $iCount = $hReportTControl._SetGeometry(0, 0, Me._Width, Me._Height) + 1
-  MTools.PageCount = $iCount
+  'MTools.PageCount = $iCount
   $bLayoutIsDirty = False
   
 End

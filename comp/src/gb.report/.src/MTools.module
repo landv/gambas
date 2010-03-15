@@ -1,8 +1,8 @@
 ' Gambas module file
 
-Public PageCount As Integer = 0
+'Public PageCount As Integer = 0
 'Public ReportZoom As Float '= 1
-Public ReportResolution As Float '= 72
+'Public ReportResolution As Float '= 72
 
 Public DrawCount As Integer
 
@@ -15,7 +15,7 @@ Public Function UnitsToPixels(Value As Float) As Float
   
   Dim f As Float
   
-  f = Units.GetFactorUnitToInch("cm") * ReportResolution
+  f = Units.GetFactorUnitToInch("cm") * Paint.ResolutionX 'ReportResolution
   
   Return Value * f 
 End
@@ -23,7 +23,7 @@ End
 Public Function PixelsToUnits(Value As Integer) As Float
   Dim f As Float
   
-  f = Units.GetFactorUnitToInch("cm") * ReportResolution
+  f = Units.GetFactorUnitToInch("cm") * Paint.ResolutionX 'ReportResolution
     
   Return (Value) / f
 End

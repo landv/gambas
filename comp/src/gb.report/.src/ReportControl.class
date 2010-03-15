@@ -65,6 +65,7 @@ Property Expand As Boolean
 Property Ignore As Boolean
 
 Property Autoresize As Boolean
+Property Read {Report} As Report
 
 
 Public Sub _New(Optional Parent As ReportContainer = Null)
@@ -345,3 +346,15 @@ Private Sub Ignore_Write(Value As Boolean)
 
 End
 
+
+Private Function Report_Read() As Report
+
+  Dim hCont As Object
+  If Me Is Report Then Return Me
+  hcont = Me.Parent
+  Do
+    If hcont Is Report Then Return hcont
+    hcont = hcont.Parent
+  Loop
+
+End

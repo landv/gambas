@@ -64,7 +64,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   
   
   If Not IsNull(Me.Font) Then Paint.Font = Me.Font
-  Paint.Font.size = Paint.Font.size / Desktop.Resolution * mTools.ReportResolution
+  Paint.Font.size = Paint.Font.size / Desktop.Resolution * Paint.ResolutionX 'mTools.ReportResolution
  
   If Me._Width = 0 Then 
     hMyHints.Width = AvailableW
