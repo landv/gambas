@@ -1,4 +1,29 @@
 -------------------------------------------------------------------------------
+ gambas2-2.20.2 - 15 Mar 2010
+-------------------------------------------------------------------------------
+
+[CONFIGURATION]
+* BUG: Add missing symbolic links on 'missing' and 'install-sh' files.
+* BUG: Backport the 'reconf' script from Gambas 3.
+
+[DEVELOPMENT ENVIRONMENT]
+* BUG: Don't try to replace underscores in project names when creating
+  *.deb packages. It does not work, and apparently dpkg-buildpackage has no
+  problem with them.
+
+[INTERPRETER]
+* BUG: Prevent a crash if during a _free special method, an element is
+  removed from a collection being freed.
+
+[GB.GTK]
+* BUG: ComboBox cannot raise its click event recursively anymore.
+
+[GB.QT]
+* BUG: ComboBox cannot raise its click event recursively anymore.
+* BUG: TrayIcons cannot be released twice anymore, which prevents a crash.
+
+
+-------------------------------------------------------------------------------
  gambas2-2.20.1 - 07 Mar 2010
 -------------------------------------------------------------------------------
 
