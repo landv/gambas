@@ -520,9 +520,10 @@ Public Sub Button1_Click()
   MyPrinter.Orientation = Printer.Portrait
   MyPrinter.Paper = MyPrinter.A4
   
-  MyPrinter.OutputFile = User.Home &/ "ouput.pdf"
+  MyPrinter.OutputFile = User.Home &/ "output.pdf"
   MyPrinter.Count = 1
   'report.Debug = True
+  If MyPrinter.Configure() Then Return
   MyPrinter.Print
   
 

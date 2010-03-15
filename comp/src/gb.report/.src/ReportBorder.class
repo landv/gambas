@@ -34,6 +34,8 @@ Static Public Function _get(sValue As String) As ReportBorder
   
   If Not sValue Then Return hReportBorder
   
+  hReportBorder.Style = ReportBorder.Solid
+  
   For Each sElt In Split(sValue, ",", "[]", True, True)
   
     Select Case UCase(sElt)
@@ -50,8 +52,6 @@ Static Public Function _get(sValue As String) As ReportBorder
       Case "RIGHT"
         If Not bReset Then bReset = ResetBorder(hReportBorder)
         hReportBorder.Right = True
-      Case "SOLID"
-        hReportBorder.Style = ReportBorder.Solid
       
       Case Else
         If sElt Begins "&H" Then
@@ -72,8 +72,8 @@ Public Function ToString() As String
   
   Dim aValue As New String[]
   
-  If Me.Style = ReportBorder.None Then aValue.Add("None")
-  If Me.Style = ReportBorder.Solid Then aValue.Add("Solid")
+  If Me.Style = ReportBorder.None Then Return 'aValue.Add("None")
+  'If Me.Style = ReportBorder.Solid Then aValue.Add("Solid")
   aValue.Add(Me.Width)
   If Me.Top Then aValue.Add("Top")
   If Me.Bottom Then aValue.Add("Bottom")
