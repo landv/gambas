@@ -481,9 +481,9 @@ void gPrinter::setOutputFileName(const char *file)
 	else
 		format = NULL;
 
-	// It does not work!!!
-	if (format)
-		gtk_print_settings_set(_settings, GTK_PRINT_SETTINGS_OUTPUT_FILE_FORMAT, format);
-
 	gtk_print_settings_set(_settings, GTK_PRINT_SETTINGS_OUTPUT_URI, uri);	
+
+	// It does not work!!!
+	//if (format)
+	//	gtk_print_settings_set(_settings, GTK_PRINT_SETTINGS_OUTPUT_FILE_FORMAT, format);
 }
