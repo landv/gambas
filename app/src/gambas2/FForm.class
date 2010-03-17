@@ -1401,7 +1401,7 @@ PRIVATE SUB RefreshProperty(OPTIONAL bForce AS Boolean)
 
   IF $bSelChange OR bForce THEN
     RefreshMenu
-    FProperty.RefreshAll
+    IF Project.ActiveForm = ME THEN FProperty.RefreshAll
     $bSelChange = FALSE
   ENDIF
 

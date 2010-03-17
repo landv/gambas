@@ -270,7 +270,7 @@ END
 PUBLIC SUB RefreshOne(hCtrl AS CControl, sProp AS String)
 
   DIM iRow AS Integer
-
+  
   IF NOT $bMany THEN
     IF $hObject <> hCtrl THEN RETURN
   ENDIF
