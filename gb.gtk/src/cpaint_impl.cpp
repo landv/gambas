@@ -952,7 +952,8 @@ static void TransformMultiply(GB_TRANSFORM matrix, GB_TRANSFORM matrix2)
 }
 
 
-GB_PAINT_DESC PAINT_Interface = {
+GB_PAINT_DESC PAINT_Interface = 
+{
 	sizeof(GB_PAINT_EXTRA),
 	Begin,
 	End,

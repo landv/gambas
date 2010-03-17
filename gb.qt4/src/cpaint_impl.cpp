@@ -281,7 +281,7 @@ static void ResetClip(GB_PAINT *d)
 	EXTRA(d)->clip = 0;
 }
 
-static void get_path_extents(QPainterPath *path, GB_EXTENTS *ext)
+static void get_path_extents(QPainterPath *path, GB_EXTENTS *ext, const QTransform &transform)
 {
 	if (!path)
 	{
@@ -289,7 +289,7 @@ static void get_path_extents(QPainterPath *path, GB_EXTENTS *ext)
 		return;
 	}
 	
-	QRectF rect = path->boundingRect();
+	QRectF rect = transform.inverted().mapRect(path->boundingRect());
 	
 	ext->x1 = (float)rect.left();
 	ext->y1 = (float)rect.top();
@@ -299,7 +299,7 @@ static void get_path_extents(QPainterPath *path, GB_EXTENTS *ext)
 
 static void ClipExtents(GB_PAINT *d, GB_EXTENTS *ext)
 {
-	get_path_extents(CLIP(d), ext);
+	get_path_extents(CLIP(d), ext, PAINTER(d)->transform());
 	if (EXTRA(d)->w > 0 && EXTRA(d)->h > 0)
 	{
 		int x1 = EXTRA(d)->x;
@@ -371,7 +371,7 @@ static void Stroke(GB_PAINT *d, int preserve)
 		
 static void PathExtents(GB_PAINT *d, GB_EXTENTS *ext)
 {
-	get_path_extents(PATH(d), ext);
+	get_path_extents(PATH(d), ext, PAINTER(d)->transform());
 }
 
 static int PathContains(GB_PAINT *d, float x, float y)
@@ -697,7 +697,7 @@ static void get_text_extents(GB_PAINT *d, bool rich, const char *text, int len, 
 	
 	p.end();
 	
-	get_path_extents(&path, ext);
+	get_path_extents(&path, ext, QTransform());
 }
 
 static void TextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext)
@@ -972,11 +972,13 @@ void PAINT_clip(int x, int y, int w, int h)
 	GB_PAINT *d = (GB_PAINT *)DRAW.Paint.GetCurrent();
 	if (d)
 	{
-		PAINTER(d)->setClipRect(x, y, w, h);
+		/*PAINTER(d)->setClipRect(x, y, w, h);
 		EXTRA(d)->x = x;
 		EXTRA(d)->y = y;
 		EXTRA(d)->w = w;
-		EXTRA(d)->h = h;
+		EXTRA(d)->h = h;*/
+		Rectangle(d, x, y, w, h);
+		Clip(d, FALSE);
 	}
 }
 

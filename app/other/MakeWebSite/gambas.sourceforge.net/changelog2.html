@@ -8,6 +8,7 @@
 ChangeLog
 </div>
 <br>
+<a target="_self" href="#2.20.2">2.20.2</a>&nbsp;
 <a target="_self" href="#2.20.1">2.20.1</a>&nbsp;
 <a target="_self" href="#2.20.0">2.20.0</a>&nbsp;
 <a target="_self" href="#2.19.0">2.19.0</a>&nbsp;
@@ -95,6 +96,42 @@ ChangeLog
 <a target="_self" href="#1.9.2">1.9.2</a>&nbsp;
 <a target="_self" href="#1.9.1">1.9.1</a>&nbsp;
 <br>
+<a style="height:4px; font-size:xx-small;" name="2.20.2"></a>
+<div class="news-title">
+  <img src="top-left-corner.png" class="top-left-corner">
+  <img src="top-right-corner.png" class="top-right-corner">
+  <div style="height:4px;"></div>
+  <div><b>2.20.2 - 15 Mar 2010</b></div>
+</div>
+<div class="news">
+<table class="none" width="100%"><tr><td class="none">
+  <p><font><b>Configuration</b></font>
+  <ul>
+  <li>BUG: Add missing symbolic links on 'missing' and 'install-sh' files.
+  <li>BUG: Backport the 'reconf' script from Gambas 3.
+  </ul>
+  <p><font><b>Development Environment</b></font>
+  <ul>
+  <li>BUG: Don't try to replace underscores in project names when creating
+  *.deb packages. It does not work, and apparently dpkg-buildpackage has no
+  problem with them.
+  </ul>
+  <p><font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: Prevent a crash if during a _free special method, an element is
+  removed from a collection being freed.
+  </ul>
+  <p><font><b><a href="http://gambasdoc.org/help/comp/gb.gtk">GB.GTK</a></b></font>
+  <ul>
+  <li>BUG: ComboBox cannot raise its click event recursively anymore.
+  </ul>
+  <p><font><b><a href="http://gambasdoc.org/help/comp/gb.qt">GB.QT</a></b></font>
+  <ul>
+  <li>BUG: ComboBox cannot raise its click event recursively anymore.
+  <li>BUG: TrayIcons cannot be released twice anymore, which prevents a crash.
+  </ul>
+</td></tr>
+</table></div>
 <a style="height:4px; font-size:xx-small;" name="2.20.1"></a>
 <div class="news-title">
   <img src="top-left-corner.png" class="top-left-corner">

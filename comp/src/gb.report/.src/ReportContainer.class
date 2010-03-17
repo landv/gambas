@@ -82,10 +82,10 @@ Public Sub _ClipChildren(Page As Integer, X As Float, Y As Float, hControl As TC
   Dim hCont As ReportContainer
   
   With Paint.ClipExtents
-    CX1 = .X / fScale
-    CY1 = .Y / fScale
-    CX2 = .X2 / fScale
-    CY2 = .Y2 / fScale
+    CX1 = .X
+    CY1 = .Y
+    CX2 = .X2
+    CY2 = .Y2
   End With
   
   X += hControl.RealLeft

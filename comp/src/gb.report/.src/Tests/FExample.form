@@ -9,8 +9,10 @@
   { HBox1 HBox
     MoveScaled(2,7,93,62)
     Expand = True
+    Spacing = True
     { VBox1 VBox
       MoveScaled(3,3,31,58)
+      Spacing = True
       { RadioButton1 RadioButton rbDemo
         Name = "RadioButton1"
         MoveScaled(0,0,23,4)
@@ -41,15 +43,24 @@
         Tag = "5"
         Text = ("Report in report")
       }
-      { Slider1 Slider
-        MoveScaled(1,20,27,4)
-        MinValue = 10
-        MaxValue = 400
-        Step = 10
-        Value = 100
+      { HBox2 HBox
+        MoveScaled(0,21,30,4)
+        { Slider1 Slider
+          MoveScaled(0,0,17,4)
+          Expand = True
+          MinValue = 10
+          MaxValue = 400
+          Step = 10
+          Value = 100
+        }
+        { SpinBox1 SpinBox
+          MoveScaled(20,0,9,4)
+          MinValue = 10
+          MaxValue = 400
+        }
       }
       { Button1 Button
-        MoveScaled(-1,25,30,6)
+        MoveScaled(0,30,30,6)
         Text = ("Test Print")
       }
     }
