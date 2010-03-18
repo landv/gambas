@@ -10,7 +10,7 @@ GB_COMPONENT(
   OPENGL,
   [OpenGL support component],
   [src],
-  [GB_FIND(gl.h glu.h glew.h, /opt/local /usr /usr/X11R6 /usr/local, include include/GL)],
+  [GB_FIND(gl.h glu.h glew.h, /opt/local /usr /usr/X11R6 /usr/local, include/GL include)],
   [GB_FIND(libGL.$SHLIBEXT libGLU.$SHLIBEXT libGLEW.$SHLIBEXT, /opt/local /usr /usr/X11R6 /usr/local, lib)],
   [-lGL -lGLU -lGLEW])
 
