@@ -15,50 +15,50 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
   
     Case "HBox"
     
-      Draw.FillX = 0
-      Draw.FillY = 0
-      If hCtrl.H >= 32 Then
-        Draw.Tile(Picture["img/16/red-arrow-h.png"], 4, 4, hCtrl.W - 8, 8)
-        Draw.Tile(Picture["img/16/red-arrow-h.png"], 4, hCtrl.H - 12, hCtrl.W - 8, 8)
-      Else 
-        Draw.Tile(Picture["img/16/red-arrow-h.png"], 4, hCtrl.H / 2 - 4, hCtrl.W - 8, 8)
-      Endif
+      ' Draw.FillX = 0
+      ' Draw.FillY = 0
+      ' If hCtrl.H >= 32 Then
+      '   Draw.Tile(Picture["img/16/red-arrow-h.png"], 4, 4, hCtrl.W - 8, 8)
+      '   Draw.Tile(Picture["img/16/red-arrow-h.png"], 4, hCtrl.H - 12, hCtrl.W - 8, 8)
+      ' Else 
+      '   Draw.Tile(Picture["img/16/red-arrow-h.png"], 4, hCtrl.H / 2 - 4, hCtrl.W - 8, 8)
+      ' Endif
       Draw.Foreground = &HFF8080&
     
     Case "VBox"
 
-      Draw.FillX = 0
-      Draw.FillY = 0
-      If hCtrl.W >= 32 Then
-        Draw.Tile(Picture["img/16/red-arrow-v.png"], 4, 4, 8, hCtrl.H - 8)
-        Draw.Tile(Picture["img/16/red-arrow-v.png"], hCtrl.W - 12, 4, 8, hCtrl.H - 8)
-      Else 
-        Draw.Tile(Picture["img/16/red-arrow-v.png"], hCtrl.W / 2 - 4, 4, 8, hCtrl.H - 8)
-      Endif
+      ' Draw.FillX = 0
+      ' Draw.FillY = 0
+      ' If hCtrl.W >= 32 Then
+      '   Draw.Tile(Picture["img/16/red-arrow-v.png"], 4, 4, 8, hCtrl.H - 8)
+      '   Draw.Tile(Picture["img/16/red-arrow-v.png"], hCtrl.W - 12, 4, 8, hCtrl.H - 8)
+      ' Else 
+      '   Draw.Tile(Picture["img/16/red-arrow-v.png"], hCtrl.W / 2 - 4, 4, 8, hCtrl.H - 8)
+      ' Endif
       Draw.Foreground = &HFF8080&
     
     Case "HPanel"
     
-      Draw.FillX = 0
-      Draw.FillY = 0
-      If hCtrl.H >= 32 Then
-        Draw.Tile(Picture["img/16/red-arrow-r.png"], 4, 4, hCtrl.W - 8, 8)
-        Draw.Tile(Picture["img/16/red-arrow-r.png"], 4, hCtrl.H - 12, hCtrl.W - 8, 8)
-      Else 
-        Draw.Tile(Picture["img/16/red-arrow-r.png"], 4, hCtrl.H / 2 - 4, hCtrl.W - 8, 8)
-      Endif
+      ' Draw.FillX = 0
+      ' Draw.FillY = 0
+      ' If hCtrl.H >= 32 Then
+      '   Draw.Tile(Picture["img/16/red-arrow-r.png"], 4, 4, hCtrl.W - 8, 8)
+      '   Draw.Tile(Picture["img/16/red-arrow-r.png"], 4, hCtrl.H - 12, hCtrl.W - 8, 8)
+      ' Else 
+      '   Draw.Tile(Picture["img/16/red-arrow-r.png"], 4, hCtrl.H / 2 - 4, hCtrl.W - 8, 8)
+      ' Endif
       Draw.Foreground = &HFF8080&
     
     Case "VPanel"
 
-      Draw.FillX = 0
-      Draw.FillY = 0
-      If hCtrl.W >= 32 Then
-        Draw.Tile(Picture["img/16/red-arrow-c.png"], 4, 4, 8, hCtrl.H - 8)
-        Draw.Tile(Picture["img/16/red-arrow-c.png"], hCtrl.W - 12, 4, 8, hCtrl.H - 8)
-      Else 
-        Draw.Tile(Picture["img/16/red-arrow-c.png"], hCtrl.W / 2 - 4, 4, 8, hCtrl.H - 8)
-      Endif
+      ' Draw.FillX = 0
+      ' Draw.FillY = 0
+      ' If hCtrl.W >= 32 Then
+      '   Draw.Tile(Picture["img/16/red-arrow-c.png"], 4, 4, 8, hCtrl.H - 8)
+      '   Draw.Tile(Picture["img/16/red-arrow-c.png"], hCtrl.W - 12, 4, 8, hCtrl.H - 8)
+      ' Else 
+      '   Draw.Tile(Picture["img/16/red-arrow-c.png"], hCtrl.W / 2 - 4, 4, 8, hCtrl.H - 8)
+      ' Endif
       Draw.Foreground = &HFF8080&
       
     Case "Panel"
@@ -80,7 +80,7 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
         Draw.Style.Panel(0, 0, hCtrl.W, hCtrl.H, iBorder)
         Return
       Endif
-      If hCCtrl.GetProperty("Background") Then Return
+      'If hCCtrl.GetProperty("Background") Then Return
       Draw.Foreground = Color.Merge(Color.Background, &H808080&)
     
     Case Else
@@ -89,8 +89,43 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
 
   End Select
 
+  'If hCCtrl["#icon"] Then
+  '  Draw.LineStyle = Line.Solid
+  'Else
   Draw.LineStyle = Line.Dash
+  'Endif
   Draw.Rect(0, 0, hCtrl.W, hCtrl.H)
   Draw.LineStyle = Line.None
   
 End
+
+Public Sub EnterControl(hCCtrl As CControl)
+  
+  Dim sImage As String
+  
+  Select hCCtrl.Kind
+  
+    Case "HBox"
+      sImage = "horizontal"
+    
+    Case "VBox"
+      sImage = "vertical"
+      
+    Case "HPanel"
+      sImage = "row"
+      
+    Case "VPanel"
+      sImage = "column"
+      
+    Case "HSplit"
+      sImage = "hsplit"
+      
+    Case "VSplit"
+      sImage = "vsplit"
+      
+  End Select
+  
+  Me.DrawIcon(hCCtrl, sImage)
+  
+End
+

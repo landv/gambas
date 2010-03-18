@@ -300,7 +300,7 @@ static void get_path_extents(QPainterPath *path, GB_EXTENTS *ext, const QTransfo
 static void ClipExtents(GB_PAINT *d, GB_EXTENTS *ext)
 {
 	get_path_extents(CLIP(d), ext, PAINTER(d)->transform());
-	if (EXTRA(d)->w > 0 && EXTRA(d)->h > 0)
+	/*if (EXTRA(d)->w > 0 && EXTRA(d)->h > 0)
 	{
 		int x1 = EXTRA(d)->x;
 		int x2 = x1 + EXTRA(d)->w;
@@ -321,7 +321,7 @@ static void ClipExtents(GB_PAINT *d, GB_EXTENTS *ext)
 			ext->y1 = y1;
 			ext->y2 = y2;
 		}
-	}
+	}*/
 }
 	
 static void Fill(GB_PAINT *d, int preserve)

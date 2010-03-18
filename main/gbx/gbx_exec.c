@@ -1385,7 +1385,7 @@ __RETURN:
 void EXEC_public_desc(CLASS *class, void *object, CLASS_DESC_METHOD *desc, int nparam)
 {
   EXEC.object = object;
-  EXEC.class = class;
+  EXEC.class = desc->class; // Because the method can be an inherited one!
   EXEC.nparam = nparam; /*desc->npmin;*/
   EXEC.drop = FALSE;
 

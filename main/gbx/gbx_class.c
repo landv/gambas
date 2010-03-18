@@ -876,7 +876,7 @@ void CLASS_make_description(CLASS *class, CLASS_DESC *desc, int n_desc, int *fir
 
 			//fprintf(stderr, "%s.%s\n", class->name, name);
 
-			// A inherited symbol has two or more entries in the table. Only the first one
+			// An inherited symbol has two or more entries in the table. Only the first one
 			// will be used, and so it must point at the new description, not the inherited one.
 			parent = class;
 			while ((parent = parent->parent))

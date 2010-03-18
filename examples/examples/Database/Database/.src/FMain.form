@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(43.5,25,63,73)
+  MoveScaled(43.5714,25,63,73)
   Text = ("Database example")
   Icon = Picture["database.png"]
   Resizable = False
@@ -11,22 +11,27 @@
     { Label5 Label
       MoveScaled(2,13,14,4)
       Text = ("Database")
+      Transparent = True
     }
     { Label1 Label
       MoveScaled(2,3,15,4)
       Text = ("Type")
+      Transparent = True
     }
     { Label2 Label
       MoveScaled(2,8,15,4)
       Text = ("Host")
+      Transparent = True
     }
     { Label3 Label
       MoveScaled(2,18,14,4)
       Text = ("User")
+      Transparent = True
     }
     { Label4 Label
       MoveScaled(2,23,14,4)
       Text = ("Password")
+      Transparent = True
     }
     { btnConnect Button
       MoveScaled(46,3,13,4)
@@ -39,7 +44,6 @@
     }
     { txtHost TextBox
       MoveScaled(18,8,24,4)
-      Text = ("")
     }
     { txtName TextBox
       MoveScaled(18,13,24,4)
@@ -47,12 +51,10 @@
     }
     { txtUser TextBox
       MoveScaled(18,18,24,4)
-      Text = ("")
       MaxLength = 16
     }
     { txtPassword TextBox
       MoveScaled(18,23,24,4)
-      Text = ("")
       Password = True
     }
     { chkCreate CheckBox
@@ -107,7 +109,6 @@
     }
     { txtRequest TextArea
       MoveScaled(2,3,46,15)
-      Text = ("")
       Wrap = True
     }
   }

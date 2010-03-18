@@ -208,28 +208,12 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
 
     Case "ReportHBox"
     
-      Draw.FillX = 0
-      Draw.FillY = 0
-      If H >= 32 Then
-        Draw.Tile(Picture["img/16/red-arrow-h.png"], X + 4, Y + 4, W - 8, 8)
-        Draw.Tile(Picture["img/16/red-arrow-h.png"], X + 4, Y + H - 12, W - 8, 8)
-      Else 
-        Draw.Tile(Picture["img/16/red-arrow-h.png"], X + 4, H / 2 - 4, W - 8, 8)
-      Endif
       Draw.Foreground = &HFF8080&
       Draw.LineStyle = Line.Dash
       Draw.Rect(0, 0, hCtrl.W, hCtrl.H)
     
     Case "ReportVBox", "Report"
 
-      Draw.FillX = 0
-      Draw.FillY = 0
-      If W >= 32 Then
-        Draw.Tile(Picture["img/16/red-arrow-v.png"], X + 4, Y + 4, 8, H - 8)
-        Draw.Tile(Picture["img/16/red-arrow-v.png"], X + W - 12, Y + 4, 8, H - 8)
-      Else 
-        Draw.Tile(Picture["img/16/red-arrow-v.png"], W / 2 - 4, Y + 4, 8, H - 8)
-      Endif
       Draw.Foreground = &HFF8080&
       Draw.LineStyle = Line.Dash
       Draw.Rect(0, 0, hCtrl.W, hCtrl.H)
@@ -252,3 +236,20 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
   
 End
 
+Public Sub EnterControl(hCCtrl As CControl)
+  
+  Dim sImage As String
+  
+  Select hCCtrl.Kind
+  
+    Case "ReportHBox"
+      sImage = "horizontal"
+    
+    Case "ReportVBox"
+      sImage = "vertical"
+      
+  End Select
+  
+  Me.DrawIcon(hCCtrl, sImage)
+  
+End

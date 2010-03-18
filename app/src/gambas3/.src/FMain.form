@@ -703,14 +703,14 @@
     Expand = True
     Arrangement = Arrange.Horizontal
     { panProject SidePanel
-      MoveScaled(0,0,34,66)
+      MoveScaled(1,1,31,66)
       ToolTip = ("Project")
       Arrangement = Arrange.Fill
       Action = "project"
       Orientation = Align.Left
       Separator = True
       { tvwProject ColumnView
-        MoveScaled(2,4,20,47)
+        MoveScaled(2,8,20,47)
         Drop = True
         Expand = True
         Header = False
@@ -736,14 +736,14 @@
       }
     }
     { panProperty SidePanel
-      MoveScaled(57,1,32,65)
+      MoveScaled(58,1,32,65)
       ToolTip = ("Properties")
       Arrangement = Arrange.Vertical
       Action = "property"
       Orientation = Align.Right
       Hidden = True
       { panTabProperty Panel
-        MoveScaled(2,0,28,40)
+        MoveScaled(1,3,28,40)
         Expand = True
         Arrangement = Arrange.Vertical
         { tabProperty TabStrip

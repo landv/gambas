@@ -1228,6 +1228,7 @@ Public Sub Control_Click()
   
   If hCCtrl.IsMultiContainer() Then 
     UpdateMultiContainer(hCCtrl)
+    If hCCtrl.HasIcon() Then $hFamily.EnterControl(hCCtrl)
   Endif
   
 End
@@ -2127,6 +2128,34 @@ Public Sub mnuShowCode_Click()
 
   Project.OpenFile(Me.Name)
 
+End
+
+Public Sub Control_Enter()
+  
+  Dim hCtrl As Control = Last  
+  Dim hCCtrl As CControl
+  
+  'If Not hCtrl Is DrawingArea Then Return
+  
+  hCCtrl = Control[hCtrl.Tag]
+  If Not hCCtrl Then Return
+  
+  $hFamily.EnterControl(hCCtrl)
+  
+End
+
+Public Sub Control_Leave()
+  
+  Dim hCtrl As Control = Last  
+  Dim hCCtrl As CControl
+  
+  'If Not hCtrl Is DrawingArea Then Return
+  
+  hCCtrl = Control[hCtrl.Tag]
+  If Not hCCtrl Then Return
+  
+  $hFamily.LeaveControl(hCCtrl)
+  
 End
 
 

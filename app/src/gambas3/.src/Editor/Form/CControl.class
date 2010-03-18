@@ -46,6 +46,7 @@ Private $X As Integer
 Private $Y As Integer
 Private $MX As Integer
 Private $MY As Integer
+Private $hFamily As CFamily
 'Private $bMaster As Boolean
 
 Static Private $bDoNotMoveHandle As Boolean
@@ -104,6 +105,8 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
   'DIM iInd AS Integer
 
   'PRINT "> CreateControl "; sClass
+
+  $hFamily = hFamily
 
   hClass = CComponent.Classes[sClass]
   bExist = hClass <> Null
@@ -1041,6 +1044,8 @@ Public Sub Move(X As Integer, Y As Integer, Optional bFree As Boolean)
   '  PRINT "Move("; X; ","; Y; ")"
   'ENDIF
 
+  If X And If Y And If X = GetProperty("#X") And If Y = GetProperty("#Y") Then Return
+
   If Parent Then
     Control.Move(X, Y)
     'Arrange(Parent.Control, FALSE)
@@ -1052,9 +1057,17 @@ Public Sub Move(X As Integer, Y As Integer, Optional bFree As Boolean)
   SetProperty("#Y", Y)
 
   $bDoNotMoveHandle = False
-
+  
   MoveAllHandle
+  
+  If HasIcon() Then $hFamily.EnterControl(Me)
 
+End
+
+Public Sub HasIcon() As Boolean
+  
+  Return $cValue["#icon"]
+  
 End
 
 
@@ -1068,6 +1081,8 @@ Public Sub Resize(W As Integer, H As Integer, Optional bFree As Boolean)
     'W = Grid(W, Desktop.Scale)
     'H = Grid(H, Desktop.Scale)
   Endif
+
+  If W = GetProperty("#Width") And H = GetProperty("#Height") Then Return
 
   Control.Resize(W, H)
   'IF Parent THEN Arrange(Parent.Control, FALSE)

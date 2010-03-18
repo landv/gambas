@@ -46,3 +46,85 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
 
 End
 
+Public Sub EnterControl(hCCtrl As CControl)
+  
+  
+  
+End
+
+Public Sub LeaveControl(hCCtrl As CControl)
+  
+  Dim hIcon As Control = hCCtrl["#icon"]
+  
+  If hIcon Then
+    hCCtrl["#icon"] = Null
+    hIcon.Delete
+  Endif
+  
+End
+
+Public Sub DrawIcon(hCCtrl As CControl, sImage As String)
+  
+  Dim hCtrl As Control = hCCtrl.Control
+  Dim hPict As Picture
+  Dim hImage As Image
+  Dim hIcon As PictureBox
+  Dim hComp As Control
+  Dim iWidth As Integer
+  Dim hCont As Container
+  Dim XI, YI, XC, YC As Integer
+
+  If Not sImage Then
+  
+    sImage = LCase(hCCtrl["Arrangement"])
+    If sImage = "none" Then sImage = ""
+    
+  Endif
+  
+  If Not sImage Then Return
+  
+  If hCCtrl["#icon"] Then LeaveControl(hCCtrl)
+  
+  hPict = Picture["$arr-" & sImage]
+  If Not hPict Then
+    hImage = New Image(15, 15, Color.RGB(0, 0, 0, 128))
+    hImage.Draw(Image.Load("img/family" &/ sImage & ".png"), 0, 0)
+    hPict = hImage.Picture
+    Picture["$arr-" & sImage] = hPict
+  Endif
+  
+  hIcon = New PictureBox(hCtrl) As "Icon"
+  hIcon.Ignore = True
+  hIcon.Raise
+  If hCtrl Is Container And If Not hCtrl Is DrawingArea And If Not hIcon.Parent Is Panel Then
+    hCont = hCtrl
+    hIcon.Move(hCont.ClientWidth - hPict.Width, 0, hPict.Width, hPict.Height)
+  Else
+    hIcon.Move(hCtrl.Width - hPict.Width, 0, hPict.Width, hPict.Height)
+  Endif
+  hIcon.Picture = hPict
+  
+  hCCtrl["#icon"] = hIcon
+  
+  If hCCtrl.Parent And If hCCtrl.Parent["#icon"] Then
+    hComp = hCCtrl.Parent["#icon"]
+    XI = hIcon.ScreenX + hIcon.Width / 2
+    YI = hIcon.ScreenY + hIcon.Height / 2
+    XC = hComp.ScreenX + hComp.Width / 2
+    YC = hComp.ScreenY + hComp.Height / 2
+    If Abs(XI - XC) < (hIcon.Width + 1) And Abs(YI - YC) < (hIcon.Height + 1) Then
+      If hCtrl.Parent.Width > hCtrl.Parent.Height Then
+        hIcon.Move(hComp.ScreenX - hIcon.Width - 1 - hIcon.Parent.ScreenX, hIcon.Y)
+      Else
+        hIcon.Move(hIcon.X, hComp.ScreenY + hIcon.Height + 1 - hIcon.Parent.ScreenY)
+      Endif
+    Endif
+  Endif
+  
+End
+
+Public Sub Icon_MouseDown()
+  
+  Last.Hide
+  
+End
