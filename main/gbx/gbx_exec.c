@@ -1385,12 +1385,12 @@ __RETURN:
 void EXEC_public_desc(CLASS *class, void *object, CLASS_DESC_METHOD *desc, int nparam)
 {
   EXEC.object = object;
-  EXEC.class = desc->class; // Because the method can be an inherited one!
   EXEC.nparam = nparam; /*desc->npmin;*/
   EXEC.drop = FALSE;
 
   if (FUNCTION_is_native(desc))
   {
+		EXEC.class = class; // EXEC_native() does not need the real class, except the GB.GetClass(NULL) API used by Form.Main.
     EXEC.native = TRUE;
     EXEC.use_stack = FALSE;
     EXEC.desc = desc;
@@ -1401,6 +1401,7 @@ void EXEC_public_desc(CLASS *class, void *object, CLASS_DESC_METHOD *desc, int n
   }
   else
   {
+		EXEC.class = desc->class; // EXEC_function_real() needs the effective class, because the method can be an inherited one!
     EXEC.native = FALSE;
     EXEC.index = (int)(intptr_t)desc->exec;
     EXEC_function_keep();
