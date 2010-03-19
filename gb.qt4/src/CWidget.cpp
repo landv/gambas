@@ -60,7 +60,8 @@
 #include <QAbstractScrollArea>
 #include <Q3ScrollView>
 #include <QProgressBar>
-
+#include <QAbstractEventDispatcher>
+ 
 #ifndef NO_X_WINDOW
 static QMap<int, int> _x11_to_qt_keycode;
 #endif
@@ -1514,8 +1515,6 @@ END_METHOD
 CWidget CWidget::manager;
 QHash<QObject *, CWIDGET *> CWidget::dict;
 bool CWidget::real;
-CWIDGET *CWidget::enter = NULL;
-//QPtrDict<char> CWidget::propDict;
 
 #if 0
 bool haveChildren;
@@ -1804,15 +1803,12 @@ void CWidget::destroy()
 	if (ob == NULL)
 		return;
 
-	if (enter == ob)
-		enter = NULL;
-
 	if (CWIDGET_active_control == ob)
 		CWIDGET_active_control = NULL;
 	
 	if (_old_active_control == ob)
 		_old_active_control = NULL;
-
+	
 	CACTION_register(ob, NULL);
 	
 	set_name(ob, 0);
@@ -1871,7 +1867,7 @@ static void handle_focus_change()
 
 bool CWidget::eventFilter(QObject *widget, QEvent *event)
 {
-	CWIDGET *control;
+	CWIDGET *control, *save;
 	int event_id;
 	int type = event->type();
 	bool real;
@@ -1897,6 +1893,18 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	design = CWIDGET_test_flag(control, WF_DESIGN); // && !GB.Is(control, CLASS_Container);
 	original = event->spontaneous();
 
+	/*if (type != QEvent::Enter)
+	{
+		if (_control_leave)
+		{
+			save = _control_leave;
+			_control_leave = NULL;
+			
+			if (type != QEvent::Leave || save != control)
+				GB.Raise(save, EVENT_Leave, 0);
+		}
+	}*/
+	
 	if (type == QEvent::Enter)
 	{
 		if (real)

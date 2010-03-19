@@ -256,8 +256,6 @@ protected:
 private:
 
 	static bool real;
-
-	static CWIDGET *enter;
 	static QHash<QObject *, CWIDGET *> dict;
 };
 
