@@ -551,7 +551,7 @@ int GB_Raise(void *object, int event_id, int nparam, ...)
 			if (func_id)
 			{
 				#if DEBUG_EVENT
-					class = OBJECT_class(object);
+					CLASS *class = OBJECT_class(object);
 					printf("GB_Raise(%p, %d, %s)\n", object, event_id, class->event[event_id].name);
 					printf("func_id = %d  parent = (%s %p)\n", func_id, parent->class->name, parent);
 					if (OBJECT_is_locked(parent))
