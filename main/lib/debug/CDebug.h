@@ -21,7 +21,7 @@
 ***************************************************************************/
 
 #ifndef __CDEBUG_H
-#define __CDBUG_H
+#define __CDEBUG_H
 
 #include "gambas.h"
 
