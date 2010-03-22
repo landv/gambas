@@ -49,7 +49,7 @@ BEGIN_METHOD(WebView_new, GB_OBJECT parent)
 
   MyWebView *wid = new MyWebView(QT.GetContainer(VARG(parent)));
 
-  QT.InitWidget(wid, _object);
+  QT.InitWidget(wid, _object, false);
 
   //QObject::connect(wid, SIGNAL(linkClicked(const QUrl &)), &CWebView::manager, SLOT(linkClicked(const QUrl &)));
   QObject::connect(wid, SIGNAL(loadFinished(bool)), &CWebView::manager, SLOT(loadFinished(bool)));

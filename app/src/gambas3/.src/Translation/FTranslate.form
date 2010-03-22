@@ -153,20 +153,17 @@
     }
     Index = 2
     Text = ("Import")
-    { HBox2 HBox
-      MoveScaled(1,1,102,56)
-      Spacing = True
+    { HSplit1 HSplit
+      MoveScaled(1,1,101,57)
       { dchImport DirChooser
-        MoveScaled(1,1,51,50)
-        Expand = True
+        MoveScaled(2,5,47,50)
         ShowSplitter = False
       }
       { VBox1 VBox
-        MoveScaled(54,1,47,54)
-        Expand = True
+        MoveScaled(52,1,47,54)
         Spacing = True
         { HBox4 HBox
-          MoveScaled(0,0,45,4)
+          MoveScaled(1,1,45,4)
           Spacing = True
           { chkBrowse CheckBox
             MoveScaled(0,0,24,4)
@@ -182,7 +179,7 @@
           }
         }
         { fvwImport FileView
-          MoveScaled(2,5,44,47)
+          MoveScaled(1,8,44,43)
           Expand = True
           ShowDetailed = True
         }

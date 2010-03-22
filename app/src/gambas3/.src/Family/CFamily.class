@@ -1,6 +1,8 @@
 ' Gambas class file
 
+Static Public List As String[] = ["form", "report", "webpage"]
 Static Public All As New Collection(gb.IgnoreCase)
+Static Private $cCtrlFromIcon As New Collection
 
 Public Const Name As String = ""
 Public Background As Integer = Color.Background
@@ -27,6 +29,7 @@ End
 Static Public Sub Exit()
   
   All = Null
+  $cCtrlFromIcon.Clear
   
 End
 
@@ -55,6 +58,19 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
 
 End
 
+Public Sub DeleteIcon(hCCtrl As CControl)
+  
+  Dim hIcon As Control = hCCtrl["#icon"]
+  
+  If Not hIcon Then Return
+  
+  hCCtrl["#icon"] = Null
+  $cCtrlFromIcon[Str(hIcon)] = Null
+  hIcon.Delete
+  
+End
+
+
 Private Sub CheckIcon(hCCtrl As CControl)
   
   Dim hCtrl As Control = hCCtrl.Control
@@ -68,8 +84,7 @@ Private Sub CheckIcon(hCCtrl As CControl)
   
   If X >= hCtrl.ScreenX And If X < (hCtrl.ScreenX + hCtrl.Width) And If Y >= hCtrl.ScreenY And If Y < (hCtrl.ScreenY + hCtrl.Height) Then Return
   
-  hCCtrl["#icon"] = Null
-  hIcon.Delete
+  DeleteIcon(hCCtrl)
   
 End
 
@@ -106,7 +121,13 @@ Public Sub DrawIcon(hCCtrl As CControl, sImage As String)
   
   If Not sImage Then Return
   
-  If hCCtrl["#icon"] Then hCCtrl["#icon"].Delete
+  hIcon = hCCtrl["#icon"]
+  
+  If hIcon Then 
+    ' If it was explicitely hidden, then do not show it again
+    If Not hIcon.Visible Then Return
+    DeleteIcon(hCCtrl)
+  Endif
   
   hPict = Picture["$arr-" & sImage]
   If Not hPict Then
@@ -143,7 +164,7 @@ Public Sub DrawIcon(hCCtrl As CControl, sImage As String)
   hIcon.Move(X - hCont.ScreenX, Y - hCont.ScreenY, hPict.Width, hPict.Height)
   hIcon.Picture = hPict
   hIcon.Raise
-  hIcon.Tag = hCCtrl
+  $cCtrlFromIcon[Str(hIcon)] = hCCtrl
   
 End
 
@@ -155,6 +176,6 @@ End
 
 Public Sub Icon_Leave()
   
-  CheckIcon(Last.Tag)
+  CheckIcon($cCtrlFromIcon[Str(Last)])
   
 End

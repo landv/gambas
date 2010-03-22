@@ -26,6 +26,7 @@
 #include <qpalette.h>
 #include <QPlainTextEdit>
 #include <QTextBlock>
+#include <QTextDocumentFragment>
 
 #include "gambas.h"
 #include "main.h"
@@ -355,8 +356,7 @@ END_PROPERTY
 BEGIN_PROPERTY(CTEXTAREA_sel_text)
 
   if (READ_PROPERTY)
-  	// TODO: replace U+2029 by '\n'
-    GB.ReturnNewZeroString(TO_UTF8(WIDGET->textCursor().selectedText()));
+    GB.ReturnNewZeroString(TO_UTF8(WIDGET->textCursor().selection().toPlainText()));
   else
     WIDGET->textCursor().insertText(QSTRING_PROP());
 

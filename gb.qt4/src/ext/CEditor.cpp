@@ -691,7 +691,7 @@ BEGIN_METHOD(CEDITOR_new, GB_OBJECT parent)
   QObject::connect(wid, SIGNAL(marginDoubleClicked(int)), &CEditor::manager, SLOT(marginDoubleClicked(int)));
   QObject::connect(wid, SIGNAL(contentsMoving(int, int)), &CEditor::manager, SLOT(scrolled(int, int)));
 
-  QT.InitWidget(wid, _object);
+  QT.InitWidget(wid, _object, true);
 
 	THIS->line = -1;
 

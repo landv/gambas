@@ -65,7 +65,7 @@ BEGIN_METHOD(CGLAREA_new, GB_OBJECT parent)
 	GLarea *area = new GLarea(QT.GetContainer(VARG(parent)), THIS, sharedWidget);
 	glWidgetCount++;
 
-	QT.InitWidget(area, _object);
+	QT.InitWidget(area, _object, false);
 	area->show();
 
 END_METHOD

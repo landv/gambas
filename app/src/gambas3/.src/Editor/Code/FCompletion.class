@@ -298,8 +298,8 @@ Private Sub GetEvents(sCtrl As String) As String[]
   hForm = Project.FindForm(GetClass())
   If Not hForm Then Return  
 
-  If LCase(sCtrl) = "form" Then 
-    Try aEvent = CComponent.Classes["Form"].Events
+  If LCase(sCtrl) = LCase(hForm.Family) Then 
+    Try aEvent = CComponent.Classes[hForm.Family].Events
   Else
     Try aEvent = CComponent.Classes[hForm.Control[sCtrl].Kind].Events
   Endif

@@ -40,7 +40,7 @@ BEGIN_METHOD(CLCDNUMBER_new, GB_OBJECT parent)
 
   QLCDNumber *wid = new QLCDNumber(QT.GetContainer(VARG(parent)));
 
-  QT.InitWidget(wid, _object);
+  QT.InitWidget(wid, _object, false);
   //QT.SetBackgroundRole(_object, QColorGroup::Base);
 
   wid->setFrameStyle(Q3Frame::NoFrame);

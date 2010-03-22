@@ -26,7 +26,7 @@
 #include "gambas.h"
 #include "../gb.qt.h"
 
-#include <q3textedit.h>
+#include <QTextEdit>
 
 #ifndef __CTEXTEDIT_CPP
 extern GB_DESC CTextEditSelectionDesc[];
@@ -34,26 +34,26 @@ extern GB_DESC CTextEditFormatDesc[];
 extern GB_DESC CTextEditDesc[];
 #else
 
-#define WIDGET       ((Q3TextEdit *)((QT_WIDGET *)_object)->widget)
+#define WIDGET       ((QTextEdit *)((QT_WIDGET *)_object)->widget)
 #define MYTEXTEDIT   ((MyTextEdit *)((QT_WIDGET *)_object)->widget)
-#define THIS_EDIT    ((CTEXTEDIT *)_object)
-#define THIS THIS_EDIT
+#define THIS         ((CTEXTEDIT *)_object)
 
 #endif
 
 typedef
   struct {
     QT_WIDGET widget;
+		int length;
     bool change;
     }
   CTEXTEDIT;
 
-class MyTextEdit: public Q3TextEdit
+class MyTextEdit: public QTextEdit
 {
   Q_OBJECT
   
 public:
-  MyTextEdit(QWidget *parent = 0, const char *name = 0);
+  MyTextEdit(QWidget *parent = 0);
   ~MyTextEdit();
   
 signals:

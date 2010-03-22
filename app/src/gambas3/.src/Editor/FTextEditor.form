@@ -2,12 +2,10 @@
 
 { Form Form
   MoveScaled(9.4286,14,96,71)
-  Text = ("")
   Icon = Picture["icon:/small/text"]
   Persistent = True
   Arrangement = Arrange.Vertical
   { mnuEditor Menu
-    Text = ("")
     Enabled = False
     { mnuGotoLine Menu
       Action = ".goto-line"
@@ -15,7 +13,6 @@
       Shortcut = "Ctrl+G"
     }
     { Menu3 Menu
-      Text = ("")
     }
     { mnuUndo Menu
       Action = ".undo"
@@ -30,7 +27,6 @@
       Shortcut = "Ctrl+Y"
     }
     { mnuSep2 Menu
-      Text = ("")
     }
     { mnuCut Menu
       Action = ".cut"
@@ -51,7 +47,6 @@
       Shortcut = "Ctrl+V"
     }
     { mnuSep3 Menu
-      Text = ("")
     }
     { mnuSelectAll Menu
       Action = ".select-all"
@@ -59,7 +54,6 @@
       Shortcut = "Ctrl+A"
     }
     { Menu2 Menu
-      Text = ("")
     }
     { mnuFind Menu
       Action = ".find"
@@ -85,7 +79,6 @@
       Shortcut = "Shift+F3"
     }
     { mnuSep4 Menu
-      Text = ("")
     }
     { mnuEditorView Menu
       Text = ("View")
@@ -109,7 +102,6 @@
       }
     }
     { mnuSep5 Menu
-      Text = ("")
     }
     { mnuSave Menu
       Action = ".save"
@@ -128,7 +120,6 @@
       MoveScaled(0,0,4,4)
       ToolTip = ("Save")
       Action = ".save"
-      Text = ("")
       Picture = Picture["icon:/small/save"]
     }
     { btnReload ToolButton mnuReload
@@ -136,7 +127,6 @@
       MoveScaled(4,0,4,4)
       ToolTip = ("Reload")
       Action = ".reload"
-      Text = ("")
       Picture = Picture["icon:/small/refresh"]
     }
     { btnShowCode ToolButton mnuShowCode
@@ -144,7 +134,6 @@
       MoveScaled(8,0,4,4)
       ToolTip = ("Code")
       Action = ".show-class"
-      Text = ("")
       Picture = Picture["img/16/class.png"]
     }
     { btnCut ToolButton mnuCut
@@ -152,7 +141,6 @@
       MoveScaled(12,0,4,4)
       ToolTip = ("Cut")
       Action = ".cut"
-      Text = ("")
       Picture = Picture["icon:/small/cut"]
     }
     { btnCopy ToolButton mnuCopy
@@ -160,7 +148,6 @@
       MoveScaled(16,0,4,4)
       ToolTip = ("Copy")
       Action = ".copy"
-      Text = ("")
       Picture = Picture["icon:/small/copy"]
     }
     { btnPaste ToolButton mnuPaste
@@ -168,7 +155,6 @@
       MoveScaled(20,0,4,4)
       ToolTip = ("Paste")
       Action = ".paste"
-      Text = ("")
       Picture = Picture["icon:/small/paste"]
     }
     { btnUndo ToolButton mnuUndo
@@ -176,7 +162,6 @@
       MoveScaled(24,0,4,4)
       ToolTip = ("Undo")
       Action = ".undo"
-      Text = ("")
       Picture = Picture["icon:/small/undo"]
     }
     { btnRedo ToolButton mnuRedo
@@ -184,21 +169,18 @@
       MoveScaled(28,0,4,4)
       ToolTip = ("Redo")
       Action = ".redo"
-      Text = ("")
       Picture = Picture["icon:/small/redo"]
     }
     { btnIndent ToolButton
       MoveScaled(33,0,4,4)
       ToolTip = ("Indent")
       Action = ".indent"
-      Text = ("")
       Picture = Picture["icon:/small/indent"]
     }
     { btnUnindent ToolButton
       MoveScaled(36,0,4,4)
       ToolTip = ("Unindent")
       Action = ".unindent"
-      Text = ("")
       Picture = Picture["icon:/small/unindent"]
     }
     { btnNoSplit ToolButton mnuNoSplit
@@ -206,7 +188,6 @@
       MoveScaled(40,0,4,4)
       ToolTip = ("No split")
       Action = ".view-nosplit"
-      Text = ("")
       Picture = Picture["icon:/small/view-normal"]
     }
     { btnHorizontalSplit ToolButton mnuHorizontalSplit
@@ -214,7 +195,6 @@
       MoveScaled(44,0,4,4)
       ToolTip = ("Horizontal split")
       Action = ".view-hsplit"
-      Text = ("")
       Picture = Picture["icon:/small/view-split-h"]
     }
     { btnVerticalSplit ToolButton mnuVerticalSplit
@@ -222,7 +202,6 @@
       MoveScaled(48,0,4,4)
       ToolTip = ("Vertical split")
       Action = ".view-vsplit"
-      Text = ("")
       Picture = Picture["icon:/small/view-split-v"]
     }
     { HBox1 HBox
@@ -235,7 +214,6 @@
       { lblEditor Label
         MoveScaled(3,0,10,4)
         AutoResize = True
-        Text = ("")
       }
       { Panel2 Panel
         MoveScaled(14,0,1,4)
@@ -248,12 +226,12 @@
     Expand = True
     Border = False
   }
-  { splVertical VSplit
-    MoveScaled(48,43,42,18)
-    Visible = False
-  }
   { splHorizontal HSplit
     MoveScaled(1,43,45,18)
+    Visible = False
+  }
+  { splVertical VSplit
+    MoveScaled(48,44,42,18)
     Visible = False
   }
 }

@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,26,20)
+  MoveScaled(0,0,24,15)
   Action = "help"
   Text = ("Help browser")
   Icon = Picture["icon:/small/help"]
@@ -14,44 +14,37 @@
     { btnHome ToolButton
       MoveScaled(0,0,4,4)
       ToolTip = ("Index")
-      Text = ("")
       Picture = Picture["icon:/small/home"]
     }
     { btnWebSite ToolButton
       MoveScaled(4,0,4,4)
       ToolTip = ("Index")
-      Text = ("")
       Picture = Picture["icon:/small/gambas"]
     }
     { btnBack ToolButton
       MoveScaled(9,0,4,4)
       ToolTip = ("Go back")
-      Text = ("")
       Picture = Picture["icon:/small/left"]
     }
     { btnForward ToolButton
       MoveScaled(13,0,4,4)
       ToolTip = ("Go forward")
-      Text = ("")
       Picture = Picture["icon:/small/right"]
     }
     { btnStop ToolButton
       MoveScaled(17,0,4,4)
       ToolTip = ("Cancel")
-      Text = ("")
       Picture = Picture["icon:/small/delete"]
     }
     { btnReload ToolButton
       MoveScaled(21,0,4,4)
       ToolTip = ("Reload")
-      Text = ("")
       Picture = Picture["icon:/small/refresh"]
     }
     { btnShowpnl ToolButton
       MoveScaled(26,0,4,4)
       Tracking = True
       ToolTip = ("Show help tree")
-      Text = ("")
       Picture = Picture["icon:/small/view-detail"]
       Toggle = True
     }
@@ -61,19 +54,16 @@
     { btnZoomIn ToolButton
       MoveScaled(32,0,4,4)
       ToolTip = ("Zoom in")
-      Text = ("")
       Picture = Picture["icon:/small/zoom-in"]
     }
     { btnZoomOut ToolButton
       MoveScaled(36,0,4,4)
       ToolTip = ("Zoom out")
-      Text = ("")
       Picture = Picture["icon:/small/zoom-out"]
     }
     { btnZoomNormal ToolButton
       MoveScaled(40,0,4,4)
       ToolTip = ("No zoom")
-      Text = ("")
       Picture = Picture["icon:/small/zoom-normal"]
     }
     { Separator2 Separator
@@ -107,15 +97,14 @@
         Expand = True
       }
     }
+    { Printer1 #Printer
+      #MoveScaled(7,1)
+    }
     { !webHelp WebView
       MoveScaled(43,3,29,15)
       #Public = True
       Expand = True
       Cached = True
-    }
-    { Printer1 #Printer
-      #X = 315
-      #Y = 140
     }
   }
 }

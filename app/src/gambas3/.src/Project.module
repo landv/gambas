@@ -188,7 +188,7 @@ Public Sub Main()
 
   'EXAMPLES_DIR = "Ceci est une très longue phrase dont j'ai l'espoir qu'elle soit correctement coupée par le ballon affiché par la fenêtre de débogage"
   'EXAMPLES_DIR = Replace(EXAMPLES_DIR, " ", "0")
-  EXAMPLES_DIR = System.Path &/ "share/gambas" & Split(System.Version,".")[0] & "/examples"
+  EXAMPLES_DIR = System.Path &/ "share/gambas" & Split(System.Version, ".")[0] & "/examples"
 
   Application.Tooltip.Enabled = Settings["/ShowTooltip", True]
 
@@ -1241,6 +1241,7 @@ Private Sub DoRefresh(Optional bReset As Boolean)
   Dim sKeyReset As String
   Dim hFile As Object
   Dim sPath As String
+  Dim sFamily As String
   Dim hModule As CModule
 
   '$bDisplayForm = Settings["/DisplayForm"]
@@ -1300,17 +1301,18 @@ Private Sub DoRefresh(Optional bReset As Boolean)
 
   DefineStartup(Startup, True)
 
-  ' $$ TODO
-  If Not HasModule("form") Then 
-    For Each hFile In Files
-      sPath = Files.Key
-      If Not IsSourcePath(sPath) Then Continue
-      If Exist(File.SetExt(sPath, "form")) Then
-        Files.Remove(sPath)
-        hFile.Delete
-      Endif
-    Next
-  Endif
+  For Each sFamily In CFamily.List
+    If Not HasModule(sFamily) Then 
+      For Each hFile In Files
+        sPath = Files.Key
+        If Not IsSourcePath(sPath) Then Continue
+        If Exist(File.SetExt(sPath, sFamily)) Then
+          Files.Remove(sPath)
+          hFile.Delete
+        Endif
+      Next
+    Endif
+  Next
 
   UpdateTitle
   $bDoRefresh = False
@@ -1553,16 +1555,23 @@ End
 
 Public Function ExistForm(sClass As String) As Boolean
 
-  Return $cSourceDir.Exist(sClass & ".form")
+  Dim sFamily As String
+  
+  For Each sFamily In CFamily.List
+    If $cSourceDir.Exist(sClass & "." & sFamily) Then Return True
+  Next
 
 End
 
 Public Sub FindForm(sClass As String) As FForm
   
+  Dim sFamily As String
   Dim sPath As String
 
-  sPath = $cSourceDir[sClass & ".form"]
-  If Exist(sPath) Then Return LoadFile(sPath)
+  For Each sFamily In CFamily.List
+    sPath = $cSourceDir[sClass & "." & sFamily]
+    If Exist(sPath) Then Return LoadFile(sPath)
+  Next
   
 End
 
@@ -3306,12 +3315,14 @@ Public Sub GetClassesOnly() As String[]
   Dim sPath As String
   Dim sFile As String
   Dim aClass As New String[]
+  Dim sClass As String
   
   For Each sPath In $cSourceDir
     sFile = File.Name(sPath)
     If File.Ext(sFile) <> "class" Then Continue
-    If $cSourceDir.Exist(File.SetExt(sFile, "form")) Then Continue
-    aClass.Add(File.BaseName(sFile))
+    sClass = File.BaseName(sFile)
+    If ExistForm(sClass) Then Continue
+    aClass.Add(sClass)
   Next
   
   Return aClass.Sort(gb.Natural)
@@ -3350,7 +3361,7 @@ Public Sub RefreshKey(sKey As String, Optional sOld As String)
   
   If Not Exist(sKey) Then Return
 
-  If IsSourcePath(sKey) And If File.Ext(sKey) = "class" And If Not $cSourceDir.Exist(File.BaseName(sKey) & ".form") Then
+  If IsSourcePath(sKey) And If File.Ext(sKey) = "class" And If Not ExistForm(File.BaseName(sKey)) Then
     RefreshInheritance
     Return
   Endif
@@ -3374,6 +3385,7 @@ Public Sub RenameFile(sPath As String, sNewName As String)
   Dim sDir As String
   Dim sNewPath As String
   Dim sMsg As String
+  Dim sFamily As String
 
   sDir = File.Dir(sPath)
   sExt = File.Ext(sPath)
@@ -3393,10 +3405,12 @@ Public Sub RenameFile(sPath As String, sNewName As String)
 
     sNewPath = RenameOneFile(sDir, sName, sNewName, sExt)
 
-    If sExt = "form" Then
+    If CFamily.List.Exist(sExt) Then
       RenameOneFile(sDir, sName, sNewName, "class")
     Else If sExt = "class" Then
-      RenameOneFile(sDir, sName, sNewName, "form")
+      For Each sFamily In CFamily.List
+        If Exist(sDir &/ sName & "." & sFamily) Then RenameOneFile(sDir, sName, sNewName, sFamily)
+      Next
     Endif
 
   Else
@@ -4621,7 +4635,7 @@ Public Sub UpdateForms()
   Inc Application.Busy
   
   For Each sForm In $cSourceDir
-    If File.Ext(sForm) <> "form" Then Continue
+    If Not CFamily.List.Exist(File.Ext(sForm)) Then Continue
     hForm = Project.LoadFile(sForm)
     hForm.Modify
     hForm.Save

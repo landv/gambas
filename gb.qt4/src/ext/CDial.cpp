@@ -38,7 +38,7 @@ BEGIN_METHOD(CDIAL_new, GB_OBJECT parent)
 
   QDial *wid = new QDial(QT.GetContainer(VARG(parent)));
 
-  QT.InitWidget(wid, _object);
+  QT.InitWidget(wid, _object, false);
   //QT.SetBackgroundRole(_object, QColorGroup::Base);
 
   QObject::connect(wid, SIGNAL(valueChanged(int)), &CDial::manager, SLOT(event_change()));

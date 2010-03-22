@@ -71,8 +71,8 @@ Public Sub DrawingArea_Draw()
     Endif
     sTitle &= "</font>"
     'Draw.Font.Bold = True
-    W = Draw.RichTextWidth(sTitle)
     X = ICON_SIZE + PADDING * 2
+    W = Max(Me.W - X, Draw.RichTextWidth(sTitle))
     If bSelected Then Draw.Foreground = Color.SelectedForeground
     Draw.RichText(sTitle, X, 0, W, Desktop.Scale * 4, Align.TopLeft)
     

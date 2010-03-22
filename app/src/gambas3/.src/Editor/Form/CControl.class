@@ -91,7 +91,7 @@ End
 
 
 
-Private Function CreateControl(sName As String, sClass As String, hParent As Object, hFamily As CFamily) As Object
+Private Function CreateControl(sName As String, sClass As String, hParent As Object) As Object
 
   Dim hCtrl As Object
   Dim hPict As Picture
@@ -105,8 +105,6 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
   'DIM iInd AS Integer
 
   'PRINT "> CreateControl "; sClass
-
-  $hFamily = hFamily
 
   hClass = CComponent.Classes[sClass]
   bExist = hClass <> Null
@@ -248,8 +246,8 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
           hCtrl.Merge = True
           'hCtrl.Text = sClass & " ?"
           hCtrl.Design = True
-          hCtrl.Painted = hFamily.IsPainted(Me)
-          hCtrl.Transparent = hFamily.IsTransparent(Me)
+          hCtrl.Painted = $hFamily.IsPainted(Me)
+          hCtrl.Transparent = $hFamily.IsTransparent(Me)
         Else
           hCtrl.Design = Not IsContainer()
           ' If Not IsMultiContainer() Then
@@ -306,6 +304,7 @@ Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As
   Name = sName
   Kind = sClass
   Parent = hParent
+  $hFamily = hFamily
   
   hClass = CComponent.Classes[sClass]
   
@@ -334,7 +333,7 @@ Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As
     If Virtual Then
 
       'PRINT sName; " is virtual"
-      hCtrl = CreateControl(sName, sClass, Parent.Control, hFamily)
+      hCtrl = CreateControl(sName, sClass, Parent.Control)
       'hCtrl.Resize(5 * Desktop.Scale, 5 * Desktop.Scale)
       iDim = 2 + (32 + Desktop.Scale - 1) \ Desktop.Scale '(40 + Desktop.Scale - 1) Div Desktop.Scale
       hCtrl.ResizeScaled(iDim, iDim)
@@ -343,7 +342,7 @@ Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As
 
       If Not Parent Then Stop
 
-      hCtrl = CreateControl(sName, sClass, Parent.Control, hFamily)
+      hCtrl = CreateControl(sName, sClass, Parent.Control)
       Unknown = Object.Type(hCtrl) <> sClass
 
     Endif
@@ -749,7 +748,8 @@ Public Sub Delete()
   Endif
 
   UnSelect(hForm)
-
+  
+  $hFamily.DeleteIcon(Me)
   Control.Delete
   Control = Null
 

@@ -839,8 +839,9 @@ static int hook_picture(CPICTURE **ppicture, GB_PICTURE_INFO *info)
 }
 #endif
 
-static void QT_InitWidget(QWidget *widget, void *object)
+static void QT_InitWidget(QWidget *widget, void *object, int fill_bg)
 {
+	((CWIDGET *)object)->flag.fillBackground = fill_bg;	
 	CWIDGET_new(widget, object);
 }
 

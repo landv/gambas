@@ -123,7 +123,7 @@ typedef
     intptr_t version;
     void (*InitEventLoop)(void);
     void (*Init)(void);
-    void (*InitWidget)(QWidget *, void *);
+    void (*InitWidget)(QWidget *, void *, int);
     void *(*GetObject)(QWidget *);
     QWidget *(*GetContainer)(void *);
     void (*BorderProperty)(void *, void *);
