@@ -92,7 +92,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   'draw.Font.size = draw.Font.size * MRTools.ReportZoom '* MRTools.ResolutionAffichage
   
   'Draw.Clip((x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
-    Paint.RichText($sText, (x + hControl.RealLeft + MTools.UnitsToPixels(Me.Padding)), (y + hControl.RealTop + MTools.UnitsToPixels(Me.Padding)), (hControl.RealWidth - 2 * MTools.UnitsToPixels(Me.Padding)), (hControl.RealHeight - 2 * MTools.UnitsToPixels(Me.Padding))) ', $iAlignment)
+    Paint.RichText($sText, (x + hControl.RealLeft + MTools.UnitsToPixels(Me._Padding)), (y + hControl.RealTop + MTools.UnitsToPixels(Me.Padding)), (hControl.RealWidth - 2 * MTools.UnitsToPixels(Me._Padding)), (hControl.RealHeight - 2 * MTools.UnitsToPixels(Me.Padding))) ', $iAlignment)
     'Draw.RichText($sText, (x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (hControl.RealWidth - 2 * MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (hControl.RealHeight - 2 * MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom) ', $iAlignment)
   'Draw.Clip.Enabled = False
 End

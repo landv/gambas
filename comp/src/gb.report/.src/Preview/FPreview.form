@@ -1,0 +1,103 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,130,78)
+  Text = ("Report preview")
+  Arrangement = Arrange.Vertical
+  { HBox1 HBox
+    MoveScaled(0,0,110,5)
+    { Panel3 Panel
+      MoveScaled(0,1,33,3)
+      Expand = True
+    }
+    { ToolButton1 ToolButton
+      MoveScaled(97,0,5,5)
+      Picture = Picture["icon:/small/quit"]
+    }
+  }
+  { HBox2 HBox
+    MoveScaled(2,7,128,50)
+    Expand = True
+    { ScrollView1 ScrollView
+      MoveScaled(-8,6,92,57)
+      Expand = True
+      Arrangement = Arrange.Column
+      Padding = 10
+      { DrawingArea1 DrawingArea
+        MoveScaled(0,0,89,51)
+        Background = &HFFFFFF&
+        Painted = True
+        Border = Border.Plain
+      }
+    }
+    { VBox1 VBox
+      MoveScaled(88,-3,36,52)
+      Spacing = True
+      { Frame1 Frame
+        MoveScaled(0,0,36,38)
+        Text = ("Size")
+        { ComboBox1 ComboBox
+          MoveScaled(2,7,33,4)
+          ReadOnly = True
+        }
+        { Label1 Label
+          MoveScaled(3,4,19,3)
+          Text = ("Paper size")
+          Transparent = True
+        }
+        { Frame3 Frame
+          MoveScaled(2,12,33,22)
+          Enabled = False
+          Text = ("Custom paper size")
+          { Label2 Label
+            MoveScaled(2,7,9,3)
+            Text = ("Width:")
+            Transparent = True
+          }
+          { Label3 Label
+            MoveScaled(2,13,9,3)
+            Text = ("Height:")
+            Transparent = True
+          }
+          { txtWidth TextBox
+            MoveScaled(9,6,14,5)
+          }
+          { txtHeight TextBox
+            MoveScaled(9,12,14,5)
+          }
+        }
+      }
+      { Frame2 Frame
+        MoveScaled(0,41,36,9)
+        Text = ("Orientation")
+        { ComboBox2 ComboBox
+          MoveScaled(2,4,28,4)
+          ReadOnly = True
+          List = [("Portrait"), ("Landscape")]
+        }
+      }
+    }
+  }
+  { Panel1 Panel
+    MoveScaled(3,63,107,4)
+    Arrangement = Arrange.Horizontal
+    Border = Border.Plain
+    { Panel2 Panel
+      MoveScaled(2,0,27,3)
+      Expand = True
+    }
+    { ToolButton2 ToolButton
+      MoveScaled(59,0,4,4)
+      Picture = Picture["icon:/small/zoom-out"]
+    }
+    { Slider1 Slider
+      MoveScaled(62,0,28,5)
+      MinValue = 10
+      Value = 100
+    }
+    { ToolButton3 ToolButton
+      MoveScaled(90,0,4,4)
+      Picture = Picture["icon:/small/zoom-in"]
+    }
+  }
+}

@@ -17,6 +17,8 @@ Private $bLayoutIsDirty As Boolean = True
 Private $fScale As Float = 1.0
 Private $hReportTControl As New TControl
 Private $sOldDeviceName As String
+Private $sOldWidth As String
+Private $sOldHeight As String
 
 Property Read Count As Integer
 Property Height As String
@@ -24,6 +26,22 @@ Property Width As String
 Property Scale As Float
 
 'EVENT Data()
+
+
+Static Public Sub Main()
+    
+   Dim hObject As Object
+   hObject = Application.Startup.AutoCreate()
+   If Not hObject Is Report Then Return
+   FPreview.Run(hObject)
+  
+End
+
+
+
+
+
+
 
 Public Sub _New()
 
@@ -34,15 +52,22 @@ Public Sub _New()
   
 End
 
+
+
+
+
 Public Sub Layout()
   
-  If Not $bLayoutIsDirty And $sOldDeviceName = Paint.Device.Name Then Return 
-  $sOldDeviceName = Paint.Device.Name
+  'If $sOldDeviceName = Paint.Device.Name Then Return 
+  '$sOldDeviceName = Paint.Device.Name"
   'MTools.ReportResolution = Paint.ResolutionX
   If Me.Parent = Null Then 
     Me.Width = (Paint.Width / $fScale) & " px"
     Me.Height = (Paint.Height / $fScale) & " px"
   Endif
+  $sOldHeight = Me.Height
+  $sOldWidth = Me.Width
+  
   Me._SetUnifiedValues()
   
   $hReportTControl.ctrl = Me
@@ -55,8 +80,13 @@ End
 
 
 Public Sub Paint(Page As Integer)
-
-   Layout()
+   
+  If Me.Parent = Null Then 
+    If $sOldWidth <> ((Paint.Width / $fScale) & " px") Then $bLayoutIsDirty = True
+    If $sOldHeight <> ((Paint.Height / $fScale) & " px") Then $bLayoutIsDirty = True
+  Endif
+   
+   If $bLayoutIsDirty Then Layout()
    
   If page < 1 Or page > $iCount Then 
     Error.Raise("This page does not exist")

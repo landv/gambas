@@ -1,0 +1,33 @@
+# Gambas Form File 3.0
+
+{ Report Report
+  #Move(0,0,726,606)
+  Padding = "2 cm"
+  Spacing = "3 cm"
+  { Liste ReportLabel
+    #Move(24,24,648,42)
+    Font = Font["Bold,+9"]
+    Padding = "1 mm"
+    Border = ReportBorder["3 px,&H000000&"]
+    Text = ("Liste de mes amis")
+    Alignment = Align.Center
+  }
+  { ReportVBox1 ReportVBox
+    #Move(24,78,642,372)
+    { ReportLabel1 ReportLabel
+      #Move(6,18,630,30)
+      Border = ReportBorder["2 px,&H000000&,Bottom"]
+      Text = ("Paulo")
+    }
+    { ReportLabel2 ReportLabel
+      #Move(6,60,630,30)
+      Border = ReportBorder["2 px,&H000000&,Bottom"]
+      Text = ("Paulo")
+    }
+    { ReportLabel3 ReportLabel
+      #Move(6,108,630,30)
+      Border = ReportBorder["2 px,&H000000&,Bottom"]
+      Text = ("Paulo")
+    }
+  }
+}

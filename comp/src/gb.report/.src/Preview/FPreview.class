@@ -1,0 +1,101 @@
+' Gambas class file
+Static Private $hreport As Report
+Private hPrinter As New Printer
+Static Public Function Run(hReport As Report)
+  Dim hFPreview As FPreview
+  $hreport = hReport
+  
+  hFpreview = New FPreview
+  hFpreview.Show
+  
+End
+
+
+Public Sub _New()
+  
+  Me.Center
+  
+End
+
+
+Public Sub ToolButton1_Click()
+
+  Me.Close
+
+End
+
+Public Sub DrawingArea1_Draw()
+
+  $hreport.Scale = Slider1.Value / 100
+  $hreport.Paint(1)
+
+End
+
+Public Sub Form_Open()
+
+  Slider1_Change
+  ComboBox1.List = ["A3", "A4", "A5", "B5", "Executive", "Legal", "Letter", "Custom"]
+  ComboBox1.Index = 1
+
+End
+
+Public Sub Slider1_Change()
+
+  DrawingArea1.Resize((hPrinter.PaperWidth * Desktop.Resolution / 25.4) * Slider1.Value / 100, (hPrinter.PaperHeight * Desktop.Resolution / 25.4) * Slider1.Value / 100)
+  DrawingArea1.Refresh
+
+End
+
+
+Public Sub ComboBox1_Click()
+   
+  hPrinter.Paper = Object.GetProperty(Printer, ComboBox1.Text)
+  
+  If ComboBox1.Text = "Custom" Then 
+    Frame3.Enabled = True
+  Else 
+    Frame3.Enabled = False
+    txtWidth.Text = Int(hPrinter.PaperWidth)
+    txtHeight.Text = Int(hPrinter.PaperHeight)
+  Endif
+  '$hreport.Layout
+  Slider1_Change
+End
+
+Public Sub ComboBox2_Click()
+
+  hPrinter.Orientation = ComboBox2.Index
+  ComboBox1_Click
+  Slider1_Change
+
+End
+
+Public Sub txtWidth_Change()
+
+  hPrinter.PaperWidth = txtWidth.Text
+
+  Slider1_Change
+  
+  Catch
+  
+
+End
+
+Public Sub txtHeight_Change()
+
+    hPrinter.PaperHeight = txtHeight.Text
+  Slider1_Change
+
+End
+
+Public Sub ToolButton2_Click()
+
+  Try Dec Slider1.Value
+
+End
+
+Public Sub ToolButton3_Click()
+
+  Try Inc Slider1.Value
+
+End
