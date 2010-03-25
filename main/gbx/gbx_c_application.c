@@ -293,7 +293,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Application_Startup)
 
-	GB_ReturnString(PROJECT_startup);
+	GB_ReturnNewZeroString(PROJECT_startup);
 
 END_PROPERTY
 
