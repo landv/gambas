@@ -80,21 +80,21 @@ void CAPP_init()
 }
 
 
-BEGIN_PROPERTY(CAPPLICATION_path)
+BEGIN_PROPERTY(Application_Path)
 
   GB_ReturnString(PROJECT_path);
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CUSER_home)
+BEGIN_PROPERTY(User_Home)
 
 	GB_ReturnString(PROJECT_get_home());
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CUSER_name)
+BEGIN_PROPERTY(User_Name)
 
   struct passwd *info = getpwuid(getuid());
 
@@ -106,49 +106,49 @@ BEGIN_PROPERTY(CUSER_name)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CUSER_id)
+BEGIN_PROPERTY(User_Id)
 
   GB_ReturnInteger(getuid());
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CUSER_group)
+BEGIN_PROPERTY(User_Group)
 
   GB_ReturnInteger(getgid());
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CAPPLICATION_name)
+BEGIN_PROPERTY(Application_Name)
 
   GB_ReturnConstZeroString(PROJECT_name);
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CAPPLICATION_title)
+BEGIN_PROPERTY(Application_Title)
 
   GB_ReturnConstZeroString(LOCAL_gettext(PROJECT_title));
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CAPPLICATION_id)
+BEGIN_PROPERTY(Application_Id)
 
   GB_ReturnInt(getpid());
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CAPPLICATION_dir)
+BEGIN_PROPERTY(Application_Dir)
 
   GB_ReturnString(PROJECT_oldcwd);
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CAPPLICATION_version)
+BEGIN_PROPERTY(Application_Version)
 
   GB_ReturnConstZeroString(PROJECT_version);
 
@@ -165,14 +165,14 @@ BEGIN_PROPERTY(CAPPLICATION_args)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CAPPLICATION_args_count)
+BEGIN_PROPERTY(Application_Args_Count)
 
   GB_ReturnInt(PROJECT_argc);
 
 END_PROPERTY
 
 
-BEGIN_METHOD(CAPPLICATION_args_get, GB_INTEGER index)
+BEGIN_METHOD(Application_Args_get, GB_INTEGER index)
 
   int index = VARG(index);
 
@@ -190,7 +190,7 @@ BEGIN_METHOD(CAPPLICATION_args_get, GB_INTEGER index)
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CAPPLICATION_args_next)
+BEGIN_METHOD_VOID(Application_Args_next)
 
   int *index = (int*)GB_GetEnum();
 
@@ -205,7 +205,7 @@ BEGIN_METHOD_VOID(CAPPLICATION_args_next)
 END_METHOD
 
 
-BEGIN_PROPERTY(CAPPLICATION_env_count)
+BEGIN_PROPERTY(Application_Env_Count)
 
 	int n = 0;
 	
@@ -217,21 +217,21 @@ BEGIN_PROPERTY(CAPPLICATION_env_count)
 END_PROPERTY
 
 
-BEGIN_METHOD(CAPPLICATION_env_get, GB_STRING key)
+BEGIN_METHOD(Application_Env_get, GB_STRING key)
 
   GB_ReturnConstZeroString(getenv(GB_ToZeroString(ARG(key))));
 
 END_METHOD
 
 
-BEGIN_METHOD(CAPPLICATION_env_put, GB_STRING value; GB_STRING key)
+BEGIN_METHOD(Application_Env_put, GB_STRING value; GB_STRING key)
 
   setenv(GB_ToZeroString(ARG(key)), GB_ToZeroString(ARG(value)), 1);
 
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CAPPLICATION_env_next)
+BEGIN_METHOD_VOID(Application_Env_next)
 
   int *index = (int*)GB_GetEnum();
   char *pos;
@@ -252,7 +252,7 @@ BEGIN_METHOD_VOID(CAPPLICATION_env_next)
 
 END_METHOD
 
-BEGIN_PROPERTY(CAPPLICATION_return)
+BEGIN_PROPERTY(Application_Return)
 
   if (READ_PROPERTY)
   	GB_ReturnInteger(EXEC_return_value);
@@ -270,7 +270,7 @@ static void init_again(int old_pid)
 	rename(old, FILE_make_temp(NULL, NULL));
 }
 
-BEGIN_PROPERTY(CAPPLICATION_daemon)
+BEGIN_PROPERTY(Application_Daemon)
 
 	int old_pid;
 
@@ -294,7 +294,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Application_Startup)
 
-	GB_ReturnNewZeroString(PROJECT_startup);
+	GB_ReturnObject(PROJECT_class);
 
 END_PROPERTY
 
@@ -379,9 +379,9 @@ GB_DESC NATIVE_AppArgs[] =
 {
   GB_DECLARE(".ApplicationArgs", 0), GB_VIRTUAL_CLASS(),
 
-  GB_STATIC_PROPERTY_READ("Count", "i", CAPPLICATION_args_count),
-  GB_STATIC_METHOD("_get", "s", CAPPLICATION_args_get, "(Index)i"),
-  GB_STATIC_METHOD("_next", "s", CAPPLICATION_args_next, NULL),
+  GB_STATIC_PROPERTY_READ("Count", "i", Application_Args_Count),
+  GB_STATIC_METHOD("_get", "s", Application_Args_get, "(Index)i"),
+  GB_STATIC_METHOD("_next", "s", Application_Args_next, NULL),
 
   GB_END_DECLARE
 };
@@ -391,10 +391,10 @@ GB_DESC NATIVE_AppEnv[] =
 {
   GB_DECLARE(".ApplicationEnv", 0), GB_VIRTUAL_CLASS(),
 
-  GB_STATIC_PROPERTY_READ("Count", "i", CAPPLICATION_env_count),
-  GB_STATIC_METHOD("_get", "s", CAPPLICATION_env_get, "(Key)s"),
-  GB_STATIC_METHOD("_put", NULL, CAPPLICATION_env_put, "(Value)s(Key)s"),
-  GB_STATIC_METHOD("_next", "s", CAPPLICATION_env_next, NULL),
+  GB_STATIC_PROPERTY_READ("Count", "i", Application_Env_Count),
+  GB_STATIC_METHOD("_get", "s", Application_Env_get, "(Key)s"),
+  GB_STATIC_METHOD("_put", NULL, Application_Env_put, "(Value)s(Key)s"),
+  GB_STATIC_METHOD("_next", "s", Application_Env_next, NULL),
 
   GB_END_DECLARE
 };
@@ -406,16 +406,16 @@ GB_DESC NATIVE_App[] =
 
   GB_STATIC_PROPERTY_SELF("Args", ".ApplicationArgs"),
   GB_STATIC_PROPERTY_SELF("Env", ".ApplicationEnv"),
-  GB_STATIC_PROPERTY_READ("Path", "s", CAPPLICATION_path),
-  GB_STATIC_PROPERTY_READ("Name", "s", CAPPLICATION_name),
-  GB_STATIC_PROPERTY_READ("Title", "s", CAPPLICATION_title),
-  GB_STATIC_PROPERTY_READ("Id", "i", CAPPLICATION_id),
-  GB_STATIC_PROPERTY_READ("Handle", "i", CAPPLICATION_id),
-  GB_STATIC_PROPERTY_READ("Version", "s", CAPPLICATION_version),
-  GB_STATIC_PROPERTY_READ("Dir", "i", CAPPLICATION_dir),
-  GB_STATIC_PROPERTY("Return", "i", CAPPLICATION_return),
-  GB_STATIC_PROPERTY("Daemon", "b", CAPPLICATION_daemon),
-  GB_STATIC_PROPERTY_READ("Startup", "s", Application_Startup),
+  GB_STATIC_PROPERTY_READ("Path", "s", Application_Path),
+  GB_STATIC_PROPERTY_READ("Name", "s", Application_Name),
+  GB_STATIC_PROPERTY_READ("Title", "s", Application_Title),
+  GB_STATIC_PROPERTY_READ("Id", "i", Application_Id),
+  GB_STATIC_PROPERTY_READ("Handle", "i", Application_Id),
+  GB_STATIC_PROPERTY_READ("Version", "s", Application_Version),
+  GB_STATIC_PROPERTY_READ("Dir", "i", Application_Dir),
+  GB_STATIC_PROPERTY("Return", "i", Application_Return),
+  GB_STATIC_PROPERTY("Daemon", "b", Application_Daemon),
+  GB_STATIC_PROPERTY_READ("Startup", "Class", Application_Startup),
 
   GB_END_DECLARE
 };
@@ -449,10 +449,10 @@ GB_DESC NATIVE_User[] =
 {
   GB_DECLARE("User", 0), GB_VIRTUAL_CLASS(),
 
-  GB_STATIC_PROPERTY_READ("Name", "s", CUSER_name),
-  GB_STATIC_PROPERTY_READ("Id", "i", CUSER_id),
-  GB_STATIC_PROPERTY_READ("Group", "i", CUSER_group),
-  GB_STATIC_PROPERTY_READ("Home", "s", CUSER_home),
+  GB_STATIC_PROPERTY_READ("Name", "s", User_Name),
+  GB_STATIC_PROPERTY_READ("Id", "i", User_Id),
+  GB_STATIC_PROPERTY_READ("Group", "i", User_Group),
+  GB_STATIC_PROPERTY_READ("Home", "s", User_Home),
 
   GB_END_DECLARE
 };
