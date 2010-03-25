@@ -291,6 +291,12 @@ BEGIN_PROPERTY(CAPPLICATION_daemon)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Application_Startup)
+
+	GB_ReturnString(PROJECT_startup);
+
+END_PROPERTY
+
 
 BEGIN_PROPERTY(System_Language)
 
@@ -408,6 +414,7 @@ GB_DESC NATIVE_App[] =
   GB_STATIC_PROPERTY_READ("Dir", "i", CAPPLICATION_dir),
   GB_STATIC_PROPERTY("Return", "i", CAPPLICATION_return),
   GB_STATIC_PROPERTY("Daemon", "b", CAPPLICATION_daemon),
+  GB_STATIC_PROPERTY_READ("Startup", "s", Application_Startup),
 
   GB_END_DECLARE
 };

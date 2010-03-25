@@ -291,6 +291,17 @@ BEGIN_PROPERTY(Class_Instance)
 
 END_PROPERTY
 
+BEGIN_METHOD_VOID(Class_AutoCreate)
+
+	CLASS *class = OBJECT(CLASS);
+	
+	if (!class->auto_create)
+		GB_ReturnNull();
+	else
+		GB_ReturnObject(CLASS_auto_create(class, 0));
+
+END_METHOD
+
 
 /**** Symbol ***************************************************************/
 
@@ -701,16 +712,13 @@ BEGIN_METHOD(Object_Call, GB_OBJECT object; GB_STRING method; GB_OBJECT params)
 	void *object = VARG(object);
 	GB_FUNCTION func;
 	GB_ARRAY params = VARGOPT(params, NULL);
-	CLASS *class;
 
 	if (GB_CheckObject(object))
 		return;
-
-	class = OBJECT_class(object);
-
+	
 	if (GB_GetFunction(&func, object, name, NULL, NULL))
 	{
-		GB_Error((char *)E_NSYMBOL, name, class->name);
+		GB_Error((char *)E_NSYMBOL, name, OBJECT_class(object)->name);
 		return;
 	}
 
@@ -896,6 +904,7 @@ GB_DESC NATIVE_Class[] =
 	GB_PROPERTY_READ("Count", "i", Class_Count),
 	GB_PROPERTY_READ("Instance", "o", Class_Instance),
 	GB_PROPERTY_READ("Symbols", "String[]", Class_Symbols),
+	GB_METHOD("AutoCreate", "o", Class_AutoCreate, NULL),
 
 	GB_CONSTANT("Variable", "i", 1),
 	GB_CONSTANT("Property", "i", 2),
