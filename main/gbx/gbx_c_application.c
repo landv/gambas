@@ -291,6 +291,7 @@ BEGIN_PROPERTY(CAPPLICATION_daemon)
 
 END_PROPERTY
 
+
 BEGIN_PROPERTY(Application_Startup)
 
 	GB_ReturnNewZeroString(PROJECT_startup);
