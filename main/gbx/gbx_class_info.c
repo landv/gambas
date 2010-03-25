@@ -271,7 +271,7 @@ static GB_DESC NATIVE_GambasLanguage[] =
   GB_METHOD("Access", "b", NULL, "(Path)s[(Mode)i]"),
 
   GB_METHOD("Dir", "String[]", NULL, "(Path)s[(Pattern)s(Filter)i]"),
-  GB_METHOD("RDir", "String[]", NULL, "(Path)s[(Pattern)s(Filter)i]"),
+  GB_METHOD("RDir", "String[]", NULL, "(Path)s[(Pattern)s(Filter)i(FollowLink)b]"),
   
   GB_METHOD("DFree", "l", NULL, "(Path)s"),
 

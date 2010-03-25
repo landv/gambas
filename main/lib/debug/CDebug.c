@@ -51,10 +51,10 @@ static void callback_read(int fd, int type, intptr_t param)
 {
   int n, i, p;
 
-	fcntl(_fdr, F_SETFL, fcntl(_fdr, F_GETFL) | O_NONBLOCK);
-
 	for(;;)
   {
+		fcntl(_fdr, F_SETFL, fcntl(_fdr, F_GETFL) | O_NONBLOCK);
+
     if (_buffer_left)
     {
       n = read(_fdr,  &_buffer[_buffer_left], BUFFER_SIZE - _buffer_left);
@@ -81,7 +81,7 @@ static void callback_read(int fd, int type, intptr_t param)
         /*fprintf(stderr, "CDEBUG_read: <<< %.*s >>>\n", i - p, &_buffer[p]);*/
         GB.Raise(_debug_object, EVENT_Read, 1, GB_T_STRING, i <= p ? NULL : &_buffer[p], i - p);
         if (!_buffer)
-          return;
+          break;
         p = i + 1;
       }
     }

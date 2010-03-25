@@ -118,7 +118,7 @@ void FILE_link(const char *src, const char *dst);
 
 char *FILE_make_temp(int *len, const char *pattern);
 
-void FILE_recursive_dir(const char *dir, void (*found)(const char *), void (*afterfound)(const char *), int attr);
+void FILE_recursive_dir(const char *dir, void (*found)(const char *), void (*afterfound)(const char *), int attr, bool follow);
 
 void FILE_make_path_dir(const char *path);
 

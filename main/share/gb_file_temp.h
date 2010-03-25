@@ -162,7 +162,7 @@ static void remove_temp_file(const char *path)
 
 void FILE_remove_temp_file(void)
 {
-	FILE_recursive_dir(FILE_make_temp(NULL, NULL), NULL, remove_temp_file, 0);
+	FILE_recursive_dir(FILE_make_temp(NULL, NULL), NULL, remove_temp_file, 0, FALSE);
 	rmdir(FILE_make_temp(NULL, NULL));
 }
 
@@ -589,7 +589,7 @@ bool FILE_dir_next(char **path, int *len)
 
 //#undef _DIRENT_HAVE_D_TYPE
 
-void FILE_recursive_dir(const char *dir, void (*found)(const char *), void (*afterfound)(const char *), int attr)
+void FILE_recursive_dir(const char *dir, void (*found)(const char *), void (*afterfound)(const char *), int attr, bool follow)
 {
 	void *list = NULL;
 	void *dir_list = NULL;
@@ -621,7 +621,7 @@ void FILE_recursive_dir(const char *dir, void (*found)(const char *), void (*aft
 		#ifdef _DIRENT_HAVE_D_TYPE
 		is_dir = _last_is_dir;
 		#else
-		FILE_stat(path, &info, FALSE);
+		FILE_stat(path, &info, follow);
 		is_dir = info.type == GB_STAT_DIRECTORY;
 		#endif
 		
@@ -639,7 +639,7 @@ void FILE_recursive_dir(const char *dir, void (*found)(const char *), void (*aft
 		TRY
 		{
 			if (found) (*found)(path);
-			FILE_recursive_dir(path, found, afterfound, attr);
+			FILE_recursive_dir(path, found, afterfound, attr, follow);
 			if (afterfound) (*afterfound)(path);
 		}
 		CATCH

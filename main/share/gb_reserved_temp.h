@@ -486,7 +486,7 @@ SUBR_INFO COMP_subr_info[] =
   { "Dir?",              80,  0,  1     },
 
   { "Dir",               81,  0,  1,  3 },
-  { "RDir",              82,  0,  1,  3 },
+  { "RDir",              82,  0,  1,  4 },
 
 #ifndef __EVAL_RESERVED_C
   { ".Exec",             83,  0,  4     },

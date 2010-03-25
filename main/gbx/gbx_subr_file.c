@@ -560,6 +560,7 @@ void SUBR_rdir()
 {
   const char *path;
   int attr = 0;
+	bool follow = FALSE;
 
   SUBR_ENTER();
 
@@ -568,8 +569,12 @@ void SUBR_rdir()
   if (NPARAM >= 2)
   {
     SUBR_get_string_len(&PARAM[1], &_pattern, &_len_pattern);
-    if (NPARAM == 3)
+    if (NPARAM >= 3)
+		{
       attr = SUBR_get_integer(&PARAM[2]);
+			if (NPARAM == 4)
+				follow = SUBR_get_boolean(&PARAM[3]);
+		}
   }
   else
     _pattern = NULL;
@@ -582,7 +587,7 @@ void SUBR_rdir()
   if (_ignore > 0 && path[_ignore - 1] != '/')
     _ignore++;
 
-  FILE_recursive_dir(path, found_file, NULL, attr);
+  FILE_recursive_dir(path, found_file, NULL, attr, follow);
 
   RETURN->_object.class = OBJECT_class(_result);
   RETURN->_object.object = _result;
