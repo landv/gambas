@@ -82,7 +82,7 @@
         #Move(462,6,114,36)
         Width = "3 cm"
         Border = ReportBorder["0.5 mm,&H000000&,Right,Bottom,Top"]
-        Text = ("Quantité")
+        Text = ("Prix Unitaire")
         Alignment = Align.Center
       }
       { ReportLabel8 ReportLabel
@@ -95,22 +95,27 @@
     }
     { ReportHBox4 ReportHBox
       #Move(0,96,696,48)
-      Height = "1 cm"
-      Expand = True
+      AutoResize = True
       Repeat = True
       { ReportVBox4 ReportVBox
         #Move(12,6,114,36)
         Width = "3 cm"
         Border = ReportBorder["0.5 mm,&H000000&,Left,Right"]
+        { ReportField1 ReportField
+          #Move(12,6,90,30)
+        }
       }
       { ReportVBox5 ReportVBox
         #Move(162,0,114,36)
         Width = "3 cm"
         Expand = True
         Border = ReportBorder["0.5 mm,&H000000&,Right"]
+        { ReportField2 ReportField
+          #Move(12,6,96,24)
+        }
       }
       { ReportVBox6 ReportVBox
-        #Move(318,0,114,36)
+        #Move(312,6,114,36)
         Width = "3 cm"
         Border = ReportBorder["0.5 mm,&H000000&,Right"]
       }
@@ -128,6 +133,7 @@
     { ReportHBox5 ReportHBox
       #Move(-6,156,696,48)
       Height = "1 cm"
+      AutoResize = True
       { ReportVBox9 ReportVBox
         #Move(12,6,114,36)
         Width = "3 cm"
@@ -157,7 +163,7 @@
     }
     { ReportLabel10 ReportLabel
       #Move(84,240,420,24)
-      Border = ReportBorder["0.5 mm,&H000000&"]
+      Border = ReportBorder["0.5 mm,&H000000&,Left,Right,Bottom"]
       Text = ("ReportLabel10")
     }
   }

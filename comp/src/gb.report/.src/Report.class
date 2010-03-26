@@ -98,7 +98,7 @@ Public Sub Paint(Page As Integer)
   
   Paint.Scale($fScale, $fScale)
   With Paint.ClipExtents
-    Debug .X;; .Y;; .Width;; .Height
+    'Debug .X;; .Y;; .Width;; .Height
   End With
 
   Me._ClipChildren(Page, 0, 0, $hReportTControl, -1, $fSCale)
@@ -106,7 +106,7 @@ Public Sub Paint(Page As Integer)
   Me._Paint(Page, 0, 0, $hReportTControl, -1)
   Me._PaintAfter(Page, 0, 0, $hReportTControl, -1)
   
-  Debug "DrawCount = "; MTools.DrawCount
+  'Debug "DrawCount = "; MTools.DrawCount
     
 End
 
