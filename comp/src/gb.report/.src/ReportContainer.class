@@ -6,7 +6,7 @@ Inherits ReportFrame
 
 Public Const _IsContainer As Boolean = True
 Public Const _Group As String = "Container"
-Public Const _Properties As String = "*,Spacing{ReportCoord}"
+Public Const _Properties As String = "*,Spacing{ReportCoord},Repeat=False"
 
 Public _Arrangement As Integer
 
@@ -15,6 +15,8 @@ Private $fSpacing As Float
 Private $sSpacing As String
 Private $bRelativeSpacing As Boolean
 Private $bRepeat As Boolean
+Private $aChildCopy As TControl[]
+
 Property Read Children As TControl[]
 Property Spacing As String
 Property {Repeat} As Boolean
@@ -259,23 +261,40 @@ End
 
 Public Sub _GenerateClones()
   
-  Dim hTControl As New TControl
-    
-  Do
-   hTControl = Me.Parent._Add(Me)
-  Loop While True 'trouver comment stoper la boucle !
+  Dim hTControl, hNewTControl, hTc As TControl
+  Dim o As Object
+  Dim i As Integer
+  Dim hCont As ReportContainer
   
   
-  For Each hTControl In $aChild
   
-    If hTControl.Ctrl Is ReportContainer Then 
-      If hTControl.Ctrl.Repeat Then hTControl.Ctrl._GenerateClones()
+  
+
+  If IsNull($aChildCopy) Then 
+    $aChildCopy = $aChild.Copy()
+  Else
+    $aChild = $aChildCopy.Copy()
+  Endif 
+  
+  
+  For Each hTc In $aChildCopy
+    If hTc.Ctrl Is ReportContainer Then 
+      hCont = hTc.Ctrl
+      If hCont.Repeat Then 
+        'Restore if needed
+        
+        
+        For i = 0 To 10
+          hNewTControl = Me._Add(hTc.Ctrl)
+          hNewTControl.VirtualId = i
+        Next
+      Endif
+      hCont._GenerateClones
     Endif
-  
   Next
-  
-  
+
 End
+
 
 
 Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer) As Float

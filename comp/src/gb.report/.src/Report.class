@@ -69,7 +69,7 @@ Public Sub Layout()
   $sOldWidth = Me.Width
   
   Me._SetUnifiedValues()
-  
+  Me._GenerateClones()
   $hReportTControl.ctrl = Me
   
   $iCount = $hReportTControl._SetGeometry(0, 0, Me._Width, Me._Height) + 1
