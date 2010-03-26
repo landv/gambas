@@ -265,7 +265,7 @@ Public Sub _GenerateClones()
   Dim o As Object
   Dim i As Integer
   Dim hCont As ReportContainer
-  
+  Dim aNewChild As TControl[]
   
   
   
@@ -281,13 +281,15 @@ Public Sub _GenerateClones()
     If hTc.Ctrl Is ReportContainer Then 
       hCont = hTc.Ctrl
       If hCont.Repeat Then 
-        'Restore if needed
-        
-        
+        aNewChild = New TControl[]
         For i = 0 To 10
-          hNewTControl = Me._Add(hTc.Ctrl)
+          hNewTControl = New TControl
+          hNewTControl.Ctrl = hTc.Ctrl
           hNewTControl.VirtualId = i
+          aNewChild.Add(hNewTControl)
         Next
+        $aChild = $aChild.Insert(aNewChild, $aChild.Find(hTc))
+
       Endif
       hCont._GenerateClones
     Endif
