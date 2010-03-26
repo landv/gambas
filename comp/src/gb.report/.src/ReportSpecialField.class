@@ -61,12 +61,12 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   fTextHeight = MTools.PixelsToUnits(Paint.Font.Height($sText)) 'hext.Height)
   fTextWidth = MTools.PixelsToUnits(Paint.Font.Width($sText)) 'hext.Width)
   
-  If hMyHints.Height < fTextHeight Then hMyHints.Height = fTextHeight + (2 * Me._Padding)
+  If hMyHints.Height < fTextHeight Then hMyHints.Height = fTextHeight + (2 * Me._Padding) + (2 * Me._BorderWidth)
   If Me._RelativeHeight Then hMyHints.Height = TotalHeight * Me._Height / 100
   If Me._Width > 0 And Not Me.Autoresize Then 
     hMyHints.Width = Me._Width
   Else 
-    hMyHints.Width = Paint.TextExtents(DecodeText($sText,, True)).Width + (2 * Me._Padding)
+    hMyHints.Width = Paint.TextExtents(DecodeText($sText,, True)).Width + (2 * Me._Padding) + (2 * Me._BorderWidth)
     If hMyHints.Width < Me._Width Then hMyHints.Width = Me._Width
   Endif 
   If Me._RelativeWidth Then hMyHints.Width = AvailableW * Me._Width / 100
@@ -83,7 +83,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
     'Paint.Font.size = Paint.Font.size * MRTools.ReportZoom '* MRTools.ResolutionAffichage
     'draw.Clip((x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
     'Draw.Text(DecodeText($sText, Page + 1), (x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom, $iAlignment)
-    Paint.Text(DecodeText($sText, Page + 1), (x + hControl.RealLeft + MTools.UnitsToPixels(Me._Padding)), (y + hControl.RealTop + MTools.UnitsToPixels(Me._Padding)), hControl.RealWidth, hControl.RealHeight, $iAlignment)
+    Paint.Text(DecodeText($sText, Page + 1), (x + hControl.RealLeft + MTools.UnitsToPixels(Me._Padding + Me._BorderWidth)), (y + hControl.RealTop + MTools.UnitsToPixels(Me._Padding)), hControl.RealWidth, hControl.RealHeight, $iAlignment)
     Paint.Fill
     'Draw.Clip.Enabled = False
 End

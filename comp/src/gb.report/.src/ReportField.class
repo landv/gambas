@@ -73,13 +73,13 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   fTextHeight = MTools.PixelsToUnits(paint.Font.Height($sTmpText)) 'hext.Height)
   fTextWidth = MTools.PixelsToUnits(Paint.Font.Width($sTmpText)) 'hext.Width)
   
-  If hMyHints.Height < fTextHeight Then hMyHints.Height = fTextHeight + (2 * Me._Padding)
+  If hMyHints.Height < fTextHeight Then hMyHints.Height = fTextHeight + (2 * Me._Padding) + (2 * Me._BorderWidth)
   If Me._RelativeHeight Then hMyHints.Height = TotalHeight * Me._Height / 100
   If Me._Width > 0 And Not Me.Autoresize Then 
     hMyHints.Width = Me._Width
   Else 
     
-    hMyHints.Width = fTextWidth + (2 * Me._Padding)
+    hMyHints.Width = fTextWidth + (2 * Me._Padding) + (2 * Me._BorderWidth)
   
     If hMyHints.Width < Me._Width Then hMyHints.Width = Me._Width
   Endif
@@ -109,7 +109,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   
   'Draw.Clip((x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
     'Draw.Text(Left($sText, $iMaxLength), (x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom, $iAlignment)
-    paint.Text(Left($sText, $iMaxLength), (x + hControl.RealLeft + MTools.UnitsToPixels(Me._Padding)), (y + hControl.RealTop + MTools.UnitsToPixels(Me._Padding)), hControl.RealWidth, hControl.RealHeight, $iAlignment)
+    paint.Text(Left($sText, $iMaxLength), (x + hControl.RealLeft + MTools.UnitsToPixels(Me._Padding + Me._BorderWidth)), (y + hControl.RealTop + MTools.UnitsToPixels(Me._Padding)), hControl.RealWidth, hControl.RealHeight, $iAlignment)
     paint.Fill
   'Draw.Clip.Enabled = False
   

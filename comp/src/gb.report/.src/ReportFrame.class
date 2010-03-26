@@ -25,6 +25,7 @@ Private $hBrush As ReportBrush
 Property Border As ReportBorder
 
 Property Brush As ReportBrush
+Property Read _BorderWidth As Float
 
 
 
@@ -188,3 +189,8 @@ Public Sub _GetSizeHints(AvailableW As Integer, AvailableH As Integer, TotalWidt
 End
 
 
+Private Function _BorderWidth_Read() As Float
+
+  Return $fBorderWidth
+
+End

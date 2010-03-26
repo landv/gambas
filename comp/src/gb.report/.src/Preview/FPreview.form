@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,130,78)
+  MoveScaled(0,0,133,88)
   Text = ("Report preview")
   Arrangement = Arrange.Vertical
   { HBox1 HBox
@@ -9,6 +9,10 @@
     { Panel3 Panel
       MoveScaled(0,1,33,3)
       Expand = True
+    }
+    { Button1 Button
+      MoveScaled(86,0,10,4)
+      Text = ("Prt")
     }
     { ToolButton1 ToolButton
       MoveScaled(97,0,5,5)
@@ -23,7 +27,7 @@
       Expand = True
       Padding = 10
       { DrawingArea1 DrawingArea
-        MoveScaled(1.6667,1.6667,89,51)
+        MoveScaled(2,2,89,51)
         Background = &HFFFFFF&
         Painted = True
         Border = Border.Plain
@@ -77,13 +81,31 @@
       }
     }
   }
+  { Printer1 #Printer
+    #MoveScaled(111,58)
+  }
   { Panel1 Panel
-    MoveScaled(3,63,107,4)
+    MoveScaled(3,61,107,4)
     Arrangement = Arrange.Horizontal
     Border = Border.Plain
     { Panel2 Panel
       MoveScaled(2,0,27,3)
       Expand = True
+    }
+    { btnAdjust ToolButton
+      MoveScaled(35,0,11,4)
+      AutoResize = True
+      Text = ("Adjust")
+      Border = True
+      Toggle = True
+    }
+    { btnZNorm ToolButton
+      MoveScaled(47,0,5,4)
+      Picture = Picture["icon:/small/zoom-normal"]
+      Border = True
+    }
+    { Separator1 Separator
+      MoveScaled(54,0,3,4)
     }
     { ToolButton2 ToolButton
       MoveScaled(59,0,4,4)

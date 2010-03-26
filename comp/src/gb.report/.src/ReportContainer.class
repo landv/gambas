@@ -25,14 +25,18 @@ Property Read _RelativeSpacing As Boolean
 
 Public _RealSpacing As Integer
 
+
 Public Function _Add(cControl As ReportControl) As TControl
+
   Dim hTControl As New TControl
   
   hTControl.Ctrl = cControl
   $aChild.Add(hTControl)
   ReportControl._ObjectFromId[cControl.Id] = cControl
   Return hTControl
+
 End
+
 
 Public Sub _Remove(id As Integer)
   
@@ -287,7 +291,7 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
   Dim fSExp As Float
   Dim fSpc As Float
   Dim fPdg As Float
-  Dim bFirst As Boolean
+  Dim bFirst As Boolean 
   Dim fH, hW, fW As Float
   Dim i As Integer
   Dim tmpX As Float
@@ -548,6 +552,9 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
       hMyHints.Width = Me._Width 'MRTools.RealWidth(ME)
     Endif
     
+    'hMyHints.Width += Me._BorderWidth
+    'hMyHints.Height += Me._BorderWidth
+    
     Return hMyHints
 
   Endif
@@ -575,7 +582,8 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
       If Me._RelativeHeight Then hMyHints.Height = AvailableH * Me._Height / 100
     Endif
       
-    
+    'hMyHints.Width += Me._BorderWidth
+    'hMyHints.Height += Me._BorderWidth
     Return hMyHints
   Endif
   
@@ -595,8 +603,25 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
       hMyHints.Height = Me._Height
       
     'Next 
+    'hMyHints.Width += Me._BorderWidth
+    'hMyHints.Height += Me._BorderWidth
     Return hMyHints
   Endif
 End
 
 
+' Private Function GetChildPosition() As Integer
+'   
+'   If _Arrangement = Arrange.Horizontal Then
+'   
+'     
+'   
+'   Endif
+'   
+'   
+'   If _Arrangement = Arrange.Vertical Then
+'   
+'   
+'   Endif
+'   
+' End

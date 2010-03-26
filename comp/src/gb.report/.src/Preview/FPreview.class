@@ -1,6 +1,7 @@
 ' Gambas class file
 Static Private $hreport As Report
-Private hPrinter As New Printer
+Private $fScale As Float = 1
+'Private hPrinter As New Printer
 Static Public Function Run(hReport As Report)
   Dim hFPreview As FPreview
   $hreport = hReport
@@ -27,7 +28,7 @@ End
 
 Public Sub DrawingArea1_Draw()
 
-  $hreport.Scale = Slider1.Value / 100
+  $hreport.Scale = $fScale
   $hreport.Paint(1)
 
 End
@@ -35,15 +36,43 @@ End
 Public Sub Form_Open()
 
   If $hreport = Null Then Me.Close
-  Slider1_Change
+  
   ComboBox1.List = ["A3", "A4", "A5", "B5", "Executive", "Legal", "Letter", "Custom"]
   ComboBox1.Index = 1
-
+  btnAdjust.Value = True
+  'Resize
+  Printer1.OutputFile = User.Home &/ "output.pdf"
+  
 End
 
 Public Sub Slider1_Change()
+  
+  If Not btnAdjust.tag Then btnAdjust.Value = False
+  Resize
+  
+End
 
-  DrawingArea1.Resize((hPrinter.PaperWidth * Desktop.Resolution / 25.4) * Slider1.Value / 100, (hPrinter.PaperHeight * Desktop.Resolution / 25.4) * Slider1.Value / 100)
+
+Public Sub Resize()
+  Dim iWidth, iHeight As Integer
+  Dim fratio As Float
+  
+  
+  iWidth = Printer1.PaperWidth * Desktop.Resolution / 25.4
+  iHeight = Printer1.PaperHeight * Desktop.Resolution / 25.4
+  
+  If btnAdjust.Value Then
+    
+    If Printer1.PaperWidth > Printer1.PaperHeight Then
+      $fScale = (ScrollView1.ClientW - 20) / iWidth
+    Else
+      $fScale = (ScrollView1.ClientH - 20) / iHeight
+    Endif
+    
+  Else
+    $fScale = Slider1.Value / 100
+  Endif
+  DrawingArea1.Resize(iWidth * $fScale, iHeight * $fScale)
   DrawingArea1.Refresh
 
 End
@@ -51,32 +80,32 @@ End
 
 Public Sub ComboBox1_Click()
    
-  hPrinter.Paper = Object.GetProperty(Printer, ComboBox1.Text)
+  Printer1.Paper = Object.GetProperty(Printer, ComboBox1.Text)
   
   If ComboBox1.Text = "Custom" Then 
     Frame3.Enabled = True
   Else 
     Frame3.Enabled = False
-    txtWidth.Text = Int(hPrinter.PaperWidth)
-    txtHeight.Text = Int(hPrinter.PaperHeight)
+    txtWidth.Text = Int(Printer1.PaperWidth)
+    txtHeight.Text = Int(Printer1.PaperHeight)
   Endif
   '$hreport.Layout
-  Slider1_Change
+  'Slider1_Change
 End
 
 Public Sub ComboBox2_Click()
 
-  hPrinter.Orientation = ComboBox2.Index
+  Printer1.Orientation = ComboBox2.Index
   ComboBox1_Click
-  Slider1_Change
+  Resize
 
 End
 
 Public Sub txtWidth_Change()
 
-  hPrinter.PaperWidth = txtWidth.Text
+  Printer1.PaperWidth = txtWidth.Text
 
-  Slider1_Change
+  Resize
   
   Catch
   
@@ -85,8 +114,8 @@ End
 
 Public Sub txtHeight_Change()
 
-    hPrinter.PaperHeight = txtHeight.Text
-  Slider1_Change
+    Printer1.PaperHeight = txtHeight.Text
+  Resize
 
 End
 
@@ -99,5 +128,45 @@ End
 Public Sub ToolButton3_Click()
 
   Try Inc Slider1.Value
+
+End
+
+Public Sub Button1_Click()
+
+  Printer1.Print()
+
+End
+
+
+
+Public Sub Printer1_Draw()
+
+  $hreport.Paint(1)
+
+End
+
+Public Sub Printer1_Begin()
+
+  $hreport.Layout
+  Printer1.Count = $hreport.Count
+
+End
+
+Public Sub Form_Resize()
+
+  Resize
+
+End
+
+Public Sub btnAdjust_Click()
+  btnAdjust.Tag = 1
+  Resize
+  Slider1.Value = $fScale * 100
+  btnAdjust.Tag = Null
+End
+
+Public Sub btnZNorm_Click()
+  btnAdjust.Value = False
+  Slider1.Value = 100
 
 End

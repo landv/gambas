@@ -2,32 +2,123 @@
 
 { Report Report
   #Move(0,0,726,606)
+  Font = Font["+15"]
   Padding = "2 cm"
-  Spacing = "3 cm"
-  { Liste ReportLabel
-    #Move(24,24,648,42)
-    Font = Font["Bold,+9"]
-    Padding = "1 mm"
-    Border = ReportBorder["3 px,&H000000&"]
-    Text = ("Liste de mes amis")
+  AutoResize = True
+  { ReportHBox1 ReportHBox
+    #Move(6,12,696,228)
+    Height = "6 cm"
+    Padding = "5 mm"
+    { ReportVBox2 ReportVBox
+      #Move(12,6,198,216)
+      AutoResize = True
+      { ReportImage1 ReportImage
+        #Move(0,0,186,174)
+        AutoResize = True
+        Image = Image.Load("new-logo.png")
+      }
+    }
+    { ReportHBox2 ReportHBox
+      #Move(228,18,132,186)
+      Expand = True
+    }
+    { ReportVBox1 ReportVBox
+      #Move(450,6,240,192)
+      Padding = "5 mm"
+      Expand = True
+      AutoResize = True
+      { ReportLabel1 ReportLabel
+        #Move(42,12,204,30)
+        Font = Font["12"]
+        Text = ("LEONARD Leon")
+      }
+      { ReportLabel2 ReportLabel
+        #Move(42,36,204,30)
+        Font = Font["12"]
+        Text = ("5 rue de Rian")
+      }
+      { ReportLabel3 ReportLabel
+        #Move(42,60,204,30)
+        Font = Font["12"]
+        Text = ("67999 PLACARDVILLE")
+      }
+    }
+  }
+  { ReportLabel4 ReportLabel
+    #Move(12,252,684,42)
+    Height = "3 cm"
+    Font = Font["+7"]
+    Text = ("Facture")
     Alignment = Align.Center
   }
-  { ReportVBox1 ReportVBox
-    #Move(24,78,642,372)
-    { ReportLabel1 ReportLabel
-      #Move(6,18,630,30)
-      Border = ReportBorder["2 px,&H000000&,Bottom"]
-      Text = ("Paulo")
+  { ReportHBox3 ReportHBox
+    #Move(18,318,696,48)
+    Height = "1 cm"
+    { ReportLabel5 ReportLabel
+      #Move(0,6,114,36)
+      Width = "3 cm"
+      Border = ReportBorder["0.5 mm,&H000000&"]
+      Text = ("Reference")
+      Alignment = Align.Center
     }
-    { ReportLabel2 ReportLabel
-      #Move(6,60,630,30)
-      Border = ReportBorder["2 px,&H000000&,Bottom"]
-      Text = ("Paulo")
+    { ReportLabel6 ReportLabel
+      #Move(162,6,114,36)
+      Expand = True
+      Border = ReportBorder["0.5 mm,&H000000&,Right,Bottom,Top"]
+      Text = ("Designation")
+      Alignment = Align.Center
     }
-    { ReportLabel3 ReportLabel
-      #Move(6,108,630,30)
-      Border = ReportBorder["2 px,&H000000&,Bottom"]
-      Text = ("Paulo")
+    { ReportLabel7 ReportLabel
+      #Move(330,6,114,36)
+      Width = "3 cm"
+      Border = ReportBorder["0.5 mm,&H000000&,Right,Bottom,Top"]
+      Text = ("Quantité")
+      Alignment = Align.Center
+    }
+    { ReportLabel9 ReportLabel
+      #Move(462,6,114,36)
+      Width = "3 cm"
+      Border = ReportBorder["0.5 mm,&H000000&,Right,Bottom,Top"]
+      Text = ("Quantité")
+      Alignment = Align.Center
+    }
+    { ReportLabel8 ReportLabel
+      #Move(564,6,114,36)
+      Width = "3 cm"
+      Border = ReportBorder["0.5 mm,&H000000&,Right,Bottom,Top"]
+      Text = ("Total HT")
+      Alignment = Align.Center
+    }
+  }
+  { ReportHBox4 ReportHBox
+    #Move(18,390,696,48)
+    Height = "1 cm"
+    Expand = True
+    { ReportVBox3 ReportVBox
+      #Move(12,6,114,36)
+      Width = "3 cm"
+      Border = ReportBorder["0.5 mm,&H000000&,Right,Bottom,Left"]
+    }
+    { ReportVBox4 ReportVBox
+      #Move(162,0,114,36)
+      Width = "3 cm"
+      Expand = True
+      Border = ReportBorder["0.5 mm,&H000000&,Right,Bottom"]
+    }
+    { ReportVBox5 ReportVBox
+      #Move(318,0,114,36)
+      Width = "3 cm"
+      Border = ReportBorder["0.5 mm,&H000000&,Right,Bottom"]
+    }
+    { ReportVBox6 ReportVBox
+      #Move(456,0,114,36)
+      Width = "3 cm"
+      Border = ReportBorder["0.5 mm,&H000000&,Right,Bottom"]
+    }
+    { ReportVBox7 ReportVBox
+      #Move(570,0,114,36)
+      Width = "3 cm"
+      Border = ReportBorder["0.5 mm,&H000000&,Right,Bottom"]
     }
   }
 }

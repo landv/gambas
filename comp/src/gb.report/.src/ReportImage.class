@@ -26,8 +26,18 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
       hMyHints.Width = w + (2 * Me._Padding)
     Endif
   Else 
-    hMyHints.Height = AvailableH + (2 * Me._Padding)
-    hMyHints.Width = AvailableW + (2 * Me._Padding)
+    
+    If h > AvailableH Then 
+      hMyHints.Height = AvailableH + (2 * Me._Padding)
+    Else
+      hMyHints.Height = h + (2 * Me._Padding)
+    Endif
+    If w > AvailableW Then
+      hMyHints.Width = AvailableW + (2 * Me._Padding)
+    Else
+      hMyHints.Width = w + (2 * Me._Padding)
+    Endif
+    
   Endif
   
   Return hMyHints
@@ -65,8 +75,8 @@ End
 Private Sub Image_Write(Value As Image)
 
   $hPic = Value
-  If Not Me.Width Then Me.Width = $hpic.Width & " px"
-  If Not Me.Height Then Me.Height = $hpic.Height & " px"
+  If Left(Me.Width, 1) = "0" Then Me.Width = $hpic.Width & " px"
+  If Left(Me.Height, 1) = "0" Then Me.Height = $hpic.Height & " px"
   
 
 End
