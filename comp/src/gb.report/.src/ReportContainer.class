@@ -7,6 +7,8 @@ Inherits ReportFrame
 Public Const _IsContainer As Boolean = True
 Public Const _Group As String = "Container"
 Public Const _Properties As String = "*,Spacing{ReportCoord},Repeat=False"
+Public Const _DefaultEvent As String = "Data"
+
 
 Public _Arrangement As Integer
 
@@ -16,8 +18,12 @@ Private $sSpacing As String
 Private $bRelativeSpacing As Boolean
 Private $bRepeat As Boolean
 Private $aChildCopy As TControl[]
+' Private $iCount As Integer
+' Private $bStopRepeat As Boolean
+Private $iIndex As Integer
 
 Property Read Children As TControl[]
+Property Read Index As Integer
 Property Spacing As String
 Property {Repeat} As Boolean
 
@@ -26,6 +32,8 @@ Property Read _Spacing As Float
 Property Read _RelativeSpacing As Boolean
 
 Public _RealSpacing As Integer
+
+Event Data
 
 
 Public Function _Add(cControl As ReportControl) As TControl
@@ -266,7 +274,7 @@ Public Sub _GenerateClones()
   Dim i As Integer
   Dim hCont As ReportContainer
   Dim aNewChild As TControl[]
-  
+  Dim bRaiseRet As Boolean
   
   
 
@@ -282,12 +290,17 @@ Public Sub _GenerateClones()
       hCont = hTc.Ctrl
       If hCont.Repeat Then 
         aNewChild = New TControl[]
-        For i = 0 To 10
+        i = 0
+        Do
+          Inc i
           hNewTControl = New TControl
           hNewTControl.Ctrl = hTc.Ctrl
           hNewTControl.VirtualId = i
           aNewChild.Add(hNewTControl)
-        Next
+          
+          bRaiseRet = hCont._GetData(i)
+          If bRaiseRet Then Break
+        Loop
         $aChild = $aChild.Insert(aNewChild, $aChild.Find(hTc))
         $aChild.Remove($aChild.Find(hTc))
 
@@ -647,3 +660,25 @@ End
 '   Endif
 '   
 ' End
+' Public Sub _StopRepeat()
+'   If Not Me.Repeat Then 
+'     If Not (Me.id = $iReportId) Then Me.Parent._StopRepeat
+'     Return
+'   Endif
+'   $bStopRepeat = True
+'   
+' End
+Public Function _GetData(iIndex As Integer) As Boolean
+  
+  Dim sRaiseRet As Boolean
+  $iIndex = iIndex
+  sRaiseRet = Raise Data
+  Return sRaiseRet
+  
+End
+
+Private Function Index_Read() As Integer
+
+  Return $iIndex
+
+End

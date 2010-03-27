@@ -94,15 +94,15 @@
       }
     }
     { ReportHBox4 ReportHBox
-      #Move(0,96,696,48)
+      #Move(6,102,696,48)
       AutoResize = True
       Repeat = True
       { ReportVBox4 ReportVBox
         #Move(12,6,114,36)
         Width = "3 cm"
         Border = ReportBorder["0.5 mm,&H000000&,Left,Right"]
-        { ReportField1 ReportField
-          #Move(12,6,90,30)
+        { ReportLabel11 ReportLabel
+          #Move(6,6,102,30)
         }
       }
       { ReportVBox5 ReportVBox
@@ -110,9 +110,6 @@
         Width = "3 cm"
         Expand = True
         Border = ReportBorder["0.5 mm,&H000000&,Right"]
-        { ReportField2 ReportField
-          #Move(12,6,96,24)
-        }
       }
       { ReportVBox6 ReportVBox
         #Move(312,6,114,36)

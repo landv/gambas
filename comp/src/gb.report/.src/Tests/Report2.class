@@ -1,0 +1,14 @@
+' Gambas class file
+
+
+Public Sub ReportVBox1_Data()
+
+  If Last.index = 5 Then Stop Event
+
+End
+
+Public Sub ReportLabel1_Data()
+
+  Last.Text = Last.index
+
+End

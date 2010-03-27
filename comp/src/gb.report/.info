@@ -110,10 +110,6 @@ _IsForm
 C
 b
 -1
-Count
-r
-i
-
 Height
 p
 s
@@ -162,6 +158,10 @@ Color
 m
 ReportBrush
 (iColor)i
+Refresh
+m
+
+
 #ReportBorder
 
 C
@@ -199,9 +199,17 @@ _Properties
 C
 s
 *,Spacing{ReportCoord},Repeat=False
+_DefaultEvent
+C
+s
+Data
 Children
 r
 TControl[]
+
+Index
+r
+i
 
 Spacing
 p
@@ -218,6 +226,10 @@ f
 _RelativeSpacing
 r
 b
+
+:Data
+:
+
 
 _Add
 m
@@ -247,6 +259,10 @@ _GenerateClones
 m
 
 
+_GetData
+m
+b
+(iIndex)i
 _SetChildGeometry
 m
 f
@@ -358,6 +374,10 @@ Report
 r
 Report
 
+_ReportId
+r
+i
+
 _New
 m
 
@@ -394,57 +414,6 @@ _SetUnifiedValues
 m
 
 
-#ReportField
-ReportFrame
-C
-_Properties
-C
-s
-*,Data,Alignment,MaxLength
-_DefaultEvent
-C
-s
-Data
-Data
-p
-s
-
-Alignment
-p
-i
-
-MaxLength
-p
-i
-
-Index
-r
-i
-
-:Data
-:
-
-
-_New
-m
-
-
-_GetSizeHints
-m
-TSizeHint
-(AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f
-_PaintBefore
-m
-
-(Page)i(X)f(Y)f(hControl)TControl;(VirtualId)i
-_Paint
-m
-
-(Page)i(X)f(Y)f(hControl)TControl;(VirtualId)i
-_SetGeometry
-m
-f
-(X)f(Y)f(W)f(H)f
 #ReportFrame
 ReportControl
 
@@ -525,6 +494,10 @@ _Properties
 C
 s
 *,Text,Alignment{Align.*}
+_DefaultEvent
+C
+s
+Data
 Text
 p
 s
@@ -532,6 +505,18 @@ s
 Alignment
 p
 i
+
+IsSpecial
+p
+b
+
+Index
+r
+i
+
+:Data
+:
+
 
 _New
 m

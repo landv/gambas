@@ -1,20 +1,20 @@
 ' Gambas class file
-
+Private $i As Integer
 Public Sub _new()
   
   'Report.debug = True
   
 End
 
-Public Sub ReportField1_Data()
 
+Public Sub ReportLabel11_Data()
   
-  Last.Data = Last.index
+   Last.text = Last.index
 
 End
 
-Public Sub ReportField2_Data()
-
-  Last.Data = Last.index
+Public Sub ReportHBox4_Data()
+  
+  If Last.index = 30 Then Stop Event
 
 End

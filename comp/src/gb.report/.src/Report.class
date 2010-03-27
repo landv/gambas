@@ -10,17 +10,18 @@ Public Const _IsForm As Boolean = True
 
 'Public Constants
 Public {Debug} As Boolean = False
+Public _bInExec As Boolean
 
 Private iCurPage As Integer = 0
 Private $iCount As Integer = -1
-Private $bLayoutIsDirty As Boolean = True
+Public $bLayoutIsDirty As Boolean = True
 Private $fScale As Float = 1.0
 Private $hReportTControl As New TControl
 Private $sOldDeviceName As String
 Private $sOldWidth As String
 Private $sOldHeight As String
 
-Property Read Count As Integer
+
 Property Height As String
 Property Width As String
 Property Scale As Float
@@ -58,6 +59,9 @@ End
 
 Public Sub Layout()
   
+  
+  'Set execution Flag to true
+  _bInExec = True
   'If $sOldDeviceName = Paint.Device.Name Then Return 
   '$sOldDeviceName = Paint.Device.Name"
   'MTools.ReportResolution = Paint.ResolutionX
@@ -76,17 +80,24 @@ Public Sub Layout()
   'MTools.PageCount = $iCount
   $bLayoutIsDirty = False
   
+  'End of execution
+  _bInExec = False
+  
 End
 
 
 Public Sub Paint(Page As Integer)
-   
+  
+  
   If Me.Parent = Null Then 
-    If $sOldWidth <> ((Paint.Width / $fScale) & " px") Then $bLayoutIsDirty = True
-    If $sOldHeight <> ((Paint.Height / $fScale) & " px") Then $bLayoutIsDirty = True
+    'If $sOldWidth <> ((Paint.Width / $fScale) & " px") Then $bLayoutIsDirty = True
+    'If $sOldHeight <> ((Paint.Height / $fScale) & " px") Then $bLayoutIsDirty = True
   Endif
-   
+  
    If $bLayoutIsDirty Then Layout()
+  
+  'Set execution Flag to true
+  _bInExec = True
    
   If page < 1 Or page > $iCount Then 
     Error.Raise("This page does not exist")
@@ -107,7 +118,8 @@ Public Sub Paint(Page As Integer)
   Me._PaintAfter(Page, 0, 0, $hReportTControl, -1)
   
   'Debug "DrawCount = "; MTools.DrawCount
-    
+    'End of execution
+  _bInExec = False
 End
 
 ' Private Sub FillPages(ctrl As ReportContainer)
@@ -245,5 +257,11 @@ Public Sub {Color}(iColor As Integer) As ReportBrush
   hBrush._Type = 0
   hBrush._iValue = iColor
   Return hBrush
+  
+End
+
+Public Sub Refresh()
+  
+  $bLayoutIsDirty = True
   
 End

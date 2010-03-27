@@ -18,7 +18,7 @@ Private $iParentId As Integer
 Private $iRelPage As Integer
 Private $vTag As Variant
 Private $fPadding As Float
-
+Private $iReportId As Integer
 
 Property Read Id As Integer
 Property Read Parent As ReportContainer
@@ -66,6 +66,7 @@ Property Ignore As Boolean
 
 Property Autoresize As Boolean
 Property Read {Report} As Report
+Property Read _ReportId As Integer
 
 
 Public Sub _New(Optional Parent As ReportContainer = Null)
@@ -74,9 +75,11 @@ Public Sub _New(Optional Parent As ReportContainer = Null)
   Inc $iLastId
   If IsNull(Parent) Then 
     $iParentId = -1
+    $iReportId = $iMyId
   Else
     $iParentId = Parent.Id
     Parent._Add(Me)
+    $iReportId = Parent._ReportId
   Endif
   
 End
@@ -349,12 +352,12 @@ End
 
 Private Function Report_Read() As Report
 
-  Dim hCont As Object
-  If Me Is Report Then Return Me
-  hcont = Me.Parent
-  Do
-    If hcont Is Report Then Return hcont
-    hcont = hcont.Parent
-  Loop
+  Return ReportControl._ObjectFromId[$iReportId]
+
+End
+
+Private Function _ReportId_Read() As Integer
+
+  Return $iReportId
 
 End

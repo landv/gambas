@@ -89,7 +89,7 @@ Public Sub ComboBox1_Click()
     txtWidth.Text = Int(Printer1.PaperWidth)
     txtHeight.Text = Int(Printer1.PaperHeight)
   Endif
-  '$hreport.Layout
+  $hreport.Refresh()
   'Slider1_Change
 End
 

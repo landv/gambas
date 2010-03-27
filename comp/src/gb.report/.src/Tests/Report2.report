@@ -1,0 +1,14 @@
+# Gambas Form File 3.0
+
+{ Report Report
+  #Move(0,0,384,384)
+  { ReportVBox1 ReportVBox
+    #Move(18,18,354,42)
+    Height = "5 cm"
+    Border = ReportBorder["1 mm,&H000000&,Left,Right,Bottom"]
+    Repeat = True
+    { ReportLabel1 ReportLabel
+      #Move(48,12,192,12)
+    }
+  }
+}

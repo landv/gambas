@@ -4,13 +4,18 @@ Export
 Inherits ReportFrame
 
 Public Const _Properties As String = "*,Text,Alignment{Align.*}"
-
+Public Const _DefaultEvent As String = "Data"
 Private $sText As String
 Private $iAlignment As Integer = Align.Normal
-
+Private $bIsSpecial As Boolean
+Private $iIndex As Integer
+Private $bGetValueAuto As Boolean = True
 Property Text As String
 Property Alignment As Integer
+Property IsSpecial As Boolean
+Property Read Index As Integer
 
+Event Data
 
 Public Sub _New()
   
@@ -19,13 +24,16 @@ Public Sub _New()
 End
 
 Private Function Text_Read() As String
-
+  
   Return $sText
 
 End
 
 Private Sub Text_Write(Value As String)
-
+  
+  If Not Me.Report._bInExec Then 
+  $bGetValueAuto = False
+  Endif
   $sText = Value
 
 End
@@ -48,6 +56,13 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   Dim fTextHeight As Float
   Dim fTextWidth As Float
   Dim hext As PaintExtents
+  Dim bRaiseRes As Boolean
+  Dim $sTempText As String
+  ' If Not $bGetValueAuto Then
+  '   bRaiseRes = Raise Data
+  '   $sTempText = AvailableW
+  '   'Print bRaiseRes, Me.Text
+  ' Endif
   
   hMyHints.Height = Me._Height + (2 * Me._Padding)
   
@@ -58,10 +73,16 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   
   'if the size choosed by the user is less than the font height, set the object to the font height
   
+  
   hext = Paint.TextExtents($sText)
-  fTextWidth = MTools.PixelsToUnits(hext.Width)
+  If $bGetValueAuto Then 
+    fTextWidth = AvailableW
+  Else
+    fTextWidth = MTools.PixelsToUnits(hext.Width)
+  Endif
   hext = Paint.TextExtents("Fjitgp,")
   fTextHeight = MTools.PixelsToUnits(hext.Height)
+  
   
   
   
@@ -83,7 +104,12 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
 End
 
 Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
-
+  
+  If $bGetValueAuto Then
+    $iIndex = VirtualId
+    Raise Data
+    
+  Endif
   'Draw.Foreground = Me.Foreground
   Paint.Brush = Paint.Color(Me.Border.Color)
   'Set the Font if it is initialized
@@ -95,6 +121,27 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
 
     Paint.Text($sText, (x + hControl.RealLeft + MTools.UnitsToPixels(Me._Padding + Me._BorderWidth)), (y + hControl.RealTop + MTools.UnitsToPixels(Me._Padding)), hControl.RealWidth, hControl.RealHeight, $iAlignment)
     Paint.Fill
+    If $bGetValueAuto Then $sText = Null
   'Draw.Clip.Enabled = False
 End
 
+
+Private Function IsSpecial_Read() As Boolean
+
+  Return $bIsSpecial
+
+End
+
+
+Private Sub IsSpecial_Write(Value As Boolean)
+
+  $bIsSpecial = Value
+
+End
+
+
+Private Function Index_Read() As Integer
+
+  Return $iIndex
+
+End
