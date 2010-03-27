@@ -291,12 +291,11 @@ void gPrinter::setOrientation(int v)
 	gtk_print_settings_set_orientation(_settings, orient);
 }
 
-void gPrinter::setPaperModel(int v)
+GtkPaperSize *gPrinter::getPaperSize()
 {
-	GtkPaperSize *paper;
 	const char *name;
 	
-	switch(v)
+	switch(_paper_size)
 	{
 		case GB_PRINT_A3: name = GTK_PAPER_NAME_A3; break;
 		case GB_PRINT_A4: name = GTK_PAPER_NAME_A4; break;
@@ -305,20 +304,36 @@ void gPrinter::setPaperModel(int v)
 		case GB_PRINT_LETTER: name = GTK_PAPER_NAME_LETTER; break;
 		case GB_PRINT_EXECUTIVE: name = GTK_PAPER_NAME_EXECUTIVE; break;
 		case GB_PRINT_LEGAL: name = GTK_PAPER_NAME_LEGAL; break;
-		default: name = GTK_PAPER_NAME_A4; v = GB_PRINT_A4;
+		default: name = GTK_PAPER_NAME_A4; _paper_size = GB_PRINT_A4;
 	}
 	
-	_paper_size = v;
+	return gtk_paper_size_new(name);
+}
+
+void gPrinter::setPaperModel(int v)
+{
+	GtkPaperSize *paper;
 	
-	paper = gtk_paper_size_new(name);
+	_paper_size = v;
+	paper = getPaperSize();
 	gtk_print_settings_set_paper_size(_settings, paper);
 	gtk_paper_size_free(paper);
 }
 
-void gPrinter::getPaperSize(double *width, double *height) const
+void gPrinter::getPaperSize(double *width, double *height)
 {
-	*width = gtk_print_settings_get_paper_width(_settings, GTK_UNIT_MM);
-	*height = gtk_print_settings_get_paper_height(_settings, GTK_UNIT_MM);
+	if (_paper_size == GB_PRINT_CUSTOM)
+	{
+		*width = gtk_print_settings_get_paper_width(_settings, GTK_UNIT_MM);
+		*height = gtk_print_settings_get_paper_height(_settings, GTK_UNIT_MM);
+	}
+	else
+	{
+		GtkPaperSize *paper = getPaperSize();
+		*width = gtk_paper_size_get_width(paper, GTK_UNIT_MM);
+		*height = gtk_paper_size_get_height(paper, GTK_UNIT_MM);
+		gtk_paper_size_free(paper);
+	}
 }
 
 void gPrinter::setPaperSize(double width, double height)

@@ -46,7 +46,7 @@ public:
 	int paperModel() const { return _paper_size; }
 	void setPaperModel(int v);
 	
-	void getPaperSize(double *width, double *height) const;
+	void getPaperSize(double *width, double *height);
 	void setPaperSize(double width, double height);
 	
 	bool collateCopies() const;
@@ -94,6 +94,7 @@ public:
 	
 private:
 	bool run(bool configure);
+	GtkPaperSize *getPaperSize();
 	
 	GtkPrintOperation *_operation;
 	GtkPrintSettings *_settings;
