@@ -217,10 +217,11 @@ int GEditor::getCharWidth() const
 
 void GEditor::updateCache()
 {
-	if (cache->width() < _cellw || cache->height() < _cellh)
+	int nw = QMAX(cache->width(), QMIN(visibleWidth(), _cellw));
+	int nh = QMAX(cache->height(), QMIN(visibleHeight(), _cellh));
+	if (nw > 0 && nh > 0 && (nw != cache->width() || nh != cache->height()))
 	{
-		int nw = QMAX(cache->width(), _cellw);
-		int nh = QMAX(cache->height(), _cellh); //QMAX(cache->height(), _cellh);
+		//qDebug("updateCache: %d %d\n", nw, nh);
 		cache->resize(nw, nh);
 	}
 }
@@ -622,14 +623,17 @@ void GEditor::paintCell(QPainter *painter, int row, int)
 	contentsToViewport(ur.x(), ur.y(), x1, y1);
 	ur.setRect(-x1, y1, ur.width(), ur.height());
 
-	realRow = viewToReal(row);
+	if (row < 0)
+		realRow = row;
+	else
+		realRow = viewToReal(row);
 	
-	if (realRow >= numLines())
+	if (realRow < 0 || realRow >= numLines())
 	{
-		/*QColor color = styles[GLine::Background].color;
+		QColor color = viewport()->paletteBackgroundColor();
 		if (flashed)
 			color = QColor(QRgb(color.rgb() ^ 0x00FFFFFF));
-		painter->fillRect(0, 0, ur.width(), ur.height(), styles[GLine::Background].color);*/
+		painter->fillRect(0, 0, ur.width(), ur.height(), color);
 		return;
 	}
 	
@@ -817,7 +821,7 @@ void GEditor::paintCell(QPainter *painter, int row, int)
 	
 	//if (cache->width() < visibleWidth())
 	//	qDebug("cache->width() = %d < visibleWidth() = %d", cache->width(), visibleWidth());
-	painter->drawPixmap(ur.left(), 0, *cache, 0, 0, _cellw, _cellh);
+	painter->drawPixmap(ur.left(), 0, *cache, 0, 0, cache->width(), cache->height()); //, _cellw, _cellh);
 }
 
 
@@ -1645,6 +1649,7 @@ void GEditor::resizeEvent(QResizeEvent *e)
 	Q3ScrollView::resizeEvent(e);
 	baptizeVisible();
 	updateWidth();
+	updateCache();
 	//updateViewport();
 }
 
@@ -2340,10 +2345,10 @@ void GEditor::drawContents(QPainter *p, int cx, int cy, int cw, int ch)
 	int rowfirst = rowAt(cy);
 	int rowlast = rowAt(cy + ch - 1);
 
-	if (rowfirst < 0)
+	/*if (rowfirst < 0)
 		rowfirst = 0;
 	if (rowlast >= _nrows)
-		rowlast = _nrows - 1;
+		rowlast = _nrows - 1;*/
 
 	// Go through the rows
 	for (int r = rowfirst; r <= rowlast; ++r) 
@@ -2356,7 +2361,7 @@ void GEditor::drawContents(QPainter *p, int cx, int cy, int cw, int ch)
 		p->translate(0, -rowp);
 	}
 
-	paintEmptyArea(p, cx, cy, cw, ch);
+	//paintEmptyArea(p, cx, cy, cw, ch);
 }
 
 void GEditor::updateViewport()

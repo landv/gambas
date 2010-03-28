@@ -667,7 +667,7 @@ END_METHOD
 BEGIN_METHOD_VOID(CWINDOW_hide)
 
 	THIS->hidden = true;
-
+	
 	if (THIS->toplevel && WINDOW->isModal())
 	{
 		do_close(THIS, 0);
@@ -896,7 +896,6 @@ static void show_window_state(void *_object)
 	
 	if (WINDOW)
 	{
-		//qDebug("show_window_state: %d", WINDOW->windowState());
 		if (WINDOW->windowState() & Qt::WindowMinimized)
 			WINDOW->showMinimized();
 		else if (WINDOW->windowState() & Qt::WindowFullScreen)
@@ -929,13 +928,24 @@ static void manage_window_state(void *_object, void *_param, Qt::WindowState sta
 			else
 				WINDOW->setWindowState(WINDOW->windowState() & ~state);
 			
-			if (WINDOW->isVisible() && !THIS->stateChange)
+			if (WINDOW->isVisible())
+			{
+				if (WINDOW->windowState() & Qt::WindowMinimized)
+					WINDOW->showMinimized();
+				else if (WINDOW->windowState() & Qt::WindowFullScreen)
+					WINDOW->showFullScreen();
+				else if (WINDOW->windowState() & Qt::WindowMaximized)
+					WINDOW->showMaximized();
+				else
+					WINDOW->showNormal();
+			}
+			/*if (WINDOW->isVisible() && !THIS->stateChange)
 			{
 				THIS->stateChange = true;
 				//qDebug("post show_window_state %s %p", GB.GetClassName(THIS), THIS);
 				GB.Ref(THIS);
 				GB.Post((GB_POST_FUNC)show_window_state, (intptr_t)THIS);
-			}		
+			}*/
 		}
 	}
 }
