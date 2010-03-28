@@ -128,7 +128,10 @@ BEGIN_PROPERTY(CDIALOG_font)
 		
 		GB.StoreObject(NULL, POINTER(&dialog_font));
 		if (font)
+		{
 			dialog_font = CFONT_create(*font->font);
+			GB.Ref(dialog_font);
+		}
   }
 
 END_PROPERTY
@@ -285,6 +288,7 @@ BEGIN_METHOD_VOID(CDIALOG_select_font)
   {
 		GB.StoreObject(NULL, POINTER(&dialog_font));
 		dialog_font = CFONT_create(qfont);
+		GB.Ref(dialog_font);
     GB.ReturnBoolean(false);
   }
 
