@@ -11,14 +11,14 @@
     Alignment = Align.Center
   }
   { ReportHBox1 ReportHBox
-    #Move(6,60,378,306)
+    #Move(6,48,378,306)
     AutoResize = True
     { ReportVBox2 ReportVBox
       #Move(6,54,18,60)
       Expand = True
     }
     { ReportVBox1 ReportVBox
-      #Move(30,6,312,312)
+      #Move(36,6,312,312)
       AutoResize = True
       Spacing = "1 mm"
       { ReportHBox2 ReportHBox
@@ -53,7 +53,7 @@
         }
       }
       { ReportVBox4 ReportVBox
-        #Move(18,138,288,156)
+        #Move(18,114,288,156)
         AutoResize = True
         Border = ReportBorder["0.5 mm,&H000000&,Top,Bottom"]
         { ReportHBox3 ReportHBox
@@ -85,6 +85,7 @@
             Border = ReportBorder["0.5 mm,&H000000&,Right"]
             Text = ("ReportLabel1")
             Key = "birth"
+            Format = "dddd mmm yyyy"
             Alignment = Align.Right
           }
         }
@@ -94,5 +95,10 @@
       #Move(348,60,24,66)
       Expand = True
     }
+  }
+  { ReportLabel8 ReportLabel
+    #Move(54,366,324,12)
+    Text = ("$PAGE/$NPAGE")
+    UseField = True
   }
 }

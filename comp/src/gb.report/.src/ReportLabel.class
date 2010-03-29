@@ -3,7 +3,7 @@
 Export
 Inherits ReportFrame
 
-Public Const _Properties As String = "*,Text,Key,Format,Alignment{Align.*}"
+Public Const _Properties As String = "*,Text,Key,Format,Alignment{Align.*},UseField"
 
 Private $sText As String
 Private $iAlignment As Integer = Align.Normal
@@ -11,11 +11,14 @@ Private $bIsSpecial As Boolean
 Private $bGetValueAuto As Boolean = True
 Private $sKey As String
 Private $sFormat As String
+Private $bUseField As Boolean
+
 Property Text As String
 Property Alignment As Integer
 Property IsSpecial As Boolean
 Property Key As String
 Property {Format} As String
+Property UseField As Boolean
 
 
 Private Function Text_Read() As String
@@ -92,13 +95,18 @@ End
 
 Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
   
-  Dim sTempText As String
+  Dim sTempText As Variant
   If $sKey Then
   sTempText = Me.Parent._GetData($sKey)
   Else
   sTempText = $sText
   Endif
-  
+  If $sFormat Then 
+    sTempText = Format(sTempText, $sFormat)
+  Endif
+  If $bUseField Then 
+    sTempText = DecodeText(sTempText, Page)
+  Endif
   'Draw.Foreground = Me.Foreground
   Paint.Brush = Paint.Color(Me.Border.Color)
   'Set the Font if it is initialized
@@ -150,5 +158,31 @@ End
 Private Sub Format_Write(Value As String)
 
   $sFormat = Value
+
+End
+
+Private Function DecodeText(sText As String, Optional Page As Integer, Optional ForSize As Boolean = False) As String
+  
+  If ForSize Then 
+    If InStr(sText, "$PAGE") Then sText = Replace(sText, "$PAGE", "999")
+    If InStr(sText, "$NPAGE") Then sText = Replace(sText, "$NPAGE", "999")
+  Else
+    If InStr(sText, "$PAGE") Then sText = Replace(sText, "$PAGE", Str(Page))
+    If InStr(sText, "$NPAGE") Then sText = Replace(sText, "$NPAGE", Str(Me.Report.Count))
+  Endif
+  
+  Return sText
+  
+End
+
+Private Function UseField_Read() As Boolean
+
+  Return $bUseField
+
+End
+
+Private Sub UseField_Write(Value As Boolean)
+
+  $bUseField = Value
 
 End
