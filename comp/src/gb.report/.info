@@ -198,7 +198,7 @@ Container
 _Properties
 C
 s
-*,Spacing{ReportCoord},Repeat=False
+*,Spacing{ReportCoord}
 _DefaultEvent
 C
 s
@@ -215,9 +215,9 @@ Spacing
 p
 s
 
-Repeat
+Data
 p
-b
+o
 
 _Spacing
 r
@@ -259,10 +259,6 @@ _GenerateClones
 m
 
 
-_GetData
-m
-b
-(iIndex)i
 _SetChildGeometry
 m
 f
@@ -271,6 +267,10 @@ _GetSizeHints
 m
 TSizeHint
 (AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f
+_GetData
+m
+v
+(sKey)s
 #ReportControl
 
 
@@ -493,11 +493,7 @@ C
 _Properties
 C
 s
-*,Text,Alignment{Align.*}
-_DefaultEvent
-C
-s
-Data
+*,Text,Key,Format,Alignment{Align.*}
 Text
 p
 s
@@ -510,17 +506,13 @@ IsSpecial
 p
 b
 
-Index
-r
-i
+Key
+p
+s
 
-:Data
-:
-
-
-_New
-m
-
+Format
+p
+s
 
 _GetSizeHints
 m

@@ -1,14 +1,13 @@
 ' Gambas class file
+Private hCon As New connection
 
-
-Public Sub ReportVBox1_Data()
-
-  If Last.index = 5 Then Stop Event
-
-End
-
-Public Sub ReportLabel1_Data()
-
-  Last.Text = Last.index
-
+Public Sub _new()
+  
+  Dim hresult As Result
+  'Report.debug = True
+  hCon.Type = "mysql"
+  hCon.User = "root"
+  hCon.Name = "test"
+  hresult = db.Exec("SELECT * FROM test")
+  ReportHBox3.Data = hresult
 End

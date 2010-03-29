@@ -1,20 +1,29 @@
 ' Gambas class file
 Private $i As Integer
+Private cCol As New Collection[10]
+Private cCol2 As New Collection[2]
 Public Sub _new()
   
+  Dim i As Integer
+  Dim c As Collection
+
+  For i = 0 To 9
+    c = New Collection
+      c["Index"] = i
+      c["Text"] = "Text " & i
+      
+      cCol[i] = c
+  Next
+  
+  For i = 0 To 1
+    c = New Collection
+      c["FactIndex"] = "Facture " & i
+      
+      
+      cCol2[i] = c
+  Next
+  ReportHBox4.Data = cCol
   'Report.debug = True
+  ReportVBox3.data = cCol2
   
-End
-
-
-Public Sub ReportLabel11_Data()
-  
-   Last.text = Last.index
-
-End
-
-Public Sub ReportHBox4_Data()
-  
-  If Last.index = 30 Then Stop Event
-
 End
