@@ -183,12 +183,14 @@ _OPEN:
 	stream->common.mode = mode;
 	stream->common.swap = FALSE;
 	stream->common.eol = 0;
+	stream->common.eof = FALSE;
 	stream->common.buffer = NULL;
 	stream->common.buffer_pos = 0;
 	stream->common.buffer_len = 0;
 	stream->common.no_fionread = FALSE;
 	stream->common.no_lseek = FALSE;
 	stream->common.standard = FALSE;
+	stream->common.blocking = TRUE;
 
 	if ((*(stream->type->open))(stream, path, mode, NULL))
 	{

@@ -411,9 +411,6 @@ void THROW(int code, ...)
 
   va_start(args, code);
 
-	if (code == E_NEPARAM)
-		BREAKPOINT();
-	
   for (i = 0; i < 4; i++)
     arg[i] = va_arg(args, char *);
 
