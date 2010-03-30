@@ -201,6 +201,7 @@ Public Sub _SetUnifiedValues()
   $bRelativeSpacing = hSizeParse.IsRelative()
   
   For Each hChild In $aChild
+    hchild.SizeHint = Null
     hChild.Ctrl._SetUnifiedValues()
   Next
   
@@ -215,17 +216,15 @@ Public Sub _GenerateClones()
   Dim hCont As ReportContainer
   Dim aNewChild As TControl[]
   Dim bRaiseRet As Boolean
+  Dim aCopy As TControl[]
   
-  
-  
-    If IsNull($aChildCopy) Then 
-      $aChildCopy = $aChild.Copy()
-    Else
+  aCopy = $aChild.Copy()
+    If $aChildCopy Then 
       $aChild = $aChildCopy.Copy()
     Endif 
     
     
-    For Each hTc In $aChildCopy
+    For Each hTc In aCopy
       If hTc.Ctrl Is ReportContainer Then 
         hCont = hTc.Ctrl
         If hCont.Data Then 
@@ -246,6 +245,7 @@ Public Sub _GenerateClones()
         hCont._GenerateClones
       Endif
     Next
+    If $aChild.Count <> aCopy.Count Then $aChildCopy = aCopy
   ' Else
   '   'if no data array is set
   '   For Each hTc In $aChild
@@ -278,6 +278,8 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
   Dim i As Integer
   Dim tmpX As Float
   Dim aIgnored As New TControl[]  
+
+  
   
   If _Arrangement = Arrange.Vertical Then 
 
@@ -296,7 +298,8 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
      For Each hChild In Me.Children
 
       hChildHints = hChild.ctrl._GetSizeHints(W, H - fSExp, W, H)
-
+      
+      hchild.SizeHint = hChildHints
         If hChild.Ctrl.Ignore Then 
           aIgnored.Add(hchild)
           Continue
@@ -344,7 +347,7 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
       
       For Each hChild In aPage[i].Children
         If hchild.Ctrl.Ignore Then Continue
-        hChildHints = hChild.ctrl._GetSizeHints(W, H - Y, W, H)
+        hChildHints = hChild.SizeHint '.ctrl._GetSizeHints(W, H - Y, W, H)
 
         If Not bFirst Then 
           Y += fSpc
@@ -394,7 +397,7 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
     For Each hChild In Me.Children
       If hChild.Ctrl.Ignore Then Continue
       hChildHints = hChild.ctrl._GetSizeHints(W - fSExp, H, W, H)
-      
+      hchild.SizeHint = hChildHints
       If hChild.ctrl.Expand Then 
         Inc iNExp
       Else 
@@ -415,7 +418,7 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
           aIgnored.Add(hChild)
           Continue
         Endif
-      hChildHints = hChild.ctrl._GetSizeHints(W - X, H, W, H)
+      hChildHints = hchild.SizeHint 'hChild.ctrl._GetSizeHints(W - X, H, W, H)
       
       If Not bFirst Then 
         X += fSpc
@@ -482,6 +485,8 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   Dim fSpacing As Float
   Dim fPadding As Float
   
+  If Me._SizeInt.StoreSize Then Return Me._SizeInt
+  
   '*******************************
   '*    Vertical arrangement     *
   '*******************************
@@ -492,6 +497,12 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
     For Each hChild In Me.Children
       'Obtention des volontées des enfants
       hChildHints = hChild.ctrl._GetSizeHints(AvailableW, AvailableH - hMyHints.Height, AvailableW, AvailableH)
+      hMyHints.StoreSize = True
+      'si l'enfant a une raison quelconque de dire que sa taille est variable
+      If hChild.ctrl._SizeInt.StoreSize Then hMyHints.StoreSize = False
+      'si la taille de l'enfant est variable
+      If hchild.Ctrl.Autoresize Then hMyHints.StoreSize = False
+      
       If Not hchild.Ctrl.Ignore Then hMyHints.Height += hChildHints.Height + fSpacing 'ME._Spacing
       If hMyHints.Width < hChildHints.Width Then hMyHints.Width = hChildHints.Width
     Next 
@@ -509,7 +520,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
       hMyHints.Width = Me._Width 
     Endif
 
-    
+    Me._SizeInt = hMyHints
     Return hMyHints
 
   Endif
@@ -525,6 +536,13 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
      
       'Obtention des volontées des enfants
       hChildHints = hChild.ctrl._GetSizeHints(AvailableW - hMyHints.Width, AvailableH, AvailableW, AvailableH)
+      
+      hMyHints.StoreSize = True
+      'si l'enfant a une raison quelconque de dire que sa taille est variable
+      If hChild.ctrl._SizeInt.StoreSize Then hMyHints.StoreSize = False
+      'si la taille de l'enfant est variable
+      If hchild.Ctrl.Autoresize Then hMyHints.StoreSize = False
+      
       If Not hchild.Ctrl.Ignore Then hMyHints.Width += hChildHints.Width + fSpacing 'ME._Spacing
       If hMyHints.Height < hChildHints.Height Then hMyHints.Height = hChildHints.Height
     Next 
@@ -536,7 +554,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
       hMyHints.Height = Me._Height
       If Me._RelativeHeight Then hMyHints.Height = AvailableH * Me._Height / 100
     Endif
-      
+    Me._SizeInt = hMyHints
     Return hMyHints
   Endif
   
@@ -548,7 +566,8 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   
       hMyHints.Width = Me._Height
       hMyHints.Height = Me._Height
-
+    Me._SizeInt.StoreSize = True
+    Me._SizeInt = hMyHints
     Return hMyHints
   Endif
 End

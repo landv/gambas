@@ -4,7 +4,6 @@
   #Move(0,0,726,570)
   Font = Font["+15"]
   Padding = "2 cm"
-  AutoResize = True
   { ReportHBox1 ReportHBox
     #Move(6,12,696,228)
     Height = "6 cm"
@@ -96,7 +95,7 @@
     }
     { ReportVBox4 ReportVBox
       #Move(12,114,696,42)
-      AutoResize = True
+      Expand = True
       { ReportHBox4 ReportHBox
         #Move(0,0,696,36)
         AutoResize = True
@@ -136,7 +135,6 @@
     { ReportHBox5 ReportHBox
       #Move(6,204,696,48)
       Height = "1 cm"
-      AutoResize = True
       { ReportVBox9 ReportVBox
         #Move(12,6,114,36)
         Width = "3 cm"

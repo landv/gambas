@@ -8,6 +8,7 @@ Public RealLeft As Float
 Public RealTop As Float
 Public RealWidth As Float
 Public RealHeight As Float
+Public SizeHint As TSizeHint
 Public _RealPadding As Float
 Public _SkipPainting As Boolean = False
 Public VirtualId As Integer = -1
@@ -17,7 +18,7 @@ Property Ctrl As ReportControl
 Public Function _SetGeometry(X As Float, Y As Float, W As Float, H As Float) As Float
   
   Dim X1, Y1, X2, Y2 As Float
-  
+  'Print ReportControl._ObjectFromId[$iCtrl].Id
   X1 = MTools.UnitsToPixels(X)
   Y1 = MTools.UnitsToPixels(Y)
   X2 = MTools.UnitsToPixels(X + W)
