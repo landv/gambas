@@ -3,6 +3,7 @@
 { Report Report
   #Move(0,0,384,384)
   Padding = "2 cm"
+  Spacing = "1.1 cm"
   { ReportLabel2 ReportLabel
     #Move(54,6,264,36)
     Height = "5 cm"
@@ -18,11 +19,11 @@
       Expand = True
     }
     { ReportVBox1 ReportVBox
-      #Move(36,6,312,312)
+      #Move(30,6,312,312)
       AutoResize = True
       Spacing = "1 mm"
       { ReportHBox2 ReportHBox
-        #Move(12,96,264,36)
+        #Move(18,48,264,36)
         AutoResize = True
         { ReportLabel3 ReportLabel
           #Move(6,6,72,24)
@@ -53,12 +54,13 @@
         }
       }
       { ReportVBox4 ReportVBox
-        #Move(18,114,288,156)
+        #Move(12,96,288,108)
+        Height = "15 cm"
         AutoResize = True
-        Border = ReportBorder["0.5 mm,&H000000&,Top,Bottom"]
+        Border = ReportBorder["0.5 mm,&H000000&,Top"]
         { ReportHBox3 ReportHBox
           #Move(0,24,264,36)
-          AutoResize = True
+          Height = "1 cm"
           { ReportLabel1 ReportLabel
             #Move(12,6,72,24)
             Width = "5 cm"
@@ -81,13 +83,32 @@
             #Move(180,6,72,24)
             Width = "5 cm"
             Font = Font["12"]
-            Padding = "0.1 mm"
             Border = ReportBorder["0.5 mm,&H000000&,Right"]
             Text = ("ReportLabel1")
             Key = "birth"
             Format = "dddd mmm yyyy"
-            Alignment = Align.Right
+            Alignment = Align.Center
           }
+        }
+      }
+      { ReportHBox4 ReportHBox
+        #Move(12,222,264,36)
+        Height = "1 cm"
+        AutoResize = True
+        { ReportVBox5 ReportVBox
+          #Move(6,6,78,24)
+          Width = "5 cm"
+          Border = ReportBorder["0.5 mm,&H000000&,Right,Bottom,Left"]
+        }
+        { ReportVBox6 ReportVBox
+          #Move(96,6,78,24)
+          Width = "5 cm"
+          Border = ReportBorder["0.5 mm,&H000000&,Right,Bottom"]
+        }
+        { ReportVBox7 ReportVBox
+          #Move(180,6,78,24)
+          Width = "5 cm"
+          Border = ReportBorder["0.5 mm,&H000000&,Right,Bottom"]
         }
       }
     }
@@ -97,8 +118,10 @@
     }
   }
   { ReportLabel8 ReportLabel
-    #Move(54,366,324,12)
-    Text = ("$PAGE/$NPAGE")
+    #Move(42,360,324,18)
+    AutoResize = True
+    Text = ("$NPAGE")
+    Alignment = Align.Right
     UseField = True
   }
 }

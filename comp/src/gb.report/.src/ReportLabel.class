@@ -96,13 +96,16 @@ End
 Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
   
   Dim sTempText As Variant
+  Dim iPadding As Integer
+  iPadding = MTools.UnitsToPixels(Me._Padding + Me._BorderWidth)
+  
   If $sKey Then
   sTempText = Me.Parent._GetData($sKey)
   Else
   sTempText = $sText
   Endif
   If $sFormat Then 
-    sTempText = Format(sTempText, $sFormat)
+    Try sTempText = Format(sTempText, $sFormat)
   Endif
   If $bUseField Then 
     sTempText = DecodeText(sTempText, Page)
@@ -116,7 +119,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   'Draw.Clip((x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
     'Draw.Text($sText, (x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom, $iAlignment)
 
-    Paint.Text(sTempText, (x + hControl.RealLeft + MTools.UnitsToPixels(Me._Padding + Me._BorderWidth)), (y + hControl.RealTop + MTools.UnitsToPixels(Me._Padding)), hControl.RealWidth, hControl.RealHeight, $iAlignment)
+    Paint.Text(sTempText, (x + hControl.RealLeft + iPadding), (y + hControl.RealTop + iPadding), hControl.RealWidth - iPadding, hControl.RealHeight - iPadding, $iAlignment)
     Paint.Fill
     'If $sKey Then $sText = Null
   'Draw.Clip.Enabled = False
