@@ -1219,13 +1219,44 @@ static int table_index(DB_DATABASE * db, const char *table, DB_INFO * info)
 
 	/* Index primaire */
 
+	info->nindex = 0;
+	
 	if (do_query(db, "Unable to get primary index: &1", &res, qindex1, 1, table))
 		return TRUE;
 
 	result_set *r = (result_set *) res->getExecRes();
-
 	n = r->records.size();
-	if (n <= 0)
+
+	for (int i = 0; i < n; i++)
+	{
+		if (strstr(r->records[i][1].get_asString().data(), "autoindex") != NULL)
+		{
+			GB.NewString(&sql, r->records[i][1].get_asString().data(), 0);
+			res->close();
+
+			if (do_query
+					(db, "Unable to get information on primary index: &1", &res,
+					 qindex2, 1, sql))
+			{
+				res->close();
+				GB.FreeString(&sql);
+				return TRUE;
+			}
+			GB.FreeString(&sql);
+
+			r = (result_set *) res->getExecRes();
+			info->nindex = r->records.size();
+			GB.Alloc(POINTER(&info->index), sizeof(int) * info->nindex);
+
+			for (i = 0; i < info->nindex; i++)
+			{
+				info->index[i] = r->records[i][1].get_asInteger();
+			}
+			break;
+		}
+	}
+
+	if (info->nindex == 0)
 	{
 		// [BM] If there is no primary key, we suppose that the first field of INTEGER datatype is the primary key.
 		// Because we use INTEGER only when creating the AUTOINCREMENT field.
@@ -1261,35 +1292,6 @@ static int table_index(DB_DATABASE * db, const char *table, DB_INFO * info)
 		{
 			res->close();
 			return FALSE;
-		}
-	}
-
-	for (int i = 0; i < n; i++)
-	{
-		if (strstr(r->records[i][1].get_asString().data(), "autoindex") != NULL)
-		{
-			GB.NewString(&sql, r->records[i][1].get_asString().data(), 0);
-			res->close();
-
-			if (do_query
-					(db, "Unable to get information on primary index: &1", &res,
-					 qindex2, 1, sql))
-			{
-				res->close();
-				GB.FreeString(&sql);
-				return TRUE;
-			}
-			GB.FreeString(&sql);
-
-			r = (result_set *) res->getExecRes();
-			info->nindex = r->records.size();
-			GB.Alloc(POINTER(&info->index), sizeof(int) * info->nindex);
-
-			for (i = 0; i < info->nindex; i++)
-			{
-				info->index[i] = r->records[i][1].get_asInteger();
-			}
-			break;
 		}
 	}
 
