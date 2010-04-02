@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,129,86)
+  MoveScaled(0,0,130,93)
   Icon = Picture["img/logo/logo-32-head.png"]
   Arrangement = Arrange.Vertical
   { mnuFile Menu
@@ -316,6 +316,11 @@
         Action = "new-directory"
         Text = ("&Directory")
         Picture = Picture["icon:/small/directory"]
+      }
+      { mnuAddProjectLink Menu
+        Action = "new-project-link"
+        Text = ("&Project link...")
+        Picture = Picture["img/logo/logo-16.png"]
       }
       { Menu19 Menu
       }
@@ -699,7 +704,7 @@
     }
   }
   { Panel1 Panel
-    MoveScaled(1,5,90,68)
+    MoveScaled(1,6,90,68)
     Expand = True
     Arrangement = Arrange.Horizontal
     { panProject SidePanel
@@ -736,18 +741,18 @@
       }
     }
     { panProperty SidePanel
-      MoveScaled(58,1,32,65)
+      MoveScaled(58,3,32,65)
       ToolTip = ("Properties")
       Arrangement = Arrange.Vertical
       Action = "property"
       Orientation = Align.Right
       Hidden = True
       { panTabProperty Panel
-        MoveScaled(1,3,28,40)
+        MoveScaled(1,7,28,42)
         Expand = True
         Arrangement = Arrange.Vertical
         { tabProperty TabStrip
-          MoveScaled(1,1,26,37)
+          MoveScaled(1,3,26,37)
           Expand = True
           Arrangement = Arrange.Fill
           Count = 2
@@ -759,7 +764,7 @@
         }
       }
       { panTool SidePanel
-        MoveScaled(6,45,21,37)
+        MoveScaled(6,51,21,37)
         ToolTip = ("Toolbox")
         Arrangement = Arrange.Fill
         Spacing = True
@@ -776,8 +781,37 @@
     #MoveScaled(96,21)
     Delay = 2000
   }
+  { panError VBox
+    MoveScaled(1,75,64,8)
+    Visible = False
+    { Panel2 Panel
+      MoveScaled(0,0,62,6)
+      Background = Color.LightBackground
+      Expand = True
+      Arrangement = Arrange.Horizontal
+      Spacing = True
+      Padding = 4
+      { imgIcon PictureBox
+        MoveScaled(3,0,5,5)
+        Alignment = Align.Center
+      }
+      { lblError TextLabel
+        MoveScaled(12,0,24,5)
+        Expand = True
+        Alignment = Align.Normal
+      }
+      { btnClose ToolButton
+        MoveScaled(48,0,4,4)
+        Ignore = True
+        Picture = Picture["icon:/small/close"]
+      }
+    }
+    { Separator1 Separator
+      MoveScaled(1,7,55,0)
+    }
+  }
   { panMessage Panel
-    MoveScaled(1,77,53,5)
+    MoveScaled(1,84,53,5)
     Arrangement = Arrange.Vertical
     { Separator6 Separator
       MoveScaled(20,1,9,0)
@@ -943,6 +977,11 @@
     Text = "&New project..."
     Shortcut = "Ctrl+N"
     Picture = "icon:/small/new"
+  }
+  { Action new-project-link
+    Text = "&Project link..."
+    Shortcut = ""
+    Picture = "img/logo/logo-16.png"
   }
   { Action new-report
     Text = "&Report..."

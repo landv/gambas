@@ -32,6 +32,8 @@ Private $bConsole As Boolean
 
 Private $sFifo As String
 
+Private $bLastCommandMayBeLong As Boolean
+
 Public BalloonControl As Control
 Public BalloonX As Integer
 Public BalloonY As Integer
@@ -64,7 +66,7 @@ Public Sub CheckErrorMessage(hEditor As FEditor)
 End
 
 
-Private Sub SetState(iState As Integer)
+Private Sub SetState(iState As Integer, Optional bDoNotMinimize As Boolean)
 
   Dim bDebug As Boolean
   Dim bEnable As Boolean
@@ -84,12 +86,6 @@ Private Sub SetState(iState As Integer)
 
   Action["stop"].Enabled = $iState <> STATE_STOP
   'btnInfo.Enabled = btnStop.Enabled
-
-  bDebug = $iState = STATE_DEBUG
-  
-  'FDebugInfo.Enabled = bDebug
-  'FDebugInfo.Visible = $iState <> STATE_STOP
-  'FWatch.Enabled = bDebug
 
 End
 
@@ -345,6 +341,9 @@ Private Sub AfterStop()
   Debug.Stop
 
   SetPosition("", 0)
+
+  SetState(STATE_STOP)
+  UpdateMinimize
   Project.Running = False
 
   WriteDebugSettings()
@@ -353,8 +352,6 @@ Private Sub AfterStop()
   'tvwLocal.Clear
   FDebugInfo.Clear
   FDebugExpr.Clear
-
-  SetState(STATE_STOP)
 
   For Each hForm In Project.Workspace.Children
     Try hForm.OnProjectDebug 
@@ -367,7 +364,7 @@ Private Sub AfterStop()
   'Settings["/FMain/Splitter"] = hForm.Layout
   'FDebugInfo.Hide
   
-  FMain.ShowDebug(False)
+  If Not $bConsole Then FMain.ShowDebug(False)
   FDebugInfo.UpdateView
 
   ' FOR EACH hForm IN $cShow
@@ -382,11 +379,6 @@ Private Sub AfterStop()
   Action["console"].Value = $bConsole
 
   Project.SetMessage(("OK"))
-
-  If Settings["/MinimizeOnRun"] Then
-    FMain.Minimized = False
-    FMain.Show
-  Endif
 
   FMain.ActivateCurrentWindow
 
@@ -577,12 +569,15 @@ Public Sub Run()
 
   If $iState = STATE_RUNNING Then Return
 
+  $bLastCommandMayBeLong = True
+
   If $iState = STATE_STOP Then
     Start("g")
-    Return
+  Else
+    Command("g", STATE_RUNNING)
   Endif
-  
-  Command("g", STATE_RUNNING)
+
+  $bLastCommandMayBeLong = False
 
 End
 
@@ -698,10 +693,6 @@ Private Sub Start(sCmd As String)
   If Project.Compile() Then Return
 
   Clear
-
-  If Settings["/MinimizeOnRun"] Then
-    FMain.Minimized = True
-  Endif
 
   'PRINT "EXEC "; "gbx -gs " & File.Dir(Project.Path) & " -- " & Project.Arguments
 
@@ -845,6 +836,8 @@ Private Sub Start(sCmd As String)
     Return
   Endif
 
+  UpdateMinimize
+
   'PRINT "Debug.Start"
   'PRINT "Debug.Start -> OK"
 
@@ -852,6 +845,23 @@ Private Sub Start(sCmd As String)
 
 End
 
+Private Sub UpdateMinimize()
+  
+  'Debug Project.Running;; $iState;; $bLastCommandMayBeLong
+  
+  If Project.Running And If Settings["/MinimizeOnRun"] Then
+    If $iState = STATE_STARTING Then
+      If $bLastCommandMayBeLong Then
+        'Debug "MINIMIZE"
+        FMain.Minimized = True
+      Endif
+    Else 
+      'Debug "RESTORE"
+      FMain.Minimized = False
+    Endif
+  Endif
+  
+End
 
 Public Sub Command(sCmd As String, Optional iNewState As Integer = STATE_LAST, Optional sPrefix As String)
 
@@ -870,13 +880,12 @@ Public Sub Command(sCmd As String, Optional iNewState As Integer = STATE_LAST, O
   
   If iNewState <> STATE_LAST Then
     If iNewState <> $iState Then
-      SetState(iNewState)
+      SetState(iNewState, True)
       SetPosition("", 0)
     Endif
   Endif
-
+  
 End
-
 
 Private Sub Signal()
 

@@ -4,7 +4,6 @@
   MoveScaled(0,0,35,23)
   Background = &HFFFFDF&
   Foreground = &H000000&
-  Text = ("")
   Mask = True
   Persistent = True
   Border = False
@@ -13,13 +12,11 @@
   SkipTaskbar = True
   { txtMessage TextLabel
     MoveScaled(8,3,24,7)
-    Text = ("")
     Alignment = Align.Normal
     Transparent = True
   }
   { timCheck #Timer
-    #X = 136
-    #Y = 120
+    #MoveScaled(24,15)
     Delay = 250
   }
   { imgIcon PictureBox txtMessage

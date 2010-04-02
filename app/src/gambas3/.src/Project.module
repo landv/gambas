@@ -311,8 +311,10 @@ Private Sub LastOpenedFiles()
   Workspace.Unlock
   RestoringFiles = False
   
-  Activate(hActive)
-  If hActive Then Workspace.ActiveWindow = hActive
+  If hActive Then 
+    Activate(hActive)
+    Workspace.ActiveWindow = hActive
+  Endif
   
 Finally
   
@@ -669,6 +671,8 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
   Dim sLocalPrefix As String
   Dim bLocked As Boolean
   Dim bAdded As Boolean
+  Dim hProject As CProjectInfo
+  Dim sLink As String
   
   If iSize Then 
     sPrefix = "icon:/" & iSize
@@ -686,9 +690,18 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
     bLocked = IsLocked(sPath)
     bAdded = IsAdded(sPath)
     
-    If .Type = gb.Directory Then 
+    If IsDir(sPath) Then 
     
-      sIcon = sPrefix &/ "directory"
+      If bLink Then
+        sLink = GetAbsoluteLink(sPath, .Link)
+        'If Left(sLink) <> "/" Then sLink = sPath &/ sLink
+        sLink = File.Dir(sLink)
+        hProject = New CProjectInfo(sLink)
+        sIcon = hProject.Icon
+        If iSize = 0 Then iSize = 16
+      Else
+        sIcon = sPrefix &/ "directory"
+      Endif
   
     Else
     
@@ -895,7 +908,7 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
     bShow = False
     bSource = IsSourcePath(sDir &/ sFile) 'Like (SourceDir &/ "*")
 
-    If .Type = gb.Directory Then
+    If IsDir(sPath) Then
 
       If sFile = "CVS" Or If sFile = "CVSROOT" Then Return
 
@@ -928,6 +941,7 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
                 Break
               Endif          
             Next
+
             If Not bIgnore Then
               'IF sFile = "ReportContainer.class" THEN STOP
               sParent = FindKey(GetParentClass(sPath))
@@ -955,6 +969,10 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
           If Not sParent Then sParent = sDir
           If sParent = SourceDir Then sParent = KEY_SOURCE
           
+          If $cSourceDir[sFile] <> sPath Then
+            bIgnore = True
+          Endif
+            
           sFile = File.BaseName(sFile)
           
         Endif
@@ -1208,7 +1226,7 @@ Private Sub RefreshSourceCache()
   
   $cSourceDir = New Collection(gb.IgnoreCase)
   
-  For Each sPath In RDir(SourceDir)
+  For Each sPath In RDir(SourceDir, "*", gb.File + gb.Directory, True)
     If CModule.Ext.Exist(File.Ext(sPath)) Then
       $cSourceDir[File.Name(sPath)] = SourceDir &/ sPath
     Endif
@@ -1995,6 +2013,37 @@ Catch
 
 End
 
+Private Sub GetAbsoluteLink(sPath As String, sLink As String) As String
+  
+  Dim aPath As String[]
+  Dim iInd As Integer
+  Dim sElt As String
+  
+  If Left$(sLink) = "/" Then Return sLink
+  
+  aPath = Split(File.Dir(sPath) &/ sLink, "/")
+  
+  While iInd < aPath.Count
+    sElt = aPath[iInd]
+    If sElt = "." Or If sElt = "" Then
+      aPath.Remove(iInd)
+    Else If sElt = ".." Then
+      If iInd Then
+        aPath.Remove(iInd - 1, 2)
+        Dec iInd
+      Else
+        aPath.Remove(iInd)
+      Endif
+    Else
+      Inc iInd
+    Endif
+  Wend
+  
+  Return "/" & aPath.Join("/")
+  
+End
+
+
 Private Sub MakeRelativeLink(sLink As String, sPath As String) As String
   
   Dim aPath As String[]
@@ -2066,7 +2115,11 @@ Public Sub InsertFile(sName As String, sDir As String, Optional sTemplate As Str
   If Len(sTemplate) Then
 
     If Exist(sPath) Then
-      FGambas.Warning(("File already exists."))
+      If IsDir(sPath) Then
+        FGambas.Warning(("Directory already exists."))
+      Else
+        FGambas.Warning(("File already exists."))
+      Endif
       Return
     Endif
 
@@ -2074,12 +2127,16 @@ Public Sub InsertFile(sName As String, sDir As String, Optional sTemplate As Str
     If bLink Then
       sTemplate = MakeRelativeLink(sTemplate, sPath)
       Try Link sTemplate To sPath ' swapped
+      If Not Exist(sPath) Then
+        FGambas.Error(("Cannot link template file.") & "\n\n" & Error.Text)
+        Return
+      Endif
     Else
       Try Copy sTemplate To sPath
-    Endif
-    If Not Exist(sPath) Then
-      FGambas.Error(("Cannot copy template file.") & "\n\n" & Error.Text)
-      Return
+      If Not Exist(sPath) Then
+        FGambas.Error(("Cannot copy template file.") & "\n\n" & Error.Text)
+        Return
+      Endif
     Endif
 
   Endif
@@ -2131,6 +2188,8 @@ Public Sub Activate(hForm As Object)
   Dim bTextEditor As Boolean
 
   If AboutToQuit Then Return
+
+  'Debug hForm
 
   If hForm Then
     SelectKey(hForm.Path)
@@ -3366,12 +3425,12 @@ Public Sub RefreshKey(sKey As String, Optional sOld As String)
     Return
   Endif
 
-  AddFile(File.Dir(sKey), File.Name(sKey), True)
-  If IsDir(sKey) Then AddDir(sKey)
+  If AddFile(File.Dir(sKey), File.Name(sKey), True) Then AddDir(sKey)
+  'If IsDir(sKey) Then AddDir(sKey)
   
   If sOld <> sKey And If Exist(sOld) Then
-    AddFile(File.Dir(sOld), File.Name(sOld), True)
-    If IsDir(sOld) Then AddDir(sOld)
+    If AddFile(File.Dir(sOld), File.Name(sOld), True) Then AddDir(sOld)
+    'If IsDir(sOld) Then AddDir(sOld)
   Endif
   
 End
@@ -3907,11 +3966,14 @@ Public Sub LinkFile(sSrc As String, sDst As String)
   Dim aDst As String[]
   Dim aSrc As String[]
   Dim sDir As String
+  Dim bDir As Boolean
+  
+  bDir = IsDir(sSrc)
 
-  If IsDir(sSrc) Then
-    Message.Warning(("Linking a directory is forbidden."))
-    Return 
-  Endif
+  'If IsDir(sSrc) Then
+  '  Message.Warning(("Linking a directory is forbidden."))
+  '  Return 
+  'Endif
 
   sDest = File.Dir(sDst) &/ GetUniqueName(File.Dir(sDst), File.Name(sDst), " (&1)")
   If sSrc Begins Project.Dir &/ "/" Then 
@@ -3931,8 +3993,12 @@ Public Sub LinkFile(sSrc As String, sDst As String)
 
   Endif
   
+  If bDir Then RefreshSourceCache
+  
   Link sSrc To sDest ' swapped
   VersionControl.AddFile(sDest)
+  
+  If bDir Then RefreshSourceCache
   
   RefreshKey(sDest)
   SelectKey(sDest)
@@ -3972,15 +4038,15 @@ Public Sub MoveFile(sSrc As String, sDst As String, Optional bOther As Boolean)
 
   With Stat(sSrc)
     If .Type = gb.Link Then 
-      sLink = .Link
-      If Left(sLink) <> "/" Then 
-        sDir = File.Dir(sSrc)
-        While Left(sLink, 3) = "../"
-          sLink = Mid(sLink, 4)
-          sDir = File.Dir(sDir)
-        Wend
-        sLink = sDir &/ sLink
-      Endif
+      sLink = GetAbsoluteLink(sSrc, .Link)
+      ' If Left(sLink) <> "/" Then 
+      '   sDir = File.Dir(sSrc)
+      '   While Left(sLink, 3) = "../"
+      '     sLink = Mid(sLink, 4)
+      '     sDir = File.Dir(sDir)
+      '   Wend
+      '   sLink = sDir &/ sLink
+      ' Endif
       DeleteFile(sSrc)
       LinkFile(sLink, sDst)
       Return
@@ -4679,3 +4745,16 @@ Public Sub SetCurrentPopup(hMenu As Menu)
   'Debug $hCurrentPopup.Name;; $hCurrentPopup.Window.Title
   
 End
+
+Public Sub IsReadOnly(sPath As String) As Boolean
+  
+  If Not Exist(sPath) Then Return True
+  
+  Do
+    sPath = File.Dir(sPath)
+    If sPath = Project.Dir Or If sPath = "/" Then Break
+    If Stat(sPath).Type = gb.Link Then Return True
+  Loop
+    
+End
+

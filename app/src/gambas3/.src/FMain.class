@@ -202,8 +202,13 @@ Public Sub mnuDeleteFile_Click()
 
   If IsDir(sPath) Then
 
-    If Message.Delete(File.Name(sPath) & "\n\n" & ("Do you really want to delete this directory ?"), ("Delete"), ("Cancel")) <> 1 Then Return
-    Project.DeleteDir(sPath)
+    If Stat(sPath).Type = gb.Link Then
+      If Message.Delete(File.Name(sPath) & "\n\n" & ("Do you really want to delete this link ?"), ("Delete"), ("Cancel")) <> 1 Then Return
+      Project.DeleteFile(sPath)
+    Else
+      If Message.Delete(File.Name(sPath) & "\n\n" & ("Do you really want to delete this directory ?"), ("Delete"), ("Cancel")) <> 1 Then Return
+      Project.DeleteDir(sPath)
+    Endif
 
   Else
 
@@ -214,7 +219,6 @@ Public Sub mnuDeleteFile_Click()
     Endif
 
     If Message.Delete(sName & "\n\n" & ("Do you really want to delete this file ?"), ("Delete"), ("Cancel")) <> 1 Then Return
-
     Project.DeleteFile(sPath)
 
   Endif
@@ -294,6 +298,16 @@ Public Sub mnuPopup_Show()
   bCurrent = sCurrent
 
   UpdateMenu
+  
+  If sCurrent And If Project.IsReadOnly(sCurrent) Then
+    mnuNew.Visible = False
+    If Not IsDir(sCurrent) Or If Stat(sCurrent).Type <> gb.Link Then
+      mnuCut.Visible = False
+      mnuCopy.Visible = False
+      mnuPaste.Visible = False
+    Endif
+    mnuRenameFile.Visible = False
+  Endif
 
   If $sKey = Project.KEY_SOURCE Or If sCurrent Begins Project.SourceDir &/ "/" Then
   
@@ -338,6 +352,7 @@ Public Sub mnuPopup_Show()
     If mnuNew.Visible Then
 
       mnuAddDirectory.Visible = Project.Dir <> Project.SourceDir
+      mnuAddProjectLink.Visible = False 'mnuAddDirectory.Visible
     
       For Each hMenu In mnuNew.Children
         If Not hMenu.Tag Then Continue
@@ -700,7 +715,9 @@ Private Function CanDelete(sPath As String) As Boolean
 
   If Not sPath Then Return
   If Left$(sPath) = "$" Then Return
-  Return tvwProject[sPath].Count = 0
+  If IsDir(sPath) And If Stat(sPath).Type = gb.Link Then Return True
+  If Project.IsReadOnly(sPath) Then Return False
+  If tvwProject[sPath].Count = 0 Then Return True
 
 End
 
@@ -1354,6 +1371,18 @@ Public Sub mnuNewFile_Click()
   
 End
 
+Public Sub mnuAddProjectLink_Click()
+  
+  Dim sPath As String 
+  
+  sPath = FOpenProject.Run() 
+  If Not sPath Then Return
+  
+  Project.InsertFile(File.Name(sPath), GetCurrentDir(), sPath &/ ".src", True, True)
+  
+End
+
+
 Public Sub tvwProject_Cancel()
 
   Dim sPath As String
@@ -1560,19 +1589,9 @@ Public Sub mnuFind_Click()
 
 End
 
-Public Sub ToolButton6_Click()
+Public Sub btnClose_Click()
 
-  'Desktop.SendKeys("ù£æ")
-  tvwProject.MoveFirst
-  tvwProject.MoveLast
-  While tvwProject.Item.Children
-    tvwProject.MoveChild
-    tvwProject.MoveLast
-  Wend
-  While tvwProject.Available
-    Print tvwProject.Item.Key
-    tvwProject.MoveAbove
-  Wend
+  panError.Hide
 
 End
 
@@ -1643,6 +1662,10 @@ Public Sub ShowMessage(sMsg As String, sIcon As String, Optional sKey As String)
   
   If FMain.Visible Then
     Balloon(sMsg, tvwProject, Picture["icon:/32/" & sIcon], X, Y)
+    ' lblError.Text = Replace$(sMsg, "\n", "<br>")
+    ' imgIcon.Picture = Picture["icon:/32/" & sIcon]
+    ' panError.Height = lblError.Height
+    ' panError.Show
   Else
     If sIcon = "error" Then
       Message.Error(sMsg)
@@ -1672,3 +1695,9 @@ Public Sub mnuAddVersion_Click()
   
 End
 
+
+Public Sub Panel2_Arrange()
+
+  btnClose.Move(Panel2.Width - btnClose.Width, 0)
+
+End

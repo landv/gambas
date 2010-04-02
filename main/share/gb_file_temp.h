@@ -621,8 +621,13 @@ void FILE_recursive_dir(const char *dir, void (*found)(const char *), void (*aft
 		#ifdef _DIRENT_HAVE_D_TYPE
 		is_dir = _last_is_dir;
 		#else
-		FILE_stat(path, &info, follow);
-		is_dir = info.type == GB_STAT_DIRECTORY;
+		if (follow)
+			is_dir = FILE_is_dir(path);
+		else
+		{
+			FILE_stat(path, &info, FALSE);
+			is_dir = info.type == GB_STAT_DIRECTORY;
+		}
 		#endif
 		
 		if (is_dir)

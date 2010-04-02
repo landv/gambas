@@ -5,6 +5,8 @@ Static Public All As New Collection(gb.IgnoreCase)
 Static Private $cCtrlFromIcon As New Collection
 
 Public Const Name As String = ""
+Public Const DropImageClass As String = ""
+Public Const DropImageProperty As String = ""
 Public Background As Integer = Color.Background
 
 Private $hTimer As Timer
@@ -70,19 +72,42 @@ Public Sub DeleteIcon(hCCtrl As CControl)
   
 End
 
+Private Sub GetContainerSize(hCont As Container) As Integer[]
+  
+  Dim W, H As Integer
+  Dim aSize As Integer[]
+  
+  W = hCont.Width
+  H = hCont.Height
+
+  If hCont.Parent Then
+  
+    aSize = GetContainerSize(hCont.Parent)
+    
+    If (W > (aSize[0] - hCont.X)) Then W = aSize[0] - hCont.X
+    If (H > (aSize[1] - hCont.Y)) Then H = aSize[1] - hCont.Y
+  
+  Endif
+  
+  Return [W, H]
+  
+End
+
 
 Private Sub CheckIcon(hCCtrl As CControl)
   
   Dim hCtrl As Control = hCCtrl.Control
   Dim hIcon As Control = hCCtrl["#icon"]
   Dim X, Y As Integer
+  Dim aSize As Integer[]
   
   If Not hIcon Then Return
   
   X = Mouse.ScreenX
   Y = Mouse.ScreenY
+  aSize = GetContainerSize(hCtrl)
   
-  If X >= hCtrl.ScreenX And If X < (hCtrl.ScreenX + hCtrl.Width) And If Y >= hCtrl.ScreenY And If Y < (hCtrl.ScreenY + hCtrl.Height) Then Return
+  If X >= hCtrl.ScreenX And If X < (hCtrl.ScreenX + aSize[0]) And If Y >= hCtrl.ScreenY And If Y < (hCtrl.ScreenY + aSize[1]) Then Return
   
   DeleteIcon(hCCtrl)
   
@@ -141,6 +166,7 @@ Public Sub DrawIcon(hCCtrl As CControl, sImage As String)
   
   X = hCtrl.ScreenX + hCtrl.Width - hPict.Width
   Y = hCtrl.ScreenY
+  If hCtrl = hCont And If hCtrl.Window.Menus.Visible Then Y += hCont.ClientY
   'hIcon.Move(,, hPict.Width, hPict.Height)
   
   If hCCtrl.Parent And If hCCtrl.Parent["#icon"] Then
@@ -161,7 +187,7 @@ Public Sub DrawIcon(hCCtrl As CControl, sImage As String)
   hIcon = New PictureBox(hCont) As "Icon"
   hCCtrl["#icon"] = hIcon
   hIcon.Ignore = True
-  hIcon.Move(X - hCont.ScreenX, Y - hCont.ScreenY, hPict.Width, hPict.Height)
+  hIcon.Move(X - hCont.ScreenX - hCont.ClientX, Y - hCont.ScreenY - hCont.ClientY, hPict.Width, hPict.Height)
   hIcon.Picture = hPict
   hIcon.Raise
   $cCtrlFromIcon[Str(hIcon)] = hCCtrl

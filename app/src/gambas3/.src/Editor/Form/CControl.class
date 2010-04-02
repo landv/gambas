@@ -1027,6 +1027,8 @@ Private Sub MoveAllHandle()
     MovePanel(iInd)
   Next
   
+  If HasIcon() Then $hFamily.EnterControl(Me)
+  
 End
 
 
@@ -1060,8 +1062,6 @@ Public Sub Move(X As Integer, Y As Integer, Optional bFree As Boolean)
   
   MoveAllHandle
   
-  If HasIcon() Then $hFamily.EnterControl(Me)
-
 End
 
 Public Sub HasIcon() As Boolean

@@ -126,7 +126,10 @@ Private Sub SetReadOnly()
 
   Dim hCtrl As Control  
 
-  $bReadOnly = Project.ReadOnly Or Project.Running Or Stat(Path).Type = gb.Link
+  $bReadOnly = False
+  If Project.ReadOnly Or If Project.Running Or If Project.IsReadOnly(Path) Then
+    $bReadOnly = True
+  Endif
 
   For Each hCtrl In panToolbar.Children
     If hCtrl.Name = "tlbMove" Then Continue

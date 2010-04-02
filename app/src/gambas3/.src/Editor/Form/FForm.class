@@ -2365,7 +2365,7 @@ End
 Private Sub SetReadOnly()
 
   $bReadOnly = False
-  If Project.ReadOnly Or If Project.Running Or If Not Exist(Path) Or If Stat(Path).Type = gb.Link Or If $bLocked Then
+  If Project.ReadOnly Or If Project.Running Or If Project.IsReadOnly(Path) Or If $bLocked Then
     $bReadOnly = True
   Endif
   FFormStack.RefreshReadOnly
@@ -2883,9 +2883,14 @@ Public Sub Control_Drop()
     Try hImage = Image.Load(sPath)
     If Not hImage Then Return
     
-    If Last.Tag <> Me.Name And If hParent.HasProperty("Picture") Then
-      hParent.SetProperty("Picture", Mid$(sPath, Len(Project.Dir) + 2)) 
-      Return
+    If Last.Tag <> Me.Name Then
+      If hParent.HasProperty("Picture") Then
+        hParent.SetProperty("Picture", Mid$(sPath, Len(Project.Dir) + 2)) 
+        Return
+      Else If hParent.HasProperty("Image") Then
+        hParent.SetProperty("Image", Mid$(sPath, Len(Project.Dir) + 2)) 
+        Return
+      Endif
     Endif
   
     FindContainer(hParent, X, Y, COORD_INSIDE_TO_CONTROL)
@@ -2901,10 +2906,10 @@ Public Sub Control_Drop()
     ' X -= hParent.Control.ClientX
     ' Y -= hParent.Control.ClientY
   
-    hCtrl = CreateControl("PictureBox", hParent,, True)
+    hCtrl = CreateControl($hFamily.DropImageClass, hParent,, True)
     hCtrl.Move(Max(0, X - hImage.Width / 2), Max(0, Y - hImage.Height / 2))
     hCtrl.Resize(hImage.Width, hImage.Height)
-    hCtrl.SetProperty("Picture", Mid$(sPath, Len(Project.Dir) + 2))
+    hCtrl.SetProperty($hFamily.DropImageProperty, Mid$(sPath, Len(Project.Dir) + 2))
     
     $hCurrent = hCtrl
     UnSelectAll

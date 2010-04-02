@@ -2097,7 +2097,7 @@ End
 Private Sub SetReadOnly()
 
   edtEditor.ReadOnly = False
-  If Project.ReadOnly Or If Project.Running Or If Not Exist(Path) Or If Stat(Path).Type = gb.Link Then
+  If Project.ReadOnly Or If Project.Running Or If Project.IsReadOnly(Path) Then
     edtEditor.ReadOnly = True
   Endif
   

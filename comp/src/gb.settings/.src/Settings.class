@@ -308,7 +308,14 @@ Public Sub ReadWindow(hWindow As Window, sKey As String)
   Dim aPos As Integer[]
 
   aPos = Me[sKey &/ "Geometry"]
-  If Not aPos Then Return
+  If Not aPos Or If aPos.Count < 2 Then Return
+
+  aPos[0] = Max(0, aPos[0])
+  aPos[1] = Max(0, aPos[1])
+  If aPos.Count = 4 Then
+    aPos[2] = Max(32, aPos[2])
+    aPos[3] = Max(32, aPos[3])
+  Endif
 
   'cPos = Split(sPos, ",")
   If aPos.Count = 4 And hWindow.Resizable Then

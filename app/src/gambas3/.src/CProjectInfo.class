@@ -70,7 +70,11 @@ Public Sub _new(sPath As String)
   
   Close #hFile
 
-  Icon = sPath &/ sIcon 'Project.StretchIcon(sPath &/ sIcon, 58)
+  If sIcon Then
+    Icon = sPath &/ sIcon 'Project.StretchIcon(sPath &/ sIcon, 58)
+  Else
+    Icon = "img/logo/logo-32.png"
+  Endif
 
 End
 
@@ -80,3 +84,12 @@ Public Sub GetTitle() As String
   Return Name
   
 End
+
+' Public Sub GetIcon(Optional iSize As Integer) As Image
+'   
+'   Dim hImage As Image = Image.Load(Icon)
+'   
+'   If iSize Then hImage = hImage.Stretch(iSize, iSize)
+'   Return hImage
+'   
+' End
