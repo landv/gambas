@@ -244,6 +244,8 @@ GB_DESC CContainerDesc[] =
 
   GB_METHOD("Find", "Control", CCONTAINER_find, "(X)i(Y)i"),
 
+	CONTAINER_DESCRIPTION,
+
   GB_EVENT("BeforeArrange", NULL, NULL, &EVENT_BeforeArrange),
   GB_EVENT("Arrange", NULL, NULL, &EVENT_Arrange),
   GB_EVENT("Insert", NULL, "(Control)Control", &EVENT_Insert),
@@ -418,8 +420,6 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(UserControl_SetFocus)
 
-	gMainWindow *win = WIDGET->window();
-	
 	WIDGET->setFocus();
   gtk_widget_child_focus(GTK_WIDGET(WIDGET->widget), GTK_DIR_TAB_FORWARD);
 

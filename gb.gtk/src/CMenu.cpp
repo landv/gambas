@@ -404,8 +404,7 @@ GB_DESC CMenuDesc[] =
 
   GB_PROPERTY_SELF("Children", ".MenuChildren"),
 
-  GB_CONSTANT("_Properties", "s", "Action,Text,Picture,Enabled=True,Toggle,Checked,Visible=True,Tag,Shortcut"),
-  GB_CONSTANT("_DefaultEvent", "s", "Click"),
+	MENU_DESCRIPTION,
 
   GB_METHOD("Popup", 0, CMENU_popup, "[(X)i(Y)i]"),
   GB_METHOD("Delete", 0, CMENU_delete, 0),

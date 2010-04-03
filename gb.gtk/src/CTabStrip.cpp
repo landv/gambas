@@ -273,7 +273,7 @@ GB_DESC CTabChildrenDesc[] =
 
   GB_METHOD("_next", "Control", CTAB_next, NULL),
   GB_PROPERTY_READ("Count", "i", CTAB_count),
-  GB_METHOD("_get", "Control", CTAB_next, NULL),
+  GB_METHOD("_get", "Control", CTAB_next, "(Index)i"),
 
   GB_END_DECLARE
 };

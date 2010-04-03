@@ -786,7 +786,7 @@ END_METHOD
 
 BEGIN_METHOD(CWIDGET_drag, GB_VARIANT data; GB_STRING format)
 
-	CDRAG_drag(THIS, &VARG(data), MISSING(format) ? NULL : GB.ToZeroString(ARG(format)));
+	GB.ReturnObject(CDRAG_drag(THIS, &VARG(data), MISSING(format) ? NULL : GB.ToZeroString(ARG(format))));
 	
 END_METHOD
 
@@ -858,7 +858,7 @@ GB_DESC CWidgetDesc[] =
 	GB_METHOD("Refresh", 0, CWIDGET_refresh, "[(X)i(Y)i(Width)i(Height)i]"),
 	GB_METHOD("Screenshot", "Picture", CWIDGET_screenshot, 0),
 	GB_METHOD("Grab", NULL, CCONTROL_grab, NULL),
-	GB_METHOD("Drag", 0, CWIDGET_drag, "(Data)v[(Format)s]"),
+	GB_METHOD("Drag", "Control", CWIDGET_drag, "(Data)v[(Format)s]"),
 
 	GB_PROPERTY("X", "i", CWIDGET_x),
 	GB_PROPERTY("Y", "i", CWIDGET_y),

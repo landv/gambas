@@ -178,7 +178,7 @@ GB_DESC CVPanelDesc[] =
   GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
   GB_PROPERTY("Margin", "b", CCONTAINER_margin),
   GB_PROPERTY("Padding", "i", CCONTAINER_padding),
-  GB_PROPERTY("Indent", "", CCONTAINER_indent),
+  GB_PROPERTY("Indent", "b", CCONTAINER_indent),
 
 	VPANEL_DESCRIPTION,
 	
