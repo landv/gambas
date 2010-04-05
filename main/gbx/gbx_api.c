@@ -53,6 +53,7 @@
 #include "gbx_component.h"
 #include "gbx_c_gambas.h"
 #include "gbx_debug.h"
+#include "gbx_c_file.h"
 
 #include "gambas.h"
 #include "gbx_api.h"
@@ -241,9 +242,12 @@ void *GAMBAS_Api[] =
   (void *)GB_HashTableGet,
   (void *)GB_HashTableEnum,
 
+	(void *)GB_StreamGet,
   (void *)GB_StreamSetBytesRead,
   (void *)GB_StreamSetSwapping,
   (void *)GB_StreamBlock,
+  (void *)GB_StreamRead,
+  (void *)GB_StreamWrite,
 
   (void *)STRING_start_len,
   (void *)STRING_end,
@@ -280,6 +284,19 @@ bool GAMBAS_DoNotRaiseEvent = FALSE;
 bool GAMBAS_StopEvent = FALSE;
 
 static bool _event_stopped = FALSE;
+
+#define CATCH_ERROR \
+  int ret = 0; \
+  TRY
+  
+#define END_CATCH_ERROR \
+  CATCH \
+  { \
+    ret = -1; \
+    GAMBAS_Error = TRUE; \
+  } \
+  END_TRY \
+  return ret;
 
 int GB_GetInterface(const char *name, int version, void *iface)
 {
@@ -1618,6 +1635,11 @@ int GB_IsRightToLeft(void)
   s->direct.fd = fd;
 }*/
 
+GB_STREAM *GB_StreamGet(void *object)
+{
+	return (GB_STREAM *)CSTREAM_stream(object);
+}
+
 void GB_StreamSetBytesRead(GB_STREAM *stream, int length)
 {
 	STREAM_eff_read = length;
@@ -1634,6 +1656,25 @@ int GB_StreamBlock(GB_STREAM *stream, int block)
 	int old = STREAM_is_blocking(st);
 	STREAM_blocking(st, block);
 	return old;
+}
+
+int GB_StreamRead(GB_STREAM *stream, void *addr, int len)
+{
+	CATCH_ERROR
+	{
+		ret = STREAM_read_max((STREAM *)stream, addr, len);
+	}
+	END_CATCH_ERROR
+}
+
+int GB_StreamWrite(GB_STREAM *stream, void *addr, int len)
+{
+	CATCH_ERROR
+	{
+		STREAM_write((STREAM *)stream, addr, len);
+		ret = len;
+	}
+	END_CATCH_ERROR
 }
 
 int GB_tolower(int c)

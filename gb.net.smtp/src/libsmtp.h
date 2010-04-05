@@ -115,47 +115,48 @@ extern char libsmtp_more_error[256];
 /* This structure defines one libsmtp session */
 
 typedef
-struct libsmtp_session_struct {
-  int serverflags;	/* Server capability flags */
-  int socket;		/* socket handle */
+	struct libsmtp_session_struct 
+	{
+		int serverflags;                // Server capability flags
+		int socket;                     // socket handle
+		void *stream;                   // Gambas stream to use instead of the socket
 
-  GString *From;	/* From address */
-  GList *To;		/* All recipients addresses */
-  GList *CC;		/* All Carbon Copy recipients addresses */
-  GList *BCC;		/* All Blind Carbon Copy recipients addresses */
-  int NumFailedTo;	/* number of rejected recipients */
-  int NumFailedCC;	/* number of rejected CC recipients */
-  int NumFailedBCC;	/* number of rejected BCC recipients */
-  GList *ToResponse;	/* List of failed recipients containing the response for
-  			   each failure */
-  GList *CCResponse;	/* The same for CC recipients */
-  GList *BCCResponse;	/* And for BCC recipients */
+		GString *From;	/* From address */
+		GList *To;		/* All recipients addresses */
+		GList *CC;		/* All Carbon Copy recipients addresses */
+		GList *BCC;		/* All Blind Carbon Copy recipients addresses */
+		int NumFailedTo;	/* number of rejected recipients */
+		int NumFailedCC;	/* number of rejected CC recipients */
+		int NumFailedBCC;	/* number of rejected BCC recipients */
+		GList *ToResponse;	/* List of failed recipients containing the response for
+						each failure */
+		GList *CCResponse;	/* The same for CC recipients */
+		GList *BCCResponse;	/* And for BCC recipients */
 
-  GString *Subject;	/* Mail subject */
-  GString *LastResponse;	/* Last SMTP response string from server */
-  int LastResponseCode;	/* Last SMTP response code from server */
-  int ErrorCode;	/* Internal libsmtp error code from last error */
-  GString *ErrorModule;	/* Module were error was caused */
-  int Stage;		/* SMTP transfer stage */
+		GString *Subject;	/* Mail subject */
+		GString *LastResponse;	/* Last SMTP response string from server */
+		int LastResponseCode;	/* Last SMTP response code from server */
+		int ErrorCode;	/* Internal libsmtp error code from last error */
+		GString *ErrorModule;	/* Module were error was caused */
+		int Stage;		/* SMTP transfer stage */
 
-  unsigned int DialogueSent;	/* Number of SMTP dialogue lines sent */
-  unsigned int DialogueBytes;	/* Bytes of SMTP dialogue data sent */
-  unsigned int HeadersSent;  	/* Number of header lines sent */
-  unsigned int HeaderBytes;	/* Bytes of header data sent */
-  unsigned int BodyBytes;	/* Bytes of body data sent */
+		unsigned int DialogueSent;	/* Number of SMTP dialogue lines sent */
+		unsigned int DialogueBytes;	/* Bytes of SMTP dialogue data sent */
+		unsigned int HeadersSent;  	/* Number of header lines sent */
+		unsigned int HeaderBytes;	/* Bytes of header data sent */
+		unsigned int BodyBytes;	/* Bytes of body data sent */
 
-  #ifdef WITH_MIME
-    GNode *Parts;		/* N-Tree of body parts (MIME stuff) */
-    int NumParts;		/* Number of body parts */
-    struct libsmtp_part_struct *PartNow;	/* Part we are sending now */
-    GNode *PartNowNode;		/* Node of the part we are just sending */
-  #endif
-  unsigned debug : 1;                // print the dialogue with the server
-  unsigned extern_socket : 1;        // do not handle the socket, it comes from the outside
-}
-LIBSMTP_SESSION;
+		#ifdef WITH_MIME
+			GNode *Parts;		/* N-Tree of body parts (MIME stuff) */
+			int NumParts;		/* Number of body parts */
+			struct libsmtp_part_struct *PartNow;	/* Part we are sending now */
+			GNode *PartNowNode;		/* Node of the part we are just sending */
+		#endif
+		unsigned debug : 1;             // Print the dialogue with the server
+	}
+	LIBSMTP_SESSION;
 
-struct libsmtp_session_struct *libsmtp_session_initialize (bool debug, int extern_socket);
+struct libsmtp_session_struct *libsmtp_session_initialize (bool debug, void *stream);
 
 int libsmtp_connect (char *, unsigned int, unsigned int, struct libsmtp_session_struct *);
 

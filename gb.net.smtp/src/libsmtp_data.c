@@ -57,7 +57,7 @@ Thu Aug 16 2001 */
 /* This function returns a pointer to an allocated libsmtp_session_struct
    All GStrings are initialized. */
 
-struct libsmtp_session_struct *libsmtp_session_initialize (bool debug, int extern_socket)
+struct libsmtp_session_struct *libsmtp_session_initialize (bool debug, void *stream)
 {
   struct libsmtp_session_struct *session;
 
@@ -81,11 +81,7 @@ struct libsmtp_session_struct *libsmtp_session_initialize (bool debug, int exter
   session->socket = -1;
 
 	session->debug = debug;
-	if (extern_socket >= 0)
-	{
-		session->extern_socket = TRUE;
-		session->socket = extern_socket;
-	}
+	session->stream = stream;
 	
   return session;
 }

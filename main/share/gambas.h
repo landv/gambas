@@ -931,9 +931,12 @@ typedef
 		HashTable;
 
 		struct {
+			GB_STREAM *(*Get)(void *object);
 			void (*SetBytesRead)(GB_STREAM *stream, int length);
 			void (*SetSwapping)(GB_STREAM *stream, int swap);
 			int (*Block)(GB_STREAM *stream, int block);
+			int (*Read)(GB_STREAM *stream, void *addr, int len);
+			int (*Write)(GB_STREAM *stream, void *addr, int len);
 			}
 		Stream;
 

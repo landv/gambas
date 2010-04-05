@@ -314,7 +314,7 @@ static bool begin_session(CSMTPCLIENT *_object)
 	fprintf(stderr, "begin_session\n");	
 	#endif
 	
-	THIS->session = libsmtp_session_initialize(THIS->debug, THIS->socket);
+	THIS->session = libsmtp_session_initialize(THIS->debug, GB.Stream.Get(THIS->stream));
 	
 	npart = GB.Count(THIS->parts);
 	if (npart == 0)
@@ -455,8 +455,6 @@ BEGIN_METHOD_VOID(SmtpClient_new)
 
 	GB.NewArray(&THIS->parts, sizeof(CSMTPPART), 0);
 	
-	THIS->socket = -1;
-
 END_METHOD
 
 
@@ -468,12 +466,16 @@ BEGIN_METHOD_VOID(SmtpClient_free)
 	GB.FreeString(&THIS->host);
 	GB.FreeString(&THIS->from);
 	GB.FreeString(&THIS->subject);
+	GB.FreeString(&THIS->user);
+	GB.FreeString(&THIS->password);
 
 	GB.Unref((void **)&THIS->to);
 	GB.Unref((void **)&THIS->cc);
 	GB.Unref((void **)&THIS->bcc);
 
 	GB.FreeArray(&THIS->parts);
+	
+	GB.Unref(&THIS->stream);
 
 	GB.FreeString(&_tmp);
 
@@ -670,12 +672,12 @@ BEGIN_PROPERTY(SmtpClient_Debug)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(SmtpClient_Socket)
+BEGIN_PROPERTY(SmtpClient_Stream)
 
 	if (READ_PROPERTY)
-		GB.ReturnInteger(THIS->socket);
+		GB.ReturnObject(THIS->stream);
 	else
-		THIS->socket = VPROP(GB_INTEGER);
+		GB.StoreObject(PROP(GB_OBJECT), POINTER(&THIS->stream));
 
 END_PROPERTY
 
@@ -688,7 +690,7 @@ GB_DESC CSmtpClientDesc[] =
   GB_METHOD("_free", NULL, SmtpClient_free, NULL),
 
 	GB_PROPERTY("Debug", "b", SmtpClient_Debug),
-	GB_PROPERTY("_Socket", "i", SmtpClient_Socket),
+	GB_PROPERTY("_Stream", "Stream", SmtpClient_Stream),
 
 	GB_PROPERTY("Host", "s", SmtpClient_host),
 	GB_PROPERTY("Port", "i", SmtpClient_port),

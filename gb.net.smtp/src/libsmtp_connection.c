@@ -75,7 +75,7 @@ int libsmtp_connect (char *libsmtp_server, unsigned int libsmtp_port, unsigned i
   /* We enter the connect stage now */
   libsmtp_session->Stage = LIBSMTP_CONNECT_STAGE;
 
-	if (!libsmtp_session->extern_socket)
+	if (!libsmtp_session->stream)
 	{
 		/* We need a socket anyway :) */
 		libsmtp_socket = socket (PF_INET, SOCK_STREAM, 0);
@@ -268,7 +268,7 @@ int libsmtp_authenticate(struct libsmtp_session_struct *session, const char *use
 
 int libsmtp_close(struct libsmtp_session_struct *libsmtp_session)
 {
-  if (!libsmtp_session->extern_socket && libsmtp_session->socket >= 0)
+  if (!libsmtp_session->stream && libsmtp_session->socket >= 0)
   {
     close (libsmtp_session->socket);
     libsmtp_session->socket = -1;

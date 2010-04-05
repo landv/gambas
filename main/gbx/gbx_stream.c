@@ -332,15 +332,16 @@ char STREAM_getchar(STREAM *stream)
 }
 
 
-static void STREAM_read_max(STREAM *stream, void *addr, int len)
+int STREAM_read_max(STREAM *stream, void *addr, int len)
 {
 	bool err;
-	STREAM_eff_read = 0;
 	int flags, handle;
 
 	if (!stream->type)
 		THROW(E_CLOSED);
 		
+	STREAM_eff_read = 0;
+	
 	if (stream->common.buffer)
 		read_buffer(stream, &addr, &len);
 	
@@ -372,14 +373,16 @@ static void STREAM_read_max(STREAM *stream, void *addr, int len)
 					continue;
 				case 0:
 				case EAGAIN:
-					return;
+					return -1;
 				case EIO:
-					return; //THROW(E_READ);
+					return -1; //THROW(E_READ);
 				default:
 					THROW_SYSTEM(errno, NULL);
 			}
 		}
 	}
+	
+	return STREAM_eff_read;
 }
 
 
