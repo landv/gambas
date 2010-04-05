@@ -41,7 +41,7 @@ typedef
     int ctime;
     uid_t uid;
     gid_t gid;
-    bool hidden;
+    char hidden;
     }
   PACKED
   FILE_STAT;

@@ -89,6 +89,9 @@ char *GB_RealFileName(const char *path, int len);
 char *GB_TempDir(void);
 char *GB_TempFile(const char *pattern);
 int GB_CopyFile(const char *src, const char *dst);
+//int GB_FindFile(const char *dir, int recursive, int follow, void (*found)(const char *));
+//int GB_StatFile(const char *path, GB_FILE_STAT *info, int follow);
+void GB_BrowseProject(GB_BROWSE_CALLBACK func);
 
 int GB_IsMissing(int param);
 

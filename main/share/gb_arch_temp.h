@@ -256,7 +256,7 @@ bool ARCH_find(ARCH *arch, const char *path, int len_path, ARCH_FIND *find)
     len_path = strlen(path);
 
 	ARCH_get_absolute_path(path, len_path, tpath, &len_tpath);
-
+	
 	if (len_tpath == 0)
 	{
 		find->sym = NULL;

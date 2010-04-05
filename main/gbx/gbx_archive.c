@@ -315,7 +315,10 @@ void ARCHIVE_stat(ARCHIVE *arch, const char *path, FILE_STAT *info)
   if (ARCHIVE_get(arch, &path, &find))
     THROW_SYSTEM(ENOENT, path);
 
-  fstat(find.arch->arch->fd, &buf);
+	if (find.arch)
+		fstat(find.arch->arch->fd, &buf);
+	else
+		stat(PROJECT_path, &buf);
 
   info->type = find.pos < 0 ? GB_STAT_DIRECTORY : GB_STAT_FILE;
   info->mode = 0400;
@@ -354,7 +357,8 @@ void ARCHIVE_dir_first(ARCHIVE *arch, const char *path, const char *pattern, int
   	return;
   }
   
-  if (!find.sym)
+  // "." means that we want to browse the archive.
+  if (!find.sym && !(path[0] == '.' && path[1] == 0))
   {
   	// By calling FILE_dir_first() again with an absolute path, we are sure that next calls to 
   	// FILE_dir_next() will never call ARCHIVE_dir_next().
@@ -374,7 +378,7 @@ void ARCHIVE_dir_first(ARCHIVE *arch, const char *path, const char *pattern, int
 
 	//if (arch_dir->header.version == 2)
 	//{
-		if (find.index)
+		if (find.index >= 0)
 			abs_len = sprintf(abs_path, "/%d:", find.index);
 		else
 			abs_len = 0;
@@ -479,3 +483,42 @@ bool ARCHIVE_check_addr(char *addr)
   return TRUE;
 }
 
+void ARCHIVE_browse(ARCHIVE *arch, void (*found)(const char *path, int64_t size))
+{
+	int i;
+	ARCH_SYMBOL *asym;
+  SYMBOL *sym;
+	ARCH *a = arch->arch;
+	char *path;
+	char *temp;
+	int size;
+	int ip;
+	
+	for (i = 0; i < a->header.n_symbol; i++)
+	{
+		asym = &a->symbol[i];
+		sym = &asym->sym;
+		
+		size = asym->len;
+		
+		STRING_new(&path, sym->name, sym->len);
+		for(;;)
+		{
+			if (*path != '/')
+				break;
+			
+			ip = atoi(&path[1]);
+			sym = &a->symbol[ip].sym;
+			
+			temp = path;
+			STRING_new(&path, sym->name, sym->len);
+			if (path[sym->len - 1] != '/')
+				STRING_add(&path, "/", 1);
+			STRING_add(&path, strchr(temp, ':') + 1, 0);
+			STRING_free(&temp);
+		}
+		
+		(*found)(path, size);
+		STRING_free(&path);
+	}
+}

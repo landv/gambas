@@ -169,6 +169,7 @@ void *GAMBAS_Api[] =
   (void *)GB_TempDir,
   (void *)GB_TempFile,
   (void *)GB_CopyFile,
+  (void *)GB_BrowseProject,
 
   (void *)GB_Store,
   (void *)GB_StoreString,
@@ -1674,6 +1675,67 @@ int GB_CopyFile(const char *src, const char *dst)
 	return ret;
 }
 
+#if 0
+int GB_FindFile(const char *dir, int recursive, int follow, void (*found)(const char *))
+{
+	int ret = 0;
+	char *pattern;
+	int len_pattern;
+	char *str;
+	
+	TRY
+	{
+		if (recursive)
+			FILE_recursive_dir(dir, found, NULL, 0, follow);
+		else
+		{
+			FILE_dir_first(dir, NULL, 0);
+			while (!FILE_dir_next(&pattern, &len_pattern))
+			{
+				if (!LOCAL_is_UTF8)
+				{
+					if (STRING_conv(&str, pattern, len_pattern, LOCAL_encoding, "UTF-8", FALSE))
+						STRING_new(&str, pattern, len_pattern);
+					else
+						STRING_ref(str);
+				}
+				else
+					STRING_new(&str, pattern, len_pattern);
+
+				(*found)(str);
+				STRING_unref(&str);
+			}
+		}
+	}
+	CATCH
+	{
+		ret = 1;
+		GAMBAS_Error = TRUE;
+	}
+	END_TRY;
+	
+	return ret;
+}
+
+int GB_StatFile(const char *path, GB_FILE_STAT *info, int follow)
+{
+	int ret = 0;
+	
+	TRY
+	{
+		FILE_stat(path, (FILE_STAT *)info, follow);
+	}
+	CATCH
+	{
+		ret = 1;
+		GAMBAS_Error = TRUE;
+	}
+	END_TRY;
+	
+	return ret;
+}
+#endif
+
 char *GB_RealFileName(const char *name, int len)
 {
   char *path = STRING_conv_file_name(name, len);
@@ -1705,6 +1767,31 @@ char *GB_RealFileName(const char *name, int len)
 
   return real;
 }
+
+static GB_BROWSE_CALLBACK _browse_project_func;
+
+static void project_file_found(const char *path)
+{
+	FILE_STAT info;
+	
+	FILE_stat(path, &info, FALSE);
+	(*_browse_project_func)(path, info.size);
+}
+
+void GB_BrowseProject(GB_BROWSE_CALLBACK func)
+{
+	ARCHIVE *arch = NULL;
+	
+	ARCHIVE_get_current(&arch);
+	if (!arch || (arch == ARCHIVE_main && !EXEC_arch))
+	{
+		_browse_project_func = func;
+		FILE_recursive_dir(PROJECT_path, project_file_found, NULL, 0, FALSE);
+	}
+	else
+		ARCHIVE_browse(arch, func);
+}
+
 
 void GB_PrintData(GB_TYPE type, void *addr)
 {

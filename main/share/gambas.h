@@ -25,6 +25,7 @@
 #include "config.h"
 #include <stdint.h>
 #include <stddef.h>
+#include <sys/types.h>
 
 /* Gambas API Version */
 
@@ -566,6 +567,12 @@ typedef
 	void (*GB_SUBST_ADD_CALLBACK)(int);
 
 
+/* Type of the GB.BrowseProject() callback */
+
+typedef
+	void (*GB_BROWSE_CALLBACK)(const char *, int64_t);
+
+
 /* Type of a posted function */
 
 typedef
@@ -833,6 +840,7 @@ typedef
 		char *(*TempDir)(void);
 		char *(*TempFile)(const char *);
 		int (*CopyFile)(const char *, const char *);
+		void (*BrowseProject)(GB_BROWSE_CALLBACK);
 
 		void (*Store)(GB_TYPE, GB_VALUE *, void *);
 		void (*StoreString)(GB_STRING *, char **);

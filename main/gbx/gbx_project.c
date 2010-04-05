@@ -335,9 +335,8 @@ void PROJECT_init(const char *file)
 
 	if (!file)
 	{
-		// "gbx2 -e" case
-		STRING_new(&PROJECT_path, NULL, 0);
-		STRING_new(&PROJECT_name, NULL, 0);
+		// "gbx3 -e" case
+		PROJECT_path = PROJECT_name = "";
 		return;
 	}
 
@@ -454,9 +453,13 @@ void PROJECT_exit(void)
   if (project_buffer)
     FREE(&project_buffer, "PROJECT_exit");
 
-  STRING_free(&PROJECT_name);
+	if (*PROJECT_name)
+	{
+		STRING_free(&PROJECT_name);
+		STRING_free(&PROJECT_path);
+	}
+	
   STRING_free(&PROJECT_oldcwd);
-  STRING_free(&PROJECT_path);
   STRING_free(&PROJECT_exec_path);
   STRING_free(&_home);
 }
