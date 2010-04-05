@@ -75,45 +75,42 @@ int libsmtp_connect (char *libsmtp_server, unsigned int libsmtp_port, unsigned i
   /* We enter the connect stage now */
   libsmtp_session->Stage = LIBSMTP_CONNECT_STAGE;
 
-  /* We need a socket anyway :) */
-  libsmtp_socket = socket (PF_INET, SOCK_STREAM, 0);
+	if (!libsmtp_session->extern_socket)
+	{
+		/* We need a socket anyway :) */
+		libsmtp_socket = socket (PF_INET, SOCK_STREAM, 0);
 
-  /* Socket ok? */
-  if (libsmtp_socket < 0)
-  {
-    libsmtp_session->ErrorCode = LIBSMTP_SOCKETNOCREATE;
-    return LIBSMTP_SOCKETNOCREATE;
-  }
+		/* Socket ok? */
+		if (libsmtp_socket < 0)
+		{
+			libsmtp_session->ErrorCode = LIBSMTP_SOCKETNOCREATE;
+			return LIBSMTP_SOCKETNOCREATE;
+		}
 
-  /* Now we need to get the IP from the hostname... */
-  if ((libsmtp_mailhost=gethostbyname((const char *)libsmtp_server))==NULL)
-  {
-    libsmtp_session->ErrorCode = LIBSMTP_HOSTNOTFOUND;
-    close (libsmtp_socket);
-    libsmtp_session->socket=0;
-    return LIBSMTP_HOSTNOTFOUND;
-  }
+		/* Now we need to get the IP from the hostname... */
+		if ((libsmtp_mailhost=gethostbyname((const char *)libsmtp_server))==NULL)
+			return libsmtp_error(libsmtp_session, LIBSMTP_HOSTNOTFOUND);
 
-  /* This struct is needed for the connect call */
-  libsmtp_sock.sin_family = AF_INET;
-  libsmtp_sock.sin_addr = *(struct in_addr *)libsmtp_mailhost->h_addr;
-  if (!libsmtp_port)
-    libsmtp_sock.sin_port = htons (25);
-  else
-    libsmtp_sock.sin_port = htons (libsmtp_port);
+		/* This struct is needed for the connect call */
+		libsmtp_sock.sin_family = AF_INET;
+		libsmtp_sock.sin_addr = *(struct in_addr *)libsmtp_mailhost->h_addr;
+		if (!libsmtp_port)
+			libsmtp_sock.sin_port = htons (25);
+		else
+			libsmtp_sock.sin_port = htons (libsmtp_port);
 
-  /* Now we make the connection to the smart host on the specified port */
+		/* Now we make the connection to the smart host on the specified port */
 
-  if (connect (libsmtp_socket, (struct sockaddr *) &libsmtp_sock, sizeof (libsmtp_sock) ) < 0)
-  {
-    libsmtp_session->ErrorCode = LIBSMTP_CONNECTERR;
-    close (libsmtp_socket);
-    libsmtp_session->socket=0;
-    return LIBSMTP_CONNECTERR;
-  }
+		if (connect (libsmtp_socket, (struct sockaddr *) &libsmtp_sock, sizeof (libsmtp_sock) ) < 0)
+		{
+			libsmtp_close(libsmtp_session);
+			libsmtp_session->ErrorCode = LIBSMTP_CONNECTERR;
+			return LIBSMTP_CONNECTERR;
+		}
 
-  /* Ok, lets set the session socket to the right handler */
-  libsmtp_session->socket = libsmtp_socket;
+		/* Ok, lets set the session socket to the right handler */
+		libsmtp_session->socket = libsmtp_socket;
+	}
 
   /* We enter the greet stage now */
   libsmtp_session->Stage = LIBSMTP_GREET_STAGE;
@@ -124,9 +121,8 @@ int libsmtp_connect (char *libsmtp_server, unsigned int libsmtp_port, unsigned i
 
   if (libsmtp_session->LastResponseCode != 220)
   {
+		libsmtp_close(libsmtp_session);
     libsmtp_session->ErrorCode = LIBSMTP_NOTWELCOME;
-    close (libsmtp_session->socket);
-    libsmtp_session->socket=0;
     return LIBSMTP_NOTWELCOME;
   }
 
@@ -144,9 +140,8 @@ int libsmtp_connect (char *libsmtp_server, unsigned int libsmtp_port, unsigned i
   strcpy(libsmtp_temp_buffer, GB.System.DomainName());
   if (!*libsmtp_temp_buffer)
   {
+		libsmtp_close(libsmtp_session);
     libsmtp_session->ErrorCode = LIBSMTP_WHATSMYHOSTNAME;
-    close (libsmtp_session->socket);
-    libsmtp_session->socket=0;
     return LIBSMTP_WHATSMYHOSTNAME;
   }
 
@@ -183,7 +178,11 @@ int libsmtp_connect (char *libsmtp_server, unsigned int libsmtp_port, unsigned i
       libsmtp_session->serverflags |= LIBSMTP_HAS_TLS;
 
     if (strstr (libsmtp_session->LastResponse->str, "AUTH"))
+		{
       libsmtp_session->serverflags |= LIBSMTP_HAS_AUTH;
+			if (strstr (libsmtp_session->LastResponse->str, "PLAIN"))
+				libsmtp_session->serverflags |= LIBSMTP_HAS_AUTH_PLAIN;
+		}
 
     if (strstr (libsmtp_session->LastResponse->str, "SIZE"))
       libsmtp_session->serverflags |= LIBSMTP_HAS_SIZE;
@@ -211,9 +210,8 @@ int libsmtp_connect (char *libsmtp_server, unsigned int libsmtp_port, unsigned i
     {
       /* We are not welcome here it seems - I don't know if this is fatal
          to SMTP transactions - FIXME */
+			libsmtp_close(libsmtp_session);
       libsmtp_session->ErrorCode=LIBSMTP_NOTWELCOME;
-      close (libsmtp_session->socket);
-      libsmtp_session->socket=0;
       return LIBSMTP_NOTWELCOME;
     }
 
@@ -225,15 +223,64 @@ int libsmtp_connect (char *libsmtp_server, unsigned int libsmtp_port, unsigned i
   return LIBSMTP_NOERR;
 }
 
-int libsmtp_close (struct libsmtp_session_struct *libsmtp_session)
+
+int libsmtp_authenticate(struct libsmtp_session_struct *session, const char *user, const char *password)
 {
-  /* I just hope that there are no socket with fd 0 out there :) */
-  if (libsmtp_session->socket)
+  GString *temp_gstring;	/* Temp gstring */
+	int len_user = strlen(user);
+	int len_password = strlen(password);
+	char buffer[len_user + len_password + 3];
+
+  temp_gstring = g_string_new (NULL);
+
+  /* We enter the auth stage now */
+  session->Stage = LIBSMTP_AUTH_STAGE;
+
+  /* Send the AUTH PLAIN authentification */
+
+	g_string_assign(temp_gstring, "AUTH PLAIN ");
+  if (libsmtp_int_send(temp_gstring, session, 2))
+    return LIBSMTP_ERRORSENDFATAL;
+	
+	buffer[0] = 0;
+	strcpy(&buffer[1], user);
+	buffer[len_user + 1] = 0;
+	strcpy(&buffer[len_user + 2], password);
+	buffer[len_user + len_password + 2] = 0;
+
+	if (libsmtp_int_send_base64(buffer, len_user + len_password + 2, session))
+		return LIBSMTP_ERRORSENDFATAL;
+
+  if (libsmtp_int_read(temp_gstring, session, 2))
+    return LIBSMTP_ERRORSENDFATAL;
+
+  if (session->LastResponseCode != 235)
+	{
+		/* We couldn't authenticate */
+		libsmtp_close(session);
+		session->ErrorCode = LIBSMTP_AUTHERR;
+		return LIBSMTP_AUTHERR;
+	}
+
+  return LIBSMTP_NOERR;	
+}
+
+
+int libsmtp_close(struct libsmtp_session_struct *libsmtp_session)
+{
+  if (!libsmtp_session->extern_socket && libsmtp_session->socket >= 0)
   {
     close (libsmtp_session->socket);
-    libsmtp_session->socket=0;
+    libsmtp_session->socket = -1;
   }
 
   return LIBSMTP_NOERR;
 }
 
+
+int libsmtp_error(struct libsmtp_session_struct *session, int error)
+{
+	libsmtp_close(session);
+	session->ErrorCode = error;
+	return error;
+}

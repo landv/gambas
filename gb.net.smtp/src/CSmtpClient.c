@@ -314,7 +314,7 @@ static bool begin_session(CSMTPCLIENT *_object)
 	fprintf(stderr, "begin_session\n");	
 	#endif
 	
-	THIS->session = libsmtp_session_initialize();
+	THIS->session = libsmtp_session_initialize(THIS->debug, THIS->socket);
 	
 	npart = GB.Count(THIS->parts);
 	if (npart == 0)
@@ -444,7 +444,7 @@ static void end_session(CSMTPCLIENT *_object)
 }
 
 
-BEGIN_METHOD_VOID(CSMTPCLIENT_new)
+BEGIN_METHOD_VOID(SmtpClient_new)
 
 	GB.Array.New(&THIS->to, GB_T_STRING, 0);
 	GB.Ref(THIS->to);
@@ -454,11 +454,13 @@ BEGIN_METHOD_VOID(CSMTPCLIENT_new)
 	GB.Ref(THIS->bcc);
 
 	GB.NewArray(&THIS->parts, sizeof(CSMTPPART), 0);
+	
+	THIS->socket = -1;
 
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CSMTPCLIENT_free)
+BEGIN_METHOD_VOID(SmtpClient_free)
 
 	end_session(THIS);
 	free_parts(THIS);
@@ -478,7 +480,7 @@ BEGIN_METHOD_VOID(CSMTPCLIENT_free)
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CSMTPCLIENT_send)
+BEGIN_METHOD_VOID(SmtpClient_send)
 
   struct libsmtp_session_struct	*session;
   int i;
@@ -509,6 +511,15 @@ BEGIN_METHOD_VOID(CSMTPCLIENT_send)
 	if (send_recipient(session, THIS->bcc, LIBSMTP_REC_BCC)) { where = "setting BCC recipient"; goto __ERROR; }
 
   if (libsmtp_connect(THIS->host ? THIS->host : "localhost", THIS->port, 0, session)) { where = "connecting to SMTP server"; goto __ERROR; }
+  
+  if (THIS->user)
+	{
+		if (libsmtp_authenticate(session, THIS->user, THIS->password ? THIS->password : ""))
+		{
+			where = "sending authorization"; goto __ERROR;
+		}
+	}
+  
   if (libsmtp_dialogue(session)) { where = "starting dialog"; goto __ERROR; }
   if (libsmtp_headers(session)) { where = "sending headers"; goto __ERROR; }
   if (libsmtp_mime_headers(session)) { where = "sending mime headers"; goto __ERROR; }
@@ -583,7 +594,7 @@ END_METHOD
 
 
 #define IMPLEMENT_STRING_PROPERTY(_property) \
-BEGIN_PROPERTY(CSMTPCLIENT_##_property) \
+BEGIN_PROPERTY(SmtpClient_##_property) \
 \
 	if (READ_PROPERTY) \
 		GB.ReturnString(THIS->_property); \
@@ -595,8 +606,10 @@ END_PROPERTY
 IMPLEMENT_STRING_PROPERTY(host);
 IMPLEMENT_STRING_PROPERTY(from);
 IMPLEMENT_STRING_PROPERTY(subject);
+IMPLEMENT_STRING_PROPERTY(user);
+IMPLEMENT_STRING_PROPERTY(password);
 
-BEGIN_PROPERTY(CSMTPCLIENT_port)
+BEGIN_PROPERTY(SmtpClient_port)
 
 	if (READ_PROPERTY)
 		GB.ReturnInteger(THIS->port);
@@ -606,7 +619,7 @@ BEGIN_PROPERTY(CSMTPCLIENT_port)
 END_PROPERTY
 
 #define IMPLEMENT_RECIPIENT(_recipient) \
-BEGIN_PROPERTY(CSMTPCLIENT_##_recipient) \
+BEGIN_PROPERTY(SmtpClient_##_recipient) \
 \
 		GB.ReturnObject(THIS->_recipient); \
 \
@@ -617,7 +630,7 @@ IMPLEMENT_RECIPIENT(cc);
 IMPLEMENT_RECIPIENT(bcc);
 
 
-BEGIN_METHOD(CSMTPCLIENT_add, GB_STRING data; GB_STRING mime; GB_STRING name)
+BEGIN_METHOD(SmtpClient_Add, GB_STRING data; GB_STRING mime; GB_STRING name)
 
 	CSMTPPART *part = (CSMTPPART *)GB.Add(&THIS->parts);
 	
@@ -630,7 +643,7 @@ BEGIN_METHOD(CSMTPCLIENT_add, GB_STRING data; GB_STRING mime; GB_STRING name)
 END_METHOD
 
 
-BEGIN_PROPERTY(CSMTPCLIENT_alternative)
+BEGIN_PROPERTY(SmtpClient_Alternative)
 
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(THIS->alternative);
@@ -640,37 +653,65 @@ BEGIN_PROPERTY(CSMTPCLIENT_alternative)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CSMTPCLIENT_count)
+BEGIN_PROPERTY(SmtpClient_Count)
 
 	GB.ReturnInteger(GB.Count(THIS->parts));
 
 END_PROPERTY
 
+
+BEGIN_PROPERTY(SmtpClient_Debug)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(THIS->debug);
+	else
+		THIS->debug = VPROP(GB_BOOLEAN);
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(SmtpClient_Socket)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(THIS->socket);
+	else
+		THIS->socket = VPROP(GB_INTEGER);
+
+END_PROPERTY
+
+
 GB_DESC CSmtpClientDesc[] =
 {
   GB_DECLARE("SmtpClient", sizeof(CSMTPCLIENT)),
 
-  GB_METHOD("_new", NULL, CSMTPCLIENT_new, NULL),
-  GB_METHOD("_free", NULL, CSMTPCLIENT_free, NULL),
+  GB_METHOD("_new", NULL, SmtpClient_new, NULL),
+  GB_METHOD("_free", NULL, SmtpClient_free, NULL),
 
-	GB_PROPERTY("Host", "s", CSMTPCLIENT_host),
-	GB_PROPERTY("Port", "i", CSMTPCLIENT_port),
-  GB_PROPERTY("From", "s", CSMTPCLIENT_from),
-  GB_PROPERTY("Subject", "s", CSMTPCLIENT_subject),
-  GB_PROPERTY_READ("To", "String[]", CSMTPCLIENT_to),
-  GB_PROPERTY_READ("Cc", "String[]", CSMTPCLIENT_cc),
-  GB_PROPERTY_READ("Bcc", "String[]", CSMTPCLIENT_bcc),
+	GB_PROPERTY("Debug", "b", SmtpClient_Debug),
+	GB_PROPERTY("_Socket", "i", SmtpClient_Socket),
 
-  GB_PROPERTY("Alternative", "b", CSMTPCLIENT_alternative),
-  GB_METHOD("Add", NULL, CSMTPCLIENT_add, "(Data)s[(MimeType)s(Name)s]"),
-  GB_PROPERTY_READ("Count", "i", CSMTPCLIENT_count),
+	GB_PROPERTY("Host", "s", SmtpClient_host),
+	GB_PROPERTY("Port", "i", SmtpClient_port),
+	
+  GB_PROPERTY("User", "s", SmtpClient_user),
+  GB_PROPERTY("Password", "s", SmtpClient_password),
+	
+  GB_PROPERTY("From", "s", SmtpClient_from),
+  GB_PROPERTY("Subject", "s", SmtpClient_subject),
+  GB_PROPERTY_READ("To", "String[]", SmtpClient_to),
+  GB_PROPERTY_READ("Cc", "String[]", SmtpClient_cc),
+  GB_PROPERTY_READ("Bcc", "String[]", SmtpClient_bcc),
+
+  GB_PROPERTY("Alternative", "b", SmtpClient_Alternative),
+  GB_METHOD("Add", NULL, SmtpClient_Add, "(Data)s[(MimeType)s(Name)s]"),
+  GB_PROPERTY_READ("Count", "i", SmtpClient_Count),
  
-  GB_METHOD("Send", NULL, CSMTPCLIENT_send, NULL),
+  GB_METHOD("Send", NULL, SmtpClient_send, NULL),
 
   GB_CONSTANT("_IsControl", "b", TRUE),
   GB_CONSTANT("_IsVirtual", "b", TRUE),
   GB_CONSTANT("_Group", "s", "Network"),
-  GB_CONSTANT("_Properties", "s", "Host,Port"),
+  GB_CONSTANT("_Properties", "s", "Host,Port,Debug"),
 
   GB_END_DECLARE
 };

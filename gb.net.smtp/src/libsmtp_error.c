@@ -68,7 +68,8 @@ const char *libsmtp_strerr_strings_fatal[] = {
   "Unable to send to socket", /* 7 */
   "Server won't accept sender",
   "Server rejected mail!!",
-  "Server won't accept DATA command"
+  "Server won't accept DATA command",
+  "Authorization failed"
 };
 
 const char *libsmtp_strerr_strings_nonfatal[] = {
@@ -81,10 +82,6 @@ const char *libsmtp_strerr_strings_nonfatal[] = {
 };
 
 const char *libsmtp_undef_errstr = "Undefined error";
-
-#define LIBSMTP_MAX_FATAL_ERRNO 10
-#define LIBSMTP_MIN_NONFATAL_ERRNO 1024
-#define LIBSMTP_MAX_NONFATAL_ERRNO 1029
 
 const char *libsmtp_strerr (struct libsmtp_session_struct *libsmtp_session)
 {

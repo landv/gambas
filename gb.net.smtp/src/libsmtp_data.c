@@ -57,28 +57,37 @@ Thu Aug 16 2001 */
 /* This function returns a pointer to an allocated libsmtp_session_struct
    All GStrings are initialized. */
 
-struct libsmtp_session_struct *libsmtp_session_initialize (void)
+struct libsmtp_session_struct *libsmtp_session_initialize (bool debug, int extern_socket)
 {
-  struct libsmtp_session_struct *libsmtp_session;
+  struct libsmtp_session_struct *session;
 
   /* We use calloc here to clear the memory. GLists are initialized when
      they point to NULL, so it must be cleared. */
-  libsmtp_session = (struct libsmtp_session_struct *)calloc (1, sizeof(struct libsmtp_session_struct));
+  session = (struct libsmtp_session_struct *)calloc (1, sizeof(struct libsmtp_session_struct));
 
-  if (libsmtp_session == NULL)
+  if (!session)
     return NULL;
 
   /* The GStrings must be initialized */
-  libsmtp_session->From = g_string_new (NULL);
-  libsmtp_session->Subject = g_string_new (NULL);
-  libsmtp_session->LastResponse = g_string_new (NULL);
+  session->From = g_string_new (NULL);
+  session->Subject = g_string_new (NULL);
+  session->LastResponse = g_string_new (NULL);
 
   #ifdef WITH_MIME
-    libsmtp_session->Parts = NULL;
-    libsmtp_session->NumParts = 0;
+    session->Parts = NULL;
+    session->NumParts = 0;
   #endif
+  
+  session->socket = -1;
 
-  return libsmtp_session;
+	session->debug = debug;
+	if (extern_socket >= 0)
+	{
+		session->extern_socket = TRUE;
+		session->socket = extern_socket;
+	}
+	
+  return session;
 }
 
 #ifdef WITH_MIME
@@ -98,11 +107,7 @@ int libsmtp_free (struct libsmtp_session_struct *libsmtp_session)
 
   /* Lets see if we gotta close the socket */
 
-  if (libsmtp_session->socket)
-  {
-    close (libsmtp_session->socket);
-    libsmtp_session->socket=0;
-  }
+	libsmtp_close(libsmtp_session);
 
   /* All GStrings and GLists must be freed */
   g_list_free (libsmtp_session->To);

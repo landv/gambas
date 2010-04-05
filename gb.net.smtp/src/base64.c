@@ -91,8 +91,7 @@ int libsmtp_int_init_base64 (void)
 /* This function will send data in a part, encoded in base64. It will not
    perform any checks whatsoever. */
 
-int libsmtp_int_send_base64 (char *libsmtp_int_data, unsigned int libsmtp_int_length, \
-         struct libsmtp_session_struct *libsmtp_session)
+int libsmtp_int_send_base64 (char *libsmtp_int_data, unsigned int libsmtp_int_length, struct libsmtp_session_struct *libsmtp_session)
 {
   int libsmtp_int_counter;
 

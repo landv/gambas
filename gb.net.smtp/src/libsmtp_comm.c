@@ -95,19 +95,21 @@ int libsmtp_int_read (GString *libsmtp_gstring_read, struct libsmtp_session_stru
 
   bzero (libsmtp_int_rec_buffer, sizeof(libsmtp_int_rec_buffer));
 
-  libsmtp_int_bytes=recv (libsmtp_session->socket, libsmtp_int_rec_buffer, sizeof(libsmtp_int_rec_buffer), 0);
+  libsmtp_int_bytes = read(libsmtp_session->socket, libsmtp_int_rec_buffer, sizeof(libsmtp_int_rec_buffer));
   if (libsmtp_int_bytes<=0)
   {
+		libsmtp_close(libsmtp_session);
     libsmtp_session->ErrorCode=LIBSMTP_ERRORREADFATAL;
     libsmtp_session->Stage=type;
-    close (libsmtp_session->socket);
-    libsmtp_session->socket=0;
     return LIBSMTP_ERRORREAD;
   }
 
   #ifdef LIBSMTP_DEBUG
-    printf ("DEBUG in read: %.*s", libsmtp_int_bytes, libsmtp_int_rec_buffer);
+    printf("DEBUG in read: %.*s\n", libsmtp_int_bytes, libsmtp_int_rec_buffer);
   #endif
+  
+  if (libsmtp_session->debug && type > 0)
+		fprintf(stderr, "<- %.*s\n", libsmtp_int_bytes, libsmtp_int_rec_buffer);
 
   /* Update statistics */
   switch (type)
@@ -154,13 +156,15 @@ int libsmtp_int_send (GString *libsmtp_send_gstring, struct libsmtp_session_stru
     printf ("DEBUG in send: %s", libsmtp_send_gstring->str);
   #endif
 
-  libsmtp_int_bytes=send (libsmtp_session->socket, libsmtp_send_gstring->str, libsmtp_send_gstring->len, 0);
+  if (libsmtp_session->debug && type > 0)
+		fprintf(stderr, "-> %.*s\n", libsmtp_send_gstring->len, libsmtp_send_gstring->str);
+
+  libsmtp_int_bytes = write(libsmtp_session->socket, libsmtp_send_gstring->str, libsmtp_send_gstring->len);
   if (libsmtp_int_bytes != libsmtp_send_gstring->len)
   {
+			libsmtp_close(libsmtp_session);
     libsmtp_session->ErrorCode=LIBSMTP_ERRORSENDFATAL;
     libsmtp_session->Stage=type;
-    close (libsmtp_session->socket);
-    libsmtp_session->socket=0;
     return LIBSMTP_ERRORSEND;
   }
   /* Update statistics */
@@ -194,9 +198,8 @@ int libsmtp_int_send_body (char *libsmtp_send_string, unsigned int libsmtp_int_l
   libsmtp_int_bytes=send (libsmtp_session->socket, libsmtp_send_string, strlen(libsmtp_send_string), 0);
   if (libsmtp_int_bytes<0)
   {
+		libsmtp_close(libsmtp_session);
     libsmtp_session->ErrorCode=LIBSMTP_ERRORSENDFATAL;
-    close (libsmtp_session->socket);
-    libsmtp_session->socket=0;
     return LIBSMTP_ERRORSEND;
   }
   /* Update statistics */
@@ -262,9 +265,8 @@ int libsmtp_dialogue (struct libsmtp_session_struct *libsmtp_session)
 
   if (libsmtp_session->LastResponseCode > 299)
   {
+		libsmtp_close(libsmtp_session);
     libsmtp_session->ErrorCode = LIBSMTP_WONTACCEPTSENDER;
-    close(libsmtp_session->socket);
-    libsmtp_session->socket=0;
     return LIBSMTP_WONTACCEPTSENDER;
   }
 
@@ -494,9 +496,8 @@ int libsmtp_headers (struct libsmtp_session_struct *libsmtp_session)
 
     if (libsmtp_session->LastResponseCode != 354)
     {
+			libsmtp_close(libsmtp_session);
       libsmtp_session->ErrorCode = LIBSMTP_WONTACCEPTDATA;
-      close(libsmtp_session->socket);
-      libsmtp_session->socket=0;
       return LIBSMTP_WONTACCEPTDATA;
     }
 
@@ -649,9 +650,8 @@ int libsmtp_header_send (char *libsmtp_header_string, \
 
     if (libsmtp_session->LastResponseCode != 354)
     {
+			libsmtp_close(libsmtp_session);
       libsmtp_session->ErrorCode = LIBSMTP_WONTACCEPTDATA;
-      close(libsmtp_session->socket);
-      libsmtp_session->socket=0;
       return LIBSMTP_WONTACCEPTDATA;
     }
 
@@ -752,10 +752,8 @@ int libsmtp_body_end (struct libsmtp_session_struct *libsmtp_session)
   if (libsmtp_session->LastResponseCode > 299)
   {
     /* Aaaw no, he didn't. Don't ask me how that can happen... */
-
+		libsmtp_close(libsmtp_session);
     libsmtp_session->ErrorCode = LIBSMTP_REJECTBODY;
-    close (libsmtp_session->socket);
-    libsmtp_session->socket=0;
     return LIBSMTP_REJECTBODY;
   }
 
@@ -793,9 +791,8 @@ int libsmtp_quit (struct libsmtp_session_struct *libsmtp_session)
     {
       /* He says it isn't, but who cares... */
 
+			libsmtp_close(libsmtp_session);
       libsmtp_session->ErrorCode = LIBSMTP_REJECTQUIT;
-      close (libsmtp_session->socket);
-      libsmtp_session->socket=0;
       libsmtp_session->Stage=LIBSMTP_NOCONNECT_STAGE;
       return LIBSMTP_REJECTQUIT;
     }
@@ -803,9 +800,8 @@ int libsmtp_quit (struct libsmtp_session_struct *libsmtp_session)
     {
       /* Babe, I'm gonne leave you... */
 
+			libsmtp_close(libsmtp_session);
       libsmtp_session->ErrorCode = LIBSMTP_NOERR;
-      close (libsmtp_session->socket);
-      libsmtp_session->socket=0;
       libsmtp_session->Stage=LIBSMTP_NOCONNECT_STAGE;
       return LIBSMTP_NOERR;
     }

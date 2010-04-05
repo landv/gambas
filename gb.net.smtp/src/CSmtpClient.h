@@ -49,7 +49,11 @@ typedef
 	  GB_ARRAY bcc;
 	  char *subject;
 	  CSMTPPART *parts;
+		char *user;
+		char *password;
+		int socket;
 		bool alternative;
+		bool debug;
 	  }
 	CSMTPCLIENT;
 

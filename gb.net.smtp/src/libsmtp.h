@@ -42,6 +42,7 @@
 #define LIBSMTP_HAS_DSN		32
 #define LIBSMTP_HAS_ETRN	64
 #define LIBSMTP_HAS_ENHANCEDSTATUSCODES	128
+#define LIBSMTP_HAS_AUTH_PLAIN	256
 
 /* Recipient types for libsmtp_add_recipient */
 
@@ -57,6 +58,7 @@
 #define LIBSMTP_CONNECT_STAGE	1
 #define LIBSMTP_GREET_STAGE	2
 #define LIBSMTP_HELLO_STAGE	3
+#define LIBSMTP_AUTH_STAGE	4
 
 #define LIBSMTP_SENDER_STAGE	16
 #define LIBSMTP_RECIPIENT_STAGE	17
@@ -89,6 +91,7 @@
 #define LIBSMTP_WONTACCEPTSENDER	8
 #define LIBSMTP_REJECTBODY	9
 #define LIBSMTP_WONTACCEPTDATA	10
+#define LIBSMTP_AUTHERR 11
 
 /* Codes >= 1024 are errors that are not fatal to the whole SMTP session */
 #define LIBSMTP_ERRORREAD	1024
@@ -102,10 +105,16 @@
 
 #define LIBSMTP_UNDEFERR	10000 /* ErrorCode was undefined!! */
 
+#define LIBSMTP_MAX_FATAL_ERRNO 11
+#define LIBSMTP_MIN_NONFATAL_ERRNO 1024
+#define LIBSMTP_MAX_NONFATAL_ERRNO 1029
+
+
 extern char libsmtp_more_error[256];
 
 /* This structure defines one libsmtp session */
 
+typedef
 struct libsmtp_session_struct {
   int serverflags;	/* Server capability flags */
   int socket;		/* socket handle */
@@ -141,11 +150,16 @@ struct libsmtp_session_struct {
     struct libsmtp_part_struct *PartNow;	/* Part we are sending now */
     GNode *PartNowNode;		/* Node of the part we are just sending */
   #endif
-};
+  unsigned debug : 1;                // print the dialogue with the server
+  unsigned extern_socket : 1;        // do not handle the socket, it comes from the outside
+}
+LIBSMTP_SESSION;
 
-struct libsmtp_session_struct *libsmtp_session_initialize (void);
+struct libsmtp_session_struct *libsmtp_session_initialize (bool debug, int extern_socket);
 
 int libsmtp_connect (char *, unsigned int, unsigned int, struct libsmtp_session_struct *);
+
+int libsmtp_authenticate(struct libsmtp_session_struct *session, const char *user, const char *password);
 
 int libsmtp_errno(struct libsmtp_session_struct *);
 
@@ -170,6 +184,8 @@ int libsmtp_body_end (struct libsmtp_session_struct *);
 int libsmtp_quit (struct libsmtp_session_struct *);
 
 int libsmtp_close (struct libsmtp_session_struct *);
+
+int libsmtp_error(struct libsmtp_session_struct *session, int error);
 
 int libsmtp_free (struct libsmtp_session_struct *);
 

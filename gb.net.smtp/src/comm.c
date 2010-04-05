@@ -99,9 +99,8 @@ int libsmtp_mime_headers (struct libsmtp_session_struct *libsmtp_session)
 
     if (libsmtp_session->LastResponseCode != 354)
     {
+			libsmtp_close(libsmtp_session);
       libsmtp_session->ErrorCode = LIBSMTP_WONTACCEPTDATA;
-      close(libsmtp_session->socket);
-      libsmtp_session->socket=0;
       return LIBSMTP_WONTACCEPTDATA;
     }
 
