@@ -54,6 +54,7 @@ typedef
 		void *stream;
 		bool alternative;
 		bool debug;
+		bool no_greeting;
 	  }
 	CSMTPCLIENT;
 

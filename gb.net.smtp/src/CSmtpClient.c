@@ -315,6 +315,7 @@ static bool begin_session(CSMTPCLIENT *_object)
 	#endif
 	
 	THIS->session = libsmtp_session_initialize(THIS->debug, THIS->stream ? GB.Stream.Get(THIS->stream) : NULL);
+	THIS->session->no_greeting = THIS->no_greeting;
 	
 	npart = GB.Count(THIS->parts);
 	if (npart == 0)
@@ -683,6 +684,16 @@ BEGIN_PROPERTY(SmtpClient_Stream)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(SmtpClient_NoGreeting)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(THIS->no_greeting);
+	else
+		THIS->no_greeting = VPROP(GB_BOOLEAN);
+
+END_PROPERTY
+
+
 GB_DESC CSmtpClientDesc[] =
 {
   GB_DECLARE("SmtpClient", sizeof(CSMTPCLIENT)),
@@ -692,6 +703,7 @@ GB_DESC CSmtpClientDesc[] =
 
 	GB_PROPERTY("Debug", "b", SmtpClient_Debug),
 	GB_PROPERTY("_Stream", "Stream", SmtpClient_Stream),
+	GB_PROPERTY("_NoGreeting", "b", SmtpClient_NoGreeting),
 
 	GB_PROPERTY("Host", "s", SmtpClient_host),
 	GB_PROPERTY("Port", "i", SmtpClient_port),

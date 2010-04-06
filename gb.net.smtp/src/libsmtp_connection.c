@@ -110,10 +110,28 @@ int libsmtp_connect (char *libsmtp_server, unsigned int libsmtp_port, unsigned i
 
 		/* Ok, lets set the session socket to the right handler */
 		libsmtp_session->socket = libsmtp_socket;
+	}
+	else
+	{
+		// Put the stream in blocking mode
+		libsmtp_session->was_blocking = GB.Stream.Block(libsmtp_session->stream, TRUE);
+		
+		/*// Ignore all data sent by the server until now
+		for(;;)
+		{
+			usleep(250000);
+			if (GB.Stream.Read(libsmtp_session->stream, libsmtp_temp_buffer, (-sizeof(libsmtp_temp_buffer))) <= 0)
+				break;
+		}
+		
+		GB.Stream.Block(libsmtp_session->stream, TRUE);*/
+	}
 
-		/* We enter the greet stage now */
-		libsmtp_session->Stage = LIBSMTP_GREET_STAGE;
+	/* We enter the greet stage now */
+	libsmtp_session->Stage = LIBSMTP_GREET_STAGE;
 
+	if (!libsmtp_session->no_greeting)
+	{
 		/* Now we should read the mail servers greeting */
 		if (libsmtp_int_read (libsmtp_temp_gstring, libsmtp_session, 2))
 			return LIBSMTP_ERRORREADFATAL;
@@ -125,22 +143,8 @@ int libsmtp_connect (char *libsmtp_server, unsigned int libsmtp_port, unsigned i
 			return LIBSMTP_NOTWELCOME;
 		}
 	}
-	else
-	{
-		// Ignore all data sent by the server until now
-		libsmtp_session->was_blocking = GB.Stream.Block(libsmtp_session->stream, FALSE);
-		
-		for(;;)
-		{
-			usleep(250000);
-			if (GB.Stream.Read(libsmtp_session->stream, libsmtp_temp_buffer, (-sizeof(libsmtp_temp_buffer))) <= 0)
-				break;
-		}
-		
-		// Put the stream in blocking mode
-		GB.Stream.Block(libsmtp_session->stream, TRUE);
-	}
-  /* Now we need to know our hostname */
+
+	/* Now we need to know our hostname */
   // BM: HELO command needs a FQDN according to the RFC
 
   /*if (gethostname ((char *)libsmtp_temp_buffer, sizeof(libsmtp_temp_buffer)))

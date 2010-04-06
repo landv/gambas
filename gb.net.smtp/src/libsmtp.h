@@ -154,6 +154,7 @@ typedef
 		#endif
 		unsigned debug : 1;             // Print the dialogue with the server
 		unsigned was_blocking : 1;      // If the Gambas stream was blocking before being used
+		unsigned no_greeting : 1;       // Do not read server greeting.
 	}
 	LIBSMTP_SESSION;
 
