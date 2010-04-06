@@ -336,6 +336,7 @@ int STREAM_read_max(STREAM *stream, void *addr, int len)
 {
 	bool err;
 	int flags, handle;
+	int save_errno;
 
 	if (!stream->type)
 		THROW(E_CLOSED);
@@ -357,11 +358,20 @@ int STREAM_read_max(STREAM *stream, void *addr, int len)
 			{
 				handle = STREAM_handle(stream);
 				flags = fcntl(handle, F_GETFL);
-				fcntl(handle, F_SETFL, flags | O_NONBLOCK);
+				if ((flags & O_NONBLOCK) == 0)
+				{
+					WATCH_process(handle, -1);
+					fcntl(handle, F_SETFL, flags | O_NONBLOCK);
+				}
 				
+				errno = 0;
 				err = (*(stream->type->read))(stream, addr, len);
+				save_errno = errno;
 				
-				fcntl(handle, F_SETFL, flags);
+				if ((flags & O_NONBLOCK) == 0)
+					fcntl(handle, F_SETFL, flags);
+				
+				errno = save_errno;
 			}
 		
 			if (!err)
@@ -373,7 +383,7 @@ int STREAM_read_max(STREAM *stream, void *addr, int len)
 					continue;
 				case 0:
 				case EAGAIN:
-					return -1;
+					return STREAM_eff_read;
 				case EIO:
 					return -1; //THROW(E_READ);
 				default:

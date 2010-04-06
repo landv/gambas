@@ -153,6 +153,7 @@ typedef
 			GNode *PartNowNode;		/* Node of the part we are just sending */
 		#endif
 		unsigned debug : 1;             // Print the dialogue with the server
+		unsigned was_blocking : 1;      // If the Gambas stream was blocking before being used
 	}
 	LIBSMTP_SESSION;
 
@@ -202,6 +203,6 @@ int libsmtp_int_send_quoted (char *libsmtp_int_data, unsigned int libsmtp_int_le
 
 int libsmtp_int_send_quoted_header (const char *header, char *libsmtp_int_data, unsigned int libsmtp_int_length, struct libsmtp_session_struct *libsmtp_session);
 
-int libsmtp_int_send_base64 (char *libsmtp_int_data, unsigned int libsmtp_int_length, struct libsmtp_session_struct *libsmtp_session);
+int libsmtp_int_send_base64 (char *libsmtp_int_data, unsigned int libsmtp_int_length, struct libsmtp_session_struct *libsmtp_session, int skip_bytes);
 
 #endif  /* LIB_SMTP_H */

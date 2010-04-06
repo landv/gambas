@@ -91,7 +91,7 @@ int libsmtp_int_init_base64 (void)
 /* This function will send data in a part, encoded in base64. It will not
    perform any checks whatsoever. */
 
-int libsmtp_int_send_base64 (char *libsmtp_int_data, unsigned int libsmtp_int_length, struct libsmtp_session_struct *libsmtp_session)
+int libsmtp_int_send_base64(char *libsmtp_int_data, unsigned int libsmtp_int_length, struct libsmtp_session_struct *libsmtp_session, int skip_bytes)
 {
   int libsmtp_int_counter;
 
@@ -106,6 +106,13 @@ int libsmtp_int_send_base64 (char *libsmtp_int_data, unsigned int libsmtp_int_le
   if (!libsmtp_int_dtable_init)
     libsmtp_int_init_base64();
 
+	if (skip_bytes > 0)
+	{
+		memcpy(libsmtp_int_ogroup, libsmtp_int_data, skip_bytes);
+		libsmtp_int_data_ptr = skip_bytes;
+		libsmtp_int_outbytes = skip_bytes;
+	}
+	
   /* The main parsing loop */
   while (!libsmtp_int_finished)
   {

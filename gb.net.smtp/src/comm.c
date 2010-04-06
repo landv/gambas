@@ -84,7 +84,7 @@ int libsmtp_mime_headers (struct libsmtp_session_struct *libsmtp_session)
   if (libsmtp_session->Stage < LIBSMTP_DATA_STAGE)
   {
     /* Great finality. After this no more dialogue can go on */
-    g_string_assign (libsmtp_temp_gstring, "DATA\r\n");
+    g_string_assign (libsmtp_temp_gstring, "dAta\r\n");
 
     if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 2))
       return LIBSMTP_ERRORSENDFATAL;
@@ -283,7 +283,7 @@ int libsmtp_part_send (char *libsmtp_body_data, unsigned int libsmtp_body_length
     break;
 
     case LIBSMTP_ENC_BASE64:
-      libsmtp_int_errorstate = libsmtp_int_send_base64 (libsmtp_body_data, libsmtp_body_length, libsmtp_session);
+      libsmtp_int_errorstate = libsmtp_int_send_base64 (libsmtp_body_data, libsmtp_body_length, libsmtp_session, 0);
     break;
 
     case LIBSMTP_ENC_QUOTED:

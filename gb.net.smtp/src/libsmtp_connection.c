@@ -110,22 +110,36 @@ int libsmtp_connect (char *libsmtp_server, unsigned int libsmtp_port, unsigned i
 
 		/* Ok, lets set the session socket to the right handler */
 		libsmtp_session->socket = libsmtp_socket;
+
+		/* We enter the greet stage now */
+		libsmtp_session->Stage = LIBSMTP_GREET_STAGE;
+
+		/* Now we should read the mail servers greeting */
+		if (libsmtp_int_read (libsmtp_temp_gstring, libsmtp_session, 2))
+			return LIBSMTP_ERRORREADFATAL;
+
+		if (libsmtp_session->LastResponseCode != 220)
+		{
+			libsmtp_close(libsmtp_session);
+			libsmtp_session->ErrorCode = LIBSMTP_NOTWELCOME;
+			return LIBSMTP_NOTWELCOME;
+		}
 	}
-
-  /* We enter the greet stage now */
-  libsmtp_session->Stage = LIBSMTP_GREET_STAGE;
-
-  /* Now we should read the mail servers greeting */
-  if (libsmtp_int_read (libsmtp_temp_gstring, libsmtp_session, 2))
-    return LIBSMTP_ERRORREADFATAL;
-
-  if (libsmtp_session->LastResponseCode != 220)
-  {
-		libsmtp_close(libsmtp_session);
-    libsmtp_session->ErrorCode = LIBSMTP_NOTWELCOME;
-    return LIBSMTP_NOTWELCOME;
-  }
-
+	else
+	{
+		// Ignore all data sent by the server until now
+		libsmtp_session->was_blocking = GB.Stream.Block(libsmtp_session->stream, FALSE);
+		
+		for(;;)
+		{
+			usleep(250000);
+			if (GB.Stream.Read(libsmtp_session->stream, libsmtp_temp_buffer, (-sizeof(libsmtp_temp_buffer))) <= 0)
+				break;
+		}
+		
+		// Put the stream in blocking mode
+		GB.Stream.Block(libsmtp_session->stream, TRUE);
+	}
   /* Now we need to know our hostname */
   // BM: HELO command needs a FQDN according to the RFC
 
@@ -150,7 +164,7 @@ int libsmtp_connect (char *libsmtp_server, unsigned int libsmtp_port, unsigned i
 
   /* Ok, lets greet him back */
 
-  g_string_sprintf (libsmtp_temp_gstring, "EHLO %s\r\n", libsmtp_temp_buffer);
+  g_string_sprintf (libsmtp_temp_gstring, "ehlo %s\r\n", libsmtp_temp_buffer);
 
   if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 2))
     return LIBSMTP_ERRORSENDFATAL;
@@ -199,7 +213,7 @@ int libsmtp_connect (char *libsmtp_server, unsigned int libsmtp_port, unsigned i
   else
   {
     /* Ok, he doesn't understand EHLO, so we will send HELO instead */
-    g_string_sprintf (libsmtp_temp_gstring, "HELO %s\r\n", libsmtp_temp_buffer);
+    g_string_sprintf (libsmtp_temp_gstring, "helo %s\r\n", libsmtp_temp_buffer);
 
     if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 2))
       return LIBSMTP_ERRORSENDFATAL;
@@ -229,7 +243,9 @@ int libsmtp_authenticate(struct libsmtp_session_struct *session, const char *use
   GString *temp_gstring;	/* Temp gstring */
 	int len_user = strlen(user);
 	int len_password = strlen(password);
-	char buffer[len_user + len_password + 3];
+	int len_auth = strlen("auth plain ");
+	char buffer[len_user + len_password + len_auth + 3];
+	char *p;
 
   temp_gstring = g_string_new (NULL);
 
@@ -238,17 +254,15 @@ int libsmtp_authenticate(struct libsmtp_session_struct *session, const char *use
 
   /* Send the AUTH PLAIN authentification */
 
-	g_string_assign(temp_gstring, "AUTH PLAIN ");
-  if (libsmtp_int_send(temp_gstring, session, 2))
-    return LIBSMTP_ERRORSENDFATAL;
-	
-	buffer[0] = 0;
-	strcpy(&buffer[1], user);
-	buffer[len_user + 1] = 0;
-	strcpy(&buffer[len_user + 2], password);
-	buffer[len_user + len_password + 2] = 0;
+	p = buffer;
+	strcpy(p, "auth plain "); p += len_auth;
+	*p++ = 0;
+	strcpy(p, user); p += len_user;
+	*p++ = 0;
+	strcpy(p, password); p += len_password;
+	strcpy(p, "\r\n"); p += 2;
 
-	if (libsmtp_int_send_base64(buffer, len_user + len_password + 2, session))
+	if (libsmtp_int_send_base64(buffer, p - buffer, session, len_auth))
 		return LIBSMTP_ERRORSENDFATAL;
 
   if (libsmtp_int_read(temp_gstring, session, 2))
@@ -268,11 +282,18 @@ int libsmtp_authenticate(struct libsmtp_session_struct *session, const char *use
 
 int libsmtp_close(struct libsmtp_session_struct *libsmtp_session)
 {
-  if (!libsmtp_session->stream && libsmtp_session->socket >= 0)
-  {
-    close (libsmtp_session->socket);
-    libsmtp_session->socket = -1;
-  }
+  if (!libsmtp_session->stream)
+	{
+		if (libsmtp_session->socket >= 0)
+		{
+			close (libsmtp_session->socket);
+			libsmtp_session->socket = -1;
+		}
+	}
+	else
+	{
+		GB.Stream.Block(libsmtp_session->stream, libsmtp_session->was_blocking);
+	}
 
   return LIBSMTP_NOERR;
 }

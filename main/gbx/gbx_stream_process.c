@@ -70,8 +70,7 @@ static int stream_read(STREAM *stream, char *buffer, int len)
 {
 	bool ret = STREAM_read_direct(FDR, buffer, len);
 
-	if (!ret)
-	  stream->process.read_something = TRUE;
+  stream->process.read_something = STREAM_eff_read > 0;
 
   return ret;
 }

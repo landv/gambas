@@ -98,11 +98,15 @@ int libsmtp_int_read (GString *libsmtp_gstring_read, struct libsmtp_session_stru
 
 	if (libsmtp_session->stream)
 	{
-		libsmtp_int_bytes = GB.Stream.Read(libsmtp_session->stream, libsmtp_int_rec_buffer, sizeof(libsmtp_int_rec_buffer));
-		fprintf(stderr, "GB.Stream.Read: %d\n", libsmtp_int_bytes);
+		//int block = GB.Stream.Block(libsmtp_session->stream, TRUE);
+		//libsmtp_int_bytes = GB.Stream.Read(libsmtp_session->stream, libsmtp_int_rec_buffer, 1);
+		//fprintf(stderr, "GB.Stream.Read: %d\n", libsmtp_int_bytes);
+		//GB.Stream.Block(libsmtp_session->stream, block);
+		libsmtp_int_bytes = GB.Stream.Read(libsmtp_session->stream, libsmtp_int_rec_buffer, (- sizeof(libsmtp_int_rec_buffer)));
+		//fprintf(stderr, "GB.Stream.Read: %d\n", libsmtp_int_bytes);
 	}
 	else
-		libsmtp_int_bytes = recv(libsmtp_session->socket, libsmtp_int_rec_buffer, sizeof(libsmtp_int_rec_buffer), 0);
+		libsmtp_int_bytes = read(libsmtp_session->socket, libsmtp_int_rec_buffer, sizeof(libsmtp_int_rec_buffer));
 	
 	if (libsmtp_int_bytes<=0)
 	{
@@ -170,10 +174,10 @@ int libsmtp_int_send (GString *libsmtp_send_gstring, struct libsmtp_session_stru
 	if (libsmtp_session->stream)
 	{
 		libsmtp_int_bytes = GB.Stream.Write(libsmtp_session->stream, libsmtp_send_gstring->str, libsmtp_send_gstring->len);
-		fprintf(stderr, "GB.Stream.Write: %d\n", libsmtp_int_bytes);
+		//fprintf(stderr, "GB.Stream.Write: %d\n", libsmtp_int_bytes);
 	}
 	else
-		libsmtp_int_bytes = send(libsmtp_session->socket, libsmtp_send_gstring->str, libsmtp_send_gstring->len, 0);
+		libsmtp_int_bytes = write(libsmtp_session->socket, libsmtp_send_gstring->str, libsmtp_send_gstring->len);
 	
 	if (libsmtp_int_bytes != libsmtp_send_gstring->len)
 	{
@@ -201,8 +205,7 @@ int libsmtp_int_send (GString *libsmtp_send_gstring, struct libsmtp_session_stru
 	return LIBSMTP_NOERR;
 }
 
-int libsmtp_int_send_body (char *libsmtp_send_string, unsigned int libsmtp_int_length, \
-				struct libsmtp_session_struct *libsmtp_session)
+int libsmtp_int_send_body(char *libsmtp_send_string, unsigned int libsmtp_int_length, struct libsmtp_session_struct *libsmtp_session)
 {
 	int libsmtp_int_bytes;
 
@@ -210,7 +213,17 @@ int libsmtp_int_send_body (char *libsmtp_send_string, unsigned int libsmtp_int_l
 		printf ("DEBUG in body send : %s\n", libsmtp_send_string);
 	#endif
 
-	libsmtp_int_bytes=send (libsmtp_session->socket, libsmtp_send_string, strlen(libsmtp_send_string), 0);
+	if (libsmtp_session->debug && libsmtp_session->Stage < LIBSMTP_DATA_STAGE)
+		fprintf(stderr, "-> %.*s\n", libsmtp_int_length, libsmtp_send_string);
+
+	if (libsmtp_session->stream)
+	{
+		libsmtp_int_bytes = GB.Stream.Write(libsmtp_session->stream, libsmtp_send_string, libsmtp_int_length);
+		//fprintf(stderr, "GB.Stream.Write: %d\n", libsmtp_int_bytes);
+	}
+	else
+		libsmtp_int_bytes = write(libsmtp_session->socket, libsmtp_send_string, libsmtp_int_length);
+
 	if (libsmtp_int_bytes<0)
 	{
 		libsmtp_close(libsmtp_session);
@@ -261,7 +274,7 @@ int libsmtp_dialogue (struct libsmtp_session_struct *libsmtp_session)
 
 	/* Ok, now lets give him the sender address */
 
-	g_string_sprintf (libsmtp_temp_gstring, "MAIL FROM: %s\r\n", \
+	g_string_sprintf (libsmtp_temp_gstring, "mail from: %s\r\n", \
 											libsmtp_session->From->str);
 
 	if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 2))
@@ -297,7 +310,7 @@ int libsmtp_dialogue (struct libsmtp_session_struct *libsmtp_session)
 		#ifdef LIBSMTP_DEBUG
 			printf ("To: %s\n", (char *)libsmtp_temp_glist->data);
 		#endif
-		g_string_sprintf (libsmtp_temp_gstring, "RCPT TO: %s\r\n", \
+		g_string_sprintf (libsmtp_temp_gstring, "rcpt to: %s\r\n", \
 				(char *)libsmtp_temp_glist->data);
 
 
@@ -339,7 +352,7 @@ int libsmtp_dialogue (struct libsmtp_session_struct *libsmtp_session)
 				libsmtp_temp++)
 	{
 		libsmtp_temp_glist=g_list_nth (libsmtp_session->CC, libsmtp_temp);
-		g_string_sprintf (libsmtp_temp_gstring, "RCPT TO: %s\r\n", \
+		g_string_sprintf (libsmtp_temp_gstring, "rcpt to: %s\r\n", \
 				(char *)libsmtp_temp_glist->data);
 
 
@@ -380,7 +393,7 @@ int libsmtp_dialogue (struct libsmtp_session_struct *libsmtp_session)
 				libsmtp_temp++)
 	{
 		libsmtp_temp_glist=g_list_nth (libsmtp_session->BCC, libsmtp_temp);
-		g_string_sprintf (libsmtp_temp_gstring, "RCPT TO: %s\r\n", \
+		g_string_sprintf (libsmtp_temp_gstring, "rcpt to: %s\r\n", \
 				(char *)libsmtp_temp_glist->data);
 
 
@@ -413,6 +426,24 @@ int libsmtp_dialogue (struct libsmtp_session_struct *libsmtp_session)
 			libsmtp_session->NumFailedBCC++;
 		}
 	}
+	
+	#if 0
+	g_string_sprintf (libsmtp_temp_gstring, "rcpt to:\r\n");
+
+	if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 2))
+	{
+		libsmtp_session->ErrorCode = LIBSMTP_ERRORSENDFATAL;
+		return LIBSMTP_ERRORSENDFATAL;
+	}
+
+	/* We have to read the servers response of course */
+	if (libsmtp_int_read (libsmtp_temp_gstring, libsmtp_session, 2))
+	{
+		libsmtp_session->ErrorCode = LIBSMTP_ERRORREADFATAL;
+		return LIBSMTP_ERRORREADFATAL;
+	}
+	#endif
+	
 	return LIBSMTP_NOERR;
 }
 
@@ -496,7 +527,7 @@ int libsmtp_headers (struct libsmtp_session_struct *libsmtp_session)
 	if (libsmtp_session->Stage < LIBSMTP_DATA_STAGE)
 	{
 		/* Great finality. After this no more dialogue can go on */
-		libsmtp_temp_gstring = g_string_new ("DATA\r\n");
+		libsmtp_temp_gstring = g_string_new ("datA\r\n");
 
 		if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 2))
 			return LIBSMTP_ERRORSENDFATAL;
@@ -650,7 +681,7 @@ int libsmtp_header_send (char *libsmtp_header_string, \
 	if (libsmtp_session->Stage < LIBSMTP_DATA_STAGE)
 	{
 		/* Great finality. After this no more dialogue can go on */
-		libsmtp_temp_gstring = g_string_new ("DATA\r\n");
+		libsmtp_temp_gstring = g_string_new ("daTa\r\n");
 
 		if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 2))
 			return LIBSMTP_ERRORSENDFATAL;
@@ -792,7 +823,7 @@ int libsmtp_quit (struct libsmtp_session_struct *libsmtp_session)
 		libsmtp_session->Stage = LIBSMTP_QUIT_STAGE;
 
 		/* Lets tell him we are quitting. */
-		libsmtp_temp_gstring = g_string_new ("QUIT\r\n");
+		libsmtp_temp_gstring = g_string_new ("quit\r\n");
 
 		if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 1))
 			return LIBSMTP_ERRORSENDFATAL;

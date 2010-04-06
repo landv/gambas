@@ -314,7 +314,7 @@ static bool begin_session(CSMTPCLIENT *_object)
 	fprintf(stderr, "begin_session\n");	
 	#endif
 	
-	THIS->session = libsmtp_session_initialize(THIS->debug, GB.Stream.Get(THIS->stream));
+	THIS->session = libsmtp_session_initialize(THIS->debug, THIS->stream ? GB.Stream.Get(THIS->stream) : NULL);
 	
 	npart = GB.Count(THIS->parts);
 	if (npart == 0)
@@ -437,6 +437,8 @@ static void end_session(CSMTPCLIENT *_object)
 	#ifdef DEBUG_ME
 	fprintf(stderr, "end_session\n");	
 	#endif
+  
+  libsmtp_quit(THIS->session);
 	
 	libsmtp_close(THIS->session);
 	libsmtp_free(THIS->session);
@@ -577,7 +579,6 @@ BEGIN_METHOD_VOID(SmtpClient_send)
 	}
 
   if (libsmtp_body_end(session)) { where = "ending dialog"; goto __ERROR; }
-  if (libsmtp_quit(session)) { where = "closing connection"; goto __ERROR; }
 
 	end_session(THIS);
 	free_parts(THIS);
