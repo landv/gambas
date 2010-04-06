@@ -1,0 +1,71 @@
+' Gambas class file
+
+Export
+
+Inherits _SmtpClient
+
+Public Const _IsControl As Boolean = True
+Public Const _IsVirtual As Boolean = True
+Public Const _Group As String = "Network"
+Public Const _Properties As String = "Host,Port,Debug,Encrypt{Net.None;SSL;TLS}"
+
+Property Encrypt As Integer
+
+Private $iCrypt As Integer
+Private $hProcess As Process
+
+Private Function Encrypt_Read() As Integer
+
+  Return $iCrypt
+
+End
+
+Private Sub Encrypt_Write(Value As Integer)
+
+  If Value = Net.None Or If Value = Net.TLS Or If Value = Net.SSL Then
+    $iCrypt = Value
+  Endif
+
+End
+
+Public Sub Send()
+  
+  Dim bDefaultPort As Boolean
+  Dim sErr As String
+  
+  bDefaultPort = Super.Port = 0
+  
+  If $iCrypt = Net.SSL Then
+    If bDefaultPort Then Super.Port = 465
+    $hProcess = Exec ["openssl", "s_client", "-quiet", "-connect", Super.Host & ":" & Super.Port] For Read Write As "Process"
+    Super._NoGreeting = False
+    Super._Stream = $hProcess
+  Else If $iCrypt = Net.TLS Then
+    $hProcess = Exec ["openssl", "s_client", "-quiet", "-starttls", "smtp", "-connect", Super.Host & ":" & Super.Port] For Read Write As "Process"
+    Super._NoGreeting = True
+    Super._Stream = $hProcess
+  Else
+    Super._NoGreeting = False
+    Super._Stream = Null
+  Endif
+  
+  Super.Send()
+  
+Finally
+  
+  sErr = Error.Text
+  If $hProcess Then $hProcess.Kill
+  If bDefaultPort Then Super.Port = 0
+
+Catch
+
+  Error.Raise(sErr)
+  
+End
+
+
+Public Sub Process_Kill()
+  
+  $hProcess = Null
+  
+End

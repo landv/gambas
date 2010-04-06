@@ -696,7 +696,7 @@ END_PROPERTY
 
 GB_DESC CSmtpClientDesc[] =
 {
-  GB_DECLARE("SmtpClient", sizeof(CSMTPCLIENT)),
+  GB_DECLARE("_SmtpClient", sizeof(CSMTPCLIENT)),
 
   GB_METHOD("_new", NULL, SmtpClient_new, NULL),
   GB_METHOD("_free", NULL, SmtpClient_free, NULL),
@@ -722,11 +722,6 @@ GB_DESC CSmtpClientDesc[] =
   GB_PROPERTY_READ("Count", "i", SmtpClient_Count),
  
   GB_METHOD("Send", NULL, SmtpClient_send, NULL),
-
-  GB_CONSTANT("_IsControl", "b", TRUE),
-  GB_CONSTANT("_IsVirtual", "b", TRUE),
-  GB_CONSTANT("_Group", "s", "Network"),
-  GB_CONSTANT("_Properties", "s", "Host,Port,Debug"),
 
   GB_END_DECLARE
 };
