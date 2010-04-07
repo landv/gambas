@@ -2314,7 +2314,7 @@ Private Sub DoAlign(sKey As String)
       iPos = Master.Control.Y
     
       For Each hCtrl In Selection
-        hCtrl.Move(hCtrl.Control.X, iPos)
+        hCtrl.Move(hCtrl.Control.X, iPos, True)
       Next
   
     Case ".align-bottom"
@@ -2322,7 +2322,7 @@ Private Sub DoAlign(sKey As String)
       iPos = Master.Control.Y + Master.Control.H
     
       For Each hCtrl In Selection
-        hCtrl.Move(hCtrl.Control.X, iPos - hCtrl.Control.H)
+        hCtrl.Move(hCtrl.Control.X, iPos - hCtrl.Control.H, True)
       Next
       
     Case ".align-left"      
@@ -2330,7 +2330,7 @@ Private Sub DoAlign(sKey As String)
       iPos = Master.Control.X
     
       For Each hCtrl In Selection
-        hCtrl.Move(iPos, hCtrl.Control.Y)
+        hCtrl.Move(iPos, hCtrl.Control.Y, True)
       Next
       
     Case ".align-right"
@@ -2338,7 +2338,7 @@ Private Sub DoAlign(sKey As String)
       iPos = Master.Control.X + Master.Control.W
     
       For Each hCtrl In Selection
-        hCtrl.Move(iPos - hCtrl.Control.W, hCtrl.Control.Y)
+        hCtrl.Move(iPos - hCtrl.Control.W, hCtrl.Control.Y, True)
       Next
       
     Case ".same-width"
@@ -2346,7 +2346,7 @@ Private Sub DoAlign(sKey As String)
       iPos = Master.Control.W
     
       For Each hCtrl In Selection 
-        hCtrl.Resize(iPos, hCtrl.Control.H)
+        hCtrl.Resize(iPos, hCtrl.Control.H, True)
       Next
       
     Case ".same-height"
@@ -2354,7 +2354,7 @@ Private Sub DoAlign(sKey As String)
       iPos = Master.Control.H
     
       For Each hCtrl In Selection
-        hCtrl.Resize(hCtrl.Control.W, iPos)
+        hCtrl.Resize(hCtrl.Control.W, iPos, True)
       Next
 
   End Select 
