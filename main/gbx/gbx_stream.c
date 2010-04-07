@@ -66,6 +66,8 @@ void STREAM_exit(void)
 }
 #endif
 
+#define wait_for_fd_ready_to_read(_fd) WATCH_process(_fd, -1)
+
 bool STREAM_in_archive(const char *path)
 {
 	ARCHIVE *arch;
@@ -360,7 +362,7 @@ int STREAM_read_max(STREAM *stream, void *addr, int len)
 				flags = fcntl(handle, F_GETFL);
 				if ((flags & O_NONBLOCK) == 0)
 				{
-					WATCH_process(handle, -1);
+					wait_for_fd_ready_to_read(handle);
 					fcntl(handle, F_SETFL, flags | O_NONBLOCK);
 				}
 				
@@ -475,13 +477,12 @@ static void fill_buffer(STREAM *stream, char *addr)
 			err = (*(stream->type->read))(stream, addr, STREAM_BUFFER_SIZE);
 		else
 		{
-			//printf("WATCH_process(%d, -1)\n", fd); fflush(stdout);
-			WATCH_process(fd, -1);
+			wait_for_fd_ready_to_read(fd);
+
 			flags = fcntl(fd, F_GETFL);
 			if ((flags & O_NONBLOCK) == 0)
 				fcntl(fd, F_SETFL, flags | O_NONBLOCK);
 			
-			//printf("read\n"); fflush(stdout);
 			err = (*(stream->type->read))(stream, addr, STREAM_BUFFER_SIZE);
 			
 			if ((flags & O_NONBLOCK) == 0)
@@ -1244,13 +1245,9 @@ void STREAM_blocking(STREAM *stream, bool block)
 		fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK);
 }
 
-bool STREAM_is_blocking(STREAM *stream)
+void STREAM_check_blocking(STREAM *stream)
 {
-	return stream->common.blocking;
-	/*int fd = STREAM_handle(stream);
+	int fd = STREAM_handle(stream);
 	
-	if (fd < 0)
-		return TRUE;
-		
-	return (fcntl(fd, F_GETFL) & O_NONBLOCK) == 0;*/
+	stream->common.blocking = (fd < 0) ? TRUE : ((fcntl(fd, F_GETFL) & O_NONBLOCK) == 0);
 }
