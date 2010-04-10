@@ -1,0 +1,33 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,44,14)
+  Text = ("")
+  Resizable = False
+  { MnuGame Menu
+    Text = ("Game")
+    { MnuClear Menu
+      Text = ("Clear")
+      Picture = Picture["icon:/32/clear"]
+    }
+    { MnuQuit Menu
+      Text = ("Quit")
+      Picture = Picture["icon:/32/quit"]
+    }
+  }
+  { MnuHelp Menu
+    Text = ("Help")
+    { MnuHelpPlay Menu
+      Text = ("How to play?")
+      Picture = Picture["icon:/32/help"]
+    }
+    { MnuAbout Menu
+      Text = ("About")
+      Picture = Picture["icon:/32/info"]
+    }
+  }
+  { Button1 Button
+    MoveScaled(15,3,16,4)
+    Text = ("Clear")
+  }
+}
