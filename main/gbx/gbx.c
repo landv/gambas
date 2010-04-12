@@ -172,11 +172,6 @@ int main(int argc, char **argv)
   COMMON_init();
   //STRING_init();
 
-	fprintf(stderr, "argc = %d\n", argc);
-	for (i = 0; i < argc; i++)
-		fprintf(stderr, "argv[%d] = '%s'\n", i, argv[i]);
-	fprintf(stderr, "\n");
-
 	prog = argv[0];
 	EXEC_arch = (strcmp(prog, "gbr" GAMBAS_VERSION_STRING) == 0);
 
@@ -305,17 +300,23 @@ int main(int argc, char **argv)
 	if (!nopreload)
 		LIBRARY_preload(file, argv);
 
+	if (EXEC_arch)
+		argv[0] = file;
+	
 	for (i = 1; i <= (argc - n); i++)
 		argv[i] = argv[i + n - 1];
 
 	argc -= n - 1;
+	
+	for (i = 0; i < argc; i++)
+		fprintf(stderr, "argv[%d] = %s\n", i, argv[i]);
 
   TRY
   {
     init(file);
     
-		//if (!EXEC_arch)
-    argv[0] = PROJECT_name;
+		if (!EXEC_arch)
+			argv[0] = PROJECT_name;
 
     HOOK(main)(&argc, argv);
     EXEC_main_hook_done = TRUE;
