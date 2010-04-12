@@ -240,125 +240,6 @@ Public Sub Form_Open()
   
 End
 
-Private Sub Search(bBack As Boolean)
-
-  Dim sFind As String = txtFind.Text
-  Dim iLine, iCol As Integer
-  Dim sLine As String
-  Dim iPos As Integer
-  Dim iStart As Integer
-  Dim bCase As Boolean = Not btnCase.Value
-  Dim bLoop As Boolean
-  
-  If Not sFind Then Return
-  
-  If edtOutput.Selected Then
-    If bBack Then
-      edtOutput.Goto(edtOutput.Selection.StartLine, edtOutput.Selection.StartColumn)
-    Else
-      edtOutput.Goto(edtOutput.Selection.EndLine, edtOutput.Selection.EndColumn)
-    Endif
-  Endif
-  
-  iLine = edtOutput.Line
-  iStart = iLine
-  iCol = edtOutput.Column
-  
-  If bCase Then sFind = String.UCase(sFind)
-  
-  If bBack Then
-  
-    Do
-      If iCol Then
-        sLine = edtOutput.Lines[iLine].Text
-        If bCase Then sLine = String.UCase(sLine)
-        iPos = String.RInStr(sLine, sFind, iCol)
-        If iPos Then
-          Dec iPos
-          'edtOutput.SetFocus
-          edtOutput.Select(iLine, iPos, iLine, iPos + String.Len(sFind))
-          Return
-        Endif
-      Endif
-      If iLine = iStart And If bLoop Then Goto NOT_FOUND
-      Dec iLine
-      If iLine < 0 Then iLine = edtOutput.Lines.Count - 1
-      iCol = edtOutput.Lines[iLine].Length
-      bLoop = True
-    Loop
-
-  Else
-  
-    Do
-      sLine = edtOutput.Lines[iLine].Text
-      If bCase Then sLine = String.UCase(sLine)
-      iPos = String.InStr(sLine, sFind, iCol + 1)
-      If iPos Then
-        Dec iPos
-        'edtOutput.SetFocus
-        edtOutput.Select(iLine, iPos, iLine, iPos + String.Len(sFind))
-        Return
-      Endif
-      If iLine = iStart And If bLoop Then Goto NOT_FOUND
-      Inc iLine
-      If iLine >= edtOutput.Lines.Count Then iLine = 0
-      iCol = 0
-      bLoop = True
-    Loop
-    
-  Endif
-  
-NOT_FOUND:
-
-  Balloon.Warning(("Search string cannot be found."), txtFind)
-  
-End
-
-Public Sub txtFind_Activate()
-
-  btnNext_Click
-
-End
-
-Public Sub btnNext_Click()
-
-  If Not txtFind.Text Then
-    btnFind.Value = True
-    txtFind.SetFocus
-  Else
-    Search(False)
-  Endif
-
-End
-
-Public Sub btnPrev_Click()
-
-  Search(True)
-
-End
-
-Public Sub btnFind_Click()
-
-  sepFind.Visible = btnFind.Value
-  txtFind.Visible = btnFind.Value
-  btnNext.Visible = btnFind.Value
-  btnPrev.Visible = btnFind.Value
-  btnCase.Visible = btnFind.Value
-  'mnuPrev.Visible = btnFind.Value
-  'mnuNext.Visible = btnFind.Value
-  txtFind.Font = Font["0"]
-  mnuFind.Value = btnFind.Value
-  If btnFind.Value Then txtFind.SetFocus
-
-End
-
-Public Sub mnuFind_Click()
-  
-  btnFind.Value = mnuFind.Value
-  
-End
-
-
 Public Sub edtOutput_Menu()
 
   mnuEditor.Popup
@@ -380,7 +261,7 @@ End
 Public Sub edtOutput_GotFocus()
 
   Project.SetCurrentPopup(mnuEditor)
-  btnFind.Value = False
+  FSearch.Update
   
 End
 
@@ -388,21 +269,48 @@ Public Sub txtFind_KeyPress()
 
   If Key.Code = Key.F3 
     If Key.Normal Then 
-      btnNext_Click
+      FSearch.FindNext
     Else If Key.Shift Then 
-      btnPrev_Click
+      FSearch.FindPrevious
     Endif
     Stop Event 
   Endif
 
 End
 
-Public Sub HandleEscape() As Boolean
+Public Sub edtOutput_LostFocus()
+
+  FSearch.Update
+
+End
+
+
+Public Sub GetText() As String
   
-  If Application.ActiveControl = txtFind Then 
-    btnFind.Value = False
-    Return True
-  Endif
+  Return edtOutput.Text
   
 End
 
+Public Sub GetPosition() As Integer
+  
+  Return edtOutput.GetPosition()
+
+End
+
+Public Sub SetPosition(iPos As Integer, iLenFind As Integer, Optional bJustCheck As Boolean) As Boolean
+  
+  Return edtOutput.SetPosition(iPos, iLenFind, bJustCheck)
+  
+End
+
+Public Sub Replace(sReplace As String)
+  
+  Editor.Replace(sReplace)
+  
+End
+
+Public Sub GetSelection() As String
+  
+  Return Editor.GetSelection()
+  
+End

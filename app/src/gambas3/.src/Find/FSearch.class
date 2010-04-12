@@ -1,0 +1,447 @@
+' Gambas class file
+
+Public CaseSensitive As Boolean
+Public RegularExpression As Boolean
+Public IgnoreStrings As Boolean
+Public IgnoreComments As Boolean
+Public WordOnly As Boolean
+Public SearchString As String
+Public ReplaceString As String
+
+Private $hCurrent As Object
+Private $hPosition As CFindResult
+Private $sGrep As String
+Private $bReplace As Boolean
+
+Private Const GO_FORWARD As Integer = 0
+Private Const GO_BACKWARD As Integer = 1
+Private Const DO_REPLACE As Integer = 2
+Private Const DO_ALL As Integer = 4
+
+Public Sub Form_Open()
+
+  Settings.Read(Me)
+  
+  chkCaseSensitive.Value = Settings["/FSearch/CaseSensitive", False]
+  chkCurrentProcedure.Value = Settings["/FSearch/CurrentProcedure", False]
+  chkHighlight.Value = Settings["/FSearch/Highlight", False]
+  chkIgnoreComments.Value = Settings["/FSearch/IgnoreComments", False]
+  chkIgnoreStrings.Value = Settings["/FSearch/IgnoreStrings", False]
+  chkRegularExpression.Value = Settings["/FSearch/RegularExpression", False]
+  chkWordOnly.Value = Settings["/FSearch/WordOnly", False]
+
+End
+
+Public Sub Form_Close()
+
+  Settings.Write(Me)
+
+  Settings["/FSearch/CaseSensitive"] = CBool(chkCaseSensitive.Value)
+  Settings["/FSearch/CurrentProcedure"] = CBool(chkCurrentProcedure.Value)
+  Settings["/FSearch/Highlight"] = CBool(chkHighlight.Value)
+  Settings["/FSearch/IgnoreComments"] = CBool(chkIgnoreComments.Value)
+  Settings["/FSearch/IgnoreStrings"] = CBool(chkIgnoreStrings.Value)
+  Settings["/FSearch/RegularExpression"] = CBool(chkRegularExpression.Value)
+  Settings["/FSearch/WordOnly"] = CBool(chkWordOnly.Value)
+
+End
+
+Private Sub UpdateTitle()
+
+  Dim sWhere As String
+
+  If $hCurrent Is FOutput Then
+    sWhere = ("Console")
+  Else If $hCurrent Then
+    sWhere = $hCurrent.Title
+  Else
+    sWhere = ("Project")
+  Endif
+  
+  Me.Title = ("Search & Replace") & " - " & sWhere
+  
+End
+
+
+Public Sub Update(Optional bForce As Boolean)
+  
+  Dim hCtrl As Control
+  Dim bCode As Boolean
+  Dim hWindow As Window
+  Dim bAllProject As Boolean
+  
+  If Not Me.Visible And If Not bForce Then Return
+  
+  Try hWindow = Application.ActiveControl.Window
+  If hWindow = Me Then Return
+  $hCurrent = hWindow
+  
+  If $hCurrent Is FOutput Then
+  Else 
+    $hCurrent = Project.ActiveForm
+    If $hCurrent Then
+      If $hCurrent Is FEditor Or If $hCurrent Is FTextEditor Then
+        bCode = $hCurrent.Editor.Highlight <> Highlight.None
+      Endif
+    Else
+      bAllProject = True
+    Endif
+  Endif
+    
+  'chkIgnoreStrings.Enabled = bCode Or bAllProject
+  'chkIgnoreComments.Enabled = bCode Or bAllProject
+  chkCurrentProcedure.Enabled = bCode
+  
+  btnNext.Visible = Not bAllProject
+  btnPrevious.Visible = Not bAllProject
+  btnReplace.Visible = Not bAllProject
+  btnReplaceAll.Visible = Not bAllProject
+  btnBrowse2.Visible = bAllProject
+  
+  UpdateTitle
+  
+End
+
+Public Sub Form_Show()
+
+  Dim sFind As String
+
+  Update()
+  
+  Try sFind = $hCurrent.GetSelection()
+  If sFind Then cmbSearch.Text = sFind
+  
+  If $bReplace And If cmbSearch.Text Then
+    cmbReplace.SelectAll
+    cmbReplace.SetFocus
+  Else
+    cmbSearch.SelectAll
+    cmbSearch.SetFocus
+  Endif
+  
+  ShowString
+
+End
+
+Public Sub Form_Activate()
+
+  Update()
+
+End
+
+
+Public Sub cmbSearch_Activate()
+
+  btnNext.Value = True
+
+End
+
+Public Sub cmbReplace_Activate()
+
+  btnReplace.Value = True
+
+End
+
+Private Sub StoreCombo(hCombo As ComboBox)
+  
+  Dim sText As String = hCombo.Text
+  Dim iInd As Integer
+
+  If Not sText Then Return 
+  
+  iInd = hCombo.Find(sText)
+  If iInd >= 0 Then hCombo.Remove(iInd)
+  hCombo.Add(sText, 0)
+  hCombo.Text = sText
+  
+End
+
+Private Sub ShowMessage(sMsg As String, hCtrl As control)
+  
+  If Me.Visible Then
+    Balloon.Info(sMsg, hCtrl)
+  Else 
+    Project.SetMessage(sMsg)
+  Endif
+  
+End
+
+' Private Sub GetCurrentPosition()
+'   
+'   Dim hFirst As Object
+'   
+'   If $hCurrent Then
+'     $hPosition = $hCurrent.GetFindPosition()
+'   Else
+'     hFirst = Project.Get
+'   Endif
+'   
+' End
+
+Public Sub Grep_Read()
+  
+  Dim sData As String
+  
+  sData = Read #Last, Lof(Last)
+  $sGrep &= sData
+  
+End
+
+' Private Sub MakeResult(sResult As String) As CFindResult
+'   
+'   Dim aResult As String[]
+'   Dim hResult As New CFindResult
+'   
+'   aResult = Split(sResult, ":")
+'   
+'   iLine = CInt(aResult[1]) - 1
+'   If iLine < hPos.Line Then Continue
+'   
+'   iCol = 0
+'   iPos = CInt(aResult[2])
+'   While iPos > 0
+'     If Mid$(sText, iPos, 1) = "\n" Then Break
+'     Dec iPos
+'     Inc iCol
+'   Wend
+'   
+'   hResult = New CFindResult
+'   hResult.Line = 
+'   
+' End
+
+Private Sub GrepFile(hFile As Object, Optional sPath As String) As String[]
+  
+  Dim sText As String
+  Dim hProcess As Process
+  Dim aGrep As String[]
+  
+  If hFile Then sText = hFile.GetText()
+  
+  'grep -nR -F -I -i -w "Date" -ob --exclude=*~ --exclude-dir=.svn -s * .src
+  
+  aGrep = ["grep", "-nobs"]
+  If Not CaseSensitive Then aGrep.Add("-i")
+  If RegularExpression Then 
+    aGrep.Add("-E")
+  Else
+    aGrep.Add("-F")
+  Endif
+  If WordOnly Then aGrep.Add("-w")
+  aGrep.Add(SearchString)
+  
+  If hFile Then
+  
+    $sGrep = ""
+    hProcess = Exec aGrep For Read Write As "Grep"
+    Print #hProcess, sText;
+    Close #hProcess
+    While hProcess.State = Process.Running
+      Wait
+    Wend
+    
+  Else
+  
+    aGrep.Add(sPath)
+    Exec aGrep To $sGrep
+  
+  Endif
+
+  Return Split($sGrep, "\n", "", True)
+  
+End
+
+
+Private Sub Run(iAction As Integer)
+  
+  Dim sResult As String
+  Dim aResult As String[]
+  Dim aFind As String[]
+  Dim iLine As Integer
+  Dim iCol As Integer
+  Dim iCurrentPos, iPos, iInd As Integer
+  Dim iTry As Integer
+  Dim nReplace As Integer
+  
+  StoreCombo(cmbSearch)
+  StoreCombo(cmbReplace)
+  
+  SearchString = cmbSearch.Text
+  ReplaceString = cmbReplace.Text
+  
+  CaseSensitive = chkCaseSensitive.Value
+  IgnoreStrings = chkIgnoreStrings.Value
+  IgnoreComments = chkIgnoreComments.Value
+  RegularExpression = chkRegularExpression.Value
+  WordOnly = chkWordOnly.Value
+  
+  If Not SearchString Then Return
+  
+  iCurrentPos = $hCurrent.GetPosition()
+
+  aResult = GrepFile($hCurrent)
+
+  If aResult.Count Then
+  
+    For iTry = 1 To aResult.Count
+    
+      If iAction And GO_BACKWARD Then
+      
+        For iInd = aResult.Max To 0 Step -1
+          aFind = Split(aResult[iInd], ":")
+          iPos = CInt(aFind[1])
+          If iPos < iCurrentPos Then Break
+        Next
+        
+        If iPos >= iCurrentPos Then 
+          iInd = aResult.Max
+          aFind = Split(aResult[iInd], ":")
+          iPos = CInt(aFind[1])
+        Endif
+    
+      Else
+      
+        For iInd = 0 To aResult.Max
+          aFind = Split(aResult[iInd], ":")
+          iPos = CInt(aFind[1])
+          If iPos > iCurrentPos Then Break
+        Next
+        
+        If iPos <= iCurrentPos Then 
+          iInd = 0
+          aFind = Split(aResult[iInd], ":")
+          iPos = CInt(aFind[1])
+        Endif
+        
+      Endif
+    
+      If Not $hCurrent.SetPosition(iPos, String.Len(aFind[2]), False) Then 
+        If iAction And DO_REPLACE Then $hCurrent.Replace(ReplaceString)
+        Inc nReplace
+        If (iAction And DO_ALL) = 0 Then Return
+      Endif
+      
+      iCurrentPos = iPos
+      
+    Next
+    
+  Endif
+  
+  If iAction And DO_REPLACE And If iAction And DO_ALL Then
+    If nReplace = 0 Then
+      ShowMessage(("Search string cannot be found."), cmbReplace)
+    Else If nReplace = 1 Then
+      ShowMessage(("Search string replaced once."), cmbReplace)
+    Else
+      ShowMessage(Subst(("Search string replaced &1 times."), nReplace), cmbReplace)
+    Endif
+  Else
+    ShowMessage(("Search string cannot be found."), cmbSearch)
+  Endif
+  
+End
+
+
+Public Sub btnNext_Click()
+
+  Run(GO_FORWARD)
+
+End
+
+Public Sub btnPrevious_Click()
+
+  Run(GO_BACKWARD)
+
+End
+
+Public Sub btnClose_Click()
+
+  Me.Close
+
+End
+
+Public Sub FindNext()
+  
+  Update(True)
+  Run(GO_FORWARD)
+  
+End
+
+Public Sub FindPrevious()
+  
+  Update(True)
+  Run(GO_BACKWARD)
+  
+End
+
+Public Sub UpdateSearchString(sText As String)
+  
+  If sText <> cmbSearch.Text Then cmbSearch.Text = sText
+  
+End
+
+Private Sub ShowString(Optional bHide As Boolean)
+
+  Dim hForm As Object
+  Dim bIgnoreCase As Boolean = chkCaseSensitive.Value = False
+  Dim sStr As String
+  
+  If chkHighlight.Value And If Not bHide Then sStr = cmbSearch.Text
+  
+  For Each hForm In Project.Files
+    Try hForm.OnShowString(sStr, bIgnoreCase)
+  Next
+  
+End
+
+Public Sub cmbSearch_Change()
+
+  FMain.UpdateSearchString(cmbSearch.Text)
+  ShowString
+  
+End
+
+
+Public Sub OnNewForm(hForm As Object)
+  
+  Try hForm.OnShowString(cmbSearch.Text, chkCaseSensitive.Value = False)
+  
+End
+
+Public Sub chkCaseSensitive_Click()
+
+  ShowString
+
+End
+
+Public Sub chkHighlight_Click()
+
+  ShowString
+
+End
+
+
+Public Sub btnReplace_Click()
+
+  Run(GO_FORWARD + DO_REPLACE)
+
+End
+
+Public Sub btnReplaceAll_Click()
+
+  Run(GO_FORWARD + DO_REPLACE + DO_ALL)
+
+End
+
+Public Sub WakeUp(bReplace As Boolean)
+  
+  $bReplace = bReplace
+  Me.Show
+  
+End
+
+Public Sub Form_Hide()
+
+  ShowString(True)
+
+End

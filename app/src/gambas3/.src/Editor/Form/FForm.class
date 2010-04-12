@@ -3171,3 +3171,28 @@ Public Sub panMenuBar_Draw()
   Endif
 
 End
+
+Public Sub GetText() As String
+
+  ResetSave
+  SaveOne(Control[Me.Name])
+  Return $sSave
+  
+End
+
+Public Sub GetPosition() As Integer
+  
+End
+
+Public Sub SetPosition(iPos As Integer, iLenFind As Integer, Optional bJustCheck As Boolean) As Boolean
+  
+End
+
+Public Sub Replace(sReplace As String)
+  
+  Editor.Replace(sReplace)
+  
+End
+
+
+

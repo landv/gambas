@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,130,93)
+  MoveScaled(0,0,167,93)
   Icon = Picture["img/logo/logo-32-head.png"]
   Arrangement = Arrange.Vertical
   { mnuFile Menu
@@ -123,7 +123,7 @@
       Shortcut = "Ctrl+P"
     }
   }
-  { Menu13 Menu
+  { mnuDebug Menu
     Text = ("&Debug")
     { mnuRun Menu
       Action = "start"
@@ -145,13 +145,13 @@
       Picture = Picture["icon:/small/stop"]
       Shortcut = "Alt+Pause"
     }
-    { mnuDebug Menu
+    { mnuStep Menu
       Action = "step"
       Text = ("St&ep")
       Picture = Picture["icon:/small/end"]
       Shortcut = "F8"
     }
-    { mnuStep Menu
+    { mnuForward Menu
       Action = "forward"
       Text = ("&Forward")
       Picture = Picture["icon:/small/forward"]
@@ -247,10 +247,15 @@
   { mnuTool Menu
     Text = ("&Tools")
     { mnuFind Menu
-      Action = "find-replace"
-      Text = ("&Find && replace")
+      Text = ("&Find...")
       Picture = Picture["icon:/small/find"]
+      Toggle = True
       Shortcut = "Ctrl+F"
+    }
+    { mnuReplace Menu
+      Text = ("&Replace...")
+      Picture = Picture["icon:/small/replace"]
+      Shortcut = "Ctrl+R"
     }
     { Menu10 Menu
     }
@@ -497,18 +502,10 @@
     Visible = False
   }
   { ToolBar1 ToolBar
-    MoveScaled(0,0,127,4)
+    MoveScaled(0,0,164,4)
     AutoResize = False
     Key = "main"
     Separator = True
-    { ToolButton10 ToolButton
-      MoveScaled(59.1429,-0.1429,4,4)
-      Visible = False
-      ToolTip = ("Toolbox")
-      Action = "control"
-      Picture = Picture["icon:/small/tools"]
-      Toggle = True
-    }
     { ToolButton1 ToolButton
       MoveScaled(0,0,4,4)
       ToolTip = ("New project")
@@ -516,84 +513,84 @@
       Picture = Picture["icon:/small/new"]
     }
     { ToolButton2 ToolButton
-      MoveScaled(4,0,4,4)
+      MoveScaled(3,0,4,4)
       ToolTip = ("Open project")
       Action = "open-project"
       Picture = Picture["icon:/small/open"]
     }
     { btnSave ToolButton
-      MoveScaled(8,0,4,4)
+      MoveScaled(6,0,4,4)
       ToolTip = ("Save project")
       Action = "save-project"
       Picture = Picture["icon:/small/save"]
     }
     { ToolButton15 ToolButton
-      MoveScaled(12,0,4,4)
+      MoveScaled(9,0,4,4)
       ToolTip = ("Save project as")
       Action = "save-project-as"
       Picture = Picture["icon:/small/save-as"]
     }
     { btnProperty ToolButton
-      MoveScaled(16,0,4,4)
+      MoveScaled(12,0,4,4)
       ToolTip = ("Project properties")
       Action = "project-property"
       Picture = Picture["icon:/small/properties"]
     }
     { ToolButton7 ToolButton
-      MoveScaled(20,0,4,4)
+      MoveScaled(15,0,4,4)
       Visible = False
       ToolTip = ("Refresh project")
       Action = "refresh-project"
       Picture = Picture["icon:/small/refresh"]
     }
     { ToolButton12 ToolButton
-      MoveScaled(24,0,4,4)
+      MoveScaled(18,0,4,4)
       ToolTip = ("Preferences")
       Action = "option"
       Picture = Picture["icon:/small/options"]
       Toggle = True
     }
     { ToolButton9 ToolButton
-      MoveScaled(28,0,4,4)
+      MoveScaled(21,0,4,4)
       Visible = False
       ToolTip = ("Shortcuts")
       Action = "shortcut"
       Picture = Picture["icon:/small/shortcut"]
     }
     { Separator3 Separator
-      MoveScaled(32,0,1,4)
+      MoveScaled(24,0,1,4)
     }
     { btnTranslate ToolButton
-      MoveScaled(34,0,4,4)
+      MoveScaled(25,0,4,4)
       ToolTip = ("Translate")
       Action = "translate"
       Picture = Picture["icon:/small/language"]
     }
     { ToolButton4 ToolButton
-      MoveScaled(38,0,4,4)
+      MoveScaled(28,0,4,4)
       Visible = False
       ToolTip = ("Make source archive")
       Action = "archive"
       Picture = Picture["icon:/small/archive"]
     }
     { ToolButton5 ToolButton
-      MoveScaled(42,0,4,4)
+      MoveScaled(31,0,4,4)
       ToolTip = ("Make executable")
       Action = "exec"
       Picture = Picture["icon:/small/exec"]
     }
     { ToolButton14 ToolButton
-      MoveScaled(46,0,4,4)
+      MoveScaled(34,0,4,4)
       Visible = False
       ToolTip = ("Make installation package")
       Action = "install"
       Picture = Picture["icon:/small/package"]
     }
     { Separator2 Separator
-      MoveScaled(50,0,1,4)
+      MoveScaled(37,0,1,4)
     }
     { ToolButton3 ToolButton
-      MoveScaled(51,0,4,4)
+      MoveScaled(38,0,4,4)
       Visible = False
       ToolTip = ("Project")
       Action = "project"
@@ -602,105 +599,128 @@
       Value = True
     }
     { ToolButton8 ToolButton
-      MoveScaled(55,0,4,4)
+      MoveScaled(41,0,4,4)
       Visible = False
       ToolTip = ("Properties sheet")
       Action = "property"
       Picture = Picture["icon:/small/edit"]
       Toggle = True
     }
+    { ToolButton10 ToolButton
+      MoveScaled(44,0,4,4)
+      Visible = False
+      ToolTip = ("Toolbox")
+      Action = "control"
+      Picture = Picture["icon:/small/tools"]
+      Toggle = True
+    }
     { btnShowConsole ToolButton
-      MoveScaled(63,0,4,4)
+      MoveScaled(47,0,4,4)
       Visible = False
       ToolTip = ("Console")
       Action = "console"
       Picture = Picture["icon:/small/terminal"]
       Toggle = True
     }
-    { ToolButton11 ToolButton
-      MoveScaled(70,0,4,4)
-      ToolTip = ("Find & replace")
-      Action = "find"
-      Picture = Picture["icon:/small/find"]
-      Toggle = True
-    }
     { Separator4 Separator
-      MoveScaled(74,0,2,4)
+      MoveScaled(50,0,2,4)
+      Visible = False
     }
     { btnCompile ToolButton
-      MoveScaled(75,0,4,4)
+      MoveScaled(51,0,4,4)
       ToolTip = ("Compile")
       Action = "compile"
       Picture = Picture["icon:/small/make"]
     }
     { btnCompileAll ToolButton
-      MoveScaled(79,0,4,4)
+      MoveScaled(54,0,4,4)
       ToolTip = ("Compile all")
       Action = "compile-all"
       Picture = Picture["icon:/small/make-all"]
     }
     { btnGo ToolButton
-      MoveScaled(83,0,4,4)
+      MoveScaled(57,0,4,4)
       ToolTip = ("Run")
       Action = "start"
       Picture = Picture["icon:/small/play"]
     }
     { btnPause ToolButton
-      MoveScaled(87,0,4,4)
+      MoveScaled(60,0,4,4)
       ToolTip = ("Pause")
       Action = "pause"
       Picture = Picture["icon:/small/pause"]
     }
     { btnStop ToolButton
-      MoveScaled(91,0,4,4)
+      MoveScaled(63,0,4,4)
       ToolTip = ("Stop")
       Action = "stop"
       Picture = Picture["icon:/small/stop"]
     }
     { btnStep ToolButton
-      MoveScaled(95,0,4,4)
+      MoveScaled(66,0,4,4)
       ToolTip = ("Step")
       Action = "step"
       Picture = Picture["icon:/small/end"]
     }
     { btnForward ToolButton
-      MoveScaled(99,0,4,4)
+      MoveScaled(69,0,4,4)
       ToolTip = ("Forward")
       Action = "forward"
       Picture = Picture["icon:/small/forward"]
     }
     { btnFrom ToolButton
-      MoveScaled(103,0,4,4)
+      MoveScaled(72,0,4,4)
       ToolTip = ("Finish current function")
       Action = "return"
       Picture = Picture["icon:/small/eject"]
     }
     { btnUntil ToolButton mnuUntil
       Name = "btnUntil"
-      MoveScaled(107,0,4,4)
+      MoveScaled(75,0,4,4)
       ToolTip = ("Run until current line")
       Action = "until"
       Picture = Picture["icon:/small/start"]
     }
     { btnWatch ToolButton mnuWatch
       Name = "btnWatch"
-      MoveScaled(111,0,4,4)
+      MoveScaled(78,0,4,4)
       ToolTip = ("Watch expression")
       Action = "watch"
       Picture = Picture["icon:/small/watch"]
     }
     { btnBreakpoint ToolButton
-      MoveScaled(115,0,4,4)
+      MoveScaled(81,0,4,4)
       ToolTip = ("Toggle breakpoint")
       Action = "break"
       Picture = Picture["icon:/small/flag"]
       Toggle = True
     }
     { btnShowMenu ToolButton
-      MoveScaled(119,0,4,4)
+      MoveScaled(84,0,4,4)
       ToolTip = ("Show menu bar")
       Action = "hide-menubar"
       Picture = Picture["img/16/menu.png"]
+    }
+    { Separator5 Separator
+      MoveScaled(88,0,1,4)
+    }
+    { cmbFind ComboBox
+      MoveScaled(89,0,44,4)
+      ToolTip = ("Search string")
+      Action = "find-text"
+    }
+    { btnSearch ToolButton
+      MoveScaled(127,0,4,4)
+      ToolTip = ("Search in project")
+      Action = "find-project"
+      Picture = Picture["icon:/small/zoom-in"]
+    }
+    { btnFind ToolButton
+      MoveScaled(129,0,4,4)
+      ToolTip = ("Search & replace")
+      Action = "find"
+      Picture = Picture["icon:/small/find"]
+      Toggle = True
     }
   }
   { Panel1 Panel
@@ -781,6 +801,13 @@
     #MoveScaled(96,21)
     Delay = 2000
   }
+  { btnMnuFile ToolButton
+    MoveScaled(101,36,6,4)
+    Visible = False
+    Action = "menu-file"
+    AutoResize = True
+    Text = ("&File")
+  }
   { panError VBox
     MoveScaled(1,75,64,8)
     Visible = False
@@ -823,6 +850,27 @@
       AutoResize = True
       Text = ("OK")
     }
+  }
+  { btnMnuProject ToolButton
+    MoveScaled(106,36,7,4)
+    Visible = False
+    Action = "menu-project"
+    AutoResize = True
+    Text = ("&Project")
+  }
+  { btnMnuDebug ToolButton
+    MoveScaled(113,36,7,4)
+    Visible = False
+    Action = "menu-debug"
+    AutoResize = True
+    Text = ("&Debug")
+  }
+  { btnMnuTool ToolButton
+    MoveScaled(119,36,7,4)
+    Visible = False
+    Action = "menu-tool"
+    AutoResize = True
+    Text = ("&Tools")
   }
 }
 
@@ -910,13 +958,16 @@
     Picture = "icon:/small/exec"
   }
   { Action find
-    Text = "Find & replace"
+    Text = "Search & replace"
     Picture = "icon:/small/find"
   }
-  { Action find-replace
-    Text = "&Find && replace"
-    Shortcut = "Ctrl+F"
-    Picture = "icon:/small/find"
+  { Action find-project
+    Text = "Search in project"
+    Picture = "icon:/small/zoom-in"
+  }
+  { Action find-text
+    Text = "Search string"
+    Picture = "$ComboBox"
   }
   { Action forward
     Text = "&Forward"
@@ -942,6 +993,22 @@
     Text = "&Installation package..."
     Shortcut = "Ctrl+Alt+I"
     Picture = "icon:/small/package"
+  }
+  { Action menu-debug
+    Text = "&Debug"
+    Picture = "$ToolButton"
+  }
+  { Action menu-file
+    Text = "&File"
+    Picture = "$ToolButton"
+  }
+  { Action menu-project
+    Text = "&Project"
+    Picture = "$ToolButton"
+  }
+  { Action menu-tool
+    Text = "&Tools"
+    Picture = "$ToolButton"
   }
   { Action new-class
     Text = "&Class..."
@@ -1123,7 +1190,7 @@
 { Toolbars
   { Toolbar main
     Text = ""
-    List = "control,new-project,open-project,save-project,save-project-as,project-property,refresh-project,option,shortcut,translate,archive,exec,install,project,property,console,find,compile,compile-all,start,pause,stop,step,forward,return,until,watch,break,hide-menubar"
-    Default = "new-project,open-project,save-project,save-project-as,project-property,option,|,translate,exec,|,find,|,compile,compile-all,start,pause,stop,step,forward,return,until,watch,break,hide-menubar"
+    List = "new-project,open-project,save-project,save-project-as,project-property,refresh-project,option,shortcut,translate,archive,exec,install,project,property,control,console,compile,compile-all,start,pause,stop,step,forward,return,until,watch,break,hide-menubar,find-text,find-project,find"
+    Default = "new-project,open-project,save-project,save-project-as,project-property,option,|,translate,exec,|,compile,compile-all,start,pause,stop,step,forward,return,until,watch,break,hide-menubar,|,find-text,find-project,find"
   }
 }

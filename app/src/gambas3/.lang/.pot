@@ -266,7 +266,7 @@ msgstr ""
 msgid "Loading information on component &1..."
 msgstr ""
 
-#: CModule.class:28 FCreateFile.class:648 FEditor.class:3397 FForm.class:3541
+#: CModule.class:28 FCreateFile.class:648 FEditor.class:3366 FForm.class:3566
 #: FInfo.class:88
 msgid "Form"
 msgstr ""
@@ -350,7 +350,7 @@ msgstr ""
 
 #: Design.module:381 FColorChooser.class:201 FCommit.class:391
 #: FConnectionEditor.class:411 FCreateFile.class:923 FFontChooser.class:79
-#: FGotoLine.class:57 FList.class:333 FMain.class:2855
+#: FGotoLine.class:57 FList.class:333 FMain.class:2924
 #: FMakeExecutable.class:136 FMenu.class:1065 FNewConnection.class:586
 #: FNewTable.class:162 FNewTranslation.class:64 FOpenProject.class:455
 #: FPasteSpecial.class:273 FPropertyProject.class:252
@@ -415,7 +415,7 @@ msgstr ""
 msgid "System information"
 msgstr ""
 
-#: FAbout.class:585 FList.class:310 FMain.class:2375
+#: FAbout.class:585 FList.class:310 FMain.class:2418
 msgid "&Copy"
 msgstr ""
 
@@ -433,16 +433,16 @@ msgstr ""
 
 #: FColorChooser.class:207 FCommit.class:397 FConflict.class:191
 #: FConnectionEditor.class:261 FCreateFile.class:929 FDebugInfo.class:490
-#: FEditor.class:2138 FFindList.class:195 FFind.class:114
+#: FEditor.class:2111 FFindList.class:195 _FFind.class:114
 #: FFontChooser.class:85 FForm.class:2831 FGotoLine.class:63
 #: FHelpBrowser.class:269 FIconEditor.class:1396 FImportTable.class:38
-#: FList.class:155 FMain.class:206 FMakeExecutable.class:142
+#: FList.class:155 FMain.class:210 FMakeExecutable.class:142
 #: FMakeInstall.class:309 FMenu.class:1070 FNewConnection.class:317
 #: FNewTable.class:168 FNewTranslation.class:70 FOpenProject.class:151
 #: FOption.class:585 FPasteSpecial.class:279 FPropertyProject.class:1240
 #: FReportBorderChooser.class:207 FReportCoordChooser.class:114
 #: FSave.class:118 FSelectExtraFile.class:78 FSelectIcon.class:273
-#: FTableChooser.class:145 FTextEditor.class:462 FText.class:107
+#: FTableChooser.class:145 FTextEditor.class:450 FText.class:107
 #: FTranslate.class:617 Project.module:353
 msgid "Cancel"
 msgstr ""
@@ -477,43 +477,43 @@ msgid ""
 msgstr ""
 
 #: FCommit.class:234 FConflict.class:327 FConnectionEditor.class:1816
-#: FEditor.class:3221 FForm.class:3381 FIconEditor.class:2171
-#: FImageEditor.class:77 FOutput.class:477 FTextEditor.class:656
+#: FEditor.class:3211 FForm.class:3406 FIconEditor.class:2171
+#: FImageEditor.class:77 FOutput.class:377 FTextEditor.class:673
 msgid "Cut"
 msgstr ""
 
 #: FCommit.class:241 FConflict.class:334 FConnectionEditor.class:1714
-#: FEditor.class:3227 FForm.class:3388 FIconEditor.class:2180
-#: FImageEditor.class:86 FOutput.class:484 FTextEditor.class:663
+#: FEditor.class:3217 FForm.class:3413 FIconEditor.class:2180
+#: FImageEditor.class:86 FOutput.class:384 FTextEditor.class:680
 msgid "Copy"
 msgstr ""
 
 #: FCommit.class:248 FConflict.class:341 FConnectionEditor.class:1840
-#: FEditor.class:3234 FForm.class:3401 FIconEditor.class:2189
-#: FImageEditor.class:95 FOutput.class:491 FTextEditor.class:670
+#: FEditor.class:3224 FForm.class:3426 FIconEditor.class:2189
+#: FImageEditor.class:95 FOutput.class:391 FTextEditor.class:687
 msgid "Paste"
 msgstr ""
 
 #: FCommit.class:255 FConflict.class:348 FConnectionEditor.class:1848
-#: FEditor.class:3204 FForm.class:3616 FIconEditor.class:2153
-#: FImageEditor.class:104 FOption.class:1315 FOutput.class:459
-#: FTextEditor.class:639
+#: FEditor.class:3195 FForm.class:3641 FIconEditor.class:2153
+#: FImageEditor.class:104 FOption.class:1315 FOutput.class:360
+#: FTextEditor.class:656
 msgid "Undo"
 msgstr ""
 
 #: FCommit.class:262 FConflict.class:355 FConnectionEditor.class:1856
-#: FEditor.class:3211 FForm.class:3626 FImageEditor.class:112
-#: FOutput.class:466 FTextEditor.class:646
+#: FEditor.class:3202 FForm.class:3651 FImageEditor.class:112
+#: FOutput.class:367 FTextEditor.class:663
 msgid "Redo"
 msgstr ""
 
-#: FCommit.class:269 FConflict.class:362 FEditor.class:3455
-#: FTextEditor.class:825
+#: FCommit.class:269 FConflict.class:362 FEditor.class:3418
+#: FTextEditor.class:842
 msgid "Indent"
 msgstr ""
 
-#: FCommit.class:276 FConflict.class:369 FEditor.class:3464
-#: FTextEditor.class:832
+#: FCommit.class:276 FConflict.class:369 FEditor.class:3426
+#: FTextEditor.class:849
 msgid "Unindent"
 msgstr ""
 
@@ -551,12 +551,13 @@ msgid ""
 "You must resolve the conflict in order to use the file."
 msgstr ""
 
-#: FConflict.class:25 FMain.class:2348
+#: FConflict.class:25 FMain.class:2391
 msgid "&Edit"
 msgstr ""
 
 #: FConflict.class:25 FFindList.class:203 FIconEditor.class:1415
-#: FImportTable.class:656 FMakeInstall.class:260 FTips.class:232
+#: FImportTable.class:656 FMakeInstall.class:260 FSearch.class:638
+#: FTips.class:232
 msgid "Close"
 msgstr ""
 
@@ -658,8 +659,8 @@ msgstr ""
 msgid "The table '&1' has been modified. Do you want to save it?"
 msgstr ""
 
-#: FConnectionEditor.class:261 FEditor.class:3345 FForm.class:3527
-#: FIconEditor.class:1415 FImageEditor.class:60 FTextEditor.class:747
+#: FConnectionEditor.class:261 FEditor.class:3317 FForm.class:3552
+#: FIconEditor.class:1415 FImageEditor.class:60 FTextEditor.class:764
 msgid "Save"
 msgstr ""
 
@@ -747,7 +748,7 @@ msgstr ""
 msgid "Do you really want to delete table '&1'?"
 msgstr ""
 
-#: FConnectionEditor.class:1330 FForm.class:3408 FMain.class:206
+#: FConnectionEditor.class:1330 FForm.class:3433 FMain.class:210
 #: FNewConnection.class:317 FTranslate.class:617
 msgid "Delete"
 msgstr ""
@@ -780,9 +781,9 @@ msgstr ""
 msgid "Connection editor"
 msgstr ""
 
-#: FConnectionEditor.class:1573 FEditor.class:2138 FForm.class:2831
+#: FConnectionEditor.class:1573 FEditor.class:2111 FForm.class:2831
 #: FHelpBrowser.class:275 FIconEditor.class:2035 FImageEditor.class:68
-#: FTextEditor.class:462 FTranslate.class:711
+#: FTextEditor.class:450 FTranslate.class:711
 msgid "Reload"
 msgstr ""
 
@@ -818,7 +819,7 @@ msgstr ""
 msgid "Fields"
 msgstr ""
 
-#: FConnectionEditor.class:1687 FMain.class:1691
+#: FConnectionEditor.class:1687 FMain.class:1689
 msgid "Add"
 msgstr ""
 
@@ -882,7 +883,7 @@ msgstr ""
 msgid "New file"
 msgstr ""
 
-#: FCreateFile.class:582 FMain.class:2253
+#: FCreateFile.class:582 FMain.class:2296
 msgid "New"
 msgstr ""
 
@@ -971,7 +972,7 @@ msgstr ""
 msgid "The project has been successfully created."
 msgstr ""
 
-#: FCreateProject.class:336 FMain.class:2496
+#: FCreateProject.class:336 FMain.class:2530
 msgid "New project"
 msgstr ""
 
@@ -1120,7 +1121,7 @@ msgid "Do you want to clear the expression list ?"
 msgstr ""
 
 #: FDebugInfo.class:490 FIconEditor.class:1396 FList.class:155
-#: FOption.class:585 FOutput.class:498
+#: FOption.class:585 FOutput.class:398
 msgid "Clear"
 msgstr ""
 
@@ -1132,11 +1133,11 @@ msgstr ""
 msgid "Dynamic variables"
 msgstr ""
 
-#: FDebugInfo.class:968 FMain.class:2755
+#: FDebugInfo.class:968 FMain.class:2816
 msgid "Debug"
 msgstr ""
 
-#: FDebugInfo.class:981 FMain.class:2613 FOption.class:1273
+#: FDebugInfo.class:981 FMain.class:2656 FOption.class:1273 FSearch.class:54
 msgid "Console"
 msgstr ""
 
@@ -1176,7 +1177,7 @@ msgstr ""
 msgid "Remove current expression"
 msgstr ""
 
-#: FDebugInfo.class:1081 FMain.class:2453 FMakeInstall.class:1545
+#: FDebugInfo.class:1081 FMain.class:2496 FMakeInstall.class:1545
 #: FPropertyProject.class:1977
 msgid "&Remove"
 msgstr ""
@@ -1205,118 +1206,110 @@ msgstr ""
 msgid "Stack backtrace"
 msgstr ""
 
-#: FEditor.class:2138 FIconEditor.class:2035 FTextEditor.class:462
+#: FEditor.class:2111 FIconEditor.class:2035 FTextEditor.class:450
 msgid ""
 "The file has been modified.\n"
 "\n"
 "All your changes will be lost."
 msgstr ""
 
-#: FEditor.class:2535
+#: FEditor.class:2508
 msgid "(Declarations)"
 msgstr ""
 
-#: FEditor.class:3138
+#: FEditor.class:3131
 msgid "Go to"
 msgstr ""
 
-#: FEditor.class:3143 FTextEditor.class:630
+#: FEditor.class:3136 FTextEditor.class:647
 msgid "Go to line..."
 msgstr ""
 
-#: FEditor.class:3149
+#: FEditor.class:3142
 msgid "Find definition"
 msgstr ""
 
-#: FEditor.class:3156 FHelpBrowser.class:257
+#: FEditor.class:3149 FHelpBrowser.class:257
 msgid "Go back"
 msgstr ""
 
-#: FEditor.class:3163
+#: FEditor.class:3156
 msgid "Open form"
 msgstr ""
 
-#: FEditor.class:3170 FForm.class:3313 FMain.class:2415
+#: FEditor.class:3163 FForm.class:3338 FMain.class:2458
 msgid "&Startup class"
 msgstr ""
 
-#: FEditor.class:3179
+#: FEditor.class:3171
 msgid "Run &until current line"
 msgstr ""
 
-#: FEditor.class:3186
+#: FEditor.class:3178
 msgid "Toggle &breakpoint"
 msgstr ""
 
-#: FEditor.class:3193
+#: FEditor.class:3185
 msgid "&Watch expression..."
 msgstr ""
 
-#: FEditor.class:3241
+#: FEditor.class:3231
 msgid "Paste special..."
 msgstr ""
 
-#: FEditor.class:3251 FTextEditor.class:680
+#: FEditor.class:3240 FTextEditor.class:697
 msgid "Select &All"
 msgstr ""
 
-#: FEditor.class:3261
+#: FEditor.class:3249
 msgid "Comment"
 msgstr ""
 
-#: FEditor.class:3268
+#: FEditor.class:3256
 msgid "Uncomment"
 msgstr ""
 
-#: FEditor.class:3279 FTextEditor.class:689
-msgid "Find..."
+#: FEditor.class:3266 _FFind.class:707 FOutput.class:408 FTextEditor.class:719
+msgid "Find next"
 msgstr ""
 
-#: FEditor.class:3285 FTextEditor.class:695
-msgid "Replace..."
+#: FEditor.class:3273 _FFind.class:714 FOutput.class:415 FTextEditor.class:726
+msgid "Find previous"
 msgstr ""
 
-#: FEditor.class:3292 FTextEditor.class:702
-msgid "Find Next"
-msgstr ""
-
-#: FEditor.class:3299 FTextEditor.class:709
-msgid "Find Previous"
-msgstr ""
-
-#: FEditor.class:3309 FTextEditor.class:718
+#: FEditor.class:3282 FTextEditor.class:735
 msgid "View"
 msgstr ""
 
-#: FEditor.class:3313 FTextEditor.class:722
+#: FEditor.class:3286 FTextEditor.class:739
 msgid "No split"
 msgstr ""
 
-#: FEditor.class:3320 FTextEditor.class:729
+#: FEditor.class:3293 FTextEditor.class:746
 msgid "Horizontal split"
 msgstr ""
 
-#: FEditor.class:3327 FTextEditor.class:736
+#: FEditor.class:3300 FTextEditor.class:753
 msgid "Vertical split"
 msgstr ""
 
-#: FEditor.class:3356 FPasteSpecial.class:253
+#: FEditor.class:3327 FPasteSpecial.class:253
 msgid "Paste as string"
 msgstr ""
 
-#: FEditor.class:3361 FPasteSpecial.class:258
+#: FEditor.class:3332 FPasteSpecial.class:258
 msgid "Paste as multi-line string"
 msgstr ""
 
-#: FEditor.class:3366 FPasteSpecial.class:243
+#: FEditor.class:3337 FPasteSpecial.class:243
 msgid "Paste as comments"
 msgstr ""
 
-#: FEditor.class:3373 FOption.class:935
+#: FEditor.class:3344 FOption.class:935
 msgid "Editor"
 msgstr ""
 
-#: FEditor.class:3522
+#: FEditor.class:3478
 msgid "Procedure list"
 msgstr ""
 
@@ -1328,71 +1321,63 @@ msgstr ""
 msgid "Find list"
 msgstr ""
 
-#: FFindList.class:273 FFind.class:395 FOutput.class:313 FTranslate.class:578
+#: FFindList.class:273 _FFind.class:395 FSearch.class:332 FTranslate.class:578
 msgid "Search string cannot be found."
 msgstr ""
 
-#: FFind.class:114
+#: _FFind.class:114
 msgid "Are you sure to want to replace all?"
 msgstr ""
 
-#: FFind.class:114
+#: _FFind.class:114 FSearch.class:533
 msgid "Replace"
 msgstr ""
 
-#: FFind.class:397
+#: _FFind.class:397 FSearch.class:334
 msgid "Search string replaced once."
 msgstr ""
 
-#: FFind.class:399
+#: _FFind.class:399 FSearch.class:336
 msgid "Search string replaced &1 times."
 msgstr ""
 
-#: FFind.class:704 FOutput.class:508
+#: _FFind.class:701
 msgid "Find"
 msgstr ""
 
-#: FFind.class:711 FOutput.class:590
-msgid "Find next"
-msgstr ""
-
-#: FFind.class:719 FOutput.class:598
-msgid "Find previous"
-msgstr ""
-
-#: FFind.class:727
+#: _FFind.class:721
 msgid "Search list"
 msgstr ""
 
-#: FFind.class:750
+#: _FFind.class:741
 msgid "Replace all"
 msgstr ""
 
-#: FFind.class:762
+#: _FFind.class:752
 msgid "Search in procedure"
 msgstr ""
 
-#: FFind.class:772
+#: _FFind.class:761
 msgid "Search in file"
 msgstr ""
 
-#: FFind.class:783
+#: _FFind.class:771 FMain.class:2766
 msgid "Search in project"
 msgstr ""
 
-#: FFind.class:798 FOutput.class:606
+#: _FFind.class:785
 msgid "Case sensitive"
 msgstr ""
 
-#: FFind.class:808
+#: _FFind.class:794
 msgid "Word only"
 msgstr ""
 
-#: FFind.class:817
+#: _FFind.class:802
 msgid "Search in comments"
 msgstr ""
 
-#: FFind.class:826
+#: _FFind.class:810
 msgid "Search in strings"
 msgstr ""
 
@@ -1411,179 +1396,179 @@ msgid ""
 "All your changes will be lost."
 msgstr ""
 
-#: FForm.class:3289 FIconEditor.class:2261
+#: FForm.class:3314 FIconEditor.class:2261
 msgid "Select"
 msgstr ""
 
-#: FForm.class:3294
+#: FForm.class:3319
 msgid "Event"
 msgstr ""
 
-#: FForm.class:3300
+#: FForm.class:3325
 msgid "Change into"
 msgstr ""
 
-#: FForm.class:3306
+#: FForm.class:3331
 msgid "Open code"
 msgstr ""
 
-#: FForm.class:3321
+#: FForm.class:3346
 msgid "Show tab"
 msgstr ""
 
-#: FForm.class:3329
+#: FForm.class:3354
 msgid "Move tab"
 msgstr ""
 
-#: FForm.class:3334
+#: FForm.class:3359
 msgid "&First"
 msgstr ""
 
-#: FForm.class:3341 FTips.class:220
+#: FForm.class:3366 FSearch.class:613 FTips.class:220
 msgid "&Previous"
 msgstr ""
 
-#: FForm.class:3348 FMenu.class:837 FTips.class:226
+#: FForm.class:3373 FMenu.class:837 FSearch.class:607 FTips.class:226
 msgid "&Next"
 msgstr ""
 
-#: FForm.class:3355
+#: FForm.class:3380
 msgid "&Last"
 msgstr ""
 
-#: FForm.class:3366
+#: FForm.class:3391
 msgid "Select all"
 msgstr ""
 
-#: FForm.class:3372
+#: FForm.class:3397
 msgid "Unselect all"
 msgstr ""
 
-#: FForm.class:3395
+#: FForm.class:3420
 msgid "Copy at the same place"
 msgstr ""
 
-#: FForm.class:3417
+#: FForm.class:3442
 msgid "Arrangement"
 msgstr ""
 
-#: FForm.class:3421
+#: FForm.class:3446
 msgid "Bring to foreground"
 msgstr ""
 
-#: FForm.class:3428
+#: FForm.class:3453
 msgid "Send to background"
 msgstr ""
 
-#: FForm.class:3438
+#: FForm.class:3463
 msgid "Horizontal"
 msgstr ""
 
-#: FForm.class:3445
+#: FForm.class:3470
 msgid "Rows"
 msgstr ""
 
-#: FForm.class:3451
+#: FForm.class:3476
 msgid "Vertical"
 msgstr ""
 
-#: FForm.class:3458
+#: FForm.class:3483
 msgid "Columns"
 msgstr ""
 
-#: FForm.class:3464
+#: FForm.class:3489
 msgid "Alignment"
 msgstr ""
 
-#: FForm.class:3468
+#: FForm.class:3493
 msgid "Align to &left"
 msgstr ""
 
-#: FForm.class:3474
+#: FForm.class:3499
 msgid "Align to &right"
 msgstr ""
 
-#: FForm.class:3480
+#: FForm.class:3505
 msgid "Align to &top"
 msgstr ""
 
-#: FForm.class:3486
+#: FForm.class:3511
 msgid "Align to &bottom"
 msgstr ""
 
-#: FForm.class:3495
+#: FForm.class:3520
 msgid "Same &width"
 msgstr ""
 
-#: FForm.class:3501
+#: FForm.class:3526
 msgid "Same &height"
 msgstr ""
 
-#: FForm.class:3511
+#: FForm.class:3536
 msgid "Menu editor..."
 msgstr ""
 
-#: FForm.class:3562 FTextEditor.class:778
+#: FForm.class:3587 FTextEditor.class:795
 msgid "Code"
 msgstr ""
 
-#: FForm.class:3569
+#: FForm.class:3594
 msgid "Lock form"
 msgstr ""
 
-#: FForm.class:3633 FMenu.class:49
+#: FForm.class:3658 FMenu.class:49
 msgid "Menu editor"
 msgstr ""
 
-#: FForm.class:3640
+#: FForm.class:3665
 msgid "Toggle grid"
 msgstr ""
 
-#: FForm.class:3669
+#: FForm.class:3694
 msgid "Align to top"
 msgstr ""
 
-#: FForm.class:3676
+#: FForm.class:3701
 msgid "Align to bottom"
 msgstr ""
 
-#: FForm.class:3683
+#: FForm.class:3708
 msgid "Align to left"
 msgstr ""
 
-#: FForm.class:3690
+#: FForm.class:3715
 msgid "Align to right"
 msgstr ""
 
-#: FForm.class:3697
+#: FForm.class:3722
 msgid "Same width"
 msgstr ""
 
-#: FForm.class:3704
+#: FForm.class:3729
 msgid "Same height"
 msgstr ""
 
-#: FForm.class:3745
+#: FForm.class:3770
 msgid "Tabstrip"
 msgstr ""
 
-#: FForm.class:3750
+#: FForm.class:3775
 msgid "Move tab first"
 msgstr ""
 
-#: FForm.class:3757
+#: FForm.class:3782
 msgid "Move tab left"
 msgstr ""
 
-#: FForm.class:3764
+#: FForm.class:3789
 msgid "Move tab right"
 msgstr ""
 
-#: FForm.class:3771
+#: FForm.class:3796
 msgid "Move tab last"
 msgstr ""
 
-#: FFormStack.class:293 FMain.class:2783
+#: FFormStack.class:293 FMain.class:2844
 msgid "Hierarchy"
 msgstr ""
 
@@ -1729,7 +1714,7 @@ msgstr ""
 msgid "Pick a color"
 msgstr ""
 
-#: FImageEditor.class:54 FTextEditor.class:756
+#: FImageEditor.class:54 FTextEditor.class:773
 msgid "Text editor"
 msgstr ""
 
@@ -1993,7 +1978,7 @@ msgstr ""
 msgid "Cl&ear"
 msgstr ""
 
-#: FList.class:316 FMain.class:2382
+#: FList.class:316 FMain.class:2425
 msgid "&Paste"
 msgstr ""
 
@@ -2001,455 +1986,463 @@ msgstr ""
 msgid "&Undo"
 msgstr ""
 
-#: FMain.class:206
+#: FMain.class:210
 msgid "Do you really want to delete this link ?"
 msgstr ""
 
-#: FMain.class:209
+#: FMain.class:213
 msgid "Do you really want to delete this directory ?"
 msgstr ""
 
-#: FMain.class:221
+#: FMain.class:225
 msgid "Do you really want to delete this file ?"
 msgstr ""
 
-#: FMain.class:228
+#: FMain.class:232
 msgid "Cannot delete file or directory"
 msgstr ""
 
-#: FMain.class:469
+#: FMain.class:473
 msgid "&Clear history"
 msgstr ""
 
-#: FMain.class:475
+#: FMain.class:479
 msgid "&Sort by path"
 msgstr ""
 
-#: FMain.class:689
+#: FMain.class:693
 msgid "New folder"
 msgstr ""
 
-#: FMain.class:760
+#: FMain.class:764
 msgid ""
 "The GNU translation tools are not installed on your system.\n"
 "\n"
 "Please install them to be able to do the translation."
 msgstr ""
 
-#: FMain.class:1230
+#: FMain.class:1237
 msgid "Do you really want to update all forms?"
 msgstr ""
 
-#: FMain.class:1230
+#: FMain.class:1237
 msgid "Update"
 msgstr ""
 
-#: FMain.class:1419
+#: FMain.class:1426
 msgid ""
 "All backup or generated files will be removed from the project directory."
 msgstr ""
 
-#: FMain.class:1419
+#: FMain.class:1426
 msgid "Clean"
 msgstr ""
 
-#: FMain.class:1691
+#: FMain.class:1689
 msgid "Do you really want to add this file to the repository?"
 msgstr ""
 
-#: FMain.class:1880
+#: FMain.class:1917
 msgid "&File"
 msgstr ""
 
-#: FMain.class:1884
+#: FMain.class:1921
 msgid "&New project..."
 msgstr ""
 
-#: FMain.class:1891
+#: FMain.class:1928
 msgid "&Open project..."
 msgstr ""
 
-#: FMain.class:1897
+#: FMain.class:1934
 msgid "Open &recent"
 msgstr ""
 
-#: FMain.class:1904
+#: FMain.class:1941
 msgid "Open &example"
 msgstr ""
 
-#: FMain.class:1915
+#: FMain.class:1952
 msgid "&Save project"
 msgstr ""
 
-#: FMain.class:1922
+#: FMain.class:1959
 msgid "Save project &as..."
 msgstr ""
 
-#: FMain.class:1932
+#: FMain.class:1969
 msgid "&Quit"
 msgstr ""
 
-#: FMain.class:1939
+#: FMain.class:1976
 msgid "&Project"
 msgstr ""
 
-#: FMain.class:1943
+#: FMain.class:1980
 msgid "&Compile"
 msgstr ""
 
-#: FMain.class:1950
+#: FMain.class:1987
 msgid "Compile &All"
 msgstr ""
 
-#: FMain.class:1960
+#: FMain.class:1997
 msgid "&Translate..."
 msgstr ""
 
-#: FMain.class:1969
+#: FMain.class:2006
 msgid "Make"
 msgstr ""
 
-#: FMain.class:1973
+#: FMain.class:2010
 msgid "E&xecutable..."
 msgstr ""
 
-#: FMain.class:1980
+#: FMain.class:2017
 msgid "&Source archive..."
 msgstr ""
 
-#: FMain.class:1987
+#: FMain.class:2024
 msgid "&Installation package..."
 msgstr ""
 
-#: FMain.class:1998
+#: FMain.class:2035
 msgid "&Clean up"
 msgstr ""
 
-#: FMain.class:2004
+#: FMain.class:2041
 msgid "&Refresh"
 msgstr ""
 
-#: FMain.class:2010
+#: FMain.class:2047
 msgid "Put on &version control"
 msgstr ""
 
-#: FMain.class:2020
+#: FMain.class:2057
 msgid "&Properties..."
 msgstr ""
 
-#: FMain.class:2027
+#: FMain.class:2064
 msgid "&Debug"
 msgstr ""
 
-#: FMain.class:2031
+#: FMain.class:2068
 msgid "&Run"
 msgstr ""
 
-#: FMain.class:2041
+#: FMain.class:2078
 msgid "&Pause"
 msgstr ""
 
-#: FMain.class:2048
+#: FMain.class:2085
 msgid "&Stop"
 msgstr ""
 
-#: FMain.class:2055
+#: FMain.class:2092
 msgid "St&ep"
 msgstr ""
 
-#: FMain.class:2062
+#: FMain.class:2099
 msgid "&Forward"
 msgstr ""
 
-#: FMain.class:2069
+#: FMain.class:2106
 msgid "Finis&h"
 msgstr ""
 
-#: FMain.class:2076
+#: FMain.class:2113
 msgid "Run &until"
 msgstr ""
 
-#: FMain.class:2086
+#: FMain.class:2123
 msgid "&Toggle breakpoint"
 msgstr ""
 
-#: FMain.class:2094
+#: FMain.class:2131
 msgid "Clear &all breakpoints"
 msgstr ""
 
-#: FMain.class:2102
+#: FMain.class:2139
 msgid "&Watch expression"
 msgstr ""
 
-#: FMain.class:2108
+#: FMain.class:2145
 msgid "Close all &debug windows"
 msgstr ""
 
-#: FMain.class:2113
+#: FMain.class:2150
 msgid "&View"
 msgstr ""
 
-#: FMain.class:2117
+#: FMain.class:2154
 msgid "Pro&ject"
 msgstr ""
 
-#: FMain.class:2126
+#: FMain.class:2163
 msgid "&Properties"
 msgstr ""
 
-#: FMain.class:2134
+#: FMain.class:2171
 msgid "&Toolbox"
 msgstr ""
 
-#: FMain.class:2142
+#: FMain.class:2179
 msgid "&Console"
 msgstr ""
 
-#: FMain.class:2152
+#: FMain.class:2189
 msgid "Status bar"
 msgstr ""
 
-#: FMain.class:2159
+#: FMain.class:2196
 msgid "Hide menubar"
 msgstr ""
 
-#: FMain.class:2166
+#: FMain.class:2203
 msgid "Close &all windows"
 msgstr ""
 
-#: FMain.class:2172
+#: FMain.class:2209
 msgid "&Tools"
 msgstr ""
 
-#: FMain.class:2176
-msgid "&Find && replace"
+#: FMain.class:2212
+msgid "&Find..."
 msgstr ""
 
-#: FMain.class:2186
+#: FMain.class:2219
+msgid "&Replace..."
+msgstr ""
+
+#: FMain.class:2229
 msgid "&Browse project..."
 msgstr ""
 
-#: FMain.class:2193
+#: FMain.class:2236
 msgid "&Open a terminal..."
 msgstr ""
 
-#: FMain.class:2200
+#: FMain.class:2243
 msgid "&Update all forms"
 msgstr ""
 
-#: FMain.class:2209
+#: FMain.class:2252
 msgid "&Shortcuts..."
 msgstr ""
 
-#: FMain.class:2215
+#: FMain.class:2258
 msgid "&Preferences..."
 msgstr ""
 
-#: FMain.class:2223
+#: FMain.class:2266
 msgid "&?"
 msgstr ""
 
-#: FMain.class:2227
+#: FMain.class:2270
 msgid "&Help browser"
 msgstr ""
 
-#: FMain.class:2235
+#: FMain.class:2278
 msgid "&Tips of the day"
 msgstr ""
 
-#: FMain.class:2244
+#: FMain.class:2287
 msgid "&About Gambas..."
 msgstr ""
 
-#: FMain.class:2257
+#: FMain.class:2300
 msgid "&Directory"
 msgstr ""
 
-#: FMain.class:2263
+#: FMain.class:2306
 msgid "&Project link..."
 msgstr ""
 
-#: FMain.class:2273
+#: FMain.class:2316
 msgid "&Module..."
 msgstr ""
 
-#: FMain.class:2281
+#: FMain.class:2324
 msgid "&Class..."
 msgstr ""
 
-#: FMain.class:2289
+#: FMain.class:2332
 msgid "&Form..."
 msgstr ""
 
-#: FMain.class:2297
+#: FMain.class:2340
 msgid "&WebPage..."
 msgstr ""
 
-#: FMain.class:2305
+#: FMain.class:2348
 msgid "&Report..."
 msgstr ""
 
-#: FMain.class:2316
+#: FMain.class:2359
 msgid "&Image..."
 msgstr ""
 
-#: FMain.class:2323
+#: FMain.class:2366
 msgid "&HTML file..."
 msgstr ""
 
-#: FMain.class:2330
+#: FMain.class:2373
 msgid "&Style sheet..."
 msgstr ""
 
-#: FMain.class:2338
+#: FMain.class:2381
 msgid "&Other..."
 msgstr ""
 
-#: FMain.class:2353
+#: FMain.class:2396
 msgid "Edit &code"
 msgstr ""
 
-#: FMain.class:2357
+#: FMain.class:2400
 msgid "Edit with"
 msgstr ""
 
-#: FMain.class:2368
+#: FMain.class:2411
 msgid "&Cut"
 msgstr ""
 
-#: FMain.class:2389
+#: FMain.class:2432
 msgid "&Rename..."
 msgstr ""
 
-#: FMain.class:2396
+#: FMain.class:2439
 msgid "&Delete..."
 msgstr ""
 
-#: FMain.class:2406
+#: FMain.class:2449
 msgid "Copy file pat&h"
 msgstr ""
 
-#: FMain.class:2423
+#: FMain.class:2466
 msgid "&Add to repository"
 msgstr ""
 
-#: FMain.class:2439
+#: FMain.class:2482
 msgid "&New connection..."
 msgstr ""
 
-#: FMain.class:2447
+#: FMain.class:2490
 msgid "&Open"
 msgstr ""
 
-#: FMain.class:2488
-msgid "Toolbox"
-msgstr ""
-
-#: FMain.class:2503
+#: FMain.class:2537
 msgid "Open project"
 msgstr ""
 
-#: FMain.class:2510
+#: FMain.class:2544
 msgid "Save project"
 msgstr ""
 
-#: FMain.class:2517 Project.module:1993
+#: FMain.class:2551 Project.module:1993
 msgid "Save project as"
 msgstr ""
 
-#: FMain.class:2524 FPropertyProject.class:52
+#: FMain.class:2558 FPropertyProject.class:52
 msgid "Project properties"
 msgstr ""
 
-#: FMain.class:2532
+#: FMain.class:2566
 msgid "Refresh project"
 msgstr ""
 
-#: FMain.class:2539 FOption.class:734
+#: FMain.class:2573 FOption.class:734
 msgid "Preferences"
 msgstr ""
 
-#: FMain.class:2548
+#: FMain.class:2582
 msgid "Shortcuts"
 msgstr ""
 
-#: FMain.class:2559
+#: FMain.class:2593
 msgid "Translate"
 msgstr ""
 
-#: FMain.class:2567
+#: FMain.class:2601
 msgid "Make source archive"
 msgstr ""
 
-#: FMain.class:2574 FMakeExecutable.class:82
+#: FMain.class:2608 FMakeExecutable.class:82
 msgid "Make executable"
 msgstr ""
 
-#: FMain.class:2582 FMakeInstall.class:1168
+#: FMain.class:2616 FMakeInstall.class:1168
 msgid "Make installation package"
 msgstr ""
 
-#: FMain.class:2594 FSelectIcon.class:216 Project.module:1283
+#: FMain.class:2628 FSearch.class:58 FSelectIcon.class:216 Project.module:1283
 msgid "Project"
 msgstr ""
 
-#: FMain.class:2604
+#: FMain.class:2638
 msgid "Properties sheet"
 msgstr ""
 
-#: FMain.class:2621
-msgid "Find & replace"
+#: FMain.class:2647
+msgid "Toolbox"
 msgstr ""
 
-#: FMain.class:2633
+#: FMain.class:2669
 msgid "Compile"
 msgstr ""
 
-#: FMain.class:2640
+#: FMain.class:2676
 msgid "Compile all"
 msgstr ""
 
-#: FMain.class:2647
+#: FMain.class:2683
 msgid "Run"
 msgstr ""
 
-#: FMain.class:2654
+#: FMain.class:2690
 msgid "Pause"
 msgstr ""
 
-#: FMain.class:2661
+#: FMain.class:2697
 msgid "Stop"
 msgstr ""
 
-#: FMain.class:2668
+#: FMain.class:2704
 msgid "Step"
 msgstr ""
 
-#: FMain.class:2675
+#: FMain.class:2711
 msgid "Forward"
 msgstr ""
 
-#: FMain.class:2682
+#: FMain.class:2718
 msgid "Finish current function"
 msgstr ""
 
-#: FMain.class:2690
+#: FMain.class:2726
 msgid "Run until current line"
 msgstr ""
 
-#: FMain.class:2698
+#: FMain.class:2734
 msgid "Watch expression"
 msgstr ""
 
-#: FMain.class:2705
+#: FMain.class:2741
 msgid "Toggle breakpoint"
 msgstr ""
 
-#: FMain.class:2713
+#: FMain.class:2749
 msgid "Show menu bar"
 msgstr ""
 
-#: FMain.class:2764 FProperty.class:1146
+#: FMain.class:2760
+msgid "Search string"
+msgstr ""
+
+#: FMain.class:2773
+msgid "Search & replace"
+msgstr ""
+
+#: FMain.class:2825 FProperty.class:1146
 msgid "Properties"
 msgstr ""
 
@@ -2518,7 +2511,7 @@ msgid "There is no CHANGELOG entry for this release."
 msgstr ""
 
 #: FMakeInstall.class:309 FPropertyProject.class:1240 FSave.class:111
-#: Project.module:2660
+#: Project.module:2662
 msgid "Continue"
 msgstr ""
 
@@ -3151,23 +3144,23 @@ msgid ""
 "\n"
 msgstr ""
 
-#: FOutput.class:446
+#: FOutput.class:348
 msgid "Console - Gambas"
 msgstr ""
 
-#: FOutput.class:522
+#: FOutput.class:427
 msgid "Undock console"
 msgstr ""
 
-#: FOutput.class:530
+#: FOutput.class:434
 msgid "Keep above"
 msgstr ""
 
-#: FOutput.class:538
+#: FOutput.class:441
 msgid "Clear console"
 msgstr ""
 
-#: FOutput.class:619
+#: FOutput.class:470
 msgid "Use system charset"
 msgstr ""
 
@@ -3492,6 +3485,58 @@ msgid ""
 "Do you want to save them?"
 msgstr ""
 
+#: FSearch.class:61
+msgid "Search & Replace"
+msgstr ""
+
+#: FSearch.class:507
+msgid "Search"
+msgstr ""
+
+#: FSearch.class:556
+msgid "&Case sensitive"
+msgstr ""
+
+#: FSearch.class:561
+msgid "&Words only"
+msgstr ""
+
+#: FSearch.class:566
+msgid "Regular e&xpression"
+msgstr ""
+
+#: FSearch.class:571
+msgid "&Highlight result"
+msgstr ""
+
+#: FSearch.class:581
+msgid "&Ignore strings"
+msgstr ""
+
+#: FSearch.class:586
+msgid "I&gnore comments"
+msgstr ""
+
+#: FSearch.class:591
+msgid "C&urrent procedure"
+msgstr ""
+
+#: FSearch.class:619
+msgid "&Replace"
+msgstr ""
+
+#: FSearch.class:625
+msgid "Replace &all"
+msgstr ""
+
+#: FSearch.class:632
+msgid "&Browse"
+msgstr ""
+
+#: FSearch.class:644
+msgid "Browse"
+msgstr ""
+
 #: FSelectExtraFile.class:50
 msgid "Select an extra file"
 msgstr ""
@@ -3514,6 +3559,14 @@ msgstr ""
 
 #: FTableChooser.class:100
 msgid "Connection"
+msgstr ""
+
+#: FTextEditor.class:706
+msgid "Find..."
+msgstr ""
+
+#: FTextEditor.class:712
+msgid "Replace..."
 msgstr ""
 
 #: FText.class:77
@@ -5034,128 +5087,128 @@ msgstr ""
 msgid "Cannot copy template file."
 msgstr ""
 
-#: Project.module:2311
+#: Project.module:2313
 msgid "Making executable..."
 msgstr ""
 
-#: Project.module:2355
+#: Project.module:2357
 msgid "Cannot make executable."
 msgstr ""
 
-#: Project.module:2659
+#: Project.module:2661
 msgid "Some components are missing: &1"
 msgstr ""
 
-#: Project.module:2860
+#: Project.module:2862
 msgid "Cannot write project file."
 msgstr ""
 
-#: Project.module:2893
+#: Project.module:2895
 msgid "Unable to create desktop shortcut."
 msgstr ""
 
-#: Project.module:2973
+#: Project.module:2975
 msgid "Unable to install component."
 msgstr ""
 
-#: Project.module:3011
+#: Project.module:3013
 msgid "Unable to uninstall component."
 msgstr ""
 
-#: Project.module:3154
+#: Project.module:3156
 msgid "The directory will be removed at the next commit."
 msgstr ""
 
-#: Project.module:3173
+#: Project.module:3175
 msgid "You must define a startup class or form!"
 msgstr ""
 
-#: Project.module:3205
+#: Project.module:3207
 msgid "Please type a name."
 msgstr ""
 
-#: Project.module:3209
+#: Project.module:3211
 msgid "This name contains a forbidden character:"
 msgstr ""
 
-#: Project.module:3213
+#: Project.module:3215
 msgid "The name cannot begins with a dot."
 msgstr ""
 
-#: Project.module:3217
+#: Project.module:3219
 msgid "This name is already used. Choose another one."
 msgstr ""
 
-#: Project.module:3248
+#: Project.module:3250
 msgid ""
 "A class name must begin with a letter or an underscore, followed by any "
 "letter or digit."
 msgstr ""
 
-#: Project.module:3296
+#: Project.module:3298
 msgid "Destination already exists"
 msgstr ""
 
-#: Project.module:3498
+#: Project.module:3500
 msgid "Unable to rename '&1'"
 msgstr ""
 
-#: Project.module:3620
+#: Project.module:3622
 msgid "Please type a project name."
 msgstr ""
 
-#: Project.module:3628
+#: Project.module:3630
 msgid "The project name cannot begin with a dot."
 msgstr ""
 
-#: Project.module:3631
+#: Project.module:3633
 msgid "Non-ASCII characters are forbidden in a project name."
 msgstr ""
 
-#: Project.module:3632
+#: Project.module:3634
 msgid ""
 "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr ""
 
-#: Project.module:3642
+#: Project.module:3644
 msgid "The project directory already exists."
 msgstr ""
 
-#: Project.module:3644
+#: Project.module:3646
 msgid ""
 "The project directory cannot be created because a file with the same name "
 "already exists."
 msgstr ""
 
-#: Project.module:3690
+#: Project.module:3692
 msgid "Create source package"
 msgstr ""
 
-#: Project.module:3691
+#: Project.module:3693
 msgid "Source packages"
 msgstr ""
 
-#: Project.module:3959
+#: Project.module:3961
 msgid "Cannot copy file &1."
 msgstr ""
 
-#: Project.module:4008
+#: Project.module:4010
 msgid "Cannot create link &1."
 msgstr ""
 
-#: Project.module:4025
+#: Project.module:4027
 msgid "Cannot move a directory inside itself."
 msgstr ""
 
-#: Project.module:4089
+#: Project.module:4091
 msgid "Cannot move file &1."
 msgstr ""
 
-#: Project.module:4635
+#: Project.module:4637
 msgid "modified"
 msgstr ""
 
-#: Project.module:4715
+#: Project.module:4717
 msgid "Unable to update all forms."
 msgstr ""
 

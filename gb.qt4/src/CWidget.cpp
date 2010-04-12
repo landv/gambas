@@ -1907,12 +1907,12 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	
 	if (type == QEvent::Enter)
 	{
-		if (real)
+		if (real && !qApp->activePopupWidget())
 			GB.Raise(control, EVENT_Enter, 0);
 	}
 	else if (type == QEvent::Leave)
 	{
-		if (real)
+		if (real && !qApp->activePopupWidget())
 			GB.Raise(control, EVENT_Leave, 0);
 	}
   else if (type == QEvent::FocusIn)

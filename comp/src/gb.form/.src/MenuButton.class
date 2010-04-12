@@ -5,7 +5,7 @@ Export
 Inherits UserControl
 
 'Public Const _Properties As String = "*,AutoResize,Text,Picture,Border,Radio,Toggle,Value"
-Public Const _Properties As String = "*,Action,Text,Picture,Menu"
+Public Const _Properties As String = "*,Action,Text,Picture,Arrow,Menu"
 Public Const _DefaultSize As String = "6,4"
 Public Const _Similar As String = "Button"
 
@@ -20,6 +20,7 @@ Property Text As String
 Property Menu As String
 'Property Action As String
 Property Value As Boolean
+Property Arrow As Boolean
 
 Private $hPanel As HBox
 Private $hButton As ToolButton
@@ -29,6 +30,7 @@ Private $sMenu As String
 
 Private $bInside As Boolean
 Private $bPressed As Boolean
+Private $bArrow As Boolean
 
 Public Sub _new()
   
@@ -179,3 +181,16 @@ Private Sub Value_Write(Value As Boolean)
 
 End
 
+
+Private Function Arrow_Read() As Boolean
+
+  Return $bArrow
+
+End
+
+Private Sub Arrow_Write(Value As Boolean)
+
+  $bArrow = Value
+  $hArrow.Visible = Value
+
+End

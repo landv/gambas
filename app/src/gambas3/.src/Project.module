@@ -418,8 +418,8 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
 
   FMain.OnProjectChange
   FOpenProject.OnUpdateRecent
-  FFind.Hide
-  FFind.ReadConfig
+  'FFind.Hide
+  'FFind.ReadConfig
   'FFind.OnProjectChange
   'FExplorer.ProjectChange
   Design.Clear
@@ -550,7 +550,7 @@ Private Function CloseProject() As Boolean
     Workspace.Unlock
     Config["/OpenFile/Count"] = nOpen
   
-    FFind.WriteConfig
+    'FFind.WriteConfig
     Try Config = Null
   
     Files.Clear
@@ -1463,7 +1463,7 @@ Public Function LoadFile(sPath As String) As Object
       hForm.Icon = GetFileIcon(sPath, 16)
     Endif
     
-    FFind.OnNewForm(hForm)
+    FSearch.OnNewForm(hForm)
 
     Dec Application.Busy
   
@@ -2225,10 +2225,12 @@ Public Sub Activate(hForm As Object)
   Action["watch"].Visible = bEditor
   Action["until"].Visible = bEditor
 
-  FFind.OnProjectActivate
+  'FFind.OnProjectActivate
   FToolBox.OnProjectActivate
 
   Try ActiveForm.SetFocus
+  
+  FSearch.Update
   
 End
 

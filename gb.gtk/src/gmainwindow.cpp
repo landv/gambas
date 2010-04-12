@@ -1241,3 +1241,17 @@ void gMainWindow::embedMenuBar(GtkWidget *border)
 		checkMenuBar();
 	}
 }
+
+double gMainWindow::opacity()
+{
+	if (isTopLevel())
+		return gtk_window_get_opacity(GTK_WINDOW(border));
+	else
+		return 1.0;
+}
+
+void gMainWindow::setOpacity(double v)
+{
+	if (isTopLevel())
+		gtk_window_set_opacity(GTK_WINDOW(border), v);
+}

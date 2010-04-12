@@ -15,6 +15,8 @@ Private $bNoSelect As String
 
 Public Sub _new()
 
+  Me.Resize(800, 600)
+
   Project.ProjectTree = tvwProject
   Project.Workspace = wrkProject
 
@@ -32,9 +34,11 @@ Public Sub _new()
   FFormStack.Load(tabProperty)
   tabProperty.Index = 0
   
-  FFind.Load(panCentral)
-  FFind.Next = panDebug
-  FFind.Hide
+  'FFind.Load(panCentral)
+  'FFind.Next = panDebug
+  'FFind.Hide
+  
+  FSearch.Load
   
   'FProject.Load(splProject)
   'splProject.Layout = "80,10"
@@ -1165,17 +1169,11 @@ Public Sub Action_Activate(Key As String) As Boolean
     Case "version-control"
       VersionControl.ControlProject
       UpdateMenu
-      
+    
     Case "find-next"
-      FFind.FindNext
+      FSearch.FindNext
     Case "find-previous"
-      FFind.FindPrevious
-    Case "replace"
-      FFind.Replace
-    Case "replace-all"
-      FFind.ReplaceAll
-    Case "find-all"
-      FFind.FindAll
+      FSearch.FindPrevious
     
     Case "console"
       If Action["console"].Value Then Try FOutput.SetFocus
@@ -1183,16 +1181,25 @@ Public Sub Action_Activate(Key As String) As Boolean
     
     Case "break"
       'Debug Action["break"].Value
-      hEditor = Project.ActiveForm
+      Try hEditor = Project.ActiveForm
       If Not Error Then Design.SetBreakpoint(hEditor.Name, hEditor.Editor.Line, Action["break"].Value)
     Case "watch"
-      hEditor = Project.ActiveForm
+      Try hEditor = Project.ActiveForm
       If Not Error Then hEditor.WatchExpression
     Case "until"
-      hEditor = Project.ActiveForm
+      Try hEditor = Project.ActiveForm
       If Not Error Then hEditor.RunUntil
     Case "info"
       FInfo.Run(tvwProject.Key)
+
+    Case "menu-file"
+      mnuFile.Popup(btnMnuFile.ScreenX, btnMnuFile.ScreenY + btnMnuFile.H)
+    Case "menu-project"
+      mnuProject.Popup(btnMnuProject.ScreenX, btnMnuProject.ScreenY + btnMnuProject.H)
+    Case "menu-debug"
+      mnuDebug.Popup(btnMnuDebug.ScreenX, btnMnuDebug.ScreenY + btnMnuDebug.H)
+    Case "menu-tool"
+      mnuTool.Popup(btnMnuTool.ScreenX, btnMnuTool.ScreenY + btnMnuTool.H)
 
   End Select 
   
@@ -1497,10 +1504,7 @@ End
 
 Public Sub HidePanels()
   
-  If FOutput.HandleEscape() Then Return
-  If FFind.HandleEscape() Then Return
-  
-  Action["find"].Value = False
+  FSearch.Hide 'Action["find"].Value = False
   Action["console"].Value = False
   Balloon.Hide
   
@@ -1580,12 +1584,6 @@ End
 Public Sub mnuClearDebugWindows_Click()
 
   FDebugExpr.Clear
-
-End
-
-Public Sub mnuFind_Click()
-
-  FFind.Find
 
 End
 
@@ -1699,5 +1697,36 @@ End
 Public Sub Panel2_Arrange()
 
   btnClose.Move(Panel2.Width - btnClose.Width, 0)
+
+End
+
+
+Public Sub cmbFind_Change()
+
+  FSearch.UpdateSearchString(cmbFind.Text)
+
+End
+
+Public Sub UpdateSearchString(sText As String)
+  
+  If sText <> cmbFind.Text Then cmbFind.Text = sText
+  
+End
+
+Public Sub cmbFind_Activate()
+
+  FSearch.FindNext
+
+End
+
+Public Sub mnuFind_Click()
+
+  FSearch.WakeUp(False)
+
+End
+
+Public Sub mnuReplace_Click()
+
+  FSearch.WakeUp(True)
 
 End

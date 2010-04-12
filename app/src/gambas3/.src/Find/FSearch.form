@@ -1,0 +1,179 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,83,37)
+  Action = "find"
+  Text = ("Search & Replace")
+  Icon = Picture["icon:/small/find"]
+  Persistent = True
+  Type = WindowType.Utility
+  Arrangement = Arrange.Fill
+  Margin = True
+  { tabSearch TabStrip
+    MoveScaled(0,1,82,35)
+    Arrangement = Arrange.Horizontal
+    Spacing = True
+    Margin = True
+    Count = 2
+    Index = 0
+    Text = ("Search")
+    { VBox3 VBox
+      MoveScaled(1,1,59,29)
+      Expand = True
+      Spacing = True
+      { HBox1 HBox
+        MoveScaled(0,0,51,4)
+        { Label1 Label
+          MoveScaled(0,0,16,4)
+          Text = ("Search")
+        }
+        { cmbSearch ComboBox
+          MoveScaled(18,0,32,4)
+          Expand = True
+        }
+      }
+      { HBox2 HBox
+        MoveScaled(0,5,51,4)
+        { Label2 Label
+          MoveScaled(0,0,16,4)
+          Text = ("Replace")
+        }
+        { cmbReplace ComboBox
+          MoveScaled(18,0,32,4)
+          Expand = True
+        }
+      }
+      { Separator1 Separator
+        MoveScaled(0,9,51,1)
+      }
+      { HBox4 HBox
+        MoveScaled(0,11,58,17)
+        Expand = True
+        { VBox2 VBox
+          MoveScaled(1,0,26,17)
+          Expand = True
+          { chkCaseSensitive CheckBox
+            MoveScaled(0,0,25,4)
+            Text = ("&Case sensitive")
+          }
+          { chkWordOnly CheckBox
+            MoveScaled(0,4,25,4)
+            Text = ("&Words only")
+          }
+          { chkRegularExpression CheckBox
+            MoveScaled(0,8,25,4)
+            Text = ("Regular e&xpression")
+          }
+          { chkHighlight CheckBox
+            MoveScaled(0,12,25,4)
+            Text = ("&Highlight result")
+          }
+        }
+        { VBox1 VBox
+          MoveScaled(28,0,29,17)
+          Expand = True
+          { chkIgnoreStrings CheckBox
+            MoveScaled(0,0,25,4)
+            Text = ("&Ignore strings")
+          }
+          { chkIgnoreComments CheckBox
+            MoveScaled(0,4,25,4)
+            Text = ("I&gnore comments")
+          }
+          { chkCurrentProcedure CheckBox
+            MoveScaled(0,8,25,4)
+            Text = ("C&urrent procedure")
+          }
+        }
+      }
+    }
+    { Separator2 Separator
+      MoveScaled(60,1,1,29)
+    }
+    { HBox5 VBox
+      MoveScaled(61,1,19,29)
+      Spacing = True
+      { btnNext Button
+        MoveScaled(0,0,17,4)
+        Text = ("&Next")
+        Picture = Picture["icon:/small/down"]
+      }
+      { btnPrevious Button
+        MoveScaled(0,5,17,4)
+        Text = ("&Previous")
+        Picture = Picture["icon:/small/up"]
+      }
+      { btnReplace Button
+        MoveScaled(0,10,17,4)
+        Text = ("&Replace")
+        Picture = Picture["icon:/small/replace"]
+      }
+      { btnReplaceAll Button
+        MoveScaled(0,15,17,4)
+        Text = ("Replace &all")
+        Picture = Picture["icon:/small/wizard"]
+      }
+      { btnBrowse2 Button btnBrowse
+        Name = "btnBrowse2"
+        MoveScaled(0,20,18,4)
+        Text = ("&Browse")
+        Picture = Picture["icon:/small/zoom-in"]
+      }
+      { btnClose Button
+        MoveScaled(0,25,18,4)
+        Text = ("Close")
+        Picture = Picture["icon:/small/close"]
+        Cancel = True
+      }
+    }
+    Index = 1
+    Text = ("Browse")
+    { lblNotFound TextLabel
+      MoveScaled(1,1,39,12)
+      Visible = False
+      Font = Font["Bold,+2"]
+      Expand = True
+      Padding = 4
+      Text = ("Search string cannot be found.")
+      Border = Border.Sunken
+    }
+    { tvwFind GridView
+      MoveScaled(1,1,47,16)
+      Expand = True
+      Mode = Select.Single
+      Header = GridView.Horizontal
+    }
+    { panSearch Panel
+      MoveScaled(54,1,19,24)
+      { picSearch PictureBox
+        MoveScaled(1,11,8,8)
+        Picture = Picture["icon:/huge/zoom-in"]
+        Stretch = True
+      }
+      { timSearch #Timer
+        #MoveScaled(8,16)
+        Delay = 100
+      }
+      { btnBrowseReplace Button
+        MoveScaled(0,5,19,4)
+        Text = ("Replace &all")
+        Picture = Picture["icon:/small/wizard"]
+      }
+      { btnBrowse Button
+        MoveScaled(0,0,19,4)
+        Text = ("&Browse")
+        Picture = Picture["icon:/small/zoom-in"]
+      }
+    }
+    Index = 0
+  }
+}
+
+# Gambas Action File 3.0
+
+{ Actions
+  { Action find
+    Text = "Search & Replace"
+    Picture = "icon:/small/find"
+  }
+}

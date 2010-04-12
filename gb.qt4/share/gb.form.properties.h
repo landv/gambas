@@ -75,7 +75,7 @@
 #define CTREEVIEW_PROPERTIES "*,Mode{Select.*}=Single,Sorted,Editable,Border=True,ScrollBar{Scroll.*}=Both"
 #define CVBOX_PROPERTIES CHBOX_PROPERTIES
 #define CVSPLIT_PROPERTIES "*"
-#define CWINDOW_PROPERTIES "*,Action,Text,Icon,Picture,Mask,Persistent,Resizable=True,Border=True,Type{WindowType.*}=Normal,Stacking{Window.Normal;Above;Below}=Normal,Minimized,Maximized,FullScreen,Sticky,SkipTaskbar," CWINDOW_ARRANGEMENT_PROPERTIES
+#define CWINDOW_PROPERTIES "*,Action,Text,Icon,Picture,Mask,Persistent,Resizable=True,Border=True,Type{WindowType.*}=Normal,Stacking{Window.Normal;Above;Below}=Normal,Minimized,Maximized,FullScreen,Sticky,SkipTaskbar,Opacity{Range:0;100}=100," CWINDOW_ARRANGEMENT_PROPERTIES
 
 #define DESCRIBE_CONTROL(_prop, _event, _size) \
 	GB_CONSTANT("_Properties", "s", _prop), \

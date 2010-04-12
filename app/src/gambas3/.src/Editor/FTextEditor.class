@@ -385,18 +385,6 @@ Public Sub OnShowString(sStr As String, bIgnoreCase As Boolean)
   
 End
 
-Public Sub mnuFind_Click()
-
-  FFind.Find
-
-End
-
-Public Sub mnuReplace_Click()
-
-  FFind.Find(True)
-
-End
-
 Private Sub AnalyzeCode(sText As String) As String
   
   Dim iInd As Integer
@@ -505,7 +493,7 @@ Private Sub SetViewMode(iViewMode As Integer)
     InitEditor($hEditor1)
     $hEditor2 = New Editor(Me) As "Editors"
     InitEditor($hEditor2)
-    FFind.OnNewForm(Me)
+    FSearch.OnNewForm(Me)
   Endif
   
   Select Case $iViewMode
@@ -564,3 +552,32 @@ Public Sub mnuShowCode_Click()
 
 End
 
+Public Sub GetText() As String
+  
+  Return Editor.Text
+  
+End
+
+Public Sub GetPosition() As Integer
+  
+  Return Editor.GetPosition()
+
+End
+
+Public Sub SetPosition(iPos As Integer, iLenFind As Integer, Optional bJustCheck As Boolean) As Boolean
+  
+  Return Editor.SetPosition(iPos, iLenFind, bJustCheck)
+  
+End
+
+Public Sub Replace(sReplace As String)
+  
+  Editor.Replace(sReplace)
+  
+End
+
+Public Sub GetSelection() As String
+  
+  Return Editor.GetSelection()
+  
+End

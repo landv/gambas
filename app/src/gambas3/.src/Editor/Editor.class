@@ -1,0 +1,75 @@
+' Gambas class file
+
+Export
+
+Public Sub GetPosition() As Integer
+  
+  Dim iLine, iColumn, iInd, iPos As Integer
+  
+  If Me.Selected Then 
+    iLine = Me.Selection.StartLine
+    iColumn = Me.Selection.StartColumn
+  Else
+    iLine = Me.Line
+    iColumn = Me.Column
+  Endif
+  
+  For iInd = 0 To iLine - 1
+    iPos += Len(Me.Lines[iInd].Text) + 1
+  Next
+  iPos += Len(String.Left(Me.Lines[iLine].Text, iColumn))
+  
+  Return iPos
+  
+End
+
+Public Sub SetPosition(iPos As Integer, iLenFind As Integer, bJustCheck As Boolean) As Boolean
+  
+  Dim iLine, iColumn As Integer
+  Dim iLen As Integer
+  Dim sLine As String
+  
+  While iLine < Me.Lines.Count
+  
+    iLen = Len(Me.Lines[iLine].Text)
+    If iPos <= iLen Then Break
+    iPos -= iLen + 1
+    Inc iLine
+    
+  Wend
+  
+  sLine = Me.Lines[iLine].Text
+  iColumn = String.Len(Left$(sLine, iPos))
+  
+  If Me.Highlight <> Highlight.None Then
+    sLine = Highlight.Purge(sLine, Not FSearch.IgnoreComments, Not FSearch.IgnoreStrings)
+    If Not Trim(String.Mid$(sLine, iColumn + 1, iLenFind)) Then Return True
+  Endif
+  
+  If bJustCheck Then Return
+  
+  Me.Goto(iLine, iColumn, True)
+  Me.Select(iLine, iColumn, iLine, iColumn + iLenFind)
+  
+End
+
+Public Sub Replace(sReplace As String)
+  
+  Dim iLine, iColumn As Integer
+  
+  If Not Me.Selected Then Return
+  
+  iLine = Me.Selection.StartLine
+  iColumn = Me.Selection.StartColumn
+  Me.Insert(sReplace)
+  Me.Select(iLine, iColumn, iLine, iColumn + String.Len(sReplace))
+  
+End
+
+Public Sub GetSelection() As String
+  
+  If Me.Selected And If Me.Selection.StartLine = Me.Selection.EndLine Then
+    Return Me.Selection.Text
+  Endif
+  
+End

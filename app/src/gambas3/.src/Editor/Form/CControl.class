@@ -117,7 +117,7 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
 
     Case "toolbutton"
       hCtrl = New ToolButton(hParent)
-      hCtrl.Picture = Picture["img/logo/logo-16.png"]
+      'hCtrl.Picture = Picture["img/logo/logo-16.png"]
 
     Case "textbox"
       hCtrl = New TextBox(hParent)

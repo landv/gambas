@@ -8,7 +8,6 @@
   Type = WindowType.Utility
   Arrangement = Arrange.Vertical
   { mnuEditor Menu
-    Text = ("")
     Enabled = False
     Visible = False
     { mnuUndo Menu btnUndo
@@ -24,7 +23,6 @@
       Shortcut = "Ctrl+Y"
     }
     { Menu1 Menu
-      Text = ("")
     }
     { mnuCut Menu btnCut
       Name = "mnuCut"
@@ -51,111 +49,82 @@
       Shortcut = "Ctrl+L"
     }
     { Menu2 Menu
-      Text = ("")
     }
-    { mnuFind Menu
-      Text = ("Find")
-      Picture = Picture["icon:/small/find"]
-      Toggle = True
+    { mnuFindNext Menu
+      Action = "find-next"
+      Text = ("Find next")
+      Picture = Picture["icon:/small/down"]
       Shortcut = "F3"
+    }
+    { mnuFindPrevious Menu
+      Action = "find-previous"
+      Text = ("Find previous")
+      Picture = Picture["icon:/small/up"]
+      Shortcut = "Shift+F3"
     }
   }
   { ToolBar1 ToolBar
     MoveScaled(1,1,90,4)
-    Text = ("")
     Separator = True
     { btnUndock ToolButton
       MoveScaled(0,0,4,4)
       ToolTip = ("Undock console")
-      Text = ("")
       Picture = Picture["icon:/small/fullscreen"]
       Toggle = True
     }
     { btnAbove ToolButton
       MoveScaled(4,0,4,4)
       ToolTip = ("Keep above")
-      Text = ("")
       Picture = Picture["img/16/raise.png"]
       Toggle = True
     }
     { btnClear ToolButton
       MoveScaled(8,0,4,4)
       ToolTip = ("Clear console")
-      Text = ("")
       Picture = Picture["icon:/small/clear"]
     }
     { btnCut ToolButton
       MoveScaled(12,0,4,4)
       ToolTip = ("Cut")
-      Text = ("")
       Picture = Picture["icon:/small/cut"]
     }
     { btnCopy ToolButton
       MoveScaled(16,0,4,4)
       ToolTip = ("Copy")
-      Text = ("")
       Picture = Picture["icon:/small/copy"]
     }
     { btnPaste ToolButton
       MoveScaled(20,0,4,4)
       ToolTip = ("Paste")
-      Text = ("")
       Picture = Picture["icon:/small/paste"]
     }
-    { HBox1 HBox
-      MoveScaled(24,0,62,4)
+    { sepCharset Separator
+      MoveScaled(25,0,1,4)
+    }
+    { chkCharset CheckBox
+      MoveScaled(28,0,28,4)
       Expand = True
-      { btnFind ToolButton
-        MoveScaled(0,0,4,4)
-        ToolTip = ("Find")
-        Text = ("")
-        Picture = Picture["icon:/small/find"]
-        Toggle = True
-      }
-      { sepFind Panel
-        MoveScaled(4,0,1,4)
-      }
-      { txtFind TextBox
-        MoveScaled(5,0,12,4)
-        Visible = False
-        Expand = True
-        Text = ("")
-      }
-      { btnNext ToolButton
-        MoveScaled(17,0,4,4)
-        Visible = False
-        ToolTip = ("Find next")
-        Text = ("")
-        Picture = Picture["icon:/small/down"]
-      }
-      { btnPrev ToolButton
-        MoveScaled(21,0,4,4)
-        Visible = False
-        ToolTip = ("Find previous")
-        Text = ("")
-        Picture = Picture["icon:/small/up"]
-      }
-      { btnCase ToolButton
-        MoveScaled(25,0,4,4)
-        Visible = False
-        ToolTip = ("Case sensitive")
-        Text = ("")
-        Picture = Picture["img/16/case.png"]
-        Toggle = True
-      }
-      { sepCharset Separator
-        MoveScaled(29,0,1,4)
-      }
-      { chkCharset CheckBox
-        MoveScaled(31,0,28,4)
-        Expand = True
-        Text = ("Use system charset")
-      }
+      Text = ("Use system charset")
     }
   }
   { edtOutput Editor
     MoveScaled(1,9,38,39)
     Expand = True
     Border = False
+  }
+}
+
+# Gambas Action File 3.0
+
+{ Actions
+  { Action find-next
+    Text = "Find next"
+    Shortcut = "F3"
+    Picture = "icon:/small/down"
+  }
+  { Action find-previous
+    Text = "Find previous"
+    Shortcut = "Shift+F3"
+    Picture = "icon:/small/up"
   }
 }

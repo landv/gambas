@@ -1311,6 +1311,23 @@ BEGIN_METHOD_VOID(CWINDOW_menu_hide)
 
 END_METHOD
 
+BEGIN_PROPERTY(Window_Opacity)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(WIDGET->windowOpacity() * 100);
+	else
+	{
+		double opacity = VPROP(GB_INTEGER) / 100.0;
+		
+		if (opacity < 0.0)
+			opacity = 0.0;
+		else if (opacity > 1.0)
+			opacity = 1.0;
+		
+		WIDGET->setWindowOpacity(opacity);
+	}
+
+END_PROPERTY
 
 
 /***************************************************************************/
@@ -1404,6 +1421,8 @@ GB_DESC CWindowDesc[] =
 	GB_PROPERTY("Sticky", "b", CWINDOW_sticky),
 	GB_PROPERTY("SkipTaskbar", "b", CWINDOW_skip_taskbar),
 	GB_PROPERTY("Visible", "b", CWINDOW_visible),
+	GB_PROPERTY("Opacity", "i", Window_Opacity),
+	
 	GB_PROPERTY("Arrangement", "i", CCONTAINER_arrangement),
 	GB_PROPERTY("Padding", "i", CCONTAINER_padding),
 	GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),

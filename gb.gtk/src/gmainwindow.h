@@ -87,6 +87,9 @@ public:
 	
 	void setMenuBarVisible(bool v);
 	bool isMenuBarVisible();
+	
+	double opacity();
+	void setOpacity(double v);
 
 //"Methods"
 	void center();

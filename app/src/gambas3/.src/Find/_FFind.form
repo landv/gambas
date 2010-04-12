@@ -2,8 +2,6 @@
 
 { Form Form
   MoveScaled(0,0,102,9)
-  Action = "find"
-  Text = ("")
   Arrangement = Arrange.Vertical
   { Panel1 Panel
     MoveScaled(2,1,32,1.1429)
@@ -15,54 +13,46 @@
     Padding = 1
     { btnClose ToolButton
       MoveScaled(0,0,4,4)
-      Text = ("")
       Picture = Picture["icon:/small/close"]
     }
     { cmbFind ComboBox
       MoveScaled(5,0,11,4)
       ToolTip = ("Find")
       Expand = True
-      Text = ("")
     }
     { ToolButton15 ToolButton
       MoveScaled(17,0,4,4)
       ToolTip = ("Find next")
       Action = "find-next"
-      Text = ("")
       Picture = Picture["icon:/small/down"]
     }
     { ToolButton14 ToolButton
       MoveScaled(21,0,4,4)
       ToolTip = ("Find previous")
       Action = "find-previous"
-      Text = ("")
       Picture = Picture["icon:/small/up"]
     }
     { ToolButton1 ToolButton
       MoveScaled(25,0,4,4)
       ToolTip = ("Search list")
       Action = "find-all"
-      Text = ("")
       Picture = Picture["icon:/small/zoom-in"]
     }
     { cmbReplace ComboBox
       MoveScaled(29,0,13,4)
       ToolTip = ("Replace")
       Expand = True
-      Text = ("")
     }
     { ToolButton16 ToolButton
       MoveScaled(43,0,4,4)
       ToolTip = ("Replace")
       Action = "replace"
-      Text = ("")
       Picture = Picture["icon:/small/replace"]
     }
     { ToolButton17 ToolButton
       MoveScaled(47,0,4,4)
       ToolTip = ("Replace all")
       Action = "replace-all"
-      Text = ("")
       Picture = Picture["icon:/small/wizard"]
     }
     { sepIn Separator
@@ -72,7 +62,6 @@
       MoveScaled(53,0,4,4)
       ToolTip = ("Search in procedure")
       Action = "find-in-sub"
-      Text = ("")
       Picture = Picture["img/16/procedure.png"]
       Radio = True
       Toggle = True
@@ -81,7 +70,6 @@
       MoveScaled(57,0,4,4)
       ToolTip = ("Search in file")
       Action = "find-in-module"
-      Text = ("")
       Picture = Picture["img/16/module.png"]
       Radio = True
       Toggle = True
@@ -91,7 +79,6 @@
       MoveScaled(61,0,4,4)
       ToolTip = ("Search in project")
       Action = "find-in-project"
-      Text = ("")
       Picture = Picture["img/16/gambas.png"]
       Radio = True
       Toggle = True
@@ -104,7 +91,6 @@
       Font = Font["-1"]
       ToolTip = ("Case sensitive")
       Action = "find-case"
-      Text = ("")
       Picture = Picture["img/16/case.png"]
       Toggle = True
     }
@@ -113,7 +99,6 @@
       Font = Font["-1"]
       ToolTip = ("Word only")
       Action = "find-word"
-      Text = ("")
       Picture = Picture["img/16/word.png"]
       Toggle = True
     }
@@ -121,7 +106,6 @@
       MoveScaled(77,0,4,4)
       ToolTip = ("Search in comments")
       Action = "find-comment"
-      Text = ("")
       Picture = Picture["img/16/comment.png"]
       Toggle = True
     }
@@ -129,7 +113,6 @@
       MoveScaled(81,0,4,4)
       ToolTip = ("Search in strings")
       Action = "find-string"
-      Text = ("")
       Picture = Picture["img/16/string.png"]
       Toggle = True
     }
@@ -139,10 +122,6 @@
 # Gambas Action File 3.0
 
 { Actions
-  { Action find
-    Text = ""
-    Picture = "$Form"
-  }
   { Action find-all
     Text = "Search list"
     Picture = "icon:/small/zoom-in"

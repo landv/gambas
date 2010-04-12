@@ -1011,33 +1011,6 @@ Static Public Function IsEndProc(sLine As String) As Boolean
 End
 
 
-Public Sub mnuFind_Click()
-
-  FFind.Find
-
-End
-
-Public Sub mnuReplace_Click()
-
-  FFind.Find(True)
-
-End
-
-
-' PUBLIC SUB mnuFindNext_Click()
-' 
-'   FFind.FindNext
-' 
-' END
-' 
-' 
-' PUBLIC SUB mnuFindPrevious_Click()
-' 
-'   FFind.FindPrevious
-' 
-' END
-
-
 Public Function CanSetBreakpoint(iLine As Integer) As Boolean
 
   Dim sLine As String
@@ -2726,7 +2699,7 @@ Private Sub SetViewMode(iViewMode As Integer)
     InitEditor($hEditor1)
     $hEditor2 = New Editor(Me) As "Editors"
     InitEditor($hEditor2)
-    FFind.OnNewForm(Me)  
+    FSearch.OnNewForm(Me)  
   Endif
 
   Select Case $iViewMode
@@ -2819,12 +2792,6 @@ Public Sub SetFoldedProc(aFold As Integer[])
     Editor.Lines[iLine].Expanded = False
   Next
   
-End
-
-Public Sub Editors_LostFocus()
-
-  'mnuEditor.Enabled = False
-
 End
 
 Public Sub mnuStartup_Click()
@@ -3042,5 +3009,35 @@ Public Sub RenameControl(sOld As String, sNew As String)
   Next
   
   Editor.End
+  
+End
+
+Public Sub GetText() As String
+  
+  Return Editor.Text
+  
+End
+
+Public Sub GetPosition() As Integer
+  
+  Return Editor.GetPosition()
+
+End
+
+Public Sub SetPosition(iPos As Integer, iLenFind As Integer, Optional bJustCheck As Boolean) As Boolean
+  
+  Return Editor.SetPosition(iPos, iLenFind, bJustCheck)
+  
+End
+
+Public Sub Replace(sReplace As String)
+  
+  Editor.Replace(sReplace)
+  
+End
+
+Public Sub GetSelection() As String
+  
+  Return Editor.GetSelection()
   
 End

@@ -512,7 +512,7 @@ void GEditor::paintShowString(QPainter &p, GLine *l, int x, int y, int xmin, int
 		{
 			if (pos >= (int)l->s.length())
 				break;
-			pos = l->s.find(_showString, pos, _showStringIgnoreCase);
+			pos = l->s.find(_showString, pos, !_showStringIgnoreCase);
 			if (pos < 0)
 				break;
 			ps = lineWidth(row, pos);

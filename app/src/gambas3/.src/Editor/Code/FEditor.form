@@ -3,10 +3,8 @@
 { Form Form
   MoveScaled(4,12,127,80)
   Background = Color.Background
-  Text = ("")
   Persistent = True
   { mnuEditor Menu
-    Text = ("")
     Enabled = False
     { mnuGoto Menu
       Text = ("Go to")
@@ -40,7 +38,6 @@
       Picture = Picture["icon:/small/play"]
     }
     { mnuSepGoto Menu
-      Text = ("")
     }
     { mnuUntil Menu
       Text = ("Run &until current line")
@@ -60,7 +57,6 @@
       Visible = False
     }
     { mnuSepWatch Menu
-      Text = ("")
     }
     { mnuUndo Menu
       Action = ".undo"
@@ -75,7 +71,6 @@
       Shortcut = "Ctrl+Y"
     }
     { mnuSepUndo Menu
-      Text = ("")
     }
     { mnuCut Menu
       Text = ("Cut")
@@ -99,7 +94,6 @@
       Shortcut = "Ctrl+Shift+V"
     }
     { Menu3 Menu
-      Text = ("")
     }
     { mnuSelectAll Menu
       Action = ".select-all"
@@ -107,7 +101,6 @@
       Shortcut = "Ctrl+A"
     }
     { mnuSep2 Menu
-      Text = ("")
     }
     { mnuComment Menu
       Action = ".comment"
@@ -122,33 +115,20 @@
       Shortcut = "Ctrl+U"
     }
     { mnuSepComment Menu
-      Text = ("")
-    }
-    { mnuFind Menu
-      Action = ".find"
-      Text = ("Find...")
-      Picture = Picture["icon:/small/find"]
-    }
-    { mnuReplace Menu
-      Action = ".replace"
-      Text = ("Replace...")
-      Picture = Picture["icon:/small/replace"]
-      Shortcut = "Ctrl+R"
     }
     { mnuFindNext Menu
       Action = "find-next"
-      Text = ("Find Next")
+      Text = ("Find next")
       Picture = Picture["icon:/small/down"]
       Shortcut = "F3"
     }
     { mnuFindPrevious Menu
       Action = "find-previous"
-      Text = ("Find Previous")
+      Text = ("Find previous")
       Picture = Picture["icon:/small/up"]
       Shortcut = "Shift+F3"
     }
     { mnuSep4 Menu
-      Text = ("")
     }
     { mnuEditorView Menu
       Text = ("View")
@@ -172,7 +152,6 @@
       }
     }
     { mnuSep5 Menu
-      Text = ("")
     }
     { mnuReload Menu
       Action = ".reload"
@@ -187,7 +166,6 @@
     }
   }
   { mnuPasteAs Menu
-    Text = ("")
     { mnuPasteAsString Menu
       Action = ".paste-string"
       Text = ("Paste as string")
@@ -211,7 +189,6 @@
       MoveScaled(0,0,4,4)
       ToolTip = ("Save")
       Action = ".save"
-      Text = ("")
       Picture = Picture["icon:/small/save"]
     }
     { btnReload ToolButton mnuReload
@@ -219,7 +196,6 @@
       MoveScaled(4,0,4,4)
       ToolTip = ("Reload")
       Action = ".reload"
-      Text = ("")
       Picture = Picture["icon:/small/refresh"]
     }
     { btnForm ToolButton mnuForm
@@ -227,7 +203,6 @@
       MoveScaled(8,0,4,4)
       ToolTip = ("Form")
       Action = ".show-form"
-      Text = ("")
       Picture = Picture["img/16/form.png"]
     }
     { btnCut ToolButton mnuCut
@@ -236,7 +211,6 @@
       Visible = False
       ToolTip = ("Cut")
       Action = ".cut"
-      Text = ("")
       Picture = Picture["icon:/small/cut"]
     }
     { btnCopy ToolButton mnuCopy
@@ -245,7 +219,6 @@
       Visible = False
       ToolTip = ("Copy")
       Action = ".copy"
-      Text = ("")
       Picture = Picture["icon:/small/copy"]
     }
     { btnPaste MenuButton mnuPaste
@@ -254,7 +227,6 @@
       Visible = False
       ToolTip = ("Paste")
       Action = ".paste"
-      Text = ("")
       Picture = Picture["icon:/small/paste"]
       Menu = "mnuPasteAs"
     }
@@ -263,7 +235,6 @@
       MoveScaled(27,0,4,4)
       ToolTip = ("Undo")
       Action = ".undo"
-      Text = ("")
       Picture = Picture["icon:/small/undo"]
     }
     { btnRedo ToolButton mnuRedo
@@ -271,7 +242,6 @@
       MoveScaled(31,0,4,4)
       ToolTip = ("Redo")
       Action = ".redo"
-      Text = ("")
       Picture = Picture["icon:/small/redo"]
     }
     { btnIndent ToolButton
@@ -279,7 +249,6 @@
       Visible = False
       ToolTip = ("Indent")
       Action = ".indent"
-      Text = ("")
       Picture = Picture["icon:/small/indent"]
     }
     { btnUnindent ToolButton
@@ -287,7 +256,6 @@
       Visible = False
       ToolTip = ("Unindent")
       Action = ".unindent"
-      Text = ("")
       Picture = Picture["icon:/small/unindent"]
     }
     { btnComment ToolButton mnuComment
@@ -295,7 +263,6 @@
       MoveScaled(40,0,4,4)
       ToolTip = ("Comment")
       Action = ".comment"
-      Text = ("")
       Picture = Picture["img/16/comment.png"]
     }
     { btnUncomment ToolButton mnuUncomment
@@ -303,7 +270,6 @@
       MoveScaled(43,0,4,4)
       ToolTip = ("Uncomment")
       Action = ".uncomment"
-      Text = ("")
       Picture = Picture["img/16/uncomment.png"]
     }
     { btnNoSplit ToolButton mnuNoSplit
@@ -311,7 +277,6 @@
       MoveScaled(46,0,4,4)
       ToolTip = ("No split")
       Action = ".view-nosplit"
-      Text = ("")
       Picture = Picture["icon:/small/view-normal"]
     }
     { btnHorizontalSplit ToolButton mnuHorizontalSplit
@@ -319,7 +284,6 @@
       MoveScaled(49,0,4,4)
       ToolTip = ("Horizontal split")
       Action = ".view-hsplit"
-      Text = ("")
       Picture = Picture["icon:/small/view-split-h"]
     }
     { btnVerticalSplit ToolButton mnuVerticalSplit
@@ -327,7 +291,6 @@
       MoveScaled(52,0,4,4)
       ToolTip = ("Vertical split")
       Action = ".view-vsplit"
-      Text = ("")
       Picture = Picture["icon:/small/view-split-v"]
     }
     { Separator1 Separator
@@ -345,7 +308,6 @@
       Visible = False
       ToolTip = ("Find definition")
       Action = ".find-definition"
-      Text = ("")
       Picture = Picture["icon:/16/info"]
     }
     { btnLastPosition ToolButton mnuLastPosition
@@ -354,7 +316,6 @@
       Visible = False
       ToolTip = ("Go back")
       Action = ".go-back"
-      Text = ("")
       Picture = Picture["icon:/16/left"]
     }
     { HBox1 HBox
@@ -367,7 +328,6 @@
       { lblEditor Label
         MoveScaled(4,0,6,4)
         AutoResize = True
-        Text = ("")
       }
       { Panel2 Panel
         MoveScaled(12,0,1,4)
@@ -381,8 +341,7 @@
     Border = False
   }
   { timProc #Timer
-    #X = 420
-    #Y = 273
+    #MoveScaled(61,34)
     Delay = 50
   }
   { splHorizontal HSplit
@@ -394,8 +353,7 @@
     Visible = False
   }
   { timShowHelp #Timer
-    #X = 518
-    #Y = 175
+    #MoveScaled(62,25)
   }
   { panProc Panel
     MoveScaled(83,9,31,39)
@@ -437,23 +395,18 @@
     Text = "Cut"
     Picture = "icon:/small/cut"
   }
-  { Action find
-    Text = "Find..."
-    Shortcut = ""
-    Picture = "icon:/small/find"
-  }
   { Action find-definition
     Text = "Find definition"
     Shortcut = "F2"
     Picture = "icon:/16/info"
   }
   { Action find-next
-    Text = "Find Next"
+    Text = "Find next"
     Shortcut = "F3"
     Picture = "icon:/small/down"
   }
   { Action find-previous
-    Text = "Find Previous"
+    Text = "Find previous"
     Shortcut = "Shift+F3"
     Picture = "icon:/small/up"
   }
@@ -504,11 +457,6 @@
     Text = "Reload"
     Shortcut = ""
     Picture = "icon:/small/refresh"
-  }
-  { Action replace
-    Text = "Replace..."
-    Shortcut = "Ctrl+R"
-    Picture = "icon:/small/replace"
   }
   { Action save
     Text = "Save"
