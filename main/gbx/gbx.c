@@ -308,9 +308,6 @@ int main(int argc, char **argv)
 
 	argc -= n - 1;
 	
-	for (i = 0; i < argc; i++)
-		fprintf(stderr, "argv[%d] = %s\n", i, argv[i]);
-
   TRY
   {
     init(file);
