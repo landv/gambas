@@ -172,6 +172,11 @@ int main(int argc, char **argv)
   COMMON_init();
   //STRING_init();
 
+	fprintf(stderr, "argc = %d\n", argc);
+	for (i = 0; i < argc; i++)
+		fprintf(stderr, "argv[%d] = '%s'\n", i, argv[i]);
+	fprintf(stderr, "\n");
+
 	prog = argv[0];
 	EXEC_arch = (strcmp(prog, "gbr" GAMBAS_VERSION_STRING) == 0);
 
@@ -182,7 +187,7 @@ int main(int argc, char **argv)
 			if (EXEC_arch)
 			{
 				printf(
-					"Usage: gbr" GAMBAS_VERSION_STRING " [options] [<executable file>] [-- <arguments>]\n\n"
+					"Usage: gbr" GAMBAS_VERSION_STRING " [options] <executable file> [<arguments>]\n\n"
 					);
 			}
 			else
@@ -273,6 +278,7 @@ int main(int argc, char **argv)
 		}
 		else if (is_option(argv[i], '-'))
 		{
+			i++;
 			break;
 		}
 		else
@@ -304,17 +310,12 @@ int main(int argc, char **argv)
 
 	argc -= n - 1;
 
-	//printf("argc = %d\n", argc);
-	/*for (i = 0; i < argc; i++)
-		fprintf(stderr, "argv[%d] = '%s'\n", i, argv[i]);
-	fprintf(stderr, "\n");*/
-
   TRY
   {
     init(file);
     
-		if (!EXEC_arch)
-    	argv[0] = PROJECT_name;
+		//if (!EXEC_arch)
+    argv[0] = PROJECT_name;
 
     HOOK(main)(&argc, argv);
     EXEC_main_hook_done = TRUE;

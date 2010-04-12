@@ -453,7 +453,7 @@ void PROJECT_exit(void)
   if (project_buffer)
     FREE(&project_buffer, "PROJECT_exit");
 
-	if (*PROJECT_name)
+	if (PROJECT_name && *PROJECT_name)
 	{
 		STRING_free(&PROJECT_name);
 		STRING_free(&PROJECT_path);
