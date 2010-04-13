@@ -433,7 +433,7 @@ msgstr ""
 
 #: FColorChooser.class:207 FCommit.class:397 FConflict.class:191
 #: FConnectionEditor.class:261 FCreateFile.class:929 FDebugInfo.class:490
-#: FEditor.class:2111 FFindList.class:195 _FFind.class:114
+#: FEditor.class:2111 FFindList.class:195 _FFind.class:114 FFind.class:114
 #: FFontChooser.class:85 FForm.class:2831 FGotoLine.class:63
 #: FHelpBrowser.class:269 FIconEditor.class:1396 FImportTable.class:38
 #: FList.class:155 FMain.class:210 FMakeExecutable.class:142
@@ -508,12 +508,12 @@ msgid "Redo"
 msgstr ""
 
 #: FCommit.class:269 FConflict.class:362 FEditor.class:3418
-#: FTextEditor.class:842
+#: FTextEditor.class:861
 msgid "Indent"
 msgstr ""
 
 #: FCommit.class:276 FConflict.class:369 FEditor.class:3426
-#: FTextEditor.class:849
+#: FTextEditor.class:868
 msgid "Unindent"
 msgstr ""
 
@@ -1269,11 +1269,13 @@ msgstr ""
 msgid "Uncomment"
 msgstr ""
 
-#: FEditor.class:3266 _FFind.class:707 FOutput.class:408 FTextEditor.class:719
+#: FEditor.class:3266 _FFind.class:707 FFind.class:711 FOutput.class:408
+#: FTextEditor.class:719
 msgid "Find next"
 msgstr ""
 
-#: FEditor.class:3273 _FFind.class:714 FOutput.class:415 FTextEditor.class:726
+#: FEditor.class:3273 _FFind.class:714 FFind.class:719 FOutput.class:415
+#: FTextEditor.class:726
 msgid "Find previous"
 msgstr ""
 
@@ -1321,63 +1323,64 @@ msgstr ""
 msgid "Find list"
 msgstr ""
 
-#: FFindList.class:273 _FFind.class:395 FSearch.class:332 FTranslate.class:578
+#: FFindList.class:273 _FFind.class:395 FFind.class:395 FSearch.class:332
+#: FTranslate.class:578
 msgid "Search string cannot be found."
 msgstr ""
 
-#: _FFind.class:114
+#: _FFind.class:114 FFind.class:114
 msgid "Are you sure to want to replace all?"
 msgstr ""
 
-#: _FFind.class:114 FSearch.class:533
+#: _FFind.class:114 FFind.class:114 FSearch.class:533
 msgid "Replace"
 msgstr ""
 
-#: _FFind.class:397 FSearch.class:334
+#: _FFind.class:397 FFind.class:397 FSearch.class:334
 msgid "Search string replaced once."
 msgstr ""
 
-#: _FFind.class:399 FSearch.class:336
+#: _FFind.class:399 FFind.class:399 FSearch.class:336
 msgid "Search string replaced &1 times."
 msgstr ""
 
-#: _FFind.class:701
+#: _FFind.class:701 FFind.class:704
 msgid "Find"
 msgstr ""
 
-#: _FFind.class:721
+#: _FFind.class:721 FFind.class:727
 msgid "Search list"
 msgstr ""
 
-#: _FFind.class:741
+#: _FFind.class:741 FFind.class:750
 msgid "Replace all"
 msgstr ""
 
-#: _FFind.class:752
+#: _FFind.class:752 FFind.class:762
 msgid "Search in procedure"
 msgstr ""
 
-#: _FFind.class:761
+#: _FFind.class:761 FFind.class:772
 msgid "Search in file"
 msgstr ""
 
-#: _FFind.class:771 FMain.class:2766
+#: _FFind.class:771 FFind.class:783 FMain.class:2766
 msgid "Search in project"
 msgstr ""
 
-#: _FFind.class:785
+#: _FFind.class:785 FFind.class:798
 msgid "Case sensitive"
 msgstr ""
 
-#: _FFind.class:794
+#: _FFind.class:794 FFind.class:808
 msgid "Word only"
 msgstr ""
 
-#: _FFind.class:802
+#: _FFind.class:802 FFind.class:817
 msgid "Search in comments"
 msgstr ""
 
-#: _FFind.class:810
+#: _FFind.class:810 FFind.class:826
 msgid "Search in strings"
 msgstr ""
 
@@ -1508,7 +1511,7 @@ msgstr ""
 msgid "Menu editor..."
 msgstr ""
 
-#: FForm.class:3587 FTextEditor.class:795
+#: FForm.class:3587 FTextEditor.class:814
 msgid "Code"
 msgstr ""
 
@@ -4897,14 +4900,6 @@ msgstr ""
 
 #: ProjectItem.class:70
 msgid "Author"
-msgstr ""
-
-#: .project:1
-msgid "Gambas 3"
-msgstr ""
-
-#: .project:2
-msgid "Integrated Development Environment for Gambas"
 msgstr ""
 
 #: Project.module:145
