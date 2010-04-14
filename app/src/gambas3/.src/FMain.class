@@ -1175,7 +1175,7 @@ Public Sub Action_Activate(Key As String) As Boolean
     Case "find-previous"
       FSearch.FindPrevious
     Case "find-project"
-      FSearch.FindProject
+      cmbFind_Activate
     
     Case "console"
       If Action["console"].Value Then Try FOutput.SetFocus

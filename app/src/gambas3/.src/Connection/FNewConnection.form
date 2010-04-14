@@ -2,7 +2,6 @@
 
 { Form Form
   MoveScaled(0,0,70,69)
-  Text = ("")
   Icon = Picture["img/16/database.png"]
   Resizable = False
   Arrangement = Arrange.Vertical
@@ -18,7 +17,6 @@
     { txtName TextBox
       MoveScaled(27,0,22,4)
       Expand = True
-      Text = ("")
     }
   }
   { HBox2 HBox
@@ -30,7 +28,6 @@
     { cmbType ComboBox
       MoveScaled(27,0,22,4)
       Expand = True
-      Text = ("")
       ReadOnly = True
       List = [("MySQL"), ("PostgreSQL"), ("SQLite"), ("Firebird"), ("ODBC")]
     }
@@ -44,7 +41,6 @@
     { txtHost TextBox
       MoveScaled(27,0,23,4)
       Expand = True
-      Text = ("")
     }
   }
   { panPath HBox
@@ -57,7 +53,6 @@
     { txtPath ButtonBox
       MoveScaled(27,0,23,4)
       Expand = True
-      Text = ("")
       ReadOnly = True
     }
   }
@@ -73,7 +68,6 @@
       { txtUser TextBox
         MoveScaled(27,0,23,4)
         Expand = True
-        Text = ("")
       }
     }
     { HBox5 HBox
@@ -85,7 +79,6 @@
       { txtPassword TextBox
         MoveScaled(27,0,23,4)
         Expand = True
-        Text = ("")
         Password = True
       }
     }
@@ -93,7 +86,6 @@
       MoveScaled(0,10,68,3)
       { Label9 Label
         MoveScaled(0,0,18,3)
-        Text = ("")
       }
       { chkRememberPassword CheckBox
         MoveScaled(27,0,24,3)
@@ -111,7 +103,6 @@
     { txtDatabase ButtonBox
       MoveScaled(27,0,23,4)
       Expand = True
-      Text = ("")
       Picture = Picture["icon:/small/view-detail"]
     }
   }
@@ -120,7 +111,6 @@
     Visible = False
     { Label8 Label
       MoveScaled(0,0,18,3)
-      Text = ("")
     }
     { VBox1 VBox
       MoveScaled(32,0,35,18)
@@ -136,13 +126,11 @@
         { btnCreateDatabase Button
           MoveScaled(0,0,14,4)
           Expand = True
-          Text = ("")
           Picture = Picture["icon:/small/new"]
         }
         { btnDeleteDatabase Button
           MoveScaled(15,0,14,4)
           Expand = True
-          Text = ("")
           Picture = Picture["icon:/small/delete"]
         }
       }
@@ -152,7 +140,6 @@
     MoveScaled(1,60,68,3)
     { Label10 Label
       MoveScaled(0,0,18,3)
-      Text = ("")
     }
     { chkIgnoreCharset CheckBox
       MoveScaled(27,0,24,3)

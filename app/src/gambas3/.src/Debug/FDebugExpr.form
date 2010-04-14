@@ -3,7 +3,6 @@
 { Form Form
   MoveScaled(0,0,30,30)
   Foreground = &H000000&
-  Text = ("")
   Type = WindowType.Utility
   SkipTaskbar = True
   Arrangement = Arrange.Vertical
@@ -14,13 +13,11 @@
       MoveScaled(0,0,16,4)
       Font = Font["Bold"]
       Expand = True
-      Text = ("")
       Border = False
     }
     { btnHidden ToolButton
       MoveScaled(22,0,4,4)
       ToolTip = ("Show hidden symbols")
-      Text = ("")
       Picture = Picture["icon:/small/lamp"]
       Toggle = True
     }

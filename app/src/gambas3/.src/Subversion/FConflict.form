@@ -2,7 +2,6 @@
 
 { Form Form
   MoveScaled(0,0,102,74)
-  Text = ("")
   Icon = Picture["icon:/small/warning"]
   Arrangement = Arrange.Vertical
   Spacing = True
@@ -16,49 +15,41 @@
       { btnOpen ToolButton
         MoveScaled(0,0,4,4)
         ToolTip = ("Open")
-        Text = ("")
         Picture = Picture["icon:/small/open"]
       }
       { btnCut ToolButton
         MoveScaled(4,0,4,4)
         ToolTip = ("Cut")
-        Text = ("")
         Picture = Picture["icon:/small/cut"]
       }
       { btnCopy ToolButton
         MoveScaled(8,0,4,4)
         ToolTip = ("Copy")
-        Text = ("")
         Picture = Picture["icon:/small/copy"]
       }
       { btnPaste ToolButton
         MoveScaled(12,0,4,4)
         ToolTip = ("Paste")
-        Text = ("")
         Picture = Picture["icon:/small/paste"]
       }
       { btnUndo ToolButton
         MoveScaled(16,0,4,4)
         ToolTip = ("Undo")
-        Text = ("")
         Picture = Picture["icon:/small/undo"]
       }
       { btnRedo ToolButton
         MoveScaled(20,0,4,4)
         ToolTip = ("Redo")
-        Text = ("")
         Picture = Picture["icon:/small/redo"]
       }
       { btnIndent ToolButton
         MoveScaled(24,0,4,4)
         ToolTip = ("Indent")
-        Text = ("")
         Picture = Picture["icon:/small/indent"]
       }
       { btnUnindent ToolButton
         MoveScaled(28,0,4,4)
         ToolTip = ("Unindent")
-        Text = ("")
         Picture = Picture["icon:/small/unindent"]
       }
       { Panel2 Panel
@@ -69,7 +60,6 @@
         MoveScaled(55,0,5,4)
         Font = Font["Bold"]
         AutoResize = True
-        Text = ("")
       }
     }
     { tabConflict TabStrip
@@ -106,7 +96,6 @@
         { lblPath Label
           MoveScaled(2,5,53,4)
           Font = Font["+2"]
-          Text = ("")
           Border = Border.Sunken
         }
         { Panel3 Panel

@@ -29,7 +29,6 @@
         MoveScaled(0,0,60,4)
         Background = Color.Background
         Expand = True
-        Text = ("")
         ReadOnly = True
       }
       { Label6 Label
@@ -39,7 +38,6 @@
       { cmbCharset ComboBox
         MoveScaled(25,5,35,4)
         Expand = True
-        Text = ("")
         List = [("UTF-8"), ("ISO 8859-1"), ("ISO 8859-15"), ("WINDOWS-1252")]
       }
       { Label7 Label
@@ -49,7 +47,6 @@
       { cmbEndOfLine ComboBox
         MoveScaled(25,10,35,4)
         Expand = True
-        Text = ("")
         ReadOnly = True
         List = [("Unix"), ("Windows"), ("Mac")]
       }
@@ -60,7 +57,6 @@
       { cmbDelim ComboBox
         MoveScaled(25,15,35,4)
         Expand = True
-        Text = ("")
         List = [("Tab"), ("Space"), (","), (";"), (":")]
       }
       { Label3 Label
@@ -70,7 +66,6 @@
       { cmbEscape ComboBox
         MoveScaled(25,20,35,4)
         Expand = True
-        Text = ("")
         List = [(""), ("'"), ("\"")]
       }
       { chkStrip CheckBox
@@ -95,7 +90,6 @@
       { cmbTable ComboBox
         MoveScaled(16,0,44,4)
         Expand = True
-        Text = ("")
       }
       { Panel2 Panel
         MoveScaled(0,5,16,3)
@@ -113,7 +107,6 @@
         MoveScaled(16,10,44,4)
         Enabled = False
         Expand = True
-        Text = ("")
         ReadOnly = True
       }
     }
@@ -122,7 +115,6 @@
     { txtPreview TextArea
       MoveScaled(1,1,61,43)
       Expand = True
-      Text = ("")
       ReadOnly = True
     }
     Index = 2

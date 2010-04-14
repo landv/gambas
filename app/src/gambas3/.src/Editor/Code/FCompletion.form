@@ -2,7 +2,6 @@
 
 { Form Form
   MoveScaled(0,2.1429,69,17)
-  Text = ("")
   Icon = Picture["img/16/magic.png"]
   Persistent = True
   Border = False
@@ -12,6 +11,9 @@
     MoveScaled(1,1,67,15)
     Arrangement = Arrange.Horizontal
     Border = Border.Plain
+    { timHelp #Timer
+      Delay = 100
+    }
     { lvwComp ListView
       MoveScaled(1,1,7,6)
       Border = False
@@ -23,11 +25,6 @@
       MoveScaled(10,1,54,13)
       Expand = True
       Cached = True
-    }
-    { timHelp #Timer
-      #X = 266
-      #Y = 21
-      Delay = 100
     }
     { panRight Panel
       MoveScaled(65,1,1,13)

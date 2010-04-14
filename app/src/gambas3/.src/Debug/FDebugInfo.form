@@ -86,7 +86,6 @@
         { cmbWatch ComboBox
           MoveScaled(0,0,27,4)
           Expand = True
-          Text = ("")
         }
         { btnWatch ToolButton
           MoveScaled(27,0,10,4)
@@ -122,6 +121,9 @@
       Index = 4
       Text = ("Breakpoints")
       Picture = Picture["icon:/small/flag"]
+      { timBreakpoint #Timer
+        Delay = 250
+      }
       { VBox1 HBox
         MoveScaled(0,0,55,4)
         { btnRemoveBreak ToolButton
@@ -147,11 +149,6 @@
         Expand = True
         Sorted = True
         Border = False
-      }
-      { timBreakpoint #Timer
-        #X = 301
-        #Y = 63
-        Delay = 250
       }
       Index = 0
     }
