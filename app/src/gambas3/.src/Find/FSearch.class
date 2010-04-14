@@ -9,14 +9,31 @@ Public SearchString As String
 Public ReplaceString As String
 
 Private $hCurrent As Object
-Private $hPosition As CFindResult
 Private $sGrep As String
 Private $bReplace As Boolean
+Private $aBrowse As New CFindResult[]
+Private $hFont As Font
+Private $aExt As String[] = ["JPG", "JPEG", "BMP", "GIF", "PNG", "ICO", "XPM", "GAMBAS"]
 
 Private Const GO_FORWARD As Integer = 0
 Private Const GO_BACKWARD As Integer = 1
 Private Const DO_REPLACE As Integer = 2
 Private Const DO_ALL As Integer = 4
+
+Public Sub _new()
+  
+  With tvwFind
+    .Columns.Count = 4  
+    .Columns[0].Width = Desktop.Scale * 16
+    .Columns[0].Text = ("File")
+    .Columns[1].Width = Desktop.Scale * 8
+    .Columns[1].Text = ("Line")
+    .Columns[2].Width = Desktop.Scale * 8
+    .Columns[2].Text = ("Column")
+    .Columns[3].Text = ("Text")    
+  End With
+  
+End
 
 Public Sub Form_Open()
 
@@ -29,6 +46,8 @@ Public Sub Form_Open()
   chkIgnoreStrings.Value = Settings["/FSearch/IgnoreStrings", False]
   chkRegularExpression.Value = Settings["/FSearch/RegularExpression", False]
   chkWordOnly.Value = Settings["/FSearch/WordOnly", False]
+  
+  ReadConfig
 
 End
 
@@ -43,6 +62,14 @@ Public Sub Form_Close()
   Settings["/FSearch/IgnoreStrings"] = CBool(chkIgnoreStrings.Value)
   Settings["/FSearch/RegularExpression"] = CBool(chkRegularExpression.Value)
   Settings["/FSearch/WordOnly"] = CBool(chkWordOnly.Value)
+
+End
+
+Public Sub ReadConfig()
+  
+  tvwFind.Font.Grade = - Settings["/GlobalFont", 0]
+  $hFont = Font[Settings["/Editor/Font", Project.DEFAULT_FONT]]
+  tvwFind.Refresh
 
 End
 
@@ -96,7 +123,7 @@ Public Sub Update(Optional bForce As Boolean)
   btnPrevious.Visible = Not bAllProject
   btnReplace.Visible = Not bAllProject
   btnReplaceAll.Visible = Not bAllProject
-  btnBrowse2.Visible = bAllProject
+  'btnBrowse2.Visible = bAllProject
   
   UpdateTitle
   
@@ -140,20 +167,6 @@ Public Sub cmbReplace_Activate()
 
   btnReplace.Value = True
 
-End
-
-Private Sub StoreCombo(hCombo As ComboBox)
-  
-  Dim sText As String = hCombo.Text
-  Dim iInd As Integer
-
-  If Not sText Then Return 
-  
-  iInd = hCombo.Find(sText)
-  If iInd >= 0 Then hCombo.Remove(iInd)
-  hCombo.Add(sText, 0)
-  hCombo.Text = sText
-  
 End
 
 Private Sub ShowMessage(sMsg As String, hCtrl As control)
@@ -210,13 +223,18 @@ End
 '   
 ' End
 
-Private Sub GrepFile(hFile As Object, Optional sPath As String) As String[]
+Private Sub GrepFile(hFile As Object) As CFindResult[]
   
   Dim sText As String
   Dim hProcess As Process
   Dim aGrep As String[]
+  Dim aResult As New CFindResult[]
+  Dim sFind As String
+  Dim aFind As String[]
+  Dim hResult As CFindResult
   
-  If hFile Then sText = hFile.GetText()
+  Try sText = hFile.GetText()
+  If Error Then Return aResult
   
   'grep -nR -F -I -i -w "Date" -ob --exclude=*~ --exclude-dir=.svn -s * .src
   
@@ -230,41 +248,34 @@ Private Sub GrepFile(hFile As Object, Optional sPath As String) As String[]
   If WordOnly Then aGrep.Add("-w")
   aGrep.Add(SearchString)
   
-  If hFile Then
-  
-    $sGrep = ""
-    hProcess = Exec aGrep For Read Write As "Grep"
-    Print #hProcess, sText;
-    Close #hProcess
-    While hProcess.State = Process.Running
-      Wait
-    Wend
-    
-  Else
-  
-    aGrep.Add(sPath)
-    Exec aGrep To $sGrep
-  
-  Endif
+  $sGrep = ""
+  hProcess = Exec aGrep For Read Write As "Grep"
+  Print #hProcess, sText;
+  Close #hProcess
+  While hProcess.State = Process.Running
+    Wait
+  Wend
 
-  Return Split($sGrep, "\n", "", True)
+  For Each sFind In Split($sGrep, "\n", "", True)
+    aFind = Split(sFind, ":")
+    hResult = New CFindResult
+    hResult.Path = hFile.Path
+    hResult.File = hFile.Name
+    hResult.Line = CInt(aFind[0])
+    hResult.Pos = CInt(aFind[1])
+    hResult.Bytes = Len(aFind[2])
+    hResult.Length = String.Len(aFind[2])
+    aResult.Add(hResult)
+  Next
+  
+  Return aResult
   
 End
 
-
-Private Sub Run(iAction As Integer)
+Private Sub InitSearch() As Boolean
   
-  Dim sResult As String
-  Dim aResult As String[]
-  Dim aFind As String[]
-  Dim iLine As Integer
-  Dim iCol As Integer
-  Dim iCurrentPos, iPos, iInd As Integer
-  Dim iTry As Integer
-  Dim nReplace As Integer
-  
-  StoreCombo(cmbSearch)
-  StoreCombo(cmbReplace)
+  Project.StoreCombo(cmbSearch)
+  Project.StoreCombo(cmbReplace)
   
   SearchString = cmbSearch.Text
   ReplaceString = cmbReplace.Text
@@ -275,11 +286,43 @@ Private Sub Run(iAction As Integer)
   RegularExpression = chkRegularExpression.Value
   WordOnly = chkWordOnly.Value
   
-  If Not SearchString Then Return
+  If Not SearchString Then Return True
+  
+End
+
+Private Sub DoReplace(aResult As CFindResult[], iInd As Integer, sReplace As String)
+
+  Dim iAdd As Integer
+  
+  iAdd = Len(sReplace) - aResult[iInd].Bytes
+
+  aResult.Remove(iInd)
+  While iInd < aResult.Count
+    aResult[iInd].Pos += iAdd
+    Inc iInd
+  Wend
+  
+End
+
+
+Private Sub Run(iAction As Integer)
+  
+  Dim sResult As String
+  Dim aResult As CFindResult[]
+  Dim aFind As String[]
+  Dim iLine As Integer
+  Dim iCol As Integer
+  Dim iCurrentPos, iPos, iInd As Integer
+  Dim iTry As Integer
+  Dim nReplace As Integer
+  
+  If InitSearch() Then Return
+  
+  aResult = GrepFile($hCurrent)
+
+DO_IT_AGAIN:
   
   iCurrentPos = $hCurrent.GetPosition()
-
-  aResult = GrepFile($hCurrent)
 
   If aResult.Count Then
   
@@ -288,37 +331,37 @@ Private Sub Run(iAction As Integer)
       If iAction And GO_BACKWARD Then
       
         For iInd = aResult.Max To 0 Step -1
-          aFind = Split(aResult[iInd], ":")
-          iPos = CInt(aFind[1])
+          iPos = aResult[iInd].Pos
           If iPos < iCurrentPos Then Break
         Next
         
         If iPos >= iCurrentPos Then 
           iInd = aResult.Max
-          aFind = Split(aResult[iInd], ":")
-          iPos = CInt(aFind[1])
+          iPos = aResult[iInd].Pos
         Endif
     
       Else
       
         For iInd = 0 To aResult.Max
-          aFind = Split(aResult[iInd], ":")
-          iPos = CInt(aFind[1])
+          iPos = aResult[iInd].Pos
           If iPos > iCurrentPos Then Break
         Next
         
         If iPos <= iCurrentPos Then 
           iInd = 0
-          aFind = Split(aResult[iInd], ":")
-          iPos = CInt(aFind[1])
+          iPos = aResult[iInd].Pos
         Endif
         
       Endif
     
-      If Not $hCurrent.SetPosition(iPos, String.Len(aFind[2]), False) Then 
-        If iAction And DO_REPLACE Then $hCurrent.Replace(ReplaceString)
+      If Not $hCurrent.SetPosition(aResult[iInd], False) Then 
+        If iAction And DO_REPLACE Then 
+          $hCurrent.Replace(ReplaceString)
+          DoReplace(aResult, iInd, ReplaceString)
+        Endif
         Inc nReplace
         If (iAction And DO_ALL) = 0 Then Return
+        Goto DO_IT_AGAIN
       Endif
       
       iCurrentPos = iPos
@@ -340,6 +383,119 @@ Private Sub Run(iAction As Integer)
   Endif
   
 End
+
+Public Sub AddFound(hResult As CFindResult)
+  
+  Dim iInd As Integer
+  
+  $aBrowse.Add(hResult)
+  If $aBrowse.Count > 1 Then 
+    If hResult.File = $aBrowse[$aBrowse.Max - 1].File Then
+      hResult.Dark = $aBrowse[$aBrowse.Max - 1].Dark
+    Else
+      hResult.Dark = Not $aBrowse[$aBrowse.Max - 1].Dark
+    Endif
+  Endif
+  tvwFind.Rows.Count = $aBrowse.Count
+  
+  iInd = $aBrowse.Max
+  While iInd > 0
+    If $aBrowse[iInd - 1].File <> hResult.File Then Break
+    Dec iInd
+  Wend
+  tvwFind[iInd, 0].RowSpan = $aBrowse.Max - iInd + 1
+  
+  iInd = $aBrowse.Max
+  While iInd > 0
+    If $aBrowse[iInd - 1].File <> hResult.File Then Break
+    If $aBrowse[iInd - 1].Line <> hResult.Line Then Break
+    Dec iInd
+  Wend
+  tvwFind[iInd, 1].RowSpan = $aBrowse.Max - iInd + 1
+  
+End
+
+Private Sub Browse()
+  
+  Dim sFile As String
+  Dim sPath As String
+  Dim iPos As Integer
+  Dim iLen As Integer
+  Dim aResult As CFindResult[]
+  Dim hFile As Object
+  Dim iInd As Integer
+  Dim aFind As String[]
+  Dim hResult As CFindResult
+  Dim sName As String
+  Dim sExt As String
+  
+  If InitSearch() Then Return
+  
+  tabSearch.Index = 1
+
+  tvwFind.Show
+  lblNotFound.Hide
+  lblBrowse.Text = ""
+  lblBrowse.Show
+  lblBrowse.Raise
+  
+  Inc Application.Busy
+  Me.Enabled = False
+  
+  tvwFind.Rows.Count = 0
+  $aBrowse.Clear
+  
+  For Each sFile In RDir(Project.Dir)
+  
+    If Left(sFile) = "." And If Not (sFile Begins ".src/") Then Continue
+    If Right(sFile) = "~" Then Continue
+      
+    sPath = Project.Dir &/ sFile
+  
+    If IsDir(sPath) Then Continue
+    If InStr(sPath, "/.svn/") Then Continue
+    
+    sExt = UCase(File.Ext(sFile))
+    If $aExt.Exist(sExt) Then Continue
+    
+    sName = File.Name(sPath)
+    If sName Begins "core." Then Continue
+    
+    If sFile Begins ".src/" Then
+      lblBrowse.Text = sName
+    Else
+      lblBrowse.Text = sFile
+    Endif
+    'Debug sName
+    Wait
+    
+    Try hFile = Project.LoadFile(sPath)
+    If Not hFile Then Continue
+    
+    aResult = GrepFile(hFile)
+    For iInd = 0 To aResult.Max
+      hResult = aResult[iInd]
+      If Not hFile.SetPosition(hResult, True) Then 
+        hResult.Path = sPath
+        AddFound(hResult)
+      Endif
+    Next
+  
+  Next
+  
+Finally
+  
+  If tvwFind.Rows.Count = 0 Then
+    tvwFind.Hide
+    lblNotFound.Show
+  Endif
+
+  lblBrowse.Hide
+  Me.Enabled = True
+  Dec Application.Busy
+
+End
+
 
 
 Public Sub btnNext_Click()
@@ -374,11 +530,20 @@ Public Sub FindPrevious()
   
 End
 
-Public Sub UpdateSearchString(sText As String)
+Public Sub FindProject(sText As String)
   
-  If sText <> cmbSearch.Text Then cmbSearch.Text = sText
+  WakeUp(False)
+  cmbSearch.Text = sText
+  Browse
   
 End
+
+
+' Public Sub UpdateSearchString(sText As String)
+'   
+'   If sText <> cmbSearch.Text Then cmbSearch.Text = sText
+'   
+' End
 
 Private Sub ShowString(Optional bHide As Boolean)
 
@@ -396,7 +561,7 @@ End
 
 Public Sub cmbSearch_Change()
 
-  FMain.UpdateSearchString(cmbSearch.Text)
+  'FMain.UpdateSearchString(cmbSearch.Text)
   ShowString
   
 End
@@ -404,7 +569,7 @@ End
 
 Public Sub OnNewForm(hForm As Object)
   
-  Try hForm.OnShowString(cmbSearch.Text, chkCaseSensitive.Value = False)
+  Try hForm.OnShowString(If(chkHighlight.Value, cmbSearch.Text, ""), chkCaseSensitive.Value = False)
   
 End
 
@@ -443,5 +608,71 @@ End
 Public Sub Form_Hide()
 
   ShowString(True)
+
+End
+
+Public Sub btnBrowse_Click()
+
+  Browse
+
+End
+
+Public Sub tvwFind_Data(Row As Integer, Column As Integer)
+
+   With tvwFind.Data
+    
+    If Column = 3 Then .Font = $hFont 
+    
+    Select Case Column
+      Case 0
+        .Text = $aBrowse[Row].File
+      Case 1
+        .Text = $aBrowse[Row].Line
+      Case 2
+        .Text = $aBrowse[Row].Column
+      Case 3
+        .RichText = $aBrowse[Row].Text
+    End Select
+    .Alignment = Align.TopNormal
+
+    ' If Row Then
+    '   If Column = 0 Then 
+    '     If $aBrowse[Row - 1][0] = .Text Then 
+    '       .Text = ""
+    '     Endif
+    '   Else If Column = 1 Then
+    '     If $aBrowse[Row - 1][0] = $aBrowse[Row][0] And $aBrowse[Row - 1][1] = $aBrowse[Row][1] Then 
+    '       .Text = "-"
+    '     Endif
+    '   Endif
+    ' Endif 
+    
+    .Background = If($aBrowse[Row].Dark, Color.LightBackground, Color.TextBackground)
+    
+  End With 
+
+End
+
+Public Sub panBrowse_Arrange()
+
+  lblBrowse.Move((panBrowse.W - lblBrowse.W) \ 2, (panBrowse.H - lblBrowse.H) \ 2)
+
+End
+
+
+Public Sub tvwFind_Select()
+
+  Dim hFind As CFindResult
+  Dim sPath As String
+  Dim hForm As Object
+
+  If $aBrowse.Count = 0 Then Return
+  
+  hFind = $aBrowse[tvwFind.Row]
+  
+  Try hForm = Project.OpenFile(hFind.Path)
+  If Not hForm Then Return
+  
+  hForm.SetPosition(hFind, False)
 
 End

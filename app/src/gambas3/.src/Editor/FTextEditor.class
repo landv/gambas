@@ -564,9 +564,9 @@ Public Sub GetPosition() As Integer
 
 End
 
-Public Sub SetPosition(iPos As Integer, iLenFind As Integer, Optional bJustCheck As Boolean) As Boolean
+Public Sub SetPosition(hResult As CFindResult, Optional bJustCheck As Boolean) As Boolean
   
-  Return Editor.SetPosition(iPos, iLenFind, bJustCheck)
+  Return Editor.SetPosition(hResult, bJustCheck)
   
 End
 

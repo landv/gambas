@@ -4760,3 +4760,17 @@ Public Sub IsReadOnly(sPath As String) As Boolean
     
 End
 
+Public Sub StoreCombo(hCombo As ComboBox)
+  
+  Dim sText As String = hCombo.Text
+  Dim iInd As Integer
+
+  If Not sText Then Return 
+  
+  iInd = hCombo.Find(sText)
+  If iInd >= 0 Then hCombo.Remove(iInd)
+  hCombo.Add(sText, 0)
+  hCombo.Text = sText
+  
+End
+

@@ -23,12 +23,14 @@ Public Sub GetPosition() As Integer
   
 End
 
-Public Sub SetPosition(iPos As Integer, iLenFind As Integer, bJustCheck As Boolean) As Boolean
+Public Sub SetPosition(hFindResult As CFindResult, bJustCheck As Boolean) As Boolean
   
   Dim iLine, iColumn As Integer
   Dim iLen As Integer
   Dim sLine As String
+  Dim iPos As Integer
   
+  iPos = hFindResult.Pos
   While iLine < Me.Lines.Count
   
     iLen = Len(Me.Lines[iLine].Text)
@@ -42,14 +44,20 @@ Public Sub SetPosition(iPos As Integer, iLenFind As Integer, bJustCheck As Boole
   iColumn = String.Len(Left$(sLine, iPos))
   
   If Me.Highlight <> Highlight.None Then
-    sLine = Highlight.Purge(sLine, Not FSearch.IgnoreComments, Not FSearch.IgnoreStrings)
-    If Not Trim(String.Mid$(sLine, iColumn + 1, iLenFind)) Then Return True
+    If Not Trim(String.Mid$(Highlight.Purge(sLine, Not FSearch.IgnoreComments, Not FSearch.IgnoreStrings), iColumn + 1, hFindResult.Length)) Then Return True
   Endif
   
-  If bJustCheck Then Return
+  hFindResult.Line = iLine
+  hFindResult.Column = iColumn
   
-  Me.Goto(iLine, iColumn, True)
-  Me.Select(iLine, iColumn, iLine, iColumn + iLenFind)
+  If bJustCheck Then 
+    sLine = Html(String.Left(sLine, iColumn)) & "<b>" & Html(String.Mid$(sLine, iColumn + 1, hFindResult.Length)) & "</b>" & Html(String.Mid$(sLine, iColumn + hFindResult.Length + 1))
+    sLine = Replace(sLine, " ", "&nbsp;")
+    hFindResult.Text = "<nobr>" & sLine
+  Else
+    Me.Goto(iLine, iColumn, True)
+    Me.Select(iLine, iColumn, iLine, iColumn + hFindResult.Length)
+  Endif
   
 End
 
@@ -61,8 +69,10 @@ Public Sub Replace(sReplace As String)
   
   iLine = Me.Selection.StartLine
   iColumn = Me.Selection.StartColumn
+  Me.Begin
   Me.Insert(sReplace)
   Me.Select(iLine, iColumn, iLine, iColumn + String.Len(sReplace))
+  Me.End
   
 End
 

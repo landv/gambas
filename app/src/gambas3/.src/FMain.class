@@ -1174,6 +1174,8 @@ Public Sub Action_Activate(Key As String) As Boolean
       FSearch.FindNext
     Case "find-previous"
       FSearch.FindPrevious
+    Case "find-project"
+      FSearch.FindProject
     
     Case "console"
       If Action["console"].Value Then Try FOutput.SetFocus
@@ -1701,21 +1703,22 @@ Public Sub Panel2_Arrange()
 End
 
 
-Public Sub cmbFind_Change()
-
-  FSearch.UpdateSearchString(cmbFind.Text)
-
-End
-
-Public Sub UpdateSearchString(sText As String)
-  
-  If sText <> cmbFind.Text Then cmbFind.Text = sText
-  
-End
+' Public Sub cmbFind_Change()
+' 
+'   FSearch.UpdateSearchString(cmbFind.Text)
+' 
+' End
+' 
+' Public Sub UpdateSearchString(sText As String)
+'   
+'   If sText <> cmbFind.Text Then cmbFind.Text = sText
+'   
+' End
 
 Public Sub cmbFind_Activate()
 
-  FSearch.FindNext
+  Project.StoreCombo(cmbFind)
+  FSearch.FindProject(cmbFind.Text)
 
 End
 

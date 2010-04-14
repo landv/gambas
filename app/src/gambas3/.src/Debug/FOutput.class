@@ -297,20 +297,20 @@ Public Sub GetPosition() As Integer
 
 End
 
-Public Sub SetPosition(iPos As Integer, iLenFind As Integer, Optional bJustCheck As Boolean) As Boolean
+Public Sub SetPosition(hResult As CFindResult, Optional bJustCheck As Boolean) As Boolean
   
-  Return edtOutput.SetPosition(iPos, iLenFind, bJustCheck)
+  Return edtOutput.SetPosition(hResult, bJustCheck)
   
 End
 
 Public Sub Replace(sReplace As String)
   
-  Editor.Replace(sReplace)
+  edtOutput.Replace(sReplace)
   
 End
 
 Public Sub GetSelection() As String
   
-  Return Editor.GetSelection()
+  Return edtOutput.GetSelection()
   
 End

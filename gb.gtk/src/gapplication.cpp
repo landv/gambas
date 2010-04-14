@@ -159,7 +159,7 @@ bool gKey::enable(gControl *control, GdkEventKey *event)
   if (filter && _im_text)
   {
 		_event.string = g_strdup(_im_text);
-		_event.keyval = 0;
+		//_event.keyval = 0;
 		filter = false;
   }
   else

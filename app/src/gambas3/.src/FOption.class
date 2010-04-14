@@ -172,7 +172,7 @@ Private Sub RefreshEditor()
     If hFile Is FEditor Or hFile Is FTextEditor Then hFile.ReadConfig()
   Next  
   
-  FFindList.ReadConfig
+  FSearch.ReadConfig
   FMain.ReadConfig
   FProperty.ReadConfig
   FFormStack.ReadConfig
@@ -206,7 +206,7 @@ Private Sub RefreshWindow()
   FProperty.ReadConfig
   FMain.ReadConfig
   FDebugInfo.ReadConfig
-  FFindList.ReadConfig
+  FSearch.ReadConfig
   FFormStack.ReadConfig
   FToolBox.ReadConfig
   FDebugExpr.ReadConfig

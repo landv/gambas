@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,83,37)
+  MoveScaled(0,0,83,39)
   Action = "find"
   Text = ("Search & Replace")
   Icon = Picture["icon:/small/find"]
@@ -99,70 +99,93 @@
         Picture = Picture["icon:/small/down"]
       }
       { btnPrevious Button
-        MoveScaled(0,5,17,4)
+        MoveScaled(0,4,17,4)
         Text = ("&Previous")
         Picture = Picture["icon:/small/up"]
       }
       { btnReplace Button
-        MoveScaled(0,10,17,4)
+        MoveScaled(0,8,17,4)
         Text = ("&Replace")
         Picture = Picture["icon:/small/replace"]
       }
       { btnReplaceAll Button
-        MoveScaled(0,15,17,4)
+        MoveScaled(0,12,17,4)
         Text = ("Replace &all")
         Picture = Picture["icon:/small/wizard"]
       }
       { btnBrowse2 Button btnBrowse
         Name = "btnBrowse2"
-        MoveScaled(0,20,18,4)
+        MoveScaled(0,16,18,4)
         Text = ("&Browse")
         Picture = Picture["icon:/small/zoom-in"]
+      }
+      { Panel1 Panel
+        MoveScaled(5,22,2,1)
+        Expand = True
       }
       { btnClose Button
         MoveScaled(0,25,18,4)
         Text = ("Close")
         Picture = Picture["icon:/small/close"]
-        Cancel = True
       }
     }
     Index = 1
     Text = ("Browse")
-    { lblNotFound TextLabel
-      MoveScaled(1,1,39,12)
-      Visible = False
-      Font = Font["Bold,+2"]
+    { panBrowse Panel
+      MoveScaled(1,1,59,29)
       Expand = True
-      Padding = 4
-      Text = ("Search string cannot be found.")
-      Border = Border.Sunken
-    }
-    { tvwFind GridView
-      MoveScaled(1,1,47,16)
-      Expand = True
-      Mode = Select.Single
-      Header = GridView.Horizontal
+      Arrangement = Arrange.Fill
+      { tvwFind GridView
+        MoveScaled(2,10,47,16)
+        Mode = Select.Single
+        Header = GridView.Horizontal
+      }
+      { lblBrowse Label
+        MoveScaled(29,2,21,6)
+        Visible = False
+        Font = Font["Bold,+4"]
+        Background = Color.TextBackground
+        Foreground = Color.TextForeground
+        Ignore = True
+        Padding = 8
+        AutoResize = True
+        Alignment = Align.Center
+        Border = Border.Plain
+      }
+      { lblNotFound TextLabel
+        MoveScaled(1,1,26,12)
+        Visible = False
+        Font = Font["Bold,+2"]
+        Padding = 4
+        Text = ("Search string cannot be found.")
+        Border = Border.Sunken
+      }
     }
     { panSearch Panel
-      MoveScaled(54,1,19,24)
-      { picSearch PictureBox
-        MoveScaled(1,11,8,8)
-        Picture = Picture["icon:/huge/zoom-in"]
-        Stretch = True
-      }
-      { timSearch #Timer
-        #MoveScaled(8,16)
-        Delay = 100
-      }
-      { btnBrowseReplace Button
-        MoveScaled(0,5,19,4)
-        Text = ("Replace &all")
-        Picture = Picture["icon:/small/wizard"]
-      }
+      MoveScaled(61,1,19,29)
+      Arrangement = Arrange.Vertical
+      Spacing = True
       { btnBrowse Button
         MoveScaled(0,0,19,4)
         Text = ("&Browse")
         Picture = Picture["icon:/small/zoom-in"]
+      }
+      { btnBrowseReplace Button
+        MoveScaled(0,5,19,4)
+        Visible = False
+        Text = ("Replace &all")
+        Picture = Picture["icon:/small/wizard"]
+      }
+      { Panel2 Panel
+        MoveScaled(5,10,2,1)
+        Expand = True
+      }
+      { btnClose2 Button btnClose
+        Name = "btnClose2"
+        MoveScaled(0,13,18,4)
+        Text = ("Close")
+        Picture = Picture["icon:/small/close"]
+        Cancel = True
       }
     }
     Index = 0
