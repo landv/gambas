@@ -162,7 +162,6 @@ End
 
 Public Function CurrentTimestamp(Optional {Format} As String = "yyyy-mm-dd hh:nn:ss") As String
 
-  ' If Not {Format} Then {Format} = "yyyy-mm-dd hh:nn:ss"
   modMain.$Query = "SELECT CURRENT_TIMESTAMP"
   Return Format(modMain.$Connection.Exec(modMain.$Query)!CURRENT_TIMESTAMP, {Format})
 
@@ -188,7 +187,6 @@ Private Function Collations_Read() As String[]
   modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
   For Each modMain.$hResult
     $asCollations.Add(modMain.$hResult["COLLATION_NAME"])
-    modMain.$hResult.MoveNext()
   Next
   Return $asCollations
 
@@ -201,7 +199,6 @@ Private Function Engines_Read() As String[]
   modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
   For Each modMain.$hResult
     $asEngines.Add(modMain.$hResult["Engine"])
-    modMain.$hResult.MoveNext()
   Next
   Return $asEngines
 
@@ -214,7 +211,6 @@ Private Function Charsets_Read() As String[]
   modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
   For Each modMain.$hResult
     $asCharsets.Add(modMain.$hResult["CHARACTER_SET_NAME"])
-    modMain.$hResult.MoveNext()
   Next
   Return $asCharsets
 
@@ -234,7 +230,6 @@ Private Function Databases_Read() As String[]
   modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
   For Each modMain.$hResult
     $asDatabases.Add(modMain.$hResult["Database"])
-    modMain.$hResult.MoveNext()
   Next
   Return $asDatabases
 
@@ -247,7 +242,6 @@ Private Function Users_Read() As String[]
   modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
   For Each modMain.$hResult
     $asUsers.Add(modMain.$hResult["User"])
-    modMain.$hResult.MoveNext()
   Next
   Return $asUsers
 

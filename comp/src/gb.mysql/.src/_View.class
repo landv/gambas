@@ -11,7 +11,6 @@ End
 
 Public Procedure Add(View As String, Statement As String, Optional {Replace} As Boolean = False)
 
-  ' If Not {Replace} Then {Replace} = False
   'TODO: Quote the Statement parameter
   modMain.$Query = "CREATE"
   If {Replace} Then modMain.$Query &= " OR REPLACE"
@@ -22,7 +21,6 @@ End
 
 Public Procedure Delete(Views As String[], Optional IfExists As Boolean = False)
 
-  ' If Not IfExists Then IfExists = False
   modMain.$Query = "DROP VIEW "
   If IfExists Then modMain.$Query &= "IF EXISTS "
   modMain.$Query &= modMain.ArrayToString(Views, True)
@@ -32,7 +30,6 @@ End
 
 Public Function Info(View As String, Optional Database As String = modMain.$Connection.Name) As String
 
-  ' If Not Database Then Database = modMain.$Connection.Name
   modMain.$Query = "SHOW CREATE VIEW `" & Database & "`.`" & View & "`"
   Return modMain.$Connection.Exec(modMain.$Query)!"Create View"
 
@@ -40,7 +37,6 @@ End
 
 Public Function Definition(View As String, Optional Database As String = modMain.$Connection.Name) As String
 
-  ' If Not Database Then Database = modMain.$Connection.Name
   modMain.$Query = "SELECT `VIEW_DEFINITION` FROM `information_schema`.`VIEWS` WHERE `TABLE_SCHEMA` = '" & Database & "' AND `TABLE_NAME` = '" & View & "'"
   Return modMain.$Connection.Exec(modMain.$Query)!"VIEW_DEFINITION"
 

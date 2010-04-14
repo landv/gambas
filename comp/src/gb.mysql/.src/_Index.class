@@ -6,7 +6,6 @@ Create Static
 Public Procedure Add(Index As String, Columns As String[], Optional Table As String, Optional Database As String = modMain.$Connection.Name)
 
   If Table Then
-    ' If Not Database Then Database = modMain.$Connection.Name
     modMain.RunQuery("CREATE INDEX `" & Index & "` ON `" & Database & "`.`" & Table & "` (" & modMain.ArrayToString(Columns, True) & ")")
   Else
     modMain.$Index.Add("INDEX `" & Index & "` (" & modMain.ArrayToString(Columns, True) & ")")
@@ -16,14 +15,12 @@ End
 
 Public Procedure Delete(Table As String, Index As String, Optional Database As String = modMain.$Connection.Name)
 
-  ' If Not Database Then Database = modMain.$Connection.Name
   modMain.RunQuery("DROP INDEX `" & Index & "` ON `" & Database & "`.`" & Table & "`")
 
 End
 
 Public Procedure PrimaryKey(Table As String, Columns As String[], Optional Database As String = modMain.$Connection.Name)
 
-  ' If Not Database Then Database = modMain.$Connection.Name
   Try modMain.RunQuery("ALTER TABLE `" & Database & "`.`" & Table & "` DROP PRIMARY KEY")
   modMain.RunQuery("ALTER TABLE `" & Database & "`.`" & Table & "` ADD PRIMARY KEY (" & modMain.ArrayToString(Columns, True) & ")")
 

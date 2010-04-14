@@ -11,16 +11,12 @@ End
 
 Public Procedure Modify(Optional Database As String = modMain.$Connection.Name, Optional Charset As String = modMain.$Connection.MySQL.Charset, Optional Collation As String = modMain.$Connection.MySQL.Collation)
 
-  ' If Not Database Then Database = modMain.$Connection.Name
-  ' If Not Charset Then Charset = modMain.$Connection.MySQL.Charset
-  ' If Not Collation Then Charset = modMain.$Connection.MySQL.Collation
   modMain.RunQuery("ALTER DATABASE `" & Database & "` DEFAULT CHARACTER SET = " & Charset & " DEFAULT COLLATE " & Collation)
 
 End
 
 Public Procedure Delete(Optional Database As String = modMain.$Connection.Name, Optional IfExists As Boolean)
 
-  ' If Not Database Then Database = modMain.$Connection.Name
   If Not IfExists Then IfExists = False
   modMain.$Query = "DROP DATABASE "
   If IfExists Then modMain.$Query &= "IF EXISTS "
@@ -31,8 +27,6 @@ End
 
 Public Procedure Add(Database As String, Optional Charset As String = modMain.$Connection.MySQL.Charset, Optional Collation As String = modMain.$Connection.MySQL.Collation)
 
-  ' If Not Charset Then Charset = modMain.$Connection.MySQL.Charset
-  ' If Not Collation Then Charset = modMain.$Connection.MySQL.Collation
   modMain.RunQuery("CREATE DATABASE `" & Database & "` DEFAULT CHARACTER SET = " & Charset & " DEFAULT COLLATE " & Collation)
 
 End
@@ -42,7 +36,6 @@ Public Procedure Dump(Optional Database As String = modMain.$Connection.Name, Op
   Dim sTmp As String
   Dim iCounter As Integer
 
-  ' If Not Database Then Database = modMain.$Connection.Name
   If Not File Then File = User.Home &/ "Dump_" & Database & ".sql"
   sTmp = "mysqldump "
   If Options Then
@@ -69,7 +62,6 @@ End
 
 Public Function Info(Optional Database As String = modMain.$Connection.Name) As String
 
-  ' If Not Database Then Database = modMain.$Connection.Name
   modMain.$Query = "SHOW CREATE DATABASE `" & Database & "`"
   Return modMain.$Connection.Exec(modMain.$Query)!"Create Database"
 
@@ -79,7 +71,6 @@ Public Function Tables(Optional Database As String = modMain.$Connection.Name) A
 
   Dim asTables As New String[]
 
-  ' If Not Database Then Database = modMain.$Connection.Name
   modMain.$Query = "SELECT `TABLE_NAME` FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA` = '" & Database & "' AND TABLE_TYPE = 'BASE TABLE'"
   modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
   For Each modMain.$hResult
@@ -93,7 +84,6 @@ Public Function Views(Optional Database As String = modMain.$Connection.Name) As
 
   Dim asViews As New String[]
 
-  ' If Not Database Then Database = modMain.$Connection.Name
   modMain.$Query = "SELECT `TABLE_NAME` FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA` = '" & Database & "' AND TABLE_TYPE = 'VIEW'"
   modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
   For Each modMain.$hResult
@@ -107,7 +97,6 @@ Public Function Triggers(Optional Database As String = modMain.$Connection.Name)
 
   Dim asTriggers As New String[]
 
-  ' If Not Database Then Database = modMain.$Connection.Name
   modMain.$Query = "SELECT `TRIGGER_NAME` FROM `information_schema`.`TRIGGERS` WHERE `TRIGGER_SCHEMA` = '" & Database & "'"
   modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
   For Each modMain.$hResult
@@ -121,7 +110,6 @@ Public Function Routines(Optional Database As String = modMain.$Connection.Name)
 
   Dim asRoutines As New String[]
 
-  ' If Not Database Then Database = modMain.$Connection.Name
   modMain.$Query = "SELECT `name` FROM `mysql`.`proc` WHERE `db` = '" & Database & "'"
   modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
   For Each modMain.$hResult
@@ -146,7 +134,6 @@ End
 
 Public Function Charset(Optional Database As String = modMain.$Connection.Name) As String
 
-  ' If Not Database Then Database = modMain.$Connection.Name
   modMain.$Query = "SELECT `DEFAULT_CHARACTER_SET_NAME` FROM `information_schema`.`SCHEMATA` WHERE `SCHEMA_NAME` = '" & Database & "'"
   Return modMain.$Connection.Exec(modMain.$Query)!DEFAULT_CHARACTER_SET_NAME
 
@@ -154,7 +141,6 @@ End
 
 Public Function Collation(Optional Database As String = modMain.$Connection.Name) As String
 
-  ' If Not Database Then Database = modMain.$Connection.Name
   modMain.$Query = "SELECT `DEFAULT_COLLATION_NAME` FROM `information_schema`.`SCHEMATA` WHERE `SCHEMA_NAME` = '" & Database & "'"
   Return modMain.$Connection.Exec(modMain.$Query)!DEFAULT_COLLATION_NAME
 

@@ -3,6 +3,10 @@
 Export
 Create Static
 
+Private $hMaintenance As _Maintenance
+
+Property Read Maintenance As _Maintenance
+
 Public Procedure Modify(Table As String, Action As String, Optional Symbol As String, Optional Definition As String)
 
   Action = Upper(Action)
@@ -26,8 +30,6 @@ End
 Public Procedure Add(Table As String, Optional Engine As String = modMain.$Connection.MySQL.Engine, Optional Charset As String = modMain.$Connection.MySQL.Charset)
 
   'Make the table statement
-  ' If Not Charset Then Charset = modMain.$Connection.MySQL.Charset
-  ' If Not Engine Then Engine = modMain.$Connection.MySQL.Engine
   modMain.$Query = "CREATE TABLE `" & Table & "` ("
   modMain.$Query &= modMain.ArrayToString(modMain.$FieldDefinition, False)
   If modMain.$PrimaryKey Then modMain.$Query &= modMain.$PrimaryKey
@@ -48,7 +50,6 @@ End
 
 Public Procedure Delete(Tables As String[], Optional IfExists As Boolean = False)
 
-  ' If Not IfExists Then IfExists = False
   modMain.$Query = "DROP TABLE "
   If IfExists Then modMain.$Query &= "IF EXISTS "
   modMain.$Query &= modMain.ArrayToString(Tables, True)
@@ -107,7 +108,6 @@ Public Function Fields(Table As String, Optional Database As String = modMain.$C
 
   Dim asFields As New String[]
 
-  ' If Not Database Then Database = modMain.$Connection.Name
   modMain.$Query = "SHOW COLUMNS FROM `" & Database & "`.`" & Table & "`"
   modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
   For Each modMain.$hResult
@@ -119,7 +119,6 @@ End
 
 Public Function Charset(Table As String, Optional Database As String = modMain.$Connection.Name) As String
 
-  ' If Not Database Then Database = modMain.$Connection.Name
   modMain.$Query = "SELECT `a`.`CHARACTER_SET_NAME` FROM `information_schema`.`COLLATIONS` `a`, `information_schema`.`TABLES` `b` WHERE `b`.`TABLE_SCHEMA` = '" & Database & "' AND `b`.`TABLE_NAME` = '" & Table & "' AND `a`.`COLLATION_NAME` = `b`.`TABLE_COLLATION`"
   Return modMain.$Connection.Exec(modMain.$Query)!CHARACTER_SET_NAME
 
@@ -127,7 +126,6 @@ End
 
 Public Function Collation(Table As String, Optional Database As String = modMain.$Connection.Name) As String
 
-  ' If Not Database Then Database = modMain.$Connection.Name
   modMain.$Query = "SELECT `TABLE_COLLATION` FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA` = '" & Database & "' AND `TABLE_NAME` = '" & Table & "'"
   Return modMain.$Connection.Exec(modMain.$Query)!TABLE_COLLATION
 
@@ -135,7 +133,6 @@ End
 
 Public Function Engine(Table As String, Optional Database As String = modMain.$Connection.Name) As String
 
-  ' If Not Database Then Database = modMain.$Connection.Name
   modMain.$Query = "SELECT `ENGINE` FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA` = '" & Database & "' AND `TABLE_NAME` = '" & Table & "'"
   Return modMain.$Connection.Exec(modMain.$Query)!ENGINE
 
@@ -143,7 +140,13 @@ End
 
 Public Procedure Truncate(Table As String, Optional Database As String = modMain.$Connection.Name)
 
-  ' If Not Database Then Database = modMain.$Connection.Name
   modMain.RunQuery("TRUNCATE TABLE `" & Database & "`.`" & Table & "`")
+
+End
+
+Private Function Maintenance_Read() As _Maintenance
+
+  $hMaintenance = New _Maintenance
+  Return $hMaintenance
 
 End

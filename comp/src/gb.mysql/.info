@@ -327,6 +327,29 @@ PrimaryKey
 m
 
 (Table)s(Columns)String[];[(Database)s]
+#_Maintenance
+
+CA
+Analyze
+m
+s
+(Table)s[(Database)s(Local)b]
+Check
+m
+s
+(Table)s[(Database)s]
+Checksum
+m
+s
+(Table)s[(Database)s]
+Optimize
+m
+s
+(Table)s[(Database)s(Local)b]
+Repair
+m
+s
+(Table)s[(Database)s(Local)b]
 #_MySQL
 
 CA
@@ -515,6 +538,10 @@ s
 #_Table
 
 CA
+Maintenance
+r
+_Maintenance
+
 Modify
 m
 

@@ -55,23 +55,15 @@ Public Sub Main()
   ' Dim iCounter As Integer
   ' Dim iCounter2 As Integer
   ' 
-  ' ' DB.Debug = True
+  ' DB.Debug = True
   ' hCon.Type = "mysql"
   ' hCon.Port = "3306"
-  ' hCon.Host = "localhost"
-  ' hCon.User = "root"
-  ' hCon.Password = "david123"
-  ' hCon.Name = "ExpoING"
+  ' hCon.Host = "192.168.0.221"
+  ' hCon.User = "dvillalobos"
+  ' hCon.Password = "l1nux"
+  ' hCon.Name = "mas"
   ' hCon.Open()
   ' 
-  ' hCon.MySQL.Result.Create("information_schema", "COLUMNS")
-  ' ' Print hCon.MySQL.Result.RowCount
-  ' hCon.MySQL.Result.AddRecord()
-  ' ' Print hCon.MySQL.Result.RowCount
-  ' ' For iCounter = 0 To hCon.MySQL.Result.RowMax
-  ' '   For iCounter2 = 0 To hCon.MySQL.Result.ColumnMax
-  ' '     Print hCon.MySQL.Result.Data(iCounter, 0)
-  ' '   Next
-  ' ' Next
+  ' Print hCon.MySQL.Table.Maintenance.Repair("MAS_Usuarios_Usuarios")
 
 End
