@@ -151,6 +151,7 @@ public:
 	bool hasLimit(int y) { colorize(y); return lines.at(y)->proc; }
 	
 	void getState(int y, bool colorize, uint &state, int &tag, bool &alternate);
+	int getCharState(int y, int x);
 	
 	int getNextLimit(int y);
 	int getPreviousLimit(int y);

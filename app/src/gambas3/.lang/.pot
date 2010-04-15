@@ -433,13 +433,13 @@ msgstr ""
 
 #: FColorChooser.class:207 FCommit.class:386 FConflict.class:191
 #: FConnectionEditor.class:261 FCreateFile.class:929 FDebugInfo.class:490
-#: FEditor.class:2111 FFindList.class:195 _FFind.class:114 FFind.class:114
-#: FFontChooser.class:85 FForm.class:2831 FGotoLine.class:63
-#: FHelpBrowser.class:269 FIconEditor.class:1396 FImportTable.class:38
-#: FList.class:155 FMain.class:210 FMakeExecutable.class:142
-#: FMakeInstall.class:309 FMenu.class:1070 FNewConnection.class:317
-#: FNewTable.class:165 FNewTranslation.class:70 FOpenProject.class:151
-#: FOption.class:585 FPasteSpecial.class:279 FPropertyProject.class:1240
+#: FEditor.class:2111 FFindList.class:195 FFontChooser.class:85
+#: FForm.class:2831 FGotoLine.class:63 FHelpBrowser.class:269
+#: FIconEditor.class:1396 FImportTable.class:38 FList.class:155
+#: FMain.class:210 FMakeExecutable.class:142 FMakeInstall.class:309
+#: FMenu.class:1070 FNewConnection.class:317 FNewTable.class:165
+#: FNewTranslation.class:70 FOpenProject.class:151 FOption.class:585
+#: FPasteSpecial.class:279 FPropertyProject.class:1240
 #: FReportBorderChooser.class:207 FReportCoordChooser.class:114
 #: FSave.class:118 FSelectExtraFile.class:78 FSelectIcon.class:272
 #: FTableChooser.class:144 FTextEditor.class:450 FText.class:106
@@ -556,7 +556,7 @@ msgid "&Edit"
 msgstr ""
 
 #: FConflict.class:25 FFindList.class:203 FIconEditor.class:1415
-#: FImportTable.class:648 FMakeInstall.class:260 FSearch.class:877
+#: FImportTable.class:648 FMakeInstall.class:260 FSearch.class:883
 #: FTips.class:232
 msgid "Close"
 msgstr ""
@@ -1270,13 +1270,11 @@ msgstr ""
 msgid "Uncomment"
 msgstr ""
 
-#: FEditor.class:3266 _FFind.class:707 FFind.class:711 FOutput.class:408
-#: FTextEditor.class:719
+#: FEditor.class:3266 FOutput.class:408 FTextEditor.class:719
 msgid "Find next"
 msgstr ""
 
-#: FEditor.class:3273 _FFind.class:714 FFind.class:719 FOutput.class:415
-#: FTextEditor.class:726
+#: FEditor.class:3273 FOutput.class:415 FTextEditor.class:726
 msgid "Find previous"
 msgstr ""
 
@@ -1324,65 +1322,8 @@ msgstr ""
 msgid "Find list"
 msgstr ""
 
-#: FFindList.class:279 _FFind.class:395 FFind.class:395 FSearch.class:375
-#: FTranslate.class:578
+#: FFindList.class:279 FSearch.class:375 FTranslate.class:578
 msgid "Search string cannot be found."
-msgstr ""
-
-#: _FFind.class:114 FFind.class:114
-msgid "Are you sure to want to replace all?"
-msgstr ""
-
-#: _FFind.class:114 FFind.class:114 FSearch.class:767
-msgid "Replace"
-msgstr ""
-
-#: _FFind.class:397 FFind.class:397 FSearch.class:377
-msgid "Search string replaced once."
-msgstr ""
-
-#: _FFind.class:399 FFind.class:399 FSearch.class:379
-msgid "Search string replaced &1 times."
-msgstr ""
-
-#: _FFind.class:701 FFind.class:704
-msgid "Find"
-msgstr ""
-
-#: _FFind.class:721 FFind.class:727
-msgid "Search list"
-msgstr ""
-
-#: _FFind.class:741 FFind.class:750
-msgid "Replace all"
-msgstr ""
-
-#: _FFind.class:752 FFind.class:762
-msgid "Search in procedure"
-msgstr ""
-
-#: _FFind.class:761 FFind.class:772
-msgid "Search in file"
-msgstr ""
-
-#: _FFind.class:771 FFind.class:783 FMain.class:2769
-msgid "Search in project"
-msgstr ""
-
-#: _FFind.class:785 FFind.class:798
-msgid "Case sensitive"
-msgstr ""
-
-#: _FFind.class:794 FFind.class:808
-msgid "Word only"
-msgstr ""
-
-#: _FFind.class:802 FFind.class:817
-msgid "Search in comments"
-msgstr ""
-
-#: _FFind.class:810 FFind.class:826
-msgid "Search in strings"
 msgstr ""
 
 #: FFontChooser.class:57
@@ -1428,11 +1369,11 @@ msgstr ""
 msgid "&First"
 msgstr ""
 
-#: FForm.class:3366 FSearch.class:847 FTips.class:220
+#: FForm.class:3366 FSearch.class:853 FTips.class:220
 msgid "&Previous"
 msgstr ""
 
-#: FForm.class:3373 FMenu.class:837 FSearch.class:841 FTips.class:226
+#: FForm.class:3373 FMenu.class:837 FSearch.class:847 FTips.class:226
 msgid "&Next"
 msgstr ""
 
@@ -2442,6 +2383,10 @@ msgstr ""
 msgid "Search string"
 msgstr ""
 
+#: FMain.class:2769
+msgid "Search in project"
+msgstr ""
+
 #: FMain.class:2776
 msgid "Search & replace"
 msgstr ""
@@ -2515,7 +2460,7 @@ msgid "There is no CHANGELOG entry for this release."
 msgstr ""
 
 #: FMakeInstall.class:309 FPropertyProject.class:1240 FSave.class:111
-#: Project.module:2662
+#: Project.module:2669
 msgid "Continue"
 msgstr ""
 
@@ -3493,51 +3438,63 @@ msgstr ""
 msgid "Search & Replace"
 msgstr ""
 
-#: FSearch.class:741
+#: FSearch.class:377
+msgid "Search string replaced once."
+msgstr ""
+
+#: FSearch.class:379
+msgid "Search string replaced &1 times."
+msgstr ""
+
+#: FSearch.class:747
 msgid "Search"
 msgstr ""
 
-#: FSearch.class:790
+#: FSearch.class:773
+msgid "Replace"
+msgstr ""
+
+#: FSearch.class:796
 msgid "&Case sensitive"
 msgstr ""
 
-#: FSearch.class:795
+#: FSearch.class:801
 msgid "&Words only"
 msgstr ""
 
-#: FSearch.class:800
+#: FSearch.class:806
 msgid "Regular e&xpression"
 msgstr ""
 
-#: FSearch.class:805
+#: FSearch.class:811
 msgid "&Highlight result"
 msgstr ""
 
-#: FSearch.class:815
+#: FSearch.class:821
 msgid "&Ignore strings"
 msgstr ""
 
-#: FSearch.class:820
+#: FSearch.class:826
 msgid "I&gnore comments"
 msgstr ""
 
-#: FSearch.class:825
+#: FSearch.class:831
 msgid "C&urrent procedure"
 msgstr ""
 
-#: FSearch.class:853
+#: FSearch.class:859
 msgid "&Replace"
 msgstr ""
 
-#: FSearch.class:859
+#: FSearch.class:865
 msgid "Replace &all"
 msgstr ""
 
-#: FSearch.class:866
+#: FSearch.class:872
 msgid "&Browse"
 msgstr ""
 
-#: FSearch.class:882
+#: FSearch.class:888
 msgid "Browse"
 msgstr ""
 
@@ -5099,120 +5056,120 @@ msgstr ""
 msgid "Cannot make executable."
 msgstr ""
 
-#: Project.module:2661
+#: Project.module:2668
 msgid "Some components are missing: &1"
 msgstr ""
 
-#: Project.module:2862
+#: Project.module:2869
 msgid "Cannot write project file."
 msgstr ""
 
-#: Project.module:2895
+#: Project.module:2902
 msgid "Unable to create desktop shortcut."
 msgstr ""
 
-#: Project.module:2975
+#: Project.module:2982
 msgid "Unable to install component."
 msgstr ""
 
-#: Project.module:3013
+#: Project.module:3020
 msgid "Unable to uninstall component."
 msgstr ""
 
-#: Project.module:3156
+#: Project.module:3163
 msgid "The directory will be removed at the next commit."
 msgstr ""
 
-#: Project.module:3175
+#: Project.module:3182
 msgid "You must define a startup class or form!"
 msgstr ""
 
-#: Project.module:3207
+#: Project.module:3214
 msgid "Please type a name."
 msgstr ""
 
-#: Project.module:3211
+#: Project.module:3218
 msgid "This name contains a forbidden character:"
 msgstr ""
 
-#: Project.module:3215
+#: Project.module:3222
 msgid "The name cannot begins with a dot."
 msgstr ""
 
-#: Project.module:3219
+#: Project.module:3226
 msgid "This name is already used. Choose another one."
 msgstr ""
 
-#: Project.module:3250
+#: Project.module:3257
 msgid ""
 "A class name must begin with a letter or an underscore, followed by any "
 "letter or digit."
 msgstr ""
 
-#: Project.module:3298
+#: Project.module:3305
 msgid "Destination already exists"
 msgstr ""
 
-#: Project.module:3500
+#: Project.module:3507
 msgid "Unable to rename '&1'"
 msgstr ""
 
-#: Project.module:3622
+#: Project.module:3629
 msgid "Please type a project name."
 msgstr ""
 
-#: Project.module:3630
+#: Project.module:3637
 msgid "The project name cannot begin with a dot."
 msgstr ""
 
-#: Project.module:3633
+#: Project.module:3640
 msgid "Non-ASCII characters are forbidden in a project name."
 msgstr ""
 
-#: Project.module:3634
+#: Project.module:3641
 msgid ""
 "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr ""
 
-#: Project.module:3644
+#: Project.module:3651
 msgid "The project directory already exists."
 msgstr ""
 
-#: Project.module:3646
+#: Project.module:3653
 msgid ""
 "The project directory cannot be created because a file with the same name "
 "already exists."
 msgstr ""
 
-#: Project.module:3692
+#: Project.module:3699
 msgid "Create source package"
 msgstr ""
 
-#: Project.module:3693
+#: Project.module:3700
 msgid "Source packages"
 msgstr ""
 
-#: Project.module:3961
+#: Project.module:3968
 msgid "Cannot copy file &1."
 msgstr ""
 
-#: Project.module:4010
+#: Project.module:4017
 msgid "Cannot create link &1."
 msgstr ""
 
-#: Project.module:4027
+#: Project.module:4034
 msgid "Cannot move a directory inside itself."
 msgstr ""
 
-#: Project.module:4091
+#: Project.module:4098
 msgid "Cannot move file &1."
 msgstr ""
 
-#: Project.module:4637
+#: Project.module:4644
 msgid "modified"
 msgstr ""
 
-#: Project.module:4717
+#: Project.module:4724
 msgid "Unable to update all forms."
 msgstr ""
 

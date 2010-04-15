@@ -1270,3 +1270,23 @@ void GDocument::getState(int y, bool col, uint &state, int &tag, bool &alternate
 		tag = l->tag;
 	}
 }
+
+int GDocument::getCharState(int y, int x)
+{
+	GLine *l;
+	int i;
+	GHighlight *hl;
+	
+	colorize(y);
+	l = lines.at(y);
+
+	for (i = 0; i < GB.Count(l->highlight); i++)
+	{
+		hl = &l->highlight[i];
+		if (x < hl->len)
+			return hl->state;
+		x -= hl->len;
+	}
+	
+	return GLine::Background;
+}

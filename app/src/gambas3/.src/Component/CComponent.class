@@ -722,6 +722,7 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
   Dim sLine As String
   Dim iPos As Integer
   Dim sSign As String
+  Dim bExport As Boolean
 
   'Debug "ScanClass "; hModule.Name
   'DEBUG "> "; hModule.Name
@@ -751,35 +752,51 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
     aSym = Highlight.Analyze(hEditor.Lines[iLine].Text)
     If aSym.Count = 0 Then Continue
     
+    Select Case aSym[0]
     
-    If aSym.Count >= 2 Then
-      If bCanInherit Then
-        If aSym[0] = "INHERITS" Then
-          If Highlight.Types[1] = Highlight.Datatype Then
-            sParent = aSym[iInd + 1]
-            MakeInheritance(hModule, cSymbol, sParent)
-          Endif
+      Case "INHERITS"
+      
+        If aSym.Count >= 2 And If bCanInherit And If Highlight.Types[1] = Highlight.Datatype Then
+          sParent = aSym[iInd + 1]
+          MakeInheritance(hModule, cSymbol, sParent)
           bCanInherit = False
         Endif
-      Endif
-    Endif
+        Continue
+      
+      Case "CREATE"
+        If aSym.Count = 1 Or If aSym[1] = "STATIC" Then 
+          hModule.AutoCreatable = True
+          'DEBUG hModule.Name; " := "; hModule.AutoCreatable
+        Else If aSym[1] = "PRIVATE" Then 
+          hModule.NotCreatable = True
+        Endif
+      
+      Case "EXPORT"
+        bExport = True
+      Default
+        Break
+    
+    End Select
+    
+  Next 
 
-    If aSym[0] = "CREATE" Then 
-      If aSym.Count = 1 Or If aSym[1] = "STATIC" Then 
-        hModule.AutoCreatable = True
-        'DEBUG hModule.Name; " := "; hModule.AutoCreatable
-      Else If aSym[1] = "PRIVATE" Then 
-        hModule.NotCreatable = True
-      Endif
-    Endif
+  If bExport And If bCanInherit And If Classes.Exist(hModule.Name) Then
+    sParent = aSym[iInd + 1]
+    MakeInheritance(hModule, cSymbol, hModule.Name, Classes[hModule.Name].Component)
+    bCanInherit = False
+  Endif
 
+  For iLine = iLine To hEditor.Lines.Count - 1
+
+    aSym = Highlight.Analyze(hEditor.Lines[iLine].Text)
+    If aSym.Count = 0 Then Continue
+    
     bStatic = bModule
     bPublic = False
     sKind = ""
 
     For iInd = 0 To aSym.Count - 1
       Select Case aSym[iInd]
-        Case "INHERITS"
         Case "PUBLIC"
           sKind = "v"
           bPublic = True
@@ -991,6 +1008,7 @@ End
 Static Public Function GetClassSymbols(sClass As String) As Collection
 
   Dim hClass As CClassInfo
+  Dim bClass As Boolean
   Dim sName As String
   Dim sPath As String
   Dim hPForm As FForm
@@ -1000,7 +1018,7 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
   Dim cSymbol As Collection
   Dim hSymbol As CSymbolInfo
   Dim iFind As Integer
-  Dim aClass As String[]
+  'Dim aClass As String[]
   Dim sFamily As String
 
   'IF Len(sClass) <= 1 THEN
@@ -1010,19 +1028,17 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
   'Debug sClass
   'If sClass = "TableView" Then Stop
 
+  bClass = Project.ExistClass(sClass)
   hClass = CComponent.Classes[sClass]
 
-  If hClass Then
-    If hClass.Component <> Project.Name Then
-      $hClass = hClass
-      Return hClass.Symbols
-    Endif
-  Endif
+  ' If hClass Then
+  '   If hClass.Component <> Project.Name Then
+  '     $hClass = hClass
+  '     Return hClass.Symbols
+  '   Endif
+  ' Endif
 
-  aClass = Project.GetClasses()
-  iFind = aClass.Find(sClass, gb.IgnoreCase)
-
-  If iFind < 0 Then
+  If Not bClass Then
     If hClass Then
       Return hClass.Symbols
     Else
@@ -1040,8 +1056,6 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
     Endif
   Endif
 
-  sClass = aClass[iFind]
-  
   sPath = Project.FindPath(sClass & ".module")
   If Exist(sPath) Then hPModule = Project.LoadFile(sPath)
   For Each sFamily In CFamily.List

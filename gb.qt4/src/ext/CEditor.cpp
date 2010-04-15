@@ -675,6 +675,35 @@ BEGIN_PROPERTY(CEDITOR_line_breakpoint)
 
 END_PROPERTY
 
+BEGIN_METHOD(CEDITOR_line_purge, GB_BOOLEAN comment; GB_BOOLEAN string)
+
+  bool comment = VARGOPT(comment, FALSE);
+  bool string = VARGOPT(string, FALSE);
+	GString line, result;
+	uint i, state;
+  
+	line = DOC->getLine(THIS->line);
+	
+  /*if (comment && string)	
+	{
+		GB.ReturnNewZeroString(line.utf8());
+		return;
+	}*/
+	
+	for (i = 0; i < line.length(); i++)
+	{
+		state = DOC->getCharState(THIS->line, i);
+		if ((!string && state == GLine::String) || (!comment && (state == GLine::Comment || state == GLine::Help)))
+			result += ' ';
+		else
+			result += line.at(i);
+	}
+  
+  GB.ReturnNewZeroString(result.utf8());
+
+END_METHOD
+
+
 
 /****************************************************************************
 	
@@ -1103,6 +1132,7 @@ GB_DESC CEditorLineDesc[] =
   GB_PROPERTY_READ("Limit", "b", CEDITOR_line_limit),
 	GB_METHOD("GetInitialState", NULL, CEDITOR_line_get_initial_state, NULL),
 	GB_METHOD("Refresh", NULL, CEDITOR_line_refresh, NULL),
+  GB_METHOD("Purge", "s", CEDITOR_line_purge, "[(Comment)b(String)b]"),
 
   GB_END_DECLARE
 };
@@ -1230,7 +1260,6 @@ GB_DESC CEditorDesc[] =
   GB_PROPERTY_READ("Selected", "b", CEDITOR_selected),
   GB_PROPERTY_READ("Selection", ".Editor.Selection", CEDITOR_sel),
   GB_PROPERTY_SELF("Lines", ".Editor.Lines"),
-  //GB_METHOD("GetPurgedLine", "s", CEDITOR_purge_line, "(Line)i[(Comment)b(String)b]"),
 
   GB_METHOD("FindNextBreakpoint", "i", CEDITOR_find_next_breakpoint, "(Line)i"),
   GB_METHOD("FindNextWord", "i", CEDITOR_find_next_word, "(Word)s(Line)i"),

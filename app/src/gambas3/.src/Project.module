@@ -2360,6 +2360,13 @@ Catch
 
 End
 
+Public Sub ExistClass(sClass As String) As Boolean
+  
+  If $cSourceDir.Exist(sClass & ".class") Then Return True
+  If $cSourceDir.Exist(sClass & ".module") Then Return True
+  
+End
+
 
 Public Function GetClasses(Optional bFullPath As Boolean) As String[]
 
@@ -4650,7 +4657,7 @@ Public Sub IsExported(sPath As String) As Boolean
   hFile = Open sPath
   While Not Eof(hFile)
     Line Input #hFile, sLine
-    sLine = Trim(sLine)
+    sLine = Highlight.Purge(Trim(sLine))
     If Not sLine Then Continue
     If Left(sLine) = "'" Then Continue
     If sLine Like "INHERITS *" Then Continue
