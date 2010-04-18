@@ -32,7 +32,10 @@ GB_DESC *GB_CLASSES[] EXPORT =
 {
   CairoPatternDesc,
   CairoExtentsDesc,
+  CairoTextExtentsDesc,
+  CairoFontExtentsDesc,
   CairoMatrixDesc,
+  CairoFontDesc,
   CairoDesc,
   NULL
 };

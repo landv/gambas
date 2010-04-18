@@ -28,13 +28,18 @@
 #ifndef __C_CAIRO_C
 
 extern GB_DESC CairoExtentsDesc[];
+extern GB_DESC CairoTextExtentsDesc[];
+extern GB_DESC CairoFontExtentsDesc[];
 extern GB_DESC CairoPatternDesc[];
 extern GB_DESC CairoMatrixDesc[];
+extern GB_DESC CairoFontDesc[];
 extern GB_DESC CairoDesc[];
 
 #else
 
 #define THIS_EXTENTS ((CAIRO_EXTENTS *)_object)
+#define THIS_TEXT_EXTENTS ((CAIRO_TEXT_EXTENTS *)_object)
+#define THIS_FONT_EXTENTS ((CAIRO_FONT_EXTENTS *)_object)
 #define THIS_PATTERN ((CAIRO_PATTERN *)_object)
 #define THIS_MATRIX ((CAIRO_MATRIX *)_object)
 
@@ -46,6 +51,20 @@ typedef
 		double x1, y1, x2, y2;
 		}
 	CAIRO_EXTENTS;
+	
+typedef
+	struct {
+		GB_BASE ob;
+		cairo_text_extents_t e;
+		}
+	CAIRO_TEXT_EXTENTS;
+	
+typedef
+	struct {
+		GB_BASE ob;
+		cairo_font_extents_t e;
+		}
+	CAIRO_FONT_EXTENTS;
 	
 typedef
 	struct {

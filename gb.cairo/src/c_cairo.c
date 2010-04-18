@@ -31,13 +31,63 @@ typedef
 		cairo_surface_t *surface;
 		cairo_t *context;
 		CAIRO_PATTERN *pattern;
+		char *font_family;
+		cairo_font_weight_t font_weight;
+		cairo_font_slant_t font_slant;
+		double font_size;
 		}
 	CAIRO_DRAW;
 
 CAIRO_DRAW *_current = NULL;
 
+#define THIS _current
 #define CNT (_current->context)
 #define SURFACE (_current->surface)
+
+static void free_image(GB_IMG *img, void *image)
+{
+	cairo_surface_destroy((cairo_surface_t *)image);
+}
+
+static void *temp_image(GB_IMG *img)
+{
+	cairo_surface_t *image;
+
+	if (!img->data)
+		image = NULL; // TODO: use a static small image surface
+	else
+		image = cairo_image_surface_create_for_data(img->data, CAIRO_FORMAT_ARGB32, img->width, img->height, 
+		                                            cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, img->width));
+	return image;
+}
+
+static GB_IMG_OWNER _image_owner = {
+	"gb.cairo",
+	GB_IMAGE_BGRP,
+	free_image,
+	free_image,
+	temp_image
+	};
+
+static cairo_surface_t *check_image(void *img)
+{
+	// TODO: format is endian-dependent
+	return (cairo_surface_t *)IMAGE.Check((GB_IMG *)img, &_image_owner);
+}
+
+static bool check_device()
+{
+	if (!_current)
+	{
+		GB.Error("No current device");
+		return TRUE;
+	}
+	else
+		return FALSE;
+}
+
+#define CHECK_CNT() if (check_device()) return
+
 
 /**** CairoExtents *********************************************************/
 
@@ -75,6 +125,60 @@ GB_DESC CairoExtentsDesc[] =
 	GB_PROPERTY_READ("Y2", "f", CAIRO_EXTENTS_y2),
 	
 	GB_METHOD("Merge", "CairoExtents", CAIRO_EXTENTS_merge, "(Extents)CairoExtents;"),
+	
+	GB_END_DECLARE
+};
+
+/**** CairoTextExtents *********************************************************/
+
+#define IMPLEMENT_TEXT_EXTENTS_PROPERTY(_method, _field) \
+BEGIN_PROPERTY(_method) \
+	GB.ReturnFloat(THIS_TEXT_EXTENTS->e._field); \
+END_PROPERTY
+
+IMPLEMENT_TEXT_EXTENTS_PROPERTY(CairoTextExtents_XBearing, x_bearing)
+IMPLEMENT_TEXT_EXTENTS_PROPERTY(CairoTextExtents_YBearing, y_bearing)
+IMPLEMENT_TEXT_EXTENTS_PROPERTY(CairoTextExtents_Width, width)
+IMPLEMENT_TEXT_EXTENTS_PROPERTY(CairoTextExtents_Height, height)
+IMPLEMENT_TEXT_EXTENTS_PROPERTY(CairoTextExtents_XAdvance, x_advance)
+IMPLEMENT_TEXT_EXTENTS_PROPERTY(CairoTextExtents_YAdvance, y_advance)
+
+GB_DESC CairoTextExtentsDesc[] = 
+{
+	GB_DECLARE("CairoTextExtents", sizeof(CAIRO_TEXT_EXTENTS)),
+	
+	GB_PROPERTY_READ("XBearing", "f", CairoTextExtents_XBearing),
+	GB_PROPERTY_READ("YBearing", "f", CairoTextExtents_YBearing),
+	GB_PROPERTY_READ("Width", "f", CairoTextExtents_Width),
+	GB_PROPERTY_READ("Height", "f", CairoTextExtents_Height),
+	GB_PROPERTY_READ("XAdvance", "f", CairoTextExtents_XAdvance),
+	GB_PROPERTY_READ("YAdvance", "f", CairoTextExtents_YAdvance),
+	
+	GB_END_DECLARE
+};
+
+/**** CairoFontExtents *********************************************************/
+
+#define IMPLEMENT_FONT_EXTENTS_PROPERTY(_method, _field) \
+BEGIN_PROPERTY(_method) \
+	GB.ReturnFloat(THIS_FONT_EXTENTS->e._field); \
+END_PROPERTY
+
+IMPLEMENT_FONT_EXTENTS_PROPERTY(CairoFontExtents_Ascent, ascent)
+IMPLEMENT_FONT_EXTENTS_PROPERTY(CairoFontExtents_Descent, descent)
+IMPLEMENT_FONT_EXTENTS_PROPERTY(CairoFontExtents_Height, height)
+IMPLEMENT_FONT_EXTENTS_PROPERTY(CairoFontExtents_MaxXAdvance, max_x_advance)
+IMPLEMENT_FONT_EXTENTS_PROPERTY(CairoFontExtents_MaxYAdvance, max_y_advance)
+
+GB_DESC CairoFontExtentsDesc[] = 
+{
+	GB_DECLARE("CairoFontExtents", sizeof(CAIRO_TEXT_EXTENTS)),
+	
+	GB_PROPERTY_READ("Ascent", "f", CairoFontExtents_Ascent),
+	GB_PROPERTY_READ("Descent", "f", CairoFontExtents_Descent),
+	GB_PROPERTY_READ("Height", "f", CairoFontExtents_Height),
+	GB_PROPERTY_READ("MaxXAdvance", "f", CairoFontExtents_MaxXAdvance),
+	GB_PROPERTY_READ("MaxYAdvance", "f", CairoFontExtents_MaxYAdvance),
 	
 	GB_END_DECLARE
 };
@@ -223,51 +327,161 @@ GB_DESC CairoPatternDesc[] =
 };
 
 
-/**** Cairo ****************************************************************/
+/**** CairoFont *********************************************************/
 
-static void free_image(GB_IMG *img, void *image)
+static void update_font()
 {
-	cairo_surface_destroy((cairo_surface_t *)image);
+	char *family = THIS->font_family;
+	
+	if (!family)
+		family = "";
+	
+	cairo_select_font_face(CNT, family, THIS->font_slant, THIS->font_weight);
 }
 
-static void *temp_image(GB_IMG *img)
-{
-	cairo_surface_t *image;
+BEGIN_PROPERTY(CairoFont_Name)
 
-	if (!img->data)
-		image = NULL; // TODO: use a static small image surface
+	CHECK_CNT();
+
+	if (READ_PROPERTY)
+		GB.ReturnString(THIS->font_family);
 	else
-		image = cairo_image_surface_create_for_data(img->data, CAIRO_FORMAT_ARGB32, img->width, img->height, 
-		                                            cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, img->width));
-	return image;
-}
-
-static GB_IMG_OWNER _image_owner = {
-	"gb.cairo",
-	GB_IMAGE_BGRP,
-	free_image,
-	free_image,
-	temp_image
-	};
-
-static cairo_surface_t *check_image(void *img)
-{
-	// TODO: format is endian-dependent
-	return (cairo_surface_t *)IMAGE.Check((GB_IMG *)img, &_image_owner);
-}
-
-static bool check_device()
-{
-	if (!_current)
 	{
-		GB.Error("No current device");
-		return TRUE;
+		GB.StoreString(PROP(GB_STRING), &(THIS->font_family));
+		update_font();
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CairoFont_Bold)
+
+	CHECK_CNT();
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(THIS->font_weight != CAIRO_FONT_WEIGHT_NORMAL);
+	else
+	{
+		THIS->font_weight = VPROP(GB_BOOLEAN) ? CAIRO_FONT_WEIGHT_BOLD : CAIRO_FONT_WEIGHT_NORMAL;
+		update_font();
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CairoFont_Weight)
+
+	CHECK_CNT();
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(THIS->font_weight);
+	else
+	{
+		THIS->font_weight = VPROP(GB_INTEGER);
+		update_font();
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CairoFont_Italic)
+
+	CHECK_CNT();
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(THIS->font_slant != CAIRO_FONT_SLANT_NORMAL);
+	else
+	{
+		THIS->font_slant = VPROP(GB_BOOLEAN) ? CAIRO_FONT_SLANT_ITALIC : CAIRO_FONT_SLANT_NORMAL;
+		update_font();
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CairoFont_Slant)
+
+	CHECK_CNT();
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(THIS->font_slant);
+	else
+	{
+		THIS->font_slant = VPROP(GB_INTEGER);
+		update_font();
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CairoFont_Size)
+
+	CHECK_CNT();
+
+	if (READ_PROPERTY)
+		GB.ReturnFloat(THIS->font_size);
+	else
+	{
+		THIS->font_size = VPROP(GB_FLOAT);
+		cairo_set_font_size(CNT, THIS->font_size);
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CairoFont_Matrix)
+
+	CAIRO_MATRIX *matrix;
+	
+	CHECK_CNT();
+
+	if (READ_PROPERTY)
+	{
+		GB.New(POINTER(&matrix), GB.FindClass("CairoMatrix"), NULL, NULL);
+		cairo_get_font_matrix(CNT, &matrix->matrix);
+		GB.ReturnObject(matrix);
 	}
 	else
-		return FALSE;
-}
+	{
+		matrix = (CAIRO_MATRIX *)VPROP(GB_OBJECT);
+		if (!matrix)
+		{
+			cairo_matrix_t identity;
+			cairo_matrix_init_identity(&identity);
+			cairo_set_font_matrix(CNT, &identity);
+		}
+		else
+			cairo_set_font_matrix(CNT, &matrix->matrix);
+	}
 
-#define CHECK_CNT() if (check_device()) return
+END_PROPERTY
+
+BEGIN_PROPERTY(CairoFont_Extents)
+
+	CAIRO_FONT_EXTENTS *extents;
+
+	CHECK_CNT();
+	
+	GB.New(POINTER(&extents), GB.FindClass("CairoFontExtents"), NULL, NULL);
+	
+	cairo_font_extents(CNT, &extents->e);
+	
+	GB.ReturnObject(extents);
+
+END_PROPERTY
+
+GB_DESC CairoFontDesc[] = 
+{
+	GB_DECLARE(".CairoFont", 0), GB_VIRTUAL_CLASS(),
+	
+	GB_STATIC_PROPERTY("Name", "s", CairoFont_Name),
+	GB_STATIC_PROPERTY("Bold", "b", CairoFont_Bold),
+	GB_STATIC_PROPERTY("Italic", "b", CairoFont_Italic),
+	GB_STATIC_PROPERTY("Weight", "i", CairoFont_Weight),
+	GB_STATIC_PROPERTY("Slant", "i", CairoFont_Slant),
+	GB_STATIC_PROPERTY("Size", "f", CairoFont_Size),
+	GB_STATIC_PROPERTY("Matrix", "CairoMatrix", CairoFont_Matrix),
+	GB_STATIC_PROPERTY("Extents", "CairoFontExtents", CairoFont_Extents),
+	
+	GB_END_DECLARE
+};
+
+
+/**** Cairo ****************************************************************/
 
 BEGIN_METHOD(CAIRO_begin, GB_OBJECT device)
 
@@ -297,6 +511,10 @@ BEGIN_METHOD(CAIRO_begin, GB_OBJECT device)
 	draw->device = device;
 	GB.Ref(device);
 	draw->pattern = NULL;
+	draw->font_family = NULL;
+	draw->font_slant = CAIRO_FONT_SLANT_NORMAL;
+	draw->font_weight = CAIRO_FONT_WEIGHT_NORMAL;
+	draw->font_size = 10.0;
 	
 	_current = draw;
 
@@ -311,6 +529,7 @@ static void end_current()
 		
 	_current = draw->previous;
 	
+	GB.FreeString(&draw->font_family);
 	GB.Unref(POINTER(&draw->pattern));
 	cairo_destroy(draw->context);
 	GB.Unref(POINTER(&draw->device));
@@ -742,6 +961,28 @@ BEGIN_PROPERTY(CAIRO_matrix)
 
 END_PROPERTY
 
+BEGIN_METHOD(Cairo_TextExtents, GB_STRING text)
+
+	CAIRO_TEXT_EXTENTS *extents;
+
+	CHECK_CNT();
+	
+	GB.New(POINTER(&extents), GB.FindClass("CairoTextExtents"), NULL, NULL);
+	
+	cairo_text_extents(CNT, GB.ToZeroString(ARG(text)), &extents->e);
+	
+	GB.ReturnObject(extents);
+
+END_PROPERTY
+
+BEGIN_METHOD(Cairo_Text, GB_STRING text)
+
+	CHECK_CNT();
+	
+	cairo_show_text(CNT, GB.ToZeroString(ARG(text)));
+	
+END_METHOD
+
 GB_DESC CairoDesc[] = 
 {
 	GB_DECLARE("Cairo", 0), GB_VIRTUAL_CLASS(),
@@ -831,6 +1072,12 @@ GB_DESC CairoDesc[] =
 	GB_CONSTANT("OperatorXor", "i",                CAIRO_OPERATOR_XOR),
 	GB_CONSTANT("OperatorAdd", "i",                CAIRO_OPERATOR_ADD),
 	GB_CONSTANT("OperatorSaturate", "i",           CAIRO_OPERATOR_SATURATE),
+	
+	GB_CONSTANT("FontSlantNormal", "i",            CAIRO_FONT_SLANT_NORMAL),
+	GB_CONSTANT("FontSlantItalic", "i",            CAIRO_FONT_SLANT_ITALIC),
+	GB_CONSTANT("FontSlantOblique", "i",           CAIRO_FONT_SLANT_OBLIQUE),
+	GB_CONSTANT("FontWeightNormal", "i",           CAIRO_FONT_WEIGHT_NORMAL),
+	GB_CONSTANT("FontWeightBold", "i",             CAIRO_FONT_WEIGHT_BOLD),
     
 	GB_STATIC_METHOD("Begin", NULL, CAIRO_begin, "(Device)o"),
 	GB_STATIC_METHOD("End", NULL, CAIRO_end, NULL),
@@ -897,6 +1144,10 @@ GB_DESC CairoDesc[] =
 	GB_STATIC_METHOD("Scale", NULL, CAIRO_scale, "(SX)f(SY)f"),
 	GB_STATIC_METHOD("Rotate", NULL, CAIRO_rotate, "(Angle)f"),
 	GB_STATIC_PROPERTY("Matrix", "CairoMatrix", CAIRO_matrix),
+	
+	GB_STATIC_PROPERTY_SELF("Font", ".CairoFont"),
+	GB_STATIC_METHOD("TextExtents", "CairoTextExtents", Cairo_TextExtents, "(Text)s"),
+	GB_STATIC_METHOD("Text", NULL, Cairo_Text, "(Text)s"),
 
 	GB_END_DECLARE	
 };
