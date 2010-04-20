@@ -395,7 +395,7 @@ Private Sub ShowAsBalloon(sMsg As String)
   Dim iPos As Integer
 
   If Left(sMsg) = "!" Then
-    sMsg = Mid$(sMsg, 2) 
+    sMsg = Design.MakeErrorMessage(Mid$(sMsg, 2))
     hIcon = Picture["icon:/32/error"]
   Else
     hIcon = Picture["icon:/32/info"]

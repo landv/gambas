@@ -124,7 +124,7 @@ Public Sub Process_Read()
   
 End
 
-Private Sub MakeErrorMessage(sErr As String) As String
+Public Sub MakeErrorMessage(sErr As String) As String
   
   Dim aErr As String[]
   

@@ -1147,7 +1147,7 @@ static void add_date_token(DATE_SERIAL *date, char *token, int count)
 
       if (date->msec || count == 2)
       {
-        n = snprintf(buf, sizeof(buf), ".%03d", date->msec);
+        n = snprintf(buf, sizeof(buf), "%03d", date->msec);
         if (count == 1)
         {
 					while (buf[n - 1] == '0')

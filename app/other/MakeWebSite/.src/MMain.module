@@ -252,7 +252,7 @@ Private Sub ReplaceLink(sData As String, sAttr As String) As String
     If Not sLink Then Continue
     If sLink Like "http://*" Then Continue
     If sLink Like "https://*" Then Continue
-    If sLink Like "mailto://*" Then Continue
+    If sLink Like "mailto:*" Then Continue
     If sLink Like "/" Then Continue
     If sLink Like "*.html" Then Continue
     If sLink Like "*.html#*" Then Continue
