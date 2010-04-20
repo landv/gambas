@@ -30,13 +30,20 @@ Private Sub SetCurrentToolbar(hToolbar As ToolBar)
   $hToolbar = hToolbar
   $hForm = $hToolbar._Container.Parent
 
-  If $hToolbar.Text Then 
-    lblTitle.Text = Subst(("&1 toolbar"), $hToolbar.Text)
+  If $hToolbar.Text Then
+    Me.Title = Subst(("'&1' toolbar configuration"), $hToolbar.Text)
   Else
-    lblTitle.Text = ("Main toolbar")
+    Me.Title = ("Toolbar configuration")
   Endif
-
-  cmbSize.Index = $hForm.GetIconSize()
+  
+  Select Case $hForm.GetIconSize()
+    Case FToolBar.ICON_LARGE
+      radLarge.Value = True
+    Case FToolBar.ICON_MEDIUM
+      radMedium.Value = True
+    Case Else
+      radSmall.Value = True
+  End Select
   
   InitAction
   $hForm.SetConfigureMode(True)
@@ -349,9 +356,27 @@ Public Sub btnUndo_Click()
 
 End
 
-Public Sub cmbSize_Click()
+' Public Sub cmbSize_Click()
+' 
+'   $hForm.SetIconSize(cmbSize.Index)
+' 
+' End
 
-  $hForm.SetIconSize(cmbSize.Index)
+
+Public Sub radSize_Click()
+
+  Dim iSize As Integer
+  
+  If Not Last.Value Then Return
+  
+  If Last = radLarge Then
+    iSize = FToolBar.ICON_LARGE
+  Else If Last = radMedium Then
+    iSize = FToolBar.ICON_MEDIUM
+  Else
+    iSize = FToolBar.ICON_SMALL
+  Endif
+  
+  $hForm.SetIconSize(iSize)
 
 End
-

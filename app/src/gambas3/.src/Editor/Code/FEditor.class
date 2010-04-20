@@ -1,14 +1,14 @@
 ' Gambas class file
 
-Public Path As String
-Public Editor As Editor
-Public Scan As Collection
-Public ParentClass As String
-Public ParentComponent As String
-Public AutoCreatable As Boolean
-Public NotCreatable As Boolean
+Public Path As String '' Source file absolute path.
+Public Editor As Editor '' The current Editor control.
+Public Scan As Collection '' The result of the class symbol analyze.
+Public ParentClass As String '' The parent class.
+Public ParentComponent As String '' The component of the parent class.
+Public AutoCreatable As Boolean '' If the class has "CREATE [STATIC]".
+Public NotCreatable As Boolean '' If the class has "CREATE PRIVATE".
 
-Property Read ReadOnly As Boolean
+Property Read ReadOnly As Boolean '' If the editor is read-only.
 
 Private $bModify As Boolean
 'PRIVATE $cLine AS NEW Collection
@@ -3026,7 +3026,18 @@ End
 
 Public Sub SetPosition(hResult As CFindResult, Optional bJustCheck As Boolean) As Boolean
   
-  Return Editor.SetPosition(hResult, bJustCheck)
+  Dim bResult As Boolean
+  
+  If FSearch.CurrentProcedure Then
+    bResult = Editor.SetPosition(hResult, True)
+    If Not bResult Then
+      If FSearch.CurrentProcedureName <> GetProcAt(hResult.Line) Then bResult = True
+    Endif
+    If Not bResult And If Not bJustCheck Then Editor.SetPosition(hResult, False)
+  Else
+    bResult = Editor.SetPosition(hResult, bJustCheck)
+  Endif
+  Return bResult
   
 End
 

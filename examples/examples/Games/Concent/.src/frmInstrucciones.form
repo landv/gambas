@@ -1,19 +1,22 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(63.8333,1.6667,89.6667,102.5)
-  Text = ("")
+  MoveScaled(63.8571,1.7143,86,77)
   Resizable = False
   { Label1 Label
-    MoveScaled(4,0,72,5.3333)
-    Text = ("COMO JUGAR CONC\xC3\x89NTRESE?")
+    MoveScaled(1,1,83,4)
+    Font = Font["Bold,+2"]
+    Text = ("COMO JUGAR CONCÉNTRESE?")
   }
   { Label2 Label
-    MoveScaled(4,6.6667,82.6667,89.3333)
-    Text = ("Se trata de un Juego Bastante sencillo: \n\n\n1.) El objetivo del juego es probar tu retentiva y nivel de concentraci\xC3\xB3n, para lo cual\n    debes encontrar los pares de rostros que hay ocultos en el tablero de\n    conc\xC3\xA9ntrese. \n \n2.) El juego tiene tres niveles (Principiante, Medio, Experto), que te permite\n    escoger entre tres tama\xC3\xB1os del tablero para a\xC3\xB1adir emoci\xC3\xB3n y dificultad al juego,\n    para Acceder a estas opciones debes ingresar por el menu Configuraci\xC3\xB3n - Nivel,\n    y seleccionar uno de los tres preestablecidos. \n\n \n3). As\xC3\xAD mismo, tienes la posibilidad de incrementar tus conocimientos al jugar en\n    Modo Pregunta, lo que incrementa tu nivel educativo, esto se logra mediante un\n    cuestionario emergente que deber\xC3\xA1s responder con cada acierto en el tablero, si\n    contestas correctamente tendr\xC3\xA1s un puntaje m\xC3\xA1s alto y podr\xC3\xA1s competir con tus\n    amigos. (Esta funci\xC3\xB3n se encuentra en construcci\xC3\xB3n debido a la migracion de\n    Visual Basic hacia Gambas, y experimentar el poder de Linux, viva el\n    OpenSource!!! \n \n4.) El juego tambi\xC3\xA9n te permite activar o desactivar los sonidos de ambientaci\xC3\xB3n,\n    para lo cual debes cambiar el estado del men\xC3\xBA Configuraci\xC3\xB3n - Sonido. \n \n5.) Recuerda: Para redistribuir el Tablero Pulsa F2 , para comenzar a jugar pulsa\n    F4, los rostros ser\xC3\xA1n cargados aleatoriamente, por lo que no debes intentar\n    aprenderte el tablero de memoria...!, Esto s\xC3\xAD que va a ser un verdadero reto!. \n \n6.) Estoy actualmente dise\xC3\xB1ando los modulos de aprendizaje que podr\xC3\xA1s conseguir\n    muy pronto; para comentarios y / o sugerencias escribe a: jbadbe@gmail.com.\n")
+    MoveScaled(1,6,84,65)
+    Padding = 8
+    Text = ("Se trata de un Juego Bastante sencillo: \n\n1.) El objetivo del juego es probar tu retentiva y nivel de concentración, para lo cual\n    debes encontrar los pares de rostros que hay ocultos en el tablero de\n    concéntrese. \n \n2.) El juego tiene tres niveles (Principiante, Medio, Experto), que te permite\n    escoger entre tres tamaños del tablero para añadir emoción y dificultad al juego,\n    para Acceder a estas opciones debes ingresar por el menu Configuración - Nivel,\n    y seleccionar uno de los tres preestablecidos. \n \n3). Así mismo, tienes la posibilidad de incrementar tus conocimientos al jugar en\n    Modo Pregunta, lo que incrementa tu nivel educativo, esto se logra mediante un\n    cuestionario emergente que deberás responder con cada acierto en el tablero, si\n    contestas correctamente tendrás un puntaje más alto y podrás competir con tus\n    amigos. (Esta función se encuentra en construcción debido a la migracion de\n    Visual Basic hacia Gambas, y experimentar el poder de Linux, viva el\n    OpenSource!!! \n \n4.) El juego también te permite activar o desactivar los sonidos de ambientación,\n    para lo cual debes cambiar el estado del menú Configuración - Sonido. \n \n5.) Recuerda: Para redistribuir el Tablero Pulsa F2 , para comenzar a jugar pulsa\n    F4, los rostros serán cargados aleatoriamente, por lo que no debes intentar\n    aprenderte el tablero de memoria...!, Esto sí que va a ser un verdadero reto!. \n \n6.) Estoy actualmente diseñando los modulos de aprendizaje que podrás conseguir\n    muy pronto; para comentarios y / o sugerencias escribe a: jbadbe@gmail.com.\n")
+    Alignment = Align.TopNormal
+    Border = Border.Plain
   }
   { Button1 Button
-    MoveScaled(32,96,20,4)
+    MoveScaled(34,72,18,4)
     Text = ("&Aceptar")
   }
 }

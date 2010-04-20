@@ -4,7 +4,6 @@
   Move(0,0,408,726)
   #Scaled = False
   Font = Font["Bitstream Vera Sans"]
-  Text = ("")
   Icon = Picture["camera.png"]
   Resizable = False
   Border = False
@@ -41,14 +40,12 @@
         }
         { buttonSettings Button
           Move(4,4,30,24)
-          Text = ("")
           Picture = Picture["settings.png"]
         }
       }
     }
     { Refresh #Timer
-      #X = 294
-      #Y = 606
+      #Move(224,175)
     }
     { tools Panel
       Move(18,276,276,270)

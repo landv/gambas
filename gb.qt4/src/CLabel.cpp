@@ -148,6 +148,14 @@ BEGIN_PROPERTY(CLABEL_transparent)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Label_Wrap)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(WIDGET->wordWrap());
+	else
+		WIDGET->setWordWrap(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
 
 GB_DESC CLabelDesc[] =
 {
@@ -183,6 +191,7 @@ GB_DESC CTextLabelDesc[] =
   GB_PROPERTY("AutoResize", "b", CLABEL_auto_resize),
   GB_PROPERTY("Padding", "i", CLABEL_margin),
   GB_PROPERTY("Transparent", "b", CLABEL_transparent),
+  GB_PROPERTY("Wrap", "b", Label_Wrap),
   GB_METHOD("Adjust", NULL, CLABEL_adjust, NULL),
 
 	TEXTLABEL_DESCRIPTION,

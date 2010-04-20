@@ -179,7 +179,7 @@ Public Sub _unknown(...) As Variant
 End
 
 ' We do not use the cached introspection, because new objects may have appeared.
-' But new interfaces or new methods are unlikey.
+' But new interfaces or new methods are unlikely.
 
 Private Function Children_Read() As String[]
 

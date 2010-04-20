@@ -458,6 +458,7 @@ static char *FindDatabase(const char *name, const char *hostName)
 		{
 			return fullpath;
 		}
+		GB.FreeString(&fullpath);
 	}
 
 #if 0
@@ -587,7 +588,7 @@ static int WalkDirectory(const char *dir, char ***databases)
 }
 
 /* Internal function to check database version number */
-int db_version()
+static int db_version()
 {
 	//Check db version
 	int dbversion = 0;
@@ -662,6 +663,7 @@ static int open_database(DB_DESC * desc, DB_DATABASE * db)
 	else
 	{
 		GB.Error("Unable to locate database: &1", name);
+		GB.FreeString(&name);
 		delete conn;
 		return TRUE;
 	}

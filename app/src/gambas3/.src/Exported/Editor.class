@@ -51,7 +51,11 @@ Public Sub SetPosition(hFindResult As CFindResult, bJustCheck As Boolean) As Boo
   hFindResult.Column = iColumn
   
   If bJustCheck Then 
-    sLine = Html(String.Left(sLine, iColumn)) & "<b>" & Html(String.Mid$(sLine, iColumn + 1, hFindResult.Length)) & "</b>" & Html(String.Mid$(sLine, iColumn + hFindResult.Length + 1))
+    If iColumn >= 40 And If Me.Lines[iLine].Length > 80 Then
+      sLine = "…" & Html(String.Mid$(sLine, iColumn - 31, 32)) & "<b>" & Html(String.Mid$(sLine, iColumn + 1, hFindResult.Length)) & "</b>" & Html(String.Mid$(sLine, iColumn + hFindResult.Length + 1, 160))
+    Else
+      sLine = Html(String.Left(sLine, iColumn)) & "<b>" & Html(String.Mid$(sLine, iColumn + 1, hFindResult.Length)) & "</b>" & Html(String.Mid$(sLine, iColumn + hFindResult.Length + 1, 160))
+    Endif
     sLine = Replace(sLine, " ", "&nbsp;")
     hFindResult.Text = "<nobr>" & sLine
   Else

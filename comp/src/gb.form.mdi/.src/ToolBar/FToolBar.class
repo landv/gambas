@@ -1,8 +1,8 @@
 ' Gambas class file
 
-Public ICON_SMALL As Integer = 0
-Public ICON_MEDIUM As Integer = 1
-Public ICON_LARGE As Integer = 2
+Public Const ICON_SMALL As Integer = 0
+Public Const ICON_MEDIUM As Integer = 1
+Public Const ICON_LARGE As Integer = 2
 
 Public ToolbarKey As String
 'Public ToolbarText As String
@@ -23,6 +23,7 @@ Private $bPressed As Boolean
 'Private $iSeparatorSize As Integer
 Private $sDropAction As String
 Private $iIconSize As Integer
+Private $iButtonWidth As Integer
 
 Private $bOpened As Boolean
 
@@ -37,6 +38,7 @@ Private $aHidden As Control[]
 Public Sub _new()
   
   $iHandleSize = Max(4, Desktop.Scale / 2)
+  $iButtonWidth = Desktop.Scale * 4
   dwgHandle.Width = $iHandleSize
   $hWatcherParent = New Watcher(Me.Parent.Parent) As "Container"
   $bAutoResize = True
@@ -129,10 +131,33 @@ Private Sub GetToolBarHeight(Optional bPadding As Boolean) As Integer
     
   Else
   
-    For Each hCtrl In panToolBar.Children
-      If Not hCtrl.Visible Then Continue
-      H = Max(H, hCtrl.H)
-    Next
+    ' For Each hCtrl In panToolBar.Children
+    '   If hCtrl.Visible Then 
+    '     If X >= GetFreeWidth() Then
+    '       X = 0
+    '       Y += H
+    '       H = 0
+    '     Endif
+    '     W += hCtrl.W
+    '     If Not hCtrl Is Separator Then
+    '       H = Max(H, hCtrl.H)
+    '       Debug hCtrl.Name;; hCtrl.H
+    '     Endif
+    '     If hCtrl.Expand Then 
+    '       X = GetFreeWidth()
+    '     Else
+    '       X += W
+    '     Endif
+    '   Endif
+    ' Next
+    ' 
+    ' H = Y
+
+    ' For Each hCtrl In panToolBar.Children
+    '   If Not hCtrl.Visible Then Continue
+    '   H = Max(H, hCtrl.H)
+    ' Next
+    H = $iButtonWidth
     
   Endif
   
@@ -161,7 +186,7 @@ Private Sub SetArrangement()
   
   If $bDesign Then Return
   hToolBar.Padding = 0
-  hToolbar.Arrangement = Arrange.Row 'If($bVertical, Arrange.Column, Arrange.Row)
+  hToolbar.Arrangement = Arrange.Horizontal 'Arrange.Row 'If($bVertical, Arrange.Column, Arrange.Row)
   
 End
 
@@ -177,6 +202,7 @@ Private Sub Update()
   $bLock = True
   
   SetArrangement
+  CheckSeparators
 
   If Not $bReallyVertical Then
   
@@ -192,7 +218,7 @@ Private Sub Update()
     YP = 0
     WH = $iHandleSize
     HH = Me.H
-  
+    
   Else
   
     XH = 0
@@ -256,8 +282,6 @@ Private Sub Update()
       panToolBar.Move(XP, YP, panToolBar.W, H - HH)
     Endif
 
-    Me.Parent.Resize(W, H)
-        
   Endif
   
   If Not $bReallyVertical Then
@@ -270,6 +294,10 @@ Private Sub Update()
   
   $bLock = False
 
+  If Not $bDesign Then 
+    Me.Parent.Resize(W, H)
+  Endif
+        
 End
 
 Public Sub Form_Resize()
@@ -972,6 +1000,36 @@ Private Sub ResizeControl(hCtrl As Control, iDim As Integer)
   
 End
 
+Private Sub CheckSeparators()
+  
+  Dim hLast As Control
+  Dim hChild As Control
+  Dim aDelete As New Control[]
+  
+  For Each hChild In panToolBar.Children
+    If hChild Is Separator Then hChild.Show
+  Next
+
+  If $bConfigure Then Return
+
+  For Each hChild In panToolBar.Children
+  
+    If Not hChild.Visible Then Continue
+    If Not hLast Or If hLast Is Separator Then
+      If hChild Is Separator Then
+        hChild.Hide
+        Continue
+      Endif
+    Endif
+    hLast = hChild
+  
+  Next
+  
+  If hLast And If hLast Is Separator Then hLast.Hide
+  
+End
+
+
 Public Sub LoadConfig(Optional bInit As Boolean)
   
   Dim hToolbar As ToolBar = Me.Parent
@@ -993,14 +1051,15 @@ Public Sub LoadConfig(Optional bInit As Boolean)
   Select Case Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey &/ "Size"]
     Case "Medium"
       $iIconSize = ICON_MEDIUM
-      iDim = Desktop.Scale * 6
+      iDim = Desktop.Scale * 5
     Case "Large"
       $iIconSize = ICON_LARGE
-      iDim = Desktop.Scale * 8
+      iDim = Desktop.Scale * 7
     Case Else
       $iIconSize = ICON_SMALL
       iDim = Desktop.Scale * 4
   End Select
+  $iButtonWidth = iDim
   
   aConfig = Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey &/ "Layout"]
   If Not aConfig Then 
@@ -1147,11 +1206,14 @@ End
 
 Private Sub Lock()
   
-  If $iLock = 0 Then
-    '$iArrangement = panToolBar.Arrangement
-    panToolBar.Arrangement = Arrange.None
-  Endif
+  Dim hToolbar As Toolbar 
+  
   Inc $iLock
+  If $iLock = 1 Then
+    '$iArrangement = panToolBar.Arrangement
+    hToolbar = Me.Parent
+    hToolbar.Arrangement = Arrange.None
+  Endif
   
 End
 

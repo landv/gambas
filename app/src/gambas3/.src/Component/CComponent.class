@@ -1031,13 +1031,6 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
   bClass = Project.ExistClass(sClass)
   hClass = CComponent.Classes[sClass]
 
-  ' If hClass Then
-  '   If hClass.Component <> Project.Name Then
-  '     $hClass = hClass
-  '     Return hClass.Symbols
-  '   Endif
-  ' Endif
-
   If Not bClass Then
     If hClass Then
       Return hClass.Symbols

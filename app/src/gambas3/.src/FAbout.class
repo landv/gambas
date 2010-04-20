@@ -8,6 +8,7 @@ Private $aUser As New CUser[]
 Private $hBack As Picture
 Private $iStep As Integer
 Private $iFirst As Integer
+Private $bDrawAbout As Boolean
 
 Private Const NSTEP As Integer = 100
 
@@ -321,66 +322,73 @@ Private Sub DisplayText(iIndex As Integer) As Boolean
     iStep = $iStep - iIndex * 40
     If iStep < 0 Then Return
     If iStep > (NSTEP * 10) Then Return True
-
-    If iStep = 0 Then
     
-      Draw.Font.Bold = .Bold
-      Draw.Font.Size = GetFontSize(hUser)
-      W = Draw.TextWidth(.Name)
-      H = Draw.TextHeight(.Name)
-      .XD = Int(Rnd(0, dwgAbout.W - W - 0))
-      .YD = Int(Rnd(0, dwgAbout.H - H - 0))
+    If $bDrawAbout Then
+    
+      If iStep = 0 Then
       
-    Endif
-  
-    If iStep < (NSTEP + 36) Then
-  
-      For I = iStep - 36 To iStep Step 6
-      
-        eStep = I / NSTEP
-        If I < 0 Or If I > NSTEP Then Continue
-  
-        eSize = GetFontSize(hUser) * eStep
-      
-        If eSize >= 1 Then
+        Draw.Font.Bold = .Bold
+        Draw.Font.Size = GetFontSize(hUser)
+        W = Draw.TextWidth(.Name)
+        H = Draw.TextHeight(.Name)
+        .XD = Int(Rnd(0, dwgAbout.W - W - 0))
+        .YD = Int(Rnd(0, dwgAbout.H - H - 0))
         
-          W = .Image.W * eStep + 0.5
-          H = .Image.H * eStep + 0.5
-          X = dwgAbout.W / 2 + (.XD - dwgAbout.W / 2) * eStep + 0.5
-          Y = dwgAbout.H / 2 + (.YD - dwgAbout.H / 2) * eStep + 0.5 
-          Draw.Image(.Image.Stretch(W, H), X, Y)
+      Endif
+    
+      If iStep < (NSTEP + 24) Then
+    
+        For I = iStep - 24 To iStep Step 6
         
-        Endif
+          eStep = I / NSTEP
+          If I < 0 Or If I > NSTEP Then Continue
+    
+          eSize = GetFontSize(hUser) * eStep
         
-      Next
+          If eSize >= 1 Then
+          
+            W = .Image.W * eStep + 0.5
+            H = .Image.H * eStep + 0.5
+            X = dwgAbout.W / 2 + (.XD - dwgAbout.W / 2) * eStep + 0.5
+            Y = dwgAbout.H / 2 + (.YD - dwgAbout.H / 2) * eStep + 0.5 
+            Draw.Image(.Image.Stretch(W, H), X, Y)
+          
+          Endif
+          
+        Next
+        
+      Endif
       
     Endif
     
     If iStep >= NSTEP And If iStep < (10 * NSTEP) Then
     
-      Draw.Font.Bold = .Bold
-      Draw.Font.Size = GetFontSize(hUser)
-      W = Draw.TextWidth(.Name)
-      H = Draw.TextHeight(.Name)
-      X = .XD 'dwgAbout.W / 2 + (.XD - dwgAbout.W / 2) * iStep / NSTEP
-      Y = .YD 'dwgAbout.H / 2 + (.YD - dwgAbout.H / 2) * iStep / NSTEP
+      If $bDrawAbout Then
       
-      ' If .Bold Then
-      '   Draw.Foreground = Color.Black
-      '   Draw.Text(.Name, X + 1, Y + 1, W, H)
-      '   Draw.Text(.Name, X + 1, Y - 1, W, H)
-      '   Draw.Text(.Name, X - 1, Y + 1, W, H)
-      '   Draw.Text(.Name, X - 1, Y - 1, W, H)
-      ' Endif
-      
-      If iStep >= (NSTEP + 36)
-        eBlend = (iStep - NSTEP - 36) / (9 * NSTEP - 36)
-        DrawText(.Name, X, Y, W, H, Color.Merge(.Color, Color.White, eBlend), Color.Merge(&HD0D0D0&, Color.White, eBlend))
-      Else
-        eBlend = 0.7 * (1 - (iStep - NSTEP) / 36)
-        DrawText(.Name, X, Y, W, H, Color.Merge(.Color, Color.White, eBlend), Color.Default)
+        Draw.Font.Bold = .Bold
+        Draw.Font.Size = GetFontSize(hUser)
+        W = Draw.TextWidth(.Name)
+        H = Draw.TextHeight(.Name)
+        X = .XD 'dwgAbout.W / 2 + (.XD - dwgAbout.W / 2) * iStep / NSTEP
+        Y = .YD 'dwgAbout.H / 2 + (.YD - dwgAbout.H / 2) * iStep / NSTEP
+        
+        ' If .Bold Then
+        '   Draw.Foreground = Color.Black
+        '   Draw.Text(.Name, X + 1, Y + 1, W, H)
+        '   Draw.Text(.Name, X + 1, Y - 1, W, H)
+        '   Draw.Text(.Name, X - 1, Y + 1, W, H)
+        '   Draw.Text(.Name, X - 1, Y - 1, W, H)
+        ' Endif
+        
+        If iStep >= (NSTEP + 36)
+          eBlend = (iStep - NSTEP - 36) / (9 * NSTEP - 36)
+          DrawText(.Name, X, Y, W, H, Color.Merge(.Color, Color.White, eBlend), Color.Merge(&HD0D0D0&, Color.White, eBlend))
+        Else
+          eBlend = 0.7 * (1 - (iStep - NSTEP) / 36)
+          DrawText(.Name, X, Y, W, H, Color.Merge(.Color, Color.White, eBlend), Color.Default)
+        Endif
+        
       Endif
-      
       
     Else If iStep >= (10 * NSTEP) Then
 
@@ -448,6 +456,9 @@ Public Sub tabAbout_Click()
     Shell "chmod a+x " & Shell$(sTemp) Wait
     Exec [sTemp] To txtInfo.Text
   Endif
+  
+  $bDrawAbout = tabAbout.Index = 1
+  If $bDrawAbout Then timAbout_Timer
 
 End
 

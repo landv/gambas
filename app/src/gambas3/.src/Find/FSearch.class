@@ -5,6 +5,8 @@ Public RegularExpression As Boolean
 Public IgnoreStrings As Boolean
 Public IgnoreComments As Boolean
 Public WordOnly As Boolean
+Public CurrentProcedure As Boolean
+Public CurrentProcedureName As String
 Public SearchString As String
 Public ReplaceString As String
 
@@ -30,6 +32,7 @@ Public Sub _new()
     .Columns[1].Text = ("Line")
     .Columns[2].Width = Desktop.Scale * 8
     .Columns[2].Text = ("Column")
+    .Columns[3].Width = 1024
     .Columns[3].Text = ("Text")    
   End With
   
@@ -285,6 +288,7 @@ Private Sub InitSearch() As Boolean
   IgnoreComments = chkIgnoreComments.Value
   RegularExpression = chkRegularExpression.Value
   WordOnly = chkWordOnly.Value
+  CurrentProcedure = chkCurrentProcedure.Value
   
   If Not SearchString Then Return True
   
@@ -315,8 +319,17 @@ Private Sub Run(iAction As Integer)
   Dim iCurrentPos, iPos, iInd As Integer
   Dim iTry As Integer
   Dim nReplace As Integer
+  Dim hEditor As FEditor
+  Dim sProc As String
   
   If InitSearch() Then Return
+  
+  If CurrentProcedure Then
+    If $hCurrent Is FEditor Then
+      hEditor = $hCurrent
+      CurrentProcedureName = hEditor.GetProcAt(hEditor.Editor.Line)
+    Endif
+  Endif
   
   aResult = GrepFile($hCurrent)
 
@@ -431,6 +444,8 @@ Private Sub Browse()
   
   If InitSearch() Then Return
   
+  CurrentProcedure = False
+  
   tabSearch.Index = 1
 
   tvwFind.Show
@@ -443,6 +458,7 @@ Private Sub Browse()
   Me.Enabled = False
   
   tvwFind.Rows.Count = 0
+  tvwFind.Clear
   $aBrowse.Clear
   
   For Each sFile In RDir(Project.Dir)

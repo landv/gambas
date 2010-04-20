@@ -38,6 +38,10 @@ static int channel_count;
 static double music_ref_time = 0;
 static double music_ref_pos = 0;
 
+static int _ch_pipe[2];
+static int _ch_playing = 0;
+static int _init = 0;
+
 #if 0
 static void musicDone()
 {
@@ -66,27 +70,58 @@ static void set_audio_properties()
 
 }
 
-static void free_channel_sound(CSOUND *sound)
+static void free_channel(CCHANNEL *ch)
 {
-/*  count_sound--;
-  printf("Unref channel [%d] sound : %p\n", count_sound,sound);*/
-  fflush(NULL);
-  GB.Unref(POINTER(&sound));
+	if (!ch->sound)
+		return;
+	
+	GB.Unref(POINTER(&ch->sound));
+	ch->sound = NULL;
+	ch->free = FALSE;
+
+	_ch_playing--;
+	if (_ch_playing == 0)
+		GB.Watch(_ch_pipe[0], GB_WATCH_NONE, (void *)0, 0);
+}
+
+static void free_finished_channels(void)
+{
+	int i;
+  CCHANNEL *ch;
+	char foo;
+	
+	read(_ch_pipe[0], &foo, 1);
+	
+	for (i = 0; i < MAX_CHANNEL; i++)
+	{
+		ch = channel_cache[i];
+		if (ch && ch->free)
+			free_channel(ch);
+	}
 }
 
 static void channel_finished(int channel)
 {
   CCHANNEL *ch = channel_cache[channel];
+	char foo = 0;
 
   if (!ch)
     return;
 
   /*printf("channel_finished: %p\n", ch->sound);*/
-  fflush(NULL);
 
-//  free_channel_sound(ch->sound);
-  GB.Post(free_channel_sound, (intptr_t)ch->sound);
-  ch->sound = NULL;
+	// TODO: do not use GB.Post(), because we are not in the main thread. Write to a pipe and watch it in the main thread
+	ch->free = TRUE;
+	write(_ch_pipe[1], &foo, 1);
+}
+
+static int play_channel(int channel, CSOUND *sound, int loops)
+{
+	_ch_playing++;
+	if (_ch_playing == 1)
+		GB.Watch(_ch_pipe[0], GB_WATCH_READ , (void *)free_finished_channels,0);
+
+  return Mix_PlayChannel(channel, sound->chunk, loops);
 }
 
 static bool start_sound_engine()
@@ -99,25 +134,19 @@ static bool start_sound_engine()
     return TRUE;
   }
 
+	if (pipe(_ch_pipe))
+	{
+		GB.Error("Unable to initialize channel pipe");
+		return TRUE;
+	}
+	
   Mix_QuerySpec(&info.rate, &info.format, &info.channels);
 
   channel_count = Mix_AllocateChannels(-1);
 
   Mix_ChannelFinished(channel_finished);
 
-  return FALSE;
-}
-
-static int init = 0;
-
-void SOUND_init(void)
-{
-  init++;
-  if (init > 1)
-    return;
-
-  set_audio_properties();	//Fill audio structures with gambas properties
-  start_sound_engine();		//Start the sound engine
+	return FALSE;
 }
 
 
@@ -132,21 +161,40 @@ static void free_music(void)
   info.music = NULL;
 }
 
-void SOUND_exit(void)
+
+static void stop_sound_engine()
 {
-  init--;
-  if (init > 0)
+	GB.Watch(_ch_pipe[0], GB_WATCH_NONE, (void *)0, 0);
+	close(_ch_pipe[0]);
+	close(_ch_pipe[1]);
+  free_music();
+  Mix_CloseAudio();
+}
+
+void SOUND_init(void)
+{
+  _init++;
+  if (_init > 1)
     return;
 
-  free_music();
+  set_audio_properties();	//Fill audio structures with gambas properties
+  start_sound_engine();		//Start the sound engine
+}
 
-  Mix_CloseAudio();
+
+void SOUND_exit(void)
+{
+  _init--;
+  if (_init > 0)
+    return;
+
+	stop_sound_engine();
 }
 
 
 static void return_channel(int channel, CSOUND *sound)
 {
-  CCHANNEL *ob=0;
+  CCHANNEL *ch = NULL;
 
   if (channel < 0 || channel >= channel_count)
   {
@@ -157,19 +205,20 @@ static void return_channel(int channel, CSOUND *sound)
     return;
   }
 
-  ob = channel_cache[channel];
-  if (!ob)
+  ch = channel_cache[channel];
+  if (!ch)
   {
-    GB.New(POINTER(&ob), GB.FindClass("Channel"), NULL, NULL);
-    channel_cache[channel] = ob;
-    ob->channel = channel;
-    GB.Ref(ob);
+    GB.New(POINTER(&ch), GB.FindClass("Channel"), NULL, NULL);
+    channel_cache[channel] = ch;
+    ch->channel = channel;
+    GB.Ref(ch);
   }
 
+	free_channel(ch);
   if (sound)
-    ob->sound = sound;
+    ch->sound = sound;
 
-  GB.ReturnObject(ob);
+  GB.ReturnObject(ch);
 }
 
 
@@ -225,9 +274,8 @@ BEGIN_METHOD(CSOUND_play, GB_INTEGER loops)
 
 /*  count_sound++;
   printf("Ref sound [%d] play : %p\n", count_sound,THIS);*/
-  fflush(NULL);
   GB.Ref(THIS);
-  channel = Mix_PlayChannel(-1, THIS->chunk, loops);
+  channel = play_channel(-1, THIS, loops);
   return_channel(channel, THIS);
 
 END_METHOD
@@ -299,10 +347,9 @@ BEGIN_METHOD(CCHANNEL_play, GB_OBJECT sound; GB_INTEGER loops)
     return;
 
   /*printf("Ref %p\n", sound);*/
-  fflush(NULL);
   GB.Ref(sound);
-  Mix_PlayChannel(THIS->channel, sound->chunk, VARGOPT(loops, 0));
   THIS->sound = sound;
+  play_channel(THIS->channel, sound, VARGOPT(loops, 0));
 
 END_METHOD
 
@@ -332,14 +379,7 @@ BEGIN_METHOD_VOID(CCHANNEL_exit)
     if (!ch)
       continue;
 
-    /*Mix_HaltChannel(ch->channel);*/
-
-    if (ch->sound)
-      free_channel_sound(ch->sound);
-
-    /*if (ch->sound)
-      GB.Unref((void **)&ch->sound);*/
-
+		free_channel(ch);
     GB.Unref(POINTER(&ch));
   }
 

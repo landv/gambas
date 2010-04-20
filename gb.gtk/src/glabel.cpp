@@ -125,6 +125,7 @@ gLabel::gLabel(gContainer *parent) : gControl(parent)
 	_mask_dirty = false;
 	_transparent = false;
 	_locked = false;
+	_wrap = true;
 	
 	border = gtk_event_box_new();
 	widget = gtk_event_box_new();
@@ -180,7 +181,7 @@ void gLabel::updateSize(bool adjust, bool noresize)
 	
 	fw = getFrameWidth();
 	
-	if (markup)
+	if (markup && _wrap)
 	{
 		w = width() - fw * 2;
 		if (w < 0)
@@ -261,7 +262,7 @@ void gLabel::enableMarkup(bool vl)
 {
 	if (markup != vl)
 	{
-		markup=vl;
+		markup = vl;
 		updateSize();
 		refresh();
 	}
@@ -313,3 +314,8 @@ void gLabel::resize(int w, int h)
 		updateSize(false, true);
 }
 
+void gLabel::setWrap(bool v)
+{
+	_wrap = v;
+	updateSize(true);
+}

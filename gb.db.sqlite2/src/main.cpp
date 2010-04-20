@@ -578,6 +578,7 @@ static int open_database(DB_DESC *desc, DB_DATABASE *db)
   else
   {
     GB.Error("Unable to locate database: &1", name);
+		GB.FreeString(&name);
     delete conn;
     return TRUE;
   }

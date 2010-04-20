@@ -2,32 +2,36 @@
 
 { Form Form
   MoveScaled(0,0,72,51)
-  Text = ("Toolbars configuration")
   Type = WindowType.Utility
   Arrangement = Arrange.Vertical
   Spacing = True
   Margin = True
-  { lblTitle Label
-    MoveScaled(1,1,16,4)
-    Font = Font["Bold"]
-    Text = ("Main toolbar")
-  }
   { HBox1 HBox
-    MoveScaled(1,9,53,4)
+    MoveScaled(1,5,69,4)
     { Label1 Label
-      MoveScaled(1,0,10,4)
+      MoveScaled(0,0,10,4)
+      Font = Font["Bold"]
       AutoResize = True
       Text = ("Icon size")
     }
     { Panel2 Panel
-      MoveScaled(20,0,2,4)
+      MoveScaled(14,0,2,4)
     }
-    { cmbSize ComboBox
-      MoveScaled(31,0,22,4)
-      Expand = True
-      Text = ("")
-      ReadOnly = True
-      List = [("Small"), ("Medium"), ("Large")]
+    { radSmall RadioButton radSize
+      Name = "radSmall"
+      MoveScaled(23,0,15,4)
+      Text = ("Small")
+      Value = True
+    }
+    { radMedium RadioButton radSize
+      Name = "radMedium"
+      MoveScaled(38,0,15,4)
+      Text = ("Medium")
+    }
+    { radLarge RadioButton radSize
+      Name = "radLarge"
+      MoveScaled(52,0,15,4)
+      Text = ("Large")
     }
   }
   { panAction Panel

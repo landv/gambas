@@ -42,6 +42,7 @@ Public Sub _new(hContainer As Container, X As Integer, Y As Integer, W As Intege
 
   $hLabel = New TextLabel($hPanel) As "Panel"
   $hLabel.Expand = True
+  $hLabel.Wrap = False
   $hLabel.Alignment = Align.Normal
   If sFont Then $hLabel.Font = Font[sFont]
   $hLabel.Text = sText

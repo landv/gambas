@@ -926,14 +926,12 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CCONTAINER_arrangement)
 
-	int arr;
-
 	if (READ_PROPERTY)
 		GB.ReturnInteger(THIS_ARRANGEMENT->mode);
 	else
 	{
-		arr = VPROP(GB_INTEGER);
-		if (arr < 0 || arr > 8)
+		int arr = VPROP(GB_INTEGER);
+		if (arr < 0 || arr > 8 || arr == THIS_ARRANGEMENT->mode)
 			return;
 		THIS_ARRANGEMENT->mode = arr;
 		arrange_now(CONTAINER);
@@ -960,7 +958,11 @@ BEGIN_PROPERTY(CCONTAINER_auto_resize)
 		GB.ReturnBoolean(THIS_ARRANGEMENT->autoresize);
 	else
 	{
-		THIS_ARRANGEMENT->autoresize = VPROP(GB_BOOLEAN);
+		bool v = VPROP(GB_BOOLEAN);
+		if (v == THIS_ARRANGEMENT->autoresize)
+			return;
+		
+		THIS_ARRANGEMENT->autoresize = v;
 		arrange_now(CONTAINER);
 	}
 
@@ -1014,7 +1016,11 @@ BEGIN_PROPERTY(CCONTAINER_spacing)
     GB.ReturnBoolean(THIS_ARRANGEMENT->spacing);
   else
   {
-		THIS_ARRANGEMENT->spacing = VPROP(GB_BOOLEAN) ? MAIN_scale : 0;
+		int v = VPROP(GB_BOOLEAN) ? MAIN_scale : 0;
+		if (v == THIS_ARRANGEMENT->spacing)
+			return;
+		
+		THIS_ARRANGEMENT->spacing = v;
 		arrange_now(CONTAINER);
   }
 

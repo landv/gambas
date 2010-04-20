@@ -31,11 +31,12 @@ public:
 	~gLabel();
 
 	int alignment();
-	int getBorder() { return getFrameBorder(); }
+	int getBorder() const { return getFrameBorder(); }
 	char* text();
-	bool isTransparent() { return _transparent; }
+	bool isTransparent() const { return _transparent; }
 	bool autoResize();
-	int padding() { return getFramePadding(); }
+	int padding() const { return getFramePadding(); }
+	bool wrap() const { return _wrap; }
 
 	void setAlignment(int al);
 	void setBorder(int vl) { setFrameBorder(vl); }
@@ -44,6 +45,7 @@ public:
 	void setTransparent(bool vl);
 	void setAutoResize(bool vl);
 	void setPadding(int vl) { setFramePadding(vl); }
+	void setWrap(bool vl);
 
 //"Methods"
 	void enableMarkup(bool vl);
@@ -61,6 +63,7 @@ public:
 	unsigned _transparent : 1;
 	unsigned _mask_dirty : 1;
 	unsigned _locked : 1;
+	unsigned _wrap : 1;
 	char *textdata;
 };
 

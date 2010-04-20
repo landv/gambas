@@ -61,6 +61,7 @@ typedef
     GB_BASE ob;
     int channel;
     CSOUND *sound;
+		char free;
     }
   CCHANNEL;
 

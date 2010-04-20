@@ -48,6 +48,7 @@ Public Sub _new()
   
   For iInd = 0 To NBR_GRADE - 1
     $hGrade[iInd] = New TextLabel(lstGrade) 'AS "lblGrade"
+    $hGrade[iInd].Wrap = False
     'lstGrade.Add($hGrade[iInd])
   Next
   
