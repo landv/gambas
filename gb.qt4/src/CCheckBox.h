@@ -25,16 +25,16 @@
 
 #include "gambas.h"
 
+#include <QCheckBox>
+
 #include "CWidget.h"
 
 #ifndef __CCHECKBOX_CPP
 extern GB_DESC CCheckBoxDesc[];
 #else
 
-#define QCHECKBOX(object) ((QCheckBox *)((CWIDGET *)object)->widget)
-
 #define THIS ((CCHECKBOX *)_object)
-#define WIDGET QCHECKBOX(_object)
+#define WIDGET ((MyCheckBox *)((CWIDGET *)_object)->widget)
 
 #endif
 
@@ -43,6 +43,27 @@ typedef
     CWIDGET widget;
     }
   CCHECKBOX;
+
+class MyCheckBox : public QCheckBox
+{
+	Q_OBJECT
+	
+public:
+
+  MyCheckBox(QWidget *parent);
+  void adjust(bool force = false);
+  bool isAutoResize() const { return _autoResize; }
+  void setAutoResize(bool a) { _autoResize = a; adjust(); }
+	
+protected:
+
+  virtual void changeEvent(QEvent *);
+  virtual void resizeEvent(QResizeEvent *);
+
+private:
+
+	unsigned _autoResize : 1;
+};
 
 class CCheckBox : public QObject
 {

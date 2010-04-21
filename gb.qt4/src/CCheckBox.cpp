@@ -22,13 +22,52 @@
 
 #define __CCHECKBOX_CPP
 
-#include <qapplication.h>
-#include <qcheckbox.h>
-
 #include "gambas.h"
+
+#include <QResizeEvent>
 
 #include "CCheckBox.h"
 
+/** MyCheckBox *************************************************************/
+
+MyCheckBox::MyCheckBox(QWidget *parent) : QCheckBox(parent)
+{
+	_autoResize = false;
+}
+
+
+void MyCheckBox::changeEvent(QEvent *e)
+{
+  QCheckBox::changeEvent(e);
+	if (e->type() == QEvent::FontChange || e->type() == QEvent::StyleChange)
+		adjust();
+}
+
+void MyCheckBox::adjust(bool force)
+{
+	void *_object = CWidget::getReal(this);
+	bool a;
+	QSize hint;
+
+	if (!THIS || (!_autoResize && !force) || CWIDGET_test_flag(THIS, WF_DESIGN) || text().length() <= 0)
+		return;
+	
+	a = _autoResize;
+	_autoResize = false;
+	hint = sizeHint();
+	CWIDGET_resize(THIS, hint.width(), QMAX(hint.height(), height()));
+	_autoResize = a;
+}
+
+void MyCheckBox::resizeEvent(QResizeEvent *e)
+{
+	QCheckBox::resizeEvent(e);
+  
+  if (_autoResize && e->oldSize().width() != e->size().width())
+  	adjust();
+}
+
+/** CheckBox ***************************************************************/
 
 DECLARE_EVENT(EVENT_Click);
 
@@ -46,17 +85,20 @@ BEGIN_METHOD(CCHECKBOX_new, GB_OBJECT parent)
 END_METHOD
 
 
-BEGIN_PROPERTY(CCHECKBOX_text)
+BEGIN_PROPERTY(CheckBox_Text)
 
   if (READ_PROPERTY)
     GB.ReturnNewZeroString(TO_UTF8(WIDGET->text()));
   else
+	{
     WIDGET->setText(QSTRING_PROP());
+		WIDGET->adjust();
+	}
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CCHECKBOX_value)
+BEGIN_PROPERTY(CheckBox_Value)
 
   /*if (READ_PROPERTY)
     GB.ReturnBoolean(WIDGET->isChecked());
@@ -83,7 +125,7 @@ BEGIN_PROPERTY(CCHECKBOX_value)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CCHECKBOX_tristate)
+BEGIN_PROPERTY(CheckBox_TriState)
 
   if (READ_PROPERTY)
     GB.ReturnBoolean(WIDGET->isTristate());
@@ -93,14 +135,14 @@ BEGIN_PROPERTY(CCHECKBOX_tristate)
 END_PROPERTY
 
 
-/* Class CCheckBox */
+BEGIN_PROPERTY(CheckBox_AutoResize)
 
-CCheckBox CCheckBox::manager;
+  if (READ_PROPERTY)
+    GB.ReturnBoolean(WIDGET->isAutoResize());
+  else
+    WIDGET->setAutoResize(VPROP(GB_BOOLEAN));
 
-void CCheckBox::clicked(void)
-{
-  RAISE_EVENT_ACTION(EVENT_Click);
-}
+END_PROPERTY
 
 
 GB_DESC CCheckBoxDesc[] =
@@ -113,11 +155,11 @@ GB_DESC CCheckBoxDesc[] =
 	GB_CONSTANT("True", "i", -1),
 	GB_CONSTANT("None", "i", 1),
 
-	GB_PROPERTY("Text", "s", CCHECKBOX_text),
-	GB_PROPERTY("Caption", "s", CCHECKBOX_text),
-
-	GB_PROPERTY("Value", "i", CCHECKBOX_value),
-	GB_PROPERTY("Tristate", "b", CCHECKBOX_tristate),
+	GB_PROPERTY("Text", "s", CheckBox_Text),
+	GB_PROPERTY("Caption", "s", CheckBox_Text),
+	GB_PROPERTY("Value", "i", CheckBox_Value),
+	GB_PROPERTY("Tristate", "b", CheckBox_TriState),
+  GB_PROPERTY("AutoResize", "b", CheckBox_AutoResize),
 
 	CHECKBOX_DESCRIPTION,
 
@@ -126,5 +168,14 @@ GB_DESC CCheckBoxDesc[] =
 	GB_END_DECLARE
 };
 
+
+/** CCheckBox *************************************************************/
+
+CCheckBox CCheckBox::manager;
+
+void CCheckBox::clicked(void)
+{
+  RAISE_EVENT_ACTION(EVENT_Click);
+}
 
 

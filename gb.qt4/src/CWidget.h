@@ -26,10 +26,10 @@
 #include "main.h"
 #include "share/gb.form.properties.h"
 
-#include <qobject.h>
-#include <qwidget.h>
-#include <qicon.h>
-#include <qpixmap.h>
+#include <QObject>
+#include <QWidget>
+#include <QIcon>
+#include <QPixmap>
 #include <QEvent>
 #include <QHash>
 

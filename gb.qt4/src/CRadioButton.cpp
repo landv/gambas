@@ -22,21 +22,62 @@
 
 #define __CRADIOBUTTON_CPP
 
-#include <qapplication.h>
-#include <qradiobutton.h>
-#include <qobject.h>
+#include <QApplication>
+#include <QRadioButton>
+#include <QResizeEvent>
 
 #include "gambas.h"
 
 #include "CRadioButton.h"
 
 
+/** MyRadioButton **********************************************************/
+
+MyRadioButton::MyRadioButton(QWidget *parent) : QRadioButton(parent)
+{
+	_autoResize = false;
+}
+
+
+void MyRadioButton::changeEvent(QEvent *e)
+{
+  QRadioButton::changeEvent(e);
+	if (e->type() == QEvent::FontChange || e->type() == QEvent::StyleChange)
+		adjust();
+}
+
+void MyRadioButton::adjust(bool force)
+{
+	void *_object = CWidget::getReal(this);
+	bool a;
+	QSize hint;
+
+	if (!THIS || (!_autoResize && !force) || CWIDGET_test_flag(THIS, WF_DESIGN) || text().length() <= 0)
+		return;
+	
+	a = _autoResize;
+	_autoResize = false;
+	hint = sizeHint();
+	CWIDGET_resize(THIS, hint.width(), QMAX(hint.height(), height()));
+	_autoResize = a;
+}
+
+void MyRadioButton::resizeEvent(QResizeEvent *e)
+{
+	QRadioButton::resizeEvent(e);
+  
+  if (_autoResize && e->oldSize().width() != e->size().width())
+  	adjust();
+}
+
+/** RadioButton ************************************************************/
+
 DECLARE_EVENT(EVENT_Click);
 
 
-BEGIN_METHOD(CRADIOBUTTON_new, GB_OBJECT parent)
+BEGIN_METHOD(RadioButton_new, GB_OBJECT parent)
 
-  QRadioButton *wid = new QRadioButton(QCONTAINER(VARG(parent)));
+  MyRadioButton *wid = new MyRadioButton(QCONTAINER(VARG(parent)));
 
   QObject::connect(wid, SIGNAL(toggled(bool)), &CRadioButton::manager, SLOT(clicked(bool)));
 
@@ -45,17 +86,20 @@ BEGIN_METHOD(CRADIOBUTTON_new, GB_OBJECT parent)
 END_METHOD
 
 
-BEGIN_PROPERTY(CRADIOBUTTON_text)
+BEGIN_PROPERTY(RadioButton_Text)
 
   if (READ_PROPERTY)
     GB.ReturnNewZeroString(TO_UTF8(WIDGET->text()));
   else
+	{
     WIDGET->setText(QSTRING_PROP());
+		WIDGET->adjust();
+	}
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CRADIOBUTTON_value)
+BEGIN_PROPERTY(RadioButton_Value)
 
   if (READ_PROPERTY)
     GB.ReturnBoolean(WIDGET->isChecked());
@@ -65,7 +109,43 @@ BEGIN_PROPERTY(CRADIOBUTTON_value)
 END_PROPERTY
 
 
-/* Class CCheckBox */
+BEGIN_PROPERTY(RadioButton_AutoResize)
+
+  if (READ_PROPERTY)
+    GB.ReturnBoolean(WIDGET->isAutoResize());
+  else
+    WIDGET->setAutoResize(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
+
+// BEGIN_METHOD_VOID(RadioButton_Adjust)
+// 
+// 	WIDGET->adjust(true);
+// 
+// END_METHOD
+
+
+GB_DESC CRadioButtonDesc[] =
+{
+  GB_DECLARE("RadioButton", sizeof(CRADIOBUTTON)), GB_INHERITS("Control"),
+
+  GB_METHOD("_new", NULL, RadioButton_new, "(Parent)Container;"),
+
+  GB_PROPERTY("Text", "s", RadioButton_Text),
+  GB_PROPERTY("Caption", "s", RadioButton_Text),
+  GB_PROPERTY("Value", "b", RadioButton_Value),
+  GB_PROPERTY("AutoResize", "b", RadioButton_AutoResize),
+
+  GB_EVENT("Click", NULL, NULL, &EVENT_Click),
+  
+  RADIOBUTTON_DESCRIPTION,
+
+  GB_END_DECLARE
+};
+
+
+/** CCheckBox **************************************************************/
 
 CRadioButton CRadioButton::manager;
 
@@ -109,23 +189,4 @@ void CRadioButton::clicked(bool on)
     //  RAISE_EVENT(EVENT_Click);
   }
 }
-
-GB_DESC CRadioButtonDesc[] =
-{
-  GB_DECLARE("RadioButton", sizeof(CRADIOBUTTON)), GB_INHERITS("Control"),
-
-  GB_METHOD("_new", NULL, CRADIOBUTTON_new, "(Parent)Container;"),
-
-  GB_PROPERTY("Text", "s", CRADIOBUTTON_text),
-  GB_PROPERTY("Caption", "s", CRADIOBUTTON_text),
-
-  GB_PROPERTY("Value", "b", CRADIOBUTTON_value),
-
-  GB_EVENT("Click", NULL, NULL, &EVENT_Click),
-  
-  RADIOBUTTON_DESCRIPTION,
-
-  GB_END_DECLARE
-};
-
 

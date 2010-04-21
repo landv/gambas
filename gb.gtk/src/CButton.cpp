@@ -248,8 +248,8 @@ GB_DESC CRadioButtonDesc[] =
 
   GB_PROPERTY("Text", "s", CBUTTON_text),
   GB_PROPERTY("Caption", "s", CBUTTON_text),
-
   GB_PROPERTY("Value", "b", CBUTTON_value),
+	GB_PROPERTY("AutoResize", "b", CBUTTON_autoresize),
 
   GB_EVENT("Click", 0, 0, &EVENT_Click),
 
@@ -271,6 +271,7 @@ GB_DESC CCheckBoxDesc[] =
   GB_PROPERTY("Text", "s", CBUTTON_text),
   GB_PROPERTY("Caption", "s", CBUTTON_text),
   GB_PROPERTY("Tristate", "b", CCHECKBOX_tristate),
+	GB_PROPERTY("AutoResize", "b", CBUTTON_autoresize),
 
   GB_PROPERTY("Value", "i", CCHECKBOX_value),
 

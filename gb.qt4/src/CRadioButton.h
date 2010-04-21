@@ -25,15 +25,16 @@
 
 #include "gambas.h"
 
+#include <QRadioButton>
+
 #include "CWidget.h"
 
 #ifndef __CRADIOBUTTON_CPP
 extern GB_DESC CRadioButtonDesc[];
 #else
 
-#define QRADIOBUTTON(object) ((QRadioButton *)((CWIDGET *)object)->widget)
-#define THIS ((CRADIOBUTTON *)_object)
-#define WIDGET QRADIOBUTTON(_object)
+#define THIS    ((CRADIOBUTTON *)_object)
+#define WIDGET  ((MyRadioButton *)((CWIDGET *)_object)->widget)
 
 #endif
 
@@ -43,6 +44,27 @@ typedef
     }
   CRADIOBUTTON;
 
+class MyRadioButton : public QRadioButton
+{
+	Q_OBJECT
+	
+public:
+
+  MyRadioButton(QWidget *parent);
+  void adjust(bool force = false);
+  bool isAutoResize() const { return _autoResize; }
+  void setAutoResize(bool a) { _autoResize = a; adjust(); }
+	
+protected:
+
+  virtual void changeEvent(QEvent *);
+  virtual void resizeEvent(QResizeEvent *);
+
+private:
+
+	unsigned _autoResize : 1;
+};
+	
 class CRadioButton : public QObject
 {
   Q_OBJECT

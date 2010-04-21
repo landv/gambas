@@ -25,9 +25,8 @@
 
 #include "gambas.h"
 
-#include <qlabel.h>
-#include <qevent.h>
-//Added by qt3to4:
+#include <QLabel>
+#include <QEvent>
 #include <QPaintEvent>
 #include <QResizeEvent>
 

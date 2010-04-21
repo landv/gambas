@@ -717,16 +717,27 @@ void gButton::setAutoResize(bool vl)
 
 void gButton::updateSize()
 {
-	int mw;
+	GtkRequisition req;
+	int mw, mh;
 	
-	if (!_autoresize)
+	if (!_autoresize || !bufText || !*bufText)
 		return;
 	
-	if (bufText && *bufText)
-		mw = font()->width(bufText, strlen(bufText)) + 8;
-	else
-		mw = 0;
+	mw = font()->width(bufText, strlen(bufText));
+	mh = minimumHeight();
 	
-	if (width() < mw)
-		resize(mw, height());
+	if (type == Check || type == Radio)
+	{
+		g_signal_emit_by_name(border, "size-request",	&req);
+		mw += req.width + 4;
+		if (req.height > mh)
+			mh = req.height;
+	}
+	else
+		mw += 8;
+	
+	if (mh < height())
+		mh = height();
+
+	resize(mw, mh);
 }

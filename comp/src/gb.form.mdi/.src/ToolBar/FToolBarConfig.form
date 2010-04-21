@@ -8,29 +8,30 @@
   Margin = True
   { HBox1 HBox
     MoveScaled(1,5,69,4)
+    Spacing = True
     { Label1 Label
       MoveScaled(0,0,10,4)
       Font = Font["Bold"]
       AutoResize = True
       Text = ("Icon size")
     }
-    { Panel2 Panel
-      MoveScaled(14,0,2,4)
-    }
     { radSmall RadioButton radSize
       Name = "radSmall"
-      MoveScaled(23,0,15,4)
+      MoveScaled(23,0,8,4)
+      AutoResize = True
       Text = ("Small")
       Value = True
     }
     { radMedium RadioButton radSize
       Name = "radMedium"
       MoveScaled(38,0,15,4)
+      AutoResize = True
       Text = ("Medium")
     }
     { radLarge RadioButton radSize
       Name = "radLarge"
       MoveScaled(52,0,15,4)
+      AutoResize = True
       Text = ("Large")
     }
   }
