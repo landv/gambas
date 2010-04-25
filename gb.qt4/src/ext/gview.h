@@ -86,6 +86,8 @@ private:
 	bool _posOutside;
 	int _cellw, _cellh;
 	int _nrows;
+	bool _insertMode;
+	int _charWidth;
 	
 	int lastx;
 	bool left;
@@ -209,6 +211,9 @@ public:
 	void redo();
 	void tab(bool back);
 	void selectAll();
+	
+	bool getInsertMode() const { return _insertMode; }
+	void setInsertMode(bool mode);
 	
 	void setStyle(int index, GHighlightStyle *style);
 	void getStyle(int index, GHighlightStyle *style) const;

@@ -517,7 +517,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CEDITOR_sel_text)
 
-  GB.ReturnNewZeroString(DOC->getSelectedText().utf8());
+  GB.ReturnNewZeroString(DOC->getSelectedText(WIDGET->getInsertMode()).utf8());
 
 END_PROPERTY
 

@@ -136,7 +136,9 @@ GEditor::GEditor(QWidget *parent)
 	_showCol = 0;
 	_showLen = 0;
 	_posOutside = false;
+	_insertMode = false;
 	_cellw = _cellh = 0;
+	_charWidth = fm.width(" ");
 	lineWidthCacheY = -1;
 	
 	for (i = 0; i < GLine::NUM_STATE; i++)
@@ -227,18 +229,21 @@ void GEditor::updateCache()
 
 int GEditor::lineWidth(int y) const
 {
-	// Add 2 so that we see the cursor at end of line
-	return margin + fm.width(doc->lines.at(y)->s.getString()) + 2;
+	// Add 2 or a space width so that we see the cursor at end of line
+	return margin + fm.width(doc->lines.at(y)->s.getString()) + (_insertMode ? _charWidth : 2);
 }
 
 
 int GEditor::lineWidth(int y, int len)
 {
+	int ns;
+	
 	if (len <= 0)
 		return margin;
 	else
 	{
 		QString s = doc->lines.at(y)->s.getString();
+		ns = QMAX(0, len - s.length());
 		len = QMIN(len, s.length());
 		
 		if (y != lineWidthCacheY)
@@ -255,7 +260,10 @@ int GEditor::lineWidth(int y, int len)
 			lw = fm.width(s, len);
 			lineWidthCache.insert(len, lw);
 		}
-		return margin + lw;
+		
+		lw += margin;
+		if (ns) lw += ns * _charWidth;
+		return lw;
 	}
 }
 
@@ -349,6 +357,7 @@ void GEditor::changeEvent(QEvent *e)
 	if (e->type() == QEvent::FontChange)
 	{
 		fm = fontMetrics();
+		_charWidth = fm.width(" ");
 		italicFont = font();
 		italicFont.setItalic(true);
 		clearLineWidthCache();
@@ -378,7 +387,7 @@ void GEditor::paintDottedSpaces(QPainter &p, int row, int ps, int ls)
 
 	x = lineWidth(row, ps) + 1;
 	y = fm.ascent();
-	w = fm.width(" ");
+	w = _charWidth;
 	for (i = 0; i < ls; i++)
 	{
 		pa[i].setX(x);
@@ -705,15 +714,23 @@ void GEditor::paintCell(QPainter *painter, int row, int)
 
 		if (realRow >= y1 && realRow <= y2 && !(realRow == y2 && x2 == 0))
 		{
-			if (realRow > y1 || x1 == 0)
-				x1 = 0;
-			else
+			if (_insertMode)
+			{
 				x1 = lineWidth(y1, x1);
-
-			if (realRow < y2)
-				x2 = _cellw + 1;
-			else
 				x2 = lineWidth(y2, x2);
+			}
+			else
+			{
+				if (realRow > y1 || x1 == 0)
+					x1 = 0;
+				else
+					x1 = lineWidth(y1, x1);
+
+				if (realRow < y2)
+					x2 = _cellw + 1;
+				else
+					x2 = lineWidth(y2, x2);
+			}
 
 			p.fillRect(x1, 0, x2 - x1, _cellh, styles[GLine::Selection].color);
 			xs1 = x1;
@@ -806,8 +823,15 @@ void GEditor::paintCell(QPainter *painter, int row, int)
 
 	// Text cursor
 	if (cursor && realRow == y)
+	{
+		int xc = lineWidth(realRow, x);
+		int wc = 2;
 		//p.fillRect(QMIN((int)l->s.length(), x) * charWidth + margin, 0, 1, _cellh, styles[GLine::Normal].color);
-		p.fillRect(lineWidth(realRow, QMIN((int)l->s.length(), x)), 0, 1, _cellh, styles[GLine::Normal].color);
+		if (_insertMode)
+			wc = lineWidth(realRow, x + 1) - xc;
+		
+		p.fillRect(xc, 0, wc, _cellh, styles[GLine::Normal].color);
+	}
 
 	// Flash
 	if (flashed)
@@ -967,7 +991,7 @@ bool GEditor::cursorGoto(int ny, int nx, bool mark)
 			ny--;
 			nx = lineLength(ny);
 		}
-		else if (nx > lineLength(ny) && ny < (numLines() - 1))
+		else if (!_insertMode && nx > lineLength(ny) && ny < (numLines() - 1))
 		{
 			ny++;
 			nx = 0;
@@ -978,7 +1002,7 @@ bool GEditor::cursorGoto(int ny, int nx, bool mark)
 	
 	if (nx < 0)
 		nx = 0;
-	else if (nx > lineLength(ny))
+	else if (!_insertMode && nx > lineLength(ny))
 		nx = lineLength(ny);
 	
 	if (ny != y)
@@ -1134,9 +1158,9 @@ void GEditor::del(bool ctrl)
 		return;
 	}
 	
-	if (x == lineLength(y))
+	if (x >= lineLength(y))
 	{
-		if (y < (numLines() - 1))
+		if (!_insertMode && y < (numLines() - 1))
 			doc->remove(y, x, y + 1, 0);
 	}
 	else
@@ -1271,7 +1295,7 @@ void GEditor::copy(bool mouse)
 	if (!doc->hasSelection())
 		return;
 
-	QString text = doc->getSelectedText().getString();
+	QString text = doc->getSelectedText(_insertMode).getString();
 	QApplication::clipboard()->setText(text, mouse ? QClipboard::Selection : QClipboard::Clipboard);
 }
 
@@ -1285,7 +1309,7 @@ void GEditor::paste(bool mouse)
 {
 	QString text;
 	QString subType("plain");
-	int i;
+	int i, i2, xs;
 	QString tab;
 
 	text = QApplication::clipboard()->text(subType, mouse ? QClipboard::Selection : QClipboard::Clipboard);
@@ -1302,7 +1326,27 @@ void GEditor::paste(bool mouse)
 			text[i] = ' ';
 	}
 
-	insert(text);
+	if (_insertMode)
+	{
+		doc->begin();
+		i = 0;
+		while (i < (int)text.length())
+		{
+			i2 = text.find('\n', i);
+			if (i2 < 0) 
+				i2 = text.length();
+			xs = x;
+			insert(text.mid(i, i2 - i));
+			x = xs;
+			y++;
+			if (y >= doc->numLines())
+				insert("\n");
+			i = i2 + 1; 
+		}
+		doc->end();
+	}
+	else
+		insert(text);
 }
 
 void GEditor::undo()
@@ -1372,7 +1416,15 @@ void GEditor::keyPressEvent(QKeyEvent *e)
 				&& e->key() != Qt::Key_Delete
 				&& e->key() != Qt::Key_Backspace)
 		{
-			insert(t);
+			if (_insertMode)
+			{
+				doc->begin();
+				del(false);
+				insert(t);
+				doc->end();
+			}
+			else
+				insert(t);
 			return;
 		}
 
@@ -1405,6 +1457,8 @@ void GEditor::keyPressEvent(QKeyEvent *e)
 				tab(false); return;
 			case Qt::Key_BackTab:
 				tab(true); return;
+			case Qt::Key_Insert:
+				setInsertMode(!_insertMode);
 		}
 
 		if (!ctrl)
@@ -1444,7 +1498,7 @@ int GEditor::posToColumn(int y, int px)
 		_posOutside = true;
 	
 	if (len == 0)
-		return 0;
+		return px / _charWidth;
 		
 	px += contentsX();
 	
@@ -1504,7 +1558,10 @@ bool GEditor::posToCursor(int px, int py, int *y, int *x)
 	ny = posToLine(py);
 	outside = _posOutside;
 	nx = posToColumn(ny, px);
-	nx = QMAX(0, QMIN(nx, lineLength(ny)));
+	if (_insertMode)
+		nx = QMAX(0, nx); //QMIN(nx, lineLength(ny)));
+	else
+		nx = QMAX(0, QMIN(nx, lineLength(ny)));
 
 	*y = ny;
 	*x = nx;
@@ -1943,7 +2000,7 @@ QVariant GEditor::inputMethodQuery(Qt::InputMethodQuery property) const
 		case Qt::ImSurroundingText:
 				return QVariant(doc->getLine(y).getString());
 		case Qt::ImCurrentSelection:
-				return QVariant(doc->getSelectedText().getString());
+				return QVariant(doc->getSelectedText(_insertMode).getString());
 		default:
 				return QVariant();
 	}
@@ -2388,4 +2445,25 @@ void GEditor::updateViewport()
 void GEditor::resizeContents(int w, int h)
 {
 	updateViewport();
+}
+
+void GEditor::setInsertMode(bool mode)
+{
+	int x1, y1, x2, y2, i;
+	
+	if (mode !=_insertMode)
+	{
+		_insertMode = mode;
+		if (!_insertMode)
+			x = QMIN(x, lineLength(y));
+		
+		if (doc->hasSelection())
+		{
+			doc->getSelection(&y1, &x1, &y2, &x2);
+			for (i = y1; i <= y2; i++)
+				updateLine(i);
+		}
+		else
+			updateLine(y);
+	}
 }

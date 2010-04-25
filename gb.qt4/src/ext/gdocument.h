@@ -156,7 +156,7 @@ public:
 	int getNextLimit(int y);
 	int getPreviousLimit(int y);
 
-	void insert(int y, int x, const GString & str);
+	void insert(int y, int x, const GString &str);
 	void remove(int y, int x, int y2, int x2);
 
 	bool undo();
@@ -178,7 +178,7 @@ public:
 	int wordLeft(int y, int x, bool word = false);
 	int wordRight(int y, int x, bool word = false);
 
-	GString getSelectedText() const;
+	GString getSelectedText(bool insertMode) const;
 
 	bool hasSelection() const { return selector != NULL; }
 	bool hasSelection(GEditor *view) const { return selector == view; }

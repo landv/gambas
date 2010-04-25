@@ -132,7 +132,7 @@ Public Sub PastePrint(sText As String)
   Dim sLine As String
   Dim sIndent As String
   
-  sText = Trim(sText)
+  'sText = Trim(sText)
   If Not sText Then Return
   
   sLine = $hEditor.Lines[$hEditor.Line].Text
@@ -157,7 +157,7 @@ Public Sub PasteComment(sText As String)
   Dim sLine As String
   Dim sIndent As String
   
-  sText = Trim(sText)
+  'sText = Trim(sText)
   If Not sText Then Return
   
   sLine = $hEditor.Lines[$hEditor.Line].Text

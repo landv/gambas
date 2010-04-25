@@ -54,7 +54,10 @@ public:
 	GString right(uint len) const;
 	GString mid(uint index, uint len = 0xffffffff) const;
   GString &remove(uint index, uint len);
+  GString &append(const GString &str);
+  GString &append(char c);
   GString &prepend(const GString &str);
+  GString &prepend(char c);
   GString &insert(uint index, const GString &str);
   bool isNewLine(uint pos) const;
   bool isSpace(uint pos) const;
@@ -156,9 +159,27 @@ inline GString &GString::insert(uint index, const GString &str)
 	return *this;
 }
 
+inline GString &GString::append(const GString &str)
+{
+	s.append(str.getString());
+	return *this;
+}
+
+inline GString &GString::append(char c)
+{
+	s.append(c);
+	return *this;
+}
+
 inline GString &GString::prepend(const GString &str)
 {
 	s.prepend(str.getString());
+	return *this;
+}
+
+inline GString &GString::prepend(char c)
+{
+	s.prepend(c);
 	return *this;
 }
 

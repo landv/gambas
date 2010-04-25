@@ -256,28 +256,45 @@ GString GDocument::getText()
   return tmp;
 }
 
-GString GDocument::getSelectedText() const
+GString GDocument::getSelectedText(bool insertMode) const
 {
-  GString tmp;
-  int x1, y1, x2, y2;
+  GString tmp, line;
+  int x1, y1, x2, y2, i;
 
   if (lines.count() && hasSelection())
   {
     getSelection(&y1, &x1, &y2, &x2);
-    if (y1 == y2)
-      tmp = lines.at(y1)->s.mid(x1, x2 - x1);
-    else
-    {
-      tmp = lines.at(y1)->s.mid(x1);
-      tmp += '\n';
-      for (int i = y1 + 1; i < y2; i++)
+    
+		if (insertMode)
+		{
+      for (i = y1; i <= y2; i++)
       {
-        tmp += lines.at(i)->s;
-        tmp += '\n';
+        line = lines.at(i)->s.mid(x1, x2 - x1);
+				while ((int)line.length() < (x2 - x1))
+					line.append(' ');
+				
+				tmp += line;
+				if (i < y2)
+					tmp += '\n';
 			}
+		}
+		else
+		{
+			if (y1 == y2)
+				tmp = lines.at(y1)->s.mid(x1, x2 - x1);
+			else
+			{
+				tmp = lines.at(y1)->s.mid(x1);
+				tmp += '\n';
+				for (i = y1 + 1; i < y2; i++)
+				{
+					tmp += lines.at(i)->s;
+					tmp += '\n';
+				}
 
-      tmp += lines.at(y2)->s.left(x2);
-    }
+				tmp += lines.at(y2)->s.left(x2);
+			}
+		}
   }
 
   return tmp;
@@ -321,16 +338,17 @@ void GDocument::insertLine(int y)
 	FOR_EACH_VIEW(v) { v->lineInserted(y); }
 }
 
-void GDocument::insert(int y, int x, const GString & text)
+void GDocument::insert(int y, int x, const GString &text)
 {
   int pos = 0;
   int pos2;
-  int xs = x, ys = y;
+  int xs, ys;
   GLine *l;
   int n = 1;
   int nl = 0;
   GString rest;
   int yy;
+	int i, ns;
 
   if (readOnly)
   {
@@ -351,6 +369,22 @@ void GDocument::insert(int y, int x, const GString & text)
 		insertLine(yy);
     nl++;
 	}
+
+  l = lines.at(y);
+	
+	ns = x - (int)l->s.length();
+	if (ns > 0)
+	{
+		GString str;
+		
+		for (i = 0; i < ns; i++)
+			str.append(' ');
+		
+		insert(y, x - ns, str);
+	}
+
+	xs = x;
+	ys = y;
 
   for(;;)
   {
@@ -670,11 +704,11 @@ void GDocument::endSelection(int y, int x)
   xs2 = x;
   getSelection(&y1b, NULL, &y2b, NULL);
 
-  if (y1a == y1b)
+  /*if (y1a == y1b)
     updateViews(GMIN(y2a, y2b), GMAX(y2a, y2b) - GMIN(y2a, y2b) + 1);
   else if (y2a == y2b)
     updateViews(GMIN(y1a, y1b), GMAX(y1a, y1b) - GMIN(y1a, y1b) + 1);
-  else
+  else*/
     updateViews(GMIN(y1a, y1b), GMAX(y2a, y2b) - GMIN(y1a, y1b) + 1);
 
   updateViews(y);
