@@ -102,12 +102,6 @@ BEGIN_PROPERTY(Component_Path)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(Component_UserPath)
-
-	GB_ReturnString(COMPONENT_user_path);
-
-END_PROPERTY
-
 BEGIN_METHOD(Component_Load, GB_STRING name)
 
 	const char *name = GB_ToZeroString(ARG(name));
@@ -870,7 +864,6 @@ GB_DESC NATIVE_Component[] =
 	GB_STATIC_METHOD("Load", "Component", Component_Load, "(Name)s"),
 	GB_STATIC_METHOD("IsLoaded", "b", Component_IsLoaded, "(Name)s"),
 	GB_STATIC_PROPERTY_READ("Path", "s", Component_Path),
-	GB_STATIC_PROPERTY_READ("UserPath", "s", Component_UserPath),
 
 	GB_PROPERTY_READ("Name", "s", Component_Name),
 

@@ -329,14 +329,15 @@ void PROJECT_init(const char *file)
   STRING_new(&COMPONENT_path, FILE_cat(PROJECT_exec_path, GAMBAS_LIB_PATH, NULL), 0);
 	#endif
   
-  STRING_new(&COMPONENT_user_path, FILE_cat(PROJECT_get_home(), ".local", GAMBAS_LIB_PATH, NULL), 0);
+  //STRING_new(&COMPONENT_user_path, FILE_cat(PROJECT_get_home(), ".local", GAMBAS_LIB_PATH, NULL), 0);
 
   /* Project path & name*/
 
 	if (!file)
 	{
 		// "gbx3 -e" case
-		PROJECT_path = PROJECT_name = "";
+		STRING_new(&PROJECT_path, "", 0);
+		STRING_new(&PROJECT_name, "", 0);
 		return;
 	}
 
@@ -453,11 +454,8 @@ void PROJECT_exit(void)
   if (project_buffer)
     FREE(&project_buffer, "PROJECT_exit");
 
-	if (PROJECT_name && *PROJECT_name)
-	{
-		STRING_free(&PROJECT_name);
-		STRING_free(&PROJECT_path);
-	}
+	STRING_free(&PROJECT_name);
+	STRING_free(&PROJECT_path);
 	
   STRING_free(&PROJECT_oldcwd);
   STRING_free(&PROJECT_exec_path);

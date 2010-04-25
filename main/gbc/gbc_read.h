@@ -28,5 +28,6 @@
 void READ_do(void);
 void READ_dump_pattern(PATTERN *pattern);
 char *READ_get_pattern(PATTERN *pattern);
+void THROW_UNEXPECTED(PATTERN *pattern);
 
 #endif

@@ -61,7 +61,6 @@ COMPONENT *COMPONENT_current = NULL;
 COMPONENT *COMPONENT_main;
 int COMPONENT_count = 0;
 char *COMPONENT_path;
-char *COMPONENT_user_path;
 
 static COMPONENT *_component_list = NULL;
 
@@ -107,7 +106,6 @@ void COMPONENT_exit(void)
   ARCHIVE_exit();
 
   STRING_free(&COMPONENT_path);
-  STRING_free(&COMPONENT_user_path);
 }
 
 
@@ -147,14 +145,20 @@ COMPONENT *COMPONENT_find(const char *name)
   return NULL;
 }
 
-
 COMPONENT *COMPONENT_create(const char *name)
 {
   COMPONENT *comp;
   char *path;
   bool can_archive;
-  bool error = FALSE;
+	bool library = FALSE;
 
+	if (*name == '/') // user library
+	{
+		library = TRUE;
+		path = name;
+		name = FILE_get_name(name);
+	}
+	
   comp = COMPONENT_find(name);
   if (comp)
     return comp;
@@ -166,66 +170,44 @@ COMPONENT *COMPONENT_create(const char *name)
 
   STRING_new(&comp->name, name, 0);
 
-	// Don't load the archive if it has the same name as the project
-
-	if (PROJECT_name)
-		can_archive = strcmp(name, PROJECT_name);
+	if (library)
+	{
+		comp->archive = ARCHIVE_create(name, path);
+	}
 	else
-		can_archive = TRUE;
-
-	// System wide component, located in /usr/local/lib/gambas2 (by default)
-
-  path = FILE_buffer();
-  sprintf(path, LIB_PATTERN, COMPONENT_path, name);
-
-  if (FILE_exist(path))
-    comp->library = LIBRARY_create(name);
-
-	if (can_archive)
 	{
+		// Don't load the archive if it has the same name as the project
+
+		if (PROJECT_name)
+			can_archive = strcmp(name, PROJECT_name);
+		else
+			can_archive = TRUE;
+
+		// System wide component, located in /usr/local/lib/gambas2 (by default)
+
 		path = FILE_buffer();
-		sprintf(path, ARCH_PATTERN, COMPONENT_path, name);
+		sprintf(path, LIB_PATTERN, COMPONENT_path, name);
 
 		if (FILE_exist(path))
-			comp->archive = ARCHIVE_create(name);
+			comp->library = LIBRARY_create(name);
+
+		if (can_archive)
+		{
+			path = FILE_buffer();
+			sprintf(path, ARCH_PATTERN, COMPONENT_path, name);
+
+			if (FILE_exist(path))
+				comp->archive = ARCHIVE_create(name, NULL);
+		}
 	}
-
-  if (comp->library || comp->archive)
-  	goto __OK;
-
-	// User specific component, located in ~/.local/lib/gambas2
-
-  path = FILE_buffer();
-  sprintf(path, LIB_PATTERN, COMPONENT_user_path, name);
-
-  if (FILE_exist(path))
-    comp->library = LIBRARY_create(name);
-
-	if (can_archive)
-	{
-		path = FILE_buffer();
-		sprintf(path, ARCH_PATTERN, COMPONENT_user_path, name);
-
-		if (FILE_exist(path))
-			comp->archive = ARCHIVE_create(name);
-	}
-
-	comp->user = TRUE;
-
-  if (comp->library || comp->archive || !can_archive)
-  	goto __OK;
-	
-	error = TRUE;
-
-__OK:
 
   LIST_insert(&_component_list, comp, &comp->list);
   COMPONENT_count++;
 
-	if (error)
+  if (!comp->library && !comp->archive)
 	{
 		COMPONENT_delete(comp);
-		THROW(E_LIBRARY, name, "cannot find library file");
+		THROW(E_LIBRARY, name, "cannot find component");
 	}
 
   return comp;

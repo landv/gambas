@@ -68,7 +68,7 @@ static void analyze_function_desc(TRANS_FUNC *func, int flag)
   }
 
   if (!PATTERN_is(*look, RS_LBRA))
-    THROW(E_UNEXPECTED, READ_get_pattern(look));
+		THROW_UNEXPECTED(look);
   look++;
 
   for(;;)
@@ -914,12 +914,12 @@ void HEADER_do(void)
 			continue;
 		}
 
-    THROW(E_UNEXPECTED, READ_get_pattern(JOB->current));
+    THROW_UNEXPECTED(JOB->current);
   }
 
-  /* R�rganisation des variables statiques et dynamiques
-     pour �iter les probl�es d'alignement
-  */
+	// Sort class declaration to avoid alignment problems.
+	// This should be useless now, as it is done again by the interpreter
+	// when loading the class.
 
   CLASS_sort_declaration(JOB->class);
 

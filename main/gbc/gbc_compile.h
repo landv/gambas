@@ -58,12 +58,12 @@ typedef
     char *output;                      /* output file */
     PATTERN *pattern;                  /* lexical analyze */
     int pattern_count;                 /* number of patterns */
-    PATTERN *current;                  /* position de traduction courante */
-    PATTERN *end;                      /* fin de traduction */
-    FUNCTION *func;                    /* fonction en cours de compilation */
-    CLASS *class;                      /* classe en cours de compilation */
-    char *form;                        /* nom du fichier formulaire */
-    char *tname;                       /* nom du fichier *.pot */
+    PATTERN *current;                  /* current pattern */
+    PATTERN *end;                      /* last pattern */
+    FUNCTION *func;                    /* current function being compiled */
+    CLASS *class;                      /* current class being compiled */
+    char *form;                        /* form file name */
+    char *tname;                       /* translation file name */
     int default_library;               /* default library name for extern declarations */
     }
   COMPILE;

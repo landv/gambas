@@ -204,7 +204,7 @@ Private Sub AddClassesAndFill(aClass As String[], Optional sBegin As String)
     'TRY lvwComp.Add(sClass, sClass)
   Next
 
-  aLib = Project.Libraries.Copy()
+  aLib = Project.Components.Copy()
   aLib.Add("gb", 0)
 
   For Each sLib In aLib

@@ -32,6 +32,7 @@ gbc3_SOURCES = \
  gb_str.h gb_str.c \
  gbc_chown.h gbc_chown.c \
  gb_common.c \
+ gbc_arch.c \
  gbc.c 
 
 gba3_SOURCES = \
@@ -43,6 +44,7 @@ gba3_SOURCES = \
  gbc_archive.h gbc_archive.c \
  gbc_chown.h gbc_chown.c \
  gb_common.c \
+ gbc_arch.c \
  gba.c
 
 gbi3_SOURCES= \
@@ -52,6 +54,7 @@ gbi3_SOURCES= \
  gb_file.h gb_file.c \
  gb_table.c \
  gb_common.c \
+ gbc_arch.c \
  gbi.c
 
 libgbcopt_la_SOURCES = \

@@ -49,13 +49,18 @@ char *STR_add(char *d, const char *s)
   return d;
 }
 
-char *STR_copy(const char *str)
+char *STR_copy_len(const char *str, int len)
 {
   char *cpy;
 
-  ALLOC(&cpy, strlen(str) + 1, "STR_copy");
-  strcpy(cpy, str);
+  ALLOC(&cpy, len  + 1, "STR_copy_len");
+  memcpy(cpy, str, len + 1);
   return cpy;
+}
+
+char *STR_copy(const char *str)
+{
+	return STR_copy_len(str, strlen(str));
 }
 
 char *STR_cat(const char *str, ...)

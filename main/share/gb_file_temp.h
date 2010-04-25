@@ -185,7 +185,20 @@ void FILE_exit(void)
 
 #endif
 
-#define stradd(d, s) \
+static char *stradd(char *d, const char *s)
+{
+	for(;;)
+	{
+		if ((*d = *s) == 0)
+			break;
+		d++;
+		s++;
+	}
+	
+	return d;
+}
+
+/*#define stradd(d, s) \
 ({ \
 	char *_d = (d); \
 	const char *_s = (s); \
@@ -200,7 +213,7 @@ void FILE_exit(void)
 	} \
 	\
 	_d; \
-})
+})*/
 
 const char *FILE_cat(const char *path, ...)
 {

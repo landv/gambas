@@ -199,7 +199,7 @@ static int ftp_exec(void *_object, int what, GB_ARRAY commands)
 		return 0;
 	}
 	
-	CCURL_Manage_ErrCode(_object,curl_easy_perform(THIS_CURL));
+	CCURL_Manage_ErrCode(_object, curl_easy_perform(THIS_CURL));
 	return 0;
 }
 

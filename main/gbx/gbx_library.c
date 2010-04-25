@@ -457,8 +457,8 @@ int LIBRARY_load(LIBRARY *lib)
   path = FILE_buffer();
   sprintf(path, LIB_PATTERN, COMPONENT_path, lib->name);
 
-  if (!FILE_exist(path))
-	  sprintf(path, LIB_PATTERN, COMPONENT_user_path, lib->name);
+  //if (!FILE_exist(path))
+	//  sprintf(path, LIB_PATTERN, COMPONENT_user_path, lib->name);
 
   #ifndef DONT_USE_LTDL
     /* no more available in libltld ?

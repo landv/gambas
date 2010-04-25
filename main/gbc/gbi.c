@@ -62,8 +62,6 @@
 #include "gb_array.h"
 #include "gambas.h"
 
-#include "gb_arch_temp.h"
-
 static char _root[PATH_MAX + 1] = { 0 };
 static char _lib_path[PATH_MAX + 1];
 static char _info_path[PATH_MAX + 1];

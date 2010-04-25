@@ -14,6 +14,7 @@ Public ReadOnly As Boolean
 
 Public Title As String
 Public Startup As String
+Public Components As String[]
 Public Libraries As String[]
 Public Arguments As String[]
 Public Environment As String[]
@@ -979,7 +980,7 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
 
       Else If IsConnectionPath(sDir &/ sFile) Then
 
-        If Libraries.Exist("gb.db") And If sExt = "connection" Then
+        If Components.Exist("gb.db") And If sExt = "connection" Then
           sFile = File.BaseName(sFile)
         Else
           bIgnore = True
@@ -1285,7 +1286,7 @@ Private Sub DoRefresh(Optional bReset As Boolean)
     '.Add(KEY_CLASS, ("Classes"), Picture["icon:/small/directory"], sKey)
     .Add(KEY_SOURCE, ("Sources"), Picture["icon:/small/directory"], sKey)
     
-    If Libraries.Exist("gb.db") Then
+    If Components.Exist("gb.db") Then
       .Add(KEY_CONNECTION, ("Connections"), Picture["icon:/small/directory"], sKey)
     Endif
     
@@ -1630,6 +1631,29 @@ Private Function AddMessage(sVoid As String) As String
 
 End
 
+Private Sub TranslateMessage(sErr As String) As String
+  
+  Dim aErr As String[]
+
+  aErr = Split(sErr, "\t")
+  aErr.Resize(5)
+  If Left(aErr[1]) = "#" Then
+    Select CInt(Mid$(aErr[1], 2))
+      Case 1
+        aErr[1] = ("first")
+      Case 2
+        aErr[2] = ("second")
+      Case 3
+        aErr[1] = ("third")
+      Default
+        aErr[1] = Subst(("&1th"), Mid$(aErr[1], 2))
+    End Select
+  Endif
+  
+  Return Subst(Tr$(aErr[0]), aErr[1], aErr[2], aErr[3], aErr[4])
+  
+End
+
 
 Private Sub CompileError(sMsg As String)
 
@@ -1638,16 +1662,15 @@ Private Sub CompileError(sMsg As String)
   Dim iLine As Integer
   Dim hForm As FEditor
   Dim sErr As String
-  Dim aErr As String[]
 
   iPos = RInStr(sMsg, "\n")
   If iPos Then sMsg = Mid$(sMsg, iPos + 1)
 
   If sMsg Begins "gbc: ERROR: " Then
   
-    sMsg = Mid$(sMsg, Len("gbc: ERROR: ") + 1)
+    sMsg = TranslateMessage(Mid$(sMsg, Len("gbc: ERROR: ") + 1))
     SetMessage(sMsg)
-    Message.Error(("Cannot compile the project.") & "\n" & sMsg)
+    'Message.Error(("Cannot compile the project.") & "\n" & sMsg)
 
   Else
   
@@ -1665,22 +1688,7 @@ Private Sub CompileError(sMsg As String)
   
     hForm = OpenFile($cSourceDir[File.Name(sFile)], iLine)
   
-    sErr = Trim(Mid$(sMsg, iPos + 1))
-    aErr = Split(sErr, "\t")
-    aErr.Resize(5)
-    If Left(aErr[1]) = "#" Then
-      Select CInt(Mid$(aErr[1], 2))
-        Case 1
-          aErr[1] = ("first")
-        Case 2
-          aErr[2] = ("second")
-        Case 3
-          aErr[1] = ("third")
-        Default
-          aErr[1] = Subst(("&1th"), Mid$(aErr[1], 2))
-      End Select
-    Endif
-    sErr = Subst(Tr$(aErr[0]), aErr[1], aErr[2], aErr[3], aErr[4])
+    sErr = TranslateMessage(Trim(Mid$(sMsg, iPos + 1)))
 
     If hForm And If iLine >= hForm.Editor.Lines.Count Then
       SetMessage(File.BaseName(sFile) & ": " & sErr & " " & ("in form definition"))
@@ -1690,14 +1698,14 @@ Private Sub CompileError(sMsg As String)
       sMsg = "<b>" & sErr & "</b><p>" & Subst(("In class &1 at line &2."), File.Name(sFile), CStr(iLine))
     Endif
     
-    If hForm Then
-      hForm.ShowErrorMessage(sMsg, "make")
-    Else
-      FMain.ShowError(sMsg, "make")
-    Endif
-    
   Endif
 
+  If hForm Then
+    hForm.ShowErrorMessage(sMsg, "make")
+  Else
+    FMain.ShowMessage(sMsg, "make")
+  Endif
+    
 'Catch
 
 End
@@ -2437,6 +2445,7 @@ Public Sub ReadProject()
 
   hFic = Open Path For Input
 
+  Components = New String[]
   Libraries = New String[]
   Title = ""
   TabSize = Settings["/DefaultTabSize", 2]
@@ -2506,12 +2515,15 @@ Public Sub ReadProject()
         'DefineStartup(sVal, True)
         Startup = sVal
 
-      Case "library", "component"
+      Case "component"
         If CComponent.All.Exist(sVal) Then
-          Libraries.Add(sVal)
+          Components.Add(sVal)
         Else
           aMissing.Add(sVal)
         Endif
+
+      Case "library"
+        If Not Libraries.Exist(sVal) Then Libraries.Add(sVal)
 
       Case "tabsize"
         TabSize = Val(sVal)
@@ -2695,13 +2707,13 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If Project.ReadOnly Then Return
 
   If CreateComponent
-    If bMakeShortcut Then
-      If Project.CreateShortcut Then
-        InstallComponent
-      Else  
-        UninstallComponent
-      Endif
-    Endif
+    ' If bMakeShortcut Then
+    '   If Project.CreateShortcut Then
+    '     InstallComponent
+    '   Else  
+    '     UninstallComponent
+    '   Endif
+    ' Endif
   Else
     MakeShortcut(bMakeShortcut)
     If Not bComponentDoNotChange Then RefreshLibrary
@@ -2729,9 +2741,13 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If VersionProgram Then Print #hFic, "VersionProgram="; VersionProgram
 
   For Each hComp In CComponent.All
-    If Libraries.Find(hComp.Key) >= 0 Then
+    If Components.Find(hComp.Key) >= 0 Then
       Print #hFic, "Component="; hComp.Key
     Endif
+  Next
+  
+  For Each sVal In Libraries
+    Print #hFic, "Library="; sVal
   Next
 
   If Description Then Print #hFic, "Description="; Quote(Description)
@@ -2940,86 +2956,86 @@ Private Sub RefreshForComponent()
 End
 
 
-Public Sub InstallComponent()
-  
-  Dim sDir As String = Component.UserPath
-  Dim sClass As String
-  Dim sIcon As String
-  
-  MakeDir(sDir)
-
-  MakeLink(Project.ExecPath, sDir &/ Name & ".gambas")
-  MakeLink(Project.Dir &/ ".component", sDir &/ Name & ".component")
-  
-  sDir = File.Dir(File.Dir(sDir)) &/ "share/gambas" & System.Version & "/info"
-  MakeDir(sDir)
-  
-  MakeLink(Project.Dir &/ ".info", sDir &/ Name & ".info")
-  MakeLink(Project.Dir &/ ".list", sDir &/ Name & ".list")
-  
-  sDir = File.Dir(sDir) &/ "control" &/ Name
-  
-  For Each sClass In GetClasses(True)
-    If Not IsExported(sClass) Then Continue
-    sClass = LCase(File.BaseName(sClass))
-    sIcon = Project.Dir &/ ".hidden/control" &/ sClass & ".png"
-    If Exist(sIcon) Then 
-      MakeDir(sDir)
-      MakeLink(sIcon, sDir &/ sClass & ".png")
-    Endif
-  Next
-  
-  If Not CComponent.All.Exist(Name) Then 
-    CComponent.FullReset
-  Endif
-  If Not Libraries.Exist(Name) Then 
-    Libraries.Add(Name)
-  Endif
-  RefreshForComponent
-  
-Catch 
-
-  FGambas.Error(("Unable to install component.") & "\n\n" & Error.Text & "\n" & Error.Where)  
-  
-End
-
-Public Sub UninstallComponent()
-  
-  Dim sDir As String = Component.UserPath
-  Dim bRefresh As Boolean
-  
-  'MakeDir(sDir)
-
-  bRefresh = Exist(sDir &/ Name & ".component")
-
-  Try Kill sDir &/ Name & ".gambas"
-  Try Kill sDir &/ Name & ".component"
-  
-  sDir = File.Dir(File.Dir(sDir)) &/ "share/gambas" & System.Version & "/info"
-  
-  Try Kill sDir &/ Name & ".info"
-  Try Kill sDir &/ Name & ".list"
-  
-  sDir = File.Dir(sDir) &/ "control" &/ Name
-  Exec ["rm", "-rf", sDir] Wait
-
-  If bRefresh Then
-    If CComponent.All.Exist(Name) Then  
-      CComponent.FullReset
-    Endif
-    If Not CComponent.All.Exist(Name) Then
-      If Libraries.Exist(Name) Then 
-        Libraries.Remove(Libraries.Find(Name))
-      Endif
-      RefreshForComponent
-    Endif
-  Endif
-  
-Catch 
-
-  FGambas.Error(("Unable to uninstall component.") & "\n\n" & Error.Text & "\n" & Error.Where)    
-  
-End
+' Public Sub InstallComponent()
+'   
+'   Dim sDir As String = Component.UserPath
+'   Dim sClass As String
+'   Dim sIcon As String
+'   
+'   MakeDir(sDir)
+' 
+'   MakeLink(Project.ExecPath, sDir &/ Name & ".gambas")
+'   MakeLink(Project.Dir &/ ".component", sDir &/ Name & ".component")
+'   
+'   sDir = File.Dir(File.Dir(sDir)) &/ "share/gambas" & System.Version & "/info"
+'   MakeDir(sDir)
+'   
+'   MakeLink(Project.Dir &/ ".info", sDir &/ Name & ".info")
+'   MakeLink(Project.Dir &/ ".list", sDir &/ Name & ".list")
+'   
+'   sDir = File.Dir(sDir) &/ "control" &/ Name
+'   
+'   For Each sClass In GetClasses(True)
+'     If Not IsExported(sClass) Then Continue
+'     sClass = LCase(File.BaseName(sClass))
+'     sIcon = Project.Dir &/ ".hidden/control" &/ sClass & ".png"
+'     If Exist(sIcon) Then 
+'       MakeDir(sDir)
+'       MakeLink(sIcon, sDir &/ sClass & ".png")
+'     Endif
+'   Next
+'   
+'   If Not CComponent.All.Exist(Name) Then 
+'     CComponent.FullReset
+'   Endif
+'   If Not Components.Exist(Name) Then 
+'     Components.Add(Name)
+'   Endif
+'   RefreshForComponent
+'   
+' Catch 
+' 
+'   FGambas.Error(("Unable to install component.") & "\n\n" & Error.Text & "\n" & Error.Where)  
+'   
+' End
+' 
+' Public Sub UninstallComponent()
+'   
+'   Dim sDir As String = Component.UserPath
+'   Dim bRefresh As Boolean
+'   
+'   'MakeDir(sDir)
+' 
+'   bRefresh = Exist(sDir &/ Name & ".component")
+' 
+'   Try Kill sDir &/ Name & ".gambas"
+'   Try Kill sDir &/ Name & ".component"
+'   
+'   sDir = File.Dir(File.Dir(sDir)) &/ "share/gambas" & System.Version & "/info"
+'   
+'   Try Kill sDir &/ Name & ".info"
+'   Try Kill sDir &/ Name & ".list"
+'   
+'   sDir = File.Dir(sDir) &/ "control" &/ Name
+'   Exec ["rm", "-rf", sDir] Wait
+' 
+'   If bRefresh Then
+'     If CComponent.All.Exist(Name) Then  
+'       CComponent.FullReset
+'     Endif
+'     If Not CComponent.All.Exist(Name) Then
+'       If Components.Exist(Name) Then 
+'         Components.Remove(Components.Find(Name))
+'       Endif
+'       RefreshForComponent
+'     Endif
+'   Endif
+'   
+' Catch 
+' 
+'   FGambas.Error(("Unable to uninstall component.") & "\n\n" & Error.Text & "\n" & Error.Where)    
+'   
+' End
 
 
 
@@ -3752,19 +3768,19 @@ Public Sub RefreshLibrary(Optional bForce As Boolean)
   ' Sort components
 
   For Each hComp In CComponent.All
-    If Libraries.Find(hComp.Key) >= 0 Then
+    If Components.Find(hComp.Key) >= 0 Then
       aLib.Add(hComp.Key)
     Endif
   Next
   
-  Libraries = aLib
+  Components = aLib
   sLibComp = aLib.Join(" ")
   
   If sLibComp <> $sOldRefreshLibrary Or If bForce Then
   
     CComponent.Reset
   
-    For Each sLib In Libraries
+    For Each sLib In Components
       CComponent.All[sLib].Load
     Next
     
@@ -4625,7 +4641,7 @@ End
 
 Public Sub IsStockAllowed() As Boolean
   
-  Return Libraries.Exist("gb.form")
+  Return Components.Exist("gb.form")
   
 End
 

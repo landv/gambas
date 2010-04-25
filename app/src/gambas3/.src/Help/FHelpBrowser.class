@@ -198,3 +198,9 @@ Public Sub btnPrint_Click()
   webHelp.Current.Print(Printer1)
 
 End
+
+Public Sub Form_KeyPress()
+
+  If Key.Code = Key.Escape Then Me.Close
+
+End

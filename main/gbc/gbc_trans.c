@@ -466,7 +466,7 @@ bool TRANS_type(int mode, TRANS_DECL *result)
   }
 
   if (!PATTERN_is_type(*look) && !PATTERN_is_class(*look))
-    THROW(E_UNEXPECTED, READ_get_pattern(look));
+    THROW_UNEXPECTED(look);
     
 	if (PATTERN_is_type(*look))
 	{

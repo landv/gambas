@@ -25,7 +25,7 @@ Public Loaded As Boolean
 Public ClassList As New String[]
 Public State As Integer
 Public SortKey As Integer
-Public User As Boolean
+'Public User As Boolean
 Public Version As String
 Public Family As String
 
@@ -177,7 +177,7 @@ End
 ' End
 
 
-Static Private Sub InitComponent(sFile As String, bUser As Boolean)
+Static Private Sub InitComponent(sFile As String)
   
   Dim hComponent As CComponent
   Dim hFic As File
@@ -193,11 +193,7 @@ Static Private Sub InitComponent(sFile As String, bUser As Boolean)
   Dim aStr As String[]
   Dim sChange As String
 
-  If bUser Then
-    sPath = Component.UserPath &/ sFile 
-  Else
-    sPath = Component.Path &/ sFile 
-  Endif
+  sPath = Component.Path &/ sFile 
   
   Try hFic = Open sPath
   If Error Then
@@ -309,8 +305,6 @@ Static Private Sub InitComponent(sFile As String, bUser As Boolean)
 
     Wend
 
-    hComponent.User = bUser
-  
     If hComponent.Key Then
       All[hComponent.Key] = hComponent
     Endif
@@ -354,19 +348,19 @@ Static Public Sub _init()
   
   aComp = Dir(Component.Path, "*.component").Sort()
   For Each sFile In aComp
-    InitComponent(sFile, False)
+    InitComponent(sFile)
   Next
 
-  If Exist(Component.UserPath) Then
-    aComp = Dir(Component.UserPath, "*.component").Sort()
-    For Each sFile In aComp
-      If All.Exist(File.BaseName(sFile)) Then 
-        Error "Warning: User component "; File.BaseName(sFile); " is ignored"
-        Continue
-      Endif
-      InitComponent(sFile, True)
-    Next
-  Endif
+  ' If Exist(Component.UserPath) Then
+  '   aComp = Dir(Component.UserPath, "*.component").Sort()
+  '   For Each sFile In aComp
+  '     If All.Exist(File.BaseName(sFile)) Then 
+  '       Error "Warning: User component "; File.BaseName(sFile); " is ignored"
+  '       Continue
+  '     Endif
+  '     InitComponent(sFile, True)
+  '   Next
+  ' Endif
 
   SortComponents
   
@@ -468,11 +462,7 @@ Public Sub Load()
     All[sLig].Load
   Next
   
-  If User Then 
-    sPath = File.Dir(File.Dir(Component.UserPath))
-  Else  
-    sPath = System.Path
-  Endif 
+  sPath = System.Path
   
   sPath &/= "share/" & "gambas" & System.Version & "/info" &/ Key & ".info"
   
@@ -1033,6 +1023,7 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
 
   If Not bClass Then
     If hClass Then
+      $hClass = hClass
       Return hClass.Symbols
     Else
       If Right(sClass, 2) = "[]" Then

@@ -11,7 +11,7 @@
     Arrangement = Arrange.Vertical
     Spacing = True
     Margin = True
-    Count = 6
+    Count = 7
     Index = 0
     Text = ("General")
     { Panel1 Panel
@@ -291,7 +291,7 @@
         Expand = True
       }
       { btnUndo Button
-        MoveScaled(64,0,15,4)
+        MoveScaled(62,0,17,4)
         Text = ("&Reset")
         Picture = Picture["icon:/small/undo"]
       }
@@ -308,20 +308,57 @@
       }
     }
     Index = 3
+    Text = ("Libraries")
+    { lstLibraries ListContainer
+      MoveScaled(1,1,81,59)
+      Expand = True
+    }
+    { HBox18 HBox
+      MoveScaled(1,69,84,4)
+      Spacing = True
+      { btnInsertLib Button
+        MoveScaled(0,0,17,4)
+        Text = ("&Insert...")
+        Picture = Picture["icon:/small/add"]
+      }
+      { btnRemoveLib Button
+        MoveScaled(18,0,17,4)
+        Text = ("&Remove")
+        Picture = Picture["icon:/small/remove"]
+      }
+      { btnMoveUpLib Button
+        MoveScaled(35,0,6,4)
+        Picture = Picture["icon:/small/up"]
+      }
+      { btnMoveDownLib Button
+        MoveScaled(41,0,6,4)
+        Picture = Picture["icon:/small/down"]
+      }
+      { Panel2 Panel
+        MoveScaled(59,0,1,4)
+        Expand = True
+      }
+      { btnUndoLib Button
+        MoveScaled(65,0,17,4)
+        Text = ("&Reset")
+        Picture = Picture["icon:/small/undo"]
+      }
+    }
+    Index = 4
     Text = ("Environment")
     { VBox1 VBox
       MoveScaled(1,1,84,72)
       Expand = True
       Spacing = True
       { VBox2 VBox
-        MoveScaled(2,1,47,8)
+        MoveScaled(2,1,58,8)
         { Label17 Label
           MoveScaled(0,0,24,4)
           Font = Font["Bold"]
           Text = ("Arguments")
         }
         { HBox2 HBox
-          MoveScaled(0,4,46,4)
+          MoveScaled(0,4,53,4)
           Spacing = True
           { btnInsertArg Button
             MoveScaled(0,0,17,4)
@@ -334,11 +371,11 @@
             Picture = Picture["icon:/small/remove"]
           }
           { btnMoveUpArg Button
-            MoveScaled(36,0,4,4)
+            MoveScaled(36,0,6,4)
             Picture = Picture["icon:/small/up"]
           }
           { btnMoveDownArg Button
-            MoveScaled(41,0,4,4)
+            MoveScaled(42,0,6,4)
             Picture = Picture["icon:/small/down"]
           }
         }
@@ -377,7 +414,7 @@
         Scrollbar = Scroll.Vertical
       }
     }
-    Index = 4
+    Index = 5
     Text = ("Versioning")
     { Label4 Label
       MoveScaled(1,1,75,3)
@@ -414,7 +451,7 @@
         Picture = Picture["icon:/small/ok"]
       }
     }
-    Index = 5
+    Index = 6
     Text = ("Requires")
     { Label15 Label
       MoveScaled(1,1,79,3)

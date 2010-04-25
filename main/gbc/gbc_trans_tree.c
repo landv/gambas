@@ -410,7 +410,7 @@ static void analyze_single(int op)
       JOB->line--;
 		}
 
-    THROW(E_UNEXPECTED, READ_get_pattern(current));
+    THROW_UNEXPECTED(current);
   }
 }
 

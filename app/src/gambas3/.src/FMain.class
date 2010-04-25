@@ -1651,13 +1651,14 @@ Public Sub ShowMessage(sMsg As String, sIcon As String, Optional sKey As String)
   
   Dim X, Y As Integer
   
-  If Not sKey Then 
-    Y = 8
-  Else
-    Try tvwProject[sKey].Selected = True
-    Wait
-    Try Y = tvwProject.Current.Y + tvwProject.Current.H \ 2
-  Endif
+  If Not sKey Then sKey = Project.Dir
+  
+  'Try tvwProject[sKey].Selected = True
+  'Wait
+  Try tvwProject[sKey].EnsureVisible
+  Y = 8
+  Try Y = tvwProject[sKey].Y + tvwProject[sKey].H \ 2
+  
   X = tvwProject.W \ 2
   
   If FMain.Visible Then

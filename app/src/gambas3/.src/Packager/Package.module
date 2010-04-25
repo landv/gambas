@@ -200,7 +200,7 @@ Private Function IsConsoleProject() As Boolean
 
   Dim sLib As String
 
-  For Each sLib In Project.Libraries
+  For Each sLib In Project.Components
     If CComponent.All[sLib].Family = "Form" Then Return False
   Next
 
@@ -219,7 +219,7 @@ Private Function GetDependencies() As String[]
   Dim aDep As New String[]
   Dim sComp As String
   
-  For Each sComp In Project.Libraries
+  For Each sComp In Project.Components
     If sComp = "gb.debug" Or If sComp = "gb.eval" Then Continue 
     aDep.Add(sComp)
   Next

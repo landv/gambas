@@ -2,10 +2,14 @@
 
 Inherits UserControl
 
+Property ShowPath As Boolean
+Property Path As String
+
 Private $hDrawingArea As DrawingArea
 Private $sPath As String
 Private $hProjectInfo As CProjectInfo
 Private $hIcon As Picture
+Private $bShowPath As Boolean
 
 Private Const ICON_SIZE As Integer = 32
 Private Const PADDING As Integer = 6
@@ -18,16 +22,15 @@ Public Sub _new()
   
   $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
   '$hDrawingArea.Mouse = Mouse.Pointing
-  Me.H = ICON_SIZE + PADDING * 2
+  Refresh
   
 End
 
   
-Public Sub SetPath(sPath As String)
+Private Sub SetPath(sPath As String)
   
   $sPath = sPath
   $hProjectInfo = New CProjectInfo(sPath)
-  Me.Tag = sPath
   
   With $hProjectInfo
     
@@ -42,7 +45,7 @@ Public Sub SetPath(sPath As String)
   End With 
   
   $hDrawingArea.ToolTip = Replace($sPath, System.User.Home, "~")
-  $hDrawingArea.Refresh
+  Refresh
   
 End
 
@@ -70,6 +73,7 @@ Public Sub DrawingArea_Draw()
       sTitle &= "<i>" & If(.Authors.Count = 1, ("Author"), ("Authors")) & " : " & .Authors.Join(", ") & "</i>"
     Endif
     sTitle &= "</font>"
+    If $bShowPath Then sTitle &= Subst("<br><font size=\"-1\" color=\"&1\"><b>", If(bSelected, "white", "gray")) & Replace($sPath, System.User.Home, "~") & "</b></font>"
     'Draw.Font.Bold = True
     X = ICON_SIZE + PADDING * 2
     W = Max(Me.W - X, Draw.RichTextWidth(sTitle))
@@ -108,5 +112,42 @@ Private Sub Background_Write(Value As Integer)
 
   Super.Background = Value
   $hDrawingArea.Background = Color.Default
+
+End
+
+Private Sub Refresh()
+  
+  Dim H As Integer
+
+  H = ICON_SIZE + PADDING * 2
+  If $bShowPath Then H += Desktop.Scale * 2
+  Me.H = H
+  Super.Refresh
+  
+End
+
+
+Private Function ShowPath_Read() As Boolean
+
+  Return $bShowPath
+
+End
+
+Private Sub ShowPath_Write(Value As Boolean)
+
+  $bShowPath = True
+  Refresh
+
+End
+
+Private Function Path_Read() As String
+
+  Return $sPath
+
+End
+
+Private Sub Path_Write(Value As String)
+
+  SetPath(Value)
 
 End

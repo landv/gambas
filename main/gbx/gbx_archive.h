@@ -37,7 +37,8 @@ typedef
     const char *name;
     char *domain;
     TABLE *classes;
-    int translation_loaded;
+		const char *path;
+    unsigned translation_loaded : 1;
     }
   ARCHIVE;
 
@@ -61,7 +62,7 @@ void ARCHIVE_exit(void);
 void ARCHIVE_create_main(const char *path);
 void ARCHIVE_load_main(void);
 
-ARCHIVE *ARCHIVE_create(const char *name);
+ARCHIVE *ARCHIVE_create(const char *name, const char *path);
 void ARCHIVE_delete(ARCHIVE *arch);
 void ARCHIVE_load(ARCHIVE *arch);
 

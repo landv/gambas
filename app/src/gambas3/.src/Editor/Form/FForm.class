@@ -1708,7 +1708,7 @@ End
 
 Private Sub DrawTitle()
 
-  If $bModify Then Stop
+  'If $bModify Then Stop
   Project.DrawTitle(Me)
 
 End
@@ -3179,6 +3179,7 @@ Public Sub GetText() As String
   ResetSave
   SaveOne(Control[Me.Name])
   $bModify = bModify
+  DrawTitle
   Return $sSave
   
 End

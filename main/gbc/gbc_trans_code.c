@@ -268,7 +268,7 @@ static void translate_body()
 
     if (test_newline)
       if (!PATTERN_is_newline(*JOB->current))
-        THROW(E_UNEXPECTED, READ_get_pattern(JOB->current));
+        THROW_UNEXPECTED(JOB->current);
   }
 
 
@@ -446,7 +446,7 @@ static void translate_body()
 
     if (test_newline)
       if (!PATTERN_is_newline(*JOB->current))
-        THROW(E_UNEXPECTED, READ_get_pattern(JOB->current));
+        THROW_UNEXPECTED(JOB->current);
 
   }
 

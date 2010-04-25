@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,83,39)
+  MoveScaled(0,0,85,39)
   Action = "find"
   Text = ("Search & Replace")
   Icon = Picture["icon:/small/find"]
@@ -10,7 +10,7 @@
   Arrangement = Arrange.Fill
   Margin = True
   { tabSearch TabStrip
-    MoveScaled(0,1,82,35)
+    MoveScaled(0,1,84,35)
     Arrangement = Arrange.Horizontal
     Spacing = True
     Margin = True
@@ -91,7 +91,7 @@
       MoveScaled(60,1,1,29)
     }
     { HBox5 VBox
-      MoveScaled(61,1,19,29)
+      MoveScaled(61,1,21,29)
       Spacing = True
       { btnNext Button
         MoveScaled(0,0,17,4)
@@ -163,9 +163,8 @@
         Border = Border.Sunken
       }
     }
-    { panSearch Panel
-      MoveScaled(61,1,19,29)
-      Arrangement = Arrange.Vertical
+    { panSearch VBox
+      MoveScaled(61,1,21,29)
       Spacing = True
       { btnBrowse Button
         MoveScaled(0,0,19,4)

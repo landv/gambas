@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  gbc_archive.h
+  gbc_arch.c
 
   (c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
 
@@ -20,29 +20,23 @@
 
 ***************************************************************************/
 
-#ifndef __GBC_ARCHIVE_H
-#define __GBC_ARCHIVE_H
+#define __GBC_ARCH_C
 
-#include "gb_alloc.h"
-#include "gb_limit.h"
-#include "gb_table.h"
-#include "gb_magic.h"
-#include "gb_arch.h"
+#include "config.h"
 
-#ifndef __GBC_ARCHIVE_C
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <errno.h>
 
-EXTERN char *ARCH_project;
-EXTERN char *ARCH_project_name;
-EXTERN char *ARCH_output;
-EXTERN bool ARCH_verbose;
-EXTERN bool ARCH_swap;
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
-#endif
+#include "gb_common.h"
+#include "gb_error.h"
+#include "gb_str.h"
+#include "gb_file.h"
 
-void ARCH_init(void);
-void ARCH_exit(void);
-void ARCH_define_project(const char *project);
-void ARCH_define_output(const char *path);
-int ARCH_add_file(const char *path);
-
-#endif
+#include "gb_arch_temp.h"

@@ -54,6 +54,7 @@ static struct option Long_options[] =
   { "swap", 0, NULL, 's' },
   { "verbose", 0, NULL, 'v' },
   { "output", 1, NULL, 'o' },
+  { "extract", 1, NULL, 'x' },
   { 0 }
 };
 #endif
@@ -65,6 +66,10 @@ static const char *allowed_hidden_files[] = { ".gambas", ".info", ".list", ".lan
 static const char *remove_ext_root[] = { "module", "class", "form", "gambas", NULL };
 static const char *remove_ext_lang[] = { "pot", "po", NULL };
 
+static bool _extract = FALSE;
+static char *_extract_archive;
+static char *_extract_file = NULL;
+
 static void get_arguments(int argc, char **argv)
 {
   int opt;
@@ -75,9 +80,9 @@ static void get_arguments(int argc, char **argv)
   for(;;)
   {
     #if HAVE_GETOPT_LONG
-      opt = getopt_long(argc, argv, "vVhso:", Long_options, &index);
+      opt = getopt_long(argc, argv, "vVLhso:x:", Long_options, &index);
     #else
-      opt = getopt(argc, argv, "vVhso:");
+      opt = getopt(argc, argv, "vVLhso:x:");
     #endif
 
     if (opt < 0) break;
@@ -98,18 +103,30 @@ static void get_arguments(int argc, char **argv)
 
 			case 'o':
         ARCH_define_output(optarg);
+				_extract = FALSE;
 				break;
+				
+			case 'x':
+        _extract_archive = optarg;
+				_extract = TRUE;
+				break;
+				
+			case 'L':
+				printf(
+					"GAMBAS Archiver version " VERSION " " __DATE__ " " __TIME__ "\n"
+					COPYRIGHT
+					);
+				exit(0);
 
       case 'h': case '?':
         printf(
-          "\n"
-          "GAMBAS Archiver version " VERSION " " __DATE__ " " __TIME__ "\n"
-          COPYRIGHT
-          "Usage: gba" GAMBAS_VERSION_STRING " [options] [<project directory>]\n\n"
+          "Usage: gba" GAMBAS_VERSION_STRING " [options] [<project directory>]\n"
+          "       gba" GAMBAS_VERSION_STRING " -x <archive path> <file>\n\n"
           "Options:"
           #if HAVE_GETOPT_LONG
           "\n"
           "  -o  --output=ARCHIVE       archive path [<project directory>/<project name>.gambas]\n"
+          "  -x  --extract=ARCHIVE      archive path\n"
           "  -v  --verbose              verbose output\n"
           "  -V  --version              display version\n"
           "  -s  --swap                 swap endianness\n"
@@ -117,6 +134,7 @@ static void get_arguments(int argc, char **argv)
           #else
           " (no long options on this system)\n"
           "  -o=ARCHIVE             archive path [<project directory>/<project name>.gambas]\n"
+          "  -x=ARCHIVE             archive path\n"
           "  -v                     verbose output\n"
           "  -V                     display version\n"
           "  -s                     swap endianness\n"
@@ -139,16 +157,28 @@ static void get_arguments(int argc, char **argv)
     exit(1);
   }
 
-  if (optind == argc)
-    ARCH_define_project(NULL);
-  else
-    ARCH_define_project(argv[optind]);
+	if (_extract)
+	{
+		if (optind == argc)
+		{
+			fprintf(stderr, "gba: not enough arguments.\n");
+			exit(1);
+		}
+		_extract_file = argv[optind];
+	}
+	else
+	{
+		if (optind == argc)
+			ARCH_define_project(NULL);
+		else
+			ARCH_define_project(argv[optind]);
 
-  if (!FILE_exist(ARCH_project))
-  {
-    fprintf(stderr, "gba: project file not found: %s\n", ARCH_project);
-    exit(1);
-  }
+		if (!FILE_exist(ARCH_project))
+		{
+			fprintf(stderr, "gba: project file not found: %s\n", ARCH_project);
+			exit(1);
+		}
+	}
 }
 
 
@@ -196,121 +226,137 @@ int main(int argc, char **argv)
   const char **p;
   int len_prefix;
   const char **remove_ext;
+	ARCH *arch;
+	ARCH_FIND find;
 
   get_arguments(argc, argv);
   COMMON_init();
 
   TRY
   {
-    ARCH_init();
+		if (_extract) // Extract a file from an archive
+		{
+			arch = ARCH_open(_extract_archive);
+			
+			if (ARCH_find(arch, _extract_file, 0, &find))
+				fprintf(stderr, "gba: file not found in archive\n");
+			else
+				fwrite(&arch->addr[find.pos], sizeof(char), find.len, stdout);
+			
+			ARCH_close(arch);
+		}
+		else // Create an archive
+		{
+			ARCH_init();
 
-		file = FILE_get_dir(ARCH_project);
-		len_prefix = strlen(file);
-    path_init(file);
+			file = FILE_get_dir(ARCH_project);
+			len_prefix = strlen(file);
+			path_init(file);
 
-    /* .project file always first ! */
-    ARCH_add_file(ARCH_project);
+			/* .project file always first ! */
+			ARCH_add_file(ARCH_project);
 
-    for(;;)
-    {
-      if (path_current >= path_count())
-        break;
+			for(;;)
+			{
+				if (path_current >= path_count())
+					break;
 
-      path = path_list[path_current++];
-      dir = opendir(path);
+				path = path_list[path_current++];
+				dir = opendir(path);
 
-      if (dir == NULL)
-      {
-        fprintf(stderr, "gba: warning: Cannot open dir: %s\n", path);
-        goto _NEXT_PATH;
-      }
+				if (dir == NULL)
+				{
+					fprintf(stderr, "gba: warning: Cannot open dir: %s\n", path);
+					goto _NEXT_PATH;
+				}
 
-      if (chdir(path) != 0)
-      {
-        fprintf(stderr, "gba: warning: Cannot change dir: %s\n", path);
-        goto _NEXT_PATH;
-      }
+				if (chdir(path) != 0)
+				{
+					fprintf(stderr, "gba: warning: Cannot change dir: %s\n", path);
+					goto _NEXT_PATH;
+				}
 
-      while ((dirent = readdir(dir)) != NULL)
-      {
-        file_name = dirent->d_name;
-        len = strlen(file_name);
+				while ((dirent = readdir(dir)) != NULL)
+				{
+					file_name = dirent->d_name;
+					len = strlen(file_name);
 
-        if (*file_name == '.')
-        {
-          for (p = allowed_hidden_files; *p; p++)
-          {
-            if (strcmp(file_name, *p) == 0)
-              break;
-          }
-
-          if (*p == NULL)
-            continue;
-        }
-
-        if (file_name[len - 1] == '~')
-          continue;
-
-        //if (strcmp(file_name, ARCH_project_name) == 0)
-        //  continue;
-
-        if ((len > 5) && (strncmp(file_name, "core.", 5) == 0))
-          continue;
-
-        file = FILE_cat(path, file_name, NULL);
-
-        if (stat(file_name, &info))
-        {
-          fprintf(stderr, "gba: warning: cannot stat file: %s\n", file);
-          continue;
-        }
-
-        if (S_ISDIR(info.st_mode))
-        {
-        	if (strcmp(file_name, "CVS") == 0)
-        		continue;
-        		
-          path_add(file);
-          ARCH_add_file(file);
-        }
-        else
-        {
-          ext = FILE_get_ext(file_name);
-
-					//printf("path = %s\n", &path[len_prefix]);
-
-					if (path[len_prefix] == 0)
-						remove_ext = remove_ext_root;
-					else if (strcmp(&path[len_prefix], "/.lang") == 0)
-						remove_ext = remove_ext_lang;
-					else
-						remove_ext = 0;
-          
-          if (remove_ext)
-          {
-						for (p = remove_ext; *p; p++)
+					if (*file_name == '.')
+					{
+						for (p = allowed_hidden_files; *p; p++)
 						{
-							if (strcasecmp(ext, *p) == 0)
+							if (strcmp(file_name, *p) == 0)
 								break;
 						}
-          
-          	if (*p != NULL)
-            	continue;
+
+						if (*p == NULL)
+							continue;
 					}
 
-          ARCH_add_file(file);
-        }
-      }
+					if (file_name[len - 1] == '~')
+						continue;
 
-_NEXT_PATH:
-      if (dir != NULL) closedir(dir);
-      FREE(&path, "main");
-    }
+					//if (strcmp(file_name, ARCH_project_name) == 0)
+					//  continue;
 
-    path_exit();
+					if ((len > 5) && (strncmp(file_name, "core.", 5) == 0))
+						continue;
 
-    ARCH_exit();
-    /*MEM_check();*/
+					file = FILE_cat(path, file_name, NULL);
+
+					if (stat(file_name, &info))
+					{
+						fprintf(stderr, "gba: warning: cannot stat file: %s\n", file);
+						continue;
+					}
+
+					if (S_ISDIR(info.st_mode))
+					{
+						if (strcmp(file_name, "CVS") == 0)
+							continue;
+							
+						path_add(file);
+						ARCH_add_file(file);
+					}
+					else
+					{
+						ext = FILE_get_ext(file_name);
+
+						//printf("path = %s\n", &path[len_prefix]);
+
+						if (path[len_prefix] == 0)
+							remove_ext = remove_ext_root;
+						else if (strcmp(&path[len_prefix], "/.lang") == 0)
+							remove_ext = remove_ext_lang;
+						else
+							remove_ext = 0;
+						
+						if (remove_ext)
+						{
+							for (p = remove_ext; *p; p++)
+							{
+								if (strcasecmp(ext, *p) == 0)
+									break;
+							}
+						
+							if (*p != NULL)
+								continue;
+						}
+
+						ARCH_add_file(file);
+					}
+				}
+
+	_NEXT_PATH:
+				if (dir != NULL) closedir(dir);
+				FREE(&path, "main");
+			}
+
+			path_exit();
+
+			ARCH_exit();
+			/*MEM_check();*/
+		}
   }
   CATCH
   {

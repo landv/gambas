@@ -54,13 +54,14 @@ static int arch_index = 0;
 static ARCH *arch_dir = NULL;
 static char *arch_prefix = NULL;
 
-ARCHIVE *ARCHIVE_create(const char *name)
+ARCHIVE *ARCHIVE_create(const char *name, const char *path)
 {
   ARCHIVE *arch;
 
   ALLOC_ZERO(&arch, sizeof(ARCHIVE), "ARCHIVE_create");
 
   arch->name = name;
+	arch->path = path;
 
   if (name)
     STRING_new(&arch->domain, name, 0);
@@ -87,6 +88,10 @@ static void load_exported_class(ARCHIVE *arch)
 	int i;
 
   /* COMPONENT_current is set => it will look in the archive */
+
+  #if DEBUG_COMP
+    fprintf(stderr, "load_exported_class: %s (component: %s)\n", arch->name, COMPONENT_current ? COMPONENT_current->name : "?");
+  #endif
 
 	if (!FILE_exist(".list"))
 		return;
@@ -149,14 +154,40 @@ static void load_archive(ARCHIVE *arch, const char *path)
 	load_exported_class(arch);
 }
 
+static char *exist_library(const char *dir, const char *name)
+{
+	char *path;
+	
+	path = (char *)FILE_cat(dir, name, NULL);
+	if (FILE_exist(path))
+		return path;
+	else
+		return NULL;
+}
 
 void ARCHIVE_load(ARCHIVE *arch)
 {
-  char *path = FILE_buffer();
+  char *path;
 
-  sprintf(path, ARCH_PATTERN, COMPONENT_path, arch->name);
-  if (!FILE_exist(path))
-	  sprintf(path, ARCH_PATTERN, COMPONENT_user_path, arch->name);
+	if (arch->path)
+	{
+		if (EXEC_debug)
+			path = (char *)arch->path;
+		else
+		{
+			path = exist_library(PROJECT_path, arch->name);
+			if (!path) path = exist_library("/usr/bin", arch->name);
+			if (!path) path = exist_library("/bin", arch->name);
+		}
+		
+		if (!path || !FILE_exist(path)) 
+			THROW(E_LIBRARY, arch->name, "cannot find library");
+	}
+	else
+	{
+		path = FILE_buffer();
+		sprintf(path, ARCH_PATTERN, COMPONENT_path, arch->name);
+	}
 
 	load_archive(arch, path);
 }
@@ -164,7 +195,7 @@ void ARCHIVE_load(ARCHIVE *arch)
 
 void ARCHIVE_create_main(const char *path)
 {
-  ARCHIVE_main = ARCHIVE_create(NULL);
+  ARCHIVE_main = ARCHIVE_create(NULL, NULL);
 
 	if (path)
   	ARCHIVE_main->arch = ARCH_open(path);

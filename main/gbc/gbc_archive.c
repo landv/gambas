@@ -241,7 +241,7 @@ void ARCH_exit(void)
   for (i = 0; i < TABLE_count(arch_table); i++)
   {
     sym = (ARCH_SYMBOL *)TABLE_get_symbol(arch_table, i);
-    write_string(sym->symbol.name, sym->symbol.len);
+    write_string(sym->sym.name, sym->sym.len);
   }
 
   /* Write file names */
@@ -254,13 +254,13 @@ void ARCH_exit(void)
   {
     sym = (ARCH_SYMBOL *)TABLE_get_symbol(arch_table, i);
     //write_short((ushort)i);
-    write_short(sym->symbol.sort);
-    write_short(sym->symbol.len);
+    write_short(sym->sym.sort);
+    write_short(sym->sym.len);
     write_int(pos_str);
     write_int(sym->pos);
     write_int(sym->len);
 
-    pos_str += sym->symbol.len;
+    pos_str += sym->sym.len;
   }
 
   /* Close file */
@@ -350,3 +350,44 @@ int ARCH_add_file(const char *path)
 	
 	return ind;
 }
+
+#if 0
+void ARCH_browse(ARCH *a, void (*found)(const char *path, int64_t size))
+{
+	int i;
+	ARCH_SYMBOL *asym;
+  SYMBOL *sym;
+	char *path;
+	char *temp;
+	int size;
+	int ip;
+	
+	for (i = 0; i < a->header.n_symbol; i++)
+	{
+		asym = &a->symbol[i];
+		sym = &asym->sym;
+		
+		size = asym->len;
+		
+		path = STR_copy_len(sym->name, sym->len);
+		for(;;)
+		{
+			if (*path != '/')
+				break;
+			
+			ip = atoi(&path[1]);
+			sym = &a->symbol[ip].sym;
+			
+			temp = path;
+			path = STR_copy_len(sym->name, sym->len);
+			if (path[sym->len - 1] != '/')
+				STRING_add(&path, "/", 1);
+			STRING_add(&path, strchr(temp, ':') + 1, 0);
+			STRING_free(&temp);
+		}
+		
+		(*found)(path, size);
+		STR_free(path);
+	}
+}
+#endif

@@ -222,7 +222,18 @@ char *READ_get_pattern(PATTERN *pattern)
   return COMMON_buffer;
 }
 
-
+void THROW_UNEXPECTED(PATTERN *pattern)
+{
+	switch (PATTERN_type(*pattern))
+	{
+		case RT_NEWLINE: case RT_END:
+			THROW("Unexpected end of line");
+    case RT_STRING: case RT_TSTRING:
+			THROW("Unexpected string");
+		default:
+			THROW("Unexpected &1", READ_get_pattern(pattern));
+	}
+}
 
 void READ_dump_pattern(PATTERN *pattern)
 {

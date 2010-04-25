@@ -126,9 +126,9 @@ Public Sub RefreshToolbar(Optional bForce As Boolean)
   Dim iInd As Integer
   'Dim sType As String
 
-  If Project.Libraries Then
+  If Project.Components Then
 
-    For Each sLib In Project.Libraries
+    For Each sLib In Project.Components
       sNewLib = sNewLib & sLib & " "
     Next
     sNewLib = Trim(sNewLib)
@@ -162,7 +162,7 @@ Public Sub RefreshToolbar(Optional bForce As Boolean)
   'AddTool(SELECT_TOOL)
   'SetTool()
 
-  If Project.Libraries Then
+  If Project.Components Then
 
     ' Get all toolbars
 
@@ -170,7 +170,7 @@ Public Sub RefreshToolbar(Optional bForce As Boolean)
 
       With hComp
 
-        If .Key <> "gb" And If Project.Libraries.Find(.Key) < 0 Then Continue
+        If .Key <> "gb" And If Project.Components.Find(.Key) < 0 Then Continue
 
         For Each sCtrl In .Controls
           sGroup = CComponent.Classes[sCtrl].Group
@@ -201,7 +201,7 @@ Public Sub RefreshToolbar(Optional bForce As Boolean)
 
       With hComp
 
-        If .Key <> "gb" And If Project.Libraries.Find(.Key) < 0 Then Continue
+        If .Key <> "gb" And If Project.Components.Find(.Key) < 0 Then Continue
 
         For Each sCtrl In .Controls
           hClass = CComponent.Classes[sCtrl]

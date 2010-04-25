@@ -1,0 +1,33 @@
+' Gambas class file
+
+Public Name As String
+Public Path As String
+Public Version As String
+Public Classes As String[]
+
+Public Sub _new(sPath As String)
+  
+  Dim hFile As File
+  Dim sIcon As String
+  Dim sLine As String
+  Dim iPos As Integer
+  Dim sKey As String
+  Dim sVal As String
+  Dim sData As String
+  Dim aData As String[]
+  
+  Path = sPath
+  Name = File.Name(sPath)
+  Classes = New String[]
+    
+  If Not sPath Or If Not Exist(sPath) Then Return
+  
+  Exec [System.Path &/ "bin/gba" & System.Version, "-x", sPath, ".startup"] To sData
+  aData = Split(sData, "\n")
+  Try Version = aData[4]
+    
+  Exec [System.Path &/ "bin/gba" & System.Version, "-x", sPath, ".list"] To sData
+  Classes = Split(sData, "\n", "", True)
+    
+End
+

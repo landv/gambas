@@ -446,7 +446,7 @@ void GDocument::removeLine(int y)
 
 void GDocument::remove(int y1, int x1, int y2, int x2)
 {
-  GLine *l;
+  GLine *l, *l2;
   GString text, rest;
   int y;
 
@@ -486,12 +486,16 @@ void GDocument::remove(int y1, int x1, int y2, int x2)
   }
   else
   {
+		l2 = lines.at(y2);
 		text = l->s.mid(x1) + '\n';
-		rest = lines.at(y2)->s.left(x2);
+		rest = l2->s.left(x2);
 
-		l->s = l->s.left(x1) + lines.at(y2)->s.mid(x2);
-		l->modified = l->changed = true;
-		l->state = 0; // force highlighting of next line.
+		if (x1 < (int)l->s.length() || x2 < (int)l2->s.length())
+		{
+			l->s = l->s.left(x1) + lines.at(y2)->s.mid(x2);
+			l->modified = l->changed = true;
+			l->state = 0; // force highlighting of next line.
+		}
 
     //maxLength = GMAX(maxLength, (int)l->s.length());
     updateLineWidth(y1);

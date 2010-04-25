@@ -323,18 +323,18 @@ Private Sub DisplayText(iIndex As Integer) As Boolean
     If iStep < 0 Then Return
     If iStep > (NSTEP * 10) Then Return True
     
-    If $bDrawAbout Then
+    If iStep = 0 Then
     
-      If iStep = 0 Then
+      Draw.Font.Bold = .Bold
+      Draw.Font.Size = GetFontSize(hUser)
+      W = Draw.TextWidth(.Name)
+      H = Draw.TextHeight(.Name)
+      .XD = Int(Rnd(0, dwgAbout.W - W - 0))
+      .YD = Int(Rnd(0, dwgAbout.H - H - 0))
       
-        Draw.Font.Bold = .Bold
-        Draw.Font.Size = GetFontSize(hUser)
-        W = Draw.TextWidth(.Name)
-        H = Draw.TextHeight(.Name)
-        .XD = Int(Rnd(0, dwgAbout.W - W - 0))
-        .YD = Int(Rnd(0, dwgAbout.H - H - 0))
-        
-      Endif
+    Endif
+    
+    If $bDrawAbout Then
     
       If iStep < (NSTEP + 24) Then
     

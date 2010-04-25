@@ -26,6 +26,7 @@
 #include "gb_alloc.h"
 
 char *STR_copy(const char *str);
+char *STR_copy_len(const char *str, int len);
 char *STR_cat(const char *str, ...);
 char *STR_add(char *d, const char *s);
 

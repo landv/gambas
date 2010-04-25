@@ -14,7 +14,7 @@ Private $sLibName As String
 Private $sTemp As String
 Private $sIcon As String
 
-Private $bCanInitLibrary As Boolean
+Private $bCanInitComponents As Boolean
 'PRIVATE $bLibModify AS Boolean
 
 ' Component
@@ -33,9 +33,11 @@ Private $bLockComp As Boolean
 Private $sVerCtrlStatus As String
 Private $sVerCtrlDiff As String
 
-Private Const LIBRARY_TAB As Integer = 2
-Private Const VERSION_TAB As Integer = 4
-Private Const COMPONENT_TAB As Integer = 5
+Private $aLibraries As String[]
+
+'Private Const LIBRARY_TAB As Integer = 2
+Private Const VERSION_TAB As Integer = 5
+Private Const REQUIRES_TAB As Integer = 6
 
 Static Public Function Run() As Boolean
 
@@ -82,6 +84,7 @@ Public Sub Form_Open()
     txtVersionProg.Text = .VersionProgram
     'chkVersion.Value = NOT IsNull(.VersionProgram)
     cmbTerminal.Index = If(.UseTerminal, 0, 1)
+    $aLibraries = .Libraries.Copy()
 
   End With
   
@@ -90,7 +93,7 @@ Public Sub Form_Open()
 
   chkShowUsed.Value = $bShowUsed
   chkShowBeta.Value = $bShowBeta
-  $bCanInitLibrary = True
+  $bCanInitComponents = True
 
   tabProject[VERSION_TAB].Visible = VersionControl.Enabled()
   If tabProject[VERSION_TAB].Visible Then
@@ -98,7 +101,8 @@ Public Sub Form_Open()
   Endif
   tabProject.Index = 0
 
-  InitLibrary
+  RefreshComponents
+  RefreshLibraries
   InitEnvironment
 
   btnOK.Enabled = Not Project.ReadOnly And Not Project.Running
@@ -235,10 +239,12 @@ Private Function DoApply() As Boolean
     Endif
 
     .TabSize = txtTabSize.Value
+    
+    .Libraries = $aLibraries
 
   End With
 
-  SaveLibrary
+  SaveComponents
   SaveEnvironment
 
   Project.WriteProject
@@ -274,13 +280,13 @@ Public Sub btnOK_Click()
 End
 
 
-Private Sub SaveLibrary()
+Private Sub SaveComponents()
 
   Dim sLib As String
   Dim bCheck As Boolean
   Dim hComp As CComponent
 
-  Project.Libraries.Clear
+  Project.Components.Clear
 
   For Each hComp In CComponent.All
 
@@ -290,12 +296,12 @@ Private Sub SaveLibrary()
     Try bCheck = $cComp[sLib].Value
 
     If bCheck Then
-      If sLib <> "gb" Then Project.Libraries.Add(sLib)
+      If sLib <> "gb" Then Project.Components.Add(sLib)
     Endif
 
   Next
 
-  Project.Libraries.Sort
+  Project.Components.Sort
 
   Project.RefreshLibrary
 
@@ -319,7 +325,7 @@ End
 ' END
 
 
-Private Sub InitLibrary()
+Private Sub RefreshComponents()
 
   Dim sLib As String
   Dim hComp As CComponent
@@ -331,7 +337,6 @@ Private Sub InitLibrary()
   Dim bDark As Boolean
   Dim hOld As ListContainer
   Dim iUser As Integer
-  Dim bUser As Boolean
 
   'If Not $bCanInitLibrary Then Return
 
@@ -342,48 +347,24 @@ Private Sub InitLibrary()
   
   For Each hComp In CComponent.All
     aComp.Add(hComp.Key)
-    If hComp.User Then bUser = True
   Next 
   aComp.Sort
   
   lstComponent.Lock
   CComponentBox.Reset
 
-  For iUser = 0 To 1
-
-    If bUser Then
-      hSep = New Label(lstComponent)
-      If iUser Then
-        hSep.Text = ("User components")
-      Else
-        hSep.Text = ("Standard components")
-      Endif
-      hSep.Font = Font["Bold,Underline,-1"]
-      hSep.Padding = 4
-      hSep.Height = hSep.Font.Height() + 8
+  For Each sLib In aComp
+    hComp = CComponent.All[sLib]
+    If $bShowUsed Then
+      If sLib <> "gb" And If Not Project.Components.Exist(hComp.Key) Then Continue
     Endif
-
-    For Each sLib In aComp
-      hComp = CComponent.All[sLib]
-      If iUser = 0 Then
-        If hComp.User Then Continue
-      Else
-        If Not hComp.User Then Continue
-      Endif
-      If $bShowUsed Then
-        If sLib <> "gb" And If Not Project.Libraries.Exist(hComp.Key) Then Continue
-      Endif
-      hCompBox = New CComponentBox(lstComponent, hComp, bDark)
-      bDark = Not bDark
-      $cComp[hComp.Key] = hCompBox 
-      hCompBox.Locked = sLib = "gb" Or $bShowUsed
-    Next
-    
-    If Not bUser Then Break
-    
+    hCompBox = New CComponentBox(lstComponent, hComp, bDark)
+    bDark = Not bDark
+    $cComp[hComp.Key] = hCompBox 
+    hCompBox.Locked = sLib = "gb" Or $bShowUsed
   Next
   
-  For Each sLib In Project.Libraries
+  For Each sLib In Project.Components
     $cComp[sLib].Value = True
   Next
   $cComp["gb"].Value = True
@@ -583,7 +564,7 @@ End
 Public Sub chkShowUsed_Click()
 
   $bShowUsed = chkShowUsed.Value
-  InitLibrary
+  RefreshComponents
 
 End
 
@@ -644,7 +625,7 @@ End
 Public Sub chkShowBeta_Click()
 
   $bShowBeta = chkShowBeta.Value
-  InitLibrary
+  RefreshComponents
 
 End
 
@@ -685,9 +666,9 @@ Public Sub cmbComponent_Click()
 
   Dim bComp As Boolean = cmbComponent.Index = 0
 
-  If bComp Then InitComponent
+  If bComp Then InitRequires
 
-  tabProject[COMPONENT_TAB].Visible = bComp
+  tabProject[REQUIRES_TAB].Visible = bComp
   'tabProject[COMPONENT_TAB + 1].Visible = bComp
   cmbComponentState.Enabled = bComp
 
@@ -718,7 +699,7 @@ End
 '   
 ' End
 
-Private Sub ReadComponent()
+Private Sub ReadComponentFile()
   
   Dim sPath As String = Project.Dir &/ ".component"
   Dim hFile As File
@@ -884,42 +865,15 @@ Catch
 End
 
 
-Public Sub InitComponent()
+Private Sub InitRequires()
 
   Dim sPath As String
   Dim sClass As String
   Dim hComp As CComponent
   Dim aComp As New String[]
   Dim sComp As String
-  'Dim hExportInfo As CExportInfo
 
-  ' tvwControl.Columns.Count = 4
-  ' tvwControl.Columns[0].Text = ("Class")
-  ' tvwControl.Columns[0].Width = Desktop.Scale * 24
-  ' tvwControl.Columns[1].Text = ("Type")
-  ' tvwControl.Columns[1].Width = Desktop.Scale * 16
-  ' tvwControl.Columns[2].Text = ("Group")
-  ' tvwControl.Columns[2].Width = Desktop.Scale * 16
-  ' tvwControl.Columns[3].Text = ("Similar")
-
-  'CExportInfo.Reset
-
-  ' For Each sPath In Project.GetClasses(True)
-  '   If Project.IsExported(sPath) Then 
-  '     sClass = File.BaseName(sPath)
-  '     If Not IsLetter(Left(sClass)) Then Continue
-  '     CExportInfo.List.Add(sClass)
-  '     hExportInfo = New CExportInfo(sClass)
-  '     hExportInfo.Parent = Project.GetParentClass(sPath)
-  '   Endif 
-  ' Next 
-  ' 
-  ' CExportInfo.Sort
-  ' 
-  ' tvwControl.Rows.Count = CExportInfo.List.Count
-  ' tvwControl.Rows.Height = Desktop.Scale * 5
-
-  ReadComponent
+  ReadComponentFile
   
   For Each hComp In CComponent.All
     If hComp.Key = Project.Name Then Continue 
@@ -937,187 +891,6 @@ Public Sub InitComponent()
   'txtImplement.Text = GetForm()
 
 End
-
-' Public Sub tvwControl_Data(Row As Integer, Column As Integer)
-' 
-'   Dim hExportInfo As CExportInfo
-'   Dim hPict As Picture
-' 
-'   Try hExportInfo = CExportInfo.All[CExportInfo.List[Row]]
-'   If Error Then Return
-'   
-'   Select Case Column
-'     Case 0
-'       tvwControl.Data.Text = hExportInfo.Name
-'       If hExportInfo.Control Then 
-'         Try hPict = Project.GetPicture(".hidden/control" &/ LCase(hExportInfo.Name) & ".png")
-'         If Not hPict Then hPict = Picture["img/control/unknown.png"]
-'         hPict = hPict.Image.Stretch(24, 24).Picture
-'       Else
-'         hPict = hExportInfo.Icon
-'       Endif
-'       tvwControl.Data.Picture = hPict
-'     Case 1
-'       tvwControl.Data.Text = hExportInfo.Type
-'     Case 2
-'       tvwControl.Data.Text = hExportInfo.Group
-'     Case 3
-'       tvwControl.Data.Text = hExportInfo.Similar
-'   End Select 
-'   
-'   tvwControl.Data.Background = If(Row And 1, Color.LightBackground, Color.TextBackground)
-' 
-' End
-
-' Private Sub MoveEditor()
-'   
-'   With tvwControl.Current
-'     cmbControl.Move(tvwControl.X + .Left, tvwControl.Y + .Top, .W, .H)
-'   End With
-'   
-' End
-' 
-' Private Sub HideEditor()
-' 
-'   If Not cmbControl.Visible Then Return 
-'   SaveEditor  
-'   cmbControl.Hide
-'   
-' End
-
-' Private Sub GetGroups() As String[]
-'   
-'   Dim aGroup As New String[]
-'   Dim hOther As CExportInfo
-' 
-'   'aGroup.Add(("(None)"))
-' 
-'   For Each hOther In CExportInfo.All
-'     If Not hOther.Group Then Continue
-'     If aGroup.Find(hOther.Group) >= 0 Then Continue
-'     aGroup.Add(hOther.Group)
-'   Next
-'   
-'   Return aGroup
-'   
-' End
-
-' Private Sub SaveEditor()
-'   
-'   Dim hExportInfo As CExportInfo
-'   
-'   If Not cmbControl.Visible Then Return
-'   
-'   hExportInfo = CExportInfo.All[CExportInfo.List[$iRow]]
-'   
-'   Select Case $iCol
-'   
-'     Case 1
-'       hExportInfo.Type = cmbControl.Text
-'     
-'     Case 2
-'       hExportInfo.Group = cmbControl.Text
-'       
-'     Case 3
-'       hExportInfo.Similar = cmbControl.Text
-'   
-'   End Select 
-'   
-'   tvwControl.Rows[$iRow].Refresh
-'   
-' End
-
-' Private Sub GetForm() As String
-'   
-'   Dim hExportInfo As CExportInfo
-'   
-'   For Each hExportInfo In CExportInfo.All
-'     If hExportInfo.Form Then Return hExportInfo.Name
-'   Next
-'   
-' End
-
-
-
-' Private Sub ShowEditor()
-'   
-'   Dim hExportInfo As CExportInfo = CExportInfo.All[CExportInfo.List[tvwControl.Row]]  
-'   Dim aList As String[]
-'   Dim sIcon As String
-'   
-'   HideEditor
-'   
-'   Select Case tvwControl.Column
-'   
-'     Case 0
-'       Return 
-'       
-'     Case 1
-'       aList = ["Class", "Control", "Virtual", "Container", "MultiContainer"]
-'       If Not GetForm() Or GetForm() = hExportInfo.Name Then aList.Add("Form")
-'       cmbControl.List = aList
-'       cmbControl.ReadOnly = True
-'       cmbControl.Text = hExportInfo.Type
-'       
-'     ' CASE 2
-'     '   IF hExportInfo.Control THEN
-'     '     sIcon = FSelectIcon.Run(hExportInfo.ControlIcon, TRUE)
-'     '     IF sIcon THEN hExportInfo.ControlIcon = sIcon
-'     '     tvwControl.Current.Refresh
-'     '   ENDIF
-'     '   RETURN
-'       
-'     Case 2
-'       If Not hExportInfo.Control Then Return
-'       cmbControl.ReadOnly = False
-'       cmbControl.List = GetGroups()
-'       cmbControl.Text = hExportInfo.Group
-'   
-'     Case 3
-'       If Not hExportInfo.Control Then Return
-'       cmbControl.ReadOnly = False
-'       cmbControl.List = CExportInfo.List
-'       cmbControl.Text = hExportInfo.Similar
-'   
-'   End Select
-'   
-'   $iRow = tvwControl.Row
-'   $iCol = tvwControl.Column
-'   
-'   MoveEditor
-'   cmbControl.Show
-'   cmbControl.SetFocus
-'   
-' End
-
-
-' Public Sub tvwControl_MouseUp()
-' 
-'   ShowEditor
-' 
-' End
-' 
-' Public Sub tvwControl_Scroll()
-' 
-'   HideEditor
-' 
-' End
-' 
-' Public Sub cmbControl_Click()
-' 
-'   Dim hExportInfo As CExportInfo = CExportInfo.All[CExportInfo.List[$iRow]]
-'   Dim sVal As String
-' 
-'   If $iCol = 3 Then
-'     sVal = hExportInfo.Similar
-'     If sVal Then sVal &= ","
-'     sVal &= cmbControl.Text 
-'     cmbControl.Text = sVal
-'   Endif
-' 
-'   SaveEditor
-' 
-' End
 
 Private Sub ReadFeatures(hCont As Container, aFeature As String[])
   
@@ -1264,7 +1037,7 @@ End
 
 Public Sub btnUndo_Click()
 
-  InitLibrary
+  RefreshComponents
 
 End
 
@@ -1454,3 +1227,94 @@ Public Sub lstComponent_Click()
   If panAboutComponent.Visible Then AboutComponent
 
 End
+
+Public Sub btnInsertLib_Click()
+
+  Dialog.Title = ("Select a Gambas application")
+  Dialog.Filter = ["*.gambas", ("Gambas applications")]
+  Dialog.Path = Settings["/FPropertyProject/Library"]
+
+  If Dialog.OpenFile() Then Return
+
+  If $aLibraries.Exist(Dialog.Path) Then
+    Message.Warning(("This application is already used as a library."))
+    Return
+  Endif
+  
+  $aLibraries.Add(Dialog.Path)
+  Settings["/FPropertyProject/Library"] = File.Dir(Dialog.Path)
+  RefreshLibraries
+
+End
+
+Private Sub RefreshLibraries()
+  
+  Dim sPath As String
+  Dim hLib As LibraryItem
+  Dim hSep As Separator
+  
+  lstLibraries.Clear
+  
+  For Each sPath In $aLibraries
+    hLib = New LibraryItem(lstLibraries)
+    hLib.Path = sPath
+    hSep = New Separator(lstLibraries)
+    hSep.H = 1
+  Next
+  
+End
+
+Public Sub btnRemoveLib_Click()
+
+  Dim hLib As LibraryItem = lstLibraries.Current
+  Dim iPos As Integer
+
+  If Not hLib Then Return
+  
+  iPos = $aLibraries.Find(hLib.Path)
+  If iPos >= 0 Then
+    $aLibraries.Remove(iPos)
+    RefreshLibraries
+  Endif
+  
+End
+
+Public Sub btnMoveUpLib_Click()
+
+  Dim hLib As LibraryItem = lstLibraries.Current
+  Dim iPos As Integer
+
+  If Not hLib Then Return
+  
+  iPos = $aLibraries.Find(hLib.Path)
+  If iPos < 1 Then Return
+  
+  Swap $aLibraries[iPos], $aLibraries[iPos - 1]
+  RefreshLibraries
+  lstLibraries.Index = (iPos - 1) * 2
+  
+End
+
+Public Sub btnMoveDownLib_Click()
+
+  Dim hLib As LibraryItem = lstLibraries.Current
+  Dim iPos As Integer
+
+  If Not hLib Then Return
+  
+  iPos = $aLibraries.Find(hLib.Path)
+  If iPos < 0 Or If iPos >= $aLibraries.Max Then Return
+  
+  Swap $aLibraries[iPos], $aLibraries[iPos + 1]
+  RefreshLibraries
+  lstLibraries.Index = (iPos + 1) * 2
+
+End
+
+Public Sub btnUndoLib_Click()
+
+  $aLibraries = Project.Libraries.Copy()
+  RefreshLibraries
+
+End
+

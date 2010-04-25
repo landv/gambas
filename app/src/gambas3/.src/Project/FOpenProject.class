@@ -30,13 +30,16 @@ End
 Public Sub btnOK_Click()
 
   Dim sPath As String
+  Dim hProjectItem As ProjectItem
   
   If tabProject.Index = 0 Then
     sPath = GetProjectPath(dchProject.Value)
   Else If tabProject.Index = 1 Then
-    Try sPath = lstRecent.Current.Tag
+    hProjectItem = lstRecent.Current
+    Try sPath = hProjectItem.Path
   Else If tabProject.Index = 2 Then
-    Try sPath = lstExample.Current.Tag
+    hProjectItem = lstExample.Current
+    Try sPath = hProjectItem.Path
   Endif
 
   If Not sPath Then Return
@@ -124,7 +127,7 @@ Public Sub dchProject_Change()
   
   $sLast = sPath
   
-  frmProjectItem.SetPath(sPath)
+  frmProjectItem.Path = sPath
   
   sdpProject.Show
 
@@ -207,7 +210,7 @@ Private Sub FillRecent()
     'If bHighlight Then hProjectItem.Background = Color.LightBackground
     'bHighlight = Not bHighlight
     If Not hFirst Then hFirst = hProjectItem
-    hProjectItem.SetPath(hRecent.Path)
+    hProjectItem.Path = hRecent.Path
   Next
   
   If hFirst Then lstRecent.Select(hFirst)
@@ -270,7 +273,7 @@ Private Sub FillExample()
     hProjectItem = New ProjectItem(lstExample)
     'If bHighlight Then hProjectItem.Background = Color.LightBackground
     'bHighlight = Not bHighlight
-    hProjectItem.SetPath(Project.EXAMPLES_DIR &/ sExample)
+    hProjectItem.Path = Project.EXAMPLES_DIR &/ sExample
   
   Next
 

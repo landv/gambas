@@ -316,5 +316,3 @@ bool ARCH_read(ARCH *arch, int pos, void *buffer, int len)
 
   return FALSE;
 }
-
-
