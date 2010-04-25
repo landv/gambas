@@ -23,12 +23,11 @@
 #ifndef __GVIEW_H
 #define __GVIEW_H
 
-#include <qstring.h>
-#include <qcolor.h>
-#include <qpixmap.h>
-#include <q3scrollview.h>
-#include <qtimer.h>
-//Added by qt3to4:
+#include <QString>
+#include <QColor>
+#include <QPixmap>
+#include <Q3ScrollView>
+#include <QTimer>
 #include <QResizeEvent>
 #include <QFocusEvent>
 #include <QMouseEvent>

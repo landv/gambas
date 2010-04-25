@@ -1,6 +1,7 @@
 ' Gambas class file
 
 Static Public All As New Collection
+Static Public Libraries As New String[]
 Static Public Classes As Collection
 Static Private $iKey As Integer
 
@@ -28,6 +29,9 @@ Public SortKey As Integer
 'Public User As Boolean
 Public Version As String
 Public Family As String
+
+Public {Library} As Boolean
+Public Path As String
 
 Static Public Features As New Collection
 
@@ -432,7 +436,6 @@ Static Private Sub CreateClass(sClass As String, sParent As String, sComp As Str
   
 End
 
-
 Public Sub Load()
 
   Dim hFic As File
@@ -449,7 +452,9 @@ Public Sub Load()
   Dim bAgain As Boolean
   Dim bNextClass As Boolean
   Dim cClass As New Collection
-  Dim sList As String
+  Dim aList As String[]
+  Dim hLibraryInfo As CLibraryInfo
+  Dim sTemp As String
 
   If Loaded Then Return
 
@@ -462,24 +467,34 @@ Public Sub Load()
     All[sLig].Load
   Next
   
-  sPath = System.Path
+  If {Library} Then
   
-  sPath &/= "share/" & "gambas" & System.Version & "/info" &/ Key & ".info"
+    hLibraryInfo = New CLibraryInfo(Path)
+    hLibraryInfo.GetInfo()
+    sPath = Temp$()
+    File.Save(sPath, hLibraryInfo.Info)
+    aList = hLibraryInfo.Classes
   
-  If Not Exist(sPath) Then
-    Error "Warning: cannot find "; sPath
-    Return
+  Else
+  
+    sPath = System.Path &/ "share/" & "gambas" & System.Version & "/info" &/ Key & ".info"
+    
+    If Not Exist(sPath) Then
+      Error "Warning: cannot find "; sPath
+      Return
+    Endif
+  
+    ' List of exported classes
+  
+    Try aList = Split(File.Load(File.SetExt(sPath, "list")), "\n", "", True)
+    If Error Then
+      Error "Warning: cannot read "; File.SetExt(sPath, "list")
+      Return
+    Endif
+    
   Endif
 
-  ' List of exported classes
-
-  Try sList = File.Load(File.SetExt(sPath, "list"))
-  If Error Then
-    Error "Warning: cannot read "; File.SetExt(sPath, "list")
-    Return
-  Endif
-
-  For Each sClass In Split(sList, "\n")
+  For Each sClass In aList
     If sClass Then cClass[sClass] = True
   Next
 
@@ -1094,10 +1109,16 @@ End
 Static Public Sub Reset()
 
   Dim hComponent As CComponent
+  Dim sLib As String
 
   For Each hComponent In All
     hComponent.Loaded = False
   Next
+  
+  For Each sLib In Libraries
+    All[sLib] = Null
+  Next
+  Libraries.Clear
   
   CModule.Reset
 
@@ -1105,4 +1126,20 @@ Static Public Sub Reset()
 
   All["gb"].Load
 
+End
+
+Static Public Sub AddLibrary(sPath As String)
+  
+  Dim hComp As CComponent
+  
+  hComp = New CComponent
+  hComp.Key = File.Name(sPath)
+  hComp.Name = hComp.Key
+  hComp.Library = True
+  hComp.Path = sPath
+  
+  All[hComp.Key] = hComp
+  
+  hComp.Load
+  
 End

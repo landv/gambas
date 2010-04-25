@@ -1230,19 +1230,31 @@ End
 
 Public Sub btnInsertLib_Click()
 
+  Dim hLib As CLibraryInfo
+  Dim sPath As String
+
   Dialog.Title = ("Select a Gambas application")
   Dialog.Filter = ["*.gambas", ("Gambas applications")]
   Dialog.Path = Settings["/FPropertyProject/Library"]
 
   If Dialog.OpenFile() Then Return
+  
+  sPath = Dialog.Path
 
-  If $aLibraries.Exist(Dialog.Path) Then
-    Message.Warning(("This application is already used as a library."))
+  Settings["/FPropertyProject/Library"] = File.Dir(sPath)
+
+  If $aLibraries.Exist(sPath) Then
+    Message.Warning(Subst(("<b>&1</b> is already used as a library."), File.Name(sPath)))
     Return
   Endif
   
-  $aLibraries.Add(Dialog.Path)
-  Settings["/FPropertyProject/Library"] = File.Dir(Dialog.Path)
+  hLib = New CLibraryInfo(sPath)
+  If hLib.Classes.Count = 0 Then
+    Message.Warning(Subst(("<b>&1</b> does not export any class."), File.Name(sPath)))
+    Return
+  Endif
+  
+  $aLibraries.Add(sPath)
   RefreshLibraries
 
 End

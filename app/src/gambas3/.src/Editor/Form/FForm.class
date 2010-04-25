@@ -2051,7 +2051,7 @@ Sub RefreshMenu()
   Action[".paste", Me].Enabled = CanPaste()
   
   mnuArrange.Visible = Not $bReadOnly
-  Action[".save,.refresh,.cut,paste-form,.delete,.lower,.raise,.menu,.arrange*", Me].Visible = Not $bReadOnly
+  Action[".save,.reload,.cut,paste-form,.delete,.lower,.raise,.menu,.arrange*", Me].Visible = Not $bReadOnly
 
   bOn = bOn And Not $bReadOnly
 

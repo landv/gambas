@@ -22,19 +22,18 @@
 
 #define __G_VIEW_CPP
 
-#include <qpainter.h>
-#include <qscrollbar.h>
-#include <qclipboard.h>
-#include <qpixmap.h>
-#include <qregexp.h>
-#include <qapplication.h>
-#include <q3dragobject.h>
-#include <qtimer.h>
-#include <q3dict.h>
-#include <qcursor.h>
-#include <q3cstring.h>
-#include <qstring.h>
-//Added by qt3to4:
+#include <QPainter>
+#include <QScrollBar>
+#include <QClipboard>
+#include <QPixmap>
+#include <QRegExp>
+#include <QApplication>
+#include <Q3DragObject>
+#include <QTimer>
+#include <Q3Dict>
+#include <QCursor>
+#include <Q3CString>
+#include <QString>
 #include <QKeyEvent>
 #include <QResizeEvent>
 #include <QFocusEvent>
@@ -1020,6 +1019,8 @@ bool GEditor::cursorGoto(int ny, int nx, bool mark)
 			
 		emit cursorMoved();
 	}
+	else if (center)
+		ensureCursorVisible();
 
 	checkMatching();
 	

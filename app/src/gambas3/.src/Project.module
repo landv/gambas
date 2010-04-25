@@ -3772,8 +3772,12 @@ Public Sub RefreshLibrary(Optional bForce As Boolean)
       aLib.Add(hComp.Key)
     Endif
   Next
+  Components = aLib.Copy()
   
-  Components = aLib
+  For Each sLib In Libraries
+    aLib.Add(File.Name(sLib))
+  Next
+  
   sLibComp = aLib.Join(" ")
   
   If sLibComp <> $sOldRefreshLibrary Or If bForce Then
@@ -3782,6 +3786,10 @@ Public Sub RefreshLibrary(Optional bForce As Boolean)
   
     For Each sLib In Components
       CComponent.All[sLib].Load
+    Next
+    
+    For Each sLib In Libraries
+      CComponent.AddLibrary(sLib)
     Next
     
     FToolBox.RefreshToolbar(bForce)
