@@ -448,6 +448,7 @@ BEGIN_PROPERTY(CMENU_value)
   }
   else if (!CMENU_is_toplevel(THIS))
   {
+		qDebug("CMENU_value: %s", THIS->widget.name);
     GB.Ref(THIS);
     send_click_event(THIS);
   }
@@ -592,8 +593,8 @@ BEGIN_METHOD(CMENU_popup, GB_INTEGER x; GB_INTEGER y)
 		
 		update_accel_recursive(THIS);
 		
-		MyMainWindow *toplevel = (MyMainWindow *)(THIS->toplevel);
-		CWINDOW_fix_menubar((CWINDOW *)CWidget::get(toplevel));
+		//MyMainWindow *toplevel = (MyMainWindow *)(THIS->toplevel);
+		//CWINDOW_fix_menubar((CWINDOW *)CWidget::get(toplevel));
 	}
 
 END_METHOD
@@ -714,6 +715,8 @@ void CMenu::slotTriggered(QAction *action)
 
 	if (menu->parent != parent)
 		return;
+
+	qDebug("slotTriggered: %s %s", menu->widget.name, (const char *)action->text().toUtf8());
 	GB.Ref(menu);
 	GB.Post((GB_POST_FUNC)send_click_event, (intptr_t)menu);
 }
