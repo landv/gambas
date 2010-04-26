@@ -152,22 +152,62 @@ static void unload_class(CLASS *class)
 	}
 	else
 	{
-		if (class->signature)
-			FREE(&class->signature, "unload_class");
-		if (class->data)
-			FREE(&class->data, "unload_class");
+		FREE(&class->signature, "unload_class");
+		FREE(&class->data, "unload_class");
 	}
 
 	if (class->free_event)
 		FREE(&class->event, "unload_class");
 
-	if (class->stat)
-		FREE(&class->stat, "unload_class");
+	FREE(&class->stat, "unload_class");
 
-	if (class->table)
-		FREE(&class->table, "unload_class");
+	FREE(&class->table, "unload_class");
 
 	class->state = CS_NULL;
+}
+
+static CLASS *class_replace_global(const char *name)
+{
+	CLASS_SYMBOL *csym;
+	char *new_name;
+	CLASS *class, *parent;
+	CLASS *new_class;
+	int len;
+
+	class = CLASS_find_global(name);
+	if (class->state)
+	{
+		len = strlen(name);
+
+		ALLOC(&new_name, len + 2, "class_replace_global");
+		snprintf(new_name, len + 2, ">%s", name);
+		new_class = class_replace_global(new_name);
+		FREE(&new_name, "class_replace_global");
+
+		new_name = (char *)new_class->name;
+
+		TABLE_find_symbol(&_global_table, name, len, (SYMBOL **)(void *)&csym, NULL);
+		csym->class = new_class;
+
+		TABLE_find_symbol(&_global_table, new_name, len + 1, (SYMBOL **)(void *)&csym, NULL);
+		csym->class = class;
+
+		new_class->name = class->name;
+		class->name = new_name;
+		
+		for(;;)
+		{
+			class->override = new_class;
+			parent = class->parent;
+			if (!parent || parent->override != class)
+				break;
+			class = parent;
+		}
+
+		class = new_class;
+	}
+
+	return class;
 }
 
 
@@ -381,9 +421,8 @@ CLASS *CLASS_find(const char *name)
 
 	ALLOC_ZERO(&class, sizeof(CLASS), "CLASS_find");
 	csym->class = class;
-	/*csym->class->id = index;*/
-	class->state = CS_NULL;
-	class->count = 0;
+	//class->state = CS_NULL;
+	//class->count = 0;
 	class->ref = 1;
 	
 	class->next = _classes;
@@ -689,9 +728,9 @@ void CLASS_sort(CLASS *class)
 	ushort *sym;
 	ushort i;
 
-	if (class->n_desc == 0)
+	if (!class->n_desc)
 		return;
-
+	
 	ALLOC(&sym, sizeof(ushort) * class->n_desc, "CLASS_sort");
 
 	for (i = 0; i < class->n_desc; i++)
@@ -720,6 +759,32 @@ void CLASS_sort(CLASS *class)
 	#endif
 
 	FREE(&sym, "CLASS_sort");
+	
+	#if 0
+	for(;;)
+	{
+		parent = class->parent;
+		if (!parent || !parent->override)
+			break;
+		
+		if (parent->special[SPEC_NEW] != NO_SYMBOL)
+			desc_new = parent->table[parent->special[SPEC_NEW]].desc;
+		if (parent->special[SPEC_FREE] != NO_SYMBOL)
+			desc_free = parent->table[parent->special[SPEC_FREE]].desc;
+		
+		FREE(&parent->table, "CLASS_sort");
+		ALLOC(&parent->table, sizeof(CLASS_DESC_SYMBOL) * class->n_desc, "CLASS_sort");
+		parent->n_desc = class->n_desc;
+		memcpy(parent->table, class->table, sizeof(CLASS_DESC_SYMBOL) * class->n_desc);
+		
+		if (parent->special[SPEC_NEW] != NO_SYMBOL)
+			parent->table[parent->special[SPEC_NEW]].desc = desc_new;
+		if (parent->special[SPEC_FREE] != NO_SYMBOL)
+			parent->table[parent->special[SPEC_FREE]].desc = desc_free;
+		
+		class = parent;
+	}
+	#endif
 }
 
 #define GET_IF_NULL(_callback) if (class->_callback == NULL) class->_callback = class->parent->_callback
@@ -752,40 +817,6 @@ void CLASS_inheritance(CLASS *class, CLASS *parent)
 }
 
 
-CLASS *CLASS_replace_global(const char *name)
-{
-	CLASS_SYMBOL *csym;
-	char *new_name;
-	CLASS *class;
-	CLASS *new_class;
-	int len;
-
-	class = CLASS_find_global(name);
-	if (class->state)
-	{
-		len = strlen(name);
-
-		ALLOC(&new_name, len + 2, "CLASS_replace_global");
-		snprintf(new_name, len + 2, ">%s", name);
-		new_class = CLASS_replace_global(new_name);
-		FREE(&new_name, "CLASS_replace_global");
-
-		new_name = (char *)new_class->name;
-
-		TABLE_find_symbol(&_global_table, name, len, (SYMBOL **)(void *)&csym, NULL);
-		csym->class = new_class;
-
-		TABLE_find_symbol(&_global_table, new_name, len + 1, (SYMBOL **)(void *)&csym, NULL);
-		csym->class = class;
-
-		new_class->name = class->name;
-		class->name = new_name;
-
-		class = new_class;
-	}
-
-	return class;
-}
 
 const char *CLASS_DESC_get_type_name(CLASS_DESC *desc)
 {
@@ -922,7 +953,7 @@ void CLASS_make_description(CLASS *class, CLASS_DESC *desc, int n_desc, int *fir
 				}
 			}
 		}
-
+		
 		for (pnonher = nonher; *pnonher; pnonher++)
 		{
 			ind = CLASS_find_symbol(class->parent, *pnonher);
@@ -1120,7 +1151,7 @@ CLASS *CLASS_check_global(char *name)
 			ERROR_panic("Class '%s' declared twice in the component '%s'.", class->name, class->component->name);
 
 		parent = class;
-		class = CLASS_replace_global(name);
+		class = class_replace_global(name);
 
 		CLASS_inheritance(class, parent);
 	}

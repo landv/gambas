@@ -148,14 +148,14 @@ COMPONENT *COMPONENT_find(const char *name)
 COMPONENT *COMPONENT_create(const char *name)
 {
   COMPONENT *comp;
-  char *path;
+  char *path = NULL;
   bool can_archive;
 	bool library = FALSE;
 
 	if (*name == '/') // user library
 	{
 		library = TRUE;
-		path = name;
+		path = (char *)name;
 		name = FILE_get_name(name);
 	}
 	

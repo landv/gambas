@@ -862,7 +862,14 @@ _RETURN:
 
   if (GET_XX())
   {
-    VALUE_conv(&SP[-1], FP->type);
+		type = FP->type;
+		if (TYPE_is_pure_object(type) && ((CLASS *)type)->override)
+		{
+			type = (TYPE)(((CLASS *)type)->override);
+			//FP->type = type;
+		}
+		
+    VALUE_conv(&SP[-1], type);
     SP--;
     *RP = *SP;
 		//ERROR_clear();

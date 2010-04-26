@@ -965,6 +965,10 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
           '   'sParent = hModule.TreeKey
           '   'If Not hModule.Used Then bIgnore = True
           '   sParent = sDir
+          Else If sExt <> "module" Then
+            If Not HasModule(sExt) Then
+              bIgnore = True
+            Endif
           Endif
 
           If Not sParent Then sParent = sDir
@@ -4173,6 +4177,7 @@ End
 
 Public Function HasModule(sType As String) As Boolean
   
+  'If sType = "class" Or If sType = "module" Then Return True
   Return CModule[sType].Used
   
 End

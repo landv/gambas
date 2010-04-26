@@ -978,21 +978,26 @@ bool EXEC_call_native(void (*exec)(), void *object, TYPE type, VALUE *param)
 
 	(*exec)(object, (void *)param);
 
+	if (GAMBAS_Error)
+	{
+		GAMBAS_Error = FALSE;
+		return TRUE;
+	}
+	
 	if (TYPE_is_pure_object(type) && TEMP.type != T_NULL && TEMP.type != T_VOID)
 	{
+		if (((CLASS *)type)->override)
+			type = (TYPE)(((CLASS *)type)->override);
+		
+		//fprintf(stderr, "type = %s  TEMP.type = %s\n", TYPE_get_name(type), TYPE_get_name(TEMP.type));
+	
 		if (TEMP.type == T_CLASS)
 			TEMP._class.class = (CLASS *)type;
 		else
 			TEMP.type = type;
 	}
 		
-	if (GAMBAS_Error)
-	{
-		GAMBAS_Error = FALSE;
-		return TRUE;
-	}
-	else
-		return FALSE;
+	return FALSE;
 }
 
 void EXEC_native_quick(void)
@@ -1783,6 +1788,8 @@ void EXEC_new(void)
 	if (SP->type == T_CLASS)
 	{
 		class = SP->_class.class;
+		if (class->override)
+			class = class->override;
 	}
 	else if (TYPE_is_string(SP->type))
 	{

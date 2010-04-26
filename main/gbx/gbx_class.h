@@ -284,10 +284,9 @@ typedef
 		char *path;                       // 116 176  Source file path
 		COMPONENT *component;             // 120 184 The component the class belongs to
 		
-		struct _CLASS *next;              // 124 192 next class
-		#ifndef OS_64BITS
-		int _reserved3;                   // 128 192
-		#endif
+		struct _CLASS *override;          //  124 192 The overridden class
+		
+		struct _CLASS *next;              // 128 200 next class
 		}
 	CLASS;
 

@@ -1126,7 +1126,10 @@ void GB_ReturnObject(void *val)
   if (val == NULL)
     GB_ReturnNull();
   else
-    GB_Return(T_OBJECT, val);
+	{
+		TEMP.type = T_OBJECT; //OBJECT_class(val);
+		TEMP._object.object = val;
+	}
 }
 
 

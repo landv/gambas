@@ -70,12 +70,8 @@ static void take_image(CIMAGE *_object, Imlib_Image image)
 CIMAGE *create_image(Imlib_Image image)
 {
 	CIMAGE *img;
-  static GB_CLASS class_id = 0;
 
-  if (!class_id)
-    class_id = GB.FindClass("Image");
-
-  GB.New(POINTER(&img), class_id, NULL, NULL);
+  GB.New(POINTER(&img), GB.FindClass("Image"), NULL, NULL);
   take_image(img, image);
   return img;
 }

@@ -186,6 +186,7 @@ void STACK_grow(void)
 	fprintf(stderr, "STACK_grow: before SP = %d\n", SP - (VALUE *)STACK_base);
 	fprintf(stderr, "STACK_grow: before STACK_limit = %d\n", (VALUE *)STACK_limit - (VALUE *)STACK_base);
 	fprintf(stderr, "STACK_grow: before STACK_frame = %d\n", (STACK_CONTEXT *)STACK_frame - (STACK_CONTEXT *)STACK_base);
+	BREAKPOINT();
 	#endif
 	
   ALLOC_ZERO(&new_base, new_size, "STACK_grow");
