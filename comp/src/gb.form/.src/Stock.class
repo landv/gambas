@@ -8,8 +8,8 @@ Static Private $bInit As Boolean
 Static Private $aIconPath As String[]
 Static Private $cIconMap As Collection
 Static Private $aList As String[]
-Static Private $aSizeDec As Integer[] = [256, 128, 64, 48, 32, 24, 16]
-Static Private $aSizeInc As Integer[] = [16, 24, 32, 48, 64, 128, 256]
+Static Private $aSizeDec As Integer[] = [256, 128, 64, 48, 32, 22, 16]
+Static Private $aSizeInc As Integer[] = [16, 22, 32, 48, 64, 128, 256]
 
 Class _DefaultStock
 
@@ -288,13 +288,12 @@ Static Public Function _get(Key As String) As Picture
     If sPath = "#" Then
     
       If Not Stock.List.Exist(Key) Then Break
-      If Not Components["gb.form.stock"] Then
-        Debug "Loading gb.form.stock component for icon '"; Key; "'"
-        Component.Load("gb.form.stock")
-      Endif
+      'Debug "Using gb.form.stock component for icon '"; Key; "'"
+      Component.Load("gb.form.stock")
       sFile = Key & ".png"
     
     Else
+    
       iPos = InStr(sPath, ":")
       If iPos Then 
         sMap = Left$(sPath, iPos - 1)
@@ -307,6 +306,7 @@ Static Public Function _get(Key As String) As Picture
       Endif
   
       If Not Exist(sPath) Then Continue
+      
     Endif
     
     For Each sFile In Split(sFile, ";")
@@ -327,7 +327,7 @@ Static Public Function _get(Key As String) As Picture
       hImage = Null
       
       For Each iTry In $aSizeInc
-        If iTry <= iSize Then Continue
+        If iTry < iSize Then Continue
         If sPath = "#" Then
           Try hImage = _DefaultStock.Load(Subst(sTemplate, iTry))
         Else
@@ -340,11 +340,11 @@ Static Public Function _get(Key As String) As Picture
       
         For Each iTry In $aSizeDec
           If iTry >= iSize Then Continue
-        If sPath = "#" Then
-          Try hImage = _DefaultStock.Load(Subst(sTemplate, iTry))
-        Else
-          Try hImage = Image.Load(Subst(sTemplate, iTry))
-        Endif
+          If sPath = "#" Then
+            Try hImage = _DefaultStock.Load(Subst(sTemplate, iTry))
+          Else
+            Try hImage = Image.Load(Subst(sTemplate, iTry))
+          Endif
           If Not Error Then Break
         Next
       

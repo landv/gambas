@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(31.5714,17,95,79)
+  MoveScaled(31.5714,17,79,63)
   Background = Color.TextBackground
   Text = ("Tips of the day")
   Icon = Picture["icon:/small/lamp"]
@@ -25,11 +25,17 @@
       Text = ("Tips of the day")
     }
   }
-  { txtTip TextEdit
-    MoveScaled(1,8,46,27)
+  { ScrollView1 ScrollView
+    MoveScaled(2,7,71,34)
     Expand = True
-    ReadOnly = True
+    Arrangement = Arrange.Vertical
     Border = False
+    ScrollBar = Scroll.Vertical
+    { txtTip TextLabel
+      MoveScaled(2,2,48,24)
+      Padding = 4
+      AutoResize = True
+    }
   }
   { panBottom Panel
     MoveScaled(1,47,76,4)

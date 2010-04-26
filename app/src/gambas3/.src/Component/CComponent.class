@@ -104,10 +104,11 @@ Static Private Sub InitComponentNames()
   $cName["gb.info"] = ("Information about components")
   $cName["gb.ldap"] = ("OpenLDAP client")
   $cName["gb.mysql"] = ("MySQL specific routines")
-  $cName["gb.net"] = ("Networking")
+  $cName["gb.net"] = ("Network programming")
   $cName["gb.net.curl"] = ("Network high-level protocols management")
   $cName["gb.net.smtp"] = ("SMTP client")
   $cName["gb.opengl"] = ("3D programming with OpenGL")
+  $cName["gb.opengl.glsl"] = ("OpenGL shaders management")
   $cName["gb.option"] = ("GNU command option parser")
   $cName["gb.pcre"] = ("Perl-compatible Regular Expression Matching")
   $cName["gb.pdf"] = ("PDF renderer based on Poppler library")
@@ -352,6 +353,7 @@ Static Public Sub _init()
   
   aComp = Dir(Component.Path, "*.component").Sort()
   For Each sFile In aComp
+    If Not $cName.Exist(File.BaseName(sFile)) Then Continue
     InitComponent(sFile)
   Next
 

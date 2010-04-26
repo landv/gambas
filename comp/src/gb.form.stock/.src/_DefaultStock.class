@@ -6,6 +6,7 @@ Class Image
 
 Static Public Sub Load(sPath As String) As Image
   
+  'Debug sPath
   Return Image.Load("stock" &/ sPath)
   
 End
