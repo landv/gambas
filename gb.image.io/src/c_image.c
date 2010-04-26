@@ -84,7 +84,7 @@ BEGIN_METHOD(CIMAGE_load, GB_STRING path)
 		default: GB.Error("Unsupported number of channels"); goto __END;
 	}
 	
-	GB.ReturnObject(IMAGE.Create(gdk_pixbuf_get_width(img), gdk_pixbuf_get_width(img), format, gdk_pixbuf_get_pixels(img)));
+	GB.ReturnObject(IMAGE.Create(gdk_pixbuf_get_width(img), gdk_pixbuf_get_height(img), format, gdk_pixbuf_get_pixels(img)));
 	g_object_unref(G_OBJECT(img));
 
 __END:
