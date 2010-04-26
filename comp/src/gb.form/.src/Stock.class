@@ -11,6 +11,8 @@ Static Private $aList As String[]
 Static Private $aSizeDec As Integer[] = [256, 128, 64, 48, 32, 24, 16]
 Static Private $aSizeInc As Integer[] = [16, 24, 32, 48, 64, 128, 256]
 
+Class _DefaultStock
+
 Static Private Sub SearchDesktop()
 
   Dim sOutput As String
@@ -102,7 +104,7 @@ Static Private Sub InitTheme()
       AddPath("gnome", "/usr/X11R6/share/icons/hicolor")
       AddPath("gnome", "/usr/share/icons/gnome")
       'AddPath("gnome", "/opt/gnome")
-      AddPath("gnome", "stock/gtk")
+      'AddPath("gnome", "stock/gtk")
       'AddPath("", "stock/qt")     
     
     Case "kde"
@@ -219,12 +221,14 @@ Static Private Sub InitTheme()
       Endif 
       
       AddPath("gnome", "/usr/share/icons/gnome")
-      AddPath("gnome", "stock/gtk")
+      'AddPath("gnome", "stock/gtk")
       
   End Select 
   
-  AddPath("", "stock/qt")
-  AddPath("", "stock/default")
+  'AddPath("", "stock/qt")
+  'AddPath("", "stock/default")
+  
+  $aIconPath.Add("#")
   
   $bInit = True
    
@@ -281,22 +285,35 @@ Static Public Function _get(Key As String) As Picture
 
   For Each sPath In $aIconPath
   
-    iPos = InStr(sPath, ":")
-    If iPos Then 
-      sMap = Left$(sPath, iPos - 1)
-      LoadMap(sMap)  
-      sFile = $cIconMap[sMap][Key]
-      If Not sFile Then sFile = Key & ".png"
-      sPath = Mid$(sPath, iPos + 1)
-    Else 
+    If sPath = "#" Then
+    
+      If Not Stock.List.Exist(Key) Then Break
+      If Not Components["gb.form.stock"] Then
+        Debug "Loading gb.form.stock component for '"; Key; "'"
+        Component.Load("gb.form.stock")
+      Endif
       sFile = Key & ".png"
+    
+    Else
+      iPos = InStr(sPath, ":")
+      If iPos Then 
+        sMap = Left$(sPath, iPos - 1)
+        LoadMap(sMap)  
+        sFile = $cIconMap[sMap][Key]
+        If Not sFile Then sFile = Key & ".png"
+        sPath = Mid$(sPath, iPos + 1)
+      Else 
+        sFile = Key & ".png"
+      Endif
+  
+      If Not Exist(sPath) Then Continue
     Endif
-  
-    If Not Exist(sPath) Then Continue
-  
+    
     For Each sFile In Split(sFile, ";")
   
-      If Left(sPath) = "/" Then   
+      If sPath = "#" Then
+        sTemplate = "&1" &/ sFile
+      Else If Left(sPath) = "/" Then   
         sTemplate = sPath &/ "&1x&1" &/ sFile
       Else 
         sTemplate = sPath &/ "&1" &/ sFile
@@ -311,7 +328,11 @@ Static Public Function _get(Key As String) As Picture
       
       For Each iTry In $aSizeInc
         If iTry <= iSize Then Continue
-        Try hImage = Image.Load(Subst(sTemplate, iTry))
+        If sPath = "#" Then
+          Try hImage = _DefaultStock.Load(Subst(sTemplate, iTry))
+        Else
+          Try hImage = Image.Load(Subst(sTemplate, iTry))
+        Endif
         If Not Error Then Break
       Next
       
@@ -319,7 +340,11 @@ Static Public Function _get(Key As String) As Picture
       
         For Each iTry In $aSizeDec
           If iTry >= iSize Then Continue
+        If sPath = "#" Then
+          Try hImage = _DefaultStock.Load(Subst(sTemplate, iTry))
+        Else
           Try hImage = Image.Load(Subst(sTemplate, iTry))
+        Endif
           If Not Error Then Break
         Next
       
