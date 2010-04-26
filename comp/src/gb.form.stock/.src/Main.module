@@ -1,0 +1,43 @@
+' Gambas module file
+
+Public Sub Main()
+  
+  ' Dim hFile As File
+  ' Dim sLine As String
+  ' Dim aLine As String[]
+  ' Dim sIcon As String
+  ' Dim sPath As String
+  ' Dim sTheme As String
+  ' Dim sSize As String
+  ' 
+  ' hFile = Open "~/gambas/3.0/trunk/comp/src/gb.form/map/gnome.map"
+  ' 
+  ' Try Mkdir "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock/16"
+  ' Try Mkdir "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock/22"
+  ' Try Mkdir "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock/32"
+  ' 
+  ' While Not Eof(hFile)
+  ' 
+  '   Line Input #hFile, sLine
+  '   aLine = Scan(sLine, "* *")
+  '   If aLine.Count < 2 Then Continue
+  '   sIcon = aLine[0]
+  '   sPath = Trim(aLine[1])
+  '   If Not sPath Then Continue
+  '   
+  '   Print sIcon
+  '   sIcon &= ".png"
+  '   
+  '   For Each sTheme In ["gnome", "Tango"]
+  '     For Each sSize In ["16", "22", "32"]
+  '   
+  '       Try Copy Subst("/usr/share/icons/&1/&2x&2", sTheme, sSize) &/ sPath To "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon
+  '   
+  '     Next
+  '   Next
+  ' 
+  ' Wend
+  ' 
+  ' Close #hFile
+  
+End

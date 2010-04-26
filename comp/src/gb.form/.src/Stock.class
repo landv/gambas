@@ -221,13 +221,13 @@ Static Private Sub InitTheme()
       Endif 
       
       AddPath("gnome", "/usr/share/icons/gnome")
-      'AddPath("gnome", "stock/gtk")
       
   End Select 
   
   'AddPath("", "stock/qt")
   'AddPath("", "stock/default")
   
+  AddPath("", "stock")
   $aIconPath.Add("#")
   
   $bInit = True
@@ -289,7 +289,7 @@ Static Public Function _get(Key As String) As Picture
     
       If Not Stock.List.Exist(Key) Then Break
       If Not Components["gb.form.stock"] Then
-        Debug "Loading gb.form.stock component for '"; Key; "'"
+        Debug "Loading gb.form.stock component for icon '"; Key; "'"
         Component.Load("gb.form.stock")
       Endif
       sFile = Key & ".png"

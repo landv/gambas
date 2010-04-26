@@ -1,0 +1,11 @@
+' Gambas class file
+
+Export
+
+Class Image
+
+Static Public Sub Load(sPath As String) As Image
+  
+  Return Image.Load("stock" &/ sPath)
+  
+End
