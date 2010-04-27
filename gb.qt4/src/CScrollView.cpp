@@ -83,6 +83,7 @@ MyContents::MyContents(MyScrollView *scrollview)
   sw = scrollview;
 	shown = THIS->widget.flag.shown;
   sw->setWidget(this);
+	setAutoFillBackground(false);
 	THIS->widget.flag.shown = shown;
   timer = false;
 	_mustfind = false;

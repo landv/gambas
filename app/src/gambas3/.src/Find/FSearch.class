@@ -134,22 +134,7 @@ End
 
 Public Sub Form_Show()
 
-  Dim sFind As String
-
   Update()
-  
-  Try sFind = $hCurrent.GetSelection()
-  If sFind Then cmbSearch.Text = sFind
-  
-  If $bReplace And If cmbSearch.Text Then
-    cmbReplace.SelectAll
-    cmbReplace.SetFocus
-  Else
-    cmbSearch.SelectAll
-    cmbSearch.SetFocus
-  Endif
-  
-  ShowString
 
 End
 
@@ -616,9 +601,24 @@ End
 
 Public Sub WakeUp(bReplace As Boolean)
   
+  Dim sFind As String
+
   $bReplace = bReplace
   Me.Show
   tabSearch.Index = 0
+
+  Update()
+  
+  Try sFind = $hCurrent.GetSelection()
+  If sFind Then cmbSearch.Text = sFind
+  
+  If $bReplace And If cmbSearch.Text Then
+    cmbReplace.SelectAll
+    cmbReplace.SetFocus
+  Else
+    cmbSearch.SelectAll
+    cmbSearch.SetFocus
+  Endif
   
 End
 

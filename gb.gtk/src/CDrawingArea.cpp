@@ -136,14 +136,14 @@ BEGIN_PROPERTY(CDRAWINGAREA_painted)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CDRAWINGAREA_transparent)
+/*BEGIN_PROPERTY(CDRAWINGAREA_transparent)
 
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(WIDGET->isTransparent());
 	else
 		WIDGET->setTransparent(VPROP(GB_BOOLEAN));
 
-END_PROPERTY
+END_PROPERTY*/
 
 
 GB_DESC CDrawingAreaDesc[] =
@@ -158,7 +158,7 @@ GB_DESC CDrawingAreaDesc[] =
   GB_PROPERTY("Merge","b",CDRAWINGAREA_merge),
   GB_PROPERTY("Focus","b",CDRAWINGAREA_focus),
 	GB_PROPERTY("Painted", "b", CDRAWINGAREA_painted),
-	GB_PROPERTY("Transparent", "b", CDRAWINGAREA_transparent),
+	//GB_PROPERTY("Transparent", "b", CDRAWINGAREA_transparent),
 
   GB_METHOD("Clear", 0, CDRAWINGAREA_clear, 0),
 

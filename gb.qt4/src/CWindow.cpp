@@ -126,7 +126,7 @@ bool CWINDOW_has_property(QWidget *w, Atom property)
 #endif
 
 // Fix a QT little boring visual bug on menubars
-
+#if 0
 void CWINDOW_fix_menubar(CWINDOW *window)
 {
 	if (window && window->menuBar)
@@ -139,6 +139,7 @@ void CWINDOW_fix_menubar(CWINDOW *window)
 			save->setFocus();
 	}
 }
+#endif
 
 /*---- Utility routines --------------------------------------------------------------*/
 
@@ -317,7 +318,7 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent)
 	#endif
 	const char *name = GB.GetClassName(THIS);
 
-	THIS->widget.flag.fillBackground = true;
+	//THIS->widget.flag.fillBackground = true;
 
 	if (MISSING(parent) || !VARG(parent))
 	{

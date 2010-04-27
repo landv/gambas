@@ -55,7 +55,6 @@ MyDrawingArea::MyDrawingArea(QWidget *parent) : MyContainer(parent)
 	_use_paint = false;
 	_set_background = false;
 	_cached = false;
-	_transparent = false;
 	
 	setMerge(false);
 	setCached(false);
@@ -66,8 +65,6 @@ MyDrawingArea::MyDrawingArea(QWidget *parent) : MyContainer(parent)
 	setAttribute(Qt::WA_DontCreateNativeAncestors, true);
 	
 	//setAttribute(Qt::WA_NoSystemBackground, true);
-	
-	setTransparent(false);
 }
 
 
@@ -153,10 +150,10 @@ void MyDrawingArea::redraw(QRect &r, bool frame)
 		p = DRAW_get_current();
 	}
 		
-	if (!isTransparent())
+	/*if (!isTransparent())
 	{
 		p->translate(-r.x(), -r.y());
-	}
+	}*/
 	
 	if (!_use_paint)
 	{
@@ -208,20 +205,20 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 		r = event->rect().intersect(rect());
 		if (r.isValid())
 		{
-			if (!isTransparent())
+			/*if (!isTransparent())
 			{
 				cache = new QPixmap(r.width(), r.height());
 				cache->fill(this, r.x(), r.y());
-			}
+			}*/
 			
 			redraw(r, true);
 
-			if (!isTransparent())
+			/*if (!isTransparent())
 			{
 				paint.drawPixmap(r.x(), r.y(), *cache);
 				delete cache;
 				cache = 0;
-			}
+			}*/
 		}
 	}
 }
@@ -326,7 +323,7 @@ void MyDrawingArea::updateCache()
 	if (_background)
 		delete _background;
 
-	if (_cached && !_transparent)
+	if (_cached) // && !_transparent)
 	{
 		_background = new QPixmap(width(), height());
 		clearBackground();
@@ -362,11 +359,11 @@ void MyDrawingArea::setPalette(const QPalette &pal)
 	repaint();
 }
 
-void MyDrawingArea::setTransparent(bool on)
+/*void MyDrawingArea::setTransparent(bool on)
 {
 	_transparent = on;
 	updateCache();
-}
+}*/
 
 void MyDrawingArea::hideEvent(QHideEvent *e)
 {
@@ -468,6 +465,7 @@ BEGIN_PROPERTY(CDRAWINGAREA_painted)
 
 END_PROPERTY
 
+#if 0
 BEGIN_PROPERTY(CDRAWINGAREA_transparent)
 
 	if (READ_PROPERTY)
@@ -480,6 +478,7 @@ BEGIN_PROPERTY(CDRAWINGAREA_transparent)
 	}
 
 END_PROPERTY
+#endif
 
 BEGIN_METHOD(DrawingArea_Refresh, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
 
@@ -514,7 +513,7 @@ GB_DESC CDrawingAreaDesc[] =
 	GB_PROPERTY("Focus", "b", CDRAWINGAREA_focus),
 	GB_PROPERTY("Enabled", "b", CDRAWINGAREA_enabled),
 	GB_PROPERTY("Painted", "b", CDRAWINGAREA_painted),
-	GB_PROPERTY("Transparent", "b", CDRAWINGAREA_transparent),
+	//GB_PROPERTY("Transparent", "b", CDRAWINGAREA_transparent),
 
 	GB_METHOD("Clear", NULL, CDRAWINGAREA_clear, NULL),
 	GB_METHOD("Refresh", NULL, DrawingArea_Refresh, "[(X)i(Y)i(Width)i(Height)i]"),

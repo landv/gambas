@@ -184,6 +184,7 @@
         MoveScaled(47,0,36,4)
         Expand = True
         ReadOnly = True
+        Sorted = True
       }
     }
     { Label9 Label
@@ -318,7 +319,7 @@
       Spacing = True
       { btnInsertLib Button
         MoveScaled(0,0,17,4)
-        Text = ("&Insert...")
+        Text = ("&Add...")
         Picture = Picture["icon:/small/add"]
       }
       { btnRemoveLib Button
@@ -350,68 +351,65 @@
       MoveScaled(1,1,84,72)
       Expand = True
       Spacing = True
-      { VBox2 VBox
-        MoveScaled(2,1,58,8)
-        { Label17 Label
-          MoveScaled(0,0,24,4)
-          Font = Font["Bold"]
-          Text = ("Arguments")
-        }
-        { HBox2 HBox
-          MoveScaled(0,4,53,4)
-          Spacing = True
-          { btnInsertArg Button
-            MoveScaled(0,0,17,4)
-            Text = ("&Insert")
-            Picture = Picture["icon:/small/add"]
-          }
-          { btnRemoveArg Button
-            MoveScaled(18,0,17,4)
-            Text = ("&Remove")
-            Picture = Picture["icon:/small/remove"]
-          }
-          { btnMoveUpArg Button
-            MoveScaled(36,0,6,4)
-            Picture = Picture["icon:/small/up"]
-          }
-          { btnMoveDownArg Button
-            MoveScaled(42,0,6,4)
-            Picture = Picture["icon:/small/down"]
-          }
-        }
+      { Label17 Label
+        MoveScaled(3,2,24,3)
+        Font = Font["Bold"]
+        Text = ("Arguments")
       }
       { tvwArg TableView
         MoveScaled(2,10,46,16)
         Expand = True
         Header = GridView.Vertical
       }
-      { VBox3 VBox
-        MoveScaled(2,27,48,8)
-        { Label18 Label
-          MoveScaled(0,0,24,4)
-          Font = Font["Bold"]
-          Text = ("Environment variables")
+      { HBox2 HBox
+        MoveScaled(2,28,53,4)
+        Spacing = True
+        { btnInsertArg Button
+          MoveScaled(0,0,17,4)
+          Text = ("&Insert")
+          Picture = Picture["icon:/small/add"]
         }
-        { HBox3 HBox
-          MoveScaled(0,4,40,4)
-          Spacing = True
-          { btnInsertEnv Button
-            MoveScaled(0,0,17,4)
-            Text = ("&Insert")
-            Picture = Picture["icon:/small/add"]
-          }
-          { btnRemoveEnv Button
-            MoveScaled(18,0,17,4)
-            Text = ("&Remove")
-            Picture = Picture["icon:/small/remove"]
-          }
+        { btnRemoveArg Button
+          MoveScaled(18,0,17,4)
+          Text = ("&Remove")
+          Picture = Picture["icon:/small/remove"]
+        }
+        { btnMoveUpArg Button
+          MoveScaled(36,0,6,4)
+          Picture = Picture["icon:/small/up"]
+        }
+        { btnMoveDownArg Button
+          MoveScaled(42,0,6,4)
+          Picture = Picture["icon:/small/down"]
         }
       }
+      { Separator1 Separator
+        MoveScaled(7,38,42,1)
+      }
+      { Label18 Label
+        MoveScaled(2,47,24,3)
+        Font = Font["Bold"]
+        Text = ("Environment variables")
+      }
       { tvwEnv TableView
-        MoveScaled(2,37,47,14)
+        MoveScaled(2,52,47,14)
         Expand = True
         Header = GridView.Horizontal
         Scrollbar = Scroll.Vertical
+      }
+      { HBox3 HBox
+        MoveScaled(2,67,40,4)
+        Spacing = True
+        { btnInsertEnv Button
+          MoveScaled(0,0,17,4)
+          Text = ("&Insert")
+          Picture = Picture["icon:/small/add"]
+        }
+        { btnRemoveEnv Button
+          MoveScaled(18,0,17,4)
+          Text = ("&Remove")
+          Picture = Picture["icon:/small/remove"]
+        }
       }
     }
     Index = 5
@@ -428,7 +426,7 @@
       ReadOnly = True
     }
     { lblNoDiff TextLabel
-      MoveScaled(3,8,80,5)
+      MoveScaled(3,9,80,5)
       Expand = True
       Text = ("There is no change to commit.")
     }

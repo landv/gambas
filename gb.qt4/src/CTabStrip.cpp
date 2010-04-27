@@ -87,7 +87,7 @@ CTab::CTab(CTABSTRIP *parent, QWidget *page)
 	visible = true; 
 	setEnabled(true);
 	
-	page->setAutoFillBackground(true);
+	//page->setAutoFillBackground(true);
 	page->hide();
 }	
 
@@ -416,7 +416,7 @@ BEGIN_METHOD(CTABSTRIP_new, GB_OBJECT parent)
 
 	QObject::connect(wid, SIGNAL(currentChanged(int)), &CTabStrip::manager, SLOT(currentChanged(int)));
 
-	THIS->widget.flag.fillBackground = TRUE;
+	//THIS->widget.flag.fillBackground = TRUE;
 	THIS->container = NULL;
 	THIS->index = -1;
 

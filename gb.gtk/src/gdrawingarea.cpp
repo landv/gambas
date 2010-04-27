@@ -90,6 +90,8 @@ gDrawingArea::gDrawingArea(gContainer *parent) : gContainer(parent)
 	g_signal_connect(G_OBJECT(widget), "size-allocate", G_CALLBACK(cb_size), (gpointer)this);
 	g_signal_connect(G_OBJECT(border), "button-press-event",G_CALLBACK(cb_button_press),(gpointer)this);
   
+	setTransparent(true);
+	
 	//resize(100,30);
 }
 

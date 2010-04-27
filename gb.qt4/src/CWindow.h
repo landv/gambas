@@ -231,6 +231,6 @@ void CWINDOW_activate(CWIDGET *ob);
 void CWINDOW_set_default_button(CWINDOW *win, QPushButton *button, bool on);
 void CWINDOW_set_cancel_button(CWINDOW *win, QPushButton *button, bool on);
 void CWINDOW_define_mask(CWINDOW *_object);
-void CWINDOW_fix_menubar(CWINDOW *window);
+//void CWINDOW_fix_menubar(CWINDOW *window);
 
 #endif

@@ -443,6 +443,27 @@ void CCONTAINER_insert_child(void *_object)
 		GB.Raise(parent, EVENT_Insert, 1, GB_T_OBJECT, THIS);
 }
 
+void CCONTAINER_decide(CWIDGET *control, bool *width, bool *height)
+{
+	void *_object = CWIDGET_get_parent(control);
+
+	*width = *height = FALSE;
+	
+	if (!THIS)
+		return;
+	
+	if ((THIS_ARRANGEMENT->mode == ARRANGE_VERTICAL)
+	    || (THIS_ARRANGEMENT->mode == ARRANGE_HORIZONTAL && control->flag.expand)
+	    || (THIS_ARRANGEMENT->mode == ARRANGE_ROW && control->flag.expand))
+		*width = TRUE;
+	
+	if ((THIS_ARRANGEMENT->mode == ARRANGE_HORIZONTAL)
+	    || (THIS_ARRANGEMENT->mode == ARRANGE_VERTICAL && control->flag.expand)
+	    || (THIS_ARRANGEMENT->mode == ARRANGE_COLUMN && control->flag.expand))
+		*height = TRUE;
+}
+
+
 /***************************************************************************
 
 	class MyContainer
@@ -452,8 +473,9 @@ void CCONTAINER_insert_child(void *_object)
 MyContainer::MyContainer(QWidget *parent)
 : QWidget(parent),_frame(0),_pixmap(0)
 {
-	setAttribute(Qt::WA_StaticContents);
-	setAttribute(Qt::WA_OpaquePaintEvent); //, _pixmap != 0);
+	//setStaticContents(true);
+	//setAttribute(Qt::WA_StaticContents);
+	//setAttribute(Qt::WA_OpaquePaintEvent); //, _pixmap != 0);
 }
 
 MyContainer::~MyContainer()
@@ -465,7 +487,12 @@ MyContainer::~MyContainer()
 
 void MyContainer::setPixmap(QPixmap *pixmap)
 {
-	_pixmap = pixmap;
+	if (_pixmap != pixmap)
+	{
+		_pixmap = pixmap;
+		setAttribute(Qt::WA_OpaquePaintEvent, _pixmap != 0);
+		setStaticContents(_pixmap != 0);
+	}
 }
 
 void MyContainer::showEvent(QShowEvent *e)
@@ -495,7 +522,8 @@ void MyContainer::hideEvent(QHideEvent *e)
 
 void MyContainer::setStaticContents(bool on)
 {
-	setAttribute(Qt::WA_StaticContents, on && _frame == BORDER_NONE);
+	void *_object = CWidget::get(this);
+	setAttribute(Qt::WA_StaticContents, on && _frame == BORDER_NONE && (_pixmap || THIS->widget.flag.fillBackground));
 }
 
 void MyContainer::setFrameStyle(int frame)
@@ -596,93 +624,14 @@ int MyContainer::frameWidth()
 	}
 }
 
-#if 0
-	Q_D(QFrame);
-	QPoint      p1, p2;
-	QStyleOptionFrame opt;
-	opt.init(this);
-	int frameShape  = d->frameStyle & QFrame::Shape_Mask;
-	int frameShadow = d->frameStyle & QFrame::Shadow_Mask;
-
-	int lw = 0;
-	int mlw = 0;
-	opt.rect = frameRect();
-	switch (frameShape) {
-	case QFrame::Box:
-	case QFrame::HLine:
-	case QFrame::VLine:
-	case QFrame::StyledPanel:
-			lw = d->lineWidth;
-			mlw = d->midLineWidth;
-			break;
-	default:
-			// most frame styles do not handle customized line and midline widths
-			// (see updateFrameWidth()).
-			lw = d->frameWidth;
-			break;
-	}
-	opt.lineWidth = lw;
-	opt.midLineWidth = mlw;
-	if (frameShadow == Sunken)
-			opt.state |= QStyle::State_Sunken;
-	else if (frameShadow == Raised)
-			opt.state |= QStyle::State_Raised;
-
-	switch (frameShape) {
-	case Box:
-			if (frameShadow == Plain)
-					qDrawPlainRect(p, opt.rect, opt.palette.foreground().color(), lw);
-			else
-					qDrawShadeRect(p, opt.rect, opt.palette, frameShadow == Sunken, lw, mlw);
-			break;
-
-
-	case StyledPanel:
-			style()->drawPrimitive(QStyle::PE_Frame, &opt, p, this);
-			break;
-
-	case Panel:
-			if (frameShadow == Plain)
-					qDrawPlainRect(p, opt.rect, opt.palette.foreground().color(), lw);
-			else
-					qDrawShadePanel(p, opt.rect, opt.palette, frameShadow == Sunken, lw);
-			break;
-
-	case WinPanel:
-			if (frameShadow == Plain)
-					qDrawPlainRect(p, opt.rect, opt.palette.foreground().color(), lw);
-			else
-					qDrawWinPanel(p, opt.rect, opt.palette, frameShadow == Sunken);
-			break;
-	case HLine:
-	case VLine:
-			if (frameShape == HLine) {
-					p1 = QPoint(opt.rect.x(), opt.rect.height() / 2);
-					p2 = QPoint(opt.rect.x() + opt.rect.width(), p1.y());
-			} else {
-					p1 = QPoint(opt.rect.x()+opt.rect.width() / 2, 0);
-					p2 = QPoint(p1.x(), opt.rect.height());
-			}
-			if (frameShadow == Plain) {
-					QPen oldPen = p->pen();
-					p->setPen(QPen(opt.palette.foreground().color(), lw));
-					p->drawLine(p1, p2);
-					p->setPen(oldPen);
-			} else {
-					qDrawShadeLine(p, p1, p2, opt.palette, frameShadow == Sunken, lw, mlw);
-			}
-			break;
-	}
-}
-#endif
 
 void MyContainer::paintEvent(QPaintEvent *e)
 {
 	QPainter painter(this);
 	if (_pixmap)
 		painter.drawTiledPixmap(0, 0, width(), height(), *_pixmap);
-	else
-		painter.eraseRect(e->rect());
+	//else
+	//	painter.eraseRect(e->rect());
 	drawFrame(&painter);
 }
 

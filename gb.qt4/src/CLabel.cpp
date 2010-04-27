@@ -57,7 +57,7 @@ BEGIN_METHOD(CLABEL_new, GB_OBJECT parent)
 
   wid->setTextFormat(Qt::PlainText);
   wid->setAlignment(Qt::AlignLeft | Qt::AlignVCenter); // + Qt::WordBreak);
-	THIS->widget.flag.fillBackground = TRUE;
+	//THIS->widget.flag.fillBackground = TRUE;
 	
   CWIDGET_new(wid, (void *)_object);
 
@@ -71,7 +71,7 @@ BEGIN_METHOD(CTEXTLABEL_new, GB_OBJECT parent)
   wid->setTextFormat(Qt::RichText);
   wid->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   wid->setWordWrap(true);
-	THIS->widget.flag.fillBackground = TRUE;
+	//THIS->widget.flag.fillBackground = TRUE;
 
   CWIDGET_new(wid, (void *)_object);
 
@@ -139,12 +139,9 @@ END_METHOD
 BEGIN_PROPERTY(CLABEL_transparent)
 
 	if (READ_PROPERTY)
-		GB.ReturnBoolean(!THIS->widget.flag.fillBackground);
+		GB.ReturnBoolean(THIS->transparent);
 	else
-	{
-		THIS->widget.flag.fillBackground = !VPROP(GB_BOOLEAN);
-		CWIDGET_reset_color((CWIDGET *)THIS);
-	}
+		THIS->transparent = VPROP(GB_BOOLEAN);
 
 END_PROPERTY
 

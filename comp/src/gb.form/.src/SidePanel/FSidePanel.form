@@ -2,24 +2,24 @@
 
 { Form Form
   MoveScaled(8,16,50,50)
-  Text = ("")
   Resizable = False
-  { panMove DrawingArea
-    MoveScaled(2,1,46,4)
-    Background = Color.Background
+  { panSide Panel
+    MoveScaled(6,11,35,33)
+  }
+  { panMove Panel
+    MoveScaled(1,1,46,4)
     { btnSide DrawingArea
       MoveScaled(10,0,6,4)
+      Mouse = Mouse.Pointing
     }
     { btnSide2 DrawingArea btnSide
       Name = "btnSide2"
       MoveScaled(19,0,6,4)
+      Mouse = Mouse.Pointing
     }
     { sepSide Separator
       MoveScaled(0,0,9,1)
       Visible = False
     }
-  }
-  { panSide Panel
-    MoveScaled(6,11,35,33)
   }
 }

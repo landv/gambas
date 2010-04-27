@@ -33,6 +33,8 @@ Public Sub _new()
 
   $bVisible = True
   $iOrientation = Align.Top
+  'btnSide.Transparent = True
+  'btnSide2.Transparent = True
 
 End
 
@@ -320,8 +322,8 @@ Public Sub btnSide_MouseUp()
 
   If Me.Parent.Design Then Return
 
-  Last.Tag = 1
-  Last.Refresh
+  'Last.Tag = 1
+  'Last.Refresh
 
   TogglePanel
 
@@ -509,27 +511,27 @@ End
 ' 
 ' END
 
-Public Sub panMove_Enter()
-
-  $iColor = panMove.Background
-
-  If Not $bVisible Then Return
-  If $bFixed Then Return
-  If Me.Parent.Design Then Return
-
-  panMove.Background = Color.ButtonBackground
-  'btnSide.Background = Color.ButtonBackground  
-  'btnSide2.Background = Color.ButtonBackground  
-
-End
-
-Public Sub panMove_Leave()
-
-  panMove.Background = $iColor
-  'btnSide.Background = $iColor
-  'btnSide2.Background = $iColor
-
-End
+' Public Sub panMove_Enter()
+' 
+'   $iColor = panMove.Background
+' 
+'   If Not $bVisible Then Return
+'   If $bFixed Then Return
+'   If Me.Parent.Design Then Return
+' 
+'   'panMove.Background = Color.ButtonBackground
+'   'btnSide.Background = Color.ButtonBackground  
+'   'btnSide2.Background = Color.ButtonBackground  
+' 
+' End
+' 
+' Public Sub panMove_Leave()
+' 
+'   'panMove.Background = $iColor
+'   'btnSide.Background = $iColor
+'   'btnSide2.Background = $iColor
+' 
+' End
 
 Public Sub btnSide_Draw()
 
@@ -542,24 +544,26 @@ End
 
 Public Sub btnSide_Enter()
 
+  Last.Background = Color.ButtonBackground
   'Last.Background = Color.ButtonBackground
-  Last.Tag = 1
-  Last.Refresh
+  'Last.Tag = 1
+  'Last.Refresh
 
 End
 
 Public Sub btnSide_Leave()
 
+  Last.Background = Color.Default
   'Last.Background = Color.Default
-  Last.Tag = Null
-  Last.Refresh
+  'Last.Tag = Null
+  'Last.Refresh
 
 End
 
 Public Sub btnSide_MouseDown()
 
-  Last.Tag = 2
-  Last.Refresh
+  'Last.Tag = 2
+  'Last.Refresh
 
 End
 

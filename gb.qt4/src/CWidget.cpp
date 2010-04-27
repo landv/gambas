@@ -155,6 +155,12 @@ static void set_design(CWIDGET *_object)
 		if (cont && cont != THIS)
 			set_design_object(cont);
 	}
+
+	if (GB.Is(THIS, CLASS_TabStrip))
+	{
+		THIS->flag.fillBackground = TRUE;
+		CWIDGET_reset_color(THIS);
+	}
 }
 
 static void set_name(CWIDGET *_object, const char *name)
@@ -399,6 +405,7 @@ void CWIDGET_resize(void *_object, int w, int h)
   QWidget *wid = get_widget_resize(THIS);
 	bool window;
 	bool resizable = true;
+	bool decide_w, decide_h;
 
 	if (!wid)
 		return;
@@ -408,10 +415,12 @@ void CWIDGET_resize(void *_object, int w, int h)
 	if (w < 0 && h < 0)
 		return;
 
-	if (w < 0)
+	CCONTAINER_decide(THIS, &decide_w, &decide_h);
+
+	if (w < 0 || decide_w)
 		w = wid->width();
 
-	if (h < 0)
+	if (h < 0 || decide_h)
 		h = wid->height();
 
 	if (w == wid->width() && h == wid->height())
@@ -894,10 +903,10 @@ BEGIN_METHOD(CCONTROL_refresh, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTE
 		y = VARG(y);
 		w = VARGOPT(w, QWIDGET(_object)->width());
 		h = VARGOPT(h, QWIDGET(_object)->height());
-		QWIDGET(_object)->repaint(x, y, w, h);
+		QWIDGET(_object)->update(x, y, w, h);
 	}
 	else
-		QWIDGET(_object)->repaint();
+		QWIDGET(_object)->update();
 
 END_METHOD
 
@@ -1402,7 +1411,7 @@ BEGIN_PROPERTY(CWIDGET_border_full)
 
 		wid->setFrameStyle(border);
 		wid->setLineWidth(lw);
-		wid->repaint();
+		wid->update();
 	}
 
 END_PROPERTY
@@ -1433,7 +1442,7 @@ BEGIN_PROPERTY(CWIDGET_border_simple)
 
 		//qDebug("--> %d", wid->frameStyle());
 
-		wid->repaint();
+		wid->update();
 	}
 
 END_PROPERTY
@@ -1867,7 +1876,7 @@ static void handle_focus_change()
 
 bool CWidget::eventFilter(QObject *widget, QEvent *event)
 {
-	CWIDGET *control, *save;
+	CWIDGET *control;
 	int event_id;
 	int type = event->type();
 	bool real;

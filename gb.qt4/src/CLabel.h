@@ -50,6 +50,7 @@ extern GB_DESC CSeparatorDesc[];
 typedef
   struct {
     CWIDGET widget;
+		bool transparent;
     }
   CLABEL;
 

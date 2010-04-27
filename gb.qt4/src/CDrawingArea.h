@@ -90,8 +90,8 @@ public:
 	void setPaint(bool on) { _use_paint = on; }
 	void redraw(QRect &r, bool frame = false);
 	
-	bool isTransparent() { return _transparent; }
-	void setTransparent(bool on);
+	//bool isTransparent() { return _transparent; }
+	//void setTransparent(bool on);
 
 protected:
 

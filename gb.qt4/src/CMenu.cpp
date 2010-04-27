@@ -716,7 +716,7 @@ void CMenu::slotTriggered(QAction *action)
 	if (menu->parent != parent)
 		return;
 
-	qDebug("slotTriggered: %s %s", menu->widget.name, (const char *)action->text().toUtf8());
+	//qDebug("slotTriggered: %s %s", menu->widget.name, (const char *)action->text().toUtf8());
 	GB.Ref(menu);
 	GB.Post((GB_POST_FUNC)send_click_event, (intptr_t)menu);
 }
