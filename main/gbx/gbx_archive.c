@@ -145,12 +145,7 @@ static void load_exported_class(ARCHIVE *arch)
 
 static void load_archive(ARCHIVE *arch, const char *path)
 {
-	if (path)
-  	arch->arch = ARCH_open(path);
-	else
-		arch->arch = NULL;
-
-  //if (arch != ARCHIVE_main)
+	arch->arch = ARCH_open(path);
 	load_exported_class(arch);
 }
 

@@ -449,7 +449,7 @@ void CCONTAINER_decide(CWIDGET *control, bool *width, bool *height)
 
 	*width = *height = FALSE;
 	
-	if (!THIS)
+	if (!THIS || control->flag.ignore)
 		return;
 	
 	if ((THIS_ARRANGEMENT->mode == ARRANGE_VERTICAL)

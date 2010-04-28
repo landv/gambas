@@ -2,6 +2,7 @@
 
 { Form Form
   MoveScaled(0,2.1429,69,17)
+  Background = Color.Background
   Icon = Picture["img/16/magic.png"]
   Persistent = True
   Border = False
@@ -12,6 +13,7 @@
     Arrangement = Arrange.Horizontal
     Border = Border.Plain
     { timHelp #Timer
+      #MoveScaled(0,8)
       Delay = 100
     }
     { lvwComp ListView

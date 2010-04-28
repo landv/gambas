@@ -398,7 +398,7 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
   Config = New Settings(sDir &/ ".settings")
 
   Inc $iNoRefresh
-  ReadProject
+  ReadProject(bSave)
   If Not ReadOnly Then
     If Not Exist(Project.Dir &/ ".hidden") Then Project.InsertDirectory(Project.Dir &/ ".hidden")
     If bSave Then WriteProject(True)
@@ -2433,8 +2433,23 @@ End
 '   
 ' End
 
+Private Sub ConvertComponent(sComp As String) As String
+  
+  Select Case sComp
+    Case "gb.qt"
+      Return "gb.qt4"
+    Case "gb.qt.ext"
+      Return "gb.qt4.ext"
+    Case "gb.qt.kde.html"
+      Return "gb.qt4.webkit"
+    Default
+      Return sComp
+  End Select
+  
+End
 
-Public Sub ReadProject() 
+
+Public Sub ReadProject(Optional bConvert As Boolean) 
 
   Dim hFic As File
   Dim sLig As String
@@ -2527,7 +2542,16 @@ Public Sub ReadProject()
         Endif
 
       Case "library"
-        If Not Libraries.Exist(sVal) Then Libraries.Add(sVal)
+        If bConvert Then
+          sVal = ConvertComponent(sVal)
+          If CComponent.All.Exist(sVal) Then
+            Components.Add(sVal)
+          Else
+            aMissing.Add(sVal)
+          Endif
+        Else
+          If Not Libraries.Exis(sVal) Then Libraries.Add(sVal)
+        Endif
 
       Case "tabsize"
         TabSize = Val(sVal)
