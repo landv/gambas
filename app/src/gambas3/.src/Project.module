@@ -2550,7 +2550,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
             aMissing.Add(sVal)
           Endif
         Else
-          If Not Libraries.Exis(sVal) Then Libraries.Add(sVal)
+          If Not Libraries.Exist(sVal) Then Libraries.Add(sVal)
         Endif
 
       Case "tabsize"
