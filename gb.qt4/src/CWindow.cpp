@@ -2304,7 +2304,10 @@ void MyMainWindow::configure()
 	else
 	{
 		if (menuBar)
-			menuBar->lower();
+		{
+			menuBar->move(0, -menuBar->height());
+			//menuBar->lower();
+		}
 		//qDebug("configure: %s (%d %d)", GB.GetClassName(THIS), this->width(), this->height());
 		THIS->container->setGeometry(0, 0, this->width(), this->height());
 		//THIS->container->setGeometry(0, 0, THIS->w, THIS->h);
