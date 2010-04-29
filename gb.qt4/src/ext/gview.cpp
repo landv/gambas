@@ -710,7 +710,7 @@ void GEditor::paintCell(QPainter *painter, int row, int)
 	xs2 = 0;
 	if (doc->hasSelection())
 	{
-		doc->getSelection(&y1, &x1, &y2, &x2);
+		doc->getSelection(&y1, &x1, &y2, &x2, _insertMode);
 
 		if (realRow >= y1 && realRow <= y2 && !(realRow == y2 && x2 == 0))
 		{
@@ -1002,8 +1002,13 @@ bool GEditor::cursorGoto(int ny, int nx, bool mark)
 	
 	if (nx < 0)
 		nx = 0;
-	else if (!_insertMode && nx > lineLength(ny))
-		nx = lineLength(ny);
+	else 
+	{
+		int xmax = _insertMode ? QMAX((_cellw / _charWidth) + 1, lineLength(largestLine)) : lineLength(ny);
+		
+		if (nx > xmax)
+			nx = xmax;
+	}
 	
 	if (ny != y)
 	{
@@ -1236,7 +1241,7 @@ void GEditor::tab(bool back)
 		return;
 	}
 
-	doc->getSelection(&y1, &x1, &y2, &x2);
+	doc->getSelection(&y1, &x1, &y2, &x2, _insertMode);
 	doc->startSelection(this, y1, 0);
 	if (x2)
 		y2++;
@@ -1498,7 +1503,7 @@ int GEditor::posToColumn(int y, int px)
 		_posOutside = true;
 	
 	if (len == 0)
-		return px / _charWidth;
+		return (px - margin) / _charWidth;
 		
 	px += contentsX();
 	
@@ -2459,7 +2464,9 @@ void GEditor::setInsertMode(bool mode)
 		
 		if (doc->hasSelection())
 		{
-			doc->getSelection(&y1, &x1, &y2, &x2);
+			doc->getSelection(&y1, &x1, &y2, &x2, _insertMode);
+			x = x2; y = y2;
+			
 			for (i = y1; i <= y2; i++)
 				updateLine(i);
 		}

@@ -182,7 +182,7 @@ public:
 
 	bool hasSelection() const { return selector != NULL; }
 	bool hasSelection(GEditor *view) const { return selector == view; }
-	void getSelection(int *y1, int *x1, int *y2, int *x2) const;
+	void getSelection(int *y1, int *x1, int *y2, int *x2, bool insertMode) const;
 	void startSelection(GEditor *view, int y, int x);
 	void endSelection(int y, int x);
 	void hideSelection();

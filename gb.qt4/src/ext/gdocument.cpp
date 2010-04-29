@@ -263,7 +263,7 @@ GString GDocument::getSelectedText(bool insertMode) const
 
   if (lines.count() && hasSelection())
   {
-    getSelection(&y1, &x1, &y2, &x2);
+    getSelection(&y1, &x1, &y2, &x2, insertMode);
     
 		if (insertMode)
 		{
@@ -663,7 +663,7 @@ void GDocument::updateViews(int row, int count)
 }
 
 
-void GDocument::getSelection(int *y1, int *x1, int *y2, int *x2) const
+void GDocument::getSelection(int *y1, int *x1, int *y2, int *x2, bool insertMode) const
 {
   if (!selector)
     return;
@@ -682,6 +682,12 @@ void GDocument::getSelection(int *y1, int *x1, int *y2, int *x2) const
     if (x1) *x1 = xs2;
     if (x2) *x2 = xs;
   }
+  
+  if (!insertMode)
+	{
+		*x1 = QMIN(*x1, lineLength(*y1));
+		*x2 = QMIN(*x2, lineLength(*y2));
+	}
 }
 
 void GDocument::startSelection(GEditor *view, int y, int x)
@@ -699,10 +705,10 @@ void GDocument::endSelection(int y, int x)
 {
   int y1a, y2a, y1b, y2b;
 
-  getSelection(&y1a, NULL, &y2a, NULL);
+  getSelection(&y1a, NULL, &y2a, NULL, true);
   ys2 = y;
   xs2 = x;
-  getSelection(&y1b, NULL, &y2b, NULL);
+  getSelection(&y1b, NULL, &y2b, NULL, true);
 
   /*if (y1a == y1b)
     updateViews(GMIN(y2a, y2b), GMAX(y2a, y2b) - GMIN(y2a, y2b) + 1);
@@ -721,7 +727,7 @@ void GDocument::hideSelection()
   if (!selector)
     return;
 
-  getSelection(&y1, NULL, &y2, NULL);
+  getSelection(&y1, NULL, &y2, NULL, true);
   selector = NULL;
   updateViews(y1, y2 - y1 + 1);
 }
@@ -733,7 +739,7 @@ void GDocument::eraseSelection()
   if (!selector)
     return;
 
-  getSelection(&y1, &x1, &y2, &x2);
+  getSelection(&y1, &x1, &y2, &x2, false);
   selector = NULL;
   /*x2--;
   if (x2 < 0)

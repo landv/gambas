@@ -249,6 +249,11 @@ public:
 	bool insideFolded(int row);
 	void foldRemove(int y1, int y2 = -1);
 	void foldInsert(int y, int n);
+	
+	bool hasSelection() const { return doc->hasSelection(); }
+	void getSelection(int *y1, int *x1, int *y2, int *x2) const { return doc->getSelection(y1, x1, y2, x2, _insertMode); }
+	GString getSelectedText() const { return doc->getSelectedText(_insertMode); }
+	void hideSelection() { doc->hideSelection(); }
 
 signals:
 

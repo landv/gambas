@@ -500,14 +500,14 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CEDITOR_selected)
 
-  GB.ReturnBoolean(DOC->hasSelection());
+  GB.ReturnBoolean(WIDGET->hasSelection());
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CEDITOR_sel)
 
-  if (DOC->hasSelection())
-    DOC->getSelection(&_y1, &_x1, &_y2, &_x2);
+  if (WIDGET->hasSelection())
+    WIDGET->getSelection(&_y1, &_x1, &_y2, &_x2);
   else
     _x1 = _y1 = _x2 = _y2 = -1;
 
@@ -517,7 +517,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CEDITOR_sel_text)
 
-  GB.ReturnNewZeroString(DOC->getSelectedText(WIDGET->getInsertMode()).utf8());
+  GB.ReturnNewZeroString(WIDGET->getSelectedText().utf8());
 
 END_PROPERTY
 
@@ -547,7 +547,7 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(CEDITOR_sel_hide)
 
-  DOC->hideSelection();
+  WIDGET->hideSelection();
 
 END_METHOD
 
