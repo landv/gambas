@@ -155,12 +155,15 @@ End
 
 Public Sub LeaveControl(hCont As Container, hCCtrl As CControl)
   
-  'Dim hIcon As Control
+  Dim hIcon As Control
   
-  CheckIcon(hCCtrl)
-  'hIcon = hCCtrl["#icon"]
-  'If hIcon And If IsInside(hIcon) Then Return
-  'DeleteIcon(hCCtrl)
+  'CheckIcon(hCCtrl)
+  'Return
+  
+  hIcon = hCont.Find(Mouse.ScreenX - hCont.ScreenX, Mouse.ScreenY - hCont.ScreenY)
+  If hIcon And If $cCtrlFromIcon.Exist(Str(hIcon)) Then Return
+  
+  DeleteIcon(hCCtrl)
   
 End
 

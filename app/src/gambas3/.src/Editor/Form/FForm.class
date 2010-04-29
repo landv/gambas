@@ -1826,6 +1826,129 @@ Private Sub ArrangeContainer(hParent As Container, iArr As Integer, Optional bRe
 
 End
 
+Private Sub CenterChildren(aCCtrl As CControl[], bVertical As Boolean)
+  
+  Dim iSize As Integer
+  Dim hCCtrl As CControl
+  Dim nSpace As Integer
+  Dim iPos As Integer
+  
+  If Not bVertical Then
+  
+    iSize = aCCtrl[0].Control.Parent.ClientWidth
+    For Each hCCtrl In aCCtrl
+      iSize -= hCCtrl.Width
+    Next
+    
+  Else
+  
+    iSize = aCCtrl[0].Control.Parent.ClientHeight
+    For Each hCCtrl In aCCtrl
+      iSize -= hCCtrl.Height
+    Next
+    
+  Endif
+  
+  If iSize < 0 Then Return
+  nSpace = aCCtrl.Count + 1
+  
+  For Each hCCtrl In aCCtrl
+    
+    iPos += iSize \ nSpace
+    iSize -= iSize \ nSpace
+    Dec nSpace
+    
+    If Not bVertical Then
+      hCCtrl.Move(iPos, hCCtrl.Y, True)
+      iPos += hCCtrl.W
+    Else
+      hCCtrl.Move(hCCtrl.X, iPos, True)
+      iPos += hCCtrl.H
+    Endif
+  
+  Next
+    
+End
+
+
+Private Sub CenterContainer(hCCont As CControl, bVertical As Boolean)
+  
+  Dim hCCtrl As CControl
+  Dim aCCtrl As CControl[]
+  Dim hChild As Control
+  Dim hCont As Container
+  Dim iPos As Integer
+  Dim iDim As Integer
+  
+  If IsNull(hCCont) Then
+  
+    If Selection.Count = 0 Then
+      CenterContainer(RootControl, bVertical)
+      Return
+    Endif
+  
+    If Selection.Count = 1 And If Master.IsContainer() Then
+      CenterContainer(Master, bVertical)
+      Return
+    Endif
+  
+    aCCtrl = New CControl[]
+    For Each hCCtrl In Selection
+      If hCCtrl.Virtual Then Continue
+      aCCtrl.Add(hCCtrl)
+    Next
+    CenterChildren(aCCtrl, bVertical)
+    Return
+  
+  Endif
+  
+  hCont = hCCont.Control
+  
+  If hCont.Children.Count = 0 Then Return
+  
+  ArrangeContainer(hCont, If(bVertical, Arrange.Column, Arrange.Row))
+  
+  aCCtrl = New CControl[]
+  If bVertical Then
+    iPos = hCont.Children[0].Y + 1
+  Else
+    iPos = hCont.Children[0].X + 1
+  Endif
+
+  For Each hChild In hCont.Children
+    
+    If Not hChild.Tag Then Continue
+    If Not Control.Exist(hChild.Tag) Then Continue
+    
+    hCCtrl = Control[hChild.Tag]
+    If hCCtrl.Virtual Then Continue
+    
+    If bVertical Then
+      iDim = hChild.Y
+    Else
+      iDim = hChild.X
+    Endif
+    
+    If iDim < iPos Then
+      If aCCtrl.Count Then CenterChildren(aCCtrl, bVertical)
+      aCCtrl.Clear
+    Endif
+    
+    aCCtrl.Add(hCCtrl)
+    
+    If bVertical Then
+      iPos = iDim + hChild.H
+    Else
+      iPos = iDim + hChild.W
+    Endif
+    
+  Next
+  
+  If aCCtrl.Count Then CenterChildren(aCCtrl, bVertical)
+  
+End
+
+
 Public Sub mnuSave_Click()
 
   Save
@@ -2771,6 +2894,12 @@ Public Sub Action_Activate(Key As String) As Boolean
 
     Case ".arrange-column"
       ArrangeContainer(Null, Arrange.Column)
+      
+    Case ".arrange-hcenter"
+      CenterContainer(Null, False)
+      
+    Case ".arrange-vcenter"
+      CenterContainer(Null, True)
       
     Case ".raise"
       DoRaise

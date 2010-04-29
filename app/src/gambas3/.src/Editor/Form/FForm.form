@@ -150,6 +150,18 @@
         Text = ("Columns")
         Picture = Picture["img/16/arrange-tb.png"]
       }
+      { Menu4 Menu
+      }
+      { mnuArrangeCenterHorizontally Menu
+        Action = ".arrange-hcenter"
+        Text = ("Center horizontally")
+        Picture = Picture["img/16/arrange-hcenter.png"]
+      }
+      { mnuArrangeCenterVertically Menu
+        Action = ".arrange-vcenter"
+        Text = ("Center vertically")
+        Picture = Picture["img/16/arrange-vcenter.png"]
+      }
     }
     { mnuAlign Menu
       Text = ("Alignment")
@@ -310,7 +322,7 @@
       }
     }
     { tlbArrange ToolBar
-      MoveScaled(1,5,59,4)
+      MoveScaled(1,5,63,4)
       Key = "arrange"
       Text = ("Arrangement")
       { ToolButton19 ToolButton
@@ -388,6 +400,18 @@
         ToolTip = ("Rows")
         Action = ".arrange-row"
         Picture = Picture["img/16/arrange-lr.png"]
+      }
+      { ToolButton10 ToolButton
+        MoveScaled(48,0,4,4)
+        ToolTip = ("Center horizontally")
+        Action = ".arrange-hcenter"
+        Picture = Picture["img/16/arrange-hcenter.png"]
+      }
+      { ToolButton8 ToolButton
+        MoveScaled(52,0,4,4)
+        ToolTip = ("Center vertically")
+        Action = ".arrange-vcenter"
+        Picture = Picture["img/16/arrange-vcenter.png"]
       }
     }
     { tlbTab ToolBar
@@ -560,6 +584,11 @@
     Shortcut = ""
     Picture = "img/16/arrange-tb.png"
   }
+  { Action arrange-hcenter
+    Text = "Center horizontally"
+    Shortcut = ""
+    Picture = "img/16/arrange-hcenter.png"
+  }
   { Action arrange-horizontal
     Text = "Horizontal"
     Shortcut = "Ctrl+Alt+H"
@@ -569,6 +598,11 @@
     Text = "Rows"
     Shortcut = ""
     Picture = "img/16/arrange-lr.png"
+  }
+  { Action arrange-vcenter
+    Text = "Center vertically"
+    Shortcut = ""
+    Picture = "img/16/arrange-vcenter.png"
   }
   { Action arrange-vertical
     Text = "Vertical"
@@ -701,8 +735,8 @@
 { Toolbars
   { Toolbar arrange
     Text = "Arrangement"
-    List = "raise,lower,align-top,align-bottom,align-left,align-right,same-width,same-height,arrange-vertical,arrange-horizontal,arrange-column,arrange-row"
-    Default = "raise,lower,align-top,align-bottom,align-left,align-right,same-width,same-height"
+    List = "raise,lower,align-top,align-bottom,align-left,align-right,same-width,same-height,arrange-vertical,arrange-horizontal,arrange-column,arrange-row,arrange-hcenter,arrange-vcenter"
+    Default = "raise,lower,align-top,align-bottom,align-left,align-right,same-width,same-height,arrange-hcenter,arrange-vcenter"
   }
   { Toolbar form
     Text = "Form"
