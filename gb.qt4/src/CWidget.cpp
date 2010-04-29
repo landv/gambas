@@ -271,7 +271,7 @@ void CWIDGET_new(QWidget *w, void *_object, bool no_show, bool no_filter, bool n
 
 	if (!no_show)
 	{
-		w->setGeometry(-32, -32, 32, 32);
+		w->setGeometry(-16, -16, 8, 8);
 		CWIDGET_set_visible(THIS, true);
 		w->raise();
 	}
@@ -1678,6 +1678,7 @@ CWIDGET *CWidget::getDesign(QObject *o)
 			return ob;
 
 		o = o->parent();
+		real = false;
 	}
 
 	return NULL;
@@ -2023,7 +2024,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			CMOUSE_clear(true);
 			CMOUSE_info.x = p.x();
 			CMOUSE_info.y = p.y();
-			CMOUSE_info.button = mevent->buttons();
+			CMOUSE_info.button = mevent->buttons() | mevent->button();
 			CMOUSE_info.modifier = mevent->modifiers();
 
 			cancel = GB.Raise(control, event_id, 0); //, GB_T_INTEGER, p.x(), GB_T_INTEGER, p.y(), GB_T_INTEGER, state);

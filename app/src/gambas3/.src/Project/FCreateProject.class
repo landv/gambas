@@ -150,6 +150,7 @@ Private Sub CreateProject() As Boolean
     
     Mkdir sDir
     Mkdir sDir &/ ".src"
+    Mkdir sDir &/ ".hidden"
     
     For Each sPath In Split(GetFile("template/list"), "\n", "", True)
       

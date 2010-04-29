@@ -6,6 +6,7 @@ Public Family As String
 Public Master As CControl
 Public Selection As New Collection
 Public Control As New Collection(gb.IgnoreCase)
+Public RootControl As CControl
 Public AllMenus As New CControl[]
 
 Public Container As Container
@@ -121,8 +122,10 @@ Public Sub Reload()
   UnSelectAll
   RefreshProperty
   
-  If Control.Exist(Me.Name) Then 
-    Control[Me.Name].Delete
+  If RootControl Then 
+    RootControl.Delete
+    RootControl = Null
+    Control[Me.Name] = Null
     AllMenus.Clear
   Endif
   
@@ -156,7 +159,7 @@ End
 Public Sub UpdateSnap()
   
   Dim hPict As Picture
-  Dim hCtrl As CControl = Control[Me.Name]
+  Dim hCtrl As CControl = RootControl
   Dim iColor As Integer
   Dim X, Y As Integer
   Dim nPts As Integer
@@ -266,22 +269,14 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
 
       If Left$(sClass) = "#" Then sClass = Mid$(sClass, 2)
 
-      If IsNull(hCtrl) Then sName = Me.Name
+      sOldClass = "" 
 
-      ' If sClass = "Image" Then
-      '   sOldClass = sClass
-      '   sClass = "PictureBox"
-      ' Else If sClass = "TextView" Then 
-      '   sOldClass = sClass
-      '   sClass = "TextEdit"
-      ' Else If sClass = "DateBox" Or sClass = "TimeBox" Then 
-      '   sOldClass = sClass
-      '   sClass = "ValueBox"
-      ' Else
-        sOldClass = "" 
-      ' Endif
-
-      hCtrl = CreateControl(sClass, hCtrl, sName)
+      If IsNull(hCtrl) Then 
+        hCtrl = CreateControl(sClass, Null, Me.Name)
+        RootControl = hCtrl
+      Else
+        hCtrl = CreateControl(sClass, hCtrl, sName)
+      Endif
       
       If sEventName Then hCtrl.SetProperty(CPropertyInfo.EVENT_NAME, sEventName)
       If bPublic Then hCtrl.SetProperty(CPropertyInfo.PUBLIC_NAME, bPublic)
@@ -582,7 +577,7 @@ Public Function Save(Optional bForce As Boolean) As Boolean
   If $bLocked Then AddLine("#LOCKED")
   AddLine()
 
-  SaveOne(Control[Me.Name])
+  SaveOne(RootControl)
   SaveAction
 
   File.Save(Path, $sSave)
@@ -838,7 +833,7 @@ Public Sub Control_Resize()
 
   Dim hCtrl As Control = Last
 
-  With Control[Me.Name]
+  With RootControl
     If hCtrl <> .Control Then Return
     If hCtrl.Width <> .GetProperty("#Width") Then .SetProperty("#Width", hCtrl.Width)
     If hCtrl.Height <> .GetProperty("#Height") Then .SetProperty("#Height", hCtrl.Height)
@@ -912,7 +907,7 @@ Public Sub Control_MouseDown()
 
   If $sTool = "" Then
 
-    If Mouse.Control Or $hCurrent.Name = Me.Name Then
+    If Mouse.Control Or If $hCurrent = RootControl Then
 
       $XS = X
       $YS = Y
@@ -992,6 +987,9 @@ Public Sub Control_MouseMove()
   Dim bMoveY As Boolean
   Dim hParent As CControl
   Dim hControl As Control
+  
+  'Dim hForm As CControl = Control[Me.Name]
+  'Debug Last;; Mouse.ScreenX - hForm.Control.ScreenX;; Mouse.ScreenY - hForm.Control.ScreenY
 
   If Not Mouse.Left Then Return
 
@@ -1152,7 +1150,7 @@ Public Sub Control_MouseUp()
 
     Else
 
-      If $hCurrent.Name = Me.Name Then
+      If $hCurrent = RootControl Then
 
         UnselectAll
 
@@ -1228,7 +1226,7 @@ Public Sub Control_Click()
   
   If hCCtrl.IsMultiContainer() Then 
     UpdateMultiContainer(hCCtrl)
-    If hCCtrl.HasIcon() Then $hFamily.EnterControl(hCCtrl)
+    If hCCtrl.HasIcon() Then $hFamily.EnterControl(RootControl, hCCtrl)
   Endif
   
 End
@@ -1266,7 +1264,7 @@ Public Function CreateControl(sClass As String, hParent As CControl, Optional sN
   If bSetText Then Try hCtrl.SetProperty("Text", sName)
 
   If sClass = "Menu" Then
-    If hParent.Name = Me.Name Then
+    If hParent = RootControl Then
       AllMenus.Add(hCtrl)
     Endif
   Endif
@@ -1303,7 +1301,7 @@ Public Sub AddControl(sClass As String, Optional hParent As CControl, Optional X
         hParent = Master.Parent
       Endif
     Else
-      hParent = Control[Me.Name]
+      hParent = RootControl
     Endif
     
   Endif
@@ -1652,7 +1650,7 @@ Public Sub PasteSelection(bSameCoord As Boolean)
   Else If Selection.Count > 1 Then
     hParent = Master.Parent
   Else
-    hParent = Control[Me.Name]
+    hParent = RootControl
   Endif
 
   If Not hParent.IsContainer() Then
@@ -1793,7 +1791,7 @@ Private Sub ArrangeContainer(hParent As Container, iArr As Integer, Optional bRe
       aCtrl.Add(hCCtrl.Control)
     Next
   Else
-    ArrangeContainer(Control[Me.Name].Control, iArr)
+    ArrangeContainer(RootControl.Control, iArr)
     Return
   Endif
 
@@ -1841,7 +1839,7 @@ Private Sub ResetSave()
   $iSaveY = 0
   '$iIndent  = 0
   $iSaveLevel = 0
-  $bScaled = Control[Me.Name].GetPropertyDefault(CPropertyInfo.SCALE_NAME)
+  $bScaled = RootControl.GetPropertyDefault(CPropertyInfo.SCALE_NAME)
   $cAction = New Collection
   $cToolbar = New Collection
 
@@ -1863,7 +1861,7 @@ Private Sub GotoEventMethod(hCtrl As CControl, sEvent As String)
   Dim sGroup As String
   Dim hEditor As FEditor
 
-  If Not hCtrl Then hCtrl = Control[Me.Name]
+  If Not hCtrl Then hCtrl = RootControl
 
   If hCtrl.Kind = "Form" Then
     sGroup = "Form"
@@ -1924,12 +1922,9 @@ Private Sub CreateMenu()
   mnuSelect.Children.Clear
 
   For Each hCtrl In Control
-    sName = hCtrl.Name
-    If sName <> Me.Name Then
-      If hCtrl.Kind <> "Menu" Then
-        cCtrl.Add(sName)
-      Endif
-    Endif
+    If hCtrl = RootControl Then Continue
+    If hCtrl.Kind = "Menu" Then Continue
+    cCtrl.Add(hCtrl.Name)
   Next
 
   mnuSelect.Enabled = cCtrl.Count
@@ -2103,15 +2098,11 @@ End
 
 Public Sub Rename(sNewName As String, sNewPath As String)
 
-  Dim hCtrl As CControl
-
-  hCtrl = Control[Me.Name]
-
   Me.Name = sNewName
   Path = sNewPath 'File.Dir(Path) &/ sNewName & "." & File.Ext(Path)
 
   $bDoNotModify = True
-  hCtrl.Rename(sNewName)
+  RootControl.Rename(sNewName)
   DrawTitle
   FProperty.RefreshAll
   $bDoNotModify = False
@@ -2141,7 +2132,7 @@ Public Sub Control_Enter()
   hCCtrl = Control[hCtrl.Tag]
   If Not hCCtrl Then Return
   
-  $hFamily.EnterControl(hCCtrl)
+  $hFamily.EnterControl(RootControl.Control, hCCtrl)
   
 End
 
@@ -2155,7 +2146,7 @@ Public Sub Control_Leave()
   hCCtrl = Control[hCtrl.Tag]
   If Not hCCtrl Then Return
   
-  $hFamily.LeaveControl(hCCtrl)
+  $hFamily.LeaveControl(RootControl.Control, hCCtrl)
   
 End
 
@@ -2264,7 +2255,7 @@ Public Sub mnuSelectAll_Click()
     hParent = Master
     If Not hParent.IsContainer() Then hParent = hParent.Parent
   Else 
-    hParent = Control[Me.Name]
+    hParent = RootControl
   Endif
 
   UnselectAll
@@ -2511,7 +2502,7 @@ Public Sub UpdateBorder()
   Dim hCtrl As CControl
   Dim H, HM As Integer
   
-  hCtrl = Control[Me.Name]
+  hCtrl = RootControl
   If Not hCtrl Then Return
 
   With hCtrl.Control
@@ -2574,7 +2565,7 @@ Public Sub UpdateTitle()
   
   If Family <> "Form" Then Return
   
-  hCtrl = Control[Me.Name]
+  hCtrl = RootControl
   If Not hCtrl Then Return
 
   sPict = hCtrl.GetProperty("Icon")
@@ -2683,15 +2674,13 @@ End
 ' 
 ' 
 Public Sub Handle_MouseDown()
+
   $bMove = True  
   $X = Mouse.ScreenX
   $Y = Mouse.ScreenY
-  $W = Control[Me.Name].Control.W
-  $H = Control[Me.Name].Control.H
+  $W = RootControl.Control.W
+  $H = RootControl.Control.H
   
-  'DEBUG Mouse.ScreenX;; Mouse.ScreenY
-  'DEBUG $X;; $Y
-
 End
 
 Public Sub Handle_MouseMove()
@@ -2703,7 +2692,7 @@ Public Sub Handle_MouseMove()
   
   hPanel = Last
 
-  With Control[Me.Name].Control
+  With RootControl.Control
 
     W = .W
     H = .H
@@ -2728,7 +2717,7 @@ Public Sub Handle_MouseMove()
     
   End With
     
-  Control[Me.Name].Resize(W, H)
+  RootControl.Resize(W, H)
   
   '$bMove = FALSE
   'UpdateBorder
@@ -2949,7 +2938,7 @@ Public Sub panTitle_Drop()
   
   Dim sPath As String = Drag.Data
   Dim hImage As Image
-  Dim hCtrl As CControl = Control[Me.Name]
+  Dim hCtrl As CControl = RootControl
   
   Try hImage = Image.Load(sPath)
   If Not hImage Then Return
@@ -3154,7 +3143,7 @@ Public Sub GetTopLevelMenus() As String[]
   Dim aMenu As New String[]
   
   For Each hCtrl In AllMenus
-    If hCtrl.Parent = Control[Me.Name] Then
+    If hCtrl.Parent = RootControl Then
       aMenu.Add(hCtrl.Name)
     Endif
   Next
@@ -3177,7 +3166,7 @@ Public Sub GetText() As String
 
   Dim bModify As Boolean = $bModify
   ResetSave
-  SaveOne(Control[Me.Name])
+  SaveOne(RootControl)
   $bModify = bModify
   DrawTitle
   Return $sSave

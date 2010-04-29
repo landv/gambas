@@ -260,7 +260,7 @@
     { mnuBrowse Menu
       Action = "browse-project"
       Text = ("&Browse project...")
-      Picture = Picture["icon:/small/view-icon"]
+      Picture = Picture["icon:/small/file-manager"]
       Shortcut = "Ctrl+Alt+O"
     }
     { mnuTerminal Menu
@@ -497,7 +497,6 @@
   }
   { Separator7 Separator
     MoveScaled(0,0,13,0)
-    Visible = False
   }
   { ToolBar1 ToolBar
     MoveScaled(0,1,163,4)
@@ -892,7 +891,7 @@
   { Action browse-project
     Text = "&Browse project..."
     Shortcut = "Ctrl+Alt+O"
-    Picture = "icon:/small/view-icon"
+    Picture = "icon:/small/file-manager"
   }
   { Action clean-up-project
     Text = "&Clean up"

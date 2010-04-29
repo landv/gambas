@@ -1,16 +1,14 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,87,69)
+  MoveScaled(0,0,87,70)
   Text = ("New project")
   Icon = Picture["icon:/small/new"]
   Persistent = True
-  Arrangement = Arrange.Horizontal
-  Spacing = True
+  Arrangement = Arrange.Fill
   Padding = 8
   { wizProject Wizard
-    MoveScaled(1,0,84,67)
-    Expand = True
+    MoveScaled(1,1,84,68)
     Arrangement = Arrange.Vertical
     Spacing = True
     Count = 3
@@ -19,15 +17,15 @@
     Index = 0
     Text = ("Project type")
     { HBox5 HBox
-      MoveScaled(0,0,79,56)
+      MoveScaled(2,0,79,55)
       Expand = True
       Spacing = True
       { VBox3 VBox
-        MoveScaled(1,1,34,49)
+        MoveScaled(2,2,35,49)
         Expand = True
         Spacing = True
         { Label5 Label
-          MoveScaled(1,0,25,3)
+          MoveScaled(1,1,25,3)
           Font = Font["Bold"]
           AutoResize = True
           Text = ("Type")
@@ -167,7 +165,7 @@
         }
       }
       { VBox1 VBox
-        MoveScaled(36,1,39,53)
+        MoveScaled(39,2,39,53)
         Expand = True
         Spacing = True
         { Label12 Label
@@ -242,7 +240,7 @@
     Index = 1
     Text = ("Project directory")
     { dchProject DirChooser
-      MoveScaled(1,0,77,50)
+      MoveScaled(1,1,77,50)
       Expand = True
       Root = "/"
       ShowBookmark = True

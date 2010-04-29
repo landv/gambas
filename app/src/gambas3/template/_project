@@ -22,6 +22,7 @@ Component=gb.db
 @
 @IF NETWORK
 Component=gb.net
+Component=gb.net.curl
 Component=gb.net.smtp
 @ENDIF
 @
@@ -46,6 +47,7 @@ Component=gb.xml.xslt
 Component=gb.opengl
 @ENDIF
 @IF GRAPHIC
+Component=gb.image
   @IF GTK
 Component=gb.gtk
 Component=gb.form
@@ -68,7 +70,7 @@ Component=gb.db.form
 @ENDIF
 @
 @IF IMAGE
-Component=gb.image
+Component=gb.image.effect
 @ENDIF
 @
 @IF GAME

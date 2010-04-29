@@ -31,8 +31,8 @@ Private $bShowIndex As Boolean
 
 Public Sub _new()
 
-  $hWizard = New FWizard(Me)
-  Object.Attach($hWizard, Me, "Wizard")
+  $hWizard = New FWizard(Me) As "Wizard"
+  'Object.Attach($hWizard, Me, "Wizard")
 
   Me.Count = 1
   'ME.Index = 0

@@ -10,6 +10,9 @@ Public Const DropImageProperty As String = ""
 Public Background As Integer = Color.Background
 
 Private $hTimer As Timer
+Private $hCurrentIcon As Control
+
+Private Const ICON_SIZE As Integer = 15
 
 Static Public Sub Get(sFamily As String) As CFamily
   
@@ -93,6 +96,41 @@ Private Sub GetContainerSize(hCont As Container) As Integer[]
   
 End
 
+Private Sub IsInside(hCtrl As Control) As Boolean
+  
+  Dim aSize As Integer[]
+  Dim X, Y As Integer
+  Dim XC, YC, WC, HC As Integer
+  
+  X = Mouse.ScreenX
+  Y = Mouse.ScreenY
+  
+  XC = hCtrl.ScreenX
+  YC = hCtrl.ScreenY
+  
+  If hCtrl Is Container Then
+    aSize = GetContainerSize(hCtrl)
+    WC = aSize[0]
+    HC = aSize[1]
+  Else
+    WC = hCtrl.W
+    HC = hCtrl.H
+  Endif
+  
+  If hCtrl.X < 0 Then
+    XC -= hCtrl.X
+    WC += hCtrl.X
+  Endif
+  
+  If hCtrl.Y < 0 Then
+    XC -= hCtrl.Y
+    WC += hCtrl.Y
+  Endif
+  
+  If X >= XC And If X < (XC + WC) And If Y >= YC And If Y < (YC + HC) Then Return True
+  
+End
+
 
 Private Sub CheckIcon(hCCtrl As CControl)
   
@@ -103,29 +141,30 @@ Private Sub CheckIcon(hCCtrl As CControl)
   
   If Not hIcon Then Return
   
-  X = Mouse.ScreenX
-  Y = Mouse.ScreenY
-  aSize = GetContainerSize(hCtrl)
-  
-  If X >= hCtrl.ScreenX And If X < (hCtrl.ScreenX + aSize[0]) And If Y >= hCtrl.ScreenY And If Y < (hCtrl.ScreenY + aSize[1]) Then Return
+  If IsInside(hCtrl) Then Return
   
   DeleteIcon(hCCtrl)
   
 End
 
-Public Sub EnterControl(hCCtrl As CControl)
+Public Sub EnterControl(hCont As Container, hCCtrl As CControl)
   
-  DrawIcon(hCCtrl, "")  
+  DrawIcon(hCont, hCCtrl, "")  
   
 End
 
-Public Sub LeaveControl(hCCtrl As CControl)
+Public Sub LeaveControl(hCont As Container, hCCtrl As CControl)
+  
+  'Dim hIcon As Control
   
   CheckIcon(hCCtrl)
+  'hIcon = hCCtrl["#icon"]
+  'If hIcon And If IsInside(hIcon) Then Return
+  'DeleteIcon(hCCtrl)
   
 End
 
-Public Sub DrawIcon(hCCtrl As CControl, sImage As String)
+Public Sub DrawIcon(hCont As Container, hCCtrl As CControl, sImage As String)
   
   Dim hCtrl As Control = hCCtrl.Control
   Dim hPict As Picture
@@ -133,7 +172,6 @@ Public Sub DrawIcon(hCCtrl As CControl, sImage As String)
   Dim hIcon As PictureBox
   Dim hComp As Control
   Dim iWidth As Integer
-  Dim hCont As Container
   Dim X, Y As Integer
   Dim XI, YI, XC, YC As Integer
 
@@ -151,46 +189,52 @@ Public Sub DrawIcon(hCCtrl As CControl, sImage As String)
   If hIcon Then 
     ' If it was explicitely hidden, then do not show it again
     If Not hIcon.Visible Then Return
-    DeleteIcon(hCCtrl)
+    'DeleteIcon(hCCtrl)
   Endif
   
-  hPict = Picture["$arr-" & sImage]
-  If Not hPict Then
-    hImage = New Image(15, 15, Color.RGB(0, 0, 0, 128))
-    hImage.Draw(Image.Load("img/family" &/ sImage & ".png"), 0, 0)
-    hPict = hImage.Picture
-    Picture["$arr-" & sImage] = hPict
-  Endif
-  
-  hCont = hCtrl.Window
-  
-  X = hCtrl.ScreenX + hCtrl.Width - hPict.Width
+  X = hCtrl.ScreenX + hCtrl.Width - ICON_SIZE
   Y = hCtrl.ScreenY
   If hCtrl = hCont And If hCtrl.Window.Menus.Visible Then Y += hCont.ClientY
   'hIcon.Move(,, hPict.Width, hPict.Height)
   
   If hCCtrl.Parent And If hCCtrl.Parent["#icon"] Then
     hComp = hCCtrl.Parent["#icon"]
-    XI = X + hPict.Width / 2
-    YI = Y + hPict.Height / 2
+    XI = X + ICON_SIZE / 2
+    YI = Y + ICON_SIZE / 2
     XC = hComp.ScreenX + hComp.Width / 2
     YC = hComp.ScreenY + hComp.Height / 2
-    If Abs(XI - XC) < (hPict.Width + 1) And Abs(YI - YC) < (hPict.Height + 1) Then
+    If Abs(XI - XC) < (ICON_SIZE + 1) And Abs(YI - YC) < (ICON_SIZE + 1) Then
       If hCtrl.Parent.Width > hCtrl.Parent.Height Then
-        X = hComp.ScreenX - hPict.Width - 1
+        X = hComp.ScreenX - ICON_SIZE - 1
       Else
-        Y = hComp.ScreenY + hPict.Height + 1
+        Y = hComp.ScreenY + ICON_SIZE + 1
       Endif
     Endif
   Endif
   
-  hIcon = New PictureBox(hCont) As "Icon"
-  hCCtrl["#icon"] = hIcon
-  hIcon.Ignore = True
-  hIcon.Move(X - hCont.ScreenX - hCont.ClientX, Y - hCont.ScreenY - hCont.ClientY, hPict.Width, hPict.Height)
-  hIcon.Picture = hPict
-  hIcon.Raise
-  $cCtrlFromIcon[Str(hIcon)] = hCCtrl
+  If Not hIcon Then
+  
+    hPict = Picture["$arr-" & sImage]
+    If Not hPict Then
+      hImage = New Image(ICON_SIZE, ICON_SIZE, Color.RGB(0, 0, 0, 96))
+      hImage.Draw(Image.Load("img/family" &/ sImage & ".png"), 0, 0)
+      hPict = hImage.Picture
+      Picture["$arr-" & sImage] = hPict
+    Endif
+    
+    hIcon = New PictureBox(hCont) As "Icon"
+    hCCtrl["#icon"] = hIcon
+    hIcon.Ignore = True
+    'hIcon.Background = Color.Black
+    hIcon.Picture = hPict
+    'hIcon.Raise
+    $cCtrlFromIcon[Str(hIcon)] = hCCtrl
+  
+  Endif
+  
+  If Not hCont Then hCont = hIcon.Parent
+  
+  hIcon.Move(X - hCont.ScreenX - hCont.ClientX, Y - hCont.ScreenY - hCont.ClientY, ICON_SIZE, ICON_SIZE)
   
 End
 
@@ -200,8 +244,16 @@ Public Sub Icon_MouseDown()
   
 End
 
+Public Sub Icon_Enter()
+  
+  $hCurrentIcon = Last
+  
+End
+
+
 Public Sub Icon_Leave()
   
+  If $hCurrentIcon = Last Then $hCurrentIcon = Null
   CheckIcon($cCtrlFromIcon[Str(Last)])
   
 End

@@ -10,9 +10,11 @@ Public Date As Date
 
 Public Sub _new(sPath As String, dDate As Date)
   
-  If Not Exist(sPath &/ ".project") Then Return
+  If IsNull(dDate) Then Try dDate = Stat(sPath &/ ".startup").LastModified
+  If IsNull(dDate) Then Try dDate = Stat(sPath &/ ".project").LastModified
+  If IsNull(dDate) Then Return
+
   Path = sPath
-  If IsNull(dDate) Then dDate = Stat(sPath &/ ".startup").LastModified
   {Date} = dDate
   
 End

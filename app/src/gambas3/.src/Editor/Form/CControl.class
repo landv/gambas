@@ -317,6 +317,7 @@ Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As
     Endif
     hCtrl.Drop = True
     hCtrl.Background = CFamily.Get(hForm.Family).Background
+    'hCtrl.Tracking = True
     
   Else If Kind = "Menu" Then
   
@@ -348,6 +349,7 @@ Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As
     Endif
 
     hCtrl.Drop = True
+    'hCtrl.Tracking = True
 
   Endif
 
@@ -1027,7 +1029,7 @@ Private Sub MoveAllHandle()
     MovePanel(iInd)
   Next
   
-  If HasIcon() Then $hFamily.EnterControl(Me)
+  If HasIcon() Then $hFamily.EnterControl(Null, Me)
   
 End
 

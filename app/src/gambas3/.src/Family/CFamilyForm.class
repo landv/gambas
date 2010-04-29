@@ -101,7 +101,7 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
   
 End
 
-Public Sub EnterControl(hCCtrl As CControl)
+Public Sub EnterControl(hCont As Container, hCCtrl As CControl)
   
   Dim sImage As String
   
@@ -127,7 +127,7 @@ Public Sub EnterControl(hCCtrl As CControl)
       
   End Select
   
-  Me.DrawIcon(hCCtrl, sImage)
+  Me.DrawIcon(hCont, hCCtrl, sImage)
   
 End
 

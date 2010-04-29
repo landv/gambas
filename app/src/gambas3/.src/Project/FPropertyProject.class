@@ -803,6 +803,7 @@ Private Sub WriteComponent() As Boolean
   Dim aVirtual As String[]
   Dim aContainer As String[]
   Dim aMultiContainer As String[]
+  Dim bNew As Boolean
 
   'HideEditor
   WriteFeatures(panNeed, $aNeed)
@@ -854,8 +855,10 @@ Private Sub WriteComponent() As Boolean
 
   Close #hFile    
   
+  bNew = Not Exist(sPath)
   Try Kill sPath
   Copy Temp$("component") To sPath
+  If bNew Then VersionControl.AddFile(sPath)
   
 Catch 
 

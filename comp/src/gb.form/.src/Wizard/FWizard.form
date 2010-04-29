@@ -1,16 +1,15 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(48.1667,29,66,50)
-  Text = ("")
+  MoveScaled(48.1429,29,66,50)
   Resizable = False
   Arrangement = Arrange.Vertical
-  Spacing = 8
+  Spacing = True
   { panTitle Panel
     MoveScaled(1,1,61,5)
     Background = Color.SelectedBackground
     Arrangement = Arrange.Horizontal
-    Spacing = 4
+    Spacing = True
     Padding = 4
     { picTitle PictureBox
       MoveScaled(1,1,4,4)
@@ -22,7 +21,6 @@
       Foreground = Color.SelectedForeground
       Expand = True
       AutoResize = True
-      Text = ("")
     }
   }
   { panWizard Panel
@@ -34,7 +32,7 @@
   }
   { HBox1 HBox
     MoveScaled(1,40,59,4)
-    Spacing = 8
+    Spacing = True
     { Panel2 Panel
       MoveScaled(2,1,3,3)
       Expand = True
@@ -54,10 +52,5 @@
       Text = ("Cancel")
       Cancel = True
     }
-  }
-  { panBorder Panel
-    MoveScaled(25,45,28,14)
-    Visible = False
-    Background = Color.SelectedBackground
   }
 }

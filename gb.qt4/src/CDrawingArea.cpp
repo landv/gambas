@@ -199,7 +199,7 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 	}
 	else
 	{
-		QPainter paint( this );
+		//QPainter paint( this );
 		QRect r;
 
 		r = event->rect().intersect(rect());

@@ -100,8 +100,8 @@ static void project_component(char *name, int len)
   comp = strtok(name, delim);
   while (comp != NULL)
   {
-  	//if (strcmp(comp, PROJECT_name))
-		COMPONENT_create(comp);
+  	if (strcmp(comp, PROJECT_name))
+			COMPONENT_create(comp);
     comp = strtok(NULL, delim);
   }
 }
