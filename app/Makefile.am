@@ -15,7 +15,7 @@ install-exec-local:
 	
 	@echo "Installing the scripter..."
 	@ln -s gbs$(GAMBAS_VERSION).gambas $(DESTDIR)$(bindir)/gbs$(GAMBAS_VERSION) || true
-	@ln -s gbw$(GAMBAS_VERSION).gambas $(DESTDIR)$(bindir)/gbs$(GAMBAS_VERSION) || true
+	@ln -s gbs$(GAMBAS_VERSION).gambas $(DESTDIR)$(bindir)/gbw$(GAMBAS_VERSION) || true
 	@if test x"$(XDG_UTILS)" != x; then \
 		$(INSTALL) -d $(DESTDIR)$(gbdatadir)/icons; \
 		cp -f $(srcdir)/mime/application-x-gambas*.png $(DESTDIR)$(gbdatadir)/icons; \

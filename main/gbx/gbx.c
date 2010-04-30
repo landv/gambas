@@ -281,12 +281,6 @@ int main(int argc, char **argv)
       argv[i] = argv[i + n - 1];
 
     argc -= n - 1;
-
-    //printf("argc = %d\n", argc);
-    /*for (i = 0; i < argc; i++)
-      fprintf(stderr, "argv[%d] = '%s'\n", i, argv[i]);
-    fprintf(stderr, "\n");*/
-
   }
 
 
