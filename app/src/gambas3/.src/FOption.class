@@ -668,7 +668,7 @@ Public Sub gvwSnippet_Data(Row As Integer, Column As Integer)
     .Data.Font = Font[txtEditorFont.Text]
     If Column = 0 Then
       .Data.Text = hSampleCode.Trigger
-      'If hSampleCode.Predefined Then .Data.Font.Italic = True
+      If hSampleCode.Default Then .Data.Font.Italic = True
     Else
       .Data.Text = Mid$(Quote(hSampleCode.Pattern), 2, -1)
     Endif
@@ -683,11 +683,9 @@ Private Sub UpdateSnippet()
   If Not hSampleCode Then
     btnRemoveSnippet.Enabled = False
     btnEditSnippet.Enabled = False
-    btnRemoveSnippet.Enabled = False
   Else
-    btnRemoveSnippet.Enabled = True
-    btnEditSnippet.Enabled = True
-    btnRemoveSnippet.Enabled = True
+    btnRemoveSnippet.Enabled = Not hSampleCode.Default
+    btnEditSnippet.Enabled = Not hSampleCode.Default
   Endif
 
 End
@@ -709,6 +707,7 @@ Public Sub btnInsertSnippet_Click()
   If FSnippet.Run() Then Return
   RefreshSnippet
   CSampleCode.Save
+  gvwSnippet.Row = CSampleCode.List.Find(FSnippet.NewTrigger)
 
 End
 
@@ -725,7 +724,7 @@ End
 
 Public Sub gvwSnippet_Activate()
 
-  btnEditSnippet_Click
+  btnEditSnippet.Value = True
 
 End
 
@@ -743,11 +742,11 @@ Public Sub btnRemoveSnippet_Click()
 
 End
 
-Public Sub btnUndoSnippet_Click()
-
-  If Message.Warning(("Do you really want to reset snippets to their default value?"), ("Reset"), ("Cancel")) = 2 Then Return
-  
-  CSampleCode.Reset
-  RefreshSnippet
-
-End
+' Public Sub btnUndoSnippet_Click()
+' 
+'   If Message.Warning(("Do you really want to reset snippets to their default value?"), ("Reset"), ("Cancel")) = 2 Then Return
+'   
+'   CSampleCode.Reset
+'   RefreshSnippet
+' 
+' End

@@ -1,5 +1,7 @@
 ' Gambas class file
 
+Static Public NewTrigger As String
+
 Private $sTrigger As String
 Private $hSampleCode As CSampleCode
 
@@ -36,6 +38,7 @@ Public Sub btnOK_Click()
     $hSampleCode.Pattern = edtSnippet.Text
   Else
     $hSampleCode = New CSampleCode(sTrigger, edtSnippet.Text)
+    NewTrigger = sTrigger
   Endif
 
   Me.Close(True)

@@ -1,16 +1,34 @@
 ' Gambas class file
+'
+' Copyright (C) Benoît Minisini
+'
+' This program is free software; you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation; either version 2 of the License, or
+' (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+' You should have received a copy of the GNU General Public License
+' along with this program; if not, write to the Free Software
+' Foundation, Inc., 51 Franklin St, Fifth Floor, 
+' Boston, MA  02110-1301  USA
+'
 
 Static Public All As Collection
 Static Public List As String[]
 
 Public Trigger As String
 Public Pattern As String
+Public {Default} As Boolean
 
 Private $aPattern As String[]
 Private $bNoVoid As Boolean
-'Private $nPattern As Integer
 
-Static Private Sub Load(hSettings As Settings)
+Static Private Sub Load(hSettings As Settings, bDefault As Boolean)
   
   Dim hSampleCode As CSampleCode
   Dim iInd As Integer
@@ -26,6 +44,7 @@ Static Private Sub Load(hSettings As Settings)
     sTrigger = Left$(sSnippet, iPos - 1)
     sSnippet = Mid$(sSnippet, iPos + 1)
     hSampleCode = New CSampleCode(sTrigger, sSnippet)
+    hSampleCode.Default = bDefault
   Next
   
 End
@@ -33,13 +52,17 @@ End
 Static Public Sub Save()
   
   Dim iInd As Integer
+  Dim iCpt As Integer
   Dim hSampleCode As CSampleCode
   
-  For iInd = 0 To List.Max
-    hSampleCode = All[List[iInd]]
-    Settings["Snippets/Snippet[" & CStr(iInd + 1) & "]"] = hSampleCode.Trigger & "\n" & hSampleCode.Pattern
+  Settings.Clear("/Snippets")
+  For iCpt = 0 To List.Max
+    hSampleCode = All[List[iCpt]]
+    If hSampleCode.Default Then Continue
+    Inc iInd
+    Settings["/Snippets/Snippet[" & CStr(iInd) & "]"] = hSampleCode.Trigger & "\n" & hSampleCode.Pattern
   Next
-  Settings["Snippets/Count"] = List.Count
+  Settings["/Snippets/Count"] = iInd
   Settings.Save
   
 End
@@ -62,26 +85,23 @@ Static Public Sub Init()
   'sTemp = Temp$()
   'Copy "snippets" To sTemp
 
-  Load(Settings)
-  If All.Count = 0 Then
-    hSettings = New Settings("../snippets")
-    Load(hSettings)
-  Endif
-  List.Sort(gb.IgnoreCase)
+  Load(Settings, False)
+  hSettings = New Settings("../snippets")
+  Load(hSettings, True)
 
   'Kill sTemp
   
 End
 
-Static Public Sub Reset()
-  
-  Settings.Clear("Snippets")
-  Settings.Save
-  All = Null
-  Init
-  
-End
-
+' Static Public Sub Reset()
+'   
+'   Settings.Clear("Snippets")
+'   Settings.Save
+'   All = Null
+'   Init
+'   
+' End
+' 
 Static Public Sub Exit()
   
   All = Null
@@ -96,15 +116,13 @@ Public Sub _new(sStart As String, sPattern As String)
   Dim bVar As Boolean
   Dim iPos As Integer
   
-  If All.Exist(sStart) Then 
-    Error "warning: snippet already exists: "; sStart
-    Return
-  Endif
+  If All.Exist(sStart) Then All[sStart].Delete
   
   Trigger = sStart
   Pattern = sPattern
   All[sStart] = Me
   List.Add(sStart)
+  List.Sort(gb.IgnoreCase)
   
   $bNoVoid = InStr(Pattern, "${}") = 0
   
@@ -452,6 +470,8 @@ Public Sub Rename(sNewTrigger As String)
   
   Dim iFind As Integer
   
+  If {Default} Then Return
+
   All[Trigger] = Null
   All[sNewTrigger] = Me
   
@@ -467,7 +487,9 @@ End
 Public Sub Delete()
 
   Dim iFind As Integer
-
+  
+  If {Default} Then Return
+  
   All[Trigger] = Null
   iFind = List.Find(Trigger)
   If iFind >= 0 Then List.Remove(iFind)
