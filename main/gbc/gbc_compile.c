@@ -56,6 +56,7 @@
 char *COMP_root = NULL;
 
 char *COMP_project;
+char *COMP_project_name;
 char *COMP_info_path;
 char *COMP_classes = NULL;
 
@@ -160,18 +161,12 @@ static void add_component_list_file(char *name)
 
 	path = (char *)FILE_cat(COMP_info_path, name, NULL);
 	strcat(path, ".list");
-
 	fi = fopen(path, "r");
 
-	/* We don't fail when a list file is not found, so that
-		a component that references itself can compile! :-)
-		In other situations, compilation will fail anyway, as
-		some classes won't be declared.
-	*/
 	if (!fi)
 	{
-		// Do not print a warning if a component self-reference is not found
-		if (strcmp(name, COMP_project))
+		// Do not raise an error if a component self-reference is not found
+		if (strcmp(name, COMP_project_name))
 			//fprintf(stderr, "warning: cannot read component list file: %s.list\n", name);
 			THROW("Component not found: &1", name);
 		return;
@@ -235,14 +230,11 @@ void COMPILE_init(void)
 
 	COMP_info_path = STR_copy(FILE_cat(root, "share/gambas" GAMBAS_VERSION_STRING "/info", NULL));
 	
-	// User component directory
-	/*info = getpwuid(getuid());
-	if (info)
-		COMP_info_user_path = STR_copy(FILE_cat(info->pw_dir, ".local/share/gambas" GAMBAS_VERSION_STRING "/info", NULL));
-	else
-		COMP_info_user_path = NULL;*/
-		
-	/* Classes du projet */
+	// Project name
+	
+	COMP_project_name = STR_copy(FILE_get_name(FILE_get_dir(COMP_project)));
+	
+	// Project classes
 
 	BUFFER_create(&COMP_classes);
 
@@ -389,6 +381,7 @@ void COMPILE_exit(void)
 {
 	RESERVED_exit();
 	BUFFER_delete(&COMP_classes);
+	STR_free(COMP_project_name);
 	STR_free(COMP_project);
 	STR_free(COMP_info_path);
 	STR_free(COMP_root);

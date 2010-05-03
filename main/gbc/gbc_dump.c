@@ -478,6 +478,11 @@ static void insert_class_info(CLASS *class, FILE *fw)
 					kind = 'p';
 				break;
 
+			case TK_VARIABLE:
+
+				kind = 'v';
+				break;
+
 			case TK_EVENT:
 
 				kind = ':';
