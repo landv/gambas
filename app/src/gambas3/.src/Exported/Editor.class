@@ -97,3 +97,9 @@ Public Sub GetSelection() As String
   Endif
   
 End
+
+Static Public Sub GetIndent(sLine As String) As Integer
+  
+  Return Len(sLine) - Len(LTrim(sLine))
+  
+End

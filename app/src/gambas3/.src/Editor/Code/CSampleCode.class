@@ -17,22 +17,31 @@ Static Public Sub Init()
   
   All = New Collection(gb.IgnoreCase)
   
-  hSampleCode = New CSampleCode("fo", "For ${1:Var} = ${2:Start} To ${3:Count}\n  ${}\nNext\n")
-  hSampleCode = New CSampleCode("fe", "For Each ${1:Var} In ${2:Collection}\n  ${}\nNext\n")
-  hSampleCode = New CSampleCode("if", "If ${1:Test} Then\n  ${}\nEndif\n")
-  hSampleCode = New CSampleCode("ie", "If ${1:Test} Then\n  ${2}\nElse\n  ${3}\nEndif\n")
-  hSampleCode = New CSampleCode("s", "Public Sub ${1:Name}(${2:Arguments})\n\n  ${}\n\nEnd\n")
-  hSampleCode = New CSampleCode("f", "Public Sub ${1:Name}(${2:Arguments}) As ${3:ReturnType}\n\n  ${}\n\nEnd\n")
-  hSampleCode = New CSampleCode("ps", "Private Sub ${1:Name}(${2:Arguments})\n\n  ${}\n\nEnd\n")
-  hSampleCode = New CSampleCode("pf", "Private Sub ${1:Name}(${2:Arguments}) As ${3:ReturnType}\n\n  ${}\n\nEnd\n")
-  hSampleCode = New CSampleCode("d", "Dim ${1:Var} As ${2:Type}\n")
-  hSampleCode = New CSampleCode("pu", "Public ${1:Var} As ${2:Type}\n")
-  hSampleCode = New CSampleCode("pr", "Private $${1:Var} As ${2:Type}\n")
-  hSampleCode = New CSampleCode("wh", "While ${1:Test}\n  ${}\nWend\n")
-  hSampleCode = New CSampleCode("re", "Repeat\n  ${}\nUntil {1:Test}\n")
-  hSampleCode = New CSampleCode("do", "Do\n  ${}\nLoop\n")
-  hSampleCode = New CSampleCode("r", "Return ${}\n")
-  hSampleCode = New CSampleCode("op", "${1:File} = Open ${2:Path} For ${3:Mode}\n")
+  hSampleCode = New CSampleCode("fo", "For ${1:Var} = ${2:Start} To ${3:Count}\n  ${}\nNext")
+  hSampleCode = New CSampleCode("fe", "For Each ${1:Var} In ${2:Collection}\n  ${}\nNext")
+  hSampleCode = New CSampleCode("if", "If ${1:Test} Then\n  ${}\nEndif")
+  hSampleCode = New CSampleCode("ie", "If ${1:Test} Then\n  ${2}\nElse\n  ${3}\nEndif")
+  hSampleCode = New CSampleCode("s", "Public Sub ${1:Name}(${2:Arguments})\n\n  ${}\n\nEnd")
+  hSampleCode = New CSampleCode("f", "Public Sub ${1:Name}(${2:Arguments}) As ${3:ReturnType}\n\n  ${}\n\nEnd")
+  hSampleCode = New CSampleCode("ss", "Static Public Sub ${1:Name}(${2:Arguments})\n\n  ${}\n\nEnd")
+  hSampleCode = New CSampleCode("sf", "Static Public Sub ${1:Name}(${2:Arguments}) As ${3:ReturnType}\n\n  ${}\n\nEnd")
+  hSampleCode = New CSampleCode("ps", "Private Sub ${1:Name}(${2:Arguments})\n\n  ${}\n\nEnd")
+  hSampleCode = New CSampleCode("pf", "Private Sub ${1:Name}(${2:Arguments}) As ${3:ReturnType}\n\n  ${}\n\nEnd")
+  hSampleCode = New CSampleCode("sps", "Static Private Sub ${1:Name}(${2:Arguments})\n\n  ${}\n\nEnd")
+  hSampleCode = New CSampleCode("spf", "Static Private Sub ${1:Name}(${2:Arguments}) As ${3:ReturnType}\n\n  ${}\n\nEnd")
+  hSampleCode = New CSampleCode("d", "Dim ${1:Var} As ${2:Type}")
+  hSampleCode = New CSampleCode("pu", "Public ${1:Var} As ${2:Type}")
+  hSampleCode = New CSampleCode("pr", "Private $${1:Var} As ${2:Type}")
+  hSampleCode = New CSampleCode("spu", "Static Public ${1:Var} As ${2:Type}")
+  hSampleCode = New CSampleCode("spr", "Static Private $${1:Var} As ${2:Type}")
+  hSampleCode = New CSampleCode("wh", "While ${1:Test}\n  ${}\nWend")
+  hSampleCode = New CSampleCode("re", "Repeat\n  ${}\nUntil {1:Test}")
+  hSampleCode = New CSampleCode("do", "Do\n  ${}\nLoop")
+  hSampleCode = New CSampleCode("r", "Return ${}")
+  hSampleCode = New CSampleCode("w", "With ${1:Expression}\n  ${}\nEnd With")
+  hSampleCode = New CSampleCode("op", "${1:File} = Open ${2:Path} For ${3:Mode}")
+  hSampleCode = New CSampleCode("se", "Select ${1:Expression}\n  Case ${2:Compare}\n    ${}\n  Default\nEnd Select")
+  hSampleCode = New CSampleCode("_n", "Public Sub _new(${1:Arguments})\n\n  ${}\n\nEnd")
   
 End
 
@@ -106,7 +115,7 @@ Public Sub GetLineCount() As Integer
 End
 
 
-Public Sub Make(Optional iIndent As Integer) As String
+Private Sub Make(Optional iIndent As Integer) As String
   
   Dim sMake As String
   Dim iPos, iPos2 As Integer
@@ -136,6 +145,19 @@ Public Sub Make(Optional iIndent As Integer) As String
   Return sMake
   
 End
+
+Public Sub Insert(hEditor As Editor)
+  
+  Dim iIndent As Integer
+  Dim sLine As String
+  Dim sMake As String
+  
+  sLine = hEditor.Lines[hEditor.Line].Text
+  iIndent = Len(sLine) - Len(LTrim(sLine))
+  hEditor.Insert(Make(iIndent), hEditor.Line, hEditor.Column)
+  
+End
+
 
 Private Sub CursorFromPos(sText As String, iPos As Integer) As Integer[]
   

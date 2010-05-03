@@ -737,12 +737,11 @@ Catch
 
 End
 
-Private Sub CheckSampleCode() As Boolean
+Private Sub CheckCodeSnippet() As Boolean
   
   Dim sLine As String
   Dim iPos As Integer
   Dim sCar As String
-  Dim iIndent As Integer
   Dim iLine, iCol As Integer
   
   If Not $hSampleCode Then
@@ -755,14 +754,7 @@ Private Sub CheckSampleCode() As Boolean
     Next
     If iPos > Len(sLine) Then Return
     
-    iIndent = iPos - 1
-    iPos = String.Len(sLine)
-    While iPos > 0
-      sCar = String.Mid$(sLine, iPos, 1)
-      If Not IsDigit(sCar) And If Not IsLetter(sCar) Then Break
-      Dec iPos
-    Wend
-    sLine = String.Mid$(sLine, iPos + 1)
+    sLine = String.Mid$(sLine, iPos)
     
     CSampleCode.Init
     $hSampleCode = CSampleCode.All[sLine]
@@ -776,7 +768,8 @@ Private Sub CheckSampleCode() As Boolean
     iLine = Editor.Line
     iCol = Editor.Column
     $iSamplePos = iCol
-    Editor.Insert($hSampleCode.Make(iIndent), Editor.Line, Editor.Column)
+    $hSampleCode.Insert(Editor)
+    'Editor.Insert($hSampleCode.Make(iIndent), Editor.Line, Editor.Column)
     Editor.Goto(iLine, iCol)
     Editor.End
     
@@ -784,7 +777,7 @@ Private Sub CheckSampleCode() As Boolean
   
   If $hSampleCode.GotoNextPos(Editor, $iSampleStart, $iSampleEnd, $iSamplePos) Then
     $hSampleCode = Null
-    Return CheckSampleCode()
+    Return CheckCodeSnippet()
   Endif
   
   Return True
@@ -800,6 +793,8 @@ Public Sub Editors_KeyPress()
   Dim iInd As Integer
   Dim iPos As Integer
   Dim bStop As Boolean
+  Dim bIndent As Boolean
+  Dim aSymbol As String[]
 
   If Not Editor.ReadOnly Then
 
@@ -908,7 +903,7 @@ Public Sub Editors_KeyPress()
 
   If Asc(Key.Text) = 13 Then
 
-    sLine = Trim(Editor.Lines[iLine].Text)
+    sLine = Editor.Lines[iLine].Text
 
     If Editor.Column < String.Len(sLine) Then Return
 
@@ -929,17 +924,33 @@ Public Sub Editors_KeyPress()
       Editor.Goto(iLine + 2, 2)
 
       Stop Event
-
-    Else If Highlight.Symbols.Count >= 4 Then
+      Return
+      
+    Endif
     
-      If Highlight.Symbols[0] = "PROPERTY" Or If Highlight.Symbols[0] = "STATIC" And Highlight.Symbols[1] = "PROPERTY" Then
+    aSymbol = Highlight.Symbols
 
-        InsertProperty      
-        
+    If aSymbol.Count >= 4 Then
+      If aSymbol[0] = "PROPERTY" Or If aSymbol[0] = "STATIC" And aSymbol[1] = "PROPERTY" Then
+        InsertProperty
+        Return
       Endif
-      
-      'STOP EVENT
-      
+    Endif
+    
+    If aSymbol.Count >= 1 Then
+      If aSymbol[0] = "IF" And If aSymbol[aSymbol.Max] = "THEN" Then
+        bIndent = True
+      Else
+        If ["DO", "WHILE", "REPEAT", "ELSE", "SELECT", "CASE", "DEFAULT", "FOR"].Exist(aSymbol[0]) Then
+          bIndent = True
+        Endif
+      Endif
+    Endif
+    
+    If bIndent Then
+      Editor.Insert("\n  " & Space$(Editor.GetIndent(sLine)))
+      Stop Event
+      Return
     Endif
 
   Else If Key.Code = Key.Space Then
@@ -956,10 +967,10 @@ Public Sub Editors_KeyPress()
 
     CheckCompletion(".")
 
-  Else If Key.Text = "_" Then
-
-    CheckCompletion("_")
-
+  ' Else If Key.Text = "_" Then
+  ' 
+  '   CheckCompletion("_")
+  ' 
   Else If InStr("(),[]", Key.Text) Then
   
     $bCheckSignature = True
@@ -971,7 +982,7 @@ Public Sub Editors_KeyPress()
   Else If Key.Code = Key.Tab Then
   
     If Not Editor.Selected Or If Editor.Selection.StartLine = Editor.Selection.EndLine Then
-      If CheckSampleCode() Then Stop Event
+      If CheckCodeSnippet() Then Stop Event
     Endif
 
   Endif
@@ -1907,9 +1918,7 @@ Private Sub CheckCompletion(sMode As String)
   Else If sMode = "_" Then 
     If Not FCompletion.VisibleFrom(Editor) Then 
       sWord = GetIdentifier(sLine, Editor.Column)
-      If Not sWord Then 
-        FCompletion.Open(Me, sMode)
-      Else If Len(sWord) >= 3 Then 
+      If Len(sWord) >= 3 Then 
         FCompletion.Open(Me, "A", sWord & "_")
       Endif
       'IF Len(sWord) >= 3 THEN DEBUG FindCompletion(sWord).Join(" ")

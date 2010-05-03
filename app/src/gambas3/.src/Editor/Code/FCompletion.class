@@ -194,7 +194,7 @@ Private Sub AddClassesAndFill(aClass As String[], Optional sBegin As String)
   Dim sClass As String
   Dim sLib As String
   Dim iType As Integer
-  Dim hPic As Picture[6]
+  Dim hPic As Picture[7]
   Dim aLib As String[]
 
   CComponent.All["gb"].Load
@@ -231,7 +231,8 @@ Private Sub AddClassesAndFill(aClass As String[], Optional sBegin As String)
   hPic[3] = Picture["img/16/point.png"]
   hPic[4] = Picture["img/16/event.png"]
   hPic[5] = hPic[0]
-
+  hPic[6] = Picture["img/16/key.png"]
+  
   lvwComp.Clear
 
   For Each sClass In aClass
@@ -370,6 +371,15 @@ Private Sub FillWithIdent(sWord As String)
     Endif
   Next
 
+  If Left(sWord) = "_" Then 
+    For Each sCar In ["_call", "_compare", "_get", "_init", "_new", "_next", "_put", "_unknown"]
+      If sCar Like sWord & "*" Then 
+        cKey[sCar] = True
+        aResult.Add(sCar & " " & MHelp.TYPE_SPECIAL)
+      Endif
+      'Try lvwComp.Add(CStr(MHelp.TYPE_SPECIAL) & sName, sName, hPict)
+    Next
+  Endif
   'sText = hEditor.Text
   'IF InStr(sText, sWord, 1, gb.Text) THEN
   
