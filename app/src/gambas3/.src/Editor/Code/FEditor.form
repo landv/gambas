@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(4,12,127,80)
+  MoveScaled(4,12,135,80)
   Background = Color.Background
   Persistent = True
   { mnuEditor Menu
@@ -180,7 +180,7 @@
     }
   }
   { panToolBar ToolBar
-    MoveScaled(0,0,126,4)
+    MoveScaled(0,0,134,4)
     Key = "editor"
     Text = ("Editor")
     Separator = True
@@ -319,18 +319,18 @@
       Picture = Picture["icon:/16/left"]
     }
     { HBox1 HBox
-      MoveScaled(110,0,14,4)
+      MoveScaled(110,0,22,4)
       Expand = True
       { Panel1 Panel
         MoveScaled(2,0,1,4)
         Expand = True
       }
       { lblEditor Label
-        MoveScaled(4,0,6,4)
-        AutoResize = True
+        MoveScaled(4,0,14,4)
+        Alignment = Align.Right
       }
       { Panel2 Panel
-        MoveScaled(12,0,1,4)
+        MoveScaled(18,0,1,4)
       }
     }
   }

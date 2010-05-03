@@ -279,7 +279,7 @@ static void http_get(void *_object, GB_ARRAY custom_headers, char *target)
 		return; 
 	}
 
-	if (target)
+	if (target && *target)
 	{
 		target = GB.FileName(target, 0);
 		THIS_FILE = fopen(target, "w");

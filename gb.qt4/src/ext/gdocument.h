@@ -178,11 +178,11 @@ public:
 	int wordLeft(int y, int x, bool word = false);
 	int wordRight(int y, int x, bool word = false);
 
-	GString getSelectedText(bool insertMode) const;
+	bool hasSelection() { return selector != NULL && (ys != ys2 || xs != xs2); }
+	bool hasSelection(GEditor *view) { return hasSelection() && selector == view; }
+	void getSelection(int *y1, int *x1, int *y2, int *x2, bool insertMode);
+	GString getSelectedText(bool insertMode);
 
-	bool hasSelection() const { return selector != NULL; }
-	bool hasSelection(GEditor *view) const { return selector == view; }
-	void getSelection(int *y1, int *x1, int *y2, int *x2, bool insertMode) const;
 	void startSelection(GEditor *view, int y, int x);
 	void endSelection(int y, int x);
 	void hideSelection();
@@ -192,6 +192,7 @@ public:
 
 private:
 
+	void checkSelection();
 	void updateLineWidth(int y);
 	void insertLine(int y);
 	void removeLine(int y);

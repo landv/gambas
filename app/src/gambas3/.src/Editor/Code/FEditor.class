@@ -10,6 +10,17 @@ Public NotCreatable As Boolean '' If the class has "CREATE PRIVATE".
 
 Property Read ReadOnly As Boolean '' If the editor is read-only.
 
+Public Const IDENT_CAR As String = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_$"
+Public Const NBR_COLOR As Integer = 15
+
+
+Static Private $hVirtualSymbol As New CSymbolInfo
+
+Static Private $bPublic As Boolean
+Static Private $bStatic As Boolean
+Static Private $sName As String
+Static Private $cType As New Collection(gb.IgnoreCase)
+
 Private $bModify As Boolean
 'PRIVATE $cLine AS NEW Collection
 Private $bToolbar As Boolean
@@ -24,30 +35,16 @@ Private $bShowPopupHelp As Boolean
 Private $X As Integer
 Private $Y As Integer
 
-
-Static Private $hVirtualSymbol As New CSymbolInfo
-
-Static Private $bPublic As Boolean
-Static Private $bStatic As Boolean
-Static Private $sName As String
-Static Private $cType As New Collection(gb.IgnoreCase)
-
 Private $iStartLine As Integer
 Private $iEndLine As Integer
 
 Private $bDoNotSavePosition As Boolean
 
-Public Const NBR_COLOR As Integer = 15
-
 Private Const TYPE_SYMBOL As Integer = 0
 Private Const TYPE_FUNCTION As Integer = 1
 Private Const TYPE_ARRAY As Integer = 2
 
-'PRIVATE $iSymbolType AS Integer
 Private $bLastStatic As Boolean
-
-'Static Public frmCompletion As FCompletion
-'Static Public frmSignature As FSignature
 
 Private $iViewMode As Integer
 Private VIEWMODE_NORMAL As Integer = 0 
@@ -63,7 +60,10 @@ Private $iFirstProcLine As Integer
 
 Private $sModule As String
 
-Public Const IDENT_CAR As String = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_$"
+Private $hSampleCode As CSampleCode
+Private $iSampleStart As Integer
+Private $iSampleEnd As Integer
+Private $iSamplePos As Integer
 
 Static Public Sub _init()
 
@@ -384,19 +384,23 @@ Private Sub RefreshLineInfo(Optional bForce As Boolean)
   Endif
   
   If Editor.Line <> $iLastLine Then
-    'eTime = Timer
+    
     $iLastLine = Editor.Line
+    
     HideCompletion
     HideSignature
-    'timProc.Enabled = TRUE
+    
     UpdateFunction
     timProc.Enabled = True
-    ' Action.Lock
-    ' Action["break"].Value = edtEditor.Lines.GetFlag(edtEditor.Line, edtEditor.Breakpoint)
-    ' Action.UnLock
-    ' Action["break"].Enabled = CanSetBreakpoint(edtEditor.Line)
+    
     If IsModified() Then {Scan} = Null
-    'DEBUG Format((Timer - eTime) * 1000, "#.###")
+    
+    If $hSampleCode Then
+      If Editor.Line < $iSampleStart Or If Editor.Line >= $iSampleEnd Then
+        $hSampleCode = Null
+      Endif
+    Endif
+    
   Else If $bCheckSignature Or If FSignature.VisibleFrom(Editor) Then
     $bCheckSignature = False
     CheckSignature
@@ -735,7 +739,55 @@ End
 
 Private Sub CheckSampleCode() As Boolean
   
+  Dim sLine As String
+  Dim iPos As Integer
+  Dim sCar As String
+  Dim iIndent As Integer
+  Dim iLine, iCol As Integer
   
+  If Not $hSampleCode Then
+  
+    If Editor.Column < Editor.Lines[Editor.Line].Length Then Return
+  
+    sLine = String.Left(Editor.Lines[Editor.Line].Text, Editor.Column)
+    For iPos = 1 To Len(sLine)
+      If Not IsSpace(Mid$(sLine, iPos, 1)) Then Break
+    Next
+    If iPos > Len(sLine) Then Return
+    
+    iIndent = iPos - 1
+    iPos = String.Len(sLine)
+    While iPos > 0
+      sCar = String.Mid$(sLine, iPos, 1)
+      If Not IsDigit(sCar) And If Not IsLetter(sCar) Then Break
+      Dec iPos
+    Wend
+    sLine = String.Mid$(sLine, iPos + 1)
+    
+    CSampleCode.Init
+    $hSampleCode = CSampleCode.All[sLine]
+    If Not $hSampleCode Then Return
+    
+    $iSampleStart = Editor.Line
+    $iSampleEnd = $iSampleStart + $hSampleCode.GetLineCount()
+    
+    Editor.Begin
+    Editor.Remove(Editor.Line, Editor.Column - String.Len(sLine), Editor.Line, Editor.Column)
+    iLine = Editor.Line
+    iCol = Editor.Column
+    $iSamplePos = iCol
+    Editor.Insert($hSampleCode.Make(iIndent), Editor.Line, Editor.Column)
+    Editor.Goto(iLine, iCol)
+    Editor.End
+    
+  Endif
+  
+  If $hSampleCode.GotoNextPos(Editor, $iSampleStart, $iSampleEnd, $iSamplePos) Then
+    $hSampleCode = Null
+    Return CheckSampleCode()
+  Endif
+  
+  Return True
   
 End
 
@@ -918,7 +970,7 @@ Public Sub Editors_KeyPress()
     
   Else If Key.Code = Key.Tab Then
   
-    If Not Editor.Selected Then
+    If Not Editor.Selected Or If Editor.Selection.StartLine = Editor.Selection.EndLine Then
       If CheckSampleCode() Then Stop Event
     Endif
 
@@ -1815,6 +1867,7 @@ Private Sub CheckCompletion(sMode As String)
   Dim eTime As Float
 
   If Not $bCompletion Then Return
+  If Editor.Selected Then Return
 
   'IF Key.Code = Key.Backspace THEN
   '  IF FCompletion.IsMine(edtEditor) THEN

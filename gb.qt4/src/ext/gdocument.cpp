@@ -256,7 +256,7 @@ GString GDocument::getText()
   return tmp;
 }
 
-GString GDocument::getSelectedText(bool insertMode) const
+GString GDocument::getSelectedText(bool insertMode)
 {
   GString tmp, line;
   int x1, y1, x2, y2, i;
@@ -663,11 +663,24 @@ void GDocument::updateViews(int row, int count)
 }
 
 
-void GDocument::getSelection(int *y1, int *x1, int *y2, int *x2, bool insertMode) const
+void GDocument::getSelection(int *y1, int *x1, int *y2, int *x2, bool insertMode)
 {
   if (!selector)
     return;
 
+	if (ys2 >= numLines())
+	{
+		ys2 = numLines() - 1;
+		if (!insertMode)
+			xs2 = lineLength(ys2);
+	}
+	
+	if (ys >= numLines())
+	{
+		ys = numLines() - 1;
+		xs = lineLength(ys);
+	}
+	
   if (ys2 > ys || (ys2 == ys && xs2 > xs))
   {
     *y1 = ys;

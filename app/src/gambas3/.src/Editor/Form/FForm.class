@@ -1226,7 +1226,7 @@ Public Sub Control_Click()
   
   If hCCtrl.IsMultiContainer() Then 
     UpdateMultiContainer(hCCtrl)
-    If hCCtrl.HasIcon() Then $hFamily.EnterControl(RootControl, hCCtrl)
+    If hCCtrl.HasIcon() Then $hFamily.EnterControl(RootControl.Control, hCCtrl)
   Endif
   
 End
@@ -2186,10 +2186,9 @@ Sub RefreshMenu()
       mnuShowTab.Show
       mnuMoveTab.Show
     Endif
-    Action[".move-tab", Me].Visible = True
-  Else 
-    Action[".move-tab", Me].Visible = False
   Endif
+  
+  Action[".move-tab*,.show-tab"].Visible = mnuShowTab.Visible
 
 End
 
@@ -3196,7 +3195,7 @@ Public Sub btnTabMenu_Click()
   
   If hTabStrip.Count <= 1 Then Return
   
-  mnuShowTab.Popup
+  mnuShowTab.Popup(btnTabMenu.ScreenX, btnTabMenu.ScreenY + btnTabMenu.H)
 
 End
 

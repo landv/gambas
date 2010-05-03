@@ -646,9 +646,9 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
     case LF_STANDARD:
     case LF_GENERAL_NUMBER:
       if ((number != 0.0) && ((fabs(number) < 1E-4) || (fabs(number) >= 1E7)))
-        fmt = "0.############E+#";
+        fmt = "0.#################E+#";
       else
-        fmt = "0.############";
+        fmt = "0.#################";
       break;
 
     case LF_FIXED:

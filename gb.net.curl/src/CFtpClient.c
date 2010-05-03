@@ -205,7 +205,12 @@ static int ftp_exec(void *_object, int what, GB_ARRAY commands)
 
 BEGIN_METHOD(FtpClient_Get, GB_STRING target)
 
+	const char *path = NULL;
+
 	if (!MISSING(target))
+		path = GB.FileName(STRING(target), LENGTH(target));
+	
+	if (path && *path)
 	{
 		if (THIS_STATUS > 0)
 		{
@@ -213,7 +218,7 @@ BEGIN_METHOD(FtpClient_Get, GB_STRING target)
 			return;
 		}
 		
-		THIS_FILE = fopen(GB.FileName(STRING(target), LENGTH(target)), "w");
+		THIS_FILE = fopen(path, "w");
 		
 		if (!THIS_FILE)
 		{
@@ -228,7 +233,7 @@ BEGIN_METHOD(FtpClient_Get, GB_STRING target)
 END_METHOD
 
 
-BEGIN_METHOD(FtpClient_Put,GB_STRING SourceFile)
+BEGIN_METHOD(FtpClient_Put, GB_STRING SourceFile)
 	
 	if (THIS_STATUS > 0)
 	{
