@@ -173,7 +173,7 @@ Private Sub Make(Optional iIndent As Integer) As String
       sCar = Mid$(Pattern, iPos, iPos2 - iPos)
       iPos = InStr(sCar, ":")
       If iPos Then 
-        sCar = Mid$(sCar, iPos + 1)
+        sCar = "{" & Mid$(sCar, iPos + 1) & "}"
       Else
         sCar = ""
       Endif

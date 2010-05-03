@@ -2,11 +2,25 @@
 
 { Form Form
   MoveScaled(0,0,66,56)
-  Resizable = False
+  Arrangement = Arrange.Vertical
   Spacing = True
   Margin = True
+  { HBox2 HBox
+    MoveScaled(1,1,64,4)
+    Spacing = True
+    { Label1 Label
+      MoveScaled(0,0,14,4)
+      AutoResize = True
+      Text = ("Trigger string")
+    }
+    { txtTrigger TextBox
+      MoveScaled(17,0,44,4)
+      Expand = True
+    }
+  }
   { edtSnippet Editor
     MoveScaled(1,6,64,43)
+    Expand = True
   }
   { HBox1 HBox
     MoveScaled(1,51,64,4)
@@ -24,19 +38,6 @@
       MoveScaled(43,0,16,4)
       Text = ("Cancel")
       Cancel = True
-    }
-  }
-  { HBox2 HBox
-    MoveScaled(1,1,64,4)
-    Spacing = True
-    { Label1 Label
-      MoveScaled(0,0,14,4)
-      AutoResize = True
-      Text = ("Trigger string")
-    }
-    { txtTrigger TextBox
-      MoveScaled(17,0,44,4)
-      Expand = True
     }
   }
 }

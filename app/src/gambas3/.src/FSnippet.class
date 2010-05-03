@@ -51,6 +51,8 @@ End
 
 Public Sub Form_Open()
 
+  Settings.Read(Me)
+
   txtTrigger.Text = $sTrigger
   If $sTrigger Then
     $hSampleCode = CSampleCode.All[$sTrigger]
@@ -63,5 +65,11 @@ Public Sub Form_Open()
   Endif
   
   FTextEditor.ReadConfigEditor(edtSnippet)
+
+End
+
+Public Sub Form_Close()
+
+  Settings.Write(Me)
 
 End

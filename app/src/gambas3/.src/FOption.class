@@ -112,9 +112,7 @@ Public Sub _new()
   chkSnippet.Value = Settings["Editor/CodeSnippet", 1]
   
   gvwSnippet.Columns.Count = 2
-  'gvwSnippet.Columns[0].Text = ("Trigger")
   gvwSnippet.Columns[0].Width = Desktop.Scale * 8
-  'gvwSnippet.Columns[1].Text = ("Pattern")
   
 End
 

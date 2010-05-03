@@ -13,8 +13,8 @@ Property Read ReadOnly As Boolean '' If the editor is read-only.
 Public Const IDENT_CAR As String = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_$"
 Public Const NBR_COLOR As Integer = 15
 
-Static Private $aStructOpen As String[] = ["DO", "WHILE", "REPEAT", "ELSE", "SELECT", "CASE", "DEFAULT", "FOR"]
-Static Private $aStructClose As String[] = ["Loop", "Wend", "Until", "", "End Select", "", "", "Next"]
+Static Private $aStructOpen As String[] = ["DO", "WHILE", "REPEAT", "ELSE", "SELECT", "CASE", "DEFAULT", "FOR", "WITH", "CATCH", "FINALLY"]
+Static Private $aStructClose As String[] = ["Loop", "Wend", "Until", "", "End Select", "", "", "Next", "End With", "", ""]
 
 Static Private $hVirtualSymbol As New CSymbolInfo
 
