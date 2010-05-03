@@ -109,6 +109,13 @@ Public Sub _new()
   
   RefreshStyle
   
+  chkSnippet.Value = Settings["Editor/CodeSnippet", 1]
+  
+  gvwSnippet.Columns.Count = 2
+  'gvwSnippet.Columns[0].Text = ("Trigger")
+  gvwSnippet.Columns[0].Width = Desktop.Scale * 8
+  'gvwSnippet.Columns[1].Text = ("Pattern")
+  
 End
 
 Public Sub Form_KeyPress()
@@ -614,5 +621,135 @@ End
 Public Sub svwOption_Arrange()
 
   panOption.Width = svwOption.ClientWidth - Desktop.Scale
+
+End
+
+Private Sub RefreshSnippet()
+  
+  CSampleCode.Init
+  gvwSnippet.Rows.Count = CSampleCode.All.Count
+  gvwSnippet.Rows.Height = Font[txtEditorFont.Text].Height("") + 8
+  gvwSnippet.Refresh
+  
+End
+
+
+Public Sub tabOption_Click()
+
+  If tabOption.Index = 2 Then
+    If gvwSnippet.Rows.Count = 0 Then
+      RefreshSnippet
+      UpdateSnippet
+    Endif
+  Endif
+
+End
+
+Private Sub GetSnippet(Optional iRow As Integer = -1) As CSampleCode
+
+  Dim hSampleCode As CSampleCode
+  
+  If iRow < 0 Then 
+    iRow = gvwSnippet.Row
+    If iRow < 0 Then Return
+    If Not gvwSnippet.Rows[iRow].Selected Then Return
+  Endif
+  Try hSampleCode = CSampleCode.All[CSampleCode.List[iRow]]
+  Return hSampleCode
+
+End
+
+Public Sub gvwSnippet_Data(Row As Integer, Column As Integer)
+
+  Dim hSampleCode As CSampleCode = GetSnippet(Row)
+  
+  If Not hSampleCode Then Return
+  
+  With gvwSnippet
+    .Data.Padding = 4
+    .Data.Font = Font[txtEditorFont.Text]
+    If Column = 0 Then
+      .Data.Text = hSampleCode.Trigger
+      'If hSampleCode.Predefined Then .Data.Font.Italic = True
+    Else
+      .Data.Text = Mid$(Quote(hSampleCode.Pattern), 2, -1)
+    Endif
+  End With
+
+End
+
+Private Sub UpdateSnippet()
+
+  Dim hSampleCode As CSampleCode = GetSnippet()
+  
+  If Not hSampleCode Then
+    btnRemoveSnippet.Enabled = False
+    btnEditSnippet.Enabled = False
+    btnRemoveSnippet.Enabled = False
+  Else
+    btnRemoveSnippet.Enabled = True
+    btnEditSnippet.Enabled = True
+    btnRemoveSnippet.Enabled = True
+  Endif
+
+End
+
+Public Sub gvwSnippet_Select()
+
+  UpdateSnippet
+
+End
+
+Public Sub chkSnippet_Click()
+
+  Settings["/Editor/CodeSnippet"] = If(chkSnippet.Value, 1, 0)
+
+End
+
+Public Sub btnInsertSnippet_Click()
+
+  If FSnippet.Run() Then Return
+  RefreshSnippet
+  CSampleCode.Save
+
+End
+
+Public Sub btnEditSnippet_Click()
+
+  Dim hSampleCode As CSampleCode = GetSnippet()
+  
+  If Not hSampleCode Then Return
+  If FSnippet.Run(hSampleCode.Trigger) Then Return
+  RefreshSnippet
+  CSampleCode.Save
+
+End
+
+Public Sub gvwSnippet_Activate()
+
+  btnEditSnippet_Click
+
+End
+
+Public Sub btnRemoveSnippet_Click()
+
+  Dim hSampleCode As CSampleCode = GetSnippet()
+  
+  If Not hSampleCode Then Return
+
+  If Message.Warning(("Do you really want to delete this snippet?"), ("Delete"), ("Cancel")) = 2 Then Return
+
+  hSampleCode.Delete
+  RefreshSnippet
+  CSampleCode.Save
+
+End
+
+Public Sub btnUndoSnippet_Click()
+
+  If Message.Warning(("Do you really want to reset snippets to their default value?"), ("Reset"), ("Cancel")) = 2 Then Return
+  
+  CSampleCode.Reset
+  RefreshSnippet
 
 End

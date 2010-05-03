@@ -1378,6 +1378,7 @@ Public Sub btnImport_Click()
   Dialog.Path = Settings["/Connection/ImportPath"]
   If Dialog.OpenFile() Then Return
   Settings["/Connection/ImportPath"] = Dialog.Path
+  If Not Exist(Dialog.Path) Then Return
   
   FImportTable.Run($hConn, GetTableList(), Dialog.Path) 
   If FImportTable.Table Then

@@ -75,22 +75,19 @@ Public Sub _new(Optional Path As String, Optional Title As String)
   If Left(Path) <> "/" And If Left(Path) <> "~" Then 
     If Not Path Then
       Path = Settings.Path &/ Application.Name & ".conf"
-    Else 
+    Else If Path Begins "./" Then
+      Path = "." & Path
+    Else If Path Begins "../" Then
+    Else
       Path = Settings.Path &/ Path & ".conf"
     Endif
-    For Each sElt In Split(Settings.Path, "/")
-      sPath &/= sElt
-      Try Mkdir "/" & sPath
-    Next
+    If Left(Path) = "/" Then
+      For Each sElt In Split(Settings.Path, "/")
+        sPath &/= sElt
+        Try Mkdir "/" & sPath
+      Next
+    Endif
   Endif
-
-'   IF Left$(Path) <> "/" THEN
-'     sDir = "~/.config"
-'     TRY MKDIR sDir
-'     sDir = sDir &/ "gambas"
-'     TRY MKDIR sDir
-'     Path = sDir &/ Path
-'   ENDIF
 
   $sTitle = Title
 

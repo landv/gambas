@@ -10,22 +10,9 @@ Public Sub Main()
 
   Print TypeOf("");; TypeOf(Null)
 
-  hSettings = New Settings("~/.config/gambas3/gb.form.conf")
+  hSettings = New Settings("./test")
 
-  Print hSettings["/Bookmarks/Count", 0]
-
-  For Each sKey In hSettings.Keys["Bookmarks"]
-    Print sKey
-  Next
-
-  'PRINT hSettings["/test/Array"].Join(" ")
- ' hSettings["PROJECTLANG"] = "toto"
-
-  'hConfig.WriteString("Name", "Benoit")
-  'hConfig.WriteInteger("Age", 31)
-  'hConfig.WriteBoolean("Man", TRUE)
-
-  'PRINT hSettings["External/Browser", "mozilla"]
+  Print hSettings["Test/Test1"]
 
 End
 

@@ -1028,13 +1028,13 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
   'Dim aClass As String[]
   Dim sFamily As String
 
-  'IF Len(sClass) <= 1 THEN
-  '  IF sClass <> "." THEN RETURN
-  'ENDIF
+  If Len(sClass) <= 1 Then
+    If sClass <> "." Then Return
+  Endif
   
   'Debug sClass
   'If sClass = "TableView" Then Stop
-
+  
   bClass = Project.ExistClass(sClass)
   hClass = CComponent.Classes[sClass]
 

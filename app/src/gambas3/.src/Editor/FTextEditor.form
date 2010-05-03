@@ -55,17 +55,6 @@
     }
     { Menu2 Menu
     }
-    { mnuFind Menu
-      Action = ".find"
-      Text = ("Find...")
-      Picture = Picture["icon:/small/find"]
-    }
-    { mnuReplace Menu
-      Action = ".replace"
-      Text = ("Replace...")
-      Picture = Picture["icon:/small/replace"]
-      Shortcut = "Ctrl+R"
-    }
     { mnuFindNext Menu
       Action = "find-next"
       Text = ("Find next")
@@ -249,11 +238,6 @@
     Shortcut = "Ctrl+X"
     Picture = "icon:/small/cut"
   }
-  { Action find
-    Text = "Find..."
-    Shortcut = ""
-    Picture = "icon:/small/find"
-  }
   { Action find-next
     Text = "Find next"
     Shortcut = "F3"
@@ -285,11 +269,6 @@
   { Action reload
     Text = "Reload"
     Picture = "icon:/small/refresh"
-  }
-  { Action replace
-    Text = "Replace..."
-    Shortcut = "Ctrl+R"
-    Picture = "icon:/small/replace"
   }
   { Action save
     Text = "Save"

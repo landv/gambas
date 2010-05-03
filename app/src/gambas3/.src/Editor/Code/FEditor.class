@@ -13,6 +13,8 @@ Property Read ReadOnly As Boolean '' If the editor is read-only.
 Public Const IDENT_CAR As String = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_$"
 Public Const NBR_COLOR As Integer = 15
 
+Static Private $aStructOpen As String[] = ["DO", "WHILE", "REPEAT", "ELSE", "SELECT", "CASE", "DEFAULT", "FOR"]
+Static Private $aStructClose As String[] = ["Loop", "Wend", "Until", "", "End Select", "", "", "Next"]
 
 Static Private $hVirtualSymbol As New CSymbolInfo
 
@@ -744,6 +746,8 @@ Private Sub CheckCodeSnippet() As Boolean
   Dim sCar As String
   Dim iLine, iCol As Integer
   
+  If Settings["/Editor/CodeSnippet", 1] = 0 Then Return
+  
   If Not $hSampleCode Then
   
     If Editor.Column < Editor.Lines[Editor.Line].Length Then Return
@@ -795,6 +799,8 @@ Public Sub Editors_KeyPress()
   Dim bStop As Boolean
   Dim bIndent As Boolean
   Dim aSymbol As String[]
+  Dim sIndent As String
+  Dim sClose As String
 
   If Not Editor.ReadOnly Then
 
@@ -940,15 +946,23 @@ Public Sub Editors_KeyPress()
     If aSymbol.Count >= 1 Then
       If aSymbol[0] = "IF" And If aSymbol[aSymbol.Max] = "THEN" Then
         bIndent = True
+        sClose = "Endif"
       Else
-        If ["DO", "WHILE", "REPEAT", "ELSE", "SELECT", "CASE", "DEFAULT", "FOR"].Exist(aSymbol[0]) Then
+        iInd = $aStructOpen.Find(aSymbol[0])
+        If iInd >= 0 Then
           bIndent = True
+          sClose = $aStructClose[iInd]
         Endif
       Endif
     Endif
     
     If bIndent Then
-      Editor.Insert("\n  " & Space$(Editor.GetIndent(sLine)))
+      sIndent = Space$(Editor.GetIndent(sLine))
+      Editor.Begin
+      Editor.Insert("\n  " & sIndent)
+      If sClose Then Editor.Insert("\n" & sIndent & sClose)
+      Editor.End
+      Editor.Goto(iLine + 1, 2 + Len(sIndent))
       Stop Event
       Return
     Endif

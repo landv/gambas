@@ -29,8 +29,8 @@ Private Sub PaintText(sText As String, X As Integer, Y As Integer, iColor As Int
   Paint.Fill
   Paint.Brush = Paint.Color(iColor)
   Paint.Text(sText, X, Y)
-  XR = Paint.X
   Paint.Fill(True)
+  XR = X + Paint.PathExtents.Width
   Paint.Brush = Paint.Color(Color.RGB(0, 0, 0, 192))
   Paint.LineWidth = 2
   Paint.Stroke

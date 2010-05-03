@@ -1,0 +1,42 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,66,56)
+  Resizable = False
+  Spacing = True
+  Margin = True
+  { edtSnippet Editor
+    MoveScaled(1,6,64,43)
+  }
+  { HBox1 HBox
+    MoveScaled(1,51,64,4)
+    Spacing = True
+    { Panel1 Panel
+      MoveScaled(4,0,4,4)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(26,0,16,4)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(43,0,16,4)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+  { HBox2 HBox
+    MoveScaled(1,1,64,4)
+    Spacing = True
+    { Label1 Label
+      MoveScaled(0,0,14,4)
+      AutoResize = True
+      Text = ("Trigger string")
+    }
+    { txtTrigger TextBox
+      MoveScaled(17,0,44,4)
+      Expand = True
+    }
+  }
+}

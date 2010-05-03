@@ -1058,7 +1058,7 @@ bool GEditor::cursorGoto(int ny, int nx, bool mark)
 
 void GEditor::insert(QString text)
 {
-	doc->eraseSelection();
+	doc->eraseSelection(_insertMode);
 	unfoldLine(y);
 	doc->insert(y, x, text);
 	cursorGoto(doc->yAfter, doc->xAfter, false);
@@ -1149,7 +1149,7 @@ void GEditor::cursorPageDown(bool mark)
 void GEditor::newLine()
 {
 	doc->begin();
-	doc->eraseSelection();
+	doc->eraseSelection(_insertMode);
 	doc->insert(y, x, '\n' + doc->lines.at(y)->s.left(QMIN(x, doc->getIndent(y))));
 	cursorGoto(doc->yAfter, doc->xAfter, false);
 	doc->end();
@@ -1159,7 +1159,7 @@ void GEditor::del(bool ctrl)
 {
 	if (doc->hasSelection())
 	{
-		doc->eraseSelection();
+		doc->eraseSelection(_insertMode);
 		return;
 	}
 	
@@ -1188,7 +1188,7 @@ void GEditor::backspace(bool ctrl)
 
 	if (doc->hasSelection())
 	{
-		doc->eraseSelection();
+		doc->eraseSelection(_insertMode);
 		return;
 	}
 
@@ -1307,7 +1307,7 @@ void GEditor::copy(bool mouse)
 void GEditor::cut()
 {
 	copy(false);
-	doc->eraseSelection();
+	doc->eraseSelection(_insertMode);
 }
 
 void GEditor::paste(bool mouse)

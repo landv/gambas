@@ -270,7 +270,7 @@ msgstr ""
 msgid "Loading information on component &1..."
 msgstr ""
 
-#: CModule.class:28 FCreateFile.class:648 FEditor.class:3439 FForm.class:3701
+#: CModule.class:28 FCreateFile.class:648 FEditor.class:3453 FForm.class:3701
 #: FInfo.class:88
 msgid "Form"
 msgstr ""
@@ -359,8 +359,8 @@ msgstr ""
 #: FNewTable.class:159 FNewTranslation.class:64 FOpenProject.class:458
 #: FPasteSpecial.class:273 FPropertyProject.class:258
 #: FReportBorderChooser.class:213 FReportCoordChooser.class:120
-#: FSelectExtraFile.class:72 FSelectIcon.class:267 FTableChooser.class:138
-#: FText.class:100
+#: FSelectExtraFile.class:72 FSelectIcon.class:267 FSnippet.class:105
+#: FTableChooser.class:138 FText.class:100
 msgid "OK"
 msgstr ""
 
@@ -437,17 +437,17 @@ msgstr ""
 
 #: FColorChooser.class:207 FCommit.class:386 FConflict.class:191
 #: FConnectionEditor.class:261 FCreateFile.class:929 FDebugInfo.class:490
-#: FEditor.class:2173 FFindList.class:195 FFontChooser.class:85
+#: FEditor.class:2187 FFindList.class:195 FFontChooser.class:85
 #: FForm.class:2949 FGotoLine.class:63 FHelpBrowser.class:275
 #: FIconEditor.class:1396 FImportTable.class:38 FList.class:155
 #: FMain.class:210 FMakeExecutable.class:144 FMakeInstall.class:309
 #: FMenu.class:1070 FNewConnection.class:317 FNewTable.class:165
-#: FNewTranslation.class:70 FOpenProject.class:154 FOption.class:585
+#: FNewTranslation.class:70 FOpenProject.class:154 FOption.class:592
 #: FPasteSpecial.class:279 FPropertyProject.class:1016
 #: FReportBorderChooser.class:207 FReportCoordChooser.class:114
 #: FSave.class:118 FSelectExtraFile.class:78 FSelectIcon.class:272
-#: FTableChooser.class:144 FTextEditor.class:450 FText.class:106
-#: FTranslate.class:617 Project.module:354
+#: FSnippet.class:111 FTableChooser.class:144 FTextEditor.class:450
+#: FText.class:106 FTranslate.class:617 Project.module:354
 msgid "Cancel"
 msgstr ""
 
@@ -480,44 +480,44 @@ msgid ""
 "Some files are not versioned and should be added manually to the repository."
 msgstr ""
 
-#: FCommit.class:234 FConflict.class:325 FConnectionEditor.class:1807
-#: FEditor.class:3284 FForm.class:3531 FIconEditor.class:2165
-#: FImageEditor.class:77 FOutput.class:377 FTextEditor.class:673
+#: FCommit.class:234 FConflict.class:325 FConnectionEditor.class:1808
+#: FEditor.class:3298 FForm.class:3531 FIconEditor.class:2165
+#: FImageEditor.class:77 FOutput.class:377 FTextEditor.class:671
 msgid "Cut"
 msgstr ""
 
-#: FCommit.class:240 FConflict.class:331 FConnectionEditor.class:1707
-#: FEditor.class:3290 FForm.class:3538 FIconEditor.class:2173
-#: FImageEditor.class:86 FOutput.class:384 FTextEditor.class:680
+#: FCommit.class:240 FConflict.class:331 FConnectionEditor.class:1708
+#: FEditor.class:3304 FForm.class:3538 FIconEditor.class:2173
+#: FImageEditor.class:86 FOutput.class:384 FTextEditor.class:678
 msgid "Copy"
 msgstr ""
 
-#: FCommit.class:246 FConflict.class:337 FConnectionEditor.class:1828
-#: FEditor.class:3297 FForm.class:3551 FIconEditor.class:2181
-#: FImageEditor.class:95 FOutput.class:391 FTextEditor.class:687
+#: FCommit.class:246 FConflict.class:337 FConnectionEditor.class:1829
+#: FEditor.class:3311 FForm.class:3551 FIconEditor.class:2181
+#: FImageEditor.class:95 FOutput.class:391 FTextEditor.class:685
 msgid "Paste"
 msgstr ""
 
-#: FCommit.class:252 FConflict.class:343 FConnectionEditor.class:1835
-#: FEditor.class:3268 FForm.class:3776 FIconEditor.class:2149
-#: FImageEditor.class:104 FOption.class:1329 FOutput.class:360
-#: FTextEditor.class:656
+#: FCommit.class:252 FConflict.class:343 FConnectionEditor.class:1836
+#: FEditor.class:3282 FForm.class:3776 FIconEditor.class:2149
+#: FImageEditor.class:104 FOption.class:1464 FOutput.class:360
+#: FTextEditor.class:654
 msgid "Undo"
 msgstr ""
 
-#: FCommit.class:258 FConflict.class:349 FConnectionEditor.class:1842
-#: FEditor.class:3275 FForm.class:3786 FImageEditor.class:112
-#: FOutput.class:367 FTextEditor.class:663
+#: FCommit.class:258 FConflict.class:349 FConnectionEditor.class:1843
+#: FEditor.class:3289 FForm.class:3786 FImageEditor.class:112
+#: FOutput.class:367 FTextEditor.class:661
 msgid "Redo"
 msgstr ""
 
-#: FCommit.class:264 FConflict.class:355 FEditor.class:3491
-#: FTextEditor.class:842
+#: FCommit.class:264 FConflict.class:355 FEditor.class:3505
+#: FTextEditor.class:827
 msgid "Indent"
 msgstr ""
 
-#: FCommit.class:270 FConflict.class:361 FEditor.class:3499
-#: FTextEditor.class:849
+#: FCommit.class:270 FConflict.class:361 FEditor.class:3513
+#: FTextEditor.class:834
 msgid "Unindent"
 msgstr ""
 
@@ -664,8 +664,8 @@ msgstr ""
 msgid "The table '&1' has been modified. Do you want to save it?"
 msgstr ""
 
-#: FConnectionEditor.class:261 FEditor.class:3390 FForm.class:3692
-#: FIconEditor.class:1415 FImageEditor.class:60 FTextEditor.class:764
+#: FConnectionEditor.class:261 FEditor.class:3404 FForm.class:3692
+#: FIconEditor.class:1415 FImageEditor.class:60 FTextEditor.class:749
 msgid "Save"
 msgstr ""
 
@@ -754,7 +754,7 @@ msgid "Do you really want to delete table '&1'?"
 msgstr ""
 
 #: FConnectionEditor.class:1330 FForm.class:3558 FMain.class:210
-#: FNewConnection.class:317 FTranslate.class:617
+#: FNewConnection.class:317 FOption.class:740 FTranslate.class:617
 msgid "Delete"
 msgstr ""
 
@@ -774,85 +774,85 @@ msgstr ""
 msgid "All files"
 msgstr ""
 
-#: FConnectionEditor.class:1399
+#: FConnectionEditor.class:1400
 msgid "Do you really want to remove the selected rows?"
 msgstr ""
 
-#: FConnectionEditor.class:1399 FMakeInstall.class:933
+#: FConnectionEditor.class:1400 FMakeInstall.class:933
 msgid "Remove"
 msgstr ""
 
-#: FConnectionEditor.class:1557
+#: FConnectionEditor.class:1558
 msgid "Connection editor"
 msgstr ""
 
-#: FConnectionEditor.class:1571 FEditor.class:2173 FForm.class:2949
+#: FConnectionEditor.class:1572 FEditor.class:2187 FForm.class:2949
 #: FHelpBrowser.class:281 FIconEditor.class:2035 FImageEditor.class:68
 #: FTextEditor.class:450 FTranslate.class:711
 msgid "Reload"
 msgstr ""
 
-#: FConnectionEditor.class:1578 FNewTable.class:98
+#: FConnectionEditor.class:1579 FNewTable.class:98
 msgid "New table"
 msgstr ""
 
-#: FConnectionEditor.class:1584
+#: FConnectionEditor.class:1585
 msgid "Delete table"
 msgstr ""
 
-#: FConnectionEditor.class:1590 FNewTable.class:30
+#: FConnectionEditor.class:1591 FNewTable.class:30
 msgid "Rename table"
 msgstr ""
 
-#: FConnectionEditor.class:1592
+#: FConnectionEditor.class:1593
 msgid "Rename..."
 msgstr ""
 
-#: FConnectionEditor.class:1598
+#: FConnectionEditor.class:1599
 msgid "Import text file"
 msgstr ""
 
-#: FConnectionEditor.class:1600
+#: FConnectionEditor.class:1601
 msgid "Import..."
 msgstr ""
 
-#: FConnectionEditor.class:1606
+#: FConnectionEditor.class:1607
 msgid "SQL request"
 msgstr ""
 
-#: FConnectionEditor.class:1664
+#: FConnectionEditor.class:1665
 msgid "Fields"
 msgstr ""
 
-#: FConnectionEditor.class:1680 FMain.class:1692
+#: FConnectionEditor.class:1681 FMain.class:1692
 msgid "Add"
 msgstr ""
 
-#: FConnectionEditor.class:1694
+#: FConnectionEditor.class:1695
 msgid "Down"
 msgstr ""
 
-#: FConnectionEditor.class:1701
+#: FConnectionEditor.class:1702
 msgid "Up"
 msgstr ""
 
-#: FConnectionEditor.class:1709
+#: FConnectionEditor.class:1710
 msgid "Copy field list"
 msgstr ""
 
-#: FConnectionEditor.class:1726
+#: FConnectionEditor.class:1727
 msgid "Indexes"
 msgstr ""
 
-#: FConnectionEditor.class:1743
+#: FConnectionEditor.class:1744
 msgid "New index"
 msgstr ""
 
-#: FConnectionEditor.class:1801
+#: FConnectionEditor.class:1802
 msgid "Run query"
 msgstr ""
 
-#: FConnectionEditor.class:1902
+#: FConnectionEditor.class:1903
 msgid "Export..."
 msgstr ""
 
@@ -1109,7 +1109,7 @@ msgid "Function"
 msgstr ""
 
 #: FDebugInfo.class:51 FFindList.class:73 FIconEditor.class:2262
-#: FOption.class:990 FSearch.class:32
+#: FOption.class:1124 FSearch.class:32
 msgid "Line"
 msgstr ""
 
@@ -1122,7 +1122,7 @@ msgid "Do you want to clear the expression list ?"
 msgstr ""
 
 #: FDebugInfo.class:490 FIconEditor.class:1396 FList.class:155
-#: FOption.class:585 FOutput.class:398
+#: FOption.class:592 FOutput.class:398
 msgid "Clear"
 msgstr ""
 
@@ -1138,7 +1138,7 @@ msgstr ""
 msgid "Debug"
 msgstr ""
 
-#: FDebugInfo.class:981 FMain.class:2657 FOption.class:1287 FSearch.class:84
+#: FDebugInfo.class:981 FMain.class:2657 FOption.class:1422 FSearch.class:84
 msgid "Console"
 msgstr ""
 
@@ -1179,7 +1179,7 @@ msgid "Remove current expression"
 msgstr ""
 
 #: FDebugInfo.class:1080 FMain.class:2498 FMakeInstall.class:1545
-#: FPropertyProject.class:1841
+#: FOption.class:1524 FPropertyProject.class:1841
 msgid "&Remove"
 msgstr ""
 
@@ -1207,110 +1207,110 @@ msgstr ""
 msgid "Stack backtrace"
 msgstr ""
 
-#: FEditor.class:2173 FIconEditor.class:2035 FTextEditor.class:450
+#: FEditor.class:2187 FIconEditor.class:2035 FTextEditor.class:450
 msgid ""
 "The file has been modified.\n"
 "\n"
 "All your changes will be lost."
 msgstr ""
 
-#: FEditor.class:2570
+#: FEditor.class:2584
 msgid "(Declarations)"
 msgstr ""
 
-#: FEditor.class:3204
+#: FEditor.class:3218
 msgid "Go to"
 msgstr ""
 
-#: FEditor.class:3209 FTextEditor.class:647
+#: FEditor.class:3223 FTextEditor.class:645
 msgid "Go to line..."
 msgstr ""
 
-#: FEditor.class:3215
+#: FEditor.class:3229
 msgid "Find definition"
 msgstr ""
 
-#: FEditor.class:3222 FHelpBrowser.class:263
+#: FEditor.class:3236 FHelpBrowser.class:263
 msgid "Go back"
 msgstr ""
 
-#: FEditor.class:3229
+#: FEditor.class:3243
 msgid "Open form"
 msgstr ""
 
-#: FEditor.class:3236 FForm.class:3463 FMain.class:2460
+#: FEditor.class:3250 FForm.class:3463 FMain.class:2460
 msgid "&Startup class"
 msgstr ""
 
-#: FEditor.class:3244
+#: FEditor.class:3258
 msgid "Run &until current line"
 msgstr ""
 
-#: FEditor.class:3251
+#: FEditor.class:3265
 msgid "Toggle &breakpoint"
 msgstr ""
 
-#: FEditor.class:3258
+#: FEditor.class:3272
 msgid "&Watch expression..."
 msgstr ""
 
-#: FEditor.class:3304
+#: FEditor.class:3318
 msgid "Paste special..."
 msgstr ""
 
-#: FEditor.class:3313 FTextEditor.class:697
+#: FEditor.class:3327 FTextEditor.class:695
 msgid "Select &All"
 msgstr ""
 
-#: FEditor.class:3322
+#: FEditor.class:3336
 msgid "Comment"
 msgstr ""
 
-#: FEditor.class:3329
+#: FEditor.class:3343
 msgid "Uncomment"
 msgstr ""
 
-#: FEditor.class:3339 FOutput.class:408 FTextEditor.class:719
+#: FEditor.class:3353 FOutput.class:408 FTextEditor.class:704
 msgid "Find next"
 msgstr ""
 
-#: FEditor.class:3346 FOutput.class:415 FTextEditor.class:726
+#: FEditor.class:3360 FOutput.class:415 FTextEditor.class:711
 msgid "Find previous"
 msgstr ""
 
-#: FEditor.class:3355 FTextEditor.class:735
+#: FEditor.class:3369 FTextEditor.class:720
 msgid "View"
 msgstr ""
 
-#: FEditor.class:3359 FTextEditor.class:739
+#: FEditor.class:3373 FTextEditor.class:724
 msgid "No split"
 msgstr ""
 
-#: FEditor.class:3366 FTextEditor.class:746
+#: FEditor.class:3380 FTextEditor.class:731
 msgid "Horizontal split"
 msgstr ""
 
-#: FEditor.class:3373 FTextEditor.class:753
+#: FEditor.class:3387 FTextEditor.class:738
 msgid "Vertical split"
 msgstr ""
 
-#: FEditor.class:3400 FPasteSpecial.class:253
+#: FEditor.class:3414 FPasteSpecial.class:253
 msgid "Paste as string"
 msgstr ""
 
-#: FEditor.class:3405 FPasteSpecial.class:258
+#: FEditor.class:3419 FPasteSpecial.class:258
 msgid "Paste as multi-line string"
 msgstr ""
 
-#: FEditor.class:3410 FPasteSpecial.class:243
+#: FEditor.class:3424 FPasteSpecial.class:243
 msgid "Paste as comments"
 msgstr ""
 
-#: FEditor.class:3417 FOption.class:949
+#: FEditor.class:3431 FOption.class:1083
 msgid "Editor"
 msgstr ""
 
-#: FEditor.class:3551
+#: FEditor.class:3565
 msgid "Procedure list"
 msgstr ""
 
@@ -1461,7 +1461,7 @@ msgstr ""
 msgid "Menu editor..."
 msgstr ""
 
-#: FForm.class:3722 FTextEditor.class:795
+#: FForm.class:3722 FTextEditor.class:780
 msgid "Code"
 msgstr ""
 
@@ -1663,7 +1663,7 @@ msgstr ""
 msgid "Pick a color"
 msgstr ""
 
-#: FImageEditor.class:54 FTextEditor.class:773
+#: FImageEditor.class:54 FTextEditor.class:758
 msgid "Text editor"
 msgstr ""
 
@@ -1875,7 +1875,7 @@ msgstr ""
 msgid "This file has not been modified since the last commit."
 msgstr ""
 
-#: FInfo.class:304 FOption.class:790 FPropertyProject.class:1466
+#: FInfo.class:304 FOption.class:924 FPropertyProject.class:1466
 msgid "General"
 msgstr ""
 
@@ -2299,7 +2299,7 @@ msgstr ""
 msgid "Refresh project"
 msgstr ""
 
-#: FMain.class:2574 FOption.class:748
+#: FMain.class:2574 FOption.class:882
 msgid "Preferences"
 msgstr ""
 
@@ -2897,220 +2897,232 @@ msgstr ""
 msgid "Define..."
 msgstr ""
 
-#: FOption.class:134
+#: FOption.class:141
 msgid "Gambas highlight theme files"
 msgstr ""
 
-#: FOption.class:135
+#: FOption.class:142
 msgid "Export a theme file"
 msgstr ""
 
-#: FOption.class:285
+#: FOption.class:292
 msgid "Select a theme file"
 msgstr ""
 
-#: FOption.class:315
+#: FOption.class:322
 msgid "You need to restart the application to see your changes."
 msgstr ""
 
-#: FOption.class:585
+#: FOption.class:592
 msgid "Do you really want to clear the documentation cache?"
 msgstr ""
 
-#: FOption.class:760
+#: FOption.class:740
+msgid "Do you really want to delete this snippet?"
+msgstr ""
+
+#: FOption.class:750
+msgid "Do you really want to reset snippets to their default value?"
+msgstr ""
+
+#: FOption.class:750
+msgid "Reset"
+msgstr ""
+
+#: FOption.class:894
 msgid "Foreground color..."
 msgstr ""
 
-#: FOption.class:764
+#: FOption.class:898
 msgid "Background color..."
 msgstr ""
 
-#: FOption.class:771
+#: FOption.class:905
 msgid "Bold"
 msgstr ""
 
-#: FOption.class:775
+#: FOption.class:909
 msgid "Italic"
 msgstr ""
 
-#: FOption.class:779
+#: FOption.class:913
 msgid "Underline"
 msgstr ""
 
-#: FOption.class:805
+#: FOption.class:939
 msgid "Interface"
 msgstr ""
 
-#: FOption.class:816
+#: FOption.class:950
 msgid "Font size"
 msgstr ""
 
-#: FOption.class:822
+#: FOption.class:956
 msgid "Normal"
 msgstr ""
 
-#: FOption.class:822
+#: FOption.class:956
 msgid "Small"
 msgstr ""
 
-#: FOption.class:822
+#: FOption.class:956
 msgid "Tiny"
 msgstr ""
 
-#: FOption.class:834
+#: FOption.class:968
 msgid "Tabstrip font size"
 msgstr ""
 
-#: FOption.class:852
+#: FOption.class:986
 msgid "Toolbox size"
 msgstr ""
 
-#: FOption.class:870
+#: FOption.class:1004
 msgid "Sort properties"
 msgstr ""
 
-#: FOption.class:876 FPropertyProject.class:1597
+#: FOption.class:1010 FPropertyProject.class:1597
 msgid "No"
 msgstr ""
 
-#: FOption.class:876 FPropertyProject.class:1597
+#: FOption.class:1010 FPropertyProject.class:1597
 msgid "Yes"
 msgstr ""
 
-#: FOption.class:892
+#: FOption.class:1026
 msgid "Minimize at runtime"
 msgstr ""
 
-#: FOption.class:914
+#: FOption.class:1048
 msgid "Icon theme"
 msgstr ""
 
-#: FOption.class:932
+#: FOption.class:1066
 msgid "Quiet external commands"
 msgstr ""
 
-#: FOption.class:960
+#: FOption.class:1094
 msgid "Default tab size"
 msgstr ""
 
-#: FOption.class:972 FPropertyProject.class:1572
+#: FOption.class:1106 FPropertyProject.class:1572
 msgid "space(s)"
 msgstr ""
 
-#: FOption.class:984
+#: FOption.class:1118
 msgid "Procedure separation"
 msgstr ""
 
-#: FOption.class:990 FProperty.class:743
+#: FOption.class:1124 FProperty.class:743
 msgid "None"
 msgstr ""
 
-#: FOption.class:990
+#: FOption.class:1124
 msgid "Blend"
 msgstr ""
 
-#: FOption.class:1002
+#: FOption.class:1136
 msgid "Highlight current line"
 msgstr ""
 
-#: FOption.class:1024
+#: FOption.class:1158
 msgid "Highlight modified lines"
 msgstr ""
 
-#: FOption.class:1046
+#: FOption.class:1180
 msgid "Show line numbers"
 msgstr ""
 
-#: FOption.class:1068
+#: FOption.class:1202
 msgid "Fold procedures by default"
 msgstr ""
 
-#: FOption.class:1090
+#: FOption.class:1224
 msgid "Keywords in upper case"
 msgstr ""
 
-#: FOption.class:1107
+#: FOption.class:1241
 msgid "Applications"
 msgstr ""
 
-#: FOption.class:1118
+#: FOption.class:1252
 msgid "Browser"
 msgstr ""
 
-#: FOption.class:1136
+#: FOption.class:1270
 msgid "Terminal"
 msgstr ""
 
-#: FOption.class:1154
+#: FOption.class:1288
 msgid "Image editor"
 msgstr ""
 
-#: FOption.class:1167 MTheme.module:6
+#: FOption.class:1301 MTheme.module:6
 msgid "Help"
 msgstr ""
 
-#: FOption.class:1178
+#: FOption.class:1312
 msgid "Display property help"
 msgstr ""
 
-#: FOption.class:1200
+#: FOption.class:1334
 msgid "Show tooltips"
 msgstr ""
 
-#: FOption.class:1222
+#: FOption.class:1356
 msgid "Show documentation in popups"
 msgstr ""
 
-#: FOption.class:1244
+#: FOption.class:1378
 msgid "Clear documentation cache"
 msgstr ""
 
-#: FOption.class:1251
+#: FOption.class:1385
 msgid "Style"
 msgstr ""
 
-#: FOption.class:1260
+#: FOption.class:1394
 msgid "Fonts"
 msgstr ""
 
-#: FOption.class:1299
+#: FOption.class:1434
 msgid "Theme"
 msgstr ""
 
-#: FOption.class:1317
+#: FOption.class:1452
 msgid "Import theme"
 msgstr ""
 
-#: FOption.class:1323
+#: FOption.class:1458
 msgid "Export theme"
 msgstr ""
 
-#: FOption.class:1345
+#: FOption.class:1480
 msgid "Code snippets"
 msgstr ""
 
-#: FOption.class:1367
-msgid "Add snippet"
+#: FOption.class:1488
+msgid "Activate code snippets"
 msgstr ""
 
-#: FOption.class:1374
-msgid "Export snippets"
+#: FOption.class:1510 FTranslate.class:1711
+msgid "&New..."
 msgstr ""
 
-#: FOption.class:1381
-msgid "Import snippets"
+#: FOption.class:1517
+msgid "&Edit..."
 msgstr ""
 
-#: FOption.class:1393
-msgid "Delete selected snippets"
+#: FOption.class:1531
+msgid "Re&set"
 msgstr ""
 
-#: FOption.class:1407
-msgid "Trigger"
+#: FOption.class:1538
+msgid "E&xport..."
 msgstr ""
 
-#: FOption.class:1416
-msgid "Pattern"
+#: FOption.class:1545 FTranslate.class:1689
+msgid "&Import..."
 msgstr ""
 
 #: FOutput.class:32
@@ -3550,6 +3562,26 @@ msgstr ""
 msgid "Stock"
 msgstr ""
 
+#: FSnippet.class:23
+msgid "Please enter a trigger string."
+msgstr ""
+
+#: FSnippet.class:29
+msgid "This trigger string is already in use."
+msgstr ""
+
+#: FSnippet.class:58
+msgid "Edit code snippet"
+msgstr ""
+
+#: FSnippet.class:61
+msgid "New code snippet"
+msgstr ""
+
+#: FSnippet.class:123
+msgid "Trigger string"
+msgstr ""
+
 #: FTableChooser.class:56
 msgid "Unable to open connection."
 msgstr ""
@@ -3560,14 +3592,6 @@ msgstr ""
 
 #: FTableChooser.class:100
 msgid "Connection"
-msgstr ""
-
-#: FTextEditor.class:706
-msgid "Find..."
-msgstr ""
-
-#: FTextEditor.class:712
-msgid "Replace..."
 msgstr ""
 
 #: FText.class:77
@@ -3716,14 +3740,6 @@ msgstr ""
 
 #: FTranslate.class:1687
 msgid "Import a translation file"
-msgstr ""
-
-#: FTranslate.class:1689
-msgid "&Import..."
-msgstr ""
-
-#: FTranslate.class:1711
-msgid "&New..."
 msgstr ""
 
 #: FTranslate.class:1717

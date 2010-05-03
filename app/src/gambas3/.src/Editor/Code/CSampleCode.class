@@ -1,47 +1,84 @@
 ' Gambas class file
 
 Static Public All As Collection
+Static Public List As String[]
 
-Public Start As String
+Public Trigger As String
 Public Pattern As String
 
 Private $aPattern As String[]
 Private $bNoVoid As Boolean
 'Private $nPattern As Integer
 
+Static Private Sub Load(hSettings As Settings)
+  
+  Dim hSampleCode As CSampleCode
+  Dim iInd As Integer
+  Dim sSnippet As String
+  Dim iPos As Integer
+  Dim sTrigger As String
+
+  For iInd = 1 To hSettings["Snippets/Count", 0]
+    sSnippet = hSettings["Snippets/Snippet[" & CStr(iInd) & "]"]
+    If Not sSnippet Then Break
+    iPos = InStr(sSnippet, "\n")
+    If iPos = 0 Then Continue
+    sTrigger = Left$(sSnippet, iPos - 1)
+    sSnippet = Mid$(sSnippet, iPos + 1)
+    hSampleCode = New CSampleCode(sTrigger, sSnippet)
+  Next
+  
+End
+
+Static Public Sub Save()
+  
+  Dim iInd As Integer
+  Dim hSampleCode As CSampleCode
+  
+  For iInd = 0 To List.Max
+    hSampleCode = All[List[iInd]]
+    Settings["Snippets/Snippet[" & CStr(iInd + 1) & "]"] = hSampleCode.Trigger & "\n" & hSampleCode.Pattern
+  Next
+  Settings["Snippets/Count"] = List.Count
+  Settings.Save
+  
+End
+
 Static Public Sub Init()
   
   Dim hSampleCode As CSampleCode
+  Dim hSettings As Settings
+  Dim iInd As Integer
+  Dim sSnippet As String
+  Dim iPos As Integer
+  Dim sTrigger As String
+  'Dim sTemp As String
   
   If All Then Return
   
   All = New Collection(gb.IgnoreCase)
+  List = New String[]
   
-  hSampleCode = New CSampleCode("fo", "For ${1:Var} = ${2:Start} To ${3:Count}\n  ${}\nNext")
-  hSampleCode = New CSampleCode("fe", "For Each ${1:Var} In ${2:Collection}\n  ${}\nNext")
-  hSampleCode = New CSampleCode("if", "If ${1:Test} Then\n  ${}\nEndif")
-  hSampleCode = New CSampleCode("ie", "If ${1:Test} Then\n  ${2}\nElse\n  ${3}\nEndif")
-  hSampleCode = New CSampleCode("s", "Public Sub ${1:Name}(${2:Arguments})\n\n  ${}\n\nEnd")
-  hSampleCode = New CSampleCode("f", "Public Sub ${1:Name}(${2:Arguments}) As ${3:ReturnType}\n\n  ${}\n\nEnd")
-  hSampleCode = New CSampleCode("ss", "Static Public Sub ${1:Name}(${2:Arguments})\n\n  ${}\n\nEnd")
-  hSampleCode = New CSampleCode("sf", "Static Public Sub ${1:Name}(${2:Arguments}) As ${3:ReturnType}\n\n  ${}\n\nEnd")
-  hSampleCode = New CSampleCode("ps", "Private Sub ${1:Name}(${2:Arguments})\n\n  ${}\n\nEnd")
-  hSampleCode = New CSampleCode("pf", "Private Sub ${1:Name}(${2:Arguments}) As ${3:ReturnType}\n\n  ${}\n\nEnd")
-  hSampleCode = New CSampleCode("sps", "Static Private Sub ${1:Name}(${2:Arguments})\n\n  ${}\n\nEnd")
-  hSampleCode = New CSampleCode("spf", "Static Private Sub ${1:Name}(${2:Arguments}) As ${3:ReturnType}\n\n  ${}\n\nEnd")
-  hSampleCode = New CSampleCode("d", "Dim ${1:Var} As ${2:Type}")
-  hSampleCode = New CSampleCode("pu", "Public ${1:Var} As ${2:Type}")
-  hSampleCode = New CSampleCode("pr", "Private $${1:Var} As ${2:Type}")
-  hSampleCode = New CSampleCode("spu", "Static Public ${1:Var} As ${2:Type}")
-  hSampleCode = New CSampleCode("spr", "Static Private $${1:Var} As ${2:Type}")
-  hSampleCode = New CSampleCode("wh", "While ${1:Test}\n  ${}\nWend")
-  hSampleCode = New CSampleCode("re", "Repeat\n  ${}\nUntil {1:Test}")
-  hSampleCode = New CSampleCode("do", "Do\n  ${}\nLoop")
-  hSampleCode = New CSampleCode("r", "Return ${}")
-  hSampleCode = New CSampleCode("w", "With ${1:Expression}\n  ${}\nEnd With")
-  hSampleCode = New CSampleCode("op", "${1:File} = Open ${2:Path} For ${3:Mode}")
-  hSampleCode = New CSampleCode("se", "Select ${1:Expression}\n  Case ${2:Compare}\n    ${}\n  Default\nEnd Select")
-  hSampleCode = New CSampleCode("_n", "Public Sub _new(${1:Arguments})\n\n  ${}\n\nEnd")
+  'sTemp = Temp$()
+  'Copy "snippets" To sTemp
+
+  Load(Settings)
+  If All.Count = 0 Then
+    hSettings = New Settings("../snippets")
+    Load(hSettings)
+  Endif
+  List.Sort(gb.IgnoreCase)
+
+  'Kill sTemp
+  
+End
+
+Static Public Sub Reset()
+  
+  Settings.Clear("Snippets")
+  Settings.Save
+  All = Null
+  Init
   
 End
 
@@ -59,9 +96,15 @@ Public Sub _new(sStart As String, sPattern As String)
   Dim bVar As Boolean
   Dim iPos As Integer
   
-  Start = sStart
+  If All.Exist(sStart) Then 
+    Error "warning: snippet already exists: "; sStart
+    Return
+  Endif
+  
+  Trigger = sStart
   Pattern = sPattern
   All[sStart] = Me
+  List.Add(sStart)
   
   $bNoVoid = InStr(Pattern, "${}") = 0
   
@@ -402,4 +445,31 @@ Catch
 
   Return True
   
+End
+
+
+Public Sub Rename(sNewTrigger As String)
+  
+  Dim iFind As Integer
+  
+  All[Trigger] = Null
+  All[sNewTrigger] = Me
+  
+  iFind = List.Find(Trigger)
+  If iFind >= 0 Then List.Remove(iFind)
+  List.Add(sNewTrigger)
+  List.Sort(gb.IgnoreCase)
+
+  Trigger = sNewTrigger
+  
+End
+
+Public Sub Delete()
+
+  Dim iFind As Integer
+
+  All[Trigger] = Null
+  iFind = List.Find(Trigger)
+  If iFind >= 0 Then List.Remove(iFind)
+
 End

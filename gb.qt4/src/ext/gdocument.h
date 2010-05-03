@@ -186,7 +186,7 @@ public:
 	void startSelection(GEditor *view, int y, int x);
 	void endSelection(int y, int x);
 	void hideSelection();
-	void eraseSelection();
+	void eraseSelection(bool insertMode);
 
 	void emitTextChanged();
 

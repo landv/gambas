@@ -30,7 +30,7 @@
       Text = ("Underline")
     }
   }
-  { TabStrip1 TabStrip
+  { tabOption TabStrip
     MoveScaled(1,1,78,66)
     Arrangement = Arrange.Fill
     Spacing = True
@@ -438,6 +438,7 @@
         }
         { txtEditorFont ButtonBox
           MoveScaled(19,0,46,4)
+          ReadOnly = True
         }
       }
       { HBox24 HBox
@@ -497,68 +498,62 @@
     }
     Index = 2
     Text = ("Code snippets")
-    { HBox25 HBox
+    { HBox25 VBox
       MoveScaled(1,1,75,60)
       Spacing = True
-      { VBox2 VBox
-        MoveScaled(1,1,33,58)
-        Spacing = True
-        { lstSnippets ListBox
-          MoveScaled(1,1,31,38)
-          Expand = True
-          Mode = Select.Multiple
-        }
-        { HBox26 HBox
-          MoveScaled(1,48,31,4)
-          Spacing = True
-          { btnNewSnippet Button
-            MoveScaled(0,0,6,4)
-            ToolTip = ("Add snippet")
-            Expand = True
-            Picture = Picture["icon:/small/new"]
-          }
-          { btnSaveSnippet Button
-            MoveScaled(6,0,6,4)
-            ToolTip = ("Export snippets")
-            Expand = True
-            Picture = Picture["icon:/small/save"]
-          }
-          { btnLoadSnippet Button
-            MoveScaled(12,0,6,4)
-            ToolTip = ("Import snippets")
-            Expand = True
-            Picture = Picture["icon:/small/open"]
-          }
-          { Panel13 Panel
-            MoveScaled(20,0,1,4)
-            Expand = True
-          }
-          { btnKillSnippet Button
-            MoveScaled(25,0,6,4)
-            ToolTip = ("Delete selected snippets")
-            Expand = True
-            Picture = Picture["icon:/small/delete"]
-          }
-        }
+      { chkSnippet CheckBox
+        MoveScaled(1,1,29,3)
+        Text = ("Activate code snippets")
       }
-      { VBox3 VBox
-        MoveScaled(35,1,39,58)
+      { HBox27 HBox
+        MoveScaled(1,5,73,54)
         Expand = True
         Spacing = True
-        { Label15 Label
-          MoveScaled(1,1,23,3)
-          Text = ("Trigger")
-        }
-        { txtTrigger TextBox
-          MoveScaled(1,5,36,4)
-        }
-        { Label28 Label
-          MoveScaled(1,10,23,3)
-          Text = ("Pattern")
-        }
-        { edtPattern Editor
-          MoveScaled(1,14,36,42)
+        { gvwSnippet GridView
+          MoveScaled(0,0,33,46)
           Expand = True
+          Mode = Select.Single
+          Scrollbar = Scroll.Vertical
+        }
+        { VBox2 VBox
+          MoveScaled(54,1,18,45)
+          Spacing = True
+          { btnInsertSnippet Button
+            MoveScaled(0,0,17,4)
+            AutoResize = True
+            Text = ("&New...")
+            Picture = Picture["icon:/small/new"]
+          }
+          { btnEditSnippet Button
+            MoveScaled(0,5,17,4)
+            AutoResize = True
+            Text = ("&Edit...")
+            Picture = Picture["icon:/small/edit"]
+          }
+          { btnRemoveSnippet Button
+            MoveScaled(0,10,17,4)
+            AutoResize = True
+            Text = ("&Remove")
+            Picture = Picture["icon:/small/delete"]
+          }
+          { btnUndoSnippet Button
+            MoveScaled(0,15,17,4)
+            AutoResize = True
+            Text = ("Re&set")
+            Picture = Picture["icon:/small/undo"]
+          }
+          { btnExportSnippet Button
+            MoveScaled(0,20,17,4)
+            AutoResize = True
+            Text = ("E&xport...")
+            Picture = Picture["icon:/small/save"]
+          }
+          { btnImportSnippet Button
+            MoveScaled(0,25,17,4)
+            AutoResize = True
+            Text = ("&Import...")
+            Picture = Picture["icon:/small/open"]
+          }
         }
       }
     }
