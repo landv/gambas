@@ -687,6 +687,12 @@ void TRANS_want(int reserved, char *msg)
   JOB->current++;
 }
 
+void TRANS_want_newline()
+{
+  if (!TRANS_newline())
+    THROW_UNEXPECTED(JOB->current);
+}
+
 
 bool TRANS_is(int reserved)
 {

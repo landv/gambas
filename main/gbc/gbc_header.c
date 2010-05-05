@@ -302,6 +302,22 @@ static bool header_property(TRANS_PROPERTY *prop)
   return TRUE;
 }
 
+static void check_public_private(PATTERN **look, bool *is_public)
+{
+  *is_public = JOB->is_module && JOB->public_module;
+
+  if (PATTERN_is(**look, RS_PUBLIC))
+  {
+    *is_public = TRUE;
+    (*look)++;
+  }
+  else if (PATTERN_is(**look, RS_PRIVATE))
+  {
+    *is_public = FALSE;
+    (*look)++;
+  }
+}
+
 static bool header_extern(TRANS_EXTERN *trans)
 {
   PATTERN *look = JOB->current;
@@ -309,24 +325,10 @@ static bool header_extern(TRANS_EXTERN *trans)
   int index;
   bool is_public;
 
-  /* public ? */
-
-  is_public = JOB->is_module && JOB->public_module;
-
-  if (PATTERN_is(*look, RS_PUBLIC))
-  {
-    is_public = TRUE;
-    look++;
-  }
-  else if (PATTERN_is(*look, RS_PRIVATE))
-  {
-    is_public = FALSE;
-    look++;
-  }
-
+	check_public_private(&look, &is_public);
+	
   if (!PATTERN_is(*look, RS_EXTERN))
     return FALSE;
-
   look++;
 
   CLEAR(trans);
@@ -379,10 +381,8 @@ static bool header_extern(TRANS_EXTERN *trans)
 
 static bool header_class(TRANS_DECL *decl)
 {
-  if (!PATTERN_is(*JOB->current, RS_CLASS))
+  if (!TRANS_is(RS_CLASS))
     return FALSE;
-
-  JOB->current++;
 
   if (!PATTERN_is_identifier(*JOB->current))
     THROW("Syntax error. CLASS needs an identifier");
@@ -415,20 +415,7 @@ static bool header_declaration(TRANS_DECL *decl)
     look++;
   }
 
-  /* public or private ? */
-
-  is_public = JOB->is_module && JOB->public_module;
-
-  if (PATTERN_is(*look, RS_PUBLIC))
-  {
-    is_public = TRUE;
-    look++;
-  }
-  else if (PATTERN_is(*look, RS_PRIVATE))
-  {
-    is_public = FALSE;
-    look++;
-  }
+	check_public_private(&look, &is_public);
 
   /* const ? */
 
@@ -437,11 +424,6 @@ static bool header_declaration(TRANS_DECL *decl)
   if (PATTERN_is(*look, RS_CONST))
   {
     /* static const <=> const */
-
-    /*
-    if (is_static)
-      return FALSE;
-    */
 
     is_const = TRUE;
     look++;
@@ -483,6 +465,60 @@ static bool header_declaration(TRANS_DECL *decl)
   //JOB->current = look;
 
   return TRUE;
+}
+
+
+static bool header_enumeration(TRANS_DECL *decl)
+{
+  PATTERN *look = JOB->current;
+	bool is_public;
+	int value = 0;
+	
+	check_public_private(&look, &is_public);
+	
+  if (!PATTERN_is(*look, RS_ENUM))
+    return FALSE;
+	look++;
+
+	JOB->current = look;
+	
+	for(;;)
+	{
+		if (!PATTERN_is_identifier(*JOB->current))
+			THROW("Syntax error. Identifier expected.");
+		
+		CLEAR(decl);
+
+		decl->index = PATTERN_index(*JOB->current);
+		JOB->current++;
+	
+    decl->type = TYPE_make(T_INTEGER, -1, 0);
+
+		if (is_public) TYPE_set_flag(&decl->type, TF_PUBLIC);
+		TYPE_set_kind(&decl->type, TK_CONST);
+
+		if (TRANS_is(RS_EQUAL))
+		{
+			JOB->current = TRANS_get_constant_value(decl, JOB->current);
+			value = decl->value + 1;
+		}
+		else
+		{
+			decl->value = value;
+			value++;
+		}
+		
+    CLASS_add_declaration(JOB->class, decl);
+
+		if (TRANS_newline())
+			break;
+
+		if (!PATTERN_is(*JOB->current, RS_COMMA))
+      THROW_UNEXPECTED(JOB->current);
+		JOB->current++;
+	}	
+	
+	return TRUE;
 }
 
 
@@ -880,6 +916,9 @@ void HEADER_do(void)
       CLASS_add_extern(JOB->class, &trans.ext);
       continue;
     }
+    
+    if (header_enumeration(&trans.decl))
+			continue;
 
     if (header_declaration(&trans.decl))
     {

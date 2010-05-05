@@ -124,6 +124,7 @@ bool TRANS_check_declaration(void);
 PATTERN *TRANS_get_constant_value(TRANS_DECL *decl, PATTERN *current);
 
 void TRANS_want(int reserved, char *msg);
+void TRANS_want_newline(void);
 bool TRANS_is(int reserved);
 void TRANS_ignore(int reserved);
 int TRANS_get_class(PATTERN pattern);

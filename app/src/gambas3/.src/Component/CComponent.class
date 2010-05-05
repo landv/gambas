@@ -834,10 +834,36 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
           bStatic = True
           Inc iInd
           Break
+        Case "ENUM"
+          sKind = "E"
+          bStatic = True
+          Inc iInd
+          Break
         Case Else
           Break
       End Select
     Next
+
+    If sKind = "E" Then
+      For iInd = iInd To aSym.Count - 1
+        If Highlight.Types[iInd] = Highlight.Symbol Then
+          
+          hSymbol = New CSymbolInfo
+          With hSymbol
+            .Name = aSym[iInd]
+            .Class = hModule.Name
+            .Kind = "C"
+            .NotPublic = Not bPublic
+            .LineNumber = iLine + 1
+            .Type = "i"
+            cSymbol[.Name] = hSymbol
+            bCanInherit = False
+          End With
+          
+        Endif
+      Next
+      Continue
+    Endif
 
     'IF NOT bPublic THEN CONTINUE
     If Not sKind Then Continue
