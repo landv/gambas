@@ -84,7 +84,7 @@ static gboolean resize_later(gMainWindow *data)
 	if (data->onResize) 
 		data->onResize(data);
 	
-	data->refresh();
+	//data->refresh();
 	
 	return false;
 }
@@ -92,7 +92,7 @@ static gboolean resize_later(gMainWindow *data)
 static gboolean cb_configure(GtkWidget *widget, GdkEventConfigure *event, gMainWindow *data)
 {
 	gint x, y;
-	//fprintf(stderr, "cb_configure: %p\n", data);
+	//fprintf(stderr, "cb_configure: %s\n", data->name());
 	
 	if (data->opened)
 	{
@@ -134,11 +134,6 @@ static gboolean cb_configure(GtkWidget *widget, GdkEventConfigure *event, gMainW
 	}
 	
 	return false;
-}
-
-static void cb_open(GtkWidget *widget, GdkEvent *e, gMainWindow *data)
-{
-	data->emitOpen();
 }
 
 static gboolean cb_expose(GtkWidget *wid, GdkEventExpose *e, gMainWindow *data)
@@ -210,13 +205,12 @@ void gMainWindow::initWindow()
 	
 	if (!isTopLevel())
 	{
-		g_signal_connect(G_OBJECT(border), "show", G_CALLBACK(cb_show), (gpointer)this);
 		g_signal_connect(G_OBJECT(border), "configure-event", G_CALLBACK(cb_configure), (gpointer)this);
-		g_signal_connect_after(G_OBJECT(border), "map-event", G_CALLBACK(cb_open), (gpointer)this);
-		g_signal_connect(G_OBJECT(border),"show",G_CALLBACK(cb_show),(gpointer)this);
-		g_signal_connect(G_OBJECT(border),"hide",G_CALLBACK(cb_hide),(gpointer)this);
+		g_signal_connect_after(G_OBJECT(border), "map", G_CALLBACK(cb_show), (gpointer)this);
+		g_signal_connect(G_OBJECT(border),"unmap",G_CALLBACK(cb_hide),(gpointer)this);
 		//g_signal_connect_after(G_OBJECT(border), "size-allocate", G_CALLBACK(cb_configure), (gpointer)this);
 		g_signal_connect(G_OBJECT(widget), "expose-event", G_CALLBACK(cb_expose), (gpointer)this);
+		gtk_widget_add_events(border, GDK_STRUCTURE_MASK);	
 	}
 	else
 	{
@@ -373,15 +367,13 @@ void gMainWindow::move(int x, int y)
 
 void gMainWindow::resize(int w, int h)
 {
+	if (w == bufW && h == bufH)
+		return;
+			
+	_resized = true;
+		
 	if (isTopLevel())
 	{
-		if (w == bufW && h == bufH)
-			return;
-			
-		_resized=true;
-		bufW = w;
-		bufH = h;
-		
 		//gdk_window_enable_synchronized_configure (border->window);
 		
 		if (w < 1 || h < 1)
@@ -413,7 +405,7 @@ void gMainWindow::emitOpen()
 	{
 		//fprintf(stderr, "emit Open: %p (%d %d)\n", this, width(), height());
 		opened = true;
-		gtk_widget_realize(border);
+		if (isTopLevel()) gtk_widget_realize(border);
 		performArrange();
 		emit(SIGNAL(onOpen));
 		if (opened)
@@ -1145,6 +1137,9 @@ void gMainWindow::setType()
 void gMainWindow::configure()
 {
 	int h;
+	
+	if (bufW < 1 || bufH < 1)
+		return;
 	
 	h = menuBarHeight();
 	

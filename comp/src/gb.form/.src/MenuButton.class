@@ -41,7 +41,7 @@ Public Sub _new()
   $hArrow = New ToolButton($hPanel) As "Arrow"
   $hArrow.W = Desktop.Scale * 2
   '$hArrow.Ignore = True
-  $hArrow.Picture = Main.GetArrow(Align.Bottom, 10)
+  $hArrow.Picture = Main.GetArrow(Align.Bottom, 10).Picture
   '$hArrow.Raise
   '$hWatcher = New Watcher(Me) As "Watcher"
   

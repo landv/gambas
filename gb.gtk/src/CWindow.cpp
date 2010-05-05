@@ -291,7 +291,7 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent;)
 	WINDOW->onClose = gb_raise_window_Close;
 	WINDOW->onActivate = cb_activate;
 	WINDOW->onDeactivate = cb_deactivate;
-	WINDOW->resize(200,150);
+	//WINDOW->resize(200,150);
 
 	if ( (!MAIN_Window) && (!parent)) 
 	{

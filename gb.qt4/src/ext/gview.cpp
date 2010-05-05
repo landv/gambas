@@ -335,7 +335,7 @@ UPDATE_WIDTH:
 	
 void GEditor::updateHeight()
 {
-	_cellh = fm.lineSpacing() + 1;
+	_cellh = fm.ascent() + fm.descent() + 2;
 	updateCache();
 		
 	if (pattern.height() < _cellh)

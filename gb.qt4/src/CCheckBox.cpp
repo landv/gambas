@@ -74,7 +74,7 @@ DECLARE_EVENT(EVENT_Click);
 
 BEGIN_METHOD(CCHECKBOX_new, GB_OBJECT parent)
 
-  QCheckBox *wid = new QCheckBox(QCONTAINER(VARG(parent)));
+  QCheckBox *wid = new MyCheckBox(QCONTAINER(VARG(parent)));
 
   QObject::connect(wid, SIGNAL(stateChanged(int)), &CCheckBox::manager, SLOT(clicked()));
 

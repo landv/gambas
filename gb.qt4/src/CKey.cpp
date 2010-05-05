@@ -25,9 +25,6 @@
 
 #include "gambas.h"
 
-#include <qnamespace.h>
-#include <qkeysequence.h>
-
 #include "main.h"
 #include "CKey.h"
 
@@ -175,8 +172,9 @@ static bool get_state(int button, int key)
 BEGIN_PROPERTY(CKEY_shift)
 
   CHECK_VALID();
-  GB.ReturnBoolean(get_state(Qt::ShiftModifier, Qt::Key_Shift));
+  //GB.ReturnBoolean(get_state(Qt::ShiftModifier, Qt::Key_Shift));
   // (CKEY_info.state & Qt::ShiftButton) || (CKEY_info.code == Qt::Key_Shift));
+  GB.ReturnBoolean((CKEY_info.state & Qt::ShiftModifier) || (CKEY_info.code == Qt::Key_Shift));
 
 END_PROPERTY
 

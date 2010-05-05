@@ -172,6 +172,7 @@ Private Sub SetSelected(Child As Control)
   If hOld = Child Then Return 
   
   For Each hChild In $hScrollView.Children
+    If Not Object.IsValid(hChild) Then Continue
     If Not hChild.Enabled Then Continue
     If hChild = Child Then 
       iSaveBackground = hChild.Background
@@ -188,7 +189,7 @@ Private Sub SetSelected(Child As Control)
   $iSaveBackground = iSaveBackground
   $iSaveForeground = iSaveForeground
 
-  Wait
+  'Wait
   Raise Click
   
 End

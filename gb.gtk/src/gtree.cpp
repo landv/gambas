@@ -1580,9 +1580,11 @@ static void icon_cell_text(GtkIconView *view, GtkCellRenderer *cell, GtkTreeMode
 	else
 	{
 		g_object_set(G_OBJECT(cell),
+			//"xalign", 0.5,
+			//"yalign", 0.0,
 			"text", row->data->text(),
 			"editable", row->isEditable(),
-			//"alignment", PANGO_ALIGN_LEFT,
+			//"alignment", PANGO_ALIGN_CENTER,
 			//"wrap_mode", PANGO_WRAP_CHAR,
 			(void *)NULL);
 	}
@@ -1645,7 +1647,7 @@ gIcon::gIcon(gIconView *v)
 	g_object_set (rtext,
 		"xalign", 0.5,
 		"yalign", 0.0,
-		"alignment", PANGO_ALIGN_LEFT,
+		"alignment", PANGO_ALIGN_CENTER,
 		"wrap_mode", PANGO_WRAP_CHAR,
 		"editable", false,
 		//"ellipsize", _word_wrap ? PANGO_ELLIPSIZE_NONE : PANGO_ELLIPSIZE_END,
@@ -1875,12 +1877,12 @@ void gIcon::setGridWidth(int w)
 void gIcon::updateTextCell()
 {
 	g_object_set (rtext,
+		"xalign", 0.5,
+		"yalign", 0.0,
+		"alignment", PANGO_ALIGN_CENTER,
+		"wrap_mode", PANGO_WRAP_CHAR,
+		"editable", false,
 		"wrap_width", _grid_width,
-		//"xalign", 0.0,
-		//"yalign", 0.0,
-		//"alignment", PANGO_ALIGN_CENTER,
-		//"wrap_mode", PANGO_WRAP_CHAR,
-		//"editable", false,
 		//"ellipsize", _word_wrap ? PANGO_ELLIPSIZE_NONE : PANGO_ELLIPSIZE_END,
 		(void *)NULL);
 }

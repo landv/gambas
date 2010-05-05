@@ -905,6 +905,7 @@ gPicture *gPicture::stretch(int w, int h, bool smooth)
 {
   gPicture *ret;
   GdkPixbuf *image;
+	int ws, hs;
   
   if (w <= 0 || h <= 0)
     return new gPicture();
@@ -916,11 +917,25 @@ gPicture *gPicture::stretch(int w, int h, bool smooth)
   image = ret->getPixbuf();
   
   if (smooth)
+	{
+		ws = w;
+		hs = h;
+		if (ws < (width() / 4))
+			ws = w * 4;
+		if (hs < (height() / 4))
+			hs = h * 4;
+		if (ws != w || hs != h)
+		{
+			ret->img = gdk_pixbuf_scale_simple(image, ws, hs, GDK_INTERP_NEAREST);
+			g_object_unref(G_OBJECT(image));
+			image = ret->img;
+		}
     ret->img = gdk_pixbuf_scale_simple(image, w, h, GDK_INTERP_BILINEAR);
+	}
   else
     ret->img = gdk_pixbuf_scale_simple(image, w, h, GDK_INTERP_NEAREST);
 
-  //g_object_unref(G_OBJECT(image));
+  g_object_unref(G_OBJECT(image));
   
   ret->_width = w;
   ret->_height = h;

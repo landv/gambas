@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,80,68)
+  MoveScaled(0,0,80,67)
   Action = "option"
   Text = ("Preferences")
   Icon = Picture["icon:/small/options"]
@@ -31,7 +31,7 @@
     }
   }
   { tabOption TabStrip
-    MoveScaled(1,1,78,66)
+    MoveScaled(1,1,78,65)
     Arrangement = Arrange.Fill
     Spacing = True
     Margin = True
@@ -39,7 +39,7 @@
     Index = 0
     Text = ("General")
     { svwOption ScrollView
-      MoveScaled(1,1,74,59)
+      MoveScaled(1,1,74,58)
       Border = False
       ScrollBar = Scroll.Vertical
       { panOption VBox
@@ -499,14 +499,14 @@
     Index = 2
     Text = ("Code snippets")
     { HBox25 VBox
-      MoveScaled(1,1,75,60)
+      MoveScaled(1,1,75,58)
       Spacing = True
       { chkSnippet CheckBox
         MoveScaled(1,1,29,3)
         Text = ("Activate code snippets")
       }
       { HBox27 HBox
-        MoveScaled(1,5,73,54)
+        MoveScaled(1,5,73,49)
         Expand = True
         Spacing = True
         { gvwSnippet GridView

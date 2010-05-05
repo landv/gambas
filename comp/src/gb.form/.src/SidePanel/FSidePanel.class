@@ -15,7 +15,7 @@ Private $MY As Integer
 Private $iMax As Integer
 Private $iColor As Integer
 Private $bOpened As Boolean
-Private $hPict As Picture
+Private $hArrow As Image
 
 Private BUTTON_H As Integer = Desktop.Scale
 Private BUTTON_W As Integer = 48
@@ -215,7 +215,6 @@ End
 
 Public Sub Form_Resize()
 
-  'DEBUG ME.X;; ME.Y;; ME.W;; ME.H
   RefreshPanel
   GetParent()._Resize
 
@@ -246,7 +245,7 @@ Private Sub RefreshArrow()
       Endif
   End Select
   
-  $hPict = Main.GetArrow(iType, 10)
+  $hArrow = Main.GetArrow(iType, 10)
   btnSide.Refresh
   btnSide2.Refresh
 
@@ -538,7 +537,7 @@ Public Sub btnSide_Draw()
   'If Last.Tag Then
   '  Draw.Style.Button(0, 0, btnSide.W, btnSide.H, Last.Tag = 2)
   'Endif
-  If $hPict Then Draw.Picture($hPict, (Last.W - $hPict.W) / 2, (Last.H - $hPict.H) / 2)
+  If $hArrow Then Draw.Image($hArrow, (Last.W - $hArrow.W) / 2, (Last.H - $hArrow.H) / 2)
 
 End
 

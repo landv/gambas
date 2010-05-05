@@ -978,7 +978,7 @@ Public Sub Editors_KeyPress()
       sIndent = Space$(Editor.GetIndent(sLine))
       Editor.Begin
       Editor.Insert("\n  " & sIndent)
-      If sClose Then Editor.Insert("\n" & sIndent & sClose)
+      If sClose And If Not Key.Shift Then Editor.Insert("\n" & sIndent & sClose)
       Editor.End
       Editor.Goto(iLine + 1, 2 + Len(sIndent))
       Stop Event

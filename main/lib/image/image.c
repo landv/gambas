@@ -110,11 +110,15 @@ static inline uint BGRA_to_format(uint col, int format)
 		col = PREMUL(col);
 	if (GB_IMAGE_FMT_IS_SWAPPED(format))
 		col = SWAP(col);
+	//if (GB_IMAGE_FMT_IS_RGBA(format))
+	//	col = SWAP_RED_BLUE(col);
 	return col;
 }
 
 static inline uint BGRA_from_format(uint col, int format)
 {
+	//if (GB_IMAGE_FMT_IS_RGBA(format))
+	//	col = SWAP_RED_BLUE(col);
 	if (GB_IMAGE_FMT_IS_SWAPPED(format))
 		col = SWAP(col);
 	if (GB_IMAGE_FMT_IS_PREMULTIPLIED(format))

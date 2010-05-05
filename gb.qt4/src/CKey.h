@@ -25,12 +25,14 @@
 
 #include "gambas.h"
 
+#include <QKeySequence>
+
 typedef
   struct {
     int valid;
     char *text;
     int code;
-    int state;
+    Qt::KeyboardModifiers state;
     int cancel;
     bool release;
     }
