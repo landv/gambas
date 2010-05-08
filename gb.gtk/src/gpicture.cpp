@@ -124,6 +124,7 @@ __ERROR:
 
 void gPicture::initialize()
 {
+	fprintf(stderr, "gPicture::initialize: %p\n", this);
   pic = 0;
   mask = 0;
   img = 0;
@@ -217,10 +218,11 @@ gPicture::gPicture(GdkPixbuf *image, bool trans) : gShare()
 		GdkPixbuf *aimg;
 		aimg = gdk_pixbuf_add_alpha(img, FALSE, 0, 0, 0);
 		g_object_unref(G_OBJECT(img));
-		g_object_ref(G_OBJECT(aimg));
+		//g_object_ref(G_OBJECT(aimg));
 		img = aimg;
 		_transparent = false;
 	}
+
 }
 
 // The gPicture takes the GdkPixmap object. Do not unreference it after.
@@ -238,6 +240,7 @@ gPicture::gPicture(GdkPixmap *pixmap) : gShare()
 
 gPicture::~gPicture()
 {
+	fprintf(stderr, "gPicture::~gPicture: %p\n", this);
   clear();
 }
 
@@ -555,7 +558,7 @@ void gPicture::clear()
   	g_object_unref(G_OBJECT(pic));
   if (mask)
   	g_object_unref(G_OBJECT(mask));
-	if (img) 
+	if (img)
 		g_object_unref(G_OBJECT(img));
 	
   pic = 0;
@@ -745,17 +748,6 @@ unsigned char *gPicture::data()
 // 	gt_pixbuf_replace_color(getPixbuf(), src, dst, noteq);
 // 	invalidate();
 // }
-
-
-/*void gPicture::fromMemory(char *addr,unsigned int len)
-{
-	GdkPixbuf *img;
-
-	if (!pixbufFromMemory(&img,addr,len)) return;
-
-	if (image) g_object_unref(G_OBJECT(image));
-	image=img;
-}*/
 
 
 gPicture* gPicture::flip(bool mirror)
