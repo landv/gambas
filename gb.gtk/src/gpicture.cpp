@@ -124,7 +124,6 @@ __ERROR:
 
 void gPicture::initialize()
 {
-	fprintf(stderr, "gPicture::initialize: %p\n", this);
   pic = 0;
   mask = 0;
   img = 0;
@@ -240,7 +239,6 @@ gPicture::gPicture(GdkPixmap *pixmap) : gShare()
 
 gPicture::~gPicture()
 {
-	fprintf(stderr, "gPicture::~gPicture: %p\n", this);
   clear();
 }
 
