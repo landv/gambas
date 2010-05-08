@@ -77,7 +77,7 @@ static bool pixbufFromMemory(GdkPixbuf **img, char *addr, unsigned int len, bool
 		GdkPixbuf *aimg;
 		aimg = gdk_pixbuf_add_alpha(*img, FALSE, 0, 0, 0);
 		g_object_unref(G_OBJECT(*img));
-  	g_object_ref(G_OBJECT(aimg));
+  	//g_object_ref(G_OBJECT(aimg));
 		*img = aimg;
 		*trans = false;
 	}
@@ -372,16 +372,21 @@ void gPicture::fill(gColor col)
   else if (_type == MEMORY)
   {
   	int r, g, b, a;
-  	char c[4];
+		union
+		{
+			char c[4];
+			uint value;
+		}
+		color;
   	
   	gt_color_to_rgba(col, &r, &g, &b, &a);
   	
-  	c[0] = a ^ 0xFF;
-  	c[1] = b;
-  	c[2] = g;
-  	c[3] = r;
+  	color.c[0] = a ^ 0xFF;
+  	color.c[1] = b;
+  	color.c[2] = g;
+  	color.c[3] = r;
   	
-  	gdk_pixbuf_fill(img, *((guint32 *)c));
+  	gdk_pixbuf_fill(img, color.value);
   }
   
   invalidate();
