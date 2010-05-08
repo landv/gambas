@@ -321,7 +321,7 @@ Public Sub Activate(Optional hWindow As Window)
       
       With $hCurrent.Window
         .Show
-        .Raise
+        '.Raise
         If Not Application.ActiveControl Or If Application.ActiveControl.Window <> $hCurrent.Window Then
           .SetFocus
         Endif

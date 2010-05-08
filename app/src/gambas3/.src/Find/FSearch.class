@@ -28,10 +28,10 @@ Public Sub _new()
     .Columns.Count = 4  
     .Columns[0].Width = Desktop.Scale * 16
     .Columns[0].Text = ("File")
-    .Columns[1].Width = Desktop.Scale * 8
+    .Columns[1].Width = Desktop.Scale * 6
     .Columns[1].Text = ("Line")
-    .Columns[2].Width = Desktop.Scale * 8
-    .Columns[2].Text = ("Column")
+    .Columns[2].Width = Desktop.Scale * 6
+    .Columns[2].Text = ("Col.")
     .Columns[3].Width = 1024
     .Columns[3].Text = ("Text")    
   End With
@@ -262,11 +262,11 @@ End
 
 Private Sub InitSearch() As Boolean
   
-  Project.StoreCombo(cmbSearch)
-  Project.StoreCombo(cmbReplace)
-  
   SearchString = cmbSearch.Text
   ReplaceString = cmbReplace.Text
+  
+  Project.StoreCombo(cmbSearch)
+  Project.StoreCombo(cmbReplace)
   
   CaseSensitive = chkCaseSensitive.Value
   IgnoreStrings = chkIgnoreStrings.Value
@@ -562,6 +562,7 @@ End
 
 Public Sub cmbSearch_Change()
 
+  'If Not cmbSearch.Text Then Stop
   'FMain.UpdateSearchString(cmbSearch.Text)
   ShowString
   
@@ -610,15 +611,16 @@ Public Sub WakeUp(bReplace As Boolean)
   Update()
   
   Try sFind = $hCurrent.GetSelection()
-  If sFind Then cmbSearch.Text = sFind
-  
-  If $bReplace And If cmbSearch.Text Then
+
+  If $bReplace And If sFind Then
     cmbReplace.SelectAll
     cmbReplace.SetFocus
   Else
     cmbSearch.SelectAll
     cmbSearch.SetFocus
   Endif
+  
+  If sFind Then cmbSearch.Text = sFind
   
 End
 
@@ -643,14 +645,17 @@ Public Sub tvwFind_Data(Row As Integer, Column As Integer)
     Select Case Column
       Case 0
         .Text = $aBrowse[Row].File
+        .Alignment = Align.TopNormal
       Case 1
         .Text = $aBrowse[Row].Line
+        .Alignment = Align.TopRight
       Case 2
         .Text = $aBrowse[Row].Column
+        .Alignment = Align.TopRight
       Case 3
         .RichText = $aBrowse[Row].Text
+        .Alignment = Align.TopNormal
     End Select
-    .Alignment = Align.TopNormal
 
     ' If Row Then
     '   If Column = 0 Then 

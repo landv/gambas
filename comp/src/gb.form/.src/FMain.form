@@ -2,7 +2,6 @@
 
 { Form Form
   MoveScaled(0,0,93,63)
-  Arrangement = Arrange.Fill
   Margin = True
   { Menu4 Menu
     Text = ("Menu4")
@@ -21,9 +20,9 @@
       Text = ("Action 3")
     }
   }
-  { FileChooser1 FileChooser
-    MoveScaled(4,6,67,44)
-    ShowDetailed = True
-    ShowBookmark = True
+  { ColorChooser1 ColorChooser
+    MoveScaled(9,14,47,24)
+    ShowAlpha = True
+    ShowColorMap = False
   }
 }

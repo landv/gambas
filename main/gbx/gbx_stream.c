@@ -135,6 +135,9 @@ static int default_eof(STREAM *stream)
 	int ilen;
 
 	fd = STREAM_handle(stream);
+	if (STREAM_is_blocking(stream))
+		wait_for_fd_ready_to_read(STREAM_handle(stream));
+		
 	if (fd < 0 || STREAM_get_readable(stream, &ilen))
 		return TRUE;
 
@@ -193,6 +196,7 @@ _OPEN:
 	stream->common.no_lseek = FALSE;
 	stream->common.standard = FALSE;
 	stream->common.blocking = TRUE;
+	stream->common.available_now = FALSE;
 
 	if ((*(stream->type->open))(stream, path, mode, NULL))
 	{
@@ -599,11 +603,11 @@ static void input(STREAM *stream, char **addr, bool line)
 			
 			if (!buffer_len)
 			{
-				if (stream->common.available_now)
-				{
+				//if (stream->common.available_now)
+				//{
 					stream->common.eof = TRUE;
 					break;
-				}
+				//}
 			}
 			
 			start = 0;

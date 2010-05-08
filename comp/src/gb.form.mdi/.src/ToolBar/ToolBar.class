@@ -8,8 +8,7 @@ Public Const _Properties As String = "*,-Arrangement,-Padding,-Spacing,-Indent,K
 Public Const _Arrangement As Integer = 3
 Public Const _DefaultSize As String = "36,3"
 
-Public Const Horizontal As Integer = 0
-Public Const Vertical As Integer = 1
+Public Enum Horizontal, Vertical
 
 Event Configure
 

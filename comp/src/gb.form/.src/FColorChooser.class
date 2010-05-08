@@ -605,3 +605,17 @@ Public Sub btnSnap_Click()
   $bSnap = Not btnSnap.Value
 
 End
+
+Public Sub GetColorMap() As Boolean
+  
+  Return dwgColorMap.Visible
+  
+End
+
+
+Public Sub SetColorMap(bShow As Boolean)
+  
+  dwgColorMap.Visible = bShow
+  panColorMapSide.Visible = bShow
+  
+End

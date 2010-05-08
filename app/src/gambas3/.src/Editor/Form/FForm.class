@@ -144,7 +144,7 @@ Public Sub Reload()
   UpdateBorder
 
   'SetLock($bAfterLock)
-  If $bAfterLock Then Stop
+  'If $bAfterLock Then Stop
   Action[".lock", Me].Value = $bAfterLock
 
   DrawTitle

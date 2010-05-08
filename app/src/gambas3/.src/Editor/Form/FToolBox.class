@@ -214,7 +214,7 @@ Public Sub RefreshToolbar(Optional bForce As Boolean)
             Endif
           Next
           If Not bExist Then 
-            If Not $cToolBar[sGroup] Then Stop
+            'If Not $cToolBar[sGroup] Then Stop
             $cToolBar[sGroup].Add(sCtrl, hComp.Key, hClass.Family)
           Endif
         Next

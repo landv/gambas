@@ -341,7 +341,7 @@ Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As
       
     Else
 
-      If Not Parent Then Stop
+      'If Not Parent Then Stop
 
       hCtrl = CreateControl(sName, sClass, Parent.Control)
       Unknown = Object.Type(hCtrl) <> sClass
@@ -1351,7 +1351,7 @@ Private Function GetCoord(iCoord As Integer, Optional bDim As Boolean) As Float
 
   If bDim And If iCoord = 1 Then Return 0
 
-  Return Round(iCoord / Desktop.Scale, -4)
+  Return iCoord / Desktop.Scale
 
 End
 
@@ -1505,8 +1505,8 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
   
     Else
   
-      sLine = "MoveScaled(" & GetCoord(X) & "," & GetCoord(Y)
-      If bHasSize Then sLine = sLine & "," & GetCoord(W, True) & "," & GetCoord(H, True)
+      sLine = "MoveScaled(" & Format(GetCoord(X), "0.####") & "," & Format(GetCoord(Y), "0.####")
+      If bHasSize Then sLine = sLine & "," & Format(GetCoord(W, True), "0.####") & "," & Format(GetCoord(H, True), "0.####")
       sLine = sLine & ")"
   
     Endif

@@ -370,6 +370,7 @@ static void combo_set_editable(void *_object, bool ed)
 		{
 			//CWidget::removeFilter(COMBOBOX);
 			COMBOBOX->setEditable(true);
+			COMBOBOX->setCompleter(0);
 			//CWidget::installFilter(COMBOBOX);
 			QObject::connect(COMBOBOX->lineEdit(), SIGNAL(returnPressed()), &CTextBox::manager, SLOT(onActivate()));
 
@@ -450,8 +451,6 @@ BEGIN_METHOD(CCOMBOBOX_new, GB_OBJECT parent)
 	QObject::connect(wid, SIGNAL(editTextChanged(const QString &)), &CTextBox::manager, SLOT(onChange()));
 	QObject::connect(wid, SIGNAL(activated(int)), &CTextBox::manager, SLOT(onClick()));
 
-	wid->setInsertPolicy(QComboBox::NoInsert);
-
 	CWIDGET_new(wid, (void *)_object);
 
 	combo_set_editable(_object, true);
@@ -476,19 +475,18 @@ END_METHOD
 
 BEGIN_PROPERTY(CCOMBOBOX_text)
 
-	int pos;
-
 	if (READ_PROPERTY)
 		GB.ReturnNewZeroString(TO_UTF8(COMBOBOX->currentText()));
 	else
 	{
 		QString text = QSTRING_PROP();
-
-		if (COMBOBOX->isEditable())
-			COMBOBOX->lineEdit()->setText(text);
+		int pos;
 
 		pos = combo_find_item(THIS, text);
-		combo_set_current_item(_object, pos);
+		if (!COMBOBOX->isEditable() || pos >= 0)
+			combo_set_current_item(_object, pos);
+		if (COMBOBOX->isEditable())
+			COMBOBOX->lineEdit()->setText(text);
 	}
 
 END_PROPERTY
@@ -673,6 +671,8 @@ MyComboBox::MyComboBox(QWidget *parent) :
 	QComboBox(parent)
 {
 	_sorted = _dirty = false;
+	setCompleter(0);
+	setInsertPolicy(NoInsert);
 	calcMinimumHeight();
 }
 

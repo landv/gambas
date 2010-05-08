@@ -467,13 +467,13 @@ void TRANS_pipe(void)
   {
     if (TRANS_is(RS_READ))
       mode |= TS_MODE_READ | TS_MODE_DIRECT;
-    else if (TRANS_is(RS_INPUT))
-      mode |= TS_MODE_READ;
+    //else if (TRANS_is(RS_INPUT))
+    //  mode |= TS_MODE_READ;
 
     if (TRANS_is(RS_WRITE))
       mode |= TS_MODE_WRITE | TS_MODE_DIRECT;
-    else if (TRANS_is(RS_OUTPUT))
-      mode |= TS_MODE_WRITE;
+    //else if (TRANS_is(RS_OUTPUT))
+    //  mode |= TS_MODE_WRITE;
 
     if (TRANS_is(RS_WATCH))
       mode |= TS_MODE_WATCH;

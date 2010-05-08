@@ -522,7 +522,7 @@ Private Function CloseProject() As Boolean
 
         If Not hForm.Path Then
           Debug "hForm.Path = NULL ?"
-          Stop
+          'Stop
         Endif
 
         Inc nOpen

@@ -800,6 +800,7 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
     
     bStatic = bModule
     bPublic = False
+    If bModule And Project.ModulePublic Then bPublic = True
     sKind = ""
 
     For iInd = 0 To aSym.Count - 1

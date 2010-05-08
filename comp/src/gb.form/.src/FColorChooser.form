@@ -2,7 +2,6 @@
 
 { Form Form
   MoveScaled(9.1429,8,72,70)
-  Text = ("")
   Arrangement = Arrange.Vertical
   Spacing = True
   { HBox1 HBox
@@ -25,13 +24,12 @@
         Border = Border.Plain
       }
     }
-    { VBox4 VBox
+    { panColorMapSide VBox
       MoveScaled(49,2,4,26)
       Spacing = True
       { btnSnap ToolButton
         MoveScaled(0,0,4,4)
         ToolTip = ("Follow color grid")
-        Text = ("")
         Picture = Picture["icon:/small/grid"]
         Toggle = True
         Value = True

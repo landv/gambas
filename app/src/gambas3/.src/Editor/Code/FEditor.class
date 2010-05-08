@@ -31,8 +31,7 @@ Property Read ReadOnly As Boolean '' If the editor is read-only.
 Public Const IDENT_CAR As String = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_$"
 Public Const NBR_COLOR As Integer = 15
 
-Static Private $aStructOpen As String[] = ["DO", "WHILE", "REPEAT", "ELSE", "SELECT", "CASE", "DEFAULT", "FOR", "WITH", "CATCH", "FINALLY"]
-Static Private $aStructClose As String[] = ["Loop", "Wend", "Until", "", "End Select", "", "", "Next", "End With", "", ""]
+Static Private $cStructClose As New Collection(gb.IgnoreCase)
 
 Static Private $hVirtualSymbol As New CSymbolInfo
 
@@ -98,6 +97,18 @@ Static Public Sub _init()
   $cType["String"] = "s"
   $cType["Variant"] = "v"
   $cType["Object"] = "o"
+
+  $cStructClose["DO"] = "Loop"
+  $cStructClose["WHILE"] = "Wend"
+  $cStructClose["REPEAT"] = "Until"
+  $cStructClose["SELECT"] = "End Select"
+  $cStructClose["FOR"] = "Next"
+  $cStructClose["WITH"] = "End With"
+  $cStructClose["ELSE"] = "<"
+  $cStructClose["CASE"] = "<"
+  $cStructClose["DEFAULT"] = "<"
+  $cStructClose["CATCH"] = "<"
+  $cStructClose["FINALLY"] = "<"
 
 End
 
@@ -816,6 +827,7 @@ Public Sub Editors_KeyPress()
   Dim iPos As Integer
   Dim bStop As Boolean
   Dim bIndent As Boolean
+  Dim bUnindent As Boolean
   Dim aSymbol As String[]
   Dim sIndent As String
   Dim sClose As String
@@ -964,21 +976,29 @@ Public Sub Editors_KeyPress()
     If aSymbol.Count >= 1 Then
       If aSymbol[0] = "IF" And If aSymbol[aSymbol.Max] = "THEN" Then
         bIndent = True
+        bUnindent = False
         sClose = "Endif"
       Else
-        iInd = $aStructOpen.Find(aSymbol[0])
-        If iInd >= 0 Then
+        sClose = $cStructClose[aSymbol[0]]
+        If sClose Then
           bIndent = True
-          sClose = $aStructClose[iInd]
+          If sClose = "<" Then sClose = ""
+          'bUnindent = sClose = "<"
         Endif
       Endif
     Endif
     
     If bIndent Then
-      sIndent = Space$(Editor.GetIndent(sLine))
       Editor.Begin
+      If bUnindent And If Not Key.Shift Then
+        If Left(sLine, 2) = "  " Then
+          sLine = Mid$(sLine, 3)
+          Editor.Lines[Editor.Line].Text = sLine
+        Endif
+      Endif
+      sIndent = Space$(Editor.GetIndent(sLine))
       Editor.Insert("\n  " & sIndent)
-      If sClose And If Not Key.Shift Then Editor.Insert("\n" & sIndent & sClose)
+      If Not bUnindent And If sClose And If Not Key.Shift Then Editor.Insert("\n" & sIndent & sClose)
       Editor.End
       Editor.Goto(iLine + 1, 2 + Len(sIndent))
       Stop Event
