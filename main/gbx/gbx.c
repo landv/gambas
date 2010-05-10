@@ -161,7 +161,6 @@ int main(int argc, char **argv)
   int i, n;
   char *file = NULL;
   bool nopreload = FALSE;
-	const char *prog;
 
  	//char log_path[256];
  	//sprintf(log_path, "/tmp/gambas-%d.log", getuid());
@@ -172,8 +171,7 @@ int main(int argc, char **argv)
   COMMON_init();
   //STRING_init();
 
-	prog = argv[0];
-	EXEC_arch = (strcmp(prog, "gbr" GAMBAS_VERSION_STRING) == 0);
+	EXEC_arch = (strcmp(FILE_get_name(argv[0]), "gbr" GAMBAS_VERSION_STRING) == 0);
 
 	if (argc == 2)
 	{

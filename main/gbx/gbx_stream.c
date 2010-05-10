@@ -135,10 +135,13 @@ static int default_eof(STREAM *stream)
 	int ilen;
 
 	fd = STREAM_handle(stream);
+	if (fd < 0)
+		return TRUE;
+	
 	if (STREAM_is_blocking(stream))
 		wait_for_fd_ready_to_read(STREAM_handle(stream));
 		
-	if (fd < 0 || STREAM_get_readable(stream, &ilen))
+	if (STREAM_get_readable(stream, &ilen))
 		return TRUE;
 
 	return (ilen == 0);
