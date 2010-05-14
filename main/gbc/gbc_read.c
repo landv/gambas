@@ -735,6 +735,7 @@ static void add_string()
   int newline;
   bool jump;
   char *p;
+	const char *end;
   int i;
 
   start = source_ptr;
@@ -808,6 +809,9 @@ static void add_string()
       {
         p--;
         len--;
+				end = source_ptr;
+				comp->line += newline;
+				newline = 0;
         jump = TRUE;
       }
       else
@@ -819,8 +823,9 @@ static void add_string()
 
   add_pattern(RT_STRING, index);
 
-  for (i = 0; i < newline; i++)
-    add_newline();
+	source_ptr = end + 1;
+  //for (i = 0; i < newline; i++)
+  //	add_newline();
 }
 
 
