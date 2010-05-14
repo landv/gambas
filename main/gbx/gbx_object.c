@@ -314,8 +314,6 @@ static void release(CLASS *class, OBJECT *ob)
     }
     else if (var->type.id == T_VARIANT)
       VARIANT_free((VARIANT *)&data[var->pos]);
-    else if (var->type.id == T_ARRAY)
-      ARRAY_free_data((void *)&data[var->pos], (ARRAY_DESC *)class->load->array[var->type.value]);
 
     var++;
   }

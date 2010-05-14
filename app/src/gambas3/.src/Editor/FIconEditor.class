@@ -20,7 +20,7 @@ Private $iColor As Integer
 Private $bGhost As Boolean
 
 Private Const MAX_UNDO As Integer = 32
-Private $hUndo[32] As Image
+Private $hUndo As New Image[32]
 Private $iUndo As Integer
 
 Private Const WIDTH_SEL As Integer = 4

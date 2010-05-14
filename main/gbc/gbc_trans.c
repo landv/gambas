@@ -440,7 +440,7 @@ bool TRANS_type(int mode, TRANS_DECL *result)
   result->init = NULL;
   result->array.ndim = 0;
 
-  look = trans_square(look, mode, result);
+  //look = trans_square(look, mode, result);
 
   if (!PATTERN_is(*look, RS_AS))
   {

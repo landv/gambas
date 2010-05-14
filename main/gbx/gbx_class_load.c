@@ -86,13 +86,12 @@ static int align_pos(int pos, int size)
 
 static int sizeof_ctype(CLASS *class, CTYPE ctype)
 {
-	size_t size;
+	//size_t size;
 	
-	if (ctype.id != T_ARRAY)
-		return TYPE_sizeof_memory(ctype.id);
+	return TYPE_sizeof_memory(ctype.id);
 		
-	size = ARRAY_get_size((ARRAY_DESC *)class->load->array[ctype.value]);
-  return (size + 3) & ~3;
+	//size = ARRAY_get_size((ARRAY_DESC *)class->load->array[ctype.value]);
+  //return (size + 3) & ~3;
 }
 
 TYPE CLASS_ctype_to_type(CLASS *class, CTYPE ctype)
@@ -101,8 +100,6 @@ TYPE CLASS_ctype_to_type(CLASS *class, CTYPE ctype)
     return (TYPE)(class->load->class_ref[ctype.value]);
   else if (ctype.id == TC_POINTER)
     return (TYPE)T_POINTER;
-  else if (ctype.id == T_ARRAY)
-    ERROR_panic("conv_type: bad type");
   else
     return (TYPE)(ctype.id);	
 }

@@ -248,29 +248,29 @@ _FIN:
 
 void EXEC_pop_array(ushort code)
 {
-	static const void *jump[] = { &&__POP_GENERIC, &&__POP_STATIC_ARRAY, &&__POP_QUICK_ARRAY, &&__POP_ARRAY };
+	static const void *jump[] = { &&__POP_GENERIC, &&__POP_QUICK_ARRAY, &&__POP_ARRAY };
 	
   CLASS *class;
   OBJECT *object;
   GET_NPARAM(np);
-  int dim[MAX_ARRAY_DIM];
+  //int dim[MAX_ARRAY_DIM];
   int i;
   void *data;
   bool defined;
   VALUE *val;
   VALUE swap;
-  ARRAY_DESC *desc;
+  //ARRAY_DESC *desc;
 
   val = &SP[-np];
 	goto *jump[(code >> 6) & 3];
 
 __POP_GENERIC:
 
-	if (val->type == T_ARRAY)
+	/*if (val->type == T_ARRAY)
 	{
 		*PC |= 1 << 6;
 		goto __POP_STATIC_ARRAY;
-	}
+	}*/
 	
 	EXEC_object(val, &class, &object, &defined);
 	
@@ -282,15 +282,13 @@ __POP_GENERIC:
   }
 	
 	if (defined && class->quick_array)
-	{
+		*PC |= 1 << 6; // Check number of arguments by not going to __POP_QUICK_ARRAY immediately
+	else
 		*PC |= 2 << 6;
-		goto __POP_ARRAY_2; // Check number of arguments by not going to __POP_QUICK_ARRAY immediately
-	}
 	
-	*PC |= 3 << 6;
 	goto __POP_ARRAY_2;
 
-__POP_STATIC_ARRAY:
+/*__POP_STATIC_ARRAY:
 
 	np--;
 
@@ -308,7 +306,7 @@ __POP_STATIC_ARRAY:
 	VALUE_write(SP - 1, data, CLASS_ctype_to_type(SP->_array.class, desc->type));
 
 	POP();
-	return;
+	return;*/
 	
 __POP_QUICK_ARRAY:
 

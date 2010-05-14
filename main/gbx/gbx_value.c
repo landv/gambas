@@ -1067,7 +1067,7 @@ void VALUE_class_read(CLASS *class, VALUE *value, char *addr, CTYPE ctype)
   {
     VALUE_read(value, addr, (ctype.value >= 0) ? (TYPE)class->load->class_ref[ctype.value] : T_OBJECT);
   }
-  else if (ctype.id == T_ARRAY)
+  /*else if (ctype.id == T_ARRAY)
   {
     value->type = T_ARRAY;
     //value->_array.desc = class->load->array[ctype.value];
@@ -1075,7 +1075,7 @@ void VALUE_class_read(CLASS *class, VALUE *value, char *addr, CTYPE ctype)
     value->_array.addr = addr;
     value->_array.index = ctype.value;
     value->_array.keep = TRUE; // We suppose that the array goes to the stack
-  }
+  }*/
   else
     VALUE_read(value, addr, (TYPE)ctype.id);
 }
@@ -1087,10 +1087,10 @@ void VALUE_class_write(CLASS *class, VALUE *value, char *addr, CTYPE ctype)
   {
     VALUE_write(value, addr, (ctype.value >= 0) ? (TYPE)class->load->class_ref[ctype.value] : T_OBJECT);
   }
-  else if (ctype.id == T_ARRAY)
+  /*else if (ctype.id == T_ARRAY)
   {
     THROW(E_UNKNOWN);
-  }
+  }*/
   else
     VALUE_write(value, addr, (TYPE)ctype.id);
 }

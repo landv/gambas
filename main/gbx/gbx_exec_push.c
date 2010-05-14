@@ -428,17 +428,17 @@ _FIN:
 
 void EXEC_push_array(ushort code)
 {
-	static const void *jump[] = { &&__PUSH_GENERIC, &&__PUSH_STATIC_ARRAY, &&__PUSH_QUICK_ARRAY, &&__PUSH_ARRAY };
+	static const void *jump[] = { &&__PUSH_GENERIC, &&__PUSH_QUICK_ARRAY, &&__PUSH_ARRAY };
 	
   CLASS *class;
   OBJECT *object;
   GET_NPARAM(np);
-  int dim[MAX_ARRAY_DIM];
+  //int dim[MAX_ARRAY_DIM];
   int i;
   void *data;
   bool defined;
   VALUE *val;
-  ARRAY_DESC *desc;
+  //ARRAY_DESC *desc;
 
   val = &SP[-np];
   np--;
@@ -447,11 +447,11 @@ void EXEC_push_array(ushort code)
 	
 __PUSH_GENERIC:
 
-	if (val->type == T_ARRAY)
+	/*if (val->type == T_ARRAY)
 	{
 		*PC |= 1 << 6;
 		goto __PUSH_STATIC_ARRAY;
-	}
+	}*/
 	
 	EXEC_object(val, &class, &object, &defined);
 	
@@ -460,15 +460,13 @@ __PUSH_GENERIC:
   	class = val->_object.class;
 	
 	if (defined && class->quick_array)
-	{
+		*PC |= 1 << 6; // Check number of arguments by not going to __PUSH_QUICK_ARRAY immediately
+	else
 		*PC |= 2 << 6;
-		goto __PUSH_ARRAY_2; // Check number of arguments by not going to __PUSH_QUICK_ARRAY immediately
-	}
 	
-	*PC |= 3 << 6;
 	goto __PUSH_ARRAY_2;
 
-__PUSH_STATIC_ARRAY:
+/*__PUSH_STATIC_ARRAY:
 
 	for (i = 1; i <= np; i++)
 	{
@@ -484,7 +482,7 @@ __PUSH_STATIC_ARRAY:
 	VALUE_read(SP, data, CLASS_ctype_to_type(SP->_array.class, desc->type));
 
 	PUSH();
-	return;
+	return;*/
 
 __PUSH_QUICK_ARRAY:
 	

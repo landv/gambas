@@ -56,7 +56,7 @@ enum {
   T_VARIANT      = 11,
   T_ARRAY        = 12,
   T_POINTER      = 13,
-  T_CLASS        = 14,
+  T_STRUCT       = 14,
   T_NULL         = 15,
   T_OBJECT       = 16
   };
@@ -76,17 +76,20 @@ enum {
   T_STRING       = 9,
   T_CSTRING      = 10,
   T_VARIANT      = 11,
-  T_ARRAY        = 12,
+  //T_ARRAY        = 12, To be replaced by T_POINTER
   T_FUNCTION     = 13,
   T_CLASS        = 14,
   T_NULL         = 15,
   T_OBJECT       = 16,
-  TC_POINTER     = 13,
 	#if __WORDSIZE == 64
-		T_POINTER      = T_LONG
+		T_POINTER      = T_LONG,
 	#else
-		T_POINTER      = T_INTEGER
+		T_POINTER      = T_INTEGER,
 	#endif
+  
+  TC_ARRAY       = 12,
+  TC_POINTER     = 13,
+  TC_STRUCT      = 14
   };
 
 #endif

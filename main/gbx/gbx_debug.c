@@ -215,9 +215,9 @@ __FOUND:
   print_value(&value);*/
 
   BORROW(&value);
-  if (value.type == T_ARRAY)
+  /*if (value.type == T_ARRAY)
     value._array.keep = TRUE;
-  else
+  else*/
     VALUE_conv(&value, T_VARIANT);
   UNBORROW(&value);
 
