@@ -486,12 +486,12 @@ bool TRANS_type(int mode, TRANS_DECL *result)
 
 		if (!PATTERN_is(look[2], RS_RSQR))
 		{
-			if (mode & TT_CAN_NEW)
+			if ((mode & TT_CAN_NEW) && result->is_new)
 			{
 				if (TYPE_get_id(result->type) == T_ARRAY)
 					THROW("Cannot mix NEW and array declaration");
 
-				result->is_new = TRUE;
+				//result->is_new = TRUE;
 				result->init = look;
 			}
 			else

@@ -702,7 +702,7 @@ void GEditor::paintCell(QPainter *painter, int row, int)
 	p.translate(-ur.left(), 0);
 
 	// Show string
-	if (highlight && (_showRow == realRow || _showString.length()))
+	if ((_showRow == realRow || _showString.length()))
 		paintShowString(p, l, margin, fm.ascent() + 1, xmin, lmax, _cellh, realRow);
 	
 	// Selection background

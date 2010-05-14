@@ -138,7 +138,7 @@ static int default_eof(STREAM *stream)
 	if (fd < 0)
 		return TRUE;
 	
-	if (STREAM_is_blocking(stream))
+	if (STREAM_is_blocking(stream) && !stream->common.available_now)
 		wait_for_fd_ready_to_read(STREAM_handle(stream));
 		
 	if (STREAM_get_readable(stream, &ilen))

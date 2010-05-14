@@ -91,6 +91,7 @@ End
 Public Sub End()
   
   Dim sBuffer As String
+  'Dim hLog As File
 
   Dec $iBegin
   If $iBegin <> 0 Then Return
@@ -101,6 +102,7 @@ Public Sub End()
     Output To Default 
     
     $hFile = Open Temp$("response") For Read 
+    'hLog = Open "/tmp/response." & CStr(Application.Id) For Create
     AddHeader("Content-Length", Lof($hFile))
     
     Print $sHeader
@@ -109,6 +111,7 @@ Public Sub End()
     While Not Eof($hFile)
       sBuffer = Read #$hFile, -4096
       Print sBuffer;
+      'Print #hLog, sBuffer;
     Wend
     Close #$hFile
     

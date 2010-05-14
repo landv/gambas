@@ -126,7 +126,8 @@ Private Sub DecodeQueryForm()
   File.In.EndOfLine = gb.Windows
   
   sType = CGI["CONTENT_TYPE"]
-  $iMaxLength = CGI["CONTENT_LENGTH"]
+  $iMaxLength = 0
+  Try $iMaxLength = CInt(CGI["CONTENT_LENGTH"])
   'DEBUG sType
   
   If sType = "application/x-www-form-urlencoded" Then 

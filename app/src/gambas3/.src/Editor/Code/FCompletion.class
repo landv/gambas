@@ -194,7 +194,7 @@ Private Sub AddClassesAndFill(aClass As String[], Optional sBegin As String)
   Dim sClass As String
   Dim sLib As String
   Dim iType As Integer
-  Dim hPic As Picture[7]
+  Dim hPic As New Picture[7]
   Dim aLib As String[]
 
   CComponent.All["gb"].Load

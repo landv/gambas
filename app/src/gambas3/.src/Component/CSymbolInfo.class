@@ -309,7 +309,7 @@ End
 Private Sub SplitSignature(sSign As String) As String[]
   
   Dim iPos As Integer
-  Dim aSign As String[2]
+  Dim aSign As New String[2]
   
   iPos = InStr(sSign, "[")
   If iPos Then
