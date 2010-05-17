@@ -247,7 +247,7 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
           'hCtrl.Text = sClass & " ?"
           hCtrl.Design = True
           hCtrl.Painted = $hFamily.IsPainted(Me)
-          hCtrl.Transparent = $hFamily.IsTransparent(Me)
+          'hCtrl.Transparent = $hFamily.IsTransparent(Me)
         Else
           hCtrl.Design = Not IsContainer()
           ' If Not IsMultiContainer() Then
