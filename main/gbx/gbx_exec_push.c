@@ -67,12 +67,12 @@ _PUSH_GENERIC:
 
 	// The first time we access a symbol, we must not be virtual to find it
 	val = &SP[-1];
-	if (defined && object && !VALUE_is_super(val))
+	if (LIKELY(defined && object && !VALUE_is_super(val)))
   	index = CLASS_find_symbol(val->_object.class, name);
 	else
   	index = CLASS_find_symbol(class, name);
 
-  if (index == NO_SYMBOL)
+  if (UNLIKELY(index == NO_SYMBOL))
   {
     //index = CLASS_find_symbol(class, name);
 
@@ -92,7 +92,7 @@ _PUSH_GENERIC:
   {
     case CD_CONSTANT:
 
-      if (defined)
+      if (LIKELY(defined))
       {
 				if ((PC[-1] & 0xF800) == C_PUSH_CLASS)
 				{
@@ -129,7 +129,7 @@ _PUSH_GENERIC:
 
       if (object == NULL)
       {
-        if (!class->auto_create)
+        if (UNLIKELY(!class->auto_create))
           THROW(E_DYNAMIC, class->name, name);
         object = EXEC_auto_create(class, TRUE);
         *PC |= 7;
@@ -146,7 +146,7 @@ _PUSH_GENERIC:
 
     case CD_STATIC_VARIABLE:
 
-      if (object != NULL)
+      if (UNLIKELY(object != NULL))
         THROW(E_STATIC, class->name, name);
 
       if (defined) *PC |= 3;
@@ -161,7 +161,7 @@ _PUSH_GENERIC:
 
       if (object == NULL)
       {
-        if (!class->auto_create)
+        if (UNLIKELY(!class->auto_create))
           THROW(E_DYNAMIC, class->name, name);
         object = EXEC_auto_create(class, TRUE);
         *PC |= 8;
@@ -179,7 +179,7 @@ _PUSH_GENERIC:
     case CD_STATIC_PROPERTY:
     case CD_STATIC_PROPERTY_READ:
 
-      if (object != NULL)
+      if (UNLIKELY(object != NULL))
         THROW(E_STATIC, class->name, name);
 
       if (defined) *PC |= 4;
@@ -193,7 +193,7 @@ _PUSH_GENERIC:
 
       if (object == NULL)
       {
-        if (!class->auto_create)
+        if (UNLIKELY(!class->auto_create))
           THROW(E_DYNAMIC, class->name, name);
         object = EXEC_auto_create(class, TRUE);
         *PC |= 9;
@@ -412,7 +412,7 @@ _FIN_DEFINED:
 
 _FIN_DEFINED_NO_BORROW:
 
-  if (!defined)
+  if (UNLIKELY(!defined))
     VALUE_conv(&SP[-1], T_VARIANT);
 
   /* sp[-1] contenait l'objet et a ���ras� Il faut donc le d���encer
@@ -450,12 +450,12 @@ __PUSH_GENERIC:
 	EXEC_object(val, &class, &object, &defined);
 	
 	// The first time we access a symbol, we must not be virtual to find it
-	if (defined && object && !VALUE_is_super(val))
+	if (LIKELY(defined && object && !VALUE_is_super(val)))
   	class = val->_object.class;
 	
 	fast = 3;
 	
-	if (defined)
+	if (LIKELY(defined))
 	{
 		if (class->quick_array == CQA_ARRAY)
 			fast = 1;
@@ -489,7 +489,7 @@ __PUSH_QUICK_ARRAY:
 	
 	EXEC_object(val, &class, &object, &defined);
 	
-	if (np == 1)
+	if (LIKELY(np == 1))
 	{
 		VALUE_conv(&val[1], T_INTEGER);
 		data = CARRAY_get_data((CARRAY *)object, val[1]._integer.value);
@@ -502,7 +502,7 @@ __PUSH_QUICK_ARRAY:
 		data = CARRAY_get_data_multi((CARRAY *)object, (GB_INTEGER *)&val[1], np);
 	}
 	
-	if (!data)
+	if (UNLIKELY(data == NULL))
 		PROPAGATE();
 	VALUE_read(val, data, ((CARRAY *)object)->type);
 	
@@ -531,7 +531,7 @@ __PUSH_ARRAY:
 	
 __PUSH_ARRAY_2:
 
-	if (EXEC_special(SPEC_GET, class, object, np, FALSE))
+	if (UNLIKELY(EXEC_special(SPEC_GET, class, object, np, FALSE)))
 		THROW(E_NARRAY, class->name);
 
 	OBJECT_UNREF(object, "EXEC_push_array");
@@ -539,6 +539,6 @@ __PUSH_ARRAY_2:
 	//SP[-1] = SP[0];
 	VALUE_copy(&SP[-1], &SP[0]);
 
-	if (!defined)
+	if (UNLIKELY(!defined))
 		VALUE_conv(&SP[-1], T_VARIANT);
 }

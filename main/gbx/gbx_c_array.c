@@ -56,12 +56,12 @@ static void THROW_static_array()
 
 static bool check_not_multi(CARRAY *_object)
 {
-	if (THIS->ref)
+	if (UNLIKELY(THIS->ref != NULL))
 	{
 		THROW_static_array();
 		return TRUE;
 	}
-	else if (THIS->dim)
+	else if (UNLIKELY(THIS->dim != NULL))
 	{
 		GB_Error("Array is multi-dimensional");
 		return TRUE;
@@ -75,7 +75,7 @@ static int get_dim(CARRAY *_object)
 {
 	int d;
 
-	if (!THIS->dim)
+	if (LIKELY(THIS->dim == NULL))
 		return 1;
 	else
 	{
@@ -90,7 +90,7 @@ static int get_dim(CARRAY *_object)
 
 static int get_bound(CARRAY *_object, int d)
 {
-	if (!THIS->dim)
+	if (LIKELY(THIS->dim == NULL))
 		return THIS->count;
 	else
 	{
@@ -148,7 +148,7 @@ void *CARRAY_get_data_multi(CARRAY *_object, GB_INTEGER *arg, int nparam)
 
 	//fprintf(stderr, "get_data_multi: nparam = %d\n", nparam);
 
-	if (THIS->dim)
+	if (UNLIKELY(THIS->dim != NULL))
 	{
 		int max;
 		int i;
@@ -321,14 +321,14 @@ static void borrow(CARRAY *_object, int start, int end)
 
 static void clear(CARRAY *_object)
 {
-	if (THIS->ref)
+	if (UNLIKELY(THIS->ref != NULL))
 	{
 		THROW_static_array();
 		return;
 	}
 	
 	release(THIS, 0, -1);
-	if (THIS->dim)
+	if (UNLIKELY(THIS->dim != NULL))
 	{
 		memset(THIS->data, 0, TYPE_sizeof_memory(THIS->type) * THIS->count);
 	}
@@ -445,7 +445,7 @@ BEGIN_METHOD_VOID(CARRAY_free)
 
 	release(THIS, 0, -1);
 	
-	if (THIS->ref)
+	if (UNLIKELY(THIS->ref != NULL))
 	{
 		GB_Unref(&THIS->ref);
 		return;
@@ -453,8 +453,7 @@ BEGIN_METHOD_VOID(CARRAY_free)
 	
 	ARRAY_delete(&THIS->data);
 
-	if (THIS->dim)
-		FREE(&THIS->dim, "CARRAY_free");
+	FREE(&THIS->dim, "CARRAY_free");
 
 END_METHOD
 

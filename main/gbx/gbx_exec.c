@@ -139,7 +139,7 @@ void UNBORROW(VALUE *value)
 
 	TYPE type = value->type;
 
-	if (TYPE_is_object(type))
+	if (UNLIKELY(TYPE_is_object(type)))
 	{
 		OBJECT_UNREF_KEEP(value->_object.object, "UNBORROW");
 		return;
@@ -209,7 +209,7 @@ void RELEASE_many(VALUE *value, int n)
 		
 		type = value->type;
 	
-		if (TYPE_is_object(type))
+		if (UNLIKELY(TYPE_is_object(type)))
 		{
 			OBJECT_UNREF(value->_object.object, "RELEASE");
 			continue;
@@ -416,9 +416,9 @@ void EXEC_enter(void)
 
 	/* check number of arguments */
 
-	if (nparam < func->npmin)
+	if (UNLIKELY(nparam < func->npmin))
 		THROW(E_NEPARAM);
-	else if (nparam > func->n_param && !func->vararg)
+	else if (UNLIKELY(nparam > func->n_param && !func->vararg))
 		THROW(E_TMPARAM);
 
 	/* mandatory arguments */
@@ -429,7 +429,7 @@ void EXEC_enter(void)
 		/*BORROW(SP - nparam + i);*/
 	}
 
-	if (func->npmin < func->n_param)
+	if (UNLIKELY(func->npmin < func->n_param))
 	{
 		/* optional arguments */
 
@@ -446,7 +446,7 @@ void EXEC_enter(void)
 
 		/* missing optional arguments */
 
-		if (nparam < func->n_param)
+		if (UNLIKELY(nparam < func->n_param))
 		{
 			STACK_check(func->n_param - nparam);
 
@@ -468,7 +468,7 @@ void EXEC_enter(void)
 	/* enter function */
 
 	BP = SP;
-	if (func->vararg)
+	if (UNLIKELY(func->vararg))
 		PP = SP - (nparam - func->n_param);
 	else
 		PP = SP;
@@ -479,7 +479,7 @@ void EXEC_enter(void)
 	//AP = ARCH_from_class(CP);
 	EP = NULL;
 
-	if (func->error)
+	if (UNLIKELY(func->error))
 	{
 		#if DEBUG_ERROR
 			printf("EXEC_enter: EC = PC + %d\n", func->error);
@@ -496,7 +496,7 @@ void EXEC_enter(void)
 
 	/* local variables initialization */
 
-	if (func->n_local)
+	if (LIKELY(func->n_local > 0))
 	{
 		for (i = 0; i < func->n_local; i++)
 		{
@@ -507,7 +507,7 @@ void EXEC_enter(void)
 
 	/* control variables initialization */
 
-	if (func->n_ctrl)
+	if (LIKELY(func->n_ctrl > 0))
 	{
 		for (i = 0; i < func->n_ctrl; i++)
 		{
@@ -574,7 +574,7 @@ void EXEC_enter_quick(void)
 	CP = class;
 	EP = NULL;
 
-	if (func->error)
+	if (UNLIKELY(func->error))
 		EC = PC + func->error;
 	else
 		EC = NULL;
@@ -584,7 +584,7 @@ void EXEC_enter_quick(void)
 
 	/* local variables initialization */
 
-	if (func->n_local)
+	if (LIKELY(func->n_local != 0))
 	{
 		for (i = 0; i < func->n_local; i++)
 		{
@@ -595,7 +595,7 @@ void EXEC_enter_quick(void)
 
 	/* control variables initialization */
 
-	if (func->n_ctrl)
+	if (LIKELY(func->n_ctrl != 0))
 	{
 		for (i = 0; i < func->n_ctrl; i++)
 		{
@@ -640,14 +640,14 @@ void EXEC_leave(bool drop)
   
 	/* ByRef arguments management */
 
-	if (!(pc && PCODE_is(pc[1], C_BYREF)))
+	if (LIKELY(!(pc && PCODE_is(pc[1], C_BYREF))))
 		goto __LEAVE_NORMAL;
 		
 	pc++;
 	nbyref = 1 + (*pc & 0xF);
 	pc_func = FP->code;
 	
-	if (!PCODE_is(*pc_func, C_BYREF))
+	if (LIKELY(!PCODE_is(*pc_func, C_BYREF)))
 		goto __LEAVE_NORMAL;
 	
 	nbyref_func = 1 + (*pc_func & 0xF);
@@ -771,7 +771,7 @@ void EXEC_function_loop()
 {
 	bool retry = FALSE;
 
-	if (PC != NULL)
+	if (LIKELY(PC != NULL))
 	{
 		do
 		{
@@ -963,15 +963,15 @@ bool EXEC_call_native(void (*exec)(), void *object, TYPE type, VALUE *param)
 
 	(*exec)(object, (void *)param);
 
-	if (GAMBAS_Error)
+	if (UNLIKELY(GAMBAS_Error))
 	{
 		GAMBAS_Error = FALSE;
 		return TRUE;
 	}
 	
-	if (TYPE_is_pure_object(type) && TEMP.type != T_NULL && TEMP.type != T_VOID)
+	if (UNLIKELY(TYPE_is_pure_object(type) && TEMP.type != T_NULL && TEMP.type != T_VOID))
 	{
-		if (((CLASS *)type)->override)
+		if (UNLIKELY(((CLASS *)type)->override != NULL))
 			type = (TYPE)(((CLASS *)type)->override);
 		
 		//fprintf(stderr, "type = %s  TEMP.type = %s\n", TYPE_get_name(type), TYPE_get_name(TEMP.type));
@@ -1002,7 +1002,7 @@ void EXEC_native_quick(void)
 
 	RELEASE_MANY(SP, nparam);
 	
-	if (error)
+	if (UNLIKELY(error))
 	{
 		POP();
 		PROPAGATE();
@@ -1072,12 +1072,12 @@ void EXEC_native(void)
 
 	TRY
 	{
-		if (nparam < desc->npmin)
+		if (UNLIKELY(nparam < desc->npmin))
 			THROW(E_NEPARAM);
 
-		if (!desc->npvar)
+		if (LIKELY(!desc->npvar))
 		{
-			if (nparam > desc->npmax)
+			if (UNLIKELY(nparam > desc->npmax))
 				THROW(E_TMPARAM);
 
 			value = &SP[-nparam];
@@ -1086,7 +1086,7 @@ void EXEC_native(void)
 			for (i = 0; i < desc->npmin; i++, value++, sign++)
 				VALUE_conv(value, *sign);
 
-			if (desc->npmin < desc->npmax)
+			if (UNLIKELY(desc->npmin < desc->npmax))
 			{
 				for (; i < nparam; i++, value++, sign++)
 				{
@@ -1096,7 +1096,7 @@ void EXEC_native(void)
 
 				n = desc->npmax - nparam;
 
-				if (STACK_check(n))
+				if (UNLIKELY(STACK_check(n)))
 				{
 					STACK_RELOCATE(value);
 				}
@@ -1116,9 +1116,9 @@ void EXEC_native(void)
 			for (i = 0; i < desc->npmin; i++, value++, sign++)
 				VALUE_conv(value, *sign);
 
-			if (desc->npmin < desc->npmax)
+			if (UNLIKELY(desc->npmin < desc->npmax))
 			{
-				if (nparam < desc->npmax)
+				if (UNLIKELY(nparam < desc->npmax))
 				{
 					for (; i < nparam; i++, value++, sign++)
 					{
@@ -1128,7 +1128,7 @@ void EXEC_native(void)
 
 					n = desc->npmax - nparam;
 
-					if (STACK_check(n))
+					if (UNLIKELY(STACK_check(n)))
 					{
 						STACK_RELOCATE(value);
 					}
@@ -1149,7 +1149,7 @@ void EXEC_native(void)
 				}
 			}
 
-			if (desc->npmax < nparam)
+			if (UNLIKELY(desc->npmax < nparam))
 				EXEC.nparvar = nparam - desc->npmax;
 			else
 				EXEC.nparvar = 0;
@@ -1196,7 +1196,7 @@ void EXEC_native(void)
 	#endif
 	*/
 
-	if (!error)
+	if (LIKELY(!error))
 	{
 		if (desc->type == T_VOID)
 		{
@@ -1228,7 +1228,7 @@ void EXEC_native(void)
 	if (use_stack)
 		OBJECT_UNREF(free_later, "EXEC_native (FUNCTION)");
 
-	if (error)
+	if (UNLIKELY(error))
 		PROPAGATE();
 
 	#if DEBUG_STACK
@@ -1251,14 +1251,14 @@ void EXEC_object(VALUE *val, CLASS **pclass, OBJECT **pobject, bool *pdefined)
 
 __RETRY:
 
-	if (TYPE_is_pure_object(val->type))
+	if (LIKELY(TYPE_is_pure_object(val->type)))
 		goto __PURE_OBJECT;
 	else
 		goto *jump[val->type];
 
 __FUNCTION:
 
-	if (val->_function.kind == FUNCTION_UNKNOWN)
+	if (LIKELY(val->_function.kind == FUNCTION_UNKNOWN))
 	{
 		EXEC.property = TRUE;
 		EXEC.unknown = CP->load->unknown[val->_function.index];
@@ -1282,11 +1282,11 @@ __CLASS:
 	object = NULL;
 	defined = TRUE;
 
-	if (val == EXEC_super)
+	if (UNLIKELY(val == EXEC_super))
 	{
 		EXEC_super = val->_class.super;
 		//*class = (*class)->parent;
-		if (!class)
+		if (UNLIKELY(class == NULL))
 			THROW(E_PARENT);
 	}
 	
@@ -1307,16 +1307,16 @@ __PURE_OBJECT:
 	class = val->_object.class;
 	defined = TRUE;
 
-	if (val == EXEC_super)
+	if (UNLIKELY(val == EXEC_super))
 	{
 		EXEC_super = val->_object.super;
 		//*class = (*class)->parent;
-		if (!class)
+		if (UNLIKELY(class == NULL))
 			THROW(E_PARENT);
 	}
-	else if (!class->is_virtual)
+	else if (LIKELY(!class->is_virtual))
 		class = OBJECT_class(object);
-	else if (!object)
+	else if (UNLIKELY(object == NULL))
 	{
 		/* A null object and a virtual class means that we want to pass a static class */
 		CLASS_load(class);
@@ -1356,12 +1356,12 @@ __NULL:
 
 __CHECK:
 
-	if (!object)
+	if (UNLIKELY(object == NULL))
 		goto __NULL;
 
 	CLASS_load(class);
 
-	if (class->check && (*(class->check))(object))
+	if (UNLIKELY(class->check && (*(class->check))(object)))
 		THROW(E_IOBJECT);
 		
 __RETURN:
@@ -1404,7 +1404,7 @@ void EXEC_public(CLASS *class, void *object, const char *name, int nparam)
 
 	desc = CLASS_get_symbol_desc_kind(class, name, (object != NULL) ? CD_METHOD : CD_STATIC_METHOD, 0);
 
-	if (desc == NULL)
+	if (UNLIKELY(desc == NULL))
 		return;
 	
 	EXEC_public_desc(class, object, &desc->method, nparam);
@@ -1438,7 +1438,7 @@ bool EXEC_special(int special, CLASS *class, void *object, int nparam, bool drop
 	CLASS_DESC *desc;
 	short index = class->special[special];
 
-	if (index == NO_SYMBOL)
+	if (UNLIKELY(index == NO_SYMBOL))
 		return TRUE;
 
 	desc = CLASS_get_desc(class, index);
@@ -1632,7 +1632,7 @@ void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int npa
 		np += desc->method.npmin;
 	}
 
-	if (np > nparam)
+	if (UNLIKELY(np > nparam))
 		THROW(E_NEPARAM);
 
 	arg = - nparam;
@@ -1720,7 +1720,7 @@ void *EXEC_create_object(CLASS *class, int np, char *event)
 
 	CLASS_load(class);
 
-	if (class->no_create)
+	if (UNLIKELY(class->no_create))
 		THROW(E_CSTATIC, class->name);
 
 	OBJECT_new(&object, class, event, ((OP == NULL) ? (OBJECT *)CP : (OBJECT *)OP));
@@ -1773,7 +1773,7 @@ void EXEC_new(void)
 	if (SP->type == T_CLASS)
 	{
 		class = SP->_class.class;
-		if (class->override)
+		if (UNLIKELY(class->override != NULL))
 			class = class->override;
 	}
 	else if (TYPE_is_string(SP->type))
@@ -1791,7 +1791,7 @@ void EXEC_new(void)
 	//printf("**** NEW %s\n", class->name);
 	CLASS_load(class);
 
-	if (class->no_create)
+	if (UNLIKELY(class->no_create))
 		THROW(E_CSTATIC, class->name);
 
 	if (event)

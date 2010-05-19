@@ -53,13 +53,13 @@ int TABLE_compare(const char *s1, int len1, const char *s2, int len2)
 		c1 = s1[i];
 		c2 = s2[i];
 
-		if (c1 > c2) return 1;
-		if (c1 < c2) return -1;
+		if (LIKELY(c1 > c2)) return 1;
+		if (LIKELY(c1 < c2)) return -1;
 	}
 
-	if (len1 < len2)
+	if (LIKELY(len1 < len2))
 		return -1;
-	else if (len1 > len2)
+	else if (LIKELY(len1 > len2))
 		return 1;
 	else
 		return 0;
@@ -74,15 +74,15 @@ int TABLE_compare_ignore_case(const char *s1, int len1, const char *s2, int len2
 	for(i = 0;;i++)
 	{
 		result = toupper(s1[i]) - toupper(s2[i]);
-		if (result)
+		if (LIKELY(result))
 			return result; // < 0 ? -1 : 1;
-		if (--len == 0)
+		if (UNLIKELY(--len == 0))
 			break;
 	}
 
-	if (len1 < len2)
+	if (LIKELY(len1 < len2))
 		return -1;
-	else if (len1 > len2)
+	else if (LIKELY(len1 > len2))
 		return 1;
 	else
 		return 0;
@@ -92,15 +92,15 @@ int TABLE_compare_ignore_case_len(const char *s1, int len1, const char *s2, int 
 {
 	int result;
 
-	if (len1 < len2)
+	if (LIKELY(len1 < len2))
 		return -1;
-	else if (len1 > len2)
+	else if (LIKELY(len1 > len2))
 		return 1;
 
 	while (len1)
 	{
 		result = tolower(*s1++) - tolower(*s2++);
-		if (result)
+		if (LIKELY(result))
 			return result; // < 0 ? -1 : 1;
 		--len1;
 	}
@@ -154,12 +154,12 @@ static bool search(void *symbol, int n_symbol, size_t size, int flag, const char
 				{
 					result = tolower(*s1++) - tolower(*s2++);
 					
-					if (result < 0)
+					if (LIKELY(result < 0))
 						goto __T_LOWER;
-					else if (result > 0)
+					else if (LIKELY(result > 0))
 						goto __T_GREATER;
 					
-					if (--l == 0)
+					if (UNLIKELY(--l == 0))
 						break;
 				}
 			
@@ -176,7 +176,7 @@ static bool search(void *symbol, int n_symbol, size_t size, int flag, const char
 	{
 		for(;;)
 		{
-			if (deb >= fin)
+			if (UNLIKELY(deb >= fin))
 			{
 				*index = deb;
 				return FALSE;
@@ -189,12 +189,12 @@ static bool search(void *symbol, int n_symbol, size_t size, int flag, const char
 
 			slen = sym->len;
 			
-			if (len < slen)
+			if (LIKELY(len < slen))
 				goto __B_LOWER;
-			else if (len > slen)
+			else if (LIKELY(len > slen))
 				goto __B_GREATER;
 			
-			if (len)
+			if (LIKELY(len > 0))
 			{
 				const uchar *s1 = (uchar *)name;
 				const uchar *s2 = (uchar *)sym->name;
@@ -206,12 +206,12 @@ static bool search(void *symbol, int n_symbol, size_t size, int flag, const char
 				{
 					result = *s1++ - *s2++;
 					
-					if (result < 0)
+					if (LIKELY(result < 0))
 						goto __B_LOWER;
-					else if (result > 0)
+					else if (LIKELY(result > 0))
 						goto __B_GREATER;
 					
-					if (--l == 0)
+					if (UNLIKELY(--l == 0))
 						break;
 				}
 			}
@@ -232,11 +232,11 @@ bool SYMBOL_find(void *symbol, int n_symbol, size_t s_symbol, int flag,
 	int index;
 	int len_prefix;
 
-	if (prefix)
+	if (UNLIKELY(prefix != NULL))
 	{
 		len_prefix = strlen(prefix);
 
-		if ((len + len_prefix) > MAX_SYMBOL_LEN)
+		if (UNLIKELY((len + len_prefix) > MAX_SYMBOL_LEN))
 			ERROR_panic("SYMBOL_find: prefixed symbol too long");
 
 		strcpy(_buffer, prefix);
@@ -245,7 +245,7 @@ bool SYMBOL_find(void *symbol, int n_symbol, size_t s_symbol, int flag,
 		name = _buffer;
 	}
 
-	if (search(symbol, n_symbol, s_symbol, flag, name, len, &index))
+	if (LIKELY(search(symbol, n_symbol, s_symbol, flag, name, len, &index)))
 	{
 		//*result = ((SYMBOL *)((char *)symbol + s_symbol * index))->sort;
 		*result = SSYM(symbol, index, s_symbol)->sort;
@@ -258,6 +258,7 @@ bool SYMBOL_find(void *symbol, int n_symbol, size_t s_symbol, int flag,
 	}
 }
 
+#if 0
 bool SYMBOL_find_old(void *symbol, int n_symbol, size_t s_symbol, int flag,
 															const char *name, int len, const char *prefix, int *result)
 {
@@ -274,11 +275,11 @@ bool SYMBOL_find_old(void *symbol, int n_symbol, size_t s_symbol, int flag,
 	deb = 0;
 	fin = n_symbol;
 
-	if (prefix)
+	if (UNLIKELY(prefix != NULL))
 	{
 		len_prefix = strlen(prefix);
 
-		if ((len + len_prefix) > MAX_SYMBOL_LEN)
+		if (UNLIKELY((len + len_prefix) > MAX_SYMBOL_LEN))
 			ERROR_panic("SYMBOL_find: prefixed symbol too long");
 
 		strcpy(_buffer, prefix);
@@ -289,7 +290,7 @@ bool SYMBOL_find_old(void *symbol, int n_symbol, size_t s_symbol, int flag,
 
 	for(;;)
 	{
-		if (deb >= fin)
+		if (UNLIKELY(deb >= fin))
 		{
 			*result = NO_SYMBOL;
 			return FALSE;
@@ -302,7 +303,7 @@ bool SYMBOL_find_old(void *symbol, int n_symbol, size_t s_symbol, int flag,
 
 		cmp = (*cmp_func)(name, len, sym->name, sym->len);
 
-		if (cmp == 0)
+		if (UNLIKELY(cmp == 0))
 		{
 			*result = index;
 			return TRUE;
@@ -314,12 +315,13 @@ bool SYMBOL_find_old(void *symbol, int n_symbol, size_t s_symbol, int flag,
 			deb = pos + 1;
 	}
 }
+#endif
 
 const char *TABLE_get_symbol_name(TABLE *table, int index)
 {
 	SYMBOL *sym;
 
-	if ((index < 0) || (index >= ARRAY_count(table->symbol)))
+	if (UNLIKELY((index < 0) || (index >= ARRAY_count(table->symbol))))
 		strcpy(_buffer, "?");
 	else
 	{
@@ -552,7 +554,7 @@ void TABLE_copy_symbol_with_prefix(TABLE *table, int ind_src, char prefix, SYMBO
 
 	ptr = (char *)sym->name - 1;
 
-	if (!isspace((unsigned char)*ptr))
+	if (UNLIKELY(!isspace((unsigned char)*ptr)))
 		ERROR_panic("Cannot add prefix to symbol");
 
 	*ptr = prefix;

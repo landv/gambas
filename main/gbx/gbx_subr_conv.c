@@ -102,7 +102,7 @@ __END:
 
 void SUBR_conv(void)
 {
-  VALUE_conv(SP - 1, EXEC_code & 0x3F);
+  VALUE_convert(SP - 1, EXEC_code & 0x3F);
 }
 
 

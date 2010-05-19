@@ -484,7 +484,7 @@ _SUBR:
 
 _SUBR_END:
 
-  if (PCODE_is_void(code))
+  if (UNLIKELY(PCODE_is_void(code)))
     POP();
 
   goto _NEXT;
@@ -625,7 +625,7 @@ _POP_OPTIONAL:
   {
     register VALUE *val = &BP[GET_XX()];
 
-    if (val->type == T_VOID)
+    if (LIKELY(val->type == T_VOID))
     {
       if (SP[-1].type == T_VOID)
         VALUE_default(&SP[-1], val->_void.ptype);
@@ -673,7 +673,7 @@ _PUSH_CHAR:
 
 _PUSH_ME:
 
-  if (GET_XX() & 1)
+  if (UNLIKELY(GET_XX() & 1))
   {
     if (DEBUG_info->op)
     {
@@ -690,7 +690,7 @@ _PUSH_ME:
   }
   else
   {
-    if (OP)
+    if (LIKELY(OP != NULL))
     {
       SP->_object.class = CP;
       SP->_object.object = OP;
@@ -702,10 +702,10 @@ _PUSH_ME:
     }
   }
 
-	if (GET_XX() & 2)
+	if (UNLIKELY(GET_XX() & 2))
 	{
 		// The used class must be in the stack, because it is tested by exec_push && exec_pop
-		if (OP)
+		if (LIKELY(OP != NULL))
 		{
 			SP->_object.class = SP->_object.class->parent;
   		SP->_object.super = EXEC_super;
@@ -834,7 +834,7 @@ _JUMP_IF_TRUE:
 
   VALUE_conv(&SP[-1], T_BOOLEAN);
   SP--;
-  if (SP->_boolean.value)
+  if (UNLIKELY(SP->_boolean.value != 0))
   {
     PC += (signed short)PC[1] + 2;
     goto _MAIN;
@@ -848,7 +848,7 @@ _JUMP_IF_FALSE:
 
   VALUE_conv(&SP[-1], T_BOOLEAN);
   SP--;
-  if (SP->_boolean.value == 0)
+  if (UNLIKELY(SP->_boolean.value == 0))
   {
     PC += (signed short)PC[1] + 2;
     goto _MAIN;
@@ -860,10 +860,10 @@ _JUMP_IF_FALSE:
 
 _RETURN:
 
-  if (GET_XX())
+  if (LIKELY(GET_XX() != 0))
   {
 		type = FP->type;
-		if (TYPE_is_pure_object(type) && ((CLASS *)type)->override)
+		if (UNLIKELY(TYPE_is_pure_object(type) && ((CLASS *)type)->override))
 		{
 			type = (TYPE)(((CLASS *)type)->override);
 			//FP->type = type;
@@ -882,7 +882,7 @@ _RETURN:
     EXEC_leave(FALSE);
   }
 
-  if (PC == NULL)
+  if (UNLIKELY(PC == NULL))
     return;
 
   goto _NEXT;
@@ -901,7 +901,7 @@ _CALL:
     ind = GET_3X();
     val = &SP[-(ind + 1)];
 
-    if (!TYPE_is_function(val->type))
+    if (UNLIKELY(!TYPE_is_function(val->type)))
     {
 			bool defined;
 
@@ -923,7 +923,7 @@ _CALL:
 		EXEC.nparam = ind;
 		EXEC.use_stack = TRUE;
 
-		if (!val->_function.defined)
+		if (UNLIKELY(!val->_function.defined))
 			*PC |= CODE_CALL_VARIANT;
 
 		goto *call_jump[(int)val->_function.kind];
@@ -1032,7 +1032,7 @@ _CALL:
   __CALL_CALL:
 
     EXEC.desc = CLASS_get_special_desc(EXEC.class, SPEC_CALL);
-    if (!EXEC.desc && !EXEC.object && EXEC.nparam == 1 && !EXEC.class->is_virtual)
+    if (UNLIKELY(!EXEC.desc && !EXEC.object && EXEC.nparam == 1 && !EXEC.class->is_virtual))
     {
     	SP[-2] = SP[-1];
     	SP--;
@@ -1044,7 +1044,7 @@ _CALL:
 
   __CALL_SPEC:
 
-    if (!EXEC.desc)
+    if (UNLIKELY(!EXEC.desc))
     	THROW(E_NFUNC);
 
     EXEC.native = FUNCTION_is_native(EXEC.desc);
@@ -1087,7 +1087,7 @@ _CALL_QUICK:
     EXEC.drop = PCODE_is_void(code);
     EXEC.nparam = ind;
 
-    if (!val->_function.defined)
+    if (UNLIKELY(!val->_function.defined))
       *PC |= CODE_CALL_VARIANT;
 
     //if (call_jump[(int)val->_function.kind] == 0)
@@ -1143,7 +1143,7 @@ _CALL_NORM:
     EXEC.nparam = ind;
     EXEC.use_stack = TRUE;
 
-    if (!val->_function.defined)
+    if (UNLIKELY(!val->_function.defined))
       *PC |= CODE_CALL_VARIANT;
 
     goto *call_jump[(int)val->_function.kind];
@@ -1207,7 +1207,7 @@ _JUMP_NEXT:
 
 		// The step value must stay negative, even if the loop variable is a byte
 
-    if (TYPE_is_integer(type))
+    if (LIKELY(TYPE_is_integer(type)))
     {
     	VALUE_conv(&SP[-1], T_INTEGER);
   	}
@@ -1225,9 +1225,9 @@ _JUMP_NEXT:
 
     val = &BP[PC[2] & 0xFF];
 
-    if (TYPE_is_integer(type))
+    if (LIKELY(TYPE_is_integer(type)))
     {
-      if (inc->_integer.value > 0)
+      if (LIKELY(inc->_integer.value > 0))
       {
         *PC |= 1;
         goto _JN_TEST_1;
@@ -1273,7 +1273,7 @@ _JUMP_NEXT:
 
   _JN_TEST_1:
 
-    if (val->_integer.value <= end->_integer.value)
+    if (LIKELY(val->_integer.value <= end->_integer.value))
       goto _NEXT3;
 
     goto _JN_END;
@@ -1284,7 +1284,7 @@ _JUMP_NEXT:
 
   _JN_TEST_2:
 
-    if (val->_integer.value >= end->_integer.value)
+    if (LIKELY(val->_integer.value >= end->_integer.value))
       goto _NEXT3;
 
     goto _JN_END;
@@ -1295,7 +1295,7 @@ _JUMP_NEXT:
 
   _JN_TEST_3:
 
-    if (val->_float.value <= end->_float.value)
+    if (LIKELY(val->_float.value <= end->_float.value))
       goto _NEXT3;
 
     goto _JN_END;
@@ -1306,7 +1306,7 @@ _JUMP_NEXT:
 
   _JN_TEST_4:
 
-    if (val->_float.value >= end->_float.value)
+    if (LIKELY(val->_float.value >= end->_float.value))
       goto _NEXT3;
 
     goto _JN_END;
@@ -1317,7 +1317,7 @@ _JUMP_NEXT:
 
   _JN_TEST_5:
 
-    if (val->_long.value <= end->_long.value)
+    if (LIKELY(val->_long.value <= end->_long.value))
       goto _NEXT3;
 
     goto _JN_END;
@@ -1328,7 +1328,7 @@ _JUMP_NEXT:
 
   _JN_TEST_6:
 
-    if (val->_long.value >= end->_long.value)
+    if (LIKELY(val->_long.value >= end->_long.value))
       goto _NEXT3;
 
     goto _JN_END;
@@ -1351,7 +1351,7 @@ _ENUM_FIRST:
 
 _ENUM_NEXT:
 
-  if (EXEC_enum_next(code))
+  if (UNLIKELY(EXEC_enum_next(code)))
     goto _JUMP;
   else
     goto _NEXT2;
@@ -1422,7 +1422,7 @@ _PUSH_DYNAMIC:
 
     var = &CP->load->dyn[GET_7XX()];
 
-    if (OP == NULL)
+    if (UNLIKELY(OP == NULL))
       THROW(E_ILLEGAL);
 
 		ref = OP;
@@ -1448,7 +1448,7 @@ _POP_DYNAMIC:
 
     var = &CP->load->dyn[GET_7XX()];
 
-    if (OP == NULL)
+    if (UNLIKELY(OP == NULL))
       THROW(E_ILLEGAL);
 
     addr = &OP[var->pos];
@@ -1503,7 +1503,7 @@ _ADD_QUICK:
 	
 		P1 = SP - 1;
 	
-		if (TYPE_is_variant(P1->type))
+		if (UNLIKELY(TYPE_is_variant(P1->type)))
 		{
 			jump_end = &&__AQ_VARIANT_END;
 			VARIANT_undo(P1);
@@ -1514,10 +1514,10 @@ _ADD_QUICK:
 		type = P1->type;
 		value = GET_XXX();
 	
-		if (type <= T_CSTRING)
+		if (LIKELY(type <= T_CSTRING))
 			goto *_aq_jump[type];
-	
-		THROW(E_TYPE, "Number", TYPE_get_name(type));
+		else
+			THROW(E_TYPE, "Number", TYPE_get_name(type));
 	
 	__AQ_BOOLEAN:
 		
@@ -1599,7 +1599,7 @@ _END_TRY:
 
 _CATCH:
 
-  if (EC == NULL)
+  if (UNLIKELY(EC == NULL))
     goto _NEXT;
   else
     goto _RETURN;
@@ -1667,7 +1667,7 @@ _QUIT:
 
 _BYREF:
 
-	if (PC == FP->code)
+	if (LIKELY(PC == FP->code))
 	{
 		PC += GET_XX();
 		goto _NEXT2;
@@ -1692,7 +1692,7 @@ _SUBR_LEFT:
 	
 		SUBR_ENTER();
 	
-		if (!SUBR_check_string(PARAM))
+		if (LIKELY(!SUBR_check_string(PARAM)))
 		{
 			if (NPARAM == 1)
 				val = 1;
@@ -1702,7 +1702,7 @@ _SUBR_LEFT:
 				val = PARAM[1]._integer.value;
 			}
 		
-			if (val < 0)
+			if (UNLIKELY(val < 0))
 				val += PARAM->_string.len;
 		
 			PARAM->_string.len = MinMax(val, 0, PARAM->_string.len);
@@ -1723,7 +1723,7 @@ _SUBR_RIGHT:
 	
 		SUBR_ENTER();
 	
-		if (!SUBR_check_string(PARAM))
+		if (LIKELY(!SUBR_check_string(PARAM)))
 		{
 			if (NPARAM == 1)
 				val = 1;
@@ -1733,7 +1733,7 @@ _SUBR_RIGHT:
 				val = PARAM[1]._integer.value;
 			}
 		
-			if (val < 0)
+			if (UNLIKELY(val < 0))
 				val += PARAM->_string.len;
 		
 			new_len = MinMax(val, 0, PARAM->_string.len);
@@ -1762,13 +1762,13 @@ _SUBR_MID:
 		VALUE_conv(&PARAM[1], T_INTEGER);
 		start = PARAM[1]._integer.value - 1;
 	
-		if (start < 0)
+		if (UNLIKELY(start < 0))
 			THROW(E_ARG);
 	
-		if (null)
+		if (UNLIKELY(null))
 			goto _SUBR_MID_FIN;
 			
-		if (start >= PARAM->_string.len)
+		if (UNLIKELY(start >= PARAM->_string.len))
 		{
 			RELEASE(PARAM);
 			STRING_void_value(PARAM);
@@ -1783,12 +1783,12 @@ _SUBR_MID:
 			len = PARAM[2]._integer.value;
 		}
 	
-		if (len < 0)
+		if (UNLIKELY(len < 0))
 			len = Max(0, PARAM->_string.len - start + len);
 	
 		len = MinMax(len, 0, PARAM->_string.len - start);
 	
-		if (len == 0)
+		if (UNLIKELY(len == 0))
 		{
 			RELEASE(PARAM);
 			PARAM->_string.addr = NULL;
@@ -1814,7 +1814,7 @@ _SUBR_LEN:
 	
 		SUBR_GET_PARAM(1);
 	
-		if (SUBR_check_string(PARAM))
+		if (UNLIKELY(SUBR_check_string(PARAM)))
 			len = 0;
 		else
 			len = PARAM->_string.len;

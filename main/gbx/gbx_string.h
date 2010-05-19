@@ -109,7 +109,7 @@ void STRING_unref(char **ptr);
 ({ \
   char **pptr = _p; \
   char *ptr = *pptr; \
-  if (ptr) \
+  if (LIKELY(ptr != NULL)) \
   { \
   	STRING_free_real(ptr); \
   	*pptr = NULL; \
@@ -119,7 +119,7 @@ void STRING_unref(char **ptr);
 #define STRING_ref(_p) \
 ({ \
   char *ptr = _p; \
-  if (ptr) \
+  if (LIKELY(ptr != NULL)) \
     STRING_from_ptr(ptr)->ref++; \
 })
 
@@ -128,7 +128,7 @@ void STRING_unref(char **ptr);
   char **pptr = _p; \
   char *ptr = *pptr; \
   STRING *str; \
-  if (ptr) \
+  if (LIKELY(ptr != NULL)) \
   { \
 	  str = STRING_from_ptr(ptr); \
   	if ((--str->ref) <= 0) \
@@ -154,7 +154,7 @@ void STRING_make_dump();
 
 #define STRING_make_char(_c) \
 ({ \
-	if (STRING_make_buffer.ntemp == STRING_MAKE_TEMP) \
+	if (UNLIKELY(STRING_make_buffer.ntemp == STRING_MAKE_TEMP)) \
 		STRING_make_dump(); \
 	STRING_make_buffer.temp[STRING_make_buffer.ntemp++] = (_c); \
 })

@@ -235,13 +235,13 @@ void VALUE_get_string(VALUE *val, char **text, int *length);
 
 #define VALUE_conv(_value, _type) \
 { \
-	if ((_value)->type != (_type)) \
+	if (UNLIKELY((_value)->type != (_type))) \
 		VALUE_convert(_value, _type); \
 }
 
 #define VALUE_conv_string(_value) \
 { \
-	if ((_value)->type != T_STRING && (_value)->type != T_CSTRING) \
+	if (UNLIKELY((_value)->type != T_STRING && (_value)->type != T_CSTRING)) \
 		VALUE_convert(_value, T_STRING); \
 }
 

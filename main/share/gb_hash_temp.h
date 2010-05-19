@@ -232,7 +232,7 @@ static HASH_NODE **hash_table_lookup_node(HASH_TABLE *hash_table, const char *ke
     while (*node)
     {
       node_key = NODE_key(hash_table, *node);
-      if (node_key->len == len && STRING_equal_ignore_case(node_key->key, node_key->len, key, len))
+      if (UNLIKELY(node_key->len == len && STRING_equal_ignore_case(node_key->key, node_key->len, key, len)))
         break;
     	node = &(*node)->next;
     }
@@ -244,7 +244,7 @@ static HASH_NODE **hash_table_lookup_node(HASH_TABLE *hash_table, const char *ke
     while (*node)
     {
       node_key = NODE_key(hash_table, *node);
-      if (node_key->len == len && STRING_equal_same(node_key->key, key, len))
+      if (UNLIKELY(node_key->len == len && STRING_equal_same(node_key->key, key, len)))
         break;
     	node = &(*node)->next;
     }
@@ -271,7 +271,7 @@ void *HASH_TABLE_insert(HASH_TABLE *hash_table, const char *key, int len)
 
   node = hash_table_lookup_node(hash_table, key, len);
 
-  if (*node)
+  if (UNLIKELY(*node != NULL))
     return NODE_value(*node);
 
   /*hash_table_resize(hash_table);*/
@@ -292,7 +292,7 @@ void HASH_TABLE_remove(HASH_TABLE *hash_table, const char *key, int len)
 
   node = hash_table_lookup_node(hash_table, key, len);
 
-  if (*node)
+  if (LIKELY(*node != NULL))
   {
     dest = *node;
     (*node) = dest->next;
@@ -429,7 +429,7 @@ static HASH_NODE *hash_node_new(HASH_TABLE *hash_table, const char *key, int len
 
   #ifdef KEEP_ORDER
 
-  if (!hash_table->sfirst)
+  if (UNLIKELY(!hash_table->sfirst))
   {
     hash_table->sfirst = hash_node;
     hash_table->slast = hash_node;
@@ -459,7 +459,7 @@ static void hash_nodes_destroy(HASH_NODE *hash_node)
 
   for(;;)
   {
-    if (node == NULL)
+    if (UNLIKELY(node == NULL))
       return;
 
     next = node->next;
@@ -473,7 +473,7 @@ void HASH_TABLE_get_key(HASH_TABLE *hash_table, HASH_NODE *node, char **key, int
 {
   HASH_KEY *node_key;
   
-  if (node)
+  if (LIKELY(node != NULL))
   {
     node_key = NODE_key(hash_table, node);
     *key = node_key->key;
