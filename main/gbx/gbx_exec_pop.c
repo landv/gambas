@@ -247,30 +247,23 @@ _FIN:
 
 void EXEC_pop_array(ushort code)
 {
-	static const void *jump[] = { &&__POP_GENERIC, &&__POP_QUICK_ARRAY, &&__POP_ARRAY };
+	static const void *jump[] = { &&__POP_GENERIC, &&__POP_QUICK_ARRAY, && __POP_QUICK_COLLECTION, &&__POP_ARRAY };
 	
   CLASS *class;
   OBJECT *object;
   GET_NPARAM(np);
-  //int dim[MAX_ARRAY_DIM];
   int i;
   void *data;
   bool defined;
   VALUE *val;
   VALUE swap;
-  //ARRAY_DESC *desc;
+	int fast;
 
   val = &SP[-np];
 	goto *jump[(code >> 6) & 3];
 
 __POP_GENERIC:
 
-	/*if (val->type == T_ARRAY)
-	{
-		*PC |= 1 << 6;
-		goto __POP_STATIC_ARRAY;
-	}*/
-	
 	EXEC_object(val, &class, &object, &defined);
 	
 	// The first time we access a symbol, we must not be virtual to find it
@@ -280,81 +273,64 @@ __POP_GENERIC:
   	class = val->_object.class;
   }
 	
-	if (defined && class->quick_array)
-		*PC |= 1 << 6; // Check number of arguments by not going to __POP_QUICK_ARRAY immediately
-	else
-		*PC |= 2 << 6;
+	fast = 3;
+	
+	if (defined)
+	{
+		if (class->quick_array == CQA_ARRAY)
+			fast = 1;
+		else if (class->quick_array == CQA_COLLECTION)
+			fast = 2;
+	}
+
+	*PC |= fast << 6;
 	
 	goto __POP_ARRAY_2;
 
-/*__POP_STATIC_ARRAY:
-
-	np--;
-
-	for (i = 1; i <= np; i++)
-	{
-		VALUE_conv(&val[i], T_INTEGER);
-		dim[i - 1] = val[i]._integer.value;
-	}
-
-	SP -= np + 1;
-
-	desc = (ARRAY_DESC *)SP->_array.class->load->array[SP->_array.index];
-	data = ARRAY_get_address(desc, SP->_array.addr, np, dim);
-
-	VALUE_write(SP - 1, data, CLASS_ctype_to_type(SP->_array.class, desc->type));
-
-	POP();
-	return;*/
-	
 __POP_QUICK_ARRAY:
 
   EXEC_object(val, &class, &object, &defined);
 
-	if (class->quick_array == CQA_ARRAY)
-	{
-		TYPE type = ((CARRAY *)object)->type;
-		
-		//swap = val[0];
-		//val[0] = val[-1];
-		//val[-1] = swap;
-		VALUE_copy(&swap, &val[0]);
-		VALUE_copy(&val[0], &val[-1]);
-		VALUE_copy(&val[-1], &swap);
-		
-		VALUE_conv(&val[0], type);
-		
-		if (np == 2)
-		{
-			VALUE_conv(&val[1], T_INTEGER);
-			data = CARRAY_get_data((CARRAY *)object, val[1]._integer.value);
-		}
-		else
-		{
-			for (i = 1; i < np; i++)
-				VALUE_conv(&val[i], T_INTEGER);
-			
-			data = CARRAY_get_data_multi((CARRAY *)object, (GB_INTEGER *)&val[1], np - 1);
-		}
-		if (!data)
-			PROPAGATE();
-		VALUE_write(val, data, type);
-		
-		SP = val + 1;
-		RELEASE_MANY(SP, 2);
-		//OBJECT_UNREF(object, "EXEC_push_array");
-	}
-	else // CQA_COLLECTION
-	{
-		VALUE_conv(&val[-1], T_VARIANT);
-		VALUE_conv_string(&val[1]);
-		
-		if (GB_CollectionSet((GB_COLLECTION)object, val[1]._string.addr + val[1]._string.start, val[1]._string.len, (GB_VARIANT *)&val[-1]))
-			PROPAGATE();
-		
-		RELEASE_MANY(SP, 3);
-	}
+	TYPE type = ((CARRAY *)object)->type;
 	
+	VALUE_copy(&swap, &val[0]);
+	VALUE_copy(&val[0], &val[-1]);
+	VALUE_copy(&val[-1], &swap);
+	
+	VALUE_conv(&val[0], type);
+	
+	if (np == 2)
+	{
+		VALUE_conv(&val[1], T_INTEGER);
+		data = CARRAY_get_data((CARRAY *)object, val[1]._integer.value);
+	}
+	else
+	{
+		for (i = 1; i < np; i++)
+			VALUE_conv(&val[i], T_INTEGER);
+		
+		data = CARRAY_get_data_multi((CARRAY *)object, (GB_INTEGER *)&val[1], np - 1);
+	}
+	if (!data)
+		PROPAGATE();
+	VALUE_write(val, data, type);
+	
+	SP = val + 1;
+	RELEASE_MANY(SP, 2);
+	//OBJECT_UNREF(object, "EXEC_push_array");
+	return;
+	
+__POP_QUICK_COLLECTION:
+
+  EXEC_object(val, &class, &object, &defined);
+
+	VALUE_conv(&val[-1], T_VARIANT);
+	VALUE_conv_string(&val[1]);
+	
+	if (GB_CollectionSet((GB_COLLECTION)object, val[1]._string.addr + val[1]._string.start, val[1]._string.len, (GB_VARIANT *)&val[-1]))
+		PROPAGATE();
+	
+	RELEASE_MANY(SP, 3);
 	return;
 	
 __POP_ARRAY:

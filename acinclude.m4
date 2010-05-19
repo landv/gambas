@@ -431,8 +431,14 @@ AC_DEFUN([GB_SYSTEM],
       AC_DEFINE(ARCH_ARM, 1, [Target architecture is ARM])
       AC_DEFINE(ARCHITECTURE, "ARM", [Architecture])
       ;;
+    powerpc-*-* )
+      ARCH=PPC
+      AC_DEFINE(ARCH_PPC, 1, [Target architecture is PowerPC])
+      AC_DEFINE(ARCHITECTURE, "PowerPC", [Architecture])
+      ;;
     *)
       ARCH=UNKNOWN
+      AC_DEFINE(ARCHITECTURE, "unknown", [Architecture])
       ;;
   esac
 

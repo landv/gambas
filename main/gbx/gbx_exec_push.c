@@ -427,7 +427,7 @@ _FIN:
 
 void EXEC_push_array(ushort code)
 {
-	static const void *jump[] = { &&__PUSH_GENERIC, &&__PUSH_QUICK_ARRAY, &&__PUSH_ARRAY };
+	static const void *jump[] = { &&__PUSH_GENERIC, &&__PUSH_QUICK_ARRAY, &&__PUSH_QUICK_COLLECTION, &&__PUSH_ARRAY };
 	
   CLASS *class;
   OBJECT *object;
@@ -437,6 +437,7 @@ void EXEC_push_array(ushort code)
   void *data;
   bool defined;
   VALUE *val;
+	int fast;
   //ARRAY_DESC *desc;
 
   val = &SP[-np];
@@ -446,22 +447,23 @@ void EXEC_push_array(ushort code)
 	
 __PUSH_GENERIC:
 
-	/*if (val->type == T_ARRAY)
-	{
-		*PC |= 1 << 6;
-		goto __PUSH_STATIC_ARRAY;
-	}*/
-	
 	EXEC_object(val, &class, &object, &defined);
 	
 	// The first time we access a symbol, we must not be virtual to find it
 	if (defined && object && !VALUE_is_super(val))
   	class = val->_object.class;
 	
-	if (defined && class->quick_array)
-		*PC |= 1 << 6; // Check number of arguments by not going to __PUSH_QUICK_ARRAY immediately
-	else
-		*PC |= 2 << 6;
+	fast = 3;
+	
+	if (defined)
+	{
+		if (class->quick_array == CQA_ARRAY)
+			fast = 1;
+		else if (class->quick_array == CQA_COLLECTION)
+			fast = 2;
+	}
+
+	*PC |= fast << 6;
 	
 	goto __PUSH_ARRAY_2;
 
@@ -487,54 +489,42 @@ __PUSH_QUICK_ARRAY:
 	
 	EXEC_object(val, &class, &object, &defined);
 	
-	if (class->quick_array == CQA_ARRAY)
+	if (np == 1)
 	{
-		if (np == 1)
-		{
-			VALUE_conv(&val[1], T_INTEGER);
-			data = CARRAY_get_data((CARRAY *)object, val[1]._integer.value);
-		}
-		else
-		{
-			for (i = 1; i <= np; i++)
-				VALUE_conv(&val[i], T_INTEGER);
-			
-			data = CARRAY_get_data_multi((CARRAY *)object, (GB_INTEGER *)&val[1], np);
-		}
-		
-		if (!data)
-			PROPAGATE();
-		VALUE_read(val, data, ((CARRAY *)object)->type);
-		
-		SP = val;
-		PUSH();
+		VALUE_conv(&val[1], T_INTEGER);
+		data = CARRAY_get_data((CARRAY *)object, val[1]._integer.value);
 	}
-	else /* CQA_COLLECTION */
+	else
 	{
-		VALUE_conv_string(&val[1]);
-		//fprintf(stderr, "GB_CollectionGet: %p '%.*s'\n", val[1]._string.addr, val[1]._string.len, val[1]._string.addr + val[1]._string.start);
-		GB_CollectionGet((GB_COLLECTION)object, val[1]._string.addr + val[1]._string.start, val[1]._string.len, (GB_VARIANT *)val);
-		/*{
-			OBJECT_UNREF(object, "EXEC_push_array");
-			PROPAGATE();
-		}*/
+		for (i = 1; i <= np; i++)
+			VALUE_conv(&val[i], T_INTEGER);
 		
-		RELEASE(&val[1]);
-		SP = val;
-		
-		PUSH();
+		data = CARRAY_get_data_multi((CARRAY *)object, (GB_INTEGER *)&val[1], np);
 	}
 	
-	//EXEC.nparvar = np - 1;
-	//if (EXEC_call_native(class->array_get->exec, object, class->array_get->type, &val[1]))
-	//	PROPAGATE();
-	//SP = val;
-	//COPY_VALUE(SP, &TEMP);
-	//PUSH();
+	if (!data)
+		PROPAGATE();
+	VALUE_read(val, data, ((CARRAY *)object)->type);
 	
+	goto __PUSH_QUICK_END;
+	
+__PUSH_QUICK_COLLECTION:
+
+	EXEC_object(val, &class, &object, &defined);
+	
+	VALUE_conv_string(&val[1]);
+	//fprintf(stderr, "GB_CollectionGet: %p '%.*s'\n", val[1]._string.addr, val[1]._string.len, val[1]._string.addr + val[1]._string.start);
+	GB_CollectionGet((GB_COLLECTION)object, val[1]._string.addr + val[1]._string.start, val[1]._string.len, (GB_VARIANT *)val);
+	
+	RELEASE(&val[1]);
+	
+__PUSH_QUICK_END:
+	
+	SP = val;
+	PUSH();
 	OBJECT_UNREF(object, "EXEC_push_array");
 	return;
-
+	
 __PUSH_ARRAY:
 
 	EXEC_object(val, &class, &object, &defined);
