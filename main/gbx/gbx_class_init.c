@@ -80,10 +80,11 @@ typedef
     GB_DESC *desc;
     CLASS **class;
     int array;
+		TYPE array_type;
     }
   CLASS_INIT;
 
-static CLASS_INIT init_list[] =
+static const CLASS_INIT init_list[] =
 {
   { NATIVE_Gambas, NULL },
   { NATIVE_Param, NULL },
@@ -112,18 +113,18 @@ static CLASS_INIT init_list[] =
 
   { NATIVE_ArrayBounds, NULL },
   { NATIVE_Array, &CLASS_Array },
-  { NATIVE_BooleanArray, &CLASS_BooleanArray, CQA_ARRAY },
-  { NATIVE_ByteArray, &CLASS_ByteArray, CQA_ARRAY },
-  { NATIVE_ShortArray, &CLASS_ShortArray, CQA_ARRAY },
-  { NATIVE_IntegerArray, &CLASS_IntegerArray, CQA_ARRAY },
-  { NATIVE_FloatArray, &CLASS_FloatArray, CQA_ARRAY },
-  { NATIVE_SingleArray, &CLASS_SingleArray, CQA_ARRAY },
-  { NATIVE_DateArray, &CLASS_DateArray, CQA_ARRAY },
-  { NATIVE_StringArray, &CLASS_StringArray, CQA_ARRAY },
-  { NATIVE_ObjectArray, &CLASS_ObjectArray, CQA_ARRAY },
-  { NATIVE_VariantArray, &CLASS_VariantArray, CQA_ARRAY },
-  { NATIVE_LongArray, &CLASS_LongArray, CQA_ARRAY },
-  { NATIVE_PointerArray, &CLASS_PointerArray, CQA_ARRAY },
+  { NATIVE_BooleanArray, &CLASS_BooleanArray, CQA_ARRAY, T_BOOLEAN },
+  { NATIVE_ByteArray, &CLASS_ByteArray, CQA_ARRAY, T_BYTE },
+  { NATIVE_ShortArray, &CLASS_ShortArray, CQA_ARRAY, T_SHORT },
+  { NATIVE_IntegerArray, &CLASS_IntegerArray, CQA_ARRAY, T_INTEGER },
+  { NATIVE_FloatArray, &CLASS_FloatArray, CQA_ARRAY, T_FLOAT },
+  { NATIVE_SingleArray, &CLASS_SingleArray, CQA_ARRAY, T_SINGLE },
+  { NATIVE_DateArray, &CLASS_DateArray, CQA_ARRAY, T_DATE },
+  { NATIVE_StringArray, &CLASS_StringArray, CQA_ARRAY, T_STRING },
+  { NATIVE_ObjectArray, &CLASS_ObjectArray, CQA_ARRAY, T_OBJECT },
+  { NATIVE_VariantArray, &CLASS_VariantArray, CQA_ARRAY, T_VARIANT },
+  { NATIVE_LongArray, &CLASS_LongArray, CQA_ARRAY, T_LONG },
+  { NATIVE_PointerArray, &CLASS_PointerArray, CQA_ARRAY, T_POINTER },
 
   { NATIVE_SubCollection, &CLASS_SubCollection },
 
@@ -133,7 +134,7 @@ static CLASS_INIT init_list[] =
 
 void CLASS_init_native(void)
 {
-  CLASS_INIT *init;
+  const CLASS_INIT *init;
   CLASS *class;
 
   /* NOTE: The 'Class' class must be first in the global class table */
@@ -150,6 +151,7 @@ void CLASS_init_native(void)
     if (init->class != NULL)
       *init->class = class;
   	class->quick_array = init->array;
+		class->array_type = init->array_type;
   }
 	
 	CLASS_Observer->is_observer = TRUE;

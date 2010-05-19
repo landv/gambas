@@ -149,8 +149,8 @@ char *TYPE_get_desc(TYPE type)
 const char *TYPE_get_short_desc(TYPE type)
 {
   static const char *name[] = {
-    "", "b", "i", "i", "i", "l", "g", "f", "d",
-    "s", "s", "v", "?", "p", "?", "?",
+    "",  "b", "i", "i", "i", "l", "g", "f", 
+    "d", "s", "s", "p", "v", "?", "?", "?", 
     "o"
     };
 

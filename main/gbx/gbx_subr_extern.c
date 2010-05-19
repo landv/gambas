@@ -73,7 +73,7 @@ void SUBR_alloc(void)
   }
   
   RETURN->type = T_POINTER;
-  RETURN->_pointer.value = (intptr_t)ptr;
+  RETURN->_pointer.value = ptr;
   
   SUBR_LEAVE();
 }
@@ -116,7 +116,7 @@ void SUBR_realloc(void)
   REALLOC(&ptr, size * count, "SUBR_realloc");
   
   RETURN->type = T_POINTER;
-  RETURN->_pointer.value = (intptr_t)ptr;
+  RETURN->_pointer.value = ptr;
   
   SUBR_LEAVE();
 }
@@ -207,7 +207,7 @@ void SUBR_varptr(void)
 		THROW(E_ILLEGAL);
 
   RETURN->type = T_POINTER;
-  RETURN->_pointer.value = (intptr_t)ptr;
+  RETURN->_pointer.value = ptr;
 	
 	SUBR_LEAVE();
 }

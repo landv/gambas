@@ -21,6 +21,7 @@ Private Sub Load()
   Dim sLine As String
   Dim sSlot As String
   Dim iPos As Integer
+  Dim hCol As Collection
 
   $cSlot = New Collection
   If Not Exist($sPath) Then Return
@@ -38,7 +39,8 @@ Private Sub Load()
     If Left$(sLine) = "[" Then
       If Right$(sLine) = "]" Then
         sSlot = Mid$(sLine, 2, -1)
-        $cSlot[sSlot] = New Collection
+        hCol = New Collection
+        $cSlot[sSlot] = hCol
         Continue
       Else
         sSlot = False
@@ -58,7 +60,7 @@ Private Sub Load()
 Catch
 
   If iLine Then
-    Error.Raise("Syntax error in settings file at line #" & iLine & ": " & Error.Text)
+    Error.Raise("Syntax error in settings file at line #" & iLine & ": " & Error.Where & ": " & Error.Text)
   Else
     Error.Raise(Error.Text)
   Endif

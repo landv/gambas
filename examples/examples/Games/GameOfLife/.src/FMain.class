@@ -37,8 +37,8 @@ End
 
 Public Sub tmrEvolution_Timer()
 
-  Dim Live As Boolean[9]
-  Dim Keep As Boolean[9]
+  Dim Live As New Boolean[9]
+  Dim Keep As New Boolean[9]
 
   If Not togEvolution.Value Then Return
   

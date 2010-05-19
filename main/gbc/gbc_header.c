@@ -198,7 +198,7 @@ static void header_module_type(void)
 static bool header_event(TRANS_EVENT *event)
 {
   PATTERN *look = JOB->current;
-  TRANS_DECL ttyp;
+  //TRANS_DECL ttyp;
 
   if (!PATTERN_is(*look, RS_EVENT))
     return FALSE;
@@ -211,12 +211,12 @@ static bool header_event(TRANS_EVENT *event)
   JOB->current++;
   analyze_function_desc((TRANS_FUNC *)event, HF_VOID);
 
-  if (PATTERN_is(*JOB->current, RS_AS))
+  /*if (PATTERN_is(*JOB->current, RS_AS))
   {
     if (!TRANS_type(TT_CAN_SQUARE, &ttyp))
       THROW("Syntax error in return type");
     event->type = ttyp.type;
-  }
+  }*/
 
   TYPE_set_kind(&event->type, TK_EVENT);
   TYPE_set_flag(&event->type, TF_PUBLIC);
@@ -280,7 +280,7 @@ static bool header_property(TRANS_PROPERTY *prop)
   prop->index = PATTERN_index(*JOB->current);
   JOB->current++;
 
-  if (!TRANS_type(TT_CAN_SQUARE, &ptype))
+  if (!TRANS_type(TT_NOTHING, &ptype))
     THROW("Syntax error. Bad property type");
 
   prop->type = ptype.type;
@@ -338,7 +338,7 @@ static bool header_extern(TRANS_EXTERN *trans)
 
   if (PATTERN_is(*JOB->current, RS_AS))
   {
-    if (!TRANS_type(TT_CAN_SQUARE, &ttyp))
+    if (!TRANS_type(TT_NOTHING, &ttyp))
       THROW("Syntax error in return type");
     trans->type = ttyp.type;
   }
@@ -440,7 +440,7 @@ static bool header_declaration(TRANS_DECL *decl)
   save = JOB->current;
   JOB->current = look;
 
-  if (!TRANS_type(((!is_const && !is_public) ? (TT_CAN_SQUARE  | TT_CAN_ARRAY) : 0) | TT_CAN_NEW, decl))
+  if (!TRANS_type((!is_const ? TT_CAN_ARRAY | TT_CAN_STATIC : 0) | TT_CAN_NEW, decl))
   {
     JOB->current = save;
     return FALSE;
@@ -593,7 +593,7 @@ static bool header_function(TRANS_FUNC *func)
   //if (!is_proc)
   if (PATTERN_is(*JOB->current, RS_AS))
   {
-    if (!TRANS_type(TT_CAN_SQUARE, &ttyp))
+    if (!TRANS_type(TT_NOTHING, &ttyp))
       THROW("Syntax error. Invalid return type");
     func->type = ttyp.type;
     is_proc = FALSE;

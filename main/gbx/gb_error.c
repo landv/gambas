@@ -40,7 +40,7 @@ bool ERROR_backtrace = FALSE;
 
 static int _lock = 0;
 
-static const char *_message[66] =
+static const char *_message[67] =
 {
   /*  0 E_UNKNOWN */ "Unknown error",
   /*  1 E_MEMORY */ "Out of memory",
@@ -107,6 +107,7 @@ static const char *_message[66] =
   /* 62 E_BYREF */ "Argument cannot be passed by reference",
   /* 63 E_OVERRIDE */ ".3'&1.&2' is badly overridden in class '&3'",
 	/* 64 E_NKEY */ "Void key",
+	/* 65 E_SARRAY */ "Static array",
   NULL
 };
 

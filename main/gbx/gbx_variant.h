@@ -42,6 +42,7 @@ typedef
 			GB_DATE_VALUE _date;
 			char *_string;
 			void *_object;
+			void *_pointer;
 			int64_t data;
 			}
 		value;

@@ -35,7 +35,7 @@ void SUBR_is_type(void)
 {
   static void *jump[] = {
     &&__BAD, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
-    &&__STRING, &&__BAD, &&__VARIANT, &&__BAD, &&__BAD, &&__BAD, &&__NULL,
+    &&__STRING, &&__BAD, &&__POINTER, &&__VARIANT, &&__BAD, &&__BAD, &&__NULL,
     &&__OBJECT, &&__NUMBER
     };
 
@@ -55,6 +55,7 @@ __LONG:
 __SINGLE:
 __FLOAT:
 __DATE:
+__POINTER:
 
   VARIANT_undo(PARAM);
 

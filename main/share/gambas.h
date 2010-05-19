@@ -77,8 +77,8 @@
 #define GB_T_DATE         8
 #define GB_T_STRING       9
 #define GB_T_CSTRING      10
-#define GB_T_VARIANT      11
-#define GB_T_POINTER      13
+#define GB_T_POINTER      11
+#define GB_T_VARIANT      12
 #define GB_T_NULL         15
 #define GB_T_OBJECT       16
 
@@ -153,6 +153,7 @@ typedef
     #endif
     }
   GB_LONG;
+
 
 /* Gambas POINTER datatype definition */
 
@@ -243,6 +244,7 @@ typedef
 			double _float;
 			GB_DATE_VALUE _date;
 			char *_string;
+			intptr_t _pointer;
 			void *_object;
 			int64_t data;
 			}
@@ -274,6 +276,7 @@ typedef
 		GB_FLOAT _float;
 		GB_DATE _date;
 		GB_STRING _string;
+		GB_POINTER _pointer;
 		GB_OBJECT _object;
 		GB_VARIANT _variant;
 		}
@@ -868,9 +871,6 @@ typedef
 		void *(*Insert)(void *, int, int);
 		void (*Remove)(void *, int, int);
 
-		void (*PrintData)(GB_TYPE, void *);
-		void (*PrintString)(char *, int);
-
 		struct {
 			void (*New)(GB_SUBCOLLECTION *, GB_SUBCOLLECTION_DESC *, void *);
 			void (*Add)(void *, const char *, int, void *);
@@ -984,6 +984,7 @@ typedef
   STRING               s
   VARIANT              v
   OBJECT               o
+  POINTER              p
   Any class            ClassName;
 
 */

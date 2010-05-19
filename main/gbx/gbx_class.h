@@ -170,7 +170,7 @@ typedef
 
 typedef
 	struct {
-		CTYPE type;
+		TYPE type;
 		int dim[0];
 		}
 	CLASS_ARRAY;
@@ -276,7 +276,7 @@ typedef
 
 		short special[12];                // 100 144  special functions index (_new, _free, ...)
 
-		struct _CLASS *array_type;        // 104 152  datatype of the contents if this class is an array class of objects
+		TYPE array_type;                  // 104 152  datatype of the contents if this class is an array class of objects
 		struct _CLASS *array_class;       // 108 160  associated array class if it exists
 		
 		void *instance;                   // 112 168  automatically created instance

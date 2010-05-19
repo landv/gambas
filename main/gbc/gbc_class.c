@@ -479,7 +479,7 @@ int CLASS_get_array_class(CLASS *class, int type, int value)
 {
 	static char *names[] = {
 		NULL, "Boolean[]", "Byte[]", "Short[]", "Integer[]", "Long[]", "Single[]", "Float[]",
-		"Date[]", "String[]", "String[]", "Variant[]", NULL, NULL, NULL, NULL, "Object[]"
+		"Date[]", "String[]", "String[]", "Pointer[]", "Variant[]", NULL, NULL, NULL, "Object[]"
 		};
 
 	int index;

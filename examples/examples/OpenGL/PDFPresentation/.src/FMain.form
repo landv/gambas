@@ -2,19 +2,17 @@
 
 { Form Form
   MoveScaled(0,0,94,64)
-  Text = ("")
   Arrangement = Arrange.Vertical
-  Spacing = 8
+  Spacing = True
   Padding = 8
   { panSelect HBox
     MoveScaled(0,0,75,4)
     AutoResize = True
-    Spacing = 8
+    Spacing = True
     { txtPath TextBox
       MoveScaled(0,0,54,4)
       Background = Color.ButtonBackground
       Expand = True
-      Text = ("")
       ReadOnly = True
     }
     { btnPath Button
@@ -23,11 +21,10 @@
     }
   }
   { glaPresentation GlArea
-    MoveScaled(6,9,62,43)
+    MoveScaled(6,9,59,39)
     Expand = True
   }
   { timUpdate #Timer
-    #X = 518
-    #Y = 224
+    #MoveScaled(78,18)
   }
 }

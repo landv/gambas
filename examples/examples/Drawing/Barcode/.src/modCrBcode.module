@@ -1,23 +1,23 @@
 ' Gambas module file
 
-PUBLIC SUB PrintBarcode(bcode AS String, posX AS Integer, posY AS Integer, bcHeight AS Integer, barThickness AS Integer, SorP AS Boolean)
-  DIM structure AS String[10]
+Public Sub PrintBarcode(bcode As String, posX As Integer, posY As Integer, bcHeight As Integer, barThickness As Integer, SorP As Boolean)
+  Dim structure As New String[10]
   'DIM enc AS String[10, 3]. I did it the following way 'cos I get not get the prg to read a multi-dimension array!
-  DIM enc1 AS String[10]
-  DIM enc2 AS String[10]
-  DIM enc3 AS String[10]
-  DIM fontSizeScreen AS Integer[10]
-  DIM fontSizePrinter AS Integer[10]
+  Dim enc1 As New String[10]
+  Dim enc2 As New String[10]
+  Dim enc3 As New String[10]
+  Dim fontSizeScreen As New Integer[10]
+  Dim fontSizePrinter As New Integer[10]
   
-  DIM first6 AS String ' encoding for first 6: l-code(1), g-code(2)
-  DIM j AS Integer
-  DIM l AS Integer
-  DIM k AS Integer
-  DIM frst AS Integer 'the first digit 
-  DIM num AS Integer 'each digit in turn
-  DIM bars AS String ' the bars for the digit
-  DIM thkns AS Integer 'thickness of each bar
-  DIM LinePos AS Integer 'used to horizontaly locate the next bar
+  Dim first6 As String ' encoding for first 6: l-code(1), g-code(2)
+  Dim j As Integer
+  Dim l As Integer
+  Dim k As Integer
+  Dim frst As Integer 'the first digit 
+  Dim num As Integer 'each digit in turn
+  Dim bars As String ' the bars for the digit
+  Dim thkns As Integer 'thickness of each bar
+  Dim LinePos As Integer 'used to horizontaly locate the next bar
   
   '
   structure = ["111111", "112122", "112212", "112221", "121122", "122112", "122211", "121212", "121221", "122121"] 
@@ -31,68 +31,68 @@ PUBLIC SUB PrintBarcode(bcode AS String, posX AS Integer, posY AS Integer, bcHei
   first6 = structure[frst]
   
   'draw 1st 2 deep bars-----------------------------------------------
-  FOR l = 1 TO barThickness
+  For l = 1 To barThickness
     Draw.Line(l + posX, 1 + posY, l + posX, bcHeight * 1.2 + posY)
-  NEXT
+  Next
   LinePos = LinePos + barThickness * 2 'allows for following gap    
-  FOR l = 1 TO barThickness
+  For l = 1 To barThickness
     Draw.Line(LinePos + l + posX, 1 + posY, LinePos + l + posX, bcHeight * 1.2 + posY)
-  NEXT
+  Next
   LinePos = LinePos + barThickness
   '---------------------------------------------------------------  
-  FOR j = 2 TO 13 'loop through each of the 12 digits
+  For j = 2 To 13 'loop through each of the 12 digits
     num = Val(Mid$(bcode, j, 1)) 'find the individual number IN the first 6 
-    IF j < 8 THEN 'different for first 6
-      IF Val(Mid(first6, j - 1, 1)) = 1 THEN 'find the bars making up that number (L,G or R)
+    If j < 8 Then 'different for first 6
+      If Val(Mid(first6, j - 1, 1)) = 1 Then 'find the bars making up that number (L,G or R)
         bars = enc1[num] 
-      ELSE 
+      Else 
         bars = enc2[num]
-      ENDIF 
-    ELSE 
+      Endif 
+    Else 
       bars = enc3[num]
-    ENDIF
+    Endif
     
     'put the 2 middle deep bars----------------------------------------
-    IF j = 8 THEN 
+    If j = 8 Then 
       LinePos = LinePos + barThickness
-      FOR l = 1 TO barThickness
+      For l = 1 To barThickness
         Draw.Line(linepos + l + posX, 1 + posY, linepos + l + posX, bcHeight * 1.2 + posY)
-      NEXT
+      Next
       LinePos = LinePos + barThickness * 2 'allows for following gap    
-      FOR l = 1 TO barThickness
+      For l = 1 To barThickness
         Draw.Line(LinePos + l + posX, 1 + posY, LinePos + l + posX, bcHeight * 1.2 + posY)
-      NEXT
+      Next
       LinePos = LinePos + barThickness * 2 'allows for following gap   
-    ENDIF 
+    Endif 
      '---------------------------------------------------------------   
-    FOR k = 1 TO 7 'draw bars for single digit
-     IF Mid(bars, k, 1) = "1" THEN
-        FOR l = 1 TO barThickness
+    For k = 1 To 7 'draw bars for single digit
+     If Mid(bars, k, 1) = "1" Then
+        For l = 1 To barThickness
           Draw.Line(linepos + l + posX, 1 + posY, LinePos + l + posX, bcHeight + posY)
-        NEXT 
-     ENDIF 
+        Next 
+     Endif 
      linepos = LinePos + barThickness
-    NEXT
-  NEXT   
+    Next
+  Next   
     
   'draw last 2 deep bars------------------------------------------------
-  FOR l = 1 TO barThickness
+  For l = 1 To barThickness
     Draw.Line(linepos + l + posX, 1 + posY, linepos + l + posX, bcHeight * 1.2 + posY)
-  NEXT
+  Next
   LinePos = LinePos + barThickness * 2 'allows for following gap    
-  FOR l = 1 TO barThickness
+  For l = 1 To barThickness
     Draw.Line(LinePos + l + posX, 1 + posY, LinePos + l + posX, bcHeight * 1.2 + posY)
-  NEXT
+  Next
   '--------------------------------------------------------------- 
   'write the barcode text
-  IF SorP THEN 
+  If SorP Then 
     Draw.Font.Size = fontSizeScreen[barThickness - 1]
-  ELSE 
+  Else 
     Draw.Font.Size = fontSizePrinter[barThickness - 1]
-  ENDIF 
+  Endif 
   Draw.Text(Left(bcode, 1), posX - barThickness * 6, posY + bcHeight * 1.02)
   Draw.Text(Mid(bcode, 2, 6), posX + barThickness * 9, posY + bcHeight * 1.02)
   Draw.Text(Right(bcode, 6), posX + barThickness * 58, posY + bcHeight * 1.02)
   
   
-END
+End

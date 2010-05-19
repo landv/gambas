@@ -48,7 +48,7 @@ Private ZoomFactor As Float = 1.0
 Private GotoZoomFactor As Float = ZoomFactor
 
 ' flag values
-Private points[45, 45, 3] As Float
+Private points As New Float[45, 45, 3]
 Private hold As Float
 Private wiggle_count As Integer
 Private DrawFlag As Boolean = False

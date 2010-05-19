@@ -97,7 +97,8 @@ enum {
   E_EXTSYM,
   E_BYREF,
   E_OVERRIDE,
-	E_VKEY
+	E_VKEY,
+	E_SARRAY
   };
 
 typedef

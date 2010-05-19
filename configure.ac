@@ -34,6 +34,7 @@ GB_CONFIG_SUBDIRS(pdf, gb.pdf)
 GB_CONFIG_SUBDIRS(cairo, gb.cairo)
 GB_CONFIG_SUBDIRS(imageio, gb.image.io)
 GB_CONFIG_SUBDIRS(imageimlib, gb.image.imlib)
+GB_CONFIG_SUBDIRS(dbus, gb.dbus)
 
 AC_CONFIG_SUBDIRS(comp)
 AC_CONFIG_SUBDIRS(app)

@@ -37,7 +37,7 @@
 'isInvalid---> Compara un determinado casillero, segun su parametro, con sus casilleros vecinos. Devuelve true si hay conflicto
 'isWin---> Verifica si todos los casilleros tienen un valor correcto, si todos son correctos y no hay ninguno vacio devuelve true.
 
-Public Boxes As Casillero[9]
+Public Boxes As New Casillero[9]
 
 Public Sub _new()
   Dim i As Integer

@@ -366,12 +366,13 @@ SUBR_INFO COMP_subr_info[] =
   { "IsFloat",           37,  7,  1     },
   { "IsDate",            37,  8,  1     },
   { "IsString",          37,  9,  1     },
-  { "IsVariant",         37,  11, 1     },
+  { "IsPointer",         37,  11, 1     },
+  { "IsVariant",         37,  12, 1     },
   { "IsNull",            37,  15, 1     },
   { "IsObject",          37,  16, 1     },
   { "IsNumber",          37,  17, 1     },
 
-  { "Boolean?",          37,  1,  1     },
+  /*{ "Boolean?",          37,  1,  1     },
   { "Byte?",             37,  2,  1     },
   { "Short?",            37,  3,  1     },
   { "Integer?",          37,  4,  1     },
@@ -382,7 +383,7 @@ SUBR_INFO COMP_subr_info[] =
   { "String?",           37,  9,  1     },
   { "Null?",             37,  15, 1     },
   { "Object?",           37,  16, 1     },
-  { "Number?",           37,  17, 1     },
+  { "Number?",           37,  17, 1     },*/
 
   { "TypeOf",            38,  0,  1     },
 
@@ -400,8 +401,8 @@ SUBR_INFO COMP_subr_info[] =
   { "CDate",             39,  8,  1     },
   { "CStr",              39,  9,  1     },
   { "CString",           39,  9,  1     },
-	{ "CVar",              39, 11,  1     },
-	{ "CVariant",          39, 11,  1     },
+	{ "CVar",              39, 12,  1     },
+	{ "CVariant",          39, 12,  1     },
 
   { "Bin$",              40,  0,  1,  2 },
   { "Bin",               40,  0,  1,  2 },

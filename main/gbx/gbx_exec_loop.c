@@ -1416,6 +1416,7 @@ _PUSH_EXTERN:
   {
     CLASS_VAR *var;
     char *addr;
+		void *ref;
 
 _PUSH_DYNAMIC:
 
@@ -1424,6 +1425,7 @@ _PUSH_DYNAMIC:
     if (OP == NULL)
       THROW(E_ILLEGAL);
 
+		ref = OP;
     addr = &OP[var->pos];
     goto __READ;
 
@@ -1431,11 +1433,12 @@ _PUSH_STATIC:
 
     var = &CP->load->stat[GET_7XX()];
     addr = (char *)CP->stat + var->pos;
+		ref = CP;
     goto __READ;
 
 __READ:
 
-    VALUE_class_read(CP, SP, addr, var->type);
+    VALUE_class_read(CP, SP, addr, var->type, ref);
 
     PUSH();
     goto _NEXT;

@@ -142,6 +142,7 @@ bool DEBUG_get_value(const char *sym, int len, GB_VARIANT *ret)
   CLASS_VAR *var;
   char *addr;
   CLASS *class;
+	void *ref;
 
   if (DEBUG_info->fp)
   {
@@ -170,14 +171,16 @@ bool DEBUG_get_value(const char *sym, int len, GB_VARIANT *ret)
         {
           var = &DEBUG_info->cp->load->dyn[gp->value];
           addr = (char *)DEBUG_info->op + var->pos;
+					ref = DEBUG_info->op;
         }
         else
         {
           var = &DEBUG_info->cp->load->stat[gp->value];
           addr = (char *)DEBUG_info->cp->stat + var->pos;
+					ref = DEBUG_info->cp;
         }
 
-        VALUE_class_read(DEBUG_info->cp, &value, addr, var->type);
+        VALUE_class_read(DEBUG_info->cp, &value, addr, var->type, ref);
         goto __FOUND;
       }
       else if (CTYPE_get_kind(gp->ctype) == TK_CONST)

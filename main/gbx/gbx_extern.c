@@ -225,7 +225,7 @@ void EXTERN_call(void)
 {
   static const void *jump[17] = {
     &&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
-    &&__STRING, &&__STRING, &&__VARIANT, &&__ARRAY, &&__FUNCTION, &&__CLASS, &&__NULL, &&__OBJECT
+    &&__STRING, &&__STRING, &&__POINTER, &&__VARIANT, &&__FUNCTION, &&__CLASS, &&__NULL, &&__OBJECT
     };
   static const int use_temp[17] = { 0, 0, 0, 0, 0, 0, sizeof(float), 0, 0, sizeof(char *), sizeof(char *), 0, 0, 0, 0, 0, sizeof(void *) };
   static char temp[4 * sizeof(void *)];
@@ -316,6 +316,10 @@ void EXTERN_call(void)
 		}
 		continue;
 	
+	__POINTER:
+		args[i] = &value->_pointer.value;
+		continue;
+	
 	__NULL:
 		args[i] = &null;
 		continue;
@@ -323,7 +327,6 @@ void EXTERN_call(void)
 	__DATE:
 	__VARIANT:
 	__VOID:
-	__ARRAY:
 	__CLASS:
 	__FUNCTION:
 	

@@ -25,6 +25,7 @@ SUBDIRS = \
  @cairo_dir@ \
  @imageio_dir@ \
  @imageimlib_dir@ \
+ @dbus_dir@ \
  comp \
  app \
  examples

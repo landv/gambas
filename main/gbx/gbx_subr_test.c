@@ -455,8 +455,7 @@ void SUBR_comp(void)
 {
   static void *jump[17] = {
     &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
-    &&__STRING, &&__STRING, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR,
-    &&__NULL, &&__OBJECT
+    &&__STRING, &&__STRING, &&__POINTER, &&__ERROR, &&__ERROR, &&__ERROR, &&__NULL, &&__OBJECT
     };
 
   static void *test[] = { &&__EQ, &&__NE, &&__GT, &&__LE, &&__LT, &&__GE };
@@ -546,6 +545,14 @@ __FLOAT:
 
   result = fsgn(P1->_float.value - P2->_float.value);
   goto __END;
+
+__POINTER:
+
+  VALUE_conv(P1, T_POINTER);
+  VALUE_conv(P2, T_POINTER);
+
+  result = P1->_pointer.value > P2->_pointer.value ? 1 : P1->_pointer.value < P2->_pointer.value ? -1 : 0;
+  goto __END_RELEASE;
 
 __OBJECT:
 

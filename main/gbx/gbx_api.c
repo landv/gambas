@@ -46,7 +46,6 @@
 #include "gbx_object.h"
 #include "gbx_string.h"
 #include "gbx_date.h"
-#include "gbx_print.h"
 #include "gbx_regexp.h"
 #include "gbx_c_array.h"
 #include "gbx_c_timer.h"
@@ -197,9 +196,6 @@ void *GAMBAS_Api[] =
   (void *)GB_Add,
   (void *)ARRAY_insert_many,
   (void *)ARRAY_remove_many,
-
-  (void *)GB_PrintData,
-  (void *)PRINT_string,
 
   (void *)GB_SubCollectionNew,
   (void *)GB_SubCollectionAdd,
@@ -1008,7 +1004,7 @@ void GB_Return(GB_TYPE type, ...)
 {
   static void *jump[16] = {
     &&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
-    &&__STRING, &&__STRING, &&__VARIANT, &&__ARRAY, &&__FUNCTION, &&__CLASS, &&__NULL
+    &&__STRING, &&__STRING, &&__POINTER, &&__VARIANT, &&__FUNCTION, &&__CLASS, &&__NULL
     };
 
   VALUE *ret = &TEMP;
@@ -1068,6 +1064,11 @@ __OBJECT:
   ret->_object.object = va_arg(args, void *);
   goto __CONV;
 
+__POINTER:
+
+  ret->_pointer.value = va_arg(args, void *);
+  goto __CONV;
+
 __CLASS:
   ret->_class.class = va_arg(args, CLASS *);
   goto __CONV;
@@ -1076,7 +1077,6 @@ __CONV:
 __STRING:
 __VOID:
 __VARIANT:
-__ARRAY:
 __FUNCTION:
 __NULL:
   return;
@@ -1840,15 +1840,6 @@ void GB_BrowseProject(GB_BROWSE_CALLBACK func)
 	}
 	else
 		ARCHIVE_browse(arch, func);
-}
-
-
-void GB_PrintData(GB_TYPE type, void *addr)
-{
-  VALUE value;
-
-  VALUE_read(&value, addr, (TYPE)type);
-  PRINT_value(&value);
 }
 
 

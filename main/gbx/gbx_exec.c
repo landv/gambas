@@ -36,7 +36,6 @@
 
 #include "gbx_string.h"
 #include "gbx_date.h"
-#include "gbx_array.h"
 
 #include "gbx_c_collection.h"
 
@@ -107,7 +106,7 @@ void EXEC_borrow(TYPE type, VALUE *value)
 {
 	static const void *jump[16] = {
 		&&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE,
-		&&__STRING, &&__NONE, &&__VARIANT, &&__NONE, &&__FUNCTION, &&__NONE, &&__NONE
+		&&__STRING, &&__NONE, &&__NONE, &&__VARIANT, &&__FUNCTION, &&__NONE, &&__NONE
 		};
 
 	goto *jump[type];
@@ -135,7 +134,7 @@ void UNBORROW(VALUE *value)
 {
 	static const void *jump[16] = {
 		&&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE,
-		&&__STRING, &&__NONE, &&__VARIANT, &&__NONE, &&__FUNCTION, &&__NONE, &&__NONE
+		&&__STRING, &&__NONE, &&__NONE, &&__VARIANT, &&__FUNCTION, &&__NONE, &&__NONE
 		};
 
 	TYPE type = value->type;
@@ -171,7 +170,7 @@ void EXEC_release(TYPE type, VALUE *value)
 {
 	static const void *jump[16] = {
 		&&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE,
-		&&__STRING, &&__NONE, &&__VARIANT, &&__ARRAY, &&__FUNCTION, &&__NONE, &&__NONE
+		&&__STRING, &&__NONE, &&__NONE, &&__VARIANT, &&__FUNCTION, &&__NONE, &&__NONE
 		};
 
 	goto *jump[type];
@@ -187,11 +186,6 @@ __FUNCTION:
 	OBJECT_UNREF(value->_function.object, "RELEASE");
 	return;
 
-__ARRAY:
-	if (!value->_array.keep)
-		ARRAY_free(&value->_array.addr, (ARRAY_DESC *)value->_array.class->load->array[value->_array.index]);
-	return;
-
 __STRING:
 	STRING_unref(&value->_string.addr);
 
@@ -203,7 +197,7 @@ void RELEASE_many(VALUE *value, int n)
 {
 	static const void *jump[16] = {
 		&&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE,
-		&&__STRING, &&__NONE, &&__VARIANT, &&__ARRAY, &&__FUNCTION, &&__NONE, &&__NONE
+		&&__STRING, &&__NONE, &&__NONE, &&__VARIANT, &&__FUNCTION, &&__NONE, &&__NONE
 		};
 
 	TYPE type;
@@ -232,11 +226,6 @@ void RELEASE_many(VALUE *value, int n)
 	
 	__FUNCTION:
 		OBJECT_UNREF(value->_function.object, "RELEASE");
-		continue;
-	
-	__ARRAY:
-		if (!value->_array.keep)
-			ARRAY_free(&value->_array.addr, (ARRAY_DESC *)value->_array.class->load->array[value->_array.index]);
 		continue;
 	
 	__STRING:
@@ -337,7 +326,7 @@ static void set_class_default(CLASS *class, VALUE *value, CTYPE ctype)
 {
   static const void *jump[] = {
     &&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, 
-    &&__DATE, &&__STRING, &&__STRING, &&__VARIANT, &&__ARRAY, &&__FUNCTION, &&__CLASS, &&__NULL, 
+    &&__DATE, &&__STRING, &&__STRING, &&__POINTER, &&__VARIANT, &&__FUNCTION, &&__CLASS, &&__NULL, 
     &&__OBJECT
     };
 
@@ -372,6 +361,10 @@ __VARIANT:
   value->_variant.vtype = T_NULL;
   return;
 
+__POINTER:
+  value->_pointer.value = NULL;
+  return;
+
 __DATE:
   value->_date.date = 0;
   value->_date.time = 0;
@@ -385,14 +378,6 @@ __OBJECT:
   	value->type = (TYPE)class->load->class_ref[ctype.value];
   value->_object.object = NULL;
   return;
-
-__ARRAY:
-
-	value->_array.class = class;
-	value->_array.keep = FALSE;
-	value->_array.index = ctype.value;
-	ARRAY_new(&value->_array.addr, (ARRAY_DESC *)class->load->array[ctype.value]);
-	return;
 
 __FUNCTION:
 __CLASS:
@@ -1256,7 +1241,7 @@ void EXEC_object(VALUE *val, CLASS **pclass, OBJECT **pobject, bool *pdefined)
 {
 	static const void *jump[] = {
 		&&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR,
-		&&__ERROR, &&__ERROR, &&__VARIANT, &&__ERROR, &&__FUNCTION, &&__CLASS, &&__NULL,
+		&&__ERROR, &&__ERROR, &&__ERROR, &&__VARIANT, &&__FUNCTION, &&__CLASS, &&__NULL,
 		&&__OBJECT
 		};
 

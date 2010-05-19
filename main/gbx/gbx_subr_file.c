@@ -33,7 +33,6 @@
 #include "gbx_regexp.h"
 #include "gbx_string.h"
 #include "gbx_c_file.h"
-#include "gbx_print.h"
 
 typedef
   struct _stream {
@@ -163,12 +162,8 @@ void SUBR_open(void)
 
 	if (EXEC_code & 0x3F)
 	{
-		if (TYPE_is_integer(PARAM->type))
-			addr = (void *)PARAM->_integer.value;
-		#ifdef OS_64BITS
-		else if (TYPE_is_long(PARAM->type))
-			addr = (void *)PARAM->_long.value;
-		#endif
+		if (TYPE_is_pointer(PARAM->type))
+			addr = (void *)PARAM->_pointer.value;
 		else
       THROW(E_TYPE, "Pointer", TYPE_get_name(PARAM->type));
 		

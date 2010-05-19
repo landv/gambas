@@ -33,7 +33,6 @@
 #include "gbx_string.h"
 #include "gbx_object.h"
 #include "gbx_variant.h"
-#include "gbx_array.h"
 
 #include "gbx_c_enum.h"
 
@@ -190,7 +189,7 @@ void EXEC_release(TYPE type, VALUE *val);
 void RELEASE_many(VALUE *val, int n);
 
 #define BORROW(_value) \
-{ \
+do { \
 	VALUE *_v = (_value); \
 	TYPE type = _v->type; \
 	if (TYPE_is_object(type)) \
@@ -201,7 +200,7 @@ void RELEASE_many(VALUE *val, int n);
 		STRING_ref(_v->_string.addr); \
 	else \
 		EXEC_borrow(type, _v); \
-}
+} while (0)
 
 #define RELEASE(_value) \
 do { \

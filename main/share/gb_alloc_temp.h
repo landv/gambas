@@ -72,7 +72,7 @@ void MEMORY_exit(void)
   if (MEMORY_count)
 	{
 		fprintf(MEMORY_log, "\n*************************************************\n");
-		fprintf(MEMORY_log, "WARNING: %d allocation(s) non freed.\n", MEMORY_count);
+		fprintf(MEMORY_log, "warning: %d allocation(s) non freed.\n", MEMORY_count);
 		while (_alloc)
 		{
 			fprintf(MEMORY_log, "<%d>\n", _alloc->id);
@@ -82,7 +82,7 @@ void MEMORY_exit(void)
 	fclose(MEMORY_log);
 #else
   if (MEMORY_count)
-    fprintf(stderr, "WARNING: %d allocation(s) non freed.\n", MEMORY_count);
+    fprintf(stderr, "warning: %d allocation(s) non freed.\n", MEMORY_count);
 #endif
 }
 

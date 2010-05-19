@@ -39,7 +39,7 @@
 #include "gbx_debug.h"
 #include "gb_magic.h"
 #include "gbx_stream.h"
-
+#include "gbx_c_array.h"
 #include "gbx_string.h"
 #include "gbx_object.h"
 #include "gbx_variant.h"
@@ -86,20 +86,24 @@ static int align_pos(int pos, int size)
 
 static int sizeof_ctype(CLASS *class, CTYPE ctype)
 {
-	//size_t size;
+	size_t size;
 	
-	return TYPE_sizeof_memory(ctype.id);
+	if (ctype.id == TC_ARRAY)
+	{
+		size = CARRAY_get_static_size(class->load->array[ctype.value]);
+		return (size + 3) & ~3;
+	}
+	else
+		return TYPE_sizeof_memory(ctype.id);
 		
-	//size = ARRAY_get_size((ARRAY_DESC *)class->load->array[ctype.value]);
-  //return (size + 3) & ~3;
 }
 
 TYPE CLASS_ctype_to_type(CLASS *class, CTYPE ctype)
 {
   if (ctype.id == T_OBJECT && ctype.value >= 0)
     return (TYPE)(class->load->class_ref[ctype.value]);
-  else if (ctype.id == TC_POINTER)
-    return (TYPE)T_POINTER;
+  //else if (ctype.id == TC_POINTER)
+  //  return (TYPE)T_POINTER;
   else
     return (TYPE)(ctype.id);	
 }
@@ -107,8 +111,8 @@ TYPE CLASS_ctype_to_type(CLASS *class, CTYPE ctype)
 
 static void conv_ctype(CTYPE *ctype)
 {
-	if (ctype->id == TC_POINTER)
-		ctype->id = T_POINTER;
+	//if (ctype->id == TC_POINTER)
+	//	ctype->id = T_POINTER;
 }
 
 
@@ -581,6 +585,7 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
     	#else
       class->load->array[i] = (CLASS_ARRAY *)((char *)class->load->array + ((int *)class->load->array)[i]);
       #endif
+      conv_type(class, &class->load->array[i]->type);
     }
   }
 

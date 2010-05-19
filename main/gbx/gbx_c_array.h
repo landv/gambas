@@ -30,13 +30,16 @@
 #include "gbx_variant.h"
 #include "gbx_object.h"
 #include "gbx_type.h"
+#include "gbx_class.h"
 
 typedef
   struct {
     OBJECT object;
     TYPE type;
     void *data;
+		int count;
     int *dim;
+		void *ref;
     }
   CARRAY;
 
@@ -68,13 +71,15 @@ void CARRAY_get_value(CARRAY *_object, int index, VALUE *value);
 #define CARRAY_invert(_array) CARRAY_reverse(_array, NULL)
 void *CARRAY_get_data_multi(CARRAY *_object, GB_INTEGER *arg, int nparam);
 void *CARRAY_out_of_bound();
+CARRAY *CARRAY_create_static(void *ref, CLASS_ARRAY *desc, void *data);
+size_t CARRAY_get_static_size(CLASS_ARRAY *desc);
 
 #define CARRAY_get_data(_array, _index) \
 ({ \
 	int __index = (_index); \
 	CARRAY *__array = (CARRAY *)(_array); \
 	void *__data; \
-  if ((__index < 0) || (__index >= ARRAY_count(__array->data))) \
+  if ((__index < 0) || (__index >= __array->count)) \
   	__data = CARRAY_out_of_bound(); \
   else \
  		__data = (void *)((char *)(__array->data) + __index * TYPE_sizeof_memory(__array->type)); \

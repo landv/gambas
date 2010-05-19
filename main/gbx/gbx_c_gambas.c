@@ -239,10 +239,10 @@ GB_DESC NATIVE_Gambas[] =
   GB_CONSTANT("Single", "i", T_SINGLE),
   GB_CONSTANT("Date", "i", T_DATE),
   GB_CONSTANT("String", "i" , T_STRING),
-  //GB_CONSTANT("Function", "i" , T_FUNCTION),
+  GB_CONSTANT("Pointer", "i" , T_POINTER),
+  GB_CONSTANT("Function", "i" , T_FUNCTION),
   GB_CONSTANT("Variant", "i", T_VARIANT),
   GB_CONSTANT("Class", "i" , T_CLASS),
-  //GB_CONSTANT("Void", "i", T_VOID),
   GB_CONSTANT("Object", "i", T_OBJECT),
 
   GB_CONSTANT("File", "i", GB_STAT_FILE),

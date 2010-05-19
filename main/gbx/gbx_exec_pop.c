@@ -26,7 +26,6 @@
 
 #include "gbx_string.h"
 #include "gbx_object.h"
-#include "gbx_array.h"
 #include "gbx_c_array.h"
 #include "gbx_c_collection.h"
 #include "gbx_api.h"

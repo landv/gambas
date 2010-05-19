@@ -57,7 +57,6 @@ gbx3_SOURCES = \
  gbx_string.h gbx_string.c \
  gbx_variant.h \
  gbx_date.h gbx_date.c \
- gbx_array.h gbx_array.c \
  gbx_c_class.h gbx_c_class.c \
  gbx_c_collection.h gbx_c_collection.c \
  gbx_c_error.h gbx_c_error.c \
@@ -70,7 +69,6 @@ gbx3_SOURCES = \
  gbx_c_string.h gbx_c_string.c \
  gbx_component.h gbx_component.c \
  gbx_extern.h gbx_extern.c \
- gbx_print.h gbx_print.c \
  gbx_c_enum.h gbx_c_enum.c \
  gbx_c_timer.h gbx_c_timer.c
 

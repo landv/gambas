@@ -70,7 +70,7 @@ typedef
 typedef
   struct {
     TYPE type;
-    intptr_t value;
+    void *value;
     }
   PACKED
   VALUE_POINTER;
@@ -159,6 +159,7 @@ typedef
 			float _single;
 			double _float;
 			char *_string;
+			void *_pointer;
 			void *_object;
 			int64_t data;
 			}
@@ -183,17 +184,6 @@ typedef
   VALUE_CLASS;
 
 typedef
-  struct {
-    TYPE type;
-    CLASS *class;
-    void *addr;
-    short index;
-    unsigned keep : 1;
-		unsigned _reserved : 15;
-    }
-  VALUE_ARRAY;
-
-typedef
   union value {
     TYPE type;
     VALUE_BOOLEAN _boolean;
@@ -205,13 +195,12 @@ typedef
     VALUE_FLOAT _float;
     VALUE_DATE _date;
     VALUE_STRING _string;
+    VALUE_POINTER _pointer;
     VALUE_FUNCTION _function;
     VALUE_VARIANT _variant;
     VALUE_CLASS _class;
     VALUE_OBJECT _object;
-    VALUE_ARRAY _array;
     VALUE_VOID _void;
-    VALUE_POINTER _pointer;
     }
   VALUE;
 
@@ -236,7 +225,7 @@ void VALUE_free(void *addr, TYPE type);
 void VALUE_to_string(VALUE *value, char **addr, int *len);
 void VALUE_from_string(VALUE *value, const char *addr, int len);
 
-void VALUE_class_read(CLASS *class, VALUE *value, char *addr, CTYPE ctype);
+void VALUE_class_read(CLASS *class, VALUE *value, char *addr, CTYPE ctype, void *ref);
 void VALUE_class_write(CLASS *class, VALUE *value, char *addr, CTYPE ctype);
 void VALUE_class_constant(CLASS *class, VALUE *value, int ind);
 

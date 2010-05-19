@@ -36,57 +36,20 @@
 
 void *TYPE_joker = NULL;
 
-const size_t TYPE_sizeof_memory_tab[16] = { 0, 1, 1, 2, 4, 8, 4, 8, 8, sizeof(void *), sizeof(void *), sizeof(VARIANT), 0, 0, 0, 0 };
-
-/* Permet de simplifier les tables de sauts associ�s aux types de donn�s */
-
-#if 0
-short TYPE_Index[] =
-{
-  0, /* T_NULL */
-  1, /* T_BOOLEAN */
-  2, /* T_BYTE */
-  2, /* T_SHORT */
-  2, /* T_INTEGER */
-  3, /* T_LONG */
-  4, /* T_FLOAT */
-  5, /* T_DATE */
-  6, /* T_STRING */
-  6, /* T_CSTRING */
-  7, /* T_FUNCTION */
-  8, /* T_ARRAY */
-  9  /* T_CLASS */
-};
-#endif
+const size_t TYPE_sizeof_memory_tab[16] = { 0, 1, 1, 2, 4, 8, 4, 8, 8, sizeof(void *), sizeof(void *), sizeof(void *), sizeof(VARIANT), 0, 0, 0 };
 
 
 /* taille n�essaire au stockage des variables globales d'une classe */
 
 size_t TYPE_sizeof(TYPE type)
 {
-  static size_t size[16] = { 0, 4, 4, 4, 4, 8, 8, 8, 8, sizeof(void *), sizeof(void *), sizeof(VARIANT), 0, 0, 0, 0 };
+  static size_t size[16] = { 0, 4, 4, 4, 4, 8, 8, 8, 8, sizeof(void *), sizeof(void *), sizeof(void *), sizeof(VARIANT), 0, 0, 0 };
 
   if (TYPE_is_object(type))
     return sizeof(void *);
   else
     return size[type];
 }
-
-#if 0
-size_t TYPE_sizeof_native(TYPE type)
-{
-  static size_t size[16] =
-  {
-    0, 4, 4, 4, 4, 8, 8, 8, 8,
-    sizeof(GB_STRING), sizeof(GB_STRING), 12, 0, 0, 0, 0
-  };
-
-  if (TYPE_is_object(type))
-    return sizeof(void *);
-  else
-    return size[type];
-}
-#endif
 
 
 const char *TYPE_get_name(TYPE type)
@@ -104,8 +67,8 @@ const char *TYPE_get_name(TYPE type)
     "Date",
     "String",
     "String",
+    "Pointer",
     "Variant",
-    "Array",
     "Function",
     "Class",
     "Null",
@@ -133,6 +96,7 @@ const char *TYPE_to_string(TYPE type)
     case T_FLOAT: return "f";
     case T_DATE: return "d";
     case T_STRING: return "s";
+    case T_POINTER: return "p";
     case T_VARIANT: return "v";
     case T_OBJECT: return "o";
 
@@ -274,11 +238,7 @@ TYPE TYPE_from_string(const char **ptype)
     case 's': return T_STRING;
     case 'v': return T_VARIANT;
     case 'o': return T_OBJECT;
-#ifdef OS_64BITS
-    case 'p': return T_LONG;
-#else
-    case 'p': return T_INTEGER;
-#endif
+    case 'p': return T_POINTER;
 
     default:
 

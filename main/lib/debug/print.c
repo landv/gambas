@@ -161,7 +161,7 @@ static void print_value(VALUE *value)
 {
   static void *jump[16] = {
     &&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
-    &&__STRING, &&__STRING, &&__VARIANT, &&__ARRAY, &&__FUNCTION, &&__CLASS, &&__NULL
+    &&__STRING, &&__STRING, &&__POINTER, &&__VARIANT, &&__FUNCTION, &&__CLASS, &&__NULL
     };
 
   VALUE conv;
@@ -258,9 +258,9 @@ __CLASS:
     goto __RETURN;
   }
 
-__ARRAY:
+__POINTER:
 
-  fprintf(_where, "ARRAY %p", value->_array.addr);
+  fprintf(_where, "(%p)", value->_pointer.value);
   goto __RETURN;
 
 __FUNCTION:

@@ -1203,13 +1203,16 @@ void CLASS_create_array_class(CLASS *class)
 	void *save = TYPE_joker;
 	char *name_joker;
 	GB_DESC *desc;
+	CLASS *array_type;
 	
 	//fprintf(stderr, "CLASS_create_array_class: create %s\n", class->name);
 
 	STRING_new(&name_joker, class->name, strlen(class->name) - 2);
 
-	TYPE_joker = class->array_type = class->global ? CLASS_find_global(name_joker) : CLASS_find(name_joker);
-	class->array_type->array_class = class;
+	array_type = class->global ? CLASS_find_global(name_joker) : CLASS_find(name_joker);
+	TYPE_joker = array_type;
+	class->array_type = (TYPE)array_type;
+	array_type->array_class = class;
 
 	ALLOC(&desc, sizeof(GB_DESC) * ARRAY_TEMPLATE_NDESC, "CLASS_create_array_class");
 	memcpy(desc, NATIVE_TemplateArray, sizeof(GB_DESC) * ARRAY_TEMPLATE_NDESC);

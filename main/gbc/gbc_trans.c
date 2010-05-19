@@ -322,35 +322,22 @@ __END:
 }
 
 
-static PATTERN *trans_square(PATTERN *look, int mode, TRANS_DECL *result)
+static PATTERN *trans_static_array(PATTERN *look, int mode, TRANS_DECL *result)
 {
   TRANS_NUMBER tnum;
   int i;
 
-  if (!(mode & TT_CAN_SQUARE))
+  if (!(mode & TT_CAN_STATIC))
   {
     if (PATTERN_is(*look, RS_LSQR))
-      THROW("Arrays are forbidden here");
+      THROW("Static arrays are forbidden here");
     return look;
   }
 
   if (!PATTERN_is(*look, RS_LSQR))
     return look;
 
-  /*
-  if (result->is_array)
-    THROW("Syntax error. Duplicated array declaration");
-  */
-
   look++;
-
-  /*
-  if (PATTERN_is(*look, RS_RSQR))
-  {
-    look++;
-    return look;
-  }
-  */
 
   if (mode && TT_CAN_ARRAY)
   {
@@ -440,7 +427,7 @@ bool TRANS_type(int mode, TRANS_DECL *result)
   result->init = NULL;
   result->array.ndim = 0;
 
-  //look = trans_square(look, mode, result);
+  look = trans_static_array(look, mode, result);
 
   if (!PATTERN_is(*look, RS_AS))
   {
@@ -457,7 +444,7 @@ bool TRANS_type(int mode, TRANS_DECL *result)
     if (PATTERN_is(*look, RS_NEW))
     {
       if (TYPE_get_id(result->type) == T_ARRAY)
-        THROW("Cannot mix NEW and array declaration");
+        THROW("Cannot mix NEW and static array declaration");
 
       result->is_new = TRUE;
       look++;
@@ -489,7 +476,7 @@ bool TRANS_type(int mode, TRANS_DECL *result)
 			if ((mode & TT_CAN_NEW) && result->is_new)
 			{
 				if (TYPE_get_id(result->type) == T_ARRAY)
-					THROW("Cannot mix NEW and array declaration");
+					THROW("Cannot mix NEW and static array declaration");
 
 				//result->is_new = TRUE;
 				result->init = look;
