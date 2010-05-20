@@ -63,6 +63,7 @@ char *COMP_classes = NULL;
 COMPILE COMP_current;
 
 const char *COMP_form_families[] = { "form", "report", NULL };
+bool COMP_family_allowed[2] = { FALSE, FALSE };
 
 static bool read_line(FILE *f, char *dir, int max)
 {
@@ -387,3 +388,23 @@ void COMPILE_exit(void)
 	STR_free(COMP_root);
 }
 
+/*
+void COMPILE_enter_struct(COMPILE *comp, const char *name, bool is_public)
+{
+	*comp = COMP_current;
+	
+	CLEAR(JOB);
+	
+	JOB->output = OUTPUT_get_file(name);
+	CLASS_create(&JOB->class);
+}
+
+void COMPILE_leave_struct(COMPILE *comp)
+{
+	CLASS_delete(&JOB->class);
+
+	STR_free(JOB->output);
+
+	COMP_current = *comp;
+}
+*/

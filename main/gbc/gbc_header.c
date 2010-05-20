@@ -39,6 +39,22 @@
 /*#define DEBUG*/
 
 
+static void check_public_private(PATTERN **look, bool *is_public)
+{
+  *is_public = JOB->is_module && JOB->public_module;
+
+  if (PATTERN_is(**look, RS_PUBLIC))
+  {
+    *is_public = TRUE;
+    (*look)++;
+  }
+  else if (PATTERN_is(**look, RS_PRIVATE))
+  {
+    *is_public = FALSE;
+    (*look)++;
+  }
+}
+
 static void analyze_function_desc(TRANS_FUNC *func, int flag)
 {
   PATTERN *look = JOB->current;
@@ -300,22 +316,6 @@ static bool header_property(TRANS_PROPERTY *prop)
     prop->comment = NO_SYMBOL;
 
   return TRUE;
-}
-
-static void check_public_private(PATTERN **look, bool *is_public)
-{
-  *is_public = JOB->is_module && JOB->public_module;
-
-  if (PATTERN_is(**look, RS_PUBLIC))
-  {
-    *is_public = TRUE;
-    (*look)++;
-  }
-  else if (PATTERN_is(**look, RS_PRIVATE))
-  {
-    *is_public = FALSE;
-    (*look)++;
-  }
 }
 
 static bool header_extern(TRANS_EXTERN *trans)
@@ -718,75 +718,6 @@ static bool header_function(TRANS_FUNC *func)
   return TRUE;
 }
 
-#if 0
-static bool header_structure(TRANS_STRUCTURE *structure)
-{
-	TRANS_PARAM *field;
-  TRANS_DECL ttyp;
-	
-  if (!PATTERN_is(*JOB->current, RS_STRUCT))
-  	return FALSE;
-  	
-  JOB->current++;
-  
-  if (!PATTERN_is_identifier(*JOB->current))
-  	THROW ("Syntax error. STRUCT needs an identifier");
-
-  structure->index = PATTERN_index(*JOB->current);
-  JOB->current++;
-	
-  if (!TRANS_newline())
-    THROW ("Syntax error at structure declaration");
-	
-	structure->nfield = 0;
-	
-	for(;;)
-	{
-		do
-		{
-	    if (PATTERN_is_end(*JOB->current) || PATTERN_is_command(*JOB->current))
-  	    THROW ("Missing END STRUCT");
-		}
-		while (TRANS_newline());
-		
-		if (PATTERN_is(*JOB->current, RS_END) && PATTERN_is(JOB->current[1], RS_STRUCT))
-		{
-  	  if (structure->nfield == 0)
-  	  	THROW ("Syntax error. A structure must have one field at least.");
-  	  	
-			JOB->current += 2;
-	    
-	    if (!TRANS_newline())
-  	  	THROW ("Syntax error. End of line expected.");
-  	  	
-  	  break;
-		}
-		
-		if (structure->nfield >= MAX_STRUCT_FIELD)
-			THROW ("Too many fields in structure declaration.");
-    
-    field = &structure->field[structure->nfield];
-    
-    if (!PATTERN_is_identifier(*JOB->current))
-      THROW ("Syntax error. The &1 field is not a valid identifier", TRANS_get_num_desc(structure->nfield + 1));
-
-    field->index = PATTERN_index(*JOB->current);
-    JOB->current++;
-
-    if (!TRANS_type(TT_NOTHING, &ttyp))
-      THROW ("Syntax error. Invalid type description of &1 field", TRANS_get_num_desc(structure->nfield + 1));
-
-    field->type = ttyp.type;
-    
-    if (!TRANS_newline())
-    	THROW ("Syntax error. End of line expected.");
-    
-		structure->nfield++;
-	}
-	
-	return TRUE;
-}
-#endif
 
 static bool header_inherits(void)
 {
@@ -858,6 +789,7 @@ static bool header_option(void)
   return FALSE;
 }
 
+
 static bool header_library(void)
 {
   if (!TRANS_is(RS_LIBRARY))
@@ -872,6 +804,84 @@ static bool header_library(void)
 }
 
 
+static bool header_structure(void)
+{
+  PATTERN *look = JOB->current;
+	bool is_public;
+	CLASS_STRUCT *structure;
+	VARIABLE *field;
+	TRANS_DECL decl;
+	int nfield;
+
+	check_public_private(&look, &is_public);
+	
+  if (!PATTERN_is(*look, RS_STRUCT))
+    return FALSE;
+  look++;
+	JOB->current = look;
+	
+	if (!is_public)
+		THROW("Structures must be public");
+	
+  if (!PATTERN_is_identifier(*JOB->current))
+    THROW("Syntax error. STRUCT needs an identifier");
+
+	structure = ARRAY_add_void(&JOB->class->structure);
+	ARRAY_create(&structure->field);
+	nfield = 0;
+	
+  structure->index = PATTERN_index(*JOB->current);
+  CLASS_add_class_exported(JOB->class, structure->index);
+	//TABLE_copy_symbol_with_prefix(JOB->class->table, structure->index, '.', NULL, &structure->index);
+
+	JOB->current++;
+	TRANS_want_newline();
+	
+	for(;;)
+	{
+		do
+		{
+	    if (PATTERN_is_end(*JOB->current) || PATTERN_is_command(*JOB->current))
+  	    THROW ("Missing END STRUCT");
+		}
+		while (TRANS_newline());
+		
+		if (PATTERN_is(*JOB->current, RS_END) && PATTERN_is(JOB->current[1], RS_STRUCT))
+		{
+  	  if (nfield == 0)
+  	  	THROW ("Syntax error. A structure must have one field at least.");
+  	  	
+			JOB->current += 2;
+	    
+			TRANS_want_newline();
+  	  break;
+		}
+		
+    if (!PATTERN_is_identifier(*JOB->current))
+      THROW("Syntax error. The &1 field is not a valid identifier", TRANS_get_num_desc(nfield + 1));
+
+		field = ARRAY_add(&structure->field);
+		field->index = PATTERN_index(*JOB->current); 
+		
+		
+    JOB->current++;
+    
+		CLEAR(&decl);
+    if (!TRANS_type(TT_CAN_ARRAY | TT_CAN_STATIC, &decl))
+      THROW("Syntax error. Invalid type description of &1 field", TRANS_get_num_desc(nfield + 1));
+
+		TRANS_want_newline();
+    
+		field->type = decl.type;
+		
+		nfield++;
+	}
+	
+	structure->nfield = nfield;
+	
+	return TRUE;
+}
+
 void HEADER_do(void)
 {
   union {
@@ -880,12 +890,28 @@ void HEADER_do(void)
     TRANS_EVENT event;
     TRANS_EXTERN ext;
     TRANS_PROPERTY prop;
-    TRANS_STRUCTURE structure;
     } trans;
 
   TRANS_reset();
 
   header_module_type();
+
+  while (JOB->current < JOB->end)
+  {
+    if (PATTERN_is_end(*JOB->current))
+      break;
+
+    if (TRANS_newline())
+      continue;
+
+    if (header_option())
+      continue;
+		
+    if (header_inherits())
+      continue;
+
+		break;
+	}
 
   while (JOB->current < JOB->end)
   {
@@ -921,18 +947,15 @@ void HEADER_do(void)
     
     if (header_enumeration(&trans.decl))
 			continue;
-
+		
     if (header_declaration(&trans.decl))
     {
       CLASS_add_declaration(JOB->class, &trans.decl);
       continue;
     }
     
-    /*if (header_structure(&trans.structure))
-    {
-    	//CLASS_add_structure(JOB->class, &trans.structure);
+    if (header_structure())
     	continue;
-    }*/
 
     if (header_class(&trans.decl))
     {
@@ -941,9 +964,6 @@ void HEADER_do(void)
     }
 
     if (header_inherits())
-      continue;
-
-    if (header_option())
       continue;
 
     if (header_library())

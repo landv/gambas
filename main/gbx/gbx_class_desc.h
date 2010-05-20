@@ -62,10 +62,11 @@ typedef
     char *name;
     TYPE type;                  // variable datatype
     int offset;   	            // variable offset in object memory
+		CTYPE ctype;                // variable compilation datatype
+		intptr_t _reserved;
 		#ifdef OS_64BITS
-		int _reserved;
+		intptr_t _reserved2;
 		#endif
-		intptr_t _reserved2[2];
     struct _CLASS *class;
     }
   PACKED

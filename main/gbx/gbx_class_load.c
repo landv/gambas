@@ -342,6 +342,7 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
   CLASS_VAR *var;
   FUNCTION *func;
   FUNC_DEBUG *debug;
+	void **struct_desc;
   int i, j, pos;
   int offset;
   short n_desc, n_class_ref, n_unknown, n_array;
@@ -386,7 +387,7 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
 
   class->debug = header->flag & CF_DEBUG;
   
-  info = (CLASS_INFO *)get_section("info", &section, NULL, _s _s _i _i );
+  info = (CLASS_INFO *)get_section("info", &section, NULL, _s _s _i _i _s _s );
   #ifdef OS_64BITS
   class->load->desc =
   #endif
@@ -405,7 +406,12 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
   local = (CLASS_PARAM *)get_section("local", &section, NULL, _t);
   class->load->array = (CLASS_ARRAY **)get_section("array", &section, &n_array, _i);  // A special process is needed later
 
-  /* Loading code */
+	// Structure descriptions
+	
+	for (i = 0; i < info->nstruct; i++)
+		get_section("structure", &section, NULL, NULL);
+	
+  // Loading code
 
   for (i = 0; i < class->load->n_func; i++)
   {
@@ -902,6 +908,7 @@ void CLASS_load_without_init(CLASS *class)
         else
           var = &class->load->dyn[desc->gambas.val1];
 
+        desc->variable.ctype = var->type;
         desc->variable.offset = var->pos;
 
         break;

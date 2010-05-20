@@ -46,7 +46,7 @@ COMP_INFO COMP_res_info[] =
   { "Pointer",      RSF_TYPE,     T_POINTER         },
   { "Class",        RSF_ILD                         },
   { "Function",     RSF_ILF                         },
-  { "Struct"                                        },
+  { "Struct",       RSF_ILD                         },
   { "Const"                                         },
   { "Private",      RSF_ILD                         },
   { "Public",       RSF_ILD                         },

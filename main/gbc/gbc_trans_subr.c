@@ -439,17 +439,15 @@ void TRANS_open(void)
 
   trans_subr(TS_SUBR_OPEN, 2);
 
-  if (TRANS_in_affectation == 0)
+  /*if (TRANS_in_affectation == 0)
   {
     //CODE_drop();
-
-    /* handle du fichier */
 
     TRANS_want(RS_AS, NULL);
     TRANS_ignore(RS_SHARP);
 
     TRANS_reference();
-  }
+  }*/
 }
 
 

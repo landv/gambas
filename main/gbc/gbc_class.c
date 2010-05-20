@@ -415,7 +415,7 @@ static int add_class(CLASS *class, int index, bool used, bool exported)
 		if (num >= MAX_CLASS_CLASS)
 			THROW("Too many different classes used");
 
-		desc = ARRAY_add(&class->class);
+		desc = ARRAY_add_void(&class->class);
 		desc->index = index;
 
 		sym->class = num + 1;
@@ -447,14 +447,14 @@ int CLASS_add_class_unused(CLASS *class, int index)
 	return add_class(class, index, FALSE, FALSE);
 }
 
-int CLASS_add_class_exported_unused(CLASS *class, int index)
-{
-	return add_class(class, index, FALSE, TRUE);
-}
-
 int CLASS_add_class_exported(CLASS *class, int index)
 {
 	return add_class(class, index, TRUE, TRUE);
+}
+
+int CLASS_add_class_exported_unused(CLASS *class, int index)
+{
+	return add_class(class, index, FALSE, TRUE);
 }
 
 
@@ -518,7 +518,7 @@ int CLASS_get_array_class(CLASS *class, int type, int value)
 		if (class->class[value].exported)
 			index = CLASS_add_class_exported(JOB->class, index);
 		else
-			index =  CLASS_add_class(JOB->class, index);
+			index = CLASS_add_class(JOB->class, index);
 	}
 
 	return index;

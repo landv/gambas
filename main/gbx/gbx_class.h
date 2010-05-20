@@ -164,6 +164,8 @@ typedef
 		short flag;
 		int s_static;
 		int s_dynamic;
+		short nstruct;
+		short _reserved;
 		}
 	PACKED
 	CLASS_INFO;
@@ -174,7 +176,7 @@ typedef
 		int dim[0];
 		}
 	CLASS_ARRAY;
-	
+
 typedef
 	CLASS_ARRAY *CLASS_ARRAY_P;
 

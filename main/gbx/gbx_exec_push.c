@@ -52,6 +52,7 @@ void EXEC_push_unknown(ushort code)
   CLASS_DESC *desc;
   CLASS *class;
   OBJECT *object;
+	void *ref;
   char *addr;
   bool defined;
   VALUE *val;
@@ -265,7 +266,8 @@ _PUSH_VARIABLE:
 _PUSH_VARIABLE_2:
 
   addr = (char *)object + desc->variable.offset;
-  goto _READ_PROPERTY;
+	ref = object;
+  goto _READ_VARIABLE;
 
 
 _PUSH_STATIC_VARIABLE:
@@ -275,12 +277,13 @@ _PUSH_STATIC_VARIABLE:
 _PUSH_STATIC_VARIABLE_2:
 
   addr = (char *)desc->variable.class->stat + desc->variable.offset;
-  goto _READ_PROPERTY;
+	ref = desc->variable.class;
+  goto _READ_VARIABLE;
 
 
-_READ_PROPERTY:
+_READ_VARIABLE:
 
-  VALUE_read(&SP[-1], (void *)addr, desc->property.type);
+  VALUE_class_read(desc->variable.class, &SP[-1], (void *)addr, desc->variable.ctype, ref);
   goto _FIN_DEFINED;
 
 

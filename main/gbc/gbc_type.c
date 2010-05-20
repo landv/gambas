@@ -49,9 +49,10 @@ TYPE TYPE_make(TYPE_ID id, short value, int flag)
   TYPE_clear(&type);
   TYPE_set_id(&type, id);
 
-  if (id == T_OBJECT || id == T_ARRAY) // || id == T_STRUCT)
-    TYPE_set_value(&type, value);
-
+  if (!(id == T_OBJECT || id == T_ARRAY || id == T_STRUCT))
+		value = -1;
+  
+	TYPE_set_value(&type, value);
   TYPE_set_flag(&type, flag);
 
   return type;

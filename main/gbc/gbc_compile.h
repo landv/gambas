@@ -77,6 +77,7 @@ EXTERN char *COMP_project_name;
 EXTERN char *COMP_info_path;
 EXTERN char *COMP_classes;
 EXTERN const char *COMP_form_families[];
+EXTERN bool COMP_family_allowed[];
 
 #endif
 

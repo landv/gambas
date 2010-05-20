@@ -1458,10 +1458,21 @@ End
 Static Public Function ReadSymbolType(aSym As String[], iIndex As Integer, Optional sSymbol As String) As String
 
   Dim sType As String
+  Dim bArray As Boolean
 
   If sSymbol Then
     If UCase(aSym[iIndex]) <> UCase(sSymbol) Then Return
     Inc iIndex
+  Endif
+
+  If aSym[iIndex] = "[" Then
+    While iIndex < aSym.Count
+      If aSym[iIndex] = "]" Then Break
+      Inc iIndex
+    Wend
+    If aSym[iIndex] <> "]" Then Return
+    Inc iIndex
+    bArray = True
   Endif
 
   If aSym[iIndex] <> "AS" Then Return
@@ -1471,10 +1482,10 @@ Static Public Function ReadSymbolType(aSym As String[], iIndex As Integer, Optio
   sType = aSym[iIndex]
   
   If (iIndex + 2) < aSym.Count Then
-    If aSym[iIndex + 1] = "[" Then 'AND aSym[iIndex + 2] = "]" THEN
-      Return sType & "[]"
-    Endif
+    If aSym[iIndex + 1] = "[" Then bArray = True
   Endif
+
+  If bArray Then Return sType & "[]"
 
   If $cType.Exist(sType) Then sType = $cType[sType]
   Return sType

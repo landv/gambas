@@ -82,33 +82,33 @@ typedef
 
 typedef
 	struct {
-		TYPE type;            // Return value datatype
-		int name;             // Function name index in class symbol table
+		TYPE type;                     // Return value datatype
+		int name;                      // Function name index in class symbol table
 
-		char nparam;          // Maximum number of arguments
-		char npmin;           // Minimum number of arguments
-		char vararg;          // If this function accepts extra arguments
+		char nparam;                   // Maximum number of arguments
+		char npmin;                    // Minimum number of arguments
+		char vararg;                   // If this function accepts extra arguments
 		char _reserved;
-		short nlocal;         // Local variable count
-		short nctrl;          // Control structure variable count
-		uint64_t byref;       // Byref mask
-		PARAM *local;         // Datatypes of local variables
-		PARAM *param;         // Datatypes of arguments
+		short nlocal;                  // Local variable count
+		short nctrl;                   // Control structure variable count
+		uint64_t byref;                // Byref mask
+		PARAM *local;                  // Datatypes of local variables
+		PARAM *param;                  // Datatypes of arguments
 
-		PATTERN *start;       // Starts compilation from there
-		int line;	            // ...which is this line
-		ushort *code;         // Compile bytecode
+		PATTERN *start;                // Starts compilation from there
+		int line;	                     // ...which is this line
+		ushort *code;                  // Compile bytecode
 		
-		short *pos_line;      // Bytecode position of each code line
+		short *pos_line;               // Bytecode position of each code line
 		
-		ushort ncode;         // Number of instructions
-		ushort ncode_max;     // Size of the bytecode allocation
+		ushort ncode;                  // Number of instructions
+		ushort ncode_max;              // Size of the bytecode allocation
 
-		short last_code;      // Last compiled bytecode position
-		short last_code2;     // Last last compiled bytecode position
-		short stack;          // Needed stack
-		short finally;        // FINALLY position
-		short catch;          // CATCH position
+		short last_code;               // Last compiled bytecode position
+		short last_code2;              // Last last compiled bytecode position
+		short stack;                   // Needed stack
+		short finally;                 // FINALLY position
+		short catch;                   // CATCH position
 		short _reserved2;
 		}
 	PACKED
@@ -116,10 +116,10 @@ typedef
 
 typedef
 	struct {
-		TYPE type;            // Return value datatype
-		int name;             // Function name index in class symbol table
-		PARAM *param;         // Argument list
-		short nparam;         // Number of arguments
+		TYPE type;                     // Return value datatype
+		int name;                      // Function name index in class symbol table
+		PARAM *param;                  // Argument list
+		short nparam;                  // Number of arguments
 		short _reserved;
 		}
 	PACKED
@@ -127,42 +127,42 @@ typedef
 
 typedef
 	struct {
-		TYPE type;            // Return value datatype
-		int name;             // Function name index in class symbol table
-		PARAM *param;         // Argument list
-		short nparam;         // Number of arguments
+		TYPE type;                     // Return value datatype
+		int name;                      // Function name index in class symbol table
+		PARAM *param;                  // Argument list
+		short nparam;                  // Number of arguments
 		short _reserved;
-		int library;          // Library name index
-		int alias;            // Real function name index
+		int library;                   // Library name index
+		int alias;                     // Real function name index
 		}
 	PACKED
 	EXTFUNC;
 
 typedef
 	struct {
-		TYPE type;            // Property datatype
-		int name;             // Property name index
-		int line;             // The line where the property is declared
-		int comment;          // Property string description, added to datatype
-		short read;           // Read function
-		short write;          // Write function
+		TYPE type;                     // Property datatype
+		int name;                      // Property name index
+		int line;                      // The line where the property is declared
+		int comment;                   // Property string description, added to datatype
+		short read;                    // Read function
+		short write;                   // Write function
 		}
 	PACKED
 	PROPERTY;
 
 typedef
 	struct {
-		TYPE type;                /* Type du tableau */
-		int ndim;               /* nombre de dimensions */
-		int dim[MAX_ARRAY_DIM];  /* dimensions du tableau */
+		TYPE type;                     // Array datatype
+		int ndim;                      // Number of dimensions
+		int dim[MAX_ARRAY_DIM];        // Dimensions bounds
 		}
 	CLASS_ARRAY;
 
 typedef
 	struct {
-		TYPE type;
-		int nfield;              /* nombre de champs dans la structure */
-		VARIABLE *field;          /* champs de la structure */
+		int index;                     // Structure name
+		int nfield;                    // Number of structure fields
+		VARIABLE *field;               // Structure fields
 		}
 	CLASS_STRUCT;
 
@@ -176,29 +176,29 @@ typedef
 
 typedef
 	struct {
-		TABLE *table;             /* symbol table */
-		TABLE *string;            /* strings table */
-		char *name;               /* class name */
-		short parent;             /* parent class */
-		unsigned exported : 1;    /* class is exported */
-		unsigned autocreate : 1;  /* class is auto-creatable */
-		unsigned optional : 1;    /* class is optional */
-		unsigned nocreate : 1;    /* class cannot be instanciated */
+		TABLE *table;                  // symbol table
+		TABLE *string;                 // strings table
+		char *name;                    // class name
+		short parent;                  // parent class
+		unsigned exported : 1;         // class is exported
+		unsigned autocreate : 1;       // class is auto-creatable
+		unsigned optional : 1;         // class is optional
+		unsigned nocreate : 1;         // class cannot be instanciated
 		unsigned _reserved : 12;
-		VARIABLE *stat;           /* static variables */
-		VARIABLE *dyn;            /* dynamic variables */
-		CONSTANT *constant;       /* constants */
-		CLASS_REF *class;         /* classes */
-		int *unknown;             /* unknown symbols */
-		FUNCTION *function;       /* functions */
-		int size_stat;            /* static variables total size */
-		int size_dyn;             /* dynamic variables total size */
-		EVENT *event;             /* events */
-		PROPERTY *prop;           /* properties */
-		EXTFUNC *ext_func;        /* extern functions */
-		CLASS_ARRAY *array;       /* array definitions */
-		CLASS_STRUCT *structure;  /* structs definitions */
-		char **names;             /* when some symbols must be created like object arrays */
+		VARIABLE *stat;                // static variables
+		VARIABLE *dyn;                 // dynamic variables
+		CONSTANT *constant;            // constants
+		CLASS_REF *class;              // classes
+		int *unknown;                  // unknown symbols
+		FUNCTION *function;            // functions
+		int size_stat;                 // static variables total size
+		int size_dyn;                  // dynamic variables total size
+		EVENT *event;                  // events
+		PROPERTY *prop;                // properties
+		EXTFUNC *ext_func;             // extern functions
+		CLASS_ARRAY *array;            // array definitions
+		CLASS_STRUCT *structure;       // structs definitions
+		char **names;                  // when some symbols must be created like object arrays
 		}
 	CLASS;
 

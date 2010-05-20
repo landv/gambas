@@ -258,6 +258,7 @@ static void export_newline(void)
 static void export_type(TYPE type, bool scomma)
 {
   int value;
+	int index;
   TYPE_ID id;
 
   id = TYPE_get_id(type);
@@ -269,6 +270,15 @@ static void export_type(TYPE type, bool scomma)
     if (scomma)
       fputc(';', _finfo);
   }
+  else if (id == T_ARRAY)
+	{
+		type = JOB->class->array[value].type;
+		index = CLASS_get_array_class(JOB->class, TYPE_get_id(type), TYPE_get_value(type));
+		fprintf(_finfo, "%s", get_name(JOB->class->class[index].index));
+    if (scomma)
+      fputc(';', _finfo);
+	}
+  // TODO: Manage T_STRUCT
   else
     fprintf(_finfo, "%s", TYPE_get_short_desc(type));
 }

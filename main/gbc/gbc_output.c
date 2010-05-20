@@ -343,19 +343,28 @@ static void output_class(void)
   short flag;
   begin_section("Class", 1);
 
-  /* classe parente */
+  // Parent class
   write_short(Class->parent);
-  /* flags */
+  
+	// Class flags
   flag = 0;
   if (Class->exported) flag |= 1;
   if (Class->autocreate) flag |= 2;
   if (Class->optional) flag |= 4;
   if (Class->nocreate) flag |= 8;
   write_short(flag);
-  /* size_static */
+  
+	// Static size
   write_int(Class->size_stat);
-  /* size_dynamic */
+	
+  // Dynamic size
   write_int(Class->size_dyn);
+	
+	// Number of structures
+	write_short(ARRAY_count(Class->structure));
+	
+	// reserved
+	write_short(0);
 
   end_section();
 }
@@ -858,6 +867,39 @@ static void output_array(void)
 }
 
 
+static void output_structure(void)
+{
+	int i, j;
+	CLASS_STRUCT *structure;
+	VARIABLE *field;
+  SYMBOL *sym;
+
+	for (i = 0; i < ARRAY_count(Class->structure); i++)
+	{
+		structure = &Class->structure[i];
+		
+		begin_section("Structure", sizeof(int));
+		
+		// Structure name
+    sym = TABLE_get_symbol(Class->table, structure->index);
+    write_int(get_string(sym->name, sym->len));
+		
+		for (j = 0; j < structure->nfield; j++)
+		{
+			field = &structure->field[j];
+			
+			// Field name
+			sym = TABLE_get_symbol(Class->table, field->index);
+			write_int(get_string(sym->name, sym->len));
+			
+			// Field datatype
+			write_type(field->type);
+		}
+		
+		end_section();
+	}
+}
+
 static void output_code()
 {
   int i, j;
@@ -1273,6 +1315,7 @@ void OUTPUT_do(bool swap)
   output_method();
   output_param_local();
   output_array();
+	output_structure();
   output_code();
 
   if (JOB->debug)
