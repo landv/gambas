@@ -76,25 +76,52 @@ EXTERN ERROR_CONTEXT *ERROR_current;
   	} \
 	}
 
+#define ERROR_enter(_err) \
+do { \
+  _err->prev = ERROR_current; \
+  _err->info.code = 0; \
+  ERROR_current = _err; \
+} while(0)
+
+
+#define ERROR_leave(_err) \
+do { \
+  if (_err->prev != ERROR_LEAVE_DONE) \
+	{ \
+		ERROR_current = _err->prev; \
+		if (ERROR_current) \
+		{ \
+			if (_err->info.code) \
+			{ \
+				ERROR_reset(&ERROR_current->info); \
+				ERROR_current->info = _err->info; \
+			} \
+		} \
+		else \
+			ERROR_reset(&_err->info); \
+    \
+		_err->prev = ERROR_LEAVE_DONE; \
+	} \
+} while(0)
+
 #define ERROR __err
 
 #define PROPAGATE() ERROR_propagate()
 
-PUBLIC void ERROR_clear(void);
-PUBLIC char *ERROR_get(void);
+void ERROR_clear(void);
+char *ERROR_get(void);
+void ERROR_reset(ERROR_INFO *info);
 
-PUBLIC void ERROR_enter(ERROR_CONTEXT *err);
-PUBLIC void ERROR_leave(ERROR_CONTEXT *err);
+//void ERROR_enter(ERROR_CONTEXT *err);
+//void ERROR_leave(ERROR_CONTEXT *err);
 
-PUBLIC void PROPAGATE() NORETURN;
-PUBLIC void THROW(const char *msg) NORETURN;
-PUBLIC void THROW2(const char *pattern, const char *msg) NORETURN;
+void PROPAGATE() NORETURN;
+void THROW(const char *msg) NORETURN;
+void THROW2(const char *pattern, const char *msg) NORETURN;
 
-PUBLIC void ERROR_panic(const char *error, ...) NORETURN;
+void ERROR_panic(const char *error, ...) NORETURN;
 
-PUBLIC void ERROR_print(void);
-PUBLIC void ERROR_print_at(FILE *where);
-
-/*PUBLIC void ERROR_must_free(void *object);*/
+void ERROR_print(void);
+void ERROR_print_at(FILE *where);
 
 #endif

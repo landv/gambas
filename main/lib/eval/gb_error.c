@@ -29,13 +29,16 @@
 
 ERROR_CONTEXT *ERROR_current = NULL;
 
-PUBLIC void ERROR_clear(void)
+void ERROR_clear(void)
 {
   errno = 0;
 }
 
 void ERROR_reset(ERROR_INFO *info)
 {
+	if (!info->code)
+		return;
+
 	info->code = 0;
 	if (info->free)
 	{
@@ -47,7 +50,7 @@ void ERROR_reset(ERROR_INFO *info)
 	//DEBUG_free_backtrace(&info->backtrace);
 }
 
-
+/*
 void ERROR_enter(ERROR_CONTEXT *err)
 {
   CLEAR(err);
@@ -71,6 +74,7 @@ void ERROR_leave(ERROR_CONTEXT *err)
 
 	err->prev = ERROR_LEAVE_DONE;
 }
+*/
 
 void ERROR_propagate()
 {
