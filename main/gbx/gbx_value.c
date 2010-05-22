@@ -813,8 +813,6 @@ void VALUE_read(VALUE *value, void *addr, TYPE type)
 		&&__STRING, &&__CSTRING, &&__POINTER, &&__VARIANT, &&__FUNCTION, &&__CLASS, &&__NULL
 		};
 
-	char *str;
-
 	value->type = type;
 
 	if (TYPE_is_object(type))
@@ -865,27 +863,29 @@ __DATE:
 
 __STRING:
 
-	str = *((char **)addr);
+	{
+		char *str = *((char **)addr);
 
-	value->type = T_STRING;
-	value->_string.addr = str;
-	value->_string.start = 0;
-	/*value->_string.len = (str == NULL) ? 0 : strlen(str);*/
-	value->_string.len = STRING_length(str);
+		value->type = T_STRING;
+		value->_string.addr = str;
+		value->_string.start = 0;
+		value->_string.len = STRING_length(str);
 
-	return;
+		return;
+	}
 
 __CSTRING:
 
-	str = *((char **)addr);
+	{
+		char *str = *((char **)addr);
 
-	value->type = T_CSTRING;
-	value->_string.addr = str;
-	value->_string.start = 0;
-	value->_string.len = (str == NULL) ? 0 : strlen(str);
-	/*value->_string.len = STRING_length(str);*/
+		value->type = T_CSTRING;
+		value->_string.addr = str;
+		value->_string.start = 0;
+		value->_string.len = (str == NULL) ? 0 : strlen(str);
 
-	return;
+		return;
+	}
 
 __OBJECT:
 
@@ -1085,24 +1085,117 @@ void VALUE_from_string(VALUE *value, const char *addr, int len)
 
 void VALUE_class_read(CLASS *class, VALUE *value, char *addr, CTYPE ctype, void *ref)
 {
-	void *object;
-	
-	if (ctype.id == T_OBJECT)
+	static void *jump[17] = {
+		&&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
+		&&__STRING, &&__CSTRING, &&__POINTER, &&__VARIANT, &&__ARRAY, &&__STRUCT, &&__NULL, &&__OBJECT
+		};
+
+	value->type = ctype.id;
+	goto *jump[ctype.id];
+
+__BOOLEAN:
+
+	value->_boolean.value = (*((unsigned char *)addr) != 0) ? (-1) : 0;
+	return;
+
+__BYTE:
+
+	value->_byte.value = *((unsigned char *)addr);
+	return;
+
+__SHORT:
+
+	value->_short.value = *((short *)addr);
+	return;
+
+__INTEGER:
+
+	value->_integer.value = *((int *)addr);
+	return;
+
+__LONG:
+
+	value->_long.value = *((int64_t *)addr);
+	return;
+
+__SINGLE:
+
+	value->_single.value = *((float *)addr);
+	return;
+
+__FLOAT:
+
+	value->_float.value = *((double *)addr);
+	return;
+
+__DATE:
+
+	value->_date.date = ((int *)addr)[0];
+	value->_date.time = ((int *)addr)[1];
+	return;
+
+__STRING:
+
 	{
-		VALUE_read(value, addr, (ctype.value >= 0) ? (TYPE)class->load->class_ref[ctype.value] : T_OBJECT);
+		char *str = *((char **)addr);
+
+		value->type = T_STRING;
+		value->_string.addr = str;
+		value->_string.start = 0;
+		value->_string.len = STRING_length(str);
+
+		return;
 	}
-	else if (ctype.id == TC_ARRAY)
+
+__CSTRING:
+
 	{
-		object = CARRAY_create_static(ref, class->load->array[ctype.value], addr);
+		char *str = *((char **)addr);
+
+		value->type = T_CSTRING;
+		value->_string.addr = str;
+		value->_string.start = 0;
+		value->_string.len = (str == NULL) ? 0 : strlen(str);
+
+		return;
+	}
+
+__OBJECT:
+
+	value->_object.object = *((void **)addr);
+	value->type = (ctype.value >= 0) ? (TYPE)class->load->class_ref[ctype.value] : T_OBJECT;
+	return;
+
+__POINTER:
+
+	value->_pointer.value = *((void **)addr);
+	return;
+
+__VARIANT:
+
+	value->_variant.type = T_VARIANT;
+	value->_variant.vtype = ((VARIANT *)addr)->type;
+
+	if (value->_variant.vtype == T_VOID)
+		value->_variant.vtype = T_NULL;
+
+	VARIANT_copy_value(&value->_variant, ((VARIANT *)addr));
+
+	return;
+	
+__ARRAY:
+	{
+		void *object = CARRAY_create_static(ref, class->load->array[ctype.value], addr);
 		value->_object.class = OBJECT_class(object);
 		value->_object.object = object;
+		return;
 	}
-	else if (ctype.id == TC_STRUCT)
-	{
-		THROW(E_ILLEGAL);
-	}
-	else
-		VALUE_read(value, addr, (TYPE)ctype.id);
+
+__VOID:
+__STRUCT:
+__NULL:
+
+	THROW(E_ILLEGAL);
 }
 
 
@@ -1110,7 +1203,14 @@ void VALUE_class_write(CLASS *class, VALUE *value, char *addr, CTYPE ctype)
 {
 	if (ctype.id == T_OBJECT)
 	{
-		VALUE_write(value, addr, (ctype.value >= 0) ? (TYPE)class->load->class_ref[ctype.value] : T_OBJECT);
+		TYPE type = (ctype.value >= 0) ? (TYPE)class->load->class_ref[ctype.value] : T_OBJECT;
+		
+		VALUE_conv(value, type);
+
+		OBJECT_REF(value->_object.object, "VALUE_class_write");
+		OBJECT_UNREF(*((void **)addr), "VALUE_class_write");
+		*((void **)addr) = value->_object.object;
+		//VALUE_write(value, addr, (ctype.value >= 0) ? (TYPE)class->load->class_ref[ctype.value] : T_OBJECT);
 	}
 	else if (ctype.id == TC_ARRAY || ctype.id == TC_STRUCT)
 	{

@@ -44,15 +44,15 @@ void CLASS_create(CLASS **result)
 
 	ALLOC_ZERO(&class, sizeof(CLASS), "CLASS_create");
 
-	ARRAY_create(&class->function);
+	ARRAY_create_inc(&class->function, 256);
 	ARRAY_create(&class->event);
 	ARRAY_create(&class->prop);
 	ARRAY_create(&class->ext_func);
-	ARRAY_create(&class->constant);
+	ARRAY_create_inc(&class->constant, 256);
 	ARRAY_create(&class->class);
-	ARRAY_create(&class->unknown);
-	ARRAY_create(&class->stat);
-	ARRAY_create(&class->dyn);
+	ARRAY_create_inc(&class->unknown, 256);
+	ARRAY_create_inc(&class->stat, 256);
+	ARRAY_create_inc(&class->dyn, 256);
 	ARRAY_create(&class->array);
 	ARRAY_create(&class->structure);
 	ARRAY_create(&class->names);

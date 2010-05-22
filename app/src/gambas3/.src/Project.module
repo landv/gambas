@@ -180,6 +180,8 @@ Public Sub Main()
   Dim sPath As String
   Dim iTest As Integer
   Dim iInd As Integer
+  Dim bTest As Boolean
+  Dim sArg As String
   
   Application.Theme = Settings["/Theme"]
   'DB.Debug = True
@@ -195,22 +197,32 @@ Public Sub Main()
 
   RefreshBreakpointPicture
   InitWebView
-  
   InitVersion
-  CRecentFile.Load
-  'CModule.Init
-
-  FMain.Load 
 
   For iInd = 1 To Application.Args.Count - 1
-    If Left(Application.Args[iInd]) <> "-" Then
+    sArg = Application.Args[iInd]
+    If sArg = "-t" Then
+      bTest = True
+      Continue
+    Endif
+    If Left(sArg) <> "-" Then
       sPath = Application.Args[iInd]
       Break
     Endif
   Next
 
-  'FMain.Close
-  'Return
+  FMain.Load 
+  
+  If bTest And If sPath Then 
+    Project.Open(sPath)
+    Project.Close
+    FMain.Close
+    CSampleCode.Exit
+    CComponent.Exit
+    Return
+  Endif
+
+  CRecentFile.Load
 
   Do
 
@@ -238,7 +250,7 @@ Public Sub Main()
   'FFormStack.Load
 
   'If Settings["/ShowMascot", False] Then FGambas.Show
-
+  
   FMain.Show
   RefreshActivate
 

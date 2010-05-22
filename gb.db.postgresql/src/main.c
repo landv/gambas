@@ -658,7 +658,7 @@ static int open_database(DB_DESC *desc, DB_DATABASE *db)
 
 	if (!do_query(db, NULL, &res, query, 0))
 	{
-		GB.NewString(&db->charset, PQgetvalue(res, 0, 0), 0);
+		GB.NewZeroString(&db->charset, PQgetvalue(res, 0, 0));
 		PQclear(res);
 	}
 	else
@@ -1181,7 +1181,7 @@ static int table_init(DB_DATABASE *db, const char *table, DB_INFO *info)
 
 	/* Nom de la table */
 
-	GB.NewString(&info->table, table, 0);
+	GB.NewZeroString(&info->table, table);
 	
 	if (get_table_schema(&table, &schema))
 	{
@@ -1213,7 +1213,7 @@ static int table_init(DB_DATABASE *db, const char *table, DB_INFO *info)
 			return TRUE;
 		}
 
-		GB.NewString(&f->name, PQgetvalue(res, i, 0), 0);
+		GB.NewZeroString(&f->name, PQgetvalue(res, i, 0));
 
 		/*f->type = conv_type(atol(PQgetvalue(res, i, 1)));
 		f->length = 0;
@@ -1459,10 +1459,10 @@ static int table_list_73(DB_DATABASE *db, char ***tables)
 		{
 			schema = PQgetvalue(res, i, 1);
 			if (!strcmp(schema, "public")) // || !strcmp(schema, "pg_catalog"))
-				GB.NewString(&((*tables)[i]), PQgetvalue(res, i, 0), 0);
+				GB.NewZeroString(&((*tables)[i]), PQgetvalue(res, i, 0));
 			else
 			{
-				GB.NewString(&((*tables)[i]), schema, 0);
+				GB.NewZeroString(&((*tables)[i]), schema);
 				GB.AddString(&((*tables)[i]), ".", 1);
 				GB.AddString(&((*tables)[i]), PQgetvalue(res, i, 0), 0);
 			}
@@ -1606,7 +1606,7 @@ static int table_primary_key(DB_DATABASE *db, const char *table, char ***primary
 	GB.NewArray(primary, sizeof(char *), PQntuples(res));
 
 	for (i = 0; i < PQntuples(res); i++)
-		GB.NewString(&((*primary)[i]), PQgetvalue(res, i, 0), 0);
+		GB.NewZeroString(&((*primary)[i]), PQgetvalue(res, i, 0));
 
 	PQclear(res);
 
@@ -1908,7 +1908,7 @@ static int field_list(DB_DATABASE *db, const char *table, char ***fields)
 		GB.NewArray(fields, sizeof(char *), PQntuples(res));
 
 		for (i = 0; i < PQntuples(res); i++)
-			GB.NewString(&((*fields)[i]), PQgetvalue(res, i, 0), 0);
+			GB.NewZeroString(&((*fields)[i]), PQgetvalue(res, i, 0));
 	}
 
 	count = PQntuples(res);
@@ -2152,7 +2152,7 @@ static int index_list(DB_DATABASE *db, const char *table, char ***indexes)
 		GB.NewArray(indexes, sizeof(char *), PQntuples(res));
 
 		for (i = 0; i < PQntuples(res); i++)
-			GB.NewString(&((*indexes)[i]), PQgetvalue(res, i, 0), 0);
+			GB.NewZeroString(&((*indexes)[i]), PQgetvalue(res, i, 0));
 	}
 
 	count = PQntuples(res);
@@ -2381,7 +2381,7 @@ static int database_list(DB_DATABASE *db, char ***databases)
 		GB.NewArray(databases, sizeof(char *), PQntuples(res));
 
 		for (i = 0; i < PQntuples(res); i++)
-			GB.NewString(&((*databases)[i]), PQgetvalue(res, i, 0), 0);
+			GB.NewZeroString(&((*databases)[i]), PQgetvalue(res, i, 0));
 	}
 
 	count = PQntuples(res);
@@ -2558,7 +2558,7 @@ static int user_list(DB_DATABASE *db, char ***users)
 		GB.NewArray(users, sizeof(char *), PQntuples(res));
 
 		for (i = 0; i < PQntuples(res); i++)
-			GB.NewString(&((*users)[i]), PQgetvalue(res, i, 0), 0);
+			GB.NewZeroString(&((*users)[i]), PQgetvalue(res, i, 0));
 	}
 
 	count = PQntuples(res);
@@ -2613,7 +2613,7 @@ static int user_info(DB_DATABASE *db, const char *name, DB_USER *info)
 	if (!do_query(db, NULL, &res, query_passwd, 1, name))
 	{
 		if (*PQgetvalue(res, 0, 0))
-			GB.NewString(&info->password, "***", 0);
+			GB.NewString(&info->password, "***", 3);
 	}
 
 	return FALSE;

@@ -184,7 +184,7 @@ BEGIN_METHOD(CDIALOG_open_file, GB_BOOLEAN multi)
       GB.StoreObject(&ob, POINTER(&dialog_paths));
       
       for (i = 0; i < files.count(); i++)
-        GB.NewString((char **)GB.Array.Get(list, i), TO_UTF8(files[i]), 0);
+        GB.NewZeroString((char **)GB.Array.Get(list, i), TO_UTF8(files[i]));
       
       GB.ReturnBoolean(false);
     }

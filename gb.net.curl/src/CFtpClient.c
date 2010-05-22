@@ -287,7 +287,7 @@ BEGIN_METHOD_VOID(FtpClient_new)
 	strcpy(tmp,"ftp://");
 	THIS_PROTOCOL=tmp;
 	Adv_user_SETAUTH (&THIS->user,CURLAUTH_BASIC);
-	GB.NewString(&THIS->user.user, "anonymous", 0);
+	GB.NewZeroString(&THIS->user.user, "anonymous");
 
 END_METHOD
 

@@ -64,9 +64,9 @@ ARCHIVE *ARCHIVE_create(const char *name, const char *path)
 	arch->path = path;
 
   if (name)
-    STRING_new(&arch->domain, name, 0);
+    STRING_new_zero(&arch->domain, name);
   else
-    STRING_new(&arch->domain, "gb", 0);
+    STRING_new_zero(&arch->domain, "gb");
 
   arch->translation_loaded = FALSE;
 
@@ -400,7 +400,7 @@ void ARCHIVE_dir_first(ARCHIVE *arch, const char *path, const char *pattern, int
   arch_index = 0;
 	
   STRING_free(&arch_pattern);
-  STRING_new(&arch_pattern, pattern, 0);
+  STRING_new_zero(&arch_pattern, pattern);
 
 	//if (arch_dir->header.version == 2)
 	//{

@@ -453,7 +453,7 @@ void SUBR_stat(void)
   OBJECT_new((void **)(void *)&cstat, CLASS_Stat, NULL, NULL);
   OBJECT_UNREF_KEEP(cstat, "SUBR_stat");
   cstat->info = info;
-  STRING_new(&cstat->path, path, 0);
+  STRING_new_zero(&cstat->path, path);
 
   OBJECT_put(RETURN, cstat);
 

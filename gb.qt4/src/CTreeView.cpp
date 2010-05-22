@@ -217,7 +217,7 @@ void MyListViewItem::startRename(int col)
 {
 	//qDebug("before: %s", text(col).latin1());
 	GB.FreeString(&container->before);
-	GB.NewString(&container->before, TO_UTF8(text(col)), 0);
+	GB.NewZeroString(&container->before, TO_UTF8(text(col)));
 	Q3ListViewItem::startRename(col);
 }
 

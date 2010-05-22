@@ -2,6 +2,7 @@ AM_CFLAGS += -I$(top_srcdir)/share
 AM_CFLAGS_OPT += -I$(top_srcdir)/share
 
 bin_PROGRAMS = gbc3 gba3 gbi3
+noinst_PROGRAMS = gbcm3
 noinst_LTLIBRARIES = libgbcopt.la
 
 libgbcopt_la_CFLAGS= -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS_OPT)
@@ -59,3 +60,6 @@ gbi3_SOURCES= \
 
 libgbcopt_la_SOURCES = \
  gb_table.c
+
+gbcm3_SOURCES = \
+ gbc_reserved_make.c

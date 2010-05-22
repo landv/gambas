@@ -294,7 +294,7 @@ char *PROJECT_get_home(void)
 		STRING_free(&_home);
 		info = getpwuid(uid);
 		if (info)
-			STRING_new(&_home, info->pw_dir, 0);
+			STRING_new_zero(&_home, info->pw_dir);
 		_uid = uid;
 	}
 
@@ -308,25 +308,25 @@ void PROJECT_init(const char *file)
 
   /* Save the working directory */
 
-  STRING_new(&PROJECT_oldcwd, FILE_getcwd(NULL), 0);
+  STRING_new_zero(&PROJECT_oldcwd, FILE_getcwd(NULL));
 
   /* Gambas installation path */
 
   path = FILE_find_gambas();
 
-  STRING_new(&PROJECT_exec_path, FILE_get_dir(FILE_get_dir(path)), 0);
+  STRING_new_zero(&PROJECT_exec_path, FILE_get_dir(FILE_get_dir(path)));
 
 	/* Component paths */
 
 	#ifdef OS_64BITS
-  STRING_new(&COMPONENT_path, FILE_cat(PROJECT_exec_path, GAMBAS_LIB64_PATH, NULL), 0);
+  STRING_new_zero(&COMPONENT_path, FILE_cat(PROJECT_exec_path, GAMBAS_LIB64_PATH, NULL));
   if (access(COMPONENT_path, F_OK))
   {	
   	STRING_free(&COMPONENT_path);
-	  STRING_new(&COMPONENT_path, FILE_cat(PROJECT_exec_path, GAMBAS_LIB_PATH, NULL), 0);
+	  STRING_new_zero(&COMPONENT_path, FILE_cat(PROJECT_exec_path, GAMBAS_LIB_PATH, NULL));
   }
   #else
-  STRING_new(&COMPONENT_path, FILE_cat(PROJECT_exec_path, GAMBAS_LIB_PATH, NULL), 0);
+  STRING_new_zero(&COMPONENT_path, FILE_cat(PROJECT_exec_path, GAMBAS_LIB_PATH, NULL));
 	#endif
   
   //STRING_new(&COMPONENT_user_path, FILE_cat(PROJECT_get_home(), ".local", GAMBAS_LIB_PATH, NULL), 0);
@@ -393,9 +393,9 @@ void PROJECT_init(const char *file)
   /* Project name */
 
   if (EXEC_arch)
-  	STRING_new(&PROJECT_name, FILE_get_basename(file), 0);
+  	STRING_new_zero(&PROJECT_name, FILE_get_basename(file));
 	else
-  	STRING_new(&PROJECT_name, FILE_get_name(PROJECT_path), 0);
+  	STRING_new_zero(&PROJECT_name, FILE_get_name(PROJECT_path));
 
 	/* Main archive creation */
 

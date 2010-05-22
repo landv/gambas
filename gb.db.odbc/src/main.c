@@ -22,6 +22,7 @@
 ***************************************************************************/
 
 #define __MAIN_C
+
 //#define ODBC_TYPE
 //#define ODBC_DEBUG
 //#define DEBUG_ODBC
@@ -1549,7 +1550,7 @@ fflush(stderr);
 	ODBC_CONN *han = (ODBC_CONN *)db->handle;
 
 
-	GB.NewString(&info->table, table, 0);
+	GB.NewZeroString(&info->table, table);
 
 	retcode =SQLAllocHandle(SQL_HANDLE_STMT, (ODBC_CONN *) han->odbcHandle, &statHandle);
 
@@ -1603,7 +1604,7 @@ fflush(stderr);
 	{
 		fieldstr = current;
 		f = &info->field[i];
-		GB.NewString(&f->name, (char *)current->fieldname, 0);
+		GB.NewZeroString(&f->name, (char *)current->fieldname);
 
 		f->type = conv_type(current->type);
 
@@ -1989,7 +1990,7 @@ fflush(stderr);
 	for (i = 0; i < tablenum; i++)
 	{
 
-		GB.NewString(&(*tables)[i], curtable->tablename, 0);
+		GB.NewZeroString(&(*tables)[i], curtable->tablename);
 		free(curtable->tablename);
 		curtable = (ODBC_TABLES *) curtable->next;
 
@@ -2094,7 +2095,7 @@ fflush(stderr);
 				 (statHandle, 6, SQL_C_CHAR, &szKeyName[0], sizeof(szKeyName), 0)))
 			strcpy((char *) szKeyName, "Unknown");
 
-		GB.NewString((char **) GB.Add(primary), (char *)szColumnName, 0);
+		GB.NewZeroString((char **) GB.Add(primary), (char *)szColumnName);
 		i++;
 	}
 
@@ -2446,7 +2447,7 @@ fflush(stderr);
 
 	for (i = 0; i < colsNum; i++)
 	{
-		GB.NewString(&((*fields)[i]), (char *) current->fieldname, 0);
+		GB.NewZeroString(&((*fields)[i]), (char *) current->fieldname);
 
 
 
@@ -2752,7 +2753,7 @@ static int database_list(DB_DATABASE *db, char ***databases)
 
 //GB.Error("ODBC does not implement this function");
 	GB.NewArray(databases, sizeof(char *), 1);
-	GB.NewString(&(*databases)[0], han->dsn_name, 0);
+	GB.NewZeroString(&(*databases)[0], han->dsn_name);
 
 	return (1);
 }
@@ -2885,7 +2886,7 @@ static int user_list(DB_DATABASE *db, char ***users)
 {
 	ODBC_CONN *han = (ODBC_CONN *)db->handle;
 	GB.NewArray(users, sizeof(char *), 1);
-	GB.NewString(&(*users)[0], han->user_name, 0);
+	GB.NewZeroString(&(*users)[0], han->user_name);
 
 	//GB.Error("ODBC does not implement this function");
 	return (1);

@@ -281,7 +281,7 @@ CRESULT *DB_MakeResult(CCONNECTION *conn, int mode, char *table_temp, char *quer
 	THIS->dmap = NULL;
 
 	// table must be copied because it can be a temporary string!
-	GB.NewString(&table, table_temp, 0);
+	GB.NewZeroString(&table, table_temp);
 
 	switch (mode)
 	{
@@ -335,7 +335,7 @@ ERROR:
 		}
 		else
 		{
-			GB.NewString(&duplicate, table, 0);
+			GB.NewZeroString(&duplicate, table);
 			token = strtok(duplicate,",");
 			do {
 				arg = token;

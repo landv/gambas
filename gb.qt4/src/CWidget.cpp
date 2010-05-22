@@ -190,7 +190,7 @@ static void set_name(CWIDGET *_object, const char *name)
 		
 	GB.FreeString(&THIS->name);
 	if (name)
-		GB.NewString(&THIS->name, name, 0);
+		GB.NewZeroString(&THIS->name, name);
 }
 
 void *CWIDGET_get_parent(void *_object)
@@ -2111,7 +2111,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			CKEY_clear(true);
 
 			GB.FreeString(&CKEY_info.text);
-			GB.NewString(&CKEY_info.text, TO_UTF8(kevent->text()), 0);
+			GB.NewZeroString(&CKEY_info.text, TO_UTF8(kevent->text()));
 			CKEY_info.state = kevent->modifiers();
 			CKEY_info.code = kevent->key();
 			CKEY_info.release = type == QEvent::KeyRelease;
@@ -2182,7 +2182,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	
 				GB.FreeString(&CKEY_info.text);
 				//qDebug("IMEnd: %s", imevent->text().latin1());
-				GB.NewString(&CKEY_info.text, TO_UTF8(imevent->commitString()), 0);
+				GB.NewZeroString(&CKEY_info.text, TO_UTF8(imevent->commitString()));
 				CKEY_info.state = 0;
 				CKEY_info.code = 0;
 	

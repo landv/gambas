@@ -1282,7 +1282,7 @@ __CLASS:
 	object = NULL;
 	defined = TRUE;
 
-	if (UNLIKELY(val == EXEC_super))
+	if (val == EXEC_super)
 	{
 		EXEC_super = val->_class.super;
 		//*class = (*class)->parent;
@@ -1780,7 +1780,7 @@ void EXEC_new(void)
 	{
 		STRING_copy_from_value_temp(&cname, SP);
 		class = CLASS_find(cname);
-		RELEASE(SP);
+		RELEASE_STRING(SP);
 		SP->type = T_NULL;
 	}
 	else
@@ -1810,7 +1810,7 @@ void EXEC_new(void)
 		SP--;
 		STRING_unref(&name);
 
-		RELEASE(SP);
+		RELEASE_STRING(SP);
 
 		np -= 2;
 	}

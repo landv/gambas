@@ -58,7 +58,7 @@ char *COMP_root = NULL;
 char *COMP_project;
 char *COMP_project_name;
 char *COMP_info_path;
-char *COMP_classes = NULL;
+static char *COMP_classes = NULL;
 
 COMPILE COMP_current;
 
@@ -112,8 +112,7 @@ static void add_memory_list(char *p, int size)
 		if (len > 2 && p[len - 1] == '?')
 			len--;
 
-		BUFFER_add(&COMP_classes, p, len);
-		BUFFER_add(&COMP_classes, "\n", 1);
+		COMPILE_add_class(p, len);
 		
 		p = p2 + 1;
 	}
@@ -133,8 +132,7 @@ static void add_file_list(FILE *fi)
 		if (len > 2 && line[len - 1] == '?')
 			len--;
 
-		BUFFER_add(&COMP_classes, line, len);
-		BUFFER_add(&COMP_classes, "\n", 1);
+		COMPILE_add_class(line, len);
 	}
 }
 
@@ -207,7 +205,6 @@ static void startup_print(FILE *fs, const char *key, const char *def)
 	if (!print && def)
 		fprintf(fs, "%s\n", def);
 }
-
 
 void COMPILE_init(void)
 {
@@ -284,7 +281,7 @@ void COMPILE_init(void)
 	// (they must be searched in the global symbol table) and classes from the
 	// project (they must be searched in the project symbol table)
 	
-	BUFFER_add(&COMP_classes, "-\n", 2);
+	COMPILE_add_class("-", 1);
 
 	/*
 	dir = opendir(FILE_get_dir(COMP_project));
@@ -388,23 +385,32 @@ void COMPILE_exit(void)
 	STR_free(COMP_root);
 }
 
-/*
-void COMPILE_enter_struct(COMPILE *comp, const char *name, bool is_public)
+void COMPILE_add_class(const char *name, int len)
 {
-	*comp = COMP_current;
+	unsigned char clen = len;
 	
-	CLEAR(JOB);
+	if (clen != len)
+		ERROR_panic("Class name is too long");
 	
-	JOB->output = OUTPUT_get_file(name);
-	CLASS_create(&JOB->class);
+	BUFFER_add(&COMP_classes, &clen, 1);
+	BUFFER_add(&COMP_classes, name, len);
 }
 
-void COMPILE_leave_struct(COMPILE *comp)
+void COMPILE_end_class(void)
 {
-	CLASS_delete(&JOB->class);
-
-	STR_free(JOB->output);
-
-	COMP_current = *comp;
+	unsigned char clen = 0;
+	BUFFER_add(&COMP_classes, &clen, 1);
 }
-*/
+
+void COMPILE_enum_class(char **name, int *len)
+{
+	char *p = *name;
+	
+	if (!p)
+		p = COMP_classes;
+	else
+		p += p[-1];
+	
+	*len = *p;
+	*name = p + 1;
+}

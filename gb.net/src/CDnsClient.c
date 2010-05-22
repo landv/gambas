@@ -21,6 +21,7 @@
 ***************************************************************************/
 
 #define __CDNSCLIENT_C
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -119,12 +120,12 @@ void dns_callback(long lParam)
 				if (Action[0]=='1')
 				{
 					GB.FreeString(&mythis->sHostIP);
-					GB.NewString(&mythis->sHostIP, Buf ,0);
+					GB.NewZeroString(&mythis->sHostIP, Buf);
 				}
 				else
 				{
 					GB.FreeString(&mythis->sHostName);
-					GB.NewString(&mythis->sHostName,Buf,0);
+					GB.NewZeroString(&mythis->sHostName, Buf);
 				}
 				mythis->iStatus=0;
 				if (mythis->finished_callback)
@@ -484,7 +485,7 @@ BEGIN_METHOD_VOID(CDNSCLIENT_GetHostName)
 		else
 		{
 			GB.FreeString(&THIS->sHostName);
-			GB.NewString(&THIS->sHostName,stHost->h_name,0);
+			GB.NewZeroString(&THIS->sHostName, stHost->h_name);
 		}
 		GB.Raise((void*)THIS,Finished,0);
 	}
@@ -536,7 +537,7 @@ BEGIN_METHOD_VOID(CDNSCLIENT_GetHostIP)
 		else
 		{
 			GB.FreeString(&THIS->sHostIP);
-			GB.NewString(&THIS->sHostIP, inet_ntoa(*( (struct in_addr*)stHost->h_addr ) ) ,0);
+			GB.NewZeroString(&THIS->sHostIP, inet_ntoa(*((struct in_addr*)stHost->h_addr)));
 		}
 		GB.Raise((void*)THIS,Finished,0);
 	}

@@ -68,6 +68,8 @@ void GB_ReturnFloat(double val);
 void GB_ReturnPtr(GB_TYPE type, void *value);
 void GB_ReturnDate(GB_DATE *date);
 void GB_ReturnSelf(void *object);
+void GB_ReturnVariant(GB_VARIANT_VALUE *value);
+
 void GB_ReturnString(char *str);
 void GB_ReturnConstString(const char *str, int len);
 void GB_ReturnConstZeroString(const char *str);
@@ -141,6 +143,7 @@ void GB_Alloc(void **addr, int len);
 void GB_Free(void **addr);
 void GB_Realloc(void **addr, int len);
 
+void GB_NewZeroString(char **str, char *src);
 void GB_TempString(char **str, char *src, int len);
 void GB_FreeString(char **str);
 int GB_StringLength(const char *str);

@@ -533,7 +533,7 @@ void CListBox::getAll(QListWidget *list, GB_ARRAY array)
 	
 	for (i = 0; i < list->count(); i++)
 	{
-		GB.NewString(&str, TO_UTF8(list->item(i)->text()), 0);
+		GB.NewZeroString(&str, TO_UTF8(list->item(i)->text()));
 		*((char **)GB.Array.Get(array, i)) = str;
 	}
 }

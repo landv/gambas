@@ -578,7 +578,7 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(CSERIALPORT_new)
 
-	GB.NewString(&THIS->portName, "/dev/ttyS0", 0);
+	GB.NewZeroString(&THIS->portName, "/dev/ttyS0");
 	THIS->speed = 19200;
 	THIS->parity = 0;
 	THIS->dataBits = 8;

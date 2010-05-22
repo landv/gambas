@@ -68,6 +68,7 @@ static void analyze_function_desc(TRANS_FUNC *func, int flag)
     THROW("Syntax error. Invalid identifier in function name");
 
   func->index = PATTERN_index(*look);
+	TYPE_clear(&func->type);
   look++;
 
   if (flag & HF_EVENT)
@@ -90,6 +91,7 @@ static void analyze_function_desc(TRANS_FUNC *func, int flag)
   for(;;)
   {
     param = &func->param[func->nparam];
+		CLEAR(param);
 
     if (PATTERN_is(*look, RS_RBRA))
     {
@@ -585,7 +587,7 @@ static bool header_function(TRANS_FUNC *func)
     return FALSE;
   look++;
 
-  CLEAR(func);
+  //CLEAR(func);
 
   JOB->current = look;
   analyze_function_desc(func, HF_NORMAL);
@@ -678,43 +680,44 @@ static bool header_function(TRANS_FUNC *func)
   func->line = PATTERN_index(*(JOB->current)) + 1;
   func->start = JOB->current + 1;
 
+	look = JOB->current;
   for(;;)
   {
-    pat = *JOB->current;
-    if (PATTERN_is_end(pat) || PATTERN_is_command(pat))
-    {
-      THROW(E_MISSING, "END");
-    }
+    pat = *look;
 
     if (PATTERN_is_newline(pat))
 		{
 			JOB->line = PATTERN_index(pat) + 1;
+			pat = look[1];
 			
-      if (PATTERN_is(JOB->current[1], RS_END))
+      if (PATTERN_is(pat, RS_END))
       {
-        if (PATTERN_is_newline(JOB->current[2]))
+        if (PATTERN_is_newline(look[2]))
         {
-          JOB->current += 2;
+          look += 2;
           break;
         }
-        if (TRANS_is_end_function(is_proc, &JOB->current[2]))
+        if (TRANS_is_end_function(is_proc, &look[2]))
         {
-          JOB->current += 3;
+          look += 3;
           break;
         }
 				else
 				{
-					if (is_proc && PATTERN_is(JOB->current[2], RS_FUNCTION))
+					if (is_proc && PATTERN_is(look[2], RS_FUNCTION))
 						THROW(E_EXPECTED, "END SUB");
-					else if (!is_proc && PATTERN_is(JOB->current[2], RS_SUB))
+					else if (!is_proc && PATTERN_is(look[2], RS_SUB))
 						THROW(E_EXPECTED, "END FUNCTION");
 				}
       }
+			else if (UNLIKELY(PATTERN_is_end(pat) || PATTERN_is_command(pat)))
+				THROW(E_MISSING, "END");
 		}
 
-    JOB->current++;
+    look++;
   }
 
+	JOB->current = look;
   return TRUE;
 }
 

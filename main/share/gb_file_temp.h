@@ -86,7 +86,7 @@ static void push_path(void **list, const char *path)
 	FILE_PATH *slot;
 
 	ALLOC(&slot, sizeof(FILE_PATH), "push_path");
-	STRING_new(&slot->path, path, 0);
+	STRING_new_zero(&slot->path, path);
 
 	slot->next = *list;
 	*list = slot;
@@ -519,8 +519,8 @@ void FILE_dir_first(const char *path, const char *pattern, int attr)
 	if (file_dir == NULL)
 		THROW_SYSTEM(errno, path);
 
-	STRING_new(&file_pattern, pattern, 0);
-	STRING_new(&file_path, path, 0);
+	STRING_new_zero(&file_pattern, pattern);
+	STRING_new_zero(&file_path, path);
 }
 
 
@@ -529,6 +529,7 @@ bool FILE_dir_next(char **path, int *len)
 	struct dirent *entry;
 	int len_entry;
 	bool ret;
+	char *name;
 	#ifdef _DIRENT_HAVE_D_TYPE
 	#else
 	struct stat info;
@@ -566,7 +567,9 @@ bool FILE_dir_next(char **path, int *len)
 			return TRUE;
 		}
 		
-		if ((strcmp(entry->d_name, ".") == 0) || (strcmp(entry->d_name, "..") == 0))
+		name = entry->d_name;
+		
+		if (name[0] == '.' && (name[1] == 0 || (name[1] == '.' && name[2] == 0)))
 			continue;
 
 		if (file_attr)
@@ -575,23 +578,23 @@ bool FILE_dir_next(char **path, int *len)
 			if ((file_attr == GB_STAT_DIRECTORY) ^ (entry->d_type == DT_DIR))
 				continue;
 			#else
-			strcpy(p, entry->d_name);
+			strcpy(p, name);
 			stat(file_buffer, &info);
 			if ((file_attr == GB_STAT_DIRECTORY) ^ (S_ISDIR(info.st_mode) != 0))
 				continue;
 			#endif
 		}
 
-		len_entry = strlen(entry->d_name);
+		len_entry = strlen(name);
 
 		if (file_pattern == NULL)
 			break;
 
-		if (REGEXP_match(file_pattern, STRING_length(file_pattern), entry->d_name, len_entry))
+		if (REGEXP_match(file_pattern, STRING_length(file_pattern), name, len_entry))
 			break;
 	}
 
-	*path = entry->d_name;
+	*path = name;
 	*len = len_entry;
 	#ifdef _DIRENT_HAVE_D_TYPE
 	_last_is_dir = entry->d_type == DT_DIR;
@@ -624,7 +627,7 @@ void FILE_recursive_dir(const char *dir, void (*found)(const char *), void (*aft
 		dir = ".";
 
 	STRING_free(&file_rdir_path);
-	STRING_new(&file_rdir_path, dir, 0);
+	STRING_new_zero(&file_rdir_path, dir);
 
 	FILE_dir_first(dir, NULL, attr);
 	while (!FILE_dir_next(&file, &len))

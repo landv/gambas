@@ -445,7 +445,7 @@ static void analyze_call()
 
   /* N.B. Le cas où last_pattern = "." n'a pas de test spécifique */
 
-	if (subr_pattern && subr_pattern == PATTERN_make(RT_SUBR, SUBR_VarPtr))
+	if (PATTERN_type(subr_pattern) == RT_SUBR && PATTERN_index(subr_pattern) == SUBR_VarPtr)
 	{
 		if (!PATTERN_is_identifier(current[0]) || !PATTERN_is(current[1], RS_RBRA))
 			THROW("Syntax error. VarPtr() takes only one identifier");
@@ -506,7 +506,8 @@ static void analyze_call()
 				THROW("Too many arguments");
 		}
 
-		if (get_last_pattern(1) == PATTERN_make(RT_RESERVED, RS_OPTIONAL))
+		last_pattern = get_last_pattern(1);
+		if (PATTERN_is(last_pattern, RS_OPTIONAL))
 			THROW("Syntax error. Needless arguments");
 		
 		/*
@@ -520,7 +521,7 @@ static void analyze_call()
 		}
 		*/
 	
-		if (subr_pattern == NULL_PATTERN)
+		if (PATTERN_is_null(subr_pattern))
 		{
 			add_operator_output(RS_LBRA, nparam_post, byref);
 			
@@ -581,21 +582,6 @@ static void analyze_array()
   add_operator(RS_LSQR, i + 2);
 }
 
-
-#if 0
-static void analyze_expr_check_first(int op_curr)
-{
-  /* On laisse le marqueur RT_FIRST que si on a affaire �l'op�ateur '.' */
-  /*
-  last = get_last_pattern();
-  if (PATTERN_is_first(last))
-  {
-    if (op_curr != RS_PT)
-      change_last_pattern(PATTERN_unset_flag(last, RT_FIRST));
-  }
-  */
-}
-#endif
 
 static void analyze_expr(short priority, short op_main)
 {
@@ -754,9 +740,9 @@ END:
 }
 
 
-TRANS_TREE *TRANS_tree(bool check_statement)
+void TRANS_tree(bool check_statement, TRANS_TREE **result, int *count)
 {
-  TRANS_TREE *copy;
+  //TRANS_TREE *copy;
   #ifdef DEBUG
   int i;
   #endif
@@ -792,10 +778,13 @@ TRANS_TREE *TRANS_tree(bool check_statement)
   if (check_statement && (!is_statement()))
     THROW("This expression cannot be a statement");
 
-  ARRAY_create(&copy);
-  ARRAY_add_many(&copy, tree_length);
-  memcpy(copy, tree, sizeof(PATTERN) * tree_length);
-
-  return copy;
+  //ARRAY_create(&copy);
+  //ARRAY_add_many(&copy, tree_length);
+	if (result)
+	{
+		ALLOC(result, sizeof(PATTERN) * tree_length, "TRANS_tree");
+		memcpy(*result, tree, sizeof(PATTERN) * tree_length);
+		*count = tree_length;
+	}
 }
 

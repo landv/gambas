@@ -82,7 +82,7 @@ static void get_formats(GB_ARRAY array, bool drag = false)
     if (j < GB.Array.Count(array))
       continue;
 		
-		GB.NewString(&str, fmt, 0);
+		GB.NewZeroString(&str, fmt);
 		*((char **)GB.Array.Add(array)) = str;
   }
 }

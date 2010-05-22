@@ -137,16 +137,16 @@ static bool search(void *symbol, int n_symbol, size_t size, int flag, const char
 
 			slen = sym->len;
 			
-			if (len < slen)
+			if (LIKELY(len < slen))
 				goto __T_LOWER;
-			else if (len > slen)
+			else if (LIKELY(len > slen))
 				goto __T_GREATER;
 			
-			if (len)
+			if (LIKELY(len > 0))
 			{
+				int result;
 				const uchar *s1 = (uchar *)name;
 				const uchar *s2 = (uchar *)sym->name;
-				int result;
 			
 				l = len;
 				
@@ -196,9 +196,9 @@ static bool search(void *symbol, int n_symbol, size_t size, int flag, const char
 			
 			if (LIKELY(len > 0))
 			{
+				int result;
 				const uchar *s1 = (uchar *)name;
 				const uchar *s2 = (uchar *)sym->name;
-				int result;
 				
 				l = len;
 			

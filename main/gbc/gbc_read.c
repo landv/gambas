@@ -55,6 +55,13 @@ static bool begin_line = FALSE;
 
 static char ident_car[256];
 static char first_car[256];
+static char digit_car[256];
+static char noop_car[256];
+
+#undef isspace
+#define isspace(_c) (((uchar)_c) <= ' ')
+#undef isdigit
+#define isdigit(_c) (digit_car[_c])
 
 enum
 {
@@ -80,6 +87,8 @@ static void READ_init(void)
 		for (i = 0; i < 255; i++)
 		{
 			ident_car[i] = (i != 0) && ((i >= 'A' && i <= 'Z') || (i >= 'a' && i <= 'z') || (i >= '0' && i <= '9') || strchr("$_?@", i));
+			digit_car[i] = (i >= '0' && i <= '9');
+			noop_car[i] = ident_car[i] || digit_car[i] || i <= ' ';
 			
 			if (i == 0)
 				first_car[i] = GOTO_BREAK;
@@ -108,29 +117,26 @@ static void READ_init(void)
 
 static void READ_exit(void)
 {
-	char *p, *p2;
-	int index;
+	char *name = NULL;
 	int len;
+	int index;
 	bool local;
 
 	local = FALSE;
-	p = COMP_classes;
-
+	
 	for(;;)
 	{
-		p2 = strchr(p, '\n');
-		if (p2 == p)
+		COMPILE_enum_class(&name, &len);
+		if (!len)
 			break;
 
-		len = p2 - p;
-		
-		if (len == 1 && *p == '-')
+		if (len == 1 && *name == '-')
 		{
 			local = TRUE;
 		}
 		else
 		{
-			if (TABLE_find_symbol(JOB->class->table, p, len, NULL, &index))
+			if (TABLE_find_symbol(JOB->class->table, name, len, NULL, &index))
 			{
 				if (local)
 					CLASS_add_class_unused(JOB->class, index);
@@ -138,8 +144,6 @@ static void READ_exit(void)
 					CLASS_add_class_exported_unused(JOB->class, index);
 			}
 		}
-		
-		p = p2 + 1;
 	}
 
 	if (JOB->verbose)
@@ -215,7 +219,7 @@ char *READ_get_pattern(PATTERN *pattern)
 			break;
 
 		default:
-			sprintf(COMMON_buffer, "%s?%08X?%s", before, *pattern, after);
+			sprintf(COMMON_buffer, "%s?%02X.%02X.%d?%s", before, PATTERN_type(*pattern), PATTERN_flag(*pattern), (int)PATTERN_index(*pattern), after);
 	}
 
 	return COMMON_buffer;
@@ -339,26 +343,19 @@ static void add_pattern(int type, int index)
 
 static PATTERN get_last_last_pattern()
 {
-	if (comp->pattern_count > 1)
+	if (LIKELY(comp->pattern_count > 1))
 		return comp->pattern[comp->pattern_count - 2];
 	else
 		return NULL_PATTERN;
 }
 
-static PATTERN get_last_pattern()
-{
-	if (comp->pattern_count > 0)
-		return comp->pattern[comp->pattern_count - 1];
-	else
-		return NULL_PATTERN;
-}
+#define get_last_pattern() (comp->pattern[comp->pattern_count - 1])
 
 static void add_newline()
 {
 	add_pattern(RT_NEWLINE, comp->line);
 	comp->line++;
 }
-
 
 static void add_end()
 {
@@ -414,7 +411,7 @@ READ_BINARY:
 	for (;;)
 	{
 		car = next_char();
-		if (car != '0' && car != '1')
+		if (UNLIKELY(car != '0' && car != '1'))
 			break;
 		has_digit = TRUE;
 	}
@@ -427,7 +424,7 @@ READ_HEXA:
 	for (;;)
 	{
 		car = next_char();
-		if (!isxdigit(car))
+		if (UNLIKELY(!isxdigit(car)))
 			break;
 		has_digit = TRUE;
 	}
@@ -496,7 +493,7 @@ NOT_A_NUMBER:
 
 
 
-static void add_identifier(bool no_res)
+static void add_identifier()
 {
 	unsigned char car;
 	const char *start;
@@ -516,7 +513,7 @@ static void add_identifier(bool no_res)
 	if (PATTERN_is_reserved(last_pattern))
 	{
 		flag = RES_get_ident_flag(PATTERN_index(last_pattern));
-		not_first = (flag & RSF_INF) != 0;
+		/*not_first = (flag & RSF_INF) != 0;
 		last_func = (flag & RSF_ILF) != 0;
 		last_declare = (flag & RSF_ILD) != 0;
 		last_class = (flag & RSF_ILC) != 0;
@@ -528,12 +525,12 @@ static void add_identifier(bool no_res)
 			if (PATTERN_is_reserved(last_last_pattern) && RES_get_ident_flag(PATTERN_index(last_last_pattern)) & RSF_ILD)
 				last_declare = TRUE;
 			flag &= ~RSF_ILDD; // flag == 0 means we can read a subroutine!
-		}
+		}*/
 	}
 	else
 	{
 		flag = 0;
-		not_first = last_func = last_declare = last_type = last_class = FALSE;
+		//not_first = last_func = last_declare = last_type = last_class = FALSE;
 	}
 
 	type = RT_IDENTIFIER;
@@ -541,6 +538,9 @@ static void add_identifier(bool no_res)
 	start = source_ptr;
 	len = 1;
 
+	last_class = (flag & RSF_ILC) != 0;
+	last_type = last_class || (flag & RSF_ILT) != 0;
+	
 	if (last_type)
 	{
 		for(;;)
@@ -578,12 +578,7 @@ static void add_identifier(bool no_res)
 		}
 	}
 
-	if (no_res)
-	{
-		if (get_char() == '}')
-			source_ptr++;
-		goto IDENTIFIER;
-	}
+	not_first = (flag & RSF_INF) != 0;
 
 	car = get_char();
 
@@ -601,6 +596,16 @@ static void add_identifier(bool no_res)
 	{
 		if (index == RS_ME || index == RS_NEW || index == RS_LAST || index == RS_SUPER)
 		{
+			last_declare = (flag & RSF_ILD) != 0;
+			if (flag & RSF_ILDD)
+			{
+				PATTERN last_last_pattern = get_last_last_pattern();
+				
+				if (PATTERN_is_reserved(last_last_pattern) && RES_get_ident_flag(PATTERN_index(last_last_pattern)) & RSF_ILD)
+					last_declare = TRUE;
+				flag &= ~RSF_ILDD; // flag == 0 means we can read a subroutine!
+			}
+			
 			can_be_reserved = !last_declare;
 		}
 		else if (index == RS_CLASS)
@@ -622,6 +627,8 @@ static void add_identifier(bool no_res)
 			{
 				if (index == RS_NEW)
 					is_type = TRUE;
+
+				last_func = (flag & RSF_ILF) != 0;
 
 				if (last_type)
 					can_be_reserved = is_type;
@@ -674,6 +681,53 @@ IDENTIFIER:
 }
 
 
+static void add_quoted_identifier(void)
+{
+	unsigned char car;
+	const char *start;
+	int len;
+	int index;
+	int type;
+	PATTERN last_pattern;
+	
+	last_pattern = get_last_pattern();
+
+	type = RT_IDENTIFIER;
+
+	start = source_ptr;
+	len = 1;
+
+	for(;;)
+	{
+		source_ptr++;
+		car = get_char();
+		if (!ident_car[car])
+			break;
+		len++;
+	}
+
+	if (get_char() == '}')
+		source_ptr++;
+
+	if (PATTERN_is(last_pattern, RS_EVENT) || PATTERN_is(last_pattern, RS_RAISE))
+	{
+		start--;
+		len++;
+		*((char *)start) = ':';
+	}
+
+	if (PATTERN_is(last_pattern, RS_EXCL))
+	{
+		TABLE_add_symbol(comp->class->string, start, len, NULL, &index);
+		type = RT_STRING;
+	}
+	else
+		TABLE_add_symbol(comp->class->table, start, len, NULL, &index);
+	
+	add_pattern(type, index);
+}
+
+
 static void add_operator()
 {
 	unsigned char car;
@@ -699,7 +753,8 @@ static void add_operator()
 		}
 
 		car = get_char();
-		if (!isascii(car) || !ispunct(car))
+		//if (!isascii(car) || !ispunct(car))
+		if (noop_car[car])
 			break;
 		len++;
 	}
@@ -877,6 +932,8 @@ void READ_do(void)
 	comp = JOB;
 
 	READ_init();
+	
+	add_pattern(RT_NEWLINE, 0);
 
 	source_ptr = comp->source;
 	source_length = BUFFER_length(comp->source);
@@ -909,7 +966,7 @@ void READ_do(void)
 			source_ptr++;
 			car = get_char();
 		}
-		while (car != '\n' && car != 0);
+		while (car != '\n');
 
 		begin_line = FALSE;
 		continue;
@@ -922,14 +979,14 @@ void READ_do(void)
 
 	__IDENT:
 		
-		add_identifier(FALSE);
+		add_identifier();
 		begin_line = FALSE;
 		continue;
 
 	__QUOTED_IDENT:
 	
 		source_ptr++;
-		add_identifier(TRUE);
+		add_quoted_identifier();
 		begin_line = FALSE;
 		continue;
 		

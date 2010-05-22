@@ -169,7 +169,7 @@ BEGIN_PROPERTY(CDIALOG_paths)
 		while (buf[b])
 		{
 			ctmp=NULL;
-			GB.NewString(&ctmp,buf[b],strlen(buf[b]));
+			GB.NewZeroString(&ctmp,buf[b]);
 			*((char **)GB.Array.Get(Array,b++)) = ctmp;
 		}
 		GB.ReturnObject(Array);

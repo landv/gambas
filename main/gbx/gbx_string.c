@@ -59,7 +59,7 @@ static void print_where()
 #define STRING_last_count 32
 static char *STRING_last[STRING_last_count] = { 0 };
 
-static const char _char_string[512] = 
+const char STRING_char_string[512] = 
 "\x00\x00\x01\x00\x02\x00\x03\x00\x04\x00\x05\x00\x06\x00\x07\x00\x08\x00\x09\x00\x0A\x00\x0B\x00\x0C\x00\x0D\x00\x0E\x00\x0F\x00"
 "\x10\x00\x11\x00\x12\x00\x13\x00\x14\x00\x15\x00\x16\x00\x17\x00\x18\x00\x19\x00\x1A\x00\x1B\x00\x1C\x00\x1D\x00\x1E\x00\x1F\x00"
 "\x20\x00\x21\x00\x22\x00\x23\x00\x24\x00\x25\x00\x26\x00\x27\x00\x28\x00\x29\x00\x2A\x00\x2B\x00\x2C\x00\x2D\x00\x2E\x00\x2F\x00"
@@ -224,10 +224,7 @@ void STRING_new(char **ptr, const char *src, int len)
 {
 	STRING *str;
 
-	if (len <= 0 && src != NULL)
-		len = strlen(src);
-
-	if (len <= 0)
+	if (len == 0)
 	{
 		*ptr = NULL;
 		return;
@@ -375,14 +372,6 @@ void STRING_void_value(VALUE *value)
 	value->_string.len = 0;
 }
 
-
-void STRING_char_value(VALUE *value, uchar car)
-{
-	value->type = T_CSTRING;
-	value->_string.addr = (char *)&_char_string[(int)car * 2];
-	value->_string.start = 0;
-	value->_string.len = 1;
-}
 
 #if DEBUG_STRING
 
@@ -840,7 +829,7 @@ char *STRING_conv_file_name(const char *name, int len)
 
 		if (dir)
 		{
-			STRING_new(&user, dir, 0);
+			STRING_new_zero(&user, dir);
 			if (pos < len)
 				STRING_add(&user, &name[pos], len - pos);
 			name = user;

@@ -65,7 +65,7 @@ void hook_main(int *argc,char ** argv)
 	for(i=0;i<*argc;i++)
 	{
 		tmp=(char **)GB.Add((void*)(&cmd_arg));
-		GB.NewString(tmp,argv[i],0);
+		GB.NewZeroString(tmp,argv[i]);
 
 	}
 	*argc=1;

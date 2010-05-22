@@ -161,7 +161,7 @@ BEGIN_METHOD(CCONNECTION_new, GB_STRING url)
 	if (p[0] != '/' || p[1] != '/') goto __BAD_URL;
 	p += 2;
 	
-	GB.NewString(&THIS->desc.type, url, 0);
+	GB.NewZeroString(&THIS->desc.type, url);
 	url = p;
 	
 	p = rindex(url, '/');
@@ -176,7 +176,7 @@ BEGIN_METHOD(CCONNECTION_new, GB_STRING url)
 		if (p == url)
 			goto __BAD_URL;
 		*p = 0;
-		GB.NewString(&THIS->desc.user, url, 0);
+		GB.NewZeroString(&THIS->desc.user, url);
 		url = p + 1;
 	}
 	
@@ -184,12 +184,12 @@ BEGIN_METHOD(CCONNECTION_new, GB_STRING url)
 	if (p)
 	{
 		*p = 0;
-		GB.NewString(&THIS->desc.port, p + 1, 0);
+		GB.NewZeroString(&THIS->desc.port, p + 1);
 	}
 
-	GB.NewString(&THIS->desc.host, url, 0);
+	GB.NewZeroString(&THIS->desc.host, url);
 	
-	GB.NewString(&THIS->desc.name, name, 0);
+	GB.NewZeroString(&THIS->desc.name, name);
 
 __BAD_URL:
 

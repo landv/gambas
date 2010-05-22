@@ -52,18 +52,6 @@ void TRANS_reset(void)
 }
 
 
-bool TRANS_newline(void)
-{
-  if (PATTERN_is_newline(*JOB->current))
-  {
-    JOB->line = PATTERN_index(*JOB->current) + 1;
-    JOB->current++;
-    return TRUE;
-  }
-
-  return FALSE;
-}
-
 static bool read_integer(char *number, int base, int64_t *result)
 {
 	uint64_t nbr2, nbr;

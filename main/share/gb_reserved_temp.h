@@ -28,174 +28,7 @@
 
 /* If this file is modified, don't forget to update GAMBAS_PCODE_VERSION in acinclude.m4 if needed */
 
-COMP_INFO COMP_res_info[] =
-{
-  { "" },
-
-  { "Boolean",      RSF_TYPE,     T_BOOLEAN         },
-  { "Byte",         RSF_TYPE,     T_BYTE            },
-  { "Date",         RSF_TYPE,     T_DATE            },
-  { "Single",       RSF_TYPE,     T_SINGLE          },
-  { "Float",        RSF_TYPE,     T_FLOAT           },
-  { "Integer",      RSF_TYPE,     T_INTEGER         },
-  { "Long",         RSF_TYPE,     T_LONG            },
-  { "Short",        RSF_TYPE,     T_SHORT           },
-  { "String",       RSF_TYPE,     T_STRING          },
-  { "Variant",      RSF_TYPE,     T_VARIANT         },
-  { "Object",       RSF_TYPE,     T_OBJECT          },
-  { "Pointer",      RSF_TYPE,     T_POINTER         },
-  { "Class",        RSF_ILD                         },
-  { "Function",     RSF_ILF                         },
-  { "Struct",       RSF_ILD                         },
-  { "Const"                                         },
-  { "Private",      RSF_ILD                         },
-  { "Public",       RSF_ILD                         },
-  { "Static"                                        },
-  { "Property",     RSF_ILD                         },
-  { "Event",        RSF_ILF                         },
-  { "Inherits",     RSF_ILC                         },
-  { "Implements"                                    },
-  { "Export"                                        },
-  { "As",           RSF_ILT                         },
-  { "Of"                                            },
-  { "Dim",          RSF_ILD                         },
-  { "New",          RSF_ILT                         },
-  { "Procedure",    RSF_ILF                         },
-  { "Sub",          RSF_ILF                         },
-  { "Return"                                        },
-  { "Optional"                                      },
-  { "Output"                                        },
-  { "Do"                                            },
-  { "Loop"                                          },
-  { "While"                                         },
-  { "Until"                                         },
-  { "Repeat"                                        },
-  { "Wend"                                          },
-  { "If"                                            },
-  { "Then"                                          },
-  { "Else"                                          },
-  { "Endif"                                         },
-  { "End"                                           },
-  { "For"                                           },
-  { "To"                                            },
-  { "From"                                          },
-  { "Step"                                          },
-  { "Next"                                          },
-  { "Select"                                        },
-  { "Case"                                          },
-  { "Exit"                                          },
-  { "Break"                                         },
-  { "Continue"                                      },
-  { "Goto"                                          },
-  { "Me"                                            },
-  { "Last"                                          },
-  { "Try"                                           },
-  { "Finally"                                       },
-  { "Catch"                                         },
-  { "With"                                          },
-  { "True"                                          },
-  { "False"                                         },
-  { "Swap"                                          },
-  { "Null"                                          },
-  { "Extern"                                        },
-  { "Each"                                          },
-  { "In"                                            },
-  { "Default"                                       },
-  { "Stop"                                          },
-  { "Quit"                                          },
-  { "Raise",        RSF_ILF                         },
-  { "Error"                                         },
-  { "Super"                                         },
-  { "Enum"                                          },
-	{ "Let"                                           },
-
-  { "Print"                                         },
-  { "Input"                                         },
-  { "Read",         RSF_ILDD                        },
-  { "Write"                                         },
-  { "Open"                                          },
-  { "Close"                                         },
-  { "Seek"                                          },
-  { "Append"                                        },
-  { "Create"                                        },
-  { "Binary"                                        },
-  { "Line"                                          },
-  { "Flush"                                         },
-  { "Exec"                                          },
-  { "Shell"                                         },
-  { "Wait"                                          },
-  { "Sleep"                                         },
-  { "Kill"                                          },
-  { "Move"                                          },
-  { "Copy"                                          },
-  { "Inc"                                           },
-  { "Dec"                                           },
-  { "Mkdir"                                         },
-  { "Rmdir"                                         },
-  { "Watch"                                         },
-  { "Link"                                          },
-  { "Lock"                                          },
-  { "Unlock"                                        },
-  { "Library"                                       },
-  { "Debug"                                         },
-  { "Pipe"                                          },
-  { "Randomize"                                     },
-  { "ByRef"                                         },
-  { "Memory"                                        },
-
-  { ":",            RSF_NONE,               OP_COLON                          },  // Use for the immediate collection syntax
-  { ";"                                                                       },
-  { ","                                                                       },
-  { "..."                                                                     },
-  { "#"                                                                       },
-  { "@"                                                                       },
-  { "?"                                                                       },
-  { "{"                                                                       },
-  { "}"                                                                       },
-  { "=",            RSF_OP2S,               OP_EQUAL,     4,    C_EQ          },
-  { "==",           RSF_OP2S,               OP_NEAR,      4,    C_NEAR        },
-  { "(",            RSF_OPP,                OP_LBRA,      12                  },
-  { ")",                                                                      },
-  { ".",            RSF_OP2|RSF_INF,        OP_PT,        20                  },
-  { "!",            RSF_OP2|RSF_INF,        OP_EXCL,      20                  },
-  { "+",            RSF_OP2,                OP_PLUS,      5,    C_ADD         },
-  { "-",            RSF_OP2,                OP_MINUS,     5,    C_SUB         },
-  { "*",            RSF_OP2,                OP_STAR,      6,    C_MUL         },
-  { "/",            RSF_OP2,                OP_SLASH,     6,    C_DIV         },
-  { "^",            RSF_OP2S,               OP_FLEX,      7,    C_POW         },
-  { "&",            RSF_OPN,                OP_AMP,       9,    C_CAT         },
-  { ">",            RSF_OP2S,               OP_GT,        4,    C_GT          },
-  { "<",            RSF_OP2S,               OP_LT,        4,    C_LT          },
-  { ">=",           RSF_OP2S,               OP_GE,        4,    C_GE          },
-  { "<=",           RSF_OP2S,               OP_LE,        4,    C_LE          },
-  { "<>",           RSF_OP2S,               OP_NE,        4,    C_NE          },
-  { "[",            RSF_OPP,                OP_LSQR,      12                  },
-  { "]",            RSF_NONE,               OP_RSQR                           },  // Use for the immediate array syntax
-  { "And",          RSF_OP2SM,              OP_AND,       2,    C_AND         },
-  { "Or",           RSF_OP2SM,              OP_OR,        2,    C_OR          },
-  { "Not",          RSF_OP1,                OP_NOT,       10,   C_NOT         },
-  { "Xor",          RSF_OP2SM,              OP_XOR,       2,    C_XOR         },
-  { "\\",           RSF_OP2S,               OP_DIV,       6,    C_QUO         },
-  { "Div",          RSF_OP2S,               OP_DIV,       6,    C_QUO         },
-  { "Mod",          RSF_OP2S,               OP_MOD,       6,    C_REM         },
-  { "Is",           RSF_OP2|RSF_ILT,        OP_IS,        11,   C_IS          },
-  { "Like",         RSF_OP2S,               OP_LIKE,      4,    C_LIKE, 0     },
-  { "Begins",       RSF_OP2S,               OP_LIKE,      4,    C_LIKE, 1     },
-  { "Ends",         RSF_OP2S,               OP_LIKE,      4,    C_LIKE, 2     },
-  { "&/",           RSF_OPN,                OP_FILE,      8,    C_FILE        },
-
-  { "+=",           RSF_ASGN,               RS_PLUS                           },
-  { "-=",           RSF_ASGN,               RS_MINUS                          },
-  { "*=",           RSF_ASGN,               RS_STAR                           },
-  { "/=",           RSF_ASGN,               RS_SLASH                          },
-  { "\\=",          RSF_ASGN,               RS_BSLASH                         },
-  { "&=",           RSF_ASGN,               RS_AMP                            },
-  { "&/=",          RSF_ASGN,               RS_FILE                           },
-  { "^=",           RSF_ASGN,               RS_FLEX                           },
-
-  { NULL }
-};
-
+#include "gb_reserved_keyword.h"
 
 SUBR_INFO COMP_subr_info[] =
 {
@@ -564,7 +397,7 @@ void RESERVED_init(void)
     if (len == 1)
       _operator_table[(uint)*info->name] = i;
     
-    TABLE_add_symbol(COMP_res_table, info->name, len, NULL, NULL);
+		TABLE_add_symbol(COMP_res_table, info->name, len, NULL, NULL);
   }
   
   #ifdef DEBUG
@@ -654,25 +487,326 @@ SUBR_INFO *SUBR_get_from_opcode(ushort opcode, ushort optype)
   return NULL;
 }
 
+static uint hash(const char *key, int len)
+{
+	int i;
+	uint h = 1;
+	for (i = 0; i < len; i++)
+		h = (h << 4) + (h ^ (key[i] & 0x1F));
+	
+	return h % 73;
+}
+	
 int RESERVED_find_word(const char *word, int len)
 {
-  //const char *res1 = ":;, #@?{}= ().!+-*/^&><   []    \\";
-  //const char *p;
   int ind;
-      
-  switch (len)
-  {
-    case 1:
-      ind = _operator_table[(uint)*word];
-      if (ind)
-        return ind;
-      break;
-      
-    default:
-      if (TABLE_find_symbol(COMP_res_table, word, len, NULL, &ind))
-        return ind;
-      break;
-  }
   
+	if (len == 1)
+	{
+		ind = _operator_table[(uint)*word];
+		if (ind)
+			return ind;
+		else
+			return -1;
+	}
+	
+  /*if (TABLE_find_symbol(COMP_res_table, word, len, NULL, &ind))
+    return ind;
+	else
+		return -1;*/
+
+  static void *jump[] = {
+    &&__00,     &&__01,     &&__02,     &&__03,     &&__04,     &&__05,     &&__06,     &&__07, 
+    &&__08,     &&__09,     &&__10,     &&__11,     &&__12,     &&__13,     &&__14,     &&__15, 
+    &&__16,     &&__17,     &&__18,     &&__19,     &&__20,     &&__21,     &&__22,     &&__23, 
+    &&__24,     &&__25,     &&__26,     &&__27,     &&__28,     &&__29,     &&__30,     &&__31, 
+    &&__32,     &&__33,     &&__34,     &&__35,     &&__36,     &&__37,     &&__38,     &&__39, 
+    &&__40,     &&__41,     &&__42,     &&__43,     &&__44,     &&__45,     &&__46,     &&__47, 
+    &&__48,     &&__49,     &&__50,     &&__51,     &&__52,     &&__53,     &&__54,     &&__55, 
+    &&__56,     &&__57,     &&__58,     &&__59,     &&__60,     &&__61,     &&__62,     &&__63, 
+    &&__64,     &&__65,     &&__66,     &&__67,     &&__68,     &&__69,     &&__70,     &&__71, 
+    &&__72, 
+  };
+
+  goto *jump[hash(word, len)];
+
+__00:
+  if (len == 4 && tolower(word[0]) == 'p' && tolower(word[1]) == 'i' && tolower(word[2]) == 'p' && tolower(word[3]) == 'e' ) return 106;
+  if (len == 2 && word[0] == '*' && word[1] == '=' ) return 152;
+  return -1;
+__01:
+  if (len == 3 && tolower(word[0]) == 'd' && tolower(word[1]) == 'e' && tolower(word[2]) == 'c' ) return 97;
+  return -1;
+__02:
+  if (len == 4 && tolower(word[0]) == 'c' && tolower(word[1]) == 'a' && tolower(word[2]) == 's' && tolower(word[3]) == 'e' ) return 51;
+  return -1;
+__03:
+  if (len == 4 && tolower(word[0]) == 't' && tolower(word[1]) == 'r' && tolower(word[2]) == 'u' && tolower(word[3]) == 'e' ) return 62;
+  if (len == 4 && tolower(word[0]) == 'e' && tolower(word[1]) == 'n' && tolower(word[2]) == 'u' && tolower(word[3]) == 'm' ) return 75;
+  return -1;
+__04:
+  if (len == 5 && tolower(word[0]) == 'e' && tolower(word[1]) == 'r' && tolower(word[2]) == 'r' && tolower(word[3]) == 'o' && tolower(word[4]) == 'r' ) return 73;
+  return -1;
+__05:
+  return -1;
+__06:
+  if (len == 4 && tolower(word[0]) == 'l' && tolower(word[1]) == 'o' && tolower(word[2]) == 'c' && tolower(word[3]) == 'k' ) return 102;
+  return -1;
+__07:
+  return -1;
+__08:
+  return -1;
+__09:
+  return -1;
+__10:
+  if (len == 5 && tolower(word[0]) == 'e' && tolower(word[1]) == 'v' && tolower(word[2]) == 'e' && tolower(word[3]) == 'n' && tolower(word[4]) == 't' ) return 21;
+  return -1;
+__11:
+  if (len == 5 && tolower(word[0]) == 'b' && tolower(word[1]) == 'r' && tolower(word[2]) == 'e' && tolower(word[3]) == 'a' && tolower(word[4]) == 'k' ) return 53;
+  if (len == 2 && word[0] == '-' && word[1] == '=' ) return 151;
+  return -1;
+__12:
+  if (len == 5 && tolower(word[0]) == 's' && tolower(word[1]) == 'h' && tolower(word[2]) == 'o' && tolower(word[3]) == 'r' && tolower(word[4]) == 't' ) return 8;
+  return -1;
+__13:
+  if (len == 2 && word[0] == '&' && word[1] == '=' ) return 155;
+  return -1;
+__14:
+  if (len == 5 && tolower(word[0]) == 'c' && tolower(word[1]) == 'l' && tolower(word[2]) == 'a' && tolower(word[3]) == 's' && tolower(word[4]) == 's' ) return 13;
+  if (len == 9 && tolower(word[0]) == 'p' && tolower(word[1]) == 'r' && tolower(word[2]) == 'o' && tolower(word[3]) == 'c' && tolower(word[4]) == 'e' && tolower(word[5]) == 'd' && tolower(word[6]) == 'u' && tolower(word[7]) == 'r' && tolower(word[8]) == 'e' ) return 29;
+  return -1;
+__15:
+  if (len == 5 && tolower(word[0]) == 's' && tolower(word[1]) == 'u' && tolower(word[2]) == 'p' && tolower(word[3]) == 'e' && tolower(word[4]) == 'r' ) return 74;
+  return -1;
+__16:
+  if (len == 8 && tolower(word[0]) == 'o' && tolower(word[1]) == 'p' && tolower(word[2]) == 't' && tolower(word[3]) == 'i' && tolower(word[4]) == 'o' && tolower(word[5]) == 'n' && tolower(word[6]) == 'a' && tolower(word[7]) == 'l' ) return 32;
+  return -1;
+__17:
+  if (len == 4 && tolower(word[0]) == 'd' && tolower(word[1]) == 'a' && tolower(word[2]) == 't' && tolower(word[3]) == 'e' ) return 3;
+  if (len == 7 && tolower(word[0]) == 'i' && tolower(word[1]) == 'n' && tolower(word[2]) == 't' && tolower(word[3]) == 'e' && tolower(word[4]) == 'g' && tolower(word[5]) == 'e' && tolower(word[6]) == 'r' ) return 6;
+  return -1;
+__18:
+  if (len == 5 && tolower(word[0]) == 'c' && tolower(word[1]) == 'o' && tolower(word[2]) == 'n' && tolower(word[3]) == 's' && tolower(word[4]) == 't' ) return 16;
+  if (len == 4 && tolower(word[0]) == 'n' && tolower(word[1]) == 'e' && tolower(word[2]) == 'x' && tolower(word[3]) == 't' ) return 49;
+  return -1;
+__19:
+  if (len == 4 && tolower(word[0]) == 'b' && tolower(word[1]) == 'y' && tolower(word[2]) == 't' && tolower(word[3]) == 'e' ) return 2;
+  return -1;
+__20:
+  if (len == 6 && tolower(word[0]) == 's' && tolower(word[1]) == 't' && tolower(word[2]) == 'r' && tolower(word[3]) == 'u' && tolower(word[4]) == 'c' && tolower(word[5]) == 't' ) return 15;
+  if (len == 6 && tolower(word[0]) == 'p' && tolower(word[1]) == 'u' && tolower(word[2]) == 'b' && tolower(word[3]) == 'l' && tolower(word[4]) == 'i' && tolower(word[5]) == 'c' ) return 18;
+  return -1;
+__21:
+  if (len == 5 && tolower(word[0]) == 'f' && tolower(word[1]) == 'l' && tolower(word[2]) == 'o' && tolower(word[3]) == 'a' && tolower(word[4]) == 't' ) return 5;
+  if (len == 5 && tolower(word[0]) == 'r' && tolower(word[1]) == 'a' && tolower(word[2]) == 'i' && tolower(word[3]) == 's' && tolower(word[4]) == 'e' ) return 72;
+  return -1;
+__22:
+  if (len == 7 && tolower(word[0]) == 'd' && tolower(word[1]) == 'e' && tolower(word[2]) == 'f' && tolower(word[3]) == 'a' && tolower(word[4]) == 'u' && tolower(word[5]) == 'l' && tolower(word[6]) == 't' ) return 69;
+  return -1;
+__23:
+  if (len == 2 && word[0] == '=' && word[1] == '=' ) return 120;
+  return -1;
+__24:
+  if (len == 4 && tolower(word[0]) == 'n' && tolower(word[1]) == 'u' && tolower(word[2]) == 'l' && tolower(word[3]) == 'l' ) return 65;
+  if (len == 4 && tolower(word[0]) == 'e' && tolower(word[1]) == 'a' && tolower(word[2]) == 'c' && tolower(word[3]) == 'h' ) return 67;
+  return -1;
+__25:
+  if (len == 6 && tolower(word[0]) == 'b' && tolower(word[1]) == 'i' && tolower(word[2]) == 'n' && tolower(word[3]) == 'a' && tolower(word[4]) == 'r' && tolower(word[5]) == 'y' ) return 86;
+  return -1;
+__26:
+  if (len == 5 && tolower(word[0]) == 'w' && tolower(word[1]) == 'h' && tolower(word[2]) == 'i' && tolower(word[3]) == 'l' && tolower(word[4]) == 'e' ) return 36;
+  return -1;
+__27:
+  if (len == 8 && tolower(word[0]) == 'f' && tolower(word[1]) == 'u' && tolower(word[2]) == 'n' && tolower(word[3]) == 'c' && tolower(word[4]) == 't' && tolower(word[5]) == 'i' && tolower(word[6]) == 'o' && tolower(word[7]) == 'n' ) return 14;
+  if (len == 3 && tolower(word[0]) == 'x' && tolower(word[1]) == 'o' && tolower(word[2]) == 'r' ) return 141;
+  if (len == 2 && word[0] == '&' && word[1] == '/' ) return 149;
+  return -1;
+__28:
+  if (len == 4 && tolower(word[0]) == 'l' && tolower(word[1]) == 'i' && tolower(word[2]) == 'n' && tolower(word[3]) == 'k' ) return 101;
+  return -1;
+__29:
+  if (len == 5 && tolower(word[0]) == 'e' && tolower(word[1]) == 'n' && tolower(word[2]) == 'd' && tolower(word[3]) == 'i' && tolower(word[4]) == 'f' ) return 43;
+  return -1;
+__30:
+  if (len == 5 && tolower(word[0]) == 's' && tolower(word[1]) == 'l' && tolower(word[2]) == 'e' && tolower(word[3]) == 'e' && tolower(word[4]) == 'p' ) return 92;
+  if (len == 2 && tolower(word[0]) == 'i' && tolower(word[1]) == 's' ) return 145;
+  return -1;
+__31:
+  if (len == 5 && tolower(word[0]) == 'c' && tolower(word[1]) == 'a' && tolower(word[2]) == 't' && tolower(word[3]) == 'c' && tolower(word[4]) == 'h' ) return 60;
+  return -1;
+__32:
+  if (len == 6 && tolower(word[0]) == 's' && tolower(word[1]) == 'i' && tolower(word[2]) == 'n' && tolower(word[3]) == 'g' && tolower(word[4]) == 'l' && tolower(word[5]) == 'e' ) return 4;
+  return -1;
+__33:
+  if (len == 4 && tolower(word[0]) == 's' && tolower(word[1]) == 'w' && tolower(word[2]) == 'a' && tolower(word[3]) == 'p' ) return 64;
+  if (len == 7 && tolower(word[0]) == 'l' && tolower(word[1]) == 'i' && tolower(word[2]) == 'b' && tolower(word[3]) == 'r' && tolower(word[4]) == 'a' && tolower(word[5]) == 'r' && tolower(word[6]) == 'y' ) return 104;
+  return -1;
+__34:
+  if (len == 6 && tolower(word[0]) == 's' && tolower(word[1]) == 't' && tolower(word[2]) == 'a' && tolower(word[3]) == 't' && tolower(word[4]) == 'i' && tolower(word[5]) == 'c' ) return 19;
+  if (len == 3 && tolower(word[0]) == 's' && tolower(word[1]) == 'u' && tolower(word[2]) == 'b' ) return 30;
+  if (len == 6 && tolower(word[0]) == 'c' && tolower(word[1]) == 'r' && tolower(word[2]) == 'e' && tolower(word[3]) == 'a' && tolower(word[4]) == 't' && tolower(word[5]) == 'e' ) return 85;
+  if (len == 3 && word[0] == '&' && word[1] == '/' && word[2] == '=' ) return 156;
+  return -1;
+__35:
+  if (len == 2 && tolower(word[0]) == 'm' && tolower(word[1]) == 'e' ) return 56;
+  if (len == 4 && tolower(word[0]) == 'm' && tolower(word[1]) == 'o' && tolower(word[2]) == 'v' && tolower(word[3]) == 'e' ) return 94;
+  if (len == 4 && tolower(word[0]) == 'e' && tolower(word[1]) == 'n' && tolower(word[2]) == 'd' && tolower(word[3]) == 's' ) return 148;
+  return -1;
+__36:
+  if (len == 5 && tolower(word[0]) == 'm' && tolower(word[1]) == 'k' && tolower(word[2]) == 'd' && tolower(word[3]) == 'i' && tolower(word[4]) == 'r' ) return 98;
+  return -1;
+__37:
+  if (len == 4 && tolower(word[0]) == 'l' && tolower(word[1]) == 'o' && tolower(word[2]) == 'n' && tolower(word[3]) == 'g' ) return 7;
+  if (len == 4 && tolower(word[0]) == 's' && tolower(word[1]) == 't' && tolower(word[2]) == 'e' && tolower(word[3]) == 'p' ) return 48;
+  if (len == 5 && tolower(word[0]) == 'b' && tolower(word[1]) == 'y' && tolower(word[2]) == 'r' && tolower(word[3]) == 'e' && tolower(word[4]) == 'f' ) return 108;
+  if (len == 3 && tolower(word[0]) == 'n' && tolower(word[1]) == 'o' && tolower(word[2]) == 't' ) return 140;
+  return -1;
+__38:
+  if (len == 7 && tolower(word[0]) == 'v' && tolower(word[1]) == 'a' && tolower(word[2]) == 'r' && tolower(word[3]) == 'i' && tolower(word[4]) == 'a' && tolower(word[5]) == 'n' && tolower(word[6]) == 't' ) return 10;
+  if (len == 6 && tolower(word[0]) == 'o' && tolower(word[1]) == 'b' && tolower(word[2]) == 'j' && tolower(word[3]) == 'e' && tolower(word[4]) == 'c' && tolower(word[5]) == 't' ) return 11;
+  if (len == 2 && word[0] == '<' && word[1] == '=' ) return 134;
+  if (len == 2 && word[0] == '\\' && word[1] == '=' ) return 154;
+  return -1;
+__39:
+  if (len == 8 && tolower(word[0]) == 'p' && tolower(word[1]) == 'r' && tolower(word[2]) == 'o' && tolower(word[3]) == 'p' && tolower(word[4]) == 'e' && tolower(word[5]) == 'r' && tolower(word[6]) == 't' && tolower(word[7]) == 'y' ) return 20;
+  if (len == 3 && tolower(word[0]) == 'f' && tolower(word[1]) == 'o' && tolower(word[2]) == 'r' ) return 45;
+  if (len == 5 && tolower(word[0]) == 'p' && tolower(word[1]) == 'r' && tolower(word[2]) == 'i' && tolower(word[3]) == 'n' && tolower(word[4]) == 't' ) return 77;
+  if (len == 3 && tolower(word[0]) == 'i' && tolower(word[1]) == 'n' && tolower(word[2]) == 'c' ) return 96;
+  return -1;
+__40:
+  if (len == 2 && tolower(word[0]) == 'a' && tolower(word[1]) == 's' ) return 25;
+  if (len == 3 && tolower(word[0]) == 'a' && tolower(word[1]) == 'n' && tolower(word[2]) == 'd' ) return 138;
+  return -1;
+__41:
+  if (len == 4 && tolower(word[0]) == 'g' && tolower(word[1]) == 'o' && tolower(word[2]) == 't' && tolower(word[3]) == 'o' ) return 55;
+  if (len == 2 && tolower(word[0]) == 'i' && tolower(word[1]) == 'n' ) return 68;
+  if (len == 2 && word[0] == '<' && word[1] == '>' ) return 135;
+  return -1;
+__42:
+  if (len == 4 && tolower(word[0]) == 'q' && tolower(word[1]) == 'u' && tolower(word[2]) == 'i' && tolower(word[3]) == 't' ) return 71;
+  if (len == 4 && tolower(word[0]) == 'l' && tolower(word[1]) == 'i' && tolower(word[2]) == 'n' && tolower(word[3]) == 'e' ) return 87;
+  return -1;
+__43:
+  return -1;
+__44:
+  if (len == 7 && tolower(word[0]) == 'p' && tolower(word[1]) == 'o' && tolower(word[2]) == 'i' && tolower(word[3]) == 'n' && tolower(word[4]) == 't' && tolower(word[5]) == 'e' && tolower(word[6]) == 'r' ) return 12;
+  if (len == 4 && tolower(word[0]) == 'r' && tolower(word[1]) == 'e' && tolower(word[2]) == 'a' && tolower(word[3]) == 'd' ) return 79;
+  if (len == 4 && tolower(word[0]) == 'l' && tolower(word[1]) == 'i' && tolower(word[2]) == 'k' && tolower(word[3]) == 'e' ) return 146;
+  return -1;
+__45:
+  if (len == 6 && tolower(word[0]) == 's' && tolower(word[1]) == 't' && tolower(word[2]) == 'r' && tolower(word[3]) == 'i' && tolower(word[4]) == 'n' && tolower(word[5]) == 'g' ) return 9;
+  if (len == 3 && tolower(word[0]) == 'd' && tolower(word[1]) == 'i' && tolower(word[2]) == 'm' ) return 27;
+  if (len == 2 && word[0] == '/' && word[1] == '=' ) return 153;
+  return -1;
+__46:
+  if (len == 6 && tolower(word[0]) == 'r' && tolower(word[1]) == 'e' && tolower(word[2]) == 'p' && tolower(word[3]) == 'e' && tolower(word[4]) == 'a' && tolower(word[5]) == 't' ) return 38;
+  if (len == 4 && tolower(word[0]) == 't' && tolower(word[1]) == 'h' && tolower(word[2]) == 'e' && tolower(word[3]) == 'n' ) return 41;
+  if (len == 3 && tolower(word[0]) == 'e' && tolower(word[1]) == 'n' && tolower(word[2]) == 'd' ) return 44;
+  if (len == 6 && tolower(word[0]) == 'a' && tolower(word[1]) == 'p' && tolower(word[2]) == 'p' && tolower(word[3]) == 'e' && tolower(word[4]) == 'n' && tolower(word[5]) == 'd' ) return 84;
+  return -1;
+__47:
+  if (len == 5 && tolower(word[0]) == 'f' && tolower(word[1]) == 'l' && tolower(word[2]) == 'u' && tolower(word[3]) == 's' && tolower(word[4]) == 'h' ) return 88;
+  return -1;
+__48:
+  if (len == 3 && word[0] == '.' && word[1] == '.' && word[2] == '.' ) return 113;
+  return -1;
+__49:
+  if (len == 2 && tolower(word[0]) == 'i' && tolower(word[1]) == 'f' ) return 40;
+  if (len == 4 && tolower(word[0]) == 'e' && tolower(word[1]) == 'x' && tolower(word[2]) == 'e' && tolower(word[3]) == 'c' ) return 89;
+  return -1;
+__50:
+  if (len == 2 && tolower(word[0]) == 't' && tolower(word[1]) == 'o' ) return 46;
+  return -1;
+__51:
+  if (len == 7 && tolower(word[0]) == 'b' && tolower(word[1]) == 'o' && tolower(word[2]) == 'o' && tolower(word[3]) == 'l' && tolower(word[4]) == 'e' && tolower(word[5]) == 'a' && tolower(word[6]) == 'n' ) return 1;
+  if (len == 6 && tolower(word[0]) == 'b' && tolower(word[1]) == 'e' && tolower(word[2]) == 'g' && tolower(word[3]) == 'i' && tolower(word[4]) == 'n' && tolower(word[5]) == 's' ) return 147;
+  return -1;
+__52:
+  return -1;
+__53:
+  if (len == 6 && tolower(word[0]) == 'r' && tolower(word[1]) == 'e' && tolower(word[2]) == 't' && tolower(word[3]) == 'u' && tolower(word[4]) == 'r' && tolower(word[5]) == 'n' ) return 31;
+  if (len == 9 && tolower(word[0]) == 'r' && tolower(word[1]) == 'a' && tolower(word[2]) == 'n' && tolower(word[3]) == 'd' && tolower(word[4]) == 'o' && tolower(word[5]) == 'm' && tolower(word[6]) == 'i' && tolower(word[7]) == 'z' && tolower(word[8]) == 'e' ) return 107;
+  return -1;
+__54:
+  if (len == 6 && tolower(word[0]) == 'o' && tolower(word[1]) == 'u' && tolower(word[2]) == 't' && tolower(word[3]) == 'p' && tolower(word[4]) == 'u' && tolower(word[5]) == 't' ) return 33;
+  if (len == 2 && tolower(word[0]) == 'o' && tolower(word[1]) == 'r' ) return 139;
+  return -1;
+__55:
+  if (len == 4 && tolower(word[0]) == 'k' && tolower(word[1]) == 'i' && tolower(word[2]) == 'l' && tolower(word[3]) == 'l' ) return 93;
+  return -1;
+__56:
+  if (len == 6 && tolower(word[0]) == 'e' && tolower(word[1]) == 'x' && tolower(word[2]) == 'p' && tolower(word[3]) == 'o' && tolower(word[4]) == 'r' && tolower(word[5]) == 't' ) return 24;
+  if (len == 7 && tolower(word[0]) == 'f' && tolower(word[1]) == 'i' && tolower(word[2]) == 'n' && tolower(word[3]) == 'a' && tolower(word[4]) == 'l' && tolower(word[5]) == 'l' && tolower(word[6]) == 'y' ) return 59;
+  if (len == 4 && tolower(word[0]) == 'w' && tolower(word[1]) == 'i' && tolower(word[2]) == 't' && tolower(word[3]) == 'h' ) return 61;
+  if (len == 5 && tolower(word[0]) == 's' && tolower(word[1]) == 'h' && tolower(word[2]) == 'e' && tolower(word[3]) == 'l' && tolower(word[4]) == 'l' ) return 90;
+  if (len == 4 && tolower(word[0]) == 'w' && tolower(word[1]) == 'a' && tolower(word[2]) == 'i' && tolower(word[3]) == 't' ) return 91;
+  return -1;
+__57:
+  if (len == 8 && tolower(word[0]) == 'i' && tolower(word[1]) == 'n' && tolower(word[2]) == 'h' && tolower(word[3]) == 'e' && tolower(word[4]) == 'r' && tolower(word[5]) == 'i' && tolower(word[6]) == 't' && tolower(word[7]) == 's' ) return 22;
+  return -1;
+__58:
+  if (len == 4 && tolower(word[0]) == 'f' && tolower(word[1]) == 'r' && tolower(word[2]) == 'o' && tolower(word[3]) == 'm' ) return 47;
+  if (len == 5 && tolower(word[0]) == 'd' && tolower(word[1]) == 'e' && tolower(word[2]) == 'b' && tolower(word[3]) == 'u' && tolower(word[4]) == 'g' ) return 105;
+  if (len == 2 && word[0] == '+' && word[1] == '=' ) return 150;
+  return -1;
+__59:
+  if (len == 3 && tolower(word[0]) == 'm' && tolower(word[1]) == 'o' && tolower(word[2]) == 'd' ) return 144;
+  return -1;
+__60:
+  if (len == 3 && tolower(word[0]) == 'n' && tolower(word[1]) == 'e' && tolower(word[2]) == 'w' ) return 28;
+  return -1;
+__61:
+  return -1;
+__62:
+  if (len == 5 && tolower(word[0]) == 'u' && tolower(word[1]) == 'n' && tolower(word[2]) == 't' && tolower(word[3]) == 'i' && tolower(word[4]) == 'l' ) return 37;
+  if (len == 4 && tolower(word[0]) == 'w' && tolower(word[1]) == 'e' && tolower(word[2]) == 'n' && tolower(word[3]) == 'd' ) return 39;
+  return -1;
+__63:
+  return -1;
+__64:
+  if (len == 4 && tolower(word[0]) == 'e' && tolower(word[1]) == 'l' && tolower(word[2]) == 's' && tolower(word[3]) == 'e' ) return 42;
+  if (len == 8 && tolower(word[0]) == 'c' && tolower(word[1]) == 'o' && tolower(word[2]) == 'n' && tolower(word[3]) == 't' && tolower(word[4]) == 'i' && tolower(word[5]) == 'n' && tolower(word[6]) == 'u' && tolower(word[7]) == 'e' ) return 54;
+  if (len == 5 && tolower(word[0]) == 'i' && tolower(word[1]) == 'n' && tolower(word[2]) == 'p' && tolower(word[3]) == 'u' && tolower(word[4]) == 't' ) return 78;
+  if (len == 6 && tolower(word[0]) == 'm' && tolower(word[1]) == 'e' && tolower(word[2]) == 'm' && tolower(word[3]) == 'o' && tolower(word[4]) == 'r' && tolower(word[5]) == 'y' ) return 109;
+  return -1;
+__65:
+  if (len == 6 && tolower(word[0]) == 's' && tolower(word[1]) == 'e' && tolower(word[2]) == 'l' && tolower(word[3]) == 'e' && tolower(word[4]) == 'c' && tolower(word[5]) == 't' ) return 50;
+  if (len == 4 && tolower(word[0]) == 'e' && tolower(word[1]) == 'x' && tolower(word[2]) == 'i' && tolower(word[3]) == 't' ) return 52;
+  if (len == 6 && tolower(word[0]) == 'e' && tolower(word[1]) == 'x' && tolower(word[2]) == 't' && tolower(word[3]) == 'e' && tolower(word[4]) == 'r' && tolower(word[5]) == 'n' ) return 66;
+  return -1;
+__66:
+  if (len == 2 && tolower(word[0]) == 'o' && tolower(word[1]) == 'f' ) return 26;
+  if (len == 5 && tolower(word[0]) == 'f' && tolower(word[1]) == 'a' && tolower(word[2]) == 'l' && tolower(word[3]) == 's' && tolower(word[4]) == 'e' ) return 63;
+  if (len == 4 && tolower(word[0]) == 's' && tolower(word[1]) == 't' && tolower(word[2]) == 'o' && tolower(word[3]) == 'p' ) return 70;
+  if (len == 4 && tolower(word[0]) == 'c' && tolower(word[1]) == 'o' && tolower(word[2]) == 'p' && tolower(word[3]) == 'y' ) return 95;
+  if (len == 5 && tolower(word[0]) == 'w' && tolower(word[1]) == 'a' && tolower(word[2]) == 't' && tolower(word[3]) == 'c' && tolower(word[4]) == 'h' ) return 100;
+  return -1;
+__67:
+  if (len == 3 && tolower(word[0]) == 'l' && tolower(word[1]) == 'e' && tolower(word[2]) == 't' ) return 76;
+  if (len == 5 && tolower(word[0]) == 'w' && tolower(word[1]) == 'r' && tolower(word[2]) == 'i' && tolower(word[3]) == 't' && tolower(word[4]) == 'e' ) return 80;
+  if (len == 4 && tolower(word[0]) == 'o' && tolower(word[1]) == 'p' && tolower(word[2]) == 'e' && tolower(word[3]) == 'n' ) return 81;
+  if (len == 5 && tolower(word[0]) == 'r' && tolower(word[1]) == 'm' && tolower(word[2]) == 'd' && tolower(word[3]) == 'i' && tolower(word[4]) == 'r' ) return 99;
+  return -1;
+__68:
+  if (len == 4 && tolower(word[0]) == 'l' && tolower(word[1]) == 'a' && tolower(word[2]) == 's' && tolower(word[3]) == 't' ) return 57;
+  return -1;
+__69:
+  if (len == 5 && tolower(word[0]) == 'c' && tolower(word[1]) == 'l' && tolower(word[2]) == 'o' && tolower(word[3]) == 's' && tolower(word[4]) == 'e' ) return 82;
+  return -1;
+__70:
+  if (len == 7 && tolower(word[0]) == 'p' && tolower(word[1]) == 'r' && tolower(word[2]) == 'i' && tolower(word[3]) == 'v' && tolower(word[4]) == 'a' && tolower(word[5]) == 't' && tolower(word[6]) == 'e' ) return 17;
+  if (len == 10 && tolower(word[0]) == 'i' && tolower(word[1]) == 'm' && tolower(word[2]) == 'p' && tolower(word[3]) == 'l' && tolower(word[4]) == 'e' && tolower(word[5]) == 'm' && tolower(word[6]) == 'e' && tolower(word[7]) == 'n' && tolower(word[8]) == 't' && tolower(word[9]) == 's' ) return 23;
+  if (len == 2 && tolower(word[0]) == 'd' && tolower(word[1]) == 'o' ) return 34;
+  if (len == 3 && tolower(word[0]) == 'd' && tolower(word[1]) == 'i' && tolower(word[2]) == 'v' ) return 143;
+  return -1;
+__71:
+  if (len == 4 && tolower(word[0]) == 'l' && tolower(word[1]) == 'o' && tolower(word[2]) == 'o' && tolower(word[3]) == 'p' ) return 35;
+  if (len == 4 && tolower(word[0]) == 's' && tolower(word[1]) == 'e' && tolower(word[2]) == 'e' && tolower(word[3]) == 'k' ) return 83;
+  if (len == 6 && tolower(word[0]) == 'u' && tolower(word[1]) == 'n' && tolower(word[2]) == 'l' && tolower(word[3]) == 'o' && tolower(word[4]) == 'c' && tolower(word[5]) == 'k' ) return 103;
+  return -1;
+__72:
+  if (len == 3 && tolower(word[0]) == 't' && tolower(word[1]) == 'r' && tolower(word[2]) == 'y' ) return 58;
+  if (len == 2 && word[0] == '>' && word[1] == '=' ) return 133;
+  if (len == 2 && word[0] == '^' && word[1] == '=' ) return 157;
   return -1;
 }

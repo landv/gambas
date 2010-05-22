@@ -31,6 +31,8 @@
 #include "gb_code.h"
 #include "eval.h"
 
+#include "gb_common_case_temp.h"
+
 /*#define DEBUG*/
 
 EXPRESSION *EVAL;

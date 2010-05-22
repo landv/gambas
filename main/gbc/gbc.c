@@ -358,8 +358,7 @@ static void fill_files(const char *root, bool recursive)
 			  *((char **)ARRAY_add(&_files)) = STR_copy(file);
 				// Add the class to the list of classes
         name = FILE_get_basename(file_name);
-        BUFFER_add(&COMP_classes, name, strlen(name));
-        BUFFER_add(&COMP_classes, "\n", 1);
+				COMPILE_add_class(name, strlen(name));
 			}
 		}
 	}
@@ -391,7 +390,7 @@ static void init_files(const char *first)
 	qsort(_files, ARRAY_count(_files), sizeof(*_files), (int (*)(const void *, const void *))compare_path);
 	
 	// End the list of classes
-  BUFFER_add(&COMP_classes, "\n", 1);
+	COMPILE_end_class();
 }
 
 

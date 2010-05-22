@@ -101,9 +101,9 @@ static void print_fmt(const char *before, const char *word, int len, const char 
 
 static bool read_line(const char **str, int *len)
 {
-	const char *start;
-	const char *nospace;
+	const char *start, *end;
 	unsigned char car;
+	int l;
 
 	if (_no_trim)
 	{
@@ -125,18 +125,27 @@ static bool read_line(const char **str, int *len)
 		}
 	}
 
-	start = nospace = _current;
+	start = _current;
 	for(;;)
 	{
 		car = *_current++;
-		if (car == '\n' || car =='\r' || !car)
+		if (car == '\n') // || car =='\r' || !car)
 			break;
-		if (car > ' ')
-			nospace = _current;
+		//if (car > ' ')
+		//	nospace = _current;
+	}
+
+	end = _current;
+	l = (int)(end - start);
+	
+	while (l > 0 && (uchar)end[-1] <= ' ')
+	{
+		end--;
+		l--;
 	}
 
 	*str = start;
-	*len = (int)(nospace - start);
+	*len = l;
 	return FALSE;
 }
 

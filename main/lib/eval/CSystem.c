@@ -44,14 +44,14 @@ BEGIN_PROPERTY(CSYSTEM_keywords)
 	  {
 	  	if (*info->name >= 'A' && *info->name <= 'Z')
 	  	{
-      	GB.NewString(&str, info->name, 0);
+      	GB.NewZeroString(&str, info->name);
       	*((char **)GB.Array.Add(_keywords)) = str;
 			}
 		}
 
   	for (subr = &COMP_subr_info[0]; subr->name; subr++)
 	  {
-      GB.NewString(&str, subr->name, 0);
+      GB.NewZeroString(&str, subr->name);
       *((char **)GB.Array.Add(_keywords)) = str;
 		}
 
@@ -75,7 +75,7 @@ BEGIN_PROPERTY(CSYSTEM_datatypes)
 	  {
 	  	if (info->flag & RSF_TYPE)
 	  	{
-      	GB.NewString(&str, info->name, 0);
+      	GB.NewZeroString(&str, info->name);
       	*((char **)GB.Array.Add(_datatypes)) = str;
 			}
 		}

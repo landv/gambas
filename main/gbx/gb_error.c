@@ -126,6 +126,9 @@ void ERROR_unlock()
 
 void ERROR_reset(ERROR_INFO *info)
 {
+	if (!info->code)
+		return;
+	
 	info->code = 0;
 	if (info->free)
 	{
@@ -159,14 +162,14 @@ void ERROR_clear()
 	ERROR_reset(&ERROR_current->info);
 }
 
-
+#if 0
 void ERROR_enter(ERROR_CONTEXT *err)
 {
   err->prev = ERROR_current;
   err->info.code = 0;
-  err->info.free = FALSE;
-  err->info.msg = NULL;
-  err->info.backtrace = NULL;
+  //err->info.free = FALSE;
+  //err->info.msg = NULL;
+  //err->info.backtrace = NULL;
   
   ERROR_current = err;
 
@@ -184,8 +187,9 @@ void ERROR_enter(ERROR_CONTEXT *err)
 	}
   #endif
 }
+#endif
 
-
+#if 0
 void ERROR_leave(ERROR_CONTEXT *err)
 {
   if (err->prev == ERROR_LEAVE_DONE)
@@ -226,6 +230,7 @@ void ERROR_leave(ERROR_CONTEXT *err)
 	err->prev = ERROR_LEAVE_DONE;
   //ERROR_reset(err);
 }
+#endif
 
 void ERROR_propagate()
 {
@@ -373,7 +378,7 @@ void ERROR_define(const char *pattern, char *arg[])
   }
   else if (ERROR_current->info.code == E_CUSTOM)
 	{
-    STRING_new(&ERROR_current->info.msg, pattern, 0);
+    STRING_new_zero(&ERROR_current->info.msg, pattern);
     ERROR_current->info.free = TRUE;
 	}
 	else
@@ -398,6 +403,8 @@ void ERROR_define(const char *pattern, char *arg[])
 		fprintf(stderr, "ERROR_define: (%p) DEBUG_backtrace: <<%p>>\n", ERROR_current, ERROR_current->info.backtrace);
 		#endif
   }
+  else
+		ERROR_current->info.backtrace = NULL;
   
   #if DEBUG_ERROR
 	fprintf(stderr, "ERROR_define: %s\n", ERROR_current->info.msg);

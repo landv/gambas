@@ -193,7 +193,7 @@ BEGIN_METHOD(CDESKTOP_get_window_property, GB_STRING name; GB_INTEGER window)
 		for (i = 0; i < count; i++)
 		{
 			name = XGetAtomName(X11_display, *((Atom *)value + i));
-			GB.NewString((char **)GB.Array.Get(array, i), name, 0);
+			GB.NewZeroString((char **)GB.Array.Get(array, i), name);
 			XFree(name);
 		}
 		GB.ReturnObject(array);

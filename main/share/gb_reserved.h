@@ -23,6 +23,7 @@
 #ifndef __GB_RESERVED_H
 #define __GB_RESERVED_H
 
+#include "gb_common.h"
 #include "gb_table.h"
 
 #define RSF_NONE          0x0

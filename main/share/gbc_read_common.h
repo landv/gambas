@@ -51,13 +51,15 @@ enum {
 
 #define NULL_PATTERN ((PATTERN)0L)
 
-#define PATTERN_make(type, index) ((PATTERN)((type) << 24) | (index))
+#define PATTERN_make(type, index) ((PATTERN)((type) | ((index) << 8)))
 
-#define PATTERN_flag(pattern)   (((pattern) >> 24) & ~0xF)
-#define PATTERN_type(pattern)   (((pattern) >> 24) & 0xF)
-#define PATTERN_index(pattern)  ((pattern) & 0x00FFFFFFL)
+#define PATTERN_flag(pattern)   ((pattern) & 0xF0)
+#define PATTERN_type(pattern)   ((pattern) & 0xF)
+#define PATTERN_index(pattern)  ((pattern) >> 8)
 
 #define PATTERN_is(pattern, res) (pattern == PATTERN_make(RT_RESERVED, res))
+
+#define PATTERN_is_null(pattern) (pattern == NULL_PATTERN)
 
 #define PATTERN_is_end(pattern)         (PATTERN_type(pattern) == RT_END)
 #define PATTERN_is_reserved(pattern)    (PATTERN_type(pattern) == RT_RESERVED)
@@ -74,12 +76,12 @@ enum {
 
 #define PATTERN_is_newline_end(pattern) (PATTERN_is_newline(pattern) || PATTERN_is_end(pattern))
 
-#define PATTERN_is_first(pattern)       ((PATTERN_flag(pattern) & RT_FIRST) != 0)
-#define PATTERN_is_point(pattern)       ((PATTERN_flag(pattern) & RT_POINT) != 0)
-#define PATTERN_is_output(pattern)      ((PATTERN_flag(pattern) & RT_OUTPUT) != 0)
+#define PATTERN_is_first(pattern)       (((pattern) & RT_FIRST) != 0)
+#define PATTERN_is_point(pattern)       (((pattern) & RT_POINT) != 0)
+#define PATTERN_is_output(pattern)      (((pattern) & RT_OUTPUT) != 0)
 
-#define PATTERN_set_flag(pattern, flag)    ((pattern) | (flag << 24))
-#define PATTERN_unset_flag(pattern, flag)    ((pattern) & ~(flag << 24))
+#define PATTERN_set_flag(pattern, flag)    ((pattern) | flag)
+#define PATTERN_unset_flag(pattern, flag)    ((pattern) & ~flag)
 
 #define PATTERN_is_operand(pattern)   (PATTERN_is_reserved(pattern) && RES_is_operand(PATTERN_index(pattern)))
 #define PATTERN_is_type(pattern)      (PATTERN_is_reserved(pattern) && RES_is_type(PATTERN_index(pattern)))

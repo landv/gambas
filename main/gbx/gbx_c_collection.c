@@ -241,7 +241,7 @@ BEGIN_METHOD_VOID(collection_next)
   if (value == NULL)
     GB_StopEnum();
   else
-    GB_ReturnPtr(T_VARIANT, value);
+    GB_ReturnVariant(value);
 
 END_METHOD
 
@@ -274,7 +274,7 @@ END_METHOD
 
 BEGIN_METHOD(collection_get, GB_STRING key)
 
-  GB_ReturnPtr(T_VARIANT, collection_get_key(THIS, STRING(key), LENGTH(key)));
+	GB_ReturnVariant(collection_get_key(THIS, STRING(key), LENGTH(key)));
 
 END_METHOD
 

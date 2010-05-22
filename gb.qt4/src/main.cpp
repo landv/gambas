@@ -343,7 +343,7 @@ static bool QT_EventFilter(QEvent *e)
 		CKEY_clear(true);
 
 		GB.FreeString(&CKEY_info.text);
-		GB.NewString(&CKEY_info.text, QT_ToUTF8(kevent->text()), 0);
+		GB.NewZeroString(&CKEY_info.text, QT_ToUTF8(kevent->text()));
 		CKEY_info.state = kevent->modifiers();
 		CKEY_info.code = kevent->key();
 
@@ -358,7 +358,7 @@ static bool QT_EventFilter(QEvent *e)
 
 			GB.FreeString(&CKEY_info.text);
 			//qDebug("IMEnd: %s", imevent->text().latin1());
-			GB.NewString(&CKEY_info.text, QT_ToUTF8(imevent->commitString()), 0);
+			GB.NewZeroString(&CKEY_info.text, QT_ToUTF8(imevent->commitString()));
 			CKEY_info.state = 0;
 			CKEY_info.code = 0;
 		}

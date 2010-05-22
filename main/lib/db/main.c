@@ -125,7 +125,7 @@ GB_ARRAY DB_StringArrayToGambasArray(char **array)
 
   for (i = 0; i < n; i++)
   {
-    GB.NewString(&str, array[i], 0);
+    GB.NewZeroString(&str, array[i]);
     *((char **)GB.Array.Get(garray, i)) = str;
   }
 

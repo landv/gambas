@@ -216,6 +216,18 @@ do { \
 		EXEC_release(type, _v); \
 } while (0)
 
+#define RELEASE_STRING(_value) \
+do { \
+	VALUE *_v = (_value); \
+	if (_v->type == T_STRING) STRING_unref(&_v->_string.addr); \
+} while(0)
+
+#define RELEASE_OBJECT(_value) \
+do { \
+	VALUE *_v = (_value); \
+	OBJECT_UNREF(_v->_object.object, "RELEASE_OBJECT"); \
+} while (0)
+
 #define RELEASE_MANY(_val, _n) \
 do { \
  if (_n) \

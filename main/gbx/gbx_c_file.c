@@ -519,7 +519,7 @@ BEGIN_METHOD(CFILE_name, GB_STRING path)
     LENGTH(path)--;
 
   path = GB_ToZeroString(ARG(path));
-  GB_ReturnNewString(FILE_get_name(path), -1);
+  GB_ReturnNewZeroString(FILE_get_name(path));
 
 END_METHOD
 
@@ -700,7 +700,7 @@ END_PROPERTY
 BEGIN_PROPERTY(CSTREAM_tag)
 
   if (READ_PROPERTY)
-    GB_ReturnPtr(GB_T_VARIANT, &THIS_STREAM->tag);
+    GB_ReturnVariant(&THIS_STREAM->tag);
   else
     GB_StoreVariant(PROP(GB_VARIANT), (void *)&(THIS_STREAM->tag));
 

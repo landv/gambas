@@ -430,13 +430,13 @@ static char *FindDatabase(const char *name, const char *hostName)
 	if (*name == '/')
 	{
 		if (IsDatabaseFile(name))
-			GB.NewString(&fullpath, name, 0);
+			GB.NewZeroString(&fullpath, name);
 
 		return fullpath;
 	}
 
 	/* Hostname contains home area */
-	GB.NewString(&fullpath, hostName, 0);
+	GB.NewZeroString(&fullpath, hostName);
 	GB.AddString(&fullpath, "/", 0);
 	GB.AddString(&fullpath, name, 0);
 	if (IsDatabaseFile(fullpath))
@@ -450,7 +450,7 @@ static char *FindDatabase(const char *name, const char *hostName)
 
 	if (dbhome != NULL)
 	{
-		GB.NewString(&fullpath, dbhome, 0);
+		GB.NewZeroString(&fullpath, dbhome);
 		GB.AddString(&fullpath, "/", 0);
 		GB.AddString(&fullpath, name, 0);
 
@@ -470,7 +470,7 @@ static char *FindDatabase(const char *name, const char *hostName)
 	}
 #endif
 
-	GB.NewString(&fullpath, GB.TempDir(), 0);
+	GB.NewZeroString(&fullpath, GB.TempDir());
 	GB.AddString(&fullpath, "/sqlite/", 0);
 	GB.AddString(&fullpath, name, 0);
 
@@ -576,7 +576,7 @@ static int WalkDirectory(const char *dir, char ***databases)
 		{
 			if (IsDatabaseFile(entry->d_name))
 			{
-				GB.NewString((char **) GB.Add(databases), entry->d_name, 0);
+				GB.NewZeroString((char **) GB.Add(databases), entry->d_name);
 			}
 		}
 	}
@@ -640,11 +640,11 @@ static int open_database(DB_DESC * desc, DB_DATABASE * db)
 
 	if (desc->name)
 	{
-		GB.NewString(&name, desc->name, 0);
+		GB.NewZeroString(&name, desc->name);
 	}
 	else
 	{
-		GB.NewString(&name, ":memory:", 0);
+		GB.NewZeroString(&name, ":memory:");
 		memory = true;
 	}
 
@@ -691,7 +691,7 @@ static int open_database(DB_DESC * desc, DB_DATABASE * db)
 
 	/* Character set cannot be set for sqlite. A sqlite re-compile
 	 * is required.                                             */
-	GB.NewString(&db->charset, "UTF-8", 0);
+	GB.NewZeroString(&db->charset, "UTF-8");
 
 	/* set dbversion */
 	db->version = db_version();
@@ -1147,7 +1147,7 @@ static int table_init(DB_DATABASE * db, const char *table, DB_INFO * info)
 
 	/* Nom de la table */
 
-	GB.NewString(&info->table, table, 0);
+	GB.NewZeroString(&info->table, table);
 
 	/* Liste des champs */
 
@@ -1176,7 +1176,7 @@ static int table_init(DB_DATABASE * db, const char *table, DB_INFO * info)
 			return TRUE;
 		}
 
-		GB.NewString(&f->name, field, 0);
+		GB.NewZeroString(&f->name, field);
 		/*f->length = 0;
 		   f->type = conv_type(GetFieldType((char *) r->records[i][2].get_asString().data(), (unsigned int *) &f->length)); */
 	}
@@ -1233,7 +1233,7 @@ static int table_index(DB_DATABASE * db, const char *table, DB_INFO * info)
 	{
 		if (strstr(r->records[i][1].get_asString().data(), "autoindex") != NULL)
 		{
-			GB.NewString(&sql, r->records[i][1].get_asString().data(), 0);
+			GB.NewZeroString(&sql, r->records[i][1].get_asString().data());
 			res->close();
 
 			if (do_query
@@ -1392,7 +1392,7 @@ static int table_list(DB_DATABASE * db, char ***tables)
 
 	while (!res->eof())
 	{
-		GB.NewString(&(*tables)[i], res->fv("tbl_name").get_asString().data(), 0);
+		GB.NewZeroString(&(*tables)[i], res->fv("tbl_name").get_asString().data());
 		res->next();
 		i++;
 	}
@@ -1400,8 +1400,8 @@ static int table_list(DB_DATABASE * db, char ***tables)
 
 	res->close();
 
-	GB.NewString(&(*tables)[i], "sqlite_master", 0);
-	GB.NewString(&(*tables)[++i], "sqlite_temp_master", 0);
+	GB.NewZeroString(&(*tables)[i], "sqlite_master");
+	GB.NewZeroString(&(*tables)[++i], "sqlite_temp_master");
 	return rows;
 }
 
@@ -1442,7 +1442,7 @@ static int table_primary_key(DB_DATABASE * db, const char *table, char ***primar
 	{
 		if (strstr(r->records[i][1].get_asString().data(), "autoindex"))
 		{
-			GB.NewString(&sql, r->records[i][1].get_asString().data(), 0);
+			GB.NewZeroString(&sql, r->records[i][1].get_asString().data());
 			res->close();
 
 			if (do_query
@@ -1464,8 +1464,7 @@ static int table_primary_key(DB_DATABASE * db, const char *table, char ***primar
 
 			for (i = 0; i < n; i++)
 			{
-				GB.NewString((char **) GB.Add(primary),
-										 r->records[i][2].get_asString().data(), 0);
+				GB.NewZeroString((char **) GB.Add(primary), r->records[i][2].get_asString().data());
 			}
 			break;
 		}
@@ -1489,8 +1488,7 @@ static int table_primary_key(DB_DATABASE * db, const char *table, char ***primar
 		{
 			if (strcmp(r->records[i][2].get_asString().data(), "INTEGER") == 0)
 			{
-				GB.NewString((char **) GB.Add(primary),
-										 r->records[i][1].get_asString().data(), 0);
+				GB.NewZeroString((char **) GB.Add(primary), r->records[i][1].get_asString().data());
 				break;
 			}
 		}
@@ -1764,7 +1762,7 @@ static int field_list(DB_DATABASE * db, const char *table, char ***fields)
 
 		for (i = 0; i < n; i++)
 		{
-			GB.NewString(&(*fields)[i], r->records[i][1].get_asString().data(), 0);
+			GB.NewZeroString(&(*fields)[i], r->records[i][1].get_asString().data());
 		}
 	}
 
@@ -1949,8 +1947,7 @@ static int index_list(DB_DATABASE * db, const char *table, char ***indexes)
 	while (!res->eof())
 	{
 		//(res->fv("tbl_name").get_asString().data());
-		GB.NewString(&(*indexes)[i],
-								 res->fv(res->fieldName(0)).get_asString().data(), 0);
+		GB.NewZeroString(&(*indexes)[i], res->fv(res->fieldName(0)).get_asString().data());
 		res->next();
 		i++;
 	}
@@ -2281,7 +2278,7 @@ static int database_create(DB_DATABASE * db, const char *name)
 	/* BM: do not use basename(), it can modify its argument */
 	if (name && name[0] == '/')
 	{
-		GB.NewString(&fullpath, name, 0);
+		GB.NewZeroString(&fullpath, name);
 		goto _CREATE_DATABASE;
 	}
 
@@ -2291,13 +2288,13 @@ static int database_create(DB_DATABASE * db, const char *name)
 	host = conn->getHostName();
 	if (host && host[0])
 	{
-		GB.NewString(&fullpath, host, 0);
+		GB.NewZeroString(&fullpath, host);
 	}
 	else
 	{
 		dir = GetDatabaseHome();
 		mkdir(dir, S_IRWXU);
-		GB.NewString(&fullpath, dir, 0);
+		GB.NewZeroString(&fullpath, dir);
 		GB.Free(POINTER(&dir));
 	}
 
@@ -2518,7 +2515,7 @@ static int user_list(DB_DATABASE * db, char ***users)
 			{
 				if (users)
 				{
-					GB.NewString((char **) GB.Add(users), user->pw_name, 0);
+					GB.NewZeroString((char **) GB.Add(users), user->pw_name);
 				}
 				else
 				{
@@ -2546,7 +2543,7 @@ static int user_list(DB_DATABASE * db, char ***users)
 			{
 				if (users)
 				{
-					GB.NewString((char **) GB.Add(users), *Member, 0);
+					GB.NewZeroString((char **) GB.Add(users), *Member);
 				}
 				else
 				{
@@ -2565,7 +2562,7 @@ static int user_list(DB_DATABASE * db, char ***users)
 		{
 			if (users)
 			{
-				GB.NewString((char **) GB.Add(users), user->pw_name, 0);
+				GB.NewZeroString((char **) GB.Add(users), user->pw_name);
 			}
 			else
 			{

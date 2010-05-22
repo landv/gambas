@@ -174,7 +174,7 @@ BEGIN_PROPERTY(CTEXTBOX_sel_text)
 	if (READ_PROPERTY)
 	{
 		buf=TEXTBOX->selText();
-		GB.ReturnNewString(buf,0);
+		GB.ReturnNewZeroString(buf);
 		g_free(buf);
 		return;
 	}
@@ -363,7 +363,7 @@ BEGIN_PROPERTY(CCOMBOBOX_list)
 		GB.Array.New(&array, GB_T_STRING, COMBOBOX->count());
 		for (i = 0; i < COMBOBOX->count(); i++)
 		{
-			GB.NewString(&text, COMBOBOX->itemText(i), 0);
+			GB.NewZeroString(&text, COMBOBOX->itemText(i));
 			*((char **)GB.Array.Get(array, i)) = text;
 		}
 		

@@ -63,17 +63,25 @@ typedef
 
 #ifndef __STRING_C
 extern STRING_MAKE STRING_make_buffer;
+extern const char STRING_char_string[];
 #endif
 
 void STRING_init(void);
 void STRING_exit(void);
 
 void STRING_new(char **ptr, const char *src, int len);
+#define STRING_new_zero(_ptr, _src) \
+({ \
+  const char *_s = (_src); \
+	STRING_new(_ptr, _s, _s ? strlen(_s) : 0); \
+})
+
 void STRING_free_real(char *ptr);
 void STRING_free_later(char *ptr);
 int STRING_get_free_index(void);
 
 #define STRING_new_temp(_pptr, _src, _len) STRING_new(_pptr, _src, _len), STRING_free_later(*_pptr)
+#define STRING_new_temp_zero(_pptr, _src) STRING_new_zero(_pptr, _src), STRING_free_later(*_pptr)
 
 void STRING_extend(char **ptr, int new_len);
 void STRING_extend_end(char **ptr);
@@ -85,7 +93,14 @@ void STRING_copy_from_value_temp(char **ptr, VALUE *value);
 void STRING_new_temp_value(VALUE *value, const char *src, int len);
 void STRING_new_constant_value(VALUE *value, const char *src, int len);
 
-void STRING_char_value(VALUE *value, uchar car);
+#define STRING_char_value(_value, _car) \
+do { \
+	_value->type = T_CSTRING; \
+	_value->_string.addr = (char *)&STRING_char_string[(_car) * 2]; \
+	_value->_string.start = 0; \
+	_value->_string.len = 1; \
+} while(0)
+
 void STRING_void_value(VALUE *value);
 
 char *STRING_subst(const char *str, int len, SUBST_FUNC get_param);

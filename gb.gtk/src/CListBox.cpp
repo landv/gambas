@@ -20,9 +20,7 @@
 
 ***************************************************************************/
 
-
 #define __CLISTBOX_CPP
-
 
 #include "gambas.h"
 #include "main.h"
@@ -149,7 +147,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CLISTBOX_text)
 
-	GB.ReturnNewString(LISTBOX->text(), 0);
+	GB.ReturnNewZeroString(LISTBOX->text());
 
 END_PROPERTY
 
@@ -177,7 +175,7 @@ END_PROPERTY
 BEGIN_PROPERTY(CLISTBOX_item_text)
 
 	if (READ_PROPERTY)
-		GB.ReturnNewString(LISTBOX->itemText(THIS->index), 0);
+		GB.ReturnNewZeroString(LISTBOX->itemText(THIS->index));
 	else	
 		LISTBOX->setItemText(THIS->index,GB.ToZeroString(PROP(GB_STRING)));
 
@@ -202,7 +200,7 @@ BEGIN_PROPERTY(CLISTBOX_list)
 		GB.Array.New(&array, GB_T_STRING, LISTBOX->count());
 		for (i = 0; i < LISTBOX->count(); i++)
 		{
-			GB.NewString(&text, LISTBOX->itemText(i), 0);
+			GB.NewZeroString(&text, LISTBOX->itemText(i));
 			*((char **)GB.Array.Get(array, i)) = text;
 		}
 		

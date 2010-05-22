@@ -63,7 +63,7 @@ cairo_surface_t *SVGIMAGE_begin(CSVGIMAGE *_object)
 			return NULL;
 		}
 		
-		GB.NewString(&THIS->file, GB.TempFile(NULL), 0);
+		GB.NewZeroString(&THIS->file, GB.TempFile(NULL));
 		SURFACE = cairo_svg_surface_create(THIS->file, THIS->width, THIS->height);
 		
 		if (HANDLE)

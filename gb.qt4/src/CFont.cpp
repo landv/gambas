@@ -494,7 +494,7 @@ BEGIN_PROPERTY(CFONT_styles)
 
   GB.Array.New(&array, GB_T_STRING, styles.count());
   for (i = 0; i < styles.count(); i++)
-    GB.NewString((char **)GB.Array.Get(array, i), TO_UTF8(styles[i]), 0);
+    GB.NewZeroString((char **)GB.Array.Get(array, i), TO_UTF8(styles[i]));
 
   GB.ReturnObject(array);
 

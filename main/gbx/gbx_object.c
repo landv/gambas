@@ -176,7 +176,7 @@ void OBJECT_attach(OBJECT *ob, OBJECT *parent, const char *name)
 	{
 		STRING_unref(&EVENT_Name);
 		if (name)
-			STRING_new(&EVENT_Name, name, 0);
+			STRING_new_zero(&EVENT_Name, name);
 		else
 			EVENT_Name = NULL;
 	}

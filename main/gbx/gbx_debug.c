@@ -452,7 +452,7 @@ GB_ARRAY DEBUG_get_string_array_from_backtrace(DEBUG_BACKTRACE *bt)
 	n = ARRAY_count(bt);
 	GB_ArrayNew(&array, GB_T_STRING, n);
 	for (i = 0; i < n; i++)
-		STRING_new((char **)GB_ArrayGet(array, i), DEBUG_get_position(bt[i].cp, bt[i].fp, bt[i].pc), 0);
+		STRING_new_zero((char **)GB_ArrayGet(array, i), DEBUG_get_position(bt[i].cp, bt[i].fp, bt[i].pc));
 
 	return array;
 }

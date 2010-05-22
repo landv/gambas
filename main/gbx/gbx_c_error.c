@@ -137,7 +137,7 @@ BEGIN_PROPERTY(CERROR_backtrace)
 
 	DEBUG_BACKTRACE *bt = (DEBUG_BACKTRACE *)ERROR_last.backtrace;
 	
-	if (!bt)
+	if (!ERROR_last.code || !bt)
 		GB_ReturnNull();
 	else
 		GB_ReturnObject(DEBUG_get_string_array_from_backtrace(bt));

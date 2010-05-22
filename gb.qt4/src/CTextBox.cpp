@@ -414,7 +414,7 @@ static void combo_get_list(void *_object, GB_ARRAY array)
 	COMBOBOX->sort();
 	for (i = 0; i < COMBOBOX->count(); i++)
 	{
-		GB.NewString(&str, TO_UTF8(COMBOBOX->text(i)), 0);
+		GB.NewZeroString(&str, TO_UTF8(COMBOBOX->text(i)));
 		*((char **)GB.Array.Get(array, i)) = str;
 	}
 }

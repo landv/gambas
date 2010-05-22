@@ -38,13 +38,13 @@
 
 //static bool _accept_statement = FALSE;
 
-static short get_nparam(PATTERN *tree, int *index, uint64_t *byref)
+static short get_nparam(PATTERN *tree, int count, int *index, uint64_t *byref)
 {
   PATTERN pattern;
   short nparam = 0;
   int shift = 0;
 
-  if (*index < (ARRAY_count(tree) - 1))
+  if (*index < count)
   {
     pattern = tree[*index + 1];
     if (PATTERN_is_param(pattern))
@@ -55,7 +55,7 @@ static short get_nparam(PATTERN *tree, int *index, uint64_t *byref)
 
 		if (byref)
 			*byref = 0;
-		while (*index < (ARRAY_count(tree) - 1))
+		while (*index < count)
 		{
 			pattern = tree[*index + 1];
 			if (!PATTERN_is_param(pattern))
@@ -304,15 +304,14 @@ static void trans_call(short nparam, uint64_t byref)
 	CODE_call_byref(nparam, byref);
 }
 
-static void trans_expr_from_tree(TRANS_TREE *tree)
+static void trans_expr_from_tree(TRANS_TREE *tree, int count)
 {
   int i, op;
   short nparam;
-  int count;
   PATTERN pattern, next_pattern, prev_pattern;
   uint64_t byref;
 
-  count = ARRAY_count(tree) - 1;
+	count--;
   pattern = NULL_PATTERN;
 
   for (i = 0; i <= count; i++)
@@ -341,7 +340,7 @@ static void trans_expr_from_tree(TRANS_TREE *tree)
 
     else if (PATTERN_is_subr(pattern))
     {
-      nparam = get_nparam(tree, &i, NULL);
+      nparam = get_nparam(tree, count, &i, NULL);
       trans_subr(PATTERN_index(pattern), nparam);
     }
 
@@ -399,12 +398,12 @@ static void trans_expr_from_tree(TRANS_TREE *tree)
       	op = PATTERN_index(pattern);
       	if (op == RS_LBRA)
       	{
-        	nparam = get_nparam(tree, &i, &byref);
+        	nparam = get_nparam(tree, count, &i, &byref);
         	trans_call(nparam, byref);
         }
       	else
       	{
-        	nparam = get_nparam(tree, &i, NULL);
+        	nparam = get_nparam(tree, count, &i, NULL);
         	trans_operation((short)op, nparam, prev_pattern);
         }
       }
@@ -535,6 +534,7 @@ void TRANS_new(void)
 void TRANS_expression(bool check_statement)
 {
   TRANS_TREE *tree;
+	int tree_length;
 
 	if (TRANS_is(RS_NEW))
 	{
@@ -547,11 +547,11 @@ void TRANS_expression(bool check_statement)
 		return;
 	}
 	
-  tree = TRANS_tree(check_statement);
+  TRANS_tree(check_statement, &tree, &tree_length);
 
-  trans_expr_from_tree(tree);
+  trans_expr_from_tree(tree, tree_length);
 
-  ARRAY_delete(&tree);
+  FREE(&tree, "TRANS_expression");
 
   if (check_statement)
   {
@@ -566,18 +566,20 @@ void TRANS_expression(bool check_statement)
 
 void TRANS_ignore_expression()
 {
-  TRANS_TREE *tree = TRANS_tree(FALSE);
-  ARRAY_delete(&tree);
+	TRANS_tree(FALSE, NULL, NULL);
 }
 
 TYPE TRANS_variable_get_type()
 {
 	TYPE type = TYPE_make(T_NULL, 0, 0);
-  TRANS_TREE *tree = TRANS_tree(FALSE);
+  TRANS_TREE *tree;
+	int count;
 	int index;
 	CLASS_SYMBOL *sym;
 	
-	if (ARRAY_count(tree) == 1 && PATTERN_is_identifier(*tree))
+	TRANS_tree(FALSE, &tree, &count);
+	
+	if (count == 1 && PATTERN_is_identifier(*tree))
 	{
 		index = PATTERN_index(*tree);
 		sym = CLASS_get_symbol(JOB->class, index);
@@ -594,7 +596,7 @@ TYPE TRANS_variable_get_type()
 		}
 	}
 	
-  ARRAY_delete(&tree);
+  FREE(&tree, "TRANS_variable_get_type");
 	
 	return type;
 }
@@ -634,7 +636,7 @@ bool TRANS_affectation(bool dup)
 
   for(;;)
   {
-    if (PATTERN_is_newline(*look) || PATTERN_is_end(*look))
+    if (PATTERN_is_newline(*look)) // || PATTERN_is_end(*look))
       break;
 
     if (PATTERN_is(*look, RS_LBRA) || PATTERN_is(*look, RS_LSQR))

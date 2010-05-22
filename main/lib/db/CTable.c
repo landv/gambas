@@ -94,7 +94,7 @@ static CTABLE *make_table(CCONNECTION *conn, const char *name, bool must_exist)
   THIS->conn = conn;
   //GB.Ref(conn);
   THIS->driver = conn->driver;
-  GB.NewString(&THIS->name, name, 0);
+  GB.NewZeroString(&THIS->name, name);
 
 	//fprintf(stderr, "make_table: -> %p '%s'\n", THIS, THIS->name);
   
@@ -188,7 +188,7 @@ BEGIN_PROPERTY(CTABLE_primary_key)
       {
         GB.NewArray(&THIS->primary, sizeof(char *), n);
         for (i = 0; i < n; i++)
-          GB.NewString(&THIS->primary[i], *((char **)GB.Array.Get(primary, i)), 0);
+          GB.NewZeroString(&THIS->primary[i], *((char **)GB.Array.Get(primary, i)));
       }
     }
   }

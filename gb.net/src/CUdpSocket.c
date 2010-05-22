@@ -21,6 +21,7 @@
 ***************************************************************************/
 
 #define __CUDPSOCKET_C
+
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -518,7 +519,7 @@ BEGIN_METHOD_VOID (CUDPSOCKET_Peek)
 			CUdpSocket_stream_close(&SOCKET->stream);
 			SOCKET->status=-4;
 			GB.Raise(THIS,CUDPSOCKET_SocketError,0);
-			GB.ReturnNewString(NULL,0);
+			GB.ReturnNull();
 			return;
 		}
 		//NoBlock++;
@@ -526,7 +527,7 @@ BEGIN_METHOD_VOID (CUDPSOCKET_Peek)
 		if (retval>0)
 			GB.ReturnNewString(sData,retval);
 		else
-			GB.ReturnNewString(NULL,0);
+			GB.ReturnNull();
 		GB.Free(POINTER(&sData));
 	}
 	else

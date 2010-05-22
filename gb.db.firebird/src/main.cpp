@@ -206,7 +206,7 @@ class FBResult{
       gb_table[l][c].type = GB_T_VARIANT;
       gb_table[l][c].value.type = GB_T_CSTRING;
       if(!IsNull(c+1))
-        GB.NewString(&gb_table[l][c].value.value._string, data.c_str(), 0);
+        GB.NewZeroString(&gb_table[l][c].value.value._string, data.c_str());
     };
 
     IBPP::STT GetType(void){
@@ -1432,7 +1432,7 @@ static int table_init(DB_DATABASE *db, const char *table, DB_INFO *info){
   int i, n;
   DB_FIELD *f;
   snprintf(qfield,SQLMAXLEN-1,"select b.RDB$field_name,a.RDB$field_type,a.RDB$field_length from RDB$fields a,RDB$relation_fields b where a.RDB$field_name=b.RDB$field_source and b.RDB$relation_name=upper('%s') order by rdb$field_position",table);
-  GB.NewString(&info->table, table, 0);
+  GB.NewZeroString(&info->table, table);
   if(do_query(db,qfield,&res,"Unable to get the table")){
     delete res;
     return TRUE;
@@ -1448,7 +1448,7 @@ static int table_init(DB_DATABASE *db, const char *table, DB_INFO *info){
   GB.Alloc(POINTER(&info->field), sizeof(DB_FIELD) * n);
   for (i = 0; i < n; i++){
     f = &info->field[i];
-    GB.NewString(&f->name, res->GetData(i,0).value.value._string, 0);
+    GB.NewZeroString(&f->name, res->GetData(i,0).value.value._string);
     f->type = conv_type(res->GetData(i,1).value.value._integer);
     f->length = 0;
     if (f->type == GB_T_STRING){
@@ -1590,7 +1590,7 @@ static int table_list(DB_DATABASE *db, char ***tables){
   if (tables){
     GB.NewArray(tables, sizeof(char *), res->GetnRecord());
     for (i = 0; i < res->GetnRecord(); i++)
-      GB.NewString(&((*tables)[i]), res->GetData(i,0).value.value._string, 0);
+      GB.NewZeroString(&((*tables)[i]), res->GetData(i,0).value.value._string);
   }
   count = res->GetnRecord();
   delete res;
@@ -1625,7 +1625,7 @@ static int table_primary_key(DB_DATABASE *db, const char *table, char ***primary
   }
   GB.NewArray(primary, sizeof(char *), res->GetnRecord());
   for (i = 0; i < res->GetnRecord(); i++)
-    GB.NewString(&((*primary)[i]), res->GetData(i,1).value.value._string, 0);
+    GB.NewZeroString(&((*primary)[i]), res->GetData(i,1).value.value._string);
   delete res;
   return FALSE;
 }
@@ -1846,7 +1846,7 @@ static int field_list(DB_DATABASE *db, const char *table, char ***fields){
   if (fields){
     GB.NewArray(fields, sizeof(char *), res->GetnRecord());
     for (i = 0; i < res->GetnRecord(); i++)
-      GB.NewString(&((*fields)[i]), res->GetData(i,0).value.value._string, 0);
+      GB.NewZeroString(&((*fields)[i]), res->GetData(i,0).value.value._string);
   }
   count = res->GetnRecord();
   delete res;
@@ -1969,7 +1969,7 @@ static int index_list(DB_DATABASE *db, const char *table, char ***indexes){
   if (indexes){
     GB.NewArray(indexes, sizeof(char *), res->GetnRecord());
     for (i = 0; i < res->GetnRecord(); i++)
-      GB.NewString(&((*indexes)[i]), res->GetData(i,0).value.value._string, 0);
+      GB.NewZeroString(&((*indexes)[i]), res->GetData(i,0).value.value._string);
     count = res->GetnRecord();
   }
   delete res;
@@ -2267,7 +2267,7 @@ static int user_list(DB_DATABASE *db, char ***users){
   if (users){
     GB.NewArray(users, sizeof(char *), ul.size());
     for (i = 0; i < ul.size(); i++)
-      GB.NewString(&((*users)[i]), ul[i].username.c_str(), 0);
+      GB.NewZeroString(&((*users)[i]), ul[i].username.c_str());
     count = ul.size();
   }
   return ul.size();

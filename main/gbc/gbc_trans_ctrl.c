@@ -566,7 +566,7 @@ void TRANS_goto()
 }
 
 
-void TRANS_do(PATTERN type)
+void TRANS_do(int type)
 {
   bool is_until;
 
@@ -599,7 +599,7 @@ void TRANS_do(PATTERN type)
 }
 
 
-void TRANS_loop(PATTERN type)
+void TRANS_loop(int type)
 {
   ushort pos;
 

@@ -31,7 +31,7 @@ EXTERN short CODE_stack_usage;
 
 
 /* Number of instruction added to a function code buffer at once. Must be a power of 2 */
-#define CODE_INSTR_INC 256
+#define CODE_INSTR_INC 1024
 
 
 #ifdef PROJECT_EXEC
@@ -55,7 +55,7 @@ bool CODE_check_jump_not(void);
 bool CODE_check_varptr(void);
 
 void CODE_allow_break(void);
-void CODE_break(void);
+//void CODE_break(void);
 
 void CODE_pop_local(short num);
 //void CODE_pop_param(short num);

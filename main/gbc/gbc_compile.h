@@ -75,7 +75,6 @@ EXTERN char *COMP_root;
 EXTERN char *COMP_project;
 EXTERN char *COMP_project_name;
 EXTERN char *COMP_info_path;
-EXTERN char *COMP_classes;
 EXTERN const char *COMP_form_families[];
 EXTERN bool COMP_family_allowed[];
 
@@ -89,5 +88,8 @@ void COMPILE_exit(void);
 void COMPILE_begin(const char *file, bool trans);
 void COMPILE_end(void);
 void COMPILE_export_class(char *name);
+void COMPILE_add_class(const char *name, int len);
+void COMPILE_end_class();
+void COMPILE_enum_class(char **name, int *len);
 
 #endif

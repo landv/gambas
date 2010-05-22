@@ -113,7 +113,7 @@ BEGIN_PROPERTY(CENUM_index)
       #ifdef DEBUG_ME
       fprintf(stderr, "CENUM_index: %p <%p>: -> value (%d)\n", THIS, THIS->enum_object, ((VARIANT *)THIS->data)->type);
       #endif  
-      GB_ReturnPtr(T_VARIANT, THIS->data);
+      GB_ReturnVariant((GB_VARIANT_VALUE *)THIS->data);
      }
   }
   else

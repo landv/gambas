@@ -41,6 +41,62 @@ static FUNCTION *cur_func = NULL;
 static int last_line = 0;
 #endif
 
+static void alloc_code(void)
+{
+	cur_func->ncode_max += CODE_INSTR_INC;
+	if (!cur_func->code)
+		ALLOC(&cur_func->code, sizeof(short) * CODE_INSTR_INC, "alloc_code");
+	else
+		REALLOC(&cur_func->code, sizeof(short) * cur_func->ncode_max, "alloc_code");
+}
+
+//static void INLINE write_short(short value)
+#define write_short(_value) \
+({ \
+  if (cur_func->ncode >= cur_func->ncode_max) \
+		alloc_code(); \
+  \
+  cur_func->code[cur_func->ncode] = _value; \
+	/*fprintf(stderr, "[%d] %04hX\n", cur_func->ncode, (ushort)value);*/ \
+  cur_func->ncode++; \
+})
+
+#ifdef PROJECT_COMP
+
+static bool _allow_break = FALSE;
+
+void CODE_allow_break(void)
+{
+	_allow_break = TRUE;
+}
+
+static void CODE_break(void)
+{
+	if (!_allow_break)
+		return;
+
+  /*if (last_line < 0)
+  {
+    if (CODE_get_current_pos())
+      return;
+  }
+  else
+  {
+    if (JOB->line == last_line)
+      return;
+
+    last_line = JOB->line;
+  }*/
+
+  #ifdef DEBUG
+  printf("BREAK\n");
+  #endif
+
+  write_short(C_BREAK);
+  _allow_break = FALSE;
+}
+
+#endif
 
 static void start_code(void)
 {
@@ -50,22 +106,6 @@ static void start_code(void)
   #endif
   cur_func->last_code2 = cur_func->last_code;
   cur_func->last_code = cur_func->ncode;
-}
-
-static void write_short(short value)
-{
-  if (cur_func->ncode >= cur_func->ncode_max)
-  {
-  	cur_func->ncode_max += CODE_INSTR_INC;
-    if (!cur_func->code)
-      ALLOC(&cur_func->code, sizeof(short) * CODE_INSTR_INC, "write_short");
-    else
-      REALLOC(&cur_func->code, sizeof(short) * cur_func->ncode_max, "write_short");
-  }
-  
-  cur_func->code[cur_func->ncode] = value;
-	//fprintf(stderr, "[%d] %04hX\n", cur_func->ncode, (ushort)value);
-  cur_func->ncode++;
 }
 
 
@@ -878,40 +918,6 @@ void CODE_return(int return_value)
 
 
 #ifdef PROJECT_COMP
-
-static bool _allow_break = FALSE;
-
-void CODE_allow_break(void)
-{
-	_allow_break = TRUE;
-}
-
-void CODE_break(void)
-{
-	if (!_allow_break)
-		return;
-
-  /*if (last_line < 0)
-  {
-    if (CODE_get_current_pos())
-      return;
-  }
-  else
-  {
-    if (JOB->line == last_line)
-      return;
-
-    last_line = JOB->line;
-  }*/
-
-  #ifdef DEBUG
-  printf("BREAK\n");
-  #endif
-
-  write_short(C_BREAK);
-  _allow_break = FALSE;
-}
-
 
 void CODE_quit(void)
 {

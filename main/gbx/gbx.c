@@ -56,6 +56,7 @@ extern void _exit(int) NORETURN;
 FILE *log_file;
 
 static bool _welcome = FALSE;
+static bool _quit_after_main = FALSE;
 
 static void NORETURN my_exit(int ret)
 {
@@ -269,6 +270,10 @@ int main(int argc, char **argv)
 		{
 			EXEC_keep_library = TRUE;
 		}
+		else if (is_option(argv[i], 'q'))
+		{
+			_quit_after_main = TRUE;
+		}
 		else if (is_option(argv[i], '-'))
 		{
 			i++;
@@ -353,9 +358,14 @@ int main(int argc, char **argv)
 		EXEC_public_desc(PROJECT_class, NULL, startup, 0);
 		EXEC_release_return_value();
 		
-    HOOK_DEFAULT(loop, WATCH_loop)();
-
-    EVENT_check_post();
+		if (_quit_after_main)
+		{
+			main_exit(TRUE);
+			_exit(0);
+		}
+		
+		HOOK_DEFAULT(loop, WATCH_loop)();
+		EVENT_check_post();
   }
   CATCH
   {

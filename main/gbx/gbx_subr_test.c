@@ -441,8 +441,8 @@ void SUBR_near(void)
   //result = STRING_comp_value_ignore_case(&PARAM[0], &PARAM[1]) ? -1 : 0;
   result = STRING_equal_ignore_case(PARAM[0]._string.addr + PARAM[0]._string.start, PARAM[0]._string.len, PARAM[1]._string.addr + PARAM[1]._string.start, PARAM[1]._string.len) ? -1 : 0;
 
-  RELEASE(&PARAM[0]);
-  RELEASE(&PARAM[1]);
+  RELEASE_STRING(&PARAM[0]);
+  RELEASE_STRING(&PARAM[1]);
 
   PARAM->type = T_BOOLEAN;
   PARAM->_boolean.value = result;
@@ -450,77 +450,76 @@ void SUBR_near(void)
   SP--;
 }
 
-
-void SUBR_comp(void)
+void SUBR_comp()
 {
-  static void *jump[17] = {
-    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
-    &&__STRING, &&__STRING, &&__POINTER, &&__ERROR, &&__ERROR, &&__ERROR, &&__NULL, &&__OBJECT
-    };
+	static void *jump[17] = {
+		&&__SC_VARIANT, &&__SC_BOOLEAN, &&__SC_BYTE, &&__SC_SHORT, &&__SC_INTEGER, &&__SC_LONG, &&__SC_SINGLE, &&__SC_FLOAT, &&__SC_DATE,
+		&&__SC_STRING, &&__SC_STRING, &&__SC_POINTER, &&__SC_ERROR, &&__SC_ERROR, &&__SC_ERROR, &&__SC_NULL, &&__SC_OBJECT
+		};
 
-  static void *test[] = { &&__EQ, &&__NE, &&__GT, &&__LE, &&__LT, &&__GE };
+	static void *test[] = { &&__SC_EQ, &&__SC_NE, &&__SC_GT, &&__SC_LE, &&__SC_LT, &&__SC_GE };
 
-  char result = 0; // prevents a gcc warning
-  char op;
-  VALUE *P1;
-  VALUE *P2;
-  bool variant;
-  TYPE type, typem;
+	char NO_WARNING(result);
+	char op;
+	VALUE *P1;
+	VALUE *P2;
+	TYPE type;
 
-  P1 = SP - 2;
-  P2 = P1 + 1;
+	op = (EXEC_code - C_EQ) >> 8;
 
-  type = EXEC_code & 0x1F;
-  op = (EXEC_code - C_EQ) >> 8;
-  goto *jump[type];
+	P1 = SP - 2;
+	P2 = P1 + 1;
 
-__BOOLEAN:
-__BYTE:
-__SHORT:
-__INTEGER:
+	type = EXEC_code & 0x1F;
+	goto *jump[type];
 
-  {
-    int tmp = P1->_integer.value - P2->_integer.value;
-    result = tmp > 0 ? 1 : tmp < 0 ? -1 : 0;
-    goto __END;
-  }
-  
-__LONG:
+__SC_BOOLEAN:
+__SC_BYTE:
+__SC_SHORT:
+__SC_INTEGER:
 
-  VALUE_conv(P1, T_LONG);
-  VALUE_conv(P2, T_LONG);
+	{
+		int tmp = P1->_integer.value - P2->_integer.value;
+		result = tmp > 0 ? 1 : tmp < 0 ? -1 : 0;
+		goto __SC_END;
+	}
+	
+__SC_LONG:
 
-  result = llsgn(P1->_long.value - P2->_long.value);
-  goto __END;
+	VALUE_conv(P1, T_LONG);
+	VALUE_conv(P2, T_LONG);
 
-__DATE:
+	result = llsgn(P1->_long.value - P2->_long.value);
+	goto __SC_END;
 
-  VALUE_conv(P1, T_DATE);
-  VALUE_conv(P2, T_DATE);
+__SC_DATE:
 
-  result = DATE_comp_value(P1, P2);
-  goto __END;
+	VALUE_conv(P1, T_DATE);
+	VALUE_conv(P2, T_DATE);
 
-__NULL:
+	result = DATE_comp_value(P1, P2);
+	goto __SC_END;
 
-  if (op < 2)
-  {
-  	if (P2->type == T_NULL)
-  	{
-	    result = !VALUE_is_null(P1);
-	    goto __END_RELEASE;
+__SC_NULL:
+
+	if (op < 2)
+	{
+		if (P2->type == T_NULL)
+		{
+			result = !VALUE_is_null(P1);
+			goto __SC_END_RELEASE;
 		}
 		else if (P1->type == T_NULL)
 		{
-	    result = !VALUE_is_null(P2);
-	    goto __END_RELEASE;
+			result = !VALUE_is_null(P2);
+			goto __SC_END_RELEASE;
 		}
-  }
+	}
 
-__STRING:
+__SC_STRING:
 
-  VALUE_conv_string(P1);
-  VALUE_conv_string(P2);
+	VALUE_conv_string(P1);
+	VALUE_conv_string(P2);
 
 //   if (op < 2 && P1->_string.len != P2->_string.len)
 //     result = 1;
@@ -535,114 +534,119 @@ __STRING:
 	}
 	else
 		result = STRING_compare(P1->_string.addr + P1->_string.start, P1->_string.len, P2->_string.addr + P2->_string.start, P2->_string.len);
-  goto __END_RELEASE;
+	
+	RELEASE_STRING(P1);
+	RELEASE_STRING(P2);
+	goto __SC_END;
 
-__SINGLE:
-__FLOAT:
+__SC_SINGLE:
+__SC_FLOAT:
 
-  VALUE_conv(P1, T_FLOAT);
-  VALUE_conv(P2, T_FLOAT);
+	VALUE_conv(P1, T_FLOAT);
+	VALUE_conv(P2, T_FLOAT);
 
-  result = fsgn(P1->_float.value - P2->_float.value);
-  goto __END;
+	result = fsgn(P1->_float.value - P2->_float.value);
+	goto __SC_END;
 
-__POINTER:
+__SC_POINTER:
 
-  VALUE_conv(P1, T_POINTER);
-  VALUE_conv(P2, T_POINTER);
+	VALUE_conv(P1, T_POINTER);
+	VALUE_conv(P2, T_POINTER);
 
-  result = P1->_pointer.value > P2->_pointer.value ? 1 : P1->_pointer.value < P2->_pointer.value ? -1 : 0;
-  goto __END_RELEASE;
+	result = P1->_pointer.value > P2->_pointer.value ? 1 : P1->_pointer.value < P2->_pointer.value ? -1 : 0;
+	goto __SC_END;
 
-__OBJECT:
+__SC_OBJECT:
 
-  result = OBJECT_comp_value(P1, P2);
-  goto __END_RELEASE;
+	result = OBJECT_comp_value(P1, P2);
+	//RELEASE_OBJECT(P1);
+	//RELEASE_OBJECT(P2);
+	goto __SC_END_RELEASE;
 
-__VARIANT:
+__SC_VARIANT:
 
-  variant = FALSE;
-  
-  if (TYPE_is_variant(P1->type))
-  {
-    VARIANT_undo(P1);
-    variant = TRUE;
-  }
+	{
+		bool variant = FALSE;
+	
+		if (TYPE_is_variant(P1->type))
+		{
+			VARIANT_undo(P1);
+			variant = TRUE;
+		}
 
-  if (TYPE_is_variant(P2->type))
-  {
-    VARIANT_undo(P2);
-    variant = TRUE;
-  }
+		if (TYPE_is_variant(P2->type))
+		{
+			VARIANT_undo(P2);
+			variant = TRUE;
+		}
 
-  type = Max(P1->type, P2->type);
+		type = Max(P1->type, P2->type);
 
-  if (op > 1)
-  {
-    if (type == T_NULL || TYPE_is_string(type))
-    {
-      typem = Min(P1->type, P2->type);
-      if (!TYPE_is_string(typem))
-        THROW(E_TYPE, TYPE_get_name(typem), TYPE_get_name(type));
-    }
-    else if (TYPE_is_object(type))
-      goto __ERROR;
-  }
-  else
-  {
-    if (TYPE_is_object_null(P1->type) && TYPE_is_object_null(P2->type))
-      type = T_OBJECT;
-    else if (TYPE_is_object(type))
-      THROW(E_TYPE, "Object", TYPE_get_name(Min(P1->type, P2->type)));
-  }
+		if (op > 1)
+		{
+			if (type == T_NULL || TYPE_is_string(type))
+			{
+				TYPE typem = Min(P1->type, P2->type);
+				if (!TYPE_is_string(typem))
+					THROW(E_TYPE, TYPE_get_name(typem), TYPE_get_name(type));
+			}
+			else if (TYPE_is_object(type))
+				goto __SC_ERROR;
+		}
+		else
+		{
+			if (TYPE_is_object_null(P1->type) && TYPE_is_object_null(P2->type))
+				type = T_OBJECT;
+			else if (TYPE_is_object(type))
+				THROW(E_TYPE, "Object", TYPE_get_name(Min(P1->type, P2->type)));
+		}
 
-  if (!variant)
-    *PC |= type;
+		if (!variant)
+			*PC |= type;
 
-  goto *jump[type];
+		goto *jump[type];
+	}
 
-__ERROR:
+__SC_ERROR:
 
-  THROW(E_TYPE, "Number, Date or String", TYPE_get_name(type));
+	THROW(E_TYPE, "Number, Date or String", TYPE_get_name(type));
 
-__END_RELEASE:
+__SC_END_RELEASE:
 
-  RELEASE(P1);
-  RELEASE(P2);
+	RELEASE(P1);
+	RELEASE(P2);
 
-__END:
+__SC_END:
 
-  P1->type = T_BOOLEAN;
-  SP--;
+	P1->type = T_BOOLEAN;
+	SP--;
 
-  goto *test[(int)op];
+	goto *test[(int)op];
 
-__EQ:
-  P1->_boolean.value = result == 0 ? -1 : 0;
-  return;
+__SC_EQ:
+	P1->_boolean.value = result == 0 ? -1 : 0;
+	return;
 
-__NE:
-  P1->_boolean.value = result != 0 ? -1 : 0;
-  return;
+__SC_NE:
+	P1->_boolean.value = result != 0 ? -1 : 0;
+	return;
 
-__GT:
-  P1->_boolean.value = result > 0 ? -1 : 0;
-  return;
+__SC_GT:
+	P1->_boolean.value = result > 0 ? -1 : 0;
+	return;
 
-__GE:
-  P1->_boolean.value = result >= 0 ? -1 : 0;
-  return;
+__SC_GE:
+	P1->_boolean.value = result >= 0 ? -1 : 0;
+	return;
 
-__LT:
-  P1->_boolean.value = result < 0 ? -1 : 0;
-  return;
+__SC_LT:
+	P1->_boolean.value = result < 0 ? -1 : 0;
+	return;
 
-__LE:
-  P1->_boolean.value = result <= 0 ? -1 : 0;
-  return;
+__SC_LE:
+	P1->_boolean.value = result <= 0 ? -1 : 0;
+	return;
 }
-
-
 
 void SUBR_strcomp(void)
 {

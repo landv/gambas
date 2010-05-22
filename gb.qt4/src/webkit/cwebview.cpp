@@ -427,7 +427,7 @@ void CWebView::statusBarMessage(const QString &text)
 {
 	GET_SENDER();
 	GB.FreeString(&THIS->status);
-	GB.NewString(&THIS->status, TO_UTF8(text), 0);
+	GB.NewZeroString(&THIS->status, TO_UTF8(text));
 	GB.Raise(THIS, EVENT_STATUS, 0);
 }
 	

@@ -187,8 +187,37 @@ EXTERN bool ERROR_backtrace;
 
 const char *ERROR_get(void);
 
-void ERROR_enter(ERROR_CONTEXT *err);
-void ERROR_leave(ERROR_CONTEXT *err);
+//void ERROR_enter(ERROR_CONTEXT *err);
+
+#define ERROR_enter(_err) \
+do { \
+  _err->prev = ERROR_current; \
+  _err->info.code = 0; \
+  ERROR_current = _err; \
+} while(0)
+
+
+//void ERROR_leave(ERROR_CONTEXT *err);
+
+#define ERROR_leave(_err) \
+do { \
+  if (_err->prev != ERROR_LEAVE_DONE) \
+	{ \
+		ERROR_current = _err->prev; \
+		if (ERROR_current) \
+		{ \
+			if (_err->info.code) \
+			{ \
+				ERROR_reset(&ERROR_current->info); \
+				ERROR_current->info = _err->info; \
+			} \
+		} \
+		else \
+			ERROR_reset(&_err->info); \
+    \
+		_err->prev = ERROR_LEAVE_DONE; \
+	} \
+} while(0)
 
 void ERROR_define(const char *pattern, char *arg[]);
 

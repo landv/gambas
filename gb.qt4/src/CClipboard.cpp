@@ -99,7 +99,7 @@ static void get_formats(const QMimeData *src, GB_ARRAY array)
     if (j < GB.Array.Count(array))
       continue;
     //fmt = get_format(src, i);
-		GB.NewString(&str, fmt.toUtf8().data(), 0);
+		GB.NewZeroString(&str, fmt.toUtf8().data());
 		*((char **)GB.Array.Add(array)) = str;
   }
 }

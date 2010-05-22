@@ -145,6 +145,7 @@ void *GAMBAS_Api[] =
   (void *)GB_ReturnNewZeroString,
 
   (void *)STRING_new,
+  (void *)GB_NewZeroString,
   (void *)GB_TempString,
   (void *)GB_FreeString,
   (void *)STRING_extend,
@@ -1085,25 +1086,29 @@ __NULL:
 
 void GB_ReturnInteger(int val)
 {
-  GB_Return(T_INTEGER, val);
+	TEMP.type = T_INTEGER;
+  TEMP._integer.value = val;
 }
 
 
 void GB_ReturnLong(int64_t val)
 {
-  GB_Return(T_LONG, val);
+	TEMP.type = T_LONG;
+	TEMP._long.value = val;
 }
 
 
 void GB_ReturnPointer(void *val)
 {
-	GB_Return(T_POINTER, (intptr_t)val);
+	TEMP.type = T_POINTER;
+	TEMP._pointer.value = val;
 }
 
 
 void GB_ReturnFloat(double val)
 {
-  GB_Return(T_FLOAT, val);
+	TEMP.type = T_FLOAT;
+  TEMP._float.value = val;
 }
 
 
@@ -1117,7 +1122,8 @@ void GB_ReturnDate(GB_DATE *date)
 
 void GB_ReturnBoolean(int val)
 {
-  GB_Return(T_BOOLEAN, val);
+	TEMP.type = T_BOOLEAN;
+  TEMP._boolean.value = val ? -1 : 0;
 }
 
 
@@ -1129,6 +1135,26 @@ void GB_ReturnObject(void *val)
 	{
 		TEMP.type = T_OBJECT; //OBJECT_class(val);
 		TEMP._object.object = val;
+	}
+}
+
+
+void GB_ReturnVariant(GB_VARIANT_VALUE *val)
+{
+	TEMP._variant.type = T_VARIANT;
+	
+	if (!val)
+	{
+		TEMP._variant.vtype = T_NULL;
+	}
+	else
+	{
+  	//VALUE_read(&TEMP, value, type);
+		TEMP._variant.vtype = val->type;
+		if (TEMP._variant.vtype == T_VOID)
+			TEMP._variant.vtype = T_NULL;
+
+		VARIANT_copy_value(&TEMP._variant, (VARIANT *)val);
 	}
 }
 
@@ -1207,6 +1233,9 @@ void GB_ReturnConstZeroString(const char *str)
 void GB_ReturnNewString(const char *src, int len)
 {
   char *str;
+	
+	if (len <= 0)
+		BREAKPOINT();
 
   STRING_new_temp(&str, src, len);
   GB_ReturnString(str);
@@ -1215,7 +1244,9 @@ void GB_ReturnNewString(const char *src, int len)
 
 void GB_ReturnNewZeroString(const char *src)
 {
-  GB_ReturnNewString(src, 0);
+	char *str;
+  STRING_new_temp_zero(&str, src);
+  GB_ReturnString(str);
 }
 
 
@@ -1563,6 +1594,10 @@ void *GB_Add(void *pdata)
   return ARRAY_add_void(pdata);
 }
 
+void GB_NewZeroString(char **str, char *src)
+{
+	STRING_new_zero(str, src);
+}
 
 void GB_TempString(char **str, char *src, int len)
 {

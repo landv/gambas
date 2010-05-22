@@ -31,10 +31,6 @@
 #include <unistd.h>
 
 
-
-
-
-
 BEGIN_METHOD_VOID (getopt_calc)
 {
 	char **tmp,c,charec[2]={0};
@@ -78,13 +74,13 @@ BEGIN_METHOD_VOID (getopt_calc)
 		
 		charec[0]=c;
 		tmp=(char **) GB.Add((void *) &(THIS->opt_found));
-		GB.NewString(tmp,charec,0);
+		GB.NewZeroString(tmp, charec);
 		
 		charec[0]=optopt;
 		tmp=(char **) GB.Add((void *) &(THIS->invalid));
 		if(optopt!=0)
 		{
-			GB.NewString(tmp,charec,0);
+			GB.NewZeroString(tmp, charec);
 		}
 		else
 		{
@@ -94,7 +90,7 @@ BEGIN_METHOD_VOID (getopt_calc)
 		tmp=(char **) GB.Add((void *) &(THIS->opt_arg));
 		if(optarg!=NULL)
 		{
-			GB.NewString(tmp,optarg,0);
+			GB.NewZeroString(tmp,optarg);
 		}
 		else
 		{
@@ -111,7 +107,7 @@ BEGIN_METHOD_VOID (getopt_calc)
 	for(i=optind;i<THIS->arg_count;i++)
 	{
 		tmp=(char **)GB.Array.Get(THIS->rest,i-optind);
-		GB.NewString(tmp,THIS->argv[i],0);
+		GB.NewZeroString(tmp,THIS->argv[i]);
 	}
 }
 END_METHOD
@@ -229,7 +225,7 @@ BEGIN_METHOD ( COPTIONS_getarg ,GB_STRING option)
 			if(THIS->opt_arg[i]!=NULL )
 			{
 				tmp=(char **)GB.Array.Add(THIS->return_temp);
-				GB.NewString(tmp,THIS->opt_arg[i],0);
+				GB.NewZeroString(tmp,THIS->opt_arg[i]);
 			}
 		}
 	}
@@ -257,7 +253,7 @@ BEGIN_METHOD_VOID ( COPTION_getallopt)
 			{
 				tmp=(char **)GB.Array.Add(THIS->return_temp);
 				charec[0]=THIS->opt_found[i][0];
-				GB.NewString(tmp,charec,0);
+				GB.NewZeroString(tmp,charec);
 			}
 		}
 	}
@@ -273,7 +269,7 @@ BEGIN_PROPERTY(COPTIONS_cmdline)
 END_PROPERTY
 
 BEGIN_PROPERTY(COPTIONS_options)
-	GB.NewString(&THIS->options,PSTRING(),0);
+	GB.NewString(&THIS->options,PSTRING(),PLENGTH());
 END_PROPERTY
 		
 BEGIN_METHOD ( COPTIONS_new, GB_STRING options; GB_OBJECT array )
@@ -281,7 +277,7 @@ BEGIN_METHOD ( COPTIONS_new, GB_STRING options; GB_OBJECT array )
 	char **tmp,*src;
 	int i,narg;
 
-	GB.NewString(&(THIS->options),STRING(options),0);
+	GB.NewString(&(THIS->options),STRING(options),LENGTH(options));
 
      GB.NewArray((void *) &(THIS->argv), sizeof(*(THIS->argv)), 0); // argv is where i keep track of what to free later
 	GB.Array.New((void *) &(THIS->cmdline) ,GB_T_STRING,arg_count);
@@ -289,7 +285,7 @@ BEGIN_METHOD ( COPTIONS_new, GB_STRING options; GB_OBJECT array )
 	for(i=0;i<arg_count;i++)
 	{
 		tmp=(char **)GB.Array.Get((void*)(THIS->cmdline),i);
-		GB.NewString(tmp,cmd_arg[i],0);
+		GB.NewZeroString(tmp,cmd_arg[i]);
 	}
 
 	if ( MISSING ( array ) )
@@ -297,7 +293,7 @@ BEGIN_METHOD ( COPTIONS_new, GB_STRING options; GB_OBJECT array )
 		for ( i=0; i<arg_count; i++ )
 		{
 			tmp=(char **)GB.Add((void *) &(THIS->argv));
-			GB.NewString(tmp,cmd_arg[i],0);
+			GB.NewZeroString(tmp,cmd_arg[i]);
 		}
 		THIS->arg_count=arg_count;
 	}
@@ -310,7 +306,7 @@ BEGIN_METHOD ( COPTIONS_new, GB_STRING options; GB_OBJECT array )
 			{
 				src=*(char **)GB.Array.Get( VARG ( array ),i);
 				tmp=(char **) GB.Add((void *) &(THIS->argv));
-				GB.NewString(tmp,src,0);
+				GB.NewZeroString(tmp,src);
 			}
 			THIS->arg_count=narg;
 		}

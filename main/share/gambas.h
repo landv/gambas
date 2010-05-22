@@ -819,6 +819,7 @@ typedef
 		void (*ReturnNewZeroString)(const char *);
 
 		void (*NewString)(char **, const char *, int);
+		void (*NewZeroString)(char **, const char *);
 		void (*TempString)(char **, const char *, int);
 		void (*FreeString)(char **);
 		void (*ExtendString)(char **, int);

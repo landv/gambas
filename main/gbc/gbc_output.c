@@ -115,7 +115,7 @@ static void flush_buffer(void)
   if (len <= 0)
     return;
     
-  if (fwrite(_buffer, sizeof(char), len, _file) != len)
+  if (UNLIKELY(fwrite(_buffer, sizeof(char), len, _file) != len))
     THROW("Write error");
     
   _pbuffer = _buffer;
@@ -128,7 +128,7 @@ static void write_byte(unsigned char val)
   printf("%ld : b %u 0x%X\n", get_pos(), val, val);
   #endif
 
-  if (_pbuffer >= _mbuffer)
+  if (UNLIKELY(_pbuffer >= _mbuffer))
     flush_buffer();
     
   *_pbuffer++ = val;
@@ -145,10 +145,10 @@ static void write_short(ushort val)
   printf("%ld : i %u 0x%X\n", get_pos(), val, val);
   #endif
 
-  if (_swap)
+  if (UNLIKELY(_swap))
   	SWAP_short((short *)&val);
 
-  if (_pbuffer >= _mbuffer)
+  if (UNLIKELY(_pbuffer >= _mbuffer))
     flush_buffer();
 
   *((ushort *)_pbuffer) = val;
@@ -163,10 +163,10 @@ static void write_int(uint val)
   printf("%ld : l %lu 0x%lX\n", get_pos(), val, val);
   #endif
 
-  if (_swap)
+  if (UNLIKELY(_swap))
   	SWAP_int((int *)&val);
 
-  if (_pbuffer >= _mbuffer)
+  if (UNLIKELY(_pbuffer >= _mbuffer))
     flush_buffer();
 
   *((uint *)_pbuffer) = val;
@@ -181,10 +181,10 @@ static void write_int64(uint64_t val)
   printf("%ld : l %llu 0x%llX\n", get_pos(), val, val);
   #endif
 
-  if (_swap)
+  if (UNLIKELY(_swap))
   	SWAP_int64((int64_t *)&val);
 
-  if (_pbuffer >= _mbuffer)
+  if (UNLIKELY(_pbuffer >= _mbuffer))
     flush_buffer();
     
   *((uint64_t *)_pbuffer) = val;
@@ -198,7 +198,7 @@ static void write_string(const char *str, int len)
   printf("%ld : s \"%.*s\"\n", get_pos(), len, str);
   #endif
 
-  if (&_pbuffer[len] > _mbuffer)
+  if (UNLIKELY(&_pbuffer[len] > _mbuffer))
     flush_buffer();
   
   if (&_pbuffer[len] <= _mbuffer)
@@ -210,7 +210,7 @@ static void write_string(const char *str, int len)
     return;
   }
 
-  if (fwrite(str, sizeof(char), len, _file) != len)
+  if (UNLIKELY(fwrite(str, sizeof(char), len, _file) != len))
     THROW("Write error");
   
   _pos += len;  
@@ -240,7 +240,7 @@ static void write_buffer(void *str, int len)
 
   flush_buffer();
   
-  if (fwrite(str, sizeof(char), len, _file) != len)
+  if (UNLIKELY(fwrite(str, sizeof(char), len, _file) != len))
     THROW("Write error");
     
   _pos += len;

@@ -114,9 +114,9 @@ EXTERN int TRANS_in_affectation;
 //EXTERN int TRANS_in_expression;
 #endif
 
+#define TRANS_newline() (PATTERN_is_newline(*JOB->current) ? JOB->line = PATTERN_index(*JOB->current) + 1, JOB->current++, TRUE : FALSE)
 
 void TRANS_reset(void);
-bool TRANS_newline(void);
 /*PUBLIC bool TRANS_type(bool check_as, bool square, bool array, bool new, TRANS_DECL *result);*/
 bool TRANS_type(int flag, TRANS_DECL *result);
 bool TRANS_get_number(int index, TRANS_NUMBER *result);
@@ -153,7 +153,8 @@ void TRANS_class(int index);
 
 #define RS_UNARY (-1)
 
-TRANS_TREE *TRANS_tree(bool check_statement);
+//TRANS_TREE *TRANS_tree(bool check_statement);
+void TRANS_tree(bool check_statement, TRANS_TREE **result, int *count);
 
 /* trans_ctrl.c */
 
@@ -164,8 +165,8 @@ void TRANS_if(void);
 void TRANS_else(void);
 void TRANS_endif(void);
 void TRANS_goto(void);
-void TRANS_do(PATTERN type);
-void TRANS_loop(PATTERN type);
+void TRANS_do(int type);
+void TRANS_loop(int type);
 void TRANS_select(void);
 void TRANS_case(void);
 void TRANS_default(void);
