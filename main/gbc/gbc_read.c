@@ -43,7 +43,6 @@
 #include "gbc_class.h"
 #include "gbc_read.h"
 
-
 //#define DEBUG
 //#define BIG_COMMENT 1
 
@@ -603,7 +602,6 @@ static void add_identifier()
 				
 				if (PATTERN_is_reserved(last_last_pattern) && RES_get_ident_flag(PATTERN_index(last_last_pattern)) & RSF_ILD)
 					last_declare = TRUE;
-				flag &= ~RSF_ILDD; // flag == 0 means we can read a subroutine!
 			}
 			
 			can_be_reserved = !last_declare;
@@ -640,7 +638,7 @@ static void add_identifier()
 		}
 	}
 
-	can_be_subr = flag == 0 && car != '.' && car != '!';
+	can_be_subr = ((flag & ~RSF_ILDD) == 0) && car != '.' && car != '!';
 
 	if (can_be_reserved)
 	{
