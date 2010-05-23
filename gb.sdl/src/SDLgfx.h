@@ -37,10 +37,9 @@ public:
 	~SDLgfx() {};
 
 	void resetGfx(void );
-	Uint32 GetBackColor(void ) { return hBackColor; }
-	Uint32 GetForeColor(void ) { return hForeColor; }
-	void SetBackColor(Uint32 color) { hBackColor = color; }
-	void SetForeColor(Uint32 color) { hForeColor = color; }
+	void SetColor(Uint32 color);
+	void Scale(GLfloat x, GLfloat y) { scalex = x; scaley = y; }
+	void Rotate(GLfloat z) { rotz = z; }
 
 	int GetLineStyle(void ) { return hLine; }
 	int GetLineWidth(void ) { return hLineWidth; }
@@ -63,12 +62,13 @@ private:
 	void SetContext(void );
 	SDL_Surface* GetDestSurface(void );
 
-	// colors (RRGGBBAA format)
-	Uint32 hBackColor;
-	Uint32 hForeColor;
 	// lines and fills
 	int hLine, hLineWidth;
 	int hFill;
+	
+	// rotations & scaling
+	GLfloat rotx, roty, rotz;
+	GLfloat scalex, scaley;
 };
 
 #endif /* __SDLGFX_H */

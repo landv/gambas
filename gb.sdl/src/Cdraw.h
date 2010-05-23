@@ -32,6 +32,8 @@ typedef
 		void *device;
 		SDLgfx *graphic;
 		CFONT *font;
+		Uint32 forecolor;
+		Uint32 backcolor;
 	}
 	CDRAW;
 

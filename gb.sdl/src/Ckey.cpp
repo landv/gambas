@@ -32,7 +32,7 @@
 CKEY_INFO CKEY_info = { 0 };
 
 #define CHECK_VALID() \
-  if (!CKEY_info.valid) \
+  if (UNLIKELY(CKEY_info.valid == NULL)) \
   { \
     GB.Error("No keyboard event data"); \
     return; \

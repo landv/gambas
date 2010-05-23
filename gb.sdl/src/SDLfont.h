@@ -60,9 +60,6 @@ public:
 	bool IsFontFixed(void );
 	bool IsFontUnderlined(void );
 
-	void SetBackColor(Uint32 color) { hBackColor = color; }
-	void SetForeColor(Uint32 color) { hForeColor = color; }
-
 	SDLsurface* RenderText(const char* text);
 
 private:
@@ -74,9 +71,6 @@ private:
 	TTF_Font *hSDLfont;
         int hSDLfontstyle;
 
-	// colors (RRGGBBAA format)
-	Uint32 hBackColor;
-	Uint32 hForeColor;
 };
 
 #endif /* _SDLFONT_H */

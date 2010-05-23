@@ -174,7 +174,7 @@ SDLsurface* SDLfont::RenderText(const char* text)
 
 	if (hfonttype == SDLTTF_font)
 	{
-		 SDL_Color fg = {(hForeColor >> 24) & 0xFF, (hForeColor >> 16) & 0xFF, (hForeColor >> 8) & 0xFF};
+		 SDL_Color fg = {0xFF, 0xFF, 0xFF};
 		 SDL_Surface *result = TTF_RenderUTF8_Blended(hSDLfont, text, fg);
 		 surf = new SDLsurface(result);
 	}

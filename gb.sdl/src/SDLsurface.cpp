@@ -84,7 +84,7 @@ SDLsurface::SDLsurface(const SDLsurface& surf)
 		SDL_SetAlpha(cpySurf, 0, 0);
 
 	/* Copy into the new surface */
-      surf.hTexture->Sync();
+	surf.hTexture->Sync();
 	SDL_BlitSurface(cpySurf, NULL, hSurface, NULL);
 
 	/* Restore the alpha blending attributes & set same attributes to new surface */

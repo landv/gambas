@@ -31,6 +31,7 @@
 
 static CDRAW draw_stack[DRAW_STACK_MAX];
 static CDRAW *draw_current = 0;
+static CFONT *default_font = 0;
 
 #define THIS (draw_current)
 #define GFX (THIS->graphic)
@@ -42,7 +43,7 @@ static CDRAW *draw_current = 0;
 
 static bool check_graphic(void)
 {
-	if (!THIS)
+	if (UNLIKELY(THIS == NULL))
 	{
 		GB.Error("No device");
 		return true;
@@ -61,13 +62,16 @@ void DRAW_begin(void *device)
 		return;
 	}
 
+	if (GB.CheckObject(device))
+		return;
+
 	if (THIS == 0)
 		THIS = draw_stack;
 	else
 		THIS++;
 
-	if (GB.CheckObject(device))
-		return;
+	THIS->backcolor = 0x00000000;
+	THIS->forecolor = 0x00FFFFFF;
 
 	if (GB.Is(device, CLASS_Window))
 	{
@@ -116,10 +120,27 @@ BEGIN_METHOD_VOID(CDRAW_end)
 
 END_METHOD
 
+BEGIN_METHOD(CDRAW_rotate, GB_FLOAT angle)
+
+	CHECK_GRAPHIC();
+
+	GFX->Rotate(VARG(angle));
+	
+END_METHOD
+
+BEGIN_METHOD(CDRAW_scale, GB_FLOAT x; GB_FLOAT y)
+
+	CHECK_GRAPHIC();
+
+	GFX->Scale(VARG(x), VARG(y));
+	
+END_METHOD
+
 BEGIN_METHOD(CDRAW_point, GB_INTEGER x; GB_INTEGER y)
 
 	CHECK_GRAPHIC();
 
+	GFX->SetColor(THIS->forecolor);
 	GFX->DrawPixel(VARG(x), VARG(y));
 
 END_METHOD
@@ -128,6 +149,7 @@ BEGIN_METHOD(CDRAW_line, GB_INTEGER x1; GB_INTEGER y1; GB_INTEGER x2; GB_INTEGER
 
 	CHECK_GRAPHIC();
 
+	GFX->SetColor(THIS->forecolor);
 	GFX->DrawLine(VARG(x1), VARG(y1), VARG(x2), VARG(y2));
 
 END_METHOD
@@ -136,6 +158,7 @@ BEGIN_METHOD(CDRAW_rect, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
 
 	CHECK_GRAPHIC();
 
+	GFX->SetColor(THIS->forecolor);
 	GFX->DrawRect(VARG(x), VARG(y), VARG(w), VARG(h));
 
 END_METHOD
@@ -144,8 +167,23 @@ BEGIN_METHOD(CDRAW_ellipse, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER
 
 	CHECK_GRAPHIC();
 
+	GFX->SetColor(THIS->forecolor);
 	GFX->DrawEllipse(VARG(x), VARG(y), VARG(w), VARG(h));
 
+END_METHOD
+
+BEGIN_METHOD(CDRAW_text, GB_STRING text; GB_INTEGER x; GB_INTEGER y)
+
+	CHECK_GRAPHIC();
+
+	if (GB.CheckObject(THIS->font))
+		return;
+
+	SDLsurface *txt = FONT->font->RenderText(GB.ToZeroString(ARG(text)));
+	GFX->SetColor(THIS->forecolor);
+	GFX->Blit(txt, VARG(x), VARG(y));
+	delete txt;
+	
 END_METHOD
 
 BEGIN_METHOD(CDRAW_image, GB_OBJECT image; GB_INTEGER x; GB_INTEGER y; GB_INTEGER width; GB_INTEGER height;
@@ -158,15 +196,27 @@ BEGIN_METHOD(CDRAW_image, GB_OBJECT image; GB_INTEGER x; GB_INTEGER y; GB_INTEGE
 	if (!image)
 		return;
 
+	GFX->SetColor(THIS->forecolor);
 	GFX->Blit(IMAGEID(image), VARG(x), VARG(y), VARGOPT(srcx,0), VARGOPT(srcy,0),
 		VARGOPT(srcw,-1), VARGOPT(srch,-1), VARGOPT(width,-1), VARGOPT(height,-1));
 
 END_METHOD
 
+BEGIN_PROPERTY(CDRAW_defaultfont)
+
+	CHECK_GRAPHIC();
+
+END_PROPERTY
+
 BEGIN_PROPERTY(CDRAW_font)
 
 	CHECK_GRAPHIC();
 
+	if (READ_PROPERTY)
+		GB.ReturnObject(FONT);
+	else
+		FONT = (CFONT *) VPROP(GB_OBJECT);
+	
 END_PROPERTY
 
 BEGIN_PROPERTY(CDRAW_linestyle)
@@ -208,9 +258,9 @@ BEGIN_PROPERTY(CDRAW_background)
 	CHECK_GRAPHIC();
 
 	if (READ_PROPERTY)
-		GB.ReturnInteger(GFX->GetBackColor());
+		GB.ReturnInteger(THIS->backcolor);
 	else
-		GFX->SetBackColor(VPROP(GB_INTEGER));
+		THIS->backcolor = VPROP(GB_INTEGER);
 
 END_PROPERTY
 
@@ -219,9 +269,9 @@ BEGIN_PROPERTY(CDRAW_foreground)
 	CHECK_GRAPHIC();
 
 	if (READ_PROPERTY)
-		GB.ReturnInteger(GFX->GetForeColor());
+		GB.ReturnInteger(THIS->forecolor);
 	else
-		GFX->SetForeColor(VPROP(GB_INTEGER));
+		THIS->forecolor = VPROP(GB_INTEGER);
 
 END_PROPERTY
 
@@ -234,18 +284,20 @@ GB_DESC CDraw[] =
   GB_STATIC_METHOD("Begin", NULL, CDRAW_begin, "(Device)o"),
   GB_STATIC_METHOD("End", NULL, CDRAW_end, NULL),
 
+  GB_STATIC_METHOD("Rotate", NULL, CDRAW_rotate, "(Angle)f"),
+  GB_STATIC_METHOD("Scale", NULL, CDRAW_scale, "(X)f(Y)f"),
+
   GB_STATIC_METHOD("Point", NULL, CDRAW_point, "(X)i(Y)i"),
   GB_STATIC_METHOD("Line", NULL, CDRAW_line, "(X1)i(Y1)i(X2)i(Y2)i"),
   GB_STATIC_METHOD("Rect", NULL, CDRAW_rect, "(X)i(Y)i(Width)i(Height)i"),
   GB_STATIC_METHOD("Ellipse", NULL, CDRAW_ellipse, "(X)i(Y)i(Width)i(Height)i"),
 
-/*
-  GB_STATIC_METHOD("Text",     NULL, DRAWING_text,     "(text)s[(X)i(Y)i]"),
-*/
-
+  GB_STATIC_METHOD("Text", NULL, CDRAW_text, "(text)s(X)i(Y)i"),
   GB_STATIC_METHOD("Image", NULL, CDRAW_image, "(Image)Image;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
 
-  GB_STATIC_PROPERTY("Font",  "Font", CDRAW_font),
+//  GB_STATIC_PROPERTY("DefaultFont",  "Font", CDRAW_defaultfont),
+  GB_STATIC_PROPERTY("Font", "Font", CDRAW_font),
+
   GB_STATIC_PROPERTY("LineStyle", "i", CDRAW_linestyle),
   GB_STATIC_PROPERTY("LineWidth", "i", CDRAW_linewidth),
   GB_STATIC_PROPERTY("FillStyle", "i", CDRAW_fillstyle),

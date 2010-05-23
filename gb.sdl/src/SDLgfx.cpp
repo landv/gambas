@@ -285,11 +285,17 @@ SDLgfx::SDLgfx(SDLsurface *surface)
 
 void SDLgfx::resetGfx(void)
 {
-	hForeColor = 0xFFFFFFFF;
-	hBackColor = 0x00000000;
 	hLine = SDL::SolidLine;
 	hLineWidth = 1;
 	hFill = SDL::NoFill;
+	rotx = roty = rotz = 0;
+	scalex = scaley = 1.0f;
+}
+
+void SDLgfx::SetColor(Uint32 color)
+{
+	glColor4f((GLfloat((color >> 16) & 0xFF)/255), (GLfloat((color >> 8) & 0xFF)/255), (GLfloat(color  & 0xFF)/255),
+                (GLfloat(~(color >> 24) & 0xFF)/255));
 }
 
 void SDLgfx::SetLineStyle(int style)
@@ -312,7 +318,7 @@ void SDLgfx::Clear(void)
 {
 	SetContext();
 
- 	glClearColor((GLfloat((hBackColor >> 16) & 0xFF)/255), (GLfloat((hBackColor >> 8) & 0xFF)/255), (GLfloat((hBackColor) & 0xFF)/255), 1.0f);
+ 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
@@ -321,8 +327,6 @@ void SDLgfx::DrawPixel(int x, int y)
 	SetContext();
 
 	glBegin(GL_POINTS);
-	glColor4f((GLfloat((hForeColor >> 16) & 0xFF)/255), (GLfloat((hForeColor >> 8) & 0xFF)/255), (GLfloat(hForeColor  & 0xFF)/255),
-                (GLfloat(~(hForeColor >> 24) & 0xFF)/255));
 	glVertex2i(x, y);
 	glEnd();
 }
@@ -340,8 +344,6 @@ void SDLgfx::DrawLine(int x1, int y1, int x2, int y2)
 	glLineWidth(GLfloat(hLineWidth));
 
 	glBegin(GL_LINES);
-	glColor4f((GLfloat((hForeColor >> 16) & 0xFF)/255), (GLfloat((hForeColor >> 8) & 0xFF)/255), (GLfloat(hForeColor  & 0xFF)/255),
-                (GLfloat(~(hForeColor >> 24) & 0xFF)/ 255));
 	glVertex2i(x1, y1);
 	glVertex2i(x2, y2);
 	glEnd();
@@ -360,8 +362,6 @@ void SDLgfx::DrawRect(int x, int y, int w, int h)
 
 	SetFillPattern(hFill);
 
-	glColor4f((GLfloat((hForeColor >> 16) & 0xFF)/255), (GLfloat((hForeColor >> 8) & 0xFF)/255), (GLfloat(hForeColor & 0xFF)/255),
-                (GLfloat(~(hForeColor >> 24) & 0xFF)/ 255));
 	glBegin(GL_QUADS);
 	glVertex2i(x, y);
 	glVertex2i(x+w, y);
@@ -397,18 +397,12 @@ void SDLgfx::DrawEllipse(int x, int y, int w, int h)
 	double step = 2 * PI / 360;
 
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
-
+	glTranslatef(x, y, 0.0f);
 	SetFillPattern(hFill);
 
-	glColor4f((GLfloat((hForeColor >> 16) & 0xFF)/255), (GLfloat((hForeColor >> 8) & 0xFF)/255), (GLfloat(hForeColor & 0xFF)/255),
-                (GLfloat(~(hForeColor >> 24) & 0xFF)/ 255));
-
 	glBegin(GL_POLYGON);
-
 	for (angle=0; angle < 2 * PI; angle += step)
-	{
-		glVertex2d(x + (w * cos(angle)), y + (h * sin(angle)));
-	}
+		glVertex2d(w * cos(angle), h * sin(angle));
 	glEnd();
 
 	if (hFill>SDL::SolidFill)
@@ -416,15 +410,13 @@ void SDLgfx::DrawEllipse(int x, int y, int w, int h)
 		SetFillPattern(SDL::NoFill);
 		SetLinePattern(hLine);
 		glLineWidth(GLfloat(hLineWidth));
-
 		glBegin(GL_POLYGON);
 		for (angle=0; angle < 2 * PI; angle += step)
-		{
-			glVertex2d(x + (w * cos(angle)), y + (h * sin(angle)));
-		}
+			glVertex2d(w * cos(angle), h * sin(angle));
 		glEnd();
 	}
 
+	glLoadIdentity();
 	glPopAttrib();
 }
 
@@ -434,6 +426,9 @@ void SDLgfx::Blit(SDLsurface *surface, int x, int y, int srcX, int srcY,
 	if ((srcX > surface->GetWidth()) || (srcY > surface->GetHeight()))
 		return;
 
+	if (!surface->GetWidth() || !surface->GetHeight())
+		return;
+	
 	SDL_Surface *destsurf = GetDestSurface();
 
 	if ((x > destsurf->w) || (y > destsurf->h))
@@ -446,7 +441,7 @@ void SDLgfx::Blit(SDLsurface *surface, int x, int y, int srcX, int srcY,
 	SDLtexture *texture = surface->GetTexture();
 	texture->GetAsTexture(&info);
 
-	int myWidth = 0, myHeight = 0;
+	GLfloat myWidth = 0, myHeight = 0;
 
 	if ((srcHeight<0) || ((srcY + srcHeight) > surface->GetHeight()))
 		myHeight = surface->GetHeight() - srcY;
@@ -471,20 +466,28 @@ void SDLgfx::Blit(SDLsurface *surface, int x, int y, int srcX, int srcY,
 	if (height != -1)
 		myHeight = height;
 
+	myWidth = myWidth / 2;
+	myHeight = myHeight / 2;
+	
+	glTranslatef(myWidth + x, myHeight + y, 0.0f);
+	glRotatef(rotz, 0, 0, 1);
+	glScalef(scalex, scaley, 0.0f);
+	
 	glBegin(GL_QUADS);
-	glColor4f(1.0, 1.0, 1.0, 1.0);
 	glTexCoord2d(myTexX, myTexY);
-	glVertex2i(x, y);
+	glVertex2f(-myWidth, -myHeight);
 
 	glTexCoord2d(myTexX, myTexHeight);
-	glVertex2i(x, y + myHeight);
+	glVertex2f(-myWidth, myHeight);
 
 	glTexCoord2d(myTexWidth, myTexHeight);
-	glVertex2i(x + myWidth, y + myHeight);
+	glVertex2f(myWidth, myHeight);
 
 	glTexCoord2d(myTexWidth, myTexY);
-	glVertex2i(x + myWidth, y);
+	glVertex2f(myWidth, -myHeight);
 	glEnd();
+	
+	glLoadIdentity();
 }
 
 void SDLgfx::SetContext()

@@ -65,8 +65,8 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CWINDOW_free)
 
-      GB.StoreObject(NULL, POINTER(&(THIS->cursor)));
-      GB.StoreObject(NULL, POINTER(&(THIS->font)));
+	GB.StoreObject(NULL, POINTER(&(THIS->cursor)));
+	GB.StoreObject(NULL, POINTER(&(THIS->font)));
 	delete WINDOWID;
 
 END_METHOD
