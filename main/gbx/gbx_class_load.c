@@ -51,6 +51,7 @@
 
 //#define DEBUG
 //#define DEBUG_LOAD 1
+//#define DEBUG_STRUCT 1
 
 static const char *ClassName;
 static bool _swap;
@@ -95,7 +96,6 @@ static int sizeof_ctype(CLASS *class, CTYPE ctype)
 	}
 	else
 		return TYPE_sizeof_memory(ctype.id);
-		
 }
 
 TYPE CLASS_ctype_to_type(CLASS *class, CTYPE ctype)
@@ -330,6 +330,128 @@ static char *get_section(char *sec_name, char **section, short *pcount, const ch
 
 #define RELOCATE(_ptr) (_ptr = (char *)&class->string[(int)(intptr_t)(_ptr)])
 
+
+static void load_structure(CLASS *class, int *structure, int nfield)
+{
+	char *name;
+	char *field;
+	CLASS *sclass;
+	int i, pos, size, len;
+	CTYPE ctype;
+	CLASS_DESC *desc;
+	CLASS_VAR *var;
+	GLOBAL_SYMBOL *global;
+	
+	name = (char *)*structure++;
+	RELOCATE(name);
+	#if DEBUG_STRUCT
+	fprintf(stderr, "Loading structure %s\n", name);
+	#endif
+	
+	if (class->global)
+		sclass = CLASS_find_global(name);
+	else
+		sclass = CLASS_find(name);
+	
+	if (sclass->state)
+	{
+		if (!sclass->is_struct)
+			THROW(E_CLASS, ClassName, "Class already exists: ", name);
+		// Must check compatibility
+	}
+	
+	sclass->swap = class->swap;
+	sclass->component = class->component;
+	sclass->debug = class->debug;
+
+	ALLOC_ZERO(&sclass->load, sizeof(CLASS_LOAD), "load_structure");
+	
+	ALLOC(&var, sizeof(CLASS_VAR) * nfield, "load_structure");
+	sclass->load->dyn = var;
+	sclass->load->n_dyn = nfield;
+	
+	if (sclass->debug)
+	{
+		ALLOC(&global, sizeof(GLOBAL_SYMBOL) * nfield, "load_structure");
+		sclass->load->global = global;
+		sclass->load->n_global = nfield;
+	}
+	
+	sclass->n_desc = nfield;
+	ALLOC(&sclass->table, sizeof(CLASS_DESC_SYMBOL) * nfield, "load_structure");
+	ALLOC(&desc, sizeof(CLASS_DESC) *nfield, "load_structure");
+	sclass->data = (char *)desc;
+
+	pos = sizeof(OBJECT);
+	
+	for (i = 0; i < nfield; i++)
+	{
+		field = (char *)*structure++;
+		RELOCATE(field);
+		len = strlen(field);
+		ctype = *((CTYPE *)structure);
+		structure++;
+		
+		desc[i].variable.name = "v";
+		desc[i].variable.type = CLASS_ctype_to_type(class, ctype);
+		desc[i].variable.ctype = ctype;
+		desc[i].variable.offset = pos;
+		desc[i].variable.class = sclass;
+		
+		var[i].type = ctype;
+		var[i].pos = pos;
+		
+		if (sclass->debug)
+		{
+			global[i].sym.name = field;
+			global[i].sym.len = len;
+			global[i].ctype = ctype;
+			global[i].value = i;
+		}
+		
+		#if DEBUG_STRUCT
+		fprintf(stderr, "  %d: %s As %s\n", i, field, TYPE_get_name(desc[i].variable.type));
+		#endif
+
+		sclass->table[i].desc = &desc[i];
+		sclass->table[i].name = field;
+		sclass->table[i].sort = 0;
+		sclass->table[i].len = len;
+
+		size = sizeof_ctype(class, ctype);
+		pos = align_pos(pos, size);
+		pos += size; //sizeof_ctype(class, var->type);
+	}
+	
+	#ifdef OS_64BITS
+	size = (pos + 7) & ~7;
+	#else
+	size = align_pos(pos, 4);
+	#endif
+
+	#if DEBUG_STRUCT
+	fprintf(stderr, "  --> size = %d\n", size);
+	#endif
+	
+  CLASS_calc_info(sclass, 0, size, TRUE, 0);
+
+	CLASS_sort(sclass);
+	
+	if (sclass->debug)
+	{
+		for (i = 0; i < nfield; i++)
+			global[i].sym.sort = sclass->table[i].sort;
+	}
+	
+	for (i = 0; i < MAX_SPEC; i++)
+		sclass->special[i] = NO_SYMBOL;
+	
+	sclass->is_struct = TRUE;
+	
+  sclass->state = CS_READY;
+}
+
+
 static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfirst)
 {
   char *section;
@@ -342,10 +464,10 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
   CLASS_VAR *var;
   FUNCTION *func;
   FUNC_DEBUG *debug;
-	void **struct_desc;
   int i, j, pos;
   int offset;
-  short n_desc, n_class_ref, n_unknown, n_array;
+  short n_desc, n_class_ref, n_unknown, n_array, n_struct;
+	CLASS_STRUCT *structure;
 	int size;
 	
   ALLOC_ZERO(&class->load, sizeof(CLASS_LOAD), "CLASS_load");
@@ -408,8 +530,15 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
 
 	// Structure descriptions
 	
-	for (i = 0; i < info->nstruct; i++)
-		get_section("structure", &section, NULL, NULL);
+	if (info->nstruct)
+	{
+		ALLOC(&structure, sizeof(CLASS_STRUCT) * info->nstruct, "load_and_relocate");
+		for (i = 0; i < info->nstruct; i++)
+		{
+			structure[i].desc = (int *)get_section("structure", &section, &n_struct, _i);
+			structure[i].nfield = (n_struct - 1) / 2;
+		}
+	}
 	
   // Loading code
 
@@ -694,6 +823,15 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
   /* Class size and offsets */
 
   CLASS_calc_info(class, class->n_event, info->s_dynamic, FALSE, info->s_static);
+	
+	// Create structures
+	
+	if (info->nstruct)
+	{
+		for (i = 0; i < info->nstruct; i++)
+			load_structure(class, structure[i].desc, structure[i].nfield);
+		FREE(&structure, "load_and_relocate");
+	}
 
   *pndesc = n_desc;
 }
@@ -796,6 +934,8 @@ void CLASS_load_without_init(CLASS *class)
 	#endif
 
   class->in_load = TRUE;
+
+	class->init_dynamic = TRUE;
 
 	load_and_relocate(class, len_data, &n_desc, &first);
 
@@ -997,7 +1137,7 @@ void CLASS_load_without_init(CLASS *class)
   //EXEC.func = &class->load->func[FUNC_INIT_STATIC];
 
   EXEC_function();
-
+	
   //total += MEMORY_size - alloc;
   //printf("%s: %d  TOTAL = %d\n", class->name, MEMORY_size - alloc, total);
 }

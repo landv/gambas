@@ -576,7 +576,7 @@ END_PROPERTY
 BEGIN_PROPERTY(CTREEVIEWITEM_text)
 
 	if (READ_PROPERTY)
-		GB.ReturnNewString(WIDGET->itemText(THIS->item), 0);
+		GB.ReturnNewZeroString(WIDGET->itemText(THIS->item));
 	else	
 		WIDGET->setItemText(THIS->item, GB.ToZeroString(PROP(GB_STRING)));
 	

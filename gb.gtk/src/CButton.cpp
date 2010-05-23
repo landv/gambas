@@ -85,7 +85,7 @@ END_METHOD
 
 BEGIN_PROPERTY(CBUTTON_text)
 
-	if (READ_PROPERTY) { GB.ReturnNewString(BUTTON->text(),0); return; }
+	if (READ_PROPERTY) { GB.ReturnNewZeroString(BUTTON->text()); return; }
 	BUTTON->setText((const char*)GB.ToZeroString(PROP(GB_STRING)));
 	
 END_PROPERTY

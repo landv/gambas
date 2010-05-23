@@ -293,10 +293,10 @@ BEGIN_METHOD_VOID(CXmlWriter_EndDocument)
 	THIS->writer=NULL;
 	if (!THIS->buffer)
 	{
-		GB.ReturnNewString(NULL,0);
+		GB.ReturnNull();
 		return;
 	}
-	GB.ReturnNewString((char *)THIS->buffer->content,0);
+	GB.ReturnNewZeroString((char *)THIS->buffer->content);
 	xmlBufferFree(THIS->buffer);
 	THIS->buffer=NULL;
 

@@ -179,7 +179,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CDIALOG_path)
 
-	if (READ_PROPERTY) { GB.ReturnNewString( gDialog::path(),0); return; }
+	if (READ_PROPERTY) { GB.ReturnNewZeroString( gDialog::path()); return; }
 	gDialog::setPath(GB.ToZeroString(PROP(GB_STRING)));
 
 END_PROPERTY

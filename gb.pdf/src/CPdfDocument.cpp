@@ -145,7 +145,7 @@ static void aux_return_unicode_string(Unicode *uni, int32_t  len)
 	for (bc=0; bc<len; bc++)
 		GB.AddString(&ret,(const char*)&uni[bc],0);
 
-	GB.ReturnNewString(ret,0);
+	GB.ReturnNewZeroString(ret);
 	GB.FreeString(&ret);
 }
 

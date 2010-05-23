@@ -161,7 +161,7 @@ BEGIN_PROPERTY(CTRAYICON_tooltip)
 
 	if (READ_PROPERTY)
 	{
-		GB.ReturnNewString(TRAYICON->toolTip(),0);
+		GB.ReturnNewZeroString(TRAYICON->toolTip());
 		return;
 	}
 	

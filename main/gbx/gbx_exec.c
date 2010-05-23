@@ -1606,7 +1606,7 @@ void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int npa
 
 	if (!class->parent)
 	{
-		if (special == SPEC_NEW && !CLASS_is_native(class))
+		if (special == SPEC_NEW && class->init_dynamic)
 		{
 			EXEC.class = class;
 			EXEC.object = object;
@@ -1652,7 +1652,7 @@ void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int npa
 
 		if (special == SPEC_NEW)
 		{
-			if (!CLASS_is_native(class))
+			if (class->init_dynamic)
 			{
 				EXEC.class = class;
 				EXEC.object = object;

@@ -113,7 +113,7 @@ BEGIN_METHOD(CNET_Format,GB_STRING IpString;GB_INTEGER Format;GB_BOOLEAN LeadZer
 	if (!LENGTH(IpString)) return;
 
 	ToIPv4 (STRING(IpString),dst,leadzero);
-	GB.ReturnNewString(dst,0);
+	GB.ReturnNewZeroString(dst);
 	
 
 END_METHOD

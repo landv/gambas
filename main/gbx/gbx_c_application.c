@@ -99,7 +99,7 @@ BEGIN_PROPERTY(User_Name)
   struct passwd *info = getpwuid(getuid());
 
   if (info)
-    GB_ReturnNewString(info->pw_name, 0);
+    GB_ReturnNewZeroString(info->pw_name);
   else
     GB_Error((char *)E_MEMORY);
 

@@ -1001,7 +1001,7 @@ fType GetFieldType(const char *Type, unsigned int *length)
 	unsigned int rTypeLen = 0;
 	int i;
 
-	GB.NewString(&upper, Type, 0);
+	GB.NewZeroString(&upper, Type);
 	for (i = 0; i < GB.StringLength(upper); i++)
 		upper[i] = toupper(upper[i]);
 	

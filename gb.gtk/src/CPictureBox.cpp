@@ -154,7 +154,7 @@ BEGIN_PROPERTY(CMOVIEBOX_path)
 	
 	if (READ_PROPERTY)
 	{
-		GB.ReturnNewString(MTHIS->path,0);
+		GB.ReturnNewZeroString(MTHIS->path);
 		return;
 	}
 	

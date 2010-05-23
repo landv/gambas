@@ -163,7 +163,7 @@ END_PROPERTY
 BEGIN_PROPERTY(CGRIDVIEWDATA_text)
 
 	if (READ_PROPERTY)
-		GB.ReturnNewString(THIS->data->text,0);
+		GB.ReturnNewZeroString(THIS->data->text);
 	else
 		THIS->data->setText(GB.ToZeroString(PROP(GB_STRING)));
 
@@ -172,7 +172,7 @@ END_PROPERTY
 BEGIN_PROPERTY(CGRIDVIEWDATA_rich_text)
 
 	if (READ_PROPERTY)
-		GB.ReturnNewString(THIS->data->richText,0);
+		GB.ReturnNewZeroString(THIS->data->richText);
 	else
 		THIS->data->setRichText(GB.ToZeroString(PROP(GB_STRING)));
 
@@ -924,7 +924,7 @@ BEGIN_PROPERTY(CGRIDVIEW_column_headertext)
 
 	if (READ_PROPERTY)
 	{
-		GB.ReturnNewString(WIDGET->headerText(THIS->col),0);
+		GB.ReturnNewZeroString(WIDGET->headerText(THIS->col));
 		return;
 	}
 	WIDGET->setHeaderText(THIS->col,PROP(GB_STRING)->value.addr);
@@ -935,7 +935,7 @@ BEGIN_PROPERTY(CGRIDVIEW_column_footer_text)
 
 	if (READ_PROPERTY)
 	{
-		GB.ReturnNewString(WIDGET->footerText(THIS->col),0);
+		GB.ReturnNewZeroString(WIDGET->footerText(THIS->col));
 		return;
 	}
 	WIDGET->setFooterText(THIS->col,PROP(GB_STRING)->value.addr);
@@ -946,7 +946,7 @@ BEGIN_PROPERTY(CGRIDVIEW_row_text)
 
 	if (READ_PROPERTY)
 	{
-		GB.ReturnNewString(WIDGET->rowText(THIS->row),0);
+		GB.ReturnNewZeroString(WIDGET->rowText(THIS->row));
 		return;
 	}
 	WIDGET->setRowText(THIS->row,PROP(GB_STRING)->value.addr);

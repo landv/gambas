@@ -189,6 +189,13 @@ typedef
 		int value;
 		}
 	GLOBAL_SYMBOL;
+	
+typedef
+	struct {
+		int nfield;
+		int *desc;
+	}
+	CLASS_STRUCT;
 
 typedef
 	struct {
@@ -253,7 +260,9 @@ typedef
 		unsigned is_native : 1;           //          If the class is native (i.e. written in C/C++)
 		unsigned error : 1;               //          Loading or registering the class has failed
 		unsigned is_observer : 1;         //          This is the Observer class
-		unsigned _reserved : 12;          //  24  36 
+		unsigned is_struct : 1;           //          This class is a structure
+		unsigned init_dynamic : 1;        //          If there is a special function to call at instanciation
+		unsigned _reserved : 11;          //  24  36 
 
 		short n_desc;                     //  26  38  number of descriptions
 		short n_event;                    //  28  40  number of events
@@ -264,7 +273,10 @@ typedef
 
 		int (*check)();                   //  40  64  method for checking that an object is valid
 
-		char *data;                       //  44  72  class file data for loaded class / generated description for native class
+		char *data;                       //  44  72  class file data for loaded class 
+		                                  //          or generated description for native class
+		                                  //          or generated description for structures
+		
 		CLASS_LOAD *load;                 //  48  80  information about loaded class
 
 		char *stat;                       //  52  88  static class data
@@ -286,7 +298,7 @@ typedef
 		char *path;                       // 116 176  Source file path
 		COMPONENT *component;             // 120 184 The component the class belongs to
 		
-		struct _CLASS *override;          //  124 192 The overridden class
+		struct _CLASS *override;          // 124 192 The overridden class
 		
 		struct _CLASS *next;              // 128 200 next class
 		}
@@ -312,7 +324,8 @@ typedef
 		SPEC_UNKNOWN,
 		SPEC_COMPARE,
 		SPEC_ATTACH,
-		SPEC_PRINT
+		SPEC_PRINT,
+		MAX_SPEC = 12
 		}
 	CLASS_SPECIAL;
 

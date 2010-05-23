@@ -405,7 +405,7 @@ BEGIN_PROPERTY ( CCURL_URL )
 	
 	if (READ_PROPERTY)
 	{
-		GB.ReturnNewString(THIS_URL,0);
+		GB.ReturnNewZeroString(THIS_URL);
 		return;
 	}
 

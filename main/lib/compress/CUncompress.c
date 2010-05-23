@@ -19,8 +19,8 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
-#define __CUNCOMPRESS_C
 
+#define __CUNCOMPRESS_C
 
 #include "CUncompress.h"
 #include "main.h"
@@ -79,11 +79,11 @@ BEGIN_METHOD (CUNCOMPRESS_String,GB_STRING Source;)
 	unsigned int lent=0;
 
 	Check_Driver();
-	if (!LENGTH(Source)) { GB.ReturnNewString(NULL,0); return; }
+	if (!LENGTH(Source)) { GB.ReturnNull(); return; }
 	
 	THIS->driver->Uncompress.String(&target,&lent,STRING(Source),LENGTH(Source));
 	
-	if (!lent) GB.ReturnNewString(NULL,0);
+	if (!lent) GB.ReturnNull();
 	GB.ReturnNewString (target,lent);
 	GB.Free(POINTER(&target));
 
@@ -106,10 +106,10 @@ BEGIN_PROPERTY (CUNCOMPRESS_Type)
 	{
 		if (!THIS->driver)
 		{	
-			GB.ReturnNewString(NULL,0);
+			GB.ReturnNull();
 			return;
 		}
-		GB.ReturnNewString(THIS->driver->name,0);
+		GB.ReturnNewZeroString(THIS->driver->name);
 		return;
 	}
 	

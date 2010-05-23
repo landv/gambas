@@ -43,7 +43,7 @@ END_METHOD
 BEGIN_PROPERTY(CKEY_text)
 
   CHECK_VALID();
-  GB.ReturnNewString(gKey::text(),0);
+  GB.ReturnNewZeroString(gKey::text());
 
 END_PROPERTY
 

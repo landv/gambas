@@ -83,7 +83,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CFRAME_text)
 
-	if (READ_PROPERTY) { GB.ReturnNewString( FRAME->text(),0 ); return; }
+	if (READ_PROPERTY) { GB.ReturnNewZeroString( FRAME->text()); return; }
 	FRAME->setText(GB.ToZeroString(PROP(GB_STRING)));
 
 END_PROPERTY

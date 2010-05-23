@@ -404,7 +404,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CWINDOW_text)
 
-	if (READ_PROPERTY) { GB.ReturnNewString(WINDOW->text(),0); return; }
+	if (READ_PROPERTY) { GB.ReturnNewZeroString(WINDOW->text()); return; }
 	WINDOW->setText((const char*)GB.ToZeroString(PROP(GB_STRING)));
 	GB.Raise(THIS, EVENT_Title, 0);
 

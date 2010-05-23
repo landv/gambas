@@ -65,7 +65,7 @@ END_PROPERTY
 BEGIN_PROPERTY(CXMLNode_Name)
 
 	if (READ_PROPERTY)
-		GB.ReturnNewString((const char *)THIS->node->name,0);
+		GB.ReturnNewZeroString((const char *)THIS->node->name);
 	else
 		xmlNodeSetName(THIS->node, (const xmlChar *)GB.ToZeroString(PROP(GB_STRING)));
 
@@ -74,7 +74,7 @@ END_PROPERTY
 BEGIN_PROPERTY(CXMLNode_Value)
 
 	if (READ_PROPERTY)
-		GB.ReturnNewString((const char *)xmlNodeGetContent(THIS->node),0);
+		GB.ReturnNewZeroString((const char *)xmlNodeGetContent(THIS->node));
 	else
 		fprintf(stderr, "*NOT IMPLEMENTED*");
 

@@ -64,7 +64,7 @@ BEGIN_PROPERTY(CTEXTAREA_text)
 	if (READ_PROPERTY)
 	{
 		buf=TEXTAREA->text();
-		GB.ReturnNewString(buf,0);
+		GB.ReturnNewZeroString(buf);
 		free(buf);
 		return;
 	}
@@ -157,7 +157,7 @@ BEGIN_PROPERTY(CTEXTAREA_sel_text)
 	if (READ_PROPERTY)
 	{
 		buf=TEXTAREA->selText();
-		GB.ReturnNewString(buf,0);
+		GB.ReturnNewZeroString(buf);
 		if (buf) free(buf);
 		return;
 	}

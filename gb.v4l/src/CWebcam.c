@@ -1518,7 +1518,7 @@ void return_array(char *array,long mmax)
 BEGIN_PROPERTY(CFEATURES_name)
 
 	if( THIS->is_v4l2 ) 
-		GB.ReturnNewString(THIS->device,strlen(THIS->device));
+		GB.ReturnNewZeroString(THIS->device);
 	else	return_array(DEVICE->vcap.name,32);
 
 END_PROPERTY
@@ -1667,7 +1667,7 @@ BEGIN_PROPERTY(CTUNER_name)
 	char * tuner = "'tuner' not currently implemented on V4L2";
 
 	if( THIS->is_v4l2 ) {
-		GB.ReturnNewString(tuner,strlen(tuner));
+		GB.ReturnNewZeroString(tuner);
 		return;
 	}
 

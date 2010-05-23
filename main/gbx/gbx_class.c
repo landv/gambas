@@ -111,7 +111,15 @@ static void unload_class(CLASS *class)
 	if (class->free_name)
 		FREE(&class->name, "unload_class");
 
-	if (!CLASS_is_native(class))
+	if (class->is_struct)
+	{
+		FREE(&class->load->dyn, "unload_class");
+		if (class->debug)
+			FREE(&class->load->global, "unload_class");
+		FREE(&class->load, "unload_class");
+		FREE(&class->data, "unload_class");
+	}
+	else if (!CLASS_is_native(class))
 	{
 		#ifdef OS_64BITS
 			
@@ -506,9 +514,6 @@ int CLASS_find_symbol(CLASS *class, const char *name)
 	int index;
 
 	//printf("%s.%s\n", class->name, name);
-	
-	//if (!strcmp(class->name, "Collection") && !strcmp(name, "Exist"))
-	//  printf("STOP\n");
 	
 	SYMBOL_find(class->table, class->n_desc, sizeof(CLASS_DESC_SYMBOL), TF_IGNORE_CASE, name, strlen(name), NULL, &index);
 

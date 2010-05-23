@@ -153,7 +153,7 @@ BEGIN_PROPERTY(CMENU_text)
 
 	if (READ_PROPERTY)
 	{
-		GB.ReturnNewString(MENU->text(),0);
+		GB.ReturnNewZeroString(MENU->text());
 		return;
 	}
 	MENU->setText(GB.ToZeroString(PROP(GB_STRING)));
@@ -220,7 +220,7 @@ BEGIN_PROPERTY(CMENU_shortcut)
 
 	if (READ_PROPERTY)
 	{
-		GB.ReturnNewString(MENU->shortcut(),0);
+		GB.ReturnNewZeroString(MENU->shortcut());
 		return;
 	}
 	

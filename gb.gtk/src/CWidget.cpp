@@ -757,7 +757,7 @@ BEGIN_PROPERTY(CWIDGET_tooltip)
 
 	if (READ_PROPERTY)
 	{
-		GB.ReturnNewString(CONTROL->toolTip(),0);
+		GB.ReturnNewZeroString(CONTROL->toolTip());
 		return;
 	}
 	

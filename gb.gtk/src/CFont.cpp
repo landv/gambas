@@ -213,7 +213,7 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(CFONT_to_string)
 
-	GB.ReturnNewString(FONT->toString(), 0);
+	GB.ReturnNewZeroString(FONT->toString());
 	
 END_METHOD
 
@@ -287,7 +287,7 @@ BEGIN_METHOD_VOID(CFONTS_next)
 		return;
 	}
 	
-	GB.ReturnNewString ( gFont::familyItem(pos[0]++),0 );  
+	GB.ReturnNewZeroString ( gFont::familyItem(pos[0]++));
   
 END_METHOD
 

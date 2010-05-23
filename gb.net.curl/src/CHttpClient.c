@@ -428,7 +428,7 @@ BEGIN_PROPERTY(HttpClient_CookiesFile)
 	file = GB.FileName(PSTRING(), PLENGTH());
 	
 	if (file)
-		GB.NewString(&THIS_HTTP->cookiesfile, file, 0);
+		GB.NewZeroString(&THIS_HTTP->cookiesfile, file);
 
 END_PROPERTY
 
@@ -517,7 +517,7 @@ BEGIN_METHOD_VOID(HttpClient_new)
 	GB.Alloc((void**)POINTER(&tmp),sizeof(char)*(1+strlen("http://127.0.0.1:80")));
 	strcpy(tmp,"http://127.0.0.1:80");
 	THIS_URL=tmp;
-	GB.NewString(&THIS_HTTP->sUserAgent,"Gambas Http/1.0",0);
+	GB.NewZeroString(&THIS_HTTP->sUserAgent,"Gambas Http/1.0");
 	
 	tmp=NULL;
 	GB.Alloc((void**)POINTER(&tmp),8);

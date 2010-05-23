@@ -177,7 +177,7 @@ void CSocket_CallBackFromDns(void *_object)
 	}
 
 	GB.FreeString (&THIS->sRemoteHostIP);
-	GB.NewString ( &THIS->sRemoteHostIP ,THIS->DnsTool->sHostIP,0);
+	GB.NewZeroString ( &THIS->sRemoteHostIP ,THIS->DnsTool->sHostIP);
 	/* Let's turn socket to async mode */
 	//ioctl(SOCKET->socket,FIONBIO,&NoBlock);
 	/* Third, we connect the socket */
@@ -262,7 +262,7 @@ void CSocket_CallBackConnecting(int t_sock,int type,intptr_t param)
 	getsockname (SOCKET->socket,(struct sockaddr*)&myhost,(socklen_t *)&mylen);
 	THIS->iLocalPort=ntohs(myhost.sin_port);
 	GB.FreeString( &THIS->sLocalHostIP);
-	GB.NewString ( &THIS->sLocalHostIP ,inet_ntoa(myhost.sin_addr),0);
+	GB.NewZeroString ( &THIS->sLocalHostIP ,inet_ntoa(myhost.sin_addr));
 
 	CSOCKET_init_connected(THIS);
 	GB.Stream.SetSwapping(&SOCKET->stream, htons(1234) != 1234);
@@ -515,7 +515,7 @@ int CSocket_connect_unix(void *_object,char *sPath, int lenpath)
 	}
 
  	GB.FreeString(&THIS->sPath);
-	GB.NewString ( &THIS->sPath , THIS->UServer.sun_path ,0);
+	GB.NewZeroString ( &THIS->sPath , THIS->UServer.sun_path);
  	THIS->conn_type=1;
  	if (connect(SOCKET->socket,(struct sockaddr*)&THIS->UServer,sizeof(struct sockaddr_un))==0)
  	{
@@ -529,7 +529,7 @@ int CSocket_connect_unix(void *_object,char *sPath, int lenpath)
 		if (THIS->Host) GB.FreeString(&THIS->Host);
 		if (THIS->Path) GB.FreeString(&THIS->Path);
 
-		GB.NewString(&THIS->Path,sPath,0);
+		GB.NewZeroString(&THIS->Path,sPath);
 		GB.Ref (THIS);
 		CSocket_post_connected(_object);
 
@@ -611,7 +611,7 @@ int CSocket_connect_socket(void *_object,char *sHost,int lenhost,int myport)
 	if (sHost != THIS->Host)
 	{
 		if (THIS->Host) GB.FreeString(&THIS->Host);
-		GB.NewString(&THIS->Host,sHost,0);
+		GB.NewZeroString(&THIS->Host,sHost);
 	}
 
 	return 0;
@@ -717,7 +717,7 @@ BEGIN_PROPERTY (CSOCKET_Host)
 
 	if (READ_PROPERTY)
 	{
-		GB.ReturnNewString(THIS->Host,0);
+		GB.ReturnNewZeroString(THIS->Host);
 		return;
 	}
 	GB.StoreString(PROP(GB_STRING), &THIS->Host);
@@ -728,7 +728,7 @@ BEGIN_PROPERTY (CSOCKET_Path)
 
 	if (READ_PROPERTY)
 	{
-		GB.ReturnNewString(THIS->Path,0);
+		GB.ReturnNewZeroString(THIS->Path);
 		return;
 	}
 	GB.StoreString(PROP(GB_STRING), &THIS->Path);
@@ -890,7 +890,7 @@ BEGIN_METHOD_VOID(CSOCKET_Peek)
   {
   	/* An error happened while trying to receive data : SOCKET ERROR */
 	if (buf) GB.Free(POINTER(&buf));
-	GB.ReturnNewString(NULL,0);
+	GB.ReturnNull();
 	return;
 
   }
@@ -898,7 +898,7 @@ BEGIN_METHOD_VOID(CSOCKET_Peek)
   if ( retval>0)
   	GB.ReturnNewString (buf,retval);
   else
-  	GB.ReturnNewString (NULL,0);
+  	GB.ReturnNull();
 
   if (buf) GB.Free(POINTER(&buf));
 

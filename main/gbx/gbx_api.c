@@ -1235,7 +1235,10 @@ void GB_ReturnNewString(const char *src, int len)
   char *str;
 	
 	if (len <= 0)
+	{
+		fprintf(stderr, "warning: now use GB.ReturnNewZeroString() instead of GB.ReturnNewString()\n");
 		BREAKPOINT();
+	}
 
   STRING_new_temp(&str, src, len);
   GB_ReturnString(str);

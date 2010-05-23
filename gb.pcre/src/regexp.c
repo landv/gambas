@@ -253,7 +253,7 @@ BEGIN_PROPERTY(CREGEXPSUBMATCH_Text)
 
      if (i < rc) {
        pcre_get_substring(THIS->subject, ovector, rc, i, &str);
-       GB.NewString(&submatch, str, 0);
+       GB.NewZeroString(&submatch, str);
        tmp = (char **) GB.Add((void *) &(THIS->smcache));
        *tmp = submatch;
        pcre_free_substring(str);
