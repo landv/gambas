@@ -435,7 +435,7 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
   'FFind.ReadConfig
   'FFind.OnProjectChange
   'FExplorer.ProjectChange
-  Design.Clear
+  Design.ClearOutput
   Design.ReadBreakpoints
   
   $hLock = hLock

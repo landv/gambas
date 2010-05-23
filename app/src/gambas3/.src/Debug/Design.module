@@ -692,7 +692,7 @@ Private Sub Start(sCmd As String)
 
   If Project.Compile() Then Return
 
-  Clear
+  ClearOutput
 
   'PRINT "EXEC "; "gbx -gs " & File.Dir(Project.Path) & " -- " & Project.Arguments
 
@@ -934,7 +934,7 @@ End
 '
 ' END
 
-Public Sub Clear()
+Public Sub ClearOutput()
 
   FOutput.Clear
 
@@ -1084,6 +1084,7 @@ Public Sub ReadBreakpoints()
 
   Dim iInd As Integer
 
+  FDebugInfo.Clear
   For iInd = 1 To Project.Config["/Breakpoints/Count", 0]
     SetBreakpointFromString(Project.Config["/Breakpoints/Breakpoint[" & CStr(iInd) & "]"], True)
   Next
