@@ -98,8 +98,13 @@ void DRAW_begin(void *device)
 		return;
 
 	delete THIS->graphic;
-	GB.Unref((void **) &THIS->device);
+	GB.Unref(POINTER(&THIS->device));
 	THIS->device = 0;
+	
+	if (FONT)
+		GB.Unref(POINTER(&FONT));
+	
+	FONT = 0;
 
 	if (THIS == draw_stack)
 		THIS = 0;
@@ -180,6 +185,16 @@ BEGIN_METHOD(CDRAW_text, GB_STRING text; GB_INTEGER x; GB_INTEGER y)
 		return;
 
 	SDLsurface *txt = FONT->font->RenderText(GB.ToZeroString(ARG(text)));
+	
+/*	if (THIS->backcolor != 0)
+	{
+		int fill = GFX->GetFillStyle();
+		GFX->SetFillStyle(SDL::SolidFill);
+		GFX->SetColor(THIS->backcolor);
+		GFX->DrawRect(VARG(x), VARG(y), txt->GetWidth(), txt->GetHeight());
+		GFX->SetFillStyle(fill);
+	}*/
+	
 	GFX->SetColor(THIS->forecolor);
 	GFX->Blit(txt, VARG(x), VARG(y));
 	delete txt;
@@ -217,7 +232,7 @@ BEGIN_PROPERTY(CDRAW_font)
 	else
 	{
 		if (FONT)
-			GB.Unref(POINTER(FONT));
+			GB.Unref(POINTER(&FONT));
 		
 		FONT = (CFONT *) VPROP(GB_OBJECT);
 		GB.Ref(FONT);
