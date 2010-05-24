@@ -215,7 +215,13 @@ BEGIN_PROPERTY(CDRAW_font)
 	if (READ_PROPERTY)
 		GB.ReturnObject(FONT);
 	else
+	{
+		if (FONT)
+			GB.Unref(POINTER(FONT));
+		
 		FONT = (CFONT *) VPROP(GB_OBJECT);
+		GB.Ref(FONT);
+	}
 	
 END_PROPERTY
 
