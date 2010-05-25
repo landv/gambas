@@ -89,7 +89,7 @@ int libsmtp_mime_headers (struct libsmtp_session_struct *libsmtp_session)
   }
 
   /* If we use the MIME stuff we tell them this, too */
-  g_string_assign (libsmtp_temp_gstring, "Mime-Version: 1.0\r\n");
+  g_string_assign (libsmtp_temp_gstring, "MIME-Version: 1.0\r\n");
 
   #ifdef LIBSMTP_DEBUG
     printf ("libsmtp_mime_headers: %s", libsmtp_temp_gstring->str);
@@ -218,7 +218,7 @@ int libsmtp_part_send (char *libsmtp_body_data, unsigned int libsmtp_body_length
     /* If we just came from the headers stage, we have to send a blank line
      first */
     GString *libsmtp_temp_gstring = g_string_new (NULL);
-    g_string_assign (libsmtp_temp_gstring, "\n");
+    g_string_assign (libsmtp_temp_gstring, "\r\n");
 
     if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 1))
       return LIBSMTP_ERRORSENDFATAL;
