@@ -80,8 +80,9 @@ static void get_symbol(PATTERN pattern, const char **symbol, int *len)
   switch(type)
   {
     case RT_RESERVED:
-      sym = TABLE_get_symbol(COMP_res_table, index);
-      break;
+			*symbol = COMP_res_info[index].name;
+			*len = strlen(*symbol);
+      return;
     case RT_NUMBER:
     case RT_IDENTIFIER:
     case RT_CLASS:
@@ -441,7 +442,7 @@ static void add_end_pattern(void)
   len = EVAL->len - (READ_source_ptr - EVAL->source);
   if (len > 0)
   {
-    TABLE_add_symbol(EVAL->string, READ_source_ptr, len, NULL, &index);
+    TABLE_add_symbol(EVAL->string, READ_source_ptr, len, &index);
     add_pattern(EVAL_TYPE_ERROR, index);
   }
   

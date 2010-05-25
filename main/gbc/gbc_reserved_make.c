@@ -30,27 +30,30 @@
 #include "gb_pcode.h"
 #include "gb_reserved_keyword.h"
 
+#define HASH_SIZE 109
+
 uint hash(const char *key, int len)
 {
 	int i;
-	uint h = 1;
+	uint h = 0;
 	for (i = 0; i < len; i++)
-		h = (h << 4) + (h ^ (key[i] & 0x1F));
+		h = (h << 4) + (h ^ (tolower(key[i])));
 	
-	return h % 73;
+	return h % HASH_SIZE;
 }
 
 int main(int argc, char **argv)
 {
   COMP_INFO *info;
-  //SUBR_INFO *subr;
+  SUBR_INFO *subr;
   int len;
-  int i, p;
+  int i, p, l;
 	uint h;
 	char c;
 
+	printf("//-----------------------------------------------\n");
 	printf("  static void *jump[] = {\n");
-	for (h = 0; h <= 72; h++)
+	for (h = 0; h < 12; h++)
 	{
 		printf("    &&__%02d, ", h);
 		if ((h % 8) == 7)
@@ -58,31 +61,94 @@ int main(int argc, char **argv)
 	}
 	printf("\n  };\n\n");
 
-	printf("  goto *jump[hash(word, len)];\n\n");
+	//printf("  goto *jump[h %% %d];\n\n", HASH_SIZE);
+	printf("  goto *jump[len];\n\n");
 	
-	for (h = 0; h <= 72; h++)
+	//for (h = 0; h < HASH_SIZE; h++)
+	for (h = 0; h < 12; h++)
 	{
 		printf("__%02d:\n", h);
 		
-		for (info = &COMP_res_info[1], i = 1; info->name; info++, i++)
+		for (l = 2; l < 11; l++)
 		{
-			len = strlen(info->name);
-			if (len <= 1)
-				continue;
-			if (hash(info->name, len) != h)
-				continue;
-			printf("  if (len == %d ", len); //COMPARE_%d(\"%s\", word)) return %d;\n", len, len, info->name, i);
-			for (p = 0; p < len; p++)
+			for (info = &COMP_res_info[1], i = 1; info->name; info++, i++)
 			{
-				c = info->name[p];
-				if (isalpha(c))
-					printf("&& tolower(word[%d]) == '%c' ", p, tolower(info->name[p]));
-				else if (c == '\\')
-					printf("&& word[%d] == '\\\\' ", p);
-				else
-					printf("&& word[%d] == '%c' ", p, info->name[p]);
+				len = strlen(info->name);
+				if (len != l)
+					continue;
+				//if (hash(info->name, len) != h)
+				if (len != h)
+					continue;
+				//printf("  if (len == %d ", len); //COMPARE_%d(\"%s\", word)) return %d;\n", len, len, info->name, i);
+				printf("  if (");
+				for (p = 0; p < len; p++)
+				{
+					if (p)
+						printf(" && ");
+					c = info->name[p];
+					if (isalpha(c))
+						printf("tolower(word[%d]) == '%c'", p, tolower(info->name[p]));
+					else if (c == '\\')
+						printf("word[%d] == '\\\\'", p);
+					else
+						printf("word[%d] == '%c'", p, info->name[p]);
+				}
+				/*printf("  if (!strncmp(\"");
+				for (p = 0; p < len; p++) 
+				{
+					c = info->name[p];
+					if (c == '\\')
+						printf("\\\\");
+					else
+						putchar(tolower(info->name[p]));
+				}
+				printf("\", word, %d)", len);*/
+				printf(") return %d;\n", i);
 			}
-			printf(") return %d;\n", i);
+		}
+		printf("  return -1;\n");
+	}
+	
+	printf("//-----------------------------------------------\n");
+	printf("  static void *jump[] = {\n");
+	for (h = 0; h < 12; h++)
+	{
+		printf("    &&__%02d, ", h);
+		if ((h % 8) == 7)
+			printf("\n");
+	}
+	printf("\n  };\n\n");
+
+	printf("  goto *jump[len];\n\n");
+	
+	for (h = 0; h < 12; h++)
+	{
+		printf("__%02d:\n", h);
+		
+		for (l = 1; l <= 11; l++)
+		{
+			for (subr = &COMP_subr_info[0], i = 0; subr->name; subr++, i++)
+			{
+				len = strlen(subr->name);
+				if (len != l)
+					continue;
+				if (len != h)
+					continue;
+				printf("  if ("); //COMPARE_%d(\"%s\", word)) return %d;\n", len, len, info->name, i);
+				for (p = 0; p < len; p++)
+				{
+					if (p)
+						printf(" && ");
+					c = subr->name[p];
+					if (isalpha(c))
+						printf("tolower(word[%d]) == '%c'", p, tolower(subr->name[p]));
+					else if (c == '\\')
+						printf("word[%d] == '\\\\'", p);
+					else
+						printf("word[%d] == '%c'", p, subr->name[p]);
+				}
+				printf(") return %d;\n", i);
+			}
 		}
 		printf("  return -1;\n");
 	}

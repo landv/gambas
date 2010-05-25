@@ -193,7 +193,6 @@ static void compress_file_name(const char *src, int lsrc, char **dst, int *ldst)
   char tpath2[PATH_MAX];
   int len;
   int ind;
-  ARCH_SYMBOL *sym;
 
 	strncpy(tpath, src, lsrc);
 	tpath[lsrc] = 0;
@@ -208,7 +207,7 @@ static void compress_file_name(const char *src, int lsrc, char **dst, int *ldst)
 		if (!p)
 			break;
 			
-	  if (!TABLE_find_symbol(arch_table, tpath, p - tpath, (SYMBOL **)(void *)&sym, &ind))
+	  if (!TABLE_find_symbol(arch_table, tpath, p - tpath, &ind))
 	  {
 	  	*p = 0;
 	  	THROW("&1: not in archive", tpath);
@@ -302,7 +301,8 @@ int ARCH_add_file(const char *path)
   len = strlen(rel_path);
   #endif
   
-  TABLE_add_symbol(arch_table, rel_path, len, (SYMBOL **)(void *)&sym, &ind);
+  TABLE_add_symbol(arch_table, rel_path, len, &ind);
+	sym = (ARCH_SYMBOL *)TABLE_get_symbol(arch_table, ind);
   sym->pos = get_pos();
 
   file = fopen(path, "r");

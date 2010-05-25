@@ -383,7 +383,7 @@ int TRANS_get_class(PATTERN pattern)
 			if (c == '[')
 			{
 				//fprintf(stderr, "TRANS_get_class: find %.*s\n", i, sym->symbol.name);
-  			if (TABLE_find_symbol(JOB->class->table, sym->symbol.name, i, NULL, &index_array))
+  			if (TABLE_find_symbol(JOB->class->table, sym->symbol.name, i, &index_array))
   			{
   				index_array = TRANS_get_class(PATTERN_make(RT_CLASS, index_array));
   				if (JOB->class->class[index_array].exported)
@@ -426,7 +426,7 @@ bool TRANS_type(int mode, TRANS_DECL *result)
   }
 
   look++;
-
+	
   if (mode & TT_CAN_NEW)
   {
     if (PATTERN_is(*look, RS_NEW))
@@ -440,47 +440,62 @@ bool TRANS_type(int mode, TRANS_DECL *result)
     }
   }
 
-  if (!PATTERN_is_type(*look) && !PATTERN_is_class(*look))
-    THROW_UNEXPECTED(look);
-    
-	if (PATTERN_is_type(*look))
+	if ((mode & TT_CAN_STATIC) && PATTERN_is(*look, RS_STRUCT))
 	{
-		id = RES_get_type(PATTERN_index(*look));
-		value = -1;
-	}
-	else
-	{
-    id = T_OBJECT;
-    value = TRANS_get_class(*look);
-	}
-	
-	if (PATTERN_is(look[1], RS_LSQR))
-	{
-		value = CLASS_get_array_class(JOB->class, id, value);
-		id = T_OBJECT;
-
-		if (!PATTERN_is(look[2], RS_RSQR))
-		{
-			if ((mode & TT_CAN_NEW) && result->is_new)
-			{
-				if (TYPE_get_id(result->type) == T_ARRAY)
-					THROW("Cannot mix NEW and static array declaration");
-
-				//result->is_new = TRUE;
-				result->init = look;
-			}
-			else
-				THROW("Syntax error");
-		}
-
-		while (!PATTERN_is_newline(*look))
-			look++;
-	}
-	else
-	{
-		//if (id == T_OBJECT)
-		//	value = (-1);
+		if (result->is_new)
+			THROW("Cannot mix NEW and static structure declaration");
+		id = T_STRUCT;
 		look++;
+
+		if (!PATTERN_is_class(*look))
+			THROW_UNEXPECTED(look);
+		value = TRANS_get_class(*look);
+		look++;
+	}
+	else
+	{
+		if (!PATTERN_is_type(*look) && !PATTERN_is_class(*look))
+			THROW_UNEXPECTED(look);
+			
+		if (PATTERN_is_type(*look))
+		{
+			id = RES_get_type(PATTERN_index(*look));
+			value = -1;
+		}
+		else
+		{
+			id = T_OBJECT;
+			value = TRANS_get_class(*look);
+		}
+		
+		if (PATTERN_is(look[1], RS_LSQR))
+		{
+			value = CLASS_get_array_class(JOB->class, id, value);
+			id = T_OBJECT;
+
+			if (!PATTERN_is(look[2], RS_RSQR))
+			{
+				if ((mode & TT_CAN_NEW) && result->is_new)
+				{
+					//if (TYPE_get_id(result->type) == T_ARRAY)
+					//	THROW("Cannot mix NEW and static array declaration");
+
+					//result->is_new = TRUE;
+					result->init = look;
+				}
+				else
+					THROW("Syntax error");
+			}
+
+			while (!PATTERN_is_newline(*look))
+				look++;
+		}
+		else
+		{
+			//if (id == T_OBJECT)
+			//	value = (-1);
+			look++;
+		}
 	}
   
   if (id == T_VOID)
@@ -496,7 +511,11 @@ bool TRANS_type(int mode, TRANS_DECL *result)
     result->array.type = TYPE_make(id, value, flag);
     result->type = TYPE_make(T_ARRAY, CLASS_add_array(JOB->class, &result->array), 0);
   }
-  else
+  else if (id == T_STRUCT)
+	{
+    result->type = TYPE_make(id, value, flag);
+	}
+	else
   {
     result->type = TYPE_make(id, value, flag);
 

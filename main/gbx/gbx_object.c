@@ -30,6 +30,7 @@
 #include "gbx_exec.h"
 #include "gbx_compare.h"
 #include "gbx_c_gambas.h"
+#include "gbx_struct.h"
 #include "gbx_object.h"
 
 #if DEBUG_REF
@@ -282,7 +283,7 @@ static void release(CLASS *class, OBJECT *ob)
 
   if (CLASS_is_native(class))
     return;
-
+	
   if (ob == NULL)
   {
     var = class->load->stat;
@@ -291,6 +292,9 @@ static void release(CLASS *class, OBJECT *ob)
   }
   else
   {
+		if (CLASS_is_struct(class) && ((CSTRUCT *)ob)->ref)
+			return;
+
     var = class->load->dyn;
     nelt = class->load->n_dyn;
     data = (char *)ob;
@@ -300,13 +304,10 @@ static void release(CLASS *class, OBJECT *ob)
   {
 #if TRACE_MEMORY
     if (var->type.id == T_STRING || var->type.id == T_OBJECT)
-    {
-      printf("release: %s %p [%d] trying %p\n", class->name, ob, i, (*(void **)&data[var->pos]));
-      fflush(NULL);
-    }
+      fprintf(stderr, "release: %s %p [%d] trying %p\n", class->name, ob, i, (*(void **)&data[var->pos]));
 #endif
 
-    if (var->type.id == T_STRING)
+		if (var->type.id == T_STRING)
       STRING_unref((char **)&data[var->pos]);
     else if (var->type.id == T_OBJECT)
     {

@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  eval_reserved.c
+  gbx_struct.c
 
   (c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
 
@@ -20,6 +20,7 @@
 
 ***************************************************************************/
 
-//#define __EVAL_RESERVED_C
+#define __GBX_STRUCT_C
 
-#include "gb_reserved_temp.h"
+#include "gbx_struct.h"
+

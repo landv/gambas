@@ -1191,8 +1191,12 @@ __ARRAY:
 		return;
 	}
 
-__VOID:
 __STRUCT:
+	{
+		
+	}
+
+__VOID:
 __NULL:
 
 	THROW(E_ILLEGAL);

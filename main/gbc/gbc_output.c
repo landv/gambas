@@ -89,11 +89,16 @@ static void output_exit(void)
 static int get_string(const char *string, int len)
 {
   OUTPUT_SYMBOL *sym;
+	int index;
+	bool new;
 
   if (len < 0)
     len = strlen(string);
 
-  if (!TABLE_add_symbol(StringTable, string, len, (SYMBOL **)(void *)&sym, NULL))
+  new = !TABLE_add_symbol(StringTable, string, len, &index);
+	sym = (OUTPUT_SYMBOL *)TABLE_get_symbol(StringTable, index);
+	
+	if (new)
   {
     sym->value = StringAddr;
     StringAddr += len + 1;
@@ -540,10 +545,18 @@ static void output_constant(void)
         break;
 
       case T_STRING: case T_CSTRING:
-
-        sym = TABLE_get_symbol(Class->string, constant->value);
-        write_int(get_string(sym->name, sym->len));
-        write_int(sym->len);
+				
+				if (constant->value == VOID_STRING)
+				{
+					write_int(0);
+					write_int(0);
+				}
+				else
+				{
+					sym = TABLE_get_symbol(Class->string, constant->value);
+					write_int(get_string(sym->name, sym->len));
+					write_int(sym->len);
+				}
         break;
     }
   }
@@ -980,6 +993,7 @@ static void output_debug_method()
   PARAM *param;
   FUNCTION *func;
   TABLE *table;
+	int index;
 
   begin_section("Debug method info", 5 * sizeof(int));
 
@@ -1055,7 +1069,8 @@ static void output_debug_method()
         param = &func->local[j];
         csym = (CLASS_SYMBOL *)TABLE_get_symbol(Class->table, param->index);
 
-        TABLE_add_symbol(table, csym->symbol.name, csym->symbol.len, (SYMBOL **)(void *)&osym, NULL);
+        TABLE_add_symbol(table, csym->symbol.name, csym->symbol.len, &index);
+				osym = (OUTPUT_SYMBOL *)TABLE_get_symbol(table, index);
         osym->value = param->value;/*TYPE_long(param->type);*/
       }
 

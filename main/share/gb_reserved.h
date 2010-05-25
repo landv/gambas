@@ -46,12 +46,13 @@
 
 enum
 {
-	RSF_INF    = 0x0100,
-	RSF_ILF    = 0x0200,   // last pattern waits for a function name
-	RSF_ILD    = 0x0400,   // last pattern waits for an identifier
-	RSF_ILDD   = 0x0800,   // last pattern waits for an identifier only if the previous one waits for an identifier too
-	RSF_ILT    = 0x1000,   // last pattern waits for a datatype
-	RSF_ILC    = 0x2000,   // last pattern waits for a class
+	RSF_POINT  = 0x0100,   // last pattern is a point or an exclamation mark
+	RSF_IDENT  = 0x0200,   // last pattern waits for an identifier
+	RSF_CLASS  = 0x0400,   // last pattern waits for a class
+	RSF_AS     = 0x0800,   // last pattern waits for a datatype
+	RSF_PREV   = 0x1000,   // last pattern use the flags of the last last pattern
+	RSF_EVENT  = 0x2000,   // last pattern waits for an event name
+	RSF_PUB    = 0x4000,   // last pattern is PUBLIC, PRIVATE or STATIC
 	RSF_IMASK  = 0xFF00
 };
 
@@ -60,6 +61,7 @@ enum
 #define RES_is_assignment(value) (COMP_res_info[value].flag & RSF_ASGN)
 #define RES_is_only(value) (COMP_res_info[value].flag & RSF_ONLY)
 #define RES_get_ident_flag(value) (COMP_res_info[value].flag & RSF_IMASK)
+#define RES_get_read_switch(value) (COMP_res_info[value].read_switch)
 
 #define RES_priority(_res) (COMP_res_info[_res].priority)
 
@@ -276,8 +278,9 @@ typedef
   struct {
     const char *name;
     short flag;
-    short value;
-    short priority;
+    unsigned char value;
+		unsigned char read_switch;
+    unsigned char priority;
     short code;
 		short subcode;
     void (*func)();
@@ -311,8 +314,8 @@ typedef
 EXTERN COMP_INFO COMP_res_info[];
 EXTERN SUBR_INFO COMP_subr_info[];
 
-EXTERN TABLE *COMP_res_table;
-EXTERN TABLE *COMP_subr_table;
+//EXTERN TABLE *COMP_res_table;
+//EXTERN TABLE *COMP_subr_table;
 
 EXTERN int SUBR_VarPtr;
 EXTERN int SUBR_Mid;
@@ -324,6 +327,7 @@ void RESERVED_init(void);
 void RESERVED_exit(void);
 
 int RESERVED_find_word(const char *word, int len);
+int RESERVED_find_subr(const char *word, int len);
 
 SUBR_INFO *SUBR_get(const char *subr_name);
 SUBR_INFO *SUBR_get_from_opcode(ushort opcode, ushort optype);

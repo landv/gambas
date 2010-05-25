@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  eval_reserved.c
+  gbx_struct.h
 
   (c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
 
@@ -20,6 +20,17 @@
 
 ***************************************************************************/
 
-//#define __EVAL_RESERVED_C
+#ifndef __GBX_STRUCT_H
+#define __GBX_STRUCT_H
 
-#include "gb_reserved_temp.h"
+#include "gbx_object.h"
+#include "gbx_value.h"
+
+typedef
+	struct {
+		OBJECT ob;
+		void *ref;
+	}
+	CSTRUCT;
+	
+#endif

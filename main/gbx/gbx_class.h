@@ -391,6 +391,7 @@ EXTERN CLASS *CLASS_SubCollection;
 #define DO_ERROR ((void (*)()) -1)
 
 #define CLASS_is_native(_class) ((_class)->is_native)
+#define CLASS_is_struct(_class) ((_class)->is_struct)
 
 #define FUNCTION_is_static(func) ((func)->type & TF_STATIC)
 #define FUNCTION_is_native(_desc) (((uintptr_t)(_desc)->exec >> 16) != 0)

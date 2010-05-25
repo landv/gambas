@@ -26,303 +26,303 @@
 ' Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ' 
 '***************************************************************************
-PRIVATE Http AS ServerSocket
-PRIVATE hSocket AS Object[]
-PRIVATE hBuffer AS String[]
-PRIVATE hProt AS Byte[]
-PRIVATE hLen AS Integer[]
-PRIVATE hConn AS Integer[]
-PRIVATE hType AS Byte[]
+Private Http As ServerSocket
+Private hSocket As Object[]
+Private hBuffer As String[]
+Private hProt As Byte[]
+Private hLen As Integer[]
+Private hConn As Integer[]
+Private hType As Byte[]
 
-PRIVATE hReply AS String
-
-
-EVENT GotData(Data AS String) AS Boolean
-EVENT ProcessData(Data AS String)
-
-PRIVATE SUB hError(hS AS Socket, hErr AS String)
-
-  TRY PRINT #hS, "HTTP/1.1 " & hErr
-  TRY PRINT #hS, "Server: Gambas XML-RPC Server"
-  TRY PRINT #hS, "Connection: close"
-  TRY PRINT #hS, "Content-Type: text/html; charset=iso-8859-1"
-  TRY PRINT #hS, ""
-  TRY PRINT #hS, "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">"
-  TRY PRINT #hS, "<HTML><HEAD>"
-  TRY PRINT #hS, "<TITLE>" & hErr & "</TITLE>"
-  TRY PRINT #hS, "</HEAD><BODY>"
-  TRY PRINT #hS, "<H1>Bad Request</H1>"
-  TRY PRINT #hS, hErr & ".<P>"
-  TRY PRINT #hS, "<HR>"
-  TRY PRINT #hS, "<ADDRESS>Gambas XML-RPC Server</ADDRESS>"
-  TRY PRINT #hS, "</BODY></HTML>"
-  TRY PRINT #hS, ""
-  TRY PRINT #hS, ""
-
-END
+Private hReply As String
 
 
+Event GotData(Data As String)
+Event ProcessData(Data As String)
 
-PRIVATE SUB RemoveSocket(hS AS Socket)
+Private Sub hError(hS As Socket, hErr As String)
 
-  DIM Bucle AS Integer
+  Try Print #hS, "HTTP/1.1 " & hErr
+  Try Print #hS, "Server: Gambas XML-RPC Server"
+  Try Print #hS, "Connection: close"
+  Try Print #hS, "Content-Type: text/html; charset=iso-8859-1"
+  Try Print #hS, ""
+  Try Print #hS, "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">"
+  Try Print #hS, "<HTML><HEAD>"
+  Try Print #hS, "<TITLE>" & hErr & "</TITLE>"
+  Try Print #hS, "</HEAD><BODY>"
+  Try Print #hS, "<H1>Bad Request</H1>"
+  Try Print #hS, hErr & ".<P>"
+  Try Print #hS, "<HR>"
+  Try Print #hS, "<ADDRESS>Gambas XML-RPC Server</ADDRESS>"
+  Try Print #hS, "</BODY></HTML>"
+  Try Print #hS, ""
+  Try Print #hS, ""
 
-  FOR Bucle = 0 TO hSocket.Count - 1
+End
 
-    IF hS = hSocket[Bucle] THEN
-      TRY CLOSE #hS
+
+
+Private Sub RemoveSocket(hS As Socket)
+
+  Dim Bucle As Integer
+
+  For Bucle = 0 To hSocket.Count - 1
+
+    If hS = hSocket[Bucle] Then
+      Try Close #hS
       hSocket.Remove(Bucle)
       hBuffer.Remove(Bucle)
       hLen.Remove(Bucle)
       hProt.Remove(Bucle)
       hConn.Remove(Bucle)
       hType.Remove(Bucle)
-      BREAK
-    END IF
+      Break
+    End If
 
-  NEXT
+  Next
 
-END
+End
 
-PRIVATE FUNCTION FirstTest(Xml AS XmlReader) AS Boolean
+Private Function FirstTest(Xml As XmlReader) As Boolean
 
-  DO WHILE NOT Xml.Eof
+  Do While Not Xml.Eof
 
-    TRY Xml.Read()
-    IF ERROR THEN RETURN FALSE
-    IF Xml.Eof THEN RETURN TRUE
-    IF Xml.Node.Type = XmlReaderNodeType.Element THEN
+    Try Xml.Read()
+    If Error Then Return False
+    If Xml.Eof Then Return True
+    If Xml.Node.Type = XmlReaderNodeType.Element Then
 
-      SELECT CASE Xml.Node.Name
+      Select Case Xml.Node.Name
 
-        CASE "methodCall"
-        CASE "methodName"
-        CASE "params"
-        CASE "param"
-        CASE "i4"
-        CASE "int"
-        CASE "boolean"
-        CASE "string"
-        CASE "double"
-        CASE "dateTime.iso8601"
-        CASE "base64"
-        CASE "struct"
-        CASE "array"
-        CASE "data"
-        CASE "member"
-        CASE "value"
-        CASE "name"
-        DEFAULT
-          RETURN FALSE
+        Case "methodCall"
+        Case "methodName"
+        Case "params"
+        Case "param"
+        Case "i4"
+        Case "int"
+        Case "boolean"
+        Case "string"
+        Case "double"
+        Case "dateTime.iso8601"
+        Case "base64"
+        Case "struct"
+        Case "array"
+        Case "data"
+        Case "member"
+        Case "value"
+        Case "name"
+        Default
+          Return False
 
-      END SELECT
+      End Select
 
-    END IF
+    End If
 
-  LOOP
+  Loop
 
-  RETURN TRUE
+  Return True
 
-END
+End
 
 
-PUBLIC SUB SetReply(sCad AS String)
+Public Sub SetReply(sCad As String)
 
   hReply = sCad
 
-END
+End
 
 
-PRIVATE SUB ProcessQuery(hS AS Socket, Buf AS String)
+Private Sub ProcessQuery(hS As Socket, Buf As String)
 
-  DIM hBuf AS String[]
-  DIM Bucle AS Integer
-  DIM Point AS Integer
-  DIM Resul AS String
-  DIM sReply AS String
-  DIM hBol AS Boolean
-  DIM Xml AS XmlReader
+  Dim hBuf As String[]
+  Dim Bucle As Integer
+  Dim Point As Integer
+  Dim Resul As String
+  Dim sReply As String
+  Dim hBol As Boolean
+  Dim Xml As XmlReader
 
   Point = - 1
   hBuf = Split(Buf, Chr(13))
 
-  FOR Bucle = 0 TO hBuf.Count - 1
+  For Bucle = 0 To hBuf.Count - 1
     hBuf[Bucle] = Replace(hBuf[Bucle], Chr(10), "")
-  NEXT
+  Next
 
-  FOR Bucle = 0 TO hBuf.Count - 1
-    IF hBuf[Bucle] = "" THEN
+  For Bucle = 0 To hBuf.Count - 1
+    If hBuf[Bucle] = "" Then
       Point = Bucle
-      BREAK
-    END IF
-  NEXT
+      Break
+    End If
+  Next
 
-  IF Point = - 1 THEN
+  If Point = - 1 Then
     hError(hS, "400 Bad Request")
     RemoveSocket(hS)
-    RETURN
-  END IF
+    Return
+  End If
 
-  FOR Bucle = Point + 1 TO hBuf.Count - 1
+  For Bucle = Point + 1 To hBuf.Count - 1
     Resul = Resul & hBuf[Bucle]
-    IF Bucle < (hBuf.Count - 1) THEN Resul = Resul & "\n"
-  NEXT
+    If Bucle < (hBuf.Count - 1) Then Resul = Resul & "\n"
+  Next
 
-  Xml = NEW XmlReader
-  TRY Xml.FromString(Trim(Resul))
-  IF ERROR THEN
-    Xml = NULL
+  Xml = New XmlReader
+  Try Xml.FromString(Trim(Resul))
+  If Error Then
+    Xml = Null
     hError(hS, "400 Bad Request")
     RemoveSocket(Hs)
-    RETURN
-  END IF
+    Return
+  End If
 
   sReply = "OK"
 
-  IF NOT FirstTest(Xml) THEN
+  If Not FirstTest(Xml) Then
     sReply = Tools.FaultReply("1", "Malformed XML-RPC document")
-  ELSE
-    hBol = RAISE GotData(Resul)
-    IF hBol THEN
+  Else
+    hBol = Raise GotData(Resul)
+    If hBol Then
       sReply = Tools.FaultReply("2", "Unknown method")
-    ELSE
+    Else
       sReply = Tools.FaultReply("3", "Can not perform desired request")
       hReply = ""
-      RAISE ProcessData(Resul)
-      IF hReply <> "" THEN sReply = hReply
-    END IF
-  END IF
+      Raise ProcessData(Resul)
+      If hReply <> "" Then sReply = hReply
+    End If
+  End If
 
 
-  TRY PRINT #hS, "HTTP/1.1 200 OK"
-  TRY PRINT #hS, "Connection: close"
-  TRY PRINT #hS, "Content-Length: " & Len(sReply)
-  TRY PRINT #hS, "Content-Type: text/xml"
-  TRY PRINT #hS, "Server: Gambas RPC Server\n"
-  TRY WRITE #hS, sReply, Len(sReply)
+  Try Print #hS, "HTTP/1.1 200 OK"
+  Try Print #hS, "Connection: close"
+  Try Print #hS, "Content-Length: " & Len(sReply)
+  Try Print #hS, "Content-Type: text/xml"
+  Try Print #hS, "Server: Gambas RPC Server\n"
+  Try Write #hS, sReply, Len(sReply)
   RemoveSocket(hS)
 
 
 
-END
+End
 
 
-PUBLIC SUB Socket_Read()
+Public Sub Socket_Read()
 
-  DIM Buf AS String
-  DIM sCad AS String
-  DIM Bucle AS Integer
-  DIM hS AS Socket
+  Dim Buf As String
+  Dim sCad As String
+  Dim Bucle As Integer
+  Dim hS As Socket
 
-  FOR Bucle = 0 TO hSocket.Count - 1
-    IF hSocket[Bucle] = LAST THEN
-      hS = LAST
-      BREAK
-    END IF
-  NEXT
+  For Bucle = 0 To hSocket.Count - 1
+    If hSocket[Bucle] = Last Then
+      hS = Last
+      Break
+    End If
+  Next
 
-  IF hS = NULL THEN RETURN
+  If hS = Null Then Return
 
-  IF hBuffer[Bucle] = "" THEN
-    IF Lof(hS) >= 5 THEN
+  If hBuffer[Bucle] = "" Then
+    If Lof(hS) >= 5 Then
 
-      TRY READ #hS, Buf, Lof(hS)
+      Try Read #hS, Buf, Lof(hS)
       hBuffer[Bucle] = hBuffer[Bucle] & Buf
-      IF Left(hBuffer[Bucle], 5) <> "POST " THEN
+      If Left(hBuffer[Bucle], 5) <> "POST " Then
         hError(hS, "405 Method Not Allowed")
         RemoveSocket(hS)
-        RETURN
-      END IF
+        Return
+      End If
 
-    END IF
-  ELSE
-    TRY READ #hS, Buf, Lof(hS)
+    End If
+  Else
+    Try Read #hS, Buf, Lof(hS)
     hBuffer[Bucle] = hBuffer[Bucle] & Buf
-  END IF
+  End If
 
-  IF hProt[Bucle] = - 1 THEN
-    IF InStr(hBuffer[Bucle], Chr(13)) > 0 THEN
+  If hProt[Bucle] = - 1 Then
+    If InStr(hBuffer[Bucle], Chr(13)) > 0 Then
       Buf = Trim(Left(hBuffer[Bucle], InStr(hBuffer[Bucle], Chr(13)) - 1))
       Buf = Right(Buf, 8)
-      IF Buf = "HTTP/1.1" THEN
+      If Buf = "HTTP/1.1" Then
         hProt[Bucle] = 1
-      ELSE IF Buf = "HTTP/1.0" THEN
+      Else If Buf = "HTTP/1.0" Then
         hProt[Bucle] = 0
-      ELSE
+      Else
         hError(hS, "505 HTTP Version Not Supported")
         RemoveSocket(hS)
-        RETURN
-      END IF
+        Return
+      End If
 
-    ELSE
-      IF Len(hBuffer[Bucle]) >= 2048 THEN
+    Else
+      If Len(hBuffer[Bucle]) >= 2048 Then
         hError(hS, "413 Request Entity Too Large")
         RemoveSocket(hS)
-        RETURN
-      END IF
-    END IF
-  END IF
+        Return
+      End If
+    End If
+  End If
 
-  IF InStr(hBuffer[Bucle], Chr(13) & Chr(10) & Chr(13) & Chr(10)) THEN
-    IF hType[Bucle] = 0 THEN
+  If InStr(hBuffer[Bucle], Chr(13) & Chr(10) & Chr(13) & Chr(10)) Then
+    If hType[Bucle] = 0 Then
       Buf = Left(hBuffer[Bucle], InStr(hBuffer[Bucle], Chr(13) & Chr(13)) - 1)
 
-      IF InStr(UCase(Buf), "CONTENT-TYPE:") > 0 THEN
+      If InStr(UCase(Buf), "CONTENT-TYPE:") > 0 Then
         sCad = Mid(Buf, InStr(UCase(Buf), "CONTENT-TYPE:") + 13)
         sCad = Trim(Left(sCad, InStr(sCad, Chr(13))))
-        IF LCase(sCad) <> "text/xml" THEN
+        If LCase(sCad) <> "text/xml" Then
           hError(hS, "415 Unsupported Media Type")
           RemoveSocket(hS)
-          RETURN
-        ELSE
+          Return
+        Else
           hType[Bucle] = 1
-        END IF
-      ELSE
+        End If
+      Else
         hError(hS, "415 Unsupported Media Type")
         RemoveSocket(hS)
-        RETURN
-      END IF
+        Return
+      End If
 
-      IF InStr(UCase(Buf), "CONTENT-LENGTH:") > 0 THEN
+      If InStr(UCase(Buf), "CONTENT-LENGTH:") > 0 Then
         sCad = Mid(Buf, InStr(UCase(Buf), "CONTENT-LENGTH:") + 15)
         sCad = Trim(Left(sCad, InStr(sCad, Chr(13))))
-        TRY hLen[Bucle] = CInt(sCad)
-        IF ERROR THEN
+        Try hLen[Bucle] = CInt(sCad)
+        If Error Then
           hError(hS, "411 Length Required")
           RemoveSocket(hS)
-          RETURN
-        END IF
-      ELSE
+          Return
+        End If
+      Else
         hError(hS, "411 Length Required")
         RemoveSocket(hS)
-        RETURN
-      END IF
+        Return
+      End If
 
-    END IF
-  END IF
+    End If
+  End If
 
-  IF InStr(hBuffer[Bucle], Chr(13) & Chr(10) & Chr(13) & Chr(10)) > 0 THEN
+  If InStr(hBuffer[Bucle], Chr(13) & Chr(10) & Chr(13) & Chr(10)) > 0 Then
 
-    IF hLen[Bucle] = - 1 OR hType[Bucle] <> 1 THEN
+    If hLen[Bucle] = - 1 Or hType[Bucle] <> 1 Then
       hError(hS, "406 Not Acceptable")
       RemoveSocket(hS)
-      RETURN
-    END IF
+      Return
+    End If
 
     ProcessQuery(hS, hBuffer[Bucle])
 
-  ELSE
-    IF Len(hBuffer[Bucle]) > 4096 THEN
+  Else
+    If Len(hBuffer[Bucle]) > 4096 Then
       hError("413 Request Entity Too Large")
       RemoveSocket(hS)
-    END IF
-  END IF
+    End If
+  End If
 
 
-END
+End
 
 
-PUBLIC SUB Http_Connection(RemoteHost AS String)
+Public Sub Http_Connection(RemoteHost As String)
 
   hSocket.Add(Http.Accept())
   hBuffer.Add("")
@@ -331,63 +331,63 @@ PUBLIC SUB Http_Connection(RemoteHost AS String)
   hConn.Add(0)
   hType.Add(0)
 
-END
+End
 
-PUBLIC SUB Close()
+Public Sub Close()
 
-  DO WHILE hSocket.Count > 0
+  Do While hSocket.Count > 0
     RemoveSocket(hSocket[0])
-  LOOP
+  Loop
 
-  TRY Http.Close()
-  Http = NULL
+  Try Http.Close()
+  Http = Null
 
-END
+End
 
 
-PUBLIC SUB Listen(Port AS Integer, MaxConn AS Integer)
+Public Sub Listen(Port As Integer, MaxConn As Integer)
 
-  IF NOT Http THEN
-    Http = NEW ServerSocket AS "Http"
-  ELSE
-    IF Http.Status <> 0 THEN Http.Close()
-  END IF
+  If Not Http Then
+    Http = New ServerSocket As "Http"
+  Else
+    If Http.Status <> 0 Then Http.Close()
+  End If
 
-  TRY Http.Port = Port
-  IF ERROR THEN
+  Try Http.Port = Port
+  If Error Then
     Error.Raise("Invalid TCP port")
-    RETURN
-  END IF
+    Return
+  End If
 
-  IF MaxConn > 0 THEN
-    TRY Http.Listen(MaxConn)
-  ELSE
-    TRY Http.Listen()
-  END IF
+  If MaxConn > 0 Then
+    Try Http.Listen(MaxConn)
+  Else
+    Try Http.Listen()
+  End If
 
-  IF ERROR THEN Error.Raise("Unable to listen at port " & Port)
-  IF Http.Status < 0 THEN Error.Raise("Unable to listen at port " & Port)
-
-
-END
-
-PUBLIC SUB _New()
-
-    hSocket = NEW Object[]
-    hBuffer = NEW String[]
-    hProt = NEW Byte[]
-    hLen = NEW Integer[]
-    hConn = NEW Integer[]
-    hType = NEW Byte[]
-
-END
-
-PUBLIC SUB _Free()
-
-  ME.Close()
+  If Error Then Error.Raise("Unable to listen at port " & Port)
+  If Http.Status < 0 Then Error.Raise("Unable to listen at port " & Port)
 
 
-END
+End
+
+Public Sub _New()
+
+    hSocket = New Object[]
+    hBuffer = New String[]
+    hProt = New Byte[]
+    hLen = New Integer[]
+    hConn = New Integer[]
+    hType = New Byte[]
+
+End
+
+Public Sub _Free()
+
+  Me.Close()
+
+
+End
 
 
 

@@ -108,8 +108,13 @@ static void push_string(int index, bool trans)
   SYMBOL *sym;
   int len;
 
-  sym = TABLE_get_symbol(JOB->class->string, index);
-  len = sym->len;
+	if (index == VOID_STRING)
+		len = 0;
+	else
+	{
+		sym = TABLE_get_symbol(JOB->class->string, index);
+		len = sym->len;
+	}
 
   if (len == 0)
   {

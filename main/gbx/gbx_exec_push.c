@@ -30,6 +30,7 @@
 #include "gbx_c_array.h"
 #include "gbx_c_collection.h"
 #include "gbx_api.h"
+#include "gbx_struct.h"
 
 void EXEC_push_unknown(ushort code)
 {
@@ -44,7 +45,8 @@ void EXEC_push_unknown(ushort code)
     /* 7 */ &&_PUSH_VARIABLE_AUTO,
     /* 8 */ &&_PUSH_PROPERTY_AUTO,
     /* 9 */ &&_PUSH_METHOD_AUTO,
-    /* 10 */ &&_PUSH_EXTERN
+    /* 10 */ &&_PUSH_EXTERN,
+		/* 11 */ &&_PUSH_STRUCT_FIELD
     };
 
   const char *name;
@@ -144,6 +146,19 @@ _PUSH_GENERIC:
         PC[1] = index;
 
       goto _PUSH_VARIABLE_2;
+
+    case CD_STRUCT_FIELD:
+
+      if (object == NULL)
+        THROW(E_DYNAMIC, class->name, name);
+      
+			if (defined) 
+			{
+				*PC |= 11;
+        PC[1] = index;
+			}
+
+      goto _PUSH_STRUCT_FIELD_2;
 
     case CD_STATIC_VARIABLE:
 
@@ -278,6 +293,21 @@ _PUSH_STATIC_VARIABLE_2:
 
   addr = (char *)desc->variable.class->stat + desc->variable.offset;
 	ref = desc->variable.class;
+  goto _READ_VARIABLE;
+
+
+_PUSH_STRUCT_FIELD:
+
+  desc = class->table[PC[1]].desc;
+
+_PUSH_STRUCT_FIELD_2:
+
+	if (((CSTRUCT *)object)->ref)
+		addr = (char *)((CSTRUCT *)object)->ref + desc->variable.offset;
+	else
+		addr = (char *)object + desc->variable.offset;
+	
+	ref = object;
   goto _READ_VARIABLE;
 
 

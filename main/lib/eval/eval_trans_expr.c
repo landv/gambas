@@ -42,7 +42,7 @@ static int subr_collection_index = -1;
 static void find_subr(int *index, const char *name)
 {
 	if (*index < 0)
-		TABLE_find_symbol(COMP_subr_table, name, strlen(name), NULL, index);
+		*index = RESERVED_find_subr(name, strlen(name));
 }
 
 static short get_nparam(PATTERN *tree, int *index)
@@ -101,8 +101,13 @@ static void push_string(int index, bool trans)
   SYMBOL *sym;
   int len;
 
-  sym = TABLE_get_symbol(EVAL->string, index);
-  len = sym->len;
+	if (index == VOID_STRING)
+		len = 0;
+	else
+	{
+		sym = TABLE_get_symbol(EVAL->string, index);
+		len = sym->len;
+	}
 
   if (len == 0)
   {
@@ -177,7 +182,7 @@ static void trans_subr(int subr, short nparam, boolean output)
 {
   SUBR_INFO *info = &COMP_subr_info[subr];
 
-  //printf("trans_subr: %s: %d %d\n", info->name, info->min_param, info->max_param);
+  //fprintf(stderr, "trans_subr: %d: %s: %d %d\n", subr, info->name, info->min_param, info->max_param);
 
   if (nparam < info->min_param)
     THROW2("Not enough arguments to &1()", info->name);

@@ -29,17 +29,19 @@
 #include "gbx_c_array.h"
 #include "gbx_c_collection.h"
 #include "gbx_api.h"
+#include "gbx_struct.h"
 
 
 void EXEC_pop_unknown(void)
 {
-  static void *jump[6] = {
+  static void *jump[] = {
     /* 0 */ &&_POP_GENERIC,
     /* 1 */ &&_POP_VARIABLE,
     /* 2 */ &&_POP_STATIC_VARIABLE,
     /* 3 */ &&_POP_PROPERTY,
     /* 4 */ &&_POP_VARIABLE_AUTO,
-    /* 5 */ &&_POP_PROPERTY_AUTO
+    /* 5 */ &&_POP_PROPERTY_AUTO,
+		/* 6 */ &&_POP_STRUCT_FIELD
     };
 
   const char *name;
@@ -106,6 +108,19 @@ _POP_GENERIC:
         PC[1] = index;
 
       goto _POP_VARIABLE_2;
+
+    case CD_STRUCT_FIELD:
+
+      if (object == NULL)
+        THROW(E_DYNAMIC, class->name, name);
+      
+      if (defined) 
+			{
+				*PC |= 6;
+        PC[1] = index;
+			}
+			
+      goto _POP_STRUCT_FIELD_2;
 
     case CD_STATIC_VARIABLE:
 
@@ -188,6 +203,21 @@ _POP_STATIC_VARIABLE:
 _POP_STATIC_VARIABLE_2:
 
   addr = (char *)desc->variable.class->stat + desc->variable.offset;
+  VALUE_write(&SP[-2], (void *)addr, desc->variable.type);
+  goto _FIN;
+
+
+_POP_STRUCT_FIELD:
+
+  desc = class->table[PC[1]].desc;
+
+_POP_STRUCT_FIELD_2:
+
+	if (((CSTRUCT *)object)->ref)
+		addr = (char *)((CSTRUCT *)object)->ref + desc->variable.offset;
+	else
+		addr = (char *)object + desc->variable.offset;
+	
   VALUE_write(&SP[-2], (void *)addr, desc->variable.type);
   goto _FIN;
 

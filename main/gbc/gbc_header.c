@@ -72,7 +72,7 @@ static void analyze_function_desc(TRANS_FUNC *func, int flag)
   look++;
 
   if (flag & HF_EVENT)
-    TABLE_copy_symbol_with_prefix(JOB->class->table, func->index, ':', NULL, &func->index);
+    TABLE_copy_symbol_with_prefix(JOB->class->table, func->index, ':', &func->index);
 
   func->nparam = 0;
   func->byref = 0;

@@ -142,7 +142,7 @@ static bool search(void *symbol, int n_symbol, size_t size, int flag, const char
 			else if (LIKELY(len > slen))
 				goto __T_GREATER;
 			
-			if (LIKELY(len > 0))
+			//if (LIKELY(len > 0))
 			{
 				int result;
 				const uchar *s1 = (uchar *)name;
@@ -194,7 +194,7 @@ static bool search(void *symbol, int n_symbol, size_t size, int flag, const char
 			else if (LIKELY(len > slen))
 				goto __B_GREATER;
 			
-			if (LIKELY(len > 0))
+			//if (LIKELY(len > 0))
 			{
 				int result;
 				const uchar *s1 = (uchar *)name;
@@ -344,7 +344,7 @@ const char *TABLE_get_symbol_name_suffix(TABLE *table, int index, const char* su
 
 void TABLE_create_static(TABLE *table, size_t size, TABLE_FLAG flag)
 {
-	ARRAY_create_with_size(&table->symbol, Max(size, sizeof(SYMBOL)), 16);
+	ARRAY_create_with_size(&table->symbol, Max(size, sizeof(SYMBOL)), 64);
 	table->flag = flag;
 }
 
@@ -363,12 +363,13 @@ void TABLE_create(TABLE **result, size_t size, TABLE_FLAG flag)
 void TABLE_create_from(TABLE **result, size_t size, const char *sym_list[], TABLE_FLAG flag)
 {
 	TABLE *table;
+	int index;
 
 	TABLE_create(&table, size, flag);
 
 	while (*sym_list)
 	{
-		TABLE_add_symbol(table, *sym_list, strlen(*sym_list), NULL, NULL);
+		TABLE_add_symbol(table, *sym_list, strlen(*sym_list), &index);
 		sym_list++;
 	}
 
@@ -398,7 +399,7 @@ int TABLE_count(TABLE *table)
 }
 
 
-bool TABLE_find_symbol(TABLE *table, const char *name, int len, SYMBOL **symbol, int *index)
+bool TABLE_find_symbol(TABLE *table, const char *name, int len, int *index)
 {
 	int ind;
 	bool result;
@@ -415,16 +416,7 @@ bool TABLE_find_symbol(TABLE *table, const char *name, int len, SYMBOL **symbol,
 	if (result)
 	{
 		sym = SSYM(tsym, ind, size);
-		ind = sym->sort;
-		
-		if (index) 
-			*index = ind;
-		
-		if (symbol)
-		{
-			sym = SSYM(tsym, ind, size);
-			*symbol = sym;
-		}
+		*index = sym->sort;
 	}
 
 	return result;
@@ -451,7 +443,7 @@ void TABLE_add_new_symbol_without_sort(TABLE *table, const char *name, int len, 
 }
 
 
-bool TABLE_add_symbol(TABLE *table, const char *name, int len, SYMBOL **symbol, int *index)
+bool TABLE_add_symbol(TABLE *table, const char *name, int len, int *index)
 {
 	int ind;
 	int i;
@@ -485,11 +477,13 @@ bool TABLE_add_symbol(TABLE *table, const char *name, int len, SYMBOL **symbol, 
 		s1 = SSYM(table->symbol, count, size);
 		s2 = (SYMBOL *)((char *)s1 - size);
 		
-		for (i = count; i > ind; i--)
+		i = count - ind;
+		while (i)
 		{
 			s1->sort = s2->sort;
 			s1 = s2;
 			s2 = (SYMBOL *)((char *)s2 - size);
+			i--;
 		}
 
 		//SYM(table, ind)->sort = (ushort)count;
@@ -499,8 +493,7 @@ bool TABLE_add_symbol(TABLE *table, const char *name, int len, SYMBOL **symbol, 
 	else
 		ind = SYM(table, ind)->sort; /*table->symbol[ind].sort;*/
 
-	if (symbol) *symbol = SYM(table, ind); /*&table->symbol[ind];*/
-	if (index) *index = ind;
+	*index = ind;
 
 	return result;
 }
@@ -545,7 +538,7 @@ void TABLE_print(TABLE *table, bool sort)
 }
 
 
-void TABLE_copy_symbol_with_prefix(TABLE *table, int ind_src, char prefix, SYMBOL **symbol, int *index)
+void TABLE_copy_symbol_with_prefix(TABLE *table, int ind_src, char prefix, int *index)
 {
 	SYMBOL *sym;
 	char *ptr;
@@ -559,7 +552,7 @@ void TABLE_copy_symbol_with_prefix(TABLE *table, int ind_src, char prefix, SYMBO
 
 	*ptr = prefix;
 
-	TABLE_add_symbol(table, ptr, sym->len + 1, symbol, index);
+	TABLE_add_symbol(table, ptr, sym->len + 1, index);
 }
 
 

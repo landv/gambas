@@ -56,6 +56,7 @@ typedef
 #ifndef __GB_ERROR_C
 EXTERN ERROR_INFO ERROR_info;
 EXTERN bool ERROR_translate;
+EXTERN ERROR_CONTEXT *ERROR_current;
 #endif
 
 
@@ -86,12 +87,26 @@ EXTERN bool ERROR_translate;
   	} \
 	}
 
+#define ERROR_enter(_err) \
+do { \
+  _err->prev = ERROR_current; \
+  _err->code = 0; \
+  ERROR_current = _err; \
+} while(0)
+
+#define ERROR_leave(_err) \
+do { \
+  if (_err->prev != ERROR_LEAVE_DONE) \
+	{ \
+		ERROR_CONTEXT *_prev = _err->prev; \
+		_err->prev = ERROR_LEAVE_DONE; \
+		ERROR_current = _prev; \
+	} \
+} while(0)
+
 #define ERROR_clear() (ERROR_info.code = 0)
 
 char *ERROR_get(void);
-
-void ERROR_enter(ERROR_CONTEXT *err);
-void ERROR_leave(ERROR_CONTEXT *err);
 
 void ERROR_define(const char *pattern, const char *arg[]);
 

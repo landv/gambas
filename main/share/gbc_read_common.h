@@ -86,4 +86,6 @@ enum {
 #define PATTERN_is_operand(pattern)   (PATTERN_is_reserved(pattern) && RES_is_operand(PATTERN_index(pattern)))
 #define PATTERN_is_type(pattern)      (PATTERN_is_reserved(pattern) && RES_is_type(PATTERN_index(pattern)))
 
+#define VOID_STRING 0xFFFFFF
+
 #endif

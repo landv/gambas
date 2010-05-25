@@ -57,15 +57,17 @@ static void dec_level()
   level--;
 }
 
-
-static void add_pattern(PATTERN pattern)
+static void THROW_EXPR_TOO_COMPLEX()
 {
-  if (tree_length >= MAX_EXPR_PATTERN)
-    THROW("Expression too complex");
-
-  tree[tree_length] = pattern;  
-  tree_length++;
+	THROW("Expression too complex");
 }
+
+#define add_pattern(_pattern) \
+do { \
+  if (tree_length >= MAX_EXPR_PATTERN) \
+		THROW_EXPR_TOO_COMPLEX(); \
+  tree[tree_length++] = (_pattern); \
+} while (0)
 
 
 static void remove_last_pattern()
@@ -166,12 +168,7 @@ static void add_operator_output(short op, short nparam, uint64_t byref)
   }
 }
 
-
-static void add_operator(short op, short nparam)
-{
-  add_operator_output(op, nparam, 0);
-}
-
+#define add_operator(_op, _nparam) add_operator_output(_op, _nparam, 0)
 
 
 static void add_subr(PATTERN subr_pattern, short nparam)

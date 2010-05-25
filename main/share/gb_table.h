@@ -66,8 +66,8 @@ int TABLE_count(TABLE *table);
 const char *TABLE_get_symbol_name(TABLE *table, int index);
 const char *TABLE_get_symbol_name_suffix(TABLE *table, int index, const char* suffix);
 
-bool TABLE_find_symbol(TABLE *table, const char *name, int len, SYMBOL **symbol, int *index);
-bool TABLE_add_symbol(TABLE *table, const char *name, int len, SYMBOL **symbol, int *index);
+bool TABLE_find_symbol(TABLE *table, const char *name, int len, int *index);
+bool TABLE_add_symbol(TABLE *table, const char *name, int len, int *index);
 void TABLE_sort(TABLE *table);
 void TABLE_print(TABLE *table, bool sort);
 /*PUBLIC bool TABLE_copy_symbol(TABLE *dst, TABLE *src, int index_src, SYMBOL **symbol, int *index);*/
@@ -79,6 +79,6 @@ bool SYMBOL_find(void *symbol, int n_symbol, size_t s_symbol, int flag, const ch
 #define TABLE_get_symbol(table, ind) ((SYMBOL *)ARRAY_get((table)->symbol, ind))
 
 SYMBOL *TABLE_get_symbol_sort(TABLE *table, int index);
-void TABLE_copy_symbol_with_prefix(TABLE *table, int ind_src, char prefix, SYMBOL **symbol, int *index);
+void TABLE_copy_symbol_with_prefix(TABLE *table, int ind_src, char prefix, int *index);
 
 #endif

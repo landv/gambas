@@ -44,6 +44,7 @@
 #include "gbx_object.h"
 #include "gbx_variant.h"
 #include "gbx_number.h"
+#include "gbx_struct.h"
 
 #include "gambas.h"
 
@@ -102,6 +103,8 @@ TYPE CLASS_ctype_to_type(CLASS *class, CTYPE ctype)
 {
   if (ctype.id == T_OBJECT && ctype.value >= 0)
     return (TYPE)(class->load->class_ref[ctype.value]);
+	else if (ctype.id == TC_ARRAY)
+		return (TYPE)CARRAY_get_array_class(class->load->array[ctype.value]->type);
   //else if (ctype.id == TC_POINTER)
   //  return (TYPE)T_POINTER;
   else
@@ -382,7 +385,7 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 	ALLOC(&desc, sizeof(CLASS_DESC) *nfield, "load_structure");
 	sclass->data = (char *)desc;
 
-	pos = sizeof(OBJECT);
+	pos = sizeof(CSTRUCT);
 	
 	for (i = 0; i < nfield; i++)
 	{
@@ -392,7 +395,7 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 		ctype = *((CTYPE *)structure);
 		structure++;
 		
-		desc[i].variable.name = "v";
+		desc[i].variable.name = "f";
 		desc[i].variable.type = CLASS_ctype_to_type(class, ctype);
 		desc[i].variable.ctype = ctype;
 		desc[i].variable.offset = pos;
@@ -443,8 +446,9 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 			global[i].sym.sort = sclass->table[i].sort;
 	}
 	
-	for (i = 0; i < MAX_SPEC; i++)
-		sclass->special[i] = NO_SYMBOL;
+  CLASS_search_special(sclass);
+	/*for (i = 0; i < MAX_SPEC; i++)
+		sclass->special[i] = NO_SYMBOL;*/
 	
 	sclass->is_struct = TRUE;
 	

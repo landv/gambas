@@ -461,6 +461,8 @@ Private Sub Browse()
     
     sName = File.Name(sPath)
     If sName Begins "core." Then Continue
+    If sName Begins "callgrind.out." Then Continue
+    If sName Begins "cachegrind.out." Then Continue
     
     If sFile Begins ".src/" Then
       lblBrowse.Text = sName

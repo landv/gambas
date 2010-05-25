@@ -181,6 +181,7 @@ static CLASS *class_replace_global(const char *name)
 	CLASS *class, *parent;
 	CLASS *new_class;
 	int len;
+	int index;
 
 	class = CLASS_find_global(name);
 	if (class->state)
@@ -194,10 +195,12 @@ static CLASS *class_replace_global(const char *name)
 
 		new_name = (char *)new_class->name;
 
-		TABLE_find_symbol(&_global_table, name, len, (SYMBOL **)(void *)&csym, NULL);
+		TABLE_find_symbol(&_global_table, name, len, &index);
+		csym = (CLASS_SYMBOL *)TABLE_get_symbol(&_global_table, index);
 		csym->class = new_class;
 
-		TABLE_find_symbol(&_global_table, new_name, len + 1, (SYMBOL **)(void *)&csym, NULL);
+		TABLE_find_symbol(&_global_table, new_name, len + 1, &index);
+		csym = (CLASS_SYMBOL *)TABLE_get_symbol(&_global_table, index);
 		csym->class = class;
 
 		new_class->name = class->name;
@@ -362,20 +365,22 @@ CLASS *CLASS_look(const char *name, int len)
 	//if (CP && CP->component && CP->component->archive)
 	if (!_global && !ARCHIVE_get_current(&arch))
 	{
-		if (TABLE_find_symbol(arch->classes, name, len, (SYMBOL **)(void *)&csym, NULL))
+		if (TABLE_find_symbol(arch->classes, name, len, &index))
 		{
 			#if DEBUG_COMP
 			fprintf(stderr, " -> in %s\n", arch->name ? arch->name : "main");
 			#endif
+			csym = (CLASS_SYMBOL *)TABLE_get_symbol(arch->classes, index);
 			return csym->class;
 		}
 	}
 
-	if (TABLE_find_symbol(&_global_table, name, len, (SYMBOL **)(void *)&csym, &index))
+	if (TABLE_find_symbol(&_global_table, name, len, &index))
 	{
 		#if DEBUG_COMP
 		fprintf(stderr, " -> %d in global\n", index);
 		#endif
+		csym = (CLASS_SYMBOL *)TABLE_get_symbol(&_global_table, index);
 		return csym->class;
 	}
 	else
@@ -413,18 +418,20 @@ CLASS *CLASS_find(const char *name)
 	if (!_global && !ARCHIVE_get_current(&arch))
 	{
 		global = FALSE;
-		TABLE_add_symbol(arch->classes, name, len, (SYMBOL **)(void *)&csym, NULL);
+		TABLE_add_symbol(arch->classes, name, len, &index);
 		#if DEBUG_LOAD || DEBUG_COMP
 			fprintf(stderr, "Not found -> creating new one in %s\n", arch->name ? arch->name : "main");
 		#endif
+		csym = (CLASS_SYMBOL *)TABLE_get_symbol(arch->classes, index);
 	}
 	else
 	{
 		global = TRUE;
-		TABLE_add_symbol(&_global_table, name, len, (SYMBOL **)(void *)&csym, &index);
+		TABLE_add_symbol(&_global_table, name, len, &index);
 		#if DEBUG_LOAD || DEBUG_COMP
 			fprintf(stderr, "Not found -> creating new one in global\n");
 		#endif
+		csym = (CLASS_SYMBOL *)TABLE_get_symbol(&_global_table, index);
 	}
 
 	ALLOC_ZERO(&class, sizeof(CLASS), "CLASS_find");

@@ -62,11 +62,13 @@ static lt_dlhandle get_library(char *name)
 {
   EXTERN_SYMBOL *esym;
   char *p;
+	int index;
   
   if (!_table)
     TABLE_create(&_table, sizeof(EXTERN_SYMBOL), TF_NORMAL);
     
-  TABLE_add_symbol(_table, name, strlen(name), (SYMBOL **)(void *)&esym, NULL);
+  TABLE_add_symbol(_table, name, strlen(name), &index);
+	esym = (EXTERN_SYMBOL *)TABLE_get_symbol(_table, index);
   if (!esym->handle)
   {
     /* !!! Must add the suffix !!! */

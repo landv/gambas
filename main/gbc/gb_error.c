@@ -46,14 +46,15 @@ static const char *_message[] =
   NULL
 };
 
-static ERROR_CONTEXT *_current = NULL;
+ERROR_CONTEXT *ERROR_current = NULL;
 
 
+#if 0
 void ERROR_enter(ERROR_CONTEXT *err)
 {
   CLEAR(err);
-  err->prev = _current;
-  _current = err;
+  err->prev = ERROR_current;
+  ERROR_current = err;
 }
 
 
@@ -63,11 +64,11 @@ void ERROR_leave(ERROR_CONTEXT *err)
   {
     /*ERROR_panic("ERROR_leave already done");*/
 
-    _current = err->prev;
+    ERROR_current = err->prev;
     err->prev = ERROR_LEAVE_DONE;
   }
 }
-
+#endif
 
 char *ERROR_get(void)
 {
@@ -196,11 +197,11 @@ void PROPAGATE()
   }
   */
 
-  if (_current == NULL)
+  if (ERROR_current == NULL)
     ERROR_panic("Cannot propagate error. No error handler.");
 
-  err = _current;
-  ERROR_leave(_current);
+  err = ERROR_current;
+  ERROR_leave(ERROR_current);
   longjmp(err->env, 1);
 }
 

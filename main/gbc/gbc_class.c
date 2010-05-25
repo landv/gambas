@@ -493,7 +493,7 @@ int CLASS_get_array_class(CLASS *class, int type, int value)
 	
 		if (index == 0)
 		{
-			if (!TABLE_find_symbol(class->table, names[type], strlen(names[type]), NULL, &index))
+			if (!TABLE_find_symbol(class->table, names[type], strlen(names[type]), &index))
 				index = CLASS_add_symbol(class, names[type]);
 			index = CLASS_add_class_exported(class, index);
 			_array_class[type] = index;
@@ -509,10 +509,10 @@ int CLASS_get_array_class(CLASS *class, int type, int value)
 		memcpy(name, sym->symbol.name, len);
 		memcpy(&name[len], "[]", 2);
 		
-		if (!TABLE_find_symbol(class->table, name, len + 2, NULL, &index))
+		if (!TABLE_find_symbol(class->table, name, len + 2, &index))
 		{
 			char *name_alloc = CLASS_add_name(class, name, len + 2);
-			TABLE_add_symbol(class->table, name_alloc, len + 2, NULL, &index);
+			TABLE_add_symbol(class->table, name_alloc, len + 2, &index);
 		}
 		
 		if (class->class[value].exported)
@@ -593,10 +593,10 @@ void CLASS_add_declaration(CLASS *class, TRANS_DECL *decl)
 
 		var->type = decl->type;
 		var->index = decl->index;
-		var->pos = class->size_stat;
-		var->size = TYPE_sizeof(var->type);
+		//var->pos = class->size_stat;
+		//var->size = TYPE_sizeof(var->type);
 
-		class->size_stat += var->size;
+		//class->size_stat += var->size;
 
 		CODE_begin_function(&class->function[FUNC_INIT_STATIC]);
 		if (TRANS_init_var(decl))
@@ -613,10 +613,10 @@ void CLASS_add_declaration(CLASS *class, TRANS_DECL *decl)
 
 		var->type = decl->type;
 		var->index = decl->index;
-		var->pos = class->size_dyn;
-		var->size = TYPE_sizeof(var->type);
+		//var->pos = class->size_dyn;
+		//var->size = TYPE_sizeof(var->type);
 
-		class->size_dyn += var->size;
+		//class->size_dyn += var->size;
 
 		CODE_begin_function(&class->function[FUNC_INIT_DYNAMIC]);
 		if (TRANS_init_var(decl))
@@ -683,7 +683,7 @@ int CLASS_add_symbol(CLASS *class, const char *name)
 {
 	int index;
 
-	TABLE_add_symbol(class->table, name, strlen(name), NULL, &index);
+	TABLE_add_symbol(class->table, name, strlen(name), &index);
 	return index;
 }
 
@@ -723,9 +723,11 @@ static int check_one_property_func(CLASS *class, PROPERTY *prop, bool write)
 
 	name = STR_copy(TABLE_get_symbol_name_suffix(class->table, prop->name, write ? "_Write" : "_Read"));
 
-	if (!TABLE_find_symbol(class->table, name, strlen(name), (SYMBOL **)(void *)&sym, &index))
+	if (!TABLE_find_symbol(class->table, name, strlen(name), &index))
 		THROW("&1 is not declared", name);
 
+	sym = (CLASS_SYMBOL *)TABLE_get_symbol(class->table, index);
+	
 	if (TYPE_get_kind(sym->global.type) != TK_FUNCTION)
 		THROW("&1 is declared but is not a function", name);
 

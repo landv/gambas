@@ -25,11 +25,11 @@ gbx3_SOURCES = \
  gb_alloc.c gb_array.c \
  gbx_stack.h gbx_stack.c \
  gb_buffer.c gbx_replace.c \
- gb_list.c \
+ gbx_value.h gbx_value.c \
  gb_hash.c \
  gb_table.c \
+ gb_list.c \
  gbx_type.h gbx_type.c \
- gbx_value.h gbx_value.c \
  gbx_exec.h gbx_exec.c gbx_exec_push.c gbx_exec_enum.c gbx_exec_pop.c \
  gbx_class_desc.h gbx_class.h gbx_class_init.c gbx_class.c gbx_class_native.c \
  gbx_class_load.c gbx_class_load.h \
@@ -70,7 +70,8 @@ gbx3_SOURCES = \
  gbx_component.h gbx_component.c \
  gbx_extern.h gbx_extern.c \
  gbx_c_enum.h gbx_c_enum.c \
- gbx_c_timer.h gbx_c_timer.c
+ gbx_c_timer.h gbx_c_timer.c \
+ gbx_struct.h gbx_struct.c
 
 gb_la_SOURCES = \
  gbx_info.h \

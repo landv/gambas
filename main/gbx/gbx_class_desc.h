@@ -34,6 +34,7 @@
 #define CD_STATIC_PROPERTY_READ   'R'
 #define CD_STATIC_METHOD          'M'
 #define CD_VARIABLE               'v'
+#define CD_STRUCT_FIELD           'f'
 #define CD_STATIC_VARIABLE        'V'
 #define CD_EXTERN                 'X'
 

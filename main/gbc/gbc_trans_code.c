@@ -456,10 +456,13 @@ static void translate_body()
 static void trans_call(const char *name, int nparam)
 {
   CLASS_SYMBOL *sym;
+	int index;
 
-  if (!TABLE_find_symbol(JOB->class->table, name, strlen(name), (SYMBOL **)(void *)&sym, NULL))
+  if (!TABLE_find_symbol(JOB->class->table, name, strlen(name), &index))
     return;
 
+	sym = (CLASS_SYMBOL *)TABLE_get_symbol(JOB->class->table, index);
+	
   if (TYPE_get_kind(sym->global.type) != TK_FUNCTION)
     return;
 

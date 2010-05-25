@@ -35,6 +35,7 @@
 
 #include "gb_common.h"
 #include "gb_common_buffer.h"
+#include "gb_common_case.h"
 #include "gb_error.h"
 #include "gb_table.h"
 #include "gb_file.h"
@@ -56,6 +57,7 @@ static char ident_car[256];
 static char first_car[256];
 static char digit_car[256];
 static char noop_car[256];
+static char canres_car[256];
 
 #undef isspace
 #define isspace(_c) (((uchar)_c) <= ' ')
@@ -88,6 +90,7 @@ static void READ_init(void)
 			ident_car[i] = (i != 0) && ((i >= 'A' && i <= 'Z') || (i >= 'a' && i <= 'z') || (i >= '0' && i <= '9') || strchr("$_?@", i));
 			digit_car[i] = (i >= '0' && i <= '9');
 			noop_car[i] = ident_car[i] || digit_car[i] || i <= ' ';
+			canres_car[i] = (i != ':') && (i != '.') && (i != '!') && (i != '(');
 			
 			if (i == 0)
 				first_car[i] = GOTO_BREAK;
@@ -135,7 +138,7 @@ static void READ_exit(void)
 		}
 		else
 		{
-			if (TABLE_find_symbol(JOB->class->table, name, len, NULL, &index))
+			if (TABLE_find_symbol(JOB->class->table, name, len, &index))
 			{
 				if (local)
 					CLASS_add_class_unused(JOB->class, index);
@@ -473,12 +476,12 @@ END:
 	if (sign && (!PATTERN_is_reserved(last_pattern) || PATTERN_is(last_pattern, RS_RBRA) || PATTERN_is(last_pattern, RS_RSQR)))
 	{
 		add_pattern(RT_RESERVED, RESERVED_find_word(&sign, 1));
-		TABLE_add_symbol(comp->class->table, start + 1, source_ptr - start - 1, NULL, &index);
+		TABLE_add_symbol(comp->class->table, start + 1, source_ptr - start - 1, &index);
 		add_pattern(RT_NUMBER, index);
 	}
 	else
 	{
-		TABLE_add_symbol(comp->class->table, start, source_ptr - start, NULL, &index);
+		TABLE_add_symbol(comp->class->table, start, source_ptr - start, &index);
 		add_pattern(RT_NUMBER, index);
 	}
 	
@@ -500,45 +503,36 @@ static void add_identifier()
 	int index;
 	int type;
 	int flag;
-	PATTERN last_pattern;
+	PATTERN last_pattern, last_last_pattern;
 	bool not_first;
 	bool can_be_reserved;
-	bool can_be_subr;
 	bool is_type;
-	bool last_func, last_declare, last_type, last_class;
+	bool last_identifier, last_type, last_class, last_pub;
 	
 	last_pattern = get_last_pattern();
 	
 	if (PATTERN_is_reserved(last_pattern))
 	{
 		flag = RES_get_ident_flag(PATTERN_index(last_pattern));
-		/*not_first = (flag & RSF_INF) != 0;
-		last_func = (flag & RSF_ILF) != 0;
-		last_declare = (flag & RSF_ILD) != 0;
-		last_class = (flag & RSF_ILC) != 0;
-		last_type = last_class || (flag & RSF_ILT) != 0;
-		if (flag & RSF_ILDD)
+		if (flag & RSF_PREV)
 		{
-			PATTERN last_last_pattern = get_last_last_pattern();
-			
-			if (PATTERN_is_reserved(last_last_pattern) && RES_get_ident_flag(PATTERN_index(last_last_pattern)) & RSF_ILD)
-				last_declare = TRUE;
-			flag &= ~RSF_ILDD; // flag == 0 means we can read a subroutine!
-		}*/
+			last_last_pattern = get_last_last_pattern();
+			if (PATTERN_is_reserved(last_last_pattern))
+				flag = RES_get_ident_flag(PATTERN_index(last_last_pattern));
+			else
+				flag = 0;
+		}
 	}
 	else
-	{
 		flag = 0;
-		//not_first = last_func = last_declare = last_type = last_class = FALSE;
-	}
 
 	type = RT_IDENTIFIER;
 
 	start = source_ptr;
 	len = 1;
 
-	last_class = (flag & RSF_ILC) != 0;
-	last_type = last_class || (flag & RSF_ILT) != 0;
+	last_class = (flag & RSF_CLASS) != 0;
+	last_type = (flag & RSF_AS) != 0;
 	
 	if (last_type)
 	{
@@ -556,7 +550,7 @@ static void add_identifier()
 				{
 					source_ptr++;
 					len++;
-					TABLE_add_symbol(comp->class->table, start, len - 2, NULL, NULL);
+					TABLE_add_symbol(comp->class->table, start, len - 2, &index);
 					continue;
 				}
 			}
@@ -577,7 +571,7 @@ static void add_identifier()
 		}
 	}
 
-	not_first = (flag & RSF_INF) != 0;
+	not_first = (flag & RSF_POINT) != 0;
 
 	car = get_char();
 
@@ -593,28 +587,48 @@ static void add_identifier()
 	
 	if (can_be_reserved)
 	{
-		if (index == RS_ME || index == RS_NEW || index == RS_LAST || index == RS_SUPER)
-		{
-			last_declare = (flag & RSF_ILD) != 0;
-			if (flag & RSF_ILDD)
-			{
-				PATTERN last_last_pattern = get_last_last_pattern();
-				
-				if (PATTERN_is_reserved(last_last_pattern) && RES_get_ident_flag(PATTERN_index(last_last_pattern)) & RSF_ILD)
-					last_declare = TRUE;
-			}
-			
-			can_be_reserved = !last_declare;
-		}
-		else if (index == RS_CLASS)
-		{
-			can_be_reserved = begin_line && isspace(car);
-		}
-		else
-		{
-			is_type = PATTERN_is_type(PATTERN_make(RT_RESERVED, index));
+		static void *jump[] = { 
+			&&__OTHERS, &&__ME_NEW_LAST_SUPER, &&__CLASS, &&__STRUCT, &&__SUB_PROCEDURE_FUNCTION, &&__CONST, &&__ENUM, &&__READ, &&__DATATYPE 
+		};
+		
+		last_identifier = (flag & RSF_IDENT) != 0;
+		last_pub = (flag & RSF_PUB) != 0;
 
-			if (is_type && (car == '[') && (get_char_offset(1) == ']'))
+		goto *jump[RES_get_read_switch(index)];
+		
+		do
+		{
+		
+		__ME_NEW_LAST_SUPER:
+			can_be_reserved = !last_identifier;
+			break;
+			
+		__CLASS:
+			can_be_reserved = canres_car[car] && begin_line;
+			break;
+			
+		__STRUCT:
+			can_be_reserved = canres_car[car] && (begin_line || last_pub || PATTERN_is(last_pattern, RS_AS) || PATTERN_is(last_pattern, RS_END));
+			break;
+			
+		__SUB_PROCEDURE_FUNCTION:
+			can_be_reserved = canres_car[car] && (begin_line || last_pub || PATTERN_is(last_pattern, RS_END));
+			break;
+		
+		__CONST:
+			can_be_reserved = canres_car[car] && (begin_line || last_pub);
+			break;
+			
+		__ENUM:
+			can_be_reserved = canres_car[car] && (begin_line || last_pub);
+			break;
+			
+		__READ:
+			can_be_reserved = canres_car[car] && (!last_identifier || PATTERN_is(last_pattern, RS_PROPERTY));
+			break;
+		
+		__DATATYPE:
+			if (car == '[' && get_char_offset(1) == ']')
 			{
 				len += 2;
 				source_ptr += 2;
@@ -623,44 +637,43 @@ static void add_identifier()
 			}
 			else
 			{
-				if (index == RS_NEW)
-					is_type = TRUE;
-
-				last_func = (flag & RSF_ILF) != 0;
-
 				if (last_type)
-					can_be_reserved = is_type;
-				else if (last_func)
-					can_be_reserved = FALSE;
+					can_be_reserved = TRUE;
 				else
-					can_be_reserved = !is_type && (car != ':') && (car != '.') && (car != '!') && (car != '(');
+					can_be_reserved = FALSE;
 			}
+			break;
+			
+		__OTHERS:
+			if (last_type || last_identifier)
+				can_be_reserved = FALSE;
+			else
+				can_be_reserved = canres_car[car];
+			break;
 		}
+		while (0);
 	}
-
-	can_be_subr = ((flag & ~RSF_ILDD) == 0) && car != '.' && car != '!';
 
 	if (can_be_reserved)
 	{
 		type = RT_RESERVED;
+		goto __ADD_PATTERN;
 	}
-	else if (can_be_subr && TABLE_find_symbol(COMP_subr_table, start, len, NULL, &index))
+	
+	if ((flag == 0) && car != '.' && car != '!')
 	{
-		type = RT_SUBR;
+		index = RESERVED_find_subr(start, len);
+		if (index >= 0)
+		{
+			type = RT_SUBR;
+			goto __ADD_PATTERN;
+		}
 	}
-	else
-	{
-		if (last_type)
-			type = RT_CLASS;
-		goto IDENTIFIER;
-	}
 
-	add_pattern(type, index);
-	return;
+	if (last_type)
+		type = RT_CLASS;
 
-IDENTIFIER:
-
-	if (PATTERN_is(last_pattern, RS_EVENT) || PATTERN_is(last_pattern, RS_RAISE))
+	if (flag & RSF_EVENT)
 	{
 		start--;
 		len++;
@@ -669,12 +682,14 @@ IDENTIFIER:
 
 	if (PATTERN_is(last_pattern, RS_EXCL))
 	{
-		TABLE_add_symbol(comp->class->string, start, len, NULL, &index);
+		TABLE_add_symbol(comp->class->string, start, len, &index);
 		type = RT_STRING;
 	}
 	else
-		TABLE_add_symbol(comp->class->table, start, len, NULL, &index);
+		TABLE_add_symbol(comp->class->table, start, len, &index);
 	
+__ADD_PATTERN:
+
 	add_pattern(type, index);
 }
 
@@ -716,11 +731,11 @@ static void add_quoted_identifier(void)
 
 	if (PATTERN_is(last_pattern, RS_EXCL))
 	{
-		TABLE_add_symbol(comp->class->string, start, len, NULL, &index);
+		TABLE_add_symbol(comp->class->string, start, len, &index);
 		type = RT_STRING;
 	}
 	else
-		TABLE_add_symbol(comp->class->table, start, len, NULL, &index);
+		TABLE_add_symbol(comp->class->table, start, len, &index);
 	
 	add_pattern(type, index);
 }
@@ -871,9 +886,13 @@ static void add_string()
 		}
 	}
 
-	TABLE_add_symbol(comp->class->string, start + 1, len, NULL, &index);
-
-	add_pattern(RT_STRING, index);
+	if (len > 0)
+	{
+		TABLE_add_symbol(comp->class->string, start + 1, len, &index);
+		add_pattern(RT_STRING, index);
+	}
+	else
+		add_pattern(RT_STRING, VOID_STRING);
 
 	source_ptr = end + 1;
 	//for (i = 0; i < newline; i++)

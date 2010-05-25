@@ -26,6 +26,7 @@
 #include <errno.h>
 #include <setjmp.h>
 
+#include "gb_common.h"
 #include "gb_limit.h"
 
 //#define DEBUG_ERROR 1
@@ -201,21 +202,21 @@ do { \
 
 #define ERROR_leave(_err) \
 do { \
-  if (_err->prev != ERROR_LEAVE_DONE) \
+	ERROR_CONTEXT *_prev = (_err); \
+  if (_prev->prev != ERROR_LEAVE_DONE) \
 	{ \
-		ERROR_current = _err->prev; \
+		ERROR_current = _prev->prev; \
 		if (ERROR_current) \
 		{ \
-			if (_err->info.code) \
+			if (_prev->info.code) \
 			{ \
 				ERROR_reset(&ERROR_current->info); \
-				ERROR_current->info = _err->info; \
+				ERROR_current->info = _prev->info; \
 			} \
 		} \
 		else \
-			ERROR_reset(&_err->info); \
-    \
-		_err->prev = ERROR_LEAVE_DONE; \
+			ERROR_reset(&_prev->info); \
+		_prev->prev = ERROR_LEAVE_DONE; \
 	} \
 } while(0)
 

@@ -43,6 +43,14 @@ static boolean begin_line = FALSE;
 
 static char ident_car[256];
 static char first_car[256];
+static char digit_car[256];
+static char noop_car[256];
+static char canres_car[256];
+
+#undef isspace
+#define isspace(_c) (((uchar)_c) <= ' ')
+#undef isdigit
+#define isdigit(_c) (digit_car[_c])
 
 enum
 {
@@ -66,6 +74,9 @@ static void READ_init(void)
     for (i = 0; i < 255; i++)
     {
       ident_car[i] = (i != 0) && ((i >= 'A' && i <= 'Z') || (i >= 'a' && i <= 'z') || (i >= '0' && i <= '9') || strchr("$_?@", i));
+			digit_car[i] = (i >= '0' && i <= '9');
+			noop_car[i] = ident_car[i] || digit_car[i] || i <= ' ';
+			canres_car[i] = (i != ':') && (i != '.') && (i != '!') && (i != '(');
       
       if (i == 0)
         first_car[i] = GOTO_BREAK;
@@ -107,7 +118,7 @@ PUBLIC char *READ_get_pattern(PATTERN *pattern)
   {
     case RT_RESERVED:
       //snprintf(COMMON_buffer, COMMON_BUF_MAX, "%s%s%s", before, TABLE_get_symbol_name(COMP_res_table, index), after);
-      str = TABLE_get_symbol_name(COMP_res_table, index);
+      str = COMP_res_info[index].name;
       if (ispunct((unsigned char)*str))
         snprintf(_buffer, BUF_MAX, "%s%s%s", before, str, after);
       else
@@ -374,12 +385,12 @@ END:
   if (sign && (!PATTERN_is_reserved(last_pattern) || PATTERN_is(last_pattern, RS_RBRA) || PATTERN_is(last_pattern, RS_RSQR)))
   {
     add_pattern(RT_RESERVED, RESERVED_find_word(&sign, 1));
-    TABLE_add_symbol(EVAL->table, start + 1, source_ptr - start - 1, NULL, &index);
+    TABLE_add_symbol(EVAL->table, start + 1, source_ptr - start - 1, &index);
     add_pattern(RT_NUMBER, index);
   }
   else
   {
-    TABLE_add_symbol(EVAL->table, start, source_ptr - start, NULL, &index);
+    TABLE_add_symbol(EVAL->table, start, source_ptr - start, &index);
     add_pattern(RT_NUMBER, index);
   }
 
@@ -391,7 +402,7 @@ NOT_A_NUMBER:
 	return TRUE;
 }
 
-
+#if 0
 static void add_identifier(bool no_res)
 {
   unsigned char car;
@@ -574,6 +585,253 @@ IDENTIFIER:
   
   add_pattern(type, index);
 }
+#endif
+
+static void add_identifier()
+{
+	unsigned char car;
+	const char *start;
+	int len;
+	int index;
+	int type;
+	int flag;
+	PATTERN last_pattern, last_last_pattern;
+	bool not_first;
+	bool can_be_reserved;
+	bool is_type;
+	bool last_identifier, last_type, last_class, last_pub;
+	
+	last_pattern = get_last_pattern();
+	
+	if (PATTERN_is_reserved(last_pattern))
+	{
+		flag = RES_get_ident_flag(PATTERN_index(last_pattern));
+		if (flag & RSF_PREV)
+		{
+			last_last_pattern = get_last_last_pattern();
+			if (PATTERN_is_reserved(last_last_pattern))
+				flag = RES_get_ident_flag(PATTERN_index(last_last_pattern));
+			else
+				flag = 0;
+		}
+	}
+	else
+		flag = 0;
+
+	type = RT_IDENTIFIER;
+
+	start = source_ptr;
+	len = 1;
+
+	last_class = (flag & RSF_CLASS) != 0;
+	last_type = (flag & RSF_AS) != 0;
+	
+	if (last_type)
+	{
+		for(;;)
+		{
+			source_ptr++;
+			len++;
+			car = get_char();
+			if (ident_car[car])
+				continue;
+			if (car == '[')
+			{
+				car = get_char_offset(1);
+				if (car == ']')
+				{
+					source_ptr++;
+					len++;
+					TABLE_add_symbol(EVAL->table, start, len - 2, &index);
+					continue;
+				}
+			}
+			
+			len--;
+			break;
+		}
+	}
+	else
+	{
+		for(;;)
+		{
+			source_ptr++;
+			car = get_char();
+			if (!ident_car[car])
+				break;
+			len++;
+		}
+	}
+
+	not_first = (flag & RSF_POINT) != 0;
+
+	car = get_char();
+
+	//can_be_reserved = !not_first && TABLE_find_symbol(COMP_res_table, &comp->source[start], len, NULL, &index);
+	
+	can_be_reserved = !not_first && !last_class;
+	
+	if (can_be_reserved)
+	{
+		index = RESERVED_find_word(start, len);
+		can_be_reserved = (index >= 0);
+	}
+	
+	if (can_be_reserved)
+	{
+		static void *jump[] = { 
+			&&__OTHERS, &&__ME_NEW_LAST_SUPER, &&__CLASS, &&__STRUCT, &&__SUB_PROCEDURE_FUNCTION, &&__CONST, &&__ENUM, &&__READ, &&__DATATYPE 
+		};
+		
+		last_identifier = (flag & RSF_IDENT) != 0;
+		last_pub = (flag & RSF_PUB) != 0;
+
+		goto *jump[RES_get_read_switch(index)];
+		
+		do
+		{
+		
+		__ME_NEW_LAST_SUPER:
+			can_be_reserved = !last_identifier;
+			break;
+			
+		__CLASS:
+			can_be_reserved = canres_car[car] && begin_line;
+			break;
+			
+		__STRUCT:
+			can_be_reserved = canres_car[car] && (begin_line || last_pub || PATTERN_is(last_pattern, RS_AS) || PATTERN_is(last_pattern, RS_END));
+			break;
+			
+		__SUB_PROCEDURE_FUNCTION:
+			can_be_reserved = canres_car[car] && (begin_line || last_pub || PATTERN_is(last_pattern, RS_END));
+			break;
+		
+		__CONST:
+			can_be_reserved = canres_car[car] && (begin_line || last_pub);
+			break;
+			
+		__ENUM:
+			can_be_reserved = canres_car[car] && (begin_line || last_pub);
+			break;
+			
+		__READ:
+			can_be_reserved = canres_car[car] && (!last_identifier || PATTERN_is(last_pattern, RS_PROPERTY));
+			break;
+		
+		__DATATYPE:
+			if (car == '[' && get_char_offset(1) == ']')
+			{
+				len += 2;
+				source_ptr += 2;
+				is_type = FALSE;
+				can_be_reserved = FALSE;
+			}
+			else
+			{
+				if (last_type)
+					can_be_reserved = TRUE;
+				else
+					can_be_reserved = FALSE;
+			}
+			break;
+			
+		__OTHERS:
+			if (last_type || last_identifier)
+				can_be_reserved = FALSE;
+			else
+				can_be_reserved = canres_car[car];
+			break;
+		}
+		while (0);
+	}
+
+	if (can_be_reserved)
+	{
+		type = RT_RESERVED;
+		goto __ADD_PATTERN;
+	}
+	
+	if ((flag == 0) && car != '.' && car != '!')
+	{
+		index = RESERVED_find_subr(start, len);
+		if (index >= 0)
+		{
+			type = RT_SUBR;
+			goto __ADD_PATTERN;
+		}
+	}
+
+	if (last_type)
+		type = RT_CLASS;
+
+	/*if (flag & RSF_EVENT)
+	{
+		start--;
+		len++;
+		*((char *)start) = ':';
+	}*/
+
+	if (!EVAL->analyze && PATTERN_is(last_pattern, RS_EXCL))
+	{
+		TABLE_add_symbol(EVAL->string, start, len, &index);
+		type = RT_STRING;
+	}
+	else
+		TABLE_add_symbol(EVAL->table, start, len, &index);
+	
+__ADD_PATTERN:
+
+	add_pattern(type, index);
+}
+
+
+static void add_quoted_identifier(void)
+{
+	unsigned char car;
+	const char *start;
+	int len;
+	int index;
+	int type;
+	PATTERN last_pattern;
+	
+	last_pattern = get_last_pattern();
+
+	type = RT_IDENTIFIER;
+
+	start = source_ptr;
+	len = 1;
+
+	for(;;)
+	{
+		source_ptr++;
+		car = get_char();
+		if (!ident_car[car])
+			break;
+		len++;
+	}
+
+	if (get_char() == '}')
+		source_ptr++;
+
+	/*if (PATTERN_is(last_pattern, RS_EVENT) || PATTERN_is(last_pattern, RS_RAISE))
+	{
+		start--;
+		len++;
+		*((char *)start) = ':';
+	}*/
+
+	if (!EVAL->analyze && PATTERN_is(last_pattern, RS_EXCL))
+	{
+		TABLE_add_symbol(EVAL->string, start, len, &index);
+		type = RT_STRING;
+	}
+	else
+		TABLE_add_symbol(EVAL->table, start, len, &index);
+	
+	add_pattern(type, index);
+}
+
 
 
 static void add_operator()
@@ -727,10 +985,13 @@ static void add_string()
   p[1] = 0;
 
   //fprintf(stderr, "EVAL_read: add_string (end): [%d] %s\n", source_ptr - EVAL->source, source_ptr);
-
-  TABLE_add_symbol(EVAL->string, start + 1, len, NULL, &index);
-
-  add_pattern(RT_STRING, index);
+	if (len > 0)
+	{
+		TABLE_add_symbol(EVAL->string, start + 1, len, &index);
+		add_pattern(RT_STRING, index);
+	}
+	else
+		add_pattern(RT_STRING, VOID_STRING);
 
   for (i = 0; i < newline; i++)
     add_newline();
@@ -805,7 +1066,7 @@ static void add_big_comment()
     source_ptr++;
   }
 
-  TABLE_add_symbol(EVAL->string, start, len, NULL, &index);
+  TABLE_add_symbol(EVAL->string, start, len, &index);
   type = RT_COMMENT;
   add_pattern(type, index);
 }
@@ -857,7 +1118,7 @@ static void add_comment()
     len++;
   }
 
-  TABLE_add_symbol(EVAL->string, start, len, NULL, &index);
+  TABLE_add_symbol(EVAL->string, start, len, &index);
   type = RT_COMMENT;
 
   add_pattern(type, index);
@@ -895,7 +1156,7 @@ static void add_string_for_analyze()
   if (car == '"')
     source_ptr++;
 
-  TABLE_add_symbol(EVAL->string, start + 1, len, NULL, &index);
+  TABLE_add_symbol(EVAL->string, start + 1, len, &index);
   type = RT_STRING;
 
   add_pattern(type, index);
@@ -980,7 +1241,7 @@ PUBLIC void EVAL_read(void)
 
   __IDENT:
     
-    add_identifier(FALSE);
+    add_identifier();
     begin_line = FALSE;
     continue;
 
@@ -989,13 +1250,13 @@ PUBLIC void EVAL_read(void)
     if (EVAL->analyze)
     {
       add_operator();
-      add_identifier(FALSE);
+      add_identifier();
       add_operator();
     }
     else
     {
       source_ptr++;
-      add_identifier(TRUE);
+      add_quoted_identifier();
     }
     begin_line = FALSE;
     continue;
