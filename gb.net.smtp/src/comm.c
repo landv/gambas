@@ -238,7 +238,7 @@ int libsmtp_part_send (char *libsmtp_body_data, unsigned int libsmtp_body_length
     /* If we just came from the headers stage, we have to send a blank line
      first */
     GString *libsmtp_temp_gstring = g_string_new (NULL);
-    g_string_assign (libsmtp_temp_gstring, "\n");
+    g_string_assign (libsmtp_temp_gstring, "\r\n");
 
     if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 1))
       return LIBSMTP_ERRORSENDFATAL;
