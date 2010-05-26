@@ -25,7 +25,7 @@
 #include "gb_common.h"
 
 // Use 64 bits I/O
-#if __WORDSIZE == 64
+#if (__WORDSIZE == 64) && (!_LARGEFILE64_SOURCE)
 #define _LARGEFILE64_SOURCE
 #endif
 
