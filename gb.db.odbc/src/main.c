@@ -913,7 +913,7 @@ fflush(stderr);
 	SQLULEN precision;
 	SQLSMALLINT scale;
 	SQLINTEGER i;
-	SQLINTEGER displaysize;
+	SQLLEN displaysize;
 	ODBC_FIELDS *field, *current;
 	SQLINTEGER collen;
 	int nresultcols;
@@ -2497,7 +2497,7 @@ fflush(stderr);
 	SQLHSTMT statHandle1;
 	SQLRETURN retcode;
 	//SQLRETURN V_OD_erg;
-	SQLINTEGER auton=SQL_FALSE;
+	SQLLEN auton=SQL_FALSE;
 	int i;
 	
 	ODBC_CONN *han = (ODBC_CONN *)db->handle;
