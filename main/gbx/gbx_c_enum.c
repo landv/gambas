@@ -49,7 +49,7 @@ CENUM *CENUM_create(void *enum_object)
   OBJECT_UNREF_KEEP(_object, "CENUM_create");
   
   THIS->enum_object = enum_object;
-  GB_Ref(enum_object);
+  OBJECT_REF(enum_object, "CENUM_create");
 
   LIST_insert(&_enum_list, THIS, &THIS->list);
   
@@ -76,7 +76,7 @@ BEGIN_METHOD_VOID(CENUM_free)
   #endif
 
   LIST_remove(&_enum_list, THIS, &THIS->list);
-  GB_Unref((void **)&THIS->enum_object);
+  OBJECT_UNREF(THIS->enum_object, "CENUM_free");
   
   if (THIS->variant)
     GB_StoreVariant(NULL, THIS->data);

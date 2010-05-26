@@ -24,3 +24,32 @@
 
 #include "gbx_struct.h"
 
+void *CSTRUCT_create_static(void *ref, CLASS *class, char *addr)
+{
+	CSTATICSTRUCT *object;
+	
+  ALLOC(&object, sizeof(CSTATICSTRUCT), "OBJECT_alloc");
+
+  object->ob.class = class;
+  object->ob.ref = 0;
+	object->ref = ref;
+	object->addr = addr;
+
+  class->count++;
+
+	OBJECT_REF(ref, "CSTRUCT_create_static");
+  
+	//fprintf(stderr, "CSTRUCT_create_static: %s %p ref = %p addr = %p\n", class->name, object, ref, addr);
+	
+	return object;
+}
+
+int CSTRUCT_get_size(CLASS *class)
+{
+	return class->size - sizeof(CSTRUCT);
+}
+
+void CSTRUCT_release(CSTRUCT *ob)
+{
+	OBJECT_UNREF(ob->ref, "CSTRUCT_release");
+}

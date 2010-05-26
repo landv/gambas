@@ -30,6 +30,7 @@
 #include "gbx_exec.h"
 #include "gbx_compare.h"
 #include "gbx_c_gambas.h"
+#include "gbx_c_array.h"
 #include "gbx_struct.h"
 #include "gbx_object.h"
 
@@ -94,29 +95,32 @@ void OBJECT_detach(OBJECT *ob)
   OBJECT_EVENT *ev;
   bool lock;
 
-  ev = (OBJECT_EVENT *)((char *)ob + class->off_event);
+	if (!class->is_observer && class->n_event == 0)
+		return;
 
-  //if (!ev->parent)
-  //	return;
+	ev = (OBJECT_EVENT *)((char *)ob + class->off_event);
 
-  if (ev->prev)
-    OBJECT_event(ev->prev)->next = ev->next;
+	//if (!ev->parent)
+	//	return;
 
-  if (ev->next)
-    OBJECT_event(ev->next)->prev = ev->prev;
+	if (ev->prev)
+		OBJECT_event(ev->prev)->next = ev->next;
 
-  if (ob == EventObject)
-    EventObject = ev->next;
+	if (ev->next)
+		OBJECT_event(ev->next)->prev = ev->prev;
 
-  ev->prev = NULL;
-  ev->next = NULL;
+	if (ob == EventObject)
+		EventObject = ev->next;
+
+	ev->prev = NULL;
+	ev->next = NULL;
 
 	//dump_attach("OBJECT_detach");
 
-  // Do not free the observers there anymore
-  
-  /* Avoids an infinite recursion, if freeing the parent implies freeing the object */
-  parent = OBJECT_parent(ob);
+	// Do not free the observers there anymore
+	
+	/* Avoids an infinite recursion, if freeing the parent implies freeing the object */
+	parent = OBJECT_parent(ob);
 
   if (parent)
   {
@@ -151,9 +155,14 @@ static void remove_observers(OBJECT *ob)
   OBJECT_EVENT *ev;
   COBSERVER *obs, *next;
 
+	//fprintf(stderr, "Remove observers: %s %p\n", class->name, ob);
+	
+	if (!class->is_observer && class->n_event == 0)
+		return;
+	
   ev = (OBJECT_EVENT *)((char *)ob + class->off_event);
   obs = ev->observer;
-  
+
   while (obs)
   {
   	next = obs->list.next;
@@ -182,34 +191,37 @@ void OBJECT_attach(OBJECT *ob, OBJECT *parent, const char *name)
 			EVENT_Name = NULL;
 	}
 
-  if (!name)
+	if (!name)
+		return;
+
+	if (!class->is_observer && class->n_event == 0)
 		return;
 		
 	lock = OBJECT_is_locked(ob);
 
-  OBJECT_detach(ob);
+	OBJECT_detach(ob);
 
-  ev = (OBJECT_EVENT *)((char *)ob + class->off_event);
+	ev = (OBJECT_EVENT *)((char *)ob + class->off_event);
 
-  ev->parent = parent;
+	ev->parent = parent;
 
 	OBJECT_lock(ob, lock);
 
-  #if DEBUG_EVENT || DEBUG_REF
-    fprintf(stderr, "OBJECT_attach : Attach (%s %p) to (%s %p) as %s\n",
-      ob->class->name, ob, parent->class->name, parent, name);
-  #endif
-  OBJECT_REF(parent, "OBJECT_attach");
+	#if DEBUG_EVENT || DEBUG_REF
+		fprintf(stderr, "OBJECT_attach : Attach (%s %p) to (%s %p) as %s\n",
+			ob->class->name, ob, parent->class->name, parent, name);
+	#endif
+	OBJECT_REF(parent, "OBJECT_attach");
 
-  EVENT_search(class, ev->event, name, parent);
+	EVENT_search(class, ev->event, name, parent);
 
-  ev->next = EventObject;
-  ev->prev = NULL;
+	ev->next = EventObject;
+	ev->prev = NULL;
 
-  if (EventObject)
-    OBJECT_event(EventObject)->prev = ob;
+	if (EventObject)
+		OBJECT_event(EventObject)->prev = ob;
 
-  EventObject = ob;
+	EventObject = ob;
 
 	if (class->special[SPEC_ATTACH] != NO_SYMBOL)
 	{
@@ -270,10 +282,39 @@ bool OBJECT_comp_value(VALUE *ob1, VALUE *ob2)
     return COMPARE_object(&ob1->_object.object, &ob2->_object.object);
 }
 
+static void release_static(CLASS *class, CLASS_VAR *var, int nelt, char *data)
+{
+	int i;
+	
+  for (i = 0; i < nelt; i++)
+  {
+#if TRACE_MEMORY
+    if (var->type.id == T_STRING || var->type.id == T_OBJECT)
+      fprintf(stderr, "release: %s %p [%d] trying %p\n", class->name, ob, i, (*(void **)&data[var->pos]));
+#endif
+
+		if (var->type.id == T_STRING)
+      STRING_unref((char **)&data[var->pos]);
+    else if (var->type.id == T_OBJECT)
+    {
+      OBJECT_UNREF(*((void **)&data[var->pos]), "release");
+    }
+    else if (var->type.id == T_VARIANT)
+      VARIANT_free((VARIANT *)&data[var->pos]);
+		else if (var->type.id == TC_ARRAY)
+			CARRAY_release_static(class->load->array[var->type.value], &data[var->pos]);
+		else if (var->type.id == TC_STRUCT)
+		{
+			CLASS *sclass = class->load->class_ref[var->type.value];
+			release_static(sclass, sclass->load->dyn, sclass->load->n_dyn, &data[var->pos]);
+		}
+
+    var++;
+  }
+}
 
 static void release(CLASS *class, OBJECT *ob)
 {
-  int i;
   CLASS_VAR *var;
   int nelt;
   char *data;
@@ -293,32 +334,17 @@ static void release(CLASS *class, OBJECT *ob)
   else
   {
 		if (CLASS_is_struct(class) && ((CSTRUCT *)ob)->ref)
+		{
+			CSTRUCT_release((CSTRUCT *)ob);
 			return;
+		}
 
     var = class->load->dyn;
     nelt = class->load->n_dyn;
     data = (char *)ob;
   }
-
-  for (i = 0; i < nelt; i++)
-  {
-#if TRACE_MEMORY
-    if (var->type.id == T_STRING || var->type.id == T_OBJECT)
-      fprintf(stderr, "release: %s %p [%d] trying %p\n", class->name, ob, i, (*(void **)&data[var->pos]));
-#endif
-
-		if (var->type.id == T_STRING)
-      STRING_unref((char **)&data[var->pos]);
-    else if (var->type.id == T_OBJECT)
-    {
-      OBJECT_UNREF(*((void **)&data[var->pos]), "release");
-    }
-    else if (var->type.id == T_VARIANT)
-      VARIANT_free((VARIANT *)&data[var->pos]);
-
-    var++;
-  }
-
+  
+  release_static(class, var, nelt, data);
 }
 
 
@@ -452,8 +478,10 @@ bool OBJECT_is_locked(OBJECT *object)
 
 OBJECT *OBJECT_parent(void *object)
 {
-	//if (!OBJECT_has_events(object))
-	//	return NULL;
+	CLASS *class = OBJECT_class(object);
+	
+	if (!class->is_observer && class->n_event == 0)
+		return NULL;
 	
   return ((OBJECT *)((intptr_t)OBJECT_event(object)->parent & ~1));
 }

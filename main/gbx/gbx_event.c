@@ -189,7 +189,7 @@ void EVENT_post2(void (*func)(), intptr_t param, intptr_t param2)
 static void post_event(void *object, int event)
 {
 	GB_Raise(object, event, 0);
-	GB_Unref(&object);
+	OBJECT_UNREF(object, "post_event");
 }
 
 void EVENT_post_event(void *object, int event)
@@ -200,7 +200,7 @@ void EVENT_post_event(void *object, int event)
 		return;
 	}*/
 	
-	GB_Ref(object);
+	OBJECT_REF(object, "EVENT_post_event");
 	post((void (*)())post_event, 2, (intptr_t)object, (intptr_t)event);
 }
 

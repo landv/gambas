@@ -403,7 +403,7 @@ void EXTERN_call(void)
 #else
 void EXTERN_call(void)
 {
-	THROW(E_ILLEGAL);
+	THROW_ILLEGAL();
 }
 #endif
 

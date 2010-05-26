@@ -233,31 +233,6 @@ static int get_count(int *dim)
 }
 
 
-size_t CARRAY_get_static_size(CLASS_ARRAY *desc)
-{
-  return (size_t)get_count(desc->dim) * TYPE_sizeof_memory(desc->type);
-}
-
-
-CARRAY *CARRAY_create_static(void *ref, CLASS_ARRAY *desc, void *data)
-{
-	CARRAY *array;
-	
-	_create_static_array = TRUE;
-	OBJECT_create(POINTER(&array), CARRAY_get_array_class(desc->type), NULL, NULL, 0);
-	_create_static_array = FALSE;
-	
-	array->type = desc->type;
-	array->data = data;
-	array->ref = ref;
-	array->count = get_count(desc->dim);
-	GB_Ref(ref);
-	array->dim = desc->dim;
-	
-	return array;
-}
-
-
 static void release_one(CARRAY *_object, int i)
 {
 	if (THIS->type == T_STRING)
@@ -268,31 +243,35 @@ static void release_one(CARRAY *_object, int i)
 		OBJECT_UNREF(((void **)(THIS->data))[i], "release_one");
 }
 
-
-static void release(CARRAY *_object, int start, int end)
+static void release_static(TYPE type, void *data, int start, int end)
 {
 	int i;
 
-	if (end < 0)
-		end = THIS->count;
-
-	if (THIS->type == T_STRING)
+	if (type == T_STRING)
 	{
 		for (i = start; i < end; i++)
-			STRING_unref(&((char **)(THIS->data))[i]);
+			STRING_unref(&((char **)data)[i]);
 	}
-	else if (THIS->type == T_VARIANT)
+	else if (type == T_VARIANT)
 	{
 		for (i = start; i < end; i++)
-			VARIANT_free(&((VARIANT *)(THIS->data))[i]);
+			VARIANT_free(&((VARIANT *)data)[i]);
 	}
-	else if (TYPE_is_object(THIS->type))
+	else if (TYPE_is_object(type))
 	{
 		for (i = start; i < end; i++)
-			OBJECT_UNREF(((void **)(THIS->data))[i], "release");
+			OBJECT_UNREF(((void **)data)[i], "release");
 	}
 }
 
+
+static void release(CARRAY *_object, int start, int end)
+{
+	if (end < 0)
+		end = THIS->count;
+
+	release_static(THIS->type, THIS->data, start, end);
+}
 
 static void borrow(CARRAY *_object, int start, int end)
 {
@@ -347,6 +326,35 @@ static void *insert(CARRAY *_object, int index)
 	return ARRAY_insert(&THIS->data, index);
 }
 
+
+size_t CARRAY_get_static_size(CLASS_ARRAY *desc)
+{
+  return (size_t)get_count(desc->dim) * TYPE_sizeof_memory(desc->type);
+}
+
+
+CARRAY *CARRAY_create_static(void *ref, CLASS_ARRAY *desc, void *data)
+{
+	CARRAY *array;
+	
+	_create_static_array = TRUE;
+	OBJECT_create(POINTER(&array), CARRAY_get_array_class(desc->type), NULL, NULL, 0);
+	_create_static_array = FALSE;
+	
+	array->type = desc->type;
+	array->data = data;
+	array->ref = ref;
+	array->count = get_count(desc->dim);
+	OBJECT_REF(ref, "CARRAY_create_static");
+	array->dim = desc->dim;
+	
+	return array;
+}
+
+void CARRAY_release_static(CLASS_ARRAY *desc, void *data)
+{
+	release_static(desc->type, data, 0, get_count(desc->dim));
+}
 
 void CARRAY_get_value(CARRAY *_object, int index, VALUE *value)
 {
@@ -443,13 +451,13 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(CARRAY_free)
 
-	release(THIS, 0, -1);
-	
 	if (UNLIKELY(THIS->ref != NULL))
 	{
 		GB_Unref(&THIS->ref);
 		return;
 	}
+	
+	release(THIS, 0, -1);
 	
 	ARRAY_delete(&THIS->data);
 

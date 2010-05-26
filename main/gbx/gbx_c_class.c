@@ -628,8 +628,8 @@ BEGIN_METHOD(Object_Attach, GB_OBJECT object; GB_OBJECT parent; GB_STRING name)
 
 	OBJECT_attach(object, parent, name);
 	
-	if (OBJECT_is(object, CLASS_Observer))
-		COBSERVER_attach((COBSERVER *)object, parent, GB_ToZeroString(ARG(name)));
+	/*if (OBJECT_is(object, CLASS_Observer))
+		COBSERVER_attach((COBSERVER *)object, parent, GB_ToZeroString(ARG(name)));*/
 
 END_METHOD
 

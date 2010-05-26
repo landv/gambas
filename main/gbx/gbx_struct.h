@@ -33,4 +33,16 @@ typedef
 	}
 	CSTRUCT;
 	
+typedef
+	struct {
+		OBJECT ob;
+		void *ref;
+		char *addr;
+	}
+	CSTATICSTRUCT;
+	
+void *CSTRUCT_create_static(void *ref, CLASS *class, char *addr);
+int CSTRUCT_get_size(CLASS *class);
+void CSTRUCT_release(CSTRUCT *ob);
+
 #endif

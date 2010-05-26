@@ -427,6 +427,10 @@ void THROW(int code, ...)
 	PROPAGATE();
 }
 
+void THROW_ILLEGAL()
+{
+	THROW(E_ILLEGAL);
+}
 
 void THROW_SYSTEM(int err, const char *path)
 {

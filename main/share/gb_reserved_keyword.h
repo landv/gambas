@@ -92,7 +92,7 @@ COMP_INFO COMP_res_info[] =
   { "False"                                                     },
   { "Swap"                                                      },
   { "Null"                                                      },
-  { "Extern",       RSF_IDENT                                   },
+  { "Extern",       RSF_IDENT,                0,          5     },
   { "Each"                                                      },
   { "In"                                                        },
   { "Default"                                                   },
@@ -326,7 +326,7 @@ SUBR_INFO COMP_subr_info[] =
   { "IsBlank",           35,  8,  1     },
   { "IsPunct",           35,  9,  1     },
 
-  { "Ascii?",            35,  1,  1     },
+  /*{ "Ascii?",            35,  1,  1     },
   { "Letter?",           35,  2,  1     },
   { "LCase?",            35,  3,  1     },
   { "Lower?",            35,  3,  1     },
@@ -336,7 +336,7 @@ SUBR_INFO COMP_subr_info[] =
   { "Hexa?",             35,  6,  1     },
   { "Space?",            35,  7,  1     },
   { "Blank?",            35,  8,  1     },
-  { "Punct?",            35,  9,  1     },
+  { "Punct?",            35,  9,  1     },*/
 
   { "BClr",              36,  1,  2     },
   { "BSet",              36,  2,  2     },
@@ -380,6 +380,7 @@ SUBR_INFO COMP_subr_info[] =
   { "Number?",           37,  17, 1     },*/
 
   { "TypeOf",            38,  0,  1     },
+  { "SizeOf",            38,  1,  1     },
 
   { "CBool",             39,  1,  1     },   /* CODE_CONV */
   { "CByte",             39,  2,  1     },

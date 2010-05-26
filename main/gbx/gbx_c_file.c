@@ -113,7 +113,7 @@ static CFILE *create_default_stream(FILE *file, int mode)
   stream.buffer.file = file;
 	STREAM_check_blocking(&stream);
   ob = CFILE_create(&stream, mode);
-  GB_Ref(ob);
+  OBJECT_REF(ob, "create_default_stream");
   return ob;
 }
 
@@ -126,9 +126,9 @@ void CFILE_init(void)
 
 void CFILE_exit(void)
 {
-	GB_Unref(POINTER(&CFILE_in));
-	GB_Unref(POINTER(&CFILE_out));
-	GB_Unref(POINTER(&CFILE_err));
+	OBJECT_UNREF(CFILE_in, "CFILE_exit");
+	OBJECT_UNREF(CFILE_out, "CFILE_exit");
+	OBJECT_UNREF(CFILE_err, "CFILE_exit");
 }
 
 void CFILE_init_watch(void)
@@ -136,7 +136,7 @@ void CFILE_init_watch(void)
   if (GB_GetFunction(&read_func, PROJECT_class, "Application_Read", "", "") == 0)
   {
     //fprintf(stderr, "watch stdin\n");
-    GB_Attach(CFILE_in, PROJECT_class, "Application");
+    OBJECT_attach((OBJECT *)CFILE_in, (OBJECT *)PROJECT_class, "Application");
     CFILE_in->watch_fd = STDIN_FILENO;
     GB_Watch(STDIN_FILENO, GB_WATCH_READ, (void *)callback_read, (intptr_t)CFILE_in);
   }

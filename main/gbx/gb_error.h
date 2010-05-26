@@ -222,9 +222,10 @@ do { \
 
 void ERROR_define(const char *pattern, char *arg[]);
 
-void ERROR_propagate() NORETURN;
+void ERROR_propagate(void) NORETURN;
 void THROW(int code, ...) NORETURN;
 void THROW_SYSTEM(int err, const char *path);
+void THROW_ILLEGAL(void) NORETURN;
 
 void ERROR_panic(const char *error, ...) NORETURN;
 
@@ -234,11 +235,11 @@ void ERROR_print_at(FILE *where, bool msgonly, bool newline);
 void ERROR_save(ERROR_INFO *save);
 void ERROR_restore(ERROR_INFO *save);
 
-void ERROR_clear();
+void ERROR_clear(void);
 void ERROR_reset(ERROR_INFO *info);
-void ERROR_lock();
-void ERROR_unlock();
-void ERROR_set_last();
+void ERROR_lock(void);
+void ERROR_unlock(void);
+void ERROR_set_last(void);
 void ERROR_deprecated(const char *msg);
 
 #define ERROR_exit() ERROR_reset(&ERROR_last)

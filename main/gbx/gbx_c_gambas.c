@@ -104,14 +104,18 @@ BEGIN_PROPERTY(CUNKNOWN_property)
 
 END_PROPERTY
 
-
 void COBSERVER_attach(COBSERVER *this, void *parent, const char *name)
 {
-	EVENT_search(OBJECT_class(this->object), this->event, name, parent);	
+	//fprintf(stderr, "COBSERVER_attach: %p: %s %p\n", this, parent ? OBJECT_class(parent)->name : "", parent);
+	//COBSERVER_set_parent(this, parent);
+	if (this->event)
+		EVENT_search(OBJECT_class(this->object), this->event, name, parent);	
 }
 
 void COBSERVER_detach(COBSERVER *this)
 {
+	//fprintf(stderr, "COBSERVER_detach: %p\n", this);
+	//COBSERVER_set_parent(this, NULL);
 	if (this->event)
 		FREE(&this->event, "COBSERVER_detach");
 }
@@ -123,10 +127,18 @@ BEGIN_METHOD(COBSERVER_new, GB_OBJECT object; GB_BOOLEAN after)
 	char *name;
 	CLASS *class;
 	COBSERVER *this;
-	OBJECT *parent;
+	void *parent;
 	
 	object = (OBJECT *)VARG(object);
 	if (GB_CheckObject(object))
+		return;
+	
+	this = ((COBSERVER *)_object);
+	parent = OBJECT_parent(this);
+	
+	//fprintf(stderr, "COBSERVER_new: %p %d %s %p\n", this, OBJECT_class(object)->n_event, EVENT_Name, parent);
+	
+	if (!parent)
 		return;
 	
 	class = OBJECT_class(object);
@@ -137,11 +149,6 @@ BEGIN_METHOD(COBSERVER_new, GB_OBJECT object; GB_BOOLEAN after)
 	if (!name || !*name)
 		return;
 	
-	this = ((COBSERVER *)_object);
-	parent = OBJECT_parent(this);
-	if (!parent)
-		return;
-	
 	ev = OBJECT_event(object);
   
   this->after = VARGOPT(after, FALSE);
@@ -150,7 +157,6 @@ BEGIN_METHOD(COBSERVER_new, GB_OBJECT object; GB_BOOLEAN after)
 
 	this->object = object;
 	COBSERVER_attach(this, parent, name);
-	//EVENT_search(class, this->event, name, parent);
 
   LIST_insert((void **)&ev->observer, this, &this->list);
   OBJECT_REF(this, "COBSERVER_new");
@@ -160,9 +166,14 @@ END_METHOD
 
 BEGIN_METHOD_VOID(COBSERVER_free)
 
-	COBSERVER_detach((COBSERVER *)_object);
+	COBSERVER *this = (COBSERVER *)_object;
+
+	//fprintf(stderr, "COBSERVER_free: %p\n", this);
+	
+	COBSERVER_detach(this);
 
 END_METHOD
+
 
 BEGIN_PROPERTY(gb_Text)
 

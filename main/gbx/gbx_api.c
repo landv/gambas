@@ -410,7 +410,7 @@ int GB_CanRaise(void *object, int event_id)
   int func_id;
   COBSERVER *obs;
 
-  if (object == NULL)
+  if (!object || !OBJECT_has_events(object))
     return FALSE;
 
 	LIST_for_each(obs, OBJECT_event(object)->observer)
@@ -506,12 +506,10 @@ int GB_Raise(void *object, int event_id, int nparam, ...)
   bool arg;
   COBSERVER *obs;
 
-  /*MEMORY_check_ptr(object);*/
-
   if (GAMBAS_DoNotRaiseEvent)
     return FALSE;
 
-  if (!OBJECT_is_valid(object))
+  if (!OBJECT_is_valid(object) || !OBJECT_has_events(object))
     return FALSE;
 
 	/*TRY
@@ -871,7 +869,7 @@ void GB_Ref(void *object)
   if (object)
 	{
 		#if DEBUG_REF
-		print_stack_backtrace();
+		//print_stack_backtrace();
 		#endif
     OBJECT_REF(object, "GB_Ref");
 	}
@@ -892,7 +890,7 @@ void GB_Unref(void **object)
   if (*object)
 	{
 		#if DEBUG_REF
-		print_stack_backtrace();
+		//print_stack_backtrace();
 		#endif
     OBJECT_UNREF(*object, "GB_Unref");
 	}
@@ -913,7 +911,7 @@ void GB_UnrefKeep(void **object, int delete)
   if (*object != NULL)
   {
 		#if DEBUG_REF
-		print_stack_backtrace();
+		//print_stack_backtrace();
 		#endif
     if (delete)
     {
@@ -936,7 +934,7 @@ void GB_Detach(void *object)
   if (object)
 	{
 		#if DEBUG_REF
-		print_stack_backtrace();
+		//print_stack_backtrace();
 		#endif
     OBJECT_detach(object);
 	}
@@ -948,7 +946,7 @@ void GB_Attach(void *object, void *parent, const char *name)
   if (object)
 	{
 		#if DEBUG_REF
-		print_stack_backtrace();
+		//print_stack_backtrace();
 		#endif
     OBJECT_attach(object, parent, name);
 	}
@@ -1363,9 +1361,9 @@ void GB_StoreObject(GB_OBJECT *src, void **dst)
     object = NULL;
 
   if (object)
-    GB_Ref(object);
+    OBJECT_REF(object, "GB_StoreObject");
 
-  GB_Unref(dst);
+  OBJECT_UNREF(*dst, "GB_StoreObject");
   *dst = object;
 }
 

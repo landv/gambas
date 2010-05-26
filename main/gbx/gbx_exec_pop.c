@@ -214,9 +214,9 @@ _POP_STRUCT_FIELD:
 _POP_STRUCT_FIELD_2:
 
 	if (((CSTRUCT *)object)->ref)
-		addr = (char *)((CSTRUCT *)object)->ref + desc->variable.offset;
+		addr = (char *)((CSTATICSTRUCT *)object)->addr + desc->variable.offset;
 	else
-		addr = (char *)object + desc->variable.offset;
+		addr = (char *)object + sizeof(CSTRUCT) + desc->variable.offset;
 	
   VALUE_write(&SP[-2], (void *)addr, desc->variable.type);
   goto _FIN;

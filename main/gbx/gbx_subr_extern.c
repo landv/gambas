@@ -194,7 +194,7 @@ void SUBR_varptr(void)
     var = &CP->load->dyn[op & 0x7FF];
 
     if (OP == NULL)
-      THROW(E_ILLEGAL);
+      THROW_ILLEGAL();
 
     ptr = &OP[var->pos];
   }
@@ -204,7 +204,7 @@ void SUBR_varptr(void)
     ptr = (char *)CP->stat + var->pos;
 	}
 	else
-		THROW(E_ILLEGAL);
+		THROW_ILLEGAL();
 
   RETURN->type = T_POINTER;
   RETURN->_pointer.value = ptr;

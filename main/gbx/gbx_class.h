@@ -463,6 +463,8 @@ int CLASS_can_be_used_like_an_array(CLASS *class);
 void CLASS_create_array_class(CLASS *class);
 CLASS *CLASS_get_array_class(CLASS *class);
 
+int CLASS_sizeof(CLASS *class);
+
 /* class_init.c */
 
 void CLASS_init_native(void);

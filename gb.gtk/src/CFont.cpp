@@ -173,44 +173,6 @@ BEGIN_PROPERTY(CFONT_strikeout)
 END_PROPERTY
 
 
-#if 0
-BEGIN_PROPERTY(CFONT_name)
-
-	const char *buf;
-	
-	if (READ_PROPERTY)
-	{
-		buf=FONT->name();
-		GB.ReturnNewString(buf,0);
-		return;
-	}
-	
-	FONT->setName(GB.ToZeroString(PROP(GB_STRING)));
-
-END_PROPERTY
-
-BEGIN_PROPERTY(CFONT_size)
-
-	if (READ_PROPERTY) { GB.ReturnFloat(FONT->size()); return; }
-	FONT->setSize(VPROP(GB_FLOAT));
-
-END_PROPERTY
-
-BEGIN_PROPERTY(CFONT_bold)
-
-	if (READ_PROPERTY){ GB.ReturnBoolean(FONT->bold()); return; }
-	FONT->setBold(VPROP(GB_BOOLEAN));
-
-END_PROPERTY
-
-BEGIN_PROPERTY(CFONT_italic)
-
-	if (READ_PROPERTY){ GB.ReturnBoolean(FONT->italic()); return; }
-	FONT->setItalic(VPROP(GB_BOOLEAN));
-
-END_PROPERTY
-#endif
-
 BEGIN_METHOD_VOID(CFONT_to_string)
 
 	GB.ReturnNewZeroString(FONT->toString());

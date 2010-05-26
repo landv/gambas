@@ -109,35 +109,32 @@ void SUBR_conv(void)
 void SUBR_type(void)
 {
   TYPE type;
+	int val;
 
   SUBR_ENTER_PARAM(1);
 
-  /* pas bon ! Ne respecte pas la transitivit�de type */
+	type = PARAM->type;
+	if (type == T_VARIANT)
+		type = PARAM->_variant.vtype;
 
-  /*if (TYPE_is_object(PARAM->type))
+	if (EXEC_code & 0x3F)
+	{
+		if (TYPE_is_pure_object(type))
+			val = CLASS_sizeof((CLASS *)type);
+		else
+			val = TYPE_sizeof_memory(type);
+	}
+	else
   {
-    type = TYPE_get_name((TYPE)OBJECT_class(PARAM->_object.object));
-    STRING_new_constant_value(RETURN, type, -1);
-  }
-  else
-  */
-
-  /*if (VALUE_is_null(PARAM))
-    RETURN->_integer.value = T_NULL;
-  else*/
-  {
-    type = PARAM->type;
-    if (type == T_VARIANT)
-      type = PARAM->_variant.vtype;
-
     if (type == T_CSTRING)
-      RETURN->_integer.value = T_STRING;
+      val = T_STRING;
     else if (TYPE_is_object(type) && type != T_NULL)
-      RETURN->_integer.value = T_OBJECT;
+      val = T_OBJECT;
     else
-      RETURN->_integer.value = type;
+			val = type;
   }
 
+  RETURN->_integer.value = val;
   RETURN->type = T_INTEGER;
 
   SUBR_LEAVE();

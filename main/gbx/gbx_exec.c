@@ -1899,12 +1899,6 @@ void EXEC_class(void)
 #endif
 
 
-void EXEC_ILLEGAL(void)
-{
-	THROW(E_ILLEGAL);
-}
-
-
 void EXEC_quit(void)
 {
 	GAMBAS_DoNotRaiseEvent = TRUE;

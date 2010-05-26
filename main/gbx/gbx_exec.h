@@ -163,7 +163,6 @@ bool EXEC_special(int spec, CLASS *class, void *object, int nparam, bool drop);
 void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int nparam, bool drop);
 
 void EXEC_nop(void);
-void EXEC_ILLEGAL(void);
 
 void EXEC_push_unknown(ushort code);
 void EXEC_push_array(ushort code);

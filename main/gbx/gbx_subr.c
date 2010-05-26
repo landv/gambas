@@ -236,5 +236,5 @@ TYPE SUBR_get_type(VALUE *param)
 		return (TYPE)param->_integer.value;
 	if (param->type == T_CLASS)
 		return (TYPE)param->_class.class;
-	THROW(E_ILLEGAL);
+	THROW_ILLEGAL();
 }

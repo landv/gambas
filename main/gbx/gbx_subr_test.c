@@ -245,7 +245,7 @@ __LSR:
 
 __ERROR:
 
-	EXEC_ILLEGAL();
+	THROW_ILLEGAL();
 
 __END:
 

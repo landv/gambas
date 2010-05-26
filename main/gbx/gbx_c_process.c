@@ -216,7 +216,7 @@ static void stop_process_after(CPROCESS *_object)
 
 	exit_process(THIS);
 
-	GB_Detach(THIS);
+	OBJECT_detach((OBJECT *)THIS);
 
 	/*printf("** stop_process_after\n");*/
 	//GB_Unref((void **)&_object); /* Ref du post */
@@ -347,7 +347,7 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 	}
 
 	/*printf("** run_process\n");*/
-	GB_Ref(process); /* Process is running */
+	OBJECT_REF(process, "run_process"); /* Process is running */
 
 	/* Adding to the running process list */
 
@@ -591,7 +591,6 @@ static void callback_child(int fd, int type, void *data)
 
 			/*printf("** signal_child\n");*/
 
-			//GB_Ref(process);
 			stop_process(process);
 			//stop_process_after(process);
 			//break; // one exit at a time // why ?

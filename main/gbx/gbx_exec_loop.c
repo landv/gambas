@@ -1423,7 +1423,7 @@ _PUSH_DYNAMIC:
     var = &CP->load->dyn[GET_7XX()];
 
     if (UNLIKELY(OP == NULL))
-      THROW(E_ILLEGAL);
+      THROW_ILLEGAL();
 
 		ref = OP;
     addr = &OP[var->pos];
@@ -1449,7 +1449,7 @@ _POP_DYNAMIC:
     var = &CP->load->dyn[GET_7XX()];
 
     if (UNLIKELY(OP == NULL))
-      THROW(E_ILLEGAL);
+      THROW_ILLEGAL();
 
     addr = &OP[var->pos];
     goto __WRITE;
@@ -1679,7 +1679,7 @@ _BYREF:
 
 _ILLEGAL:
 
-  THROW(E_ILLEGAL);
+  THROW_ILLEGAL();
 
 /*-----------------------------------------------*/
 

@@ -369,9 +369,6 @@ void SUBR_trim(void)
 	left = (code == 0 || code == 1);
 	right = (code == 0 || code == 2);
 
-/* if (!(left || right))
-		THROW(E_ILLEGAL);*/
-
 	if (PARAM->_string.len > 0)
 	{
 		str = (uchar *)&PARAM->_string.addr[PARAM->_string.start];

@@ -37,7 +37,7 @@
 #include "gbx_debug.h"
 #include "gb_magic.h"
 #include "gbx_stream.h"
-
+#include "gbx_struct.h"
 #include "gbx_string.h"
 #include "gbx_object.h"
 #include "gbx_variant.h"
@@ -660,6 +660,9 @@ void CLASS_free(void *object)
 void CLASS_ref(void *object)
 {
 	((OBJECT *)object)->ref++;
+	
+	//if (OBJECT_class(object)->is_observer)
+	//	BREAKPOINT();
 
 	#if DEBUG_MEMORY
 	fprintf(stderr, "%s: %s: ref(%s <%d>) -> %d\n", OBJECT_ref_where,
@@ -677,6 +680,9 @@ bool CLASS_unref(void *ob, bool can_free)
 {
 	OBJECT *object = (OBJECT *)ob;
 	
+	//if (OBJECT_class(object)->is_observer)
+	//	BREAKPOINT();
+
 	#if DEBUG_MEMORY
 	if (object->ref <= 0)
 		fprintf(stderr, "*** <%d> REF = %d !\n", GET_ALLOC_ID(object), object->ref);
@@ -1040,7 +1046,10 @@ void CLASS_calc_info(CLASS *class, int n_event, int size_dynamic, bool all, int 
 		class->n_event = n_event;
 	}
 
-	class->size = class->off_event + sizeof(OBJECT_EVENT) + class->n_event * sizeof(ushort);
+	if (class->n_event)
+		class->size = class->off_event + sizeof(OBJECT_EVENT) + class->n_event * sizeof(ushort);
+	else
+		class->size = class->off_event;
 
 	class->size_stat = size_static;
 	if (size_static)
@@ -1251,4 +1260,13 @@ CLASS *CLASS_get_array_class(CLASS *class)
 	}
 	
 	return class->array_class;
+}
+
+
+int CLASS_sizeof(CLASS *class)
+{
+	if (CLASS_is_struct(class))
+		return class->size - sizeof(CSTRUCT);
+	else
+		return class->size - sizeof(OBJECT);
 }

@@ -95,6 +95,10 @@ static int sizeof_ctype(CLASS *class, CTYPE ctype)
 		size = CARRAY_get_static_size(class->load->array[ctype.value]);
 		return (size + 3) & ~3;
 	}
+	else if (ctype.id == TC_STRUCT)
+	{
+		return CSTRUCT_get_size(class->load->class_ref[ctype.value]);
+	}
 	else
 		return TYPE_sizeof_memory(ctype.id);
 }
@@ -105,8 +109,8 @@ TYPE CLASS_ctype_to_type(CLASS *class, CTYPE ctype)
     return (TYPE)(class->load->class_ref[ctype.value]);
 	else if (ctype.id == TC_ARRAY)
 		return (TYPE)CARRAY_get_array_class(class->load->array[ctype.value]->type);
-  //else if (ctype.id == TC_POINTER)
-  //  return (TYPE)T_POINTER;
+  else if (ctype.id == TC_STRUCT)
+    return (TYPE)(class->load->class_ref[ctype.value]);
   else
     return (TYPE)(ctype.id);	
 }
@@ -330,9 +334,7 @@ static char *get_section(char *sec_name, char **section, short *pcount, const ch
 	return current;
 }
 
-
 #define RELOCATE(_ptr) (_ptr = (char *)&class->string[(int)(intptr_t)(_ptr)])
-
 
 static void load_structure(CLASS *class, int *structure, int nfield)
 {
@@ -360,7 +362,31 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 	{
 		if (!sclass->is_struct)
 			THROW(E_CLASS, ClassName, "Class already exists: ", name);
-		// Must check compatibility
+		
+		// Check compatibility with previous declaration
+		
+		if (sclass->load->n_dyn != nfield)
+			goto __MISMATCH;
+		
+		desc = (CLASS_DESC *)sclass->data;
+		
+		for (i = 0; i < nfield; i++)
+		{
+			field = (char *)*structure++;
+			RELOCATE(field);
+			len = strlen(field);
+			ctype = *((CTYPE *)structure);
+			structure++;
+			
+			if (CLASS_ctype_to_type(class, ctype) != desc[i].variable.type)
+				goto __MISMATCH;
+			
+			if (TABLE_compare_ignore_case_len(field, strlen(field), sclass->table[i].name, sclass->table[i].len))
+				goto __MISMATCH;
+		}
+		
+		// OK, they are the same!
+		return;
 	}
 	
 	sclass->swap = class->swap;
@@ -372,6 +398,8 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 	ALLOC(&var, sizeof(CLASS_VAR) * nfield, "load_structure");
 	sclass->load->dyn = var;
 	sclass->load->n_dyn = nfield;
+	sclass->load->class_ref = class->load->class_ref;
+	sclass->load->array = class->load->array;
 	
 	if (sclass->debug)
 	{
@@ -385,7 +413,7 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 	ALLOC(&desc, sizeof(CLASS_DESC) *nfield, "load_structure");
 	sclass->data = (char *)desc;
 
-	pos = sizeof(CSTRUCT);
+	pos = 0; //sizeof(CSTRUCT);
 	
 	for (i = 0; i < nfield; i++)
 	{
@@ -398,7 +426,7 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 		desc[i].variable.name = "f";
 		desc[i].variable.type = CLASS_ctype_to_type(class, ctype);
 		desc[i].variable.ctype = ctype;
-		desc[i].variable.offset = pos;
+		desc[i].variable.offset = pos; // This the position relative to the data, NOT the object!
 		desc[i].variable.class = sclass;
 		
 		var[i].type = ctype;
@@ -413,7 +441,7 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 		}
 		
 		#if DEBUG_STRUCT
-		fprintf(stderr, "  %d: %s As %s\n", i, field, TYPE_get_name(desc[i].variable.type));
+		fprintf(stderr, "  %d: %s As %s (%d)\n", i, field, TYPE_get_name(desc[i].variable.type), sizeof_ctype(class, ctype));
 		#endif
 
 		sclass->table[i].desc = &desc[i];
@@ -431,6 +459,8 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 	#else
 	size = align_pos(pos, 4);
 	#endif
+
+	size += sizeof(CSTRUCT);
 
 	#if DEBUG_STRUCT
 	fprintf(stderr, "  --> size = %d\n", size);
@@ -453,6 +483,11 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 	sclass->is_struct = TRUE;
 	
   sclass->state = CS_READY;
+	return;
+	
+__MISMATCH:
+
+  THROW(E_CLASS, ClassName, "Structure is declared elsewhere differently: ", sclass->name);
 }
 
 
@@ -728,6 +763,15 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
     }
   }
 
+	// Create structures (we may need the structure size to compute the variable sizes)
+	
+	if (info->nstruct)
+	{
+		for (i = 0; i < info->nstruct; i++)
+			load_structure(class, structure[i].desc, structure[i].nfield);
+		FREE(&structure, "load_and_relocate");
+	}
+
   // Computes and align the position of each static and dynamic variables.
 	// Computes the total size needed accordingly.
   
@@ -828,15 +872,6 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
 
   CLASS_calc_info(class, class->n_event, info->s_dynamic, FALSE, info->s_static);
 	
-	// Create structures
-	
-	if (info->nstruct)
-	{
-		for (i = 0; i < info->nstruct; i++)
-			load_structure(class, structure[i].desc, structure[i].nfield);
-		FREE(&structure, "load_and_relocate");
-	}
-
   *pndesc = n_desc;
 }
 

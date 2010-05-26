@@ -155,6 +155,7 @@ void CLASS_init_native(void)
   }
 	
 	CLASS_Observer->is_observer = TRUE;
+	CLASS_Observer->size += sizeof(OBJECT_EVENT);
 }
 
 

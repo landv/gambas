@@ -303,9 +303,9 @@ _PUSH_STRUCT_FIELD:
 _PUSH_STRUCT_FIELD_2:
 
 	if (((CSTRUCT *)object)->ref)
-		addr = (char *)((CSTRUCT *)object)->ref + desc->variable.offset;
+		addr = (char *)((CSTATICSTRUCT *)object)->addr + desc->variable.offset;
 	else
-		addr = (char *)object + desc->variable.offset;
+		addr = (char *)object + sizeof(CSTRUCT) + desc->variable.offset;
 	
 	ref = object;
   goto _READ_VARIABLE;

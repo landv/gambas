@@ -36,7 +36,7 @@
 
 
 #define SYM(table, ind) (TABLE_get_symbol(table, ind))
-#define SSYM(_symbol, _pos, _size) ((SYMBOL *)((char *)_symbol + _pos * _size))
+#define SSYM(_symbol, _pos, _size) ((SYMBOL *)((char *)(_symbol) + (_pos) * (_size)))
 
 
 static char _buffer[MAX_SYMBOL_LEN + 1];
@@ -112,7 +112,10 @@ static bool search(void *symbol, int n_symbol, size_t size, int flag, const char
 {
 	int pos, deb, fin;
 	SYMBOL *sym;
-	int slen, l;
+	int l;
+	char result;
+	const uchar *s1;
+	const uchar *s2;
 
 	pos = 0;
 	deb = 0;
@@ -122,7 +125,7 @@ static bool search(void *symbol, int n_symbol, size_t size, int flag, const char
 	{
 		for(;;)
 		{
-			if (deb >= fin)
+			if (UNLIKELY(deb >= fin))
 			{
 				*index = deb;
 				return FALSE;
@@ -132,27 +135,23 @@ static bool search(void *symbol, int n_symbol, size_t size, int flag, const char
 	
 			//sym = SYM(table, SYM(table, pos)->sort); /*&table->symbol[table->symbol[pos].sort];*/
 			
-			sym = SSYM(symbol, pos, size);
-			sym = SSYM(symbol, sym->sort, size);
+			sym = SSYM(symbol, SSYM(symbol, pos, size)->sort, size);
 
-			slen = sym->len;
-			
-			if (LIKELY(len < slen))
+			if (LIKELY(len < sym->len))
 				goto __T_LOWER;
-			else if (LIKELY(len > slen))
+			else if (LIKELY(len > sym->len))
 				goto __T_GREATER;
 			
 			//if (LIKELY(len > 0))
 			{
-				int result;
-				const uchar *s1 = (uchar *)name;
-				const uchar *s2 = (uchar *)sym->name;
+				s1 = (uchar *)name;
+				s2 = (uchar *)sym->name;
 			
 				l = len;
 				
 				for(;;)
 				{
-					result = tolower(*s1++) - tolower(*s2++);
+					result = tolower(*s1) - tolower(*s2);
 					
 					if (LIKELY(result < 0))
 						goto __T_LOWER;
@@ -161,6 +160,9 @@ static bool search(void *symbol, int n_symbol, size_t size, int flag, const char
 					
 					if (UNLIKELY(--l == 0))
 						break;
+					
+					s1++;
+					s2++;
 				}
 			
 			}  
@@ -184,27 +186,23 @@ static bool search(void *symbol, int n_symbol, size_t size, int flag, const char
 	
 			pos = (deb + fin) >> 1;
 	
-			sym = SSYM(symbol, pos, size);
-			sym = SSYM(symbol, sym->sort, size);
+			sym = SSYM(symbol, SSYM(symbol, pos, size)->sort, size);
 
-			slen = sym->len;
-			
-			if (LIKELY(len < slen))
+			if (LIKELY(len < sym->len))
 				goto __B_LOWER;
-			else if (LIKELY(len > slen))
+			else if (LIKELY(len > sym->len))
 				goto __B_GREATER;
 			
 			//if (LIKELY(len > 0))
 			{
-				int result;
-				const uchar *s1 = (uchar *)name;
-				const uchar *s2 = (uchar *)sym->name;
+				s1 = (uchar *)name;
+				s2 = (uchar *)sym->name;
 				
 				l = len;
 			
 				for(;;)
 				{
-					result = *s1++ - *s2++;
+					result = *s1 - *s2;
 					
 					if (LIKELY(result < 0))
 						goto __B_LOWER;
@@ -213,6 +211,9 @@ static bool search(void *symbol, int n_symbol, size_t size, int flag, const char
 					
 					if (UNLIKELY(--l == 0))
 						break;
+					
+					s1++;
+					s2++;
 				}
 			}
 
@@ -481,9 +482,9 @@ bool TABLE_add_symbol(TABLE *table, const char *name, int len, int *index)
 		while (i)
 		{
 			s1->sort = s2->sort;
-			s1 = s2;
-			s2 = (SYMBOL *)((char *)s2 - size);
 			i--;
+			s1 = (SYMBOL *)((char *)s1 - size);
+			s2 = (SYMBOL *)((char *)s2 - size);
 		}
 
 		//SYM(table, ind)->sort = (ushort)count;

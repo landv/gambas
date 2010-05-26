@@ -33,6 +33,8 @@ extern GB_DESC NATIVE_Param[];
 extern GB_DESC NATIVE_Observer[];
 #endif
 
+// Note: the interpreter automatically allocates an extra OBJECT_EVENT structure. See CLASS_calc_info().
+
 typedef
 	struct {
 		OBJECT ob;

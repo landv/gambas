@@ -818,7 +818,7 @@ static int query_fill(DB_DATABASE *db, DB_RESULT result, int pos, GB_VARIANT_VAL
 
   for ( i=0; i < res->fieldCount(); i++)
   {
-       GB.NewString( &data, res->fv(res->fieldName(i)).get_asString().data(),0);
+       GB.NewZeroString( &data, res->fv(res->fieldName(i)).get_asString().data());
 
         value.type = GB_T_VARIANT;
         value.value._object.type = GB_T_NULL;
@@ -850,7 +850,6 @@ static int query_fill(DB_DATABASE *db, DB_RESULT result, int pos, GB_VARIANT_VAL
 
 	for (i = 0; i < res->fieldCount(); i++)
 	{
-		//GB.NewString( &data, res->fv(res->fieldName(i)).get_asString().data(),0);
 		if (res->fv(i).get_isNull())
 			data = NULL;
 		else

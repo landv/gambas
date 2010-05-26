@@ -38,7 +38,7 @@
 #include "gbx_object.h"
 #include "gbx_variant.h"
 #include "gbx_date.h"
-
+#include "gbx_struct.h"
 #include "gbx_exec.h"
 #include "gbx_local.h"
 #include "gb_common_buffer.h"
@@ -1193,13 +1193,16 @@ __ARRAY:
 
 __STRUCT:
 	{
-		
+		void *object = CSTRUCT_create_static(ref, class->load->class_ref[ctype.value], addr);
+		value->_object.class = OBJECT_class(object);
+		value->_object.object = object;
+		return;
 	}
 
 __VOID:
 __NULL:
 
-	THROW(E_ILLEGAL);
+	THROW_ILLEGAL();
 }
 
 
@@ -1218,7 +1221,7 @@ void VALUE_class_write(CLASS *class, VALUE *value, char *addr, CTYPE ctype)
 	}
 	else if (ctype.id == TC_ARRAY || ctype.id == TC_STRUCT)
 	{
-		THROW(E_ILLEGAL);
+		THROW_ILLEGAL();
 	}
 	else
 		VALUE_write(value, addr, (TYPE)ctype.id);
@@ -1282,7 +1285,7 @@ __POINTER:
 
 __ILLEGAL:
 
-	EXEC_ILLEGAL();
+	THROW_ILLEGAL();
 }
 
 
