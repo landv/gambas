@@ -24,8 +24,6 @@
 ***************************************************************************/
 
 #include "SDLosrender.h"
-#include "SDLgl.h"
-
 
 /****** FBO render ******/
 
@@ -33,8 +31,8 @@ bool FBOrender::Check(void )
 {
 	bool hasFBO = false;
 
-	hasFBO = GL::CheckExtension("GL_EXT_framebuffer_object");
-	SDLdebug::Print("GL_EXT_framebuffer_object: %b",hasFBO);
+// 	hasFBO = GL::CheckExtension("GL_EXT_framebuffer_object");
+// 	SDLdebug::Print("GL_EXT_framebuffer_object: %b",hasFBO);
 
 	return (hasFBO);
 }

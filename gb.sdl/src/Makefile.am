@@ -15,7 +15,6 @@ gb_sdl_la_SOURCES = \
  SDLerror.h SDLerror.cpp \
  SDLfont.h SDLfont.cpp \
  SDLgfx.h SDLgfx.cpp \
- SDLgl.h SDLgl.cpp \
  SDLcursor.h SDLcursor.cpp \
  SDLosrender.h SDLosrender.cpp \
  SDLsurface.h SDLsurface.cpp \

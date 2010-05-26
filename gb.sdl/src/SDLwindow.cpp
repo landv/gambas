@@ -23,7 +23,6 @@
 #include "SDLwindow.h"
 #include "SDLcore.h"
 #include "SDLtexture.h"
-#include "SDLgl.h"
 
 #include <iostream>
 
@@ -68,7 +67,7 @@ void SDLwindow::Show()
 	if (GLEW_OK != err)
 	{
 		/* Problem: glewInit failed, something is seriously wrong. */
-		fprintf(stderr, "Error: Failed to init GLEW \n%s\n", glewGetErrorString(err));
+		SDLcore::RaiseError((char *)glewGetErrorString(err));
 		return;
 	}
 
@@ -84,7 +83,7 @@ void SDLwindow::Show()
 	if (SDLcore::GetWindow() != this)
 		SDLcore::RegisterWindow(this);
 
-	GL::init();
+//	GL::init();
 	SDLtexture::init();
 
 	Clear();

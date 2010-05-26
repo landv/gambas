@@ -28,14 +28,10 @@
 #include "SDLsurface.h"
 #include "SDLtexture.h"
 #include "SDLcore.h"
-#include "SDLgl.h"
 
 #include <iostream>
 #include <cstdio>
 #include <cstring>
-
-/* Non power of two support */
-static bool hasNPOT = false;
 
 SDLtexture::SDLtexture(SDLsurface *surface)
 {
@@ -54,9 +50,6 @@ SDLtexture::~SDLtexture()
 
 void SDLtexture::init()
 {
-	hasNPOT = GL::CheckExtension("GL_ARB_texture_non_power_of_two");
-	SDLdebug::Print("GL_ARB_non_power_of_two: %b",hasNPOT);
-
 	FBOrender::Check();
 }
 
@@ -83,7 +76,7 @@ void SDLtexture::GetAsTexture(texinfo *tex)
 	{
 		SDL_Surface *image;
 
-		if (!hasNPOT)
+		if (!GLEW_ARB_texture_non_power_of_two)
 		{
 			SDL_Surface *origin = hSurface->GetSdlSurface();
 
@@ -137,7 +130,7 @@ void SDLtexture::GetAsTexture(texinfo *tex)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-		if (!hasNPOT)
+		if (!GLEW_ARB_texture_non_power_of_two)
 			SDL_FreeSurface(image); /* No longer needed */
 
 		hTexinfo->State = TEXTURE_OK;
