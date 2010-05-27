@@ -289,7 +289,7 @@ typedef
 		uint size;                        //  72 120  dynamic class size
 		uint off_event;                   //  76 124  offset of OBJECT_EVENT structure in the object
 		#ifdef OS_64BITS
-		uint _reserved;                   //     128
+		uint _reserved2;                  //     128
 		#endif
 
 		short special[12];                // 100 152  special functions index (_new, _free, ...)
