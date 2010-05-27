@@ -446,7 +446,6 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 
 		sclass->table[i].desc = &desc[i];
 		sclass->table[i].name = field;
-		sclass->table[i].sort = 0;
 		sclass->table[i].len = len;
 
 		size = sizeof_ctype(class, ctype);
@@ -471,10 +470,7 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 	CLASS_sort(sclass);
 	
 	if (sclass->debug)
-	{
-		for (i = 0; i < nfield; i++)
-			global[i].sym.sort = sclass->table[i].sort;
-	}
+		sclass->load->sort = sclass->sort;
 	
   CLASS_search_special(sclass);
 	/*for (i = 0; i < MAX_SPEC; i++)
@@ -598,6 +594,7 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
   if (class->debug)
   {
     class->load->global = (GLOBAL_SYMBOL *)get_section("debug global", &section, &class->load->n_global, _s _s _p _c _i );
+    class->load->sort = (ushort *)get_section("debug global sort", &section, NULL, _s);
     #ifdef OS_64BITS
     class->load->debug =
     #endif

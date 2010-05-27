@@ -253,15 +253,16 @@ void ARCH_exit(void)
   {
     sym = (ARCH_SYMBOL *)TABLE_get_symbol(arch_table, i);
     //write_short((ushort)i);
-    write_short(sym->sym.sort);
-    write_short(sym->sym.len);
     write_int(pos_str);
+    write_int(sym->sym.len);
     write_int(sym->pos);
     write_int(sym->len);
 
     pos_str += sym->sym.len;
   }
 
+	for (i = 0; i < TABLE_count(arch_table); i++)
+    write_short(arch_table->sort[i]);
   /* Close file */
 
   fclose(arch_file);

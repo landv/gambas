@@ -181,9 +181,8 @@ typedef
 
 typedef
   struct {
-    short sort;
-    short len;
     char *name;
+    int len;
     CLASS_DESC *desc;
     }
   PACKED

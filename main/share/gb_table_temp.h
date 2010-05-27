@@ -108,7 +108,7 @@ int TABLE_compare_ignore_case_len(const char *s1, int len1, const char *s2, int 
 	return 0;
 }
 
-static bool search(void *symbol, int n_symbol, size_t size, int flag, const char *name, int len, int *index)
+static bool search(void *symbol, ushort *sort, int n_symbol, size_t size, int flag, const char *name, int len, int *index)
 {
 	int pos, deb, fin;
 	SYMBOL *sym;
@@ -135,7 +135,7 @@ static bool search(void *symbol, int n_symbol, size_t size, int flag, const char
 	
 			//sym = SYM(table, SYM(table, pos)->sort); /*&table->symbol[table->symbol[pos].sort];*/
 			
-			sym = SSYM(symbol, SSYM(symbol, pos, size)->sort, size);
+			sym = SSYM(symbol, sort[pos], size);
 
 			if (LIKELY(len < sym->len))
 				goto __T_LOWER;
@@ -186,7 +186,7 @@ static bool search(void *symbol, int n_symbol, size_t size, int flag, const char
 	
 			pos = (deb + fin) >> 1;
 	
-			sym = SSYM(symbol, SSYM(symbol, pos, size)->sort, size);
+			sym = SSYM(symbol, sort[pos], size);
 
 			if (LIKELY(len < sym->len))
 				goto __B_LOWER;
@@ -227,7 +227,7 @@ static bool search(void *symbol, int n_symbol, size_t size, int flag, const char
 }
 
 
-bool SYMBOL_find(void *symbol, int n_symbol, size_t s_symbol, int flag,
+bool SYMBOL_find(void *symbol, ushort *sort, int n_symbol, size_t s_symbol, int flag,
 													const char *name, int len, const char *prefix, int *result)
 {
 	int index;
@@ -246,10 +246,10 @@ bool SYMBOL_find(void *symbol, int n_symbol, size_t s_symbol, int flag,
 		name = _buffer;
 	}
 
-	if (LIKELY(search(symbol, n_symbol, s_symbol, flag, name, len, &index)))
+	if (LIKELY(search(symbol, sort, n_symbol, s_symbol, flag, name, len, &index)))
 	{
 		//*result = ((SYMBOL *)((char *)symbol + s_symbol * index))->sort;
-		*result = SSYM(symbol, index, s_symbol)->sort;
+		*result = sort[index];
 		return TRUE;
 	}
 	else
@@ -346,6 +346,7 @@ const char *TABLE_get_symbol_name_suffix(TABLE *table, int index, const char* su
 void TABLE_create_static(TABLE *table, size_t size, TABLE_FLAG flag)
 {
 	ARRAY_create_with_size(&table->symbol, Max(size, sizeof(SYMBOL)), 64);
+	ARRAY_create(&table->sort);
 	table->flag = flag;
 }
 
@@ -381,6 +382,7 @@ void TABLE_create_from(TABLE **result, size_t size, const char *sym_list[], TABL
 void TABLE_delete_static(TABLE *table)
 {
 	ARRAY_delete(&table->symbol);
+	ARRAY_delete(&table->sort);
 }
 
 
@@ -404,7 +406,7 @@ bool TABLE_find_symbol(TABLE *table, const char *name, int len, int *index)
 {
 	int ind;
 	bool result;
-	SYMBOL *tsym, *sym;
+	SYMBOL *tsym;
 	int count;
 	size_t size;
 
@@ -412,13 +414,10 @@ bool TABLE_find_symbol(TABLE *table, const char *name, int len, int *index)
 	count = ARRAY_count(tsym);
 	size = ARRAY_size(tsym);
 
-	result = search(tsym, count, size, table->flag, name, len, &ind);
+	result = search(tsym, table->sort, count, size, table->flag, name, len, &ind);
 	
 	if (result)
-	{
-		sym = SSYM(tsym, ind, size);
-		*index = sym->sort;
-	}
+		*index = table->sort[ind];
 
 	return result;
 }
@@ -437,7 +436,8 @@ void TABLE_add_new_symbol_without_sort(TABLE *table, const char *name, int len, 
 
 	sym->name = (char *)name;
 	sym->len = len;
-	sym->sort = sort;
+	
+	*((ushort *)ARRAY_add(&table->sort)) = sort;
 
 	if (symbol) *symbol = sym; /*&table->symbol[ind];*/
 	if (index) *index = count;
@@ -447,35 +447,37 @@ void TABLE_add_new_symbol_without_sort(TABLE *table, const char *name, int len, 
 bool TABLE_add_symbol(TABLE *table, const char *name, int len, int *index)
 {
 	int ind;
-	int i;
 	bool result;
 	SYMBOL *sym;
 	int count;
-	SYMBOL *s1, *s2;
 	size_t size;
 
 	/*len = Min(len, MAX_SYMBOL_LEN);*/
-	len = Min(len, 65535);
+	//len = Min(len, 65535);
 
 	count = ARRAY_count(table->symbol);
 	size = ARRAY_size(table->symbol);
 	
-	result = search(table->symbol, count, size, table->flag, name, len, &ind);
+	result = search(table->symbol, table->sort, count, size, table->flag, name, len, &ind);
 
 	if (!result)
 	{
 		sym = (SYMBOL *)ARRAY_add_void(&table->symbol);
 
 		sym->name = (char *)name;
-		sym->len = (ushort)len;
-
+		sym->len = len;
+		
 		/*
 		printf("TABLE_add_symbol: %.*s %d %d\n", len, name, ((CLASS_SYMBOL *)sym)->global.type,
 			((CLASS_SYMBOL *)sym)->local.type);
 		*/
 		
 		//s1 = (SYMBOL *)((char *)table->symbol + count * size);
-		s1 = SSYM(table->symbol, count, size);
+		ARRAY_add(&table->sort);
+		if (count > ind)
+			memmove(&table->sort[ind + 1], &table->sort[ind], sizeof(ushort) * (count - ind));
+
+		/*s1 = SSYM(table->symbol, count, size);
 		s2 = (SYMBOL *)((char *)s1 - size);
 		
 		i = count - ind;
@@ -485,14 +487,14 @@ bool TABLE_add_symbol(TABLE *table, const char *name, int len, int *index)
 			i--;
 			s1 = (SYMBOL *)((char *)s1 - size);
 			s2 = (SYMBOL *)((char *)s2 - size);
-		}
+		}*/
 
 		//SYM(table, ind)->sort = (ushort)count;
-		s1->sort = (ushort)count;
+		table->sort[ind] = (ushort)count;
 		ind = count;
 	}
 	else
-		ind = SYM(table, ind)->sort; /*table->symbol[ind].sort;*/
+		ind = table->sort[ind]; //SYM(table, ind)->sort; /*table->symbol[ind].sort;*/
 
 	*index = ind;
 
@@ -522,13 +524,13 @@ void TABLE_print(TABLE *table, bool sort)
 	{
 		if (sort)
 		{
-			sym = SYM(table, SYM(table, i)->sort);
+			sym = SYM(table, table->sort[i]);
 			fprintf(stderr, "%.*s ", (int)sym->len, sym->name);
 		}
 		else
 		{
 			sym = SYM(table, i);
-			fprintf(stderr, "%d %.*s ", (int)sym->sort, (int)sym->len, sym->name);
+			fprintf(stderr, "%d %.*s ", (int)table->sort[i], (int)sym->len, sym->name);
 		}
 
 		//if ((i > 0) && (!(i & 0xF)))
@@ -559,8 +561,6 @@ void TABLE_copy_symbol_with_prefix(TABLE *table, int ind_src, char prefix, int *
 
 SYMBOL *TABLE_get_symbol_sort(TABLE *table, int index)
 {
-	SYMBOL *sym = TABLE_get_symbol(table, index);
-
-	return TABLE_get_symbol(table, sym->sort);
+	return TABLE_get_symbol(table, table->sort[index]);
 }
 

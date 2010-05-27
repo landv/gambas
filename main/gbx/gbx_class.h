@@ -216,6 +216,7 @@ typedef
 		char **unknown;
 
 		GLOBAL_SYMBOL *global;
+		ushort *sort;
 		short n_global;
 		short n_ext;
 		#ifdef OS_64BITS
@@ -268,39 +269,42 @@ typedef
 		short n_event;                    //  28  40  number of events
 
 		CLASS_DESC_SYMBOL *table;         //  32  48  class description
+		ushort *sort;                     //  36  56  table sort
 
-		CLASS_EVENT *event;               //  36  56  event description
+		CLASS_EVENT *event;               //  40  64  event description
 
-		int (*check)();                   //  40  64  method for checking that an object is valid
+		int (*check)();                   //  44  72  method for checking that an object is valid
 
-		char *data;                       //  44  72  class file data for loaded class 
+		char *data;                       //  48  80  class file data for loaded class 
 		                                  //          or generated description for native class
 		                                  //          or generated description for structures
 		
-		CLASS_LOAD *load;                 //  48  80  information about loaded class
+		CLASS_LOAD *load;                 //  52  88  information about loaded class
 
-		char *stat;                       //  52  88  static class data
-		TYPE *signature;                  //  56  96  signatures address
-		char *string;                     //  60 104  strings address
+		char *stat;                       //  56  96  static class data
+		TYPE *signature;                  //  60 104  signatures address
+		char *string;                     //  64 112  strings address
 
-		uint size_stat;                   //  64 108  static class size
-		uint size;                        //  68 112  dynamic class size
-		uint off_event;                   //  72 116  offset of OBJECT_EVENT structure in the object
-		int _reserved2;                   //  76 120
+		uint size_stat;                   //  68 116  static class size
+		uint size;                        //  72 120  dynamic class size
+		uint off_event;                   //  76 124  offset of OBJECT_EVENT structure in the object
+		#ifdef OS_64BITS
+		uint _reserved;                   //     128
+		#endif
 
-		short special[12];                // 100 144  special functions index (_new, _free, ...)
+		short special[12];                // 100 152  special functions index (_new, _free, ...)
 
-		TYPE array_type;                  // 104 152  datatype of the contents if this class is an array class of objects
-		struct _CLASS *array_class;       // 108 160  associated array class if it exists
+		TYPE array_type;                  // 104 160  datatype of the contents if this class is an array class of objects
+		struct _CLASS *array_class;       // 108 168  associated array class if it exists
 		
-		void *instance;                   // 112 168  automatically created instance
+		void *instance;                   // 112 176  automatically created instance
 		
-		char *path;                       // 116 176  Source file path
-		COMPONENT *component;             // 120 184 The component the class belongs to
+		char *path;                       // 116 184  Source file path
+		COMPONENT *component;             // 120 192 The component the class belongs to
 		
-		struct _CLASS *override;          // 124 192 The overridden class
+		struct _CLASS *override;          // 124 200 The overridden class
 		
-		struct _CLASS *next;              // 128 200 next class
+		struct _CLASS *next;              // 128 208 next class
 		}
 	CLASS;
 

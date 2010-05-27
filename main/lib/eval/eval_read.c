@@ -795,7 +795,6 @@ static void add_quoted_identifier(void)
 	PATTERN last_pattern;
 	
 	last_pattern = get_last_pattern();
-
 	type = RT_IDENTIFIER;
 
 	start = source_ptr;
@@ -805,13 +804,21 @@ static void add_quoted_identifier(void)
 	{
 		source_ptr++;
 		car = get_char();
-		if (!ident_car[car])
+		if (car == '\n')
 			break;
 		len++;
+		if (car == '}')
+		{
+			source_ptr++;
+			break;
+		}
 	}
 
-	if (get_char() == '}')
+	/*if (car == '}')
+	{
 		source_ptr++;
+		len++;
+	}*/
 
 	/*if (PATTERN_is(last_pattern, RS_EVENT) || PATTERN_is(last_pattern, RS_RAISE))
 	{
@@ -822,11 +829,18 @@ static void add_quoted_identifier(void)
 
 	if (!EVAL->analyze && PATTERN_is(last_pattern, RS_EXCL))
 	{
-		TABLE_add_symbol(EVAL->string, start, len, &index);
+		TABLE_add_symbol(EVAL->string, start + 1, len - 2, &index);
 		type = RT_STRING;
 	}
 	else
+	{
+		if (!EVAL->rewrite)
+		{
+			start++;
+			len -= 2;
+		}
 		TABLE_add_symbol(EVAL->table, start, len, &index);
+	}
 	
 	add_pattern(type, index);
 }
@@ -1246,17 +1260,7 @@ PUBLIC void EVAL_read(void)
 
   __QUOTED_IDENT:
     
-    if (EVAL->analyze)
-    {
-      add_operator();
-      add_identifier();
-      add_operator();
-    }
-    else
-    {
-      source_ptr++;
-      add_quoted_identifier();
-    }
+    add_quoted_identifier();
     begin_line = FALSE;
     continue;
 		

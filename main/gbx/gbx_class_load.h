@@ -32,9 +32,8 @@ typedef
 
 typedef
   struct {
-    unsigned short sort;
-    unsigned short len;
     ptr32_t name;
+    int len;
     }
   PACKED
   SYMBOL_32;

@@ -59,7 +59,7 @@ static void read_at(ARCH *arch, int pos, void *buf, int len)
 
 static void load_arch(ARCH *arch, const char *path)
 {
-  int len;
+  int len, lens;
   int i;
   int pos;
   struct stat info;
@@ -109,16 +109,18 @@ static void load_arch(ARCH *arch, const char *path)
   /* File names table */
 
 	len = arch->header.n_symbol * sizeof(ARCH_SYMBOL);
-	if (len <= 0)
+	lens = arch->header.n_symbol * sizeof(ushort);
+	if (len <= 0 || lens <= 0)
 		arch_error("corrupted header");
 
 	ALLOC(&arch->symbol, len, "ARCHIVE_load");
+	ALLOC(&arch->sort, lens, "ARCHIVE_load");
 	
 	#ifdef OS_64BITS
 	sym = (ARCH_SYMBOL_32 *)&arch->addr[arch->header.pos_table];
   for (i = 0; i < arch->header.n_symbol; i++, sym++)
 	{
-		arch->symbol[i].sym.sort = sym->sym.sort;
+		//arch->symbol[i].sym.sort = sym->sym.sort;
 		arch->symbol[i].sym.len = sym->sym.len;
 		arch->symbol[i].sym.name = (char *)(intptr_t)sym->sym.name;
 		arch->symbol[i].pos = sym->pos;
@@ -127,6 +129,7 @@ static void load_arch(ARCH *arch, const char *path)
 	#else
 	read_at(arch, arch->header.pos_table, arch->symbol, len);
 	#endif
+	read_at(arch, arch->header.pos_table + len, arch->sort, lens);
 	
 
   /* String relocation */
@@ -136,7 +139,7 @@ static void load_arch(ARCH *arch, const char *path)
 	{
 		for (i = 0; i < arch->header.n_symbol; i++)
 		{
-			SWAP_short((short *)&arch->symbol[i].sym.sort);
+			SWAP_short((short *)&arch->sort[i]);
 			SWAP_short((short *)&arch->symbol[i].sym.len);
 			SWAP_int(&arch->symbol[i].pos);
 			SWAP_int(&arch->symbol[i].len);
@@ -152,6 +155,13 @@ static void load_arch(ARCH *arch, const char *path)
 			pos += arch->symbol[i].sym.len;
 		}
 	}
+
+	#if 0
+  for (i = 0; i < arch->header.n_symbol; i++)
+	{
+		fprintf(stderr, "%i (%i) %.*s\n", i, arch->sort[i], arch->symbol[i].sym.len, arch->symbol[i].sym.name);
+	}
+	#endif
 }
 
 
@@ -172,6 +182,7 @@ void ARCH_close(ARCH *arch)
   {
     FREE(&arch->string, "ARCH_close");
     FREE(&arch->symbol, "ARCH_close");
+    FREE(&arch->sort, "ARCH_close");
     munmap(arch->addr, arch->length);
     close(arch->fd);
   }
@@ -276,7 +287,7 @@ bool ARCH_find(ARCH *arch, const char *path, int len_path, ARCH_FIND *find)
 			if (!p)
 				break;
 	
-			SYMBOL_find(arch->symbol, arch->header.n_symbol, sizeof(ARCH_SYMBOL), TF_NORMAL, tpath, p - tpath, 0, &ind);
+			SYMBOL_find(arch->symbol, arch->sort, arch->header.n_symbol, sizeof(ARCH_SYMBOL), TF_NORMAL, tpath, p - tpath, 0, &ind);
 			if (ind == NO_SYMBOL)
 				break;
 
@@ -285,7 +296,7 @@ bool ARCH_find(ARCH *arch, const char *path, int len_path, ARCH_FIND *find)
 			strcpy(tpath, tpath2);
 		}
 		
-  	SYMBOL_find(arch->symbol, arch->header.n_symbol, sizeof(ARCH_SYMBOL), TF_NORMAL, tpath, len_tpath, 0, &ind);
+  	SYMBOL_find(arch->symbol, arch->sort, arch->header.n_symbol, sizeof(ARCH_SYMBOL), TF_NORMAL, tpath, len_tpath, 0, &ind);
 	//}
 	//else
   //	SYMBOL_find_old(arch->symbol, arch->header.n_symbol, sizeof(ARCH_SYMBOL), TF_NORMAL, tpath, len_tpath, 0, &ind);

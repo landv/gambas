@@ -447,8 +447,8 @@ bool ARCHIVE_dir_next(char **name, int *len, int attr)
     if (arch_index >= arch_dir->header.n_symbol)
       return TRUE;
 
-		sym = &arch_dir->symbol[arch_index].sym;
-		asym = &arch_dir->symbol[sym->sort];
+		//sym = &arch_dir->symbol[arch_index].sym;
+		asym = &arch_dir->symbol[arch_dir->sort[arch_index]];
 		sym = &asym->sym;
 
     if (arch_pattern == NULL)

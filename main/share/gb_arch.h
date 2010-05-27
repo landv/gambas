@@ -51,8 +51,7 @@ typedef
 typedef
   struct {
 	  struct {
-    	unsigned short sort;
-    	unsigned short len;
+    	int len;
     	uint name;
     	}
   	PACKED
@@ -69,6 +68,7 @@ typedef
     int fd;
     ARCH_HEADER header;
     ARCH_SYMBOL *symbol;
+		ushort *sort;
     char *string;
     char *addr;
     size_t length;

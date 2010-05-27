@@ -82,6 +82,13 @@ static void get_symbol(PATTERN pattern, const char **symbol, int *len)
     case RT_RESERVED:
 			*symbol = COMP_res_info[index].name;
 			*len = strlen(*symbol);
+			if (!EVAL->rewrite)
+			{
+				memcpy(keyword, *symbol, *len);
+				for (i = 0; i < *len; i++)
+					keyword[i] = toupper(keyword[i]);
+				*symbol = keyword;
+			}
       return;
     case RT_NUMBER:
     case RT_IDENTIFIER:
@@ -108,14 +115,6 @@ static void get_symbol(PATTERN pattern, const char **symbol, int *len)
   *len = sym->len;
   if (*len > EVAL_COLOR_MAX_LEN)
     *len = EVAL_COLOR_MAX_LEN;
-    
-  if (type == RT_RESERVED && !EVAL->rewrite)
-  {
-  	memcpy(keyword, sym->name, sym->len);
-  	for (i = 0; i < sym->len; i++)
-  		keyword[i] = toupper(keyword[i]);
-  	*symbol = keyword;
-  }
 }
 
 
@@ -344,13 +343,13 @@ static void analyze(EVAL_ANALYZE *result)
           if (old_type != EVAL_TYPE_OPERATOR)
             space_before = TRUE;
           space_after = FALSE;
-          in_quote = *symbol == '{';
+          //in_quote = *symbol == '{';
         }
         else if (index("}", *symbol))
         {
           space_before = FALSE;
           space_after = FALSE;
-          in_quote = FALSE;
+          //in_quote = FALSE;
         }
         else if (index(".!", *symbol)) //symbol[0] == '.' && symbol[1] == 0)
         {

@@ -60,8 +60,8 @@
 
 static EXEC_FUNC SubrTable[] =
 {
-  /* 28 */  SUBR_comp,            SUBR_comp,            SUBR_comp,            SUBR_comp,
-  /* 2C */  SUBR_comp,            SUBR_comp,            SUBR_near,            SUBR_case,
+  /* 28 */  SUBR_comp,            SUBR_comp,            SUBR_compi,           SUBR_compi,
+  /* 2C */  SUBR_compi,           SUBR_compi,           SUBR_near,            SUBR_case,
   /* 30 */  SUBR_add_,            SUBR_add_,            SUBR_add_,            SUBR_add_,
   /* 34 */  SUBR_neg_,            SUBR_quo,             SUBR_rem,             SUBR_pow,
   /* 38 */  SUBR_and_,            SUBR_and_,            SUBR_and_,            SUBR_not,

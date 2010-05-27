@@ -140,6 +140,7 @@ void SUBR_unquote(void);
 /* subr_test.c */
 
 void SUBR_comp(void);
+void SUBR_compi(void);
 void SUBR_case(void);
 void SUBR_bit(void);
 void SUBR_min_max(void);

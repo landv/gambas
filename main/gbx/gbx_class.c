@@ -24,6 +24,7 @@
 
 #include "gb_common.h"
 #include "gb_common_buffer.h"
+#include "gb_common_case.h"
 #include "gb_alloc.h"
 #include "gb_error.h"
 #include "gb_limit.h"
@@ -170,6 +171,7 @@ static void unload_class(CLASS *class)
 	FREE(&class->stat, "unload_class");
 
 	FREE(&class->table, "unload_class");
+	FREE(&class->sort, "unload_class");
 
 	class->state = CS_NULL;
 }
@@ -522,7 +524,7 @@ int CLASS_find_symbol(CLASS *class, const char *name)
 
 	//printf("%s.%s\n", class->name, name);
 	
-	SYMBOL_find(class->table, class->n_desc, sizeof(CLASS_DESC_SYMBOL), TF_IGNORE_CASE, name, strlen(name), NULL, &index);
+	SYMBOL_find(class->table, class->sort, class->n_desc, sizeof(CLASS_DESC_SYMBOL), TF_IGNORE_CASE, name, strlen(name), NULL, &index);
 
 	//if (strcmp(name, "m1") == 0)
 	//printf("find: %s in %s -> %d\n", name, class->name, index);
@@ -535,7 +537,7 @@ int CLASS_find_symbol_with_prefix(CLASS *class, const char *name, const char *pr
 {
 	int index;
 
-	SYMBOL_find(class->table, class->n_desc, sizeof(CLASS_DESC_SYMBOL), TF_IGNORE_CASE, name, strlen(name), prefix, &index);
+	SYMBOL_find(class->table, class->sort, class->n_desc, sizeof(CLASS_DESC_SYMBOL), TF_IGNORE_CASE, name, strlen(name), prefix, &index);
 	return index;
 }
 
@@ -733,12 +735,34 @@ static CLASS_DESC_SYMBOL *SortClassDesc;
 static int sort_desc(ushort *i1, ushort *i2)
 {
 	/*return strcmp(SortClassDesc[*i1].load.symbol.name, SortClassDesc[*i2].load.symbol.name);*/
-	return TABLE_compare_ignore_case_len(
+	/*return TABLE_compare_ignore_case_len(
 		SortClassDesc[*i1].name,
 		SortClassDesc[*i1].len,
 		SortClassDesc[*i2].name,
 		SortClassDesc[*i2].len
-		);
+		);*/
+
+	int result;
+	int len1 = SortClassDesc[*i1].len;
+	int len2 = SortClassDesc[*i2].len;
+
+	if (LIKELY(len1 < len2))
+		return -1;
+	else if (LIKELY(len1 > len2))
+		return 1;
+
+	const char *s1 = SortClassDesc[*i1].name;
+	const char *s2 = SortClassDesc[*i2].name;
+
+	while (len1)
+	{
+		result = tolower(*s1++) - tolower(*s2++);
+		if (LIKELY(result))
+			return result; // < 0 ? -1 : 1;
+		--len1;
+	}
+
+	return 0;
 }
 
 void CLASS_sort(CLASS *class)
@@ -757,8 +781,7 @@ void CLASS_sort(CLASS *class)
 	SortClassDesc = class->table;
 	qsort(sym, class->n_desc, sizeof(ushort), (int (*)(const void *, const void *))sort_desc);
 
-	for (i = 0; i < class->n_desc; i++)
-		class->table[i].sort = sym[i];
+	class->sort = sym;
 
 	#if DEBUG_DESC
 	{
@@ -771,36 +794,8 @@ void CLASS_sort(CLASS *class)
 			sym = (SYMBOL *)&class->table[i];
 			//sym = (SYMBOL *)&class->table[sym->sort];
 
-			fprintf(stderr, "[%d] (%d) %.*s\n", i, (int)sym->sort, (int)sym->len, sym->name);
+			fprintf(stderr, "[%d] (%d) %.*s\n", i, (int)class->sort[i], (int)sym->len, sym->name);
 		}
-	}
-	#endif
-
-	FREE(&sym, "CLASS_sort");
-	
-	#if 0
-	for(;;)
-	{
-		parent = class->parent;
-		if (!parent || !parent->override)
-			break;
-		
-		if (parent->special[SPEC_NEW] != NO_SYMBOL)
-			desc_new = parent->table[parent->special[SPEC_NEW]].desc;
-		if (parent->special[SPEC_FREE] != NO_SYMBOL)
-			desc_free = parent->table[parent->special[SPEC_FREE]].desc;
-		
-		FREE(&parent->table, "CLASS_sort");
-		ALLOC(&parent->table, sizeof(CLASS_DESC_SYMBOL) * class->n_desc, "CLASS_sort");
-		parent->n_desc = class->n_desc;
-		memcpy(parent->table, class->table, sizeof(CLASS_DESC_SYMBOL) * class->n_desc);
-		
-		if (parent->special[SPEC_NEW] != NO_SYMBOL)
-			parent->table[parent->special[SPEC_NEW]].desc = desc_new;
-		if (parent->special[SPEC_FREE] != NO_SYMBOL)
-			parent->table[parent->special[SPEC_FREE]].desc = desc_free;
-		
-		class = parent;
 	}
 	#endif
 }
@@ -906,7 +901,6 @@ void CLASS_make_description(CLASS *class, CLASS_DESC *desc, int n_desc, int *fir
 		for (j = 0; j < class->parent->n_desc; j++)
 		{
 			class->table[i] = class->parent->table[j];
-			class->table[i].sort = 0;
 			i++;
 		}
 
@@ -957,7 +951,6 @@ void CLASS_make_description(CLASS *class, CLASS_DESC *desc, int n_desc, int *fir
 					#endif
 					
 					cds->desc = &desc[j];
-					cds->sort = 0;
 					cds->name = ".";
 					cds->len = 1;
 					
@@ -979,7 +972,6 @@ void CLASS_make_description(CLASS *class, CLASS_DESC *desc, int n_desc, int *fir
 			{
 				cds = &class->table[ind];
 				cds->desc = NULL;
-				cds->sort = 0;
 				cds->name = ".";
 				cds->len = 1;
 			}
@@ -998,7 +990,6 @@ void CLASS_make_description(CLASS *class, CLASS_DESC *desc, int n_desc, int *fir
 		else
 			class->table[i].name = desc[j].gambas.name;
 
-		class->table[i].sort = 0;
 		class->table[i].len = strlen(class->table[i].name);
 	}
 	
@@ -1009,7 +1000,7 @@ void CLASS_make_description(CLASS *class, CLASS_DESC *desc, int n_desc, int *fir
 		for (i = 0; i < class->n_desc; i++)
 		{
 			cds = &class->table[i];
-			fprintf(stderr, "%d (%d): %.*s %p\n", i, cds->sort, cds->len, cds->name, cds->desc);
+			fprintf(stderr, "%d: %.*s %p\n", i, cds->len, cds->name, cds->desc);
 		}
 	}
 	#endif
@@ -1202,9 +1193,9 @@ CLASS_DESC_SYMBOL *CLASS_get_next_sorted_symbol(CLASS *class, int *index)
 		if (*index >= class->n_desc)
 			return NULL;
 
-		cur = &class->table[class->table[*index].sort];
+		cur = &class->table[class->sort[*index]];
 		if (*index > 0)
-			old = &class->table[class->table[*index - 1].sort];
+			old = &class->table[class->sort[*index - 1]];
 		
 		(*index)++;
 		

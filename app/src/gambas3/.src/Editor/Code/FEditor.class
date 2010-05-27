@@ -1054,7 +1054,7 @@ Static Private Function IsCurrentProc() As Boolean
   $sName = ""
 
   For iPos = 0 To aLine.Count - 1
-
+    
     If aLine[iPos] = "PUBLIC" Then
       $bPublic = True
       Continue

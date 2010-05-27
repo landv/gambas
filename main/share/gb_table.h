@@ -29,9 +29,8 @@
 
 typedef
   struct {
-    unsigned short sort;
-    unsigned short len;
     char *name;
+    int len;
     }
   PACKED
   SYMBOL;
@@ -47,6 +46,7 @@ typedef
 typedef
   struct _table {
     SYMBOL *symbol;
+		ushort *sort;
     TABLE_FLAG flag;
     }
   TABLE;
@@ -73,7 +73,7 @@ void TABLE_print(TABLE *table, bool sort);
 /*PUBLIC bool TABLE_copy_symbol(TABLE *dst, TABLE *src, int index_src, SYMBOL **symbol, int *index);*/
 void TABLE_add_new_symbol_without_sort(TABLE *table, const char *name, int len, int sort, SYMBOL **symbol, int *index);
 
-bool SYMBOL_find(void *symbol, int n_symbol, size_t s_symbol, int flag, const char *name, int len, const char *prefix, int *result);
+bool SYMBOL_find(void *symbol, ushort *sort, int n_symbol, size_t s_symbol, int flag, const char *name, int len, const char *prefix, int *result);
 //bool SYMBOL_find_old(void *symbol, int n_symbol, size_t s_symbol, int flag, const char *name, int len, const char *prefix, int *result);
 
 #define TABLE_get_symbol(table, ind) ((SYMBOL *)ARRAY_get((table)->symbol, ind))
