@@ -102,7 +102,7 @@ int libsmtp_int_read (GString *libsmtp_gstring_read, struct libsmtp_session_stru
 		//libsmtp_int_bytes = GB.Stream.Read(libsmtp_session->stream, libsmtp_int_rec_buffer, 1);
 		//fprintf(stderr, "GB.Stream.Read: %d\n", libsmtp_int_bytes);
 		//GB.Stream.Block(libsmtp_session->stream, block);
-		libsmtp_int_bytes = GB.Stream.Read(libsmtp_session->stream, libsmtp_int_rec_buffer, (- sizeof(libsmtp_int_rec_buffer)));
+		libsmtp_int_bytes = GB.Stream.Read(libsmtp_session->stream, libsmtp_int_rec_buffer, (int)(- sizeof(libsmtp_int_rec_buffer)));
 		//fprintf(stderr, "GB.Stream.Read: %d\n", libsmtp_int_bytes);
 	}
 	else
@@ -169,7 +169,7 @@ int libsmtp_int_send (GString *libsmtp_send_gstring, struct libsmtp_session_stru
 	#endif
 
 	if (libsmtp_session->debug && type > 0)
-		fprintf(stderr, "-> %.*s\n", libsmtp_send_gstring->len, libsmtp_send_gstring->str);
+		fprintf(stderr, "-> %.*s\n", (int)libsmtp_send_gstring->len, libsmtp_send_gstring->str);
 
 	if (libsmtp_session->stream)
 	{

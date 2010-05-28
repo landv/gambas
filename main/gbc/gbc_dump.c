@@ -102,7 +102,7 @@ static void dump_function(FUNCTION *func)
 {
   int i;
 
-	printf("<%lld> ", func->byref);
+	//printf("<%lld> ", func->byref);
 	
   printf("(");
 

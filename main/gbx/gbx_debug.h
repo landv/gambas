@@ -44,14 +44,6 @@
 /* Stream opening debugging */
 #define DEBUG_STREAM   0
 
-typedef
-	struct {
-		void *pc;
-		void *cp;
-		void *fp;
-	}
-	DEBUG_BACKTRACE;
-
 #ifndef __GBX_DEBUG_C
 
 EXTERN DEBUG_INTERFACE DEBUG;
@@ -67,10 +59,9 @@ void DEBUG_where(void);
 bool DEBUG_get_value(const char *sym, int len, GB_VARIANT *ret);
 int DEBUG_set_value(const char *sym, int len, VALUE *value);
 int DEBUG_get_object_access_type(void *object, CLASS *class, int *count);
-DEBUG_BACKTRACE *DEBUG_backtrace();
-GB_ARRAY DEBUG_get_string_array_from_backtrace(DEBUG_BACKTRACE *bt);
-DEBUG_BACKTRACE *DEBUG_copy_backtrace(DEBUG_BACKTRACE *bt);
-#define DEBUG_free_backtrace(_bt) ARRAY_delete(_bt)
 GB_CLASS DEBUG_find_class(const char *name);
+
+void DEBUG_print_backtrace(ERROR_INFO *err);
+GB_ARRAY DEBUG_get_string_array_from_backtrace(ERROR_INFO *err);
 
 #endif

@@ -130,9 +130,6 @@ char *X11_get_property(Window wid, Atom prop, Atom *type, int *format, int *pcou
   unsigned long count;
   unsigned long after;
 	int size;
-	#if OS_64BITS
-	int i;
-	#endif
 
 	*pcount = 0;
 

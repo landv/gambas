@@ -136,14 +136,7 @@ void ERROR_reset(ERROR_INFO *info)
 		info->free = FALSE;
 	}
 	info->msg = NULL;
-	if (info->backtrace)
-	{
-		#if DEBUG_ERROR
-		fprintf(stderr, "ERROR_reset: DEBUG_free_backtrace: <<%p>>\n", info->backtrace);
-		#endif
-		DEBUG_free_backtrace(&info->backtrace);
-		info->backtrace = NULL;
-	}
+	info->bt_count = 0;
 }
 
 void ERROR_clear()
@@ -394,17 +387,7 @@ void ERROR_define(const char *pattern, char *arg[])
   ERROR_current->info.cp = CP;
   ERROR_current->info.fp = FP;
   ERROR_current->info.pc = PC;
-  
-  if (EXEC_debug || (ERROR_backtrace && (CP && CP->debug)))
-  {
-  	//DEBUG_free_backtrace(&ERROR_current->info.backtrace);
-  	ERROR_current->info.backtrace = DEBUG_backtrace();
-		#if DEBUG_ERROR
-		fprintf(stderr, "ERROR_define: (%p) DEBUG_backtrace: <<%p>>\n", ERROR_current, ERROR_current->info.backtrace);
-		#endif
-  }
-  else
-		ERROR_current->info.backtrace = NULL;
+	ERROR_current->info.bt_count = STACK_frame_count;
   
   #if DEBUG_ERROR
 	fprintf(stderr, "ERROR_define: %s\n", ERROR_current->info.msg);
@@ -526,19 +509,12 @@ void ERROR_print(void)
 {
   static bool lock = FALSE;
   
-  DEBUG_BACKTRACE *bt = ERROR_current->info.backtrace;
-
   ERROR_print_at(stderr, FALSE, TRUE);
   
-  if (bt)
-  {
-  	int i;
-  	
-		for(i = 0; i < ARRAY_count(bt); i++)
-			fprintf(stderr, "%d: %s\n", i, DEBUG_get_position(bt[i].cp, bt[i].fp, bt[i].pc));
-	}
+  if (ERROR_backtrace)
+		DEBUG_print_backtrace(&ERROR_current->info);
 
-  if (EXEC_main_hook_done && !EXEC_debug && EXEC_Hook.error && !lock)
+	if (EXEC_main_hook_done && !EXEC_debug && EXEC_Hook.error && !lock)
   {
     lock = TRUE;
     GAMBAS_DoNotRaiseEvent = TRUE;
@@ -569,7 +545,6 @@ void ERROR_set_last(void)
 	ERROR_last = ERROR_current->info;
 	if (ERROR_last.free)
 		STRING_ref(ERROR_last.msg);
-	ERROR_last.backtrace = DEBUG_copy_backtrace(ERROR_last.backtrace);
 	#if DEBUG_ERROR
 	fprintf(stderr, "ERROR_set_last: DEBUG_copy_backtrace: <<%p>>\n", ERROR_last.backtrace);
 	#endif

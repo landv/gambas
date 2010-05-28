@@ -391,68 +391,45 @@ __NORMAL:
 }
 
 
-
-DEBUG_BACKTRACE *DEBUG_backtrace()
+void DEBUG_print_backtrace(ERROR_INFO *err)
 {
-	DEBUG_BACKTRACE *result;
-  int i, n;
-  STACK_CONTEXT *context;
-
-	n = 1;
-  for (i = 0; i < (STACK_frame_count - 1); i++)
-  {
-    context = &STACK_frame[i];
-    if (!context->pc)
-    	continue;
-    n++;
-  }
+	int i, n;
+	STACK_CONTEXT *sc = (STACK_CONTEXT *)(STACK_base + STACK_size) - err->bt_count;
 	
-	ARRAY_create(&result);
-	ARRAY_add_many(&result, n);
-
-	result[0].pc = PC;
-	result[0].cp = CP;
-	result[0].fp = FP;
-
-	n = 0;
-  for (i = 0; i < (STACK_frame_count - 1); i++)
-  {
-    context = &STACK_frame[i];
-    if (!context->pc)
-    	continue;
-    n++;
-  	result[n].pc = context->pc;
-  	result[n].cp = context->cp;
-  	result[n].fp = context->fp;
-  }
-  
-  return result;
-}
-
-DEBUG_BACKTRACE *DEBUG_copy_backtrace(DEBUG_BACKTRACE *bt)
-{
-	DEBUG_BACKTRACE *result;
-	int i;
-	int n = ARRAY_count(bt);
-	
-	ARRAY_create(&result);
-	ARRAY_add_many(&result, n);
-	for (i = 0; i < n; i++)
-		result[i] = bt[i];
-		
-	return result;
+	fprintf(stderr, "0: %s\n", DEBUG_get_position(err->cp, err->fp, err->pc));
+	for (i = 0, n = 0; i < err->bt_count; i++)
+	{
+		//fprintf(stderr, "%d: %s\n", i, DEBUG_get_position(bt[i].cp, bt[i].fp, bt[i].pc));
+		if (!sc[i].pc)
+			continue;
+		n++;
+		fprintf(stderr, "%d: %s\n", n, DEBUG_get_position(sc[i].cp, sc[i].fp, sc[i].pc));
+	}
 }
 
 
-GB_ARRAY DEBUG_get_string_array_from_backtrace(DEBUG_BACKTRACE *bt)
+GB_ARRAY DEBUG_get_string_array_from_backtrace(ERROR_INFO *err)
 {
 	GB_ARRAY array;
 	int i, n;
+	STACK_CONTEXT *sc = (STACK_CONTEXT *)(STACK_base + STACK_size) - err->bt_count;
 	
-	n = ARRAY_count(bt);
+	for (i = 0, n = 1; i < err->bt_count; i++)
+	{
+		if (!sc[i].pc)
+			continue;
+		n++;
+	}
+
 	GB_ArrayNew(&array, GB_T_STRING, n);
-	for (i = 0; i < n; i++)
-		STRING_new_zero((char **)GB_ArrayGet(array, i), DEBUG_get_position(bt[i].cp, bt[i].fp, bt[i].pc));
+	STRING_new_zero((char **)GB_ArrayGet(array, 0), DEBUG_get_position(err->cp, err->fp, err->pc));
+	for (i = 0, n = 1; i < err->bt_count; i++)
+	{
+		if (!sc[i].pc)
+			continue;
+		STRING_new_zero((char **)GB_ArrayGet(array, n), DEBUG_get_position(sc[i].cp, sc[i].fp, sc[i].pc));
+		n++;
+	}
 
 	return array;
 }

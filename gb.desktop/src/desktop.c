@@ -285,8 +285,8 @@ BEGIN_METHOD(CDESKTOP_set_window_property, GB_STRING name; GB_STRING type; GB_VA
 		case GB_T_INTEGER:
 			format = 32;
 			#if OS_64BITS
-			padded_data = VARG(value).value._integer;
-			data = &padded_data;
+			padded_value = VARG(value).value._integer;
+			data = &padded_value;
 			#else
 			data = &VARG(value).value._integer;
 			#endif
@@ -397,7 +397,7 @@ END_METHOD
 BEGIN_METHOD(CDESKTOP_send_client_message, GB_STRING message; GB_OBJECT data; GB_INTEGER window)
 
 	GB_ARRAY array;
-	char *data = NULL;
+	void *data = NULL;
 	int count = 0;
 	int format = 0;
 	#if OS_64BITS

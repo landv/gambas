@@ -15,6 +15,7 @@ Public Sub _new(sPath As String, dDate As Date)
   If IsNull(dDate) Then Try dDate = Stat(sPath &/ ".startup").LastModified
   If IsNull(dDate) Then Try dDate = Stat(sPath &/ ".project").LastModified
   If IsNull(dDate) Then Return
+  If Not Exist(sPath) Then Return
 
   Path = sPath
   {Date} = dDate

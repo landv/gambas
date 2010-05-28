@@ -106,6 +106,8 @@ static STREAM *get_default(intptr_t val)
 			else
       	stream = CSTREAM_stream(CFILE_err);
       break;
+		default:
+			stream = NULL;
   }
 
   return stream;

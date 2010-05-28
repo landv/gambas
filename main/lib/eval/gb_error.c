@@ -45,36 +45,11 @@ void ERROR_reset(ERROR_INFO *info)
 		GB.FreeString(&info->msg);
 		info->free = FALSE;
 	}
-	else
-		info->msg = NULL;
-	//DEBUG_free_backtrace(&info->backtrace);
+
+	info->msg = NULL;
+	info->bt_count = 0;
 }
 
-/*
-void ERROR_enter(ERROR_CONTEXT *err)
-{
-  CLEAR(err);
-  err->prev = ERROR_current;
-  ERROR_current = err;
-}
-
-
-void ERROR_leave(ERROR_CONTEXT *err)
-{
-  if (err->prev == ERROR_LEAVE_DONE)
-  	return;
-  	
-	ERROR_current = err->prev;
-	
-	if (ERROR_current)
-	{
-		ERROR_reset(&ERROR_current->info);
-		ERROR_current->info = err->info;
-	}
-
-	err->prev = ERROR_LEAVE_DONE;
-}
-*/
 
 void ERROR_propagate()
 {

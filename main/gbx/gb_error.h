@@ -109,9 +109,8 @@ typedef
     void *cp;
     void *fp;
     void *pc;
-    //char msg[MAX_ERROR_MSG + 1];
     char *msg;
-    void *backtrace;
+		int bt_count;
     }
   ERROR_INFO;
 
