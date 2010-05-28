@@ -80,6 +80,9 @@ public:
 	virtual ~MyTabWidget();
 	virtual void setEnabled(bool e);
 	void layoutContainer();
+	
+private:
+	int _oldw, _oldh;
 };
 
 class CTabStrip : public QObject

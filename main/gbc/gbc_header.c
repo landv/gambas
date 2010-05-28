@@ -815,6 +815,7 @@ static bool header_structure(void)
 	VARIABLE *field;
 	TRANS_DECL decl;
 	int nfield;
+	int index;
 
 	check_public_private(&look, &is_public);
 	
@@ -834,8 +835,10 @@ static bool header_structure(void)
 	nfield = 0;
 	
   structure->index = PATTERN_index(*JOB->current);
-  CLASS_add_class_exported(JOB->class, structure->index);
-	//TABLE_copy_symbol_with_prefix(JOB->class->table, structure->index, '.', NULL, &structure->index);
+  index = CLASS_add_class_exported(JOB->class, structure->index);
+	JOB->class->class[index].structure = TRUE; // Not used at the moment
+
+//TABLE_copy_symbol_with_prefix(JOB->class->table, structure->index, '.', NULL, &structure->index);
 
 	JOB->current++;
 	TRANS_want_newline();

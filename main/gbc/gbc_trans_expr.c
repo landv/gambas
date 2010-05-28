@@ -576,7 +576,7 @@ void TRANS_ignore_expression()
 
 TYPE TRANS_variable_get_type()
 {
-	TYPE type = TYPE_make(T_NULL, 0, 0);
+	TYPE type = TYPE_make(T_VOID, 0, 0);
   TRANS_TREE *tree;
 	int count;
 	int index;

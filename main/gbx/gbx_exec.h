@@ -142,7 +142,7 @@ void EXEC_enter_quick(void);
 void EXEC_leave(bool drop);
 void EXEC_loop(void);
 
-void EXEC_object(VALUE *SP, CLASS **pclass, OBJECT **pobject, bool *pdefined);
+bool EXEC_object(VALUE *SP, CLASS **pclass, OBJECT **pobject);
 void *EXEC_auto_create(CLASS *class, bool ref);
 
 bool EXEC_call_native(void (*exec)(), void *object, TYPE type, VALUE *param);

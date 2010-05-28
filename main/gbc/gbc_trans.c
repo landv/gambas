@@ -310,7 +310,7 @@ __END:
 }
 
 
-static PATTERN *trans_static_array(PATTERN *look, int mode, TRANS_DECL *result)
+static PATTERN *trans_embedded_array(PATTERN *look, int mode, TRANS_DECL *result)
 {
   TRANS_NUMBER tnum;
   int i;
@@ -362,34 +362,37 @@ static PATTERN *trans_static_array(PATTERN *look, int mode, TRANS_DECL *result)
 }
 
 
-int TRANS_get_class(PATTERN pattern)
+static int TRANS_get_class(PATTERN pattern, bool array)
 {
   int index = PATTERN_index(pattern);
   int index_array;
 
   if (!CLASS_exist_class(JOB->class, index))
   {
-		// Maybe a compound class?
-		
-		CLASS_SYMBOL *sym = CLASS_get_symbol(JOB->class, index);
-		int i;
-		char c;
-		
-		//fprintf(stderr, "TRANS_get_class: %.*s\n", sym->symbol.len, sym->symbol.name);
-		
-		for (i = sym->symbol.len - 1; i >= 0; i--)
+		if (array)
 		{
-			c = sym->symbol.name[i];
-			if (c == '[')
+			// Maybe a compound class?
+			
+			CLASS_SYMBOL *sym = CLASS_get_symbol(JOB->class, index);
+			int i;
+			char c;
+			
+			//fprintf(stderr, "TRANS_get_class: %.*s\n", sym->symbol.len, sym->symbol.name);
+			
+			for (i = sym->symbol.len - 1; i >= 0; i--)
 			{
-				//fprintf(stderr, "TRANS_get_class: find %.*s\n", i, sym->symbol.name);
-  			if (TABLE_find_symbol(JOB->class->table, sym->symbol.name, i, &index_array))
-  			{
-  				index_array = TRANS_get_class(PATTERN_make(RT_CLASS, index_array));
-  				if (JOB->class->class[index_array].exported)
-						return CLASS_add_class_exported(JOB->class, index);
-  				else
-						return CLASS_add_class(JOB->class, index);
+				c = sym->symbol.name[i];
+				if (c == '[')
+				{
+					//fprintf(stderr, "TRANS_get_class: find %.*s\n", i, sym->symbol.name);
+					if (TABLE_find_symbol(JOB->class->table, sym->symbol.name, i, &index_array))
+					{
+						index_array = TRANS_get_class(PATTERN_make(RT_CLASS, index_array), TRUE);
+						if (JOB->class->class[index_array].exported)
+							return CLASS_add_class_exported(JOB->class, index);
+						else
+							return CLASS_add_class(JOB->class, index);
+					}
 				}
 			}
 		}
@@ -415,7 +418,7 @@ bool TRANS_type(int mode, TRANS_DECL *result)
   result->init = NULL;
   result->array.ndim = 0;
 
-  look = trans_static_array(look, mode, result);
+  look = trans_embedded_array(look, mode, result);
 
   if (!PATTERN_is(*look, RS_AS))
   {
@@ -432,7 +435,7 @@ bool TRANS_type(int mode, TRANS_DECL *result)
     if (PATTERN_is(*look, RS_NEW))
     {
       if (TYPE_get_id(result->type) == T_ARRAY)
-        THROW("Cannot mix NEW and static array declaration");
+        THROW("Cannot mix NEW and embedded array");
 
       result->is_new = TRUE;
       look++;
@@ -443,13 +446,16 @@ bool TRANS_type(int mode, TRANS_DECL *result)
 	if ((mode & TT_CAN_STATIC) && PATTERN_is(*look, RS_STRUCT))
 	{
 		if (result->is_new)
-			THROW("Cannot mix NEW and static structure declaration");
+			THROW("Cannot mix NEW and embedded structure");
+		if (result->array.ndim > 0)
+			THROW("Cannot mix embedded array and embedded structure");
+		
 		id = T_STRUCT;
 		look++;
 
 		if (!PATTERN_is_class(*look))
 			THROW_UNEXPECTED(look);
-		value = TRANS_get_class(*look);
+		value = TRANS_get_class(*look, FALSE);
 		look++;
 	}
 	else
@@ -465,7 +471,7 @@ bool TRANS_type(int mode, TRANS_DECL *result)
 		else
 		{
 			id = T_OBJECT;
-			value = TRANS_get_class(*look);
+			value = TRANS_get_class(*look, TRUE);
 		}
 		
 		if (PATTERN_is(look[1], RS_LSQR))

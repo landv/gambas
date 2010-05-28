@@ -59,7 +59,7 @@ void EXEC_push_unknown(ushort code)
   bool defined;
   VALUE *val;
 
-  EXEC_object(&SP[-1], &class, &object, &defined);
+  defined = EXEC_object(&SP[-1], &class, &object);
 
   goto *jump[code & 0xF];
 
@@ -480,7 +480,7 @@ void EXEC_push_array(ushort code)
 	
 __PUSH_GENERIC:
 
-	EXEC_object(val, &class, &object, &defined);
+	defined = EXEC_object(val, &class, &object);
 	
 	// The first time we access a symbol, we must not be virtual to find it
 	if (LIKELY(defined && object && !VALUE_is_super(val)))
@@ -520,7 +520,7 @@ __PUSH_GENERIC:
 
 __PUSH_QUICK_ARRAY:
 	
-	EXEC_object(val, &class, &object, &defined);
+	defined = EXEC_object(val, &class, &object);
 	
 	if (LIKELY(np == 1))
 	{
@@ -543,7 +543,7 @@ __PUSH_QUICK_ARRAY:
 	
 __PUSH_QUICK_COLLECTION:
 
-	EXEC_object(val, &class, &object, &defined);
+	defined = EXEC_object(val, &class, &object);
 	
 	VALUE_conv_string(&val[1]);
 	//fprintf(stderr, "GB_CollectionGet: %p '%.*s'\n", val[1]._string.addr, val[1]._string.len, val[1]._string.addr + val[1]._string.start);
@@ -560,7 +560,7 @@ __PUSH_QUICK_END:
 	
 __PUSH_ARRAY:
 
-	EXEC_object(val, &class, &object, &defined);
+	defined = EXEC_object(val, &class, &object);
 	
 __PUSH_ARRAY_2:
 

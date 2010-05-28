@@ -53,7 +53,7 @@ void EXEC_pop_unknown(void)
   bool defined;
   VALUE *val;
 
-  EXEC_object(&SP[-1], &class, &object, &defined);
+  defined = EXEC_object(&SP[-1], &class, &object);
 
   /*printf("> exec_pop_unknown: SP = %p -> %p\n", SP, SP->_string.addr);*/
 
@@ -294,7 +294,7 @@ void EXEC_pop_array(ushort code)
 
 __POP_GENERIC:
 
-	EXEC_object(val, &class, &object, &defined);
+	defined = EXEC_object(val, &class, &object);
 	
 	// The first time we access a symbol, we must not be virtual to find it
 	if (LIKELY(defined && object && !VALUE_is_super(val)))
@@ -319,7 +319,7 @@ __POP_GENERIC:
 
 __POP_QUICK_ARRAY:
 
-  EXEC_object(val, &class, &object, &defined);
+  defined = EXEC_object(val, &class, &object);
 
 	TYPE type = ((CARRAY *)object)->type;
 	
@@ -352,7 +352,7 @@ __POP_QUICK_ARRAY:
 	
 __POP_QUICK_COLLECTION:
 
-  EXEC_object(val, &class, &object, &defined);
+  defined = EXEC_object(val, &class, &object);
 
 	VALUE_conv(&val[-1], T_VARIANT);
 	VALUE_conv_string(&val[1]);
@@ -365,7 +365,7 @@ __POP_QUICK_COLLECTION:
 	
 __POP_ARRAY:
     
-  EXEC_object(val, &class, &object, &defined);
+  defined = EXEC_object(val, &class, &object);
 
 __POP_ARRAY_2:
 

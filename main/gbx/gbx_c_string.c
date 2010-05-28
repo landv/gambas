@@ -192,7 +192,10 @@ static void get_substring(int start, int len)
       break;
   }
 
-  GB_ReturnNewString(_str + pos, _pos - pos);
+	if (_pos > pos)
+		GB_ReturnNewString(_str + pos, _pos - pos);
+	else
+		GB_ReturnNull();
 }
 
 
@@ -272,7 +275,10 @@ static void convert_string(char *str, int len, bool upper)
   
 __ERROR:
 
-	GB_ReturnNewString(str, len);
+	if (len > 0)
+		GB_ReturnNewString(str, len);
+	else
+		GB_ReturnNull();
 }
 
 

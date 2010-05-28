@@ -33,14 +33,13 @@ void EXEC_enum_first(PCODE code)
 {
   OBJECT *object;
   CLASS *class;
-  bool defined;
   VALUE *local;
   CENUM *old = EXEC_enum;
   CENUM *cenum;
 
   local = &BP[code & 0xFF];
 
-  EXEC_object(local, &class, &object, &defined);
+  EXEC_object(local, &class, &object);
 
 	if (!object && class->auto_create && !class->enum_static)
 		object = EXEC_auto_create(class, FALSE);
@@ -72,7 +71,7 @@ bool EXEC_enum_next(PCODE code)
 
   local = &BP[PC[-1] & 0xFF];
 
-  EXEC_object(local, &class, &object, &defined);
+  defined = EXEC_object(local, &class, &object);
   cenum = (CENUM *)local[1]._object.object;
 
   if (!cenum->stop)

@@ -195,6 +195,7 @@ void CTab::updateText()
 
 MyTabWidget::MyTabWidget(QWidget *parent) : QTabWidget(parent)
 {
+	_oldw = _oldh = 0;
 	//tabBar()->installEventFilter(this);
 }
 
@@ -228,13 +229,20 @@ void MyTabWidget::layoutContainer()
 	#else
 	QStyleOptionTabWidgetFrame option;
 	#endif
-
-	initStyleOption(&option);
-	QRect contentsRect = style()->subElementRect(QStyle::SE_TabWidgetTabContents, &option, this);
-
 	QWidget *w = findChild<QStackedWidget *>();
+	QRect contentsRect;
 
-	w->setGeometry(contentsRect);
+	if (_oldw != width() || _oldh != height())
+	{
+		initStyleOption(&option);
+		contentsRect = style()->subElementRect(QStyle::SE_TabWidgetTabContents, &option, this);
+		_oldw = width();
+		_oldh = height();
+		w->setGeometry(contentsRect);
+	}
+	else
+		contentsRect = w->geometry();
+
 	if (THIS->container)
 		THIS->container->setGeometry(0, 0, contentsRect.width(), contentsRect.height());
 }

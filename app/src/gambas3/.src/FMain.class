@@ -1597,7 +1597,11 @@ End
 
 Public Sub mnuTerminal_Click()
 
-  Desktop.OpenTerminal(Project.Dir)  
+  If Desktop.Type = "KDE4" Then
+    Exec ["konsole", "--workdir", Project.Dir, "--notransparency"]
+  Else
+    Desktop.OpenTerminal(Project.Dir)  
+  Endif
 
 End
 

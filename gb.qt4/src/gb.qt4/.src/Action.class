@@ -165,6 +165,7 @@ Static Public Sub Raise(Control As Object)
   If $iGlobalLock Then Return
   If Not Object.IsValid(Control) Then
     Debug "warning: invalid control: "; Control
+    Error System.Backtrace.Join("\n")
     Return
   Endif
 

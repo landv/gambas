@@ -60,7 +60,7 @@ static void create_local_from_param()
 
   for (i = 0; i < func->nparam; i++)
   {
-    if (TYPE_get_id(func->param[i].type) != T_NULL)
+    if (TYPE_get_id(func->param[i].type) != T_VOID)
     {
       add_local(func->param[i].index, func->param[i].type, (i - func->nparam));
     }

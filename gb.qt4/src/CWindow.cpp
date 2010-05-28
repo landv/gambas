@@ -2478,7 +2478,7 @@ bool CWindow::eventFilter(QObject *o, QEvent *e)
 {
 	CWINDOW *_object = (CWINDOW *)CWidget::get(o);
 
-	if (THIS != NULL)
+	if (THIS != NULL && !	CWIDGET_test_flag(THIS, WF_DELETED))
 	{
 		if (e->type() == QEvent::WindowActivate && e->spontaneous())
 		{

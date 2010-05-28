@@ -903,10 +903,9 @@ _CALL:
 
     if (UNLIKELY(!TYPE_is_function(val->type)))
     {
-			bool defined;
-
-      EXEC_object(val, &EXEC.class, (OBJECT **)&EXEC.object, &defined);
-	    val->type = T_FUNCTION;
+			bool defined = EXEC_object(val, &EXEC.class, (OBJECT **)&EXEC.object);
+	    
+			val->type = T_FUNCTION;
 	    val->_function.kind = FUNCTION_CALL;
 	    val->_function.defined = defined;
 	    val->_function.class = EXEC.class;

@@ -3,6 +3,8 @@
 Static Public All As New CRecentFile[]
 Static Public SortByDate As Boolean
 
+Static Private $bLoaded As Boolean
+
 Public Const MAX_RECENT As Integer = 64
 
 Public Path As String
@@ -88,6 +90,8 @@ Static Public Sub Load()
       Endif
     Endif
   Next
+  
+  $bLoaded = True
 
 End
 
@@ -116,6 +120,8 @@ Static Public Sub Add(sPath As String)
   Dim iInd As Integer
   Dim nMax As Integer
   Dim hRecentFile As CRecentFile
+  
+  If Not $bLoaded Then Return
 
   If Right$(sPath) = "/" Then sPath = Left$(sPath, -1)
 

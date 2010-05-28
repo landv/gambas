@@ -57,7 +57,7 @@ enum {
   T_VARIANT      = 12,
   T_ARRAY        = 13,
   T_STRUCT       = 14,
-  T_NULL         = 15,
+  //T_NULL         = 15,
   T_OBJECT       = 16
   };
 

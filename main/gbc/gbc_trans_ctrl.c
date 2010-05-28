@@ -1017,7 +1017,7 @@ void TRANS_label(void)
   if (label_info == NULL)
     ARRAY_create(&label_info);
 
-  sym->local.type = TYPE_make(T_NULL, 0L, TK_LABEL);
+  sym->local.type = TYPE_make(T_VOID, 0L, TK_LABEL);
   sym->local.value = ARRAY_count(label_info);
 
   label = ARRAY_add(&label_info);

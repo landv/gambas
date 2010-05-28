@@ -1237,7 +1237,7 @@ void EXEC_native(void)
 }
 
 
-void EXEC_object(VALUE *val, CLASS **pclass, OBJECT **pobject, bool *pdefined)
+bool EXEC_object(VALUE *val, CLASS **pclass, OBJECT **pobject)
 {
 	static const void *jump[] = {
 		&&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR,
@@ -1368,7 +1368,8 @@ __RETURN:
 
 	*pclass = class;
 	*pobject = object;
-	*pdefined = defined;
+	
+	return defined;
 }
 
 

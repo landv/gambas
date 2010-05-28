@@ -169,8 +169,10 @@ typedef
 typedef
 	struct {
 		int index;
-		bool used;
-		bool exported;
+		unsigned used : 1;
+		unsigned exported : 1;
+		unsigned structure : 1;
+		unsigned _reserved : 29;
 		}
 	CLASS_REF;
 

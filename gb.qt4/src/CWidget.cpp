@@ -1885,10 +1885,58 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	bool original;
 	bool cancel;
 	QPoint p;
+	void *jump;
 
 	//if (widget->isA("MyMainWindow"))
 	//	getDesignDebug(widget);
-
+	switch (type)
+	{
+		case QEvent::Enter: 
+			jump = &&__ENTER; break;
+		case QEvent::Leave: 
+			jump = &&__LEAVE; break;
+		case QEvent::FocusIn:
+			jump = &&__FOCUS_IN; break;
+		case QEvent::FocusOut:
+			jump = &&__FOCUS_OUT; break;
+		case QEvent::ContextMenu:
+			jump = &&__CONTEXT_MENU; break;
+		case QEvent::MouseButtonPress:
+		case QEvent::MouseButtonRelease:
+		case QEvent::MouseMove:
+			jump = &&__MOUSE; break;
+		case QEvent::MouseButtonDblClick:
+			jump = &&__DBL_CLICK; break;
+		case QEvent::KeyPress:
+		case QEvent::KeyRelease:
+			jump = &&__KEY; break;
+		case QEvent::InputMethod:
+			jump = &&__INPUT_METHOD; break;
+		case QEvent::Wheel:
+			jump = &&__MOUSE_WHEEL; break;
+		case QEvent::DragEnter:
+			jump = &&__DRAG_ENTER; break;
+		case QEvent::DragMove:
+			jump = &&__DRAG_MOVE; break;
+		case QEvent::Drop:
+			jump = &&__DROP; break;
+		case QEvent::DragLeave:
+			jump = &&__DRAG_LEAVE; break;
+		case QEvent::Shortcut:
+			jump = &&_DESIGN; break;
+		case QEvent::DeferredDelete:
+			control = CWidget::getDesign(widget);
+			if (!control || CWIDGET_test_flag(control, WF_DELETED))
+			{
+				QObject::eventFilter(widget, event); 
+				return false;
+			}
+			else
+				goto _STANDARD;
+		default:
+			goto _STANDARD;
+	}
+	
 	control = CWidget::getDesign(widget);
 	//for(;;)
 	//{
@@ -1902,6 +1950,8 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	real = CWidget::real;
 	design = CWIDGET_test_flag(control, WF_DESIGN); // && !GB.Is(control, CLASS_Container);
 	original = event->spontaneous();
+	
+	goto *jump;
 
 	/*if (type != QEvent::Enter)
 	{
@@ -1915,30 +1965,38 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		}
 	}*/
 	
-	if (type == QEvent::Enter)
+	__ENTER:
 	{
 		if (real && !qApp->activePopupWidget())
 			GB.Raise(control, EVENT_Enter, 0);
+		goto __NEXT;
 	}
-	else if (type == QEvent::Leave)
+
+	__LEAVE:
 	{
 		if (real && !qApp->activePopupWidget())
 			GB.Raise(control, EVENT_Leave, 0);
+		goto __NEXT;
 	}
-  else if (type == QEvent::FocusIn)
+	
+  __FOCUS_IN:
   {
 		//qDebug("FocusIn: %p %s (%p)", control, control->name, CWIDGET_active_control);
 		CWIDGET_active_control = control;
 		handle_focus_change();
 		CWINDOW_activate(control);
+		goto __NEXT;
   }
-  else if (type == QEvent::FocusOut)
+  
+  __FOCUS_OUT:
   {
 		//qDebug("FocusOut: %p %s (%p)", control, control->name, CWIDGET_active_control);
 		CWIDGET_active_control = NULL;
 		handle_focus_change();
+		goto __NEXT;
   }
-	else if (type == QEvent::ContextMenu)
+  
+	__CONTEXT_MENU:
 	{
 		// if (real && GB.CanRaise(control, EVENT_Menu))
 		//qDebug("Menu event! %p %d", control, EVENT_Menu);
@@ -1948,10 +2006,10 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			GB.Raise(control, EVENT_Menu, 0);
 			return true;
 		}
+		goto __NEXT;		
 	}
-	else if ((type == QEvent::MouseButtonPress)
-					|| (type == QEvent::MouseButtonRelease)
-					|| (type == QEvent::MouseMove))
+	
+	__MOUSE:
 	{
 		QMouseEvent *mevent = (QMouseEvent *)event;
 
@@ -2065,8 +2123,11 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		
 		if (cancel)
 			return true;
+		
+		goto __NEXT;
 	}
-	else if (type == QEvent::MouseButtonDblClick)
+	
+	__DBL_CLICK:
 	{
 		if (!original)
 			goto _DESIGN;
@@ -2077,9 +2138,10 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			GB.Ref(control);
 			GB.Post((void (*)())post_dblclick_event, (intptr_t)control);
 		}
+		goto __NEXT;
 	}
-	else if ((type == QEvent::KeyPress)
-					|| (type == QEvent::KeyRelease))
+	
+	__KEY:
 	{
 		QKeyEvent *kevent = (QKeyEvent *)event;
 
@@ -2140,6 +2202,8 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		if (control->flag.grab && event_id == EVENT_KeyPress && kevent->key() == Qt::Key_Escape)
 			MyApplication::eventLoop->exit();
 
+		goto __NEXT;
+		
 	/*_ACCEL:
 
 		if (event_id == EVENT_KeyPress && CWINDOW_Main && ((QWidget *)widget)->isWindow())
@@ -2158,7 +2222,8 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			}
 		}*/
 	}
-	else if (type == QEvent::InputMethod)
+	
+	__INPUT_METHOD:
 	{
 		QInputMethodEvent *imevent = (QInputMethodEvent *)event;
 
@@ -2194,8 +2259,11 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 					return true;
 			}
 		}
+		
+		goto __NEXT;
 	}
-	else if (type == QEvent::Wheel)
+	
+	__MOUSE_WHEEL:
 	{
 		QWheelEvent *ev = (QWheelEvent *)event;
 
@@ -2227,8 +2295,11 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 
 			CMOUSE_clear(false);
 		}
+		
+		goto __NEXT;
 	}
-	else if (type == QEvent::DragEnter)
+	
+	__DRAG_ENTER:
 	{
 		//if (!CWIDGET_test_flag(control, WF_NO_DRAG))
 		if (CDRAG_drag_enter((QWidget *)widget, control, (QDropEvent *)event))
@@ -2237,8 +2308,10 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 				CDRAG_hide_frame(control);
 			return true;
 		}
+		goto __NEXT;
 	}
-	else if (type == QEvent::DragMove)
+	
+	__DRAG_MOVE:
 	{
 		//if (!CWIDGET_test_flag(control, WF_NO_DRAG))
 		if (CDRAG_drag_move((QWidget *)widget, control, (QDropEvent *)event))
@@ -2247,16 +2320,23 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 				CDRAG_hide_frame(control);
 			return true;
 		}
+		goto __NEXT;
 	}
-	else if (type == QEvent::Drop)
+	
+	__DROP:
 	{
 		//if (!CWIDGET_test_flag(control, WF_NO_DRAG))
 		CDRAG_drag_drop((QWidget *)widget, control, (QDropEvent *)event);
+		goto __NEXT;
 	}
-	else if (type == QEvent::DragLeave)
+	
+	__DRAG_LEAVE:
 	{
 		CDRAG_hide_frame(control);
+		goto __NEXT;
 	}
+	
+	__NEXT:
 	
 	if (!control || CWIDGET_test_flag(control, WF_DELETED))
 	{
