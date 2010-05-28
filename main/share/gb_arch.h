@@ -51,8 +51,8 @@ typedef
 typedef
   struct {
 	  struct {
-    	int len;
     	uint name;
+    	int len;
     	}
   	PACKED
 		sym;

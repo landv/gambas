@@ -156,7 +156,7 @@ void HASH_TABLE_create(HASH_TABLE **hash, size_t s_value, HASH_FLAG mode)
   hash_table->size = HASH_TABLE_MIN_SIZE;
   hash_table->s_value = s_value;
 
-  ALLOC_ZERO(&hash_table->nodes, sizeof(HASH_NODE) * hash_table->size, "HASH_TABLE_create");
+  ALLOC_ZERO(&hash_table->nodes, sizeof(HASH_NODE *) * hash_table->size, "HASH_TABLE_create");
 
   if (mode == HF_IGNORE_CASE)
     hash_table->mode = mode;

@@ -62,6 +62,7 @@ static void load_arch(ARCH *arch, const char *path)
   int len, lens;
   int i;
   int pos;
+	int pos_sort;
   struct stat info;
   #ifdef OS_64BITS
   ARCH_SYMBOL_32 *sym;
@@ -117,20 +118,22 @@ static void load_arch(ARCH *arch, const char *path)
 	ALLOC(&arch->sort, lens, "ARCHIVE_load");
 	
 	#ifdef OS_64BITS
-	sym = (ARCH_SYMBOL_32 *)&arch->addr[arch->header.pos_table];
-  for (i = 0; i < arch->header.n_symbol; i++, sym++)
-	{
-		//arch->symbol[i].sym.sort = sym->sym.sort;
-		arch->symbol[i].sym.len = sym->sym.len;
-		arch->symbol[i].sym.name = (char *)(intptr_t)sym->sym.name;
-		arch->symbol[i].pos = sym->pos;
-		arch->symbol[i].len = sym->len;
-	}	
+		sym = (ARCH_SYMBOL_32 *)&arch->addr[arch->header.pos_table];
+		for (i = 0; i < arch->header.n_symbol; i++, sym++)
+		{
+			//arch->symbol[i].sym.sort = sym->sym.sort;
+			arch->symbol[i].sym.len = sym->sym.len;
+			arch->symbol[i].sym.name = (char *)(intptr_t)sym->sym.name;
+			arch->symbol[i].pos = sym->pos;
+			arch->symbol[i].len = sym->len;
+		}	
+		pos_sort = arch->header.pos_table + arch->header.n_symbol * sizeof(ARCH_SYMBOL_32);
 	#else
-	read_at(arch, arch->header.pos_table, arch->symbol, len);
+		read_at(arch, arch->header.pos_table, arch->symbol, len);
+		pos_sort = arch->header.pos_table + len;
 	#endif
-	read_at(arch, arch->header.pos_table + len, arch->sort, lens);
 	
+	read_at(arch, pos_sort, arch->sort, lens);
 
   /* String relocation */
 

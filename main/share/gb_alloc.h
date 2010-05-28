@@ -69,11 +69,21 @@ void MEMORY_check_ptr(void *ptr);
 
 #elif OPTIMIZE_MEMORY
 
-#define ALLOC(_ptr, _size, _src)        (LIKELY((*(_ptr) = malloc(_size)) != 0) ? MEMORY_count++ : THROW_MEMORY())
+/*#define ALLOC(_ptr, _size, _src)        (LIKELY((*(_ptr) = malloc(_size)) != 0) ? MEMORY_count++ : THROW_MEMORY())
 #define ALLOC_ZERO(_ptr, _size, _src)   (LIKELY((*(_ptr) = calloc(_size, 1)) != 0) ? MEMORY_count++ : THROW_MEMORY())
 #define REALLOC(_ptr, _size, _src)      (LIKELY((*(_ptr) = realloc(*(_ptr), _size)) != 0) ? 0 : THROW_MEMORY())
 #define FREE(_ptr, _src)                (LIKELY(*(_ptr) != 0) ? free(*(_ptr)), *(_ptr) = NULL, MEMORY_count-- : 0)
-#define IFREE(_ptr, _src)               (LIKELY(_ptr != 0) ? free(_ptr), MEMORY_count-- : 0)
+#define IFREE(_ptr, _src)               (LIKELY(_ptr != 0) ? free(_ptr), MEMORY_count-- : 0)*/
+
+#define ALLOC(_ptr, _size, _src)        (*(_ptr) = my_malloc(_size))
+#define ALLOC_ZERO(_ptr, _size, _src)   (*(_ptr) = my_malloc(_size), memset(*(_ptr), 0, (_size)))
+#define REALLOC(_ptr, _size, _src)      (*(_ptr) = my_realloc(*(_ptr), (_size)))
+#define FREE(_ptr, _src)                (my_free(*(_ptr)), *(_ptr) = NULL)
+#define IFREE(_ptr, _src)               (my_free(_ptr))
+
+void *my_malloc(size_t len);
+void my_free(void *alloc);
+void *my_realloc(void *alloc, size_t len);
 
 int THROW_MEMORY();
 

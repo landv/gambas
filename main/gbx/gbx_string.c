@@ -107,6 +107,8 @@ static STRING *alloc_string(int len)
 	int size = REAL_SIZE(len + 1 + sizeof(STRING));
 	int pool = (size / SIZE_INC) - 1;
 	
+	MEMORY_count++;
+	
 	if (pool < POOL_SIZE)
 	{
 		if (_pool_count[pool])
@@ -126,8 +128,10 @@ static STRING *alloc_string(int len)
 	}
 	//else
 	//	printf("alloc_string: %d\n", pool);
-			
-	ALLOC(&str, size, "alloc_string");
+	
+	str = malloc(size);
+	if (!str)
+		THROW_MEMORY();
 	str->len = len;
 	str->ref = 1;
 	return str;
@@ -139,6 +143,8 @@ void STRING_free_real(char *ptr)
 	int size = REAL_SIZE(str->len + 1 + sizeof(STRING));
 	int pool = (size / SIZE_INC) - 1;
 
+	MEMORY_count--;
+	
 	if (pool < POOL_SIZE)
 	{
 		if (_pool_count[pool] < POOL_MAX)		
@@ -153,7 +159,7 @@ void STRING_free_real(char *ptr)
 		}
 	}
 	
-	IFREE(str, "free_string");
+	free(str);
 }
 
 static STRING *realloc_string(STRING *str, int new_len)
@@ -176,7 +182,8 @@ static STRING *realloc_string(STRING *str, int new_len)
 		}
 		else if (size > POOL_MAX_LEN && new_size > POOL_MAX_LEN)
 		{
-			REALLOC(&str, new_size, "realloc_string");
+			str = realloc(str, new_size);
+			//REALLOC(&str, new_size, "realloc_string");
 		}
 		else
 		{
@@ -208,7 +215,7 @@ static void clear_pool(void)
 		while (str)
 		{
 			next = *((STRING **)str);
-			IFREE(str, "clear_pool");
+			free(str);
 			str = next;
 		}
 	}
