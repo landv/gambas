@@ -55,8 +55,9 @@ void TRANS_reset(void)
 static bool read_integer(char *number, int base, int64_t *result)
 {
 	uint64_t nbr2, nbr;
-	int d, n, nmax;
+	int d, n;
 	unsigned char c;
+	int nmax;
 
 	n = 0;
 	nbr = 0;
@@ -68,38 +69,64 @@ static bool read_integer(char *number, int base, int64_t *result)
 		case 16: nmax = 16; break;
 	}
 
-	c = *number++;
-
-	for(;;)
+	if (base == 10)
 	{
-		if (c >= '0' && c <= '9')
-			d = c - '0';
-		else if (c >= 'A' && c <='Z')
-			d = c - 'A' + 10;
-		else if (c >= 'a' && c <='z')
-			d = c - 'a' + 10;
-		else
-			break;
-
-		if (d >= base)
-			break;
-
-		n++;
-		
-		nbr2 = nbr * base;
-		
-		if (((int64_t)nbr2 / base) != (int64_t)nbr)
-			return TRUE;
-		
-		nbr = nbr2 + d;
-
 		c = *number++;
-		if (!c)
-			break;
-	}
 
-	if (base != 10)
+		for(;;)
+		{
+			if (isdigit(c))
+				d = c - '0';
+			else
+				break;
+
+			n++;
+			if (n < nmax)
+				nbr = nbr * 10 + d;
+			else
+			{
+				nbr2 = nbr * 10 + d;
+			
+				if (((int64_t)nbr2 / 10) != (int64_t)nbr)
+					return TRUE;
+			
+				nbr = nbr2;
+			}
+
+			c = *number++;
+			if (!c)
+				break;
+		}
+	}
+	else
 	{
+		c = *number++;
+
+		for(;;)
+		{
+			if (isdigit(c))
+				d = c - '0';
+			else if (c >= 'A' && c <='Z')
+				d = c - 'A' + 10;
+			else if (c >= 'a' && c <='z')
+				d = c - 'a' + 10;
+			else
+				break;
+
+			if (d >= base)
+				break;
+
+			n++;
+			if (n > nmax)
+				return TRUE;
+			
+			nbr = nbr * base + d;
+			
+			c = *number++;
+			if (!c)
+				break;
+		}
+
 		if ((c == '&' || c == 'u' || c == 'U') && base != 10)
 			c = *number++;
 		else
@@ -116,7 +143,7 @@ static bool read_integer(char *number, int base, int64_t *result)
 			}
 		}
 	}
-	
+
 	if (c)
 		return TRUE;
 	
@@ -222,7 +249,9 @@ __END:
 
 bool TRANS_get_number(int index, TRANS_NUMBER *result)
 {
-  char *number = (char *)TABLE_get_symbol_name(JOB->class->table, index);
+	char buffer[68];
+	SYMBOL *sym;
+  char *number;
   unsigned char c;
   int64_t val = 0;
   double dval = 0.0;
@@ -230,6 +259,13 @@ bool TRANS_get_number(int index, TRANS_NUMBER *result)
   int base = 10;
   bool minus = FALSE;
 
+	sym = TABLE_get_symbol(JOB->class->table, index);
+	if (sym->len > 66)
+		return TRUE;
+	memcpy(buffer, sym->name, sym->len);
+	buffer[sym->len] = 0;
+	number = buffer;
+	
   c = *number++;
 
   if (c == '+' || c == '-')
@@ -693,17 +729,6 @@ void TRANS_want_newline()
     THROW_UNEXPECTED(JOB->current);
 }
 
-
-bool TRANS_is(int reserved)
-{
-  if (PATTERN_is(*JOB->current, reserved))
-  {
-    JOB->current++;
-    return TRUE;
-  }
-  else
-    return FALSE;
-}
 
 void TRANS_ignore(int reserved)
 {

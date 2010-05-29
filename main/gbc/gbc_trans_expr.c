@@ -38,35 +38,47 @@
 
 //static bool _accept_statement = FALSE;
 
-static short get_nparam(PATTERN *tree, int count, int *index, uint64_t *byref)
+static short get_nparam(PATTERN *tree, int count, int *pindex, uint64_t *byref)
 {
   PATTERN pattern;
-  short nparam = 0;
-  int shift = 0;
+  int nparam = 0;
+	int index = *pindex;
 
-  if (*index < count)
+  if (index < count)
   {
-    pattern = tree[*index + 1];
+    pattern = tree[index + 1];
     if (PATTERN_is_param(pattern))
     {
-      (*index)++;
-      nparam = (short)PATTERN_index(pattern);
+      index++;
+      nparam = PATTERN_index(pattern);
     }
 
 		if (byref)
-			*byref = 0;
-		while (*index < count)
 		{
-			pattern = tree[*index + 1];
-			if (!PATTERN_is_param(pattern))
-				break;
-			(*index)++;
-			if (byref)
+			int shift = 0;
+			*byref = 0;
+			while (index < count)
 			{
+				pattern = tree[index + 1];
+				if (!PATTERN_is_param(pattern))
+					break;
+				index++;
 				*byref |= (uint64_t)PATTERN_index(pattern) << shift;
 				shift += 16;
 			}
 		}
+		else
+		{
+			while (index < count)
+			{
+				pattern = tree[index + 1];
+				if (!PATTERN_is_param(pattern))
+					break;
+				index++;
+			}
+		}
+		
+		*pindex = index;
 	}
 
   /*
@@ -74,7 +86,7 @@ static short get_nparam(PATTERN *tree, int count, int *index, uint64_t *byref)
      => nparam = 0
   */
 
-  return nparam;
+  return (short)nparam;
 }
 
 
@@ -126,7 +138,7 @@ static void push_string(int index, bool trans)
   }
   else
   {
-    CLEAR(&decl);
+    //CLEAR(&decl);
 
     if (trans)
       decl.type = TYPE_make(T_CSTRING, 0, 0);

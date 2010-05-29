@@ -827,6 +827,8 @@ End
 
 Public Function GetHelpHTML() As String
   
+  Dim sPath As String
+  Dim hClass As CClassInfo
   Dim hForm As Object
   Dim hEdit As Editor
   Dim sHTML, sHelp As String
@@ -837,7 +839,16 @@ Public Function GetHelpHTML() As String
   
   If Component Then Return
   
-  hForm = Project.LoadFile(Project.FindPath(Me.Class))
+  sPath = Project.FindPath({Class})
+  If Not sPath Then
+    hClass = CComponent.Classes[{Class}]
+    If hClass And If hClass.DeclareIn Then
+      sPath = Project.FindPath(hClass.DeclareIn)
+    Endif
+  Endif
+  If Not sPath Then Return
+  
+  hForm = Project.LoadFile(sPath)
   Try hEdit = hForm.Editor
   If Not hEdit Then Return  
   iLine = Me.LineNumber - 1

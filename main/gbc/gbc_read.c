@@ -55,14 +55,9 @@ static bool begin_line = FALSE;
 
 static char ident_car[256];
 static char first_car[256];
-static char digit_car[256];
+char READ_digit_car[256];
 static char noop_car[256];
 static char canres_car[256];
-
-#undef isspace
-#define isspace(_c) (((uchar)_c) <= ' ')
-#undef isdigit
-#define isdigit(_c) (digit_car[_c])
 
 enum
 {
@@ -88,8 +83,8 @@ static void READ_init(void)
 		for (i = 0; i < 255; i++)
 		{
 			ident_car[i] = (i != 0) && ((i >= 'A' && i <= 'Z') || (i >= 'a' && i <= 'z') || (i >= '0' && i <= '9') || strchr("$_?@", i));
-			digit_car[i] = (i >= '0' && i <= '9');
-			noop_car[i] = ident_car[i] || digit_car[i] || i <= ' ';
+			READ_digit_car[i] = (i >= '0' && i <= '9');
+			noop_car[i] = ident_car[i] || READ_digit_car[i] || i <= ' ';
 			canres_car[i] = (i != ':') && (i != '.') && (i != '!') && (i != '(');
 			
 			if (i == 0)

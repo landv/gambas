@@ -3,11 +3,11 @@ AM_CFLAGS_OPT += -I$(top_srcdir)/share
 
 bin_PROGRAMS = gbc3 gba3 gbi3
 noinst_PROGRAMS = gbcm3
-noinst_LTLIBRARIES = libgbcopt.la
+##noinst_LTLIBRARIES = libgbcopt.la
 
-libgbcopt_la_CFLAGS= -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS_OPT)
+##libgbcopt_la_CFLAGS= -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS_OPT)
 
-gbc3_LDADD = libgbcopt.la @MATH_LIB@
+gbc3_LDADD = @MATH_LIB@
 gbc3_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS)
 
 gbi3_LDADD = @DL_LIB@
@@ -34,6 +34,7 @@ gbc3_SOURCES = \
  gbc_chown.h gbc_chown.c \
  gb_common.c \
  gbc_arch.c \
+ gb_table.c \
  gbc.c 
 
 gba3_SOURCES = \
@@ -58,8 +59,8 @@ gbi3_SOURCES= \
  gbc_arch.c \
  gbi.c
 
-libgbcopt_la_SOURCES = \
- gb_table.c
+##libgbcopt_la_SOURCES = \
+## gb_table.c
 
 gbcm3_SOURCES = \
  gbc_reserved_make.c

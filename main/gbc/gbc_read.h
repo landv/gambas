@@ -25,6 +25,17 @@
 
 #include "gbc_read_common.h"
 
+#include <ctype.h>
+
+#undef isdigit
+#define isdigit(_c) (READ_digit_car[_c])
+#undef isspace
+#define isspace(_c) (((uchar)_c) <= ' ')
+
+#ifndef __GBC_READ_C
+extern char READ_digit_car[];
+#endif
+
 void READ_do(void);
 void READ_dump_pattern(PATTERN *pattern);
 char *READ_get_pattern(PATTERN *pattern);

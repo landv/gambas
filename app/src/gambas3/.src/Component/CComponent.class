@@ -707,6 +707,62 @@ End
 ' 
 ' End
 
+Static Private Sub ScanStruct(hModule As Object, iLine As Integer) As Integer
+  
+  Dim hEditor As Editor
+  Dim aSym As String[]
+  Dim iInd As Integer
+  Dim sClass As String
+  Dim hSymbol As CSymbolInfo
+  Dim cSymbol As New Collection
+  Dim hClass As CClassInfo
+  
+  hEditor = hModule.Editor
+  
+  aSym = Highlight.Analyze(hEditor.Lines[iLine].Text)
+  
+  For iInd = 0 To aSym.Max - 1
+    If aSym[iInd] = "STRUCT" Then Break
+  Next
+  sClass = aSym[iInd + 1]
+  
+  Do
+    Inc iLine
+    If iLine >= hEditor.Lines.Count Then Return iLine
+    
+    aSym = Highlight.Analyze(hEditor.Lines[iLine].Text)
+    
+    If aSym.Count >= 2 And If aSym[0] = "END" And If aSym[1] = "STRUCT" Then Break
+    
+    If Highlight.Types[0] <> Highlight.Symbol Then Continue
+    
+    hSymbol = New CSymbolInfo
+    With hSymbol
+      .Name = aSym[0]
+      .Class = sClass
+      .Kind = "v"
+      .NotPublic = False
+      .LineNumber = iLine + 1
+      .Type = FEditor.ReadSymbolType(aSym, 1)
+      cSymbol[.Name] = hSymbol
+    End With
+
+  Loop
+  
+  hClass = Classes[sClass]
+  If hClass And If Not hClass.Structure Then Return
+  
+  hClass = New CClassInfo(sClass)
+  'hClass.Component = hModuleClass.Component
+  hClass.Structure = True
+  hClass.Symbols = cSymbol
+  hClass.DeclareIn = hModule.Name
+  
+  Classes[sClass] = hClass
+  
+  Return iLine
+  
+End
 
 
 Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule As Boolean, Optional bCanInherit As Boolean = True)
@@ -840,6 +896,9 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
           bStatic = True
           Inc iInd
           Break
+        Case "STRUCT"
+          sKind = "S"
+          Break
         Case Else
           Break
       End Select
@@ -863,6 +922,9 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
           
         Endif
       Next
+      Continue
+    Else If sKind = "S" Then
+      iLine = ScanStruct(hModule, iLine)
       Continue
     Endif
 

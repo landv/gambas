@@ -396,12 +396,6 @@ void TABLE_delete(TABLE **p_table)
 }
 
 
-int TABLE_count(TABLE *table)
-{
-	return ARRAY_count(table->symbol);
-}
-
-
 bool TABLE_find_symbol(TABLE *table, const char *name, int len, int *index)
 {
 	int ind;

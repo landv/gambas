@@ -58,7 +58,7 @@ FILE *MEMORY_log;
 
 #define POOL_MAX_LEN   (POOL_SIZE * SIZE_INC)
 
-static int *_pool[POOL_SIZE] = { 0 };
+static size_t *_pool[POOL_SIZE] = { 0 };
 static int _pool_count[POOL_SIZE] = { 0 };
 
 int THROW_MEMORY()
@@ -282,8 +282,8 @@ void MEMORY_free(void *p_ptr)
 
 void *my_malloc(size_t len)
 {
-	int *ptr;
-	int size = REAL_SIZE((int)len + sizeof(int));
+	size_t *ptr;
+	int size = REAL_SIZE((int)len + sizeof(size_t));
 	int pool = (size / SIZE_INC) - 1;
 	
 	MEMORY_count++;
@@ -315,7 +315,7 @@ void *my_malloc(size_t len)
 
 void my_free(void *alloc)
 {
-	int *ptr;
+	size_t *ptr;
 	int size;
 	int pool;
 
@@ -327,7 +327,7 @@ void my_free(void *alloc)
 	ptr = alloc;
 	ptr--;
 	
-	size = *ptr;
+	size = (int)*ptr;
 	pool = (size / SIZE_INC) - 1;
 
 	if (pool < POOL_SIZE)
@@ -352,13 +352,13 @@ void my_free(void *alloc)
 
 void *my_realloc(void *alloc, size_t new_len)
 {
-	int *ptr;
+	size_t *ptr;
 	int size;
 	int new_size;
 	
 	ptr = alloc;
 	ptr--;
-	size = *ptr;
+	size = (int)*ptr;
 	new_size = REAL_SIZE(new_len + sizeof(int));
 	
 	if (size == new_size)
@@ -383,7 +383,7 @@ void *my_realloc(void *alloc, size_t new_len)
 	}
 	else
 	{
-		int *nptr = my_malloc(new_len);
+		size_t *nptr = my_malloc(new_len);
 		
 		nptr--;
 		

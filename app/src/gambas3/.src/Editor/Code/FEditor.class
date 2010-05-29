@@ -1478,6 +1478,7 @@ Static Public Function ReadSymbolType(aSym As String[], iIndex As Integer, Optio
   If aSym[iIndex] <> "AS" Then Return
   Inc iIndex
   If aSym[iIndex] = "NEW" Then Inc iIndex
+  If aSym[iIndex] = "STRUCT" Then Inc iIndex
 
   sType = aSym[iIndex]
   
