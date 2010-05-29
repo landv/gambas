@@ -27,9 +27,6 @@
 #include "gb_alloc.h"
 #include "gb_array.h"
 
-
-
-
 void ARRAY_create_with_size(void *p_data, size_t size, int inc)
 {
   ARRAY *array;
@@ -38,7 +35,7 @@ void ARRAY_create_with_size(void *p_data, size_t size, int inc)
 
   array->count = 0;
   array->max = 0;
-  array->size = size;
+  array->size = (int)size;
   if (size > 2 && (size & 3))
     fprintf(stderr, "WARNING: ARRAY_create_with_size: size = %zi\n", size);
   array->inc = inc;
@@ -85,11 +82,33 @@ void *ARRAY_add_data(void *p_data, int num, bool zero)
   return ptr;
 }
 
+void ARRAY_realloc(void *p_data, bool zero)
+{
+  void **data = (void **)p_data;
+  ARRAY *array = DATA_TO_ARRAY(*data);
+  ARRAY *new_array;
+	int old_max = array->max;
+	int size = array->size;
+	
+	array->max = array->inc + ((array->count + array->inc) / array->inc) * array->inc;
+	new_array = array;
+	REALLOC(&new_array, sizeof(ARRAY) + array->max * size, "ARRAY_realloc");
+  *data = ARRAY_TO_DATA(new_array);
+	//fprintf(stderr, "ARRAY_realloc: %p (%d) -> %p (%d) [%d]\n", array, old_max, new_array, new_array->max, size);
+	if (zero)
+	{
+		//fprintf(stderr, "ARRAY_realloc: memset(%p, 0, %d)\n", ARRAY_TO_DATA(new_array) + old_max * size, (new_array->max - old_max) * size);
+		memset(ARRAY_TO_DATA(new_array) + old_max * size, 0, (new_array->max - old_max) * size);
+	}
+}
+
+
 void *ARRAY_add_data_one(void *p_data, bool zero)
 {
   void **data = (void **)p_data;
   register ARRAY *array = DATA_TO_ARRAY(*data);
   ARRAY *new_array;
+	int size = array->size;
   char *ptr;
 
   array->count++;
@@ -98,14 +117,14 @@ void *ARRAY_add_data_one(void *p_data, bool zero)
   {
     array->max = array->inc + ((array->count + array->inc) / array->inc) * array->inc;
     new_array = array;
-    REALLOC(&new_array, sizeof(ARRAY) + array->max * array->size, "ARRAY_add_data_one");
+    REALLOC(&new_array, sizeof(ARRAY) + array->max * size, "ARRAY_add_data_one");
     array = new_array;
     *data = ARRAY_TO_DATA(array);
   }
 
-  ptr = (char *)array + sizeof(ARRAY) + array->size * (array->count - 1);
+  ptr = (char *)array + sizeof(ARRAY) + size * (array->count - 1);
   
-  if (zero) memset(ptr, 0, array->size);
+  if (zero) memset(ptr, 0, size);
 
   return ptr;
 }

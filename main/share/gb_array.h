@@ -27,7 +27,7 @@ typedef
   struct {
     int count;
     int max;
-    size_t size;
+    int size;
     int inc;
     }
   ARRAY;
@@ -47,11 +47,56 @@ void ARRAY_delete(void *p_data);
 #define ARRAY_size(_data) (DATA_TO_ARRAY(_data)->size)
 #define ARRAY_count(_data) ((_data) ? DATA_TO_ARRAY(_data)->count : 0)
 
+void ARRAY_realloc(void *p_data, bool zero);
+
 void *ARRAY_add_data(void *p_data, int num, bool zero);
 void *ARRAY_add_data_one(void *p_data, bool zero);
 
-#define ARRAY_add(_pdata) ARRAY_add_data_one(_pdata, FALSE)
-#define ARRAY_add_void(_pdata) ARRAY_add_data_one(_pdata, TRUE)
+#define ARRAY_add_one(_pdata, _zero) \
+({ \
+	ARRAY *array = DATA_TO_ARRAY(*(_pdata)); \
+	__typeof__(*(_pdata)) ptr; \
+	int old_count = array->count; \
+	\
+	array->count++; \
+	\
+	if (array->count <= array->max) \
+	{ \
+		ptr = *(_pdata) + old_count; \
+	} \
+	else \
+	{ \
+		ARRAY_realloc(_pdata, (_zero)); \
+		ptr = *(_pdata) + old_count; \
+	} \
+	ptr; \
+})
+
+/*#define ARRAY_add_one_size(_pdata, _zero) \
+({ \
+  ARRAY *array = DATA_TO_ARRAY(*(_pdata)); \
+  __typeof__(*(_pdata)) ptr; \
+  \
+  if (array->count < array->max) \
+	{ \
+		ptr = (void *)((char *)*(_pdata) + array->count * array->size); \
+		memset(ptr, 0, array->size); \
+		array->count++; \
+	} \
+	else \
+	{ \
+		array->count++; \
+		array = ARRAY_realloc(_pdata, (_zero)); \
+		ptr = (void *)((char *)*(_pdata) + (array->count - 1) * array->size); \
+	} \
+	ptr; \
+})*/
+
+#define ARRAY_add(_pdata) ARRAY_add_one(_pdata, FALSE)
+#define ARRAY_add_void(_pdata) ARRAY_add_one(_pdata, TRUE)
+#define ARRAY_add_size(_pdata) ARRAY_add_data_one(_pdata, FALSE)
+#define ARRAY_add_void_size(_pdata) ARRAY_add_data_one(_pdata, TRUE)
+
 #define ARRAY_add_many(_pdata, _num) ARRAY_add_data(_pdata, _num, FALSE)
 #define ARRAY_add_many_void(_pdata, _num) ARRAY_add_data(_pdata, _num, TRUE)
 

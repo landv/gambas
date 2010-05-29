@@ -346,7 +346,7 @@ const char *TABLE_get_symbol_name_suffix(TABLE *table, int index, const char* su
 void TABLE_create_static(TABLE *table, size_t size, TABLE_FLAG flag)
 {
 	ARRAY_create_with_size(&table->symbol, Max(size, sizeof(SYMBOL)), 64);
-	ARRAY_create(&table->sort);
+	ARRAY_create_with_size(&table->sort, sizeof(ushort), 64);
 	table->flag = flag;
 }
 
@@ -426,7 +426,7 @@ void TABLE_add_new_symbol_without_sort(TABLE *table, const char *name, int len, 
 
 	count = ARRAY_count(table->symbol);
 
-	sym = (SYMBOL *)ARRAY_add_void(&table->symbol);
+	sym = (SYMBOL *)ARRAY_add_void_size(&table->symbol);
 
 	sym->name = (char *)name;
 	sym->len = len;
@@ -456,7 +456,7 @@ bool TABLE_add_symbol(TABLE *table, const char *name, int len, int *index)
 
 	if (!result)
 	{
-		sym = (SYMBOL *)ARRAY_add_void(&table->symbol);
+		sym = (SYMBOL *)ARRAY_add_void_size(&table->symbol);
 
 		sym->name = (char *)name;
 		sym->len = len;

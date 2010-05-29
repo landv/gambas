@@ -836,7 +836,7 @@ static bool header_structure(void)
 	
   structure->index = PATTERN_index(*JOB->current);
   index = CLASS_add_class_exported(JOB->class, structure->index);
-	JOB->class->class[index].structure = TRUE; // Not used at the moment
+	JOB->class->class[index].structure = TRUE;
 
 //TABLE_copy_symbol_with_prefix(JOB->class->table, structure->index, '.', NULL, &structure->index);
 

@@ -492,6 +492,8 @@ bool TRANS_type(int mode, TRANS_DECL *result)
 		if (!PATTERN_is_class(*look))
 			THROW_UNEXPECTED(look);
 		value = TRANS_get_class(*look, FALSE);
+		if (!JOB->class->class[value].structure)
+			THROW("&1 is not a structure", TABLE_get_symbol_name(JOB->class->table, PATTERN_index(*look)));
 		look++;
 	}
 	else

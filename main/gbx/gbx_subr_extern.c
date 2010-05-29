@@ -126,23 +126,33 @@ void SUBR_strptr(void)
 {
   char *ptr;
   size_t len = 0;
+	bool err;
   
-  SUBR_ENTER_PARAM(1);
+  SUBR_ENTER();
   
   ptr = (char *)SUBR_get_pointer(PARAM);
-  
-  if (CHECK_strlen(ptr, &len))
-  {
-    RETURN->type = T_NULL;
-  }
-  else
-  { 
-    RETURN->type = T_CSTRING;
-    RETURN->_string.addr = ptr;
-    RETURN->_string.start = 0;
-    RETURN->_string.len = (int)len;
-  }
+	
+	if (NPARAM == 1)
+	{
+		err = CHECK_strlen(ptr, &len);
+	}
+	else
+	{
+		err = CHECK_address(ptr, SUBR_get_integer(&PARAM[1]));
+	}
     
+	if (err)
+	{
+		RETURN->type = T_NULL;
+	}
+	else
+	{ 
+		RETURN->type = T_CSTRING;
+		RETURN->_string.addr = ptr;
+		RETURN->_string.start = 0;
+		RETURN->_string.len = (int)len;
+	}
+	
   SUBR_LEAVE();
 }
 

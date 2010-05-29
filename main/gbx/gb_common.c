@@ -72,11 +72,16 @@ bool CHECK_address(void *ptr, size_t len)
 {
   offset_t i;
 
+	if (len < 0)
+		return TRUE;
+	
   CHECK_enter();
   if (sigsetjmp(CHECK_jump, TRUE) == 0)
   {
     for (i = 0; i < len; i += 1024)
       _dummy = ((int *)ptr)[i];
+    
+		_dummy = ((int *)ptr)[len >> 2];
   }
   CHECK_leave();
   return _got_error;

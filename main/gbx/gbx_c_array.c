@@ -1619,11 +1619,11 @@ static void add_entry()
 	if (!_entry)
 	{
 		if (!_novoid)
-			ARRAY_add_void(&_array->data);
+			ARRAY_add_void_size(&_array->data);
 	}
 	else
 	{
-		*((char **)ARRAY_add(&_array->data)) = _entry;
+		*((char **)ARRAY_add_size(&_array->data)) = _entry;
 		_entry = NULL;
 	}
 	

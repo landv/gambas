@@ -492,7 +492,7 @@ SUBR_INFO COMP_subr_info[] =
   { "Alloc",             84,  0,  1,  2 },
   { "Free",              85,  0,  1     },
   { "Realloc",           86,  0,  2,  3 },
-  { "StrPtr",            87,  0,  1     },
+  { "StrPtr",            87,  0,  1,  2 },
 
 #ifndef __EVAL_RESERVED_C
   { ".Sleep",            88,  0,  1     },

@@ -1,32 +1,32 @@
 # Gambas Form File 3.0
 
 { Report Report
-  #Move(0,0,384,384)
+  #MoveScaled(0,0,58,55)
   Padding = "2 cm"
   Spacing = "1.1 cm"
   { ReportLabel2 ReportLabel
-    #Move(54,6,264,36)
+    #MoveScaled(7.7143,0.8571,37.7143,5.1429)
     Height = "5 cm"
     Font = Font["+14"]
     Text = ("Base de donnée de test")
     Alignment = Align.Center
   }
   { ReportHBox1 ReportHBox
-    #Move(6,48,378,306)
+    #MoveScaled(0.8571,6.8571,54,43.7143)
     AutoResize = True
     { ReportVBox2 ReportVBox
-      #Move(6,54,18,60)
+      #MoveScaled(0.8571,7.7143,2.5714,8.5714)
       Expand = True
     }
     { ReportVBox1 ReportVBox
-      #Move(30,6,312,312)
+      #MoveScaled(4.2857,0.8571,44.5714,44.5714)
       AutoResize = True
       Spacing = "1 mm"
       { ReportHBox2 ReportHBox
-        #Move(18,48,264,36)
+        #MoveScaled(2.5714,6.8571,37.7143,5.1429)
         AutoResize = True
         { ReportLabel3 ReportLabel
-          #Move(6,6,72,24)
+          #MoveScaled(0.8571,0.8571,10.2857,3.4286)
           Width = "5 cm"
           Font = Font["12"]
           Padding = "0.2 mm"
@@ -35,7 +35,7 @@
           Alignment = Align.Center
         }
         { ReportLabel4 ReportLabel
-          #Move(84,6,72,24)
+          #MoveScaled(12,0.8571,10.2857,3.4286)
           Width = "5 cm"
           Font = Font["12"]
           Padding = "0.2 mm"
@@ -44,7 +44,7 @@
           Alignment = Align.Center
         }
         { ReportLabel5 ReportLabel
-          #Move(174,6,72,24)
+          #MoveScaled(24.8571,0.8571,10.2857,3.4286)
           Width = "5 cm"
           Font = Font["12"]
           Padding = "0.2 mm"
@@ -54,15 +54,15 @@
         }
       }
       { ReportVBox4 ReportVBox
-        #Move(12,96,288,108)
+        #MoveScaled(1.7143,13.7143,41.1429,15.4286)
         Height = "15 cm"
         AutoResize = True
         Border = ReportBorder["0.5 mm,&H000000&,Top"]
         { ReportHBox3 ReportHBox
-          #Move(0,24,264,36)
+          #MoveScaled(0,3.4286,37.7143,5.1429)
           Height = "1 cm"
           { ReportLabel1 ReportLabel
-            #Move(12,6,72,24)
+            #MoveScaled(1.7143,0.8571,10.2857,3.4286)
             Width = "5 cm"
             Font = Font["12"]
             Padding = "0.1 mm"
@@ -71,7 +71,7 @@
             Key = "name"
           }
           { ReportLabel6 ReportLabel
-            #Move(99,6,72,24)
+            #MoveScaled(14.1429,0.8571,10.2857,3.4286)
             Width = "5 cm"
             Font = Font["12"]
             Padding = "0.1 mm"
@@ -80,7 +80,7 @@
             Key = "firstname"
           }
           { ReportLabel7 ReportLabel
-            #Move(180,6,72,24)
+            #MoveScaled(25.7143,0.8571,10.2857,3.4286)
             Width = "5 cm"
             Font = Font["12"]
             Border = ReportBorder["0.5 mm,&H000000&,Right"]
@@ -92,33 +92,33 @@
         }
       }
       { ReportHBox4 ReportHBox
-        #Move(12,222,264,36)
+        #MoveScaled(1.7143,31.7143,37.7143,5.1429)
         Height = "1 cm"
         AutoResize = True
         { ReportVBox5 ReportVBox
-          #Move(6,6,78,24)
+          #MoveScaled(0.8571,0.8571,11.1429,3.4286)
           Width = "5 cm"
           Border = ReportBorder["0.5 mm,&H000000&,Right,Bottom,Left"]
         }
         { ReportVBox6 ReportVBox
-          #Move(96,6,78,24)
+          #MoveScaled(13.7143,0.8571,11.1429,3.4286)
           Width = "5 cm"
           Border = ReportBorder["0.5 mm,&H000000&,Right,Bottom"]
         }
         { ReportVBox7 ReportVBox
-          #Move(180,6,78,24)
+          #MoveScaled(25.7143,0.8571,11.1429,3.4286)
           Width = "5 cm"
           Border = ReportBorder["0.5 mm,&H000000&,Right,Bottom"]
         }
       }
     }
     { ReportVBox3 ReportVBox
-      #Move(348,60,24,66)
+      #MoveScaled(49.7143,8.5714,3.4286,9.4286)
       Expand = True
     }
   }
   { ReportLabel8 ReportLabel
-    #Move(42,360,324,18)
+    #MoveScaled(6,51.4286,46.2857,2.5714)
     AutoResize = True
     Text = ("$NPAGE")
     Alignment = Align.Right

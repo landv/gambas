@@ -26,8 +26,21 @@
 #define write_Z8xx(code, val)  write_short(code | ((short)val & 0x07FF))
 #define write_ZZxx(code, val)  write_short(code | ((short)val & 0x00FF))
 
-#define LAST_CODE start_code()
-
+#ifndef PROJECT_EXEC
+#define LAST_CODE \
+{ \
+  if (JOB->debug && !JOB->nobreak) \
+    CODE_break(); \
+  cur_func->last_code2 = cur_func->last_code; \
+  cur_func->last_code = cur_func->ncode; \
+}
+#else
+#define LAST_CODE \
+{ \
+  cur_func->last_code2 = cur_func->last_code; \
+  cur_func->last_code = cur_func->ncode; \
+}
+#endif
 
 short CODE_stack_usage;
 short CODE_stack;
@@ -97,16 +110,6 @@ static void CODE_break(void)
 }
 
 #endif
-
-static void start_code(void)
-{
-  #ifndef PROJECT_EXEC
-  if (JOB->debug && !JOB->nobreak)
-    CODE_break();
-  #endif
-  cur_func->last_code2 = cur_func->last_code;
-  cur_func->last_code = cur_func->ncode;
-}
 
 
 static void write_int(int value)
