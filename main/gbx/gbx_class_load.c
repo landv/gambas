@@ -593,7 +593,7 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
 
   if (class->debug)
   {
-    class->load->global = (GLOBAL_SYMBOL *)get_section("debug global", &section, &class->load->n_global, _s _s _p _c _i );
+    class->load->global = (GLOBAL_SYMBOL *)get_section("debug global", &section, &class->load->n_global, _p _i _c _i );
     class->load->sort = (ushort *)get_section("debug global sort", &section, NULL, _s);
     #ifdef OS_64BITS
     class->load->debug =
@@ -615,7 +615,7 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
     for (i = 0; i < class->load->n_func; i++)
     {
       func = &class->load->func[i];
-      func->debug->local = (LOCAL_SYMBOL *)get_section("debug local", &section, &func->debug->n_local, _s _s _p _i );
+      func->debug->local = (LOCAL_SYMBOL *)get_section("debug local", &section, &func->debug->n_local, _p _i _i );
     }
   }
 
