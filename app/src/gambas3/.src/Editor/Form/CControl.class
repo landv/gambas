@@ -1355,6 +1355,16 @@ Private Function GetCoord(iCoord As Integer, Optional bDim As Boolean) As Float
 
 End
 
+Private Sub FormatScaledCoord(eCoord As Float) As String
+  
+  If eCoord = Int(eCoord) Then
+    Return CStr(Int(eCoord))
+  Else
+    Return CStr(Int(eCoord)) & "." & Mid$(Format(Frac(eCoord), ".####"), 2)
+  Endif
+  
+End
+
 
 Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale As Boolean) As String[]
 
@@ -1505,8 +1515,8 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
   
     Else
   
-      sLine = "MoveScaled(" & Format(GetCoord(X), "0.####") & "," & Format(GetCoord(Y), "0.####")
-      If bHasSize Then sLine = sLine & "," & Format(GetCoord(W, True), "0.####") & "," & Format(GetCoord(H, True), "0.####")
+      sLine = "MoveScaled(" & FormatScaledCoord(GetCoord(X)) & "," & FormatScaledCoord(GetCoord(Y))
+      If bHasSize Then sLine = sLine & "," & FormatScaledCoord(GetCoord(W, True)) & "," & FormatScaledCoord(GetCoord(H, True))
       sLine = sLine & ")"
   
     Endif

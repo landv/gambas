@@ -1962,7 +1962,11 @@ Private Sub ResetSave()
   $iSaveY = 0
   '$iIndent  = 0
   $iSaveLevel = 0
-  $bScaled = RootControl.GetPropertyDefault(CPropertyInfo.SCALE_NAME)
+  If $hFamily.AllowScaledProperty Then
+    $bScaled = RootControl.GetPropertyDefault(CPropertyInfo.SCALE_NAME)
+  Else
+    $bScaled = True
+  Endif
   $cAction = New Collection
   $cToolbar = New Collection
 
