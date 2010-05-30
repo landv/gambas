@@ -2,7 +2,7 @@
 
 { Report Report
   #MoveScaled(0,0,58,55)
-  Padding = "2 cm"
+  Padding = "1 cm"
   Spacing = "1.1 cm"
   { ReportLabel2 ReportLabel
     #MoveScaled(7.7143,0.8571,37.7143,5.1429)
@@ -13,14 +13,11 @@
   }
   { ReportHBox1 ReportHBox
     #MoveScaled(0.8571,6.8571,54,43.7143)
+    Expand = True
     AutoResize = True
-    { ReportVBox2 ReportVBox
-      #MoveScaled(0.8571,7.7143,2.5714,8.5714)
-      Expand = True
-    }
     { ReportVBox1 ReportVBox
-      #MoveScaled(4.2857,0.8571,44.5714,44.5714)
-      AutoResize = True
+      #MoveScaled(6,1,44.5714,44.5714)
+      Expand = True
       Spacing = "1 mm"
       { ReportHBox2 ReportHBox
         #MoveScaled(2.5714,6.8571,37.7143,5.1429)
@@ -48,6 +45,7 @@
           Width = "5 cm"
           Font = Font["12"]
           Padding = "0.2 mm"
+          Expand = True
           Border = ReportBorder["0.5 mm,&H000000&,Right,Top,Bottom"]
           Text = ("Birth")
           Alignment = Align.Center
@@ -56,7 +54,6 @@
       { ReportVBox4 ReportVBox
         #MoveScaled(1.7143,13.7143,41.1429,15.4286)
         Height = "15 cm"
-        AutoResize = True
         Border = ReportBorder["0.5 mm,&H000000&,Top"]
         { ReportHBox3 ReportHBox
           #MoveScaled(0,3.4286,37.7143,5.1429)
@@ -83,6 +80,7 @@
             #MoveScaled(25.7143,0.8571,10.2857,3.4286)
             Width = "5 cm"
             Font = Font["12"]
+            Expand = True
             Border = ReportBorder["0.5 mm,&H000000&,Right"]
             Text = ("ReportLabel1")
             Key = "birth"
@@ -108,19 +106,16 @@
         { ReportVBox7 ReportVBox
           #MoveScaled(25.7143,0.8571,11.1429,3.4286)
           Width = "5 cm"
+          Expand = True
           Border = ReportBorder["0.5 mm,&H000000&,Right,Bottom"]
         }
       }
-    }
-    { ReportVBox3 ReportVBox
-      #MoveScaled(49.7143,8.5714,3.4286,9.4286)
-      Expand = True
     }
   }
   { ReportLabel8 ReportLabel
     #MoveScaled(6,51.4286,46.2857,2.5714)
     AutoResize = True
-    Text = ("$NPAGE")
+    Text = ("$PAGE")
     Alignment = Align.Right
     UseField = True
   }

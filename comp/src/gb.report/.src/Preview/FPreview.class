@@ -1,6 +1,7 @@
 ' Gambas class file
 Static Private $hreport As Report
 Private $fScale As Float = 1
+Private $iPage As Integer = 1
 'Private hPrinter As New Printer
 Static Public Function Run(hReport As Report)
   Dim hFPreview As FPreview
@@ -29,8 +30,8 @@ End
 Public Sub DrawingArea1_Draw()
 
   $hreport.Scale = $fScale
-  $hreport.Paint(1)
-
+  $hreport.Paint($iPage)
+  SpinBox1.MaxValue = $hreport.Count
 End
 
 Public Sub Form_Open()
@@ -141,7 +142,7 @@ End
 
 Public Sub Printer1_Draw()
 
-  $hreport.Paint(1)
+  $hreport.Paint($iPage)
 
 End
 
@@ -168,5 +169,12 @@ End
 Public Sub btnZNorm_Click()
   btnAdjust.Value = False
   Slider1.Value = 100
+
+End
+
+Public Sub SpinBox1_Change()
+
+  $iPage = Last.Value
+  DrawingArea1.Refresh
 
 End

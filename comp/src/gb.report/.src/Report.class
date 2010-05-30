@@ -103,7 +103,7 @@ Public Sub Paint(Page As Integer)
   If page < 1 Or page > $iCount Then 
     Error.Raise("This page does not exist")
   Endif
-  Dec page
+  'Dec page
   
   'Paint.Clip
   MTools.DrawCount = 0

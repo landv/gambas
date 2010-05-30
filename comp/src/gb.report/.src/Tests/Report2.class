@@ -8,7 +8,13 @@ Public Sub _new()
   hCon.Type = "mysql"
   hCon.User = "root"
   hCon.Name = "test"
-  hresult = db.Limit(100).Exec("SELECT * FROM test")
+  hresult = db.Limit(300).Exec("SELECT * FROM test")
   Print hresult.Count
   ReportHBox3.Data = hresult
+End
+
+Public Sub Report2_Data()
+
+  
+
 End
