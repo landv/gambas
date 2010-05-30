@@ -447,6 +447,12 @@ int libsmtp_int_nextpart (struct libsmtp_session_struct *libsmtp_session)
 						if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 1))
 							return LIBSMTP_ERRORSENDFATAL;
 					}
+
+					/* Adds a blank line */
+					g_string_assign (libsmtp_temp_gstring, "\r\n");
+					
+					if (libsmtp_int_send(libsmtp_temp_gstring, libsmtp_session, 1))
+						return LIBSMTP_ERRORSENDFATAL;
         }
       }
 
