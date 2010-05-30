@@ -75,6 +75,7 @@ StringList SDLfont::GetFontList(void )
 SDLfont::SDLfont()
 {
 	hfonttype = X_font;
+	hXfont = 0;
 }
 
 SDLfont::SDLfont(char *fontfile)
@@ -94,6 +95,9 @@ SDLfont::~SDLfont()
 {
 	if ((hfonttype == SDLTTF_font) && hSDLfont)
 		TTF_CloseFont(hSDLfont);
+
+	if ((hfonttype == SDLTTF_font) && hXfont)
+		XftFontClose(SDLapp->X11appDisplay(), hXfont);
 }
 
 void SDLfont::SetFontName(char* name)

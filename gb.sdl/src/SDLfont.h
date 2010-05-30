@@ -70,7 +70,10 @@ private:
 	/* SDL_TTF font */
 	TTF_Font *hSDLfont;
         int hSDLfontstyle;
-
+	
+	/* System font */
+	XftFont *hXfont;
+	XftColor Background, Foreground;
 };
 
 #endif /* _SDLFONT_H */

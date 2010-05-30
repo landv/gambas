@@ -438,6 +438,7 @@ void SDLgfx::Blit(SDLsurface *surface, int x, int y, int srcX, int srcY,
 
 	texinfo info;
 
+	glPushAttrib(GL_ENABLE_BIT);
 	SDLtexture *texture = surface->GetTexture();
 	texture->GetAsTexture(&info);
 
@@ -487,6 +488,7 @@ void SDLgfx::Blit(SDLsurface *surface, int x, int y, int srcX, int srcY,
 	glVertex2f(myWidth, -myHeight);
 	glEnd();
 	
+	glPopAttrib();
 	glLoadIdentity();
 }
 
