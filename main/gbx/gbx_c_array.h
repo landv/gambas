@@ -35,9 +35,10 @@
 typedef
   struct {
     OBJECT object;
+		int mode;
+		int count;
     TYPE type;
     void *data;
-		int count;
     int *dim;
 		void *ref;
     }

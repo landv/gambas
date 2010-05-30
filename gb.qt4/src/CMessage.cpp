@@ -195,23 +195,23 @@ static int make_message(int type, int nbmax, void *_param)
 	{
 		case MSG_INFO:
 			icon = QMessageBox::Information;
-			stock = "icon:/32/info";
+			stock = "icon:/48/info";
 			break;
 		case MSG_WARNING:
 			icon = QMessageBox::Warning;
-			stock = "icon:/32/warning";
+			stock = "icon:/48/warning";
 			break;
 		case MSG_ERROR:
 			icon = QMessageBox::Critical;
-			stock = "icon:/32/error";
+			stock = "icon:/48/error";
 			break;
 		case MSG_QUESTION:
-			icon = QMessageBox::Information;
-			stock = "icon:/32/question";
+			icon = QMessageBox::Question;
+			stock = "icon:/48/question";
 			break;
 		case MSG_DELETE:
-			icon = QMessageBox::Information;
-			stock = "icon:/32/trash";
+			icon = QMessageBox::Warning;
+			stock = "icon:/48/trash";
 			break;
 		default:
 			icon = QMessageBox::Information;

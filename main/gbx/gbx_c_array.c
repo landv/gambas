@@ -385,6 +385,11 @@ BEGIN_METHOD(CARRAY_new, GB_INTEGER size)
 		return;
 	}
 
+	if (TYPE_is_object(type))
+		THIS->mode = T_OBJECT;
+	else
+		THIS->mode = (int)type;
+
 	//printf("CARRAY_new: type = %d nsize = %d\n", type, nsize);
 
 	THIS->type = type;
