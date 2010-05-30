@@ -35,7 +35,7 @@ typedef
 
 static GList *menus=NULL;
 
-static void mnu_destroy (GtkWidget *object,gMenu *data)
+static void mnu_destroy (GtkWidget *object, gMenu *data)
 {
 	if (data->stop_signal) 
 		data->stop_signal = false; 
@@ -43,7 +43,7 @@ static void mnu_destroy (GtkWidget *object,gMenu *data)
 		delete data;
 }
 
-static void mnu_activate(GtkMenuItem *menuitem,gMenu *data)
+static void mnu_activate(GtkMenuItem *menuitem, gMenu *data)
 {
 	if (data->onClick) data->onClick(data);
 }
@@ -117,7 +117,6 @@ static gboolean cb_check_expose(GtkWidget *wid, GdkEventExpose *e, gMenu *menu)
 
 void gMenu::update()
 {
-	GtkWidget *hbox;
 	GtkMenuShell *shell = NULL;
 	gint pos;
 	GtkRequisition req;
@@ -163,10 +162,11 @@ void gMenu::update()
 			}
 			else if (_style == MENU)
 			{
-				menu = (GtkMenuItem *)gtk_menu_item_new();
+				menu = (GtkMenuItem *)gtk_image_menu_item_new();
 				//g_debug("%p: create new menu %p", this, menu);
 				
 				hbox = gtk_hbox_new(false, 4);
+				set_gdk_bg_color(hbox, 0xFF0000);
 				gtk_container_add(GTK_CONTAINER(menu), GTK_WIDGET(hbox));
 				
 				label = gtk_label_new_with_mnemonic("");
@@ -175,24 +175,24 @@ void gMenu::update()
 				if (!top_level)
 				{
 					image = gtk_image_new();
+					g_object_ref(image);
 					
 					aclbl = gtk_label_new("");
 					gtk_misc_set_alignment(GTK_MISC(aclbl), 0, 0.5);
 					gtk_size_group_add_widget(((gMenu*)pr)->sizeGroup, aclbl);
 					
 					check = gtk_image_new();
+					g_object_ref(check);
 					gtk_widget_set_size_request(check, 16, 16);
 					g_signal_connect_after(G_OBJECT(check), "expose-event", G_CALLBACK(cb_check_expose), (gpointer)this);
-				
-					gtk_box_pack_start(GTK_BOX(hbox), check, false, false, 0);
-					gtk_box_pack_start(GTK_BOX(hbox), image, false, false, 0);
+					
+					//gtk_box_pack_start(GTK_BOX(hbox), check, false, false, 0);
+					//gtk_box_pack_start(GTK_BOX(hbox), image, false, false, 0);
 					gtk_box_pack_start(GTK_BOX(hbox), label, false, false, 0);
 					gtk_box_pack_end(GTK_BOX(hbox), aclbl, false, false, 0);				
 				}
 				else
 				{
-					check = NULL;
-					image = NULL;
 					aclbl = NULL;
 					gtk_box_pack_start(GTK_BOX(hbox), label, false, false, 0);
 				}
@@ -289,19 +289,30 @@ void gMenu::update()
 		
 		if (!top_level)
 		{
-			GdkPixbuf *buf;
-			buf = _picture ? _picture->getPixbuf() : 0;
-			gtk_image_set_from_pixbuf(GTK_IMAGE(image), buf);
+			if (!_picture && !_checked)
+			{
+				gtk_image_set_from_pixbuf(GTK_IMAGE(image), NULL);
+				gtk_image_menu_item_set_image((GtkImageMenuItem *)menu, image);
+			}
+			else if (_checked)
+			{
+				gtk_image_menu_item_set_image((GtkImageMenuItem *)menu, check);
+			}
+			else
+			{
+				gtk_image_set_from_pixbuf(GTK_IMAGE(image), _picture ? _picture->getPixbuf() : NULL);
+				gtk_image_menu_item_set_image((GtkImageMenuItem *)menu, image);
+			}
 			
-			if (buf)
+			/*if (buf)
 				gtk_widget_show(image);
 			else
-				gtk_widget_hide(image);
+				gtk_widget_hide(image);*/
 				
-			if (_checked || !buf)
+			/*if (_checked || !buf)
 				gtk_widget_show(check);
 			else
-				gtk_widget_hide(check);			
+				gtk_widget_hide(check);*/
 		}
 		else
 		{
@@ -436,6 +447,12 @@ gMenu::~gMenu()
 	_style = NOTHING;
 	
 	stop_signal = true;
+	
+	if (image)
+		gtk_widget_destroy(GTK_WIDGET(image));
+		
+	if (check)
+		gtk_widget_destroy(GTK_WIDGET(check));
 		
 	if (menu)
 		gtk_widget_destroy(GTK_WIDGET(menu));

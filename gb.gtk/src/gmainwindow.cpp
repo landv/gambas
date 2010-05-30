@@ -110,8 +110,9 @@ static gboolean cb_configure(GtkWidget *widget, GdkEventConfigure *event, gMainW
 			if (data->onMove) data->onMove(data);
 		}
 		
-		if ( (event->width!=data->bufW) || (event->height!=data->bufH) || (data->_resized) || !event->window )
+		if ((event->width != data->bufW) || (event->height != data->bufH) || (data->_resized) || !event->window)
 		{
+			//fprintf(stderr, "cb_configure: %d %d\n", event->width, event->height);
 			data->_next_w = event->width;
 			data->_next_h = event->height;
 /*			data->bufW=event->width;
@@ -383,13 +384,17 @@ void gMainWindow::resize(int w, int h)
 		}
 		else
 		{
+			//fprintf(stderr, "resize: %d %d (%d)\n", w, h, gtk_window_get_resizable(GTK_WINDOW(border)));
 			if (gtk_window_get_resizable(GTK_WINDOW(border)))
-				gtk_window_resize(GTK_WINDOW(border),w,h);
+				gtk_window_resize(GTK_WINDOW(border),w, h);
 			else
 				gtk_widget_set_size_request(border, w, h);
 				
 			if (visible)
 				gtk_widget_show(border);
+			
+			bufW = w;
+			bufH = h;
 		}
 	}
 	else
@@ -625,13 +630,15 @@ void gMainWindow::setResizable(bool b)
 	
 	if (b == isResizable())
 		return;
-		
-	gtk_window_set_resizable(GTK_WINDOW(border), b);
+	
+	//fprintf(stderr, "setResizable: %d %d %d\n", b, bufW, bufH);
 	
 	if (b)
 		gtk_widget_set_size_request(border, 1, 1);
 	else
 		gtk_widget_set_size_request(border, bufW, bufH);
+
+	gtk_window_set_resizable(GTK_WINDOW(border), b);
 }
 
 

@@ -88,6 +88,7 @@ public:
 	GtkAccelGroup *accel;
 	GtkMenu *child;
 	GtkMenuItem *menu;
+	GtkWidget *hbox;
 	GtkWidget *label;
 	GtkWidget *aclbl;
 	GtkWidget *image;
