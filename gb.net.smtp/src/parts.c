@@ -235,6 +235,19 @@ int libsmtp_mime_subtype_custom (char *libsmtp_int_custom_subtype, \
   return LIBSMTP_NOERR;
 }
 
+void libsmtp_set_boundary(struct libsmtp_part_struct *part, int index)
+{
+	static char pattern[33];
+	static char digits[] = "0123456789ABCDEF";
+	int i;
+	
+	for(i = 0; i < 32; i++)
+		pattern[i] = digits[(random() >> 4) & 0xF];
+	
+	pattern[32] = 0;
+
+	g_string_sprintf(part->Boundary, "----%s%02d", pattern, index);
+}
 
 /* We use this function internally to set the session to the next part to
    send. This function relies on the caller to check that all arguments
@@ -263,7 +276,7 @@ int libsmtp_int_nextpart (struct libsmtp_session_struct *libsmtp_session)
     if (libsmtp_session->PartNow->Type == LIBSMTP_MIME_MULTIPART)
     {
       g_string_assign (libsmtp_temp_gstring, \
-         "This is a MIME multipart message. Your mail reader isn't MIME capable.\r\nYou might not be able to read parts or all of this message.\r\n");
+         "This is a MIME multipart message.\r\n");
 
       if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 2))
         return LIBSMTP_ERRORSENDFATAL;
@@ -354,9 +367,7 @@ int libsmtp_int_nextpart (struct libsmtp_session_struct *libsmtp_session)
         if (libsmtp_temp_part->Boundary->len == 0)
         {
           /* No, we really should set that */
-          g_string_sprintf (libsmtp_temp_part->Boundary,
-             "----_=_libsmtp_Nextpart__000_000007DA.3B95D19_%d",
-             g_node_depth (libsmtp_session->PartNowNode));
+					libsmtp_set_boundary(libsmtp_temp_part, g_node_depth (libsmtp_session->PartNowNode));
 
 					#ifdef LIBSMTP_DEBUG
 						printf ("libsmtp_int_nextpart: Part %s is Multipart, Setting boundary to '%s'\n", libsmtp_temp_part->Description->str, libsmtp_temp_part->Boundary->str);
@@ -374,7 +385,7 @@ int libsmtp_int_nextpart (struct libsmtp_session_struct *libsmtp_session)
           libsmtp_temp_now=libsmtp_session->PartNowNode->parent;
           libsmtp_temp_part=libsmtp_temp_now->data;
 
-          g_string_sprintf (libsmtp_temp_gstring, "\r\n\r\n\r\n--%s\r\n", \
+          g_string_sprintf (libsmtp_temp_gstring, "\r\n\r\n--%s\r\n", \
              libsmtp_temp_part->Boundary->str);
 
           #ifdef LIBSMTP_DEBUG
@@ -468,6 +479,12 @@ int libsmtp_int_nextpart (struct libsmtp_session_struct *libsmtp_session)
 						if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 1))
 							return LIBSMTP_ERRORSENDFATAL;
 					}
+					
+					/* Adds a blank line */
+					g_string_assign (libsmtp_temp_gstring, "\r\n");
+					
+					if (libsmtp_int_send(libsmtp_temp_gstring, libsmtp_session, 1))
+						return LIBSMTP_ERRORSENDFATAL;
         }
       }
 

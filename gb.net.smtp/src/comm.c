@@ -163,8 +163,7 @@ int libsmtp_mime_headers (struct libsmtp_session_struct *libsmtp_session)
 
     if (libsmtp_temp_part->Type==LIBSMTP_MIME_MULTIPART)
     {
-      g_string_assign (libsmtp_temp_part->Boundary, \
-             "----_=_libsmtp_Nextpart__000_000007DA.3B95D19_1");
+			libsmtp_set_boundary(libsmtp_temp_part, 0);
 
       #ifdef LIBSMTP_DEBUG
         printf ("libsmtp_mime_headers: %s", libsmtp_temp_part->Boundary->str);
