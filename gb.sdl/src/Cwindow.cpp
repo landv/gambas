@@ -375,9 +375,9 @@ void myWin::Open(void)
 		// enable blending, should work like 2d sdl does
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		// enable anti-aliasing
+//		enable anti-aliasing
 		glEnable(GL_POINT_SMOOTH);
-		glEnable(GL_LINE_SMOOTH);
+//		glEnable(GL_LINE_SMOOTH);
 		glMatrixMode(GL_MODELVIEW);
 	}	
 
