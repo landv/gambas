@@ -625,6 +625,7 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
   int exp_zero;
 
   int number_sign;
+	uint64_t mantisse;
   double number_mant;
   int number_exp;
   int number_real_exp;
@@ -645,10 +646,10 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 
     case LF_STANDARD:
     case LF_GENERAL_NUMBER:
-      if ((number != 0.0) && ((fabs(number) < 1E-4) || (fabs(number) >= 1E7)))
-        fmt = "0.#################E+#";
+      if ((number != 0.0) && ((fabs(number) < 1E-4) || (fabs(number) >= 1E10)))
+        fmt = "0.################E+#";
       else
-        fmt = "0.#################";
+        fmt = "0.################";
       break;
 
     case LF_FIXED:
@@ -660,7 +661,7 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
       break;
 
     case LF_SCIENTIFIC:
-      fmt = "0.##################E+#";
+      fmt = "0.#################E+#";
       break;
 
     case LF_CURRENCY:
@@ -905,9 +906,15 @@ _FORMAT:
   }
 
 
-  /* le nombre */
+  /* the number */
 
   number_mant = frexp10(fabs(number), &number_exp);
+	ndigit = MinMax(after + number_exp, 0, DBL_DIG);
+	mantisse = number_mant * pow(10, ndigit + 1);
+	if ((mantisse % 10) >= 5)
+		mantisse += 10;
+	mantisse /= 10;
+	ndigit = sprintf(buf, "0.%" PRId64, mantisse);
 
   /* 0.0 <= number_mant < 1.0 */
 
@@ -917,8 +924,22 @@ _FORMAT:
   if (exposant)
     number_exp = number != 0.0;
 
+	#if 0
 	// FIXME: Format(0.25, "0.0") -> 0.2, but Format(0.45, "0.0") -> 0.5
-  ndigit = snprintf(buf, sizeof(buf), "%.*f", MinMax(after + number_exp, 0, DBL_DIG + 1), number_mant);
+  //ndigit = snprintf(buf, sizeof(buf), "%.*f", MinMax(after + number_exp, 0, DBL_DIG + 1), number_mant);
+	n = MinMax(after + number_exp, 0, DBL_DIG + 1);
+	ndigit = n + 2;
+	buf_start = buf;
+	*buf_start++ = '0';
+	*buf_start++ = '.';
+	while (n)
+	{
+		number_mant *= 10;
+		number_mant = modf(number_mant, &int_mant);
+		*buf_start++ = '0' + (int)int_mant;
+		n--;
+	}
+	#endif
 
   // should return "0[.]...", or "1[.]..." if the number is rounded up.
 

@@ -166,10 +166,12 @@ static bool read_float(double *result, bool local)
   char thsep;
 	int ndigit_thsep;
 	bool first_thsep;
-	int c;
+	int c, n;
 
-  double nint;
-  double nfrac, n;
+	uint64_t mantisse;
+	int ndigit_frac;
+	bool frac;
+
   int nexp;
   bool nexp_minus;
 
@@ -182,27 +184,43 @@ static bool read_float(double *result, bool local)
 		first_thsep = FALSE;
 	}
 
-  nint = 0.0;
-  nfrac = 0.0;
-  nexp = 0;
-  nexp_minus = FALSE;
-
 	c = last_char();
 	
-  /* Integer part */
+  /* Integer and decimal part */
 
+	n = 0;
+	mantisse = 0;
+	frac = FALSE;
+	ndigit_frac = 0;
+	
   for(;;)
   {
     if (c == point)
     {
+    	if (frac)
+    		break;
       c = get_char();
-      break;
+			frac = TRUE;
     }
 
     if (!isdigit(c) || (c < 0))
-      return TRUE;
+      break;
+		
+    n++;
+    if (n > DBL_DIG)
+		{
+			if (n == (DBL_DIG + 1) && (c >= '5'))
+				mantisse++;
+			if (!frac)
+				ndigit_frac--;
+			c = get_char();
+			continue;
+		}
 
-    nint = nint * 10 + (c - '0');
+    mantisse = mantisse * 10 + (c - '0');
+		
+		if (frac)
+			ndigit_frac++;
 		
 		if (local)
 			ndigit_thsep++;
@@ -228,19 +246,26 @@ static bool read_float(double *result, bool local)
 
   /* Decimal part */
 
-	n = 0.1;
+	/*pos = COMMON_pos;
+	n = 0;
+	p10 = 1;
 	for(;;)
 	{
 		if (!isdigit(c) || (c < 0))
 			break;
-
-		nfrac += n * (c - '0');
-		n /= 10;
-
+		n++;
+		if (n > DBL_DIG)
+			break;
+		p10 *= 10;
 		c = get_char();
 	}
+	
+	COMMON_pos = pos;*/
 
   /* Exponent */
+
+  nexp = 0;
+  nexp_minus = FALSE;
 
   if (c == 'e' || c == 'E')
   {
@@ -267,6 +292,9 @@ static bool read_float(double *result, bool local)
       if (!isdigit(c) || (c < 0))
         break;
     }
+		
+		if (nexp_minus)
+			nexp = (-nexp);
   }
 
   if (c >= 0 && !isspace(c))
@@ -277,7 +305,10 @@ __END:
 	if (local && first_thsep && ndigit_thsep != 3)
 		return TRUE;
 
-	*result = (nint + nfrac) * pow(10, nexp_minus ? (-nexp) : nexp);
+	//*result = (nint + nfrac) * pow(10, nexp_minus ? (-nexp) : nexp);
+	
+	nexp -= ndigit_frac;
+	*result = ((double)mantisse * pow(10, nexp));
 
   return FALSE;
 }
