@@ -105,8 +105,8 @@ __DATE:
 
 __STRING:
 
-  VALUE_conv(P1, T_STRING);
-  VALUE_conv(P2, T_STRING);
+  VALUE_conv_string(P1);
+  VALUE_conv_string(P2);
 
   if (P1->_string.len != P2->_string.len)
   	result = 0 STT_TEST 1;
@@ -123,16 +123,16 @@ __STRING:
 
 __SINGLE:
 
-  VALUE_conv(P1, T_FLOAT);
-  VALUE_conv(P2, T_FLOAT);
+  VALUE_conv_float(P1);
+  VALUE_conv_float(P2);
 
   result = fabs(P1->_float.value - P2->_float.value) <= 1E-6 * fabs(P1->_float.value + P2->_float.value);
   goto __END;
   
 __FLOAT:
 
-  VALUE_conv(P1, T_FLOAT);
-  VALUE_conv(P2, T_FLOAT);
+  VALUE_conv_float(P1);
+  VALUE_conv_float(P2);
 
   result = fabs(P1->_float.value - P2->_float.value) <= 1E-12 * fabs(P1->_float.value + P2->_float.value);
   goto __END;
@@ -142,8 +142,8 @@ __FLOAT:
 __SINGLE:
 __FLOAT:
 
-  VALUE_conv(P1, T_FLOAT);
-  VALUE_conv(P2, T_FLOAT);
+  VALUE_conv_float(P1);
+  VALUE_conv_float(P2);
 
   result = P1->_float.value STT_TEST P2->_float.value;
   goto __END;
@@ -268,8 +268,8 @@ __DATE:
 
 __NULL:
 
-  VALUE_conv(P1, T_STRING);
-  VALUE_conv(P2, T_STRING);
+  VALUE_conv_string(P1);
+  VALUE_conv_string(P2);
 
 __STRING:
 
@@ -280,8 +280,8 @@ __STRING:
 __SINGLE:
 __FLOAT:
 
-  VALUE_conv(P1, T_FLOAT);
-  VALUE_conv(P2, T_FLOAT);
+  VALUE_conv_float(P1);
+  VALUE_conv_float(P2);
 
   result = P1->_float.value STT_TEST P2->_float.value;
   goto __END;

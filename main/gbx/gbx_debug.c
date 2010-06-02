@@ -382,7 +382,7 @@ int DEBUG_get_object_access_type(void *object, CLASS *class, int *count)
     RP->type = T_VOID;
   }
 
-	VALUE_conv(&TEMP, GB_T_INTEGER);
+	VALUE_conv_integer(&TEMP);
 	*count = TEMP._integer.value;
 	return access;
 

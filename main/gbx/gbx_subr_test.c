@@ -68,7 +68,7 @@ void SUBR_bit(void)
 
 	n = nbits[type];
 
-  VALUE_conv(&PARAM[1], T_INTEGER);
+  VALUE_conv_integer(&PARAM[1]);
   bit = PARAM[1]._integer.value;
 
   if ((bit < 0) || (bit >= n))
@@ -359,7 +359,7 @@ void SUBR_if(void)
 	TYPE type;
   SUBR_ENTER_PARAM(3);
 
-  VALUE_conv(PARAM, T_BOOLEAN);
+  VALUE_conv_boolean(PARAM);
 
 	switch (EXEC_code & 0x1F)
 	{
@@ -411,7 +411,7 @@ void SUBR_choose(void)
 
   SUBR_ENTER();
 
-  VALUE_conv(PARAM, T_INTEGER);
+  VALUE_conv_integer(PARAM);
   val = PARAM->_integer.value;
 
   if (val >= 1 && val <= NPARAM)
@@ -525,8 +525,8 @@ __STRING:
 __SINGLE:
 __FLOAT:
 
-	VALUE_conv(P1, T_FLOAT);
-	VALUE_conv(P2, T_FLOAT);
+	VALUE_conv_float(P1);
+	VALUE_conv_float(P2);
 
 	result = P1->_float.value == P2->_float.value;
 	goto __END;
@@ -668,8 +668,8 @@ __STRING:
 __SINGLE:
 __FLOAT:
 
-	VALUE_conv(P1, T_FLOAT);
-	VALUE_conv(P2, T_FLOAT);
+	VALUE_conv_float(P1);
+	VALUE_conv_float(P2);
 
 	result = P1->_float.value > P2->_float.value ? 1 : P1->_float.value < P2->_float.value ? -1 : 0;
 	goto __END;
@@ -883,8 +883,8 @@ __LONG:
 
 __FLOAT:
 
-  VALUE_conv(P1, T_FLOAT);
-  VALUE_conv(P2, T_FLOAT);
+  VALUE_conv_float(P1);
+  VALUE_conv_float(P2);
 
 	if (is_max)
 	{

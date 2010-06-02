@@ -113,7 +113,7 @@ __LONG:
 
 __FLOAT:
 
-  VALUE_conv(P1, T_FLOAT);
+  VALUE_conv_float(P1);
 
   #ifdef SMT_OP
   P1->_float.value = SMT_OP ( P1->_float.value );
@@ -232,8 +232,8 @@ __DATE:
 
 __FLOAT:
 
-  VALUE_conv(P1, T_FLOAT);
-  VALUE_conv(P2, T_FLOAT);
+  VALUE_conv_float(P1);
+  VALUE_conv_float(P2);
 
   #ifdef SMT_OP
   P1->_float.value SMT_OP P2->_float.value;
@@ -275,10 +275,10 @@ __VARIANT:
     VARIANT_undo(P2);
 
   if (TYPE_is_string(P1->type))
-    VALUE_conv(P1, T_FLOAT);
+    VALUE_conv_float(P1);
 
   if (TYPE_is_string(P2->type))
-    VALUE_conv(P2, T_FLOAT);
+    VALUE_conv_float(P2);
 
   if (TYPE_is_null(P1->type) || TYPE_is_null(P2->type))
     type = T_NULL;

@@ -504,7 +504,7 @@ __PUSH_GENERIC:
 
 	for (i = 1; i <= np; i++)
 	{
-		VALUE_conv(&val[i], T_INTEGER);
+		VALUE_conv_integer(&val[i];
 		dim[i - 1] = val[i]._integer.value;
 	}
 
@@ -524,13 +524,13 @@ __PUSH_QUICK_ARRAY:
 	
 	if (LIKELY(np == 1))
 	{
-		VALUE_conv(&val[1], T_INTEGER);
+		VALUE_conv_integer(&val[1]);
 		data = CARRAY_get_data((CARRAY *)object, val[1]._integer.value);
 	}
 	else
 	{
 		for (i = 1; i <= np; i++)
-			VALUE_conv(&val[i], T_INTEGER);
+			VALUE_conv_integer(&val[i]);
 		
 		data = CARRAY_get_data_multi((CARRAY *)object, (GB_INTEGER *)&val[1], np);
 	}

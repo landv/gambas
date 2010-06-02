@@ -105,9 +105,9 @@ void SUBR_date(void)
   }
   else
   {
-    VALUE_conv(PARAM, T_INTEGER);
-    VALUE_conv(&PARAM[1], T_INTEGER);
-    VALUE_conv(&PARAM[2], T_INTEGER);
+    VALUE_conv_integer(PARAM);
+    VALUE_conv_integer(&PARAM[1]);
+    VALUE_conv_integer(&PARAM[2]);
 
     CLEAR(&date);
     date.year = PARAM->_integer.value;
@@ -116,19 +116,19 @@ void SUBR_date(void)
 
     if (NPARAM >= 4)
     {
-      VALUE_conv(&PARAM[3], T_INTEGER);
+      VALUE_conv_integer(&PARAM[3]);
       date.hour = PARAM[3]._integer.value;
     }
 
     if (NPARAM >= 5)
     {
-      VALUE_conv(&PARAM[4], T_INTEGER);
+      VALUE_conv_integer(&PARAM[4]);
       date.min = PARAM[4]._integer.value;
     }
 
     if (NPARAM >= 6)
     {
-      VALUE_conv(&PARAM[5], T_INTEGER);
+      VALUE_conv_integer(&PARAM[5]);
       date.sec = PARAM[5]._integer.value;
     }
   }
@@ -156,9 +156,9 @@ void SUBR_time(void)
   }
   else if (NPARAM == 3)
   {
-    VALUE_conv(PARAM, T_INTEGER);
-    VALUE_conv(&PARAM[1], T_INTEGER);
-    VALUE_conv(&PARAM[2], T_INTEGER);
+    VALUE_conv_integer(PARAM);
+    VALUE_conv_integer(&PARAM[1]);
+    VALUE_conv_integer(&PARAM[2]);
 
     CLEAR(&date);
     date.hour = PARAM->_integer.value;

@@ -164,7 +164,7 @@ void SUBR_left(void)
 		val = 1;
 	else
 	{
-		VALUE_conv(&PARAM[1], T_INTEGER);
+		VALUE_conv_integer(&PARAM[1]);
 		val = PARAM[1]._integer.value;
 	}
 
@@ -195,7 +195,7 @@ void SUBR_right(void)
 		val = 1;
 	else
 	{
-		VALUE_conv(&PARAM[1], T_INTEGER);
+		VALUE_conv_integer(&PARAM[1]);
 		val = PARAM[1]._integer.value;
 	}
 
@@ -226,7 +226,7 @@ void SUBR_mid(void)
 	if (SUBR_check_string(PARAM))
 		goto FIN;
 
-	VALUE_conv(&PARAM[1], T_INTEGER);
+	VALUE_conv_integer(&PARAM[1]);
 	start = PARAM[1]._integer.value - 1;
 
 	if (start < 0)
@@ -243,7 +243,7 @@ void SUBR_mid(void)
 		len = PARAM->_string.len;
 	else
 	{
-		VALUE_conv(&PARAM[2], T_INTEGER);
+		VALUE_conv_integer(&PARAM[2]);
 		len = PARAM[2]._integer.value;
 	}
 
@@ -441,8 +441,7 @@ void SUBR_chr(void)
 
 	SUBR_GET_PARAM(1);
 
-	VALUE_conv(PARAM, T_INTEGER);
-	/*SUBR_check_integer(PARAM);*/
+	VALUE_conv_integer(PARAM);
 
 	car = PARAM->_integer.value;
 	if (car < 0 || car > 255)

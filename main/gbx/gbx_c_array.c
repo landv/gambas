@@ -170,7 +170,7 @@ void *CARRAY_get_data_multi(CARRAY *_object, GB_INTEGER *arg, int nparam)
 				stop = TRUE;
 			}
 
-			VALUE_conv((VALUE *)&arg[i], GB_T_INTEGER);
+			VALUE_conv_integer((VALUE *)&arg[i]);
 			d = arg[i].value;
 
 			if (d < 0 || d >= max)
@@ -422,7 +422,7 @@ BEGIN_METHOD(CARRAY_new, GB_INTEGER size)
 		size = 1;
 		for (i = 0; i < nsize; i++)
 		{
-			VALUE_conv((VALUE *)&sizes[i], T_INTEGER);
+			VALUE_conv_integer((VALUE *)&sizes[i]);
 			if (sizes[i].value < 1)
 			{
 				GB_Error("Bad dimension");

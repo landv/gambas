@@ -221,7 +221,7 @@ void SUBR_format(void)
   }
   else
   {
-    VALUE_conv(PARAM, T_FLOAT);
+    VALUE_conv_float(PARAM);
     if (LOCAL_format_number(PARAM->_float.value, fmt_type, format, len, &str, &len_str, TRUE))
       THROW(E_FORMAT);
   }
@@ -245,7 +245,7 @@ void SUBR_hex(void)
 
   if (NPARAM == 2)
   {
-    VALUE_conv(&PARAM[1], T_INTEGER);
+    VALUE_conv_integer(&PARAM[1]);
 
     prec = PARAM[1]._integer.value;
 
@@ -269,7 +269,7 @@ void SUBR_bin(void)
 
   if (NPARAM == 2)
   {
-    VALUE_conv(&PARAM[1], T_INTEGER);
+    VALUE_conv_integer(&PARAM[1]);
 
     prec = PARAM[1]._integer.value;
 

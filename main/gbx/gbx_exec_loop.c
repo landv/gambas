@@ -832,7 +832,7 @@ _JUMP:
 
 _JUMP_IF_TRUE:
 
-  VALUE_conv(&SP[-1], T_BOOLEAN);
+  VALUE_conv_boolean(&SP[-1]);
   SP--;
   if (UNLIKELY(SP->_boolean.value != 0))
   {
@@ -846,7 +846,7 @@ _JUMP_IF_TRUE:
 
 _JUMP_IF_FALSE:
 
-  VALUE_conv(&SP[-1], T_BOOLEAN);
+  VALUE_conv_boolean(&SP[-1]);
   SP--;
   if (UNLIKELY(SP->_boolean.value == 0))
   {
@@ -1208,7 +1208,7 @@ _JUMP_NEXT:
 
     if (LIKELY(TYPE_is_integer(type)))
     {
-    	VALUE_conv(&SP[-1], T_INTEGER);
+    	VALUE_conv_integer(&SP[-1]);
   	}
     else
     {
@@ -1550,7 +1550,7 @@ _ADD_QUICK:
 	__AQ_DATE:
 	__AQ_STRING:
 		
-		VALUE_conv(P1, T_FLOAT);
+		VALUE_conv_float(P1);
 	
 	__AQ_FLOAT:
 	
@@ -1697,7 +1697,7 @@ _SUBR_LEFT:
 				val = 1;
 			else
 			{
-				VALUE_conv(&PARAM[1], T_INTEGER);
+				VALUE_conv_integer(&PARAM[1]);
 				val = PARAM[1]._integer.value;
 			}
 		
@@ -1728,7 +1728,7 @@ _SUBR_RIGHT:
 				val = 1;
 			else
 			{
-				VALUE_conv(&PARAM[1], T_INTEGER);
+				VALUE_conv_integer(&PARAM[1]);
 				val = PARAM[1]._integer.value;
 			}
 		
@@ -1758,7 +1758,7 @@ _SUBR_MID:
 	
 		null = SUBR_check_string(PARAM);
 	
-		VALUE_conv(&PARAM[1], T_INTEGER);
+		VALUE_conv_integer(&PARAM[1]);
 		start = PARAM[1]._integer.value - 1;
 	
 		if (UNLIKELY(start < 0))
@@ -1778,7 +1778,7 @@ _SUBR_MID:
 			len = PARAM->_string.len;
 		else
 		{
-			VALUE_conv(&PARAM[2], T_INTEGER);
+			VALUE_conv_integer(&PARAM[2]);
 			len = PARAM[2]._integer.value;
 		}
 	
@@ -1916,8 +1916,8 @@ _SUBR_COMP:
 	__SC_SINGLE:
 	__SC_FLOAT:
 
-		VALUE_conv(P1, T_FLOAT);
-		VALUE_conv(P2, T_FLOAT);
+		VALUE_conv_float(P1);
+		VALUE_conv_float(P2);
 
 		result = fsgn(P1->_float.value - P2->_float.value);
 		goto __SC_END;

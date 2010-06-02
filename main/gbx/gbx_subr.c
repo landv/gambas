@@ -89,7 +89,7 @@ void SUBR_check_float(VALUE *param)
 
   if (TYPE_is_number(param->type))
   {
-    VALUE_conv(param, T_FLOAT);
+    VALUE_conv_float(param);
     return;
   }
 
@@ -163,7 +163,7 @@ void SUBR_get_string_len(VALUE *param, char **str, int *len)
 
 bool SUBR_get_boolean(VALUE *param)
 {
-	VALUE_conv(param, T_BOOLEAN);
+	VALUE_conv_boolean(param);
 	return param->_boolean.value;
 }
 

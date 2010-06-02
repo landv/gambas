@@ -153,7 +153,7 @@ void SUBR_exec(void)
 		env = (PARAM[1]._object.object);
 	}
 	
-	VALUE_conv(&PARAM[2], T_INTEGER);
+	VALUE_conv_integer(&PARAM[2]);
 	mode = PARAM[2]._integer.value;
 	wait = mode & PM_WAIT;
 

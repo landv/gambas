@@ -73,7 +73,7 @@ void SUBR_pi(void)
   }
   else
   {
-    VALUE_conv(PARAM, T_FLOAT);
+    VALUE_conv_float(PARAM);
     RETURN->type = T_FLOAT;
     RETURN->_float.value = M_PI * PARAM->_float.value;
   }
@@ -105,14 +105,14 @@ void SUBR_rnd(void)
 
   if (NPARAM >= 1)
   {
-    VALUE_conv(&PARAM[0], T_FLOAT);
+    VALUE_conv_float(&PARAM[0]);
     max = PARAM->_float.value;
   }
 
   if (NPARAM == 2)
   {
     min = max;
-    VALUE_conv(&PARAM[1], T_FLOAT);
+    VALUE_conv_float(&PARAM[1]);
     max = PARAM[1]._float.value;
   }
 
@@ -135,7 +135,7 @@ void SUBR_round(void)
 
   power = pow(10, val);
 
-  VALUE_conv(&PARAM[0], T_FLOAT);
+  VALUE_conv_float(&PARAM[0]);
 
   RETURN->type = T_FLOAT;
   /*RETURN->_float.value = rint(PARAM->_float.value / power) * power;*/
@@ -155,7 +155,7 @@ void SUBR_math(void)
   if (!TYPE_is_number(PARAM->type))
     THROW(E_TYPE, "Number", TYPE_get_name(PARAM->type));*/
 
-  VALUE_conv(PARAM, T_FLOAT);
+  VALUE_conv_float(PARAM);
 
   PARAM->_float.value = (*MathFunc[EXEC_code & 0x1F])(PARAM->_float.value);
 
@@ -168,8 +168,8 @@ void SUBR_math2(void)
 {
   SUBR_ENTER_PARAM(2);
 
-  VALUE_conv(&PARAM[0], T_FLOAT);
-  VALUE_conv(&PARAM[1], T_FLOAT);
+  VALUE_conv_float(&PARAM[0]);
+  VALUE_conv_float(&PARAM[1]);
 
   PARAM->_float.value = (*MathFunc2[EXEC_code & 0x1F])(PARAM[0]._float.value, PARAM[1]._float.value);
 
@@ -184,8 +184,8 @@ void SUBR_pow(void)
 {
   SUBR_ENTER_PARAM(2);
 
-  VALUE_conv(&PARAM[0], T_FLOAT);
-  VALUE_conv(&PARAM[1], T_FLOAT);
+  VALUE_conv_float(&PARAM[0]);
+  VALUE_conv_float(&PARAM[1]);
 
   PARAM->_float.value = pow(PARAM[0]._float.value, PARAM[1]._float.value);
 
@@ -386,10 +386,10 @@ __VARIANT:
     VARIANT_undo(P2);
 
   if (TYPE_is_string(P1->type))
-    VALUE_conv(P1, T_BOOLEAN);
+    VALUE_convert_boolean(P1);
 
   if (TYPE_is_string(P2->type))
-    VALUE_conv(P2, T_BOOLEAN);
+    VALUE_convert_boolean(P2);
 
   if (TYPE_is_null(P1->type) || TYPE_is_null(P2->type))
     type = T_NULL;
@@ -544,7 +544,7 @@ __LONG:
 
 __FLOAT:
 
-  VALUE_conv(P1, T_FLOAT);
+  VALUE_conv_float(P1);
 
   {
     static void *exec[] = { &&__NEG_F, &&__ABS_F, &&__INT_F, &&__FIX_F }; //, &&__SGN_F };
@@ -684,8 +684,8 @@ __LONG:
 
 __DATE:
 
-  VALUE_conv(P1, T_FLOAT);
-  VALUE_conv(P2, T_FLOAT);
+  VALUE_conv_float(P1);
+  VALUE_conv_float(P2);
 
   {
     static void *exec[] = { &&__ADD_F, && __SUB_F, &&__ERROR, &&__ERROR };
@@ -694,8 +694,8 @@ __DATE:
 
 __FLOAT:
 
-  VALUE_conv(P1, T_FLOAT);
-  VALUE_conv(P2, T_FLOAT);
+  VALUE_conv_float(P1);
+  VALUE_conv_float(P2);
 
   {
     static void *exec[] = { &&__ADD_F, && __SUB_F, &&__MUL_F, &&__DIV_F };
@@ -734,10 +734,10 @@ __VARIANT:
     VARIANT_undo(P2);
 
   if (TYPE_is_string(P1->type))
-    VALUE_conv(P1, T_FLOAT);
+    VALUE_conv_float(P1);
 
   if (TYPE_is_string(P2->type))
-    VALUE_conv(P2, T_FLOAT);
+    VALUE_conv_float(P2);
 
   if (TYPE_is_null(P1->type) || TYPE_is_null(P2->type))
     type = T_NULL;

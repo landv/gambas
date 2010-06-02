@@ -450,7 +450,7 @@ int COMPARE_object(void **a, void **b)
 		OBJECT_REF(*b, "compare_object");
 		SP++;
 		EXEC_special(SPEC_COMPARE, ca, *a, 1, FALSE);
-		VALUE_conv(&SP[-1], T_INTEGER);
+		VALUE_conv_integer(&SP[-1]);
 		SP--;
 		comp = SP->_integer.value;
 	}
@@ -462,7 +462,7 @@ int COMPARE_object(void **a, void **b)
 		OBJECT_REF(*a, "compare_object");
 		SP++;
 		EXEC_special(SPEC_COMPARE, cb, *b, 1, FALSE);
-		VALUE_conv(&SP[-1], T_INTEGER);
+		VALUE_conv_integer(&SP[-1]);
 		SP--;
 		comp = (- SP->_integer.value);
 	}

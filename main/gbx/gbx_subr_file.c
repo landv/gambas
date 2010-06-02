@@ -346,7 +346,7 @@ void SUBR_seek(void)
 
     if (NPARAM == 3)
     {
-      VALUE_conv(&PARAM[2], T_INTEGER);
+      VALUE_conv_integer(&PARAM[2]);
       whence = PARAM[2]._integer.value;
       if (whence != SEEK_SET && whence != SEEK_CUR && whence != SEEK_END)
         THROW(E_ARG);
@@ -385,7 +385,7 @@ void SUBR_read(void)
 	
 	if (EXEC_code & 0x3F)
 	{
-    VALUE_conv(&PARAM[1], T_INTEGER);
+    VALUE_conv_integer(&PARAM[1]);
 		len = PARAM[1]._integer.value;
 		do_not = len == 0;
 		type = T_STRING;
@@ -416,9 +416,9 @@ void SUBR_write(void)
 
 	if (EXEC_code & 0x3F)
 	{
-    VALUE_conv(&PARAM[1], T_STRING);
+    VALUE_conv_string(&PARAM[1]);
 		type = T_STRING;
-    VALUE_conv(&PARAM[2], T_INTEGER);
+    VALUE_conv_integer(&PARAM[2]);
     len = PARAM[2]._integer.value;
 		if (len < 0)
 			len = PARAM[1]._string.len;
@@ -689,7 +689,7 @@ void SUBR_access(void)
     access = R_OK;
   else
   {
-    VALUE_conv(&PARAM[1], T_INTEGER);
+    VALUE_conv_integer(&PARAM[1]);
     access = PARAM[1]._integer.value;
   }
 

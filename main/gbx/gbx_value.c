@@ -45,6 +45,28 @@
 
 #include "gbx_value.h"
 
+/*
+VALUE_CONVERT_FUNC VALUE_jump[] = 
+{
+  VALUE_convert_void,
+  VALUE_convert_boolean,
+  VALUE_convert_byte,
+  VALUE_convert_short,
+  VALUE_convert_integer,
+  VALUE_convert_long,
+  VALUE_convert_single,
+  VALUE_convert_float,
+  VALUE_convert_date,
+  VALUE_convert_string,
+  VALUE_convert_string,
+  VALUE_convert_pointer,
+  VALUE_convert_variant,
+  VALUE_convert_function,
+  VALUE_convert_class,
+  VALUE_convert_null
+};
+*/
+
 static bool unknown_function(VALUE *value)
 {
 	if (value->_function.kind == FUNCTION_UNKNOWN)
@@ -1354,3 +1376,354 @@ void VALUE_get_string(VALUE *val, char **text, int *length)
 	}
 }
 
+
+
+void VALUE_convert_boolean(VALUE *value)
+{
+	static const void *jump[16] =
+	{
+		&&__NR, &&__OK, &&__c2b, &&__h2b, &&__i2b, &&__l2b, &&__f2b, &&__f2b,
+		&&__d2b, &&__s2b, &&__s2b, &&__N, &&__v2, &&__func, &&__N, &&__n2b
+	};
+
+	char *addr;
+	int index;
+	bool test;
+
+__CONV:
+
+	if (TYPE_is_object(value->type))
+		goto __OBJECT;
+	else
+		goto *jump[value->type];
+
+__c2b:
+__h2b:
+__i2b:
+
+	value->_integer.value = (value->_integer.value != 0) ? -1 : 0;
+	goto __TYPE;
+
+__l2b:
+
+	value->_integer.value = (value->_long.value != 0) ? -1 : 0;
+	goto __TYPE;
+
+__f2b:
+
+	value->_integer.value = (value->_float.value != 0) ? -1 : 0;
+	goto __TYPE;
+
+__d2b:
+	
+	value->_integer.value = (value->_date.date != 0 || value->_date.time != 0) ? -1 : 0;
+	goto __TYPE;
+
+__s2b:
+
+	addr = value->_string.addr;
+	value->_integer.value = ((addr != NULL) && (value->_string.len != 0)) ? -1 : 0;
+	if (value->type == T_STRING)
+		STRING_unref(&addr);
+	goto __TYPE;
+
+__n2b:
+
+	value->_integer.value = 0;
+	goto __TYPE;
+
+__v2:
+
+	index = value->_variant.vtype;
+
+	if (index != T_NULL)
+		VALUE_read(value, &value->_variant.value, value->_variant.vtype);
+	value->type = index;
+
+	goto __CONV;
+
+__func:
+
+	if (unknown_function(value))
+		goto __CONV;
+	else
+		goto __N;
+
+__OBJECT:
+
+	test = (value->_object.object != NULL);
+	OBJECT_UNREF(value->_object.object, "VALUE_convert");
+	value->_boolean.value = -test;
+	goto __TYPE;
+
+__TYPE:
+
+	value->type = T_BOOLEAN;
+
+__OK:
+
+	return;
+
+__N:
+
+	THROW(E_TYPE, "Boolean", TYPE_get_name(value->type));
+
+__NR:
+
+	THROW(E_NRETURN);
+}
+
+
+void VALUE_convert_integer(VALUE *value)
+{
+	static const void *jump[16] =
+	{
+		&&__NR, &&__TYPE, &&__TYPE, &&__TYPE, &&__OK, &&__l2i, &&__f2i, &&__f2i,
+		&&__d2i, &&__s2i, &&__s2i, &&__N, &&__v2, &&__func, &&__N, &&__N
+	};
+		
+	char *addr;
+	int index;
+
+__CONV:
+
+	if (TYPE_is_object(value->type))
+		goto __N;
+	else
+		goto *jump[value->type];
+
+__l2i:
+
+	value->_integer.value = (int)value->_long.value;
+	goto __TYPE;
+
+__f2i:
+
+	value->_integer.value = (int)value->_float.value;
+	goto __TYPE;
+
+__d2i:
+
+	value->_integer.value = value->_date.date;
+	goto __TYPE;
+
+__s2i:
+
+	addr = value->type == T_STRING ? value->_string.addr : NULL;
+
+	if (NUMBER_from_string(NB_READ_INTEGER, value->_string.addr + value->_string.start, value->_string.len, value))
+		goto __N;
+
+	STRING_unref(&addr);
+	goto __TYPE;
+
+__v2:
+
+	index = value->_variant.vtype;
+
+	if (index != T_NULL)
+		VALUE_read(value, &value->_variant.value, value->_variant.vtype);
+	value->type = index;
+
+	goto __CONV;
+
+__func:
+
+	if (unknown_function(value))
+		goto __CONV;
+	else
+		goto __N;
+
+__TYPE:
+
+	value->type = T_INTEGER;
+
+__OK:
+
+	return;
+
+__N:
+
+	THROW(E_TYPE, "Integer", TYPE_get_name(value->type));
+
+__NR:
+
+	THROW(E_NRETURN);
+}
+
+
+void VALUE_convert_float(VALUE *value)
+{
+	static const void *jump[16] =
+	{
+		&&__NR, &&__b2f, &&__c2f, &&__h2f, &&__i2f, &&__l2f, &&__TYPE, &&__OK,
+		&&__d2f, &&__s2f, &&__s2f, &&__N, &&__v2, &&__func, &&__N, &&__N
+	};
+	
+	char *addr;
+	int index;
+
+__CONV:
+
+	if (TYPE_is_object(value->type))
+		goto __N;
+	else
+		goto *jump[value->type];
+
+__b2f:
+__c2f:
+__h2f:
+__i2f:
+
+	value->_float.value = value->_integer.value;
+	goto __TYPE;
+
+__l2f:
+
+	value->_float.value = value->_long.value;
+	goto __TYPE;
+
+__d2f:
+
+	value->_float.value = (double)value->_date.date + (double)value->_date.time / 86400000.0;
+	goto __TYPE;
+
+__s2f:
+
+	addr = value->type == T_STRING ? value->_string.addr : NULL;
+
+	if (NUMBER_from_string(NB_READ_FLOAT, value->_string.addr + value->_string.start, value->_string.len, value))
+		goto __N;
+
+	STRING_unref(&addr);
+	return;
+
+__v2:
+
+	index = value->_variant.vtype;
+
+	if (index != T_NULL)
+		VALUE_read(value, &value->_variant.value, value->_variant.vtype);
+	value->type = index;
+
+	goto __CONV;
+
+__func:
+
+	if (unknown_function(value))
+		goto __CONV;
+	else
+		goto __N;
+
+__TYPE:
+
+	value->type = T_FLOAT;
+
+__OK:
+
+	return;
+
+__N:
+
+	THROW(E_TYPE, "Float", TYPE_get_name(value->type));
+
+__NR:
+
+	THROW(E_NRETURN);
+}
+
+
+void VALUE_convert_string(VALUE *value)
+{
+	static const void *jump[16] =
+	{
+		&&__NR, &&__b2s, &&__c2s, &&__h2s, &&__i2s, &&__l2s, &&__g2s, &&__f2s,
+		&&__d2s, &&__OK, &&__OK, &&__N, &&__v2, &&__func, &&__N, &&__n2s
+	};
+
+	int len;
+	char *addr;
+	int index;
+
+__CONV:
+
+	if (TYPE_is_object(value->type))
+		goto __OBJECT;
+	else
+		goto *jump[value->type];
+
+__b2s:
+
+	if (value->_boolean.value)
+		STRING_char_value(value, 'T');
+	else
+		STRING_void_value(value);
+	return;
+
+__c2s:
+__h2s:
+__i2s:
+
+	NUMBER_int_to_string(value->_integer.value, 0, 10, value);
+	BORROW(value);
+	return;
+
+__l2s:
+
+	NUMBER_int_to_string(value->_long.value, 0, 10, value);
+	BORROW(value);
+	return;
+
+__g2s:
+__f2s:
+
+	LOCAL_format_number(value->_float.value, LF_GENERAL_NUMBER, NULL, 0, &addr, &len, FALSE);
+	STRING_new_temp_value(value, addr, len);
+	BORROW(value);
+	return;
+
+__d2s:
+
+	len = DATE_to_string(COMMON_buffer, value);
+	STRING_new_temp_value(value, COMMON_buffer, len);
+	BORROW(value);
+	return;
+
+__n2s:
+
+	STRING_void_value(value);
+	return;
+
+__v2:
+
+	index = value->_variant.vtype;
+
+	if (index != T_NULL)
+		VALUE_read(value, &value->_variant.value, value->_variant.vtype);
+	value->type = index;
+
+	goto __CONV;
+
+__func:
+
+	if (unknown_function(value))
+		goto __CONV;
+	else
+		goto __N;
+
+__OBJECT:
+		
+	goto __N;
+
+__OK:
+
+	return;
+
+__N:
+
+	THROW(E_TYPE, "String", TYPE_get_name(value->type));
+
+__NR:
+
+	THROW(E_NRETURN);
+}
