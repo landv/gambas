@@ -342,6 +342,9 @@ BEGIN_METHOD_VOID(CMENU_free)
 
   GB.StoreVariant(NULL, &THIS->widget.tag);
 
+	//qDebug("free_name: %s %p (CMENU_free)", THIS->widget.name, THIS->widget.name);
+	//if (!strcmp(THIS->widget.name, "mnuCut"))
+	//	BREAKPOINT();
 	GB.FreeString(&THIS->widget.name);
 
   #ifdef DEBUG_MENU

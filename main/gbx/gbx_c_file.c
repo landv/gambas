@@ -593,7 +593,7 @@ BEGIN_METHOD(CFILE_load, GB_STRING path)
       THROW(E_MEMORY);
     rlen = len;
 
-    STRING_new_temp(&str, NULL, rlen);
+    str = STRING_new_temp(NULL, rlen);
 
     STREAM_read(&stream, str, rlen);
     STREAM_close(&stream);

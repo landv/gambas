@@ -259,7 +259,7 @@ static void add_string(const char *str, int len)
 {
 	char **p = (char **)GB_ArrayAdd((GB_ARRAY)_scan_array);
 	if (len)
-		STRING_new(p, str, len);
+		*p = STRING_new(str, len);
 }
 
 

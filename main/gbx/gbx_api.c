@@ -1182,7 +1182,7 @@ char *GB_ToZeroString(GB_STRING *src)
 {
   char *str;
 
-  STRING_new_temp(&str, src->value.addr + src->value.start, src->value.len);
+  str = STRING_new_temp(src->value.addr + src->value.start, src->value.len);
 
   if (str == NULL)
     return "";
@@ -1230,8 +1230,6 @@ void GB_ReturnConstZeroString(const char *str)
 
 void GB_ReturnNewString(const char *src, int len)
 {
-  char *str;
-	
 	if (len <= 0)
 	{
 		if (*src)
@@ -1243,16 +1241,13 @@ void GB_ReturnNewString(const char *src, int len)
 		return;
 	}
 
-  STRING_new_temp(&str, src, len);
-  GB_ReturnString(str);
+  GB_ReturnString(STRING_new_temp(src, len));
 }
 
 
 void GB_ReturnNewZeroString(const char *src)
 {
-	char *str;
-  STRING_new_temp_zero(&str, src);
-  GB_ReturnString(str);
+  GB_ReturnString(STRING_new_temp_zero(src));
 }
 
 
@@ -1339,13 +1334,10 @@ void GB_Store(GB_TYPE type, GB_VALUE *src, void *dst)
 
 void GB_StoreString(GB_STRING *src, char **dst)
 {
-  char *str;
-
   STRING_unref(dst);
   if (src)
   {
-    STRING_new(&str, src->value.addr + src->value.start, src->value.len);
-    *dst = str;
+    *dst = STRING_new(src->value.addr + src->value.start, src->value.len);
   }
   else
     *dst = NULL;
@@ -1600,14 +1592,14 @@ void *GB_Add(void *pdata)
   return ARRAY_add_void_size(pdata);
 }
 
-void GB_NewZeroString(char **str, char *src)
+char *GB_NewZeroString(char *src)
 {
-	STRING_new_zero(str, src);
+	return STRING_new_zero(src);
 }
 
-void GB_TempString(char **str, char *src, int len)
+char *GB_TempString(char *src, int len)
 {
-  STRING_new_temp(str, src, len);
+  return STRING_new_temp(src, len);
 }
 
 void GB_FreeString(char **str)
@@ -1837,7 +1829,7 @@ char *GB_RealFileName(const char *name, int len)
     return path;
 
   temp = FILE_make_temp(NULL, NULL);
-  STRING_new_temp(&real, NULL, strlen(temp) + strlen(path) + strlen("/data/"));
+  real = STRING_new_temp(NULL, strlen(temp) + strlen(path) + strlen("/data/"));
   snprintf(real, strlen(temp) + strlen(path) + strlen("/data/"), "%s/data/%s", temp, path);
 
   if (!FILE_exist(real))

@@ -56,6 +56,33 @@ static void print_where()
 #define DEBUG_where print_where
 #endif*/
 
+#if DEBUG_MEMORY
+
+static void *_my_malloc(int size)
+{
+	void *ptr;
+	ALLOC(&ptr, size, "_my_malloc");
+	return ptr;
+}
+
+static void _my_free(void *ptr)
+{
+	IFREE(ptr, "_my_free");
+}
+
+static void *_my_realloc(void *ptr, int size)
+{
+	REALLOC(&ptr, size, "_my_realloc");
+	return ptr;
+}
+#else
+
+#define _my_malloc malloc
+#define _my_free free
+#define _my_realloc realloc
+
+#endif
+
 #define STRING_last_count 32
 static char *STRING_last[STRING_last_count] = { 0 };
 
@@ -101,41 +128,31 @@ STRING_MAKE STRING_make_buffer;
 static STRING *_pool[POOL_SIZE] = { 0 };
 static int _pool_count[POOL_SIZE] = { 0 };
 
-static STRING *alloc_string(int len)
-{
-	STRING *str;
-	int size = REAL_SIZE(len + 1 + sizeof(STRING));
-	int pool = (size / SIZE_INC) - 1;
-	
-	MEMORY_count++;
-	
-	if (pool < POOL_SIZE)
-	{
-		if (_pool_count[pool])
-		{
-			str = _pool[pool];
-			#ifdef DEBUG_ME
-			fprintf(stderr, "alloc_string: %d bytes from pool %d -> %p\n", size, pool, str);
-			#endif
-			_pool[pool] = *((STRING **)str);
-			_pool_count[pool]--;
-			str->len = len;
-			str->ref = 1;
-			return str;
-		}
-		//else
-		//	printf("pool[%d] void\n", pool);
-	}
-	//else
-	//	printf("alloc_string: %d\n", pool);
-	
-	str = malloc(size);
-	if (!str)
-		THROW_MEMORY();
-	str->len = len;
-	str->ref = 1;
-	return str;
-}
+#define alloc_string(_len) \
+({ \
+	STRING *str; \
+	int size = REAL_SIZE((_len) + 1 + sizeof(STRING)); \
+	int pool = (size / SIZE_INC) - 1; \
+	\
+	MEMORY_count++; \
+	\
+	if (pool < POOL_SIZE && (_pool_count[pool])) \
+	{ \
+		str = _pool[pool]; \
+		_pool[pool] = *((STRING **)str); \
+		_pool_count[pool]--; \
+		/*fprintf(stderr, "alloc_string: (%p) %d bytes from pool %d\n", str, size, pool);*/ \
+	} \
+	else \
+	{ \
+		str = _my_malloc(size); \
+		if (!str) \
+			THROW_MEMORY(); \
+	} \
+	str->len = (_len); \
+	str->ref = 1; \
+	str; \
+})
 
 void STRING_free_real(char *ptr)
 {
@@ -145,13 +162,15 @@ void STRING_free_real(char *ptr)
 
 	MEMORY_count--;
 	
+	//fprintf(stderr, "STRING_free_real: %p\n", ptr);
+	
 	if (pool < POOL_SIZE)
 	{
 		if (_pool_count[pool] < POOL_MAX)		
 		{
-			#ifdef DEBUG_ME
-			fprintf(stderr, "STRING_free_real: (%p) %d bytes to pool %d\n", str, size, pool);
-			#endif
+			//#ifdef DEBUG_ME
+			//fprintf(stderr, "STRING_free_real: (%p) %d bytes to pool %d\n", str, size, pool);
+			//#endif
 			*((STRING **)str) = _pool[pool];
 			_pool[pool] = str;
 			_pool_count[pool]++;
@@ -159,7 +178,7 @@ void STRING_free_real(char *ptr)
 		}
 	}
 	
-	free(str);
+	_my_free(str);
 }
 
 static STRING *realloc_string(STRING *str, int new_len)
@@ -182,7 +201,7 @@ static STRING *realloc_string(STRING *str, int new_len)
 		}
 		else if (size > POOL_MAX_LEN && new_size > POOL_MAX_LEN)
 		{
-			str = realloc(str, new_size);
+			str = _my_realloc(str, new_size);
 			//REALLOC(&str, new_size, "realloc_string");
 		}
 		else
@@ -215,7 +234,7 @@ static void clear_pool(void)
 		while (str)
 		{
 			next = *((STRING **)str);
-			free(str);
+			_my_free(str);
 			str = next;
 		}
 	}
@@ -227,15 +246,12 @@ static void clear_pool(void)
 
 ****************************************************************************/
 
-void STRING_new(char **ptr, const char *src, int len)
+char *STRING_new(const char *src, int len)
 {
 	STRING *str;
 
 	if (len == 0)
-	{
-		*ptr = NULL;
-		return;
-	}
+		return NULL;
 
 	//ALLOC(&str, REAL_SIZE(len + 1 + sizeof(STRING)), "STRING_new");
 	str = alloc_string(len);
@@ -245,16 +261,16 @@ void STRING_new(char **ptr, const char *src, int len)
 
 	str->data[len] = 0;
 
-	*ptr = str->data;
-
 	#ifdef DEBUG_ME
 	DEBUG_where();
-	fprintf(stderr, "STRING_new %p ( 0 ) \"%.*s\"\n", *ptr, len, src);
+	fprintf(stderr, "STRING_new %p ( 0 ) \"%.*s\"\n", str->data, len, src);
 	fflush(stderr);
 	#endif
+	
+	return str->data;
 }
 
-void STRING_free_later(char *ptr)
+char *STRING_free_later(char *ptr)
 {
 	/*if (NLast >= MAX_LAST_STRING)
 		THROW(E_STRING);*/
@@ -281,6 +297,8 @@ void STRING_free_later(char *ptr)
 
 	if (_index >= STRING_last_count)
 		_index = 0;
+	
+	return ptr;
 }
 
 
@@ -337,16 +355,6 @@ void STRING_extend_end(char **ptr)
 }
 
 
-void STRING_copy_from_value_temp(char **ptr, VALUE *value)
-{
-	if (value->_string.len == 0)
-		*ptr = NULL;
-	else if (value->type == T_STRING && value->_string.start == 0 && value->_string.len == STRING_length(value->_string.addr))
-		*ptr = value->_string.addr;
-	else
-		STRING_new_temp(ptr, &value->_string.addr[value->_string.start], value->_string.len);
-}
-
 
 /* Attention ! Contrairement �STRING_new, STRING_new_temp_value cr� des
 	cha�es temporaires.
@@ -354,7 +362,7 @@ void STRING_copy_from_value_temp(char **ptr, VALUE *value)
 
 void STRING_new_temp_value(VALUE *value, const char *src, int len)
 {
-	STRING_new_temp(&(value->_string.addr), src, len);
+	value->_string.addr = STRING_new_temp(src, len);
 
 	value->_string.len = STRING_length(value->_string.addr);
 	value->_string.start = 0;
@@ -408,7 +416,7 @@ void STRING_ref(char *ptr)
 
 	#ifdef DEBUG_ME
 	DEBUG_where();
-	fprintf(stderr, "STRING_ref: %p ( %ld -> %ld )\n", ptr, str->ref, str->ref + 1);
+	fprintf(stderr, "STRING_ref: %p ( %d -> %d )\n", ptr, str->ref, str->ref + 1);
 	if (str->ref < 0 || str->ref > 10000)
 		fprintf(stderr, "*** BAD\n");
 	fflush(stderr);
@@ -429,7 +437,7 @@ void STRING_unref(char **ptr)
 
 	#ifdef DEBUG_ME
 	DEBUG_where();
-	fprintf(stderr, "STRING_unref: %p ( %ld -> %ld )\n", *ptr, str->ref, str->ref - 1);
+	fprintf(stderr, "STRING_unref: %p ( %d -> %d )\n", *ptr, str->ref, str->ref - 1);
 	if (str->ref < 1 || str->ref > 10000)
 		fprintf(stderr, "*** BAD\n");
 	fflush(stderr);
@@ -559,7 +567,7 @@ char *STRING_subst(const char *str, int len, SUBST_FUNC get_param)
 		}
 	}
 	
-	STRING_new(&subst, NULL, len_subst);
+	subst = STRING_new(NULL, len_subst);
 	ps = subst;
 
 	for (i = 0; i < len; i++)
@@ -590,8 +598,7 @@ char *STRING_subst(const char *str, int len, SUBST_FUNC get_param)
 	}
 	
 	*ps = 0;
-	STRING_free_later(subst);
-	return subst;
+	return STRING_free_later(subst);
 }
 
 char *STRING_subst_add(const char *str, int len, SUBST_ADD_FUNC add_param)
@@ -783,7 +790,7 @@ char *STRING_conv_to_UTF8(const char *name, int len)
 		if (len <= 0)
 			result = (char *)name;
 		else
-			STRING_new_temp(&result, name, len);
+			result = STRING_new_temp(name, len);
 	}
 	else
 	{
@@ -826,7 +833,7 @@ char *STRING_conv_file_name(const char *name, int len)
 			dir = PROJECT_get_home();
 		else
 		{
-			STRING_new_temp(&user, &name[1], pos - 1);
+			user = STRING_new_temp(&name[1], pos - 1);
 			info = getpwnam(user);
 			if (info)
 				dir = info->pw_dir;
@@ -836,7 +843,7 @@ char *STRING_conv_file_name(const char *name, int len)
 
 		if (dir)
 		{
-			STRING_new_zero(&user, dir);
+			user = STRING_new_zero(dir);
 			if (pos < len)
 				STRING_add(&user, &name[pos], len - pos);
 			name = user;
@@ -846,7 +853,7 @@ char *STRING_conv_file_name(const char *name, int len)
 	}
 
 	if (LOCAL_is_UTF8)
-		STRING_new_temp(&result, name, len);
+		result = STRING_new_temp(name, len);
 	else
 		STRING_conv(&result, name, len, "UTF-8", LOCAL_encoding, TRUE);
 
@@ -1028,8 +1035,7 @@ void STRING_start_len(int len)
 	if (len == 0)
 		len = 32;
 		
-	STRING_new(&_make.buffer, NULL, len);
-	
+	_make.buffer = STRING_new(NULL, len);
 	_make.max = len;
 	_make.len = 0;
 	_make.ptr = _make.buffer;

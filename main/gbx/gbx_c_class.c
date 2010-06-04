@@ -251,7 +251,7 @@ BEGIN_PROPERTY(Class_Symbols)
 		cds = CLASS_get_next_sorted_symbol(class, &index);
 		if (!cds)
 			break;
-		STRING_new((char **)GB_ArrayAdd(array), cds->name, cds->len);
+		*((char **)GB_ArrayAdd(array)) = STRING_new(cds->name, cds->len);
 	}
 	
 	GB_ReturnObject(array);

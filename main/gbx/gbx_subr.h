@@ -43,7 +43,7 @@ EXTERN int NPARAM;
 */
 
 #define SUBR_ENTER() \
-  int NPARAM = EXEC_code & 0x3F; \
+  int NPARAM = code & 0x3F; \
   VALUE *PARAM = (SP - NPARAM)
 
 #define SUBR_GET_PARAM(nparam) \
@@ -72,7 +72,9 @@ EXTERN int NPARAM;
 void SUBR_leave(int nparam);
 void SUBR_leave_void(int nparam);
 
-bool SUBR_check_string(VALUE *param);
+#define SUBR_check_string(_value) (TYPE_is_string((_value)->type) ? ((_value)->_string.len == 0) : SUBR_check_string_real(_value))
+
+bool SUBR_check_string_real(VALUE *param);
 void SUBR_check_integer(VALUE *param);
 void SUBR_check_float(VALUE *param);
 
@@ -91,115 +93,116 @@ TYPE SUBR_check_good_type(VALUE *param, int count);
 
 /* subr_math.c */
 
-void SUBR_add_(void);
+void SUBR_add_(ushort code);
 void SUBR_quo(void);
 void SUBR_rem(void);
 void SUBR_pow(void);
 
-void SUBR_and_(void);
-void SUBR_not(void);
+void SUBR_and_(ushort code);
+void SUBR_not(ushort code);
 
-void SUBR_neg_(void);
-void SUBR_sgn(void);
-void SUBR_pi(void);
-void SUBR_math(void);
-void SUBR_math2(void);
+void SUBR_neg_(ushort code);
+void SUBR_sgn(ushort code);
+void SUBR_pi(ushort code);
+void SUBR_math(ushort code);
+void SUBR_math2(ushort code);
 
-void SUBR_randomize(void);
-void SUBR_rnd(void);
-void SUBR_round(void);
+void SUBR_randomize(ushort code);
+void SUBR_rnd(ushort code);
+void SUBR_round(ushort code);
 
 /* subr_string.c */
 
-void SUBR_cat(void);
-void SUBR_file(void);
+void SUBR_cat(ushort code);
+void SUBR_file(ushort code);
 //void SUBR_left(void);
 //void SUBR_right(void);
 //void SUBR_mid(void);
 //void SUBR_len(void);
-void SUBR_trim(void);
+void SUBR_trim(ushort code);
 void SUBR_space(void);
 void SUBR_string(void);
 void SUBR_upper(void);
 void SUBR_lower(void);
 void SUBR_chr(void);
-void SUBR_asc(void);
-void SUBR_instr(void);
-void SUBR_like(void);
+void SUBR_asc(ushort code);
+void SUBR_instr(ushort code);
+void SUBR_like(ushort code);
 void SUBR_scan(void);
-void SUBR_subst(void);
-void SUBR_replace(void);
-void SUBR_split(void);
+void SUBR_subst(ushort code);
+void SUBR_replace(ushort code);
+void SUBR_split(ushort code);
 void SUBR_iconv(void);
-void SUBR_sconv(void);
-void SUBR_is_chr(void);
+void SUBR_sconv(ushort code);
+void SUBR_is_chr(ushort code);
 void SUBR_tr(void);
-void SUBR_quote(void);
+void SUBR_quote(ushort code);
 void SUBR_unquote(void);
 
 /* subr_test.c */
 
-void SUBR_comp(void);
-void SUBR_compi(void);
-void SUBR_case(void);
-void SUBR_bit(void);
-void SUBR_min_max(void);
-void SUBR_if(void);
-void SUBR_choose(void);
+void SUBR_comp(ushort code);
+void SUBR_compn(ushort code);
+void SUBR_compi(ushort code);
+void SUBR_case(ushort code);
+void SUBR_bit(ushort code);
+void SUBR_min_max(ushort code);
+void SUBR_if(ushort code);
+void SUBR_choose(ushort code);
 void SUBR_near(void);
-void SUBR_strcomp(void);
+void SUBR_strcomp(ushort code);
 void SUBR_is(void);
 
 /* subr_conv.c */
 
-void SUBR_is_type(void);
-void SUBR_conv(void);
-void SUBR_type(void);
+void SUBR_is_type(ushort code);
+void SUBR_conv(ushort code);
+void SUBR_type(ushort code);
 void SUBR_str(void);
 void SUBR_val(void);
-void SUBR_format(void);
-void SUBR_hex(void);
-void SUBR_bin(void);
+void SUBR_format(ushort code);
+void SUBR_hex(ushort code);
+void SUBR_bin(ushort code);
 
 /* subr_time.c */
 
 void SUBR_timer(void);
 void SUBR_now(void);
-void SUBR_year(void);
-void SUBR_time(void);
-void SUBR_date(void);
-void SUBR_date_op(void);
-void SUBR_week(void);
+void SUBR_year(ushort code);
+void SUBR_time(ushort code);
+void SUBR_date(ushort code);
+void SUBR_date_op(ushort code);
+void SUBR_week(ushort code);
 
 /* subr_file.c */
 
-void SUBR_open(void);
+void SUBR_open(ushort code);
 void SUBR_close(void);
-void SUBR_print(void);
+void SUBR_print(ushort code);
 void SUBR_linput(void);
-void SUBR_eof(void);
-void SUBR_lof(void);
-void SUBR_seek(void);
-void SUBR_input(void);
-void SUBR_read(void);
-void SUBR_write(void);
+void SUBR_eof(ushort code);
+void SUBR_lof(ushort code);
+void SUBR_seek(ushort code);
+void SUBR_input(ushort code);
+void SUBR_read(ushort code);
+void SUBR_write(ushort code);
 void SUBR_flush(void);
-void SUBR_lock(void);
-void SUBR_inp_out(void);
+void SUBR_lock(ushort code);
+void SUBR_inp_out(ushort code);
 
-void SUBR_stat(void);
+void SUBR_stat(ushort code);
 void SUBR_exist(void);
-void SUBR_dir(void);
+void SUBR_dir(ushort code);
 void SUBR_kill(void);
 void SUBR_mkdir(void);
 void SUBR_rmdir(void);
 void SUBR_rename(void);
 void SUBR_copy(void);
-void SUBR_temp(void);
+void SUBR_temp(ushort code);
 void SUBR_isdir(void);
-void SUBR_access(void);
+void SUBR_access(ushort code);
 void SUBR_link(void);
-void SUBR_rdir(void);
+void SUBR_rdir(ushort code);
 void SUBR_dfree();
 
 void SUBR_exit_inp_out(void);
@@ -207,22 +210,22 @@ void SUBR_exit_inp_out(void);
 
 /* subr_extern.c */
 
-void SUBR_alloc(void);
+void SUBR_alloc(ushort code);
 void SUBR_free(void);
-void SUBR_realloc(void);
-void SUBR_strptr(void);
+void SUBR_realloc(ushort code);
+void SUBR_strptr(ushort code);
 void SUBR_varptr(void);
 
 /* subr_misc.c */
 
 void SUBR_error(void);
 void SUBR_shell(void);
-void SUBR_wait(void);
+void SUBR_wait(ushort code);
 void SUBR_sleep(void);
-void SUBR_exec(void);
-void SUBR_eval(void);
-void SUBR_array(void);
-void SUBR_collection(void);
+void SUBR_exec(ushort code);
+void SUBR_eval(ushort code);
+void SUBR_array(ushort code);
+void SUBR_collection(ushort code);
 void SUBR_debug(void);
 
 void EVAL_string(char *expr);

@@ -70,7 +70,7 @@ BEGIN_METHOD(CIMAGESTAT_call, GB_STRING path)
 	else
 	{
 		GB.New(POINTER(&stat), GB.FindClass("ImageStat"), NULL, NULL);
-		GB.NewZeroString(&stat->path, path);
+		stat->path = GB.NewZeroString(path);
 		stat->type = info.type;
 		stat->width = info.width;
 		stat->height = info.height;

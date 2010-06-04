@@ -290,7 +290,7 @@ bool ARCH_find(ARCH *arch, const char *path, int len_path, ARCH_FIND *find)
 			if (!p)
 				break;
 	
-			SYMBOL_find(arch->symbol, arch->sort, arch->header.n_symbol, sizeof(ARCH_SYMBOL), TF_NORMAL, tpath, p - tpath, 0, &ind);
+			ind = SYMBOL_find(arch->symbol, arch->sort, arch->header.n_symbol, sizeof(ARCH_SYMBOL), TF_NORMAL, tpath, p - tpath, 0);
 			if (ind == NO_SYMBOL)
 				break;
 
@@ -299,7 +299,7 @@ bool ARCH_find(ARCH *arch, const char *path, int len_path, ARCH_FIND *find)
 			strcpy(tpath, tpath2);
 		}
 		
-  	SYMBOL_find(arch->symbol, arch->sort, arch->header.n_symbol, sizeof(ARCH_SYMBOL), TF_NORMAL, tpath, len_tpath, 0, &ind);
+  	ind = SYMBOL_find(arch->symbol, arch->sort, arch->header.n_symbol, sizeof(ARCH_SYMBOL), TF_NORMAL, tpath, len_tpath, 0);
 	//}
 	//else
   //	SYMBOL_find_old(arch->symbol, arch->header.n_symbol, sizeof(ARCH_SYMBOL), TF_NORMAL, tpath, len_tpath, 0, &ind);

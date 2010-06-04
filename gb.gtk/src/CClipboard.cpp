@@ -62,7 +62,6 @@ static void get_formats(GB_ARRAY array, bool drag = false)
 {
   int i, j;
   char *fmt;
-  char *str;
   
   for (i = 0;; i++)
   {
@@ -82,8 +81,7 @@ static void get_formats(GB_ARRAY array, bool drag = false)
     if (j < GB.Array.Count(array))
       continue;
 		
-		GB.NewZeroString(&str, fmt);
-		*((char **)GB.Array.Add(array)) = str;
+		*((char **)GB.Array.Add(array)) = GB.NewZeroString(fmt);
   }
 }
 

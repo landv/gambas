@@ -26,17 +26,31 @@ bool STRING_equal_same(const char *str1, const char *str2, int len)
 {
 	static const void *jump[8] = { &&__LEN_0, &&__LEN_1, &&__LEN_2, &&__LEN_3, &&__LEN_4, &&__LEN_5, &&__LEN_6, &&__LEN_7 };
   
-  if (UNLIKELY(len < 8))
-  	goto *jump[len];
-  
-  while (len)
+  while (len >= 8)
   {
-    len--;
-    if (LIKELY(str1[len] != str2[len]))
+    if (LIKELY(str1[0] != str2[0]))
       return FALSE;
+    if (LIKELY(str1[1] != str2[1]))
+      return FALSE;
+    if (LIKELY(str1[2] != str2[2]))
+      return FALSE;
+    if (LIKELY(str1[3] != str2[3]))
+      return FALSE;
+    if (LIKELY(str1[4] != str2[4]))
+      return FALSE;
+    if (LIKELY(str1[5] != str2[5]))
+      return FALSE;
+    if (LIKELY(str1[6] != str2[6]))
+      return FALSE;
+    if (LIKELY(str1[7] != str2[7]))
+      return FALSE;
+		str1 += 8;
+		str2 += 8;
+    len -= 8;
   }
   
-  return TRUE;
+  //if (UNLIKELY(len < 8))
+  goto *jump[len];
   
 __LEN_7: if (LIKELY(str1[6] != str2[6])) return FALSE;
 __LEN_6: if (LIKELY(str1[5] != str2[5])) return FALSE;
@@ -50,17 +64,45 @@ __LEN_0: return TRUE;
 
 bool STRING_equal_ignore_case(const char *str1, int len1, const char *str2, int len2)
 {
+	static const void *jump[8] = { &&__LEN_0, &&__LEN_1, &&__LEN_2, &&__LEN_3, &&__LEN_4, &&__LEN_5, &&__LEN_6, &&__LEN_7 };
+  
   if (LIKELY(len1 != len2))
     return FALSE;
     
-  while (len1)
+  while (len1 >= 8)
   {
-    len1--;
-    if (LIKELY(toupper(str1[len1]) != toupper(str2[len1])))
+    if (LIKELY(toupper(str1[0]) != toupper(str2[0])))
       return FALSE;
+    if (LIKELY(toupper(str1[1]) != toupper(str2[1])))
+      return FALSE;
+    if (LIKELY(toupper(str1[2]) != toupper(str2[2])))
+      return FALSE;
+    if (LIKELY(toupper(str1[3]) != toupper(str2[3])))
+      return FALSE;
+    if (LIKELY(toupper(str1[4]) != toupper(str2[4])))
+      return FALSE;
+    if (LIKELY(toupper(str1[5]) != toupper(str2[5])))
+      return FALSE;
+    if (LIKELY(toupper(str1[6]) != toupper(str2[6])))
+      return FALSE;
+    if (LIKELY(toupper(str1[7]) != toupper(str2[7])))
+      return FALSE;
+		str1 += 8;
+		str2 += 8;
+    len1 -= 8;
   }
   
-  return TRUE;
+  //if (UNLIKELY(len < 8))
+  goto *jump[len1];
+  
+__LEN_7: if (LIKELY(toupper(str1[6]) != toupper(str2[6]))) return FALSE;
+__LEN_6: if (LIKELY(toupper(str1[5]) != toupper(str2[5]))) return FALSE;
+__LEN_5: if (LIKELY(toupper(str1[4]) != toupper(str2[4]))) return FALSE;
+__LEN_4: if (LIKELY(toupper(str1[3]) != toupper(str2[3]))) return FALSE;
+__LEN_3: if (LIKELY(toupper(str1[2]) != toupper(str2[2]))) return FALSE;
+__LEN_2: if (LIKELY(toupper(str1[1]) != toupper(str2[1]))) return FALSE;
+__LEN_1: if (LIKELY(toupper(str1[0]) != toupper(str2[0]))) return FALSE;
+__LEN_0: return TRUE;
 }
 
 int STRING_compare(const char *str1, int len1, const char *str2, int len2)

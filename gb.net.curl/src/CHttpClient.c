@@ -85,7 +85,7 @@ static void http_parse_header(CHTTPCLIENT *_object)
 	
 	THIS_HTTP->return_code = ret;
 	//GB.FreeString(&THIS_HTTP->return_string);
-	GB.NewString(&THIS_HTTP->return_string, p, header + len - p);
+	THIS_HTTP->return_string = GB.NewString(p, header + len - p);
 }
 
 
@@ -98,7 +98,7 @@ static int http_header_curl(void *buffer, size_t size, size_t nmemb, void *_obje
 	}
 
 	if (nmemb > 2)
-		GB.NewString((char **)GB.Array.Add(THIS_HTTP->headers), buffer, (nmemb - 2) * size);
+		*(char **)GB.Array.Add(THIS_HTTP->headers) = GB.NewString(buffer, (nmemb - 2) * size);
 	
 	if ( (THIS_STATUS==6) && THIS->async )
 	{
@@ -428,7 +428,7 @@ BEGIN_PROPERTY(HttpClient_CookiesFile)
 	file = GB.FileName(PSTRING(), PLENGTH());
 	
 	if (file)
-		GB.NewZeroString(&THIS_HTTP->cookiesfile, file);
+		THIS_HTTP->cookiesfile = GB.NewZeroString(file);
 
 END_PROPERTY
 
@@ -517,7 +517,7 @@ BEGIN_METHOD_VOID(HttpClient_new)
 	GB.Alloc((void**)POINTER(&tmp),sizeof(char)*(1+strlen("http://127.0.0.1:80")));
 	strcpy(tmp,"http://127.0.0.1:80");
 	THIS_URL=tmp;
-	GB.NewZeroString(&THIS_HTTP->sUserAgent,"Gambas Http/1.0");
+	THIS_HTTP->sUserAgent = GB.NewZeroString("Gambas Http/1.0");
 	
 	tmp=NULL;
 	GB.Alloc((void**)POINTER(&tmp),8);

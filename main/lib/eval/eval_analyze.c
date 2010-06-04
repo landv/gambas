@@ -90,21 +90,28 @@ static void get_symbol(PATTERN pattern, const char **symbol, int *len)
 				*symbol = keyword;
 			}
       return;
+			
     case RT_NUMBER:
     case RT_IDENTIFIER:
+      sym = TABLE_get_symbol(EVAL->table, index);
+      break;
+			
     case RT_CLASS:
       sym = TABLE_get_symbol(EVAL->table, index);
       break;
+			
     case RT_STRING:
     case RT_TSTRING:
     case RT_COMMENT:
     case EVAL_TYPE_ERROR:
       sym = TABLE_get_symbol(EVAL->string, index);
       break;
+			
     case RT_SUBR:
       *symbol = COMP_subr_info[index].name;
       *len = strlen(*symbol);
       return;
+			
     default:
       *symbol = NULL;
       *len = 0;
@@ -395,19 +402,16 @@ static void analyze(EVAL_ANALYZE *result)
     if (type == EVAL_TYPE_STRING)
       GB.AddString(&result->str, "\"", 1);
 
-    //len = strlen(symbol);
-
-    /*if (type == EVAL_TYPE_IDENTIFIER && len >= 2 &&
-       islower(symbol[0]) && islower(symbol[1]))
-    {
-      char c = toupper(symbol[0]);
-      GB.AddString(&result->str, &c, 1);
-      GB.AddString(&result->str, &symbol[1], len - 1);
-    }
-    else*/
     if (len)
     {
-      GB.AddString(&result->str, symbol, len);
+			if (EVAL->rewrite && type == EVAL_TYPE_CLASS)
+			{
+				char c = toupper(symbol[0]);
+				GB.AddString(&result->str, &c, 1);
+				GB.AddString(&result->str, &symbol[1], len - 1);
+			}
+			else
+				GB.AddString(&result->str, symbol, len);
       //printf("add: %.*s\n", len, symbol);
       len = get_utf8_length(symbol, len);
     }
@@ -475,7 +479,7 @@ PUBLIC void EVAL_analyze(const char *src, int len, int state, EVAL_ANALYZE *resu
 
 		EVAL_clear(EVAL);
 		
-		GB.NewString(&EVAL->source, src, len);
+		EVAL->source = GB.NewString(src, len);
 		GB.AddString(&EVAL->source, "\0\0", 2);
 		EVAL->len = len;
 		

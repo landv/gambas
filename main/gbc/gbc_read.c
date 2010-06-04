@@ -602,7 +602,7 @@ static void add_identifier()
 			break;
 			
 		__STRUCT:
-			can_be_reserved = canres_car[car] && (begin_line || last_pub || PATTERN_is(last_pattern, RS_AS) || PATTERN_is(last_pattern, RS_END));
+			can_be_reserved = canres_car[car] && (begin_line || last_pub || PATTERN_is(last_pattern, RS_AS) || PATTERN_is(last_pattern, RS_END) || PATTERN_is(last_pattern, RS_NEW));
 			break;
 			
 		__SUB_PROCEDURE_FUNCTION:

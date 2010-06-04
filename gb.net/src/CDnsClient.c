@@ -120,12 +120,12 @@ void dns_callback(long lParam)
 				if (Action[0]=='1')
 				{
 					GB.FreeString(&mythis->sHostIP);
-					GB.NewZeroString(&mythis->sHostIP, Buf);
+					mythis->sHostIP = GB.NewZeroString(Buf);
 				}
 				else
 				{
 					GB.FreeString(&mythis->sHostName);
-					GB.NewZeroString(&mythis->sHostName, Buf);
+					mythis->sHostName = GB.NewZeroString(Buf);
 				}
 				mythis->iStatus=0;
 				if (mythis->finished_callback)
@@ -485,7 +485,7 @@ BEGIN_METHOD_VOID(CDNSCLIENT_GetHostName)
 		else
 		{
 			GB.FreeString(&THIS->sHostName);
-			GB.NewZeroString(&THIS->sHostName, stHost->h_name);
+			THIS->sHostName = GB.NewZeroString(stHost->h_name);
 		}
 		GB.Raise((void*)THIS,Finished,0);
 	}
@@ -537,7 +537,7 @@ BEGIN_METHOD_VOID(CDNSCLIENT_GetHostIP)
 		else
 		{
 			GB.FreeString(&THIS->sHostIP);
-			GB.NewZeroString(&THIS->sHostIP, inet_ntoa(*((struct in_addr*)stHost->h_addr)));
+			THIS->sHostIP = GB.NewZeroString(inet_ntoa(*((struct in_addr*)stHost->h_addr)));
 		}
 		GB.Raise((void*)THIS,Finished,0);
 	}

@@ -1597,15 +1597,15 @@ static char *_entry;
 static const char *_ptr;
 static int _lptr;
 
-static void add_char(const char *p)
+static void add_char_real(const char *p)
 {
 	//fprintf(stderr, "add_char: %p %c\n", p, p ? *p : 0);
 	
-	if (p && p == (_ptr + _lptr))
+	/*if (p && p == (_ptr + _lptr))
 	{
 		_lptr++;
 		return;
-	}
+	}*/
 	
 	if (_lptr)
 	{
@@ -1616,6 +1616,14 @@ static void add_char(const char *p)
 	_ptr = p;
 	_lptr = p ? 1 : 0;
 }
+
+#define add_char(_p) \
+({ \
+	if ((_p) && (_p) == (_ptr + _lptr)) \
+		_lptr++; \
+	else \
+		add_char_real(_p); \
+})
 
 static void add_entry()
 {

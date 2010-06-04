@@ -818,9 +818,9 @@ typedef
 		void (*ReturnNewString)(const char *, int);
 		void (*ReturnNewZeroString)(const char *);
 
-		void (*NewString)(char **, const char *, int);
-		void (*NewZeroString)(char **, const char *);
-		void (*TempString)(char **, const char *, int);
+		char *(*NewString)(const char *, int);
+		char *(*NewZeroString)(const char *);
+		char *(*TempString)(const char *, int);
 		void (*FreeString)(char **);
 		void (*ExtendString)(char **, int);
 		void (*AddString)(char **, const char *, int);

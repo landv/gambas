@@ -85,8 +85,6 @@ void *my_malloc(size_t len);
 void my_free(void *alloc);
 void *my_realloc(void *alloc, size_t len);
 
-int THROW_MEMORY();
-
 #else
 
 #define ALLOC(_ptr, _size, _src)        MEMORY_alloc((void *)_ptr, _size)
@@ -105,6 +103,7 @@ void MEMORY_check(void);
 
 void MEMORY_init(void);
 void MEMORY_exit(void);
+int THROW_MEMORY();
 
 #endif
 

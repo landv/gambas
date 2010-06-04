@@ -182,7 +182,7 @@ static void analyze(const char *src, int len_src, bool rewrite, int state)
 		
     if (result.color[p].state != EVAL_TYPE_END)
     {
-      GB.NewString(&str, &result.str[upos], ulen);
+      str = GB.NewString(&result.str[upos], ulen);
       *((char **)GB.Array.Get(garray, i)) = str;
       *((int *)GB.Array.Get(tarray, i)) = convState(result.color[p].state);
       *((int *)GB.Array.Get(parray, i)) = pos;

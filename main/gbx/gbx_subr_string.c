@@ -37,7 +37,7 @@
 #include "gbx_local.h"
 #include "gbx_compare.h"
 
-void SUBR_cat(void)
+void SUBR_cat(ushort code)
 {
 	int i;
 	int len, len_cat;
@@ -54,12 +54,13 @@ void SUBR_cat(void)
 		len_cat += PARAM[i]._string.len;
 	}
 
-	STRING_new_temp(&str, NULL, len_cat);
+	str = STRING_new(NULL, len_cat);
 	ptr = str;
 
 	for (i = 0; i < NPARAM; i++)
 	{
 		len = PARAM[i]._string.len;
+		
 		if (len > 0)
 		{
 			/*printf("add %p ", PARAM[i]._string.addr + PARAM[i]._string.start); fflush(NULL);
@@ -67,20 +68,22 @@ void SUBR_cat(void)
 			memcpy(ptr, PARAM[i]._string.addr + PARAM[i]._string.start, len);
 			ptr += len;
 		}
+		
+		RELEASE_STRING(&PARAM[i]);
 	}
 
 	/*printf("\n");*/
 
-	RETURN->type = T_STRING;
-	RETURN->_string.addr = str;
-	RETURN->_string.start = 0;
-	RETURN->_string.len = len_cat;
-
-	SUBR_LEAVE();
+	SP -= NPARAM;
+	SP->type = T_STRING;
+	SP->_string.addr = str;
+	SP->_string.start = 0;
+	SP->_string.len = len_cat;
+	SP++;
 }
 
 
-void SUBR_file(void)
+void SUBR_file(ushort code)
 {
 	int i;
 	int length;
@@ -116,7 +119,7 @@ void SUBR_file(void)
 
 	}
 
-	STRING_new_temp(&str, NULL, length);
+	str = STRING_new(NULL, length);
 	ptr = str;
 	slash = FALSE;
 
@@ -139,155 +142,19 @@ void SUBR_file(void)
 			memcpy(ptr, addr, len);
 			ptr += len;
 		}
+
+		RELEASE_STRING(&PARAM[i]);
 	}
-
-	RETURN->type = T_STRING;
-	RETURN->_string.addr = str;
-	RETURN->_string.start = 0;
-	RETURN->_string.len = length;
-
-	SUBR_LEAVE();
-}
-
-
-#if 0
-void SUBR_left(void)
-{
-	int val;
-
-	SUBR_ENTER();
-
-	if (SUBR_check_string(PARAM))
-		goto _FIN;
-
-	if (NPARAM == 1)
-		val = 1;
-	else
-	{
-		VALUE_conv_integer(&PARAM[1]);
-		val = PARAM[1]._integer.value;
-	}
-
-	if (val < 0)
-		val += PARAM->_string.len;
-
-	PARAM->_string.len = MinMax(val, 0, PARAM->_string.len);
-
-_FIN:
 
 	SP -= NPARAM;
+	SP->type = T_STRING;
+	SP->_string.addr = str;
+	SP->_string.start = 0;
+	SP->_string.len = length;
 	SP++;
 }
 
 
-
-void SUBR_right(void)
-{
-	int val;
-	int new_len;
-
-	SUBR_ENTER();
-
-	if (SUBR_check_string(PARAM))
-		goto _FIN;
-
-	if (NPARAM == 1)
-		val = 1;
-	else
-	{
-		VALUE_conv_integer(&PARAM[1]);
-		val = PARAM[1]._integer.value;
-	}
-
-	if (val < 0)
-		val += PARAM->_string.len;
-
-	new_len = MinMax(val, 0, PARAM->_string.len);
-
-	PARAM->_string.start += PARAM->_string.len - new_len;
-	PARAM->_string.len = new_len;
-
-_FIN:
-
-	SP -= NPARAM;
-	SP++;
-}
-
-
-
-
-void SUBR_mid(void)
-{
-	int start;
-	int len;
-
-	SUBR_ENTER();
-
-	if (SUBR_check_string(PARAM))
-		goto FIN;
-
-	VALUE_conv_integer(&PARAM[1]);
-	start = PARAM[1]._integer.value - 1;
-
-	if (start < 0)
-		THROW(E_ARG);
-
-	if (start >= PARAM->_string.len)
-	{
-		RELEASE(PARAM);
-		STRING_void_value(PARAM);
-		goto FIN;
-	}
-
-	if (NPARAM == 2)
-		len = PARAM->_string.len;
-	else
-	{
-		VALUE_conv_integer(&PARAM[2]);
-		len = PARAM[2]._integer.value;
-	}
-
-	if (len < 0)
-		len = Max(0, PARAM->_string.len - start + len);
-
-	len = MinMax(len, 0, PARAM->_string.len - start);
-
-	if (len == 0)
-	{
-		RELEASE(PARAM);
-		PARAM->_string.addr = NULL;
-		PARAM->_string.start = 0;
-	}
-	else
-		PARAM->_string.start += start;
-
-	PARAM->_string.len = len;
-
-FIN:
-
-	SP -= NPARAM;
-	SP++;
-}
-
-
-
-void SUBR_len(void)
-{
-	int len;
-
-	SUBR_GET_PARAM(1);
-
-	if (SUBR_check_string(PARAM))
-		len = 0;
-	else
-		len = PARAM->_string.len;
-
-	RELEASE(PARAM);
-
-	PARAM->type = T_INTEGER;
-	PARAM->_integer.value = len;
-}
-#endif
 
 void SUBR_space(void)
 {
@@ -354,18 +221,17 @@ void SUBR_string(void)
 }
 
 
-void SUBR_trim(void)
+void SUBR_trim(ushort code)
 {
 	unsigned char *str;
 	bool left, right;
-	int code;
 
 	SUBR_GET_PARAM(1);
 
 	if (SUBR_check_string(PARAM))
 		return;
 
-	code = EXEC_code & 0x1F;
+	code &= 0x1F;
 	left = (code == 0 || code == 1);
 	right = (code == 0 || code == 2);
 
@@ -409,7 +275,7 @@ void SUBR_trim(void)
 		len = PARAM->_string.len; \
 		if (len > 0) \
 		{ \
-			STRING_new_temp(&str, &PARAM->_string.addr[PARAM->_string.start], PARAM->_string.len); \
+			str = STRING_new_temp(&PARAM->_string.addr[PARAM->_string.start], PARAM->_string.len); \
 			\
 			for (i = 0; i < len; i++) \
 				str[i] = _func(str[i]); \
@@ -452,7 +318,7 @@ void SUBR_chr(void)
 
 
 
-void SUBR_asc(void)
+void SUBR_asc(ushort code)
 {
 	int pos = 0;
 
@@ -481,7 +347,7 @@ void SUBR_asc(void)
 
 
 
-void SUBR_instr(void)
+void SUBR_instr(ushort code)
 {
 	bool right, nocase = FALSE;
 	int is, pos;
@@ -503,7 +369,7 @@ void SUBR_instr(void)
 	lp = PARAM[1]._string.len;
 	ls = PARAM->_string.len;
 
-	right = ((EXEC_code >> 8) == CODE_RINSTR);
+	right = ((code >> 8) == CODE_RINSTR);
 
 	if (lp > ls) goto __FOUND;
 
@@ -522,14 +388,17 @@ void SUBR_instr(void)
 
 __FOUND:
 
-	RETURN->type = T_INTEGER;
-	RETURN->_integer.value = pos;
+	RELEASE_STRING(PARAM);
+	RELEASE_STRING(&PARAM[1]);
 
-	SUBR_LEAVE();
+	SP -= NPARAM;
+	SP->type = T_INTEGER;
+	SP->_integer.value = pos;
+	SP++;
 }
 
 
-void SUBR_like(void)
+void SUBR_like(ushort code)
 {
 	static const void *jump[] = { &&__LIKE, &&__BEGINS, &&__ENDS, &&__RETURN };
 	char *pattern;
@@ -542,7 +411,7 @@ void SUBR_like(void)
 	SUBR_get_string_len(&PARAM[0], &string, &len_string);
 	SUBR_get_string_len(&PARAM[1], &pattern, &len_pattern);
 
-	goto *jump[EXEC_code & 0x3];
+	goto *jump[code & 0x3];
 	
 __LIKE:
 	
@@ -589,7 +458,7 @@ static void get_subst(int np, char **str, int *len)
 }
 
 
-void SUBR_subst(void)
+void SUBR_subst(ushort code)
 {
 	char *string;
 	int len;
@@ -620,7 +489,7 @@ void SUBR_subst(void)
 
 
 
-void SUBR_replace(void)
+void SUBR_replace(ushort code)
 {
 	char *ps;
 	char *pp;
@@ -678,7 +547,7 @@ void SUBR_replace(void)
 }
 
 
-void SUBR_split(void)
+void SUBR_split(ushort code)
 {
 	CARRAY *array;
 	char *str;
@@ -784,7 +653,7 @@ void SUBR_iconv(void)
 }
 
 
-void SUBR_sconv(void)
+void SUBR_sconv(ushort code)
 {
 	char *str;
 	const char *src;
@@ -800,7 +669,7 @@ void SUBR_sconv(void)
 	str = SUBR_get_string(&PARAM[0]);
 	len = PARAM[0]._string.len;
 
-	if (EXEC_code & 0xF)
+	if (code & 0xF)
 	{
 		src = LOCAL_encoding;
 		dst = "UTF-8";
@@ -872,7 +741,7 @@ static int _is_punct(int c)
 }
 
 
-void SUBR_is_chr(void)
+void SUBR_is_chr(ushort code)
 {
 	static void *jump[] =
 	{
@@ -890,7 +759,7 @@ void SUBR_is_chr(void)
 
 	SUBR_get_string_len(PARAM, &addr, &len);
 
-	func = jump[EXEC_code & 0x3F];
+	func = jump[code & 0x3F];
 
 	for (i = 0; i < len; i++)
 	{
@@ -898,10 +767,11 @@ void SUBR_is_chr(void)
 			break;
 	}
 
-	RETURN->type = T_BOOLEAN;
-	RETURN->_boolean.value = (len > 0 && i >= len) ? -1 : 0;
-
-	SUBR_LEAVE();
+	RELEASE_STRING(PARAM);
+	SP--;
+	SP->type = T_BOOLEAN;
+	SP->_boolean.value = (len > 0 && i >= len) ? -1 : 0;
+	SP++;
 }
 
 
@@ -917,7 +787,7 @@ void SUBR_tr(void)
 		STRING_void_value(RETURN);
 	else
 	{
-		STRING_new_temp(&str, &PARAM->_string.addr[PARAM->_string.start], PARAM->_string.len);
+		str = STRING_new_temp(&PARAM->_string.addr[PARAM->_string.start], PARAM->_string.len);
 		
 		RETURN->type = T_CSTRING;
 		RETURN->_string.addr = (char *)LOCAL_gettext(str);
@@ -929,7 +799,7 @@ void SUBR_tr(void)
 }
 
 
-void SUBR_quote(void)
+void SUBR_quote(ushort code)
 {
 	static void *jump[4] = { &&__QUOTE, &&__SHELL, &&__HTML, &&__QUOTE };
 	char *str;
@@ -947,7 +817,7 @@ void SUBR_quote(void)
 	
 	STRING_start_len(lstr);
 	
-	goto *jump[EXEC_code & 0x3];
+	goto *jump[code & 0x3];
 	
 __QUOTE:
 	

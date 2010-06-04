@@ -129,7 +129,14 @@ void DEBUG_exit(void)
 
 void DEBUG_where(void)
 {
-  fprintf(stderr, "%s: ", DEBUG_get_current_position());
+	//static bool breakpoint = FALSE;
+	const char *where = DEBUG_get_current_position();
+	/*if (!breakpoint && !strcmp(where, "FForm._new.97"))
+	{
+		breakpoint = TRUE;
+		BREAKPOINT();
+	}*/
+  fprintf(stderr, "%s: ", where);
 }
 
 
@@ -221,7 +228,7 @@ __FOUND:
   /*if (value.type == T_ARRAY)
     value._array.keep = TRUE;
   else*/
-    VALUE_conv(&value, T_VARIANT);
+    VALUE_conv_variant(&value);
   UNBORROW(&value);
 
   *((VALUE *)ret) = value;
@@ -422,12 +429,12 @@ GB_ARRAY DEBUG_get_string_array_from_backtrace(ERROR_INFO *err)
 	}
 
 	GB_ArrayNew(&array, GB_T_STRING, n);
-	STRING_new_zero((char **)GB_ArrayGet(array, 0), DEBUG_get_position(err->cp, err->fp, err->pc));
+	*((char **)GB_ArrayGet(array, 0)) = STRING_new_zero(DEBUG_get_position(err->cp, err->fp, err->pc));
 	for (i = 0, n = 1; i < err->bt_count; i++)
 	{
 		if (!sc[i].pc)
 			continue;
-		STRING_new_zero((char **)GB_ArrayGet(array, n), DEBUG_get_position(sc[i].cp, sc[i].fp, sc[i].pc));
+		*((char **)GB_ArrayGet(array, n)) = STRING_new_zero(DEBUG_get_position(sc[i].cp, sc[i].fp, sc[i].pc));
 		n++;
 	}
 

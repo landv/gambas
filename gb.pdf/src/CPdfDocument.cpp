@@ -110,7 +110,7 @@ static void aux_return_date_info(void *_object, const char *key)
 			GB.ConvString (&datestr,goo->getCString()+2,goo->getLength()-2,"UTF-16BE","UTF-8");
 		else
 		{
-			GB.NewString(&datestr,goo->getCString(),goo->getLength());
+			datestr = GB.NewString(goo->getCString(),goo->getLength());
 			tofree=datestr;		
 		}
 

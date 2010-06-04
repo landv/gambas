@@ -42,7 +42,6 @@
 #define IS_PURE_INTEGER(_int64_val) ((_int64_val) == ((int)(_int64_val)))
 
 int TRANS_in_affectation = 0;
-//int TRANS_in_expression = 0;
 
 void TRANS_reset(void)
 {
@@ -370,6 +369,8 @@ static PATTERN *trans_embedded_array(PATTERN *look, int mode, TRANS_DECL *result
       if (i >= MAX_ARRAY_DIM)
         THROW("Too many dimensions");
 
+			if (!PATTERN_is_number(*look))
+        THROW(E_SYNTAX);
       if (TRANS_get_number(PATTERN_index(*look), &tnum))
         THROW(E_SYNTAX);
       if (tnum.type != T_INTEGER)
@@ -439,6 +440,41 @@ static int TRANS_get_class(PATTERN pattern, bool array)
   return CLASS_add_class(JOB->class, index);
 }
 
+static bool check_structure(int cindex)
+{
+	SYMBOL *sym = TABLE_get_symbol(JOB->class->table, JOB->class->class[cindex].index);
+	int len = sym->len;
+	char name[sym->len + 1];
+	int index;
+	bool is_array;
+			
+	strncpy(name, sym->name, len);
+	while (name[len - 1] == ']')
+		len -= 2;
+	name[len] = 0;
+	
+	if (len < sym->len)
+	{
+		if (!TABLE_find_symbol(JOB->class->table, name, len, &index))
+			goto __ERROR;
+		
+		index = CLASS_add_class(JOB->class, index);
+		is_array = TRUE;
+	}
+	else
+	{
+		index = cindex;
+		is_array = FALSE;
+	}
+	
+	if (JOB->class->class[index].structure)
+		return is_array;
+
+__ERROR:
+
+	THROW("&1 is not a structure", name);
+}
+
 
 bool TRANS_type(int mode, TRANS_DECL *result)
 {
@@ -446,6 +482,7 @@ bool TRANS_type(int mode, TRANS_DECL *result)
   short id;
   int value;
   int flag = 0;
+	bool is_array;
 
   /* Do not fill the structure with zeros */
 
@@ -481,19 +518,23 @@ bool TRANS_type(int mode, TRANS_DECL *result)
 
 	if ((mode & TT_CAN_STATIC) && PATTERN_is(*look, RS_STRUCT))
 	{
-		if (result->is_new)
-			THROW("Cannot mix NEW and embedded structure");
-		if (result->array.ndim > 0)
-			THROW("Cannot mix embedded array and embedded structure");
-		
 		id = T_STRUCT;
 		look++;
 
 		if (!PATTERN_is_class(*look))
 			THROW_UNEXPECTED(look);
+		
 		value = TRANS_get_class(*look, TRUE);
-		if (!JOB->class->class[value].structure)
-			THROW("&1 is not a structure", TABLE_get_symbol_name(JOB->class->table, PATTERN_index(*look)));
+		is_array = check_structure(value);
+		
+		if (!is_array)
+		{
+			if (result->is_new)
+				THROW("Cannot mix NEW and embedded structure");
+			if (result->array.ndim > 0)
+				THROW("Cannot mix embedded array and embedded structure");
+		}
+		
 		look++;
 	}
 	else

@@ -22,7 +22,7 @@
 
 #ifndef STT_INEQUALITY
 
-void STT_NAME(void)
+void STT_NAME(ushort code)
 {
   static void *jump[17] = {
     &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
@@ -39,7 +39,7 @@ void STT_NAME(void)
   P2 = P1 + 1;
 
   variant = FALSE;
-  type = EXEC_code & 0x1F;
+  type = code & 0x1F;
   goto *jump[type];
 
 __VARIANT:
@@ -193,7 +193,7 @@ __END:
 
 #else /* inequality tests */
 
-void STT_NAME(void)
+void STT_NAME(ushort code)
 {
   static void *jump[17] = {
     &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
@@ -209,7 +209,7 @@ void STT_NAME(void)
   P2 = P1 + 1;
 
   variant = FALSE;
-  type = EXEC_code & 0x1F;
+  type = code & 0x1F;
   goto *jump[type];
 
 __VARIANT:

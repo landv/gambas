@@ -518,27 +518,9 @@ bool CLASS_inherits(CLASS *class, CLASS *parent)
 }
 
 
-int CLASS_find_symbol(CLASS *class, const char *name)
-{
-	int index;
-
-	//printf("%s.%s\n", class->name, name);
-	
-	SYMBOL_find(class->table, class->sort, class->n_desc, sizeof(CLASS_DESC_SYMBOL), TF_IGNORE_CASE, name, strlen(name), NULL, &index);
-
-	//if (strcmp(name, "m1") == 0)
-	//printf("find: %s in %s -> %d\n", name, class->name, index);
-
-	return index;
-}
-
-
 int CLASS_find_symbol_with_prefix(CLASS *class, const char *name, const char *prefix)
 {
-	int index;
-
-	SYMBOL_find(class->table, class->sort, class->n_desc, sizeof(CLASS_DESC_SYMBOL), TF_IGNORE_CASE, name, strlen(name), prefix, &index);
-	return index;
+	return SYMBOL_find(class->table, class->sort, class->n_desc, sizeof(CLASS_DESC_SYMBOL), TF_IGNORE_CASE, name, strlen(name), prefix);
 }
 
 
@@ -1219,7 +1201,7 @@ void CLASS_create_array_class(CLASS *class)
 	
 	//fprintf(stderr, "CLASS_create_array_class: create %s\n", class->name);
 
-	STRING_new(&name_joker, class->name, strlen(class->name) - 2);
+	name_joker = STRING_new(class->name, strlen(class->name) - 2);
 
 	array_type = class->global ? CLASS_find_global(name_joker) : CLASS_find(name_joker);
 	TYPE_joker = array_type;

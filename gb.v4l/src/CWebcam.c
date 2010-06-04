@@ -831,7 +831,7 @@ BEGIN_METHOD(CWEBCAM_new, GB_STRING Device; GB_INTEGER Compat)
 	//
 	//	Open the device
 	//
-	GB.NewString(&THIS->device, STRING(Device), LENGTH(Device));
+	THIS->device = GB.NewString(STRING(Device), LENGTH(Device));
 
 	THIS->io = gv4l2_open_device(THIS->device);
 	if (THIS->io == -1) 

@@ -93,7 +93,7 @@ static char *get_quote_string(const char *str, int len, char quote)
 			len_res++;
 	}
 	
-	GB.TempString(&res, NULL, len_res);
+	res = GB.TempString(NULL, len_res);
 	
 	p = res;
 	for (i = 0; i < len; i++)
@@ -578,7 +578,7 @@ static void set_character_set(DB_DATABASE *db)
 	if (search_result(res, "character_set_client", &row))
 		return;
 	
-  GB.NewZeroString(&db->charset, row[1]);
+  db->charset = GB.NewZeroString(row[1]);
   //fprintf(stderr, "charset is '%s'\n", db->charset);
   mysql_free_result(res);
 }
@@ -942,7 +942,7 @@ static int field_index(DB_RESULT Result, const char *name, DB_DATABASE *db)
   fld = strchr(name, (int)FLD_SEP);
   if (fld)
 	{ /* Field does includes table info */
-		GB.NewString(&table, name, fld - name);
+		table = GB.NewString(name, fld - name);
 		fld = fld + 1;
 	}
   else 
@@ -1137,7 +1137,7 @@ static int table_init(DB_DATABASE *db, const char *table, DB_INFO *info)
 
   /* Nom de la table */
 
-  GB.NewZeroString(&info->table, table);
+  info->table = GB.NewZeroString(table);
 
   res = mysql_list_fields( conn, table, 0);
   if (!res)
@@ -1161,7 +1161,7 @@ static int table_init(DB_DATABASE *db, const char *table, DB_INFO *info)
 		  return TRUE;
 		}
 
-		GB.NewZeroString(&f->name, field->name);
+		f->name = GB.NewZeroString(field->name);
 
     /*f->type = conv_type(field->type, field->length);
     f->length = 0;
@@ -1334,7 +1334,7 @@ static int table_list(DB_DATABASE *db, char ***tables)
 
   for (i = 0; i < rows; i++){
     row = mysql_fetch_row(res);
-    GB.NewZeroString(&(*tables)[i], row[0]);
+    (*tables)[i] = GB.NewZeroString(row[0]);
   }
 
   mysql_free_result(res);
@@ -1375,7 +1375,7 @@ static int table_primary_key(DB_DATABASE *db, const char *table, char ***primary
   {
     row = mysql_fetch_row(res);
     if (strcmp("PRIMARY", row[2]) == 0)
-      GB.NewZeroString((char **)GB.Add(primary), row[4]);
+      *(char **)GB.Add(primary) = GB.NewZeroString(row[4]);
   }
 
   mysql_free_result(res);
@@ -1695,7 +1695,7 @@ static int field_list(DB_DATABASE *db, const char *table, char ***fields)
 
     for (i = 0; i < n; i++){
       row = mysql_fetch_row(res);
-      GB.NewZeroString(&(*fields)[i], row[0]);
+      (*fields)[i] = GB.NewZeroString(row[0]);
     }
   }
 
@@ -1870,7 +1870,7 @@ static int index_list(DB_DATABASE *db, const char *table, char ***indexes)
   {
     row = mysql_fetch_row(res);
     if ( atoi(row[3]) == 1 /* Start of a new index */)
-       GB.NewZeroString(&(*indexes)[n++], row[2]); /* (BM) The name is row[2], not row[4] */
+       (*indexes)[n++] = GB.NewZeroString(row[2]); /* (BM) The name is row[2], not row[4] */
   }
 
   mysql_free_result(res);
@@ -2070,7 +2070,7 @@ static int database_list(DB_DATABASE *db, char ***databases)
 
   for (i = 0; i < rows; i++){
     row = mysql_fetch_row(res);
-    GB.NewZeroString(&(*databases)[i], row[0]);
+    (*databases)[i] = GB.NewZeroString(row[0]);
     /*printf("%s\n", (*databases)[i]); */
   }
 
@@ -2244,7 +2244,7 @@ static int user_list(DB_DATABASE *db, char ***users)
     {
        row = mysql_fetch_row(res);
        sprintf(_username,"%s@%s", row[0], row[1]);
-       GB.NewZeroString(&(*users)[i], _username);
+       (*users)[i] = GB.NewZeroString(_username);
     }
     free(_username);
   }
@@ -2333,7 +2333,7 @@ static int user_info(DB_DATABASE *db, const char *name, DB_USER *info )
 	 info->admin = 0;
 
  if (row[3])
-     GB.NewZeroString(&info->password, row[3]); //password is encrypted in mysql
+     info->password = GB.NewZeroString(row[3]); //password is encrypted in mysql
 
   mysql_free_result(res);
   free(_name);

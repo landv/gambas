@@ -84,7 +84,6 @@ static void get_formats(const QMimeData *src, GB_ARRAY array)
   int i, j;
   QStringList formats = src->formats();
   QString fmt;
-  char *str;
   
   for (i = 0; i < formats.count(); i++)
   {
@@ -99,8 +98,8 @@ static void get_formats(const QMimeData *src, GB_ARRAY array)
     if (j < GB.Array.Count(array))
       continue;
     //fmt = get_format(src, i);
-		GB.NewZeroString(&str, fmt.toUtf8().data());
-		*((char **)GB.Array.Add(array)) = str;
+		
+		*((char **)GB.Array.Add(array)) = GB.NewZeroString(fmt.toUtf8().data());
   }
 }
 

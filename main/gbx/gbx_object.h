@@ -115,6 +115,16 @@ EXTERN const char *OBJECT_ref_where;
 	} \
 }
 
+#define OBJECT_just_unref(_object) \
+{ \
+	if (OBJECT_class(_object) == (CLASS *)0x23232323) \
+	{ \
+		fprintf(stderr, "*ALREADY FREED* %p\n", (_object)); \
+		fflush(NULL); \
+	} \
+	CLASS_unref(_object, TRUE); \
+}
+
 
 #define OBJECT_unref_keep(_object) \
 { \
@@ -151,6 +161,12 @@ EXTERN const char *OBJECT_ref_where;
 			_object = NULL; \
 		} \
 	} \
+}
+
+#define OBJECT_just_unref(_object) \
+{ \
+	if ((--((OBJECT *)(_object))->ref) == 0) \
+		CLASS_free(_object); \
 }
 
 #define OBJECT_unref_keep(_object) \

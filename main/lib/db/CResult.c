@@ -281,7 +281,7 @@ CRESULT *DB_MakeResult(CCONNECTION *conn, int mode, char *table_temp, char *quer
 	THIS->dmap = NULL;
 
 	// table must be copied because it can be a temporary string!
-	GB.NewZeroString(&table, table_temp);
+	table = GB.NewZeroString(table_temp);
 
 	switch (mode)
 	{
@@ -335,7 +335,7 @@ ERROR:
 		}
 		else
 		{
-			GB.NewZeroString(&duplicate, table);
+			duplicate = GB.NewZeroString(table);
 			token = strtok(duplicate,",");
 			do {
 				arg = token;
@@ -838,7 +838,7 @@ static void set_blob(CBLOB *_object, char *data, int length)
 
 	if (data && length)
 	{
-		GB.NewString((char **)&BLOB->data, data, length);
+		*((char **)&BLOB->data) = GB.NewString(data, length);
 		BLOB->constant = FALSE;
 	}
 

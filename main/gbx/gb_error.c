@@ -320,7 +320,7 @@ void ERROR_define(const char *pattern, char *arg[])
 		len = get_message_length(pattern, arg, narg);
     if (len)
     {
-			STRING_new(&msg, NULL, len);
+			msg = STRING_new(NULL, len);
 			ERROR_current->info.msg = msg;
     	ERROR_current->info.free = TRUE;
     
@@ -371,7 +371,7 @@ void ERROR_define(const char *pattern, char *arg[])
   }
   else if (ERROR_current->info.code == E_CUSTOM)
 	{
-    STRING_new_zero(&ERROR_current->info.msg, pattern);
+    ERROR_current->info.msg = STRING_new_zero(pattern);
     ERROR_current->info.free = TRUE;
 	}
 	else

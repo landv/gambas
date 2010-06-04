@@ -59,7 +59,7 @@ QSvgGenerator *SVGIMAGE_begin(CSVGIMAGE *_object, QPainter **painter)
 			return NULL;
 		}
 		
-		GB.NewZeroString(&THIS->file, GB.TempFile(NULL));
+		THIS->file = GB.NewZeroString(GB.TempFile(NULL));
 		THIS->generator = new QSvgGenerator();
 		GENERATOR->setSize(QSize(THIS->width, THIS->height));
 		//GENERATOR->setViewBox(QRectF(0, 0, THIS->width, THIS->height));

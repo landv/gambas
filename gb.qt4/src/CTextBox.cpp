@@ -409,13 +409,11 @@ static int combo_find_item(void *_object, const QString& s)
 static void combo_get_list(void *_object, GB_ARRAY array)
 {
 	int i;
-	char *str;
 	
 	COMBOBOX->sort();
 	for (i = 0; i < COMBOBOX->count(); i++)
 	{
-		GB.NewZeroString(&str, TO_UTF8(COMBOBOX->text(i)));
-		*((char **)GB.Array.Get(array, i)) = str;
+		*((char **)GB.Array.Get(array, i)) = GB.NewZeroString(TO_UTF8(COMBOBOX->text(i)));
 	}
 }
 

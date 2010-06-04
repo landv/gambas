@@ -479,6 +479,7 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 	sclass->is_struct = TRUE;
 	
   sclass->state = CS_READY;
+	sclass->ready = TRUE;
 	return;
 	
 __MISMATCH:
@@ -1192,6 +1193,7 @@ void CLASS_load_real(CLASS *class)
 
 	CLASS_load_without_init(class);
   class->state = CS_READY;
+	class->ready = TRUE;
 
   EXEC_public(class, NULL, "_init", 0);
 }

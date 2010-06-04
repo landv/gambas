@@ -31,21 +31,21 @@
 #include "gbx_number.h"
 
 
-void SUBR_is_type(void)
+void SUBR_is_type(ushort code)
 {
-  static void *jump[] = {
-    &&__BAD, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
-    &&__STRING, &&__BAD, &&__POINTER, &&__VARIANT, &&__BAD, &&__BAD, &&__NULL,
-    &&__OBJECT, &&__NUMBER
-    };
+	static void *jump[] = {
+		&&__BAD, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
+		&&__STRING, &&__BAD, &&__POINTER, &&__VARIANT, &&__BAD, &&__BAD, &&__NULL,
+		&&__OBJECT, &&__NUMBER
+		};
 
-  bool test;
-  TYPE type;
+	bool test;
+	TYPE type;
 
-  SUBR_ENTER_PARAM(1);
+	SUBR_ENTER_PARAM(1);
 
-  type = EXEC_code & 0x3F;
-  goto *jump[type];
+	type = code & 0x3F;
+	goto *jump[type];
 
 __BOOLEAN:
 __BYTE:
@@ -57,56 +57,57 @@ __FLOAT:
 __DATE:
 __POINTER:
 
-  VARIANT_undo(PARAM);
+	VARIANT_undo(PARAM);
 
 __VARIANT:
 
 	test = PARAM->type == type;
-  goto __END;
+	goto __END;
 
 __STRING:
 
-  VARIANT_undo(PARAM);
+	VARIANT_undo(PARAM);
 
-  test = PARAM->type == T_STRING || PARAM->type == T_CSTRING;
-  if (test)
-    goto __END;
+	test = PARAM->type == T_STRING || PARAM->type == T_CSTRING;
+	if (test)
+		goto __END;
 
 __NULL:
 
-  test = VALUE_is_null(PARAM);
-  goto __END;
+	test = VALUE_is_null(PARAM);
+	goto __END;
 
 __OBJECT:
 
-  test = TYPE_is_object_null(PARAM->type) || (PARAM->type == T_VARIANT && TYPE_is_object_null(PARAM->_variant.vtype));
-  goto __END;
+	test = TYPE_is_object_null(PARAM->type) || (PARAM->type == T_VARIANT && TYPE_is_object_null(PARAM->_variant.vtype));
+	goto __END;
 
 __NUMBER:
 
-  test = TYPE_is_number(PARAM->type) || (PARAM->type == T_VARIANT && TYPE_is_number(PARAM->_variant.vtype));
-  goto __END;
+	test = TYPE_is_number(PARAM->type) || (PARAM->type == T_VARIANT && TYPE_is_number(PARAM->_variant.vtype));
+	goto __END;
 
 __BAD:
 
-  THROW(E_ILLEGAL);
+	THROW_ILLEGAL();
 
 __END:
 
-  RETURN->type = T_BOOLEAN;
-  RETURN->_integer.value = test ? -1 : 0;
-
-  SUBR_LEAVE();
+	RELEASE(PARAM);
+	SP--;
+	SP->type = T_BOOLEAN;
+	SP->_integer.value = (-test);
+	SP++;
 }
 
 
-void SUBR_conv(void)
+void SUBR_conv(ushort code)
 {
-  VALUE_convert(SP - 1, EXEC_code & 0x3F);
+  VALUE_convert(SP - 1, code & 0x3F);
 }
 
 
-void SUBR_type(void)
+void SUBR_type(ushort code)
 {
   TYPE type;
 	int val;
@@ -117,7 +118,7 @@ void SUBR_type(void)
 	if (type == T_VARIANT)
 		type = PARAM->_variant.vtype;
 
-	if (EXEC_code & 0x3F)
+	if (code & 0x3F)
 	{
 		if (TYPE_is_pure_object(type))
 			val = CLASS_sizeof((CLASS *)type);
@@ -169,7 +170,7 @@ void SUBR_val(void)
 
   VALUE_from_string(&result, addr, len);
 
-  VALUE_conv(&result, T_VARIANT);
+  VALUE_conv_variant(&result);
 
   *RETURN = result;
 
@@ -177,7 +178,7 @@ void SUBR_val(void)
 }
 
 
-void SUBR_format(void)
+void SUBR_format(ushort code)
 {
   int fmt_type;
   char *format = NULL;
@@ -235,7 +236,7 @@ void SUBR_format(void)
 }
 
 
-void SUBR_hex(void)
+void SUBR_hex(ushort code)
 {
   int prec = 0;
 
@@ -259,7 +260,7 @@ void SUBR_hex(void)
 }
 
 
-void SUBR_bin(void)
+void SUBR_bin(ushort code)
 {
   int prec = 0;
 

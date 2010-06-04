@@ -86,7 +86,7 @@ static void push_path(void **list, const char *path)
 	FILE_PATH *slot;
 
 	ALLOC(&slot, sizeof(FILE_PATH), "push_path");
-	STRING_new_zero(&slot->path, path);
+	slot->path = STRING_new_zero(path);
 
 	slot->next = *list;
 	*list = slot;
@@ -519,8 +519,8 @@ void FILE_dir_first(const char *path, const char *pattern, int attr)
 	if (file_dir == NULL)
 		THROW_SYSTEM(errno, path);
 
-	STRING_new_zero(&file_pattern, pattern);
-	STRING_new_zero(&file_path, path);
+	file_pattern = STRING_new_zero(pattern);
+	file_path = STRING_new_zero(path);
 }
 
 
@@ -627,12 +627,12 @@ void FILE_recursive_dir(const char *dir, void (*found)(const char *), void (*aft
 		dir = ".";
 
 	STRING_free(&file_rdir_path);
-	STRING_new_zero(&file_rdir_path, dir);
+	file_rdir_path = STRING_new_zero(dir);
 
 	FILE_dir_first(dir, NULL, attr);
 	while (!FILE_dir_next(&file, &len))
 	{
-		STRING_new_temp(&temp, file, len);
+		temp = STRING_new_temp(file, len);
 		path = (char *)FILE_cat(file_rdir_path, temp, NULL);
 		#ifdef _DIRENT_HAVE_D_TYPE
 		is_dir = _last_is_dir;

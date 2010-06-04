@@ -294,7 +294,7 @@ char *PROJECT_get_home(void)
 		STRING_free(&_home);
 		info = getpwuid(uid);
 		if (info)
-			STRING_new_zero(&_home, info->pw_dir);
+			_home = STRING_new_zero(info->pw_dir);
 		_uid = uid;
 	}
 
@@ -308,25 +308,25 @@ void PROJECT_init(const char *file)
 
   /* Save the working directory */
 
-  STRING_new_zero(&PROJECT_oldcwd, FILE_getcwd(NULL));
+  PROJECT_oldcwd = STRING_new_zero(FILE_getcwd(NULL));
 
   /* Gambas installation path */
 
   path = FILE_find_gambas();
 
-  STRING_new_zero(&PROJECT_exec_path, FILE_get_dir(FILE_get_dir(path)));
+  PROJECT_exec_path = STRING_new_zero(FILE_get_dir(FILE_get_dir(path)));
 
 	/* Component paths */
 
 	#ifdef OS_64BITS
-  STRING_new_zero(&COMPONENT_path, FILE_cat(PROJECT_exec_path, GAMBAS_LIB64_PATH, NULL));
+  COMPONENT_path = STRING_new_zero(FILE_cat(PROJECT_exec_path, GAMBAS_LIB64_PATH, NULL));
   if (access(COMPONENT_path, F_OK))
   {	
   	STRING_free(&COMPONENT_path);
-	  STRING_new_zero(&COMPONENT_path, FILE_cat(PROJECT_exec_path, GAMBAS_LIB_PATH, NULL));
+	  COMPONENT_path = STRING_new_zero(FILE_cat(PROJECT_exec_path, GAMBAS_LIB_PATH, NULL));
   }
   #else
-  STRING_new_zero(&COMPONENT_path, FILE_cat(PROJECT_exec_path, GAMBAS_LIB_PATH, NULL));
+  COMPONENT_path = STRING_new_zero(FILE_cat(PROJECT_exec_path, GAMBAS_LIB_PATH, NULL));
 	#endif
   
   //STRING_new(&COMPONENT_user_path, FILE_cat(PROJECT_get_home(), ".local", GAMBAS_LIB_PATH, NULL), 0);
@@ -336,8 +336,8 @@ void PROJECT_init(const char *file)
 	if (!file)
 	{
 		// "gbx3 -e" case
-		STRING_new(&PROJECT_path, "", 0);
-		STRING_new(&PROJECT_name, "", 0);
+		PROJECT_path = STRING_new("", 0);
+		PROJECT_name = STRING_new("", 0);
 		return;
 	}
 
@@ -386,16 +386,16 @@ void PROJECT_init(const char *file)
     /*path[len] = 0;*/
   }
 
-  STRING_new(&PROJECT_path, path, len);
+  PROJECT_path = STRING_new(path, len);
 
   chdir(PROJECT_path);
 
   /* Project name */
 
   if (EXEC_arch)
-  	STRING_new_zero(&PROJECT_name, FILE_get_basename(file));
+  	PROJECT_name = STRING_new_zero(FILE_get_basename(file));
 	else
-  	STRING_new_zero(&PROJECT_name, FILE_get_name(PROJECT_path));
+  	PROJECT_name = STRING_new_zero(FILE_get_name(PROJECT_path));
 
 	/* Main archive creation */
 

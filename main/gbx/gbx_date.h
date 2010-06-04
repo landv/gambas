@@ -43,12 +43,15 @@ typedef
   PACKED
   DATE_SERIAL;
 
+#ifndef __DATE_DECLARED
+#define __DATE_DECLARED
 typedef
   struct {
     int date;
     int time;
     }
   DATE;
+#endif
 
 #endif
   

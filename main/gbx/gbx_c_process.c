@@ -727,6 +727,8 @@ void CPROCESS_wait_for(CPROCESS *process)
 			callback_child(_pipe_child[0], GB_WATCH_READ, 0);
 		else if (ret == process->out)
 			callback_write(process->out, GB_WATCH_READ, process);
+		else
+			usleep(1000);
 	}
 	OBJECT_UNREF(process, "CPROCESS_wait_for");
 

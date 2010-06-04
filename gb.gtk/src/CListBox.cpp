@@ -193,15 +193,13 @@ BEGIN_PROPERTY(CLISTBOX_list)
 
 	GB_ARRAY array;
 	int i;
-	char *text;
 	
 	if (READ_PROPERTY)
 	{
 		GB.Array.New(&array, GB_T_STRING, LISTBOX->count());
 		for (i = 0; i < LISTBOX->count(); i++)
 		{
-			GB.NewZeroString(&text, LISTBOX->itemText(i));
-			*((char **)GB.Array.Get(array, i)) = text;
+			*((char **)GB.Array.Get(array, i)) = GB.NewZeroString(LISTBOX->itemText(i));
 		}
 		
 		GB.ReturnObject(array);

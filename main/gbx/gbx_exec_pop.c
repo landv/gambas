@@ -354,7 +354,7 @@ __POP_QUICK_COLLECTION:
 
   defined = EXEC_object(val, &class, &object);
 
-	VALUE_conv(&val[-1], T_VARIANT);
+	VALUE_conv_variant(&val[-1]);
 	VALUE_conv_string(&val[1]);
 	
 	if (UNLIKELY(GB_CollectionSet((GB_COLLECTION)object, val[1]._string.addr + val[1]._string.start, val[1]._string.len, (GB_VARIANT *)&val[-1])))

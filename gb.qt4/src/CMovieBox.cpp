@@ -65,7 +65,7 @@ static bool load_movie(void *_object, char *path, int len)
 		THIS->ba->fromRawData((const char *)THIS->addr, THIS->len);
 		THIS->movie = new QMovie(*(THIS->ba));
 		
-		GB.NewString(&THIS->path, path, len);
+		THIS->path = GB.NewString(path, len);
 		
 		//qDebug("setMovie");
 		WIDGET->setMovie(THIS->movie);

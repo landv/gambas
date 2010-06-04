@@ -42,7 +42,7 @@ void SUBR_leave(int nparam)
   BORROW(RP);
 
   RELEASE_MANY(SP, nparam);
-
+	
   //*SP++ = *RP;
   COPY_VALUE(SP, RP);
   SP++;
@@ -50,7 +50,7 @@ void SUBR_leave(int nparam)
 }
 
 
-bool SUBR_check_string(VALUE *param)
+bool SUBR_check_string_real(VALUE *param)
 {
 __RETRY:
 
@@ -125,24 +125,17 @@ double SUBR_get_float(VALUE *param)
 
 char *SUBR_get_string(VALUE *param)
 {
-  char *str;
-
   if (SUBR_check_string(param))
     return "";
 
-  STRING_copy_from_value_temp(&str, param);
-  return str;
+  return STRING_copy_from_value_temp(param);
 }
 
 
 char *SUBR_copy_string(VALUE *param)
 {
-  char *ret;
-
   SUBR_check_string(param);
-  STRING_copy_from_value_temp(&ret, param);
-  /*RELEASE_STRING(param);*/
-  return ret;
+  return STRING_copy_from_value_temp(param);
 }
 
 

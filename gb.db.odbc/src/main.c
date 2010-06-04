@@ -1550,7 +1550,7 @@ fflush(stderr);
 	ODBC_CONN *han = (ODBC_CONN *)db->handle;
 
 
-	GB.NewZeroString(&info->table, table);
+	info->table = GB.NewZeroString(table);
 
 	retcode =SQLAllocHandle(SQL_HANDLE_STMT, (ODBC_CONN *) han->odbcHandle, &statHandle);
 
@@ -1604,7 +1604,7 @@ fflush(stderr);
 	{
 		fieldstr = current;
 		f = &info->field[i];
-		GB.NewZeroString(&f->name, (char *)current->fieldname);
+		f->name = GB.NewZeroString((char *)current->fieldname);
 
 		f->type = conv_type(current->type);
 
@@ -1984,13 +1984,10 @@ fflush(stderr);
 
 	GB.NewArray(tables, sizeof(char *), tablenum);
 
-
-
 	curtable = &tablelist;
 	for (i = 0; i < tablenum; i++)
 	{
-
-		GB.NewZeroString(&(*tables)[i], curtable->tablename);
+		(*tables)[i] = GB.NewZeroString(curtable->tablename);
 		free(curtable->tablename);
 		curtable = (ODBC_TABLES *) curtable->next;
 
@@ -2095,7 +2092,7 @@ fflush(stderr);
 				 (statHandle, 6, SQL_C_CHAR, &szKeyName[0], sizeof(szKeyName), 0)))
 			strcpy((char *) szKeyName, "Unknown");
 
-		GB.NewZeroString((char **) GB.Add(primary), (char *)szColumnName);
+		*(char **)GB.Add(primary) = GB.NewZeroString((char *)szColumnName);
 		i++;
 	}
 
@@ -2447,9 +2444,7 @@ fflush(stderr);
 
 	for (i = 0; i < colsNum; i++)
 	{
-		GB.NewZeroString(&((*fields)[i]), (char *) current->fieldname);
-
-
+		(*fields)[i] = GB.NewZeroString((char *) current->fieldname);
 
 		current = (ODBC_FIELDS *) current->next;
 		free(fieldstr);
@@ -2753,7 +2748,7 @@ static int database_list(DB_DATABASE *db, char ***databases)
 
 //GB.Error("ODBC does not implement this function");
 	GB.NewArray(databases, sizeof(char *), 1);
-	GB.NewZeroString(&(*databases)[0], han->dsn_name);
+	(*databases)[0] = GB.NewZeroString(han->dsn_name);
 
 	return (1);
 }
@@ -2886,7 +2881,7 @@ static int user_list(DB_DATABASE *db, char ***users)
 {
 	ODBC_CONN *han = (ODBC_CONN *)db->handle;
 	GB.NewArray(users, sizeof(char *), 1);
-	GB.NewZeroString(&(*users)[0], han->user_name);
+	(*users)[0] = GB.NewZeroString(han->user_name);
 
 	//GB.Error("ODBC does not implement this function");
 	return (1);

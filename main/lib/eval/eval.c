@@ -192,7 +192,7 @@ void EVAL_new(EXPRESSION **expr, char *src, int len)
 {
   GB.Alloc((void **)expr, sizeof(EXPRESSION));
   CLEAR(*expr);
-  GB.NewString(&((*expr)->source), src, len);
+  (*expr)->source = GB.NewString(src, len);
   GB.AddString(&((*expr)->source), "\n\0", 2);
   (*expr)->len = len + 2;
   /*(*expr)->option = option;*/

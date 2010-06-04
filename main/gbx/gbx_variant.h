@@ -52,11 +52,11 @@ typedef
 
 #define VARIANT_copy_value(_dst, _src) (_dst)->value.data = (_src)->value.data
 
-static INLINE void VARIANT_undo(VALUE *val)
-{
-  if (val->type == T_VARIANT)
-    VALUE_conv(val, val->_variant.vtype);
-}
+#define VARIANT_undo(_value) \
+({ \
+	if ((_value)->type == T_VARIANT) \
+		VALUE_undo_variant(_value); \
+})
 
 static INLINE void VARIANT_free(VARIANT *var)
 {

@@ -119,7 +119,7 @@ int CCURL_stream_read(GB_STREAM *stream, char *buffer, int len)
 	len_data -= len;
 	
 	if (len_data > 0)
-		GB.NewString(&new_data, THIS->data + len, len_data);
+		new_data = GB.NewString(THIS->data + len, len_data);
 	else
 		new_data = NULL;
 	

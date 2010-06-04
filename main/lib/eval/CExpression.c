@@ -62,7 +62,7 @@ BEGIN_PROPERTY(CEXPRESSION_text)
   {
     GB.StoreString(PROP(GB_STRING), &THIS->text);
     GB.FreeString(&THIS->expr.source);
-    GB.NewString(&THIS->expr.source, THIS->text, VPROP(GB_STRING).len);
+    THIS->expr.source = GB.NewString(THIS->text, VPROP(GB_STRING).len);
     THIS->expr.len = VPROP(GB_STRING).len;
     THIS->compiled = FALSE;
   }

@@ -48,8 +48,6 @@
 STACK_CONTEXT EXEC_current = { 0 };
 /* Stack pointer */
 VALUE *SP = NULL;
-/* Current instruction opcode */
-PCODE EXEC_code;
 /* Temporary storage or return value of a native function */
 VALUE TEMP;
 /* Return value of a gambas function */
@@ -73,6 +71,8 @@ bool EXEC_main_hook_done = FALSE;
 int EXEC_return_value = 0;
 bool EXEC_got_error = FALSE;
 uint64_t EXEC_byref = 0;
+
+const char EXEC_should_borrow[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0 };
 
 void EXEC_init(void)
 {
@@ -728,7 +728,7 @@ __RETURN_VALUE:
 		COPY_VALUE(SP, &ret);
 		RP->type = T_VOID;
 		if (PCODE_is_variant(*PC))
-			VALUE_conv(SP, T_VARIANT);
+			VALUE_conv_variant(SP);
 		SP++;
 	}
 	else if (!keep_ret_value)
@@ -956,33 +956,43 @@ void EXEC_native_check(bool defined)
 
 }
 
+#define EXEC_call_native_inline(_exec, _object, _type, _param) \
+({ \
+	GAMBAS_Error = FALSE; \
+	\
+	(*(_exec))((_object), (void *)(_param)); \
+	\
+	if (UNLIKELY(GAMBAS_Error)) \
+	{ \
+		GAMBAS_Error = FALSE; \
+		error = TRUE; \
+	} \
+	else \
+	{ \
+		TYPE __type = (_type); \
+		if (UNLIKELY(TYPE_is_pure_object(_type) && TEMP.type != T_NULL && TEMP.type != T_VOID)) \
+		{ \
+			if (UNLIKELY(((CLASS *)__type)->override != NULL)) \
+				__type = (TYPE)(((CLASS *)__type)->override); \
+			\
+			if (TEMP.type == T_CLASS) \
+				TEMP._class.class = (CLASS *)__type; \
+			else \
+				TEMP.type = __type; \
+			\
+			error = FALSE; \
+		} \
+		else \
+			error = FALSE; \
+	} \
+})
 
 bool EXEC_call_native(void (*exec)(), void *object, TYPE type, VALUE *param)
 {
-	GAMBAS_Error = FALSE;
-
-	(*exec)(object, (void *)param);
-
-	if (UNLIKELY(GAMBAS_Error))
-	{
-		GAMBAS_Error = FALSE;
-		return TRUE;
-	}
+	bool error;
 	
-	if (UNLIKELY(TYPE_is_pure_object(type) && TEMP.type != T_NULL && TEMP.type != T_VOID))
-	{
-		if (UNLIKELY(((CLASS *)type)->override != NULL))
-			type = (TYPE)(((CLASS *)type)->override);
-		
-		//fprintf(stderr, "type = %s  TEMP.type = %s\n", TYPE_get_name(type), TYPE_get_name(TEMP.type));
-	
-		if (TEMP.type == T_CLASS)
-			TEMP._class.class = (CLASS *)type;
-		else
-			TEMP.type = type;
-	}
-		
-	return FALSE;
+	EXEC_call_native_inline(exec, object, type, param);
+	return error;
 }
 
 void EXEC_native_quick(void)
@@ -997,7 +1007,7 @@ void EXEC_native_quick(void)
 	void *free_later;
 	VALUE ret;
 
-	error = EXEC_call_native(desc->exec, object, desc->type, &SP[-nparam]);
+	EXEC_call_native_inline(desc->exec, object, desc->type, &SP[-nparam]);
 	COPY_VALUE(&ret, &TEMP);
 
 	RELEASE_MANY(SP, nparam);
@@ -1061,7 +1071,7 @@ void EXEC_native(void)
 	TYPE *sign;
 	bool error;
 	void * NO_WARNING(free_later);
-	int n;
+	int n, nm;
 	VALUE ret;
 
 	#if DEBUG_STACK
@@ -1072,21 +1082,24 @@ void EXEC_native(void)
 
 	TRY
 	{
-		if (UNLIKELY(nparam < desc->npmin))
+		n = desc->npmin;
+		nm = desc->npmax;
+		
+		if (UNLIKELY(nparam < n))
 			THROW(E_NEPARAM);
 
 		if (LIKELY(!desc->npvar))
 		{
-			if (UNLIKELY(nparam > desc->npmax))
+			if (UNLIKELY(nparam > nm))
 				THROW(E_TMPARAM);
 
 			value = &SP[-nparam];
 			sign = desc->signature;
 
-			for (i = 0; i < desc->npmin; i++, value++, sign++)
+			for (i = 0; i < n; i++, value++, sign++)
 				VALUE_conv(value, *sign);
 
-			if (UNLIKELY(desc->npmin < desc->npmax))
+			if (UNLIKELY(n < nm))
 			{
 				for (; i < nparam; i++, value++, sign++)
 				{
@@ -1094,7 +1107,7 @@ void EXEC_native(void)
 						VALUE_conv(value, *sign);
 				}
 
-				n = desc->npmax - nparam;
+				n = nm - nparam;
 
 				if (UNLIKELY(STACK_check(n)))
 				{
@@ -1102,7 +1115,7 @@ void EXEC_native(void)
 				}
 				
 				SP += n;
-				nparam = desc->npmax;
+				nparam = nm;
 
 				for (; i < nparam; i++, value++)
 					value->type = T_VOID;
@@ -1113,12 +1126,13 @@ void EXEC_native(void)
 			value = &SP[-nparam];
 			sign = desc->signature;
 
-			for (i = 0; i < desc->npmin; i++, value++, sign++)
+			for (i = 0; i < n; i++, value++, sign++)
 				VALUE_conv(value, *sign);
 
-			if (UNLIKELY(desc->npmin < desc->npmax))
+			nm = desc->npmax;
+			if (UNLIKELY(n < nm))
 			{
-				if (UNLIKELY(nparam < desc->npmax))
+				if (UNLIKELY(nparam < nm))
 				{
 					for (; i < nparam; i++, value++, sign++)
 					{
@@ -1126,7 +1140,7 @@ void EXEC_native(void)
 							VALUE_conv(value, *sign);
 					}
 
-					n = desc->npmax - nparam;
+					n = nm - nparam;
 
 					if (UNLIKELY(STACK_check(n)))
 					{
@@ -1134,14 +1148,15 @@ void EXEC_native(void)
 					}
 					
 					SP += n;
-					nparam = desc->npmax;
+					nparam = nm;
 
 					for (; i < nparam; i++, value++)
 						value->type = T_VOID;
 				}
 				else
 				{
-					for (; i < desc->npmax; i++, value++, sign++)
+					n = desc->npmax;
+					for (; i < n; i++, value++, sign++)
 					{
 						if (value->type != T_VOID)
 							VALUE_conv(value, *sign);
@@ -1149,8 +1164,8 @@ void EXEC_native(void)
 				}
 			}
 
-			if (UNLIKELY(desc->npmax < nparam))
-				EXEC.nparvar = nparam - desc->npmax;
+			if (UNLIKELY(nm < nparam))
+				EXEC.nparvar = nparam - nm;
 			else
 				EXEC.nparvar = 0;
 
@@ -1167,7 +1182,7 @@ void EXEC_native(void)
 	}
 	END_TRY
 
-	error = EXEC_call_native(desc->exec, object, desc->type, &SP[-nparam]);
+	EXEC_call_native_inline(desc->exec, object, desc->type, &SP[-nparam]);
 	COPY_VALUE(&ret, &TEMP);
 
 	/* Lib�ation des arguments */
@@ -1296,7 +1311,9 @@ __CLASS:
 __OBJECT:
 
 	object = val->_object.object;
-	class = OBJECT_class(object);
+	if (!object)
+		goto __NULL;
+	class = object->class;
 	defined = FALSE;
 
 	goto __CHECK;
@@ -1307,6 +1324,15 @@ __PURE_OBJECT:
 	class = val->_object.class;
 	defined = TRUE;
 
+	if (!object)
+	{
+		/* A null object and a virtual class means that we want to pass a static class */
+		if (!class->is_virtual)
+			goto __NULL;
+		CLASS_load(class);
+		goto __RETURN;
+	}
+	
 	if (UNLIKELY(val == EXEC_super))
 	{
 		EXEC_super = val->_object.super;
@@ -1314,14 +1340,8 @@ __PURE_OBJECT:
 		if (UNLIKELY(class == NULL))
 			THROW(E_PARENT);
 	}
-	else if (LIKELY(!class->is_virtual))
-		class = OBJECT_class(object);
-	else if (UNLIKELY(object == NULL))
-	{
-		/* A null object and a virtual class means that we want to pass a static class */
-		CLASS_load(class);
-		goto __RETURN;
-	}
+	else if (!class->is_virtual)
+		class = object->class;
 
 	goto __CHECK;
 
@@ -1330,16 +1350,20 @@ __VARIANT:
 	if (val->_variant.vtype == T_OBJECT)
 	{
 		object = val->_variant.value._object;
-		class = OBJECT_class(object);
+		if (!object)
+			goto __NULL;
+		class = object->class;
 		defined = FALSE;
 		goto __CHECK;
 	}
 	else if (TYPE_is_object(val->_variant.vtype))
 	{
 		object = val->_variant.value._object;
+		if (!object)
+			goto __NULL;
 		class = (CLASS *)val->_variant.vtype;
 		if (!class->is_virtual)
-			class = OBJECT_class(object); /* Virtual dispatching */
+			class = object->class; /* Virtual dispatching */
 		defined = FALSE;
 		goto __CHECK;
 	}
@@ -1356,12 +1380,9 @@ __NULL:
 
 __CHECK:
 
-	if (UNLIKELY(object == NULL))
-		goto __NULL;
+	//CLASS_load(class); If we have an object, the class is necessarily loaded.
 
-	CLASS_load(class);
-
-	if (UNLIKELY(class->check && (*(class->check))(object)))
+	if (UNLIKELY(class->must_check && (*(class->check))(object)))
 		THROW(E_IOBJECT);
 		
 __RETURN:
@@ -1779,7 +1800,7 @@ void EXEC_new(void)
 	}
 	else if (TYPE_is_string(SP->type))
 	{
-		STRING_copy_from_value_temp(&cname, SP);
+		cname = STRING_copy_from_value_temp(SP);
 		class = CLASS_find(cname);
 		RELEASE_STRING(SP);
 		SP->type = T_NULL;
@@ -1802,7 +1823,7 @@ void EXEC_new(void)
 		if (!TYPE_is_string(SP->type))
 			THROW(E_TYPE, "String", TYPE_get_name(SP->type));
 
-		STRING_copy_from_value_temp(&name, SP);
+		name = STRING_copy_from_value_temp(SP);
 		//printf("**** name %s\n", class->name);
 
 		STRING_ref(name);
@@ -1857,47 +1878,6 @@ void EXEC_new(void)
 
 	/* OBJECT_UNREF(&object, "EXEC_new"); */
 }
-
-#if 0
-void EXEC_class(void)
-{
-	//fprintf(stderr, ">> EXEC_class: SP = %d  drop = %d\n", SP - (VALUE *)STACK_base, EXEC.drop);
-
-	if (EXEC_special(SPEC_CALL, EXEC.class, EXEC.object, EXEC.nparam, EXEC.drop))
-	{
-		if (EXEC.nparam < 1)
-			THROW(E_NEPARAM);
-		else if (EXEC.nparam > 1)
-			THROW(E_TMPARAM);
-
-		VALUE_conv(SP - 1, (TYPE)EXEC.class);
-	}
-	else
-	{
-		#if 0
-		if (RP->type != T_VOID) /* Ceci est fait pour un EXEC_native, mais pas pour un EXEC_function */
-		{
-			BORROW(RP);
-			SP[-1] = *RP; /* On �rase la classe */
-			EXEC_release_return_value();
-		}
-		else
-			POP(); /* On enl�e la classe */
-		#endif
-		/* Class is replaced by return value */
-		if (!EXEC.drop)
-		{
-			VALUE swap;
-
-			swap = SP[-2];
-			SP[-2] = SP[-1];
-			SP[-1] = swap;
-		}
-	}
-
-	//fprintf(stderr, "<< EXEC_class: SP = %d\n\n", SP - (VALUE *)STACK_base);
-}
-#endif
 
 
 void EXEC_quit(void)

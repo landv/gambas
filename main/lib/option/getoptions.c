@@ -74,27 +74,27 @@ BEGIN_METHOD_VOID (getopt_calc)
 		
 		charec[0]=c;
 		tmp=(char **) GB.Add((void *) &(THIS->opt_found));
-		GB.NewZeroString(tmp, charec);
+		*tmp = GB.NewZeroString(charec);
 		
 		charec[0]=optopt;
 		tmp=(char **) GB.Add((void *) &(THIS->invalid));
 		if(optopt!=0)
 		{
-			GB.NewZeroString(tmp, charec);
+			*tmp = GB.NewZeroString(charec);
 		}
 		else
 		{
-			GB.NewString(tmp,"",0);
+			*tmp = GB.NewString("", 0);
 		}
 
 		tmp=(char **) GB.Add((void *) &(THIS->opt_arg));
 		if(optarg!=NULL)
 		{
-			GB.NewZeroString(tmp,optarg);
+			*tmp = GB.NewZeroString(optarg);
 		}
 		else
 		{
-			GB.NewString(tmp,"",0);
+			*tmp = GB.NewString("", 0);
 		}
 	}
 	if(THIS->rest!=NULL)
@@ -107,7 +107,7 @@ BEGIN_METHOD_VOID (getopt_calc)
 	for(i=optind;i<THIS->arg_count;i++)
 	{
 		tmp=(char **)GB.Array.Get(THIS->rest,i-optind);
-		GB.NewZeroString(tmp,THIS->argv[i]);
+		*tmp = GB.NewZeroString(THIS->argv[i]);
 	}
 }
 END_METHOD
@@ -225,7 +225,7 @@ BEGIN_METHOD ( COPTIONS_getarg ,GB_STRING option)
 			if(THIS->opt_arg[i]!=NULL )
 			{
 				tmp=(char **)GB.Array.Add(THIS->return_temp);
-				GB.NewZeroString(tmp,THIS->opt_arg[i]);
+				*tmp = GB.NewZeroString(THIS->opt_arg[i]);
 			}
 		}
 	}
@@ -253,7 +253,7 @@ BEGIN_METHOD_VOID ( COPTION_getallopt)
 			{
 				tmp=(char **)GB.Array.Add(THIS->return_temp);
 				charec[0]=THIS->opt_found[i][0];
-				GB.NewZeroString(tmp,charec);
+				*tmp = GB.NewZeroString(charec);
 			}
 		}
 	}
@@ -263,13 +263,15 @@ BEGIN_METHOD_VOID ( COPTION_getallopt)
 END_METHOD
 
 BEGIN_PROPERTY(COPTIONS_cmdline)
-{
+
 	GB.ReturnObject(THIS->cmdline);
-}
+
 END_PROPERTY
 
 BEGIN_PROPERTY(COPTIONS_options)
-	GB.NewString(&THIS->options,PSTRING(),PLENGTH());
+
+	THIS->options = GB.NewString(PSTRING(), PLENGTH());
+
 END_PROPERTY
 		
 BEGIN_METHOD ( COPTIONS_new, GB_STRING options; GB_OBJECT array )
@@ -277,15 +279,15 @@ BEGIN_METHOD ( COPTIONS_new, GB_STRING options; GB_OBJECT array )
 	char **tmp,*src;
 	int i,narg;
 
-	GB.NewString(&(THIS->options),STRING(options),LENGTH(options));
+	THIS->options = GB.NewString(STRING(options), LENGTH(options));
 
-     GB.NewArray((void *) &(THIS->argv), sizeof(*(THIS->argv)), 0); // argv is where i keep track of what to free later
+	GB.NewArray((void *) &(THIS->argv), sizeof(*(THIS->argv)), 0); // argv is where i keep track of what to free later
 	GB.Array.New((void *) &(THIS->cmdline) ,GB_T_STRING,arg_count);
 	GB.Ref(THIS->cmdline);
 	for(i=0;i<arg_count;i++)
 	{
 		tmp=(char **)GB.Array.Get((void*)(THIS->cmdline),i);
-		GB.NewZeroString(tmp,cmd_arg[i]);
+		*tmp = GB.NewZeroString(cmd_arg[i]);
 	}
 
 	if ( MISSING ( array ) )
@@ -293,7 +295,7 @@ BEGIN_METHOD ( COPTIONS_new, GB_STRING options; GB_OBJECT array )
 		for ( i=0; i<arg_count; i++ )
 		{
 			tmp=(char **)GB.Add((void *) &(THIS->argv));
-			GB.NewZeroString(tmp,cmd_arg[i]);
+			*tmp = GB.NewZeroString(cmd_arg[i]);
 		}
 		THIS->arg_count=arg_count;
 	}
@@ -306,7 +308,7 @@ BEGIN_METHOD ( COPTIONS_new, GB_STRING options; GB_OBJECT array )
 			{
 				src=*(char **)GB.Array.Get( VARG ( array ),i);
 				tmp=(char **) GB.Add((void *) &(THIS->argv));
-				GB.NewZeroString(tmp,src);
+				*tmp = GB.NewZeroString(src);
 			}
 			THIS->arg_count=narg;
 		}

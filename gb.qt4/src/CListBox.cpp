@@ -529,12 +529,10 @@ int CListBox::find(QListWidget *list, const QString& s)
 void CListBox::getAll(QListWidget *list, GB_ARRAY array)
 {
 	int i;
-	char *str;
 	
 	for (i = 0; i < list->count(); i++)
 	{
-		GB.NewZeroString(&str, TO_UTF8(list->item(i)->text()));
-		*((char **)GB.Array.Get(array, i)) = str;
+		*((char **)GB.Array.Get(array, i)) = GB.NewZeroString(TO_UTF8(list->item(i)->text()));
 	}
 }
 

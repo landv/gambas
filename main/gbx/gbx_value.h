@@ -28,6 +28,16 @@
 #include "gbx_type.h"
 #include "gbx_class.h"
 
+#ifndef __DATE_DECLARED
+#define __DATE_DECLARED
+typedef
+  struct {
+    int date;
+    int time;
+    }
+  DATE;
+#endif
+
 typedef
   struct {
     TYPE type;
@@ -158,6 +168,7 @@ typedef
 			int64_t _long;
 			float _single;
 			double _float;
+			DATE _date;
 			char *_string;
 			void *_pointer;
 			void *_object;
@@ -225,9 +236,13 @@ void VALUE_convert_boolean(VALUE *value);
 void VALUE_convert_integer(VALUE *value);
 void VALUE_convert_float(VALUE *value);
 void VALUE_convert_string(VALUE *value);
+void VALUE_convert_variant(VALUE *value);
+void VALUE_convert_object(VALUE *value, TYPE type);
 
 void VALUE_read(VALUE *value, void *addr, TYPE type);
 void VALUE_write(VALUE *value, void *addr, TYPE type);
+
+void VALUE_undo_variant(VALUE *value);
 
 //void VALUE_put(VALUE *value, void *addr, TYPE type);
 
@@ -243,11 +258,73 @@ bool VALUE_is_null(VALUE *val);
 
 void VALUE_get_string(VALUE *val, char **text, int *length);
 
+void THROW_TYPE_INTEGER(TYPE type) NORETURN;
+void THROW_TYPE_FLOAT(TYPE type) NORETURN;
+void THROW_TYPE_STRING(TYPE type) NORETURN;
+
 #define VALUE_conv(_value, _type) \
 ({ \
 	if (UNLIKELY((_value)->type != (_type))) \
 		VALUE_convert(_value, _type); \
 })
+
+#if 0
+
+#define VALUE_conv_boolean(_value) \
+({ \
+	VALUE *v = _value; \
+	if (UNLIKELY(v->type != T_BOOLEAN)) \
+	{ \
+		VALUE_convert_boolean(v); \
+	} \
+})
+
+#define VALUE_conv_integer(_value) \
+({ \
+	VALUE *v = _value; \
+	if (UNLIKELY(v->type != T_INTEGER)) \
+	{ \
+		if (TYPE_is_object(v->type)) \
+			THROW_TYPE_INTEGER(v->type); \
+		VALUE_convert_integer(v); \
+	} \
+})
+
+#define VALUE_conv_float(_value) \
+({ \
+	VALUE *v = _value; \
+	if (UNLIKELY(v->type != T_FLOAT)) \
+	{ \
+		if (TYPE_is_object(v->type)) \
+			THROW_TYPE_FLOAT(v->type); \
+		VALUE_convert_float(v); \
+	} \
+})
+
+#define VALUE_conv_string(_value) \
+({ \
+	VALUE *v = _value; \
+	if (UNLIKELY(v->type != T_STRING && v->type != T_CSTRING)) \
+	{ \
+		if (TYPE_is_object(v->type)) \
+			THROW_TYPE_STRING(v->type); \
+		VALUE_convert_string(v); \
+	} \
+})
+
+#define VALUE_conv_variant(_value) \
+({ \
+	if (UNLIKELY((_value)->type != T_VARIANT)) \
+		VALUE_convert_variant(_value); \
+})
+
+#define VALUE_conv_object(_value, _type) \
+({ \
+	if (UNLIKELY((_value)->type != (_type))) \
+		VALUE_convert_object(_value, _type); \
+})
+
+#else
 
 #define VALUE_conv_boolean(_value) \
 ({ \
@@ -255,25 +332,129 @@ void VALUE_get_string(VALUE *val, char **text, int *length);
 		VALUE_convert_boolean(_value); \
 })
 
-#define VALUE_conv_integer(_value) \
-({ \
-	if (UNLIKELY((_value)->type != T_INTEGER)) \
-		VALUE_convert_integer(_value); \
-})
-
-#define VALUE_conv_float(_value) \
-({ \
-	if (UNLIKELY((_value)->type != T_FLOAT)) \
-		VALUE_convert_float(_value); \
-})
+//#define VALUE_conv_boolean(_value) VALUE_conv(_value, T_BOOLEAN)
+#define VALUE_conv_integer(_value) VALUE_conv(_value, T_INTEGER)
+#define VALUE_conv_float(_value) VALUE_conv(_value, T_FLOAT)
+#define VALUE_conv_variant(_value) VALUE_conv(_value, T_VARIANT)
+#define VALUE_conv_object(_value, _type) VALUE_conv(_value, _type)
 
 #define VALUE_conv_string(_value) \
 ({ \
 	if (UNLIKELY((_value)->type != T_STRING && (_value)->type != T_CSTRING)) \
-		VALUE_convert_string(_value); \
+		VALUE_conv(_value, T_STRING); \
 })
 
+#endif
 
 #define VALUE_is_super(_value) (EXEC_super && EXEC_super == (_value)->_object.super)
+
+#define VALUE_class_read_inline(_class, _value, _addr, _ctype, _ref) \
+({ \
+	static void *jump[17] = { \
+		&&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE, \
+		&&__STRING, &&__CSTRING, &&__POINTER, &&__VARIANT, &&__ARRAY, &&__STRUCT, &&__NULL, &&__OBJECT \
+		}; \
+	\
+	for(;;) \
+	{ \
+		(_value)->type = (_ctype).id; \
+		goto *jump[(_ctype).id]; \
+		\
+	__BOOLEAN: \
+		(_value)->_boolean.value = -(*((unsigned char *)(_addr)) != 0); \
+		break; \
+		\
+	__BYTE: \
+		(_value)->_byte.value = *((unsigned char *)(_addr)); \
+		break; \
+		\
+	__SHORT: \
+		(_value)->_short.value = *((short *)(_addr)); \
+		break; \
+		\
+	__INTEGER: \
+		(_value)->_integer.value = *((int *)(_addr)); \
+		break; \
+		\
+	__LONG: \
+		(_value)->_long.value = *((int64_t *)(_addr)); \
+		break; \
+		\
+	__SINGLE: \
+		(_value)->_single.value = *((float *)(_addr)); \
+		break; \
+		\
+	__FLOAT: \
+		(_value)->_float.value = *((double *)(_addr)); \
+		break; \
+		\
+	__DATE: \
+		(_value)->_date.date = ((int *)(_addr))[0]; \
+		(_value)->_date.time = ((int *)(_addr))[1]; \
+		break; \
+		\
+	__STRING: \
+		{ \
+			char *str = *((char **)(_addr)); \
+			\
+			(_value)->type = T_STRING; \
+			(_value)->_string.addr = str; \
+			(_value)->_string.start = 0; \
+			(_value)->_string.len = STRING_length(str); \
+			\
+			break; \
+		} \
+		\
+	__CSTRING: \
+		{ \
+			char *str = *((char **)(_addr)); \
+			\
+			(_value)->type = T_CSTRING; \
+			(_value)->_string.addr = str; \
+			(_value)->_string.start = 0; \
+			(_value)->_string.len = (str == NULL) ? 0 : strlen(str); \
+			\
+			break; \
+		} \
+		\
+	__OBJECT: \
+		(_value)->_object.object = *((void **)(_addr)); \
+		(_value)->type = ((_ctype).value >= 0) ? (TYPE)(_class)->load->class_ref[(_ctype).value] : T_OBJECT; \
+		break; \
+		\
+	__POINTER: \
+		(_value)->_pointer.value = *((void **)(_addr)); \
+		break; \
+		\
+	__VARIANT: \
+		(_value)->_variant.type = T_VARIANT; \
+		(_value)->_variant.vtype = ((VARIANT *)(_addr))->type; \
+		if ((_value)->_variant.vtype == T_VOID) \
+			(_value)->_variant.vtype = T_NULL; \
+		VARIANT_copy_value(&(_value)->_variant, ((VARIANT *)(_addr))); \
+		break; \
+		\
+	__ARRAY: \
+		{ \
+			void *object = CARRAY_create_static((_ref), (_class)->load->array[(_ctype).value], (_addr)); \
+			(_value)->_object.class = OBJECT_class(object); \
+			(_value)->_object.object = object; \
+			break; \
+		} \
+		\
+	__STRUCT: \
+		{ \
+			void *object = CSTRUCT_create_static((_ref), (_class)->load->class_ref[(_ctype).value], (_addr)); \
+			(_value)->_object.class = OBJECT_class(object); \
+			(_value)->_object.object = object; \
+			break; \
+		} \
+		\
+	__VOID: \
+	__NULL: \
+		THROW_ILLEGAL(); \
+	} \
+})
+
 
 #endif

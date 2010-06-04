@@ -143,7 +143,7 @@ char *X11_get_property(Window wid, Atom prop, Atom *type, int *format, int *pcou
 	size = *format == 32 ? sizeof(long) : ( *format == 16 ? sizeof(short) : 1 );
 	
 	GB.FreeString(&_property_value);
-	GB.NewString(&_property_value, (char *)data, count * size);
+	_property_value = GB.NewString((char *)data, count * size);
 	XFree(data);
 	
 	if (after)

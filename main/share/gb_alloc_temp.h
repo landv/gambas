@@ -61,12 +61,12 @@ FILE *MEMORY_log;
 static size_t *_pool[POOL_SIZE] = { 0 };
 static int _pool_count[POOL_SIZE] = { 0 };
 
+#endif
+
 int THROW_MEMORY()
 {
 	THROW(E_MEMORY);
 }
-
-#endif
 
 void MEMORY_init(void)
 {
@@ -145,8 +145,8 @@ void MEMORY_alloc(void *p_ptr, size_t size, const char *src)
   fprintf(MEMORY_log, "%s: ", DEBUG_get_current_position());
   fprintf(MEMORY_log, "<%d> %s: MEMORY_alloc(%d) -> %p\n", _id, src, (int)size, (char *)alloc + sizeof(ALLOC));
   fflush(MEMORY_log);
-	//if (_id == 1621)
-	//	sleep(60);
+	//if (_id == 66719)
+	//	BREAKPOINT();
   #endif
 }
 #else

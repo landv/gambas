@@ -67,7 +67,7 @@ void *CDATABASE_get(CCONNECTION *conn, const char *name)
   GB.New(POINTER(&_object), GB.FindClass("Database"), NULL, NULL);
   THIS->conn = conn;
   THIS->driver = conn->driver;
-  GB.NewZeroString(&THIS->name, name);
+  THIS->name = GB.NewZeroString(name);
   return THIS;
 }
 

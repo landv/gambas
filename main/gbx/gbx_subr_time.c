@@ -51,7 +51,7 @@ void SUBR_now(void)
 }
 
 
-void SUBR_year(void)
+void SUBR_year(ushort code)
 {
   DATE_SERIAL *date;
   int val;
@@ -62,7 +62,7 @@ void SUBR_year(void)
 
   date = DATE_split(PARAM);
 
-  switch(EXEC_code & 0xF)
+  switch(code & 0xF)
   {
     case 1: val = date->year; break;
     case 2: val = date->month; break;
@@ -84,7 +84,7 @@ void SUBR_year(void)
 }
 
 
-void SUBR_date(void)
+void SUBR_date(ushort code)
 {
   DATE_SERIAL date;
 
@@ -140,7 +140,7 @@ void SUBR_date(void)
 }
 
 
-void SUBR_time(void)
+void SUBR_time(ushort code)
 {
   DATE_SERIAL date;
 
@@ -175,11 +175,11 @@ void SUBR_time(void)
 }
 
 
-void SUBR_date_op(void)
+void SUBR_date_op(ushort code)
 {
   SUBR_ENTER_PARAM(3);
 
-  switch (EXEC_code & 0xF)
+  switch (code & 0xF)
   {
     case 0: /* DateAdd */
     
@@ -205,7 +205,7 @@ void SUBR_date_op(void)
 }
 
 
-void SUBR_week(void)
+void SUBR_week(ushort code)
 {
   bool plain = FALSE;
   int start = 1; /* Monday */

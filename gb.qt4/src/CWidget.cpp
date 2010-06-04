@@ -25,6 +25,7 @@
 #undef QT3_SUPPORT
 
 #include "gambas.h"
+#include "gb_common.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -187,10 +188,23 @@ static void set_name(CWIDGET *_object, const char *name)
 		else
 			win->setName(THIS->name, 0);
 	}
-		
+	
+	if (THIS->name)
+	{
+		//if (!strcmp(THIS->name, "mnuCut"))
+		//	BREAKPOINT();
+		//qDebug("free_name: %s %p", THIS->name, THIS->name);
+	}
+	
 	GB.FreeString(&THIS->name);
+	
 	if (name)
-		GB.NewZeroString(&THIS->name, name);
+	{
+		//if (!strcmp(name, "mnuCut"))
+		//	BREAKPOINT();
+		THIS->name = GB.NewZeroString(name);
+		//qDebug("set_name: %s %p", THIS->name, THIS->name);
+	}
 }
 
 void *CWIDGET_get_parent(void *_object)
@@ -2173,7 +2187,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			CKEY_clear(true);
 
 			GB.FreeString(&CKEY_info.text);
-			GB.NewZeroString(&CKEY_info.text, TO_UTF8(kevent->text()));
+			CKEY_info.text = GB.NewZeroString(TO_UTF8(kevent->text()));
 			CKEY_info.state = kevent->modifiers();
 			CKEY_info.code = kevent->key();
 			CKEY_info.release = type == QEvent::KeyRelease;
@@ -2247,7 +2261,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	
 				GB.FreeString(&CKEY_info.text);
 				//qDebug("IMEnd: %s", imevent->text().latin1());
-				GB.NewZeroString(&CKEY_info.text, TO_UTF8(imevent->commitString()));
+				CKEY_info.text = GB.NewZeroString(TO_UTF8(imevent->commitString()));
 				CKEY_info.state = 0;
 				CKEY_info.code = 0;
 	

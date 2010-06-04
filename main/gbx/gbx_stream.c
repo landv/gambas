@@ -819,7 +819,7 @@ void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
 				len = (-len);
 				
 				value->type = T_STRING;
-				STRING_new(&value->_string.addr, NULL, len);
+				value->_string.addr = STRING_new(NULL, len);
 				value->_string.start = 0;
 				value->_string.len = len;
 				

@@ -244,6 +244,7 @@ typedef
 		char *name;                       //  20  32  Class name
 
 		unsigned state : 2;               //          Initialization state
+		unsigned ready : 1;               //          Class is ready (<=> state == CS_READY)
 		unsigned debug : 1;               //          Debugging information ?
 		unsigned free_name : 1;           //          Must free the class name
 		unsigned free_event : 1;          //          Must free class->event
@@ -263,7 +264,8 @@ typedef
 		unsigned is_observer : 1;         //          This is the Observer class
 		unsigned is_struct : 1;           //          This class is a structure
 		unsigned init_dynamic : 1;        //          If there is a special function to call at instanciation
-		unsigned _reserved : 11;          //  24  36 
+		unsigned must_check : 1;          //          The class has a check function
+		unsigned _reserved : 8;           //  24  36 
 
 		short n_desc;                     //  26  38  number of descriptions
 		short n_event;                    //  28  40  number of events
@@ -424,7 +426,9 @@ CLASS_DESC_METHOD *CLASS_get_special_desc(CLASS *class, int spec);
 
 CLASS_DESC_EVENT *CLASS_get_event_desc(CLASS *class, const char *name);
 
-int CLASS_find_symbol(CLASS *class, const char *name);
+#define CLASS_find_symbol(_class, _name) \
+	SYMBOL_find((_class)->table, (_class)->sort, (_class)->n_desc, sizeof(CLASS_DESC_SYMBOL), TF_IGNORE_CASE, (_name), strlen((_name)), NULL)
+
 int CLASS_find_symbol_with_prefix(CLASS *class, const char *name, const char *prefix);
 
 CLASS *CLASS_look(const char *name, int len);
@@ -479,10 +483,10 @@ TYPE CLASS_ctype_to_type(CLASS *class, CTYPE ctype);
 void CLASS_load_without_init(CLASS *class);
 void CLASS_load_real(CLASS *class);
 #define CLASS_load(_class) \
-{ \
-	if ((_class)->state != CS_READY) \
+({ \
+	if (!((_class)->ready)) \
 		CLASS_load_real(_class); \
-}
+})
 
 /* class_native.c */
 

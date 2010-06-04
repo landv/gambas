@@ -40,6 +40,8 @@
 #include "gbx_exec.h"
 #include "gbx_subr.h"
 #include "gbx_math.h"
+#include "gbx_c_array.h"
+#include "gbx_struct.h"
 
 //#define DEBUG_PCODE 1
 
@@ -54,117 +56,122 @@
 #define GET_XXX()   (((signed short)(code << 4)) >> 4)
 #define GET_UXX()   (code & 0xFFF)
 #define GET_7XX()   (code & 0x7FF)
-#define GET_XX()    ((signed char)(code & 0xFF))
+#define GET_XX()    ((signed char)code)
+#define GET_UX()    ((unsigned char)code)
 #define GET_3X()    (code & 0x3F)
 
 
-static EXEC_FUNC SubrTable[] =
+static void *SubrTable[] =
 {
-  /* 28 */  SUBR_comp,            SUBR_comp,            SUBR_compi,           SUBR_compi,
+  /* 28 */  SUBR_comp,            SUBR_compn,           SUBR_compi,           SUBR_compi,
   /* 2C */  SUBR_compi,           SUBR_compi,           SUBR_near,            SUBR_case,
   /* 30 */  SUBR_add_,            SUBR_add_,            SUBR_add_,            SUBR_add_,
   /* 34 */  SUBR_neg_,            SUBR_quo,             SUBR_rem,             SUBR_pow,
   /* 38 */  SUBR_and_,            SUBR_and_,            SUBR_and_,            SUBR_not,
   /* 3C */  SUBR_cat,             SUBR_like,            SUBR_file,            SUBR_is,
 
-  NULL,            /* 00 */
-  NULL,            /* 01 */
-  NULL,            /* 02 */
-  NULL,            /* 03 */
-  SUBR_space,      /* 04 */
-  SUBR_string,     /* 05 */
-  SUBR_trim,       /* 06 */
-  SUBR_upper,      /* 07 */
-  SUBR_lower,      /* 08 */
-  SUBR_chr,        /* 09 */
-  SUBR_asc,        /* 10 */
-  SUBR_instr,      /* 11 */
-  SUBR_instr,      /* 12 */
-  SUBR_subst,      /* 13 */
-  SUBR_replace,    /* 14 */
-  SUBR_split,      /* 15 */
-  SUBR_scan,       /* 16 */
-  SUBR_strcomp,    /* 17 */
-  SUBR_iconv,      /* 18 */
-  SUBR_sconv,      /* 19 */
-  SUBR_neg_,       /* 20 */
-  SUBR_neg_,       /* 21 */
-  SUBR_neg_,       /* 22 */
-  SUBR_sgn,        /* 23 */
-  SUBR_math,       /* 24 */
-  SUBR_pi,         /* 25 */
-  SUBR_round,      /* 26 */
-  SUBR_randomize,  /* 27 */
-  SUBR_rnd,        /* 28 */
-  SUBR_min_max,    /* 29 */
-  SUBR_min_max,    /* 30 */
-  SUBR_if,         /* 31 */
-  SUBR_choose,     /* 32 */
-  SUBR_array,      /* 33 */
-  SUBR_math2,      /* 34 */
-  SUBR_is_chr,     /* 35 */
-  SUBR_bit,        /* 36 */
-  SUBR_is_type,    /* 37 */
-  SUBR_type,       /* 38 */
-  SUBR_conv,       /* 39 */
-  SUBR_bin,        /* 40 */
-  SUBR_hex,        /* 41 */
-  SUBR_val,        /* 42 */
-  SUBR_str,        /* 43 */
-  SUBR_format,     /* 44 */
-  SUBR_timer,      /* 45 */
-  SUBR_now,        /* 46 */
-  SUBR_year,       /* 47 */
-  SUBR_week,       /* 48 */
-  SUBR_date,       /* 49 */
-  SUBR_time,       /* 50 */
-  SUBR_date_op,    /* 51 */
-  SUBR_eval,       /* 52 */
-  SUBR_error,      /* 53 */
-  SUBR_debug,      /* 54 */
-  SUBR_wait,       /* 55 */
-  SUBR_open,       /* 56 */
-  SUBR_close,      /* 57 */
-  SUBR_input,      /* 58 */
-  SUBR_linput,     /* 59 */
-  SUBR_print,      /* 60 */
-  SUBR_read,       /* 61 */
-  SUBR_write,      /* 62 */
-  SUBR_flush,      /* 63 */
-  SUBR_lock,       /* 64 */
-  SUBR_inp_out,    /* 65 */
-  SUBR_eof,        /* 66 */
-  SUBR_lof,        /* 67 */
-  SUBR_seek,       /* 68 */
-  SUBR_kill,       /* 69 */
-  SUBR_mkdir,      /* 70 */
-  SUBR_rmdir,      /* 71 */
-  SUBR_rename,     /* 72 */
-  SUBR_copy,       /* 73 */
-  SUBR_link,       /* 74 */
-  SUBR_exist,      /* 75 */
-  SUBR_access,     /* 76 */
-  SUBR_stat,       /* 77 */
-  SUBR_dfree,      /* 78 */
-  SUBR_temp,       /* 79 */
-  SUBR_isdir,      /* 80 */
-  SUBR_dir,        /* 81 */
-  SUBR_rdir,       /* 82 */
-  SUBR_exec,       /* 83 */
-  SUBR_alloc,      /* 84 */
-  SUBR_free,       /* 85 */
-  SUBR_realloc,    /* 86 */
-  SUBR_strptr,     /* 87 */
-  SUBR_sleep,      /* 88 */
-  SUBR_varptr,     /* 89 */
-  SUBR_collection, /* 90 */
-  SUBR_tr,         /* 91 */
-  SUBR_quote,      /* 92 */
-  SUBR_unquote,    /* 93 */
-	SUBR_eval,       /* 94 */
-  /* -> 95 */
+  NULL,            /* 00 40 */
+  NULL,            /* 01 41 */
+  NULL,            /* 02 42 */
+  NULL,            /* 03 43 */
+  SUBR_space,      /* 04 44 */
+  SUBR_string,     /* 05 45 */
+  SUBR_trim,       /* 06 46 */
+  SUBR_upper,      /* 07 47 */
+  SUBR_lower,      /* 08 48 */
+  SUBR_chr,        /* 09 49 */
+  SUBR_asc,        /* 10 4A */
+  SUBR_instr,      /* 11 4B */
+  SUBR_instr,      /* 12 4C */
+  SUBR_subst,      /* 13 4D */
+  SUBR_replace,    /* 14 4E */
+  SUBR_split,      /* 15 4F */
+  SUBR_scan,       /* 16 50 */
+  SUBR_strcomp,    /* 17 51 */
+  SUBR_iconv,      /* 18 52 */
+  SUBR_sconv,      /* 19 53 */
+  SUBR_neg_,       /* 20 54 */
+  SUBR_neg_,       /* 21 55 */
+  SUBR_neg_,       /* 22 56 */
+  SUBR_sgn,        /* 23 57 */
+  SUBR_math,       /* 24 58 */
+  SUBR_pi,         /* 25 59 */
+  SUBR_round,      /* 26 5A */
+  SUBR_randomize,  /* 27 5B */
+  SUBR_rnd,        /* 28 5C */
+  SUBR_min_max,    /* 29 5D */
+  SUBR_min_max,    /* 30 5E */
+  SUBR_if,         /* 31 5F */
+  SUBR_choose,     /* 32 60 */
+  SUBR_array,      /* 33 61 */
+  SUBR_math2,      /* 34 62 */
+  SUBR_is_chr,     /* 35 63 */
+  SUBR_bit,        /* 36 64 */
+  SUBR_is_type,    /* 37 65 */
+  SUBR_type,       /* 38 66 */
+  SUBR_conv,       /* 39 67 */
+  SUBR_bin,        /* 40 68 */
+  SUBR_hex,        /* 41 69 */
+  SUBR_val,        /* 42 6A */
+  SUBR_str,        /* 43 6B */
+  SUBR_format,     /* 44 6C */
+  SUBR_timer,      /* 45 6D */
+  SUBR_now,        /* 46 6E */
+  SUBR_year,       /* 47 6F */
+  SUBR_week,       /* 48 70 */
+  SUBR_date,       /* 49 71 */
+  SUBR_time,       /* 50 72 */
+  SUBR_date_op,    /* 51 73 */
+  SUBR_eval,       /* 52 74 */
+  SUBR_error,      /* 53 75 */
+  SUBR_debug,      /* 54 76 */
+  SUBR_wait,       /* 55 77 */
+  SUBR_open,       /* 56 78 */
+  SUBR_close,      /* 57 79 */
+  SUBR_input,      /* 58 7A */
+  SUBR_linput,     /* 59 7B */
+  SUBR_print,      /* 60 7C */
+  SUBR_read,       /* 61 7D */
+  SUBR_write,      /* 62 7E */
+  SUBR_flush,      /* 63 7F */
+  SUBR_lock,       /* 64 80 */
+  SUBR_inp_out,    /* 65 81 */
+  SUBR_eof,        /* 66 82 */
+  SUBR_lof,        /* 67 83 */
+  SUBR_seek,       /* 68 84 */
+  SUBR_kill,       /* 69 85 */
+  SUBR_mkdir,      /* 70 86 */
+  SUBR_rmdir,      /* 71 87 */
+  SUBR_rename,     /* 72 88 */
+  SUBR_copy,       /* 73 89 */
+  SUBR_link,       /* 74 8A */
+  SUBR_exist,      /* 75 8B */
+  SUBR_access,     /* 76 8C */
+  SUBR_stat,       /* 77 8D */
+  SUBR_dfree,      /* 78 8E */
+  SUBR_temp,       /* 79 8F */
+  SUBR_isdir,      /* 80 90 */
+  SUBR_dir,        /* 81 91 */
+  SUBR_rdir,       /* 82 92 */
+  SUBR_exec,       /* 83 93 */
+  SUBR_alloc,      /* 84 94 */
+  SUBR_free,       /* 85 95 */
+  SUBR_realloc,    /* 86 96 */
+  SUBR_strptr,     /* 87 97 */
+  SUBR_sleep,      /* 88 98 */
+  SUBR_varptr,     /* 89 99 */
+  SUBR_collection, /* 90 9A */
+  SUBR_tr,         /* 91 9B */
+  SUBR_quote,      /* 92 9C */
+  SUBR_unquote,    /* 93 9D */
+	SUBR_eval,       /* 94 9E */
+	NULL,            /* 95 9F */
 };
 
+static void my_VALUE_class_read(CLASS *class, VALUE *value, char *addr, CTYPE ctype, void *ref)
+{
+	VALUE_class_read_inline(class, value, addr, ctype, ref);
+}
 
 void EXEC_loop(void)
 {
@@ -210,124 +217,124 @@ void EXEC_loop(void)
     /* 25 JUMP NEXT       */  &&_JUMP_NEXT,
     /* 26 FIRST           */  &&_ENUM_FIRST,
     /* 27 NEXT            */  &&_ENUM_NEXT,
-    /* 28 =               */  &&_SUBR,
-    /* 29 <>              */  &&_SUBR,
-    /* 2A >               */  &&_SUBR,
-    /* 2B <=              */  &&_SUBR,
-    /* 2C <               */  &&_SUBR,
-    /* 2D >=              */  &&_SUBR,
+    /* 28 =               */  &&_SUBR_CODE,
+    /* 29 <>              */  &&_SUBR_CODE,
+    /* 2A >               */  &&_SUBR_CODE,
+    /* 2B <=              */  &&_SUBR_CODE,
+    /* 2C <               */  &&_SUBR_CODE,
+    /* 2D >=              */  &&_SUBR_CODE,
     /* 2E ==              */  &&_SUBR,
-    /* 2F CASE            */  &&_SUBR,
-    /* 30 +               */  &&_SUBR,
-    /* 31 -               */  &&_SUBR,
-    /* 32 *               */  &&_SUBR,
-    /* 33 /               */  &&_SUBR,
-    /* 34 NEG             */  &&_SUBR,
+    /* 2F CASE            */  &&_SUBR_CODE,
+    /* 30 +               */  &&_SUBR_CODE,
+    /* 31 -               */  &&_SUBR_CODE,
+    /* 32 *               */  &&_SUBR_CODE,
+    /* 33 /               */  &&_SUBR_CODE,
+    /* 34 NEG             */  &&_SUBR_CODE,
     /* 35 \               */  &&_SUBR,
     /* 36 MOD             */  &&_SUBR,
     /* 37 ^               */  &&_SUBR,
-    /* 38 AND             */  &&_SUBR,
-    /* 39 OR              */  &&_SUBR,
-    /* 3A XOR             */  &&_SUBR,
-    /* 3B NOT             */  &&_SUBR,
-    /* 3C &               */  &&_SUBR,
-    /* 3D LIKE            */  &&_SUBR,
-    /* 3E &/              */  &&_SUBR,
-    /* 3F                 */  &&_SUBR,
+    /* 38 AND             */  &&_SUBR_CODE,
+    /* 39 OR              */  &&_SUBR_CODE,
+    /* 3A XOR             */  &&_SUBR_CODE,
+    /* 3B NOT             */  &&_SUBR_CODE,
+    /* 3C &               */  &&_SUBR_CODE,
+    /* 3D LIKE            */  &&_SUBR_CODE,
+    /* 3E &/              */  &&_SUBR_CODE,
+    /* 3F Is              */  &&_SUBR,
     /* 40 Left$           */  &&_SUBR_LEFT,
     /* 41 Mid$            */  &&_SUBR_MID,
     /* 42 Right$          */  &&_SUBR_RIGHT,
     /* 43 Len             */  &&_SUBR_LEN,
     /* 44 Space$          */  &&_SUBR,
     /* 45 String$         */  &&_SUBR,
-    /* 46 Trim$           */  &&_SUBR,
+    /* 46 Trim$           */  &&_SUBR_CODE,
     /* 47 UCase$          */  &&_SUBR,
     /* 48 LCase$          */  &&_SUBR,
     /* 49 Chr$            */  &&_SUBR,
-    /* 4A Asc             */  &&_SUBR,
-    /* 4B InStr           */  &&_SUBR,
-    /* 4C RInStr          */  &&_SUBR,
-    /* 4D Subst$          */  &&_SUBR,
-    /* 4E Replace$        */  &&_SUBR,
-    /* 4F Split           */  &&_SUBR,
+    /* 4A Asc             */  &&_SUBR_CODE,
+    /* 4B InStr           */  &&_SUBR_CODE,
+    /* 4C RInStr          */  &&_SUBR_CODE,
+    /* 4D Subst$          */  &&_SUBR_CODE,
+    /* 4E Replace$        */  &&_SUBR_CODE,
+    /* 4F Split           */  &&_SUBR_CODE,
     /* 50 Scan            */  &&_SUBR,
-    /* 51 Comp            */  &&_SUBR,
+    /* 51 Comp            */  &&_SUBR_CODE,
     /* 52 Conv            */  &&_SUBR,
-    /* 53 DConv           */  &&_SUBR,
-    /* 54 Abs             */  &&_SUBR,
-    /* 55 Int             */  &&_SUBR,
-    /* 56 Fix             */  &&_SUBR,
-    /* 57 Sgn             */  &&_SUBR,
-    /* 58 Frac...         */  &&_SUBR,
-    /* 59 Pi              */  &&_SUBR,
-    /* 5A Round           */  &&_SUBR,
-    /* 5B Randomize       */  &&_SUBR,
-    /* 5C Rnd             */  &&_SUBR,
-    /* 5D Min             */  &&_SUBR,
-    /* 5E Max             */  &&_SUBR,
-    /* 5F IIf             */  &&_SUBR,
-    /* 60 Choose          */  &&_SUBR,
-    /* 61 Array           */  &&_SUBR,
-    /* 62 ATan2...        */  &&_SUBR,
-    /* 63 IsAscii...      */  &&_SUBR,
-    /* 64 BClr...         */  &&_SUBR,
-    /* 65 IsBoolean...    */  &&_SUBR,
-    /* 66 TypeOf          */  &&_SUBR,
-    /* 67 CBool...        */  &&_SUBR,
-    /* 68 Bin$            */  &&_SUBR,
-    /* 69 Hex$            */  &&_SUBR,
+    /* 53 DConv           */  &&_SUBR_CODE,
+    /* 54 Abs             */  &&_SUBR_CODE,
+    /* 55 Int             */  &&_SUBR_CODE,
+    /* 56 Fix             */  &&_SUBR_CODE,
+    /* 57 Sgn             */  &&_SUBR_CODE,
+    /* 58 Frac...         */  &&_SUBR_CODE,
+    /* 59 Pi              */  &&_SUBR_CODE,
+    /* 5A Round           */  &&_SUBR_CODE,
+    /* 5B Randomize       */  &&_SUBR_CODE,
+    /* 5C Rnd             */  &&_SUBR_CODE,
+    /* 5D Min             */  &&_SUBR_CODE,
+    /* 5E Max             */  &&_SUBR_CODE,
+    /* 5F IIf             */  &&_SUBR_CODE,
+    /* 60 Choose          */  &&_SUBR_CODE,
+    /* 61 Array           */  &&_SUBR_CODE,
+    /* 62 ATan2...        */  &&_SUBR_CODE,
+    /* 63 IsAscii...      */  &&_SUBR_CODE,
+    /* 64 BClr...         */  &&_SUBR_CODE,
+    /* 65 IsBoolean...    */  &&_SUBR_CODE,
+    /* 66 TypeOf          */  &&_SUBR_CODE,
+    /* 67 CBool...        */  &&_SUBR_CODE,
+    /* 68 Bin$            */  &&_SUBR_CODE,
+    /* 69 Hex$            */  &&_SUBR_CODE,
     /* 6A Val             */  &&_SUBR,
     /* 6B Str             */  &&_SUBR,
-    /* 6C Format          */  &&_SUBR,
+    /* 6C Format          */  &&_SUBR_CODE,
     /* 6D Timer           */  &&_SUBR,
     /* 6E Now             */  &&_SUBR,
-    /* 6F Year...         */  &&_SUBR,
-    /* 70 Date            */  &&_SUBR,
-    /* 71 Time...         */  &&_SUBR,
-    /* 72 DateAdd...      */  &&_SUBR,
-    /* 73 Eval            */  &&_SUBR,
-    /* 74 Error           */  &&_SUBR,
-    /* 75 Debug           */  &&_SUBR,
-    /* 76 Wait            */  &&_SUBR,
-    /* 77 Open            */  &&_SUBR,
-    /* 78 Close           */  &&_SUBR,
-    /* 79 Input           */  &&_SUBR,
-    /* 7A LineInput       */  &&_SUBR,
-    /* 7B Print           */  &&_SUBR,
-    /* 7C Read            */  &&_SUBR,
-    /* 7D Write           */  &&_SUBR,
-    /* 7E Flush           */  &&_SUBR,
-    /* 7F Lock...         */  &&_SUBR,
-    /* 80 InputFrom...    */  &&_SUBR,
-    /* 81 Eof             */  &&_SUBR,
-    /* 82 Lof             */  &&_SUBR,
-    /* 83 Seek            */  &&_SUBR,
-    /* 84 Kill            */  &&_SUBR,
-    /* 85 Mkdir           */  &&_SUBR,
-    /* 86 Rmdir           */  &&_SUBR,
-    /* 87 Move            */  &&_SUBR,
-    /* 88 Copy            */  &&_SUBR,
-    /* 89 Link            */  &&_SUBR,
-    /* 8A Exist           */  &&_SUBR,
-    /* 8B Access          */  &&_SUBR,
-    /* 8C Stat            */  &&_SUBR,
-    /* 8D Dfree           */  &&_SUBR,
-    /* 8E Temp$           */  &&_SUBR,
-    /* 8F IsDir           */  &&_SUBR,
-    /* 90 Dir             */  &&_SUBR,
-    /* 91 RDir            */  &&_SUBR,
-    /* 92 Exec...         */  &&_SUBR,
-    /* 93 Alloc           */  &&_SUBR,
-    /* 94 Free            */  &&_SUBR,
-    /* 95 Realloc         */  &&_SUBR,
-    /* 96 StrPtr          */  &&_SUBR,
-    /* 97 Sleep           */  &&_SUBR,
-    /* 98 VarPtr          */  &&_SUBR,
-    /* 99 Collection      */  &&_SUBR,
-    /* 9A Tr$             */  &&_SUBR,
-    /* 9B Quote$...       */  &&_SUBR,
-    /* 9C Unquote$        */  &&_SUBR,
-    /* 9D Assign          */  &&_SUBR,
+    /* 6F Year...         */  &&_SUBR_CODE,
+    /* 70 Week            */  &&_SUBR_CODE,
+    /* 71 Date            */  &&_SUBR_CODE,
+    /* 72 Time...         */  &&_SUBR_CODE,
+    /* 73 DateAdd...      */  &&_SUBR_CODE,
+    /* 74 Eval            */  &&_SUBR_CODE,
+    /* 75 Error           */  &&_SUBR,
+    /* 76 Debug           */  &&_SUBR,
+    /* 77 Wait            */  &&_SUBR_CODE,
+    /* 78 Open            */  &&_SUBR_CODE,
+    /* 79 Close           */  &&_SUBR,
+    /* 7A Input           */  &&_SUBR_CODE,
+    /* 7B LineInput       */  &&_SUBR,
+    /* 7C Print           */  &&_SUBR_CODE,
+    /* 7D Read            */  &&_SUBR_CODE,
+    /* 7E Write           */  &&_SUBR_CODE,
+    /* 7F Flush           */  &&_SUBR,
+    /* 80 Lock...         */  &&_SUBR_CODE,
+    /* 81 InputFrom...    */  &&_SUBR_CODE,
+    /* 82 Eof             */  &&_SUBR_CODE,
+    /* 83 Lof             */  &&_SUBR_CODE,
+    /* 84 Seek            */  &&_SUBR_CODE,
+    /* 85 Kill            */  &&_SUBR,
+    /* 86 Mkdir           */  &&_SUBR,
+    /* 87 Rmdir           */  &&_SUBR,
+    /* 88 Move            */  &&_SUBR,
+    /* 89 Copy            */  &&_SUBR,
+    /* 8A Link            */  &&_SUBR,
+    /* 8B Exist           */  &&_SUBR,
+    /* 8C Access          */  &&_SUBR_CODE,
+    /* 8D Stat            */  &&_SUBR_CODE,
+    /* 8E Dfree           */  &&_SUBR,
+    /* 8F Temp$           */  &&_SUBR_CODE,
+    /* 90 IsDir           */  &&_SUBR,
+    /* 91 Dir             */  &&_SUBR_CODE,
+    /* 92 RDir            */  &&_SUBR_CODE,
+    /* 93 Exec...         */  &&_SUBR_CODE,
+    /* 94 Alloc           */  &&_SUBR_CODE,
+    /* 95 Free            */  &&_SUBR,
+    /* 96 Realloc         */  &&_SUBR_CODE,
+    /* 97 StrPtr          */  &&_SUBR_CODE,
+    /* 98 Sleep           */  &&_SUBR,
+    /* 99 VarPtr          */  &&_SUBR,
+    /* 9A Collection      */  &&_SUBR_CODE,
+    /* 9B Tr$             */  &&_SUBR,
+    /* 9C Quote$...       */  &&_SUBR_CODE,
+    /* 9D Unquote$        */  &&_SUBR,
     /* 9E                 */  &&_SUBR,
     /* 9F                 */  &&_SUBR,
     /* A0 ADD QUICK       */  &&_ADD_QUICK,
@@ -428,8 +435,8 @@ void EXEC_loop(void)
     /* FF PUSH QUICK      */  &&_PUSH_QUICK
   };
 
-  register int NO_WARNING(ind);
-  register ushort code;
+  int NO_WARNING(ind);
+  ushort code;
   /*ushort uind;*/
   TYPE type;
 
@@ -445,13 +452,14 @@ void EXEC_loop(void)
 
 /*-----------------------------------------------*/
 
-_NEXT3:
+_SUBR_CODE:
 
-  PC++;
+  (*(EXEC_FUNC_CODE)SubrTable[(code >> 8) - 0x28])(code);
 
-_NEXT2:
+  if (UNLIKELY(PCODE_is_void(code)))
+    POP();
 
-  PC++;
+/*-----------------------------------------------*/
 
 _NEXT:
 
@@ -478,9 +486,7 @@ _MAIN:
 
 _SUBR:
 
-  EXEC_code = code;
-
-  (*SubrTable[(code >> 8) - 0x28])();
+  (*(EXEC_FUNC)SubrTable[(code >> 8) - 0x28])();
 
 _SUBR_END:
 
@@ -542,7 +548,7 @@ _PUSH_EVENT:
     Then CALL QUICK must know how to handle these functions.
   */
 
-	ind = GET_XX();
+	ind = GET_UX();
 
 	if (CP->parent)
 		ind += CP->parent->n_event;
@@ -659,13 +665,14 @@ _PUSH_INTEGER:
   PC++;
   SP->_integer.value = PC[0] | ((uint)PC[1] << 16);
   SP++;
-  goto _NEXT2;
+	PC += 2;
+  goto _MAIN;
 
 /*-----------------------------------------------*/
 
 _PUSH_CHAR:
 
-  STRING_char_value(SP, (char)GET_XX());
+  STRING_char_value(SP, (char)GET_UX());
   SP++;
   goto _NEXT;
 
@@ -673,7 +680,7 @@ _PUSH_CHAR:
 
 _PUSH_ME:
 
-  if (UNLIKELY(GET_XX() & 1))
+  if (UNLIKELY(GET_UX() & 1))
   {
     if (DEBUG_info->op)
     {
@@ -702,7 +709,7 @@ _PUSH_ME:
     }
   }
 
-	if (UNLIKELY(GET_XX() & 2))
+	if (UNLIKELY(GET_UX() & 2))
 	{
 		// The used class must be in the stack, because it is tested by exec_push && exec_pop
 		if (LIKELY(OP != NULL))
@@ -730,7 +737,7 @@ _PUSH_MISC:
     static const void *_jump[] =
       { &&__PUSH_NULL, &&__PUSH_VOID, &&__PUSH_FALSE, &&__PUSH_TRUE, &&__PUSH_LAST, &&__PUSH_STRING };
 
-    goto *_jump[GET_XX()];
+    goto *_jump[GET_UX()];
 
   __PUSH_NULL:
 
@@ -835,12 +842,10 @@ _JUMP_IF_TRUE:
   VALUE_conv_boolean(&SP[-1]);
   SP--;
   if (UNLIKELY(SP->_boolean.value != 0))
-  {
-    PC += (signed short)PC[1] + 2;
-    goto _MAIN;
-  }
+    PC += (signed short)PC[1];
 
-  goto _NEXT2;
+	PC += 2;
+  goto _MAIN;
 
 /*-----------------------------------------------*/
 
@@ -849,18 +854,16 @@ _JUMP_IF_FALSE:
   VALUE_conv_boolean(&SP[-1]);
   SP--;
   if (UNLIKELY(SP->_boolean.value == 0))
-  {
-    PC += (signed short)PC[1] + 2;
-    goto _MAIN;
-  }
+    PC += (signed short)PC[1];
 
-  goto _NEXT2;
+	PC += 2;
+  goto _MAIN;
 
 /*-----------------------------------------------*/
 
 _RETURN:
 
-  if (LIKELY(GET_XX() != 0))
+  if (LIKELY(GET_UX() != 0))
   {
 		type = FP->type;
 		if (UNLIKELY(TYPE_is_pure_object(type) && ((CLASS *)type)->override))
@@ -1035,7 +1038,7 @@ _CALL:
     {
     	SP[-2] = SP[-1];
     	SP--;
-			VALUE_conv(SP - 1, (TYPE)EXEC.class);
+			VALUE_conv_object(SP - 1, (TYPE)EXEC.class);
 			goto _NEXT;
     }
     
@@ -1198,7 +1201,7 @@ _JUMP_NEXT:
     inc = end + 1;
     val = &BP[PC[2] & 0xFF];
 
-    goto *jn_jump[GET_XX()];
+    goto *jn_jump[GET_UX()];
 
   _JN_START:
 
@@ -1273,7 +1276,10 @@ _JUMP_NEXT:
   _JN_TEST_1:
 
     if (LIKELY(val->_integer.value <= end->_integer.value))
-      goto _NEXT3;
+		{
+			PC += 3;
+      goto _MAIN;
+		}
 
     goto _JN_END;
 
@@ -1284,7 +1290,10 @@ _JUMP_NEXT:
   _JN_TEST_2:
 
     if (LIKELY(val->_integer.value >= end->_integer.value))
-      goto _NEXT3;
+		{
+			PC += 3;
+			goto _MAIN;
+		}
 
     goto _JN_END;
 
@@ -1295,7 +1304,10 @@ _JUMP_NEXT:
   _JN_TEST_3:
 
     if (LIKELY(val->_float.value <= end->_float.value))
-      goto _NEXT3;
+		{
+			PC += 3;
+			goto _MAIN;
+		}
 
     goto _JN_END;
 
@@ -1306,7 +1318,10 @@ _JUMP_NEXT:
   _JN_TEST_4:
 
     if (LIKELY(val->_float.value >= end->_float.value))
-      goto _NEXT3;
+		{
+			PC += 3;
+			goto _MAIN;
+		}
 
     goto _JN_END;
 
@@ -1317,7 +1332,10 @@ _JUMP_NEXT:
   _JN_TEST_5:
 
     if (LIKELY(val->_long.value <= end->_long.value))
-      goto _NEXT3;
+		{
+			PC += 3;
+			goto _MAIN;
+		}
 
     goto _JN_END;
 
@@ -1328,7 +1346,10 @@ _JUMP_NEXT:
   _JN_TEST_6:
 
     if (LIKELY(val->_long.value >= end->_long.value))
-      goto _NEXT3;
+		{
+			PC += 3;
+			goto _MAIN;
+		}
 
     goto _JN_END;
 
@@ -1353,7 +1374,10 @@ _ENUM_NEXT:
   if (UNLIKELY(EXEC_enum_next(code)))
     goto _JUMP;
   else
-    goto _NEXT2;
+	{
+		PC += 2;
+    goto _MAIN;
+	}
 
 /*-----------------------------------------------*/
 
@@ -1402,7 +1426,7 @@ _PUSH_EXTERN:
   SP->_function.class = CP;
   SP->_function.object = NULL;
   SP->_function.kind = FUNCTION_EXTERN;
-  SP->_function.index = GET_XX();
+  SP->_function.index = GET_UX();
   SP->_function.defined = TRUE;
 
   //OBJECT_REF(OP, "exec_loop._PUSH_FUNCTION (FUNCTION)");
@@ -1437,7 +1461,7 @@ _PUSH_STATIC:
 
 __READ:
 
-    VALUE_class_read(CP, SP, addr, var->type, ref);
+    my_VALUE_class_read(CP, SP, addr, var->type, ref);
 
     PUSH();
     goto _NEXT;
@@ -1559,7 +1583,7 @@ _ADD_QUICK:
 	
 	__AQ_VARIANT_END:
 	
-		VALUE_conv(P1, T_VARIANT);
+		VALUE_conv_variant(P1);
 	
 	__AQ_END:
   	goto _NEXT;
@@ -1577,7 +1601,8 @@ _TRY:
   fprintf(stderr, "exec TRY %p\n", EC);
   #endif
 
-  goto _NEXT2;
+	PC += 2;
+  goto _MAIN;
 
 /*-----------------------------------------------*/
 
@@ -1615,7 +1640,7 @@ _BREAK:
     TC = PC + 1;
     TP = SP;
 
-    ind = GET_XX();
+    ind = GET_UX();
 
     if (ind == 0)
     {
@@ -1652,7 +1677,7 @@ _BREAK:
 
 _QUIT:
 
-  if (GET_XX() == 0)
+  if (GET_UX() == 0)
     EXEC_quit();
 
   if (EXEC_debug && CP && CP->component == COMPONENT_main)
@@ -1668,8 +1693,8 @@ _BYREF:
 
 	if (LIKELY(PC == FP->code))
 	{
-		PC += GET_XX();
-		goto _NEXT2;
+		PC += GET_UX() + 2;
+		goto _MAIN;
 	}
 
 	THROW(E_BYREF);

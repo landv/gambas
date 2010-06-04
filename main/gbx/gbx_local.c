@@ -317,7 +317,7 @@ static char *get_languages(void)
   char *lang_list = NULL;
   char *src;
 
-  STRING_new_temp_zero(&lang, LOCAL_get_lang());
+  lang = STRING_new_temp_zero(LOCAL_get_lang());
 
   STRING_add(&lang_list, lang, 0);
   STRING_add(&lang_list, ":", 1);
@@ -369,7 +369,7 @@ static void fill_local_info(void)
   if (!codeset || !*codeset)
   	codeset = "US-ASCII";
 
-  STRING_new_zero(&LOCAL_encoding, codeset);
+  LOCAL_encoding = STRING_new_zero(codeset);
 
   LOCAL_is_UTF8 = (strcasecmp(LOCAL_encoding, "UTF-8") == 0);
 
@@ -539,7 +539,7 @@ const char *LOCAL_get_lang(void)
 			lang = getenv("LANG");
 		if (!lang || !*lang)
 			lang = "en_US";
-		STRING_new_zero(&_lang, lang);
+		_lang = STRING_new_zero(lang);
 	}
 	
   return _lang;
@@ -576,7 +576,7 @@ void LOCAL_set_lang(const char *lang)
   }
 
 	STRING_free(&_lang);
-	STRING_new_zero(&_lang, lang);
+	_lang = STRING_new_zero(lang);
 
   fill_local_info();
 
@@ -1387,7 +1387,7 @@ void LOCAL_load_translation(ARCHIVE *arch)
 
     if (*lang)
     {
-      STRING_new_temp_zero(&test, lang);
+      test = STRING_new_temp_zero(lang);
       src = test;
 
       for(;;)

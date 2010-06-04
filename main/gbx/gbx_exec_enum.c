@@ -83,7 +83,7 @@ bool EXEC_enum_next(PCODE code)
       THROW(E_ENUM);
     
     if (!defined && !drop && !cenum->stop)
-    	VALUE_conv(&SP[-1], T_VARIANT);
+    	VALUE_conv_variant(&SP[-1]);
   }
 
   if (drop || cenum->stop)

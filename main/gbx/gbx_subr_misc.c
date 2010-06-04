@@ -62,7 +62,7 @@ void SUBR_error(void)
 }
 
 
-void SUBR_wait(void)
+void SUBR_wait(ushort code)
 {
 	struct timespec rem;
 	double wait;
@@ -119,7 +119,7 @@ void SUBR_sleep(void)
 }
 
 
-void SUBR_exec(void)
+void SUBR_exec(ushort code)
 {
 	void *cmd;
 	bool wait;
@@ -132,13 +132,13 @@ void SUBR_exec(void)
 
 	SUBR_ENTER_PARAM(4);
 
-	shell = (EXEC_code & 0x1F) != 0;
+	shell = (code & 0x1F) != 0;
 
 	if (shell)
 		cmd = (void *)SUBR_get_string(PARAM);
 	else
 	{
-		VALUE_conv(PARAM, (TYPE)CLASS_StringArray);
+		VALUE_conv_object(PARAM, (TYPE)CLASS_StringArray);
 		cmd = (void *)(PARAM->_object.object);
 	}
 
@@ -149,7 +149,7 @@ void SUBR_exec(void)
 		env = NULL;
 	else
 	{
-		VALUE_conv(&PARAM[1], (TYPE)CLASS_StringArray);
+		VALUE_conv_object(&PARAM[1], (TYPE)CLASS_StringArray);
 		env = (PARAM[1]._object.object);
 	}
 	
@@ -159,7 +159,7 @@ void SUBR_exec(void)
 
 	name = SUBR_get_string(&PARAM[3]);
 
-	ret = !PCODE_is_void(EXEC_code);
+	ret = !PCODE_is_void(code);
 
 	if (shell)
 		mode |= PM_SHELL;
@@ -253,7 +253,7 @@ _FREE:
 	STREAM_flush(CSTREAM_stream(CFILE_out));
 }
 
-void SUBR_eval(void)
+void SUBR_eval(ushort code)
 {
 	char *expr;
 	int len;
@@ -266,7 +266,7 @@ void SUBR_eval(void)
 
 	if (NPARAM == 2)
 	{
-		VALUE_conv(&PARAM[1], (TYPE)CLASS_Collection);
+		VALUE_conv_object(&PARAM[1], (TYPE)CLASS_Collection);
 		eval_env = (CCOLLECTION *)(PARAM[1]._object.object);
 	}
 	else
@@ -274,7 +274,7 @@ void SUBR_eval(void)
 
 	EVAL.New((void **)(void *)&eval, expr, len);
 
-	if (EVAL.Compile(eval, (EXEC_code >> 8) == CODE_ASSIGN))
+	if (EVAL.Compile(eval, (code >> 8) == CODE_ASSIGN))
 		goto _ERROR;
 
 	if (!EVAL.Run(eval, get_value))
@@ -293,7 +293,7 @@ _FREE:
 }
 
 
-void SUBR_array(void)
+void SUBR_array(ushort code)
 {
 	TYPE type;
 	int i;
@@ -321,7 +321,7 @@ void SUBR_array(void)
 	SUBR_LEAVE();
 }
 
-void SUBR_collection(void)
+void SUBR_collection(ushort code)
 {
 	int i;
 	GB_COLLECTION col;
@@ -338,7 +338,7 @@ void SUBR_collection(void)
 		vkey = &PARAM[i];
 		vval = vkey + 1;
 		SUBR_get_string_len(vkey, &key, &len);
-		VALUE_conv(vval, T_VARIANT);
+		VALUE_conv_variant(vval);
 		if (GB_CollectionSet(col, key, len, (GB_VARIANT *)vval))
 		{
 			OBJECT_UNREF(col, "SUBR_collection");

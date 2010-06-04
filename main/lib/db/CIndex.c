@@ -76,7 +76,7 @@ static CINDEX *make_index(CTABLE *table, const char *name, bool must_exist)
   GB.New(POINTER(&_object), GB.FindClass("Index"), NULL, NULL);
   THIS->table = table;
   THIS->driver = table->conn->driver;
-  GB.NewZeroString(&THIS->name, name);
+  THIS->name = GB.NewZeroString(name);
 
   return _object;
 }
@@ -141,13 +141,13 @@ BEGIN_PROPERTY(CINDEX_fields)
 	char *fields;
 	char *name;
 	
-	GB.NewZeroString(&fields, THIS->info.fields);
+	fields = GB.NewZeroString(THIS->info.fields);
 	GB.Array.New(&array, GB_T_STRING, 0);
 	
 	name = strtok(fields, ",");
 	while (name)
 	{
-		GB.NewZeroString((char **)GB.Array.Add(array), name);
+		*((char **)GB.Array.Add(array)) = GB.NewZeroString(name);
 		name = strtok(NULL, ",");
 	}
 

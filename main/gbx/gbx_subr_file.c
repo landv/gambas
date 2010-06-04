@@ -113,31 +113,31 @@ static STREAM *get_default(intptr_t val)
   return stream;
 }
 
-static STREAM *get_stream(VALUE *value, bool can_default)
-{
-  STREAM *stream;
-
-  if (TYPE_is_integer(value->type) && can_default && value->_integer.value >= 0 && value->_integer.value <= 2)
-    stream = get_default((intptr_t)value->_integer.value);
-  else
-  {
-    if (VALUE_is_null(value))
-      THROW(E_NULL);
-
-		if (TYPE_is_object(value->type) && OBJECT_class(value->_object.object)->is_stream)
-	    stream = CSTREAM_stream(value->_object.object);
-	  else
-	  {
-    	VALUE_conv(value, (TYPE)CLASS_Stream);
-    	stream = NULL;
-    }
-  }
-
-  if (STREAM_is_closed(stream))
-    THROW(E_CLOSED);
-
-  return stream;
-}
+#define get_stream(_value, _can_default) \
+({ \
+	STREAM *stream; \
+	\
+	if ((_can_default) && TYPE_is_integer((_value)->type) && (_value)->_integer.value >= 0 && (_value)->_integer.value <= 2) \
+		stream = get_default((intptr_t)(_value)->_integer.value); \
+	else \
+	{ \
+		if (TYPE_is_object((_value)->type) && OBJECT_class((_value)->_object.object)->is_stream) \
+			stream = CSTREAM_stream((_value)->_object.object); \
+		else \
+		{ \
+			if (VALUE_is_null(_value)) \
+				THROW(E_NULL); \
+			\
+			VALUE_conv_object((_value), (TYPE)CLASS_Stream); \
+			stream = NULL; \
+		} \
+	} \
+	\
+	if (STREAM_is_closed(stream)) \
+		THROW(E_CLOSED); \
+	\
+	stream; \
+})
 
 
 static char *get_path(VALUE *param)
@@ -150,7 +150,7 @@ static char *get_path(VALUE *param)
   return STRING_conv_file_name(name, len);
 }
 
-void SUBR_open(void)
+void SUBR_open(ushort code)
 {
   CFILE *file;
   STREAM stream;
@@ -162,7 +162,7 @@ void SUBR_open(void)
   SUBR_check_integer(&PARAM[1]);
   mode = PARAM[1]._integer.value;
 
-	if (EXEC_code & 0x3F)
+	if (code & 0x3F)
 	{
 		if (TYPE_is_pointer(PARAM->type))
 			addr = (void *)PARAM->_pointer.value;
@@ -209,7 +209,7 @@ void SUBR_flush(void)
   STREAM_write(_stream, addr, len);
 }*/
 
-void SUBR_print(void)
+void SUBR_print(ushort code)
 {
   int i;
   char *addr;
@@ -244,22 +244,24 @@ void SUBR_linput(void)
   STREAM *stream;
   char *addr;
 
-  SUBR_ENTER_PARAM(1);
-
-  stream = get_stream(PARAM, TRUE);
+  stream = get_stream(&SP[-1], TRUE);
 
   STREAM_line_input(stream, &addr);
 
-  RETURN->type = T_STRING;
-  RETURN->_string.addr = addr;
-  RETURN->_string.start = 0;
-  RETURN->_string.len = STRING_length(addr);
-
-  SUBR_LEAVE();
+	SP--;
+	RELEASE_OBJECT(SP);
+	
+  SP->type = T_STRING;
+  SP->_string.addr = addr;
+  SP->_string.start = 0;
+  SP->_string.len = STRING_length(addr);
+	
+	STRING_ref(addr);
+	SP++;
 }
 
 
-void SUBR_input(void)
+void SUBR_input(ushort code)
 {
   static STREAM *stream = NULL;
   char *addr;
@@ -290,27 +292,33 @@ void SUBR_input(void)
 }
 
 
-void SUBR_eof(void)
+void SUBR_eof(ushort code)
 {
-  STREAM *stream;
+	STREAM *stream;
+	bool eof;
 
-  SUBR_ENTER();
+	SUBR_ENTER();
 
-  if (NPARAM == 1)
-    stream = get_stream(PARAM, FALSE);
-  else
-    stream = get_default(0);
+	if (NPARAM == 1)
+	{
+		stream = get_stream(PARAM, FALSE);
+		eof = STREAM_eof(stream);
+		RELEASE_OBJECT(PARAM);
+		SP--;
+	}
+	else
+	{
+		stream = get_default(0);
+		eof = STREAM_eof(stream);
+	}
 
-  //fprintf(stderr, "Eof(stream) = %d\n", STREAM_eof(stream));
-
-  RETURN->type = T_BOOLEAN;
-  RETURN->_boolean.value = STREAM_eof(stream) ? -1 : 0;
-
-  SUBR_LEAVE();
+	SP->type = T_BOOLEAN;
+	SP->_boolean.value = (-eof);
+	SP++;
 }
 
 
-void SUBR_lof(void)
+void SUBR_lof(ushort code)
 {
   STREAM *stream;
 
@@ -328,7 +336,7 @@ void SUBR_lof(void)
 }
 
 
-void SUBR_seek(void)
+void SUBR_seek(ushort code)
 {
   STREAM *stream;
   int64_t pos;
@@ -372,7 +380,7 @@ void SUBR_seek(void)
   SUBR_LEAVE();
 }
 
-void SUBR_read(void)
+void SUBR_read(ushort code)
 {
   STREAM *stream;
   int len = 0;
@@ -383,7 +391,7 @@ void SUBR_read(void)
 
   stream = get_stream(PARAM, TRUE);
 	
-	if (EXEC_code & 0x3F)
+	if (code & 0x3F)
 	{
     VALUE_conv_integer(&PARAM[1]);
 		len = PARAM[1]._integer.value;
@@ -404,7 +412,7 @@ void SUBR_read(void)
 }
 
 
-void SUBR_write(void)
+void SUBR_write(ushort code)
 {
   STREAM *stream;
   int len;
@@ -414,7 +422,7 @@ void SUBR_write(void)
 
   stream = get_stream(PARAM, TRUE);
 
-	if (EXEC_code & 0x3F)
+	if (code & 0x3F)
 	{
     VALUE_conv_string(&PARAM[1]);
 		type = T_STRING;
@@ -436,7 +444,7 @@ void SUBR_write(void)
 }
 
 
-void SUBR_stat(void)
+void SUBR_stat(ushort code)
 {
   const char *path;
   CSTAT *cstat;
@@ -455,9 +463,10 @@ void SUBR_stat(void)
   OBJECT_new((void **)(void *)&cstat, CLASS_Stat, NULL, NULL);
   OBJECT_UNREF_KEEP(cstat, "SUBR_stat");
   cstat->info = info;
-  STRING_new_zero(&cstat->path, path);
+  cstat->path = STRING_new_zero(path);
 
-  OBJECT_put(RETURN, cstat);
+	RETURN->_object.class = CLASS_Stat;
+  RETURN->_object.object = cstat;
 
   SUBR_LEAVE();
 }
@@ -481,7 +490,7 @@ void SUBR_exist(void)
 }
 
 
-void SUBR_dir()
+void SUBR_dir(ushort code)
 {
   GB_ARRAY array;
   const char *path;
@@ -512,12 +521,12 @@ void SUBR_dir()
     if (!LOCAL_is_UTF8)
     {
       if (STRING_conv(&str, pattern, len_pattern, LOCAL_encoding, "UTF-8", FALSE))
-	      STRING_new(&str, pattern, len_pattern);
+	      str = STRING_new(pattern, len_pattern);
 	    else
       	STRING_ref(str);
     }
     else
-      STRING_new(&str, pattern, len_pattern);
+      str = STRING_new(pattern, len_pattern);
 
     *((char **)GB_ArrayAdd(array)) = str;
   }
@@ -543,17 +552,17 @@ static void found_file(const char *path)
   if (!LOCAL_is_UTF8)
   {
     if (STRING_conv(&str, path, len, LOCAL_encoding, "UTF-8", FALSE))
-	    STRING_new(&str, path, len);
+	    str = STRING_new(path, len);
 	  else
   	  STRING_ref(str);
   }
   else
-    STRING_new(&str, path, len);
+    str = STRING_new(path, len);
 
   *((char **)GB_ArrayAdd(_result)) = str;
 }
 
-void SUBR_rdir()
+void SUBR_rdir(ushort code)
 {
   const char *path;
   int attr = 0;
@@ -633,7 +642,7 @@ void SUBR_rename(void)
 }
 
 
-void SUBR_temp(void)
+void SUBR_temp(ushort code)
 {
   char *temp;
   int len;
@@ -679,7 +688,7 @@ void SUBR_copy(void)
 }
 
 
-void SUBR_access(void)
+void SUBR_access(ushort code)
 {
   int access;
 
@@ -712,11 +721,11 @@ void SUBR_link(void)
 }
 
 
-void SUBR_lock(void)
+void SUBR_lock(ushort code)
 {
   SUBR_ENTER_PARAM(1);
 
-	if (EXEC_code & 0x1F)
+	if (code & 0x1F)
 	{
 	  STREAM_close(get_stream(PARAM, FALSE));
 	  SUBR_LEAVE_VOID();
@@ -740,14 +749,14 @@ void SUBR_lock(void)
 }
 
 
-void SUBR_inp_out(void)
+void SUBR_inp_out(ushort code)
 {
   CSTREAM *stream;
   void **where;
 
   SUBR_ENTER_PARAM(1);
 
-	switch(EXEC_code & 0x1F)
+	switch(code & 0x1F)
 	{
 		case 0: where = &_default_in; break;
 		case 1: where = &_default_out; break;
@@ -762,7 +771,7 @@ void SUBR_inp_out(void)
     return;
   }
 
-  VALUE_conv(PARAM, (TYPE)CLASS_Stream);
+  VALUE_conv_object(PARAM, (TYPE)CLASS_Stream);
 
   stream = PARAM->_object.object;
   OBJECT_REF(stream, "SUBR_inp_out");

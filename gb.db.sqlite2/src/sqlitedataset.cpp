@@ -92,7 +92,7 @@ int callback(void* res_ptr,int ncol, char** reslt,char** cols){
 	 }
 	 else {
              //table = strndup(cols[i], strchr(cols[i], (int)'.') - cols[i]);
-             GB.NewString(&table, cols[i], strchr(cols[i], (int)'.') - cols[i]);
+             table = GB.NewString(cols[i], strchr(cols[i], (int)'.') - cols[i]);
 //             table = strdup(reslt[0]);
              r->record_header[i].name = item + 1;
              r->record_header[i].field_table = table;
@@ -669,7 +669,7 @@ fType GetFieldType(const char *Type, unsigned int *length )
 	unsigned int rTypeLen;
 	int i;
 
-	GB.NewZeroString(&upper, Type);
+	upper = GB.NewZeroString(Type);
 	for (i = 0; i < GB.StringLength(upper); i++)
 		upper[i] = toupper(upper[i]);
 	

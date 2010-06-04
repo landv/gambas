@@ -37,7 +37,7 @@
 #include "gbx_subr_test_temp.h"
 
 
-void SUBR_bit(void)
+void SUBR_bit(ushort code)
 {
   static void *jump[16] = {
     &&__ERROR, &&__BCLR, &&__BSET, &&__BTST, &&__BCHG, &&__ASL, &&__ASR, &&__ROL,
@@ -76,7 +76,7 @@ void SUBR_bit(void)
 
   RETURN->type = type;
 
-	goto *jump[EXEC_code & 0xF];
+	goto *jump[code & 0xF];
 
 __BCLR:
 
@@ -274,94 +274,22 @@ __END:
 __END_VARIANT:
 
 	if (variant)
-		VALUE_conv(RETURN, T_VARIANT);
+		VALUE_conv_variant(RETURN);
 
 __LEAVE:
 
   SUBR_LEAVE();
 }
 
-#if 0
-void SUBR_min_max(void)
-{
-  TYPE type = T_VOID;
-  int i;
-  bool is_max;
 
-  SUBR_ENTER();
-
-  is_max = ((EXEC_code >> 8) == CODE_MAX);
-
-  for (i = 0; i < NPARAM; i++)
-  {
-    VARIANT_undo(&PARAM[i]);
-    type = Max(type, PARAM[i].type);
-  }
-
-  if (!TYPE_is_number_date(type))
-    THROW(E_TYPE, "Number or Date", TYPE_get_name(type));
-
-  VALUE_conv(PARAM, type);
-
-  switch (type)
-  {
-    case T_FLOAT:
-
-      for (i = 1; i < NPARAM; i++)
-      {
-        VALUE_conv(&PARAM[i], type);
-        if ((PARAM[i]._float.value < PARAM[0]._float.value) ^ is_max)
-          PARAM[0]._float.value = PARAM[i]._float.value;
-      }
-      break;
-
-    case T_DATE:
-
-      for (i = 1; i < NPARAM; i++)
-      {
-        VALUE_conv(&PARAM[i], type);
-        if (DATE_comp_value(&PARAM[i], &PARAM[0]) == (is_max ? 1 : -1))
-        {
-          PARAM[0]._date.date = PARAM[i]._date.date;
-          PARAM[0]._date.time = PARAM[i]._date.time;
-        }
-      }
-      break;
-
-    case T_LONG:
-
-      for (i = 1; i < NPARAM; i++)
-      {
-        VALUE_conv(&PARAM[i], type);
-        if ((PARAM[i]._long.value < PARAM[0]._long.value) ^ is_max)
-          PARAM[0]._long.value = PARAM[i]._long.value;
-      }
-      break;
-
-    default:
-
-      for (i = 1; i < NPARAM; i++)
-      {
-        VALUE_conv(&PARAM[i], type);
-        if ((PARAM[i]._integer.value < PARAM[0]._integer.value) ^ is_max)
-          PARAM[0]._integer.value = PARAM[i]._integer.value;
-      }
-      break;
-  }
-
-  SP -= NPARAM;
-  SP++;
-}
-#endif
-
-void SUBR_if(void)
+void SUBR_if(ushort code)
 {
 	TYPE type;
   SUBR_ENTER_PARAM(3);
 
   VALUE_conv_boolean(PARAM);
 
-	switch (EXEC_code & 0x1F)
+	switch (code & 0x1F)
 	{
 		case 0:
 		
@@ -389,12 +317,12 @@ void SUBR_if(void)
 		
 			if (PARAM->_boolean.value)
 			{
-				VALUE_conv(&PARAM[1], T_VARIANT);
+				VALUE_conv_variant(&PARAM[1]);
 				*RETURN = PARAM[1];
 			}
 			else
 			{
-				VALUE_conv(&PARAM[2], T_VARIANT);
+				VALUE_conv_variant(&PARAM[2]);
 				*RETURN = PARAM[2];
 			}
 			
@@ -405,7 +333,7 @@ void SUBR_if(void)
 }
 
 
-void SUBR_choose(void)
+void SUBR_choose(ushort code)
 {
   int val;
 
@@ -416,7 +344,7 @@ void SUBR_choose(void)
 
   if (val >= 1 && val <= NPARAM)
   {
-    VALUE_conv(&PARAM[val], T_VARIANT);
+    VALUE_conv_variant(&PARAM[val]);
     *RETURN = PARAM[val];
   }
   else
@@ -451,7 +379,7 @@ void SUBR_near(void)
 }
 
 
-void SUBR_comp()
+void SUBR_comp(ushort code)
 {
 	static void *jump[17] = {
 		&&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
@@ -463,13 +391,11 @@ void SUBR_comp()
 	char NO_WARNING(result);
 	VALUE *P1;
 	VALUE *P2;
-	TYPE type;
 
 	P1 = SP - 2;
 	P2 = P1 + 1;
 
-	type = EXEC_code & 0x1F;
-	goto *jump[type];
+	goto *jump[code & 0x1F];
 
 __BOOLEAN:
 __BYTE:
@@ -550,6 +476,7 @@ __VARIANT:
 
 	{
 		bool variant = FALSE;
+		TYPE type;
 	
 		if (TYPE_is_variant(P1->type))
 		{
@@ -578,7 +505,147 @@ __VARIANT:
 
 __ERROR:
 
-	THROW(E_TYPE, "Number, Date or String", TYPE_get_name(type));
+	THROW(E_TYPE, "Number, Date or String", TYPE_get_name(code & 0x1F));
+
+__END_RELEASE:
+
+	RELEASE(P1);
+	RELEASE(P2);
+
+__END:
+
+	P1->type = T_BOOLEAN;
+	SP--;
+	P1->_boolean.value = -result;
+}
+
+void SUBR_compn(ushort code)
+{
+	static void *jump[17] = {
+		&&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
+		&&__STRING, &&__STRING, &&__POINTER, &&__ERROR, &&__ERROR, &&__ERROR, &&__NULL, &&__OBJECT
+		};
+
+	//static void *test[] = { &&__EQ, &&__NE, &&__GT, &&__LE, &&__LT, &&__GE };
+
+	char NO_WARNING(result);
+	VALUE *P1;
+	VALUE *P2;
+
+	P1 = SP - 2;
+	P2 = P1 + 1;
+
+	goto *jump[code & 0x1F];
+
+__BOOLEAN:
+__BYTE:
+__SHORT:
+__INTEGER:
+
+	result = P1->_integer.value == P2->_integer.value;
+	goto __END;
+	
+__LONG:
+
+	VALUE_conv(P1, T_LONG);
+	VALUE_conv(P2, T_LONG);
+
+	result = P1->_long.value == P2->_long.value;
+	goto __END;
+
+__DATE:
+
+	VALUE_conv(P1, T_DATE);
+	VALUE_conv(P2, T_DATE);
+
+	result = DATE_comp_value(P1, P2) == 0;
+	goto __END;
+
+__NULL:
+
+	if (P2->type == T_NULL)
+	{
+		result = VALUE_is_null(P1);
+		goto __END_RELEASE;
+	}
+	else if (P1->type == T_NULL)
+	{
+		result = VALUE_is_null(P2);
+		goto __END_RELEASE;
+	}
+
+__STRING:
+
+	VALUE_conv_string(P1);
+	VALUE_conv_string(P2);
+
+	if (P1->_string.len != P2->_string.len)
+		result = 0;
+	else
+		result = STRING_equal_same(P1->_string.addr + P1->_string.start, P2->_string.addr + P2->_string.start, P1->_string.len);
+	
+	RELEASE_STRING(P1);
+	RELEASE_STRING(P2);
+	goto __END;
+
+__SINGLE:
+__FLOAT:
+
+	VALUE_conv_float(P1);
+	VALUE_conv_float(P2);
+
+	result = P1->_float.value == P2->_float.value;
+	goto __END;
+
+__POINTER:
+
+	VALUE_conv(P1, T_POINTER);
+	VALUE_conv(P2, T_POINTER);
+
+	result = P1->_pointer.value == P2->_pointer.value;
+	goto __END;
+
+__OBJECT:
+
+	result = OBJECT_comp_value(P1, P2) == 0;
+	//RELEASE_OBJECT(P1);
+	//RELEASE_OBJECT(P2);
+	goto __END_RELEASE;
+
+__VARIANT:
+
+	{
+		bool variant = FALSE;
+		TYPE type;
+	
+		if (TYPE_is_variant(P1->type))
+		{
+			VARIANT_undo(P1);
+			variant = TRUE;
+		}
+
+		if (TYPE_is_variant(P2->type))
+		{
+			VARIANT_undo(P2);
+			variant = TRUE;
+		}
+
+		type = Max(P1->type, P2->type);
+
+		if (TYPE_is_object_null(P1->type) && TYPE_is_object_null(P2->type))
+			type = T_OBJECT;
+		else if (TYPE_is_object(type))
+			THROW(E_TYPE, "Object", TYPE_get_name(Min(P1->type, P2->type)));
+
+		if (!variant)
+			*PC |= type;
+
+		goto *jump[type];
+	}
+
+__ERROR:
+
+	THROW(E_TYPE, "Number, Date or String", TYPE_get_name(code & 0x1F));
 
 __END_RELEASE:
 
@@ -590,10 +657,7 @@ __END:
 	P1->type = T_BOOLEAN;
 	SP--;
 
-	if ((EXEC_code - C_EQ) >> 8)
-		P1->_boolean.value = result ? 0 : -1;
-	else
-		P1->_boolean.value = result ? -1 : 0;
+	P1->_boolean.value = result - 1; // ? 0 : -1;
 }
 
 #define sgn(_x) \
@@ -606,7 +670,7 @@ __END:
   result; \
 })
 
-void SUBR_compi(void)
+void SUBR_compi(ushort code)
 {
 	static void *jump[17] = {
 		&&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
@@ -621,12 +685,12 @@ void SUBR_compi(void)
 	VALUE *P2;
 	TYPE type;
 
-	op = (EXEC_code - C_GT) >> 8;
+	op = (code - C_GT) >> 8;
 
 	P1 = SP - 2;
 	P2 = P1 + 1;
 
-	type = EXEC_code & 0x1F;
+	type = code & 0x1F;
 	goto *jump[type];
 
 __BOOLEAN:
@@ -756,7 +820,7 @@ __LE:
 	return;
 }
 
-void SUBR_strcomp(void)
+void SUBR_strcomp(ushort code)
 {
   int mode = GB_COMP_BINARY;
   char *s1, *s2;
@@ -824,7 +888,7 @@ void SUBR_is(void)
 }
 
 
-void SUBR_min_max(void)
+void SUBR_min_max(ushort code)
 {
   static void *jump[] = {
     &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__FLOAT, &&__FLOAT, &&__DATE
@@ -839,8 +903,8 @@ void SUBR_min_max(void)
   P2 = P1 + 1;
 
   jump_end = &&__END;
-  type = EXEC_code & 0x0F;
-  is_max = ((EXEC_code >> 8) == CODE_MAX);
+  type = code & 0x0F;
+  is_max = ((code >> 8) == CODE_MAX);
   goto *jump[type];
 
 __BOOLEAN:
@@ -941,7 +1005,7 @@ __ERROR:
 
 __VARIANT_END:
 
-  VALUE_conv(P1, T_VARIANT);
+  VALUE_conv_variant(P1);
 
 __END:
 

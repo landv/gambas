@@ -1986,7 +1986,7 @@ void MyMainWindow::keyPressEvent(QKeyEvent *e)
 		CKEY_clear(true);
 
 		GB.FreeString(&CKEY_info.text);
-		GB.NewZeroString(&CKEY_info.text, TO_UTF8(e->text()));
+		CKEY_info.text = GB.NewZeroString(TO_UTF8(e->text()));
 		CKEY_info.state = e->modifiers();
 		CKEY_info.code = e->key();
 

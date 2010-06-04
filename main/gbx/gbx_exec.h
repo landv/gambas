@@ -41,6 +41,9 @@ typedef
   void (*EXEC_FUNC)();
 
 typedef
+  void (*EXEC_FUNC_CODE)(ushort);
+
+typedef
   struct {
     CLASS *class;
     OBJECT *object;
@@ -76,7 +79,6 @@ typedef
 #ifndef __GBX_EXEC_C
 
 EXTERN STACK_CONTEXT EXEC_current;
-EXTERN PCODE EXEC_code;
 EXTERN VALUE *SP;
 EXTERN VALUE TEMP;
 EXTERN VALUE RET;
@@ -99,6 +101,8 @@ EXTERN bool EXEC_main_hook_done;
 EXTERN int EXEC_return_value;
 EXTERN bool EXEC_got_error;
 /*EXTERN long EXEC_const[];*/
+
+EXTERN const char EXEC_should_borrow[];
 
 #endif
 
@@ -197,7 +201,7 @@ do { \
 	} \
 	else if (type == T_STRING) \
 		STRING_ref(_v->_string.addr); \
-	else \
+	else if (EXEC_should_borrow[type]) \
 		EXEC_borrow(type, _v); \
 } while (0)
 
@@ -211,7 +215,7 @@ do { \
 	} \
 	else if (type == T_STRING) \
 		STRING_unref(&_v->_string.addr); \
-	else \
+	else if (EXEC_should_borrow[type]) \
 		EXEC_release(type, _v); \
 } while (0)
 

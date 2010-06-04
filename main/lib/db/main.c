@@ -125,7 +125,7 @@ GB_ARRAY DB_StringArrayToGambasArray(char **array)
 
   for (i = 0; i < n; i++)
   {
-    GB.NewZeroString(&str, array[i]);
+    str = GB.NewZeroString(array[i]);
     *((char **)GB.Array.Get(garray, i)) = str;
   }
 
@@ -355,7 +355,7 @@ char *DB_MakeQuery(DB_DRIVER *driver, const char *pattern, int len, int narg, GB
   query_driver = driver;
 
 	if (narg == 0)
-		GB.TempString(&query, pattern, len);
+		query = GB.TempString(pattern, len);
 	else
   	query = GB.SubstStringAdd(pattern, len, mq_add_param);
 
@@ -499,7 +499,7 @@ char *DB_QuoteString(const char *str, int len, char quote)
 			len_res++;
 	}
 	
-	GB.TempString(&res, NULL, len_res);
+	res = GB.TempString(NULL, len_res);
 	
 	p = res;
 	for (i = 0; i < len; i++)
@@ -539,7 +539,7 @@ char *DB_UnquoteString(const char *str, int len, char quote)
 		}
 	}
 	
-	GB.TempString(&res, NULL, len_res);
+	res = GB.TempString(NULL, len_res);
 	
 	p = res;
 	for (i = 0; i < len; i++)
@@ -583,12 +583,12 @@ char *DB_GetQuotedTable(DB_DRIVER *driver, DB_DATABASE *db, const char *table)
 	
 	if (!point)
 	{
-		GB.TempString(&res, NULL, len + 2);
+		res = GB.TempString(NULL, len + 2);
 		sprintf(res, "%s%s%s", quote, table, quote);
 	}
 	else
 	{
-		GB.TempString(&res, NULL, len + 2);
+		res = GB.TempString(NULL, len + 2);
 		sprintf(res, "%.*s.%s%s%s", point - table, table, quote, point + 1, quote);
 	}
 	

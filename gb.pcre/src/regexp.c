@@ -117,7 +117,7 @@ BEGIN_METHOD(CREGEXP_compile, GB_STRING pattern; GB_INTEGER coptions)
 	THIS->copts = VARGOPT(coptions, 0);
 
 	GB.FreeString(&THIS->pattern);
-	GB.NewString(&THIS->pattern, STRING(pattern), LENGTH(pattern));
+	THIS->pattern = GB.NewString(STRING(pattern), LENGTH(pattern));
 	CALL_METHOD_VOID(CREGEXP_private_compile);
 
 END_METHOD
@@ -127,7 +127,7 @@ BEGIN_METHOD(CREGEXP_exec, GB_STRING subject; GB_INTEGER eoptions)
 	THIS->eopts = VARGOPT(eoptions, 0);
 	
 	GB.FreeString(&THIS->subject);
-	GB.NewString(&THIS->subject, STRING(subject), LENGTH(subject));
+	THIS->subject = GB.NewString(STRING(subject), LENGTH(subject));
 	CALL_METHOD_VOID(CREGEXP_private_exec);
 
 END_METHOD
@@ -156,12 +156,10 @@ BEGIN_METHOD(CREGEXP_new, GB_STRING subject; GB_STRING pattern; GB_INTEGER copti
 		THIS->copts = VARG(coptions);
 	}
 
-     char *tmp = NULL;
 if (THIS->pattern) {
   GB.FreeString(&THIS->pattern);
 }
-     GB.NewString(&tmp, STRING(pattern), LENGTH(pattern));
-     THIS->pattern = tmp;
+     THIS->pattern = GB.NewString(STRING(pattern), LENGTH(pattern));
 
      // fprintf(stderr, "debug 3\n");
      CALL_METHOD_VOID(CREGEXP_private_compile);
@@ -189,8 +187,7 @@ if (THIS->pattern) {
 if (THIS->subject) {
   GB.FreeString(&THIS->subject);
 }
-       GB.NewString(&tmp, STRING(subject), LENGTH(subject));
-       THIS->subject = tmp;
+       THIS->subject = GB.NewString(STRING(subject), LENGTH(subject));
 
      // fprintf(stderr, "debug 7\n");
      // fprintf(stderr, "compiled is %d\n", THIS->compiled);
@@ -231,13 +228,10 @@ END_PROPERTY
 BEGIN_PROPERTY(CREGEXP_Text)
 
      const char *substring_start = THIS->subject + (THIS->ovector)[0];
-     long substring_length = (THIS->ovector)[1] - (THIS->ovector)[0];
-     char *str = NULL;
-     char **tmp = NULL;
+     int substring_length = (THIS->ovector)[1] - (THIS->ovector)[0];
+		 char *str;
 
-     GB.NewString(&str, substring_start, substring_length);
-     tmp = (char **) GB.Add((void *) &(THIS->smcache));
-     *tmp = str;
+     *(char **)GB.Add((void *)&(THIS->smcache)) = str = GB.NewString(substring_start, substring_length);
      GB.ReturnString(str);
 
 END_PROPERTY
@@ -253,7 +247,7 @@ BEGIN_PROPERTY(CREGEXPSUBMATCH_Text)
 
      if (i < rc) {
        pcre_get_substring(THIS->subject, ovector, rc, i, &str);
-       GB.NewZeroString(&submatch, str);
+       submatch = GB.NewZeroString(str);
        tmp = (char **) GB.Add((void *) &(THIS->smcache));
        *tmp = submatch;
        pcre_free_substring(str);

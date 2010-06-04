@@ -30,7 +30,7 @@
 #include "gbx_subr.h"
 
 
-void SUBR_alloc(void)
+void SUBR_alloc(ushort code)
 {
   int size;
   int count;
@@ -93,7 +93,7 @@ void SUBR_free(void)
 }
 
 
-void SUBR_realloc(void)
+void SUBR_realloc(ushort code)
 {
   int size;
   int count;
@@ -122,7 +122,7 @@ void SUBR_realloc(void)
 }
 
 
-void SUBR_strptr(void)
+void SUBR_strptr(ushort code)
 {
   char *ptr;
   size_t len = 0;

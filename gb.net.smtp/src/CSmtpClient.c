@@ -121,7 +121,7 @@ static char *get_address(char *address)
 	if (address[0] == '<' && address[len - 1] == '>')
 		return address;
 
-	GB.NewString(&_tmp, "<", 1);
+	_tmp = GB.NewString("<", 1);
 	GB.AddString(&_tmp, address, len);
 	GB.AddString(&_tmp, ">", 1);
 	return _tmp;
@@ -324,7 +324,7 @@ static bool begin_session(CSMTPCLIENT *_object)
 		fprintf(stderr, "Add void part\n");	
 		#endif	
 		p = (CSMTPPART *)GB.Add(&THIS->parts);
-		GB.NewString(&p->data, "\n", 1);
+		p->data = GB.NewString("\n", 1);
 		npart = 1;
 	}
 	

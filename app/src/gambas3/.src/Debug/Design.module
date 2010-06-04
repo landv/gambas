@@ -1084,7 +1084,7 @@ Public Sub ReadBreakpoints()
 
   Dim iInd As Integer
 
-  FDebugInfo.Clear
+  FDebugInfo.ClearBreakpoints
   For iInd = 1 To Project.Config["/Breakpoints/Count", 0]
     SetBreakpointFromString(Project.Config["/Breakpoints/Breakpoint[" & CStr(iInd) & "]"], True)
   Next

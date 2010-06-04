@@ -156,7 +156,6 @@ BEGIN_PROPERTY(CDIALOG_paths)
 
 	GB_ARRAY Array=NULL;
 	char **buf=NULL;
-	char *ctmp;
 	long b=0;
 	
 	buf=gDialog::paths();
@@ -168,9 +167,8 @@ BEGIN_PROPERTY(CDIALOG_paths)
 		b=0;
 		while (buf[b])
 		{
-			ctmp=NULL;
-			GB.NewZeroString(&ctmp,buf[b]);
-			*((char **)GB.Array.Get(Array,b++)) = ctmp;
+			*((char **)GB.Array.Get(Array, b)) = GB.NewZeroString(buf[b]);
+			b++;
 		}
 		GB.ReturnObject(Array);
 	}

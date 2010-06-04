@@ -69,26 +69,49 @@ extern const char STRING_char_string[];
 void STRING_init(void);
 void STRING_exit(void);
 
-void STRING_new(char **ptr, const char *src, int len);
-#define STRING_new_zero(_ptr, _src) \
+char *STRING_new(const char *src, int len);
+#define STRING_new_zero(_src) \
 ({ \
   const char *_s = (_src); \
-	STRING_new(_ptr, _s, _s ? strlen(_s) : 0); \
+	STRING_new(_s, _s ? strlen(_s) : 0); \
 })
 
 void STRING_free_real(char *ptr);
-void STRING_free_later(char *ptr);
+char *STRING_free_later(char *ptr);
 int STRING_get_free_index(void);
 
-#define STRING_new_temp(_pptr, _src, _len) STRING_new(_pptr, _src, _len), STRING_free_later(*_pptr)
-#define STRING_new_temp_zero(_pptr, _src) STRING_new_zero(_pptr, _src), STRING_free_later(*_pptr)
+#define STRING_new_temp(_src, _len) STRING_free_later(STRING_new(_src, _len))
+#define STRING_new_temp_zero(_src) STRING_free_later(STRING_new_zero(_src))
 
 void STRING_extend(char **ptr, int new_len);
 void STRING_extend_end(char **ptr);
 void STRING_add(char **ptr, const char *src, int len);
 void STRING_add_char(char **ptr, char c);
 
-void STRING_copy_from_value_temp(char **ptr, VALUE *value);
+#define STRING_copy_from_value(_value) \
+({ \
+	char *ptr; \
+	if ((_value)->_string.len == 0) \
+		ptr = NULL; \
+	else if ((_value)->type == T_STRING && (_value)->_string.start == 0 && (_value)->_string.len == STRING_length((_value)->_string.addr)) \
+		ptr = (_value)->_string.addr; \
+	else \
+		ptr = STRING_new(&(_value)->_string.addr[(_value)->_string.start], (_value)->_string.len); \
+	ptr; \
+})
+
+#define STRING_copy_from_value_temp(_value) \
+({ \
+	char *ptr; \
+	if ((_value)->_string.len == 0) \
+		ptr = NULL; \
+	else if ((_value)->type == T_STRING && (_value)->_string.start == 0 && (_value)->_string.len == STRING_length((_value)->_string.addr)) \
+		ptr = (_value)->_string.addr; \
+	else \
+		ptr = STRING_new_temp(&(_value)->_string.addr[(_value)->_string.start], (_value)->_string.len); \
+	ptr; \
+})
+
 
 void STRING_new_temp_value(VALUE *value, const char *src, int len);
 void STRING_new_constant_value(VALUE *value, const char *src, int len);

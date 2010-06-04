@@ -356,15 +356,13 @@ BEGIN_PROPERTY(CCOMBOBOX_list)
 
 	GB_ARRAY array;
 	int i;
-	char *text;
 	
 	if (READ_PROPERTY)
 	{
 		GB.Array.New(&array, GB_T_STRING, COMBOBOX->count());
 		for (i = 0; i < COMBOBOX->count(); i++)
 		{
-			GB.NewZeroString(&text, COMBOBOX->itemText(i));
-			*((char **)GB.Array.Get(array, i)) = text;
+			*((char **)GB.Array.Get(array, i)) = GB.NewZeroString(COMBOBOX->itemText(i));
 		}
 		
 		GB.ReturnObject(array);

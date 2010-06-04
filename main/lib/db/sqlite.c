@@ -99,13 +99,13 @@ static char *FindDatabase(char *name, char *hostName)
 	if (strcmp(basename(name), name))
 	{
 		if (IsDatabaseFile(name))
-			GB.NewZeroString(&fullpath, name);
+			fullpath = GB.NewZeroString(name);
 
 		return fullpath;
 	}
 
 	/* Hostname contains home area */
-	GB.NewZeroString(&fullpath, hostName);
+	fullpath = GB.NewZeroString(hostName);
 	GB.AddString(&fullpath, "/", 0);
 	GB.AddString(&fullpath, name, 0);
 	if (IsDatabaseFile(fullpath))
@@ -119,7 +119,7 @@ static char *FindDatabase(char *name, char *hostName)
 
 	if (dbhome != NULL)
 	{
-		GB.NewZeroString(&fullpath, dbhome);
+		fullpath = GB.NewZeroString(dbhome);
 		GB.AddString(&fullpath, "/", 0);
 		GB.AddString(&fullpath, name, 0);
 
@@ -129,7 +129,7 @@ static char *FindDatabase(char *name, char *hostName)
 		}
 	}
 
-	GB.NewZeroString(&fullpath, GB.TempDir());
+	fullpath = GB.NewZeroString(GB.TempDir());
 	GB.AddString(&fullpath, "/sqlite/", 0);
 	GB.AddString(&fullpath, name, 0);
 

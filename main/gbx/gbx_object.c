@@ -186,7 +186,7 @@ void OBJECT_attach(OBJECT *ob, OBJECT *parent, const char *name)
 	{
 		STRING_unref(&EVENT_Name);
 		if (name)
-			STRING_new_zero(&EVENT_Name, name);
+			EVENT_Name = STRING_new_zero(name);
 		else
 			EVENT_Name = NULL;
 	}
@@ -290,7 +290,7 @@ static void release_static(CLASS *class, CLASS_VAR *var, int nelt, char *data)
   {
 #if TRACE_MEMORY
     if (var->type.id == T_STRING || var->type.id == T_OBJECT)
-      fprintf(stderr, "release: %s %p [%d] trying %p\n", class->name, ob, i, (*(void **)&data[var->pos]));
+      fprintf(stderr, "release_static: %s [%d] trying %p\n", class->name, i, (*(void **)&data[var->pos]));
 #endif
 
 		if (var->type.id == T_STRING)

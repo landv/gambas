@@ -837,6 +837,7 @@ static bool header_structure(void)
   structure->index = PATTERN_index(*JOB->current);
   index = CLASS_add_class_exported(JOB->class, structure->index);
 	JOB->class->class[index].structure = TRUE;
+	//fprintf(stderr, "Set structure flag to %s\n", TABLE_get_symbol_name(JOB->class->table, structure->index));
 
 //TABLE_copy_symbol_with_prefix(JOB->class->table, structure->index, '.', NULL, &structure->index);
 

@@ -137,6 +137,7 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
 
       case (intptr_t)GB_HOOK_CHECK_ID:
         class->check = (int (*)())(desc->hook.func);
+				class->must_check = TRUE;
         break;
         
       default:
@@ -297,6 +298,7 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
   /* Class is ready */
 
   class->state = CS_READY;
+	class->ready = TRUE;
 
   //total += MEMORY_size - alloc;
   //printf("%s: %d  TOTAL = %d\n", class->name, MEMORY_size - alloc, total);

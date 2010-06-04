@@ -143,8 +143,8 @@ void GB_Alloc(void **addr, int len);
 void GB_Free(void **addr);
 void GB_Realloc(void **addr, int len);
 
-void GB_NewZeroString(char **str, char *src);
-void GB_TempString(char **str, char *src, int len);
+char *GB_NewZeroString(char *src);
+char *GB_TempString(char *src, int len);
 void GB_FreeString(char **str);
 int GB_StringLength(const char *str);
 int GB_ConvString(char **result, const char *str, int len, const char *src, const char *dst);

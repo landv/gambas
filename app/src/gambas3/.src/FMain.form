@@ -798,8 +798,15 @@
     #MoveScaled(96,21)
     Delay = 2000
   }
+  { btnMnuProject ToolButton
+    MoveScaled(106,36,7,4)
+    Visible = False
+    Action = "menu-project"
+    AutoResize = True
+    Text = ("&Project")
+  }
   { btnMnuFile ToolButton
-    MoveScaled(101,36,6,4)
+    MoveScaled(100,38,6,4)
     Visible = False
     Action = "menu-file"
     AutoResize = True
@@ -847,13 +854,6 @@
       AutoResize = True
       Text = ("OK")
     }
-  }
-  { btnMnuProject ToolButton
-    MoveScaled(106,36,7,4)
-    Visible = False
-    Action = "menu-project"
-    AutoResize = True
-    Text = ("&Project")
   }
   { btnMnuDebug ToolButton
     MoveScaled(113,36,7,4)

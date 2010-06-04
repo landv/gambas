@@ -141,6 +141,9 @@ Private $cSourceDir As Collection
 Public LockedPaths As Collection
 Public AddedPaths As Collection
 
+' I'm using the IDE to test the interpreter with valgrind!
+Private $bTesting As Boolean
+
 Public Sub _init()
   
   ExampleTitle["Automation"] = ("Automation")
@@ -180,7 +183,6 @@ Public Sub Main()
   Dim sPath As String
   Dim iTest As Integer
   Dim iInd As Integer
-  Dim bTest As Boolean
   Dim sArg As String
   
   Application.Theme = Settings["/Theme"]
@@ -196,13 +198,11 @@ Public Sub Main()
   Application.Tooltip.Enabled = Settings["/ShowTooltip", True]
 
   RefreshBreakpointPicture
-  InitWebView
-  InitVersion
 
   For iInd = 1 To Application.Args.Count - 1
     sArg = Application.Args[iInd]
     If sArg = "-t" Then
-      bTest = True
+      $bTesting = True
       Continue
     Endif
     If Left(sArg) <> "-" Then
@@ -211,18 +211,20 @@ Public Sub Main()
     Endif
   Next
 
-  FMain.Load 
-  
-  If bTest And If sPath Then 
+  If $bTesting And If sPath Then 
+    'FMain.Load 
     Project.Open(sPath)
     Project.Close
-    FMain.Close
+    'FMain.Close
     CSampleCode.Exit
     CComponent.Exit
     Return
   Endif
 
+  InitVersion
+  InitWebView
   CRecentFile.Load
+  FMain.Load 
 
   Do
 
@@ -379,7 +381,9 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
     Endif
   Endif
 
-  If CloseProject() Then Return True
+  If Not $bTesting Then
+    If CloseProject() Then Return True
+  Endif
 
   ReadOnly = Not Access(sDir, gb.Write)
   If Not ReadOnly Then
@@ -421,7 +425,7 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
 
   MConnection.Password.Clear
 
-  Refresh
+  If Not $bTesting Then Refresh
   
   DefineStartup(Startup, True)
   
@@ -429,20 +433,18 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
   
   Positions.Clear
 
-  FMain.OnProjectChange
-  FOpenProject.OnUpdateRecent
-  'FFind.Hide
-  'FFind.ReadConfig
-  'FFind.OnProjectChange
-  'FExplorer.ProjectChange
-  Design.ClearOutput
-  Design.ReadBreakpoints
+  If Not $bTesting Then 
+    FMain.OnProjectChange
+    FOpenProject.OnUpdateRecent
+    Design.ClearOutput
+    Design.ReadBreakpoints
+  Endif
   
   $hLock = hLock
 
   LastOpenedFiles
 
-  If ReadOnly Then FGambas.Warning(("This project is read-only."))
+  If ReadOnly Then FMain.ShowMessage(("This project is read-only."), "warning")
 
   'SetMessage(("OK"))
   Return
@@ -555,12 +557,14 @@ Private Function CloseProject() As Boolean
 
     Next
     
-    CloseAllWindows
-    Workspace.Lock
-    For Each hForm In Files
-      hForm.Delete
-    Next
-    Workspace.Unlock
+    If Not $bTesting Then
+      CloseAllWindows
+      Workspace.Lock
+      For Each hForm In Files
+        hForm.Delete
+      Next
+      Workspace.Unlock
+    Endif
     Config["/OpenFile/Count"] = nOpen
   
     'FFind.WriteConfig
@@ -2724,7 +2728,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
     Endif
   Endif
 
-  FMain.UpdateTranslate
+  If Not $bTesting Then FMain.UpdateTranslate
   RefreshLibrary
   'CreateConnectionDirectory
 
@@ -3134,6 +3138,7 @@ Public Sub SetMessage(sMsg As String)
   ' If FGambas.Visible And If sMsg <> ("OK") Then
   '   FGambas.Info(sMsg)
   ' Endif
+  If $bTesting Then Return
   FMain.SetMessage(sMsg)
 
 End
@@ -3833,11 +3838,12 @@ Public Sub RefreshLibrary(Optional bForce As Boolean)
       CComponent.AddLibrary(sLib)
     Next
     
-    FToolBox.RefreshToolbar(bForce)
-    FCompletion.RefreshLibrary
-    FProperty.RefreshAll
-    'FExplorer.RefreshTree
-    Project.Refresh
+    If Not $bTesting Then
+      FToolBox.RefreshToolbar(bForce)
+      FCompletion.RefreshLibrary
+      FProperty.RefreshAll
+      Project.Refresh
+    Endif
     
     $sOldRefreshLibrary = sLibComp
 

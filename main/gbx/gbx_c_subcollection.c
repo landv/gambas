@@ -69,7 +69,7 @@ static void *get_from_key(CSUBCOLLECTION *_object, const char *key, int len)
   data = HASH_TABLE_lookup(THIS->hash_table, key, len);
   if (!data)
   {
-    STRING_new_temp(&tkey, key, len);
+    tkey = STRING_new_temp(key, len);
     data = (*THIS->desc->get)(THIS->container, tkey);
     if (data)
     {

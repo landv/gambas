@@ -105,7 +105,7 @@ static CFIELD *make_field(CTABLE *table, const char *name, bool must_exist)
   GB.New(POINTER(&_object), GB.FindClass("Field"), NULL, NULL);
   THIS->table = table;
   THIS->driver = table->conn->driver;
-  GB.NewZeroString(&THIS->name, name);
+  THIS->name = GB.NewZeroString(name);
 
   return _object;
 }
@@ -301,7 +301,7 @@ BEGIN_METHOD(CFIELD_add, GB_STRING name; GB_INTEGER type; GB_INTEGER length; GB_
   if (!MISSING(def))
     GB.StoreVariant(ARG(def), &info->def);
 
-  GB.NewString(&info->name, STRING(name), LENGTH(name));
+  info->name = GB.NewString(STRING(name), LENGTH(name));
   //DB_LowerString(info->name);
 
   add_new_field(table, info);

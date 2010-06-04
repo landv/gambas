@@ -227,8 +227,7 @@ static bool search(void *symbol, ushort *sort, int n_symbol, size_t size, int fl
 }
 
 
-bool SYMBOL_find(void *symbol, ushort *sort, int n_symbol, size_t s_symbol, int flag,
-													const char *name, int len, const char *prefix, int *result)
+int SYMBOL_find(void *symbol, ushort *sort, int n_symbol, size_t s_symbol, int flag, const char *name, int len, const char *prefix)
 {
 	int index;
 	int len_prefix;
@@ -247,16 +246,9 @@ bool SYMBOL_find(void *symbol, ushort *sort, int n_symbol, size_t s_symbol, int 
 	}
 
 	if (LIKELY(search(symbol, sort, n_symbol, s_symbol, flag, name, len, &index)))
-	{
-		//*result = ((SYMBOL *)((char *)symbol + s_symbol * index))->sort;
-		*result = sort[index];
-		return TRUE;
-	}
+		return sort[index];
 	else
-	{
-		*result = NO_SYMBOL;
-		return FALSE;
-	}
+		return NO_SYMBOL;
 }
 
 #if 0

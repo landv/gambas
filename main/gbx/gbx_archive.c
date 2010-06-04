@@ -63,10 +63,7 @@ ARCHIVE *ARCHIVE_create(const char *name, const char *path)
   arch->name = name;
 	arch->path = path;
 
-  if (name)
-    STRING_new_zero(&arch->domain, name);
-  else
-    STRING_new_zero(&arch->domain, "gb");
+  arch->domain = STRING_new_zero(name ? name : "gb");
 
   arch->translation_loaded = FALSE;
 
@@ -400,7 +397,7 @@ void ARCHIVE_dir_first(ARCHIVE *arch, const char *path, const char *pattern, int
   arch_index = 0;
 	
   STRING_free(&arch_pattern);
-  STRING_new_zero(&arch_pattern, pattern);
+  arch_pattern = STRING_new_zero(pattern);
 
 	//if (arch_dir->header.version == 2)
 	//{
@@ -422,7 +419,7 @@ void ARCHIVE_dir_first(ARCHIVE *arch, const char *path, const char *pattern, int
 
 	STRING_free(&arch_prefix);
 	if (abs_len)
-		STRING_new(&arch_prefix, abs_path, abs_len);
+		arch_prefix = STRING_new(abs_path, abs_len);
 }
 
 
@@ -527,7 +524,7 @@ void ARCHIVE_browse(ARCHIVE *arch, void (*found)(const char *path, int64_t size)
 		
 		size = asym->len;
 		
-		STRING_new(&path, sym->name, sym->len);
+		path = STRING_new(sym->name, sym->len);
 		for(;;)
 		{
 			if (*path != '/')
@@ -537,7 +534,7 @@ void ARCHIVE_browse(ARCHIVE *arch, void (*found)(const char *path, int64_t size)
 			sym = &a->symbol[ip].sym;
 			
 			temp = path;
-			STRING_new(&path, sym->name, sym->len);
+			path = STRING_new(sym->name, sym->len);
 			if (path[sym->len - 1] != '/')
 				STRING_add(&path, "/", 1);
 			STRING_add(&path, strchr(temp, ':') + 1, 0);

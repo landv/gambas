@@ -136,7 +136,7 @@ __ERROR:
 
 __VARIANT_END:
 
-  VALUE_conv(P1, T_VARIANT);
+  VALUE_conv_variant(P1);
 
 __END:
   return;
@@ -299,7 +299,7 @@ __ERROR:
 
 __VARIANT_END:
 
-  VALUE_conv(P1, T_VARIANT);
+  VALUE_conv_variant(P1);
 
 __END:
 

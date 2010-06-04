@@ -446,7 +446,7 @@ _FIN_DEFINED:
 _FIN_DEFINED_NO_BORROW:
 
   if (UNLIKELY(!defined))
-    VALUE_conv(&SP[-1], T_VARIANT);
+    VALUE_conv_variant(&SP[-1]);
 
   /* sp[-1] contenait l'objet et a ���ras� Il faut donc le d���encer
      nous-m�e. Sauf si c'est un appel de m�hode statique (cf. plus haut) */
@@ -573,5 +573,5 @@ __PUSH_ARRAY_2:
 	VALUE_copy(&SP[-1], &SP[0]);
 
 	if (UNLIKELY(!defined))
-		VALUE_conv(&SP[-1], T_VARIANT);
+		VALUE_conv_variant(&SP[-1]);
 }

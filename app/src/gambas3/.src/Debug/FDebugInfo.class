@@ -91,9 +91,14 @@ Public Sub Clear()
 
   lstStack.Clear
   cvwWatch.Clear
-  cvwBreak.Clear
   $cRefresh.Clear
 
+End
+
+Public Sub ClearBreakpoints()
+  
+  cvwBreak.Clear
+  
 End
 
 

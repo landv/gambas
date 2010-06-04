@@ -62,7 +62,7 @@ static MATH_FUNC_2 MathFunc2[] = {
 #include "gbx_subr_math_temp.h"
 
 
-void SUBR_pi(void)
+void SUBR_pi(ushort code)
 {
   SUBR_ENTER();
 
@@ -82,7 +82,7 @@ void SUBR_pi(void)
 }
 
 
-void SUBR_randomize(void)
+void SUBR_randomize(ushort code)
 {
 	SUBR_ENTER();
 
@@ -97,7 +97,7 @@ void SUBR_randomize(void)
 }
 
 
-void SUBR_rnd(void)
+void SUBR_rnd(ushort code)
 {
   double min = 0.0, max = 1.0;
 
@@ -123,7 +123,7 @@ void SUBR_rnd(void)
 }
 
 
-void SUBR_round(void)
+void SUBR_round(ushort code)
 {
   int val = 0;
   double power;
@@ -145,7 +145,7 @@ void SUBR_round(void)
 }
 
 
-void SUBR_math(void)
+void SUBR_math(ushort code)
 {
   SUBR_ENTER_PARAM(1);
 
@@ -157,21 +157,21 @@ void SUBR_math(void)
 
   VALUE_conv_float(PARAM);
 
-  PARAM->_float.value = (*MathFunc[EXEC_code & 0x1F])(PARAM->_float.value);
+  PARAM->_float.value = (*MathFunc[code & 0x1F])(PARAM->_float.value);
 
   if (!finite(PARAM->_float.value))
     THROW(E_MATH);
 }
 
 
-void SUBR_math2(void)
+void SUBR_math2(ushort code)
 {
   SUBR_ENTER_PARAM(2);
 
   VALUE_conv_float(&PARAM[0]);
   VALUE_conv_float(&PARAM[1]);
 
-  PARAM->_float.value = (*MathFunc2[EXEC_code & 0x1F])(PARAM[0]._float.value, PARAM[1]._float.value);
+  PARAM->_float.value = (*MathFunc2[code & 0x1F])(PARAM[0]._float.value, PARAM[1]._float.value);
 
   if (!finite(PARAM->_float.value))
     THROW(E_MATH);
@@ -196,7 +196,7 @@ void SUBR_pow(void)
 }
 
 
-void SUBR_not(void)
+void SUBR_not(ushort code)
 {
   static void *jump[17] = {
     &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
@@ -206,7 +206,7 @@ void SUBR_not(void)
 
   VALUE *P1;
   void *jump_end;
-  TYPE type = EXEC_code & 0x1F;
+  TYPE type = code & 0x1F;
   bool test;
 
   P1 = SP - 1;
@@ -282,13 +282,13 @@ __ERROR:
 
 __VARIANT_END:
 
-  VALUE_conv(P1, T_VARIANT);
+  VALUE_conv_variant(P1);
 
 __END:
   return;
 }
 
-void SUBR_and_(void)
+void SUBR_and_(ushort code)
 {
   static void *jump[] = {
     &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__ERROR, &&__ERROR, &&__ERROR
@@ -303,8 +303,8 @@ void SUBR_and_(void)
   P2 = P1 + 1;
 
   jump_end = &&__END;
-  type = EXEC_code & 0x0F;
-  op = (EXEC_code - C_AND) >> 8;
+  type = code & 0x0F;
+  op = (code - C_AND) >> 8;
   goto *jump[type];
 
 __BYTE:
@@ -408,7 +408,7 @@ __ERROR:
 
 __VARIANT_END:
 
-  VALUE_conv(P1, T_VARIANT);
+  VALUE_conv_variant(P1);
 
 __END:
 
@@ -417,7 +417,7 @@ __END:
 
 
 
-void SUBR_sgn(void)
+void SUBR_sgn(ushort code)
 {
   static void *jump[] = {
     &&__VARIANT, &&__INTEGER, &&__INTEGER, &&__INTEGER, &&__INTEGER, &&__LONG, &&__FLOAT, &&__FLOAT, &&__ERROR
@@ -427,7 +427,7 @@ void SUBR_sgn(void)
   TYPE type;
 
   P1 = SP - 1;
-  type = EXEC_code & 0x0F;
+  type = code & 0x0F;
   goto *jump[type];
 
 __INTEGER:  P1->_integer.value = lsgn(P1->_integer.value); goto __END;
@@ -468,7 +468,7 @@ __END:
 }
 
 
-void SUBR_neg_(void)
+void SUBR_neg_(ushort code)
 {
   static void *jump[] = {
     &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__FLOAT, &&__FLOAT, &&__ERROR
@@ -482,9 +482,9 @@ void SUBR_neg_(void)
   P1 = SP - 1;
   jump_end = &&__END;
 
-  type = EXEC_code & 0x0F;
+  type = code & 0x0F;
 
-  op = EXEC_code >> 8;
+  op = code >> 8;
   op = (op == (C_NEG >> 8)) ? 0 : op - CODE_ABS + 1;
 
   goto *jump[type];
@@ -584,7 +584,7 @@ __ERROR:
 
 __VARIANT_END:
 
-  VALUE_conv(P1, T_VARIANT);
+  VALUE_conv_variant(P1);
 
 //__END_SGN:
 //  P1->type = T_INTEGER;
@@ -595,7 +595,7 @@ __END:
 
 
 
-void SUBR_add_(void)
+void SUBR_add_(ushort code)
 {
   static void *jump[] = {
     &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__FLOAT, &&__FLOAT, &&__DATE
@@ -610,8 +610,8 @@ void SUBR_add_(void)
   P2 = P1 + 1;
 
   jump_end = &&__END;
-  type = EXEC_code & 0x0F;
-  op = (EXEC_code - C_ADD) >> 8;
+  type = code & 0x0F;
+  op = (code - C_ADD) >> 8;
   goto *jump[type];
 
 __BOOLEAN:
@@ -758,7 +758,7 @@ __ERROR:
 
 __VARIANT_END:
 
-  VALUE_conv(P1, T_VARIANT);
+  VALUE_conv_variant(P1);
 
 __END:
 

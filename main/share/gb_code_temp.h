@@ -1216,9 +1216,11 @@ void CODE_drop(void)
     }
   }
 
-  LAST_CODE;
+  THROW("Internal compiler error: Bad stack drop!");
+  
+	/*LAST_CODE;
 
-  write_ZZxx(C_DROP, 1);
+  write_ZZxx(C_DROP, 1);*/
 }
 
 

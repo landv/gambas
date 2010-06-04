@@ -177,7 +177,7 @@ void CSocket_CallBackFromDns(void *_object)
 	}
 
 	GB.FreeString (&THIS->sRemoteHostIP);
-	GB.NewZeroString ( &THIS->sRemoteHostIP ,THIS->DnsTool->sHostIP);
+	THIS->sRemoteHostIP = GB.NewZeroString (THIS->DnsTool->sHostIP);
 	/* Let's turn socket to async mode */
 	//ioctl(SOCKET->socket,FIONBIO,&NoBlock);
 	/* Third, we connect the socket */
@@ -262,7 +262,7 @@ void CSocket_CallBackConnecting(int t_sock,int type,intptr_t param)
 	getsockname (SOCKET->socket,(struct sockaddr*)&myhost,(socklen_t *)&mylen);
 	THIS->iLocalPort=ntohs(myhost.sin_port);
 	GB.FreeString( &THIS->sLocalHostIP);
-	GB.NewZeroString ( &THIS->sLocalHostIP ,inet_ntoa(myhost.sin_addr));
+	THIS->sLocalHostIP  = GB.NewZeroString(inet_ntoa(myhost.sin_addr));
 
 	CSOCKET_init_connected(THIS);
 	GB.Stream.SetSwapping(&SOCKET->stream, htons(1234) != 1234);
@@ -515,7 +515,7 @@ int CSocket_connect_unix(void *_object,char *sPath, int lenpath)
 	}
 
  	GB.FreeString(&THIS->sPath);
-	GB.NewZeroString ( &THIS->sPath , THIS->UServer.sun_path);
+	THIS->sPath = GB.NewZeroString(THIS->UServer.sun_path);
  	THIS->conn_type=1;
  	if (connect(SOCKET->socket,(struct sockaddr*)&THIS->UServer,sizeof(struct sockaddr_un))==0)
  	{
@@ -529,7 +529,7 @@ int CSocket_connect_unix(void *_object,char *sPath, int lenpath)
 		if (THIS->Host) GB.FreeString(&THIS->Host);
 		if (THIS->Path) GB.FreeString(&THIS->Path);
 
-		GB.NewZeroString(&THIS->Path,sPath);
+		THIS->Path = GB.NewZeroString(sPath);
 		GB.Ref (THIS);
 		CSocket_post_connected(_object);
 
@@ -592,7 +592,7 @@ int CSocket_connect_socket(void *_object,char *sHost,int lenhost,int myport)
 
 	dns_set_async_mode(1,THIS->DnsTool);
 	GB.FreeString (&(THIS->DnsTool->sHostName));
-	GB.NewString(&THIS->DnsTool->sHostName,sHost,lenhost);
+	THIS->DnsTool->sHostName = GB.NewString(sHost,lenhost);
 	THIS->DnsTool->finished_callback=CSocket_CallBackFromDns;
 	
 	/********************************************
@@ -611,7 +611,7 @@ int CSocket_connect_socket(void *_object,char *sHost,int lenhost,int myport)
 	if (sHost != THIS->Host)
 	{
 		if (THIS->Host) GB.FreeString(&THIS->Host);
-		GB.NewZeroString(&THIS->Host,sHost);
+		THIS->Host = GB.NewZeroString(sHost);
 	}
 
 	return 0;

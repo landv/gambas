@@ -168,7 +168,7 @@ COMPONENT *COMPONENT_create(const char *name)
   comp->class = CLASS_Component;
   comp->ref = 1;
 
-  STRING_new_zero(&comp->name, name);
+  comp->name = STRING_new_zero(name);
 
 	if (library)
 	{

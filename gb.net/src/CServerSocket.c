@@ -515,11 +515,11 @@ BEGIN_METHOD_VOID(CSERVERSOCKET_Accept)
 	cli_obj->conn_type=0;
 	if (THIS->type)
 	{
-		GB.NewZeroString ( &cli_obj->sRemoteHostIP , inet_ntoa(THIS->so_client.in.sin_addr));
-		GB.NewZeroString ( &cli_obj->Host, inet_ntoa(THIS->so_client.in.sin_addr));
+		cli_obj->sRemoteHostIP = GB.NewZeroString (inet_ntoa(THIS->so_client.in.sin_addr));
+		cli_obj->Host = GB.NewZeroString (inet_ntoa(THIS->so_client.in.sin_addr));
 		mylen=sizeof(struct sockaddr);
 		getsockname (cli_obj->common.socket,(struct sockaddr*)&myhost,&mylen);
-		GB.NewZeroString ( &cli_obj->sLocalHostIP , inet_ntoa(myhost.sin_addr));
+		cli_obj->sLocalHostIP = GB.NewZeroString(inet_ntoa(myhost.sin_addr));
 		cli_obj->iLocalPort=ntohs(myhost.sin_port);
 		cli_obj->iPort=ntohs(THIS->so_client.in.sin_port);
 		cli_obj->iUsePort=ntohs(THIS->so_client.in.sin_port);
@@ -527,8 +527,8 @@ BEGIN_METHOD_VOID(CSERVERSOCKET_Accept)
 	else
 	{
 		cli_obj->conn_type=1;
-		GB.NewZeroString ( &cli_obj->sPath,THIS->sPath);
-		GB.NewZeroString ( &cli_obj->Path,THIS->sPath);
+		cli_obj->sPath = GB.NewZeroString(THIS->sPath);
+		cli_obj->Path = GB.NewZeroString(THIS->sPath);
 	}
 
 	CSOCKET_init_connected(cli_obj);
