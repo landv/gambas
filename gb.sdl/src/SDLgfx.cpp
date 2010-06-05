@@ -338,8 +338,6 @@ void SDLgfx::DrawLine(int x1, int y1, int x2, int y2)
 
 	SetContext();
 
-	glPushAttrib(GL_ALL_ATTRIB_BITS);
-
 	SetLinePattern(hLine);
 	glLineWidth(GLfloat(hLineWidth));
 
@@ -347,8 +345,6 @@ void SDLgfx::DrawLine(int x1, int y1, int x2, int y2)
 	glVertex2i(x1, y1);
 	glVertex2i(x2, y2);
 	glEnd();
-
-	glPopAttrib();
 }
 
 void SDLgfx::DrawRect(int x, int y, int w, int h)
@@ -357,8 +353,6 @@ void SDLgfx::DrawRect(int x, int y, int w, int h)
 		return;
 
 	SetContext();
-
-	glPushAttrib(GL_ALL_ATTRIB_BITS);
 
 	SetFillPattern(hFill);
 
@@ -382,8 +376,6 @@ void SDLgfx::DrawRect(int x, int y, int w, int h)
 		glVertex2i(x, y+h);
 		glEnd();
 	}
-
-	glPopAttrib();
 }
 
 void SDLgfx::DrawEllipse(int x, int y, int w, int h)
@@ -396,7 +388,6 @@ void SDLgfx::DrawEllipse(int x, int y, int w, int h)
 	double angle;
 	double step = 2 * PI / 360;
 
-	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	glTranslatef(x, y, 0.0f);
 	SetFillPattern(hFill);
 
@@ -417,7 +408,6 @@ void SDLgfx::DrawEllipse(int x, int y, int w, int h)
 	}
 
 	glLoadIdentity();
-	glPopAttrib();
 }
 
 void SDLgfx::Blit(SDLsurface *surface, int x, int y, int srcX, int srcY,
