@@ -22,13 +22,16 @@
 
 #include "SDLfont.h"
 #include "SDLapp.h"
+#include "gb_common.h"
 
 #include <algorithm>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <ctype.h>
 
 static StringList _FontList;
+XftColor SDLfont::background, SDLfont::foreground;
 
 #define DEFAULT_FONT_SIZE 20
 #define DEFAULT_DPI 72 /* Default DPI size in SDL_TTF */
@@ -43,7 +46,7 @@ inline bool cmp_nocase(const std::string x, const std::string y)
 
 StringList SDLfont::GetFontList(void )
 {
-	if (!_FontList.empty())
+	if (LIKELY(_FontList.empty() == 0))
 		return _FontList;
 
 	Display *disp = SDLapp->X11appDisplay();
@@ -72,10 +75,51 @@ StringList SDLfont::GetFontList(void )
 	return _FontList;
 }
 
+void SDLfont::Init()
+{
+	XRenderColor backg, foreg;
+	Display* disp = SDLapp->X11appDisplay();
+	int screen = DefaultScreen(disp);
+	
+	// full white
+	foreg.red = foreg.green = foreg.blue = foreg.alpha = 0xFF;
+	//transparent black
+	backg.red = backg.green = backg.blue = backg.alpha = 0x00;
+	
+	if (!XftColorAllocValue(disp , DefaultVisual(disp, screen),
+		DefaultColormap(disp, screen), &foreg, &foreground))
+		std::cerr << "error XftColorAllocValue() foreground" << std::endl;
+	
+	if (!XftColorAllocValue(disp , DefaultVisual(disp, screen),
+		DefaultColormap(disp, screen), &backg, &background))
+		std::cerr << "error XftColorAllocValue() background" << std::endl;
+}
+
+void SDLfont::Exit()
+{
+	Display* disp = SDLapp->X11appDisplay();
+	int screen = DefaultScreen(disp);
+
+	XftColorFree (disp, DefaultVisual(disp, screen), DefaultColormap(disp, screen), &foreground);
+	XftColorFree (disp, DefaultVisual(disp, screen), DefaultColormap(disp, screen), &background);
+}
+
 SDLfont::SDLfont()
 {
 	hfonttype = X_font;
-	hXfont = 0;
+	Display* disp = SDLapp->X11appDisplay();
+	int screen = DefaultScreen(disp);
+	char fnt[512];
+	
+	snprintf(fnt, 512, "Arial,helvetica-%d:medium:slant=roman:dpi=%d",
+		DEFAULT_FONT_SIZE, DEFAULT_DPI);
+		
+	hXfont = XftFontOpenName(disp, screen, fnt);
+//	XftNameUnparse(hXfont->pattern, fnt, 512);
+//	std::cout << fnt << std::endl;
+
+	if (UNLIKELY(hXfont == NULL))
+		SDLerror::RaiseError("Failed to open default font!");
 }
 
 SDLfont::SDLfont(char *fontfile)
@@ -86,7 +130,7 @@ SDLfont::SDLfont(char *fontfile)
 
 	hSDLfont = TTF_OpenFont(fontfile, hfontsize);
 
-	if (!hSDLfont)
+	if (UNLIKELY(hSDLfont == NULL))
 		SDLerror::RaiseError(TTF_GetError());
 
 }
@@ -96,7 +140,7 @@ SDLfont::~SDLfont()
 	if ((hfonttype == SDLTTF_font) && hSDLfont)
 		TTF_CloseFont(hSDLfont);
 
-	if ((hfonttype == SDLTTF_font) && hXfont)
+	if ((hfonttype == X_font) && hXfont)
 		XftFontClose(SDLapp->X11appDisplay(), hXfont);
 }
 
@@ -127,7 +171,7 @@ void SDLfont::SetFontSize(int size)
 
 		hSDLfont = TTF_OpenFont(hfontname.c_str(), hfontsize);
 
-		if (!hSDLfont)
+		if (UNLIKELY(hSDLfont == NULL))
 			SDLerror::RaiseError(TTF_GetError());
 	}
 }
@@ -148,28 +192,63 @@ bool SDLfont::IsFontUnderlined(void )
 	return false;
 }
 
+bool SDLfont::IsFontScalable(void )
+{
+	if (hfonttype == SDLTTF_font)
+		return true;
+	else
+	{
+		Bool scalable;
+		
+		XftPatternGetBool(hXfont->pattern,
+				XFT_SCALABLE, 0, &scalable);
+		return (scalable);
+	}		
+}
+
 int SDLfont::GetFontAscent(void )
 {
 	if (hfonttype == SDLTTF_font)
 		return TTF_FontAscent(hSDLfont);
-
-	return 0;
+	else 
+		return (hXfont->ascent);
 }
 
 int SDLfont::GetFontDescent(void )
 {
 	if (hfonttype == SDLTTF_font)
 		return TTF_FontDescent(hSDLfont);
-
-	return 0;
+	else 
+		return (hXfont->descent);
 }
 
 bool SDLfont::IsFontFixed(void )
 {
 	if (hfonttype == SDLTTF_font)
 		return (TTF_FontFaceIsFixedWidth(hSDLfont));
+	else
+	{
+		int spacing;
+		
+		XftPatternGetInteger(hXfont->pattern,
+				XFT_SPACING, 0, &spacing);
+		return (spacing >= XFT_MONO);
+	}		
+}
 
-	return false;
+void SDLfont::SizeText(const char *text, int *width, int *height)
+{
+	if (hfonttype == SDLTTF_font)
+		TTF_SizeText(hSDLfont, text, width, height);
+	else
+	{
+		XGlyphInfo glyphinfo;
+		Display* disp = SDLapp->X11appDisplay();
+		
+		XftTextExtentsUtf8(disp , hXfont, (XftChar8* )text, strlen(text), &glyphinfo);
+		*width = int(glyphinfo.width);
+		*height = int(glyphinfo.height);
+	}		
 }
 
 SDLsurface* SDLfont::RenderText(const char* text)

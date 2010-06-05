@@ -375,7 +375,7 @@ void myWin::Open(void)
 		// enable blending, should work like 2d sdl does
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//		enable anti-aliasing
+		// enable anti-aliasing
 		glEnable(GL_POINT_SMOOTH);
 //		glEnable(GL_LINE_SMOOTH);
 		glMatrixMode(GL_MODELVIEW);
@@ -394,9 +394,9 @@ void myWin::Open(void)
 void myWin::KeyEvent(SDL_KeyboardEvent *keyEvent, int eventType)
 {
 	CKEY_info.valid = true;
-      SDLapp->LockX11();
+	SDLapp->LockX11();
 	CKEY_info.code = XKeycodeToKeysym(SDLapp->X11appDisplay(), keyEvent->keysym.scancode, 0);
-      SDLapp->UnlockX11();
+	SDLapp->UnlockX11();
 	CKEY_info.state = keyEvent->keysym.mod;
 
 	if (eventType == SDL_KEYDOWN)

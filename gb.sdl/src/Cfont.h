@@ -25,7 +25,7 @@
 
 #include "SDLfont.h"
 
-#include "gambas.h"
+#include "main.h"
 
 #ifndef __CFONT_CPP
 extern GB_DESC CFont[];

@@ -33,6 +33,7 @@ extern IMAGE_INTERFACE IMAGE;
 
 extern GB_CLASS CLASS_Window;
 extern GB_CLASS CLASS_Image;
+extern GB_CLASS CLASS_Font;
 #endif
 
 

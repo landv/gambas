@@ -22,9 +22,6 @@
 
 #define __CFONT_CPP
 
-#include "gambas.h"
-#include "main.h"
-
 #include "Cfont.h"
 
 static StringList FontList;
@@ -65,15 +62,32 @@ END_PROPERTY
 
 BEGIN_METHOD(CFONT_load, GB_STRING path)
 
-	static GB_CLASS class_id = NULL;
-
-	if (!class_id)
-		class_id = GB.FindClass("Font");
-
 	CFONT *font;
-	GB.New(POINTER(&font), class_id, NULL, NULL);
+	GB.New(POINTER(&font), CLASS_Font, NULL, NULL);
 	font->font = new SDLfont(GB.RealFileName(STRING(path), LENGTH(path)));
 	GB.ReturnObject(font);
+
+END_METHOD
+
+BEGIN_METHOD(CFONT_width, GB_STRING text)
+
+	int width, height;
+	FONT->SizeText(STRING(text), &width, &height);
+	GB.ReturnInteger(width);
+
+END_METHOD
+
+BEGIN_METHOD(CFONT_height, GB_STRING text)
+
+	int width, height;
+	FONT->SizeText(STRING(text), &width, &height);
+	GB.ReturnInteger(height);
+
+END_METHOD
+
+BEGIN_METHOD(CFONT_new, GB_STRING font)
+
+	THIS->font = new SDLfont();
 
 END_METHOD
 
@@ -122,7 +136,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CFONT_scalable)
 
-	GB.ReturnBoolean(!FONT->IsFontFixed());
+	GB.ReturnBoolean(FONT->IsFontScalable());
 
 END_PROPERTY
 
@@ -143,7 +157,7 @@ GB_DESC CFont[] =
 
   GB_STATIC_METHOD("Load", "Font", CFONT_load, "(Path)s"),
 
-//  GB_METHOD("_new", NULL, CFONT_new, "[(Font)s]"),
+  GB_METHOD("_new", NULL, CFONT_new, "[(Font)s]"),
   GB_METHOD("_free", NULL, CFONT_free, NULL),
 
   GB_PROPERTY("Name", "s", CFONT_name),
@@ -153,6 +167,9 @@ GB_DESC CFont[] =
   GB_PROPERTY_READ("Descent", "i", CFONT_descent),
   GB_PROPERTY_READ("Fixed", "b", CFONT_fixed),
   GB_PROPERTY_READ("Scalable", "b", CFONT_scalable),
+
+  GB_METHOD("Width", "i", CFONT_width, "(Text)s"),
+  GB_METHOD("Height", "i", CFONT_height, "(Text)s"),
 
 /*
   GB_STATIC_METHOD("_init", NULL, CFONT_init, NULL),
@@ -165,10 +182,6 @@ GB_DESC CFont[] =
   GB_PROPERTY("StrikeOut", "b", CFONT_strikeout),
 
   GB_METHOD("ToString", "s", CFONT_to_string, NULL),
-
-  GB_METHOD("Width", "i", CFONT_width, "(Text)s"),
-  GB_METHOD("Height", "i", CFONT_height, "(Text)s"),
-
   GB_STATIC_METHOD("_get", "Font", CFONT_get, "(Font)s"),
 
   GB_PROPERTY_READ("Styles", "String[]", CFONT_styles),

@@ -25,6 +25,7 @@
 #include "SDLcore.h"
 #include "SDLwindow.h"
 #include "SDL_ttf.h"
+#include "SDLfont.h"
 
 #include <iostream>
 #include <string>
@@ -70,9 +71,10 @@ SDLapplication::SDLapplication(int &argc, char **argv)
 		goto _error;
 	}
 
+	SDLapp = this;
 	SDLcore::Init();
 	SDLdebug::Init();
-	SDLapp = this;
+	SDLfont::Init();
 
 	return;
 
@@ -91,6 +93,7 @@ SDLapplication::~SDLapplication()
 		return;
 	}
 
+	SDLfont::Exit();
 	TTF_Quit();
 	Uint32 sysInit = SDL_WasInit(SDL_INIT_EVERYTHING);
 
@@ -98,7 +101,7 @@ SDLapplication::~SDLapplication()
 	if (sysInit & SDL_INIT_AUDIO)
 		SDL_QuitSubSystem(SDL_INIT_VIDEO);
 	else
-		SDL_Quit();	
+		SDL_Quit();
 }
 
 void SDLapplication::ManageEvents()

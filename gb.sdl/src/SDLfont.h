@@ -47,7 +47,9 @@ public:
 	~SDLfont();
 
 	static StringList GetFontList(void );
-
+	static void Init(void );
+	static void Exit(void );
+	
 	void SetFontName(char* name);
 	void SetFontSize(int size);
 	void SetFontUnderline(bool state);
@@ -59,7 +61,9 @@ public:
 
 	bool IsFontFixed(void );
 	bool IsFontUnderlined(void );
+	bool IsFontScalable(void );
 
+	void SizeText(const char* text, int *width, int *height);
 	SDLsurface* RenderText(const char* text);
 
 private:
@@ -73,7 +77,7 @@ private:
 	
 	/* System font */
 	XftFont *hXfont;
-	XftColor Background, Foreground;
+	static XftColor background, foreground;
 };
 
 #endif /* _SDLFONT_H */
