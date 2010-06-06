@@ -76,7 +76,7 @@ void STACK_grow(void);
 
 #define STACK_get_current() ((STACK_frame_count > 0) ? STACK_frame : NULL)
 
-#define STACK_copy(_dst, _src) \
+/*#define STACK_copy(_dst, _src) \
   (_dst)->next = (_src)->next; \
 	(_dst)->bp = (_src)->bp; \
 	(_dst)->pp = (_src)->pp; \
@@ -88,7 +88,9 @@ void STACK_grow(void);
 	(_dst)->ec = (_src)->ec; \
 	(_dst)->et = (_src)->et; \
 	(_dst)->tc = (_src)->tc; \
-	(_dst)->tp = (_src)->tp;
+	(_dst)->tp = (_src)->tp;*/
+
+#define STACK_copy(_dst, _src) *(_dst) = *(_src)
 
 #define STACK_RELOCATE(_ptr) if (_ptr) _ptr = (void *)((char *)_ptr + STACK_relocate)
 	

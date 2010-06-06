@@ -49,6 +49,8 @@ static const int primes[] =
   1215497, 1823231, 2734867, 4102283, 6153409, 9230113, 13845163
 };
 
+//static const uint seed[] = { 0x9A177BA5, 0x9A177BA4, 0x9A177BA7, 0x9A177BA6, 0x9A177BA1, 0x9A177BA0, 0x9A177BA3, 0x9A177BA2, 0x9A177BAD };
+
 static const int nprimes = sizeof (primes) / sizeof (primes[0]);
 
 static int spaced_primes_closest(int num)
@@ -63,87 +65,72 @@ static int spaced_primes_closest(int num)
 }
 
 
+// Fast hashing functions. Sometimes Microsoft Research produces useful things.
+
 static uint key_hash_binary(const char *key, int len)
 {
-	static const void *jump[4] = { &&__LEN_0, &&__LEN_1, &&__LEN_2, &&__LEN_3 };
-  uint hash = 0;
+	static const void *jump[] = { &&__LEN_0, &&__LEN_1, &&__LEN_2, &&__LEN_3, &&__LEN_4, &&__LEN_5, &&__LEN_6, &&__LEN_7, &&__LEN_8 };
+  uint hash = 0x9A177BA5 ^ len;
 
-  //for (i = 0; i < len; i++)
-  //  hash = (hash << 4) + (hash ^ key[i]);
-
-	while (len >= 4)
-	{
-		len -= 4;
-		hash = (hash << 4) + (hash ^ key[len]);
-		hash = (hash << 4) + (hash ^ key[len + 1]);
-		hash = (hash << 4) + (hash ^ key[len + 2]);
-		hash = (hash << 4) + (hash ^ key[len + 3]);
-	}
-
+	if (len > 8)
+		len = 8;
+	
 	goto *jump[len];
 
+__LEN_8:
+	hash = hash * 101 + key[7];
+__LEN_7:
+	hash = hash * 101 + key[6];
+__LEN_6:
+	hash = hash * 101 + key[5];
+__LEN_5:
+	hash = hash * 101 + key[4];
+__LEN_4:
+	hash = hash * 101 + key[3];
 __LEN_3:
-	hash = (hash << 4) + (hash ^ key[2]);
+	hash = hash * 101 + key[2];
 __LEN_2:
-	hash = (hash << 4) + (hash ^ key[1]);
+	hash = hash * 101 + key[1];
 __LEN_1:
-	hash = (hash << 4) + (hash ^ key[0]);
+	hash = hash * 101 + key[0];
 __LEN_0:
-  
-  /*while (len)
-  {
-    len--;
-    hash = (hash << 4) + (hash ^ key[len]);
-  }*/
-  
-  return hash;
-}
 
+	return hash;
+}
 
 static uint key_hash_text(const char *key, int len)
 {
-	static const void *jump[4] = { &&__LEN_0, &&__LEN_1, &&__LEN_2, &&__LEN_3 };
-  uint hash = 0;
+	static const void *jump[] = { &&__LEN_0, &&__LEN_1, &&__LEN_2, &&__LEN_3, &&__LEN_4, &&__LEN_5, &&__LEN_6, &&__LEN_7, &&__LEN_8 };
+  uint hash = 0x9A177BA5 ^ len;
 
-	while (len >= 4)
-	{
-		len--;
-		hash = (hash << 4) + (hash ^ (key[len] & ~0x20));
-		len--;
-		hash = (hash << 4) + (hash ^ (key[len] & ~0x20));
-		len--;
-		hash = (hash << 4) + (hash ^ (key[len] & ~0x20));
-		len--;
-		hash = (hash << 4) + (hash ^ (key[len] & ~0x20));
-	}
-
+	if (len > 8)
+		len = 8;
+	
 	goto *jump[len];
 
+__LEN_8:
+	hash = hash * 101 + (key[7] & ~0x20);
+__LEN_7:
+	hash = hash * 101 + (key[6] & ~0x20);
+__LEN_6:
+	hash = hash * 101 + (key[5] & ~0x20);
+__LEN_5:
+	hash = hash * 101 + (key[4] & ~0x20);
+__LEN_4:
+	hash = hash * 101 + (key[3] & ~0x20);
 __LEN_3:
-	hash = (hash << 4) + (hash ^ (key[2] & ~0x20));
+	hash = hash * 101 + (key[2] & ~0x20);
 __LEN_2:
-	hash = (hash << 4) + (hash ^ (key[1] & ~0x20));
+	hash = hash * 101 + (key[1] & ~0x20);
 __LEN_1:
-	hash = (hash << 4) + (hash ^ (key[0] & ~0x20));
+	hash = hash * 101 + (key[0] & ~0x20);
 __LEN_0:
-  
-  /*while (len)
-  {
-    len--;
-    hash = (hash << 4) + (hash ^ (key[len] & ~0x20));
-  }*/
 
   return hash;
 }
 
 
-static HASH_FUNC get_hash_func(HASH_TABLE *hash)
-{
-  if (hash->mode == HF_IGNORE_CASE)
-    return key_hash_text;
-  else
-    return key_hash_binary;
-}
+#define get_hash_func(_hash) ((_hash)->mode ? key_hash_text : key_hash_binary)
 
 
 void HASH_TABLE_create(HASH_TABLE **hash, size_t s_value, HASH_FLAG mode)
@@ -188,44 +175,13 @@ int HASH_TABLE_size(HASH_TABLE *hash_table)
   return hash_table->nnodes;
 }
 
-#if 0
-static bool compare_key_ignore_case(const char *key_comp, int len_comp, const char *key, int len)
-{
-  if (len != len_comp)
-    return FALSE;
-    
-  while (len)
-  {
-    len--;
-    if (toupper(key_comp[len]) != toupper(key[len]))
-      return FALSE;      
-  }
-  
-  return TRUE;
-}
-
-static bool compare_key(const char *key_comp, int len_comp, const char *key, int len)
-{
-  if (len != len_comp)
-    return FALSE;
-    
-  while (len)
-  {
-    len--;
-    if (key_comp[len] != key[len])
-      return FALSE;      
-  }
-  
-  return TRUE;
-}
-#endif
 
 static HASH_NODE **hash_table_lookup_node(HASH_TABLE *hash_table, const char *key, int len)
 {
   HASH_NODE **node;
   HASH_KEY *node_key;
 
-	if (hash_table->mode == HF_IGNORE_CASE)
+	if (hash_table->mode)
 	{
 	  node = &hash_table->nodes[key_hash_text(key, len) % hash_table->size];
 

@@ -322,67 +322,82 @@ static bool exec_enter_can_quick(void)
 	return TRUE;
 }
 
-static void set_class_default(CLASS *class, VALUE *value, CTYPE ctype)
+static void init_local_var(CLASS *class, FUNCTION *func)
 {
-  static const void *jump[] = {
-    &&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, 
-    &&__DATE, &&__STRING, &&__STRING, &&__POINTER, &&__VARIANT, &&__FUNCTION, &&__CLASS, &&__NULL, 
-    &&__OBJECT
-    };
+	static const void *jump[] = {
+		&&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, 
+		&&__DATE, &&__STRING, &&__STRING, &&__POINTER, &&__VARIANT, &&__FUNCTION, &&__CLASS, &&__NULL, 
+		&&__OBJECT
+		};
+		
+	CLASS_LOCAL *local;
+	int n;
+	CTYPE ctype;
+	VALUE *value;
+	
+	local = func->local;
+	value = SP;
+	
+	for (n = func->n_local; n; n--, value++, local++)
+	{
+		ctype = local->type;
+		
+		value->type = ctype.id;
+		goto *jump[ctype.id];
 
-	value->type = ctype.id;
-  goto *jump[ctype.id];
+	__BOOLEAN:
+	__BYTE:
+	__SHORT:
+	__INTEGER:
 
-__BOOLEAN:
-__BYTE:
-__SHORT:
-__INTEGER:
+		value->_integer.value = 0;
+		continue;
 
-  value->_integer.value = 0;
-  return;
+	__LONG:
 
-__LONG:
+		value->_long.value = 0;
+		continue;
 
-  value->_long.value = 0;
-  return;
+	__SINGLE:
+	__FLOAT:
+		value->_float.value = 0;
+		continue;
 
-__SINGLE:
-__FLOAT:
-  value->_float.value = 0;
-  return;
+	__STRING:
+		value->_string.addr = NULL;
+		value->_string.start = 0;
+		value->_string.len = 0;
+		continue;
 
-__STRING:
-  value->_string.addr = NULL;
-  value->_string.start = 0;
-  value->_string.len = 0;
-  return;
+	__VARIANT:
+		value->_variant.vtype = T_NULL;
+		continue;
 
-__VARIANT:
-  value->_variant.vtype = T_NULL;
-  return;
+	__POINTER:
+		value->_pointer.value = NULL;
+		continue;
 
-__POINTER:
-  value->_pointer.value = NULL;
-  return;
+	__DATE:
+		value->_date.date = 0;
+		value->_date.time = 0;
+		continue;
 
-__DATE:
-  value->_date.date = 0;
-  value->_date.time = 0;
-  return;
+	__VOID:
+		continue;
 
-__VOID:
-  return;
+	__OBJECT:
+		if (ctype.value >= 0)
+			value->type = (TYPE)class->load->class_ref[ctype.value];
+		value->_object.object = NULL;
+		continue;
 
-__OBJECT:
-	if (ctype.value >= 0)
-  	value->type = (TYPE)class->load->class_ref[ctype.value];
-  value->_object.object = NULL;
-  return;
-
-__FUNCTION:
-__CLASS:
-__NULL:
-  ERROR_panic("VALUE_default: Unknown default type");
+	__FUNCTION:
+	__CLASS:
+	__NULL:
+		ERROR_panic("VALUE_default: Unknown default type");
+	}
+	
+	SP = value;
 }
 
 // EXEC.nparam must be set to the amount of stack that must be freed if an exception is raised during EXEC_enter()
@@ -497,13 +512,7 @@ void EXEC_enter(void)
 	/* local variables initialization */
 
 	if (LIKELY(func->n_local > 0))
-	{
-		for (i = 0; i < func->n_local; i++)
-		{
-			set_class_default(class, SP, func->local[i].type);
-			SP++;
-		}
-	}
+		init_local_var(class, func);
 
 	/* control variables initialization */
 
@@ -585,13 +594,7 @@ void EXEC_enter_quick(void)
 	/* local variables initialization */
 
 	if (LIKELY(func->n_local != 0))
-	{
-		for (i = 0; i < func->n_local; i++)
-		{
-			set_class_default(class, SP, func->local[i].type);
-			SP++;
-		}
-	}
+		init_local_var(class, func);
 
 	/* control variables initialization */
 

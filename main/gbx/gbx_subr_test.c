@@ -680,12 +680,9 @@ void SUBR_compi(ushort code)
 	static void *test[] = { &&__GT, &&__LE, &&__LT, &&__GE };
 
 	char NO_WARNING(result);
-	char op;
 	VALUE *P1;
 	VALUE *P2;
 	TYPE type;
-
-	op = (code - C_GT) >> 8;
 
 	P1 = SP - 2;
 	P2 = P1 + 1;
@@ -801,7 +798,7 @@ __END:
 	P1->type = T_BOOLEAN;
 	SP--;
 
-	goto *test[(int)op];
+	goto *test[(code >> 8) - (C_GT >> 8)];
 
 __GT:
 	P1->_boolean.value = result > 0 ? -1 : 0;

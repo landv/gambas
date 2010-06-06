@@ -604,14 +604,14 @@ void SUBR_add_(ushort code)
   TYPE type;
   VALUE *P1, *P2;
   void *jump_end;
-  short op;
+  int op;
 
   P1 = SP - 2;
   P2 = P1 + 1;
 
   jump_end = &&__END;
   type = code & 0x0F;
-  op = (code - C_ADD) >> 8;
+  op = (code >> 8) - (C_ADD >> 8);
   goto *jump[type];
 
 __BOOLEAN:

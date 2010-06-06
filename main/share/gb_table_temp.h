@@ -151,6 +151,13 @@ static bool search(void *symbol, ushort *sort, int n_symbol, size_t size, int fl
 				
 				for(;;)
 				{
+					/*result = (*s1 - *s2) & ~0x20;
+					
+					if (LIKELY(result < 0))
+						goto __T_LOWER;
+					else if (LIKELY(result > 0))
+						goto __T_GREATER;*/
+					
 					result = tolower(*s1) - tolower(*s2);
 					
 					if (LIKELY(result < 0))
