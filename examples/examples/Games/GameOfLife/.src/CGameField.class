@@ -127,7 +127,7 @@ Private Function CountNeighboursOnBorder(x As Integer, y As Integer) As Integer
 
   iTot = iTot - Game[x, y] - Color.White * 8
 
-  Return iTot / (Color.Red - Color.White)
+  Return iTot \ (Color.Red - Color.White)
     
 End
 
@@ -141,7 +141,7 @@ Private Function CountNeighbours(x As Integer, y As Integer) As Integer
     
   iTot -= Color.White * 8
   'DEBUG iTot / (Color.Red - Color.Background)
-  Return iTot / (Color.Red - Color.White)
+  Return iTot \ (Color.Red - Color.White)
 
 End
 

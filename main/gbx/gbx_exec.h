@@ -221,8 +221,7 @@ do { \
 
 #define RELEASE_STRING(_value) \
 do { \
-	VALUE *_v = (_value); \
-	if (_v->type == T_STRING) STRING_unref(&_v->_string.addr); \
+	if ((_value)->type == T_STRING) STRING_unref(&(_value)->_string.addr); \
 } while(0)
 
 #define RELEASE_OBJECT(_value) \

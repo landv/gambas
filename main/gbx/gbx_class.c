@@ -712,39 +712,64 @@ int CLASS_return_zero()
 }
 
 
-static CLASS_DESC_SYMBOL *SortClassDesc;
-
-static int sort_desc(ushort *i1, ushort *i2)
+static int partition(CLASS_DESC_SYMBOL *cds, ushort *sym, const int start, const int end)
 {
-	/*return strcmp(SortClassDesc[*i1].load.symbol.name, SortClassDesc[*i2].load.symbol.name);*/
-	/*return TABLE_compare_ignore_case_len(
-		SortClassDesc[*i1].name,
-		SortClassDesc[*i1].len,
-		SortClassDesc[*i2].name,
-		SortClassDesc[*i2].len
-		);*/
-
+	int pos = start;
+	short pivot = sym[start];
+	int i;
+	ushort val;
+	int len;
+	const char *s1, *s2;
 	int result;
-	int len1 = SortClassDesc[*i1].len;
-	int len2 = SortClassDesc[*i2].len;
 
-	if (LIKELY(len1 < len2))
-		return -1;
-	else if (LIKELY(len1 > len2))
-		return 1;
-
-	const char *s1 = SortClassDesc[*i1].name;
-	const char *s2 = SortClassDesc[*i2].name;
-
-	while (len1)
+	for (i = start + 1; i <= end; i++)
 	{
-		result = tolower(*s1++) - tolower(*s2++);
-		if (LIKELY(result))
-			return result; // < 0 ? -1 : 1;
-		--len1;
+		len = cds[sym[i]].len;
+		result = len - cds[pivot].len;
+
+		if (result > 0)
+			continue;
+		
+		if (result == 0)
+		{
+			s1 = cds[sym[i]].name;
+			s2 = cds[pivot].name;
+
+			while (len)
+			{
+				result = tolower(*s1++) - tolower(*s2++);
+				if (result)
+					break;
+				len--;
+			}
+			
+			if (result >= 0)
+				continue;
+		}
+
+		pos++; // incrémente compteur cad la place finale du pivot
+		//echanger(tableau, compteur, i); // élément positionné
+		val = sym[pos];
+		sym[pos] = sym[i];
+		sym[i] = val;
 	}
 
-	return 0;
+	//echanger(tableau, compteur, debut); // le pivot est placé
+	val = sym[pos];
+	sym[pos] = sym[start];
+	sym[start] = val;
+	
+	return pos; // et sa position est retournée
+}
+
+static void my_qsort(CLASS_DESC_SYMBOL *cds, ushort *sym, const int start, const int end)
+{
+   if (start < end) // cas d'arrêt pour la récursivité
+   {
+      int pivot = partition(cds, sym, start, end); // division du tableau
+      my_qsort(cds, sym, start, pivot - 1); // trie partie1
+      my_qsort(cds, sym, pivot + 1, end); // trie partie2
+   }
 }
 
 void CLASS_sort(CLASS *class)
@@ -760,23 +785,22 @@ void CLASS_sort(CLASS *class)
 	for (i = 0; i < class->n_desc; i++)
 		sym[i] = i;
 
-	SortClassDesc = class->table;
-	qsort(sym, class->n_desc, sizeof(ushort), (int (*)(const void *, const void *))sort_desc);
+	//qsort(sym, class->n_desc, sizeof(ushort), (int (*)(const void *, const void *))sort_desc);
+	my_qsort(class->table, sym, 0, class->n_desc - 1);
 
 	class->sort = sym;
 
 	#if DEBUG_DESC
 	{
-		SYMBOL *sym;
+		SYMBOL *s;
 
 		fprintf(stderr, "\nSORT %s\n", class->name);
 
 		for (i = 0; i < class->n_desc; i++)
 		{
-			sym = (SYMBOL *)&class->table[i];
-			//sym = (SYMBOL *)&class->table[sym->sort];
+			s = (SYMBOL *)&class->table[sym[i]];
 
-			fprintf(stderr, "[%d] (%d) %.*s\n", i, (int)class->sort[i], (int)sym->len, sym->name);
+			fprintf(stderr, "[%d] %.*s\n", i, (int)s->len, s->name);
 		}
 	}
 	#endif

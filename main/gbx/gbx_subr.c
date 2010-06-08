@@ -151,7 +151,6 @@ void SUBR_get_string_len(VALUE *param, char **str, int *len)
 		*str = param->_string.addr + param->_string.start;
 		*len = param->_string.len;
 	}
-  //VALUE_get_string(param, str, len);
 }
 
 bool SUBR_get_boolean(VALUE *param)

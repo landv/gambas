@@ -1140,65 +1140,9 @@ void VALUE_class_write(CLASS *class, VALUE *value, char *addr, CTYPE ctype)
 	}
 }
 
-
 void VALUE_class_constant(CLASS *class, VALUE *value, int ind)
 {
-	static void *jump[] =
-	{
-		&&__ILLEGAL, &&__INTEGER, &&__INTEGER, &&__INTEGER, &&__INTEGER, &&__LONG, &&__FLOAT, &&__FLOAT,
-		&&__ILLEGAL, &&__STRING, &&__CSTRING, &&__POINTER, &&__ILLEGAL, &&__ILLEGAL, &&__ILLEGAL, &&__ILLEGAL
-	};
-
-	CLASS_CONST *cc;
-
-	if (ind < 0)
-		goto __ILLEGAL;
-
-	cc = &class->load->cst[ind];
-
-	value->type = cc->type;
-	goto *jump[cc->type];
-
-__INTEGER:
-
-	value->_integer.value = cc->_integer.value;
-	return;
-
-__LONG:
-
-	value->_long.value = cc->_long.value;
-	return;
-
-__FLOAT:
-
-	value->_float.value = cc->_float.value;
-	return;
-
-__STRING:
-
-	value->type = T_CSTRING;
-	value->_string.addr = (char *)cc->_string.addr;
-	value->_string.start = 0;
-	value->_string.len = cc->_string.len;
-	return;
-
-__CSTRING:
-
-	value->type = T_CSTRING;
-	value->_string.addr = (char *)LOCAL_gettext(cc->_string.addr);
-	value->_string.start = 0;
-	value->_string.len = strlen(value->_string.addr);
-	return;
-	
-__POINTER:
-
-	value->type = T_POINTER;
-	value->_pointer.value = NULL;
-	return;
-
-__ILLEGAL:
-
-	THROW_ILLEGAL();
+	VALUE_class_constant_inline(class, value, ind);
 }
 
 
@@ -1248,25 +1192,6 @@ __VARIANT:
 __FALSE:
 	return FALSE;
 }
-
-
-void VALUE_get_string(VALUE *val, char **text, int *length)
-{
-	if (VALUE_is_null(val))
-	{
-		*text = 0;
-		*length = 0;
-	}
-	else
-	{
-		*length = val->_string.len;
-		if (*length)
-			*text = val->_string.start + val->_string.addr;
-		else
-			*text = NULL;
-	}
-}
-
 
 
 void VALUE_convert_boolean(VALUE *value)
@@ -1780,7 +1705,7 @@ void VALUE_undo_variant(VALUE *value)
 {
 	static void *jump[16] = {
 		&&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
-		&&__STRING, &&__STRING, &&__POINTER, &&__VOID, &&__FUNCTION, &&__CLASS, &&__NULL
+		&&__STRING, &&__CSTRING, &&__POINTER, &&__VOID, &&__FUNCTION, &&__CLASS, &&__NULL
 		};
 
 	TYPE type = value->_variant.vtype;
@@ -1846,6 +1771,19 @@ __STRING:
 		value->_string.addr = str;
 		value->_string.start = 0;
 		value->_string.len = STRING_length(str);
+
+		return;
+	}
+
+__CSTRING:
+
+	{
+		char *str = value->_variant.value._string;
+
+		value->type = T_STRING;
+		value->_string.addr = str;
+		value->_string.start = 0;
+		value->_string.len = strlen(str);
 
 		return;
 	}

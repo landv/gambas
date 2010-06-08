@@ -42,38 +42,31 @@ static OBJECT *EventObject = NULL;
 
 void OBJECT_new(void **ptr, CLASS *class, const char *name, OBJECT *parent)
 {
-  OBJECT_alloc(ptr, class, class->size);
+	OBJECT *object;
+	
+  //if (size < sizeof(OBJECT))
+  //  size = sizeof(OBJECT);
 
-  //#if DEBUG_EVENT
-  //printf("OBJECT_new: %s %p %d\n", class->name, *ptr, class->off_event);
-  //#endif
-
-  OBJECT_attach(*ptr, parent, name);
-}
-
-
-void OBJECT_alloc(void **ptr, CLASS *class, size_t size)
-{
-  OBJECT *object;
-
-  if (size < sizeof(OBJECT))
-    size = sizeof(OBJECT);
-
-  ALLOC_ZERO(&object, size, "OBJECT_alloc");
+  ALLOC_ZERO(&object, class->size, "OBJECT_new");
 
   object->class = class;
 	#if DEBUG_REF
 	object->ref = 0;
-	OBJECT_REF(object, "OBJECT_alloc");
+	OBJECT_REF(object, "OBJECT_new");
 	#else
   object->ref = 1;
 	#endif
 
   class->count++;
 
-  *ptr = object;
-	
+  OBJECT_attach(object, parent, name);
+
+	*ptr = object;
+  //#if DEBUG_EVENT
+  //printf("OBJECT_new: %s %p %d\n", class->name, *ptr, class->off_event);
+  //#endif
 }
+
 
 #if 0
 static void dump_attach(char *title)
@@ -284,33 +277,48 @@ bool OBJECT_comp_value(VALUE *ob1, VALUE *ob2)
 
 static void release_static(CLASS *class, CLASS_VAR *var, int nelt, char *data)
 {
-	int i;
-	
-  for (i = 0; i < nelt; i++)
-  {
+	static void *jump[17] = {
+		&&__NEXT, &&__NEXT, &&__NEXT, &&__NEXT, &&__NEXT, &&__NEXT, &&__NEXT, &&__NEXT, &&__NEXT,
+		&&__STRING, &&__NEXT, &&__NEXT, &&__VARIANT, &&__ARRAY, &&__STRUCT, &&__NEXT, &&__OBJECT
+		};
+		
+	CTYPE type;
+		
+	while (nelt--)
+	{
 #if TRACE_MEMORY
-    if (var->type.id == T_STRING || var->type.id == T_OBJECT)
-      fprintf(stderr, "release_static: %s [%d] trying %p\n", class->name, i, (*(void **)&data[var->pos]));
+		if (var->type.id == T_STRING || var->type.id == T_OBJECT)
+			fprintf(stderr, "release_static: %s [%d] trying %p\n", class->name, i, (*(void **)&data[var->pos]));
 #endif
 
-		if (var->type.id == T_STRING)
-      STRING_unref((char **)&data[var->pos]);
-    else if (var->type.id == T_OBJECT)
-    {
-      OBJECT_UNREF(*((void **)&data[var->pos]), "release");
-    }
-    else if (var->type.id == T_VARIANT)
-      VARIANT_free((VARIANT *)&data[var->pos]);
-		else if (var->type.id == TC_ARRAY)
-			CARRAY_release_static(class->load->array[var->type.value], &data[var->pos]);
-		else if (var->type.id == TC_STRUCT)
+		type = var->type;
+		goto *jump[type.id];
+		
+	__STRING:
+		STRING_unref((char **)&data[var->pos]);
+		goto __NEXT;
+			
+	__OBJECT:
+		OBJECT_UNREF(*((void **)&data[var->pos]), "release");
+		goto __NEXT;
+		
+	__VARIANT:
+		VARIANT_free((VARIANT *)&data[var->pos]);
+		goto __NEXT;
+			
+	__ARRAY:
+		CARRAY_release_static(class->load->array[type.value], &data[var->pos]);
+		goto __NEXT;
+			
+	__STRUCT:
 		{
-			CLASS *sclass = class->load->class_ref[var->type.value];
+			CLASS *sclass = class->load->class_ref[type.value];
 			release_static(sclass, sclass->load->dyn, sclass->load->n_dyn, &data[var->pos]);
 		}
 
-    var++;
-  }
+	__NEXT:
+		var++;
+	}
 }
 
 static void release(CLASS *class, OBJECT *ob)

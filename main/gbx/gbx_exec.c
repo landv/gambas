@@ -1260,7 +1260,7 @@ bool EXEC_object(VALUE *val, CLASS **pclass, OBJECT **pobject)
 	static const void *jump[] = {
 		&&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR,
 		&&__ERROR, &&__ERROR, &&__ERROR, &&__VARIANT, &&__FUNCTION, &&__CLASS, &&__NULL,
-		&&__OBJECT
+		&&__OBJECT,
 		};
 
 	CLASS *class;

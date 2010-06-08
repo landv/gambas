@@ -214,6 +214,9 @@ void *HASH_TABLE_lookup(HASH_TABLE *hash_table, const char *key, int len)
 {
   HASH_NODE *node;
 
+	if (len == 0)
+		return NULL;
+	
   node = *hash_table_lookup_node(hash_table, key, len);
   hash_table->last = node;
 

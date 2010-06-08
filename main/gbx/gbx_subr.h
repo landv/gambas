@@ -93,9 +93,12 @@ TYPE SUBR_check_good_type(VALUE *param, int count);
 
 /* subr_math.c */
 
-void SUBR_add_(ushort code);
-void SUBR_quo(void);
-void SUBR_rem(void);
+//void SUBR_add(ushort code);
+//void SUBR_sub(ushort code);
+//void SUBR_mul(ushort code);
+//void SUBR_div(ushort code);
+void SUBR_quo(ushort code);
+void SUBR_rem(ushort code);
 void SUBR_pow(void);
 
 void SUBR_and_(ushort code);
@@ -141,8 +144,8 @@ void SUBR_unquote(void);
 
 /* subr_test.c */
 
-void SUBR_comp(ushort code);
-void SUBR_compn(ushort code);
+//void SUBR_comp(ushort code);
+//void SUBR_compn(ushort code);
 void SUBR_compi(ushort code);
 void SUBR_case(ushort code);
 void SUBR_bit(ushort code);

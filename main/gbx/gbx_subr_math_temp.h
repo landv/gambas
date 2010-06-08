@@ -312,7 +312,7 @@ __END:
 
 #if SMT_TYPE == 3
 
-void SMT_NAME(void)
+void SMT_NAME(ushort code)
 {
 
   static void *jump[] = {
@@ -325,7 +325,7 @@ void SMT_NAME(void)
   P1 = SP - 2;
   P2 = P1 + 1;
 
-  type = *PC & 0x0F;
+  type = code & 0x0F;
   goto *jump[type];
 
 __VARIANT:

@@ -60,12 +60,21 @@
 #define GET_UX()    ((unsigned char)code)
 #define GET_3X()    (code & 0x3F)
 
+static void my_VALUE_class_read(CLASS *class, VALUE *value, char *addr, CTYPE ctype, void *ref);
+static void my_VALUE_class_constant(CLASS *class, VALUE *value, int ind);
+static void _SUBR_comp(ushort code);
+static void _SUBR_compn(ushort code);
+static void _SUBR_add(ushort code);
+static void _SUBR_sub(ushort code);
+static void _SUBR_mul(ushort code);
+static void _SUBR_div(ushort code);
+
 
 static void *SubrTable[] =
 {
-  /* 28 */  SUBR_comp,            SUBR_compn,           SUBR_compi,           SUBR_compi,
+  /* 28 */  _SUBR_comp,           _SUBR_compn,          SUBR_compi,           SUBR_compi,
   /* 2C */  SUBR_compi,           SUBR_compi,           SUBR_near,            SUBR_case,
-  /* 30 */  SUBR_add_,            SUBR_add_,            SUBR_add_,            SUBR_add_,
+  /* 30 */  _SUBR_add,            _SUBR_sub,            _SUBR_mul,            _SUBR_div,
   /* 34 */  SUBR_neg_,            SUBR_quo,             SUBR_rem,             SUBR_pow,
   /* 38 */  SUBR_and_,            SUBR_and_,            SUBR_and_,            SUBR_not,
   /* 3C */  SUBR_cat,             SUBR_like,            SUBR_file,            SUBR_is,
@@ -168,10 +177,6 @@ static void *SubrTable[] =
 	NULL,            /* 95 9F */
 };
 
-static void my_VALUE_class_read(CLASS *class, VALUE *value, char *addr, CTYPE ctype, void *ref)
-{
-	VALUE_class_read_inline(class, value, addr, ctype, ref);
-}
 
 void EXEC_loop(void)
 {
@@ -230,8 +235,8 @@ void EXEC_loop(void)
     /* 32 *               */  &&_SUBR_CODE,
     /* 33 /               */  &&_SUBR_CODE,
     /* 34 NEG             */  &&_SUBR_CODE,
-    /* 35 \               */  &&_SUBR,
-    /* 36 MOD             */  &&_SUBR,
+    /* 35 \               */  &&_SUBR_CODE,
+    /* 36 MOD             */  &&_SUBR_CODE,
     /* 37 ^               */  &&_SUBR,
     /* 38 AND             */  &&_SUBR_CODE,
     /* 39 OR              */  &&_SUBR_CODE,
@@ -1496,7 +1501,8 @@ __WRITE:
 
 _PUSH_CONST:
 
-  VALUE_class_constant(CP, SP, GET_UXX());
+	ind = GET_UXX();
+  my_VALUE_class_constant(CP, SP, ind);
   SP++;
   goto _NEXT;
 
@@ -1794,7 +1800,7 @@ _SUBR_MID:
 			
 		if (UNLIKELY(start >= PARAM->_string.len))
 		{
-			RELEASE(PARAM);
+			RELEASE_STRING(PARAM);
 			STRING_void_value(PARAM);
 			goto _SUBR_MID_FIN;
 		}
@@ -1814,7 +1820,7 @@ _SUBR_MID:
 	
 		if (UNLIKELY(len == 0))
 		{
-			RELEASE(PARAM);
+			RELEASE_STRING(PARAM);
 			PARAM->_string.addr = NULL;
 			PARAM->_string.start = 0;
 		}
@@ -1843,7 +1849,7 @@ _SUBR_LEN:
 		else
 			len = PARAM->_string.len;
 	
-		RELEASE(PARAM);
+		RELEASE_STRING(PARAM);
 	
 		PARAM->type = T_INTEGER;
 		PARAM->_integer.value = len;
@@ -2047,3 +2053,567 @@ _SUBR_COMP:
 #endif
 }
 
+
+static void my_VALUE_class_read(CLASS *class, VALUE *value, char *addr, CTYPE ctype, void *ref)
+{
+	VALUE_class_read_inline(class, value, addr, ctype, ref);
+}
+
+static void _SUBR_comp(ushort code)
+{
+	static void *jump[17] = {
+		&&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
+		&&__STRING, &&__STRING, &&__POINTER, &&__ERROR, &&__ERROR, &&__ERROR, &&__NULL, &&__OBJECT
+		};
+
+	//static void *test[] = { &&__EQ, &&__NE, &&__GT, &&__LE, &&__LT, &&__GE };
+
+	char NO_WARNING(result);
+	VALUE *P1;
+	VALUE *P2;
+
+	P1 = SP - 2;
+	P2 = P1 + 1;
+
+	goto *jump[code & 0x1F];
+
+__BOOLEAN:
+__BYTE:
+__SHORT:
+__INTEGER:
+
+	result = P1->_integer.value == P2->_integer.value;
+	goto __END;
+	
+__LONG:
+
+	VALUE_conv(P1, T_LONG);
+	VALUE_conv(P2, T_LONG);
+
+	result = P1->_long.value == P2->_long.value;
+	goto __END;
+
+__DATE:
+
+	VALUE_conv(P1, T_DATE);
+	VALUE_conv(P2, T_DATE);
+
+	result = DATE_comp_value(P1, P2) == 0;
+	goto __END;
+
+__NULL:
+
+	if (P2->type == T_NULL)
+	{
+		result = VALUE_is_null(P1);
+		goto __END_RELEASE;
+	}
+	else if (P1->type == T_NULL)
+	{
+		result = VALUE_is_null(P2);
+		goto __END_RELEASE;
+	}
+
+__STRING:
+
+	VALUE_conv_string(P1);
+	VALUE_conv_string(P2);
+
+	if (P1->_string.len != P2->_string.len)
+		result = 0;
+	else
+		result = STRING_equal_same(P1->_string.addr + P1->_string.start, P2->_string.addr + P2->_string.start, P1->_string.len);
+	
+	RELEASE_STRING(P1);
+	RELEASE_STRING(P2);
+	goto __END;
+
+__SINGLE:
+__FLOAT:
+
+	VALUE_conv_float(P1);
+	VALUE_conv_float(P2);
+
+	result = P1->_float.value == P2->_float.value;
+	goto __END;
+
+__POINTER:
+
+	VALUE_conv(P1, T_POINTER);
+	VALUE_conv(P2, T_POINTER);
+
+	result = P1->_pointer.value == P2->_pointer.value;
+	goto __END;
+
+__OBJECT:
+
+	result = OBJECT_comp_value(P1, P2) == 0;
+	//RELEASE_OBJECT(P1);
+	//RELEASE_OBJECT(P2);
+	goto __END_RELEASE;
+
+__VARIANT:
+
+	{
+		bool variant = FALSE;
+		TYPE type;
+	
+		if (TYPE_is_variant(P1->type))
+		{
+			VARIANT_undo(P1);
+			variant = TRUE;
+		}
+
+		if (TYPE_is_variant(P2->type))
+		{
+			VARIANT_undo(P2);
+			variant = TRUE;
+		}
+
+		type = Max(P1->type, P2->type);
+
+		if (TYPE_is_object_null(P1->type) && TYPE_is_object_null(P2->type))
+			type = T_OBJECT;
+		else if (TYPE_is_object(type))
+			THROW(E_TYPE, "Object", TYPE_get_name(Min(P1->type, P2->type)));
+
+		if (!variant)
+			*PC |= type;
+
+		goto *jump[type];
+	}
+
+__ERROR:
+
+	THROW(E_TYPE, "Number, Date or String", TYPE_get_name(code & 0x1F));
+
+__END_RELEASE:
+
+	RELEASE(P1);
+	RELEASE(P2);
+
+__END:
+
+	P1->type = T_BOOLEAN;
+	SP--;
+	P1->_boolean.value = -result;
+}
+
+static void _SUBR_compn(ushort code)
+{
+	static void *jump[17] = {
+		&&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
+		&&__STRING, &&__STRING, &&__POINTER, &&__ERROR, &&__ERROR, &&__ERROR, &&__NULL, &&__OBJECT
+		};
+
+	//static void *test[] = { &&__EQ, &&__NE, &&__GT, &&__LE, &&__LT, &&__GE };
+
+	char NO_WARNING(result);
+	VALUE *P1;
+	VALUE *P2;
+
+	P1 = SP - 2;
+	P2 = P1 + 1;
+
+	goto *jump[code & 0x1F];
+
+__BOOLEAN:
+__BYTE:
+__SHORT:
+__INTEGER:
+
+	result = P1->_integer.value == P2->_integer.value;
+	goto __END;
+	
+__LONG:
+
+	VALUE_conv(P1, T_LONG);
+	VALUE_conv(P2, T_LONG);
+
+	result = P1->_long.value == P2->_long.value;
+	goto __END;
+
+__DATE:
+
+	VALUE_conv(P1, T_DATE);
+	VALUE_conv(P2, T_DATE);
+
+	result = DATE_comp_value(P1, P2) == 0;
+	goto __END;
+
+__NULL:
+
+	if (P2->type == T_NULL)
+	{
+		result = VALUE_is_null(P1);
+		goto __END_RELEASE;
+	}
+	else if (P1->type == T_NULL)
+	{
+		result = VALUE_is_null(P2);
+		goto __END_RELEASE;
+	}
+
+__STRING:
+
+	VALUE_conv_string(P1);
+	VALUE_conv_string(P2);
+
+	if (P1->_string.len != P2->_string.len)
+		result = 0;
+	else
+		result = STRING_equal_same(P1->_string.addr + P1->_string.start, P2->_string.addr + P2->_string.start, P1->_string.len);
+	
+	RELEASE_STRING(P1);
+	RELEASE_STRING(P2);
+	goto __END;
+
+__SINGLE:
+__FLOAT:
+
+	VALUE_conv_float(P1);
+	VALUE_conv_float(P2);
+
+	result = P1->_float.value == P2->_float.value;
+	goto __END;
+
+__POINTER:
+
+	VALUE_conv(P1, T_POINTER);
+	VALUE_conv(P2, T_POINTER);
+
+	result = P1->_pointer.value == P2->_pointer.value;
+	goto __END;
+
+__OBJECT:
+
+	result = OBJECT_comp_value(P1, P2) == 0;
+	//RELEASE_OBJECT(P1);
+	//RELEASE_OBJECT(P2);
+	goto __END_RELEASE;
+
+__VARIANT:
+
+	{
+		bool variant = FALSE;
+		TYPE type;
+	
+		if (TYPE_is_variant(P1->type))
+		{
+			VARIANT_undo(P1);
+			variant = TRUE;
+		}
+
+		if (TYPE_is_variant(P2->type))
+		{
+			VARIANT_undo(P2);
+			variant = TRUE;
+		}
+
+		type = Max(P1->type, P2->type);
+
+		if (TYPE_is_object_null(P1->type) && TYPE_is_object_null(P2->type))
+			type = T_OBJECT;
+		else if (TYPE_is_object(type))
+			THROW(E_TYPE, "Object", TYPE_get_name(Min(P1->type, P2->type)));
+
+		if (!variant)
+			*PC |= type;
+
+		goto *jump[type];
+	}
+
+__ERROR:
+
+	THROW(E_TYPE, "Number, Date or String", TYPE_get_name(code & 0x1F));
+
+__END_RELEASE:
+
+	RELEASE(P1);
+	RELEASE(P2);
+
+__END:
+
+	P1->type = T_BOOLEAN;
+	SP--;
+
+	P1->_boolean.value = result - 1; // ? 0 : -1;
+}
+
+static void my_VALUE_class_constant(CLASS *class, VALUE *value, int ind)
+{
+	VALUE_class_constant_inline(class, value, ind);
+}
+
+#define MANAGE_VARIANT(_func) \
+({ \
+	type = Max(P1->type, P2->type); \
+	\
+	if (TYPE_is_number_date(type)) \
+	{ \
+		*PC |= type; \
+		goto *jump[type]; \
+	} \
+	\
+	VARIANT_undo(P1); \
+	VARIANT_undo(P2); \
+	\
+	if (TYPE_is_string(P1->type)) \
+		VALUE_conv_float(P1); \
+	\
+	if (TYPE_is_string(P2->type)) \
+		VALUE_conv_float(P2); \
+	\
+	if (TYPE_is_null(P1->type) || TYPE_is_null(P2->type)) \
+		type = T_NULL; \
+	else \
+		type = Max(P1->type, P2->type); \
+	\
+	if (TYPE_is_number_date(type)) \
+	{ \
+		(_func)(code | type); \
+		VALUE_conv_variant(P1); \
+		return; \
+	} \
+})
+
+
+static void _SUBR_add(ushort code)
+{
+  static void *jump[] = {
+    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__FLOAT, &&__FLOAT, &&__DATE
+    };
+
+  TYPE type;
+  VALUE *P1, *P2;
+
+  P1 = SP - 2;
+  P2 = P1 + 1;
+
+  type = code & 0x0F;
+  goto *jump[type];
+
+__BOOLEAN:
+	
+	P1->type = T_BOOLEAN;
+	P1->_integer.value = P1->_integer.value | P2->_integer.value; goto __END;
+
+__BYTE:
+	
+	P1->type = T_BYTE;
+	P1->_integer.value = (unsigned char)(P1->_integer.value + P2->_integer.value); goto __END;
+
+__SHORT:
+	
+	P1->type = T_SHORT;
+	P1->_integer.value = (short)(P1->_integer.value + P2->_integer.value); goto __END;
+
+__INTEGER:
+
+	P1->type = T_INTEGER;
+	P1->_integer.value += P2->_integer.value; goto __END;
+
+__LONG:
+
+  VALUE_conv(P1, T_LONG);
+  VALUE_conv(P2, T_LONG);
+
+	P1->_long.value += P2->_long.value; goto __END;
+
+__DATE:
+__FLOAT:
+
+  VALUE_conv_float(P1);
+  VALUE_conv_float(P2);
+
+	P1->_float.value += P2->_float.value; goto __END;
+
+__VARIANT:
+
+	MANAGE_VARIANT(_SUBR_add);
+  goto __ERROR;
+
+__ERROR:
+
+  THROW(E_TYPE, "Number", TYPE_get_name(type));
+
+__END:
+
+  SP--;
+}
+
+static void _SUBR_sub(ushort code)
+{
+  static void *jump[] = {
+    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__FLOAT, &&__FLOAT, &&__DATE
+    };
+
+  TYPE type;
+  VALUE *P1, *P2;
+
+  P1 = SP - 2;
+  P2 = P1 + 1;
+
+  type = code & 0x0F;
+  goto *jump[type];
+
+__BOOLEAN:
+	
+	P1->type = T_BOOLEAN;
+	P1->_integer.value = P1->_integer.value ^ P2->_integer.value; goto __END;
+
+__BYTE:
+	
+	P1->type = T_BYTE;
+	P1->_integer.value = (unsigned char)(P1->_integer.value - P2->_integer.value); goto __END;
+
+__SHORT:
+	
+	P1->type = T_SHORT;
+	P1->_integer.value = (short)(P1->_integer.value - P2->_integer.value); goto __END;
+
+__INTEGER:
+
+	P1->type = T_INTEGER;
+	P1->_integer.value -= P2->_integer.value; goto __END;
+
+__LONG:
+
+  VALUE_conv(P1, T_LONG);
+  VALUE_conv(P2, T_LONG);
+
+	P1->_long.value -= P2->_long.value; goto __END;
+
+__DATE:
+__FLOAT:
+
+  VALUE_conv_float(P1);
+  VALUE_conv_float(P2);
+
+	P1->_float.value -= P2->_float.value; goto __END;
+
+__VARIANT:
+
+	MANAGE_VARIANT(_SUBR_sub);
+  goto __ERROR;
+
+__ERROR:
+
+  THROW(E_TYPE, "Number", TYPE_get_name(type));
+
+__END:
+
+  SP--;
+}
+
+static void _SUBR_mul(ushort code)
+{
+  static void *jump[] = {
+    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__FLOAT, &&__FLOAT, &&__ERROR
+    };
+
+  TYPE type;
+  VALUE *P1, *P2;
+
+  P1 = SP - 2;
+  P2 = P1 + 1;
+
+  type = code & 0x0F;
+  goto *jump[type];
+
+__BOOLEAN:
+	
+	P1->type = T_BOOLEAN;
+	P1->_integer.value = P1->_integer.value & P2->_integer.value; goto __END;
+
+__BYTE:
+	
+	P1->type = T_BYTE;
+	P1->_integer.value = (unsigned char)(P1->_integer.value * P2->_integer.value); goto __END;
+
+__SHORT:
+	
+	P1->type = T_SHORT;
+	P1->_integer.value = (short)(P1->_integer.value * P2->_integer.value); goto __END;
+
+__INTEGER:
+
+	P1->type = T_INTEGER;
+	P1->_integer.value *= P2->_integer.value; goto __END;
+
+__LONG:
+
+  VALUE_conv(P1, T_LONG);
+  VALUE_conv(P2, T_LONG);
+
+	P1->_long.value *= P2->_long.value; goto __END;
+
+__FLOAT:
+
+  VALUE_conv_float(P1);
+  VALUE_conv_float(P2);
+
+	P1->_float.value *= P2->_float.value; goto __END;
+
+__VARIANT:
+
+	MANAGE_VARIANT(_SUBR_mul);
+  goto __ERROR;
+
+__ERROR:
+
+  THROW(E_TYPE, "Number", TYPE_get_name(type));
+
+__END:
+
+  SP--;
+}
+
+static void _SUBR_div(ushort code)
+{
+  static void *jump[] = {
+    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__FLOAT, &&__FLOAT, &&__ERROR
+    };
+
+  TYPE type;
+  VALUE *P1, *P2;
+
+  P1 = SP - 2;
+  P2 = P1 + 1;
+
+  type = code & 0x0F;
+  goto *jump[type];
+
+__BOOLEAN:
+__BYTE:
+__SHORT:
+__INTEGER:
+__LONG:
+__FLOAT:
+
+  VALUE_conv_float(P1);
+  VALUE_conv_float(P2);
+
+	P1->_float.value /= P2->_float.value;
+	if (!finite(P1->_float.value))
+	{
+		if (P2->_float.value == 0.0)
+			THROW(E_ZERO);
+		else
+			THROW(E_MATH);
+	}
+	goto __END;
+
+__VARIANT:
+
+	MANAGE_VARIANT(_SUBR_div);
+  goto __ERROR;
+
+__ERROR:
+
+  THROW(E_TYPE, "Number", TYPE_get_name(type));
+
+__END:
+
+  SP--;
+}

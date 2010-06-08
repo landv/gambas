@@ -54,7 +54,7 @@ FILE *MEMORY_log;
 #define REAL_SIZE(_size) (((_size) + (SIZE_INC - 1)) & ~(SIZE_INC - 1))
 
 #define POOL_SIZE  16
-#define POOL_MAX   32
+#define POOL_MAX   64
 
 #define POOL_MAX_LEN   (POOL_SIZE * SIZE_INC)
 

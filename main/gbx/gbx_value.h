@@ -256,7 +256,15 @@ void VALUE_class_constant(CLASS *class, VALUE *value, int ind);
 
 bool VALUE_is_null(VALUE *val);
 
-void VALUE_get_string(VALUE *val, char **text, int *length);
+//void VALUE_get_string(VALUE *val, char **text, int *length);
+#define VALUE_get_string(_value, _ptext, _plen) \
+({ \
+	*(_plen) = (_value)->_string.len; \
+	if (*(_plen)) \
+		*(_ptext) = (_value)->_string.start + (_value)->_string.addr; \
+	else \
+		*(_ptext) = NULL; \
+})
 
 void THROW_TYPE_INTEGER(TYPE type) NORETURN;
 void THROW_TYPE_FLOAT(TYPE type) NORETURN;
@@ -456,5 +464,65 @@ void THROW_TYPE_STRING(TYPE type) NORETURN;
 	} \
 })
 
+#define VALUE_class_constant_inline(_class, _value, _ind) \
+({ \
+	static void *jump[] = \
+	{ \
+		&&__ILLEGAL, &&__INTEGER, &&__INTEGER, &&__INTEGER, &&__INTEGER, &&__LONG, &&__FLOAT, &&__FLOAT, \
+		&&__ILLEGAL, &&__STRING, &&__CSTRING, &&__POINTER, &&__ILLEGAL, &&__ILLEGAL, &&__ILLEGAL, &&__ILLEGAL \
+	}; \
+	\
+	CLASS_CONST *cc; \
+	\
+	for(;;) \
+	{ \
+		cc = &(_class)->load->cst[_ind]; \
+		goto *jump[cc->type]; \
+		\
+	__INTEGER: \
+		\
+		(_value)->type = T_INTEGER; \
+		(_value)->_integer.value = cc->_integer.value; \
+		break; \
+		\
+	__LONG: \
+		\
+		(_value)->type = T_LONG; \
+		(_value)->_long.value = cc->_long.value; \
+		break; \
+		\
+	__FLOAT: \
+		\
+		(_value)->type = T_FLOAT; \
+		(_value)->_float.value = cc->_float.value; \
+		break; \
+		\
+	__STRING: \
+		\
+		(_value)->type = T_CSTRING; \
+		(_value)->_string.addr = (char *)cc->_string.addr; \
+		(_value)->_string.start = 0; \
+		(_value)->_string.len = cc->_string.len; \
+		break; \
+		\
+	__CSTRING: \
+		\
+		(_value)->type = T_CSTRING; \
+		(_value)->_string.addr = (char *)LOCAL_gettext(cc->_string.addr); \
+		(_value)->_string.start = 0; \
+		(_value)->_string.len = strlen((_value)->_string.addr); \
+		break; \
+		\
+	__POINTER: \
+		\
+		(_value)->type = T_POINTER; \
+		(_value)->_pointer.value = NULL; \
+		break; \
+		\
+	__ILLEGAL: \
+		\
+		THROW_ILLEGAL(); \
+	} \
+})
 
 #endif

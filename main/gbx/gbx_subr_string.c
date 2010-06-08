@@ -57,19 +57,19 @@ void SUBR_cat(ushort code)
 	str = STRING_new(NULL, len_cat);
 	ptr = str;
 
-	for (i = 0; i < NPARAM; i++)
+	i = NPARAM;
+	while (i--)
 	{
-		len = PARAM[i]._string.len;
+		len = PARAM->_string.len;
 		
-		if (len > 0)
+		if (len)
 		{
-			/*printf("add %p ", PARAM[i]._string.addr + PARAM[i]._string.start); fflush(NULL);
-			printf("%.*s\n", (int)len, PARAM[i]._string.addr + PARAM[i]._string.start);*/
-			memcpy(ptr, PARAM[i]._string.addr + PARAM[i]._string.start, len);
+			memcpy(ptr, PARAM->_string.addr + PARAM->_string.start, len);
 			ptr += len;
 		}
 		
-		RELEASE_STRING(&PARAM[i]);
+		RELEASE_STRING(PARAM);
+		PARAM++;
 	}
 
 	/*printf("\n");*/
@@ -123,9 +123,10 @@ void SUBR_file(ushort code)
 	ptr = str;
 	slash = FALSE;
 
-	for (i = 0; i < NPARAM; i++)
+	i = NPARAM;
+	while (i--)
 	{
-		VALUE_get_string(&PARAM[i], &addr, &len);
+		VALUE_get_string(PARAM, &addr, &len);
 		
 		if (len > 0)
 		{
@@ -143,7 +144,8 @@ void SUBR_file(ushort code)
 			ptr += len;
 		}
 
-		RELEASE_STRING(&PARAM[i]);
+		RELEASE_STRING(PARAM);
+		PARAM++;
 	}
 
 	SP -= NPARAM;
@@ -558,8 +560,11 @@ void SUBR_split(ushort code)
 	bool keep_esc = FALSE;
 
 	SUBR_ENTER();
+	
+	VALUE_conv_string(PARAM);
+	VALUE_get_string(PARAM, &str, &lstr);
 
-	SUBR_get_string_len(&PARAM[0], &str, &lstr);
+	//SUBR_get_string_len(&PARAM[0], &str, &lstr);
 	
 	if (NPARAM >= 2)
 	{
@@ -757,20 +762,23 @@ void SUBR_is_chr(ushort code)
 
 	VALUE_conv_string(PARAM);
 
-	SUBR_get_string_len(PARAM, &addr, &len);
+	//SUBR_get_string_len(PARAM, &addr, &len);
+	VALUE_get_string(PARAM, &addr, &len);
 
 	func = jump[code & 0x3F];
 
-	for (i = 0; i < len; i++)
+	i = len;
+	while(i)
 	{
-		if (!(*func)(addr[i]))
+		if (!(*func)(*addr++))
 			break;
+		i--;
 	}
 
 	RELEASE_STRING(PARAM);
 	SP--;
 	SP->type = T_BOOLEAN;
-	SP->_boolean.value = (len > 0 && i >= len) ? -1 : 0;
+	SP->_boolean.value = (len > 0 && i == 0) ? -1 : 0;
 	SP++;
 }
 

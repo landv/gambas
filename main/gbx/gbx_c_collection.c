@@ -60,7 +60,7 @@ static void collection_free(CCOLLECTION *col)
 	col->locked = FALSE;
 }
 
-static void *collection_get_key(CCOLLECTION *col, const char *key, int len)
+/*static void *collection_get_key(CCOLLECTION *col, const char *key, int len)
 {
   if (len == 0)
     return NULL;
@@ -69,7 +69,9 @@ static void *collection_get_key(CCOLLECTION *col, const char *key, int len)
     len = strlen(key);
 
   return HASH_TABLE_lookup(col->hash_table, key, len);
-}
+}*/
+
+#define collection_get_key(_col, _key, _len) HASH_TABLE_lookup((_col)->hash_table, (_key), (_len))
 
 
 static void *collection_add_key(CCOLLECTION *col, const char *key, int len)

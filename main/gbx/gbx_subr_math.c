@@ -304,7 +304,7 @@ void SUBR_and_(ushort code)
 
   jump_end = &&__END;
   type = code & 0x0F;
-  op = (code - C_AND) >> 8;
+  op = (code >> 8)  - (C_AND >> 8);
   goto *jump[type];
 
 __BYTE:
@@ -594,7 +594,7 @@ __END:
 }
 
 
-
+#if 0
 void SUBR_add_(ushort code)
 {
   static void *jump[] = {
@@ -603,13 +603,11 @@ void SUBR_add_(ushort code)
 
   TYPE type;
   VALUE *P1, *P2;
-  void *jump_end;
   int op;
 
   P1 = SP - 2;
   P2 = P1 + 1;
 
-  jump_end = &&__END;
   type = code & 0x0F;
   op = (code >> 8) - (C_ADD >> 8);
   goto *jump[type];
@@ -622,9 +620,9 @@ __BOOLEAN:
     static void *exec[] = { &&__ADD_B, && __SUB_B, &&__MUL_B, &&__FLOAT };
     goto *exec[op];
 
-    __ADD_B: P1->_integer.value = P1->_integer.value | P2->_integer.value; goto *jump_end;
-    __SUB_B: P1->_integer.value = P1->_integer.value ^ P2->_integer.value; goto *jump_end;
-    __MUL_B: P1->_integer.value = P1->_integer.value & P2->_integer.value; goto *jump_end;
+    __ADD_B: P1->_integer.value = P1->_integer.value | P2->_integer.value; goto __END;
+    __SUB_B: P1->_integer.value = P1->_integer.value ^ P2->_integer.value; goto __END;
+    __MUL_B: P1->_integer.value = P1->_integer.value & P2->_integer.value; goto __END;
   }
 
 __BYTE:
@@ -635,9 +633,9 @@ __BYTE:
     static void *exec[] = { &&__ADD_C, && __SUB_C, &&__MUL_C, &&__FLOAT };
     goto *exec[op];
 
-    __ADD_C: P1->_integer.value = (unsigned char)(P1->_integer.value + P2->_integer.value); goto *jump_end;
-    __SUB_C: P1->_integer.value = (unsigned char)(P1->_integer.value - P2->_integer.value); goto *jump_end;
-    __MUL_C: P1->_integer.value = (unsigned char)(P1->_integer.value * P2->_integer.value); goto *jump_end;
+    __ADD_C: P1->_integer.value = (unsigned char)(P1->_integer.value + P2->_integer.value); goto __END;
+    __SUB_C: P1->_integer.value = (unsigned char)(P1->_integer.value - P2->_integer.value); goto __END;
+    __MUL_C: P1->_integer.value = (unsigned char)(P1->_integer.value * P2->_integer.value); goto __END;
   }
 
 __SHORT:
@@ -648,9 +646,9 @@ __SHORT:
     static void *exec[] = { &&__ADD_H, && __SUB_H, &&__MUL_H, &&__FLOAT };
     goto *exec[op];
 
-    __ADD_H: P1->_integer.value = (short)(P1->_integer.value + P2->_integer.value); goto *jump_end;
-    __SUB_H: P1->_integer.value = (short)(P1->_integer.value - P2->_integer.value); goto *jump_end;
-    __MUL_H: P1->_integer.value = (short)(P1->_integer.value * P2->_integer.value); goto *jump_end;
+    __ADD_H: P1->_integer.value = (short)(P1->_integer.value + P2->_integer.value); goto __END;
+    __SUB_H: P1->_integer.value = (short)(P1->_integer.value - P2->_integer.value); goto __END;
+    __MUL_H: P1->_integer.value = (short)(P1->_integer.value * P2->_integer.value); goto __END;
   }
 
 __INTEGER:
@@ -661,9 +659,9 @@ __INTEGER:
     static void *exec[] = { &&__ADD_I, && __SUB_I, &&__MUL_I, &&__FLOAT };
     goto *exec[op];
 
-    __ADD_I: P1->_integer.value += P2->_integer.value; goto *jump_end;
-    __SUB_I: P1->_integer.value -= P2->_integer.value; goto *jump_end;
-    __MUL_I: P1->_integer.value *= P2->_integer.value; goto *jump_end;
+    __ADD_I: P1->_integer.value += P2->_integer.value; goto __END;
+    __SUB_I: P1->_integer.value -= P2->_integer.value; goto __END;
+    __MUL_I: P1->_integer.value *= P2->_integer.value; goto __END;
   }
 
 __LONG:
@@ -677,9 +675,9 @@ __LONG:
     static void *exec[] = { &&__ADD_L, && __SUB_L, &&__MUL_L, &&__FLOAT };
     goto *exec[op];
 
-    __ADD_L: P1->_long.value += P2->_long.value; goto *jump_end;
-    __SUB_L: P1->_long.value -= P2->_long.value; goto *jump_end;
-    __MUL_L: P1->_long.value *= P2->_long.value; goto *jump_end;
+    __ADD_L: P1->_long.value += P2->_long.value; goto __END;
+    __SUB_L: P1->_long.value -= P2->_long.value; goto __END;
+    __MUL_L: P1->_long.value *= P2->_long.value; goto __END;
   }
 
 __DATE:
@@ -701,9 +699,9 @@ __FLOAT:
     static void *exec[] = { &&__ADD_F, && __SUB_F, &&__MUL_F, &&__DIV_F };
     goto *exec[op];
 
-    __ADD_F: P1->_float.value += P2->_float.value; goto *jump_end;
-    __SUB_F: P1->_float.value -= P2->_float.value; goto *jump_end;
-    __MUL_F: P1->_float.value *= P2->_float.value; goto *jump_end;
+    __ADD_F: P1->_float.value += P2->_float.value; goto __END;
+    __SUB_F: P1->_float.value -= P2->_float.value; goto __END;
+    __MUL_F: P1->_float.value *= P2->_float.value; goto __END;
 
     __DIV_F:
     	P1->_float.value /= P2->_float.value;
@@ -714,7 +712,7 @@ __FLOAT:
 				else
 					THROW(E_MATH);
 			}
-    	goto *jump_end;
+    	goto __END;
   }
 
 __VARIANT:
@@ -746,8 +744,9 @@ __VARIANT:
 
   if (TYPE_is_number_date(type))
   {
-    jump_end = &&__VARIANT_END;
-    goto *jump[type];
+		SUBR_add_(code | type);
+		VALUE_conv_variant(P1);
+		return;
   }
 
   goto __ERROR;
@@ -756,11 +755,281 @@ __ERROR:
 
   THROW(E_TYPE, "Number", TYPE_get_name(type));
 
-__VARIANT_END:
+__END:
 
-  VALUE_conv_variant(P1);
+  SP--;
+}
+
+#define MANAGE_VARIANT(_func) \
+({ \
+	type = Max(P1->type, P2->type); \
+	\
+	if (TYPE_is_number_date(type)) \
+	{ \
+		*PC |= type; \
+		goto *jump[type]; \
+	} \
+	\
+	VARIANT_undo(P1); \
+	VARIANT_undo(P2); \
+	\
+	if (TYPE_is_string(P1->type)) \
+		VALUE_conv_float(P1); \
+	\
+	if (TYPE_is_string(P2->type)) \
+		VALUE_conv_float(P2); \
+	\
+	if (TYPE_is_null(P1->type) || TYPE_is_null(P2->type)) \
+		type = T_NULL; \
+	else \
+		type = Max(P1->type, P2->type); \
+	\
+	if (TYPE_is_number_date(type)) \
+	{ \
+		(_func)(code | type); \
+		VALUE_conv_variant(P1); \
+		return; \
+	} \
+})
+
+
+void SUBR_add(ushort code)
+{
+  static void *jump[] = {
+    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__FLOAT, &&__FLOAT, &&__DATE
+    };
+
+  TYPE type;
+  VALUE *P1, *P2;
+
+  P1 = SP - 2;
+  P2 = P1 + 1;
+
+  type = code & 0x0F;
+  goto *jump[type];
+
+__BOOLEAN:
+	
+	P1->type = T_BOOLEAN;
+	P1->_integer.value = P1->_integer.value | P2->_integer.value; goto __END;
+
+__BYTE:
+	
+	P1->type = T_BYTE;
+	P1->_integer.value = (unsigned char)(P1->_integer.value + P2->_integer.value); goto __END;
+
+__SHORT:
+	
+	P1->type = T_SHORT;
+	P1->_integer.value = (short)(P1->_integer.value + P2->_integer.value); goto __END;
+
+__INTEGER:
+
+	P1->type = T_INTEGER;
+	P1->_integer.value += P2->_integer.value; goto __END;
+
+__LONG:
+
+  VALUE_conv(P1, T_LONG);
+  VALUE_conv(P2, T_LONG);
+
+	P1->_long.value += P2->_long.value; goto __END;
+
+__DATE:
+__FLOAT:
+
+  VALUE_conv_float(P1);
+  VALUE_conv_float(P2);
+
+	P1->_float.value += P2->_float.value; goto __END;
+
+__VARIANT:
+
+	MANAGE_VARIANT(SUBR_add);
+  goto __ERROR;
+
+__ERROR:
+
+  THROW(E_TYPE, "Number", TYPE_get_name(type));
 
 __END:
 
   SP--;
 }
+
+void SUBR_sub(ushort code)
+{
+  static void *jump[] = {
+    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__FLOAT, &&__FLOAT, &&__DATE
+    };
+
+  TYPE type;
+  VALUE *P1, *P2;
+
+  P1 = SP - 2;
+  P2 = P1 + 1;
+
+  type = code & 0x0F;
+  goto *jump[type];
+
+__BOOLEAN:
+	
+	P1->type = T_BOOLEAN;
+	P1->_integer.value = P1->_integer.value ^ P2->_integer.value; goto __END;
+
+__BYTE:
+	
+	P1->type = T_BYTE;
+	P1->_integer.value = (unsigned char)(P1->_integer.value - P2->_integer.value); goto __END;
+
+__SHORT:
+	
+	P1->type = T_SHORT;
+	P1->_integer.value = (short)(P1->_integer.value - P2->_integer.value); goto __END;
+
+__INTEGER:
+
+	P1->type = T_INTEGER;
+	P1->_integer.value -= P2->_integer.value; goto __END;
+
+__LONG:
+
+  VALUE_conv(P1, T_LONG);
+  VALUE_conv(P2, T_LONG);
+
+	P1->_long.value -= P2->_long.value; goto __END;
+
+__DATE:
+__FLOAT:
+
+  VALUE_conv_float(P1);
+  VALUE_conv_float(P2);
+
+	P1->_float.value -= P2->_float.value; goto __END;
+
+__VARIANT:
+
+	MANAGE_VARIANT(SUBR_sub);
+  goto __ERROR;
+
+__ERROR:
+
+  THROW(E_TYPE, "Number", TYPE_get_name(type));
+
+__END:
+
+  SP--;
+}
+
+void SUBR_mul(ushort code)
+{
+  static void *jump[] = {
+    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__FLOAT, &&__FLOAT, &&__ERROR
+    };
+
+  TYPE type;
+  VALUE *P1, *P2;
+
+  P1 = SP - 2;
+  P2 = P1 + 1;
+
+  type = code & 0x0F;
+  goto *jump[type];
+
+__BOOLEAN:
+	
+	P1->type = T_BOOLEAN;
+	P1->_integer.value = P1->_integer.value & P2->_integer.value; goto __END;
+
+__BYTE:
+	
+	P1->type = T_BYTE;
+	P1->_integer.value = (unsigned char)(P1->_integer.value * P2->_integer.value); goto __END;
+
+__SHORT:
+	
+	P1->type = T_SHORT;
+	P1->_integer.value = (short)(P1->_integer.value * P2->_integer.value); goto __END;
+
+__INTEGER:
+
+	P1->type = T_INTEGER;
+	P1->_integer.value *= P2->_integer.value; goto __END;
+
+__LONG:
+
+  VALUE_conv(P1, T_LONG);
+  VALUE_conv(P2, T_LONG);
+
+	P1->_long.value *= P2->_long.value; goto __END;
+
+__FLOAT:
+
+  VALUE_conv_float(P1);
+  VALUE_conv_float(P2);
+
+	P1->_float.value *= P2->_float.value; goto __END;
+
+__VARIANT:
+
+	MANAGE_VARIANT(SUBR_mul);
+  goto __ERROR;
+
+__ERROR:
+
+  THROW(E_TYPE, "Number", TYPE_get_name(type));
+
+__END:
+
+  SP--;
+}
+
+void SUBR_div(ushort code)
+{
+  static void *jump[] = {
+    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__FLOAT, &&__FLOAT, &&__ERROR
+    };
+
+  TYPE type;
+  VALUE *P1, *P2;
+
+  P1 = SP - 2;
+  P2 = P1 + 1;
+
+  type = code & 0x0F;
+  goto *jump[type];
+
+__BOOLEAN:
+__BYTE:
+__SHORT:
+__INTEGER:
+__LONG:
+__FLOAT:
+
+  VALUE_conv_float(P1);
+  VALUE_conv_float(P2);
+
+	P1->_float.value /= P2->_float.value;
+	if (!finite(P1->_float.value))
+	{
+		if (P2->_float.value == 0.0)
+			THROW(E_ZERO);
+		else
+			THROW(E_MATH);
+	}
+	goto __END;
+
+__VARIANT:
+
+	MANAGE_VARIANT(SUBR_div);
+  goto __ERROR;
+
+__ERROR:
+
+  THROW(E_TYPE, "Number", TYPE_get_name(type));
+
+__END:
+
+  SP--;
+}
+#endif

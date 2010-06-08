@@ -246,7 +246,7 @@ void SUBR_linput(void)
 
   stream = get_stream(&SP[-1], TRUE);
 
-  STREAM_line_input(stream, &addr);
+  addr = STREAM_line_input(stream);
 
 	SP--;
 	RELEASE_OBJECT(SP);
@@ -273,7 +273,7 @@ void SUBR_input(ushort code)
 
 	if (stream)
 	{
-  	STREAM_input(stream, &addr);
+  	addr = STREAM_input(stream);
 
 		VALUE_from_string(RETURN, addr, STRING_length(addr));
 

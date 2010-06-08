@@ -516,7 +516,7 @@ static void fill_buffer(STREAM *stream, char *addr)
 }
 
 
-static void input(STREAM *stream, char **addr, bool line)
+static char *input(STREAM *stream, bool line)
 {
 	int len = 0;
 	int start;
@@ -524,10 +524,11 @@ static void input(STREAM *stream, char **addr, bool line)
 	void *test;
 	bool eol;
 	char *buffer;
-	short buffer_len;
-	short buffer_pos;
+	int buffer_len;
+	int buffer_pos;
+	char *addr;
 	
-	*addr = NULL;
+	addr = NULL;
 
 	stream->common.eof = FALSE;
 	
@@ -576,7 +577,7 @@ static void input(STREAM *stream, char **addr, bool line)
 			if (len)
 			{
 				//add_string(addr, &len_str, stream->common.buffer + start, len);
-				STRING_add(addr, buffer + start, len);
+				STRING_add(&addr, buffer + start, len);
 				len = 0;
 			}
 			
@@ -656,25 +657,27 @@ static void input(STREAM *stream, char **addr, bool line)
 
 	if (len > 0)
 		//add_string(addr, &len_str, stream->common.buffer + start, len);
-		STRING_add(addr, buffer + start, len);
+		STRING_add(&addr, buffer + start, len);
 
-	STRING_extend_end(addr);
+	STRING_extend_end(&addr);
 	
 	stream->common.buffer = buffer;
 	stream->common.buffer_pos = buffer_pos;
 	stream->common.buffer_len = buffer_len;
+	
+	return addr;
 }
 
 
-void STREAM_line_input(STREAM *stream, char **addr)
+char *STREAM_line_input(STREAM *stream)
 {
-	input(stream, addr, TRUE);
+	return input(stream, TRUE);
 }
 
 
-void STREAM_input(STREAM *stream, char **addr)
+char *STREAM_input(STREAM *stream)
 {
-	input(stream, addr, FALSE);
+	return input(stream, FALSE);
 }
 
 

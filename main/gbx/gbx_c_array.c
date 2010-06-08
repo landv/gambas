@@ -1627,7 +1627,7 @@ static void add_char_real(const char *p)
 
 static void add_entry()
 {
-	add_char(NULL);
+	add_char_real(NULL);
 	
 	if (!_entry)
 	{
@@ -1657,17 +1657,6 @@ void CARRAY_split(CARRAY *_object, const char *str, int lstr, const char *sep, c
 
 	lsep = sep[1];
 
-	if (esc == NULL || *esc == 0)
-		escl = escr = 0;
-	else
-	{
-		escl = *esc++;
-		if (*esc)
-			escr = *esc;
-		else
-			escr = escl;
-	}
-
 	clear(THIS);
 	
 	_array = _object;
@@ -1676,46 +1665,76 @@ void CARRAY_split(CARRAY *_object, const char *str, int lstr, const char *sep, c
 	_ptr = NULL;
 	_lptr = 0;
 	
-	escape = FALSE;
-	
-	for (i = 0; i < lstr; i++)
+	if (esc == NULL || *esc == 0)
 	{
-		c = *str;
-		
-		if (escape)
+		i = lstr;
+		while (i--)
 		{
-			if (c != escr)
-				add_char(str);
-			else if ((i < (lstr - 1)) && str[1] == escr)
-			{
-				add_char(str);
-				str++;
-				i++;
-			}
+			c = *str;
+			
+			if (c == *sep || (lsep && index(&sep[1], c)))
+				add_entry();
 			else
 			{
-				escape = FALSE;
+				//add_char(str);
+				if (!_lptr) _ptr = str;
+				_lptr++;
+			}
+				
+			str++;
+		}
+		
+		add_entry();
+	}
+	else
+	{
+		escl = *esc++;
+		if (*esc)
+			escr = *esc;
+		else
+			escr = escl;
+
+		escape = FALSE;
+		
+		for (i = 0; i < lstr; i++)
+		{
+			c = *str;
+			
+			if (escape)
+			{
+				if (c != escr)
+					add_char(str);
+				else if ((i < (lstr - 1)) && str[1] == escr)
+				{
+					add_char(str);
+					str++;
+					i++;
+				}
+				else
+				{
+					escape = FALSE;
+					if (keep_esc)
+						add_char(str);
+				}
+			}
+			else if (c == escl)
+			{
+				escape = TRUE;
 				if (keep_esc)
 					add_char(str);
 			}
-		}
-		else if (c == escl)
-		{
-			escape = TRUE;
-			if (keep_esc)
+			else if (c == *sep || (lsep && index(&sep[1], c)))
+			{
+				add_entry();
+			}
+			else
 				add_char(str);
+				
+			str++;
 		}
-		else if (c == *sep || (lsep && index(&sep[1], c)))
-		{
-			add_entry();
-		}
-		else
-			add_char(str);
-			
-		str++;
+		
+		add_entry();
 	}
-	
-	add_entry();
 	
 	_object->count = ARRAY_count(_object->data);
 	_array = NULL;

@@ -121,7 +121,7 @@ static bool search(void *symbol, ushort *sort, int n_symbol, size_t size, int fl
 	deb = 0;
 	fin = n_symbol; //ARRAY_count(table->symbol);
 
-	if (flag == TF_IGNORE_CASE)
+	if (flag) // == TF_IGNORE_CASE
 	{
 		for(;;)
 		{

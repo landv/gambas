@@ -378,7 +378,7 @@ void SUBR_near(void)
   SP--;
 }
 
-
+#if 0
 void SUBR_comp(ushort code)
 {
 	static void *jump[17] = {
@@ -659,6 +659,7 @@ __END:
 
 	P1->_boolean.value = result - 1; // ? 0 : -1;
 }
+#endif
 
 #define sgn(_x) \
 ({ \
