@@ -1255,11 +1255,96 @@ void EXEC_native(void)
 }
 
 
-bool EXEC_object(VALUE *val, CLASS **pclass, OBJECT **pobject)
+CLASS *EXEC_object_real(VALUE *val, OBJECT **pobject)
+{
+	CLASS *class;
+	OBJECT *object;
+
+	object = val->_object.object;
+	class = val->_object.class;
+
+	if (!object)
+	{
+		/* A null object and a virtual class means that we want to pass a static class */
+		if (!class->is_virtual)
+			THROW(E_NULL);
+		CLASS_load(class);
+		goto __RETURN;
+	}
+	
+	if (UNLIKELY(val == EXEC_super))
+	{
+		EXEC_super = val->_object.super;
+		//*class = (*class)->parent;
+		if (UNLIKELY(class == NULL))
+			THROW(E_PARENT);
+	}
+	else if (!class->is_virtual)
+		class = object->class;
+
+	//CLASS_load(class); If we have an object, the class is necessarily loaded.
+
+	if (UNLIKELY(class->must_check && (*(class->check))(object)))
+		THROW(E_IOBJECT);
+		
+__RETURN:
+
+	*pobject = object;
+	
+	return class;
+}
+
+CLASS *EXEC_object_variant(VALUE *val, OBJECT **pobject)
+{
+	CLASS *class;
+	OBJECT *object;
+
+	if (TYPE_is_pure_object(val->_variant.vtype))
+	{
+		object = val->_variant.value._object;
+		if (!object)
+			goto __NULL;
+		class = (CLASS *)val->_variant.vtype;
+		if (!class->is_virtual)
+			class = object->class; /* Virtual dispatching */
+		goto __CHECK;
+	}
+	else if (val->_variant.vtype == T_OBJECT)
+	{
+		object = val->_variant.value._object;
+		if (!object)
+			goto __NULL;
+		class = object->class;
+		goto __CHECK;
+	}
+	else
+		goto __ERROR;
+
+__ERROR:
+
+	THROW(E_NOBJECT);
+
+__NULL:
+
+	THROW(E_NULL);
+
+__CHECK:
+
+	//CLASS_load(class); If we have an object, the class is necessarily loaded.
+
+	if (UNLIKELY(class->must_check && (*(class->check))(object)))
+		THROW(E_IOBJECT);
+		
+	*pobject = object;
+	
+	return class;
+}
+
+bool EXEC_object_other(VALUE *val, CLASS **pclass, OBJECT **pobject)
 {
 	static const void *jump[] = {
 		&&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR,
-		&&__ERROR, &&__ERROR, &&__ERROR, &&__VARIANT, &&__FUNCTION, &&__CLASS, &&__NULL,
+		&&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__FUNCTION, &&__CLASS, &&__NULL,
 		&&__OBJECT,
 		};
 
@@ -1267,12 +1352,7 @@ bool EXEC_object(VALUE *val, CLASS **pclass, OBJECT **pobject)
 	OBJECT *object;
 	bool defined;
 
-__RETRY:
-
-	if (LIKELY(TYPE_is_pure_object(val->type)))
-		goto __PURE_OBJECT;
-	else
-		goto *jump[val->type];
+	goto *jump[val->type];
 
 __FUNCTION:
 
@@ -1289,7 +1369,7 @@ __FUNCTION:
 		SP--;
 		//*val = *SP;
 		COPY_VALUE(val, SP);
-		goto __RETRY;
+		return EXEC_object(val, pclass, pobject);
 	}
 	else
 		goto __ERROR;
@@ -1320,58 +1400,6 @@ __OBJECT:
 	defined = FALSE;
 
 	goto __CHECK;
-
-__PURE_OBJECT:
-
-	object = val->_object.object;
-	class = val->_object.class;
-	defined = TRUE;
-
-	if (!object)
-	{
-		/* A null object and a virtual class means that we want to pass a static class */
-		if (!class->is_virtual)
-			goto __NULL;
-		CLASS_load(class);
-		goto __RETURN;
-	}
-	
-	if (UNLIKELY(val == EXEC_super))
-	{
-		EXEC_super = val->_object.super;
-		//*class = (*class)->parent;
-		if (UNLIKELY(class == NULL))
-			THROW(E_PARENT);
-	}
-	else if (!class->is_virtual)
-		class = object->class;
-
-	goto __CHECK;
-
-__VARIANT:
-
-	if (val->_variant.vtype == T_OBJECT)
-	{
-		object = val->_variant.value._object;
-		if (!object)
-			goto __NULL;
-		class = object->class;
-		defined = FALSE;
-		goto __CHECK;
-	}
-	else if (TYPE_is_object(val->_variant.vtype))
-	{
-		object = val->_variant.value._object;
-		if (!object)
-			goto __NULL;
-		class = (CLASS *)val->_variant.vtype;
-		if (!class->is_virtual)
-			class = object->class; /* Virtual dispatching */
-		defined = FALSE;
-		goto __CHECK;
-	}
-	else
-		goto __ERROR;
 
 __ERROR:
 

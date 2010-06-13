@@ -221,7 +221,8 @@ TYPE TYPE_from_string(const char **ptype)
       continue;
     }
 
-    if (index("[]<>", *type) == NULL)
+    //if (index("[]<>", *type) == NULL)
+		if (!(*type == '[' || *type == ']' || *type == '<' || *type == '>'))
       break;
   }
 

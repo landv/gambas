@@ -249,8 +249,9 @@ void EXTERN_call(void)
   	int _integer;
   	float _single;
   	double _float;
-  	char * _string;
+  	char *_string;
   	int64_t _long;
+		void *_pointer;
   	}
   	rvalue;
 
@@ -373,6 +374,10 @@ void EXTERN_call(void)
       //GB_ReturnConstString(*(char **)POINTER(rvalue), 0);
       GB_ReturnConstString(rvalue._string, 0);
       break;
+			
+		case T_POINTER:
+			GB_ReturnPointer(rvalue._pointer);
+			break;
     
     default:
       //GB_ReturnNull();

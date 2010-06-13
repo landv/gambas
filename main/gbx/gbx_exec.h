@@ -146,7 +146,15 @@ void EXEC_enter_quick(void);
 void EXEC_leave(bool drop);
 void EXEC_loop(void);
 
-bool EXEC_object(VALUE *SP, CLASS **pclass, OBJECT **pobject);
+#define EXEC_object(_val, _pclass, _pobject) \
+	((LIKELY(TYPE_is_pure_object((_val)->type))) ? (*(_pclass) = EXEC_object_real(_val, _pobject)), TRUE : \
+	TYPE_is_variant((_val)->type) ? (*(_pclass) = EXEC_object_variant(_val, _pobject)), FALSE : \
+	EXEC_object_other(_val, _pclass, _pobject))
+
+CLASS *EXEC_object_real(VALUE *val, OBJECT **pobject);
+CLASS *EXEC_object_variant(VALUE *val, OBJECT **pobject);
+bool EXEC_object_other(VALUE *val, CLASS **pclass, OBJECT **pobject);
+
 void *EXEC_auto_create(CLASS *class, bool ref);
 
 bool EXEC_call_native(void (*exec)(), void *object, TYPE type, VALUE *param);

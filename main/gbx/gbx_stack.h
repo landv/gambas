@@ -54,6 +54,8 @@ EXTERN size_t STACK_relocate;
 EXTERN int STACK_frame_count;
 EXTERN STACK_CONTEXT *STACK_frame;
 
+EXTERN uintptr_t STACK_process_stack_limit;
+
 #endif
 
 void STACK_init(void);
@@ -94,4 +96,30 @@ void STACK_grow(void);
 
 #define STACK_RELOCATE(_ptr) if (_ptr) _ptr = (void *)((char *)_ptr + STACK_relocate)
 	
+#define STACK_push_frame(_context, _need) \
+({ \
+	int stack; \
+	\
+	if ((uintptr_t)&stack < STACK_process_stack_limit) \
+		THROW(E_STACK); \
+	\
+	if ((char *)(SP + (_need) + 8 + sizeof(STACK_CONTEXT)) >= STACK_limit) \
+		STACK_grow(); \
+	\
+  STACK_frame--; \
+  \
+  STACK_copy(STACK_frame, _context); \
+  \
+  STACK_frame_count++; \
+  STACK_limit = (char *)STACK_frame; \
+})
+
+#define STACK_pop_frame(_context) \
+({ \
+  STACK_copy(_context, STACK_frame); \
+  STACK_frame++; \
+  STACK_frame_count--; \
+  STACK_limit = (char *)STACK_frame; \
+})
+
 #endif

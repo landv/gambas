@@ -43,7 +43,7 @@ STACK_CONTEXT *STACK_frame;
 int STACK_frame_count;
 size_t STACK_relocate = 0;
 
-static uintptr_t _process_stack_limit;
+uintptr_t STACK_process_stack_limit;
 
 void STACK_init(void)
 {
@@ -62,7 +62,7 @@ void STACK_init(void)
 	
 	max -= STACK_INC * 8; // 32 Kb security (64 Kb on 64 bits OS)
 	
-	_process_stack_limit = (uintptr_t)&stack - max;
+	STACK_process_stack_limit = (uintptr_t)&stack - max;
 	
 	//fprintf(stderr, "STACK_size = %ld\n", STACK_size);
   ALLOC_ZERO(&STACK_base, STACK_size, "STACK_init");
@@ -102,6 +102,7 @@ bool STACK_check(int need)
 }
 #endif
 
+#if 0
 void STACK_push_frame(STACK_CONTEXT *context, int need)
 {
 	int stack;
@@ -147,6 +148,7 @@ void STACK_pop_frame(STACK_CONTEXT *context)
   //fprintf(stderr, "STACK_pop_frame: [%d] PC = %p  FP = %p (%s)\n", STACK_frame_count, context->pc, context->fp,
   //  context->fp ? (context->fp->debug ? context->fp->debug->name : 0) : 0);
 }
+#endif
 
 bool STACK_has_error_handler(void)
 {

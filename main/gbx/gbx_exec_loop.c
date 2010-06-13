@@ -42,6 +42,7 @@
 #include "gbx_math.h"
 #include "gbx_c_array.h"
 #include "gbx_struct.h"
+#include "gbx_variant.h"
 
 //#define DEBUG_PCODE 1
 
@@ -447,7 +448,7 @@ void EXEC_loop(void)
 
   void _pop_ctrl(int ind)
   {
-    register VALUE *val = &BP[ind];
+    VALUE *val = &BP[ind];
     RELEASE(val);
     SP--;
     *val = *SP;
@@ -573,7 +574,7 @@ _PUSH_EVENT:
 _POP_LOCAL:
 
   {
-    register VALUE *val = &BP[GET_XX()];
+    VALUE *val = &BP[GET_XX()];
 
     VALUE_conv(&SP[-1], val->type);
 
@@ -589,7 +590,7 @@ _POP_LOCAL:
 _POP_PARAM:
 
   {
-    register VALUE *val = &PP[GET_XX()];
+    VALUE *val = &PP[GET_XX()];
 
     VALUE_conv(&SP[-1], val->type);
 
@@ -634,7 +635,7 @@ _POP_OPTIONAL:
   */
 
   {
-    register VALUE *val = &BP[GET_XX()];
+    VALUE *val = &BP[GET_XX()];
 
     if (LIKELY(val->type == T_VOID))
     {
@@ -904,7 +905,7 @@ _CALL:
       { &&__CALL_NULL, &&__CALL_NATIVE, &&__CALL_PRIVATE, &&__CALL_PUBLIC,
         &&__CALL_EVENT, &&__CALL_EXTERN, &&__CALL_UNKNOWN, &&__CALL_CALL };
 
-    register VALUE * NO_WARNING(val);
+    VALUE * NO_WARNING(val);
 
     ind = GET_3X();
     val = &SP[-(ind + 1)];
@@ -1084,7 +1085,7 @@ _CALL_QUICK:
     static const void *call_jump[] =
       { &&__CALL_NULL, &&__CALL_NATIVE_Q, &&__CALL_PRIVATE_Q, &&__CALL_PUBLIC_Q };
 
-    register VALUE * NO_WARNING(val);
+    VALUE * NO_WARNING(val);
 
     ind = GET_3X();
     val = &SP[-(ind + 1)];
@@ -1139,7 +1140,7 @@ _CALL_NORM:
     static const void *call_jump[] =
       { &&__CALL_NULL, &&__CALL_NATIVE_N, &&__CALL_PRIVATE_N, &&__CALL_PUBLIC_N };
 
-    register VALUE * NO_WARNING(val);
+    VALUE * NO_WARNING(val);
 
     ind = GET_3X();
     val = &SP[-(ind + 1)];
@@ -1200,7 +1201,7 @@ _JUMP_NEXT:
 
     VALUE * NO_WARNING(end);
     VALUE * NO_WARNING(inc);
-    register VALUE * NO_WARNING(val);
+    VALUE * NO_WARNING(val);
     
     end = &BP[PC[-1] & 0xFF];
     inc = end + 1;
@@ -1450,8 +1451,8 @@ _PUSH_DYNAMIC:
 
     var = &CP->load->dyn[GET_7XX()];
 
-    if (UNLIKELY(OP == NULL))
-      THROW_ILLEGAL();
+    //if (UNLIKELY(OP == NULL))
+    //  THROW_ILLEGAL();
 
 		ref = OP;
     addr = &OP[var->pos];
@@ -1476,8 +1477,8 @@ _POP_DYNAMIC:
 
     var = &CP->load->dyn[GET_7XX()];
 
-    if (UNLIKELY(OP == NULL))
-      THROW_ILLEGAL();
+    //if (UNLIKELY(OP == NULL))
+    //  THROW_ILLEGAL();
 
     addr = &OP[var->pos];
     goto __WRITE;

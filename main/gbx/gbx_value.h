@@ -340,9 +340,15 @@ void THROW_TYPE_STRING(TYPE type) NORETURN;
 		VALUE_convert_boolean(_value); \
 })
 
+#define VALUE_conv_float(_value) \
+({ \
+	if (UNLIKELY((_value)->type != T_FLOAT)) \
+		VALUE_convert_float(_value); \
+})
+
 //#define VALUE_conv_boolean(_value) VALUE_conv(_value, T_BOOLEAN)
 #define VALUE_conv_integer(_value) VALUE_conv(_value, T_INTEGER)
-#define VALUE_conv_float(_value) VALUE_conv(_value, T_FLOAT)
+//#define VALUE_conv_float(_value) VALUE_conv(_value, T_FLOAT)
 #define VALUE_conv_variant(_value) VALUE_conv(_value, T_VARIANT)
 #define VALUE_conv_object(_value, _type) VALUE_conv(_value, _type)
 

@@ -192,6 +192,8 @@ static bool read_float(double *result, bool local)
 	mantisse = 0;
 	frac = FALSE;
 	ndigit_frac = 0;
+  nexp = 0;
+  nexp_minus = FALSE;
 	
   for(;;)
   {
@@ -263,9 +265,6 @@ static bool read_float(double *result, bool local)
 	COMMON_pos = pos;*/
 
   /* Exponent */
-
-  nexp = 0;
-  nexp_minus = FALSE;
 
   if (c == 'e' || c == 'E')
   {

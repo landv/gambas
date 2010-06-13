@@ -313,12 +313,13 @@ void SUBR_array(ushort code)
 	{
 		VALUE_conv(&PARAM[i], type);
 		GB_Store(type, (GB_VALUE *)&PARAM[i], GB_ArrayGet(array, i));
+		RELEASE(&PARAM[i]);
 	}
 
-	RETURN->_object.class = OBJECT_class(array); //CLASS_Array;
-	RETURN->_object.object = array;
-
-	SUBR_LEAVE();
+	OBJECT_REF(array, "SUBR_array");
+	PARAM->_object.class = OBJECT_class(array); //CLASS_Array;
+	PARAM->_object.object = array;
+	SP = PARAM + 1;
 }
 
 void SUBR_collection(ushort code)
@@ -344,12 +345,14 @@ void SUBR_collection(ushort code)
 			OBJECT_UNREF(col, "SUBR_collection");
 			THROW(E_VKEY);
 		}
+		RELEASE_STRING(&PARAM[i]);
+		RELEASE(&PARAM[i + 1]);
 	}
 
-	RETURN->_object.class = OBJECT_class(col); //CLASS_Array;
-	RETURN->_object.object = col;
-
-	SUBR_LEAVE();
+	OBJECT_REF(col, "SUBR_collection");
+	PARAM->_object.class = OBJECT_class(col); //CLASS_Array;
+	PARAM->_object.object = col;
+	SP = PARAM + 1;
 }
 
 

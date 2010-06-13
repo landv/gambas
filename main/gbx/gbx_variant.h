@@ -58,51 +58,39 @@ typedef
 		VALUE_undo_variant(_value); \
 })
 
-static INLINE void VARIANT_free(VARIANT *var)
-{
-  if (var->type == T_STRING)
-  {
-    STRING_unref(&var->value._string);
-  }
-  else if (TYPE_is_object(var->type))
-  {
-    OBJECT_UNREF(var->value._object, "VARIANT_free");
-  }
-}
+#define VARIANT_free(_var) \
+({ \
+  if ((_var)->type == T_STRING) \
+  { \
+    STRING_unref(&(_var)->value._string); \
+  } \
+  else if (TYPE_is_object((_var)->type)) \
+  { \
+    OBJECT_UNREF((_var)->value._object, "VARIANT_free"); \
+  } \
+})
 
-static INLINE void VARIANT_keep(VARIANT *var)
-{
-  if (var->type == T_STRING)
-  {
-    STRING_ref(var->value._string);
-  }
-  else if (TYPE_is_object(var->type))
-  {
-    OBJECT_REF(var->value._object, "VARIANT_keep");
-  }
-}
+#define VARIANT_keep(_var) \
+({ \
+  if ((_var)->type == T_STRING) \
+  { \
+    STRING_ref((_var)->value._string); \
+  } \
+  else if (TYPE_is_object((_var)->type)) \
+  { \
+    OBJECT_REF((_var)->value._object, "VARIANT_keep"); \
+  } \
+})
 
-static INLINE boolean VARIANT_is_null(VARIANT *var)
-{
-  if (var->type == T_NULL)
-    return TRUE;
+#define VARIANT_is_null(_var) \
+  (((_var)->type == T_NULL) || ((_var)->type == T_STRING && !(_var)->value._string) || (TYPE_is_object((_var)->type) && !(_var)->value._object))
 
-  if (var->type == T_STRING && !var->value._string)
-    return TRUE;
-
-  if (TYPE_is_object(var->type) && !var->value._object)
-    return TRUE;
-
-  return FALSE;
-}
-
-static INLINE void VARIANT_clear(VARIANT *var)
-{
-  VARIANT_free(var);
-
-	var->type = 0;
-	var->value.data = 0;
-}
+#define VARIANT_clear(_var) \
+({ \
+  VARIANT_free(_var); \
+	(_var)->type = 0; \
+	(_var)->value.data = 0; \
+})
 
 #endif
 

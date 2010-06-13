@@ -131,7 +131,7 @@ static void collection_remove_key(CCOLLECTION *col, const char *key, int len)
 
   //col->hash_table->last = last;
 
-  VARIANT_free(value);
+  VARIANT_free((VARIANT *)value);
 	
 	if (!col->locked)
 		HASH_TABLE_remove(col->hash_table, key, len);

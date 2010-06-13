@@ -68,17 +68,15 @@ void SUBR_pi(ushort code)
 
   if (NPARAM == 0)
   {
-    RETURN->type = T_FLOAT;
-    RETURN->_float.value = M_PI;
+    SP->type = T_FLOAT;
+    SP->_float.value = M_PI;
+		SP++;
   }
   else
   {
     VALUE_conv_float(PARAM);
-    RETURN->type = T_FLOAT;
-    RETURN->_float.value = M_PI * PARAM->_float.value;
+    SP->_float.value = M_PI * PARAM->_float.value;
   }
-
-  SUBR_LEAVE();
 }
 
 
@@ -148,12 +146,6 @@ void SUBR_round(ushort code)
 void SUBR_math(ushort code)
 {
   SUBR_ENTER_PARAM(1);
-
-  /*if (TYPE_is_variant(PARAM->type))
-    VARIANT_undo(PARAM);
-
-  if (!TYPE_is_number(PARAM->type))
-    THROW(E_TYPE, "Number", TYPE_get_name(PARAM->type));*/
 
   VALUE_conv_float(PARAM);
 
