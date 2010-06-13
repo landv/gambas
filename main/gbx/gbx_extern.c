@@ -52,7 +52,7 @@ static TABLE *_table = NULL;
 static ffi_type *_to_ffi_type[17] = {
 	&ffi_type_void, &ffi_type_sint32, &ffi_type_sint32, &ffi_type_sint32, 
 	&ffi_type_sint32, &ffi_type_sint64, &ffi_type_float, &ffi_type_double, 
-	&ffi_type_void,	&ffi_type_pointer, &ffi_type_pointer, &ffi_type_void, 
+	&ffi_type_void,	&ffi_type_pointer, &ffi_type_pointer, &ffi_type_pointer, 
 	&ffi_type_void, &ffi_type_void, &ffi_type_void, &ffi_type_pointer,
 	&ffi_type_pointer
 	};
