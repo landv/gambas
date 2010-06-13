@@ -353,7 +353,7 @@ Static Public Sub _init()
   
   aComp = Dir(Component.Path, "*.component").Sort()
   For Each sFile In aComp
-    If Not $cName.Exist(File.BaseName(sFile)) Then Continue
+    'If Not $cName.Exist(File.BaseName(sFile)) Then Continue
     InitComponent(sFile)
   Next
 
