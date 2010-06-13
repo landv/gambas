@@ -76,7 +76,7 @@ static void *SubrTable[] =
   /* 28 */  _SUBR_comp,           _SUBR_compn,          SUBR_compi,           SUBR_compi,
   /* 2C */  SUBR_compi,           SUBR_compi,           SUBR_near,            SUBR_case,
   /* 30 */  _SUBR_add,            _SUBR_sub,            _SUBR_mul,            _SUBR_div,
-  /* 34 */  SUBR_neg_,            SUBR_quo,             SUBR_rem,             SUBR_pow,
+  /* 34 */  SUBR_neg,             SUBR_quo,             SUBR_rem,             SUBR_pow,
   /* 38 */  SUBR_and_,            SUBR_and_,            SUBR_and_,            SUBR_not,
   /* 3C */  SUBR_cat,             SUBR_like,            SUBR_file,            SUBR_is,
 
@@ -100,9 +100,9 @@ static void *SubrTable[] =
   SUBR_strcomp,    /* 17 51 */
   SUBR_iconv,      /* 18 52 */
   SUBR_sconv,      /* 19 53 */
-  SUBR_neg_,       /* 20 54 */
-  SUBR_neg_,       /* 21 55 */
-  SUBR_neg_,       /* 22 56 */
+  SUBR_abs,        /* 20 54 */
+  SUBR_int,        /* 21 55 */
+  SUBR_fix,        /* 22 56 */
   SUBR_sgn,        /* 23 57 */
   SUBR_math,       /* 24 58 */
   SUBR_pi,         /* 25 59 */
@@ -469,7 +469,9 @@ _SUBR_CODE:
 
 _NEXT:
 
-  PC++;
+	PC++;
+  code = *PC;
+  goto *jump_table[code >> 8];
 
 /*-----------------------------------------------*/
 

@@ -110,16 +110,6 @@ int fsgn(double x)
   return ((x > 0) ? 1 : ((x < 0) ? (-1) : 0));
 }
 
-double deg(double x)
-{
-  return x * 180 / M_PI;
-}
-
-double rad(double x)
-{
-  return x * M_PI / 180;
-}
-
 double fix(double x)
 {
   if (x >= 0)

@@ -37,11 +37,11 @@
 
 #define ABS(x) ((x) < 0 ? (-x) : (x))
 
-static MATH_FUNC MathFunc[] = {
+/*static MATH_FUNC MathFunc[] = {
   NULL, frac, log, exp, sqrt, sin, cos, tan, atan, asin, acos,
   deg, rad, log10, sinh, cosh, tanh, asinh, acosh, atanh,
   exp2, exp10, log2, cbrt, expm1, log1p
-  };
+  };*/
 
 static MATH_FUNC_2 MathFunc2[] = {
   NULL, atan2, ang, hypot
@@ -145,11 +145,45 @@ void SUBR_round(ushort code)
 
 void SUBR_math(ushort code)
 {
+	static void *jump[] = {
+		NULL, &&__FRAC, &&__LOG, &&__EXP, &&__SQRT, &&__SIN, &&__COS, &&__TAN, &&__ATAN, &&__ASIN, &&__ACOS,
+		&&__DEG, &&__RAD, &&__LOG10, &&__SINH, &&__COSH, &&__TANH, &&__ASINH, &&__ACOSH, &&__ATANH,
+		&&__EXP2, &&__EXP10, &&__LOG2, &&__CBRT, &&__EXPM1, &&__LOG1P
+	};
+	
+	
   SUBR_ENTER_PARAM(1);
 
   VALUE_conv_float(PARAM);
+	goto *jump[code & 0x1F];
 
-  PARAM->_float.value = (*MathFunc[code & 0x1F])(PARAM->_float.value);
+__FRAC: PARAM->_float.value = frac(PARAM->_float.value); goto __END;
+__LOG: PARAM->_float.value = log(PARAM->_float.value); goto __END;
+__EXP: PARAM->_float.value = exp(PARAM->_float.value); goto __END;
+__SQRT: PARAM->_float.value = sqrt(PARAM->_float.value); goto __END;
+__SIN: PARAM->_float.value = sin(PARAM->_float.value); goto __END;
+__COS: PARAM->_float.value = cos(PARAM->_float.value); goto __END;
+__TAN: PARAM->_float.value = tan(PARAM->_float.value); goto __END;
+__ATAN: PARAM->_float.value = atan(PARAM->_float.value); goto __END;
+__ASIN: PARAM->_float.value = asin(PARAM->_float.value); goto __END;
+__ACOS: PARAM->_float.value = acos(PARAM->_float.value); goto __END;
+__DEG: PARAM->_float.value = deg(PARAM->_float.value); goto __END;
+__RAD: PARAM->_float.value = rad(PARAM->_float.value); goto __END;
+__LOG10: PARAM->_float.value = log10(PARAM->_float.value); goto __END;
+__SINH: PARAM->_float.value = sinh(PARAM->_float.value); goto __END;
+__COSH: PARAM->_float.value = cosh(PARAM->_float.value); goto __END;
+__TANH: PARAM->_float.value = tanh(PARAM->_float.value); goto __END;
+__ASINH: PARAM->_float.value = asinh(PARAM->_float.value); goto __END;
+__ACOSH: PARAM->_float.value = acosh(PARAM->_float.value); goto __END;
+__ATANH: PARAM->_float.value = atanh(PARAM->_float.value); goto __END;
+__EXP2: PARAM->_float.value = exp2(PARAM->_float.value); goto __END;
+__EXP10: PARAM->_float.value = exp10(PARAM->_float.value); goto __END;
+__LOG2: PARAM->_float.value = log2(PARAM->_float.value); goto __END;
+__CBRT: PARAM->_float.value = cbrt(PARAM->_float.value); goto __END;
+__EXPM1: PARAM->_float.value = expm1(PARAM->_float.value); goto __END;
+__LOG1P: PARAM->_float.value = log1p(PARAM->_float.value); goto __END;
+
+__END:
 
   if (!finite(PARAM->_float.value))
     THROW(E_MATH);
@@ -177,10 +211,34 @@ void SUBR_pow(void)
   SUBR_ENTER_PARAM(2);
 
   VALUE_conv_float(&PARAM[0]);
-  VALUE_conv_float(&PARAM[1]);
+	
+	if (TYPE_is_integer(PARAM[1].type))
+	{
+		static void *jump[] = { &&__M4, &&__M3, &&__M2, &&__M1, &&__P0, &&__END, &&__P2, &&__P3, &&__P4 };
+		int val = PARAM[1]._integer.value;
+		
+		if (val >= -4 && val <= 4)
+			goto *jump[val + 4];
+		else
+			goto __FLOAT;
+		
+		__P0: PARAM->_float.value = 1.0; goto __END;
+		__P2: PARAM->_float.value *= PARAM->_float.value; goto __END;
+		__P3: PARAM->_float.value *= PARAM->_float.value * PARAM->_float.value; goto __END;
+		__P4: PARAM->_float.value *= PARAM->_float.value;PARAM->_float.value *= PARAM->_float.value; goto __END;
+		__M1: PARAM->_float.value = 1.0 / PARAM->_float.value; goto __END;
+		__M2: PARAM->_float.value = 1.0 / PARAM->_float.value / PARAM->_float.value; goto __END;
+		__M3: PARAM->_float.value = 1.0 / PARAM->_float.value / PARAM->_float.value / PARAM->_float.value; goto __END;
+		__M4: PARAM->_float.value = 1.0 / PARAM->_float.value / PARAM->_float.value / PARAM->_float.value / PARAM->_float.value; goto __END;
+	}
 
+__FLOAT:
+
+  VALUE_conv_float(&PARAM[1]);
   PARAM->_float.value = pow(PARAM[0]._float.value, PARAM[1]._float.value);
 
+__END:
+	
   if (!finite(PARAM->_float.value))
     THROW(E_MATH);
 
@@ -407,6 +465,28 @@ __END:
   SP--;
 }
 
+#define MANAGE_VARIANT(_func) \
+({ \
+  type = P1->type; \
+	\
+  if (TYPE_is_number_date(type)) \
+  { \
+    *PC |= type; \
+    goto *jump[type]; \
+  } \
+  \
+  if (TYPE_is_variant(type)) \
+  { \
+    type = P1->_variant.vtype; \
+    if (TYPE_is_number_date(type)) \
+    { \
+      VARIANT_undo(P1); \
+			(_func)(code | type); \
+			VALUE_conv_variant(P1); \
+			return; \
+    } \
+  } \
+})
 
 
 void SUBR_sgn(ushort code)
@@ -460,6 +540,195 @@ __END:
 }
 
 
+void SUBR_neg(ushort code)
+{
+  static void *jump[] = {
+    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__ERROR
+    };
+
+  VALUE *P1;
+  TYPE type;
+
+  P1 = SP - 1;
+
+  type = code & 0x0F;
+
+  goto *jump[type];
+
+__BOOLEAN:
+
+	return;
+
+__BYTE:
+	
+	P1->_integer.value = (unsigned char)(-P1->_integer.value); return;
+
+__SHORT:
+
+	P1->_integer.value = (short)(-P1->_integer.value); return;
+
+__INTEGER:
+
+	P1->_integer.value = (-P1->_integer.value); return;
+
+__LONG:
+
+	P1->_long.value = (-P1->_long.value); return;
+
+__SINGLE:
+
+  VALUE_conv_float(P1);
+
+__FLOAT:
+	
+	P1->_float.value = (-P1->_float.value); return;
+
+__VARIANT:
+
+	MANAGE_VARIANT(SUBR_neg);
+
+__ERROR:
+
+  THROW(E_TYPE, "Number", TYPE_get_name(type));
+}
+
+
+void SUBR_abs(ushort code)
+{
+  static void *jump[] = {
+    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__ERROR
+    };
+
+  VALUE *P1;
+  TYPE type;
+
+  P1 = SP - 1;
+
+  type = code & 0x0F;
+
+  goto *jump[type];
+
+__BOOLEAN:
+
+	return;
+
+__BYTE:
+	
+	P1->_integer.value = (unsigned char)ABS(-P1->_integer.value); return;
+
+__SHORT:
+
+	P1->_integer.value = (short)ABS(P1->_integer.value); return;
+
+__INTEGER:
+
+	P1->_integer.value = ABS(P1->_integer.value); return;
+
+__LONG:
+
+	P1->_long.value = ABS(P1->_long.value); return;
+
+__SINGLE:
+
+  VALUE_conv_float(P1);
+
+__FLOAT:
+	
+	P1->_float.value = fabs(P1->_float.value); return;
+
+__VARIANT:
+
+	MANAGE_VARIANT(SUBR_abs);
+
+__ERROR:
+
+  THROW(E_TYPE, "Number", TYPE_get_name(type));
+}
+
+
+void SUBR_int(ushort code)
+{
+  static void *jump[] = {
+    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__ERROR
+    };
+
+  VALUE *P1;
+  TYPE type;
+
+  P1 = SP - 1;
+
+  type = code & 0x0F;
+
+  goto *jump[type];
+
+__BOOLEAN:
+__BYTE:
+__SHORT:
+__INTEGER:
+__LONG:
+
+	return;
+
+__SINGLE:
+
+  VALUE_conv_float(P1);
+
+__FLOAT:
+	
+	P1->_float.value = floor(P1->_float.value); return;
+
+__VARIANT:
+
+	MANAGE_VARIANT(SUBR_int);
+
+__ERROR:
+
+  THROW(E_TYPE, "Number", TYPE_get_name(type));
+}
+
+
+void SUBR_fix(ushort code)
+{
+  static void *jump[] = {
+    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__ERROR
+    };
+
+  VALUE *P1;
+  TYPE type;
+
+  P1 = SP - 1;
+
+  type = code & 0x0F;
+
+  goto *jump[type];
+
+__BOOLEAN:
+__BYTE:
+__SHORT:
+__INTEGER:
+__LONG:
+
+	return;
+
+__SINGLE:
+
+  VALUE_conv_float(P1);
+
+__FLOAT:
+	
+	P1->_float.value = fix(P1->_float.value); return;
+
+__VARIANT:
+
+	MANAGE_VARIANT(SUBR_fix);
+
+__ERROR:
+
+  THROW(E_TYPE, "Number", TYPE_get_name(type));
+}
+
+
+#if 0
 void SUBR_neg_(ushort code)
 {
   static void *jump[] = {
@@ -585,8 +854,6 @@ __END:
   return;
 }
 
-
-#if 0
 void SUBR_add_(ushort code)
 {
   static void *jump[] = {

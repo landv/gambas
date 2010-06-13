@@ -33,14 +33,15 @@ int llsgn(int64_t x);
 
 double frac(double x);
 int fsgn(double x);
-double deg(double x);
-double rad(double x);
 double fix(double x);
 double frexp10(double x, int *exp);
 double ang(double x, double y);
 
 void randomize(bool set, uint seed);
 double rnd(void);
+
+#define deg(_x) ((_x) * 180 / M_PI)
+#define rad(_x) ((_x) * M_PI / 180)
 
 #if defined(OS_FREEBSD) || defined(OS_OPENBSD) || defined(OS_CYGWIN)
 double exp10(double x);

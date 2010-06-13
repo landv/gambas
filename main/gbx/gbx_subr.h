@@ -104,7 +104,10 @@ void SUBR_pow(void);
 void SUBR_and_(ushort code);
 void SUBR_not(ushort code);
 
-void SUBR_neg_(ushort code);
+void SUBR_neg(ushort code);
+void SUBR_int(ushort code);
+void SUBR_abs(ushort code);
+void SUBR_fix(ushort code);
 void SUBR_sgn(ushort code);
 void SUBR_pi(ushort code);
 void SUBR_math(ushort code);
