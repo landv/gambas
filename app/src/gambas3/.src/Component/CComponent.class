@@ -29,6 +29,7 @@ Public SortKey As Integer
 'Public User As Boolean
 Public Version As String
 Public Family As String
+Public ThirdParty As Boolean
 
 Public {Library} As Boolean
 Public Path As String
@@ -197,7 +198,7 @@ Static Private Sub InitComponent(sFile As String)
   Dim aChange As String[]
   Dim aStr As String[]
   Dim sChange As String
-
+  
   sPath = Component.Path &/ sFile 
   
   Try hFic = Open sPath
@@ -213,8 +214,9 @@ Static Private Sub InitComponent(sFile As String)
 
     hComponent = New CComponent
     hComponent.Key = File.BaseName(sFile)
+    hComponent.ThirdParty = Not $cName.Exist(hComponent.key)
     hComponent.Name = $cName[hComponent.Key]
-
+   
     While Not Eof(hFic)
 
       Line Input #hFic, sLig
