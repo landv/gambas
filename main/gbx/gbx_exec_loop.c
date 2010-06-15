@@ -458,23 +458,6 @@ void EXEC_loop(void)
 
 /*-----------------------------------------------*/
 
-_SUBR_CODE:
-
-  (*(EXEC_FUNC_CODE)SubrTable[(code >> 8) - 0x28])(code);
-
-  if (UNLIKELY(PCODE_is_void(code)))
-    POP();
-
-/*-----------------------------------------------*/
-
-_NEXT:
-
-	PC++;
-  code = *PC;
-  goto *jump_table[code >> 8];
-
-/*-----------------------------------------------*/
-
 _MAIN:
 
 #if DEBUG_PCODE
@@ -488,6 +471,22 @@ _MAIN:
 #endif
 
   code = *PC;
+  goto *jump_table[code >> 8];
+
+/*-----------------------------------------------*/
+
+_SUBR_CODE:
+
+  (*(EXEC_FUNC_CODE)SubrTable[(code >> 8) - 0x28])(code);
+
+  if (UNLIKELY(PCODE_is_void(code)))
+    POP();
+
+/*-----------------------------------------------*/
+
+_NEXT:
+
+  code = *(++PC);
   goto *jump_table[code >> 8];
 
 /*-----------------------------------------------*/
@@ -2598,14 +2597,13 @@ __FLOAT:
   VALUE_conv_float(P2);
 
 	P1->_float.value /= P2->_float.value;
-	if (!finite(P1->_float.value))
+	if (isfinite(P1->_float.value))
 	{
-		if (P2->_float.value == 0.0)
-			THROW(E_ZERO);
-		else
-			THROW(E_MATH);
+		SP--;
+		return;
 	}
-	goto __END;
+	
+	THROW(E_ZERO);
 
 __VARIANT:
 
@@ -2615,8 +2613,4 @@ __VARIANT:
 __ERROR:
 
   THROW(E_TYPE, "Number", TYPE_get_name(type));
-
-__END:
-
-  SP--;
 }

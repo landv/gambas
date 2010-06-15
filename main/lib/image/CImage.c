@@ -71,6 +71,13 @@ BEGIN_METHOD(CIMAGE_fill, GB_INTEGER col)
 
 END_METHOD
 
+BEGIN_METHOD(Image_FillRect, GB_INTEGER x; GB_INTEGER y; GB_INTEGER width; GB_INTEGER height; GB_INTEGER col)
+
+	IMAGE_fill_rect(THIS_IMAGE, VARG(x), VARG(y), VARG(width), VARG(height), VARG(col));
+	GB.ReturnObject(THIS);
+
+END_METHOD
+
 BEGIN_METHOD(CIMAGE_get, GB_INTEGER x; GB_INTEGER y)
 
 	GB.ReturnInteger(IMAGE_get_pixel(THIS_IMAGE, VARG(x), VARG(y)));
@@ -245,6 +252,8 @@ GB_DESC CImageDesc[] =
   GB_METHOD("Resize", "Image", CIMAGE_resize, "(Width)i(Height)i"),
 
   GB_METHOD("Mirror", "Image", CIMAGE_mirror, "(Horizontal)b(Vertical)b"),
+  
+  GB_METHOD("FillRect", "Image", Image_FillRect, "(X)i(Y)i(Width)i(Height)i(Color)i"),
 	
 	//GB_METHOD("Transform", "Image", CIMAGE_transform, "(SrcX)f(SrcY)f(DepX)f(DepY)f"),
   //GB_METHOD("Draw", NULL, CIMAGE_draw, "(Image)Image;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),

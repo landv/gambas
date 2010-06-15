@@ -36,7 +36,6 @@
 
 ERROR_CONTEXT *ERROR_current = NULL;
 ERROR_INFO ERROR_last = { 0 };
-bool ERROR_backtrace = FALSE;
 
 static int _lock = 0;
 
@@ -511,8 +510,8 @@ void ERROR_print(void)
   
   ERROR_print_at(stderr, FALSE, TRUE);
   
-  if (ERROR_backtrace)
-		DEBUG_print_backtrace(&ERROR_current->info);
+  //if (ERROR_backtrace)
+	DEBUG_print_backtrace(&ERROR_current->info);
 
 	if (EXEC_main_hook_done && !EXEC_debug && EXEC_Hook.error && !lock)
   {

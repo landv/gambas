@@ -346,6 +346,7 @@ Private Sub RefreshComponents()
   $hLastComp = Null
   
   For Each hComp In CComponent.All
+    If hComp.Library Then Continue
     aComp.Add(hComp.Key)
   Next 
   aComp.Sort
@@ -380,7 +381,7 @@ End
 
 Private Function IsChecked(sKey As String) As Boolean
   
-  Return $cComp[sKey].Value
+  Try Return $cComp[sKey].Value
   
 End
 

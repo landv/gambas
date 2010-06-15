@@ -32,54 +32,58 @@ typedef
 
 static int _default_format = GB_IMAGE_RGBA;
 
-static inline unsigned char *GET_END_POINTER(GB_IMG *image)
+/*static inline unsigned char *GET_END_POINTER(GB_IMG *image)
 {
 	return &image->data[IMAGE_size(image)];
-}
+}*/
 
-static inline uint PREMUL(uint x) 
-{
-	uint a = x >> 24;
-	
-	if (a == 0)
-		return 0;
-	else if (a == 0xFF)
-		return x;
-	
-	uint t = (x & 0xff00ff) * a;
-	t = (t + ((t >> 8) & 0xff00ff) + 0x800080) >> 8;
-	t &= 0xff00ff;
+#define GET_END_POINTER(_img) (&(_img)->data[IMAGE_size(_img)])
 
-	x = ((x >> 8) & 0xff) * a;
-	x = (x + ((x >> 8) & 0xff) + 0x80);
-	x &= 0xff00;
-	x |= t | (a << 24);
-	return x;
-}
+#define PREMUL(_x)  \
+({ \
+	uint x = (_x); \
+	uint a = x >> 24; \
+	\
+	if (a == 0) \
+		x = 0; \
+	else if (a != 0xFF) \
+	{ \
+		uint t = (x & 0xFF00FF) * a; \
+		t = (t + ((t >> 8) & 0xFF00FF) + 0x800080) >> 8; \
+		t &= 0xff00ff; \
+		\
+		x = ((x >> 8) & 0xff) * a; \
+		x = (x + ((x >> 8) & 0xFF) + 0x80); \
+		x &= 0xFF00; \
+		x |= t | (a << 24); \
+	} \
+	x; \
+})
 
-static inline uint INV_PREMUL(uint p)
-{
-	if (ALPHA(p) == 0)
-		return 0;
-	else if (ALPHA(p) == 0xFF)
-		return p;
-	else
-		return
-			((ALPHA(p) << 24)
-			| (((255*RED(p))/ ALPHA(p)) << 16)
-			| (((255*GREEN(p)) / ALPHA(p)) << 8)
-			| ((255*BLUE(p)) / ALPHA(p)));
-}
+#define INV_PREMUL(__p) \
+({ \
+	uint _p = (__p); \
+	if (ALPHA(_p) == 0) \
+		_p = 0; \
+	else if (ALPHA(_p) != 0xFF) \
+		_p = ((ALPHA(_p) << 24) \
+			   | (((255*RED(_p))/ ALPHA(_p)) << 16) \
+			   | (((255*GREEN(_p)) / ALPHA(_p)) << 8) \
+			   | ((255*BLUE(_p)) / ALPHA(_p))); \
+	_p; \
+})
 
-static inline uint SWAP(uint p)
-{
-	return RGBA(ALPHA(p), BLUE(p), GREEN(p), RED(p));
-}
+#define SWAP(__p) \
+({ \
+  uint _p = (__p); \
+	RGBA(ALPHA(_p), BLUE(_p), GREEN(_p), RED(_p)); \
+})
 
-static inline uint SWAP_RED_BLUE(uint p)
-{
-	return RGBA(BLUE(p), GREEN(p), RED(p), ALPHA(p));
-}
+#define SWAP_RED_BLUE(__p) \
+({ \
+	uint _p = (__p); \
+	RGBA(BLUE(_p), GREEN(_p), RED(_p), ALPHA(_p)); \
+})
 
 static uint from_GB_COLOR(GB_COLOR col, int format)
 {
@@ -527,6 +531,33 @@ void IMAGE_set_pixel(GB_IMG *img, int x, int y, GB_COLOR col)
   	return;
   
   ((uint *)img->data)[y * img->width + x] = from_GB_COLOR(col, img->format);
+}
+
+void IMAGE_fill_rect(GB_IMG *img, int x, int y, int w, int h, GB_COLOR col)
+{
+	uint *p;
+	int i;
+	uint c;
+	
+	if (x >= img->width || y >= img->height) return;
+	
+	if (x < 0) { w += x; x = 0; }
+	if (y < 0) { h += y; y = 0; }
+	if ((x + w) > img->width) { w = img->width - x; }
+	if ((y + h) > img->height) { h = img->height - y; }
+	
+	if (w <= 0 || h <= 0) return;
+	
+	c = from_GB_COLOR(col, img->format);
+	p = &((uint *)img->data)[y * img->width + x];
+	
+	while (h)
+	{
+		for(i = w; i; i--)
+			*p++ = c;
+		h--;
+		p += img->width - w;
+	}
 }
 
 void IMAGE_replace(GB_IMG *img, GB_COLOR src, GB_COLOR dst, bool noteq)

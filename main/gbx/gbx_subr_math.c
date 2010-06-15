@@ -37,17 +37,6 @@
 
 #define ABS(x) ((x) < 0 ? (-x) : (x))
 
-/*static MATH_FUNC MathFunc[] = {
-  NULL, frac, log, exp, sqrt, sin, cos, tan, atan, asin, acos,
-  deg, rad, log10, sinh, cosh, tanh, asinh, acosh, atanh,
-  exp2, exp10, log2, cbrt, expm1, log1p
-  };*/
-
-static MATH_FUNC_2 MathFunc2[] = {
-  NULL, atan2, ang, hypot
-  };
-
-
 #define SMT_NAME    SUBR_quo
 #define SMT_TYPE    3
 #define SMT_OP      /
@@ -158,30 +147,30 @@ void SUBR_math(ushort code)
 	goto *jump[code & 0x1F];
 
 __FRAC: PARAM->_float.value = frac(PARAM->_float.value); goto __END;
-__LOG: PARAM->_float.value = log(PARAM->_float.value); goto __END;
-__EXP: PARAM->_float.value = exp(PARAM->_float.value); goto __END;
-__SQRT: PARAM->_float.value = sqrt(PARAM->_float.value); goto __END;
-__SIN: PARAM->_float.value = sin(PARAM->_float.value); goto __END;
-__COS: PARAM->_float.value = cos(PARAM->_float.value); goto __END;
-__TAN: PARAM->_float.value = tan(PARAM->_float.value); goto __END;
-__ATAN: PARAM->_float.value = atan(PARAM->_float.value); goto __END;
-__ASIN: PARAM->_float.value = asin(PARAM->_float.value); goto __END;
-__ACOS: PARAM->_float.value = acos(PARAM->_float.value); goto __END;
+__LOG: PARAM->_float.value = __builtin_log(PARAM->_float.value); goto __END;
+__EXP: PARAM->_float.value = __builtin_exp(PARAM->_float.value); goto __END;
+__SQRT: PARAM->_float.value = __builtin_sqrt(PARAM->_float.value); goto __END;
+__SIN: PARAM->_float.value = __builtin_sin(PARAM->_float.value); goto __END;
+__COS: PARAM->_float.value = __builtin_cos(PARAM->_float.value); goto __END;
+__TAN: PARAM->_float.value = __builtin_tan(PARAM->_float.value); goto __END;
+__ATAN: PARAM->_float.value = __builtin_atan(PARAM->_float.value); goto __END;
+__ASIN: PARAM->_float.value = __builtin_asin(PARAM->_float.value); goto __END;
+__ACOS: PARAM->_float.value = __builtin_acos(PARAM->_float.value); goto __END;
 __DEG: PARAM->_float.value = deg(PARAM->_float.value); goto __END;
 __RAD: PARAM->_float.value = rad(PARAM->_float.value); goto __END;
 __LOG10: PARAM->_float.value = log10(PARAM->_float.value); goto __END;
-__SINH: PARAM->_float.value = sinh(PARAM->_float.value); goto __END;
-__COSH: PARAM->_float.value = cosh(PARAM->_float.value); goto __END;
-__TANH: PARAM->_float.value = tanh(PARAM->_float.value); goto __END;
-__ASINH: PARAM->_float.value = asinh(PARAM->_float.value); goto __END;
-__ACOSH: PARAM->_float.value = acosh(PARAM->_float.value); goto __END;
-__ATANH: PARAM->_float.value = atanh(PARAM->_float.value); goto __END;
-__EXP2: PARAM->_float.value = exp2(PARAM->_float.value); goto __END;
-__EXP10: PARAM->_float.value = exp10(PARAM->_float.value); goto __END;
-__LOG2: PARAM->_float.value = log2(PARAM->_float.value); goto __END;
-__CBRT: PARAM->_float.value = cbrt(PARAM->_float.value); goto __END;
-__EXPM1: PARAM->_float.value = expm1(PARAM->_float.value); goto __END;
-__LOG1P: PARAM->_float.value = log1p(PARAM->_float.value); goto __END;
+__SINH: PARAM->_float.value = __builtin_sinh(PARAM->_float.value); goto __END;
+__COSH: PARAM->_float.value = __builtin_cosh(PARAM->_float.value); goto __END;
+__TANH: PARAM->_float.value = __builtin_tanh(PARAM->_float.value); goto __END;
+__ASINH: PARAM->_float.value = __builtin_asinh(PARAM->_float.value); goto __END;
+__ACOSH: PARAM->_float.value = __builtin_acosh(PARAM->_float.value); goto __END;
+__ATANH: PARAM->_float.value = __builtin_atanh(PARAM->_float.value); goto __END;
+__EXP2: PARAM->_float.value = __builtin_exp2(PARAM->_float.value); goto __END;
+__EXP10: PARAM->_float.value = __builtin_exp10(PARAM->_float.value); goto __END;
+__LOG2: PARAM->_float.value = __builtin_log2(PARAM->_float.value); goto __END;
+__CBRT: PARAM->_float.value = __builtin_cbrt(PARAM->_float.value); goto __END;
+__EXPM1: PARAM->_float.value = __builtin_expm1(PARAM->_float.value); goto __END;
+__LOG1P: PARAM->_float.value = __builtin_log1p(PARAM->_float.value); goto __END;
 
 __END:
 
@@ -192,12 +181,20 @@ __END:
 
 void SUBR_math2(ushort code)
 {
-  SUBR_ENTER_PARAM(2);
+	static void *jump[] = { NULL, &&__ATAN2, &&__ANG, &&__HYPOT };
+
+	SUBR_ENTER_PARAM(2);
 
   VALUE_conv_float(&PARAM[0]);
   VALUE_conv_float(&PARAM[1]);
 
-  PARAM->_float.value = (*MathFunc2[code & 0x1F])(PARAM[0]._float.value, PARAM[1]._float.value);
+	goto *jump[code & 0x1F];
+	
+__ATAN2: PARAM->_float.value = __builtin_atan2(PARAM[0]._float.value, PARAM[1]._float.value); goto __END;
+__ANG: PARAM->_float.value = __builtin_atan2(PARAM[1]._float.value, PARAM[0]._float.value); goto __END;
+__HYPOT: PARAM->_float.value = sqrt(PARAM[0]._float.value * PARAM[0]._float.value + PARAM[1]._float.value * PARAM[1]._float.value); goto __END;
+
+__END:
 
   if (!finite(PARAM->_float.value))
     THROW(E_MATH);

@@ -41,6 +41,7 @@ void *IMAGE_check(GB_IMG *img, GB_IMG_OWNER *temp_owner);
 void IMAGE_delete(GB_IMG *img);
 void IMAGE_convert(GB_IMG *img, int format);
 void IMAGE_fill(GB_IMG *img, GB_COLOR col);
+void IMAGE_fill_rect(GB_IMG *img, int x, int y, int w, int h, GB_COLOR col);
 void IMAGE_make_gray(GB_IMG *img);
 void IMAGE_make_transparent(GB_IMG *img, GB_COLOR color);
 GB_COLOR IMAGE_get_pixel(GB_IMG *img, int x, int y);

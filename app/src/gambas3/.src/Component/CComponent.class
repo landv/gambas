@@ -216,7 +216,8 @@ Static Private Sub InitComponent(sFile As String)
     hComponent.Key = File.BaseName(sFile)
     hComponent.ThirdParty = Not $cName.Exist(hComponent.key)
     hComponent.Name = $cName[hComponent.Key]
-   
+    If Not hComponent.Name Then hComponent.Name = " " 'Subst(("&1 component"), hComponent.Key)
+
     While Not Eof(hFic)
 
       Line Input #hFic, sLig

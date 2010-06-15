@@ -72,7 +72,7 @@ int EXEC_return_value = 0;
 bool EXEC_got_error = FALSE;
 uint64_t EXEC_byref = 0;
 
-const char EXEC_should_borrow[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0 };
+const char EXEC_should_borrow[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 2, 2, 0, 0 };
 
 void EXEC_init(void)
 {

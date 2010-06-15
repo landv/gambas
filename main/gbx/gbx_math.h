@@ -35,7 +35,6 @@ double frac(double x);
 int fsgn(double x);
 double fix(double x);
 double frexp10(double x, int *exp);
-double ang(double x, double y);
 
 void randomize(bool set, uint seed);
 double rnd(void);

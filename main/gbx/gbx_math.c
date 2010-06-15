@@ -178,11 +178,6 @@ double rnd(void)
 }
 
 
-double ang(double x, double y)
-{
-  return atan2(y, x);
-}
-
 #if defined(OS_FREEBSD) || defined(OS_OPENBSD)
 
 double exp10(double x)

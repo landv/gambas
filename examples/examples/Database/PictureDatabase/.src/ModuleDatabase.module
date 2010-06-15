@@ -172,7 +172,7 @@ Public Sub Add(ImagePath As String)
   If img.Width > thumbSize Or img.Height > thumbSize Then 
     ' Calc factor to scale isotropic
     scale = Min(ThumbSize / img.Width, ThumbSize / img.Height)
-    img = img.Stretch(img.Width * scale, img.Height * scale, True)
+    img = img.Stretch(img.Width * scale, img.Height * scale)
     img.Save(tempFile)
   End If
   newPicture["thumb"] = File.Load(tempFile)

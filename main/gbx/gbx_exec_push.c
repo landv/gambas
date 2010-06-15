@@ -549,7 +549,7 @@ __PUSH_QUICK_COLLECTION:
 	//fprintf(stderr, "GB_CollectionGet: %p '%.*s'\n", val[1]._string.addr, val[1]._string.len, val[1]._string.addr + val[1]._string.start);
 	GB_CollectionGet((GB_COLLECTION)object, val[1]._string.addr + val[1]._string.start, val[1]._string.len, (GB_VARIANT *)val);
 	
-	RELEASE(&val[1]);
+	RELEASE_STRING(&val[1]);
 	
 __PUSH_QUICK_END:
 	

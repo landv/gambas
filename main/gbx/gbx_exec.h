@@ -135,7 +135,7 @@ EXTERN const char EXEC_should_borrow[];
 #define HOOK(func) (!EXEC_Hook.func) ? 0 : (*EXEC_Hook.func)
 #define HOOK_DEFAULT(func, def) (*((!EXEC_Hook.func) ? def : EXEC_Hook.func))
 
-#define GET_NPARAM(var)         short var = *PC & 0x3F
+#define GET_NPARAM(var)         short var = code & 0x3F
 #define GET_PARAM(var, nparam)  VALUE *var = &SP[-nparam]
 
 void EXEC_init(void);
@@ -207,10 +207,13 @@ do { \
 	{ \
 		OBJECT_REF(_v->_object.object, "BORROW"); \
 	} \
-	else if (type == T_STRING) \
-		STRING_ref(_v->_string.addr); \
 	else if (EXEC_should_borrow[type]) \
-		EXEC_borrow(type, _v); \
+	{ \
+		if (type == T_STRING) \
+			STRING_ref(_v->_string.addr); \
+		else \
+			EXEC_borrow(type, _v); \
+	} \
 } while (0)
 
 #define RELEASE(_value) \
@@ -221,10 +224,13 @@ do { \
 	{ \
 		OBJECT_UNREF(_v->_object.object, "RELEASE"); \
 	} \
-	else if (type == T_STRING) \
-		STRING_unref(&_v->_string.addr); \
 	else if (EXEC_should_borrow[type]) \
-		EXEC_release(type, _v); \
+	{ \
+		if (type == T_STRING) \
+			STRING_unref(&_v->_string.addr); \
+		else \
+			EXEC_release(type, _v); \
+	} \
 } while (0)
 
 #define RELEASE_STRING(_value) \

@@ -130,7 +130,8 @@ static void project_stack(char *name, int len)
 
 static void project_stacktrace(char *name, int len)
 {
-	ERROR_backtrace = !(len == 1 && *name == '0');
+	//ERROR_backtrace = !(len == 1 && *name == '0');
+	// Backtrace is always printed now.
 }
 
 #if 0
