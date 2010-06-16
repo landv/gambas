@@ -983,6 +983,14 @@ BEGIN_METHOD(Cairo_Text, GB_STRING text)
 	
 END_METHOD
 
+BEGIN_METHOD(Cairo_DrawText, GB_STRING text)
+
+	CHECK_CNT();
+	
+	cairo_show_text(CNT, GB.ToZeroString(ARG(text)));
+	
+END_METHOD
+
 GB_DESC CairoDesc[] = 
 {
 	GB_DECLARE("Cairo", 0), GB_VIRTUAL_CLASS(),
@@ -1148,6 +1156,7 @@ GB_DESC CairoDesc[] =
 	GB_STATIC_PROPERTY_SELF("Font", ".CairoFont"),
 	GB_STATIC_METHOD("TextExtents", "CairoTextExtents", Cairo_TextExtents, "(Text)s"),
 	GB_STATIC_METHOD("Text", NULL, Cairo_Text, "(Text)s"),
+	GB_STATIC_METHOD("DrawText", NULL, Cairo_DrawText, "(Text)s"),
 
 	GB_END_DECLARE	
 };
