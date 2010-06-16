@@ -1668,20 +1668,40 @@ void CARRAY_split(CARRAY *_object, const char *str, int lstr, const char *sep, c
 	if (esc == NULL || *esc == 0)
 	{
 		i = lstr;
-		while (i--)
+		
+		if (!lsep)
 		{
-			c = *str;
+			char csep = sep[0];
 			
-			if (c == *sep || (lsep && index(&sep[1], c)))
-				add_entry();
-			else
+			while (i--)
 			{
-				//add_char(str);
-				if (!_lptr) _ptr = str;
-				_lptr++;
+				if (*str == csep)
+					add_entry();
+				else
+				{
+					//add_char(str);
+					if (!_lptr) _ptr = str;
+					_lptr++;
+				}
+					
+				str++;
+			}		
+		}
+		else
+		{
+			while (i--)
+			{
+				if (index(sep, *str))
+					add_entry();
+				else
+				{
+					//add_char(str);
+					if (!_lptr) _ptr = str;
+					_lptr++;
+				}
+					
+				str++;
 			}
-				
-			str++;
 		}
 		
 		add_entry();

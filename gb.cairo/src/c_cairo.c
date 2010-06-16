@@ -979,7 +979,7 @@ BEGIN_METHOD(Cairo_Text, GB_STRING text)
 
 	CHECK_CNT();
 	
-	cairo_show_text(CNT, GB.ToZeroString(ARG(text)));
+	cairo_text_path(CNT, GB.ToZeroString(ARG(text)));
 	
 END_METHOD
 

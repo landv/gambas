@@ -27,8 +27,11 @@
 
 static void free_image(GB_IMG *img, void *image)
 {
-	imlib_context_set_image((Imlib_Image)image);
-	imlib_free_image();
+	if (image)
+	{
+		imlib_context_set_image((Imlib_Image)image);
+		imlib_free_image();
+	}
 }
 
 static void *temp_image(GB_IMG *img)
