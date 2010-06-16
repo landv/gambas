@@ -33,8 +33,8 @@ GB_COMPONENT(
   [SDL],
   [src],
   [GB_FIND(SDL_opengl.h SDL.h SDL_image.h SDL_ttf.h, `sdl-config --prefix`, include/SDL)],
-  [GB_FIND(libSDL_image.$SHLIBEXT libSDL_ttf.$SHLIBEXT libGLEW.$SHLIBEXT, /usr /usr/X11R6 /usr/local `sdl-config --prefix`, lib)],
-  [$X_LIBS -lSDL_image -lSDL_ttf -lGLU -lGLEW],
+  [GB_FIND(libSDL_ttf.$SHLIBEXT libGLEW.$SHLIBEXT, /usr /usr/X11R6 /usr/local `sdl-config --prefix`, lib)],
+  [$X_LIBS -lSDL_ttf -lGLU -lGLEW],
   [$SDL_CFLAGS])
 
 AC_OUTPUT( \

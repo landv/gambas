@@ -37,7 +37,7 @@ public:
 	~SDLsurface();
 
 	void Create(int Width, int Height, int Depth = 0);
-	void LoadFromMem(char* addr, long len);
+//	void LoadFromMem(char* addr, long len);
 
 	int GetWidth(void );
 	int GetHeight(void );

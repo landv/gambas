@@ -161,7 +161,7 @@ void SDLsurface::Create(int Width, int Height, int Depth)
 	}
 	hTexture->ToLoad();
 }
-
+/*
 void SDLsurface::LoadFromMem(char *addr, long len)
 {
 	SDL_Surface *surface = IMG_Load_RW(SDL_RWFromMem(addr, len), true);
@@ -180,7 +180,7 @@ void SDLsurface::LoadFromMem(char *addr, long len)
 		std::cout << "SDLsurface::LoadFromMem : alpha layer detected" << std::endl;
 #endif
 }
-
+*/
 int SDLsurface::GetWidth()
 {
 	if (hSurface)

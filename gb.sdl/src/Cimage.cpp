@@ -91,7 +91,7 @@ CIMAGE *CIMAGE_create(SDLsurface *image)
 }
 
 /***************************************************************************/
-
+/*
 BEGIN_METHOD(CIMAGE_load, GB_STRING path)
 
 	char *addr;
@@ -113,14 +113,14 @@ BEGIN_METHOD(CIMAGE_load, GB_STRING path)
 		GB.Error("Unable to load image");
 
 END_METHOD
-
+*/
 /***************************************************************************/
 
 GB_DESC CImage[] =
 {
   GB_DECLARE("Image", sizeof(CIMAGE)),
 
-  GB_STATIC_METHOD("Load", "Image", CIMAGE_load, "(Path)s"),
+  //GB_STATIC_METHOD("Load", "Image", CIMAGE_load, "(Path)s"),
 
   GB_END_DECLARE
 };
