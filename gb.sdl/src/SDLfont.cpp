@@ -31,6 +31,8 @@
 #include <ctype.h>
 
 static StringList _FontList;
+Display *SDLfont::display = 0;
+int SDLfont::screen = 0;
 XftColor SDLfont::background, SDLfont::foreground;
 
 #define DEFAULT_FONT_SIZE 20
@@ -78,43 +80,43 @@ StringList SDLfont::GetFontList(void )
 void SDLfont::Init()
 {
 	XRenderColor backg, foreg;
-	Display* disp = SDLapp->X11appDisplay();
-	int screen = DefaultScreen(disp);
+	display = SDLapp->X11appDisplay();
+	screen = DefaultScreen(display);
 	
 	// full white
 	foreg.red = foreg.green = foreg.blue = foreg.alpha = 0xFF;
 	//transparent black
 	backg.red = backg.green = backg.blue = backg.alpha = 0x00;
 	
-	if (!XftColorAllocValue(disp , DefaultVisual(disp, screen),
-		DefaultColormap(disp, screen), &foreg, &foreground))
+	XftColorAllocName(display, DefaultVisual(display, screen),  
+		DefaultColormap(display, screen), "black", &background);  
+	XftColorAllocName(display, DefaultVisual(display, screen),  
+		DefaultColormap(display, screen), "white", &foreground);  
+/*
+		if (!XftColorAllocValue(display , DefaultVisual(display, screen),
+		DefaultColormap(display, screen), &foreg, &foreground))
 		std::cerr << "error XftColorAllocValue() foreground" << std::endl;
 	
-	if (!XftColorAllocValue(disp , DefaultVisual(disp, screen),
-		DefaultColormap(disp, screen), &backg, &background))
-		std::cerr << "error XftColorAllocValue() background" << std::endl;
+	if (!XftColorAllocValue(display , DefaultVisual(display, screen),
+		DefaultColormap(display, screen), &backg, &background))
+		std::cerr << "error XftColorAllocValue() background" << std::endl;*/
 }
 
 void SDLfont::Exit()
 {
-	Display* disp = SDLapp->X11appDisplay();
-	int screen = DefaultScreen(disp);
-
-	XftColorFree (disp, DefaultVisual(disp, screen), DefaultColormap(disp, screen), &foreground);
-	XftColorFree (disp, DefaultVisual(disp, screen), DefaultColormap(disp, screen), &background);
+	XftColorFree(display, DefaultVisual(display, screen), DefaultColormap(display, screen), &foreground);
+	XftColorFree(display, DefaultVisual(display, screen), DefaultColormap(display, screen), &background);
 }
 
 SDLfont::SDLfont()
 {
 	hfonttype = X_font;
-	Display* disp = SDLapp->X11appDisplay();
-	int screen = DefaultScreen(disp);
 	char fnt[512];
 	
 	snprintf(fnt, 512, "Arial,helvetica-%d:medium:slant=roman:dpi=%d",
 		DEFAULT_FONT_SIZE, DEFAULT_DPI);
 		
-	hXfont = XftFontOpenName(disp, screen, fnt);
+	hXfont = XftFontOpenName(display, screen, fnt);
 //	XftNameUnparse(hXfont->pattern, fnt, 512);
 //	std::cout << fnt << std::endl;
 
@@ -141,7 +143,7 @@ SDLfont::~SDLfont()
 		TTF_CloseFont(hSDLfont);
 
 	if ((hfonttype == X_font) && hXfont)
-		XftFontClose(SDLapp->X11appDisplay(), hXfont);
+		XftFontClose(display, hXfont);
 }
 
 void SDLfont::SetFontName(char* name)
@@ -243,9 +245,8 @@ void SDLfont::SizeText(const char *text, int *width, int *height)
 	else
 	{
 		XGlyphInfo glyphinfo;
-		Display* disp = SDLapp->X11appDisplay();
 		
-		XftTextExtentsUtf8(disp , hXfont, (XftChar8* )text, strlen(text), &glyphinfo);
+		XftTextExtentsUtf8(display , hXfont, (XftChar8* )text, strlen(text), &glyphinfo);
 		*width = int(glyphinfo.width);
 		*height = int(glyphinfo.height);
 	}		
@@ -253,14 +254,46 @@ void SDLfont::SizeText(const char *text, int *width, int *height)
 
 SDLsurface* SDLfont::RenderText(const char* text)
 {
-	SDLsurface* surf;
-
 	if (hfonttype == SDLTTF_font)
 	{
-		 SDL_Color fg = {0xFF, 0xFF, 0xFF};
-		 SDL_Surface *result = TTF_RenderUTF8_Blended(hSDLfont, text, fg);
-		 surf = new SDLsurface(result);
-	}
+		SDL_Color fg = {0xFF, 0xFF, 0xFF};
 
-	return surf;
+		SDL_Surface *result = TTF_RenderUTF8_Blended(hSDLfont, text, fg);
+		SDLsurface *surf = new SDLsurface(result);
+		return (surf);
+	}
+	else
+	{
+		XGlyphInfo glyphinfo;
+
+		//SDLapp->LockX11();
+		XftTextExtentsUtf8(display , hXfont, (XftChar8* )text, strlen(text), &glyphinfo);
+		// Create the pixmap to draw on.  
+		Pixmap pixmap = XCreatePixmap(display, DefaultRootWindow(display), glyphinfo.width,
+					glyphinfo.height, DefaultDepth(display, screen));  
+		// And the Xft wrapper around it.  
+		XftDraw *draw = XftDrawCreate(display, pixmap, DefaultVisual(display, screen),
+					DefaultColormap(display, screen));  
+		XftDrawRect(draw, &foreground, 0, 0, glyphinfo.width, glyphinfo.height);
+		XftDrawString8(draw, &background, hXfont, 0, glyphinfo.height, (XftChar8 *)text, strlen(text));
+		XImage *img = XGetImage(display, pixmap, 0, 0, glyphinfo.width, glyphinfo.height, AllPlanes, XYPixmap);
+		SDLsurface *surf = new SDLsurface(glyphinfo.width, glyphinfo.height);
+
+//		std::cout << "image : " << glyphinfo.width << ":" << glyphinfo.height << std::endl;
+		for (int y = 0; y < glyphinfo.height; y++)
+		{
+			for (int x = 0; x < glyphinfo.width; x++)
+			{
+				((Uint32* )surf->GetData())[x + (y * glyphinfo.width)] = XGetPixel(img, x, y);
+//				std::cout << std::hex <<  XGetPixel(img, x, y) << " ";
+			}
+//			std::cout << std::endl;
+		}
+		// clean up
+		XDestroyImage(img); 
+		XftDrawDestroy(draw);  
+		XFreePixmap(display, pixmap);  
+		//SDLapp->UnlockX11();
+		return (surf);
+	}
 }

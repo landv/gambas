@@ -42,12 +42,22 @@ static void *temp_image(GB_IMG *img)
 	return image;
 }
 
+static void lock_image(void *image)
+{
+}
+
+static void unlock_image(void *image, int changed)
+{
+}
+
 static GB_IMG_OWNER _image_owner = {
 	"gb.sdl",
 	GB_IMAGE_RGBA,
 	free_image,
 	free_image,
-	temp_image
+	temp_image,
+	lock_image,
+	unlock_image,
 	};
 
 SDLsurface *CIMAGE_get(CIMAGE *_object)

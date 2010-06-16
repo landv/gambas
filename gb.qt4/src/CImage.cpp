@@ -95,12 +95,22 @@ static void *temp_image(GB_IMG *img)
 	return image;
 }
 
+static void lock_image(void *image)
+{
+}
+
+static void unlock_image(void *image, int changed)
+{
+}
+
 static GB_IMG_OWNER _image_owner = {
 	"gb.qt4",
 	GB_IMAGE_BGRA,
 	free_image,
 	free_image,
-	temp_image
+	temp_image,
+	lock_image,
+	unlock_image,
 	};
 
 QImage *CIMAGE_get(CIMAGE *_object)

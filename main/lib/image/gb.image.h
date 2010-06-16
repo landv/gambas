@@ -70,8 +70,8 @@ typedef
 		void (*free)(struct GB_IMG *img, void *handle);     // free owner handle
 		void (*release)(struct GB_IMG *img, void *handle);  // free temporary handle
 		void *(*temp)(struct GB_IMG *img);                  // create a temporary handle for an image and returns it
-		//void (*lock)(void *handle); // lock, before accessing pixels
-		//void (*unlock)(void *handle); // unlock, after accessing pixels
+		void (*lock)(void *handle);                         // lock, before accessing pixels
+		void (*unlock)(void *handle, int changed);          // unlock, after accessing pixels, indicate if image was changed
 		}
 	GB_IMG_OWNER;
 	

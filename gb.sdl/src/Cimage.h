@@ -43,5 +43,6 @@ extern GB_DESC CImage[];
 #endif /* __CIMAGE_CPP */
 
 SDLsurface *CIMAGE_get(CIMAGE *);
+CIMAGE *CIMAGE_create(SDLsurface *);
 
 #endif /* __CIMAGE_H */

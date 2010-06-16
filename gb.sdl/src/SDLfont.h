@@ -78,6 +78,8 @@ private:
 	/* System font */
 	XftFont *hXfont;
 	static XftColor background, foreground;
+	static Display *display;
+	static int screen;
 };
 
 #endif /* _SDLFONT_H */

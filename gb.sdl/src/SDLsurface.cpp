@@ -104,6 +104,27 @@ SDLsurface::SDLsurface(SDL_Surface* surf)
 	hTexture->ToLoad();
 }
 
+SDLsurface::SDLsurface(int Width, int Height)
+{
+	hTexture = new SDLtexture(this);
+	hSurface = SDL_CreateRGBSurface(SDL_SWSURFACE, Width, Height, 32,
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN /* OpenGL RGBA masks */
+			0x000000FF, 
+			0x0000FF00, 
+			0x00FF0000, 
+			0xFF000000
+#else
+			0xFF000000,
+			0x00FF0000, 
+			0x0000FF00, 
+			0x000000FF
+#endif
+			);
+
+	if (!hSurface)
+		SDLcore::RaiseError(SDL_GetError());
+}
+
 SDLsurface::~SDLsurface()
 {
 	if (hSurface)

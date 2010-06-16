@@ -33,6 +33,7 @@ public:
 	SDLsurface();
 	SDLsurface(const SDLsurface& surf);
 	SDLsurface(SDL_Surface* surf); /* SDLsurface will free surf automaticly */
+	SDLsurface(int Width, int Height);
 	~SDLsurface();
 
 	void Create(int Width, int Height, int Depth = 0);

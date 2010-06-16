@@ -61,12 +61,22 @@ static void *temp_image(GB_IMG *img)
 	return image;
 }
 
+static void lock_image(void *image)
+{
+}
+
+static void unlock_image(void *image, int changed)
+{
+}
+
 static GB_IMG_OWNER _image_owner = {
 	"gb.cairo",
 	GB_IMAGE_BGRP,
 	free_image,
 	free_image,
-	temp_image
+	temp_image,
+	lock_image,
+	unlock_image,
 	};
 
 static cairo_surface_t *check_image(void *img)

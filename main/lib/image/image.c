@@ -141,12 +141,22 @@ static void free_image(GB_IMG *img, void *image)
 	GB.Free(POINTER(&img->data));
 }
 
+static void lock_image(void *image)
+{
+}
+
+static void unlock_image(void *image, int changed)
+{
+}
+
 static GB_IMG_OWNER _image_owner = {
 	"gb.image",
 	0,
 	free_image,
 	free_image,
-	NULL
+	NULL,
+	lock_image,
+	unlock_image,
 	};
 
 

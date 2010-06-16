@@ -23,6 +23,7 @@
 #define __CFONT_CPP
 
 #include "Cfont.h"
+#include "Cimage.h"
 
 static StringList FontList;
 
@@ -82,6 +83,17 @@ BEGIN_METHOD(CFONT_height, GB_STRING text)
 	int width, height;
 	FONT->SizeText(STRING(text), &width, &height);
 	GB.ReturnInteger(height);
+
+END_METHOD
+
+BEGIN_METHOD(CFONT_image, GB_STRING text)
+
+	CIMAGE *img;
+	
+	SDLsurface *txt = FONT->RenderText(GB.ToZeroString(ARG(text)));
+	img = CIMAGE_create(txt);
+	
+	GB.ReturnObject(img);
 
 END_METHOD
 
@@ -170,7 +182,8 @@ GB_DESC CFont[] =
 
   GB_METHOD("Width", "i", CFONT_width, "(Text)s"),
   GB_METHOD("Height", "i", CFONT_height, "(Text)s"),
-
+  GB_METHOD("Image", "Image", CFONT_image, "(Text)s"),
+  
 /*
   GB_STATIC_METHOD("_init", NULL, CFONT_init, NULL),
   GB_STATIC_METHOD("_exit", NULL, CFONT_exit, NULL),
