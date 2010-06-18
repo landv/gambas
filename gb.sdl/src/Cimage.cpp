@@ -23,6 +23,10 @@
 #define __CIMAGE_CPP
 
 #include "Cimage.h"
+#include "SDLtexture.h"
+
+#include <iostream>
+#include <cstring>
 
 static void free_image(GB_IMG *img, void *image)
 {
@@ -32,13 +36,13 @@ static void free_image(GB_IMG *img, void *image)
 static void *temp_image(GB_IMG *img)
 {
 	SDLsurface *image;
-		
+	
 	if (!img->data)
 		image = new SDLsurface();
 	else
 		image = new SDLsurface((char *)img->data, img->width, img->height);
-	image->SetAlphaBuffer(true);
 	
+	image->SetAlphaBuffer(true);
 	return image;
 }
 
@@ -83,7 +87,10 @@ CIMAGE *CIMAGE_create(SDLsurface *image)
 	GB.New(POINTER(&img), class_id, NULL, NULL);
   
 	if (image)
+	{
+		(image->GetTexture())->Sync();
 		take_image(img, image);
+	}
 	else
 		take_image(img, new SDLsurface());
 	

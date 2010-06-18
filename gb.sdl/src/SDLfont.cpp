@@ -84,22 +84,18 @@ void SDLfont::Init()
 	screen = DefaultScreen(display);
 	
 	// full white
-	foreg.red = foreg.green = foreg.blue = foreg.alpha = 0xFF;
+	foreg.red = foreg.green = foreg.blue = backg.alpha = 0xFFFF;
 	//transparent black
-	backg.red = backg.green = backg.blue = backg.alpha = 0x00;
+	backg.red = backg.green = backg.blue = foreg.alpha = 0x0000;
 	
-	XftColorAllocName(display, DefaultVisual(display, screen),  
-		DefaultColormap(display, screen), "black", &background);  
-	XftColorAllocName(display, DefaultVisual(display, screen),  
-		DefaultColormap(display, screen), "white", &foreground);  
-/*
-		if (!XftColorAllocValue(display , DefaultVisual(display, screen),
+	if (!XftColorAllocValue(display , DefaultVisual(display, screen),
 		DefaultColormap(display, screen), &foreg, &foreground))
 		std::cerr << "error XftColorAllocValue() foreground" << std::endl;
 	
 	if (!XftColorAllocValue(display , DefaultVisual(display, screen),
 		DefaultColormap(display, screen), &backg, &background))
-		std::cerr << "error XftColorAllocValue() background" << std::endl;*/
+		std::cerr << "error XftColorAllocValue() background" << std::endl;
+
 }
 
 void SDLfont::Exit()
@@ -266,34 +262,38 @@ SDLsurface* SDLfont::RenderText(const char* text)
 	{
 		XGlyphInfo glyphinfo;
 
-		//SDLapp->LockX11();
+		SDLapp->LockX11();
 		XftTextExtentsUtf8(display , hXfont, (XftChar8* )text, strlen(text), &glyphinfo);
 		// Create the pixmap to draw on.  
 		Pixmap pixmap = XCreatePixmap(display, DefaultRootWindow(display), glyphinfo.width,
-					glyphinfo.height, DefaultDepth(display, screen));  
+					glyphinfo.height, DefaultDepth(display, screen));
+					
 		// And the Xft wrapper around it.  
 		XftDraw *draw = XftDrawCreate(display, pixmap, DefaultVisual(display, screen),
 					DefaultColormap(display, screen));  
-		XftDrawRect(draw, &foreground, 0, 0, glyphinfo.width, glyphinfo.height);
-		XftDrawString8(draw, &background, hXfont, 0, glyphinfo.height, (XftChar8 *)text, strlen(text));
-		XImage *img = XGetImage(display, pixmap, 0, 0, glyphinfo.width, glyphinfo.height, AllPlanes, XYPixmap);
+		XftDrawRect(draw, &background, 0, 0, glyphinfo.width, glyphinfo.height);
+		XftDrawString8(draw, &foreground, hXfont, 0, glyphinfo.height-1 , (XftChar8 *)text, strlen(text));
+		XImage *img = XGetImage(display, pixmap, 0, 0, glyphinfo.width, glyphinfo.height, AllPlanes, ZPixmap);
 		SDLsurface *surf = new SDLsurface(glyphinfo.width, glyphinfo.height);
-
-//		std::cout << "image : " << glyphinfo.width << ":" << glyphinfo.height << std::endl;
+		Uint8 *data = (Uint8 *) surf->GetData();
+		
 		for (int y = 0; y < glyphinfo.height; y++)
 		{
 			for (int x = 0; x < glyphinfo.width; x++)
 			{
+				Uint32 pixel = (Uint32 )XGetPixel(img, x, y);
 				((Uint32* )surf->GetData())[x + (y * glyphinfo.width)] = XGetPixel(img, x, y);
-//				std::cout << std::hex <<  XGetPixel(img, x, y) << " ";
+				/* Create alpha value depending of pixel value (lowest R,G,B value)*/
+				data[3] = (pixel & 0xFF) & ((pixel >> 8) & 0xFF) &
+						((pixel >> 16) & 0xFF);
+				data += 4;
 			}
-//			std::cout << std::endl;
 		}
 		// clean up
 		XDestroyImage(img); 
 		XftDrawDestroy(draw);  
 		XFreePixmap(display, pixmap);  
-		//SDLapp->UnlockX11();
+		SDLapp->UnlockX11();
 		return (surf);
 	}
 }
