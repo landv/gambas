@@ -59,7 +59,7 @@ Public Language As String
 Public CreateComponent As Boolean
 Public ComponentState As Integer
 'Public Stack As Integer
-Public StackTrace As Boolean
+'Public StackTrace As Boolean
 Public Authors As String
 Public VersionProgram As String
 Public UseTerminal As Boolean
@@ -2520,7 +2520,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   Language = ""
   VersionProgram = ""
   'Stack = 0
-  StackTrace = False
+  'StackTrace = False
   UseTerminal = False
   Maintainer = ""
   Vendor = ""
@@ -2701,8 +2701,8 @@ Public Sub ReadProject(Optional bConvert As Boolean)
       'Case "stack"
       '  Stack = Val(sVal)
         
-      Case "stacktrace"
-        StackTrace = Val(sVal) <> 0
+      'Case "stacktrace"
+      '  StackTrace = Val(sVal) <> 0
         
       Case "useterminal"
         UseTerminal = Val(sVal) <> 0
@@ -2777,7 +2777,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If Title Then Print #hFic, "Title="; Title
   If Startup Then Print #hFic, "Startup="; Startup
   'If Stack Then Print #hFic, "Stack="; Stack
-  If StackTrace Then Print #hFic, "StackTrace=1"
+  'If StackTrace Then Print #hFic, "StackTrace=1"
   If UseTerminal Then Print #hFic, "UseTerminal=1"
   If Icon Then Print #hFic, "Icon="; Icon
 

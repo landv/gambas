@@ -1,13 +1,13 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2,89,88)
+  MoveScaled(0,2,89,78)
   Text = ("Project properties")
   Icon = Picture["icon:/small/properties"]
   Persistent = True
   Resizable = False
   { tabProject TabStrip
-    MoveScaled(1,1,87,81)
+    MoveScaled(1,1,87,71)
     Arrangement = Arrange.Vertical
     Spacing = True
     Margin = True
@@ -15,66 +15,76 @@
     Index = 0
     Text = ("General")
     { Panel1 Panel
-      MoveScaled(1,1,84,9)
-      { txtName TextLabel
-        MoveScaled(0,0,74,9)
-        Padding = 4
-        Alignment = Align.Left
-        Border = Border.Sunken
-      }
+      MoveScaled(1,1,84,10)
+      Background = Color.SelectedBackground
+      Arrangement = Arrange.Horizontal
+      Spacing = True
+      Padding = 4
       { btnIcon ToolButton
-        MoveScaled(75,0,9,9)
+        MoveScaled(0,0,9,9)
         Border = True
       }
+      { txtName TextLabel
+        MoveScaled(10,0,74,9)
+        Foreground = Color.SelectedForeground
+        Expand = True
+        Alignment = Align.Left
+      }
     }
-    { HBox1 HBox
-      MoveScaled(1,14,84,4)
+    { HPanel1 HPanel
+      MoveScaled(1,12,84,53)
       Spacing = True
       { Label10 Label
         MoveScaled(0,0,16,4)
         Font = Font["Bold"]
         Text = ("Version")
       }
-      { txtMajor SpinBox
-        MoveScaled(17,0,9,4)
-        MaxValue = 9999
+      { HBox1 HBox
+        MoveScaled(18,0,32,4)
+        Expand = True
+        Spacing = True
+        { txtMajor SpinBox
+          MoveScaled(0,0,9,4)
+          MaxValue = 9999
+        }
+        { txtMinor SpinBox
+          MoveScaled(10,0,9,4)
+          MaxValue = 9999
+        }
+        { txtRelease SpinBox
+          MoveScaled(20,0,12,4)
+          MaxValue = 999999
+        }
       }
-      { txtMinor SpinBox
-        MoveScaled(27,0,9,4)
-        MaxValue = 9999
+      { Label12 Label
+        MoveScaled(0,5,16,4)
+        Font = Font["Bold"]
+        Text = ("Title")
       }
-      { txtRelease SpinBox
-        MoveScaled(37,0,12,4)
-        MaxValue = 999999
+      { txtTitle TextBox
+        MoveScaled(18,5,60,4)
+        Expand = True
       }
-    }
-    { Label12 Label
-      MoveScaled(1,20,16,2)
-      Font = Font["Bold"]
-      Text = ("Title")
-    }
-    { txtTitle TextBox
-      MoveScaled(1,23,84,4)
-    }
-    { Label3 Label
-      MoveScaled(1,28,79,2)
-      Font = Font["Bold"]
-      Text = ("Description")
-    }
-    { txtDesc TextArea
-      MoveScaled(1,32,84,9)
-      Expand = True
-      Wrap = True
-    }
-    { Label11 Label
-      MoveScaled(1,52,80,2)
-      Font = Font["Bold"]
-      Text = ("Author(s)")
-    }
-    { txtAuthor TextArea
-      MoveScaled(1,56,84,8)
-      Expand = True
-      Wrap = True
+      { Label3 Label
+        MoveScaled(0,10,16,4)
+        Font = Font["Bold"]
+        Text = ("Description")
+      }
+      { txtDesc TextArea
+        MoveScaled(18,10,60,21)
+        Expand = True
+        Wrap = True
+      }
+      { Label11 Label
+        MoveScaled(0,31,16,4)
+        Font = Font["Bold"]
+        Text = ("Author(s)")
+      }
+      { txtAuthor TextArea
+        MoveScaled(18,32,57,21)
+        Expand = True
+        Wrap = True
+      }
     }
     Index = 1
     Text = ("Options")
@@ -187,36 +197,15 @@
         Sorted = True
       }
     }
-    { Label9 Label
-      MoveScaled(1,43,84,3)
-      Font = Font["Bold"]
-      Expand = True
-      Text = ("Execution")
-      Alignment = Align.BottomNormal
-    }
-    { HBox16 HBox
-      MoveScaled(2,47,83,4)
-      Spacing = True
-      Indent = True
-      { Label6 Label
-        MoveScaled(0,0,46,4)
-        Text = ("Dump stack on error")
-      }
-      { cmbStackTrace ComboBox
-        MoveScaled(47,0,10,4)
-        ReadOnly = True
-        List = [("Yes"), ("No")]
-      }
-    }
     { Label27 Label
-      MoveScaled(1,52,84,3)
+      MoveScaled(1,43,84,3)
       Font = Font["Bold"]
       Expand = True
       Text = ("Debugging")
       Alignment = Align.BottomNormal
     }
     { HBox17 HBox
-      MoveScaled(2,56,83,4)
+      MoveScaled(2,47,83,4)
       Spacing = True
       Indent = True
       { Label28 Label
@@ -230,14 +219,14 @@
       }
     }
     { Label16 Label
-      MoveScaled(1,61,84,3)
+      MoveScaled(1,52,84,3)
       Font = Font["Bold"]
       Expand = True
       Text = ("Component")
       Alignment = Align.BottomNormal
     }
     { HBox6 HBox
-      MoveScaled(2,65,83,4)
+      MoveScaled(2,56,83,4)
       Spacing = True
       Indent = True
       { Label25 Label
@@ -251,7 +240,7 @@
       }
     }
     { HBox5 HBox
-      MoveScaled(2,70,83,4)
+      MoveScaled(2,61,83,4)
       Spacing = True
       Indent = True
       { Label26 Label
@@ -298,13 +287,13 @@
       }
     }
     { panAboutComponent Panel
-      MoveScaled(1,46,84,28)
+      MoveScaled(1,46,84,17)
       Visible = False
       Expand = True
       Arrangement = Arrange.Vertical
       Border = Border.Plain
       { webAboutComponent WebView
-        MoveScaled(2,7,24,19)
+        MoveScaled(2,2,24,13)
         Expand = True
       }
     }
@@ -315,7 +304,7 @@
       Expand = True
     }
     { HBox18 HBox
-      MoveScaled(1,69,84,4)
+      MoveScaled(1,62,84,4)
       Spacing = True
       { btnInsertLib Button
         MoveScaled(0,0,17,4)
@@ -348,7 +337,7 @@
     Index = 4
     Text = ("Environment")
     { VBox1 VBox
-      MoveScaled(1,1,84,72)
+      MoveScaled(1,1,84,66)
       Expand = True
       Spacing = True
       { Label17 Label
@@ -387,18 +376,18 @@
         MoveScaled(7,38,42,1)
       }
       { Label18 Label
-        MoveScaled(2,47,24,3)
+        MoveScaled(2,41,24,3)
         Font = Font["Bold"]
         Text = ("Environment variables")
       }
       { tvwEnv TableView
-        MoveScaled(2,52,47,14)
+        MoveScaled(2,46,47,14)
         Expand = True
         Header = GridView.Horizontal
         Scrollbar = Scroll.Vertical
       }
       { HBox3 HBox
-        MoveScaled(2,67,40,4)
+        MoveScaled(2,61,40,4)
         Spacing = True
         { btnInsertEnv Button
           MoveScaled(0,0,17,4)
@@ -420,7 +409,7 @@
       Text = ("Changes since last commit")
     }
     { edtDiff Editor
-      MoveScaled(5,6,73,57)
+      MoveScaled(5,6,73,30)
       Expand = True
       Highlight = Highlight.Diff
       ReadOnly = True
@@ -431,7 +420,7 @@
       Text = ("There is no change to commit.")
     }
     { HBox15 HBox
-      MoveScaled(1,69,84,4)
+      MoveScaled(1,50,84,4)
       Spacing = True
       { btnUpdate Button
         MoveScaled(0,0,20,4)
@@ -532,12 +521,12 @@
     Index = 0
   }
   { btnOK Button
-    MoveScaled(55,83,16,4)
+    MoveScaled(55,73,16,4)
     Text = ("OK")
     Default = True
   }
   { btnCancel Button
-    MoveScaled(72,83,16,4)
+    MoveScaled(72,73,16,4)
     Text = ("Cancel")
     Cancel = True
   }

@@ -157,7 +157,7 @@ Public Sub cmbReplace_Activate()
 
 End
 
-Private Sub ShowMessage(sMsg As String, hCtrl As control)
+Private Sub ShowMessage(sMsg As String, hCtrl As Control)
   
   If Me.Visible Then
     Balloon.Info(sMsg, hCtrl)
@@ -247,8 +247,13 @@ Private Sub GrepFile(hFile As Object) As CFindResult[]
   For Each sFind In Split($sGrep, "\n", "", True)
     aFind = Split(sFind, ":")
     hResult = New CFindResult
-    hResult.Path = hFile.Path
-    hResult.File = hFile.Name
+    If hFile Is FOutput Then
+      hResult.Path = ""
+      hResult.File = "Console"
+    Else
+      hResult.Path = hFile.Path
+      hResult.File = hFile.Name
+    Endif
     hResult.Line = CInt(aFind[0])
     hResult.Pos = CInt(aFind[1])
     hResult.Bytes = Len(aFind[2])
