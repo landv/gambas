@@ -36,6 +36,7 @@
 
 ERROR_CONTEXT *ERROR_current = NULL;
 ERROR_INFO ERROR_last = { 0 };
+ERROR_HANDLER *ERROR_handler = NULL;
 
 static int _lock = 0;
 
@@ -230,6 +231,14 @@ void ERROR_propagate()
 	fprintf(stderr, "ERROR_propagate: %d %s\n", ERROR_current->info.code, ERROR_current->info.msg);
 	#endif
 	
+	while (ERROR_handler)
+	{
+		if (ERROR_handler->context != ERROR_current)
+			break;
+		(*ERROR_handler->handler)();
+		ERROR_handler = ERROR_handler->prev;
+	}
+	
 	if (ERROR_current->ret)
 		ERROR_leave(ERROR_current);
   longjmp(ERROR_current->env, 1);
@@ -400,7 +409,7 @@ void THROW(int code, ...)
   char *arg[4];
 
   va_start(args, code);
-
+	
   for (i = 0; i < 4; i++)
     arg[i] = va_arg(args, char *);
 

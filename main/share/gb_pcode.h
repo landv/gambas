@@ -75,19 +75,18 @@
 #define CPM_STRING       5
 #define CPM_STRUCT       6
 
-#define C_EVENT                 0x1600
+#define C_TRY                   0x1600
+#define C_END_TRY               0x1700
+#define C_CATCH                 0x1800
 
-#define C_TRY                   0x1700
-#define C_END_TRY               0x1800
-#define C_CATCH                 0x1900
+#define C_DUP                   0x1900
+#define C_DROP                  0x1A00
+#define C_NEW                   0x1B00
 
-#define C_DUP                   0x1A00
-#define C_DROP                  0x1B00
-#define C_NEW                   0x1C00
-
-#define C_CALL                  0x1D00
-#define C_CALL_QUICK            0x1E00
-#define C_CALL_NORM             0x1F00
+#define C_CALL                  0x1C00
+#define C_CALL_QUICK            0x1D00
+//#define C_CALL_EASY             0x1E00
+#define C_CALL_SLOW             0x1E00
 
 #define C_JUMP                  0x2000
 #define C_JUMP_IF_TRUE          0x2100
@@ -128,8 +127,8 @@
 #define CODE_FIRST_SUBR 0x40
 #define CODE_LAST_SUBR  0x9F
 
-#define CODE_CALL_VARIANT   0x40
-#define CODE_CALL_VOID      0x80
+#define CODE_CALL_VARIANT   0x80
+//#define CODE_CALL_VOID      0x40
 
 #define CODE_STATIC    0x0800
 #define CODE_FUNCTION  0x0400

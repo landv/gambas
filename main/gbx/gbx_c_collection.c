@@ -332,7 +332,7 @@ void GB_CollectionNew(GB_COLLECTION *col, int mode)
   param._integer.type = GB_T_INTEGER;
   param._integer.value = mode;
 
-  OBJECT_create_native((void **)col, CLASS_Collection, &param);
+  *col = OBJECT_create_native(CLASS_Collection, &param);
 }
 
 int GB_CollectionCount(GB_COLLECTION col)

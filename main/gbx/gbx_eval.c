@@ -57,6 +57,10 @@ static void EVAL_enter()
   RP->type = T_VOID;
 }
 
+static void error_EVAL_exec(void)
+{
+	STACK_pop_frame(&EXEC_current);
+}
 
 static void EVAL_exec()
 {
@@ -65,16 +69,11 @@ static void EVAL_exec()
 
 	PC = NULL;
 
-	TRY
+	ON_ERROR(error_EVAL_exec)
 	{
 		EVAL_enter();
 	}
-	CATCH
-	{
-		STACK_pop_frame(&EXEC_current);
-		PROPAGATE();	
-	}
-	END_TRY
+	END_ERROR
 
 	EXEC_function_loop();
 

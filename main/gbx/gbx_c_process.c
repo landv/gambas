@@ -670,7 +670,7 @@ CPROCESS *CPROCESS_create(int mode, void *cmd, char *name, CARRAY *env)
 	//if (!name || !*name)
 	//	name = "Process";
 
-	OBJECT_new((void **)(void *)&process, CLASS_Process, name, OP  ? (OBJECT *)OP : (OBJECT *)CP);
+	process = OBJECT_new(CLASS_Process, name, OP  ? (OBJECT *)OP : (OBJECT *)CP);
 
 	init_process(process);
 	run_process(process, mode, cmd, env);

@@ -384,7 +384,7 @@ void EXTERN_call(void)
       break;
   }	
 
-  while (nparam > 0)
+  while (nparam)
   {
     nparam--;
     POP();
@@ -396,14 +396,9 @@ void EXTERN_call(void)
     
   BORROW(&TEMP);
 
-  if (EXEC.drop)
-    RELEASE(&TEMP);
-  else
-  {
-    VALUE_conv(&TEMP, ext->type);
-    *SP = TEMP;
-    SP++;
-  }
+	VALUE_conv(&TEMP, ext->type);
+	*SP = TEMP;
+	SP++;
 }
 #else
 void EXTERN_call(void)

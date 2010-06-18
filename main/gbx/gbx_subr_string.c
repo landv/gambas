@@ -581,7 +581,7 @@ void SUBR_split(ushort code)
 		}
 	}
 
-	OBJECT_create((void **)(void *)&array, CLASS_StringArray, NULL, NULL, 0);
+	array = OBJECT_create(CLASS_StringArray, NULL, NULL, 0);
 
 	if (lstr)
 	{
@@ -614,7 +614,7 @@ void SUBR_scan(void)
 	SUBR_get_string_len(&PARAM[0], &str, &len_str);
 	SUBR_get_string_len(&PARAM[1], &pat, &len_pat);
 
-	OBJECT_create((void **)(void *)&array, CLASS_StringArray, NULL, NULL, 0);
+	array = OBJECT_create(CLASS_StringArray, NULL, NULL, 0);
 
 	if (len_str && len_pat)
 		REGEXP_scan(array, pat, len_pat, str, len_str);

@@ -93,14 +93,14 @@ END_METHOD
 
 BEGIN_PROPERTY(CUNKNOWN_name)
 
-  GB_ReturnConstZeroString(EXEC.unknown);
+  GB_ReturnConstZeroString(EXEC_unknown_name);
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CUNKNOWN_property)
 
-  GB_ReturnBoolean(EXEC.property);
+  GB_ReturnBoolean(EXEC_unknown_property);
 
 END_PROPERTY
 

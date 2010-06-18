@@ -115,17 +115,26 @@ typedef
   ERROR_INFO;
 
 typedef
-  struct _ERROR {
-    struct _ERROR *prev;
-    jmp_buf env;
-    int ret;
-    ERROR_INFO info;
-    }
-  ERROR_CONTEXT;
+	struct _ERROR_CONTEXT {
+		struct _ERROR_CONTEXT *prev;
+		jmp_buf env;
+		int ret;
+		ERROR_INFO info;
+		}
+	ERROR_CONTEXT;
 
+typedef
+	struct _ERROR_HANDLER {
+		struct _ERROR_HANDLER *prev;
+		ERROR_CONTEXT *context;
+		void (*handler)();
+		}
+	ERROR_HANDLER;
+	
 #ifndef __GB_ERROR_C
 EXTERN ERROR_CONTEXT *ERROR_current;
 EXTERN ERROR_INFO ERROR_last;
+EXTERN ERROR_HANDLER *ERROR_handler;
 #endif
 
 #define ERROR_LEAVE_DONE ((ERROR_CONTEXT *)-1)
@@ -181,6 +190,17 @@ EXTERN ERROR_INFO ERROR_last;
 
 #endif
 
+#define ON_ERROR(_handler) \
+	{ \
+		ERROR_HANDLER __handler; \
+		__handler.handler = (_handler); \
+		__handler.prev = ERROR_handler; \
+		__handler.context = ERROR_current; \
+		ERROR_handler = &__handler;
+
+#define END_ERROR \
+		ERROR_handler = __handler.prev; \
+	}
 
 #define ERROR __err
 

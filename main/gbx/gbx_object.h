@@ -50,7 +50,7 @@ typedef
 #define OBJECT_class(_object) ((_object) ? ((OBJECT *)_object)->class : NULL)
 #define OBJECT_count(_object) ((_object) ? ((OBJECT *)_object)->ref : 0)
 
-void OBJECT_new(void **ptr, CLASS *class, const char *name, OBJECT *parent);
+void *OBJECT_new(CLASS *class, const char *name, OBJECT *parent);
 void OBJECT_attach(OBJECT *ob, OBJECT *parent, const char *name);
 void OBJECT_detach(OBJECT *ob);
 void OBJECT_release(CLASS *class, OBJECT *ob);
@@ -58,12 +58,12 @@ void OBJECT_free(CLASS *class, OBJECT *ob);
 void OBJECT_lock(OBJECT *ob, bool block);
 bool OBJECT_is_locked(OBJECT *ob);
 
-void OBJECT_alloc(void **ptr, CLASS *class, size_t size);
+//void *OBJECT_alloc(CLASS *class, size_t size);
 bool OBJECT_comp_value(VALUE *ob1, VALUE *ob2);
 
 void OBJECT_exit(void);
-void OBJECT_create(void **object, CLASS *class, const char *name, void *parent, int nparam);
-void OBJECT_create_native(void **object, CLASS *class, VALUE *param);
+void *OBJECT_create(CLASS *class, const char *name, void *parent, int nparam);
+void *OBJECT_create_native(CLASS *class, VALUE *param);
 
 #define OBJECT_is_valid(_object) ((_object) && !(((OBJECT *)_object)->class->check && (*((OBJECT *)_object)->class->check)(_object)))
 #define OBJECT_has_events(_object) (((OBJECT *)_object)->class->n_event != 0)

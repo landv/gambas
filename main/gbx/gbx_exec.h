@@ -48,17 +48,12 @@ typedef
     CLASS *class;
     OBJECT *object;
     int index;
-    //FUNCTION *func;
     CLASS_DESC_METHOD *desc;
-    int nparam;
-    int nparvar;
-    bool drop;
+    char nparam;
     bool native;
     bool use_stack;
-    bool property;
-    const char *unknown;
     }
-  EXEC_FUNCTION;
+  EXEC_GLOBAL;
 
 typedef
   struct {
@@ -82,7 +77,6 @@ EXTERN STACK_CONTEXT EXEC_current;
 EXTERN VALUE *SP;
 EXTERN VALUE TEMP;
 EXTERN VALUE RET;
-EXTERN EXEC_FUNCTION EXEC;
 
 EXTERN VALUE *EXEC_super;
 
@@ -100,9 +94,14 @@ EXTERN bool EXEC_big_endian;
 EXTERN bool EXEC_main_hook_done;
 EXTERN int EXEC_return_value;
 EXTERN bool EXEC_got_error;
-/*EXTERN long EXEC_const[];*/
 
 EXTERN const char EXEC_should_borrow[];
+
+EXTERN const char *EXEC_unknown_name;
+EXTERN bool EXEC_unknown_property;
+EXTERN char EXEC_unknown_nparam;
+
+EXTERN EXEC_GLOBAL EXEC;
 
 #endif
 
@@ -150,6 +149,14 @@ void EXEC_loop(void);
 	((LIKELY(TYPE_is_pure_object((_val)->type))) ? (*(_pclass) = EXEC_object_real(_val, _pobject)), TRUE : \
 	TYPE_is_variant((_val)->type) ? (*(_pclass) = EXEC_object_variant(_val, _pobject)), FALSE : \
 	EXEC_object_other(_val, _pclass, _pobject))
+	
+#define EXEC_object_fast(_val, _pclass, _pobject) \
+({ \
+	if ((_val)->type != T_CLASS) \
+		(*(_pclass)) = EXEC_object_real(_val, _pobject); \
+	else \
+		EXEC_object_other(_val, _pclass, _pobject); \
+})
 
 CLASS *EXEC_object_real(VALUE *val, OBJECT **pobject);
 CLASS *EXEC_object_variant(VALUE *val, OBJECT **pobject);
@@ -160,9 +167,9 @@ void *EXEC_auto_create(CLASS *class, bool ref);
 bool EXEC_call_native(void (*exec)(), void *object, TYPE type, VALUE *param);
 void EXEC_native_check(bool defined);
 void EXEC_native_quick(void);
-void EXEC_native();
-void EXEC_function_real();
-void EXEC_function_loop();
+void EXEC_native(void);
+void EXEC_function_real(void);
+void EXEC_function_loop(void);
 
 #define EXEC_function() EXEC_function_real(), EXEC_release_return_value()
 #define EXEC_function_keep() EXEC_function_real()

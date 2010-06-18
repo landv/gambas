@@ -1006,7 +1006,7 @@ void CODE_stop_event(void)
 {
   LAST_CODE;
 
-  write_ZZxx(C_EVENT, 0);
+  write_ZZxx(C_QUIT, 2);
 
   #ifdef DEBUG
   printf("STOP EVENT\n");
@@ -1185,8 +1185,8 @@ void CODE_catch(void)
 
 void CODE_drop(void)
 {
-  ushort *last_code = get_last_code();
-  ushort subr;
+  //ushort *last_code = get_last_code();
+  //ushort subr;
 
   use_stack(-1);
 
@@ -1194,7 +1194,7 @@ void CODE_drop(void)
   printf("DROP\n");
   #endif
 
-  if (last_code)
+  /*if (last_code)
   {
     switch(*last_code & 0xFF00)
     {
@@ -1214,7 +1214,7 @@ void CODE_drop(void)
           return;
         }
     }
-  }
+  }*/
 
   //THROW("Internal compiler error: Bad stack drop!");
   

@@ -40,7 +40,7 @@ const char *OBJECT_ref_where = 0;
 
 static OBJECT *EventObject = NULL;
 
-void OBJECT_new(void **ptr, CLASS *class, const char *name, OBJECT *parent)
+void *OBJECT_new(CLASS *class, const char *name, OBJECT *parent)
 {
 	OBJECT *object;
 	
@@ -61,7 +61,7 @@ void OBJECT_new(void **ptr, CLASS *class, const char *name, OBJECT *parent)
 
   OBJECT_attach(object, parent, name);
 
-	*ptr = object;
+	return object;
   //#if DEBUG_EVENT
   //printf("OBJECT_new: %s %p %d\n", class->name, *ptr, class->off_event);
   //#endif
@@ -239,17 +239,6 @@ void OBJECT_attach(OBJECT *ob, OBJECT *parent, const char *name)
 
 void OBJECT_free(CLASS *class, OBJECT *ob)
 {
-  /* Il faut emp�her EXEC_leave() de relib�er l'objet */
-  /*((OBJECT *)free_ptr)->ref = 1;*/
-
-  /*OBJECT_REF(ob, "OBJECT_free");*/
-
-  /* Ex�ution de la m�hode _free pour toutes les classes parentes
-     puis pour la classe de l'objet */
-
-  /*if (CLASS_is_native(class))
-    EXEC_special_inheritance(SPEC_FREE, class, ob, 0, TRUE);*/
-
   OBJECT_detach(ob);
   remove_observers(ob);
 
@@ -385,42 +374,45 @@ void OBJECT_exit(void)
 	#endif
 }
 
+static void *_object;
 
+static void error_OBJECT_create(void)
+{
+	OBJECT_UNREF_KEEP(_object, "OBJECT_create");
+}
 
-void OBJECT_create(void **object, CLASS *class, const char *name, void *parent, int nparam)
+void *OBJECT_create(CLASS *class, const char *name, void *parent, int nparam)
 {
   void *ob;
 
   if (class->no_create)
     THROW(E_CSTATIC, class->name);
 
-  TRY
+  ON_ERROR(error_OBJECT_create)
   {
-    OBJECT_new(&ob, class, name, parent);
-    *object = ob;
+		_object = NULL;
+    ob = OBJECT_new(class, name, parent);
+		_object = ob;
 		OBJECT_lock(ob, TRUE);
     EXEC_special_inheritance(SPEC_NEW, class, ob, nparam, TRUE);
 		OBJECT_lock(ob, FALSE);
-    OBJECT_UNREF_KEEP(ob, "OBJECT_create");
+		OBJECT_UNREF_KEEP(ob, "OBJECT_create");
   }
-  CATCH
-  {
-    *object = NULL;
-    OBJECT_UNREF_KEEP(ob, "OBJECT_create");
-    PROPAGATE();
-  }
-  END_TRY
+  END_ERROR
+  
+  return ob;
 }
 
 
 /* FIXME: The _new are methods called differently from EXEC_special_inheritance */
 
-void OBJECT_create_native(void **object, CLASS *class, VALUE *param)
+void *OBJECT_create_native(CLASS *class, VALUE *param)
 {
   CLASS_DESC *desc;
   short index;
+	void *object;
 
-  OBJECT_new(object, class, NULL, NULL);
+  object = OBJECT_new(class, NULL, NULL);
 
   for(;;)
   {
@@ -428,14 +420,15 @@ void OBJECT_create_native(void **object, CLASS *class, VALUE *param)
     if (index != NO_SYMBOL)
     {
       desc = CLASS_get_desc(class, index);
-      EXEC_call_native(desc->method.exec, *object, desc->method.type, param);
+      EXEC_call_native(desc->method.exec, object, desc->method.type, param);
     }
     class = class->parent;
     if (!class)
       break;
   }
 
-  OBJECT_UNREF_KEEP(*object, "OBJECT_create");
+  OBJECT_UNREF_KEEP(object, "OBJECT_create");
+	return object;
 }
 
 void OBJECT_lock(OBJECT *object, bool block)

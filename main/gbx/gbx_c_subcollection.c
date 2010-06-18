@@ -235,7 +235,7 @@ void GB_SubCollectionNew(GB_SUBCOLLECTION *subcollection, GB_SUBCOLLECTION_DESC 
   else
     class = CLASS_find(desc->klass);
 
-  OBJECT_create_native((void **)(void *)&ob, class, NULL);
+  ob = OBJECT_create_native(class, NULL);
 
   ob->container = container;
   //ob->store = subcollection;

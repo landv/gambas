@@ -623,10 +623,12 @@ const char *CLASS_DESC_get_signature(CLASS_DESC *cd)
 	return NULL;
 }
 
+// The _free method can be called during a conversion, so we must save the EXEC structure
 
 void CLASS_free(void *object)
 {
 	CLASS *class = OBJECT_class(object);
+	EXEC_GLOBAL save = EXEC;
 
 	//fprintf(stderr, "> CLASS_free: %s %p\n", class->name, object);
 	
@@ -634,6 +636,8 @@ void CLASS_free(void *object)
 	//fprintf(stderr, "CLASS_free: %s %p\n", class->name, object);
 	EXEC_special_inheritance(SPEC_FREE, class, object, 0, TRUE);
 	((OBJECT *)object)->ref = 0;
+	
+	EXEC = save;
 
 	OBJECT_release(class, object);
 
@@ -1130,7 +1134,7 @@ void *CLASS_auto_create(CLASS *class, int nparam)
 
 	/*fprintf(stderr, "CLASS_auto_create: create %s\n", class->name);*/
 
-	OBJECT_create(&class->instance, class, NULL, NULL, nparam);
+	class->instance = OBJECT_create(class, NULL, NULL, nparam);
 	ob = class->instance;
 	OBJECT_REF(ob, "CLASS_auto_create");
 

@@ -338,7 +338,7 @@ CARRAY *CARRAY_create_static(void *ref, CLASS_ARRAY *desc, void *data)
 	CARRAY *array;
 	
 	_create_static_array = TRUE;
-	OBJECT_create(POINTER(&array), CARRAY_get_array_class(desc->type), NULL, NULL, 0);
+	array = OBJECT_create(CARRAY_get_array_class(desc->type), NULL, NULL, 0);
 	_create_static_array = FALSE;
 	
 	array->type = desc->type;
@@ -1776,7 +1776,7 @@ void GB_ArrayNew(GB_ARRAY *array, intptr_t type, int size)
 		np = 0;
 	}
 	
-	OBJECT_create((void **)array, CARRAY_get_array_class(type), NULL, NULL, np);
+	*array = OBJECT_create(CARRAY_get_array_class(type), NULL, NULL, np);
 }
 
 int GB_ArrayCount(GB_ARRAY array)

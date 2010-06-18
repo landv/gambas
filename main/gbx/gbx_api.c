@@ -801,19 +801,19 @@ int GB_Stopped(void)
 
 int GB_NParam(void)
 {
-  return EXEC.nparvar;
+  return EXEC_unknown_nparam;
 }
 
 
 int GB_IsProperty(void)
 {
-  return EXEC.property;
+  return EXEC_unknown_property;
 }
 
 
 const char *GB_GetUnknown(void)
 {
-  return EXEC.unknown;
+  return EXEC_unknown_name;
 }
 
 
@@ -1394,10 +1394,10 @@ int GB_New(void **object, void *class, const char *name, void *parent)
   }
 
   if (!((CLASS *)class)->no_create)
-    OBJECT_create(object, class, name, parent, 0);
+    *object = OBJECT_create(class, name, parent, 0);
   else
   {
-    OBJECT_new(object, class, name, parent);
+    *object = OBJECT_new(class, name, parent);
     OBJECT_UNREF_KEEP(*object, "GB_New");
   }
 

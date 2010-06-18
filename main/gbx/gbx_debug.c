@@ -376,7 +376,6 @@ int DEBUG_get_object_access_type(void *object, CLASS *class, int *count)
   {
     EXEC.class = desc->property.class;
     EXEC.object = object;
-    EXEC.drop = FALSE;
     EXEC.nparam = 0;
     EXEC.native = FALSE;
     EXEC.index = (int)(intptr_t)desc->property.read;

@@ -246,7 +246,6 @@ _POP_PROPERTY_2:
 
     EXEC.class = desc->property.class;
     EXEC.object = object;
-    EXEC.drop = FALSE;
     EXEC.nparam = 1;
     EXEC.native = FALSE;
     EXEC.index = (int)(intptr_t)desc->property.write;
@@ -258,8 +257,8 @@ _POP_PROPERTY_2:
 
 _POP_UNKNOWN_PROPERTY:
 
-	EXEC.property = TRUE;
-	EXEC.unknown = CP->load->unknown[PC[1]];
+	EXEC_unknown_property = TRUE;
+	EXEC_unknown_name = CP->load->unknown[PC[1]];
 
 	*SP = SP[-2];
 	PUSH();
@@ -290,7 +289,7 @@ void EXEC_pop_array(ushort code)
 	int fast;
 
   val = &SP[-np];
-	goto *jump[(code >> 6) & 3];
+	goto *jump[((unsigned char)code) >> 6];
 
 __POP_GENERIC:
 
@@ -319,7 +318,7 @@ __POP_GENERIC:
 
 __POP_QUICK_ARRAY:
 
-  defined = EXEC_object(val, &class, &object);
+  EXEC_object_fast(val, &class, &object);
 
 	TYPE type = ((CARRAY *)object)->type;
 	
@@ -328,15 +327,15 @@ __POP_QUICK_ARRAY:
 	VALUE_copy(&val[-1], &swap);
 	
 	VALUE_conv(&val[0], type);
+	VALUE_conv_integer(&val[1]);
 	
 	if (LIKELY(np == 2))
 	{
-		VALUE_conv_integer(&val[1]);
 		data = CARRAY_get_data((CARRAY *)object, val[1]._integer.value);
 	}
 	else
 	{
-		for (i = 1; i < np; i++)
+		for (i = 2; i < np; i++)
 			VALUE_conv_integer(&val[i]);
 		
 		data = CARRAY_get_data_multi((CARRAY *)object, (GB_INTEGER *)&val[1], np - 1);
@@ -352,7 +351,7 @@ __POP_QUICK_ARRAY:
 	
 __POP_QUICK_COLLECTION:
 
-  defined = EXEC_object(val, &class, &object);
+  EXEC_object_fast(val, &class, &object);
 
 	VALUE_conv_variant(&val[-1]);
 	VALUE_conv_string(&val[1]);

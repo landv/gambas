@@ -159,7 +159,7 @@ void SUBR_exec(ushort code)
 
 	name = SUBR_get_string(&PARAM[3]);
 
-	ret = !PCODE_is_void(code);
+	ret = TRUE; // !PCODE_is_void(code);
 
 	if (shell)
 		mode |= PM_SHELL;

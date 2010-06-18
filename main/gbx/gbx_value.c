@@ -71,8 +71,8 @@ static bool unknown_function(VALUE *value)
 {
 	if (value->_function.kind == FUNCTION_UNKNOWN)
 	{
-		EXEC.property = TRUE;
-		EXEC.unknown = CP->load->unknown[value->_function.index];
+		EXEC_unknown_property = TRUE;
+		EXEC_unknown_name = CP->load->unknown[value->_function.index];
 
 		EXEC_special(SPEC_UNKNOWN, value->_function.class, value->_function.object, 0, FALSE);
 

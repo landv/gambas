@@ -66,13 +66,17 @@ const char *EXEC_fifo_name = NULL; // fifo name
 bool EXEC_keep_library = FALSE; // do not unload libraries
 
 EXEC_HOOK EXEC_Hook = { NULL };
-EXEC_FUNCTION EXEC;
+EXEC_GLOBAL EXEC;
 bool EXEC_main_hook_done = FALSE;
 int EXEC_return_value = 0;
 bool EXEC_got_error = FALSE;
 uint64_t EXEC_byref = 0;
 
 const char EXEC_should_borrow[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 2, 2, 0, 0 };
+
+const char *EXEC_unknown_name;
+bool EXEC_unknown_property;
+char EXEC_unknown_nparam;
 
 void EXEC_init(void)
 {
@@ -298,7 +302,7 @@ void EXEC_release_return_value(void)
 #define print_register() \
 	printf("| SP = %d  BP = %d  FP = %p  PC = %p  EC = %p\n", SP - (VALUE *)STACK_base, BP - (VALUE *)STACK_base, FP, PC, EC)
 
-static bool exec_enter_can_quick(void)
+static ushort exec_enter_can_quick(void)
 {
 	int i;
 	FUNCTION *func;
@@ -309,17 +313,17 @@ static bool exec_enter_can_quick(void)
 	/* check number of arguments */
 
 	if (func->npmin < func->n_param || nparam != func->n_param || func->vararg)
-		return FALSE;
+		return C_CALL_SLOW;
 
 	/* check arguments type */
-
+	
 	for (i = 0; i < nparam; i++)
 	{
 		if (SP[i - nparam].type != func->param[i].type)
-			return FALSE;
+			return C_CALL_SLOW;
 	}
 
-	return TRUE;
+	return C_CALL_QUICK;
 }
 
 static void init_local_var(CLASS *class, FUNCTION *func)
@@ -538,15 +542,15 @@ void EXEC_enter(void)
 
 void EXEC_enter_check(bool defined)
 {
-	if (defined && exec_enter_can_quick())
+	ushort mode = defined ? exec_enter_can_quick() : C_CALL_SLOW;
+	
+	*PC = (*PC & 0xFF) | mode;
+	
+	switch(mode)
 	{
-		*PC = (*PC & 0xFF) | C_CALL_QUICK;
-		EXEC_enter_quick();
-	}
-	else
-	{
-		*PC = (*PC & 0xFF) | C_CALL_NORM;
-		EXEC_enter();
+		case C_CALL_QUICK: EXEC_enter_quick(); break;
+		//case C_CALL_EASY: EXEC_enter_easy(); break;
+		default: EXEC_enter(); break;
 	}
 }
 
@@ -615,6 +619,78 @@ void EXEC_enter_quick(void)
 	#endif
 }
 
+
+#if 0
+void EXEC_enter_easy(void)
+{
+	int i;
+	FUNCTION *func;;
+	int nparam = EXEC.nparam;
+	void *object = EXEC.object;
+	CLASS *class = EXEC.class;
+
+	#if DEBUG_STACK
+	printf("\n| >> EXEC_enter_quick(%s, %ld, %d)\n", EXEC.class->name, EXEC.index, EXEC.nparam);
+	print_register();
+	#endif
+
+	func = &class->load->func[EXEC.index];
+	#if DEBUG_STACK
+	if (func->debug)
+		printf(" | >> %s\n", func->debug->name);
+	#endif
+
+	for (i = 0; i < func->npmin; i++)
+	{
+		VALUE_conv(SP - nparam + i, func->param[i].type);
+	}
+
+/* save context & check stack */
+
+	STACK_push_frame(&EXEC_current, func->stack_usage);
+
+	/* enter function */
+
+	BP = SP;
+	PP = SP;
+	FP = func;
+	PC = func->code;
+	OP = object;
+	CP = class;
+	EP = NULL;
+
+	if (UNLIKELY(func->error))
+		EC = PC + func->error;
+	else
+		EC = NULL;
+
+	/* reference the object so that it is not destroyed during the function call */
+	OBJECT_REF(OP, "EXEC_enter_quick");
+
+	/* local variables initialization */
+
+	if (LIKELY(func->n_local != 0))
+		init_local_var(class, func);
+
+	/* control variables initialization */
+
+	if (LIKELY(func->n_ctrl != 0))
+	{
+		for (i = 0; i < func->n_ctrl; i++)
+		{
+			SP->type = T_VOID;
+			SP++;
+		}
+	}
+
+	RP->type = T_VOID;
+
+	#if DEBUG_STACK
+	printf("| << EXEC_enter()\n");
+	print_register();
+	#endif
+}
+#endif
 
 void EXEC_leave(bool drop)
 {
@@ -712,7 +788,7 @@ __RETURN_VALUE:
 
 	if (pc && !drop)
 	{
-		drop = PCODE_is_void(*pc);
+		//drop = PCODE_is_void(*pc);
 		if (SP[-1].type == T_FUNCTION)
 		{
 			SP--;
@@ -730,7 +806,7 @@ __RETURN_VALUE:
 		//*SP = ret;
 		COPY_VALUE(SP, &ret);
 		RP->type = T_VOID;
-		if (PCODE_is_variant(*PC))
+		if (PCODE_is_variant(*PC) && SP->type != T_VOID)
 			VALUE_conv_variant(SP);
 		SP++;
 	}
@@ -747,6 +823,11 @@ __RETURN_VALUE:
 	return;
 }
 
+static void error_EXEC_function_real(void)
+{
+	RELEASE_MANY(SP, EXEC.nparam);
+	STACK_pop_frame(&EXEC_current);
+}
 
 void EXEC_function_real()
 {
@@ -755,17 +836,11 @@ void EXEC_function_real()
 
 	PC = NULL;
 
-	TRY
+	ON_ERROR(error_EXEC_function_real)
 	{
 		EXEC_enter();
 	}
-	CATCH
-	{
-		RELEASE_MANY(SP, EXEC.nparam);
-		STACK_pop_frame(&EXEC_current);
-		PROPAGATE();	
-	}
-	END_TRY
+	END_ERROR
 	
 	EXEC_function_loop();
 }
@@ -920,7 +995,7 @@ void EXEC_function_loop()
 }
 
 
-static bool exec_native_can_quick(void)
+static ushort exec_native_can_quick(void)
 {
 	CLASS_DESC_METHOD *desc = EXEC.desc;
 	int i;
@@ -931,32 +1006,31 @@ static bool exec_native_can_quick(void)
 	//fprintf(stderr, "exec_native_can_quick: %s.%s(%d) npmin:%d npmax:%d npvar:%d\n", desc->class->name, desc->name, nparam, desc->npmin, desc->npmax, desc->npvar);
 
 	if (desc->npmin < desc->npmax || nparam != desc->npmin || desc->npvar)
-		return FALSE;
+		return C_CALL_SLOW;
 		
 	/* check arguments type */
 
 	for (i = 0; i < nparam; i++)
 	{
 		if (SP[i - nparam].type != desc->signature[i])
-			return FALSE;
+			return C_CALL_SLOW;
 	}
 
-	return TRUE;
+	return C_CALL_QUICK;
 }
 
 void EXEC_native_check(bool defined)
 {
-	if (defined && exec_native_can_quick())
+	ushort mode = defined ? exec_native_can_quick() : C_CALL_SLOW;
+	
+	*PC = (*PC & 0xFF) | mode;
+	
+	switch(mode)
 	{
-		*PC = (*PC & 0xFF) | C_CALL_QUICK;
-		EXEC_native_quick();
+		case C_CALL_QUICK: EXEC_native_quick(); break;
+		//case C_CALL_EASY: EXEC_native_easy(); break;
+		default: EXEC_native(); break;
 	}
-	else
-	{
-		*PC = (*PC & 0xFF) | C_CALL_NORM;
-		EXEC_native();
-	}
-
 }
 
 #define EXEC_call_native_inline(_exec, _object, _type, _param) \
@@ -1001,16 +1075,14 @@ bool EXEC_call_native(void (*exec)(), void *object, TYPE type, VALUE *param)
 void EXEC_native_quick(void)
 {
 	CLASS_DESC_METHOD *desc = EXEC.desc;
-	bool drop = EXEC.drop;
 	int nparam = EXEC.nparam;
 	//bool use_stack = EXEC.use_stack; // Always TRUE
-	void *object = EXEC.object;
 
 	bool error;
 	void *free_later;
 	VALUE ret;
 
-	EXEC_call_native_inline(desc->exec, object, desc->type, &SP[-nparam]);
+	EXEC_call_native_inline(desc->exec, EXEC.object, desc->type, &SP[-nparam]);
 	COPY_VALUE(&ret, &TEMP);
 
 	RELEASE_MANY(SP, nparam);
@@ -1021,36 +1093,21 @@ void EXEC_native_quick(void)
 		PROPAGATE();
 	}
 	
-	/* Si la description de la fonction se trouve sur la pile */
-
 	SP--;
 	free_later = SP->_function.object;
 	SP->type = T_NULL;
 
 	if (desc->type == T_VOID)
 	{
-		if (!drop)
-		{
-			SP->type = T_VOID;
-			SP->_void.ptype = T_NULL;
-			SP++;
-		}
+		SP->type = T_VOID;
+		SP->_void.ptype = T_NULL;
+		SP++;
 	}
 	else
 	{
 		BORROW(&ret);
-
-		if (drop)
-		{
-			RELEASE(&ret);
-		}
-		else
-		{
-				
-			//*SP = ret;
-			COPY_VALUE(SP, &ret);
-			SP++;
-		}
+		COPY_VALUE(SP, &ret);
+		SP++;
 	}
 
 	OBJECT_UNREF(free_later, "EXEC_native (FUNCTION)");
@@ -1061,20 +1118,84 @@ void EXEC_native_quick(void)
 }
 
 
+#if 0
+void EXEC_native_easy(void)
+{
+	CLASS_DESC_METHOD *desc = EXEC.desc;
+	int nparam = EXEC.nparam;
+	bool error;
+	void *free_later;
+	VALUE ret;
+	VALUE *value;
+	TYPE *sign;
+	int i;
+
+	value = &SP[-nparam];
+	sign = desc->signature;
+
+	TRY
+	{
+		for (i = nparam; i > 0; i--, value++, sign++)
+			VALUE_conv(value, *sign);
+	}
+	CATCH
+	{
+		RELEASE_MANY(SP, nparam);
+		PROPAGATE();	
+	}
+	END_TRY
+
+	EXEC_call_native_inline(desc->exec, EXEC.object, desc->type, &SP[-nparam]);
+	COPY_VALUE(&ret, &TEMP);
+
+	RELEASE_MANY(SP, nparam);
+	
+	if (UNLIKELY(error))
+	{
+		POP();
+		PROPAGATE();
+	}
+	
+	SP--;
+	free_later = SP->_function.object;
+	SP->type = T_NULL;
+
+	if (desc->type == T_VOID)
+	{
+		SP->type = T_VOID;
+		SP->_void.ptype = T_NULL;
+		SP++;
+	}
+	else
+	{
+		BORROW(&ret);
+		COPY_VALUE(SP, &ret);
+		SP++;
+	}
+
+	OBJECT_UNREF(free_later, "EXEC_native (FUNCTION)");
+
+	#if DEBUG_STACK
+	printf("| << EXEC_native: %s (%p)\n", desc->name, &desc);
+	#endif
+}
+#endif
+
+static void error_EXEC_native(void)
+{
+	RELEASE_MANY(SP, EXEC.nparam);
+}
+
 void EXEC_native(void)
 {
 	CLASS_DESC_METHOD *desc = EXEC.desc;
-	bool drop = EXEC.drop;
 	int nparam = EXEC.nparam;
-	bool use_stack = EXEC.use_stack;
-	void *object = EXEC.object;
+	bool use_stack;
 
-	int i; /* ,j */
+	int i, n, nm;
 	VALUE *value;
 	TYPE *sign;
 	bool error;
-	void * NO_WARNING(free_later);
-	int n, nm;
 	VALUE ret;
 
 	#if DEBUG_STACK
@@ -1083,7 +1204,7 @@ void EXEC_native(void)
 
 	//printf("EXEC_native: nparam = %d desc->npvar = %d\n", nparam, desc->npvar);
 
-	TRY
+	ON_ERROR(error_EXEC_native)
 	{
 		n = desc->npmin;
 		nm = desc->npmax;
@@ -1167,10 +1288,7 @@ void EXEC_native(void)
 				}
 			}
 
-			if (UNLIKELY(nm < nparam))
-				EXEC.nparvar = nparam - nm;
-			else
-				EXEC.nparvar = 0;
+			EXEC_unknown_nparam = nparam <= nm ? 0 : nparam - nm;
 
 			for (; i < nparam; i++, value++)
 				VARIANT_undo(value);
@@ -1178,14 +1296,10 @@ void EXEC_native(void)
 			//printf("EXEC_native: nparvar = %d\n", EXEC.nparvar);
 		}
 	}
-	CATCH
-	{
-		RELEASE_MANY(SP, nparam);
-		PROPAGATE();	
-	}
-	END_TRY
+	END_ERROR
 
-	EXEC_call_native_inline(desc->exec, object, desc->type, &SP[-nparam]);
+	use_stack = EXEC.use_stack;
+	EXEC_call_native_inline(desc->exec, EXEC.object, desc->type, &SP[-nparam]);
 	COPY_VALUE(&ret, &TEMP);
 
 	/* Lib�ation des arguments */
@@ -1197,57 +1311,52 @@ void EXEC_native(void)
 	}*/
 	
 	RELEASE_MANY(SP, nparam);
-	
-	/* Si la description de la fonction se trouve sur la pile */
 
-	if (use_stack)
+	if (UNLIKELY(error))
 	{
-		SP--;
-		free_later = SP->_function.object;
-		SP->type = T_NULL;
-	}
-
-	/*
-	#if DEBUG_STACK
-	else
-		printf("** SP != func SP = %p func = %p **\n>", SP, func);
-	#endif
-	*/
-
-	if (LIKELY(!error))
-	{
-		if (desc->type == T_VOID)
+		if (use_stack)
 		{
-			if (!drop)
-			{
-				SP->type = T_VOID;
-				SP->_void.ptype = T_NULL;
-				SP++;
-			}
+			SP--;
+			OBJECT_UNREF(SP->_function.object, "EXEC_native (FUNCTION)");
+		}
+		
+		PROPAGATE();
+	}
+	
+	// If the function description is on the stack
+
+	if (desc->type == T_VOID)
+	{
+		if (use_stack)
+		{
+			SP--;
+			OBJECT_UNREF(SP->_function.object, "EXEC_native (FUNCTION)");
+		}
+		
+		SP->type = T_VOID;
+		SP->_void.ptype = T_NULL;
+		SP++;
+	}
+	else
+	{
+		if (use_stack)
+		{
+			void *free_later;
+			SP--;
+			free_later = SP->_function.object;
+			BORROW(&ret);
+			COPY_VALUE(SP, &ret);
+			SP++;
+			OBJECT_UNREF(free_later, "EXEC_native (FUNCTION)");
 		}
 		else
 		{
 			BORROW(&ret);
-
-			if (drop)
-			{
-				RELEASE(&ret);
-			}
-			else
-			{
-				//VALUE_conv(&ret, desc->type);
-				//*SP = ret;
-				COPY_VALUE(SP, &ret);
-				SP++;
-			}
+			COPY_VALUE(SP, &ret);
+			SP++;
 		}
 	}
 
-	if (use_stack)
-		OBJECT_UNREF(free_later, "EXEC_native (FUNCTION)");
-
-	if (UNLIKELY(error))
-		PROPAGATE();
 
 	#if DEBUG_STACK
 	printf("| << EXEC_native: %s (%p)\n", desc->name, &desc);
@@ -1358,8 +1467,8 @@ __FUNCTION:
 
 	if (LIKELY(val->_function.kind == FUNCTION_UNKNOWN))
 	{
-		EXEC.property = TRUE;
-		EXEC.unknown = CP->load->unknown[val->_function.index];
+		EXEC_unknown_property = TRUE;
+		EXEC_unknown_name = CP->load->unknown[val->_function.index];
 
 		EXEC_special(SPEC_UNKNOWN, val->_function.class, val->_function.object, 0, FALSE);
 
@@ -1369,7 +1478,8 @@ __FUNCTION:
 		SP--;
 		//*val = *SP;
 		COPY_VALUE(val, SP);
-		return EXEC_object(val, pclass, pobject);
+		EXEC_object(val, pclass, pobject);
+		return FALSE; // Could be TRUE, but always returning FALSE allows optimizations in quick array management
 	}
 	else
 		goto __ERROR;
@@ -1429,7 +1539,6 @@ void EXEC_public_desc(CLASS *class, void *object, CLASS_DESC_METHOD *desc, int n
 {
   EXEC.object = object;
   EXEC.nparam = nparam; /*desc->npmin;*/
-  EXEC.drop = FALSE;
 
   if (FUNCTION_is_native(desc))
   {
@@ -1462,26 +1571,6 @@ void EXEC_public(CLASS *class, void *object, const char *name, int nparam)
 	
 	EXEC_public_desc(class, object, &desc->method, nparam);
 	EXEC_release_return_value();
-	
-	#if 0
-	EXEC.class = desc->method.class;
-	EXEC.object = object;
-	EXEC.nparam = nparam;
-	EXEC.drop = TRUE;
-
-	if (FUNCTION_is_native(&desc->method))
-	{
-		EXEC.desc = &desc->method;
-		EXEC.use_stack = FALSE;
-		EXEC_native();
-	}
-	else
-	{
-		EXEC.index = (int)(intptr_t)desc->method.exec;
-		//EXEC.func = &class->load->func[(long)desc->method.exec]
-		EXEC_function();
-	}
-	#endif
 }
 
 
@@ -1516,7 +1605,6 @@ bool EXEC_special(int special, CLASS *class, void *object, int nparam, bool drop
 	EXEC.class = desc->method.class;
 	EXEC.object = object;
 	EXEC.nparam = nparam;
-	EXEC.drop = drop;
 
 	/*printf("<< EXEC_spec: SP = %d\n", SP - (VALUE *)STACK_base);
 	save_SP = SP;*/
@@ -1527,6 +1615,8 @@ bool EXEC_special(int special, CLASS *class, void *object, int nparam, bool drop
 		EXEC.use_stack = FALSE;
 		EXEC.native = TRUE;
 		EXEC_native();
+		if (drop)
+			POP();
 	}
 	else
 	{
@@ -1776,7 +1866,7 @@ void *EXEC_create_object(CLASS *class, int np, char *event)
 	if (UNLIKELY(class->no_create))
 		THROW(E_CSTATIC, class->name);
 
-	OBJECT_new(&object, class, event, ((OP == NULL) ? (OBJECT *)CP : (OBJECT *)OP));
+	object = OBJECT_new(class, event, ((OP == NULL) ? (OBJECT *)CP : (OBJECT *)OP));
 
 	TRY
 	{
@@ -1859,7 +1949,7 @@ void EXEC_new(void)
 
 		STRING_ref(name);
 		SP++;
-		OBJECT_new(&object, class, name, ((OP == NULL) ? (OBJECT *)CP : (OBJECT *)OP));
+		object = OBJECT_new(class, name, ((OP == NULL) ? (OBJECT *)CP : (OBJECT *)OP));
 		SP--;
 		STRING_unref(&name);
 
@@ -1869,7 +1959,7 @@ void EXEC_new(void)
 	}
 	else
 	{
-		OBJECT_new(&object, class, name, ((OP == NULL) ? (OBJECT *)CP : (OBJECT *)OP));
+		object = OBJECT_new(class, name, ((OP == NULL) ? (OBJECT *)CP : (OBJECT *)OP));
 		np--;
 	}
 

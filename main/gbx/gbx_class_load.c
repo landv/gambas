@@ -891,7 +891,7 @@ void CLASS_load_without_init(CLASS *class)
   int first;
   int first_event;
   COMPONENT *save;
-
+	
   //size_t alloc = MEMORY_size;
 	
 	if (class->state >= CS_LOADED)

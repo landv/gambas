@@ -205,16 +205,16 @@ void EXEC_loop(void)
     /* 13 PUSH CHAR       */  &&_PUSH_CHAR,
     /* 14 PUSH MISC       */  &&_PUSH_MISC,
     /* 15 PUSH ME         */  &&_PUSH_ME,
-    /* 16 EVENT           */  &&_EVENT,
-    /* 17 TRY             */  &&_TRY,
-    /* 18 END TRY         */  &&_END_TRY,
-    /* 19 CATCH           */  &&_CATCH,
-    /* 1A DUP             */  &&_DUP,
-    /* 1B DROP            */  &&_DROP,
-    /* 1C NEW             */  &&_NEW,
-    /* 1D CALL            */  &&_CALL,
-    /* 1E CALL QUICK      */  &&_CALL_QUICK,
-    /* 1F CALL NORM       */  &&_CALL_NORM,
+    /* 16 TRY             */  &&_TRY,
+    /* 17 END TRY         */  &&_END_TRY,
+    /* 18 CATCH           */  &&_CATCH,
+    /* 19 DUP             */  &&_DUP,
+    /* 1A DROP            */  &&_DROP,
+    /* 1B NEW             */  &&_NEW,
+    /* 1C CALL            */  &&_CALL,
+    /* 1D CALL QUICK      */  &&_CALL_QUICK,
+    /* 1E CALL EASY       */  &&_CALL_EASY,
+    /* 1F CALL SLOW       */  &&_CALL_SLOW,
     /* 20 JUMP            */  &&_JUMP,
     /* 21 JUMP IF TRUE    */  &&_JUMP_IF_TRUE,
     /* 22 JUMP IF FALSE   */  &&_JUMP_IF_FALSE,
@@ -445,7 +445,7 @@ void EXEC_loop(void)
   ushort code;
   /*ushort uind;*/
   TYPE type;
-
+	
   void _pop_ctrl(int ind)
   {
     VALUE *val = &BP[ind];
@@ -479,8 +479,8 @@ _SUBR_CODE:
 
   (*(EXEC_FUNC_CODE)SubrTable[(code >> 8) - 0x28])(code);
 
-  if (UNLIKELY(PCODE_is_void(code)))
-    POP();
+  //if (UNLIKELY(PCODE_is_void(code)))
+  //  POP();
 
 /*-----------------------------------------------*/
 
@@ -494,12 +494,6 @@ _NEXT:
 _SUBR:
 
   (*(EXEC_FUNC)SubrTable[(code >> 8) - 0x28])();
-
-_SUBR_END:
-
-  if (UNLIKELY(PCODE_is_void(code)))
-    POP();
-
   goto _NEXT;
 
 /*-----------------------------------------------*/
@@ -791,13 +785,6 @@ _PUSH_MISC:
 
 /*-----------------------------------------------*/
 
-_EVENT:
-
-  GAMBAS_StopEvent = TRUE;
-  goto _NEXT;
-
-/*-----------------------------------------------*/
-
 /*
 _PUSH_RETURN:
 
@@ -817,14 +804,7 @@ _DUP:
 
 _DROP:
 
-  ind = GET_3X();
-
-  while (ind > 0)
-  {
-    POP();
-    ind--;
-  }
-
+  POP();
   goto _NEXT;
 
 /*-----------------------------------------------*/
@@ -928,7 +908,6 @@ _CALL:
 			EXEC.object = val->_function.object;
 		}
 
-		EXEC.drop = PCODE_is_void(code);
 		EXEC.nparam = ind;
 		EXEC.use_stack = TRUE;
 
@@ -947,7 +926,7 @@ _CALL:
 
     POP();
 
-    if (!PCODE_is_void(code))
+    //if (!PCODE_is_void(code))
     {
       /*VALUE_default(SP, (TYPE)(val->_function.function));*/
       SP->type = T_NULL;
@@ -1019,7 +998,7 @@ _CALL:
 
 		POP(); // function
 
-		if (!PCODE_is_void(code))
+		//if (!PCODE_is_void(code))
 		{
 			SP->type = T_BOOLEAN;
 			SP->_boolean.value = ind ? -1 : 0;
@@ -1032,8 +1011,8 @@ _CALL:
 
   __CALL_UNKNOWN:
 
-    EXEC.property = FALSE;
-    EXEC.unknown = CP->load->unknown[val->_function.index];
+    EXEC_unknown_property = FALSE;
+    EXEC_unknown_name = CP->load->unknown[val->_function.index];
     EXEC.desc = CLASS_get_special_desc(EXEC.class, SPEC_UNKNOWN);
     //EXEC.use_stack = TRUE;
     goto __CALL_SPEC;
@@ -1093,7 +1072,6 @@ _CALL_QUICK:
 
     EXEC.class = val->_function.class;
     EXEC.object = val->_function.object;
-    EXEC.drop = PCODE_is_void(code);
     EXEC.nparam = ind;
 
     if (UNLIKELY(!val->_function.defined))
@@ -1135,11 +1113,11 @@ _CALL_QUICK:
 
 /*-----------------------------------------------*/
 
-_CALL_NORM:
-
+_CALL_EASY:
+#if 0
   {
     static const void *call_jump[] =
-      { &&__CALL_NULL, &&__CALL_NATIVE_N, &&__CALL_PRIVATE_N, &&__CALL_PUBLIC_N };
+      { &&__CALL_NULL, &&__CALL_NATIVE_E, &&__CALL_PRIVATE_E, &&__CALL_PUBLIC_E };
 
     VALUE * NO_WARNING(val);
 
@@ -1148,7 +1126,61 @@ _CALL_NORM:
 
     EXEC.class = val->_function.class;
     EXEC.object = val->_function.object;
-    EXEC.drop = PCODE_is_void(code);
+    EXEC.nparam = ind;
+
+    if (UNLIKELY(!val->_function.defined))
+      *PC |= CODE_CALL_VARIANT;
+
+    //if (call_jump[(int)val->_function.kind] == 0)
+    //  fprintf(stderr, "val->_function.kind = %d ?\n", val->_function.kind);
+
+    goto *call_jump[(int)val->_function.kind];
+
+  __CALL_PRIVATE_E:
+
+    EXEC.native = FALSE;
+    EXEC.index = val->_function.index;
+
+    goto __EXEC_ENTER_E;
+
+  __CALL_PUBLIC_E:
+
+    EXEC.native = FALSE;
+    EXEC.desc = &EXEC.class->table[val->_function.index].desc->method;
+    EXEC.index = (int)(intptr_t)(EXEC.desc->exec);
+    EXEC.class = EXEC.desc->class;
+
+  __EXEC_ENTER_E:
+
+    EXEC_enter_easy();
+    goto _MAIN;
+    
+  __CALL_NATIVE_E:
+  
+    EXEC.native = TRUE;
+    EXEC.index = val->_function.index;
+    EXEC.desc = &EXEC.class->table[EXEC.index].desc->method;
+    
+    EXEC_native_easy();
+    goto _NEXT;
+  }
+#endif
+
+/*-----------------------------------------------*/
+
+_CALL_SLOW:
+
+  {
+    static const void *call_jump[] =
+      { &&__CALL_NULL, &&__CALL_NATIVE_S, &&__CALL_PRIVATE_S, &&__CALL_PUBLIC_S };
+
+    VALUE * NO_WARNING(val);
+
+    ind = GET_3X();
+    val = &SP[-(ind + 1)];
+
+    EXEC.class = val->_function.class;
+    EXEC.object = val->_function.object;
     EXEC.nparam = ind;
     EXEC.use_stack = TRUE;
 
@@ -1157,26 +1189,26 @@ _CALL_NORM:
 
     goto *call_jump[(int)val->_function.kind];
 
-  __CALL_PRIVATE_N:
+  __CALL_PRIVATE_S:
 
     EXEC.native = FALSE;
     EXEC.index = val->_function.index;
 
-    goto __EXEC_ENTER_N;
+    goto __EXEC_ENTER_S;
 
-  __CALL_PUBLIC_N:
+  __CALL_PUBLIC_S:
 
     EXEC.native = FALSE;
     EXEC.desc = &EXEC.class->table[val->_function.index].desc->method;
     EXEC.index = (int)(intptr_t)(EXEC.desc->exec);
     EXEC.class = EXEC.desc->class;
 
-  __EXEC_ENTER_N:
+  __EXEC_ENTER_S:
 
     EXEC_enter();
     goto _MAIN;
     
-  __CALL_NATIVE_N:
+  __CALL_NATIVE_S:
     
     EXEC.native = TRUE;
     EXEC.index = val->_function.index;
@@ -1685,13 +1717,22 @@ _BREAK:
 
 _QUIT:
 
-  if (GET_UX() == 0)
-    EXEC_quit();
-
-  if (EXEC_debug && CP && CP->component == COMPONENT_main)
-    DEBUG.Breakpoint(0);
-	//else
-	//	TRACE_backtrace(stderr);
+	switch(GET_UX())
+	{
+		case 0: 
+			EXEC_quit(); 
+			break;
+			
+		case 1:
+			if (EXEC_debug && CP && CP->component == COMPONENT_main)
+				DEBUG.Breakpoint(0);
+			break;
+			
+		case 2:
+		default:
+			GAMBAS_StopEvent = TRUE;
+			break;
+	}
 
   goto _NEXT;
 
@@ -1743,7 +1784,7 @@ _SUBR_LEFT:
 		SP -= NPARAM;
 		SP++;
 	}
-	goto _SUBR_END;
+	goto _NEXT;
 
 /*-----------------------------------------------*/
 
@@ -1777,7 +1818,7 @@ _SUBR_RIGHT:
 		SP -= NPARAM;
 		SP++;
 	}
-	goto _SUBR_END;
+	goto _NEXT;
 
 /*-----------------------------------------------*/
 
@@ -1836,7 +1877,7 @@ _SUBR_MID:
 		SP -= NPARAM;
 		SP++;
 	}
-	goto _SUBR_END;
+	goto _NEXT;
 
 /*-----------------------------------------------*/
 
@@ -1856,7 +1897,7 @@ _SUBR_LEN:
 		PARAM->type = T_INTEGER;
 		PARAM->_integer.value = len;
 	}
-	goto _SUBR_END;
+	goto _NEXT;
 	
 /*-----------------------------------------------*/
 

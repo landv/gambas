@@ -460,7 +460,7 @@ void SUBR_stat(ushort code)
 	
   FILE_stat(path, &info, follow);
 
-  OBJECT_new((void **)(void *)&cstat, CLASS_Stat, NULL, NULL);
+  cstat = OBJECT_new(CLASS_Stat, NULL, NULL);
   OBJECT_UNREF_KEEP(cstat, "SUBR_stat");
   cstat->info = info;
   cstat->path = STRING_new_zero(path);

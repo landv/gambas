@@ -491,7 +491,6 @@ BEGIN_METHOD(Object_GetProperty, GB_OBJECT object; GB_STRING property)
 		{
 			EXEC.class = desc->property.class;
 			EXEC.object = object;
-			EXEC.drop = FALSE;
 			EXEC.nparam = 0;
 			EXEC.native = FALSE;
 			EXEC.index = (int)(intptr_t)desc->property.read;
@@ -594,7 +593,6 @@ BEGIN_METHOD(Object_SetProperty, GB_OBJECT object; GB_STRING property; GB_VARIAN
 	
 			EXEC.class = desc->property.class;
 			EXEC.object = object;
-			EXEC.drop = FALSE;
 			EXEC.nparam = 1;
 			EXEC.native = FALSE;
 			EXEC.index = (int)(intptr_t)desc->property.write;

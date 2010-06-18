@@ -74,7 +74,7 @@ CFILE *CFILE_create(STREAM *stream, int mode)
   int fd;
   CFILE *file;
 
-  OBJECT_new((void **)(void *)&file, CLASS_File, NULL, NULL);
+  file = OBJECT_new(CLASS_File, NULL, NULL);
   OBJECT_UNREF_KEEP(file, "CFILE_new");
 
   if (stream)
@@ -573,6 +573,13 @@ BEGIN_METHOD(CFILE_set_basename, GB_STRING path; GB_STRING new_basename)
 
 END_METHOD
 
+static STREAM *_stream;
+
+static void error_CFILE_load_save(void)
+{
+	if (_stream)
+		STREAM_close(_stream);
+}
 
 BEGIN_METHOD(CFILE_load, GB_STRING path)
 
@@ -580,13 +587,12 @@ BEGIN_METHOD(CFILE_load, GB_STRING path)
   int64_t len;
   int rlen;
   char *str;
-  bool opened = FALSE;
-  //ERROR_INFO save; We suppose it is useless
 
-  TRY
+  ON_ERROR(error_CFILE_load_save)
   {
+		_stream = NULL;
     STREAM_open(&stream, STRING_conv_file_name(STRING(path), LENGTH(path)), ST_READ);
-    opened = TRUE;
+    _stream = &stream;
 
     STREAM_lof(&stream, &len);
     if (len >> 31)
@@ -600,38 +606,23 @@ BEGIN_METHOD(CFILE_load, GB_STRING path)
 
     GB_ReturnString(str);
   }
-  CATCH
-  {
-  	//ERROR_save(&save);
-    if (opened)
-      STREAM_close(&stream);
-		//ERROR_restore(&save);
-    PROPAGATE();
-  }
-  END_TRY
+  END_ERROR
 
 END_METHOD
-
 
 BEGIN_METHOD(CFILE_save, GB_STRING path; GB_STRING data)
 
   STREAM stream;
-  bool opened = FALSE;
 
-  TRY
+  ON_ERROR(error_CFILE_load_save)
   {
+		_stream = NULL;
     STREAM_open(&stream, STRING_conv_file_name(STRING(path), LENGTH(path)), ST_CREATE);
-    opened = TRUE;
+    _stream = &stream;
     STREAM_write(&stream, STRING(data), LENGTH(data));
     STREAM_close(&stream);
   }
-  CATCH
-  {
-    if (opened)
-      STREAM_close(&stream);
-    PROPAGATE();
-  }
-  END_TRY
+  END_ERROR
 
 END_METHOD
 

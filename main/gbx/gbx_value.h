@@ -224,6 +224,8 @@ typedef
 	(_dst)->_void.value[0] = (_src)->_void.value[0]; \
 	(_dst)->_void.value[1] = (_src)->_void.value[1];
 
+#define VALUE_is_equal(_v1, _v2) (*_v1 == *v2)
+	
 #define VALUE_is_object(val) (TYPE_is_object((val)->type))
 #define VALUE_is_string(val) ((val)->type == T_STRING || (val)->type == T_CSTRING)
 #define VALUE_is_number(val) ((val)->type >= T_BYTE && (val)->type <= T_FLOAT)
