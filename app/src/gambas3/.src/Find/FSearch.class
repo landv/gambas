@@ -326,6 +326,14 @@ Private Sub Run(iAction As Integer)
 DO_IT_AGAIN:
   
   iCurrentPos = $hCurrent.GetPosition()
+  
+  If iAction And DO_REPLACE And If nReplace = 0 Then
+    If iAction And GO_BACKWARD Then
+      Inc iCurrentPos
+    Else
+      Dec iCurrentPos
+    Endif
+  Endif
 
   If aResult.Count Then
   
