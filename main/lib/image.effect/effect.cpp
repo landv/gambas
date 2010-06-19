@@ -31,6 +31,8 @@ static void get_info(GB_IMAGE img, uint **data, uint *width, uint *height, uint 
 {
 	GB_IMG *info = (GB_IMG *)img;
 
+	SYNCHRONIZE_IMAGE(info);
+	
 	*data = (uint *)info->data;
 	if (width) *width = info->width;
 	if (height) *height = info->height;

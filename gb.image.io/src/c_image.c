@@ -128,6 +128,7 @@ BEGIN_METHOD(CIMAGE_save, GB_STRING path; GB_INTEGER quality)
 		goto __END;
 	}
 
+	SYNCHRONIZE_IMAGE(THIS);
 	IMAGE.Convert(THIS, GB_IMAGE_RGBA);
 	image = gdk_pixbuf_new_from_data((const guchar *)THIS->data, GDK_COLORSPACE_RGB, TRUE, 8, THIS->width, THIS->height, THIS->width * sizeof(uint), NULL, NULL);
 

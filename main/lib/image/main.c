@@ -58,6 +58,7 @@ void *GB_IMAGE_1[] EXPORT =
 	(void *)create_image,
 	(void *)IMAGE_take,
 	(void *)IMAGE_check,
+	(void *)IMAGE_synchronize,
 	(void *)IMAGE_size,
 	(void *)IMAGE_set_default_format,
 	(void *)IMAGE_get_default_format,

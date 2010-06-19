@@ -33,6 +33,18 @@ static void free_image(GB_IMG *img, void *image)
 	delete (SDLsurface *)image;
 }
 
+static void check_modified(GB_IMG *img)
+{
+	// Vérifie le flag modified
+	if (img->modified)
+	{
+		// Synchronize l'image image->texture
+		
+		// Réinitialise le flag modified
+		img->modified = false;
+	}
+}
+
 static void *temp_image(GB_IMG *img)
 {
 	SDLsurface *image;
@@ -40,19 +52,23 @@ static void *temp_image(GB_IMG *img)
 	if (!img->data)
 		image = new SDLsurface();
 	else
+	{
+		// Pas besoin de faire de synchro image->texture, vu qu'on crée une nouvelle surface ?
 		image = new SDLsurface((char *)img->data, img->width, img->height);
+	}
 	
 	image->SetAlphaBuffer(true);
 	return image;
 }
 
-static void lock_image(void *image)
+static void sync_image(GB_IMG *image)
 {
+	// Synchronize l'image texture->image
+	
+	// Puis mets le flag de synchro à false
+	image->sync = false;
 }
 
-static void unlock_image(void *image, int changed)
-{
-}
 
 static GB_IMG_OWNER _image_owner = {
 	"gb.sdl",
@@ -60,13 +76,17 @@ static GB_IMG_OWNER _image_owner = {
 	free_image,
 	free_image,
 	temp_image,
-	lock_image,
-	unlock_image,
+	sync_image,
 	};
 
 SDLsurface *CIMAGE_get(CIMAGE *_object)
 {
-	return (SDLsurface *)IMAGE.Check(THIS_IMAGE, &_image_owner);
+	GB_IMG *img = THIS_IMAGE;
+	
+	// Si ce n'est pas nécessaire de le faire systématiquement chaque fois qu'on a besoin de l'image,
+	// alors ne pas le faire ici, mais explicitement où c'est vraiment nécessaire.
+	check_modified(img);
+	return (SDLsurface *)IMAGE.Check(img, &_image_owner);
 }
 
 #define check_image CIMAGE_get

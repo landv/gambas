@@ -74,7 +74,7 @@ public:
 	void reset() { };
 	void release();
 	void create(int w, int h, bool t);
-	GB_IMAGE object() { created = false; return (GB_IMAGE)img; }
+	GB_IMAGE object() { created = false; MODIFY_IMAGE(img); return (GB_IMAGE)img; }
 	int depth() const { return 32; }
 	int width() const { return img->width; }
 	int height() const { return img->height; }

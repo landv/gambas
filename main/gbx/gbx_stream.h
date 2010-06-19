@@ -47,9 +47,6 @@ typedef
 typedef
   struct {
     STREAM_CLASS *type;
-    char *buffer;
-    short buffer_pos;
-    short buffer_len;
     short mode;
     unsigned swap : 1;
     unsigned eol : 2;
@@ -65,6 +62,9 @@ typedef
     #else
     unsigned _reserved : 7;
     #endif
+    short buffer_pos;
+    short buffer_len;
+    char *buffer;
     }
   PACKED
   STREAM_COMMON;

@@ -68,6 +68,7 @@ QImage::QImage(GB_IMAGE image)
 {
 	init();
 	img = (GB_IMG *)image;
+	SYNCHRONIZE_IMAGE(img);
 	getInfo();
 }
 

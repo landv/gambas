@@ -141,22 +141,13 @@ static void free_image(GB_IMG *img, void *image)
 	GB.Free(POINTER(&img->data));
 }
 
-static void lock_image(void *image)
-{
-}
-
-static void unlock_image(void *image, int changed)
-{
-}
-
 static GB_IMG_OWNER _image_owner = {
 	"gb.image",
 	0,
 	free_image,
 	free_image,
 	NULL,
-	lock_image,
-	unlock_image,
+	NULL
 	};
 
 
@@ -365,6 +356,9 @@ __PREMULTIPLIED:
 	}
 }
 
+#define SYNCHRONIZE(_img) ({ if ((_img)->sync) (*(_img)->temp_owner->sync)(_img); })
+#define MODIFY(_img) ((_img)->modified = TRUE)
+
 int IMAGE_size(GB_IMG *img)
 {
 	return img->width * img->height * (GB_IMAGE_FMT_IS_24_BITS(img->format) ? 3 : 4);
@@ -439,6 +433,8 @@ void *IMAGE_check(GB_IMG *img, GB_IMG_OWNER *temp_owner)
 		// If we are not the owner, then we will have to create the temporary handle ourself
 		else
 		{
+			// Synchronize the image if needed
+			SYNCHRONIZE(img);
 			// Conversion can make gb.image the new owner and temporary owner
 			IMAGE_convert(img, temp_owner->format);
 			img->temp_handle = (*temp_owner->temp)(img);
@@ -495,6 +491,11 @@ void IMAGE_delete(GB_IMG *img)
 	img->format = 0;
 }
 
+void IMAGE_synchronize(GB_IMG *img)
+{
+	SYNCHRONIZE(img);
+}
+
 #define GET_POINTER(_img, _p, _pm) \
 	uint *_p = (uint *)(_img)->data; \
 	uint *_pm = (uint *)GET_END_POINTER(_img);
@@ -506,6 +507,8 @@ void IMAGE_fill(GB_IMG *img, GB_COLOR col)
 	col = from_GB_COLOR(col, img->format);
 	while (p != pm)
 		*p++ = col;	
+	
+	MODIFY(img);
 }
 
 // GB_IMAGE_RGB[APX] only
@@ -515,6 +518,8 @@ void IMAGE_make_gray(GB_IMG *img)
 	uint col;
 	uchar g;
 
+	SYNCHRONIZE(img);
+	
 	while (p != pm) 
 	{
 		col = BGRA_from_format(*p, img->format);
@@ -522,6 +527,8 @@ void IMAGE_make_gray(GB_IMG *img)
 		
 		*p++ = BGRA_to_format(RGBA(g, g, g, ALPHA(col)), img->format);
 	}
+
+	MODIFY(img);
 }
 
 GB_COLOR IMAGE_get_pixel(GB_IMG *img, int x, int y)
@@ -531,6 +538,7 @@ GB_COLOR IMAGE_get_pixel(GB_IMG *img, int x, int y)
   if (!is_valid(img, x, y))
   	return (-1);
   
+	SYNCHRONIZE(img);
   col = ((uint *)img->data)[y * img->width + x];
   return to_GB_COLOR(col, img->format);
 }
@@ -540,7 +548,9 @@ void IMAGE_set_pixel(GB_IMG *img, int x, int y, GB_COLOR col)
   if (!is_valid(img, x, y))
   	return;
   
+	SYNCHRONIZE(img);
   ((uint *)img->data)[y * img->width + x] = from_GB_COLOR(col, img->format);
+	MODIFY(img);
 }
 
 void IMAGE_fill_rect(GB_IMG *img, int x, int y, int w, int h, GB_COLOR col)
@@ -558,6 +568,8 @@ void IMAGE_fill_rect(GB_IMG *img, int x, int y, int w, int h, GB_COLOR col)
 	
 	if (w <= 0 || h <= 0) return;
 	
+	SYNCHRONIZE(img);
+
 	c = from_GB_COLOR(col, img->format);
 	p = &((uint *)img->data)[y * img->width + x];
 	
@@ -568,6 +580,8 @@ void IMAGE_fill_rect(GB_IMG *img, int x, int y, int w, int h, GB_COLOR col)
 		h--;
 		p += img->width - w;
 	}
+	
+	MODIFY(img);
 }
 
 void IMAGE_replace(GB_IMG *img, GB_COLOR src, GB_COLOR dst, bool noteq)
@@ -576,6 +590,8 @@ void IMAGE_replace(GB_IMG *img, GB_COLOR src, GB_COLOR dst, bool noteq)
 
   src = from_GB_COLOR(src, img->format);
   dst = from_GB_COLOR(dst, img->format);
+
+	SYNCHRONIZE(img);
 
 	if (noteq)
 	{
@@ -595,6 +611,8 @@ void IMAGE_replace(GB_IMG *img, GB_COLOR src, GB_COLOR dst, bool noteq)
 			p++;
 		}
 	}
+	
+	MODIFY(img);
 }
 
 // Comes from the GIMP
@@ -678,6 +696,8 @@ void IMAGE_make_transparent(GB_IMG *img, GB_COLOR col)
 
 	//fprintf(stderr, "IMAGE_make_transparent: %d x %d / %d\n", img->width, img->height, img->format);
 
+	SYNCHRONIZE(img);
+
 	color = from_GB_COLOR(col, img->format);
 	rgb_color.b = BLUE(color) / 255.0;
 	rgb_color.g = GREEN(color) / 255.0;
@@ -706,6 +726,7 @@ void IMAGE_make_transparent(GB_IMG *img, GB_COLOR col)
 		p++;
 	}
 	
+	MODIFY(img);
 	//fprintf(stderr, "IMAGE_make_transparent: ** DONE **\n");
 }
 
@@ -739,6 +760,9 @@ void IMAGE_bitblt(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int 
 	if ( dy + sh > dst->height ) sh = dst->height - dy;
 	if ( sw <= 0 || sh <= 0 ) return; // Nothing left to copy
 	
+	SYNCHRONIZE(src);
+	SYNCHRONIZE(dst);
+		
 	if (GB_IMAGE_FMT_IS_32_BITS(src->format))
 	{
 		uint *d = (uint *)dst->data + dy * dst->width + dx;
@@ -787,6 +811,8 @@ void IMAGE_bitblt(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int 
 			s += ds;
 		}
 	}
+	
+	MODIFY(dst);
 }
 
 void IMAGE_compose(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int sw, int sh)
@@ -807,6 +833,9 @@ void IMAGE_compose(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int
 	if ( dx + sw > dst->width ) sw = dst->width - dx;
 	if ( dy + sh > dst->height ) sh = dst->height - dy;
 	if ( sw <= 0 || sh <= 0 ) return;
+
+	SYNCHRONIZE(src);
+	SYNCHRONIZE(dst);
 
 	/*if ( src->hasAlphaBuffer() ) {
 	    QRgb* d = (QRgb*)dst->scanLine(dy) + dx;
@@ -871,6 +900,8 @@ void IMAGE_compose(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int
 			break;
 		}
 	}
+	
+	MODIFY(dst);
 }
 
 void IMAGE_colorize(GB_IMG *img, GB_COLOR color)
@@ -881,6 +912,8 @@ void IMAGE_colorize(GB_IMG *img, GB_COLOR color)
 	int r, g, b;
 	int hcol, scol, vcol;
 	
+	SYNCHRONIZE(img);
+
 	col = from_GB_COLOR(color, img->format);
 	COLOR_rgb_to_hsv(RED(col), GREEN(col), BLUE(col), &hcol, &scol, &vcol);
 
@@ -891,6 +924,8 @@ void IMAGE_colorize(GB_IMG *img, GB_COLOR color)
 		COLOR_hsv_to_rgb(hcol, scol, v, &r, &g, &b);
 		*p++ = BGRA_to_format(RGBA(r, g, b, ALPHA(col)), img->format);
 	}
+	
+	MODIFY(img);
 }
 
 void IMAGE_mask(GB_IMG *img, GB_COLOR color)
@@ -900,6 +935,8 @@ void IMAGE_mask(GB_IMG *img, GB_COLOR color)
 	unsigned char red[256], blue[256], green[256], alpha[256];
 	int i, r, g, b, a;
 	
+	SYNCHRONIZE(img);
+
 	col = from_GB_COLOR(color, img->format);
 	r = RED(col);
 	g = GREEN(col);
@@ -919,6 +956,8 @@ void IMAGE_mask(GB_IMG *img, GB_COLOR color)
 		col = BGRA_from_format(*p, img->format);
 		*p++ = BGRA_to_format(RGBA(red[RED(col)], green[GREEN(col)], blue[BLUE(col)], alpha[ALPHA(col)]), img->format);
 	}
+	
+	MODIFY(img);
 }
 
 void IMAGE_mirror(GB_IMG *src, GB_IMG *dst, bool horizontal, bool vertical)
@@ -934,6 +973,8 @@ void IMAGE_mirror(GB_IMG *src, GB_IMG *dst, bool horizontal, bool vertical)
   int dyi = vertical ? -1 : 1;
   int dy = vertical ? (h - 1) : 0;
   int sx, sy;
+
+	SYNCHRONIZE(src);
 
 	if (GB_IMAGE_FMT_IS_24_BITS(src->format))
 	{
@@ -957,6 +998,8 @@ void IMAGE_mirror(GB_IMG *src, GB_IMG *dst, bool horizontal, bool vertical)
           dsl[dx] = ssl[sx];
     }
   }
+  
+  MODIFY(dst);
 }
 
 #if 0

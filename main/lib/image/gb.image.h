@@ -70,8 +70,7 @@ typedef
 		void (*free)(struct GB_IMG *img, void *handle);     // free owner handle
 		void (*release)(struct GB_IMG *img, void *handle);  // free temporary handle
 		void *(*temp)(struct GB_IMG *img);                  // create a temporary handle for an image and returns it
-		void (*lock)(void *handle);                         // lock, before accessing pixels
-		void (*unlock)(void *handle, int changed);          // unlock, after accessing pixels, indicate if image was changed
+		void (*sync)(struct GB_IMG *img);                   // synchronize the data. Called only if the GB_IMG.sync flag is set
 		}
 	GB_IMG_OWNER;
 	
@@ -88,6 +87,8 @@ typedef
 		void *owner_handle;                       // handle for the owner
 		GB_IMG_OWNER *temp_owner;                 // owner of the temporary handle that does not own the data
 		void *temp_handle;                        // temporary handle
+		unsigned modified : 1;                    // data has been modified by gb.image
+		unsigned sync : 1;                        // data must be synchronized by calling GB_IMG_OWNER.sync()
 		}
 	GB_IMG;
 
@@ -129,6 +130,8 @@ typedef
 		void (*Take)(GB_IMG *img, GB_IMG_OWNER *owner, void *owner_handle, int width, int height, unsigned char *data);
 		// Create a temporary handle on the image without becoming the owner.
 		void *(*Check)(GB_IMG *img, GB_IMG_OWNER *temp_owner);
+		// Synchronize the image data if needed
+		void (*Synchronize)(GB_IMG *img);
 		// Return the size of the image data in bytes
 		int (*Size)(GB_IMG *img);
 		// Set the default format used when creating images
@@ -149,6 +152,9 @@ typedef
 	IMAGE_INTERFACE;
 
 #define GB_IMG_HANDLE(_image) ((_image)->temp_handle)
+
+#define SYNCHRONIZE_IMAGE(_image) (IMAGE.Synchronize(_image))
+#define MODIFY_IMAGE(_image) ((_image)->modified = 1)
 
 #define COLOR_DEFAULT (-1)
 
