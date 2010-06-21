@@ -121,7 +121,7 @@ static STREAM *get_default(intptr_t val)
 		stream = get_default((intptr_t)(_value)->_integer.value); \
 	else \
 	{ \
-		if (TYPE_is_object((_value)->type) && OBJECT_class((_value)->_object.object)->is_stream) \
+		if (TYPE_is_object((_value)->type) && (_value)->_object.object && OBJECT_class((_value)->_object.object)->is_stream) \
 			stream = CSTREAM_stream((_value)->_object.object); \
 		else \
 		{ \
