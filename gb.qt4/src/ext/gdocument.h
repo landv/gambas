@@ -144,6 +144,8 @@ public:
 
 	bool getLineFlag(int y, int f) const;
 	void setLineFlag(int y, int f, bool b);
+	
+	bool isLineEditedSomewhere(int y);
 
 	int lineLength(int y) const { return lines.at(y)->s.length(); }
 	int numLines() const { return lines.count(); }

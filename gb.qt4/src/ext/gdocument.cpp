@@ -1349,3 +1349,26 @@ int GDocument::getCharState(int y, int x)
 	
 	return GLine::Background;
 }
+
+bool GDocument::isLineEditedSomewhere(int y)
+{
+	//fprintf(stderr, "isLineEditedSomewhere %d ?\n", y);
+	if (!lines.at(y)->modified)
+	{
+		//fprintf(stderr, "--> false (not modified)\n");
+		return false;
+	}
+	
+	FOR_EACH_VIEW(v)
+	{
+		//fprintf(stderr, "check with %d\n", v->y);
+		if (v->y == y)
+		{
+			//fprintf(stderr, "--> true\n");
+			return true;
+		}
+	}
+	
+	//fprintf(stderr, "--> false (no view matches)\n");
+	return false;
+}

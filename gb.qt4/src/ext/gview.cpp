@@ -648,7 +648,7 @@ void GEditor::paintCell(QPainter *painter, int row, int)
 	l = doc->lines.at(realRow);
 	
 	// Colorize as soon as possible
-	highlight = !(doc->getHighlightMode() == GDocument::None || (l->modified && realRow == y && !getFlag(HighlightCurrent)));
+	highlight = (doc->getHighlightMode() != GDocument::None) && !doc->isLineEditedSomewhere(realRow); //(l->modified && realRow == y && !getFlag(HighlightCurrent)));
 	if (highlight)
 	{
 		painting = true;
@@ -1780,6 +1780,8 @@ void GEditor::focusInEvent(QFocusEvent *e)
 void GEditor::focusOutEvent(QFocusEvent *e)
 {
 	stopBlink();
+	if (!getFlag(HighlightCurrent))
+		doc->colorize(y);
 	Q3ScrollView::focusOutEvent(e);
 }
 
