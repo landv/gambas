@@ -9,7 +9,7 @@ Public Procedure Add(Index As String, Columns As String[], Optional Table As Str
     modMain.RunQuery("CREATE INDEX `" & Index & "` ON `" & Database & "`.`" & Table & "` (" & modMain.ArrayToString(Columns, True) & ")")
   Else
     modMain.$Index.Add("INDEX `" & Index & "` (" & modMain.ArrayToString(Columns, True) & ")")
-  Endif  
+  Endif
 
 End
 

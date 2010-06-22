@@ -23,6 +23,7 @@ Private $asCollations As New String[]
 Private $asCharsets As New String[]
 Private $asDatabases As New String[]
 Private $asUsers As New String[]
+Private $Version As _Version
 
 Property Engine As String
 Property Charset As String
@@ -44,6 +45,7 @@ Property Read Users As String[]
 Property Read Query As String
 Property Read {Event} As _Event
 Property Read Result As _Result
+Property Read Version As _Version
 
 Private Function Engine_Read() As String
 
@@ -299,5 +301,12 @@ Private Function Result_Read() As _Result
 
   $Result = New _Result
   Return $Result
+
+End
+
+Private Function Version_Read() As _Version
+
+  $Version = New _Version
+  Return $Version
 
 End

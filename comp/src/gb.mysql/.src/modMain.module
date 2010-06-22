@@ -51,19 +51,21 @@ End
 
 Public Sub Main()
 
-  ' Dim hCon As New Connection
-  ' Dim iCounter As Integer
-  ' Dim iCounter2 As Integer
-  ' 
-  ' DB.Debug = True
-  ' hCon.Type = "mysql"
-  ' hCon.Port = "3306"
-  ' hCon.Host = "192.168.0.221"
-  ' hCon.User = "dvillalobos"
-  ' hCon.Password = "l1nux"
-  ' hCon.Name = "mas"
-  ' hCon.Open()
-  ' 
-  ' Print hCon.MySQL.Table.Maintenance.Repair("MAS_Usuarios_Usuarios")
+  Dim hCon As New Connection
+
+  'DB.Debug = True
+  hCon.Type = "mysql"
+  hCon.Port = "3306"
+  hCon.Host = "192.168.20.181"
+  hCon.User = "dvillalobos"
+  hCon.Password = ""
+  hCon.Name = "mysql"
+  hCon.Open()
+
+  Print hCon.MySQL.Version.Version()
+  Print hCon.MySQL.Version.VersionComment()
+  Print hCon.MySQL.Version.MayorVersion()
+  Print hCon.MySQL.Version.MinorVersion()
+  Print hCon.MySQL.Version.Release()
 
 End
