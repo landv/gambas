@@ -378,10 +378,11 @@ void EXTERN_call(void)
 		case T_POINTER:
 			GB_ReturnPointer(rvalue._pointer);
 			break;
-    
+			
+		case T_VOID:
     default:
-      //GB_ReturnNull();
-      break;
+			TEMP.type = T_VOID;
+			break;
   }	
 
   while (nparam)
