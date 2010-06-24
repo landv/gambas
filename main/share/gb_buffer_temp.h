@@ -64,9 +64,11 @@ bool BUFFER_need(void *p_data, size_t size)
   BUFFER *buffer = DATA_TO_BUFFER(*data);
 
   buffer->length += size;
+	//fprintf(stderr, "BUFFER_need: %ld (%ld / %ld)\n", size, buffer->length, buffer->max);
+	
   if (buffer->length > buffer->max)
   {
-    while (buffer->length > buffer->max)
+    while (buffer->length >= buffer->max)
       buffer->max += BUFFER_INC;
       
     REALLOC(&buffer, sizeof(char) * buffer->max + sizeof(BUFFER), "BUFFER_need");
@@ -81,12 +83,17 @@ offset_t BUFFER_add(void *p_data, const void *string, size_t len)
 {
   void **data = (void **)p_data;
   BUFFER *buffer = DATA_TO_BUFFER(*data);
-  long pos;
+  size_t pos;
 
+	//fprintf(stderr, "BUFFER_add: %ld\n", len);
+	
   pos = buffer->length;
   BUFFER_need(p_data, len);
 
   memcpy(*data + pos, string, len);
+
+	//fprintf(stderr, ">> BUFFER_add\n");
+	
   return pos;
 }
 

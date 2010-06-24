@@ -88,6 +88,7 @@ static void print(const char *buffer)
 {
 	if (JOB->verbose)
 		printf("%s", buffer);
+	
 	BUFFER_add(&JOB->source, buffer, strlen(buffer));
 }
 

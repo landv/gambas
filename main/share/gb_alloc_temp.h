@@ -36,6 +36,8 @@
 
 int MEMORY_count = 0;
 
+//#define DEBUG_ME
+
 #if DEBUG_MEMORY
 
 #include "gb_error.h"
@@ -359,7 +361,7 @@ void *my_realloc(void *alloc, size_t new_len)
 	ptr = alloc;
 	ptr--;
 	size = (int)*ptr;
-	new_size = REAL_SIZE(new_len + sizeof(int));
+	new_size = REAL_SIZE(new_len + sizeof(size_t));
 	
 	if (size == new_size)
 		return alloc;
