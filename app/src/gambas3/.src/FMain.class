@@ -12,6 +12,7 @@ Private $bInTreeView As Boolean
 Private $bInRename As Boolean
 Private $sKeyInfo As String
 Private $bNoSelect As String
+Private $bExpandOnMouseUp As Boolean
 
 Public Sub _new()
 
@@ -893,15 +894,20 @@ Public Sub tvwProject_Select()
   RefreshMenu
 
   If tvwProject.Current.Children Then 
-    tvwProject.Current.Expanded = True
-    ' tvwProject.MoveCurrent
-    ' tvwProject.MoveChild
-    ' tvwProject.MoveLast
-    ' tvwProject.Item.EnsureVisible
-    ' tvwProject.Current.EnsureVisible
+    $bExpandOnMouseUp = True
   Endif
 
 End
+
+Public Sub tvwProject_MouseUp()
+  
+  If $bExpandOnMouseUp Then
+    Try tvwProject.Current.Expanded = True
+    $bExpandOnMouseUp = False
+  Endif
+  
+End
+
 
 ' PUBLIC SUB tvwProject_Expand()
 ' 

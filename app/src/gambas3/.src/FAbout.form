@@ -65,6 +65,12 @@
       Text = ("Make a gift!")
       Picture = Picture["img/donate.png"]
     }
+    { picGradientTop PictureBox
+      MoveScaled(0,1,79,3)
+    }
+    { picGradientBottom PictureBox
+      MoveScaled(0,40,79,3)
+    }
     Index = 1
     Text = ("Hall Of Fame")
     { dwgAbout DrawingArea

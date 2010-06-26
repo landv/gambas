@@ -104,6 +104,8 @@ static void delete_menu(CMENU *_object)
 	
 	//qDebug("delete_menu: %s %p", THIS->widget.name, THIS);
 	
+	THIS->deleted = true;
+	
 	clear_menu(THIS);
 	
 	if (THIS->menu)
@@ -115,8 +117,6 @@ static void delete_menu(CMENU *_object)
 	if (THIS->accel)
 		delete THIS->accel;
 
-	THIS->deleted = true;
-	
 	if (ACTION)
 	{
 		refresh_menubar(THIS);

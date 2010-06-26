@@ -27,6 +27,7 @@ Private $hPict As Picture
 Private $bDeleteOnCancel As Boolean
 Private $bNoExpand As Boolean
 Private $bNoEvent As Boolean
+Private $bExpandOnMouseUp As Boolean
 
 Public Sub _new()
 
@@ -169,13 +170,23 @@ End
 Public Sub TreeView_Select()
 
   If Not $bNoExpand Then
-    Last.Item.Expanded = True
+    $bExpandOnMouseUp = True
   Endif
   If $bNoEvent Then Return 
   Raise {Select}
   Raise Click
 
 End
+
+Public Sub TreeView_MouseUp()
+  
+  If $bExpandOnMouseUp Then
+    Try Last.Current.Expanded = True
+    $bExpandOnMouseUp = False
+  Endif
+  
+End
+
 
 Public Sub TreeView_Activate()
 
@@ -312,7 +323,7 @@ Private Function Border_Read() As Boolean
 
 End
 
-Private Function GetIcon(sPath As String) As picture
+Private Function GetIcon(sPath As String) As Picture
 
   If sPath = GetRoot() Then Return $hRootPict  
   $hPict = Null

@@ -27,6 +27,8 @@ End
 Public Sub Form_Open()
 
   Dim sText As String
+  Dim hImage As Image
+  Dim Y As Integer
 
   $hWelcome = New CWelcome(dwgWelcome)
 
@@ -39,6 +41,17 @@ Public Sub Form_Open()
   
   $hBack = New Picture(dwgAbout.W, dwgAbout.H)
   $hBack.Fill(Color.White)
+
+  hImage = New Image(picGradientTop.W, picGradientTop.H)
+  For Y = 0 To hImage.H - 1
+    hImage.FillRect(0, Y, hImage.W, 1, Color.RGB(255, 255, 255, Y * 255 / hImage.H))
+  Next
+  picGradientTop.Picture = hImage.Picture
+
+  For Y = 0 To hImage.H - 1
+    hImage.FillRect(0, Y, hImage.W, 1, Color.RGB(255, 255, 255, 255 - (Y * 255 / hImage.H)))
+  Next
+  picGradientBottom.Picture = hImage.Picture
 
   'lblMessage.Text = "© 2000-" & Year(Now) & " Benoît Minisini"
   
