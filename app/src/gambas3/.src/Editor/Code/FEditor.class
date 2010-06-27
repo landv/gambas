@@ -202,7 +202,7 @@ Public Sub ReadConfig()
   $bShowPopupHelp = Settings["/Editor/ShowPopupHelp", True]
 
   panProc.Font.Grade = - Settings["/GlobalFont", 0]
-  gvwProc.Rows.H = panProc.Font.Height() + 1
+  gvwProc.Rows.H = panProc.Font.Height + 1
 
 End
 

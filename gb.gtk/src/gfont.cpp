@@ -638,3 +638,24 @@ bool gFont::isAllSet()
 		&& _strikeout_set
 		&& _underline_set;
 }
+
+void gFont::richTextSize(char *txt, int len, int sw, int *w, int *h)
+{
+	PangoLayout *ly;
+	int tw = 0, th = 0;
+	char *html;
+	
+	if (txt && len)
+	{
+		ly = pango_layout_new(ct);
+		html = gt_html_to_pango_string(txt, len, false);
+		pango_layout_set_markup(ly, html, -1);	
+		if (sw > 0)
+			pango_layout_set_width(ly, sw * PANGO_SCALE);
+		pango_layout_get_pixel_size(ly, &tw, &th);
+		g_free(html);
+	}
+	
+	if (w) *w = tw;
+	if (h) *h = th;
+}

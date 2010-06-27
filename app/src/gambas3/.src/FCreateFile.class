@@ -27,7 +27,7 @@ End
 Public Sub lstType_Click()
 
   Dim sPrefix As String
-  Dim hChild As control
+  Dim hChild As Control
   Dim bOpt As Boolean
   Dim iFilter As Integer
   
@@ -144,7 +144,7 @@ End
 
 Public Sub txtHeight_MouseDown()
 
-  $bMouse = True  
+  $bMouse = True
 
 End
 
@@ -163,7 +163,7 @@ End
 
 Public Sub txtName_GotFocus()
 
-  txtName.Select  
+  txtName.SelectAll
 
 End
 

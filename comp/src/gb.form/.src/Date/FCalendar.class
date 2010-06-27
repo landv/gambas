@@ -135,7 +135,7 @@ Public Sub dwgMonth_Draw()
   Draw.FillColor = Color.SelectedBackground
   Draw.Foreground = Color.SelectedForeground
   Draw.Font = dwgMonth.Font
-  Draw.Font.Size = Draw.Font.Size * H / Draw.Font.Height("a") * 0.7
+  Draw.Font.Size = Draw.Font.Size * H / Draw.Font.Height * 0.7
   Draw.Font.Bold = True
 
   X = XD

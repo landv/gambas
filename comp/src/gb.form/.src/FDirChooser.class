@@ -454,7 +454,7 @@ Public Sub AddBookmark(sLink As String, Optional sName As String, sIcon As Strin
   hPanel.Spacing = 6
   hPanel.Tag = sLink
   hPanel.ToolTip = sTooltip
-  hPanel.Height = hPanel.Font.Height() * 2 + 8
+  hPanel.Height = hPanel.Font.Height * 2 + 8
 
   hIcon = New PictureBox(hPanel)
   hIcon.Picture = Picture[sIcon]
@@ -476,7 +476,7 @@ Public Sub AddBookmark(sLink As String, Optional sName As String, sIcon As Strin
   hText.Font.Bold = True
   'hText.Font.Grade = 3
 
-  $iMaxWidth = Max($iMaxWidth, hText.Font.Width(sName))
+  $iMaxWidth = Max($iMaxWidth, hText.Font.TextWidth(sName))
 
   If Left(sLink) <> "$" Then
     hText = New Label(hVBox)
@@ -487,7 +487,7 @@ Public Sub AddBookmark(sLink As String, Optional sName As String, sIcon As Strin
     hText.Text = Replace(sTooltip, System.User.Home, "~")
     'hText.Font.Grade = -1
 
-    $iMaxWidth = Max($iMaxWidth, hText.Font.Width(hText.Text))
+    $iMaxWidth = Max($iMaxWidth, hText.Font.TextWidth(hText.Text))
   Endif
   
 End

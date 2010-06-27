@@ -60,6 +60,9 @@ Public Sub Form_Open()
   If $sTrigger Then
     $hSampleCode = CSampleCode.All[$sTrigger]
     edtSnippet.Text = $hSampleCode.Pattern
+    edtSnippet.ReadOnly = $hSampleCode.Default
+    txtTrigger.ReadOnly = $hSampleCode.Default
+    btnOK.Enabled = Not $hSampleCode.Default
     Me.Title = ("Edit code snippet")
     edtSnippet.SetFocus
   Else

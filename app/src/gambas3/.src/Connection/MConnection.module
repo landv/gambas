@@ -52,28 +52,28 @@ Public Function WidthFromType(hCtrl As Control, iType As Integer, iLength As Int
   Select Case iType
 
     Case gb.Boolean
-      iWidth = hCtrl.Font.Width(Str(False)) + 32
+      iWidth = hCtrl.Font.TextWidth(Str(False)) + 32
 
     Case gb.Integer
-      iWidth = hCtrl.Font.Width("1234567890") + 8
+      iWidth = hCtrl.Font.TextWidth("1234567890") + 8
 
     Case gb.Long
-      iWidth = hCtrl.Font.Width("1234567890") * 2 + 8
+      iWidth = hCtrl.Font.TextWidth("1234567890") * 2 + 8
 
     Case gb.Float
-      iWidth = hCtrl.Font.Width(CStr(Pi) & "E+999") + 8
+      iWidth = hCtrl.Font.TextWidth(CStr(Pi) & "E+999") + 8
 
     Case gb.Date
-      iWidth = hCtrl.Font.Width(Str(Now)) + 8
+      iWidth = hCtrl.Font.TextWidth(Str(Now)) + 8
 
     Case gb.String
       If iLength = 0 Then iLength = 255
       iLength = Min(32, iLength)
-      iWidth = hCtrl.Font.Width("X") * iLength + 8
+      iWidth = hCtrl.Font.TextWidth("X") * iLength + 8
 
   End Select
 
-  iWidth = Max(iWidth, hCtrl.Font.Width(sTitle) + 8)
+  iWidth = Max(iWidth, hCtrl.Font.TextWidth(sTitle) + 8)
 
   Return iWidth
 

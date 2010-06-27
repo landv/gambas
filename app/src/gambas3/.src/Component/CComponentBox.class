@@ -109,7 +109,7 @@ Public Sub _new(hComp As CComponent, bDark As Boolean)
   txtInfo.Padding = 2
   'txtInfo.Background = Color.Yellow
 
-  W = txtName.Font.Width(txtName.Text)
+  W = txtName.Font.TextWidth(txtName.Text)
   If W > $iMaxWidth Then 
     $iMaxWidth = W
   Endif

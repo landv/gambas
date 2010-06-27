@@ -1,60 +1,60 @@
 ' Gambas class file
 
-PUBLIC FUNCTION GetContainer() AS Container
+Public Function GetContainer() As Container
 
-  RETURN panToolBar
+  Return panToolBar
 
-END
+End
 
 
-PUBLIC SUB SetTitle(sTitle AS String)
+Public Sub SetTitle(sTitle As String)
 
   btnTitle.Text = sTitle
-  btnTitle.Height = ME.Font.Height(" ") + 4
+  btnTitle.Height = Me.Font.Height + 4
   'IF ME.Parent.Parent.Parent.Design THEN panToolBar.Move(0, btnTitle.H, panToolBar.W, ME.CLientH - btnTitle.H)
 
-END
+End
 
-PUBLIC FUNCTION GetTitle() AS String
+Public Function GetTitle() As String
 
-  RETURN btnTitle.Text
+  Return btnTitle.Text
 
-END
+End
 
-PUBLIC SUB SetPicture(hPict AS Picture)
+Public Sub SetPicture(hPict As Picture)
 
   btnTitle.Picture = hPict
 
-END
+End
 
-PUBLIC FUNCTION GetPicture() AS Picture
+Public Function GetPicture() As Picture
 
-  RETURN btnTitle.Picture
+  Return btnTitle.Picture
 
-END
+End
 
-PUBLIC FUNCTION GetButtonHeight() AS Integer
+Public Function GetButtonHeight() As Integer
 
-  RETURN btnTitle.Height
+  Return btnTitle.Height
 
-END
+End
 
-PUBLIC SUB btnTitle_Click()
+Public Sub btnTitle_Click()
 
-  DIM hParent AS ToolPanelContainer = ME.Parent
+  Dim hParent As ToolPanelContainer = Me.Parent
   hParent._Change
 
-END
+End
 
-PUBLIC SUB SetTextFont(hFont AS Font)
+Public Sub SetTextFont(hFont As Font)
   
   btnTitle.Font = hFont
   SetTitle(btnTitle.Text)
   
-END
+End
 
-PUBLIC SUB GetTextFont() AS Font
+Public Sub GetTextFont() As Font
   
-  RETURN btnTitle.Font
+  Return btnTitle.Font
   
-END
+End

@@ -194,35 +194,60 @@ BEGIN_METHOD(CFONT_get, GB_STRING str)
 END_METHOD
 
 
-BEGIN_METHOD(CFONT_width, GB_STRING text)
-
-	GB.ReturnInteger( FONT->width( STRING(text), LENGTH(text) ) );
-
-END_METHOD
-
-
-BEGIN_PROPERTY(CFONT_ascent)
+BEGIN_PROPERTY(Font_Ascent)
 
 	GB.ReturnInteger(FONT->ascent());
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CFONT_descent)
+BEGIN_PROPERTY(Font_Descent)
 
 	GB.ReturnInteger(FONT->descent());
 
 END_PROPERTY
 
 
-BEGIN_METHOD(CFONT_height, GB_STRING text)
+BEGIN_PROPERTY(Font_Height)
 
-	if (MISSING(text))
-		GB.ReturnInteger(FONT->height());
-	else
-		GB.ReturnInteger(FONT->height(STRING(text), LENGTH(text)));
+	GB.ReturnInteger(FONT->height());
+
+END_PROPERTY
+
+
+BEGIN_METHOD(Font_TextWidth, GB_STRING text)
+
+	GB.ReturnInteger(FONT->width(STRING(text), LENGTH(text)));
 
 END_METHOD
+
+
+BEGIN_METHOD(Font_TextHeight, GB_STRING text)
+
+	GB.ReturnInteger(FONT->height(STRING(text), LENGTH(text)));
+
+END_METHOD
+
+
+BEGIN_METHOD(Font_RichTextWidth, GB_STRING text)
+
+	int w;
+	
+	FONT->richTextSize(STRING(text), LENGTH(text), -1, &w, NULL);
+	GB.ReturnInteger(w);
+
+END_METHOD
+
+
+BEGIN_METHOD(Font_RichTextHeight, GB_STRING text; GB_INTEGER width)
+
+	int h;
+	
+	FONT->richTextSize(STRING(text), LENGTH(text), VARGOPT(width, -1), NULL, &h);
+	GB.ReturnInteger(h);
+
+END_METHOD
+
 
 BEGIN_PROPERTY(CFONT_fixed)
 
@@ -230,13 +255,6 @@ BEGIN_PROPERTY(CFONT_fixed)
 
 END_PROPERTY
 
-#if 0
-BEGIN_PROPERTY(CFONT_resolution)
-
-
-
-END_PROPERTY
-#endif
 
 BEGIN_METHOD_VOID(CFONTS_next)
 
@@ -319,15 +337,19 @@ GB_DESC CFontDesc[] =
 
   GB_METHOD("ToString", "s", CFONT_to_string, 0),
 
-  GB_METHOD("Width", "i", CFONT_width, "(Text)s"),
-  GB_METHOD("Height", "i", CFONT_height, "[(Text)s]"),
+  GB_METHOD("TextWidth", "i", Font_TextWidth, "(Text)s"),
+  GB_METHOD("TextHeight", "i", Font_TextHeight, "(Text)s"),
+
+  GB_METHOD("RichTextWidth", "i", Font_RichTextWidth, "(Text)s"),
+  GB_METHOD("RichTextHeight", "i", Font_RichTextHeight, "(Text)s[(Width)i]"),
 
   GB_STATIC_METHOD("_get", "Font", CFONT_get, "(Font)s"),
   #if 0
   GB_STATIC_PROPERTY("Resolution", "i", CFONT_resolution),
   #endif
-  GB_PROPERTY_READ("Ascent", "i", CFONT_ascent),
-  GB_PROPERTY_READ("Descent", "i", CFONT_descent),
+  GB_PROPERTY_READ("Ascent", "i", Font_Ascent),
+  GB_PROPERTY_READ("Descent", "i", Font_Descent),
+  GB_PROPERTY_READ("Height", "i", Font_Height),
 
   GB_PROPERTY_READ("Fixed", "b", CFONT_fixed),
   GB_PROPERTY_READ("Scalable", "b", CFONT_scalable),

@@ -626,7 +626,7 @@ Private Sub RefreshSnippet()
   
   CSampleCode.Init
   gvwSnippet.Rows.Count = CSampleCode.All.Count
-  gvwSnippet.Rows.Height = Font[txtEditorFont.Text].Height("") + 8
+  gvwSnippet.Rows.Height = Font[txtEditorFont.Text].Height + 8
   gvwSnippet.Refresh
   
 End
@@ -685,7 +685,7 @@ Private Sub UpdateSnippet()
     btnEditSnippet.Enabled = False
   Else
     btnRemoveSnippet.Enabled = Not hSampleCode.Default
-    btnEditSnippet.Enabled = Not hSampleCode.Default
+    btnEditSnippet.Enabled = True 'Not hSampleCode.Default
   Endif
 
 End

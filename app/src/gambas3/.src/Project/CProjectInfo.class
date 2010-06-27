@@ -6,6 +6,8 @@ Public Version As String
 Public Description As String
 Public Authors As String[]
 Public Icon As String
+Public Startup As String
+Public Components As String[]
 
 Private Sub GetProjectPath(sPath As String) As String
   
@@ -32,6 +34,7 @@ Public Sub _new(sPath As String)
   If Not sPath Then Return
   
   Name = File.Name(sPath)
+  Components = New String[]
     
   hFile = Open sPath &/ ".project"
   
@@ -63,6 +66,12 @@ Public Sub _new(sPath As String)
 
       Case "icon"
         sIcon = sVal
+        
+      Case "startup"
+        Startup = sVal
+        
+      Case "component"
+        Components.Add(sVal)
 
     End Select
   

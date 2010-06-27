@@ -58,8 +58,8 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
 
   'if the size choosed by the user is less than the font height, set the object to the font height
   'hext = Paint.TextExtents($sText)
-  fTextHeight = MTools.PixelsToUnits(Paint.Font.Height($sText)) 'hext.Height)
-  fTextWidth = MTools.PixelsToUnits(Paint.Font.Width($sText)) 'hext.Width)
+  fTextHeight = MTools.PixelsToUnits(Paint.Font.TextHeight($sText)) 'hext.Height)
+  fTextWidth = MTools.PixelsToUnits(Paint.Font.TextWidth($sText)) 'hext.Width)
   
   If hMyHints.Height < fTextHeight Then hMyHints.Height = fTextHeight + (2 * Me._Padding) + (2 * Me._BorderWidth)
   If Me._RelativeHeight Then hMyHints.Height = TotalHeight * Me._Height / 100

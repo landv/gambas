@@ -236,17 +236,20 @@ static bool emit_open_event(void *_object)
 	return false;
 }
 
-static void post_show_event(void *_object)
+static void handle_focus(CWINDOW *_object)
 {
-	GB.Raise(THIS, EVENT_Move, 0);
-	GB.Raise(THIS, EVENT_Resize, 0);
-	
 	if (THIS->focus)
 	{
 		THIS->focus->widget->setFocus();
 		GB.Unref(POINTER(&THIS->focus));
 		THIS->focus = NULL;
 	}	
+}
+
+static void post_show_event(void *_object)
+{
+	GB.Raise(THIS, EVENT_Move, 0);
+	GB.Raise(THIS, EVENT_Resize, 0);
 }
 
 static void reparent_window(CWINDOW *_object, void *parent, bool move, int x = 0, int y = 0)
@@ -2491,6 +2494,8 @@ bool CWindow::eventFilter(QObject *o, QEvent *e)
 				CWINDOW_LastActive = 0;
 				//qDebug("CWINDOW_LastActive = 0");
 			}
+			
+			handle_focus(THIS);
 		}
 		else if (e->type() == QEvent::WindowDeactivate && e->spontaneous())
 		{

@@ -26,10 +26,12 @@
 #include "main.h"
 
 #include <math.h>
-#include <qapplication.h>
-#include <qstringlist.h>
-#include <qfontmetrics.h>
-#include <qfontdatabase.h>
+
+#include <QApplication>
+#include <QStringList>
+#include <QFontMetrics>
+#include <QFontDatabase>
+#include <QTextDocument>
 
 #include "CWidget.h"
 #include "CDraw.h"
@@ -369,7 +371,49 @@ BEGIN_METHOD(CFONT_get, GB_STRING str)
 END_METHOD
 
 
-BEGIN_METHOD(CFONT_width, GB_STRING text)
+BEGIN_PROPERTY(Font_Ascent)
+
+  QFontMetrics fm(*(THIS->font));
+
+  GB.ReturnInteger(fm.ascent());
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(Font_Descent)
+
+  QFontMetrics fm(*(THIS->font));
+
+  GB.ReturnInteger(fm.descent());
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(Font_Height)
+
+  QFontMetrics fm(*(THIS->font));
+
+  GB.ReturnInteger(fm.height() + fm.leading());
+
+END_PROPERTY
+
+
+BEGIN_METHOD(Font_TextHeight, GB_STRING text)
+
+  QFontMetrics fm(*(THIS->font));
+  QString s;
+  int nl;
+
+  if (!MISSING(text))
+    s = QSTRING_ARG(text);
+  nl = s.count('\n');
+
+  GB.ReturnInteger(fm.height() * (1 + nl) + fm.leading() * nl);
+
+END_METHOD
+
+
+BEGIN_METHOD(Font_TextWidth, GB_STRING text)
 
   QFontMetrics fm(*(THIS->font));
   QStringList sl;
@@ -391,35 +435,37 @@ BEGIN_METHOD(CFONT_width, GB_STRING text)
 END_METHOD
 
 
-BEGIN_PROPERTY(CFONT_ascent)
-
-  QFontMetrics fm(*(THIS->font));
-
-  GB.ReturnInteger(fm.ascent());
-
-END_PROPERTY
-
-
-BEGIN_PROPERTY(CFONT_descent)
-
-  QFontMetrics fm(*(THIS->font));
-
-  GB.ReturnInteger(fm.descent());
-
-END_PROPERTY
+static void rich_text_size(CFONT *_object, char *text, int len, int sw, int *w, int *h)
+{
+	QTextDocument rt;
+	
+	rt.setHtml(QString::fromUtf8((const char *)text, len));
+	rt.setDefaultFont(*(THIS->font));
+	
+	if (sw > 0)
+		rt.setTextWidth(sw);
+	
+	if (w) *w = rt.idealWidth();
+	if (h) *h = rt.size().height();
+}
 
 
-BEGIN_METHOD(CFONT_height, GB_STRING text)
+BEGIN_METHOD(Font_RichTextWidth, GB_STRING text)
 
-  QFontMetrics fm(*(THIS->font));
-  QString s;
-  int nl;
+	int w;
+	
+	rich_text_size(THIS, STRING(text), LENGTH(text), -1, &w, NULL);
+	GB.ReturnInteger(w);
 
-  if (!MISSING(text))
-    s = QSTRING_ARG(text);
-  nl = s.count('\n');
+END_METHOD
 
-  GB.ReturnInteger(fm.height() * (1 + nl) + fm.leading() * nl);
+
+BEGIN_METHOD(Font_RichTextHeight, GB_STRING text; GB_INTEGER width)
+
+	int h;
+	
+	rich_text_size(THIS, STRING(text), LENGTH(text), VARGOPT(width, -1), NULL, &h);
+	GB.ReturnInteger(h);
 
 END_METHOD
 
@@ -534,8 +580,11 @@ GB_DESC CFontDesc[] =
 
   GB_METHOD("ToString", "s", CFONT_to_string, NULL),
 
-  GB_METHOD("Width", "i", CFONT_width, "(Text)s"),
-  GB_METHOD("Height", "i", CFONT_height, "[(Text)s]"),
+  GB_METHOD("TextWidth", "i", Font_TextWidth, "(Text)s"),
+  GB_METHOD("TextHeight", "i", Font_TextHeight, "(Text)s"),
+
+  GB_METHOD("RichTextWidth", "i", Font_RichTextWidth, "(Text)s"),
+  GB_METHOD("RichTextHeight", "i", Font_RichTextHeight, "(Text)s[(Width)i]"),
 
   GB_STATIC_METHOD("_get", "Font", CFONT_get, "(Font)s"),
 
@@ -543,8 +592,9 @@ GB_DESC CFontDesc[] =
   GB_STATIC_PROPERTY("Resolution", "i", CFONT_resolution),
   #endif
 
-  GB_PROPERTY_READ("Ascent", "i", CFONT_ascent),
-  GB_PROPERTY_READ("Descent", "i", CFONT_descent),
+  GB_PROPERTY_READ("Ascent", "i", Font_Ascent),
+  GB_PROPERTY_READ("Descent", "i", Font_Descent),
+  GB_PROPERTY_READ("Height", "i", Font_Height),
 
   GB_PROPERTY_READ("Fixed", "b", CFONT_fixed),
   GB_PROPERTY_READ("Scalable", "b", CFONT_scalable),

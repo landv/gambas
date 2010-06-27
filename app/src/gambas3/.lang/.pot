@@ -18,7 +18,7 @@ msgstr ""
 msgid "Not finished but stable"
 msgstr ""
 
-#: CComponentBox.class:205 ProjectItem.class:73
+#: CComponentBox.class:205 ProjectItem.class:68
 msgid "Authors"
 msgstr ""
 
@@ -307,6 +307,23 @@ msgstr ""
 msgid "Gambas reports"
 msgstr ""
 
+#: CProjectTree.class:290 FMain.class:2639 FSearch.class:88
+#: FSelectIcon.class:216 Project.module:1305
+msgid "Project"
+msgstr ""
+
+#: CProjectTree.class:293 Project.module:1308
+msgid "Sources"
+msgstr ""
+
+#: CProjectTree.class:296 Project.module:1311
+msgid "Connections"
+msgstr ""
+
+#: CProjectTree.class:305 Project.module:1320
+msgid "Data"
+msgstr ""
+
 #: CRecentFile.class:49
 msgid "Today"
 msgstr ""
@@ -356,10 +373,10 @@ msgstr ""
 #: FConnectionEditor.class:411 FCreateFile.class:923 FFontChooser.class:79
 #: FGotoLine.class:57 FList.class:331 FMain.class:2943
 #: FMakeExecutable.class:138 FMenu.class:1065 FNewConnection.class:573
-#: FNewTable.class:159 FNewTranslation.class:64 FOpenProject.class:458
+#: FNewTable.class:159 FNewTranslation.class:64 FOpenProject.class:484
 #: FPasteSpecial.class:273 FPropertyProject.class:258
 #: FReportBorderChooser.class:213 FReportCoordChooser.class:120
-#: FSelectExtraFile.class:72 FSelectIcon.class:267 FSnippet.class:133
+#: FSelectExtraFile.class:72 FSelectIcon.class:267 FSnippet.class:136
 #: FTableChooser.class:138 FText.class:100
 msgid "OK"
 msgstr ""
@@ -442,11 +459,11 @@ msgstr ""
 #: FIconEditor.class:1396 FImportTable.class:38 FList.class:155
 #: FMain.class:211 FMakeExecutable.class:144 FMakeInstall.class:309
 #: FMenu.class:1070 FNewConnection.class:317 FNewTable.class:165
-#: FNewTranslation.class:70 FOpenProject.class:154 FOption.class:590
+#: FNewTranslation.class:70 FOpenProject.class:161 FOption.class:590
 #: FPasteSpecial.class:279 FPropertyProject.class:1017
 #: FReportBorderChooser.class:207 FReportCoordChooser.class:114
 #: FSave.class:118 FSelectExtraFile.class:78 FSelectIcon.class:272
-#: FSnippet.class:139 FTableChooser.class:144 FTextEditor.class:450
+#: FSnippet.class:142 FTableChooser.class:144 FTextEditor.class:450
 #: FText.class:106 FTranslate.class:617 Project.module:368
 msgid "Cancel"
 msgstr ""
@@ -589,7 +606,7 @@ msgid ""
 "Do you really want to open another file?"
 msgstr ""
 
-#: FConflict.class:254 FOpenProject.class:377 Project.module:368
+#: FConflict.class:254 FOpenProject.class:392 Project.module:368
 msgid "Open"
 msgstr ""
 
@@ -1063,7 +1080,7 @@ msgstr ""
 msgid "Title"
 msgstr ""
 
-#: FCreateProject.class:660 FOpenProject.class:448
+#: FCreateProject.class:660 FOpenProject.class:474
 msgid "Open in another window"
 msgstr ""
 
@@ -2323,10 +2340,6 @@ msgstr ""
 msgid "Make installation package"
 msgstr ""
 
-#: FMain.class:2639 FSearch.class:88 FSelectIcon.class:216 Project.module:1305
-msgid "Project"
-msgstr ""
-
 #: FMain.class:2649
 msgid "Properties sheet"
 msgstr ""
@@ -2821,27 +2834,27 @@ msgstr ""
 msgid "New translation"
 msgstr ""
 
-#: FOpenProject.class:154
+#: FOpenProject.class:161
 msgid "Do you want to uncompress this archive?"
 msgstr ""
 
-#: FOpenProject.class:154
+#: FOpenProject.class:161
 msgid "Uncompress"
 msgstr ""
 
-#: FOpenProject.class:363
+#: FOpenProject.class:378
 msgid "Select a project"
 msgstr ""
 
-#: FOpenProject.class:416
+#: FOpenProject.class:442
 msgid "Recent"
 msgstr ""
 
-#: FOpenProject.class:424 FWelcome.class:528
+#: FOpenProject.class:450 FWelcome.class:528
 msgid "Sort by path"
 msgstr ""
 
-#: FOpenProject.class:433 FWelcome.class:52
+#: FOpenProject.class:459 FWelcome.class:52
 msgid "Examples"
 msgstr ""
 
@@ -3558,15 +3571,15 @@ msgstr ""
 msgid "This trigger string is already in use."
 msgstr ""
 
-#: FSnippet.class:63
+#: FSnippet.class:66
 msgid "Edit code snippet"
 msgstr ""
 
-#: FSnippet.class:66
+#: FSnippet.class:69
 msgid "New code snippet"
 msgstr ""
 
-#: FSnippet.class:108
+#: FSnippet.class:111
 msgid "Trigger string"
 msgstr ""
 
@@ -4928,7 +4941,7 @@ msgstr ""
 msgid "'tar' has returned the following error code:"
 msgstr ""
 
-#: ProjectItem.class:73
+#: ProjectItem.class:68
 msgid "Author"
 msgstr ""
 
@@ -5036,18 +5049,6 @@ msgstr ""
 
 #: Project.module:1270
 msgid "ALPHA VERSION, USE AT YOUR OWN RISK! :-)"
-msgstr ""
-
-#: Project.module:1308
-msgid "Sources"
-msgstr ""
-
-#: Project.module:1311
-msgid "Connections"
-msgstr ""
-
-#: Project.module:1320
-msgid "Data"
 msgstr ""
 
 #: Project.module:1425

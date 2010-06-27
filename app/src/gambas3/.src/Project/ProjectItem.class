@@ -4,6 +4,9 @@ Inherits UserControl
 
 Property ShowPath As Boolean
 Property Path As String
+Property Highlight As Boolean
+Property Background As Integer
+Property Read IdealHeight As Integer
 
 Private $hDrawingArea As DrawingArea
 Private $sPath As String
@@ -14,15 +17,13 @@ Private $bShowPath As Boolean
 Private Const ICON_SIZE As Integer = 32
 Private Const PADDING As Integer = 6
 
+Private $bCanHighlight As Boolean = True
 Private $bHighlight As Boolean
-
-Property Background As Integer
 
 Public Sub _new()
   
   $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
-  '$hDrawingArea.Mouse = Mouse.Pointing
-  Refresh
+  $hDrawingArea.Mouse = Mouse.Pointing
   
 End
 
@@ -45,15 +46,41 @@ Private Sub SetPath(sPath As String)
   End With 
   
   $hDrawingArea.ToolTip = Replace($sPath, System.User.Home, "~")
+  Me.H = Me.IdealHeight
   Refresh
   
 End
+
+Private Sub GetTitle() As String
+  
+  Dim sTitle As String
+  Dim bSelected As Boolean
+  
+  bSelected = Me.Background = Color.SelectedBackground
+
+  With $hProjectInfo
+    sTitle = .Title
+    If Not sTitle Then sTitle = .Name
+    sTitle = "<b>" & .Name & "</b>&nbsp;" & .Version
+    sTitle &= Subst("<br><font size=\"-1\" color=\"&1\">", If(bSelected, "white", "gray")) & .Title
+    If .Authors And If .Authors.Count Then
+      If .Title Then sTitle &= " - "
+      sTitle &= "<i>" & If(.Authors.Count = 1, ("Author"), ("Authors")) & " : " & .Authors.Join(", ") & "</i>"
+    Endif
+    sTitle &= "</font>"
+    If $bShowPath Then sTitle &= Subst("<br><font size=\"-1\" color=\"&1\"><b>", If(bSelected, "white", "gray")) & Replace($sPath, System.User.Home, "~") & "</b></font>"
+  End With
+  
+  Return sTitle
+
+End
+
 
 Public Sub DrawingArea_Draw()
   
   Dim hIcon As Picture
   Dim sTitle As String
-  Dim X, W As Integer
+  Dim X, W, H As Integer
   Dim sPath As String
   Dim bSelected As Boolean
   
@@ -64,21 +91,13 @@ Public Sub DrawingArea_Draw()
   With $hProjectInfo
     
     Draw.Picture($hIcon, PADDING, PADDING)
-    sTitle = .Title
-    If Not sTitle Then sTitle = .Name
-    sTitle = "<b>" & .Name & "</b> " & .Version
-    sTitle &= Subst("<br><font size=\"-1\" color=\"&1\">", If(bSelected, "white", "gray")) & .Title
-    If .Authors And If .Authors.Count Then
-      If .Title Then sTitle &= " - "
-      sTitle &= "<i>" & If(.Authors.Count = 1, ("Author"), ("Authors")) & " : " & .Authors.Join(", ") & "</i>"
-    Endif
-    sTitle &= "</font>"
-    If $bShowPath Then sTitle &= Subst("<br><font size=\"-1\" color=\"&1\"><b>", If(bSelected, "white", "gray")) & Replace($sPath, System.User.Home, "~") & "</b></font>"
+    sTitle = GetTitle()
     'Draw.Font.Bold = True
     X = ICON_SIZE + PADDING * 2
-    W = Max(Me.W - X, Draw.RichTextWidth(sTitle))
+    W = Min(Me.W - X, Draw.RichTextWidth(sTitle))
     If bSelected Then Draw.Foreground = Color.SelectedForeground
-    Draw.RichText(sTitle, X, 0, W, Desktop.Scale * 4, Align.TopLeft)
+    H = Draw.RichTextHeight(sTitle, W)
+    Draw.RichText(sTitle, X, 0, W, H, Align.TopLeft)
     
   End With
   
@@ -86,12 +105,12 @@ End
 
 Public Sub DrawingArea_Enter()
   
-  'If Me.Parent Is ListContainer Then
+  If $bCanHighlight Then
     If Me.Background = Color.Default Then 
       $hDrawingArea.Background = Color.LightBackground
       $bHighlight = True
     Endif
-  'Endif
+  Endif
   
 End
 
@@ -117,11 +136,6 @@ End
 
 Private Sub Refresh()
   
-  Dim H As Integer
-
-  H = ICON_SIZE + PADDING * 2
-  If $bShowPath Then H += Desktop.Scale * 2
-  Me.H = H
   Super.Refresh
   
 End
@@ -150,4 +164,34 @@ Private Sub Path_Write(Value As String)
 
   SetPath(Value)
 
+End
+
+Private Function Highlight_Read() As Boolean
+
+  Return $bCanHighlight
+
+End
+
+Private Sub Highlight_Write(Value As Boolean)
+
+  $bCanHighlight = Value
+  $hDrawingArea.Mouse = If(Value, Mouse.Pointing, Mouse.Default)
+
+End
+
+Private Function IdealHeight_Read() As Integer
+  
+  Dim X, H As Integer
+  Dim sTitle As String
+
+  X = ICON_SIZE + PADDING * 2
+  If $hProjectInfo Then
+    sTitle = GetTitle()
+    H = $hDrawingArea.Font.RichTextHeight(sTitle, Min(Me.W - X, $hDrawingArea.Font.RichTextWidth(sTitle)))
+  Endif
+
+  H = Max(H, X)
+  If $bShowPath Then H += Desktop.Scale * 2
+  Return H
+  
 End

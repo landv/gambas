@@ -6,7 +6,7 @@ Static Private $bAnother As Boolean
 
 Static Public InAnotherWindow As Boolean
 
-Private frmProjectItem As ProjectItem
+Private $hProjectItem As ProjectItem
 
 Public Sub Run(Optional bAnother As Boolean) As String
 
@@ -22,7 +22,8 @@ End
 
 Public Sub _new()
   
-  frmProjectItem = New ProjectItem(panProject)
+  $hProjectItem = New ProjectItem(panProjectTitle)
+  $hProjectItem.Highlight = False
   
 End
 
@@ -111,6 +112,7 @@ End
 Public Sub dchProject_Change()
 
   Dim sPath As String
+  Dim hProjectTree As CProjectTree
   
   fvwProject.ShowHidden = dchProject.ShowHidden  
   fvwProject.Dir = dchProject.Value
@@ -119,7 +121,8 @@ Public Sub dchProject_Change()
   
   If Not sPath Then
     $sLast = ""
-    sdpProject.Hide
+    fvwProject.Show
+    panProject.Hide
     Return 
   Endif
   
@@ -127,9 +130,13 @@ Public Sub dchProject_Change()
   
   $sLast = sPath
   
-  frmProjectItem.Path = sPath
+  $hProjectItem.Path = sPath
+  hProjectTree = New CProjectTree(tvwProject, sPath)
   
-  sdpProject.Show
+  panProject.Show
+  fvwProject.Hide
+  
+  splProject_Resize
 
 End
 
@@ -197,7 +204,7 @@ Private Sub FillRecent()
           .Enabled = False
           .Tag = sTitle 
           .Font = Font["Bold"]
-          .H = .Font.Height() + If(sLastTitle, 16, 8)
+          .H = .Font.Height + If(sLastTitle, 16, 8)
           .Foreground = Color.SelectedBackground
           Y += .H
         End With
@@ -263,7 +270,7 @@ Private Sub FillExample()
         .Enabled = False
         .Tag = Project.ExampleTitle[sDir]
         .Font = Font["Bold"]
-        .H = .Font.Height() + If(sLastDir, 16, 8)
+        .H = .Font.Height + If(sLastDir, 16, 8)
         .Foreground = Color.SelectedBackground
       End With
       'bHighlight = False
@@ -332,5 +339,11 @@ End
 Public Sub fvwProject_Menu()
 
   Debug
+
+End
+
+Public Sub splProject_Resize()
+
+  panProjectTitle.H = $hProjectItem.IdealHeight + panProjectTitle.Padding * 2
 
 End

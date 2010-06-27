@@ -27,23 +27,32 @@
       }
       { Panel2 Panel
         MoveScaled(50,3,42,56)
-        Arrangement = Arrange.Vertical
-        { sdpProject SidePanel
-          MoveScaled(1,1,40,12)
-          Arrangement = Arrange.Fill
-          { panProject Panel
-            MoveScaled(1,1,34,7)
+        Arrangement = Arrange.Fill
+        { fvwProject FileView
+          MoveScaled(1,38,40,17)
+          ShowDetailed = True
+          ShowDirectory = True
+        }
+        { panProject Panel
+          MoveScaled(1,1,40,32)
+          Arrangement = Arrange.Vertical
+          Padding = 1
+          Border = Border.Sunken
+          { panProjectTitle Panel
+            MoveScaled(1,1,34,9)
             Background = Color.TextBackground
             Arrangement = Arrange.Fill
             Padding = 2
-            Border = Border.Plain
           }
-        }
-        { fvwProject FileView
-          MoveScaled(1,14,40,37)
-          Expand = True
-          ShowDetailed = True
-          ShowDirectory = True
+          { Separator1 Separator
+            MoveScaled(1,11,12,0)
+            Background = Color.TextBackground
+          }
+          { tvwProject TreeView
+            MoveScaled(2,13,35,17)
+            Expand = True
+            Border = False
+          }
         }
       }
     }

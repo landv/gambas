@@ -117,7 +117,7 @@ Public Sub Open(hForm As FEditor, sMode As String, Optional sClass As String, Op
     lvwComp.Item.EnsureVisible
   Endif 
 
-  W = $iMaxLen * Me.Font.Width("A") + 16 + 16 + 12
+  W = $iMaxLen * Me.Font.TextWidth("A") + 16 + 16 + 12
   
   If $bShowHelp Then
     sepHelp.Show
@@ -142,7 +142,7 @@ Public Sub Open(hForm As FEditor, sMode As String, Optional sClass As String, Op
     sText &= Key.Text
   Endif
 
-  iX = $hEditor.X + $hEditor.ToPosX(0) + $hEditor.Font.Width(sText)
+  iX = $hEditor.X + $hEditor.ToPosX(0) + $hEditor.Font.TextWidth(sText)
 
   iX = Max(0, Min(iX, $hEditor.Window.ClientW - Me.Width))
 

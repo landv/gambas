@@ -92,7 +92,7 @@ Private Sub RefreshGrade()
   For iInd = 0 To NBR_GRADE - 1
     sGrade = Trim(Format(FIRST_GRADE + iInd, "+#"))
     hFont = Font[GetFont(sGrade)]
-    H = hFont.Height("X") + 4
+    H = hFont.Height + 4
     With $hGrade[iInd]
       .Font = hFont
       .Height = H
@@ -237,7 +237,7 @@ Private Sub RefreshExample()
     Size = Font[sFont].Size
     Grade = Font[sFont].Grade
     'PRINT Size;; Grade
-    $iHeight = txtExample.Font.Height(txtExample.Text) + 16
+    $iHeight = txtExample.Font.Height + 16
     Form_Resize
 
     RefreshGrade

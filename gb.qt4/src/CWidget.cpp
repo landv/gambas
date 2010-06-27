@@ -930,9 +930,13 @@ BEGIN_METHOD_VOID(CCONTROL_set_focus)
 	CWINDOW *win = CWidget::getTopLevel(THIS);
 
 	if (QWIDGET(win)->isVisible())
+	{
+		//qDebug("setFocus: now");
 		WIDGET->setFocus();
+	}
 	else if ((CWIDGET *)win != THIS)
 	{
+		//qDebug("setFocus: later");
 		GB.Unref(POINTER(&win->focus));
 		win->focus = THIS;
 		GB.Ref(THIS);
