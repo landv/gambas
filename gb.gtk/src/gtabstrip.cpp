@@ -176,7 +176,7 @@ void gTabStripPage::updateColors()
 
 void gTabStripPage::updateFont()
 {
-	gFont *fnt = parent->font();
+	gFont *fnt = parent->textFont();
 	gtk_widget_modify_font(widget, fnt ? fnt->desc() : NULL);
 	gtk_widget_modify_font(label, fnt ? fnt->desc() : NULL);
 }
@@ -320,7 +320,9 @@ gTabStrip::gTabStrip(gContainer *parent) : gContainer(parent)
 {
 	g_typ=Type_gTabStrip;
 	_pages = g_ptr_array_new();
-	onClick=NULL;
+	_textFont = NULL;
+	
+	onClick = NULL;
 	
 	widget = gtk_notebook_new();
 	gtk_notebook_set_scrollable(GTK_NOTEBOOK(widget), TRUE);
@@ -352,6 +354,7 @@ gTabStrip::~gTabStrip()
 	while (count())
 		destroyTab(count() - 1);
 	unlock();
+	gFont::assign(&_textFont);
 	g_ptr_array_free(_pages, TRUE);
 }
 
@@ -576,12 +579,27 @@ gTabStripPage *gTabStrip::get(int ind)
 		return (gTabStripPage *)g_ptr_array_index(_pages, ind);
 }
 
-void gTabStrip::setFont(gFont *font)
+void gTabStrip::updateFont()
 {
 	int i;
 	
-	gControl::setFont(font);
-	
 	for (i = 0; i < count(); i++)
 		get(i)->updateFont();	
+}
+
+void gTabStrip::setFont(gFont *font)
+{
+	gControl::setFont(font);
+	updateFont();
+}
+
+gFont *gTabStrip::textFont()
+{
+	return _textFont;
+}
+
+void gTabStrip::setTextFont(gFont *font)
+{
+	gFont::assign(&_textFont, font);
+	updateFont();
 }

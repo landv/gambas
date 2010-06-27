@@ -247,6 +247,15 @@ void MyTabWidget::layoutContainer()
 		THIS->container->setGeometry(0, 0, contentsRect.width(), contentsRect.height());
 }
 
+void MyTabWidget::updateTextFont()
+{
+	CWIDGET *_object = CWidget::get(this);
+	if (THIS->textFont)
+		tabBar()->setFont(*THIS->textFont->font);
+	else
+		tabBar()->setFont(QFont());
+}
+
 #if 0
 bool MyTabWidget::eventFilter(QObject *o, QEvent *e)
 {
@@ -436,6 +445,12 @@ BEGIN_METHOD(CTABSTRIP_new, GB_OBJECT parent)
 END_METHOD
 
 
+BEGIN_METHOD_VOID(TabStrip_free)
+
+	GB.Unref(POINTER(&THIS->textFont));
+
+END_METHOD
+
 
 BEGIN_PROPERTY(CTABSTRIP_count)
 
@@ -542,6 +557,19 @@ BEGIN_PROPERTY(CTAB_text)
 	{
 		WIDGET->stack.at(index)->text = QSTRING_PROP();
 		WIDGET->stack.at(index)->updateText();
+	}
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(TabStrip_TextFont)
+
+	if (READ_PROPERTY)
+		GB.ReturnObject(THIS->textFont);
+	else
+	{
+		GB.StoreObject(PROP(GB_OBJECT), POINTER(&THIS->textFont));
+		WIDGET->updateTextFont();
 	}
 
 END_PROPERTY
@@ -835,9 +863,11 @@ GB_DESC CTabStripDesc[] =
 	GB_DECLARE("TabStrip", sizeof(CTABSTRIP)), GB_INHERITS("Container"),
 
 	GB_METHOD("_new", NULL, CTABSTRIP_new, "(Parent)Container;"),
+	GB_METHOD("_free", NULL, TabStrip_free, NULL),
 
 	GB_PROPERTY("Count", "i", CTABSTRIP_count),
 	GB_PROPERTY("Text", "s", CTABSTRIP_text),
+	GB_PROPERTY("TextFont", "Font", TabStrip_TextFont),
 	GB_PROPERTY("Picture", "Picture", CTABSTRIP_picture),
 	GB_PROPERTY("Caption", "s", CTABSTRIP_text),
 	GB_PROPERTY_READ("Current", ".Tab", CTABSTRIP_current),

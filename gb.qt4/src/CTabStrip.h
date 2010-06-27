@@ -28,6 +28,7 @@
 #include "CWidget.h"
 #include "CContainer.h"
 #include "CPicture.h"
+#include "CFont.h"
 
 #include <QTabWidget>
 #include <QTabBar>
@@ -57,6 +58,7 @@ typedef
     CWIDGET widget;
     QWidget *container;
     CARRANGEMENT arrangement;
+		CFONT *textFont;
     int index;
     int id;
     unsigned geom : 1;
@@ -80,6 +82,7 @@ public:
 	virtual ~MyTabWidget();
 	virtual void setEnabled(bool e);
 	void layoutContainer();
+	void updateTextFont();
 	
 private:
 	int _oldw, _oldh;

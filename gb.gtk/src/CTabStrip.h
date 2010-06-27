@@ -45,6 +45,7 @@ typedef
 	{
 		CWIDGET ob;
 		int index;
+		void *textFont;
 	}  
 	CTABSTRIP;
 

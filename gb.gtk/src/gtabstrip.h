@@ -60,7 +60,10 @@ public:
 
 	virtual void setFont(gFont *ft);
 
-//"Events"
+	gFont *textFont();
+	void setTextFont(gFont *ft);
+
+	//"Events"
 	void (*onClick)(gTabStrip *sender);
 
 //"Private"
@@ -68,8 +71,10 @@ public:
 	
 private:
 	GPtrArray *_pages;
+	gFont *_textFont;
 	gTabStripPage *get(int ind);
 	int getRealIndex(GtkWidget *page);
+	void updateFont();
 	void destroyTab(int ind);
 };
 
