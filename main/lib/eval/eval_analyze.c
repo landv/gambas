@@ -408,7 +408,7 @@ static void analyze(EVAL_ANALYZE *result)
 			{
 				char c = toupper(symbol[0]);
 				GB.AddString(&result->str, &c, 1);
-				GB.AddString(&result->str, &symbol[1], len - 1);
+				if (len > 1) GB.AddString(&result->str, &symbol[1], len - 1);
 			}
 			else
 				GB.AddString(&result->str, symbol, len);
