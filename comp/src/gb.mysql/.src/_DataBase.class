@@ -15,9 +15,8 @@ Public Procedure Modify(Optional Database As String = modMain.$Connection.Name, 
 
 End
 
-Public Procedure Delete(Optional Database As String = modMain.$Connection.Name, Optional IfExists As Boolean)
+Public Procedure Delete(Optional Database As String = modMain.$Connection.Name, Optional IfExists As Boolean = False)
 
-  If Not IfExists Then IfExists = False
   modMain.$Query = "DROP DATABASE "
   If IfExists Then modMain.$Query &= "IF EXISTS "
   modMain.$Query &= "`" & Database & "`"

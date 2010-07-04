@@ -3,7 +3,7 @@
 Export
 Create Static
 
-Public Procedure Delete(User As String, Host As String, Optional IfExists As Boolean)
+Public Procedure Delete(User As String, Host As String, Optional IfExists As Boolean = False)
 
   modMain.$Query = "DROP USER '" & User & "'@'" & Host & "'"
   If IfExists Then

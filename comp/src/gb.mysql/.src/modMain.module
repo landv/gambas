@@ -56,16 +56,12 @@ Public Sub Main()
   'DB.Debug = True
   hCon.Type = "mysql"
   hCon.Port = "3306"
-  hCon.Host = "192.168.20.181"
-  hCon.User = "dvillalobos"
-  hCon.Password = ""
-  hCon.Name = "mysql"
+  hCon.Host = "localhost"
+  hCon.User = "root"
+  hCon.Password = "david123"
+  hCon.Name = "MAS"
   hCon.Open()
 
-  Print hCon.MySQL.Version.Version()
-  Print hCon.MySQL.Version.VersionComment()
-  Print hCon.MySQL.Version.MayorVersion()
-  Print hCon.MySQL.Version.MinorVersion()
-  Print hCon.MySQL.Version.Release()
+  Print hCon.MySQL.Trigger.Time("a")
 
 End
