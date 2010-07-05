@@ -274,6 +274,7 @@ bool ARCH_find(ARCH *arch, const char *path, int len_path, ARCH_FIND *find)
 	if (len_tpath == 0)
 	{
 		find->sym = NULL;
+		find->index = NO_SYMBOL;
 		find->pos = -1;
 		find->len = 0;
 		return FALSE;

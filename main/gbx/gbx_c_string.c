@@ -80,6 +80,7 @@ static int get_next_pos(void)
 
   //_pos += get_char_length(&_str[_pos]);
   _pos += _char_length[(unsigned char)_str[_pos]];
+
   return _pos;
 }
 
@@ -192,6 +193,9 @@ static void get_substring(int start, int len)
       break;
   }
 
+	if (_pos > _len)
+		_pos = _len;
+	
 	if (_pos > pos)
 		GB_ReturnNewString(_str + pos, _pos - pos);
 	else

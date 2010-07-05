@@ -20,6 +20,8 @@ Property ShowSplitter As Boolean
 Property Bookmarks As Array
 Property Icon As Picture
 Property Settings As Variant[]
+Property Read DirView As DirView
+Property Read FileView As FileView
 
 Event Change
 Event Activate
@@ -216,4 +218,16 @@ Public Sub Reload()
   
   frmChooser.Reload
   
+End
+
+Private Function FileView_Read() As FileView
+
+  Return frmChooser.FileView
+
+End
+
+Private Function DirView_Read() As DirView
+
+  Return frmChooser.DirView
+
 End

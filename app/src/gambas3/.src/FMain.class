@@ -947,8 +947,8 @@ Public Sub ReadConfig()
 
   tvwProject.Font.Grade = - Settings["/GlobalFont", 0]
   lblMessage.Font = tvwProject.Font
-  tabProperty.Font.Grade = - Settings["/TabStripFont", 0]
-  wrkProject.Font = tabProperty.Font
+  tabProperty.TextFont = Font[CStr(- Settings["/TabStripFont", 0])]
+  wrkProject.Font = tabProperty.TextFont
   'wrkProject.Font = tvwProject.Font
   'tabProperty.Font = tvwProject.Font
   panMessage.Height = lblMessage.Font.Height + lblMessage.Padding * 2 + 2
@@ -959,7 +959,7 @@ Public Sub ReadConfig()
   mnuStatusBar.Value = bShow
 
   Me.Menus.Visible = Settings["/ShowMenus", True]
-  btnShowMenu.Visible = Not Me.Menus.Visible
+  panShowMenu.Visible = Not Me.Menus.Visible
   
 
   MTheme.InitControl(tvwProject)
@@ -1613,16 +1613,22 @@ End
 
 Public Sub mnuHideMenu_Click()
 
-  Me.Menus.Hide
-  btnShowMenu.Show
-  Settings["/ShowMenus"] = Me.Menus.Visible
+  If Me.Menus.Visible Then
+    Me.Menus.Hide
+    sepMenu.Hide
+    panShowMenu.Show
+    Settings["/ShowMenus"] = Me.Menus.Visible
+  Else
+    btnShowMenu_Click
+  Endif
 
 End
 
 Public Sub btnShowMenu_Click()
 
   Me.Menus.Show
-  btnShowMenu.Hide
+  sepMenu.Show
+  panShowMenu.Hide
   Settings["/ShowMenus"] = Me.Menus.Visible
 
 End

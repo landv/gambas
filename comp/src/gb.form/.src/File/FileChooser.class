@@ -21,6 +21,8 @@ Property ShowDetailed As Boolean
 Property ShowBookmark As Boolean
 Property Bookmarks As Array
 Property Settings As Variant[]
+Property Read DirView As DirView
+Property Read FileView As FileView
 
 Property ReadOnly As Boolean
 Property Filter As String[]
@@ -298,3 +300,15 @@ Public Sub Reload()
   
 End
 
+
+Private Function FileView_Read() As FileView
+
+  Return frmChooser.FileView
+
+End
+
+Private Function DirView_Read() As DirView
+
+  Return frmChooser.DirView
+
+End

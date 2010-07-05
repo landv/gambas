@@ -113,8 +113,7 @@
         Text = ("Replace &all")
         Picture = Picture["icon:/small/wizard"]
       }
-      { btnBrowse2 Button btnBrowse
-        Name = "btnBrowse2"
+      { btnBrowse Button
         MoveScaled(0,16,18,4)
         Text = ("&Browse")
         Picture = Picture["icon:/small/zoom-in"]
@@ -170,12 +169,6 @@
       { panSearch HBox
         MoveScaled(1,26,79,4)
         Spacing = True
-        { btnBrowse Button
-          MoveScaled(0,0,21,4)
-          Visible = False
-          Text = ("&Refresh")
-          Picture = Picture["icon:/small/refresh"]
-        }
         { btnBrowseReplace Button
           MoveScaled(21,0,21,4)
           Visible = False

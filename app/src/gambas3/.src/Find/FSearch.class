@@ -16,6 +16,7 @@ Private $bReplace As Boolean
 Private $aBrowse As New CFindResult[]
 Private $hFont As Font
 Private $aExt As String[] = ["JPG", "JPEG", "BMP", "GIF", "PNG", "ICO", "XPM", "GAMBAS"]
+Private $bCancel As Boolean
 
 Private Const GO_FORWARD As Integer = 0
 Private Const GO_BACKWARD As Integer = 1
@@ -240,9 +241,9 @@ Private Sub GrepFile(hFile As Object) As CFindResult[]
   hProcess = Exec aGrep For Read Write As "Grep"
   Print #hProcess, sText;
   Close #hProcess
-  While hProcess.State = Process.Running
-    Wait
-  Wend
+  Repeat
+    Wait 0.01
+  Until hProcess.State <> Process.Running
 
   For Each sFind In Split($sGrep, "\n", "", True)
     aFind = Split(sFind, ":")
@@ -426,6 +427,17 @@ Public Sub AddFound(hResult As CFindResult)
   
 End
 
+Private Sub EnableGUI(bOn As Boolean)
+  
+  Dim hCtrl As Control
+  
+  For Each hCtrl In tabSearch[0].Children
+    hCtrl.Enabled = bOn
+  Next
+  
+End
+
+
 Private Sub Browse()
   
   Dim sFile As String
@@ -453,7 +465,13 @@ Private Sub Browse()
   lblBrowse.Raise
   
   Inc Application.Busy
-  Me.Enabled = False
+  FMain.Enabled = False
+  EnableGUI(False)
+  'tabSearch.Enabled = False
+  
+  btnClose.Text = ("Cancel")
+  btnClose2.Text = ("Cancel")
+  $bCancel = False
   
   tvwFind.Rows.Count = 0
   tvwFind.Clear
@@ -478,18 +496,19 @@ Private Sub Browse()
     If sName Begins "callgrind.out." Then Continue
     If sName Begins "cachegrind.out." Then Continue
     
+    'Debug sName
+    Try hFile = Project.LoadFile(sPath)
+    If Not hFile Then Continue
+    
     If sFile Begins ".src/" Then
       lblBrowse.Text = sName
     Else
       lblBrowse.Text = sFile
     Endif
-    'Debug sName
-    Wait
-    
-    Try hFile = Project.LoadFile(sPath)
-    If Not hFile Then Continue
     
     aResult = GrepFile(hFile)
+    If $bCancel Then Break
+    
     For iInd = 0 To aResult.Max
       hResult = aResult[iInd]
       If Not hFile.SetPosition(hResult, True) Then 
@@ -508,7 +527,10 @@ Finally
   Endif
 
   lblBrowse.Hide
-  Me.Enabled = True
+  EnableGUI(True)
+  FMain.Enabled = True
+  btnClose.Text = ("Close")
+  btnClose2.Text = ("Close")
   Dec Application.Busy
 
 End
@@ -529,7 +551,11 @@ End
 
 Public Sub btnClose_Click()
 
-  Me.Close
+  If FMain.Enabled Then
+    Me.Close
+  Else 
+    $bCancel = True
+  Endif
 
 End
 
@@ -718,6 +744,8 @@ End
 
 Public Sub Form_KeyPress()
 
-  If Key.Code = Key.Esc Then Me.Close
+  If Key.Code = Key.Esc Then 
+    btnClose_Click
+  Endif
 
 End

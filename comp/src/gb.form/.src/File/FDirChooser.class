@@ -57,7 +57,7 @@ End
 
 Public Sub dvwChoose_Click()
 
-  If fvwChoose.Visible Then fvwChoose.Dir = dvwChoose.Current
+  If panView.Visible Then fvwChoose.Dir = dvwChoose.Current
 
   AddToHistory(dvwChoose.Current)
   Object.Lock(cmbDir)
@@ -94,7 +94,7 @@ End
 Public Sub btnView_Click()
 
   $bView = Not $bView
-  fvwChoose.Visible = $bView
+  panView.Visible = $bView
   btnDetailed.Visible = $bView
   If $bView Then
     fvwChoose.Dir = dvwChoose.Current
@@ -165,13 +165,13 @@ End
 
 Public Function GetFileVisible() As Boolean
 
-  Return fvwChoose.Visible
+  Return panView.Visible
 
 End
 
 Public Sub SetFileVisible(bVisible As Boolean)
 
-  If fvwChoose.Visible <> bVisible Then btnView_Click
+  If panView.Visible <> bVisible Then btnView_Click
 
 End
 

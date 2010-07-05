@@ -1406,6 +1406,37 @@ Public Function IsForm(hFile As Object) As Boolean
 
 End
 
+Private Sub IsTextFile(sPath As String) As Boolean
+  
+  Dim hFile As File
+  Dim sStr As String
+  Dim sCar As String
+  Dim iInd As Integer
+  Dim iCode As Integer
+  Dim sTest As String
+  
+  hFile = Open sPath
+  sStr = Read #hFile, -256
+  
+  While sStr
+    sCar = String.Left(sStr)
+    If Not sCar Then Break
+    If Len(sCar) = 1 Then
+      iCode = Asc(sCar)
+      If iCode = &HFE Then Return False
+      If iCode = &HFF Then Return False
+      If iCode < 32 And If iCode <> 10 And If iCode <> 7 Then Return False
+    Else
+      Try sTest = Conv(sCar, "UTF-8", "UCS-4LE")
+    Endif
+    If Error Then Return False
+    sStr = Mid$(sStr, Len(sCar) + 1)
+  Wend
+  
+  Return True
+  
+End
+
 
 Public Function LoadFile(sPath As String) As Object
 
@@ -1463,10 +1494,17 @@ Public Function LoadFile(sPath As String) As Object
 
       Select Case Lower(File.Ext(sPath))
   
-        Case "png", "gif", "jpg", "jpeg", "bmp", "xpm"          
+        Case "png", "gif", "jpg", "jpeg", "bmp", "xpm"
           hForm = New FIconEditor(sPath)
   
         Case Else
+          ' Check that it is not a binary file
+          If Not IsTextFile(sPath) Then 
+            Dec Application.Busy
+            Files[sPath] = Null
+            FMain.ShowError(("Cannot open a binary file."), sPath)
+            Return
+          Endif
           hForm = New FTextEditor(sPath)
   
       End Select
@@ -1485,7 +1523,7 @@ Public Function LoadFile(sPath As String) As Object
       hForm.Icon = GetFileIcon(sPath, 16)
     Endif
     
-    FSearch.OnNewForm(hForm)
+    If hForm Then FSearch.OnNewForm(hForm)
 
     Dec Application.Busy
   
@@ -1497,7 +1535,7 @@ Catch
 
   Dec Application.Busy
   Files[sPath] = Null
-  FGambas.Error(("Cannot open file.") & "\n\n" & Error.Text & "\n" & Error.Where)
+  FMain.ShowError(("Cannot open file.") & "\n\n" & Error.Text & "\n" & Error.Where, sPath)
 
 End
 

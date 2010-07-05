@@ -530,7 +530,7 @@ Public Sub ReadConfig()
   Dim hButton As ToolButton
 
   Settings.Read(splDebug,, [4, 1])
-  tabDebug.Font.Grade = - Settings["/TabStripFont", 0]
+  tabDebug.TextFont = Font[CStr(- Settings["/TabStripFont", 0])]
   tbvLocal.Font.Grade = - Settings["/GlobalFont", 0]
   tbvObject.Font = tbvLocal.Font
   lstStack.Font = tbvLocal.Font

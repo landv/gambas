@@ -91,9 +91,13 @@
           MoveScaled(2,3,25,33)
           Picture = Picture["icon:/small/home"]
         }
-        { fvwChoose FileView
+        { panView Panel
           MoveScaled(30,2,25,33)
           Visible = False
+          Arrangement = Arrange.Fill
+          { fvwChoose FileView
+            MoveScaled(0,0,20,26)
+          }
         }
       }
     }

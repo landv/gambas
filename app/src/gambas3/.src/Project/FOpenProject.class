@@ -24,6 +24,7 @@ Public Sub _new()
   
   $hProjectItem = New ProjectItem(panProjectTitle)
   $hProjectItem.Highlight = False
+  panProject.Reparent(dchProject.FileView.Parent)
   
 End
 
@@ -68,6 +69,7 @@ Public Sub Form_Open()
   Settings.Read(Me)
   Settings.Read(dchProject)
   Settings.Read(splProject)
+  dchProject.ShowFile = True
   'dchProject.Value = Settings["/FOpenProject/Path"]
   dchProject_Change
   tabProject_Click
@@ -114,15 +116,12 @@ Public Sub dchProject_Change()
   Dim sPath As String
   Dim hProjectTree As CProjectTree
   
-  fvwProject.ShowHidden = dchProject.ShowHidden  
-  fvwProject.Dir = dchProject.Value
-
   sPath = GetProjectPath(dchProject.Value)
   
   If Not sPath Then
     $sLast = ""
-    fvwProject.Show
     panProject.Hide
+    dchProject.FileView.Show
     Return 
   Endif
   
@@ -134,44 +133,44 @@ Public Sub dchProject_Change()
   hProjectTree = New CProjectTree(tvwProject, sPath)
   
   panProject.Show
-  fvwProject.Hide
+  dchProject.FileView.Hide
   
   splProject_Resize
 
 End
 
-Public Sub fvwProject_Activate()
+' Public Sub fvwProject_Activate()
+' 
+'   Dim sPath As String = fvwProject.Dir &/ fvwProject.Current
+'   Dim sProg As String
+' 
+'   If IsDir(sPath) Then
+'     dchProject.Value = sPath
+'     Return
+'   Endif
+'   
+'   If sPath Like "*.tar.gz" Then
+'     sProg = "tar xfz"
+'   Else If sPath Like "*.tar.bz2" Then
+'     sProg = "tar xfj"
+'   Else
+'     Return
+'   Endif
+'   
+'   If Message.Question("<b>" & fvwProject.Current & "</b><p>" & ("Do you want to uncompress this archive?"), ("Uncompress"), ("Cancel")) = 2 Then Return
+'   
+'   Shell "cd " & Shell$(File.Dir(sPath)) & " && " & sProg & " " & Shell$(sPath) Wait
+'   dchProject.Reload
+' 
+' End
 
-  Dim sPath As String = fvwProject.Dir &/ fvwProject.Current
-  Dim sProg As String
-
-  If IsDir(sPath) Then
-    dchProject.Value = sPath
-    Return
-  Endif
-  
-  If sPath Like "*.tar.gz" Then
-    sProg = "tar xfz"
-  Else If sPath Like "*.tar.bz2" Then
-    sProg = "tar xfj"
-  Else
-    Return
-  Endif
-  
-  If Message.Question("<b>" & fvwProject.Current & "</b><p>" & ("Do you want to uncompress this archive?"), ("Uncompress"), ("Cancel")) = 2 Then Return
-  
-  Shell "cd " & Shell$(File.Dir(sPath)) & " && " & sProg & " " & Shell$(sPath) Wait
-  dchProject.Reload
-
-End
-
-Public Sub fvwProject_Icon(Path As String)
-
-  If Exist(Path &/ ".project") Then 
-    fvwProject.Icon = Project.GetIcon(Path, 16)    
-  Endif    
-
-End
+' Public Sub fvwProject_Icon(Path As String)
+'
+'  If Exist(Path &/ ".project") Then 
+'    fvwProject.Icon = Project.GetIcon(Path, 16)    
+'  Endif    
+'
+' End
 
 Private Sub FillRecent()
   
@@ -333,12 +332,6 @@ End
 Public Sub lstExample_Activate()
 
   btnOK.Value = True
-
-End
-
-Public Sub fvwProject_Menu()
-
-  Debug
 
 End
 
