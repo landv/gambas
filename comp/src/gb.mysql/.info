@@ -549,11 +549,7 @@ _Maintenance
 Modify
 m
 
-(Table)s(Action)s[(Symbol)s(Definition)s]
-Add
-m
-
-(Table)s[(Engine)s(Charset)s]
+(Table)s[(Database)s(Engine)s(Charset)s]
 Engine
 m
 s
@@ -562,6 +558,14 @@ Charset
 m
 s
 (Table)s[(Database)s]
+ModifyColumn
+m
+
+(Table)s(Action)s[(Symbol)s(Definition)s(Database)s]
+Add
+m
+
+(Table)s[(Engine)s(Charset)s(Database)s]
 Delete
 m
 
@@ -569,15 +573,15 @@ m
 LoadData
 m
 
-(Table)s(File)s
+(Table)s(File)s[(Database)s]
 Info
 m
 s
-(Table)s
+(Table)s[(Database)s]
 Insert
 m
 
-(Table)s(Fields)String[];(Values)String[];
+(Table)s(Fields)String[];(Values)String[];[(Database)s]
 Fields
 m
 String[]
@@ -585,7 +589,7 @@ String[]
 Rename
 m
 
-(Table)s(NewTable)s
+(Table)s(NewTable)s[(Database)s]
 Collation
 m
 s

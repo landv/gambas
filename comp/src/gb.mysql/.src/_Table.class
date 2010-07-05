@@ -4,13 +4,21 @@ Export
 Create Static
 
 Private $hMaintenance As _Maintenance
-
 Property Read Maintenance As _Maintenance
 
-Public Procedure Modify(Table As String, Action As String, Optional Symbol As String, Optional Definition As String)
+Public Procedure Modify(Table As String, Optional Database As String = modMain.$Connection.Name, Optional Engine As String = modMain.$Connection.MySQL.Engine, Optional Charset As String = modMain.$Connection.MySQL.Charset)
+
+  modMain.$Query = "ALTER TABLE `" & Database & "`.`" & Table & "`"
+  modMain.$Query &= " ENGINE = " & Engine
+  modMain.$Query &= " CHARACTER SET = " & Charset
+  modMain.RunQuery(modMain.$Query)
+
+End
+
+Public Procedure ModifyColumn(Table As String, Action As String, Optional Symbol As String, Optional Definition As String, Optional Database As String = modMain.$Connection.Name)
 
   Action = Upper(Action)
-  modMain.$Query = "ALTER TABLE `" & Table & "` "
+  modMain.$Query = "ALTER TABLE `" & Database & "`.`" & Table & "`"
   Select (Action)
     Case "DROP"
       modMain.$Query &= Action & " COLUMN `" & Symbol & "`"
@@ -27,10 +35,10 @@ Public Procedure Modify(Table As String, Action As String, Optional Symbol As St
 
 End
 
-Public Procedure Add(Table As String, Optional Engine As String = modMain.$Connection.MySQL.Engine, Optional Charset As String = modMain.$Connection.MySQL.Charset)
+Public Procedure Add(Table As String, Optional Engine As String = modMain.$Connection.MySQL.Engine, Optional Charset As String = modMain.$Connection.MySQL.Charset, Optional Database As String = modMain.$Connection.Name)
 
   'Make the table statement
-  modMain.$Query = "CREATE TABLE `" & Table & "` ("
+  modMain.$Query = "CREATE TABLE `" & Database & "`.`" & Table & "` ("
   modMain.$Query &= modMain.ArrayToString(modMain.$FieldDefinition, False)
   If modMain.$PrimaryKey Then modMain.$Query &= modMain.$PrimaryKey
   If modMain.$Index.Count Then modMain.$Query &= ", " & modMain.ArrayToString(modMain.$Index, False)
@@ -57,24 +65,25 @@ Public Procedure Delete(Tables As String[], Optional IfExists As Boolean = False
 
 End
 
-Public Procedure LoadData(Table As String, File As String)
+Public Procedure LoadData(Table As String, File As String, Optional Database As String = modMain.$Connection.Name)
 
-  modMain.RunQuery("LOAD DATA LOCAL INFILE '" & File & "' INTO TABLE `" & Table & "`")
+  modMain.RunQuery("LOAD DATA LOCAL INFILE '" & File & "' INTO TABLE `" & Database & "`.`" & Table & "`")
 
 End
 
-Public Function Info(Table As String) As String
+Public Function Info(Table As String, Optional Database As String = modMain.$Connection.Name) As String
 
-  modMain.$Query = "SHOW CREATE TABLE `" & Table & "`"
+  modMain.$Query = "SHOW CREATE TABLE `" & Database & "`.`" & Table & "`"
   Return modMain.$Connection.Exec(modMain.$Query)!"Create Table"
 
 End
 
-Public Procedure Insert(Table As String, Fields As String[], Values As String[])
+Public Procedure Insert(Table As String, Fields As String[], Values As String[], Optional Database As String = modMain.$Connection.Name)
+
 
   Dim iCounter As Integer
 
-  modMain.$Query = "INSERT INTO `" & Table & "`"
+  modMain.$Query = "INSERT INTO `" & Database & "`.`" & Table & "`"
   If Upper(Fields[0]) = "ALL" Then
     modMain.$Query &= " VALUES ("
   Else
@@ -98,9 +107,9 @@ Public Procedure Insert(Table As String, Fields As String[], Values As String[])
 
 End
 
-Public Procedure Rename(Table As String, NewTable As String)
+Public Procedure Rename(Table As String, NewTable As String, Optional Database As String = modMain.$Connection.Name)
 
-  modMain.RunQuery("RENAME TABLE `" & Table & "` TO `" & NewTable & "`")
+  modMain.RunQuery("RENAME TABLE `" & Database & "`.`" & Table & "` TO `" & Database & "`.`" & NewTable & "`")
 
 End
 
