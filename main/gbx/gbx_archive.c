@@ -380,8 +380,8 @@ void ARCHIVE_dir_first(ARCHIVE *arch, const char *path, const char *pattern, int
   	return;
   }
   
-  // "." means that we want to browse the archive.
-  if (!find.sym && !(path[0] == '.' && path[1] == 0))
+  // ?? "." means that we want to browse the archive.
+  if (!find.sym && !find.arch) // && !(path[0] == '.' && path[1] == 0))
   {
   	// By calling FILE_dir_first() again with an absolute path, we are sure that next calls to 
   	// FILE_dir_next() will never call ARCHIVE_dir_next().
