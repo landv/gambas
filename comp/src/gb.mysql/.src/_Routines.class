@@ -3,6 +3,13 @@
 Export
 Create Static
 
+Public Procedure Modify(Routine As String, Statement As String, Optional Parameters As String[], Optional Returns As String, Optional Database As String = modMain.$Connection.Name)
+
+  Delete(Routine, True, Database)
+  Add(Routine, Statement, Parameters, Returns, Database)
+
+End
+
 Public Procedure Add(Routine As String, Statement As String, Optional Parameters As String[], Optional Returns As String, Optional Database As String = modMain.$Connection.Name)
 
   modMain.$Query = "CREATE "
@@ -58,5 +65,19 @@ Public Function Definition(Routine As String, Optional Database As String = modM
 
   modMain.$Query = "SELECT `body` FROM `mysql`.`proc` WHERE `db` = '" & Database & "' AND `name` = '" & Routine & "'"
   Return modMain.$Connection.Exec(modMain.$Query)["body"].Data
+
+End
+
+Public Function Returns(Routine As String, Optional Database As String = modMain.$Connection.Name) As String
+
+  modMain.$Query = "SELECT `returns` FROM `mysql`.`proc` WHERE `db` = '" & Database & "' AND `name` = '" & Routine & "'"
+  Return modMain.$Connection.Exec(modMain.$Query)["returns"].Data
+
+End
+
+Public Function Parameters(Routine As String, Optional Database As String = modMain.$Connection.Name) As String
+
+  modMain.$Query = "SELECT REPLACE(REPLACE(REPLACE(CAST(`param_list` AS CHAR), '\n', ''), '  ', ''), '`', '') AS `List` FROM `mysql`.`proc` WHERE `db` = '" & Database & "' AND `name` = '" & Routine & "'"
+  Return modMain.$Connection.Exec(modMain.$Query)["List"]
 
 End

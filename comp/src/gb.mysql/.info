@@ -315,14 +315,22 @@ m
 #_Index
 
 CA
-Add
+Modify
 m
 
 (Index)s(Columns)String[];[(Table)s(Database)s]
+Columns
+m
+String[]
+(Table)s(Index)s[(Database)s]
 Delete
 m
 
 (Table)s(Index)s[(Database)s]
+Add
+m
+
+(Index)s(Columns)String[];[(Table)s(Database)s]
 PrimaryKey
 m
 
@@ -523,14 +531,26 @@ b
 #_Routines
 
 CA
-Add
+Modify
 m
 
 (Routine)s(Statement)s[(Parameters)String[];(Returns)s(Database)s]
+Parameters
+m
+s
+(Routine)s[(Database)s]
+Returns
+m
+s
+(Routine)s[(Database)s]
 Delete
 m
 
 (Routine)s[(IfExists)b(Database)s]
+Add
+m
+
+(Routine)s(Statement)s[(Parameters)String[];(Returns)s(Database)s]
 Info
 m
 s
