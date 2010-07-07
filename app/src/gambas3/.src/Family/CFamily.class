@@ -157,11 +157,17 @@ End
 Public Sub LeaveControl(hCont As Container, hCCtrl As CControl)
   
   Dim hIcon As Control
+  Dim X, Y As Integer
   
   'CheckIcon(hCCtrl)
   'Return
   
-  hIcon = hCont.Find(Mouse.ScreenX - hCont.ScreenX, Mouse.ScreenY - hCont.ScreenY)
+  X = Mouse.ScreenX - hCont.ScreenX
+  Y = Mouse.ScreenY - hCont.ScreenY
+  
+  If hCont.Window.Menus.Visible Then Y -= hCont.Window.ClientY
+
+  hIcon = hCont.Find(X, Y)
   If hIcon And If $cCtrlFromIcon.Exist(Str(hIcon)) Then Return
   
   DeleteIcon(hCCtrl)
