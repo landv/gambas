@@ -531,8 +531,8 @@ bool TRANS_type(int mode, TRANS_DECL *result)
 		{
 			if (result->is_new)
 				THROW("Cannot mix NEW and embedded structure");
-			if (result->array.ndim > 0)
-				THROW("Cannot mix embedded array and embedded structure");
+			//if (result->array.ndim > 0)
+			//	THROW("Cannot mix embedded array and embedded structure");
 		}
 		
 		look++;

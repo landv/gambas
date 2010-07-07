@@ -86,13 +86,14 @@ static int align_pos(int pos, int size)
 }
 
 
-static int sizeof_ctype(CLASS *class, CTYPE ctype)
+int CLASS_sizeof_ctype(CLASS *class, CTYPE ctype)
 {
 	size_t size;
 	
 	if (ctype.id == TC_ARRAY)
 	{
-		size = CARRAY_get_static_size(class->load->array[ctype.value]);
+		CLASS_ARRAY *array = class->load->array[ctype.value];
+		size = CARRAY_get_static_size(class, array);
 		return (size + 3) & ~3;
 	}
 	else if (ctype.id == TC_STRUCT)
@@ -108,7 +109,7 @@ TYPE CLASS_ctype_to_type(CLASS *class, CTYPE ctype)
   if (ctype.id == T_OBJECT && ctype.value >= 0)
     return (TYPE)(class->load->class_ref[ctype.value]);
 	else if (ctype.id == TC_ARRAY)
-		return (TYPE)CARRAY_get_array_class(class->load->array[ctype.value]->type);
+		return (TYPE)CARRAY_get_array_class(class, class->load->array[ctype.value]->ctype);
   else if (ctype.id == TC_STRUCT)
     return (TYPE)(class->load->class_ref[ctype.value]);
   else
@@ -347,7 +348,7 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 	CLASS_VAR *var;
 	GLOBAL_SYMBOL *global;
 	
-	name = (char *)*structure++;
+	name = (char *)(intptr_t)(*structure++);
 	RELOCATE(name);
 	#if DEBUG_STRUCT
 	fprintf(stderr, "Loading structure %s\n", name);
@@ -372,7 +373,7 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 		
 		for (i = 0; i < nfield; i++)
 		{
-			field = (char *)*structure++;
+			field = (char *)(intptr_t)(*structure++);
 			RELOCATE(field);
 			len = strlen(field);
 			ctype = *((CTYPE *)structure);
@@ -417,7 +418,7 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 	
 	for (i = 0; i < nfield; i++)
 	{
-		field = (char *)*structure++;
+		field = (char *)(intptr_t)(*structure++);
 		RELOCATE(field);
 		len = strlen(field);
 		ctype = *((CTYPE *)structure);
@@ -441,14 +442,14 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 		}
 		
 		#if DEBUG_STRUCT
-		fprintf(stderr, "  %d: %s As %s (%d)\n", i, field, TYPE_get_name(desc[i].variable.type), sizeof_ctype(class, ctype));
+		fprintf(stderr, "  %d: %s As %s (%d)\n", i, field, TYPE_get_name(desc[i].variable.type), CLASS_sizeof_ctype(class, ctype));
 		#endif
 
 		sclass->table[i].desc = &desc[i];
 		sclass->table[i].name = field;
 		sclass->table[i].len = len;
 
-		size = sizeof_ctype(class, ctype);
+		size = CLASS_sizeof_ctype(class, ctype);
 		pos = align_pos(pos, size);
 		pos += size; //sizeof_ctype(class, var->type);
 	}
@@ -620,10 +621,10 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
     }
   }
 
-  /* Source file path */
+  /* Source file path, ingored now! */
 
   if (class->debug)
-    class->path = (char *)get_section("debug file name", &section, NULL, NULL);
+    get_section("debug file name", &section, NULL, NULL);
 
   /* Strings */
 
@@ -757,7 +758,7 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
     	#else
       class->load->array[i] = (CLASS_ARRAY *)((char *)class->load->array + ((int *)class->load->array)[i]);
       #endif
-      conv_type(class, &class->load->array[i]->type);
+      //conv_type(class, &class->load->array[i]->type);
     }
   }
 
@@ -782,7 +783,7 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
 	{
 		var = &class->load->stat[i];
 		conv_ctype(&var->type);
-		size = sizeof_ctype(class, var->type);
+		size = CLASS_sizeof_ctype(class, var->type);
 		pos = align_pos(pos, size);
 		var->pos = pos;
 		#ifdef DEBUG
@@ -801,7 +802,7 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
 	{
 		var = &class->load->dyn[i];
 		conv_ctype(&var->type);
-		size = sizeof_ctype(class, var->type);
+		size = CLASS_sizeof_ctype(class, var->type);
 		pos = align_pos(pos, size);
 		var->pos = pos;
 		#ifdef DEBUG

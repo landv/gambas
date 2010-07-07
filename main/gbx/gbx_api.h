@@ -127,7 +127,7 @@ int GB_IsRightToLeft(void);
 
 void *GB_Eval(void *, void *);
 
-void GB_ArrayNew(GB_ARRAY *array, intptr_t type, int size);
+void GB_ArrayNew(GB_ARRAY *array, TYPE type, int size);
 int GB_ArrayCount(GB_ARRAY array);
 void *GB_ArrayAdd(GB_ARRAY array);
 void *GB_ArrayGet(GB_ARRAY array, int index);

@@ -35,7 +35,7 @@
 typedef
   struct {
     OBJECT object;
-		int mode;
+		int size;
 		int count;
     TYPE type;
     void *data;
@@ -60,6 +60,7 @@ extern GB_DESC NATIVE_DateArray[];
 extern GB_DESC NATIVE_VariantArray[];
 extern GB_DESC NATIVE_ObjectArray[];
 extern GB_DESC NATIVE_TemplateArray[];
+extern GB_DESC NATIVE_TemplateArrayOfStruct[];
 #else
 
 #define THIS ((CARRAY *)_object)
@@ -72,10 +73,11 @@ void CARRAY_get_value(CARRAY *_object, int index, VALUE *value);
 #define CARRAY_invert(_array) CARRAY_reverse(_array, NULL)
 void *CARRAY_get_data_multi(CARRAY *_object, GB_INTEGER *arg, int nparam);
 void *CARRAY_out_of_bound();
-CARRAY *CARRAY_create_static(void *ref, CLASS_ARRAY *desc, void *data);
-size_t CARRAY_get_static_size(CLASS_ARRAY *desc);
-CLASS *CARRAY_get_array_class(TYPE type);
-void CARRAY_release_static(CLASS_ARRAY *desc, void *data);
+CLASS *CARRAY_get_array_class(CLASS *class, CTYPE ctype);
+
+CARRAY *CARRAY_create_static(CLASS *class, void *ref, CLASS_ARRAY *desc, void *data);
+size_t CARRAY_get_static_size(CLASS *class, CLASS_ARRAY *desc);
+void CARRAY_release_static(CLASS *class, CLASS_ARRAY *desc, void *data);
 
 #define CARRAY_get_data(_array, _index) \
 ({ \
@@ -85,7 +87,7 @@ void CARRAY_release_static(CLASS_ARRAY *desc, void *data);
   if ((__index < 0) || (__index >= __array->count)) \
   	__data = CARRAY_out_of_bound(); \
   else \
- 		__data = (void *)((char *)(__array->data) + __index * TYPE_sizeof_memory(__array->type)); \
+ 		__data = (void *)((char *)(__array->data) + __index * __array->size); \
  	__data; \
 })
 
@@ -93,5 +95,6 @@ void CARRAY_release_static(CLASS_ARRAY *desc, void *data);
 #endif  // #ifndef __GBX_CLASS_INFO_C 
 
 #define ARRAY_TEMPLATE_NDESC 18
+#define ARRAY_OF_STRUCT_TEMPLATE_NDESC 12
 
 #endif

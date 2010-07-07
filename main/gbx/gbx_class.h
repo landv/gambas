@@ -172,7 +172,7 @@ typedef
 
 typedef
 	struct {
-		TYPE type;
+		CTYPE ctype;
 		int dim[0];
 		}
 	CLASS_ARRAY;
@@ -297,11 +297,11 @@ typedef
 		short special[12];                // 100 152  special functions index (_new, _free, ...)
 
 		TYPE array_type;                  // 104 160  datatype of the contents if this class is an array class of objects
-		struct _CLASS *array_class;       // 108 168  associated array class if it exists
+		struct _CLASS *array_class;       // 108 168  array of class
+		struct _CLASS *astruct_class;     // 112 176  array of struct class
 		
-		void *instance;                   // 112 176  automatically created instance
+		void *instance;                   // 116 184  automatically created instance
 		
-		char *path;                       // 116 184  Source file path
 		COMPONENT *component;             // 120 192 The component the class belongs to
 		
 		struct _CLASS *override;          // 124 200 The overridden class
@@ -471,6 +471,9 @@ int CLASS_can_be_used_like_an_array(CLASS *class);
 void CLASS_create_array_class(CLASS *class);
 CLASS *CLASS_get_array_class(CLASS *class);
 
+void CLASS_create_array_of_struct_class(CLASS *class);
+CLASS *CLASS_get_array_of_struct_class(CLASS *class);
+
 int CLASS_sizeof(CLASS *class);
 
 /* class_init.c */
@@ -480,6 +483,8 @@ void CLASS_init_native(void);
 /* class_load.c */
 
 TYPE CLASS_ctype_to_type(CLASS *class, CTYPE ctype);
+int CLASS_sizeof_ctype(CLASS *class, CTYPE ctype);
+
 void CLASS_load_without_init(CLASS *class);
 void CLASS_load_real(CLASS *class);
 #define CLASS_load(_class) \

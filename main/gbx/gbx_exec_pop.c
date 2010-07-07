@@ -120,6 +120,9 @@ _POP_GENERIC:
         PC[1] = index;
 			}
 			
+			if (desc->variable.ctype.id == TC_STRUCT || desc->variable.ctype.id == TC_ARRAY)
+				THROW(E_NWRITE, class->name, name);
+			
       goto _POP_STRUCT_FIELD_2;
 
     case CD_STATIC_VARIABLE:
@@ -218,7 +221,7 @@ _POP_STRUCT_FIELD_2:
 	else
 		addr = (char *)object + sizeof(CSTRUCT) + desc->variable.offset;
 	
-  VALUE_write(&SP[-2], (void *)addr, desc->variable.type);
+	VALUE_write(&SP[-2], (void *)addr, desc->variable.type);
   goto _FIN;
 
 

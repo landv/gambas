@@ -332,6 +332,7 @@ EXTERN GB_DESC NATIVE_StringArray[];
 EXTERN GB_DESC NATIVE_ObjectArray[];
 EXTERN GB_DESC NATIVE_VariantArray[];
 EXTERN GB_DESC NATIVE_TemplateArray[];
+EXTERN GB_DESC NATIVE_TemplateArrayOfStruct[];
 EXTERN GB_DESC NATIVE_LongArray[];
 EXTERN GB_DESC NATIVE_PointerArray[];
 EXTERN GB_DESC NATIVE_SubCollection[];
@@ -375,7 +376,8 @@ GB_DESC *GB_CLASSES[] EXPORT =
   NATIVE_StringArray,
   NATIVE_ObjectArray,
   NATIVE_VariantArray,
-  NATIVE_TemplateArray,
+  //NATIVE_TemplateArray,
+  //NATIVE_TemplateArrayOfStruct,
   NATIVE_LongArray,
   NATIVE_PointerArray,
   NATIVE_SubCollection,

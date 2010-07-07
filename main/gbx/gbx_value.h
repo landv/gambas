@@ -452,7 +452,7 @@ void THROW_TYPE_STRING(TYPE type) NORETURN;
 		\
 	__ARRAY: \
 		{ \
-			void *object = CARRAY_create_static((_ref), (_class)->load->array[(_ctype).value], (_addr)); \
+			void *object = CARRAY_create_static((_class), (_ref), (_class)->load->array[(_ctype).value], (_addr)); \
 			(_value)->_object.class = OBJECT_class(object); \
 			(_value)->_object.object = object; \
 			break; \

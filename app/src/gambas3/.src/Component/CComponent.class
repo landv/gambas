@@ -737,6 +737,7 @@ Static Private Sub ScanStruct(hModule As Object, iLine As Integer) As Integer
     
     If aSym.Count >= 2 And If aSym[0] = "END" And If aSym[1] = "STRUCT" Then Break
     
+    If aSym.Count = 0 Then Continue
     If Highlight.Types[0] <> Highlight.Symbol Then Continue
     
     hSymbol = New CSymbolInfo

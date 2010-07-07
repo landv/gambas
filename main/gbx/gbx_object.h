@@ -54,6 +54,7 @@ void *OBJECT_new(CLASS *class, const char *name, OBJECT *parent);
 void OBJECT_attach(OBJECT *ob, OBJECT *parent, const char *name);
 void OBJECT_detach(OBJECT *ob);
 void OBJECT_release(CLASS *class, OBJECT *ob);
+void OBJECT_release_static(CLASS *class, CLASS_VAR *var, int nelt, char *data);
 void OBJECT_free(CLASS *class, OBJECT *ob);
 void OBJECT_lock(OBJECT *ob, bool block);
 bool OBJECT_is_locked(OBJECT *ob);

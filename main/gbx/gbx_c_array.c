@@ -42,6 +42,7 @@
 #include "gbx_object.h"
 #include "gbx_api.h"
 #include "gbx_c_file.h"
+#include "gbx_struct.h"
 #include "gbx_c_array.h"
 
 static bool _create_static_array;
@@ -103,31 +104,46 @@ static int get_bound(CARRAY *_object, int d)
 }
 
 
-CLASS *CARRAY_get_array_class(TYPE type)
+CLASS *CARRAY_get_array_class(CLASS *class, CTYPE ctype)
 {
-	CLASS *class;
-	
-	if (TYPE_is_pure_object(type))
-		class = CLASS_get_array_class((CLASS *)type);
-	else
+	if (ctype.id == T_NULL)
 	{
-		switch(type)
-		{
-			case GB_T_BOOLEAN: class = CLASS_BooleanArray; break;
-			case GB_T_BYTE: class = CLASS_ByteArray; break;
-			case GB_T_SHORT: class = CLASS_ShortArray; break;
-			case GB_T_INTEGER: class = CLASS_IntegerArray; break;
-			case GB_T_LONG: class = CLASS_LongArray; break;
-			case GB_T_SINGLE: class = CLASS_SingleArray; break;
-			case GB_T_FLOAT: class = CLASS_FloatArray; break;
-			case GB_T_STRING: class = CLASS_StringArray; break;
-			case GB_T_DATE: class = CLASS_DateArray; break;
-			case GB_T_OBJECT: class = CLASS_ObjectArray; break;
-			case GB_T_POINTER: class = CLASS_PointerArray; break;
-			default: class = CLASS_VariantArray; break;
-		}
+		if (TYPE_is_pure_object((TYPE)class))
+			return CLASS_get_array_class(class);
+		
+		ctype.id = (unsigned char)(TYPE)class;
+		ctype.value = -1;
 	}
 	
+	switch (ctype.id)
+	{
+		case T_BOOLEAN: class = CLASS_BooleanArray; break;
+		case T_BYTE: class = CLASS_ByteArray; break;
+		case T_SHORT: class = CLASS_ShortArray; break;
+		case T_INTEGER: class = CLASS_IntegerArray; break;
+		case T_LONG: class = CLASS_LongArray; break;
+		case T_SINGLE: class = CLASS_SingleArray; break;
+		case T_FLOAT: class = CLASS_FloatArray; break;
+		case T_STRING: class = CLASS_StringArray; break;
+		case T_DATE: class = CLASS_DateArray; break;
+		case T_POINTER: class = CLASS_PointerArray; break;
+		
+		case T_OBJECT:
+			if (ctype.value >= 0)
+				class = CLASS_get_array_class(class->load->class_ref[ctype.value]);
+			else
+				class = CLASS_ObjectArray; 
+			break;
+			
+		case TC_STRUCT:
+			class = CLASS_get_array_of_struct_class(class->load->class_ref[ctype.value]);
+			break;
+			
+		default: 
+			class = CLASS_VariantArray; 
+			break;
+	}
+
 	return class;
 }
 
@@ -209,7 +225,7 @@ void *CARRAY_get_data_multi(CARRAY *_object, GB_INTEGER *arg, int nparam)
 		}
 	}
 
-	return (void *)((char *)(THIS->data) + index * TYPE_sizeof_memory(THIS->type));
+	return (void *)((char *)(THIS->data) + index * THIS->size);
 }
 
 
@@ -309,12 +325,12 @@ static void clear(CARRAY *_object)
 	release(THIS, 0, -1);
 	if (UNLIKELY(THIS->dim != NULL))
 	{
-		memset(THIS->data, 0, TYPE_sizeof_memory(THIS->type) * THIS->count);
+		memset(THIS->data, 0, THIS->size * THIS->count);
 	}
 	else
 	{
 		ARRAY_delete(&THIS->data);
-		ARRAY_create_with_size(&THIS->data, TYPE_sizeof_memory(THIS->type), 8);
+		ARRAY_create_with_size(&THIS->data, THIS->size, 8);
 		THIS->count = 0;
 	}
 }
@@ -327,33 +343,54 @@ static void *insert(CARRAY *_object, int index)
 }
 
 
-size_t CARRAY_get_static_size(CLASS_ARRAY *desc)
+size_t CARRAY_get_static_size(CLASS *class, CLASS_ARRAY *desc)
 {
-  return (size_t)get_count(desc->dim) * TYPE_sizeof_memory(desc->type);
+  return (size_t)get_count(desc->dim) * CLASS_sizeof_ctype(class, desc->ctype);
 }
 
 
-CARRAY *CARRAY_create_static(void *ref, CLASS_ARRAY *desc, void *data)
+CARRAY *CARRAY_create_static(CLASS *class, void *ref, CLASS_ARRAY *desc, void *data)
 {
 	CARRAY *array;
+	TYPE type;
+	CLASS *aclass;
 	
+	type = CLASS_ctype_to_type(class, desc->ctype);
 	_create_static_array = TRUE;
-	array = OBJECT_create(CARRAY_get_array_class(desc->type), NULL, NULL, 0);
+	aclass = CARRAY_get_array_class(class, desc->ctype);
+	array = OBJECT_create_native(aclass, NULL);
 	_create_static_array = FALSE;
 	
-	array->type = desc->type;
+	array->type = type;
 	array->data = data;
 	array->ref = ref;
 	array->count = get_count(desc->dim);
 	OBJECT_REF(ref, "CARRAY_create_static");
 	array->dim = desc->dim;
+	array->size = CLASS_sizeof_ctype(class, desc->ctype);
 	
 	return array;
 }
 
-void CARRAY_release_static(CLASS_ARRAY *desc, void *data)
+void CARRAY_release_static(CLASS *class, CLASS_ARRAY *desc, void *data)
 {
-	release_static(desc->type, data, 0, get_count(desc->dim));
+	int count = get_count(desc->dim);
+	
+	if (desc->ctype.id == TC_STRUCT)
+	{
+		CLASS *sclass = class->load->class_ref[desc->ctype.value];
+		int i;
+		int size = CLASS_sizeof_ctype(class, desc->ctype);
+		char *p = (char *)data;
+		
+		for (i = 0; i < count; i++)
+		{
+			OBJECT_release_static(sclass, sclass->load->dyn, sclass->load->n_dyn, p);
+			p += size;
+		}
+	}
+	else
+		release_static(CLASS_ctype_to_type(class, desc->ctype), data, 0, count);
 }
 
 void CARRAY_get_value(CARRAY *_object, int index, VALUE *value)
@@ -385,15 +422,16 @@ BEGIN_METHOD(CARRAY_new, GB_INTEGER size)
 		return;
 	}
 
-	if (TYPE_is_object(type))
+	/*if (TYPE_is_object(type))
 		THIS->mode = T_OBJECT;
 	else
-		THIS->mode = (int)type;
+		THIS->mode = (int)type;*/
 
 	//printf("CARRAY_new: type = %d nsize = %d\n", type, nsize);
 
 	THIS->type = type;
-	max_size = INT_MAX / TYPE_sizeof_memory(type);
+	THIS->size = TYPE_sizeof_memory(type);
+	max_size = INT_MAX / THIS->size;
 
 	if (nsize <= 1)
 	{
@@ -407,7 +445,7 @@ BEGIN_METHOD(CARRAY_new, GB_INTEGER size)
 		if (inc < 8)
 			inc = 8;
 
-		ARRAY_create_with_size(&THIS->data, TYPE_sizeof_memory(type), inc);
+		ARRAY_create_with_size(&THIS->data, THIS->size, inc);
 		if (size > 0)
 			ARRAY_add_many_void(&THIS->data, size);
 	}
@@ -439,7 +477,7 @@ BEGIN_METHOD(CARRAY_new, GB_INTEGER size)
 			THIS->dim[i] = sizes[i].value;
 		THIS->dim[nsize - 1] = (-THIS->dim[nsize - 1]);
 
-		ARRAY_create_with_size(&THIS->data, TYPE_sizeof_memory(type), 8);
+		ARRAY_create_with_size(&THIS->data, THIS->size, 8);
 		ARRAY_add_many_void(&THIS->data, (int)size);
 	}
 
@@ -448,11 +486,11 @@ BEGIN_METHOD(CARRAY_new, GB_INTEGER size)
 END_METHOD
 
 
-BEGIN_PROPERTY(CARRAY_type)
+/*BEGIN_PROPERTY(CARRAY_type)
 
 	GB_ReturnInteger(THIS->type);
 
-END_PROPERTY
+END_PROPERTY*/
 
 BEGIN_METHOD_VOID(CARRAY_free)
 
@@ -535,7 +573,7 @@ static bool copy_remove(CARRAY *_object, int start, int length, bool copy, bool 
 		{
 			data = ARRAY_insert_many(&array->data, 0, length);
 			array->count += length;
-			memmove(data, get_data(THIS, start), length * TYPE_sizeof_memory(THIS->type));
+			memmove(data, get_data(THIS, start), length * THIS->size);
 			borrow(array, 0, -1);
 		}
 		
@@ -731,7 +769,7 @@ BEGIN_METHOD(CARRAY_fill, GB_VALUE value; GB_INTEGER start; GB_INTEGER length)
 	VALUE_conv((VALUE *)ARG(value), THIS->type);
 
 	data = get_data(THIS, start);
-	size = TYPE_sizeof_memory(THIS->type);
+	size = THIS->size;
 
 	for (i = 0; i < length; i++)
 	{
@@ -768,7 +806,7 @@ BEGIN_METHOD(CARRAY_insert, GB_OBJECT array; GB_INTEGER pos)
 		data = ARRAY_insert_many(&THIS->data, pos, count);
 		THIS->count += count;
 		borrow(array, 0, -1);
-		memmove(data, array->data, count * TYPE_sizeof_memory(THIS->type));
+		memmove(data, array->data, count * THIS->size);
 	}
 	
 	GB_ReturnObject(THIS);
@@ -834,7 +872,7 @@ BEGIN_METHOD(CARRAY_sort, GB_INTEGER mode)
 	if (THIS->count > 1)
 	{
 		compare = COMPARE_get(THIS->type, mode);
-		qsort(data, THIS->count, TYPE_sizeof_memory(THIS->type), compare);
+		qsort(data, THIS->count, THIS->size, compare);
 	}
 
 	GB_ReturnObject(THIS);
@@ -1023,7 +1061,7 @@ BEGIN_METHOD_VOID(CARRAY_reverse)
 	if (count <= 1)
 		return;
 
-	size = TYPE_sizeof_memory(THIS->type);
+	size = THIS->size;
 	pi = get_data(THIS, 0);
 	pj = get_data(THIS, count - 1);
 
@@ -1049,7 +1087,7 @@ BEGIN_METHOD(CARRAY_read, GB_OBJECT file; GB_INTEGER start; GB_INTEGER length)
 	if ((start + length) > count)
 		length = count - start;
 
-	STREAM_read(CSTREAM_stream(VARG(file)), get_data(THIS, start), length * TYPE_sizeof_memory(THIS->type));
+	STREAM_read(CSTREAM_stream(VARG(file)), get_data(THIS, start), length * THIS->size);
 
 END_METHOD
 
@@ -1063,7 +1101,7 @@ BEGIN_METHOD(CARRAY_write, GB_OBJECT file; GB_INTEGER start; GB_INTEGER length)
 	if ((start + length) > count)
 		length = count - start;
 
-	STREAM_write(CSTREAM_stream(VARG(file)), get_data(THIS, start), length * TYPE_sizeof_memory(THIS->type));
+	STREAM_write(CSTREAM_stream(VARG(file)), get_data(THIS, start), length * THIS->size);
 
 END_METHOD
 
@@ -1089,6 +1127,96 @@ BEGIN_METHOD(CARRAY_bounds_get, GB_INTEGER index)
 	GB_ReturnInteger(get_bound(THIS, index));
 
 END_PROPERTY
+
+BEGIN_METHOD(ByteArray_ToString, GB_INTEGER start; GB_INTEGER length)
+
+	int start, length;
+	int count = THIS->count;
+	char *p;
+	
+	start = VARGOPT(start, 0);
+	
+	if (start < 0)
+	{
+		GB_Error((char *)E_BOUND);
+		return;
+	}
+
+	if (start >= count)
+	{
+		GB_ReturnNull();
+		return;
+	}
+
+	length = VARGOPT(length, -1);
+	if (length < 0)
+	{
+		p = memchr((char *)THIS->data + start, 0, count - start);
+		if (!p)
+			length = count - start;
+		else
+			length = p - ((char *)THIS->data + start);
+	}
+	else
+	{
+		if ((start + length) > count)
+			length = count - start;
+	}
+	
+	GB_ReturnNewString((char *)THIS->data + start, length);
+
+END_METHOD
+
+
+BEGIN_METHOD(ByteArray_FromString, GB_STRING string; GB_INTEGER start)
+
+	char *string = STRING(string);
+	int length = LENGTH(string);
+	int start;
+	int count = THIS->count;
+	
+	start = VARGOPT(start, 0);
+	
+	if (start < 0)
+	{
+		GB_Error((char *)E_BOUND);
+		return;
+	}
+
+	if (start >= count)
+		return;
+
+	if ((start + length) > count)
+		length = count - start;
+	
+	memcpy(THIS->data + start, string, length);
+
+END_METHOD
+
+
+BEGIN_METHOD(ArrayOfStruct_get, GB_INTEGER index)
+
+	void *data = get_data_multi(THIS, ARG(index), GB_NParam() + 1);
+
+	if (data)
+		GB_ReturnObject(CSTRUCT_create_static(THIS, (CLASS *)THIS->type, data));
+
+END_METHOD
+
+
+BEGIN_METHOD_VOID(ArrayOfStruct_next)
+
+	int *index = (int *)GB_GetEnum();
+
+	if (*index >= THIS->count)
+		GB_StopEnum();
+	else
+	{
+		GB_ReturnObject(CSTRUCT_create_static(THIS, (CLASS *)THIS->type, get_data(THIS, *index)));
+		(*index)++;
+	}
+
+END_METHOD
 
 
 /*BEGIN_METHOD_VOID(CARRAY_print)
@@ -1159,7 +1287,7 @@ GB_DESC NATIVE_Array[] =
 
 	GB_METHOD("_free", NULL, CARRAY_free, NULL),
 
-	GB_PROPERTY_READ("Type", "i", CARRAY_type),
+	//GB_PROPERTY_READ("Type", "i", CARRAY_type),
 	GB_PROPERTY_READ("Count", "i", CARRAY_count),
 	GB_PROPERTY_READ("Max", "i", CARRAY_max),
 	GB_PROPERTY_READ("Length", "i", CARRAY_count),
@@ -1244,6 +1372,9 @@ GB_DESC NATIVE_ByteArray[] =
 	GB_METHOD("Delete", "Byte[]", CARRAY_extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Sort", "Byte[]", CARRAY_sort, "[(Mode)i]"),
 	GB_METHOD("Fill", NULL, CARRAY_fill, "(Value)c[(Start)i(Length)i]"),
+
+	GB_METHOD("ToString", "s", ByteArray_ToString, "[(Start)i(Length)i]"),
+	GB_METHOD("FromString", NULL, ByteArray_FromString, "(String)s[(Start)i]"),
 
 	GB_END_DECLARE
 };
@@ -1534,6 +1665,30 @@ GB_DESC NATIVE_ObjectArray[] =
 	GB_END_DECLARE
 };
 
+GB_DESC NATIVE_VariantArray[] =
+{
+	GB_DECLARE("Variant[]", sizeof(CARRAY)), GB_INHERITS("Array"),
+
+	GB_METHOD("_new", NULL, CARRAY_new, "[(Size)i.]"),
+
+	GB_METHOD("Add", NULL, CARRAY_variant_add, "(Value)v[(Index)i]"),
+	GB_METHOD("Push", NULL, CARRAY_variant_push, "(Value)v"),
+	GB_METHOD("_put", NULL, CARRAY_variant_put, "(Value)v(Index)i."),
+
+	GB_METHOD("Pop", "v", CARRAY_pop, NULL),
+	GB_METHOD("_get", "v", CARRAY_get, "(Index)i."),
+	GB_METHOD("_next", "v", CARRAY_next, NULL),
+
+	GB_METHOD("Insert", "Variant[]", CARRAY_insert, "(Array)Variant[];[(Pos)i]"),
+
+	GB_METHOD("Copy", "Variant[]", CARRAY_copy, "[(Start)i(Length)i]"),
+	GB_METHOD("Extract", "Variant[]", CARRAY_extract, "(Start)i[(Length)i]"),
+	GB_METHOD("Delete", "Variant[]", CARRAY_extract, "(Start)i[(Length)i]"),
+	GB_METHOD("Fill", NULL, CARRAY_fill, "(Value)v[(Start)i(Length)i]"),
+
+	GB_END_DECLARE
+};
+
 // Beware: if this declaration is modified, the ARRAY_TEMPLATE_NDESC constant must be modified accordingly.
 
 GB_DESC NATIVE_TemplateArray[ARRAY_TEMPLATE_NDESC] =
@@ -1563,26 +1718,24 @@ GB_DESC NATIVE_TemplateArray[ARRAY_TEMPLATE_NDESC] =
 	GB_END_DECLARE
 };
 
-GB_DESC NATIVE_VariantArray[] =
+// Beware: if this declaration is modified, the ARRAY_OF_STRUCT_TEMPLATE_NDESC constant must be modified accordingly.
+
+GB_DESC NATIVE_TemplateArrayOfStruct[ARRAY_OF_STRUCT_TEMPLATE_NDESC] =
 {
-	GB_DECLARE("Variant[]", sizeof(CARRAY)), GB_INHERITS("Array"),
+	GB_DECLARE("$*[]", sizeof(CARRAY)), GB_NOT_CREATABLE(),
 
-	GB_METHOD("_new", NULL, CARRAY_new, "[(Size)i.]"),
+	//GB_METHOD("_new", NULL, CARRAY_new, "[(Size)i.]"),
+	GB_METHOD("_free", NULL, CARRAY_free, NULL),
 
-	GB_METHOD("Add", NULL, CARRAY_variant_add, "(Value)v[(Index)i]"),
-	GB_METHOD("Push", NULL, CARRAY_variant_push, "(Value)v"),
-	GB_METHOD("_put", NULL, CARRAY_variant_put, "(Value)v(Index)i."),
+	GB_PROPERTY_READ("Count", "i", CARRAY_count),
+	GB_PROPERTY_READ("Max", "i", CARRAY_max),
+	GB_PROPERTY_READ("Length", "i", CARRAY_count),
+	GB_PROPERTY_READ("Dim", "i", CARRAY_dim),
+	GB_PROPERTY_READ("Data", "p", CARRAY_data),
+	GB_PROPERTY_SELF("Bounds", ".Array.Bounds"),
 
-	GB_METHOD("Pop", "v", CARRAY_pop, NULL),
-	GB_METHOD("_get", "v", CARRAY_get, "(Index)i."),
-	GB_METHOD("_next", "v", CARRAY_next, NULL),
-
-	GB_METHOD("Insert", "Variant[]", CARRAY_insert, "(Array)Variant[];[(Pos)i]"),
-
-	GB_METHOD("Copy", "Variant[]", CARRAY_copy, "[(Start)i(Length)i]"),
-	GB_METHOD("Extract", "Variant[]", CARRAY_extract, "(Start)i[(Length)i]"),
-	GB_METHOD("Delete", "Variant[]", CARRAY_extract, "(Start)i[(Length)i]"),
-	GB_METHOD("Fill", NULL, CARRAY_fill, "(Value)v[(Start)i(Length)i]"),
+	GB_METHOD("_get", "*", ArrayOfStruct_get, "(Index)i."),
+	GB_METHOD("_next", "*", ArrayOfStruct_next, NULL),
 
 	GB_END_DECLARE
 };
@@ -1762,9 +1915,10 @@ void CARRAY_split(CARRAY *_object, const char *str, int lstr, const char *sep, c
 
 /* Gambas API */
 
-void GB_ArrayNew(GB_ARRAY *array, intptr_t type, int size)
+void GB_ArrayNew(GB_ARRAY *array, TYPE type, int size)
 {
 	int np;
+	CTYPE ctype;
 
 	if (size > 0)
 	{
@@ -1776,7 +1930,8 @@ void GB_ArrayNew(GB_ARRAY *array, intptr_t type, int size)
 		np = 0;
 	}
 	
-	*array = OBJECT_create(CARRAY_get_array_class(type), NULL, NULL, np);
+	ctype.id = T_NULL;
+	*array = OBJECT_create(CARRAY_get_array_class((CLASS *)type, ctype), NULL, NULL, np);
 }
 
 int GB_ArrayCount(GB_ARRAY array)

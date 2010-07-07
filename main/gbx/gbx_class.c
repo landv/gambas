@@ -1225,15 +1225,19 @@ void CLASS_create_array_class(CLASS *class)
 	void *save = TYPE_joker;
 	char *name_joker;
 	GB_DESC *desc;
-	CLASS *array_type;
+	CLASS *array_type = (CLASS *)class->array_type;
 	
 	//fprintf(stderr, "CLASS_create_array_class: create %s\n", class->name);
 
 	name_joker = STRING_new(class->name, strlen(class->name) - 2);
 
-	array_type = class->global ? CLASS_find_global(name_joker) : CLASS_find(name_joker);
+	if (!array_type)
+	{
+		array_type = class->global ? CLASS_find_global(name_joker) : CLASS_find(name_joker);
+		class->array_type = (TYPE)array_type;
+	}
+	
 	TYPE_joker = array_type;
-	class->array_type = (TYPE)array_type;
 	array_type->array_class = class;
 
 	ALLOC(&desc, sizeof(GB_DESC) * ARRAY_TEMPLATE_NDESC, "CLASS_create_array_class");
@@ -1263,6 +1267,52 @@ CLASS *CLASS_get_array_class(CLASS *class)
 	return class->array_class;
 }
 
+
+void CLASS_create_array_of_struct_class(CLASS *class)
+{
+	void *save = TYPE_joker;
+	char *name_joker;
+	GB_DESC *desc;
+	CLASS *array_type = (CLASS *)class->array_type;
+	
+	//fprintf(stderr, "CLASS_create_array_class: create %s\n", class->name);
+
+	name_joker = STRING_new(&class->name[1], strlen(class->name) - 3);
+
+	if (!array_type)
+	{
+		array_type = class->global ? CLASS_find_global(name_joker) : CLASS_find(name_joker);
+		class->array_type = (TYPE)array_type;
+	}
+	
+	TYPE_joker = array_type;
+	array_type->astruct_class = class;
+
+	ALLOC(&desc, sizeof(GB_DESC) * ARRAY_OF_STRUCT_TEMPLATE_NDESC, "CLASS_create_array_of_struct_class");
+	memcpy(desc, NATIVE_TemplateArrayOfStruct, sizeof(GB_DESC) * ARRAY_OF_STRUCT_TEMPLATE_NDESC);
+	((CLASS_DESC_GAMBAS *)desc)->name = class->name;
+
+	CLASS_register_class(desc, class);
+
+	class->data = (char *)desc;
+	
+	STRING_free(&name_joker);
+	TYPE_joker = save;
+}
+
+
+CLASS *CLASS_get_array_of_struct_class(CLASS *class)
+{
+	if (!class->astruct_class)
+	{
+		char name[strlen(class->name) + 4];
+		sprintf(name, "$%s[]", class->name);
+		class->astruct_class = class->global ? CLASS_find_global(name) : CLASS_find(name);
+		CLASS_create_array_of_struct_class(class->astruct_class);
+	}
+	
+	return class->astruct_class;
+}
 
 int CLASS_sizeof(CLASS *class)
 {

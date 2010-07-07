@@ -264,7 +264,7 @@ bool OBJECT_comp_value(VALUE *ob1, VALUE *ob2)
     return COMPARE_object(&ob1->_object.object, &ob2->_object.object);
 }
 
-static void release_static(CLASS *class, CLASS_VAR *var, int nelt, char *data)
+void OBJECT_release_static(CLASS *class, CLASS_VAR *var, int nelt, char *data)
 {
 	static void *jump[17] = {
 		&&__NEXT, &&__NEXT, &&__NEXT, &&__NEXT, &&__NEXT, &&__NEXT, &&__NEXT, &&__NEXT, &&__NEXT,
@@ -296,13 +296,13 @@ static void release_static(CLASS *class, CLASS_VAR *var, int nelt, char *data)
 		goto __NEXT;
 			
 	__ARRAY:
-		CARRAY_release_static(class->load->array[type.value], &data[var->pos]);
+		CARRAY_release_static(class, class->load->array[type.value], &data[var->pos]);
 		goto __NEXT;
 			
 	__STRUCT:
 		{
 			CLASS *sclass = class->load->class_ref[type.value];
-			release_static(sclass, sclass->load->dyn, sclass->load->n_dyn, &data[var->pos]);
+			OBJECT_release_static(sclass, sclass->load->dyn, sclass->load->n_dyn, &data[var->pos]);
 		}
 
 	__NEXT:
@@ -341,7 +341,7 @@ static void release(CLASS *class, OBJECT *ob)
     data = (char *)ob;
   }
   
-  release_static(class, var, nelt, data);
+  OBJECT_release_static(class, var, nelt, data);
 }
 
 

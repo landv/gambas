@@ -255,6 +255,14 @@ TYPE TYPE_from_string(const char **ptype)
 				if (type > start)
 					strncat(COMMON_buffer, start, type - start);
 			}
+			else if (*start && start[1] == '*')
+			{
+				COMMON_buffer[0] = *start;
+				strcpy(&COMMON_buffer[1], ((CLASS *)TYPE_joker)->name);
+				start += 2;
+				if (type > start)
+					strncat(COMMON_buffer, start, type - start);
+			}
 			else
 			{
       	memcpy(COMMON_buffer, start, type - start);
