@@ -3,8 +3,8 @@
 Export
 Create Static
 
-Private $hMaintenance As _Maintenance
-Property Read Maintenance As _Maintenance
+Private $hMaintenance As _TableMaintenance
+Property Read Maintenance As _TableMaintenance
 
 Public Procedure Modify(Table As String, Optional Database As String = modMain.$Connection.Name, Optional Engine As String = modMain.$Connection.MySQL.Engine, Optional Charset As String = modMain.$Connection.MySQL.Charset)
 
@@ -18,10 +18,10 @@ End
 Public Procedure ModifyColumn(Table As String, Action As String, Optional Symbol As String, Optional Definition As String, Optional Database As String = modMain.$Connection.Name)
 
   Action = Upper(Action)
-  modMain.$Query = "ALTER TABLE `" & Database & "`.`" & Table & "`"
+  modMain.$Query = "ALTER TABLE `" & Database & "`.`" & Table & "` "
   Select (Action)
     Case "DROP"
-      modMain.$Query &= Action & " COLUMN `" & Symbol & "`"
+      modMain.$Query &= Action & " COLUMN `" & Symbol & "` "
     Case "ADD", "MODIFY", "CHANGE", "ALTER"
       modMain.$Query &= Action & " COLUMN `" & Symbol & "` " & Definition
     Case "CHARACTER SET"
@@ -153,9 +153,9 @@ Public Procedure Truncate(Table As String, Optional Database As String = modMain
 
 End
 
-Private Function Maintenance_Read() As _Maintenance
+Private Function Maintenance_Read() As _TableMaintenance
 
-  $hMaintenance = New _Maintenance
+  $hMaintenance = New _TableMaintenance
   Return $hMaintenance
 
 End

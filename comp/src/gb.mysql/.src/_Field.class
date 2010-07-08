@@ -85,3 +85,10 @@ Public Procedure Rename(Table As String, Field As String, NewField As String, Op
   modMain.$Connection.Exec(modMain.$Query)
 
 End
+
+Public Procedure FieldEspecifications(Field As String, Table As String, Optional Database As String = modMain.$Connection.Name) As _FieldEspecifications
+
+  Dim hFieldEspecifications As New _FieldEspecifications(Field, Table, Database)
+  Return hFieldEspecifications
+
+End

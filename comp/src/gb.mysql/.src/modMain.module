@@ -62,7 +62,6 @@ Public Sub Main()
   hCon.Name = "MAS"
   hCon.Open()
 
-  Print hCon.MySQL.Routines.Parameters("MAS_sf_GuardaMarcas")
-  Print hCon.MySQL.Index.Columns("MAS_Instituciones", "oo")
+  Print hCon.MySQL.CharsetCollations("UTF8")
 
 End

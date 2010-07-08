@@ -269,6 +269,10 @@ Modify
 m
 
 (Event)s(Schedule)s(Statement)s
+Schedule
+m
+s
+(Event)s[(Database)s]
 Add
 m
 
@@ -278,6 +282,10 @@ m
 
 (Event)s[(IfExists)b]
 Info
+m
+s
+(Event)s[(Database)s]
+Definition
 m
 s
 (Event)s[(Database)s]
@@ -312,6 +320,41 @@ Rename
 m
 
 (Table)s(Field)s(NewField)s[(Database)s]
+FieldEspecifications
+m
+_FieldEspecifications
+(Field)s(Table)s[(Database)s]
+#_FieldEspecifications
+
+CA
+_call
+m
+_FieldEspecifications
+(Field)s(Table)s[(Database)s]
+_new
+m
+
+(Field)s(Table)s[(Database)s]
+IsNullable
+m
+b
+
+Extra
+m
+s
+
+DefaultValue
+m
+s
+
+Datatype
+m
+s
+
+Commnet
+m
+s
+
 #_Index
 
 CA
@@ -335,29 +378,6 @@ PrimaryKey
 m
 
 (Table)s(Columns)String[];[(Database)s]
-#_Maintenance
-
-CA
-Analyze
-m
-s
-(Table)s[(Database)s(Local)b]
-Check
-m
-s
-(Table)s[(Database)s]
-Checksum
-m
-s
-(Table)s[(Database)s]
-Optimize
-m
-s
-(Table)s[(Database)s(Local)b]
-Repair
-m
-s
-(Table)s[(Database)s(Local)b]
 #_MySQL
 
 CA
@@ -481,6 +501,10 @@ KillProcess
 m
 
 (Process)i
+CharsetCollations
+m
+String[]
+(Charset)s
 #_Result
 
 CA
@@ -564,7 +588,7 @@ s
 CA
 Maintenance
 r
-_Maintenance
+_TableMaintenance
 
 Modify
 m
@@ -618,6 +642,29 @@ Truncate
 m
 
 (Table)s[(Database)s]
+#_TableMaintenance
+
+CA
+Analyze
+m
+s
+(Table)s[(Database)s(Local)b]
+Check
+m
+s
+(Table)s[(Database)s]
+Checksum
+m
+s
+(Table)s[(Database)s]
+Optimize
+m
+s
+(Table)s[(Database)s(Local)b]
+Repair
+m
+s
+(Table)s[(Database)s(Local)b]
 #_Trigger
 
 CA

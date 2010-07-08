@@ -33,3 +33,19 @@ Public Function Info({Event} As String, Optional Database As String = modMain.$C
   Return modMain.$Connection.Exec(modMain.$Query)!"Create Event"
 
 End
+
+Public Function Definition({Event} As String, Optional Database As String = modMain.$Connection.Name) As String
+
+  modMain.$Query = "SELECT CAST(`EVENT_DEFINITION` AS CHAR) AS `Definition` FROM `information_schema`.`EVENTS` WHERE `EVENT_SCHEMA` = '" & Database & "' AND `EVENT_NAME` = '" & {Event} & "'"
+  Return modMain.$Connection.Exec(modMain.$Query)["Definition"].Data
+
+End
+
+Public Function Schedule({Event} As String, Optional Database As String = modMain.$Connection.Name) As String
+
+  Dim sText As String = Info({Event}, Database)
+  Dim iStart As Integer = InStr(sText, "ON SCHEDULE") + 12
+
+  Return Mid(sText, iStart, (InStr(sText, "ON COMPLETION") - 1 - iStart))
+
+End

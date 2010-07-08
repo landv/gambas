@@ -1,0 +1,62 @@
+' Gambas class file
+
+Export
+Create Static
+
+Private $sField As String
+Private $sTable As String
+Private $sDatabase As String
+
+Public Function _call(Field As String, Table As String, Optional Database As String = modMain.$Connection.Name) As _FieldEspecifications
+
+  Dim hFieldEspecifications As New _FieldEspecifications
+  Return hFieldEspecifications
+
+End
+
+Public Sub _new(Field As String, Table As String, Optional Database As String = modMain.$Connection.Name)
+
+  $sField = Field
+  $sTable = Table
+  $sDatabase = Database
+
+End
+
+Public Function IsNullable() As Boolean
+
+  modMain.$Query = "SELECT `IS_NULLABLE` FROM `information_schema`.`COLUMNS` WHERE `TABLE_NAME` = '" & $sTable & "' AND `TABLE_SCHEMA` = '" & $sDatabase & "' AND `COLUMN_NAME` = '" & $sField & "'"
+  If modMain.$Connection.Exec(modMain.$Query)!"IS_NULLABLE" = "YES" Then
+    Return True
+  Else
+    Return False
+  Endif
+
+End
+
+Public Function Extra() As String
+
+  modMain.$Query = "SELECT `EXTRA` FROM `information_schema`.`COLUMNS` WHERE `TABLE_NAME` = '" & $sTable & "' AND `TABLE_SCHEMA` = '" & $sDatabase & "' AND `COLUMN_NAME` = '" & $sField & "'"
+  Return modMain.$Connection.Exec(modMain.$Query)!"EXTRA"
+
+End
+
+Public Function DefaultValue() As String
+
+  modMain.$Query = "SELECT `COLUMN_DEFAULT` FROM `information_schema`.`COLUMNS` WHERE `TABLE_NAME` = '" & $sTable & "' AND `TABLE_SCHEMA` = '" & $sDatabase & "' AND `COLUMN_NAME` = '" & $sField & "'"
+  Return modMain.$Connection.Exec(modMain.$Query)!"COLUMN_DEFAULT"
+
+End
+
+Public Function Datatype() As String
+
+  modMain.$Query = "SELECT `COLUMN_TYPE` FROM `information_schema`.`COLUMNS` WHERE `TABLE_NAME` = '" & $sTable & "' AND `TABLE_SCHEMA` = '" & $sDatabase & "' AND `COLUMN_NAME` = '" & $sField & "'"
+  Return modMain.$Connection.Exec(modMain.$Query)!"COLUMN_TYPE"
+
+End
+
+Public Function Commnet() As String
+
+  modMain.$Query = "SELECT `COLUMN_COMMENT` FROM `information_schema`.`COLUMNS` WHERE `TABLE_NAME` = '" & $sTable & "' AND `TABLE_SCHEMA` = '" & $sDatabase & "' AND `COLUMN_NAME` = '" & $sField & "'"
+  Return modMain.$Connection.Exec(modMain.$Query)!"COLUMN_COMMENT"
+
+End
