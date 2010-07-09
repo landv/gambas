@@ -36,7 +36,8 @@
 #include "gbx_class.h"
 #include "gbx_exec.h"
 #include "gbx_api.h"
-
+#include "gbx_c_array.h"
+#include "gbx_struct.h"
 #include "gbx_extern.h"
 
 typedef
@@ -310,12 +311,24 @@ void EXTERN_call(void)
 	__OBJECT:	
 		{
 			void *ob = value->_object.object;
+			void *addr;
 			CLASS *class = OBJECT_class(ob);
 			
 			if (!CLASS_is_native(class) && class == CLASS_Class)
-				*((void **)tmp) = class->stat;
+				addr = class->stat;
+			else if (CLASS_is_array(class))
+				addr = ((CARRAY *)ob)->data;
+			else if (CLASS_is_struct(class))
+			{
+				if (((CSTRUCT *)ob)->ref)
+					addr = (char *)((CSTATICSTRUCT *)ob)->addr;
+				else
+					addr = (char *)ob + sizeof(CSTRUCT);
+			}
 			else
-				*((void **)tmp) = (char *)ob + sizeof(OBJECT);
+				addr = (char *)ob + sizeof(OBJECT);
+			
+			*((void **)tmp) = addr;
 		}
 		continue;
 	

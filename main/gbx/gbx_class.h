@@ -263,9 +263,10 @@ typedef
 		unsigned error : 1;               //          Loading or registering the class has failed
 		unsigned is_observer : 1;         //          This is the Observer class
 		unsigned is_struct : 1;           //          This class is a structure
+		unsigned is_array : 1;            //          This class is an array
 		unsigned init_dynamic : 1;        //          If there is a special function to call at instanciation
 		unsigned must_check : 1;          //          The class has a check function
-		unsigned _reserved : 8;           //  24  36 
+		unsigned _reserved : 7;           //  24  36 
 
 		short n_desc;                     //  26  38  number of descriptions
 		short n_event;                    //  28  40  number of events
@@ -398,6 +399,7 @@ EXTERN CLASS *CLASS_SubCollection;
 
 #define CLASS_is_native(_class) ((_class)->is_native)
 #define CLASS_is_struct(_class) ((_class)->is_struct)
+#define CLASS_is_array(_class) ((_class)->is_array)
 
 #define FUNCTION_is_static(func) ((func)->type & TF_STATIC)
 #define FUNCTION_is_native(_desc) (((uintptr_t)(_desc)->exec >> 16) != 0)

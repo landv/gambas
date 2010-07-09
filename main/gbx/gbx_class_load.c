@@ -279,7 +279,7 @@ static char *get_section(char *sec_name, char **section, short *pcount, const ch
 		
 		if (size_one_64 != size_one)
 		{
-			ALLOC(POINTER(&alloc), size_one_64 * size, "get_section");
+			ALLOC(&alloc, size_one_64 * size, "get_section");
 				
 			for (i = 0; i < size; i++)
 			{
@@ -1010,7 +1010,8 @@ void CLASS_load_without_init(CLASS *class)
 				#ifdef OS_64BITS
 				// Special process for long constants: the first 32 bits part of the LONG constant
 				// has been extended to 64 bits
-				cc->_swap.val[0] = (int)(*((int64_t *)(void *)&cc->_string.addr));
+				//cc->_swap.val[0] = (int)(*((int64_t *)(void *)&cc->_string.addr));
+				cc->_swap.val[0] = (int)(intptr_t)cc->_string.addr;
 				cc->_swap.val[1] = cc->_string.len;
 				#endif
 				/*

@@ -1246,6 +1246,8 @@ void CLASS_create_array_class(CLASS *class)
 
 	CLASS_register_class(desc, class);
 
+	class->is_array = TRUE;
+	class->quick_array = CQA_ARRAY;
 	class->data = (char *)desc;
 	
 	STRING_free(&name_joker);
@@ -1294,6 +1296,7 @@ void CLASS_create_array_of_struct_class(CLASS *class)
 
 	CLASS_register_class(desc, class);
 
+	class->is_array = TRUE;
 	class->data = (char *)desc;
 	
 	STRING_free(&name_joker);

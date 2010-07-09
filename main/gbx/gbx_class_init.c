@@ -150,8 +150,12 @@ void CLASS_init_native(void)
     class = CLASS_register(init->desc);
     if (init->class != NULL)
       *init->class = class;
-  	class->quick_array = init->array;
-		class->array_type = init->array_type;
+		if (init->array)
+		{
+			class->quick_array = init->array;
+			class->array_type = init->array_type;
+			class->is_array = TRUE;
+		}
   }
 	
 	CLASS_Observer->is_observer = TRUE;
