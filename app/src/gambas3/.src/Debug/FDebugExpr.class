@@ -638,7 +638,11 @@ Public Sub Form_Open()
   Dim aGeom As Integer[]
   
   aGeom = Project.Config["DebugWindow" &/ $sKey &/ "Geometry"]
-  If aGeom Then Try Me.Move(aGeom[0], aGeom[1], aGeom[2], aGeom[3])
+  If aGeom Then 
+    Try Me.Move(aGeom[0], aGeom[1], aGeom[2], aGeom[3])
+  Else
+    Me.Move(FMain.X, FMain.Y)
+  Endif
 
   If $sLastExpr Then 
     If $cAll.Exist($sLastExpr) Then 
