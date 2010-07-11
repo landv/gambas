@@ -90,11 +90,11 @@ static void load_arch(ARCH *arch, const char *path)
 	_swap = arch->header.magic != ARCH_MAGIC;
   
   if (_swap)
-  {
-  	fprintf(stderr, "gbx: Swapping archive\n");
   	SWAP_ints((int *)&arch->header, 6);
-	}
 
+	if (arch->header.magic != ARCH_MAGIC)
+		arch_error("not an archive");
+	
   //if (arch->header.version != ARCH_VERSION)
   //	arch_error("bad version");
 

@@ -21,7 +21,7 @@ Public Sub _new()
   
   $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
   '$hDrawingArea.Mouse = Mouse.Pointing
-  Me.H = Max(ICON_SIZE, Desktop.Scale * 7) + PADDING * 2
+  Me.H = Max(ICON_SIZE, Desktop.Scale * 9) + PADDING * 2
   
 End
 
@@ -51,9 +51,12 @@ Public Sub DrawingArea_Draw()
   
   With $hLibraryInfo
     
-    $sText = "<b>" & .Name & "</b> " & .Version
-    $sText &= Subst("<br><font size=\"-1\" color=\"&1\"><b>", If(IsSelected(), "white", "gray")) & Replace($sPath, System.User.Home, "~") & "</b></font>"
+    $sText = Subst("<font color=\"&1\">", If(IsSelected(), "white", "black"))
+    $sText &= "<font size=\"+1\"><b>" & .Name & "</b> " & .Version & "</font>"
+    '$sText &= Subst("<font size=\"-1\" color=\"&1\"><b>", If(IsSelected(), "white", "gray")) & Replace($sPath, System.User.Home, "~") & "</b></font>"
+    $sText &= "<hr><font size=\"-1\"><b>" & ("Location") & "&nbsp;:&nbsp;</b>" & Replace($sPath, System.User.Home, "~") & "</font>"
     $sText &= "<br><font size=\"-1\"><b>" & ("Provides") & "&nbsp;:&nbsp;</b>" & .Classes.Join(", ") & "</font>"
+    $sText &= "</font>"
 
     $iTextW = Draw.RichTextWidth($sText)
 

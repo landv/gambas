@@ -216,7 +216,7 @@ static int path_count(void)
 int main(int argc, char **argv)
 {
   DIR *dir;
-  char *path;
+  const char *path;
   struct dirent *dirent;
   char *file_name;
   const char *file;
@@ -253,8 +253,13 @@ int main(int argc, char **argv)
 			len_prefix = strlen(file);
 			path_init(file);
 
-			/* .project file always first ! */
-			ARCH_add_file(ARCH_project);
+			/* .startup and .project file always first ! */
+			
+			path = FILE_cat(FILE_get_dir(ARCH_project), ".startup", NULL);
+			if (FILE_exist(path)) ARCH_add_file(path);
+			
+			path = FILE_cat(FILE_get_dir(ARCH_project), ".project", NULL);
+			if (FILE_exist(path)) ARCH_add_file(path);
 
 			for(;;)
 			{
@@ -355,7 +360,7 @@ int main(int argc, char **argv)
 
 	_NEXT_PATH:
 				if (dir != NULL) closedir(dir);
-				FREE(&path, "main");
+				FREE((char **)&path, "main");
 			}
 
 			path_exit();

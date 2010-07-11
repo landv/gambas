@@ -23,7 +23,7 @@ AC_DEFUN([GB_INIT_PROJECT],
   AM_INIT_AUTOMAKE($1, $(PACKAGE_VERSION))
 
   ## List of needed components
-  COMPONENTS=`cat $1/.project | grep "Library=" | sed s/"Library="//g`
+  COMPONENTS=`cat $1/.project | grep "Component=" | sed s/"Component="//g`
 
   ## Check if the project is a component
   COMPONENT_build=`cat $1/.project | grep "MakeComponent=" | sed s/"MakeComponent="//g`

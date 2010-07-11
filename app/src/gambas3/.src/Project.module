@@ -44,6 +44,7 @@ Public ExtraAutoconfTest As String
 Public Categories As Collection
 Public Prefix As Boolean
 Public UseRelease As Boolean
+Public PackageName As String
 Public Maintainer As String
 Public Address As String
 Public Vendor As String
@@ -2549,6 +2550,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   ExtraAutoconfTest = ""
   Prefix = False
   UseRelease = False
+  PackageName = ""
   ExecPath = Project.Dir &/ Project.Name & ".gambas"
   SourcePath = ""
   CreateComponent = False
@@ -2718,6 +2720,9 @@ Public Sub ReadProject(Optional bConvert As Boolean)
       Case "userelease"
         UseRelease = Val(sVal)
         
+      Case "packagename"
+        PackageName = sVal
+        
       Case "maintainer"
         Maintainer = sVal
         
@@ -2860,6 +2865,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If License Then Print #hFic, "License="; License
   If Prefix Then Print #hFic, "Prefix=1"
   If UseRelease Then Print #hFic, "UseRelease=1"
+  If PackageName Then Print #hFic, "PackageName="; PackageName
   If CreateEachDirectory Then Print #hFic, "CreateEachDirectory=1"
 
   If Systems.Count Then

@@ -303,6 +303,7 @@ Public Sub wizInstall_BeforeChange()
       Project.Description = txtDescribe.Text
       Project.Prefix = chkPrefix.Value
       Project.UseRelease = chkUseRelease.Value
+      Project.PackageName = txtPackage.Text
 
     Case 1
       If Not Trim(txtChange.Text) Then 

@@ -37,3 +37,22 @@ Public Sub GetInfo()
   Exec [System.Path &/ "bin/gba" & System.Version, "-x", Path, ".info"] To Info
   
 End
+
+Public Sub GetPackageName() As String
+  
+  Dim sProject As String
+  Dim sLine As String
+  Dim aLine As String[]
+  Dim aVersion As String[]
+  
+  Exec [System.Path &/ "bin/gba" & System.Version, "-x", Path, ".project"] To sProject
+  
+  For Each sLine In Split(sProject, "\n")
+    aLine = Scan(sLine, "PackageName=*")
+    If aLine.Count Then Return aLine[0]
+  Next
+  
+  aVersion = Split(Version, ".")
+  Return String.UCase(Name & "-" & aVersion[0] & "." & aVersion[1])
+  
+End
