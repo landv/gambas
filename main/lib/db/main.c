@@ -589,7 +589,7 @@ char *DB_GetQuotedTable(DB_DRIVER *driver, DB_DATABASE *db, const char *table)
 	else
 	{
 		res = GB.TempString(NULL, len + 2);
-		sprintf(res, "%.*s.%s%s%s", point - table, table, quote, point + 1, quote);
+		sprintf(res, "%.*s.%s%s%s", (int)(point - table), table, quote, point + 1, quote);
 	}
 	
 	return res;
