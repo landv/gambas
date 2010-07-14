@@ -253,7 +253,6 @@ static GB_DESC NATIVE_GambasLanguage[] =
   GB_METHOD("DateDiff", "i", NULL, "(Date1)d(Date2)d(Period)i"),
 
   GB_METHOD("Eval", "v", NULL, "(Expression)s[(Context)Collection;]"),
-  GB_METHOD("Assign", "v", NULL, "(Expression)s[(Context)Collection;]"),
 
   GB_METHOD("Eof", "b", NULL, "[(File)Stream;]"),
   GB_METHOD("Lof", "l", NULL, "[(File)Stream;]"),
@@ -281,7 +280,17 @@ static GB_DESC NATIVE_GambasLanguage[] =
   GB_METHOD("StrPtr", "s", NULL, "(Pointer)p"),
   GB_METHOD("VarPtr", "p", NULL, "(Variable)v"),
   
-  GB_METHOD("Tr", "s", NULL, "(String)s"),
+  GB_METHOD("BoolPtr", "b", NULL, "(Pointer)p"),
+  GB_METHOD("BytePtr", "c", NULL, "(Pointer)p"),
+  GB_METHOD("ShortPtr", "h", NULL, "(Pointer)p"),
+  GB_METHOD("IntPtr", "i", NULL, "(Pointer)p"),
+  GB_METHOD("IntegerPtr", "i", NULL, "(Pointer)p"),
+  GB_METHOD("LongPtr", "l", NULL, "(Pointer)p"),
+  GB_METHOD("SinglePtr", "g", NULL, "(Pointer)p"),
+  GB_METHOD("FloatPtr", "f", NULL, "(Pointer)p"),
+  GB_METHOD("PointerPtr", "p", NULL, "(Pointer)p"),
+
+	GB_METHOD("Tr", "s", NULL, "(String)s"),
   GB_METHOD("Tr$", "s", NULL, "(String)s"),
 
   GB_METHOD("Quote", "s", NULL, "(String)s"),
@@ -292,6 +301,9 @@ static GB_DESC NATIVE_GambasLanguage[] =
   
   GB_METHOD("Html", "s", NULL, "(String)s"),
   GB_METHOD("Html$", "s", NULL, "(String)s"),
+  
+  GB_METHOD("Unquote", "s", NULL, "(String)s"),
+  GB_METHOD("Unquote$", "s", NULL, "(String)s"),
   
   GB_END_DECLARE
 };

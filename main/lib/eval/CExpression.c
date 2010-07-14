@@ -38,7 +38,6 @@ static CEXPRESSION *_current;
 BEGIN_METHOD_VOID(CEXPRESSION_new)
 
   THIS->compiled = FALSE;
-	THIS->assignment = FALSE;
   CLEAR(&THIS->expr);
 
 END_METHOD
@@ -79,19 +78,18 @@ BEGIN_PROPERTY(CEXPRESSION_environment)
 
 END_PROPERTY
 
-static void prepare(CEXPRESSION *_object, bool assignment)
+static void prepare(CEXPRESSION *_object)
 {
   if (!THIS->compiled && (THIS->expr.len > 0))
   {
-		THIS->assignment = assignment;
-    if (!EVAL_compile(&THIS->expr, THIS->assignment))
+    if (!EVAL_compile(&THIS->expr, FALSE))
       THIS->compiled = TRUE;
   }
 }
 
-BEGIN_METHOD(CEXPRESSION_prepare, GB_BOOLEAN assignment)
+BEGIN_METHOD_VOID(CEXPRESSION_prepare)
 
-	prepare(THIS, VARGOPT(assignment, FALSE));
+	prepare(THIS);
 
 END_METHOD
 
@@ -109,7 +107,7 @@ static bool get_variable(const char *sym, int len, GB_VARIANT *value)
 static void execute(CEXPRESSION *_object)
 {
   if (!THIS->compiled)
-		prepare(THIS, FALSE);
+		prepare(THIS);
 
   if (!THIS->compiled)
   {
@@ -140,7 +138,7 @@ GB_DESC CExpressionDesc[] =
   GB_PROPERTY("Text", "s", CEXPRESSION_text),
   GB_PROPERTY("Environment", "Collection;", CEXPRESSION_environment),
 
-  GB_METHOD("Compile", NULL, CEXPRESSION_prepare, "[(Assignment)b]"),
+  GB_METHOD("Compile", NULL, CEXPRESSION_prepare, NULL),
 
   GB_PROPERTY_READ("Value", "v", CEXPRESSION_value),
 

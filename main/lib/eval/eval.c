@@ -131,7 +131,7 @@ bool EVAL_compile(EXPRESSION *expr, bool assign)
 
   if (expr->len == 0)
     return TRUE;
-
+	
   EVAL_start(EVAL);
 
   TRY
@@ -140,10 +140,16 @@ bool EVAL_compile(EXPRESSION *expr, bool assign)
 		
 		EVAL->current = EVAL->pattern;
 		
+		if (PATTERN_is(*EVAL->current, RS_LET))
+		{
+			EVAL->current++;
+			assign = TRUE;
+		}
+		
 		if (assign)
 		{
 			if (!TRANS_affectation())
-				TRANS_expression();
+				THROW(E_SYNTAX);
 		}
 		else
 			TRANS_expression();

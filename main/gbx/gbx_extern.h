@@ -38,8 +38,9 @@
 
 #include "gbx_value.h"
 
-void EXTERN_call(void);
+void EXTERN_release(void);
 void EXTERN_exit(void);
+void EXTERN_call(void);
 void *EXTERN_make_callback(VALUE_FUNCTION *value);
 
 #endif

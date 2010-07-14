@@ -39,9 +39,8 @@ typedef
     GB_BASE ob;
     char *text;
     void *env;
-    bool compiled;
-		bool assignment;
     EXPRESSION expr;
+    bool compiled;
     }
   CEXPRESSION;
 

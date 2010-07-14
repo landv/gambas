@@ -428,6 +428,12 @@ static void translate_body()
       JOB->current += 2;
       TRANS_end_with();
     }
+    else if (PATTERN_is(look[0], RS_LET))
+		{
+			JOB->current++;
+			if (!TRANS_affectation(FALSE))
+				THROW(E_SYNTAX);
+		}
     else
       TRANS_statement();
 

@@ -274,7 +274,7 @@ void SUBR_eval(ushort code)
 
 	EVAL.New((void **)(void *)&eval, expr, len);
 
-	if (EVAL.Compile(eval, (code >> 8) == CODE_ASSIGN))
+	if (EVAL.Compile(eval, FALSE))
 		goto _ERROR;
 
 	if (!EVAL.Run(eval, get_value))

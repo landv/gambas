@@ -725,7 +725,7 @@ Private Sub EnterSection(sSection As String, Optional sArg As String)
     Case "example"
       If Not $bExample Then
         $bExample = True
-        $sRes &= "<h3>" & ("Examples") & "</h3>\n"
+        $sRes &= "<h3>" & ("Example") & "</h3>\n"
       Endif
       $sRes &= "<div class=\"example\">"
       $bVerbatim = True
@@ -769,7 +769,10 @@ Private Sub EnterSection(sSection As String, Optional sArg As String)
         If IsComponentPath($sPath) Then
           $sRes &= "<div style=\"display:none\">"
         Else
-          $sRes &= "<table class=\"only-" & Left(sParam) & "\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\"><tr><td class=\"only-" & Left(sParam) & "\" width=\"8\" valign=\"top\"><b>" & sParam & "</b></td><td class=\"only-contents\">"
+          $sRes &= "<table class=\"only-" & Left(sParam) & "\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">"
+          '$sRes &= "<tr><td class=\"only-" & Left(sParam) & "-title\" valign=\"top\">&nbsp;" & sParam & "&nbsp;</td><td width=\"100%\">&nbsp;</td></tr>"
+          $sRes &= "<tr><td class=\"only-contents\">"
+          $sRes &= "<div class=\"only-" & Left(sParam) & "-title\">&nbsp;" & sParam & "&nbsp;</div>"
         Endif
         $sOnlyVersion = $sVersion
         $sVersion = sParam
@@ -1926,7 +1929,7 @@ Private Sub PrintExample(sExample As String)
 
   If Not $bExample Then
     $bExample = True
-    Print "<h3>" & ("Examples") & "</h3>"
+    Print "<h3>" & ("Example") & "</h3>"
   Endif
 
   Print "<pre class=\"example\">"; RTrim(sExample); "</pre><p>"

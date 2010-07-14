@@ -222,3 +222,23 @@ void SUBR_varptr(void)
 	
 	SUBR_LEAVE();
 }
+
+
+void SUBR_ptr(ushort code)
+{
+  void *ptr;
+  
+  ptr = SUBR_get_pointer(SP - 1);
+	SP--;
+	
+	CHECK_enter();
+	VALUE_read(SP, ptr, code & 0xF);
+	CHECK_leave();
+	
+	if (CHECK_got_error())
+		THROW(E_ARG);
+
+	SP++;
+}
+
+

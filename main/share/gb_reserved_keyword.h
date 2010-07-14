@@ -326,18 +326,6 @@ SUBR_INFO COMP_subr_info[] =
   { "IsBlank",           35,  8,  1     },
   { "IsPunct",           35,  9,  1     },
 
-  /*{ "Ascii?",            35,  1,  1     },
-  { "Letter?",           35,  2,  1     },
-  { "LCase?",            35,  3,  1     },
-  { "Lower?",            35,  3,  1     },
-  { "UCase?",            35,  4,  1     },
-  { "Upper?",            35,  4,  1     },
-  { "Digit?",            35,  5,  1     },
-  { "Hexa?",             35,  6,  1     },
-  { "Space?",            35,  7,  1     },
-  { "Blank?",            35,  8,  1     },
-  { "Punct?",            35,  9,  1     },*/
-
   { "BClr",              36,  1,  2     },
   { "BSet",              36,  2,  2     },
   { "BTst",              36,  3,  2     },
@@ -366,19 +354,6 @@ SUBR_INFO COMP_subr_info[] =
   { "IsObject",          37,  16, 1     },
   { "IsNumber",          37,  17, 1     },
 
-  /*{ "Boolean?",          37,  1,  1     },
-  { "Byte?",             37,  2,  1     },
-  { "Short?",            37,  3,  1     },
-  { "Integer?",          37,  4,  1     },
-  { "Long?",             37,  5,  1     },
-  { "Single?",           37,  6,  1     },
-  { "Float?",            37,  7,  1     },
-  { "Date?",             37,  8,  1     },
-  { "String?",           37,  9,  1     },
-  { "Null?",             37,  15, 1     },
-  { "Object?",           37,  16, 1     },
-  { "Number?",           37,  17, 1     },*/
-
   { "TypeOf",            38,  0,  1     },
   { "SizeOf",            38,  1,  1     },
 
@@ -396,6 +371,7 @@ SUBR_INFO COMP_subr_info[] =
   { "CDate",             39,  8,  1     },
   { "CStr",              39,  9,  1     },
   { "CString",           39,  9,  1     },
+  { "CPointer",          39, 11,  1     },
 	{ "CVar",              39, 12,  1     },
 	{ "CVariant",          39, 12,  1     },
 
@@ -515,12 +491,16 @@ SUBR_INFO COMP_subr_info[] =
   { "Unquote",           93,  0,  1     },
   { "Unquote$",          93,  0,  1     },
 
-  { "Assign",            94,  0,  1,  2 },   /* CODE_ASSIGN */
-  /*
-  { "_EventOff",         94,  0,  0     },
-  { "_EventOn",          95,  0,  0     },
-  */
-
+  { "BoolPtr",           95,  1,  1     },
+  { "BytePtr",           95,  2,  1     },
+  { "ShortPtr",          95,  3,  1     },
+  { "IntPtr",            95,  4,  1     },
+  { "IntegerPtr",        95,  4,  1     },
+  { "LongPtr",           95,  5,  1     },
+  { "SinglePtr",         95,  6,  1     },
+  { "FloatPtr",          95,  7,  1     },
+  { "PointerPtr",        95,  11, 1     },
+	
   { NULL }
 };
 

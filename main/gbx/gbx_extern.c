@@ -388,6 +388,18 @@ void EXTERN_call(void)
 	SP++;
 }
 
+void EXTERN_release(void)
+{
+	EXTERN_CALLBACK *cb = _callbacks;
+	
+	while (cb)
+	{
+		if (cb->exec.object)
+			OBJECT_UNREF(cb->exec.object, "EXTERN_exit");
+		cb = cb->next;
+	}
+}
+
 void EXTERN_exit(void)
 {
 	int i;
@@ -641,6 +653,10 @@ void *EXTERN_make_callback(VALUE_FUNCTION *value)
 void EXTERN_call(void)
 {
 	THROW_ILLEGAL();
+}
+
+void EXTERN_release(void)
+{
 }
 
 void EXTERN_exit(void)

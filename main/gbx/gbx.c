@@ -122,6 +122,7 @@ static void main_exit(bool silent)
 	if (!SP)
 		STACK_init();
 	
+  EXTERN_release();
   STREAM_exit();
   OBJECT_exit();
 	CLASS_clean_up(silent);
