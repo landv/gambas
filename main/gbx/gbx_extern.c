@@ -51,7 +51,6 @@ typedef
 typedef
 	struct EXTERN_CALLBACK {
 		struct EXTERN_CALLBACK *next;
-		VALUE_FUNCTION func;
 		EXEC_GLOBAL exec;
 		void *closure;
 		int nparam;
@@ -461,6 +460,8 @@ void EXTERN_exit(void)
 		cb = _callbacks;
 		_callbacks = cb->next;
 		
+		if (cb->exec.object)
+			OBJECT_UNREF(cb->exec.object, "EXTERN_exit");
 		FREE(&cb->types, "EXTERN_exit");
 		FREE(&cb, "EXTERN_exit");
 	}
@@ -474,7 +475,7 @@ static void callback(ffi_cif *cif, void *result, void **args, void *user_data)
     };
 
 	EXTERN_CALLBACK *cb = (EXTERN_CALLBACK *)user_data;
-	VALUE_FUNCTION *value = &cb->func;
+	//VALUE_FUNCTION *value = &cb->func;
 	int i;
 	VALUE *arg;
 	
@@ -542,9 +543,10 @@ static void callback(ffi_cif *cif, void *result, void **args, void *user_data)
 		arg->type = T_NULL;
 	}
 
-	if (value->kind == FUNCTION_PUBLIC || value->kind == FUNCTION_PRIVATE)
+	EXEC = cb->exec;
+	
+	if (!EXEC.native)
 	{
-		EXEC = cb->exec;
 		EXEC_function_keep();
 		
 		// Do that later, within a TRY/CATCH: VALUE_conv(RP, cb->ret);
@@ -655,7 +657,6 @@ void *EXTERN_make_callback(VALUE_FUNCTION *value)
 	cb->next = _callbacks;
 	_callbacks = cb;
 	
-	cb->func = *value;
 	if (value->object)
 		OBJECT_REF(value->object, "EXTERN_make_callback");
 	

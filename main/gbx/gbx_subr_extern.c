@@ -138,7 +138,7 @@ void SUBR_strptr(ushort code)
 	}
 	else
 	{
-		len = SUBR_get_integer(&PARAM[1])
+		len = SUBR_get_integer(&PARAM[1]);
 		err = CHECK_address(ptr, len);
 	}
     
