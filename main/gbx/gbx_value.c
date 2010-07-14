@@ -275,14 +275,14 @@ void VALUE_convert(VALUE *value, TYPE type)
 	/* b      */ { &&__N,     &&__OK,    &&__b2c,   &&__b2h,   &&__TYPE,  &&__b2l,   &&__b2g,   &&__b2f,   &&__N,     &&__b2s,   &&__b2s,   &&__N,     &&__2v,    &&__N,     &&__N,     &&__N,     },
 	/* c      */ { &&__N,     &&__c2b,   &&__OK,    &&__c2h,   &&__TYPE,  &&__c2l,   &&__c2g,   &&__c2f,   &&__c2d,   &&__c2s,   &&__c2s,   &&__N,     &&__2v,    &&__N,     &&__N,     &&__N,     },
 	/* h      */ { &&__N,     &&__h2b,   &&__h2c,   &&__OK,    &&__TYPE,  &&__h2l,   &&__h2g,   &&__h2f,   &&__h2d,   &&__h2s,   &&__h2s,   &&__N,     &&__2v,    &&__N,     &&__N,     &&__N,     },
-	/* i      */ { &&__N,     &&__i2b,   &&__i2c,   &&__i2h,   &&__OK,    &&__i2l,   &&__i2g,   &&__i2f,   &&__i2d,   &&__i2s,   &&__i2s,   &&__N,     &&__2v,    &&__N,     &&__N,     &&__N,     },
-	/* l      */ { &&__N,     &&__l2b,   &&__l2c,   &&__l2h,   &&__l2i,   &&__OK,    &&__l2g,   &&__l2f,   &&__l2d,   &&__l2s,   &&__l2s,   &&__N,     &&__2v,    &&__N,     &&__N,     &&__N,     },
+	/* i      */ { &&__N,     &&__i2b,   &&__i2c,   &&__i2h,   &&__OK,    &&__i2l,   &&__i2g,   &&__i2f,   &&__i2d,   &&__i2s,   &&__i2s,   &&__i2p,   &&__2v,    &&__N,     &&__N,     &&__N,     },
+	/* l      */ { &&__N,     &&__l2b,   &&__l2c,   &&__l2h,   &&__l2i,   &&__OK,    &&__l2g,   &&__l2f,   &&__l2d,   &&__l2s,   &&__l2s,   &&__l2p,   &&__2v,    &&__N,     &&__N,     &&__N,     },
 	/* g      */ { &&__N,     &&__f2b,   &&__f2c,   &&__f2h,   &&__f2i,   &&__f2l,   &&__OK,    &&__TYPE,  &&__f2d,   &&__f2s,   &&__g2s,   &&__N,     &&__2v,    &&__N,     &&__N,     &&__N,     },
 	/* f      */ { &&__N,     &&__f2b,   &&__f2c,   &&__f2h,   &&__f2i,   &&__f2l,   &&__f2g,   &&__OK,    &&__f2d,   &&__f2s,   &&__f2s,   &&__N,     &&__2v,    &&__N,     &&__N,     &&__N,     },
 	/* d      */ { &&__N,     &&__d2b,   &&__d2c,   &&__d2h,   &&__d2i,   &&__d2l,   &&__d2g,   &&__d2f,   &&__OK,    &&__d2s,   &&__d2s,   &&__N,     &&__2v,    &&__N,     &&__N,     &&__N,     },
 	/* cs     */ { &&__N,     &&__s2b,   &&__s2c,   &&__s2h,   &&__s2i,   &&__s2l,   &&__s2g,   &&__s2f,   &&__s2d,   &&__OK,    &&__OK,    &&__N,     &&__s2v,   &&__N,     &&__N,     &&__N,     },
 	/* s      */ { &&__N,     &&__s2b,   &&__s2c,   &&__s2h,   &&__s2i,   &&__s2l,   &&__s2g,   &&__s2f,   &&__s2d,   &&__OK,    &&__OK,    &&__N,     &&__s2v,   &&__N,     &&__N,     &&__N,     },
-	/* p      */ { &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__OK,    &&__2v,    &&__N,     &&__N,     &&__N,     },
+	/* p      */ { &&__N,     &&__N,     &&__N,     &&__N,     &&__p2i,   &&__p2l,   &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__OK,    &&__2v,    &&__N,     &&__N,     &&__N,     },
 	/* v      */ { &&__N,     &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__OK,    &&__N,     &&__v2,    &&__v2,    },
 	/* func   */ { &&__N,     &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__f2p,   &&__func,  &&__OK,    &&__N,     &&__func,  },
 	/* class  */ { &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__2v,    &&__N,     &&__OK,    &&__N,     },
@@ -377,6 +377,12 @@ __f2i:
 	value->_integer.value = (int)value->_float.value;
 	value->type = T_INTEGER;
 	return;
+	
+__p2i:
+
+	value->_integer.value = (int)(intptr_t)value->_pointer.value;
+	value->type = T_INTEGER;
+	return;
 
 __b2l:
 __c2l:
@@ -390,6 +396,12 @@ __i2l:
 __f2l:
 
 	value->_long.value = (int64_t)value->_float.value;
+	value->type = T_LONG;
+	return;
+
+__p2l:
+
+	value->_long.value = (int64_t)(intptr_t)value->_pointer.value;
 	value->type = T_LONG;
 	return;
 
@@ -639,6 +651,16 @@ __func:
 	else
 		goto __N;
 
+__i2p:
+	value->_pointer.value = (void *)(intptr_t)value->_integer.value;
+	value->type = T_POINTER;
+	return;
+	
+__l2p:
+	value->_pointer.value = (void *)(intptr_t)value->_long.value;
+	value->type = T_POINTER;
+	return;
+	
 __f2p:
 
 	value->_pointer.value = EXTERN_make_callback(&value->_function);

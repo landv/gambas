@@ -1,22 +1,22 @@
 /***************************************************************************
 
-  gbx_extern.c
+	gbx_extern.c
 
-  (c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -26,8 +26,8 @@
 #include "gb_common.h"
 
 #if HAVE_FFI_COMPONENT
+
 #include <ffi.h>
-#endif
 
 #include "gb_common_buffer.h"
 #include "gb_table.h"
@@ -42,12 +42,20 @@
 #include "gbx_extern.h"
 
 typedef
-  struct {
-    SYMBOL sym;
-    lt_dlhandle handle;
-    }
-  EXTERN_SYMBOL;  
+	struct {
+		SYMBOL sym;
+		lt_dlhandle handle;
+		}
+	EXTERN_SYMBOL;  
 
+typedef
+	struct {
+		ffi_cif cif;
+		ffi_type **types;
+		ffi_type *rtype;
+	}
+	EXTERN_CIF;
+	
 typedef
 	struct EXTERN_CALLBACK {
 		struct EXTERN_CALLBACK *next;
@@ -56,16 +64,22 @@ typedef
 		int nparam;
 		TYPE *sign;
 		TYPE ret;
-		ffi_cif cif;
-		ffi_type **types;
-		ffi_type *rtype;
+		EXTERN_CIF info;
 	}
 	EXTERN_CALLBACK;
+	
+typedef
+	struct EXTERN_FUNC {
+		struct EXTERN_FUNC *next;
+		void *call;
+		EXTERN_CIF info;
+	}
+	EXTERN_FUNC;
 
 static TABLE *_table = NULL;
 static EXTERN_CALLBACK *_callbacks = NULL;
+static EXTERN_FUNC *_functions = NULL;
 
-#if HAVE_FFI_COMPONENT
 static ffi_type *_to_ffi_type[17] = {
 	&ffi_type_void, &ffi_type_sint32, &ffi_type_sint32, &ffi_type_sint32, 
 	&ffi_type_sint32, &ffi_type_sint64, &ffi_type_float, &ffi_type_double, 
@@ -73,218 +87,169 @@ static ffi_type *_to_ffi_type[17] = {
 	&ffi_type_void, &ffi_type_void, &ffi_type_void, &ffi_type_pointer,
 	&ffi_type_pointer
 	};
-#endif
+
+
+static void prepare_cif(EXTERN_CIF *info, int nparam, TYPE *sign, TYPE ret)
+{
+	int i;
+	TYPE t;
+
+	if (nparam > 0)
+	{
+		ALLOC(&info->types, sizeof(ffi_type *) * nparam, "prepare_cif");
+		
+		for (i = 0; i < nparam; i++)
+		{
+			if (TYPE_is_object(sign[i]))
+				t = T_OBJECT;
+			else
+				t = (int)sign[i];
+				
+			info->types[i] = _to_ffi_type[t];
+		}
+	}
+	
+	if (TYPE_is_object(ret))
+		t = T_OBJECT;
+	else
+		t = (int)ret;
+	
+	info->rtype = _to_ffi_type[t];
+
+	if (ffi_prep_cif(&info->cif, FFI_DEFAULT_ABI, nparam, info->rtype, info->types) != FFI_OK)
+		THROW(E_EXTCB, "Unable to prepare function description");
+}
+
 
 static lt_dlhandle get_library(char *name)
 {
-  EXTERN_SYMBOL *esym;
-  char *p;
+	EXTERN_SYMBOL *esym;
+	char *p;
 	int index;
-  
-  if (!_table)
-    TABLE_create(&_table, sizeof(EXTERN_SYMBOL), TF_NORMAL);
-    
-  TABLE_add_symbol(_table, name, strlen(name), &index);
+	
+	if (!_table)
+		TABLE_create(&_table, sizeof(EXTERN_SYMBOL), TF_NORMAL);
+		
+	TABLE_add_symbol(_table, name, strlen(name), &index);
 	esym = (EXTERN_SYMBOL *)TABLE_get_symbol(_table, index);
-  if (!esym->handle)
-  {
-    /* !!! Must add the suffix !!! */
-  
-    p = strrchr(name, ':');
-    if (!p)
-      sprintf(COMMON_buffer, "%s." SHARED_LIBRARY_EXT, name);
-    else
-      sprintf(COMMON_buffer, "%.*s." SHARED_LIBRARY_EXT ".%s", (int)(p - name), name, p + 1);
-      
-    name = COMMON_buffer;
-    
-    #ifndef DONT_USE_LTDL
-      /* no more available in libltld ?
-      lt_dlopen_flag = RTLD_LAZY;
-      */
-      esym->handle = lt_dlopenext(name);
-    #else
-      esym->handle = dlopen(name, RTLD_LAZY);
-    #endif
-  
-    if (esym->handle == NULL)
-      THROW(E_EXTLIB, name, lt_dlerror());
-      
-    //fprintf(stderr, "%s loaded.\n", name);
-  }
-  
-  return esym->handle;
+	if (!esym->handle)
+	{
+		/* !!! Must add the suffix !!! */
+	
+		p = strrchr(name, ':');
+		if (!p)
+			sprintf(COMMON_buffer, "%s." SHARED_LIBRARY_EXT, name);
+		else
+			sprintf(COMMON_buffer, "%.*s." SHARED_LIBRARY_EXT ".%s", (int)(p - name), name, p + 1);
+			
+		name = COMMON_buffer;
+		
+		#ifndef DONT_USE_LTDL
+			/* no more available in libltld ?
+			lt_dlopen_flag = RTLD_LAZY;
+			*/
+			esym->handle = lt_dlopenext(name);
+		#else
+			esym->handle = dlopen(name, RTLD_LAZY);
+		#endif
+	
+		if (esym->handle == NULL)
+			THROW(E_EXTLIB, name, lt_dlerror());
+			
+		//fprintf(stderr, "%s loaded.\n", name);
+	}
+	
+	return esym->handle;
 }  
-  
-#if 0
-static int put_arg(void *addr, VALUE *value)
+
+
+static EXTERN_FUNC *get_function(CLASS_EXTERN *ext)
 {
-  static void *jump[16] = {
-    &&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
-    &&__STRING, &&__STRING, &&__VARIANT, &&__ARRAY, &&__FUNCTION, &&__CLASS, &&__NULL
-    };
-    
-  if (TYPE_is_object(value->type))
-    goto __OBJECT;
-  else
-    goto *jump[value->type];
+	EXTERN_FUNC *func;
+	void *call;
+	lt_dlhandle handle;
+	
+	if (ext->loaded)
+		return (EXTERN_FUNC *)ext->alias;
+	
+	handle = get_library(ext->library);
+	call = lt_dlsym(handle, ext->alias);
+	
+	if (call == NULL)
+	{
+		lt_dlclose(handle);
+		THROW(E_EXTSYM, ext->library, ext->alias);
+	}
 
-__BOOLEAN:
-
-  *((int *)addr) = (value->_boolean.value != 0 ? 1 : 0);
-  return 1;
-
-__BYTE:
-
-  *((int *)addr) = (unsigned char)(value->_byte.value);
-  return 1;
-
-__SHORT:
-
-  *((int *)addr) = (short)(value->_short.value);
-  return 1;
-
-__INTEGER:
-
-  *((int *)addr) = value->_integer.value;
-  return 1;
-
-__LONG:
-
-  *((int64_t *)addr) = value->_long.value;
-  return 2;
-
-__SINGLE:
-
-  *((float *)addr) = (float)value->_float.value;
-  return 1;
-
-__FLOAT:
-
-  *((double *)addr) = value->_float.value;
-  return 2;
-
-__DATE:
-
-  /* Inverser au cas o value ~= addr */
-
-  ((int *)addr)[1] = value->_date.time;
-  ((int *)addr)[0] = value->_date.date;
-  return 2;
-
-__STRING:
-
-  *((char **)addr) = (char *)(value->_string.addr + value->_string.start);
-  return 1;
-
-__OBJECT:
-
-  {
-    void *ob = value->_object.object;
-    CLASS *class = OBJECT_class(ob);
-    
-    if (!CLASS_is_native(class) && class == CLASS_Class)
-      *((void **)addr) = class->stat;
-    else
-      *((void **)addr) = (char *)ob + sizeof(OBJECT);
-    
-    return 1;
-  }
-
-__NULL:
-  *((void **)addr) = NULL;
-  return 1;
-
-__VARIANT:
-__VOID:
-__ARRAY:
-__CLASS:
-__FUNCTION:
-
-  ERROR_panic("Bad type (%d) for EXTERN_call", value->type);
-}
-#endif
-
-
-
-static void *get_function(CLASS_EXTERN *ext)
-{
-  lt_dlhandle handle;
-  void *func;
-  
-  if (ext->loaded)
-    return (void *)ext->alias;
-    
-  handle = get_library(ext->library);
-  func = lt_dlsym(handle, ext->alias);
-  
-  if (func == NULL)
-  {
-    lt_dlclose(handle);
-    THROW(E_EXTSYM, ext->library, ext->alias);
-  }
-
-  //ext->library = (char *)handle;
-  ext->alias = (char *)func;
-  ext->loaded = TRUE;
-  
-  return func;
+	ALLOC(&func, sizeof(EXTERN_FUNC), "get_function");
+	func->next = _functions;
+	_functions = func;
+	
+	func->call = call;
+	prepare_cif(&func->info, ext->n_param, (TYPE *)ext->param, ext->type);
+	
+	//ext->library = (char *)handle;
+	ext->alias = (char *)func;
+	ext->loaded = TRUE;
+	
+	return func;
 }
 
 
 /*
-  EXEC.class : the class
-  EXEC.index : the extern function index
-  EXEC.nparam : the number of parameters to the call
-  EXEC.drop : if the return value should be dropped.
+	EXEC.class : the class
+	EXEC.index : the extern function index
+	EXEC.nparam : the number of parameters to the call
+	EXEC.drop : if the return value should be dropped.
 */
 
-#if HAVE_FFI_COMPONENT
 void EXTERN_call(void)
 {
-  static const void *jump[17] = {
-    &&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
-    &&__STRING, &&__STRING, &&__POINTER, &&__VARIANT, &&__FUNCTION, &&__CLASS, &&__NULL, &&__OBJECT
-    };
-  static const int use_temp[17] = { 0, 0, 0, 0, 0, 0, sizeof(float), 0, 0, sizeof(char *), sizeof(char *), 0, 0, 0, 0, 0, sizeof(void *) };
-  static char temp[4 * sizeof(void *)];
-  static void *null = 0;
-    
-  CLASS_EXTERN *ext = &EXEC.class->load->ext[EXEC.index];
-  int nparam = EXEC.nparam;
-  ffi_cif cif;
-  ffi_type *types[nparam];
-  ffi_type *rtype;
-  void *args[nparam];
-  TYPE *sign;
-  VALUE *value;
-  char *tmp = NULL;
-  char *next_tmp;
-  void *func;
-  int i, t;
-  union {
-  	int _integer;
-  	float _single;
-  	double _float;
-  	char *_string;
-  	int64_t _long;
+	static const void *jump[17] = {
+		&&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
+		&&__STRING, &&__STRING, &&__POINTER, &&__VARIANT, &&__FUNCTION, &&__CLASS, &&__NULL, &&__OBJECT
+		};
+	static const int use_temp[17] = { 0, 0, 0, 0, 0, 0, sizeof(float), 0, 0, sizeof(char *), sizeof(char *), 0, 0, 0, 0, 0, sizeof(void *) };
+	static char temp[4 * sizeof(void *)];
+	static void *null = 0;
+		
+	CLASS_EXTERN *ext = &EXEC.class->load->ext[EXEC.index];
+	EXTERN_FUNC *func;
+	int nparam = EXEC.nparam;
+	void *args[nparam];
+	TYPE *sign;
+	VALUE *value;
+	char *tmp = NULL;
+	char *next_tmp;
+	int i, t;
+	union {
+		int _integer;
+		float _single;
+		double _float;
+		char *_string;
+		int64_t _long;
 		void *_pointer;
-  	}
-  	rvalue;
+		}
+		rvalue;
 
-  if (nparam < ext->n_param)
-    THROW(E_NEPARAM);
-  if (nparam > ext->n_param)
-    THROW(E_TMPARAM);
-  
-  sign = (TYPE *)ext->param;
-  value = &SP[-nparam];
-  next_tmp = temp;
-  
-  for (i = 0; i < nparam; i++, value++, sign++)
-  {
-  	VALUE_conv(value, *sign);
-  	
+	if (!ext->loaded)
+	{
+		if (nparam < ext->n_param)
+			THROW(E_NEPARAM);
+		if (nparam > ext->n_param)
+			THROW(E_TMPARAM);
+	}
+	
+	func = get_function(ext);
+	
+	sign = (TYPE *)ext->param;
+	value = &SP[-nparam];
+	next_tmp = temp;
+	
+	for (i = 0; i < nparam; i++, value++, sign++)
+	{
+		VALUE_conv(value, *sign);
+		
 		if (TYPE_is_object(value->type))
 			t = T_OBJECT;
 		else
@@ -298,7 +263,6 @@ void EXTERN_call(void)
 			args[i] = tmp;
 			next_tmp = tmp + use_temp[t];
 		}
-  	types[i] = _to_ffi_type[t];
 		goto *jump[t];
 
 	__BOOLEAN:
@@ -363,97 +327,85 @@ void EXTERN_call(void)
 	__FUNCTION:
 	
 		ERROR_panic("Bad type (%d) for EXTERN_call", value->type);
-  }
-  
-  rtype = _to_ffi_type[ext->type];
-  
-  func = get_function(ext);
-  
-	if (ffi_prep_cif(&cif, FFI_DEFAULT_ABI, nparam, rtype, types) != FFI_OK)
-		ERROR_panic("ffi_prep_cif has failed");
-  
-	ffi_call(&cif, func, &rvalue, args);
+	}
+	
+	ffi_call(&func->info.cif, func->call, &rvalue, args);
 
-  switch (ext->type)
-  {
-    case T_BOOLEAN:
-    case T_BYTE:
-    case T_SHORT:
-    case T_INTEGER:
-      //GB_ReturnInteger(*(int *)POINTER(rvalue));
-      GB_ReturnInteger(rvalue._integer);
-      break;
-    
-    case T_LONG:
-      //GB_ReturnLong(*(int64_t *)POINTER(rvalue));
-      GB_ReturnLong(rvalue._long);
-      break;
-    
-    case T_SINGLE:
-      //GB_ReturnFloat(*(float *)POINTER(rvalue));
-      GB_ReturnFloat(rvalue._single);
-      break;
-      
-    case T_FLOAT:
-      //GB_ReturnFloat(*(double *)POINTER(rvalue));
-      GB_ReturnFloat(rvalue._float);
-      break;
-      
-    case T_STRING:
-      //GB_ReturnConstString(*(char **)POINTER(rvalue), 0);
-      GB_ReturnConstString(rvalue._string, 0);
-      break;
+	switch (ext->type)
+	{
+		case T_BOOLEAN:
+		case T_BYTE:
+		case T_SHORT:
+		case T_INTEGER:
+			//GB_ReturnInteger(*(int *)POINTER(rvalue));
+			GB_ReturnInteger(rvalue._integer);
+			break;
+		
+		case T_LONG:
+			//GB_ReturnLong(*(int64_t *)POINTER(rvalue));
+			GB_ReturnLong(rvalue._long);
+			break;
+		
+		case T_SINGLE:
+			//GB_ReturnFloat(*(float *)POINTER(rvalue));
+			GB_ReturnFloat(rvalue._single);
+			break;
+			
+		case T_FLOAT:
+			//GB_ReturnFloat(*(double *)POINTER(rvalue));
+			GB_ReturnFloat(rvalue._float);
+			break;
+			
+		case T_STRING:
+			//GB_ReturnConstString(*(char **)POINTER(rvalue), 0);
+			GB_ReturnConstString(rvalue._string, 0);
+			break;
 			
 		case T_POINTER:
 			GB_ReturnPointer(rvalue._pointer);
 			break;
 			
 		case T_VOID:
-    default:
+		default:
 			TEMP.type = T_VOID;
 			break;
-  }	
+	}	
 
-  while (nparam)
-  {
-    nparam--;
-    POP();
-  }
+	while (nparam)
+	{
+		nparam--;
+		POP();
+	}
 
-  POP(); /* extern function */
-  
-  /* from EXEC_native() */
-    
-  BORROW(&TEMP);
+	POP(); /* extern function */
+	
+	/* from EXEC_native() */
+		
+	BORROW(&TEMP);
 
 	VALUE_conv(&TEMP, ext->type);
 	*SP = TEMP;
 	SP++;
 }
-#else
-void EXTERN_call(void)
-{
-	THROW_ILLEGAL();
-}
-#endif
 
 void EXTERN_exit(void)
 {
-  int i;
-  EXTERN_SYMBOL *esym;
+	int i;
+	EXTERN_SYMBOL *esym;
 	EXTERN_CALLBACK *cb;
-  
-  if (!_table)
-    return;
-  
-  for (i = 0; i < TABLE_count(_table); i++)
-  {
-    esym = (EXTERN_SYMBOL *)TABLE_get_symbol(_table, i);
-    if (esym->handle)
-      lt_dlclose(esym->handle);
-  }
-  
-  TABLE_delete(&_table);
+	EXTERN_FUNC *func;
+	
+	if (_table)
+	{
+		for (i = 0; i < TABLE_count(_table); i++)
+		{
+			esym = (EXTERN_SYMBOL *)TABLE_get_symbol(_table, i);
+			if (esym->handle)
+				lt_dlclose(esym->handle);
+		}
+		
+		TABLE_delete(&_table);
+	}
 	
 	while (_callbacks)
 	{
@@ -462,17 +414,26 @@ void EXTERN_exit(void)
 		
 		if (cb->exec.object)
 			OBJECT_UNREF(cb->exec.object, "EXTERN_exit");
-		FREE(&cb->types, "EXTERN_exit");
+		FREE(&cb->info.types, "EXTERN_exit");
 		FREE(&cb, "EXTERN_exit");
+	}
+	
+	while (_functions)
+	{
+		func = _functions;
+		_functions = func->next;
+		
+		FREE(&func->info.types, "EXTERN_exit");
+		FREE(&func, "EXTERN_exit");
 	}
 }
 
 static void callback(ffi_cif *cif, void *result, void **args, void *user_data)
 {
-  static const void *jump[17] = {
-    &&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
-    &&__STRING, &&__STRING, &&__POINTER, &&__VARIANT, &&__FUNCTION, &&__CLASS, &&__NULL, &&__OBJECT
-    };
+	static const void *jump[17] = {
+		&&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
+		&&__STRING, &&__STRING, &&__POINTER, &&__VARIANT, &&__FUNCTION, &&__CLASS, &&__NULL, &&__OBJECT
+		};
 
 	EXTERN_CALLBACK *cb = (EXTERN_CALLBACK *)user_data;
 	//VALUE_FUNCTION *value = &cb->func;
@@ -595,36 +556,6 @@ static void callback(ffi_cif *cif, void *result, void **args, void *user_data)
 	}
 }
 
-static void prepare_cif(EXTERN_CALLBACK *cb)
-{
-	int i;
-	TYPE t;
-
-	if (cb->nparam)
-	{
-		ALLOC(&cb->types, sizeof(ffi_type *) * cb->nparam, "prepare_cif");
-		
-		for (i = 0; i < cb->nparam; i++)
-		{
-			if (TYPE_is_object(cb->sign[i]))
-				t = T_OBJECT;
-			else
-				t = (int)cb->sign[i];
-				
-			cb->types[i] = _to_ffi_type[t];
-		}
-	}
-	
-	if (TYPE_is_object(cb->ret))
-		t = T_OBJECT;
-	else
-		t = (int)cb->ret;
-	
-  cb->rtype = _to_ffi_type[t];
-
-	if (ffi_prep_cif(&cb->cif, FFI_DEFAULT_ABI, cb->nparam, cb->rtype, cb->types) != FFI_OK)
-		THROW(E_EXTCB, "Unable to prepare function description");
-}
 
 static void prepare_cif_from_gambas(EXTERN_CALLBACK *cb, FUNCTION *func)
 {
@@ -667,7 +598,7 @@ void *EXTERN_make_callback(VALUE_FUNCTION *value)
 		cb->exec.object = value->object;
 		cb->exec.class = value->class;
 		cb->exec.native = FALSE;
-    cb->exec.index = value->index;
+		cb->exec.index = value->index;
 		
 		prepare_cif_from_gambas(cb, &cb->exec.class->load->func[cb->exec.index]);
 	}
@@ -675,8 +606,8 @@ void *EXTERN_make_callback(VALUE_FUNCTION *value)
 	{
 		cb->exec.object = value->object;
 		cb->exec.native = FALSE;
-    cb->exec.desc = &value->class->table[value->index].desc->method;
-    cb->exec.index = (int)(intptr_t)(cb->exec.desc->exec);
+		cb->exec.desc = &value->class->table[value->index].desc->method;
+		cb->exec.index = (int)(intptr_t)(cb->exec.desc->exec);
 		cb->exec.class = cb->exec.desc->class;
 		prepare_cif_from_gambas(cb, &cb->exec.class->load->func[cb->exec.index]);
 	}
@@ -685,8 +616,8 @@ void *EXTERN_make_callback(VALUE_FUNCTION *value)
 		cb->exec.object = value->object;
 		cb->exec.class = value->class;
 		cb->exec.native = TRUE;
-    cb->exec.index = value->index;
-    cb->exec.desc = &value->class->table[value->index].desc->method;
+		cb->exec.index = value->index;
+		cb->exec.desc = &value->class->table[value->index].desc->method;
 		//cb->desc = &value->class->table[value->index].desc->method;
 		prepare_cif_from_native(cb, cb->exec.desc);
 	}
@@ -695,13 +626,31 @@ void *EXTERN_make_callback(VALUE_FUNCTION *value)
 		
 	cb->exec.nparam = cb->nparam;
 	
-	prepare_cif(cb);
+	prepare_cif(&cb->info, cb->nparam, cb->sign, cb->ret);
 	
 	cb->closure = ffi_closure_alloc(sizeof(ffi_closure), &code);
 	
-	if (ffi_prep_closure_loc(cb->closure, &cb->cif, callback, cb, code) != FFI_OK)
+	if (ffi_prep_closure_loc(cb->closure, &cb->info.cif, callback, cb, code) != FFI_OK)
 		THROW(E_EXTCB, "Unable to create closure");
 	
 	return code;
 }
+
+#else /* HAVE_FFI_COMPONENT */
+
+void EXTERN_call(void)
+{
+	THROW_ILLEGAL();
+}
+
+void EXTERN_exit(void)
+{
+}
+
+void *EXTERN_make_callback(VALUE_FUNCTION *value)
+{
+	return NULL;
+}
+
+#endif
 
