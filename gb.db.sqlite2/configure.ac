@@ -1,6 +1,6 @@
 dnl ****************************************************************************
 dnl   configure.ac for gb.db.sqlite driver
-dnl   (c) Benoît Minisini 2000-2005
+dnl   (c) BenoÃ®t Minisini 2000-2005
 dnl ****************************************************************************
 
 dnl ---- Initialization
@@ -27,3 +27,5 @@ AC_OUTPUT( \
 Makefile \
 src/Makefile \
 )
+
+GB_PRINT_MESSAGES

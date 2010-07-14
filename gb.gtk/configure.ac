@@ -28,3 +28,5 @@ Makefile \
 src/Makefile \
 src/opengl/Makefile
 )
+
+GB_PRINT_MESSAGES

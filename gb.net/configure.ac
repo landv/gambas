@@ -17,3 +17,4 @@ GB_COMPONENT(
 
 AC_OUTPUT(Makefile src/Makefile)
 
+GB_PRINT_MESSAGES

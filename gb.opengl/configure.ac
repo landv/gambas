@@ -19,3 +19,5 @@ Makefile \
 src/Makefile \
 src/glsl/Makefile \
 )
+
+GB_PRINT_MESSAGES

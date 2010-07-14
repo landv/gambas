@@ -15,3 +15,5 @@ GB_COMPONENT_PKG_CONFIG(
   glib-2.0)
 
 AC_OUTPUT( Makefile src/Makefile )
+
+GB_PRINT_MESSAGES

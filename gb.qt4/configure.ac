@@ -60,3 +60,5 @@ src/ext/Makefile \
 src/webkit/Makefile \
 src/opengl/Makefile \
 )
+
+GB_PRINT_MESSAGES

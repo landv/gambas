@@ -44,10 +44,14 @@
 
 static int stream_open(STREAM *stream, const char *path, int mode)
 {
-  if (stream->memory.addr == NULL)
-    return TRUE;
-	
 	stream->memory.addr = (char *)path;
+
+	if (stream->memory.addr == NULL)
+	{
+		stream->type = NULL;
+		THROW(E_ARG);
+	}
+	
   stream->memory.pos = 0;
 
 	stream->common.available_now = TRUE;

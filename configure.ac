@@ -60,23 +60,20 @@ AC_SUBST(gbdatadir)
 
 AC_OUTPUT(Makefile)
 
-GB_SUMMARY=""
+GB_CLEAR_MESSAGES
+
 for comp in gb.*; do
   if test -e $comp/DISABLED; then
-    GB_SUMMARY="$GB_SUMMARY"$'\n'"- $comp"   
+    if ! test -s $srcdir/warnings.log; then
+      GB_MESSAGE([THESE COMPONENTS ARE DISABLED:])
+    fi
+    GB_MESSAGE([- $comp])
   fi
 done
 
-echo
-echo "************************************************************"
-echo
-if test x"$GB_SUMMARY" = x; then
-  echo "ALL COMPONENTS WILL BE COMPILED"
-else
-  echo "THESE COMPONENTS ARE DISABLED:"
-  echo $GB_SUMMARY
+if ! test -s $srcdir/warnings.log; then
+  GB_MESSAGE([ALL COMPONENTS WILL BE COMPILED])
 fi
-echo
-echo "************************************************************"
-echo
 
+GB_PRINT_MESSAGES
+echo

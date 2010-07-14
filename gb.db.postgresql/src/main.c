@@ -175,7 +175,7 @@ static char *get_quoted_table(const char *table)
 	else
 	{
 		res = GB.TempString(NULL, len + 2);
-		sprintf(res, "%.*s.\"%s\"", point - table, table, point + 1);
+		sprintf(res, "%.*s.\"%s\"", (int)(point - table), table, point + 1);
 	}
 	
 	return res;

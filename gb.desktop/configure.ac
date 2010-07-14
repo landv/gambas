@@ -31,3 +31,5 @@ Makefile \
 src/Makefile \
 src/gnome/Makefile \
 )
+
+GB_PRINT_MESSAGES

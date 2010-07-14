@@ -33,6 +33,7 @@
 #include "gb_table.h"
 #include "gbx_type.h"
 #include "gbx_value.h"
+#include "gbx_class_desc.h"
 #include "gbx_class.h"
 #include "gbx_exec.h"
 #include "gbx_api.h"
@@ -47,7 +48,23 @@ typedef
     }
   EXTERN_SYMBOL;  
 
+typedef
+	struct EXTERN_CALLBACK {
+		struct EXTERN_CALLBACK *next;
+		VALUE_FUNCTION func;
+		EXEC_GLOBAL exec;
+		void *closure;
+		int nparam;
+		TYPE *sign;
+		TYPE ret;
+		ffi_cif cif;
+		ffi_type **types;
+		ffi_type *rtype;
+	}
+	EXTERN_CALLBACK;
+
 static TABLE *_table = NULL;
+static EXTERN_CALLBACK *_callbacks = NULL;
 
 #if HAVE_FFI_COMPONENT
 static ffi_type *_to_ffi_type[17] = {
@@ -353,7 +370,7 @@ void EXTERN_call(void)
   
   func = get_function(ext);
   
-	if (ffi_prep_cif(&cif, FFI_DEFAULT_ABI, nparam,	rtype, types) != FFI_OK)
+	if (ffi_prep_cif(&cif, FFI_DEFAULT_ABI, nparam, rtype, types) != FFI_OK)
 		ERROR_panic("ffi_prep_cif has failed");
   
 	ffi_call(&cif, func, &rvalue, args);
@@ -425,6 +442,7 @@ void EXTERN_exit(void)
 {
   int i;
   EXTERN_SYMBOL *esym;
+	EXTERN_CALLBACK *cb;
   
   if (!_table)
     return;
@@ -437,4 +455,252 @@ void EXTERN_exit(void)
   }
   
   TABLE_delete(&_table);
+	
+	while (_callbacks)
+	{
+		cb = _callbacks;
+		_callbacks = cb->next;
+		
+		FREE(&cb->types, "EXTERN_exit");
+		FREE(&cb, "EXTERN_exit");
+	}
 }
+
+static void callback(ffi_cif *cif, void *result, void **args, void *user_data)
+{
+  static const void *jump[17] = {
+    &&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
+    &&__STRING, &&__STRING, &&__POINTER, &&__VARIANT, &&__FUNCTION, &&__CLASS, &&__NULL, &&__OBJECT
+    };
+
+	EXTERN_CALLBACK *cb = (EXTERN_CALLBACK *)user_data;
+	VALUE_FUNCTION *value = &cb->func;
+	int i;
+	VALUE *arg;
+	
+	STACK_check(cb->nparam);
+	
+	for (i = 0; i < cb->nparam; i++)
+	{
+		arg = SP++;
+		arg->type = cb->sign[i];
+		
+		if (TYPE_is_object(cb->sign[i]))
+			goto __OBJECT;
+		else
+			goto *jump[cb->sign[i]];
+		
+	__BOOLEAN:
+		arg->_integer.value = *((char *)args[i]) ? -1 : 0;
+		continue;
+		
+	__BYTE:
+		arg->_integer.value = *((char *)args[i]);
+		continue;
+	
+	__SHORT:
+		arg->_integer.value = *((short *)args[i]);
+		continue;
+
+	__INTEGER:
+		arg->_integer.value = *((int *)args[i]);
+		continue;
+	
+	__LONG:
+		arg->_integer.value = *((int64_t *)args[i]);
+		continue;
+	
+	__SINGLE:
+		arg->_integer.value = *((float *)args[i]);
+		continue;
+	
+	__FLOAT:
+		arg->_integer.value = *((double *)args[i]);
+		continue;
+	
+	__STRING:
+		arg->type = T_CSTRING;
+		arg->_string.addr = *((char **)args[i]);
+		arg->_string.start = 0;
+		arg->_string.len = arg->_string.addr ? strlen(arg->_string.addr) : 0;
+		continue;
+	
+	__OBJECT:	
+		arg->_object.object = *((void **)args[i]);
+		continue;
+	
+	__POINTER:
+		arg->_pointer.value = *((void **)args[i]);
+		continue;
+	
+	__NULL:
+	__DATE:
+	__VARIANT:
+	__VOID:
+	__CLASS:
+	__FUNCTION:
+		arg->type = T_NULL;
+	}
+
+	if (value->kind == FUNCTION_PUBLIC || value->kind == FUNCTION_PRIVATE)
+	{
+		EXEC = cb->exec;
+		EXEC_function_keep();
+		
+		// Do that later, within a TRY/CATCH: VALUE_conv(RP, cb->ret);
+		
+		switch (cb->ret)
+		{
+			case T_BOOLEAN:
+			case T_BYTE:
+			case T_SHORT:
+			case T_INTEGER:
+				*((ffi_arg *)result) = RP->_integer.value;
+				break;
+			
+			case T_LONG:
+				*((int64_t *)result) = RP->_long.value;
+				break;
+			
+			case T_SINGLE:
+				*((float *)result) = RP->_single.value;
+				break;
+				
+			case T_FLOAT:
+				*((double *)result) = RP->_float.value;
+				break;
+				
+			case T_STRING:
+				if (!RP->_string.len)
+					*((char **)result) = NULL;
+				else
+					*((char **)result) = RP->_string.addr + RP->_string.start;
+				break;
+				
+			case T_OBJECT:
+				*((void **)result) = RP->_object.object;
+				break;
+				
+			case T_POINTER:
+				*((void **)result) = RP->_pointer.value;
+				break;
+				
+			default:
+				break;
+		}	
+		
+		EXEC_release_return_value();
+	}
+}
+
+static void prepare_cif(EXTERN_CALLBACK *cb)
+{
+	int i;
+	TYPE t;
+
+	if (cb->nparam)
+	{
+		ALLOC(&cb->types, sizeof(ffi_type *) * cb->nparam, "prepare_cif");
+		
+		for (i = 0; i < cb->nparam; i++)
+		{
+			if (TYPE_is_object(cb->sign[i]))
+				t = T_OBJECT;
+			else
+				t = (int)cb->sign[i];
+				
+			cb->types[i] = _to_ffi_type[t];
+		}
+	}
+	
+	if (TYPE_is_object(cb->ret))
+		t = T_OBJECT;
+	else
+		t = (int)cb->ret;
+	
+  cb->rtype = _to_ffi_type[t];
+
+	if (ffi_prep_cif(&cb->cif, FFI_DEFAULT_ABI, cb->nparam, cb->rtype, cb->types) != FFI_OK)
+		THROW(E_EXTCB, "Unable to prepare function description");
+}
+
+static void prepare_cif_from_gambas(EXTERN_CALLBACK *cb, FUNCTION *func)
+{
+	if (func->npmin != func->n_param || func->vararg)
+		THROW(E_EXTCB, "The function must take a fixed number of arguments");
+	
+	cb->nparam = func->npmin;
+	cb->sign = (TYPE *)func->param;
+	cb->ret = func->type;
+}
+
+static void prepare_cif_from_native(EXTERN_CALLBACK *cb, CLASS_DESC_METHOD *desc)
+{
+	THROW(E_EXTCB, "Not implemented yet");
+}
+
+void *EXTERN_make_callback(VALUE_FUNCTION *value)
+{
+	EXTERN_CALLBACK *cb;
+	void *code;
+	
+	if (value->kind == FUNCTION_EXTERN)
+	{
+		CLASS_EXTERN *ext = &value->class->load->ext[value->index];
+		return get_function(ext);
+	}
+	
+	ALLOC(&cb, sizeof(EXTERN_CALLBACK), "EXTERN_make_callback");
+	
+	cb->next = _callbacks;
+	_callbacks = cb;
+	
+	cb->func = *value;
+	if (value->object)
+		OBJECT_REF(value->object, "EXTERN_make_callback");
+	
+	// See gbx_exec_loop.c, at the _CALL label, to understand the following.
+	
+	if (value->kind == FUNCTION_PRIVATE)
+	{
+		cb->exec.object = value->object;
+		cb->exec.class = value->class;
+		cb->exec.native = FALSE;
+    cb->exec.index = value->index;
+		
+		prepare_cif_from_gambas(cb, &cb->exec.class->load->func[cb->exec.index]);
+	}
+	else if (value->kind == FUNCTION_PUBLIC)
+	{
+		cb->exec.object = value->object;
+		cb->exec.native = FALSE;
+    cb->exec.desc = &value->class->table[value->index].desc->method;
+    cb->exec.index = (int)(intptr_t)(cb->exec.desc->exec);
+		cb->exec.class = cb->exec.desc->class;
+		prepare_cif_from_gambas(cb, &cb->exec.class->load->func[cb->exec.index]);
+	}
+	else if (value->kind == FUNCTION_NATIVE)
+	{
+		cb->exec.object = value->object;
+		cb->exec.class = value->class;
+		cb->exec.native = TRUE;
+    cb->exec.index = value->index;
+    cb->exec.desc = &value->class->table[value->index].desc->method;
+		//cb->desc = &value->class->table[value->index].desc->method;
+		prepare_cif_from_native(cb, cb->exec.desc);
+	}
+	else
+		THROW(E_EXTCB, "Function must be public or extern");
+		
+	cb->exec.nparam = cb->nparam;
+	
+	prepare_cif(cb);
+	
+	cb->closure = ffi_closure_alloc(sizeof(ffi_closure), &code);
+	
+	if (ffi_prep_closure_loc(cb->closure, &cb->cif, callback, cb, code) != FFI_OK)
+		THROW(E_EXTCB, "Unable to create closure");
+	
+	return code;
+}
+

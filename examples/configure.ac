@@ -8,3 +8,5 @@ dnl ---- Create makefiles
 AC_OUTPUT( \
 Makefile \
 )
+
+GB_PRINT_MESSAGES

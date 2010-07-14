@@ -25,3 +25,5 @@ src/Makefile \
 src/xslt/Makefile \
 src/rpc/Makefile \
 )
+
+GB_PRINT_MESSAGES

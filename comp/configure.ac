@@ -1,7 +1,7 @@
 dnl ---------------------------------------------------
 dnl
 dnl   configure.in for components written in Gambas
-dnl   (c) Benoît Minisini 2000-2005
+dnl   (c) BenoÃ®t Minisini 2000-2005
 dnl
 dnl ----------------------------------------------------
 
@@ -15,3 +15,5 @@ dnl ---- Create makefiles
 AC_OUTPUT( \
 Makefile \
 )
+
+GB_PRINT_MESSAGES

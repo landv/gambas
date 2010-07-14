@@ -11,3 +11,5 @@ GB_COMPONENT_PKG_CONFIG(
   [src],
   dbus-1)
 AC_OUTPUT( Makefile src/Makefile )
+
+GB_PRINT_MESSAGES

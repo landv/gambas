@@ -14,3 +14,5 @@ GB_COMPONENT(
   [$THREAD_LIB -lm],
   [$THREAD_INC])
 AC_OUTPUT( Makefile src/Makefile )
+
+GB_PRINT_MESSAGES

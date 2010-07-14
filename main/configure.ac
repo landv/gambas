@@ -18,7 +18,7 @@ GB_COMPONENT(
   [GB_FIND(libintl.$SHLIBEXT, /opt/local /usr/local /usr /, lib)],
   [-lintl],
   [],
-  [This library may be located inside the system C library, so let's go on...])
+  [This library may be located inside the system C library, so you can ignore that warning...])
 
 dnl ---- Check for charset conversion library
 
@@ -31,7 +31,7 @@ GB_COMPONENT(
   [GB_FIND(libiconv.$SHLIBEXT, /opt/local /usr/local /usr, lib)],
   [-liconv],
   [],
-  [This library may be located inside the system C library, so let's go on...])
+  [This library may be located inside the system C library, so you can ignore that warning...])
 
 dnl ---- Check for gettext library
 
@@ -46,7 +46,7 @@ GB_COMPONENT(
   [GB_FIND(libgettextlib.$SHLIBEXT, /opt/local /usr/local /usr, lib)],
   [-lgettextlib],
   [],
-  [This library may be located inside the system C library, so let's go on...])
+  [This library may be located inside the system C library, so you can ignore that warning...])
   
 fi
 
@@ -107,7 +107,7 @@ if test "$SYSTEM" != "CYGWIN"; then
   fi
 else
   if test "$gambas_preloading" = "yes"; then
-    AC_MSG_WARN([Preloading is disabled on this system])
+    GB_MESSAGE([Preloading is disabled on this system])
   fi
 fi
 
@@ -133,3 +133,4 @@ lib/signal/Makefile \
 ])
 AC_OUTPUT
 
+GB_PRINT_MESSAGES

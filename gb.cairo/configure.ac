@@ -22,3 +22,5 @@ GB_COMPONENT_PKG_CONFIG(
 )
 
 AC_OUTPUT( Makefile src/Makefile )
+
+GB_PRINT_MESSAGES

@@ -10,6 +10,54 @@
 #######################################################################################
 
 ## ---------------------------------------------------------------------------
+## GB_MESSAGE
+## Prints a message, and stores it in a summay file to print it later
+## ---------------------------------------------------------------------------
+
+AC_DEFUN([GB_MESSAGE],
+[
+  echo "|| $1" >> $srcdir/warnings.log
+])
+
+## ---------------------------------------------------------------------------
+## GB_MESSAGE
+## Prints a warning message, and stores it in a summay file to print it later
+## ---------------------------------------------------------------------------
+
+AC_DEFUN([GB_WARNING],
+[
+  AC_MSG_WARN($1)
+  GB_MESSAGE([$1])
+])
+
+## ---------------------------------------------------------------------------
+## GB_CLEAR_MESSAGES
+## Clear summary
+## ---------------------------------------------------------------------------
+
+AC_DEFUN([GB_CLEAR_MESSAGES],
+[
+  rm -f $srcdir/warnings.log
+  touch $srcdir/warnings.log
+])
+
+## ---------------------------------------------------------------------------
+## GB_PRINT_MESSAGES
+## Print summary
+## ---------------------------------------------------------------------------
+
+AC_DEFUN([GB_PRINT_MESSAGES],
+[
+  if test -s $srcdir/warnings.log; then
+    echo
+    echo "||"
+    cat $srcdir/warnings.log
+    echo "||"
+    echo
+  fi
+])
+
+## ---------------------------------------------------------------------------
 ## GB_INIT_AUTOMAKE
 ## automake initialization with common version number
 ## ---------------------------------------------------------------------------
@@ -21,6 +69,7 @@ AC_DEFUN([GB_INIT_AUTOMAKE],
   AM_CONFIG_HEADER([config.h])
   AC_DEFINE(GAMBAS_FULL_VERSION, 0x02990000, [Full Gambas version])
   AC_DEFINE(GAMBAS_PCODE_VERSION, 0x02990010, [Gambas bytecode version])
+  GB_CLEAR_MESSAGES
 ])
 
 ## ---------------------------------------------------------------------------
@@ -43,7 +92,7 @@ AC_DEFUN([GB_CONFIG_SUBDIRS],
       $1_dir=$2
     fi
   else
-    AC_MSG_WARN([$1 component is disabled])
+    GB_WARNING([$1 component is disabled by configure option])
     $1_dir=""
   fi
   
@@ -408,6 +457,7 @@ AC_DEFUN([GB_SYSTEM],
     *)
       SYSTEM=UNKNOWN
       AC_DEFINE(SYSTEM, "unknown", [Operating system])
+      GB_MESSAGE([System is unknown])
       ;;
   esac
 
@@ -439,6 +489,7 @@ AC_DEFUN([GB_SYSTEM],
     *)
       ARCH=UNKNOWN
       AC_DEFINE(ARCHITECTURE, "unknown", [Architecture])
+      GB_MESSAGE([Architecture is unknown])
       ;;
   esac
 
@@ -686,9 +737,9 @@ dnl    fi
     $2_DIR=""
     if test "$gb_in_component_search" != "yes"; then
       if test x"$6" = x; then
-	AC_MSG_WARN([*** $3 is disabled])
+	GB_WARNING([$3 is disabled])
       else
-	AC_MSG_NOTICE([$6])
+	GB_WARNING([$6])
       fi
     fi
 
@@ -756,7 +807,7 @@ AC_DEFUN([GB_COMPONENT],
     
     if test "$gb_cv_header_$1" = "no"; then
       for gb_result in $gb_file_list; do
-        AC_MSG_WARN([Unable to find file: $gb_result])
+        GB_WARNING([Unable to find file: $gb_result])
       done
     fi
 
@@ -810,7 +861,7 @@ AC_DEFUN([GB_COMPONENT],
 
     if test "$gb_cv_lib_$1" = "no"; then
       for gb_result in $gb_file_list; do
-        AC_MSG_WARN([Unable to find file: $gb_result])
+        GB_WARNING([Unable to find file: $gb_result])
       done
     fi
 
@@ -853,9 +904,9 @@ AC_DEFUN([GB_COMPONENT],
     $2_DIR=""
     $2_LDFLAGS=""
     if test x"$9" = x; then
-      AC_MSG_WARN([*** $3 is disabled])
+      GB_WARNING([$3 is disabled])
     else
-      AC_MSG_NOTICE([$9])
+      GB_WARNING([$9])
     fi
 
   fi
@@ -968,7 +1019,7 @@ AC_DEFUN([GB_FIND_QT_MOC],
   AC_MSG_RESULT([$gb_cv_path_qt_moc])
   
   if test x"$gb_cv_path_qt_moc" = x; then
-    AC_MSG_WARN([QT moc compiler not found. Try --with-moc option.])
+    GB_WARNING([QT moc compiler not found. Try --with-moc option.])
     MOC=""
     touch DISABLED
   else
@@ -999,149 +1050,6 @@ AC_DEFUN([GB_CHECK_XWINDOW],
     touch DISABLED
   fi
 
-])
-
-## ---------------------------------------------------------------------------
-## DOLT
-## Optimize libtool!
-## ---------------------------------------------------------------------------
-
-dnl dolt, a replacement for libtool
-dnl Copyright Â© 2007-2008 Josh Triplett <josh@freedesktop.org>
-dnl Copying and distribution of this file, with or without modification,
-dnl are permitted in any medium without royalty provided the copyright
-dnl notice and this notice are preserved.
-dnl
-dnl To use dolt, invoke the DOLT macro immediately after the libtool macros.
-dnl Optionally, copy this file into acinclude.m4, to avoid the need to have it
-dnl installed when running autoconf on your project.
-
-AC_DEFUN([DOLT], [
-AC_REQUIRE([AC_CANONICAL_HOST])
-# dolt, a replacement for libtool
-# Josh Triplett <josh@freedesktop.org>
-AC_PATH_PROG(DOLT_BASH, bash)
-AC_MSG_CHECKING([if dolt supports this host])
-dolt_supported=yes
-if test x$DOLT_BASH = x; then
-    dolt_supported=no
-fi
-if test x$GCC != xyes; then
-    dolt_supported=no
-fi
-case $host in
-i?86-*-linux*|x86_64-*-linux*|powerpc-*-linux*) ;;
-amd64-*-freebsd*|i?86-*-freebsd*|ia64-*-freebsd*) ;;
-*) dolt_supported=no ;;
-esac
-if test x$dolt_supported = xno ; then
-    AC_MSG_RESULT([no, falling back to libtool])
-    LTCOMPILE='$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(COMPILE)'
-    LTCXXCOMPILE='$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXXCOMPILE)'
-else
-    AC_MSG_RESULT([yes, replacing libtool])
-
-dnl Start writing out doltcompile.
-    cat <<__DOLTCOMPILE__EOF__ >doltcompile
-#!$DOLT_BASH
-__DOLTCOMPILE__EOF__
-    cat <<'__DOLTCOMPILE__EOF__' >>doltcompile
-args=("$[]@")
-for ((arg=0; arg<${#args@<:@@@:>@}; arg++)) ; do
-    if test x"${args@<:@$arg@:>@}" = x-o ; then
-        objarg=$((arg+1))
-        break
-    fi
-done
-if test x$objarg = x ; then
-    echo 'Error: no -o on compiler command line' 1>&2
-    exit 1
-fi
-lo="${args@<:@$objarg@:>@}"
-obj="${lo%.lo}"
-if test x"$lo" = x"$obj" ; then
-    echo "Error: libtool object file name \"$lo\" does not end in .lo" 1>&2
-    exit 1
-fi
-objbase="${obj##*/}"
-__DOLTCOMPILE__EOF__
-
-dnl Write out shared compilation code.
-    if test x$enable_shared = xyes; then
-        cat <<'__DOLTCOMPILE__EOF__' >>doltcompile
-libobjdir="${obj%$objbase}.libs"
-if test ! -d "$libobjdir" ; then
-    mkdir_out="$(mkdir "$libobjdir" 2>&1)"
-    mkdir_ret=$?
-    if test "$mkdir_ret" -ne 0 && test ! -d "$libobjdir" ; then
-	echo "$mkdir_out" 1>&2
-        exit $mkdir_ret
-    fi
-fi
-pic_object="$libobjdir/$objbase.o"
-args@<:@$objarg@:>@="$pic_object"
-"${args@<:@@@:>@}" -fPIC -DPIC || exit $?
-__DOLTCOMPILE__EOF__
-    fi
-
-dnl Write out static compilation code.
-dnl Avoid duplicate compiler output if also building shared objects.
-    if test x$enable_static = xyes; then
-        cat <<'__DOLTCOMPILE__EOF__' >>doltcompile
-non_pic_object="$obj.o"
-args@<:@$objarg@:>@="$non_pic_object"
-__DOLTCOMPILE__EOF__
-        if test x$enable_shared = xyes; then
-            cat <<'__DOLTCOMPILE__EOF__' >>doltcompile
-"${args@<:@@@:>@}" >/dev/null 2>&1 || exit $?
-__DOLTCOMPILE__EOF__
-        else
-            cat <<'__DOLTCOMPILE__EOF__' >>doltcompile
-"${args@<:@@@:>@}" || exit $?
-__DOLTCOMPILE__EOF__
-        fi
-    fi
-
-dnl Write out the code to write the .lo file.
-dnl The second line of the .lo file must match "^# Generated by .*libtool"
-    cat <<'__DOLTCOMPILE__EOF__' >>doltcompile
-{
-echo "# $lo - a libtool object file"
-echo "# Generated by doltcompile, not libtool"
-__DOLTCOMPILE__EOF__
-
-    if test x$enable_shared = xyes; then
-        cat <<'__DOLTCOMPILE__EOF__' >>doltcompile
-echo "pic_object='$pic_object'"
-__DOLTCOMPILE__EOF__
-    else
-        cat <<'__DOLTCOMPILE__EOF__' >>doltcompile
-echo pic_object=none
-__DOLTCOMPILE__EOF__
-    fi
-
-    if test x$enable_static = xyes; then
-        cat <<'__DOLTCOMPILE__EOF__' >>doltcompile
-echo "non_pic_object='$non_pic_object'"
-__DOLTCOMPILE__EOF__
-    else
-        cat <<'__DOLTCOMPILE__EOF__' >>doltcompile
-echo non_pic_object=none
-__DOLTCOMPILE__EOF__
-    fi
-
-    cat <<'__DOLTCOMPILE__EOF__' >>doltcompile
-} > "$lo"
-__DOLTCOMPILE__EOF__
-
-dnl Done writing out doltcompile; substitute it for libtool compilation.
-    chmod +x doltcompile
-    LTCOMPILE='$(top_builddir)/doltcompile $(COMPILE)'
-    LTCXXCOMPILE='$(top_builddir)/doltcompile $(CXXCOMPILE)'
-fi
-AC_SUBST(LTCOMPILE)
-AC_SUBST(LTCXXCOMPILE)
-# end dolt
 ])
 
 ## ---------------------------------------------------------------------------

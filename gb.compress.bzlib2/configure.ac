@@ -22,3 +22,5 @@ AC_OUTPUT( \
 Makefile \
 src/Makefile \
 )
+
+GB_PRINT_MESSAGES
