@@ -12,4 +12,5 @@ gb_dbus_la_SOURCES = \
 	helper.c helper.h \
 	c_dbus.c c_dbus.h \
 	c_dbusvariant.c c_dbusvariant.h \
-	c_dbusconnection.c c_dbusconnection.h
+	c_dbusconnection.c c_dbusconnection.h \
+	dbus_print_message.c dbus_print_message.h

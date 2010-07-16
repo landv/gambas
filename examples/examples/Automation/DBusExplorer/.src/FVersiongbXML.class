@@ -21,8 +21,9 @@ Public Sub _new()
 End
 
 Public Sub Form_Open()
-  Me.Raise
+  
   btnRefresh_Click
+  
 End
 
 Public Sub ShowPathContent(sPath As String, sBus As String, sApplication As String)
@@ -125,8 +126,8 @@ Public Sub btnRefresh_Click()
   lstbSession.Clear
   $ColArgs.Clear
   tvDbus.Clear
-  lstbSession.List = DBus.Session.Applications
-  lstbSystem.List = DBus.System.Applications
+  lstbSession.List = DBus.Session.Applications.Sort()
+  lstbSystem.List = DBus.System.Applications.Sort()
 
 End
 

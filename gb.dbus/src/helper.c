@@ -23,6 +23,7 @@
 #define __HELPER_C
 
 #include "c_dbusvariant.h"
+#include "dbus_print_message.h"
 #include "helper.h"
 
 typedef
@@ -552,7 +553,7 @@ char *DBUS_introspect(DBusConnection *connection, const char *application, const
 	dbus_error_init(&error);
 	reply = dbus_connection_send_with_reply_and_block (connection, message, -1, &error);
 
-	if (dbus_error_is_set (&error))
+	if (dbus_error_is_set(&error))
 	{
 		GB.Error("&1: &2", error.name, error.message);
 		goto __RETURN;
@@ -614,6 +615,87 @@ __RETURN:
 	return signature;
 }
 
+
+static DBusHandlerResult filter_func (DBusConnection *connection, DBusMessage *message, void *user_data)
+{
+  print_message(message, FALSE);
+  return DBUS_HANDLER_RESULT_HANDLED;
+}
+
+
+static void handle_message(int fd, int type, DBusConnection *connection)
+{
+	fprintf(stdout, "handle_message\n");
+	do
+	{
+		dbus_connection_read_write_dispatch(connection, -1);
+	}
+	while (dbus_connection_get_dispatch_status(connection) == DBUS_DISPATCH_DATA_REMAINS);
+}
+
+
+/*static bool add_match(DBusConnection *connection, const char *rule)
+{
+	DBusError error;
+	dbus_error_init(&error);
+	char buffer[256];
+	
+	sprintf(buffer, "destination='%s',%s", dbus_bus_get_unique_name(connection), rule);
+	dbus_bus_add_match(connection, buffer, &error);
+	
+	return dbus_error_is_set(&error);
+}
+
+static bool remove_match(DBusConnection *connection, const char *rule)
+{
+	DBusError error;
+	dbus_error_init(&error);
+	char buffer[256];
+	
+	sprintf(buffer, "destination='%s',%s", dbus_bus_get_unique_name(connection), rule);
+	dbus_bus_remove_match(connection, buffer, &error);
+	
+	return dbus_error_is_set(&error);
+}*/
+
+
+bool DBUS_register(DBusConnection *connection, const char *name, bool unique)
+{
+	DBusError error;
+	int ret, socket;
+
+	if (!dbus_connection_get_socket(connection, &socket) || !dbus_connection_add_filter(connection, filter_func, NULL, NULL))
+	{
+		GB.Error("Unable to watch the DBus connection");
+		return TRUE;
+	}
+		
+	dbus_error_init(&error);
+	
+	ret = dbus_bus_request_name(connection, name, unique ? DBUS_NAME_FLAG_DO_NOT_QUEUE : 0, &error);
+
+	if (dbus_error_is_set(&error))
+	{
+		GB.Error("Unable to register application");
+		return TRUE;
+	}
+
+	if (unique && ret != DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER)
+		return TRUE;
+	
+	/*if (add_match(connection, "type='signal'")) goto ERROR_MATCH;
+	if (add_match(connection, "type='method_call'")) goto ERROR_MATCH;
+	//if (add_match(connection, "type='method_return'") goto ERROR_MATCH;
+	if (add_match(connection, "type='error'")) goto ERROR_MATCH;*/
+
+	GB.Watch(socket, GB_WATCH_READ, (void *)handle_message, (intptr_t)connection);
+	
+	if (dbus_connection_get_dispatch_status(connection) == DBUS_DISPATCH_DATA_REMAINS)
+		handle_message(-1, 0, connection);
+		
+	return FALSE;
+	
+}
 
 /***************************************************************************
 
@@ -771,3 +853,4 @@ bool DBUS_validate_method(const char *method, int len)
 
 	return FALSE;
 }
+
