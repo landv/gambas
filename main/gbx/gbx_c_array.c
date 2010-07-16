@@ -486,11 +486,11 @@ BEGIN_METHOD(CARRAY_new, GB_INTEGER size)
 END_METHOD
 
 
-/*BEGIN_PROPERTY(CARRAY_type)
+BEGIN_PROPERTY(CARRAY_type)
 
 	GB_ReturnInteger(THIS->type);
 
-END_PROPERTY*/
+END_PROPERTY
 
 BEGIN_METHOD_VOID(CARRAY_free)
 
@@ -1287,7 +1287,7 @@ GB_DESC NATIVE_Array[] =
 
 	GB_METHOD("_free", NULL, CARRAY_free, NULL),
 
-	//GB_PROPERTY_READ("Type", "i", CARRAY_type),
+	GB_PROPERTY_READ("Type", "i", CARRAY_type),
 	GB_PROPERTY_READ("Count", "i", CARRAY_count),
 	GB_PROPERTY_READ("Max", "i", CARRAY_max),
 	GB_PROPERTY_READ("Length", "i", CARRAY_count),
