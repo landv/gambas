@@ -695,6 +695,9 @@ void TRANS_case(void)
     if (i > MAX_CASE_EXPR)
       THROW("Too many expressions in CASE");
 
+		if (PATTERN_is_newline_end(*JOB->current))
+			THROW("Unexpected end of line");
+		
     /*CODE_dup();
     TRANS_expression(FALSE);
     CODE_op(C_EQ, 2);*/
