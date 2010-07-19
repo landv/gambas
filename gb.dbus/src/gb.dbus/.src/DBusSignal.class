@@ -1,0 +1,19 @@
+' Gambas class file
+
+Export
+
+Event Signal(Signal As String)
+
+Private $hObserver As DBusObserver
+
+Public Sub _new(Connection As DBusConnection, Interface As String)
+
+  $hObserver = New DBusObserver(Connection, DBus.Signal, "", "", Interface) As "DBusObserver"
+  
+End
+
+Public Sub DBusObserver_Message()
+  
+  Raise Signal($hObserver.Message.Member)
+  
+End

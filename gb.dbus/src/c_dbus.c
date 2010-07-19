@@ -25,13 +25,13 @@
 #include "c_dbusconnection.h"
 #include "c_dbus.h"
 
-BEGIN_PROPERTY(dbus_System)
+BEGIN_PROPERTY(DBus_System)
 
 	GB.ReturnObject(CDBUSCONNECTION_get(DBUS_BUS_SYSTEM));
 
 END_PROPERTY
 
-BEGIN_PROPERTY(dbus_Session)
+BEGIN_PROPERTY(DBus_Session)
 
 	GB.ReturnObject(CDBUSCONNECTION_get(DBUS_BUS_SESSION));
 
@@ -41,8 +41,13 @@ GB_DESC CDBusDesc[] =
 {
   GB_DECLARE("_DBus", 0),
 
-  GB_STATIC_PROPERTY_READ("System", "DBusConnection", dbus_System),
-  GB_STATIC_PROPERTY_READ("Session", "DBusConnection", dbus_Session),
+  GB_STATIC_PROPERTY_READ("System", "DBusConnection", DBus_System),
+  GB_STATIC_PROPERTY_READ("Session", "DBusConnection", DBus_Session),
+
+  GB_CONSTANT("Method", "i", DBUS_MESSAGE_TYPE_METHOD_CALL),
+  GB_CONSTANT("Reply", "i", DBUS_MESSAGE_TYPE_METHOD_RETURN),
+  GB_CONSTANT("Signal", "i", DBUS_MESSAGE_TYPE_SIGNAL),
+  GB_CONSTANT("Error", "i", DBUS_MESSAGE_TYPE_ERROR),
   
   GB_END_DECLARE
 };

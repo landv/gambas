@@ -801,8 +801,6 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
   hModule.NotCreatable = False
   'DEBUG hModule.Name; " := "; hModule.AutoCreatable
 
-  'IF hModule.Name = "Desktop" THEN STOP
-
   If bCanInherit Then
     hClass = Classes[hModule.Name]
     
@@ -810,9 +808,11 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
     '   hClass = Classes[hClass.Parent]
     ' Endif
     
-    If hClass And If hClass.Component <> Project.Name Then
-      MakeInheritance(hModule, cSymbol, hClass.Name, hClass.Component)
-      bCanInherit = False
+    If hClass Then
+      If hClass.Component <> Project.Name Then
+        MakeInheritance(hModule, cSymbol, hClass.Name, hClass.Component)
+        bCanInherit = False
+      Endif
     Endif 
   Endif
   
@@ -820,6 +820,7 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
 
     aSym = Highlight.Analyze(hEditor.Lines[iLine].Text)
     If aSym.Count = 0 Then Continue
+    If Highlight.Types[0] = Highlight.Comment Or If Highlight.Types[0] = Highlight.Help Then Continue
     
     Select Case aSym[0]
     

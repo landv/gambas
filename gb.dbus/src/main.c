@@ -24,6 +24,7 @@
 
 #include "c_dbusvariant.h"
 #include "c_dbusconnection.h"
+#include "c_dbusobserver.h"
 #include "c_dbus.h"
 
 #include "main.h"
@@ -35,6 +36,8 @@ GB_CLASS CLASS_DBusVariant;
 GB_DESC *GB_CLASSES[] EXPORT =
 {
 	CDBusVariantDesc,
+	CDBusObserverMessageDesc,
+	CDBusObserverDesc,
   CDBusConnectionDesc,
   CDBusDesc,
   NULL

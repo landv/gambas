@@ -595,32 +595,48 @@ CLASS_DESC_EVENT *CLASS_get_event_desc(CLASS *class, const char *name)
 }
 
 
-const char *CLASS_DESC_get_signature(CLASS_DESC *cd)
+char *CLASS_DESC_get_signature(CLASS_DESC *cd)
 {
-	#if 0
+	char *res = NULL;
+	TYPE *sign;
+	int i, n;
+	TYPE type;
+	
 	switch (CLASS_DESC_get_type(cd))
 	{
 		case CD_METHOD:
 		case CD_STATIC_METHOD:
-
-			return cd->method.help;
+			
+			sign = cd->method.signature;
+			n = cd->method.npmax;
+			break;
 
 		case CD_EVENT:
 
-			return cd->event.help;
-
-		case CD_PROPERTY:
-		case CD_STATIC_PROPERTY:
-
-			return cd->property.help;
+			sign = cd->event.signature;
+			n = cd->event.npmax;
+			break;
+			
+		case CD_EXTERN:
+			
+			sign = cd->ext.signature;
+			n = cd->ext.npmax;
+			break;
 
 		default:
 
 			return NULL;
 	}
-	#endif
-
-	return NULL;
+	
+	for (i = 0; i < n; i++)
+	{
+		type = sign[i];
+		STRING_add(&res, TYPE_to_string(type), 0);
+		if (TYPE_is_object(type))
+			STRING_add(&res, ";", 1);
+	}
+	
+	return res;
 }
 
 // The _free method can be called during a conversion, so we must save the EXEC structure

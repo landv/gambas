@@ -2,226 +2,354 @@
 
 Export
 
-Property Read Children As String[]
+Static Public _ObjectCache As New Collection
 
-Private $hAppIndex As Integer
-Private $sObjectPath As String
-Private $sInterface As String
-Private $sIntrospection As String
-Private $cSignature As New Collection
+Static Private $cType As Collection = [
+  "b": "b", 
+  "c": "y", 
+  "h": "n",
+  "i": "i",
+  "l": "x",
+  "p": "x",
+  "g": "d",
+  "f": "d",
+  "d": "d",
+  "s": "s",
+  "v": "v",
+  "DBusObject": "o",
+  "Collection": "{sv}",
+  "Boolean[]": "ab",
+  "Byte[]": "ay",
+  "Short[]": "an",
+  "Integer[]": "ai",
+  "Long[]": "ax",
+  "Pointer[]": "ax",
+  "Single[]": "ad",
+  "Float[]": "ad",
+  "Date[]": "ad",
+  "String[]": "as",
+  "Variant[]": "av"]
+  
+Static Private $sName As String
+Static Private $sInterface As String
 
-Public Sub _new(Application As DBusApplication, ObjectPath As String, Optional Interface As String)
+Private $sPath As String
+Private $aChildren As String[]
+Private $hObserver As DBusObserver
+
+Static Private Sub ConvType(sType As String) As String
   
-  Dim iPos, iPos2 As Integer
-  
-  $hAppIndex = Application.Index
-  $sObjectPath = ObjectPath
-  $sInterface = Interface
-  
-  $sIntrospection = Application._Introspect(ObjectPath)
-  If Not $sIntrospection Then Error.Raise("Unknown object")
-  
-  If Interface Then
-    iPos = InStr($sIntrospection, "<interface name=\"" & Interface & "\">")
-    If iPos = 0 Then Error.Raise("Unknown interface")
-    iPos2 = InStr($sIntrospection, "</interface>", iPos)
-    If iPos2 = 0 Then Error.Raise("Introspection error")
-    $sIntrospection = Mid$($sIntrospection, iPos, iPos2 - iPos)
-  Endif
-  
-  'Debug $sIntrospection
+  Return $cType[sType]
   
 End
 
-Private Sub GetMethodSignature(sMethod As String) As String
+Public Sub _AddChild(sChild As String)
   
-  Dim sFind As String
-  Dim iPos, iPos2, iEnd As Integer
-  Dim sSignIn, sSignOut As String
-  Dim sDir, sType As String
-  
-  sSignIn = $cSignature[sMethod]
-  If sSignIn Then Return sSignIn
-  
-  sFind = "<method name=\"" & sMethod & "\""
-  iPos = InStr($sIntrospection, sFind, 1, gb.IgnoreCase)
-  If iPos = 0 Then Error.Raise("Unknown method")
-  iPos += Len(sFind)
-  If Not $sInterface Then
-    If InStr($sIntrospection, sFind, iPos, gb.IgnoreCase) Then Error.Raise("Ambiguous method")
-  Endif
-  If LTrim(Mid$($sIntrospection, iPos, 1)) <> "/>" Then
-  
-    iEnd = InStr($sIntrospection, "</method>", iPos)
-  
-    Do
-      iPos = InStr($sIntrospection, "<arg ", iPos)
-      If iPos = 0 Or If iPos > iEnd Then Break
-      iPos2 = InStr($sIntrospection, ">", iPos + 1)
-      If iPos2 = 0 Or If iPos2 > iEnd Then Break
-      
-      sDir = "in"
-      Try sDir = Scan(Mid$($sIntrospection, iPos, iPos2 - iPos), "*direction=\"*\"*")[1]
-      Try sType = Scan(Mid$($sIntrospection, iPos, iPos2 - iPos), "*type=\"*\"*")[1]
-      If Error Then Break
-      
-      If sDir = "in" Then
-        sSignIn &= sType
-      Else
-        sSignOut &= sType
-      Endif
-      
-      iPos = iPos2
-      
-    Loop
-    
-  Endif
-  
-  sSignIn &= ":" & sSignOut
-  $cSignature[sMethod] = sSignIn
-  Return sSignIn
+  If Not $aChildren Then $aChildren = New String[]
+  $aChildren.Add(sChild)
   
 End
 
-Private Sub GetPropertySignature(sProperty As String) As String
+Public Sub _GetPath() As String
   
-  Dim sFind As String
-  Dim iPos, iPos2, iEnd As Integer
-  Dim sSignIn, sSignOut As String
-  Dim sAccess, sType As String
-  
-  sType = $cSignature[":" & sProperty]
-  If sType Then Return sType
-  
-  sFind = "<property name=\"" & sProperty & "\""
-  iPos = InStr($sIntrospection, sFind, 1, gb.IgnoreCase)
-  If iPos = 0 Then Error.Raise("Unknown property")
-  iPos += Len(sFind)
-  If Not $sInterface Then
-    If InStr($sIntrospection, sFind, iPos, gb.IgnoreCase) Then Error.Raise("Ambiguous property")
-  Endif
-
-  iPos2 = InStr($sIntrospection, ">", iPos + 1)
-  Try sType = Scan(Mid$($sIntrospection, iPos, iPos2 - iPos), "*type=\"*\"*")[1]
-  If Error Then Error.Raise("Unknown property")
-      
-  Try sAccess = Scan(Mid$($sIntrospection, iPos, iPos2 - iPos), "*access=\"*\"*")[1]
-  If Error Then Error.Raise("Malformed property")
-  
-  If sAccess = "read" Then
-    sType &= ":r"
-  Else If sAccess = "write" Then
-    sType &= ":w"
-  Else If sAccess = "readwrite" Then
-    sType &= ":rw"
-  Else
-    Error.Raise("Malformed property")
-  Endif
-  
-  $cSignature[":" & sProperty] = sType
-  Return sType
+  Return $sPath
   
 End
 
-Public Sub _Invoke(sName As String, bProperty As Boolean, aArg As Variant[]) As Variant
+
+Static Private Sub Normalize(sName As String) As String
   
-  Dim aSign As String[]
-  Dim hApp As DBusApplication
+  Dim sRes As String
   Dim iInd As Integer
-  Dim vVal As Variant
+  Dim sCar As String
   
-  hApp = DBus._ApplicationCache[$hAppIndex]
-    
-  If bProperty Then 'Error.Raise("Unknown property")
-  
-    aSign = Split(GetPropertySignature(sName), ":")
-    
-    If IsNull(aArg) Or If aArg.Count = 0 Then
-      If InStr(aSign[1], "r") = 0 Then Error.Raise("Write-only property")
-      aArg = New Variant[2]
-      aArg[0] = $sInterface
-      aArg[1] = sName
-      Return hApp.Connection._CallMethod(hApp.Name, $sObjectPath, "org.freedesktop.DBus.Properties", "Get", "ss", "v", aArg)
+  sRes = "."
+  For iInd = 1 To Len(sName)
+    sCar = Mid$(sName, iInd, 1)
+    If IsLetter(sCar) Then
+      sCar = LCase(sCar)
+    Else If IsDigit(sCar) Then
     Else
-      If InStr(aSign[1], "w") = 0 Then Error.Raise("Read-only property")
-      vVal = aArg[0]
-      aArg = New Variant[3]
-      aArg[0] = $sInterface
-      aArg[1] = sName
-      aArg[2] = DBusVariant(vVal, aSign[0])
-      hApp.Connection._CallMethod(hApp.Name, $sObjectPath, "org.freedesktop.DBus.Properties", "Set", "ssv", "", aArg)
+      If Right(sRes) <> "." Then
+        sCar = "."
+      Else
+        sCar = ""
+      Endif
+    Endif
+    sRes &= sCar
+  Next
+  
+  If Right(sRes) = "." Then sRes = Left(sRes, -1)
+  
+  Return sRes
+  
+End
+
+
+Public Sub _Register(Connection As DBusConnection, Path As String)
+  
+  Dim hParent As DBusObject
+  Dim sParent As String
+  
+  If Not $sName Then
+    $sName = "org.gambas" & Normalize(Application.Name)
+    Connection._RequestName($sName)
+  Endif
+  
+  If Left(Path) <> "/" Then Path = "/" & Path
+  
+  If _ObjectCache.Exist(Path) Then Return
+  
+  $sPath = Path
+  
+  If Path <> "/" Then
+    
+    sParent = File.Dir(Path)
+    hParent = _ObjectCache[sParent]
+    If Not hParent Then
+      hParent = New DBusObject
+      hParent._Register(Connection, sParent)
     Endif
   
-  Else
-  
-    aSign = Split(GetMethodSignature(sName), ":")
-    'Print GetSignature(Param.Name)
-    Return hApp.Connection._CallMethod(hApp.Name, $sObjectPath, $sInterface, Param.Name, aSign[0], aSign[1], aArg)
+    hParent._AddChild(File.Name(Path))
     
   Endif
   
+  $hObserver = New DBusObserver(Connection, DBus.Method, Path) As "DBusObserver"
+  
 End
 
-Public Sub _unknown(...) As Variant
+Public Sub _Introspect() As String
   
-  Dim aArg As Variant[]
+  Dim sRes As String
+  Dim sChild As String
+  Dim sSymbol As String
+  Dim hClass As Class
+  Dim bHasProperty As Boolean
+  Dim bHasMethod As Boolean
+  Dim sType As String
+  Dim sSign As String
+  Dim sArg As String
+  Dim sOne As String
+  Dim iPos As Integer
   Dim iInd As Integer
   
-  If Param.Count Then
-    aArg = New Variant[Param.Count]
-    For iInd = 0 To Param.Max
-      aArg[iInd] = Param[iInd]
+  sRes &= "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\" \"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n"
+  sRes &= "<node>\n"
+  
+  sRes &= "  <interface name=\"org.freedesktop.Introspectable\">\n"
+  sRes &= "    <method name=\"Introspect\">\n"
+  sRes &= "      <arg name=\"xml_data\" type=\"s\" direction=\"out\"/>\n"
+  sRes &= "    </method>\n"
+  sRes &= "  </interface>\n"
+  
+  
+  hClass = Object.Class(Me)
+  
+  For Each sSymbol In hClass.Symbols
+    With hClass[sSymbol]
+      If InStr(sSymbol, "_") Then Continue
+      If .Static Then Continue
+      If .Kind = Class.Property Then 
+        bHasProperty = True
+      Else If .Kind = Class.Method Then
+        bHasMethod = True
+      Endif
+    End With
+  Next
+  
+  If bHasProperty Then
+    sRes &= "  <interface name=\"org.freedesktop.DBus.Properties\">\n"
+    sRes &= "    <method name=\"Get\">\n"
+    sRes &= "      <arg name=\"interface_name\" type=\"s\" direction=\"in\"/>\n"
+    sRes &= "      <arg name=\"property_name\" type=\"s\" direction=\"in\"/>\n"
+    sRes &= "      <arg name=\"value\" type=\"v\" direction=\"out\"/>\n"
+    sRes &= "    </method>\n"
+    sRes &= "    <method name=\"Set\">\n"
+    sRes &= "      <arg name=\"interface_name\" type=\"s\" direction=\"in\"/>\n"
+    sRes &= "      <arg name=\"property_name\" type=\"s\" direction=\"in\"/>\n"
+    sRes &= "      <arg name=\"value\" type=\"v\" direction=\"in\"/>\n"
+    sRes &= "    </method>\n"
+    sRes &= "    <method name=\"GetAll\">\n"
+    sRes &= "      <arg name=\"interface_name\" type=\"s\" direction=\"in\"/>\n"
+    sRes &= "      <arg name=\"values\" type=\"a{sv}\" direction=\"out\"/>\n"
+    sRes &= "    </method>\n"
+    sRes &= "  </interface>\n"
+  Endif
+  
+  If bHasMethod Then
+    sRes &= "  <interface name=\"" & $sName & Normalize(hClass.Name) & "\">"
+    For Each sSymbol In hClass.Symbols
+      With hClass[sSymbol]
+        If InStr(sSymbol, "_") Then Continue
+        If .Static Then Continue
+
+        sType = ""
+        
+        If .Type Then
+          sType = ConvType(.Type)
+          If Not sType Then Continue
+        Endif
+            
+        Select Case .Kind
+
+          Case Class.Method
+
+            'Debug .Name;; .Type;; .Signature
+            
+            sArg = ""
+            iInd = 0
+              
+            sSign = .Signature
+            If sSign Then
+              While sSign
+                If IsLCase(Left(sSign)) Then
+                  sOne = ConvType(Left(sSign))
+                  sSign = Mid$(sSign, 2)
+                Else
+                  iPos = InStr(sSign, ";")
+                  If iPos Then
+                    sOne = Left(sSign, iPos - 1)
+                    sSign = Mid$(sSign, iPos + 1)
+                  Else
+                    sOne = sSign
+                    sSign = ""
+                  Endif
+                  sOne = ConvType(sOne)
+                Endif
+                If Not sOne Then
+                  sArg = ""
+                  Break
+                Endif
+                
+                Inc iInd
+                sArg &= "      <arg name=\"arg" & CStr(iInd) & "\" type=\"" & sOne & "\" direction=\"in\"/>\n"
+                
+              Wend
+              
+              If Not sArg Then Continue
+            Endif
+            
+            sRes &= "    <method name=\"" & sSymbol & "\">\n"
+            
+            If sArg Then sRes &= sArg
+            
+            If sType Then
+              sRes &= "      <arg name=\"value\" type=\"" & sType & "\" direction=\"out\"/>\n"
+            Endif
+            
+            sRes &= "    </method>\n"
+            
+          Case Class.Property
+            
+            sRes &= "    <property name=\"" & sSymbol & "\" type=\"" & sType & "\" access=\"" & If(.ReadOnly, "read", "readwrite") & "\"/>\n"
+
+        End Select
+      End With
+    Next
+    sRes &= "  </interface>\n"
+  Endif
+  
+  If $aChildren Then
+    For Each sChild In $aChildren.Sort()
+      sRes &= "  <node name=\"" & sChild & "\"/>\n"
     Next
   Endif
   
-  Return _Invoke(Param.Name, Param.Property, aArg)
+  sRes &= "</node>\n"
+  
+  Return sRes
   
 End
 
-' We do not use the cached introspection, because new objects may have appeared.
-' But new interfaces or new methods are unlikely.
-
-Private Function Children_Read() As String[]
-
-  Dim sIntr As String
-  Dim aChildren As New String[]
-  Dim iPos, iPos2, iLevel As Integer
-  Dim sNode, sChild As String
-  Dim hApp As DBusApplication
+Private Sub GetProperty()
   
-  hApp = DBus._ApplicationCache[$hAppIndex]
-  sIntr = hApp._Introspect($sObjectPath)
+  Dim sInterface As String
+  Dim sProperty As String
   
-  Do
-    iPos2 = iPos
-    iPos = InStr(sIntr, "<node", iPos + 1)
-    If iPos = 0 Then iPos = Len(sIntr) + 1
-    iPos2 = InStr(sIntr, "</node>", iPos2 + 1)
-    If iPos2 = 0 Then iPos2 = Len(sIntr) + 1
+  With $hObserver.Message
+  
+    sInterface = .Arguments[0]
+    sProperty = .Arguments[1]
     
-    If iPos > Len(sIntr) And If iPos2 > Len(sIntr) Then Return aChildren
+    If sInterface And If sInterface <> ($sName & Normalize(Object.Class(Me).Name)) Then Return
+    If InStr(sProperty, "_") Then Return
     
-    If iPos < iPos2 Then
+    $hObserver.Reply("v", [Object.GetProperty(Me, sProperty)])
     
-      Inc iLevel
-      If iLevel <> 2 Then Continue
+  End With
+  
+Catch
+  
+  $hObserver.Error(Error.Text)
+  
+End
+
+Private Sub SetProperty()
+  
+  Dim sInterface As String
+  Dim sProperty As String
+  Dim vValue As Variant
+  
+  With $hObserver.Message
+  
+    sInterface = .Arguments[0]
+    sProperty = .Arguments[1]
+    vValue = .Arguments[2]
     
-      iPos2 = InStr(sIntr, ">", iPos + 1)
-      If iPos2 = 0 Then Continue
-      
-      sNode = Mid$(sIntr, iPos, iPos2 - iPos + 1)
-      Try sChild = Scan(sNode, "*name=\"*\"*")[1]
-      If sChild Then aChildren.Add(sChild)
-      
-      If Right(sNode, 2) = "/>" Then Dec iLevel
+    If sInterface And If sInterface <> ($sName & Normalize(Object.Class(Me).Name)) Then Return
+    If InStr(sProperty, "_") Then Return
     
-    Else
+    Object.SetProperty(Me, sProperty, vValue)
     
-      iPos = iPos2
-      Dec iLevel
-    
+  End With
+  
+Catch
+  
+  $hObserver.Error(Error.Text)
+  
+End
+
+
+Public Sub DBusObserver_Message()
+  
+  Dim vVal As Variant
+  Dim sMethod As String
+  Dim sInterface As String
+  
+  sMethod = $hObserver.Message.Member
+  sInterface = $hObserver.Message.Interface
+  
+  'Debug sInterface;; sMethod
+  
+  If InStr(sMethod, "_") Then Return
+  
+  If sInterface = "org.freedesktop.DBus.Introspectable" Or If Not sInterface Then
+    If sMethod = "Introspect" Then
+      $hObserver.Reply("s", [_Introspect()])
+      Return
     Endif
-    
-  Loop
+  Endif
+  
+  If sInterface = "org.freedesktop.DBus.Properties" Or If Not sInterface Then
+    If sMethod = "Get" Then
+      GetProperty()
+      Return
+    Else If sMethod = "Set" Then
+      SetProperty()
+      Return
+    Else If sMethod = "GetAll" Then
+      'GetAllProperties()
+      $hObserver.Error("Not yet implemented")
+      Return
+    Endif
+  Endif
+  
+  vVal = Object.Call(Me, sMethod, $hObserver.Message.Arguments)
+  $hObserver.Reply(ConvType(Object.Class(Me)[sMethod].Type), [vVal])
 
+Catch
+
+  $hObserver.Error(Error.Text)
+  
 End

@@ -27,15 +27,19 @@ Public Sub Form_Open()
 End
 
 Public Sub ShowPathContent(sPath As String, sBus As String, sApplication As String)
+  
   Dim xmlDoc As New XmlDocument
   Dim sInterface, sFullDbusPath, s, sAppPath As String
   Dim hattr, hattr2, hNode, hNode2 As XmlNode
   Dim i, j, k As Integer
   Dim aArgs As New String[]
   Dim sArgs As String
+  Dim sIntr As String
   'Dim haArgs As New Object[]
-   
-   Try xmlDoc.FromString(DBus[sBus & sApplication]._introspect(sPath))
+  
+  sIntr = DBus[sBus & sApplication]._Introspect(sPath)
+  Print sIntr
+  Try xmlDoc.FromString(sIntr)
 
    If Error Then Return
   
@@ -126,8 +130,8 @@ Public Sub btnRefresh_Click()
   lstbSession.Clear
   $ColArgs.Clear
   tvDbus.Clear
-  lstbSession.List = DBus.Session.Applications.Sort()
-  lstbSystem.List = DBus.System.Applications.Sort()
+  lstbSession.List = DBus.Session.Applications.Sort(gb.Natural)
+  lstbSystem.List = DBus.System.Applications.Sort(gb.Natural)
 
 End
 

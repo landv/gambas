@@ -104,6 +104,8 @@ void GB_Store(GB_TYPE type, GB_VALUE *src, void *dst);
 void GB_StoreString(GB_STRING *src, char **dst);
 void GB_StoreObject(GB_OBJECT *object, void **dst);
 void GB_StoreVariant(GB_VARIANT *src, void *dst);
+void GB_BorrowValue(GB_VALUE *value);
+void GB_ReleaseValue(GB_VALUE *value);
 
 void GB_Watch(int fd, int flag, void *callback, intptr_t param);
 

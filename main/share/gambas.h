@@ -851,6 +851,8 @@ typedef
 		void (*StoreObject)(GB_OBJECT *, void **);
 		void (*StoreVariant)(GB_VARIANT *, void *);
 		void (*ReadValue)(GB_VALUE *, void *, GB_TYPE);
+		void (*BorrowValue)(GB_VALUE *);
+		void (*ReleaseValue)(GB_VALUE *);
 
 		GB_DATE_SERIAL *(*SplitDate)(GB_DATE *);
 		int (*MakeDate)(GB_DATE_SERIAL *, GB_DATE *);

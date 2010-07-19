@@ -177,6 +177,8 @@ void *GAMBAS_Api[] =
   (void *)GB_StoreObject,
   (void *)GB_StoreVariant,
 	(void *)VALUE_read,
+	(void *)GB_BorrowValue,
+	(void *)GB_ReleaseValue,
 
   (void *)DATE_split,
   (void *)DATE_make,
@@ -1377,6 +1379,15 @@ void GB_StoreVariant(GB_VARIANT *src, void *dst)
   }
 }
 
+void GB_BorrowValue(GB_VALUE *value)
+{
+	BORROW((VALUE *)value);
+}
+
+void GB_ReleaseValue(GB_VALUE *value)
+{
+	RELEASE((VALUE *)value);
+}
 
 void GB_Watch(int fd, int flag, void *callback, intptr_t param)
 {

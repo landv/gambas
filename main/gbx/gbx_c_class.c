@@ -394,8 +394,12 @@ END_PROPERTY
 BEGIN_PROPERTY(Symbol_Signature)
 
 	CLASS_DESC_SYMBOL *cds = _current_symbol;
+	char *sign = CLASS_DESC_get_signature(cds->desc);
 
-	GB_ReturnConstZeroString(CLASS_DESC_get_signature(cds->desc));
+	if (sign)
+		GB_ReturnString(sign);
+	else
+		GB_ReturnNull();
 
 END_METHOD
 

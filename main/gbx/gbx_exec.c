@@ -1190,7 +1190,8 @@ void EXEC_native(void)
 {
 	CLASS_DESC_METHOD *desc = EXEC.desc;
 	int nparam = EXEC.nparam;
-	bool use_stack;
+	void *object = EXEC.object;
+	bool use_stack = EXEC.use_stack;
 
 	int i, n, nm;
 	VALUE *value;
@@ -1298,8 +1299,7 @@ void EXEC_native(void)
 	}
 	END_ERROR
 
-	use_stack = EXEC.use_stack;
-	EXEC_call_native_inline(desc->exec, EXEC.object, desc->type, &SP[-nparam]);
+	EXEC_call_native_inline(desc->exec, object, desc->type, &SP[-nparam]);
 	COPY_VALUE(&ret, &TEMP);
 
 	/* Lib�ation des arguments */

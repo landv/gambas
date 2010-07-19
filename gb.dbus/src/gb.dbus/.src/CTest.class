@@ -1,0 +1,26 @@
+' Gambas class file
+
+Inherits DBusObject
+
+Create Static
+
+Property Enabled As Boolean
+
+Public Sub Compute(Value1 As Float, Value2 As Float) As Float
+  
+  Return Value1 + Value2
+  
+End
+
+
+Private Function Enabled_Read() As Boolean
+
+  
+
+End
+
+Private Sub Enabled_Write(Value As Boolean)
+
+  
+
+End

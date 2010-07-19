@@ -23,11 +23,34 @@
 #define __HELPER_C
 
 #include "c_dbusvariant.h"
+#include "c_dbusobserver.h"
 #include "dbus_print_message.h"
 #include "helper.h"
 
 typedef
 	void (*RETRIEVE_CALLBACK)(GB_TYPE type, void *data, void *param);
+
+static void handle_message(int fd, int type, DBusConnection *connection)
+{
+	//fprintf(stdout, "handle_message\n");
+	do
+	{
+		dbus_connection_read_write_dispatch(connection, -1);
+	}
+	while (dbus_connection_get_dispatch_status(connection) == DBUS_DISPATCH_DATA_REMAINS);
+}
+
+static void check_message_now(DBusConnection *connection)
+{
+	if (dbus_connection_get_dispatch_status(connection) == DBUS_DISPATCH_DATA_REMAINS)
+		handle_message(-1, 0, connection);
+}
+
+static void check_message(DBusConnection *connection)
+{
+	GB.Post((GB_POST_FUNC)check_message_now, (intptr_t)connection);
+}
+
 
 /***************************************************************************
 
@@ -61,9 +84,38 @@ aT        ARRAY             Array
 {TT}      DICT_ENTRY        Collection
 
 ***************************************************************************/
-
-static char *to_dbus_type(GB_TYPE type)
+typedef
+	struct {
+		const char *name;
+		const char *dbus;
+	}
+	CONV_TYPE;
+	
+CONV_TYPE _conv_type[] = 
 {
+	{ "DBusObject", "o" },
+	{ "Collection", "{sv}" },
+	{ "Boolean[]", "ab" },
+	{ "Byte[]", "ay" },
+	{ "Short[]", "an" },
+	{ "Integer[]", "ai" },
+	{ "Long[]", "ax" },
+	{ "Single[]", "ad" },
+	{ "Float[]", "ad" },
+	{ "Date[]", "ad" },
+	{ "Pointer[]", "ax" },
+	{ "String[]", "as" },
+	{ "Variant[]", "av" },
+	{ "DBusObject[]", "ao" },
+	{ "Collection[]", "a{sv}" },
+	{ NULL }
+};
+
+
+const char *DBUS_to_dbus_type(GB_TYPE type)
+{
+	CONV_TYPE *p;
+	
 	switch(type)
 	{
 		case GB_T_BYTE: return DBUS_TYPE_BYTE_AS_STRING;
@@ -71,11 +123,20 @@ static char *to_dbus_type(GB_TYPE type)
 		case GB_T_SHORT: return DBUS_TYPE_INT16_AS_STRING;
 		case GB_T_INTEGER: return DBUS_TYPE_INT32_AS_STRING;
 		case GB_T_LONG: return DBUS_TYPE_INT64_AS_STRING;
+		case GB_T_POINTER: return DBUS_TYPE_INT64_AS_STRING;
 		case GB_T_SINGLE: return DBUS_TYPE_DOUBLE_AS_STRING;
 		case GB_T_FLOAT: return DBUS_TYPE_DOUBLE_AS_STRING;
 		case GB_T_STRING: return DBUS_TYPE_STRING_AS_STRING;
-		default: return NULL;
+		default: break;
 	}
+	
+	for (p = _conv_type; p->name; p++)
+	{
+		if (GB.FindClass(p->name) == type)
+			return p->dbus;
+	}
+	
+	return "v";
 }
 
 static char *array_from_dbus_type(const char *signature)
@@ -194,6 +255,8 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 		if (GB.Conv(arg, gtype))
 			return TRUE;
 	}
+	
+	GB.ReleaseValue(arg);
 
 	switch(type)
 	{
@@ -273,6 +336,7 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 			for (i = 0; i < GB.Array.Count(array); i++)
 			{
 				GB.ReadValue(&value, GB.Array.Get(array, i), value.type);
+				GB.BorrowValue(&value);
 				if (append_arg(&citer, contents_signature, &value))
 					return TRUE;
 			}
@@ -298,6 +362,7 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 			for (i = 0; i < GB.Array.Count(array); i++)
 			{
 				GB.ReadValue(&value, GB.Array.Get(array, i), value.type);
+				GB.BorrowValue(&value);
 				if (append_arg(&citer, dbus_signature_iter_get_signature(&siter_contents), &value))
 					return TRUE;
 				dbus_signature_iter_next(&siter_contents);
@@ -324,11 +389,12 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 				contents_signature = dbusvariant->signature;
 			}
 			else
-				contents_signature = to_dbus_type(arg->type);
+				contents_signature = DBUS_to_dbus_type(arg->type);
 			
 			if (contents_signature)
 			{
 				dbus_message_iter_open_container(iter, DBUS_TYPE_VARIANT, contents_signature, &citer);
+				GB.BorrowValue(arg);
 				if (append_arg(&citer, contents_signature, arg))
 					return TRUE;
 				dbus_message_iter_close_container(iter, &citer);
@@ -420,6 +486,55 @@ static bool retrieve_arg(DBusMessageIter *iter, RETRIEVE_CALLBACK cb, void *para
 	}
 }
 
+static bool define_arguments(DBusMessage *message, const char *signature, GB_ARRAY arguments)
+{
+	int nparam;
+	int n;
+	GB_TYPE type;
+	GB_VALUE value;
+	DBusMessageIter iter;
+	DBusSignatureIter siter;
+	
+	if (arguments)
+	{
+		nparam = GB.Array.Count(arguments);
+		type = GB.Array.Type(arguments);
+	}
+	else
+	{
+		nparam = 0;
+		type = GB_T_NULL;
+	}
+	
+	if (signature && *signature)
+	{
+		dbus_message_iter_init_append(message, &iter);
+		
+		dbus_signature_iter_init(&siter, signature);
+		
+		for (n = 0; n < nparam; n++)
+		{
+			value.type = type;
+			GB.ReadValue(&value, GB.Array.Get(arguments, n), type);
+			GB.BorrowValue(&value);
+			if (append_arg(&iter, dbus_signature_iter_get_signature(&siter), &value))
+				return TRUE;
+			if (!dbus_signature_iter_next(&siter))
+			{
+				if (n < (nparam - 1))
+				{
+					GB.Error("Too many arguments");
+					return TRUE;
+				}
+				return FALSE;
+			}
+		}
+	}
+	
+	GB.Error("Not enough arguments");
+	return TRUE;
+}
+
 bool DBUS_call_method(DBusConnection *connection, const char *application, const char *path, const char *interface, const char *method, 
 											const char *signature_in, const char *signature_out, GB_ARRAY arguments)
 {
@@ -430,7 +545,6 @@ bool DBUS_call_method(DBusConnection *connection, const char *application, const
 	DBusError error;
 	DBusSignatureIter siter;
 	bool ret;
-	GB_VALUE value;
 	GB_TYPE type;
 	int nparam;
 	
@@ -445,31 +559,12 @@ bool DBUS_call_method(DBusConnection *connection, const char *application, const
 	
 	dbus_message_set_auto_start (message, TRUE);
 
-	if (arguments)
-	{
-		nparam = GB.Array.Count(arguments);
-		type = GB.Array.Type(arguments);
-	}
-	else
-	{
-		nparam = 0;
-		type = GB_T_NULL;
-	}
+	if (define_arguments(message, signature_in, arguments))
+		goto __RETURN;
 	
-	dbus_message_iter_init_append(message, &iter);
-	
-	dbus_signature_iter_init(&siter, signature_in);
-	for(n = 0; n < nparam; n++)
-	{
-		value.type = type;
-		GB.ReadValue(&value, GB.Array.Get(arguments, n), type);
-		if (append_arg(&iter, dbus_signature_iter_get_signature(&siter), &value))
-			goto __RETURN;
-		dbus_signature_iter_next(&siter);
-	}
-
 	dbus_error_init(&error);
 	reply = dbus_connection_send_with_reply_and_block(connection, message, -1, &error);
+	check_message(connection);
 
 	if (dbus_error_is_set(&error))
 	{
@@ -499,9 +594,12 @@ bool DBUS_call_method(DBusConnection *connection, const char *application, const
 		do
 		{
 			if (retrieve_arg(&iter, add_value_cb, result))
+			{
+				GB.Unref(&result);
 				goto __RETURN;
+			}
 		}
-		while(dbus_message_iter_next(&iter));
+		while (dbus_message_iter_next(&iter));
 		
 		GB.ReturnObject(result);
 		ret = FALSE;
@@ -512,6 +610,104 @@ bool DBUS_call_method(DBusConnection *connection, const char *application, const
 __RETURN:
 	
 	dbus_message_unref(message);
+	return ret;
+}
+
+bool DBUS_retrieve_message_arguments(DBusMessage *message)
+{
+	DBusMessageIter iter;
+
+	dbus_message_iter_init(message, &iter);
+	
+	if (dbus_message_iter_get_arg_type(&iter) == DBUS_TYPE_INVALID)
+	{
+		GB.ReturnNull();
+		return FALSE;
+	}
+	else
+	{
+		GB_ARRAY result;
+		GB.Array.New(POINTER(&result), GB_T_VARIANT, 0);
+		
+		do
+		{
+			if (retrieve_arg(&iter, add_value_cb, result))
+			{
+				GB.Unref(&result);
+				return TRUE;
+			}
+		}
+		while(dbus_message_iter_next(&iter));
+		
+		GB.ReturnObject(result);
+		return FALSE;
+	}
+}
+
+bool DBUS_reply(DBusConnection *connection, DBusMessage *message, const char *signature, GB_ARRAY arguments)
+{
+	bool ret = TRUE;
+	DBusMessage *reply;
+	DBusError error;
+	dbus_uint32_t serial = 0;
+
+	reply = dbus_message_new_method_return(message);
+	
+	if (define_arguments(reply, signature, arguments))
+		goto __RETURN;
+	
+	if (!dbus_connection_send(connection, reply, &serial)) 
+	{
+		GB.Error("Cannot send reply");
+		goto __RETURN;
+	}
+	
+	dbus_connection_flush(connection);
+
+	check_message(connection);
+	
+	ret = FALSE;
+	
+__RETURN:
+	
+	dbus_message_unref(reply);
+	return ret;
+}
+
+bool DBUS_error(DBusConnection *connection, DBusMessage *message, const char *type, const char *error)
+{
+	bool ret = TRUE;
+	DBusMessage *reply;
+	dbus_uint32_t serial = 0;
+	char *full_type;
+
+	if (!error) error = "";
+	
+	if (!type)
+		full_type = DBUS_ERROR_FAILED;
+	else
+	{
+		full_type = GB.NewZeroString("org.freedesktop.org.DBus.Error.");
+		GB.AddString(&full_type, type, 0);
+	}
+	
+	reply = dbus_message_new_error(message, full_type, error);
+	
+	if (!dbus_connection_send(connection, reply, &serial)) 
+	{
+		GB.Error("Cannot send error");
+		goto __RETURN;
+	}
+	
+	dbus_connection_flush(connection);
+
+	check_message(connection);
+	
+	ret = FALSE;
+	
+__RETURN:
+	
+	dbus_message_unref(reply);
 	return ret;
 }
 
@@ -552,6 +748,7 @@ char *DBUS_introspect(DBusConnection *connection, const char *application, const
 
 	dbus_error_init(&error);
 	reply = dbus_connection_send_with_reply_and_block (connection, message, -1, &error);
+	check_message(connection);
 
 	if (dbus_error_is_set(&error))
 	{
@@ -562,46 +759,6 @@ char *DBUS_introspect(DBusConnection *connection, const char *application, const
 	if (!reply)
 		goto __RETURN;
 	
-	/*const char *sender;
-	const char *destination;
-	int message_type;
-
-	message_type = dbus_message_get_type (reply);
-	sender = dbus_message_get_sender (reply);
-	destination = dbus_message_get_destination (reply);
-	
-	printf ("%s sender=%s -> dest=%s",
-		type_to_name (message_type),
-		sender ? sender : "(null sender)",
-		destination ? destination : "(null destination)");
-	
-	switch (message_type)
-	{
-		case DBUS_MESSAGE_TYPE_METHOD_CALL:
-		case DBUS_MESSAGE_TYPE_SIGNAL:
-			printf (" serial=%u path=%s; interface=%s; member=%s\n",
-										dbus_message_get_serial (message),
-				dbus_message_get_path (message),
-				dbus_message_get_interface (message),
-				dbus_message_get_member (message));
-			break;
-				
-		case DBUS_MESSAGE_TYPE_METHOD_RETURN:
-			printf (" reply_serial=%u\n",
-						dbus_message_get_reply_serial (message));
-			break;
-
-		case DBUS_MESSAGE_TYPE_ERROR:
-			printf (" error_name=%s reply_serial=%u\n",
-				dbus_message_get_error_name (message),
-						dbus_message_get_reply_serial (message));
-			break;
-
-		default:
-			printf ("\n");
-			break;
-	}*/
-
 	dbus_message_iter_init(reply, &iter);
 	type = dbus_message_iter_get_arg_type(&iter);
 	if (type == DBUS_TYPE_STRING)
@@ -615,49 +772,51 @@ __RETURN:
 	return signature;
 }
 
-
-static DBusHandlerResult filter_func (DBusConnection *connection, DBusMessage *message, void *user_data)
+static bool check_filter(char *rule, const char *value)
 {
-  print_message(message, FALSE);
+	if (!rule || !*rule || (rule[0] == '*' && rule[1] == 0))
+		return FALSE;
+	
+	return (strcasecmp(rule, value) != 0);
+}
+
+static DBusHandlerResult filter_func(DBusConnection *connection, DBusMessage *message, void *user_data)
+{
+	CDBUSOBSERVER *obs;
+	bool found = FALSE;
+	
+	for (obs = DBUS_observers; obs; obs = obs->next)
+	{
+		if (obs->type != dbus_message_get_type(message))
+			continue;
+		
+		// Beware: "" means "only me" in DBusObserver, but everthing there!
+		if (check_filter(obs->destination, dbus_message_get_destination(message)))
+			continue;
+		if (check_filter(obs->object, dbus_message_get_path(message)))
+			continue;
+		if (check_filter(obs->member, dbus_message_get_member(message)))
+			continue;
+		if (check_filter(obs->interface, dbus_message_get_interface(message)))
+			continue;
+		
+		found = TRUE;
+		obs->message = message;
+		obs->reply = FALSE;
+		DBUS_raise_observer(obs);
+		obs->message = NULL;
+		if (obs->reply)
+			return DBUS_HANDLER_RESULT_HANDLED;
+	}
+	
+  if (!found)
+	{
+		fprintf(stderr, "warning: unhandled message: ");
+		print_message(message, FALSE);
+	}
+	
   return DBUS_HANDLER_RESULT_HANDLED;
 }
-
-
-static void handle_message(int fd, int type, DBusConnection *connection)
-{
-	fprintf(stdout, "handle_message\n");
-	do
-	{
-		dbus_connection_read_write_dispatch(connection, -1);
-	}
-	while (dbus_connection_get_dispatch_status(connection) == DBUS_DISPATCH_DATA_REMAINS);
-}
-
-
-/*static bool add_match(DBusConnection *connection, const char *rule)
-{
-	DBusError error;
-	dbus_error_init(&error);
-	char buffer[256];
-	
-	sprintf(buffer, "destination='%s',%s", dbus_bus_get_unique_name(connection), rule);
-	dbus_bus_add_match(connection, buffer, &error);
-	
-	return dbus_error_is_set(&error);
-}
-
-static bool remove_match(DBusConnection *connection, const char *rule)
-{
-	DBusError error;
-	dbus_error_init(&error);
-	char buffer[256];
-	
-	sprintf(buffer, "destination='%s',%s", dbus_bus_get_unique_name(connection), rule);
-	dbus_bus_remove_match(connection, buffer, &error);
-	
-	return dbus_error_is_set(&error);
-}*/
-
 
 bool DBUS_register(DBusConnection *connection, const char *name, bool unique)
 {
@@ -690,8 +849,7 @@ bool DBUS_register(DBusConnection *connection, const char *name, bool unique)
 
 	GB.Watch(socket, GB_WATCH_READ, (void *)handle_message, (intptr_t)connection);
 	
-	if (dbus_connection_get_dispatch_status(connection) == DBUS_DISPATCH_DATA_REMAINS)
-		handle_message(-1, 0, connection);
+	check_message(connection);
 		
 	return FALSE;
 	

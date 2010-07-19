@@ -2,9 +2,6 @@
 
 Public Sub Main()
 
-  Dim aRect As Integer[]
-  Dim iInd As Integer
-
   'DBus["org.kde.kmail"]["/kmail/kmail_mainwindow_1"].geometry = [0, 24, 1024, 768] '.Get("", "rect")
   'aRect = DBus["org.kde.kmail"]["/kmail/kmail_mainwindow_1", "com.trolltech.Qt.QWidget"].geometry
   'Get("com.trolltech.Qt.QWidget", "rect")
@@ -20,6 +17,13 @@ Public Sub Main()
   'Print DBus["org.kde.kmail"]["/kmail/kmail_mainwindow_1"].geometry  '"turlutu"
   'Debug aRect
   'Print DBus["system://org.freedesktop.Hal"]["/org/freedesktop/Hal/Manager", "org.freedesktop.Hal.Manager"].GetAllDevices().Join("\n")
-  Print DBus["org.kde.krunner"]["/"].Children.Join("\n")
+  'Print DBus["org.kde.krunner"]["/"].Children.Join("\n")
+  'Print DBus["org.kde.krunner"]["/"]._Introspection
 
+  'Print DBus.Session._Name
+  'Dim hTest As CTest = CTest
+  DBus.Session.Register(CTest, "/Test")
+  
+  'Print DBus["org.gambas.gb.dbus"]["/Test"].Compute(5, 7)  
+  
 End

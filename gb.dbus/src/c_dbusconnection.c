@@ -147,7 +147,7 @@ BEGIN_PROPERTY(DBusConnection_Applications)
 END_PROPERTY
 
 
-BEGIN_METHOD(DBusConnection_Register, GB_STRING name; GB_BOOLEAN unique)
+BEGIN_METHOD(DBusConnection_RequestName, GB_STRING name; GB_BOOLEAN unique)
 
 	bool ret = DBUS_register(THIS->connection, GB.ToZeroString(ARG(name)), VARGOPT(unique, FALSE));
 	
@@ -162,88 +162,39 @@ BEGIN_PROPERTY(DBusConnection_Name)
 
 END_PROPERTY
 
-static void add_rule(char **match, const char *name, const char *rule, int len)
-{
-	if (len <= 0)
-		len = strlen(rule);
+BEGIN_METHOD(DBusConnection_Register, GB_OBJECT object; GB_STRING path)
+
+	GB_FUNCTION func;
+	void *object = VARG(object);
 	
-	if (len == 1 && *rule == '*')
+	if (GB.CheckObject(object))
 		return;
-	
-	if (*match)
-		GB.AddString(match, ",", 1);
-	
-	GB.AddString(match, name, 0);
-	GB.AddString(match, "='", 2);
-	GB.AddString(match, rule, len);
-	GB.AddString(match, "'", 1);
-}
 
-static bool handle_match(bool add, DBusConnection *connection, char *match)
-{
-	DBusError error;
-
-	dbus_error_init(&error);
+	if (GB.GetFunction(&func, object, "_Register", NULL, NULL))
+	{
+		GB.Error("Cannot find _Register method");
+		return;
+	}
 	
-	if (add)
-		dbus_bus_add_match(connection, match, &error);
-	else
-		dbus_bus_remove_match(connection, match, &error);
-	
-	GB.FreeString(&match);
-	
-	return dbus_error_is_set(&error);
-}
-
-BEGIN_METHOD(DBusConnection_AddMatch, GB_STRING type; GB_STRING object; GB_STRING member; GB_STRING interface; GB_STRING destination)
-
-	char *match = NULL;
-	
-	add_rule(&match, "type", STRING(type), LENGTH(type));
-	if (!MISSING(object)) add_rule(&match, "path", STRING(object), LENGTH(object));
-	if (!MISSING(member)) add_rule(&match, "member", STRING(member), LENGTH(member));
-	if (!MISSING(interface)) add_rule(&match, "interface", STRING(interface), LENGTH(interface));
-	if (MISSING(destination))
-		add_rule(&match, "destination", dbus_bus_get_unique_name(THIS->connection), 0);
-	else
-		add_rule(&match, "destination", STRING(destination), LENGTH(destination));
-	
-	GB.ReturnBoolean(handle_match(TRUE, THIS->connection, match));
+	GB.Push(2, GB_T_OBJECT, THIS, GB_T_STRING, STRING(path), LENGTH(path));
+	GB.Call(&func, 2, TRUE);
 
 END_METHOD
-
-
-BEGIN_METHOD(DBusConnection_RemoveMatch, GB_STRING type; GB_STRING object; GB_STRING member; GB_STRING interface; GB_STRING destination)
-
-	char *match = NULL;
-	
-	add_rule(&match, "type", STRING(type), LENGTH(type));
-	if (!MISSING(object)) add_rule(&match, "path", STRING(object), LENGTH(object));
-	if (!MISSING(member)) add_rule(&match, "member", STRING(member), LENGTH(member));
-	if (!MISSING(interface)) add_rule(&match, "interface", STRING(interface), LENGTH(interface));
-	if (MISSING(destination))
-		add_rule(&match, "destination", dbus_bus_get_unique_name(THIS->connection), 0);
-	else
-		add_rule(&match, "destination", STRING(destination), LENGTH(destination));
-	
-	GB.ReturnBoolean(handle_match(FALSE, THIS->connection, match));
-
-END_METHOD
-
 
 GB_DESC CDBusConnectionDesc[] =
 {
-  GB_DECLARE("DBusConnection", sizeof(CDBUSCONNECTION)),
+  GB_DECLARE("DBusConnection", sizeof(CDBUSCONNECTION)), GB_NOT_CREATABLE(),
 
 	GB_STATIC_METHOD("_exit", NULL, DBusConnection_exit, NULL),
 	GB_METHOD("_free", NULL, DBusConnection_free, NULL),
 	GB_METHOD("_Introspect", "s", DBusConnection_Introspect, "(Application)s[(Object)s]"),
 	GB_METHOD("_CallMethod", "v", DBusConnection_CallMethod, "(Application)s(Object)s(Interface)s(Method)s(InputSignature)s(OutputSignature)s(Arguments)Array;"),
-	GB_METHOD("_AddMatch", "b", DBusConnection_AddMatch, "(Type)s[(Object)s(Member)s(Interface)s(Destination)s]"),
-	GB_METHOD("_RemoveMatch", "b", DBusConnection_RemoveMatch, "(Type)s[(Object)s(Member)s(Interface)s(Destination)s]"),
+	//GB_METHOD("_AddMatch", "b", DBusConnection_AddMatch, "(Type)s[(Object)s(Member)s(Interface)s(Destination)s]"),
+	//GB_METHOD("_RemoveMatch", "b", DBusConnection_RemoveMatch, "(Type)s[(Object)s(Member)s(Interface)s(Destination)s]"),
 	GB_PROPERTY_READ("Applications", "String[]", DBusConnection_Applications),
-	GB_METHOD("Register", "b", DBusConnection_Register, "(Name)s[(Unique)b]"),
-	GB_PROPERTY_READ("Name", "s", DBusConnection_Name),
+	GB_METHOD("_RequestName", "b", DBusConnection_RequestName, "(Name)s[(Unique)b]"),
+	GB_PROPERTY_READ("_Name", "s", DBusConnection_Name),
+	GB_METHOD("Register", NULL, DBusConnection_Register, "(Object)DBusObject;(Path)s"),
 
   GB_END_DECLARE
 };

@@ -36,5 +36,9 @@ bool DBUS_validate_path(const char *path, int len);
 bool DBUS_validate_interface (const char *interface, int len);
 bool DBUS_validate_method(const char *method, int len);
 
+bool DBUS_retrieve_message_arguments(DBusMessage *message);
+bool DBUS_reply(DBusConnection *connection, DBusMessage *message, const char *signature, GB_ARRAY arguments);
+
+const char *DBUS_to_dbus_type(GB_TYPE type);
 
 #endif

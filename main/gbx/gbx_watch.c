@@ -477,6 +477,9 @@ static bool do_loop(struct timeval *wait)
 	fd_set rfd, wfd;
 	bool something_done = FALSE;
 
+	if (EVENT_check_post())
+		something_done = TRUE;
+
 	if (get_timeout(wait, &tv))
 		ret = do_select(&rfd, &wfd, NULL);
 	else
@@ -503,8 +506,8 @@ static bool do_loop(struct timeval *wait)
 		something_done = TRUE;
 	}
 
-	if (EVENT_check_post())
-		something_done = TRUE;
+	//if (EVENT_check_post())
+	//	something_done = TRUE;
 
 	return something_done;
 }
