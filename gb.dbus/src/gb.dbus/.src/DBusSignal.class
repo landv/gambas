@@ -2,7 +2,7 @@
 
 Export
 
-Event Signal(Signal As String)
+Event Signal(Signal As String, Arguments As Variant[])
 
 Private $hObserver As DBusObserver
 
@@ -14,6 +14,6 @@ End
 
 Public Sub DBusObserver_Message()
   
-  Raise Signal($hObserver.Message.Member)
+  Raise Signal($hObserver.Message.Member, $hObserver.Message.Arguments)
   
 End
