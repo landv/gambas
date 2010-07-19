@@ -22,8 +22,10 @@ Public Sub Main()
 
   'Print DBus.Session._Name
   'Dim hTest As CTest = CTest
-  DBus.Session.Register(CTest, "/Test")
+  'DBus.Session.Register(CTest, "/Test")
+  'Print DBus.Session.Applications
   
+  DBus["org.kde.kmail"]["/KMail"].openComposer("gambas@users.sf.net", "", "", "Hello", "Your language is great!", False, "", Null, Null)
   'Print DBus["org.gambas.gb.dbus"]["/Test"].Compute(5, 7)  
   
 End

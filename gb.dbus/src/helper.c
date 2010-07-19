@@ -529,10 +529,18 @@ static bool define_arguments(DBusMessage *message, const char *signature, GB_ARR
 				return FALSE;
 			}
 		}
+		
+		GB.Error("Not enough arguments");
+		return TRUE;
 	}
-	
-	GB.Error("Not enough arguments");
-	return TRUE;
+	else
+	{
+		if (nparam == 0) 
+			return FALSE;
+		
+		GB.Error("Too many arguments");
+		return TRUE;
+	}
 }
 
 bool DBUS_call_method(DBusConnection *connection, const char *application, const char *path, const char *interface, const char *method, 
