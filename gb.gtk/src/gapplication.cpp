@@ -266,9 +266,22 @@ static GtkWindowGroup *get_window_group(GtkWidget *widget)
     toplevel = gtk_widget_get_toplevel(widget);
 
   if (GTK_IS_WINDOW (toplevel))
-    return gtk_window_get_group(GTK_WINDOW (toplevel));
-  else
+	  return gtk_window_get_group(GTK_WINDOW (toplevel));
+	else
     return gtk_window_get_group(NULL);
+}
+
+static bool is_child_of(GtkWidget *child, GtkWidget *parent)
+{
+	for(;;)
+	{
+		if (!child)
+			return FALSE;
+		if (child == parent)
+			return TRUE;
+	
+		child = gtk_widget_get_parent(child);
+	}
 }
 
 static void gambas_handle_event(GdkEvent *event)
@@ -312,12 +325,13 @@ static void gambas_handle_event(GdkEvent *event)
 	
 	grab = gtk_grab_get_current();
 	
-	if (grab && widget != grab)
+	if (grab && !is_child_of(widget, grab))
 		goto __HANDLE_EVENT;
 	
 	group = get_window_group(widget);
-	if (group != gApplication::currentGroup())
-		goto __HANDLE_EVENT;
+
+	//if (group != gApplication::currentGroup())
+	//	goto __HANDLE_EVENT;
 	
 	if (event->type != GDK_ENTER_NOTIFY)
 	{
@@ -806,7 +820,7 @@ void gApplication::enterLoop(void *owner, bool showIt)
 
 	_loopLevel++;
 	_loop_owner = owner;
-	
+
 	do
 	{
 		do_iteration(false);
