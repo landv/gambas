@@ -1,4 +1,53 @@
 -------------------------------------------------------------------------------
+ gambas2-2.21.0 - 20 Jul 2010
+-------------------------------------------------------------------------------
+
+[CONFIGURATION]
+* BUG: Fix the creation of the gbw2 symbolic link.
+* NEW: Remove generated files.
+* NEW: './reconf' now is used inside sub-directories for reconfiguring it,
+  without modifying libtool.
+* NEW: To install the libtool version required by your system, use now the
+  './reconf-all' script in the top directory.
+
+[DEVELOPMENT ENVIRONMENT]
+* BUG: Align buttons do not snap control dimensions to grid anymore.
+* BUG: In the property sheet, when scrolling, the property editor is not
+  displayed above the property help anymore.
+* BUG: Understand "END FUNCTION" when scanning a class.
+* NEW: Czech translation finished by Radek Fryšták.
+* NEW: German translation finished by Mathias Ebermann.
+* OPT: Refresh the property sheet only for the active form.
+
+[GB.DB.FORM]
+* NEW: German translation made by Mathias Ebermann.
+
+[GB.DB.SQLITE3]
+* BUG: Tables with an autoincrement field and some indexes are correctly
+  managed now.
+
+[GB.FORM]
+* NEW: German translation made by Mathias Ebermann.
+
+[GB.FORM.DIALOG]
+* NEW: German translation made by Mathias Ebermann.
+
+[GB.FORM.MDI]
+* NEW: German translation made by Mathias Ebermann.
+
+[GB.GTK]
+* BUG: Key.Code is not lost anymore during a KeyPress event.
+* BUG: Fix a memory leak when loading an image without transparency.
+* BUG: Fix a memory leak in the Image.Stretch() method.
+* BUG: Basic controls events are correctly sent again when a modal dialog
+  is displayed.
+
+[GB.NET.SMTP]
+* BUG: Send a CR+LF and not just a LF before sending mime part body.
+* BUG: Adds a newline between MIME part headers and MIME part body.
+
+
+-------------------------------------------------------------------------------
  gambas2-2.20.2 - 15 Mar 2010
 -------------------------------------------------------------------------------
 
