@@ -13,7 +13,6 @@ Public Sub Main()
   ' Next
   ' Error
 
-  'DBus["org.kde.kmail"]["/kmail/kmail_mainwindow_1"].geometry = [0, 24, 1024, 768]
   'Print DBus["org.kde.kmail"]["/kmail/kmail_mainwindow_1"].geometry  '"turlutu"
   'Debug aRect
   'Print DBus["system://org.freedesktop.Hal"]["/org/freedesktop/Hal/Manager", "org.freedesktop.Hal.Manager"].GetAllDevices().Join("\n")
@@ -25,7 +24,7 @@ Public Sub Main()
   'DBus.Session.Register(CTest, "/Test")
   'Print DBus.Session.Applications
   
-  DBus["org.kde.kmail"]["/KMail"].openComposer("gambas@users.sf.net", "", "", "Hello", "Your language is great!", False, "", Null, Null)
+  DBus["org.kde.kmail"]["/kmail/kmail_mainwindow_1"].geometry = [0, 24, 1024, 768]
   'Print DBus["org.gambas.gb.dbus"]["/Test"].Compute(5, 7)  
   
 End

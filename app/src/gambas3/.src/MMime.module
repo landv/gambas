@@ -7,6 +7,7 @@ Public Const URI As String = "text/uri-list"
 Public Const DATA As String = "text/x-gambas-data"
 Public Const CLASS As String = "text/x-gambas-class"
 Public Const LIST As String = "text/x-gambas-list"
+Public Const MENU As String = "text/x-gambas-menu"
 
 Private $cFormat As New Collection
 
@@ -15,6 +16,7 @@ Public Sub _init()
   $cFormat["text/plain"] = ("Plain text")
   $cFormat["text/html"] = ("HTML text")
   $cFormat[FORM] = ("Gambas form data")
+  $cFormat[MENU] = ("Gambas menu data")
   $cFormat[FILE] = ("Gambas project file path")
   $cFormat[URI] = ("URI list")
   

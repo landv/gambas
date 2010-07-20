@@ -303,12 +303,6 @@ GB_DESC CListBoxDesc[] =
 {
   GB_DECLARE("ListBox", sizeof(CLISTBOX)), GB_INHERITS("Control"),
 
-  //GB_CONSTANT("None", "i", SELECT_NONE),
-  //GB_CONSTANT("Single", "i", SELECT_SINGLE),
-  //GB_CONSTANT("Multi", "i", SELECT_MULTIPLE), // REMOVE
-  //GB_CONSTANT("Multiple", "i", SELECT_MULTIPLE),
-  //GB_CONSTANT("Extended", "i", QListWidget::Extended),
-
   GB_METHOD("_new", NULL, CLISTBOX_new, "(Parent)Container;"),
 
   GB_METHOD("_get", ".ListBoxItem", CLISTBOX_get, "(Index)i"),
@@ -328,14 +322,11 @@ GB_DESC CListBoxDesc[] =
   GB_PROPERTY_READ("Text", "s", CLISTBOX_text),
   GB_PROPERTY("Index", "i", CLISTBOX_index),
 
+  GB_PROPERTY("Border", "b", CWIDGET_border_simple),
+
   GB_PROPERTY("Mode", "i", CLISTBOX_mode),
 
   GB_METHOD("Find", "i", CLISTBOX_find, "(Item)s"),
-
-  /*
-  GB_METHOD("Select", NULL, CLISTBOX_select, 1, 1, "i"),
-  GB_METHOD("Invert", NULL, CLISTBOX_invert, 0, 0, NULL),
-  */
 
   GB_EVENT("Select", NULL, NULL, &EVENT_Select),
   GB_EVENT("Activate", NULL, NULL, &EVENT_Activate),

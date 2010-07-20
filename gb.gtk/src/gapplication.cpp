@@ -252,6 +252,7 @@ static bool check_button(gControl *w)
 	return w && w->isVisible() && w->enabled();
 }
 
+#if 0
 static GtkWindowGroup *get_window_group(GtkWidget *widget)
 {
   GtkWidget *toplevel = NULL;
@@ -264,6 +265,7 @@ static GtkWindowGroup *get_window_group(GtkWidget *widget)
   else
     return gtk_window_get_group(NULL);
 }
+#endif
 
 /*static gboolean close_dialog(GtkButton *button)
 {
@@ -275,7 +277,6 @@ static void gambas_handle_event(GdkEvent *event)
 {
   GtkWidget *widget;
   GtkWidget *grab;
-	GtkWindowGroup *group;
 	gControl *control;
 	int x, y, xc, yc;
 	bool real;
@@ -336,9 +337,9 @@ static void gambas_handle_event(GdkEvent *event)
 	if (grab && grab != widget)
 		goto __HANDLE_EVENT;
 	
-	group = get_window_group(widget);
-	if (group != gApplication::currentGroup())
-		goto __HANDLE_EVENT;
+	//group = get_window_group(widget);
+	//if (group != gApplication::currentGroup())
+	//	goto __HANDLE_EVENT;
 	
 	if (event->type != GDK_ENTER_NOTIFY)
 	{

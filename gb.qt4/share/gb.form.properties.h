@@ -50,7 +50,7 @@
 #define CICONVIEW_PROPERTIES "*,Mode{Select.*}=Single,Sorted,Editable,GridWidth{Range:0;64}=0,Border=True,ScrollBar{Scroll.*}=Both"
 #define CLABEL_PROPERTIES "*,Padding{Range:0;63},AutoResize,Text,Alignment{Align.*}=Normal,Border{Border.*},Transparent"
 #define CLCDNUMBER_PROPERTIES "*,Value,Digits{Range:1;64}=1,SmallDecimalPoint,Style{LCDNumber.Outline;Filled;Flat}=Outline,Mode{LCDNumber.Decimal;Hexadecimal;Binary}=Decimal,Border{Border.*}"
-#define CLISTBOX_PROPERTIES "*,List,Mode{Select.*}=Single,Sorted"
+#define CLISTBOX_PROPERTIES "*,List,Border=True,Mode{Select.*}=Single,Sorted"
 #define CLISTVIEW_PROPERTIES "*,Mode{Select.*}=Single,Sorted,Editable,Border=True,ScrollBar{Scroll.*}=Both"
 #define CMENU_PROPERTIES "Action,Text,Picture,Enabled=True,Toggle,Checked,Visible=True,Tag,Shortcut"
 #define CMOVIEBOX_PROPERTIES "*,Path,Playing,Border{Border.*}"

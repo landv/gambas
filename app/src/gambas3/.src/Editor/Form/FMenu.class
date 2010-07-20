@@ -47,9 +47,12 @@ Public Sub Form_Open()
   Settings.Read(Me)
   'PRINT "_new"
   Me.Title = $hForm.Name & " - " & ("Menu editor")
+  
   $iCurrent = -1
   LoadShortcut
   LoadAllMenu
+  
+  UpdatePaste
 
 End
 
@@ -710,7 +713,7 @@ Private Sub SetPicture(sPict As String)
 
   txtPicture.Text = sPict
   hPict = Project.GetPicture(sPict)
-  If hPict Then hPict = hPict.Image.Stretch(btnIcon.W - 16, btnIcon.H - 16).Picture
+  If hPict Then hPict = hPict.Image.Stretch(48, 48).Picture
   btnIcon.Picture = hPict
   
 Catch
@@ -750,5 +753,88 @@ Public Sub btnShortcut_Click()
   chkShift.Value = False
   chkAlt.Value = False
   cmbShortcut.Index = 0  
+
+End
+
+Public Sub panIcon_Arrange()
+
+  btnIcon.H = btnIcon.W
+
+End
+
+Private Sub GetMenu(hMenu As CMenu) As String
+  
+  With hMenu
+    
+    Return .Name & "," & .Level & "," & Quote(.Caption) & "," & .Action & "," & .Group & "," & .Visible & "," & .Enabled & "," & .Checked & "," & .Toggle & "," &
+      .Ctrl & "," & .Shift & "," & .Alt & "," & Quote(.Shortcut) & "," & Quote(.Picture) & "," & Quote(.Tag)
+    
+  End With
+
+End
+
+
+Public Sub btnCopy_Click()
+
+  Dim iInd As Integer
+  Dim sData As String
+  
+  For iInd = 0 To lstMenu.Count - 2
+    If lstMenu[iInd].Selected Then
+      sData &= GetMenu($aMenu[iInd]) & "\n"
+    Endif
+  Next
+  
+  If Not sData Then Return
+  
+  Clipboard.Copy(sData, MMime.MENU)
+  UpdatePaste
+
+End
+
+Public Sub btnCut_Click()
+
+  btnCopy_Click
+  btnDelete_Click
+
+End
+
+Private Sub UpdatePaste()
+  
+  btnPaste.Enabled = Clipboard.Formats.Exist(MMime.MENU)
+  
+End
+
+
+Public Sub btnPaste_Click()
+
+  Dim sData As String
+  Dim aMenu As String[]
+  
+  sData = Trim(Clipboard.Paste(MMime.MENU))
+  If Not sData Then Return
+  
+  For Each sData In Split(sData, "\n")
+    aMenu = Split(sData, ",", Chr$(34))
+    btnInsert_Click
+    txtName.Text = aMenu[0]
+    $aMenu[$iCurrent].Level = CInt(aMenu[1])
+    txtCaption.Text = aMenu[2]
+    txtAction.Text = aMenu[3]
+    txtGroup.Text = aMenu[4]
+    chkVisible.Value = CBool(aMenu[5])
+    chkEnabled.Value = CBool(aMenu[6])
+    chkChecked.Value = CBool(aMenu[7])
+    chkToggle.Value = CBool(aMenu[8])
+    chkCtrl.Value = CBool(aMenu[9])
+    chkShift.Value = CBool(aMenu[10])
+    chkAlt.Value = CBool(aMenu[11])
+    cmbShortcut.Text = aMenu[12]
+    SetPicture(aMenu[13])
+    txtTag.Text = aMenu[14]
+    WriteMenu
+  Next
+  
+  ReadMenu
 
 End

@@ -219,6 +219,15 @@ BEGIN_PROPERTY(CLISTBOX_list)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(CLISTBOX_border)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(LISTBOX->hasBorder());
+	else
+		LISTBOX->setBorder(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
 /***************************************************************************
 
   ListBoxItem
@@ -259,6 +268,7 @@ GB_DESC CListBoxDesc[] =
   GB_PROPERTY_READ("Text", "s", CLISTBOX_text),
   GB_PROPERTY("Index", "i", CLISTBOX_index),
   GB_PROPERTY("Mode", "i", CLISTBOX_mode),
+  GB_PROPERTY("Border", "b", CLISTBOX_border),
 
   GB_EVENT("Select", 0, 0, &EVENT_Select),
   GB_EVENT("Activate", 0, 0, &EVENT_Activate),

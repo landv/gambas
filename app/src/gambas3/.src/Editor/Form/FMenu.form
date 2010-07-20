@@ -1,63 +1,96 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(17,15,83,80)
+  MoveScaled(17,15,83,81)
   Text = ("Menu editor")
   Icon = Picture["img/16/menu.png"]
   Arrangement = Arrange.Vertical
   Spacing = True
   Padding = 8
-  { VBox4 VBox
-    MoveScaled(1,1,80,35)
+  { VBox2 Panel
+    MoveScaled(1,1,80,36)
     Expand = True
-    Spacing = True
-    { lstMenu ListBox
-      MoveScaled(0,0,60,30)
-      Expand = True
-      Mode = Select.Multiple
-    }
-    { HBox1 HBox
-      MoveScaled(0,31,79,4)
-      Spacing = True
-      { btnNext Button
-        MoveScaled(0,0,17,4)
-        Text = ("&Next")
-        Picture = Picture["icon:/small/next"]
-      }
-      { btnInsert Button
-        MoveScaled(18,0,17,4)
+    Arrangement = Arrange.Vertical
+    Border = Border.Plain
+    { HBox5 HBox
+      MoveScaled(0,0,79,4)
+      { btnInsert ToolButton
+        MoveScaled(0,0,11,4)
+        AutoResize = True
         Text = ("&Insert")
         Picture = Picture["icon:/small/add"]
       }
-      { btnDelete Button
-        MoveScaled(37,0,17,4)
+      { btnNext ToolButton
+        MoveScaled(11,0,9,4)
+        AutoResize = True
+        Text = ("&Next")
+        Picture = Picture["icon:/small/next"]
+      }
+      { btnDelete ToolButton
+        MoveScaled(20,0,11,4)
+        AutoResize = True
         Text = ("&Delete")
         Picture = Picture["icon:/small/delete"]
       }
-      { btnUp Button
-        MoveScaled(55,0,4,4)
+      { Separator2 Separator
+        MoveScaled(35,0,1,4)
+      }
+      { btnCut ToolButton
+        MoveScaled(36,0,4,4)
+        ToolTip = ("Cut")
+        Picture = Picture["icon:/small/cut"]
+      }
+      { btnCopy ToolButton
+        MoveScaled(40,0,4,4)
+        ToolTip = ("Copy")
+        Picture = Picture["icon:/small/copy"]
+      }
+      { btnPaste ToolButton
+        MoveScaled(44,0,4,4)
+        ToolTip = ("Paste")
+        Picture = Picture["icon:/small/paste"]
+      }
+      { Separator1 Separator
+        MoveScaled(48,0,1,4)
+      }
+      { btnRight ToolButton
+        MoveScaled(49,0,4,4)
+        ToolTip = ("Indent")
+        Picture = Picture["icon:/small/indent"]
+      }
+      { btnLeft ToolButton
+        MoveScaled(53,0,4,4)
+        ToolTip = ("Unindent")
+        Picture = Picture["icon:/small/unindent"]
+      }
+      { btnUp ToolButton
+        MoveScaled(57,0,4,4)
+        ToolTip = ("Move up")
         Picture = Picture["icon:/small/up"]
       }
-      { btnDown Button
-        MoveScaled(60,0,4,4)
+      { btnDown ToolButton
+        MoveScaled(61,0,4,4)
+        ToolTip = ("Move down")
         Picture = Picture["icon:/small/down"]
       }
-      { btnLeft Button
-        MoveScaled(65,0,4,4)
-        Picture = Picture["icon:/small/left"]
-      }
-      { btnRight Button
-        MoveScaled(70,0,4,4)
-        Picture = Picture["icon:/small/right"]
-      }
       { btnSave Button
-        MoveScaled(75,0,4,4)
+        MoveScaled(68,0,4,4)
+        Visible = False
         Picture = Picture["icon:/small/save"]
       }
     }
+    { Separator3 Separator
+      MoveScaled(12,6,16,0)
+    }
+    { lstMenu ListBox
+      MoveScaled(4,10,65,23)
+      Expand = True
+      Border = False
+      Mode = Select.Multiple
+    }
   }
   { VBox3 VBox
-    MoveScaled(1,37,73,37)
+    MoveScaled(1,38,73,37)
     Spacing = True
     { frmMenu HBox
       MoveScaled(0,0,72,37)
@@ -149,17 +182,17 @@
             Expand = True
             ReadOnly = True
           }
-          { btnKillPicture Button
-            MoveScaled(28,0,4,4)
-            Picture = Picture["icon:/small/delete"]
-          }
           { btnPicture Button
-            MoveScaled(33,0,4,4)
+            MoveScaled(28,0,4,4)
             Picture = Picture["icon:/small/open"]
+          }
+          { btnKillPicture Button
+            MoveScaled(33,0,4,4)
+            Picture = Picture["icon:/small/clear"]
           }
         }
       }
-      { VBox1 VBox
+      { panIcon VBox
         MoveScaled(58,1,13,34)
         { chkVisible CheckBox
           MoveScaled(0,0,12,4)
@@ -183,7 +216,7 @@
         }
         { btnIcon Button btnPicture
           Name = "btnIcon"
-          MoveScaled(0,19,11,12)
+          MoveScaled(0,20,10,11)
         }
         { Panel1 Panel
           MoveScaled(3,31,5,3)
@@ -191,13 +224,14 @@
       }
     }
     { lblCreate Label
-      MoveScaled(4,1,46,4)
+      MoveScaled(3,2,37,4)
+      AutoResize = True
       Text = ("Click on Insert to add a new menu.")
       Alignment = Align.TopNormal
     }
   }
   { HBox2 HBox
-    MoveScaled(1,75,55,4)
+    MoveScaled(1,76,55,4)
     Spacing = True
     { Panel2 Panel
       MoveScaled(3,0,4,4)

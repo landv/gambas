@@ -441,12 +441,6 @@ void gMainWindow::setVisible(bool vl)
 		if (!opened)
 			return;
 		
-		if (isTopLevel() && !_xembed)
-		{
-			//fprintf(stderr, "adding window %p to group %p\n", this, group);
-			gtk_window_group_add_window(gApplication::currentGroup(), GTK_WINDOW(border));
-		}
-			
 		_not_spontaneous = !visible;
 		visible = true;
 		_hidden = false;
@@ -456,9 +450,14 @@ void gMainWindow::setVisible(bool vl)
 			if (!_title || !*_title)
 				gtk_window_set_title(GTK_WINDOW(border), gApplication::defaultTitle());
 			
-			active = gDesktop::activeWindow();
-			if (active && active != this)
-				gtk_window_set_transient_for(GTK_WINDOW(border), GTK_WINDOW(active->border));
+			if (!_xembed)
+			{
+				gtk_window_group_add_window(gApplication::currentGroup(), GTK_WINDOW(border));
+
+				active = gDesktop::activeWindow();
+				if (active && active != this)
+					gtk_window_set_transient_for(GTK_WINDOW(border), GTK_WINDOW(active->border));
+			}
 			
 			gtk_window_move(GTK_WINDOW(border), bufX, bufY);
 			gtk_window_present(GTK_WINDOW(border));
