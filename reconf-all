@@ -2,6 +2,8 @@
 
 rm -f config.cache
 rm -f acconfig.cache
+rm -f libtool */libtool
 
+libtoolize --force --copy --nonrecursive
 autoreconf -v --install $@
 
