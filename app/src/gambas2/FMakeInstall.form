@@ -137,8 +137,9 @@
     Index = 2
     Text = ("3. Target distribution")
     { panSystem VBox
-      MoveScaled(0,0,72,65)
+      MoveScaled(2,1,71,72)
       Expand = True
+      AutoResize = True
       Spacing = 4
       { HBox5 HBox
         MoveScaled(1,0,69,9)
@@ -248,8 +249,26 @@
           Text = ("Ubuntu")
         }
       }
+      { HBox11 HBox
+        MoveScaled(1,54,69,9)
+        Tag = "archlinux"
+        Spacing = 8
+        Padding = 4
+        { ToolButton8 ToolButton
+          MoveScaled(0,0,8,8)
+          Text = ("")
+          Picture = Picture["img/logo/arch-logo.png"]
+          Toggle = True
+        }
+        { CheckBox6 CheckBox chkDistro
+          Name = "CheckBox6"
+          MoveScaled(9,1,24,4)
+          Expand = True
+          Text = ("Archlinux")
+        }
+      }
       { HBox10 HBox
-        MoveScaled(1,55,69,9)
+        MoveScaled(1,63,69,9)
         Tag = "autotools"
         Spacing = 8
         Padding = 4
