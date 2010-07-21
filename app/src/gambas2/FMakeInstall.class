@@ -50,6 +50,12 @@ PUBLIC SUB Form_Open()
     txtMail.Text = System.User.Name & "@" & System.Host
   ENDIF
   
+  IF Project.Url THEN
+    txtUrl.Text = Project.Url
+  ELSE 
+    txtUrl.Text = "http://www.endoftheinternet.com/"
+  ENDIF
+
   txtVendor.Text = Project.Vendor
   
   IF Project.License THEN
@@ -264,7 +270,8 @@ PUBLIC SUB wizInstall_BeforeChange()
       Project.Address = Trim(txtMail.Text)
       Project.Vendor = Trim(txtVendor.Text)
       Project.License = Trim(txtLicense.Text)
-
+      Project.Url = Trim(txtUrl.Text)
+      
       IF NOT Project.Maintainer THEN
         Message.Warning(("Please enter your name."))
         STOP EVENT

@@ -40,6 +40,7 @@ PUBLIC UseRelease AS Boolean
 PUBLIC Maintainer AS String
 PUBLIC Address AS String
 PUBLIC Vendor AS String
+PUBLIC Url AS String
 PUBLIC License AS String
 PUBLIC CreateEachDirectory AS Boolean
 
@@ -2077,6 +2078,7 @@ PUBLIC SUB ReadProject()
   Vendor = ""
   Address = ""
   License = ""
+  Url = ""
   CreateEachDirectory = FALSE
 
   WHILE NOT Eof(hFic)
@@ -2208,6 +2210,9 @@ PUBLIC SUB ReadProject()
       CASE "address"
         Address = sVal
         
+      CASE "url"
+        Url = sVal
+
       CASE "license"
         License = sVal
 
@@ -2315,6 +2320,7 @@ PUBLIC SUB WriteProject(OPTIONAL bComponentDoNotChange AS Boolean, OPTIONAL bMak
   IF Maintainer THEN PRINT #hFic, "Maintainer="; Maintainer
   IF Vendor THEN PRINT #hFic, "Vendor="; Vendor
   IF Address THEN PRINT #hFic, "Address="; Address
+  IF Url THEN PRINT #hFic, "Url="; Url
   IF License THEN PRINT #hFic, "License="; License
   IF Prefix THEN PRINT #hFic, "Prefix=1"
   IF UseRelease THEN PRINT #hFic, "UseRelease=1"
