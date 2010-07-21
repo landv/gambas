@@ -152,9 +152,47 @@
     { PanSystem ScrollView
       MoveScaled(1,1,74,65)
       Expand = True
+      Arrangement = Arrange.Vertical
+      Border = False
       ScrollBar = Scroll.Vertical
-      { HBox5 HBox
+      { HBox11 HBox
         MoveScaled(0,0,72,9)
+        Tag = "archlinux"
+        Spacing = 8
+        Padding = 4
+        { ToolButton8 ToolButton
+          MoveScaled(0,0,8,8)
+          Text = ("")
+          Picture = Picture["img/logo/archlinux.png"]
+          Toggle = True
+        }
+        { CheckBox6 CheckBox chkDistro
+          Name = "CheckBox6"
+          MoveScaled(9,1,24,4)
+          Expand = True
+          Text = ("Archlinux")
+        }
+      }
+      { HBox10 HBox
+        MoveScaled(0,9,73,9)
+        Tag = "autotools"
+        Spacing = 8
+        Padding = 4
+        { ToolButton7 ToolButton
+          MoveScaled(0,0,8,8)
+          Text = ("")
+          Picture = Picture["img/logo/package-gnu.png"]
+          Toggle = True
+        }
+        { CheckBox5 CheckBox chkDistro
+          Name = "CheckBox5"
+          MoveScaled(9,1,24,4)
+          Expand = True
+          Text = ("Autotools")
+        }
+      }
+      { HBox5 HBox
+        MoveScaled(0,18,72,9)
         Tag = "debian"
         Spacing = 8
         Padding = 4
@@ -172,7 +210,7 @@
         }
       }
       { HBox6 HBox
-        MoveScaled(0,9,72,9)
+        MoveScaled(0,27,72,9)
         Tag = "fedora"
         Spacing = 8
         Padding = 4
@@ -190,7 +228,7 @@
         }
       }
       { HBox3 HBox
-        MoveScaled(0,18,72,9)
+        MoveScaled(0,36,72,9)
         Tag = "mandriva"
         Spacing = 8
         Padding = 4
@@ -208,7 +246,7 @@
         }
       }
       { HBox7 HBox
-        MoveScaled(0,27,72,9)
+        MoveScaled(0,45,72,9)
         Tag = "suse"
         Spacing = 8
         Padding = 4
@@ -226,7 +264,7 @@
         }
       }
       { HBox4 HBox
-        MoveScaled(0,36,72,9)
+        MoveScaled(0,54,72,9)
         Tag = "slackware"
         Spacing = 8
         Padding = 4
@@ -244,7 +282,7 @@
         }
       }
       { HBox9 HBox
-        MoveScaled(0,45,72,9)
+        MoveScaled(0,63,72,9)
         Tag = "ubuntu"
         Spacing = 8
         Padding = 4
@@ -259,42 +297,6 @@
           MoveScaled(9,1,23,4)
           Expand = True
           Text = ("Ubuntu")
-        }
-      }
-      { HBox11 HBox
-        MoveScaled(0,54,72,9)
-        Tag = "archlinux"
-        Spacing = 8
-        Padding = 4
-        { ToolButton8 ToolButton
-          MoveScaled(0,0,8,8)
-          Text = ("")
-          Picture = Picture["img/logo/arch-logo.png"]
-          Toggle = True
-        }
-        { CheckBox6 CheckBox chkDistro
-          Name = "CheckBox6"
-          MoveScaled(9,1,24,4)
-          Expand = True
-          Text = ("Archlinux")
-        }
-      }
-      { HBox10 HBox
-        MoveScaled(0,63,73,9)
-        Tag = "autotools"
-        Spacing = 8
-        Padding = 4
-        { ToolButton7 ToolButton
-          MoveScaled(0,0,8,8)
-          Text = ("")
-          Picture = Picture["img/logo/package-gnu.png"]
-          Toggle = True
-        }
-        { CheckBox5 CheckBox chkDistro
-          Name = "CheckBox5"
-          MoveScaled(9,1,24,4)
-          Expand = True
-          Text = ("Autotools")
         }
       }
     }
