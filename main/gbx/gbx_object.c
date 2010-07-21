@@ -245,7 +245,7 @@ void OBJECT_free(CLASS *class, OBJECT *ob)
   class->count--;
 
   #if DEBUG_REF
-  ob->class = (CLASS *)0x23232323;
+  ob->class = FREE_MARK;
   #endif
 
   FREE(&ob, "OBJECT_free");

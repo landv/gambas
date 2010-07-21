@@ -86,13 +86,19 @@ static INLINE CLASS *OBJECT_class(void *object)
 
 #if DEBUG_REF
 
+#if OS_64BITS
+	#define FREE_MARK ((CLASS *)0x2323232323232323LL)
+#else
+	#define FREE_MARK ((CLASS *)0x23232323)
+#endif
+
 EXTERN const char *OBJECT_ref_where;
 
 #define OBJECT_ref(_object) \
 { \
 	if (_object) \
 	{ \
-		if (OBJECT_class(_object) == (CLASS *)0x23232323) \
+		if (OBJECT_class(_object) == FREE_MARK) \
 		{ \
 			fprintf(stderr, "*ALREADY FREED* %p\n", (_object)); \
 			fflush(NULL); \
@@ -106,7 +112,7 @@ EXTERN const char *OBJECT_ref_where;
 { \
 	if (_object) \
 	{ \
-		if (OBJECT_class(_object) == (CLASS *)0x23232323) \
+		if (OBJECT_class(_object) == FREE_MARK) \
 		{ \
 			fprintf(stderr, "*ALREADY FREED* %p\n", (_object)); \
 			fflush(NULL); \
@@ -118,7 +124,7 @@ EXTERN const char *OBJECT_ref_where;
 
 #define OBJECT_just_unref(_object) \
 { \
-	if (OBJECT_class(_object) == (CLASS *)0x23232323) \
+	if (OBJECT_class(_object) == FREE_MARK) \
 	{ \
 		fprintf(stderr, "*ALREADY FREED* %p\n", (_object)); \
 		fflush(NULL); \
@@ -131,7 +137,7 @@ EXTERN const char *OBJECT_ref_where;
 { \
 	if (_object) \
 	{ \
-		if (OBJECT_class(_object) == (CLASS *)0x23232323) \
+		if (OBJECT_class(_object) == FREE_MARK) \
 		{ \
 			fprintf(stderr, "*ALREADY FREED* %p\n", (_object)); \
 			fflush(NULL); \

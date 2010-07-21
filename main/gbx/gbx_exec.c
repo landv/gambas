@@ -1076,94 +1076,28 @@ void EXEC_native_quick(void)
 {
 	CLASS_DESC_METHOD *desc = EXEC.desc;
 	int nparam = EXEC.nparam;
-	//bool use_stack = EXEC.use_stack; // Always TRUE
 
 	bool error;
-	void *free_later;
+	//void *free_later;
 	VALUE ret;
 
 	EXEC_call_native_inline(desc->exec, EXEC.object, desc->type, &SP[-nparam]);
 	COPY_VALUE(&ret, &TEMP);
 
-	BORROW(&ret);
-	RELEASE_MANY(SP, nparam);
-	
 	if (UNLIKELY(error))
-	{
-		UNBORROW(&ret);
-		POP();
-		PROPAGATE();
-	}
-	
-	SP--;
-	free_later = SP->_function.object;
-	SP->type = T_NULL;
-
-	if (desc->type == T_VOID)
-	{
-		UNBORROW(&ret);
-		SP->type = T_VOID;
-		SP->_void.ptype = T_NULL;
-		SP++;
-	}
-	else
-	{
-		COPY_VALUE(SP, &ret);
-		SP++;
-	}
-
-	OBJECT_UNREF(free_later, "EXEC_native (FUNCTION)");
-
-	#if DEBUG_STACK
-	printf("| << EXEC_native: %s (%p)\n", desc->name, &desc);
-	#endif
-}
-
-
-#if 0
-void EXEC_native_easy(void)
-{
-	CLASS_DESC_METHOD *desc = EXEC.desc;
-	int nparam = EXEC.nparam;
-	bool error;
-	void *free_later;
-	VALUE ret;
-	VALUE *value;
-	TYPE *sign;
-	int i;
-
-	value = &SP[-nparam];
-	sign = desc->signature;
-
-	TRY
-	{
-		for (i = nparam; i > 0; i--, value++, sign++)
-			VALUE_conv(value, *sign);
-	}
-	CATCH
 	{
 		RELEASE_MANY(SP, nparam);
-		PROPAGATE();	
-	}
-	END_TRY
-
-	EXEC_call_native_inline(desc->exec, EXEC.object, desc->type, &SP[-nparam]);
-	COPY_VALUE(&ret, &TEMP);
-
-	RELEASE_MANY(SP, nparam);
-	
-	if (UNLIKELY(error))
-	{
 		POP();
 		PROPAGATE();
 	}
 	
-	SP--;
-	free_later = SP->_function.object;
-	SP->type = T_NULL;
-
 	if (desc->type == T_VOID)
 	{
+		RELEASE_MANY(SP, nparam);
+
+		SP--;
+		OBJECT_UNREF(SP->_function.object, "EXEC_native (FUNCTION)");
+
 		SP->type = T_VOID;
 		SP->_void.ptype = T_NULL;
 		SP++;
@@ -1171,17 +1105,20 @@ void EXEC_native_easy(void)
 	else
 	{
 		BORROW(&ret);
+		RELEASE_MANY(SP, nparam);
+
+		SP--;
+		OBJECT_UNREF(SP->_function.object, "EXEC_native (FUNCTION)");
 		COPY_VALUE(SP, &ret);
 		SP++;
 	}
 
-	OBJECT_UNREF(free_later, "EXEC_native (FUNCTION)");
 
 	#if DEBUG_STACK
 	printf("| << EXEC_native: %s (%p)\n", desc->name, &desc);
 	#endif
 }
-#endif
+
 
 static void error_EXEC_native(void)
 {
@@ -1311,18 +1248,16 @@ void EXEC_native(void)
 		POP();
 	}*/
 	
-	BORROW(&ret);
-	RELEASE_MANY(SP, nparam);
-
 	if (UNLIKELY(error))
 	{
+		RELEASE_MANY(SP, nparam);
+
 		if (use_stack)
 		{
 			SP--;
 			OBJECT_UNREF(SP->_function.object, "EXEC_native (FUNCTION)");
 		}
 		
-		UNBORROW(&ret);
 		PROPAGATE();
 	}
 	
@@ -1330,7 +1265,8 @@ void EXEC_native(void)
 
 	if (desc->type == T_VOID)
 	{
-		UNBORROW(&ret);
+		RELEASE_MANY(SP, nparam);
+		
 		if (use_stack)
 		{
 			SP--;
@@ -1340,25 +1276,21 @@ void EXEC_native(void)
 		SP->type = T_VOID;
 		SP->_void.ptype = T_NULL;
 		SP++;
+		//UNBORROW(&ret);
 	}
 	else
 	{
+		BORROW(&ret);
+		RELEASE_MANY(SP, nparam);
+		
 		if (use_stack)
 		{
-			void *free_later;
 			SP--;
-			free_later = SP->_function.object;
-			//BORROW(&ret);
-			COPY_VALUE(SP, &ret);
-			SP++;
-			OBJECT_UNREF(free_later, "EXEC_native (FUNCTION)");
+			OBJECT_UNREF(SP->_function.object, "EXEC_native (FUNCTION)");
 		}
-		else
-		{
-			//BORROW(&ret);
-			COPY_VALUE(SP, &ret);
-			SP++;
-		}
+		
+		COPY_VALUE(SP, &ret);
+		SP++;
 	}
 
 

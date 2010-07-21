@@ -663,44 +663,52 @@ void CLASS_free(void *object)
 #if DEBUG_REF
 void CLASS_ref(void *object)
 {
+	char *name;
+	
 	((OBJECT *)object)->ref++;
 	
-	//if (OBJECT_class(object)->is_observer)
-	//	BREAKPOINT();
-
+	if (OBJECT_class(object) == FREE_MARK)
+		name = "*ALREADY FREED*";
+	else
+		name = OBJECT_class(object)->name;
+	
 	#if DEBUG_MEMORY
-	fprintf(stderr, "%s: %s: ref(%s <%d>) -> %d\n", OBJECT_ref_where,
+	fprintf(stderr, "%s: %s: ref(%s <%d>) -> %ld\n", OBJECT_ref_where,
 		DEBUG_get_current_position(),
-		OBJECT_class(object)->name, GET_ALLOC_ID(object), ((OBJECT *)object)->ref);
+		name, GET_ALLOC_ID(object), ((OBJECT *)object)->ref);
 	#else
-	fprintf(stderr, "%s: %s: ref(%s %p) -> %d\n", OBJECT_ref_where,
+	fprintf(stderr, "%s: %s: ref(%s %p) -> %ld\n", OBJECT_ref_where,
 		DEBUG_get_current_position(),
-		OBJECT_class(object)->name, object, ((OBJECT *)object)->ref);
+		name, object, ((OBJECT *)object)->ref);
 	#endif
 	fflush(stdout);
 }
 
 bool CLASS_unref(void *ob, bool can_free)
 {
+	char *name;
+
 	OBJECT *object = (OBJECT *)ob;
 	
-	//if (OBJECT_class(object)->is_observer)
-	//	BREAKPOINT();
+	if (OBJECT_class(object) == FREE_MARK)
+		name = "*ALREADY FREED*";
+	else
+		name = OBJECT_class(object)->name;
 
 	#if DEBUG_MEMORY
 	if (object->ref <= 0)
-		fprintf(stderr, "*** <%d> REF = %d !\n", GET_ALLOC_ID(object), object->ref);
+		fprintf(stderr, "*** <%d> REF = %ld !\n", GET_ALLOC_ID(object), object->ref);
 
-	fprintf(stderr, "%s: %s: unref(%s <%d>) -> %d\n", OBJECT_ref_where,
+	fprintf(stderr, "%s: %s: unref(%s <%d>) -> %ld\n", OBJECT_ref_where,
 		DEBUG_get_current_position(),
-		OBJECT_class(object)->name, GET_ALLOC_ID(object), object->ref - 1);
+		name, GET_ALLOC_ID(object), object->ref - 1);
 	#else
 	if (object->ref <= 0)
 		fprintf(stderr, "*** %p REF = %d !\n", object, object->ref);
 
-	fprintf(stderr, "%s, %s: unref(%s %p) -> %d\n", OBJECT_ref_where,
+	fprintf(stderr, "%s, %s: unref(%s %p) -> %ld\n", OBJECT_ref_where,
 		DEBUG_get_current_position(),
-		OBJECT_class(object)->name, object, object->ref - 1);
+		name, object, object->ref - 1);
 	#endif
 	fflush(stdout);
 
