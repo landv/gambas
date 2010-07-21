@@ -506,7 +506,7 @@ msgstr "Implémente"
 msgid "Provides"
 msgstr "Fournit"
 
-#: CModule.class:28 FCreateFile.class:648 FEditor.class:3502 FForm.class:3707
+#: CModule.class:28 FCreateFile.class:648 FEditor.class:3502 FForm.class:3704
 #: FInfo.class:88
 msgid "Form"
 msgstr "Formulaire"
@@ -617,7 +617,7 @@ msgstr ""
 #: Design.module:381 FColorChooser.class:201 FCommit.class:380
 #: FConnectionEditor.class:411 FCreateFile.class:923 FFontChooser.class:79
 #: FGotoLine.class:57 FList.class:331 FMain.class:3016
-#: FMakeExecutable.class:138 FMenu.class:1105 FNewConnection.class:573
+#: FMakeExecutable.class:138 FMenu.class:1197 FNewConnection.class:573
 #: FNewTable.class:159 FNewTranslation.class:64 FOpenProject.class:473
 #: FPasteSpecial.class:273 FPropertyProject.class:258
 #: FReportBorderChooser.class:213 FReportCoordChooser.class:120
@@ -697,7 +697,7 @@ msgstr "Libre"
 #: FForm.class:2955 FGotoLine.class:63 FHelpBrowser.class:275
 #: FIconEditor.class:1396 FImportTable.class:38 FList.class:155
 #: FMain.class:211 FMakeExecutable.class:144 FMakeInstall.class:310
-#: FMenu.class:1110 FNewConnection.class:317 FNewTable.class:165
+#: FMenu.class:1202 FNewConnection.class:317 FNewTable.class:165
 #: FNewTranslation.class:70 FOpenProject.class:479 FOption.class:590
 #: FPasteSpecial.class:279 FPropertyProject.class:1017
 #: FReportBorderChooser.class:207 FReportCoordChooser.class:114
@@ -737,45 +737,45 @@ msgid "Some files are not versioned and should be added manually to the reposito
 msgstr "Certains fichiers ne sont pas versionnés et doivent être ajoutés manuellement au référentiel."
 
 #: FCommit.class:234 FConflict.class:325 FConnectionEditor.class:1808
-#: FEditor.class:3347 FForm.class:3537 FIconEditor.class:2165
-#: FImageEditor.class:77 FMenu.class:862 FOutput.class:377
+#: FEditor.class:3347 FForm.class:3534 FIconEditor.class:2165
+#: FImageEditor.class:77 FMenu.class:948 FOutput.class:377
 #: FTextEditor.class:671
 msgid "Cut"
 msgstr "Couper"
 
 #: FCommit.class:240 FConflict.class:331 FConnectionEditor.class:1708
-#: FEditor.class:3353 FForm.class:3544 FIconEditor.class:2173
-#: FImageEditor.class:86 FMenu.class:868 FOutput.class:384
+#: FEditor.class:3353 FForm.class:3541 FIconEditor.class:2173
+#: FImageEditor.class:86 FMenu.class:954 FOutput.class:384
 #: FTextEditor.class:678
 msgid "Copy"
 msgstr "Copier"
 
 #: FCommit.class:246 FConflict.class:337 FConnectionEditor.class:1829
-#: FEditor.class:3360 FForm.class:3557 FIconEditor.class:2181
-#: FImageEditor.class:95 FMenu.class:874 FOutput.class:391
+#: FEditor.class:3360 FForm.class:3554 FIconEditor.class:2181
+#: FImageEditor.class:95 FMenu.class:960 FOutput.class:391
 #: FTextEditor.class:685
 msgid "Paste"
 msgstr "Coller"
 
 #: FCommit.class:252 FConflict.class:343 FConnectionEditor.class:1836
-#: FEditor.class:3331 FForm.class:3782 FIconEditor.class:2149
+#: FEditor.class:3331 FForm.class:3779 FIconEditor.class:2149
 #: FImageEditor.class:104 FOption.class:1461 FOutput.class:360
 #: FTextEditor.class:654
 msgid "Undo"
 msgstr "Annuler"
 
 #: FCommit.class:258 FConflict.class:349 FConnectionEditor.class:1843
-#: FEditor.class:3338 FForm.class:3792 FImageEditor.class:112
+#: FEditor.class:3338 FForm.class:3789 FImageEditor.class:112
 #: FOutput.class:367 FTextEditor.class:661
 msgid "Redo"
 msgstr "Rétablir"
 
-#: FCommit.class:264 FConflict.class:355 FEditor.class:3554
+#: FCommit.class:264 FConflict.class:355 FEditor.class:3554 FMenu.class:970
 #: FTextEditor.class:827
 msgid "Indent"
 msgstr "Indenter"
 
-#: FCommit.class:270 FConflict.class:361 FEditor.class:3562
+#: FCommit.class:270 FConflict.class:361 FEditor.class:3562 FMenu.class:976
 #: FTextEditor.class:834
 msgid "Unindent"
 msgstr "Désindenter"
@@ -929,7 +929,7 @@ msgstr "Impossible de se connecter à la base de données."
 msgid "Do not save"
 msgstr "Ne pas enregistrer"
 
-#: FConnectionEditor.class:261 FEditor.class:3453 FForm.class:3698
+#: FConnectionEditor.class:261 FEditor.class:3453 FForm.class:3695
 #: FIconEditor.class:1415 FImageEditor.class:60 FTextEditor.class:749
 msgid "Save"
 msgstr "Enregistrer"
@@ -1014,7 +1014,7 @@ msgstr "La table « &1 » n'a pas de clef primaire."
 msgid "Cannot write table '&1'."
 msgstr "Impossible d'écrire la table « &1 »."
 
-#: FConnectionEditor.class:1330 FForm.class:3564 FMain.class:211
+#: FConnectionEditor.class:1330 FForm.class:3561 FMain.class:211
 #: FNewConnection.class:317 FOption.class:737 FTranslate.class:617
 msgid "Delete"
 msgstr "Supprimer"
@@ -1513,7 +1513,7 @@ msgstr "Revenir en arrière"
 msgid "Open form"
 msgstr "Ouvrir le formulaire"
 
-#: FEditor.class:3299 FForm.class:3469 FMain.class:2489
+#: FEditor.class:3299 FForm.class:3466 FMain.class:2489
 msgid "&Startup class"
 msgstr "Cla&sse de démarrage"
 
@@ -1619,179 +1619,179 @@ msgstr ""
 "\n"
 "Tous vos changements seront perdus."
 
-#: FForm.class:3445 FIconEditor.class:2244
+#: FForm.class:3442 FIconEditor.class:2244
 msgid "Select"
 msgstr "Sélectionner"
 
-#: FForm.class:3450
+#: FForm.class:3447
 msgid "Event"
 msgstr "Evènement"
 
-#: FForm.class:3456
+#: FForm.class:3453
 msgid "Change into"
 msgstr "Transformer en"
 
-#: FForm.class:3462
+#: FForm.class:3459
 msgid "Open code"
 msgstr "Ouvrir le code"
 
-#: FForm.class:3477
+#: FForm.class:3474
 msgid "Show tab"
 msgstr "Afficher l'onglet"
 
-#: FForm.class:3485
+#: FForm.class:3482
 msgid "Move tab"
 msgstr "Déplacer l'onglet"
 
-#: FForm.class:3490
+#: FForm.class:3487
 msgid "&First"
 msgstr "&Début"
 
-#: FForm.class:3497 FSearch.class:920 FTips.class:228
+#: FForm.class:3494 FSearch.class:920 FTips.class:228
 msgid "&Previous"
 msgstr "&Précédent"
 
-#: FForm.class:3504 FMenu.class:845 FSearch.class:914 FTips.class:234
+#: FForm.class:3501 FMenu.class:931 FSearch.class:914 FTips.class:234
 msgid "&Next"
 msgstr "&Suivant"
 
-#: FForm.class:3511
+#: FForm.class:3508
 msgid "&Last"
 msgstr "&Fin"
 
-#: FForm.class:3522
+#: FForm.class:3519
 msgid "Select all"
 msgstr "Sélectionner tout"
 
-#: FForm.class:3528
+#: FForm.class:3525
 msgid "Unselect all"
 msgstr "Déselectionner tout"
 
-#: FForm.class:3551
+#: FForm.class:3548
 msgid "Copy at the same place"
 msgstr "Copier au même emplacement"
 
-#: FForm.class:3573
+#: FForm.class:3570
 msgid "Arrangement"
 msgstr "Disposition"
 
-#: FForm.class:3577
+#: FForm.class:3574
 msgid "Bring to foreground"
 msgstr "Au premier plan"
 
-#: FForm.class:3584
+#: FForm.class:3581
 msgid "Send to background"
 msgstr "A l'arrière-plan"
 
-#: FForm.class:3594
+#: FForm.class:3591
 msgid "Horizontal"
 msgstr "Horizontal"
 
-#: FForm.class:3601
+#: FForm.class:3598
 msgid "Rows"
 msgstr "Lignes"
 
-#: FForm.class:3607
+#: FForm.class:3604
 msgid "Vertical"
 msgstr "Vertical"
 
-#: FForm.class:3614
+#: FForm.class:3611
 msgid "Columns"
 msgstr "Colonnes"
 
-#: FForm.class:3623
+#: FForm.class:3620
 msgid "Center horizontally"
 msgstr "Centrer horizontalement"
 
-#: FForm.class:3629
+#: FForm.class:3626
 msgid "Center vertically"
 msgstr "Centrer verticalement"
 
-#: FForm.class:3635
+#: FForm.class:3632
 msgid "Alignment"
 msgstr "Alignement"
 
-#: FForm.class:3639
+#: FForm.class:3636
 msgid "Align to &left"
 msgstr "Aligner sur la &gauche"
 
-#: FForm.class:3645
+#: FForm.class:3642
 msgid "Align to &right"
 msgstr "Aligner sur la &droite"
 
-#: FForm.class:3651
+#: FForm.class:3648
 msgid "Align to &top"
 msgstr "Aligner sur le &haut"
 
-#: FForm.class:3657
+#: FForm.class:3654
 msgid "Align to &bottom"
 msgstr "Aligner sur le &bas"
 
-#: FForm.class:3666
+#: FForm.class:3663
 msgid "Same &width"
 msgstr "Même &largeur"
 
-#: FForm.class:3672
+#: FForm.class:3669
 msgid "Same &height"
 msgstr "Même hau&teur"
 
-#: FForm.class:3682
+#: FForm.class:3679
 msgid "Menu editor..."
 msgstr "Editeur de menu..."
 
-#: FForm.class:3728 FTextEditor.class:780
+#: FForm.class:3725 FTextEditor.class:780
 msgid "Code"
 msgstr "Code"
 
-#: FForm.class:3735
+#: FForm.class:3732
 msgid "Lock form"
 msgstr "Verrouiller le formulaire"
 
-#: FForm.class:3799 FMenu.class:49
+#: FForm.class:3796 FMenu.class:49
 msgid "Menu editor"
 msgstr "Editeur de menu"
 
-#: FForm.class:3806
+#: FForm.class:3803
 msgid "Toggle grid"
 msgstr "Bascule l'affichage de la grille"
 
-#: FForm.class:3833
+#: FForm.class:3830
 msgid "Align to top"
 msgstr "Aligner sur le haut"
 
-#: FForm.class:3840
+#: FForm.class:3837
 msgid "Align to bottom"
 msgstr "Aligner sur le bas"
 
-#: FForm.class:3847
+#: FForm.class:3844
 msgid "Align to left"
 msgstr "Aligner sur la gauche"
 
-#: FForm.class:3854
+#: FForm.class:3851
 msgid "Align to right"
 msgstr "Aligner sur la droite"
 
-#: FForm.class:3861
+#: FForm.class:3858
 msgid "Same width"
 msgstr "Même largeur"
 
-#: FForm.class:3868
+#: FForm.class:3865
 msgid "Same height"
 msgstr "Même hauteur"
 
-#: FForm.class:3925
+#: FForm.class:3922
 msgid "Move tab first"
 msgstr "Déplacer l'onglet au début"
 
-#: FForm.class:3932
+#: FForm.class:3929
 msgid "Move tab left"
 msgstr "Déplacer l'onglet à gauche"
 
-#: FForm.class:3939
+#: FForm.class:3936
 msgid "Move tab right"
 msgstr "Déplacer l'onglet à droite"
 
-#: FForm.class:3946
+#: FForm.class:3943
 msgid "Move tab last"
 msgstr "Déplacer l'onglet à la fin"
 
@@ -1807,11 +1807,11 @@ msgstr "Cliquez sur un formulaire pour afficher la hiérarchie de ses contrôles
 msgid "Move top"
 msgstr "Déplacer tout en haut"
 
-#: FFormStack.class:316
+#: FFormStack.class:316 FMenu.class:982
 msgid "Move up"
 msgstr "Déplacer vers le haut"
 
-#: FFormStack.class:322
+#: FFormStack.class:322 FMenu.class:988
 msgid "Move down"
 msgstr "Déplacer vers le bas"
 
@@ -2187,11 +2187,11 @@ msgstr "Désirez-vous vraiment vider la liste ?"
 msgid "Edit list property"
 msgstr "Éditer la liste des propriétés"
 
-#: FList.class:274 FMenu.class:838 FPropertyProject.class:1876
+#: FList.class:274 FMenu.class:924 FPropertyProject.class:1876
 msgid "&Insert"
 msgstr "&Insérer"
 
-#: FList.class:280 FMenu.class:852 FTranslate.class:1725
+#: FList.class:280 FMenu.class:938 FTranslate.class:1725
 msgid "&Delete"
 msgstr "&Supprimer"
 
@@ -2962,51 +2962,51 @@ msgstr ""
 "<p>Cliquez sur le bouton <b>Annuler</b> pour abandonner l'opération.\n"
 "\n"
 
-#: FMenu.class:276
+#: FMenu.class:279
 msgid "Please enter a menu name."
 msgstr "Veuillez entrer un nom de menu."
 
-#: FMenu.class:282
+#: FMenu.class:285
 msgid "Bad menu name !"
 msgstr "Nom de menu incorrect !"
 
-#: FMenu.class:288
+#: FMenu.class:291
 msgid "Bad group name !"
 msgstr "Nom de groupe incorrect !"
 
-#: FMenu.class:559
+#: FMenu.class:562
 msgid "This menu is too deep !"
 msgstr "Ce menu est trop profond !"
 
-#: FMenu.class:995
+#: FMenu.class:1086
 msgid "CTRL"
 msgstr "-"
 
-#: FMenu.class:1000
+#: FMenu.class:1091
 msgid "SHIFT"
 msgstr "-"
 
-#: FMenu.class:1005
+#: FMenu.class:1096
 msgid "ALT"
 msgstr "-"
 
-#: FMenu.class:1053
+#: FMenu.class:1144
 msgid "Visible"
 msgstr "-"
 
-#: FMenu.class:1058
+#: FMenu.class:1149
 msgid "Enabled"
 msgstr "-"
 
-#: FMenu.class:1063
+#: FMenu.class:1154
 msgid "Toggle"
 msgstr "-"
 
-#: FMenu.class:1068
+#: FMenu.class:1159
 msgid "Checked"
 msgstr "Checked"
 
-#: FMenu.class:1089
+#: FMenu.class:1181
 msgid "Click on Insert to add a new menu."
 msgstr "Cliquez sur Insérer pour ajouter un nouveau menu."
 
@@ -5060,27 +5060,32 @@ msgstr "Cette classe peut s'utiliser comme un objet, auquel cas une instance cac
 msgid "This class is creatable.<br>"
 msgstr "Cette classe est instanciable.<br>"
 
-#: MMime.module:15
+#: MMime.module:16
 msgid "Plain text"
 msgstr "Texte brut"
 
-#: MMime.module:16
+#: MMime.module:17
 msgid "HTML text"
 msgstr "Texte HTML"
 
-#: MMime.module:17
+#: MMime.module:18
 msgid "Gambas form data"
 msgstr "Données de formulaires Gambas"
 
-#: MMime.module:18
+#: MMime.module:19
+#, fuzzy
+msgid "Gambas menu data"
+msgstr "Données de formulaires Gambas"
+
+#: MMime.module:20
 msgid "Gambas project file path"
 msgstr "Chemin de fichier projet Gambas"
 
-#: MMime.module:19
+#: MMime.module:21
 msgid "URI list"
 msgstr "Liste d'URIs"
 
-#: MMime.module:30
+#: MMime.module:32
 msgid "Unknown format"
 msgstr "Format inconnu"
 

@@ -30,6 +30,13 @@
 typedef
 	void (*RETRIEVE_CALLBACK)(GB_TYPE type, void *data, void *param);
 
+typedef
+	struct {
+		GB_COLLECTION col;
+		char *key;
+	}
+	COLLECTION_ADD;
+	
 static void handle_message(int fd, int type, DBusConnection *connection)
 {
 	//fprintf(stdout, "handle_message\n");
@@ -94,7 +101,7 @@ typedef
 CONV_TYPE _conv_type[] = 
 {
 	{ "DBusObject", "o" },
-	{ "Collection", "{sv}" },
+	{ "Collection", "a{sv}" },
 	{ "Boolean[]", "ab" },
 	{ "Byte[]", "ay" },
 	{ "Short[]", "an" },
@@ -107,7 +114,6 @@ CONV_TYPE _conv_type[] =
 	{ "String[]", "as" },
 	{ "Variant[]", "av" },
 	{ "DBusObject[]", "ao" },
-	{ "Collection[]", "a{sv}" },
 	{ NULL }
 };
 
@@ -160,15 +166,25 @@ static char *array_from_dbus_type(const char *signature)
 		case DBUS_TYPE_VARIANT: return "Variant[]";
 		
 		case DBUS_TYPE_DICT_ENTRY: 
-			return "Collection[]";
+			if (signature[1] == 's')
+				return "Collection";
+			else
+				return NULL;
+		
 		
 		case DBUS_TYPE_ARRAY: 
 		{
 			DBusSignatureIter siter_contents;
 			char *type_contents;
+			char *sign_contents;
 			
 			dbus_signature_iter_recurse(&siter, &siter_contents);
-			type_contents = array_from_dbus_type(dbus_signature_iter_get_signature(&siter_contents));
+			sign_contents = dbus_signature_iter_get_signature(&siter_contents);
+			type_contents = array_from_dbus_type(sign_contents);
+			dbus_free(sign_contents);
+			if (!type_contents)
+				return NULL;
+			
 			if (type_contents != type)
 				strcpy(type, type_contents);
 			strcat(type, "[]");
@@ -198,29 +214,48 @@ static GB_TYPE from_dbus_type(const char *signature)
 		case DBUS_TYPE_OBJECT_PATH:
 		case DBUS_TYPE_SIGNATURE: return GB_T_STRING; 
 		
-		case DBUS_TYPE_DICT_ENTRY: return GB.FindClass("Collection");
-		
 		case DBUS_TYPE_ARRAY:
 		{
 			DBusSignatureIter siter_contents;
 			char *type;
+			char *sign_contents;
 			
 			dbus_signature_iter_recurse(&siter, &siter_contents);
-			type = array_from_dbus_type(dbus_signature_iter_get_signature(&siter_contents));
-			return GB.FindClass(type);
+			sign_contents = dbus_signature_iter_get_signature(&siter_contents);
+			type = array_from_dbus_type(sign_contents);
+			dbus_free(sign_contents);
+			if (type)
+				return GB.FindClass(type);
+			else
+				return GB_T_VARIANT;
 		}
 
 		case DBUS_TYPE_STRUCT:
 		{
 			DBusSignatureIter siter_contents;
+			char *atype;
 			GB_TYPE type, type2;
+			char *sign_contents;
 
 			dbus_signature_iter_recurse(&siter, &siter_contents);
-			type = GB.FindClass(array_from_dbus_type(dbus_signature_iter_get_signature(&siter_contents)));
+			sign_contents = dbus_signature_iter_get_signature(&siter_contents);
+			atype = array_from_dbus_type(sign_contents);
+			dbus_free(sign_contents);
+			if (atype)
+				type = GB.FindClass(atype);
+			else
+				return GB.FindClass("Variant[]");
 	
 			while (dbus_signature_iter_next(&siter_contents))
 			{
-				type2 = GB.FindClass(array_from_dbus_type(dbus_signature_iter_get_signature(&siter_contents)));
+				sign_contents = dbus_signature_iter_get_signature(&siter_contents);
+				atype = array_from_dbus_type(sign_contents);
+				dbus_free(sign_contents);
+				if (atype)
+					type2 = GB.FindClass(atype);
+				else
+					return GB.FindClass("Variant[]");
+				
 				if (type != type2)
 					return GB.FindClass("Variant[]");
 			}
@@ -238,13 +273,17 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 	DBusSignatureIter siter;
 	int type;
 	GB_TYPE gtype;
+	char *sign;
 	
 	if (arg->type == GB_T_VARIANT)
 		GB.Conv(arg, arg->_variant.value.type);
 		
 	dbus_signature_iter_init(&siter, signature);
 	type = dbus_signature_iter_get_current_type(&siter);
-	gtype = from_dbus_type(dbus_signature_iter_get_signature(&siter));
+	
+	sign = dbus_signature_iter_get_signature(&siter);
+	gtype = from_dbus_type(sign);
+	dbus_free(sign);
 	
 	if (gtype == GB_T_NULL)
 	{
@@ -253,11 +292,12 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 	else if (gtype != GB_T_VARIANT)
 	{
 		if (GB.Conv(arg, gtype))
+		{
+			GB.ReleaseValue(arg);
 			return TRUE;
+		}
 	}
 	
-	GB.ReleaseValue(arg);
-
 	switch(type)
 	{
 		case DBUS_TYPE_BYTE:
@@ -322,23 +362,49 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 		
 		case DBUS_TYPE_ARRAY:
 		{
-			GB_ARRAY array;
 			DBusMessageIter citer;
+			DBusMessageIter dict_entry_iter;
 			int i;
 			GB_VALUE value;
 			const char *contents_signature = &signature[1];
 			
-			array = (GB_ARRAY)(arg->_object.value);
+			dbus_message_iter_open_container(iter, DBUS_TYPE_ARRAY, contents_signature, &citer);
 			
-			dbus_message_iter_open_container(iter, DBUS_TYPE_VARIANT, contents_signature, &citer);
-			
-			value.type = GB.Array.Type(array);
-			for (i = 0; i < GB.Array.Count(array); i++)
+			if (contents_signature[0] == '{' && contents_signature[1] == 's')
 			{
-				GB.ReadValue(&value, GB.Array.Get(array, i), value.type);
-				GB.BorrowValue(&value);
-				if (append_arg(&citer, contents_signature, &value))
-					return TRUE;
+				GB_COLLECTION col = (GB_COLLECTION)(arg->_object.value);
+				char *key;
+				int len;
+				
+				GB.Collection.Enum(col, NULL, NULL, NULL);
+				for(;;)
+				{
+					if (GB.Collection.Enum(col, (GB_VARIANT *)&value, &key, &len))
+						break;
+					
+					key = GB.TempString(key, len);
+					dbus_message_iter_open_container(&citer, DBUS_TYPE_DICT_ENTRY, NULL, &dict_entry_iter);
+					dbus_message_iter_append_basic(&dict_entry_iter, DBUS_TYPE_STRING, &key);
+					
+					GB.BorrowValue(&value);
+					if (append_arg(&dict_entry_iter, &contents_signature[2], &value))
+						goto __ERROR;
+					
+					dbus_message_iter_close_container(&citer, &dict_entry_iter);
+				}
+			}
+			else
+			{
+				GB_ARRAY array = (GB_ARRAY)(arg->_object.value);
+				
+				value.type = GB.Array.Type(array);
+				for (i = 0; i < GB.Array.Count(array); i++)
+				{
+					GB.ReadValue(&value, GB.Array.Get(array, i), value.type);
+					GB.BorrowValue(&value);
+					if (append_arg(&citer, contents_signature, &value))
+						goto __ERROR;
+				}
 			}
 			
 			dbus_message_iter_close_container(iter, &citer);
@@ -363,8 +429,10 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 			{
 				GB.ReadValue(&value, GB.Array.Get(array, i), value.type);
 				GB.BorrowValue(&value);
-				if (append_arg(&citer, dbus_signature_iter_get_signature(&siter_contents), &value))
-					return TRUE;
+				sign = dbus_signature_iter_get_signature(&siter_contents);
+				if (append_arg(&citer, sign, &value))
+					goto __ERROR_SIGN;
+				dbus_free(sign);
 				dbus_signature_iter_next(&siter_contents);
 			}
 			
@@ -396,7 +464,7 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 				dbus_message_iter_open_container(iter, DBUS_TYPE_VARIANT, contents_signature, &citer);
 				GB.BorrowValue(arg);
 				if (append_arg(&citer, contents_signature, arg))
-					return TRUE;
+					goto __ERROR;
 				dbus_message_iter_close_container(iter, &citer);
 				break;
 			}
@@ -406,12 +474,19 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 			goto __UNSUPPORTED;
 	}
 	
+	GB.ReleaseValue(arg);
 	return FALSE;
 	
 __UNSUPPORTED:
 	GB.Error("Unsupported datatype");
-	return TRUE;
+	goto __ERROR;
 
+__ERROR_SIGN:
+	dbus_free(sign);
+
+__ERROR:
+	GB.ReleaseValue(arg);
+	return TRUE;
 }
 
 static void return_value_cb(GB_TYPE type, void *value, void *param)
@@ -428,8 +503,26 @@ static void add_value_cb(GB_TYPE type, void *value, void *param)
 		type = GB_T_CSTRING;
 	
 	GB.ReadValue(&val, value, type);
+	GB.BorrowValue(&val);
 	GB.Conv(&val, GB.Array.Type(array));
 	GB.Store(GB.Array.Type(array), &val, GB.Array.Add(array));
+	GB.ReleaseValue(&val);
+}
+
+static void add_collection_cb(GB_TYPE type, void *value, void *param)
+{
+	COLLECTION_ADD *add = (COLLECTION_ADD *)param;
+	GB_VALUE val;
+	
+	if (type == GB_T_STRING)
+		type = GB_T_CSTRING;
+	
+	GB.ReadValue(&val, value, type);
+	GB.BorrowValue(&val);
+	GB.Conv(&val, GB_T_VARIANT);
+	//GB.Store(GB.Array.Type(array), &val, GB.Array.Add(array));
+	GB.Collection.Set(add->col, add->key, strlen(add->key), (GB_VARIANT *)&val);
+	GB.ReleaseValue(&val);	
 }
 
 static bool retrieve_arg(DBusMessageIter *iter, RETRIEVE_CALLBACK cb, void *param)
@@ -437,6 +530,7 @@ static bool retrieve_arg(DBusMessageIter *iter, RETRIEVE_CALLBACK cb, void *para
 	char *signature = dbus_message_iter_get_signature(iter);
 	GB_TYPE gtype = from_dbus_type(signature);
 	int type = dbus_message_iter_get_arg_type(iter);
+	dbus_free(signature);
 	
 	if (dbus_type_is_basic(type))
 	{
@@ -459,31 +553,70 @@ static bool retrieve_arg(DBusMessageIter *iter, RETRIEVE_CALLBACK cb, void *para
 		case DBUS_TYPE_ARRAY:
 		case DBUS_TYPE_STRUCT:
 		{
-			GB_ARRAY array;
-			const char *signature_contents;
+			char *signature_contents;
 			DBusMessageIter iter_contents;
+			DBusMessageIter dict_entry_contents;
 
 			dbus_message_iter_recurse(iter, &iter_contents);
+
 			signature_contents = dbus_message_iter_get_signature(&iter_contents);
 			
-			GB.Array.New(POINTER(&array), from_dbus_type(signature_contents), 0);
-			
-			while (dbus_message_iter_get_arg_type(&iter_contents) != DBUS_TYPE_INVALID)
+			if (signature_contents[0] == '{' && signature_contents[1] == 's')
 			{
-				if (retrieve_arg(&iter_contents, add_value_cb, array))
-					return TRUE;
-				dbus_message_iter_next(&iter_contents);
+				GB_COLLECTION col;
+				COLLECTION_ADD add;
+				
+				GB.Collection.New(POINTER(&col), FALSE);
+				
+				add.col = col;
+				
+				for(;;)
+				{
+					if (dbus_message_iter_get_arg_type(&iter_contents) == DBUS_TYPE_INVALID)
+						break;
+					
+					dbus_message_iter_recurse(&iter_contents, &dict_entry_contents);
+					
+					// key
+					
+					dbus_message_iter_get_basic(&dict_entry_contents, &add.key);
+					dbus_message_iter_next(&dict_entry_contents);
+					
+					// value
+					
+					if (dbus_message_iter_get_arg_type(&dict_entry_contents) != DBUS_TYPE_INVALID)
+					{
+						if (retrieve_arg(&dict_entry_contents, add_collection_cb, &add))
+							return TRUE;
+					}
+					
+					dbus_message_iter_next(&iter_contents);
+				}
+				
+				(*cb)(gtype, &col, param);
+				return FALSE;
 			}
-			
-			(*cb)(gtype, &array, param);
-			return FALSE;
+			else
+			{
+				GB_ARRAY array;
+				GB.Array.New(POINTER(&array), from_dbus_type(signature_contents), 0);
+				dbus_free(signature_contents);
+				
+				while (dbus_message_iter_get_arg_type(&iter_contents) != DBUS_TYPE_INVALID)
+				{
+					if (retrieve_arg(&iter_contents, add_value_cb, array))
+						return TRUE;
+					dbus_message_iter_next(&iter_contents);
+				}
+				
+				(*cb)(gtype, &array, param);
+				return FALSE;
+			}
 		}
-			
-		case DBUS_TYPE_DICT_ENTRY:
-		default:
-			GB.Error("Unsupported DBus datatype");
-			return TRUE;
 	}
+			
+	GB.Error("Unsupported DBus datatype");
+	return TRUE;
 }
 
 static bool define_arguments(DBusMessage *message, const char *signature, GB_ARRAY arguments)
@@ -494,6 +627,8 @@ static bool define_arguments(DBusMessage *message, const char *signature, GB_ARR
 	GB_VALUE value;
 	DBusMessageIter iter;
 	DBusSignatureIter siter;
+	char *sign;
+	bool err;
 	
 	if (arguments)
 	{
@@ -517,8 +652,13 @@ static bool define_arguments(DBusMessage *message, const char *signature, GB_ARR
 			value.type = type;
 			GB.ReadValue(&value, GB.Array.Get(arguments, n), type);
 			GB.BorrowValue(&value);
-			if (append_arg(&iter, dbus_signature_iter_get_signature(&siter), &value))
+
+			sign = dbus_signature_iter_get_signature(&siter);
+			err = append_arg(&iter, sign, &value);
+			dbus_free(sign);
+			if (err) 
 				return TRUE;
+			
 			if (!dbus_signature_iter_next(&siter))
 			{
 				if (n < (nparam - 1))

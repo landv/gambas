@@ -17,7 +17,7 @@ Static Private $cType As Collection = [
   "s": "s",
   "v": "v",
   "DBusObject": "o",
-  "Collection": "{sv}",
+  "Collection": "a{sv}",
   "Boolean[]": "ab",
   "Byte[]": "ay",
   "Short[]": "an",
@@ -178,7 +178,7 @@ Public Sub _Introspect() As String
   Endif
   
   If bHasMethod Then
-    sRes &= "  <interface name=\"" & $sName & Normalize(hClass.Name) & "\">"
+    sRes &= "  <interface name=\"" & $sName & Normalize(hClass.Name) & "\">\n"
     For Each sSymbol In hClass.Symbols
       With hClass[sSymbol]
         If InStr(sSymbol, "_") Then Continue
@@ -285,6 +285,43 @@ Catch
   
 End
 
+Private Sub GetAllProperties()
+  
+  Dim cVal As New Collection
+  Dim sInterface As String
+  Dim hClass As Class
+  Dim sSymbol As String
+  
+  With $hObserver.Message
+  
+    sInterface = .Arguments[0]
+    
+    If Not sInterface Or If sInterface = ($sName & Normalize(Object.Class(Me).Name)) Then
+      
+      hClass = Object.Class(Me)
+      
+      For Each sSymbol In hClass.Symbols
+        With hClass[sSymbol]
+          If InStr(sSymbol, "_") Then Continue
+          If .Static Then Continue
+          If .Kind = Class.Property Then 
+            cVal[sSymbol] = Object.GetProperty(Me, sSymbol)
+          Endif
+        End With
+      Next
+      
+    Endif
+    
+    $hObserver.Reply("a{sv}", [cVal])
+    
+  End With
+  
+Catch
+  
+  $hObserver.Error(Error.Text)
+  
+End
+
 Private Sub SetProperty()
   
   Dim sInterface As String
@@ -339,8 +376,7 @@ Public Sub DBusObserver_Message()
       SetProperty()
       Return
     Else If sMethod = "GetAll" Then
-      'GetAllProperties()
-      $hObserver.Error("Not yet implemented")
+      GetAllProperties()
       Return
     Endif
   Endif

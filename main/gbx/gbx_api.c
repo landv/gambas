@@ -232,6 +232,7 @@ void *GAMBAS_Api[] =
   (void *)GB_CollectionCount,
   (void *)GB_CollectionSet,
   (void *)GB_CollectionGet,
+  (void *)GB_CollectionEnum,
 
   (void *)GB_HashTableNew,
   (void *)HASH_TABLE_delete,

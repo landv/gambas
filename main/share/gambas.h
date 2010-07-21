@@ -919,6 +919,7 @@ typedef
 			int (*Count)(GB_COLLECTION);
 			void (*Set)(GB_COLLECTION, const char *, int, GB_VARIANT *);
 			int (*Get)(GB_COLLECTION, const char *, int, GB_VARIANT *);
+			int (*Enum)(GB_COLLECTION, GB_VARIANT *, char **key, int *len);
 			}
 		Collection;
 

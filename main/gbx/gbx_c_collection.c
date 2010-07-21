@@ -392,6 +392,7 @@ int GB_CollectionEnum(GB_COLLECTION col, GB_VARIANT *value, char **key, int *len
   	return TRUE;
 
   value->type = T_VARIANT;
+  value->value.type = val->type;
 	value->value.value.data = val->value.data;
 
 	HASH_TABLE_get_last_key(hash_table, key, len);

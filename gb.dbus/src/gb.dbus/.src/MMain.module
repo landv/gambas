@@ -21,10 +21,11 @@ Public Sub Main()
 
   'Print DBus.Session._Name
   'Dim hTest As CTest = CTest
-  'DBus.Session.Register(CTest, "/Test")
+  DBus.Session.Register(CTest, "/Test")
   'Print DBus.Session.Applications
   
-  DBus["org.kde.kmail"]["/kmail/kmail_mainwindow_1"].geometry = [0, 24, 1024, 768]
+  'DBus["org.kde.kmail"]["/kmail/kmail_mainwindow_1"].geometry = [0, 24, 1024, 768]
   'Print DBus["org.gambas.gb.dbus"]["/Test"].Compute(5, 7)  
+  
   
 End

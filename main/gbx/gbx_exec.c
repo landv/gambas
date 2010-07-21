@@ -1085,10 +1085,12 @@ void EXEC_native_quick(void)
 	EXEC_call_native_inline(desc->exec, EXEC.object, desc->type, &SP[-nparam]);
 	COPY_VALUE(&ret, &TEMP);
 
+	BORROW(&ret);
 	RELEASE_MANY(SP, nparam);
 	
 	if (UNLIKELY(error))
 	{
+		UNBORROW(&ret);
 		POP();
 		PROPAGATE();
 	}
@@ -1099,13 +1101,13 @@ void EXEC_native_quick(void)
 
 	if (desc->type == T_VOID)
 	{
+		UNBORROW(&ret);
 		SP->type = T_VOID;
 		SP->_void.ptype = T_NULL;
 		SP++;
 	}
 	else
 	{
-		BORROW(&ret);
 		COPY_VALUE(SP, &ret);
 		SP++;
 	}
@@ -1301,7 +1303,6 @@ void EXEC_native(void)
 
 	EXEC_call_native_inline(desc->exec, object, desc->type, &SP[-nparam]);
 	COPY_VALUE(&ret, &TEMP);
-
 	/* Lib�ation des arguments */
 
 	/*while (nparam > 0)
@@ -1310,6 +1311,7 @@ void EXEC_native(void)
 		POP();
 	}*/
 	
+	BORROW(&ret);
 	RELEASE_MANY(SP, nparam);
 
 	if (UNLIKELY(error))
@@ -1320,6 +1322,7 @@ void EXEC_native(void)
 			OBJECT_UNREF(SP->_function.object, "EXEC_native (FUNCTION)");
 		}
 		
+		UNBORROW(&ret);
 		PROPAGATE();
 	}
 	
@@ -1327,6 +1330,7 @@ void EXEC_native(void)
 
 	if (desc->type == T_VOID)
 	{
+		UNBORROW(&ret);
 		if (use_stack)
 		{
 			SP--;
@@ -1344,14 +1348,14 @@ void EXEC_native(void)
 			void *free_later;
 			SP--;
 			free_later = SP->_function.object;
-			BORROW(&ret);
+			//BORROW(&ret);
 			COPY_VALUE(SP, &ret);
 			SP++;
 			OBJECT_UNREF(free_later, "EXEC_native (FUNCTION)");
 		}
 		else
 		{
-			BORROW(&ret);
+			//BORROW(&ret);
 			COPY_VALUE(SP, &ret);
 			SP++;
 		}

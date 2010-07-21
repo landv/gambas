@@ -12,6 +12,14 @@ Public Sub Compute(Value1 As Float, Value2 As Float) As Float
   
 End
 
+Public Sub TestCollection(cCol As Collection) As Collection
+  
+  cCol["Test"] = Pi
+  Return cCol
+  
+End
+
+
 
 Private Function Enabled_Read() As Boolean
 
