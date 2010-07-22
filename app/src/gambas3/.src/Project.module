@@ -48,6 +48,7 @@ Public PackageName As String
 Public Maintainer As String
 Public Address As String
 Public Vendor As String
+Public Url As String
 Public License As String
 Public CreateEachDirectory As Boolean
 
@@ -2565,6 +2566,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   Maintainer = ""
   Vendor = ""
   Address = ""
+  Url = ""
   License = ""
   CreateEachDirectory = False
 
@@ -2732,6 +2734,9 @@ Public Sub ReadProject(Optional bConvert As Boolean)
       Case "address"
         Address = sVal
         
+      Case "url"
+        Url = sVal
+
       Case "license"
         License = sVal
 
@@ -2862,6 +2867,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If Maintainer Then Print #hFic, "Maintainer="; Maintainer
   If Vendor Then Print #hFic, "Vendor="; Vendor
   If Address Then Print #hFic, "Address="; Address
+  If Url Then Print #hFic, "Url="; Url
   If License Then Print #hFic, "License="; License
   If Prefix Then Print #hFic, "Prefix=1"
   If UseRelease Then Print #hFic, "UseRelease=1"

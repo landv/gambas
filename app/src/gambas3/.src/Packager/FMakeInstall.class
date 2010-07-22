@@ -63,6 +63,12 @@ Public Sub Form_Open()
     txtLicense.Text = "General Public License"
   Endif
   
+  If Project.Url Then
+    txtUrl.Text = Project.Url
+  Else 
+    txtUrl.Text = "http://www.endoftheinternet.com/"
+  Endif
+
   txtDescribe.Text = Project.Description
 
   Try txtChangeLog.Text = File.Load(Project.Dir &/ "CHANGELOG")
@@ -288,7 +294,8 @@ Public Sub wizInstall_BeforeChange()
       Project.Address = Trim(txtMail.Text)
       Project.Vendor = Trim(txtVendor.Text)
       Project.License = Trim(txtLicense.Text)
-
+      Project.Url = Trim(txtUrl.Text)
+      
       If Not Project.Maintainer Then
         Message.Warning(("Please enter your name."))
         Stop Event

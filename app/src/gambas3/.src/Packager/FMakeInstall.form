@@ -82,25 +82,37 @@
         Expand = True
       }
     }
+    { HBox16 HBox
+      MoveScaled(1,37,70,4)
+      Spacing = True
+      { Label7 Label
+        MoveScaled(0,0,23,4)
+        Text = ("Website")
+      }
+      { txtUrl TextBox
+        MoveScaled(24,0,44,4)
+        Expand = True
+      }
+    }
     { Label6 Label
-      MoveScaled(1,37,68,4)
+      MoveScaled(1,41,68,4)
       Font = Font["Bold"]
       Text = ("Description")
       Alignment = Align.BottomNormal
     }
     { txtDescribe TextArea
-      MoveScaled(1,42,71,14)
+      MoveScaled(1,46,71,14)
       Expand = True
       Wrap = True
     }
     { Label5 Label
-      MoveScaled(1,56,70,4)
+      MoveScaled(1,59,70,4)
       Font = Font["Bold"]
       Text = ("License")
       Alignment = Align.BottomNormal
     }
     { txtLicense ComboBox
-      MoveScaled(1,61,71,4)
+      MoveScaled(1,64,71,4)
       List = [("General Public License"), ("Freeware"), ("Public Domain"), ("Lesser General Public License"), ("Other License(s)"), ("Non-free License")]
       Sorted = True
     }
@@ -128,12 +140,42 @@
     }
     Index = 2
     Text = ("Target distribution")
-    { panSystem VBox
-      MoveScaled(0,0,72,65)
-      Expand = True
-      Spacing = True
+    { PanSystem ScrollView
+      MoveScaled(1,0,87,68)
+      { HBox10 HBox
+        MoveScaled(0,0,83,9)
+        Tag = "archlinux"
+        Spacing = True
+        Padding = 4
+        { ToolButton7 ToolButton
+          MoveScaled(0,0,8,8)
+          Picture = Picture["img/logo/archlinux.png"]
+          Toggle = True
+        }
+        { CheckBox5 CheckBox chkDistro
+          Name = "CheckBox5"
+          MoveScaled(9,1,26,4)
+          Text = ("Archlinux")
+        }
+      }
+      { HBox15 HBox
+        MoveScaled(0,9,83,9)
+        Tag = "autotools"
+        Spacing = True
+        Padding = 4
+        { ToolButton8 ToolButton
+          MoveScaled(0,0,8,8)
+          Picture = Picture["img/logo/package-gnu.png"]
+          Toggle = True
+        }
+        { CheckBox6 CheckBox chkDistro
+          Name = "CheckBox6"
+          MoveScaled(9,1,26,4)
+          Text = ("Autotools")
+        }
+      }
       { HBox5 HBox
-        MoveScaled(1,0,69,9)
+        MoveScaled(0,18,83,9)
         Tag = "debian"
         Spacing = True
         Padding = 4
@@ -149,7 +191,7 @@
         }
       }
       { HBox6 HBox
-        MoveScaled(1,9,69,9)
+        MoveScaled(0,27,83,9)
         Tag = "fedora"
         Spacing = True
         Padding = 4
@@ -165,7 +207,7 @@
         }
       }
       { HBox3 HBox
-        MoveScaled(1,18,69,9)
+        MoveScaled(0,36,83,9)
         Tag = "mandriva"
         Spacing = True
         Padding = 4
@@ -176,12 +218,12 @@
         }
         { chkMandriva CheckBox chkDistro
           Name = "chkMandriva"
-          MoveScaled(10,1,26,4)
+          MoveScaled(9,1,26,4)
           Text = ("Mandriva Linux")
         }
       }
       { HBox7 HBox
-        MoveScaled(1,27,69,9)
+        MoveScaled(0,45,83,9)
         Tag = "suse"
         Spacing = True
         Padding = 4
@@ -197,7 +239,7 @@
         }
       }
       { HBox4 HBox
-        MoveScaled(1,36,69,9)
+        MoveScaled(0,54,83,9)
         Tag = "slackware"
         Spacing = True
         Padding = 4
@@ -213,7 +255,7 @@
         }
       }
       { HBox9 HBox
-        MoveScaled(1,45,69,9)
+        MoveScaled(0,63,83,9)
         Tag = "ubuntu"
         Spacing = True
         Padding = 4
@@ -226,22 +268,6 @@
           Name = "CheckBox1"
           MoveScaled(9,1,26,4)
           Text = ("Ubuntu")
-        }
-      }
-      { HBox10 HBox
-        MoveScaled(1,55,69,9)
-        Tag = "autotools"
-        Spacing = True
-        Padding = 4
-        { ToolButton7 ToolButton
-          MoveScaled(0,0,8,8)
-          Picture = Picture["img/logo/package-gnu.png"]
-          Toggle = True
-        }
-        { CheckBox5 CheckBox chkDistro
-          Name = "CheckBox5"
-          MoveScaled(9,1,26,4)
-          Text = ("Autotools")
         }
       }
     }
