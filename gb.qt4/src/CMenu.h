@@ -30,6 +30,7 @@
 #include <QMenuBar>
 #include <QKeySequence>
 #include <QList>
+#include <QPoint>
 
 #include "CWidget.h"
 #include "CPicture.h"
@@ -95,5 +96,7 @@ public slots:
   void slotShown();
   void slotHidden();
 };
+
+void CMENU_popup(CMENU *_object, const QPoint &pos);
 
 #endif

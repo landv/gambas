@@ -37,6 +37,7 @@ public:
 	static int   winChildCount(gMainWindow *win);
 	static gMenu* winChildMenu(gMainWindow *par,int pos);
 	static void updateFont(gMainWindow *win);
+	static gMenu *findFromName(gMainWindow *win, const char *name);
 
 //"Properties"
 	bool checked() const { return _checked; }

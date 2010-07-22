@@ -48,6 +48,7 @@ typedef
 	  gControl *widget;
 		GB_VARIANT_VALUE tag;
 		void *font;
+		char *popup;
 	}  
 	CWIDGET;
 

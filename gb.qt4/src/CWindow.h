@@ -132,6 +132,7 @@ public:
 
 	static void insertTopLevel(CWINDOW *_object);
 	static void removeTopLevel(CWINDOW *_object);
+	static CMENU *findMenu(CWINDOW *_object, const char *name);
 
 protected:
 

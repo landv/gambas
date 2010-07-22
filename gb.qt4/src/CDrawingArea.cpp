@@ -401,7 +401,7 @@ BEGIN_PROPERTY(CDRAWINGAREA_cached)
 END_PROPERTY
 
 
-DECLARE_METHOD(CCONTROL_background);
+DECLARE_METHOD(Control_Background);
 
 
 BEGIN_METHOD_VOID(CDRAWINGAREA_clear)
@@ -413,7 +413,7 @@ END_METHOD
 
 BEGIN_PROPERTY(CDRAWINGAREA_background)
 
-	CCONTROL_background(_object, _param);
+	Control_Background(_object, _param);
 
 	if (!READ_PROPERTY)
 		WIDGET->clearBackground();
@@ -431,7 +431,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CDRAWINGAREA_enabled)
 
-	CCONTROL_enabled(_object, _param);
+	Control_Enabled(_object, _param);
 
 	if (!READ_PROPERTY)
 		WIDGET->setFrozen(!VPROP(GB_BOOLEAN));
@@ -494,7 +494,7 @@ BEGIN_METHOD(DrawingArea_Refresh, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_I
 		WIDGET->redraw(r, false);
 	}
 	
-	CCONTROL_refresh(_object, _param);
+	Control_Refresh(_object, _param);
 
 END_METHOD
 

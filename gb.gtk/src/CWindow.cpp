@@ -37,8 +37,8 @@ bool CWINDOW_Embedded = false;
 
 CWINDOW *CWINDOW_Active = NULL;
 
-static CWINDOW *MAIN_Window=NULL;
-static long MODAL_windows=0;
+static CWINDOW *MAIN_Window = NULL;
+static int MODAL_windows = 0;
 
 DECLARE_EVENT(EVENT_Open);
 DECLARE_EVENT(EVENT_Show);

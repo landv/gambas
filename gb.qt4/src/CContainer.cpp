@@ -1123,11 +1123,10 @@ BEGIN_PROPERTY(CUSERCONTAINER_container)
 
 END_PROPERTY
 
-DECLARE_METHOD(CCONTROL_design);
 
 BEGIN_PROPERTY(CUSERCONTAINER_design)
 
-	CCONTROL_design(_object, _param);
+	Control_Design(_object, _param);
 	
 	if (!READ_PROPERTY && VPROP(GB_BOOLEAN))
 	{

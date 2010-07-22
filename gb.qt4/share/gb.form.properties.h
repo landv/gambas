@@ -27,7 +27,7 @@
 	"X{Position},Y{Position},Width{Dimension},Height{Dimension},Visible=True,Enabled=True,Font{Font}," \
 	"Background{Color}=-1,Foreground{Color}=-1," \
 	"Tag,Tracking,Mouse{Mouse.Default;Blank;Arrow;Cross;Wait;Text;SizeAll;SizeH;SizeV;SizeN;SizeS;SizeW;" \
-	"SizeE;SizeNWSE;SizeNESW;SplitH;SplitV;Pointing}=Default,ToolTip,Drop,Expand,Ignore"
+	"SizeE;SizeNWSE;SizeNESW;SplitH;SplitV;Pointing}=Default,ToolTip,Drop,Expand,Ignore,PopupMenu{Menu}"
 #define CARRANGEMENT_PROPERTY "Arrangement{Arrange.None;Horizontal;Vertical;Row;Column;Fill}"
 #define CPADDING_PROPERTIES "Spacing,Margin,Padding{Range:0;63},Indent"
 #define CWINDOW_PADDING_PROPERTIES "Spacing,Margin,Padding{Range:0;63}"

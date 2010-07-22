@@ -138,7 +138,7 @@ void gb_plug_raise_error(gControl *sender)
 
 bool gb_raise_MouseEvent(gControl *sender, int type)
 {
-	void *ob = GetObject(sender);
+	CWIDGET *ob = GetObject(sender);
 	
 	if (!ob) return false; // possible, for MouseDrag for example
 	
@@ -166,14 +166,22 @@ bool gb_raise_MouseEvent(gControl *sender, int type)
 			break;
 			
 		case gEvent_MouseMenu:
+			
 			if (GB.CanRaise(ob, EVENT_Menu))
 			{
 				GB.Raise(ob, EVENT_Menu, 0);
 				return true;
-				//GB.Ref((void *)_ob);
-				//GB.Post((GB_POST_FUNC)raise_menu, (long)_ob);
-				//return true;
 			}
+			
+			if (ob->popup)
+			{
+				gMainWindow *window = sender->window();
+				gMenu *menu = gMenu::findFromName(window, ob->popup);
+				if (menu)
+					menu->popup();
+				return true;
+			}
+			
 			break;
 			
 		case gEvent_MouseDblClick:
@@ -300,6 +308,8 @@ void DeleteControl(gControl *control)
 	widget->font = NULL;
 	widget->widget = NULL;
 	GB.Unref(POINTER(&widget));
+	
+	GB.FreeString(&widget->popup);
 }
 
 
@@ -830,6 +840,16 @@ BEGIN_PROPERTY(CCONTROL_action)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(Control_PopupMenu)
+
+	if (READ_PROPERTY)
+		GB.ReturnString(THIS->popup);
+	else
+		GB.StoreString(PROP(GB_STRING), &(THIS->popup));
+
+END_PROPERTY
+
+
 GB_DESC CWidgetDesc[] =
 {
 	GB_DECLARE("Control", sizeof(CWIDGET)),
@@ -891,6 +911,7 @@ GB_DESC CWidgetDesc[] =
 	GB_PROPERTY("ToolTip", "s", CWIDGET_tooltip),
 	GB_PROPERTY("Drop", "b", CWIDGET_drop),
 	GB_PROPERTY("Action", "s", CCONTROL_action),
+	GB_PROPERTY("PopupMenu", "s", Control_PopupMenu),
 
 	GB_PROPERTY_READ("Parent", "Container", CWIDGET_parent),
 	GB_PROPERTY_READ("Window", "Window", CWIDGET_window),

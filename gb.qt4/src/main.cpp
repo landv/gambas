@@ -622,13 +622,16 @@ static void QT_Init(void)
 	init = true;
 }
 
-static QString _init_lang;
-static bool _init_rtl;
-
 static void init_lang(QString locale, bool rtl)
 {
+	int pos;
+	
+	pos = locale.lastIndexOf(".");
+	if (pos >= 0) locale = locale.left(pos);
+	
 	qt = new QTranslator();
-	qt->load(QString( "qt_") + locale, QString(getenv("QTDIR")) + "/translations");
+	if (!qt->load(QString( "qt_fr"), QString(getenv("QTDIR")) + "/translations"))
+		qDebug("warning: unable to load Qt translation: %s", QT_ToUTF8(locale));
 
 	qApp->installTranslator(qt);
 	if (rtl)
@@ -640,11 +643,7 @@ static void hook_lang(char *lang, int rtl)
 	QString locale(lang);
 
 	if (!qApp)
-	{
-		_init_lang = locale;
-		_init_rtl = rtl;
 		return;
-	}
 
 	init_lang(locale, rtl);
 
@@ -657,7 +656,7 @@ static void hook_main(int *argc, char **argv)
 	new MyApplication(*argc, argv);
 	
 	QT_Init();
-	init_lang(_init_lang, _init_rtl);
+	init_lang(GB.System.Language(), GB.System.IsRightToLeft());
 }
 
 
@@ -971,7 +970,7 @@ void *GB_QT4_1[] EXPORT = {
 	(void *)CWIDGET_border_simple,
 	(void *)CWIDGET_border_full,
 	(void *)CWIDGET_scrollbar,
-	(void *)CCONTROL_font,
+	(void *)Control_Font,
 	(void *)QT_CreateFont,
 	(void *)QT_CreatePicture,
 	//(void *)QT_MimeSourceFactory,

@@ -661,6 +661,22 @@ gMenu* gMenu::winChildMenu(gMainWindow *par,int pos)
 	return NULL;
 }
 
+gMenu *gMenu::findFromName(gMainWindow *win, const char *name)
+{
+	int i;
+	int count = winChildCount(win);
+	gMenu *menu;
+	
+	for (i = 0; i < count; i++)
+	{
+		menu = winChildMenu(win, i);
+		if (!strcasecmp(menu->name(), name))
+			return menu;
+	}
+	
+	return NULL;
+}
+
 void gMenu::setShortcut(char *shortcut)
 {
 	guint key;

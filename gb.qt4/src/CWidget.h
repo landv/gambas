@@ -56,6 +56,7 @@ typedef
 		char *name;
 		void *cursor;
 		void *font;
+		char *popup;
 		//CWIDGET *next;
 		//CWIDGET *prev;
 		int level;
@@ -103,16 +104,16 @@ extern CWIDGET *CWIDGET_active_control;
 #define QWIDGET(object) (((CWIDGET *)object)->widget)
 #define QCONTAINER(_ob) CWidget::getContainerWidget((CCONTAINER *)_ob)
 
-DECLARE_METHOD(CCONTROL_delete);
-DECLARE_METHOD(CCONTROL_refresh);
-DECLARE_PROPERTY(CCONTROL_tag);
+DECLARE_METHOD(Control_Delete);
+DECLARE_METHOD(Control_Refresh);
+DECLARE_PROPERTY(Control_Tag);
 DECLARE_PROPERTY(CWIDGET_border_full);
 DECLARE_PROPERTY(CWIDGET_border_simple);
 DECLARE_PROPERTY(CWIDGET_scrollbar);
-DECLARE_PROPERTY(CCONTROL_design);
-DECLARE_PROPERTY(CCONTROL_enabled);
-DECLARE_PROPERTY(CCONTROL_font);
-DECLARE_PROPERTY(CCONTROL_action);
+DECLARE_PROPERTY(Control_Design);
+DECLARE_PROPERTY(Control_Enabled);
+DECLARE_PROPERTY(Control_Font);
+DECLARE_PROPERTY(Control_Action);
 
 #define CWIDGET_set_flag(wid, _f) (((CWIDGET *)wid)->flag.f |= _f)
 #define CWIDGET_clear_flag(wid, _f) (((CWIDGET *)wid)->flag.f &= ~_f)

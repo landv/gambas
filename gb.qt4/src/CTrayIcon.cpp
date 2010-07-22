@@ -44,10 +44,10 @@
 #include "CWidget.h"
 #include "CTrayIcon.h"
 
-DECLARE_METHOD(CCONTROL_screen_x);
-DECLARE_METHOD(CCONTROL_screen_y);
-DECLARE_METHOD(CCONTROL_w);
-DECLARE_METHOD(CCONTROL_h);
+DECLARE_METHOD(Control_ScreenX);
+DECLARE_METHOD(Control_ScreenY);
+DECLARE_METHOD(Control_Width);
+DECLARE_METHOD(Control_Height);
 
 DECLARE_EVENT(EVENT_MouseDown);
 DECLARE_EVENT(EVENT_MouseUp);
@@ -357,7 +357,7 @@ END_PROPERTY
 BEGIN_PROPERTY(CTRAYICON_screen_x)
 
 	if (WIDGET)
-		CCONTROL_screen_x(_object, _param);
+		Control_ScreenX(_object, _param);
 	else
 		GB.ReturnInteger(0);
 
@@ -367,7 +367,7 @@ END_PROPERTY
 BEGIN_PROPERTY(CTRAYICON_screen_y)
 
 	if (WIDGET)
-		CCONTROL_screen_y(_object, _param);
+		Control_ScreenY(_object, _param);
 	else
 		GB.ReturnInteger(0);
 
@@ -377,7 +377,7 @@ END_PROPERTY
 BEGIN_PROPERTY(CTRAYICON_w)
 
 	if (WIDGET)
-		CCONTROL_w(_object, _param);
+		Control_Width(_object, _param);
 	else
 		GB.ReturnInteger(0);
 
@@ -387,7 +387,7 @@ END_PROPERTY
 BEGIN_PROPERTY(CTRAYICON_h)
 
 	if (WIDGET)
-		CCONTROL_h(_object, _param);
+		Control_Height(_object, _param);
 	else
 		GB.ReturnInteger(0);
 

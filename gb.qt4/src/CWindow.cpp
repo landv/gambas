@@ -892,7 +892,6 @@ BEGIN_PROPERTY(CWINDOW_state)
 	}
 
 END_PROPERTY
-#endif
 
 static void show_window_state(void *_object)
 {
@@ -913,6 +912,7 @@ static void show_window_state(void *_object)
 	//qDebug("show_window_state %s %p", GB.GetClassName(THIS), THIS);
 	GB.Unref(POINTER(&_object));
 }
+#endif
 
 static void manage_window_state(void *_object, void *_param, Qt::WindowState state)
 {
@@ -2612,4 +2612,22 @@ void CWindow::removeTopLevel(CWINDOW *_object)
 	#endif
 
 	MAIN_check_quit();
+}
+
+CMENU *CWindow::findMenu(CWINDOW *_object, const char *name)
+{
+	int i;
+	CMENU *menu;
+	
+	if (THIS->menuBar)
+	{
+		for (i = 0; i < THIS->menuBar->actions().count(); i++)
+		{
+			menu = CMenu::dict[THIS->menuBar->actions().at(i)];
+			if (menu && !strcasecmp(menu->widget.name, name))
+				return menu;
+		}
+	}
+	
+	return NULL;
 }

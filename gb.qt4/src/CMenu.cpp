@@ -39,8 +39,8 @@ DECLARE_EVENT(EVENT_Click);
 DECLARE_EVENT(EVENT_Show);
 DECLARE_EVENT(EVENT_Hide);
 
-DECLARE_METHOD(CCONTROL_window);
-DECLARE_METHOD(CCONTROL_name);
+DECLARE_METHOD(Control_Window);
+DECLARE_METHOD(Control_Name);
 DECLARE_METHOD(CMENU_hide);
 
 static void clear_menu(CMENU *_object);
@@ -571,9 +571,8 @@ BEGIN_METHOD_VOID(CMENU_clear)
 
 END_METHOD
 
-
-BEGIN_METHOD(CMENU_popup, GB_INTEGER x; GB_INTEGER y)
-
+void CMENU_popup(CMENU *_object, const QPoint &pos)
+{
 	bool disabled;
 
 	if (THIS->menu && !THIS->exec)
@@ -588,10 +587,7 @@ BEGIN_METHOD(CMENU_popup, GB_INTEGER x; GB_INTEGER y)
 		
 		// The Click event is posted, it does not occur immediately.
 		THIS->exec = true;
-		if (MISSING(x) || MISSING(y))
-			THIS->menu->exec(QCursor::pos());
-		else
-			THIS->menu->exec(QPoint(VARG(x), VARG(y)));
+		THIS->menu->exec(pos);
 		THIS->exec = false;
 		
 		update_accel_recursive(THIS);
@@ -599,7 +595,19 @@ BEGIN_METHOD(CMENU_popup, GB_INTEGER x; GB_INTEGER y)
 		//MyMainWindow *toplevel = (MyMainWindow *)(THIS->toplevel);
 		//CWINDOW_fix_menubar((CWINDOW *)CWidget::get(toplevel));
 	}
+}
 
+BEGIN_METHOD(Menu_Popup, GB_INTEGER x; GB_INTEGER y)
+
+	QPoint pos;
+	
+	if (MISSING(x) || MISSING(y))
+		pos = QCursor::pos();
+	else
+		pos = QPoint(VARG(x), VARG(y));
+	
+	CMENU_popup(THIS, pos);
+	
 END_METHOD
 
 
@@ -651,12 +659,12 @@ GB_DESC CMenuDesc[] =
 
   //GB_PROPERTY_READ("Parent", "Control", CWIDGET_parent),
 
-  GB_PROPERTY("Name", "s", CCONTROL_name),
+  GB_PROPERTY("Name", "s", Control_Name),
   GB_PROPERTY("Caption", "s", CMENU_text),
   GB_PROPERTY("Text", "s", CMENU_text),
   GB_PROPERTY("Enabled", "b", CMENU_enabled),
   GB_PROPERTY("Checked", "b", CMENU_checked),
-  GB_PROPERTY("Tag", "v", CCONTROL_tag),
+  GB_PROPERTY("Tag", "v", Control_Tag),
   GB_PROPERTY("Picture", "Picture", CMENU_picture),
   //GB_PROPERTY("Stretch", "b", CMENU_stretch),
   GB_PROPERTY("Shortcut", "s", CMENU_shortcut),
@@ -664,7 +672,7 @@ GB_DESC CMenuDesc[] =
   GB_PROPERTY("Toggle", "b", CMENU_toggle),
   GB_PROPERTY("Value", "b", CMENU_value),
   //GB_PROPERTY("TearOff", "b", CMENU_tear_off),
-  GB_PROPERTY("Action", "s", CCONTROL_action),
+  GB_PROPERTY("Action", "s", Control_Action),
   GB_PROPERTY_READ("Window", "Window", CMENU_window),
 
   GB_PROPERTY_SELF("Children", ".MenuChildren"),
@@ -672,7 +680,7 @@ GB_DESC CMenuDesc[] =
 
 	MENU_DESCRIPTION,
 
-  GB_METHOD("Popup", NULL, CMENU_popup, "[(X)i(Y)i]"),
+  GB_METHOD("Popup", NULL, Menu_Popup, "[(X)i(Y)i]"),
   GB_METHOD("Delete", NULL, CMENU_delete, NULL),
   GB_METHOD("Show", NULL, CMENU_show, NULL),
   GB_METHOD("Hide", NULL, CMENU_hide, NULL),
