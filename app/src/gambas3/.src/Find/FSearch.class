@@ -225,16 +225,17 @@ Private Sub GrepFile(hFile As Object) As CFindResult[]
   Try sText = hFile.GetText()
   If Error Then Return aResult
   
-  'grep -nR -F -I -i -w "Date" -ob --exclude=*~ --exclude-dir=.svn -s * .src
+  'grep -nR -F -I -i -w -ob --exclude=*~ --exclude-dir=.svn -s -- "Date" * .src
   
   aGrep = ["grep", "-nobs"]
   If Not CaseSensitive Then aGrep.Add("-i")
+  If WordOnly Then aGrep.Add("-w")
   If RegularExpression Then 
     aGrep.Add("-E")
   Else
     aGrep.Add("-F")
   Endif
-  If WordOnly Then aGrep.Add("-w")
+  aGrep.Add("--")
   aGrep.Add(SearchString)
   
   $sGrep = ""

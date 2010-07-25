@@ -1184,7 +1184,11 @@ Public Sub Action_Activate(Key As String) As Boolean
       cmbFind_Activate
     
     Case "console"
-      If Action["console"].Value Then Try FOutput.SetFocus
+      If Action["console"].Value Then 
+        Try FOutput.SetFocus
+      Else
+        Try Project.ActiveForm.SetFocus
+      Endif
       'FOutput.Toggle(Action["console"].Value)
     
     Case "break"
