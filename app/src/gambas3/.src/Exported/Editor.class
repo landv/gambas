@@ -54,7 +54,7 @@ Public Sub SetPosition(hFindResult As CFindResult, bJustCheck As Boolean) As Boo
   'Endif
   
   If Me.Highlight <> Highlight.None Then
-    If Not Trim(String.Mid$(Me.Lines[iLine].Purge(Not FSearch.IgnoreComments, Not FSearch.IgnoreStrings), iColumn + 1, hFindResult.Length)) Then Return True
+    If InStr(String.Mid$(Me.Lines[iLine].Purge(Not FSearch.IgnoreComments, Not FSearch.IgnoreStrings, Chr$(1)), iColumn + 1, hFindResult.Length), Chr$(1)) Then Return True
   Endif
   
   hFindResult.Line = iLine

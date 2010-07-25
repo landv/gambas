@@ -2,6 +2,7 @@
 
 Public Path As String
 Public Editor As Editor
+Public Age As Integer
 
 Property Read ReadOnly As Boolean
 
@@ -157,7 +158,10 @@ Public Sub Modify(Optional bReset As Boolean)
 
   $bModify = Not bReset
   DrawTitle
-  If $bModify Then Inc Project.TimeStamp
+  If $bModify Then 
+    Inc Project.TimeStamp
+    Inc Age
+  Endif
 
 End
 

@@ -46,6 +46,7 @@ public:
 	QString getString() const { return s; }
 	uint length() const { return s.length(); }
 	GString &operator=(const GString &str);
+	GString &operator=(const QString &str);
 	GString &operator=(const char *utf8);
 	GString &operator+=(const GString &str);
   GString &operator+=(const char *utf8);
@@ -82,6 +83,12 @@ inline GString::GString(const QString &str)
 inline GString &GString::operator=(const GString &str)
 {
 	s = str.getString();
+	return *this;
+}
+
+inline GString &GString::operator=(const QString &str)
+{
+	s = str;
 	return *this;
 }
 

@@ -435,8 +435,9 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
   
   Positions.Clear
 
-  If Not $bTesting Then 
+  If Not $bTesting
     FMain.OnProjectChange
+    FSearch.OnProjectChange
     FOpenProject.OnUpdateRecent
     Design.ClearOutput
     Design.ReadBreakpoints
@@ -4802,7 +4803,7 @@ Public Sub IsLocked(sPath As String) As Boolean
 End
 
 Public Sub IsAdded(sPath As String, Optional bNoRec As Boolean) As Boolean
-  
+ 
   If AddedPaths.Exist(sPath) Then Return True
   If bNoRec Then Return False
   If sPath = "" Or sPath = "/" Then Return False

@@ -25,6 +25,7 @@ Public ParentClass As String '' The parent class.
 Public ParentComponent As String '' The component of the parent class.
 Public AutoCreatable As Boolean '' If the class has "CREATE [STATIC]".
 Public NotCreatable As Boolean '' If the class has "CREATE PRIVATE".
+Public Age As Integer
 
 Property Read ReadOnly As Boolean '' If the editor is read-only.
 
@@ -350,6 +351,7 @@ Public Sub Modify(Optional bReset As Boolean)
   
     $bModify = True
     Inc Project.TimeStamp
+    Inc Age
     $cProc = New Collection
     $aProc = New String[]
     FDebugInfo.RefreshBreakpoint(Me.Name)

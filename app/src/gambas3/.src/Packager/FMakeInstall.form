@@ -1,13 +1,13 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,92,82)
+  MoveScaled(0,0,92,81)
   Text = ("Make installation package")
   Icon = Picture["icon:/small/package"]
   Arrangement = Arrange.Fill
   Padding = 8
   { wizInstall Wizard
-    MoveScaled(1,1,89,80)
+    MoveScaled(1,1,89,79)
     Arrangement = Arrange.Vertical
     Spacing = True
     Count = 10
@@ -25,8 +25,9 @@
     { txtPackage Label
       MoveScaled(1,5,70,4)
       Font = Font["Bold,+2"]
+      Background = Color.LightForeground
+      Padding = 4
       AutoResize = True
-      Border = Border.Sunken
     }
     { VBox1 VBox
       MoveScaled(1,10,70,8)
@@ -101,18 +102,18 @@
       Alignment = Align.BottomNormal
     }
     { txtDescribe TextArea
-      MoveScaled(1,46,71,14)
+      MoveScaled(1,46,71,13)
       Expand = True
       Wrap = True
     }
     { Label5 Label
-      MoveScaled(1,59,70,4)
+      MoveScaled(1,58,70,4)
       Font = Font["Bold"]
       Text = ("License")
       Alignment = Align.BottomNormal
     }
     { txtLicense ComboBox
-      MoveScaled(1,64,71,4)
+      MoveScaled(1,63,71,4)
       List = [("General Public License"), ("Freeware"), ("Public Domain"), ("Lesser General Public License"), ("Other License(s)"), ("Non-free License")]
       Sorted = True
     }
@@ -141,7 +142,11 @@
     Index = 2
     Text = ("Target distribution")
     { PanSystem ScrollView
-      MoveScaled(1,0,87,68)
+      MoveScaled(0,0,88,68)
+      Expand = True
+      Arrangement = Arrange.Vertical
+      Border = False
+      ScrollBar = Scroll.Vertical
       { HBox10 HBox
         MoveScaled(0,0,83,9)
         Tag = "archlinux"
@@ -155,6 +160,7 @@
         { CheckBox5 CheckBox chkDistro
           Name = "CheckBox5"
           MoveScaled(9,1,26,4)
+          Expand = True
           Text = ("Archlinux")
         }
       }
@@ -171,6 +177,7 @@
         { CheckBox6 CheckBox chkDistro
           Name = "CheckBox6"
           MoveScaled(9,1,26,4)
+          Expand = True
           Text = ("Autotools")
         }
       }
@@ -187,6 +194,7 @@
         { chkDebian CheckBox chkDistro
           Name = "chkDebian"
           MoveScaled(9,2,26,4)
+          Expand = True
           Text = ("Debian")
         }
       }
@@ -203,6 +211,7 @@
         { CheckBox3 CheckBox chkDistro
           Name = "CheckBox3"
           MoveScaled(9,1,26,4)
+          Expand = True
           Text = ("Fedora")
         }
       }
@@ -219,6 +228,7 @@
         { chkMandriva CheckBox chkDistro
           Name = "chkMandriva"
           MoveScaled(9,1,26,4)
+          Expand = True
           Text = ("Mandriva Linux")
         }
       }
@@ -235,6 +245,7 @@
         { CheckBox4 CheckBox chkDistro
           Name = "CheckBox4"
           MoveScaled(9,2,26,4)
+          Expand = True
           Text = ("OpenSUSE")
         }
       }
@@ -251,6 +262,7 @@
         { CheckBox2 CheckBox chkDistro
           Name = "CheckBox2"
           MoveScaled(9,1,26,4)
+          Expand = True
           Text = ("Slackware")
         }
       }
@@ -267,6 +279,7 @@
         { CheckBox1 CheckBox chkDistro
           Name = "CheckBox1"
           MoveScaled(9,1,26,4)
+          Expand = True
           Text = ("Ubuntu")
         }
       }

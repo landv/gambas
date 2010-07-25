@@ -18,6 +18,11 @@ Private $hFont As Font
 Private $aExt As String[] = ["JPG", "JPEG", "BMP", "GIF", "PNG", "ICO", "XPM", "GAMBAS"]
 Private $bCancel As Boolean
 
+Private $aGrepCache As CFindResult[]
+Private $iGrepCacheAge As Integer
+Private $sGrepCacheKey As String
+Private $sGrepCacheCommand As String
+
 Private Const GO_FORWARD As Integer = 0
 Private Const GO_BACKWARD As Integer = 1
 Private Const DO_REPLACE As Integer = 2
@@ -215,17 +220,20 @@ End
 Private Sub GrepFile(hFile As Object) As CFindResult[]
   
   Dim sText As String
-  Dim hProcess As Process
   Dim aGrep As String[]
   Dim aResult As New CFindResult[]
   Dim sFind As String
   Dim aFind As String[]
   Dim hResult As CFindResult
+  Dim sTemp As String
+  Dim iAge As Integer
+
+  Wait 0.01
   
   Try sText = hFile.GetText()
   If Error Then Return aResult
   
-  'grep -nR -F -I -i -w -ob --exclude=*~ --exclude-dir=.svn -s -- "Date" * .src
+  sTemp = Temp$("grep")
   
   aGrep = ["grep", "-nobs"]
   If Not CaseSensitive Then aGrep.Add("-i")
@@ -237,14 +245,28 @@ Private Sub GrepFile(hFile As Object) As CFindResult[]
   Endif
   aGrep.Add("--")
   aGrep.Add(SearchString)
+  aGrep.Add(sTemp)
   
-  $sGrep = ""
-  hProcess = Exec aGrep For Read Write As "Grep"
-  Print #hProcess, sText;
-  Close #hProcess
-  Repeat
-    Wait 0.01
-  Until hProcess.State <> Process.Running
+  If hFile.Path = $sGrepCacheKey Then
+    iAge = -1
+    Try iAge = hFile.Age
+    If iAge = $iGrepCacheAge Then
+      If aGrep.Join("\n") = $sGrepCacheCommand Then
+        Return $aGrepCache
+      Endif
+    Endif
+  Endif
+  
+  'grep -nR -F -I -i -w -ob --exclude=*~ --exclude-dir=.svn -s -- "Date" * .src
+  
+  File.Save(sTemp, sText)
+  
+  Exec aGrep To $sGrep 'For Read Write As "Grep"
+  ' Print #hProcess, sText;
+  ' Close #hProcess
+  ' Repeat
+  '   Wait 0.01
+  ' Until hProcess.State <> Process.Running
 
   For Each sFind In Split($sGrep, "\n", "", True)
     aFind = Split(sFind, ":")
@@ -262,6 +284,14 @@ Private Sub GrepFile(hFile As Object) As CFindResult[]
     hResult.Length = String.Len(aFind[2])
     aResult.Add(hResult)
   Next
+  
+  Try iAge = hFile.Age
+  If Not Error Then
+    $aGrepCache = aResult.Copy()
+    $iGrepCacheAge = iAge
+    $sGrepCacheKey = hFile.Path
+    $sGrepCacheCommand = aGrep.Join("\n")
+  Endif
   
   Return aResult
   
@@ -299,7 +329,6 @@ Private Sub DoReplace(aResult As CFindResult[], iInd As Integer, sReplace As Str
   Wend
   
 End
-
 
 Private Sub Run(iAction As Integer)
   
@@ -359,7 +388,7 @@ DO_IT_AGAIN:
           iPos = aResult[iInd].Pos
           If iPos > iCurrentPos Then Break
         Next
-        
+         
         If iPos <= iCurrentPos Then 
           iInd = 0
           iPos = aResult[iInd].Pos
@@ -476,7 +505,10 @@ Private Sub Browse()
   
   tvwFind.Rows.Count = 0
   tvwFind.Clear
+  tvwFind.Rows.Height = Max(tvwFind.Font.Height, $hFont.Height)
   $aBrowse.Clear
+  
+  Inc FMain.NoMessage
   
   For Each sFile In RDir(Project.Dir)
   
@@ -521,6 +553,8 @@ Private Sub Browse()
   Next
   
 Finally
+  
+  Dec FMain.NoMessage
   
   If tvwFind.Rows.Count = 0 Then
     tvwFind.Hide
@@ -694,7 +728,7 @@ Public Sub tvwFind_Data(Row As Integer, Column As Integer)
         .Text = $aBrowse[Row].Line
         .Alignment = Align.TopRight
       Case 2
-        .Text = $aBrowse[Row].Column
+        .Text = $aBrowse[Row].Column + 1
         .Alignment = Align.TopRight
       Case 3
         .RichText = $aBrowse[Row].Text
@@ -749,4 +783,19 @@ Public Sub Form_KeyPress()
     btnClose_Click
   Endif
 
+End
+
+Private Sub ClearCache()
+  
+  $aGrepCache = Null
+  $sGrepCacheKey = ""
+  $iGrepCacheAge = 0
+  $sGrepCacheCommand = ""
+  
+End
+
+Public Sub OnProjectChange()
+  
+  ClearCache
+  
 End

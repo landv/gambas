@@ -675,13 +675,19 @@ BEGIN_PROPERTY(CEDITOR_line_breakpoint)
 
 END_PROPERTY
 
-BEGIN_METHOD(CEDITOR_line_purge, GB_BOOLEAN comment; GB_BOOLEAN string)
+BEGIN_METHOD(CEDITOR_line_purge, GB_BOOLEAN comment; GB_BOOLEAN string; GB_STRING replace)
 
   bool comment = VARGOPT(comment, FALSE);
   bool string = VARGOPT(string, FALSE);
 	GString line, result;
 	uint i, state;
+	GString replace;
   
+	if (MISSING(replace))
+		replace = " ";
+	else
+		replace = QSTRING_ARG(replace);
+	
 	line = DOC->getLine(THIS->line);
 	
   /*if (comment && string)	
@@ -694,7 +700,7 @@ BEGIN_METHOD(CEDITOR_line_purge, GB_BOOLEAN comment; GB_BOOLEAN string)
 	{
 		state = DOC->getCharState(THIS->line, i);
 		if ((!string && state == GLine::String) || (!comment && (state == GLine::Comment || state == GLine::Help)))
-			result += ' ';
+			result += replace;
 		else
 			result += line.at(i);
 	}
@@ -1132,7 +1138,7 @@ GB_DESC CEditorLineDesc[] =
   GB_PROPERTY_READ("Limit", "b", CEDITOR_line_limit),
 	GB_METHOD("GetInitialState", NULL, CEDITOR_line_get_initial_state, NULL),
 	GB_METHOD("Refresh", NULL, CEDITOR_line_refresh, NULL),
-  GB_METHOD("Purge", "s", CEDITOR_line_purge, "[(Comment)b(String)b]"),
+  GB_METHOD("Purge", "s", CEDITOR_line_purge, "[(Comment)b(String)b(Replace)s]"),
 
   GB_END_DECLARE
 };

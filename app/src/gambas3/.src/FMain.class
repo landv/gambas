@@ -1,5 +1,7 @@
 ' Gambas class file
 
+Public NoMessage As Integer
+
 Private $sKey As String
 Private $bCtrl As Boolean
 Private $bLock As Boolean
@@ -1670,6 +1672,8 @@ End
 Public Sub ShowMessage(sMsg As String, sIcon As String, Optional sKey As String)
   
   Dim X, Y As Integer
+  
+  If NoMessage Then Return
   
   If Not sKey Then sKey = Project.Dir
   

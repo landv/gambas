@@ -217,7 +217,8 @@ Private Sub InitSystemControls()
       hPanel.Arrangement = Arrange.Horizontal
       hPanel.Spacing = 8
       hPanel.Padding = 4
-      hPanel.Expand = True
+      hPanel.Width = Desktop.Scale * 48
+      'hPanel.Expand = True
       
       hPict = New PictureBox(hPanel)
       hPict.Picture = Picture["icon:/32/warning"]

@@ -8,6 +8,7 @@
 ChangeLog
 </div>
 <br>
+<a target="_self" href="#2.21.0">2.21.0</a>&nbsp;
 <a target="_self" href="#2.20.2">2.20.2</a>&nbsp;
 <a target="_self" href="#2.20.1">2.20.1</a>&nbsp;
 <a target="_self" href="#2.20.0">2.20.0</a>&nbsp;
@@ -96,6 +97,72 @@ ChangeLog
 <a target="_self" href="#1.9.2">1.9.2</a>&nbsp;
 <a target="_self" href="#1.9.1">1.9.1</a>&nbsp;
 <br>
+<a style="height:4px; font-size:xx-small;" name="2.21.0"></a>
+<div class="news-title">
+  <img src="top-left-corner.png" class="top-left-corner">
+  <img src="top-right-corner.png" class="top-right-corner">
+  <div style="height:4px;"></div>
+  <div><b>2.21.0 - 20 Jul 2010</b></div>
+</div>
+<div class="news">
+<table class="none" width="100%"><tr><td class="none">
+  <p><font><b>Configuration</b></font>
+  <ul>
+  <li>BUG: Fix the creation of the gbw2 symbolic link.
+  <li>NEW: Remove generated files.
+  <li>NEW: './reconf' now is used inside sub-directories for reconfiguring it,
+  without modifying libtool.
+  <li>NEW: To install the libtool version required by your system, use now the
+  './reconf-all' script in the top directory.
+  </ul>
+  <p><font><b>Development Environment</b></font>
+  <ul>
+  <li>BUG: Align buttons do not snap control dimensions to grid anymore.
+  <li>BUG: In the property sheet, when scrolling, the property editor is not
+  displayed above the property help anymore.
+  <li>BUG: Understand "END FUNCTION" when scanning a class.
+  <li>NEW: Add Archlinux package support (source and binary).
+  <li>NEW: Czech translation finished by Radek Fryšták.
+  <li>NEW: German translation finished by Mathias Ebermann.
+  <li>NEW: French translation updated.
+  <li>OPT: Refresh the property sheet only for the active form.
+  </ul>
+  <p><font><b><a href="http://gambasdoc.org/help/comp/gb.db.form">GB.DB.FORM</a></b></font>
+  <ul>
+  <li>NEW: German translation made by Mathias Ebermann.
+  </ul>
+  <p><font><b><a href="http://gambasdoc.org/help/comp/gb.db.sqlite3">GB.DB.SQLITE3</a></b></font>
+  <ul>
+  <li>BUG: Tables with an autoincrement field and some indexes are correctly
+  managed now.
+  </ul>
+  <p><font><b><a href="http://gambasdoc.org/help/comp/gb.form">GB.FORM</a></b></font>
+  <ul>
+  <li>NEW: German translation made by Mathias Ebermann.
+  </ul>
+  <p><font><b><a href="http://gambasdoc.org/help/comp/gb.form.dialog">GB.FORM.DIALOG</a></b></font>
+  <ul>
+  <li>NEW: German translation made by Mathias Ebermann.
+  </ul>
+  <p><font><b><a href="http://gambasdoc.org/help/comp/gb.form.mdi">GB.FORM.MDI</a></b></font>
+  <ul>
+  <li>NEW: German translation made by Mathias Ebermann.
+  </ul>
+  <p><font><b><a href="http://gambasdoc.org/help/comp/gb.gtk">GB.GTK</a></b></font>
+  <ul>
+  <li>BUG: Key.Code is not lost anymore during a KeyPress event.
+  <li>BUG: Fix a memory leak when loading an image without transparency.
+  <li>BUG: Fix a memory leak in the Image.Stretch() method.
+  <li>BUG: Basic controls events are correctly sent again when a modal dialog
+  is displayed.
+  </ul>
+  <p><font><b><a href="http://gambasdoc.org/help/comp/gb.net.smtp">GB.NET.SMTP</a></b></font>
+  <ul>
+  <li>BUG: Send a CR+LF and not just a LF before sending mime part body.
+  <li>BUG: Adds a newline between MIME part headers and MIME part body.
+  </ul>
+</td></tr>
+</table></div>
 <a style="height:4px; font-size:xx-small;" name="2.20.2"></a>
 <div class="news-title">
   <img src="top-left-corner.png" class="top-left-corner">
