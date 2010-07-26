@@ -64,7 +64,7 @@ void SUBR_pi(ushort code)
   else
   {
     VALUE_conv_float(PARAM);
-    SP->_float.value = M_PI * PARAM->_float.value;
+    PARAM->_float.value = M_PI * PARAM->_float.value;
   }
 }
 
