@@ -60,8 +60,9 @@ static void bt_click(GtkButton *object, gButton *data)
 
 static void cb_released(GtkButton *object, gButton *data)
 {
-	if (data->isTristate())
+	if (data->isTristate() && !data->locked())
 	{
+		data->lock();
 		if (data->inconsistent())
 		{
 			data->setInconsistent(false);
@@ -69,6 +70,7 @@ static void cb_released(GtkButton *object, gButton *data)
 		}
 		else if (!data->value())
 			data->setInconsistent(true);
+		data->unlock();
 	}
 
 	data->emit(SIGNAL(data->onClick));
@@ -281,11 +283,12 @@ gButton::gButton(gContainer *par, Type typ) : gControl(par)
 	
 	if (type == Radio)
 		g_signal_connect(G_OBJECT(widget),"clicked",G_CALLBACK(rd_click),(gpointer)this);
+	else if (type == Check)
+		g_signal_connect(G_OBJECT(widget), "clicked", G_CALLBACK(cb_released), (gpointer)this);	
 	else
 		g_signal_connect(G_OBJECT(widget),"clicked",G_CALLBACK(bt_click),(gpointer)this);	
 	
-	if (type == Check)
-		g_signal_connect(G_OBJECT(widget), "released", G_CALLBACK(cb_released), (gpointer)this);	
+	
 	
 	//resize(100,30);
 	
