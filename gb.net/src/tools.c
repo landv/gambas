@@ -181,7 +181,7 @@ int CheckConnection(int Socket)
 }
 
 /* free "buf" after using it! */
-int IsHostPath(char *sCad,char **buf,int *port)
+int IsHostPath(char *sCad, int lenCad, char **buf,int *port)
 {
 	/*******************
 	 0 --> Error
@@ -198,7 +198,7 @@ int IsHostPath(char *sCad,char **buf,int *port)
 	{
 		return 2;
 	}
-	for (myloop=0;myloop<strlen(sCad);myloop++)
+	for (myloop=0;myloop<lenCad;myloop++)
 	{
 		if (sCad[myloop]==':')
 		{
@@ -208,7 +208,7 @@ int IsHostPath(char *sCad,char **buf,int *port)
 	}
 	if (npoint != 1) return 0;
 
-	for (myloop=npos+1;myloop<strlen(sCad);myloop++)
+	for (myloop=npos+1;myloop<lenCad;myloop++)
 	{
 		if ( (sCad[myloop]<'0') || (sCad[myloop]>'9') ) return 0;
 		bufport*=10;

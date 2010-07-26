@@ -22,7 +22,6 @@
 
 #define __CSERVERSOCKET_C
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -32,6 +31,8 @@
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <sys/un.h>
+#include <net/if.h>
+#include <errno.h>
 
 #include "main.h"
 #include "tools.h"
@@ -39,15 +40,175 @@
 #include "CServerSocket.h"
 #include "CSocket.h"
 
-
-
 DECLARE_EVENT(EVENT_Connection);
 DECLARE_EVENT(EVENT_Error);
 
-void srvsock_post_error(CSERVERSOCKET *_object)
+static void srvsock_post_error(CSERVERSOCKET *_object)
 {
 	GB.Raise(THIS, EVENT_Error, 0);
 	GB.Unref(POINTER(&_object));
+}
+
+static void CServerSocket_CallBack(int fd, int type, intptr_t lParam)
+{
+	int okval=0;
+	char *rem_ip_buf;
+	unsigned int ClientLen;
+	CSERVERSOCKET *_object = (CSERVERSOCKET*)lParam;
+	
+	if ( SOCKET->status != 1) return;
+
+	SOCKET->status=2;
+	ClientLen=sizeof(struct sockaddr_in);
+	THIS->Client=accept(SOCKET->socket,(struct sockaddr*)&THIS->so_client.in,&ClientLen);
+	if (THIS->Client == -1)
+	{
+		close(THIS->Client);
+		SOCKET->status=1;
+		return;
+	}
+	rem_ip_buf=inet_ntoa(THIS->so_client.in.sin_addr);
+	if ( (!THIS->iMaxConn) || (THIS->iCurConn < THIS->iMaxConn) ) okval=1;
+	if ( (!THIS->iPause) && (okval) )
+		GB.Raise(THIS,EVENT_Connection,1,GB_T_STRING,rem_ip_buf,0);
+	if  ( SOCKET->status == 2) close(THIS->Client);
+	SOCKET->status=1;
+}
+
+static void CServerSocket_CallBackUnix(int fd, int type, intptr_t lParam)
+{
+	//int position=0;
+	int okval=0;
+	unsigned int ClientLen;
+	CSERVERSOCKET *_object = (CSERVERSOCKET*)lParam;
+	
+	if ( SOCKET->status != 1) return;
+
+	SOCKET->status=2;
+	ClientLen=sizeof(struct sockaddr_un);
+	THIS->Client=accept(SOCKET->socket,(struct sockaddr*)&THIS->so_client.un,&ClientLen);
+	if (THIS->Client == -1)
+	{
+		close(THIS->Client);
+		SOCKET->status=1;
+		return;
+	}
+	if ( (!THIS->iMaxConn) || (THIS->iCurConn < THIS->iMaxConn) ) okval=1;
+	if ( (!THIS->iPause) && (okval) )
+		GB.Raise(THIS,EVENT_Connection,1,GB_T_STRING,NULL,0);
+	if  ( SOCKET->status == 2) close(THIS->Client);
+	SOCKET->status=1;
+
+}
+
+
+/*********************************************************
+ Starts listening (TCP/UDP/UNIX)
+ **********************************************************/
+static int do_srvsock_listen(CSERVERSOCKET* _object,int mymax)
+{
+	int NoBlock=1;
+	int retval;
+	int auth = 1;
+
+	if ( (!THIS->iPort) && (THIS->type) ) return 8;
+
+	if ( SOCKET->status >0 ) return 1;
+
+	if (mymax<0) return 13;
+
+	if ( (!THIS->type) && (!THIS->sPath) ) return 7;
+
+
+	if (THIS->type)
+	{
+		THIS->so_server.in.sin_family=AF_INET;
+		THIS->so_server.in.sin_addr.s_addr=INADDR_ANY;
+		THIS->so_server.in.sin_port=htons(THIS->iPort);
+		SOCKET->socket=socket(PF_INET,SOCK_STREAM,0);
+	}
+	else
+	{
+		unlink(THIS->sPath);
+		THIS->so_server.un.sun_family=AF_UNIX;
+		strcpy(THIS->so_server.un.sun_path,THIS->sPath);
+		SOCKET->socket=socket(AF_UNIX,SOCK_STREAM,0);
+	}
+
+	if ( SOCKET->socket==-1 )
+	{
+		SOCKET->status=-2;
+		GB.Ref(THIS);
+		GB.Post(srvsock_post_error,(intptr_t)THIS);
+		return 2;
+	}
+	// thanks to Benoit : this option allows non-root users to reuse the
+	// port after closing it and reopening it in a short interval of time.
+	// However, If you are porting this component to other O.S., be careful,
+	// as this is not a standard unix option
+	setsockopt(SOCKET->socket, SOL_SOCKET, SO_REUSEADDR, &auth, sizeof(int));
+	
+	// Define specific interface: does not really work... :-/
+	if (THIS->interface)
+	{
+		if (setsockopt(SOCKET->socket, SOL_SOCKET, SO_BINDTODEVICE, THIS->interface, GB.StringLength(THIS->interface)))
+		{
+			fprintf(stderr, "unable to bind socket to interface: %s\n", strerror(errno));
+			SOCKET->status = -15;
+			return 15;
+		}
+	}
+	
+	SOCKET_update_timeout(SOCKET);
+	//
+	if (THIS->type)
+		retval=bind(SOCKET->socket,(struct sockaddr*)&THIS->so_server.in, \
+			sizeof(struct sockaddr_in));
+	else
+		retval=bind(SOCKET->socket,(struct sockaddr*)&THIS->so_server.un, \
+			sizeof(struct sockaddr_un));
+	if (retval==-1)
+	{
+		close(SOCKET->socket);
+		SOCKET->status=-10;
+		GB.Ref(THIS);
+		GB.Post(srvsock_post_error,(intptr_t)THIS);
+		return 10;
+	}
+
+	ioctl(SOCKET->socket,FIONBIO,&NoBlock);
+
+	if ( listen(SOCKET->socket,mymax) == -1 )
+	{
+		close(SOCKET->socket);
+		SOCKET->status=-14;
+		GB.Ref(THIS);
+		GB.Post(srvsock_post_error,(intptr_t)THIS);
+		return 14;
+	}
+	THIS->iCurConn=0;
+	THIS->iMaxConn=mymax;
+	SOCKET->status=1;
+
+	//CServerSocket_AssignCallBack((intptr_t)THIS,SOCKET->socket);
+	if (THIS->type)
+		GB.Watch (SOCKET->socket , GB_WATCH_READ , (void *)CServerSocket_CallBack,(intptr_t)THIS);
+	else
+		GB.Watch (SOCKET->socket , GB_WATCH_READ , (void *)CServerSocket_CallBackUnix,(intptr_t)THIS);
+	return 0;
+}
+
+static void srvsock_listen(CSERVERSOCKET *_object, int max)
+{
+	switch(do_srvsock_listen(THIS, max))
+	{
+		case 1: GB.Error("Socket is already listening"); break;
+		case 7: GB.Error("Path is not defined"); break;
+		case 8: GB.Error("Port is not defined"); break;
+		case 13: GB.Error("Invalid maximum number of connections"); break;
+		case 15: GB.Error("Unable to bind socket to interface"); break;
+		default: break;
+	}
 }
 
 // BM: Fix bug in allocations
@@ -102,64 +263,11 @@ void CServerSocket_OnClose(void *sck)
 
 }
 
-void CServerSocket_CallBack(int fd, int type, intptr_t lParam)
-{
-	int okval=0;
-	char *rem_ip_buf;
-	unsigned int ClientLen;
-	CSERVERSOCKET *_object = (CSERVERSOCKET*)lParam;
-	
-	if ( SOCKET->status != 1) return;
-
-	SOCKET->status=2;
-	ClientLen=sizeof(struct sockaddr_in);
-	THIS->Client=accept(SOCKET->socket,(struct sockaddr*)&THIS->so_client.in,&ClientLen);
-	if (THIS->Client == -1)
-	{
-		close(THIS->Client);
-		SOCKET->status=1;
-		return;
-	}
-	rem_ip_buf=inet_ntoa(THIS->so_client.in.sin_addr);
-	if ( (!THIS->iMaxConn) || (THIS->iCurConn < THIS->iMaxConn) ) okval=1;
-	if ( (!THIS->iPause) && (okval) )
-		GB.Raise(THIS,EVENT_Connection,1,GB_T_STRING,rem_ip_buf,0);
-	if  ( SOCKET->status == 2) close(THIS->Client);
-	SOCKET->status=1;
-}
-
-void CServerSocket_CallBackUnix(int fd, int type, intptr_t lParam)
-{
-	//int position=0;
-	int okval=0;
-	unsigned int ClientLen;
-	CSERVERSOCKET *_object = (CSERVERSOCKET*)lParam;
-	
-	if ( SOCKET->status != 1) return;
-
-	SOCKET->status=2;
-	ClientLen=sizeof(struct sockaddr_un);
-	THIS->Client=accept(SOCKET->socket,(struct sockaddr*)&THIS->so_client.un,&ClientLen);
-	if (THIS->Client == -1)
-	{
-		close(THIS->Client);
-		SOCKET->status=1;
-		return;
-	}
-	if ( (!THIS->iMaxConn) || (THIS->iCurConn < THIS->iMaxConn) ) okval=1;
-	if ( (!THIS->iPause) && (okval) )
-		GB.Raise(THIS,EVENT_Connection,1,GB_T_STRING,NULL,0);
-	if  ( SOCKET->status == 2) close(THIS->Client);
-	SOCKET->status=1;
-
-}
-
-
 /***************************************************
  This property reflects current status of the
  socket (closed, listening...)
  ***************************************************/
-BEGIN_PROPERTY ( CSERVERSOCKET_Status )
+BEGIN_PROPERTY ( ServerSocket_Status )
 
 	GB.ReturnInteger(SOCKET->status);
 
@@ -168,7 +276,7 @@ END_PROPERTY
 /******************************************************************
  This property gets/sets the port to listen to (TCP or UDP sockets)
  ******************************************************************/
-BEGIN_PROPERTY ( CSERVERSOCKET_Port )
+BEGIN_PROPERTY ( ServerSocket_Port )
 
 	if (READ_PROPERTY)
 	{
@@ -193,9 +301,7 @@ END_PROPERTY
 /***************************************************************
  This property gets/sets the address to listen to (UNIX socket)
  ***************************************************************/
-BEGIN_PROPERTY ( CSERVERSOCKET_Path )
-
-	char *tmpstr=NULL;
+BEGIN_PROPERTY(ServerSocket_Path)
 
 	if (READ_PROPERTY)
 	{
@@ -204,13 +310,12 @@ BEGIN_PROPERTY ( CSERVERSOCKET_Path )
 	}
 	if (SOCKET->status>0)
 	{
-		GB.Error("Path value can not be changed when socket is active");
+		GB.Error("Path cannot be changed while socket is active");
 		return;
 	}
-	tmpstr=GB.ToZeroString ( PROP(GB_STRING) );
-	if ( (strlen(tmpstr)<1) || (strlen(tmpstr)>NET_UNIX_PATH_MAX) )
+	if (PLENGTH() > NET_UNIX_PATH_MAX)
 	{
-		GB.Error ("Invalid path length");
+		GB.Error ("Path is too long");
 		return;
 	}
 	GB.StoreString(PROP(GB_STRING), &THIS->sPath);
@@ -218,10 +323,35 @@ BEGIN_PROPERTY ( CSERVERSOCKET_Path )
 END_PROPERTY
 
 
+BEGIN_PROPERTY(ServerSocket_Interface)
+
+	if (READ_PROPERTY)
+	{
+		GB.ReturnString(THIS->sPath);
+	}
+	else
+	{
+		if (SOCKET->status>0)
+		{
+			GB.Error("Interface cannot be changed while socket is active");
+			return;
+		}
+		if (PLENGTH() > IFNAMSIZ)
+		{
+			GB.Error ("Interface name is too long");
+			return;
+		}
+
+		GB.StoreString(PROP(GB_STRING), &THIS->interface);
+	}
+
+END_PROPERTY
+
+
 /***************************************************************
  This property gets/sets the socket type (0 -> TCP, 1 -> UNIX)
  ***************************************************************/
-BEGIN_PROPERTY ( CSERVERSOCKET_Type )
+BEGIN_PROPERTY ( ServerSocket_Type )
 
 	if (READ_PROPERTY)
 	{
@@ -244,83 +374,55 @@ END_PROPERTY
 /***********************************************
  Gambas object "Constructor"
  ***********************************************/
-BEGIN_METHOD(CSERVERSOCKET_new,GB_STRING sPath;GB_INTEGER iMaxConn;)
+BEGIN_METHOD(ServerSocket_new,GB_STRING sPath;GB_INTEGER iMaxConn;)
 
-	int retval;
 	char *buf=NULL;
 	int nport=0;
-	int iMax=0;
+	int iMax;
 
-	THIS->iPort=0;
-	SOCKET->status=0;
-	THIS->sPath=NULL;
-	THIS->iPause=0;
-	THIS->iMaxConn=0;
-	THIS->iCurConn=0;
 	THIS->type=1;
-	THIS->children=NULL;
-	THIS->nchildren=0;
 
 	if (MISSING(sPath)) return;
 	if (!STRING(sPath)) return;
 
-	if (!MISSING(iMaxConn)) iMax=VARG(iMaxConn);
-	retval=IsHostPath(STRING(sPath),&buf,&nport);
-	if (!retval)
+	iMax = VARGOPT(iMaxConn, 0);
+	
+	switch(IsHostPath(STRING(sPath), LENGTH(sPath), &buf, &nport))
 	{
-		GB.Error("Invalid Host / Path string");
-		return;
-	}
-	if (retval==2)
-	{
-		THIS->type=0;
-		buf=GB.ToZeroString ( (GB_STRING*)STRING(sPath) );
-		if ( (strlen(buf)<1) || (strlen(buf)>NET_UNIX_PATH_MAX) )
-		{
-			GB.Error ("Invalid path length");
+		case 0:
+			GB.Error("Invalid Host or Path");
 			return;
-		}
-		GB.StoreString((GB_STRING*)STRING(sPath),&THIS->sPath);
-		return;
-	}
-	else
-	{
-		if (buf)
-		{
-			GB.Free(POINTER(&buf));
-			GB.Error("Invalid Host String");
-			return;
-		}
-		if (nport<1)
-		{
-			GB.Error("Invalid Port value");
-			return;
-		}
-
-		THIS->type=1;
-		THIS->iPort=nport;
-	}
-
-	switch(srvsock_listen(THIS,iMax))
-	{
+		
 		case 1:
-			GB.Error("Socket is already listening");
-			return;
-		case 7:
-			GB.Error ("You must define Path");
-			return;
-		case 8:
-			GB.Error ("Error. You must define port");
-			return;
-		case 13:
-			GB.Error ("Invalid maximun connections value");
-			return;
-	}
+			if (buf)
+			{
+				GB.Free(POINTER(&buf));
+				GB.Error("Invalid Host");
+				return;
+			}
+			if (nport<1)
+			{
+				GB.Error("Invalid Port");
+				return;
+			}
 
+			THIS->type=1;
+			THIS->iPort=nport;
+			srvsock_listen(THIS, iMax);
+			break;
+			
+		case 2:
+			THIS->type = 0;
+			if (LENGTH(sPath) >NET_UNIX_PATH_MAX)
+			{
+				GB.Error ("Path is too long");
+				return;
+			}
+			GB.StoreString(ARG(sPath), &THIS->sPath);
+			break;
+	}
 
 END_METHOD
-
-
 
 void close_server(CSERVERSOCKET *_object)
 {
@@ -345,11 +447,11 @@ void close_server(CSERVERSOCKET *_object)
 /*************************************************
  Gambas object "Destructor"
  *************************************************/
-BEGIN_METHOD_VOID(CSERVERSOCKET_free)
-
+BEGIN_METHOD_VOID(ServerSocket_free)
 
 	close_server(THIS);
 	GB.FreeString(&THIS->sPath);
+	GB.FreeString(&THIS->interface);
 
 END_METHOD
 
@@ -357,7 +459,7 @@ END_METHOD
  Stops listening (TCP/UDP/UNIX), and closes all client sockets associated
  to this server
  *********************************************************/
-BEGIN_METHOD_VOID(CSERVERSOCKET_Close)
+BEGIN_METHOD_VOID(ServerSocket_Close)
 
 	close_server(THIS);
 
@@ -366,7 +468,7 @@ END_METHOD
 /********************************************************
  Do not accept more connections until Resume is used
  *********************************************************/
-BEGIN_METHOD_VOID(CSERVERSOCKET_Pause)
+BEGIN_METHOD_VOID(ServerSocket_Pause)
 
 	THIS->iPause=1;
 
@@ -375,117 +477,15 @@ END_METHOD
 /********************************************************
  Accept connections again
  *********************************************************/
-BEGIN_METHOD_VOID(CSERVERSOCKET_Resume)
+BEGIN_METHOD_VOID(ServerSocket_Resume)
 
 	THIS->iPause=0;
 
 END_METHOD
 
-/*********************************************************
- Starts listening (TCP/UDP/UNIX)
- **********************************************************/
-int srvsock_listen(CSERVERSOCKET* _object,int mymax)
-{
-	int NoBlock=1;
-	int retval;
-	int auth = 1;
+BEGIN_METHOD(ServerSocket_Listen, GB_INTEGER MaxConn)
 
-	if ( (!THIS->iPort) && (THIS->type) ) return 8;
-
-	if ( SOCKET->status >0 ) return 1;
-
-	if (mymax<0) return 13;
-
-	if ( (!THIS->type) && (!THIS->sPath) ) return 7;
-
-
-	if (THIS->type)
-	{
-		THIS->so_server.in.sin_family=AF_INET;
-		THIS->so_server.in.sin_addr.s_addr=INADDR_ANY;
-		THIS->so_server.in.sin_port=htons(THIS->iPort);
-		SOCKET->socket=socket(PF_INET,SOCK_STREAM,0);
-	}
-	else
-	{
-		unlink(THIS->sPath);
-		THIS->so_server.un.sun_family=AF_UNIX;
-		strcpy(THIS->so_server.un.sun_path,THIS->sPath);
-		SOCKET->socket=socket(AF_UNIX,SOCK_STREAM,0);
-	}
-
-	if ( SOCKET->socket==-1 )
-	{
-		SOCKET->status=-2;
-		GB.Ref(THIS);
-		GB.Post(srvsock_post_error,(intptr_t)THIS);
-		return 2;
-	}
-	// thanks to Benoit : this option allows non-root users to reuse the
-	// port after closing it and reopening it in a short interval of time.
-	// However, If you are porting this component to other O.S., be careful,
-	// as this is not a standard unix option
-	setsockopt(SOCKET->socket, SOL_SOCKET, SO_REUSEADDR, &auth, sizeof(int));
-	SOCKET_update_timeout(SOCKET);
-	//
-	if (THIS->type)
-		retval=bind(SOCKET->socket,(struct sockaddr*)&THIS->so_server.in, \
-			sizeof(struct sockaddr_in));
-	else
-		retval=bind(SOCKET->socket,(struct sockaddr*)&THIS->so_server.un, \
-			sizeof(struct sockaddr_un));
-	if (retval==-1)
-	{
-		close(SOCKET->socket);
-		SOCKET->status=-10;
-		GB.Ref(THIS);
-		GB.Post(srvsock_post_error,(intptr_t)THIS);
-		return 10;
-	}
-
-	ioctl(SOCKET->socket,FIONBIO,&NoBlock);
-
-	if ( listen(SOCKET->socket,mymax) == -1 )
-	{
-		close(SOCKET->socket);
-		SOCKET->status=-14;
-		GB.Ref(THIS);
-		GB.Post(srvsock_post_error,(intptr_t)THIS);
-		return 14;
-	}
-	THIS->iCurConn=0;
-	THIS->iMaxConn=mymax;
-	SOCKET->status=1;
-
-	//CServerSocket_AssignCallBack((intptr_t)THIS,SOCKET->socket);
-	if (THIS->type)
-		GB.Watch (SOCKET->socket , GB_WATCH_READ , (void *)CServerSocket_CallBack,(intptr_t)THIS);
-	else
-		GB.Watch (SOCKET->socket , GB_WATCH_READ , (void *)CServerSocket_CallBackUnix,(intptr_t)THIS);
-	return 0;
-}
-
-BEGIN_METHOD(CSERVERSOCKET_Listen,GB_INTEGER MaxConn;)
-
-	int retval;
-	int mymax=0;
- 	if (!MISSING(MaxConn)) mymax=VARG(MaxConn);
-	retval=srvsock_listen(THIS,mymax);
-	switch(retval)
-	{
-		case 1:
-			GB.Error("Socket is already listening");
-			return;
-		case 7:
-			GB.Error ("You must define Path");
-			return;
-		case 8:
-			GB.Error ("Error. You must define port");
-			return;
-		case 13:
-			GB.Error ("Invalid maximun connections value");
-			return;
-	}
+	srvsock_listen(THIS, VARGOPT(MaxConn, 0));
 
 END_METHOD
 
@@ -493,7 +493,7 @@ END_METHOD
  To accept a pending connection and delegate it to a Socket object
 *******************************************************************/
 
-BEGIN_METHOD_VOID(CSERVERSOCKET_Accept)
+BEGIN_METHOD_VOID(ServerSocket_Accept)
 
 	CSOCKET *cli_obj;
 	struct sockaddr_in myhost;
@@ -547,7 +547,7 @@ END_METHOD
 
 // BM: Enumeration of child sockets
 
-BEGIN_METHOD_VOID(CSERVERSOCKET_next)
+BEGIN_METHOD_VOID(ServerSocket_next)
 
   int *index = (int *)GB.GetEnum();
 
@@ -561,7 +561,7 @@ BEGIN_METHOD_VOID(CSERVERSOCKET_next)
 
 END_METHOD
 
-BEGIN_PROPERTY(CSERVERSOCKET_count)
+BEGIN_PROPERTY(ServerSocket_count)
 
 	GB.ReturnInteger(THIS->nchildren);
 
@@ -578,28 +578,29 @@ GB_DESC CServerSocketDesc[] =
   GB_EVENT("Connection", NULL, "(RemoteHostIP)s", &EVENT_Connection),
   GB_EVENT("Error", NULL,NULL, &EVENT_Error),
 
-  GB_METHOD("_new", NULL, CSERVERSOCKET_new,"[(Path)s(MaxConn)i]"),
-  GB_METHOD("_free", NULL, CSERVERSOCKET_free, NULL),
-  GB_METHOD("Listen",NULL, CSERVERSOCKET_Listen, "[(MaxConn)i]"),
-  GB_METHOD("Pause", NULL, CSERVERSOCKET_Pause, NULL),
-  GB_METHOD("Resume", NULL, CSERVERSOCKET_Resume, NULL),
-  GB_METHOD("Accept","Socket",CSERVERSOCKET_Accept,NULL),
-  GB_METHOD("Close",NULL,CSERVERSOCKET_Close,NULL),
+  GB_METHOD("_new", NULL, ServerSocket_new,"[(Path)s(MaxConn)i]"),
+  GB_METHOD("_free", NULL, ServerSocket_free, NULL),
+  GB_METHOD("Listen",NULL, ServerSocket_Listen, "[(MaxConn)i]"),
+  GB_METHOD("Pause", NULL, ServerSocket_Pause, NULL),
+  GB_METHOD("Resume", NULL, ServerSocket_Resume, NULL),
+  GB_METHOD("Accept","Socket",ServerSocket_Accept,NULL),
+  GB_METHOD("Close",NULL,ServerSocket_Close,NULL),
 
-  GB_PROPERTY("Type","i<Net,Internet,Local>",CSERVERSOCKET_Type),
-  GB_PROPERTY("Path","s",CSERVERSOCKET_Path),
-  GB_PROPERTY("Port", "i", CSERVERSOCKET_Port),
-  GB_PROPERTY_READ("Status","i",CSERVERSOCKET_Status),
+  GB_PROPERTY("Type","i",ServerSocket_Type),
+  GB_PROPERTY("Path","s",ServerSocket_Path),
+  GB_PROPERTY("Port", "i", ServerSocket_Port),
+  GB_PROPERTY("Interface", "s", ServerSocket_Interface),
+  GB_PROPERTY_READ("Status","i",ServerSocket_Status),
 
-  GB_METHOD("_next", "Socket", CSERVERSOCKET_next, NULL),
-  GB_PROPERTY_READ("Count", "i", CSERVERSOCKET_count),
+  GB_METHOD("_next", "Socket", ServerSocket_next, NULL),
+  GB_PROPERTY_READ("Count", "i", ServerSocket_count),
 
 	GB_PROPERTY("Timeout", "i", CSOCKET_Timeout),
 
   GB_CONSTANT("_IsControl", "b", TRUE),
   GB_CONSTANT("_IsVirtual", "b", TRUE),
   GB_CONSTANT("_Group", "s", "Network"),
-  GB_CONSTANT("_Properties", "s", "Type=0,Path,Port"),
+  GB_CONSTANT("_Properties", "s", "Type=Local,Path,Port"),
   GB_CONSTANT("_DefaultEvent", "s", "Connection"),
 
   GB_END_DECLARE

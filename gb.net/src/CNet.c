@@ -144,6 +144,7 @@ GB_DESC CNetDesc[] =
   GB_CONSTANT("HostNotFound", "i", -6),
   GB_CONSTANT("CannotBindSocket", "i", -10),
   GB_CONSTANT("CannotListen", "i", -14),
+  GB_CONSTANT("CannotBindInterface", "i", -15),
   /* SeverSocket, type */
   GB_CONSTANT("Internet", "i", 1),
   GB_CONSTANT("Local", "i", 0),

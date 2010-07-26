@@ -63,10 +63,8 @@ typedef
 		int Client;
 		void **children;
 		int nchildren;
+		char *interface;
 	}  
 	CSERVERSOCKET;
-
-int srvsock_listen(CSERVERSOCKET* mythis, int mymax);
-void srvsock_post_error(CSERVERSOCKET* mythis);
 
 #endif

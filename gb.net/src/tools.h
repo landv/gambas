@@ -53,7 +53,7 @@ void Alloc_CallBack_Pointers(long nobjs,long **objs,long **scks);
 int search_by_integer(long *objlist,long nobj,long iData);
 
 int CheckConnection(int Socket);
-int IsHostPath(char *sCad,char **buf,int *port);
+int IsHostPath(char *sCad, int lenCad, char **buf,int *port);
 
 void correct_url(char **buf,char *protocol);
 int ConvertBaudRate(int nBauds);
