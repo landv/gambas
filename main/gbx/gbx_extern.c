@@ -25,7 +25,7 @@
 #include "config.h"
 #include "gb_common.h"
 
-#if HAVE_FFI_COMPONENT
+#ifdef HAVE_FFI_COMPONENT
 
 #include <ffi.h>
 
@@ -649,6 +649,8 @@ void *EXTERN_make_callback(VALUE_FUNCTION *value)
 }
 
 #else /* HAVE_FFI_COMPONENT */
+
+#include "gbx_value.h"
 
 void EXTERN_call(void)
 {
