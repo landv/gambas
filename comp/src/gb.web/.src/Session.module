@@ -112,15 +112,17 @@ Private Sub WriteValue(vVal As Variant)
   
 End
 
-Private Sub LockSession() As File
+Private Sub LockSession() 
   
   Dim iInd As Integer
   
   For iInd = 1 To 10
     Try $hLock = Lock $sPath & ".lock"
-    If Not Error Then Break
+    If Not Error Then Return
     Sleep 0.1
   Next
+  
+  Main.Log("LockSession: unable to lock session")
   
 End
 
@@ -136,28 +138,38 @@ Private Sub SaveSession()
   Dim hFile As File
   Dim hLock As File
   Dim sTemp As String
+  Dim eNow As Float
 
   'PRINT "<h2>Save session</h2>"
   'PRINT "<p>"; $sId; "<br>"; $bModify; "<br>"; $sPath; "<br>"; $cVal.Count
   
   If Not $sId Then Return 
-
+  
   sTemp = Temp$()
 
   'Startup time is always modified
   If Not $bModify Then 
   
-    LockSession
-    
-    'Main.Log("SaveSession: " & $sPath & ": Just update time stamp : " & Exist($sPath))
-    hFile = Open $sPath For Write 
-    Write #hFile, Now As Float
-    Close #hFile
-    
-    UnlockSession
-    
+    eNow = Now
+    If (eNow - $eStartup) > 1 Then
+  
+      Main.Log("SaveSession: " & $sId & ": update timestamp")
+
+      LockSession
+      
+      'Main.Log("SaveSession: " & $sPath & ": Just update time stamp : " & Exist($sPath))
+      hFile = Open $sPath For Write 
+      Write #hFile, Now As Float
+      Close #hFile
+      
+      UnlockSession
+      
+    Endif
+
   Else
   
+    Main.Log("SaveSession: " & $sId)
+    
     'Main.Log("SaveSession: " & $sPath & ": Save all session : " & Exist($sPath))
     hFile = Open sTemp For Write Create 
 
@@ -177,11 +189,17 @@ Private Sub SaveSession()
     
   Endif
     
+  Main.Log("SaveSession: OK")
+
   ' If Exist($sPath) Then
   '   Main.Log("SaveSession: " & $sPath & " (" & Stat($sPath).Size & ")")
   ' Else
   '   Main.Log("SaveSession: " & $sPath & " NOT FOUND!")
   ' Endif
+  
+Catch
+  
+  Main.Log("SaveSession: " & Error.Where & ": " & Error.Text)
   
 End
 
@@ -264,7 +282,7 @@ Private Sub LoadSession()
   
   Dim hFile As File
 
-  'Main.Log("LoadSession: " & $sPath)
+  Main.Log("LoadSession: " & $sPath)
   ' Main.Log("System.Language = " & System.Language)
   ' Main.Log("System.Charset = " & System.Charset)
   ' Main.Log(System.Backtrace.Join(" "))
@@ -281,17 +299,16 @@ Private Sub LoadSession()
   $eStartup = Read As Float
   $eTimeout = Read As Float
   If CheckSession() Then 
-    'Main.Log("* TimeOut: " & CStr(CDate($eTimeOut)) & " Startup: " & CStr(CDate($eStartup)) & " Now: " & CStr(Now))
+    Main.Log("LoadSession: timeout: " & CStr(CDate($eTimeOut)) & " Startup: " & CStr(CDate($eStartup)) & " Now: " & CStr(Now))
     Goto _ABANDON
   Endif
-  
-  'Main.Log("LoadSession: #3")
   
   $cVal = ReadValue()
   $bModify = False
   Close #hFile
   Input From Default
   UnlockSession
+  Main.Log("LoadSession: OK")
   Return  
 
 Catch
@@ -302,6 +319,8 @@ Catch
   'Try Copy $sPath To $sPath & ".error"
 
 _ABANDON:
+
+  Main.Log("LoadSession: abandon")
 
   'Main.Log("LoadSession: #4")
 
@@ -332,7 +351,7 @@ Private Sub CheckUnique()
   
   If Not $bUnique Then Return
   
-  Try hLock = Lock GetPath(".unique")
+  Try hLock = Lock GetPath(".unique.lock")
   If Error Then Return
   
   If $sPrefix Then
@@ -397,6 +416,8 @@ End
 
 
 Public Sub _init()
+  
+  Main.AllowLog = Exist("/tmp/session.debug")
   
   $sId = Request.Cookies["SESSION"]
   '$sId = "9E2496B3AB6DDED93ABE6F0CF6E071B3@"

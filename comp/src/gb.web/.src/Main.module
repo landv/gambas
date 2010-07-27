@@ -1,8 +1,12 @@
 ' Gambas module file
 
+Public AllowLog As Boolean
+
 Public Sub Log(sMsg As String)
   
   Dim hFile As File
+  
+  If Not AllowLog Then Return
   
   hFile = Open "/tmp/session.log" For Append 
   Print #hFile, sMsg
