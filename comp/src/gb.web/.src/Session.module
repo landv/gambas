@@ -151,20 +151,18 @@ Private Sub SaveSession()
   If Not $bModify Then 
   
     eNow = Now
-    If (eNow - $eStartup) > 1 Then
+    If (eNow - $eStartup) < 1 Then Return
   
-      Main.Log("SaveSession: " & $sId & ": update timestamp")
+    Main.Log("SaveSession: " & $sId & ": update timestamp")
 
-      LockSession
-      
-      'Main.Log("SaveSession: " & $sPath & ": Just update time stamp : " & Exist($sPath))
-      hFile = Open $sPath For Write 
-      Write #hFile, Now As Float
-      Close #hFile
-      
-      UnlockSession
-      
-    Endif
+    LockSession
+    
+    'Main.Log("SaveSession: " & $sPath & ": Just update time stamp : " & Exist($sPath))
+    hFile = Open $sPath For Write 
+    Write #hFile, Now As Float
+    Close #hFile
+    
+    UnlockSession
 
   Else
   
