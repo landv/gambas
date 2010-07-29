@@ -151,6 +151,7 @@ COMPONENT *COMPONENT_create(const char *name)
   char *path = NULL;
   bool can_archive;
 	bool library = FALSE;
+	bool same_name_as_project = FALSE;
 
 	if (*name == '/') // user library
 	{
@@ -177,11 +178,11 @@ COMPONENT *COMPONENT_create(const char *name)
 	else
 	{
 		// Don't load the archive if it has the same name as the project
-
+		
 		if (PROJECT_name)
-			can_archive = strcmp(name, PROJECT_name);
-		else
-			can_archive = TRUE;
+			same_name_as_project = strcmp(name, PROJECT_name) == 0;
+		
+		can_archive = !same_name_as_project;
 
 		// System wide component, located in /usr/local/lib/gambas2 (by default)
 
@@ -204,7 +205,7 @@ COMPONENT *COMPONENT_create(const char *name)
   LIST_insert(&_component_list, comp, &comp->list);
   COMPONENT_count++;
 
-  if (!comp->library && !comp->archive)
+  if (!comp->library && !comp->archive && !same_name_as_project)
 	{
 		COMPONENT_delete(comp);
 		THROW(E_LIBRARY, name, "cannot find component");

@@ -61,7 +61,7 @@ Public Sub MySock_Read()
   '****************************************
   Dim S As String
   If MySock.Status = Net.Connected Then
-      Read #MySock, S, -16 'Lof(MySock)
+      Read #MySock, S, Lof(MySock)
       TextArea1.Pos = TextArea1.Length
       TextArea1.Insert(S)
   End If

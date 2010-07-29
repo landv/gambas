@@ -2,6 +2,8 @@
 
 { Form Form
   MoveScaled(0,0,93,63)
+  Arrangement = Arrange.Vertical
+  Spacing = True
   Margin = True
   { Menu4 Menu
     Text = ("Menu4")
@@ -20,9 +22,11 @@
       Text = ("Action 3")
     }
   }
-  { ColorChooser1 ColorChooser
-    MoveScaled(9,14,47,24)
-    ShowAlpha = True
-    ShowColorMap = False
+  { DateChooser1 DateChooser
+    MoveScaled(13,12,44,32)
+  }
+  { Button1 Button
+    MoveScaled(31,53,16,4)
+    Text = ("Button1")
   }
 }

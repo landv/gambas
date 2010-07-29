@@ -5,7 +5,7 @@ Export
 Inherits UserControl
 
 'Public Const _Properties As String = "*,AutoResize,Text,Picture,Border,Radio,Toggle,Value"
-Public Const _Properties As String = "*,Action,Text,Picture,Arrow,Menu"
+Public Const _Properties As String = "*,Action,AutoResize,Text,Picture,Arrow=True,Menu"
 Public Const _DefaultSize As String = "6,4"
 Public Const _Similar As String = "Button"
 
@@ -21,6 +21,7 @@ Property Menu As String
 'Property Action As String
 Property Value As Boolean
 Property Arrow As Boolean
+Property AutoResize As Boolean
 
 Private $hPanel As HBox
 Private $hButton As ToolButton
@@ -31,6 +32,7 @@ Private $sMenu As String
 Private $bInside As Boolean
 Private $bPressed As Boolean
 Private $bArrow As Boolean
+Private $bAutoResize As Boolean
 
 Public Sub _new()
   
@@ -63,6 +65,7 @@ End
 Private Sub Picture_Write(Value As Picture)
 
   $hButton.Picture = Value
+  UpdateSize
 
 End
 
@@ -75,6 +78,7 @@ End
 Private Sub Text_Write(Value As String)
 
   $hButton.Text = Value
+  UpdateSize
 
 End
 
@@ -92,8 +96,12 @@ End
 
 Public Sub Button_Click()
   
-  Action.Raise(Me)
-  Raise Click
+  If $bArrow Then
+    Action.Raise(Me)
+    Raise Click
+  Else
+    Arrow_Click
+  Endif
   
 End
 
@@ -192,5 +200,35 @@ Private Sub Arrow_Write(Value As Boolean)
 
   $bArrow = Value
   $hArrow.Visible = Value
+  UpdateSize
+
+End
+
+Private Sub UpdateSize()
+  
+  Dim W As Integer
+  
+  If Not $hButton.AutoResize Then Return
+  
+  $hButton.W = Desktop.Scale
+  W = $hButton.W
+  If $bArrow Then W += $hArrow.W
+  Me.W = W
+  
+End
+
+
+Private Function AutoResize_Read() As Boolean
+
+  Return $hButton.AutoResize
+
+End
+
+Private Sub AutoResize_Write(Value As Boolean)
+
+  '$bAutoResize = Value
+  $hButton.Expand = Not Value
+  $hButton.AutoResize = Value
+  UpdateSize
 
 End

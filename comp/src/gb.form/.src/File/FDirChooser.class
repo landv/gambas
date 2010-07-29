@@ -7,28 +7,36 @@ Event Change
 Event {Select}
 Event GetIcon(Path As String)
 Event ShowHidden
+Event Cancel
+Event OK
 'EVENT ShowHiddenChange
 
 Private $bView As Boolean
 Private $sActivate As String
 Private $aFilter As String[]
 Private $bFile As Boolean
-Private $aBookmark As Array
 Private $iMaxWidth As Integer
+Private $hBookmarkList As CBookmarkList
 
 Static Private $aHistory As New String[]
-
-Class Settings
 
 Public Sub _new(Optional bFile As Boolean)
 
   DirView = dvwChoose
   FileView = fvwChoose
+  
+  $hBookmarkList = New CBookmarkList
+  FillMenu
 
-  SetRoot()  
-
+  SetRoot()
+  SetBookmark($hBookmarkList.FindBest(System.User.Home))
+  
   $bFile = bFile
-  If Not bFile Then Return
+  
+  If Not bFile Then 
+    UpdateFilterPanel
+    Return
+  Endif
 
   btnView_Click
   btnView.Visible = False
@@ -137,9 +145,22 @@ Private Sub AddToHistory(sDir As String)
   
 End
 
+Private Sub SetBookmark(hBookmark As CBookmark)
+  
+  If Not hBookmark Then Return
+  SetRoot(hBookmark.Path)
+  dvwChoose.Picture = Picture[hBookmark.Icon]
+  btnBookmark.Picture = dvwChoose.Picture
+  btnBookmark.Text = hBookmark.Name
+  
+End
+
+
 Public Sub SetDir(sDir As String)
 
-  If panBookmark.Visible Then FindBestBookmark(sDir)
+  If btnBookmark.Visible Then
+    SetBookmark($hBookmarkList.FindBest(sDir))
+  Endif
     
   dvwChoose.Current = sDir
 
@@ -338,7 +359,7 @@ Public Sub SetFilter(Optional aFilter As String[])
   cmbFilter.Add(("All files (*)"))
 
   cmbFilter.Index = 0
-  cmbFilter.Visible = cmbFilter.Count > 1
+  UpdateFilterPanel
 
 End
 
@@ -362,7 +383,7 @@ Public Function GetFilter() As String[]
   Dim aFilter As New String[]
 
   For iInd = 0 To $aFilter.Max
-    aFilter.Add($aFilter(iInd))
+    aFilter.Add($aFilter[iInd])
     aFilter.Add(cmbFilter[iInd].Text)
   Next
 
@@ -436,222 +457,21 @@ Private Sub GetRealLink(sLink As String) As String
 End
 
 
-Public Sub AddBookmark(sLink As String, Optional sName As String, sIcon As String)
+Public Sub mnuBookmark_Click()
 
-  Dim hPanel As HBox
-  Dim hIcon As PictureBox
-  Dim hVBox As VBox
-  Dim hText As Label
-  Dim sTooltip As String
-  
-  If Not sName Then sName = File.Name(sLink)
-  If Not sIcon Then sIcon = "icon:/small/bookmark"
+  Dim hMenu As Menu = Last
+  Dim sLink As String = hMenu.Tag
+  Dim hBookmark As CBookmark = $hBookmarkList.FindBookmark(sLink)
 
-  sTooltip = GetRealLink(sLink)
-  
-  hPanel = New HBox(lstBookmark)
-  hPanel.Padding = 2
-  hPanel.Spacing = 6
-  hPanel.Tag = sLink
-  hPanel.ToolTip = sTooltip
-  hPanel.Height = hPanel.Font.Height * 2 + 8
-
-  hIcon = New PictureBox(hPanel)
-  hIcon.Picture = Picture[sIcon]
-  hIcon.Alignment = Align.Center
-  hIcon.Resize(20, 16)
-  hIcon.ToolTip = sTooltip
-
-  hVBox = New VBox(hPanel)
-  hVBox.Expand = True
-
-  hText = New Label(hVBox)
-  'hText.Expand = TRUE
-  hText.AutoResize = True
-  hText.Expand = True
-  'hText.Alignment = Align.TopNormal
-  hText.Text = sName  
-  hText.ToolTip = sTooltip
-  'hText.Background = Color.Yellow
-  hText.Font.Bold = True
-  'hText.Font.Grade = 3
-
-  $iMaxWidth = Max($iMaxWidth, hText.Font.TextWidth(sName))
-
-  If Left(sLink) <> "$" Then
-    hText = New Label(hVBox)
-    'hText.Expand = TRUE
-    hText.AutoResize = True
-    hText.Expand = True
-    'hText.Alignment = Align.TopNormal
-    hText.Text = Replace(sTooltip, System.User.Home, "~")
-    'hText.Font.Grade = -1
-
-    $iMaxWidth = Max($iMaxWidth, hText.Font.TextWidth(hText.Text))
-  Endif
-  
-End
-
-Public Sub RemoveBookmark(sLink As String)
-  
-  Dim hPanel As Container
-  
-  For Each hPanel In lstBookmark.Children
-    If hPanel.Tag Then hPanel.Delete
-  Next
-  
-End
-
-
-Private Sub LoadBookmark()
-  
-  Dim hSettings As Settings 
-  Dim iInd As Integer
-  Dim aBookmark As String[]
-
-  If Not Components["gb.settings"] Then Return
-  
-  hSettings = New Settings("gb.form")
-  
-  For iInd = 1 To hSettings["/Bookmarks/Count", 0]
-    aBookmark = hSettings["/Bookmarks/Bookmark" & CStr(iInd)]
-    AddBookmark(aBookmark[0], aBookmark[1])
-  Next
-
-End
-
-
-Private Sub SaveBookmark()
-  
-  Dim hSettings As Settings 
-  Dim iInd As Integer  
-  Dim hPanel As Container
-  
-  If Not Components["gb.settings"] Then Return
-  
-  hSettings = New Settings("gb.form")
-
-  hSettings.Clear("/Bookmarks")
-  
-  For Each hPanel In lstBookmark.Children
-    If Left(hPanel.Tag) <> "/" Then Continue
-    If Not hPanel.Visible Then Continue
-    Inc iInd
-    hSettings["/Bookmarks/Bookmark" & CStr(iInd)] = [CStr(hPanel.Tag), File.Name(hPanel.Tag)]
-  Next
-  
-  hSettings["/Bookmarks/Count"] = iInd
-
-  hSettings.Save
-    
-End
-
-
-Private Sub FillBookmark()
-  
-  Dim iInd As Integer
-  Dim sLink As String
-  Dim sName As String
-  Dim sIcon As String
-  
-  lstBookmark.Clear
-  $iMaxWidth = 0
-  
-  AddBookmark("$" & System.User.Home, ("Home"), "icon:/small/home")
-  If Component.IsLoaded("gb.desktop") Then
-    AddBookmark("$" & Desktop.Path, ("Desktop"), "icon:/small/desktop")
-  Endif
-  AddBookmark("$/", ("System"), "icon:/small/system")
-
-  If $aBookmark Then
-    For iInd = 0 To $aBookmark.Max
-      sName = ""
-      sIcon = ""
-      If IsObject($aBookmark[iInd]) Then
-        sLink = $aBookmark[iInd][0]
-        Try sName = $aBookmark[iInd][1]
-        Try sIcon = $aBookmark[iInd][2]
-      Else 
-        sLink = $aBookmark[iInd]
-      Endif
-      AddBookmark("#" & sLink, sName, sIcon)
-    Next
-  Endif 
-
-  LoadBookmark
-  
-  panBookmark.Dimension = Min($iMaxWidth + 52, Me.Width / 2)
-
-  SelectBookmark
-  
-End
-
-
-Public Sub ShowBookmark(bShow As Boolean)
-
-  panBookmark.Visible = bShow
-  FillBookmark  
-  'FindBookmark
-  
-End
-
-Public Sub IsBookmarkVisible() As Boolean
-  
-  Return panBookmark.Visible
-  
-End
-
-Private Sub SelectBookmark()
-  
-  Dim hPanel As Container
-  Dim hIcon As PictureBox
-  Dim sRoot As String
-
-  If Not panBookmark.Visible Then Return
-  
-  sRoot = dvwChoose.Root
-  If Not sRoot Then sRoot = System.User.Home
-  
-  For Each hPanel In lstBookmark.Children
-    If GetRealLink(hPanel.Tag) = sRoot Then 
-      For Each hIcon In hPanel.Children
-        dvwChoose.Picture = hIcon.Picture
-        Break
-      Next
-      lstBookmark.Select(hPanel)
-      Return
-    Endif
-  Next
-  
-End
-
-Private Sub FindBookmark(sLink As String) As Container
-  
-  Dim hPanel As Container
-  
-  For Each hPanel In lstBookmark.Children
-    If GetRealLink(hPanel.Tag) = sLink Then Return hPanel
-  Next  
-  
-End
-
-
-Public Sub lstBookmark_Click()
-
-  Dim sLink As String = lstBookmark.Current.Tag
-
-  SetRoot(GetRealLink(sLink))
-  btnRemove.Enabled = Left(sLink) = "/"
+  SetBookmark(hBookmark)
   
 End
 
 
 Public Sub SetRoot(Optional sRoot As String)
   
-  If sRoot = dvwChoose.Root Then Return  
+  If sRoot = dvwChoose.Root Then Return
   dvwChoose.Root = sRoot
-  
-  SelectBookmark
   
 End
 
@@ -661,43 +481,55 @@ Public Sub GetRoot() As String
   
 End
 
-Public Sub SetPrivateBookmarks(aBookmark As Array)
+Public Sub SetPrivateBookmarks(aBookmark As Collection[])
   
-  $aBookmark = aBookmark
-  FillBookmark    
-  
-End
-
-Public Sub GetPrivateBookmarks() As Array
-  
-  Return $aBookmark
+  $hBookmarkList.Private = aBookmark
+  FillMenu
   
 End
 
-Public Sub btnAdd_Click()
+Public Sub GetPrivateBookmarks() As Collection[]
+  
+  Return $hBookmarkList.Private
+  
+End
+
+Public Sub mnuAddBookmark_Click()
 
   Dim sLink As String = dvwChoose.Current
   
-  If FindBookmark(sLink) Then Return 
-  AddBookmark(sLink)
-  SaveBookmark
+  If $hBookmarkList.FindBookmark(sLink) Then Return 
+  
+  Inc Application.Busy
+  $hBookmarkList.AddBookmark(sLink)
+  $hBookmarkList.Save
+  FillMenu
+  SetRoot(sLink)
+  
+Finally
+  Dec Application.Busy
 
 End
 
-Public Sub btnRemove_Click()
+Public Sub mnuRemoveBookmark_Click()
 
-  lstBookmark.Current.Delete
-  SetRoot()
-  SaveBookmark
+  Inc Application.Busy
+  $hBookmarkList.RemoveBookmark(dvwChoose.Root)
+  $hBookmarkList.Save
+  FillMenu
+  SetDir(dvwChoose.Current)
+  
+Finally
+  Dec Application.Busy
 
 End
 
 Public Sub GetSettings() As Variant[]
   
   If Not $bFile Then 
-    Return [CVariant(dvwChoose.Root), dvwChoose.Current, $bView, splChoose.Layout, btnShowHidden.Value, fvwChoose.Settings, Not panBookmark.Hidden]
+    Return [CVariant(dvwChoose.Root), dvwChoose.Current, $bView, splChoose.Layout, btnShowHidden.Value, fvwChoose.Settings, btnBookmark.Visible]
   Else
-    Return [CVariant(dvwChoose.Root), dvwChoose.Current, fvwChoose.Current, $bView, splChoose.Layout, btnShowHidden.Value, fvwChoose.Settings, GetFilterIndex(), Not panBookmark.Hidden]
+    Return [CVariant(dvwChoose.Root), dvwChoose.Current, fvwChoose.Current, $bView, splChoose.Layout, btnShowHidden.Value, fvwChoose.Settings, GetFilterIndex(), btnBookmark.Visible]
   Endif 
 
 End
@@ -712,8 +544,8 @@ Public Sub SetSettings(aVar As Variant[])
     If Not Error Then btnView_Click
     splChoose.Layout = aVar[3]
     Try btnShowHidden.Value = aVar[4]
-    Try fvwChoose.Settings = aVar[5] 
-    Try panBookmark.Hidden = Not aVar[6]
+    Try fvwChoose.Settings = aVar[5]
+    Try btnBookmark.Visible = aVar[6]
     
   Else
   
@@ -726,10 +558,12 @@ Public Sub SetSettings(aVar As Variant[])
     Try btnShowHidden.Value = aVar[5]
     Try fvwChoose.Settings = aVar[6]
     Try SetFilterIndex(aVar[7])
-    Try panBookmark.Hidden = Not aVar[8]
+    Try btnBookmark.Visible = aVar[8]
     
   Endif
 
+  FillMenu
+  
 End
 
 Public Sub btnNewDir_Click()
@@ -738,41 +572,6 @@ Public Sub btnNewDir_Click()
 
 End
 
-Private Sub FindBestBookmark(sDir As String)
-  
-  Dim hPanel As Container
-  Dim sBest As String
-  Dim iScore As Integer
-  Dim aBook As String[]
-  Dim aDir As String[]
-  Dim iInd As Integer
-  
-  aDir = Split(sDir, "/")
-  
-  For Each hPanel In lstBookmark.Children
-    aBook = Split(GetRealLink(hPanel.Tag), "/")
-    For iInd = 0 To Min(aDir.Max, aBook.Max)
-      If aBook[iInd] <> aDir[iInd] Then Break
-    Next
-    'DEBUG "Comp:";; aBook.Join("|");; aDir.Join("|");; "=";; iInd
-    If iInd > iScore And If iInd > aBook.Max Then   
-      iScore = iInd
-      sBest = hPanel.Tag
-    Endif
-  Next  
-  
-  If iScore <= 1 Then sBest = "$/"
-  
-  For Each hPanel In lstBookmark.Children
-    If hPanel.Tag = sBest Then 
-      'DEBUG sDir; " -> "; hPanel.Tag
-      lstBookmark.Select(hPanel)
-      Break 
-    Endif
-  Next  
-  
-  
-End
 
 Public Sub btnRefresh_Click()
 
@@ -805,6 +604,20 @@ Public Sub Reload()
   
 End
 
+Public Sub SetDialogButtonVisible(bVisible As Boolean)
+  
+  panButton.Visible = bVisible
+  UpdateFilterPanel
+  
+End
+
+Public Sub IsDialogButtonVisible() As Boolean
+  
+  Return panButton.Visible 
+  
+End
+
+
 ' Public Sub ShowAutomaticExtension(bShow As Boolean)
 '   
 '   chkExt.Visible = bShow
@@ -816,3 +629,126 @@ End
 '   chkExt.Value = bVal
 '   
 ' End
+
+Public Sub btnOK_Click()
+
+  Raise Select
+
+End
+
+Public Sub btnCancel_Click()
+
+  Raise Cancel
+
+End
+
+Private Sub GetHeight(hCont As Container) As Integer
+  
+  Dim H As Integer
+  Dim hChild As Control
+  
+  For Each hChild In hCont.Children
+    If hChild.Visible Then H = Max(H, hChild.Y + hChild.H)
+  Next
+  
+  Return H
+  
+End
+
+
+Public Sub UpdateFilterPanel()
+
+  Dim H As Integer
+
+  Object.Lock(panFilter)
+  
+  cmbFilter.Enabled = cmbFilter.Count > 1
+  cmbFilter.Visible = txtFile.Visible
+  If Not cmbFilter.Enabled And If Not panButton.Visible Then cmbFilter.Hide
+
+  If panButton.Visible Then
+    panFilter.H = Max(panButton.H, GetHeight(panExtension))
+    panFilter.Show
+  Else
+    H = GetHeight(panExtension)
+    If H Then
+      panFilter.H = H
+      panFilter.Show
+    Else
+      panFilter.Hide
+    Endif
+  Endif
+  
+  Object.Unlock(panFilter)
+
+End
+
+Public Sub GetExtensionContainer() As Container
+  
+  Return panExtension
+  
+End
+
+Public Sub panExtension_Arrange()
+
+  UpdateFilterPanel
+
+End
+
+Private Sub AddBookmarkMenu(hBookmark As CBookmark)
+  
+  Dim hMenu As Menu
+  
+  hMenu = New Menu(mnuBookmark) As "mnuBookmark"
+  hMenu.Tag = hBookmark.Link
+  hMenu.Text = hBookmark.Name
+  hMenu.Picture = Picture[hBookmark.Icon]
+  
+End
+
+
+Private Sub FillMenu()
+  
+  Dim hBookmark As CBookmark
+  
+  Dim iInd As Integer
+  Dim sLink As String
+  Dim sName As String
+  Dim sIcon As String
+  Dim hSettings As Settings 
+  Dim aBookmark As String[]
+  Dim hMenu As Menu
+  
+  If Not btnBookmark.Visible Then Return
+  
+  mnuBookmark.Children.Clear
+  
+  For Each hBookmark In $hBookmarkList
+    AddBookmarkMenu(hBookmark)
+  Next
+  
+  hMenu = New Menu(mnuBookmark)
+  
+  hMenu = New Menu(mnuBookmark) As "mnuAddBookmark"
+  hMenu.Text = ("&Add bookmark")
+  hMenu.Picture = Picture["icon:/small/add"]
+  
+  hMenu = New Menu(mnuBookmark) As "mnuRemoveBookmark"
+  hMenu.Text = ("&Remove bookmark")
+  hMenu.Picture = Picture["icon:/small/remove"]
+  
+End
+
+Public Sub IsBookmarkVisible() As Boolean
+  
+  Return btnBookmark.Visible
+  
+End
+
+Public Sub ShowBookmark(bShow As Boolean)
+  
+  btnBookmark.Visible = bShow
+  FillMenu
+  
+End
+

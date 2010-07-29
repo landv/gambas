@@ -3,7 +3,7 @@
 Inherits UserControl
 Export
 
-Public Const _Properties As String = "*,Root,Picture,Multi,Filter,ShowHidden,ShowDirectory,ShowDetailed,ShowBookmark,ReadOnly"
+Public Const _Properties As String = "*,Root,Picture,Multi,Filter,ShowHidden,ShowDirectory,ShowDetailed,ShowBookmark=True,ShowButton,ReadOnly"
 Public Const _DefaultEvent As String = "Change"
 Public Const _DefaultSize As String = "36,36"
 Public Const _Group As String = "Chooser"
@@ -23,6 +23,8 @@ Property Bookmarks As Array
 Property Settings As Variant[]
 Property Read DirView As DirView
 Property Read FileView As FileView
+Property ShowButton As Boolean
+Property Read Extension As Container
 
 Property ReadOnly As Boolean
 Property Filter As String[]
@@ -32,6 +34,8 @@ Property Icon As Picture
 Event Change
 Event Activate
 Event Icon(Path As String)
+Event Cancel
+
 'EVENT ShowHidden
 
 Private frmChooser As FDirChooser
@@ -310,5 +314,30 @@ End
 Private Function DirView_Read() As DirView
 
   Return frmChooser.DirView
+
+End
+
+Private Function ShowButton_Read() As Boolean
+
+  Return frmChooser.IsDialogButtonVisible()
+
+End
+
+Private Sub ShowButton_Write(Value As Boolean)
+
+  frmChooser.SetDialogButtonVisible(Value)
+
+End
+
+Public Sub frmChooser_Cancel()
+  
+  Raise Cancel
+  
+End
+
+
+Private Function Extension_Read() As Container
+
+  Return frmChooser.GetExtensionContainer()
 
 End

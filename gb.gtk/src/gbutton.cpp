@@ -28,7 +28,7 @@
 
 #include <unistd.h>
 
-static void bt_click(GtkButton *object, gButton *data)
+static void cb_click(GtkButton *object, gButton *data)
 {
 	if (data->disable)
 	{
@@ -52,10 +52,20 @@ static void bt_click(GtkButton *object, gButton *data)
 	data->emit(SIGNAL(data->onClick));
 }
 
-static void cb_released(GtkButton *object, gButton *data)
+static void cb_click_radio(GtkButton *object,gControl *data)
 {
-	if (data->isTristate())
+	if (!gApplication::userEvents()) return;
+
+	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(object)))
+		if (((gButton*)data)->onClick) ((gButton*)data)->onClick((gControl*)data);
+	return;
+}
+
+static void cb_click_check(GtkButton *object, gButton *data)
+{
+	if (data->isTristate() && !data->locked())
 	{
+		data->lock();
 		if (data->inconsistent())
 		{
 			data->setInconsistent(false);
@@ -63,10 +73,12 @@ static void cb_released(GtkButton *object, gButton *data)
 		}
 		else if (!data->value())
 			data->setInconsistent(true);
+		data->unlock();
 	}
 
 	data->emit(SIGNAL(data->onClick));
 }
+
 
 static bool button_expose(GtkWidget *wid,GdkEventExpose *e,gButton *data)
 {
@@ -180,15 +192,6 @@ static bool button_expose(GtkWidget *wid,GdkEventExpose *e,gButton *data)
 	return FALSE;
 }
 
-static void rd_click (GtkButton *object,gControl *data)
-{
-	if (!gApplication::userEvents()) return;
-
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(object)))
-		if (((gButton*)data)->onClick) ((gButton*)data)->onClick((gControl*)data);
-	return;
-}
-
 gButton::gButton(gContainer *par, Type typ) : gControl(par)
 {
 	gContainer *ct;
@@ -275,12 +278,12 @@ gButton::gButton(gContainer *par, Type typ) : gControl(par)
 	onClick=NULL;
 	
 	if (type == Radio)
-		g_signal_connect(G_OBJECT(widget),"clicked",G_CALLBACK(rd_click),(gpointer)this);
+		g_signal_connect(G_OBJECT(widget),"clicked",G_CALLBACK(cb_click_radio),(gpointer)this);
+	else if (type == Check)
+		g_signal_connect(G_OBJECT(widget), "clicked", G_CALLBACK(cb_click_check), (gpointer)this);	
 	else
-		g_signal_connect(G_OBJECT(widget),"clicked",G_CALLBACK(bt_click),(gpointer)this);	
+		g_signal_connect(G_OBJECT(widget),"clicked",G_CALLBACK(cb_click),(gpointer)this);	
 	
-	if (type == Check)
-		g_signal_connect(G_OBJECT(widget), "released", G_CALLBACK(cb_released), (gpointer)this);	
 	
 	if (type == Tool) 
     setBorder(false);

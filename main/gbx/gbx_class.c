@@ -860,6 +860,9 @@ void CLASS_inheritance(CLASS *class, CLASS *parent)
 	if (parent->auto_create)
 		class->auto_create = TRUE;
 
+	if (!class->array_type)
+		class->array_type = parent->array_type;
+	
 	//fprintf(stderr, "CLASS_inheritance: %s %s\n", class->name, class->auto_create ? "AUTO CREATE" : "");
 }
 

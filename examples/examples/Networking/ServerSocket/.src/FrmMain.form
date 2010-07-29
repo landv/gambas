@@ -14,10 +14,10 @@
   }
   { TextArea1 TextArea
     MoveScaled(1,22,61,28)
-    Text = ("")
   }
   { Button2 Button
     MoveScaled(44,6,18,4)
+    Enabled = False
     Text = ("Close")
   }
   { TextLabel1 TextLabel
@@ -54,10 +54,8 @@
   }
   { TxtPath TextBox
     MoveScaled(22,11,40,4)
-    Text = ("")
   }
   { Server #ServerSocket
-    #X = 282
-    #Y = 192
+    #MoveScaled(13,8)
   }
 }

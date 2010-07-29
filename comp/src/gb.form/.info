@@ -418,7 +418,7 @@ C
 _Properties
 C
 s
-*,Root,Picture,ShowHidden,ShowFile,ShowDetailed,ShowBookmark,ShowSplitter=True
+*,Root,Picture,ShowHidden,ShowFile,ShowDetailed,ShowBookmark=True,ShowSplitter=True
 _DefaultEvent
 C
 s
@@ -683,7 +683,7 @@ C
 _Properties
 C
 s
-*,Root,Picture,Multi,Filter,ShowHidden,ShowDirectory,ShowDetailed,ShowBookmark,ReadOnly
+*,Root,Picture,Multi,Filter,ShowHidden,ShowDirectory,ShowDetailed,ShowBookmark=True,ShowButton,ReadOnly
 _DefaultEvent
 C
 s
@@ -756,6 +756,14 @@ FileView
 r
 FileView
 
+ShowButton
+p
+b
+
+Extension
+r
+Container
+
 ReadOnly
 p
 b
@@ -784,6 +792,10 @@ Picture
 :
 
 (Path)s
+:Cancel
+:
+
+
 _new
 m
 
@@ -805,6 +817,10 @@ m
 
 (Path)s
 Reload
+m
+
+
+frmChooser_Cancel
 m
 
 
@@ -1102,7 +1118,7 @@ C
 _Properties
 C
 s
-*,Action,Text,Picture,Arrow,Menu
+*,Action,AutoResize,Text,Picture,Arrow=True,Menu
 _DefaultSize
 C
 s
@@ -1151,6 +1167,10 @@ Arrow
 p
 b
 
+AutoResize
+p
+b
+
 _new
 m
 
@@ -1160,6 +1180,10 @@ m
 
 
 Button_Click
+m
+
+
+Arrow_Click
 m
 
 
@@ -1176,10 +1200,6 @@ m
 
 
 Button_MouseDrag
-m
-
-
-Arrow_Click
 m
 
 

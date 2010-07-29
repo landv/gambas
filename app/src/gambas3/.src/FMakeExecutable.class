@@ -27,23 +27,8 @@ Public Sub Form_Open()
   ' Endif
   chkShortcut.Visible = Not Project.CreateComponent
   txtCommand.Text = Project.RunAfterMakingExec
-
-End
-
-Public Sub btnOK_Click()
-
-  $sPath = fchExec.SelectedPath
-  Project.KeepDebugInfo = chkDebug.Value
-  Project.CreateShortcut = chkShortcut.Value
-  Project.RunAfterMakingExec = Trim(txtCommand.Text)
-  Project.WriteProject(True)
-  Me.Close(True)
-
-End
-
-Public Sub btnCancel_Click()
-
-  Me.Close
+  
+  panExtension.Reparent(fchExec.Extension)
 
 End
 
@@ -56,6 +41,17 @@ End
 
 Public Sub fchExec_Activate()
 
-  btnOK.Value = True
+  $sPath = fchExec.SelectedPath
+  Project.KeepDebugInfo = chkDebug.Value
+  Project.CreateShortcut = chkShortcut.Value
+  Project.RunAfterMakingExec = Trim(txtCommand.Text)
+  Project.WriteProject(True)
+  Me.Close(True)
 
+End
+
+Public Sub fchExec_Cancel()
+  
+  Me.Close
+  
 End

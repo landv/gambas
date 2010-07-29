@@ -10,7 +10,6 @@
   }
   { TextArea1 TextArea
     MoveScaled(1,44,47,15)
-    Text = ("")
     ReadOnly = True
   }
   { Button2 Button
@@ -41,7 +40,6 @@
   { TextArea2 TextArea
     MoveScaled(1,27,47,6)
     Enabled = False
-    Text = ("")
   }
   { Button3 Button
     MoveScaled(13,34,23,4)
@@ -63,21 +61,18 @@
     List = [("TCP"), ("UNIX")]
   }
   { MySock #Socket
-    #X = 147
-    #Y = 329
+    #MoveScaled(39,36)
     Port = 7
     Timeout = 1000
   }
   { Label3 TextLabel
     MoveScaled(1,17,47,6)
     Font = Font["Bold"]
-    Text = ("")
     Alignment = Align.Center
     Border = Border.Sunken
   }
   { Timer1 #Timer
-    #X = 231
-    #Y = 350
+    #MoveScaled(26,47)
     Delay = 10
   }
 }

@@ -69,7 +69,7 @@ Public Sub Socket_Write()
   
   Do
     Inc iInd
-    If iInd > 1000 Then
+    If iInd > 10 Then
       hSocket.Tag = Null
       Return
     Endif

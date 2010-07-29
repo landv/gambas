@@ -737,6 +737,13 @@ void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
 				SWAP_int64(&value->_long.value);
 			break;
 
+		case T_POINTER:
+
+			STREAM_read(stream, &value->_pointer.value, sizeof(void *));
+			if (stream->common.swap)
+				SWAP_pointer(&value->_pointer.value);
+			break;
+
 		case T_SINGLE:
 
 			STREAM_read(stream, &buffer._single, sizeof(float));
@@ -864,6 +871,7 @@ void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
 		float _single;
 		double _float;
 		unsigned char _data[8];
+		void *_pointer;
 	}
 	buffer;
 	
@@ -915,6 +923,14 @@ void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
 			if (stream->common.swap)
 				SWAP_int64(&buffer._long);
 			STREAM_write(stream, &buffer._long, sizeof(int64_t));
+			break;
+
+		case T_POINTER:
+
+			buffer._pointer = value->_pointer.value;
+			if (stream->common.swap)
+				SWAP_pointer(&buffer._pointer);
+			STREAM_write(stream, &buffer._pointer, sizeof(void *));
 			break;
 
 		case T_SINGLE:
