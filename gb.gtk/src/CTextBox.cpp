@@ -377,6 +377,7 @@ BEGIN_PROPERTY(CCOMBOBOX_list)
 	}
 	else
 	{
+		GB.NewString(&text, COMBOBOX->text(), 0);
 		array = VPROP(GB_OBJECT);
 		COMBOBOX->lock();
 		COMBOBOX->clear();
@@ -385,10 +386,10 @@ BEGIN_PROPERTY(CCOMBOBOX_list)
 			for (i = 0; i < GB.Array.Count(array); i++)
 				COMBOBOX->add(*((char **)GB.Array.Get(array, i)));
 		}
-		COMBOBOX->setIndex(-1);
-		if (array)
-			COMBOBOX->setIndex(0);
+
+		COMBOBOX->setText(text);
 		COMBOBOX->unlock();
+		GB.FreeString(&text);
 	}
 
 END_PROPERTY

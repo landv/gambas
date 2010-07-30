@@ -212,10 +212,13 @@ int gComboBox::index()
 	return gtk_combo_box_get_active (GTK_COMBO_BOX(widget));
 }
 
-char* gComboBox::itemText(int ind)
+char *gComboBox::itemText(int ind)
 {
 	gTreeRow *row;
 	gTreeCell *cell;
+	
+	if (ind < 0)
+		return NULL;
 	
 	updateModel();
 	
@@ -319,10 +322,7 @@ void gComboBox::setReadOnly(bool vl)
 		gtk_widget_show(entry);
 
 		if (count())
-		{
-			//fprintf(stderr, "setReadOnly: gTextBox::setText: %s\n", itemText(index()));
 			gTextBox::setText(itemText(index()));
-		}
 		
 		setBackground(background());
 		setForeground(foreground());
@@ -335,11 +335,19 @@ void gComboBox::setReadOnly(bool vl)
 		g_signal_connect(G_OBJECT(entry), "focus-out-event", G_CALLBACK(gcb_focus_out), (gpointer)this);
 	}
 	
-	if ( vl && entry ) 
+	if (vl && entry) 
 	{
+		char *txt = g_strdup(text());
+		
+		setIndex(-1);
 		gtk_widget_destroy(entry);
-		//gtk_container_remove(GTK_CONTAINER(widget), entry);
 		entry = NULL;
+		
+		_model_dirty = true;
+		updateModel();
+		
+		setText(txt);
+		g_free(txt);
 	}
 	
 	updateFocusHandler();
@@ -353,8 +361,6 @@ void gComboBox::setSorted(bool vl)
 void gComboBox::setText(const char *vl)
 {
 	int index = find(vl);
-	
-	//fprintf(stderr, "setText: %s\n", vl);
 	
 	if (index >= 0)
 		setIndex(index);

@@ -6,6 +6,7 @@ dnl ****************************************************************************
 dnl ---- Initialization
 
 AC_INIT(configure.ac)
+AC_PROG_LIBTOOL
 
 AC_CONFIG_SUBDIRS(main)
 

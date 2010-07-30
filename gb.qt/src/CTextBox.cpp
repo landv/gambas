@@ -402,6 +402,17 @@ static int combo_find_item(void *_object, const QString& s)
   return (-1);
 }
 
+static void combo_set_text(CCOMBOBOX *_object, QString &text)
+{
+	int pos;
+	
+	if (COMBOBOX->editable())
+		COMBOBOX->lineEdit()->setText(text);
+
+	pos = combo_find_item(THIS, text);
+	//COMBOBOX->blockSignals(true);
+	combo_set_current_item(_object, pos);
+}
 
 static void combo_get_list(void *_object, GB_ARRAY array)
 {
@@ -415,10 +426,10 @@ static void combo_get_list(void *_object, GB_ARRAY array)
 	}
 }
 
-
 static void combo_set_list(void *_object, GB_ARRAY array)
 {
 	int i;
+	QString text = COMBOBOX->currentText();
 	
   COMBOBOX->blockSignals(true);
   COMBOBOX->clear();
@@ -435,6 +446,8 @@ static void combo_set_list(void *_object, GB_ARRAY array)
 		COMBOBOX->listBox()->sort();
 
   COMBOBOX->blockSignals(false);
+	
+	combo_set_text(THIS, text);
 	
 	//if (COMBOBOX->count())
 	//	GB.Raise(THIS, EVENT_Click, 0);
@@ -476,21 +489,12 @@ END_METHOD
 
 BEGIN_PROPERTY(CCOMBOBOX_text)
 
-  int pos;
-
   if (READ_PROPERTY)
     GB.ReturnNewZeroString(TO_UTF8(COMBOBOX->currentText()));
   else
   {
     QString text = QSTRING_PROP();
-
-    if (COMBOBOX->editable())
-      COMBOBOX->lineEdit()->setText(text);
-
-    pos = combo_find_item(THIS, text);
-		//COMBOBOX->blockSignals(true);
-    combo_set_current_item(_object, pos);
-		//COMBOBOX->blockSignals(false);
+		combo_set_text(THIS, text);
   }
 
 END_PROPERTY
