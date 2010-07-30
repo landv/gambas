@@ -445,12 +445,9 @@ static void combo_set_list(void *_object, GB_ARRAY array)
 	if (THIS->sorted)
 		COMBOBOX->listBox()->sort();
 
-  COMBOBOX->blockSignals(false);
-	
 	combo_set_text(THIS, text);
 	
-	//if (COMBOBOX->count())
-	//	GB.Raise(THIS, EVENT_Click, 0);
+  COMBOBOX->blockSignals(false);
 }
 
 
