@@ -120,6 +120,8 @@ PRIVATE $aRefreshAfter AS NEW String[]
 PRIVATE $iNoRefresh AS Integer
 PRIVATE $bDoRefresh AS Boolean
 
+PUBLIC CONST DEFAULT_URL AS String = "http://www.endoftheinternet.com/"
+
 PUBLIC SUB _init()
   
   ExampleTitle["Automation"] = ("Automation")
@@ -2320,7 +2322,7 @@ PUBLIC SUB WriteProject(OPTIONAL bComponentDoNotChange AS Boolean, OPTIONAL bMak
   IF Maintainer THEN PRINT #hFic, "Maintainer="; Maintainer
   IF Vendor THEN PRINT #hFic, "Vendor="; Vendor
   IF Address THEN PRINT #hFic, "Address="; Address
-  IF Url THEN PRINT #hFic, "Url="; Url
+  IF Url AND IF Url <> DEFAULT_URL THEN PRINT #hFic, "Url="; Url
   IF License THEN PRINT #hFic, "License="; License
   IF Prefix THEN PRINT #hFic, "Prefix=1"
   IF UseRelease THEN PRINT #hFic, "UseRelease=1"

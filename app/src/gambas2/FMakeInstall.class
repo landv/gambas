@@ -53,7 +53,7 @@ PUBLIC SUB Form_Open()
   IF Project.Url THEN
     txtUrl.Text = Project.Url
   ELSE 
-    txtUrl.Text = "http://www.endoftheinternet.com/"
+    txtUrl.Text = Project.DEFAULT_URL
   ENDIF
 
   txtVendor.Text = Project.Vendor
