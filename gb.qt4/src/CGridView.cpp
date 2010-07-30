@@ -487,7 +487,8 @@ void MyTable::drawContents(QPainter *p, int cx, int cy, int cw, int ch)
 	int collast = columnAt(cx + cw);
 	int rowfirst = rowAt(cy);
 	int rowlast = rowAt(cy + ch);
-
+	MyTableItem *itm;
+	
 	if (rowfirst == -1 || colfirst == -1) 
 	{
 		paintEmptyArea(p, cx, cy, cw, ch);
@@ -520,7 +521,7 @@ void MyTable::drawContents(QPainter *p, int cx, int cy, int cw, int ch)
 			int oldrp = rowp;
 			int oldrh = rowh;
 
-			MyTableItem *itm = (MyTableItem *)item(r, c);
+			itm = (MyTableItem *)item(r, c);
 			itm->getSpan(r, c, &rowspan, &colspan);
 			if (rowspan >= 0 && colspan >= 0)
 			{
@@ -559,6 +560,7 @@ void MyTable::drawContents(QPainter *p, int cx, int cy, int cw, int ch)
 					colw += columnWidth(i + cs);
 			}
 
+			itm = (MyTableItem *)item(rs, cs);
 			// Translate painter and draw the cell
 			p->translate(colp, rowp);
 			//bool selected = isSelected(rs, cs);

@@ -204,34 +204,36 @@ void CWINDOW_define_mask(CWINDOW *_object)
 
 static bool emit_open_event(void *_object)
 {
-	if (THIS->opening)
-		return true;
+	//if (THIS->opening)
+	//	return true;
+	
+	if (THIS->opened)
+		return false;
 	
 	CWIDGET_clear_flag(THIS, WF_CLOSED);
+	THIS->opened = true;
 	
-	if (!THIS->opened)
+	if (!THIS->minw && !THIS->minh)
 	{
-		if (!THIS->minw && !THIS->minh)
-		{
-			THIS->minw = THIS->w;
-			THIS->minh = THIS->h;
-		}
+		THIS->minw = THIS->w;
+		THIS->minh = THIS->h;
+	}
+	#if DEBUG_WINDOW
+	qDebug("emit_open_event: %s %p", GB.GetClassName(THIS), THIS);
+	#endif
+	//THIS->opening = true;
+	GB.Raise(THIS, EVENT_Open, 0);
+	//THIS->opening = false;
+	if (CWIDGET_test_flag(THIS, WF_CLOSED))
+	{
 		#if DEBUG_WINDOW
-		qDebug("emit_open_event: %s %p", GB.GetClassName(THIS), THIS);
+		qDebug("emit_open_event: %s %p [CANCELED]", GB.GetClassName(THIS), THIS);
 		#endif
-		THIS->opening = true;
-		GB.Raise(THIS, EVENT_Open, 0);
-		THIS->opening = false;
-		if (CWIDGET_test_flag(THIS, WF_CLOSED))
-		{
-			#if DEBUG_WINDOW
-			qDebug("emit_open_event: %s %p [CANCELED]", GB.GetClassName(THIS), THIS);
-			#endif
-			return true;
-		}
-		THIS->opened = true;
+		THIS->opened = false;
+		return true;
 	}
 	
+	THIS->opened = true;
 	THIS->hidden = false;
 	return false;
 }
