@@ -82,6 +82,8 @@ Public Const CONNECTION_MAGIC As String = "# Gambas Connection File 3.0"
 
 Public Const DEFAULT_FONT As String = "Monospace,9"
 
+Public Const DEFAULT_URL As String = "http://www.endoftheinternet.com/"
+
 Public Files As New Collection
 
 Public AboutToQuit As Boolean
@@ -2868,7 +2870,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If Maintainer Then Print #hFic, "Maintainer="; Maintainer
   If Vendor Then Print #hFic, "Vendor="; Vendor
   If Address Then Print #hFic, "Address="; Address
-  If Url Then Print #hFic, "Url="; Url
+  If Url And If Url <> DEFAULT_URL Then Print #hFic, "Url="; Url
   If License Then Print #hFic, "License="; License
   If Prefix Then Print #hFic, "Prefix=1"
   If UseRelease Then Print #hFic, "UseRelease=1"

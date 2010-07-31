@@ -360,9 +360,36 @@ static void combo_set_current_item(void *_object, int item)
 		raise_click_event(THIS);
 }
 
+static int combo_find_item(void *_object, const QString& s)
+{
+	COMBOBOX->sort();
+	for (int i = 0; i < (int)COMBOBOX->count(); i++)
+	{
+		if (COMBOBOX->text(i) == s)
+			return i;
+	}
+
+	return (-1);
+}
+
+static void combo_set_text(CCOMBOBOX *_object, QString &text)
+{
+	int pos;
+
+	pos = combo_find_item(THIS, text);
+	if (!COMBOBOX->isEditable() || pos >= 0)
+		combo_set_current_item(_object, pos);
+	if (COMBOBOX->isEditable())
+		COMBOBOX->lineEdit()->setText(text);
+}
+
 static void combo_set_editable(void *_object, bool ed)
 {
 	QLineEdit *textbox;
+	QString text;
+	
+	COMBOBOX->blockSignals(true);
+	text = COMBOBOX->currentText();
 
 	if (ed)
 	{
@@ -386,25 +413,14 @@ static void combo_set_editable(void *_object, bool ed)
 	{
 		COMBOBOX->setEditable(false);
 	}
+	
+	combo_set_text(THIS, text);
 
 	if (CWIDGET_test_flag(THIS, WF_DESIGN))
 		COMBOBOX->setFocusPolicy(Qt::NoFocus);
 
-	//COMBOBOX->calcMinimumHeight();
+	COMBOBOX->blockSignals(false);
 }
-
-static int combo_find_item(void *_object, const QString& s)
-{
-	COMBOBOX->sort();
-	for (int i = 0; i < (int)COMBOBOX->count(); i++)
-	{
-		if (COMBOBOX->text(i) == s)
-			return i;
-	}
-
-	return (-1);
-}
-
 
 static void combo_get_list(void *_object, GB_ARRAY array)
 {
@@ -421,6 +437,7 @@ static void combo_get_list(void *_object, GB_ARRAY array)
 static void combo_set_list(void *_object, GB_ARRAY array)
 {
 	int i;
+	QString text = COMBOBOX->currentText();
 	
 	COMBOBOX->blockSignals(true);
 	COMBOBOX->clear();
@@ -434,10 +451,9 @@ static void combo_set_list(void *_object, GB_ARRAY array)
 	}
 
 	COMBOBOX->setDirty();
-	COMBOBOX->blockSignals(false);
+	combo_set_text(THIS, text);
 	
-	//if (COMBOBOX->count())
-	//	GB.Raise(THIS, EVENT_Click, 0);
+	COMBOBOX->blockSignals(false);
 }
 
 
@@ -478,13 +494,7 @@ BEGIN_PROPERTY(CCOMBOBOX_text)
 	else
 	{
 		QString text = QSTRING_PROP();
-		int pos;
-
-		pos = combo_find_item(THIS, text);
-		if (!COMBOBOX->isEditable() || pos >= 0)
-			combo_set_current_item(_object, pos);
-		if (COMBOBOX->isEditable())
-			COMBOBOX->lineEdit()->setText(text);
+		combo_set_text(THIS, text);
 	}
 
 END_PROPERTY

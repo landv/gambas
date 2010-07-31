@@ -76,8 +76,9 @@ End
 
 Public Sub ReadConfig()
   
-  tvwFind.Font.Grade = - Settings["/GlobalFont", 0]
+  tvwFind.Font.Grade = - Settings["/TabStripFont", 0]
   $hFont = Font[Settings["/Editor/Font", Project.DEFAULT_FONT]]
+  $hFont.Grade = tvwFind.Font.Grade
   tvwFind.Refresh
 
 End
@@ -248,7 +249,6 @@ Private Sub GrepFile(hFile As Object) As CFindResult[]
   aGrep.Add(sTemp)
   
   If hFile.Path = $sGrepCacheKey Then
-    iAge = -1
     Try iAge = hFile.Age
     If iAge = $iGrepCacheAge Then
       If aGrep.Join("\n") = $sGrepCacheCommand Then
@@ -789,7 +789,7 @@ Private Sub ClearCache()
   
   $aGrepCache = Null
   $sGrepCacheKey = ""
-  $iGrepCacheAge = 0
+  $iGrepCacheAge = -1
   $sGrepCacheCommand = ""
   
 End

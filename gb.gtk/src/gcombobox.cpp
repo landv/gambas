@@ -281,6 +281,9 @@ char* gComboBox::itemText(int ind)
 	gTreeRow *row;
 	gTreeCell *cell;
 	
+	if (ind < 0)
+		return NULL;
+	
 	updateModel();
 	
 	char *key = indexToKey(ind);
