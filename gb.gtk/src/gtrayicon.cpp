@@ -160,6 +160,7 @@ gTrayIcon
 static bool  tray_enterleave(GtkWidget *widget, GdkEventCrossing *e,gTrayIcon *data)
 {
 	if (gApplication::loopLevel() > data->loopLevel()) return false;
+	
 	if (e->type==GDK_ENTER_NOTIFY)
 	{
 		if (data->onEnter) data->onEnter(data);
@@ -181,12 +182,13 @@ static gboolean tray_event(GtkWidget *widget, GdkEvent *event,gTrayIcon *data)
 	if (!gApplication::userEvents()) return false;
 	if (gApplication::loopLevel() > data->loopLevel()) return false;
 
+	gApplication::updateLastEventTime(event);
+	
 	if (event->type==GDK_2BUTTON_PRESS)
 	{
 		if (data->onDoubleClick) data->onDoubleClick(data);
 		return false;
 	}
-
 
 	return false;
 }

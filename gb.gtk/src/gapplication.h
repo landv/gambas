@@ -40,6 +40,7 @@ public:
 	static GtkWindowGroup *enterGroup();
 	static void exitGroup(GtkWindowGroup *oldGroup);
 	static guint32 lastEventTime() { return _event_time; }
+	static void updateLastEventTime(GdkEvent *e);
 
 	static bool (*onKeyEvent)(int type);
 
