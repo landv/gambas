@@ -99,6 +99,7 @@ public:
 public slots:
 
   void currentChanged(int);
+	void tabCloseRequested(int);
 };
 
 void CTABSTRIP_arrange(void *_object);

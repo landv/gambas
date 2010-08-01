@@ -28,11 +28,14 @@ Private $bDeleteOnCancel As Boolean
 Private $bNoExpand As Boolean
 Private $bNoEvent As Boolean
 Private $bExpandOnMouseUp As Boolean
+Private $bNoExpandOnMouseUp As Boolean
+Private $hTimerExpand As Timer
 
 Public Sub _new()
 
   $hTreeView = New TreeView(Me) As "TreeView"
   $hTreeView.Editable = True
+  $hTimerExpand = New Timer As "TimerExpand"
   ClearView
 
 End
@@ -170,7 +173,7 @@ End
 Public Sub TreeView_Select()
 
   If Not $bNoExpand Then
-    $bExpandOnMouseUp = True
+    $hTimerExpand.Trigger
   Endif
   If $bNoEvent Then Return 
   Raise {Select}
@@ -178,14 +181,20 @@ Public Sub TreeView_Select()
 
 End
 
-Public Sub TreeView_MouseUp()
+Public Sub TimerExpand_Timer()
   
-  If $bExpandOnMouseUp Then
-    Try Last.Current.Expanded = True
-    $bExpandOnMouseUp = False
-  Endif
+  Try $hTreeView.Current.Expanded = True
   
 End
+
+' Public Sub TreeView_MouseUp()
+'   
+'   'If $bExpandOnMouseUp Then
+'     Try Last.Current.Expanded = True
+'     $bExpandOnMouseUp = False
+'   'Endif
+'   
+' End
 
 
 Public Sub TreeView_Activate()

@@ -42,6 +42,7 @@ DECLARE_METHOD(CCONTAINER_x);
 DECLARE_METHOD(CCONTAINER_y);
 
 DECLARE_EVENT(EVENT_Click);
+DECLARE_EVENT(EVENT_Close);
 
 void CTABSTRIP_arrange(void *_object)
 {
@@ -432,6 +433,7 @@ BEGIN_METHOD(CTABSTRIP_new, GB_OBJECT parent)
 	MyTabWidget *wid = new MyTabWidget(QCONTAINER(VARG(parent))); //, 0, Qt::WNoMousePropagation);
 
 	QObject::connect(wid, SIGNAL(currentChanged(int)), &CTabStrip::manager, SLOT(currentChanged(int)));
+	QObject::connect(wid, SIGNAL(tabCloseRequested(int)), &CTabStrip::manager, SLOT(tabCloseRequested(int)));
 
 	//THIS->widget.flag.fillBackground = TRUE;
 	THIS->container = NULL;
@@ -759,13 +761,16 @@ BEGIN_PROPERTY(CTABSTRIP_picture)
 	THIS->index = -1;
 	CTAB_picture(_object, _param);
 
-	/*if (READ_PROPERTY)
-		GB.ReturnNewZeroString(TO_UTF8(WIDGET->tabLabel(WIDGET->currentPage())));
-	else
-		WIDGET->changeTab(WIDGET->currentPage(), QSTRING_PROP());*/
-
 END_PROPERTY
 
+BEGIN_PROPERTY(TabStrip_Closable)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(WIDGET->tabsClosable());
+	else
+		WIDGET->setTabsClosable(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
 
 BEGIN_PROPERTY(CTABSTRIP_client_x)
 
@@ -827,6 +832,13 @@ void CTabStrip::currentChanged(int index)
 	}
 }
 
+void CTabStrip::tabCloseRequested(int index)
+{
+	GET_SENDER();
+
+	GB.Raise(THIS, EVENT_Close, 1, GB_T_INTEGER, index);
+}
+
 
 /** Descriptions *********************************************************/
 
@@ -869,6 +881,7 @@ GB_DESC CTabStripDesc[] =
 	GB_PROPERTY("Text", "s", CTABSTRIP_text),
 	GB_PROPERTY("TextFont", "Font", TabStrip_TextFont),
 	GB_PROPERTY("Picture", "Picture", CTABSTRIP_picture),
+  GB_PROPERTY("Closable", "b", TabStrip_Closable),
 	GB_PROPERTY("Caption", "s", CTABSTRIP_text),
 	GB_PROPERTY_READ("Current", ".Tab", CTABSTRIP_current),
 	GB_PROPERTY("Index", "i", CTABSTRIP_index),
@@ -894,6 +907,7 @@ GB_DESC CTabStripDesc[] =
 	TABSTRIP_DESCRIPTION,
 
 	GB_EVENT("Click", NULL, NULL, &EVENT_Click),
+	GB_EVENT("Close", NULL, "(Index)i", &EVENT_Close),
 
 	GB_END_DECLARE
 };

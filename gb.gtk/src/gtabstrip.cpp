@@ -24,6 +24,7 @@
 #include "widgets_private.h"
 #include "gapplication.h"
 #include "gmouse.h"
+#include "gdesktop.h"
 #include "gtabstrip.h"
 
 
@@ -75,6 +76,83 @@ static void cb_size_allocate(GtkWidget *wid, GtkAllocation *alloc, gTabStrip *da
 	}
 }
 
+static bool cb_button_expose(GtkWidget *wid, GdkEventExpose *e, gTabStrip *data)
+{
+	GdkGC        *gc;
+	GdkPixbuf    *img;
+	GdkRectangle rpix={0,0,0,0};
+	GdkRectangle rect={0,0,0,0};
+	gint         py,px;
+	bool         rtl,bcenter=false;
+	gint dx, dy;
+
+	rtl = gtk_widget_get_default_direction() == GTK_TEXT_DIR_RTL;
+
+	rect = wid->allocation;
+	px = rect.width;
+
+	if (GTK_WIDGET_STATE(data->widget) == GTK_STATE_ACTIVE)
+	{
+	  gtk_widget_style_get (wid,
+				"child-displacement-x", &dx,
+				"child-displacement-y", &dy,
+				(void *)NULL);
+		rect.x += dx;
+		rect.y += dy;
+	}
+
+	if (GTK_WIDGET_STATE(data->widget)==GTK_STATE_INSENSITIVE) 
+	{
+		if (!data->_button_pixbuf_disabled)
+		{
+			data->_button_pixbuf_disabled = gt_pixbuf_create_disabled(data->_button_pixbuf_normal);
+			g_object_ref(G_OBJECT(data->_button_pixbuf_disabled));
+		}
+		img = data->_button_pixbuf_disabled;
+	}
+	else
+		img = data->_button_pixbuf_normal;
+
+	rpix.width = gdk_pixbuf_get_width(img);
+	rpix.height = gdk_pixbuf_get_height(img);
+	
+	py = (rect.height - rpix.height)/2;
+	
+	gc = gdk_gc_new(wid->window);
+	gdk_gc_set_clip_origin(gc,0,0);
+	gdk_gc_set_clip_rectangle(gc,&e->area);
+
+	bcenter = true; //!(data->text()) || !(*data->text());
+	
+	if (bcenter) 
+	{	
+		gdk_draw_pixbuf(GDK_DRAWABLE(wid->window),gc,img,0,0,rect.x + (px-rpix.width)/2, rect.y + py,
+																			-1,-1,GDK_RGB_DITHER_MAX,0,0);
+		g_object_unref(gc);
+		return false;
+	}
+
+	if (rtl)
+		gdk_draw_pixbuf(GDK_DRAWABLE(wid->window),gc,img,0,0,rect.x + rect.width - 6, rect.y + py,
+																			-1,-1,GDK_RGB_DITHER_MAX,0,0);
+	else
+		gdk_draw_pixbuf(GDK_DRAWABLE(wid->window),gc,img,0,0,rect.x + 6, rect.y + py,
+																			-1,-1,GDK_RGB_DITHER_MAX,0,0);
+
+	g_object_unref(G_OBJECT(gc));
+	
+	//rect.width -= rpix.width;
+	//rect.x += rpix.width;
+	
+	return FALSE;
+}
+
+static void cb_button_clicked(GtkWidget *wid, gTabStrip *data)
+{
+	if (data->onClose)
+		(*data->onClose)(data, (int)(intptr_t)g_object_get_data(G_OBJECT(wid), "gambas-tab-index"));
+}
+
 
 /****************************************************************************
 	
@@ -100,12 +178,14 @@ public:
 	gControl *child(int n);
 	void updateColors();
 	void updateFont();
+	void updateButton();
 
 	GtkWidget *fix;
 	GtkWidget *widget;
 	GtkWidget *label;
 	GtkWidget *image;
 	GtkWidget *hbox;
+	GtkWidget *_button;
 	
 	gPicture *_picture;
 	gTabStrip *parent;
@@ -157,6 +237,9 @@ gTabStripPage::gTabStripPage(gTabStrip *tab)
 	
 	gtk_widget_hide(image);
 	
+	_button = NULL;
+	
+	updateButton();
 	setVisible(true);
 }
 
@@ -310,6 +393,35 @@ gControl *gTabStripPage::child(int n)
 }
 
 
+void gTabStripPage::updateButton()
+{
+	bool v = parent->isClosable();
+	
+	if (v && !_button)
+	{
+		_button = gtk_button_new();
+		gtk_button_set_relief(GTK_BUTTON(_button), GTK_RELIEF_NONE);
+		g_signal_connect_after(G_OBJECT(_button), "expose-event", G_CALLBACK(cb_button_expose), (gpointer)parent);
+		g_signal_connect(G_OBJECT(_button), "clicked", G_CALLBACK(cb_button_clicked), (gpointer)parent);
+		g_object_set_data(G_OBJECT(_button), "gambas-tab-index", (void *)index);
+		
+		gtk_widget_show(_button);
+		
+		gtk_box_pack_start(GTK_BOX(hbox), _button, FALSE, FALSE, 0);
+	}
+	else if (!v && _button)
+	{
+		gtk_widget_destroy(_button);
+		_button = NULL;
+	}
+	
+	if (_button)
+	{
+		gtk_widget_set_size_request(_button, 20, 20);
+	}
+}
+
+
 /****************************************************************************
 	
 	gTabStrip
@@ -318,11 +430,14 @@ gControl *gTabStripPage::child(int n)
 
 gTabStrip::gTabStrip(gContainer *parent) : gContainer(parent)
 {
-	g_typ=Type_gTabStrip;
+	g_typ = Type_gTabStrip;
 	_pages = g_ptr_array_new();
 	_textFont = NULL;
+	_button_pixbuf_normal = NULL;
+	_button_pixbuf_disabled = NULL;
 	
 	onClick = NULL;
+	onClose = NULL;
 	
 	widget = gtk_notebook_new();
 	gtk_notebook_set_scrollable(GTK_NOTEBOOK(widget), TRUE);
@@ -331,17 +446,6 @@ gTabStrip::gTabStrip(gContainer *parent) : gContainer(parent)
 	realize();
 
 	setCount(1);
-	
-	/*ebox=gtk_event_box_new();
-	hbox=gtk_hbox_new(false,0);
-	lbl=gtk_label_new_with_mnemonic("");
-	gtk_container_add(GTK_CONTAINER(ebox),hbox);
-	gtk_container_add(GTK_CONTAINER(hbox),lbl);
-	gtk_widget_show_all(ebox);
-	gtk_notebook_append_page(GTK_NOTEBOOK(border),widget,ebox);
-	g_signal_connect(G_OBJECT(ebox),"button-press-event",G_CALLBACK(gTabStrip_buttonPress),(gpointer)this);
-	g_signal_connect(G_OBJECT(ebox),"button-release-event",G_CALLBACK(gTabStrip_buttonRelease),(gpointer)this);
-  */
   
 	gtk_widget_add_events(widget,GDK_BUTTON_RELEASE_MASK);
 	g_signal_connect_after(G_OBJECT(border), "switch-page", G_CALLBACK(cb_click), (gpointer)this);
@@ -355,6 +459,7 @@ gTabStrip::~gTabStrip()
 		destroyTab(count() - 1);
 	unlock();
 	gFont::assign(&_textFont);
+	setClosable(false);
 	g_ptr_array_free(_pages, TRUE);
 }
 
@@ -603,3 +708,34 @@ void gTabStrip::setTextFont(gFont *font)
 	gFont::assign(&_textFont, font);
 	updateFont();
 }
+
+void gTabStrip::setClosable(bool v)
+{
+	int i;
+	
+	if (v == isClosable())
+		return;
+	
+	if (_button_pixbuf_normal)
+	{
+		g_object_unref(G_OBJECT(_button_pixbuf_normal));
+		_button_pixbuf_normal = NULL;
+	}
+	if (_button_pixbuf_disabled)
+	{
+		g_object_unref(G_OBJECT(_button_pixbuf_disabled));
+		_button_pixbuf_disabled = NULL;
+	}
+		
+	if (v)
+	{
+		_button_pixbuf_normal = gtk_icon_theme_load_icon(gtk_icon_theme_get_default(), GTK_STOCK_CLOSE, 16, GTK_ICON_LOOKUP_USE_BUILTIN, NULL);
+		fprintf(stderr, "_button_pixbuf_normal = %p\n", _button_pixbuf_normal);
+		g_object_ref(G_OBJECT(_button_pixbuf_normal));
+	}
+	
+	for (i = 0; i < count(); i++)
+		get(i)->updateButton();
+}
+
+

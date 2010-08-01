@@ -1,6 +1,6 @@
 ' Gambas class file
 Inherits UserControl
-Export
+'Export
 
 Public Const ThisDay As Integer = 0
 Public Const FirstDayOfWeek As Integer = 1
@@ -23,7 +23,7 @@ Private $iHeightForm As Integer
 Private $sFormat As String
 Private $iFin As Integer
 Private $iDebut As Integer
-Private htimer As timer
+Private htimer As Timer
 Private IsActivate As Boolean
 Private hIcon As Picture
 Property HeightForm As Integer
@@ -40,7 +40,7 @@ Event Change()
 Public Sub _New()
   Dim hPanel1, hPanel2 As Panel
   
-  hTimer = New timer As "hTimer"
+  hTimer = New Timer As "hTimer"
   'htimer.delay = 100
   hPanel2 = New Panel(Me)
   hPanel2.Arrangement = Arrange.Horizontal

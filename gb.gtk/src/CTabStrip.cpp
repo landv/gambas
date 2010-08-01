@@ -28,19 +28,26 @@
 #include "CTabStrip.h"
 
 DECLARE_EVENT(EVENT_Click);
+DECLARE_EVENT(EVENT_Close);
 
-void gb_tabstrip_raise_click(CTABSTRIP *_object)
+static void gb_tabstrip_raise_click(CTABSTRIP *_object)
 {
 	GB.Raise(THIS, EVENT_Click, 0);
 	GB.Unref(POINTER(&_object));
 }
 
-void gb_tabstrip_post_click(gTabStrip *sender)
+static void gb_tabstrip_post_click(gTabStrip *sender)
 {
 	CWIDGET *_object = GetObject(sender);
 	
 	GB.Ref(THIS);
 	GB.Post((GB_POST_FUNC)gb_tabstrip_raise_click, (long)THIS);
+}
+
+static void handle_close(gTabStrip *sender, int index)
+{
+	CWIDGET *_object = GetObject(sender);
+	GB.Raise(THIS, EVENT_Close, 1, GB_T_INTEGER, index);
 }
 
 /***************************************************************************
@@ -53,6 +60,7 @@ BEGIN_METHOD(CTABSTRIP_new, GB_OBJECT parent)
 
 	InitControl(new gTabStrip(CONTAINER(VARG(parent))), (CWIDGET*)THIS);
 	TABSTRIP->onClick = gb_tabstrip_post_click;
+	TABSTRIP->onClose = handle_close;
 	gb_tabstrip_post_click(TABSTRIP);
 
 END_METHOD
@@ -255,7 +263,7 @@ BEGIN_PROPERTY(CTABSTRIP_picture)
 
 	if (READ_PROPERTY)
 	{
-		gPicture *pic = TABSTRIP->tabPicture(index);;
+		gPicture *pic = TABSTRIP->tabPicture(index);
 		GB.ReturnObject(pic ? pic->getTagValue() : 0);
 	}
 	else
@@ -264,6 +272,16 @@ BEGIN_PROPERTY(CTABSTRIP_picture)
 		TABSTRIP->setTabPicture(index, pic ? pic->picture : 0);
 	}
 
+END_PROPERTY
+
+
+BEGIN_PROPERTY(TabStrip_Closable)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(TABSTRIP->isClosable());
+	else
+		TABSTRIP->setClosable(VPROP(GB_BOOLEAN));
+	
 END_PROPERTY
 
 
@@ -329,6 +347,7 @@ GB_DESC CTabStripDesc[] =
   GB_PROPERTY("Text", "s", CTABSTRIP_text),
   GB_PROPERTY("TextFont", "Font", TabStrip_TextFont),
   GB_PROPERTY("Picture", "Picture", CTABSTRIP_picture),
+  GB_PROPERTY("Closable", "b", TabStrip_Closable),
   GB_PROPERTY("Caption", "s", CTABSTRIP_text),
   GB_PROPERTY_READ("Current", ".Tab", CTABSTRIP_current),
   GB_PROPERTY("Index", "i", CTABSTRIP_index),
@@ -343,7 +362,8 @@ GB_DESC CTabStripDesc[] =
 
   GB_METHOD("_get", ".Tab", CTABSTRIP_get, "(Index)i"),
 
-  GB_EVENT("Click", 0, 0, &EVENT_Click),
+  GB_EVENT("Click", NULL, NULL, &EVENT_Click),
+  GB_EVENT("Close", NULL, "(Index)i", &EVENT_Close),
   
   TABSTRIP_DESCRIPTION,
 

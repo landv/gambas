@@ -33,7 +33,7 @@ public:
 	~gTabStrip();
 
 //"Properties"
-	int count() { return _pages->len; }
+	int count() const { return _pages->len; }
 	int index();
 	int orientation();
 	void setOrientation(int vl);
@@ -51,6 +51,8 @@ public:
 	void setTabText(int ind, char *txt);
 	void setTabVisible(int ind, bool vl);
 	bool removeTab(int ind);
+	void setClosable(bool v);
+	bool isClosable() const { return _button_pixbuf_normal != NULL; }
 
 	virtual int childCount();
 	virtual gControl *child(int index);
@@ -65,9 +67,13 @@ public:
 
 	//"Events"
 	void (*onClick)(gTabStrip *sender);
+	void (*onClose)(gTabStrip *sender, int index);
 
 //"Private"
 	virtual GtkWidget *getContainer();
+
+	GdkPixbuf *_button_pixbuf_normal;
+	GdkPixbuf *_button_pixbuf_disabled;
 	
 private:
 	GPtrArray *_pages;

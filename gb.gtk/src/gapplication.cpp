@@ -351,6 +351,8 @@ static void gambas_handle_event(GdkEvent *event)
 		}
 	}
 	
+	gApplication::updateLastEventTime(event);
+	
 	switch ((int)event->type)
 	{
 		case GDK_ENTER_NOTIFY:
@@ -380,8 +382,6 @@ static void gambas_handle_event(GdkEvent *event)
 		case GDK_2BUTTON_PRESS:
 		case GDK_BUTTON_RELEASE:
 			
-			gApplication::_event_time = event->button.time;
-
 			if (control->onMouseEvent)
 			{
 				control->getScreenPos(&xc, &yc);
@@ -418,8 +418,6 @@ static void gambas_handle_event(GdkEvent *event)
 			
 		case GDK_MOTION_NOTIFY:
 
-			gApplication::_event_time = event->motion.time;
-
 			if (control->onMouseEvent && (control->isTracking() || (event->motion.state & (GDK_BUTTON1_MASK | GDK_BUTTON2_MASK | GDK_BUTTON3_MASK))))
 			{
 				control->getScreenPos(&xc, &yc);
@@ -441,8 +439,6 @@ static void gambas_handle_event(GdkEvent *event)
 			break;
 			
 		case GDK_SCROLL:
-			
-			gApplication::_event_time = event->scroll.time;
 			
 			if (control->onMouseEvent)
 			{
@@ -472,7 +468,6 @@ static void gambas_handle_event(GdkEvent *event)
 		{
 			bool cancel = false;
 			
-			gApplication::_event_time = event->key.time;
 			control = gDesktop::activeControl();
 			
 			if (control)
@@ -523,7 +518,6 @@ static void gambas_handle_event(GdkEvent *event)
 			
 		case GDK_KEY_RELEASE:
 			
-			gApplication::_event_time = event->key.time;
 			control = gDesktop::activeControl();
 			
 			if (control)
@@ -872,3 +866,27 @@ GtkWindowGroup *gApplication::currentGroup()
 	else
 		return gtk_window_get_group(NULL);
 }
+
+void gApplication::updateLastEventTime(GdkEvent *e)
+{
+	guint32 time;
+	
+	switch (e->type)
+	{
+		case GDK_KEY_PRESS: case GDK_KEY_RELEASE: 
+			time = e->key.time; break;
+		case GDK_BUTTON_PRESS: case GDK_2BUTTON_PRESS: case GDK_3BUTTON_PRESS: case GDK_BUTTON_RELEASE:
+			time = e->button.time; break;
+		case GDK_MOTION_NOTIFY:
+			time = e->motion.time; break;
+		case GDK_SCROLL:
+			time = e->scroll.time; break;
+		case GDK_ENTER_NOTIFY: case GDK_LEAVE_NOTIFY:
+			time = e->crossing.time; break;
+		default:
+			time = GDK_CURRENT_TIME;
+	}
+	
+	_event_time = time;
+}
+

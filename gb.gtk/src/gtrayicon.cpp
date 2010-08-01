@@ -175,12 +175,13 @@ static gboolean tray_event(GtkWidget *widget, GdkEvent *event,gTrayIcon *data)
 	if (!gApplication::userEvents()) return false;
 	if (gApplication::loopLevel() > data->loopLevel()) return false;
 
+	gApplication::updateLastEventTime(event);
+
 	if (event->type==GDK_2BUTTON_PRESS)
 	{
 		if (data->onDoubleClick) data->onDoubleClick(data);
 		return false;
 	}
-
 
 	return false;
 }

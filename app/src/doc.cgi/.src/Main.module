@@ -1082,7 +1082,7 @@ Private Function Encode(sText As String) As String
             $sRes &= GetLastChanges()
             Continue
           
-          Case "translate"
+          Case "translate", "todo"
             $sRes &= GetTranslate()
             Continue
           
@@ -3786,6 +3786,10 @@ Private Function GetTranslate() As String
   Dim sRes As String
   Dim bOdd As Boolean
 
+  If $sLang = DEFAULT_LANG Then 
+    Return "<h2>Nothing to translate, but the following is not yet documented!</h2>\n" & GetTodo()
+  Endif
+  
   rPageDef = DB.Find("page", "sLang = &1 ORDER BY dDate DESC", DEFAULT_LANG)
 
   sRes = "<table class=\"table\" border=\"0\" cellpadding=\"4\" cellspacing=\"0\">\n"
@@ -3821,10 +3825,85 @@ Private Function GetTranslate() As String
   Next
 
   sRes &= "</table>\n"
+  
   Return sRes
 
 End
 
+Private Function GetTodo() As String
+
+  Dim hComp As CComponent
+  Dim hClass As CClassInfo
+  Dim hSymbol As CSymbolInfo
+  Dim bPrintClass As Boolean
+  Dim rPage As Result
+  Dim sRes As String
+  Dim sComp As String
+  Dim sName As String
+  Dim iCpt As Integer
+  Dim aIgnore As String[] = ["gb.gui", "gb.gtk", "gb.qt", "gb.corba", "gb.gtk.ext", "gb.qt.ext"]
+  Dim aAllow As String[] = ["_new", "_put", "_get", "_call", "_next"]
+
+  $sVersion = "3.0"
+  InitVersion("3.0")
+  CComponent.Init
+  
+  
+  For Each hComp In CComponent.All
+    hComp.Load
+  Next
+  
+  For Each hClass In CComponent.Classes
+    
+    If hClass.Name = "." Then Continue
+    
+    bPrintClass = True
+    
+    If $cCompRedirect And If $cCompRedirect.Exist(sComp) Then Continue
+    sComp = hClass.Component
+    If aIgnore.Find(sComp) >= 0 Then Continue
+    
+    For Each hSymbol In hClass.Symbols
+      
+      If hSymbol.Class <> hClass.Name Or If hSymbol.Component <> hClass.Component Then Continue
+      sName = hSymbol.Name
+      If sName = "_free" Then Continue
+      If InStr(sName, "_") Then 
+        If Left(sName) <> "_" Or If aAllow.Find(sName) < 0 Then Continue
+      Endif
+      
+      rPage = DB.Find("page", "sLang = &1 AND sPath = &2", DEFAULT_LANG, GetSymbolPath(hSymbol))
+      If Not rPage.Available Then 
+
+        If bPrintClass Then
+          sRes &= "<h3>" & GetLink("/comp" &/ sComp &/ LCase(hClass.Name), hClass.Name) & "</h3>\n"
+          bPrintClass = False
+        Endif
+        sRes &= GetSymbolLink(hSymbol, hClass, hClass.Name & "." & hSymbol.Name) & "&nbsp;\n"
+        Inc iCpt
+      Endif
+    Next
+  Next
+  
+  Return sRes & "<hr>\n" & Subst("&1 symbols to document yet.\n", CStr(iCpt))
+
+End
+
+Private Sub GetSymbolPath(hSym As CSymbolInfo) As String
+  
+  Dim sComp As String
+  
+  If $cCompRedirect Then 
+    sComp = hSym.Component
+    While $cCompRedirect.Exist(sComp)
+      sComp = $cCompRedirect[sComp]
+    Wend
+  Endif
+  If Not sComp Then sComp = hSym.Component
+
+  Return "/comp" &/ LCase(sComp &/ hSym.Class &/ Replace(hSym.Name, ":", "."))
+  
+End
 
 
 Private Function GetSymbolLink(hSym As CSymbolInfo, hClass As CClassInfo, Optional sMyTitle As String) As String
@@ -3842,7 +3921,7 @@ Private Function GetSymbolLink(hSym As CSymbolInfo, hClass As CClassInfo, Option
 
   'If hSym.Class <> hClass.Name Then sRes &= "<font color=\"#808080\">"
   If hSym.IsStatic() Then sRes &= "<b>"
-  sRes &= GetLink("/comp" &/ LCase(sComp &/ hSym.Class &/ Replace(hSym.Name, ":", ".")), sMyTitle,, "none")
+  sRes &= GetLink(GetSymbolPath(hSym), sMyTitle,, "none")
   If hSym.IsStatic() Then sRes &= "</b>"
   'If hSym.Class <> hClass.Name Then sRes &= "°"
 
