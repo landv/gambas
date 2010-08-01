@@ -507,6 +507,7 @@ Private Function CloseProject() As Boolean
   Dim nOpen As Integer
   Dim sState As String
   Dim aFold As Integer[]
+  Dim sPath As String
 
   'IF Len(Path) = 0 THEN RETURN
 
@@ -554,7 +555,12 @@ Private Function CloseProject() As Boolean
         Try aFold = hForm.GetFoldedProc()
   
         If sState Then sState = ":" & sState
-        Config["/OpenFile/File[" & CStr(nOpen) & "]"] = hForm.Path & sState
+        sPath = hForm.Path
+        If sPath Begins Project.Dir Then 
+          sPath = Mid$(sPath, Len(Project.Dir) + 1)
+          If Left(sPath) = "/" Then sPath = Mid$(sPath, 2)
+        Endif
+        Config["/OpenFile/File[" & CStr(nOpen) & "]"] = sPath & sState
         
         If aFold And If aFold.Count Then Config["/OpenFile/Fold[" & CStr(nOpen) & "]"] = aFold
         
