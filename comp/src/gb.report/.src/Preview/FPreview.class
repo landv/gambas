@@ -49,12 +49,12 @@ End
 Public Sub Slider1_Change()
   
   If Not btnAdjust.tag Then btnAdjust.Value = False
-  Resize
+  ResizeMe
   
 End
 
 
-Public Sub Resize()
+Private Sub ResizeMe()
   Dim iWidth, iHeight As Integer
   Dim fratio As Float
   
@@ -98,7 +98,7 @@ Public Sub ComboBox2_Click()
 
   Printer1.Orientation = ComboBox2.Index
   ComboBox1_Click
-  Resize
+  ResizeMe
 
 End
 
@@ -106,7 +106,7 @@ Public Sub txtWidth_Change()
 
   Printer1.PaperWidth = txtWidth.Text
 
-  Resize
+  ResizeMe
   
   Catch
   
@@ -116,7 +116,7 @@ End
 Public Sub txtHeight_Change()
 
     Printer1.PaperHeight = txtHeight.Text
-  Resize
+  ResizeMe
 
 End
 
@@ -155,13 +155,13 @@ End
 
 Public Sub Form_Resize()
 
-  Resize
+  ResizeMe
 
 End
 
 Public Sub btnAdjust_Click()
   btnAdjust.Tag = 1
-  Resize
+  ResizeMe
   Slider1.Value = $fScale * 100
   btnAdjust.Tag = Null
 End

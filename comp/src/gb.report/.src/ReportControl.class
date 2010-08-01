@@ -7,7 +7,7 @@ Public Const _IsControl As Boolean = True
 Public Const _Properties As String = "Left{ReportCoord},Top{ReportCoord},Width{ReportCoord},Height{ReportCoord},Visible=True,Font,Padding{ReportCoord},Expand,AutoResize,Tag"
 Public Const _Family As String = "Report"
 Public _SizeInt As New TSizeHint
-
+Public Name As String
 'Object Management
 Static Public _ObjectFromId As New Collection
 Static Public _iCurPagePos As Integer
@@ -266,6 +266,7 @@ End
 Private Function _Padding_Read() As Float
 
   Return $fPadding
+  
 
 End
 

@@ -118,6 +118,10 @@ _bInExec
 v
 b
 
+_cPages
+v
+Object[]
+
 $bLayoutIsDirty
 v
 b
@@ -165,11 +169,11 @@ ReportBrush
 LinearGradient
 m
 ReportBrush
-(Colors)Integer[];(Positions)float[];
+(Colors)Integer[];(Positions)Float[];
 RadialGradient
 m
 ReportBrush
-(Colors)Integer[];(Positions)float[];
+(Colors)Integer[];(Positions)Float[];
 Color
 m
 ReportBrush
@@ -363,6 +367,10 @@ _GetData
 m
 v
 (sKey)s
+_SetVerticalChildGeometry
+m
+f
+(X)f(Y)f(W)f(H)f(ContPage)i
 #ReportControl
 
 
@@ -381,6 +389,10 @@ Report
 _SizeInt
 v
 TSizeHint
+
+Name
+v
+s
 
 _ObjectFromId
 V

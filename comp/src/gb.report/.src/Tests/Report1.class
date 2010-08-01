@@ -1,13 +1,13 @@
 ' Gambas class file
 Private $i As Integer
-Private cCol As New Collection[10]
-Private cCol2 As New Collection[10]
+Private cCol As New Collection[200]
+Private cCol2 As New Collection[1]
 Public Sub _new()
   
   Dim i As Integer
   Dim c As Collection
   'Report.Debug = True
-  For i = 0 To 9
+  For i = 0 To 199
     c = New Collection
       c["Index"] = i
       c["Text"] = "Text " & i
@@ -15,13 +15,13 @@ Public Sub _new()
       cCol[i] = c
   Next
   
-  For i = 0 To 9
+  'For i = 0 To 1
     c = New Collection
       c["FactIndex"] = "Facture " & i
       
       
-      cCol2[i] = c
-  Next
+      cCol2[0] = c
+  'Next
   ReportHBox4.Data = cCol
   'Report.debug = True
   ReportVBox3.data = cCol2

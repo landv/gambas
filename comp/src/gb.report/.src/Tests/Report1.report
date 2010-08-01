@@ -1,9 +1,10 @@
 # Gambas Form File 3.0
 
 { Report Report
-  #MoveScaled(0,0,103.7143,81.00000000000001.4286)
+  #MoveScaled(0,0,104,82)
   Font = Font["+15"]
   Padding = "2 cm"
+  Expand = True
   { ReportHBox1 ReportHBox
     #MoveScaled(0.8571,1.7143,99.4286,32.5714)
     Height = "6 cm"
@@ -48,7 +49,6 @@
     Expand = True
     { ReportVBox4 ReportVBox
       #MoveScaled(4,3,102,37)
-      Expand = True
       AutoResize = True
       { ReportLabel4 ReportLabel
         #MoveScaled(2,2,98,4)
@@ -140,37 +140,43 @@
       { ReportHBox5 ReportHBox
         #MoveScaled(1,26,99.4286,6.8571)
         Height = "1 cm"
+        AutoResize = True
         { ReportVBox9 ReportVBox
           #MoveScaled(1.7143,0.8571,16.2857,5.1429)
           Width = "3 cm"
+          Height = "1 mm"
           Border = ReportBorder["0.5 mm,&H000000&,Bottom,Left,Right"]
         }
         { ReportVBox10 ReportVBox
           #MoveScaled(23.1429,0,16.2857,5.1429)
           Width = "3 cm"
+          Height = "1 mm"
           Expand = True
           Border = ReportBorder["0.5 mm,&H000000&,Bottom,Right"]
         }
         { ReportVBox11 ReportVBox
           #MoveScaled(45.4286,0,16.2857,5.1429)
           Width = "3 cm"
+          Height = "1 mm"
           Border = ReportBorder["0.5 mm,&H000000&,Bottom,Right"]
         }
         { ReportVBox12 ReportVBox
           #MoveScaled(65.1429,0,16.2857,5.1429)
           Width = "3 cm"
+          Height = "1 mm"
           Border = ReportBorder["0.5 mm,&H000000&,Bottom,Right"]
         }
         { ReportVBox13 ReportVBox
           #MoveScaled(82,0,16.2857,5.1429)
           Width = "3 cm"
+          Height = "1 mm"
           Border = ReportBorder["0.5 mm,&H000000&,Bottom,Right"]
         }
       }
     }
   }
   { ReportLabel15 ReportLabel
-    #MoveScaled(1,77,100,3)
+    #MoveScaled(1,78,100,3)
     Text = ("$PAGE")
     Alignment = Align.Right
     UseField = True

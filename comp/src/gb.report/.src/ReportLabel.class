@@ -77,7 +77,10 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   
   
   If hMyHints.Height < fTextHeight Then hMyHints.Height = fTextHeight + (2 * Me._Padding) + (2 * Me._BorderWidth)
+  
   If Me._RelativeHeight Then hMyHints.Height = TotalHeight * Me._Height / 100
+  If hMyHints.Height <= 0 Then hMyHints.Height = Me.Font.Height
+  
   If Me._Width > 0 And Not Me.Autoresize Then 
     hMyHints.Width = Me._Width
   Else 

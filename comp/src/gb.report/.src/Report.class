@@ -11,6 +11,7 @@ Public Const _IsForm As Boolean = True
 'Public Constants
 Public {Debug} As Boolean = False
 Public _bInExec As Boolean
+Public _cPages As New Object[]
 
 Private iCurPage As Integer = 0
 Private $iCount As Integer = -1
@@ -225,7 +226,7 @@ Public Function Image(Value As String, X As String, Y As String) As ReportBrush
 End
 
 
-Public Function LinearGradient(Colors As Integer[], Positions As float[]) As ReportBrush
+Public Function LinearGradient(Colors As Integer[], Positions As Float[]) As ReportBrush
   
   Dim hBrush As New ReportBrush
   hBrush._Type = 2
@@ -239,7 +240,7 @@ Public Function LinearGradient(Colors As Integer[], Positions As float[]) As Rep
   
 End
 
-Public Function RadialGradient(Colors As Integer[], Positions As float[]) As ReportBrush
+Public Function RadialGradient(Colors As Integer[], Positions As Float[]) As ReportBrush
   
   Dim hBrush As New ReportBrush
   hBrush._Type = 3
