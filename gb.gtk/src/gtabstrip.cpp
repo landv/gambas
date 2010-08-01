@@ -730,7 +730,6 @@ void gTabStrip::setClosable(bool v)
 	if (v)
 	{
 		_button_pixbuf_normal = gtk_icon_theme_load_icon(gtk_icon_theme_get_default(), GTK_STOCK_CLOSE, 16, GTK_ICON_LOOKUP_USE_BUILTIN, NULL);
-		fprintf(stderr, "_button_pixbuf_normal = %p\n", _button_pixbuf_normal);
 		g_object_ref(G_OBJECT(_button_pixbuf_normal));
 	}
 	
