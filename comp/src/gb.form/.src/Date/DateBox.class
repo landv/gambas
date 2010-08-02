@@ -1,0 +1,139 @@
+' Gambas class file
+
+Export
+Inherits UserControl
+
+Public Const _Properties As String = "*,Value,ReadOnly,Border=True"
+'Public Const _DefaultEvent As String = "Click"
+Public Const _DefaultSize As String = "24,4"
+Public Const _Similar As String = "TextBox"
+
+Property Value As Date
+Property ReadOnly As Boolean
+Property Border As Boolean
+
+Private $hButtonBox As ButtonBox
+Private $hPopup As Window
+Private $hChooser As DateChooser
+
+Private Sub GetDateFormat() As String
+  
+  Dim sFormat As String
+  
+  sFormat = Format(Date(3333, 11, 22), gb.ShortDate)
+  sFormat = Replace(sFormat, "3333", "yyyy")
+  sFormat = Replace(sFormat, "22", "dd")
+  sFormat = Replace(sFormat, "11", "mm")
+  
+  Return sFormat
+  
+End
+
+Public Sub _new()
+  
+  Dim hPanel As Panel
+  
+  $hButtonBox = New ButtonBox(Me) As "ButtonBox"
+  $hButtonBox.Picture = Picture["icon:/small/calendar"]
+  
+  $hPopup = New Window As "PopupWindow"
+  $hPopup.Persistent = True
+  $hPopup.Arrangement = Arrange.Fill
+  $hPopup.Resize(Desktop.Scale * 32, Desktop.Scale * 24)
+  
+  hPanel = New Panel($hPopup)
+  hPanel.Arrangement = Arrange.Fill
+  hPanel.Border = Border.Plain
+  
+  $hChooser = New DateChooser(hPanel) As "DateChooser"
+  
+  Me.Value = Now
+  
+End
+
+Private Function Value_Read() As Date
+
+  Dim vVal As Variant = Val($hButtonBox.Text)
+  
+  If vVal And If IsDate(vVal) Then Return vVal
+
+End
+
+Private Sub Value_Write(Value As Date)
+
+  $hButtonBox.Text = Format(Value, GetDateFormat())
+
+End
+
+Public Sub ButtonBox_Click()
+  
+  Dim X, Y, iPad As Integer
+  Dim hPanel As Panel
+  
+  hPanel = $hButtonBox.Children[0]
+  iPad = hPanel.Padding
+  X = $hButtonBox.ScreenX + $hButtonBox.W - $hPopup.W - iPad
+  Y = $hButtonBox.ScreenY + $hButtonBox.H - iPad
+  
+  If (Y + $hPopup.H) > Desktop.H Then
+    Y = $hButtonBox.ScreenY - $hPopup.H
+  Endif
+  
+  $hPopup.ShowPopup(X, Y)
+  '$hPopup.ShowModal
+  
+End
+
+Public Sub ButtonBox_KeyPress()
+  
+  If Key.Code = Key.Space Then
+    ButtonBox_Click
+    Stop Event
+  Endif
+  
+End
+
+
+Public Sub PopupWindow_Show()
+  
+  $hChooser.SetFocus
+  
+End
+
+
+Private Function ReadOnly_Read() As Boolean
+
+  Return $hButtonBox.ReadOnly
+
+End
+
+Private Sub ReadOnly_Write(Value As Boolean)
+
+  $hButtonBox.ReadOnly = Value
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $hButtonBox.Border
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $hButtonBox.Border = Value
+
+End
+
+Public Sub DateChooser_Activate()
+  
+  Me.Value = $hChooser.Value
+  $hPopup.Close
+  
+End
+
+Public Sub DateChooser_Cancel()
+  
+  $hPopup.Close
+  
+End

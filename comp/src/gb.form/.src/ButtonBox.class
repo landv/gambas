@@ -32,13 +32,13 @@ Public Sub _new()
   
   $hPanel = New Panel(Me) As "Panel"
   '$hPanel.Border = Border.Sunken
-  '$hPanel.Background = Color.TextBackground
   $hPanel.Arrangement = Arrange.Horizontal
   $hPanel.Padding = 3
   
   $hBackground = New TextBox($hPanel) As "Background"
   $hBackground.ReadOnly = True
   $hBackground.Ignore = True
+  '$hBackground.Background = Color.Yellow
   '$hBackground.Enabled = False
   
   $hTextBox = New TextBox($hPanel) 
@@ -49,6 +49,8 @@ Public Sub _new()
   $hButton = New Button($hPanel) As "Button"
   $hButton.W = Desktop.Scale * 4
   $hButton.Picture = Picture["./img/select.png"]
+  $hButton.Border = False
+  '$hButton.Background = Color.TextBackground
   
   $hTextBox.SetFocus
   

@@ -35,6 +35,7 @@
 #include <QEvent>
 #include <QPushButton>
 #include <QSizeGrip>
+#include <QPoint>
 
 #include "gambas.h"
 #include "CContainer.h"
@@ -189,7 +190,7 @@ public:
 	void showActivate(QWidget *parent = 0);
 	//void activateLater() { _activate = true; }
 	void showModal();
-	void showPopup();
+	void showPopup(QPoint &pos);
 	void afterShow();
 	//bool isModal() { return testWFlags(WShowModal); }
 	void doReparent(QWidget *w, const QPoint &p) { doReparent(w, windowFlags(), p); }

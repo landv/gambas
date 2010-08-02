@@ -834,8 +834,6 @@ void CLASS_sort(CLASS *class)
 	#endif
 }
 
-#define GET_IF_NULL(_callback) if (class->_callback == NULL) class->_callback = class->parent->_callback
-
 void CLASS_inheritance(CLASS *class, CLASS *parent)
 {
 	if (class->parent != NULL)
@@ -853,8 +851,11 @@ void CLASS_inheritance(CLASS *class, CLASS *parent)
 	}
 	END_TRY
 
-	GET_IF_NULL(check);
-
+	if (!class->check)
+	{
+		class->check = class->parent->check;
+		class->must_check = class->parent->must_check;
+	}
 	// CREATE STATIC is inherited, but not CREATE PRIVATE
 
 	if (parent->auto_create)

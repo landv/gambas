@@ -32,17 +32,15 @@ extern GB_DESC CTrayIconDesc[];
 extern GB_DESC CTrayIconsDesc[];
 #else
 #define THIS ((CTRAYICON *)_object)
-#define TRAYICON (THIS->icon)
+#define TRAYICON ((gTrayIcon *)(THIS->base.widget))
 #endif
 
-typedef  struct 
-{
-	GB_BASE ob;
-	gTrayIcon *icon;
-	GB_VARIANT_VALUE tag;
-
-	CPICTURE *picture;
-
-}  CTRAYICON;
+typedef
+	struct 
+	{
+		GTK_CONTROL base;
+		CPICTURE *picture;
+	}  
+	CTRAYICON;
 
 #endif

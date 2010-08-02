@@ -38,6 +38,7 @@
 #include "gmenu.h"
 #include "gmessage.h"
 #include "gdialog.h"
+#include "gmouse.h"
 #include "gmainwindow.h"
 
 static gboolean win_frame(GtkWidget *widget,GdkEventWindowState *event,gMainWindow *data)
@@ -188,6 +189,7 @@ void gMainWindow::initialize()
 	_hidden = false;
 	_hideMenuBar = false;
 	_showMenuBar = true;
+	_popup = false;
 
 	onOpen = NULL;
 	onShow = NULL;
@@ -460,7 +462,10 @@ void gMainWindow::setVisible(bool vl)
 			}
 			
 			gtk_window_move(GTK_WINDOW(border), bufX, bufY);
-			gtk_window_present(GTK_WINDOW(border));
+			if (isPopup())
+				gtk_widget_show_now(border);
+			else
+				gtk_window_present(GTK_WINDOW(border));
 		}
 		else 
 		{
@@ -573,6 +578,63 @@ void gMainWindow::showModal()
 		destroyNow();
 	else
 		hide();
+}
+
+void gMainWindow::showPopup(int x, int y)
+{
+  gMainWindow *save;
+	bool has_border;
+	int oldx, oldy;
+	
+	if (!isTopLevel()) return;
+	if (modal()) return;
+	
+	//gtk_widget_unrealize(border);
+	//((GtkWindow *)border)->type = GTK_WINDOW_POPUP;
+	//gtk_widget_realize(border);
+
+	oldx = left();
+	oldy = top();
+	
+	has_border = gtk_window_get_decorated(GTK_WINDOW(border));
+	gtk_window_set_decorated(GTK_WINDOW(border), false);
+  move(x, y);
+	gtk_window_resize(GTK_WINDOW(border), bufW, bufH);
+	
+	//reparent(NULL, x, y, GTK_WINDOW_POPUP);
+
+	_popup = true;
+	save = _current;
+	_current = this;
+	
+	gApplication::enterPopup(this);
+	
+	_current = save;
+	_popup = false;
+	
+	if (!persistent)
+		destroyNow();
+	else
+	{
+		//if (_current)
+		//gtk_window_activate_focus(GTK_WINDOW(_current->border));
+	
+		hide();
+		//reparent(NULL, oldx, oldy, GTK_WINDOW_TOPLEVEL);
+		gtk_window_set_decorated(GTK_WINDOW(border), has_border);
+		move(oldx, oldy);
+		/*gtk_widget_unrealize(border);
+		((GtkWindow *)border)->type = GTK_WINDOW_TOPLEVEL;
+		gtk_widget_realize(border);*/
+	}
+	
+}
+
+void gMainWindow::showPopup()
+{
+	int x, y;
+	gMouse::getScreenPos(&x, &y);
+	showPopup(x, y);
 }
 
 void gMainWindow::raise()
@@ -911,7 +973,7 @@ bool gMainWindow::close()
 	return doClose();
 }
 
-void gMainWindow::reparent(gContainer *newpr, int x, int y)
+void gMainWindow::reparent(gContainer *newpr, int x, int y, GtkWindowType type)
 {
 	GtkWidget *new_border;
 	int w, h;
@@ -951,11 +1013,12 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y)
 		move(x, y);
 		gtk_widget_set_size_request(border, width(), height());
 	}
-	else if (!isTopLevel() && !newpr)
+	else if ((!isTopLevel() && !newpr)
+	         || (isTopLevel() && (isPopup() ^ (type == GTK_WINDOW_POPUP))))
 	{
 		gtk_window_remove_accel_group(GTK_WINDOW(topLevel()->border), accel);
 		// TODO: test that
-		new_border = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+		new_border = gtk_window_new(type);
 		gtk_widget_reparent(widget, new_border);
 		embedMenuBar(new_border);
 		_no_delete = true;
@@ -965,9 +1028,12 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y)
 		border = new_border;
 		registerControl();
 		
-		parent()->remove(this);
-		parent()->arrange();
-		setParent(NULL);
+		if (parent())
+		{
+			parent()->remove(this);
+			parent()->arrange();
+			setParent(NULL);
+		}
 		initWindow();	
 		borderSignals();
 		setBackground(bg);
@@ -979,6 +1045,8 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y)
 		h = height();
 		bufW = bufH = -1;
 		resize(w, h);
+		
+		_popup = type == GTK_WINDOW_POPUP;
 	}
 	else
 		gControl::reparent(newpr, x, y);	
@@ -1112,6 +1180,8 @@ void gMainWindow::setActiveWindow(gControl *control)
 		
 	if (window)
 		window->emit(SIGNAL(window->onActivate));
+	
+	//fprintf(stderr, "setActiveWindow: %p %s\n", _active, _active ? _active->name() : "");
 }
 
 #ifdef GDK_WINDOWING_X11

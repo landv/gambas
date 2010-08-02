@@ -2,41 +2,38 @@
 
 { Form Form
   MoveScaled(0,0,58,37)
-  Text = ("")
   Resizable = False
   Arrangement = Arrange.Vertical
   { panToolbar HBox
     MoveScaled(1,1,55,4)
-    Spacing = True
-    { HBox1 HBox
-      MoveScaled(1,0,12,4)
-      { btnReload ToolButton
-        MoveScaled(0,0,4,4)
-        ToolTip = ("Today")
-        Text = ("")
-        Picture = Picture["icon:/small/calendar"]
-      }
-      { btnPrevMonth ToolButton
-        MoveScaled(4,0,4,4)
-        ToolTip = ("Previous month")
-        Text = ("")
-        Picture = Picture["icon:/small/left"]
-      }
-      { btnNextMonth ToolButton
-        MoveScaled(8,0,4,4)
-        ToolTip = ("Next month")
-        Text = ("")
-        Picture = Picture["icon:/small/right"]
-      }
+    { btnReload ToolButton
+      MoveScaled(0,0,4,4)
+      ToolTip = ("Today")
+      Picture = Picture["icon:/small/calendar"]
+    }
+    { btnPrevMonth ToolButton
+      MoveScaled(4,0,4,4)
+      ToolTip = ("Previous month")
+      Picture = Picture["icon:/small/left"]
+    }
+    { btnNextMonth ToolButton
+      MoveScaled(8,0,4,4)
+      ToolTip = ("Next month")
+      Picture = Picture["icon:/small/right"]
+    }
+    { panSepMonth Panel
+      MoveScaled(15,0,1,4)
     }
     { cmbMonth ComboBox
       MoveScaled(19,0,19,4)
       Expand = True
-      Text = ("")
       ReadOnly = True
     }
+    { Panel2 Panel
+      MoveScaled(40,0,1,4)
+    }
     { txtYear SpinBox
-      MoveScaled(39,0,10,4)
+      MoveScaled(42,0,10,4)
       MinValue = 1600
       MaxValue = 9999
     }

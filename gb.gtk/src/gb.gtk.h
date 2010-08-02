@@ -59,6 +59,7 @@ typedef
 	  void *widget;
 		GB_VARIANT_VALUE tag;
 		void *font;
+		char *popup;
 	}
 	GTK_CONTROL;
 

@@ -83,7 +83,7 @@ enum
 #endif
 
 
-//#define DEBUG_STATE
+//#define DEBUG_WINDOW 1
 
 DECLARE_EVENT(EVENT_Open);
 DECLARE_EVENT(EVENT_Close);
@@ -697,6 +697,28 @@ BEGIN_METHOD_VOID(CWINDOW_show_modal)
 			WINDOW->showModal();
 			//THIS->widget.flag.visible = false;
 		}
+	}
+
+	GB.ReturnInteger(THIS->ret);
+
+END_METHOD
+
+
+BEGIN_METHOD(Window_ShowPopup, GB_INTEGER x; GB_INTEGER y)
+
+	QPoint pos;
+	
+	if (MISSING(x) || MISSING(y))
+		pos = QCursor::pos();
+	else
+		pos = QPoint(VARG(x), VARG(y));
+	
+	THIS->ret = 0;
+
+	if (!emit_open_event(THIS))
+	{
+		if (THIS->toplevel)
+			WINDOW->showPopup(pos);
 	}
 
 	GB.ReturnInteger(THIS->ret);
@@ -1403,6 +1425,7 @@ GB_DESC CWindowDesc[] =
 	GB_METHOD("Hide", NULL, CWINDOW_hide, NULL),
 	GB_METHOD("ShowModal", "i", CWINDOW_show_modal, NULL),
 	GB_METHOD("ShowDialog", "i", CWINDOW_show_modal, NULL),
+	GB_METHOD("ShowPopup", "i", Window_ShowPopup, "[(X)i(Y)i]"),
 	GB_METHOD("Center", NULL, CWINDOW_center, NULL),
 	GB_PROPERTY_READ("Modal", "b", CWINDOW_modal),
 	GB_PROPERTY_READ("TopLevel", "b", CWINDOW_top_level),
@@ -1756,6 +1779,61 @@ void MyMainWindow::showModal(void)
 	}
 }
 
+void MyMainWindow::showPopup(QPoint &pos)
+{
+	Qt::WindowFlags flags = windowFlags();
+	CWIDGET *_object = CWidget::get(this);
+	bool persistent = CWIDGET_test_flag(THIS, WF_PERSISTENT);
+	CWINDOW *save = CWINDOW_Current;
+	QEventLoop *old;
+	QEventLoop eventLoop;
+
+	//if (isModal())
+		//return;
+
+	old = MyApplication::eventLoop;
+	MyApplication::eventLoop = &eventLoop;
+
+	#ifndef NO_X_WINDOW
+	if (CWINDOW_Active)
+		X11_set_transient_for(winId(), CWINDOW_Active->widget.widget->winId());
+	#endif
+
+	setWindowFlags(Qt::Popup);
+
+	setWindowModality(Qt::ApplicationModal);
+
+	if (_resizable && _border)
+	{
+		setMinimumSize(THIS->minw, THIS->minh);
+		setSizeGrip(true);
+	}
+
+	THIS->enterLoop = false; // Do not call exitLoop() if we do not entered the loop yet!
+	
+	move(pos);
+	show();
+	afterShow();
+	
+	THIS->loopLevel++;
+	CWINDOW_Current = THIS;
+	
+	THIS->enterLoop = true;
+	
+	eventLoop.exec();
+	//eventLoop.processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::DeferredDeletion, 0);
+	
+	MyApplication::eventLoop = old;
+	CWINDOW_Current = save;
+		
+	if (persistent)
+	{
+		setSizeGrip(false);
+		setWindowModality(Qt::NonModal);
+		setWindowFlags(flags);
+	}
+}
+
 bool MyMainWindow::isToolbar(void)
 {
 	#ifdef NO_X_WINDOW
@@ -1987,7 +2065,6 @@ void MyMainWindow::keyPressEvent(QKeyEvent *e)
 	
 	if (GB.CanRaise(THIS, EVENT_KeyPress))
 	{
-	
 		CKEY_clear(true);
 
 		GB.FreeString(&CKEY_info.text);

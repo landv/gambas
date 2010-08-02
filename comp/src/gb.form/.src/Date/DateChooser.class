@@ -12,6 +12,7 @@ Property Read Colors As _DateChooserColors
 
 Event Change
 Event Activate
+Event Cancel
 
 Public Const _Properties As String = "*"
 Public Const _DefaultEvent As String = "Change"
@@ -47,6 +48,12 @@ End
 Public Sub _Activate()
   
   Raise Activate
+  
+End
+
+Public Sub _Cancel()
+  
+  Raise Cancel
   
 End
 
@@ -113,4 +120,11 @@ Private Function Colors_Read() As _DateChooserColors
   _DateChooserColors._Calendar = $hCal
   Return _DateChooserColors
 
+End
+
+
+Public Sub SetFocus()
+  
+  $hCal.SetFocus
+  
 End

@@ -54,7 +54,7 @@ static gboolean sg_menu(GtkWidget *widget, gControl *data)
 
 gboolean gcb_focus_in(GtkWidget *widget,GdkEventFocus *event,gControl *data)
 {	
-	//fprintf(stderr, "sg_focus_in: %s\n", data->name());
+	//fprintf(stderr, "sg_focus_in: %p %s\n", data, data->name());
 
 	if (!gApplication::allEvents()) return false;
 
@@ -69,7 +69,7 @@ gboolean gcb_focus_in(GtkWidget *widget,GdkEventFocus *event,gControl *data)
 
 gboolean gcb_focus_out(GtkWidget *widget,GdkEventFocus *event,gControl *data)
 {	
-	//fprintf(stderr, "sg_focus_out: %s\n", data->name());
+	//fprintf(stderr, "sg_focus_out: %p %s\n", data, data->name());
 	
 	if (!gApplication::allEvents()) return false;
 	

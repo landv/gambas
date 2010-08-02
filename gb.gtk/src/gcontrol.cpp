@@ -860,7 +860,6 @@ void gControl::setFocus()
 	
 	if (win->isVisible())
 	{
-		//fprintf(stderr, "setFocus now %s\n", name());
 		//if (isVisible() && bufW > 0 && bufH > 0)
 		gtk_widget_grab_focus(widget);
 	}
@@ -1247,6 +1246,10 @@ void gControl::realize(bool make_frame)
 	//if (isContainer() && widget != border)
 	//	g_signal_connect(G_OBJECT(widget), "size-allocate", G_CALLBACK(cb_size_allocate), (gpointer)this);
 	
+	gtk_widget_add_events(widget, GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK
+		| GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK
+		| GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK);
+
 	registerControl();
 }
 
@@ -1662,28 +1665,29 @@ void gControl::setTracking(bool v)
 	}
 }
 
-void gControl::grab()
+bool gControl::grab(bool showIt)
 {
 	if (_grab)
-		return;
+		return false;
 	
-	if (gdk_pointer_grab(border->window, false, (GdkEventMask)(GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK), NULL, NULL, GDK_CURRENT_TIME) != GDK_GRAB_SUCCESS)
+	if (gdk_pointer_grab(border->window, false, (GdkEventMask)(GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK), NULL, NULL, gApplication::lastEventTime()) != GDK_GRAB_SUCCESS)
 	{
 		fprintf(stderr, "warning: cannot grab pointer\n");
-		return;
+		return true;
 	}
-	if (gdk_keyboard_grab(border->window, false, GDK_CURRENT_TIME) != GDK_GRAB_SUCCESS)
+	if (gdk_keyboard_grab(border->window, false, gApplication::lastEventTime()) != GDK_GRAB_SUCCESS)
 	{
 		gdk_pointer_ungrab(GDK_CURRENT_TIME);
 		fprintf(stderr, "warning: cannot grab keyboard\n");
-		return;
+		return true;
 	}
 
 	_grab = true;
 	
-	gApplication::enterLoop(this);
+	gApplication::enterLoop(this, showIt);
 
 	gdk_pointer_ungrab(GDK_CURRENT_TIME);
 	gdk_keyboard_ungrab(GDK_CURRENT_TIME);
 	_grab = false;
+	return false;
 }

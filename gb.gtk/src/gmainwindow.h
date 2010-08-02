@@ -48,9 +48,10 @@ public:
 	bool fullscreen();
 	bool getSticky();
 	int  getStacking();
-	bool isPersistent() { return persistent; }
-	bool isClosed() { return !opened; }
-	bool isHidden() { return _hidden; }
+	bool isPersistent() const { return persistent; }
+	bool isClosed() const { return !opened; }
+	bool isHidden() const { return _hidden; }
+	bool isPopup() const { return _popup; }
 	
 	int controlCount();
 	gControl *getControl(char *name);
@@ -94,11 +95,13 @@ public:
 //"Methods"
 	void center();
 	void showModal();
+	void showPopup();
+	void showPopup(int x, int y);
 	void raise();
 	virtual void move(int x, int y);
 	virtual void resize(int w, int h);
 	bool close();
-	virtual void reparent(gContainer *newpr, int x, int y);
+	virtual void reparent(gContainer *newpr, int x, int y, GtkWindowType type = GTK_WINDOW_TOPLEVEL);
 
 //"Signals"
 	void (*onOpen)(gMainWindow *sender);
@@ -165,6 +168,7 @@ public:
 	unsigned _hidden : 1;
 	unsigned _hideMenuBar : 1;
 	unsigned _showMenuBar : 1;
+	unsigned _popup : 1;
 };
 
 #endif

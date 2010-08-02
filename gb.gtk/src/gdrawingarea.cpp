@@ -54,7 +54,7 @@ static gboolean cb_button_press(GtkWidget *wid, GdkEventButton *event, gDrawingA
 {
 	if (data->canFocus())
 		data->setFocus();
-		
+	
 	return false;
 }
 
@@ -78,10 +78,10 @@ gDrawingArea::gDrawingArea(gContainer *parent) : gContainer(parent)
   
 	gtk_widget_add_events(widget, GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK
 		| GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK
-		| GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_POINTER_MOTION_MASK);
+		| GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK);
 	
 	//GTK_WIDGET_UNSET_FLAGS(border, GTK_APP_PAINTABLE);
-	GTK_WIDGET_SET_FLAGS(widget, GTK_CAN_FOCUS);
+	//GTK_WIDGET_SET_FLAGS(widget, GTK_CAN_FOCUS);
 		
 	_event_mask = gtk_widget_get_events(widget);
 	
@@ -109,13 +109,12 @@ void gDrawingArea::resize(int w, int h)
 
 bool gDrawingArea::canFocus() const
 {
-	return GTK_WIDGET_CAN_FOCUS(widget);
+	return gtk_widget_get_can_focus(widget);
 }
 
 void gDrawingArea::setCanFocus(bool vl)
 {
-	if (vl) GTK_WIDGET_SET_FLAGS(widget,GTK_CAN_FOCUS);
-	else    GTK_WIDGET_UNSET_FLAGS(widget,GTK_CAN_FOCUS);
+	gtk_widget_set_can_focus(widget, vl);
 }
 
 void gDrawingArea::updateEventMask()

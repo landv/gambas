@@ -205,9 +205,9 @@ void *CWIDGET_get_parent(void *_object)
     return CWidget::get(parent);
 }
 
-int Control_check(void *object)
+int Control_check(void *_object)
 {
-	return QWIDGET(object) == NULL || CWIDGET_test_flag(object, WF_DELETED);
+	return WIDGET == NULL || CWIDGET_test_flag(THIS, WF_DELETED);
 }
 
 static QWidget *get_viewport(QWidget *w)

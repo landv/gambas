@@ -370,6 +370,20 @@ BEGIN_METHOD_VOID(CWINDOW_show_modal)
 END_METHOD
 
 
+BEGIN_METHOD(Window_ShowPopup, GB_INTEGER x; GB_INTEGER y)
+
+	THIS->ret = 0;
+	MODAL_windows++;
+	if (!MISSING(x) && !MISSING(y))
+		WINDOW->showPopup(VARG(x), VARG(y));
+	else
+		WINDOW->showPopup();
+	MODAL_windows--;
+	GB.ReturnInteger(THIS->ret);
+
+END_METHOD
+
+
 BEGIN_METHOD_VOID(CWINDOW_show)
 
 	WINDOW->show();
@@ -769,6 +783,7 @@ GB_DESC CWindowDesc[] =
 	//GB_PROPERTY("Visible", "b", CWINDOW_visible),
 	GB_METHOD("ShowModal", "i", CWINDOW_show_modal, NULL),
 	GB_METHOD("ShowDialog", "i", CWINDOW_show_modal, NULL),
+	GB_METHOD("ShowPopup", "i", Window_ShowPopup, "[(X)i(Y)i]"),
 	GB_METHOD("Center", NULL, CWINDOW_center, NULL),
 	GB_PROPERTY_READ("Modal", "b", CWINDOW_modal),
 	GB_PROPERTY_READ("TopLevel", "b", CWINDOW_top_level),

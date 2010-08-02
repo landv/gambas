@@ -119,6 +119,11 @@ int gMouse::y()
 	return _isValid ? _y : -1;
 }
 
+void gMouse::getScreenPos(int *x, int *y)
+{
+	gdk_display_get_pointer(gdk_display_get_default(), NULL, x, y, NULL);
+}
+
 int gMouse::screenX()
 {
 	gint x;

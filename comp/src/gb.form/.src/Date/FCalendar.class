@@ -6,15 +6,36 @@ Private $dMonth As Date
 Private $dLast As Date
 Private $iDisabledColor As Integer
 Private $cDateColor As New Collection
+Private $bShort As Boolean
+
+Private Sub FillMonth(bShort As Boolean)
+  
+  Dim iMonth As Integer
+  Dim sFormat As String
+  Dim iIndex As Integer
+  
+  If bShort = $bShort And If cmbMonth.Count Then Return
+  
+  sFormat = If(bShort, "mmm", "mmmm")
+  
+  iIndex = cmbMonth.Index
+  Object.Lock(cmbMonth)
+  cmbMonth.Clear
+  For iMonth = 1 To 12
+    cmbMonth.Add(DConv(Format(Date(1972, iMonth, 1), sFormat)))
+  Next 
+  cmbMonth.Index = iIndex
+  Object.Unlock(cmbMonth)
+  
+  $bShort = bShort
+  
+End
+
 
 Public Sub _new()
   
-  Dim iMonth As Integer
+  FillMonth(False)
   
-  For iMonth = 1 To 12
-    cmbMonth.Add(DConv(Format(Date(1972, iMonth, 1), "mmmm")))
-  Next 
-
   $dDate = Now  
   SetDate()
   
@@ -90,6 +111,8 @@ Private Sub SetDate(Optional iYear As Integer, Optional iMonth As Integer, Optio
     $dLast = $dDate
     GetParent()._Change    
   Endif
+  
+  dwgMonth.SetFocus
   
 End
 
@@ -263,22 +286,26 @@ Public Sub dwgMonth_KeyPress()
     Case Key.Left
       Dec $dDate
       SetDate
+      Stop Event
   
     Case Key.Right
       Inc $dDate
       SetDate
+      Stop Event
   
     Case Key.Up
       $dDate -= 7
       SetDate
+      Stop Event
   
     Case Key.Down
       $dDate += 7
       SetDate
+      Stop Event
       
-    Case Key.Space
+    Case Key.Space, Key.Enter, Key.Return
       dwgMonth_DblClick
-  
+      
   End Select   
 
 End
@@ -306,7 +333,7 @@ End
 Public Sub btnReload_Click()
 
   $dDate = Now
-  SetDate  
+  SetDate
 
 End
 
@@ -355,3 +382,36 @@ Public Sub GetColor(dDate As Date) As Integer
   
 End
 
+
+Public Sub Form_Resize()
+
+  If Me.Width < (Desktop.Scale * 36) Then
+    btnNextMonth.Hide
+    btnPrevMonth.Hide
+    If Me.Width < (Desktop.Scale * 24) Then
+      panSepMonth.Hide
+      btnReload.Hide
+    Else
+      panSepMonth.Show
+      btnReload.Show
+    Endif
+  Else
+    btnNextMonth.Show
+    btnPrevMonth.Show
+  Endif
+  
+  FillMonth(cmbMonth.Width < (Desktop.Scale * 12))
+
+End
+
+Public Sub Form_KeyPress()
+
+  If Key.Code = Key.Escape Then GetParent()._Cancel
+
+End
+
+Public Sub SetFocus()
+  
+  dwgMonth.SetFocus
+  
+End

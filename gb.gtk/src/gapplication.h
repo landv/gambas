@@ -58,6 +58,7 @@ public:
 	static void setDirty();
 	static int loopLevel() { return _loopLevel; }
 	static void enterLoop(void *owner, bool showIt = false);
+	static void enterPopup(gMainWindow *owner);
 	static void exitLoop(void *owner);
 	static bool hasLoop(void *owner) { return _loop_owner == owner; }
 	static GtkWindowGroup *enterGroup();

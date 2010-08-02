@@ -160,6 +160,7 @@ BEGIN_METHOD_VOID(CTRAYICON_free)
 
 	GB.StoreObject(NULL, POINTER(&THIS->icon));
 	GB.FreeString(&THIS->tooltip);
+	GB.FreeString(&THIS->popup);
 	GB.StoreVariant(NULL, &THIS->tag);
 
 	destroy_widget(THIS);
@@ -232,6 +233,15 @@ BEGIN_PROPERTY(CTRAYICON_tooltip)
 		GB.StoreString(PROP(GB_STRING), &(THIS->tooltip));
 		define_tooltip(THIS);
 	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(TrayIcon_PopupMenu)
+
+	if (READ_PROPERTY)
+		GB.ReturnString(THIS->popup);
+	else
+		GB.StoreString(PROP(GB_STRING), &(THIS->popup));
 
 END_PROPERTY
 
@@ -424,6 +434,7 @@ GB_DESC CTrayIconDesc[] =
 	GB_PROPERTY("Visible", "b", CTRAYICON_visible),
 
 	GB_PROPERTY("Text", "s", CTRAYICON_tooltip),
+	GB_PROPERTY("PopupMenu", "s", TrayIcon_PopupMenu),
 	GB_PROPERTY("Tooltip", "s", CTRAYICON_tooltip),
 	GB_PROPERTY("Tag", "v", CTRAYICON_tag),
 
@@ -516,6 +527,18 @@ bool CTrayIcon::eventFilter(QObject *widget, QEvent *event)
 			((QContextMenuEvent *)event)->accept();
 			GB.Raise(THIS, EVENT_Menu, 0);
 			return true;
+		}
+		if (THIS->popup)
+		{
+			void *parent = GB.Parent(THIS);
+			if (parent && GB.Is(parent, Class_Control))
+			{
+				CWINDOW *window = CWidget::getWindow(parent);
+				CMENU *menu = CWindow::findMenu(window, THIS->popup);
+				if (menu)
+					CMENU_popup(menu, QCursor::pos());
+				return true;
+			}
 		}
 	}
 	else if ((type == QEvent::MouseButtonPress)

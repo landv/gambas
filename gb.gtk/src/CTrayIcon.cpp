@@ -40,65 +40,64 @@ DECLARE_EVENT(EVENT_Leave);
 DECLARE_EVENT(EVENT_GotFocus);
 DECLARE_EVENT(EVENT_LostFocus);
 
-void Tray_destroy(gTrayIcon *sender)
+static void Tray_destroy(gTrayIcon *sender)
 {
-	CTRAYICON *icon=(CTRAYICON*)sender->hFree;
-	icon->icon=NULL;
-	GB.Unref(POINTER(&icon));
+	CTRAYICON *_object = (CTRAYICON*)sender->hFree;
+	THIS->base.widget = NULL;
+	GB.Unref(POINTER(&_object));
 }
 
-void Tray_enter(gTrayIcon *sender)
+static void Tray_enter(gTrayIcon *sender)
 {
-	GB.Raise(sender->hFree,EVENT_Enter,0);
+	GB.Raise(sender->hFree, EVENT_Enter, 0);
 }
 
-void Tray_leave(gTrayIcon *sender)
+static void Tray_leave(gTrayIcon *sender)
 {
 	GB.Raise(sender->hFree,EVENT_Leave,0);
 }
 
-void Tray_dblClick(gTrayIcon *sender)
+static void Tray_dblClick(gTrayIcon *sender)
 {
 	GB.Raise(sender->hFree,EVENT_DblClick,0);
 }
 
-void Tray_press(gTrayIcon *sender)
+static void Tray_press(gTrayIcon *sender)
 {
 	GB.Raise(sender->hFree,EVENT_MouseDown,0);
 }
 
-void Tray_release(gTrayIcon *sender)
+static void Tray_release(gTrayIcon *sender)
 {
 	GB.Raise(sender->hFree,EVENT_MouseUp,0);
 }
 
-void Tray_menu(gTrayIcon *sender)
+static void Tray_menu(gTrayIcon *sender)
 {
 	GB.Raise(sender->hFree,EVENT_Menu,0);
 }
 
-void Tray_gotFocus(gTrayIcon *sender)
+static void Tray_gotFocus(gTrayIcon *sender)
 {
 	GB.Raise(sender->hFree,EVENT_GotFocus,0);
 }
 
-void Tray_lostFocus(gTrayIcon *sender)
+static void Tray_lostFocus(gTrayIcon *sender)
 {
 	GB.Raise(sender->hFree,EVENT_LostFocus,0);
 }
 
-int CTRAYICON_check(void *_object)
+static int CTRAYICON_check(void *_object)
 {
-	if (!TRAYICON) return true;
-  	return false;
+	return TRAYICON == NULL;
 }
 
 BEGIN_METHOD_VOID(CTRAYICON_new)
 
-	THIS->icon = new gTrayIcon();
-	THIS->icon->hFree = (void*)THIS;
+	THIS->base.widget = new gTrayIcon();
+	TRAYICON->hFree = (void*)THIS;
   
-  THIS->tag.type = GB_T_NULL;
+  THIS->base.tag.type = GB_T_NULL;
 	
 	TRAYICON->onMousePress=Tray_press;
 	TRAYICON->onMouseRelease=Tray_release;
@@ -115,28 +114,28 @@ BEGIN_METHOD_VOID(CTRAYICON_new)
 	
 END_METHOD
 
-BEGIN_METHOD_VOID(CTRAYICON_free)
-
-  GB.StoreObject(NULL, POINTER(&THIS->picture));
-  GB.StoreVariant(NULL, &THIS->tag);
-
-	//Remove_Tray(_object);
+static void destroy_tray_icon(CTRAYICON *_object)
+{
 	if (TRAYICON) 
 	{
 		delete TRAYICON;
-		TRAYICON=NULL;
+		THIS->base.widget = NULL;
 	}
+}
+
+BEGIN_METHOD_VOID(CTRAYICON_free)
+
+  GB.StoreObject(NULL, POINTER(&THIS->picture));
+  GB.StoreVariant(NULL, &THIS->base.tag);
+
+	destroy_tray_icon(THIS);
 
 END_METHOD
 
 
 BEGIN_METHOD_VOID(CTRAYICON_destroy)
 
-	if (TRAYICON) 
-	{
-		delete TRAYICON;
-		TRAYICON=NULL;
-	}
+	destroy_tray_icon(THIS);
 
 END_METHOD
 
@@ -216,9 +215,9 @@ END_PROPERTY
 BEGIN_PROPERTY(CTRAYICON_tag)
 
   if (READ_PROPERTY)
-    GB.ReturnPtr(GB_T_VARIANT, &THIS->tag);
+    GB.ReturnPtr(GB_T_VARIANT, &THIS->base.tag);
   else
-    GB.StoreVariant(PROP(GB_VARIANT), (void *)&THIS->tag);
+    GB.StoreVariant(PROP(GB_VARIANT), (void *)&THIS->base.tag);
 
 END_METHOD
 

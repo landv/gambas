@@ -151,6 +151,7 @@ void gDesktop::setFont(gFont *ft)
 
 void gDesktop::setActiveControl(gControl *control)
 {
+	//fprintf(stderr, "setActiveControl: %p %s\n", control, control ? control->name() : "");
 	_active_control = control;
 }
 

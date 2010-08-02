@@ -305,11 +305,13 @@ void DeleteControl(gControl *control)
 	WINDOW_kill((CWINDOW*)widget);
 	
 	GB.Unref(POINTER(&widget->font));
+	GB.FreeString(&widget->popup);
+	
 	widget->font = NULL;
 	widget->widget = NULL;
 	GB.Unref(POINTER(&widget));
 	
-	GB.FreeString(&widget->popup);
+	control->hFree = NULL;
 }
 
 

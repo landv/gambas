@@ -25,6 +25,7 @@
 
 #include "gambas.h"
 #include "gb.image.h"
+#include "gb.gtk.h"
 #include "widgets.h"
 #include "CWidget.h"
 

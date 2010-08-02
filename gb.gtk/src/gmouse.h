@@ -40,6 +40,7 @@ public:
 	static int y();
 	static int screenX();
 	static int screenY();
+	static void getScreenPos(int *x, int *y);
 	static int delta();
 	static int orientation();
 	static bool isValid() { return _isValid; }

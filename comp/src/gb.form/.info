@@ -214,6 +214,57 @@ _RaiseActivate
 m
 
 
+#DateBox
+UserControl
+C
+_Properties
+C
+s
+*,Value,ReadOnly,Border=True
+_DefaultSize
+C
+s
+24,4
+_Similar
+C
+s
+TextBox
+Value
+p
+d
+
+ReadOnly
+p
+b
+
+Border
+p
+b
+
+_new
+m
+
+
+ButtonBox_Click
+m
+
+
+ButtonBox_KeyPress
+m
+
+
+PopupWindow_Show
+m
+
+
+DateChooser_Activate
+m
+
+
+DateChooser_Cancel
+m
+
+
 #DateChooser
 UserControl
 C
@@ -249,6 +300,10 @@ _DateChooserColors
 :
 
 
+:Cancel
+:
+
+
 _Properties
 C
 s
@@ -274,6 +329,14 @@ m
 
 
 _Activate
+m
+
+
+_Cancel
+m
+
+
+SetFocus
 m
 
 

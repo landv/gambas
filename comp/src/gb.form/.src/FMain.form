@@ -1,12 +1,12 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,93,63)
-  Arrangement = Arrange.Vertical
+  MoveScaled(0,0,33,31)
   Spacing = True
   Margin = True
   { Menu4 Menu
     Text = ("Menu4")
+    Visible = False
     { Menu5 Menu
       Text = ("Reload")
     }
@@ -22,12 +22,17 @@
       Text = ("Action 3")
     }
   }
-  { FileChooser1 FileChooser
-    MoveScaled(7,3,36,36)
-    Expand = True
+  { DateBox1 DateBox
+    MoveScaled(4,4,24,5)
+    Border = False
   }
   { Button1 Button
-    MoveScaled(31,53,16,4)
+    MoveScaled(6,16,16,8)
     Text = ("Button1")
+  }
+  { TextBox1 ComboBox
+    MoveScaled(4,10,24,5)
+    List = [("Élément 1"), ("Élément 2"), ("Élément 3"), ("Élément 4"), ("Élément 5")]
+    Text = ("TextBox1")
   }
 }

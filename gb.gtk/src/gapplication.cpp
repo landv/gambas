@@ -22,6 +22,7 @@
 
 #include <ctype.h>
 #include <time.h>
+#include <unistd.h>
 
 #include "widgets.h"
 #include "widgets_private.h"
@@ -308,8 +309,15 @@ static void gambas_handle_event(GdkEvent *event)
 		goto __HANDLE_EVENT;
 	
 	widget = gtk_get_event_widget(event);
-	real = true;
 	
+	grab = gtk_grab_get_current();
+	if (grab)
+	{
+		if (widget != grab && !gtk_widget_is_ancestor(widget, grab))
+			widget = grab;
+	}
+	
+	real = true;
 	while (widget)
 	{
 		control = (gControl *)g_object_get_data(G_OBJECT(widget), "gambas-control");
@@ -319,6 +327,11 @@ static void gambas_handle_event(GdkEvent *event)
 		real = false;
 	}
 
+	/*if (event->type == GDK_BUTTON_PRESS)
+		fprintf(stderr, "GDK_BUTTON_PRESS: %p %s\n", widget, control ? control->name() : NULL);
+	else if (event->type == GDK_KEY_PRESS)
+		fprintf(stderr, "GDK_KEY_PRESS: %p %s\n", widget, control ? control->name() : NULL);*/
+	
 	if (!widget || !control)
 		goto __HANDLE_EVENT;
 	
@@ -333,10 +346,6 @@ static void gambas_handle_event(GdkEvent *event)
 			break;
 	}*/
 		
-	grab = gtk_grab_get_current();
-	if (grab && grab != widget)
-		goto __HANDLE_EVENT;
-	
 	//group = get_window_group(widget);
 	//if (group != gApplication::currentGroup())
 	//	goto __HANDLE_EVENT;
@@ -395,7 +404,13 @@ static void gambas_handle_event(GdkEvent *event)
 				switch ((int)event->type)
 				{
 					case GDK_BUTTON_PRESS: 
-						control->onMouseEvent(control, gEvent_MousePress); 
+						control->onMouseEvent(control, gEvent_MousePress);
+						if (control->isTopLevel())
+						{
+							gMainWindow *win = ((gMainWindow *)control);
+							if (win->isPopup() && (x < 0 || y < 0 || x >= win->width() || y >= win->height()))
+								win->close();
+						}
 						break;
 					
 					case GDK_2BUTTON_PRESS: 
@@ -467,11 +482,14 @@ static void gambas_handle_event(GdkEvent *event)
 		case GDK_KEY_PRESS:
 		{
 			bool cancel = false;
+			gMainWindow *win;
 			
 			control = gDesktop::activeControl();
 			
 			if (control)
 			{
+				win = control->window();
+				
 				if (!gKey::enable(control, &event->key))
 				{
 					if (gApplication::onKeyEvent)
@@ -480,6 +498,10 @@ static void gambas_handle_event(GdkEvent *event)
 					{
 						//fprintf(stderr, "gEvent_KeyPress on %p %s\n", control, control->name());
 						cancel = control->onKeyEvent(control, gEvent_KeyPress);
+					}
+					if (!cancel && win->onKeyEvent)
+					{
+						cancel = control->onKeyEvent(win, gEvent_KeyPress);
 					}
 				}
 				gKey::disable();
@@ -495,7 +517,6 @@ static void gambas_handle_event(GdkEvent *event)
 						return;
 					}
 					
-					gMainWindow *win = control->window();
 					if (check_button(win->_cancel))
 					{
 						win->_cancel->animateClick(false);
@@ -504,7 +525,6 @@ static void gambas_handle_event(GdkEvent *event)
 				}
 				else if (event->key.keyval == GDK_Return || event->key.keyval == GDK_KP_Enter)
 				{
-					gMainWindow *win = control->window();
 					if (check_button(win->_default))
 					{
 						win->_default->animateClick(false);
@@ -847,6 +867,73 @@ void gApplication::enterLoop(void *owner, bool showIt)
 	
 	_loop_owner = old_owner;
 
+	exitGroup(oldGroup);
+}
+
+static gboolean
+popup_grab_on_window (GdkWindow *window,
+		      guint32    activate_time,
+		      gboolean   grab_keyboard)
+{
+  /*gdk_display_pointer_ungrab (gdk_drawable_get_display (window), gApplication::lastEventTime());
+  gdk_display_keyboard_ungrab(gdk_drawable_get_display (window), gApplication::lastEventTime());
+	gdk_display_flush(gdk_drawable_get_display (window));*/
+	
+  int ret = gdk_pointer_grab(window, TRUE,
+			 (GdkEventMask)(GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK |
+			 GDK_POINTER_MOTION_MASK),
+			 NULL, NULL, activate_time);
+	
+	if (ret == 0)
+	{
+		if (grab_keyboard)
+			ret = gdk_keyboard_grab(window, TRUE, activate_time);
+		
+		if (ret == 0)
+			return TRUE;
+		
+		gdk_display_pointer_ungrab (gdk_drawable_get_display (window), activate_time);
+	}
+
+	fprintf(stderr, "grab failed: %d\n", ret);
+	return FALSE;
+}
+
+
+void gApplication::enterPopup(gMainWindow *owner)
+{
+	void *old_owner = _loop_owner;
+	int l = _loopLevel;
+	GtkWindowGroup *oldGroup;
+	GtkWidget *toplevel;
+	GtkWindow *window = GTK_WINDOW(owner->border);
+	gControl *active;
+	
+	oldGroup = enterGroup();
+	
+	gtk_window_set_modal(window, true);
+	owner->show();
+	
+  if (popup_grab_on_window(owner->border->window, GDK_CURRENT_TIME, FALSE))
+	{
+		_loopLevel++;
+		_loop_owner = owner;
+		
+		do
+		{
+			do_iteration(false);
+		}
+		while (_loopLevel > l);
+		
+		//active = gDesktop::activeControl();
+		//if (active)
+		//	gcb_focus_out(active->widget, NULL, active);
+		
+		_loop_owner = old_owner;
+	}
+
+	//gtk_window_set_type_hint(window, GDK_WINDOW_TYPE_HINT_NORMAL);
+	gtk_window_set_modal(window, false);
 	exitGroup(oldGroup);
 }
 

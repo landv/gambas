@@ -65,6 +65,7 @@ typedef
     GB_VARIANT_VALUE tag;
     CPICTURE *icon;
     char *tooltip;
+		char *popup;
     }
   CTRAYICON;
 

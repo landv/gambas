@@ -59,6 +59,7 @@ typedef
 		gPlugin *widget;
 		GB_VARIANT_VALUE tag;
 		void *font;
+		char *popup;
 	}
 	CPLUGIN;
 
