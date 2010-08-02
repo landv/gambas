@@ -1712,10 +1712,10 @@ void MyMainWindow::showActivate(QWidget *transient)
 			//MAIN_process_events();
 			//usleep(50000);
 			//_activate = TRUE;
-			if (isToolbar())
-				QTimer::singleShot(50, this, SLOT(activateLater()));
-			else
-				activateWindow();
+			//if (isToolbar())
+			QTimer::singleShot(50, this, SLOT(activateLater()));
+			//else
+			//	activateWindow();
 		}
 	}
 	else
