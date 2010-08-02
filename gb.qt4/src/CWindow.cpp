@@ -43,6 +43,7 @@
 #include <QDesktopWidget>
 #include <QAction>
 #include <QX11Info>
+#include <QTimer>
 
 #include "main.h"
 
@@ -1591,6 +1592,7 @@ void MyMainWindow::showEvent(QShowEvent *e)
 
 	if (_activate)
 	{
+		qDebug("showEvent: activate: %s", THIS->widget.name);
 		raise();
 		//setFocus();
 		activateWindow();
@@ -1622,6 +1624,11 @@ void MyMainWindow::afterShow()
 		//define_mask(THIS, THIS->picture, THIS->masked);	
 		THIS->loopLevel = CWINDOW_Current ? CWINDOW_Current->loopLevel : 0;
 	}
+}
+
+void MyMainWindow::activateLater()
+{
+	activateWindow();
 }
 
 void MyMainWindow::showActivate(QWidget *transient)
@@ -1702,9 +1709,13 @@ void MyMainWindow::showActivate(QWidget *transient)
 		{*/
 		if (hasBorder())
 		{
-			MAIN_process_events();
-			usleep(50000);
-			activateWindow();
+			//MAIN_process_events();
+			//usleep(50000);
+			//_activate = TRUE;
+			if (isToolbar())
+				QTimer::singleShot(50, this, SLOT(activateLater()));
+			else
+				activateWindow();
 		}
 	}
 	else
@@ -2566,8 +2577,6 @@ bool CWindow::eventFilter(QObject *o, QEvent *e)
 		{
 			if (THIS->toplevel)
 			{
-				//qDebug("Activate: ob = %p", THIS);
-				
 				CWINDOW_activate((CWIDGET *)(CWINDOW_LastActive ? CWINDOW_LastActive : THIS));
 				//GB.Unref(POINTER(&CWINDOW_LastActive));
 				CWINDOW_LastActive = 0;

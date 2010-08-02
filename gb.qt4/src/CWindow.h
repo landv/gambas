@@ -177,6 +177,10 @@ protected:
 
 	//bool eventFilter(QObject *, QEvent *);
 
+public slots:
+	
+	void activateLater();
+	
 public:
 
 	enum { BorderNone = 0, BorderFixed = 1, BorderResizable = 2 };

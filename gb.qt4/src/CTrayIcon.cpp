@@ -37,11 +37,13 @@
 
 #include "gambas.h"
 #include "main.h"
-#include "x11.h"
 
 #include "CMouse.h"
 #define DO_NOT_DECLARE_EVENTS
 #include "CWidget.h"
+#include "CMenu.h"
+#include "CWindow.h"
+#include "x11.h"
 #include "CTrayIcon.h"
 
 DECLARE_METHOD(Control_ScreenX);
@@ -531,9 +533,9 @@ bool CTrayIcon::eventFilter(QObject *widget, QEvent *event)
 		if (THIS->popup)
 		{
 			void *parent = GB.Parent(THIS);
-			if (parent && GB.Is(parent, Class_Control))
+			if (parent && GB.Is(parent, CLASS_Control))
 			{
-				CWINDOW *window = CWidget::getWindow(parent);
+				CWINDOW *window = CWidget::getWindow((CWIDGET *)parent);
 				CMENU *menu = CWindow::findMenu(window, THIS->popup);
 				if (menu)
 					CMENU_popup(menu, QCursor::pos());
