@@ -25,6 +25,7 @@
 
 #include "gb_table.h"
 #include "gb_reserved.h"
+#include "gb_error.h"
 #include "eval_read.h"
 /*#include "CCollection.h"*/
 #include "main.h"
