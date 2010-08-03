@@ -85,15 +85,19 @@ static bool button_expose(GtkWidget *wid,GdkEventExpose *e,gButton *data)
 	GdkGC        *gc;
 	GdkPixbuf    *img;
 	GdkRectangle rpix={0,0,0,0};
-	GdkRectangle rect={0,0,0,0};
+	GdkRectangle rect;
 	GtkCellRendererState state;
 	gint         py,px;
 	bool         rtl,bcenter=false;
 	gint dx, dy;
+	GdkWindow *win;
 
+		
 	rtl = gtk_widget_get_default_direction() == GTK_TEXT_DIR_RTL;
 
 	rect = wid->allocation;
+	win = wid->window;
+	
 	px = rect.width;
 
 	if (GTK_WIDGET_STATE(data->widget) == GTK_STATE_ACTIVE)
@@ -125,7 +129,7 @@ static bool button_expose(GtkWidget *wid,GdkEventExpose *e,gButton *data)
 		
 		py = (rect.height - rpix.height)/2;
 		
-		gc=gdk_gc_new(wid->window);
+		gc=gdk_gc_new(win);
 		gdk_gc_set_clip_origin(gc,0,0);
 		gdk_gc_set_clip_rectangle(gc,&e->area);
 
@@ -133,17 +137,17 @@ static bool button_expose(GtkWidget *wid,GdkEventExpose *e,gButton *data)
 		
 		if (bcenter) 
 		{	
-			gdk_draw_pixbuf(GDK_DRAWABLE(wid->window),gc,img,0,0,rect.x + (px-rpix.width)/2, rect.y + py,
+			gdk_draw_pixbuf(GDK_DRAWABLE(win),gc,img,0,0,rect.x + (px-rpix.width)/2, rect.y + py,
                                         -1,-1,GDK_RGB_DITHER_MAX,0,0);
 			g_object_unref(gc);
 			return false;
 		}
 
 		if (rtl)
-			gdk_draw_pixbuf(GDK_DRAWABLE(wid->window),gc,img,0,0,rect.x + rect.width - 6, rect.y + py,
+			gdk_draw_pixbuf(GDK_DRAWABLE(win),gc,img,0,0,rect.x + rect.width - 6, rect.y + py,
                                         -1,-1,GDK_RGB_DITHER_MAX,0,0);
 		else
-			gdk_draw_pixbuf(GDK_DRAWABLE(wid->window),gc,img,0,0,rect.x + 6, rect.y + py,
+			gdk_draw_pixbuf(GDK_DRAWABLE(win),gc,img,0,0,rect.x + 6, rect.y + py,
                                         -1,-1,GDK_RGB_DITHER_MAX,0,0);
 
 		g_object_unref(G_OBJECT(gc));
@@ -186,7 +190,7 @@ static bool button_expose(GtkWidget *wid,GdkEventExpose *e,gButton *data)
 	if (rect.width >= 1 && rect.height >= 1)
 	{
 		gtk_cell_renderer_set_fixed_size(data->rendtxt,rect.width,rect.height);
-		gtk_cell_renderer_render(data->rendtxt,wid->window,wid,&rect,&rect,&rect,state);
+		gtk_cell_renderer_render(data->rendtxt,win,wid,&rect,&rect,&rect,state);
 	}
 	
 	return FALSE;
@@ -195,6 +199,7 @@ static bool button_expose(GtkWidget *wid,GdkEventExpose *e,gButton *data)
 gButton::gButton(gContainer *par, Type typ) : gControl(par)
 {
 	gContainer *ct;
+	bool invisible;
 
 	g_typ = Type_gButton;
 	
@@ -216,35 +221,39 @@ gButton::gButton(gContainer *par, Type typ) : gControl(par)
 	
 	//border=gtk_event_box_new();
 	
+	invisible = false;
+	
 	switch(typ)
 	{
 		case Toggle:
-			rendtxt=gtk_cell_renderer_text_new();
-			border=gtk_toggle_button_new();
+			rendtxt = gtk_cell_renderer_text_new();
+			border = gtk_toggle_button_new();
 			break;
 			
 		case Check:
-			border=gtk_check_button_new();
+			border = gtk_check_button_new();
 			break;
 			
 		case Radio:
 			ct = parent();
 			if (!ct->radiogroup) 
 			{
-				ct->radiogroup=gtk_radio_button_new(NULL);
+				ct->radiogroup = gtk_radio_button_new(NULL);
 				g_object_ref(ct->radiogroup);
-				border=gtk_radio_button_new_from_widget(GTK_RADIO_BUTTON(ct->radiogroup));
-				gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(border),true);
+				border = gtk_radio_button_new_from_widget(GTK_RADIO_BUTTON(ct->radiogroup));
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(border),true);
 			}
 			else 
 			{
-				border=gtk_radio_button_new_from_widget(GTK_RADIO_BUTTON(ct->radiogroup));
+				border = gtk_radio_button_new_from_widget(GTK_RADIO_BUTTON(ct->radiogroup));
 			}
 			break;
 		
 		case Tool:
-			rendtxt=gtk_cell_renderer_text_new();
-			border=gtk_toggle_button_new();
+			rendtxt = gtk_cell_renderer_text_new();
+			border = gtk_toggle_button_new();
+			gtk_button_set_focus_on_click(GTK_BUTTON(border), false);
+			invisible = true;
 			break;
 		
 		default:
@@ -256,12 +265,16 @@ gButton::gButton(gContainer *par, Type typ) : gControl(par)
 
   widget = border;
   border = gtk_event_box_new();
+	if (invisible)
+		gtk_event_box_set_visible_window(GTK_EVENT_BOX(border), false);
+																
   type = typ;
 
 	if (rendtxt) 
 	{
 		g_object_set(G_OBJECT(rendtxt),"xalign",0.5,(void *)NULL);
 		g_object_set(G_OBJECT(rendtxt),"yalign",0.5,(void *)NULL);
+
 		g_signal_connect_after(G_OBJECT(widget),"expose-event",G_CALLBACK(button_expose),(gpointer)this);
 	}
 	else
@@ -273,7 +286,6 @@ gButton::gButton(gContainer *par, Type typ) : gControl(par)
 	
 	realize();
 	
-	gtk_button_set_focus_on_click (GTK_BUTTON(widget),true);
 	gtk_widget_add_events(widget, GDK_POINTER_MOTION_MASK);
 	onClick=NULL;
 	

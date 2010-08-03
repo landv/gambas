@@ -167,6 +167,7 @@ typedef
 			void (*Button)(GB_DRAW *d, int x, int y, int w, int h, int value, int state);
 			void (*Panel)(GB_DRAW *d, int x, int y, int w, int h, int border, int state);
 			void (*Handle)(GB_DRAW *d, int x, int y, int w, int h, int vertical, int state);
+			void (*Box)(GB_DRAW *d, int x, int y, int w, int h, int state);
 			}
 			Style;
 	}

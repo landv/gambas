@@ -104,10 +104,6 @@ Button_Click
 m
 
 
-Panel_Arrange
-m
-
-
 Background_GotFocus
 m
 
@@ -117,6 +113,14 @@ m
 
 
 Clear
+m
+
+
+Background_Arrange
+m
+
+
+Background_Draw
 m
 
 
@@ -1046,7 +1050,7 @@ C
 _Properties
 C
 s
-*,Action,AutoResize,Text,Picture,Arrow=True,Menu
+*,AutoResize,Text,Picture,Arrow=True,Border=True,Menu
 _DefaultSize
 C
 s
@@ -1099,11 +1103,11 @@ AutoResize
 p
 b
 
+Border
+p
+b
+
 _new
-m
-
-
-Watcher_Resize
 m
 
 
@@ -1128,6 +1132,10 @@ m
 
 
 Button_MouseDrag
+m
+
+
+Panel_Arrange
 m
 
 

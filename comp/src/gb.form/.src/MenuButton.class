@@ -5,7 +5,7 @@ Export
 Inherits UserControl
 
 'Public Const _Properties As String = "*,AutoResize,Text,Picture,Border,Radio,Toggle,Value"
-Public Const _Properties As String = "*,Action,AutoResize,Text,Picture,Arrow=True,Menu"
+Public Const _Properties As String = "*,AutoResize,Text,Picture,Arrow=True,Border=True,Menu"
 Public Const _DefaultSize As String = "6,4"
 Public Const _Similar As String = "Button"
 
@@ -22,9 +22,10 @@ Property Menu As String
 Property Value As Boolean
 Property Arrow As Boolean
 Property AutoResize As Boolean
+Property Border As Boolean
 
 Private $hPanel As HBox
-Private $hButton As ToolButton
+Private $hButton As Button
 Private $hArrow As ToolButton
 Private $hWatcher As Watcher
 Private $sMenu As String
@@ -36,24 +37,27 @@ Private $bAutoResize As Boolean
 
 Public Sub _new()
   
-  $hPanel = New HBox(Me)
+  $hPanel = New HBox(Me) As "Panel"
   'Me._Arrangement = Arrange.Horizontal
-  $hButton = New ToolButton($hPanel) As "Button"
+  $hButton = New Button($hPanel) As "Button"
   $hButton.Expand = True
+  $hButton.Border = True
   $hArrow = New ToolButton($hPanel) As "Arrow"
   $hArrow.W = Desktop.Scale * 2
   '$hArrow.Ignore = True
-  $hArrow.Picture = Main.GetArrow(Align.Bottom, 10).Picture
+  $hArrow.Picture = Main.GetArrow(Align.Bottom, 8).Picture
+  $hArrow.Border = True
+  $bArrow = True
   '$hArrow.Raise
   '$hWatcher = New Watcher(Me) As "Watcher"
   
 End
 
-Public Sub Watcher_Resize()
-  
-  $hArrow.Move(Me.W - $hArrow.W, 0, $hArrow.W, Me.H)
-  
-End
+' Public Sub Watcher_Resize()
+'   
+'   $hArrow.Move(Me.W - $hArrow.W, 0, $hArrow.W, Me.H)
+'   
+' End
 
 
 Private Function Picture_Read() As Picture
@@ -151,15 +155,18 @@ Public Sub Arrow_Click()
     hMenu = FindMenu(hWindow)
     If hMenu Then Break
     Try hWindow = hWindow.Parent.Window
-    If Error Then Return
+    If Error Then
+      Raise Click
+      Return
+    Endif
   Loop
   
   Object.Lock($hButton)
-  $hButton.Toggle = True
-  $hButton.Value = True
+  '$hButton.Toggle = True
+  '$hButton.Value = True
   hMenu.Popup($hButton.ScreenX, $hButton.ScreenY + $hButton.H)
-  $hButton.Value = False
-  $hButton.Toggle = False
+  '$hButton.Value = False
+  '$hButton.Toggle = False
   Object.Unlock($hButton)
   
 End
@@ -208,10 +215,10 @@ Private Sub UpdateSize()
   
   Dim W As Integer
   
-  If Not $hButton.AutoResize Then Return
+  If Not $bAutoResize Then Return
   
-  $hButton.W = Desktop.Scale
-  W = $hButton.W
+  W = $hButton.Font.TextWidth($hButton.Text) + Desktop.Scale * 3
+  If $hButton.Picture Then W += $hButton.Picture.W + Desktop.Scale
   If $bArrow Then W += $hArrow.W
   Me.W = W
   
@@ -220,15 +227,32 @@ End
 
 Private Function AutoResize_Read() As Boolean
 
-  Return $hButton.AutoResize
+  Return $bAutoResize
 
 End
 
 Private Sub AutoResize_Write(Value As Boolean)
 
-  '$bAutoResize = Value
-  $hButton.Expand = Not Value
-  $hButton.AutoResize = Value
+  $bAutoResize = Value
   UpdateSize
 
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $hButton.Border
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $hButton.Border = Value
+  $hArrow.Border = Value
+
+End
+
+Public Sub Panel_Arrange()
+  
+  $hArrow.Move($hPanel.W - $hArrow.W, 0, $hArrow.W, $hPanel.H)
+  
 End

@@ -1084,6 +1084,13 @@ BEGIN_METHOD(CDRAW_style_handle, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_IN
 
 END_METHOD
 
+BEGIN_METHOD(DrawStyle_Box, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_INTEGER state)
+
+	GET_COORD();
+	DRAW->Style.Box(THIS, x, y, w, h, VARGOPT(state, GB_DRAW_STATE_NORMAL));
+
+END_METHOD
+
 
 GB_DESC CDrawClipDesc[] =
 {
@@ -1114,6 +1121,7 @@ GB_DESC CDrawStyleDesc[] =
 	GB_STATIC_METHOD("Button", NULL, CDRAW_style_button, "(X)i(Y)i(Width)i(Height)i(Value)b[(Flag)i]"),
 	GB_STATIC_METHOD("Panel", NULL, CDRAW_style_panel, "(X)i(Y)i(Width)i(Height)i(Border)i[(Flag)i]"),
 	GB_STATIC_METHOD("Handle", NULL, CDRAW_style_handle, "(X)i(Y)i(Width)i(Height)i[(Vertical)b(Flag)i]"),
+	GB_STATIC_METHOD("Box", NULL, DrawStyle_Box, "(X)i(Y)i(Width)i(Height)i[(Flag)i]"),
 	
 	GB_END_DECLARE
 };

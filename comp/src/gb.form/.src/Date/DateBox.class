@@ -68,10 +68,8 @@ End
 Public Sub ButtonBox_Click()
   
   Dim X, Y, iPad As Integer
-  Dim hPanel As Panel
   
-  hPanel = $hButtonBox.Children[0]
-  iPad = hPanel.Padding
+  iPad = If($hButtonBox.Border, 3, 0)
   X = $hButtonBox.ScreenX + $hButtonBox.W - $hPopup.W - iPad
   Y = $hButtonBox.ScreenY + $hButtonBox.H - iPad
   

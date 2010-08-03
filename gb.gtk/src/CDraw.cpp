@@ -483,7 +483,18 @@ static void style_handle(GB_DRAW *d, int x, int y, int w, int h, int vertical, i
 			x, y, w, h,
 			(!vertical) ? GTK_ORIENTATION_HORIZONTAL : GTK_ORIENTATION_VERTICAL);
 }
-			
+
+static void style_box(GB_DRAW *d, int x, int y, int w, int h, int state)
+{
+	gtk_paint_shadow(DR(d)->style(), DR(d)->drawable(),
+		state ? GTK_STATE_INSENSITIVE : GTK_STATE_NORMAL, 
+		GTK_SHADOW_IN, NULL, NULL, "entry", x, y, w, h);
+	if (DR(d)->mask())
+		gtk_paint_shadow(DR(d)->style(), DR(d)->mask(),
+			state ? GTK_STATE_INSENSITIVE : GTK_STATE_NORMAL, 
+			GTK_SHADOW_IN, NULL, NULL, "entry", x, y, w, h);
+}
+
 			
 GB_DRAW_DESC DRAW_Interface = {
 	sizeof(GB_DRAW_EXTRA),
@@ -545,7 +556,8 @@ GB_DRAW_DESC DRAW_Interface = {
 		style_focus,
 		style_button,
 		style_panel,
-		style_handle
+		style_handle,
+		style_box
 	}
 };
 

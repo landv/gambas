@@ -225,8 +225,8 @@
       MoveScaled(20,0,6,4)
       Visible = False
       ToolTip = ("Paste")
-      Action = ".paste"
       Picture = Picture["icon:/small/paste"]
+      Border = False
       Menu = "mnuPasteAs"
     }
     { btnUndo ToolButton mnuUndo
@@ -509,7 +509,7 @@
 { Toolbars
   { Toolbar editor
     Text = "Editor"
-    List = "save,reload,show-form,cut,copy,paste,undo,redo,indent,unindent,comment,uncomment,view-nosplit,view-hsplit,view-vsplit,proc,find-definition,go-back"
+    List = "save,reload,show-form,cut,copy,undo,redo,indent,unindent,comment,uncomment,view-nosplit,view-hsplit,view-vsplit,proc,find-definition,go-back"
     Default = "save,reload,show-form,undo,redo,comment,uncomment,view-nosplit,view-hsplit,view-vsplit,|,proc,$HBox1"
   }
 }
