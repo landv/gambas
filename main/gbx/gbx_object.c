@@ -383,11 +383,13 @@ static void error_OBJECT_create(void)
 
 void *OBJECT_create(CLASS *class, const char *name, void *parent, int nparam)
 {
+	void *save;
   void *ob;
 
   if (class->no_create)
     THROW(E_CSTATIC, class->name);
 
+	save = _object;
   ON_ERROR(error_OBJECT_create)
   {
 		_object = NULL;
@@ -399,6 +401,7 @@ void *OBJECT_create(CLASS *class, const char *name, void *parent, int nparam)
 		OBJECT_UNREF_KEEP(ob, "OBJECT_create");
   }
   END_ERROR
+  _object = save;
   
   return ob;
 }

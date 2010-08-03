@@ -419,8 +419,12 @@ static int compare_string_like(char **pa, char **pb)
 {
 	int la = *pa ? strlen(*pa) : 0;
 	int lb = *pb ? strlen(*pb) : 0;
-	return COMPARE_string_like(*pa, la, *pb, lb);
-	//return REGEXP_match(*pb, lb, *pa, la) ? 0 : TABLE_compare_ignore_case(*pa, la, *pb, lb);
+	int diff = COMPARE_string_like(*pa, la, *pb, lb);
+  if (_descent)
+		return (-diff);
+	else
+		return diff;
+//return REGEXP_match(*pb, lb, *pa, la) ? 0 : TABLE_compare_ignore_case(*pa, la, *pb, lb);
 }
 
 #define IMPLEMENT_COMPARE_STRING_NATURAL(_name, _nocase) \
@@ -428,7 +432,11 @@ static int compare_string_##_name(char **pa, char **pb) \
 { \
 	int la = *pa ? strlen(*pa) : 0; \
 	int lb = *pb ? strlen(*pb) : 0; \
-	return COMPARE_string_natural(*pa, la, *pb, lb, _nocase); \
+	int diff = COMPARE_string_natural(*pa, la, *pb, lb, _nocase); \
+	if (_descent) \
+		return (-diff); \
+	else \
+		return diff; \
 }
 
 IMPLEMENT_COMPARE_STRING_NATURAL(natural, FALSE)

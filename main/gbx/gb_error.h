@@ -120,6 +120,7 @@ typedef
 		struct _ERROR_CONTEXT *prev;
 		jmp_buf env;
 		int ret;
+		struct _ERROR_HANDLER *handler;
 		ERROR_INFO info;
 		}
 	ERROR_CONTEXT;
@@ -198,10 +199,12 @@ EXTERN ERROR_HANDLER *ERROR_handler;
 		__handler.prev = ERROR_handler; \
 		__handler.context = ERROR_current; \
 		ERROR_handler = &__handler;
+		//fprintf(stderr, "%s.%d: ERROR_handler -> %p @ %p\n", __FUNCTION__, __LINE__, ERROR_handler, ERROR_current);
 
 #define END_ERROR \
 		ERROR_handler = __handler.prev; \
 	}
+		//fprintf(stderr, "%s.%d: ERROR_handler <- %p @ %p (%p)\n", __FUNCTION__, __LINE__, ERROR_handler, ERROR_handler ? ERROR_handler->context : NULL, ERROR_current);
 
 #define ERROR __err
 
@@ -213,6 +216,7 @@ const char *ERROR_get(void);
 do { \
   _err->prev = ERROR_current; \
   _err->info.code = 0; \
+  _err->handler = ERROR_handler; \
   ERROR_current = _err; \
 } while(0)
 

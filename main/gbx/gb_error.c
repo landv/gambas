@@ -227,20 +227,29 @@ void ERROR_leave(ERROR_CONTEXT *err)
 
 void ERROR_propagate()
 {
+	ERROR_HANDLER *ph;
 	#if DEBUG_ERROR
 	fprintf(stderr, "ERROR_propagate: %d %s\n", ERROR_current->info.code, ERROR_current->info.msg);
 	#endif
 	
-	while (ERROR_handler)
-	{
-		if (ERROR_handler->context != ERROR_current)
-			break;
-		(*ERROR_handler->handler)();
-		ERROR_handler = ERROR_handler->prev;
-	}
-	
+	//fprintf(stderr, "ERROR_propagate: %p\n", ERROR_handler);
+
 	if (ERROR_current->ret)
 		ERROR_leave(ERROR_current);
+	
+	while (ERROR_handler)
+	{
+		ph = ERROR_handler;
+		if (ERROR_current && ERROR_current->handler == ph)
+			break;
+		
+		//fprintf(stderr, "ERROR_propagate: %p @ %p (%p)\n", ERROR_handler, ERROR_handler->context, ERROR_current);
+		ERROR_handler = ph->prev;
+		(*ph->handler)();
+	}
+	
+	//fprintf(stderr, "ERROR_propagate: -> %p\n", ERROR_handler);
+
   longjmp(ERROR_current->env, 1);
 }
 

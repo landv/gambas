@@ -155,6 +155,8 @@ End
 
 Private Sub Buffered_Write(Value As Boolean)
 
+  If $bBuffered And If Not Value Then $iBegin = 0
+
   $bBuffered = Value
 
 End

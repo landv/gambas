@@ -110,9 +110,10 @@ Public Sub Error(Text As String)
   Output To Default
 
   Response.Buffered = False
-  Response.Begin  
+  Response.Begin 
+  Print "<html><body>" 
   Print "<h1>"; ("Error in CGI script"); "</h1>"
-  Print "<pre>"; Text; "</pre>"
+  Print "<pre>"; Text; "</pre></body>"
   Response.End
   Quit 
   
