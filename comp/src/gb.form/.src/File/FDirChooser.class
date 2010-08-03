@@ -29,22 +29,22 @@ Public Sub _new(Optional bFile As Boolean)
   FillMenu
 
   SetRoot()
-  SetBookmark($hBookmarkList.FindBest(System.User.Home))
   
   $bFile = bFile
   
   If Not bFile Then 
     UpdateFilterPanel
-    Return
+  Else
+    btnView_Click
+    btnView.Visible = False
+    txtFile.Visible = True
+    cmbFilter.Visible = True
+    SetMulti(False)
+    SetFont(Me.Font)
+    SetFilter()
   Endif
-
-  btnView_Click
-  btnView.Visible = False
-  txtFile.Visible = True
-  cmbFilter.Visible = True
-  SetMulti(False)
-  SetFont(Me.Font)
-  SetFilter()
+  
+  SetBookmark($hBookmarkList.FindBest(System.User.Home))
   
 End
 
@@ -538,19 +538,20 @@ Public Sub SetSettings(aVar As Variant[])
   
   If Not $bFile Then 
   
+    Try btnBookmark.Visible = aVar[6]
     Try SetRoot(aVar[0])
-    Try dvwChoose.Current = aVar[1]
+    Try SetDir(aVar[1])
     Try $bView = Not aVar[2]
     If Not Error Then btnView_Click
     splChoose.Layout = aVar[3]
     Try btnShowHidden.Value = aVar[4]
     Try fvwChoose.Settings = aVar[5]
-    Try btnBookmark.Visible = aVar[6]
     
   Else
   
+    Try btnBookmark.Visible = aVar[8]
     Try SetRoot(aVar[0])
-    Try dvwChoose.Current = aVar[1]
+    Try SetDir(aVar[1])
     Try fvwChoose.Current = aVar[2]
     Try $bView = Not aVar[3]
     If Not Error Then btnView_Click
@@ -558,7 +559,6 @@ Public Sub SetSettings(aVar As Variant[])
     Try btnShowHidden.Value = aVar[5]
     Try fvwChoose.Settings = aVar[6]
     Try SetFilterIndex(aVar[7])
-    Try btnBookmark.Visible = aVar[8]
     
   Endif
 

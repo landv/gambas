@@ -56,6 +56,8 @@ Private $iWarnForeground As Integer
 Private $bWarnReadOnly As Boolean
 Private $bDelete As Boolean
 
+Private $hObserver As Observer
+
 Static Private Sub GetSeparators()
   
   If $sDateSep Then Return
@@ -79,17 +81,22 @@ End
 Public Sub _new()
 
   Dim hPanel, hPanel2 As Panel
+  Dim sEventName As String = Object.LastEventName
 
   GetSeparators  
   
-  hTimer = New timer As "hTimer"
+  hTimer = New Timer As "hTimer"
   htimer.delay = 100
   hPanel2 = New Panel(Me) As "Pan"
   hPanel2.Arrangement = Arrange.Horizontal
   hPanel2.Border = Border.Sunken
-  $hTextBox = New TextBox(hPanel2) As "TextBox"
+  $hTextBox = New TextBox(hPanel2)
   $hTextBox.Expand = True
   $hTextBox.Border = Border.None
+  Object.Attach($hTextBox, Object.Parent(Me), sEventName)
+  
+  $hObserver = New Observer($hTextBox) As "TextBox"
+  
   hIcon = Picture["icon:/small/calendar"]
   $hButton = New DrawingArea(hPanel2) As "Button"
   $hButton.Width = 24
