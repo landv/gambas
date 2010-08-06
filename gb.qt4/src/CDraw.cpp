@@ -960,8 +960,17 @@ static void set_clipping_enabled(GB_DRAW *d, int enable)
 static void init_option(QStyleOption &opt, int x, int y, int w, int h, int state)
 {
 	opt.rect = QRect(x, y, w ,h);
-	if (!state)
-		opt.state |= QStyle::State_Enabled;
+	if (state & GB_DRAW_STATE_DISABLED)
+		return;
+	
+	opt.state |= QStyle::State_Enabled;
+	
+	if (state & GB_DRAW_STATE_FOCUS)
+		opt.state |= QStyle::State_HasFocus;
+	if (state & GB_DRAW_STATE_HOVER)
+		opt.state |= QStyle::State_MouseOver;
+	if (state & GB_DRAW_STATE_ACTIVE)
+		opt.state |= QStyle::State_On | QStyle::State_Sunken | QStyle::State_Active;
 }
 
 static void style_arrow(GB_DRAW *d, int x, int y, int w, int h, int type, int state)

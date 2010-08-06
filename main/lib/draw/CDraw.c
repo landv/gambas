@@ -1195,8 +1195,10 @@ GB_DESC CDrawDesc[] =
 	GB_STATIC_METHOD("Translate", NULL, CDRAW_translate, "(DX)f(DY)f"),
 	GB_STATIC_METHOD("Scale", NULL, CDRAW_scale, "(SX)f(SY)f"),
 	
-	GB_CONSTANT("Normal", "i", GB_DRAW_STATE_NORMAL),
+	GB_CONSTANT("Normale", "i", GB_DRAW_STATE_NORMAL),
 	GB_CONSTANT("Disabled", "i", GB_DRAW_STATE_DISABLED),
+	GB_CONSTANT("Focus", "i", GB_DRAW_STATE_FOCUS),
+	GB_CONSTANT("Hover", "i", GB_DRAW_STATE_HOVER),
 	//GB_CONSTANT("ToolButton", "i", GB_DRAW_STATE_TOOL_BUTTON),
 	
 	#if 0

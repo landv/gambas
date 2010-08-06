@@ -316,6 +316,18 @@ static void set_clipping_enabled(GB_DRAW *d, int enable)
 	DR(d)->setClipEnabled(enable);
 }
 
+static GtkStateType get_state(int state)
+{
+	if (state & GB_DRAW_STATE_DISABLED)
+		return GTK_STATE_INSENSITIVE;
+	if (state & GB_DRAW_STATE_ACTIVE)
+		return GTK_STATE_ACTIVE;
+	if (state & GB_DRAW_STATE_HOVER)
+		return GTK_STATE_PRELIGHT;
+	
+	return GTK_STATE_NORMAL;
+}
+
 static void style_arrow(GB_DRAW *d, int x, int y, int w, int h, int type, int state)
 {
 	GtkArrowType arrow;
@@ -331,13 +343,11 @@ static void style_arrow(GB_DRAW *d, int x, int y, int w, int h, int type, int st
 			return;
 	}
 	
-	gtk_paint_arrow(DR(d)->style(), DR(d)->drawable(), 
-		state ? GTK_STATE_INSENSITIVE : GTK_STATE_NORMAL, 
+	gtk_paint_arrow(DR(d)->style(), DR(d)->drawable(), get_state(state), 
 		GTK_SHADOW_NONE, NULL, NULL, NULL, 
 		arrow, TRUE, x, y, w, h);
 	if (DR(d)->mask())
-		gtk_paint_arrow(DR(d)->style(), DR(d)->mask(), 
-			state ? GTK_STATE_INSENSITIVE : GTK_STATE_NORMAL, 
+		gtk_paint_arrow(DR(d)->style(), DR(d)->mask(), get_state(state), 
 			GTK_SHADOW_NONE, NULL, NULL, NULL, 
 			arrow, TRUE, x, y, w, h);
 }
@@ -345,7 +355,7 @@ static void style_arrow(GB_DRAW *d, int x, int y, int w, int h, int type, int st
 static void style_check(GB_DRAW *d, int x, int y, int w, int h, int value, int state)
 {
 	GtkShadowType shadow;
-	GtkStateType st = state ? GTK_STATE_INSENSITIVE : (value ? GTK_STATE_ACTIVE : GTK_STATE_NORMAL);
+	GtkStateType st = get_state(state | (value ? GB_DRAW_STATE_ACTIVE : 0));
 	
 	switch (value)
 	{
@@ -368,7 +378,7 @@ static void style_check(GB_DRAW *d, int x, int y, int w, int h, int value, int s
 static void style_option(GB_DRAW *d, int x, int y, int w, int h, int value, int state)
 {
 	GtkShadowType shadow;
-	GtkStateType st = state ? GTK_STATE_INSENSITIVE : (value ? GTK_STATE_ACTIVE : GTK_STATE_NORMAL);
+	GtkStateType st = get_state(state | (value ? GB_DRAW_STATE_ACTIVE : 0));
 	
 	shadow = value ? GTK_SHADOW_IN : GTK_SHADOW_OUT;
 
@@ -383,7 +393,7 @@ static void style_option(GB_DRAW *d, int x, int y, int w, int h, int value, int 
 
 static void style_separator(GB_DRAW *d, int x, int y, int w, int h, int vertical, int state)
 {
-	GtkStateType st = state ? GTK_STATE_INSENSITIVE : GTK_STATE_NORMAL;
+	GtkStateType st = get_state(state);
 	
 	if (vertical)
 	{
@@ -426,7 +436,7 @@ static void style_focus(GB_DRAW *d, int x, int y, int w, int h)
 			
 static void style_button(GB_DRAW *d, int x, int y, int w, int h, int value, int state)
 {
-	GtkStateType st = state ? GTK_STATE_INSENSITIVE : (value ? GTK_STATE_ACTIVE : GTK_STATE_NORMAL);
+	GtkStateType st = get_state(state | (value ? GB_DRAW_STATE_ACTIVE : 0));
 	
 	gtk_paint_box(DR(d)->style(), DR(d)->drawable(),
 		st, value ? GTK_SHADOW_IN : GTK_SHADOW_OUT,
@@ -471,14 +481,14 @@ static void style_panel(GB_DRAW *d, int x, int y, int w, int h, int border, int 
 			
 static void style_handle(GB_DRAW *d, int x, int y, int w, int h, int vertical, int state)
 {
-	gtk_paint_handle(DR(d)->style(), DR(d)->drawable(),
-		state ? GTK_STATE_INSENSITIVE : GTK_STATE_NORMAL, 
+	GtkStateType st = get_state(state);
+
+	gtk_paint_handle(DR(d)->style(), DR(d)->drawable(), st,
 		GTK_SHADOW_NONE, NULL, NULL, NULL,
 		x, y, w, h,
 		(!vertical) ? GTK_ORIENTATION_HORIZONTAL : GTK_ORIENTATION_VERTICAL);
 	if (DR(d)->mask())
-		gtk_paint_handle(DR(d)->style(), DR(d)->mask(),
-			state ? GTK_STATE_INSENSITIVE : GTK_STATE_NORMAL, 
+		gtk_paint_handle(DR(d)->style(), DR(d)->mask(), st, 
 			GTK_SHADOW_NONE, NULL, NULL, NULL,
 			x, y, w, h,
 			(!vertical) ? GTK_ORIENTATION_HORIZONTAL : GTK_ORIENTATION_VERTICAL);
@@ -486,12 +496,12 @@ static void style_handle(GB_DRAW *d, int x, int y, int w, int h, int vertical, i
 
 static void style_box(GB_DRAW *d, int x, int y, int w, int h, int state)
 {
-	gtk_paint_shadow(DR(d)->style(), DR(d)->drawable(),
-		state ? GTK_STATE_INSENSITIVE : GTK_STATE_NORMAL, 
+	GtkStateType st = get_state(state);
+
+	gtk_paint_shadow(DR(d)->style(), DR(d)->drawable(), st,
 		GTK_SHADOW_IN, NULL, NULL, "entry", x, y, w, h);
 	if (DR(d)->mask())
-		gtk_paint_shadow(DR(d)->style(), DR(d)->mask(),
-			state ? GTK_STATE_INSENSITIVE : GTK_STATE_NORMAL, 
+		gtk_paint_shadow(DR(d)->style(), DR(d)->mask(), st,
 			GTK_SHADOW_IN, NULL, NULL, "entry", x, y, w, h);
 }
 
