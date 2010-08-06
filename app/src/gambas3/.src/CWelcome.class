@@ -25,22 +25,23 @@ Private Sub PaintText(sText As String, X As Integer, Y As Integer, iColor As Int
   Dim XR As Integer
   
   Paint.Brush = Paint.Color(Color.RGB(0, 0, 0, 192))
-  Paint.Text(sText, X + 4, Y + 4)
+  Paint.Text(sText, X + 6, Y + 6)
   Paint.Fill
+
+
+  Paint.Brush = Paint.Color(Color.RGB(128, 128, 128))
+  Paint.Text(sText, X - 1, Y - 1)
+  Paint.Text(sText, X + 1, Y - 1)
+  Paint.Text(sText, X + 1, Y + 1)
+  Paint.Text(sText, X - 1, Y + 1)
+  Paint.Fill
+
   Paint.Brush = Paint.Color(iColor)
   Paint.Text(sText, X, Y)
-  Paint.Fill(True)
   XR = X + Paint.PathExtents.Width
-  Paint.Brush = Paint.Color(Color.RGB(0, 0, 0, 192))
-  Paint.LineWidth = 2
-  Paint.Stroke
-  
+  Paint.Fill
+
   Return XR
-  'Paint.LineWidth = 2
-  'hColor = Color[Color.LightBackground]
-  'hColor.Alpha = 128  
-  'Paint.Brush = Paint.Color(hColor.Value)
-  'Paint.Stroke
   
 End
 
@@ -57,10 +58,11 @@ Public Sub dwgWelcome_Draw()
 
   Paint.Font = Font["+12,Bold"]
   X = PaintText("Gambas", 8, 48, Color.SelectedForeground)
+  
   Paint.Font = Font["+9,Bold"]
   PaintText(Project.Version, X + 8, 32, Color.SelectedForeground)
   Paint.Font = Font["+2"]
-  PaintText("http://gambas.sourceforge.net", 12, 68, Color.SelectedForeground)
+  PaintText("http://gambas.sourceforge.net", 12, 68, Color.LightForeground)
   
   Paint.Font = Font["Bold,Italic,+2"]
   PaintText(("This program is published under\nthe GNU General Public License."), 12, 104, Color.SelectedForeground)

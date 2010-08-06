@@ -999,23 +999,57 @@ bool MyPaintEngine::end()
 	return true;
 }
 
-void MyPaintEngine::updateState(const QPaintEngineState &state) {}
+void MyPaintEngine::updateState(const QPaintEngineState &state) 
+{
+	//qDebug("MyPaintEngine::updateState: %04X", (int)state.state());
+}
 
-void MyPaintEngine::drawRects(const QRectF *rects, int rectCount) {}
+void MyPaintEngine::drawRects(const QRectF *rects, int rectCount)
+{
+	//qDebug("MyPaintEngine::drawRects");
+}
 
-void MyPaintEngine::drawLines(const QLineF *lines, int lineCount) {}
+void MyPaintEngine::drawLines(const QLineF *lines, int lineCount)
+{
+	//qDebug("MyPaintEngine::drawLines");
+}
 
-void MyPaintEngine::drawEllipse(const QRectF &r) {}
+void MyPaintEngine::drawEllipse(const QRectF &r)
+{
+	//qDebug("MyPaintEngine::drawEllipse");
+}
 
-void MyPaintEngine::drawPath(const QPainterPath &path) {}
+void MyPaintEngine::drawPath(const QPainterPath &path)
+{
+	//qDebug("MyPaintEngine::drawPath");
+}
 
-void MyPaintEngine::drawPoints(const QPointF *points, int pointCount) {}
+void MyPaintEngine::drawPoints(const QPointF *points, int pointCount)
+{
+	//qDebug("MyPaintEngine::drawPoints");
+}
 
-void MyPaintEngine::drawPolygon(const QPointF *points, int pointCount, PolygonDrawMode mode) {}
+void MyPaintEngine::drawPolygon(const QPointF *points, int pointCount, PolygonDrawMode mode)
+{
+	//qDebug("MyPaintEngine::drawPolygon");
+}
 
-void MyPaintEngine::drawPixmap(const QRectF &r, const QPixmap &pm, const QRectF &sr) {}
-void MyPaintEngine::drawTiledPixmap(const QRectF &r, const QPixmap &pixmap, const QPointF &s) {}
-void MyPaintEngine::drawImage(const QRectF &r, const QImage &pm, const QRectF &sr, Qt::ImageConversionFlags flags) {}
+
+void MyPaintEngine::drawPixmap(const QRectF &r, const QPixmap &pm, const QRectF &sr)
+{
+	//qDebug("MyPaintEngine::drawPixmap");
+}
+
+void MyPaintEngine::drawTiledPixmap(const QRectF &r, const QPixmap &pixmap, const QPointF &s)
+{
+	//qDebug("MyPaintEngine::drawTiledPixmap");
+}
+
+void MyPaintEngine::drawImage(const QRectF &r, const QImage &pm, const QRectF &sr, Qt::ImageConversionFlags flags)
+{
+	//qDebug("MyPaintEngine::drawImage");
+}
+
 
 //QPoint MyPaintEngine::coordinateOffset() const;
 
@@ -1026,7 +1060,8 @@ MyPaintEngine::Type MyPaintEngine::type() const
 
 void MyPaintEngine::drawTextItem(const QPointF &p, const QTextItem &textItem)
 {
-	//qDebug("drawTextItem: %g %g [%s] '%s'", p.x() + _draw_x, p.y() + _draw_y, (const char *)textItem.font().toString().toUtf8(), (const char *)textItem.text().toUtf8());
+	//qDebug("MyPaintEngine::drawTextItem: %g %g [%s] '%s'", p.x() + _draw_x, p.y() + _draw_y, (const char *)textItem.font().toString().toUtf8(), (const char *)textItem.text().toUtf8());
+	//_draw_path->moveTo(p.x() + _draw_x, p.y() + _draw_y);
 	_draw_path->addText(p.x() + _draw_x, p.y() + _draw_y, textItem.font(), textItem.text());
 }
 

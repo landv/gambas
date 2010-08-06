@@ -46,6 +46,11 @@
       Picture = Picture["icon:/small/paste"]
       Shortcut = "Ctrl+V"
     }
+    { mnuInsertColor Menu
+      Action = ".color"
+      Text = ("Insert color...")
+      Picture = Picture["icon:/small/color"]
+    }
     { mnuSep3 Menu
     }
     { mnuSelectAll Menu
@@ -128,6 +133,7 @@
     { btnCut ToolButton mnuCut
       Name = "btnCut"
       MoveScaled(12,0,4,4)
+      Visible = False
       ToolTip = ("Cut")
       Action = ".cut"
       Picture = Picture["icon:/small/cut"]
@@ -135,6 +141,7 @@
     { btnCopy ToolButton mnuCopy
       Name = "btnCopy"
       MoveScaled(16,0,4,4)
+      Visible = False
       ToolTip = ("Copy")
       Action = ".copy"
       Picture = Picture["icon:/small/copy"]
@@ -142,6 +149,7 @@
     { btnPaste ToolButton mnuPaste
       Name = "btnPaste"
       MoveScaled(20,0,4,4)
+      Visible = False
       ToolTip = ("Paste")
       Action = ".paste"
       Picture = Picture["icon:/small/paste"]
@@ -175,6 +183,7 @@
     { btnNoSplit ToolButton mnuNoSplit
       Name = "btnNoSplit"
       MoveScaled(40,0,4,4)
+      Visible = False
       ToolTip = ("No split")
       Action = ".view-nosplit"
       Picture = Picture["icon:/small/view-normal"]
@@ -182,6 +191,7 @@
     { btnHorizontalSplit ToolButton mnuHorizontalSplit
       Name = "btnHorizontalSplit"
       MoveScaled(44,0,4,4)
+      Visible = False
       ToolTip = ("Horizontal split")
       Action = ".view-hsplit"
       Picture = Picture["icon:/small/view-split-h"]
@@ -189,12 +199,21 @@
     { btnVerticalSplit ToolButton mnuVerticalSplit
       Name = "btnVerticalSplit"
       MoveScaled(48,0,4,4)
+      Visible = False
       ToolTip = ("Vertical split")
       Action = ".view-vsplit"
       Picture = Picture["icon:/small/view-split-v"]
     }
+    { btnInsertColor MenuButton
+      MoveScaled(52,0,6,4)
+      ToolTip = ("Insert color")
+      Action = ".color"
+      Picture = Picture["icon:/small/color"]
+      Border = False
+      Menu = "mnuColor"
+    }
     { HBox1 HBox
-      MoveScaled(52,0,16,4)
+      MoveScaled(62,0,16,4)
       Expand = True
       { Panel1 Panel
         MoveScaled(2,0,1,4)
@@ -211,7 +230,7 @@
   }
   { edtEditor Editor Editors
     Name = "edtEditor"
-    MoveScaled(6,15,25,15)
+    MoveScaled(6,15,58,22)
     Expand = True
     Border = False
   }
@@ -228,6 +247,11 @@
 # Gambas Action File 3.0
 
 { Actions
+  { Action color
+    Text = "Insert color..."
+    Shortcut = ""
+    Picture = "icon:/small/color"
+  }
   { Action copy
     Text = "Copy"
     Shortcut = "Ctrl+C"
@@ -312,7 +336,7 @@
 { Toolbars
   { Toolbar text
     Text = "Text editor"
-    List = "save,reload,show-class,cut,copy,paste,undo,redo,indent,unindent,view-nosplit,view-hsplit,view-vsplit"
-    Default = "save,reload,show-class,cut,copy,paste,undo,redo,indent,unindent,view-nosplit,view-hsplit,view-vsplit,$HBox1"
+    List = "save,reload,show-class,cut,copy,paste,undo,redo,indent,unindent,view-nosplit,view-hsplit,view-vsplit,color"
+    Default = "save,reload,show-class,undo,redo,indent,unindent,color,$HBox1"
   }
 }

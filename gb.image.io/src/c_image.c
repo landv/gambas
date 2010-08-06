@@ -119,6 +119,7 @@ BEGIN_METHOD(CIMAGE_save, GB_STRING path; GB_INTEGER quality)
 	GSList *formats, *iter;
 	GdkPixbuf *image = NULL;
 	int quality = VARGOPT(quality, -1);
+	char arg[4];
 	GError *error = NULL;
 	
 	ext = FILE_get_ext(path);
@@ -166,7 +167,24 @@ BEGIN_METHOD(CIMAGE_save, GB_STRING path; GB_INTEGER quality)
 	}
 
 	if (quality >= 0)
-		b = gdk_pixbuf_save(image, path, format, &error, "quality", quality, (void *)NULL);
+	{
+		if (!strcmp(format, "jpeg"))
+		{
+			if (quality > 100)
+				quality = 100;
+			sprintf(arg, "%d", quality);
+			b = gdk_pixbuf_save(image, path, format, &error, "quality", arg, (void *)NULL);
+		}
+		else if (!strcmp(format, "png"))
+		{
+			if (quality > 9)
+				quality = 9;
+			sprintf(arg, "%d", quality);
+			b = gdk_pixbuf_save(image, path, format, &error, "compression", arg, (void *)NULL);
+		}
+		else
+			b = gdk_pixbuf_save(image, path, format, &error, (void *)NULL);
+	}
 	else
 		b = gdk_pixbuf_save(image, path, format, &error, (void *)NULL);
 

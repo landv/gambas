@@ -5,15 +5,15 @@ Export
 Inherits UserControl
 
 'Public Const _Properties As String = "*,AutoResize,Text,Picture,Border,Radio,Toggle,Value"
-Public Const _Properties As String = "*,AutoResize,Text,Picture,Arrow=True,Border=True,Menu"
+Public Const _Properties As String = "*,Action,AutoResize,Text,Picture,Arrow=True,Border=True,Menu"
 Public Const _DefaultSize As String = "6,4"
 Public Const _Similar As String = "Button"
 
 Event Click
-Event MouseDown
-Event MouseUp
-Event MouseWheel
-Event MouseDrag
+' Event MouseDown
+' Event MouseUp
+' Event MouseWheel
+' Event MouseDrag
 
 Property Picture As Picture
 Property Text As String
@@ -35,7 +35,11 @@ Private $bPressed As Boolean
 Private $bArrow As Boolean
 Private $bAutoResize As Boolean
 
+Private $hObserver As Observer
+
 Public Sub _new()
+  
+  Dim sEventName As String = Object.LastEventName
   
   $hPanel = New HBox(Me) As "Panel"
   'Me._Arrangement = Arrange.Horizontal
@@ -50,6 +54,9 @@ Public Sub _new()
   $bArrow = True
   '$hArrow.Raise
   '$hWatcher = New Watcher(Me) As "Watcher"
+  
+  $hObserver = New Observer($hButton)
+  Object.Attach($hObserver, Me.Parent, sEventName)
   
 End
 
@@ -109,29 +116,29 @@ Public Sub Button_Click()
   
 End
 
-Public Sub Button_MouseDown()
-  
-  Raise MouseDown
-  
-End
-
-Public Sub Button_MouseUp()
-  
-  Raise MouseUp
-  
-End
-
-Public Sub Button_MouseWheel()
-  
-  Raise MouseWheel
-  
-End
-
-Public Sub Button_MouseDrag()
-  
-  Raise MouseDrag
-  
-End
+' Public Sub Button_MouseDown()
+'   
+'   Raise MouseDown
+'   
+' End
+' 
+' Public Sub Button_MouseUp()
+'   
+'   Raise MouseUp
+'   
+' End
+' 
+' Public Sub Button_MouseWheel()
+'   
+'   Raise MouseWheel
+'   
+' End
+' 
+' Public Sub Button_MouseDrag()
+'   
+'   Raise MouseDrag
+'   
+' End
 
 
 Private Sub FindMenu(hWindow As Window) As Menu

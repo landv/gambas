@@ -47,7 +47,7 @@ void gt_color_to_rgba(uint color, int *r, int *g, int *b, int *a)
 
 static uint gt_rgba_to_color(int r, int g, int b, int a)
 {
-	return (uint)(b | (g << 8) | (r << 16) | (a << 24));
+	return (uint)((uchar)b | ((uchar)g << 8) | ((uchar)r << 16) | ((uchar)a << 24));
 }
 
 void COLOR_rgb_to_hsv(int r, int g, int b, int *H, int *S, int *V)
@@ -120,7 +120,7 @@ void COLOR_hsv_to_rgb(int h, int s, int v, int *R, int *G, int *B)
 	 S = ((double)s) / 255;
 	 V = ((double)v) / 255;
 
-	if (S == 0)
+	if (s == 0)
 	{
 		*R = (int)(V * 255);
 		*G = (int)(V * 255);
@@ -220,9 +220,11 @@ GB_COLOR COLOR_darker(GB_COLOR color)
   
 	gt_color_to_rgba(color, &r, &g, &b, &a);
   COLOR_rgb_to_hsv(r, g, b, &h, &s, &v);
-  COLOR_hsv_to_rgb(h, 255 - (255 - s) / 2, v / 2, &r, &g, &b);
+  COLOR_hsv_to_rgb(h, s ? 255 - (255 - s) / 2 : 0, v / 2, &r, &g, &b);
 
-  return gt_rgba_to_color(r, g, b, a);
+  v = gt_rgba_to_color(r, g, b, a);
+	
+	return v;
 }
 
 BEGIN_METHOD(CCOLOR_rgb, GB_INTEGER r; GB_INTEGER g; GB_INTEGER b; GB_INTEGER a)

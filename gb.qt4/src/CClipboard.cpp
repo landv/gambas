@@ -373,7 +373,6 @@ void *CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, GB_STRING *fmt)
 		return NULL;
 	}
 
-	drag = new QDrag(source->widget);
 	mimeData = new QMimeData();
 
 	if (data->type == GB_T_STRING)
@@ -403,6 +402,9 @@ void *CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, GB_STRING *fmt)
   else
     goto _BAD_FORMAT;
 
+	source->flag.dragging = true;
+	
+	drag = new QDrag(source->widget);
   drag->setMimeData(mimeData);
   
   if (_picture)
@@ -419,6 +421,8 @@ void *CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, GB_STRING *fmt)
   
 	//qDebug("start drag");
   drag->exec();
+
+	source->flag.dragging = false;
 	//qDebug("end drag");
   
   hide_frame(NULL);

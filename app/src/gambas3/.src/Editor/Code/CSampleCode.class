@@ -181,6 +181,7 @@ Private Sub Make(Optional iIndent As Integer) As String
   Dim sMake As String
   Dim iPos, iPos2 As Integer
   Dim sCar As String
+  Dim sVar As String
   
   For iPos = 1 To Len(Pattern)
   
@@ -190,8 +191,17 @@ Private Sub Make(Optional iIndent As Integer) As String
       iPos2 = InStr(Pattern, "}", iPos)
       sCar = Mid$(Pattern, iPos, iPos2 - iPos)
       iPos = InStr(sCar, ":")
-      If iPos Then 
-        sCar = "{" & Mid$(sCar, iPos + 1) & "}"
+      If iPos Then
+        sVar = Mid$(sCar, iPos + 1)
+        If sVar = "$TITLE" Then
+          sCar = Project.Title
+        Else If sVar = "$DESCRIPTION" Then
+          sCar = Project.Description
+        Else If sVar = "$AUTHOR" Or If sVar = "$AUTHORS" Then
+          sCar = Split(Project.Authors, "\n", "", True).Join(", ")
+        Else
+          sCar = sVar
+        Endif
       Else
         sCar = ""
       Endif

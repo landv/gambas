@@ -278,7 +278,11 @@ msgstr ""
 msgid "Loading information on component &1..."
 msgstr ""
 
-#: CModule.class:28 FCreateFile.class:648 FEditor.class:3504 FForm.class:3704
+#: CInsertColor.class:103 FEditor.class:3637 FTextEditor.class:912
+msgid "Insert color"
+msgstr ""
+
+#: CModule.class:28 FCreateFile.class:648 FEditor.class:3527 FForm.class:3704
 #: FInfo.class:88
 msgid "Form"
 msgstr ""
@@ -316,19 +320,19 @@ msgid "Gambas reports"
 msgstr ""
 
 #: CProjectTree.class:290 FMain.class:2711 FSearch.class:95
-#: FSelectIcon.class:216 Project.module:1316
+#: FSelectIcon.class:216 Project.module:1337
 msgid "Project"
 msgstr ""
 
-#: CProjectTree.class:293 Project.module:1319
+#: CProjectTree.class:293 Project.module:1340
 msgid "Sources"
 msgstr ""
 
-#: CProjectTree.class:296 Project.module:1322
+#: CProjectTree.class:296 Project.module:1343
 msgid "Connections"
 msgstr ""
 
-#: CProjectTree.class:305 Project.module:1331
+#: CProjectTree.class:305 Project.module:1352
 msgid "Data"
 msgstr ""
 
@@ -352,13 +356,13 @@ msgstr ""
 msgid "This month"
 msgstr ""
 
-#: CWelcome.class:66
+#: CWelcome.class:68
 msgid ""
 "This program is published under\n"
 "the GNU General Public License."
 msgstr ""
 
-#: Design.module:216 Project.module:1768
+#: Design.module:216 Project.module:1789
 msgid "In class &1 at line &2."
 msgstr ""
 
@@ -377,11 +381,11 @@ msgid ""
 "the value: &1"
 msgstr ""
 
-#: Design.module:381 FColorChooser.class:201 FCommit.class:380
+#: Design.module:381 FColorChooser.class:209 FCommit.class:380
 #: FConnectionEditor.class:411 FCreateFile.class:922 FFontChooser.class:79
 #: FGotoLine.class:57 FList.class:331 FMain.class:3024 FMenu.class:1197
 #: FNewConnection.class:573 FNewTable.class:159 FNewTranslation.class:64
-#: FOpenProject.class:472 FPasteSpecial.class:273 FPropertyProject.class:258
+#: FOpenProject.class:490 FPasteSpecial.class:273 FPropertyProject.class:258
 #: FReportBorderChooser.class:213 FReportCoordChooser.class:120
 #: FSelectExtraFile.class:72 FSelectIcon.class:268 FSnippet.class:136
 #: FTableChooser.class:138 FText.class:100
@@ -447,31 +451,31 @@ msgstr ""
 msgid "&Copy"
 msgstr ""
 
-#: FColorChooser.class:161
+#: FColorChooser.class:128
 msgid "Select a color"
 msgstr ""
 
-#: FColorChooser.class:174
+#: FColorChooser.class:182
 msgid "System"
 msgstr ""
 
-#: FColorChooser.class:180
+#: FColorChooser.class:188
 msgid "Free"
 msgstr ""
 
-#: FColorChooser.class:207 FCommit.class:386 FConflict.class:191
+#: FColorChooser.class:215 FCommit.class:386 FConflict.class:191
 #: FConnectionEditor.class:261 FCreateFile.class:928 FDebugInfo.class:496
-#: FEditor.class:2239 FFindList.class:195 FFontChooser.class:85
+#: FEditor.class:2247 FFindList.class:195 FFontChooser.class:85
 #: FForm.class:2955 FGotoLine.class:63 FHelpBrowser.class:275
 #: FIconEditor.class:1396 FImportTable.class:38 FList.class:155
 #: FMain.class:213 FMakeInstall.class:318 FMenu.class:1202
 #: FNewConnection.class:317 FNewTable.class:165 FNewTranslation.class:70
-#: FOpenProject.class:478 FOption.class:590 FPasteSpecial.class:279
+#: FOpenProject.class:496 FOption.class:590 FPasteSpecial.class:279
 #: FPropertyProject.class:1017 FReportBorderChooser.class:207
 #: FReportCoordChooser.class:114 FSave.class:118 FSearch.class:502
 #: FSelectExtraFile.class:78 FSelectIcon.class:273 FSnippet.class:142
-#: FTableChooser.class:144 FTextEditor.class:454 FText.class:106
-#: FTranslate.class:617 Project.module:372
+#: FTableChooser.class:144 FTextEditor.class:476 FText.class:106
+#: FTranslate.class:617 Project.module:393
 msgid "Cancel"
 msgstr ""
 
@@ -505,46 +509,46 @@ msgid ""
 msgstr ""
 
 #: FCommit.class:234 FConflict.class:325 FConnectionEditor.class:1808
-#: FEditor.class:3349 FForm.class:3534 FIconEditor.class:2165
+#: FEditor.class:3366 FForm.class:3534 FIconEditor.class:2165
 #: FImageEditor.class:77 FMenu.class:948 FOutput.class:377
-#: FTextEditor.class:675
+#: FTextEditor.class:706
 msgid "Cut"
 msgstr ""
 
 #: FCommit.class:240 FConflict.class:331 FConnectionEditor.class:1708
-#: FEditor.class:3355 FForm.class:3541 FIconEditor.class:2173
+#: FEditor.class:3372 FForm.class:3541 FIconEditor.class:2173
 #: FImageEditor.class:86 FMenu.class:954 FOutput.class:384
-#: FTextEditor.class:682
+#: FTextEditor.class:713
 msgid "Copy"
 msgstr ""
 
 #: FCommit.class:246 FConflict.class:337 FConnectionEditor.class:1829
-#: FEditor.class:3362 FForm.class:3554 FIconEditor.class:2181
+#: FEditor.class:3379 FForm.class:3554 FIconEditor.class:2181
 #: FImageEditor.class:95 FMenu.class:960 FOutput.class:391
-#: FTextEditor.class:689
+#: FTextEditor.class:720
 msgid "Paste"
 msgstr ""
 
 #: FCommit.class:252 FConflict.class:343 FConnectionEditor.class:1836
-#: FEditor.class:3333 FForm.class:3779 FIconEditor.class:2149
+#: FEditor.class:3350 FForm.class:3779 FIconEditor.class:2149
 #: FImageEditor.class:104 FOption.class:1461 FOutput.class:360
-#: FTextEditor.class:658
+#: FTextEditor.class:689
 msgid "Undo"
 msgstr ""
 
 #: FCommit.class:258 FConflict.class:349 FConnectionEditor.class:1843
-#: FEditor.class:3340 FForm.class:3789 FImageEditor.class:112
-#: FOutput.class:367 FTextEditor.class:665
+#: FEditor.class:3357 FForm.class:3789 FImageEditor.class:112
+#: FOutput.class:367 FTextEditor.class:696
 msgid "Redo"
 msgstr ""
 
-#: FCommit.class:264 FConflict.class:355 FEditor.class:3556 FMenu.class:970
-#: FTextEditor.class:831
+#: FCommit.class:264 FConflict.class:355 FEditor.class:3579 FMenu.class:970
+#: FTextEditor.class:871
 msgid "Indent"
 msgstr ""
 
-#: FCommit.class:270 FConflict.class:361 FEditor.class:3564 FMenu.class:976
-#: FTextEditor.class:838
+#: FCommit.class:270 FConflict.class:361 FEditor.class:3587 FMenu.class:976
+#: FTextEditor.class:878
 msgid "Unindent"
 msgstr ""
 
@@ -616,7 +620,7 @@ msgid ""
 "Do you really want to open another file?"
 msgstr ""
 
-#: FConflict.class:254 FOpenProject.class:384 Project.module:372
+#: FConflict.class:254 FOpenProject.class:402 Project.module:393
 msgid "Open"
 msgstr ""
 
@@ -691,8 +695,8 @@ msgstr ""
 msgid "The table '&1' has been modified. Do you want to save it?"
 msgstr ""
 
-#: FConnectionEditor.class:261 FEditor.class:3455 FForm.class:3695
-#: FIconEditor.class:1415 FImageEditor.class:60 FTextEditor.class:753
+#: FConnectionEditor.class:261 FEditor.class:3478 FForm.class:3695
+#: FIconEditor.class:1415 FImageEditor.class:60 FTextEditor.class:790
 msgid "Save"
 msgstr ""
 
@@ -813,9 +817,9 @@ msgstr ""
 msgid "Connection editor"
 msgstr ""
 
-#: FConnectionEditor.class:1572 FEditor.class:2239 FForm.class:2955
+#: FConnectionEditor.class:1572 FEditor.class:2247 FForm.class:2955
 #: FHelpBrowser.class:281 FIconEditor.class:2035 FImageEditor.class:68
-#: FTextEditor.class:454 FTranslate.class:711
+#: FTextEditor.class:476 FTranslate.class:711
 msgid "Reload"
 msgstr ""
 
@@ -1090,7 +1094,7 @@ msgstr ""
 msgid "Title"
 msgstr ""
 
-#: FCreateProject.class:659 FOpenProject.class:462
+#: FCreateProject.class:659 FOpenProject.class:480
 msgid "Open in another window"
 msgstr ""
 
@@ -1234,110 +1238,114 @@ msgstr ""
 msgid "Stack backtrace"
 msgstr ""
 
-#: FEditor.class:2239 FIconEditor.class:2035 FTextEditor.class:454
+#: FEditor.class:2247 FIconEditor.class:2035 FTextEditor.class:476
 msgid ""
 "The file has been modified.\n"
 "\n"
 "All your changes will be lost."
 msgstr ""
 
-#: FEditor.class:2636
+#: FEditor.class:2645
 msgid "(Declarations)"
 msgstr ""
 
-#: FEditor.class:3269
+#: FEditor.class:3286
 msgid "Go to"
 msgstr ""
 
-#: FEditor.class:3274 FTextEditor.class:649
+#: FEditor.class:3291 FTextEditor.class:680
 msgid "Go to line..."
 msgstr ""
 
-#: FEditor.class:3280
+#: FEditor.class:3297
 msgid "Find definition"
 msgstr ""
 
-#: FEditor.class:3287 FHelpBrowser.class:263
+#: FEditor.class:3304 FHelpBrowser.class:263
 msgid "Go back"
 msgstr ""
 
-#: FEditor.class:3294
+#: FEditor.class:3311
 msgid "Open form"
 msgstr ""
 
-#: FEditor.class:3301 FForm.class:3466 FMain.class:2497
+#: FEditor.class:3318 FForm.class:3466 FMain.class:2497
 msgid "&Startup class"
 msgstr ""
 
-#: FEditor.class:3309
+#: FEditor.class:3326
 msgid "Run &until current line"
 msgstr ""
 
-#: FEditor.class:3316
+#: FEditor.class:3333
 msgid "Toggle &breakpoint"
 msgstr ""
 
-#: FEditor.class:3323
+#: FEditor.class:3340
 msgid "&Watch expression..."
 msgstr ""
 
-#: FEditor.class:3369
+#: FEditor.class:3386
 msgid "Paste special..."
 msgstr ""
 
-#: FEditor.class:3378 FTextEditor.class:699
+#: FEditor.class:3392 FTextEditor.class:727
+msgid "Insert color..."
+msgstr ""
+
+#: FEditor.class:3401 FTextEditor.class:736
 msgid "Select &All"
 msgstr ""
 
-#: FEditor.class:3387
+#: FEditor.class:3410
 msgid "Comment"
 msgstr ""
 
-#: FEditor.class:3394
+#: FEditor.class:3417
 msgid "Uncomment"
 msgstr ""
 
-#: FEditor.class:3404 FOutput.class:408 FTextEditor.class:708
+#: FEditor.class:3427 FOutput.class:408 FTextEditor.class:745
 msgid "Find next"
 msgstr ""
 
-#: FEditor.class:3411 FOutput.class:415 FTextEditor.class:715
+#: FEditor.class:3434 FOutput.class:415 FTextEditor.class:752
 msgid "Find previous"
 msgstr ""
 
-#: FEditor.class:3420 FTextEditor.class:724
+#: FEditor.class:3443 FTextEditor.class:761
 msgid "View"
 msgstr ""
 
-#: FEditor.class:3424 FTextEditor.class:728
+#: FEditor.class:3447 FTextEditor.class:765
 msgid "No split"
 msgstr ""
 
-#: FEditor.class:3431 FTextEditor.class:735
+#: FEditor.class:3454 FTextEditor.class:772
 msgid "Horizontal split"
 msgstr ""
 
-#: FEditor.class:3438 FTextEditor.class:742
+#: FEditor.class:3461 FTextEditor.class:779
 msgid "Vertical split"
 msgstr ""
 
-#: FEditor.class:3465 FPasteSpecial.class:253
+#: FEditor.class:3488 FPasteSpecial.class:253
 msgid "Paste as string"
 msgstr ""
 
-#: FEditor.class:3470 FPasteSpecial.class:258
+#: FEditor.class:3493 FPasteSpecial.class:258
 msgid "Paste as multi-line string"
 msgstr ""
 
-#: FEditor.class:3475 FPasteSpecial.class:243
+#: FEditor.class:3498 FPasteSpecial.class:243
 msgid "Paste as comments"
 msgstr ""
 
-#: FEditor.class:3482 FOption.class:1080
+#: FEditor.class:3505 FOption.class:1080
 msgid "Editor"
 msgstr ""
 
-#: FEditor.class:3616
+#: FEditor.class:3651
 msgid "Procedure list"
 msgstr ""
 
@@ -1488,7 +1496,7 @@ msgstr ""
 msgid "Menu editor..."
 msgstr ""
 
-#: FForm.class:3725 FTextEditor.class:784
+#: FForm.class:3725 FTextEditor.class:821
 msgid "Code"
 msgstr ""
 
@@ -1690,7 +1698,7 @@ msgstr ""
 msgid "Pick a color"
 msgstr ""
 
-#: FImageEditor.class:54 FTextEditor.class:762
+#: FImageEditor.class:54 FTextEditor.class:799
 msgid "Text editor"
 msgstr ""
 
@@ -2314,7 +2322,7 @@ msgstr ""
 msgid "Save project"
 msgstr ""
 
-#: FMain.class:2634 Project.module:2071
+#: FMain.class:2634 Project.module:2092
 msgid "Save project as"
 msgstr ""
 
@@ -2483,7 +2491,7 @@ msgid "There is no CHANGELOG entry for this release."
 msgstr ""
 
 #: FMakeInstall.class:318 FPropertyProject.class:1017 FSave.class:111
-#: Project.module:2783
+#: Project.module:2804
 msgid "Continue"
 msgstr ""
 
@@ -2828,7 +2836,7 @@ msgstr ""
 msgid "Path"
 msgstr ""
 
-#: FNewConnection.class:501 Project.module:155
+#: FNewConnection.class:501 Project.module:176
 msgid "Database"
 msgstr ""
 
@@ -2852,19 +2860,19 @@ msgstr ""
 msgid "New translation"
 msgstr ""
 
-#: FOpenProject.class:370
+#: FOpenProject.class:388
 msgid "Select a project"
 msgstr ""
 
-#: FOpenProject.class:430
+#: FOpenProject.class:448
 msgid "Recent"
 msgstr ""
 
-#: FOpenProject.class:438 FWelcome.class:528
+#: FOpenProject.class:456 FWelcome.class:528
 msgid "Sort by path"
 msgstr ""
 
-#: FOpenProject.class:447 FWelcome.class:52
+#: FOpenProject.class:465 FWelcome.class:52
 msgid "Examples"
 msgstr ""
 
@@ -4979,292 +4987,292 @@ msgstr ""
 msgid "Integrated Development Environment for Gambas"
 msgstr ""
 
-#: Project.module:153
+#: Project.module:174
 msgid "Automation"
 msgstr ""
 
-#: Project.module:154
+#: Project.module:175
 msgid "Basic"
 msgstr ""
 
-#: Project.module:156
+#: Project.module:177
 msgid "Drawing"
 msgstr ""
 
-#: Project.module:157
+#: Project.module:178
 msgid "Games"
 msgstr ""
 
-#: Project.module:158
+#: Project.module:179
 msgid "Miscellaneous"
 msgstr ""
 
-#: Project.module:159
+#: Project.module:180
 msgid "Networking"
 msgstr ""
 
-#: Project.module:160
+#: Project.module:181
 msgid "OpenGL"
 msgstr ""
 
-#: Project.module:161
+#: Project.module:182
 msgid "Printing"
 msgstr ""
 
-#: Project.module:162
+#: Project.module:183
 msgid "Sound"
 msgstr ""
 
-#: Project.module:163
+#: Project.module:184
 msgid "Video"
 msgstr ""
 
-#: Project.module:164
+#: Project.module:185
 msgid "Controls"
 msgstr ""
 
-#: Project.module:355
+#: Project.module:376
 msgid "This project does not exist."
 msgstr ""
 
-#: Project.module:370
+#: Project.module:391
 msgid "This is not a Gambas project."
 msgstr ""
 
-#: Project.module:372
+#: Project.module:393
 msgid ""
 "This is a Gambas &1 project.\n"
 "\n"
 "Do you want to open it anyway?"
 msgstr ""
 
-#: Project.module:383
+#: Project.module:404
 msgid ""
 "This project seems to be already opened.\n"
 "\n"
 "Opening the same project twice can lead to data loss."
 msgstr ""
 
-#: Project.module:383
+#: Project.module:404
 msgid "Open after all"
 msgstr ""
 
-#: Project.module:383
+#: Project.module:404
 msgid "Do not open"
 msgstr ""
 
-#: Project.module:406
+#: Project.module:427
 msgid "This project is read-only."
 msgstr ""
 
-#: Project.module:406
+#: Project.module:427
 msgid "It cannot be converted."
 msgstr ""
 
-#: Project.module:460
+#: Project.module:481
 msgid "Cannot open project file :\n"
 msgstr ""
 
-#: Project.module:1117
+#: Project.module:1138
 msgid "The following classes have circular inheritance:"
 msgstr ""
 
-#: Project.module:1279
+#: Project.module:1300
 msgid "read-only"
 msgstr ""
 
-#: Project.module:1281
+#: Project.module:1302
 msgid "ALPHA VERSION, USE AT YOUR OWN RISK! :-)"
 msgstr ""
 
-#: Project.module:1467
+#: Project.module:1488
 msgid "Loading &1..."
 msgstr ""
 
-#: Project.module:1516
+#: Project.module:1537
 msgid "Cannot open a binary file."
 msgstr ""
 
-#: Project.module:1549
+#: Project.module:1570
 msgid "Cannot open file."
 msgstr ""
 
-#: Project.module:1608
+#: Project.module:1629
 msgid "File not found!"
 msgstr ""
 
-#: Project.module:1713
+#: Project.module:1734
 msgid "first"
 msgstr ""
 
-#: Project.module:1715
+#: Project.module:1736
 msgid "second"
 msgstr ""
 
-#: Project.module:1717
+#: Project.module:1738
 msgid "third"
 msgstr ""
 
-#: Project.module:1719
+#: Project.module:1740
 msgid "&1th"
 msgstr ""
 
-#: Project.module:1764
+#: Project.module:1785
 msgid "in form definition"
 msgstr ""
 
-#: Project.module:1922
+#: Project.module:1943
 msgid ""
 "Some project source files are in conflict.\n"
 "Please solve them if you want to compile the project."
 msgstr ""
 
-#: Project.module:1926
+#: Project.module:1947
 msgid "Compiling project"
 msgstr ""
 
-#: Project.module:1938
+#: Project.module:1959
 msgid "Nothing to do."
 msgstr ""
 
-#: Project.module:2077
+#: Project.module:2098
 msgid "This project already exists."
 msgstr ""
 
-#: Project.module:2090
+#: Project.module:2111
 msgid "Unable to save the project."
 msgstr ""
 
-#: Project.module:2163
+#: Project.module:2184
 msgid "File already exists."
 msgstr ""
 
-#: Project.module:2197
+#: Project.module:2218
 msgid "Directory already exists."
 msgstr ""
 
-#: Project.module:2209
+#: Project.module:2230
 msgid "Cannot link template file."
 msgstr ""
 
-#: Project.module:2215
+#: Project.module:2236
 msgid "Cannot copy template file."
 msgstr ""
 
-#: Project.module:2391
+#: Project.module:2412
 msgid "Making executable..."
 msgstr ""
 
-#: Project.module:2435
+#: Project.module:2456
 msgid "Cannot make executable."
 msgstr ""
 
-#: Project.module:2782
+#: Project.module:2803
 msgid "Some components are missing: &1"
 msgstr ""
 
-#: Project.module:2989
+#: Project.module:3010
 msgid "Cannot write project file."
 msgstr ""
 
-#: Project.module:3022
+#: Project.module:3043
 msgid "Unable to create desktop shortcut."
 msgstr ""
 
-#: Project.module:3284
+#: Project.module:3305
 msgid "The directory will be removed at the next commit."
 msgstr ""
 
-#: Project.module:3303
+#: Project.module:3324
 msgid "You must define a startup class or form!"
 msgstr ""
 
-#: Project.module:3335
+#: Project.module:3356
 msgid "Please type a name."
 msgstr ""
 
-#: Project.module:3339
+#: Project.module:3360
 msgid "This name contains a forbidden character:"
 msgstr ""
 
-#: Project.module:3343
+#: Project.module:3364
 msgid "The name cannot begins with a dot."
 msgstr ""
 
-#: Project.module:3347
+#: Project.module:3368
 msgid "This name is already used. Choose another one."
 msgstr ""
 
-#: Project.module:3378
+#: Project.module:3399
 msgid ""
 "A class name must begin with a letter or an underscore, followed by any "
 "letter or digit."
 msgstr ""
 
-#: Project.module:3426
+#: Project.module:3447
 msgid "Destination already exists"
 msgstr ""
 
-#: Project.module:3628
+#: Project.module:3649
 msgid "Unable to rename '&1'"
 msgstr ""
 
-#: Project.module:3750
+#: Project.module:3771
 msgid "Please type a project name."
 msgstr ""
 
-#: Project.module:3758
+#: Project.module:3779
 msgid "The project name cannot begin with a dot."
 msgstr ""
 
-#: Project.module:3761
+#: Project.module:3782
 msgid "Non-ASCII characters are forbidden in a project name."
 msgstr ""
 
-#: Project.module:3762
+#: Project.module:3783
 msgid ""
 "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr ""
 
-#: Project.module:3772
+#: Project.module:3793
 msgid "The project directory already exists."
 msgstr ""
 
-#: Project.module:3774
+#: Project.module:3795
 msgid ""
 "The project directory cannot be created because a file with the same name "
 "already exists."
 msgstr ""
 
-#: Project.module:3820
+#: Project.module:3841
 msgid "Create source package"
 msgstr ""
 
-#: Project.module:3821
+#: Project.module:3842
 msgid "Source packages"
 msgstr ""
 
-#: Project.module:4098
+#: Project.module:4119
 msgid "Cannot copy file &1."
 msgstr ""
 
-#: Project.module:4147
+#: Project.module:4168
 msgid "Cannot create link &1."
 msgstr ""
 
-#: Project.module:4164
+#: Project.module:4185
 msgid "Cannot move a directory inside itself."
 msgstr ""
 
-#: Project.module:4228
+#: Project.module:4249
 msgid "Cannot move file &1."
 msgstr ""
 
-#: Project.module:4775
+#: Project.module:4796
 msgid "modified"
 msgstr ""
 
-#: Project.module:4855
+#: Project.module:4876
 msgid "Unable to update all forms."
 msgstr ""
 

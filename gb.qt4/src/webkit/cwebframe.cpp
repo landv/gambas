@@ -108,6 +108,18 @@ BEGIN_METHOD(WebFrame_Print, GB_OBJECT printer)
 
 END_METHOD
 
+BEGIN_PROPERTY(WebFrame_HTML)
+
+	GB.ReturnNewZeroString(TO_UTF8(FRAME->toHtml()));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(WebFrame_Text)
+
+	GB.ReturnNewZeroString(TO_UTF8(FRAME->toPlainText()));
+
+END_PROPERTY
+
 #if 0
 BEGIN_METHOD(WebFrame_EvalJavaScript, GB_STRING javascript)
 
@@ -154,6 +166,8 @@ GB_DESC CWebFrameDesc[] =
 	GB_PROPERTY_READ("Parent", "WebFrame", WebFrame_Parent),
 	GB_PROPERTY("Url", "s", WebFrame_Url),
 	GB_METHOD("Print", NULL, WebFrame_Print, "(Printer)Printer;"),
+	GB_PROPERTY_READ("HTML", "s", WebFrame_HTML),
+	GB_PROPERTY_READ("Text", "s", WebFrame_Text),
 	//GB_METHOD("EvalJavaScript", NULL, WebFrame_EvalJavaScript, "(JavaScript)s"),
 	
 	GB_END_DECLARE

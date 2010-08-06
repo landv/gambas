@@ -50,7 +50,8 @@ typedef
 			unsigned tracking : 1;
 			unsigned old_tracking : 1;
 			unsigned grab : 1;
-			unsigned _reserved : 7;
+			unsigned dragging: 1;
+			unsigned _reserved : 6;
 			} flag;
 		GB_VARIANT_VALUE tag;
 		char *name;

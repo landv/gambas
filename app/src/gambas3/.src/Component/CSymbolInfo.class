@@ -761,6 +761,11 @@ Private Sub DecodeHelpLine(sLine As String) As String
       sChar = sLink
       If sLink Like "*://*" Then
       Else
+        iPoint = InStr(sLink, "|")
+        If iPoint Then
+          sChar = Mid$(sLink, iPoint + 1)
+          sLink = Left(sLink, iPoint - 1)
+        Endif
         iPoint = RInStr(sLink, ".")
         If iPoint = 0 Then
           If UCase(sLink) = sLink Then

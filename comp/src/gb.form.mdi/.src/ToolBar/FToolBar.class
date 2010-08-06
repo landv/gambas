@@ -743,8 +743,11 @@ Private Sub OnMouseDrag(hCtrl As Control)
   Dim iArr As Integer
   Dim sAction As String
   
+  'Debug hCtrl
+  
   While hCtrl.Parent <> panToolBar
     hCtrl = hCtrl.Parent
+    'Debug "-> "; hCtrl
   Wend
   
   If Not $bConfigure Then Return

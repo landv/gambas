@@ -6,15 +6,17 @@ Static Public Value As Integer
 Static Private $sColor As String
 Static Private $bAlpha As Boolean
 Static Private $aSystem As String[] = ["Background", "Foreground", "SelectedBackground", "SelectedForeground", "LightBackground", "LightForeground", "TextBackground", "TextForeground", "ButtonBackground", "ButtonForeground"]
+Static Private $sTitle As String
 
 Private Const DEFAULT_COLOR As String = "-"
 
 Private $cColor As New Collection
 
-Static Public Function Run(Optional sColor As String, Optional bAlpha As Boolean) As Boolean
+Static Public Function Run(Optional sColor As String, Optional bAlpha As Boolean, Optional sTitle As String) As Boolean
 
   $sColor = sColor
   $bAlpha = bAlpha
+  $sTitle = sTitle
   'IF NOT $sColor THEN $sColor = Color
   'IF NOT $sColor THEN $sColor = "&H" & Hex$(Value, 6)
   If FColorChooser.ShowModal() Then
@@ -43,12 +45,12 @@ End
 
 Private Sub AddColor(sText As String, sTag As String, sColor As String)
 
-  Dim hBox As hBox
+  Dim hBox As HBox
   Dim hLabel As Label
   Dim hColor As Label
   Dim hPict As PictureBox
 
-  hBox = New hBox(lstSystem)
+  hBox = New HBox(lstSystem)
   hBox.Padding = 4
   hBox.Spacing = 4
   hBox.Height = 24
@@ -119,6 +121,12 @@ Public Sub Form_Open()
   Endif
   
   dlgColor.ShowAlpha = $bAlpha
+  
+  If $sTitle Then
+    Me.Title = $sTitle
+  Else
+    $sTitle = ("Select a color")
+  Endif
 
 End
 

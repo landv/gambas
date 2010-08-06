@@ -1,0 +1,120 @@
+' Gambas class file
+
+' Gambas module file
+
+'Public Const MODE_GAMBAS As Integer = 0
+'Public Const MODE_HTML As Integer = 1
+'Public Const MODE_C As Integer = 2
+
+Private $hEditor As Editor
+Private $sPattern As String
+Private $aPattern As String[]
+Private $hMenu As Menu
+
+Public Sub _new(hMenuButton As MenuButton, hEditor As Editor)
+  
+  Dim hMenu As Menu
+  
+  $hEditor = hEditor
+  
+  Select Case $hEditor.Highlight
+    Case Highlight.Gambas
+      $aPattern = ["&H", "#"]
+    Case Highlight.CSS, Highlight.WebPage, Highlight.HTML
+      $aPattern = ["#"]
+    Case Highlight.JavaScript
+      $aPattern = ["#"]
+    Case Else
+      Return
+  End Select 
+  $sPattern = $aPattern[0]
+  
+  $hMenu = New Menu(hMenuButton.Window, True) As "Menu"
+  $hMenu.Name = "mnuInsertColor"
+  hMenu = New Menu($hMenu)
+  hMenuButton.Menu = $hMenu.Name
+  Object.Attach(hMenuButton, Me, "Button")
+  
+  
+End
+
+Public Sub Menu_Show()
+  
+  Dim sText As String
+  Dim iPos As Integer
+  Dim sPattern As String
+  Dim sDigit As String
+  Dim aColor As String[]
+  Dim hMenu As Menu
+  Dim hImage As Image
+  Dim iColor As Integer
+  
+  sText = $hEditor.Text
+  aColor = [$sPattern & "000000", $sPattern & "FFFFFF", $sPattern & "808080"]
+  
+  For Each sPattern In $aPattern
+    iPos = 0
+    Do
+      iPos = InStr(sText, sPattern, iPos + 1)
+      If iPos = 0 Then Break
+      
+      iPos += Len(sPattern)
+      sDigit = ""
+      While IsHexa(Mid$(sText, iPos, 1)) And Len(sDigit) < 6
+        sDigit &= Mid$(sText, iPos, 1)
+        Inc iPos
+      Wend
+      If Len(sDigit) = 0 Then Continue
+      If IsLetter(Mid$(sText, iPos, 1)) Then Continue
+      
+      sDigit = String$(6 - Len(sDigit), "0") & sDigit
+      
+      sDigit = sPattern & UCase$(sDigit)
+      If Not aColor.Exist(sDigit) Then aColor.Add(sDigit)
+      
+    Loop
+  Next
+  
+  aColor.Sort
+
+  $hMenu.Children.Clear
+  
+  For Each sDigit In aColor
+    hMenu = New Menu($hMenu) As "MenuColor"
+    hMenu.Text = Replace(sDigit, "&", "&&")
+    hMenu.Tag = sDigit
+    hImage = New Image(16, 16)
+    hImage.FillRect(0, 0, 16, 16, Color.Black)
+    iColor = Val("&H" & Mid$(sDigit, Len($sPattern) + 1) & "&")
+    hImage.FillRect(1, 1, 14, 14, iColor)
+    hMenu.Picture = hImage.Picture
+  Next
+  
+End
+
+Public Sub MenuColor_Click()
+  
+  $hEditor.Insert(Last.Tag)
+  
+End
+
+Public Sub Button_Click()
+  
+  If FColorChooser.Run("", False, ("Insert color")) Then Return
+  
+  $hEditor.Insert($sPattern & Hex$(FColorChooser.Value, 6))
+  
+End
+
+Public Sub Insert()
+  
+  Button_Click
+  
+End
+
+
+Public Sub SetEditor(hEditor As Editor)
+  
+  $hEditor = hEditor
+  
+End

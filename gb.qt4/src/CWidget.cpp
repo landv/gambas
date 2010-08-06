@@ -293,6 +293,12 @@ void CWIDGET_destroy(CWIDGET *object)
 
 	if (CWIDGET_test_flag(object, WF_DELETED))
 		return;
+	
+	if (object->flag.dragging)
+	{
+		GB.Error("Control is being dragged");
+		return;
+	}
 
 	//qDebug("CWIDGET_destroy: %p (%p) :%p:%ld", object, object->widget, object->ob.klass, object->ob.ref);
 	//qDebug("CWIDGET_destroy: %s %p", GB.GetClassName(object), object);

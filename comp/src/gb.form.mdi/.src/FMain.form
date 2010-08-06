@@ -2,35 +2,41 @@
 
 { Form Form
   MoveScaled(0,0,69,72)
-  Text = ("")
   Arrangement = Arrange.Vertical
   { ToolBar1 ToolBar
-    MoveScaled(0,0,69,4)
+    MoveScaled(3,4,52,5)
+    Key = "main"
     Text = ("ToolBar1")
-    { Button4 Button
-      MoveScaled(1,0,16,4)
-      Text = ("Button4")
-    }
-  }
-  { Workspace1 Workspace
-    MoveScaled(1,5,67,61)
-    Expand = True
-    Orientation = Align.Bottom
-  }
-  { HBox1 HBox
-    MoveScaled(1,67,67,4)
-    Spacing = True
     { Button1 Button
-      MoveScaled(0,0,15,4)
+      MoveScaled(0,0,16,4)
+      Action = "button"
       Text = ("Button1")
     }
-    { Button2 Button
-      MoveScaled(25,0,15,4)
-      Text = ("Button2")
+    { MenuButton1 MenuButton
+      MoveScaled(17,0,15,4)
+      Action = "test"
+      Text = ("MenuButton1")
     }
-    { Button3 Button
-      MoveScaled(50,0,16,4)
-      Text = ("Button3")
-    }
+  }
+}
+
+# Gambas Action File 3.0
+
+{ Actions
+  { Action button
+    Text = "Button1"
+    Picture = "$Button"
+  }
+  { Action test
+    Text = "MenuButton1"
+    Picture = "$MenuButton"
+  }
+}
+
+{ Toolbars
+  { Toolbar main
+    Text = "ToolBar1"
+    List = "button,test"
+    Default = "button,test"
   }
 }

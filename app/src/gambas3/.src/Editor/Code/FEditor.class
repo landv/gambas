@@ -1,6 +1,9 @@
 ' Gambas class file
 '
-' Copyright (C) Benoît Minisini
+' Gambas 3
+' Integrated Development Environment for Gambas
+' 
+' Copyright (C) Benoît Minisini, Fabien Bodard, Charlie Reinl, José Luis Redrejo, Robert Rowe
 '
 ' This program is free software; you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
@@ -23,9 +26,10 @@ Public Editor As Editor '' The current Editor control.
 Public Scan As Collection '' The result of the class symbol analyze.
 Public ParentClass As String '' The parent class.
 Public ParentComponent As String '' The component of the parent class.
-Public AutoCreatable As Boolean '' If the class has "CREATE [STATIC]".
-Public NotCreatable As Boolean '' If the class has "CREATE PRIVATE".
-Public Age As Integer
+Public AutoCreatable As Boolean '' If the class has "[CREATESTATIC|CREATE STATIC]".
+Public NotCreatable As Boolean '' If the class has "[CREATEPRIVATE|CREATE PRIVATE]".
+Public Age As Integer '' The text age. It is incremented each time the text is modified
+
 
 Property Read ReadOnly As Boolean '' If the editor is read-only.
 
@@ -85,6 +89,8 @@ Private $iSampleStart As Integer
 Private $iSampleEnd As Integer
 Private $iSamplePos As Integer
 
+Private $hInsertColor As CInsertColor
+
 Static Public Sub _init()
 
   $cType["Boolean"] = "b"
@@ -125,6 +131,8 @@ Public Sub _new(sPath As String)
   Editor = edtEditor
   edtEditor.Flags[Editor.HighlightBraces] = True
   edtEditor.Highlight = Highlight.Gambas
+
+  $hInsertColor = New CInsertColor(btnInsertColor, Editor)
 
   ' If Not frmCompletion Then
   '   frmCompletion = New FCompletion(Me)
@@ -2486,6 +2494,7 @@ End
 Public Sub Editors_GotFocus()
   
   Editor = Last 
+  $hInsertColor.SetEditor(Editor)
   Project.SetCurrentPopup(mnuEditor)
 
 End
@@ -3179,4 +3188,10 @@ Public Sub GetSelection() As String
   
   Return Editor.GetSelection()
   
+End
+
+Public Sub mnuInsertColor_Click()
+
+  $hInsertColor.Insert
+
 End

@@ -328,6 +328,8 @@ _ABANDON:
     UnlockSession
   Endif
   
+  Try Object.Call(Application.Startup, "Session_Abandon")
+  
   Try Kill $sPath
   Try Kill $sPath & ".lock"
   $sId = ""
@@ -440,6 +442,9 @@ Public Sub Abandon()
   'Main.Log("Abandon")  
   
   If Not $sId Then Return
+
+  Try Object.Call(Application.Startup, "Session_Abandon")
+
   Try Kill $sPath
   Try Kill $sPath & ".lock"
   Response.RemoveCookie("SESSION", $sId, "", File.Dir(CGI["SCRIPT_NAME"]))

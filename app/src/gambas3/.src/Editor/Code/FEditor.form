@@ -92,6 +92,11 @@
       Text = ("Paste special...")
       Shortcut = "Ctrl+Shift+V"
     }
+    { mnuInsertColor Menu
+      Action = ".color"
+      Text = ("Insert color...")
+      Picture = Picture["icon:/small/color"]
+    }
     { Menu3 Menu
     }
     { mnuSelectAll Menu
@@ -223,8 +228,8 @@
     { btnPaste MenuButton mnuPaste
       Name = "btnPaste"
       MoveScaled(20,0,6,4)
-      Visible = False
       ToolTip = ("Paste")
+      Action = ".paste"
       Picture = Picture["icon:/small/paste"]
       Border = False
       Menu = "mnuPasteAs"
@@ -274,6 +279,7 @@
     { btnNoSplit ToolButton mnuNoSplit
       Name = "btnNoSplit"
       MoveScaled(46,0,4,4)
+      Visible = False
       ToolTip = ("No split")
       Action = ".view-nosplit"
       Picture = Picture["icon:/small/view-normal"]
@@ -281,6 +287,7 @@
     { btnHorizontalSplit ToolButton mnuHorizontalSplit
       Name = "btnHorizontalSplit"
       MoveScaled(49,0,4,4)
+      Visible = False
       ToolTip = ("Horizontal split")
       Action = ".view-hsplit"
       Picture = Picture["icon:/small/view-split-h"]
@@ -288,15 +295,24 @@
     { btnVerticalSplit ToolButton mnuVerticalSplit
       Name = "btnVerticalSplit"
       MoveScaled(52,0,4,4)
+      Visible = False
       ToolTip = ("Vertical split")
       Action = ".view-vsplit"
       Picture = Picture["icon:/small/view-split-v"]
     }
+    { btnInsertColor MenuButton
+      MoveScaled(56,0,6,4)
+      ToolTip = ("Insert color")
+      Action = ".color"
+      Picture = Picture["icon:/small/color"]
+      Border = False
+      Menu = "mnuColor"
+    }
     { Separator1 Separator
-      MoveScaled(56,0,1,4)
+      MoveScaled(63,0,1,4)
     }
     { btnProc ToolButton
-      MoveScaled(57,0,46,4)
+      MoveScaled(64,0,46,4)
       Action = ".proc"
       Text = ("Procedure list")
       Picture = Picture["img/16/procedure.png"]
@@ -380,6 +396,11 @@
     Text = "Open form"
     Shortcut = "F12"
     Picture = "img/16/form.png"
+  }
+  { Action color
+    Text = "Insert color..."
+    Shortcut = ""
+    Picture = "icon:/small/color"
   }
   { Action comment
     Text = "Comment"
@@ -509,7 +530,7 @@
 { Toolbars
   { Toolbar editor
     Text = "Editor"
-    List = "save,reload,show-form,cut,copy,undo,redo,indent,unindent,comment,uncomment,view-nosplit,view-hsplit,view-vsplit,proc,find-definition,go-back"
-    Default = "save,reload,show-form,undo,redo,comment,uncomment,view-nosplit,view-hsplit,view-vsplit,|,proc,$HBox1"
+    List = "save,reload,show-form,cut,copy,paste,undo,redo,indent,unindent,comment,uncomment,view-nosplit,view-hsplit,view-vsplit,color,proc,find-definition,go-back"
+    Default = "save,reload,show-form,paste,undo,redo,comment,uncomment,color,|,proc,$HBox1"
   }
 }
