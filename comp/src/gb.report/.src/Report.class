@@ -62,6 +62,7 @@ End
 Public Sub Layout()
   
   Print "layout"
+  If _bInExec Then Return
   'Set execution Flag to true
   _bInExec = True
   'If $sOldDeviceName = Paint.Device.Name Then Return 

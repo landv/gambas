@@ -16,29 +16,29 @@ Public Function GetWidth(hCtrl As Control) As Integer
   Select Case Type
 
     Case db.Boolean
-      iWidth = hCtrl.Font.Width("False") + 32
+      iWidth = hCtrl.Font.TextWidth("False") + 32
 
     Case db.Integer
-      iWidth = hCtrl.Font.Width("9") * 8
+      iWidth = hCtrl.Font.TextWidth("9") * 8
 
     Case db.Long, db.Serial
-      iWidth = hCtrl.Font.Width("9") * 16
+      iWidth = hCtrl.Font.TextWidth("9") * 16
 
     Case db.Float
-      iWidth = hCtrl.Font.Width("9") * 16
+      iWidth = hCtrl.Font.TextWidth("9") * 16
 
     Case db.Date
-      iWidth = hCtrl.Font.Width("9") * 20 + 12
+      iWidth = hCtrl.Font.TextWidth("9") * 20 + 12
 
     Case db.String
       iLen = Length
       If iLen = 0 Then iLen = 255
       iLen = Min(32, iLen)
-      iWidth = hCtrl.Font.Width("M") * iLen
+      iWidth = hCtrl.Font.TextWidth("M") * iLen
 
   End Select
 
-  iWidth = Max(iWidth, hCtrl.Font.Width(Name) + 16)
+  iWidth = Max(iWidth, hCtrl.Font.TextWidth(Name) + 16)
 
   Return iWidth
 
