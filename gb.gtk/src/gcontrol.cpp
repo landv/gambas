@@ -1649,9 +1649,16 @@ int gControl::minimumHeight()
 
 void gControl::setTracking(bool v)
 {
+	GtkWidget *wid;
+	
+	if (GTK_IS_EVENT_BOX(border))
+		wid = border;
+	else
+		wid = widget;
+	
 	if (v != _tracking)
 	{
-		uint event_mask = gtk_widget_get_events(widget);
+		uint event_mask = gtk_widget_get_events(wid);
 		_tracking = v;
 		if (v)
 		{
@@ -1665,9 +1672,9 @@ void gControl::setTracking(bool v)
 		
 		if (!_old_tracking)
 		{
-			gtk_widget_unrealize(widget);
-			gtk_widget_set_events(widget, event_mask);
-			gtk_widget_realize(widget);
+			gtk_widget_unrealize(wid);
+			gtk_widget_set_events(wid, event_mask);
+			gtk_widget_realize(wid);
 		}
 	}
 }

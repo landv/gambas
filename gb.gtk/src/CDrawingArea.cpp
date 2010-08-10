@@ -112,15 +112,6 @@ BEGIN_PROPERTY(CDRAWINGAREA_focus)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CDRAWINGAREA_track_mouse)
-
-	if (READ_PROPERTY)
-		GB.ReturnBoolean(WIDGET->isTracking());
-	else
-		WIDGET->setTracking(VPROP(GB_BOOLEAN));
-
-END_PROPERTY
-
 BEGIN_METHOD_VOID(CDRAWINGAREA_clear)
 
 	WIDGET->clear();
@@ -154,7 +145,6 @@ GB_DESC CDrawingAreaDesc[] =
 
   GB_PROPERTY("Cached", "b", CDRAWINGAREA_cached),
   GB_PROPERTY("Border", "i", CDRAWINGAREA_border),
-  GB_PROPERTY("Tracking", "b", CDRAWINGAREA_track_mouse),
   GB_PROPERTY("Merge","b",CDRAWINGAREA_merge),
   GB_PROPERTY("Focus","b",CDRAWINGAREA_focus),
 	GB_PROPERTY("Painted", "b", CDRAWINGAREA_painted),
