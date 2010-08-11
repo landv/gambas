@@ -1045,7 +1045,7 @@ static void style_separator(GB_DRAW *d, int x, int y, int w, int h, int vertical
 	QStyleOption opt;
 	init_option(opt, x, y, w, h, state);
 	
-	if (!vertical)
+	if (vertical)
 		opt.state |= QStyle::State_Horizontal;
 	
 	QApplication::style()->drawPrimitive(QStyle::PE_IndicatorToolBarSeparator, &opt, DP(d));
