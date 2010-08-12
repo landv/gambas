@@ -744,8 +744,11 @@ int IMAGE_get_default_format()
 void IMAGE_bitblt(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int sw, int sh)
 {
 	if (dst->format != src->format)
+	{
+		GB.Error("The source image and the destination image must have the same format");
 		return;
-
+	}
+	
 	// Parameter correction
 	
 	if ( sw < 0 ) sw = src->width;
@@ -812,6 +815,63 @@ void IMAGE_bitblt(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int 
 		}
 	}
 	
+	MODIFY(dst);
+}
+
+void IMAGE_draw_alpha(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int sw, int sh)
+{
+	if (dst->format != src->format)
+	{
+		GB.Error("The source image and the destination image must have the same format");
+		return;
+	}
+	
+	if (!GB_IMAGE_FMT_IS_32_BITS(dst->format))
+	{
+		GB.Error("The image must have an alpha channel");
+		return;
+	}
+
+	// Parameter correction
+	
+	if ( sw < 0 ) sw = src->width;
+	if ( sh < 0 ) sh = src->height;
+	if ( sx < 0 ) { dx -= sx; sw += sx; sx = 0; }
+	if ( sy < 0 ) { dy -= sy; sh += sy; sy = 0; }
+	if ( dx < 0 ) { sx -= dx; sw += dx; dx = 0; }
+	if ( dy < 0 ) { sy -= dy; sh += dy; dy = 0; }
+	if ( sx + sw > src->width ) sw = src->width - sx;
+	if ( sy + sh > src->height ) sh = src->height - sy;
+	if ( dx + sw > dst->width ) sw = dst->width - dx;
+	if ( dy + sh > dst->height ) sh = dst->height - dy;
+	if ( sw <= 0 || sh <= 0 ) return; // Nothing left to copy
+	
+	SYNCHRONIZE(src);
+	SYNCHRONIZE(dst);
+		
+	uint *d = (uint *)dst->data + dy * dst->width + dx;
+	uint *s = (uint *)src->data + sy * src->width + sx;
+
+	const int dd = dst->width - sw;
+	const int ds = src->width - sw;
+	uint cs, cd;
+	int format = src->format;
+	int t;
+	
+	while (sh--)
+	{
+		for (t = sw; t--; d++,s++)
+		{
+			cs = BGRA_from_format(*s, format);
+			cd = BGRA_from_format(*d, format);
+			if (ALPHA(cs) < ALPHA(cd))
+				*d = BGRA_to_format(RGBA(RED(cd), GREEN(cd), BLUE(cd), ALPHA(cs)), format);
+		}
+		
+		d += dd;
+		s += ds;
+	}
+
 	MODIFY(dst);
 }
 
