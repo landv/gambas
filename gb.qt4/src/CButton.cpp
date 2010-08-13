@@ -566,7 +566,6 @@ void MyPushButton::calcMinimumSize()
 	if (THIS->autoresize)
 	{
 		size = sizeHint();
-		setMinimumWidth(size.width());
 		CWIDGET_resize(THIS, size.width(), height());
 		setMinimumWidth(size.width());
 	}
