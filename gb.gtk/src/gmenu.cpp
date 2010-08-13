@@ -606,6 +606,9 @@ void gMenu::doPopup(bool move, int x, int y)
 	}
 	
 	gtk_menu_popup(child, NULL, NULL, move ? (GtkMenuPositionFunc)position_menu : NULL, (gpointer)pos, 0, gApplication::lastEventTime());
+	
+	while (GTK_WIDGET_MAPPED(child))
+		do_iteration(false);
 }
 
 void gMenu::popup(int x, int y)

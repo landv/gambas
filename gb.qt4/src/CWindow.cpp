@@ -1146,6 +1146,15 @@ BEGIN_PROPERTY(CWINDOW_type)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Window_Utility)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(WINDOW->getType() == _NET_WM_WINDOW_TYPE_UTILITY);
+	else
+		WINDOW->setType(VPROP(GB_BOOLEAN) ? _NET_WM_WINDOW_TYPE_UTILITY : _NET_WM_WINDOW_TYPE_NORMAL);
+
+END_PROPERTY
+
 #endif //------------------------------------------------------------------------------------------
 
 
@@ -1460,6 +1469,7 @@ GB_DESC CWindowDesc[] =
 	GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
 	
 	GB_PROPERTY("Type", "i", CWINDOW_type),
+	GB_PROPERTY("Utility", "b", Window_Utility),
 	GB_PROPERTY("Border", "b", CWINDOW_border),
 	GB_PROPERTY("Resizable", "b", CWINDOW_resizable),
 

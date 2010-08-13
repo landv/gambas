@@ -103,6 +103,7 @@ private:
 	void endFill();
 	void drawLayout(PangoLayout *ly, int x, int y, int w, int h, int align);
 	void initGC();
+	void updateStyle();
 
 	gDrawingArea *dArea;
 	gFont *ft;
@@ -110,6 +111,7 @@ private:
 	bool clip_enabled;
 	bool _transparent;
 	GtkStyle *stl;
+	GtkWidget *_widget;
 	GdkDrawable *dr;
 	GdkDrawable *drm;
 	GdkPixmap *stipple;

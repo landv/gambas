@@ -328,6 +328,19 @@ static GtkStateType get_state(int state)
 	return GTK_STATE_NORMAL;
 }
 
+static void style_focus(GB_DRAW *d, int x, int y, int w, int h)
+{
+	gtk_paint_focus(DR(d)->style(), DR(d)->drawable(),
+		GTK_STATE_NORMAL, 
+		NULL, NULL, NULL, 
+		x, y, w, h);
+	if (DR(d)->mask())
+		gtk_paint_focus(DR(d)->style(), DR(d)->mask(),
+			GTK_STATE_NORMAL, 
+			NULL, NULL, NULL, 
+			x, y, w, h);
+}
+			
 static void style_arrow(GB_DRAW *d, int x, int y, int w, int h, int type, int state)
 {
 	GtkArrowType arrow;
@@ -373,6 +386,9 @@ static void style_check(GB_DRAW *d, int x, int y, int w, int h, int value, int s
 			st, 
 			shadow, NULL, NULL, "checkbutton", 
 			x, y, w, h);
+
+	if (state & GB_DRAW_STATE_FOCUS)
+		style_focus(d, x, y, w, h);
 }
 
 static void style_option(GB_DRAW *d, int x, int y, int w, int h, int value, int state)
@@ -389,6 +405,9 @@ static void style_option(GB_DRAW *d, int x, int y, int w, int h, int value, int 
 		gtk_paint_option(DR(d)->style(), DR(d)->mask(),
 			st, shadow, NULL, NULL, "radiobutton", 
 			x, y, w, h);
+			
+	if (state & GB_DRAW_STATE_FOCUS)
+		style_focus(d, x, y, w, h);
 }
 
 static void style_separator(GB_DRAW *d, int x, int y, int w, int h, int vertical, int state)
@@ -421,19 +440,6 @@ static void style_separator(GB_DRAW *d, int x, int y, int w, int h, int vertical
 	}
 }
 
-static void style_focus(GB_DRAW *d, int x, int y, int w, int h)
-{
-	gtk_paint_focus(DR(d)->style(), DR(d)->drawable(),
-		GTK_STATE_NORMAL, 
-		NULL, NULL, NULL, 
-		x, y, w, h);
-	if (DR(d)->mask())
-		gtk_paint_focus(DR(d)->style(), DR(d)->mask(),
-			GTK_STATE_NORMAL, 
-			NULL, NULL, NULL, 
-			x, y, w, h);
-}
-			
 static void style_button(GB_DRAW *d, int x, int y, int w, int h, int value, int state)
 {
 	GtkStateType st = get_state(state | (value ? GB_DRAW_STATE_ACTIVE : 0));
@@ -447,6 +453,9 @@ static void style_button(GB_DRAW *d, int x, int y, int w, int h, int value, int 
 			st, value ? GTK_SHADOW_IN : GTK_SHADOW_OUT,
 			NULL, NULL, "button",
 			x, y, w, h);
+
+	if (state & GB_DRAW_STATE_FOCUS)
+		style_focus(d, x, y, w, h);
 }
 			
 static void style_panel(GB_DRAW *d, int x, int y, int w, int h, int border, int state)
@@ -477,6 +486,9 @@ static void style_panel(GB_DRAW *d, int x, int y, int w, int h, int border, int 
 		if (DR(d)->mask())
 			gdk_draw_rectangle(DR(d)->mask(), DR(d)->style()->fg_gc[state ? GTK_STATE_INSENSITIVE : GTK_STATE_NORMAL], FALSE, x, y, w - 1, h - 1); 
 	}
+
+	if (state & GB_DRAW_STATE_FOCUS)
+		style_focus(d, x, y, w, h);
 }
 			
 static void style_handle(GB_DRAW *d, int x, int y, int w, int h, int vertical, int state)
@@ -503,6 +515,9 @@ static void style_box(GB_DRAW *d, int x, int y, int w, int h, int state)
 	if (DR(d)->mask())
 		gtk_paint_shadow(DR(d)->style(), DR(d)->mask(), st,
 			GTK_SHADOW_IN, NULL, NULL, "entry", x, y, w, h);
+
+	if (state & GB_DRAW_STATE_FOCUS)
+		style_focus(d, x, y, w, h);
 }
 
 			

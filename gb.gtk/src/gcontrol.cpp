@@ -1141,7 +1141,19 @@ void gControl::drawBorder(GdkDrawable *win)
 	{
     case BORDER_PLAIN:
     {
-      gdk_draw_rectangle(win, use_base ? st->text_gc[GTK_STATE_NORMAL] : st->fg_gc[GTK_STATE_NORMAL], FALSE, x, y, w - 1, h - 1); 
+			GdkGC *gc;
+			GdkGCValues values;
+			uint col;
+			
+			col = IMAGE.MergeColor(gDesktop::bgColor(), gDesktop::fgColor(), 0.5);
+			col = IMAGE.LighterColor(col);
+
+			fill_gdk_color(&values.foreground, col, gdk_drawable_get_colormap(win));
+			gc = gtk_gc_get(gdk_drawable_get_depth(win), gdk_drawable_get_colormap(win), &values, GDK_GC_FOREGROUND);
+			
+			//gdk_draw_rectangle(win, use_base ? st->text_gc[GTK_STATE_NORMAL] : st->fg_gc[GTK_STATE_NORMAL], FALSE, x, y, w - 1, h - 1); 
+			gdk_draw_rectangle(win, gc, FALSE, x, y, w - 1, h - 1); 
+			gtk_gc_release(gc);
       return;
     }
     

@@ -6,6 +6,13 @@ Private $bError As Boolean
 Private $sLastUrl As String
 Private $bPrint As Boolean
 
+Public Sub _new()
+  
+  Me.Utility = Settings["/UseUtilityWindows", 1]
+  
+End
+
+
 Public Sub Form_Open()
 
   Settings.Read(Me)
@@ -15,7 +22,7 @@ Public Sub Form_Open()
     webHelp.Url = MHelp.GetURL() & "?help&" & MHelp.GetHelpLanguage()
     webHelp.TextZoom = 0.8
   Endif
-
+  
 End
 
 Public Sub Form_Close()
@@ -204,3 +211,4 @@ Public Sub Form_KeyPress()
   If Key.Code = Key.Escape Then Me.Close
 
 End
+

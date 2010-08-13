@@ -1,22 +1,22 @@
 /***************************************************************************
 
-  image.c
+	image.c
 
-  (c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -67,15 +67,15 @@ static int _default_format = GB_IMAGE_RGBA;
 		_p = 0; \
 	else if (ALPHA(_p) != 0xFF) \
 		_p = ((ALPHA(_p) << 24) \
-			   | (((255*RED(_p))/ ALPHA(_p)) << 16) \
-			   | (((255*GREEN(_p)) / ALPHA(_p)) << 8) \
-			   | ((255*BLUE(_p)) / ALPHA(_p))); \
+				| (((255*RED(_p))/ ALPHA(_p)) << 16) \
+				| (((255*GREEN(_p)) / ALPHA(_p)) << 8) \
+				| ((255*BLUE(_p)) / ALPHA(_p))); \
 	_p; \
 })
 
 #define SWAP(__p) \
 ({ \
-  uint _p = (__p); \
+	uint _p = (__p); \
 	RGBA(ALPHA(_p), BLUE(_p), GREEN(_p), RED(_p)); \
 })
 
@@ -85,7 +85,9 @@ static int _default_format = GB_IMAGE_RGBA;
 	RGBA(BLUE(_p), GREEN(_p), RED(_p), ALPHA(_p)); \
 })
 
-static uint from_GB_COLOR(GB_COLOR col, int format)
+// Convert from GB_COLOR to a specific format
+
+static uint GB_COLOR_to_format(GB_COLOR col, int format)
 {
 	col ^= 0xFF000000;
 	if (GB_IMAGE_FMT_IS_PREMULTIPLIED(format))
@@ -97,7 +99,9 @@ static uint from_GB_COLOR(GB_COLOR col, int format)
 	return col;
 }
 
-static GB_COLOR to_GB_COLOR(uint col, int format)
+// Convert from a specific format to GB_COLOR
+
+static GB_COLOR GB_COLOR_from_format(uint col, int format)
 {
 	if (GB_IMAGE_FMT_IS_RGBA(format))
 		col = SWAP_RED_BLUE(col);
@@ -108,26 +112,57 @@ static GB_COLOR to_GB_COLOR(uint col, int format)
 	return col ^ 0xFF000000;
 }
 
+// Convert from BGRA to a specific format
+
 static inline uint BGRA_to_format(uint col, int format)
 {
 	if (GB_IMAGE_FMT_IS_PREMULTIPLIED(format))
 		col = PREMUL(col);
 	if (GB_IMAGE_FMT_IS_SWAPPED(format))
 		col = SWAP(col);
-	//if (GB_IMAGE_FMT_IS_RGBA(format))
-	//	col = SWAP_RED_BLUE(col);
+	if (GB_IMAGE_FMT_IS_RGBA(format))
+		col = SWAP_RED_BLUE(col);
 	return col;
 }
 
+// Convert from a specific format to BGRA
+
 static inline uint BGRA_from_format(uint col, int format)
 {
-	//if (GB_IMAGE_FMT_IS_RGBA(format))
-	//	col = SWAP_RED_BLUE(col);
+	if (GB_IMAGE_FMT_IS_RGBA(format))
+		col = SWAP_RED_BLUE(col);
 	if (GB_IMAGE_FMT_IS_SWAPPED(format))
 		col = SWAP(col);
 	if (GB_IMAGE_FMT_IS_PREMULTIPLIED(format))
 		col = INV_PREMUL(col);
 	return col;
+}
+
+// Convert from GB_COLOR to BGRA
+
+static inline uint GB_COLOR_to_BGRA(GB_COLOR col)
+{
+	return col ^ 0xFF000000;
+}
+
+// Compose two BGRA colors
+
+static inline uint BGRA_compose(uint dst, uint src)
+{
+	unsigned char a = ALPHA(src);
+	if (a == 255)
+		return src;
+	else if (a == 0)
+		return dst;
+	else 
+	{
+		unsigned char r = ((RED(src) - RED(dst)) * a) / 256 + RED(dst);
+		unsigned char g = ((GREEN(src) - GREEN(dst)) * a) / 256 + GREEN(dst);
+		unsigned char b = ((BLUE(src) - BLUE(dst)) * a) / 256 + BLUE(dst);
+		if (ALPHA(dst) > a)
+			a = ALPHA(dst);
+		return RGBA(r, g, b, a);
+	}
 }
 
 static inline bool is_valid(GB_IMG *img, int x, int y)
@@ -183,76 +218,76 @@ static void convert_image(uchar *dst, int dst_format, uchar *src, int src_format
 	fprintf(stderr, "convert_image: after: src_format = %d dst_format = %d\n", src_format, dst_format);
 	#endif
 
-  if (dst_format == GB_IMAGE_BGRA || dst_format == GB_IMAGE_BGRX)
-  {
-    switch (src_format)
-    {
-      case GB_IMAGE_BGRA: case GB_IMAGE_BGRX: 
-        goto __0123;
-  
-      case GB_IMAGE_ARGB: case GB_IMAGE_XRGB:
-        goto __3210;
-  
-      case GB_IMAGE_RGBA: case GB_IMAGE_RGBX:
-        goto __2103;
-  
-      case GB_IMAGE_ABGR: case GB_IMAGE_XBGR:
-        goto __1230;
-        
-      case GB_IMAGE_BGR:
-        goto __012X;
-  
-      case GB_IMAGE_RGB:
-        goto __210X;
-    }
-  }
-  else if (dst_format == GB_IMAGE_RGBA || dst_format == GB_IMAGE_RGBX)
-  {
-    switch (src_format)
-    {
-      case GB_IMAGE_RGBA: case GB_IMAGE_RGBX:
-        goto __0123;
-  
-      case GB_IMAGE_ABGR: case GB_IMAGE_XBGR:
-        goto __3210;
-  
-      case GB_IMAGE_BGRA: case GB_IMAGE_BGRX:
-        goto __2103;
-  
-      case GB_IMAGE_ARGB: case GB_IMAGE_XRGB:
-        goto __1230;
-  
-      case GB_IMAGE_RGB:
-        goto __012X;
-      
-      case GB_IMAGE_BGR:
-        goto __210X;  
-    }  
-  }
-  
+	if (dst_format == GB_IMAGE_BGRA || dst_format == GB_IMAGE_BGRX)
+	{
+		switch (src_format)
+		{
+			case GB_IMAGE_BGRA: case GB_IMAGE_BGRX: 
+				goto __0123;
+	
+			case GB_IMAGE_ARGB: case GB_IMAGE_XRGB:
+				goto __3210;
+	
+			case GB_IMAGE_RGBA: case GB_IMAGE_RGBX:
+				goto __2103;
+	
+			case GB_IMAGE_ABGR: case GB_IMAGE_XBGR:
+				goto __1230;
+				
+			case GB_IMAGE_BGR:
+				goto __012X;
+	
+			case GB_IMAGE_RGB:
+				goto __210X;
+		}
+	}
+	else if (dst_format == GB_IMAGE_RGBA || dst_format == GB_IMAGE_RGBX)
+	{
+		switch (src_format)
+		{
+			case GB_IMAGE_RGBA: case GB_IMAGE_RGBX:
+				goto __0123;
+	
+			case GB_IMAGE_ABGR: case GB_IMAGE_XBGR:
+				goto __3210;
+	
+			case GB_IMAGE_BGRA: case GB_IMAGE_BGRX:
+				goto __2103;
+	
+			case GB_IMAGE_ARGB: case GB_IMAGE_XRGB:
+				goto __1230;
+	
+			case GB_IMAGE_RGB:
+				goto __012X;
+			
+			case GB_IMAGE_BGR:
+				goto __210X;  
+		}  
+	}
+	
 __0123:         
 
 	#ifdef DEBUG_CONVERT
 	fprintf(stderr, "convert_image: 0123\n");
 	#endif
-  memcpy(dst, src, len);
-  goto __PREMULTIPLIED;
+	memcpy(dst, src, len);
+	goto __PREMULTIPLIED;
 
 __3210:
 
 	#ifdef DEBUG_CONVERT
 	fprintf(stderr, "convert_image: 3210\n");
 	#endif
-  while (d != dm)
-  {
-    d[0] = s[3];
-    d[1] = s[2];
-    d[2] = s[1];
-    d[3] = s[0];
-    s += 4;
-    d += 4;
-  }
-  goto __PREMULTIPLIED;
+	while (d != dm)
+	{
+		d[0] = s[3];
+		d[1] = s[2];
+		d[2] = s[1];
+		d[3] = s[0];
+		s += 4;
+		d += 4;
+	}
+	goto __PREMULTIPLIED;
 
 __2103:
 
@@ -260,33 +295,33 @@ __2103:
 	fprintf(stderr, "convert_image: 2103\n");
 	#endif
 
-  while (d != dm)
-  {
-    d[0] = s[2];
-    d[1] = s[1];
-    d[2] = s[0];
-    d[3] = s[3];
-    s += 4;
-    d += 4;
-  }
-  goto __PREMULTIPLIED;
-  
+	while (d != dm)
+	{
+		d[0] = s[2];
+		d[1] = s[1];
+		d[2] = s[0];
+		d[3] = s[3];
+		s += 4;
+		d += 4;
+	}
+	goto __PREMULTIPLIED;
+	
 __1230:
 
 	#ifdef DEBUG_CONVERT
 	fprintf(stderr, "convert_image: 1230\n");
 	#endif
 	
-  while (d != dm)
-  {
-    d[0] = s[1];
-    d[1] = s[2];
-    d[2] = s[3];
-    d[3] = s[0];
-    s += 4;
-    d += 4;
-  }
-  goto __PREMULTIPLIED;
+	while (d != dm)
+	{
+		d[0] = s[1];
+		d[1] = s[2];
+		d[2] = s[3];
+		d[3] = s[0];
+		s += 4;
+		d += 4;
+	}
+	goto __PREMULTIPLIED;
 
 __012X:
 
@@ -294,16 +329,16 @@ __012X:
 	fprintf(stderr, "convert_image: 012X\n");
 	#endif
 	
-  while (d != dm)
-  {
-    d[0] = s[0];
-    d[1] = s[1];
-    d[2] = s[2];
-    d[3] = 0xFF;
-    s += 3;
-    d += 4;
-  }
-  return;
+	while (d != dm)
+	{
+		d[0] = s[0];
+		d[1] = s[1];
+		d[2] = s[2];
+		d[3] = 0xFF;
+		s += 3;
+		d += 4;
+	}
+	return;
 
 __210X:
 
@@ -311,17 +346,17 @@ __210X:
 	fprintf(stderr, "convert_image: 210X\n");
 	#endif
 	
-  while (d != dm)
-  {
-    d[0] = s[2];
-    d[1] = s[1];
-    d[2] = s[0];
-    d[3] = 0xFF;
-    s += 3;
-    d += 4;
-  }
-  return;
-  
+	while (d != dm)
+	{
+		d[0] = s[2];
+		d[1] = s[1];
+		d[2] = s[0];
+		d[3] = 0xFF;
+		s += 3;
+		d += 4;
+	}
+	return;
+	
 __PREMULTIPLIED:
 
 	if (psrc == pdst)
@@ -504,7 +539,7 @@ void IMAGE_fill(GB_IMG *img, GB_COLOR col)
 {
 	GET_POINTER(img, p, pm);
 	
-	col = from_GB_COLOR(col, img->format);
+	col = GB_COLOR_to_format(col, img->format);
 	while (p != pm)
 		*p++ = col;	
 	
@@ -517,15 +552,16 @@ void IMAGE_make_gray(GB_IMG *img)
 	GET_POINTER(img, p, pm);
 	uint col;
 	uchar g;
+	int format = img->format;
 
 	SYNCHRONIZE(img);
 	
 	while (p != pm) 
 	{
-		col = BGRA_from_format(*p, img->format);
+		col = BGRA_from_format(*p, format);
 		g = (((RED(col) + BLUE(col)) >> 1) + GREEN(col)) >> 1;
 		
-		*p++ = BGRA_to_format(RGBA(g, g, g, ALPHA(col)), img->format);
+		*p++ = BGRA_to_format(RGBA(g, g, g, ALPHA(col)), format);
 	}
 
 	MODIFY(img);
@@ -535,21 +571,21 @@ GB_COLOR IMAGE_get_pixel(GB_IMG *img, int x, int y)
 {
 	uint col;
 	
-  if (!is_valid(img, x, y))
-  	return (-1);
-  
+	if (!is_valid(img, x, y))
+		return (-1);
+	
 	SYNCHRONIZE(img);
-  col = ((uint *)img->data)[y * img->width + x];
-  return to_GB_COLOR(col, img->format);
+	col = ((uint *)img->data)[y * img->width + x];
+	return GB_COLOR_from_format(col, img->format);
 }
 
 void IMAGE_set_pixel(GB_IMG *img, int x, int y, GB_COLOR col)
 {
-  if (!is_valid(img, x, y))
-  	return;
-  
+	if (!is_valid(img, x, y))
+		return;
+	
 	SYNCHRONIZE(img);
-  ((uint *)img->data)[y * img->width + x] = from_GB_COLOR(col, img->format);
+	((uint *)img->data)[y * img->width + x] = GB_COLOR_to_format(col, img->format);
 	MODIFY(img);
 }
 
@@ -558,6 +594,7 @@ void IMAGE_fill_rect(GB_IMG *img, int x, int y, int w, int h, GB_COLOR col)
 	uint *p;
 	int i;
 	uint c;
+	int format = img->format;
 	
 	if (x >= img->width || y >= img->height) return;
 	
@@ -570,15 +607,30 @@ void IMAGE_fill_rect(GB_IMG *img, int x, int y, int w, int h, GB_COLOR col)
 	
 	SYNCHRONIZE(img);
 
-	c = from_GB_COLOR(col, img->format);
 	p = &((uint *)img->data)[y * img->width + x];
 	
-	while (h)
+	c = GB_COLOR_to_BGRA(col);
+	
+	if (ALPHA(c) == 255)
 	{
-		for(i = w; i; i--)
-			*p++ = c;
-		h--;
-		p += img->width - w;
+		c = BGRA_to_format(c, format);
+		while (h)
+		{
+			for(i = w; i; i--)
+				*p++ = c;
+			h--;
+			p += img->width - w;
+		}
+	}
+	else
+	{
+		while (h)
+		{
+			for(i = w; i; i--, p++)
+				*p = BGRA_to_format(BGRA_compose(BGRA_from_format(*p, format), c), format);
+			h--;
+			p += img->width - w;
+		}
 	}
 	
 	MODIFY(img);
@@ -588,8 +640,8 @@ void IMAGE_replace(GB_IMG *img, GB_COLOR src, GB_COLOR dst, bool noteq)
 {
 	GET_POINTER(img, p, pm);
 
-  src = from_GB_COLOR(src, img->format);
-  dst = from_GB_COLOR(dst, img->format);
+	src = GB_COLOR_to_format(src, img->format);
+	dst = GB_COLOR_to_format(dst, img->format);
 
 	SYNCHRONIZE(img);
 
@@ -628,62 +680,58 @@ typedef
 
 static void color_to_alpha(FLOAT_RGB *src, const FLOAT_RGB *color)
 {
-  FLOAT_RGB alpha;
+	FLOAT_RGB alpha;
 
-  alpha.a = src->a;
+	alpha.a = src->a;
 
-  if (color->r < 0.0001)
-    alpha.r = src->r;
-  else if (src->r > color->r)
-    alpha.r = (src->r - color->r) / (1.0 - color->r);
-  else if (src->r < color->r)
-    alpha.r = (color->r - src->r) / color->r;
-  else alpha.r = 0.0;
+	if (color->r < 0.0001)
+		alpha.r = src->r;
+	else if (src->r > color->r)
+		alpha.r = (src->r - color->r) / (1.0 - color->r);
+	else if (src->r < color->r)
+		alpha.r = (color->r - src->r) / color->r;
+	else alpha.r = 0.0;
 
-  if (color->g < 0.0001)
-    alpha.g = src->g;
-  else if (src->g > color->g)
-    alpha.g = (src->g - color->g) / (1.0 - color->g);
-  else if (src->g < color->g)
-    alpha.g = (color->g - src->g) / (color->g);
-  else alpha.g = 0.0;
+	if (color->g < 0.0001)
+		alpha.g = src->g;
+	else if (src->g > color->g)
+		alpha.g = (src->g - color->g) / (1.0 - color->g);
+	else if (src->g < color->g)
+		alpha.g = (color->g - src->g) / (color->g);
+	else alpha.g = 0.0;
 
-  if (color->b < 0.0001)
-    alpha.b = src->b;
-  else if (src->b > color->b)
-    alpha.b = (src->b - color->b) / (1.0 - color->b);
-  else if (src->b < color->b)
-    alpha.b = (color->b - src->b) / (color->b);
-  else alpha.b = 0.0;
+	if (color->b < 0.0001)
+		alpha.b = src->b;
+	else if (src->b > color->b)
+		alpha.b = (src->b - color->b) / (1.0 - color->b);
+	else if (src->b < color->b)
+		alpha.b = (color->b - src->b) / (color->b);
+	else alpha.b = 0.0;
 
-  if (alpha.r > alpha.g)
-    {
-      if (alpha.r > alpha.b)
-        {
-          src->a = alpha.r;
-        }
-      else
-        {
-          src->a = alpha.b;
-        }
-    }
-  else if (alpha.g > alpha.b)
-    {
-      src->a = alpha.g;
-    }
-  else
-    {
-      src->a = alpha.b;
-    }
+	if (alpha.r > alpha.g)
+	{
+		if (alpha.r > alpha.b)
+			src->a = alpha.r;
+		else
+			src->a = alpha.b;
+	}
+	else if (alpha.g > alpha.b)
+	{
+		src->a = alpha.g;
+	}
+	else
+	{
+		src->a = alpha.b;
+	}
 
-  if (src->a < 0.0001)
-    return;
+	if (src->a < 0.0001)
+		return;
 
-  src->r = (src->r - color->r) / src->a + color->r;
-  src->g = (src->g - color->g) / src->a + color->g;
-  src->b = (src->b - color->b) / src->a + color->b;
+	src->r = (src->r - color->r) / src->a + color->r;
+	src->g = (src->g - color->g) / src->a + color->g;
+	src->b = (src->b - color->b) / src->a + color->b;
 
-  src->a *= alpha.a;
+	src->a *= alpha.a;
 }
 
 void IMAGE_make_transparent(GB_IMG *img, GB_COLOR col)
@@ -693,12 +741,13 @@ void IMAGE_make_transparent(GB_IMG *img, GB_COLOR col)
 	uint color;
 	FLOAT_RGB rgb_color;
 	FLOAT_RGB rgb_src;
+	int format = img->format;
 
 	//fprintf(stderr, "IMAGE_make_transparent: %d x %d / %d\n", img->width, img->height, img->format);
 
 	SYNCHRONIZE(img);
 
-	color = from_GB_COLOR(col, img->format);
+	color = GB_COLOR_to_BGRA(col);
 	rgb_color.b = BLUE(color) / 255.0;
 	rgb_color.g = GREEN(color) / 255.0;
 	rgb_color.r = RED(color) / 255.0;
@@ -706,7 +755,7 @@ void IMAGE_make_transparent(GB_IMG *img, GB_COLOR col)
 
 	while (p != pm) 
 	{
-		color = BGRA_from_format(*p, img->format);
+		color = BGRA_from_format(*p, format);
 		rgb_src.b = BLUE(color) / 255.0;
 		rgb_src.g = GREEN(color) / 255.0;
 		rgb_src.r = RED(color) / 255.0;
@@ -721,7 +770,7 @@ void IMAGE_make_transparent(GB_IMG *img, GB_COLOR col)
 			(unsigned char)(255.0 * rgb_src.a + 0.5)
 			);
 	
-		*p = BGRA_to_format(color, img->format);
+		*p = BGRA_to_format(color, format);
 		//fprintf(stderr, "[%d] %08X\n", p - (uint *)img->data, *p);
 		p++;
 	}
@@ -898,29 +947,29 @@ void IMAGE_compose(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int
 	SYNCHRONIZE(dst);
 
 	/*if ( src->hasAlphaBuffer() ) {
-	    QRgb* d = (QRgb*)dst->scanLine(dy) + dx;
-	    QRgb* s = (QRgb*)src->scanLine(sy) + sx;
-	    const int dd = dst->width() - sw;
-	    const int ds = src->width() - sw;
-	    while ( sh-- ) {
+			QRgb* d = (QRgb*)dst->scanLine(dy) + dx;
+			QRgb* s = (QRgb*)src->scanLine(sy) + sx;
+			const int dd = dst->width() - sw;
+			const int ds = src->width() - sw;
+			while ( sh-- ) {
 		for ( int t=sw; t--; ) {
-		    unsigned char a = qAlpha(*s);
-		    if ( a == 255 )
+				unsigned char a = qAlpha(*s);
+				if ( a == 255 )
 			*d++ = *s++;
-		    else if ( a == 0 )
+				else if ( a == 0 )
 			++d,++s; // nothing
-		    else {
+				else {
 			unsigned char r = ((qRed(*s)-qRed(*d)) * a) / 256 + qRed(*d);
 			unsigned char g = ((qGreen(*s)-qGreen(*d)) * a) / 256 + qGreen(*d);
 			unsigned char b = ((qBlue(*s)-qBlue(*d)) * a) / 256 + qBlue(*d);
 			a = QMAX(qAlpha(*d),a); // alternatives...
 			*d++ = qRgba(r,g,b,a);
 			++s;
-		    }
+				}
 		}
 		d += dd;
 		s += ds;
-	    }
+			}
 	} else {*/
 	
 	switch(src->format)
@@ -971,15 +1020,16 @@ void IMAGE_colorize(GB_IMG *img, GB_COLOR color)
 	int h, s, v;
 	int r, g, b;
 	int hcol, scol, vcol;
+	int format = img->format;
 	
 	SYNCHRONIZE(img);
 
-	col = from_GB_COLOR(color, img->format);
+	col = GB_COLOR_to_format(color, format);
 	COLOR_rgb_to_hsv(RED(col), GREEN(col), BLUE(col), &hcol, &scol, &vcol);
 
 	while (p != pm) 
 	{
-		col = BGRA_from_format(*p, img->format);
+		col = BGRA_from_format(*p, format);
 		COLOR_rgb_to_hsv(RED(col), GREEN(col), BLUE(col), &h, &s, &v);
 		COLOR_hsv_to_rgb(hcol, scol, v, &r, &g, &b);
 		*p++ = BGRA_to_format(RGBA(r, g, b, ALPHA(col)), img->format);
@@ -994,10 +1044,11 @@ void IMAGE_mask(GB_IMG *img, GB_COLOR color)
 	uint col;
 	unsigned char red[256], blue[256], green[256], alpha[256];
 	int i, r, g, b, a;
+	int format = img->format;
 	
 	SYNCHRONIZE(img);
 
-	col = from_GB_COLOR(color, img->format);
+	col = GB_COLOR_to_format(color, img->format);
 	r = RED(col);
 	g = GREEN(col);
 	b = BLUE(col);
@@ -1013,8 +1064,8 @@ void IMAGE_mask(GB_IMG *img, GB_COLOR color)
 
 	while (p != pm) 
 	{
-		col = BGRA_from_format(*p, img->format);
-		*p++ = BGRA_to_format(RGBA(red[RED(col)], green[GREEN(col)], blue[BLUE(col)], alpha[ALPHA(col)]), img->format);
+		col = BGRA_from_format(*p, format);
+		*p++ = BGRA_to_format(RGBA(red[RED(col)], green[GREEN(col)], blue[BLUE(col)], alpha[ALPHA(col)]), format);
 	}
 	
 	MODIFY(img);
@@ -1025,41 +1076,41 @@ void IMAGE_mirror(GB_IMG *src, GB_IMG *dst, bool horizontal, bool vertical)
 	if (dst->width != src->width || dst->height != src->height || dst->format != src->format)
 		return;
 
-  int w = src->width;
-  int h = src->height;
+	int w = src->width;
+	int h = src->height;
 
-  int dxi = horizontal ? -1 : 1;
-  int dxs = horizontal ? (w - 1) : 0;
-  int dyi = vertical ? -1 : 1;
-  int dy = vertical ? (h - 1) : 0;
-  int sx, sy;
+	int dxi = horizontal ? -1 : 1;
+	int dxs = horizontal ? (w - 1) : 0;
+	int dyi = vertical ? -1 : 1;
+	int dy = vertical ? (h - 1) : 0;
+	int sx, sy;
 
 	SYNCHRONIZE(src);
 
 	if (GB_IMAGE_FMT_IS_24_BITS(src->format))
 	{
-    for (sy = 0; sy < h; sy++, dy += dyi) 
-    {
-      uint24 *ssl = (uint24 *)(src->data + sy * src->width * 3);
-      uint24 *dsl = (uint24 *)(dst->data + dy * dst->width * 3);
-      int dx = dxs;
-      for (sx = 0; sx < w; sx++, dx += dxi)
-          dsl[dx] = ssl[sx];
-    }
-  }
-  else 
-  {
-    for (sy = 0; sy < h; sy++, dy += dyi) 
-    {
-      uint *ssl = (uint *)(src->data + sy * src->width * 4);
-      uint *dsl = (uint *)(dst->data + dy * dst->width * 4);
-      int dx = dxs;
-      for (sx = 0; sx < w; sx++, dx += dxi)
-          dsl[dx] = ssl[sx];
-    }
-  }
-  
-  MODIFY(dst);
+		for (sy = 0; sy < h; sy++, dy += dyi) 
+		{
+			uint24 *ssl = (uint24 *)(src->data + sy * src->width * 3);
+			uint24 *dsl = (uint24 *)(dst->data + dy * dst->width * 3);
+			int dx = dxs;
+			for (sx = 0; sx < w; sx++, dx += dxi)
+					dsl[dx] = ssl[sx];
+		}
+	}
+	else 
+	{
+		for (sy = 0; sy < h; sy++, dy += dyi) 
+		{
+			uint *ssl = (uint *)(src->data + sy * src->width * 4);
+			uint *dsl = (uint *)(dst->data + dy * dst->width * 4);
+			int dx = dxs;
+			for (sx = 0; sx < w; sx++, dx += dxi)
+					dsl[dx] = ssl[sx];
+		}
+	}
+	
+	MODIFY(dst);
 }
 
 #if 0

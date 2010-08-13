@@ -42,6 +42,8 @@ Public Sub _new()
     .Columns[3].Text = ("Text")    
   End With
   
+  Me.Utility = Settings["/UseUtilityWindows", 1]
+  
 End
 
 Public Sub Form_Open()

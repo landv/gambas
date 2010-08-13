@@ -79,6 +79,7 @@ Public Sub _new()
     [cmbShowCurrent, "/Editor/ShowCurrent", 1],
     [cmbFoldProc, "/Editor/Fold", 0],
     [cmbOutput, "/QuietExternalCommands", 0],
+    [cmbUtility, "/UseUtilityWindows", 1],
     [cmbTooltip, "/ShowTooltip", 0],
     [cmbIntegratedHelp, "/PropertyHelp", 1],
     [cmbHelpCompletion, "/ShowHelpInPopup", 1],
@@ -113,6 +114,8 @@ Public Sub _new()
   
   gvwSnippet.Columns.Count = 2
   gvwSnippet.Columns[0].Width = Desktop.Scale * 8
+  
+  Me.Utility = Settings["/UseUtilityWindows", 1]
   
 End
 
@@ -388,6 +391,13 @@ End
 Public Sub cmbOutput_Click()
 
   Settings["/QuietExternalCommands"] = cmbOutput.Index = 1
+
+End
+
+Public Sub cmbUtility_Click()
+
+  Settings["/UseUtilityWindows"] = cmbUtility.Index = 1
+  NeedRestart(cmbUtility)
 
 End
 

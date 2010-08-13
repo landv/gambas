@@ -6,8 +6,7 @@
   Text = ("Preferences")
   Icon = Picture["icon:/small/options"]
   Persistent = True
-  Type = WindowType.Utility
-  SkipTaskbar = True
+  Utility = True
   Arrangement = Arrange.Fill
   Margin = True
   { mnuPopup Menu
@@ -43,7 +42,7 @@
       Border = False
       ScrollBar = Scroll.Vertical
       { panOption VBox
-        MoveScaled(0,0,68,121)
+        MoveScaled(0,0,68,126)
         Expand = True
         Spacing = True
         { Label29 Label
@@ -165,13 +164,31 @@
             MoveScaled(59,0,7,4)
           }
         }
+        { HBox26 HBox
+          MoveScaled(1,39,66,4)
+          Spacing = True
+          Indent = True
+          { Label15 Label
+            MoveScaled(0,0,47,4)
+            Expand = True
+            Text = ("Use utility windows")
+          }
+          { cmbUtility ComboBox
+            MoveScaled(48,0,10,4)
+            ReadOnly = True
+            List = [("No"), ("Yes")]
+          }
+          { Panel13 Panel
+            MoveScaled(59,0,7,4)
+          }
+        }
         { Label9 Label
-          MoveScaled(0,39,56,3)
+          MoveScaled(0,44,56,3)
           Font = Font["Bold"]
           Text = ("Editor")
         }
         { HBox14 HBox
-          MoveScaled(1,43,66,4)
+          MoveScaled(1,48,66,4)
           Spacing = True
           Indent = True
           { Label40 Label
@@ -191,7 +208,7 @@
           }
         }
         { HBox18 HBox
-          MoveScaled(1,48,66,4)
+          MoveScaled(1,53,66,4)
           Spacing = True
           Indent = True
           { Label5 Label
@@ -206,7 +223,7 @@
           }
         }
         { HBox17 HBox
-          MoveScaled(1,53,66,4)
+          MoveScaled(1,58,66,4)
           Spacing = True
           Indent = True
           { Label6 Label
@@ -224,7 +241,7 @@
           }
         }
         { HBox16 HBox
-          MoveScaled(1,58,66,4)
+          MoveScaled(1,63,66,4)
           Spacing = True
           Indent = True
           { Label7 Label
@@ -242,7 +259,7 @@
           }
         }
         { HBox15 HBox
-          MoveScaled(1,63,66,4)
+          MoveScaled(1,68,66,4)
           Spacing = True
           Indent = True
           { Label8 Label
@@ -260,7 +277,7 @@
           }
         }
         { HBox4 HBox
-          MoveScaled(1,68,66,4)
+          MoveScaled(1,73,66,4)
           Spacing = True
           Indent = True
           { Label17 Label
@@ -278,7 +295,7 @@
           }
         }
         { HBox20 HBox
-          MoveScaled(1,73,66,4)
+          MoveScaled(1,78,66,4)
           Spacing = True
           Indent = True
           { Label20 Label
@@ -296,12 +313,12 @@
           }
         }
         { Label25 Label
-          MoveScaled(0,78,62,3)
+          MoveScaled(0,83,62,3)
           Font = Font["Bold"]
           Text = ("Applications")
         }
         { HBox12 HBox
-          MoveScaled(1,82,66,4)
+          MoveScaled(1,87,66,4)
           Spacing = True
           Indent = True
           { Label13 Label
@@ -316,7 +333,7 @@
           }
         }
         { HBox2 HBox
-          MoveScaled(1,87,66,4)
+          MoveScaled(1,92,66,4)
           Spacing = True
           Indent = True
           { Label4 Label
@@ -331,7 +348,7 @@
           }
         }
         { HBox9 HBox
-          MoveScaled(1,92,66,4)
+          MoveScaled(1,97,66,4)
           Spacing = True
           Indent = True
           { Label14 Label
@@ -346,12 +363,12 @@
           }
         }
         { Label22 Label
-          MoveScaled(0,97,63,3)
+          MoveScaled(0,102,63,3)
           Font = Font["Bold"]
           Text = ("Help")
         }
         { HBox13 HBox
-          MoveScaled(1,101,66,4)
+          MoveScaled(1,106,66,4)
           Spacing = True
           Indent = True
           { Label32 Label
@@ -369,7 +386,7 @@
           }
         }
         { HBox3 HBox
-          MoveScaled(1,106,66,4)
+          MoveScaled(1,111,66,4)
           Spacing = True
           Indent = True
           { Label10 Label
@@ -387,7 +404,7 @@
           }
         }
         { HBox5 HBox
-          MoveScaled(1,111,66,4)
+          MoveScaled(1,116,66,4)
           Spacing = True
           Indent = True
           { Label23 Label
@@ -405,7 +422,7 @@
           }
         }
         { HBox22 HBox
-          MoveScaled(1,116,66,4)
+          MoveScaled(1,121,66,4)
           Spacing = True
           Indent = True
           { btnClearCache Button

@@ -168,6 +168,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(WebView_Reload)
 
+	WIDGET->stop();
 	WIDGET->reload();
 
 END_METHOD

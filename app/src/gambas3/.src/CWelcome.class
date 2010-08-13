@@ -59,12 +59,12 @@ Public Sub dwgWelcome_Draw()
   Paint.Font = Font["+12,Bold"]
   X = PaintText("Gambas", 8, 48, Color.SelectedForeground)
   
-  Paint.Font = Font["+9,Bold"]
+  Paint.Font = Font["+8,Bold"]
   PaintText(Project.Version, X + 8, 32, Color.SelectedForeground)
   Paint.Font = Font["+2"]
   PaintText("http://gambas.sourceforge.net", 12, 68, Color.LightForeground)
   
-  Paint.Font = Font["Bold,Italic,+2"]
+  Paint.Font = Font["Italic,+1"]
   PaintText(("This program is published under\nthe GNU General Public License."), 12, 104, Color.SelectedForeground)
 
 End
