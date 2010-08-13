@@ -4,7 +4,7 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Orientation{Align.Top;Bottom}=Top,ButtonPosition{Align.Right;Left}=Right"
+Public Const _Properties As String = "*,Orientation{Align.Top;Bottom}=Top"
 Public Const _DefaultEvent As String = "Activate"
 Public Const _Group As String = "Special"
 
@@ -12,12 +12,10 @@ Event Activate
 'EVENT WindowMenu
 
 Property ActiveWindow As Window
-'PROPERTY ShowTitle AS Boolean
 Property Read Children As Window[]
 Property Font As Font
 Property Background As Integer
 Property Orientation As Integer
-Property ButtonPosition As Integer
 
 Private hWorkspace As FWorkspace
 
@@ -127,17 +125,5 @@ End
 Private Sub Orientation_Write(Value As Integer)
 
   hWorkspace.SetOrientation(Value)
-
-End
-
-Private Function ButtonPosition_Read() As Integer
-
-  Return hWorkspace.GetButtonPosition()  
-
-End
-
-Private Sub ButtonPosition_Write(Value As Integer)
-
-  hWorkspace.SetButtonPosition(Value)
 
 End

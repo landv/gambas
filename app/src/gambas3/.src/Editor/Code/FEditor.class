@@ -631,15 +631,18 @@ Private Sub UpdateMenu()
   mnuSepUndo.Visible = bVisible
   mnuCut.Visible = bVisible
   mnuPaste.Visible = bVisible
+  mnuPasteSpecial.Visible = bVisible
   mnuComment.Visible = bVisible
   mnuUncomment.Visible = bVisible
-  mnuSepComment.Visible = bVisible
+  'mnuSepComment.Visible = bVisible
   mnuReload.Visible = bVisible
+  mnuInsertColor.Visible = bVisible
 
   btnUndo.Visible = bVisible
   btnRedo.Visible = bVisible
   btnCut.Visible = bVisible
   btnPaste.Visible = bVisible
+  btnInsertColor.Visible = bVisible
   btnComment.Visible = bVisible
   btnUncomment.Visible = bVisible
   btnIndent.Visible = bVisible

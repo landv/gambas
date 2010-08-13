@@ -19,7 +19,6 @@ Private $iBackground As Integer = Color.Default
 Private $bNoClose As Boolean
 Private $iLock As Integer
 'Private $bLogo As Boolean
-Private $bButtonLeft As Boolean
 
 Public Sub _new()
   
@@ -160,7 +159,11 @@ Private Sub RemoveWindow(hWin As Window, Optional bClose As Boolean)
     HideTabStrip
   Endif
   
-  Activate
+  If $hCurrent Then
+    Activate($hCurrent.Window)
+  Else
+    Activate
+  Endif
   
   Dec $iNoWait
   
@@ -369,64 +372,68 @@ Public Sub Form_Resize()
     If tabWorkspace.Orientation = Align.Top Then
     
       H = tabWorkspace.ClientY - 2
-      'H = panChild.ScreenY - tabWorkspace.ScreenY
-      If btnTabClose.W <> H Or btnTabClose.H <> H Then 
-        btnTabClose.Resize(H - 2, H - 2)
-        btnTabClose.Picture = Picture["icon:/" & (H - 10) & "/close"]
-      Endif
-      
-      If $bButtonLeft Then
-      
-        btnTabClose.Move(0, 1)
-        tabWorkspace.Move(H, 0, Me.ClientW - H, HH)
-        
-      Else
-      
-        btnTabClose.Move(Me.ClientW - H + 1, 1)
-        tabWorkspace.Move(0, 0, Me.ClientW - H, HH)
-        'tabWorkspace.Move(0, 0, Me.ClientW - H, tabWorkspace.ClientY + 2)
-        
-      Endif
 
+      ' If btnTabClose.W <> H Or btnTabClose.H <> H Then 
+      '   btnTabClose.Resize(H - 2, H - 2)
+      '   btnTabClose.Picture = Picture["icon:/" & (H - 10) & "/close"]
+      ' Endif
+      
+      ' If $bButtonLeft Then
+      ' 
+      '   btnTabClose.Move(0, 1)
+      '   tabWorkspace.Move(H, 0, Me.ClientW - H, HH)
+      '   
+      ' Else
+      ' 
+      '   btnTabClose.Move(Me.ClientW - H + 1, 1)
+      '   tabWorkspace.Move(0, 0, Me.ClientW - H, HH)
+      '   'tabWorkspace.Move(0, 0, Me.ClientW - H, tabWorkspace.ClientY + 2)
+      '   
+      ' Endif
+
+      tabWorkspace.Move(0, 0, Me.ClientW, HH)
+      
       With tabWorkspace
         If $bShowTitle Then
-          panTitle.Move(.X, H, .W + btnTabClose.W, panTitle.H)
-          svwWorkspace.Move(0, panTitle.H + H, .W + H, HH - panTitle.H - H)
-          panWorkspace.Move(0, panTitle.H + H, .W + H, HH - panTitle.H - H)
+          panTitle.Move(.X, H, .W, panTitle.H)
+          svwWorkspace.Move(0, panTitle.H + H, .W, HH - panTitle.H - H)
+          panWorkspace.Move(0, panTitle.H + H, .W, HH - panTitle.H - H)
         Else 
-          svwWorkspace.Move(0, H, .W + H, HH - H)
-          panWorkspace.Move(0, H, .W + H, HH - H)
+          svwWorkspace.Move(0, H, .W, HH - H)
+          panWorkspace.Move(0, H, .W, HH - H)
         Endif 
       End With 
       
     Else
     
       H = tabWorkspace.H - tabWorkspace.ClientY - tabWorkspace.ClientH - 2
-      If btnTabClose.W <> H Or btnTabClose.H <> H Then 
-        btnTabClose.Resize(H - 2, H - 2)
-        btnTabClose.Picture = Picture["icon:/" & (H - 10) & "/close"]
-      Endif
+      ' If btnTabClose.W <> H Or btnTabClose.H <> H Then 
+      '   btnTabClose.Resize(H - 2, H - 2)
+      '   btnTabClose.Picture = Picture["icon:/" & (H - 10) & "/close"]
+      ' Endif
 
-      If $bButtonLeft Then
-      
-        btnTabClose.Move(0, Me.ClientH - H + 1)
-        tabWorkspace.Move(H, 0, Me.ClientW - H, Me.ClientH)
-        
-      Else
-      
-        btnTabClose.Move(Me.ClientW - H + 1, Me.ClientH - H + 1)
-        tabWorkspace.Move(0, 0, Me.ClientW - H, Me.ClientH)
-        
-      Endif
+      ' If $bButtonLeft Then
+      ' 
+      '   btnTabClose.Move(0, Me.ClientH - H + 1)
+      '   tabWorkspace.Move(H, 0, Me.ClientW - H, Me.ClientH)
+      '   
+      ' Else
+      ' 
+      '   btnTabClose.Move(Me.ClientW - H + 1, Me.ClientH - H + 1)
+      '   tabWorkspace.Move(0, 0, Me.ClientW - H, Me.ClientH)
+      '   
+      ' Endif
 
+      tabWorkspace.Move(H, 0, Me.ClientW, Me.ClientH)
+      
       With tabWorkspace
         If $bShowTitle Then
-          panTitle.Move(.X, Me.ClientH - H, .W + btnTabClose.W, panTitle.H)
-          svwWorkspace.Move(0, Me.ClientH - panTitle.H - H, .W + H, .H - panTitle.H - H)
-          panWorkspace.Move(0, Me.ClientH - panTitle.H - H, .W + H, .H - panTitle.H - H)
+          panTitle.Move(.X, Me.ClientH - H, .W, panTitle.H)
+          svwWorkspace.Move(0, Me.ClientH - panTitle.H - H, .W, .H - panTitle.H - H)
+          panWorkspace.Move(0, Me.ClientH - panTitle.H - H, .W, .H - panTitle.H - H)
         Else 
-          svwWorkspace.Move(0, Me.ClientY, .W + H, .H - H)
-          panWorkspace.Move(0, Me.ClientY, .W + H, .H - H)
+          svwWorkspace.Move(0, Me.ClientY, .W, .H - H)
+          panWorkspace.Move(0, Me.ClientY, .W, .H - H)
         Endif 
       End With 
 
@@ -698,7 +705,6 @@ End
 Private Sub HideTabStrip()
   
   tabWorkspace.Hide
-  btnTabClose.Hide
   panTitle.Visible = $bShowTitle
   Form_Resize  
   
@@ -708,7 +714,6 @@ End
 Private Sub ShowTabStrip()
   
   If $aWindow.Count Then 
-    btnTabClose.Show
     tabWorkspace.Show
     Form_Resize
   Endif
@@ -749,19 +754,6 @@ End
 Public Sub SetOrientation(iOrientation As Integer)
   
   tabWorkspace.Orientation = iOrientation
-  Form_Resize
-  
-End
-
-Public Sub GetButtonPosition() As Integer
-  
-  Return If($bButtonLeft, Align.Left, Align.Right)
-  
-End
-
-Public Sub SetButtonPosition(iPos As Integer)
-  
-  $bButtonLeft = iPos = Align.Left
   Form_Resize
   
 End
@@ -810,4 +802,10 @@ Public Sub mnuNextTab_Click()
   
   Try Inc tabWorkspace.Index
   
+End
+
+Public Sub tabWorkspace_Close(Index As Integer)
+
+  $aWindow[Index].Window.Close
+
 End

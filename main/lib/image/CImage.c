@@ -96,10 +96,17 @@ BEGIN_PROPERTY(CIMAGE_data)
 
 END_PROPERTY
 
-BEGIN_METHOD_VOID(CIMAGE_gray)
+BEGIN_METHOD_VOID(Image_Desaturate)
 
 	IMAGE_make_gray(THIS_IMAGE);
 	GB.ReturnObject(THIS);
+
+END_METHOD
+
+BEGIN_METHOD_VOID(CIMAGE_gray)
+
+	fprintf(stderr, "warning: Image.Gray is deprecated, use Image.Desaturate instead.\n");
+	Image_Desaturate(_object, _param);
 
 END_METHOD
 
@@ -116,10 +123,17 @@ BEGIN_METHOD(CIMAGE_replace, GB_INTEGER src; GB_INTEGER dst; GB_BOOLEAN noteq)
 
 END_METHOD
 
-BEGIN_METHOD(CIMAGE_transparent, GB_INTEGER color)
+BEGIN_METHOD(Image_Erase, GB_INTEGER color)
 
 	IMAGE_make_transparent(THIS_IMAGE, VARGOPT(color, 0xFFFFFF));
 	GB.ReturnObject(THIS);
+
+END_METHOD
+
+BEGIN_METHOD_VOID(CIMAGE_transparent)
+
+	fprintf(stderr, "warning: Image.Transparent is deprecated, use Image.Erase instead.\n");
+	Image_Erase(_object, _param);
 
 END_METHOD
 
@@ -256,6 +270,8 @@ GB_DESC CImageDesc[] =
   GB_METHOD("Fill", "Image", CIMAGE_fill, "(Color)i"),
   GB_METHOD("Gray", "Image", CIMAGE_gray, NULL),
   GB_METHOD("Transparent", "Image", CIMAGE_transparent, "[(Color)i]"),
+  GB_METHOD("Desaturate", "Image", Image_Desaturate, NULL),
+  GB_METHOD("Erase", "Image", Image_Erase, "[(Color)i]"),
   GB_METHOD("Replace", "Image", CIMAGE_replace, "(OldColor)i(NewColor)i[(NotEqual)b]"),
   GB_METHOD("Colorize", "Image", CIMAGE_colorize, "(Color)i"),
 	GB_METHOD("Mask", "Image", CIMAGE_mask, "(Color)i"),

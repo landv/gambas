@@ -95,22 +95,22 @@ BEGIN_METHOD(CIMAGE_fade, GB_INTEGER col; GB_FLOAT val)
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CIMAGE_gray)
+/*BEGIN_METHOD_VOID(CIMAGE_gray)
 
 	QImage img(THIS);
 
 	KImageEffect::toGray(img, false);
 
-END_METHOD
+END_METHOD*/
 
 
-BEGIN_METHOD(CIMAGE_desaturate, GB_FLOAT val)
+/*BEGIN_METHOD(CIMAGE_desaturate, GB_FLOAT val)
 
 	QImage img(THIS);
 
-	KImageEffect::desaturate(img, VARG(val));
+	KImageEffect::desaturate(img, VARGOPT(val, 0.3));
 
-END_METHOD
+END_METHOD*/
 
 
 BEGIN_METHOD(CIMAGE_threshold, GB_FLOAT val)
@@ -354,8 +354,8 @@ GB_DESC CImageDesc[] =
 	GB_METHOD("Intensity", NULL, CIMAGE_intensity, "(Value)f[(Channel)i]"),
 	GB_METHOD("Flatten", NULL, CIMAGE_flatten, "(DarkColor)i(BrightColor)i"),
 	GB_METHOD("Fade", NULL, CIMAGE_fade, "(Color)i(Value)f"),
-	GB_METHOD("Gray", NULL, CIMAGE_gray, NULL),
-	GB_METHOD("Desaturate", NULL, CIMAGE_desaturate, "(Value)f"),
+	//GB_METHOD("Gray", NULL, CIMAGE_gray, NULL),
+	//GB_METHOD("Desaturate", NULL, CIMAGE_desaturate, "[(Value)f]"),
 	GB_METHOD("Threshold", NULL, CIMAGE_threshold, "(Value)f"),
 	GB_METHOD("Solarize", NULL, CIMAGE_solarize, "(Value)f"),
 	GB_METHOD("Normalize", NULL, CIMAGE_normalize, NULL),

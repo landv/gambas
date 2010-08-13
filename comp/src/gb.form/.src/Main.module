@@ -29,7 +29,7 @@ Public Sub GetArrow(iType As Integer, iSize As Integer) As Image
     Draw.Style.Arrow(0, 0, 16, 16, iType)
     Draw.End
     hImage = hPict.Image.Stretch(iSize, iSize)
-    hImage.Transparent(Color.White)
+    hImage.Erase()
     'hPict = hImage.Picture
     $cArrow[sKey] = hImage
   Endif
