@@ -330,7 +330,6 @@ GtkStyle *gDraw::style()
 			stl = gtk_style_copy(gt_get_style("GtkButton", GTK_TYPE_BUTTON));
 			stl = gtk_style_attach(stl, (GdkWindow*)dr);
 		}
-		updateStyle();
 	}
 	
 	return stl;
@@ -671,32 +670,6 @@ bool gDraw::clipEnabled()
 	return clip_enabled;
 }
 
-void gDraw::updateStyle()
-{
-	int i;
-	GdkRectangle *cr;
-	
-	if (!stl)
-		return;
-	
-	cr = clip_enabled ? &clip : NULL;
-	
-	gdk_gc_set_clip_rectangle(stl->black_gc, cr);
-	gdk_gc_set_clip_rectangle(stl->white_gc, cr);
-
-	for (i = 0; i < 5; i++)
-	{
-		gdk_gc_set_clip_rectangle(stl->fg_gc[i], cr);
-    gdk_gc_set_clip_rectangle(stl->bg_gc[i], cr);
-    gdk_gc_set_clip_rectangle(stl->light_gc[i], cr);
-    gdk_gc_set_clip_rectangle(stl->dark_gc[i], cr);
-    gdk_gc_set_clip_rectangle(stl->mid_gc[i], cr);
-    gdk_gc_set_clip_rectangle(stl->text_gc[i], cr);
-    gdk_gc_set_clip_rectangle(stl->base_gc[i], cr);
-    gdk_gc_set_clip_rectangle(stl->text_aa_gc[i], cr);
-	}
-}
-
 void gDraw::setClipEnabled(bool vl)
 {
 	if (vl)
@@ -711,8 +684,6 @@ void gDraw::setClipEnabled(bool vl)
 		if (gcm) gdk_gc_set_clip_rectangle(gcm, NULL);
 		clip_enabled=false;
 	}
-	
-	updateStyle();
 }
 
 void gDraw::setClip(int x,int y,int w,int h)
@@ -724,8 +695,6 @@ void gDraw::setClip(int x,int y,int w,int h)
 	clip.height=h;
 	gdk_gc_set_clip_rectangle(gc,&clip);
 	if (gcm) gdk_gc_set_clip_rectangle(gcm, &clip);
-
-	updateStyle();
 }
 
 

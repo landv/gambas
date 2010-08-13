@@ -103,7 +103,6 @@ private:
 	void endFill();
 	void drawLayout(PangoLayout *ly, int x, int y, int w, int h, int align);
 	void initGC();
-	void updateStyle();
 
 	gDrawingArea *dArea;
 	gFont *ft;
