@@ -2198,27 +2198,16 @@ void MyMainWindow::closeEvent(QCloseEvent *e)
 
 	e->ignore();
 
-	//if (qApp->loopLevel() != THIS->level)
-	//  return;
-
-	//if (_object == CWINDOW_Main && qApp->loopLevel() > 1)
-	//  return;
-
-	/*if (MAIN_in_wait)
-	{
-		qDebug("Ignore close event: MAIN_in_wait");
-		goto IGNORE;
-	}*/
-
-	//if (CWINDOW_Current && (THIS != CWINDOW_Current))
-	if (CWINDOW_Current && (THIS->loopLevel != CWINDOW_Current->loopLevel))
-	{
-		//qDebug("ignore close event");
-		goto IGNORE;
-	}
-
+	//qDebug("closeEvent: CWINDOW_Current = %p / %d <-> %p / %d", CWINDOW_Current, CWINDOW_Current ? CWINDOW_Current->loopLevel : -1, THIS, THIS->loopLevel);
+	
 	if (THIS->opened)
 	{
+		// If a window is not opened, then it can be closed whatever the loop level is
+		if (CWINDOW_Current && (THIS->loopLevel != CWINDOW_Current->loopLevel))
+		{
+			goto IGNORE;
+		}
+
 		//qDebug("THIS->opened = %d: %p: %s", THIS->opened, THIS, GB.GetClassName(THIS));
 		THIS->closing = true;
 		//qDebug("Close event: %s %p", GB.GetClassName(THIS), THIS);

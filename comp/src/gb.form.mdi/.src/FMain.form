@@ -1,10 +1,10 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,69,72)
+  MoveScaled(0,0,82,72)
   Arrangement = Arrange.Vertical
   { ToolBar1 ToolBar
-    MoveScaled(3,4,52,5)
+    MoveScaled(3,4,69,5)
     Key = "main"
     Text = ("ToolBar1")
     { Button1 Button
@@ -16,6 +16,21 @@
       MoveScaled(17,0,15,4)
       Action = "test"
       Text = ("MenuButton1")
+    }
+    { ToolButton1 ToolButton
+      MoveScaled(32,0,13,4)
+      Enabled = False
+      Action = "zop"
+      AutoResize = True
+      Text = ("ToolButton1")
+      Picture = Picture["icon:/small/bookmark"]
+    }
+    { ToolButton2 ToolButton
+      MoveScaled(46,0,13,4)
+      Action = "zop2"
+      AutoResize = True
+      Text = ("ToolButton1")
+      Picture = Picture["icon:/small/bookmark"]
     }
   }
 }
@@ -31,12 +46,20 @@
     Text = "MenuButton1"
     Picture = "$MenuButton"
   }
+  { Action zop
+    Text = "ToolButton1"
+    Picture = "icon:/small/bookmark"
+  }
+  { Action zop2
+    Text = "ToolButton1"
+    Picture = "icon:/small/bookmark"
+  }
 }
 
 { Toolbars
   { Toolbar main
     Text = "ToolBar1"
-    List = "button,test"
-    Default = "button,test"
+    List = "button,test,zop,zop2"
+    Default = "button,test,zop,zop2"
   }
 }

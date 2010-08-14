@@ -2139,7 +2139,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 				return true;*/
 		}
 		
-		if (!cancel && event_id == EVENT_MouseMove && (mevent->buttons() != Qt::NoButton) && GB.CanRaise(control, EVENT_MouseDrag) && !CDRAG_dragging
+		if (event_id == EVENT_MouseMove && !cancel && (mevent->buttons() != Qt::NoButton) && GB.CanRaise(control, EVENT_MouseDrag) && !CDRAG_dragging
 				&& ((abs(p.x() - CMOUSE_info.sx) + abs(p.y() - CMOUSE_info.sy)) > 8)) // QApplication::startDragDistance()))
 		{		
 			/*if (!design && CWIDGET_test_flag(control, WF_SCROLLVIEW))

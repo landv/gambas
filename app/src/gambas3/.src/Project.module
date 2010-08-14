@@ -4769,9 +4769,12 @@ End
 Public Sub RefreshBreakpointPicture()
 
   Dim iSize As Integer
+  Dim hPict As Picture
   
   iSize = Font[Settings["/Editor/Font"]].Height
-  Try Editor.BreakpointPicture = Picture["icon:/small/flag"].Image.Stretch(iSize, iSize).Picture 
+  hPict = Picture["icon:/small/halt"]
+  If iSize < Stock.GetSize("small") Then hPict = hPict.Image.Stretch(iSize, iSize).Picture 
+  Try Editor.BreakpointPicture = hPict
   
 End
 

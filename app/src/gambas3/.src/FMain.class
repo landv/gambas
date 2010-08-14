@@ -1193,13 +1193,13 @@ Public Sub Action_Activate(Key As String) As Boolean
       Endif
       'FOutput.Toggle(Action["console"].Value)
     
-    Case "break"
-      'Debug Action["break"].Value
-      Try hEditor = Project.ActiveForm
-      If Not Error Then Design.SetBreakpoint(hEditor.Name, hEditor.Editor.Line, Action["break"].Value)
-    Case "watch"
-      Try hEditor = Project.ActiveForm
-      If Not Error Then hEditor.WatchExpression
+    ' Case "break"
+    '   'Debug Action["break"].Value
+    '   Try hEditor = Project.ActiveForm
+    '   If Not Error Then Design.SetBreakpoint(hEditor.Name, hEditor.Editor.Line, Action["break"].Value)
+    ' Case "watch"
+    '   Try hEditor = Project.ActiveForm
+    '   If Not Error Then hEditor.WatchExpression
     Case "until"
       Try hEditor = Project.ActiveForm
       If Not Error Then hEditor.RunUntil

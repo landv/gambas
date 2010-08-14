@@ -171,23 +171,9 @@
     }
     { Menu9 Menu
     }
-    { Menu3 Menu
-      Action = "break"
-      Text = ("&Toggle breakpoint")
-      Picture = Picture["icon:/small/flag"]
-      Toggle = True
-      Shortcut = "F9"
-    }
     { mnuClearBreakpoints Menu
       Action = "clear-break"
       Text = ("Clear &all breakpoints")
-    }
-    { Menu21 Menu
-    }
-    { Menu12 Menu
-      Action = "watch"
-      Text = ("&Watch expression")
-      Picture = Picture["icon:/small/watch"]
     }
     { mnuClearDebugWindows Menu
       Action = "close-all-debug"
@@ -708,20 +694,6 @@
       Action = "until"
       Picture = Picture["icon:/small/start"]
     }
-    { btnWatch ToolButton mnuWatch
-      Name = "btnWatch"
-      MoveScaled(78,0,4,4)
-      ToolTip = ("Watch expression")
-      Action = "watch"
-      Picture = Picture["icon:/small/watch"]
-    }
-    { btnBreakpoint ToolButton
-      MoveScaled(81,0,4,4)
-      ToolTip = ("Toggle breakpoint")
-      Action = "break"
-      Picture = Picture["icon:/small/flag"]
-      Toggle = True
-    }
     { Separator5 Separator
       MoveScaled(84,0,1,4)
     }
@@ -923,11 +895,6 @@
     Text = "&Source archive..."
     Shortcut = "Ctrl+Alt+A"
     Picture = "icon:/small/archive"
-  }
-  { Action break
-    Text = "&Toggle breakpoint"
-    Shortcut = "F9"
-    Picture = "icon:/small/flag"
   }
   { Action browse-project
     Text = "&Browse project..."
@@ -1217,17 +1184,12 @@
     Shortcut = ""
     Picture = "icon:/small/add"
   }
-  { Action watch
-    Text = "&Watch expression"
-    Shortcut = ""
-    Picture = "icon:/small/watch"
-  }
 }
 
 { Toolbars
   { Toolbar main
     Text = ""
-    List = "new-project,open-project,save-project,save-project-as,project-property,refresh-project,option,shortcut,translate,archive,exec,install,project,property,control,console,compile,compile-all,start,pause,stop,step,forward,return,until,watch,break,find-text,find-project,find"
-    Default = "new-project,open-project,save-project,save-project-as,project-property,option,|,translate,exec,|,compile,compile-all,start,pause,stop,step,forward,return,until,watch,break,|,find-text,find-project,find,|,$panShowMenu"
+    List = "new-project,open-project,save-project,save-project-as,project-property,refresh-project,option,shortcut,translate,archive,exec,install,project,property,control,console,compile,compile-all,start,pause,stop,step,forward,return,until,find-text,find-project,find"
+    Default = "new-project,open-project,save-project,save-project-as,project-property,option,|,translate,exec,|,compile,compile-all,start,pause,stop,step,forward,return,until,|,find-text,find-project,find,|,$panShowMenu"
   }
 }

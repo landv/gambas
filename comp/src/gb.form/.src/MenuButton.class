@@ -268,6 +268,7 @@ End
 Public Sub DrawingArea_MouseDown()
   
   If Not Mouse.Left Then Return
+  If Not Me.Enabled Then Return
   
   $bPressed = True
   $bInsideArrow = Mouse.X > (Me.W - Desktop.Scale * 3 + 3)
@@ -284,6 +285,7 @@ End
 Public Sub DrawingArea_MouseUp()
   
   If Not Mouse.Left Then Return
+  If Not Me.Enabled Then Return
 
   $bPressed = False
   $hDrawingArea.Refresh

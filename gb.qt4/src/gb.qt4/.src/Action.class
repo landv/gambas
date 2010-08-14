@@ -148,11 +148,18 @@ Static Public Sub Lock()
   
 End
 
-Static Public Sub UnLock()
+Static Public Sub Unlock()
   
   $iGlobalLock = Max(0, $iGlobalLock - 1)
   
 End
+
+Static Public Sub IsLocked() As Boolean
+  
+  Return $iGlobalLock
+  
+End
+
 
 Static Public Sub Raise(Control As Object)
   

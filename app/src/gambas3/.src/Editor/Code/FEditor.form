@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(4,12,135,80)
+  MoveScaled(4,12,142,80)
   Persistent = True
   { mnuEditor Menu
     Enabled = False
@@ -41,19 +41,19 @@
     { mnuUntil Menu
       Text = ("Run &until current line")
       Picture = Picture["icon:/small/start"]
-      Visible = False
       Shortcut = "Shift+F5"
     }
     { mnuBreakpoint Menu
+      Action = ".break"
       Text = ("Toggle &breakpoint")
-      Picture = Picture["icon:/small/flag"]
+      Picture = Picture["icon:/small/halt"]
       Toggle = True
-      Visible = False
+      Shortcut = "F9"
     }
     { mnuWatch Menu
-      Text = ("&Watch expression...")
+      Action = ".watch"
+      Text = ("&Watch expression")
       Picture = Picture["icon:/small/watch"]
-      Visible = False
     }
     { mnuSepWatch Menu
     }
@@ -184,7 +184,7 @@
     }
   }
   { panToolBar ToolBar
-    MoveScaled(0,0,134,4)
+    MoveScaled(0,0,141,4)
     Key = "editor"
     Text = ("Editor")
     Separator = True
@@ -197,21 +197,21 @@
     }
     { btnReload ToolButton mnuReload
       Name = "btnReload"
-      MoveScaled(4,0,4,4)
+      MoveScaled(3,0,4,4)
       ToolTip = ("Reload")
       Action = ".reload"
       Picture = Picture["icon:/small/refresh"]
     }
     { btnForm ToolButton mnuForm
       Name = "btnForm"
-      MoveScaled(8,0,4,4)
+      MoveScaled(6,0,4,4)
       ToolTip = ("Form")
       Action = ".show-form"
       Picture = Picture["img/16/form.png"]
     }
     { btnCut ToolButton mnuCut
       Name = "btnCut"
-      MoveScaled(12,0,4,4)
+      MoveScaled(9,0,4,4)
       Visible = False
       ToolTip = ("Cut")
       Action = ".cut"
@@ -219,7 +219,7 @@
     }
     { btnCopy ToolButton mnuCopy
       Name = "btnCopy"
-      MoveScaled(16,0,4,4)
+      MoveScaled(12,0,4,4)
       Visible = False
       ToolTip = ("Copy")
       Action = ".copy"
@@ -227,36 +227,44 @@
     }
     { btnPaste MenuButton mnuPaste
       Name = "btnPaste"
-      MoveScaled(20,0,6,4)
+      MoveScaled(15,0,6,4)
       ToolTip = ("Paste")
       Action = ".paste"
       Picture = Picture["icon:/small/paste"]
       Border = False
       Menu = "mnuPasteAs"
     }
+    { btnInsertColor MenuButton
+      MoveScaled(20,0,6,4)
+      ToolTip = ("Insert color")
+      Action = ".color"
+      Picture = Picture["icon:/small/color"]
+      Border = False
+      Menu = "mnuColor"
+    }
     { btnUndo ToolButton mnuUndo
       Name = "btnUndo"
-      MoveScaled(27,0,4,4)
+      MoveScaled(25,0,4,4)
       ToolTip = ("Undo")
       Action = ".undo"
       Picture = Picture["icon:/small/undo"]
     }
     { btnRedo ToolButton mnuRedo
       Name = "btnRedo"
-      MoveScaled(31,0,4,4)
+      MoveScaled(28,0,4,4)
       ToolTip = ("Redo")
       Action = ".redo"
       Picture = Picture["icon:/small/redo"]
     }
     { btnIndent ToolButton
-      MoveScaled(34,0,4,4)
+      MoveScaled(31,0,4,4)
       Visible = False
       ToolTip = ("Indent")
       Action = ".indent"
       Picture = Picture["icon:/small/indent"]
     }
     { btnUnindent ToolButton
-      MoveScaled(37,0,4,4)
+      MoveScaled(34,0,4,4)
       Visible = False
       ToolTip = ("Unindent")
       Action = ".unindent"
@@ -264,21 +272,21 @@
     }
     { btnComment ToolButton mnuComment
       Name = "btnComment"
-      MoveScaled(40,0,4,4)
+      MoveScaled(37,0,4,4)
       ToolTip = ("Comment")
       Action = ".comment"
       Picture = Picture["img/16/comment.png"]
     }
     { btnUncomment ToolButton mnuUncomment
       Name = "btnUncomment"
-      MoveScaled(43,0,4,4)
+      MoveScaled(40,0,4,4)
       ToolTip = ("Uncomment")
       Action = ".uncomment"
       Picture = Picture["img/16/uncomment.png"]
     }
     { btnNoSplit ToolButton mnuNoSplit
       Name = "btnNoSplit"
-      MoveScaled(46,0,4,4)
+      MoveScaled(42,0,4,4)
       Visible = False
       ToolTip = ("No split")
       Action = ".view-nosplit"
@@ -286,7 +294,7 @@
     }
     { btnHorizontalSplit ToolButton mnuHorizontalSplit
       Name = "btnHorizontalSplit"
-      MoveScaled(49,0,4,4)
+      MoveScaled(45,0,4,4)
       Visible = False
       ToolTip = ("Horizontal split")
       Action = ".view-hsplit"
@@ -294,32 +302,38 @@
     }
     { btnVerticalSplit ToolButton mnuVerticalSplit
       Name = "btnVerticalSplit"
-      MoveScaled(52,0,4,4)
+      MoveScaled(48,0,4,4)
       Visible = False
       ToolTip = ("Vertical split")
       Action = ".view-vsplit"
       Picture = Picture["icon:/small/view-split-v"]
     }
-    { btnInsertColor MenuButton
-      MoveScaled(56,0,6,4)
-      ToolTip = ("Insert color")
-      Action = ".color"
-      Picture = Picture["icon:/small/color"]
-      Border = False
-      Menu = "mnuColor"
+    { btnBreakpoint ToolButton
+      MoveScaled(52,0,4,4)
+      ToolTip = ("Toggle breakpoint")
+      Action = ".break"
+      Picture = Picture["icon:/small/halt"]
+      Toggle = True
     }
-    { Separator1 Separator
-      MoveScaled(63,0,1,4)
+    { btnWatch ToolButton mnuWatch
+      Name = "btnWatch"
+      MoveScaled(55,0,4,4)
+      ToolTip = ("Watch expression")
+      Action = ".watch"
+      Picture = Picture["icon:/small/watch"]
+    }
+    { Separator2 Separator
+      MoveScaled(58,0,2,4)
     }
     { btnProc ToolButton
-      MoveScaled(64,0,46,4)
+      MoveScaled(60,0,46,4)
       Action = ".proc"
       Text = ("Procedure list")
       Picture = Picture["img/16/procedure.png"]
     }
     { btnDefinition ToolButton mnuDefinition
       Name = "btnDefinition"
-      MoveScaled(103,0,4,4)
+      MoveScaled(111,0,4,4)
       Visible = False
       ToolTip = ("Find definition")
       Action = ".find-definition"
@@ -327,14 +341,14 @@
     }
     { btnLastPosition ToolButton mnuLastPosition
       Name = "btnLastPosition"
-      MoveScaled(106,0,4,4)
+      MoveScaled(114,0,4,4)
       Visible = False
       ToolTip = ("Go back")
       Action = ".go-back"
       Picture = Picture["icon:/16/left"]
     }
     { HBox1 HBox
-      MoveScaled(110,0,22,4)
+      MoveScaled(118,0,22,4)
       Expand = True
       { Panel1 Panel
         MoveScaled(2,0,1,4)
@@ -392,6 +406,11 @@
 # Gambas Action File 3.0
 
 { Actions
+  { Action break
+    Text = "Toggle &breakpoint"
+    Shortcut = "F9"
+    Picture = "icon:/small/halt"
+  }
   { Action code-form
     Text = "Open form"
     Shortcut = "F12"
@@ -525,12 +544,17 @@
     Shortcut = "Ctrl+J"
     Picture = "icon:/small/view-split-v"
   }
+  { Action watch
+    Text = "&Watch expression"
+    Shortcut = ""
+    Picture = "icon:/small/watch"
+  }
 }
 
 { Toolbars
   { Toolbar editor
     Text = "Editor"
-    List = "save,reload,show-form,cut,copy,paste,undo,redo,indent,unindent,comment,uncomment,view-nosplit,view-hsplit,view-vsplit,color,proc,find-definition,go-back"
-    Default = "save,reload,show-form,paste,undo,redo,comment,uncomment,color,|,proc,$HBox1"
+    List = "save,reload,show-form,cut,copy,paste,color,undo,redo,indent,unindent,comment,uncomment,view-nosplit,view-hsplit,view-vsplit,break,watch,proc,find-definition,go-back"
+    Default = "save,reload,show-form,paste,color,undo,redo,comment,uncomment,break,watch,|,proc,$HBox1"
   }
 }

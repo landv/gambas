@@ -499,35 +499,47 @@ void gMainWindow::setVisible(bool vl)
 
 void gMainWindow::setMinimized(bool vl)
 {
+	if (!isTopLevel()) return;
 	if (vl) gtk_window_iconify(GTK_WINDOW(border));
 	else    gtk_window_deiconify(GTK_WINDOW(border));
 }
 
 void gMainWindow::setMaximized(bool vl)
 {
+	if (!isTopLevel()) return;
 	if (vl) gtk_window_maximize(GTK_WINDOW(border));
 	else    gtk_window_unmaximize(GTK_WINDOW(border));
 }
 
 void gMainWindow::setFullscreen(bool vl)
 {
+	if (!isTopLevel()) return;
 	if (vl) gtk_window_fullscreen(GTK_WINDOW(border));
 	else    gtk_window_unfullscreen(GTK_WINDOW(border));
 }
 
 bool gMainWindow::minimized()
 {
-	return (bool)(gdk_window_get_state(border->window) &  GDK_WINDOW_STATE_ICONIFIED);
+	if (isTopLevel())
+		return (bool)(gdk_window_get_state(border->window) &  GDK_WINDOW_STATE_ICONIFIED);
+	else
+		return false;
 }
 
 bool gMainWindow::maximized()
 {
-	return (bool)(gdk_window_get_state(border->window) &  GDK_WINDOW_STATE_MAXIMIZED);
+	if (isTopLevel())
+		return (bool)(gdk_window_get_state(border->window) &  GDK_WINDOW_STATE_MAXIMIZED);
+	else
+		return false;
 }
 
 bool gMainWindow::fullscreen()
 {
-	return (bool)(gdk_window_get_state(border->window) &  GDK_WINDOW_STATE_FULLSCREEN);
+	if (isTopLevel())
+		return (bool)(gdk_window_get_state(border->window) &  GDK_WINDOW_STATE_FULLSCREEN);
+	else
+		return false;
 }
 
 void gMainWindow::center()
@@ -668,12 +680,18 @@ void gMainWindow::setText(const char *txt)
 
 bool gMainWindow::hasBorder()
 {
-	return gtk_window_get_decorated(GTK_WINDOW(border));
+	if (isTopLevel())
+		return gtk_window_get_decorated(GTK_WINDOW(border));
+	else
+		return false;
 }
 
 bool gMainWindow::isResizable()
 {
-	return gtk_window_get_resizable(GTK_WINDOW(border));
+	if (isTopLevel())
+		return gtk_window_get_resizable(GTK_WINDOW(border));
+	else
+		return false;
 }
 
 void gMainWindow::setBorder(bool b)

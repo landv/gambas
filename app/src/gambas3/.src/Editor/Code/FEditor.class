@@ -637,6 +637,7 @@ Private Sub UpdateMenu()
   'mnuSepComment.Visible = bVisible
   mnuReload.Visible = bVisible
   mnuInsertColor.Visible = bVisible
+  mnuWatch.Visible = Not bVisible
 
   btnUndo.Visible = bVisible
   btnRedo.Visible = bVisible
@@ -649,6 +650,7 @@ Private Sub UpdateMenu()
   btnUnIndent.Visible = bVisible
   btnReload.Visible = bVisible
   btnSave.Visible = bVisible
+  btnWatch.Visible = Not bVisible
 
 End
 
@@ -2624,9 +2626,11 @@ End
 Public Sub timProc_Timer()
 
   Action.Lock
-  Action["break"].Value = Editor.Lines[Editor.Line].Breakpoint
-  Action.UnLock
-  Action["break"].Enabled = CanSetBreakpoint(Editor.Line)
+  Object.Lock(btnBreakpoint)
+  Action[".break", Me].Value = Editor.Lines[Editor.Line].Breakpoint
+  Object.Unlock(btnBreakpoint)
+  Action.Unlock
+  Action[".break", Me].Enabled = CanSetBreakpoint(Editor.Line)
   timProc.Enabled = False
 
 End 
@@ -3198,3 +3202,23 @@ Public Sub mnuInsertColor_Click()
   $hInsertColor.Insert
 
 End
+
+Public Sub btnBreakpoint_Click()
+  
+  Design.SetBreakpoint(Me.Name, Editor.Line, Not HasBreakpoint(Editor.Line))
+
+End
+
+Public Sub mnuWatch_Click()
+
+  WatchExpression
+  FDebugInfo.ShowWatchTab
+
+End
+
+Public Sub mnuUntil_Click()
+  
+  RunUntil
+  
+End
+

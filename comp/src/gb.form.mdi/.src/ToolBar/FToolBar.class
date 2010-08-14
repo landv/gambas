@@ -40,7 +40,7 @@ Public Sub _new()
   dwgHandle.Width = $iHandleSize
   $hWatcherParent = New Watcher(Me.Parent.Parent) As "Container"
   $bAutoResize = True
-  dwgHandle_Leave
+  UpdateHandle
   
 End
 
@@ -98,7 +98,7 @@ Private Function GetToolBarWidth(Optional bPadding As Boolean) As Integer
   Endif
   
   If bPadding Then W += panToolBar.Padding * 2 
-  Return W 
+  Return W
   
 End
 
@@ -342,8 +342,13 @@ End
 
 Public Sub dwgHandle_Draw()
 
+  Dim iFlag As Integer
+
+  If $bInside Then iFlag += Draw.Hover
+  If Not Me.Enabled Then iFlag += Draw.Disabled
+
   'Draw.Style.Button(1, 1, dwgHandle.W - 2, dwgHandle.H - 2, $bPressed And $bInside, Not Me.Enabled)
-  'Draw.Style.Handle(1, 1, dwgHandle.W - 2, dwgHandle.H - 2, Not $bVertical, Not Me.Enabled)
+  Draw.Style.Handle(0, 0, dwgHandle.W, dwgHandle.H, Not $bVertical, iFlag)
   'If $bInside Then  
   '  Draw.FillRect(1, 1, dwgHandle.W - 2, dwgHandle.H - 2, Color.Background)
   'Endif
@@ -354,12 +359,23 @@ Public Sub dwgHandle_Draw()
   
 End
 
+Private Sub UpdateHandle()
+  
+  'If $bInside Or If $bConfigure Then
+  '  dwgHandle.Background = Color.Merge(Color.Background, Color.Foreground, 0.3)
+  'Else
+  '  dwgHandle.Background = Color.Default
+  'Endif
+  dwgHandle.Refresh
+  
+End
+
+
 Public Sub dwgHandle_Enter()
 
   If $bDesign Then Return
   $bInside = True
-  'dwgHandle.Background = Color.Lighter(dwgHandle.Background)
-  dwgHandle.Refresh
+  UpdateHandle
 
 End
 
@@ -367,8 +383,7 @@ Public Sub dwgHandle_Leave()
 
   If $bDesign Then Return
   $bInside = False
-  dwgHandle.Background = Color.Lighter(Color.Merge(Color.Background, Color.Foreground))
-  dwgHandle.Refresh
+  UpdateHandle
 
 End
 
@@ -378,7 +393,6 @@ Public Sub dwgHandle_MouseDown()
   $bPressed = True
   dwgHandle.Refresh
   'SetHidden(NOT $bHidden)
-  
 
 End
 
@@ -531,12 +545,13 @@ Public Sub SetConfigureMode(bConfigure As Boolean)
   
   panToolBar.Enabled = Not $bConfigure
   If $bConfigure Then
-    hColor = Color[Color.LightBackground]
-    hColor.Saturation /= 2
-    Me.Background = hColor.Color
+    'hColor = Color[Color.LightBackground]
+    'hColor.Saturation /= 2
+    'Me.Background = dwgHandle.Background 'hColor.Color
   Else
-    Me.Background = Color.Default
+    'Me.Background = Color.Default
   Endif
+  UpdateHandle
   dwgHandle.Enabled = Not $bConfigure
 
   Lock()
@@ -766,6 +781,12 @@ Private Sub OnMouseDrag(hCtrl As Control)
   Wait
   
   FToolBarConfig.DragAction(hCtrl, sAction)
+  
+End
+
+Public Sub Item_MouseDown()
+  
+  If $bConfigure Then Stop Event
   
 End
 
@@ -1248,6 +1269,7 @@ Public Sub SetDesign()
   
   $bDesign = True
   dwgHandle.ToolTip = ""
+  dwgHandle.Mouse = Mouse.Default
   
 End
 

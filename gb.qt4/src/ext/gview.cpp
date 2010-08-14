@@ -806,7 +806,7 @@ void GEditor::paintCell(QPainter *painter, int row, int)
 		pal.setColor(QColorGroup::Foreground, styles[GLine::Normal].color);
 		w = qMin(_cellh, 12);
 		//opt.rect = QRect(margin - 12, 0, 12, 12);
-		opt.rect = QRect(margin - w, 0, w, _cellh);
+		opt.rect = QRect(margin - w - 2, 0, w, _cellh);
 		opt.palette = pal;
 		opt.state |= QStyle::State_Enabled;
 		
@@ -818,7 +818,7 @@ void GEditor::paintCell(QPainter *painter, int row, int)
 	{
 		//p.fillRect(margin - 10, 0, 8, _cellh, styles[GLine::Breakpoint].color);
 		//updateBreakpoint(styles[GLine::Background].color.rgb(), styles[GLine::Breakpoint].color.rgb());
-		p.drawPixmap(margin - (_cellh + breakpoint->width()) / 2, (_cellh - breakpoint->height()) / 2, *breakpoint);
+		p.drawPixmap(margin - breakpoint->width() - 2, (_cellh - breakpoint->height()) / 2, *breakpoint);
 	}
 
 	// Text cursor
@@ -1856,7 +1856,7 @@ void GEditor::updateMargin()
 	if (doc->getHighlightMode() != GDocument::None)
 	{
 		if (breakpoint && !breakpoint->isNull())
-			nm += breakpoint->width();
+			nm += breakpoint->width() + 2;
 		else
 			nm += 8;
 	}
