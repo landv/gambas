@@ -1303,12 +1303,11 @@ void gMainWindow::embedMenuBar(GtkWidget *border)
 		gtk_widget_reparent(widget, GTK_WIDGET(layout));
 		gtk_container_add(GTK_CONTAINER(border), GTK_WIDGET(layout));
 	
+		gtk_widget_show(GTK_WIDGET(menuBar));
 		gtk_widget_show(GTK_WIDGET(layout));
 		gtk_widget_show(GTK_WIDGET(widget));
-		//gtk_widget_show(GTK_WIDGET(par->menuBar));
 		set_gdk_fg_color(GTK_WIDGET(menuBar), foreground());
 		set_gdk_bg_color(GTK_WIDGET(menuBar), background());
-		//gtk_widget_modify_font(GTK_WIDGET(menuBar), font()->desc());
 		
 		checkMenuBar();
 	}
