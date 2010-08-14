@@ -299,7 +299,8 @@ void DeleteControl(gControl *control)
 	if (_old_active_control == widget)
 		_old_active_control = NULL;
 	
-	GB.StoreVariant(NULL, (void *)&widget->tag);
+	GB.StoreVariant(NULL, POINTER(&widget->tag));
+	GB.StoreObject(NULL, POINTER(&widget->cursor));
 	CACTION_register(widget, NULL);
 	
 	WINDOW_kill((CWINDOW*)widget);
@@ -707,26 +708,17 @@ BEGIN_PROPERTY(CWIDGET_mouse)
 END_METHOD
 
 
-BEGIN_PROPERTY(CWIDGET_cursor)
+BEGIN_PROPERTY(Control_Cursor)
 
-	CCURSOR *Cur;
-	gCursor *cur;
-	
 	if (READ_PROPERTY)
+		GB.ReturnObject(THIS->cursor);
+	else
 	{
-		cur=CONTROL->cursor();
-		if (!cur) return;
-		GB.New(POINTER(&Cur), GB.FindClass("Cursor"), 0, 0);
-		Cur->cur=cur;
-		GB.ReturnObject((void*)Cur);
-		return;
+		GB.StoreObject(PROP(GB_OBJECT), &THIS->cursor);
+		CCURSOR *c = (CCURSOR *)THIS->cursor;
+		CONTROL->setCursor(c ? c->cur : NULL);
 	}
-	
-	Cur=(CCURSOR*)VPROP(GB_OBJECT);
-	if (!Cur) CONTROL->setCursor(NULL);
-	else CONTROL->setCursor(Cur->cur);
-	
- 
+
 END_PROPERTY
 
 
@@ -916,7 +908,7 @@ GB_DESC CWidgetDesc[] =
 	GB_PROPERTY("Tag", "v", CWIDGET_tag),
 	GB_PROPERTY("Tracking", "b", CCONTROL_tracking),
 	GB_PROPERTY("Mouse", "i", CWIDGET_mouse), 
-	GB_PROPERTY("Cursor", "Cursor", CWIDGET_cursor),
+	GB_PROPERTY("Cursor", "Cursor", Control_Cursor),
 	GB_PROPERTY("ToolTip", "s", CWIDGET_tooltip),
 	GB_PROPERTY("Drop", "b", CWIDGET_drop),
 	GB_PROPERTY("Action", "s", CCONTROL_action),

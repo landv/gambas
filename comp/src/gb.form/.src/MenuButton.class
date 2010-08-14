@@ -267,6 +267,8 @@ End
 
 Public Sub DrawingArea_MouseDown()
   
+  If Not Mouse.Left Then Return
+  
   $bPressed = True
   $bInsideArrow = Mouse.X > (Me.W - Desktop.Scale * 3 + 3)
   $hDrawingArea.Refresh
@@ -281,6 +283,8 @@ End
 
 Public Sub DrawingArea_MouseUp()
   
+  If Not Mouse.Left Then Return
+
   $bPressed = False
   $hDrawingArea.Refresh
   
@@ -302,9 +306,10 @@ Public Sub DrawingArea_Draw()
 
   If $bInsideArrow Then
     Draw.Style.Button(0, 0, Me.W, Me.H, False, iFlag, Not $bBorder)
+    'Draw.Save
     'Draw.Clip(Me.W - Desktop.Scale * 3 + 3, 0, Desktop.Scale * 3 - 3, Me.H)
-    'Draw.Style.Button(0, 0, Me.W, Me.H, $bPressed, iFlag)
-    'Draw.Clip.Enabled = False
+    'Draw.Style.Button(0, 0, Me.W, Me.H, $bPressed, iFlag, Not $bBorder)
+    'Draw.Restore
   Else
     Draw.Style.Button(0, 0, Me.W, Me.H, $bPressed, iFlag, Not $bBorder)
   Endif

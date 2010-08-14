@@ -205,6 +205,11 @@ void *CWIDGET_get_parent(void *_object)
     return CWidget::get(parent);
 }
 
+static bool is_visible(void *_object)
+{
+	return THIS->flag.visible; // || !QWIDGET(_object)->isHidden();
+}
+
 int Control_check(void *_object)
 {
 	return WIDGET == NULL || CWIDGET_test_flag(THIS, WF_DELETED);
@@ -644,6 +649,12 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Control_Hovered)
 
+	if (!is_visible(THIS))
+	{
+		GB.ReturnBoolean(false);
+		return;
+	}
+
 	QPoint m = QCursor::pos();
 	int x = WIDGET->mapToGlobal(QPoint(0, 0)).x(); 
 	int y = WIDGET->mapToGlobal(QPoint(0, 0)).y(); 
@@ -734,12 +745,6 @@ BEGIN_METHOD_VOID(Control_Delete)
 	CWIDGET_destroy(THIS);
 
 END_METHOD
-
-
-static bool is_visible(void *_object)
-{
-	return THIS->flag.visible; // || !QWIDGET(_object)->isHidden();
-}
 
 
 void CWIDGET_set_visible(CWIDGET *_object, bool v)

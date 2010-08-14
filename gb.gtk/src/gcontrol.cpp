@@ -345,6 +345,12 @@ POSITION AND SIZE
 
 void gControl::getScreenPos(int *x, int *y)
 {
+	if (!border->window)
+	{
+		*x = *y = 0;
+		return;
+	}
+	
 	gdk_window_get_origin(border->window, x, y);
 }
 
@@ -803,7 +809,10 @@ int gControl::handle()
 {
 	#ifndef GAMBAS_DIRECTFB
 	#ifdef GDK_WINDOWING_X11
-	return GDK_WINDOW_XID(border->window);
+	if (!border->window)
+		return 0;
+	else
+		return GDK_WINDOW_XID(border->window);
 	#else
 	stub("no-X11/gControl::handle()");
 	return 0;
@@ -1723,6 +1732,9 @@ bool gControl::grab(bool showIt)
 bool gControl::hovered()
 {
 	int x, y, xm, ym;
+	
+	if (!isVisible())
+		return false;
 	
 	getScreenPos(&x, &y);
 	gMouse::getScreenPos(&xm, &ym);

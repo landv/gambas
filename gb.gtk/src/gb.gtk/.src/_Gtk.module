@@ -1,6 +1,6 @@
 ' Gambas module file
 
-EXPORT 
+Export 
 
 ' PRIVATE SUB Quote(sStr AS String) AS String
 '   
@@ -15,110 +15,106 @@ EXPORT
 ' END
 
 
-PUBLIC SUB _GetColumnViewSettings(hColumnView AS ColumnView) AS String
+Public Sub _GetColumnViewSettings(hColumnView As ColumnView) As String
   
-  DIM sVal AS String
-  DIM iCol AS Integer
+  Dim sVal As String
+  Dim iCol As Integer
 
-  WITH hColumnView
+  With hColumnView
 
     sVal = CStr(.Columns.Count)
     
-    FOR iCol = 0 TO .Columns.Count - 1
+    For iCol = 0 To .Columns.Count - 1
       'sVal &= "," & "\"" & Quote(.Columns[iCol].Text) & "\""
       sVal &= "," & CStr(Round(.Columns[iCol].Width / Desktop.Scale, -3))
-      SELECT CASE .Columns[iCol].Alignment 
-        CASE Align.Left
+      Select Case .Columns[iCol].Alignment 
+        Case Align.Left
           sVal &= ",<"
-        CASE Align.Right
+        Case Align.Right
           sVal &= ",>"
-      END SELECT
-      IF .Columns.Sort = iCol THEN 
-        IF .Columns.Ascending THEN 
+      End Select
+      If .Columns.Sort = iCol Then 
+        If .Columns.Ascending Then 
           sVal &= ",+"
-        ELSE 
+        Else 
           sVal &= ",-"
-        ENDIF
-      ENDIF
-    NEXT    
+        Endif
+      Endif
+    Next    
   
-  END WITH 
+  End With 
   
-  DEBUG sVal
+  Return sVal
   
-  RETURN sVal
-  
-END
+End
 
-PUBLIC SUB _SetColumnViewSettings(hColumnView AS ColumnView, sSettings AS String)
+Public Sub _SetColumnViewSettings(hColumnView As ColumnView, sSettings As String)
 
-  DIM aVal AS String[]
-  DIM iInd AS Integer
-  DIM iCol AS Integer
-  DIM eWidth AS Float[]
-  DIM eSum AS Float
-
-  DEBUG sSettings
+  Dim aVal As String[]
+  Dim iInd As Integer
+  Dim iCol As Integer
+  Dim eWidth As Float[]
+  Dim eSum As Float
 
   aVal = Split(sSettings, ",", "\"")
   
-  WITH hColumnView
+  With hColumnView
 
     .Columns.Count = CInt(aVal[0])
-    eWidth = NEW Float[.Columns.Count]
-    INC iInd
-    WHILE iCol < .Columns.Count
-      IF iInd >= aVal.Count THEN BREAK 
+    eWidth = New Float[.Columns.Count]
+    Inc iInd
+    While iCol < .Columns.Count
+      If iInd >= aVal.Count Then Break 
       'DEBUG iCol;; "=";; CFloat(aVal[iInd])
       eWidth[iCol] = CFloat(aVal[iInd]) * Desktop.Scale
       eSum += eWidth[iCol]
-      INC iInd
-      DO
-        IF iInd >= aVal.Count THEN BREAK 
-        SELECT CASE aVal[iInd] 
-          CASE "<"
+      Inc iInd
+      Do
+        If iInd >= aVal.Count Then Break 
+        Select Case aVal[iInd] 
+          Case "<"
             .Columns[iCol].Alignment = Align.Left
-          CASE ">"
+          Case ">"
             .Columns[iCol].Alignment = Align.Right
-          CASE "+"
+          Case "+"
             .Columns.Sort = iCol
-            .Columns.Ascending = TRUE
-          CASE "-"
+            .Columns.Ascending = True
+          Case "-"
             .Columns.Sort = iCol
-            .Columns.Ascending = FALSE
-          CASE ELSE 
-            BREAK 
-        END SELECT 
-        INC iInd
-      LOOP
-      INC iCol
-    WEND
+            .Columns.Ascending = False
+          Case Else 
+            Break 
+        End Select 
+        Inc iInd
+      Loop
+      Inc iCol
+    Wend
     
     iCol = 0
-    WHILE iInd < aVal.Count AND iCol < .Columns.Count
-      .Columns[iCol].Text = UnQuote(aVal[iInd])
-      INC iCol
-      INC iInd      
-    WEND
+    While iInd < aVal.Count And iCol < .Columns.Count
+      .Columns[iCol].Text = Unquote(aVal[iInd])
+      Inc iCol
+      Inc iInd      
+    Wend
     
-    IF eSum > 0 THEN
-      FOR iCol = 0 TO .Columns.Count - 1
+    If eSum > 0 Then
+      For iCol = 0 To .Columns.Count - 1
         .Columns[iCol].Width = eWidth[iCol] * .ClientW / eSum
-      NEXT
+      Next
       ' ELSE
       '   FOR iCol = 0 TO .Columns.Count - 1
       '     .Columns[iCol].Width = eWidth[iCol]
       '     'DEBUG iCol;; ":";; .Columns[iCol].Width / Desktop.Scale
       '   NEXT
-    ENDIF
+    Endif
     
     'DEBUG sSettings;; "->";; hColumnView.Settings
   
-  END WITH
+  End With
   
-CATCH 
+Catch 
 
-  DEBUG Error.Where; ": "; Error.Text
+  Debug Error.Where; ": "; Error.Text
 
-END
+End
 
