@@ -3215,11 +3215,11 @@ End
 
 Public Sub panBorder_Draw()
 
-  If $bBorder Then
-    Draw.Style.Panel(0, -4, panBorder.W, panBorder.H + 4, Border.Raised)
-  Else
+  'If $bBorder Then
+  '  Draw.Style.Panel(0, -4, panBorder.W, panBorder.H + 4, Border.Raised)
+  'Else
     Draw.Style.Panel(0, 0, panBorder.W, panBorder.H, Border.Plain)
-  Endif
+  'Endif
 
 End
 

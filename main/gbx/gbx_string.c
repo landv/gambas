@@ -128,6 +128,8 @@ STRING_MAKE STRING_make_buffer;
 static STRING *_pool[POOL_SIZE] = { 0 };
 static int _pool_count[POOL_SIZE] = { 0 };
 
+#ifdef DEBUG_ME
+
 #define alloc_string(_len) \
 ({ \
 	STRING *str; \
@@ -141,7 +143,7 @@ static int _pool_count[POOL_SIZE] = { 0 };
 		str = _pool[pool]; \
 		_pool[pool] = *((STRING **)str); \
 		_pool_count[pool]--; \
-		/*fprintf(stderr, "alloc_string: (%p) %d bytes from pool %d\n", str, size, pool);*/ \
+		fprintf(stderr, "alloc_string: (%p) %d bytes from pool %d\n", str, size, pool); \
 	} \
 	else \
 	{ \
@@ -153,6 +155,35 @@ static int _pool_count[POOL_SIZE] = { 0 };
 	str->ref = 1; \
 	str; \
 })
+
+#else
+
+#define alloc_string(_len) \
+({ \
+	STRING *str; \
+	int size = REAL_SIZE((_len) + 1 + sizeof(STRING)); \
+	int pool = (size / SIZE_INC) - 1; \
+	\
+	MEMORY_count++; \
+	\
+	if (pool < POOL_SIZE && (_pool_count[pool])) \
+	{ \
+		str = _pool[pool]; \
+		_pool[pool] = *((STRING **)str); \
+		_pool_count[pool]--; \
+	} \
+	else \
+	{ \
+		str = _my_malloc(size); \
+		if (!str) \
+			THROW_MEMORY(); \
+	} \
+	str->len = (_len); \
+	str->ref = 1; \
+	str; \
+})
+
+#endif
 
 void STRING_free_real(char *ptr)
 {
@@ -168,9 +199,9 @@ void STRING_free_real(char *ptr)
 	{
 		if (_pool_count[pool] < POOL_MAX)		
 		{
-			//#ifdef DEBUG_ME
-			//fprintf(stderr, "STRING_free_real: (%p) %d bytes to pool %d\n", str, size, pool);
-			//#endif
+			#ifdef DEBUG_ME
+			fprintf(stderr, "STRING_free_real: (%p / %p) %d bytes to pool %d\n", str, ptr, size, pool);
+			#endif
 			*((STRING **)str) = _pool[pool];
 			_pool[pool] = str;
 			_pool_count[pool]++;
@@ -230,6 +261,9 @@ static void clear_pool(void)
 	
 	for (i = 0; i < POOL_SIZE; i++)
 	{
+		#ifdef DEBUG_ME
+		fprintf(stderr, "clear_pool: clear pool #%d\n", i);
+		#endif
 		str = _pool[i];
 		while (str)
 		{
@@ -318,10 +352,15 @@ void STRING_exit(void)
 {
 	int i;
 
+	#ifdef DEBUG_ME
+	fprintf(stderr, "STRING_exit\n");
+	#endif
 	for (i = 0; i < STRING_last_count; i++)
 	{
-		/*if (STRING_last[i])
-			printf("release temp %p '%s'\n", STRING_last[i], STRING_last[i]);*/
+		#ifdef DEBUG_ME
+		if (STRING_last[i])
+			fprintf(stderr, "release temp %p '%s'\n", STRING_last[i], STRING_last[i]);
+		#endif
 		STRING_unref(&STRING_last[i]);
 		STRING_last[i] = NULL;
 	}
@@ -337,9 +376,19 @@ void STRING_extend(char **ptr, int new_len)
 	STRING *str;
 
 	if (!*ptr)
+	{
 		str = alloc_string(new_len);
+		#ifdef DEBUG_ME
+			fprintf(stderr, "STRING_extend: NULL -> %p / %p\n", str, str->data);
+		#endif
+	}
 	else
+	{
 		str = realloc_string(STRING_from_ptr(*ptr), new_len);
+		#ifdef DEBUG_ME
+			fprintf(stderr, "STRING_extend: %p / %p -> %p / %p\n", STRING_from_ptr(*ptr), *ptr, str, str->data);
+		#endif
+	}
 
 	*ptr = str ? str->data : NULL;
 }
@@ -397,7 +446,7 @@ void STRING_free(char **ptr)
 
 	#ifdef DEBUG_ME
 	DEBUG_where();
-	fprintf(stderr, "STRING_free: %p %p\n", *ptr, ptr);
+	fprintf(stderr, "STRING_free: %p\n", *ptr);
 	fflush(stderr);
 	#endif
 
