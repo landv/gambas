@@ -71,6 +71,28 @@ static bool check_not_multi(CARRAY *_object)
 		return FALSE;
 }
 
+static bool check_start_length(int count, int *start, int *length)
+{
+	if (*start < 0)
+	{
+		GB_Error((char *)E_BOUND);
+		return TRUE;
+	}
+
+	if (*start >= count)
+		*length = 0;
+
+	if (*length == -1)
+		*length = count - *start;
+
+	if (*length < 0 || (*start + *length) > count)
+	{
+		GB_Error((char *)E_BOUND);
+		return TRUE;
+	}
+	
+	return FALSE;
+}
 
 static int get_dim(CARRAY *_object)
 {
@@ -547,23 +569,8 @@ static bool copy_remove(CARRAY *_object, int start, int length, bool copy, bool 
 	if (check_not_multi(THIS) && (start != 0 || length != -1))
 		return TRUE;
 
-	if (start < 0)
-	{
-		GB_Error((char *)E_BOUND);
+	if (check_start_length(count, &start, &length))
 		return TRUE;
-	}
-
-	if (start >= count)
-		length = 0;
-
-	if (length == -1)
-		length = count - start;
-
-	if (length < 0 || (start + length) > count)
-	{
-		GB_Error((char *)E_BOUND);
-		return TRUE;
-	}
 
 	if (copy)
 	{
@@ -762,9 +769,9 @@ BEGIN_METHOD(CARRAY_fill, GB_VALUE value; GB_INTEGER start; GB_INTEGER length)
 	int i;
 	void *data;
 	int size;
-
-	if ((start + length) > count)
-		length = count - start;
+	
+	if (check_start_length(count, &start, &length))
+		return;
 
 	VALUE_conv((VALUE *)ARG(value), THIS->type);
 
@@ -1084,8 +1091,8 @@ BEGIN_METHOD(CARRAY_read, GB_OBJECT file; GB_INTEGER start; GB_INTEGER length)
 	int start = VARGOPT(start, 0);
 	int length = VARGOPT(length, count);
 
-	if ((start + length) > count)
-		length = count - start;
+	if (check_start_length(count, &start, &length))
+		return;
 
 	STREAM_read(CSTREAM_stream(VARG(file)), get_data(THIS, start), length * THIS->size);
 
@@ -1098,8 +1105,8 @@ BEGIN_METHOD(CARRAY_write, GB_OBJECT file; GB_INTEGER start; GB_INTEGER length)
 	int start = VARGOPT(start, 0);
 	int length = VARGOPT(length, count);
 
-	if ((start + length) > count)
-		length = count - start;
+	if (check_start_length(count, &start, &length))
+		return;
 
 	STREAM_write(CSTREAM_stream(VARG(file)), get_data(THIS, start), length * THIS->size);
 
