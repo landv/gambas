@@ -47,6 +47,7 @@
 #include "gsplitter.h"
 #include "gdesktop.h"
 #include "gdrag.h"
+#include "gmouse.h"
 #include "gcontrol.h"
 
 static GList *controls=NULL;
@@ -265,9 +266,6 @@ gControl::~gControl()
 	if (win && win->focus == this)
 		win->focus = 0;
 	
-	if (pr)
-		pr->remove(this);
-	
 	if (gDrag::getSource() == this)
 		gDrag::cancel();
 	
@@ -290,9 +288,13 @@ void gControl::destroy()
 		return;
 		
 	hide();
+
 	//fprintf(stderr, "added to destroy list: %p\n", this);
-	controls_destroyed=g_list_prepend(controls_destroyed,(gpointer)this);
+	controls_destroyed = g_list_prepend(controls_destroyed,(gpointer)this);
 	_destroyed = true;
+
+	if (pr)
+		pr->remove(this);
 }
 
 
@@ -1716,4 +1718,14 @@ bool gControl::grab(bool showIt)
 	gdk_keyboard_ungrab(GDK_CURRENT_TIME);
 	_grab = false;
 	return false;
+}
+
+bool gControl::hovered()
+{
+	int x, y, xm, ym;
+	
+	getScreenPos(&x, &y);
+	gMouse::getScreenPos(&xm, &ym);
+	
+	return (xm >= x && ym >= y && xm < (x + width()) && ym < (y + height()));
 }

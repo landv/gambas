@@ -642,6 +642,16 @@ BEGIN_PROPERTY(Control_HasFocus)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Control_Hovered)
+
+	QPoint m = QCursor::pos();
+	int x = WIDGET->mapToGlobal(QPoint(0, 0)).x(); 
+	int y = WIDGET->mapToGlobal(QPoint(0, 0)).y(); 
+
+	GB.ReturnBoolean(m.x() >= x && m.y() >= y && m.x() < (x + WIDGET->width()) && m.y() < (y + WIDGET->height()));
+
+END_PROPERTY
+
 BEGIN_PROPERTY(Control_Expand)
 
 	if (READ_PROPERTY)
@@ -2514,6 +2524,7 @@ GB_DESC CControlDesc[] =
 	GB_PROPERTY("Visible", "b", Control_Visible),
 	GB_PROPERTY("Enabled", "b", Control_Enabled),
 	GB_PROPERTY_READ("HasFocus", "b", Control_HasFocus),
+	GB_PROPERTY_READ("Hovered", "b", Control_Hovered),
 	
 	GB_PROPERTY("Expand", "b", Control_Expand),
 	GB_PROPERTY("Ignore", "b", Control_Ignore),

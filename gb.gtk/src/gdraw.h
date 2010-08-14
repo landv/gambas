@@ -52,15 +52,16 @@ public:
 	int          textWidth(char *txt, int len = -1);
 	int          textHeight(char *txt, int len = -1);
 	void         richTextSize(char *txt, int len, int sw, int *w, int *h);
-	int          width() { return _width; }
-	int          height() { return _height; }
+	int          width() const { return _width; }
+	int          height() const { return _height; }
 	int          resolution();
 	bool         isTransparent();
-	GdkDrawable* drawable() { return dr; }
-	GdkDrawable* mask() { return drm; }
-	GtkStyle*    style();
-	int          state() { return (int)_state; };
-	int          shadow() { return (int)_shadow; };
+	GdkDrawable* drawable() const { return dr; }
+	GdkDrawable* mask() const { return drm; }
+	GtkStyle*    style(const char *name = NULL, GType type = G_TYPE_NONE);
+	GtkWidget *widget() const { return _widget; }
+	int          state() const { return (int)_state; };
+	int          shadow() const { return (int)_shadow; };
 
 	void setForeground(gColor vl);
 	void setFont(gFont *f);
@@ -110,6 +111,7 @@ private:
 	bool clip_enabled;
 	bool _transparent;
 	GtkStyle *stl;
+	const char *stl_name;
 	GtkWidget *_widget;
 	GdkDrawable *dr;
 	GdkDrawable *drm;

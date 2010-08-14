@@ -513,6 +513,12 @@ BEGIN_PROPERTY(CWIDGET_has_focus)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Control_Hovered)
+
+	GB.ReturnBoolean(CONTROL->hovered());
+
+END_PROPERTY
+
 BEGIN_PROPERTY(CWIDGET_expand)
 
 	if (READ_PROPERTY) { GB.ReturnBoolean(CONTROL->expand()); return; }
@@ -896,6 +902,7 @@ GB_DESC CWidgetDesc[] =
 	GB_PROPERTY("Visible", "b", CWIDGET_visible),
 	GB_PROPERTY("Enabled", "b", CWIDGET_enabled),
 	GB_PROPERTY_READ("HasFocus", "b", CWIDGET_has_focus),
+	GB_PROPERTY_READ("Hovered", "b", Control_Hovered),
 
 	GB_PROPERTY("Expand", "b", CWIDGET_expand),
 	GB_PROPERTY("Ignore", "b", CWIDGET_ignore),

@@ -1056,17 +1056,10 @@ BEGIN_METHOD(CDRAW_style_separator, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB
 
 END_METHOD
 
-BEGIN_METHOD(CDRAW_style_focus, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
+BEGIN_METHOD(CDRAW_style_button, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_BOOLEAN value; GB_INTEGER state; GB_BOOLEAN flat)
 
 	GET_COORD();
-	DRAW->Style.Focus(THIS, x, y, w, h);
-
-END_METHOD
-
-BEGIN_METHOD(CDRAW_style_button, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_BOOLEAN value; GB_INTEGER state)
-
-	GET_COORD();
-	DRAW->Style.Button(THIS, x, y, w, h, VARG(value), VARGOPT(state, GB_DRAW_STATE_NORMAL));
+	DRAW->Style.Button(THIS, x, y, w, h, VARG(value), VARGOPT(state, GB_DRAW_STATE_NORMAL), VARGOPT(flat, FALSE));
 
 END_METHOD
 
@@ -1117,8 +1110,7 @@ GB_DESC CDrawStyleDesc[] =
 	GB_STATIC_METHOD("Check", NULL, CDRAW_style_check, "(X)i(Y)i(Width)i(Height)i(Value)i[(Flag)i]"),
 	GB_STATIC_METHOD("Option", NULL, CDRAW_style_option, "(X)i(Y)i(Width)i(Height)i(Value)b[(Flag)i]"),
 	GB_STATIC_METHOD("Separator", NULL, CDRAW_style_separator, "(X)i(Y)i(Width)i(Height)i[(Vertical)b(Flag)i]"),
-	GB_STATIC_METHOD("Focus", NULL, CDRAW_style_focus, "(X)i(Y)i(Width)i(Height)i"),
-	GB_STATIC_METHOD("Button", NULL, CDRAW_style_button, "(X)i(Y)i(Width)i(Height)i(Value)b[(Flag)i]"),
+	GB_STATIC_METHOD("Button", NULL, CDRAW_style_button, "(X)i(Y)i(Width)i(Height)i(Value)b[(Flag)i(Flat)b]"),
 	GB_STATIC_METHOD("Panel", NULL, CDRAW_style_panel, "(X)i(Y)i(Width)i(Height)i(Border)i[(Flag)i]"),
 	GB_STATIC_METHOD("Handle", NULL, CDRAW_style_handle, "(X)i(Y)i(Width)i(Height)i[(Vertical)b(Flag)i]"),
 	GB_STATIC_METHOD("Box", NULL, DrawStyle_Box, "(X)i(Y)i(Width)i(Height)i[(Flag)i]"),

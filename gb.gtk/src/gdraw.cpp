@@ -60,6 +60,7 @@ void gDraw::init()
 	_shadow = GTK_SHADOW_NONE;
 	_state = GTK_STATE_NORMAL;
 	stl = NULL;
+	stl_name = NULL;
 	dr = drm = NULL;
 	gc = gcm = NULL;
 	ft = NULL;
@@ -316,21 +317,29 @@ Information
 
 ***************************************************************************/
 
-GtkStyle *gDraw::style()
+GtkStyle *gDraw::style(const char *name, GType type)
 {
-	if (!stl)
+	if (stl && (!name || (stl_name && !strcmp(name, stl_name))))
+		return stl;
+	
+	if (stl)
 	{
-		if (_widget)
-		{
-			stl = gtk_style_copy(_widget->style);
-			stl = gtk_style_attach(stl, _widget->window);
-		}
-		else
-		{
-			stl = gtk_style_copy(gt_get_style("GtkButton", GTK_TYPE_BUTTON));
-			stl = gtk_style_attach(stl, (GdkWindow*)dr);
-		}
+		g_object_unref(stl);
+		stl = NULL;
 	}
+	
+	if (!name)
+	{
+		stl = gtk_style_copy(_widget->style);
+		stl = gtk_style_attach(stl, _widget->window);
+	}
+	else
+	{
+		stl = gtk_style_copy(gt_get_style(name, type));
+		stl = gtk_style_attach(stl, (GdkWindow*)dr);
+	}
+	
+	stl_name = name;
 	
 	return stl;
 }

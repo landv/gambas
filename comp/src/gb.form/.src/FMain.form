@@ -2,7 +2,50 @@
 
 { Form Form
   MoveScaled(0,0,74,57)
-  Arrangement = Arrange.Fill
   Spacing = True
   Margin = True
+  { Menu1 Menu
+    { Menu2 Menu
+      Text = ("Menu2")
+    }
+    { Menu3 Menu
+      Text = ("Menu3")
+    }
+    { Menu4 Menu
+      Text = ("Menu4")
+    }
+    { Menu5 Menu
+      Text = ("Menu5")
+    }
+  }
+  { Button4 Button
+    MoveScaled(19,1,16,4)
+    Text = ("MenuButton1")
+  }
+  { Button5 Button
+    MoveScaled(19,5,16,4)
+    Text = ("Button1")
+  }
+  { Button1 Button
+    MoveScaled(19,9,16,4)
+    Text = ("&Button1")
+  }
+  { Button2 Button
+    MoveScaled(19,13,16,4)
+    Text = ("Button1")
+    Border = False
+  }
+  { MenuButton1 MenuButton
+    MoveScaled(19,21,16,4)
+    Text = ("M&enuButton1")
+    Menu = "Menu1"
+  }
+  { Label1 Label
+    MoveScaled(19,25,24,4)
+    Text = ("Label1")
+  }
+  { Button3 Button
+    MoveScaled(19,29,16,4)
+    Text = ("Button1")
+  }
 }

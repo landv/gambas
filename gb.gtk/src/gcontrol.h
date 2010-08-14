@@ -38,12 +38,12 @@ public:
 	void *hFree;
 
 // "Properties"
-	int getClass() { return g_typ; }
+	int getClass() const { return g_typ; }
 	
-	bool isContainer() { return (g_typ & 0x100) != 0; }
+	bool isContainer() const { return (g_typ & 0x100) != 0; }
 	bool isWindow();
-	bool isTopLevel() { return pr == NULL; }
-	bool isDestroyed() { return _destroyed; }
+	bool isTopLevel() const { return pr == NULL; }
+	bool isDestroyed() const { return _destroyed; }
 	
 	gMainWindow *window();
 	gMainWindow *topLevel();
@@ -54,6 +54,7 @@ public:
 	virtual bool enabled();
 	bool expand();
 	bool ignore();
+	bool hovered();
 	virtual int handle();
 	virtual int height();
 	virtual int left();

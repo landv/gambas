@@ -1071,28 +1071,24 @@ static void style_focus(GB_DRAW *d, int x, int y, int w, int h)
 	}	
 }
 			
-static void style_button(GB_DRAW *d, int x, int y, int w, int h, int value, int state)
+static void style_button(GB_DRAW *d, int x, int y, int w, int h, int value, int state, int flat)
 {
-	QStyleOption opt;
+	QStyleOptionButton opt;
 	init_option(opt, x, y, w, h, state);
 	
 	if (value)
 		opt.state |= QStyle::State_On;
 	
-	/*if (state & GB_DRAW_STATE_TOOL_BUTTON)
+  opt.features = QStyleOptionButton::None;
+	if (flat)
+		opt.features |= QStyleOptionButton::Flat;
+	
+	QApplication::style()->drawPrimitive(QStyle::PE_PanelButtonCommand, &opt, DP(d));
+	if (DPM(d)) 
 	{
-		static QToolButton tb;
-		QApplication::style()->drawComplexControl(QStyle::CC_ToolButton, DP(d), &tb, QRect(x, y, w, h), 
-	}
-	else*/
-	{
-		QApplication::style()->drawPrimitive(QStyle::PE_PanelButtonCommand, &opt, DP(d));
-		if (DPM(d)) 
-		{
-			//DPM(d)->setRasterOp(Qt::OrROP);
-			QApplication::style()->drawPrimitive(QStyle::PE_PanelButtonCommand, &opt, DPM(d));
-			//DPM(d)->setRasterOp(Qt::CopyROP);
-		}
+		//DPM(d)->setRasterOp(Qt::OrROP);
+		QApplication::style()->drawPrimitive(QStyle::PE_PanelButtonCommand, &opt, DPM(d));
+		//DPM(d)->setRasterOp(Qt::CopyROP);
 	}
 }
 			
@@ -1245,7 +1241,6 @@ GB_DRAW_DESC DRAW_Interface = {
 		style_check,
 		style_option,
 		style_separator,
-		style_focus,
 		style_button,
 		style_panel,
 		style_handle,

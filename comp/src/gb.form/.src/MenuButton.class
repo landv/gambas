@@ -24,13 +24,16 @@ Property Arrow As Boolean
 Property AutoResize As Boolean
 Property Border As Boolean
 
-Private $hPanel As HBox
-Private $hButton As Button
-Private $hArrow As ToolButton
-Private $hWatcher As Watcher
+Private $hDrawingArea As DrawingArea
+Private $hPicture As Picture
+Private $sText As String
+Private $bBorder As Boolean
 Private $sMenu As String
+Private $hButton As Button
+Private $iShortcutPos As Integer
 
 Private $bInside As Boolean
+Private $bInsideArrow As Boolean
 Private $bPressed As Boolean
 Private $bArrow As Boolean
 Private $bAutoResize As Boolean
@@ -41,21 +44,13 @@ Public Sub _new()
   
   Dim sEventName As String = Object.LastEventName
   
-  $hPanel = New HBox(Me) As "Panel"
-  'Me._Arrangement = Arrange.Horizontal
-  $hButton = New Button($hPanel) As "Button"
-  $hButton.Expand = True
-  $hButton.Border = True
-  $hArrow = New ToolButton($hPanel) As "Arrow"
-  $hArrow.W = Desktop.Scale * 2
-  '$hArrow.Ignore = True
-  $hArrow.Picture = Main.GetArrow(Align.Bottom, 8).Picture
-  $hArrow.Border = True
-  $bArrow = True
-  '$hArrow.Raise
-  '$hWatcher = New Watcher(Me) As "Watcher"
+  $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
+  $hDrawingArea.Focus = True
   
-  $hObserver = New Observer($hButton)
+  $bBorder = True
+  $bArrow = True
+  
+  $hObserver = New Observer($hDrawingArea)
   Object.Attach($hObserver, Me.Parent, sEventName)
   
 End
@@ -69,26 +64,47 @@ End
 
 Private Function Picture_Read() As Picture
 
-  Return $hButton.Picture
+  Return $hPicture
 
 End
 
 Private Sub Picture_Write(Value As Picture)
 
-  $hButton.Picture = Value
+  $hPicture = Value
   UpdateSize
 
 End
 
 Private Function Text_Read() As String
 
-  Return $hButton.Text
+  Return $sText
 
 End
 
 Private Sub Text_Write(Value As String)
 
-  $hButton.Text = Value
+  Dim iPos As Integer
+
+  $sText = Value
+  $iShortcutPos = 0
+  
+  Do
+    iPos = String.InStr($sText, "&", iPos + 1)
+    If iPos = 0 Then Break
+    If String.Mid$($sText, iPos + 1, 1) = "&" Then
+      Inc iPos
+      Continue
+    Endif
+    If Not $hButton Then
+      $hButton = New Button(Me) As "Button"
+      $hButton.Ignore = True
+      $hButton.Move(-16, -16, 8, 8)
+    Endif
+    $hButton.Text = String.Mid$($sText, iPos, 2)
+    $iShortcutPos = iPos
+    Break
+  Loop
+  
   UpdateSize
 
 End
@@ -105,6 +121,13 @@ Private Sub Menu_Write(Value As String)
 
 End
 
+Public Sub Button_GotFocus()
+  
+  $hDrawingArea.SetFocus
+  
+End
+
+
 Public Sub Button_Click()
   
   If $bArrow Then
@@ -116,31 +139,6 @@ Public Sub Button_Click()
   
 End
 
-' Public Sub Button_MouseDown()
-'   
-'   Raise MouseDown
-'   
-' End
-' 
-' Public Sub Button_MouseUp()
-'   
-'   Raise MouseUp
-'   
-' End
-' 
-' Public Sub Button_MouseWheel()
-'   
-'   Raise MouseWheel
-'   
-' End
-' 
-' Public Sub Button_MouseDrag()
-'   
-'   Raise MouseDrag
-'   
-' End
-
-
 Private Sub FindMenu(hWindow As Window) As Menu
   
   Dim hMenu As Menu
@@ -150,7 +148,6 @@ Private Sub FindMenu(hWindow As Window) As Menu
   Next
   
 End
-
 
 Public Sub Arrow_Click()
   
@@ -168,13 +165,7 @@ Public Sub Arrow_Click()
     Endif
   Loop
   
-  Object.Lock($hButton)
-  '$hButton.Toggle = True
-  '$hButton.Value = True
-  hMenu.Popup($hButton.ScreenX, $hButton.ScreenY + $hButton.H)
-  '$hButton.Value = False
-  '$hButton.Toggle = False
-  Object.Unlock($hButton)
+  hMenu.Popup(Me.ScreenX, Me.ScreenY + Me.H)
   
 End
 
@@ -193,13 +184,13 @@ End
 
 Private Function Value_Read() As Boolean
 
-  Return $hButton.Value
+  Return False
 
 End
 
 Private Sub Value_Write(Value As Boolean)
 
-  $hButton.Value = Value
+  If Value Then Print "Click"
 
 End
 
@@ -213,7 +204,6 @@ End
 Private Sub Arrow_Write(Value As Boolean)
 
   $bArrow = Value
-  $hArrow.Visible = Value
   UpdateSize
 
 End
@@ -222,12 +212,15 @@ Private Sub UpdateSize()
   
   Dim W As Integer
   
-  If Not $bAutoResize Then Return
+  If $bAutoResize Then 
+    W = Me.Font.TextWidth($sText)
+    If $hPicture Then W += $hPicture.W + Desktop.Scale
+    If $bArrow Then W += Desktop.Scale * 3
+    W += Desktop.Scale * 2
+    Me.W = W
+  Endif
   
-  W = $hButton.Font.TextWidth($hButton.Text) + Desktop.Scale * 3
-  If $hButton.Picture Then W += $hButton.Picture.W + Desktop.Scale
-  If $bArrow Then W += $hArrow.W
-  Me.W = W
+  $hDrawingArea.Refresh
   
 End
 
@@ -247,19 +240,121 @@ End
 
 Private Function Border_Read() As Boolean
 
-  Return $hButton.Border
+  Return $bBorder
 
 End
 
 Private Sub Border_Write(Value As Boolean)
 
-  $hButton.Border = Value
-  $hArrow.Border = Value
+  $bBorder = Value
+  UpdateSize
 
 End
 
-Public Sub Panel_Arrange()
+Public Sub DrawingArea_Enter()
   
-  $hArrow.Move($hPanel.W - $hArrow.W, 0, $hArrow.W, $hPanel.H)
+  $bInside = True
+  $hDrawingArea.Refresh
+  
+End
+
+Public Sub DrawingArea_Leave()
+  
+  $bInside = False
+  $hDrawingArea.Refresh
+  
+End
+
+Public Sub DrawingArea_MouseDown()
+  
+  $bPressed = True
+  $bInsideArrow = Mouse.X > (Me.W - Desktop.Scale * 3 + 3)
+  $hDrawingArea.Refresh
+  
+  If $bInsideArrow Then
+    Arrow_Click
+    DrawingArea_MouseUp
+    If Not $hDrawingArea.Hovered Then DrawingArea_Leave
+  Endif
+  
+End
+
+Public Sub DrawingArea_MouseUp()
+  
+  $bPressed = False
+  $hDrawingArea.Refresh
+  
+  If Not $bInsideArrow Then Button_Click
+
+End
+
+Public Sub DrawingArea_Draw()
+  
+  Dim X, X2, Y As Integer
+  Dim iFlag As Integer
+  Dim sText As String
+  
+  If $bInside Then iFlag += Draw.Hover
+  If Not Me.Enabled Then iFlag += Draw.Disabled
+  If $hDrawingArea.HasFocus Then iFlag += Draw.Focus
+  
+  '' TODO: System.RightToLeft
+
+  If $bInsideArrow Then
+    Draw.Style.Button(0, 0, Me.W, Me.H, False, iFlag, Not $bBorder)
+    'Draw.Clip(Me.W - Desktop.Scale * 3 + 3, 0, Desktop.Scale * 3 - 3, Me.H)
+    'Draw.Style.Button(0, 0, Me.W, Me.H, $bPressed, iFlag)
+    'Draw.Clip.Enabled = False
+  Else
+    Draw.Style.Button(0, 0, Me.W, Me.H, $bPressed, iFlag, Not $bBorder)
+  Endif
+    
+  X = Desktop.Scale
+  
+  If $hPicture Then
+    Draw.Picture($hPicture, X, (Me.H - $hPicture.H) / 2)
+    X += $hPicture.H + Desktop.Scale
+  Endif
+  
+  If $sText Then 
+    sText = $sText
+    If $iShortcutPos Then sText = String.Left($sText, $iShortcutPos - 1) & String.Mid$($sText, $iShortcutPos + 1)
+    Draw.Text(sText, X, 0, Me.W - X, Me.H, Align.Left)
+    If $iShortcutPos Then
+      X2 = X + Draw.Font.TextWidth(String.Left(sText, $iShortcutPos))
+      X += Draw.Font.TextWidth(String.Left(sText, $iShortcutPos - 1))
+      Y = (Me.H - Draw.Font.Height) / 2 + Draw.Font.Ascent + 1
+      Draw.Line(X, Y, X2, Y)
+    Endif
+  Endif
+  
+  If $bArrow Then
+    'If $bBorder Or If $bInside Then Draw.Style.Separator(Me.W - Desktop.Scale * 3, 3, 3, Me.H - 6, True)
+    Draw.Style.Arrow(Me.W - Desktop.Scale * 2, 0, Desktop.Scale, Me.H, Align.Bottom, iFlag)
+  Endif
+  
+End
+
+Public Sub DrawingArea_KeyPress()
+  
+  If Key.Code = Key.Space Then 
+    $bPressed = True
+    $hDrawingArea.Refresh
+  Else If Key.Code = Key.Tab Then
+    If $hButton Then
+      Try Me.Next.SetFocus
+      Stop Event
+    Endif
+  Endif
+  
+End
+
+Public Sub DrawingArea_KeyRelease()
+  
+  If Key.Code = Key.Space Then 
+    $bPressed = False
+    $hDrawingArea.Refresh
+    Button_Click
+  Endif
   
 End
