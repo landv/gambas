@@ -313,11 +313,6 @@ static void resize_container(void *_object, QWidget *cont, int w, int h)
 
 void CCONTAINER_arrange(void *_object)
 {
-	if (GB.Is(THIS, CLASS_ScrollView))
-		CSCROLLVIEW_arrange(THIS);
-	else if (GB.Is(THIS, CLASS_TabStrip))
-		CTABSTRIP_arrange(THIS);
-
 	#if DEBUG_CONTAINER
 	static int level = 0;
 	
@@ -330,6 +325,11 @@ void CCONTAINER_arrange(void *_object)
 	qDebug("CCONTAINER_arrange: %s %p", GB.GetClassName(THIS), THIS->widget.widget);
 	_cache_level++;
 	#endif
+
+	if (GB.Is(THIS, CLASS_TabStrip))
+		CTABSTRIP_arrange(THIS);
+	else if (GB.Is(THIS, CLASS_ScrollView))
+		CSCROLLVIEW_arrange(THIS);
 
 	CCONTAINER_arrange_real(_object);
 	
