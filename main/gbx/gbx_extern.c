@@ -94,6 +94,8 @@ static void prepare_cif(EXTERN_CIF *info, int nparam, TYPE *sign, TYPE ret)
 	int i;
 	TYPE t;
 
+	info->types = NULL;
+	
 	if (nparam > 0)
 	{
 		ALLOC(&info->types, sizeof(ffi_type *) * nparam, "prepare_cif");
