@@ -37,6 +37,12 @@ DECLARE_EVENT(EVENT_Expand);
 DECLARE_EVENT(EVENT_Collapse);
 //DECLARE_EVENT(EVENT_ColumnClick);
 
+static int check_valid_item(void *_object)
+{
+	return THIS->item == 0 || CWIDGET_check(_object);
+}
+
+
 static void set_item(CTREEVIEW *_object, char *key)
 {
 	//if (THIS->item != key)
@@ -47,7 +53,7 @@ static void set_item(CTREEVIEW *_object, char *key)
   
   THIS->item = key;
 }
- 
+
 static void set_save_item(CTREEVIEW *_object, char *key)
 {
 	//if (THIS->save != key)
@@ -923,7 +929,8 @@ END_PROPERTY
 
 GB_DESC CListViewItemDesc[] =
 {
-  GB_DECLARE(".ListViewItem", 0), GB_VIRTUAL_CLASS(),
+  GB_DECLARE(".ListViewItem", 0), GB_VIRTUAL_CLASS(), 
+  GB_HOOK_CHECK(check_valid_item),
 
   GB_PROPERTY_READ("Key", "s", CTREEVIEWITEM_key),
   GB_PROPERTY("Picture", "Picture", CTREEVIEWITEM_picture),
@@ -959,7 +966,7 @@ GB_DESC CListViewItemDesc[] =
 
 GB_DESC CTreeViewItemDesc[] =
 {
-  GB_DECLARE(".TreeViewItem", 0), GB_VIRTUAL_CLASS(),
+  GB_DECLARE(".TreeViewItem", 0), GB_VIRTUAL_CLASS(), GB_HOOK_CHECK(check_valid_item),
 
   GB_PROPERTY_READ("Key", "s", CTREEVIEWITEM_key),
   GB_PROPERTY_READ("ParentKey", "s", CTREEVIEWITEM_parent_key),
@@ -1008,7 +1015,7 @@ GB_DESC CTreeViewItemDesc[] =
 
 GB_DESC CColumnViewItemDesc[] =
 {
-  GB_DECLARE(".ColumnViewItem", 0), GB_VIRTUAL_CLASS(),
+  GB_DECLARE(".ColumnViewItem", 0), GB_VIRTUAL_CLASS(), GB_HOOK_CHECK(check_valid_item),
 
   GB_PROPERTY_READ("Key", "s", CTREEVIEWITEM_key),
   GB_PROPERTY_READ("ParentKey", "s", CTREEVIEWITEM_parent_key),

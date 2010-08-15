@@ -332,6 +332,11 @@ void MyListView::clear()
 
 ***************************************************************************/
 
+static int check_item(void *_object)
+{
+	return THIS->item == 0 || CWIDGET_check(_object);
+}
+
 static void return_item(void *_object, MyListViewItem *item)
 {
   if (!item)
@@ -904,7 +909,10 @@ END_METHOD
 
 BEGIN_PROPERTY(CTREEVIEWITEM_key)
 
-  GB.ReturnString(THIS->item->key);
+	if (!THIS->item)
+		GB.ReturnNull();
+	else
+		GB.ReturnString(THIS->item->key);
 
 END_PROPERTY
 
@@ -943,7 +951,7 @@ BEGIN_PROPERTY(CTREEVIEWITEM_expanded)
 
   MyListViewItem *it = THIS->item;
 
-  if (THIS->item->childCount() == 0)
+  if (it->childCount() == 0)
   {
     if (READ_PROPERTY)
       GB.ReturnBoolean(false);
@@ -1543,7 +1551,7 @@ END_PROPERTY
 
 GB_DESC CListViewItemDesc[] =
 {
-  GB_DECLARE(".ListViewItem", 0), GB_VIRTUAL_CLASS(),
+  GB_DECLARE(".ListViewItem", 0), GB_VIRTUAL_CLASS(), GB_HOOK_CHECK(check_item),
 
   GB_PROPERTY_READ("Key", "s", CTREEVIEWITEM_key),
   GB_PROPERTY("Picture", "Picture", CTREEVIEWITEM_picture),
@@ -1579,7 +1587,7 @@ GB_DESC CListViewItemDesc[] =
 
 GB_DESC CTreeViewItemDesc[] =
 {
-  GB_DECLARE(".TreeViewItem", 0), GB_VIRTUAL_CLASS(),
+  GB_DECLARE(".TreeViewItem", 0), GB_VIRTUAL_CLASS(), GB_HOOK_CHECK(check_item),
 
   GB_PROPERTY_READ("Key", "s", CTREEVIEWITEM_key),
   GB_PROPERTY_READ("ParentKey", "s", CTREEVIEWITEM_parent_key),
@@ -1628,7 +1636,7 @@ GB_DESC CTreeViewItemDesc[] =
 
 GB_DESC CColumnViewItemDesc[] =
 {
-  GB_DECLARE(".ColumnViewItem", 0), GB_VIRTUAL_CLASS(),
+  GB_DECLARE(".ColumnViewItem", 0), GB_VIRTUAL_CLASS(), GB_HOOK_CHECK(check_item),
 
   GB_PROPERTY_READ("Key", "s", CTREEVIEWITEM_key),
   GB_PROPERTY_READ("ParentKey", "s", CTREEVIEWITEM_parent_key),

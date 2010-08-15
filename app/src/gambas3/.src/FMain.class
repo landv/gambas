@@ -1758,3 +1758,68 @@ Public Sub mnuReplace_Click()
   FSearch.WakeUp(True)
 
 End
+
+Public Sub panSearchProject_Arrange()
+
+  dwgSearchProject.Move(0, 0, panSearchProject.W, panSearchProject.H)
+  dwgSearchProject.Lower
+
+End
+
+Public Sub panSearchProject_Enter()
+  
+  dwgSearchProject.Refresh
+  
+End
+
+Public Sub panSearchProject_Leave()
+  
+  dwgSearchProject.Refresh
+  
+End
+
+Public Sub dwgSearchProject_Draw()
+
+  Dim iFlag As Integer
+  
+  If txtSearchProject.HasFocus Then iFlag += Draw.Focus
+  If dwgSearchProject.Hovered Then iFlag += Draw.Hover
+  If Not panSearchProject.Enabled Then iFlag += Draw.Disabled
+
+  Draw.Style.Box(0, 0, dwgSearchProject.W, dwgSearchProject.H, iFlag)
+
+End
+
+Public Sub txtSearchProject_GotFocus()
+
+  dwgSearchProject.Refresh
+
+End
+
+Public Sub txtSearchProject_LostFocus()
+
+  dwgSearchProject.Refresh
+
+End
+
+Public Sub btnClearSearchProject_Click()
+
+  txtSearchProject.Clear
+  timSearchProject_Timer
+  
+End
+
+Public Sub txtSearchProject_Change()
+
+  Project.ProjectFilter = Trim(txtSearchProject.Text)
+  timSearchProject.Start
+
+End
+
+Public Sub timSearchProject_Timer()
+  
+  Project.Refresh
+  timSearchProject.Stop
+  
+End
+

@@ -161,13 +161,13 @@ BEGIN_PROPERTY(CKEY_state)
 
 END_PROPERTY
 
-static bool get_state(int button, int key)
+/*static bool get_state(int button, int key)
 {
 	if (CKEY_info.release)
 		return ((CKEY_info.state & button) && CKEY_info.code != key);
 	else
 		return ((CKEY_info.state & button) || CKEY_info.code == key);
-}
+}*/
 
 BEGIN_PROPERTY(CKEY_shift)
 

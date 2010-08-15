@@ -210,7 +210,7 @@ static bool is_visible(void *_object)
 	return THIS->flag.visible; // || !QWIDGET(_object)->isHidden();
 }
 
-int Control_check(void *_object)
+int CWIDGET_check(void *_object)
 {
 	return WIDGET == NULL || CWIDGET_test_flag(THIS, WF_DELETED);
 }
@@ -363,7 +363,7 @@ static void arrange_parent(CWIDGET *_object)
 	void *parent = CWIDGET_get_parent(THIS);
 	if (!parent)
 		return;
-	if (Control_check(parent))
+	if (CWIDGET_check(parent))
 		return;
 	CCONTAINER_arrange(parent);
 }
@@ -2390,7 +2390,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		return (type != QEvent::DeferredDelete);
 	}
 	
-	/*if (Control_check(control))
+	/*if (CWIDGET_check(control))
 	{
 		qDebug("CWidget::eventFilter: %p was destroyed", control);
 		return true;
@@ -2487,7 +2487,7 @@ GB_DESC CControlDesc[] =
 {
 	GB_DECLARE("Control", sizeof(CCONTROL)), GB_NOT_CREATABLE(),
 
-	GB_HOOK_CHECK(Control_check),
+	GB_HOOK_CHECK(CWIDGET_check),
 
 	GB_METHOD("_free", NULL, Control_Delete, NULL),
 

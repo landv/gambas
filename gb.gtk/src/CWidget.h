@@ -76,6 +76,8 @@ CWIDGET *GetContainer(CWIDGET *control);
 
 DECLARE_PROPERTY(CCONTROL_action);
 
+int CWIDGET_check(void *_object);
+
 void CACTION_register(void *control, const char *key);
 void CACTION_raise(void *control);
 void CACTION_get(void *control);

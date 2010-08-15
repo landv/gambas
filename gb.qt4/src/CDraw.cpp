@@ -1201,18 +1201,20 @@ static void style_handle(GB_DRAW *d, int x, int y, int w, int h, int vertical, i
 
 static void style_box(GB_DRAW *d, int x, int y, int w, int h, int state)
 {
-	QStyleOptionFrameV2 opt;
+	QStyleOptionFrame opt;
+	
 	init_option(opt, x, y, w, h, state);
 
 	opt.lineWidth = QApplication::style()->pixelMetric(QStyle::PM_DefaultFrameWidth, &opt);
 	opt.midLineWidth = 0;
 	opt.state |= QStyle::State_Sunken;
+	//opt.features = QStyleOptionFrameV2::None;
 	
   QApplication::style()->drawPrimitive(QStyle::PE_PanelLineEdit, &opt, DP(d));
 	if (DPM(d)) 
 		QApplication::style()->drawPrimitive(QStyle::PE_PanelLineEdit, &opt, DPM(d));
 	
-	paint_focus(d, x, y, w, h, state);
+	//paint_focus(d, x, y, w, h, state);
 }
 
 
