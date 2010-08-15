@@ -1057,20 +1057,7 @@ static void style_separator(GB_DRAW *d, int x, int y, int w, int h, int vertical
 	}
 }
 
-static void style_focus(GB_DRAW *d, int x, int y, int w, int h)
-{
-	QStyleOption opt;
-	init_option(opt, x, y, w, h, FALSE);
-	
-	QApplication::style()->drawPrimitive(QStyle::PE_FrameFocusRect, &opt, DP(d));
-	if (DPM(d)) 
-	{
-		//DPM(d)->setRasterOp(Qt::OrROP);
-		QApplication::style()->drawPrimitive(QStyle::PE_FrameFocusRect, &opt, DPM(d));
-		//DPM(d)->setRasterOp(Qt::CopyROP);
-	}	
-}
-			
+
 static void style_button(GB_DRAW *d, int x, int y, int w, int h, int value, int state, int flat)
 {
 	QStyleOptionButton opt;

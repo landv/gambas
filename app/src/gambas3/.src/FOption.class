@@ -626,11 +626,11 @@ Public Sub txtConsoleFont_Click()
 
 End
 
-Public Sub svwOption_Arrange()
-
-  panOption.Width = svwOption.ClientWidth - Desktop.Scale
-
-End
+' Public Sub svwOption_Arrange()
+' 
+'   panOption.Width = svwOption.ClientWidth - Desktop.Scale
+' 
+' End
 
 Private Sub RefreshSnippet()
   
@@ -760,3 +760,14 @@ End
 '   RefreshSnippet
 ' 
 ' End
+
+Public Sub expOption_Show()
+
+  Dim hLast As Expander = Last
+  Dim hOther As Expander
+  
+  For Each hOther In svwOption.Children
+    If hOther <> hLast Then hOther.Hidden = True
+  Next
+
+End

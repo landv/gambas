@@ -2,31 +2,28 @@
 
 { Form Form
   MoveScaled(0,0,65,59)
-  Text = ("")
   Resizable = False
   Arrangement = Arrange.Vertical
   { panTitle Panel
-    MoveScaled(1,2,46,4)
+    MoveScaled(1,2,46,3)
     Arrangement = Arrange.Horizontal
-    AutoResize = True
-    { btnExpand PictureBox
-      MoveScaled(1,0,2,4)
-      Picture = Picture["img/8/side-bottom-void.png"]
-      Alignment = Align.Left
+    { btnExpand DrawingArea
+      MoveScaled(0,0,3,3)
     }
     { lblTitle Label btnExpand
       Name = "lblTitle"
-      MoveScaled(4,0,33,4)
-      Expand = True
+      MoveScaled(4,0,33,3)
       AutoResize = True
-      Text = ("")
     }
   }
   { HBox1 HBox
-    MoveScaled(4,10,49,40)
+    MoveScaled(2,7,49,41)
     Expand = True
+    { Panel1 Panel
+      MoveScaled(2,8,2,3)
+    }
     { panContainer Panel
-      MoveScaled(10,9,34,26)
+      MoveScaled(9,5,34,26)
       Expand = True
     }
   }

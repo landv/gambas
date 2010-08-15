@@ -35,7 +35,7 @@ Private $aHidden As Control[]
 
 Public Sub _new()
   
-  $iHandleSize = Max(4, Desktop.Scale / 2)
+  $iHandleSize = Max(4, Desktop.Scale)
   $iButtonWidth = Desktop.Scale * 4
   dwgHandle.Width = $iHandleSize
   $hWatcherParent = New Watcher(Me.Parent.Parent) As "Container"
@@ -348,9 +348,13 @@ Public Sub dwgHandle_Draw()
   If Not Me.Enabled Then iFlag += Draw.Disabled
 
   'Draw.Style.Button(1, 1, dwgHandle.W - 2, dwgHandle.H - 2, $bPressed And $bInside, Not Me.Enabled)
-  Draw.Style.Handle(0, 0, dwgHandle.W, dwgHandle.H, Not $bVertical, iFlag)
-  'If $bInside Then  
-  '  Draw.FillRect(1, 1, dwgHandle.W - 2, dwgHandle.H - 2, Color.Background)
+  'Draw.Style.Handle(1, 1, dwgHandle.W - 2, dwgHandle.H - 2, Not $bVertical, iFlag)
+  'If $bInside Then
+  If $bInside Or If $bConfigure Then
+    Draw.FillRect(0, 0, dwgHandle.W, dwgHandle.H, Color.Merge(Color.LightForeground, Color.TextBackground, 0.3))
+  Else
+    Draw.FillRect(0, 0, dwgHandle.W, dwgHandle.H, Color.LightForeground)
+  Endif
   'Endif
   'Draw.Style.Separator(0, 0, dwgHandle.W, dwgHandle.H, $bVertical, Not Me.Enabled)
   'Draw.FillX = 0
