@@ -3605,8 +3605,10 @@ Public Sub RenameFile(sPath As String, sNewName As String)
     sName = File.BaseName(sPath)
     If sName = sNewName Then Return
 
-    sMsg = CheckClassName(sNewName, True)
-    If sMsg Then Error.Raise(sMsg)
+    If UCase(sName) <> UCase(sNewName) Then
+      sMsg = CheckClassName(sNewName, True)
+      If sMsg Then Error.Raise(sMsg)
+    Endif
 
     If sName = Startup Then
       Startup = sNewName
