@@ -74,11 +74,11 @@ gDrawingArea::gDrawingArea(gContainer *parent) : gContainer(parent)
 		
   realize(false);
   
-  //gtk_event_box_set_visible_window(GTK_EVENT_BOX(border), false);
+	//gtk_event_box_set_visible_window(GTK_EVENT_BOX(border), false);	
   
 	gtk_widget_add_events(widget, GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK
 		| GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK
-		| GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK);
+		| GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_SCROLL_MASK);
 	
 	//GTK_WIDGET_UNSET_FLAGS(border, GTK_APP_PAINTABLE);
 	//GTK_WIDGET_SET_FLAGS(widget, GTK_CAN_FOCUS);
@@ -119,13 +119,22 @@ void gDrawingArea::setCanFocus(bool vl)
 
 void gDrawingArea::updateEventMask()
 {
+	static int event_mask;
+	XWindowAttributes attr;
+		
+	gtk_widget_realize(border);
+	
 	if (!enabled())
 	{
-		gtk_widget_set_events(widget, GDK_EXPOSURE_MASK);
-		return;
+		XGetWindowAttributes(gdk_display, GDK_WINDOW_XID(border->window), &attr);
+		event_mask = attr.your_event_mask;
+		XSelectInput(gdk_display, GDK_WINDOW_XID(border->window), ExposureMask);
+	}
+	else
+	{
+		XSelectInput(gdk_display, GDK_WINDOW_XID(border->window), event_mask);
 	}
 	
-	gtk_widget_set_events(widget, _event_mask);
 }
 
 void gDrawingArea::setEnabled(bool vl)

@@ -1,48 +1,44 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(33.1667,15,51,45)
+  MoveScaled(33.1429,15,51,45)
   Text = ("Movie player")
   Icon = Picture["video.png"]
   { txtAbout TextLabel
     MoveScaled(2,1,46,20)
-    Text = ("<h1>Gambas Movie Player</h1>\n\n<p>This example is based on the MPlayer movie player and was made by Beno\xC3\xAEt Minisini</p>")
+    Text = ("<h1>Gambas Movie Player</h1>\n\n<p>This example is based on the MPlayer movie player and was made by Benoît Minisini</p>")
   }
   { panButton Panel
     MoveScaled(0,26,46,6)
     { btnPlay Button
       MoveScaled(1,1,4,4)
       Enabled = False
-      Text = ("")
-      Picture = Picture["play.png"]
+      Picture = Picture["icon:/small/play"]
     }
     { btnPause Button
       MoveScaled(6,1,4,4)
       Enabled = False
-      Text = ("")
-      Picture = Picture["pause.png"]
+      Picture = Picture["icon:/small/pause"]
     }
     { btnStop Button
       MoveScaled(11,1,4,4)
       Enabled = False
-      Text = ("")
-      Picture = Picture["stop.png"]
+      Picture = Picture["icon:/small/stop"]
     }
     { btnOpen Button
       MoveScaled(16,1,4,4)
-      Text = ("")
-      Picture = Picture["open.png"]
+      Picture = Picture["icon:/small/open"]
     }
   }
-  { lblMoviePlayer DrawingArea
-    MoveScaled(3,9,9,5)
+  { dwgMoviePlayer DrawingArea
+    MoveScaled(5,18,9,5)
     Visible = False
     Enabled = False
     Background = &H000000&
+    Focus = True
   }
   { timShow #Timer
-    #X = 208
-    #Y = 256
+    #MoveScaled(32,17)
     Delay = 500
   }
 }

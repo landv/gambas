@@ -1,153 +1,142 @@
 ' Gambas class file
 
-PRIVATE $hProcess AS Process
-PRIVATE $bQuit AS Boolean
-PRIVATE $sPath AS String
-PRIVATE $bShow AS Boolean
+Private $hProcess As Process
+Private $bQuit As Boolean
+Private $sPath As String
+Private $bShow As Boolean
 
-PUBLIC SUB Form_Resize()
+Public Sub Form_Resize()
 
-  lblMoviePlayer.Move(8, 8, ME.ClientW - 16, ME.ClientH - panButton.H - 8)
-  panButton.Move(0, ME.CLientH - panButton.H, ME.CLientW)
-  txtAbout.Move(16, 16, lblMoviePlayer.W - 16, lblMoviePlayer.H - 16)
+  dwgMoviePlayer.Move(8, 8, Me.ClientW - 16, Me.ClientH - panButton.H - 8)
+  panButton.Move(0, Me.CLientH - panButton.H, Me.CLientW)
+  txtAbout.Move(16, 16, dwgMoviePlayer.W - 16, dwgMoviePlayer.H - 16)
 
-END
+End
 
-PUBLIC SUB btnPlay_Click()
+Public Sub btnPlay_Click()
 
-  IF $hProcess THEN
-    PRINT #$hProcess, " ";
-    btnPlay.Enabled = FALSE
-    btnPause.Enabled = TRUE
+  If $hProcess Then
+    Print #$hProcess, " ";
+    btnPlay.Enabled = False
+    btnPause.Enabled = True
     'PRINT "CONTINUE"
-    RETURN
-  ENDIF
+    Return
+  Endif
 
-  txtAbout.Visible = FALSE
+  txtAbout.Visible = False
 
-  WITH lblMoviePlayer
+  With dwgMoviePlayer
     Form_Resize
     .Show
-    .Enabled = FALSE
+    .Enabled = False
   '  '.Mouse = Mouse.Default
   '  Form_Resize
   '  '.Enabled = FALSE
-  END WITH
+  End With
 
-  $bShow = TRUE
+  $bShow = True
 
-  $hProcess = EXEC ["mplayer", "-wid", lblMoviePlayer.Handle, Conv$($sPath, Desktop.Charset, System.Charset)] FOR READ WRITE
+  $hProcess = Exec ["mplayer", "-wid", CStr(dwgMoviePlayer.Handle), Conv$($sPath, Desktop.Charset, System.Charset)] For Read Write As "Process"
 
-  btnStop.Enabled = TRUE
-  btnPlay.Enabled = FALSE
-  btnPause.Enabled = TRUE
+  btnStop.Enabled = True
+  btnPlay.Enabled = False
+  btnPause.Enabled = True
 
-  lblMoviePlayer.Hide
-  timShow.Enabled = TRUE
+  'dwgMoviePlayer.Hide
+  'timShow.Enabled = True
 
-END
+End
 
-PUBLIC SUB btnPause_Click()
+Public Sub btnPause_Click()
 
-  IF NOT $hProcess THEN RETURN
-  PRINT #$hProcess, " ";
+  If Not $hProcess Then Return
+  Print #$hProcess, " ";
   '$hProcess.Send(" ") '("pause\n")
-  btnPlay.Enabled = TRUE
-  btnPause.Enabled = FALSE
+  btnPlay.Enabled = True
+  btnPause.Enabled = False
   'PRINT "PAUSE"
 
-END
+End
 
-PUBLIC SUB btnStop_Click()
+Public Sub btnStop_Click()
 
-  IF NOT $hProcess THEN RETURN
-  IF $bQuit THEN
+  If Not $hProcess Then Return
+  If $bQuit Then
     $hProcess.Kill
-  ELSE
-    PRINT #$hProcess, "q";
-    $bQuit = TRUE
-  ENDIF
+  Else
+    Print #$hProcess, "q";
+    $bQuit = True
+  Endif
 
-END
+End
 
-PUBLIC SUB Process_Read()
+Public Sub Process_Read()
   
-  DIM sData AS String
+  Dim sData As String
   
-  READ #LAST, sData, -255
+  sData = Read #Last, -255
   
-END
+End
 
 
-PUBLIC SUB Process_Kill()
+Public Sub Process_Kill()
 
-  'PRINT "KILL"
-
-  $hProcess = NULL
-  timShow.Enabled = FALSE
-  $bQuit = FALSE
-  $bShow = FALSE
-  btnPause.Enabled = FALSE
-  btnPlay.Enabled = TRUE
-  btnStop.Enabled = FALSE
-  lblMoviePlayer.Hide
+  $hProcess = Null
+  timShow.Enabled = False
+  $bQuit = False
+  $bShow = False
+  btnPause.Enabled = False
+  btnPlay.Enabled = True
+  btnStop.Enabled = False
+  dwgMoviePlayer.Hide
   txtAbout.Show
   'PRINT "STOP"
 
-END
+End
 
 
-PRIVATE SUB StopMovie()
+Private Sub StopMovie()
 
-  IF NOT $hProcess THEN RETURN
+  If Not $hProcess Then Return
 
   $hProcess.Kill
-  WHILE $hProcess
-    WAIT
-  WEND
+  'While $hProcess
+  '  Wait
+  'Wend
 
-END
+End
 
-PUBLIC SUB Form_Close()
+Public Sub Form_Close()
   
   StopMovie
   
-END
+End
 
 
-PUBLIC SUB btnOpen_Click()
+Public Sub btnOpen_Click()
 
   Dialog.Path = $sPath
-  IF Dialog.OpenFile() THEN RETURN
+  If Dialog.OpenFile() Then Return
   $sPath = Dialog.Path
   
   StopMovie
-  btnPlay.Enabled = TRUE
+  btnPlay.Enabled = True
   btnPlay_Click
   
-END
+End
 
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
-  PRINT "Wid = "; Hex$(lblMoviePlayer.id)
+  Print "Wid = "; Hex$(dwgMoviePlayer.id)
 
-END
+End
 
-PUBLIC SUB Button1_Click()
+Public Sub timShow_Timer()
 
-  WITH lblMoviePlayer
-    PRINT .X; " "; .Y; " "; .W; " "; .H; " "; .Visible; " "; .Parent.Handle
-  END WITH
-
-END
-
-
-PUBLIC SUB timShow_Timer()
-
-  lblMoviePlayer.Resize(1, 1)
-  lblMoviePlayer.Show
+  dwgMoviePlayer.Resize(1, 1)
+  dwgMoviePlayer.Show
   FORM_Resize
-  timShow.Enabled = FALSE
+  timShow.Enabled = False
 
-END
+End
