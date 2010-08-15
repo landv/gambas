@@ -251,6 +251,18 @@ Private Sub Border_Write(Value As Boolean)
 
 End
 
+Public Sub DrawingArea_GotFocus()
+  
+  $hDrawingArea.Refresh
+  
+End
+
+Public Sub DrawingArea_LostFocus()
+  
+  $hDrawingArea.Refresh
+  
+End
+
 Public Sub DrawingArea_Enter()
   
   $bInside = True
@@ -282,10 +294,25 @@ Public Sub DrawingArea_MouseDown()
   
 End
 
+Public Sub DrawingArea_MouseMove()
+  
+  Dim bPressed As Boolean
+  
+  bPressed = $hDrawingArea.Hovered
+  
+  If $bPressed <> bPressed Then
+    $bPressed = bPressed
+    $hDrawingArea.Refresh
+  Endif
+  
+End
+
+
 Public Sub DrawingArea_MouseUp()
   
   If Not Mouse.Left Then Return
   If Not Me.Enabled Then Return
+  If Not $bPressed Then Return
 
   $bPressed = False
   $hDrawingArea.Refresh
@@ -299,6 +326,7 @@ Public Sub DrawingArea_Draw()
   Dim X, X2, Y As Integer
   Dim iFlag As Integer
   Dim sText As String
+  Dim bFlat As Boolean
   
   If $bInside Then iFlag += Draw.Hover
   If Not Me.Enabled Then iFlag += Draw.Disabled
@@ -306,20 +334,26 @@ Public Sub DrawingArea_Draw()
   
   '' TODO: System.RightToLeft
 
+  bFlat = Not $bBorder 'And Not $bInside
+
   If $bInsideArrow Then
-    Draw.Style.Button(0, 0, Me.W, Me.H, False, iFlag, Not $bBorder)
+    Draw.Style.Button(0, 0, Me.W, Me.H, False, iFlag, bFlat)
     'Draw.Save
     'Draw.Clip(Me.W - Desktop.Scale * 3 + 3, 0, Desktop.Scale * 3 - 3, Me.H)
     'Draw.Style.Button(0, 0, Me.W, Me.H, $bPressed, iFlag, Not $bBorder)
     'Draw.Restore
   Else
-    Draw.Style.Button(0, 0, Me.W, Me.H, $bPressed, iFlag, Not $bBorder)
+    Draw.Style.Button(0, 0, Me.W, Me.H, $bPressed, iFlag, bFlat)
   Endif
     
   X = Desktop.Scale
   
   If $hPicture Then
-    Draw.Picture($hPicture, X, (Me.H - $hPicture.H) / 2)
+    If Me.Enabled Then
+      Draw.Picture($hPicture, X, (Me.H - $hPicture.H) / 2)
+    Else
+      Draw.Picture($hPicture.Image.Desaturate().Picture, X, (Me.H - $hPicture.H) / 2)
+    Endif
     X += $hPicture.H + Desktop.Scale
   Endif
   
@@ -361,6 +395,7 @@ Public Sub DrawingArea_KeyRelease()
   If Key.Code = Key.Space Then 
     $bPressed = False
     $hDrawingArea.Refresh
+    Wait
     Button_Click
   Endif
   

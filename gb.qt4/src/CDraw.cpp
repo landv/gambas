@@ -973,6 +973,20 @@ static void init_option(QStyleOption &opt, int x, int y, int w, int h, int state
 		opt.state |= QStyle::State_On | QStyle::State_Sunken | QStyle::State_Active;
 }
 
+static void paint_focus(GB_DRAW *d, int x, int y, int w, int h, int state)
+{
+	QStyleOptionFocusRect opt;
+	
+	if ((state & GB_DRAW_STATE_DISABLED) || !(state & GB_DRAW_STATE_FOCUS))
+		return;
+	
+	init_option(opt, x, y, w, h, state);
+	
+	QApplication::style()->drawPrimitive(QStyle::PE_FrameFocusRect, &opt, DP(d));
+	if (DPM(d))
+		QApplication::style()->drawPrimitive(QStyle::PE_FrameFocusRect, &opt, DPM(d));
+}
+
 static void style_arrow(GB_DRAW *d, int x, int y, int w, int h, int type, int state)
 {
 	QStyleOption opt;
@@ -1003,7 +1017,7 @@ static void style_arrow(GB_DRAW *d, int x, int y, int w, int h, int type, int st
 
 static void style_check(GB_DRAW *d, int x, int y, int w, int h, int value, int state)
 {
-	QStyleOption opt;
+	QStyleOptionButton opt;
 	init_option(opt, x, y, w, h, state);
 	
 	if (value)
@@ -1021,11 +1035,13 @@ static void style_check(GB_DRAW *d, int x, int y, int w, int h, int value, int s
 		QApplication::style()->drawPrimitive(QStyle::PE_IndicatorCheckBox, &opt, DPM(d));
 		//DPM(d)->setRasterOp(Qt::CopyROP);
 	}
+	
+	paint_focus(d, x, y, w, h, state);
 }
 
 static void style_option(GB_DRAW *d, int x, int y, int w, int h, int value, int state)
 {
-	QStyleOption opt;
+	QStyleOptionButton opt;
 	init_option(opt, x, y, w, h, state);
 	
 	if (value)
@@ -1038,6 +1054,8 @@ static void style_option(GB_DRAW *d, int x, int y, int w, int h, int value, int 
 		QApplication::style()->drawPrimitive(QStyle::PE_IndicatorRadioButton, &opt, DPM(d));
 		//DPM(d)->setRasterOp(Qt::CopyROP);
 	}
+	
+	paint_focus(d, x, y, w, h, state);
 }
 
 static void style_separator(GB_DRAW *d, int x, int y, int w, int h, int vertical, int state)
@@ -1060,23 +1078,46 @@ static void style_separator(GB_DRAW *d, int x, int y, int w, int h, int vertical
 
 static void style_button(GB_DRAW *d, int x, int y, int w, int h, int value, int state, int flat)
 {
-	QStyleOptionButton opt;
-	init_option(opt, x, y, w, h, state);
-	
-	if (value)
-		opt.state |= QStyle::State_On;
-	
-  opt.features = QStyleOptionButton::None;
 	if (flat)
-		opt.features |= QStyleOptionButton::Flat;
-	
-	QApplication::style()->drawPrimitive(QStyle::PE_PanelButtonCommand, &opt, DP(d));
-	if (DPM(d)) 
 	{
-		//DPM(d)->setRasterOp(Qt::OrROP);
-		QApplication::style()->drawPrimitive(QStyle::PE_PanelButtonCommand, &opt, DPM(d));
-		//DPM(d)->setRasterOp(Qt::CopyROP);
+		QStyleOptionToolButton opt;
+		
+		init_option(opt, x, y, w, h, state);
+		
+		//opt.state |= QStyle::State_Raised;
+		
+		if (value)
+			opt.state |= QStyle::State_On;
+
+		//opt.state &= ~QStyle::State_HasFocus;
+		opt.state |= QStyle::State_AutoRaise;
+		if (opt.state & QStyle::State_MouseOver)
+			opt.state |= QStyle::State_Raised;
+		
+		if (opt.state & (QStyle::State_Sunken | QStyle::State_On | QStyle::State_MouseOver))
+		{
+			QApplication::style()->drawPrimitive(QStyle::PE_PanelButtonTool, &opt, DP(d));
+			if (DPM(d)) 
+				QApplication::style()->drawPrimitive(QStyle::PE_PanelButtonTool, &opt, DPM(d));
+		}
 	}
+	else
+	{
+		QStyleOptionButton opt;
+	
+		init_option(opt, x, y, w, h, state);
+		
+		opt.state |= QStyle::State_Raised;
+		
+		if (value)
+			opt.state |= QStyle::State_On;
+	
+		QApplication::style()->drawPrimitive(QStyle::PE_PanelButtonCommand, &opt, DP(d));
+		if (DPM(d)) 
+			QApplication::style()->drawPrimitive(QStyle::PE_PanelButtonCommand, &opt, DPM(d));
+	}
+	
+	paint_focus(d, x + 3, y + 3, w - 6, h - 6, state);
 }
 			
 static void style_panel(GB_DRAW *d, int x, int y, int w, int h, int border, int state)
@@ -1153,6 +1194,8 @@ static void style_handle(GB_DRAW *d, int x, int y, int w, int h, int vertical, i
 		//DPM(d)->setRasterOp(Qt::CopyROP);
 		//DPM(d)->translate(-x, -y);
 	}
+
+	paint_focus(d, x, y, w, h, state);
 }
 
 
@@ -1168,6 +1211,8 @@ static void style_box(GB_DRAW *d, int x, int y, int w, int h, int state)
   QApplication::style()->drawPrimitive(QStyle::PE_PanelLineEdit, &opt, DP(d));
 	if (DPM(d)) 
 		QApplication::style()->drawPrimitive(QStyle::PE_PanelLineEdit, &opt, DPM(d));
+	
+	paint_focus(d, x, y, w, h, state);
 }
 
 
