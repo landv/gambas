@@ -1088,8 +1088,10 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
         If bAfter Then .MoveAfter(sAfter)
         If bShow Then
           ProjectTree.MoveTo(sKey)
-          ProjectTree.MoveParent
-          ProjectTree.Item.Expanded = True
+          Do
+            If ProjectTree.MoveParent() Then Break
+            ProjectTree.Item.Expanded = True
+          Loop
         Endif
       End With
       
@@ -1138,7 +1140,7 @@ Private Sub DoRefreshAfter()
     FGambas.Error(("The following classes have circular inheritance:") & "\n\n" & $aRefreshAfter.Join(", "))
     $aRefreshAfter.Clear
   Endif
-
+  
 End
 
 
@@ -1366,6 +1368,12 @@ Private Sub DoRefresh(Optional bReset As Boolean)
       .MoveNext
     Wend
   End With
+
+  For Each sPath In AddedPaths
+    sPath = AddedPaths.Key
+    EnsureKey(sPath)
+    ProjectTree[sPath].EnsureVisible
+  Next
 
   If sKeyReset Then sKey = sKeyReset
 
