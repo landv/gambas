@@ -1203,6 +1203,9 @@ static void style_box(GB_DRAW *d, int x, int y, int w, int h, int state)
 {
 	QStyleOptionFrame opt;
 	
+	if (GB.Is(d->device, CLASS_DrawingArea))
+		opt.initFrom(QWIDGET(d->device));
+	
 	init_option(opt, x, y, w, h, state);
 
 	opt.lineWidth = QApplication::style()->pixelMetric(QStyle::PM_DefaultFrameWidth, &opt);
@@ -1211,10 +1214,13 @@ static void style_box(GB_DRAW *d, int x, int y, int w, int h, int state)
 	//opt.features = QStyleOptionFrameV2::None;
 	
   QApplication::style()->drawPrimitive(QStyle::PE_PanelLineEdit, &opt, DP(d));
+	//QApplication::style()->drawControl(QStyle::CE_ShapedFrame, &opt, DP(d), NULL);
 	if (DPM(d)) 
 		QApplication::style()->drawPrimitive(QStyle::PE_PanelLineEdit, &opt, DPM(d));
 	
 	//paint_focus(d, x, y, w, h, state);
+	//if (state & GB_DRAW_STATE_FOCUS)
+	//	QApplication::style()->drawControl(QStyle::CE_FocusFrame, &opt, DP(d), GB.Is(d->device, CLASS_DrawingArea) ? QWIDGET(d->device) : NULL);
 }
 
 

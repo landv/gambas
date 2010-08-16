@@ -518,220 +518,218 @@
   { sepMenu Separator
     MoveScaled(0,0,13,0)
   }
-  { ToolBar1 ToolBar
-    MoveScaled(0,1,163,4)
-    AutoResize = False
-    Key = "main"
-    Separator = True
-    { ToolButton1 ToolButton
-      MoveScaled(0,0,4,4)
-      ToolTip = ("New project")
-      Action = "new-project"
-      Picture = Picture["icon:/small/new"]
+  { HBox1 HBox
+    MoveScaled(2,0,162,4)
+    { ToolBar1 ToolBar
+      MoveScaled(0,0,132,4)
+      AutoResize = False
+      Key = "main"
+      { ToolButton1 ToolButton
+        MoveScaled(0,0,4,4)
+        ToolTip = ("New project")
+        Action = "new-project"
+        Picture = Picture["icon:/small/new"]
+      }
+      { ToolButton2 ToolButton
+        MoveScaled(3,0,4,4)
+        ToolTip = ("Open project")
+        Action = "open-project"
+        Picture = Picture["icon:/small/open"]
+      }
+      { btnSave ToolButton
+        MoveScaled(6,0,4,4)
+        ToolTip = ("Save project")
+        Action = "save-project"
+        Picture = Picture["icon:/small/save"]
+      }
+      { ToolButton15 ToolButton
+        MoveScaled(9,0,4,4)
+        ToolTip = ("Save project as")
+        Action = "save-project-as"
+        Picture = Picture["icon:/small/save-as"]
+      }
+      { btnProperty ToolButton
+        MoveScaled(12,0,4,4)
+        ToolTip = ("Project properties")
+        Action = "project-property"
+        Picture = Picture["icon:/small/properties"]
+      }
+      { ToolButton7 ToolButton
+        MoveScaled(15,0,4,4)
+        Visible = False
+        ToolTip = ("Refresh project")
+        Action = "refresh-project"
+        Picture = Picture["icon:/small/refresh"]
+      }
+      { ToolButton12 ToolButton
+        MoveScaled(18,0,4,4)
+        ToolTip = ("Preferences")
+        Action = "option"
+        Picture = Picture["icon:/small/options"]
+        Toggle = True
+      }
+      { ToolButton9 ToolButton
+        MoveScaled(21,0,4,4)
+        Visible = False
+        ToolTip = ("Shortcuts")
+        Action = "shortcut"
+        Picture = Picture["icon:/small/shortcut"]
+      }
+      { Separator3 Separator
+        MoveScaled(24,0,1,4)
+      }
+      { btnTranslate ToolButton
+        MoveScaled(25,0,4,4)
+        ToolTip = ("Translate")
+        Action = "translate"
+        Picture = Picture["icon:/small/language"]
+      }
+      { ToolButton4 ToolButton
+        MoveScaled(28,0,4,4)
+        Visible = False
+        ToolTip = ("Make source archive")
+        Action = "archive"
+        Picture = Picture["icon:/small/archive"]
+      }
+      { ToolButton5 ToolButton
+        MoveScaled(31,0,4,4)
+        ToolTip = ("Make executable")
+        Action = "exec"
+        Picture = Picture["icon:/small/exec"]
+      }
+      { ToolButton14 ToolButton
+        MoveScaled(34,0,4,4)
+        Visible = False
+        ToolTip = ("Make installation package")
+        Action = "install"
+        Picture = Picture["icon:/small/package"]
+      }
+      { Separator2 Separator
+        MoveScaled(37,0,1,4)
+      }
+      { ToolButton3 ToolButton
+        MoveScaled(38,0,4,4)
+        Visible = False
+        ToolTip = ("Project")
+        Action = "project"
+        Picture = Picture["img/16/gambas.png"]
+        Toggle = True
+        Value = True
+      }
+      { ToolButton8 ToolButton
+        MoveScaled(41,0,4,4)
+        Visible = False
+        ToolTip = ("Properties sheet")
+        Action = "property"
+        Picture = Picture["icon:/small/edit"]
+        Toggle = True
+      }
+      { ToolButton10 ToolButton
+        MoveScaled(44,0,4,4)
+        Visible = False
+        ToolTip = ("Toolbox")
+        Action = "control"
+        Picture = Picture["icon:/small/tools"]
+        Toggle = True
+      }
+      { btnShowConsole ToolButton
+        MoveScaled(47,0,4,4)
+        Visible = False
+        ToolTip = ("Console")
+        Action = "console"
+        Picture = Picture["icon:/small/terminal"]
+        Toggle = True
+      }
+      { btnCompile ToolButton
+        MoveScaled(51,0,4,4)
+        ToolTip = ("Compile")
+        Action = "compile"
+        Picture = Picture["icon:/small/make"]
+      }
+      { btnCompileAll ToolButton
+        MoveScaled(54,0,4,4)
+        ToolTip = ("Compile all")
+        Action = "compile-all"
+        Picture = Picture["icon:/small/make-all"]
+      }
+      { btnGo ToolButton
+        MoveScaled(57,0,4,4)
+        ToolTip = ("Run")
+        Action = "start"
+        Picture = Picture["icon:/small/play"]
+      }
+      { btnPause ToolButton
+        MoveScaled(60,0,4,4)
+        ToolTip = ("Pause")
+        Action = "pause"
+        Picture = Picture["icon:/small/pause"]
+      }
+      { btnStop ToolButton
+        MoveScaled(63,0,4,4)
+        ToolTip = ("Stop")
+        Action = "stop"
+        Picture = Picture["icon:/small/stop"]
+      }
+      { btnStep ToolButton
+        MoveScaled(66,0,4,4)
+        ToolTip = ("Step")
+        Action = "step"
+        Picture = Picture["icon:/small/end"]
+      }
+      { btnForward ToolButton
+        MoveScaled(69,0,4,4)
+        ToolTip = ("Forward")
+        Action = "forward"
+        Picture = Picture["icon:/small/forward"]
+      }
+      { btnFrom ToolButton
+        MoveScaled(72,0,4,4)
+        ToolTip = ("Finish current function")
+        Action = "return"
+        Picture = Picture["icon:/small/eject"]
+      }
+      { btnUntil ToolButton mnuUntil
+        Name = "btnUntil"
+        MoveScaled(75,0,4,4)
+        ToolTip = ("Run until current line")
+        Action = "until"
+        Picture = Picture["icon:/small/start"]
+      }
+      { Separator5 Separator
+        MoveScaled(84,0,1,4)
+      }
+      { cmbFind ComboBox
+        MoveScaled(85,0,44,4)
+        ToolTip = ("Search string")
+        Action = "find-text"
+      }
+      { btnSearch ToolButton
+        MoveScaled(123,0,4,4)
+        ToolTip = ("Search in project")
+        Action = "find-project"
+        Picture = Picture["icon:/small/zoom-in"]
+      }
+      { btnFind ToolButton
+        MoveScaled(125,0,4,4)
+        ToolTip = ("Search & replace")
+        Action = "find"
+        Picture = Picture["icon:/small/find"]
+        Toggle = True
+      }
     }
-    { ToolButton2 ToolButton
-      MoveScaled(3,0,4,4)
-      ToolTip = ("Open project")
-      Action = "open-project"
-      Picture = Picture["icon:/small/open"]
-    }
-    { btnSave ToolButton
-      MoveScaled(6,0,4,4)
-      ToolTip = ("Save project")
-      Action = "save-project"
-      Picture = Picture["icon:/small/save"]
-    }
-    { ToolButton15 ToolButton
-      MoveScaled(9,0,4,4)
-      ToolTip = ("Save project as")
-      Action = "save-project-as"
-      Picture = Picture["icon:/small/save-as"]
-    }
-    { btnProperty ToolButton
-      MoveScaled(12,0,4,4)
-      ToolTip = ("Project properties")
-      Action = "project-property"
-      Picture = Picture["icon:/small/properties"]
-    }
-    { ToolButton7 ToolButton
-      MoveScaled(15,0,4,4)
-      Visible = False
-      ToolTip = ("Refresh project")
-      Action = "refresh-project"
-      Picture = Picture["icon:/small/refresh"]
-    }
-    { ToolButton12 ToolButton
-      MoveScaled(18,0,4,4)
-      ToolTip = ("Preferences")
-      Action = "option"
-      Picture = Picture["icon:/small/options"]
-      Toggle = True
-    }
-    { ToolButton9 ToolButton
-      MoveScaled(21,0,4,4)
-      Visible = False
-      ToolTip = ("Shortcuts")
-      Action = "shortcut"
-      Picture = Picture["icon:/small/shortcut"]
-    }
-    { Separator3 Separator
-      MoveScaled(24,0,1,4)
-    }
-    { btnTranslate ToolButton
-      MoveScaled(25,0,4,4)
-      ToolTip = ("Translate")
-      Action = "translate"
-      Picture = Picture["icon:/small/language"]
-    }
-    { ToolButton4 ToolButton
-      MoveScaled(28,0,4,4)
-      Visible = False
-      ToolTip = ("Make source archive")
-      Action = "archive"
-      Picture = Picture["icon:/small/archive"]
-    }
-    { ToolButton5 ToolButton
-      MoveScaled(31,0,4,4)
-      ToolTip = ("Make executable")
-      Action = "exec"
-      Picture = Picture["icon:/small/exec"]
-    }
-    { ToolButton14 ToolButton
-      MoveScaled(34,0,4,4)
-      Visible = False
-      ToolTip = ("Make installation package")
-      Action = "install"
-      Picture = Picture["icon:/small/package"]
-    }
-    { Separator2 Separator
-      MoveScaled(37,0,1,4)
-    }
-    { ToolButton3 ToolButton
-      MoveScaled(38,0,4,4)
-      Visible = False
-      ToolTip = ("Project")
-      Action = "project"
-      Picture = Picture["img/16/gambas.png"]
-      Toggle = True
-      Value = True
-    }
-    { ToolButton8 ToolButton
-      MoveScaled(41,0,4,4)
-      Visible = False
-      ToolTip = ("Properties sheet")
-      Action = "property"
-      Picture = Picture["icon:/small/edit"]
-      Toggle = True
-    }
-    { ToolButton10 ToolButton
-      MoveScaled(44,0,4,4)
-      Visible = False
-      ToolTip = ("Toolbox")
-      Action = "control"
-      Picture = Picture["icon:/small/tools"]
-      Toggle = True
-    }
-    { btnShowConsole ToolButton
-      MoveScaled(47,0,4,4)
-      Visible = False
-      ToolTip = ("Console")
-      Action = "console"
-      Picture = Picture["icon:/small/terminal"]
-      Toggle = True
-    }
-    { btnCompile ToolButton
-      MoveScaled(51,0,4,4)
-      ToolTip = ("Compile")
-      Action = "compile"
-      Picture = Picture["icon:/small/make"]
-    }
-    { btnCompileAll ToolButton
-      MoveScaled(54,0,4,4)
-      ToolTip = ("Compile all")
-      Action = "compile-all"
-      Picture = Picture["icon:/small/make-all"]
-    }
-    { btnGo ToolButton
-      MoveScaled(57,0,4,4)
-      ToolTip = ("Run")
-      Action = "start"
-      Picture = Picture["icon:/small/play"]
-    }
-    { btnPause ToolButton
-      MoveScaled(60,0,4,4)
-      ToolTip = ("Pause")
-      Action = "pause"
-      Picture = Picture["icon:/small/pause"]
-    }
-    { btnStop ToolButton
-      MoveScaled(63,0,4,4)
-      ToolTip = ("Stop")
-      Action = "stop"
-      Picture = Picture["icon:/small/stop"]
-    }
-    { btnStep ToolButton
-      MoveScaled(66,0,4,4)
-      ToolTip = ("Step")
-      Action = "step"
-      Picture = Picture["icon:/small/end"]
-    }
-    { btnForward ToolButton
-      MoveScaled(69,0,4,4)
-      ToolTip = ("Forward")
-      Action = "forward"
-      Picture = Picture["icon:/small/forward"]
-    }
-    { btnFrom ToolButton
-      MoveScaled(72,0,4,4)
-      ToolTip = ("Finish current function")
-      Action = "return"
-      Picture = Picture["icon:/small/eject"]
-    }
-    { btnUntil ToolButton mnuUntil
-      Name = "btnUntil"
-      MoveScaled(75,0,4,4)
-      ToolTip = ("Run until current line")
-      Action = "until"
-      Picture = Picture["icon:/small/start"]
-    }
-    { Separator5 Separator
-      MoveScaled(84,0,1,4)
-    }
-    { cmbFind ComboBox
-      MoveScaled(85,0,44,4)
-      ToolTip = ("Search string")
-      Action = "find-text"
-    }
-    { btnSearch ToolButton
-      MoveScaled(123,0,4,4)
-      ToolTip = ("Search in project")
-      Action = "find-project"
-      Picture = Picture["icon:/small/zoom-in"]
-    }
-    { btnFind ToolButton
-      MoveScaled(125,0,4,4)
-      ToolTip = ("Search & replace")
-      Action = "find"
-      Picture = Picture["icon:/small/find"]
-      Toggle = True
-    }
-    { Separator8 Separator
-      MoveScaled(129,0,1,4)
-    }
-    { panShowMenu HBox
-      MoveScaled(133,0,26,4)
+    { Panel3 Panel
+      MoveScaled(138,1,3,3)
       Expand = True
-      { Panel3 Panel
-        MoveScaled(4,1,2,3)
-        Expand = True
-      }
-      { btnShowMenu ToolButton
-        MoveScaled(9,0,17,4)
-        ToolTip = ("Show menu bar")
-        AutoResize = True
-        Text = ("Show menu bar")
-      }
     }
+    { btnShowMenu ToolButton
+      MoveScaled(143,0,18,4)
+      ToolTip = ("Show menu bar")
+      AutoResize = True
+      Text = ("Show menu bar")
+    }
+  }
+  { Separator7 Separator
+    MoveScaled(60,5,38,0)
   }
   { Panel1 Panel
     MoveScaled(1,6,90,68)
@@ -1215,6 +1213,6 @@
   { Toolbar main
     Text = ""
     List = "new-project,open-project,save-project,save-project-as,project-property,refresh-project,option,shortcut,translate,archive,exec,install,project,property,control,console,compile,compile-all,start,pause,stop,step,forward,return,until,find-text,find-project,find"
-    Default = "new-project,open-project,save-project,save-project-as,project-property,option,|,translate,exec,|,compile,compile-all,start,pause,stop,step,forward,return,until,|,find-text,find-project,find,|,$panShowMenu"
+    Default = "new-project,open-project,save-project,save-project-as,project-property,option,|,translate,exec,|,compile,compile-all,start,pause,stop,step,forward,return,until,|,find-text,find-project,find"
   }
 }

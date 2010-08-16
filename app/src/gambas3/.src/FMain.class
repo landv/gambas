@@ -961,7 +961,7 @@ Public Sub ReadConfig()
   mnuStatusBar.Value = bShow
 
   Me.Menus.Visible = Settings["/ShowMenus", True]
-  panShowMenu.Visible = Not Me.Menus.Visible
+  btnShowMenu.Visible = Not Me.Menus.Visible
   
 
   MTheme.InitControl(tvwProject)
@@ -1622,7 +1622,7 @@ Public Sub mnuHideMenu_Click()
   If Me.Menus.Visible Then
     Me.Menus.Hide
     sepMenu.Hide
-    panShowMenu.Show
+    btnShowMenu.Show
     Settings["/ShowMenus"] = Me.Menus.Visible
   Else
     btnShowMenu_Click
@@ -1634,7 +1634,7 @@ Public Sub btnShowMenu_Click()
 
   Me.Menus.Show
   sepMenu.Show
-  panShowMenu.Hide
+  btnShowMenu.Hide
   Settings["/ShowMenus"] = Me.Menus.Visible
 
 End
