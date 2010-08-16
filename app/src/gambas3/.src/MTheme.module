@@ -10,7 +10,7 @@ Private $cDefault As Collection
 Public Sub _init()
   
   $cDefault = ReadFile(DEFAULT_THEME)
-
+  
 End
 
 Public Sub IsBackgroundStyle(sKey As String) As Boolean
@@ -49,7 +49,6 @@ Public Sub WriteSettings(hSettings As Settings, sParent As String, cColor As Col
   
 End
 
-
 Public Function ReadFile(sPath As String) As Collection
   
   Dim hSettings As Settings
@@ -73,7 +72,7 @@ Public Sub WriteFile(sPath As String, cColor As Collection)
   
   Dim hSettings As Settings
   Dim hCtrl As Control
-
+  
   hSettings = New Settings(sPath)
   WriteSettings(hSettings, "Theme", cColor)  
   
@@ -93,13 +92,13 @@ Public Sub Copy(cColor As Collection) As Collection
 End
 
 Public Sub InitEditor(hEditor As Editor)
-
+  
   Dim iInd As Integer  
   Dim hStyle As New CStyle
   Dim iStyle As Integer
   
   For iInd = 0 To ColorKeys.Max
-
+    
     hStyle.FromString(Settings["Highlight" &/ ColorKeys[iInd], $cDefault[ColorKeys[iInd]]])
     iStyle = Object.GetProperty(Classes["Highlight"], ColorKeys[iInd])
     With hEditor.Styles[iStyle]
@@ -109,7 +108,7 @@ Public Sub InitEditor(hEditor As Editor)
       .Italic = hStyle.Italic
       .Underline = hStyle.Underline
     End With
-
+    
   Next
   
 End
@@ -122,7 +121,6 @@ Public Sub GetColor(sStyle As String) As Integer
   Return hStyle.Foreground
   
 End
-
 
 Public Sub InitControl(hControl As Control)
   

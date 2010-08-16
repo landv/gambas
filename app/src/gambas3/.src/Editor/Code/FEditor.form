@@ -157,6 +157,11 @@
     }
     { mnuSep5 Menu
     }
+    { mnuPrettyPrint Menu
+      Action = ".pretty"
+      Text = ("Make code pretty")
+      Picture = Picture["icon:/small/wizard"]
+    }
     { mnuReload Menu
       Action = ".reload"
       Text = ("Reload")
@@ -322,11 +327,18 @@
       Action = ".watch"
       Picture = Picture["icon:/small/watch"]
     }
+    { btnPretty ToolButton mnuPretty
+      Name = "btnPretty"
+      MoveScaled(58,0,4,4)
+      ToolTip = ("Make code pretty")
+      Action = ".pretty"
+      Picture = Picture["icon:/small/wizard"]
+    }
     { Separator2 Separator
-      MoveScaled(58,0,2,4)
+      MoveScaled(63,0,2,4)
     }
     { btnProc ToolButton
-      MoveScaled(60,0,46,4)
+      MoveScaled(65,0,46,4)
       Action = ".proc"
       Text = ("Procedure list")
       Picture = Picture["img/16/procedure.png"]
@@ -483,6 +495,11 @@
     Text = "Paste as multi-line string"
     Shortcut = ""
   }
+  { Action pretty
+    Text = "Make code pretty"
+    Shortcut = ""
+    Picture = "icon:/small/wizard"
+  }
   { Action proc
     Text = "Procedure list"
     Picture = "img/16/procedure.png"
@@ -554,7 +571,7 @@
 { Toolbars
   { Toolbar editor
     Text = "Editor"
-    List = "save,reload,show-form,cut,copy,paste,color,undo,redo,indent,unindent,comment,uncomment,view-nosplit,view-hsplit,view-vsplit,break,watch,proc,find-definition,go-back"
-    Default = "save,reload,show-form,paste,color,undo,redo,comment,uncomment,break,watch,|,proc,$HBox1"
+    List = "save,reload,show-form,cut,copy,paste,color,undo,redo,indent,unindent,comment,uncomment,view-nosplit,view-hsplit,view-vsplit,break,watch,pretty,proc,find-definition,go-back"
+    Default = "save,reload,show-form,paste,color,undo,redo,comment,uncomment,break,watch,pretty,|,proc,$HBox1"
   }
 }

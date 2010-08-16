@@ -1,0 +1,132 @@
+' Gambas module file
+
+Private $cOpen As New Collection
+Private $cClose As New Collection
+
+Private $iLine As Integer
+Private $iLevel As Integer
+Private $bLastNewLine As Boolean
+Private $bNeedNewLine As Boolean
+Private $iLastDim As Integer
+Private $iLastSelect As Integer
+
+Public Sub _init()
+  
+  Dim sStr As String
+  
+  For Each sStr In ["DO", "FOR", "ELSE", "SELECT", "CASE", "DEFAULT", "WHILE", "REPEAT", "WITH", "CATCH", "FINALLY"]
+    $cOpen[sStr] = True
+  Next
+  For Each sStr In ["LOOP", "NEXT", "ENDIF", "ELSE", "CASE", "DEFAULT", "WEND", "UNTIL", "END WITH", "CATCH", "FINALLY"]
+    $cClose[sStr] = True
+  Next
+  ' IF and END SELECT are special
+  
+End
+
+Public Sub Run(sText As String, Optional iLevel As Integer) As String
+  
+  Dim aLine As String[] = Split(sText, "\n")
+  Dim sLine As String
+  Dim iLine As Integer
+  
+  $iLevel = iLevel
+  $bLastNewLine = True
+  $iLastDim = -1
+  $iLastSelect = -1
+  
+  While iLine < aLine.Count
+    
+    $iLine = iLine
+    aLine[iLine] = IndentLine(aLine[iLine])
+    
+    If iLine > 0 And If Not Trim(aLine[iLine]) And If Not Trim$(aLine[iLine - 1]) Then
+      aLine.Remove(iLine)
+    Else
+      Inc iLine
+    Endif
+    
+  Wend
+  
+  Return aLine.Join("\n")
+  
+End
+
+Private Sub IndentLine(sLine As String) As String
+  
+  Dim aSym As String[]
+  Dim sAdd As String
+  Dim iNextLevel As Integer
+  Dim sSym As String
+  Dim iPos As Integer
+  
+  sLine = LTrim(sLine)
+  
+  If sLine Then
+    
+    aSym = Highlight.Analyze(Highlight.Purge(sLine))
+    
+    If $bNeedNewLine Then
+      If Not $bLastNewLine Then sAdd = "\n"
+      $bNeedNewLine = False
+    Endif
+    
+    If FEditor.IsCurrentProc() Then
+      $iLevel = 0
+      iNextLevel = 1
+      $bNeedNewLine = True
+      If Not $bLastNewLine Then sAdd = "\n"
+    Else If FEditor.IsCurrentEndProc() Then
+      $iLevel = 0
+      iNextLevel = 0
+      $bNeedNewLine = True
+      If Not $bLastNewLine Then sAdd = "\n"
+    Else
+      sSym = aSym[0]
+      If sSym = "END" And If aSym.Count >= 2 Then sSym &= " " & aSym[1]
+      
+      If sSym = "DIM" Then
+        $iLastDim = $iLine
+      Else If $iLastDim = ($iLine - 1) Then
+        If Not $bLastNewLine Then sAdd = "\n"
+      Endif
+      
+      If sSym = "END SELECT" Then
+        $iLevel -= 2
+        iNextLevel = $iLevel
+      Else If Right(aSym[0]) = ":" Then
+        iNextLevel = $iLevel
+        $iLevel = 0
+      Else If sSym = "IF" Then
+        iNextLevel = $iLevel
+        iPos = aSym.Find("THEN")
+        If iPos < 0 Or If iPos = aSym.Max Then Inc iNextLevel
+      Else If sSym = "SELECT" Then
+        $iLastSelect = $iLine
+        iNextLevel = $iLevel + 2
+      Else
+        If $cClose.Exist(sSym) Then Dec $iLevel
+        iNextLevel = $iLevel
+        If $cOpen.Exist(sSym) Then Inc iNextLevel
+      Endif
+    Endif
+    
+    $bLastNewLine = False 
+    
+    $iLevel = Max(0, $iLevel)
+    iNextLevel = Max(0, iNextLevel)
+    
+    sLine = sAdd & Space$(Project.TabSize * $iLevel) & sLine
+    $iLevel = iNextLevel
+    
+  Else
+    
+    $bLastNewLine = True
+    
+    sLine = Space$(Project.TabSize * $iLevel)
+    
+  Endif
+  
+  Return sLine
+  
+End
