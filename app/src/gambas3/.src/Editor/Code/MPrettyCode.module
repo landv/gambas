@@ -17,7 +17,7 @@ Public Sub _init()
   For Each sStr In ["DO", "FOR", "ELSE", "SELECT", "CASE", "DEFAULT", "WHILE", "REPEAT", "WITH", "CATCH", "FINALLY"]
     $cOpen[sStr] = True
   Next
-  For Each sStr In ["LOOP", "NEXT", "ENDIF", "ELSE", "CASE", "DEFAULT", "WEND", "UNTIL", "END WITH", "CATCH", "FINALLY"]
+  For Each sStr In ["LOOP", "NEXT", "ENDIF", "END IF", "ELSE", "CASE", "DEFAULT", "WEND", "UNTIL", "END WITH", "CATCH", "FINALLY"]
     $cClose[sStr] = True
   Next
   ' IF and END SELECT are special
