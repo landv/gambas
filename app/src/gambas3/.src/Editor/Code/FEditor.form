@@ -313,8 +313,15 @@
       Action = ".view-vsplit"
       Picture = Picture["icon:/small/view-split-v"]
     }
+    { btnPretty ToolButton mnuPretty
+      Name = "btnPretty"
+      MoveScaled(51,0,4,4)
+      ToolTip = ("Make code pretty")
+      Action = ".pretty"
+      Picture = Picture["icon:/small/wizard"]
+    }
     { btnBreakpoint ToolButton
-      MoveScaled(52,0,4,4)
+      MoveScaled(54,0,4,4)
       ToolTip = ("Toggle breakpoint")
       Action = ".break"
       Picture = Picture["icon:/small/halt"]
@@ -322,17 +329,10 @@
     }
     { btnWatch ToolButton mnuWatch
       Name = "btnWatch"
-      MoveScaled(55,0,4,4)
+      MoveScaled(57,0,4,4)
       ToolTip = ("Watch expression")
       Action = ".watch"
       Picture = Picture["icon:/small/watch"]
-    }
-    { btnPretty ToolButton mnuPretty
-      Name = "btnPretty"
-      MoveScaled(58,0,4,4)
-      ToolTip = ("Make code pretty")
-      Action = ".pretty"
-      Picture = Picture["icon:/small/wizard"]
     }
     { Separator2 Separator
       MoveScaled(63,0,2,4)
@@ -571,7 +571,7 @@
 { Toolbars
   { Toolbar editor
     Text = "Editor"
-    List = "save,reload,show-form,cut,copy,paste,color,undo,redo,indent,unindent,comment,uncomment,view-nosplit,view-hsplit,view-vsplit,break,watch,pretty,proc,find-definition,go-back"
-    Default = "save,reload,show-form,paste,color,undo,redo,comment,uncomment,break,watch,pretty,|,proc,$HBox1"
+    List = "save,reload,show-form,cut,copy,paste,color,undo,redo,indent,unindent,comment,uncomment,view-nosplit,view-hsplit,view-vsplit,pretty,break,watch,proc,find-definition,go-back"
+    Default = "save,reload,show-form,paste,color,undo,redo,comment,uncomment,pretty,break,watch,|,proc,$HBox1"
   }
 }

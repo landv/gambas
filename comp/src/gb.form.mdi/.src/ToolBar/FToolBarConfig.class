@@ -380,3 +380,55 @@ Public Sub radSize_Click()
   $hForm.SetIconSize(iSize)
 
 End
+
+Public Sub OpenMenu(hToolbar As ToolBar)
+  
+  If $hForm Then Return
+  If Not hToolbar.Key Then Return
+  
+  SetCurrentToolbar(hToolbar)
+
+  'mnuConfigure.Text = Me.Title & "..." 'Subst(("Configure '&1' toolbar..."), hToolbar.Key)
+
+  mnuSmallSize.Checked = False
+  mnuMediumSize.Checked = False
+  mnuLargeSize.Checked = False
+
+  Select Case $hForm.GetIconSize()
+    Case FToolBar.ICON_LARGE
+      mnuLargeSize.Checked = True
+    Case FToolBar.ICON_MEDIUM
+      mnuMediumSize.Checked = True
+    Case Else
+      mnuSmallSize.Checked = True
+  End Select
+  
+  mnuToolbar.Popup
+  
+  If Not Me.Visible Then SetCurrentToolbar(Null)
+  
+End
+
+Public Sub mnuSmallSize_Click()
+  
+  $hForm.SetIconSize(FToolBar.ICON_SMALL)
+  
+End
+
+Public Sub mnuMediumSize_Click()
+  
+  $hForm.SetIconSize(FToolBar.ICON_MEDIUM)
+  
+End
+
+Public Sub mnuLargeSize_Click()
+  
+  $hForm.SetIconSize(FToolBar.ICON_LARGE)
+  
+End
+
+Public Sub mnuConfigure_Click()
+  
+  Me.Show
+  
+End

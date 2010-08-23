@@ -8,8 +8,9 @@ Public $bDesign As Boolean
 
 Static Private $cRegister As New Collection
 
-Private $hWatcher As Watcher
-Private $hWatcherParent As Watcher
+'Private $hWatcher As Watcher
+'Private $hWatcherParent As Watcher
+Private $hObserverParent As Observer
 Private $bLock As Boolean
 Private $bHidden As Boolean
 Private $bVertical As Boolean
@@ -38,7 +39,7 @@ Public Sub _new()
   $iHandleSize = Max(4, Desktop.Scale)
   $iButtonWidth = Desktop.Scale * 4
   dwgHandle.Width = $iHandleSize
-  $hWatcherParent = New Watcher(Me.Parent.Parent) As "Container"
+  $hObserverParent = New Observer(Me.Parent.Parent) As "Container"
   $bAutoResize = True
   UpdateHandle
   
@@ -305,14 +306,14 @@ Public Sub Form_Resize()
 End
 
  
-Public Sub Container_Resize()
+Public Sub Container_Arrange()
   
   Update
   
 End
 
 
-Public Sub panToolBar_BeforeArrange()
+Public Sub panToolbar_BeforeArrange()
 
   If $bDesign Then Return
   Update
@@ -949,7 +950,7 @@ Public Sub SetKey(sKey As String)
     InitToolbar
     RegisterToolbar
   Endif
-  dwgHandle.Visible = ToolbarKey
+  'dwgHandle.Visible = ToolbarKey
   Update
   
 End
@@ -1309,3 +1310,9 @@ Public Sub SetSeparator(bVisible As Boolean)
   
 End
 
+
+Public Sub Form_Menu()
+
+  FToolBarConfig.OpenMenu(Me.Parent)
+
+End

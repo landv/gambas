@@ -2,10 +2,37 @@
 
 { Form Form
   MoveScaled(0,0,72,51)
-  Type = WindowType.Utility
+  Utility = True
   Arrangement = Arrange.Vertical
   Spacing = True
   Margin = True
+  { mnuToolbar Menu
+    { mnuConfigure Menu
+      Text = ("Configure...")
+      Picture = Picture["icon:/small/options"]
+    }
+    { Menu2 Menu
+      Text = ("Icon size")
+      { mnuSmallSize Menu
+        Text = ("Small")
+        Toggle = True
+      }
+      { mnuMediumSize Menu
+        Text = ("Medium")
+        Toggle = True
+      }
+      { mnuLargeSize Menu
+        Text = ("Large")
+        Toggle = True
+      }
+      { Menu1 Menu
+      }
+    }
+    { Menu3 Menu
+      Text = ("Cancel")
+      Picture = Picture["icon:/small/close"]
+    }
+  }
   { HBox1 HBox
     MoveScaled(1,5,69,4)
     Spacing = True

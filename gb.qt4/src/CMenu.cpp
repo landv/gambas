@@ -43,6 +43,9 @@ DECLARE_METHOD(Control_Window);
 DECLARE_METHOD(Control_Name);
 DECLARE_METHOD(CMENU_hide);
 
+static bool _popup_immediate = false;
+static CMENU *_popup_menu_clicked = NULL;
+
 static void clear_menu(CMENU *_object);
 
 static int check_menu(void *_object)
@@ -587,10 +590,19 @@ void CMENU_popup(CMENU *_object, const QPoint &pos)
 		
 		// The Click event is posted, it does not occur immediately.
 		THIS->exec = true;
+		_popup_immediate = true;
 		THIS->menu->exec(pos);
+		_popup_immediate = false;
 		THIS->exec = false;
 		
+		//qDebug("_popup_menu_clicked = %p", _popup_menu_clicked);
 		update_accel_recursive(THIS);
+		
+		if (_popup_menu_clicked)
+		{
+			send_click_event(_popup_menu_clicked);
+			_popup_menu_clicked = NULL;
+		}
 		
 		//MyMainWindow *toplevel = (MyMainWindow *)(THIS->toplevel);
 		//CWINDOW_fix_menubar((CWINDOW *)CWidget::get(toplevel));
@@ -729,7 +741,10 @@ void CMenu::slotTriggered(QAction *action)
 
 	//qDebug("slotTriggered: %s %s", menu->widget.name, (const char *)action->text().toUtf8());
 	GB.Ref(menu);
-	GB.Post((GB_POST_FUNC)send_click_event, (intptr_t)menu);
+	if (_popup_immediate)
+		_popup_menu_clicked = menu;
+	else
+		GB.Post((GB_POST_FUNC)send_click_event, (intptr_t)menu);
 }
 
 void CMenu::slotShown(void)

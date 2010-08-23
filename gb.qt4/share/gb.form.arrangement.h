@@ -193,7 +193,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 		//if (!strcmp(GET_OBJECT_NAME(_object), "HBox1"))
 		//	fprintf(stderr, "HBox1: child count: %d\n", gtk_count);
 
-		swap = (arr->mode & 1) == 0;
+		swap = (arr->mode & 1) == 0; // --> means "vertical"
 		autoresize = arr->autoresize; // && !IS_EXPAND(_object);
 		padding = arr->padding;
 		if (arr->margin) padding += DESKTOP_SCALE;

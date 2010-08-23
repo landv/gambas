@@ -1,36 +1,53 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,82,72)
+  MoveScaled(0,0,103,24)
   Arrangement = Arrange.Vertical
-  { ToolBar1 ToolBar
-    MoveScaled(3,4,69,5)
-    Key = "main"
-    Text = ("ToolBar1")
-    { Button1 Button
-      MoveScaled(0,0,16,4)
-      Action = "button"
-      Text = ("Button1")
+  { TestHBox Panel
+    MoveScaled(1,1,90,13)
+    Arrangement = Arrange.Horizontal
+    AutoResize = True
+    { TestToolbar ToolBar
+      MoveScaled(0,0,63,4)
+      Background = &HDFFFDF&
+      Key = "main"
+      Text = ("ToolBar1")
+      { Button1 Button
+        MoveScaled(0,0,16,4)
+        Action = "button"
+        Text = ("Button1")
+      }
+      { MenuButton1 MenuButton
+        MoveScaled(17,0,15,4)
+        Action = "test"
+        Text = ("MenuButton1")
+      }
+      { ToolButton1 ToolButton
+        MoveScaled(32,0,14,4)
+        Enabled = False
+        Action = "zop"
+        AutoResize = True
+        Text = ("ToolButton1")
+        Picture = Picture["icon:/small/bookmark"]
+      }
+      { ToolButton2 ToolButton
+        MoveScaled(47,0,14,4)
+        Action = "zop2"
+        AutoResize = True
+        Text = ("ToolButton1")
+        Picture = Picture["icon:/small/bookmark"]
+      }
     }
-    { MenuButton1 MenuButton
-      MoveScaled(17,0,15,4)
-      Action = "test"
-      Text = ("MenuButton1")
+    { Panel3 Panel
+      MoveScaled(64,0,3,3)
+      Background = &HDFF7FF&
+      Expand = True
     }
-    { ToolButton1 ToolButton
-      MoveScaled(32,0,13,4)
-      Enabled = False
-      Action = "zop"
+    { btnShowMenu ToolButton
+      MoveScaled(67,0,18,4)
+      ToolTip = ("Show menu bar")
       AutoResize = True
-      Text = ("ToolButton1")
-      Picture = Picture["icon:/small/bookmark"]
-    }
-    { ToolButton2 ToolButton
-      MoveScaled(46,0,13,4)
-      Action = "zop2"
-      AutoResize = True
-      Text = ("ToolButton1")
-      Picture = Picture["icon:/small/bookmark"]
+      Text = ("Show menu bar")
     }
   }
 }
