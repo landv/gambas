@@ -130,7 +130,7 @@ void dns_callback(long lParam)
 				mythis->iStatus=0;
 				if (mythis->finished_callback)
 				{
-				  GB.Ref(mythis);
+				  //GB.Ref(mythis);
 				  GB.Post(mythis->finished_callback, (long)mythis->CliParent);
 				}
 				else
