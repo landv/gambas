@@ -91,6 +91,7 @@ End
 Public Sub End()
   
   Dim sBuffer As String
+  Dim sFile As String
   'Dim hLog As File
 
   Dec $iBegin
@@ -101,10 +102,17 @@ Public Sub End()
     Close #$hFile
     Output To Default 
     
-    $hFile = Open Temp$("response") For Read 
+    sFile = Temp$("response")
+    
+    If Split(CGI["HTTP_ACCEPT_ENCODING"], ",").Exist("gzip") Then
+      AddHeader("Content-Encoding", "gzip")
+      Exec ["gzip", "-9", sFile] Wait
+      sFile &= ".gz"
+    Endif
+
+    $hFile = Open sFile For Read 
     'hLog = Open "/tmp/response." & CStr(Application.Id) For Create
     AddHeader("Content-Length", Lof($hFile))
-    
     Print $sHeader
     $sHeader = ""
   

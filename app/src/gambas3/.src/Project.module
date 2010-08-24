@@ -4513,15 +4513,15 @@ Public Sub OpenWebPage(sLink As String)
     hFirefox = Shell "firefox -remote \"openURL(" & sLink & ",new-window)\"" Wait 
     If hFirefox.Value = 2 Then 
       Shell Browser & " " & Chr$(34) & sLink & Chr$(34)
-      End If
-    Else 
-      Shell Browser & " " & Chr$(34) & sLink & Chr$(34)
-      End If
-      
-    Catch
-      
-      Message.Error(Error.Text)
-      
+    End If
+  Else 
+    Shell Browser & " " & Chr$(34) & sLink & Chr$(34)
+  End If
+  
+Catch
+  
+  Message.Error(Error.Text)
+  
 End
 
 Public Sub OpenImage(sLink As String, sEditor As String) As Boolean

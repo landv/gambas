@@ -589,7 +589,7 @@ void IMAGE_set_pixel(GB_IMG *img, int x, int y, GB_COLOR col)
 	MODIFY(img);
 }
 
-void IMAGE_fill_rect(GB_IMG *img, int x, int y, int w, int h, GB_COLOR col)
+void IMAGE_fill_rect(GB_IMG *img, int x, int y, int w, int h, GB_COLOR col, bool opaque)
 {
 	uint *p;
 	int i;
@@ -611,7 +611,7 @@ void IMAGE_fill_rect(GB_IMG *img, int x, int y, int w, int h, GB_COLOR col)
 	
 	c = GB_COLOR_to_BGRA(col);
 	
-	if (ALPHA(c) == 255)
+	if (opaque || ALPHA(c) == 255)
 	{
 		c = BGRA_to_format(c, format);
 		while (h)

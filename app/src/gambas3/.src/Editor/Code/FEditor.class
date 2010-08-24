@@ -390,16 +390,16 @@ Public Sub Form_Arrange()
   Endif
   
   Select Case $iViewMode
-  Case VIEWMODE_NORMAL
-    edtEditor.Move(0, iToolbarOffset, Me.ClientW, Me.ClientH - iToolbarOffset)
-  Case VIEWMODE_HORIZONTAL
-    splHorizontal.Move(0, iToolbarOffset, Me.ClientW, Me.ClientH - iToolbarOffset)
-  Case VIEWMODE_VERTICAL
-    splVertical.Move(0, iToolbarOffset, Me.ClientW, Me.ClientH - iToolbarOffset)
-    End Select 
-
-ResizeProcList
-
+    Case VIEWMODE_NORMAL
+      edtEditor.Move(0, iToolbarOffset, Me.ClientW, Me.ClientH - iToolbarOffset)
+    Case VIEWMODE_HORIZONTAL
+      splHorizontal.Move(0, iToolbarOffset, Me.ClientW, Me.ClientH - iToolbarOffset)
+    Case VIEWMODE_VERTICAL
+      splVertical.Move(0, iToolbarOffset, Me.ClientW, Me.ClientH - iToolbarOffset)
+  End Select 
+  
+  ResizeProcList
+  
 End
 
 Public Sub Editors_Change()
@@ -1821,101 +1821,101 @@ Private Function GetExpressionType(aExpr As String[], aType As Integer[], bPoint
     If iInd > 0 Then
       If Not bPointAfter Then Return
       Select Case aType[iInd - 1]
-      Case Highlight.Operator, Highlight.Keyword
-      Default
-        Return
-        End Select
+        Case Highlight.Operator, Highlight.Keyword
+        Default
+          Return
+      End Select
+    Endif
+    
+    GetSymbolWith(aExpr, aType)
+    'PRINT "#1 WITH: "; aExpr.Join("/")
+    
+  Else If aExpr[iInd] = "." Then
+    GetSymbolWith(aExpr, aType, iInd)
+    'PRINT "#2 WITH: "; aExpr.Join("/")
   Endif
   
-  GetSymbolWith(aExpr, aType)
-  'PRINT "#1 WITH: "; aExpr.Join("/")
-  
-Else If aExpr[iInd] = "." Then
-  GetSymbolWith(aExpr, aType, iInd)
-  'PRINT "#2 WITH: "; aExpr.Join("/")
-Endif
-
-For iInd = iInd To aExpr.Count - 1
-  
-  sPattern = aExpr[iInd]
-  'PRINT sPattern
-  
-  If sPattern = "(" Then
-    'INC $bInMethod
-    sWait.Push(")")
-    Continue
-  Else If sPattern = "[" Then
-    sWait.Push("]")
-    Continue
-  Else If sWait.Count Then
-    If sPattern = sWait[sWait.Count - 1] Then
-      sWait.Pop
-      If sWait.Count Then Continue
-    Else
+  For iInd = iInd To aExpr.Count - 1
+    
+    sPattern = aExpr[iInd]
+    'PRINT sPattern
+    
+    If sPattern = "(" Then
+      'INC $bInMethod
+      sWait.Push(")")
       Continue
-    Endif
-  Endif
-  
-  'IF aType[iInd] = Editor.Symbol OR aType[iInd] = Editor.DataType OR aType[iInd] = Editor.Keyword THEN
-  If IsTypeSymbol(sPattern, aType[iInd]) Then
-    If Not sType Then
-      If iInd >= (aExpr.Count - 1) Then
-        sType = GetSymbolType(sPattern, bPointAfter)
+    Else If sPattern = "[" Then
+      sWait.Push("]")
+      Continue
+    Else If sWait.Count Then
+      If sPattern = sWait[sWait.Count - 1] Then
+        sWait.Pop
+        If sWait.Count Then Continue
       Else
-        sType = GetSymbolType(sPattern, aExpr[iInd + 1] = ".")
-      Endif
-      If $hSymbol Then
-        '$bLastStatic = FALSE
-        sType = $hSymbol.Type
-        bNeedMethod = LCase($hSymbol.Kind) = "m"
+        Continue
       Endif
     Endif
-    If Not sType Then Return
-  Else If sPattern = "." Then
-    If iInd <= (aExpr.Count - 2) Then
-      If sType Then
-        If aType[iInd + 1] = Highlight.Symbol Then
-          'PRINT sType; " ";
-          cSymbol = CComponent.GetClassSymbols(sType)
-          $hSymbol = Null
-          Try $hSymbol = cSymbol[aExpr[iInd + 1]]
-          If Not $hSymbol Then Return
+    
+    'IF aType[iInd] = Editor.Symbol OR aType[iInd] = Editor.DataType OR aType[iInd] = Editor.Keyword THEN
+    If IsTypeSymbol(sPattern, aType[iInd]) Then
+      If Not sType Then
+        If iInd >= (aExpr.Count - 1) Then
+          sType = GetSymbolType(sPattern, bPointAfter)
+        Else
+          sType = GetSymbolType(sPattern, aExpr[iInd + 1] = ".")
+        Endif
+        If $hSymbol Then
+          '$bLastStatic = FALSE
           sType = $hSymbol.Type
-          $bLastStatic = False ' A property cannot return static classes
-          'PRINT sType
-          If Not sType Then Return
-          If LCase($hSymbol.Kind) = "m" Then bNeedMethod = True
-          Inc iInd
+          bNeedMethod = LCase($hSymbol.Kind) = "m"
+        Endif
+      Endif
+      If Not sType Then Return
+    Else If sPattern = "." Then
+      If iInd <= (aExpr.Count - 2) Then
+        If sType Then
+          If aType[iInd + 1] = Highlight.Symbol Then
+            'PRINT sType; " ";
+            cSymbol = CComponent.GetClassSymbols(sType)
+            $hSymbol = Null
+            Try $hSymbol = cSymbol[aExpr[iInd + 1]]
+            If Not $hSymbol Then Return
+            sType = $hSymbol.Type
+            $bLastStatic = False ' A property cannot return static classes
+            'PRINT sType
+            If Not sType Then Return
+            If LCase($hSymbol.Kind) = "m" Then bNeedMethod = True
+            Inc iInd
+          Else
+            Return
+          Endif
         Else
           Return
         Endif
       Else
         Return
       Endif
-    Else
-      Return
-    Endif
-  Else If sPattern = ")" Then
-    If bNeedMethod Then
-      bNeedMethod = False
-    Else
-      Try $hSymbol = CComponent.GetClassSymbols(sType)["_call"]
+    Else If sPattern = ")" Then
+      If bNeedMethod Then
+        bNeedMethod = False
+      Else
+        Try $hSymbol = CComponent.GetClassSymbols(sType)["_call"]
+        If Not $hSymbol Then Return
+        sType = $hSymbol.Type ' A method cannot return static classes
+        $bLastStatic = False
+      Endif
+    Else If sPattern = "]" Then
+      Try $hSymbol = CComponent.GetClassSymbols(sType)["_get"]
       If Not $hSymbol Then Return
-      sType = $hSymbol.Type ' A method cannot return static classes
-      $bLastStatic = False
+      sType = $hSymbol.Type
+      $bLastStatic = False ' A method cannot return static classes
     Endif
-  Else If sPattern = "]" Then
-    Try $hSymbol = CComponent.GetClassSymbols(sType)["_get"]
-    If Not $hSymbol Then Return
-    sType = $hSymbol.Type
-    $bLastStatic = False ' A method cannot return static classes
-  Endif
+    
+  Next
   
-Next
-
-If bNeedMethod Then Return
-Return sType
-
+  If bNeedMethod Then Return
+  Return sType
+  
 End
 
 Private Sub CheckCompletion(sMode As String)
@@ -2806,35 +2806,35 @@ Private Sub SetViewMode(iViewMode As Integer)
   Endif
   
   Select Case $iViewMode
-    
-  Case VIEWMODE_NORMAL
-    edtEditor.Show
-    splHorizontal.Hide
-    splVertical.Hide
-    Editor = edtEditor  
-    
-  Case VIEWMODE_HORIZONTAL
-    $hEditor1.Reparent(splHorizontal)
-    $hEditor2.Reparent(splHorizontal)
-    edtEditor.Hide
-    splHorizontal.Show
-    splVertical.Hide
-    Editor = $hEditor1
-    
-  Case VIEWMODE_VERTICAL
-    $hEditor1.Reparent(splVertical)
-    $hEditor2.Reparent(splVertical)
-    edtEditor.Hide
-    splHorizontal.Hide
-    splVertical.Show
-    Editor = $hEditor1
-    
-    End Select   
-
-Editor.SetFocus
-Form_Arrange
-Editors_Cursor
-
+      
+    Case VIEWMODE_NORMAL
+      edtEditor.Show
+      splHorizontal.Hide
+      splVertical.Hide
+      Editor = edtEditor  
+      
+    Case VIEWMODE_HORIZONTAL
+      $hEditor1.Reparent(splHorizontal)
+      $hEditor2.Reparent(splHorizontal)
+      edtEditor.Hide
+      splHorizontal.Show
+      splVertical.Hide
+      Editor = $hEditor1
+      
+    Case VIEWMODE_VERTICAL
+      $hEditor1.Reparent(splVertical)
+      $hEditor2.Reparent(splVertical)
+      edtEditor.Hide
+      splHorizontal.Hide
+      splVertical.Show
+      Editor = $hEditor1
+      
+  End Select   
+  
+  Editor.SetFocus
+  Form_Arrange
+  Editors_Cursor
+  
 End
 
 Public Sub mnuNoSplit_Click()
@@ -2961,6 +2961,7 @@ Public Sub btnProc_MouseDown()
   Dim nRow As Integer
   
   If Not btnProc.Enabled Then Return
+  If Not Mouse.Left Then Return
   
   If panProc.Visible Then
     

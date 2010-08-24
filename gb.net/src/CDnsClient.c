@@ -42,13 +42,14 @@
 #define _REENTRANT
 #endif
 
-void **dns_object=NULL;
-int dns_count=0;
-sem_t dns_th_pipe;
-int dns_r_pipe=-1;
-int dns_w_pipe=-1;
+static void **dns_object=NULL;
+static int dns_count=0;
+static sem_t dns_th_pipe;
+static int dns_r_pipe=-1;
+static int dns_w_pipe=-1;
 
-DECLARE_EVENT (Finished);
+DECLARE_EVENT(EVENT_Finished);
+
 /**********************************************************
  DnsClient pipe message protocol:
 
@@ -56,7 +57,7 @@ DECLARE_EVENT (Finished);
  2) Action : '0' --> dns_get_name, '1' --> dns_get_ip
  3) Result : string finished with '\x10'
  *********************************************************/
-void dns_callback(long lParam)
+void dns_callback(intptr_t lParam)
 {
 	/***********************************************************
 	This function reads a message sent by a thread, and then
@@ -77,7 +78,8 @@ void dns_callback(long lParam)
 	int idata=1;
 	if (dns_r_pipe==-1) return;
 	sem_wait(&dns_th_pipe);
-	while (1)
+	
+	for(;;)
 	{
 		Position=0;
 		BufRead[0]='\0';
@@ -131,12 +133,12 @@ void dns_callback(long lParam)
 				if (mythis->finished_callback)
 				{
 				  //GB.Ref(mythis);
-				  GB.Post(mythis->finished_callback, (long)mythis->CliParent);
+				  GB.Post(mythis->finished_callback, (intptr_t)mythis->CliParent);
 				}
 				else
 				{
 					GB.Ref(mythis);
-					GB.Post((void (*)())dns_event, (long)mythis);
+					GB.Post((void (*)())dns_event, (intptr_t)mythis);
 				}
 			}
 		}
@@ -151,7 +153,7 @@ void dns_callback(long lParam)
 
 void dns_event(CDNSCLIENT *mythis)
 {
-    GB.Raise(mythis,Finished,0);
+    GB.Raise(mythis,EVENT_Finished,0);
     GB.Unref(POINTER(&mythis));
 }
 
@@ -244,7 +246,6 @@ void* dns_get_ip(void* v_obj)
 
 void dns_close_all(CDNSCLIENT *mythis)
 {
-
 	if (mythis->iStatus)
   	{
 		pthread_cancel(mythis->th_id); /* cancel thread */
@@ -299,6 +300,7 @@ int dns_set_async_mode(int myval,CDNSCLIENT *mythis)
 	mythis->iAsync=myval;
 	return 0;
 }
+
 /*************************************************************************************
 ######################################################################################
 	---------------------  DNSCLIENT GAMBAS INTERFACE IMPLEMENTATION -----------------
@@ -487,7 +489,7 @@ BEGIN_METHOD_VOID(CDNSCLIENT_GetHostName)
 			GB.FreeString(&THIS->sHostName);
 			THIS->sHostName = GB.NewZeroString(stHost->h_name);
 		}
-		GB.Raise((void*)THIS,Finished,0);
+		GB.Raise((void*)THIS,EVENT_Finished,0);
 	}
   }
   else
@@ -523,7 +525,7 @@ BEGIN_METHOD_VOID(CDNSCLIENT_GetHostIP)
 		THIS->iStatus=1;
 		if (dns_thread_getip(THIS))
 		{
-			GB.Error("No resources available to create a thread");
+			GB.Error("No resource available to create a thread");
 			return;
 		}
 	}
@@ -539,7 +541,7 @@ BEGIN_METHOD_VOID(CDNSCLIENT_GetHostIP)
 			GB.FreeString(&THIS->sHostIP);
 			THIS->sHostIP = GB.NewZeroString(inet_ntoa(*((struct in_addr*)stHost->h_addr)));
 		}
-		GB.Raise((void*)THIS,Finished,0);
+		GB.Raise((void*)THIS,EVENT_Finished,0);
 	}
   }
   else
@@ -560,7 +562,7 @@ GB_DESC CDnsClientDesc[] =
 
   GB_DECLARE("DnsClient", sizeof(CDNSCLIENT)),
 
-  GB_EVENT("Finished", NULL, NULL, &Finished),
+  GB_EVENT("Finished", NULL, NULL, &EVENT_Finished),
 
   GB_METHOD("_new", NULL, CDNSCLIENT_new, NULL),
   GB_METHOD("_free", NULL, CDNSCLIENT_free, NULL),
@@ -577,7 +579,7 @@ GB_DESC CDnsClientDesc[] =
   GB_CONSTANT("_IsVirtual", "b", TRUE),
   GB_CONSTANT("_Group", "s", "Network"),
   GB_CONSTANT("_Properties", "s", "HostName,HostIP,Async=TRUE"),
-  GB_CONSTANT("_DefaultEvent", "s", "Finished"),
+  GB_CONSTANT("_DefaultEvent", "s", "EVENT_Finished"),
 
   GB_END_DECLARE
 };

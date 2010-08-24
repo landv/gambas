@@ -491,7 +491,7 @@ END_METHOD
 BEGIN_METHOD_VOID (CUDPSOCKET_Peek)
 
 	char *sData=NULL;
-	size_t host_len;
+	socklen_t host_len;
 	int retval=0;
 	//int NoBlock=0;
 	int peeking;
@@ -502,7 +502,6 @@ BEGIN_METHOD_VOID (CUDPSOCKET_Peek)
 		return;
 	}
 
-
 	peeking = MSG_NOSIGNAL | MSG_PEEK;
 
 	ioctl(SOCKET->socket,FIONREAD,&bytes);
@@ -511,8 +510,7 @@ BEGIN_METHOD_VOID (CUDPSOCKET_Peek)
 		GB.Alloc( POINTER(&sData),bytes*sizeof(char) );
 		host_len = sizeof(THIS->addr);
 		//ioctl(SOCKET->socket,FIONBIO,&NoBlock);
-		USE_MSG_NOSIGNAL(retval=recvfrom(SOCKET->socket,(void*)sData,1024*sizeof(char) \
-					,peeking,(struct sockaddr*)&THIS->addr, &host_len));
+		USE_MSG_NOSIGNAL(retval=recvfrom(SOCKET->socket, (void*)sData, 1024 * sizeof(char), peeking, (struct sockaddr*)&THIS->addr, &host_len));
 		if (retval<0)
 		{
 			GB.Free(POINTER(&sData));

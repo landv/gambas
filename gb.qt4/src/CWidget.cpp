@@ -1942,9 +1942,9 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		case QEvent::MouseButtonPress:
 		case QEvent::MouseButtonRelease:
 		case QEvent::MouseMove:
-			jump = &&__MOUSE; break;
 		case QEvent::MouseButtonDblClick:
-			jump = &&__DBL_CLICK; break;
+			jump = &&__MOUSE; break;
+			//jump = &&__DBL_CLICK; break;
 		case QEvent::KeyPress:
 		case QEvent::KeyRelease:
 			jump = &&__KEY; break;
@@ -2098,6 +2098,10 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			CMOUSE_info.sx = p.x();
 			CMOUSE_info.sy = p.y();
 			//qDebug("MouseEvent: %d %d", mevent->x(), mevent->y());
+		}
+		else if (type == QEvent::MouseButtonDblClick)
+		{
+			event_id = EVENT_DblClick;
 		}
 		else
 		{

@@ -4,6 +4,7 @@ Private $hToolbar As ToolBar
 Private $hForm As FToolBar
 Private $aDefault As String[]
 Private $hInside As DrawingArea
+Private $hPopupToolbar As ToolBar
 
 Public Sub Run(hToolbar As ToolBar) 
 
@@ -12,6 +13,13 @@ Public Sub Run(hToolbar As ToolBar)
   Me.Show
   
 End
+
+Private Sub GetForm(hToolbar As ToolBar) As FToolBar
+  
+  Return hToolbar._Container.Parent
+  
+End
+
 
 Private Sub SetCurrentToolbar(hToolbar As ToolBar)
 
@@ -28,7 +36,7 @@ Private Sub SetCurrentToolbar(hToolbar As ToolBar)
   If Not hToolbar Then Return
   
   $hToolbar = hToolbar
-  $hForm = $hToolbar._Container.Parent
+  $hForm = GetForm(hToolbar)
 
   If $hToolbar.Text Then
     Me.Title = Subst(("'&1' toolbar configuration"), $hToolbar.Text)
@@ -383,10 +391,12 @@ End
 
 Public Sub OpenMenu(hToolbar As ToolBar)
   
+  Dim hForm As FToolBar
+  
   If $hForm Then Return
   If Not hToolbar.Key Then Return
   
-  SetCurrentToolbar(hToolbar)
+  $hPopupToolbar = hToolbar
 
   'mnuConfigure.Text = Me.Title & "..." 'Subst(("Configure '&1' toolbar..."), hToolbar.Key)
 
@@ -394,7 +404,7 @@ Public Sub OpenMenu(hToolbar As ToolBar)
   mnuMediumSize.Checked = False
   mnuLargeSize.Checked = False
 
-  Select Case $hForm.GetIconSize()
+  Select Case GetForm(hToolbar).GetIconSize()
     Case FToolBar.ICON_LARGE
       mnuLargeSize.Checked = True
     Case FToolBar.ICON_MEDIUM
@@ -405,30 +415,31 @@ Public Sub OpenMenu(hToolbar As ToolBar)
   
   mnuToolbar.Popup
   
-  If Not Me.Visible Then SetCurrentToolbar(Null)
+  'If Not Me.Visible Then SetCurrentToolbar(Null)
   
 End
 
 Public Sub mnuSmallSize_Click()
   
-  $hForm.SetIconSize(FToolBar.ICON_SMALL)
+  GetForm($hPopupToolbar).SetIconSize(FToolBar.ICON_SMALL)
   
 End
 
 Public Sub mnuMediumSize_Click()
   
-  $hForm.SetIconSize(FToolBar.ICON_MEDIUM)
+  GetForm($hPopupToolbar).SetIconSize(FToolBar.ICON_MEDIUM)
   
 End
 
 Public Sub mnuLargeSize_Click()
   
-  $hForm.SetIconSize(FToolBar.ICON_LARGE)
+  GetForm($hPopupToolbar).SetIconSize(FToolBar.ICON_LARGE)
   
 End
 
 Public Sub mnuConfigure_Click()
   
+  SetCurrentToolbar($hPopupToolbar)
   Me.Show
   
 End

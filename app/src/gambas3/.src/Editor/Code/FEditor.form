@@ -157,7 +157,7 @@
     }
     { mnuSep5 Menu
     }
-    { mnuPrettyPrint Menu
+    { mnuPretty Menu
       Action = ".pretty"
       Text = ("Make code pretty")
       Picture = Picture["icon:/small/wizard"]
@@ -316,6 +316,7 @@
     { btnPretty ToolButton mnuPretty
       Name = "btnPretty"
       MoveScaled(51,0,4,4)
+      Visible = False
       ToolTip = ("Make code pretty")
       Action = ".pretty"
       Picture = Picture["icon:/small/wizard"]
@@ -572,6 +573,6 @@
   { Toolbar editor
     Text = "Editor"
     List = "save,reload,show-form,cut,copy,paste,color,undo,redo,indent,unindent,comment,uncomment,view-nosplit,view-hsplit,view-vsplit,pretty,break,watch,proc,find-definition,go-back"
-    Default = "save,reload,show-form,paste,color,undo,redo,comment,uncomment,pretty,break,watch,|,proc,$HBox1"
+    Default = "save,reload,show-form,paste,color,undo,redo,comment,uncomment,break,watch,|,proc,$HBox1"
   }
 }
