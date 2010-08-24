@@ -52,7 +52,7 @@ typedef
 	}
 	CDNSCLIENT;
 
-void dns_callback(long lParam);
+void dns_callback(intptr_t lParam);
 void* dns_get_name(void* v_obj);
 void* dns_get_ip(void* v_obj);
 void dns_event(CDNSCLIENT *mythis);
