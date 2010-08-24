@@ -237,6 +237,7 @@ int CUdpSocket_stream_write(GB_STREAM *stream, char *buffer, int len)
 	struct in_addr dest_ip;
 	NET_ADDRESS dest;
 	size_t size;
+	struct sockaddr *addr;
 
 	if (!THIS) return -1;
 	
@@ -247,20 +248,31 @@ int CUdpSocket_stream_write(GB_STREAM *stream, char *buffer, int len)
 		dest.un.sun_family = PF_UNIX;
 		strcpy(dest.un.sun_path, THIS->tpath);
 		size = sizeof(struct sockaddr_un);
+		addr = (struct sockaddr *)&dest.un;
 	}
 	else
 	{
-		if (!inet_aton((const char*)THIS->thost, &dest_ip))
-			return -1;
+		/*if (THIS->broadcast)
+		{
+			fprintf(stderr, "broadcast\n");
+			dest.in.sin_addr.s_addr = INADDR_BROADCAST;
+		}
+		else*/
+		{
+			if (!inet_aton((const char*)THIS->thost, &dest_ip))
+				return -1;
+			dest.in.sin_addr.s_addr = dest_ip.s_addr;
+		}
 			
 		dest.in.sin_family = PF_INET;
-		dest.in.sin_addr.s_addr = dest_ip.s_addr;
-		dest.in.sin_port = htons(THIS->port);
-		size = sizeof(struct sockaddr_in);
-		//bzero(&(THIS->addr.in.sin_zero), 8);
+		dest.in.sin_port = htons(THIS->tport);
+		size = sizeof(struct sockaddr);
+		addr = (struct sockaddr *)&dest.in;
 	}
 
-	USE_MSG_NOSIGNAL(retval = sendto(SOCKET->socket, (void*)buffer, len, MSG_NOSIGNAL, (struct sockaddr*)&dest, size));
+	//fprintf(stderr, "write: %s %d %d '%.*s'\n", THIS->thost, THIS->tport, len, len, buffer);
+
+	USE_MSG_NOSIGNAL(retval = sendto(SOCKET->socket, (void*)buffer, len, MSG_NOSIGNAL, addr, size));
 
 	if (retval >= 0) 
 		return 0;
@@ -278,7 +290,7 @@ int CUdpSocket_stream_write(GB_STREAM *stream, char *buffer, int len)
 
 static bool update_broadcast(CUDPSOCKET *_object)
 {
-	if (SOCKET->socket == 0)
+	if (SOCKET->socket < 0)
 		return FALSE;
 
 	if (setsockopt(SOCKET->socket, SOL_SOCKET, SO_BROADCAST, (char *)&THIS->broadcast, sizeof(int)) < 0)
@@ -295,6 +307,7 @@ static void dgram_start(CUDPSOCKET *_object)
 	sa_family_t domain;
 	size_t size;
 	struct stat info;
+	struct sockaddr *addr;
 
 	if (SOCKET->status > 0)
 	{
@@ -346,6 +359,7 @@ static void dgram_start(CUDPSOCKET *_object)
 		THIS->addr.un.sun_family = domain;
 		strcpy(THIS->addr.un.sun_path, THIS->path);
 		size = sizeof(struct sockaddr_un);
+		addr = (struct sockaddr *)&THIS->addr.un;
 	}
 	else
 	{
@@ -353,10 +367,11 @@ static void dgram_start(CUDPSOCKET *_object)
 		THIS->addr.in.sin_addr.s_addr = htonl(INADDR_ANY);
 		THIS->addr.in.sin_port = htons(THIS->port);
 		size = sizeof(struct sockaddr_in);
+		addr = (struct sockaddr *)&THIS->addr.in;
 		//bzero(&(THIS->addr.in.sin_zero), 8);
 	}
 	
-	if (bind(SOCKET->socket, (struct sockaddr*)&THIS->addr, size) < 0)
+	if (bind(SOCKET->socket, addr, size) < 0)
 	{
 		close(SOCKET->socket);
 		SOCKET->status = -10;
@@ -475,6 +490,7 @@ Gambas object "Constructor"
 BEGIN_METHOD_VOID(CUDPSOCKET_new)
 
 	SOCKET->stream.tag = _object;
+	SOCKET->socket = -1;
 
 END_METHOD
 
