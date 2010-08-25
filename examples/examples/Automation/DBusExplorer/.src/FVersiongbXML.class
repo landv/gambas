@@ -86,7 +86,7 @@ Public Sub ShowPathContent(sPath As String, sBus As String, sApplication As Stri
     Endif
   Next
   
-  For Each s In DBus[sApplication][sPath].Children
+  For Each s In DBus[sBus & sApplication][sPath].Children
     sAppPath = [sBus, sApplication, sPath].join("|")
     
     If tvDbus.Exist(sAppPath) Then
@@ -100,7 +100,7 @@ Public Sub ShowPathContent(sPath As String, sBus As String, sApplication As Stri
   Next
   
 Catch
-  Print Error.Text
+  Print Error.Where; ": "; Error.Text
 
 End
 
@@ -176,11 +176,13 @@ End
 Public Function MakeSignature(sKey As String) As String
 
   Dim ars As String[]
-  Dim ars2 As New String[]
-  Dim s, t, sOut As String
+  Dim aIn As New String[]
+  Dim s, t As String
   Dim aArg As String[]
   Dim sName, sType As String
   Dim iArg As Integer
+  Dim sOut As String
+  Dim aOut As New String[]
 
   ars = Split(skey, "|")
   If Not $cArgs.Exist(skey) Then 
@@ -195,39 +197,40 @@ Public Function MakeSignature(sKey As String) As String
     
     Inc iArg
     
+    sName = "Arg" & CStr(iArg)
+    For Each t In Split(s)
+      aArg = Scan(t, "*=*")
+      Select Case aArg[0]
+        Case "type"
+          sType = GetType(aArg[1])
+        Case "name"
+          sName = aArg[1]
+      End Select
+    Next
+
     If InStr(s, "=out") Then
       
-      For Each t In Split(s)
-        If Scan(t, "*=*")[0] = "type" Then 
-          s = Scan(t, "*=*")[1]
-          sType = GetType(s)
-        Endif
-      Next
-      
-      If Not sOut Then
-        sOut = " As " & sType
-      Else
-        sOut = " As Variant[]"
-      Endif
+      aOut.Add(sName & " As " & sType)
       
     Else
-      sName = "Arg" & CStr(iArg)
-      For Each t In Split(s)
-        aArg = Scan(t, "*=*")
-        Select Case aArg[0]
-          Case "type"
-            sType = GetType(aArg[1])
-          Case "name"
-            sName = aArg[1]
-        End Select
-      Next
-      ars2.Add(sName & " As " & sType)
+      
+      aIn.Add(sName & " As " & sType)
       
     Endif
     
   Next
   
-  Return ars[ars.Max] & "(" & ars2.Join(", ") & ")" & sOut
+  s = ars[ars.Max] & "(" & aIn.Join(", ") & ")"
+  If aOut.Count Then
+    s &= " As "
+    If aOut.Count = 1 Then
+      s &= Scan(aOut[0], "* As *")[1]
+    Else
+      s &= "[" & aOut.Join(", ") & "]"
+    Endif
+  Endif
+  
+  Return s
   
 End
 

@@ -31,7 +31,8 @@ Public Sub Main()
   'DBus["org.kde.kmail"]["/kmail/kmail_mainwindow_1"].geometry = [0, 24, 1024, 768]
   'Print DBus["org.gambas.gb.dbus"]["/Test"].Compute(5, 7)  
   
-  aVal = DBus["org.freedesktop.Notifications"]["/org/freedesktop/Notifications"].GetServerInformation()
-  Print aVal[0];; aVal[1];; aVal[2]
+  'aVal = DBus["org.freedesktop.Notifications"]["/org/freedesktop/Notifications"].GetServerInformation()
+  'Print aVal[0];; aVal[1];; aVal[2]
+  Print DBus["system://org.freedesktop.UDisks"]["/"].Children
   
 End
