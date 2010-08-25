@@ -43,6 +43,8 @@ static fd_set read_fd;
 static fd_set write_fd;
 
 static WATCH_CALLBACK *watch_callback = NULL;
+static short *watch_index = NULL;
+
 static int max_fd = 0;
 
 static WATCH_TIMER *_timers = NULL;
@@ -245,6 +247,7 @@ void WATCH_init(void)
 	FD_ZERO(&write_fd);
 
 	ARRAY_create(&watch_callback);
+	ARRAY_create(&watch_index);
 	ARRAY_create(&_timers);
 
 	#ifdef DEBUG_TIMER
@@ -256,6 +259,7 @@ void WATCH_init(void)
 void WATCH_exit(void)
 {
 	ARRAY_delete(&watch_callback);
+	ARRAY_delete(&watch_index);
 	ARRAY_delete(&_timers);
 }
 
@@ -285,7 +289,13 @@ static void watch_fd(int fd, int flag, bool watch)
 
 static int watch_find_callback(int fd)
 {
-	int i;
+	fprintf(stderr, "watch_find_callback: %d\n", fd);
+	if (fd < 0 || fd >= ARRAY_count(watch_index))
+		return -1;
+	else
+		return watch_index[fd];
+	
+	/*int i;
 
 	for (i = 0; i < ARRAY_count(watch_callback); i++)
 	{
@@ -293,7 +303,7 @@ static int watch_find_callback(int fd)
 			return i;
 	}
 
-	return (-1);
+	return (-1);*/
 }
 
 
@@ -311,6 +321,20 @@ static int find_max_fd(void)
 	return max;
 }
 
+static void ensure_watch_index(int fd)
+{
+	int i;
+	int count = ARRAY_count(watch_index);
+	
+	//fprintf(stderr, "ensure_watch_index: %d (%d)\n", fd, count);
+	
+	if (fd < count)
+		return;
+	
+	ARRAY_add_many(&watch_index, fd - count + 1);
+	for (i = count; i <= fd; i++)
+		watch_index[i] = -1;
+}
 
 static WATCH_CALLBACK *watch_create_callback(int fd)
 {
@@ -324,6 +348,7 @@ static WATCH_CALLBACK *watch_create_callback(int fd)
 	pos = watch_find_callback(fd);
 	if (pos < 0)
 	{
+		pos = ARRAY_count(watch_callback);
 		wcb = ARRAY_add_void(&watch_callback);
 		wcb->fd = fd;
 	}
@@ -336,6 +361,9 @@ static WATCH_CALLBACK *watch_create_callback(int fd)
 	#if DEBUG_WATCH
 	fprintf(stderr, "watch_create_callback: %d -> %d read = %p (%p) write = %p (%p)\n", fd, pos, wcb->callback_read, (void *)wcb->param_read, wcb->callback_write, (void *)wcb->param_write);
 	#endif
+	
+	ensure_watch_index(fd);
+	watch_index[fd] = pos;
 	
 	return wcb;
 }
@@ -353,6 +381,8 @@ static void watch_delete_callback(int fd)
 	pos = watch_find_callback(fd);
 	if (pos < 0)
 		return;
+	
+	watch_index[fd] = -1;
 	
 	wcb = &watch_callback[pos];
 	wcb->fd = -1;
