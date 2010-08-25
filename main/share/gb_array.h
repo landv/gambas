@@ -47,7 +47,7 @@ void ARRAY_delete(void *p_data);
 #define ARRAY_size(_data) (DATA_TO_ARRAY(_data)->size)
 #define ARRAY_count(_data) ((_data) ? DATA_TO_ARRAY(_data)->count : 0)
 
-void ARRAY_realloc(void *p_data, bool zero);
+void ARRAY_realloc(void *p_data);
 
 void *ARRAY_add_data(void *p_data, int num, bool zero);
 void *ARRAY_add_data_one(void *p_data, bool zero);
@@ -66,9 +66,10 @@ void *ARRAY_add_data_one(void *p_data, bool zero);
 	} \
 	else \
 	{ \
-		ARRAY_realloc(_pdata, (_zero)); \
+		ARRAY_realloc(_pdata); \
 		ptr = *(_pdata) + old_count; \
 	} \
+	if (_zero) memset(ptr, 0, sizeof(*ptr)); \
 	ptr; \
 })
 

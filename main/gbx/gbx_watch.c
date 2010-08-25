@@ -36,9 +36,8 @@
 #include "gbx_c_timer.h"
 #include "gbx_watch.h"
 
-
-//#define DEBUG_TIMER
-//#define DEBUG_WATCH
+//#define DEBUG_TIMER 1
+//#define DEBUG_WATCH 1
 
 static fd_set read_fd;
 static fd_set write_fd;
@@ -208,6 +207,9 @@ static bool get_timeout(const struct timeval *wait, struct timeval *tv)
 
 	if (timeout.tv_sec == 0 && timeout.tv_usec < (1000000 / 100))
 	{
+		#ifdef DEBUG_TIMER
+		fprintf(stderr, "busy loop\n");
+		#endif
 		// busy loop!
 		time_add(&timeout, now);
 		for(;;)
@@ -261,7 +263,7 @@ void WATCH_exit(void)
 static void watch_fd(int fd, int flag, bool watch)
 {
 	#if DEBUG_WATCH
-	fprintf(stderr, "watch_fd: %d / %d: %d\n", fd, flag, watch);
+	fprintf(stderr, "watch_fd: %d for %s: %s\n", fd, flag == WATCH_READ ? "read" : "write", watch ? "set" : "clear");
 	#endif
 
 	if (flag == WATCH_READ)
@@ -331,19 +333,29 @@ static WATCH_CALLBACK *watch_create_callback(int fd)
 	if (fd > max_fd)
 		max_fd = fd;
 		
+	#if DEBUG_WATCH
+	fprintf(stderr, "watch_create_callback: %d -> %d read = %p (%p) write = %p (%p)\n", fd, pos, wcb->callback_read, (void *)wcb->param_read, wcb->callback_write, (void *)wcb->param_write);
+	#endif
+	
 	return wcb;
 }
 
 
 static void watch_delete_callback(int fd)
 {
+	WATCH_CALLBACK *wcb;
 	int pos;
 	
+	#if DEBUG_WATCH
+	fprintf(stderr, "watch_delete_callback: %d (%d)\n", fd, _do_not_really_delete_callback);
+	#endif
+
 	pos = watch_find_callback(fd);
 	if (pos < 0)
 		return;
-		
-	watch_callback[pos].fd = -1;
+	
+	wcb = &watch_callback[pos];
+	wcb->fd = -1;
 	watch_fd(fd, WATCH_READ, FALSE);
 	watch_fd(fd, WATCH_WRITE, FALSE);
 	max_fd = find_max_fd();
@@ -383,6 +395,11 @@ void WATCH_watch(int fd, int type, void *callback, intptr_t param)
 			wcb->callback_write = callback;
 			wcb->param_write = param;
 		}
+
+		#if DEBUG_WATCH
+		fprintf(stderr, "add watch: %d -> %d read = %p (%p) write = %p (%p)\n", fd, watch_find_callback(fd), wcb->callback_read, (void *)wcb->param_read, wcb->callback_write, (void *)wcb->param_write);
+		#endif
+
 		if (!wcb->callback_read && !wcb->callback_write)
 			watch_delete_callback(fd);
 		else
@@ -390,10 +407,6 @@ void WATCH_watch(int fd, int type, void *callback, intptr_t param)
 			watch_fd(fd, WATCH_READ, wcb->callback_read != NULL);
 			watch_fd(fd, WATCH_WRITE, wcb->callback_write != NULL);
 		}
-		
-		#if DEBUG_WATCH
-		fprintf(stderr, "add watch: %d\n",  watch_find_callback(fd));
-		#endif
 	}
 }
 
@@ -406,7 +419,7 @@ static void raise_callback(fd_set *rfd, fd_set *wfd)
 	_do_not_really_delete_callback++;
 
 	#if DEBUG_WATCH
-	fprintf(stderr, "\nmax_fd = %d\n", max_fd);
+	fprintf(stderr, "raise_callback: max_fd = %d\n", max_fd);
 	#endif
 	for (i = 0; i < ARRAY_count(watch_callback); i++)
 	{
@@ -414,19 +427,34 @@ static void raise_callback(fd_set *rfd, fd_set *wfd)
 		// execution of the callbacks.
 		
 		wcb = watch_callback[i];
+
+		#if DEBUG_WATCH
+		fprintf(stderr, "raise_callback: [%d] fd = %d read = %p (%p) write = %p (%p)\n", i, wcb.fd, wcb.callback_read, (void *)wcb.param_read, wcb.callback_write, (void *)wcb.param_write);
+		#endif
+		
 		if (wcb.fd < 0)
 			continue;
 		
 		if (FD_ISSET(wcb.fd, rfd))
 		{
 			if (wcb.callback_read)
+			{
+				#ifdef DEBUG_WATCH
+				fprintf(stderr, "call read callback on fd %d\n", wcb.fd);
+				#endif
 				(*(wcb.callback_read))(wcb.fd, WATCH_READ, wcb.param_read);
+			}
 		}
 
 		if (FD_ISSET(wcb.fd, wfd))
 		{
 			if (wcb.callback_write)
+			{
+				#ifdef DEBUG_WATCH
+				fprintf(stderr, "call write callback on fd %d\n", wcb.fd);
+				#endif
 				(*(wcb.callback_write))(wcb.fd, WATCH_WRITE, wcb.param_write);
+			}
 		}
 	}
 
@@ -480,6 +508,10 @@ static bool do_loop(struct timeval *wait)
 	if (EVENT_check_post())
 		something_done = TRUE;
 
+	#ifdef DEBUG_TIMER
+	fprintf(stderr, "\ndo_loop: now = %.7g: select (%d)\n", time_to_double(time_now()), something_done);
+	#endif
+
 	if (get_timeout(wait, &tv))
 		ret = do_select(&rfd, &wfd, NULL);
 	else
@@ -489,10 +521,14 @@ static bool do_loop(struct timeval *wait)
 	}
 
 	#ifdef DEBUG_TIMER
-	fprintf(stderr, "do_loop: now = %.7g\n", time_to_double(time_now()));
+	fprintf(stderr, "do_loop: now = %.7g: timers (%d)\n", time_to_double(time_now()), something_done);
 	#endif
 
 	raise_timers();
+
+	#ifdef DEBUG_TIMER
+	fprintf(stderr, "do_loop: now = %.7g: callbacks\n", time_to_double(time_now()));
+	#endif
 
 	if (ret > 0)
 	{
@@ -608,3 +644,4 @@ void WATCH_timer(void *t, int on)
 		timer->id = 0;
 	}
 }
+

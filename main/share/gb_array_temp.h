@@ -82,12 +82,12 @@ void *ARRAY_add_data(void *p_data, int num, bool zero)
   return ptr;
 }
 
-void ARRAY_realloc(void *p_data, bool zero)
+void ARRAY_realloc(void *p_data) //, bool zero)
 {
   void **data = (void **)p_data;
   ARRAY *array = DATA_TO_ARRAY(*data);
   ARRAY *new_array;
-	int old_max = array->max;
+	//int old_max = array->max;
 	int size = array->size;
 	
 	array->max = array->inc + ((array->count + array->inc) / array->inc) * array->inc;
@@ -95,11 +95,11 @@ void ARRAY_realloc(void *p_data, bool zero)
 	REALLOC(&new_array, sizeof(ARRAY) + array->max * size, "ARRAY_realloc");
   *data = ARRAY_TO_DATA(new_array);
 	//fprintf(stderr, "ARRAY_realloc: %p (%d) -> %p (%d) [%d]\n", array, old_max, new_array, new_array->max, size);
-	if (zero)
+	/*if (zero)
 	{
 		//fprintf(stderr, "ARRAY_realloc: memset(%p, 0, %d)\n", ARRAY_TO_DATA(new_array) + old_max * size, (new_array->max - old_max) * size);
 		memset(ARRAY_TO_DATA(new_array) + old_max * size, 0, (new_array->max - old_max) * size);
-	}
+	}*/
 }
 
 
