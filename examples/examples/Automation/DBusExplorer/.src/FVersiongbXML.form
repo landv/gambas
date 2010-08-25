@@ -6,16 +6,23 @@
   Icon = Picture["dbus64.png"]
   Arrangement = Arrange.Vertical
   { Panel1 Panel
-    MoveScaled(3,0,83,4)
+    MoveScaled(3,0,102,4)
     Arrangement = Arrange.Horizontal
     { btnRefresh ToolButton
-      MoveScaled(0,0,7,4)
+      MoveScaled(0,0,11,4)
       AutoResize = True
       Text = ("Refresh")
       Picture = Picture["icon:/small/refresh"]
     }
+    { btnShowId ToolButton
+      MoveScaled(12,0,14,4)
+      AutoResize = True
+      Text = ("Show bus ids")
+      Picture = Picture["icon:/small/lamp"]
+      Toggle = True
+    }
     { HBox1 HBox
-      MoveScaled(11,0,52,3)
+      MoveScaled(47,0,52,3)
       Spacing = True
       { Separator1 Separator
         MoveScaled(2,0,0,3)
@@ -105,11 +112,11 @@
         { Separator4 Separator
           MoveScaled(12,45,23,0)
         }
-        { lblsignature Label
+        { lblsignature TextLabel
           MoveScaled(5,49,34,3)
+          Font = Font["Monospace,-2"]
           Background = Color.LightBackground
-          AutoResize = True
-          Text = ("")
+          Padding = 4
         }
       }
     }

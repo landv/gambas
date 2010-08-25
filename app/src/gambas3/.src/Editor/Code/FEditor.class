@@ -850,7 +850,7 @@ Public Sub Editors_KeyPress()
   
   If Key.Code = Key.F6 Then
     
-    btnProc_MouseDown
+    ToggleProcList
     Stop Event
     
   Else If Key.Code = Key.F2 Then
@@ -2955,13 +2955,13 @@ Private Sub ResizeProcList()
   
 End
 
-Public Sub btnProc_MouseDown()
+Private Sub ToggleProcList()
+  
   
   Dim iCurrent As Integer
   Dim nRow As Integer
   
   If Not btnProc.Enabled Then Return
-  If Not Mouse.Left Then Return
   
   If panProc.Visible Then
     
@@ -2987,6 +2987,14 @@ Public Sub btnProc_MouseDown()
     Endif
     
   Endif
+  
+End
+
+
+Public Sub btnProc_MouseDown()
+  
+  If Not Mouse.Left Then Return
+  ToggleProcList
   
 End
 
@@ -3065,7 +3073,7 @@ Public Sub gvwProc_KeyPress()
     gvwProc_Click
     Stop Event
   Else If Key.Code = Key.F6 Then
-    btnProc_MouseDown
+    ToggleProcList
     Stop Event
   Endif
   

@@ -2,6 +2,8 @@
 
 Public Sub Main()
 
+  Dim aVal As Variant[]
+
   'DBus["org.kde.kmail"]["/kmail/kmail_mainwindow_1"].geometry = [0, 24, 1024, 768] '.Get("", "rect")
   'aRect = DBus["org.kde.kmail"]["/kmail/kmail_mainwindow_1", "com.trolltech.Qt.QWidget"].geometry
   'Get("com.trolltech.Qt.QWidget", "rect")
@@ -21,11 +23,15 @@ Public Sub Main()
 
   'Print DBus.Session._Name
   'Dim hTest As CTest = CTest
-  DBus.Session.Register(CTest, "/Test")
+  
+  'DBus.Session.Register(CTest, "/Test")
+  
   'Print DBus.Session.Applications
   
   'DBus["org.kde.kmail"]["/kmail/kmail_mainwindow_1"].geometry = [0, 24, 1024, 768]
   'Print DBus["org.gambas.gb.dbus"]["/Test"].Compute(5, 7)  
   
+  aVal = DBus["org.freedesktop.Notifications"]["/org/freedesktop/Notifications"].GetServerInformation()
+  Print aVal[0];; aVal[1];; aVal[2]
   
 End

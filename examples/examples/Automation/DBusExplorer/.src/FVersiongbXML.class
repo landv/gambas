@@ -1,22 +1,21 @@
 ' Gambas class file
 
-Private $ColArgs As New Collection
-Private $colTypes As New Collection
+Private $cArgs As New Collection
+Private $cType As New Collection
 
 Public Sub _new()
-
-  $colTypes["i"] = "Integer"
-  $colTypes["u"] = "Integer"
-  $colTypes["s"] = "String"
-  $colTypes["o"] = "DBusObject"
-  $colTypes["b"] = "Boolean"
-  $colTypes["y"] = "Byte"
-  $colTypes["ay"] = "Byte[]"
-  $colTypes["ai"] = "Integer[]"
-  $colTypes["as"] = "String[]"
-  $colTypes["v"] = "Variant"
-  $colTypes["av"] = "Variant[]"
-  $colTypes["ao"] = "DBusObject[]"
+  
+  $cType["i"] = "Integer"
+  $cType["u"] = "Integer"
+  $cType["s"] = "String"
+  $cType["o"] = "DBusObject"
+  $cType["b"] = "Boolean"
+  $cType["y"] = "Byte"
+  $cType["v"] = "Variant"
+  $cType["d"] = "Float"
+  $cType["n"] = "Short"
+  $cType["x"] = "Long"
+  $cType["a{sv}"] = "Collection"
 
 End
 
@@ -35,15 +34,16 @@ Public Sub ShowPathContent(sPath As String, sBus As String, sApplication As Stri
   Dim aArgs As New String[]
   Dim sArgs As String
   Dim sIntr As String
+
   'Dim haArgs As New Object[]
   
   sIntr = DBus[sBus & sApplication]._Introspect(sPath)
   Print sIntr
   Try xmlDoc.FromString(sIntr)
-
-   If Error Then Return
   
-   For i = 0 To xmlDoc.Root.Children.Count - 1
+  If Error Then Return
+  
+  For i = 0 To xmlDoc.Root.Children.Count - 1
     hNode = xmlDoc.Root.Children[i]
     If hNode.Name = "interface" Then
       For Each hattr In hNode.Attributes
@@ -53,39 +53,37 @@ Public Sub ShowPathContent(sPath As String, sBus As String, sApplication As Stri
         Else
           tvDbus.Add(sFullDbusPath, hattr.Value,, sBus & "|" & sApplication & "|" & sPath)
         Endif
-  
+        
         For j = 0 To hNode.Children.Count - 1
           hNode2 = hNode.Children[j]
           If hNode2.Name = "method" Or hNode2.Name = "property" Or hNode2.Name = "signal" Then
-             For Each hattr In hNode2.Attributes
+            For Each hattr In hNode2.Attributes
               Break
-             Next
+            Next
             Try tvDbus.Add(sFullDbusPath & "|" & hattr.Value, hattr.Value, Picture[hNode2.Name & ".png"], sFullDbusPath)
             If Error Then Continue
             For k = 0 To hNode2.Children.Count - 1
               If hNode2.Children[k].Name = "arg" Then
                 
                 For Each hattr2 In hNode2.Children[k].Attributes
-
+                  
                   aArgs.Add(hattr2.Name & "=" & hattr2.Value)
                   
                 Next
-
-                $ColArgs[sFullDbusPath & "|" & hattr.Value] &= aArgs.Join()
                 
-                If k < hNode2.Children.Count - 2 Then $ColArgs[sFullDbusPath & "|" & hattr.Value] &= "|"
+                $cArgs[sFullDbusPath & "|" & hattr.Value] &= aArgs.Join()
+                
+                If k < hNode2.Children.Count - 2 Then $cArgs[sFullDbusPath & "|" & hattr.Value] &= "|"
                 aArgs.Clear
               Endif
             Next
-
             
           Endif
-  
+          
         Next 
       Next
     Endif
-   Next
-  
+  Next
   
   For Each s In DBus[sApplication][sPath].Children
     sAppPath = [sBus, sApplication, sPath].join("|")
@@ -97,111 +95,149 @@ Public Sub ShowPathContent(sPath As String, sBus As String, sApplication As Stri
     Endif
     tvDbus.Add(sAppPath &/ s & "|child", "child",, sAppPath &/ s)
     tvDbus[sAppPath &/ s].Picture = Picture["icon:/small/directory"]
-   
+    
   Next
+  
+Catch
+  Print Error.Text
 
-
-  Catch
-   Print Error.Text
 End
 
-
-
-
 Public Sub lstb_activate()
-   tvDbus.Clear
-   $ColArgs.Clear
-  ShowPathContent("/", Last.Tag & "://", Last.current.text)
 
+  tvDbus.Clear
+  $cArgs.Clear
+  ShowPathContent("/", Last.Tag & "://", Last.current.text)
+  
 End
 
 Public Sub tvDbus_Expand()
+
   Dim ars As String[]
+
   If Not tvDbus.Exist(tvDbus.item.Key & "|" & "child") Then Return
   tvDbus.Remove(tvDbus.item.Key & "|" & "child")
   ars = Split(tvDbus.Item.Key, "|")
   ShowPathContent(ars[2], ars[0], ars[1])
-
+  
 End
+
+Private Sub RemoveIds(aList As String[])
+  
+  Dim iInd As Integer
+  
+  While iInd < aList.Count
+    If Left(aList[iInd]) = ":" Then
+      aList.Remove(iInd)
+    Else
+      Inc iInd
+    Endif
+  Wend
+  
+End
+
 
 Public Sub btnRefresh_Click()
-
+  
+  Dim aList As String[]
+  
   lstbSystem.Clear
   lstbSession.Clear
-  $ColArgs.Clear
+  $cArgs.Clear
   tvDbus.Clear
-  lstbSession.List = DBus.Session.Applications.Sort(gb.Natural)
-  lstbSystem.List = DBus.System.Applications.Sort(gb.Natural)
-
+  
+  aList = DBus.Session.Applications.Sort(gb.Natural)
+  If Not btnShowId.Value Then RemoveIds(aList)
+  lstbSession.List = aList
+  aList = DBus.System.Applications.Sort(gb.Natural)
+  If Not btnShowId.Value Then RemoveIds(aList)
+  lstbSystem.List = aList
+  
 End
 
-
 Public Sub lstb_DblClick()
-
+  
   Try Print DBus[Last.current.text]._Introspect("/")
+  
+End
 
+Private Sub GetType(sType As String) As String
+  
+  If $cType.Exist(sType) Then Return $cType[sType]
+  
+  If Left(sType) = "a" Then Return GetType(Mid$(sType, 2)) & "[]"
+  
+  Return "Variant"
+  
 End
 
 
 Public Function MakeSignature(sKey As String) As String
+
   Dim ars As String[]
   Dim ars2 As New String[]
-  Dim sValue, s, t, sOut As String
+  Dim s, t, sOut As String
+  Dim aArg As String[]
+  Dim sName, sType As String
+  Dim iArg As Integer
+
   ars = Split(skey, "|")
-  If Not $ColArgs.Exist(skey) Then Return
-  
-  
-  
-  For Each s In Split($ColArgs[sKey], "|")
-  
-    If InStr(s, "=out") Then
-      For Each t In Split(s)
-        If Scan(t, "*=*")[0] = "type" Then 
-          s = Scan(t, "*=*")[1]
-          If $colTypes.Exist(s) Then
-            sOut &= $colTypes[s]
-          Else
-            sOut &= s
-          Endif
-          Endif
-          
-      Next
-      sOut = " As " & sOut
+  If Not $cArgs.Exist(skey) Then 
+    If ars.Max = 4 Then 
+      Return ars[ars.Max] & "()"
     Else
-      sValue &= "Value As "
+      Return
+    Endif
+  Endif
+  
+  For Each s In Split($cArgs[sKey], "|")
+    
+    Inc iArg
+    
+    If InStr(s, "=out") Then
+      
       For Each t In Split(s)
         If Scan(t, "*=*")[0] = "type" Then 
           s = Scan(t, "*=*")[1]
-          If $colTypes.Exist(s) Then
-            sValue &= $colTypes[s]
-          Else
-            sValue &= s
-          Endif
-          Endif
-          
+          sType = GetType(s)
+        Endif
       Next
-      ars2.Add(sValue)
-        sValue = ""
+      
+      If Not sOut Then
+        sOut = " As " & sType
+      Else
+        sOut = " As Variant[]"
+      Endif
+      
+    Else
+      sName = "Arg" & CStr(iArg)
+      For Each t In Split(s)
+        aArg = Scan(t, "*=*")
+        Select Case aArg[0]
+          Case "type"
+            sType = GetType(aArg[1])
+          Case "name"
+            sName = aArg[1]
+        End Select
+      Next
+      ars2.Add(sName & " As " & sType)
       
     Endif
-  
-
+    
   Next
-    sValue = ars[ars.Max] & "(" & ars2.Join(", ") & ")" & sOut
   
-  Return sValue
+  Return ars[ars.Max] & "(" & ars2.Join(", ") & ")" & sOut
   
 End
-
 
 Public Sub tvDbus_Select()
-
+  
   MakeSignature(Last.item.key)
-
+  
 End
 
-
 Public Sub tvDbus_MouseMove()
+
   Dim s As String
   Dim ix, iy As Integer
   Dim hcont As Object
@@ -209,7 +245,7 @@ Public Sub tvDbus_MouseMove()
   If Not tvDbus.Find(Mouse.x, Mouse.y) Then 
     
     s = MakeSignature(tvDbus.item.key)
-
+    
     hcont = tvDbus.Parent
     ix = tvDbus.Item.X + tvDbus.Item.w / 2
     iy = tvDbus.Item.Y
@@ -219,10 +255,15 @@ Public Sub tvDbus_MouseMove()
     'lblsignature.Y = iY
     'lblsignature.Visible = True
     'lblsignature.Refresh
-  'Else
+    'Else
     'lblsignature.Visible = False
   Endif
   lblsignature.Text = s
   
 End
 
+Public Sub btnShowId_Click()
+
+  btnRefresh_Click
+
+End

@@ -105,9 +105,11 @@ Public Sub End()
     sFile = Temp$("response")
     
     If Split(CGI["HTTP_ACCEPT_ENCODING"], ",").Exist("gzip") Then
-      AddHeader("Content-Encoding", "gzip")
-      Exec ["gzip", "-9", sFile] Wait
-      sFile &= ".gz"
+      If Stat(sFile).Size >= 128 Then
+        AddHeader("Content-Encoding", "gzip")
+        Exec ["gzip", "-9", sFile] Wait
+        If Exist(sFile & ".gz") Then sFile &= ".gz"
+      Endif
     Endif
 
     $hFile = Open sFile For Read 
