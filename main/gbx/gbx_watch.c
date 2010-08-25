@@ -289,21 +289,10 @@ static void watch_fd(int fd, int flag, bool watch)
 
 static int watch_find_callback(int fd)
 {
-	fprintf(stderr, "watch_find_callback: %d\n", fd);
 	if (fd < 0 || fd >= ARRAY_count(watch_index))
 		return -1;
 	else
 		return watch_index[fd];
-	
-	/*int i;
-
-	for (i = 0; i < ARRAY_count(watch_callback); i++)
-	{
-		if (fd == watch_callback[i].fd)
-			return i;
-	}
-
-	return (-1);*/
 }
 
 
@@ -456,14 +445,14 @@ static void raise_callback(fd_set *rfd, fd_set *wfd)
 		// We copy the callback structure, because the watch_callback array can change during the
 		// execution of the callbacks.
 		
+		if (watch_callback[i].fd < 0)
+			continue;
+		
 		wcb = watch_callback[i];
 
 		#if DEBUG_WATCH
 		fprintf(stderr, "raise_callback: [%d] fd = %d read = %p (%p) write = %p (%p)\n", i, wcb.fd, wcb.callback_read, (void *)wcb.param_read, wcb.callback_write, (void *)wcb.param_write);
 		#endif
-		
-		if (wcb.fd < 0)
-			continue;
 		
 		if (FD_ISSET(wcb.fd, rfd))
 		{
