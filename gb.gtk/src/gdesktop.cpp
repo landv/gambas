@@ -224,6 +224,33 @@ gColor gDesktop::selbgColor()
 	return get_gdk_color(&st->base[GTK_STATE_SELECTED]);
 }
 
+gColor gDesktop::lightbgColor()
+{
+	int h, s, v;
+  int h2, s2, v2;
+  int r, g, b;
+  
+	gt_color_to_rgb(gDesktop::selbgColor(), &r, &g, &b);
+  gt_rgb_to_hsv(r, g, b, &h, &s, &v);
+  
+	gt_color_to_rgb(gDesktop::textbgColor(), &r, &g, &b);
+  gt_rgb_to_hsv(r, g, b, &h2, &s2, &v2);
+  
+  gt_hsv_to_rgb(h, (s2 * 3 + s) / 4, (v2 * 3 + v) / 4, &r, &g, &b);
+
+  return gt_rgb_to_color(r, g, b);
+}
+
+gColor gDesktop::lightfgColor()
+{
+	uint col;
+	
+	col = IMAGE.MergeColor(gDesktop::bgColor(), gDesktop::fgColor(), 0.5);
+	col = IMAGE.LighterColor(col);
+	
+	return col;
+}
+
 int gDesktop::height()
 {
 	return gdk_screen_get_height(gdk_screen_get_default ());

@@ -26,13 +26,6 @@ class gSeparator : public gControl
 {
 public:
 	gSeparator(gContainer *parent);
-
-	long foreground();
-	long background();
-
-	void setForeground(long vl);
-	void setBackground(long vl);
-
 };
 
 #endif

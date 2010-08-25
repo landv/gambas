@@ -22,18 +22,31 @@
 
 #include "widgets.h"
 #include "widgets_private.h"
+#include "gdesktop.h"
 #include "gseparator.h"
 
-gboolean gSeparator_expose(GtkWidget *wid,GdkEventExpose *e,gSeparator *data)
+gboolean gSeparator_expose(GtkWidget *wid, GdkEventExpose *e, gSeparator *data)
 {
-	gint w,h;
+	gint w, h;
 
-	gdk_drawable_get_size(wid->window,&w,&h);
-	if (w>=h)
+	w = data->width();
+	h = data->height();
+	
+	if (w == 1 || h == 1)
+	{
+		GdkGC *gc;
+		GdkGCValues values;
+
+		fill_gdk_color(&values.foreground, gDesktop::lightfgColor(), gdk_drawable_get_colormap(wid->window));
+		gc = gtk_gc_get(gdk_drawable_get_depth(wid->window), gdk_drawable_get_colormap(wid->window), &values, GDK_GC_FOREGROUND);
+		
+		gdk_draw_rectangle(wid->window, gc, TRUE, e->area.x, e->area.y, e->area.width, e->area.height);
+		gtk_gc_release(gc);
+	}
+	else if (w>=h)
 		gtk_paint_hline(wid->style,wid->window,GTK_STATE_NORMAL,&e->area,wid,NULL,0,w,h/2);
 	else
 		gtk_paint_vline(wid->style,wid->window,GTK_STATE_NORMAL,&e->area,wid,NULL,0,h,w/2);
-                                            
 
 	return false;
 } 
@@ -52,34 +65,7 @@ gSeparator::gSeparator(gContainer *parent) : gControl(parent)
 	connectParent();
 	initSignals();
 
-	
-
 	g_signal_connect(G_OBJECT(widget),"expose-event",G_CALLBACK(gSeparator_expose),(gpointer)this);
-
-}
-
-long gSeparator::foreground()
-{
-	return get_gdk_bg_color(widget);
-}
-
-long gSeparator::background()
-{
-	return get_gdk_bg_color(border);
-}
-
-void gSeparator::setForeground(long vl)
-{
-	set_gdk_fg_color(widget,vl);
-	if (!border->window) gtk_widget_realize(border);
-	gdk_window_process_updates(border->window,true);
-}
-	
-void gSeparator::setBackground(long vl)
-{
-	set_gdk_bg_color(widget,vl);
-	if (!border->window) gtk_widget_realize(border);
-	gdk_window_process_updates(border->window,true);
 }
 
 

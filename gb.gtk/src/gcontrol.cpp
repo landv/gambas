@@ -198,16 +198,16 @@ void gControl::cleanRemovedControls()
 
 void gControl::initAll(gContainer *parent)
 {
-	bufW=0;
-	bufH=0;
-	bufX=0;
-	bufY=0;
-	curs=NULL;
+	bufW = 0;
+	bufH = 0;
+	bufX = 0;
+	bufY = 0;
+	curs = NULL;
 	fnt = NULL;
-	g_typ=0;
-	dsg=false;
-	expa=false;
-	igno=false;
+	g_typ = 0;
+	dsg = false;
+	expa = false;
+	igno = false;
 	_accept_drops = false;
 	_drag_enter = false;
 	_drag_get_data = false;
@@ -511,7 +511,7 @@ void gControl::resize(int w, int h)
 		if (visible)
 			gtk_widget_show(border);
 	
-		//g_debug("resize: %p: %d %d", this, w, h);
+		//g_debug("resize: %p %s: %d %d", this, name(), w, h);
 		_dirty_size = true;
 		
 		#if GEOMETRY_OPTIMIZATION
@@ -1154,12 +1154,8 @@ void gControl::drawBorder(GdkDrawable *win)
     {
 			GdkGC *gc;
 			GdkGCValues values;
-			uint col;
-			
-			col = IMAGE.MergeColor(gDesktop::bgColor(), gDesktop::fgColor(), 0.5);
-			col = IMAGE.LighterColor(col);
 
-			fill_gdk_color(&values.foreground, col, gdk_drawable_get_colormap(win));
+			fill_gdk_color(&values.foreground, gDesktop::lightfgColor(), gdk_drawable_get_colormap(win));
 			gc = gtk_gc_get(gdk_drawable_get_depth(win), gdk_drawable_get_colormap(win), &values, GDK_GC_FOREGROUND);
 			
 			//gdk_draw_rectangle(win, use_base ? st->text_gc[GTK_STATE_NORMAL] : st->fg_gc[GTK_STATE_NORMAL], FALSE, x, y, w - 1, h - 1); 

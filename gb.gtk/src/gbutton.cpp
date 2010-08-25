@@ -505,6 +505,7 @@ void gButton::setPicture(gPicture *npic)
 	
 	rendpix = new_rendpix;
 	
+	updateSize();
 	refresh();
 }
 
@@ -622,15 +623,20 @@ void gButton::animateClick(bool on)
 
 int gButton::minimumHeight()
 {
+	int mh = 0;
+	
 	if (bufText && *bufText)
 	{
 		if (type == Button || type == Toggle || type == Tool)
-			return font()->height() + 8;
+			mh = font()->height() + 8;
 		else
-			return font()->height() + 2;
+			mh = font()->height() + 2;
 	}
 	
-	return 0;
+	if (pic && (pic->height() > mh))
+		mh = pic->height();
+	
+	return mh;
 }
 
 void gButton::setRadio(bool vl)
@@ -735,21 +741,34 @@ void gButton::updateSize()
 	GtkRequisition req;
 	int mw, mh;
 	
-	if (!_autoresize || !bufText || !*bufText)
+	if (!_autoresize)
 		return;
 	
-	mw = font()->width(bufText, strlen(bufText));
 	mh = minimumHeight();
+	mw = 0;
 	
-	if (type == Check || type == Radio)
+	if (bufText && *bufText)
 	{
-		g_signal_emit_by_name(border, "size-request",	&req);
-		mw += req.width + 4;
-		if (req.height > mh)
-			mh = req.height;
+		int m = font()->width(bufText, strlen(bufText));
+	
+		if (type == Check || type == Radio)
+		{
+			g_signal_emit_by_name(border, "size-request",	&req);
+			m += req.width;
+			if (req.height > m)
+				m = req.height;
+		}
+		
+		mw += m;
 	}
-	else
-		mw += 8;
+	
+	if (pic)
+	{
+		if (mw) mw += 8;
+		mw += pic->width();
+	}
+	
+	mw += 16;
 	
 	if (mh < height())
 		mh = height();

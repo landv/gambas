@@ -15,32 +15,34 @@
       Picture = Picture["icon:/small/refresh"]
     }
     { btnShowId ToolButton
-      MoveScaled(12,0,14,4)
+      MoveScaled(12,0,15,4)
       AutoResize = True
       Text = ("Show bus ids")
       Picture = Picture["icon:/small/lamp"]
       Toggle = True
     }
+    { Panel2 Panel
+      MoveScaled(37,1,2,3)
+      Expand = True
+    }
     { HBox1 HBox
-      MoveScaled(47,0,52,3)
+      MoveScaled(44,0,52,4)
+      AutoResize = True
       Spacing = True
-      { Separator1 Separator
-        MoveScaled(2,0,0,3)
-      }
       { Label4 Label
-        MoveScaled(3,0,9,3)
+        MoveScaled(3,0,9,4)
         Font = Font["Bold"]
         AutoResize = True
         Text = ("Legend:")
       }
       { PictureBox1 PictureBox
-        MoveScaled(11,0,3,3)
+        MoveScaled(11,0,3,4)
         Picture = Picture["method.png"]
         AutoResize = True
         Alignment = Align.Center
       }
       { Label1 Label
-        MoveScaled(14,0,8,3)
+        MoveScaled(14,0,8,4)
         AutoResize = True
         Text = ("Method")
       }
@@ -51,7 +53,7 @@
         Alignment = Align.Center
       }
       { Label2 Label
-        MoveScaled(28,0,10,3)
+        MoveScaled(28,0,8,4)
         AutoResize = True
         Text = ("Property")
       }
@@ -62,9 +64,12 @@
         Alignment = Align.Center
       }
       { Label3 Label
-        MoveScaled(41,0,6,3)
+        MoveScaled(41,0,6,4)
         AutoResize = True
         Text = ("Signal")
+      }
+      { Panel3 Panel
+        MoveScaled(48,1,1,3)
       }
     }
   }
@@ -72,10 +77,10 @@
     MoveScaled(20,5,18,0)
   }
   { HSplit1 HSplit
-    MoveScaled(0,8,102,74)
+    MoveScaled(0,8,106,74)
     Expand = True
     { TabStrip3 TabStrip
-      MoveScaled(2,8,39,57)
+      MoveScaled(2,5,39,57)
       Arrangement = Arrange.Fill
       Count = 2
       Index = 0
@@ -97,15 +102,16 @@
       Index = 0
     }
     { VBox1 HBox
-      MoveScaled(46,2,54,65)
+      MoveScaled(46,2,59,65)
       { Separator3 Separator
         MoveScaled(2,19,0,30)
       }
       { VBox2 VBox
-        MoveScaled(6,6,47,56)
+        MoveScaled(3,8,54,56)
         Expand = True
         { tvDbus TreeView
-          MoveScaled(6,3,33,32)
+          MoveScaled(6,14,33,32)
+          Tracking = True
           Expand = True
           Border = False
         }
@@ -115,7 +121,6 @@
         { lblsignature TextLabel
           MoveScaled(5,49,34,3)
           Font = Font["Monospace,-2"]
-          Background = Color.LightBackground
           Padding = 4
         }
       }

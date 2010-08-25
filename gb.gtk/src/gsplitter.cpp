@@ -129,8 +129,24 @@ void gSplitter::insert(gControl *child, bool realize)
 {	
 	GtkWidget *w = child->border;
 	GtkWidget *tmp;
+	int layout_count, *layout;
 	
 	lock();
+	
+	layout_count = layoutCount();
+	layout = (int *)malloc(sizeof(int) * (layout_count + 1));
+	getLayout(layout);
+	if (layout_count == 0)
+		layout[0] = 1;
+	else if (layout_count == 1)
+		layout[1] = layout[0] = 1;
+	else
+	{
+		int s = 0;
+		for (int i = 0; i < layout_count; i++)
+			s += layout[i];
+		layout[layout_count] = s / layout_count;
+	}
 	
 	if (!gtk_paned_get_child1(curr))
 	{
@@ -159,6 +175,9 @@ void gSplitter::insert(gControl *child, bool realize)
 	
 	gContainer::insert(child, realize);
 	//updateVisibility();
+	
+	setLayout(layout, layout_count + 1);
+	free(layout);
 	
 	unlock();
 }
@@ -197,6 +216,13 @@ void gSplitter::setLayout(int *array, int count)
 	
 	if (count <= 0)
 		return;
+	
+	#if 0
+	fprintf(stderr, "setLayout: ");
+	for (i = 0; i < count; i++)
+		fprintf(stderr, "%d ", array[i]);
+	fprintf(stderr, "\n");
+	#endif
 	
   gtk_widget_style_get (border,
 			"handle-size", &shandle,
