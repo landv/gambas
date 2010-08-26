@@ -100,6 +100,10 @@ Private Sub SetDate(Optional iYear As Integer, Optional iMonth As Integer, Optio
     txtYear.Value = Year($dMonth)
     
     iDay = WeekDay($dMonth) - 1
+    ' US is the only country that starts week on Sunday!
+    If System.Language = "en_US" Or If System.Language = "C" Then
+      Inc iDay
+    Endif
     If iDay < 1 Then iDay += 7
     $dStart = $dMonth - iDay
     
@@ -155,29 +159,26 @@ Public Sub dwgMonth_Draw()
   Draw.FillStyle = Fill.Solid
   Draw.LineStyle = Line.None
   
-  Draw.FillColor = Color.SelectedBackground
-  Draw.Foreground = Color.SelectedForeground
   Draw.Font = dwgMonth.Font
   Draw.Font.Size = Draw.Font.Size * H / Draw.Font.Height * 0.7
   Draw.Font.Bold = True
 
   X = XD
   Y = 0
-  For I = 0 To 4
+  For I = 0 To 6
+    Select Case WeekDay($dStart + I)
+      Case 0, 6
+        Draw.FillColor = iBackground
+        Draw.Foreground = Color.SelectedBackground
+      Default
+        Draw.FillColor = Color.SelectedBackground
+        Draw.Foreground = Color.SelectedForeground
+    End Select
     Draw.Rect(X, Y, W, YD)
     Draw.Text(Format(CDate($dStart + I), "ddd"), X, Y, W, YD, Align.Center)
     X += W
   Next  
   
-  Draw.FillColor = iBackground
-  Draw.Foreground = Color.SelectedBackground
-
-  For I = 5 To 6
-    Draw.Rect(X, Y, W, YD)
-    Draw.Text(Format(CDate($dStart + I), "ddd"), X, Y, W, YD, Align.Center)
-    X += W
-  Next
-
   Draw.LineStyle = Line.Solid
   Draw.Foreground = iForeground
   Draw.Line(XD, YD - 1, XD + Draw.W - 1, YD - 1)

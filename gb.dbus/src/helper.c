@@ -947,7 +947,7 @@ static DBusHandlerResult filter_func(DBusConnection *connection, DBusMessage *me
 		if (obs->type != dbus_message_get_type(message))
 			continue;
 		
-		// Beware: "" means "only me" in DBusObserver, but everthing there!
+		// Beware: "" means "only me" in DBusObserver, but everything there!
 		if (check_filter(obs->destination, dbus_message_get_destination(message)))
 			continue;
 		if (check_filter(obs->object, dbus_message_get_path(message)))

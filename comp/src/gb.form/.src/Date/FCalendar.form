@@ -16,33 +16,39 @@
       ToolTip = ("Previous month")
       Picture = Picture["icon:/small/left"]
     }
-    { btnNextMonth ToolButton
-      MoveScaled(8,0,4,4)
-      ToolTip = ("Next month")
-      Picture = Picture["icon:/small/right"]
-    }
     { panSepMonth Panel
-      MoveScaled(15,0,1,4)
+      MoveScaled(8,0,1,4)
     }
     { cmbMonth ComboBox
-      MoveScaled(19,0,19,4)
+      MoveScaled(10,0,19,4)
       Expand = True
       ReadOnly = True
     }
     { Panel2 Panel
-      MoveScaled(40,0,1,4)
+      MoveScaled(30,0,1,4)
     }
     { txtYear SpinBox
-      MoveScaled(42,0,10,4)
+      MoveScaled(31,0,10,4)
       MinValue = 1600
       MaxValue = 9999
     }
+    { panSepMonth2 Panel
+      MoveScaled(42,0,1,4)
+    }
+    { btnNextMonth ToolButton
+      MoveScaled(51,0,4,4)
+      ToolTip = ("Next month")
+      Picture = Picture["icon:/small/right"]
+    }
+  }
+  { Panel1 Panel
+    MoveScaled(30,6,3,1)
   }
   { Separator1 Separator
-    MoveScaled(10,6,30,0)
+    MoveScaled(10,8,30,0)
   }
   { dwgMonth DrawingArea
-    MoveScaled(1,7,56,29)
+    MoveScaled(1,9,56,27)
     Background = Color.TextBackground
     Foreground = Color.TextForeground
     Expand = True
