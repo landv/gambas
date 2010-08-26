@@ -33,6 +33,10 @@ Public Sub Main()
   
   'aVal = DBus["org.freedesktop.Notifications"]["/org/freedesktop/Notifications"].GetServerInformation()
   'Print aVal[0];; aVal[1];; aVal[2]
-  Print DBus["system://org.freedesktop.UDisks"]["/"].Children
+  'Print DBus["system://org.freedesktop.UDisks"]["/"].Children
   
+  Dim c As Collection
+
+  DBus["org.freedesktop.Notifications"]["/org/freedesktop/Notifications"].Notify("MyApp", 0, "", "PoissonTChat", "Fabien: Chu la ! <a href=\"http://gambaslinux.forumactif.net\">ici</a>", ["test"], c, 1000)
+   
 End

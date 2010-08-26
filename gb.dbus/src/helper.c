@@ -376,34 +376,40 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 				char *key;
 				int len;
 				
-				GB.Collection.Enum(col, NULL, NULL, NULL);
-				for(;;)
+				if (col)
 				{
-					if (GB.Collection.Enum(col, (GB_VARIANT *)&value, &key, &len))
-						break;
-					
-					key = GB.TempString(key, len);
-					dbus_message_iter_open_container(&citer, DBUS_TYPE_DICT_ENTRY, NULL, &dict_entry_iter);
-					dbus_message_iter_append_basic(&dict_entry_iter, DBUS_TYPE_STRING, &key);
-					
-					GB.BorrowValue(&value);
-					if (append_arg(&dict_entry_iter, &contents_signature[2], &value))
-						goto __ERROR;
-					
-					dbus_message_iter_close_container(&citer, &dict_entry_iter);
+					GB.Collection.Enum(col, NULL, NULL, NULL);
+					for(;;)
+					{
+						if (GB.Collection.Enum(col, (GB_VARIANT *)&value, &key, &len))
+							break;
+						
+						key = GB.TempString(key, len);
+						dbus_message_iter_open_container(&citer, DBUS_TYPE_DICT_ENTRY, NULL, &dict_entry_iter);
+						dbus_message_iter_append_basic(&dict_entry_iter, DBUS_TYPE_STRING, &key);
+						
+						GB.BorrowValue(&value);
+						if (append_arg(&dict_entry_iter, &contents_signature[2], &value))
+							goto __ERROR;
+						
+						dbus_message_iter_close_container(&citer, &dict_entry_iter);
+					}
 				}
 			}
 			else
 			{
 				GB_ARRAY array = (GB_ARRAY)(arg->_object.value);
 				
-				value.type = GB.Array.Type(array);
-				for (i = 0; i < GB.Array.Count(array); i++)
+				if (array)
 				{
-					GB.ReadValue(&value, GB.Array.Get(array, i), value.type);
-					GB.BorrowValue(&value);
-					if (append_arg(&citer, contents_signature, &value))
-						goto __ERROR;
+					value.type = GB.Array.Type(array);
+					for (i = 0; i < GB.Array.Count(array); i++)
+					{
+						GB.ReadValue(&value, GB.Array.Get(array, i), value.type);
+						GB.BorrowValue(&value);
+						if (append_arg(&citer, contents_signature, &value))
+							goto __ERROR;
+					}
 				}
 			}
 			
@@ -424,16 +430,19 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 			dbus_message_iter_open_container(iter, DBUS_TYPE_STRUCT, NULL, &citer);
 			dbus_signature_iter_recurse(&siter, &siter_contents);
 			
-			value.type = GB.Array.Type(array);
-			for (i = 0; i < GB.Array.Count(array); i++)
+			if (array)
 			{
-				GB.ReadValue(&value, GB.Array.Get(array, i), value.type);
-				GB.BorrowValue(&value);
-				sign = dbus_signature_iter_get_signature(&siter_contents);
-				if (append_arg(&citer, sign, &value))
-					goto __ERROR_SIGN;
-				dbus_free(sign);
-				dbus_signature_iter_next(&siter_contents);
+				value.type = GB.Array.Type(array);
+				for (i = 0; i < GB.Array.Count(array); i++)
+				{
+					GB.ReadValue(&value, GB.Array.Get(array, i), value.type);
+					GB.BorrowValue(&value);
+					sign = dbus_signature_iter_get_signature(&siter_contents);
+					if (append_arg(&citer, sign, &value))
+						goto __ERROR_SIGN;
+					dbus_free(sign);
+					dbus_signature_iter_next(&siter_contents);
+				}
 			}
 			
 			dbus_message_iter_close_container(iter, &citer);
