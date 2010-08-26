@@ -230,6 +230,9 @@ int CUdpSocket_stream_write(GB_STREAM *stream, char *buffer, int len)
 	remhost.sin_addr.s_addr=rem_ip.s_addr;
 	bzero(&(remhost.sin_zero),8);
 	ioctl(THIS->Socket,FIONBIO,&NoBlock);
+
+	//fprintf(stderr, "write: %s %d %d '%.*s'\n", THIS->thost, THIS->tport, len, len, buffer);
+	
 	USE_MSG_NOSIGNAL(retval=sendto(THIS->Socket,(void*)buffer,len*sizeof(char) \
 		              ,MSG_NOSIGNAL,(struct sockaddr*)&remhost,sizeof(struct sockaddr)));
 	NoBlock++;

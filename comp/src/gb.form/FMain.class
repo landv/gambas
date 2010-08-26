@@ -1,21 +1,2 @@
 ' Gambas class file
 
-PUBLIC SUB _new()
-
-END
-
-PUBLIC SUB Form_Open()
-  TableView1.Rows.Count = 40
-  TableView1.Columns.Count = 4
-  TableView1.Edit
-END
-
-PUBLIC SUB TableView1_GotFocus()
-  LAST.Edit
-END
-
-PUBLIC SUB TableView1_Click()
-
-  LAST.Edit
-
-END
