@@ -92,7 +92,7 @@ static void callback_write(int fd, int type, CPROCESS *process)
 			//#endif
 		}
 	}
-	else if (!STREAM_eof(CSTREAM_stream(process))) //process->running &&
+	else if (!STREAM_is_closed(CSTREAM_stream(process)) && !STREAM_eof(CSTREAM_stream(process))) //process->running &&
 		GB_Raise(process, EVENT_Read, 0);
 }
 
@@ -100,7 +100,7 @@ static void callback_write(int fd, int type, CPROCESS *process)
 static int callback_error(int fd, int type, CPROCESS *process)
 {
 	/*fprintf(stderr, ">> Write\n"); fflush(stderr);*/
-	char buffer[1024];
+	char buffer[256];
 	int n;
 
 	#ifdef DEBUG_ME
