@@ -1853,6 +1853,8 @@ void MyMainWindow::showPopup(QPoint &pos)
 		setWindowModality(Qt::NonModal);
 		setWindowFlags(flags);
 	}
+	
+	CWIDGET_check_hovered();
 }
 
 bool MyMainWindow::isToolbar(void)

@@ -314,7 +314,7 @@ void *GB_Hook(int type, void *hook)
   void *old_hook;
   void **phook = (void **)(void *)&EXEC_Hook;
 
-  if ((type < GB_HOOK_MAIN) || (type > GB_HOOK_PICTURE))
+  if ((type < 0) || (type > GB_HOOK_MAX))
     return NULL;
 
   type--;

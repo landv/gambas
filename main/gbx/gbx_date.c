@@ -597,21 +597,25 @@ int DATE_comp_value(VALUE *date1, VALUE *date2)
 }
 
 
+double DATE_to_double(struct timeval *time, int from_start)
+{
+	double result = (double)time->tv_sec + (double)time->tv_usec / 1E6;
+	
+	if (from_start)
+		result -= _start_time;
+	
+	return result;
+}
+
 bool DATE_timer(double *result, int from_start)
 {
   struct timeval tv;
 
-  *result = 0;
-
-  if (gettimeofday(&tv, NULL) == 0)
-  {
-    *result = (double)tv.tv_sec + (double)tv.tv_usec / 1E6;
-    if (from_start)
-      *result -= _start_time;
-    return FALSE;
-  }
-  else
-    return TRUE;
+	if (gettimeofday(&tv, NULL))
+		return TRUE;
+	
+	*result = DATE_to_double(&tv, from_start);
+	return FALSE;
 }
 
 

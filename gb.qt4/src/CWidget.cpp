@@ -73,6 +73,9 @@ CWIDGET *CWIDGET_active_control = 0;
 static bool _focus_change = false;
 static CWIDGET *_old_active_control = 0;
 
+static CWIDGET *_hovered = 0;
+static CWIDGET *_official_hovered = 0;
+
 static void set_mouse(QWidget *w, int mouse, void *cursor)
 {
 	QObjectList children;
@@ -519,6 +522,16 @@ void CWIDGET_move_resize_cached(void *_object, int x, int y, int w, int h)
   }
 
 	CWIDGET_after_geometry_change(THIS, true);
+}
+
+void CWIDGET_check_hovered()
+{
+	if (_official_hovered != _hovered)
+	{
+		if (_official_hovered) GB.Raise(_official_hovered, EVENT_Leave, NULL);
+		if (_hovered) GB.Raise(_hovered, EVENT_Enter, NULL);
+		_official_hovered = _hovered;
+	}
 }
 
 BEGIN_PROPERTY(Control_X)
@@ -1856,6 +1869,12 @@ void CWidget::destroy()
 	if (_old_active_control == ob)
 		_old_active_control = NULL;
 	
+	if (_hovered == ob)
+		_hovered = NULL;
+	
+	if (_official_hovered == ob)
+		_official_hovered = NULL;
+	
 	CACTION_register(ob, NULL);
 	
 	set_name(ob, 0);
@@ -2005,8 +2024,12 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	
 	__ENTER:
 	{
+		_hovered = control;
 		if (real && !qApp->activePopupWidget())
+		{
+			_official_hovered = control;
 			GB.Raise(control, EVENT_Enter, 0);
+		}
 		goto __NEXT;
 	}
 

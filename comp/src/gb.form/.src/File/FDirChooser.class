@@ -17,6 +17,7 @@ Private $aFilter As String[]
 Private $bFile As Boolean
 Private $iMaxWidth As Integer
 Private $hBookmarkList As CBookmarkList
+Private $hCurrentBookmark As CBookmark
 
 Static Private $aHistory As New String[]
 
@@ -156,20 +157,35 @@ End
 '   
 ' End
 
+Private Sub UpdateBookmarkButton()
+  
+  If IsBookmarkVisible() Then
+    btnBookmark.Text = $hCurrentBookmark.Name
+    btnBookmark.Picture = Picture[$hCurrentBookmark.Icon]
+  Else
+    btnBookmark.Text = File.Name(dvwChoose.Root)
+    btnBookmark.Picture = dvwChoose.Picture 'Picture["icon:/small/directory"]
+  Endif
+  
+End
+
+
 Private Sub SetBookmark(hBookmark As CBookmark)
   
   If Not hBookmark Then Return
+  
+  $hCurrentBookmark = hBookmark
+  
   SetRoot(hBookmark.Path)
   dvwChoose.Picture = Picture[hBookmark.Icon]
-  btnBookmark.Picture = dvwChoose.Picture
-  btnBookmark.Text = hBookmark.Name
+  UpdateBookmarkButton
   
 End
 
 
 Public Sub SetDir(sDir As String)
 
-  If btnBookmark.Visible Then
+  If IsBookmarkVisible() Then
     SetBookmark($hBookmarkList.FindBest(sDir))
   Endif
     
@@ -445,6 +461,7 @@ End
 Public Sub SetPicture(hPict As Picture)
 
   dvwChoose.Picture = hPict
+  If Not IsBookmarkVisible() Then UpdateBookmarkButton
   
 End 
 
@@ -484,6 +501,7 @@ Public Sub SetRoot(Optional sRoot As String)
   If sRoot = dvwChoose.Root Then Return
   dvwChoose.Root = sRoot
   btnBookmark.Tooltip = sRoot
+  UpdateBookmarkButton
   
 End
 
@@ -539,18 +557,20 @@ End
 Public Sub GetSettings() As Variant[]
   
   If Not $bFile Then 
-    Return [CVariant(dvwChoose.Root), dvwChoose.Current, $bView, splChoose.Layout, btnShowHidden.Value, fvwChoose.Settings, btnBookmark.Visible]
+    Return [CVariant(dvwChoose.Root), dvwChoose.Current, $bView, splChoose.Layout, btnShowHidden.Value, fvwChoose.Settings, IsBookmarkVisible()]
   Else
-    Return [CVariant(dvwChoose.Root), dvwChoose.Current, fvwChoose.Current, $bView, splChoose.Layout, btnShowHidden.Value, fvwChoose.Settings, GetFilterIndex(), btnBookmark.Visible]
+    Return [CVariant(dvwChoose.Root), dvwChoose.Current, fvwChoose.Current, $bView, splChoose.Layout, btnShowHidden.Value, fvwChoose.Settings, GetFilterIndex(), IsBookmarkVisible()]
   Endif 
 
 End
 
 Public Sub SetSettings(aVar As Variant[])
   
+  Dim bBookmark As Boolean
+  
   If Not $bFile Then 
   
-    Try btnBookmark.Visible = aVar[6]
+    Try bBookmark = aVar[6]
     Try SetRoot(aVar[0])
     Try SetDir(aVar[1])
     Try $bView = Not aVar[2]
@@ -561,7 +581,7 @@ Public Sub SetSettings(aVar As Variant[])
     
   Else
   
-    Try btnBookmark.Visible = aVar[8]
+    Try bBookmark = aVar[8]
     Try SetRoot(aVar[0])
     Try SetDir(aVar[1])
     Try fvwChoose.Current = aVar[2]
@@ -574,7 +594,7 @@ Public Sub SetSettings(aVar As Variant[])
     
   Endif
 
-  FillMenu
+  ShowBookmark(bBookmark)
   
 End
 
@@ -731,7 +751,7 @@ Private Sub FillMenu()
   Dim aBookmark As String[]
   Dim hMenu As Menu
   
-  If Not btnBookmark.Visible Then Return
+  If Not IsBookmarkVisible() Then Return
   
   mnuBookmark.Children.Clear
   
@@ -753,13 +773,14 @@ End
 
 Public Sub IsBookmarkVisible() As Boolean
   
-  Return btnBookmark.Visible
+  Return btnBookmark.Enabled
   
 End
 
 Public Sub ShowBookmark(bShow As Boolean)
   
-  btnBookmark.Visible = bShow
+  btnBookmark.Enabled = bShow
+  UpdateBookmarkButton
   FillMenu
   
 End

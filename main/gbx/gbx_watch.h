@@ -65,5 +65,6 @@ void WATCH_wait(int);
 int WATCH_loop_signal(const sigset_t *sig);
 int WATCH_process(int fd_end, int fd_output);
 void WATCH_timer(void *t, int on);
+double WATCH_get_timeout(GB_TIMER *timer);
 
 #endif /* */

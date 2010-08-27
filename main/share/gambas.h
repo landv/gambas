@@ -525,6 +525,8 @@ typedef
 
 /* Constants used with the GB.Hook() API function */
 
+#define GB_HOOK_MAX 10
+
 #define GB_HOOK_MAIN      1
 #define GB_HOOK_LOOP      2
 #define GB_HOOK_WAIT      3
@@ -534,9 +536,7 @@ typedef
 #define GB_HOOK_POST      7
 #define GB_HOOK_QUIT      8
 #define GB_HOOK_ERROR     9
-#define GB_HOOK_IMAGE     10
-#define GB_HOOK_PICTURE   11
-
+#define GB_HOOK_TIMEOUT   10
 
 /* Constants that represent interpreter signals catched by GB_SIGNAL function */
 

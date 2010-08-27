@@ -66,8 +66,7 @@ typedef
     void (*post)();
     void (*quit)();
     void (*error)();
-    int (*image)();
-    int (*picture)();
+		double (*timeout)();
     }
   EXEC_HOOK;
 

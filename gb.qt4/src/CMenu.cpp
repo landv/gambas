@@ -598,6 +598,8 @@ void CMENU_popup(CMENU *_object, const QPoint &pos)
 		//qDebug("_popup_menu_clicked = %p", _popup_menu_clicked);
 		update_accel_recursive(THIS);
 		
+		CWIDGET_check_hovered();
+		
 		if (_popup_menu_clicked)
 		{
 			send_click_event(_popup_menu_clicked);

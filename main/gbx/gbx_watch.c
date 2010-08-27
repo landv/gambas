@@ -123,22 +123,40 @@ static void add_timer(GB_TIMER *timer, const struct timeval *timeout)
 	#endif
 }
 
-
-static void remove_timer(GB_TIMER *timer)
+static int find_timer(GB_TIMER *timer)
 {
 	int i;
 
 	for (i = 0; i < ARRAY_count(_timers); i++)
 	{
 		if (_timers[i].timer == timer)
-		{
-			ARRAY_remove(&_timers, i)
-			#ifdef DEBUG_TIMER
-			fprintf(stderr, "remove_timer: %p at %i\n", timer, i);
-			#endif
-			break;
-		}
+			return i;
 	}
+	
+	return (-1);
+}
+
+static void remove_timer(GB_TIMER *timer)
+{
+	int i = find_timer(timer);
+
+	if (i >= 0)
+	{
+		ARRAY_remove(&_timers, i)
+		#ifdef DEBUG_TIMER
+		fprintf(stderr, "remove_timer: %p at %i\n", timer, i);
+		#endif
+	}
+}
+
+double WATCH_get_timeout(GB_TIMER *timer)
+{
+	int i = find_timer(timer);
+
+	if (i < 0)
+		return 0.0;
+	else
+		return DATE_to_double(&_timers[i].timeout, TRUE);
 }
 
 static void raise_timers()

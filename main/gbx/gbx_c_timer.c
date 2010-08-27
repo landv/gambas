@@ -113,6 +113,12 @@ BEGIN_METHOD_VOID(CTIMER_trigger)
 
 END_METHOD
 
+/*BEGIN_PROPERTY(Timer_Timeout)
+
+	GB_ReturnFloat(THIS->id ? HOOK_DEFAULT(timeout, WATCH_get_timeout)((GB_TIMER *)THIS) : 0);
+
+END_PROPERTY*/
+
 #endif
 
 GB_DESC NATIVE_Timer[] =
@@ -124,6 +130,7 @@ GB_DESC NATIVE_Timer[] =
 
   GB_PROPERTY("Enabled", "b", CTIMER_enabled),
   GB_PROPERTY("Delay", "i", CTIMER_delay),
+  //GB_PROPERTY_READ("Timeout", "f", Timer_Timeout),
 
   GB_METHOD("Start", NULL, CTIMER_start, NULL),
   GB_METHOD("Stop", NULL, CTIMER_stop, NULL),

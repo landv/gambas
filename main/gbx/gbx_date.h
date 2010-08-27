@@ -85,7 +85,8 @@ bool DATE_from_string(const char *str, int len, VALUE *val, bool local);
 int DATE_comp_value(VALUE *date1, VALUE *date2);
 int DATE_comp(DATE *date1, DATE *date2);
 
-bool DATE_timer(double *time, int from_start);
+double DATE_to_double(struct timeval *time, int from_start);
+bool DATE_timer(double *result, int from_start);
 
 void DATE_void_value(VALUE *value);
 
