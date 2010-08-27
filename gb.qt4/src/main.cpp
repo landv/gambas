@@ -142,7 +142,7 @@ GB_CLASS CLASS_SvgImage;
 
 static bool in_event_loop = false;
 static int _no_destroy = 0;
-static QTranslator *qt = NULL;
+static QTranslator *_translator = NULL;
 static bool _application_keypress = false;
 static GB_FUNCTION _application_keypress_func;
 static QWidget *_mouseGrabber = 0;
@@ -622,6 +622,13 @@ static void QT_Init(void)
 	init = true;
 }
 
+static bool try_to_load_translation(QString &locale)
+{
+	return (!_translator->load(QString("qt_") + locale, QString(getenv("QTDIR")) + "/translations")
+		  && !_translator->load(QString("qt_") + locale, QString("/usr/lib/qt4/translations"))
+		  && !_translator->load(QString("qt_") + locale, QString("/usr/share/qt4/translations")));
+}
+
 static void init_lang(QString locale, bool rtl)
 {
 	int pos;
@@ -629,16 +636,26 @@ static void init_lang(QString locale, bool rtl)
 	pos = locale.lastIndexOf(".");
 	if (pos >= 0) locale = locale.left(pos);
 	
-	qt = new QTranslator();
-	if (!qt->load(QString("qt") + locale, QString(getenv("QTDIR")) + "/translations")
-		  && !qt->load(QString("qt") + locale, QString("/usr/lib/qt4/translations"))
-		  && !qt->load(QString("qt") + locale, QString("/usr/share/qt4/translations")))
-	{
-		qDebug("warning: unable to load Qt translation: %s", QT_ToUTF8(locale));
-	}
-	else
-		qApp->installTranslator(qt);
+	_translator = new QTranslator();
 	
+	if (!try_to_load_translation(locale))
+		goto __INSTALL_TRANSLATOR;
+
+	pos = locale.lastIndexOf("_");
+	if (pos >= 0)
+	{
+		locale = locale.left(pos);
+		if (!try_to_load_translation(locale))
+			goto __INSTALL_TRANSLATOR;
+	}
+
+	qDebug("warning: unable to load Qt translation: %s", QT_ToUTF8(locale));
+	goto __SET_DIRECTION;
+
+__INSTALL_TRANSLATOR:
+	qApp->installTranslator(_translator);
+
+__SET_DIRECTION:
 	if (rtl)
 		qApp->setLayoutDirection(Qt::RightToLeft);
 }
