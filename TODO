@@ -6,17 +6,8 @@ COMPILER
 - Compilation error must indicate the column, not only the line.
 - Conditional compilation #IF DEBUG
 - Warn for unused local or private variables.
-- CASE LIKE
 
 INTERPRETER
-
-/**** NEIN!
-- OPTIONAL arguments should take any expression.
-- Class synonymous.
-- Array[x] when x < 0 should return Array[Array.Count - x]
-- NEW Collection OF String
-- A ConstCopy() function for arrays, and const arrays.
-****/
 
 - A special syntax to make variable writable once only (for controls variables).
 - Add global parameters for each component. Or no, a global configuration repository, to
@@ -43,12 +34,10 @@ DEVELOPMENT ENVIRONMENT
 - Generates an index control->component to suggest components for missing controls.
 - Be able to open a .tar.gz project, and compress it back when the project is closed.
 - Conditional breakpoints.
-- Finding files in the treeview.
 
 GUI RELATED STUFF
 
 - Deleting a currently expanding item in TreeView crashes.
-- Form.KeyPreview
 - ValueBox.Value should be visible in the IDE.
 - GridView automatic column resizing by code in gb.gtk, and in gb.qt.
 

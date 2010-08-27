@@ -167,7 +167,8 @@ End
 
 Private Sub UpdateTitle()
   
-  panTitle.H = Max(Desktop.Scale * 2, ((lblTitle.Font.Height + Desktop.Scale - 1 + 6) \ Desktop.Scale) * Desktop.Scale)
+  panTitle.H = Max(Desktop.Scale * 2, ((lblTitle.Font.Height + Desktop.Scale - 1) \ Desktop.Scale) * Desktop.Scale)
+  btnExpand.W = Desktop.Scale * 2
   
 End
 
@@ -176,7 +177,7 @@ Public Sub btnExpand_Draw()
   Dim iFlag As Integer
   Dim Y, W As Integer
   
-  W = Desktop.Scale * 2
+  W = Desktop.Scale * 3 / 2
   Y = (btnExpand.H - W) / 2
   
   If Not Me.Enabled Then iFlag += Draw.Disabled
@@ -186,5 +187,24 @@ Public Sub btnExpand_Draw()
   Endif
 
   Draw.Style.Arrow(0, Y, W, W, If($bHidden, Align.Right, Align.Bottom), iFlag)
+  'Draw.Rect(0, Y, W, W)
+
+End
+
+Public Sub panTitle_Enter()
+
+  panTitle.Background = Color.Merge(Color.Background, Color.TextBackground)
+
+End
+
+Public Sub panTitle_Leave()
+
+  panTitle.Background = Color.Default
+
+End
+
+Public Sub panTitle_MouseDown()
+
+  SetHidden(Not $bHidden)
 
 End

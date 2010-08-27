@@ -18,7 +18,36 @@ Private Sub GetPath(sPath As String) As String
   sPath = Replace(sPath, "/gb+gui/", "/gb+qt/")
   sPath = Replace(sPath, "/gb+gtk/", "/gb+qt/")
   Return System.Path &/ "share/gambas" & CStr(System.Version) &/ "help" &/ sPath
+  
 End
+
+Public Sub SetLanguage(sLang As String)
+  
+  Settings["/HelpLanguage"] = sLang
+  
+End
+
+Public Sub GetLanguage(Optional bReturnVoidIfDefault As Boolean) As String
+  
+  Dim sLang As String
+  Dim iPos As Integer
+  Dim sCar As String
+  
+  sLang = Settings["/HelpLanguage"]
+  If sLang Then Return sLang
+  If bReturnVoidIfDefault Then Return
+  
+  sLang = System.Language
+  
+  For iPos = 1 To Len(sLang)
+    If Not IsLower(Mid$(sLang, iPos, 1)) Then Break
+  Next
+  
+  Return Left$(sLang, iPos - 1)
+
+End
+
+
 
 
 Public Sub Open()
@@ -46,18 +75,6 @@ Private Sub FormatName(sName As String) As String
   Return sName
   
 End
-
-Private Sub GetLanguage() As String
-  
-  Dim sLang As String = System.Language
-  Dim iPos As Integer
-  
-  iPos = InStr(sLang, ".")
-  If iPos Then sLang = Left$(sLang, iPos - 1)
-  Return sLang
-  
-End
-
 
 Public Sub GotoSymbol(hSymbol As CSymbolInfo)
   
@@ -278,20 +295,6 @@ Public Sub GetURL(Optional sPath As String) As String
 End
 
 
-Public Sub GetHelpLanguage() As String
-  
-  Dim sLang As String = System.Language
-  Dim iPos As Integer
-  Dim sCar As String
-  
-  For iPos = 1 To Len(sLang)
-    If Not IsLower(Mid$(sLang, iPos, 1)) Then Break
-  Next
-  
-  Return Left$(sLang, iPos - 1)
-  
-End
-
 Public Sub GetSymbolURL(sComponent As String, sClass As String, Optional sSymbol As String) As String
   
   Dim sPath As String
@@ -313,7 +316,7 @@ Public Sub GetSymbolURL(sComponent As String, sClass As String, Optional sSymbol
     sPath &/= sName
   Endif
     
-  Return sPath & "?help&v3&" & GetHelpLanguage()
+  Return sPath & "?help&v3&" & GetLanguage()
     
 End
 
@@ -329,13 +332,13 @@ Public Sub GetLangURL(sSymbol As String) As String
   sSymbol = Replace(sSymbol, "$", "")
   If Right(sSymbol) = "?" Then sSymbol = "is" & Left(sSymbol, -1)
   
-  Return GetURL("lang") &/ sSymbol & "?help&v3&" & GetHelpLanguage()
+  Return GetURL("lang") &/ sSymbol & "?help&v3&" & GetLanguage()
   
 End
 
 Public Sub GetSpecialURL(sSymbol As String) As String
   
-  Return GetURL("lang") &/ "special" &/ Mid$(sSymbol, 2) & "?help&v3&" & GetHelpLanguage()
+  Return GetURL("lang") &/ "special" &/ Mid$(sSymbol, 2) & "?help&v3&" & GetLanguage()
   
 End
 
@@ -423,6 +426,7 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
   
   If sUrl Then
     If sMore Then sUrl &= "&" & sMore
+    sMore &= "&" & GetLanguage()
     If hWebView.Url = sUrl Then Return
   Endif
 

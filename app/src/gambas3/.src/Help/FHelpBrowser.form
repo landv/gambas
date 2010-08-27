@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,24,15)
+  MoveScaled(0,0,113,52)
   Action = "help"
   Text = ("Help browser")
   Icon = Picture["icon:/small/help"]
@@ -10,73 +10,75 @@
   SkipTaskbar = True
   Arrangement = Arrange.Vertical
   { panToolbar HBox
-    MoveScaled(0,0,82,4)
-    { btnHome ToolButton
-      MoveScaled(0,0,4,4)
+    MoveScaled(0,0,107,4)
+    { btnHome MenuButton
+      MoveScaled(0,0,16,4)
       ToolTip = ("Index")
+      AutoResize = True
       Picture = Picture["icon:/small/home"]
-    }
-    { btnWebSite ToolButton
-      MoveScaled(4,0,4,4)
-      ToolTip = ("Index")
-      Picture = Picture["icon:/small/gambas"]
+      Border = False
     }
     { btnBack ToolButton
-      MoveScaled(9,0,4,4)
+      MoveScaled(15,0,4,4)
       ToolTip = ("Go back")
       Picture = Picture["icon:/small/left"]
     }
     { btnForward ToolButton
-      MoveScaled(13,0,4,4)
+      MoveScaled(19,0,4,4)
       ToolTip = ("Go forward")
       Picture = Picture["icon:/small/right"]
     }
     { btnStop ToolButton
-      MoveScaled(17,0,4,4)
+      MoveScaled(23,0,4,4)
       ToolTip = ("Cancel")
       Picture = Picture["icon:/small/delete"]
     }
     { btnReload ToolButton
-      MoveScaled(21,0,4,4)
+      MoveScaled(27,0,4,4)
       ToolTip = ("Reload")
       Picture = Picture["icon:/small/refresh"]
     }
-    { btnShowpnl ToolButton
-      MoveScaled(26,0,4,4)
+    { btnShowPanel ToolButton
+      MoveScaled(32,0,4,4)
       Tracking = True
       ToolTip = ("Show help tree")
       Picture = Picture["icon:/small/view-detail"]
       Toggle = True
     }
     { Separator1 Separator
-      MoveScaled(31,0,1,4)
+      MoveScaled(37,0,1,4)
     }
     { btnZoomIn ToolButton
-      MoveScaled(32,0,4,4)
+      MoveScaled(38,0,4,4)
       ToolTip = ("Zoom in")
       Picture = Picture["icon:/small/zoom-in"]
     }
     { btnZoomOut ToolButton
-      MoveScaled(36,0,4,4)
+      MoveScaled(42,0,4,4)
       ToolTip = ("Zoom out")
       Picture = Picture["icon:/small/zoom-out"]
     }
     { btnZoomNormal ToolButton
-      MoveScaled(40,0,4,4)
+      MoveScaled(46,0,4,4)
       ToolTip = ("No zoom")
       Picture = Picture["icon:/small/zoom-normal"]
     }
     { Separator2 Separator
-      MoveScaled(45,0,1,4)
+      MoveScaled(51,0,1,4)
+    }
+    { btnWebSite ToolButton
+      MoveScaled(52,0,4,4)
+      ToolTip = ("Gambas site web")
+      Picture = Picture["icon:/small/gambas"]
     }
     { btnPrint ToolButton
-      MoveScaled(47,0,15,4)
+      MoveScaled(56,0,11,4)
       AutoResize = True
       Text = ("Print")
       Picture = Picture["icon:/small/print"]
     }
     { btnModify ToolButton
-      MoveScaled(56,0,25,4)
+      MoveScaled(68,0,25,4)
       AutoResize = True
       Text = ("Modify documentation...")
       Picture = Picture["icon:/small/edit"]

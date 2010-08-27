@@ -2,24 +2,53 @@
 
 Property Read {Error} As Boolean
 
+Static Private $aLang As String[] = ["en", "fr", "de", "es", "it", "nl", "pl", "pt", "pt_BR", "mk", "sq", "ca", "hu", "tr", "ar", "fa", "vi", "ko", "ja", "ru", "zh", "zh_TW", "eo"]
+
 Private $bError As Boolean
 Private $sLastUrl As String
 Private $bPrint As Boolean
+Private mnuLang As Menu
 
 Public Sub _new()
   
+  Dim sLang As String
+  Dim hMenu As Menu
+
   Me.Utility = Settings["/UseUtilityWindows", 1]
+  
+  mnuLang = New Menu(Me) As "mnuLang"
+  
+  hMenu = New Menu(mnuLang) As "mnuSelectLanguage"
+  hMenu.Text = ("Default language")
+  
+  For Each sLang In $aLang
+    hMenu = New Menu(mnuLang) As "mnuSelectLanguage"
+    hMenu.Text = Language.ToName(sLang)
+    hMenu.Tag = sLang
+  Next
+  
+  btnHome.Menu = "mnuLang"
   
 End
 
 
 Public Sub Form_Open()
 
+  Dim sLang As String
+
   Settings.Read(Me)
-  splHelp.Layout = Settings["/ExplorerPnlLayout", [1, 4]]
-  btnShowpnl.Value = Settings["/frmExplorerPan", False]
+  Settings.Read(splHelp)
+  btnShowPanel.Value = Settings["/FHelpBrowser/ShowPanel", False]
+  
+  sLang = MHelp.GetLanguage(True)
+  If sLang Then
+    btnHome.Text = Language.ToName(sLang)
+  Else
+    btnHome.Text = ("Default language")
+  Endif
+  
   If Not webHelp.Url Then 
-    webHelp.Url = MHelp.GetURL() & "?help&" & MHelp.GetHelpLanguage()
+    webHelp.Url = MHelp.GetURL() & "?help&" & MHelp.GetLanguage()
     webHelp.TextZoom = 0.8
   Endif
   
@@ -28,13 +57,14 @@ End
 Public Sub Form_Close()
   
   Settings.Write(Me)
-  Settings["/ExplorerPnlLayout"] = splHelp.Layout
-  Settings["/frmExplorerPan"] = btnShowpnl.Value
+  Settings.Write(splHelp)
+  Settings["/FHelpBrowser/ShowPanel"] = btnShowPanel.Value
+  
 End
 
 Public Sub btnHome_Click()
 
-  webHelp.Url = MHelp.GetURL() & "?help&" & MHelp.GetHelpLanguage()
+  webHelp.Url = MHelp.GetURL() & "?help&" & MHelp.GetLanguage()
   webHelp.TextZoom = 0.8
 
 End
@@ -142,7 +172,7 @@ Public Sub btnModify_Click()
 
 End
 
-Public Sub btnShowpnl_Click()
+Public Sub btnShowPanel_Click()
 
   
   hbHelp.Visible = Last.Value
@@ -169,6 +199,8 @@ Private Sub FillTree()
    For Each hClass In CComponent.Classes
      
      If hClass.Name = "." Then Continue
+     If InStr(hClass.Name, "*") Then Continue
+     
      If hClass.Component = Null Then 
        sComponent = "gb"
      Else 
@@ -183,10 +215,12 @@ Private Sub FillTree()
      Try tvClasses.Add(sComponent &/ sClass, sClass,, sComponent)
  
   Next
+  
 End
 
 
 Public Sub tvClasses_Click()
+
   Dim ars As String[]
   Dim iType As Integer
   
@@ -210,5 +244,28 @@ Public Sub Form_KeyPress()
 
   If Key.Code = Key.Escape Then Me.Close
 
+End
+
+Private Sub SetLang(sLang As String)
+  
+  Dim sUrl As String
+  Dim sOldLang As String = MHelp.GetLanguage()
+  
+  MHelp.SetLanguage(sLang)
+  sLang = MHelp.GetLanguage()
+  
+  sUrl = webHelp.Url
+  If sUrl Begins "http://gambasdoc.org/" Then
+    sUrl = Replace(sUrl, "&" & sOldLang, "")
+    webHelp.Url = sUrl & "&" & sLang
+  Endif
+  
+End
+
+Public Sub mnuSelectLanguage_Click()
+  
+  SetLang(Last.Tag)
+  btnHome.Text = Last.Text
+  
 End
 
