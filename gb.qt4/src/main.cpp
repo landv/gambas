@@ -630,10 +630,15 @@ static void init_lang(QString locale, bool rtl)
 	if (pos >= 0) locale = locale.left(pos);
 	
 	qt = new QTranslator();
-	if (!qt->load(QString( "qt_fr"), QString(getenv("QTDIR")) + "/translations"))
+	if (!qt->load(QString("qt") + locale, QString(getenv("QTDIR")) + "/translations")
+		  && !qt->load(QString("qt") + locale, QString("/usr/lib/qt4/translations"))
+		  && !qt->load(QString("qt") + locale, QString("/usr/share/qt4/translations")))
+	{
 		qDebug("warning: unable to load Qt translation: %s", QT_ToUTF8(locale));
-
-	qApp->installTranslator(qt);
+	}
+	else
+		qApp->installTranslator(qt);
+	
 	if (rtl)
 		qApp->setLayoutDirection(Qt::RightToLeft);
 }
