@@ -11,14 +11,13 @@
     MoveScaled(0,0,79,50)
     Expand = True
     { VBox1 VBox
-      MoveScaled(1,2,76,46)
+      MoveScaled(3,3,76,46)
       Expand = True
-      Spacing = True
       { HBox1 HBox
         MoveScaled(1,1,74,4)
         AutoResize = True
         { btnBookmark MenuButton
-          MoveScaled(0,0,4,4)
+          MoveScaled(0,0,9,4)
           ToolTip = ("Bookmarks")
           AutoResize = True
           Picture = Picture["icon:/small/home"]
@@ -26,10 +25,14 @@
           Border = False
           Menu = "mnuBookmark"
         }
-        { cmbDir ComboBox
-          MoveScaled(7,0,31,4)
+        { txtDir Label
+          MoveScaled(15,0,11,4)
           Expand = True
-          Sorted = True
+          Text = ("Test Test")
+        }
+        { Separator1 Separator
+          MoveScaled(36,0,1,4)
+          Visible = False
         }
         { btnParent ToolButton
           MoveScaled(38,0,4,4)
@@ -64,8 +67,12 @@
           Picture = Picture["icon:/small/view-split-h"]
         }
       }
+      { Separator2 Separator
+        MoveScaled(30,6,11,0)
+        Visible = False
+      }
       { splChoose HSplit
-        MoveScaled(5,6,56,37)
+        MoveScaled(5,8,56,37)
         Expand = True
         { dvwChoose DirView
           MoveScaled(2,3,25,33)

@@ -629,9 +629,10 @@ static bool try_to_load_translation(QString &locale)
 		  && !_translator->load(QString("qt_") + locale, QString("/usr/share/qt4/translations")));
 }
 
-static void init_lang(QString locale, bool rtl)
+static void init_lang(char *lang, bool rtl)
 {
 	int pos;
+	QString locale(lang);
 	
 	pos = locale.lastIndexOf(".");
 	if (pos >= 0) locale = locale.left(pos);
@@ -649,7 +650,7 @@ static void init_lang(QString locale, bool rtl)
 			goto __INSTALL_TRANSLATOR;
 	}
 
-	qDebug("warning: unable to load Qt translation: %s", QT_ToUTF8(locale));
+	qDebug("warning: unable to load Qt translation: %s", lang);
 	goto __SET_DIRECTION;
 
 __INSTALL_TRANSLATOR:
@@ -662,12 +663,10 @@ __SET_DIRECTION:
 
 static void hook_lang(char *lang, int rtl)
 {
-	QString locale(lang);
-
 	if (!qApp)
 		return;
 
-	init_lang(locale, rtl);
+	init_lang(lang, rtl);
 
 	//locale = QTextCodec::locale();
 }

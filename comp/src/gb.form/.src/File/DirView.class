@@ -30,6 +30,7 @@ Private $bNoEvent As Boolean
 Private $bExpandOnMouseUp As Boolean
 Private $bNoExpandOnMouseUp As Boolean
 Private $hTimerExpand As Timer
+Private $bInRename As Boolean
 
 Public Sub _new()
 
@@ -91,6 +92,7 @@ Private Sub AddDir(sDir As String, sFile As String, Optional bIgnoreHidden As Bo
   Dim hPict As Picture
   Dim bNoEdit As Boolean
   Dim sAfter As String
+  Dim sName As String
   
   If Not $bShowHidden And If Left(sFile) = "." And If Not bIgnoreHidden Then Return
   
@@ -99,14 +101,16 @@ Private Sub AddDir(sDir As String, sFile As String, Optional bIgnoreHidden As Bo
     sParent = ""
     hPict = $hRootPict
     If Not hPict Then hPict = Picture["icon:/small/directory"]
+    sName = sDir &/ sFile
     bNoEdit = True
   Else 
     hPict = GetIcon(sDir &/ sFile)
+    sName = sFile
   Endif
   
-  sAfter = FindAfter($hTreeView, sFile, sParent)
+  sAfter = FindAfter($hTreeView, sName, sParent)
   
-  With $hTreeView.Add(sDir &/ sFile, sFile, hPict, sParent)
+  With $hTreeView.Add(sDir &/ sFile, sName, hPict, sParent)
     .Editable = Not bNoEdit
     'DEBUG sFile; " -> "; sAfter
     .MoveAfter(sAfter)
@@ -172,8 +176,8 @@ End
 
 Public Sub TreeView_Select()
 
-  If Not $bNoExpand Then
-    $hTimerExpand.Trigger
+  If Not $bNoExpand And If Not $bInRename Then
+    If Not $hTreeView.Current.Expanded Then $hTimerExpand.Trigger
   Endif
   If $bNoEvent Then Return 
   Raise {Select}
@@ -221,6 +225,7 @@ End
 Private Function Current_Read() As String
 
   Try Return $hTreeView.Current.Key
+  If Error Then Return GetRoot()
 
 End
 
@@ -365,6 +370,8 @@ Public Sub TreeView_Rename()
   Dim sNewName As String = $hTreeView.Item.Text
   Dim sMsg As String
   
+  $bInRename = False
+  
   If $hTreeView.MoveParent() Then Return
   $hTreeView.MoveBack()
   
@@ -401,10 +408,18 @@ End
 
 Public Sub TreeView_Cancel()
   
+  Dim sParent As String
+  
+  $bInRename = False
+  
   If Not $bDeleteOnCancel Then Return
+  
+  sParent = $hTreeView.Item.ParentKey
   
   Try Rmdir $hTreeView.Item.Key
   $hTreeView.Item.Delete
+
+  $hTreeView[sParent].Selected = True
 
   $bDeleteOnCancel = False
   
@@ -414,6 +429,7 @@ End
 Public Sub NewFolder()
   
   Dim sDir As String
+  Dim sPath As String
   Dim iInd As Integer
   
   sDir = ("New folder")
@@ -425,13 +441,15 @@ Public Sub NewFolder()
     sDir = ("New folder") & " (" & CStr(iInd) & ")"
   Loop  
   
-  Mkdir Current_Read() &/ sDir
+  sPath = Current_Read() &/ sDir
+  Mkdir sPath
   AddDir(Current_Read(), sDir)
   $bDeleteOnCancel = True
-  $hTreeView[Current_Read() &/ sDir].Rename
+  $bInRename = True
+  $hTreeView[sPath].Rename
   
 Catch
-
+ 
   Message.Error(("Cannot create directory.") & "\n\n" & Error.Text)
   
 End

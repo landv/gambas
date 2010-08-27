@@ -49,17 +49,31 @@ Public Sub _new(Optional bFile As Boolean)
 End
 
 
-Public Sub cmbDir_Change()
+' Public Sub txtDir_Change()
+' 
+'   $sActivate = txtDir.Text
+'   dvwChoose.Current = txtDir.Text
+' 
+' End
 
-  $sActivate = cmbDir.Text
-  dvwChoose.Current = cmbDir.Text
+' Public Sub txtDir_Click()
+' 
+'   'cmbDir_Activate
+' 
+' End
 
-End
+Private Sub UpdateLabelDir()
+  
+  Dim sDir As String
 
-Public Sub cmbDir_Click()
-
-  'cmbDir_Activate
-
+  sDir = Mid$(dvwChoose.Current, Len(dvwChoose.Root) + 1)
+  If Left(sDir) <> "/" Then sDir = "/" & sDir
+  
+  'sDir = Html(sDir)
+  sDir = Replace(sDir, "/", " ‣ ")
+  
+  txtDir.Text = sDir
+  
 End
 
 
@@ -67,10 +81,7 @@ Public Sub dvwChoose_Click()
 
   If panView.Visible Then fvwChoose.Dir = dvwChoose.Current
 
-  AddToHistory(dvwChoose.Current)
-  Object.Lock(cmbDir)
-  cmbDir.Text = dvwChoose.Current
-  Object.Unlock(cmbDir)
+  UpdateLabelDir
 
   ' IF $sActivate THEN
   '   IF $sActivate = dvwChoose.Current THEN
@@ -93,7 +104,7 @@ Public Sub Form_Open()
   'DirView = dvwChoose
   'FileView = fvwChoose
 
-  cmbDir.Text = dvwChoose.Current
+  UpdateLabelDir
   If $bFile Then txtFile.SetFocus
   Raise Change
 
@@ -128,22 +139,22 @@ Public Sub btnParent_Click()
 
 End
 
-Private Sub AddToHistory(sDir As String)
-  
-  Dim iInd As Integer
-  
-  iInd = $aHistory.Find(sDir)
-  If iInd >= 0 Then $aHistory.Remove(iInd)
-  $aHistory.Add(sDir)
-  While $aHistory.Count > 16
-    $aHistory.Remove(0)
-  Wend
-
-  Object.Lock(cmbDir)
-  cmbDir.List = $aHistory  
-  Object.Unlock(cmbDir)
-  
-End
+' Private Sub AddToHistory(sDir As String)
+'   
+'   Dim iInd As Integer
+'   
+'   iInd = $aHistory.Find(sDir)
+'   If iInd >= 0 Then $aHistory.Remove(iInd)
+'   $aHistory.Add(sDir)
+'   While $aHistory.Count > 16
+'     $aHistory.Remove(0)
+'   Wend
+' 
+'   Object.Lock(txtDir)
+'   txtDir.List = $aHistory  
+'   Object.Unlock(txtDir)
+'   
+' End
 
 Private Sub SetBookmark(hBookmark As CBookmark)
   
@@ -472,6 +483,7 @@ Public Sub SetRoot(Optional sRoot As String)
   
   If sRoot = dvwChoose.Root Then Return
   dvwChoose.Root = sRoot
+  btnBookmark.Tooltip = sRoot
   
 End
 

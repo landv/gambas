@@ -35,8 +35,8 @@ Public Sub Main()
   'Print aVal[0];; aVal[1];; aVal[2]
   'Print DBus["system://org.freedesktop.UDisks"]["/"].Children
   
-  Dim c As Collection
+   Dim cInts As Collection = ["image_path": "/usr/share/icons/gnome/48x48/actions/add.png"]
 
-  DBus["org.freedesktop.Notifications"]["/org/freedesktop/Notifications"].Notify("MyApp", 0, "", "PoissonTChat", "Fabien: Chu la ! <a href=\"http://gambaslinux.forumactif.net\">ici</a>", ["test"], c, 1000)
-   
+   DBus["org.freedesktop.Notifications"]["/org/freedesktop/Notifications"].Notify("MyApp", 0, "", "PoissonTChat", "Fabien: Chu la ! <a href=\"http://gambaslinux.forumactif.net\">ici</a>", ["test"], cInts, 1000)
+
 End
