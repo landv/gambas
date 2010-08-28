@@ -100,7 +100,7 @@ void EXEC_init(void)
 	EXEC_big_endian = test._int == 0xAABBCCDDL;
 	
 	if (EXEC_big_endian)
-		fprintf(stderr, "** WARNING: CPU is big endian\n");
+		ERROR_warning("CPU is big endian");
 
 	DATE_init();
 }

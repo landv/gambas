@@ -4,6 +4,8 @@
 Public Sub Form_Open()
 
   Me.Center
+  System.FirstDayOfWeek = gb.Wednesday
+  Let DateChooser1.Value = Now
   
   'DirChooser1.Value = "/home/benoit/gambas/3.0/trunk"
 Me.Icon = Picture["icon:/small/new"]

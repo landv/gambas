@@ -309,6 +309,16 @@ BEGIN_PROPERTY(System_Language)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(System_FirstDayOfWeek)
+
+  if (READ_PROPERTY)
+    GB_ReturnInteger(LOCAL_get_first_day_of_week());
+  else
+    LOCAL_set_first_day_of_week(VPROP(GB_INTEGER));
+
+END_PROPERTY
+
+
 BEGIN_PROPERTY(System_Charset)
 
   GB_ReturnString(LOCAL_encoding);
@@ -434,6 +444,7 @@ GB_DESC NATIVE_System[] =
   GB_STATIC_PROPERTY_READ("Backtrace", "String[]", System_Backtrace),
 
 	GB_STATIC_PROPERTY("Language", "s", System_Language),
+	GB_STATIC_PROPERTY("FirstDayOfWeek", "i", System_FirstDayOfWeek),
   GB_STATIC_PROPERTY_READ("RightToLeft", "b", System_Rtl),
   GB_STATIC_PROPERTY_READ("Charset", "s", System_Charset),
   GB_STATIC_PROPERTY_READ("Host", "s", System_Host),

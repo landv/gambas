@@ -413,7 +413,7 @@ void WATCH_watch(int fd, int type, void *callback, intptr_t param)
 
 	if (fd < 0 || fd > FD_SETSIZE)
 	{
-		fprintf(stderr, "WARNING: trying to watch fd %d\n", fd);
+		ERROR_warning("trying to watch fd #%d", fd);
 		return;
 	}
 

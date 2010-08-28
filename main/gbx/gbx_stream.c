@@ -62,7 +62,7 @@ static int _nopen = 0;
 void STREAM_exit(void)
 {
 	if (_nopen)
-		fprintf(stderr, "WARNING: %d streams yet opened\n", _nopen);
+		ERROR_warning("%d streams yet opened", _nopen);
 }
 #endif
 

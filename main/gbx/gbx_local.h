@@ -95,6 +95,7 @@ typedef
 EXTERN LOCAL_INFO LOCAL_default, LOCAL_local;
 EXTERN char *LOCAL_encoding;
 EXTERN bool LOCAL_is_UTF8;
+EXTERN char LOCAL_first_day_of_week;
 #endif
 
 
@@ -106,6 +107,8 @@ const char *LOCAL_get_lang(void);
 void LOCAL_set_lang(const char *lang);
 const char *LOCAL_gettext(const char *msgid);
 void LOCAL_load_translation(ARCHIVE *arch);
+int LOCAL_get_first_day_of_week();
+void LOCAL_set_first_day_of_week(char day);
 
 #define LOCAL_get(_local) ((_local) ? &LOCAL_local : &LOCAL_default)
 

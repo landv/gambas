@@ -571,3 +571,16 @@ void ERROR_deprecated(const char *msg)
 {
 	fprintf(stderr, "%s: %s\n", DEBUG_get_current_position(), msg);
 }
+
+void ERROR_warning(const char *warning, ...)
+{
+  va_list args;
+
+  va_start(args, warning);
+
+  fflush(NULL);
+
+  fprintf(stderr, "gbx" GAMBAS_VERSION_STRING ": warning:");
+  vfprintf(stderr, warning, args);
+  putc('\n', stderr);
+}

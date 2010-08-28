@@ -99,15 +99,11 @@ Private Sub SetDate(Optional iYear As Integer, Optional iMonth As Integer, Optio
     cmbMonth.Index = Month($dMonth) - 1
     txtYear.Value = Year($dMonth)
     
-    iDay = WeekDay($dMonth) - 1
-    ' US is the only country that starts week on Sunday!
-    If System.Language = "en_US" Or If System.Language = "C" Then
-      Inc iDay
-    Endif
-    If iDay < 1 Then iDay += 7
-    $dStart = $dMonth - iDay
-    
   Endif
+    
+  iDay = WeekDay($dMonth) - System.FirstDayOfWeek
+  If iDay < 1 Then iDay += 7
+  $dStart = $dMonth - iDay
     
   dwgMonth.Refresh
   

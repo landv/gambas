@@ -303,7 +303,7 @@ void CLASS_clean_up(bool silent)
 	if (n < nc)
 	{
 		if (!silent)
-			fprintf(stderr, "WARNING: circular references detected\n");
+			ERROR_warning("circular references detected");
 		for (class = _classes; class; class = class->next)
 		{
 			if (!CLASS_is_native(class) && class->state && !class->exit)

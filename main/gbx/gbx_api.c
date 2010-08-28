@@ -1237,11 +1237,14 @@ void GB_ReturnNewString(const char *src, int len)
 	{
 		if (*src)
 		{
-			fprintf(stderr, "warning: now use GB.ReturnNewZeroString() instead of GB.ReturnNewString()\n");
-			BREAKPOINT();
+			ERROR_warning("please use GB.ReturnNewZeroString() instead of GB.ReturnNewString()");
+			len = strlen(src);
 		}
-		GB_ReturnNull();
-		return;
+		else
+		{
+			GB_ReturnNull();
+			return;
+		}
 	}
 
   GB_ReturnString(STRING_new_temp(src, len));

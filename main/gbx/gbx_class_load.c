@@ -156,7 +156,7 @@ static void check_version(CLASS *class, int loaded)
 	
   int current = GAMBAS_PCODE_VERSION;
 
-  if (GAMBAS_FULL_VERSION > 0x01090000 && GAMBAS_FULL_VERSION <= 0x0200FFFF)
+  /*if (GAMBAS_FULL_VERSION > 0x01090000 && GAMBAS_FULL_VERSION <= 0x0200FFFF)
   {
     if (loaded == current)
       return;
@@ -164,7 +164,7 @@ static void check_version(CLASS *class, int loaded)
     if ((comp && comp->warning) || warning)
     	return;
     
-    fprintf(stderr, "WARNING: ");
+    fprintf(stderr, "warning: ");
     if (comp)
     	fprintf(stderr, "%s: ", comp->name);
     fprintf(stderr, "current bytecode version is ");
@@ -178,7 +178,7 @@ static void check_version(CLASS *class, int loaded)
     	warning = TRUE;
     	
     return;
-  }
+  }*/
   
   if (loaded > current)
     THROW(E_CLASS, ClassName, "Version too recent. Please upgrade Gambas.", "");

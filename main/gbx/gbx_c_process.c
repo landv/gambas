@@ -117,8 +117,7 @@ static int callback_error(int fd, int type, CPROCESS *process)
 
 	/*printf("callback_error: (%d) %.*s\n", n, n, buffer);*/
 
-	GB_Raise(process, EVENT_Error, 1,
-		GB_T_STRING, buffer, n);
+	GB_Raise(process, EVENT_Error, 1, GB_T_STRING, buffer, n);
 
 	return FALSE;
 
@@ -549,7 +548,7 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 			{
 				str = ((char **)env->data)[i];
 				if (putenv(str))
-					fprintf(stderr, "warning: cannot set environment string: %s\n", str);
+					ERROR_warning("cannot set environment string: %s", str);
 			}
 		}
 		

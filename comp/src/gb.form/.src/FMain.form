@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,88,71)
+  MoveScaled(0,0,50,40)
   Arrangement = Arrange.Fill
   Spacing = True
   { Menu1 Menu
@@ -18,12 +18,7 @@
       Text = ("Menu5")
     }
   }
-  { Expander1 Expander
-    MoveScaled(5,6,74,56)
-    Arrangement = Arrange.Fill
-    Text = ("Expander1")
-    { DirChooser1 DirChooser
-      MoveScaled(1,1,56,48)
-    }
+  { DateChooser1 DateChooser
+    MoveScaled(7,6,40,28)
   }
 }

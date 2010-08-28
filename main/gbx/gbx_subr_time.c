@@ -28,7 +28,7 @@
 #include "gb_error.h"
 #include "gbx_value.h"
 #include "gbx_subr.h"
-
+#include "gbx_local.h"
 #include "gbx_date.h"
 
 
@@ -208,7 +208,7 @@ void SUBR_date_op(ushort code)
 void SUBR_week(ushort code)
 {
   bool plain = FALSE;
-  int start = 1; /* Monday */
+  int start = LOCAL_get_first_day_of_week();
   DATE_SERIAL ds;
   VALUE date, first;
   int day, n;

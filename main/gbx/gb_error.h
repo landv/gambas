@@ -251,6 +251,7 @@ void THROW_SYSTEM(int err, const char *path);
 void THROW_ILLEGAL(void) NORETURN;
 
 void ERROR_panic(const char *error, ...) NORETURN;
+void ERROR_warning(const char *warning, ...);
 
 void ERROR_print(void);
 void ERROR_print_at(FILE *where, bool msgonly, bool newline);
