@@ -193,10 +193,10 @@ Private Sub FillTree()
   tvwClasses.Add("$", "Project", Picture["img/16/gambas.png"])
   For Each sClass In Project.GetClasses()
     
-    tvwClasses.Add("Project" &/ sClass, sClass,, "Project")
+    tvwClasses.Add("$" &/ sClass, sClass,, "$")
     
   Next
-  tvwClasses["Project"].Expanded = True
+  tvwClasses["$"].Expanded = True
   
   For Each hClass In CComponent.Classes
     
