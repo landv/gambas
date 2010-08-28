@@ -1167,12 +1167,12 @@ Public Sub Form_Close()
 
 End
 
-Public Sub cbxFileChoice_Click()
+Public Sub cmbFileChoice_Click()
 
-  If cbxFileChoice.Index = 0 Then
+  If cmbFileChoice.Index = 0 Then
     ShiftToSort()
   Else
-    ShiftToSort(cbxFileChoice.Text)
+    ShiftToSort(cmbFileChoice.Text)
   Endif
 
 End
@@ -1221,7 +1221,7 @@ Private Sub MakeFileChoice()
   Dim aChoice As New String[]
   Dim iPos As Integer
 
-  cbxFileChoice.Clear
+  cmbFileChoice.Clear
   'cbxFileChoice.Add("(" & ("All files") & ")")
 
   With cvwTranslate
@@ -1239,7 +1239,10 @@ Private Sub MakeFileChoice()
 
   aChoice.Add("(" & ("All files") & ")", 0)
 
-  cbxFileChoice.List = aChoice.Sort()
+  cmbFileChoice.List = aChoice.Sort()
+  Object.Lock(cmbFileChoice)
+  cmbFileChoice.Index = 0
+  Object.Unlock(cmbFileChoice)
 
 End
 

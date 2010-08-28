@@ -14,15 +14,15 @@
 <div class="title" $(hide-title)><a href="$(where)">$(class)</a></div>
 <p>
 $(help)
-<div class="black"><font size="-2"><b>Symbols</b></font></div> 
+<div class="black"><font size="-2"><b>''Symbols''</b></font></div> 
 <div class="border"> 
-<!--$(showinherits)
 
-<div style="height:6px"></div>
-<!--$(ShowParConst)
+ShowInherits[
+<p>$(Inherits)</p>
+ShowParConst[
   <table class="none" cellspacing="0" cellpadding="2"> 
   <tr> 
-  <td><b>Constants</b></td><td width="32">&nbsp;</td> 
+  <td><b>''Constants''</b></td><td width="32">&nbsp;</td> 
   </tr> 
   <tr valign="top"> 
   <td dir="ltr"> 
@@ -30,27 +30,20 @@ $(help)
   </td><td>&nbsp;</td> 
   </tr> 
   </table> 
-$(ShowParConst)-->
+ShowParConst]
 <table class="none" cellspacing="0" cellpadding="2"> 
-  <tr> 
-    <td><b>Properties</b></td><td width="32">&nbsp;</td> 
-    <td><b>Methods</b></td><td width="32">&nbsp;</td> 
-    <td><b>Events</b></td><td width="32">&nbsp;</td> 
-  </tr> 
-  <tr valign="top">
-      $(ParSymbols)
-  </tr>
+  $(ParSymbols)
 </table>
 <hr class="border"> 
-$(showinherits)-->
+ShowInherits]
 
 
 <!--$(Info)-->
 
-<!--$(ShowConst)
+ShowConst[
 <table class="none" cellspacing="0" cellpadding="2"> 
 <tr> 
-<td><b>Constants</b></td><td width="32">&nbsp;</td> 
+<td><b>''Constants''</b></td><td width="32">&nbsp;</td> 
 </tr> 
 <tr valign=top> 
 <td dir="ltr"> 
@@ -58,17 +51,10 @@ $(Const)
 </td><td>&nbsp;</td> 
 </tr> 
 </table> 
-$(ShowConst)-->
+ShowConst]
 <div style="height:6px"></div>
 <table class="none" cellspacing="0" cellpadding="2"> 
-  <tr> 
-    <td><b>Properties</b></td><td width="32">&nbsp;</td> 
-    <td><b>Methods</b></td><td width="32">&nbsp;</td> 
-    <td><b>Events</b></td><td width="32">&nbsp;</td> 
-  </tr> 
-  <tr valign="top">
-      $(Symbols)
-  </tr>
+  $(Symbols)
 </table>
 </div>
 </div>

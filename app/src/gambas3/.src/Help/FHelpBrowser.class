@@ -13,7 +13,7 @@ Public Sub _new()
   
   Dim sLang As String
   Dim hMenu As Menu
-
+  
   Me.Utility = Settings["/UseUtilityWindows", 1]
   
   mnuLang = New Menu(Me) As "mnuLang"
@@ -31,11 +31,10 @@ Public Sub _new()
   
 End
 
-
 Public Sub Form_Open()
-
+  
   Dim sLang As String
-
+  
   Settings.Read(Me)
   Settings.Read(splHelp)
   btnShowPanel.Value = Settings["/FHelpBrowser/ShowPanel", False]
@@ -63,68 +62,68 @@ Public Sub Form_Close()
 End
 
 Public Sub btnHome_Click()
-
+  
   webHelp.Url = MHelp.GetURL() & "?help&" & MHelp.GetLanguage()
   webHelp.TextZoom = 0.8
-
+  
 End
 
 Public Sub btnBack_Click()
-
+  
   webHelp.Back
-
+  
 End
 
 Public Sub btnForward_Click()
-
+  
   webHelp.Forward
-
+  
 End
 
 Public Sub btnStop_Click()
-
+  
   webHelp.Stop
-
+  
 End
 
 Public Sub btnReload_Click()
-
+  
   webHelp.Reload
-
+  
 End
 
 Public Sub btnZoomIn_Click()
-
+  
   webHelp.TextZoom = Round(webHelp.TextZoom * 1.25, -2)
-
+  
 End
 
 Public Sub btnZoomOut_Click()
-
+  
   webHelp.TextZoom = Round(webHelp.TextZoom / 1.25, -2)
-
+  
 End
 
 Public Sub btnZoomNormal_Click()
-
+  
   webHelp.TextZoom = 0.8
-
+  
 End
 
 Public Sub Form_Resize()
-
+  
   Dim bVisible As Boolean = Me.Height > Desktop.Scale * 30 And Me.Width > Desktop.Scale * 30
+
   panToolbar.Visible = bVisible
   sepToolbar.Visible = bVisible
-
+  
 End
 
-
 Public Sub btnWebSite_Click()
-
+  
   webHelp.Url = "http://gambas.sourceforge.net"
   webHelp.TextZoom = 0.8
-
+  
 End
 
 Public Sub webHelp_Error()
@@ -137,30 +136,30 @@ Public Sub webHelp_Error()
   
   $bError = True
   btnModify.Enabled = False
-
+  
 End
 
 Public Sub webHelp_Load()
-
+  
   $bError = False
   btnModify.Enabled = webHelp.Url Begins "http://gambasdoc.org"
-
+  
 End
 
 Public Sub webHelp_Link(Url As String)
-
+  
   $sLastUrl = Url
-
+  
 End
 
 Private Function Error_Read() As Boolean
-
+  
   Return $bError
-
+  
 End
 
 Public Sub btnModify_Click()
-
+  
   Dim sUrl As String
   
   sUrl = webHelp.Url
@@ -169,81 +168,89 @@ Public Sub btnModify_Click()
   sUrl = Replace(sUrl, "http://gambasdoc.org/help", "http://gambasdoc.org/edit")
   
   Project.OpenWebPage(sUrl)
-
+  
 End
 
 Public Sub btnShowPanel_Click()
-
   
-  hbHelp.Visible = Last.Value
-  If Last.value Then FillTree
+  tvwClasses.Visible = Last.Value
+  If btnShowPanel.Value Then FillTree
+  If splHelp.Layout[0] = 0 Then splHelp.Layout = [1, 2]
+
 End
 
 ''Fill the TreeView with Project components and classes
+
 Private Sub FillTree()
+
   Dim hComp As CComponent
   Dim hClass As CClassInfo
   Dim sComponent As String
   Dim sClass As String
   
-  tvClasses.Clear
-
-   tvClasses.Add("Project", "Project", Picture["img/16/gambas.png"])
-   For Each sClass In Project.GetClasses()
-   
-    tvClasses.Add("Project" &/ sClass, sClass,, "Project")
-   
-   Next
-   tvClasses["Project"].Expanded = True
-   
-   For Each hClass In CComponent.Classes
-     
-     If hClass.Name = "." Then Continue
-     If InStr(hClass.Name, "*") Then Continue
-     
-     If hClass.Component = Null Then 
-       sComponent = "gb"
-     Else 
-       sComponent = hClass.Component
-     Endif
-     sClass = hClass.Name
-
-     If Not tvClasses.Exist(sComponent) Then 
-      tvClasses.Add(sComponent, sComponent, Picture["img/16/component.png"])
-     Endif
-     
-     Try tvClasses.Add(sComponent &/ sClass, sClass,, sComponent)
- 
+  tvwClasses.Clear
+  
+  tvwClasses.Add("$", "Project", Picture["img/16/gambas.png"])
+  For Each sClass In Project.GetClasses()
+    
+    tvwClasses.Add("Project" &/ sClass, sClass,, "Project")
+    
+  Next
+  tvwClasses["Project"].Expanded = True
+  
+  For Each hClass In CComponent.Classes
+    
+    If hClass.Name = "." Then Continue
+    If InStr(hClass.Name, "*") Then Continue
+    
+    If hClass.Component = Null Then 
+      sComponent = "gb"
+    Else 
+      sComponent = hClass.Component
+    Endif
+    sClass = hClass.Name
+    
+    If Not tvwClasses.Exist(sComponent) Then 
+      tvwClasses.Add(sComponent, sComponent, Picture["img/16/component.png"])
+    Endif
+    
+    Try tvwClasses.Add(sComponent &/ sClass, sClass,, sComponent)
+    
   Next
   
 End
 
-
-Public Sub tvClasses_Click()
-
+Public Sub tvwClasses_Select()
+  
   Dim ars As String[]
   Dim iType As Integer
+  Dim sKey As String
   
-  ars = Split(tvClasses.Current.Key, "/")
-  If ars.count < 2 Then Return
+  sKey = tvwClasses.Current.Key
+  If sKey = "$" Then Return
   
-  MHelp.InitWebViewWith(webHelp, 1, ars[1])
-
+  ars = Split(sKey, "/")
+  If ars.count = 2 Then
+    MHelp.InitWebViewWith(webHelp, MHelp.TYPE_CLASS, ars[1])
+  Else If ars.Count = 1 Then
+    MHelp.InitWebViewWith(webHelp, MHelp.TYPE_COMPONENT, ars[0])
+  Endif
+  
 End
 
 Public Sub btnPrint_Click()
-
+  
   Printer1.OutputFile = "~/print.pdf"
   $bPrint = False
   If Printer1.Configure() Then Return
   webHelp.Current.Print(Printer1)
-
+  
 End
 
 Public Sub Form_KeyPress()
-
+  
   If Key.Code = Key.Escape Then Me.Close
-
+  
 End
 
 Private Sub SetLang(sLang As String)
@@ -268,4 +275,3 @@ Public Sub mnuSelectLanguage_Click()
   btnHome.Text = Last.Text
   
 End
-

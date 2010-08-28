@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,113,52)
+  MoveScaled(0,0,28,18)
   Action = "help"
   Text = ("Help browser")
   Icon = Picture["icon:/small/help"]
@@ -84,23 +84,18 @@
       Picture = Picture["icon:/small/edit"]
     }
   }
+  { Printer1 #Printer
+    #MoveScaled(4,2)
+  }
   { sepToolbar Separator
     MoveScaled(12,5,20,0)
   }
   { splHelp HSplit
     MoveScaled(1,5,80,29)
     Expand = True
-    { hbHelp VBox
-      MoveScaled(2,1,34,27)
-      Visible = False
+    { tvwClasses TreeView
+      MoveScaled(8,1,31,27)
       Expand = True
-      { tvClasses TreeView
-        MoveScaled(1,1,31,27)
-        Expand = True
-      }
-    }
-    { Printer1 #Printer
-      #MoveScaled(7,1)
     }
     { !webHelp WebView
       MoveScaled(43,3,29,15)

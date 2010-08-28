@@ -641,57 +641,65 @@
         Picture = Picture["icon:/small/terminal"]
         Toggle = True
       }
+      { btnHelp ToolButton
+        MoveScaled(50,0,4,4)
+        Visible = False
+        ToolTip = ("Help browser")
+        Action = "help"
+        Picture = Picture["icon:/small/help"]
+        Toggle = True
+      }
       { btnCompile ToolButton
-        MoveScaled(51,0,4,4)
+        MoveScaled(54,0,4,4)
         ToolTip = ("Compile")
         Action = "compile"
         Picture = Picture["icon:/small/make"]
       }
       { btnCompileAll ToolButton
-        MoveScaled(54,0,4,4)
+        MoveScaled(57,0,4,4)
         ToolTip = ("Compile all")
         Action = "compile-all"
         Picture = Picture["icon:/small/make-all"]
       }
       { btnGo ToolButton
-        MoveScaled(57,0,4,4)
+        MoveScaled(60,0,4,4)
         ToolTip = ("Run")
         Action = "start"
         Picture = Picture["icon:/small/play"]
       }
       { btnPause ToolButton
-        MoveScaled(60,0,4,4)
+        MoveScaled(63,0,4,4)
         ToolTip = ("Pause")
         Action = "pause"
         Picture = Picture["icon:/small/pause"]
       }
       { btnStop ToolButton
-        MoveScaled(63,0,4,4)
+        MoveScaled(66,0,4,4)
         ToolTip = ("Stop")
         Action = "stop"
         Picture = Picture["icon:/small/stop"]
       }
       { btnStep ToolButton
-        MoveScaled(66,0,4,4)
+        MoveScaled(69,0,4,4)
         ToolTip = ("Step")
         Action = "step"
         Picture = Picture["icon:/small/end"]
       }
       { btnForward ToolButton
-        MoveScaled(69,0,4,4)
+        MoveScaled(72,0,4,4)
         ToolTip = ("Forward")
         Action = "forward"
         Picture = Picture["icon:/small/forward"]
       }
       { btnFrom ToolButton
-        MoveScaled(72,0,4,4)
+        MoveScaled(75,0,4,4)
         ToolTip = ("Finish current function")
         Action = "return"
         Picture = Picture["icon:/small/eject"]
       }
       { btnUntil ToolButton mnuUntil
         Name = "btnUntil"
-        MoveScaled(75,0,4,4)
+        MoveScaled(78,0,4,4)
         ToolTip = ("Run until current line")
         Action = "until"
         Picture = Picture["icon:/small/start"]
@@ -1213,7 +1221,7 @@
 { Toolbars
   { Toolbar main
     Text = ""
-    List = "new-project,open-project,save-project,save-project-as,project-property,refresh-project,option,shortcut,translate,archive,exec,install,project,property,control,console,compile,compile-all,start,pause,stop,step,forward,return,until,find-text,find-project,find"
+    List = "new-project,open-project,save-project,save-project-as,project-property,refresh-project,option,shortcut,translate,archive,exec,install,project,property,control,console,help,compile,compile-all,start,pause,stop,step,forward,return,until,find-text,find-project,find"
     Default = "new-project,open-project,save-project,save-project-as,project-property,option,|,translate,exec,|,compile,compile-all,start,pause,stop,step,forward,return,until,|,find-text,find-project,find"
   }
 }
