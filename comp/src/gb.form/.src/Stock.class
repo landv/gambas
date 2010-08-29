@@ -94,6 +94,7 @@ Static Private Sub InitTheme()
       
       If sTheme Then 
         sTheme = Trim(sTheme)
+        'AddPath("gnome", "/usr/share/icons" &/ sTheme)
         GetAllThemePath(sTheme)
         'Print $aIconPath
         'AddPath("freedesktop", "/usr/share/icons" &/ sTheme)
@@ -417,6 +418,7 @@ Static Private Function ImageFromSvg(Path As String, Size As Integer) As Image
   Dim hSvg As SvgImage
   Dim hImage As Image
   
+  Debug Path;; Size
   'If Not Exist(Path) Then Error.Raise("")
   hSvg = SvgImage.Load(Path)
   
