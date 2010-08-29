@@ -121,6 +121,8 @@ public:
 
 gTabStripPage::gTabStripPage(gTabStrip *tab)
 {
+	char text[16];
+	
 	parent = tab;
 	
 	widget = gtk_layout_new(0,0);
@@ -163,6 +165,8 @@ gTabStripPage::gTabStripPage(gTabStrip *tab)
 	
 	gtk_widget_hide(image);
 	
+	sprintf(text, "Tab %d", index);
+	setText(text);
 	setVisible(true);
 }
 
@@ -426,10 +430,14 @@ bool gTabStrip::setCount(int vl)
 
 	ind = index();
 
-	lock();
-	while (vl > count())
-		g_ptr_array_add(_pages, (gpointer)new gTabStripPage(this));
-	unlock();
+	if (vl > count())
+	{
+		lock();
+		while (vl > count())
+			g_ptr_array_add(_pages, (gpointer)new gTabStripPage(this));
+		setIndex(count() - 1);
+		unlock();
+	}
 	
 	if (vl < count())
 	{
