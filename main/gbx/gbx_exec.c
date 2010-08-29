@@ -1035,8 +1035,7 @@ void EXEC_native_check(bool defined)
 
 #define EXEC_call_native_inline(_exec, _object, _type, _param) \
 ({ \
-	if (0) EXEC_set_native_error(FALSE); \
-	\
+	EXEC_set_native_error(FALSE); \
 	(*(_exec))((_object), (void *)(_param)); \
 	\
 	if (UNLIKELY(EXEC_has_native_error())) \
