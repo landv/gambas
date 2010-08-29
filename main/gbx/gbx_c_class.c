@@ -487,7 +487,7 @@ BEGIN_METHOD(Object_GetProperty, GB_OBJECT object; GB_STRING property)
 		{
 			if (EXEC_call_native(desc->property.read, object, desc->property.type, 0))
 			{
-				GAMBAS_Error = TRUE;
+				EXEC_set_native_error(TRUE);
 				return;
 			}
 		}
@@ -585,7 +585,7 @@ BEGIN_METHOD(Object_SetProperty, GB_OBJECT object; GB_STRING property; GB_VARIAN
 	
 			if (EXEC_call_native(desc->property.write, object, 0, value))
 			{
-				GAMBAS_Error = TRUE;
+				EXEC_set_native_error(TRUE);
 				return;
 			}
 		}

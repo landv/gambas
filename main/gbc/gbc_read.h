@@ -39,6 +39,8 @@ extern char READ_digit_car[];
 void READ_do(void);
 void READ_dump_pattern(PATTERN *pattern);
 char *READ_get_pattern(PATTERN *pattern);
+int READ_get_column();
+
 void THROW_UNEXPECTED(PATTERN *pattern);
 
 #endif

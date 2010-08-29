@@ -1035,13 +1035,13 @@ void EXEC_native_check(bool defined)
 
 #define EXEC_call_native_inline(_exec, _object, _type, _param) \
 ({ \
-	GAMBAS_Error = FALSE; \
+	EXEC_set_native_error(FALSE); \
 	\
 	(*(_exec))((_object), (void *)(_param)); \
 	\
-	if (UNLIKELY(GAMBAS_Error)) \
+	if (UNLIKELY(EXEC_has_native_error())) \
 	{ \
-		GAMBAS_Error = FALSE; \
+		EXEC_set_native_error(FALSE); \
 		error = TRUE; \
 	} \
 	else \

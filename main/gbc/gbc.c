@@ -1,22 +1,22 @@
 /***************************************************************************
 
-  gbc.c
+	gbc.c
 
-  (c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -58,22 +58,22 @@
 #if HAVE_GETOPT_LONG
 static struct option Long_options[] =
 {
-  { "debug", 0, NULL, 'g' },
-  { "version", 0, NULL, 'V' },
-  { "help", 0, NULL, 'h' },
-  { "license", 0, NULL, 'L' },
-  { "verbose", 0, NULL, 'v' },
-  { "translate", 0, NULL, 't' },
-  { "public-control", 0, NULL, 'p' },
-  { "public-module", 0, NULL, 'm' },
-  { "swap", 0, NULL, 's' },
-  { "class", 1, NULL, 'c' },
-  /*{ "dump", 0, NULL, 'd' },*/
-  { "root", 1, NULL, 'r' },
-  { "all", 0, NULL, 'a' },
+	{ "debug", 0, NULL, 'g' },
+	{ "version", 0, NULL, 'V' },
+	{ "help", 0, NULL, 'h' },
+	{ "license", 0, NULL, 'L' },
+	{ "verbose", 0, NULL, 'v' },
+	{ "translate", 0, NULL, 't' },
+	{ "public-control", 0, NULL, 'p' },
+	{ "public-module", 0, NULL, 'm' },
+	{ "swap", 0, NULL, 's' },
+	{ "class", 1, NULL, 'c' },
+	/*{ "dump", 0, NULL, 'd' },*/
+	{ "root", 1, NULL, 'r' },
+	{ "all", 0, NULL, 'a' },
 	{ "translate-errors", 0, NULL, 'e' },
 	{ "no-old-read-write-syntax", 0, NULL, 1 },
-  { 0 }
+	{ 0 }
 };
 #endif
 
@@ -91,62 +91,62 @@ static char **_files = NULL;
 
 static void get_arguments(int argc, char **argv)
 {
-  const char *dir;
-  int opt;
-  #if HAVE_GETOPT_LONG
-  int index = 0;
-  #endif
+	const char *dir;
+	int opt;
+	#if HAVE_GETOPT_LONG
+	int index = 0;
+	#endif
 
-  for(;;)
-  {
-    #if HAVE_GETOPT_LONG
-      opt = getopt_long(argc, argv, "gvaVhLtpmser:", Long_options, &index);
-    #else
-      opt = getopt(argc, argv, "gvaVhLtpmser:");
-    #endif
-    if (opt < 0) break;
+	for(;;)
+	{
+		#if HAVE_GETOPT_LONG
+			opt = getopt_long(argc, argv, "gvaVhLtpmser:", Long_options, &index);
+		#else
+			opt = getopt(argc, argv, "gvaVhLtpmser:");
+		#endif
+		if (opt < 0) break;
 
-    switch (opt)
-    {
-      case 'V':
-        printf(VERSION "\n");
-        exit(0);
+		switch (opt)
+		{
+			case 'V':
+				printf(VERSION "\n");
+				exit(0);
 
-      case 'g':
-        main_debug = TRUE;
-        break;
+			case 'g':
+				main_debug = TRUE;
+				break;
 
-      case 'v':
-        main_verbose = TRUE;
-        break;
+			case 'v':
+				main_verbose = TRUE;
+				break;
 
-      case 'a':
-        main_compile_all = TRUE;
-        break;
+			case 'a':
+				main_compile_all = TRUE;
+				break;
 
-      case 't':
-        main_trans = TRUE;
-        break;
+			case 't':
+				main_trans = TRUE;
+				break;
 
-      case 'p':
-        main_public = TRUE;
-        break;
+			case 'p':
+				main_public = TRUE;
+				break;
 
-      case 'm':
-        main_public_module = TRUE;
-        break;
+			case 'm':
+				main_public_module = TRUE;
+				break;
 
-      case 's':
-        main_swap = TRUE;
-        break;
+			case 's':
+				main_swap = TRUE;
+				break;
 
-      //case 'c':
-      //  main_class_file = optarg;
-      //:  break;
+			//case 'c':
+			//  main_class_file = optarg;
+			//:  break;
 
-      case 'r':
-      	COMP_root = STR_copy(optarg);
-        break;
+			case 'r':
+				COMP_root = STR_copy(optarg);
+				break;
 				
 			case 'e':
 				ERROR_translate = TRUE;
@@ -155,152 +155,152 @@ static void get_arguments(int argc, char **argv)
 			case 1:
 				main_no_old_read_syntax = TRUE;
 				break;
-      
+			
 			case 'L':
-        printf(
-          "GAMBAS Compiler version " VERSION " " __DATE__ " " __TIME__ "\n"
-          COPYRIGHT
-          );
+				printf(
+					"GAMBAS Compiler version " VERSION " " __DATE__ " " __TIME__ "\n"
+					COPYRIGHT
+					);
 				exit(0);
 				
-      case 'h': case '?':
-        printf(
-          "Usage: gbc" GAMBAS_VERSION_STRING " [options] [<project directory>]\n\n"
-          "Options:"
-          #if HAVE_GETOPT_LONG
-          "\n"
-          "  -g  --debug                add debugging information\n"
-          "  -v  --verbose              verbose output\n"
-          "  -a  --all                  compile all\n"
-          "  -t  --translate            output translation files\n"
-          "  -p  --public-control       form controls are public\n"
-          "  -m  --public-module        module symbols are public by default\n"
-          "  -s  --swap                 swap endianness\n"
-          "  -r  --root <directory>     gives the gambas installation directory\n"
-          "  -V  --version              display version\n"
-          "  -h  --help                 display this help\n"
-          "  -L  --license              display license\n"
+			case 'h': case '?':
+				printf(
+					"Usage: gbc" GAMBAS_VERSION_STRING " [options] [<project directory>]\n\n"
+					"Options:"
+					#if HAVE_GETOPT_LONG
+					"\n"
+					"  -g  --debug                add debugging information\n"
+					"  -v  --verbose              verbose output\n"
+					"  -a  --all                  compile all\n"
+					"  -t  --translate            output translation files\n"
+					"  -p  --public-control       form controls are public\n"
+					"  -m  --public-module        module symbols are public by default\n"
+					"  -s  --swap                 swap endianness\n"
+					"  -r  --root <directory>     gives the gambas installation directory\n"
+					"  -V  --version              display version\n"
+					"  -h  --help                 display this help\n"
+					"  -L  --license              display license\n"
 					"  -e  --translate-errors     display translatable error messages\n"
-          #else
-          " (no long options on this system)\n"
-          "  -g                         add debugging information\n"
-          "  -v                         verbose output\n"
-          "  -a                         compile all\n"
-          "  -t                         output translation files\n"
-          "  -p                         form controls are public\n"
-          "  -m                         module symbols are public by default\n"
-          "  -s                         swap endianness\n"
-          "  -r <directory>             gives the gambas installation directory\n"
-          "  -V                         display version\n"
-          "  -h                         display this help\n"
-          "  -L                         display license\n"
+					#else
+					" (no long options on this system)\n"
+					"  -g                         add debugging information\n"
+					"  -v                         verbose output\n"
+					"  -a                         compile all\n"
+					"  -t                         output translation files\n"
+					"  -p                         form controls are public\n"
+					"  -m                         module symbols are public by default\n"
+					"  -s                         swap endianness\n"
+					"  -r <directory>             gives the gambas installation directory\n"
+					"  -V                         display version\n"
+					"  -h                         display this help\n"
+					"  -L                         display license\n"
 					"  -e                         display translatable error messages\n"
-          #endif
-          "\n"
-          );
+					#endif
+					"\n"
+					);
 
-        exit(0);
+				exit(0);
 
-      default:
-        exit(1);
+			default:
+				exit(1);
 
-    }
-  }
+		}
+	}
 
-  if (optind < (argc - 1))
-  {
-    fprintf(stderr, "gbc: too many arguments.\n");
-    exit(1);
-  }
+	if (optind < (argc - 1))
+	{
+		fprintf(stderr, "gbc: too many arguments.\n");
+		exit(1);
+	}
 
-  /*COMP_project = STR_copy(FILE_cat(argv[optind], "Gambas", NULL));*/
-  if (optind < argc)
-    chdir(argv[optind]);
+	/*COMP_project = STR_copy(FILE_cat(argv[optind], "Gambas", NULL));*/
+	if (optind < argc)
+		chdir(argv[optind]);
 
-  dir = FILE_get_current_dir();
-  if (!dir)
-  {
-    fprintf(stderr, "gbc: no current directory.\n");
-    exit(1);
-  }    
+	dir = FILE_get_current_dir();
+	if (!dir)
+	{
+		fprintf(stderr, "gbc: no current directory.\n");
+		exit(1);
+	}    
 
-  COMP_project = STR_copy(FILE_cat(dir, ".project", NULL));
+	COMP_project = STR_copy(FILE_cat(dir, ".project", NULL));
 
-  if (!FILE_exist(COMP_project))
-  {
-    fprintf(stderr, "gbc: project file not found: %s\n", COMP_project);
-    exit(1);
-  }
+	if (!FILE_exist(COMP_project))
+	{
+		fprintf(stderr, "gbc: project file not found: %s\n", COMP_project);
+		exit(1);
+	}
 }
 
 
 static void compile_file(const char *file)
 {
 	int i;
-  time_t time_src, time_form, time_pot, time_output;
+	time_t time_src, time_form, time_pot, time_output;
 
-  COMPILE_begin(file, main_trans);
+	COMPILE_begin(file, main_trans);
 
-  if (!main_compile_all)
-  {
-    if (FILE_exist(JOB->output))
-    {
-      time_src = FILE_get_time(JOB->name);
-      time_output = FILE_get_time(JOB->output);
+	if (!main_compile_all)
+	{
+		if (FILE_exist(JOB->output))
+		{
+			time_src = FILE_get_time(JOB->name);
+			time_output = FILE_get_time(JOB->output);
 
-      if (JOB->form)
-        time_form = FILE_get_time(JOB->form);
-      else
-        time_form = time_src;
+			if (JOB->form)
+				time_form = FILE_get_time(JOB->form);
+			else
+				time_form = time_src;
 
-      if (main_trans)
-        time_pot = FILE_get_time(JOB->tname);
-      else
-        time_pot = time_src;
+			if (main_trans)
+				time_pot = FILE_get_time(JOB->tname);
+			else
+				time_pot = time_src;
 
-      if (time_src <= time_output && time_src <= time_pot && time_form <= time_output)
-        goto _FIN;
-    }
-  }
-
-  JOB->all = main_compile_all;
-  JOB->debug = main_debug;
-  JOB->verbose = main_verbose;
-  JOB->swap = main_swap;
-  JOB->public_module = main_public_module;
-	JOB->no_old_read_syntax = main_no_old_read_syntax;
-  //JOB->class_file = main_class_file;
-
-  if (JOB->verbose)
-  {
-  	putchar('\n');
-  	for (i = 1; i <= 9; i++)
-  		printf("--------");
-  	printf("\nCompiling %s...\n", FILE_get_name(JOB->name));
+			if (time_src <= time_output && time_src <= time_pot && time_form <= time_output)
+				goto _FIN;
+		}
 	}
 
-  COMPILE_load();
-  FORM_do(main_public);
-  BUFFER_add(&JOB->source, "\n\n\n\0", 4);
+	JOB->all = main_compile_all;
+	JOB->debug = main_debug;
+	JOB->verbose = main_verbose;
+	JOB->swap = main_swap;
+	JOB->public_module = main_public_module;
+	JOB->no_old_read_syntax = main_no_old_read_syntax;
+	//JOB->class_file = main_class_file;
 
-  READ_do();
+	if (JOB->verbose)
+	{
+		putchar('\n');
+		for (i = 1; i <= 9; i++)
+			printf("--------");
+		printf("\nCompiling %s...\n", FILE_get_name(JOB->name));
+	}
 
-  #ifdef DEBUG
-  TABLE_print(JOB->class->table, TRUE);
-  #endif
+	COMPILE_load();
+	FORM_do(main_public);
+	BUFFER_add(&JOB->source, "\n\n\n\0", 4);
 
-  HEADER_do();
-  TRANS_code();
+	READ_do();
 
-  #ifdef DEBUG
-  TABLE_print(JOB->class->string, FALSE);
-  #endif
+	#ifdef DEBUG
+	TABLE_print(JOB->class->table, TRUE);
+	#endif
 
-  OUTPUT_do(main_swap);
-  CLASS_export();
+	HEADER_do();
+	TRANS_code();
+
+	#ifdef DEBUG
+	TABLE_print(JOB->class->string, FALSE);
+	#endif
+
+	OUTPUT_do(main_swap);
+	CLASS_export();
 
 _FIN:
-  COMPILE_end();
+	COMPILE_end();
 }
 
 
@@ -311,24 +311,24 @@ static int compare_path(char **a, char **b)
 
 static void fill_files(const char *root, bool recursive)
 {
-  DIR *dir;
-  char *path;
-  struct dirent *dirent;
-  char *file_name;
+	DIR *dir;
+	char *path;
+	struct dirent *dirent;
+	char *file_name;
 	const char *name;
-  const char *file;
-  struct stat info;
-  const char *ext;
+	const char *file;
+	struct stat info;
+	const char *ext;
 	
 	path = STR_copy(root);
 	
-  dir = opendir(path);
+	dir = opendir(path);
 	if (!dir)
 	{
 		fprintf(stderr, "gbc: cannot browse directory: %s\n", path);
 		exit(1);
 	}
-  
+	
 	while ((dirent = readdir(dir)) != NULL)
 	{
 		file_name = dirent->d_name;
@@ -355,9 +355,9 @@ static void fill_files(const char *root, bool recursive)
 			if ((strcmp(FILE_get_ext(file), "module") == 0)
 					|| (strcmp(FILE_get_ext(file), "class") == 0))
 			{
-			  *((char **)ARRAY_add(&_files)) = STR_copy(file);
+				*((char **)ARRAY_add(&_files)) = STR_copy(file);
 				// Add the class to the list of classes
-        name = FILE_get_basename(file_name);
+				name = FILE_get_basename(file_name);
 				COMPILE_add_class(name, strlen(name));
 			}
 		}
@@ -371,16 +371,16 @@ static void init_files(const char *first)
 {
 	bool recursive;
 	
-  ARRAY_create(&_files);
+	ARRAY_create(&_files);
 
-  if (*first)
-  {
-    if (chdir(first))
-    {
+	if (*first)
+	{
+		if (chdir(first))
+		{
 			fprintf(stderr, "gbc: cannot switch to directory: %s\n", first);
 			exit(1);
 		}
-  }
+	}
 	
 	recursive = chdir(".src") == 0;
 	fill_files(FILE_get_current_dir(), recursive);
@@ -401,7 +401,7 @@ static void exit_files(void)
 	for (i = 0; i < ARRAY_count(_files); i++)
 		STR_free(_files[i]);
 	
-  ARRAY_delete(&_files);
+	ARRAY_delete(&_files);
 }
 
 
@@ -409,14 +409,14 @@ int main(int argc, char **argv)
 {
 	int i;
 	
-  MEMORY_init();
-  COMMON_init();
+	MEMORY_init();
+	COMMON_init();
 
-  get_arguments(argc, argv);
+	get_arguments(argc, argv);
 
-  TRY
-  {
-    COMPILE_init();
+	TRY
+	{
+		COMPILE_init();
 
 		// Remove information files if we are compiling everything
 		
@@ -429,29 +429,34 @@ int main(int argc, char **argv)
 			unlink(".list");
 		}
 
-    init_files(FILE_get_dir(COMP_project));
+		init_files(FILE_get_dir(COMP_project));
 
 		for (i = 0; i < ARRAY_count(_files); i++)
 			compile_file(_files[i]);
 
-    exit_files();
-    
-    COMPILE_exit();
-    
-    puts("OK");
-  }
-  CATCH
-  {
-    fflush(NULL);
-    if (JOB->line)
-      fprintf(stderr, "%s:%d: ", JOB->name, JOB->line);
-    else
-      fprintf(stderr, "gbc: ERROR: ");
-    ERROR_print();
-    exit(1);
-  }
-  END_TRY
+		exit_files();
+		
+		COMPILE_exit();
+		
+		puts("OK");
+	}
+	CATCH
+	{
+		fflush(NULL);
+		if (JOB->line)
+		{
+			if (JOB->column)
+				fprintf(stderr, "%s:%d:%d: ", JOB->name, JOB->line, READ_get_column());
+			else
+				fprintf(stderr, "%s:%d: ", JOB->name, JOB->line);
+		}
+		else
+			fprintf(stderr, "gbc: ERROR: ");
+		ERROR_print();
+		exit(1);
+	}
+	END_TRY
 
-  return 0;
+	return 0;
 }
 

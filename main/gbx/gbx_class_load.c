@@ -151,8 +151,8 @@ static void conv_type_simple(CLASS *class, int *ptype)
 
 static void check_version(CLASS *class, int loaded)
 {
-	static bool warning = FALSE;
-	COMPONENT *comp = class->component;
+	//static bool warning = FALSE;
+	//COMPONENT *comp = class->component;
 	
   int current = GAMBAS_PCODE_VERSION;
 

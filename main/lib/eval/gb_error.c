@@ -25,6 +25,7 @@
 #include "main.h"
 #include "gb_common.h"
 #include <stdarg.h>
+#include "eval.h"
 #include "gb_error.h"
 
 ERROR_CONTEXT *ERROR_current = NULL;
@@ -53,7 +54,7 @@ void ERROR_reset(ERROR_INFO *info)
 
 void ERROR_propagate()
 {
-	if (ERROR_current->ret)
+	if (ERROR_in_catch(ERROR_current))
 		ERROR_leave(ERROR_current);
   longjmp(ERROR_current->env, 1);
 }
@@ -73,13 +74,24 @@ PUBLIC char *ERROR_get(void)
 
 PUBLIC void THROW(const char *msg)
 {
-  GB.Error("&1", (char *)msg);
+	GB.FreeString(&EVAL->error);
+	EVAL->error = GB.NewZeroString(msg);
   ERROR_propagate();
+}
+
+static const char *_error_arg;
+
+static void get_error_arg(int index, char **str, int *len)
+{
+	*str = (char *)_error_arg;
+	*len = strlen(_error_arg);
 }
 
 PUBLIC void THROW2(const char *pattern, const char *msg)
 {
-  GB.Error((char *)pattern, (char *)msg);
+	GB.FreeString(&EVAL->error);
+	_error_arg = msg;
+	EVAL->error = GB.SubstString(pattern, strlen(pattern), get_error_arg);
   ERROR_propagate();
 }
 

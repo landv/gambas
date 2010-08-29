@@ -477,7 +477,7 @@ PUBLIC void EVAL_analyze(const char *src, int len, int state, EVAL_ANALYZE *resu
   {
 		EVAL = &EVAL_read_expr;
 
-		EVAL_clear(EVAL);
+		EVAL_clear(EVAL, FALSE);
 		
 		EVAL->source = GB.NewString(src, len);
 		GB.AddString(&EVAL->source, "\0\0", 2);

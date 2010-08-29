@@ -190,7 +190,6 @@ void *GB_DebugGetExec(void);
 EXTERN void *GAMBAS_Api[];
 EXTERN void *GAMBAS_DebugApi[];
 EXTERN unsigned int GAMBAS_MissingParam;
-EXTERN bool GAMBAS_Error;
 EXTERN bool GAMBAS_DoNotRaiseEvent;
 EXTERN bool GAMBAS_StopEvent;
 #endif

@@ -45,7 +45,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CEXPRESSION_free)
 
-  EVAL_clear(&THIS->expr);
+  EVAL_clear(&THIS->expr, FALSE);
   GB.FreeString(&THIS->text);
   GB.FreeString(&THIS->expr.source);
   GB.Unref((void **)&THIS->env);
@@ -84,6 +84,8 @@ static void prepare(CEXPRESSION *_object)
   {
     if (!EVAL_compile(&THIS->expr, FALSE))
       THIS->compiled = TRUE;
+		else
+			GB.Error(THIS->expr.error);
   }
 }
 

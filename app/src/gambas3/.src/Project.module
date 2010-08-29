@@ -1661,7 +1661,7 @@ Catch
   
 End
 
-Public Sub OpenFile(sPath As String, Optional iLine As Integer) As Object
+Public Sub OpenFile(sPath As String, Optional iLine As Integer, Optional iColumn As Integer = -1) As Object
   
   Dim hForm As Object
   
@@ -1699,7 +1699,7 @@ Public Sub OpenFile(sPath As String, Optional iLine As Integer) As Object
   'ENDIF
   
   If iLine Then 
-    hForm.GotoCenter(iLine - 1, -1)
+    hForm.GotoCenter(iLine - 1, iColumn)
   Endif
   
   Return hForm
@@ -1790,8 +1790,11 @@ Private Sub CompileError(sMsg As String)
   Dim iPos As Integer
   Dim sFile As String
   Dim iLine As Integer
+  Dim iColumn As Integer
   Dim hForm As FEditor
   Dim sErr As String
+  Dim sInfo As String
+  Dim aInfo As String[]
   
   iPos = RInStr(sMsg, "\n")
   If iPos Then sMsg = Mid$(sMsg, iPos + 1)
@@ -1804,21 +1807,22 @@ Private Sub CompileError(sMsg As String)
     
   Else
     
-    iPos = InStr(sMsg, ":")
-    sFile = Left$(sMsg, iPos - 1)
+    iPos = InStr(sMsg, " ")
+    sInfo = Left$(sMsg, iPos - 1)
     sMsg = Mid$(sMsg, iPos + 1)
     
-    iPos = InStr(sMsg, ":")
-    'if iPos = 0 then return
+    aInfo = Split(sInfo, ":", "", True)
     
-    iLine = Val(Left$(sMsg, iPos - 1))
+    sFile = aInfo[0]
+    iLine = CInt(aInfo[1])
+    Try iColumn = CInt(aInfo[2])
     'if iLine = 0 then return
     
     'sFile = File.Dir(Path) &/ File.Name(sFile)
     
-    hForm = OpenFile($cSourceDir[File.Name(sFile)], iLine)
+    hForm = OpenFile($cSourceDir[File.Name(sFile)], iLine, iColumn - 1)
     
-    sErr = TranslateMessage(Trim(Mid$(sMsg, iPos + 1)))
+    sErr = TranslateMessage(sMsg)
     
     If hForm And If iLine >= hForm.Editor.Lines.Count Then
       SetMessage(File.BaseName(sFile) & ": " & sErr & " " & ("in form definition"))

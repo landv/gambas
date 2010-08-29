@@ -28,85 +28,16 @@
 
 #include "gb_limit.h"
 
+#define NO_ERROR_HANDLER
+
+#include "gb_error_common.h"
+
 #define E_MEMORY    "Out of memory"
 #define E_SYNTAX    "Syntax error"
-
-typedef
-  struct {
-  	short code;
-    bool free;
-    void *cp;
-    void *fp;
-    void *pc;
-    //char msg[MAX_ERROR_MSG + 1];
-    char *msg;
-		int bt_count;
-    }
-  ERROR_INFO;
-
-typedef
-  struct _ERROR {
-    struct _ERROR *prev;
-    jmp_buf env;
-    int ret;
-    ERROR_INFO info;
-    }
-  ERROR_CONTEXT;
 
 #ifndef __GB_ERROR_C
 EXTERN ERROR_CONTEXT *ERROR_current;
 #endif
-
-#define ERROR_LEAVE_DONE ((ERROR_CONTEXT *)-1)
-
-#define TRY \
-  { \
-		ERROR_CONTEXT __err_context; \
-    { \
-     	ERROR_CONTEXT *__err = &__err_context; \
-     	ERROR_enter(__err); \
-     	__err->ret = setjmp(__err->env); \
-     	if (__err->ret == 0)
-
-#define CATCH \
-			else
-
-#define END_TRY \
-			ERROR_leave(__err); \
-  	} \
-	}
-
-#define ERROR_enter(_err) \
-do { \
-  _err->prev = ERROR_current; \
-  _err->info.code = 0; \
-  ERROR_current = _err; \
-} while(0)
-
-
-#define ERROR_leave(_err) \
-do { \
-  if (_err->prev != ERROR_LEAVE_DONE) \
-	{ \
-		ERROR_current = _err->prev; \
-		if (ERROR_current) \
-		{ \
-			if (_err->info.code) \
-			{ \
-				ERROR_reset(&ERROR_current->info); \
-				ERROR_current->info = _err->info; \
-			} \
-		} \
-		else \
-			ERROR_reset(&_err->info); \
-    \
-		_err->prev = ERROR_LEAVE_DONE; \
-	} \
-} while(0)
-
-#define ERROR __err
-
-#define PROPAGATE() ERROR_propagate()
 
 void ERROR_clear(void);
 char *ERROR_get(void);

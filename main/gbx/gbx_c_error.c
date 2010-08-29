@@ -120,7 +120,7 @@ END_METHOD
 BEGIN_METHOD(CERROR_raise, GB_STRING msg)
 
   ERROR_define(GB_ToZeroString(ARG(msg)), NULL);
-  GAMBAS_Error = TRUE;
+  EXEC_set_native_error(TRUE);
 
 END_METHOD
 
@@ -128,7 +128,7 @@ END_METHOD
 BEGIN_METHOD_VOID(CERROR_propagate)
 
 	if (ERROR_last.code)
-		GAMBAS_Error = TRUE;
+		EXEC_set_native_error(TRUE);
 
 END_METHOD
 

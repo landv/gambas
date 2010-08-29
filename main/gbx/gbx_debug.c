@@ -300,7 +300,7 @@ __FOUND:
   CATCH
   {
     ret = GB_DEBUG_SET_ERROR;
-    GAMBAS_Error = TRUE;
+    EXEC_set_native_error(TRUE);
   }
   END_TRY
 

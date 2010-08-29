@@ -281,4 +281,7 @@ do { \
 
 #define COPY_VALUE(_dst, _src) VALUE_copy(_dst, _src)
 
+#define EXEC_set_native_error(_err) (ERROR_current->info.native = (_err))
+#define EXEC_has_native_error() (ERROR_current->info.native)
+
 #endif /* */

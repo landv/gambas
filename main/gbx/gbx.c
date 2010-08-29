@@ -122,25 +122,28 @@ static void main_exit(bool silent)
 	if (!SP)
 		STACK_init();
 	
-  EXTERN_release();
-  STREAM_exit();
-  OBJECT_exit();
-	CLASS_clean_up(silent);
-  SUBR_exit();
-  DEBUG_exit();
-  CFILE_exit();
-  WATCH_exit();
-  CLASS_exit();
-  COMPONENT_exit();
-  EXTERN_exit();
-  PROJECT_exit();
-  LOCAL_exit();
-  EVENT_exit();
-  FILE_exit();
-  STACK_exit();
-  ERROR_exit();
-  STRING_exit();
-	//fclose(log_file);
+	TRY
+	{
+		EXTERN_release();
+		STREAM_exit();
+		OBJECT_exit();
+		CLASS_clean_up(silent);
+		SUBR_exit();
+		DEBUG_exit();
+		CFILE_exit();
+		WATCH_exit();
+		CLASS_exit();
+		COMPONENT_exit();
+		EXTERN_exit();
+		PROJECT_exit();
+		LOCAL_exit();
+		EVENT_exit();
+		FILE_exit();
+		STACK_exit();
+		ERROR_exit();
+		STRING_exit();
+	}
+	END_TRY
 }
 
 static bool is_option(const char *arg, char option)

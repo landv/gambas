@@ -37,6 +37,9 @@
 ERROR_CONTEXT *ERROR_current = NULL;
 ERROR_INFO ERROR_last = { 0 };
 ERROR_HANDLER *ERROR_handler = NULL;
+#if DEBUG_ERROR
+int ERROR_depth = 0;
+#endif
 
 static int _lock = 0;
 
@@ -111,7 +114,20 @@ static const char *_message[67] =
 	/* 66 E_EXTCB */ ".1Cannot create callback: &1"
 };
 
+#if DEBUG_ERROR
+void ERROR_debug(const char *msg, ...)
+{
+	int i;
+  va_list args;
 
+  va_start(args, msg);
+
+	for (i = 0; i < ERROR_depth; i++)
+		fprintf(stderr, "- ");
+
+  vfprintf(stderr, msg, args);
+}
+#endif
 
 void ERROR_lock()
 {
@@ -144,7 +160,7 @@ void ERROR_clear()
 	if (_lock)
 	{
 		#if DEBUG_ERROR
-		fprintf(stderr, "ERROR_clear: (%p) *LOCKED*\n", ERROR_current);
+		ERROR_debug("ERROR_clear: (%p) *LOCKED*\n", ERROR_current);
 		#endif
 		return;
 	}
@@ -229,12 +245,12 @@ void ERROR_propagate()
 {
 	ERROR_HANDLER *ph;
 	#if DEBUG_ERROR
-	fprintf(stderr, "ERROR_propagate: %d %s\n", ERROR_current->info.code, ERROR_current->info.msg);
+	ERROR_debug("ERROR_propagate: %p %d %s (ret = %d)\n", ERROR_current, ERROR_current->info.code, ERROR_current->info.msg, ERROR_current->ret);
 	#endif
 	
 	//fprintf(stderr, "ERROR_propagate: %p\n", ERROR_handler);
 
-	if (ERROR_current->ret)
+	if (ERROR_in_catch(ERROR_current))
 		ERROR_leave(ERROR_current);
 	
 	while (ERROR_handler)
@@ -407,7 +423,7 @@ void ERROR_define(const char *pattern, char *arg[])
 	ERROR_current->info.bt_count = STACK_frame_count;
   
   #if DEBUG_ERROR
-	fprintf(stderr, "ERROR_define: %s\n", ERROR_current->info.msg);
+	ERROR_debug("ERROR_define: %s\n", ERROR_current->info.msg);
   #endif
 }
 
@@ -562,9 +578,6 @@ void ERROR_set_last(void)
 	ERROR_last = ERROR_current->info;
 	if (ERROR_last.free)
 		STRING_ref(ERROR_last.msg);
-	#if DEBUG_ERROR
-	fprintf(stderr, "ERROR_set_last: DEBUG_copy_backtrace: <<%p>>\n", ERROR_last.backtrace);
-	#endif
 }
 
 void ERROR_deprecated(const char *msg)

@@ -48,7 +48,7 @@ void EVAL_init(void)
 
 void EVAL_exit(void)
 {
-  EVAL_clear(&EVAL_read_expr);
+  EVAL_clear(&EVAL_read_expr, FALSE);
   RESERVED_exit();
 }
 
@@ -83,7 +83,7 @@ GB_VALUE *EVAL_expression(EXPRESSION *expr, EVAL_FUNCTION get_value)
 }
 
 
-void EVAL_clear(EXPRESSION *expr)
+void EVAL_clear(EXPRESSION *expr, bool keep_error)
 {
   ARRAY_delete(&expr->tree);
 
@@ -99,6 +99,9 @@ void EVAL_clear(EXPRESSION *expr)
     FREE(&expr->pattern, "EVAL_clear");
   if (expr->code)
     FREE(&expr->code,"EVAL_clear");
+	
+	if (!keep_error)
+		GB.FreeString(&expr->error);
 }
 
 
@@ -127,7 +130,7 @@ bool EVAL_compile(EXPRESSION *expr, bool assign)
 
   EVAL = expr;
 
-  EVAL_clear(EVAL);
+  EVAL_clear(EVAL, FALSE);
 
   if (expr->len == 0)
     return TRUE;
@@ -163,7 +166,7 @@ bool EVAL_compile(EXPRESSION *expr, bool assign)
   }
   CATCH
   {
-    EVAL_clear(EVAL);
+    EVAL_clear(EVAL, TRUE);
     error = TRUE;
   }
   END_TRY
@@ -207,7 +210,7 @@ void EVAL_new(EXPRESSION **expr, char *src, int len)
 
 void EVAL_free(EXPRESSION **pexpr)
 {
-  EVAL_clear(*pexpr);
+  EVAL_clear(*pexpr, FALSE);
   GB.FreeString(&(*pexpr)->source);
   GB.Free((void **)pexpr);
 }

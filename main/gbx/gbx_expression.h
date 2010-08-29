@@ -53,6 +53,7 @@ typedef
 		short assign_code;
     int stack_usage;
     void *op;
+		char *error;
     unsigned analyze : 1;
     unsigned rewrite : 1;
 		unsigned comment : 1;

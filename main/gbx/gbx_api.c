@@ -279,7 +279,6 @@ void *GAMBAS_DebugApi[] =
 };
 
 
-bool GAMBAS_Error = FALSE;
 bool GAMBAS_DoNotRaiseEvent = FALSE;
 bool GAMBAS_StopEvent = FALSE;
 
@@ -293,7 +292,7 @@ static bool _event_stopped = FALSE;
   CATCH \
   { \
     ret = -1; \
-    GAMBAS_Error = TRUE; \
+    EXEC_set_native_error(TRUE); \
   } \
   END_TRY \
   return ret;
@@ -328,21 +327,12 @@ void *GB_Hook(int type, void *hook)
 
 int GB_LoadComponent(const char *name)
 {
-  int ret = 0;
-
-  TRY
+  CATCH_ERROR
   {
     COMPONENT *comp = COMPONENT_create(name);
     COMPONENT_load(comp);
   }
-  CATCH
-  {
-    ret = 1;
-    GAMBAS_Error = TRUE;
-  }
-  END_TRY
-
-  return ret;
+  END_CATCH_ERROR
 }
 
 
@@ -828,7 +818,7 @@ void GB_Error(const char *error, ...)
 
   if (!error)
   {
-    GAMBAS_Error = FALSE;
+    EXEC_set_native_error(FALSE);
     return;
   }
 
@@ -838,8 +828,7 @@ void GB_Error(const char *error, ...)
     arg[i] = va_arg(args, char *);
 
   ERROR_define(error, arg);
-
-  GAMBAS_Error = TRUE;
+  EXEC_set_native_error(TRUE);
 }
 
 #if DEBUG_REF
@@ -1310,7 +1299,7 @@ int GB_LoadFile(const char *path, int lenp, char **addr, int *len)
     if (*addr)
       STREAM_unmap(*addr, *len);
 
-    GAMBAS_Error = TRUE;
+    EXEC_set_native_error(TRUE);
     ret = 1;
   }
   END_TRY
@@ -1470,8 +1459,11 @@ const char *GB_AppStartup(void)
 
 void *GB_Eval(void *expr, void *func)
 {
-  GAMBAS_Error = EVAL_expression((EXPRESSION *)expr, (EVAL_FUNCTION)func);
-  if (GAMBAS_Error)
+	bool err = EVAL_expression((EXPRESSION *)expr, (EVAL_FUNCTION)func);
+  
+	EXEC_set_native_error(err);
+  
+	if (err)
   	return NULL;
 	else
 		return &TEMP;
@@ -1496,20 +1488,11 @@ void GB_Realloc(void **addr, int len)
 
 int GB_Conv(GB_VALUE *arg, GB_TYPE type)
 {
-  int ret = 0;
-
-  TRY
+  CATCH_ERROR
   {
     VALUE_conv((VALUE *)arg, (GB_TYPE)type);
   }
-  CATCH
-  {
-    ret = 1;
-    GAMBAS_Error = TRUE;
-  }
-  END_TRY
-
-  return ret;
+  END_CATCH_ERROR
 }
 
 
@@ -1625,21 +1608,11 @@ void GB_FreeString(char **str)
 
 int GB_ConvString(char **result, const char *str, int len, const char *src, const char *dst)
 {
-  bool err = FALSE;
-
-  TRY
+  CATCH_ERROR
   {
     STRING_conv(result, str, len, src, dst, TRUE);
   }
-  CATCH
-  {
-		fprintf(stderr, "GB_ConvString: %d\n", ERROR_current->info.code);
-    err = TRUE;
-    GAMBAS_Error = TRUE;
-  }
-  END_TRY
-
-  return err;
+  END_CATCH_ERROR
 }
 
 
@@ -1757,20 +1730,11 @@ char *GB_TempFile(const char *pattern)
 
 int GB_CopyFile(const char *src, const char *dst)
 {
-	int ret = 0;
-	
-	TRY
+	CATCH_ERROR
 	{
 		FILE_copy(src, dst);
 	}
-	CATCH
-	{
-		ret = 1;
-    GAMBAS_Error = TRUE;
-	}
-	END_TRY
-	
-	return ret;
+	END_CATCH_ERROR
 }
 
 #if 0

@@ -52,6 +52,7 @@ static COMPILE *comp;
 static const char *source_ptr;
 static int source_length;
 static bool begin_line = FALSE;
+static bool _no_quote = FALSE;
 
 static char ident_car[256];
 static char first_car[256];
@@ -77,6 +78,7 @@ static void READ_init(void)
 	unsigned char i;
 	
 	JOB->line = 1;
+	JOB->column = TRUE;
 	
 	if (!is_init)
 	{
@@ -145,26 +147,44 @@ static void READ_exit(void)
 
 	if (JOB->verbose)
 		printf("\n");
+	
+	JOB->column = FALSE;
+}
+
+static int get_utf8_length(const char *str, int len)
+{
+  int ulen = 0;
+	int i;
+
+  for (i = 0; i < len; i++)
+  {
+    if ((str[i] & 0xC0) != 0x80)
+      ulen++;
+  }
+
+  return ulen;
 }
 
 
-/*static void char *quote_string(const char *src)
+int READ_get_column()
 {
-	char *p = COMMON_buffer;
-	char c;
-
-	for(;;)
+	const char *p = source_ptr;
+	int col = 0;
+	
+	while (p > comp->source)
 	{
-		c = *src++;
-		if (c == 0)
+		if (*p == '\n')
+		{
+			p++;
 			break;
-		if (p >= &COMMON_buffer[COMMON_BUF_MAX - 2])
-			break;
-		if (c
+		}
+		p--;
+		col++;
 	}
-}*/
+	
+	return get_utf8_length(p, col + 1);
+}
 
-static bool _no_quote = FALSE;
 
 char *READ_get_pattern(PATTERN *pattern)
 {

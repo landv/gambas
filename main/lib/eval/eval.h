@@ -47,7 +47,7 @@ void EVAL_free(EXPRESSION **expr);
 bool EVAL_compile(EXPRESSION *expr, bool assign);
 
 GB_VALUE *EVAL_expression(EXPRESSION *expr, EVAL_FUNCTION get_value);
-void EVAL_clear(EXPRESSION *expr);
+void EVAL_clear(EXPRESSION *expr, bool keep_error);
 
 int EVAL_add_constant(CLASS_CONST *cst);
 int EVAL_add_class(char *name);
