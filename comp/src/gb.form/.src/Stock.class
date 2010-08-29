@@ -95,8 +95,8 @@ Static Private Sub InitTheme()
       If sTheme Then 
         sTheme = Trim(sTheme)
         GetAllThemePath(sTheme)
-        Print $aIconPath
-        AddPath("freedesktop", "/usr/share/icons" &/ sTheme)
+        'Print $aIconPath
+        'AddPath("freedesktop", "/usr/share/icons" &/ sTheme)
         'AddPath("gnome", "/usr/X11R6/share/icons" &/ sTheme)
       Endif
       
@@ -395,18 +395,16 @@ End
 
 Static Private Sub GetAllThemePath(sTheme As String)
   
-  Dim s As String
-  Dim Them As String
+  Dim sLine As String
   
   AddPath("freedesktop", "/usr/share/icons" &/ sTheme)
   
-  For Each s In Split(File.Load("/usr/share/icons" &/ sTheme &/ "index.theme"), "\n")
+  For Each sLine In Split(File.Load("/usr/share/icons" &/ sTheme &/ "index.theme"), "\n")
     
-    If InStr(s, "Inherits") Then 
-      For Each Them In Split(Scan(s, "*=*")[1])
-        GetAllThemePath(Them)
+    If InStr(sLine, "Inherits") Then 
+      For Each sTheme In Split(Scan(sLine, "*=*")[1])
+        GetAllThemePath(sTheme)
       Next
-      
       Break
     Endif
     
@@ -417,13 +415,12 @@ End
 Static Private Function ImageFromSvg(Path As String, Size As Integer) As Image
   
   Dim hSvg As SvgImage
-  Dim hImage As New Image
+  Dim hImage As Image
   
-  If Not Exist(Path) Then Error.Raise("")
+  'If Not Exist(Path) Then Error.Raise("")
   hSvg = SvgImage.Load(Path)
   
-  hImage.Resize(Size, Size)
-  hImage.Fill(Color.Transparent)
+  hImage = New Image(Size, Size, Color.Transparent)
   Paint.Begin(hImage)
   Paint.Scale(Size / hSvg.Width, Size / hSvg.Height)
   hSvg.Paint()
