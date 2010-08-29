@@ -381,6 +381,7 @@ BEGIN_PROPERTY(CCOMBOBOX_list)
 		}
 		COMBOBOX->setText(text);
 		COMBOBOX->unlock();
+
 		GB.FreeString(&text);
 	}
 

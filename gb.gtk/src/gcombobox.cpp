@@ -327,6 +327,8 @@ char* gComboBox::text()
 
 void gComboBox::setIndex(int vl)
 {
+	fprintf(stderr, "setIndex: %d\n", vl);
+	
 	if (vl < 0)
 		vl = -1;
 	else if (vl >= count()) 
@@ -386,7 +388,7 @@ void gComboBox::setText(const char *vl)
 {
 	int index = find(vl);
 	
-	if (index >= 0)
+	if (!entry || index >= 0)
 		setIndex(index);
 	else if (entry)
 		gTextBox::setText(vl);

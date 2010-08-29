@@ -522,7 +522,7 @@
     MoveScaled(2,0,162,4)
     AutoResize = True
     { tlbMain ToolBar
-      MoveScaled(0,0,132,4)
+      MoveScaled(0,0,135,4)
       AutoResize = False
       Key = "main"
       { ToolButton1 ToolButton
@@ -702,7 +702,7 @@
         MoveScaled(78,0,4,4)
         ToolTip = ("Run until current line")
         Action = "until"
-        Picture = Picture["icon:/small/start"]
+        Picture = Picture["icon:/small/jump"]
       }
       { Separator5 Separator
         MoveScaled(84,0,1,4)
@@ -713,13 +713,13 @@
         Action = "find-text"
       }
       { btnSearch ToolButton
-        MoveScaled(123,0,4,4)
+        MoveScaled(128,0,4,4)
         ToolTip = ("Search in project")
         Action = "find-project"
         Picture = Picture["icon:/small/zoom-in"]
       }
       { btnFind ToolButton
-        MoveScaled(125,0,4,4)
+        MoveScaled(130,0,4,4)
         ToolTip = ("Search & replace")
         Action = "find"
         Picture = Picture["icon:/small/find"]
@@ -1204,7 +1204,7 @@
   { Action until
     Text = "Run &until"
     Shortcut = "Shift+F5"
-    Picture = "icon:/small/start"
+    Picture = "icon:/small/jump"
   }
   { Action update-all-form
     Text = "&Update all forms"

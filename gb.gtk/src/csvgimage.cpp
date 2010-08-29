@@ -112,24 +112,21 @@ BEGIN_PROPERTY(SvgImage_Height)
 	
 END_PROPERTY
 
-static bool load_file(CSVGIMAGE *_object, const char *path, int len_path)
+static const char *load_file(CSVGIMAGE *_object, const char *path, int len_path)
 {
 	RsvgHandle *handle = NULL;
 	RsvgDimensionData dim;
 	char *addr;
 	int len;
-	bool ret = true;
+	const char *err = NULL;
 
 	if (GB.LoadFile(path, len_path, &addr, &len))
-	{
-		GB.Error("Unable to load SVG file");
-		return true;
-	}
+		return "Unable to load SVG file";
 
 	handle = rsvg_handle_new_from_data((const guint8 *)addr, len / sizeof(guint8), NULL);
 	if (!handle) 
 	{
-		GB.Error("Unable to load SVG file: invalid format"); 
+		err = "Unable to load SVG file: invalid format"; 
 		goto __RETURN;
 	}
 
@@ -142,7 +139,6 @@ static bool load_file(CSVGIMAGE *_object, const char *path, int len_path)
 	THIS->height = dim.height;
 
 	handle = NULL;
-	ret = false;
 
 __RETURN:
 
@@ -150,18 +146,20 @@ __RETURN:
 		rsvg_handle_free(handle);
 	
 	GB.ReleaseFile(addr, len);
-	return ret;
+	return err;
 }
 
 BEGIN_METHOD(SvgImage_Load, GB_STRING path)
 
 	CSVGIMAGE *svgimage;
+	const char *err;
 
 	GB.New(POINTER(&svgimage), CLASS_SvgImage, NULL, NULL);
 
-	if (load_file(svgimage, STRING(path), LENGTH(path)))
+	if ((err = load_file(svgimage, STRING(path), LENGTH(path))))
 	{
 		GB.Unref(POINTER(&svgimage));
+		GB.Error(err);
 		return;
 	}
 	
@@ -172,6 +170,7 @@ END_METHOD
 BEGIN_METHOD_VOID(SvgImage_Paint)
 
 	cairo_t *context = PAINT_get_current_context();
+	const char *err;
 	
 	if (!context)
 		return;
@@ -179,7 +178,11 @@ BEGIN_METHOD_VOID(SvgImage_Paint)
 	if (THIS->file)
 	{
 		cairo_surface_finish(SURFACE);
-		load_file(THIS, THIS->file, GB.StringLength(THIS->file));
+		if ((err = load_file(THIS, THIS->file, GB.StringLength(THIS->file))))
+		{
+			GB.Error(err);
+			return;
+		}
 	}
 	
 	if (!HANDLE)

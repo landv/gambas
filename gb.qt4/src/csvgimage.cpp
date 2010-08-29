@@ -108,26 +108,23 @@ BEGIN_PROPERTY(SvgImage_Height)
 	
 END_PROPERTY
 
-static bool load_file(CSVGIMAGE *_object, const char *path, int len_path)
+static const char *load_file(CSVGIMAGE *_object, const char *path, int len_path)
 {
 	QSvgRenderer *renderer;
 	QByteArray data;
 	char *addr;
 	int len;
-	bool ret = true;
+	const char *error = NULL;
 
 	if (GB.LoadFile(path, len_path, &addr, &len))
-	{
-		GB.Error("Unable to load SVG file");
-		return true;
-	}
+		return "Unable to load SVG file";
 
 	data = QByteArray::fromRawData(addr, len);
 
 	renderer = new QSvgRenderer(data);
 	if (!renderer->isValid())
 	{
-		GB.Error("Unable to load SVG file: unable to create renderer"); 
+		error = "Unable to load SVG file: unable to create renderer";
 		goto __RETURN;
 	}
 	
@@ -137,7 +134,6 @@ static bool load_file(CSVGIMAGE *_object, const char *path, int len_path)
 	THIS->height = renderer->defaultSize().height();
 
 	renderer = NULL;
-	ret = false;
 
 __RETURN:
 
@@ -145,18 +141,21 @@ __RETURN:
 		delete renderer;
 	
 	GB.ReleaseFile(addr, len);
-	return ret;
+	return error;
 }
 
 BEGIN_METHOD(SvgImage_Load, GB_STRING path)
 
 	CSVGIMAGE *svgimage;
+	const char *err;
 
 	GB.New(POINTER(&svgimage), CLASS_SvgImage, NULL, NULL);
 
-	if (load_file(svgimage, STRING(path), LENGTH(path)))
+	err = load_file(svgimage, STRING(path), LENGTH(path));
+	if (err)
 	{
 		GB.Unref(POINTER(&svgimage));
+		GB.Error(err);
 		return;
 	}
 	
@@ -168,12 +167,20 @@ BEGIN_METHOD_VOID(SvgImage_Paint)
 
 	QPainter *painter = PAINT_get_current();
 	float x, y;
+	const char *err;
 	
 	if (!painter)
 		return;
 	
 	if (THIS->file)
-		load_file(THIS, THIS->file, GB.StringLength(THIS->file));
+	{
+		err = load_file(THIS, THIS->file, GB.StringLength(THIS->file));
+		if (err)
+		{
+			GB.Error(err);
+			return;
+		}
+	}
 	
 	if (!RENDERER)
 		return;
