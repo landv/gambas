@@ -260,7 +260,7 @@ void gTabStripPage::setVisible(bool v)
 			if (page->isVisible())
 				n++;
 		}
-		gtk_notebook_insert_page(GTK_NOTEBOOK(parent->border), widget, fix, n);
+		gtk_notebook_insert_page(GTK_NOTEBOOK(parent->widget), widget, fix, n);
 		gtk_widget_realize(widget);
 		gtk_widget_realize(fix);
 		gtk_widget_show_all(widget);
@@ -270,8 +270,8 @@ void gTabStripPage::setVisible(bool v)
 	}
 	else
 	{
-		ind = gtk_notebook_page_num(GTK_NOTEBOOK(parent->border), widget);
-		gtk_notebook_remove_page(GTK_NOTEBOOK(parent->border), ind);
+		ind = gtk_notebook_page_num(GTK_NOTEBOOK(parent->widget), widget);
+		gtk_notebook_remove_page(GTK_NOTEBOOK(parent->widget), ind);
 	}
 }
 
@@ -333,6 +333,7 @@ gTabStrip::gTabStrip(gContainer *parent) : gContainer(parent)
 	_pages = g_ptr_array_new();
 	onClick=NULL;
 	
+	border = gtk_event_box_new();
 	widget = gtk_notebook_new();
 	gtk_notebook_set_scrollable(GTK_NOTEBOOK(widget), TRUE);
 	gtk_drag_dest_unset(widget);
@@ -353,7 +354,7 @@ gTabStrip::gTabStrip(gContainer *parent) : gContainer(parent)
   */
   
 	gtk_widget_add_events(widget,GDK_BUTTON_RELEASE_MASK);
-	g_signal_connect_after(G_OBJECT(border), "switch-page", G_CALLBACK(cb_click), (gpointer)this);
+	g_signal_connect_after(G_OBJECT(widget), "switch-page", G_CALLBACK(cb_click), (gpointer)this);
 }
 
 gTabStrip::~gTabStrip()
@@ -382,7 +383,7 @@ int gTabStrip::getRealIndex(GtkWidget *page)
 
 int gTabStrip::index()
 {
-	GtkWidget *page = gtk_notebook_get_nth_page(GTK_NOTEBOOK(border), gtk_notebook_get_current_page(GTK_NOTEBOOK(border)));
+	GtkWidget *page = gtk_notebook_get_nth_page(GTK_NOTEBOOK(widget), gtk_notebook_get_current_page(GTK_NOTEBOOK(widget)));
 	return getRealIndex(page);
 }
 
@@ -393,13 +394,13 @@ void gTabStrip::setIndex(int vl)
 	if ( (vl<0) || (vl>=count()) || !get(vl)->isVisible() ) return;
 	
 	page = get(vl)->widget;
-	gtk_notebook_set_current_page(GTK_NOTEBOOK(border), getRealIndex(page));
+	gtk_notebook_set_current_page(GTK_NOTEBOOK(widget), getRealIndex(page));
 	//widget = get(vl)->widget;
 }
 
 int gTabStrip::orientation()
 {
-	switch ( gtk_notebook_get_tab_pos(GTK_NOTEBOOK(border)) )
+	switch ( gtk_notebook_get_tab_pos(GTK_NOTEBOOK(widget)) )
 	{
 		case GTK_POS_TOP: return 0;
 		default: return 1;
@@ -479,9 +480,9 @@ void gTabStrip::setOrientation(int vl)
 	switch (vl)
 	{
 		case 0:
-			gtk_notebook_set_tab_pos(GTK_NOTEBOOK(border),GTK_POS_TOP); break;
+			gtk_notebook_set_tab_pos(GTK_NOTEBOOK(widget),GTK_POS_TOP); break;
 		case 1:
-			gtk_notebook_set_tab_pos(GTK_NOTEBOOK(border),GTK_POS_BOTTOM); break;
+			gtk_notebook_set_tab_pos(GTK_NOTEBOOK(widget),GTK_POS_BOTTOM); break;
 	}
 }
 
