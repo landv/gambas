@@ -209,48 +209,44 @@ PUBLIC SUB Editor_KeyPress()
       WEND
 
     CASE Key.Left
-      IF $bTextBox THEN 
-        IF $hEditor.Pos = 0 THEN
-          DO
-            IF ME.Column > 0 THEN 
-              DEC ME.Column
-              RAISE Click
-            ELSE IF ME.Row > 0 THEN
-              ME.MoveTo(ME.Row - 1, ME.Columns.Count - 1) 
-              RAISE Click
-            ELSE
-              BREAK
-            ENDIF
-            IF $hEditor THEN
-              $hEditor.Pos = $hEditor.Length
-              STOP EVENT
-              BREAK
-            ENDIF
-          LOOP
-        ENDIF 
-      ENDIF
+      IF $bTextBox AND IF $hEditor.Pos > 0 THEN RETURN 
+
+      DO
+        IF ME.Column > 0 THEN 
+          DEC ME.Column
+          RAISE Click
+        ELSE IF ME.Row > 0 THEN
+          ME.MoveTo(ME.Row - 1, ME.Columns.Count - 1) 
+          RAISE Click
+        ELSE
+          BREAK
+        ENDIF
+        IF $hEditor THEN
+          TRY $hEditor.Pos = $hEditor.Length
+          STOP EVENT
+          BREAK
+        ENDIF
+      LOOP
 
     CASE Key.Right
-      IF $bTextBox THEN 
-        IF $hEditor.Pos = $hEditor.Length THEN
-          DO
-            IF ME.Column < (ME.Columns.Count - 1) THEN 
-              INC ME.Column
-              RAISE Click
-            ELSE IF ME.Row < (ME.Rows.Count - 1) THEN
-              ME.MoveTo(ME.Row + 1, 0)
-              RAISE Click
-            ELSE
-              BREAK
-            ENDIF
-            IF $hEditor THEN
-              $hEditor.Pos = 0
-              STOP EVENT
-              BREAK
-            ENDIF
-          LOOP
-        ENDIF 
-      ENDIF
+      IF $bTextBox AND IF $hEditor.Pos < $hEditor.Length THEN RETURN
+
+      DO
+        IF ME.Column < (ME.Columns.Count - 1) THEN 
+          INC ME.Column
+          RAISE Click
+        ELSE IF ME.Row < (ME.Rows.Count - 1) THEN
+          ME.MoveTo(ME.Row + 1, 0)
+          RAISE Click
+        ELSE
+          BREAK
+        ENDIF
+        IF $hEditor THEN
+          TRY $hEditor.Pos = 0
+          STOP EVENT
+          BREAK
+        ENDIF
+      LOOP
       
     CASE Key.Enter, Key.Return
       IF $bTextBox THEN 
@@ -267,7 +263,7 @@ PUBLIC SUB Editor_KeyPress()
             BREAK
           ENDIF
           IF $hEditor THEN
-            $hEditor.Pos = 0
+            TRY $hEditor.Pos = 0
             STOP EVENT
             BREAK
           ENDIF

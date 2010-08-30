@@ -1,2 +1,24 @@
 ' Gambas class file
 
+PUBLIC SUB _new()
+
+END
+
+PUBLIC SUB Form_Open()
+  DIM c AS Integer
+  
+  tv.Rows.Count = 10
+  tv.Columns.Count = 5
+  tv.Rows.Height = 24
+  
+  FOR c = 0 TO tv.Columns.Count - 1
+    tv.Columns[c].text = IIf(c = 2, "ReadOnly", "")
+  NEXT 
+  
+END
+
+PUBLIC SUB tv_Click()
+
+  tv.Edit(["", "0", "1", "2"], tv.Column = 2)
+
+END

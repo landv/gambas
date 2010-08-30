@@ -1,13 +1,12 @@
 # Gambas Form File 2.0
 
 { Form Form
-  MoveScaled(13.625,13.625,50,34)
+  MoveScaled(0,0,76,47)
   Text = ("")
-  Icon = Picture["icon:/24/gambas"]
-  Arrangement = Arrange.Fill
-  Spacing = 8
-  Padding = 8
-  { DateChooser1 DateChooser
-    MoveScaled(2,3,40,28)
+  Arrangement = Arrange.Vertical
+  { tv TableView
+    MoveScaled(22,22,16,16)
+    Expand = True
+    Header = GridView.Both
   }
 }
