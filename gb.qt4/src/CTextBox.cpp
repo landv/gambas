@@ -412,10 +412,13 @@ static void combo_set_editable(void *_object, bool ed)
 	}
 	else
 	{
-		get(THIS, &textbox);
-		textbox->setFocusProxy(0);
-		COMBOBOX->setEditable(false);
-		COMBOBOX->update();
+		if (COMBOBOX->isEditable())
+		{
+			get(THIS, &textbox);
+			textbox->setFocusProxy(0);
+			COMBOBOX->setEditable(false);
+			COMBOBOX->update();
+		}
 	}
 	
 	combo_set_text(THIS, text);
