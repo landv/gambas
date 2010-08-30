@@ -387,6 +387,7 @@ static void combo_set_editable(void *_object, bool ed)
 {
 	QLineEdit *textbox;
 	QString text;
+	bool hasFocus = COMBOBOX->hasFocus();
 	
 	COMBOBOX->blockSignals(true);
 	text = COMBOBOX->currentText();
@@ -411,11 +412,17 @@ static void combo_set_editable(void *_object, bool ed)
 	}
 	else
 	{
+		get(THIS, &textbox);
+		textbox->setFocusProxy(0);
 		COMBOBOX->setEditable(false);
+		COMBOBOX->update();
 	}
 	
 	combo_set_text(THIS, text);
 
+	if (hasFocus)
+		COMBOBOX->setFocus();
+	
 	if (CWIDGET_test_flag(THIS, WF_DESIGN))
 		COMBOBOX->setFocusPolicy(Qt::NoFocus);
 

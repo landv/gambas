@@ -1894,11 +1894,11 @@ void CWidget::destroy()
 	GB.Unref(POINTER(&ob));
 }
 
-static void post_dblclick_event(void *control)
+/*static void post_dblclick_event(void *control)
 {
 	GB.Raise(control, EVENT_DblClick, 0);
 	GB.Unref(&control);
-}
+}*/
 
 static void post_focus_change(void *)
 {
@@ -2042,7 +2042,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	
   __FOCUS_IN:
   {
-		//qDebug("FocusIn: %p %s (%p)", control, control->name, CWIDGET_active_control);
+		//qDebug("FocusIn: %p %s (%p %s)", control, control->name, CWIDGET_active_control, CWIDGET_active_control ? CWIDGET_active_control->name : "");
 		CWIDGET_active_control = control;
 		handle_focus_change();
 		CWINDOW_activate(control);
@@ -2051,7 +2051,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
   
   __FOCUS_OUT:
   {
-		//qDebug("FocusOut: %p %s (%p)", control, control->name, CWIDGET_active_control);
+		//qDebug("FocusOut: %p %s (%p %s)", control, control->name, CWIDGET_active_control, CWIDGET_active_control ? CWIDGET_active_control->name : "");
 		CWIDGET_active_control = NULL;
 		handle_focus_change();
 		goto __NEXT;
@@ -2200,6 +2200,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		goto __NEXT;
 	}
 	
+	/*
 	__DBL_CLICK:
 	{
 		if (!original)
@@ -2213,6 +2214,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		}
 		goto __NEXT;
 	}
+	*/
 	
 	__KEY:
 	{
