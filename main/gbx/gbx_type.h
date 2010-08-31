@@ -42,22 +42,7 @@ typedef
 #define CTYPE_is_public(type)     ((type).flag & TF_PUBLIC)
 #define CTYPE_get_kind(type)      ((type).flag & 0x7)
 
-/*
-enum {
-  TI_NULL,
-  TI_BOOLEAN,
-  TI_INTEGER,
-  TI_LONG,
-  TI_FLOAT,
-  TI_DATE,
-  TI_STRING,
-  TI_FUNCTION,
-  TI_ARRAY,
-  TI_CLASS
-  };
-*/
-
-/* Si type >= T_OBJECT, il s'agit de l'identificateur de classe */
+// If type > T_OBJECT, then type is a pointer to the class
 
 typedef
   uintptr_t TYPE;

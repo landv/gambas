@@ -815,7 +815,7 @@ Private Sub LeaveSection()
       $sRes &= "</table>\n"
 
     Case "seealso"
-      $sRes = Left$($sRes, $iPos) & Replace(Mid$($sRes, $iPos + 1), "</a>", "</a>&nbsp;")
+      $sRes = Left$($sRes, $iPos) & Replace(Mid$($sRes, $iPos + 1, -4), "</a>", "</a>, ") & Right$($sRes, 4)
       '$sRes &= "</td></tr>\n"
       '$sRes &= "</table>\n"
       $sRes &= "</div>\n"
@@ -856,7 +856,7 @@ Private Function Encode(sText As String) As String
   Dim iPos As Integer
   Dim iPos2 As Integer
   Dim iPos3 As Integer
-  Dim sCar As String
+  Dim sCar, sPrev, sNext As String
   Dim bBold As Boolean
   Dim bItalic As Boolean
   Dim bUnderline As Boolean
@@ -883,6 +883,7 @@ Private Function Encode(sText As String) As String
   Dim iTitleIndexStart As Integer
   Dim iLastTitleLevel As Integer
   Dim iTitleLevel As Integer
+  Dim bBegin, bEnd As Boolean
 
   $sRes = ""
   $aSection = New String[]
@@ -1234,34 +1235,71 @@ Private Function Encode(sText As String) As String
         iPos = iPos2
       Else If $bNoWiki Then
 
-      Else If InStr("*_/=", sCar) Then
+      Else If InStr("*_/=", sCar) > 0 Then
         
-        If iPos > 1 And If iPos < Len(sStr) Then
-          If InStr(LETTER_DIGIT, Mid$(sStr, iPos - 1, 1)) And If InStr(LETTER_DIGIT, Mid$(sStr, iPos + 1, 1)) Then Goto NEXT_CAR
+        If iPos > 1 Then 
+          sPrev = Mid$(sStr, iPos - 1, 1)
+        Else
+          sPrev = ""
         Endif
+        
+        If iPos < Len(sStr) Then 
+          sNext = Mid$(sStr, iPos + 1, 1)
+        Else
+          sNext = ""
+        Endif
+        
+        If InStr(LETTER_DIGIT, sPrev) And If InStr(LETTER_DIGIT, sNext) Then Goto NEXT_CAR
+        
+        bBegin = False
+        bEnd = False
+        
+        If Asc(sPrev) <= 32 Or If InStr("('\">", sPrev) Then bBegin = True
+        If Asc(sNext) <= 32 Or If InStr(".;:,)!?'\"<", sNext) Then bEnd = True
+        
+        If Not bEnd And If Not bBegin 
+          If InStr("*/_=", sPrev) Then bBegin = True
+          If InStr("*/_=", sNext) Then bEnd = True
+        Endif
+        
+        If bBegin And bEnd And If Asc(sPrev) <= 32 And If Asc(sNext) <= 32 Then Goto NEXT_CAR
         
         If sCar = "*" Then
-          If bBold Then 'Or Asc(Mid$(sStr, iPos + 1, 1)) > 32 Then
-            bBold = Not bBold
-            sCar = If(bBold, "<b>", "</b>")
+          If Not bBold And If bBegin Then
+            bBold = True
+            sCar = "<b>"
+          Else If bBold And If bEnd Then
+            bBold = False
+            sCar = "</b>"
           Endif
         Else If sCar = "/" Then
-          bItalic = Not bItalic
-          sCar = If(bItalic, "<i>", "</i>")
+          If Not bItalic And If bBegin Then
+            bItalic = True
+            sCar = "<i>"
+          Else If bItalic And If bEnd Then
+            bItalic = False
+            sCar = "</i>"
+          Endif
         Else If sCar = "_" Then
-          If iPos = Len(sStr) And Not bUnderline Then
+          If iPos = Len(sStr) And If Not bUnderline Then
             sCar = "<br>"
-          Else If bUnderLine Then 'Or Asc(Mid$(sStr, iPos + 1, 1)) > 32 Then 
-            bUnderline = Not bUnderline
-            sCar = If(bUnderline, "<u>", "</u>")
+          Else If Not bUnderLine And If bBegin Then
+            bUnderline = True
+            sCar = "<u>"
+          Else If bUnderLine And If bEnd Then
+            bUnderline = False
+            sCar = "</u>"
           Endif
         Else If sCar = "=" Then
-          If bTT Then 'Or Asc(Mid$(sStr, iPos + 1, 1)) > 32 Then
-            bTT = Not bTT
-            sCar = If(bTT, "<tt>", "</tt>")
+          If Not bTT And If bBegin Then
+            bTT = True
+            sCar = "<tt>"
+          Else If bTT And If bEnd Then
+            bTT = False
+            sCar = "</tt>"
           Endif
         Endif
-        
+
       Else If sCar = "[" Then
 
         If Mid$(sStr, iPos + 1, 1) <> " " Then

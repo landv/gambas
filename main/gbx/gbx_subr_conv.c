@@ -114,19 +114,16 @@ void SUBR_type(ushort code)
 
   SUBR_ENTER_PARAM(1);
 
-	type = PARAM->type;
-	if (type == T_VARIANT)
-		type = PARAM->_variant.vtype;
-
 	if (code & 0x3F)
 	{
-		if (TYPE_is_pure_object(type))
-			val = CLASS_sizeof((CLASS *)type);
-		else
-			val = TYPE_sizeof_memory(type);
+		val = TYPE_sizeof_memory(SUBR_get_integer(PARAM));
 	}
 	else
   {
+		type = PARAM->type;
+		if (type == T_VARIANT)
+			type = PARAM->_variant.vtype;
+
     if (type == T_CSTRING)
       val = T_STRING;
     else if (TYPE_is_object(type) && type != T_NULL)

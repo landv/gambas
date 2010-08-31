@@ -787,6 +787,17 @@ BEGIN_METHOD(Object_Count, GB_OBJECT object)
 
 END_METHOD
 
+BEGIN_METHOD(Object_SizeOf, GB_OBJECT object)
+
+	void *object = VARG(object);
+
+	if (GB_CheckObject(object))
+		return;
+
+	GB_ReturnInteger(CLASS_sizeof(OBJECT_class(object)));
+
+END_METHOD
+
 BEGIN_METHOD(Object_New, GB_STRING class; GB_OBJECT params)
 
 	CLASS *class = CLASS_find(GB_ToZeroString(ARG(class)));
@@ -929,6 +940,7 @@ GB_DESC NATIVE_Object[] =
 	GB_STATIC_METHOD("Unlock", NULL, Object_Unlock, "(Object)o"),
 	GB_STATIC_METHOD("IsLocked", "b", Object_IsLocked, "(Object)o"),
 	GB_STATIC_METHOD("Count", "i", Object_Count, "(Object)o"),
+	GB_STATIC_METHOD("SizeOf", "i", Object_SizeOf, "(Object)o"),
 	GB_STATIC_PROPERTY_READ("LastEventName", "s", Object_LastEventName),
 
 	GB_END_DECLARE
