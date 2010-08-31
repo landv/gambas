@@ -254,6 +254,7 @@ void gTreeView::setItemPicture(char *key,gPicture *vl)
 	row=tree->getRow(key);
 	if (!row) return;
 	row->get(0)->setPicture(vl);
+	row->update();
 }
 
 bool gTreeView::isItemSelected(char *key)
