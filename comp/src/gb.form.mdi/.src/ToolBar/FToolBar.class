@@ -798,10 +798,16 @@ End
 
 Public Sub Item_MouseDown()
   
-  If $bConfigure Then Stop Event
+  If $bConfigure Then 
+    Stop Event
+  Else If Mouse.Right Then
+    If Not Application.ActiveControl Is TextBox Then
+      FToolBarConfig.OpenMenu(Me.Parent)
+      Stop Event
+    Endif
+  Endif
   
 End
-
 
 Public Sub Item_MouseDrag()
   
