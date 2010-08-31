@@ -117,7 +117,7 @@ Public Sub Reload()
   Else If Left$(sData, Len(Project.FORM_MAGIC_2)) = Project.FORM_MAGIC_2 Then
     $bConvert = True
   Else If Left$(sData, Len(Project.FORM_MAGIC)) <> Project.FORM_MAGIC Then
-    FGambas.Warning(("Bad form file"))
+    FMain.ShowWarning(("Bad form file"))
     Return
   Endif
 
@@ -1256,7 +1256,7 @@ Public Function CreateControl(sClass As String, hParent As CControl, Optional sN
 
   ' If the component is not loaded, then return null
   If Not CComponent.Classes.Exist(sClass) Then
-    FGambas.Error("Component missing")
+    FMain.ShowError("Component missing")
     hCtrl = New CControl(sName, "DrawingArea", hParent, Me, $hFamily)
   Else
     hCtrl = New CControl(sName, sClass, hParent, Me, $hFamily)

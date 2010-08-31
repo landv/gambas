@@ -207,9 +207,9 @@ Public Sub Edit(Optional List As String[], Optional ReadOnly As Boolean)
   Endif
   
   $hEditor.Text = Me[$iRow, $iCol].Text
-  Try $hEditor.SelectAll
+  If $bTextBox Then $hEditor.SelectAll
   MoveEditor
-  Try $hEditor.SetFocus  
+  Try $hEditor.SetFocus
 
 End
 
@@ -244,7 +244,6 @@ Public Sub EditWith(Editor As Control)
 
 End
 
-
 Public Sub Editor_Activate()
   
   SaveEditor
@@ -271,6 +270,7 @@ Public Sub Editor_KeyPress()
 
     Case Key.Up
       If $bNoKeyboard Then Return
+      If Not Key.Normal Then Return
       If $hEditor Is TextArea And If $hEditor.Line > 0 Then Return
 
       If SaveEditor() Then
@@ -290,6 +290,7 @@ Public Sub Editor_KeyPress()
 
     Case Key.Down
       If $bNoKeyboard Then Return
+      If Not Key.Normal Then Return
       If $hEditor Is TextArea And If $hEditor.Line < $hEditor.ToLine($hEditor.Length) Then Return
 
       If SaveEditor() Then
@@ -309,6 +310,7 @@ Public Sub Editor_KeyPress()
 
     Case Key.Left
       If $bNoKeyboard Then Return
+      If Not Key.Normal Then Return
       If $bTextBox And If $hEditor.Pos > 0 Then Return
       
       If SaveEditor() Then
@@ -335,6 +337,7 @@ Public Sub Editor_KeyPress()
 
     Case Key.Right
       If $bNoKeyboard Then Return
+      If Not Key.Normal Then Return
       If $bTextBox And If $hEditor.Pos < $hEditor.Length Then Return
 
       If SaveEditor() Then
@@ -361,7 +364,7 @@ Public Sub Editor_KeyPress()
       
     Case Key.Enter, Key.Return
       
-      If Key.Control Or Key.Shift Then Return
+      If Not Key.Normal Then Return
       
       If $bNoKeyboard Then 
         If $hEditor Then 
@@ -401,7 +404,9 @@ Public Sub Editor_KeyPress()
     $bDoNotHideEditor = Not IsNull($hEditor)
     If $bDoNotHideEditor Then $hTimer.Trigger
   Endif
-  If Not $hEditor Then Me.SetFocus
+  If Not $hEditor Then 
+    Me.SetFocus
+  Endif
   
 End
 

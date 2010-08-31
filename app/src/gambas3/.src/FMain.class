@@ -223,7 +223,7 @@ Public Sub mnuDeleteFile_Click()
   
 Catch
   
-  FGambas.Error(("Cannot delete file or directory") & "\n\n" & Error.Text)
+  FMain.ShowError(("Cannot delete file or directory") & "\n\n" & Error.Text)
   
 End
 
@@ -923,7 +923,7 @@ Public Sub ReadConfig()
   mnuStatusBar.Value = bShow
   
   Me.Menus.Visible = Settings["/ShowMenus", True]
-  btnShowMenu.Visible = Not Me.Menus.Visible
+  'btnShowMenu.Visible = Not Me.Menus.Visible
   
   MTheme.InitControl(tvwProject)
   
@@ -1134,8 +1134,8 @@ Public Sub Action_Activate(Key As String) As Boolean
       FSearch.FindNext
     Case "find-previous"
       FSearch.FindPrevious
-    Case "find-project"
-      cmbFind_Activate
+    'Case "find-project"
+      'cmbFind_Activate
       
     Case "console"
       If Action["console"].Value Then 
@@ -1568,8 +1568,9 @@ Public Sub mnuHideMenu_Click()
   If Me.Menus.Visible Then
     Me.Menus.Hide
     sepMenu.Hide
-    btnShowMenu.Show
+    'btnShowMenu.Show
     Settings["/ShowMenus"] = Me.Menus.Visible
+    Message.Optional(Subst(("To show the menu bar again, hit the following keys:<p><b>&1</b>"), mnuHideMenu.Shortcut), ("OK"), "HideMenu", "menu")
   Else
     btnShowMenu_Click
   Endif
@@ -1580,7 +1581,7 @@ Public Sub btnShowMenu_Click()
   
   Me.Menus.Show
   sepMenu.Show
-  btnShowMenu.Hide
+  'btnShowMenu.Hide
   Settings["/ShowMenus"] = Me.Menus.Visible
   
 End
@@ -1654,6 +1655,18 @@ Public Sub ShowError(sMsg As String, Optional sKey As String)
   
 End
 
+Public Sub ShowWarning(sMsg As String, Optional sKey As String)
+  
+  ShowMessage(sMsg, "warning", sKey)
+  
+End
+
+Public Sub ShowInfo(sMsg As String, Optional sKey As String)
+  
+  ShowMessage(sMsg, "info", sKey)
+  
+End
+
 Public Sub mnuAddVersion_Click()
   
   If Not Project.IsAdded($sKey, True) Then Return
@@ -1665,9 +1678,9 @@ Public Sub mnuAddVersion_Click()
   
 End
 
-Public Sub Panel2_Arrange()
+Public Sub panErrorFrame_Arrange()
   
-  btnClose.Move(Panel2.Width - btnClose.Width, 0)
+  btnClose.Move(panErrorFrame.Width - btnClose.Width, 0)
   
 End
 
@@ -1682,13 +1695,6 @@ End
 '   If sText <> cmbFind.Text Then cmbFind.Text = sText
 '   
 ' End
-
-Public Sub cmbFind_Activate()
-  
-  Project.StoreCombo(cmbFind)
-  FSearch.FindProject(cmbFind.Text)
-  
-End
 
 Public Sub mnuFind_Click()
   
@@ -1766,9 +1772,22 @@ Public Sub timSearchProject_Timer()
   
 End
 
-Public Sub tlbMain_Configure()
-  
-  panSepToolbar.H = tlbMain.H
-  btnShowMenu.H = tlbMain.H
-  
+' Public Sub tlbMain_Configure()
+'   
+'   panSepToolbar.H = tlbMain.H
+'   btnShowMenu.H = tlbMain.H
+'   
+' End
+
+Public Sub txtSearch_Click()
+
+  'Project.StoreCombo(cmbFind)
+  FSearch.FindProject(txtSearch.Text)
+
+End
+
+Public Sub txtSearch_Activate()
+
+  txtSearch_Click
+
 End

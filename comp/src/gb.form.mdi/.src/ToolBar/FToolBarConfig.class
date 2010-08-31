@@ -100,6 +100,7 @@ Private Sub InitAction()
   svwAction.Arrangement = Arrange.None
   
   AddAction("|")
+  AddAction("~")
   
   'Print $hToolbar.Children.Count;; $hToolbar._Container.Children.Count
   For Each sAction In MAction.Toolbars[$hForm.ToolbarKey].List
@@ -143,17 +144,26 @@ Private Sub DrawItem(hAction As CAction)
   'If $hInside = hItem Then 
   Draw.Style.Button(0, 0, Draw.W, Draw.H, False)
   If hAction Then
-    If hAction.Icon Then 
-      Draw.Picture(hAction.Icon, 4, (Draw.H - hAction.Icon.H) / 2)
-      W = hAction.Icon.W
+    hIcon = hAction.GetConfigIcon()
+    If hIcon Then 
+      Draw.Picture(hIcon, 4, (Draw.H - hIcon.H) / 2)
+      W = hIcon.W
     Else
       W = Stock.GetSize("small")
     Endif
     If Draw.W > (Draw.H * 2) Then Draw.Text(hAction.Display, W + 8, 0, Draw.W - W - 12, Draw.H, Align.Normal)
   Else
-    W = Stock.GetSize("small")
-    Draw.Rect(4 + W \ 2 - 2, (Draw.H - W) \ 2, 4, W)
-    If Draw.W > (Draw.H * 2) Then Draw.Text(("Separator"), W + 8, 0, Draw.W - W - 12, Draw.H, Align.Normal)
+    If Last.Tag = "|" Then
+      'Draw.Rect(4 + W \ 2 - 2, (Draw.H - W) \ 2, 4, W)
+      hIcon = Picture["img/separator.png"]
+      sText = ("Separator")
+    Else
+      hIcon = Picture["img/expander.png"]
+      sText = ("Expander")
+    Endif
+    Draw.Picture(hIcon, 4, (Draw.H - hIcon.H) / 2)
+    W = hIcon.W
+    If Draw.W > (Draw.H * 2) Then Draw.Text(sText, W + 8, 0, Draw.W - W - 12, Draw.H, Align.Normal)
     'Draw.Style.Separator(8, (hItem.H - W) / 2, W - 4, W, False)
   Endif
   
@@ -252,6 +262,10 @@ Public Sub DragAction(hCtrl As Control, sAction As String)
   '  Drag.Icon = GetItemScreenshot(hItem)
   If hAction Then
     Drag.Icon = GetItemScreenshot(hAction)
+  Else If sAction = "~" Then
+    Drag.Icon = Picture["img/expander.png"]
+  Else If sAction = "|" Then
+    Drag.Icon = Picture["img/separator.png"]
   Else
     Drag.Icon = Null
   Endif
@@ -266,7 +280,7 @@ Public Sub DragAction(hCtrl As Control, sAction As String)
     
       If hDest = panAction Then
       Else
-        If hCtrl.Tag <> "|" Then 
+        If hCtrl.Tag <> "|" And If hCtrl.Tag <> "~" Then 
           hCtrl.Hide
         Endif
       Endif
@@ -343,7 +357,7 @@ Public Sub panAction_Drop()
 
   Dim sAction As String = Drag.Paste(MAction.MIME)
   
-  If sAction <> "|" Then AddAction(sAction)
+  If sAction <> "|" And If sAction <> "~" Then AddAction(sAction)
 
 End
 

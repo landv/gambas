@@ -1,24 +1,11 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,50,40)
-  Arrangement = Arrange.Fill
-  Spacing = True
-  { Menu1 Menu
-    { Menu2 Menu
-      Text = ("Menu2")
-    }
-    { Menu3 Menu
-      Text = ("Menu3")
-    }
-    { Menu4 Menu
-      Text = ("Menu4")
-    }
-    { Menu5 Menu
-      Text = ("Menu5")
-    }
-  }
-  { DateChooser1 DateChooser
-    MoveScaled(7,6,40,28)
+  MoveScaled(0,0,97,52)
+  Arrangement = Arrange.Vertical
+  { tv TableView
+    MoveScaled(22,22,16,16)
+    Expand = True
+    Header = GridView.Both
   }
 }

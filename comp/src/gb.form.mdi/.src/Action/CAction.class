@@ -25,6 +25,7 @@ Public Sub _new(sKey As String, bHasShortcut As Boolean, cSlot As Collection, hM
 
   Dim sPicture As String
   Dim W As Integer
+  Dim aControl As Object[]
 
   'Debug sKey;; bHasShortcut;; cSlot["Picture"]
 
@@ -46,10 +47,14 @@ Public Sub _new(sKey As String, bHasShortcut As Boolean, cSlot As Collection, hM
   
   sPicture = cSlot["Picture"]
   
+  If Not sPicture Then
+    aControl = Action[sKey].Controls
+    If aControl.Count = 1 And If Object.Type(aControl[0]) = "MenuButton" Then
+      sPicture = "icon:/small/menu"
+    Endif
+  Endif
+  
   If Left(sPicture) = "$" Then
-    W = Stock.GetSize("small")
-    IconPath = "control" &/ LCase(Mid$(sPicture, 2)) & ".png"
-    Try Icon = Picture[IconPath].Image.Stretch(W, W).Picture
   Else
     If Not (sPicture Begins "icon:/") Then sPicture = "../" &/ sPicture
     IconPath = sPicture
@@ -90,5 +95,25 @@ End
 Public Sub _compare(hAction As CAction) As Integer
   
   Return String.Comp(Display, hAction.Display)
+  
+End
+
+Public Sub GetConfigIcon() As Picture
+  
+  Dim W As Integer
+  Dim aControl As Object[]
+  Dim sType As String
+  
+  If Icon Then Return Icon
+  
+  aControl = Action[Key].Controls
+  If aControl.Count = 0 Then Return
+  
+  sType = Object.Type(aControl[0])
+  If sType = "MenuButton" Then Return Picture["icon:/small/menu"]
+  
+  W = Stock.GetSize("small")
+  IconPath = "./control" &/ LCase(sType) & ".png"
+  Try Return Picture[IconPath].Image.Stretch(W, W).Picture
   
 End

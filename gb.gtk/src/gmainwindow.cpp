@@ -410,9 +410,25 @@ void gMainWindow::emitOpen()
 {
 	if (!opened)
 	{
-		//fprintf(stderr, "emit Open: %p (%d %d)\n", this, width(), height());
+		//fprintf(stderr, "emit Open: %p (%d %d) resizable = %d\n", this, width(), height(), isResizable());
 		opened = true;
-		if (isTopLevel()) gtk_widget_realize(border);
+		
+		if (isTopLevel()) 
+		{
+			gtk_widget_realize(border);
+			/*if (modal())
+			{
+				GdkGeometry geometry;
+				
+				geometry.min_width = bufW;
+				geometry.min_height = bufH;
+				
+				fprintf(stderr, "gtk_window_set_geometry_hints: %d %d\n", bufW, bufH);
+				
+				gtk_window_set_geometry_hints(GTK_WINDOW(border), border, &geometry, GDK_HINT_MIN_SIZE);
+			}*/
+		}
+		
 		performArrange();
 		emit(SIGNAL(onOpen));
 		if (opened)

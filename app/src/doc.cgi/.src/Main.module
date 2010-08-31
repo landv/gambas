@@ -13,6 +13,8 @@ Private Const BULLET As String = ""
 Private Const ARROW As String = "<b>&gt;</b>" ' ► 
 'PRIVATE CONST BRK AS String = "<p>"
 
+Private Const LETTER_DIGIT As String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
 Private $hConn As New Connection
 
 Private $aLang As String[]
@@ -1232,26 +1234,34 @@ Private Function Encode(sText As String) As String
         iPos = iPos2
       Else If $bNoWiki Then
 
-      Else If sCar = "*" Then
-        bBold = Not bBold
-        sCar = If(bBold, "<b>", "</b>")
-      Else If sCar = "/" Then
-        If bItalic Or Asc(Mid$(sStr, iPos + 1, 1)) > 32 Then
+      Else If InStr("*_/=", sCar) Then
+        
+        If iPos > 1 And If iPos < Len(sStr) Then
+          If InStr(LETTER_DIGIT, Mid$(sStr, iPos - 1, 1)) And If InStr(LETTER_DIGIT, Mid$(sStr, iPos + 1, 1)) Then Goto NEXT_CAR
+        Endif
+        
+        If sCar = "*" Then
+          If bBold Then 'Or Asc(Mid$(sStr, iPos + 1, 1)) > 32 Then
+            bBold = Not bBold
+            sCar = If(bBold, "<b>", "</b>")
+          Endif
+        Else If sCar = "/" Then
           bItalic = Not bItalic
           sCar = If(bItalic, "<i>", "</i>")
+        Else If sCar = "_" Then
+          If iPos = Len(sStr) And Not bUnderline Then
+            sCar = "<br>"
+          Else If bUnderLine Then 'Or Asc(Mid$(sStr, iPos + 1, 1)) > 32 Then 
+            bUnderline = Not bUnderline
+            sCar = If(bUnderline, "<u>", "</u>")
+          Endif
+        Else If sCar = "=" Then
+          If bTT Then 'Or Asc(Mid$(sStr, iPos + 1, 1)) > 32 Then
+            bTT = Not bTT
+            sCar = If(bTT, "<tt>", "</tt>")
+          Endif
         Endif
-      Else If sCar = "_" Then
-        If iPos = Len(sStr) And Not bUnderline Then
-          sCar = "<br>"
-        Else
-          bUnderline = Not bUnderline
-          sCar = If(bUnderline, "<u>", "</u>")
-        Endif
-      Else If sCar = "=" Then
-        If bTT Or Asc(Mid$(sStr, iPos + 1, 1)) > 32 Then
-          bTT = Not bTT
-          sCar = If(bTT, "<tt>", "</tt>")
-        Endif
+        
       Else If sCar = "[" Then
 
         If Mid$(sStr, iPos + 1, 1) <> " " Then
@@ -1299,6 +1309,8 @@ Private Function Encode(sText As String) As String
       'ELSE IF Asc(sCar) > 127 THEN
         'sCar = "&#" & Asc(sCar) & ";"
       Endif
+
+NEXT_CAR:
 
       $sRes = $sRes & sCar
 

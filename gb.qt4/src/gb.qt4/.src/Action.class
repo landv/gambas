@@ -16,6 +16,7 @@ Property Text As String
 Property Picture As Picture
 Property Value As Boolean
 Property Shortcut As String
+Property Read Controls As Object[]
 'Property Icon As Picture
 
 Private $sKey As String
@@ -528,5 +529,11 @@ Private Sub Shortcut_Write(Value As String)
   For Each hCtrl In GetControls()
     If hCtrl Is Menu Then hCtrl.Shortcut = Value
   Next  
+
+End
+
+Private Function Controls_Read() As Object[]
+
+  Return GetControls()
 
 End

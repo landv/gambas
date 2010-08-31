@@ -756,6 +756,8 @@ gGridView::gGridView(gContainer *parent) : gControl(parent)
 	_autoresize = true;
 
 	border=gtk_event_box_new();
+	//gtk_event_box_set_visible_window(GTK_EVENT_BOX(border), false);
+	
 	widget=gtk_table_new(3,3,FALSE);
 	//gtk_container_set_border_width  (GTK_CONTAINER(widget),1);
 

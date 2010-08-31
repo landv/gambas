@@ -518,12 +518,11 @@
   { sepMenu Separator
     MoveScaled(0,0,13,0)
   }
-  { HBox1 HBox
-    MoveScaled(2,0,162,4)
+  { HBox1 HPanel
+    MoveScaled(0,0,164,4)
     AutoResize = True
     { tlbMain ToolBar
-      MoveScaled(0,0,135,4)
-      AutoResize = False
+      MoveScaled(0,0,157,4)
       Key = "main"
       { ToolButton1 ToolButton
         MoveScaled(0,0,4,4)
@@ -641,8 +640,16 @@
         Picture = Picture["icon:/small/terminal"]
         Toggle = True
       }
-      { btnHelp ToolButton
+      { btnFind ToolButton
         MoveScaled(50,0,4,4)
+        Visible = False
+        ToolTip = ("Search")
+        Action = "find"
+        Picture = Picture["icon:/small/find"]
+        Toggle = True
+      }
+      { btnHelp ToolButton
+        MoveScaled(53,0,4,4)
         Visible = False
         ToolTip = ("Help browser")
         Action = "help"
@@ -650,91 +657,132 @@
         Toggle = True
       }
       { btnCompile ToolButton
-        MoveScaled(54,0,4,4)
+        MoveScaled(57,0,4,4)
         ToolTip = ("Compile")
         Action = "compile"
         Picture = Picture["icon:/small/make"]
       }
       { btnCompileAll ToolButton
-        MoveScaled(57,0,4,4)
+        MoveScaled(60,0,4,4)
         ToolTip = ("Compile all")
         Action = "compile-all"
         Picture = Picture["icon:/small/make-all"]
       }
       { btnGo ToolButton
-        MoveScaled(60,0,4,4)
+        MoveScaled(63,0,4,4)
         ToolTip = ("Run")
         Action = "start"
         Picture = Picture["icon:/small/play"]
       }
       { btnPause ToolButton
-        MoveScaled(63,0,4,4)
+        MoveScaled(66,0,4,4)
         ToolTip = ("Pause")
         Action = "pause"
         Picture = Picture["icon:/small/pause"]
       }
       { btnStop ToolButton
-        MoveScaled(66,0,4,4)
+        MoveScaled(69,0,4,4)
         ToolTip = ("Stop")
         Action = "stop"
         Picture = Picture["icon:/small/stop"]
       }
       { btnStep ToolButton
-        MoveScaled(69,0,4,4)
+        MoveScaled(72,0,4,4)
         ToolTip = ("Step")
         Action = "step"
         Picture = Picture["icon:/small/end"]
       }
       { btnForward ToolButton
-        MoveScaled(72,0,4,4)
+        MoveScaled(75,0,4,4)
         ToolTip = ("Forward")
         Action = "forward"
         Picture = Picture["icon:/small/forward"]
       }
       { btnFrom ToolButton
-        MoveScaled(75,0,4,4)
+        MoveScaled(78,0,4,4)
         ToolTip = ("Finish current function")
         Action = "return"
         Picture = Picture["icon:/small/eject"]
       }
       { btnUntil ToolButton mnuUntil
         Name = "btnUntil"
-        MoveScaled(78,0,4,4)
+        MoveScaled(81,0,4,4)
         ToolTip = ("Run until current line")
         Action = "until"
         Picture = Picture["icon:/small/jump"]
       }
       { Separator5 Separator
-        MoveScaled(84,0,1,4)
+        MoveScaled(85,0,1,4)
       }
-      { cmbFind ComboBox
-        MoveScaled(85,0,44,4)
-        ToolTip = ("Search string")
-        Action = "find-text"
-      }
-      { btnSearch ToolButton
-        MoveScaled(128,0,4,4)
-        ToolTip = ("Search in project")
+      { txtSearch ButtonBox
+        MoveScaled(87,0,37,4)
         Action = "find-project"
-        Picture = Picture["icon:/small/zoom-in"]
-      }
-      { btnFind ToolButton
-        MoveScaled(130,0,4,4)
-        ToolTip = ("Search & replace")
-        Action = "find"
         Picture = Picture["icon:/small/find"]
-        Toggle = True
       }
-    }
-    { panSepToolbar Panel
-      MoveScaled(138,0,3,3)
-      Expand = True
-    }
-    { btnShowMenu ToolButton
-      MoveScaled(143,0,18,4)
-      ToolTip = ("Show menu bar")
-      AutoResize = True
-      Text = ("Show menu bar")
+      { Separator8 Separator
+        MoveScaled(125,0,1,4)
+        Visible = False
+      }
+      { btnMnuFile MenuButton
+        MoveScaled(126,0,8,4)
+        Visible = False
+        Action = "menu-file"
+        AutoResize = True
+        Text = ("&File")
+        Arrow = False
+        Border = False
+        Menu = "mnuFile"
+      }
+      { btnMnuProject MenuButton
+        MoveScaled(131,0,7,4)
+        Visible = False
+        Action = "menu-project"
+        AutoResize = True
+        Text = ("&Project")
+        Arrow = False
+        Border = False
+        Menu = "mnuProject"
+      }
+      { btnMnuDebug MenuButton
+        MoveScaled(136,0,7,4)
+        Visible = False
+        Action = "menu-debug"
+        AutoResize = True
+        Text = ("&Debug")
+        Arrow = False
+        Border = False
+        Menu = "mnuDebug"
+      }
+      { btnMenuView MenuButton
+        MoveScaled(140,0,7,4)
+        Visible = False
+        Action = "menu-view"
+        AutoResize = True
+        Text = ("&View")
+        Arrow = False
+        Border = False
+        Menu = "mnuView"
+      }
+      { btnMnuTool MenuButton
+        MoveScaled(145,0,7,4)
+        Visible = False
+        Action = "menu-tool"
+        AutoResize = True
+        Text = ("&Tools")
+        Arrow = False
+        Border = False
+        Menu = "mnuTool"
+      }
+      { btnMnuHelp MenuButton
+        MoveScaled(151,0,4,4)
+        Visible = False
+        Action = "menu-help"
+        AutoResize = True
+        Text = ("&?")
+        Arrow = False
+        Border = False
+        Menu = "mnuHelp"
+      }
     }
   }
   { Separator7 Separator
@@ -843,24 +891,10 @@
     #MoveScaled(96,21)
     Delay = 2000
   }
-  { btnMnuProject ToolButton
-    MoveScaled(106,36,7,4)
-    Visible = False
-    Action = "menu-project"
-    AutoResize = True
-    Text = ("&Project")
-  }
-  { btnMnuFile ToolButton
-    MoveScaled(100,38,6,4)
-    Visible = False
-    Action = "menu-file"
-    AutoResize = True
-    Text = ("&File")
-  }
   { panError VBox
     MoveScaled(1,75,64,8)
     Visible = False
-    { Panel2 Panel
+    { panErrorFrame Panel
       MoveScaled(0,0,62,6)
       Background = Color.LightBackground
       Expand = True
@@ -899,20 +933,6 @@
       AutoResize = True
       Text = ("OK")
     }
-  }
-  { btnMnuDebug ToolButton
-    MoveScaled(113,36,7,4)
-    Visible = False
-    Action = "menu-debug"
-    AutoResize = True
-    Text = ("&Debug")
-  }
-  { btnMnuTool ToolButton
-    MoveScaled(119,36,7,4)
-    Visible = False
-    Action = "menu-tool"
-    AutoResize = True
-    Text = ("&Tools")
   }
 }
 
@@ -995,16 +1015,12 @@
     Picture = "icon:/small/exec"
   }
   { Action find
-    Text = "Search & replace"
+    Text = "Search"
     Picture = "icon:/small/find"
   }
   { Action find-project
-    Text = "Search in project"
-    Picture = "icon:/small/zoom-in"
-  }
-  { Action find-text
-    Text = "Search string"
-    Picture = "$ComboBox"
+    Text = ""
+    Picture = "icon:/small/find"
   }
   { Action forward
     Text = "&Forward"
@@ -1032,19 +1048,27 @@
   }
   { Action menu-debug
     Text = "&Debug"
-    Picture = "$ToolButton"
+    Picture = "$MenuButton"
   }
   { Action menu-file
     Text = "&File"
-    Picture = "$ToolButton"
+    Picture = "$MenuButton"
+  }
+  { Action menu-help
+    Text = "&?"
+    Picture = "$MenuButton"
   }
   { Action menu-project
     Text = "&Project"
-    Picture = "$ToolButton"
+    Picture = "$MenuButton"
   }
   { Action menu-tool
     Text = "&Tools"
-    Picture = "$ToolButton"
+    Picture = "$MenuButton"
+  }
+  { Action menu-view
+    Text = "&View"
+    Picture = "$MenuButton"
   }
   { Action new-class
     Text = "&Class..."
@@ -1221,7 +1245,7 @@
 { Toolbars
   { Toolbar main
     Text = ""
-    List = "new-project,open-project,save-project,save-project-as,project-property,refresh-project,option,shortcut,translate,archive,exec,install,project,property,control,console,help,compile,compile-all,start,pause,stop,step,forward,return,until,find-text,find-project,find"
-    Default = "new-project,open-project,save-project,save-project-as,project-property,option,|,translate,exec,|,compile,compile-all,start,pause,stop,step,forward,return,until,|,find-text,find-project,find"
+    List = "new-project,open-project,save-project,save-project-as,project-property,refresh-project,option,shortcut,translate,archive,exec,install,project,property,control,console,find,help,compile,compile-all,start,pause,stop,step,forward,return,until,find-project,menu-file,menu-project,menu-debug,menu-view,menu-tool,menu-help"
+    Default = "new-project,open-project,save-project,save-project-as,project-property,option,|,translate,exec,|,compile,compile-all,start,pause,stop,step,forward,return,until,|,find-project"
   }
 }

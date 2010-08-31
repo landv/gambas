@@ -321,7 +321,7 @@ Public Sub Process_Kill()
       Message.Error(sMsg)
     Endif
   Else If $hProcess.Value Then
-    FGambas.Info(Subst(("The program has returned\nthe value: &1"), $hProcess.Value))
+    FMain.ShowInfo(Subst(("The program has returned\nthe value: &1"), $hProcess.Value))
   Endif
 
   $hProcess = Null
@@ -794,7 +794,7 @@ Private Sub Start(sCmd As String)
     If Project.CheckProgram(sProg) Then 
       sProg = "xterm"
       If Project.CheckProgram(sProg) Then
-        FGambas.Warning(("No terminal emulator found."))
+        FMain.ShowWarning(("No terminal emulator found."))
         sProg = ""
       Endif
     Endif
@@ -832,7 +832,7 @@ Private Sub Start(sCmd As String)
   If Error Then 
     'sArg = Error.Text
     $hProcess.Kill
-    'FGambas.Error(("Unable to start debugger.") & "\n\n" & sArg)
+    'FMain.ShowError(("Unable to start debugger.") & "\n\n" & sArg)
     Return
   Endif
 

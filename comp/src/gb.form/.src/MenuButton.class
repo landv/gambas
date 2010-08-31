@@ -215,8 +215,8 @@ Private Sub UpdateSize()
   If $bAutoResize Then 
     W = Me.Font.TextWidth($sText)
     If $hPicture Then W += $hPicture.W + Desktop.Scale
-    If $bArrow Then W += Desktop.Scale * 3
-    W += Desktop.Scale * 2
+    If $bArrow Then W += Desktop.Scale * 4
+    W += Desktop.Scale
     Me.W = W
   Endif
   
@@ -283,7 +283,11 @@ Public Sub DrawingArea_MouseDown()
   If Not Me.Enabled Then Return
   
   $bPressed = True
-  $bInsideArrow = Mouse.X > (Me.W - Desktop.Scale * 3 + 3)
+  If $bArrow Then
+    $bInsideArrow = Mouse.X > (Me.W - Desktop.Scale * 3 + 3)
+  Else
+    $bInsideArrow = True ' if the arrow is hidden, the all button will popup the menu
+  Endif
   $hDrawingArea.Refresh
   
   If $bInsideArrow Then

@@ -36,7 +36,7 @@ Private $aHidden As Control[]
 
 Public Sub _new()
   
-  $iHandleSize = Max(4, Desktop.Scale)
+  $iHandleSize = 1 'Max(4, Desktop.Scale)
   $iButtonWidth = Desktop.Scale * 4
   dwgHandle.Width = $iHandleSize
   $hObserverParent = New Observer(Me.Parent.Parent) As "Container"
@@ -195,6 +195,7 @@ Private Sub Update()
   Dim XH, YH, WH, HH As Integer 
   Dim XP, YP, WP, HP As Integer 
 
+  If Not Object.IsValid(Me.Parent) Then Return
   If Not Object.IsValid(Me.Parent.Parent) Then Return
   If $iLock Then Return
   If $bLock Then Return
@@ -645,7 +646,7 @@ Private Sub ShowWhere(sAction As String, bAnim As Boolean, Optional hCtrl As Con
   Dim W, H As Integer
   
   If Not hCtrl Then
-    If sAction And If sAction <> "|" Then
+    If sAction And If sAction <> "|" And If sAction <> "~" Then
       hCtrl = FindControl(sAction)
       If Not hCtrl Then Return
     Endif
@@ -774,7 +775,13 @@ Private Sub OnMouseDrag(hCtrl As Control)
   
   sAction = hCtrl.Action
   If Left(sAction) = "." Then sAction = Mid$(sAction, 2)
-  If Not sAction Then sAction = "|"
+  If Not sAction Then
+    If hCtrl.Expand Then
+      sAction = "~"
+    Else
+      sAction = "|"
+    Endif
+  Endif
 
   Lock()
   DragStart(True)
@@ -829,6 +836,8 @@ Public Sub DragEnd(bAnim As Boolean)
   
     If $sDropAction = "|" Then
       AddSeparator(panWhere)
+    Else If $sDropAction = "~" Then
+      AddExpander(panWhere)
     Else
       hCtrl = FindControl($sDropAction)
       If hCtrl Then 
@@ -877,6 +886,33 @@ Private Sub AddSeparator(Optional hNext As Control)
   hSep.Resize(W, H)
   hSep.Drop = True
   hObs = New Observer(hSep) As "Item"
+  
+  Unlock()
+  
+End
+
+Private Sub AddExpander(Optional hNext As Control)
+  
+  Dim hExp As Panel
+  Dim hObs As Observer
+  Dim W, H As Integer
+
+  Lock()
+  
+  If $bVertical Then
+    W = GetToolBarHeight()
+    H = Desktop.Scale
+  Else
+    W = Desktop.Scale
+    H = GetToolBarHeight()
+  Endif
+
+  hExp = New Panel(panToolBar)
+  hExp.Next = hNext
+  hExp.Resize(W, H)
+  hExp.Expand = True
+  hExp.Drop = True
+  hObs = New Observer(hExp) As "Item"
   
   Unlock()
   
@@ -1042,7 +1078,7 @@ Private Sub CheckSeparators()
   For Each hChild In panToolBar.Children
   
     If Not hChild.Visible Then Continue
-    If Not hLast Or If hLast Is Separator Then
+    If Not hLast Or If hLast Is Separator Then 
       If hChild Is Separator Then
         hChild.Hide
         Continue
@@ -1125,6 +1161,8 @@ Public Sub LoadConfig(Optional bInit As Boolean)
     If sAction = "|" Then
       'Print "--> AddSeparator()"
       AddSeparator()
+    Else If sAction = "~" Then
+      AddExpander()
     Else If Left(sAction) = "$" Then
       hCtrl = Me[Mid$(sAction, 2)]
       If hCtrl Then
@@ -1186,6 +1224,8 @@ Public Sub SaveConfig(Optional bReset As Boolean)
         aConfig.Add(sAction)
       Else If hCtrl Is Separator
         aConfig.Add("|")
+      Else If hCtrl Is Panel And If hCtrl.Expand And If Panel(hCtrl).Children.Count = 0 Then
+        aConfig.Add("~")
       Else If hCtrl.Visible Then
         aConfig.Add("$" & hCtrl.Name)
       Endif

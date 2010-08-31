@@ -51,7 +51,7 @@ C
 _Properties
 C
 s
-*,Text,Picture,ReadOnly,Border=True
+*,Action,Text,Picture,ReadOnly,Border=True
 _DefaultEvent
 C
 s
@@ -69,6 +69,10 @@ TextBox
 
 
 :Change
+:
+
+
+:Activate
 :
 
 
@@ -1147,6 +1151,13 @@ DrawingArea_KeyRelease
 m
 
 
+#Message
+
+C
+Optional
+M
+i
+(Message)s(Button)s(Key)s[(Icon)s]
 #SidePanel
 UserContainer
 C

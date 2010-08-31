@@ -19,13 +19,13 @@ Public Sub _new(hMenuButton As MenuButton, hEditor As Editor)
   
   Select Case $hEditor.Highlight
     Case Highlight.Gambas
-      $aPattern = ["&H", "#"]
+      $aPattern = ["&H", "#", "&"]
     Case Highlight.CSS, Highlight.WebPage, Highlight.HTML
       $aPattern = ["#"]
     Case Highlight.JavaScript
       $aPattern = ["#"]
     Case Else
-      Return
+      $aPattern = ["#"]
   End Select 
   $sPattern = $aPattern[0]
   
@@ -34,7 +34,6 @@ Public Sub _new(hMenuButton As MenuButton, hEditor As Editor)
   hMenu = New Menu($hMenu)
   hMenuButton.Menu = $hMenu.Name
   Object.Attach(hMenuButton, Me, "Button")
-  
   
 End
 

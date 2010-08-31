@@ -776,6 +776,7 @@ Public Sub tvwFind_Select()
   If Not hForm Then Return
   
   hForm.SetPosition(hFind, False)
+  Project.Activate(hForm)
 
 End
 

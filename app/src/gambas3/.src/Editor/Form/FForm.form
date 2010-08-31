@@ -203,7 +203,7 @@
     { mnuMenu Menu
       Action = ".menu"
       Text = ("Menu editor...")
-      Picture = Picture["img/16/menu.png"]
+      Picture = Picture["icon:/small/menu"]
       Shortcut = "Ctrl+E"
     }
     { mnuSep4 Menu
@@ -236,7 +236,7 @@
       MoveScaled(4,0,4,4)
       ToolTip = ("Reload")
       Action = ".reload"
-      Picture = Picture["icon:/small/refresh"]
+      Picture = Picture["icon:/small/revert"]
     }
     { ToolButton12 ToolButton mnuShowCode
       Name = "ToolButton12"
@@ -306,7 +306,7 @@
       MoveScaled(40,0,4,4)
       ToolTip = ("Menu editor")
       Action = ".menu"
-      Picture = Picture["img/16/menu.png"]
+      Picture = Picture["icon:/small/menu"]
     }
     { ToolButton2 ToolButton
       MoveScaled(45,0,4,4)
@@ -640,7 +640,7 @@
   { Action menu
     Text = "Menu editor..."
     Shortcut = "Ctrl+E"
-    Picture = "img/16/menu.png"
+    Picture = "icon:/small/menu"
   }
   { Action move-tab-first
     Text = "&First"
@@ -679,7 +679,7 @@
   { Action reload
     Text = "Reload"
     Shortcut = ""
-    Picture = "icon:/small/refresh"
+    Picture = "icon:/small/revert"
   }
   { Action same-height
     Text = "Same &height"

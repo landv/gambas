@@ -97,6 +97,11 @@
     }
     { mnuSep5 Menu
     }
+    { mnuReload Menu
+      Action = ".reload"
+      Text = ("Reload")
+      Picture = Picture["icon:/small/revert"]
+    }
     { mnuSave Menu
       Action = ".save"
       Text = ("Save")
@@ -121,7 +126,7 @@
       MoveScaled(4,0,4,4)
       ToolTip = ("Reload")
       Action = ".reload"
-      Picture = Picture["icon:/small/refresh"]
+      Picture = Picture["icon:/small/revert"]
     }
     { btnShowCode ToolButton mnuShowCode
       Name = "btnShowCode"
@@ -292,7 +297,8 @@
   }
   { Action reload
     Text = "Reload"
-    Picture = "icon:/small/refresh"
+    Shortcut = ""
+    Picture = "icon:/small/revert"
   }
   { Action save
     Text = "Save"

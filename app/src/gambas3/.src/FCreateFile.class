@@ -438,7 +438,7 @@ Public Sub btnOK_Click()
 
 Catch 
 
-  FGambas.Error(("Cannot add file.") & "\n\n" & Error.Text & "\n" & Error.Where)
+  FMain.ShowError(("Cannot add file.") & "\n\n" & Error.Text & "\n" & Error.Where)
   
 End
 

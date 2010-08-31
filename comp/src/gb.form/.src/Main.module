@@ -36,3 +36,9 @@ Public Sub GetArrow(iType As Integer, iSize As Integer) As Image
   Return hImage
   
 End
+
+Public Sub Main()
+  
+  Message.Optional("<h2>Votre document n'a pas été enregistré.</h2>\nVous risquez de perdre votre travail !<p>C'est grave, très grave même !<p>Veuillez faire attention à ce que vous allez faire et n'agissez qu'avec la plus entière circonception.</p>", "OK",, "Test")
+  
+End

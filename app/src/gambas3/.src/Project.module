@@ -277,7 +277,7 @@ Public Sub Main()
   'FToolBox.Show
   'FFormStack.Load
   
-  'If Settings["/ShowMascot", False] Then FGambas.Show
+  'If Settings["/ShowMascot", False] Then FMain.ShowShow
   
   FMain.Show
   RefreshActivate
@@ -1133,7 +1133,7 @@ Private Sub DoRefreshAfter()
       AddFile(File.Dir(sKey), File.Name(sKey), True, True)
       $aRefreshAfter[iInd] = File.BaseName(sKey)
     Next
-    FGambas.Error(("The following classes have circular inheritance:") & "\n\n" & $aRefreshAfter.Join(", "))
+    FMain.ShowError(("The following classes have circular inheritance:") & "\n\n" & $aRefreshAfter.Join(", "))
     $aRefreshAfter.Clear
   Endif
   
@@ -1657,7 +1657,7 @@ Public Sub ShowFile(hForm As Form)
   
 Catch
   
-  FGambas.Error(("Cannot open file.") & "\n\n" & Error.Text & "\n" & Error.Where)
+  FMain.ShowError(("Cannot open file.") & "\n\n" & Error.Text & "\n" & Error.Where)
   
 End
 
@@ -1669,7 +1669,7 @@ Public Sub OpenFile(sPath As String, Optional iLine As Integer, Optional iColumn
   
   Try Stat(sPath, True)
   If Error Then
-    FGambas.Warning(("File not found!") & "\n" & sPath)
+    FMain.ShowWarning(("File not found!") & "\n" & sPath)
     Project.Refresh
     Return
   Endif
@@ -2014,7 +2014,7 @@ Public Function Compile(Optional bAll As Boolean, Optional bNoDebug As Boolean) 
       Endif
       
       'SetMessage(("OK"))
-      'FGambas.Animate("Happy")
+      'FMain.ShowAnimate("Happy")
       
     Endif
   Endif
@@ -2124,7 +2124,7 @@ Public Sub SaveAs()
   Settings["/SaveProjectAs"] = Dialog.Path
   sDir = Dialog.Path &/ Project.Name
   If Exist(sDir) Then 
-    FGambas.Warning(("This project already exists."))
+    FMain.ShowWarning(("This project already exists."))
     Return
   Endif
   
@@ -2137,7 +2137,7 @@ Public Sub SaveAs()
 Catch 
   
   Application.Busy = 0
-  FGambas.Error(("Unable to save the project.") & "\n\n" & Error.Text)
+  FMain.ShowError(("Unable to save the project.") & "\n\n" & Error.Text)
   
 End
 
@@ -2207,7 +2207,7 @@ Public Sub InsertSource(sName As String, sType As String, sDir As String, Option
   
   sPath = sDir &/ File.BaseName(sName) & "." & sType
   If Exist(sPath) Then
-    FGambas.Warning(("File already exists."))
+    FMain.ShowWarning(("File already exists."))
     Return
   Endif
   
@@ -2240,9 +2240,9 @@ Public Sub InsertFile(sName As String, sDir As String, Optional sTemplate As Str
     
     If Exist(sPath) Then
       If IsDir(sPath) Then
-        FGambas.Warning(("Directory already exists."))
+        FMain.ShowWarning(("Directory already exists."))
       Else
-        FGambas.Warning(("File already exists."))
+        FMain.ShowWarning(("File already exists."))
       Endif
       Return
     Endif
@@ -2252,13 +2252,13 @@ Public Sub InsertFile(sName As String, sDir As String, Optional sTemplate As Str
       sTemplate = MakeRelativeLink(sTemplate, sPath)
       Try Link sTemplate To sPath ' swapped
       If Not Exist(sPath) Then
-        FGambas.Error(("Cannot link template file.") & "\n\n" & Error.Text)
+        FMain.ShowError(("Cannot link template file.") & "\n\n" & Error.Text)
         Return
       Endif
     Else
       Try Copy sTemplate To sPath
       If Not Exist(sPath) Then
-        FGambas.Error(("Cannot copy template file.") & "\n\n" & Error.Text)
+        FMain.ShowError(("Cannot copy template file.") & "\n\n" & Error.Text)
         Return
       Endif
     Endif
@@ -2277,7 +2277,7 @@ End
 Public Function InsertDirectory(sPath As String, Optional bNoVerCtrl As Boolean) As Boolean
   
   If Exist(sPath) Then
-    FGambas.Warning(("Directory already exists."))
+    FMain.ShowWarning(("Directory already exists."))
     Return True
   Endif
   
@@ -2477,7 +2477,7 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
   
 Catch 
   
-  FGambas.Error(("Cannot make executable.") & "\n\n" & Error.Text & "\n" & Error.Where)
+  FMain.ShowError(("Cannot make executable.") & "\n\n" & Error.Text & "\n" & Error.Where)
   EnableRefresh
   Return True
   
@@ -3028,7 +3028,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   
 Catch
   
-  FGambas.Error(("Cannot write project file.") & "\n\n" & Error.Text)
+  FMain.ShowError(("Cannot write project file.") & "\n\n" & Error.Text)
   
 End
 
@@ -3060,7 +3060,7 @@ Public Sub MakeShortcut(Optional bForce As Boolean)
   
 Catch 
   
-  FGambas.Error(("Unable to create desktop shortcut.") & "\n\n" & Error.Text & "\n" & Error.Where)
+  FMain.ShowError(("Unable to create desktop shortcut.") & "\n\n" & Error.Text & "\n" & Error.Where)
   
 End
 
@@ -3139,7 +3139,7 @@ End
 '   
 ' Catch 
 ' 
-'   FGambas.Error(("Unable to install component.") & "\n\n" & Error.Text & "\n" & Error.Where)  
+'   FMain.ShowError(("Unable to install component.") & "\n\n" & Error.Text & "\n" & Error.Where)  
 '   
 ' End
 ' 
@@ -3177,7 +3177,7 @@ End
 '   
 ' Catch 
 ' 
-'   FGambas.Error(("Unable to uninstall component.") & "\n\n" & Error.Text & "\n" & Error.Where)    
+'   FMain.ShowError(("Unable to uninstall component.") & "\n\n" & Error.Text & "\n" & Error.Where)    
 '   
 ' End
 
@@ -3230,8 +3230,8 @@ End
 
 Public Sub SetMessage(sMsg As String)
   
-  ' If FGambas.Visible And If sMsg <> ("OK") Then
-  '   FGambas.Info(sMsg)
+  ' If FMain.ShowVisible And If sMsg <> ("OK") Then
+  '   FMain.ShowInfo(sMsg)
   ' Endif
   If $bTesting Then Return
   FMain.SetMessage(sMsg)
@@ -3333,7 +3333,7 @@ Private Function CheckStartupClass() As Boolean
   
   If Startup Then Return
   
-  FGambas.Warning(("You must define a startup class or form!"))
+  FMain.ShowWarning(("You must define a startup class or form!"))
   
   Return True
   
@@ -4853,7 +4853,7 @@ Public Sub UpdateForms()
 Catch 
   
   Dec Application.Busy
-  FGambas.Error(("Unable to update all forms.") & "\n\n" & Error.Text)
+  FMain.ShowError(("Unable to update all forms.") & "\n\n" & Error.Text)
   
 End
 

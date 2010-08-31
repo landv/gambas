@@ -30,13 +30,6 @@
         Text = ("ToolButton1")
         Picture = Picture["icon:/small/bookmark"]
       }
-      { ToolButton2 ToolButton
-        MoveScaled(47,0,14,4)
-        Action = "zop2"
-        AutoResize = True
-        Text = ("ToolButton1")
-        Picture = Picture["icon:/small/bookmark"]
-      }
     }
     { Panel3 Panel
       MoveScaled(64,0,3,3)
@@ -67,16 +60,12 @@
     Text = "ToolButton1"
     Picture = "icon:/small/bookmark"
   }
-  { Action zop2
-    Text = "ToolButton1"
-    Picture = "icon:/small/bookmark"
-  }
 }
 
 { Toolbars
   { Toolbar main
     Text = "ToolBar1"
-    List = "button,test,zop,zop2"
-    Default = "button,test,zop,zop2"
+    List = "button,test,zop"
+    Default = "button,test,zop"
   }
 }

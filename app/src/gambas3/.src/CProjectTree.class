@@ -421,7 +421,7 @@ Private Sub DoRefreshAfter()
       AddFile(File.Dir(sKey), File.Name(sKey), True, True)
       $aRefreshAfter[iInd] = File.BaseName(sKey)
     Next
-    'FGambas.Error(("The following classes have circular inheritance:") & "\n\n" & $aRefreshAfter.Join(", "))
+    'FMain.ShowError(("The following classes have circular inheritance:") & "\n\n" & $aRefreshAfter.Join(", "))
     $aRefreshAfter.Clear
   Endif
 

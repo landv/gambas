@@ -4,13 +4,14 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Text,Picture,ReadOnly,Border=True"
+Public Const _Properties As String = "*,Action,Text,Picture,ReadOnly,Border=True"
 Public Const _DefaultEvent As String = "Click"
 Public Const _DefaultSize As String = "24,4"
 Public Const _Similar As String = "TextBox"
 
 Event Click
 Event Change
+Event Activate
 
 Property Picture As Picture
 Property Text As String

@@ -46,7 +46,7 @@ gPanel::gPanel(gContainer *parent) : gContainer(parent)
 {
 	g_typ = Type_gPanel;
 
-	border = gtk_event_box_new();
+	//border = gtk_event_box_new();
 	widget= gtk_layout_new(0,0);
 	frame = widget;
 	realize(true);

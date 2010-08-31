@@ -165,7 +165,7 @@
     { mnuReload Menu
       Action = ".reload"
       Text = ("Reload")
-      Picture = Picture["icon:/small/refresh"]
+      Picture = Picture["icon:/small/revert"]
     }
     { mnuSave Menu
       Action = ".save"
@@ -205,7 +205,7 @@
       MoveScaled(3,0,4,4)
       ToolTip = ("Reload")
       Action = ".reload"
-      Picture = Picture["icon:/small/refresh"]
+      Picture = Picture["icon:/small/revert"]
     }
     { btnForm ToolButton mnuForm
       Name = "btnForm"
@@ -513,7 +513,7 @@
   { Action reload
     Text = "Reload"
     Shortcut = ""
-    Picture = "icon:/small/refresh"
+    Picture = "icon:/small/revert"
   }
   { Action save
     Text = "Save"

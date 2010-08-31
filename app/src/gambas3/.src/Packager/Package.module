@@ -447,7 +447,7 @@ Private Function MakePackage(sSys As String) As Boolean
 Catch
 
   AddLog(("The package build has failed.") & "\n" & Error.Where & ": " & Error.Text)
-  FGambas.Error(("The package build has failed."))
+  FMain.ShowError(("The package build has failed."))
   Application.Busy = 0
   Return True
 

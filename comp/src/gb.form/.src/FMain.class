@@ -1,19 +1,28 @@
 ' Gambas class file
 
+Public Sub _new()
 
-Public Sub Form_Open()
-
-  Me.Center
-  System.FirstDayOfWeek = gb.Wednesday
-  Let DateChooser1.Value = Now
+  Dim x As Collection = ["a": 1, "b": "toto", "c": Pi]
   
-  'DirChooser1.Value = "/home/benoit/gambas/3.0/trunk"
-Me.Icon = Picture["icon:/small/new"]
+  Print x.Count
+
 End
 
+Public Sub Form_Open()
+  Dim c As Integer
+  
+  tv.Rows.Count = 10
+  tv.Columns.Count = 5
+  tv.Rows.Height = 24
+  
+  For c = 0 To tv.Columns.Count - 1
+    tv.Columns[c].text = IIf(c = 2, "ReadOnly", "")
+  Next 
+  
+End
 
-Public Sub MenuButton1_Click()
+Public Sub tv_Click()
 
-  Debug
+  tv.Edit(["", "0", "1", "2"], tv.Column = 2)
 
 End
