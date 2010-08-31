@@ -487,7 +487,7 @@ AC_DEFUN([GB_SYSTEM],
       AC_DEFINE(ARCH_X86, 1, [Target architecture is x86])
       AC_DEFINE(ARCHITECTURE, "x86", [Architecture])
       ;;
-    x86_64-*-* )
+    x86_64-*-*-* | amd64-* | ia64-* )
       ARCH=X86_64
       AC_DEFINE(ARCH_X86_64, 1, [Target architecture is x86_64])
       AC_DEFINE(ARCHITECTURE, "x86_64", [Architecture])
@@ -495,12 +495,12 @@ AC_DEFUN([GB_SYSTEM],
     arm*-*-* )
       ARCH=ARM
       AC_DEFINE(ARCH_ARM, 1, [Target architecture is ARM])
-      AC_DEFINE(ARCHITECTURE, "ARM", [Architecture])
+      AC_DEFINE(ARCHITECTURE, "arm", [Architecture])
       ;;
     powerpc-*-* )
       ARCH=PPC
       AC_DEFINE(ARCH_PPC, 1, [Target architecture is PowerPC])
-      AC_DEFINE(ARCHITECTURE, "PowerPC", [Architecture])
+      AC_DEFINE(ARCHITECTURE, "powerpc", [Architecture])
       ;;
     *)
       ARCH=UNKNOWN
