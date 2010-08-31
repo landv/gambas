@@ -177,50 +177,55 @@ double rnd(void)
 	return (double)val / 18446744073709551616.0; //0xFFFFFFFFFFFFFFFFULL;
 }
 
-
-#if defined(OS_FREEBSD) || defined(OS_OPENBSD)
-
+#ifndef HAVE_EXP10
 double exp10(double x)
 {
 	return pow(10, x);
 }
+#endif
 
+#ifndef HAVE_LOG2
 double log2(double x)
 {
 	return log(x) / M_LN2;
 }
+#endif
 
+#ifndef HAVE_EXP2
 double exp2(double x)
 {
 	return pow(2, x);
 }
-
 #endif
 
-#if defined(OS_FREEBSD) || defined(OS_OPENBSD) || defined(ARCH_ARM) || defined(OS_CYGWIN)
-
+#ifndef HAVE_LOG10L
 long double log10l(long double x)
 {
 	return log10((double) x);
 }
+#endif
 
+#ifndef HAVE_FABSL
 long double fabsl(long double x)
 {
 	return fabs((double) x);
 }
+#endif
 
+#ifndef HAVE_POWL
 long double powl(long double x, long double y)
 {
 	return pow((double) x, (double) y);
 }
+#endif
 
+#ifndef HAVE_MODFL
 long double modfl(long double x, long double *iptr)
 {
 	double val;
 	return modf((double)x, &val);
 	*iptr = val;
 }
-
 #endif
 
 void MATH_init(void)

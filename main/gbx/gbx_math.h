@@ -42,20 +42,32 @@ double rnd(void);
 #define deg(_x) ((_x) * 180 / M_PI)
 #define rad(_x) ((_x) * M_PI / 180)
 
-#if defined(OS_FREEBSD) || defined(OS_OPENBSD) || defined(OS_CYGWIN)
+#ifndef HAVE_EXP10
 double exp10(double x);
-#ifdef log2
-#undef log2
 #endif
+
+#ifndef HAVE_LOG2
 double log2(double x);
+#endif
+
+#ifndef HAVE_EXP2
 double exp2(double x);
 #endif
 
-#if defined(OS_FREEBSD) || defined(OS_OPENBSD) || defined(OS_CYGWIN) || defined(ARCH_ARM)
+#ifndef HAVE_LOG10L
 long double log10l(long double x);
+#endif
+
+#ifndef HAVE_FABSL
 long double fabsl(long double x);
-long double powl(long double x, long double y);
-long double modfl(long double x, long double *p);
+#endif
+
+#ifndef HAVE_POWL
+long double powl(long double x);
+#endif
+
+#ifndef HAVE_MODFL
+long double modfl(long double x);
 #endif
 
 #endif

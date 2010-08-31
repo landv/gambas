@@ -194,7 +194,7 @@ AC_DEFUN([GB_INIT],
   dnl AC_FUNC_WAIT3
   dnl AC_CHECK_FUNCS(getcwd gettimeofday mkdir rmdir select socket strdup strerror strtod strtol sysinfo)
   
-  AC_REPLACE_FUNCS(setenv unsetenv getdomainname getpt cfmakeraw)
+  AC_CHECK_FUNCS(setenv unsetenv getdomainname getpt cfmakeraw)
 
   dnl ---- Checks for libraries
 
@@ -342,6 +342,7 @@ AC_DEFUN([GB_INIT],
   rm -f DISABLED
 ])
 
+
 ## ---------------------------------------------------------------------------
 ## GB_THREAD
 ## Detect threading compiler options
@@ -402,6 +403,21 @@ AC_DEFUN([GB_MATH],
   AC_MSG_RESULT($MATH_LIB)
 
   AC_SUBST(MATH_LIB)
+])
+
+
+## ---------------------------------------------------------------------------
+## GB_MATH_FUNC
+## Detect which mathematical functions are available
+## ---------------------------------------------------------------------------
+
+AC_DEFUN([GB_MATH_FUNC],
+[
+  dnl AC_CHECK_LIB(m, main, true)
+  ac_save_LDFLAGS="$LDFLAGS"
+  LDFLAGS="$LDFLAGS -lm"
+  AC_CHECK_FUNCS(log10l fabsl powl modfl exp10 exp2 log2)
+  LDFLAGS=$ac_save_LDFLAGS
 ])
 
 
