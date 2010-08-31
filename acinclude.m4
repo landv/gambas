@@ -312,6 +312,21 @@ AC_DEFUN([GB_MATH],
 
 
 ## ---------------------------------------------------------------------------
+## GB_MATH_FUNC
+## Detect which mathematical functions are available
+## ---------------------------------------------------------------------------
+
+AC_DEFUN([GB_MATH_FUNC],
+[
+  dnl AC_CHECK_LIB(m, main, true)
+  ac_save_LDFLAGS="$LDFLAGS"
+  LDFLAGS="$LDFLAGS -lm"
+  AC_CHECK_FUNCS(log10l fabsl powl modfl exp10 exp2 log2)
+  LDFLAGS=$ac_save_LDFLAGS
+])
+
+
+## ---------------------------------------------------------------------------
 ## GB_SYSTEM
 ## Detects the target system and its architecture
 ## ---------------------------------------------------------------------------

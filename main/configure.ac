@@ -3,6 +3,7 @@ dnl ---- configure.ac for main programs
 AC_INIT(configure.ac)
 AC_CONFIG_MACRO_DIR([m4])
 GB_INIT(main)
+GB_MATH_FUNC
 LT_INIT
 AM_PROG_CC_C_O
 

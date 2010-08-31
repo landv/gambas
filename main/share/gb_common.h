@@ -58,8 +58,6 @@
   #include <limits.h>
   /* sighandler_t is replaced by sig_t */
   #define sighandler_t sig_t
-  /* modfl is not yet implemented */
-  #define modfl(a,b)	modf(a,b)
 	
 	typedef unsigned long ulong;
 
