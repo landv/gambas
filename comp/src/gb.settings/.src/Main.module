@@ -218,7 +218,7 @@ Private Sub ReadType() As Integer
 End
 
 
-Private Sub ReadValue() As Variant
+Private Sub ReadValue(Optional bNotStrict As Boolean) As Variant
   
   Dim sCar As String
   
@@ -238,6 +238,8 @@ Private Sub ReadValue() As Variant
     Return True
   Else If sCar == "false" Then
     Return False
+  Else If bNotStrict Then
+    Return $sStr
   Else
     Error.Raise("Incorrect token: " & Quote(sCar))
   Endif
@@ -319,7 +321,7 @@ Public Sub FromString(Value As String) As Variant
   Dim vVal As Variant
   $sStr = Value
   $iPos = 1
-  vVal = ReadValue()
+  vVal = ReadValue(True)
   $sStr = ""
   Return vVal
   
