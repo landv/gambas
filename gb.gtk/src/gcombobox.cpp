@@ -342,6 +342,7 @@ void gComboBox::setReadOnly(bool vl)
 		setIndex(-1);
 		gtk_widget_destroy(entry);
 		entry = NULL;
+		_button = NULL;
 		
 		_model_dirty = true;
 		updateModel();
