@@ -31,7 +31,7 @@
 
 void stub(const char *function)
 {
-	printf("WARNING: %s not yet implemented\n", function);
+	printf("gb.gtk: warning: %s not yet implemented\n", function);
 }
 
 /*******************************************************************

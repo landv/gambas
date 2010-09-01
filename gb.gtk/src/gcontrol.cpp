@@ -883,7 +883,7 @@ void gControl::setFocus()
 
 bool gControl::hasFocus()
 {
-	return GTK_WIDGET_HAS_FOCUS(border) || GTK_WIDGET_HAS_FOCUS(widget);
+	return (border && GTK_WIDGET_HAS_FOCUS(border)) || (widget && GTK_WIDGET_HAS_FOCUS(widget)) || gDesktop::activeControl() == this;
 }
 
 gControl* gControl::next()
@@ -936,7 +936,7 @@ void gControl::lower()
 	}
 	else
 	{	
-		fprintf(stderr, "WARNING: gControl::lower(): no window\n");
+		fprintf(stderr, "gb.gtk: warning: gControl::lower(): no window\n");
 		
 		if (!(chd=gtk_container_get_children(GTK_CONTAINER(pr->getContainer())))) return;
 		chd=g_list_first(chd);
@@ -996,7 +996,7 @@ void gControl::raise()
 	}
 	else
 	{	
-		fprintf(stderr, "WARNING: gControl::raise(): no window\n");
+		fprintf(stderr, "gb.gtk: warning: gControl::raise(): no window\n");
 		
 		x=left();
 		y=top();
@@ -1705,13 +1705,13 @@ bool gControl::grab(bool showIt)
 	
 	if (gdk_pointer_grab(border->window, false, (GdkEventMask)(GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK), NULL, NULL, gApplication::lastEventTime()) != GDK_GRAB_SUCCESS)
 	{
-		fprintf(stderr, "warning: cannot grab pointer\n");
+		fprintf(stderr, "gb.gtk: warning: cannot grab pointer\n");
 		return true;
 	}
 	if (gdk_keyboard_grab(border->window, false, gApplication::lastEventTime()) != GDK_GRAB_SUCCESS)
 	{
 		gdk_pointer_ungrab(GDK_CURRENT_TIME);
-		fprintf(stderr, "warning: cannot grab keyboard\n");
+		fprintf(stderr, "gb.gtk: warning: cannot grab keyboard\n");
 		return true;
 	}
 

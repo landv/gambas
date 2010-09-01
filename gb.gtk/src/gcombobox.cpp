@@ -23,6 +23,7 @@
 #include "widgets.h"
 #include "widgets_private.h"
 #include "gmainwindow.h"
+#include "gdesktop.h"
 #include "gcombobox.h"
 
 /**************************************************************************
@@ -99,21 +100,21 @@ static void combo_cell_text(GtkComboBox *combo, GtkCellRenderer *cell, GtkTreeMo
 		(void *)NULL);
 }
 
-static GtkWidget *_button;
+static GtkWidget *_find_button;
 
 static void cb_find_button(GtkWidget *widget, gpointer data)
 {
 	if (GTK_IS_TOGGLE_BUTTON(widget))
-		_button = widget;
+		_find_button = widget;
 	else if (GTK_IS_CONTAINER(widget))
 		gtk_container_forall(GTK_CONTAINER(widget), cb_find_button, NULL);
 }
 
 static GtkWidget *find_button(GtkWidget *combo)
 {
-	_button = NULL;
+	_find_button = NULL;
 	gtk_container_forall(GTK_CONTAINER(combo), cb_find_button, NULL);
-	return _button;
+	return _find_button;
 }
 
 char *gComboBox::indexToKey(int index)
@@ -129,6 +130,11 @@ void gComboBox::create(bool readOnly)
 {
 	bool first = !border;
 	int ind = -1;
+	//bool focus = hasFocus();
+	
+	//fprintf(stderr, "create: %d hasFocus = %d\n", readOnly, focus );
+	
+	lock();
 	
 	if (first)
 		border = gtk_event_box_new();
@@ -140,6 +146,7 @@ void gComboBox::create(bool readOnly)
 		if (cell) g_object_unref(cell);
 		cell = NULL;
 		gtk_widget_destroy(widget);
+		_button = NULL;
 	}
 	
 	if (readOnly)
@@ -201,6 +208,11 @@ void gComboBox::create(bool readOnly)
 
 	if (ind >= 0)
 		setIndex(ind);
+	
+	//if (focus)
+	//	gDesktop::setActiveControl(this);
+	
+	unlock();
 }
 
 gComboBox::gComboBox(gContainer *parent) : gTextBox(parent, true)
@@ -327,7 +339,7 @@ char* gComboBox::text()
 
 void gComboBox::setIndex(int vl)
 {
-	fprintf(stderr, "setIndex: %d\n", vl);
+	//fprintf(stderr, "setIndex: %d\n", vl);
 	
 	if (vl < 0)
 		vl = -1;

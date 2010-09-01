@@ -1839,6 +1839,7 @@ void EXEC_new(void)
 	void *object;
 	char *name = NULL;
 	char *cname = NULL;
+	char *save_name;
 
 	np = *PC & 0xFF;
 	event = np & CODE_NEW_EVENT;

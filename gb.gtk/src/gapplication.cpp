@@ -327,6 +327,11 @@ static void gambas_handle_event(GdkEvent *event)
 		real = false;
 	}
 
+	/*if (event->type == GDK_KEY_PRESS)
+		fprintf(stderr, "KEY_PRESS: %p %s\n", control, control ? control->name() : 0);
+	else if (event->type == GDK_BUTTON_PRESS)
+		fprintf(stderr, "BUTTON_PRESS: %p %s\n", control, control ? control->name() : 0);*/
+	
 	/*if (event->type == GDK_BUTTON_PRESS)
 		fprintf(stderr, "GDK_BUTTON_PRESS: %p %s\n", widget, control ? control->name() : NULL);
 	else if (event->type == GDK_KEY_PRESS)
