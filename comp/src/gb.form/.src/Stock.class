@@ -64,6 +64,11 @@ End
 Static Private Sub AddPath(sMap As String, sPath As String)
   
   If Not Exist(sPath) Then Return 
+  If Dir(sPath, "*", gb.Directory)[0] Like "*[1-9]x[1-9]*" Then
+    sPath &/= "&2x&2!&1"
+  Else
+    sPath &/= "&1!&2"
+  Endif
   
   If sMap Then sPath = sMap & ":" & sPath
   If Not $aIconPath.Exist(sPath) Then $aIconPath.Add(sPath)
@@ -94,8 +99,8 @@ Static Private Sub InitTheme()
       
       If sTheme Then 
         sTheme = Trim(sTheme)
-        AddPath("gnome", "/usr/share/icons" &/ sTheme)
-        GetAllThemePath(sTheme)
+        'AddPath("gnome", "/usr/share/icons" &/ sTheme)
+        GetAllThemePath("gnome", "/usr/share/icons", sTheme)
         'Print $aIconPath
         'AddPath("freedesktop", "/usr/share/icons" &/ sTheme)
         'AddPath("gnome", "/usr/X11R6/share/icons" &/ sTheme)
@@ -136,7 +141,7 @@ Static Private Sub InitTheme()
           
           If sStyle Then
             For Each sPath In Split(sIconPath, ":")
-              AddPath("kde", sPath &/ sStyle)
+              GetAllThemePath("kde", sPath, sStyle)
               AddPath("gnome", sPath &/ sStyle)
             Next
           Endif 
@@ -183,7 +188,7 @@ Static Private Sub InitTheme()
           
           If sStyle Then
             For Each sPath In Split(sIconPath, ":")
-              AddPath("kde4", sPath &/ sStyle)
+              GetAllThemePath("kde4", sPath, sStyle)
               AddPath("gnome", sPath &/ sStyle)
             Next
           Endif 
@@ -218,8 +223,8 @@ Static Private Sub InitTheme()
       Endif
       
       If sTheme Then 
-        AddPath("gnome", "/usr/share/icons" &/ sTheme)
-        AddPath("gnome", "/usr/X11R6/share/icons" &/ sTheme)
+        GetAllThemePath("gnome", "/usr/share/icons", sTheme)
+        GetAllThemePath("gnome", "/usr/X11R6/share/icons", sTheme)
       Endif 
       
       AddPath("gnome", "/usr/share/icons/gnome")
@@ -271,6 +276,7 @@ Static Public Function _get(Key As String) As Picture
   Dim sFile As String
   Dim sMap As String
   Dim sImagePath As String
+  Dim sDirPattern As String
   
   'IF Right(Key, 4) <> ".png" THEN Key &= ".png"
   
@@ -305,7 +311,9 @@ Static Public Function _get(Key As String) As Picture
       Else 
         sFile = Key & ".png"
       Endif
+      sDirPattern = Replace(File.Name(sPath), "!", "/")
       
+      sPath = File.Dir(sPath)
       If Not Exist(sPath) Then Continue
       
     Endif
@@ -315,30 +323,28 @@ Static Public Function _get(Key As String) As Picture
       If sPath = "#" Then
         sTemplate = "&1" &/ sFile
       Else If Left(sPath) = "/" Then   
-        If sMap = "freedesktop" Then 
-          sTemplate = sPath &/ File.Dir(sFile) &/ "&1" &/ File.BaseName(sFile) & ".svg"
-        Else
-          sTemplate = sPath &/ "&1x&1" &/ sFile
-        Endif
+        sTemplate = Subst(sPath &/ sDirPattern &/ File.Name(sFile), File.Dir(sFile), "&1")
+        
       Else 
         sTemplate = sPath &/ "&1" &/ sFile
       Endif 
       
       sImagePath = Subst(sTemplate, iSize)
       
-      If sMap = "freedesktop" Then 
-        Try hPict = ImageFromSvg(sImagePath, iSize).Picture
-      Else
+      'If sMap = "freedesktop" Then 
+      Try hPict = ImageFromSvg(Left(sImagePath, -4) & ".svg", iSize).Picture
+      If Error Then
         Try hPict = Picture[sImagePath]
       Endif
+      
       If hPict Then Return hPict
       
       hImage = Null
       
       If Exist(sPath &/ "scalable") Then
         sImagePath = sPath &/ "scalable"
-        If Not sMap = "freedesktop" Then sFile = Left(sFile, -4)
-        Try hImage = ImageFromSvg(sImagePath &/ sFile & ".svg", iSize)
+        'If Not sMap = "freedesktop" Then sFile = Left(sFile, -4)
+        Try hImage = ImageFromSvg(sImagePath &/ Left(sFile, -4) & ".svg", iSize)
       Endif
       
       For Each iTry In $aSizeInc
@@ -346,9 +352,8 @@ Static Public Function _get(Key As String) As Picture
         If sPath = "#" Then                                       'load image from stock
         Try hImage = _DefaultStock.Load(Subst(sTemplate, iTry))
       Else
-        If sMap = "freedesktop" Then 
-          Try hImage = ImageFromSvg(Subst(sTemplate, iTry), iSize)
-        Else
+        Try hImage = ImageFromSvg(Subst(sTemplate, iTry), iSize)
+        If Error Then 
           Try hImage = Image.Load(Subst(sTemplate, iTry))
         Endif
       Endif
@@ -362,9 +367,9 @@ Static Public Function _get(Key As String) As Picture
       If sPath = "#" Then
         Try hImage = _DefaultStock.Load(Subst(sTemplate, iTry))
       Else
-        If sMap = "freedesktop" Then 
-          Try hImage = ImageFromSvg(Subst(sTemplate, iTry), iSize)
-        Else
+        'If sMap = "freedesktop" Then 
+        Try hImage = ImageFromSvg(Subst(Left(sTemplate, -4) & ".svg", iTry), iSize)
+        If Error Then 
           Try hImage = Image.Load(Subst(sTemplate, iTry))
         Endif
       Endif
@@ -395,17 +400,17 @@ Static Private Function List_Read() As String[]
   
 End
 
-Static Private Sub GetAllThemePath(sTheme As String)
+Static Private Sub GetAllThemePath(sMap As String, sPath As String, sTheme As String)
   
   Dim sLine As String
   
-  AddPath("freedesktop", "/usr/share/icons" &/ sTheme)
+  AddPath(sMap, sPath &/ sTheme)
   
-  For Each sLine In Split(File.Load("/usr/share/icons" &/ sTheme &/ "index.theme"), "\n")
+  For Each sLine In Split(File.Load(sPath &/ sTheme &/ "index.theme"), "\n")
     
     If InStr(sLine, "Inherits") Then 
       For Each sTheme In Split(Scan(sLine, "*=*")[1])
-        GetAllThemePath(sTheme)
+        GetAllThemePath(sMap, sPath, sTheme)
       Next
       Break
     Endif
@@ -420,7 +425,7 @@ Static Private Function ImageFromSvg(Path As String, Size As Integer) As Image
   Dim hImage As Image
   
   'Debug Path;; Size
-  'If Not Exist(Path) Then Error.Raise("")
+  
   hSvg = SvgImage.Load(Path)
   
   hImage = New Image(Size, Size, Color.Transparent)
