@@ -233,7 +233,10 @@ void EVAL_string(char *expr)
 	EVAL.New((void **)(void *)&eval, expr, len);
 
 	if (EVAL.Compile(eval, FALSE))
+	{
+		GB_Error(eval->error);
 		goto _ERROR;
+	}
 
 	if (!EVAL.Run(eval, get_value))
 		goto _ERROR;
@@ -275,7 +278,10 @@ void SUBR_eval(ushort code)
 	EVAL.New((void **)(void *)&eval, expr, len);
 
 	if (EVAL.Compile(eval, FALSE))
+	{
+		GB_Error(eval->error);
 		goto _ERROR;
+	}
 
 	if (!EVAL.Run(eval, get_value))
 		goto _ERROR;

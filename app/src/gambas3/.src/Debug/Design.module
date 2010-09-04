@@ -1030,13 +1030,16 @@ End
 Public Sub SetBreakpoint(sClass As String, iLine As Integer, bOn As Boolean) 
   
   Dim hEditor As FEditor
+  Dim sPath As String
   
   'Debug sClass; "."; iLine;; bOn
   
   If $iState = STATE_RUNNING Then Return
 
   ' Update editor
-  hEditor = Project.LoadFile(Project.FindPath(sClass))
+  sPath = Project.FindPath(sClass)
+  If Not sPath Then Return
+  Try hEditor = Project.LoadFile(sPath)
   If Not hEditor Then Return 
   If hEditor.SetBreakpoint(iLine, bOn) Then Return 
   

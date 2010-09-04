@@ -68,7 +68,6 @@ Public Sub btnOK_Click()
   'Settings["/FOpenProject/Path"] = $sPath
   'tabProject.Index = 0
   lstRecent.Clear
-  InAnotherWindow = chkOther.Value  
   
   Me.Close(True)
 
@@ -92,9 +91,8 @@ Public Sub Form_Open()
   dchProject_Change
   tabProject_Click
 
-  chkOther.Value = False
   InAnotherWindow = False
-  chkOther.Visible = $bAnother
+  btnOther.Visible = $bAnother
   chkSortRecent.Value = Settings["/FOpenProjet/SortRecent", False]  
 
 End
@@ -356,5 +354,13 @@ End
 Public Sub splProject_Resize()
 
   panProjectTitle.H = $hProjectItem.IdealHeight + panProjectTitle.Padding * 2
+
+End
+
+Public Sub btnOther_Click()
+
+  InAnotherWindow = True
+  btnOK_Click
+  
 
 End

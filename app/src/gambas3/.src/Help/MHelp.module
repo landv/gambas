@@ -304,7 +304,7 @@ Public Sub GetSymbolURL(sComponent As String, sClass As String, Optional sSymbol
   'If sComp = "gb.qt4" Or If sComp = "gb.gtk" Or If sComp = "gb.gui" Then sComp = "gb.qt"
   'If sComp = "gb.qt4.ext" Then sComp = "gb.qt.ext"
   sPath &/= LCase(sComp)
-  sPath &/= Replace(LCase(sClass), "_", ".")
+  sPath &/= LCase(Left(sClass) & Replace(Mid(sClass, 2), "_", "."))
   
   If sSymbol Then
     sName = LCase(sSymbol)

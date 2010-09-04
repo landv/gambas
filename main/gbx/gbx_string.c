@@ -41,6 +41,8 @@
 
 #include "gbx_string.h"
 
+//#define DEBUG_ME
+
 #if DEBUG_STRING
 #define DEBUG_ME
 #endif
@@ -130,8 +132,8 @@ static int _pool_count[POOL_SIZE] = { 0 };
 
 #ifdef DEBUG_ME
 
-#define alloc_string(_len) \
-({ \
+static STRING *alloc_string(_len) \
+{ \
 	STRING *str; \
 	int size = REAL_SIZE((_len) + 1 + sizeof(STRING)); \
 	int pool = (size / SIZE_INC) - 1; \
@@ -153,8 +155,8 @@ static int _pool_count[POOL_SIZE] = { 0 };
 	} \
 	str->len = (_len); \
 	str->ref = 1; \
-	str; \
-})
+	return str; \
+}
 
 #else
 

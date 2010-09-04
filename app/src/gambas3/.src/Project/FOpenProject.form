@@ -75,24 +75,24 @@
     Index = 0
   }
   { HBox1 HBox
-    MoveScaled(1,71,87,4)
+    MoveScaled(1,71,112,4)
     Spacing = True
-    { chkOther CheckBox
-      MoveScaled(1,0,43,4)
+    { Panel1 Panel
+      MoveScaled(31,0,3,4)
       Expand = True
+    }
+    { btnOther Button
+      MoveScaled(49,0,27,4)
+      AutoResize = True
       Text = ("Open in another window")
     }
-    { Panel1 Panel
-      MoveScaled(45,0,3,4)
-      Expand = True
-    }
     { btnOK Button
-      MoveScaled(48,0,15,4)
+      MoveScaled(78,0,15,4)
       Text = ("OK")
       Default = True
     }
     { btnCancel Button
-      MoveScaled(65,0,15,4)
+      MoveScaled(95,0,15,4)
       Text = ("Cancel")
       Cancel = True
     }

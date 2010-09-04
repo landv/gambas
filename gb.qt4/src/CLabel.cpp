@@ -281,12 +281,14 @@ void MyLabel::calcMinimumHeight(bool adjust)
 		br = fm.boundingRect(0, 0, QWIDGETSIZE_MAX, QWIDGETSIZE_MAX, alignment(), text());
 		nw = br.width();
 		nh = br.height();
-		if (alignment() & Qt::AlignVCenter && (nh + f * 2) < height())
-			nh = height() - f * 2;
 	}
 	
 	w = nw + f * 2;
 	h = nh + f * 2;
+
+	if (alignment() & Qt::AlignVCenter && nh < height())
+		nh = height();
+	
 	locked = true;
 	CWIDGET_resize(THIS, w, h);
 	locked = false;

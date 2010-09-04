@@ -59,7 +59,7 @@ static void get_subst(int np, char **str, int *len)
 
 BEGIN_PROPERTY(CERROR_text)
 
-	if (ERROR_last.code)
+	if (ERROR_last.code && ERROR_last.msg)
 	{
 		if (EXEC_debug)
 		{

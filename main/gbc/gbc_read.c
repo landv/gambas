@@ -836,7 +836,7 @@ static void add_string()
 				newline++;
 			else if (car == '"')
 				jump = FALSE;
-			else if (!isspace(car))
+			else if (!car || !isspace(car))
 				break;
 		}
 		else
