@@ -10,7 +10,7 @@ Private $hOutClass As File
 Private $sMainScriptPath As String
 Private $aIncFiles As New String[]
 Private $iLevel As Integer
-Private $cComponents As New collection
+Private $cComponents As New Collection
 Private $aSortKey As New Integer[]
 Private $aAppArgs As New String[]
 Private $bNoCache As Boolean
@@ -156,13 +156,14 @@ Private Sub MakeVirtualProject()
   
   'Make the Virtual directory
   Try Mkdir $sPrjPath
+  Try Mkdir $sPrjPath &/ ".src"
   'File the .project content var
   sPrjFileContent = "# Gambas Project File 2.0\n"
   sPrjFileContent &= "Title=Gambas Script\n"
   sPrjFileContent &= "Startup=MMain\n"
   
   'Open a Main module
-  $hOutFile = Open $sPrjPath &/ "MMain.module" For Write Create 
+  $hOutFile = Open $sPrjPath &/ ".src/MMain.module" For Write Create 
   Print #$hOutFile, "' Gambas module file\n"
   'Fill it and create class as need
   $iLevel = 0
@@ -269,7 +270,7 @@ Private Sub GenerateFiles(Path As String)
         Continue
       Endif
       If $bVerbose Then Print "gbs: create class: "; sClass
-      $hOutClass = Open $sPrjPath &/ sClass & ".class" For Write Create
+      $hOutClass = Open $sPrjPath &/ ".src" &/ sClass & ".class" For Write Create
       bInClass = True
       Continue       
     Endif

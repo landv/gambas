@@ -2,7 +2,9 @@
 Count=0
 
 [DebugWindow]
-Count=0
+Count=2
+DebugWindow[1]="Need"
+DebugWindow[2]="Require"
 
 [DebugWindow/$aAppArgs]
 Geometry=[13,42,335,301]
@@ -25,8 +27,20 @@ Geometry=[0,0,301,301]
 [DebugWindow/CComponent.All]
 Geometry=[0,0,301,301]
 
+[DebugWindow/Need]
+Geometry=[0,24,210,210]
+
+[DebugWindow/Require]
+Geometry=[0,24,210,210]
+
 [DebugWindow/Scan(sLine, "CLASS *")]
 Geometry=[0,0,301,301]
+
+[DebugWindow/Split(LCase(sLig))]
+Geometry=[0,24,210,210]
+
+[DebugWindow/hComp]
+Geometry=[0,24,210,210]
 
 [FDebugExpr/DebugWindow/$houtFile]
 Geometry=[0,25,301,301]
@@ -42,10 +56,10 @@ SearchComment=False
 SearchString=True
 
 [OpenFile]
-Active=1
-File[1]="/home/benoit/gambas/3.0/trunk/app/src/gbs3/.src/MMain.module:381.0"
-File[2]="/home/benoit/gambas/3.0/trunk/app/src/gbs3/.src/CComponent.class:168.20"
-File[3]="/home/benoit/gambas/3.0/trunk/app/src/gbs3/.src/MServerPage.module:33.0"
+File[1]=".src/MMain.module:397.4"
+File[2]=".src/MServerPage.module:33.0"
+Active=3
+File[3]=".src/CComponent.class:400.6"
 Count=3
 
 [Watches]
