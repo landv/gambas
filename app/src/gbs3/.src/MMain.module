@@ -88,7 +88,8 @@ Public Sub Main()
     
     If sRes <> "OK\n" Then 
       Error sRes
-      Print File.Load($sPrjPath &/ "MMain.module")
+      Print File.Load($sPrjPath &/ ".project")
+      Print File.Load($sPrjPath &/ ".src" &/ "MMain.module")
       Application.Return = 1
       Return 
     Endif
@@ -158,7 +159,7 @@ Private Sub MakeVirtualProject()
   Try Mkdir $sPrjPath
   Try Mkdir $sPrjPath &/ ".src"
   'File the .project content var
-  sPrjFileContent = "# Gambas Project File 2.0\n"
+  sPrjFileContent = "# Gambas Project File 3.0\n"
   sPrjFileContent &= "Title=Gambas Script\n"
   sPrjFileContent &= "Startup=MMain\n"
   
@@ -185,7 +186,7 @@ Private Sub MakeVirtualProject()
   
   'Now make the component list with the info collected
   For Each i In $aSortKey
-     sPrjFileContent &= "Library=" & $cComponents[i] & "\n"
+     sPrjFileContent &= "Component=" & $cComponents[i] & "\n"
      'PRINT $cComponents[i]
   Next
   
