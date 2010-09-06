@@ -706,6 +706,7 @@ End
 
 Public Sub Form_Hide()
 
+  If Not FMain.Enabled Then $bCancel = True
   ShowString(True)
 
 End

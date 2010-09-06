@@ -59,74 +59,82 @@ Private Sub IndentLine(sLine As String) As String
   Dim iNextLevel As Integer
   Dim sSym As String
   Dim iPos As Integer
+  Dim iType As Integer
   
   sLine = LTrim(sLine)
   
   If sLine Then
     
-    aSym = Highlight.Analyze(Highlight.Purge(sLine))
+    aSym = Highlight.Analyze(Trim(Highlight.Purge(sLine)))
+    While aSym.Count
+      iType = Highlight.Types[aSym.Max]
+      If iType <> Highlight.Comment And If iType <> Highlight.Help Then Break
+      aSym.Remove(aSym.Max)
+    Wend
     
-    If $bNeedNewLine Then
-      If Not $bLastNewLine Then sAdd = "\n"
-      $bNeedNewLine = False
-    Endif
+    If aSym.Count Then
     
-    If FEditor.IsCurrentProc() Then
-      $iLevel = 0
-      iNextLevel = 1
-      $bNeedNewLine = True
-      If Not $bLastNewLine Then sAdd = "\n"
-    Else If FEditor.IsCurrentEndProc() Then
-      $iLevel = 0
-      iNextLevel = 0
-      $bNeedNewLine = True
-      If Not $bLastNewLine Then sAdd = "\n"
-    Else
-      sSym = aSym[0]
-      If sSym = "END" And If aSym.Count >= 2 Then sSym &= " " & aSym[1]
-      
-      If sSym = "DIM" Then
-        $iLastDim = $iLine
-      Else If $iLastDim = ($iLine - 1) Then
+      If $bNeedNewLine Then
         If Not $bLastNewLine Then sAdd = "\n"
+        $bNeedNewLine = False
       Endif
       
-      If sSym = "END SELECT" Then
-        $iLevel -= 2
-        iNextLevel = $iLevel
-      Else If Right(aSym[0]) = ":" Then
-        iNextLevel = $iLevel
+      If FEditor.IsCurrentProc() Then
         $iLevel = 0
-      Else If sSym = "IF" Then
-        iNextLevel = $iLevel
-        iPos = aSym.Find("THEN")
-        If iPos < 0 Or If iPos = aSym.Max Then Inc iNextLevel
-      Else If sSym = "SELECT" Then
-        $iLastSelect = $iLine
-        iNextLevel = $iLevel + 2
+        iNextLevel = 1
+        $bNeedNewLine = True
+        If Not $bLastNewLine Then sAdd = "\n"
+      Else If FEditor.IsCurrentEndProc() Then
+        $iLevel = 0
+        iNextLevel = 0
+        $bNeedNewLine = True
+        If Not $bLastNewLine Then sAdd = "\n"
       Else
-        If $cClose.Exist(sSym) Then Dec $iLevel
-        iNextLevel = $iLevel
-        If $cOpen.Exist(sSym) Then Inc iNextLevel
+        sSym = aSym[0]
+        If sSym = "END" And If aSym.Count >= 2 Then sSym &= " " & aSym[1]
+        
+        If sSym = "DIM" Then
+          $iLastDim = $iLine
+        Else If $iLastDim = ($iLine - 1) Then
+          If Not $bLastNewLine Then sAdd = "\n"
+        Endif
+        
+        If sSym = "END SELECT" Then
+          $iLevel -= 2
+          iNextLevel = $iLevel
+        Else If Right(aSym[0]) = ":" Then
+          iNextLevel = $iLevel
+          $iLevel = 0
+        Else If sSym = "IF" Then
+          iNextLevel = $iLevel
+          iPos = aSym.Find("THEN")
+          If iPos < 0 Or If iPos = aSym.Max Then Inc iNextLevel
+        Else If sSym = "SELECT" Then
+          $iLastSelect = $iLine
+          iNextLevel = $iLevel + 2
+        Else
+          If $cClose.Exist(sSym) Then Dec $iLevel
+          iNextLevel = $iLevel
+          If $cOpen.Exist(sSym) Then Inc iNextLevel
+        Endif
       Endif
+      
+      $bLastNewLine = False 
+      
+      $iLevel = Max(0, $iLevel)
+      iNextLevel = Max(0, iNextLevel)
+      
+      sLine = sAdd & Space$(Project.TabSize * $iLevel) & sLine
+      $iLevel = iNextLevel
+      
+      Return sLine
+    
     Endif
-    
-    $bLastNewLine = False 
-    
-    $iLevel = Max(0, $iLevel)
-    iNextLevel = Max(0, iNextLevel)
-    
-    sLine = sAdd & Space$(Project.TabSize * $iLevel) & sLine
-    $iLevel = iNextLevel
-    
-  Else
-    
-    $bLastNewLine = True
-    
-    sLine = Space$(Project.TabSize * $iLevel)
     
   Endif
-  
+    
+  $bLastNewLine = True
+  sLine = Space$(Project.TabSize * $iLevel)
   Return sLine
   
 End
