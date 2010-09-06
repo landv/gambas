@@ -695,6 +695,11 @@ void MyComboBox::calcMinimumHeight()
     setMinimumHeight(fm.lineSpacing() + 2);
 }
 
+void MyComboBox::hide()
+{
+	QComboBox::hide();
+	focusNextPrevChild(true);
+}
 
 /***************************************************************************
 

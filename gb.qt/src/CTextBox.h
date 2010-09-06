@@ -72,6 +72,8 @@ public:
   MyComboBox(QWidget *parent);
   void fontChange(const QFont &);
   void calcMinimumHeight();
+	
+	virtual void hide();
 };
 
 
