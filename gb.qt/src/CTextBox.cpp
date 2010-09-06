@@ -697,8 +697,11 @@ void MyComboBox::calcMinimumHeight()
 
 void MyComboBox::hide()
 {
+	void *_object = CWidget::get(this);
+	
 	QComboBox::hide();
-	focusNextPrevChild(true);
+	if (CWIDGET_active_control == (CWIDGET *)THIS)
+		focusNextPrevChild(true);
 }
 
 /***************************************************************************
