@@ -62,14 +62,16 @@ Static Private Sub LoadMap(sMap As String)
 End
 
 Static Private Sub AddPath(sMap As String, sPath As String)
-  
+  Dim aDir As String[]
   If Not Exist(sPath) Then Return 
-  If Dir(sPath, "*", gb.Directory)[0] Like "*[1-9]x[1-9]*" Then
-    sPath &/= "&2x&2!&1"
-  Else
-    sPath &/= "&1!&2"
+  aDir = Dir(sPath, "*", gb.Directory) 
+  If aDir.Count > 0 Then
+    If aDir[0] Like "*[1-9]x[1-9]*" Then
+      sPath &/= "&2x&2!&1"
+    Else
+      sPath &/= "&1!&2"
+    Endif
   Endif
-  
   If sMap Then sPath = sMap & ":" & sPath
   If Not $aIconPath.Exist(sPath) Then $aIconPath.Add(sPath)
   
