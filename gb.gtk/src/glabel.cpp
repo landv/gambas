@@ -176,7 +176,7 @@ void gLabel::updateSize(bool adjust, bool noresize)
 	gint w, h;
 	int fw;
 	
-	if (_locked)
+	if (_locked || !textdata || !*textdata)
 		return;
 	
 	fw = getFrameWidth();
@@ -197,7 +197,6 @@ void gLabel::updateSize(bool adjust, bool noresize)
 		return;
 		
 	pango_layout_get_pixel_size(layout, &w, &h);
-	//fprintf(stderr, "gLabel::updateSize: %s (%d %d) -> (%d %d)\n", name(), width(), height(), w + fw * 2, h + fw * 2);
 	
 	w += fw * 2;
 	h += fw * 2;

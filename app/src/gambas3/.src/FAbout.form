@@ -8,6 +8,7 @@
   Resizable = False
   { tabAbout TabStrip
     MoveScaled(1,22,80,48)
+    Background = &HFFFFFF&
     Count = 3
     Index = 0
     Text = ("About")
@@ -29,7 +30,6 @@
       }
       { Image1 PictureBox
         MoveScaled(24,66,20,17)
-        Background = &HFFFFFF&
         Picture = Picture["img/logo/logo.png"]
         Alignment = Align.Center
       }
@@ -46,6 +46,7 @@
       }
       { txtAuthor TextEdit
         MoveScaled(4,118,54,11)
+        Background = &HFFFFFF&
         ReadOnly = True
         Border = False
       }
