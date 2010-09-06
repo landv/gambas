@@ -618,16 +618,6 @@ void MyTable::rowHeightChanged(int row)
 
 void MyTable::setRowHeight(int row, int height)
 {
-	/*verticalHeader()->setUpdatesEnabled(false);
-	horizontalHeader()->setUpdatesEnabled(false);
-	setUpdatesEnabled(false);
-	if (!_enableUpdates)
-	{
-		_enableUpdates = true;
-		_min_row = numRows();
-		QTimer::singleShot(0, this, SLOT(enableUpdates()));
-	}*/
-	
 	if (height < 0)
 		adjustRow(row);
 	else if (height != rowHeight(row))
@@ -637,10 +627,9 @@ void MyTable::setRowHeight(int row, int height)
 
 void MyTable::setColumnWidth(int col, int width)
 {
-	//qDebug("MyTable::setColumnWidth(%d, %ld): %d", col, width, columnWidth(col));
 	if (width < 0)
 		adjustColumn(col);
-	else if (width != columnWidth(width))
+	else if (width != columnWidth(col))
 		Q3Table::setColumnWidth(col, width);
 		
 	if (col == (numCols() - 1) && !_updating_last_column)
@@ -987,7 +976,7 @@ void MyTable::resizeEvent(QResizeEvent *e)
 
 void MyTable::columnWidthChanged(int col)
 {
-	//qDebug("MyTable::columnWidthChanged");
+	qDebug("MyTable::columnWidthChanged");
 	Q3Table::columnWidthChanged(col);
 	//if (col != (numCols() - 1))
 	updateLastColumnLater();
