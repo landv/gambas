@@ -976,7 +976,7 @@ void MyTable::resizeEvent(QResizeEvent *e)
 
 void MyTable::columnWidthChanged(int col)
 {
-	qDebug("MyTable::columnWidthChanged");
+	//qDebug("MyTable::columnWidthChanged");
 	Q3Table::columnWidthChanged(col);
 	//if (col != (numCols() - 1))
 	updateLastColumnLater();
