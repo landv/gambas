@@ -100,7 +100,10 @@ Static Private Sub InitTheme()
       If sTheme Then 
         sTheme = Trim(sTheme)
         'AddPath("gnome", "/usr/share/icons" &/ sTheme)
-        GetAllThemePath("gnome", "/usr/share/icons", sTheme)
+        sPath = "/usr/share/icons"
+        
+        
+        GetAllThemePath("gnome", sPath, sTheme)
         'Print $aIconPath
         'AddPath("freedesktop", "/usr/share/icons" &/ sTheme)
         'AddPath("gnome", "/usr/X11R6/share/icons" &/ sTheme)
@@ -403,6 +406,12 @@ End
 Static Private Sub GetAllThemePath(sMap As String, sPath As String, sTheme As String)
   
   Dim sLine As String
+  
+  If sMap = "gnome" Then
+    sPath = "/usr/share/icons"
+        If Not Exist(sPath &/ sTheme) Then sPath = User.Home &/ ".icons"
+  Endif
+  If Not Exist(sPath &/ sTheme) Then Return
   
   AddPath(sMap, sPath &/ sTheme)
   
