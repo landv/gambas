@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,72,51)
+  MoveScaled(0,0,55,51)
   Utility = True
   Arrangement = Arrange.Vertical
   Spacing = True
@@ -34,7 +34,7 @@
     }
   }
   { HBox1 HBox
-    MoveScaled(1,5,69,4)
+    MoveScaled(1,5,47,4)
     Spacing = True
     { Label1 Label
       MoveScaled(0,0,10,4)
@@ -42,24 +42,11 @@
       AutoResize = True
       Text = ("Icon size")
     }
-    { radSmall RadioButton radSize
-      Name = "radSmall"
-      MoveScaled(23,0,8,4)
-      AutoResize = True
-      Text = ("Small")
-      Value = True
-    }
-    { radMedium RadioButton radSize
-      Name = "radMedium"
-      MoveScaled(38,0,15,4)
-      AutoResize = True
-      Text = ("Medium")
-    }
-    { radLarge RadioButton radSize
-      Name = "radLarge"
-      MoveScaled(52,0,15,4)
-      AutoResize = True
-      Text = ("Large")
+    { cmbSize ComboBox
+      MoveScaled(10,0,24,4)
+      ReadOnly = True
+      List = [("Small"), ("Medium"), ("Large")]
+      Text = ("ComboBox1")
     }
   }
   { panAction Panel
@@ -71,7 +58,7 @@
       MoveScaled(1,1,48,26)
       Spacing = True
       Margin = True
-      ScrollBar = Scroll.Horizontal
+      ScrollBar = Scroll.Vertical
     }
   }
   { HBox2 HBox

@@ -44,14 +44,7 @@ Private Sub SetCurrentToolbar(hToolbar As ToolBar)
     Me.Title = ("Toolbar configuration")
   Endif
   
-  Select Case $hForm.GetIconSize()
-    Case FToolBar.ICON_LARGE
-      radLarge.Value = True
-    Case FToolBar.ICON_MEDIUM
-      radMedium.Value = True
-    Case Else
-      radSmall.Value = True
-  End Select
+  cmbSize.Index = $hForm.GetIconSize()
   
   InitAction
   $hForm.SetConfigureMode(True)
@@ -113,7 +106,7 @@ Private Sub InitAction()
     
   Next
   
-  svwAction.Arrangement = Arrange.Column
+  svwAction.Arrangement = Arrange.Vertical
   
 End
 
@@ -385,21 +378,9 @@ End
 ' End
 
 
-Public Sub radSize_Click()
+Public Sub cmbSize_Click()
 
-  Dim iSize As Integer
-  
-  If Not Last.Value Then Return
-  
-  If Last = radLarge Then
-    iSize = FToolBar.ICON_LARGE
-  Else If Last = radMedium Then
-    iSize = FToolBar.ICON_MEDIUM
-  Else
-    iSize = FToolBar.ICON_SMALL
-  Endif
-  
-  $hForm.SetIconSize(iSize)
+  $hForm.SetIconSize(cmbSize.Index)
 
 End
 

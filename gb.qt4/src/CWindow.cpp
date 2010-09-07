@@ -243,6 +243,7 @@ static void handle_focus(CWINDOW *_object)
 {
 	if (THIS->focus)
 	{
+		//qDebug("handle_focus");
 		THIS->focus->widget->setFocus();
 		GB.Unref(POINTER(&THIS->focus));
 		THIS->focus = NULL;
@@ -716,9 +717,9 @@ BEGIN_METHOD(Window_ShowPopup, GB_INTEGER x; GB_INTEGER y)
 	
 	THIS->ret = 0;
 
-	if (!emit_open_event(THIS))
+	if (THIS->toplevel)
 	{
-		if (THIS->toplevel)
+		if (!emit_open_event(THIS))
 			WINDOW->showPopup(pos);
 	}
 
@@ -1602,7 +1603,7 @@ void MyMainWindow::showEvent(QShowEvent *e)
 
 	if (_activate)
 	{
-		qDebug("showEvent: activate: %s", THIS->widget.name);
+		//qDebug("showEvent: activate: %s", THIS->widget.name);
 		raise();
 		//setFocus();
 		activateWindow();
@@ -1818,6 +1819,7 @@ void MyMainWindow::showPopup(QPoint &pos)
 	#ifndef NO_X_WINDOW
 	if (CWINDOW_Active)
 		X11_set_transient_for(winId(), CWINDOW_Active->widget.widget->winId());
+	//setAttribute(Qt::WA_X11NetWmWindowTypePopupMenu, true);
 	#endif
 
 	setWindowFlags(Qt::Popup);
@@ -1834,10 +1836,18 @@ void MyMainWindow::showPopup(QPoint &pos)
 	
 	move(pos);
 	show();
+	if (THIS->focus)
+		handle_focus(THIS);
+	else
+		setFocus();
 	afterShow();
+	//QTimer::singleShot(50, this, SLOT(activateLater()));
 	
 	THIS->loopLevel++;
 	CWINDOW_Current = THIS;
+
+	//handle_focus(THIS);
+	//activateWindow();
 	
 	THIS->enterLoop = true;
 	
@@ -1852,6 +1862,9 @@ void MyMainWindow::showPopup(QPoint &pos)
 		setSizeGrip(false);
 		setWindowModality(Qt::NonModal);
 		setWindowFlags(flags);
+		//#ifndef NO_X_WINDOW
+		//setAttribute(Qt::WA_X11NetWmWindowTypePopupMenu, false);
+		//#endif
 	}
 	
 	CWIDGET_check_hovered();
@@ -2614,6 +2627,7 @@ bool CWindow::eventFilter(QObject *o, QEvent *e)
 			if (THIS->toplevel)
 				w->center();
 				
+			//handle_focus(THIS);
 			post_show_event(THIS);
 			//CWINDOW_define_mask(THIS);
 			

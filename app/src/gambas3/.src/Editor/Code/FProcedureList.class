@@ -1,0 +1,106 @@
+' Gambas class file
+
+Private $aProc As String[]
+Private $iCurrent As Integer
+Private $sClass As String
+
+Static Public Sub Popup(sClass As String, aProc As String[], iCurrent As Integer, X As Integer, Y As Integer, W As Integer, H As Integer) As Integer
+  
+  FProcedureList.Init(sClass, aProc, iCurrent, W, H)
+  Return FProcedureList.ShowPopup(X, Y) - 1
+  
+End
+
+Public Sub Init(sClass As String, aProc As String[], iCurrent As Integer, W As Integer, H As Integer)
+  
+  Dim iRow As Integer
+  
+  $sClass = sClass
+  $aProc = aProc
+  $iCurrent = iCurrent
+  
+  gvwProc.Rows.Count = aProc.Count
+  gvwProc.Rows.Unselect
+  gvwProc.Columns.Count = 1
+  Me.Resize(W, Min(H, gvwProc.Rows.Count * gvwProc.Rows.Height + 2))
+  
+  If iCurrent >= 0 Then 
+    gvwProc.Rows[iCurrent].Selected = True
+    gvwProc[Min(gvwProc.Rows.Count - 1, iCurrent + (gvwProc.H \ gvwProc.Rows.H) \ 2), 0].EnsureVisible
+    iRow = gvwProc.RowAt(0)
+    gvwProc[iRow, 0].EnsureVisible
+  Endif
+  
+End
+
+Public Sub gvwProc_Data(Row As Integer, Column As Integer)
+  
+  Dim cSymbol As Collection
+  Dim hSymbol As CSymbolInfo
+  Dim sName As String
+  
+  'Dim hColor As Color
+  
+  Try sName = $aProc[Row]
+  If Not sName Then Return
+  
+  cSymbol = CComponent.GetClassSymbols($sClass)
+  hSymbol = cSymbol[sName]
+  
+  gvwProc.Data.Text = sName
+  If hSymbol Then
+    If hSymbol.Kind = "M" Then gvwProc.Data.Font.Bold = True
+    If hSymbol.NotPublic Then 
+      'hColor = Color(Color.Foreground)
+      'hColor.Value = 255 - (255 - hColor.Value) * 0.6
+      gvwProc.Data.Foreground = Color.Lighter(Color.Foreground)
+    Endif
+    'gvwProc.Data.Picture = Picture[hSymbol.GetIcon()]
+  Else
+    gvwProc.Data.Foreground = Color.Lighter(Color.Foreground)
+  Endif
+  If Left(sName) = "_" Then 
+    'gvwProc.Data.Picture = Picture["img/16/point.png"]
+    'gvwProc.Data.Foreground = Color.Lighter(Color.Foreground)
+  Else If InStr(sName, "_") Then
+    'gvwProc.Data.Picture = Picture["img/16/event.png"]
+    gvwProc.Data.Font.Italic = True
+  Endif
+  
+  If Row = $iCurrent Then 
+    gvwProc.Data.Background = Color.LightBackground
+  Endif
+  
+End
+
+Public Sub gvwProc_MouseUp()
+  
+  Me.Close(gvwProc.Row + 1)
+  
+End
+
+Public Sub gvwProc_MouseMove()
+  
+  Dim iRow As Integer = gvwProc.RowAt(Mouse.Y)
+  
+  Try gvwProc.Rows[iRow].Selected = True
+  
+End
+
+Public Sub gvwProc_KeyPress()
+  
+  If Key.Code = Key.Return Or If Key.Code = Key.Enter Or If Key.Code = Key.Space Then
+    gvwProc_MouseUp
+    Stop Event
+  Else If Key.Code = Key.F6 Or If Key.Code = Key.Escape Then
+    Me.Close
+    Stop Event
+  Endif
+  
+End
+
+Public Sub Form_Open()
+
+  gvwProc.SetFocus
+  
+End

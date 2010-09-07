@@ -372,13 +372,6 @@ Public Function IsModified() As Boolean
   
 End
 
-Public Sub Form_Resize()
-  
-  'HideCompletion
-  'HideSignature
-  
-End
-
 Public Sub Form_Arrange()
   
   Dim iToolbarOffset As Integer
@@ -2958,35 +2951,17 @@ End
 
 Private Sub ToggleProcList()
   
-  
   Dim iCurrent As Integer
   Dim nRow As Integer
+  Dim iLine As Integer
   
-  If Not btnProc.Enabled Then Return
+  FillProcCombo
+  iCurrent = $aProc.Find(btnProc.Text)
   
-  If panProc.Visible Then
-    
-    panProc.Hide
-    Editor.SetFocus
-    
-  Else
-    
-    FillProcCombo
-    
-    gvwProc.Rows.Count = $aProc.Count
-    gvwProc.Rows.Unselect
-    gvwProc.Columns.Count = 1
-    panProc.Move(btnProc.ScreenX - panProc.Parent.ScreenX, btnProc.ScreenY - panProc.Parent.ScreenY + btnProc.H)
-    ResizeProcList
-    
-    panProc.Show
-    gvwProc.SetFocus
-    iCurrent = $aProc.Find(btnProc.Text)
-    If iCurrent >= 0 Then 
-      gvwProc[Min(gvwProc.Rows.Count - 1, iCurrent + (gvwProc.H \ gvwProc.Rows.H) \ 2), 0].EnsureVisible
-      'gvwProc[iCurrent, 0].EnsureVisible
-    Endif
-    
+  iCurrent = FProcedureList.Popup(Me.Name, $aProc, iCurrent, btnProc.ScreenX, btnProc.ScreenY + btnProc.H, btnProc.W, Me.ClientH - panToolbar.H - Desktop.Scale)
+  If iCurrent >= 0 Then 
+    Try iLine = $cProc[$aProc[iCurrent]]
+    GotoProc(iLine)
   Endif
   
 End
@@ -2996,89 +2971,78 @@ Public Sub btnProc_MouseDown()
   
   If Not Mouse.Left Then Return
   ToggleProcList
+  Stop Event
   
 End
 
-Public Sub gvwProc_LostFocus()
-  
-  panProc.Hide
-  
-End
-
-Public Sub gvwProc_Data(Row As Integer, Column As Integer)
-  
-  Dim cSymbol As Collection
-  Dim hSymbol As CSymbolInfo
-  Dim sName As String
-  
-  'Dim hColor As Color
-  
-  Try sName = $aProc[Row]
-  If Not sName Then Return
-  
-  cSymbol = CComponent.GetClassSymbols(Me.Name)
-  hSymbol = cSymbol[sName]
-  
-  gvwProc.Data.Text = sName
-  If hSymbol Then
-    If hSymbol.Kind = "M" Then gvwProc.Data.Font.Bold = True
-    If hSymbol.NotPublic Then 
-      'hColor = Color(Color.Foreground)
-      'hColor.Value = 255 - (255 - hColor.Value) * 0.6
-      gvwProc.Data.Foreground = Color.Lighter(Color.Foreground)
-    Endif
-    'gvwProc.Data.Picture = Picture[hSymbol.GetIcon()]
-  Else
-    gvwProc.Data.Foreground = Color.Lighter(Color.Foreground)
-  Endif
-  If Left(sName) = "_" Then 
-    'gvwProc.Data.Picture = Picture["img/16/point.png"]
-    'gvwProc.Data.Foreground = Color.Lighter(Color.Foreground)
-  Else If InStr(sName, "_") Then
-    'gvwProc.Data.Picture = Picture["img/16/event.png"]
-    gvwProc.Data.Font.Italic = True
-  Endif
-  
-  If sName = btnProc.Text Then 
-    gvwProc.Data.Background = Color.LightBackground
-  Endif
-  
-End
-
-Public Sub gvwProc_Click()
-  
-  Dim iLine As Integer
-  
-  Try iLine = $cProc[$aProc[gvwProc.Row]]
-  GotoProc(iLine)
-  
-End
-
-Public Sub gvwProc_MouseMove()
-  
-  Dim iRow As Integer = gvwProc.RowAt(Mouse.Y)
-  
-  Try gvwProc.Rows[iRow].Selected = True
-  
-End
-
-Public Sub btnProc_DblClick()
-  
-  btnProc_MouseDown
-  
-End
-
-Public Sub gvwProc_KeyPress()
-  
-  If Key.Code = Key.Return Or If Key.Code = Key.Enter Or If Key.Code = Key.Space Then
-    gvwProc_Click
-    Stop Event
-  Else If Key.Code = Key.F6 Then
-    ToggleProcList
-    Stop Event
-  Endif
-  
-End
+' Public Sub gvwProc_LostFocus()
+'   
+'   panProc.Hide
+'   
+' End
+' 
+' Public Sub gvwProc_Data(Row As Integer, Column As Integer)
+'   
+'   Dim cSymbol As Collection
+'   Dim hSymbol As CSymbolInfo
+'   Dim sName As String
+'   
+'   'Dim hColor As Color
+'   
+'   Try sName = $aProc[Row]
+'   If Not sName Then Return
+'   
+'   cSymbol = CComponent.GetClassSymbols(Me.Name)
+'   hSymbol = cSymbol[sName]
+'   
+'   gvwProc.Data.Text = sName
+'   If hSymbol Then
+'     If hSymbol.Kind = "M" Then gvwProc.Data.Font.Bold = True
+'     If hSymbol.NotPublic Then 
+'       'hColor = Color(Color.Foreground)
+'       'hColor.Value = 255 - (255 - hColor.Value) * 0.6
+'       gvwProc.Data.Foreground = Color.Lighter(Color.Foreground)
+'     Endif
+'     'gvwProc.Data.Picture = Picture[hSymbol.GetIcon()]
+'   Else
+'     gvwProc.Data.Foreground = Color.Lighter(Color.Foreground)
+'   Endif
+'   If Left(sName) = "_" Then 
+'     'gvwProc.Data.Picture = Picture["img/16/point.png"]
+'     'gvwProc.Data.Foreground = Color.Lighter(Color.Foreground)
+'   Else If InStr(sName, "_") Then
+'     'gvwProc.Data.Picture = Picture["img/16/event.png"]
+'     gvwProc.Data.Font.Italic = True
+'   Endif
+'   
+'   If sName = btnProc.Text Then 
+'     gvwProc.Data.Background = Color.LightBackground
+'   Endif
+'   
+' End
+' 
+' Public Sub gvwProc_Click()
+'   
+'   Dim iLine As Integer
+'   
+'   Try iLine = $cProc[$aProc[gvwProc.Row]]
+'   GotoProc(iLine)
+'   
+' End
+' 
+' Public Sub gvwProc_MouseMove()
+'   
+'   Dim iRow As Integer = gvwProc.RowAt(Mouse.Y)
+'   
+'   Try gvwProc.Rows[iRow].Selected = True
+'   
+' End
+' 
+' Public Sub btnProc_DblClick()
+'   
+'   btnProc_MouseDown
+'   
+' End
 
 '' Update a control name and its event handler in the source code when it is renamed
 
