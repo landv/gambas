@@ -80,6 +80,7 @@ Public Sub _new()
     [cmbFoldProc, "/Editor/Fold", 0],
     [cmbOutput, "/QuietExternalCommands", 0],
     [cmbUtility, "/UseUtilityWindows", 1],
+    [cmbOptional, "/AlwaysDisplayOptionalMessages", 0],
     [cmbTooltip, "/ShowTooltip", 0],
     [cmbIntegratedHelp, "/PropertyHelp", 1],
     [cmbHelpCompletion, "/ShowHelpInPopup", 1],
@@ -391,6 +392,12 @@ Public Sub cmbUtility_Click()
 
   Settings["/UseUtilityWindows"] = cmbUtility.Index = 1
   NeedRestart(cmbUtility)
+
+End
+
+Public Sub cmbOptional_Click()
+
+  Settings["/AlwaysDisplayOptionalMessages"] = cmbOptional.Index = 1
 
 End
 

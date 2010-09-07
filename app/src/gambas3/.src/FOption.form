@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,80,64)
+  MoveScaled(0,0,80,67)
   Action = "option"
   Text = ("Preferences")
   Icon = Picture["icon:/small/options"]
@@ -30,7 +30,7 @@
     }
   }
   { tabOption TabStrip
-    MoveScaled(1,1,78,59)
+    MoveScaled(1,1,78,65)
     Arrangement = Arrange.Fill
     Spacing = True
     Margin = True
@@ -44,7 +44,7 @@
       ScrollBar = Scroll.Vertical
       { Expander1 Expander expOption
         Name = "Expander1"
-        MoveScaled(0,0,68,43)
+        MoveScaled(0,0,68,48)
         Arrangement = Arrange.Vertical
         Spacing = True
         Text = ("Interface")
@@ -173,10 +173,27 @@
             MoveScaled(59,0,7,4)
           }
         }
+        { HBox28 HBox
+          MoveScaled(0,40,66,4)
+          Spacing = True
+          { Label9 Label
+            MoveScaled(0,0,47,4)
+            Expand = True
+            Text = ("Always display optional messages")
+          }
+          { cmbOptional ComboBox
+            MoveScaled(48,0,10,4)
+            ReadOnly = True
+            List = [("No"), ("Yes")]
+          }
+          { Panel14 Panel
+            MoveScaled(59,0,7,4)
+          }
+        }
       }
       { Expander2 Expander expOption
         Name = "Expander2"
-        MoveScaled(0,44,66,38)
+        MoveScaled(0,48,68,38)
         Arrangement = Arrange.Vertical
         Spacing = True
         Text = ("Editor")
@@ -303,7 +320,7 @@
       }
       { Expander3 Expander expOption
         Name = "Expander3"
-        MoveScaled(0,83,67,18)
+        MoveScaled(0,87,68,18)
         Arrangement = Arrange.Vertical
         Spacing = True
         Text = ("Applications")
@@ -354,7 +371,7 @@
       }
       { Expander4 Expander expOption
         Name = "Expander4"
-        MoveScaled(0,102,66,23)
+        MoveScaled(0,106,68,23)
         Arrangement = Arrange.Vertical
         Spacing = True
         Text = ("Help")

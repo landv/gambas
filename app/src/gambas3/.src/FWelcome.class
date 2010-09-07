@@ -47,7 +47,7 @@ Public Sub Form_Open()
   btnNew.Foreground = Color.SelectedBackground
   btnOpen = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON, W, HEIGHT_BUTTON, ("Open project..."), "icon:/large/open", sFont) As "btnOpen"
   btnOpen.Foreground = Color.SelectedBackground
-  btnRecent = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 2, W, HEIGHT_BUTTON, ("Recent projects"), "icon:/large/play", sFont) As "btnRecent"
+  btnRecent = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 2, W, HEIGHT_BUTTON, ("Recent projects"), "icon:/large/open-recent", sFont) As "btnRecent"
   btnRecent.Foreground = Color.SelectedBackground
   btnExample = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 3, W, HEIGHT_BUTTON, ("Examples"), "icon:/large/help", sFont) As "btnExample"
   btnExample.Foreground = Color.SelectedBackground

@@ -1570,7 +1570,7 @@ Public Sub mnuHideMenu_Click()
     sepMenu.Hide
     'btnShowMenu.Show
     Settings["/ShowMenus"] = Me.Menus.Visible
-    Message.Optional(Subst(("To show the menu bar again, hit the following keys:<p><b>&1</b>"), mnuHideMenu.Shortcut), ("OK"), "HideMenu", "menu")
+    Message.Optional(Subst(("To show the menu bar again, hit the following keys:<p><b>&1</b>"), mnuHideMenu.Shortcut), ("OK"), "HideMenu", "menu", Settings["/AlwaysDisplayOptionalMessages"])
   Else
     btnShowMenu_Click
   Endif

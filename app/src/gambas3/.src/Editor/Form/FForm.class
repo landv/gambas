@@ -3271,15 +3271,26 @@ Public Sub mnuStartup_Click()
   
 End
 
-Public Sub GetTopLevelMenus() As String[]
+Private Sub AddMenu(aMenu As String[], hMenu As Menu)
+  
+  If hMenu.Children.Count = 0 Then Return
+  
+  aMenu.Add(Control[hMenu.Tag].Name)
+  
+  For Each hMenu In hMenu.Children
+    AddMenu(aMenu, hMenu)
+  Next
+  
+End
+
+
+Public Sub GetMenus() As String[]
   
   Dim hCtrl As CControl
   Dim aMenu As New String[]
   
   For Each hCtrl In AllMenus
-    If hCtrl.Parent = RootControl Then
-      aMenu.Add(hCtrl.Name)
-    Endif
+    AddMenu(aMenu, hCtrl.Control)
   Next
   
   Return aMenu.Sort(gb.IgnoreCase + gb.Natural)

@@ -139,12 +139,25 @@ Public Sub Button_Click()
   
 End
 
+Private Sub FindMenuChild(hMenu As Menu) As Menu
+  
+  For Each hMenu In hMenu.Children
+    If hMenu.Name == $sMenu Then Return hMenu
+    hMenu = FindMenuChild(hMenu)
+    If hMenu Then Return hMenu
+  Next
+  
+End
+
+
 Private Sub FindMenu(hWindow As Window) As Menu
   
   Dim hMenu As Menu
   
   For Each hMenu In hWindow.Menus
     If hMenu.Name == $sMenu Then Return hMenu
+    hMenu = FindMenuChild(hMenu)
+    If hMenu Then Return hMenu
   Next
   
 End

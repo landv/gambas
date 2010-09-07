@@ -727,7 +727,7 @@ Private Sub ShowProperty(Optional sFocus As String)
       
     Case "Menu"
       
-      aElt = $hForm.GetTopLevelMenus()
+      aElt = $hForm.GetMenus()
       If aElt.Count = 0 Then Return
       
       hEditor = cmbProperty
