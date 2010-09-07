@@ -142,6 +142,7 @@ static int make_message(int type, int nbmax, void *_param)
 		if (CWINDOW_Main)
 			parent = CWINDOW_Main->widget.widget;
 	}
+	
 	mb = new QMessageBox(parent);
 	
 	// Number of buttons
@@ -245,6 +246,8 @@ static int make_message(int type, int nbmax, void *_param)
 	// Run the message box
 	
 	mb->exec();
+	
+	CWINDOW_ensure_active_window();
 	
 	// Returned value
 	

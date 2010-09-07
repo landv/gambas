@@ -293,6 +293,14 @@ static void reparent_window(CWINDOW *_object, void *parent, bool move, int x = 0
 		CWIDGET_move(THIS, p.x(), p.y());
 }
 
+void CWINDOW_ensure_active_window()
+{
+	void *_object = CWINDOW_Active;
+	
+	if (THIS)
+		WINDOW->activateWindow();
+}
+
 
 
 
@@ -1799,6 +1807,8 @@ void MyMainWindow::showModal(void)
 		setSizeGrip(false);
 		setWindowModality(Qt::NonModal);
 	}
+	
+	CWINDOW_ensure_active_window();
 }
 
 void MyMainWindow::showPopup(QPoint &pos)
@@ -2734,3 +2744,4 @@ CMENU *CWindow::findMenu(CWINDOW *_object, const char *name)
 	
 	return NULL;
 }
+
