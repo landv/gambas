@@ -5,8 +5,8 @@ Public Sub _new()
   
   Dim hresult As Result
   'Report.debug = True
-  hCon.Type = "mysql"
-  hCon.User = "root"
+  hCon.Type = "sqlite"
+  hCon.Host = User.Home
   hCon.Name = "test"
   hresult = db.Limit(300).Exec("SELECT * FROM test")
   Print hresult.Count

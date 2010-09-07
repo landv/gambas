@@ -69,12 +69,10 @@ Static Private Sub AddPath(sMap As String, sPath As String)
   
   If Not Exist(sPath) Then Return 
   aDir = Dir(sPath, "[1-9]*", gb.Directory) 
-  If aDir.Count > 0 Then
-    If aDir[0] Like "*[1-9]x[1-9]*" Then
-      sPath &/= "&2x&2!&1"
-    Else
-      sPath &/= "&1!&2"
-    Endif
+  If aDir.Count > 0 And If aDir[0] Like "*[1-9]x[1-9]*" Then
+    sPath &/= "&2x&2!&1"
+  Else
+    sPath &/= "&1!&2"
   Endif
   If sMap Then sPath = sMap & ":" & sPath
   If Not $aIconPath.Exist(sPath) Then 
