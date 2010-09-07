@@ -193,7 +193,7 @@ Private Sub MakeVirtualProject()
   
   'Save the .Project File
   File.Save($sPrjPath &/ ".project", sPrjFileContent)
-  Print sPrjFileContent
+  'Print sPrjFileContent
   Close $hOutFile
   'PRINT file.Load($sPrjPath &/ "MMain.module")
 

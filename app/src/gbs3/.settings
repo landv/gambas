@@ -2,9 +2,12 @@
 Count=0
 
 [DebugWindow]
-Count=2
-DebugWindow[1]="Need"
-DebugWindow[2]="Require"
+Count=5
+DebugWindow[1]="CComponent.All"
+DebugWindow[2]="CComponent.WhoImplement[s]"
+DebugWindow[3]="hComp"
+DebugWindow[4]="hComp.Implement"
+DebugWindow[5]="WhoImplement[s]"
 
 [DebugWindow/$aAppArgs]
 Geometry=[13,42,335,301]
@@ -18,6 +21,9 @@ Geometry=[0,0,301,301]
 [DebugWindow/$aSortKey]
 Geometry=[0,0,301,301]
 
+[DebugWindow/$cComponents]
+Geometry=[0,24,210,210]
+
 [DebugWindow/Application.Args]
 Geometry=[0,0,604,301]
 
@@ -26,6 +32,9 @@ Geometry=[0,0,301,301]
 
 [DebugWindow/CComponent.All]
 Geometry=[0,0,301,301]
+
+[DebugWindow/CComponent.WhoImplement[s]]
+Geometry=[0,24,210,210]
 
 [DebugWindow/Need]
 Geometry=[0,24,210,210]
@@ -39,11 +48,23 @@ Geometry=[0,0,301,301]
 [DebugWindow/Split(LCase(sLig))]
 Geometry=[0,24,210,210]
 
+[DebugWindow/WhoImplement[s]]
+Geometry=[0,24,210,210]
+
+[DebugWindow/aSym]
+Geometry=[0,24,210,210]
+
 [DebugWindow/hComp]
 Geometry=[0,24,210,210]
 
+[DebugWindow/hComp.Authors]
+Geometry=[14,38,210,210]
+
+[DebugWindow/hComp.Implement]
+Geometry=[0,24,210,210]
+
 [FCommit]
-LastCommit="[SCRIPTER]\n* BUG: Change the content of .project file to fit with the new gb3 pattern\n---- Cette ligne et les suivantes seront ignorées ----\n\nM       .src/MMain.module"
+LastCommit="[SCRIPTER]\n* BUG: Gambas scripter work again on gambas3.\n* BUG: If a function is already implemented by a given library then don't\n  try to add a new one.\n* BUG: Main sub is correctly detected now\n---- Cette ligne et les suivantes seront ignorées ----\n\nM       .project\nM       .src/MMain.module\nA       .src/CComponent.class\nM       .settings"
 
 [FDebugExpr/DebugWindow/$houtFile]
 Geometry=[0,25,301,301]
@@ -59,10 +80,10 @@ SearchComment=False
 SearchString=True
 
 [OpenFile]
-Active=1
-File[1]=".src/MMain.module:385.18"
-File[2]=".src/MServerPage.module:33.0"
-File[3]=".src/CComponent.class:235.2"
+File[1]=".src/MMain.module:289.21"
+Active=2
+File[2]=".src/MServerPage.module:146.0"
+File[3]=".src/CComponent.class:58.25"
 Count=3
 
 [Watches]
