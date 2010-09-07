@@ -40,7 +40,7 @@ End
 Public Sub Main()
   
   'Message.Optional("<h2>Votre document n'a pas été enregistré.</h2>\nVous risquez de perdre votre travail !<p>C'est grave, très grave même !<p>Veuillez faire attention à ce que vous allez faire et n'agissez qu'avec la plus entière circonception.</p>", "OK", "", "Test")
-  
-  InputBox("Ceci est un prompt vraiment très très long, enfin qui essaie tout du moins", "Titre")
+  Dim hPict As Picture = Picture["icon:/16/add"]
+  'InputBox("Ceci est un prompt vraiment très très long, enfin qui essaie tout du moins", "Titre")
   
 End

@@ -33,6 +33,8 @@ struct GHighlight
 	unsigned len : 10;
 };
 
+#define HIGHLIGHT_LEN_MAX 1023
+
 typedef
 	GHighlight *GHighlightArray;
 

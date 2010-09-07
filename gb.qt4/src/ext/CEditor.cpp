@@ -168,7 +168,7 @@ BEGIN_METHOD(CHIGHLIGHT_add, GB_INTEGER state; GB_INTEGER len)
 	if (len < 1)
 		return;
 
-	if (count < 0 || (*_highlight_data)[count].state != (uint)state || (*_highlight_data)[count].alternate != _highlight_alternate)
+	if (count < 0 || (*_highlight_data)[count].state != (uint)state || (*_highlight_data)[count].alternate != _highlight_alternate || ((*_highlight_data)[count].len + len) > HIGHLIGHT_LEN_MAX)
 	{
 		count++;
 		h = (GHighlight *)GB.Add(_highlight_data);

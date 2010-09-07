@@ -785,7 +785,6 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
   Dim iEnd As Integer
   Dim iSign As Integer
   Dim cClassSymbol As Collection
-  Dim sParent As String
   Dim hClass As CClassInfo
   Dim sName As String
   Dim sLine As String
@@ -827,8 +826,7 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
       Case "INHERITS"
       
         If aSym.Count >= 2 And If bCanInherit And If Highlight.Types[1] = Highlight.Datatype Then
-          sParent = aSym[iInd + 1]
-          MakeInheritance(hModule, cSymbol, sParent)
+          MakeInheritance(hModule, cSymbol, aSym[iInd + 1])
           bCanInherit = False
         Endif
         Continue
@@ -851,7 +849,7 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
   Next 
 
   If bExport And If bCanInherit And If Classes.Exist(hModule.Name) Then
-    sParent = aSym[iInd + 1]
+    'sParent = aSym[iInd + 1]
     MakeInheritance(hModule, cSymbol, hModule.Name, Classes[hModule.Name].Component)
     bCanInherit = False
   Endif

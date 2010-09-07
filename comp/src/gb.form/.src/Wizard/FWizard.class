@@ -1,36 +1,36 @@
 ' Gambas class file
 
-EVENT Previous
-EVENT {Next}
-EVENT Cancel
+Event Previous
+Event {Next}
+Event Cancel
 
-PUBLIC SUB btnPrevious_Click()
+Public Sub btnPrevious_Click()
 
-  RAISE Previous
+  Raise Previous
 
-END
+End
 
-PUBLIC SUB btnNext_Click()
+Public Sub btnNext_Click()
 
-  RAISE {Next}
+  Raise {Next}
 
-END
+End
 
-PUBLIC SUB btnCancel_Click()
+Public Sub btnCancel_Click()
 
-  RAISE Cancel
+  Raise Cancel
 
-END
+End
 
-PUBLIC FUNCTION GetContainer() AS Container
+Public Function GetContainer() As Container
 
-  RETURN panWizard
+  Return panWizard
 
-END
+End
 
-PUBLIC SUB SetTitle(sText AS String, hPict AS Picture)
+Public Sub SetTitle(sText As String, hPict As Picture)
 
-  DIM H AS Integer
+  Dim H As Integer
 
   lblTitle.Text = sText
   picTitle.Picture = hPict
@@ -38,52 +38,52 @@ PUBLIC SUB SetTitle(sText AS String, hPict AS Picture)
 
   H = lblTitle.Height
 
-  IF hPict THEN
+  If hPict Then
     H = Max(H, hPict.Height)
     picTitle.Width = hPict.Width
-  ENDIF
+  Endif
 
   H += panTitle.Padding * 2
   panTitle.Height = H
 
-END
+End
 
-PUBLIC SUB SetPosition(iPos AS Integer, bPrevious AS Boolean, bNext AS Boolean)
+Public Sub SetPosition(iPos As Integer, bPrevious As Boolean, bNext As Boolean)
 
   btnPrevious.Enabled = bPrevious
-  IF bNext THEN
+  If bNext Then
     btnNext.Text = ("&Next")
     btnNext.Picture = Picture["icon:/small/forward"]
-    btnNext.Default = FALSE
-  ELSE
+    btnNext.Default = False
+  Else
     btnNext.Text = ("OK")
-    btnNext.Picture = NULL
-    btnNext.Default = TRUE
-  ENDIF
+    btnNext.Picture = Null
+    btnNext.Default = True
+  Endif
 
-END
+End
 
-PUBLIC SUB SetShowTitle(bShow AS Boolean)
+Public Sub SetShowTitle(bShow As Boolean)
   
   panTitle.Visible = bShow
   
-END
+End
 
-PUBLIC SUB GetShowTitle() AS Boolean
+Public Sub GetShowTitle() As Boolean
   
-  RETURN panTitle.Visible
+  Return panTitle.Visible
   
-END
+End
 
-PUBLIC SUB SetBorder(bOn AS Boolean)
+Public Sub SetBorder(bOn As Boolean)
   
   panWizard.Border = If(bOn, Border.Sunken, Border.None)
   
-END
+End
 
-PUBLIC SUB GetBorder() AS Boolean
+Public Sub GetBorder() As Boolean
   
-  RETURN panWizard.Border <> Border.None
+  Return panWizard.Border <> Border.None
   
-END
+End
 
