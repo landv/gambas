@@ -18,10 +18,11 @@ Private $hFont As Font
 Private $aExt As String[] = ["JPG", "JPEG", "BMP", "GIF", "PNG", "ICO", "XPM", "GAMBAS"]
 Private $bCancel As Boolean
 
-Private $aGrepCache As CFindResult[]
-Private $iGrepCacheAge As Integer
-Private $sGrepCacheKey As String
-Private $sGrepCacheCommand As String
+Private $cGrepCache As New Collection
+Private $cRefreshBrowse As New Collection
+Private $bMustRefreshBrowse As Boolean
+
+Private $iBrowseAge As Integer
 
 Private Const GO_FORWARD As Integer = 0
 Private Const GO_BACKWARD As Integer = 1
@@ -150,6 +151,7 @@ End
 Public Sub Form_Activate()
 
   Update()
+  RefreshBrowse()
 
 End
 
@@ -230,9 +232,9 @@ Private Sub GrepFile(hFile As Object) As CFindResult[]
   Dim hResult As CFindResult
   Dim sTemp As String
   Dim iAge As Integer
+  Dim hGrepResult As CGrepResult
+  Dim sPath As String
 
-  Wait 0.01
-  
   Try sText = hFile.GetText()
   If Error Then Return aResult
   
@@ -250,11 +252,14 @@ Private Sub GrepFile(hFile As Object) As CFindResult[]
   aGrep.Add(SearchString)
   aGrep.Add(sTemp)
   
-  If hFile.Path = $sGrepCacheKey Then
+  sPath = hFile.Path
+  hGrepResult = $cGrepCache[sPath]
+  
+  If hGrepResult Then
     Try iAge = hFile.Age
-    If iAge = $iGrepCacheAge Then
-      If aGrep.Join("\n") = $sGrepCacheCommand Then
-        Return $aGrepCache
+    If iAge = hGrepResult.Age Then
+      If aGrep.Join("\n") = hGrepResult.Command Then
+        Return hGrepResult.Result
       Endif
     Endif
   Endif
@@ -289,10 +294,14 @@ Private Sub GrepFile(hFile As Object) As CFindResult[]
   
   Try iAge = hFile.Age
   If Not Error Then
-    $aGrepCache = aResult.Copy()
-    $iGrepCacheAge = iAge
-    $sGrepCacheKey = hFile.Path
-    $sGrepCacheCommand = aGrep.Join("\n")
+    hGrepResult = New CGrepResult
+    With hGrepResult
+      .Result = aResult.Copy()
+      .Age = iAge
+      .Path = sPath
+      .Command = aGrep.Join("\n")
+    End With
+    $cGrepCache[sPath] = hGrepResult
   Endif
   
   Return aResult
@@ -428,34 +437,40 @@ DO_IT_AGAIN:
   
 End
 
-Public Sub AddFound(hResult As CFindResult)
+Public Sub AddFound(hResult As CFindResult, Optional iIndex As Integer = -1)
   
   Dim iInd As Integer
   
-  $aBrowse.Add(hResult)
-  If $aBrowse.Count > 1 Then 
-    If hResult.File = $aBrowse[$aBrowse.Max - 1].File Then
-      hResult.Dark = $aBrowse[$aBrowse.Max - 1].Dark
+  If iIndex < 0 Then
+    iIndex = $aBrowse.Count
+    $aBrowse.Add(hResult)
+  Else
+    $aBrowse.Add(hResult, iIndex)
+  Endif
+  
+  If iIndex > 0 Then 
+    If hResult.File = $aBrowse[iIndex - 1].File Then
+      hResult.Dark = $aBrowse[iIndex - 1].Dark
     Else
-      hResult.Dark = Not $aBrowse[$aBrowse.Max - 1].Dark
+      hResult.Dark = Not $aBrowse[iIndex - 1].Dark
     Endif
   Endif
   tvwFind.Rows.Count = $aBrowse.Count
   
-  iInd = $aBrowse.Max
+  iInd = iIndex
   While iInd > 0
     If $aBrowse[iInd - 1].File <> hResult.File Then Break
     Dec iInd
   Wend
-  tvwFind[iInd, 0].RowSpan = $aBrowse.Max - iInd + 1
+  tvwFind[iInd, 0].RowSpan = iIndex - iInd + 1
   
-  iInd = $aBrowse.Max
+  iInd = iIndex
   While iInd > 0
     If $aBrowse[iInd - 1].File <> hResult.File Then Break
     If $aBrowse[iInd - 1].Line <> hResult.Line Then Break
     Dec iInd
   Wend
-  tvwFind[iInd, 1].RowSpan = $aBrowse.Max - iInd + 1
+  tvwFind[iInd, 1].RowSpan = iIndex - iInd + 1
   
 End
 
@@ -469,6 +484,43 @@ Private Sub EnableGUI(bOn As Boolean)
   
 End
 
+Private Sub FindPathInBrowseResult(sPath As String) As Integer
+  
+  Dim iInd As Integer
+  
+  For iInd = 0 To $aBrowse.Max
+    If $aBrowse[iInd].Path = sPath Then Return iInd
+  Next
+  
+  Return -1
+  
+End
+
+
+Private Sub BrowseFile(sPath As String, Optional iIndex As Integer = -1)
+  
+  Dim hFile As Object
+  Dim aResult As CFindResult[]
+  Dim iInd As Integer
+  Dim hResult As CFindResult
+  
+  Try hFile = Project.LoadFile(sPath)
+  If Not hFile Then Return
+  
+  aResult = GrepFile(hFile)
+  
+  For iInd = 0 To aResult.Max
+    hResult = aResult[iInd]
+    If Not hFile.SetPosition(hResult, True) Then 
+      hResult.Path = sPath
+      AddFound(hResult, iIndex)
+      If iIndex >= 0 Then Inc iIndex
+    Endif
+  Next
+  
+End
+
+
 
 Private Sub Browse()
   
@@ -476,17 +528,14 @@ Private Sub Browse()
   Dim sPath As String
   Dim iPos As Integer
   Dim iLen As Integer
-  Dim aResult As CFindResult[]
-  Dim hFile As Object
-  Dim iInd As Integer
   Dim aFind As String[]
-  Dim hResult As CFindResult
   Dim sName As String
   Dim sExt As String
   
   If InitSearch() Then Return
   
   CurrentProcedure = False
+  $iBrowseAge = Project.TimeStamp
   
   tabSearch.Index = 1
 
@@ -494,7 +543,6 @@ Private Sub Browse()
   lblNotFound.Hide
   lblBrowse.Text = ""
   lblBrowse.Show
-  lblBrowse.Raise
   
   Inc Application.Busy
   FMain.Enabled = False
@@ -531,27 +579,17 @@ Private Sub Browse()
     If sName Begins "callgrind.out." Then Continue
     If sName Begins "cachegrind.out." Then Continue
     
-    'Debug sName
-    Try hFile = Project.LoadFile(sPath)
-    If Not hFile Then Continue
-    
     If sFile Begins ".src/" Then
       lblBrowse.Text = sName
     Else
       lblBrowse.Text = sFile
     Endif
-    
-    aResult = GrepFile(hFile)
+  
+    BrowseFile(sPath)
+    Wait 0.01
     If $bCancel Then Break
     
-    For iInd = 0 To aResult.Max
-      hResult = aResult[iInd]
-      If Not hFile.SetPosition(hResult, True) Then 
-        hResult.Path = sPath
-        AddFound(hResult)
-      Endif
-    Next
-  
+    'Debug sName
   Next
   
 Finally
@@ -756,13 +794,6 @@ Public Sub tvwFind_Data(Row As Integer, Column As Integer)
 
 End
 
-Public Sub panBrowse_Arrange()
-
-  lblBrowse.Move((panBrowse.W - lblBrowse.W) \ 2, (panBrowse.H - lblBrowse.H) \ 2)
-
-End
-
-
 Public Sub tvwFind_Select()
 
   Dim hFind As CFindResult
@@ -791,15 +822,48 @@ End
 
 Private Sub ClearCache()
   
-  $aGrepCache = Null
-  $sGrepCacheKey = ""
-  $iGrepCacheAge = -1
-  $sGrepCacheCommand = ""
+  $cGrepCache.Clear
+  $cRefreshBrowse.Clear
   
 End
 
 Public Sub OnProjectChange()
   
   ClearCache
+  
+End
+
+Public Sub OnFileChange(sPath As String)
+  
+  If Not $cGrepCache.Exist(sPath) Then Return
+  
+  $cRefreshBrowse[sPath] = True
+  
+End
+
+Private Sub RefreshBrowse()
+  
+  Dim sPath As String
+  Dim iIndex As Integer
+  
+  If $cRefreshBrowse.Count = 0 Then Return
+  
+  For Each $cRefreshBrowse
+    sPath = $cRefreshBrowse.Key
+    
+    $cGrepCache[sPath] = Null
+    
+    iIndex = FindPathInBrowseResult(sPath)
+    If iIndex >= 0 Then
+      While $aBrowse[iIndex].Path = sPath
+        $aBrowse.Remove(iIndex)
+        If $aBrowse.Count = 0 Then Break
+      Wend
+    Endif
+    BrowseFile(sPath, iIndex)
+    
+  Next
+  
+  $cRefreshBrowse.Clear
   
 End

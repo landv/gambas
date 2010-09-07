@@ -145,18 +145,6 @@
           Scrollbar = Scroll.Vertical
           AutoResize = False
         }
-        { lblBrowse Label
-          MoveScaled(29,2,21,6)
-          Visible = False
-          Font = Font["Bold,+4"]
-          Background = Color.TextBackground
-          Foreground = Color.TextForeground
-          Ignore = True
-          Padding = 8
-          AutoResize = True
-          Alignment = Align.Center
-          Border = Border.Plain
-        }
         { lblNotFound TextLabel
           MoveScaled(1,1,26,12)
           Visible = False
@@ -169,6 +157,14 @@
       { panSearch HBox
         MoveScaled(1,26,79,4)
         Spacing = True
+        { lblBrowse Label
+          MoveScaled(0,0,19,4)
+          Visible = False
+          Expand = True
+          Padding = 4
+          AutoResize = True
+          Border = Border.Plain
+        }
         { btnBrowseReplace Button
           MoveScaled(21,0,21,4)
           Visible = False
@@ -176,7 +172,7 @@
           Picture = Picture["icon:/small/wizard"]
         }
         { Panel2 Panel
-          MoveScaled(46,0,1,3)
+          MoveScaled(47,0,3,4)
           Expand = True
         }
         { btnClose2 Button btnClose

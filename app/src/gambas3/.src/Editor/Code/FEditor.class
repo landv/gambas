@@ -358,6 +358,7 @@ Public Sub Modify(Optional bReset As Boolean)
     $cProc = New Collection
     $aProc = New String[]
     FDebugInfo.RefreshBreakpoint(Me.Name)
+    FSearch.OnFileChange(Me.Path)
     
   Endif
   
