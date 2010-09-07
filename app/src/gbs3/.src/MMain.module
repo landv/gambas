@@ -15,9 +15,10 @@ Private $aSortKey As New Integer[]
 Private $aAppArgs As New String[]
 Private $bNoCache As Boolean
 Private $bVerbose As Boolean
+Private $aImplemented As New String[]
 
 Public Sub Main()
-
+  
   Dim s As Integer
   Dim sCacheDir As String = File.Dir(File.Dir(Temp$())) &/ "script-cache"
   Dim sRes As String
@@ -44,15 +45,15 @@ Public Sub Main()
   Endif 
   
   $sMainScriptPath = File.Dir($sPath)
-
+  
   'Extract the sum md5
   Exec ["md5sum", $sPath] To $sMd5
   $sMd5 = Scan($sMd5, "* *")[0]
-    
+  
   If $bNoCache Then 
-  
+    
     bCompile = True
-  
+    
   Else  
     
     'Verify if the project was compiled
@@ -66,9 +67,9 @@ Public Sub Main()
   Endif
   
   If bCompile Then 
-  
+    
     'If we are run as 'gbw2', then we have a server page to compile!
-  
+    
     If File.Name(Application.Args[0]) = "gbw2" Then 
       If $bVerbose Then Print "gbs: compiling server page"
       $sPath = MServerPage.Make($sPath)
@@ -78,7 +79,7 @@ Public Sub Main()
         Print String$(20, "-")
       Endif 
     Endif
-  
+    
     'If not we Make and Compile it
     MakeVirtualProject
     
@@ -101,7 +102,6 @@ Public Sub Main()
     
   Endif
   
-  
   'Execute it
   $aAppArgs.Add(sCacheDir &/ $sMd5, 0)
   Exec $aAppArgs
@@ -113,9 +113,10 @@ Private Function ParseArgs() As String
   Dim s As String
   Dim i As Integer
   Dim sApp As String
+
   For i = 1 To Application.Args.Count - 1
     s = Application.Args[i]
-
+    
     If Left(s) = "-" Then 
       If s = "--version" Or If s = "-V" Then 
         Print Application.Version
@@ -141,9 +142,8 @@ Private Function ParseArgs() As String
   Next
   
   Return sApp
+
 End
-
-
 
 Private Sub MakeVirtualProject()
   
@@ -151,8 +151,9 @@ Private Sub MakeVirtualProject()
   Dim s As String
   Dim sPrjFileContent As String
   Dim i As Integer
-  $sPrjPath = Temp("project") 
 
+  $sPrjPath = Temp("project") 
+  
   If $bVerbose Then Print "gbs: create project"
   
   'Make the Virtual directory
@@ -186,15 +187,16 @@ Private Sub MakeVirtualProject()
   
   'Now make the component list with the info collected
   For Each i In $aSortKey
-     sPrjFileContent &= "Component=" & $cComponents[i] & "\n"
-     'PRINT $cComponents[i]
+    sPrjFileContent &= "Component=" & $cComponents[i] & "\n"
+    'PRINT $cComponents[i]
   Next
   
   'Save the .Project File
   File.Save($sPrjPath &/ ".project", sPrjFileContent)
-  
+  Print sPrjFileContent
   Close $hOutFile
   'PRINT file.Load($sPrjPath &/ "MMain.module")
+
 End
 
 Private Sub CompileError(sPath As String, iLine As Integer, sMessage As String)
@@ -204,7 +206,6 @@ Private Sub CompileError(sPath As String, iLine As Integer, sMessage As String)
   Quit
   
 End
-
 
 Private Sub GenerateFiles(Path As String)
   
@@ -223,9 +224,9 @@ Private Sub GenerateFiles(Path As String)
   If Not Exist(Path) Then Return 
   'Check if this file is already included: if true not include it
   If $aIncFiles.Exist(Path) Then Return 
-      
+  
   If $bVerbose Then Print "gbs: process file: "; Path
-
+  
   'Increment Recursion level index
   Inc $iLevel
   
@@ -264,7 +265,7 @@ Private Sub GenerateFiles(Path As String)
     
     'Open a new Class
     If aSym.Count = 2 And If aSym[0] = "CLASS" And If Highlight.Types[1] = Highlight.Symbol Then 
-       'IF NOT IsNull(sCodeBuf) THEN ERROR.Raise("You can't declare a CLASS in a SUB or FUNCTION")
+      'IF NOT IsNull(sCodeBuf) THEN ERROR.Raise("You can't declare a CLASS in a SUB or FUNCTION")
       sClass = aSym[1] 'Trim(Scan(sLine, "CLASS *")[0])
       If IsNull(sClass) Then 
         CompileError(Path, iLine, "Class name missing")
@@ -287,6 +288,7 @@ Private Sub GenerateFiles(Path As String)
         If Not CComponent.All.Exist(s) Then CompileError(Path, iLine, Subst("Unknown component: &1", s))
         $cComponents[CComponent.All[s].SortKey] = s
         $aSortKey.Add(CComponent.All[s].SortKey)
+        $aImplemented.Insert(CComponent.All[s].Implement)
         If iInd < aSym.Max Then
           s = aSym[iInd + 1]
           If s <> "," Then CompileError(Path, iLine, "Comma missing")
@@ -296,7 +298,7 @@ Private Sub GenerateFiles(Path As String)
     Endif
     
     'Control if the user have not done a Main Sub itself
-    If aSym.Count = 4 And If (aSym[0] = "SUB" Or aSym[0] = "PROCEDURE") And If aSym[1] = "Main" And If aSym[2] = "(" And If aSym[3] = ")" Then 
+    If aSym.Count = 5 And If aSym[0] = "PUBLIC" And If (aSym[1] = "SUB" Or aSym[0] = "PROCEDURE") And If aSym[2] = "Main" And If aSym[3] = "(" And If aSym[4] = ")" Then 
       If $bVerbose Then Print "gbs: Main procedure already defined"
       bAutoMain = False
     Endif
@@ -313,7 +315,6 @@ Private Sub GenerateFiles(Path As String)
       Endif
     Endif
     
-      
   Wend
   
   If bInClass Then CompileError(Path, iLine, "END CLASS missing")
@@ -334,8 +335,6 @@ Private Sub GenerateFiles(Path As String)
   
 End
 
-
-
 Public Function IsValid(sPath As String) As Boolean
   
   Dim aFileInfo As String[]
@@ -350,12 +349,11 @@ Public Function IsValid(sPath As String) As Boolean
   Next
   
   Return True
-
- Catch
-   Return False
+  
+Catch
+  Return False
   
 End
-
 
 Public Sub GetRequiredComp(sComp As String)
   
@@ -368,21 +366,24 @@ Public Sub GetRequiredComp(sComp As String)
     If Not $cComponents.Exist(s) Then      
       $cComponents.Add(s, CComponent.All[s].Sortkey)
       $aSortKey.add(CComponent.All[s].SortKey)
+      $aImplemented.Insert(CComponent.All[s].Implement)
       GetRequiredComp(s)   
     Endif
-  
+    
   Next
   
 End
 
-
 Private Sub GetNeededComp(sComp As String)
-  Dim s, t As String
+
+  Dim s, t, u As String
   Dim bExist As Boolean
   
   If Not CComponent.All.Exist(sComp) Then Return
-
+  
   For Each s In CComponent.All[sComp].Need
+    If $aImplemented.Exist(s) Then Break
+    
     For Each t In CComponent.WhoImplement[s]
       If $cComponents.Exist(t) Then 
         bExist = True
@@ -390,11 +391,12 @@ Private Sub GetNeededComp(sComp As String)
       Endif
       
     Next 
-  
+    
     If Not bExist Then  
       t = CComponent.WhoImplement[s][0]
       $cComponents.Add(t, CComponent.All[t].SortKey)
       $aSortKey.add(CComponent.All[t].SortKey)
+      $aImplemented.Insert(CComponent.All[t].Implement)
     Endif
     
     GetNeededComp(t)
@@ -402,7 +404,3 @@ Private Sub GetNeededComp(sComp As String)
   Next
   
 End
-
-
-
-
