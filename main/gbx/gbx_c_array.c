@@ -1651,7 +1651,7 @@ GB_DESC NATIVE_ObjectArray[] =
 
 	GB_METHOD("_new", NULL, CARRAY_new, "[(Size)i.]"),
 
-	GB_METHOD("Add", NULL, CARRAY_object_add, "(Value)o[(Index)i.]"),
+	GB_METHOD("Add", NULL, CARRAY_object_add, "(Value)o[(Index)i]"),
 	GB_METHOD("Push", NULL, CARRAY_object_push, "(Value)o"),
 	GB_METHOD("_put", NULL, CARRAY_object_put, "(Value)o(Index)i."),
 	GB_METHOD("Find", "i", CARRAY_object_find, "(Value)o[(Start)i]"),
@@ -1704,7 +1704,7 @@ GB_DESC NATIVE_TemplateArray[ARRAY_TEMPLATE_NDESC] =
 
 	GB_METHOD("_new", NULL, CARRAY_new, "[(Size)i.]"),
 
-	GB_METHOD("Add", NULL, CARRAY_object_add, "(Value)*;[(Index)i.]"),
+	GB_METHOD("Add", NULL, CARRAY_object_add, "(Value)*;[(Index)i]"),
 	GB_METHOD("Push", NULL, CARRAY_object_push, "(Value)*;"),
 	GB_METHOD("_put", NULL, CARRAY_object_put, "(Value)*;(Index)i."),
 	GB_METHOD("Find", "i", CARRAY_object_find, "(Value)*;[(Start)i]"),
