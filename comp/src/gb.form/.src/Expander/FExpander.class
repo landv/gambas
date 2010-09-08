@@ -167,7 +167,7 @@ End
 
 Private Sub UpdateTitle()
   
-  panTitle.H = Max(Desktop.Scale * 2, ((lblTitle.Font.Height + Desktop.Scale - 1) \ Desktop.Scale) * Desktop.Scale)
+  panTitle.H = Desktop.Scale + Max(Desktop.Scale * 2, ((lblTitle.Font.Height + Desktop.Scale - 1) \ Desktop.Scale) * Desktop.Scale)
   btnExpand.W = Desktop.Scale * 2
   
 End

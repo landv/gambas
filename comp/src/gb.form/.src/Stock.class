@@ -63,17 +63,23 @@ Static Private Sub LoadMap(sMap As String)
   
 End
 
-Static Private Sub AddPath(sMap As String, sPath As String)
+Static Private Sub AddPath(sMap As String, sPath As String, Optional sPattern As String)
   
   Dim aDir As String[]
   
-  If Not Exist(sPath) Then Return 
-  aDir = Dir(sPath, "[1-9]*", gb.Directory) 
-  If aDir.Count > 0 And If aDir[0] Like "*[1-9]x[1-9]*" Then
-    sPath &/= "&2x&2!&1"
-  Else
-    sPath &/= "&1!&2"
+  If Not Exist(sPath) Then Return
+  
+  If Not sPattern Then
+    aDir = Dir(sPath, "[1-9]*", gb.Directory) 
+    If aDir.Count > 0 And If aDir[0] Like "*[1-9]x[1-9]*" Then
+      sPattern = "&2x&2!&1" 
+    Else
+      sPattern = "&1!&2"
+    Endif
   Endif
+  
+  sPath &/= sPattern
+  
   If sMap Then sPath = sMap & ":" & sPath
   If Not $aIconPath.Exist(sPath) Then 
     $aIconPath.Add(sPath)
@@ -219,7 +225,7 @@ Static Private Sub InitTheme()
       
   End Select 
   
-  AddPath("", "stock")
+  AddPath("", "stock", "&2")
   $aIconPath.Add("#")
   
   $bInit = True
@@ -307,7 +313,6 @@ Static Public Function _get(Key As String) As Picture
         sTemplate = "&1" &/ sFile
       Else If Left(sPath) = "/" Then   
         sTemplate = Subst(sPath &/ sDirPattern &/ File.Name(sFile), File.Dir(sFile), "&1")
-        
       Else 
         sTemplate = sPath &/ "&1" &/ sFile
       Endif 
