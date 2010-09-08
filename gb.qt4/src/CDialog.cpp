@@ -237,7 +237,7 @@ BEGIN_METHOD_VOID(CDIALOG_get_color)
 
   QColor color;
 
-  color = QColorDialog::getColor(dialog_color); //, qApp->activeWindow());
+  color = QColorDialog::getColor(dialog_color, qApp->activeWindow(), dialog_title); //, qApp->activeWindow());
 
   if (!color.isValid())
     GB.ReturnBoolean(true);
@@ -272,7 +272,7 @@ BEGIN_METHOD_VOID(CDIALOG_select_font)
   QPaintDevice::x11SetAppDpiY(CFONT_dpi);
   #endif
   
-  qfont = QFontDialog::getFont(&ok, qfont, qApp->activeWindow());
+  qfont = QFontDialog::getFont(&ok, qfont, qApp->activeWindow(), dialog_title);
 
   #ifdef USE_DPI
   QPaintDevice::x11SetAppDpiX(dpiX);
