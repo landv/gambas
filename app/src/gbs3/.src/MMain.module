@@ -4,7 +4,7 @@ Private $sMd5 As String
 Private $sPrjPath As String
 Private $hOutFile As File
 Private $sPath As String
-'PRIVATE $aComponents AS NEW String[]
+
 Private $iClassCount As Integer
 Private $hOutClass As File
 Private $sMainScriptPath As String
@@ -17,6 +17,7 @@ Private $bNoCache As Boolean
 Private $bVerbose As Boolean
 Private $aImplemented As New String[]
 Private $bExecuteFromArgs As Boolean
+
 Public Sub Main()
   
   Dim s As Integer
@@ -29,10 +30,17 @@ Public Sub Main()
   $sPath = ParseArgs()
   
   If IsNull($sPath) Then 
-    Error "gbs: No script file specified"
-    Error "Type 'gbs"; System.Version; " --help' for more information."
-    Application.Return = 1
-    Return 
+    
+    $sPath = Read Lof(File.In)
+    If Not $sPath Then 
+      Error "gbs: No script file specified"
+      Error "Type 'gbs"; System.Version; " --help' for more information."
+      Application.Return = 1
+      Return 
+    Else
+      $bExecuteFromArgs = True
+    Endif
+    
   Endif
   
   If Not $bExecuteFromArgs Then
@@ -48,7 +56,6 @@ Public Sub Main()
   
   $sMainScriptPath = File.Dir($sPath)
   
-  'Extract the sum md5
   If $bExecuteFromArgs Then 
     Shell ("echo " & $sPath & "|md5sum") To $sMd5
   Else
@@ -62,19 +69,16 @@ Public Sub Main()
     
   Else  
     
-    'Verify if the project was compiled
     If Not Exist(sCacheDir &/ $sMd5) Then 
       bCompile = True
     Else
-      'Verify the cache file
+      
       bCompile = Not IsValid(sCacheDir &/ $sMd5 & ".info") 
     Endif
     
   Endif
   
   If bCompile Then 
-    
-    'If we are run as 'gbw2', then we have a server page to compile!
     
     If File.Name(Application.Args[0]) = "gbw2" Then 
       If $bVerbose Then Print "gbs: compiling server page"
@@ -86,11 +90,8 @@ Public Sub Main()
       Endif 
     Endif
     
-    'If not we Make and Compile it
     MakeVirtualProject
     
-    'compile
-    'EXEC [System.Path &/ "bin/gbc" & System.Version, "-a", $sPrjPath] TO sRes 
     Shell (System.Path &/ "bin/gbc" & System.Version & " -ag " & $sPrjPath & " 2>&1") To sRes
     
     If sRes <> "OK\n" Then 
@@ -101,14 +102,12 @@ Public Sub Main()
       Return 
     Endif
     
-    'Make package
     Exec [System.Path &/ "bin/gba" & system.Version, "-o", sCacheDir &/ $sMd5, $sPrjPath] To sRes 
-    'Save the FileInfo Cache
+    
     File.Save(sCacheDir &/ $sMd5 & ".info", $aIncFiles.Join("\n"))
     
   Endif
   
-  'Execute it
   $aAppArgs.Add(sCacheDir &/ $sMd5, 0)
   Exec $aAppArgs
   
@@ -119,7 +118,7 @@ Private Function ParseArgs() As String
   Dim s As String
   Dim i As Integer
   Dim sApp As String
-
+  
   For i = 1 To Application.Args.Count - 1
     s = Application.Args[i]
     
@@ -144,13 +143,13 @@ Private Function ParseArgs() As String
         Continue 
       Endif
       sApp = s
-      'RETURN a
+      
     Endif
     
   Next
   
   Return sApp
-
+  
 End
 
 Private Sub MakeVirtualProject()
@@ -159,23 +158,21 @@ Private Sub MakeVirtualProject()
   Dim s As String
   Dim sPrjFileContent As String
   Dim i As Integer
-
+  
   $sPrjPath = Temp("project") 
   
   If $bVerbose Then Print "gbs: create project"
   
-  'Make the Virtual directory
   Try Mkdir $sPrjPath
   Try Mkdir $sPrjPath &/ ".src"
-  'File the .project content var
+  
   sPrjFileContent = "# Gambas Project File 3.0\n"
   sPrjFileContent &= "Title=Gambas Script\n"
   sPrjFileContent &= "Startup=MMain\n"
   
-  'Open a Main module
   $hOutFile = Open $sPrjPath &/ ".src/MMain.module" For Write Create 
   Print #$hOutFile, "' Gambas module file\n"
-  'Fill it and create class as need
+  
   $iLevel = 0
   If $bExecuteFromArgs Then
     GenerateFilesFromArgs($sPath)
@@ -183,8 +180,6 @@ Private Sub MakeVirtualProject()
     GenerateFiles($sPath)
   Endif
   
-  
-  'Complete the components list
   For Each s In $cComponents
     GetNeededComp(s)
   Next
@@ -195,21 +190,17 @@ Private Sub MakeVirtualProject()
   
   CComponent.Exit
   
-  'Sort components
   $aSortKey.Sort
   
-  'Now make the component list with the info collected
   For Each i In $aSortKey
     sPrjFileContent &= "Component=" & $cComponents[i] & "\n"
-    'PRINT $cComponents[i]
+    
   Next
   
-  'Save the .Project File
   File.Save($sPrjPath &/ ".project", sPrjFileContent)
-  'Print sPrjFileContent
+  
   Close $hOutFile
-  'PRINT file.Load($sPrjPath &/ "MMain.module")
-
+  
 End
 
 Private Sub CompileError(sPath As String, iLine As Integer, sMessage As String)
@@ -235,15 +226,13 @@ Private Sub GenerateFiles(Path As String)
   Dim iLine As Integer
   
   If Not Exist(Path) Then Return 
-  'Check if this file is already included: if true not include it
+  
   If $aIncFiles.Exist(Path) Then Return 
   
   If $bVerbose Then Print "gbs: process file: "; Path
   
-  'Increment Recursion level index
   Inc $iLevel
   
-  'Add file info for file cache
   $aIncFiles.Add(Path)
   $aIncFiles.Add(Stat(Path).LastModified)
   
@@ -257,8 +246,6 @@ Private Sub GenerateFiles(Path As String)
     
     aSym = Highlight.Analyze(sLine)
     
-    'Look for file inclusion 
-    ' if true call this function recursively
     If aSym.Count = 2 And If aSym[0] = "INCLUDE" And If Highlight.Types[1] = Highlight.String Then 
       sPath = Mid$(aSym[1], 2, -1) 'Trim(Scan(sLine, "INCLUDE *")[0])
       If Not Exist(sPath) Then sPath = $sMainScriptPath &/ sPath
@@ -268,17 +255,15 @@ Private Sub GenerateFiles(Path As String)
       Continue 
     Endif
     
-    'Close The Class
     If aSym.Count = 2 And If aSym[0] = "END" And If aSym[1] = "CLASS" And If bInClass Then 
       Close #$hOutClass
-      'PRINT File.Load($sPrjPath &/ sClass & ".class")
+      
       bInClass = False
       Continue 
     Endif
     
-    'Open a new Class
     If aSym.Count = 2 And If aSym[0] = "CLASS" And If Highlight.Types[1] = Highlight.Symbol Then 
-      'IF NOT IsNull(sCodeBuf) THEN ERROR.Raise("You can't declare a CLASS in a SUB or FUNCTION")
+      
       sClass = aSym[1] 'Trim(Scan(sLine, "CLASS *")[0])
       If IsNull(sClass) Then 
         CompileError(Path, iLine, "Class name missing")
@@ -290,14 +275,13 @@ Private Sub GenerateFiles(Path As String)
       Continue       
     Endif
     
-    'Add a new component
     If aSym.Count >= 2 And If aSym[0] = "USE" Then 
-      'aSym.Remove(0) 's = aSym[1] 'Trim(Scan(sLine, "USE *")[0])
+      
       For iInd = 1 To aSym.Max Step 2
         If Highlight.Types[iInd] <> Highlight.String Then CompileError(Path, iLine, "Syntax error")
         s = Mid$(aSym[iInd], 2, -1)
         If $bVerbose Then Print "gbs: use component: "; s
-        '$aComponents.Add(Trim(s))
+        
         If Not CComponent.All.Exist(s) Then CompileError(Path, iLine, Subst("Unknown component: &1", s))
         $cComponents[CComponent.All[s].SortKey] = s
         $aSortKey.Add(CComponent.All[s].SortKey)
@@ -310,18 +294,16 @@ Private Sub GenerateFiles(Path As String)
       Continue 
     Endif
     
-    'Control if the user have not done a Main Sub itself
     If aSym.Count = 5 And If aSym[0] = "PUBLIC" And If (aSym[1] = "SUB" Or aSym[0] = "PROCEDURE") And If aSym[2] = "Main" And If aSym[3] = "(" And If aSym[4] = ")" Then 
       If $bVerbose Then Print "gbs: Main procedure already defined"
       bAutoMain = False
     Endif
     
-    'if in class write directly in file ... else use buffer
     If bInClass Then 
       Print #$hOutClass, sLine
     Else 
       sCodeBuf &= sLine & "\n"
-      'if END detected then write to module file
+      
       If aSym.Count = 1 And If aSym[0] = "END" Then 
         Print #$hOutFile, sCodeBuf
         sCodeBuf = Null
@@ -332,9 +314,6 @@ Private Sub GenerateFiles(Path As String)
   
   If bInClass Then CompileError(Path, iLine, "END CLASS missing")
   
-  'If not exist a Main sub and buffer not empty then generate a Main sub
-  'With the Buffer content.. if we are not in an include file
-  'In this case the free code is forgotten
   If bAutoMain And Not IsNull(sCodeBuf) And $iLevel = 1 Then 
     If $bVerbose Then Print "gbs: Main procedure not defined, create it"
     Print #$hOutFile, "PUBLIC SUB Main()"
@@ -388,7 +367,7 @@ Public Sub GetRequiredComp(sComp As String)
 End
 
 Private Sub GetNeededComp(sComp As String)
-
+  
   Dim s, t, u As String
   Dim bExist As Boolean
   
@@ -418,10 +397,9 @@ Private Sub GetNeededComp(sComp As String)
   
 End
 
-
 Private Sub GenerateFilesFromArgs(sLine As String)
   
-   Dim bCrochetOuvert As Boolean
+  Dim bCrochetOuvert As Boolean
   
   Dim s As String
   Dim i As Integer
@@ -433,19 +411,13 @@ Private Sub GenerateFilesFromArgs(sLine As String)
     If s = "]" Then bCrochetOuvert = False
     
     If s = ":" And Not bCrochetOuvert Then s = "\n" 
-
+    
     sCode &= s
-
     
-    
-
-  
-  
   Next
   scode = "PUBLIC SUB Main()\n" & sCode 
   sCode &= "\nEND\n"
-  'Print scode
-  Print #$hOutFile, sCode
   
+  Print #$hOutFile, sCode
   
 End
