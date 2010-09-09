@@ -1535,3 +1535,24 @@ void gt_layout_alignment(PangoLayout *layout, float w, float h, float *tw, float
 			break;
 	}
 }
+
+#if GTK_MAJOR_VERSION >= 2 && GTK_MINOR_VERSION >= 18
+#else
+void
+gtk_widget_set_can_focus (GtkWidget *widget,
+                          gboolean   can_focus)
+{
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
+  if (can_focus != GTK_WIDGET_CAN_FOCUS (widget))
+    {
+      if (can_focus)
+        GTK_WIDGET_SET_FLAGS (widget, GTK_CAN_FOCUS);
+      else
+        GTK_WIDGET_UNSET_FLAGS (widget, GTK_CAN_FOCUS);
+
+      gtk_widget_queue_resize (widget);
+      g_object_notify (G_OBJECT (widget), "can-focus");
+    }
+}
+#endif

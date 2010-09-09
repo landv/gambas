@@ -19,6 +19,7 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
+
 #ifndef __GTOOLS_H
 #define __GTOOLS_H
 
@@ -135,5 +136,10 @@ gPicture *gt_grab_window(GdkWindow *win, int x = 0, int y = 0, int w = 0, int h 
 
 void gt_layout_alignment(PangoLayout *layout, float w, float h, float *tw, float *th, int align, float *offX, float *offY);
 
+#if GTK_MAJOR_VERSION >= 2 && GTK_MINOR_VERSION >= 18
+#else
+void
+gtk_widget_set_can_focus(GtkWidget *widget, gboolean can_focus);
 #endif
 
+#endif

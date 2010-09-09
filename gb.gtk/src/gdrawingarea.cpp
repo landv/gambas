@@ -109,7 +109,7 @@ void gDrawingArea::resize(int w, int h)
 
 bool gDrawingArea::canFocus() const
 {
-	return gtk_widget_get_can_focus(widget);
+	return GTK_WIDGET_CAN_FOCUS(widget);
 }
 
 void gDrawingArea::setCanFocus(bool vl)
