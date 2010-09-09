@@ -16,7 +16,7 @@ Private $aAppArgs As New String[]
 Private $bNoCache As Boolean
 Private $bVerbose As Boolean
 Private $aImplemented As New String[]
-
+Private $bExecuteFromArgs As Boolean
 Public Sub Main()
   
   Dim s As Integer
@@ -35,22 +35,28 @@ Public Sub Main()
     Return 
   Endif
   
-  If Not Exist($sPath) Then 
-    $sPath = Application.Dir &/ $sPath
+  If Not $bExecuteFromArgs Then
     If Not Exist($sPath) Then 
-      Error "gbs: Script file does not exist: " & Application.Args[1]
-      Application.Return = 1
-      Return 
+      $sPath = Application.Dir &/ $sPath
+      If Not Exist($sPath) And Not $bExecuteFromArgs Then 
+        Error "gbs: Script file does not exist: " & Application.Args[1]
+        Application.Return = 1
+        Return 
+      Endif
     Endif
   Endif 
   
   $sMainScriptPath = File.Dir($sPath)
   
   'Extract the sum md5
-  Exec ["md5sum", $sPath] To $sMd5
+  If $bExecuteFromArgs Then 
+    Shell ("echo " & $sPath & "|md5sum") To $sMd5
+  Else
+    Exec ["md5sum", $sPath] To $sMd5
+  Endif
   $sMd5 = Scan($sMd5, "* *")[0]
   
-  If $bNoCache Then 
+  If $bNoCache Or $bExecuteFromArgs Then 
     
     bCompile = True
     
@@ -129,6 +135,8 @@ Private Function ParseArgs() As String
         $bNoCache = True
       Else If s = "--verbose" Or If s = "-v" Then
         $bVerbose = True
+      Else If s = "-e" Then
+        $bExecuteFromArgs = True
       Endif
     Else 
       If Not IsNull(sApp) Then 
@@ -169,7 +177,12 @@ Private Sub MakeVirtualProject()
   Print #$hOutFile, "' Gambas module file\n"
   'Fill it and create class as need
   $iLevel = 0
-  GenerateFiles($sPath)
+  If $bExecuteFromArgs Then
+    GenerateFilesFromArgs($sPath)
+  Else
+    GenerateFiles($sPath)
+  Endif
+  
   
   'Complete the components list
   For Each s In $cComponents
@@ -402,5 +415,37 @@ Private Sub GetNeededComp(sComp As String)
     GetNeededComp(t)
     
   Next
+  
+End
+
+
+Private Sub GenerateFilesFromArgs(sLine As String)
+  
+   Dim bCrochetOuvert As Boolean
+  
+  Dim s As String
+  Dim i As Integer
+  Dim sCode As String
+  
+  For i = 1 To Len(sLine) 
+    s = Mid(sLine, i, 1)
+    If s = "[" Then bCrochetOuvert = True
+    If s = "]" Then bCrochetOuvert = False
+    
+    If s = ":" And Not bCrochetOuvert Then s = "\n" 
+
+    sCode &= s
+
+    
+    
+
+  
+  
+  Next
+  scode = "PUBLIC SUB Main()\n" & sCode 
+  sCode &= "\nEND\n"
+  'Print scode
+  Print #$hOutFile, sCode
+  
   
 End
