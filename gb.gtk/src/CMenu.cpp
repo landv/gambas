@@ -66,6 +66,7 @@ static void cb_finish(gMenu *sender)
 	{ 
 		//CACTION_register(THIS, NULL);
 		THIS->widget = NULL;
+    GB.StoreVariant(NULL, POINTER(&THIS->tag));
 		GB.Unref(POINTER(&_object));
 	}
 }
