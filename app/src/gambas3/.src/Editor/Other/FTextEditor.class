@@ -61,6 +61,7 @@ End
 Public Sub LoadFile() As Boolean
   
   Dim sExt As String = LCase(File.Ext(Path))
+  Dim bShowCompress As Boolean
   
   If $aExt.Find(sExt) >= 0 Then
     With edtEditor
@@ -72,14 +73,18 @@ Public Sub LoadFile() As Boolean
     Select Case sExt
       Case "css"
         edtEditor.Highlight = Highlight.CSS
+        bShowCompress = Not Project.IsHiddenPath(Path)
       Case "webpage"
         edtEditor.Highlight = Highlight.WebPage
       Case "js"
         edtEditor.Highlight = Highlight.JavaScript
+        bShowCompress = Not Project.IsHiddenPath(Path)
       Case Else 
         edtEditor.Highlight = Highlight.HTML
     End Select 
   Endif
+
+  Action[".compress,.uncompress", Me].Visible = bShowCompress
 
   $hInsertColor = New CInsertColor(btnInsertColor, Editor)
 
@@ -613,4 +618,74 @@ Public Sub mnuInsertColor_Click()
 
   $hInsertColor.Insert
 
+End
+
+Private Sub SetText(sText As String)
+  
+  Editor.Begin
+  Editor.SelectAll
+  Editor.Insert(sText)
+  Editor.End
+  
+End
+
+Private Sub GetUncompressPath() As String
+  
+  Return Project.Dir &/ ".hidden/Uncompressed" &/ Mid$(Path, Len(Project.Dir) + 1)
+  
+End
+
+
+Public Sub mnuCompress_Click()
+  
+  Dim sText As String
+  Dim iLen As Integer
+  Dim fGain As Float
+  Dim sPath As String
+  
+  If Project.IsHiddenPath(Path) Then Return
+  
+  Inc Application.Busy
+  Me.Save
+  sText = Editor.Text
+  iLen = Len(sText)
+  Select Case Editor.Highlight 
+    Case Highlight.JavaScript
+      sText = MCompressFile.Javascript(sText)
+    Case Highlight.CSS
+      sText = MCompressFile.Css(sText)
+  End Select
+  
+  fGain = Len(sText) / iLen
+  Dec Application.Busy
+  
+  If fGain < 0.95 Then
+    sPath = GetUncompressPath()
+    If Not Exist(File.Dir(sPath)) Then Project.InsertDirectory(File.Dir(sPath))
+    If Not Exist(sPath) Then 
+      Project.InsertFile(File.Name(sPath), File.Dir(sPath), Path, True)
+    Else
+      File.Save(sPath, Editor.Text)
+    Endif
+    SetText(sText)
+    Message.Info("<b>" & Subst(("The file has been compressed from &1 to &2 bytes (&3)."), Str(iLen), Str(Len(sText)), Format(fGain, "#.##%")) & "</b><p>" & ("Original file has been saved in the <b>Project</b> folder."))
+  Endif
+  
+Catch
+  
+  Dec Application.Busy
+  Message.Error("<b>" & ("Unable to compress file.") & "</b><p>" & Error.Text)
+  
+End
+
+Public Sub mnuUncompress_Click()
+  
+  Dim sPath As String
+  
+  If Project.IsHiddenPath(Path) Then Return
+  
+  sPath = GetUncompressPath()
+  If Not Exist(sPath) Then Return
+  SetText(File.Load(sPath))
+  
 End

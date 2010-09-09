@@ -252,14 +252,16 @@ Private Sub GrepFile(hFile As Object) As CFindResult[]
   aGrep.Add(SearchString)
   aGrep.Add(sTemp)
   
-  sPath = hFile.Path
-  hGrepResult = $cGrepCache[sPath]
-  
-  If hGrepResult Then
-    Try iAge = hFile.Age
-    If iAge = hGrepResult.Age Then
-      If aGrep.Join("\n") = hGrepResult.Command Then
-        Return hGrepResult.Result
+  Try sPath = hFile.Path
+  If sPath Then
+    hGrepResult = $cGrepCache[sPath]
+    
+    If hGrepResult Then
+      Try iAge = hFile.Age
+      If iAge = hGrepResult.Age Then
+        If aGrep.Join("\n") = hGrepResult.Command Then
+          Return hGrepResult.Result
+        Endif
       Endif
     Endif
   Endif
@@ -293,7 +295,7 @@ Private Sub GrepFile(hFile As Object) As CFindResult[]
   Next
   
   Try iAge = hFile.Age
-  If Not Error Then
+  If Not Error And If sPath Then
     hGrepResult = New CGrepResult
     With hGrepResult
       .Result = aResult.Copy()
@@ -865,5 +867,10 @@ Private Sub RefreshBrowse()
   Next
   
   $cRefreshBrowse.Clear
+  
+Catch
+  
+  Debug Error.Text
+  Error Error.Backtrace.Join("\n")
   
 End

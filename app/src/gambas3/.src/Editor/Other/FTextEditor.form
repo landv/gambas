@@ -97,6 +97,18 @@
     }
     { mnuSep5 Menu
     }
+    { mnuCompress Menu
+      Action = ".compress"
+      Text = ("Compress file")
+      Picture = Picture["icon:/small/archive"]
+    }
+    { mnuUncompress Menu
+      Action = ".uncompress"
+      Text = ("Uncompress file")
+      Picture = Picture["icon:/small/undo"]
+    }
+    { Menu1 Menu
+    }
     { mnuReload Menu
       Action = ".reload"
       Text = ("Reload")
@@ -257,6 +269,11 @@
     Shortcut = ""
     Picture = "icon:/small/color"
   }
+  { Action compress
+    Text = "Compress file"
+    Shortcut = ""
+    Picture = "icon:/small/archive"
+  }
   { Action copy
     Text = "Copy"
     Shortcut = "Ctrl+C"
@@ -312,6 +329,11 @@
   { Action show-class
     Text = "Code"
     Picture = "img/16/class.png"
+  }
+  { Action uncompress
+    Text = "Uncompress file"
+    Shortcut = ""
+    Picture = "icon:/small/undo"
   }
   { Action undo
     Text = "Undo"

@@ -1,0 +1,189 @@
+' Gambas module file
+
+Private Const IDENT_CAR As String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"
+Private Const IDENT_CAR_CSS As String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-.#"
+
+Public Sub Javascript(sText As String) As String
+  
+  Dim sRes As String
+  Dim iPos, iPos2 As Integer
+  Dim sCar As String
+  Dim sCar2 As String
+  Dim bComment As Boolean
+  Dim bOneLineComment As Boolean
+  Dim sString As String
+  Dim iLen As Integer
+  Dim iLastNewLine As Integer
+  
+  iLen = Len(sText)
+  sText = sText & "  "
+  
+  iPos = 1
+  For iPos = 1 To iLen
+    
+    sCar = Mid$(sText, iPos, 1)
+    sCar2 = Mid$(sText, iPos, 2)
+    
+    If bComment Then
+      If sCar2 = "*/" Then
+        bComment = False
+        Inc iPos
+      Endif
+      Continue
+    Else If bOneLineComment Then
+      If sCar = "\n" Then
+        bOneLineComment = False
+        Dec iPos
+      Endif
+      Continue
+    Else If sString Then
+      If sCar = "\\" Then
+        sCar = Right(sCar2)
+        If sCar = "x" Then
+          sRes &= Mid$(sText, iPos, 4)
+          iPos += 3
+          Continue
+        Else If sCar = "u" Then
+          sRes &= Mid$(sText, iPos, 6)
+          iPos += 5
+          Continue
+        Else
+          sRes &= sCar2
+          Inc iPos
+          Continue
+        Endif
+      Else If sCar = sString Then
+        sString = ""
+      Endif
+      sRes &= sCar
+      Continue
+    Endif
+    
+    If sCar2 = "/*" Then
+      bComment = True
+      Inc iPos
+      Continue
+    Else If sCar2 = "//" Then
+      bOneLineComment = True
+      Inc iPos
+      Continue
+    Endif
+    
+    If sCar = "\"" Or If sCar = "'" Then
+      sString = sCar
+    Else If sCar = "}" Then
+      If Right(sRes) = "\n" Then sRes = Left(sRes, -1)
+    Else If sCar = " " Or If sCar = "\n" Then
+      
+      If Len(sRes) = 0 Then Continue
+      If Right(sRes) = " " Or If Right$(sRes) = "\n" Then Continue
+      
+      If sCar = "\n" Then
+        'Print Right(sRes, 40)
+        'If InStr(Right(sRes, 40), "left") Then Stop
+        If InStr(";{+-*/=,[(:", Right(sRes)) = 0 Then
+          sRes &= sCar
+          Continue
+        Endif
+      Endif
+      sCar = " "
+      If InStr("=", Right(sCar2)) = 0 Then
+        If (Len(sRes) - iLastNewLine) > 255 Or If Mid$(sText, iPos + 1) Begins "function " Then 
+          sRes &= "\n"
+          iLastNewLine = Len(sRes)
+        Endif
+      Endif
+      If Right(sRes) = "}" And If IsLetter(Right(sCar2)) Then 
+        sCar = "\n"
+      Else
+        If InStr(IDENT_CAR, Right(sRes)) = 0 And If Right(sRes) <> "}" Then Continue
+        If InStr(IDENT_CAR, Right$(sCar2)) = 0 Then Continue
+      Endif
+    Endif
+    
+    sRes &= sCar
+    
+  Next
+  
+  Return sRes
+  
+End
+
+Public Sub Css(sText As String) As String
+  
+  Dim sRes As String
+  Dim iPos, iPos2 As Integer
+  Dim sCar As String
+  Dim sCar2 As String
+  Dim bComment As Boolean
+  Dim bOneLineComment As Boolean
+  Dim sString As String
+  Dim iLen As Integer
+  Dim iLastNewLine As Integer
+  
+  iLen = Len(sText)
+  sText = sText & "  "
+  
+  iPos = 1
+  For iPos = 1 To iLen
+    
+    sCar = Mid$(sText, iPos, 1)
+    sCar2 = Mid$(sText, iPos, 2)
+    
+    If bComment Then
+      If sCar2 = "*/" Then
+        bComment = False
+        Inc iPos
+      Endif
+      Continue
+    Else If bOneLineComment Then
+      If sCar = "\n" Then
+        bOneLineComment = False
+        Dec iPos
+      Endif
+      Continue
+    Else If sString Then
+      If sCar = "\\" Then
+        sRes &= sCar2
+        Inc iPos
+        Continue
+      Else If sCar = sString Then
+        sString = ""
+      Endif
+      sRes &= sCar
+      Continue
+    Endif
+    
+    If sCar2 = "/*" Then
+      bComment = True
+      Inc iPos
+      Continue
+    Else If sCar2 = "//" Then
+      bOneLineComment = True
+      Inc iPos
+      Continue
+    Endif
+    
+    If sCar = "\"" Or If sCar = "'" Then
+      sString = sCar
+    Else If sCar = "}" Then
+      sRes &= "}\n"
+      Continue
+    Else If sCar = " " Or If sCar = "\n" Then
+      
+      If Len(sRes) = 0 Then Continue
+      If Right(sRes) = " " Or If Right$(sRes) = "\n" Then Continue
+      
+      sCar = " "
+      
+      If InStr(IDENT_CAR_CSS, Right(sRes)) = 0 Then Continue
+      If InStr(IDENT_CAR_CSS, Right$(sCar2)) = 0 Then Continue
+    Endif
+    
+    sRes &= sCar
+    
+  Next
+  
+  Return sRes
+  
+End

@@ -2274,23 +2274,44 @@ Public Sub InsertFile(sName As String, sDir As String, Optional sTemplate As Str
   
 End
 
-Public Function InsertDirectory(sPath As String, Optional bNoVerCtrl As Boolean) As Boolean
+Public Sub MakeDir(sDir As String) As Boolean
   
-  If Exist(sPath) Then
+  Dim sPath As String
+  Dim sElt As String
+  
+  For Each sElt In Split(sDir, "/")
+    sPath &/= sElt
+    Try Mkdir "/" & sPath
+  Next
+  
+  If Not Exist(sDir) Or If Not IsDir(sDir) Then Return True
+  
+End
+
+Public Function InsertDirectory(sDir As String, Optional bNoVerCtrl As Boolean) As Boolean
+  
+  Dim sPath As String
+  Dim sElt As String
+
+  If Exist(sDir) Then
     FMain.ShowWarning(("Directory already exists."))
     Return True
   Endif
   
-  Try Mkdir sPath
-  
-  If Error Then 
-    Message.Error(Error.Text)
-    Return False
-  Endif
-  
-  If Not bNoVerCtrl Then VersionControl.AddDir(sPath)
-  
-  RefreshKey(sPath)
+  sPath = "/"
+  For Each sElt In Split(sDir, "/")
+    sPath &/= sElt
+    If Len(sPath) > Len(Project.Dir) And If Not Exist(sPath) Then
+      Try Mkdir sPath
+      If Error Then 
+        Message.Error(Error.Text)
+        Return False
+      Endif
+      If Not bNoVerCtrl Then VersionControl.AddDir(sPath)
+      RefreshKey(sPath)
+    Endif
+  Next
+
   Return True
   
 End
@@ -3061,20 +3082,6 @@ Public Sub MakeShortcut(Optional bForce As Boolean)
 Catch 
   
   FMain.ShowError(("Unable to create desktop shortcut.") & "\n\n" & Error.Text & "\n" & Error.Where)
-  
-End
-
-Public Sub MakeDir(sDir As String) As Boolean
-  
-  Dim sPath As String
-  Dim sElt As String
-  
-  For Each sElt In Split(sDir, "/")
-    sPath &/= sElt
-    Try Mkdir "/" & sPath
-  Next
-  
-  If Not Exist(sDir) Or If Not IsDir(sDir) Then Return True
   
 End
 
@@ -3963,6 +3970,13 @@ Public Sub IsConnectionPath(sPath As String) As Boolean
   Return sPath Begins Project.Dir &/ ".connection" &/ "/"
   
 End
+
+Public Sub IsHiddenPath(sPath As String) As Boolean
+  
+  Return sPath Begins Project.Dir &/ ".hidden" &/ "/"
+  
+End
+
 
 Public Function StripPath(sPath As String) As String
   

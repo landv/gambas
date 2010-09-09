@@ -70,6 +70,7 @@ Public Sub ReadConfig()
 
   edtOutput.Flags[Editor.ShowCurrentLine] = False 'Settings["/Editor/ShowCurrent", True]
   edtOutput.Flags[Editor.ShowModifiedLines] = False
+  edtOutput.Flags[Editor.ShowLineNumbers] = False 'Settings["/Editor/ShowLineNumbers", False]
 
 End
 
