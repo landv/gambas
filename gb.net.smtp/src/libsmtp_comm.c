@@ -815,7 +815,7 @@ int libsmtp_quit (struct libsmtp_session_struct *libsmtp_session)
 	GString *libsmtp_temp_gstring;
 
 	/* We need to be in body stage to leave it :) */
-	if ((libsmtp_session->Stage = LIBSMTP_FINISHED_STAGE) || \
+	if ((libsmtp_session->Stage == LIBSMTP_FINISHED_STAGE) || \
 			(libsmtp_session->Stage < LIBSMTP_DATA_STAGE))
 	{
 

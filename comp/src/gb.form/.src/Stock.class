@@ -330,7 +330,6 @@ Static Public Function _get(Key As String) As Picture
       
       If Exist(sPath &/ "scalable") Then
         sImagePath = sPath &/ "scalable"
-        
         Try hImage = ImageFromSvg(sImagePath &/ Left(sFile, -4) & ".svg", iSize)
       Endif
       
@@ -354,7 +353,6 @@ Static Public Function _get(Key As String) As Picture
           If sPath = "#" Then
             Try hImage = _DefaultStock.Load(Subst(sTemplate, iTry))
           Else
-            
             Try hImage = ImageFromSvg(Subst(Left(sTemplate, -4) & ".svg", iTry), iSize)
             If Error Then 
               Try hImage = Image.Load(Subst(sTemplate, iTry))

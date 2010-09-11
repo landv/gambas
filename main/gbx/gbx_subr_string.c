@@ -505,12 +505,20 @@ void SUBR_replace(ushort code)
 	SUBR_get_string_len(&PARAM[0], &ps, &ls);
 	SUBR_get_string_len(&PARAM[1], &pp, &lp);
 	SUBR_get_string_len(&PARAM[2], &pr, &lr);
-
 	if (NPARAM == 4)
 		nocase = SUBR_get_integer(&PARAM[3]) == GB_COMP_NOCASE;
 
+	if (lp == 0)
+	{
+		RELEASE(&PARAM[1]);
+		RELEASE(&PARAM[2]);
+		SP -= NPARAM;
+		SP++;
+		return;
+	}
+
 	STRING_start_len(ls);
-	
+		
 	if (ls > 0 && lp > 0)
 	{
 		is = 0;

@@ -717,7 +717,7 @@ int libsmtp_int_check_part (struct libsmtp_part_struct *libsmtp_int_part)
 
 const char *libsmtp_int_lookup_mime_type (struct libsmtp_part_struct *libsmtp_int_part)
 {
-  if ((libsmtp_int_part->Type >= 0) && (libsmtp_int_part->Type < LIBSMTP_MAX_MIME))
+  if ((libsmtp_int_part->Type >= 0) && (libsmtp_int_part->Type <= LIBSMTP_MAX_MIME))
   {
     if (libsmtp_int_part->Type == LIBSMTP_MIME_CUSTOM)
       return libsmtp_int_part->CustomType->str;

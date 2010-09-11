@@ -77,6 +77,7 @@ Public CreateEachDirectory As Boolean
 Public TabSize As Integer
 Public Version As String
 Public FullVersion As String
+Public FullVersionWithRevision As String
 Public ExecPath As String
 Public SourcePath As String
 Public Language As String
@@ -303,10 +304,11 @@ Private Sub InitVersion()
   aVer.Remove(aVer.Max)
   Version = aVer.Join(".")
   
-  sVer = VersionControl.GetVersion(Application.Path)
+  FullVersionWithRevision = FullVersion
+  sVer = VersionControl.GetVersion(File.Dir(File.Dir(File.Dir(Application.Path))))
   If sVer Then 
-    Version &= " (r" & sVer & ")"
-    FullVersion &= " (r" & sVer & ")"
+    'Version &= " (r" & sVer & ")"
+    FullVersionWithRevision &= " (r" & sVer & ")"
   Endif
   
 Catch 

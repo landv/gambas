@@ -449,6 +449,13 @@ Public Sub UpdateRecentMenu()
   Dim sTitle As String
   Dim sLastTitle As String
   Dim hMenuTitle As Menu
+  Dim cMenu As New Collection
+  Dim cParent As New Collection
+  Dim aMenu As New String[]
+  Dim sDir As String
+  Dim vVal As Variant
+  Dim iVal As Integer
+  Dim bIgnored As Boolean
   
   Inc Application.Busy
   
@@ -478,27 +485,84 @@ Public Sub UpdateRecentMenu()
     If bSort Then
       
       For Each hRecentFile In aList
-        hMenu = New Menu(mnuOpenRecent) As "mnuOpenRecentFile"
+        
         sPath = hRecentFile.Path
+        Repeat
+          If cMenu.Exist(sPath) Then Break
+          cMenu[sPath] = True
+          sPath = File.Dir(sPath)
+          iVal = 0
+          Try iVal = cParent[sPath]
+          Inc iVal
+          cParent[sPath] = iVal
+        Until sPath = "/"
+        
+      Next
+        
+      For Each iVal In cParent
+        If iVal >= 2 Then aMenu.Add(cParent.Key)
+      Next
+      aMenu.Sort
+      Try aMenu.Remove(0)
+      
+      For Each hRecentFile In aList
+        aMenu.Add(hRecentFile.Path)
+      Next
+      
+      cMenu.Clear
+      
+      For Each sPath In aMenu
+        
+        sDir = sPath
+        
+        Do
+          sDir = File.Dir(sDir)
+          If sDir = "/" Then Break
+          hMenuTitle = cMenu[sDir]
+          If hMenuTitle Then Break
+        Loop
+        If Not hMenuTitle Then hMenuTitle = mnuOpenRecent
+        
+        If Exist(sPath &/ ".project") Then
+          hMenu = New Menu(hMenuTitle) As "mnuOpenRecentFile"
+          hMenu.Picture = Project.GetIcon(sPath, 16)
+        Else
+          hMenu = New Menu(hMenuTitle)
+        Endif
+        If hMenuTitle <> mnuOpenRecent Then 
+          sTitle = Mid$(Replace(sPath, hMenuTitle.Tag, ""), 2)
+        Else
+          sTitle = Replace(sPath, System.User.Home, "~")
+        Endif
+        hMenu.Text = sTitle
         hMenu.Tag = sPath
-        hMenu.Text = FormatFile(sPath)
-        hMenu.Picture = Project.GetIcon(hMenu.Tag, 16)
+        cMenu[sPath] = hMenu
+        
       Next
       
     Else
-      
+    
       For Each hRecentFile In aList
+        
         sPath = hRecentFile.Path
+        
         sTitle = hRecentFile.GetSlot()
+        
         If sTitle <> sLastTitle Then
-          hMenuTitle = New Menu(mnuOpenRecent)
-          hMenuTitle.Text = sTitle
+          If sTitle = ("Today") Then
+            hMenuTitle = mnuOpenRecent
+          Else
+            hMenuTitle = New Menu(mnuOpenRecent)
+            hMenuTitle.Text = sTitle
+          Endif
           sLastTitle = sTitle
         Endif
+        
         hMenu = New Menu(hMenuTitle) As "mnuOpenRecentFile"
         hMenu.Tag = sPath
         hMenu.Text = FormatFile(sPath)
         hMenu.Picture = Project.GetIcon(hMenu.Tag, 16)
+        
       Next
       
     Endif

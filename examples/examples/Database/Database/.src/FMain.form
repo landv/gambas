@@ -9,60 +9,60 @@
     MoveScaled(1,1,61,33)
     Text = ("Connection")
     { Label5 Label
-      MoveScaled(2,13,14,4)
+      MoveScaled(2,14,14,4)
       Text = ("Database")
       Transparent = True
     }
     { Label1 Label
-      MoveScaled(2,3,15,4)
+      MoveScaled(2,4,15,4)
       Text = ("Type")
       Transparent = True
     }
     { Label2 Label
-      MoveScaled(2,8,15,4)
+      MoveScaled(2,9,15,4)
       Text = ("Host")
       Transparent = True
     }
     { Label3 Label
-      MoveScaled(2,18,14,4)
+      MoveScaled(2,19,14,4)
       Text = ("User")
       Transparent = True
     }
     { Label4 Label
-      MoveScaled(2,23,14,4)
+      MoveScaled(2,24,14,4)
       Text = ("Password")
       Transparent = True
     }
     { btnConnect Button
-      MoveScaled(46,3,13,4)
+      MoveScaled(46,4,13,4)
       Text = ("Connect")
     }
     { cmbType ComboBox
-      MoveScaled(18,3,24,4)
-      Text = (" ")
+      MoveScaled(18,4,24,4)
       List = [("postgresql"), ("mysql"), ("sqlite3"), ("odbc"), ("firebird")]
+      Text = (" ")
     }
     { txtHost TextBox
-      MoveScaled(18,8,24,4)
+      MoveScaled(18,9,24,4)
     }
     { txtName TextBox
-      MoveScaled(18,13,24,4)
+      MoveScaled(18,14,24,4)
       Text = ("test")
     }
     { txtUser TextBox
-      MoveScaled(18,18,24,4)
+      MoveScaled(18,19,24,4)
       MaxLength = 16
     }
     { txtPassword TextBox
-      MoveScaled(18,23,24,4)
+      MoveScaled(18,24,24,4)
       Password = True
     }
     { chkCreate CheckBox
-      MoveScaled(2,28,39,4)
+      MoveScaled(2,29,39,4)
       Text = ("Create database if it does not exist")
     }
     { chkDebug CheckBox
-      MoveScaled(46,8,13,4)
+      MoveScaled(46,9,13,4)
       Text = ("Debug")
     }
   }
@@ -103,12 +103,12 @@
     Enabled = False
     Text = ("SQL request")
     { btnRun Button
-      MoveScaled(50,3,9,4)
+      MoveScaled(50,4,9,4)
       Text = ("Run...")
       Default = True
     }
     { txtRequest TextArea
-      MoveScaled(2,3,46,15)
+      MoveScaled(2,4,46,15)
       Wrap = True
     }
   }

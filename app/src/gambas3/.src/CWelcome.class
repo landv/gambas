@@ -60,7 +60,7 @@ Public Sub dwgWelcome_Draw()
   X = PaintText("Gambas", 8, 48, Color.SelectedForeground)
   
   Paint.Font = Font["+8,Bold"]
-  PaintText(Project.Version, X + 8, 32, Color.SelectedForeground)
+  PaintText(Project.FullVersionWithRevision, X + 8, 32, Color.SelectedForeground)
   Paint.Font = Font["+2"]
   PaintText("http://gambas.sourceforge.net", 12, 68, Color.LightForeground)
   
