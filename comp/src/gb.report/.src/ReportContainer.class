@@ -226,11 +226,11 @@ Public Sub _GenerateClones()
   Dim bRaiseRet As Boolean
   Dim aCopy As TControl[]
   
-  aCopy = $aChild.Copy()
+  
     If $aChildCopy Then 
       $aChild = $aChildCopy.Copy()
     Endif 
-    
+    aCopy = $aChild.Copy()
     
     For Each hTc In aCopy
       If hTc.Ctrl Is ReportContainer Then 
