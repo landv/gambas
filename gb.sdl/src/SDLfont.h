@@ -76,10 +76,9 @@ private:
         int hSDLfontstyle;
 	
 	/* System font */
-	XftFont *hXfont;
-	static XftColor background, foreground;
 	static Display *display;
 	static int screen;
+	int hfontindex;
 };
 
 #endif /* _SDLFONT_H */

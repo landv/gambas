@@ -123,6 +123,8 @@ SDLsurface::SDLsurface(int Width, int Height)
 
 	if (!hSurface)
 		SDLcore::RaiseError(SDL_GetError());
+	
+	hTexture->ToLoad();
 }
 
 SDLsurface::~SDLsurface()

@@ -56,6 +56,8 @@ static bool check_graphic(void)
 
 void DRAW_begin(void *device)
 {
+	static GB_CLASS font_id = NULL;
+
 	if (THIS >= &draw_stack[DRAW_STACK_MAX - 1])
 	{
 		GB.Error("Too many nested drawings");
@@ -73,6 +75,15 @@ void DRAW_begin(void *device)
 	THIS->backcolor = 0x00000000;
 	THIS->forecolor = 0x00FFFFFF;
 
+	if (!font_id)
+		font_id = GB.FindClass("Font");
+
+	if (FONT)
+		GB.Unref(POINTER(&FONT));
+
+	GB.New(POINTER(&FONT), font_id, NULL, NULL);
+	GB.Ref(FONT);
+	
 	if (GB.Is(device, CLASS_Window))
 	{
 		THIS->device = device;
