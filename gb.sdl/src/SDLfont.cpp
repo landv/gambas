@@ -34,6 +34,7 @@ typedef struct {
 	std::string name;
 	std::string realname;
 	std::string foundry;
+	std::string path;
 	} fontdesc;
 	
 static std::vector<fontdesc> fontDB;
@@ -96,7 +97,6 @@ StringList SDLfont::GetFontList(void )
 			font.foundry = foundry[0];
 			fontDB.push_back(font);
 		}
-//		XftPatternGetString(hSet->fonts[i], XFT_FILE, 0, name);
 		XFree(Fntdetail);
 	}
 
@@ -111,13 +111,23 @@ StringList SDLfont::GetFontList(void )
 			i++;
 			continue;
 		}
-		font = fontDB[i].name;
-		i++;
+		font = fontDB[i++].name;
 	}
 	
 	i = 0;
-	while (i<int(fontDB.size()))
-		_FontList.push_back(fontDB[i++].name);
+	while (i<int(fontDB.size())) {
+		char *res[255];
+		
+		XftFontSet *Fntdetail = XftListFonts(disp, DefaultScreen(disp),
+				XFT_FAMILY, XftTypeString, fontDB[i].realname.c_str(),
+				XFT_FOUNDRY, XftTypeString, fontDB[i].foundry.c_str(), 0,
+				XFT_FILE, NULL);
+		XftPatternGetString(Fntdetail->fonts[0], XFT_FILE, 0, res);
+		fontDB[i].path = res[0];
+		_FontList.push_back(fontDB[i].name);
+		XFree(Fntdetail);
+		i++;
+	}
 
 	return _FontList;
 }
@@ -136,23 +146,14 @@ SDLfont::SDLfont()
 {
 	hfonttype = X_font;
 	hfontsize = DEFAULT_FONT_SIZE;
-	char *res[255];
+	hfontindex = 0;
 	
 	SDLfont::GetFontList();
-	XftFontSet *Fntdetail = XftListFonts(SDLapp->X11appDisplay(), DefaultScreen(SDLapp->X11appDisplay()),
-				XFT_FAMILY, XftTypeString, fontDB[0].name.c_str(),
-				XFT_FOUNDRY, XftTypeString, fontDB[0].foundry.c_str(), 0,
-				XFT_FILE, NULL);
-	XftPatternGetString(Fntdetail->fonts[0], XFT_FILE, 0, res);
-	hfontname = res[0];
-	hfontindex = 0;
-	XFree(Fntdetail);
-
+	hfontname = fontDB[hfontindex].path;
 	hSDLfont = TTF_OpenFont(hfontname.c_str(), hfontsize);
 
 	if (UNLIKELY(hSDLfont == NULL))
 		SDLerror::RaiseError(TTF_GetError());
-
 }
 
 SDLfont::SDLfont(char *fontfile)
