@@ -110,6 +110,7 @@ Public Sub Paint(Page As Integer)
   'Paint.Clip
   MTools.DrawCount = 0
   
+  Paint.Reset
   Paint.Scale($fScale, $fScale)
   With Paint.ClipExtents
     'Debug .X;; .Y;; .Width;; .Height
