@@ -116,7 +116,7 @@ Static Private Sub InitTheme()
       
       If sTheme Then 
         sTheme = Trim(sTheme)
-        GetAllThemePath("gnome", ["~/.icon", "/usr/share/icons"], sTheme)
+        GetAllThemePath("gnome", ["~/.icons", "/usr/share/icons"], sTheme)
       Endif
       
       AddPath("gnome", "/usr/share/icons/gnome")
