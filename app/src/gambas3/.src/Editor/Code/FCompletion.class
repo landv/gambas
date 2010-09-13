@@ -11,6 +11,7 @@ Private $iLen As Integer
 Private $bUserChoice As Boolean
 Private $iMaxLen As Integer
 Private $sClass As String
+Private $sEventClass As String
 Private $bShowHelp As Boolean
 Private $sLastUrl As String
 
@@ -59,6 +60,7 @@ Public Sub Open(hForm As FEditor, sMode As String, Optional sClass As String, Op
   $iMaxLen = 16
   $iCol = $hEditor.Column + 1
   $sClass = ""
+  $sEventClass = ""
   
   Select $sMode
     Case "."
@@ -295,14 +297,41 @@ Private Sub GetEvents(sCtrl As String) As String[]
   Dim sName As String
   Dim hForm As FForm
   Dim aEvent As String[]
+  Dim iLine As Integer
+  Dim sLine As String
+  Dim aLine As String[]
+  Dim iPos As Integer
   
   hForm = Project.FindForm(GetClass())
   If Not hForm Then Return  
 
+  sCtrl = LCase(sCtrl)
+
   If LCase(sCtrl) = LCase(hForm.Family) Then 
-    Try aEvent = CComponent.Classes[hForm.Family].Events
+    $sEventClass = hForm.Family
   Else
-    Try aEvent = CComponent.Classes[hForm.Control[sCtrl].Kind].Events
+    Try $sEventClass = hForm.Control[sCtrl].Kind
+  Endif
+  
+  If $sEventClass Then Try aEvent = CComponent.Classes[$sEventClass].Events
+  
+  If Not aEvent Then
+    For iLine = 0 To $hEditor.Lines.Count - 1
+      sLine = $hEditor.Lines[iLine].Purge(False, True)
+      
+      aLine = Scan(sLine, "*NEW * AS \"*\"*")
+      If aLine.Count <> 4 Then Continue
+      If LCase(aLine[2]) <> sCtrl Then Continue
+      
+      sLine = aLine[1]
+      iPos = InStr(sLine, "(")
+      If iPos Then sLine = Left(sLine, iPos - 1)
+      $sEventClass = sLine
+      
+      Try aEvent = CComponent.Classes[$sEventClass].Events
+      If aEvent Then Break
+      
+    Next
   Endif
   
   Return aEvent
@@ -730,9 +759,7 @@ Public Sub timHelp_Timer()
   If sSymbol Then   
     iType = CInt(Left(lvwComp.Key))
     sClass = $sClass
-    If Not sClass Then 
-      sClass = GetClass()
-    Endif
+    If Not sClass Then sClass = $sEventClass
     MHelp.InitWebViewWith(webHelp, iType, sSymbol, sClass, "noimage", $hEditor.Window)
   Endif
 

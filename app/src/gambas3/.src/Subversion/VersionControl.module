@@ -144,6 +144,7 @@ End
 Private Sub UpdatePathFromStatus(sStatus As String)
   
   Dim sFile As String
+  Dim sExt As String
 
   For Each sStatus In Split(sStatus, "\n")
 
@@ -155,6 +156,8 @@ Private Sub UpdatePathFromStatus(sStatus As String)
       If Left(File.Name(sFile)) = "." Then Continue
       If sFile Begins ".lang/" Then Continue
       If sFile = Project.Name & ".gambas" Then Continue
+      sExt = File.Ext(sFile)
+      If Left(sExt) = "r" And IsDigit(Mid$(sExt, 2)) And If Exist(Project.Dir &/ File.Dir(sFile) &/ File.BaseName(sFile)) Then Continue
       Project.AddedPaths[Project.Dir &/ sFile] = True
     Endif
     
