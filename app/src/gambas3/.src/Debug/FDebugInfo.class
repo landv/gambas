@@ -216,25 +216,23 @@ Private Sub DefineVar(hView As TableView, sList As String, sCmd As String, iInde
       $aLocal = aVar
       $aValLocal = New String[$aLocal.Count]
       cCol = $cLocal
-      bSort = chkSortLocal.Value
+      bSort = True 'chkSortLocal.Value
     Else
       $aObject = aVar
       $aValObject = New String[$aObject.Count]
       cCol = $cObject
-      bSort = chkSortObject.Value
+      bSort = True 'chkSortObject.Value
     Endif
     
-    While iPos < aVar.Max
+    While iPos <= aVar.Max
       sVar = aVar[iPos]
       If Right(sVar) = ":" Then 
         If iPos = aVar.Max Or If Right(aVar[iPos + 1]) = ":" Then
           aVar.Remove(iPos)
-        Else
-          Inc iPos
+          Continue
         Endif
-      Else
-        Inc iPos
       Endif
+      Inc iPos
     Wend
     
     If bSort Then SortVariable(aVar)
@@ -505,13 +503,20 @@ Public Sub cmbWatch_Click()
 
 End
 
+Private Sub WatchExpression(sText As String)
+  
+  Design.Command("#X" & sText & "\t" & sText)  
+  
+End
+
+
 Public Sub cvwWatch_Activate()
 
   Dim sText As String = cvwWatch.Item.Text
 
   If Right(sText) = ":" Then Return
   If Left(cvwWatch.Item[1]) = "(" Then
-    Design.Command("#X" & sText & "\t" & sText)  
+    WatchExpression(sText)
   Endif
 
   cmbWatch.Text = Last.Item.Text
@@ -537,7 +542,7 @@ Public Sub ReadConfig()
   cvwWatch.Font = tbvLocal.Font
   cvwBreak.Font = tbvLocal.Font
 
-  For Each hButton In [btnClearBreak, btnKillAllWatch, btnKillWatch, btnRemoveBreak, btnShowME, btnWatch]
+  For Each hButton In [btnClearBreak, btnKillAllWatch, btnKillWatch, btnRemoveBreak, btnShowMe, btnWatch]
     hButton.AutoResize = False
     hButton.W = 8
     hButton.AutoResize = True
@@ -611,17 +616,17 @@ Public Sub Message(sMsg As String)
   
 End
 
-Public Sub chkSortLocal_Click()
-
-  DefineLocal
-
-End
-
-Public Sub chkSortObject_Click()
-
-  DefineObject
-
-End
+' Public Sub chkSortLocal_Click()
+' 
+'   DefineLocal
+' 
+' End
+' 
+' Public Sub chkSortObject_Click()
+' 
+'   DefineObject
+' 
+' End
 
 Public Sub tabDebug_Click()
 
@@ -772,7 +777,7 @@ End
 
 Public Sub btnShowMe_Click()
 
-  Design.Command("#XMe\tMe")
+  WatchExpression("Me")
 
 End
 
@@ -872,6 +877,7 @@ Public Sub tbvLocal_Data(Row As Integer, Column As Integer)
         .Text = If(UCase(sVar) = "S:", ("Static variables"), ("Dynamic variables"))
       Else
         .Text = sVar
+        .Foreground = Color.Merge(Color.TextBackground, Color.TextForeground, 0.7)
       Endif
     Else
       Try .Text = aValue[Row]
@@ -936,4 +942,13 @@ Public Sub ShowWatchTab()
   
   tabDebug.Index = TAB_WATCH
   
+End
+
+Public Sub btnShow_Click()
+
+  Dim sText As String = Trim(cmbWatch.Text)
+  
+  If Not sText Then Return
+  WatchExpression(sText)
+
 End

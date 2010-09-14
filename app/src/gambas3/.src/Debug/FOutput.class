@@ -281,6 +281,7 @@ End
 
 Public Sub edtOutput_LostFocus()
 
+  If Project.AboutToQuit Then Return
   FSearch.Update
 
 End

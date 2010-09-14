@@ -95,7 +95,7 @@ Public Sub gvwExpr_Data(Row As Integer, Column As Integer)
   Dim sSym As String
   Dim sVal As String
 
-  If Column = 0 Then gvwExpr.Data.Foreground = Color.Lighter(Color.Foreground)
+  If Column = 0 Then gvwExpr.Data.Foreground = Color.Merge(Color.TextBackground, Color.TextForeground, 0.7)
 
   If $bArray Then 
   
@@ -161,7 +161,7 @@ Public Sub gvwExpr_Data(Row As Integer, Column As Integer)
     If Left(gvwExpr.Data.Text) <> "!" Then
 
       If $cVal.Exist(Row) And If $cOldVal.Exist(Row) And If gvwExpr.Data.Text <> $cOldVal[Row] Then 
-        gvwExpr.Data.Background = Color.Yellow
+        gvwExpr.Data.Background = Color.Lighter(Color.Yellow)
         gvwExpr.Data.Font.Bold = True
       Endif
       

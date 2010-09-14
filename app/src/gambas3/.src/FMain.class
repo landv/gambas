@@ -29,24 +29,13 @@ Public Sub _new()
   Design.Init
   
   FDebugInfo.Load(panDebug)
-  'Design.Load(panToolbar)  
   FToolbox.Load(panTool)
-  'FIconTool.Load(panIcon)
   FProperty.Load(tabProperty)
   tabProperty.Index = 1
   FFormStack.Load(tabProperty)
   tabProperty.Index = 0
   
-  'FFind.Load(panCentral)
-  'FFind.Next = panDebug
-  'FFind.Hide
-  
   FSearch.Load
-  
-  'FProject.Load(splProject)
-  'splProject.Layout = "80,10"
-  
-  'PRINT 1 / 0
   
   FOption.Load
   FHelpBrowser.Load
@@ -459,6 +448,8 @@ Public Sub UpdateRecentMenu()
   
   Inc Application.Busy
   
+  bSort = Settings["/FWelcome/SortRecent", False]
+    
   mnuOpenRecent.Children.Clear
   mnuOpenRecent.Enabled = CRecentFile.All.Count > 0
   
@@ -555,15 +546,15 @@ Public Sub UpdateRecentMenu()
     
     hMenu = New Menu(mnuOpenRecent)
     
-    hMenu = New Menu(mnuOpenRecent) As "mnuClearRecent"
-    hMenu.Text = ("&Clear history")
-    hMenu.Picture = Picture["icon:/small/trash"]
     hMenu = New Menu(mnuOpenRecent) As "mnuSortRecent"
     hMenu.Text = ("&Sort by path")
     hMenu.Toggle = True
     Object.Lock(hMenu)
     hMenu.Checked = bSort
     Object.Unlock(hMenu)
+    hMenu = New Menu(mnuOpenRecent) As "mnuClearRecent"
+    hMenu.Text = ("&Clear history")
+    hMenu.Picture = Picture["icon:/small/trash"]
   
   Endif
   

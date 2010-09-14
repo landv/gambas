@@ -9,6 +9,14 @@
   Utility = True
   Arrangement = Arrange.Fill
   Margin = True
+  { mnuBrowse Menu
+    { mnuBrowseAll Menu
+      Text = ("&Browse all")
+    }
+    { mnuBrowseSource Menu
+      Text = ("Browse &source files only")
+    }
+  }
   { tabSearch TabStrip
     MoveScaled(0,1,84,37)
     Arrangement = Arrange.Horizontal
@@ -113,14 +121,15 @@
         Text = ("Replace &all")
         Picture = Picture["icon:/small/wizard"]
       }
-      { btnBrowse Button
-        MoveScaled(0,16,18,4)
+      { Panel1 Panel
+        MoveScaled(5,18,2,1)
+        Expand = True
+      }
+      { btnBrowse MenuButton
+        MoveScaled(0,20,18,4)
         Text = ("&Browse")
         Picture = Picture["icon:/small/find"]
-      }
-      { Panel1 Panel
-        MoveScaled(5,22,2,1)
-        Expand = True
+        Menu = "mnuBrowse"
       }
       { btnClose Button
         MoveScaled(0,25,18,4)
@@ -138,7 +147,7 @@
         MoveScaled(1,1,79,22)
         Expand = True
         Arrangement = Arrange.Fill
-        { tvwFind GridView
+        { gvwFind GridView
           MoveScaled(5,5,47,16)
           Mode = Select.Single
           Header = GridView.Horizontal
@@ -160,7 +169,6 @@
         { lblBrowse Label
           MoveScaled(0,0,19,4)
           Visible = False
-          Expand = True
           Padding = 4
           AutoResize = True
           Border = Border.Plain

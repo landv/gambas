@@ -942,7 +942,11 @@ BEGIN_METHOD(Control_Refresh, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEG
 		QWIDGET(_object)->update(x, y, w, h);
 	}
 	else
+	{
 		QWIDGET(_object)->update();
+		if (CWIDGET_test_flag(THIS, WF_SCROLLVIEW))
+			get_viewport(WIDGET)->update();
+	}
 
 END_METHOD
 

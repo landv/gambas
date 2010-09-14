@@ -1950,8 +1950,13 @@ void *EXEC_auto_create(CLASS *class, bool ref)
 	void *object;
 
 	object = CLASS_auto_create(class, 0); /* object is checked by CLASS_auto_create */
+	
+	if (UNLIKELY(class->must_check && (*(class->check))(object)))
+		THROW(E_IOBJECT);
+
 	if (ref)
 		OBJECT_REF(object, "EXEC_auto_create");
+	
 	return object;
 }
 

@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,29,18)
+  MoveScaled(0,0,82,18)
   Action = "help"
   Text = ("Help browser")
   Icon = Picture["icon:/small/help"]
@@ -11,6 +11,7 @@
   Arrangement = Arrange.Vertical
   { panToolbar HBox
     MoveScaled(0,0,107,4)
+    Font = Font["-2"]
     { btnHome MenuButton
       MoveScaled(0,0,16,4)
       ToolTip = ("Index")
@@ -69,7 +70,8 @@
     { btnWebSite ToolButton
       MoveScaled(52,0,21,4)
       ToolTip = ("Gambas site web")
-      Text = ("gambas.sourceforge.net")
+      AutoResize = True
+      Text = ("http://gambas.sourceforge.net")
       Picture = Picture["icon:/small/gambas"]
     }
     { btnPrint ToolButton

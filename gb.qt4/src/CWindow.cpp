@@ -2195,19 +2195,11 @@ static void deleteAll()
 
 	for (i = 0; i < list.count(); i++)
 	{
-		win = list.at(i);
-
+		win = CWindow::list.at(i);
 		if (win != CWINDOW_Main)
-		{
-			//CWIDGET_set_flag(win, WF_CLOSED);
-			//qDebug("post DELETE to %p", win);
-			//qApp->postEvent(win->widget.widget, new QEvent(EVENT_CLOSE));
 			CWIDGET_destroy((CWIDGET *)win);
-			//GB.Post((void *)deleteAfter, win
-			//delete win;
-		}
 	}
-
+	
 	#if DEBUG_WINDOW
 	qDebug("DELETE ALL >>>");
 	#endif
@@ -2254,15 +2246,15 @@ void MyMainWindow::closeEvent(QCloseEvent *e)
 	CWIDGET_set_flag(THIS, WF_CLOSED);
 	//qApp->sendEvent(WIDGET, new QEvent(EVENT_CLOSE));
 
-	if (!CWIDGET_test_flag(_object, WF_PERSISTENT))
+	if (!CWIDGET_test_flag(THIS, WF_PERSISTENT))
 	{
 		if (CWINDOW_Main == THIS)
 		{
 			deleteAll();
 			#if DEBUG_WINDOW
-			qDebug("CWINDOW_Main -> 0");
+			qDebug("CWINDOW_Main -> NULL");
 			#endif
-			CWINDOW_Main = 0;
+			CWINDOW_Main = NULL;
 		}
 
 		CWIDGET_destroy((CWIDGET *)THIS);
@@ -2275,7 +2267,7 @@ void MyMainWindow::closeEvent(QCloseEvent *e)
 	if (CWINDOW_LastActive == THIS)
 	{
 		//GB.Unref(POINTER(&CWINDOW_LastActive));
-		CWINDOW_LastActive = 0;
+		CWINDOW_LastActive = NULL;
 		//qDebug("CWINDOW_LastActive = 0");
 	}
 	//qDebug("THIS->opened <- false: %p: %s", THIS, GB.GetClassName(THIS));

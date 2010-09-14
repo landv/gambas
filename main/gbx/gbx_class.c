@@ -99,6 +99,9 @@ static void exit_class(CLASS *class, bool native)
 
 	if (CLASS_is_native(class) != native)
 		return;
+	
+	if (class->state < CS_LOADED)
+		return;
 
 	EXEC_public(class, NULL, "_exit", 0);
 }
@@ -1147,17 +1150,19 @@ void *CLASS_auto_create(CLASS *class, int nparam)
 
 	//fprintf(stderr, ">>> CLASS_auto_create: %s (%p)\n", class->name, ob);
 	
+	// Now we return the automatic instance even if it is invalid.
+	
 	if (ob)
 	{
-		if (OBJECT_is_valid(ob))
+		//if (OBJECT_is_valid(ob))
 		{
 			RELEASE_MANY(SP, nparam);
 			//fprintf(stderr, "<<< CLASS_auto_create: %s (%p): valid=1\n", class->name, ob);
 			return ob;
 		}
 
-		OBJECT_UNREF(class->instance, "CLASS_auto_create");
-		class->instance = NULL;
+		//OBJECT_UNREF(class->instance, "CLASS_auto_create");
+		//class->instance = NULL;
 	}
 
 	/*fprintf(stderr, "CLASS_auto_create: create %s\n", class->name);*/

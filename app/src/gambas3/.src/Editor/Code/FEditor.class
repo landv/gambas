@@ -355,8 +355,8 @@ Public Sub Modify(Optional bReset As Boolean)
     $bModify = True
     Inc Project.TimeStamp
     Inc Age
-    $cProc = New Collection
-    $aProc = New String[]
+    $cProc.Clear ' = New Collection
+    $aProc.Clear ' = New String[]
     FDebugInfo.RefreshBreakpoint(Me.Name)
     FSearch.OnFileChange(Me.Path)
     

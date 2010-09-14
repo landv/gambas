@@ -9,6 +9,7 @@ Public CurrentProcedure As Boolean
 Public CurrentProcedureName As String
 Public SearchString As String
 Public ReplaceString As String
+'Private OnlySource As Boolean
 
 Private $hCurrent As Object
 Private $sGrep As String
@@ -31,7 +32,7 @@ Private Const DO_ALL As Integer = 4
 
 Public Sub _new()
   
-  With tvwFind
+  With gvwFind
     .Columns.Count = 4  
     .Columns[0].Width = Desktop.Scale * 16
     .Columns[0].Text = ("File")
@@ -79,10 +80,10 @@ End
 
 Public Sub ReadConfig()
   
-  tvwFind.Font.Grade = - Settings["/TabStripFont", 0]
+  gvwFind.Font.Grade = - Settings["/TabStripFont", 0]
   $hFont = Font[Settings["/Editor/Font", Project.DEFAULT_FONT]]
-  $hFont.Grade = tvwFind.Font.Grade
-  tvwFind.Refresh
+  $hFont.Grade = gvwFind.Font.Grade
+  gvwFind.Refresh
 
 End
 
@@ -457,14 +458,14 @@ Public Sub AddFound(hResult As CFindResult, Optional iIndex As Integer = -1)
       hResult.Dark = Not $aBrowse[iIndex - 1].Dark
     Endif
   Endif
-  tvwFind.Rows.Count = $aBrowse.Count
+  gvwFind.Rows.Count = $aBrowse.Count
   
   iInd = iIndex
   While iInd > 0
     If $aBrowse[iInd - 1].File <> hResult.File Then Break
     Dec iInd
   Wend
-  tvwFind[iInd, 0].RowSpan = iIndex - iInd + 1
+  gvwFind[iInd, 0].RowSpan = iIndex - iInd + 1
   
   iInd = iIndex
   While iInd > 0
@@ -472,7 +473,7 @@ Public Sub AddFound(hResult As CFindResult, Optional iIndex As Integer = -1)
     If $aBrowse[iInd - 1].Line <> hResult.Line Then Break
     Dec iInd
   Wend
-  tvwFind[iInd, 1].RowSpan = iIndex - iInd + 1
+  gvwFind[iInd, 1].RowSpan = iIndex - iInd + 1
   
 End
 
@@ -499,7 +500,7 @@ Private Sub FindPathInBrowseResult(sPath As String) As Integer
 End
 
 
-Private Sub BrowseFile(sPath As String, Optional iIndex As Integer = -1)
+Private Sub BrowseFile(sPath As String, Optional iIndex As Integer = -1, Optional bRefresh As Boolean)
   
   Dim hFile As Object
   Dim aResult As CFindResult[]
@@ -516,16 +517,21 @@ Private Sub BrowseFile(sPath As String, Optional iIndex As Integer = -1)
     If Not hFile.SetPosition(hResult, True) Then 
       hResult.Path = sPath
       AddFound(hResult, iIndex)
+      If bRefresh Then 
+        If iIndex >= 0 Then gvwFind.Rows[iIndex].Refresh
+      Endif
       If iIndex >= 0 Then Inc iIndex
     Endif
   Next
+  
   
 End
 
 
 
-Private Sub Browse()
+Private Sub Browse(Optional bOnlySource As Boolean)
   
+  Dim sDir As String
   Dim sFile As String
   Dim sPath As String
   Dim iPos As Integer
@@ -535,13 +541,14 @@ Private Sub Browse()
   Dim sExt As String
   
   If InitSearch() Then Return
+  'OnlySource = bOnlySource
   
   CurrentProcedure = False
   $iBrowseAge = Project.TimeStamp
   
   tabSearch.Index = 1
 
-  tvwFind.Show
+  gvwFind.Show
   lblNotFound.Hide
   lblBrowse.Text = ""
   lblBrowse.Show
@@ -555,19 +562,25 @@ Private Sub Browse()
   btnClose2.Text = ("Cancel")
   $bCancel = False
   
-  tvwFind.Rows.Count = 0
-  tvwFind.Clear
-  tvwFind.Rows.Height = Max(tvwFind.Font.Height, $hFont.Height)
+  gvwFind.Rows.Count = 0
+  gvwFind.Clear
+  gvwFind.Rows.Height = Max(gvwFind.Font.Height, $hFont.Height)
   $aBrowse.Clear
   
   Inc FMain.NoMessage
   
-  For Each sFile In RDir(Project.Dir)
+  If bOnlySource Then
+    sDir = Project.Dir &/ ".src"
+  Else
+    sDir = Project.Dir
+  Endif
+  
+  For Each sFile In RDir(sDir)
   
     If Left(sFile) = "." And If Not (sFile Begins ".src/") Then Continue
     If Right(sFile) = "~" Then Continue
       
-    sPath = Project.Dir &/ sFile
+    sPath = sDir &/ sFile
   
     If IsDir(sPath) Then Continue
     If InStr(sPath, "/.svn/") Then Continue
@@ -598,8 +611,8 @@ Finally
   
   Dec FMain.NoMessage
   
-  If tvwFind.Rows.Count = 0 Then
-    tvwFind.Hide
+  If gvwFind.Rows.Count = 0 Then
+    gvwFind.Hide
     lblNotFound.Show
   Endif
 
@@ -757,9 +770,23 @@ Public Sub btnBrowse_Click()
 
 End
 
-Public Sub tvwFind_Data(Row As Integer, Column As Integer)
+Public Sub mnuBrowseAll_Click()
+  
+  Browse
+  
+End
 
-   With tvwFind.Data
+Public Sub mnuBrowseSource_Click()
+  
+  Browse(True)
+  
+End
+
+
+
+Public Sub gvwFind_Data(Row As Integer, Column As Integer)
+
+   With gvwFind.Data
     
     If Column = 3 Then .Font = $hFont 
     
@@ -796,7 +823,7 @@ Public Sub tvwFind_Data(Row As Integer, Column As Integer)
 
 End
 
-Public Sub tvwFind_Select()
+Public Sub gvwFind_Select()
 
   Dim hFind As CFindResult
   Dim sPath As String
@@ -804,7 +831,7 @@ Public Sub tvwFind_Select()
 
   If $aBrowse.Count = 0 Then Return
   
-  hFind = $aBrowse[tvwFind.Row]
+  hFind = $aBrowse[gvwFind.Row]
   
   Try hForm = Project.OpenFile(hFind.Path)
   If Not hForm Then Return

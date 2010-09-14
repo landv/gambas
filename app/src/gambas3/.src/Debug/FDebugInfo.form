@@ -23,16 +23,6 @@
       Index = 1
       Text = ("Local variables")
       Picture = Picture["img/16/local.png"]
-      { HBox4 HBox
-        MoveScaled(1,1,32,4)
-        { chkSortLocal ToolButton
-          MoveScaled(0,0,18,4)
-          AutoResize = True
-          Text = ("Sort local variables")
-          Picture = Picture["icon:/small/sort-ascent"]
-          Toggle = True
-        }
-      }
       { Separator4 Separator
         MoveScaled(7,7,5,0)
       }
@@ -48,24 +38,6 @@
       Index = 2
       Text = ("Current object")
       Picture = Picture["img/16/current.png"]
-      { HBox2 HBox
-        MoveScaled(1,2,58,4)
-        Spacing = True
-        { chkSortObject ToolButton
-          MoveScaled(1,0,23,4)
-          AutoResize = True
-          Text = ("Sort object variables")
-          Picture = Picture["icon:/small/sort-ascent"]
-          Toggle = True
-        }
-        { btnShowME ToolButton
-          MoveScaled(39,0,16,4)
-          ToolTip = ("Display ME")
-          AutoResize = True
-          Text = ("Display ME")
-          Picture = Picture["icon:/small/fullscreen"]
-        }
-      }
       { Separator2 Separator
         MoveScaled(24,7,8,0)
       }
@@ -82,31 +54,46 @@
       Text = ("Watch")
       Picture = Picture["icon:/small/watch"]
       { HBox1 HBox
-        MoveScaled(2,2,72,4)
+        MoveScaled(2,2,84,4)
+        Font = Font["-2"]
         { cmbWatch ComboBox
           MoveScaled(0,0,27,4)
           Expand = True
         }
         { btnWatch ToolButton
-          MoveScaled(27,0,10,4)
+          MoveScaled(27,0,7,4)
           ToolTip = ("Add expression")
           AutoResize = True
           Text = ("&Add")
           Picture = Picture["icon:/small/add"]
         }
         { btnKillWatch ToolButton
-          MoveScaled(36,0,11,4)
+          MoveScaled(34,0,10,4)
           ToolTip = ("Remove current expression")
           AutoResize = True
           Text = ("&Remove")
           Picture = Picture["icon:/small/remove"]
         }
         { btnKillAllWatch ToolButton
-          MoveScaled(52,0,13,4)
+          MoveScaled(44,0,12,4)
           ToolTip = ("Remove all expressions")
           AutoResize = True
           Text = ("Remove all")
           Picture = Picture["icon:/small/trash"]
+        }
+        { btnShow ToolButton
+          MoveScaled(57,0,12,4)
+          ToolTip = ("Display ME")
+          AutoResize = True
+          Text = ("Display")
+          Picture = Picture["icon:/small/watch"]
+        }
+        { btnShowMe ToolButton
+          MoveScaled(70,0,12,4)
+          ToolTip = ("Display ME")
+          AutoResize = True
+          Text = ("Display ME")
+          Picture = Picture["img/16/current.png"]
         }
       }
       { Separator3 Separator
@@ -123,8 +110,9 @@
       Picture = Picture["icon:/small/flag"]
       { VBox1 HBox
         MoveScaled(0,0,55,4)
+        Font = Font["-2"]
         { btnRemoveBreak ToolButton
-          MoveScaled(0,0,11,4)
+          MoveScaled(0,0,27,4)
           ToolTip = ("Remove current breakpoint")
           AutoResize = True
           Text = ("Remove current breakpoint")
@@ -153,25 +141,35 @@
       }
       Index = 0
     }
-    { panStack VBox
+    { panStack ScrollView
       MoveScaled(90,1,22,41)
+      Background = Color.TextBackground
       Expand = True
+      Arrangement = Arrange.Vertical
+      ScrollBar = Scroll.None
       { HBox3 HBox
         MoveScaled(1,1,19,4)
+        AutoResize = True
+        Spacing = True
+        Margin = True
         { PictureBox1 PictureBox
-          MoveScaled(0,0,4,4)
+          MoveScaled(0,0,4,3)
           Picture = Picture["img/16/stack.png"]
+          AutoResize = True
           Alignment = Align.Center
         }
         { Label1 Label
-          MoveScaled(4,0,14,4)
+          MoveScaled(4,0,14,3)
+          Font = Font["Underline,-2"]
           Expand = True
+          AutoResize = True
           Text = ("Stack backtrace")
         }
       }
       { lstStack ListBox
         MoveScaled(3,13,13,23)
         Expand = True
+        Border = False
       }
     }
   }

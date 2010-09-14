@@ -1975,7 +1975,7 @@ END_PROPERTY
 // CWIDGET_refresh does not work for this widget ??
 // Should do viewport->refresh() !
 
-BEGIN_METHOD(CGRIDVIEW_refresh, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
+/*BEGIN_METHOD(CGRIDVIEW_refresh, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
 
 	int x, y, w, h;
 
@@ -1990,7 +1990,7 @@ BEGIN_METHOD(CGRIDVIEW_refresh, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INT
 	else
 		WIDGET->viewport()->update();
 
-END_METHOD
+END_METHOD*/
 
 BEGIN_PROPERTY(CGRIDVIEW_scroll_x)
 
@@ -2275,7 +2275,7 @@ GB_DESC CGridViewDesc[] =
 
 	GB_PROPERTY_SELF("Data", ".GridViewData"),
 
-	GB_METHOD("Refresh", NULL, CGRIDVIEW_refresh, "[(X)i(Y)i(Width)i(Height)i]"),
+	//GB_METHOD("Refresh", NULL, CGRIDVIEW_refresh, "[(X)i(Y)i(Width)i(Height)i]"),
 
 	GRIDVIEW_DESCRIPTION,
 
