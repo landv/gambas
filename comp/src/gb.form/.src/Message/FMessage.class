@@ -32,7 +32,7 @@ Public Sub _new()
   picIcon.W = 64
   
   chkDoNotDisplayAnymore.Visible = $sKey
-  If $sKey Then chkDoNotDisplayAnymore.Value = Settings["/HiddenMessage" &/ $sKey]
+  If $sKey Then chkDoNotDisplayAnymore.Value = Settings["/HiddenMessage" &/ $sKey, False]
   
   panButton.Children.Clear
   

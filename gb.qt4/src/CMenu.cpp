@@ -84,6 +84,7 @@ static void refresh_menubar(CMENU *menu)
 	}
 	
 	window->hideMenuBar = i == list.count();
+
 	toplevel->configure();
 }
 
@@ -288,11 +289,11 @@ BEGIN_METHOD(CMENU_new, GB_OBJECT parent; GB_BOOLEAN hidden)
     }
     
 		action = new QAction(menuBar);
+    menuBar->addAction(action);
+
 		action->setSeparator(true);
-		
 		QObject::connect(action, SIGNAL(destroyed()), &CMenu::manager, SLOT(slotDestroyed()));
     
-    menuBar->addAction(action);
     //qDebug("New action %p for top level Menu %p", action, THIS);
   }
   else

@@ -143,6 +143,7 @@
     }
     { panStack ScrollView
       MoveScaled(90,1,22,41)
+      Visible = False
       Background = Color.TextBackground
       Expand = True
       Arrangement = Arrange.Vertical
@@ -151,7 +152,7 @@
         MoveScaled(1,1,19,4)
         AutoResize = True
         Spacing = True
-        Margin = True
+        Padding = 4
         { PictureBox1 PictureBox
           MoveScaled(0,0,4,3)
           Picture = Picture["img/16/stack.png"]
@@ -160,14 +161,15 @@
         }
         { Label1 Label
           MoveScaled(4,0,14,3)
-          Font = Font["Underline,-2"]
+          Font = Font["Bold,-2"]
           Expand = True
           AutoResize = True
           Text = ("Stack backtrace")
         }
       }
-      { lstStack ListBox
-        MoveScaled(3,13,13,23)
+      { lvwStack ListView
+        MoveScaled(2,7,16,30)
+        Mouse = Mouse.Pointing
         Expand = True
         Border = False
       }

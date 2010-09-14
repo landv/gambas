@@ -89,7 +89,7 @@ Public Sub Clear()
   ClearView(tbvObject)
   tbvObject.Tag = ""
 
-  lstStack.Clear
+  lvwStack.Clear
   cvwWatch.Clear
   $cRefresh.Clear
 
@@ -105,7 +105,7 @@ End
 
 Public Sub EnableStack(bOn As Boolean)
 
-  lstStack.Enabled = bOn
+  lvwStack.Enabled = bOn
 
 End
 
@@ -113,32 +113,46 @@ End
 Public Sub FillStack(aPos As String[])
 
   Dim sPos As String
+  Dim iInd As Integer
+  Dim sKey As String
 
-  lstStack.Clear
+  Object.Lock(lvwStack)
+
+  If lvwStack.Count And If aPos[0] = lvwStack[0].Text Then
+    sKey = lvwStack.Key
+  Else
+    sKey = 0
+  Endif
+  
+  lvwStack.Clear
 
   For Each sPos In aPos
     If sPos = "?" Then
-      lstStack.Add("(" & ("native code") & ")")
+      lvwStack.Add(iInd, "(" & ("native code") & ")")
     Else
-      lstStack.Add(sPos)
+      lvwStack.Add(iInd, sPos)
     Endif
+    Inc iInd
   Next
+  
+  Try lvwStack[sKey].Selected = True
+  Object.Unlock(lvwStack)
 
 End
 
 
-Public Sub lstStack_Activate()
+Public Sub lvwStack_Select()
 
   Dim sLoc As String
   Dim iPos As Integer
   Dim sFile As String
   Dim iLine As Integer
 
-  Design.Command("@" & lstStack.Index)
+  Design.Command("@" & lvwStack.Key)
   FDebugExpr.RefreshAll
   RefreshAllWatch
 
-  sLoc = lstStack.Current.Text
+  sLoc = lvwStack.Current.Text
   If InStr(sLoc, "(") Then Return
 
   iPos = InStr(sLoc, ".")
@@ -538,7 +552,7 @@ Public Sub ReadConfig()
   tabDebug.TextFont = Font[CStr(- Settings["/TabStripFont", 0])]
   tbvLocal.Font.Grade = - Settings["/GlobalFont", 0]
   tbvObject.Font = tbvLocal.Font
-  lstStack.Font = tbvLocal.Font
+  lvwStack.Font = tbvLocal.Font
   cvwWatch.Font = tbvLocal.Font
   cvwBreak.Font = tbvLocal.Font
 

@@ -2405,17 +2405,18 @@ void MyMainWindow::configure()
 
 	if (menuBar && THIS->showMenuBar && !THIS->hideMenuBar)
 	{
-		h = menuBar->sizeHint().height();
-		menuBar->setGeometry(0, 0, this->width(), h);
+		//qDebug("action.count = %d", menuBar->actions().count());
+		//h = menuBar->sizeHint().height();
 		menuBar->show();
-		THIS->container->setGeometry(0, h, this->width(), this->height() - h);
+		THIS->container->setGeometry(0, menuBar->height(), this->width(), this->height() - menuBar->height());
+		menuBar->setGeometry(0, 0, this->width(), menuBar->height());
 	}
 	else
 	{
 		if (menuBar)
 		{
 			menuBar->move(0, -menuBar->height());
-			//menuBar->lower();
+			menuBar->lower();
 		}
 		//qDebug("configure: %s (%d %d)", GB.GetClassName(THIS), this->width(), this->height());
 		THIS->container->setGeometry(0, 0, this->width(), this->height());

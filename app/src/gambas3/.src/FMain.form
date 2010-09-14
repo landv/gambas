@@ -275,27 +275,6 @@
       Shortcut = "Ctrl+Alt+P"
     }
   }
-  { mnuHelp Menu
-    Text = ("&?")
-    { mnuViewExplorer Menu
-      Action = "help"
-      Text = ("&Help browser")
-      Picture = Picture["icon:/small/help"]
-      Toggle = True
-      Shortcut = "F1"
-    }
-    { mnuTip Menu
-      Action = "tips"
-      Text = ("&Tips of the day")
-      Picture = Picture["icon:/small/lamp"]
-    }
-    { Menu8 Menu
-    }
-    { mnuAbout Menu
-      Action = "about"
-      Text = ("&About Gambas...")
-    }
-  }
   { mnuPopup Menu
     Enabled = False
     Visible = False
@@ -513,6 +492,27 @@
     }
     { mnuHelp2 Menu
       Text = ("&?")
+    }
+  }
+  { mnuHelp Menu
+    Text = ("&?")
+    { mnuViewExplorer Menu
+      Action = "help"
+      Text = ("&Help browser")
+      Picture = Picture["icon:/small/help"]
+      Toggle = True
+      Shortcut = "F1"
+    }
+    { mnuTip Menu
+      Action = "tips"
+      Text = ("&Tips of the day")
+      Picture = Picture["icon:/small/lamp"]
+    }
+    { Menu8 Menu
+    }
+    { mnuAbout Menu
+      Action = "about"
+      Text = ("&About Gambas...")
     }
   }
   { sepMenu Separator
