@@ -464,21 +464,7 @@ Public Sub UpdateRecentMenu()
   
   If mnuOpenRecent.Enabled Then
     
-    hMenu = New Menu(mnuOpenRecent) As "mnuClearRecent"
-    hMenu.Text = ("&Clear history")
-    hMenu.Picture = Picture["icon:/small/trash"]
-    
     bSort = Settings["/FWelcome/SortRecent", False]
-    
-    hMenu = New Menu(mnuOpenRecent) As "mnuSortRecent"
-    hMenu.Text = ("&Sort by path")
-    hMenu.Toggle = True
-    Object.Lock(hMenu)
-    hMenu.Checked = bSort
-    Object.Unlock(hMenu)
-    'hMenu.Picture = Picture["icon:/small/trash"]
-    
-    hMenu = New Menu(mnuOpenRecent)
     
     aList = CRecentFile.Get(bSort)
     
@@ -567,6 +553,18 @@ Public Sub UpdateRecentMenu()
       
     Endif
     
+    hMenu = New Menu(mnuOpenRecent)
+    
+    hMenu = New Menu(mnuOpenRecent) As "mnuClearRecent"
+    hMenu.Text = ("&Clear history")
+    hMenu.Picture = Picture["icon:/small/trash"]
+    hMenu = New Menu(mnuOpenRecent) As "mnuSortRecent"
+    hMenu.Text = ("&Sort by path")
+    hMenu.Toggle = True
+    Object.Lock(hMenu)
+    hMenu.Checked = bSort
+    Object.Unlock(hMenu)
+  
   Endif
   
   Dec Application.Busy
