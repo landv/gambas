@@ -119,7 +119,7 @@ Public Sub Draw(bSeries As Boolean)
       
       If $sTitle <> "" Then TitleH = draw.TextHeight($sTitle)
       
-      h = TitleH + iStaticSpace + arsInt.Count * (draw.Font.Height() + iStaticSpace)
+      h = TitleH + iStaticSpace + arsInt.Count * (draw.Font.Height + iStaticSpace)
       x = Chart._$ColChart[$sidChart].Width - w - iStaticSpace
       y = (Chart._$ColChart[$sidChart].Height - h) / 2
       draw.ForeGround = Color.Black
@@ -138,7 +138,7 @@ Public Sub Draw(bSeries As Boolean)
         Endif
         'Draw.Rect(x + iStaticSpace+square, Y + TitleH + iStaticSpace + cnt, SQUARESIZE, SQUARESIZE)
         Draw.Text(arsInt[i], x + iStaticSpace + SQUARESIZE + iStaticSpace, Y + TitleH + iStaticSpace + cnt)
-        cnt += Draw.Font.Height() + iStaticSpace
+        cnt += Draw.Font.Height + iStaticSpace
       Next
       
       

@@ -87,7 +87,7 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
     '-->
     
     
-    'draw.Text(Chart[i].Label, Cos(fTextPos) * (fRayon) + CX + CW / 2, Sin((fTextPos) - Rad(180)) * (fRayon) + CY + fRayon - draw.Font.Height())
+    'draw.Text(Chart[i].Label, Cos(fTextPos) * (fRayon) + CX + CW / 2, Sin((fTextPos) - Rad(180)) * (fRayon) + CY + fRayon - draw.Font.Height)
     
     fCumul += Rad(f * frapport)
     

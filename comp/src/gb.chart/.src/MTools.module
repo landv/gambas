@@ -100,11 +100,11 @@ Public Function DrawChartAxes(sidChart As String, hChartRect As CRect, fMinValue
   'Redefinition de la position basse
   If Chart._$ColChart[sidChart].XAxe.Visible Then
     If Chart._$ColChart[sidChart].XAxe.Arrange = Chart._$ColChart[sidChart].XAxe.Steps Then 
-      hChartRect.Bottom = hChartRect.Bottom - (iStaticSpace * 2 + Draw.Font.Height())
-      hChartRect.Top = hChartRect.Top '+ (iStaticSpace * 2 + Draw.Font.Height())
+      hChartRect.Bottom = hChartRect.Bottom - (iStaticSpace * 2 + Draw.Font.Height)
+      hChartRect.Top = hChartRect.Top '+ (iStaticSpace * 2 + Draw.Font.Height)
     Else
-      hChartRect.Bottom = hChartRect.Bottom - (Draw.Font.Height())
-      hChartRect.Top = hChartRect.Top '+ (Draw.Font.Height())
+      hChartRect.Bottom = hChartRect.Bottom - (Draw.Font.Height)
+      hChartRect.Top = hChartRect.Top '+ (Draw.Font.Height)
     Endif
   Endif
   draw.Font = Chart._$ColChart[sidChart].XAxe.Font
@@ -149,7 +149,7 @@ Public Function DrawChartAxes(sidChart As String, hChartRect As CRect, fMinValue
       'Dessine le taquet
 
       Draw.Line(hChartRect.Left - iStaticSpace, fTabPos, hChartRect.Left, fTabPos)
-      Draw.Text(f, hChartRect.Left - iStaticSpace * Chart._$ColChart[sidChart]._fProportionnal - Draw.TextWidth(f & " "), fTabPos - Draw.Font.Height() / 2)
+      Draw.Text(f, hChartRect.Left - iStaticSpace * Chart._$ColChart[sidChart]._fProportionnal - Draw.TextWidth(f & " "), fTabPos - Draw.Font.Height / 2)
     Endif
   Next
   
@@ -179,7 +179,7 @@ Public Function DrawChartAxes(sidChart As String, hChartRect As CRect, fMinValue
         Draw.Line(fTabPos, hChartRect.Bottom, fTabPos, hChartRect.Bottom + iStaticSpace)
       If Chart._$ColChart[sidChart].XAxe.Visible Then 
         
-        If bBascule Then iXStep = Draw.Font.Height() / 2
+        If bBascule Then iXStep = Draw.Font.Height / 2
         
         Draw.Text(oSerie.Text, fTabPos - (fXUnit * (Chart._$ColChart[sidChart].Count + 1)) / 2 - Draw.TextWidth(oSerie.Text) / 2, hChartRect.Bottom + iStaticSpace + iXStep, Align.Center)
         
@@ -199,7 +199,7 @@ Public Function DrawChartAxes(sidChart As String, hChartRect As CRect, fMinValue
 
     Draw.Line(fTabPos, hChartRect.Bottom, fTabPos, hChartRect.Bottom + 2 * Chart._$ColChart[sidChart]._fProportionnal)
     If Chart._$ColChart[sidChart].XAxe.Visible Then 
-      If bBascule Then iXStep = Draw.Font.Height() / 2
+      If bBascule Then iXStep = Draw.Font.Height / 2
       Draw.Text(Chart._$ColChart[sidChart].Headers[i], fTabPos - Draw.TextWidth(Chart._$ColChart[sidChart].Headers[i]) / 2, hChartRect.Bottom + iStaticSpace + iXStep, Align.Center)
       If Chart._$ColChart[sidChart].XAxe.Arrange = Chart._$ColChart[sidChart].XAxe.Steps Then
           bBascule = Not bBascule

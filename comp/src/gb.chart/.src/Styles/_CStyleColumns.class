@@ -18,7 +18,7 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
   Dim i, j As Integer
   Dim f As Float
   Dim YHeadersW As Integer
-  Dim iTwoLetterHeight As Integer = draw.Font.Height() * 2 * Chart._$ColChart[$sidChart]._fProportionnal
+  Dim iTwoLetterHeight As Integer = draw.Font.Height * 2 * Chart._$ColChart[$sidChart]._fProportionnal
   Dim fTabPos As Float
   Dim iXUnit As Float
   Dim iStaticSpace As Integer = 5 * Chart._$ColChart[$sidChart]._fProportionnal

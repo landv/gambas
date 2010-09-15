@@ -170,7 +170,7 @@ Public Sub Draw()
     'Draw.Font.Grade = 4
     Draw.Font = $oTitle.Font
     Draw.Font.Size = $oTitle.Font.Size * _fProportionnal
-    iTitleHeight = Draw.Font.Height() * 2
+    iTitleHeight = Draw.Font.Height * 2
   Endif
 
   iClientWidth = Me.Width - $oLegend._Width - 2 * iStaticSpace
