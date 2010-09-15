@@ -1664,9 +1664,6 @@ void MyMainWindow::showActivate(QWidget *transient)
 
 	// Reparent the window if, for example, there is an already modal window displayed
 	
-	setWindowFlags(Qt::Window);
-	setWindowModality(Qt::NonModal);
-
 	if (CWINDOW_Current && THIS != CWINDOW_Current)
 	{
 		newParentWidget = CWINDOW_Current->widget.widget;
@@ -1786,7 +1783,6 @@ void MyMainWindow::showModal(void)
 		X11_set_transient_for(winId(), CWINDOW_Active->widget.widget->winId());
 	#endif
 
-	setWindowFlags(Qt::Window);
 	setWindowModality(Qt::ApplicationModal);
 
 	if (_resizable && _border)
@@ -1874,22 +1870,8 @@ void MyMainWindow::showPopup(QPoint &pos)
 		
 	if (persistent)
 	{
-		QRect g = geometry();
-		//setSizeGrip(false);
 		setWindowModality(Qt::NonModal);
-		/*setGeometry(0,0,1,1);
-		//setWindowFlags(Qt::Window);
-		THIS->opened = true;
-		show();
-		THIS->opened = false;
-		hide();
-		setGeometry(g.x(), g.y(), g.width(), g.height());*/
-		//setWindowFlags(Qt::Window);
-		//THIS->hidden = true;
-		//doReparent(parentWidget(), flags, this->pos());
-		//#ifndef NO_X_WINDOW
-		//setAttribute(Qt::WA_X11NetWmWindowTypePopupMenu, false);
-		//#endif
+		setWindowFlags(Qt::Window);
 	}
 	
 	CWIDGET_check_hovered();
