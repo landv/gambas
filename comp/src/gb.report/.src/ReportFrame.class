@@ -6,169 +6,119 @@ Inherits ReportControl
 
 Public Const _Properties As String = "*,Border"
 
-'Private $iBorderColor As Integer = Color.Black
-'Private $iBackGround As Integer = Color.White
-'Private $iColor As Integer = Color.Black
-
 Private $fBorderWidth As Float
-'Private $sBorderWidth As String = "1 px"
+
 Private $hBorder As New ReportBorder
-'Private $hImage As Image
 
 Private $hBrush As ReportBrush
 
-'Property BorderColor As Integer
-'Property BackGround As Integer
-'Property Color As Integer
-
-'Property BorderWidth As String
 Property Border As ReportBorder
 
 Property Brush As ReportBrush
 Property Read _BorderWidth As Float
 
-
-
-
-
-' Private Function BorderColor_Read() As Integer
-' 
-'   Return $iBorderColor
-' 
-' End
-' 
-' Private Sub BorderColor_Write(Value As Integer)
-' 
-'   $iBorderColor = Value
-' 
-' End
-' 
-
-
-' Private Function BorderWidth_Read() As String
-' 
-'   Return $sBorderWidth
-' 
-' End
-' 
-' Private Sub BorderWidth_Write(Value As String)
-' 
-'   $sBorderWidth = Value
-' 
-' End
-
 Private Function Border_Read() As ReportBorder
-
+  
   Return $hBorder
-
+  
 End
 
 Private Sub Border_Write(Value As ReportBorder)
-
+  
   $hBorder = Value
-
+  
 End
 
 Public Sub _PaintBefore(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
-
+  
   Dim X1, Y1, X2, Y2 As Float
   Dim hImage As Picture
   Dim fradius As Float
-
+  
+ 
+  
   X1 = (x + hControl.RealLeft) 
   Y1 = (y + hControl.RealTop) 
   X2 = (x + hControl.RealLeft + hControl.RealWidth) 
   Y2 = (y + hControl.RealTop + hControl.RealHeight) 
-
+  
   If Report.Debug Then
-
-
-      Paint.Brush = Paint.Color(0)
-      Paint.Dash = MTools.GetBorder(Line.Dot)
-      Paint.Rectangle(X1, Y1, X2 - X1, Y2 - Y1)
-      Paint.Stroke
-      
+    
+    Paint.Brush = Paint.Color(Color.Green)
+    'Paint.Dash = MTools.GetBorder(Line.Dot)
+    Paint.Rectangle(X1, Y1, X2 - X1, Y2 - Y1)
+    Paint.Stroke
+    
   Else 
-    'si pas de fond alors on ne le dessine pas !
+    
     If Me.Brush = Null Then Return
     Select Case Me.Brush._Type
       Case 0
         Paint.Brush = Paint.Color(Me.Brush._iValue)
       Case 1
         Paint.Brush = paint.Image(Me.Brush._Image, X1, Y1)
-        
       Case 2
         Paint.Brush = paint.LinearGradient(X1, Y1, X1, Y2, Me.Brush._Color, Me.Brush._Pos)
       Case 3
         fradius = If((X2 - X1) > (Y2 - Y1), X2 - X1, Y2 - Y1)
         Paint.Brush = paint.RadialGradient(X1, Y1, fradius, X1, Y1, Me.Brush._Color, Me.Brush._Pos)
-      End Select
+    End Select
     
     Paint.Rectangle(X1, Y1, X2 - X1, Y2 - Y1)
     Paint.Fill
     
-
   Endif 
   
-  
-  
-    
 End
 
-
 Public Sub _PaintFrame(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
+
   _PaintBefore(Page, X, Y, hControl, VirtualId)
   Me._Paint(Page, X, Y, hControl, VirtualId)
   _PaintAfter(Page, X, Y, hControl, VirtualId)
+
 End
-
-
 
 Public Sub _PaintAfter(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
   
-Dim X1, Y1, X2, Y2 As Integer
-Dim fWidth As Float
+  Dim X1, Y1, X2, Y2 As Integer
+  Dim fWidth As Float
+
   X1 = (x + hControl.RealLeft) 
   Y1 = (y + hControl.RealTop) 
   X2 = (x + hControl.RealLeft + hControl.RealWidth) 
   Y2 = (y + hControl.RealTop + hControl.RealHeight) 
   
-    If $hBorder.Style <> Line.None Then 
-      fWidth = MTools.UnitsToPixels($fBorderWidth)
-      'If $hBorder.Style <> Line.Solid Then paint.Dash = MTools.GetBorder(Me.Border)
-      
-      'Draw.BorderStyle = $iBorderStyle
-      'Draw.BorderWidth = $iBorderWidth
-      Paint.Brush = Paint.Color($hBorder.Color)
-      
-      'Draw.Foreground = $iForeground
-      'draw.FillStyle = Fill.None
-        
-     If $hBorder.Top Then paint.Rectangle(X1, Y1, X2 - X1, fWidth)
-     If $hBorder.Right Then paint.Rectangle(X2 - fWidth, Y1, fWidth, Y2 - Y1)
-     If $hBorder.Bottom Then paint.Rectangle(X1, Y2 - fWidth, X2 - X1, fWidth)
-     If $hBorder.Left Then paint.Rectangle(X1, Y1, fWidth, Y2 - Y1)
-      
-      paint.Fill
-      
-    Endif
+  If $hBorder.Style <> Line.None Then 
+    fWidth = MTools.UnitsToPixels($fBorderWidth)
+    
+    Paint.Brush = Paint.Color($hBorder.Color)
+    
+    If $hBorder.Top Then paint.Rectangle(X1, Y1, X2 - X1, fWidth)
+    If $hBorder.Right Then paint.Rectangle(X2 - fWidth, Y1, fWidth, Y2 - Y1)
+    If $hBorder.Bottom Then paint.Rectangle(X1, Y2 - fWidth, X2 - X1, fWidth)
+    If $hBorder.Left Then paint.Rectangle(X1, Y1, fWidth, Y2 - Y1)
+    
+    paint.Fill
+    
+  Endif
   
 End
 
-
 Private Function Brush_Read() As ReportBrush
-
+  
   Return $hBrush
-
+  
 End
 
 Private Sub Brush_Write(Value As ReportBrush)
-
+  
   $hBrush = Value
-
+  
 End
 
 Public Sub _SetUnifiedValues()
+
   Dim hSizeParse As TSizeParse
   
   Super._SetUnifiedValues()
@@ -178,19 +128,18 @@ Public Sub _SetUnifiedValues()
   
 End
 
-
 Public Sub _GetSizeHints(AvailableW As Integer, AvailableH As Integer, TotalWidth As Integer, TotalHeight As Integer) As TSizeHint
-    Dim hMyHints As New TSizeHint
-    
-    hMyHints.Height = Me._Height
-    hMyHints.Width = Me._Width
-    Return hMyHints
+
+  Dim hMyHints As New TSizeHint
+  
+  hMyHints.Height = Me._Height
+  hMyHints.Width = Me._Width
+  Return hMyHints
   
 End
 
-
 Private Function _BorderWidth_Read() As Float
-
+  
   Return $fBorderWidth
-
+  
 End

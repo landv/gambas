@@ -95,13 +95,6 @@ DashDotDot
 C
 i
 5
-#Paint
-
-C
-Rectangle
-M
-
-(X)f(Y)f(W)f(H)f
 #Report
 ReportVBox
 CA
@@ -366,6 +359,10 @@ _SetChildGeometry
 m
 f
 (X)f(Y)f(W)f(H)f(ContPage)i
+_SetVerticalChildGeometry
+m
+f
+(X)f(Y)f(W)f(H)f(ContPage)i
 _GetSizeHints
 m
 TSizeHint
@@ -374,10 +371,6 @@ _GetData
 m
 v
 (sKey)s
-_SetVerticalChildGeometry
-m
-f
-(X)f(Y)f(W)f(H)f(ContPage)i
 #ReportControl
 
 
@@ -486,6 +479,10 @@ p
 b
 
 Ignore
+p
+b
+
+Fixed
 p
 b
 
@@ -696,13 +693,6 @@ p
 i
 
 _new
-m
-
-
-#ReportSection
-ReportContainer
-C
-_New
 m
 
 

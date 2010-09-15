@@ -1,0 +1,63 @@
+' Gambas class file
+
+Static Private $aPage As CPageInfo[]
+Static Private $j As Integer
+Static Public Sub Run(aPage As CPageInfo[])
+$aPage = aPage
+Me.Showmodal
+End
+Public Sub Form_Open()
+
+  Dim hPageItem As CPageInfo
+  Dim i, j As Integer
+  Dim o, p As Object
+  
+  tv.Columns.Count = 3
+  tv.Columns[0].Text = "Objet"
+  tv.Columns[1].Text = "Page Reelle"
+  tv.Columns[2].Text = "Page Relative"
+  
+  tv.Clear
+  $j = 0
+  For Each hPageItem In $aPage
+    Inc i
+    tv.Add("Page" & i, "Page " & i, Picture["icon:/medium/new"])
+    
+    For Each p In hPageItem.Children
+      Inc $j
+      o = p.ctrl
+      Tv.Add($j, Object.Type(o),, "Page" & i)
+      tv[$j][1] = p.RealPage
+      tv[$j][2] = p.relpage
+      If o Is ReportContainer Then Explorechildrens($j, o)
+      
+    Next
+    tv["Page" & i].Expanded = True
+  Next
+
+End
+
+Private Sub Explorechildrens(sParent As String, aCont As ReportContainer)
+  
+  Dim o, p As Object
+  Dim j As Integer
+  For Each p In aCont.Children
+    Inc $J
+    j = $j
+    o = p.ctrl
+      Tv.Add($j, Object.Type(o),, sParent)
+      tv[$j][1] = p.RealPage
+      tv[$j][2] = p.relpage
+      If o Is ReportContainer Then 
+        
+        Tv[j].Picture = Picture[IIf(o Is ReportVBox, "img/control/vbox.png", "img/control/hbox.png")].Image.Stretch(16, 16).picture
+        Explorechildrens($j, o)
+        Else
+          If o Is ReportLabel Then Tv[j].Picture = Picture["img/control/label.png"].Image.Stretch(16, 16).Picture
+      Endif
+      Tv[j].Expanded = True
+  Next
+  
+End
+
+

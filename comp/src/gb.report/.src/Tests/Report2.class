@@ -5,10 +5,14 @@ Public Sub _new()
   
   Dim hresult As Result
   'Report.debug = True
+  ReportLabel8.Fixed = True
+  ReportHBox4.Fixed = True 
+  ReportHBox2.Fixed = True
+  ReportLabel2.Fixed = True
   hCon.Type = "sqlite"
   hCon.Host = User.Home
   hCon.Name = "test"
-  hresult = db.Limit(300).Exec("SELECT * FROM test")
+  hresult = db.Limit(100).Exec("SELECT * FROM test")
   Print hresult.Count
   ReportHBox3.Data = hresult
 End

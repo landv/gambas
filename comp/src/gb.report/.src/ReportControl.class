@@ -37,23 +37,25 @@ Private $sWidth As String = "0 cm"
 Private $sTop As String = "0 cm"
 Private $sPadding As String = "0 cm"
 
+
 Private $iVisible As Boolean = True
 Private $hFont As New Font
 Private $bExpand As Boolean
+Private $bFixed As Boolean
 Private $bAutoresize As Boolean = False
 Private $bRelativeWidth As Boolean
 Private $bRelativeHeight As Boolean
 Private $bRelativePadding As Boolean
 Private $bIgnore As Boolean = False
 
-Property Read _Top As Float
-Property Read _Height As Float
-Property Read _Width As Float
-Property Read _Left As Float
-Property Read _Padding As Float
-Property Read _RelativeWidth As Boolean
-Property Read _RelativeHeight As Boolean
-Property Read _RelativePadding As Boolean
+Property Read _Top As Float               ''Top of the control in cm
+Property Read _Height As Float            ''Height of the control in cm
+Property Read _Width As Float             ''Width of the control in cm
+Property Read _Left As Float              ''Left of the control in cm
+Property Read _Padding As Float           '' Padding of the control in cm
+Property Read _RelativeWidth As Boolean   ''Use percentage for width?
+Property Read _RelativeHeight As Boolean  ''Use percentage for height ?
+Property Read _RelativePadding As Boolean ''Use percentage for padding ?
 
 Property Left As String
 Property Top As String
@@ -64,6 +66,7 @@ Property Visible As Boolean
 Property {Font} As Font
 Property Expand As Boolean
 Property Ignore As Boolean
+Property Fixed As Boolean
 
 Property Autoresize As Boolean
 Property Read {Report} As Report
@@ -361,5 +364,17 @@ End
 Private Function _ReportId_Read() As Integer
 
   Return $iReportId
+
+End
+
+Private Function Fixed_Read() As Boolean
+
+  Return $bFixed
+
+End
+
+Private Sub Fixed_Write(Value As Boolean)
+
+  $bFixed = Value
 
 End

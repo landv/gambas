@@ -115,7 +115,7 @@ Public Sub Paint(Page As Integer)
   With Paint.ClipExtents
     'Debug .X;; .Y;; .Width;; .Height
   End With
-
+  
   Me._ClipChildren(Page, 0, 0, $hReportTControl, -1, $fSCale)
   Me._PaintBefore(Page, 0, 0, $hReportTControl, -1)
   Me._Paint(Page, 0, 0, $hReportTControl, -1)

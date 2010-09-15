@@ -3,11 +3,10 @@
 { Report Report
   #MoveScaled(0,0,58,55)
   Padding = "1 cm"
-  Spacing = "1.1 cm"
   { ReportLabel2 ReportLabel
     #MoveScaled(7.7143,0.8571,37.7143,5.1429)
     Height = "5 cm"
-    Font = Font["+14"]
+    Font = Font["Andale Mono,+12"]
     Text = ("Base de donnée de test")
     Alignment = Align.Center
   }
@@ -18,7 +17,6 @@
     { ReportVBox1 ReportVBox
       #MoveScaled(6,1,44.5714,44.5714)
       Expand = True
-      Spacing = "1 mm"
       { ReportHBox2 ReportHBox
         #MoveScaled(2.5714,6.8571,37.7143,5.1429)
         AutoResize = True
@@ -53,16 +51,18 @@
       }
       { ReportVBox4 ReportVBox
         #MoveScaled(1.7143,13.7143,41.1429,15.4286)
-        Height = "15 cm"
+        Expand = True
+        AutoResize = True
         Border = ReportBorder["0.5 mm,&H000000&,Top"]
         { ReportHBox3 ReportHBox
-          #MoveScaled(0,3.4286,37.7143,5.1429)
+          #MoveScaled(0,4,37.7143,5.1429)
           Height = "1 cm"
           { ReportLabel1 ReportLabel
             #MoveScaled(1.7143,0.8571,10.2857,3.4286)
             Width = "5 cm"
             Font = Font["12"]
             Padding = "0.1 mm"
+            Tag = "*"
             Border = ReportBorder["0.5 mm,&H000000&,Right,Left"]
             Text = ("ReportLabel1")
             Key = "name"
@@ -88,26 +88,26 @@
             Alignment = Align.Center
           }
         }
-      }
-      { ReportHBox4 ReportHBox
-        #MoveScaled(1.7143,31.7143,37.7143,5.1429)
-        Height = "1 cm"
-        AutoResize = True
-        { ReportVBox5 ReportVBox
-          #MoveScaled(0.8571,0.8571,11.1429,3.4286)
-          Width = "5 cm"
-          Border = ReportBorder["0.5 mm,&H000000&,Right,Bottom,Left"]
-        }
-        { ReportVBox6 ReportVBox
-          #MoveScaled(13.7143,0.8571,11.1429,3.4286)
-          Width = "5 cm"
-          Border = ReportBorder["0.5 mm,&H000000&,Right,Bottom"]
-        }
-        { ReportVBox7 ReportVBox
-          #MoveScaled(25.7143,0.8571,11.1429,3.4286)
-          Width = "5 cm"
-          Expand = True
-          Border = ReportBorder["0.5 mm,&H000000&,Right,Bottom"]
+        { ReportHBox4 ReportHBox
+          #MoveScaled(1,10,37.7143,5.1429)
+          Height = "1 cm"
+          { ReportVBox5 ReportVBox
+            #MoveScaled(1,1,11.1429,3.4286)
+            Width = "5 cm"
+            Tag = "*"
+            Border = ReportBorder["0.5 mm,&HF40004&,Right,Bottom,Left"]
+          }
+          { ReportVBox6 ReportVBox
+            #MoveScaled(13.7143,0.8571,11.1429,3.4286)
+            Width = "5 cm"
+            Border = ReportBorder["0.5 mm,&H000000&,Right,Bottom"]
+          }
+          { ReportVBox7 ReportVBox
+            #MoveScaled(25.7143,0.8571,11.1429,3.4286)
+            Width = "5 cm"
+            Expand = True
+            Border = ReportBorder["0.5 mm,&H000000&,Right,Bottom"]
+          }
         }
       }
     }

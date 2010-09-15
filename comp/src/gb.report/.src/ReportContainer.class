@@ -18,8 +18,7 @@ Private $sSpacing As String
 Private $bRelativeSpacing As Boolean
 Private $bRepeat As Boolean
 Private $aChildCopy As TControl[]
-' Private $iCount As Integer
-' Private $bStopRepeat As Boolean
+
 Private $iIndex As Integer
 Private $hData As Object
 Property Read Children As TControl[]
@@ -31,21 +30,19 @@ Property Read _Spacing As Float
 Property Read _RelativeSpacing As Boolean
 
 Public _RealSpacing As Integer
-
+Static Private $iLevel As Integer
 Event Data
 
-
 Public Function _Add(cControl As ReportControl) As TControl
-
+  
   Dim hTControl As New TControl
   
   hTControl.Ctrl = cControl
   $aChild.Add(hTControl)
   ReportControl._ObjectFromId[cControl.Id] = cControl
   Return hTControl
-
+  
 End
-
 
 Public Sub _Remove(id As Integer)
   
@@ -53,44 +50,41 @@ Public Sub _Remove(id As Integer)
   
 End
 
-
 Public Sub _Free()
   
   Dim hCtrl As TControl
+  
   For Each hCtrl In $aChild
     Try ReportControl._ObjectFromId.Remove(hCtrl.Ctrl.Id)
-    'hctrl = NULL
+    
   Next 
   $aChild.Clear
-    
+  
 End
 
 Private Function Children_Read() As TControl[]
-
+  
   Return $aChild
-
+  
 End
 
-
 Private Function Spacing_Read() As String
-
+  
   Return $sSpacing
-
+  
 End
 
 Private Sub Spacing_Write(Value As String)
-
+  
   $sSpacing = Value
-
+  
 End
-
 
 Public Sub _ClipChildren(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer, fScale As Float)
   
   Dim hChild As TControl
   Dim vi As Integer
-  'Dim hExt As PaintExtents
-  'Dim fFrameWidth As Float
+  
   Dim CX1, CX2, CY1, CY2 As Float
   Dim hCont As ReportContainer
   
@@ -108,14 +102,8 @@ Public Sub _ClipChildren(Page As Integer, X As Float, Y As Float, hControl As TC
     vi = VirtualId
     If hControl.VirtualId > -1 Then vi = hControl.VirtualId
     
-    'Evaluate if the object need to be painted
-    
-    'Debug hChild.Ctrl;; X + hChild.RealLeft;; Y + hChild.RealTop;; "->";; X + hChild.RealLeft + hChild.RealWidth;; Y + hChild.RealTop + hChild.RealHeight; " DANS "; CX1;; CY1;; "->";; CX2;; CY2; " ?"
-    
-    'reset the Painting flag
     hChild._SkipPainting = False
-    'Test the painting Position
-
+    
     If Not Paint.Device Is Printer And If CX2 > CX1 And If CY2 > CY1 Then 
       If (X + hChild.RealLeft) > CX2 Then 
         hChild._SkipPainting = True
@@ -140,8 +128,6 @@ Public Sub _ClipChildren(Page As Integer, X As Float, Y As Float, hControl As TC
       Continue
     Endif
     
-    'Debug "-> YES"
-    
     If hChild.Ctrl Is ReportContainer Then
       hCont = hChild.Ctrl
       hCont._ClipChildren(Page, X, Y, hChild, vi, fScale)
@@ -151,59 +137,49 @@ Public Sub _ClipChildren(Page As Integer, X As Float, Y As Float, hControl As TC
   
 End
 
-
 Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
   
   Dim hChild As TControl
-  'Dim vi As Integer
   
   X += hControl.RealLeft
   Y += hControl.RealTop
-  
-  For Each hChild In Me.Children
 
-    'If hChild._SkipPainting Then Continue
-    ' If hchild.RealPage >= Page Then 
-    ' Continue
-    ' Endif
-    If hchild.RelPage = -1 Or hControl.RealPage + hChild.RelPage = Page - 1 Then 
+  For Each hChild In Me.Children
+    'Print object.Type(hchild.Ctrl), hControl.RelPage, hControl.RealPage + hchild.RelPage, Page - 1
     
-    
-    'If hchild.Ctrl Is ReportVBox Then Print Page, "=", hchild.RealPage 
-    
-    Inc MTools.DrawCount
-    
-    'vi = VirtualId
-    $iIndex = VirtualId
-    If hControl.VirtualId > -1 Then $iIndex = hControl.VirtualId
-  
-    hChild.Ctrl._Paintframe(Page, X, Y, hChild, $iIndex)
+    If hchild.RelPage = -1 Or hControl.RealPage + hchild.RelPage = Page - 1 Then 
+      
+      Inc MTools.DrawCount
+      
+      $iIndex = VirtualId
+      If hControl.VirtualId > -1 Then $iIndex = hControl.VirtualId
+      
+      hChild.Ctrl._Paintframe(Page, X, Y, hChild, $iIndex)
     Endif
     
   Next 
   
 End
 
-
 Private Function _Spacing_Read() As Float
-
+  
   Return $fSpacing
-
+  
 End
 
-
 Private Function _RelativeSpacing_Read() As Boolean
-
+  
   Return $bRelativeSpacing
-
+  
 End
 
 Public Sub _SetUnifiedValues()
+  
   Dim hChild As TControl
   Dim hSizeParse As TSizeParse
   
   Super._SetUnifiedValues()
-
+  
   hSizeParse = New TSizeParse($sSpacing, True)
   $fSpacing = hSizeParse.GetValue()
   $bRelativeSpacing = hSizeParse.IsRelative()
@@ -215,7 +191,6 @@ Public Sub _SetUnifiedValues()
   
 End
 
-
 Public Sub _GenerateClones()
   
   Dim hTControl, hNewTControl, hTc As TControl
@@ -226,47 +201,35 @@ Public Sub _GenerateClones()
   Dim bRaiseRet As Boolean
   Dim aCopy As TControl[]
   
+  If $aChildCopy Then 
+    $aChild = $aChildCopy.Copy()
+  Endif 
+  aCopy = $aChild.Copy()
   
-    If $aChildCopy Then 
-      $aChild = $aChildCopy.Copy()
-    Endif 
-    aCopy = $aChild.Copy()
-    
-    For Each hTc In aCopy
-      If hTc.Ctrl Is ReportContainer Then 
-        hCont = hTc.Ctrl
-        If hCont.Data Then 
-          aNewChild = New TControl[]
-          'i = 0
-          For i = 0 To hCont.Data.Count - 1
-            'Inc i
-            hNewTControl = New TControl
-            hNewTControl.Ctrl = hTc.Ctrl
-            hNewTControl.VirtualId = i
-            aNewChild.Add(hNewTControl)
-
-          Next
-          $aChild = $aChild.Insert(aNewChild, $aChild.Find(hTc))
-          $aChild.Remove($aChild.Find(hTc))
-  
-        Endif
-        hCont._GenerateClones
+  For Each hTc In aCopy
+    If hTc.Ctrl Is ReportContainer Then 
+      hCont = hTc.Ctrl
+      If hCont.Data Then 
+        aNewChild = New TControl[]
+        
+        For i = 0 To hCont.Data.Count - 1
+          
+          hNewTControl = New TControl
+          hNewTControl.Ctrl = hTc.Ctrl
+          hNewTControl.VirtualId = i
+          aNewChild.Add(hNewTControl)
+          
+        Next
+        $aChild = $aChild.Insert(aNewChild, $aChild.Find(hTc))
+        $aChild.Remove($aChild.Find(hTc))
+        
       Endif
-    Next
-    If $aChild.Count <> aCopy.Count Then $aChildCopy = aCopy
-  ' Else
-  '   'if no data array is set
-  '   For Each hTc In $aChild
-  '     If hTc.Ctrl Is ReportContainer Then 
-  '       hcont = hTc.Ctrl
-  '       hCont._GenerateClones
-  '     Endif
-  '   Next
-  ' 
-  ' Endif
-
+      hCont._GenerateClones
+    Endif
+  Next
+  If $aChild.Count <> aCopy.Count Then $aChildCopy = aCopy
+  
 End
-
 
 Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer) As Float
   
@@ -287,39 +250,31 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
   Dim i As Integer
   Dim tmpX As Float
   Dim aIgnored As New TControl[]  
-
-        'If H > 5000 Then Stop
   
   If _Arrangement = Arrange.Vertical Then 
-  'Return _SetVerticalChildGeometry(X, Y, W, H, ContPage)
+    Return _SetVerticalChildGeometry(X, Y, W, H, ContPage)
     
     fSpc = IIf(Me._RelativeSpacing, H * Me._Spacing / 100, Me._Spacing) 'ME._Spacing
     fPdg = Me._Padding
-
+    
     X = fPdg
     Y = fPdg
     W -= fPdg * 2
     H -= fPdg * 2
     tmpX = X
-
-    'Calcul des zone libres pour l'extention et 
-    'repartition des controles par pages
-
-     For Each hChild In Me.Children
-
+    
+    For Each hChild In Me.Children
+      
       hChildHints = hChild.ctrl._GetSizeHints(W, H - fSExp, W, H)
       
       hchild.SizeHint = hChildHints
-        If hChild.Ctrl.Ignore Then 
-          aIgnored.Add(hchild)
-          Continue
-        Endif
-
+      If hChild.Ctrl.Ignore Then 
+        aIgnored.Add(hchild)
+        Continue
+      Endif
+      
       If hChild.ctrl.Expand Then Inc iNExp
       
-      
-         'Print fSExp + hChildHints.Height > H, fSExp + hChildHints.Height, H
-       If h - Y <= 0 Then Print fSExp, hChildHints.Height, "=", H
       If fSExp + hChildHints.Height > H And Not Me Is Report Then 
         fSExp -= fSpc
         aPageItems.SExp = H - fsExp
@@ -328,16 +283,16 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
         aPageItems = New CPageInfo
         fsExp = 0
         iNExp = 0
-      
+        
       Endif
-
-        fSExp += hChildHints.Height
-
-        hChild.RelPage = aPage.Count
-        hChild.RealPage = ContPage + aPage.Count
-'         Print hchild.RealPage
-        aPageItems.Children.Add(hChild)
-        fSExp += fSpc
+      
+      fSExp += hChildHints.Height
+      
+      hChild.RelPage = aPage.Count
+      hChild.RealPage = ContPage + aPage.Count
+      
+      aPageItems.Children.Add(hChild)
+      fSExp += fSpc
     Next
     
     fSExp -= fSpc 
@@ -353,16 +308,16 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
     Endif
     
     For i = 0 To aPage.Max
-    
-       X = fPdg
-       Y = fPdg
-
-       bFirst = True
+      
+      X = fPdg
+      Y = fPdg
+      
+      bFirst = True
       
       For Each hChild In aPage[i].Children
-        If hchild.Ctrl.Ignore Then Continue
+        
         hChildHints = hChild.ctrl._GetSizeHints(W, H - Y, W, H) '.SizeHint '.ctrl._GetSizeHints(W, H - Y, W, H)
-
+        
         If Not bFirst Then 
           Y += fSpc
         Endif
@@ -377,36 +332,24 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
         If fH = 0 Then 
           Break
           
-        
         Endif
         iPage = iPage + hChild._SetGeometry(X, Y, W, fH)
         
         Y += fH
-  
+        
       Next
       
     Next 
-    For Each hchild In aIgnored
-      hchild._SetGeometry(hchild.Ctrl._Left, hchild.Ctrl._Top, hchild.Ctrl._Width, hchild.Ctrl._Height)
-    Next 
-  
     
     Return aPage.Max + iPage
-  
-  
-  
-  
+    
   Endif
   
-  '*******************************
-  '*   Horizontal arrangement    *
-  '*******************************
-  
   If _Arrangement = Arrange.Horizontal Then
-  
+    
     fSpc = IIf(Me._RelativeSpacing, W * Me._Spacing / 100, Me._Spacing) 'ME._Spacing
     fPdg = Me._Padding
-      
+    
     X = fPdg
     Y = fPdg
     W -= fPdg * 2
@@ -414,7 +357,7 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
     
     For Each hChild In Me.Children
       If hChild.Ctrl.Ignore Then Continue
-
+      
       hChildHints = hChild.ctrl._GetSizeHints(W - fSExp, H, W, H)
       hchild.SizeHint = hChildHints
       If hChild.ctrl.Expand Then 
@@ -422,8 +365,11 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
       Else 
         fSExp += hChildHints.Width
       Endif
-       'Print "H", fSExp + hChildHints.Height, H
+      
       fSExp += fSpc
+      
+      hchild.RealPage = ContPage
+      If Not hchild.Ctrl.Fixed Then hChild.RelPage = 0
       
     Next
     
@@ -433,10 +379,10 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
     bFirst = True
     
     For Each hChild In Me.Children
-       If hChild.Ctrl.Ignore Then 
-          aIgnored.Add(hChild)
-          Continue
-        Endif
+      If hChild.Ctrl.Ignore Then 
+        aIgnored.Add(hChild)
+        Continue
+      Endif
       hChildHints = hchild.SizeHint 'hChild.ctrl._GetSizeHints(W - X, H, W, H)
       
       If Not bFirst Then 
@@ -452,8 +398,9 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
       Endif 
       
       nbPage = hChild._SetGeometry(X, Y, fW, h)
-  
+      
       If nbPage > iPage Then iPage = nbPage
+      If iPage > 0 Then hchild.RelPage = -1
       X += fW
       
     Next
@@ -462,35 +409,30 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
       hchild._SetGeometry(hchild.Ctrl._Left, hchild.Ctrl._Top, hchild.Ctrl._Width, hchild.Ctrl._Height)
     Next
     
-    
     Return iPage
   Endif
   
-  '*******************************
-  '*       Fill arrangement      *
-  '*******************************
-  
   If _Arrangement = Arrange.Fill Then
-      fPdg = Me._Padding
-      
-      X = fPdg
-      Y = fPdg
-      W -= fPdg * 2
-      H -= fPdg * 2
-      
-      For Each hChild In Me.Children
-        If hChild.Ctrl.Ignore Then 
-          aIgnored.Add(hChild)
-          Continue
-        Endif
-        hChildHints = hChild.ctrl._GetSizeHints(W - X, H, W, H)
-        hchild._SetGeometry(X, Y, W, H)
-      Next
+    fPdg = Me._Padding
+    
+    X = fPdg
+    Y = fPdg
+    W -= fPdg * 2
+    H -= fPdg * 2
+    
+    For Each hChild In Me.Children
+      If hChild.Ctrl.Ignore Then 
+        aIgnored.Add(hChild)
+        Continue
+      Endif
+      hChildHints = hChild.ctrl._GetSizeHints(W - X, H, W, H)
+      hchild._SetGeometry(X, Y, W, H)
+    Next
     
     For Each hChild In aIgnored
       hchild._SetGeometry(hchild.Ctrl._Left, hchild.Ctrl._Top, hchild.Ctrl._Width, hchild.Ctrl._Height)
     Next
-  
+    
   Endif
   
 End
@@ -506,47 +448,36 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   
   If Me._SizeInt.StoreSize Then Return Me._SizeInt
   
-  '*******************************
-  '*    Vertical arrangement     *
-  '*******************************
   If _Arrangement = Arrange.Vertical Then
-    'If Me._Height = 10 Then Stop
+    
     fSpacing = IIf(Me._RelativeSpacing, TotalHeight * Me._Spacing / 100, Me._Spacing)
     
     For Each hChild In Me.Children
-      'Obtention des volontées des enfants
-      hChildHints = hChild.ctrl._GetSizeHints(AvailableW, AvailableH - hMyHints.Height, AvailableW, AvailableH)
-       ' If hChildHints.Height = 0 Then 
-       '   Print 
-       ' Endif
       
+      hChildHints = hChild.ctrl._GetSizeHints(AvailableW, AvailableH - hMyHints.Height, AvailableW, AvailableH)
       
       hMyHints.StoreSize = True
-      'si l'enfant a une raison quelconque de dire que sa taille est variable alors je ne mémorise pas la valeur
+      
       If hChild.ctrl._SizeInt.StoreSize Then hMyHints.StoreSize = False
-      'si la taille de l'enfant est lui même variable idem
+      
       If hchild.Ctrl.Autoresize Then hMyHints.StoreSize = False
-      'Si l'enfant peut être affecté pas l'arrangement alors on le  compte dans la hauteur totale
+      
       If Not hchild.Ctrl.Ignore Then hMyHints.Height += hChildHints.Height + fSpacing 'ME._Spacing
-      'Si j'ai une largeur inférieur a celle de mon enfant, alor je lui impose ma largeur
-      '!!! Il n'est pas sur que ce controle soit bien nécéssaire !!!
+      
       If hMyHints.Width < hChildHints.Width Then hMyHints.Width = hChildHints.Width
       
     Next 
     
-        If hMyHints.Height = 0 Then
-        Print
-    Endif
-    'je déduit un espace inter enfant
+    
+    
     hMyHints.Height -= fSpacing 
-    'je doit prendre en compte mes margeset mes bordures !
+    
     hMyHints.Height += 2 * Me._Padding + 2 * Me._BorderWidth
     
-    'Je dit que moi je veux toute la largeur
     fHeight = Me._Height 
-    'Si ce que mes enfants demande est inférieur a ma taille d'origine alors je maintient ma taille d'origine
+    
     If hMyHints.Height < fHeight And Not Me.Autoresize Then hMyHints.Height = fHeight
-    'si ma hauteur est relative, 
+    
     If Me._RelativeHeight Then hMyHints.Height = AvailableH * Me._Height / 100
     
     If hMyHints.Height > AvailableH Then 
@@ -557,71 +488,57 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
       Endif
     Endif
     
-    
     If Not Me.Autoresize Then 
       If Me._RelativeWidth Then hMyHints.Width = AvailableW * Me._Width / 100
       hMyHints.Width = Me._Width 
     Endif
-
-    Me._SizeInt = hMyHints
-
-    ' If hMyHints.Height = 0 Then 
-    '   Print
-    ' Endif
     
+    Me._SizeInt = hMyHints
     
     Return hMyHints
-
+    
   Endif
   
-  '*******************************
-  '*   Horizontal arrangement    *
-  '*******************************
   If _Arrangement = Arrange.Horizontal Then
-      
+    
     fSpacing = IIf(Me._RelativeSpacing, TotalWidth * Me._Spacing / 100, Me._Spacing)
-     'If Me._Height = 2 Then Stop
+    
     For Each hChild In Me.Children
       
-      'Obtention des volontées des enfants
       hChildHints = hChild.ctrl._GetSizeHints(AvailableW - hMyHints.Width, AvailableH, AvailableW, AvailableH)
       
       hMyHints.StoreSize = True
-      'si l'enfant a une raison quelconque de dire que sa taille est variable
+      
       If hChild.ctrl._SizeInt.StoreSize Then hMyHints.StoreSize = False
-      'si la taille de l'enfant est variable
+      
       If hchild.Ctrl.Autoresize Then hMyHints.StoreSize = False
       
       If Not hchild.Ctrl.Ignore Then hMyHints.Width += hChildHints.Width + fSpacing 'ME._Spacing
       If hMyHints.Height < hChildHints.Height Then hMyHints.Height = hChildHints.Height
     Next 
-      hMyHints.Width -= fSpacing 
-      hMyHints.Width += 2 * Me._Padding
-      If Me._RelativeWidth Then hMyHints.Width = AvailableW * Me._Width / 100
-    'je veut ma hauteur !
+    hMyHints.Width -= fSpacing 
+    hMyHints.Width += 2 * Me._Padding
+    If Me._RelativeWidth Then hMyHints.Width = AvailableW * Me._Width / 100
+    
     If Not Me.Autoresize Then 
       hMyHints.Height = Me._Height
       If Me._RelativeHeight Then hMyHints.Height = AvailableH * Me._Height / 100
     Endif
     Me._SizeInt = hMyHints
-    'If hMyHints.Height > 5000 Then Stop
+    
     Return hMyHints
   Endif
   
-  
-  '*******************************
-  '*       Fill arrangement      *
-  '*******************************
   If _Arrangement = Arrange.Fill Then
-  
-      hMyHints.Width = Me._Height
-      hMyHints.Height = Me._Height
+    
+    hMyHints.Width = Me._Height
+    hMyHints.Height = Me._Height
     Me._SizeInt.StoreSize = True
     Me._SizeInt = hMyHints
     Return hMyHints
   Endif
+  
 End
-
 
 Public Function _GetData(sKey As String) As Variant
   
@@ -632,25 +549,26 @@ Public Function _GetData(sKey As String) As Variant
     Endif
   Else
     If $hdata <> Null And If $hData[0].Exist(sKey) Then
-        Return $hdata[$iIndex][skey]
+      Return $hdata[$iIndex][skey]
     Endif
   Endif
   
   If Not Me.Parent Is Report Then Return Me.Parent._GetData(sKey)
-
+  
   Return Null
+  
 End
 
 Private Function Index_Read() As Integer
-
+  
   Return $iIndex
-
+  
 End
 
 Private Function Data_Read() As Object
-
+  
   Return $hData
-
+  
 End
 
 Private Sub Data_Write(Value As Object)
@@ -667,62 +585,116 @@ Private Sub Data_Write(Value As Object)
       Error.Raise(("You must give a Collecton[] object or a Result Object"))
       Return
     Endif
-   Endif
+  Endif
   
   $hData = Value
-
+  
 End
 
-
 Public Function _SetVerticalChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer) As Float
+  
   Dim hChildHints As TSizeHint
   Dim hChild As TControl
   Dim iChildrenH As Float
+  Dim iChildPage As Integer
   Dim PageSExp As New Float[]
   Dim PageNExp As New Integer[]
   Dim iPage, nbPage As Integer
   Dim aPage As New CPageInfo[]
   Dim aPageItems As New CPageInfo
-  Dim iNExp As Integer
-  Dim fSExp As Float
-  Dim fSpc As Float
-  Dim fPdg As Float
-  Dim bFirst As Boolean 
+  Dim iNExp As Integer  ''Number of expanded control in the children
+  Dim fSExp As Float  ''Space used by non expended controls
+  Dim fSpc As Float  ''space between controls in the container
+  Dim fPdg As Float  ''Padding of the container
+  Dim bFirst As Boolean   ''not used
   Dim fH, hW, fW As Float
   Dim i As Integer
   Dim tmpX As Float
   Dim aIgnored As New TControl[]  
- 
+  Inc $iLevel
   fSpc = IIf(Me._RelativeSpacing, H * Me._Spacing / 100, Me._Spacing) 'ME._Spacing
-    fPdg = Me._Padding
-     X = fPdg
-    Y = fPdg
-    W -= fPdg * 2
-    H -= fPdg * 2
-    tmpX = X
+  fPdg = Me._Padding
+  X = fPdg
+  Y = fPdg
+  W -= fPdg * 2
+  H -= fPdg * 2
+  tmpX = X
+  
+  For Each hchild In $aChild
+    
+    hChildHints = hchild.Ctrl._GetSizeHints(W, H - fSExp, W, H)
+    
+    Y += fSpc
+    fH = hChildHints.Height
+    If hchild.Ctrl.Expand Then 
+      Inc iNExp
+    Endif
+    
+    If fSExp + hChildHints.Height > H And Not hchild.Ctrl.Fixed Then
+      
+      fSExp -= fSpc  'Je retire le dernier espace
+      aPageItems.SExp = H - fSExp  'Enregistre la place disponible pour les expendable
+      aPageItems.NExp = iNExp 'enregistre le nombre d'expendable
+      aPage.Add(aPageItems) 'Ajoute la page aux dossier
+      aPageItems = New CPageInfo  'génère une nouvelle page
+      fSExp = 0  'Réinitialise l'espace consommé par les non expendable  
+      iNExp = 0  'réinitialise le nombre d'expendable
+    Endif
+    
+    fsExp += hChildHints.Height  'ajoute la hauteur de cet enfant
 
- For Each hchild In $aChild
-   
-   hChildHints = hchild.Ctrl._GetSizeHints(W, H, W, H)
-   ' If h - Y <= 0 Then 
-   '   Break
-   ' Endif
-   
-   Y += fSpc
-   fH = hChildHints.Height
-   
-   iPage = iPage + hChild._SetGeometry(X, Y, W, fH)
-   'hchild.RelPage = -1
-   
-   Y += fH
- Next
- 
- aPage.Add(aPageItems)
- 
-    Return aPage.Max + iPage
+    
+    If Not hchild.Ctrl.Fixed Then hChild.RelPage = aPage.Count 'stocke la page relative dans le controle
+    hChild.RealPage = ContPage + aPage.Count 'Stocke la page précalculée 
+    
+    aPageItems.Children.Add(hChild)  'enregistre le controle sur la page
+    fSExp += fSpc                'Ajoute un espace
+    
+  Next
   
-  
-  
-  
+  fSExp -= fSpc  'Je retire le dernier espace
+  aPageItems.SExp = H - fSExp  'Enregistre la place disponible pour les expendable
+  aPageItems.NExp = iNExp 'enregistre le nombre d'expendable
+  aPage.Add(aPageItems) 'Ajoute la page aux dossier
 
+
+  
+  For Each aPageItems In aPage
+    X = fPdg  'L'élément premier commence après le padding
+    Y = fPdg  'L'élément premier commence après le padding
+    
+    bFirst = True 'Gère l'ajout des espaces
+    
+    For Each hchild In aPageItems.Children
+      hChildHints = hchild.ctrl._GetSizeHints(W, H - Y, W, H)  'récupère les besoin des enfants
+      
+      If Not bFirst Then Y += fSpc 'N'ajoute un espace qu'a partir du deuxième élément
+      If hChild.Ctrl.Expand Then
+        Try fH = hChildHints.Height + (aPageItems.SExp / aPageItems.NExp)
+      Else
+        fH = hChildHints.Height
+      Endif
+       'If fH = 0 Then 
+       '   Break
+          
+        'Endif
+        'Print hchild.RealPage
+      iChildPage = hchild._SetGeometry(X, Y, W, fH)
+      If iChildPage > 0 Then hchild.RelPage = -1
+      iPage += iChildPage
+      
+      
+      y += fH
+      
+    Next
+  
+  Next
+  
+  
+  'If $iLevel = 1 Then Form1.Run(aPage)
+  
+  Dec $iLevel
+  
+  Return aPage.Max + iPage
+  
 End
