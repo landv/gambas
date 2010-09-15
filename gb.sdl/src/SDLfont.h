@@ -48,10 +48,12 @@ public:
 
 	static StringList GetFontList(void );
 	static void Init(void );
-	static void Exit(void );
 	
 	void SetFontName(char* name);
 	void SetFontSize(int size);
+	void SetFontBold(bool state);
+	void SetFontItalic(bool state);
+	void SetFontStrikeout(bool state);
 	void SetFontUnderline(bool state);
 
 	const char* GetFontName(void );
@@ -60,7 +62,10 @@ public:
 	int GetFontDescent(void );
 
 	bool IsFontFixed(void );
-	bool IsFontUnderlined(void );
+	bool IsFontBold(void );
+	bool IsFontItalic(void );
+	bool IsFontStrikeout(void );
+	bool IsFontUnderline(void );
 	bool IsFontScalable(void );
 
 	void SizeText(const char* text, int *width, int *height);
@@ -69,16 +74,13 @@ public:
 private:
 	int hfonttype;
 	int hfontsize;
+	int hfontindex;
 	std::string hfontname;
 
 	/* SDL_TTF font */
 	TTF_Font *hSDLfont;
         int hSDLfontstyle;
 	
-	/* System font */
-	static Display *display;
-	static int screen;
-	int hfontindex;
 };
 
 #endif /* _SDLFONT_H */

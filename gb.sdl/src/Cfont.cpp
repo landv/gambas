@@ -128,6 +128,42 @@ BEGIN_PROPERTY(CFONT_size)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(CFONT_bold)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(FONT->IsFontBold());
+	else
+		FONT->SetFontBold(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CFONT_italic)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(FONT->IsFontItalic());
+	else
+		FONT->SetFontItalic(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CFONT_strikeout)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(FONT->IsFontStrikeout());
+	else
+		FONT->SetFontStrikeout(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CFONT_underline)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(FONT->IsFontUnderline());
+	else
+		FONT->SetFontUnderline(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
 BEGIN_PROPERTY(CFONT_ascent)
 
 	GB.ReturnInteger(FONT->GetFontAscent());
@@ -174,30 +210,22 @@ GB_DESC CFont[] =
 
   GB_PROPERTY("Name", "s", CFONT_name),
   GB_PROPERTY("Size", "i", CFONT_size),
+  GB_PROPERTY("Bold", "b", CFONT_bold),
+  GB_PROPERTY("Italic", "b", CFONT_italic),
+  GB_PROPERTY("StrikeOut", "b", CFONT_strikeout),
+  GB_PROPERTY("Underline", "b", CFONT_underline),
 
   GB_PROPERTY_READ("Ascent", "i", CFONT_ascent),
   GB_PROPERTY_READ("Descent", "i", CFONT_descent),
   GB_PROPERTY_READ("Fixed", "b", CFONT_fixed),
   GB_PROPERTY_READ("Scalable", "b", CFONT_scalable),
-
+ 
   GB_METHOD("Width", "i", CFONT_width, "(Text)s"),
   GB_METHOD("Height", "i", CFONT_height, "(Text)s"),
   GB_METHOD("Image", "Image", CFONT_image, "(Text)s"),
   
 /*
-  GB_STATIC_METHOD("_init", NULL, CFONT_init, NULL),
-  GB_STATIC_METHOD("_exit", NULL, CFONT_exit, NULL),
-
   GB_PROPERTY("Grade", "i", CFONT_grade),
-  GB_PROPERTY("Bold", "b", CFONT_bold),
-  GB_PROPERTY("Italic", "b", CFONT_italic),
-  GB_PROPERTY("Underline", "b", CFONT_underline),
-  GB_PROPERTY("StrikeOut", "b", CFONT_strikeout),
-
-  GB_METHOD("ToString", "s", CFONT_to_string, NULL),
-  GB_STATIC_METHOD("_get", "Font", CFONT_get, "(Font)s"),
-
-  GB_PROPERTY_READ("Styles", "String[]", CFONT_styles),
 */
   GB_END_DECLARE
 };

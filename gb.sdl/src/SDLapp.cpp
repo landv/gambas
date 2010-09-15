@@ -93,7 +93,6 @@ SDLapplication::~SDLapplication()
 		return;
 	}
 
-	SDLfont::Exit();
 	TTF_Quit();
 	Uint32 sysInit = SDL_WasInit(SDL_INIT_EVERYTHING);
 

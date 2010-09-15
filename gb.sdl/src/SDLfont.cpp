@@ -38,10 +38,7 @@ typedef struct {
 	} fontdesc;
 	
 static std::vector<fontdesc> fontDB;
-
 static StringList _FontList;
-Display *SDLfont::display = 0;
-int SDLfont::screen = 0;
 
 #define DEFAULT_FONT_SIZE 20
 #define DEFAULT_DPI 72 /* Default DPI size in SDL_TTF */
@@ -56,13 +53,17 @@ inline bool cmp_db_nocase(const fontdesc x, const fontdesc y)
 
 StringList SDLfont::GetFontList(void )
 {
-	if (LIKELY(_FontList.empty() == 0))
-		return _FontList;
+	return _FontList;
+}
 
-	Display *disp = SDLapp->X11appDisplay();
-	XftFontSet *FntnameSet = XftListFonts(disp, DefaultScreen(disp), NULL,
-		XFT_FAMILY, /*XFT_FILE, XFT_FOUNDRY,*/ NULL);
+void SDLfont::Init()
+{
+	Display *disp = XOpenDisplay(NULL);
+	int scr = XDefaultScreen(disp);
 	int i;
+
+	XftFontSet *FntnameSet = XftListFonts(disp, scr, 0,
+		XFT_FAMILY, NULL);
 	
 	// Get the fonts name
 	for (i = 0; i < FntnameSet->nfont; i++)	{
@@ -76,7 +77,7 @@ StringList SDLfont::GetFontList(void )
 		if (res!=XftResultMatch)
 			continue;
 
-		XftFontSet *Fntdetail = XftListFonts(disp, DefaultScreen(disp),
+		XftFontSet *Fntdetail = XftListFonts(disp, scr,
 			XFT_FAMILY, XftTypeString, name[0], 0,
 			XFT_FOUNDRY, NULL);
 		j = Fntdetail->nfont;
@@ -118,7 +119,7 @@ StringList SDLfont::GetFontList(void )
 	while (i<int(fontDB.size())) {
 		char *res[255];
 		
-		XftFontSet *Fntdetail = XftListFonts(disp, DefaultScreen(disp),
+		XftFontSet *Fntdetail = XftListFonts(disp, scr,
 				XFT_FAMILY, XftTypeString, fontDB[i].realname.c_str(),
 				XFT_FOUNDRY, XftTypeString, fontDB[i].foundry.c_str(), 0,
 				XFT_FILE, NULL);
@@ -128,18 +129,8 @@ StringList SDLfont::GetFontList(void )
 		XFree(Fntdetail);
 		i++;
 	}
-
-	return _FontList;
-}
-
-void SDLfont::Init()
-{
-	display = SDLapp->X11appDisplay();
-	screen = DefaultScreen(display);
-}
-
-void SDLfont::Exit()
-{
+	
+	XCloseDisplay(disp);
 }
 
 SDLfont::SDLfont()
@@ -148,7 +139,6 @@ SDLfont::SDLfont()
 	hfontsize = DEFAULT_FONT_SIZE;
 	hfontindex = 0;
 	
-	SDLfont::GetFontList();
 	hfontname = fontDB[hfontindex].path;
 	hSDLfont = TTF_OpenFont(hfontname.c_str(), hfontsize);
 
@@ -180,35 +170,77 @@ void SDLfont::SetFontName(char* name)
 
 const char* SDLfont::GetFontName(void )
 {
-	if (hfonttype == SDLTTF_font) {
-		std::string name; 
-		name = hfontname.substr((hfontname.find_last_of("/"))+1);
-		return name.c_str();
-	}
+	if (hfonttype == SDLTTF_font)
+		return hfontname.substr((hfontname.find_last_of("/"))+1).c_str();
 	else
 		return fontDB[hfontindex].name.c_str();
 }
 
 void SDLfont::SetFontSize(int size)
 {
+	int style = TTF_GetFontStyle(hSDLfont);
 	hfontsize = size;
 
-	if (hSDLfont)
-		TTF_CloseFont(hSDLfont);
-
+	TTF_CloseFont(hSDLfont);
 	hSDLfont = TTF_OpenFont(hfontname.c_str(), hfontsize);
 
 	if (UNLIKELY(hSDLfont == NULL))
 		SDLerror::RaiseError(TTF_GetError());
+	
+	TTF_SetFontStyle(hSDLfont, style);
+}
+
+void SDLfont::SetFontBold(bool state)
+{
+	if (state == (TTF_GetFontStyle(hSDLfont) & TTF_STYLE_BOLD))
+		return;
+	
+	TTF_SetFontStyle(hSDLfont, (TTF_GetFontStyle(hSDLfont) ^ TTF_STYLE_BOLD));
+}
+
+bool SDLfont::IsFontBold(void )
+{
+	return (TTF_GetFontStyle(hSDLfont) & TTF_STYLE_BOLD);
+}
+
+
+void SDLfont::SetFontItalic(bool state)
+{
+	if (state == (TTF_GetFontStyle(hSDLfont) & TTF_STYLE_ITALIC))
+		return;
+	
+	TTF_SetFontStyle(hSDLfont, (TTF_GetFontStyle(hSDLfont) ^ TTF_STYLE_ITALIC));
+}
+
+bool SDLfont::IsFontItalic(void )
+{
+	return (TTF_GetFontStyle(hSDLfont) & TTF_STYLE_ITALIC);
+}
+
+void SDLfont::SetFontStrikeout(bool state)
+{
+	if (state == (TTF_GetFontStyle(hSDLfont) & TTF_STYLE_STRIKETHROUGH))
+		return;
+	
+	TTF_SetFontStyle(hSDLfont, (TTF_GetFontStyle(hSDLfont) ^ TTF_STYLE_STRIKETHROUGH));
+}
+
+bool SDLfont::IsFontStrikeout(void )
+{
+	return (TTF_GetFontStyle(hSDLfont) & TTF_STYLE_STRIKETHROUGH);
 }
 
 void SDLfont::SetFontUnderline(bool state)
 {
+	if (state == (TTF_GetFontStyle(hSDLfont) & TTF_STYLE_UNDERLINE))
+		return;
+	
+	TTF_SetFontStyle(hSDLfont, (TTF_GetFontStyle(hSDLfont) ^ TTF_STYLE_UNDERLINE));
 }
 
-bool SDLfont::IsFontUnderlined(void )
+bool SDLfont::IsFontUnderline(void )
 {
-	return false;
+	return (TTF_GetFontStyle(hSDLfont) & TTF_STYLE_UNDERLINE);
 }
 
 bool SDLfont::IsFontScalable(void )
@@ -233,7 +265,7 @@ bool SDLfont::IsFontFixed(void )
 
 void SDLfont::SizeText(const char *text, int *width, int *height)
 {
-	TTF_SizeText(hSDLfont, text, width, height);
+	TTF_SizeUTF8(hSDLfont, text, width, height);
 }
 
 SDLsurface* SDLfont::RenderText(const char* text)

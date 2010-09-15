@@ -31,7 +31,7 @@
 
 static CDRAW draw_stack[DRAW_STACK_MAX];
 static CDRAW *draw_current = 0;
-static CFONT *default_font = 0;
+static GB_CLASS font_id = NULL;
 
 #define THIS (draw_current)
 #define GFX (THIS->graphic)
@@ -56,10 +56,7 @@ static bool check_graphic(void)
 
 void DRAW_begin(void *device)
 {
-	static GB_CLASS font_id = NULL;
-
-	if (THIS >= &draw_stack[DRAW_STACK_MAX - 1])
-	{
+	if (THIS >= &draw_stack[DRAW_STACK_MAX - 1]) {
 		GB.Error("Too many nested drawings");
 		return;
 	}
@@ -84,8 +81,7 @@ void DRAW_begin(void *device)
 	GB.New(POINTER(&FONT), font_id, NULL, NULL);
 	GB.Ref(FONT);
 	
-	if (GB.Is(device, CLASS_Window))
-	{
+	if (GB.Is(device, CLASS_Window)) {
 		THIS->device = device;
 		THIS->graphic = new SDLgfx(WINDOWID(device));
 		GB.Ref(THIS->device);
