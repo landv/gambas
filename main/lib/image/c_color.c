@@ -182,7 +182,9 @@ void COLOR_hsv_to_rgb(int h, int s, int v, int *R, int *G, int *B)
 
 GB_COLOR COLOR_merge(GB_COLOR col1, GB_COLOR col2, double weight)
 {
-	int a, r, g, b;
+	int r, g, b;
+	int h1, s1, v1, a1;
+	int h2, s2, v2, a2;
 	
 	if (weight == 0.0)
 		return col1;
@@ -190,14 +192,16 @@ GB_COLOR COLOR_merge(GB_COLOR col1, GB_COLOR col2, double weight)
 		return col2;
 	else
 	{
-		#define MIX_COLOR(_shift) (int)((((col2 >> _shift) & 0xFF) * weight + ((col1 >> _shift) & 0xFF) * (1 - weight)) + 0.5)
+		gt_color_to_rgba(col1, &r, &g, &b, &a1);
+		COLOR_rgb_to_hsv(r, g, b, &h1, &s1, &v1);
+		gt_color_to_rgba(col2, &r, &g, &b, &a2);
+		COLOR_rgb_to_hsv(r, g, b, &h2, &s2, &v2);
 		
-		a = MIX_COLOR(24);
-		r = MIX_COLOR(16);
-		g = MIX_COLOR(8);
-		b = MIX_COLOR(0);
+		#define MIX(_val1, _val2) ((int)((_val1) * (1 - weight) + (_val2) * weight + 0.5))
 		
-		return gt_rgba_to_color(r, g, b, a);
+		COLOR_hsv_to_rgb(MIX(h1, h2), MIX(s1, s2), MIX(v1, v2), &r, &g, &b);
+		
+		return gt_rgba_to_color(r, g, b, MIX(a1, a2));
 	}
 }
 

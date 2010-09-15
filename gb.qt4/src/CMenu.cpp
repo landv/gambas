@@ -365,8 +365,8 @@ BEGIN_PROPERTY(CMENU_text)
   else
   {
   	QString text = QSTRING_PROP();
-  	ACTION->setSeparator(text.isNull());
   	ACTION->setText(text);
+		ACTION->setSeparator(text.isNull());
 		refresh_menubar(THIS);
   }
 

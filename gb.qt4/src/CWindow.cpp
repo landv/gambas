@@ -83,7 +83,6 @@ enum
 };
 #endif
 
-
 //#define DEBUG_WINDOW 1
 
 DECLARE_EVENT(EVENT_Open);
@@ -623,8 +622,6 @@ static bool do_close(CWINDOW *_object, int ret, bool destroyed = false)
 
 	if (closed)
 		THIS->ret = ret;
-
-	//qDebug("CWINDOW_close: ret = %d", THIS->ret);
 
 	return (!closed);
 }
@@ -1549,6 +1546,7 @@ MyMainWindow::MyMainWindow(QWidget *parent, const char *name, bool embedded) :
 	mustCenter = false;
 	_deleted = false;
 	_type = _NET_WM_WINDOW_TYPE_NORMAL;
+	_enterLoop = false;
 	
 	setAttribute(Qt::WA_KeyCompression, true);
 	setAttribute(Qt::WA_InputMethodEnabled, true);
@@ -1620,6 +1618,13 @@ void MyMainWindow::showEvent(QShowEvent *e)
 	}
 }
 
+void MyMainWindow::hideEvent(QHideEvent *e)
+{
+	if (isModal() && _enterLoop)
+		MyApplication::eventLoop->exit();
+}
+
+
 void MyMainWindow::initProperties()
 {
 	#ifndef NO_X_WINDOW
@@ -1659,6 +1664,9 @@ void MyMainWindow::showActivate(QWidget *transient)
 
 	// Reparent the window if, for example, there is an already modal window displayed
 	
+	setWindowFlags(Qt::Window);
+	setWindowModality(Qt::NonModal);
+
 	if (CWINDOW_Current && THIS != CWINDOW_Current)
 	{
 		newParentWidget = CWINDOW_Current->widget.widget;
@@ -1778,6 +1786,7 @@ void MyMainWindow::showModal(void)
 		X11_set_transient_for(winId(), CWINDOW_Active->widget.widget->winId());
 	#endif
 
+	setWindowFlags(Qt::Window);
 	setWindowModality(Qt::ApplicationModal);
 
 	if (_resizable && _border)
@@ -1786,7 +1795,7 @@ void MyMainWindow::showModal(void)
 		setSizeGrip(true);
 	}
 
-	THIS->enterLoop = false; // Do not call exitLoop() if we do not entered the loop yet!
+	_enterLoop = false; // Do not call exitLoop() if we do not entered the loop yet!
 	
 	show();
 	afterShow();
@@ -1794,7 +1803,7 @@ void MyMainWindow::showModal(void)
 	THIS->loopLevel++;
 	CWINDOW_Current = THIS;
 	
-	THIS->enterLoop = true;
+	_enterLoop = true;
 	
 	eventLoop.exec();
 	//eventLoop.processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::DeferredDeletion, 0);
@@ -1817,35 +1826,25 @@ void MyMainWindow::showPopup(QPoint &pos)
 	CWIDGET *_object = CWidget::get(this);
 	bool persistent = CWIDGET_test_flag(THIS, WF_PERSISTENT);
 	CWINDOW *save = CWINDOW_Current;
-	QEventLoop *old;
-	QEventLoop eventLoop;
 
-	//if (isModal())
-		//return;
-
-	old = MyApplication::eventLoop;
-	MyApplication::eventLoop = &eventLoop;
-
-	#ifndef NO_X_WINDOW
-	if (CWINDOW_Active)
-		X11_set_transient_for(winId(), CWINDOW_Active->widget.widget->winId());
-	//setAttribute(Qt::WA_X11NetWmWindowTypePopupMenu, true);
-	#endif
+	if (isModal())
+		return;
 
 	setWindowFlags(Qt::Popup);
-
 	setWindowModality(Qt::ApplicationModal);
 
-	if (_resizable && _border)
+	/*if (_resizable && _border)
 	{
 		setMinimumSize(THIS->minw, THIS->minh);
 		setSizeGrip(true);
-	}
+	}*/
 
-	THIS->enterLoop = false; // Do not call exitLoop() if we do not entered the loop yet!
+	_enterLoop = false; // Do not call exitLoop() if we do not entered the loop yet!
 	
+	move(0, 0);
 	move(pos);
 	show();
+	raise();
 	if (THIS->focus)
 		handle_focus(THIS);
 	else
@@ -1859,19 +1858,35 @@ void MyMainWindow::showPopup(QPoint &pos)
 	//handle_focus(THIS);
 	//activateWindow();
 	
-	THIS->enterLoop = true;
+	_enterLoop = true;
 	
+	QEventLoop eventLoop;
+	QEventLoop *old;
+	
+	old = MyApplication::eventLoop;
+	MyApplication::eventLoop = &eventLoop;
 	eventLoop.exec();
+	MyApplication::eventLoop = old;
+	//eventLoop.exec();
 	//eventLoop.processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::DeferredDeletion, 0);
 	
-	MyApplication::eventLoop = old;
 	CWINDOW_Current = save;
 		
 	if (persistent)
 	{
-		setSizeGrip(false);
+		QRect g = geometry();
+		//setSizeGrip(false);
 		setWindowModality(Qt::NonModal);
-		setWindowFlags(flags);
+		/*setGeometry(0,0,1,1);
+		//setWindowFlags(Qt::Window);
+		THIS->opened = true;
+		show();
+		THIS->opened = false;
+		hide();
+		setGeometry(g.x(), g.y(), g.width(), g.height());*/
+		//setWindowFlags(Qt::Window);
+		//THIS->hidden = true;
+		//doReparent(parentWidget(), flags, this->pos());
 		//#ifndef NO_X_WINDOW
 		//setAttribute(Qt::WA_X11NetWmWindowTypePopupMenu, false);
 		//#endif
@@ -2215,7 +2230,9 @@ void MyMainWindow::closeEvent(QCloseEvent *e)
 
 	e->ignore();
 
-	//qDebug("closeEvent: CWINDOW_Current = %p / %d <-> %p / %d", CWINDOW_Current, CWINDOW_Current ? CWINDOW_Current->loopLevel : -1, THIS, THIS->loopLevel);
+	#if DEBUG_WINDOW
+		qDebug("closeEvent: CWINDOW_Current = %p / %d <-> %p / %d", CWINDOW_Current, CWINDOW_Current ? CWINDOW_Current->loopLevel : -1, THIS, THIS->loopLevel);
+	#endif
 	
 	if (THIS->opened)
 	{
@@ -2270,16 +2287,11 @@ void MyMainWindow::closeEvent(QCloseEvent *e)
 		CWINDOW_LastActive = NULL;
 		//qDebug("CWINDOW_LastActive = 0");
 	}
-	//qDebug("THIS->opened <- false: %p: %s", THIS, GB.GetClassName(THIS));
+	#if DEBUG_WINDOW
+	qDebug("THIS->opened <- false: %p: %s", THIS, GB.GetClassName(THIS));
+	#endif
 	THIS->opened = false;
 	
-	//qDebug("THIS->enterLoop = %d", THIS->enterLoop);
-	if (modal && THIS->enterLoop)
-	{
-		//qDebug("exitLoop: %p", THIS);
-		MyApplication::eventLoop->exit();
-	}
-
 	return;
 
 IGNORE:
@@ -2399,7 +2411,6 @@ void MyMainWindow::configure()
 {
 	CWINDOW *_object = (CWINDOW *)CWidget::get(this);
 	QMenuBar *menuBar = THIS->menuBar;
-	int h;
 	
 	//qDebug("THIS->menuBar = %p  menuBar() = %p", THIS->menuBar, menuBar());
 

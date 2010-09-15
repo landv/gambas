@@ -78,7 +78,6 @@ typedef
 		unsigned scale : 1;
 		unsigned minsize : 1;
 		unsigned title : 1;
-		unsigned enterLoop : 1;
 		unsigned stateChange : 1;
 		//unsigned opening : 1;
 		unsigned closing : 1;
@@ -161,6 +160,7 @@ private:
 	bool _border;
 	bool _resizable;
 	bool _deleted;
+	bool _enterLoop;
 	int _type;
 
 	void doReparent(QWidget *, Qt::WFlags, const QPoint &);
@@ -168,7 +168,7 @@ private:
 protected:
 
 	virtual void showEvent(QShowEvent *);
-	//void hideEvent(QHideEvent *);
+	virtual void hideEvent(QHideEvent *);
 	virtual void resizeEvent(QResizeEvent *);
 	virtual void moveEvent(QMoveEvent *);
 	virtual void keyPressEvent(QKeyEvent *);

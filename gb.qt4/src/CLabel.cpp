@@ -383,7 +383,7 @@ void MySeparator::paintEvent( QPaintEvent * )
 	
 	//if (width() == 1 || height() == 1)
 	{
-		p.setPen(CCOLOR_merge(palette().color(QPalette::Window), palette().color(QPalette::WindowText)).lighter());
+		p.setPen(CCOLOR_light_foreground());
 		if (width() >= height())
 			p.drawLine(0, height() / 2, width() - 1, height() / 2);
 		else

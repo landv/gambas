@@ -31,13 +31,14 @@
 #include "CWidget.h"
 #include "CColor.h"
 
-static int _h = 0;
-static int _s = 0;
-static int _v = 0;
-
-QColor CCOLOR_merge(const QColor &colorA, const QColor &colorB, int factor)
+QColor CCOLOR_merge(const QColor &colorA, const QColor &colorB, double factor)
 {
-	return QColor(IMAGE.MergeColor(colorA.rgba(), colorB.rgba(), factor / 100.0));
+	return QColor(IMAGE.MergeColor(colorA.rgba(), colorB.rgba(), factor));
+}
+
+QColor CCOLOR_light_foreground()
+{
+	return CCOLOR_merge(qApp->palette().color(QPalette::Window), qApp->palette().color(QPalette::WindowText), 0.2);
 }
 
 QColor CCOLOR_make(GB_COLOR color)
@@ -49,21 +50,6 @@ QColor CCOLOR_make(GB_COLOR color)
 	
 	return QColor(r, g, b, a);
 }
-
-static void get_hsv(int col)
-{
-  static int last = 0;
-
-  if (last == col)
-    return;
-
-  QColor c(col);
-  c.getHsv(&_h, &_s, &_v);
-  if (_h < 0)
-    _h = 0;
-  last = col;
-}
-
 
 static void return_color(QPalette::ColorRole role)
 {
@@ -100,22 +86,6 @@ BEGIN_PROPERTY(CCOLOR_selected_background)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CCOLOR_light_background)
-
-	QColor col;
-	int h, s, v;
-
-	get_hsv(QApplication::palette().color(QPalette::Highlight).rgb() & 0xFFFFFF);
-	h = _h; s = _s; v = _v;
-	
-	get_hsv(QApplication::palette().color(QPalette::Base).rgb() & 0xFFFFFF);
-	
-	col = QColor::fromHsv(h, (_s * 3 + s) / 4, (_v * 3 + v) / 4);
-	
-  GB.ReturnInteger((uint)col.rgb() & 0xFFFFFF);
-
-END_PROPERTY
-
 BEGIN_PROPERTY(CCOLOR_selected_foreground)
 
   return_color(QPalette::HighlightedText);
@@ -134,13 +104,16 @@ BEGIN_PROPERTY(CCOLOR_button_foreground)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CCOLOR_light_foreground)
+BEGIN_PROPERTY(Color_LightBackground)
 
-	uint col;
-	
-	col = IMAGE.MergeColor(qApp->palette().color(QPalette::Window).rgb() & 0xFFFFFF, qApp->palette().color(QPalette::WindowText).rgb() & 0xFFFFFF, 0.5);
-	col = IMAGE.LighterColor(col);
+	uint col = IMAGE.MergeColor(qApp->palette().color(QPalette::Base).rgb() & 0xFFFFFF, qApp->palette().color(QPalette::Highlight).rgb() & 0xFFFFFF, 0.5);
+	GB.ReturnInteger(col);
 
+END_PROPERTY
+
+BEGIN_PROPERTY(Color_LightForeground)
+
+	uint col = IMAGE.MergeColor(qApp->palette().color(QPalette::Window).rgb() & 0xFFFFFF, qApp->palette().color(QPalette::WindowText).rgb() & 0xFFFFFF, 0.3);
 	GB.ReturnInteger(col);
 
 END_PROPERTY
@@ -151,12 +124,12 @@ GB_DESC CColorDesc[] =
 
   GB_STATIC_PROPERTY("Background", "i", CCOLOR_background),
   GB_STATIC_PROPERTY("SelectedBackground", "i", CCOLOR_selected_background),
-  GB_STATIC_PROPERTY("LightBackground", "i", CCOLOR_light_background),
+  GB_STATIC_PROPERTY("LightBackground", "i", Color_LightBackground),
   GB_STATIC_PROPERTY("TextBackground", "i", CCOLOR_text_background),
   GB_STATIC_PROPERTY("ButtonBackground", "i", CCOLOR_button_background),
 
   GB_STATIC_PROPERTY("Foreground", "i", CCOLOR_foreground),
-  GB_STATIC_PROPERTY("LightForeground", "i", CCOLOR_light_foreground),
+  GB_STATIC_PROPERTY("LightForeground", "i", Color_LightForeground),
   GB_STATIC_PROPERTY("SelectedForeground", "i", CCOLOR_selected_foreground),
   GB_STATIC_PROPERTY("TextForeground", "i", CCOLOR_text_foreground),
   GB_STATIC_PROPERTY("ButtonForeground", "i", CCOLOR_button_foreground),

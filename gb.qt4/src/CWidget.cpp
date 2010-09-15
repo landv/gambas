@@ -1549,8 +1549,8 @@ BEGIN_PROPERTY(CWIDGET_scrollbar)
 
 END_PROPERTY
 
-BEGIN_METHOD_VOID(Control_Grab)
-
+void CWIDGET_grab(CWIDGET *_object)
+{
 	QEventLoop eventLoop;
 	QEventLoop *old;
 	
@@ -1569,6 +1569,12 @@ BEGIN_METHOD_VOID(Control_Grab)
 	WIDGET->releaseMouse();
 	WIDGET->releaseKeyboard();
 	THIS->flag.grab = false;
+
+}
+
+BEGIN_METHOD_VOID(Control_Grab)
+
+	CWIDGET_grab(THIS);
 
 END_METHOD
 

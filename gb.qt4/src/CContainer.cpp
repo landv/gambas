@@ -556,7 +556,7 @@ void CCONTAINER_draw_frame(QPainter *p, int frame, QStyleOptionFrame &opt, QWidg
 	switch (frame)
 	{
 		case BORDER_PLAIN:
-			qDrawPlainRect(p, opt.rect, CCOLOR_merge(opt.palette.color(QPalette::Window), opt.palette.color(QPalette::WindowText)).lighter(), 1);
+			qDrawPlainRect(p, opt.rect, CCOLOR_light_foreground());
 			//p->setPen(opt.palette.windowText().color());
 			break;
 			

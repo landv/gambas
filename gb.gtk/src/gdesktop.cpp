@@ -225,28 +225,13 @@ gColor gDesktop::selbgColor()
 
 gColor gDesktop::lightbgColor()
 {
-	int h, s, v;
-  int h2, s2, v2;
-  int r, g, b;
-  
-	gt_color_to_rgb(gDesktop::selbgColor(), &r, &g, &b);
-  gt_rgb_to_hsv(r, g, b, &h, &s, &v);
-  
-	gt_color_to_rgb(gDesktop::textbgColor(), &r, &g, &b);
-  gt_rgb_to_hsv(r, g, b, &h2, &s2, &v2);
-  
-  gt_hsv_to_rgb(h, (s2 * 3 + s) / 4, (v2 * 3 + v) / 4, &r, &g, &b);
-
-  return gt_rgb_to_color(r, g, b);
+	uint col = IMAGE.MergeColor(gDesktop::selbgColor(), gDesktop::selfgColor(), 0.2);
+	return col;
 }
 
 gColor gDesktop::lightfgColor()
 {
-	uint col;
-	
-	col = IMAGE.MergeColor(gDesktop::bgColor(), gDesktop::fgColor(), 0.5);
-	col = IMAGE.LighterColor(col);
-	
+	uint col = IMAGE.MergeColor(gDesktop::bgColor(), gDesktop::fgColor(), 0.2);
 	return col;
 }
 
