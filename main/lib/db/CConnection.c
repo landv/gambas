@@ -85,6 +85,8 @@ static void open_connection(CCONNECTION *_object)
 
 static bool check_opened(CCONNECTION *_object)
 {
+	DB_CurrentDatabase = &THIS->db;
+
 	if (!THIS->db.handle)
 		open_connection(THIS);
 
