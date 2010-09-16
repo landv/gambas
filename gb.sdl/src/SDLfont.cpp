@@ -30,6 +30,10 @@
 #include <string>
 #include <ctype.h>
 
+#ifndef TTF_STYLE_STRIKETHROUGH
+#define TTF_STYLE_STRIKETHROUGH	0x08
+#endif
+
 typedef struct {
 	std::string name;
 	std::string realname;
