@@ -234,10 +234,12 @@ BEGIN_METHOD(CINDEX_add, GB_STRING name; GB_OBJECT fields; GB_BOOLEAN unique)
 		q_add(table->driver->GetQuote());
 	}
 	
-  info.fields = q_get();
+  info.fields = q_steal();
   info.unique = VARGOPT(unique, FALSE);
 
   table->driver->Index.Create(&table->conn->db, table->name, name, &info);
+	
+	GB.FreeString(&info.fields);
 
 END_METHOD
 
