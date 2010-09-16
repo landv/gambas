@@ -72,6 +72,8 @@ public:
 	SDLsurface* RenderText(const char* text);
 
 private:
+	void OpenFont(const char* file);
+	
 	int hfonttype;
 	int hfontsize;
 	int hfontindex;

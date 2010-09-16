@@ -25,9 +25,9 @@
 
 #include <string>
 
-#define COMP_WARN	"gb.sdl warning: ",
-#define COMP_ERR	"gb.sdl error: ",
-#define COMP_INFO	"gb.sdl info: ",
+#define COMP_WARN	"gb.sdl warning: &1",
+#define COMP_ERR	"gb.sdl error: &1",
+#define COMP_INFO	"gb.sdl info: &1",
 
 class SDLerror
 {

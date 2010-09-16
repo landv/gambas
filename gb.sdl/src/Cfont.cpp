@@ -145,7 +145,7 @@ BEGIN_PROPERTY(CFONT_italic)
 		FONT->SetFontItalic(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
-
+/*
 BEGIN_PROPERTY(CFONT_strikeout)
 
 	if (READ_PROPERTY)
@@ -154,7 +154,7 @@ BEGIN_PROPERTY(CFONT_strikeout)
 		FONT->SetFontStrikeout(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
-
+*/
 BEGIN_PROPERTY(CFONT_underline)
 
 	if (READ_PROPERTY)
@@ -212,7 +212,7 @@ GB_DESC CFont[] =
   GB_PROPERTY("Size", "i", CFONT_size),
   GB_PROPERTY("Bold", "b", CFONT_bold),
   GB_PROPERTY("Italic", "b", CFONT_italic),
-  GB_PROPERTY("StrikeOut", "b", CFONT_strikeout),
+//  GB_PROPERTY("StrikeOut", "b", CFONT_strikeout),
   GB_PROPERTY("Underline", "b", CFONT_underline),
 
   GB_PROPERTY_READ("Ascent", "i", CFONT_ascent),

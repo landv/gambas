@@ -30,9 +30,11 @@
 #include <string>
 #include <ctype.h>
 
+/*
 #ifndef TTF_STYLE_STRIKETHROUGH
 #define TTF_STYLE_STRIKETHROUGH	0x08
 #endif
+*/
 
 typedef struct {
 	std::string name;
@@ -44,7 +46,7 @@ typedef struct {
 static std::vector<fontdesc> fontDB;
 static StringList _FontList;
 
-#define DEFAULT_FONT_SIZE 20
+#define DEFAULT_FONT_SIZE 25
 #define DEFAULT_DPI 72 /* Default DPI size in SDL_TTF */
 
 inline bool cmp_db_nocase(const fontdesc x, const fontdesc y)
@@ -142,12 +144,10 @@ SDLfont::SDLfont()
 	hfonttype = X_font;
 	hfontsize = DEFAULT_FONT_SIZE;
 	hfontindex = 0;
+	hSDLfont = 0;
 	
 	hfontname = fontDB[hfontindex].path;
-	hSDLfont = TTF_OpenFont(hfontname.c_str(), hfontsize);
-
-	if (UNLIKELY(hSDLfont == NULL))
-		SDLerror::RaiseError(TTF_GetError());
+	OpenFont(hfontname.c_str());
 }
 
 SDLfont::SDLfont(char *fontfile)
@@ -155,11 +155,9 @@ SDLfont::SDLfont(char *fontfile)
 	hfonttype = SDLTTF_font;
 	hfontsize = DEFAULT_FONT_SIZE;
 	hfontname = fontfile;
+	hSDLfont = 0;
 
-	hSDLfont = TTF_OpenFont(fontfile, hfontsize);
-
-	if (UNLIKELY(hSDLfont == NULL))
-		SDLerror::RaiseError(TTF_GetError());
+	OpenFont(fontfile);
 }
 
 SDLfont::~SDLfont()
@@ -168,8 +166,34 @@ SDLfont::~SDLfont()
 		TTF_CloseFont(hSDLfont);
 }
 
+void SDLfont::OpenFont(const char* file)
+{
+	if (hSDLfont)
+		TTF_CloseFont(hSDLfont);
+
+	hSDLfont = TTF_OpenFont(file, hfontsize);
+	
+	if (UNLIKELY(hSDLfont == NULL))
+		SDLerror::RaiseError(TTF_GetError());
+}
 void SDLfont::SetFontName(char* name)
 {
+	std::string font = name;
+	int i=0;
+	
+	while (i<int(fontDB.size())) {
+		if (!fontDB[i].name.compare(font)) {
+			hfonttype = X_font;
+			hfontsize = DEFAULT_FONT_SIZE;
+			hfontindex = i;
+
+			hfontname = fontDB[hfontindex].path;
+			OpenFont(hfontname.c_str());
+			return;
+		}
+		i++;
+	}
+	SDLerror::RaiseError("Font not found!");
 }
 
 const char* SDLfont::GetFontName(void )
@@ -185,12 +209,7 @@ void SDLfont::SetFontSize(int size)
 	int style = TTF_GetFontStyle(hSDLfont);
 	hfontsize = size;
 
-	TTF_CloseFont(hSDLfont);
-	hSDLfont = TTF_OpenFont(hfontname.c_str(), hfontsize);
-
-	if (UNLIKELY(hSDLfont == NULL))
-		SDLerror::RaiseError(TTF_GetError());
-	
+	OpenFont(hfontname.c_str());
 	TTF_SetFontStyle(hSDLfont, style);
 }
 
@@ -223,15 +242,17 @@ bool SDLfont::IsFontItalic(void )
 
 void SDLfont::SetFontStrikeout(bool state)
 {
+/*
 	if (state == (TTF_GetFontStyle(hSDLfont) & TTF_STYLE_STRIKETHROUGH))
 		return;
 	
 	TTF_SetFontStyle(hSDLfont, (TTF_GetFontStyle(hSDLfont) ^ TTF_STYLE_STRIKETHROUGH));
+*/
 }
 
 bool SDLfont::IsFontStrikeout(void )
 {
-	return (TTF_GetFontStyle(hSDLfont) & TTF_STYLE_STRIKETHROUGH);
+//	return (TTF_GetFontStyle(hSDLfont) & TTF_STYLE_STRIKETHROUGH);
 }
 
 void SDLfont::SetFontUnderline(bool state)
