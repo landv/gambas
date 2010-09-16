@@ -1,0 +1,67 @@
+' Gambas class file
+
+Static Private $sNewPath As String
+
+Public Sub Run() 
+
+  $sNewPath = ""
+  If Me.ShowModal() Then
+    Project.Open($sNewPath)
+  Endif
+
+End
+
+Public Sub btnOK_Click()
+
+  Dim sDir As String
+  Dim sName As String
+  Dim sMsg As String
+  
+  sName = Trim(txtName.Text)
+  sDir = dchProject.Value
+  
+  sMsg = Project.CheckProjectName(sName, sDir)
+  If sMsg
+    txtName.SetFocus
+    txtName.SelectAll
+    Balloon.Warning(sMsg, txtName)
+    Return
+  Endif  
+  
+  sDir &/= sName
+  Inc Application.Busy
+  Project.Save
+  Project.CopyProject(Project.Dir, sDir)
+  Dec Application.Busy
+  $sNewPath = sDir
+  Me.Close(True)
+  
+Catch 
+  
+  Application.Busy = 0
+  Message.Error(("Unable to save the project.") & "\n\n" & Error.Text)
+  
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+Public Sub Form_Open()
+
+  txtName.Text = Project.Name
+  txtName.SelectAll
+  
+  Settings.Read(Me)
+  Settings.Read(dchProject, "dchProject")
+
+End
+
+Public Sub Form_Close()
+  
+  Settings.Write(Me)
+  Settings.Write(dchProject, "dchProject")
+  
+End

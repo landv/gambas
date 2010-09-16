@@ -979,6 +979,7 @@ void gControl::lower()
 	pr->ch_list = g_list_remove(pr->ch_list, this);
 	pr->ch_list = g_list_prepend(pr->ch_list, this);
 	pr->updateFocusChain();
+	pr->performArrange();
 }
 
 void gControl::raise()
@@ -1010,6 +1011,7 @@ void gControl::raise()
 	pr->ch_list = g_list_remove(pr->ch_list, this);
 	pr->ch_list = g_list_append(pr->ch_list, this);
 	pr->updateFocusChain();
+	pr->performArrange();
 }
 
 void gControl::setNext(gControl *ctrl)
@@ -1038,6 +1040,7 @@ void gControl::setNext(gControl *ctrl)
 	pr->ch_list = g_list_remove(pr->ch_list, this);
 	pr->ch_list = g_list_insert_before(pr->ch_list, next, this);
 	pr->updateFocusChain();
+	pr->performArrange();
 	#endif
 }
 

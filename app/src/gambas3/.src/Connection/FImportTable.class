@@ -10,6 +10,7 @@ Private $sEscape As String
 Private $sCharset As String
 Private $iEndOfLine As Integer
 Private $bStrip As Boolean
+Private $iIgnore As Integer
 
 Private $iLine As Integer
 Private $bImport As Boolean
@@ -71,6 +72,19 @@ Public Sub Form_Open()
   txtPreview.Text = sData
   txtPreview.Pos = 0
   
+  gvwMessage.Columns.Count = 2
+  gvwMessage.Columns[0].Text = ("Line")
+  gvwMessage.Columns[0].Width = Desktop.Scale * 6
+  gvwMessage.Columns[1].Text = ("Message")
+  
+  cmbCharset.Text = Project.Config["/FImportTable/Charset", "UTF-8"]
+  cmbEndOfLine.Text = Project.Config["/FImportTable/EndOfLine", "Unix"]
+  cmbDelim.Text = Project.Config["/FImportTable/Delim", ","]
+  cmbEscape.Text = Project.Config["/FImportTable/Escape", Chr$(34)]
+  chkStrip.Value = Project.Config["/FImportTable/StripSpace", False]
+  txtIgnore.Value = Project.Config["/FImportTable/Ignore", 0]
+  Settings.Read(Me)
+  
 End
 
 Public Sub chkFirstLine_Click()
@@ -91,12 +105,10 @@ Private Sub UpdateDelim()
   Endif
   
   $sEscape = cmbEscape.Text
-  
   $sCharset = cmbCharset.Text
-  
   $iEndOfLine = Choose(cmbEndOfLine.Index + 1, gb.Unix, gb.Windows, gb.Mac)
-  
   $bStrip = chkStrip.Value
+  $iIgnore = txtIgnore.Value
   
 End
 
@@ -113,6 +125,7 @@ Private Sub UpdateKey()
   Dim hFile As File
   Dim sLig As String
   Dim aData As String[]
+  Dim iLine As Integer
 
   If Not cmbKey.Enabled Then Return
   
@@ -121,14 +134,17 @@ Private Sub UpdateKey()
   hFile = Open $sPath For Input
   hFile.EndOfLine = $iEndOfLine
   
-  'WHILE NOT Eof(hFile)
-  If Not Eof(hFile) Then
+  While Not Eof(hFile)
     sLig = ReadLine(hFile)
+    Inc iLine
+    If iLine > $iIgnore Then Break
+  Wend
+
+  If Not Eof(hFile) Then
     aData = [("(Automatic key)")]
     aData.Insert(MakeFields(Analyze(sLig)))
     cmbKey.List = aData
   Endif
-  'WEND
 
 Finally
 
@@ -166,8 +182,13 @@ End
 
 Private Sub DoMessage(sMsg As String, Optional bNoLine As Boolean)
   
-  If Not bNoLine Then sMsg = $iLine & ": " & sMsg
-  lstMessage.Add(sMsg)
+  Dim iRow As Integer = gvwMessage.Rows.Count
+  
+  gvwMessage.Rows.Count = iRow + 1
+  
+  If Not bNoLine Then gvwMessage[iRow, 0].Text = CStr($iLine)
+  gvwMessage[iRow, 1].Text = sMsg
+
   If tabImport.Index <> 2 Then tabImport.Index = 2 
   Wait
   
@@ -300,11 +321,13 @@ Private Sub DoImport()
 
   $bImport = True 
   tabImport.Enabled = False
-  lstMessage.Clear
+  gvwMessage.Rows.Count = 0
   hConn = $hConn
   sTable = Trim(cmbTable.Text)
   bCreateTable = Not hConn.Tables.Exist(sTable)
+  
   UpdateDelim
+  
   pgbImport.Value = 0
   pgbImport.Show
   
@@ -329,6 +352,8 @@ Private Sub DoImport()
   While Not Eof(hFile)
     Inc $iLine
     sLig = ReadLine(hFile)
+    If $iLine <= $iIgnore Then Continue
+    
     aLine = Analyze(sLig, sDestCharset)
     
     If bCreateTable Then
@@ -432,5 +457,14 @@ End
 Public Sub Form_Close()
 
   If $bImport Then Stop Event
+  
+  Settings.Write(Me)
+
+  Project.Config["/FImportTable/Charset"] = cmbCharset.Text
+  Project.Config["/FImportTable/EndOfLine"] = cmbEndOfLine.Text 
+  Project.Config["/FImportTable/Delim"] = cmbDelim.Text 
+  Project.Config["/FImportTable/Escape"] = cmbEscape.Text 
+  Project.Config["/FImportTable/StripSpace"] = CBool(chkStrip.Value)
+  Project.Config["/FImportTable/Ignore"] = txtIgnore.Value
 
 End

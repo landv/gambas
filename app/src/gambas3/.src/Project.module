@@ -2098,7 +2098,7 @@ Public Sub Save(Optional bReset As Boolean)
   
 End
 
-Private Sub CopyProject(sSrc As String, sDst As String)
+Public Sub CopyProject(sSrc As String, sDst As String)
   
   Dim sFile As String
   
@@ -2117,29 +2117,7 @@ End
 
 Public Sub SaveAs()
   
-  Dim sDir As String
-  
-  Dialog.Path = Settings["/SaveProjectAs", System.User.Home]  
-  Dialog.Title = ("Save project as")
-  If Dialog.SelectDirectory() Then Return
-  
-  Settings["/SaveProjectAs"] = Dialog.Path
-  sDir = Dialog.Path &/ Project.Name
-  If Exist(sDir) Then 
-    FMain.ShowWarning(("This project already exists."))
-    Return
-  Endif
-  
-  Inc Application.Busy
-  Project.Save
-  CopyProject(Project.Dir, sDir)
-  Dec Application.Busy
-  Project.Open(sDir)
-  
-Catch 
-  
-  Application.Busy = 0
-  FMain.ShowError(("Unable to save the project.") & "\n\n" & Error.Text)
+  FSaveProjectAs.Run
   
 End
 

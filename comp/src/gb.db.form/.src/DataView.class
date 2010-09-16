@@ -758,6 +758,7 @@ Public Function Remove() As Boolean
   Dim hSrc As DataSource
   Dim iRow As Integer
   Dim aDelete As Integer[]
+  Dim bRollback As Boolean
   
   If CanEdit() Then
     
@@ -794,10 +795,13 @@ Public Function Remove() As Boolean
       Next
       aDelete.Reverse
       
+      hSrc._GetDB().Begin
+      bRollback = True
       For Each iRow In aDelete
         hSrc.MoveTo(iRow)
         hSrc._DeleteCurrent()
       Next
+      hSrc._GetDB().Commit
       hSrc.Create(True)
     
     Endif
@@ -809,6 +813,7 @@ Public Function Remove() As Boolean
 Catch
 
   Warning("<b>" & ("Unable to delete record.") & "</b><p><font size=\"-1\">" & Error.Text & "</font>", True) 
+  If bRollback Then hSrc._GetDB().Rollback
   Return True
   
 End

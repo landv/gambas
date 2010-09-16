@@ -1150,19 +1150,19 @@ void *CLASS_auto_create(CLASS *class, int nparam)
 
 	//fprintf(stderr, ">>> CLASS_auto_create: %s (%p)\n", class->name, ob);
 	
-	// Now we return the automatic instance even if it is invalid.
+	// We automatically release invalid automatic instances
 	
 	if (ob)
 	{
-		//if (OBJECT_is_valid(ob))
+		if (OBJECT_is_valid(ob))
 		{
 			RELEASE_MANY(SP, nparam);
 			//fprintf(stderr, "<<< CLASS_auto_create: %s (%p): valid=1\n", class->name, ob);
 			return ob;
 		}
 
-		//OBJECT_UNREF(class->instance, "CLASS_auto_create");
-		//class->instance = NULL;
+		OBJECT_UNREF(class->instance, "CLASS_auto_create");
+		class->instance = NULL;
 	}
 
 	/*fprintf(stderr, "CLASS_auto_create: create %s\n", class->name);*/

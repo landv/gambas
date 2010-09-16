@@ -248,7 +248,7 @@ Private Sub CreateFile() As Boolean
       
       sTemp = Project.FORM_MAGIC & "\n\n" &   
               "{ " & sName & " " & UCase(Left(sType)) & Mid$(sType, 2) & "\n" &   
-              "  MoveScaled(0, 0, 64, 64)\n"
+              "  MoveScaled(0, 0, 68, 64)\n"
       
       If sType = "form" Then
       

@@ -137,6 +137,13 @@ Public Sub Update(Optional bForce As Boolean)
   btnPrevious.Visible = Not bAllProject
   btnReplace.Visible = Not bAllProject
   btnReplaceAll.Visible = Not bAllProject
+  
+  If bAllProject Then
+    btnBrowse.Lower
+  Else
+    btnBrowse.Next = btnClose
+  Endif
+  
   'btnBrowse2.Visible = bAllProject
   
   UpdateTitle

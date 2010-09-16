@@ -525,12 +525,12 @@ void ERROR_print_at(FILE *where, bool msgonly, bool newline)
 	else
 	{
 		char *p = ERROR_current->info.msg;
-		char c;
+		unsigned char c;
 		
 		while ((c = *p++))
 		{
-			if (c == '\n') c = ' ';
-				fputc(c, where);
+			if (c < ' ') c = ' ';
+			fputc(c, where);
 		}
 	}
 

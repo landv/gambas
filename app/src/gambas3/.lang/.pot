@@ -387,8 +387,8 @@ msgstr ""
 #: FNewConnection.class:573 FNewTable.class:159 FNewTranslation.class:64
 #: FOpenProject.class:496 FPasteSpecial.class:273 FPropertyProject.class:258
 #: FReportBorderChooser.class:213 FReportCoordChooser.class:120
-#: FSelectExtraFile.class:72 FSelectIcon.class:268 FSnippet.class:136
-#: FTableChooser.class:138 FText.class:100
+#: FSaveProjectAs.class:124 FSelectExtraFile.class:72 FSelectIcon.class:268
+#: FSnippet.class:136 FTableChooser.class:138 FText.class:100
 msgid "OK"
 msgstr ""
 
@@ -467,15 +467,15 @@ msgstr ""
 #: FConnectionEditor.class:261 FCreateFile.class:928 FDebugInfo.class:508
 #: FEditor.class:2215 FFontChooser.class:85 FForm.class:2955
 #: FGotoLine.class:63 FHelpBrowser.class:342 FIconEditor.class:1396
-#: FImportTable.class:38 FList.class:155 FMain.class:193
+#: FImportTable.class:39 FList.class:155 FMain.class:193
 #: FMakeInstall.class:318 FMenu.class:1202 FNewConnection.class:317
 #: FNewTable.class:165 FNewTranslation.class:70 FOpenProject.class:502
 #: FOption.class:600 FPasteSpecial.class:279 FPropertyProject.class:1017
 #: FReportBorderChooser.class:207 FReportCoordChooser.class:114
-#: FSave.class:118 FSearch.class:561 FSelectExtraFile.class:78
-#: FSelectIcon.class:273 FSnippet.class:142 FTableChooser.class:144
-#: FTextEditor.class:489 FText.class:106 FTranslate.class:617
-#: Project.module:394
+#: FSave.class:118 FSaveProjectAs.class:130 FSearch.class:568
+#: FSelectExtraFile.class:78 FSelectIcon.class:273 FSnippet.class:142
+#: FTableChooser.class:144 FTextEditor.class:489 FText.class:106
+#: FTranslate.class:617 Project.module:394
 msgid "Cancel"
 msgstr ""
 
@@ -590,8 +590,8 @@ msgstr ""
 msgid "&Edit"
 msgstr ""
 
-#: FConflict.class:25 FIconEditor.class:1415 FImportTable.class:648
-#: FMakeInstall.class:267 FSearch.class:622 FTips.class:240
+#: FConflict.class:25 FIconEditor.class:1415 FImportTable.class:700
+#: FMakeInstall.class:267 FSearch.class:629 FTips.class:240
 msgid "Close"
 msgstr ""
 
@@ -681,7 +681,7 @@ msgstr ""
 msgid "Unique"
 msgstr ""
 
-#: FConnectionEditor.class:68 FImportTable.class:346
+#: FConnectionEditor.class:68 FImportTable.class:371
 msgid "Field"
 msgstr ""
 
@@ -937,7 +937,7 @@ msgstr ""
 msgid "Style sheet"
 msgstr ""
 
-#: FCreateFile.class:791 FCreateProject.class:536 FImportTable.class:489
+#: FCreateFile.class:791 FCreateProject.class:536 FImportTable.class:526
 #: FPropertyProject.class:1607
 msgid "Options"
 msgstr ""
@@ -1137,8 +1137,8 @@ msgstr ""
 msgid "Function"
 msgstr ""
 
-#: FDebugInfo.class:51 FIconEditor.class:2262 FOption.class:1183
-#: FSearch.class:40
+#: FDebugInfo.class:51 FIconEditor.class:2262 FImportTable.class:76
+#: FOption.class:1183 FSearch.class:40
 msgid "Line"
 msgstr ""
 
@@ -1398,11 +1398,11 @@ msgstr ""
 msgid "&First"
 msgstr ""
 
-#: FForm.class:3505 FSearch.class:1086 FTips.class:228
+#: FForm.class:3505 FSearch.class:1093 FTips.class:228
 msgid "&Previous"
 msgstr ""
 
-#: FForm.class:3512 FMenu.class:931 FSearch.class:1080 FTips.class:234
+#: FForm.class:3512 FMenu.class:931 FSearch.class:1087 FTips.class:234
 msgid "&Next"
 msgstr ""
 
@@ -1708,151 +1708,163 @@ msgstr ""
 msgid "Text editor"
 msgstr ""
 
-#: FImportTable.class:41 FTranslate.class:1664
+#: FImportTable.class:42 FTranslate.class:1664
 msgid "Import"
 msgstr ""
 
-#: FImportTable.class:127
+#: FImportTable.class:78
+msgid "Message"
+msgstr ""
+
+#: FImportTable.class:144
 msgid "(Automatic key)"
 msgstr ""
 
-#: FImportTable.class:260
+#: FImportTable.class:281
 msgid "Field_&1"
 msgstr ""
 
-#: FImportTable.class:374
+#: FImportTable.class:399
 msgid "Not enough values"
 msgstr ""
 
-#: FImportTable.class:376
+#: FImportTable.class:401
 msgid "Too many values"
 msgstr ""
 
-#: FImportTable.class:395
+#: FImportTable.class:420
 msgid "Cancelled by user"
 msgstr ""
 
-#: FImportTable.class:404
+#: FImportTable.class:429
 msgid "No record imported."
 msgstr ""
 
-#: FImportTable.class:406
+#: FImportTable.class:431
 msgid "One record imported."
 msgstr ""
 
-#: FImportTable.class:408
+#: FImportTable.class:433
 msgid "&1 records imported."
 msgstr ""
 
-#: FImportTable.class:475
+#: FImportTable.class:512
 msgid "Import file"
 msgstr ""
 
-#: FImportTable.class:494
+#: FImportTable.class:531
 msgid "Source"
 msgstr ""
 
-#: FImportTable.class:511
+#: FImportTable.class:548
 msgid "Charset"
 msgstr ""
 
-#: FImportTable.class:517
+#: FImportTable.class:554
 msgid "UTF-8"
 msgstr ""
 
-#: FImportTable.class:517
+#: FImportTable.class:554
 msgid "ISO 8859-1"
 msgstr ""
 
-#: FImportTable.class:517
+#: FImportTable.class:554
 msgid "ISO 8859-15"
 msgstr ""
 
-#: FImportTable.class:517
+#: FImportTable.class:554
 msgid "WINDOWS-1252"
 msgstr ""
 
-#: FImportTable.class:522
+#: FImportTable.class:559
 msgid "End of line"
 msgstr ""
 
-#: FImportTable.class:529
+#: FImportTable.class:566
 msgid "Unix"
 msgstr ""
 
-#: FImportTable.class:529
+#: FImportTable.class:566
 msgid "Windows"
 msgstr ""
 
-#: FImportTable.class:529
+#: FImportTable.class:566
 msgid "Mac"
 msgstr ""
 
-#: FImportTable.class:534
+#: FImportTable.class:571
 msgid "Delimiter character"
 msgstr ""
 
-#: FImportTable.class:540
+#: FImportTable.class:577
 msgid "Tab"
 msgstr ""
 
-#: FImportTable.class:540
+#: FImportTable.class:577
 msgid "Space"
 msgstr ""
 
-#: FImportTable.class:540
+#: FImportTable.class:577
 msgid ","
 msgstr ""
 
-#: FImportTable.class:540
+#: FImportTable.class:577
 msgid ";"
 msgstr ""
 
-#: FImportTable.class:540
+#: FImportTable.class:577
 msgid ":"
 msgstr ""
 
-#: FImportTable.class:545
+#: FImportTable.class:582
 msgid "Enclose character"
 msgstr ""
 
-#: FImportTable.class:551
+#: FImportTable.class:588
 msgid "'"
 msgstr ""
 
-#: FImportTable.class:551
+#: FImportTable.class:588
 msgid "\""
 msgstr ""
 
-#: FImportTable.class:557
+#: FImportTable.class:594
 msgid "Strip useless white spaces"
 msgstr ""
 
-#: FImportTable.class:564
+#: FImportTable.class:599
+msgid "Ignore first lines"
+msgstr ""
+
+#: FImportTable.class:609
+msgid "Line(s)"
+msgstr ""
+
+#: FImportTable.class:616
 msgid "Destination"
 msgstr ""
 
-#: FImportTable.class:574 FTableChooser.class:112
+#: FImportTable.class:626 FTableChooser.class:112
 msgid "Table"
 msgstr ""
 
-#: FImportTable.class:589
+#: FImportTable.class:641
 msgid "The first line contains field names"
 msgstr ""
 
-#: FImportTable.class:594
+#: FImportTable.class:646
 msgid "Key field"
 msgstr ""
 
-#: FImportTable.class:605
+#: FImportTable.class:657
 msgid "Preview"
 msgstr ""
 
-#: FImportTable.class:613
+#: FImportTable.class:665
 msgid "Messages"
 msgstr ""
 
-#: FImportTable.class:641 FTranslate.class:1692
+#: FImportTable.class:693 FTranslate.class:1692
 msgid "&Import"
 msgstr ""
 
@@ -2324,7 +2336,7 @@ msgstr ""
 msgid "Save project"
 msgstr ""
 
-#: FMain.class:2709 Project.module:2123
+#: FMain.class:2709 FSaveProjectAs.class:86
 msgid "Save project as"
 msgstr ""
 
@@ -2368,7 +2380,7 @@ msgstr ""
 msgid "Toolbox"
 msgstr ""
 
-#: FMain.class:2823 FSearch.class:980
+#: FMain.class:2823 FSearch.class:987
 msgid "Search"
 msgstr ""
 
@@ -2481,7 +2493,7 @@ msgid "There is no CHANGELOG entry for this release."
 msgstr ""
 
 #: FMakeInstall.class:318 FPropertyProject.class:1017 FSave.class:111
-#: Project.module:2849
+#: Project.module:2827
 msgid "Continue"
 msgstr ""
 
@@ -3501,6 +3513,14 @@ msgstr ""
 msgid "The following files have been modified. Do you want to save them?"
 msgstr ""
 
+#: FSaveProjectAs.class:42
+msgid "Unable to save the project."
+msgstr ""
+
+#: FSaveProjectAs.class:99
+msgid "Project name"
+msgstr ""
+
 #: FSearch.class:42
 msgid "Col."
 msgstr ""
@@ -3509,71 +3529,71 @@ msgstr ""
 msgid "Search & Replace"
 msgstr ""
 
-#: FSearch.class:431 FTranslate.class:578
+#: FSearch.class:438 FTranslate.class:578
 msgid "Search string cannot be found."
 msgstr ""
 
-#: FSearch.class:433
+#: FSearch.class:440
 msgid "Search string replaced once."
 msgstr ""
 
-#: FSearch.class:435
+#: FSearch.class:442
 msgid "Search string replaced &1 times."
 msgstr ""
 
-#: FSearch.class:965
+#: FSearch.class:972
 msgid "&Browse all"
 msgstr ""
 
-#: FSearch.class:969
+#: FSearch.class:976
 msgid "Browse &source files only"
 msgstr ""
 
-#: FSearch.class:1006
+#: FSearch.class:1013
 msgid "Replace"
 msgstr ""
 
-#: FSearch.class:1029
+#: FSearch.class:1036
 msgid "&Case sensitive"
 msgstr ""
 
-#: FSearch.class:1034
+#: FSearch.class:1041
 msgid "&Words only"
 msgstr ""
 
-#: FSearch.class:1039
+#: FSearch.class:1046
 msgid "Regular e&xpression"
 msgstr ""
 
-#: FSearch.class:1044
+#: FSearch.class:1051
 msgid "&Highlight result"
 msgstr ""
 
-#: FSearch.class:1054
+#: FSearch.class:1061
 msgid "&Ignore strings"
 msgstr ""
 
-#: FSearch.class:1059
+#: FSearch.class:1066
 msgid "I&gnore comments"
 msgstr ""
 
-#: FSearch.class:1064
+#: FSearch.class:1071
 msgid "C&urrent procedure"
 msgstr ""
 
-#: FSearch.class:1092
+#: FSearch.class:1099
 msgid "&Replace"
 msgstr ""
 
-#: FSearch.class:1098
+#: FSearch.class:1105
 msgid "Replace &all"
 msgstr ""
 
-#: FSearch.class:1109
+#: FSearch.class:1116
 msgid "&Browse"
 msgstr ""
 
-#: FSearch.class:1121
+#: FSearch.class:1128
 msgid "Browse"
 msgstr ""
 
@@ -5175,144 +5195,140 @@ msgstr ""
 msgid "Nothing to do."
 msgstr ""
 
-#: Project.module:2129
-msgid "This project already exists."
-msgstr ""
-
-#: Project.module:2142
-msgid "Unable to save the project."
-msgstr ""
-
-#: Project.module:2212
+#: Project.module:2190
 msgid "File already exists."
 msgstr ""
 
-#: Project.module:2245
+#: Project.module:2223
 msgid "Directory already exists."
 msgstr ""
 
-#: Project.module:2257
+#: Project.module:2235
 msgid "Cannot link template file."
 msgstr ""
 
-#: Project.module:2263
+#: Project.module:2241
 msgid "Cannot copy template file."
 msgstr ""
 
-#: Project.module:2459
+#: Project.module:2437
 msgid "Making executable..."
 msgstr ""
 
-#: Project.module:2503
+#: Project.module:2481
 msgid "Cannot make executable."
 msgstr ""
 
-#: Project.module:2848
+#: Project.module:2826
 msgid "Some components are missing: &1"
 msgstr ""
 
-#: Project.module:3054
+#: Project.module:3032
 msgid "Cannot write project file."
 msgstr ""
 
-#: Project.module:3086
+#: Project.module:3064
 msgid "Unable to create desktop shortcut."
 msgstr ""
 
-#: Project.module:3328
+#: Project.module:3306
 msgid "The directory will be removed at the next commit."
 msgstr ""
 
-#: Project.module:3345
+#: Project.module:3323
 msgid "You must define a startup class or form!"
 msgstr ""
 
-#: Project.module:3376
+#: Project.module:3354
 msgid "Please type a name."
 msgstr ""
 
-#: Project.module:3380
+#: Project.module:3358
 msgid "This name contains a forbidden character:"
 msgstr ""
 
-#: Project.module:3384
+#: Project.module:3362
 msgid "The name cannot begins with a dot."
 msgstr ""
 
-#: Project.module:3388
+#: Project.module:3366
 msgid "This name is already used. Choose another one."
 msgstr ""
 
-#: Project.module:3418
+#: Project.module:3396
 msgid ""
 "A class name must begin with a letter or an underscore, followed by any "
 "letter or digit."
 msgstr ""
 
-#: Project.module:3465
+#: Project.module:3443
 msgid "Destination already exists"
 msgstr ""
 
-#: Project.module:3665
+#: Project.module:3643
 msgid "Unable to rename '&1'"
 msgstr ""
 
-#: Project.module:3780
+#: Project.module:3758
 msgid "Please type a project name."
 msgstr ""
 
-#: Project.module:3788
+#: Project.module:3766
 msgid "The project name cannot begin with a dot."
 msgstr ""
 
-#: Project.module:3791
+#: Project.module:3769
 msgid "Non-ASCII characters are forbidden in a project name."
 msgstr ""
 
-#: Project.module:3792
+#: Project.module:3770
 msgid ""
 "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr ""
 
-#: Project.module:3802
+#: Project.module:3777
+msgid "This project already exists."
+msgstr ""
+
+#: Project.module:3780
 msgid "The project directory already exists."
 msgstr ""
 
-#: Project.module:3804
+#: Project.module:3782
 msgid ""
 "The project directory cannot be created because a file with the same name "
 "already exists."
 msgstr ""
 
-#: Project.module:3849
+#: Project.module:3827
 msgid "Create source package"
 msgstr ""
 
-#: Project.module:3850
+#: Project.module:3828
 msgid "Source packages"
 msgstr ""
 
-#: Project.module:4126
+#: Project.module:4104
 msgid "Cannot copy file &1."
 msgstr ""
 
-#: Project.module:4175
+#: Project.module:4153
 msgid "Cannot create link &1."
 msgstr ""
 
-#: Project.module:4192
+#: Project.module:4170
 msgid "Cannot move a directory inside itself."
 msgstr ""
 
-#: Project.module:4256
+#: Project.module:4234
 msgid "Cannot move file &1."
 msgstr ""
 
-#: Project.module:4794
+#: Project.module:4772
 msgid "modified"
 msgstr ""
 
-#: Project.module:4872
+#: Project.module:4850
 msgid "Unable to update all forms."
 msgstr ""
 

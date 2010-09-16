@@ -1,0 +1,45 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,68,64)
+  Text = ("Save project as")
+  Icon = Picture["icon:/small/save-as"]
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { HBox2 HBox
+    MoveScaled(1,1,64,4)
+    Spacing = True
+    { Label1 Label
+      MoveScaled(0,0,13,4)
+      AutoResize = True
+      Text = ("Project name")
+    }
+    { txtName TextBox
+      MoveScaled(14,0,46,4)
+      Expand = True
+    }
+  }
+  { dchProject DirChooser
+    MoveScaled(1,7,64,49)
+    Expand = True
+  }
+  { HBox1 HBox
+    MoveScaled(1,59,66,4)
+    Spacing = True
+    { Panel1 Panel
+      MoveScaled(4,0,4,4)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(31,0,16,4)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(48,0,16,4)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

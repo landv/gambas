@@ -806,6 +806,7 @@ END_METHOD
 BEGIN_METHOD_VOID(Control_Raise)
 
 	QWIDGET(_object)->raise();
+	arrange_parent(THIS);
 
 END_METHOD
 
@@ -813,6 +814,7 @@ END_METHOD
 BEGIN_METHOD_VOID(Control_Lower)
 
 	QWIDGET(_object)->lower();
+	arrange_parent(THIS);
 
 END_METHOD
 
