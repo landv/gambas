@@ -2805,6 +2805,7 @@ Private Sub SetViewMode(iViewMode As Integer)
       edtEditor.Show
       splHorizontal.Hide
       splVertical.Hide
+      edtEditor.Goto(Editor.Line, Editor.Column, True)
       Editor = edtEditor  
       
     Case VIEWMODE_HORIZONTAL
@@ -2813,6 +2814,8 @@ Private Sub SetViewMode(iViewMode As Integer)
       edtEditor.Hide
       splHorizontal.Show
       splVertical.Hide
+      $hEditor1.Goto(Editor.Line, Editor.Column, True)
+      $hEditor2.Goto(Editor.Line, Editor.Column, True)
       Editor = $hEditor1
       
     Case VIEWMODE_VERTICAL
@@ -2821,6 +2824,8 @@ Private Sub SetViewMode(iViewMode As Integer)
       edtEditor.Hide
       splHorizontal.Hide
       splVertical.Show
+      $hEditor1.Goto(Editor.Line, Editor.Column, True)
+      $hEditor2.Goto(Editor.Line, Editor.Column, True)
       Editor = $hEditor1
       
   End Select   
