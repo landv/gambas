@@ -193,8 +193,8 @@ public:
 	void cursorCenter() { center = true; }
 	void cursorLeft(bool shift, bool ctrl);
 	void cursorRight(bool shift, bool ctrl);
-	void cursorUp(bool shift, bool ctrl);
-	void cursorDown(bool shift, bool ctrl);
+	void cursorUp(bool shift, bool ctrl, bool alt);
+	void cursorDown(bool shift, bool ctrl, bool alt);
 	void cursorPageUp(bool mark);
 	void cursorPageDown(bool mark);
 	void cursorHome(bool shift, bool ctrl);

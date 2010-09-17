@@ -1088,27 +1088,99 @@ void GEditor::cursorRight(bool shift, bool ctrl)
 }
 
 
-void GEditor::cursorUp(bool shift, bool ctrl)
+void GEditor::cursorUp(bool shift, bool ctrl, bool alt)
 {
-	if (!ctrl)
+	if (alt)
 	{
-		cursorGoto(viewToReal(realToView(y) - 1), xx, shift);
-		return;
+		if (!ctrl)
+		{
+			QString str;
+			int x1, y1, x2, y2;
+			bool hasSelection;
+			
+			hasSelection = doc->hasSelection();
+			
+			if (hasSelection)
+			{
+				doc->getSelection(&y1, &x1, &y2, &x2, _insertMode);
+				if (x2) y2++;
+			}
+			else
+			{
+				y1 = y;
+				y2 = y + 1;
+				x1 = x;
+			}
+			
+			if (y1 > 0)
+			{
+				str = doc->lines.at(y1 - 1)->s.getString() + '\n';
+				
+				doc->begin();
+				doc->remove(y1 - 1, 0, y1, 0);
+				doc->insert(y2 - 1, 0, str);
+				if (hasSelection)
+				{
+					cursorGoto(y1 - 1, 0, false);
+					doc->startSelection(this, y1 - 1, 0);
+					doc->endSelection(y2 - 1, 0);
+				}
+				doc->end();
+			}
+		}
 	}
-
-	cursorGoto(doc->getPreviousLimit(y), xx, shift);
+	else if (ctrl)
+		cursorGoto(doc->getPreviousLimit(y), xx, shift);
+	else
+		cursorGoto(viewToReal(realToView(y) - 1), xx, shift);
 }
 
 
-void GEditor::cursorDown(bool shift, bool ctrl)
+void GEditor::cursorDown(bool shift, bool ctrl, bool alt)
 {
-	if (!ctrl)
+	if (alt)
 	{
-		cursorGoto(viewToReal(realToView(y) + 1), xx, shift);
-		return;
+		if (!ctrl)
+		{
+			QString str;
+			int x1, y1, x2, y2;
+			bool hasSelection;
+			
+			hasSelection = doc->hasSelection();
+			
+			if (hasSelection)
+			{
+				doc->getSelection(&y1, &x1, &y2, &x2, _insertMode);
+				if (x2) y2++;
+			}
+			else
+			{
+				y1 = y;
+				y2 = y + 1;
+				x1 = x;
+			}
+			
+			if (y2 < (numLines() - 1))
+			{
+				str = doc->lines.at(y2)->s.getString() + '\n';
+				
+				doc->begin();
+				doc->remove(y2, 0, y2 + 1, 0);
+				doc->insert(y1, 0, str);
+				if (hasSelection)
+				{
+					cursorGoto(y2 + 1, 0, false);
+					doc->startSelection(this, y1 + 1, 0);
+					doc->endSelection(y2 + 1, 0);
+				}
+				doc->end();
+			}
+		}
 	}
-
-	cursorGoto(doc->getNextLimit(y), xx, shift);
+	else if (!ctrl)
+		cursorGoto(viewToReal(realToView(y) + 1), xx, shift);
+	else
+		cursorGoto(doc->getNextLimit(y), xx, shift);
 }
 
 void GEditor::cursorHome(bool shift, bool ctrl)
@@ -1376,6 +1448,7 @@ void GEditor::keyPressEvent(QKeyEvent *e)
 {
 	bool shift = e->state() & Qt::ShiftButton;
 	bool ctrl = e->state() & Qt::ControlButton;
+	bool alt = e->state() & Qt::AltButton;
 
 	e->accept();
 
@@ -1388,9 +1461,9 @@ void GEditor::keyPressEvent(QKeyEvent *e)
 			case Qt::Key_Right:
 				cursorRight(shift, ctrl); return;
 			case Qt::Key_Up:
-				cursorUp(shift, ctrl); return;
+				cursorUp(shift, ctrl, false); return;
 			case Qt::Key_Down:
-				cursorDown(shift, ctrl); return;
+				cursorDown(shift, ctrl, false); return;
 			case Qt::Key_Home:
 				cursorHome(shift, ctrl); return;
 			case Qt::Key_End:
@@ -1440,9 +1513,9 @@ void GEditor::keyPressEvent(QKeyEvent *e)
 			case Qt::Key_Right:
 				cursorRight(shift, ctrl); return;
 			case Qt::Key_Up:
-				cursorUp(shift, ctrl); return;
+				cursorUp(shift, ctrl, alt); return;
 			case Qt::Key_Down:
-				cursorDown(shift, ctrl); return;
+				cursorDown(shift, ctrl, alt); return;
 			case Qt::Key_Enter: 
 			case Qt::Key_Return:
 				newLine(); return;
