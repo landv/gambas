@@ -1691,6 +1691,7 @@ Public Sub ShowMessage(sMsg As String, sIcon As String, Optional sKey As String)
     ' panError.Height = lblError.Height
     ' panError.Show
   Else
+    sMsg = Replace(sMsg, "\n", "<br>")
     If sIcon = "error" Then
       Message.Error(sMsg)
     Else If sIcon = "warning" Then

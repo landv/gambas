@@ -1135,7 +1135,7 @@ Private Sub DoRefreshAfter()
       AddFile(File.Dir(sKey), File.Name(sKey), True, True)
       $aRefreshAfter[iInd] = File.BaseName(sKey)
     Next
-    FMain.ShowError(("The following classes have circular inheritance:") & "\n\n" & $aRefreshAfter.Join(", "))
+    FMain.ShowError("<b>" & ("The following classes have circular inheritance:") & "</b>\n\n" & $aRefreshAfter.Join(", "))
     $aRefreshAfter.Clear
   Endif
   
@@ -1154,6 +1154,8 @@ Private Procedure AddDir(Optional sDir As String)
     If SourceDir <> Project.Dir Then cDir.Add(SourceDir)
   Endif
   
+  $aRefreshAfter.Clear
+    
   Repeat
     
     sDir = cDir[0]
@@ -1171,8 +1173,6 @@ Private Procedure AddDir(Optional sDir As String)
     
     aFile.Sort(gb.Natural)
     
-    $aRefreshAfter.Clear
-    
     For Each sFile In aFile
       
       sFile = Mid$(sFile, 2)
@@ -1181,12 +1181,12 @@ Private Procedure AddDir(Optional sDir As String)
       
     Next
     
-    DoRefreshAfter
-    
     cDir.Remove(0)
     
   Until cDir.Count = 0
   
+  DoRefreshAfter
+    
 End
 
 Public Sub FillDir(sDir As String)
@@ -1822,7 +1822,9 @@ Private Sub CompileError(sMsg As String)
     
     'sFile = File.Dir(Path) &/ File.Name(sFile)
     
-    hForm = OpenFile($cSourceDir[File.Name(sFile)], iLine, iColumn - 1)
+    hForm = OpenFile($cSourceDir[sFile], iLine, iColumn - 1)
+    
+    If sMsg Begins "error: " Then sMsg = Mid$(sMsg, 8)
     
     sErr = TranslateMessage(sMsg)
     

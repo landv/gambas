@@ -445,13 +445,15 @@ int main(int argc, char **argv)
 		fflush(NULL);
 		if (JOB->line)
 		{
+			const char *name = FILE_get_name(JOB->name);
+			
 			if (JOB->column)
-				fprintf(stderr, "%s:%d:%d: ", JOB->name, JOB->line, READ_get_column());
+				fprintf(stderr, "%s:%d:%d: error: ", name, JOB->line, READ_get_column());
 			else
-				fprintf(stderr, "%s:%d: ", JOB->name, JOB->line);
+				fprintf(stderr, "%s:%d: error: ", name, JOB->line);
 		}
 		else
-			fprintf(stderr, "gbc: ERROR: ");
+			fprintf(stderr, "error: ");
 		ERROR_print();
 		exit(1);
 	}
