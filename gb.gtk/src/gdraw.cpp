@@ -66,7 +66,7 @@ void gDraw::init()
 	ft = NULL;
 	stipple = NULL;
 	tag = NULL;
-	_width = _height = _resolution = 0;
+	_x = _y = _width = _height = _resolution = 0;
 	_gc_stack = NULL;
 	_widget = NULL;
 }
@@ -87,7 +87,7 @@ void gDraw::clear()
 	drm = NULL;
 	gc = NULL;
 	gcm = NULL;
-	stipple=NULL;
+	stipple = NULL;
 	
 	if (_gc_stack)
 	{
@@ -117,8 +117,8 @@ void gDraw::reset()
 	clear();
 	init();
 	
-	_shadow=GTK_SHADOW_NONE;
-	_state=GTK_STATE_NORMAL;
+	_shadow = GTK_SHADOW_NONE;
+	_state = GTK_STATE_NORMAL;
 	line_style = LINE_SOLID;
 	clip_enabled = false;
 	clip.x = 0;
@@ -165,7 +165,6 @@ void gDraw::connect(gControl *wid)
 	
 	ft = wid->font()->copy(); //ft = new gFont(wid->widget); 
 	
-	_x = _y = 0;
 	_width = wid->width();
 	_height = wid->height();
 	
