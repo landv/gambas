@@ -10,226 +10,26 @@ Property Read Query As String
 Property Read Files As Collection
 Property Delimiter As String
 Property Read InternetExplorer As Integer
+Property Read Get As _RequestGet
+'Property Read Post As _RequestPost
 
 Private $cCookies As Collection
 Private $cVal As Collection
-Private $cFiles As Collection
-Private $aField As New String[]
+Private $aField As String[]
 Private $iMaxLength As Integer
 Private $sBuffer As String
 Private $bEOF As Boolean
 Private $sDelimiter As String = "&"
 Private $iIE As Integer
+Private $bDecoded As Boolean
+Private $bPost As Boolean
 
-Private Sub ReadLine() As String
-  
-  Dim iPos As Integer
-  Dim sLine As String
-  Dim sData As String
+Private Sub Decode()
 
-  Do
-
-    iPos = InStr($sBuffer, "\r\n")
-    If iPos Then 
-      sLine = Left($sBuffer, iPos - 1)
-      $sBuffer = Mid$($sBuffer, iPos + 2)
-      Break
-    Endif
-    
-    If $iMaxLength = 0 Then
-      $bEOF = True
-      sLine = $sBuffer
-      $sBuffer = ""
-      Break
-    Endif
-    
-    sData = Read Min(4096, $iMaxLength)
-    $iMaxLength -= Len(sData)
-    $sBuffer &= sData
-    
-  Loop
-
-  Return sLine
+  If $bDecoded Then Return
+  $bPost = CGI["REQUEST_METHOD"] = "POST"
+  $bDecoded = True
   
-End
-
-
-Private Sub DecodeURL(sUrl As String, cVal As Collection)
-  
-  Dim sElt As String
-  Dim aElt As String[]
-  Dim sKey As String
-  Dim sVal As String
-  Dim iPos As Integer
-  Dim iPos2 As Integer
-  Dim sCar As String
-
-  sUrl = Trim(sUrl)
-  
-  For Each sElt In Split(sUrl, $sDelimiter)
-  
-    If Not sElt Then Continue
-  
-    aElt = Split(sElt, "=")
-    If aElt.Count = 2 Then
-      sKey = CGI.Decode(aElt[0])
-      If Not sKey Then Continue
-      sVal = CGI.Decode(aElt[1])
-    Else 
-      sKey = CGI.Decode(aElt[0])
-      If Not sKey Then Continue
-      sVal = ""
-    Endif
-    
-    If Not $aField.Exist(sKey) Then
-      $aField.Add(sKey)
-      cVal[sKey] = sVal
-    Else If sVal Then 
-      'IF TypeOf(cVal[sKey]) = gb.String THEN 
-      '  cVal[sKey] = [CStr(cVal[sKey]), sVal]
-      'ELSE  
-      '  cVal[sKey].Add(sVal)
-      'ENDIF
-      cVal[sKey] &= "\n" & sVal
-    Endif
-  
-  Next  
- 
-End
-
-
-Private Sub DecodeQueryForm()
-  
-  Dim sStr As String
-  Dim sType As String
-  Dim sLine As String
-  Dim aElt As String[]
-  Dim sElt As String
-  Dim sName As String
-  Dim sFileName As String
-  Dim sValue As String
-  Dim iLength As Integer
-  Dim bFile As Boolean
-  Dim bFirst As Boolean
-  Dim hFile As File
-  
-  $cVal = New Collection
-  $cFiles = New Collection
-
-  If CGI["REQUEST_METHOD"] = "GET" Then
-    DecodeURL(CGI["QUERY_STRING"], $cVal)  
-    Return
-  Endif
-
-  If CGI["REQUEST_METHOD"] <> "POST" Then Return
-  
-  File.In.EndOfLine = gb.Windows
-  
-  sType = CGI["CONTENT_TYPE"]
-  $iMaxLength = 0
-  Try $iMaxLength = CInt(CGI["CONTENT_LENGTH"])
-  'DEBUG sType
-  
-  If sType = "application/x-www-form-urlencoded" Then 
-    sStr = Read $iMaxLength
-    'LINE INPUT sStr
-    DecodeURL(sStr, $cVal)
-    Return
-  Endif
-    
-  If Not (sType Begins "multipart/form-data") Then Return
-  
-  'SHELL "echo MaxLength = " & CStr($iMaxLength) & " >> /var/log/thttpd/debug.log" WAIT
-  'sType = Scan(sType, "*boundary=*")[1]
-  
-  sType = ReadLine()
-  'IF sLine <> sType THEN RETURN
-  
-  While Not $bEOF
-  
-    sLine = ReadLine()
-    
-    If sLine Begins "Content-Disposition:" Then 
-      bFile = False
-      sFileName = ""
-      aElt = Split(sLine, ";", Chr$(34))
-      For Each sElt In aElt
-        sElt = Trim(sElt)
-        'SHELL "echo " & Quote.Shell(sElt) & " >> /var/log/thttpd/debug.log" WAIT
-        If sElt Begins "name=" Then 
-          sName = Split(sElt, "=", Chr$(34))[1]
-        Else If sElt Begins "filename=" Then
-          bFile = True
-          sFileName = Split(sElt, "=", Chr$(34))[1]
-        Endif
-      Next
-      Continue
-    Endif
-    
-    If sLine Then Continue
-
-    If bFile Then 
-    
-      sValue = sFileName
-      If sValue Then
-        sFileName = Temp$()
-        $cFiles[sName] = sFileName
-        
-        hFile = Open sFileName For Create
-  
-        bFirst = True    
-        Do
-          sLine = ReadLine()
-          If Left(sLine, Len(sType)) = sType Then Break
-          If Not bFirst Then Print #hFile, "\r\n";
-          Print #hFile, sLine;
-          bFirst = False
-        Loop
-        
-        Close #hFile
-      Else
-        Do
-          sLine = ReadLine()
-          If Left(sLine, Len(sType)) = sType Then Break
-        Loop
-      Endif
-
-      'SHELL "echo filename = " & Quote.Shell(sFileName) & " >> /var/log/thttpd/debug.log" WAIT
-
-    Else
-    
-      sValue = ""
-      Do
-        sLine = ReadLine()
-        If Left(sLine, Len(sType)) = sType Then Break
-        If sValue Then sValue &= "\r\n"
-        sValue &= sLine
-      Loop
-      
-      'SHELL "echo value = " & Quote.Shell(sValue) & " >> /var/log/thttpd/debug.log" WAIT
-
-    Endif
-    
-    If sName Then 
-      If Not $aField.Exist(sName) Then 
-        $aField.Add(sName)
-        $cVal[sName] = sValue
-      Else 
-        ' IF TypeOf($cVal[sName]) = gb.String THEN 
-        '   $cVal[sName] = [CStr($cVal[sName]), sValue]
-        ' ELSE  
-        '   $cVal[sName].Add(sValue)
-        ' ENDIF
-        $cVal[sName] &= "\n" & sValue
-      Endif
-    Endif
-      
-    If Right(sLine, 2) = "--" Then Break
-
-  Wend 
-    
-  'SHELL "echo =DONE= >> /var/log/thttpd/debug.log" WAIT
-
 End
 
 Public Sub _init()
@@ -240,15 +40,24 @@ Public Sub _init()
   
 End
 
-
 Public Sub _get(Key As String) As String
+
+  Dim sVal As String
   
-  If Not $cVal Then DecodeQueryForm
-  Return $cVal[Key]
+  If $cVal And If $cVal.Exist(Key) Then Return $cVal[Key]
+  
+  Decode
+  
+  If $bPost Then
+    sVal = _RequestPost[Key]
+    If sVal Then Return sVal
+  Endif
+  
+  Return _RequestGet[Key]
   
 End
 
-Public Sub _put(Value As Variant, Key As String)
+Public Sub _put(Value As String, Key As String)
   
   If Not $cVal Then $cVal = New Collection
   $cVal[Key] = Value
@@ -257,7 +66,19 @@ End
 
 Private Function Fields_Read() As String[]
 
-  If Not $cVal Then DecodeQueryForm
+  Dim sField As String
+
+  If Not $aField Then
+    If Not $bPost Then
+      $aField = _RequestGet.Fields
+    Else
+      $aField = _RequestGet.Fields.Copy()
+      For Each sField In _RequestPost.Fields
+        If Not $aField.Exist(sField) Then $aField.Add(sField)
+      Next
+    Endif
+  Endif
+  
   Return $aField
 
 End
@@ -304,13 +125,14 @@ End
 
 Private Function Files_Read() As Collection
 
-  Return $cFiles  
+  Return _RequestPost.Files
 
 End
 
 Public Sub Exist(Field As String) As Boolean
   
-  Return $aField.Find(Field) >= 0
+  Fields_Read()
+  Return $aField.Exist(Field)
   
 End
 
@@ -330,5 +152,11 @@ End
 Private Function InternetExplorer_Read() As Integer
 
   Return $iIE  
+
+End
+
+Private Function Get_Read() As _RequestGet
+
+  Return _RequestGet
 
 End

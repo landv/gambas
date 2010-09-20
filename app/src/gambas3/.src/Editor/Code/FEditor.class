@@ -210,6 +210,8 @@ Public Sub ReadConfig()
   panProc.Font.Grade = - Settings["/GlobalFont", 0]
   gvwProc.Rows.H = panProc.Font.Height + 1
   
+  RefreshBackground
+  
 End
 
 Public Function Save(Optional bReset As Boolean) As Boolean
@@ -2455,13 +2457,42 @@ Public Sub Form_Activate()
   
 End
 
+Private Sub RefreshBackground()
+  
+  Dim hEditor As Editor
+  
+  For Each hEditor In [$hEditor1, $hEditor2]
+    
+    If Not hEditor Then Continue
+    
+    If hEditor.HasFocus Then
+      ReadConfigEditor(hEditor)
+    Else
+      hEditor.Styles[Highlight.Background].Color = Color.Background
+      hEditor.Flags[Editor.ShowCurrentLine] = False
+      hEditor.Flags[Editor.ShowModifiedLines] = False
+      hEditor.Flags[Editor.ShowProcedureLimits] = False
+    Endif
+    
+  Next
+  
+End
+
+
 Public Sub Editors_GotFocus()
   
-  Editor = Last 
+  Dim hEditor As Editor = Last
+  
+  Editor = hEditor
   $hInsertColor.SetEditor(Editor)
   Project.SetCurrentPopup(mnuEditor)
   
+  If hEditor = $hEditor1 Or hEditor = $hEditor2 Then
+    RefreshBackground
+  Endif
+  
 End
+
 
 ' Public Sub Editors_MouseMove()
 '   

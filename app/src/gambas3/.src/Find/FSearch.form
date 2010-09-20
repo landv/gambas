@@ -40,6 +40,10 @@
           Expand = True
         }
       }
+      { timRefresh #Timer
+        #MoveScaled(48,2)
+        Delay = 500
+      }
       { HBox2 HBox
         MoveScaled(0,5,51,4)
         { Label2 Label
@@ -171,17 +175,16 @@
           Visible = False
           Padding = 4
           AutoResize = True
-          Border = Border.Plain
+        }
+        { Panel2 Panel
+          MoveScaled(30,0,3,4)
+          Expand = True
         }
         { btnBrowseReplace Button
-          MoveScaled(21,0,21,4)
+          MoveScaled(35,0,21,4)
           Visible = False
           Text = ("Replace &all")
           Picture = Picture["icon:/small/wizard"]
-        }
-        { Panel2 Panel
-          MoveScaled(47,0,3,4)
-          Expand = True
         }
         { btnClose2 Button btnClose
           Name = "btnClose2"

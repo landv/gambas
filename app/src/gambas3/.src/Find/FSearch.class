@@ -9,6 +9,7 @@ Public CurrentProcedure As Boolean
 Public CurrentProcedureName As String
 Public SearchString As String
 Public ReplaceString As String
+Public BrowseTimeStamp As Integer
 'Private OnlySource As Boolean
 
 Private $hCurrent As Object
@@ -22,8 +23,6 @@ Private $bCancel As Boolean
 Private $cGrepCache As New Collection
 Private $cRefreshBrowse As New Collection
 Private $bMustRefreshBrowse As Boolean
-
-Private $iBrowseAge As Integer
 
 Private Const GO_FORWARD As Integer = 0
 Private Const GO_BACKWARD As Integer = 1
@@ -447,6 +446,41 @@ DO_IT_AGAIN:
   
 End
 
+Private Sub UpdateSpan(iRow As Integer)
+  
+  Dim hResult As CFindResult
+  Dim iLastFile, iLastLine As Integer
+  
+  If iRow >= $aBrowse.Count Then Return
+  
+  iLastFile = iRow
+  iLastLine = iRow
+  
+  gvwFind[iRow, 0].RowSpan = 1
+  gvwFind[iRow, 1].RowSpan = 1
+  
+  Inc iRow
+  
+  While iRow < $aBrowse.Count
+    
+    hResult = $aBrowse[iRow]
+    
+    If hResult.File <> $aBrowse[iLastFile].File Then
+      iLastFile = iRow
+      iLastLine = iRow
+    Else If hResult.Line <> $aBrowse[iLastLine].Line Then
+      iLastLine = iRow
+    Endif
+    gvwFind[iLastFile, 0].RowSpan = iRow - iLastFile + 1
+    gvwFind[iLastLine, 1].RowSpan = iRow - iLastLine + 1
+    
+    Inc iRow
+    
+  Wend
+  
+End
+
+
 Public Sub AddFound(hResult As CFindResult, Optional iIndex As Integer = -1)
   
   Dim iInd As Integer
@@ -465,22 +499,21 @@ Public Sub AddFound(hResult As CFindResult, Optional iIndex As Integer = -1)
       hResult.Dark = Not $aBrowse[iIndex - 1].Dark
     Endif
   Endif
-  gvwFind.Rows.Count = $aBrowse.Count
   
-  iInd = iIndex
-  While iInd > 0
-    If $aBrowse[iInd - 1].File <> hResult.File Then Break
-    Dec iInd
-  Wend
-  gvwFind[iInd, 0].RowSpan = iIndex - iInd + 1
-  
-  iInd = iIndex
-  While iInd > 0
-    If $aBrowse[iInd - 1].File <> hResult.File Then Break
-    If $aBrowse[iInd - 1].Line <> hResult.Line Then Break
-    Dec iInd
-  Wend
-  gvwFind[iInd, 1].RowSpan = iIndex - iInd + 1
+  ' iInd = iIndex
+  ' While iInd > 0
+  '   If $aBrowse[iInd - 1].File <> hResult.File Then Break
+  '   Dec iInd
+  ' Wend
+  ' gvwFind[iInd, 0].RowSpan = iIndex - iInd + 1
+  ' 
+  ' iInd = iIndex
+  ' While iInd > 0
+  '   If $aBrowse[iInd - 1].File <> hResult.File Then Break
+  '   If $aBrowse[iInd - 1].Line <> hResult.Line Then Break
+  '   Dec iInd
+  ' Wend
+  ' gvwFind[iInd, 1].RowSpan = iIndex - iInd + 1
   
 End
 
@@ -513,9 +546,16 @@ Private Sub BrowseFile(sPath As String, Optional iIndex As Integer = -1, Optiona
   Dim aResult As CFindResult[]
   Dim iInd As Integer
   Dim hResult As CFindResult
+  Dim iStart As Integer
   
   Try hFile = Project.LoadFile(sPath)
   If Not hFile Then Return
+  
+  If iIndex < 0 Then
+    iStart = $aBrowse.Count
+  Else
+    iStart = iIndex
+  Endif
   
   aResult = GrepFile(hFile)
   
@@ -531,10 +571,10 @@ Private Sub BrowseFile(sPath As String, Optional iIndex As Integer = -1, Optiona
     Endif
   Next
   
+  gvwFind.Rows.Count = $aBrowse.Count
+  UpdateSpan(iStart)
   
 End
-
-
 
 Private Sub Browse(Optional bOnlySource As Boolean)
   
@@ -551,7 +591,7 @@ Private Sub Browse(Optional bOnlySource As Boolean)
   'OnlySource = bOnlySource
   
   CurrentProcedure = False
-  $iBrowseAge = Project.TimeStamp
+  BrowseTimeStamp = Project.TimeStamp
   
   tabSearch.Index = 1
 
@@ -793,6 +833,8 @@ End
 
 Public Sub gvwFind_Data(Row As Integer, Column As Integer)
 
+  If Row > $aBrowse.Max Then Return
+
    With gvwFind.Data
     
     If Column = 3 Then .Font = $hFont 
@@ -802,7 +844,7 @@ Public Sub gvwFind_Data(Row As Integer, Column As Integer)
         .Text = $aBrowse[Row].File
         .Alignment = Align.TopNormal
       Case 1
-        .Text = $aBrowse[Row].Line
+        .Text = $aBrowse[Row].Line + 1
         .Alignment = Align.TopRight
       Case 2
         .Text = $aBrowse[Row].Column + 1
@@ -875,6 +917,9 @@ Public Sub OnFileChange(sPath As String)
   
   $cRefreshBrowse[sPath] = True
   
+  timRefresh.Stop
+  If Me.Visible Then timRefresh.Start
+  
 End
 
 Private Sub RefreshBrowse()
@@ -883,6 +928,8 @@ Private Sub RefreshBrowse()
   Dim iIndex As Integer
   
   If $cRefreshBrowse.Count = 0 Then Return
+  
+  Object.Lock(gvwFind)
   
   For Each $cRefreshBrowse
     sPath = $cRefreshBrowse.Key
@@ -901,10 +948,20 @@ Private Sub RefreshBrowse()
   Next
   
   $cRefreshBrowse.Clear
+  Object.Unlock(gvwFind)
+  gvwFind.Refresh
+  timRefresh.Stop
+  BrowseTimeStamp = Project.TimeStamp
   
 Catch
   
   Debug Error.Text
   Error Error.Backtrace.Join("\n")
+  
+End
+
+Public Sub timRefresh_Timer()
+  
+  RefreshBrowse
   
 End

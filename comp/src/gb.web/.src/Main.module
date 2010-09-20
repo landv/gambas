@@ -14,12 +14,56 @@ Public Sub Log(sMsg As String)
   
 End
 
+Public Sub DecodeURL(sUrl As String, aField As String[], cVal As Collection)
+  
+  Dim sElt As String
+  Dim aElt As String[]
+  Dim sKey As String
+  Dim sVal As String
+  Dim iPos As Integer
+  Dim iPos2 As Integer
+  Dim sCar As String
+
+  sUrl = Trim(sUrl)
+  
+  For Each sElt In Split(sUrl, Request.Delimiter)
+  
+    If Not sElt Then Continue
+  
+    aElt = Split(sElt, "=")
+    If aElt.Count = 2 Then
+      sKey = CGI.Decode(aElt[0])
+      If Not sKey Then Continue
+      sVal = CGI.Decode(aElt[1])
+    Else 
+      sKey = CGI.Decode(aElt[0])
+      If Not sKey Then Continue
+      sVal = ""
+    Endif
+    
+    If Not aField.Exist(sKey) Then
+      aField.Add(sKey)
+      cVal[sKey] = sVal
+    Else If sVal Then 
+      'IF TypeOf(cVal[sKey]) = gb.String THEN 
+      '  cVal[sKey] = [CStr(cVal[sKey]), sVal]
+      'ELSE  
+      '  cVal[sKey].Add(sVal)
+      'ENDIF
+      cVal[sKey] &= "\n" & sVal
+    Endif
+  
+  Next  
+ 
+End
+
+
 Public Sub Main()
 
   Dim vVal As Variant
   
-  'vVal = JSON.Decode(File.Load("~/test.json"))
-  vVal = JSON.Decode("\"bébé\\u0101\"")
-  Print JSON.Encode(vVal)
+  CGI["QUERY_STRING"] = "a=1&b=2"
+  
+  Print Request.Get["a"]
   
 End

@@ -239,8 +239,8 @@ GString GDocument::getText()
 
   if (lines.count())
   {
-    for (uint i = 0; i < lines.count(); i++)
-      colorize(i);
+    //for (uint i = 0; i < lines.count(); i++)
+    //  colorize(i);
 
     for (uint i = 0; i < (lines.count() - 1); i++)
     {
@@ -1187,9 +1187,9 @@ void GDocument::colorize(int y)
 				
 				//maxLength = GMAX(maxLength, (int)l->s.length());
 				updateLineWidth(y);
-			//qDebug("colorize: %d has changed: '%s' -> '%s'", y, old.utf8(), l->s.utf8());
-			l->changed = true;
-			changed = true;
+				//qDebug("colorize: %d has changed: '%s' -> '%s'", y, old.utf8(), l->s.utf8());
+				l->changed = true;
+				changed = true;
 			}
 		}
 		else
@@ -1336,8 +1336,14 @@ int GDocument::getCharState(int y, int x)
 	int i;
 	GHighlight *hl;
 	
-	colorize(y);
 	l = lines.at(y);
+	if (l->modified)
+	{
+		if (x < 0 || x > (int)l->s.length())
+			return GLine::Background;
+		else
+			return GLine::Normal;
+	}
 
 	for (i = 0; i < GB.Count(l->highlight); i++)
 	{

@@ -98,10 +98,10 @@ InternetExplorer
 R
 i
 
-Exist
-M
-b
-(Field)s
+Get
+R
+_RequestGet
+
 _init
 M
 
@@ -110,10 +110,14 @@ _get
 M
 s
 (Key)s
+Exist
+M
+b
+(Field)s
 _put
 M
 
-(Value)v(Key)s
+(Value)s(Key)s
 #Response
 
 C
@@ -215,3 +219,37 @@ Render
 m
 
 
+#_RequestGet
+
+CA
+Fields
+r
+String[]
+
+_get
+m
+s
+(Key)s
+Exist
+m
+b
+(Field)s
+#_RequestPost
+
+CA
+Fields
+r
+String[]
+
+Files
+r
+Collection
+
+Exist
+m
+b
+(Field)s
+_get
+m
+s
+(Key)s

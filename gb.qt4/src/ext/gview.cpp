@@ -746,7 +746,7 @@ void GEditor::paintCell(QPainter *painter, int row, int)
 
 		if (getFlag(ShowModifiedLines) && l->changed)
 			p.fillRect(0, 0, margin - 2, _cellh, styles[GLine::Highlight].color);
-		else //if (getFlag(ShowLineNumbers))
+		else if (getFlag(ShowCurrentLine))
 			p.fillRect(0, 0, margin - 2, _cellh, styles[GLine::Line].color);
 
 		//x1 = 0;
@@ -1933,6 +1933,8 @@ void GEditor::updateMargin()
 		else
 			nm += 8;
 	}
+	else if (getFlag(ShowLineNumbers))
+		nm += 4;
 	
 	if (getFlag(ShowLineNumbers))
 	{
