@@ -206,6 +206,9 @@ void SUBR_format(ushort code)
     }
     else
       THROW(E_TYPE, TYPE_get_name(T_INTEGER), TYPE_get_name(PARAM[1].type));
+		
+		if (!len)
+			fmt_type = LF_STANDARD;
   }
 
 	if (PARAM->type == T_VARIANT)

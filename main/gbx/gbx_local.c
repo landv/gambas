@@ -641,7 +641,7 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 		local_current = &LOCAL_local;
 	else
 		local_current = &LOCAL_default;
-
+	
 	switch(fmt_type)
 	{
 		case LF_USER:

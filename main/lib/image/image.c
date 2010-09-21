@@ -1024,7 +1024,7 @@ void IMAGE_colorize(GB_IMG *img, GB_COLOR color)
 	
 	SYNCHRONIZE(img);
 
-	col = GB_COLOR_to_format(color, format);
+	col = GB_COLOR_to_BGRA(color);
 	COLOR_rgb_to_hsv(RED(col), GREEN(col), BLUE(col), &hcol, &scol, &vcol);
 
 	while (p != pm) 
