@@ -3,6 +3,8 @@
 Private $aProc As String[]
 Private $iCurrent As Integer
 Private $sClass As String
+Private $sFind As String
+Private $dFind As Float
 
 Static Public Sub Popup(sClass As String, aProc As String[], iCurrent As Integer, X As Integer, Y As Integer, W As Integer, H As Integer) As Integer
   
@@ -30,6 +32,9 @@ Public Sub Init(sClass As String, aProc As String[], iCurrent As Integer, W As I
     iRow = gvwProc.RowAt(0)
     gvwProc[iRow, 0].EnsureVisible
   Endif
+  
+  $sFind = ""
+  $dFind = Timer
   
 End
 
@@ -87,6 +92,28 @@ Public Sub gvwProc_MouseMove()
   
 End
 
+Private Sub FindProcedure()
+  
+  Dim iRow, iStart As Integer
+  
+  iStart = gvwProc.Row
+  iRow = iStart
+  
+  Do
+    Inc iRow
+    If iRow >= gvwProc.Rows.Count Then
+      iRow = 0
+    Endif
+    If iRow = iStart Then Break
+    If LCase(gvwProc[iRow, 0].Text) Begins $sFind Then
+      Try gvwProc.Rows[iRow].Selected = True
+      Break
+    Endif
+  Loop
+  
+End
+
+
 Public Sub gvwProc_KeyPress()
   
   If Key.Code = Key.Return Or If Key.Code = Key.Enter Or If Key.Code = Key.Space Then
@@ -95,6 +122,11 @@ Public Sub gvwProc_KeyPress()
   Else If Key.Code = Key.F6 Or If Key.Code = Key.Escape Then
     Me.Close
     Stop Event
+  Else If Key.Text Then
+    If (Timer - $dFind) >= 1 Then $sFind = ""
+    $sFind &= String.LCase(Key.Text)
+    $dFind = Timer
+    FindProcedure
   Endif
   
 End
