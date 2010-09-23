@@ -230,7 +230,7 @@ void EXTERN_call(void)
     &&__STRING, &&__STRING, &&__VARIANT, &&__ARRAY, &&__FUNCTION, &&__CLASS, &&__NULL, &&__OBJECT
     };
   static const int use_temp[17] = { 0, 0, 0, 0, 0, 0, sizeof(float), 0, 0, sizeof(char *), sizeof(char *), 0, 0, 0, 0, 0, sizeof(void *) };
-  static char temp[4 * sizeof(void *)];
+  static char temp[16 * sizeof(void *)];
   static void *null = 0;
     
   CLASS_EXTERN *ext = &EXEC.class->load->ext[EXEC.index];

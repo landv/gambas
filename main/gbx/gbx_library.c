@@ -303,6 +303,7 @@ void LIBRARY_preload(const char *file, char **argv)
 _PANIC:
 
   fprintf(stderr, "Cannot preload libraries: %s\n", err ? err : strerror(errno));
+	fclose(fd);
 #endif
 }
 
