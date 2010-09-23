@@ -265,8 +265,8 @@ BEGIN_METHOD(GLLIGHTFV, GB_INTEGER light; GB_INTEGER pname; GB_OBJECT params)
 	GB_ARRAY fArray = (GB_ARRAY) VARG(params);
 	uint i, count = GB.Array.Count(fArray);
 	
-	if (count>4)
-		count==4;
+	if (count > 4)
+		count = 4;
 
 	for (i=0;i<count; i++)
 		params[i]=*((double *)GB.Array.Get(fArray,i));
@@ -281,8 +281,8 @@ BEGIN_METHOD(GLLIGHTIV, GB_INTEGER light; GB_INTEGER pname; GB_OBJECT params)
 	GB_ARRAY iArray = (GB_ARRAY) VARG(params);
 	uint i, count = GB.Array.Count(iArray);
 	
-	if (count>4)
-		count==4;
+	if (count > 4)
+		count = 4;
 
 	for (i=0;i<count; i++)
 		params[i]=*((GLint *)GB.Array.Get(iArray,i));

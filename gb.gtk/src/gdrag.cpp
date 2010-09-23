@@ -578,13 +578,14 @@ static void cb_drag_data_received(GtkWidget *widget, GdkDragContext *context, gi
 
 bool gDrag::getData(const char *prefix)
 {
+	static bool norec = false;
 	GList *tg;
 	gchar *format = NULL;
 	gulong id;
 	
 	//fprintf(stderr, "getData\n");
 	
-	if (_local) // local DnD
+	if (_local || norec) // local DnD
 		return false;
 	
 	tg = g_list_first(_context->targets);
@@ -602,11 +603,13 @@ bool gDrag::getData(const char *prefix)
 			
 			_got_data = false;
 			
+			norec = true;
 			gtk_drag_get_data (_dest->border, _context, (GdkAtom)tg->data, _time);
 			
 			while (!_got_data)
 				do_iteration(true);
-	
+			norec = false;
+			
 			g_signal_handler_disconnect(_dest->border, id);
 	
 			return false;

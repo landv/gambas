@@ -1,0 +1,13 @@
+' Gambas class file
+
+
+PUBLIC SUB Button1_Click()
+
+  PRINT Application.ActiveControl
+  WITH ComboBox1
+    .Visible = NOT .Visible
+  END WITH
+  PRINT Application.ActiveControl
+  
+
+END

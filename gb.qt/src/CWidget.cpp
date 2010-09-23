@@ -2029,7 +2029,8 @@ _ACCEL:
 	else if (type == QEvent::Drop)
 	{
   	//if (!CWIDGET_test_flag(control, WF_NO_DRAG))
-		CDRAG_drag_drop((QWidget *)widget, control, (QDropEvent *)event);
+		if (CDRAG_drag_drop((QWidget *)widget, control, (QDropEvent *)event))
+			return true;
 	}
 	else if (type == QEvent::DragLeave)
 	{

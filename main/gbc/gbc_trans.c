@@ -114,7 +114,7 @@ static bool read_integer(char *number, int base, int64_t *result)
 
 	if (base != 10)
 	{
-		if ((c == '&' || c == 'u' || c == 'U') && base != 10)
+		if (c == '&' || c == 'u' || c == 'U')
 			c = *number++;
 		else
 		{

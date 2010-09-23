@@ -1,11 +1,15 @@
 # Gambas Form File 2.0
 
 { Form Form
-  MoveScaled(0,0,76,47)
+  MoveScaled(0,0,119,66)
   Text = ("")
   Arrangement = Arrange.Vertical
+  { CheckBox1 CheckBox
+    MoveScaled(2,1,24,3)
+    Text = ("Col2 ReadOnly")
+  }
   { tv TableView
-    MoveScaled(22,22,16,16)
+    MoveScaled(5,7,16,16)
     Expand = True
     Header = GridView.Both
   }

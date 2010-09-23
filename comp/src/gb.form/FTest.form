@@ -1,0 +1,26 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,64,64)
+  Text = ("")
+  { TextBox1 TextBox
+    MoveScaled(13,5,24,3)
+    Text = ("TextBox1")
+  }
+  { ComboBox1 ComboBox
+    MoveScaled(11,12,24,3)
+    List = [("Item 1"), ("Item 2"), ("Item 3")]
+    Text = ("ComboBox1")
+  }
+  { TextBox2 TextBox
+    MoveScaled(22,22,24,3)
+    Text = ("TextBox2")
+  }
+  { Button1 Button
+    MoveScaled(9,31,16,3)
+    Text = ("Button1")
+  }
+  { ColorButton1 ColorButton
+    MoveScaled(30,28,9,4)
+  }
+}

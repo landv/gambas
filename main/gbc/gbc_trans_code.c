@@ -559,7 +559,7 @@ bool TRANS_init_var(TRANS_DECL *decl)
       CODE_new(array->ndim + 1, TRUE, FALSE);
       return TRUE;
     }
-    else if (decl->is_new)
+    else
     {
       JOB->current = decl->init;
       TRANS_new();

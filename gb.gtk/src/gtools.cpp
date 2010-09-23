@@ -357,15 +357,16 @@ gPicture *Grab_gdkWindow(GdkWindow *win)
 
 void gMnemonic_correctText(char *st,char **buf)
 {
-	long bucle,b2;
-	long len=strlen(st);
-	long len_in=len;
+	int bucle,b2;
 	
 	if (!st || !*st)
 	{
 		*buf = g_strdup("");
 		return;
 	}
+	
+	int len = strlen(st);
+	int len_in = len;
 	
 	for (bucle=0;bucle<len_in;bucle++)
 	{
@@ -419,9 +420,7 @@ void gMnemonic_correctText(char *st,char **buf)
 
 guint gMnemonic_correctMarkup(char *st,char **buf)
 {
-	long bucle,b2;
-	long len=strlen(st);
-	long len_in=len;
+	int bucle,b2;
 	guint retval=0;	
 
 	if (!st || !*st)
@@ -429,6 +428,9 @@ guint gMnemonic_correctMarkup(char *st,char **buf)
 		*buf = g_strdup("");
 		return retval;
 	}
+	
+	int len = strlen(st);
+	int len_in = len;
 	
 	for (bucle=0;bucle<len_in;bucle++)
 	{
@@ -523,9 +525,7 @@ guint gMnemonic_correctMarkup(char *st,char **buf)
 
 void gMnemonic_returnText(char *st,char **buf)
 {
-	long bucle,b2;
-	long len=strlen(st);
-	long len_in=len;
+	int bucle,b2;
 	
 	if (!st || !*st)
 	{
@@ -533,6 +533,9 @@ void gMnemonic_returnText(char *st,char **buf)
 		return;
 	}
 		
+	int len = strlen(st);
+	int len_in = len;
+	
 	for (bucle=0;bucle<len_in;bucle++)
 	{
 		if (st[bucle]=='_')

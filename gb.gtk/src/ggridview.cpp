@@ -111,7 +111,7 @@ void gGridRow::setText(const char *vl)
 {
 	if (!vl) vl="";
 	if (text) g_free(text);
-	text = g_strdup(text);
+	text = g_strdup(vl);
 }
 
 

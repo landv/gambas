@@ -5,20 +5,33 @@ PUBLIC SUB _new()
 END
 
 PUBLIC SUB Form_Open()
+
+setTV
+  
+END
+
+SUB setTV()
+  
   DIM c AS Integer
   
   tv.Rows.Count = 10
   tv.Columns.Count = 5
-  tv.Rows.Height = 24
   
   FOR c = 0 TO tv.Columns.Count - 1
-    tv.Columns[c].text = IIf(c = 2, "ReadOnly", "")
+    tv.Columns[c].text = IIf((c = 2) AND CheckBox1.Value, "ReadOnly", "")
   NEXT 
   
 END
 
+
 PUBLIC SUB tv_Click()
 
-  tv.Edit(["", "0", "1", "2"], tv.Column = 2)
+  tv.Edit(["", "0", "1", "2"], IIf(tv.Column = 2, CheckBox1.Value, FALSE))
+
+END
+
+PUBLIC SUB CheckBox1_Click()
+
+  setTV
 
 END
