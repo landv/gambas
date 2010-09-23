@@ -361,16 +361,16 @@ int GB_CollectionGet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *va
   VARIANT *var;
 
   var = (VARIANT *)collection_get_key((CCOLLECTION *)col, key, len);
+  value->type = T_VARIANT;
   if (var)
   {
-    value->type = T_VARIANT;
     value->value.type = var->type;
 		value->value.value.data = var->value.data;
     return FALSE;
   }
   else
   {
-    value->type = GB_T_NULL;
+    value->value.type = GB_T_NULL;
     return TRUE;
   }
 }

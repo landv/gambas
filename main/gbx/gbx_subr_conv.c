@@ -157,19 +157,17 @@ void SUBR_val(void)
 {
   char *addr;
   int len;
-  VALUE result;
 
   SUBR_ENTER_PARAM(1);
 
-  SUBR_check_string(PARAM);
-
-  VALUE_get_string(PARAM, &addr, &len);
-
-  VALUE_from_string(&result, addr, len);
-
-  VALUE_conv_variant(&result);
-
-  *RETURN = result;
+  if (SUBR_check_string(PARAM))
+		RETURN->type = T_NULL;
+	else
+	{
+		VALUE_get_string(PARAM, &addr, &len);
+		VALUE_from_string(RETURN, addr, len);
+		VALUE_conv_variant(RETURN);
+	}
 
   SUBR_LEAVE();
 }
