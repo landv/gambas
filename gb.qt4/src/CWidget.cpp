@@ -2413,7 +2413,8 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	__DROP:
 	{
 		//if (!CWIDGET_test_flag(control, WF_NO_DRAG))
-		CDRAG_drag_drop((QWidget *)widget, control, (QDropEvent *)event);
+		if (CDRAG_drag_drop((QWidget *)widget, control, (QDropEvent *)event))
+			return true;
 		goto __NEXT;
 	}
 	

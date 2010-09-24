@@ -28,11 +28,22 @@ SUBDIRS = \
  @dbus_dir@ \
  comp \
  app \
- examples
+ examples \
+ .
 
 EXTRA_DIST = component.am README README.*[^~] TODO TEMPLATE reconf reconf-all
 
 am__tar = ${AMTAR} cof - "$$tardir"
 
+install-exec-local:
+	if test -s $(top_srcdir)/warnings.log; then
+	  echo
+	  echo "||"
+	  cat $(top_srcdir)/warnings.log
+	  echo "||"
+	  echo
+	fi
+	
+	 
 dist-hook:
 	@(cd $(distdir); rm -rf `find . -name ".gambas" -o -name ".lock" -o -name ".xvpics" -o -name "*~" -o -name "*.out"  -o -name "*.pot" -o -name "*.gambas" -o -name "core.*" -o -name "vgcore.*" -o -name ".kdbg*" -o -name ".svn"`;)

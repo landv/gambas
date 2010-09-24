@@ -524,14 +524,14 @@ bool CDRAG_drag_move(QWidget *w, CWIDGET *control, QDropEvent *e)
 	return cancel;
 }
 
-void CDRAG_drag_drop(QWidget *w, CWIDGET *control, QDropEvent *e)
+bool CDRAG_drag_drop(QWidget *w, CWIDGET *control, QDropEvent *e)
 {
 	QPoint p;
 
 	//hide_frame();
 
 	if (!GB.CanRaise(control, EVENT_Drop))
-		return;
+		return false;
 
 	// Hack for QScrollView
 	if (CWIDGET_test_flag(control, WF_SCROLLVIEW) && qobject_cast<MyListView *>(QWIDGET(control)))
@@ -550,6 +550,7 @@ void CDRAG_drag_drop(QWidget *w, CWIDGET *control, QDropEvent *e)
 	GB.Raise(control, EVENT_Drop, 0);
 
 	CDRAG_clear(false);
+	return true;
 }
 
 

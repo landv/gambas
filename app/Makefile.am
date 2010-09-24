@@ -5,10 +5,10 @@ install-exec-local:
 	@(cd $(srcdir)/src; d=`pwd`; \
 	  for p in `cat INSTALL`; do \
 	    echo "Compiling $$p..."; cd $$d/$$p; \
-	    $(DESTDIR)$(bindir)/gbc$(GAMBAS_VERSION) -ag -r $(DESTDIR)$(prefix); \
-	    $(DESTDIR)$(bindir)/gba$(GAMBAS_VERSION); \
-	    rm -rf .gambas; \
-	    $(INSTALL) $$p.gambas $(DESTDIR)$(bindir); \
+	    $(DESTDIR)$(bindir)/gbc$(GAMBAS_VERSION) -ag -r $(DESTDIR)$(prefix) && \
+	      $(DESTDIR)$(bindir)/gba$(GAMBAS_VERSION) && \
+	      rm -rf .gambas && \
+	      $(INSTALL) $$p.gambas $(DESTDIR)$(bindir) || echo "|| Unable to compile $$p" >> $(top_srcdir)/warnings.log; \
 	  done)
 	##@if test "$(bindir)" != "$(ROOT)/usr/bin" && test "$(bindir)" != "$(ROOT)/usr/bin/"; then
 	@ln -s gambas$(GAMBAS_VERSION).gambas $(DESTDIR)$(bindir)/gambas$(GAMBAS_VERSION) || true
