@@ -3,6 +3,7 @@ SUBDIRS = gbc gbx lib share
 EXTRA_DIST = TODO reconf spec README mime
 
 install-exec-local:
+	@rm -f $(srcdir)/../warnings.log
 	@if test x"$(DESTDIR)" != x; then \
 		echo "Installing with DESTDIR='$(DESTDIR)'"; \
 	fi

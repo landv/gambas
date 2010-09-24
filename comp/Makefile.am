@@ -25,20 +25,24 @@ install-exec-local:
 	  echo "Compiling $$p..."; \
 	  cd $$d/$$p; \
 	  $(DESTDIR)$(bindir)/gbc$(GAMBAS_VERSION) -ag -r $(DESTDIR)$(prefix); \
-	  $(DESTDIR)$(bindir)/gba$(GAMBAS_VERSION); \
-	  rm -rf .gambas; \
-	  echo "Installing $$p..."; \
-	  $(INSTALL) $$p.gambas $(DESTDIR)$(gblibdir); \
-	  $(INSTALL) .component $(DESTDIR)$(gblibdir)/$$p.component; \
-	  chmod a-x $(DESTDIR)$(gblibdir)/$$p.component; \
-	  $(INSTALL) .info $(DESTDIR)$(gbdatadir)/info/$$p.info; \
-	  chmod a-x $(DESTDIR)$(gbdatadir)/info/$$p.info; \
-	  $(INSTALL) .list $(DESTDIR)$(gbdatadir)/info/$$p.list; \
-	  chmod a-x $(DESTDIR)$(gbdatadir)/info/$$p.list; \
-	  if test -d .hidden/control; then \
-	    $(INSTALL) -d $(DESTDIR)$(gbdatadir)/control; \
-	    $(INSTALL) -d $(DESTDIR)$(gbdatadir)/control/$$p; \
-	    $(INSTALL) .hidden/control/*.png $(DESTDIR)$(gbdatadir)/control/$$p; \
+	  if test $$? -eq 0; then \
+	    $(DESTDIR)$(bindir)/gba$(GAMBAS_VERSION); \
+	    rm -rf .gambas; \
+	    echo "Installing $$p..."; \
+	    $(INSTALL) $$p.gambas $(DESTDIR)$(gblibdir); \
+	    $(INSTALL) .component $(DESTDIR)$(gblibdir)/$$p.component; \
+	    chmod a-x $(DESTDIR)$(gblibdir)/$$p.component; \
+	    $(INSTALL) .info $(DESTDIR)$(gbdatadir)/info/$$p.info; \
+	    chmod a-x $(DESTDIR)$(gbdatadir)/info/$$p.info; \
+	    $(INSTALL) .list $(DESTDIR)$(gbdatadir)/info/$$p.list; \
+	    chmod a-x $(DESTDIR)$(gbdatadir)/info/$$p.list; \
+	    if test -d .hidden/control; then \
+	      $(INSTALL) -d $(DESTDIR)$(gbdatadir)/control; \
+	      $(INSTALL) -d $(DESTDIR)$(gbdatadir)/control/$$p; \
+	      $(INSTALL) .hidden/control/*.png $(DESTDIR)$(gbdatadir)/control/$$p; \
+	    fi \
+	  else \
+	    echo "|| Unable to compile $$p" >> ../../../warnings.log; \
 	  fi \
 	  done; true)
 

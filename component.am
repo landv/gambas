@@ -10,9 +10,13 @@ install-data-hook:
 			$(DESTDIR)$(bindir)/gbi$(GAMBAS_VERSION) -r $(DESTDIR)$(prefix) $(COMPONENT); \
 			cd $(COMPONENT); \
 			$(DESTDIR)$(bindir)/gbc$(GAMBAS_VERSION) -ag -r $(DESTDIR)$(prefix); \
-			$(DESTDIR)$(bindir)/gba$(GAMBAS_VERSION); \
-			rm -rf .gambas; \
-			$(INSTALL) $(COMPONENT).gambas $(DESTDIR)$(gblibdir); \
+			if test $$? -eq 0; then \
+				$(DESTDIR)$(bindir)/gba$(GAMBAS_VERSION); \
+				rm -rf .gambas; \
+				$(INSTALL) $(COMPONENT).gambas $(DESTDIR)$(gblibdir); \
+			else \
+				echo "|| Unable to compile $(COMPONENT)" >> ../../../warnings.log; \
+			fi \
 		) \
 	fi
 	@echo "Installing the $(COMPONENT) control icons if needed...";
