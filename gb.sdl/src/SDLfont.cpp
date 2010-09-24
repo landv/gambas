@@ -253,6 +253,7 @@ void SDLfont::SetFontStrikeout(bool state)
 bool SDLfont::IsFontStrikeout(void )
 {
 //	return (TTF_GetFontStyle(hSDLfont) & TTF_STYLE_STRIKETHROUGH);
+	return false;
 }
 
 void SDLfont::SetFontUnderline(bool state)

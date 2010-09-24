@@ -34,7 +34,7 @@ void SWAP_double(double *val);
 #if OS_64BITS
 #define SWAP_pointer(_val) SWAP_int64(_val)
 #else
-#define SWAP_pointer(_val) SWAP_int(_val)
+#define SWAP_pointer(_val) SWAP_int(((int *)(void *)_val))
 #endif
 
 #endif
