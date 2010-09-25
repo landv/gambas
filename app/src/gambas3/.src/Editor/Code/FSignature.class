@@ -19,6 +19,7 @@ Private Sub UpdateSignature(Optional hForm As FEditor)
   Dim hCont As Container
   Dim sIcon As String
 
+  panSignature.H = lblNewSignature.H + 4
   If $bShowHelp And $bUseHelp Then
     MHelp.InitWebViewWith(webHelp, MHelp.TYPE_SYMBOL, $hSymbol.Name, $hSymbol.Class, "noimage")
     sepHelp.Show
@@ -32,9 +33,9 @@ Private Sub UpdateSignature(Optional hForm As FEditor)
     panHelp.Hide
     panRight.Hide
     If hForm Then
-      Me.Resize(lblNewSignature.W + 2 + If($bUseHelp, btnHelp.W + panRight.W, 0), lblSignature.H + 2)
+      Me.Resize(lblNewSignature.W + 4 + If($bUseHelp, btnHelp.W + panRight.W, 0), lblNewSignature.H + 6)
     Else
-      Me.H = lblSignature.H + 2
+      Me.H = lblNewSignature.H + 6
     Endif
   Endif
   
