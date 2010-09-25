@@ -339,28 +339,23 @@ void EXTERN_call(void)
 		case T_BYTE:
 		case T_SHORT:
 		case T_INTEGER:
-			//GB_ReturnInteger(*(int *)POINTER(rvalue));
 			GB_ReturnInteger(rvalue._integer);
 			break;
 		
 		case T_LONG:
-			//GB_ReturnLong(*(int64_t *)POINTER(rvalue));
 			GB_ReturnLong(rvalue._long);
 			break;
 		
 		case T_SINGLE:
-			//GB_ReturnFloat(*(float *)POINTER(rvalue));
 			GB_ReturnFloat(rvalue._single);
 			break;
 			
 		case T_FLOAT:
-			//GB_ReturnFloat(*(double *)POINTER(rvalue));
 			GB_ReturnFloat(rvalue._float);
 			break;
 			
 		case T_STRING:
-			//GB_ReturnConstString(*(char **)POINTER(rvalue), 0);
-			GB_ReturnConstString(rvalue._string, 0);
+			GB_ReturnConstZeroString(rvalue._string);
 			break;
 			
 		case T_POINTER:
