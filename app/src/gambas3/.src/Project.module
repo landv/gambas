@@ -1421,10 +1421,12 @@ Private Sub DoRefresh(Optional bReset As Boolean)
     Endif
   Next
   
+  ' Path may not exist in the tree if a filter is active
+  
   For Each sPath In AddedPaths
     sPath = AddedPaths.Key
     EnsureKey(sPath)
-    ProjectTree[sPath].EnsureVisible
+    Try ProjectTree[sPath].EnsureVisible
   Next
   
   If $aProjectFilter Then
