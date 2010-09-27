@@ -55,6 +55,7 @@ extern GB_DESC NATIVE_Collection[];
 
 #endif
 
+#define CCOLLECTION_get_count(_col) HASH_TABLE_size((_col)->hash_table)
 
 /*PUBLIC void *CCOLLECTION_new(TYPE type);*/
 /*

@@ -48,7 +48,8 @@
 #include "gbx_api.h"
 #include "gbx_string.h"
 #include "gbx_watch.h"
-
+#include "gbx_c_array.h"
+#include "gbx_c_collection.h"
 #include "gbx_stream.h"
 
 int STREAM_eff_read;
@@ -681,8 +682,55 @@ char *STREAM_input(STREAM *stream)
 }
 
 
+static int read_length(STREAM *stream)
+{
+	union
+	{
+		unsigned char _data[4];
+		short _short;
+		int _int;
+	}
+	buffer;
+	
+	int len = 0;
+
+	STREAM_read(stream, buffer._data, 1);
+
+	switch (buffer._data[0] >> 6)
+	{
+		case 0:
+		case 1:
+			len = buffer._data[0];
+			break;
+
+		case 2:
+			STREAM_read(stream, &buffer._data[1], 1);
+			buffer._data[0] &= 0x3F;
+
+			if (!EXEC_big_endian)
+				SWAP_short(&buffer._short);
+
+			len = buffer._short;
+			break;
+
+		case 3:
+			STREAM_read(stream, &buffer._data[1], 3);
+			buffer._data[0] &= 0x3F;
+
+			if (!EXEC_big_endian)
+				SWAP_int(&buffer._int);
+
+			len = buffer._int;
+			break;
+	}
+	
+	return len;
+}
+
 void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
 {
+	bool variant;
+	
 	union
 	{
 		unsigned char _byte;
@@ -693,9 +741,72 @@ void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
 	}
 	buffer;
 
-	if (type == T_VARIANT)
+	variant = (type == T_VARIANT);
+	
+	if (variant)
 	{
 		STREAM_read(stream, &buffer._byte, 1);
+		
+		if (buffer._byte == 'A')
+		{
+			CARRAY *array;
+			int size, i;
+			VALUE temp;
+			void *data;
+			
+			STREAM_read(stream, &buffer._byte, 1);
+			type = (TYPE)buffer._byte;
+			
+			size = read_length(stream);
+			
+			GB_ArrayNew((GB_ARRAY *)&array, type, size);
+			for (i = 0; i < size; i++)
+			{
+				data = CARRAY_get_data(array, i);
+				STREAM_read_type(stream, type, &temp, 0);
+				VALUE_write(&temp, data, type);
+			}
+			
+			value->type = T_VARIANT;
+			value->_variant.vtype = (TYPE)OBJECT_class(array);
+			value->_variant.value._object = array;
+			
+			return;
+		}
+		
+		if (buffer._byte == 'c' || buffer._byte == 'C')
+		{
+			GB_COLLECTION col;
+			int size, i;
+			VALUE temp;
+			char *key;
+			char tkey[32];
+			int len;
+			
+			size = read_length(stream);
+			
+			GB_CollectionNew(&col, buffer._byte == 'c');
+			for (i = 0; i < size; i++)
+			{
+				len = read_length(stream);
+				if (len < sizeof(tkey))
+					key = tkey;
+				else
+					key = STRING_new(NULL, len);
+				STREAM_read(stream, key, len);
+				STREAM_read_type(stream, T_VARIANT, &temp, 0);
+				GB_CollectionSet(col, key, len, (GB_VARIANT *)&temp);
+				if (len >= 32)
+					STRING_free_real(key);
+			}
+			
+			value->type = T_VARIANT;
+			value->_variant.vtype = (TYPE)OBJECT_class(col);
+			value->_variant.value._object = col;
+			
+			return;
+		}
+		
 		type = buffer._byte;
 	}
 	
@@ -787,35 +898,7 @@ void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
 				}
 				else
 				{
-					STREAM_read(stream, buffer._data, 1);
-
-					switch (buffer._data[0] >> 6)
-					{
-						case 0:
-						case 1:
-							len = buffer._data[0];
-							break;
-
-						case 2:
-							STREAM_read(stream, &buffer._data[1], 1);
-							buffer._data[0] &= 0x3F;
-
-							if (!EXEC_big_endian)
-								SWAP_short(&buffer._short);
-
-							len = buffer._short;
-							break;
-
-						case 3:
-							STREAM_read(stream, &buffer._data[1], 3);
-							buffer._data[0] &= 0x3F;
-
-							if (!EXEC_big_endian)
-								SWAP_int(&buffer._int);
-
-							len = buffer._int;
-							break;
-					}
+					len = read_length(stream);
 				}
 			}
 
@@ -857,8 +940,41 @@ void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
 
 			THROW(E_TYPE, "Standard type", TYPE_get_name(type));
 	}
+	
+	if (variant)
+		VALUE_convert_variant(value);
 }
 
+static void write_length(STREAM *stream, int len)
+{
+	union
+	{
+		unsigned char _byte;
+		short _short;
+		int _int;
+	}
+	buffer;
+
+	if (len < 0x80)
+	{
+		buffer._byte = (unsigned char)len;
+		STREAM_write(stream, &buffer._byte, 1);
+	}
+	else if (len < 0x4000)
+	{
+		buffer._short = (short)len | 0x8000;
+		if (!EXEC_big_endian)
+			SWAP_short(&buffer._short);
+		STREAM_write(stream, &buffer._short, sizeof(short));
+	}
+	else
+	{
+		buffer._int = len | 0xC0000000;
+		if (!EXEC_big_endian)
+			SWAP_int(&buffer._int);
+		STREAM_write(stream, &buffer._int, sizeof(int));
+	}
+}
 
 void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
 {
@@ -881,11 +997,15 @@ void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
 	{
 		VARIANT_undo(value);
 		type = value->type;
-		buffer._byte = (unsigned char)type;
-		STREAM_write(stream, &buffer._byte, 1);
+		if (!TYPE_is_object(type))
+		{
+			buffer._byte = (unsigned char)type;
+			STREAM_write(stream, &buffer._byte, 1);
+		}
 	}
 
-	//value->type = type;
+	if (TYPE_is_object(type))
+		type = T_OBJECT;
 
 	switch (type)
 	{
@@ -973,27 +1093,7 @@ void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
 				len = value->_string.len;
 
 				if (stream->type != &STREAM_memory)
-				{
-          if (len < 0x80)
-          {
-            buffer._byte = (unsigned char)len;
-            STREAM_write(stream, &buffer._byte, 1);
-          }
-          else if (len < 0x4000)
-          {
-            buffer._short = (short)len | 0x8000;
-            if (!EXEC_big_endian)
-              SWAP_short(&buffer._short);
-            STREAM_write(stream, &buffer._short, sizeof(short));
-          }
-          else
-          {
-            buffer._int = len | 0xC0000000;
-            if (!EXEC_big_endian)
-              SWAP_int(&buffer._int);
-            STREAM_write(stream, &buffer._int, sizeof(int));
-          }
-				}
+					write_length(stream, len);
 			}
 
 			STREAM_write(stream, value->_string.addr + value->_string.start, Min(len, value->_string.len));
@@ -1017,19 +1117,58 @@ void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
 			STREAM_write(stream, &buffer._byte, 1);
 			break;
 
-		/*case T_OBJECT:
-		
-			class = OBJECT_class(value->_object.object);
-			if (class == CLASS_Array || CLASS_inherits(class, CLASS_Array))
+		case T_OBJECT:
+		{
+			CLASS *class = OBJECT_class(value->_object.object);
+			
+			if (class->quick_array == CQA_ARRAY)
 			{
-				CARRAY_stream_write((CARRAY *)value->_object.object, stream);
+				CARRAY *array = (CARRAY *)value->_object.object;
+				VALUE temp;
+				void *data;
+				int i;
+				
+				buffer._byte = 'A';
+				STREAM_write(stream, &buffer._byte, 1);
+				
+				buffer._byte = (unsigned char)Min(T_OBJECT, array->type);
+				STREAM_write(stream, &buffer._byte, 1);
+				
+				write_length(stream, array->count);
+				
+				for (i = 0; i < array->count; i++)
+				{
+					data = CARRAY_get_data(array, i);
+					VALUE_read(&temp, data, array->type);
+					STREAM_write_type(stream, array->type, &temp, 0);
+				}
+				
 				break;
 			}
-			else if (class == CLASS_Collection || CLASS_inherits(class, CLASS_Collection))
+			else if (class->quick_array == CQA_COLLECTION)
 			{
-				CCOLLECTION_stream_write((CCOLLECTION *)value->_object.object, stream);
+				CCOLLECTION *col = (CCOLLECTION *)value->_object.object;
+				char *key = NULL;
+				int len;
+				VALUE temp;
+				
+				buffer._byte = col->mode ? 'c' : 'C';
+				STREAM_write(stream, &buffer._byte, 1);
+				
+				write_length(stream, CCOLLECTION_get_count(col));
+				
+				GB_CollectionEnum(col, (GB_VARIANT *)&temp, NULL, NULL);
+				while (!GB_CollectionEnum(col, (GB_VARIANT *)&temp, &key, &len))
+				{
+					write_length(stream, len);
+					STREAM_write(stream, key, len);
+					STREAM_write_type(stream, T_VARIANT, &temp, 0);
+				}
+				
 				break;
-			}*/			 
+			}
+			// continue;
+		}
 
 		default:
 

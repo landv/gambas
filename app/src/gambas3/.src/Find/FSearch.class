@@ -940,7 +940,7 @@ Private Sub RefreshBrowse()
     If iIndex >= 0 Then
       While $aBrowse[iIndex].Path = sPath
         $aBrowse.Remove(iIndex)
-        If $aBrowse.Count = 0 Then Break
+        If iIndex >= $aBrowse.Count Then Break
       Wend
     Endif
     BrowseFile(sPath, iIndex)

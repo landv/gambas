@@ -159,7 +159,7 @@ END_METHOD
 
 BEGIN_PROPERTY(collection_count)
 
-  GB_ReturnInt(HASH_TABLE_size(THIS->hash_table));
+  GB_ReturnInt(CCOLLECTION_get_count(THIS));
 
 END_PROPERTY
 

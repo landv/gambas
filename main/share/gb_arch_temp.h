@@ -194,16 +194,18 @@ void ARCH_close(ARCH *arch)
 }
 
 
-void ARCH_get_absolute_path(const char *path, int len_path, char *abs_path, int *len_abs_path)
+static bool get_absolute_path(const char *path, int len_path, char *abs_path, int *len_abs_path)
 {
   const char *p, *lp;
-  char *ap;
+  char *ap, *apm;
   char c;
   int rest;
+	bool err = FALSE;
 
 	p = path;
 	lp = p;
 	ap = abs_path;
+	apm = &abs_path[PATH_MAX];
 	*len_abs_path = 0;
 
 	for(;;)
@@ -211,6 +213,12 @@ void ARCH_get_absolute_path(const char *path, int len_path, char *abs_path, int 
 		rest = &path[len_path] - p;
 		if (rest <= 0)
 			break;
+		
+		if (ap >= apm)
+		{
+			err = TRUE;
+			break;
+		}
 
 		c = *p;
 
@@ -257,6 +265,7 @@ void ARCH_get_absolute_path(const char *path, int len_path, char *abs_path, int 
 
 	*len_abs_path = ap - abs_path;
 	*ap = 0;
+	return err;
 }
 
 bool ARCH_find(ARCH *arch, const char *path, int len_path, ARCH_FIND *find)
@@ -269,7 +278,8 @@ bool ARCH_find(ARCH *arch, const char *path, int len_path, ARCH_FIND *find)
   if (len_path <= 0)
     len_path = strlen(path);
 
-	ARCH_get_absolute_path(path, len_path, tpath, &len_tpath);
+	if (get_absolute_path(path, len_path, tpath, &len_tpath))
+		return TRUE;
 	
 	if (len_tpath == 0)
 	{

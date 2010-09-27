@@ -89,6 +89,6 @@ ARCH *ARCH_open(const char *path);
 void ARCH_close(ARCH *arch);
 bool ARCH_find(ARCH *arch, const char *path, int len_path, ARCH_FIND *find);
 bool ARCH_read(ARCH *arch, int pos, void *buffer, int len);
-void ARCH_get_absolute_path(const char *path, int len_path, char *abs_path, int *len_abs_path);
+//void ARCH_get_absolute_path(const char *path, int len_path, char *abs_path, int *len_abs_path);
 
 #endif

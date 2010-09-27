@@ -60,10 +60,18 @@ End
 
 Public Sub Main()
 
-  Dim vVal As Variant
+  Dim hFile As File
+  Dim aStr As Variant[] = ["la", ["nuit", "tous"], "les", "chats", [3, 4, 5], "sont", "gris"]
+  Dim cCol As Collection = ["aspic": Pi, "camembert": aStr, "barbapapa": "Gambas !"]
   
-  CGI["QUERY_STRING"] = "a=1&b=2"
+  hFile = Open "~/serialize.txt" For Create
+  Write #hFile, cCol As Variant
+  Close #hFile
   
-  Print Request.Get["a"]
+  hFile = Open "~/serialize.txt" For Read
+  cCol = Read #hFile As Variant
+  Close #hFile
+  
+  Print cCol.Count
   
 End
