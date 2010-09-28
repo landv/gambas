@@ -437,7 +437,7 @@ void SUBR_near(void)
   VALUE_conv(&PARAM[0], T_STRING);
   VALUE_conv(&PARAM[1], T_STRING);
 
-  result = STRING_comp_value_ignore_case(&PARAM[0], &PARAM[1]) ? -1 : 0;
+  result = STRING_comp_value_ignore_case(&PARAM[0], &PARAM[1]) ? 0 : -1;
 
   RELEASE(&PARAM[0]);
   RELEASE(&PARAM[1]);
