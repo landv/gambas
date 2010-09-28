@@ -743,7 +743,7 @@ void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
 
 	variant = (type == T_VARIANT);
 	
-	if (variant)
+	if (variant || type == T_OBJECT)
 	{
 		STREAM_read(stream, &buffer._byte, 1);
 		
@@ -807,7 +807,8 @@ void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
 			return;
 		}
 		
-		type = buffer._byte;
+		if (variant)
+			type = buffer._byte;
 	}
 	
 	value->type = type;

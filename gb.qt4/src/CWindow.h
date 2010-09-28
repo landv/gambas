@@ -168,7 +168,6 @@ private:
 protected:
 
 	virtual void showEvent(QShowEvent *);
-	virtual void hideEvent(QHideEvent *);
 	virtual void resizeEvent(QResizeEvent *);
 	virtual void moveEvent(QMoveEvent *);
 	virtual void keyPressEvent(QKeyEvent *);

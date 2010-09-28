@@ -18,7 +18,8 @@ Public Sub Init(sClass As String, aProc As String[], iCurrent As Integer, W As I
   Dim iRow As Integer
   
   $sClass = sClass
-  $aProc = aProc
+  ' Copy it, as it can disappear during the Editor_Change() method
+  $aProc = aProc.Copy()
   $iCurrent = iCurrent
   
   gvwProc.Rows.Count = aProc.Count

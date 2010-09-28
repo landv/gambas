@@ -1618,12 +1618,6 @@ void MyMainWindow::showEvent(QShowEvent *e)
 	}
 }
 
-void MyMainWindow::hideEvent(QHideEvent *e)
-{
-	if (isModal() && _enterLoop)
-		MyApplication::eventLoop->exit();
-}
-
 
 void MyMainWindow::initProperties()
 {
@@ -2269,6 +2263,11 @@ void MyMainWindow::closeEvent(QCloseEvent *e)
 		CWINDOW_LastActive = NULL;
 		//qDebug("CWINDOW_LastActive = 0");
 	}
+
+
+	if (isModal() && _enterLoop)
+		MyApplication::eventLoop->exit();
+
 	#if DEBUG_WINDOW
 	qDebug("THIS->opened <- false: %p: %s", THIS, GB.GetClassName(THIS));
 	#endif
