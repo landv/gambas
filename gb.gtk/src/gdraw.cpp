@@ -327,14 +327,18 @@ GtkStyle *gDraw::style(const char *name, GType type)
 		stl = NULL;
 	}
 	
-	if (!name)
+	if (!name && _widget)
 	{
 		stl = gtk_style_copy(_widget->style);
 		stl = gtk_style_attach(stl, _widget->window);
 	}
 	else
 	{
-		stl = gtk_style_copy(gt_get_style(name, type));
+		if (name)
+			stl = gtk_style_copy(gt_get_style(name, type));
+		else
+			stl = gtk_style_copy(gtk_widget_get_default_style());
+		
 		stl = gtk_style_attach(stl, (GdkWindow*)dr);
 	}
 	
@@ -653,6 +657,7 @@ void gDraw::setFillStyle(int vl)
 Clip Area
 
 ***************************************************************************/
+
 int gDraw::clipX()
 {
 	return clip.x;

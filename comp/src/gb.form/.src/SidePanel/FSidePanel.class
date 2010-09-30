@@ -4,6 +4,7 @@ Static Private $hHandleH As Picture
 Static Private $hHandleV As Picture
 
 Private $iOrientation As Integer
+Private $iArrowType As Integer
 Private $bFixed As Boolean
 Private $X As Integer
 Private $Y As Integer
@@ -245,7 +246,8 @@ Private Sub RefreshArrow()
       Endif
   End Select
   
-  $hArrow = Main.GetArrow(iType, 10)
+  If Not Component.IsLoaded("gb.gtk") Then $hArrow = Main.GetArrow(iType, 10)
+  $iArrowType = iType
   btnSide.Refresh
   btnSide2.Refresh
 
@@ -534,10 +536,16 @@ End
 
 Public Sub btnSide_Draw()
 
+  Dim S As Integer
   'If Last.Tag Then
   '  Draw.Style.Button(0, 0, btnSide.W, btnSide.H, Last.Tag = 2)
   'Endif
-  If $hArrow Then Draw.Image($hArrow, (Last.W - $hArrow.W) / 2, (Last.H - $hArrow.H) / 2)
+  If $hArrow Then 
+    Draw.Image($hArrow, (Last.W - $hArrow.W) / 2, (Last.H - $hArrow.H) / 2)
+  Else
+    S = Min(btnSide.W, btnSide.H)
+    Draw.Style.Arrow((btnSide.W - S) \ 2, (btnSide.H - S) \ 2, S, S, $iArrowType)
+  Endif
 
 End
 
