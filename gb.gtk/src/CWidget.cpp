@@ -136,6 +136,26 @@ void gb_plug_raise_error(gControl *sender)
 // 	GB.Unref(POINTER(&_object));
 // }
 
+static bool gb_can_raise(gControl *sender, int type)
+{
+	CWIDGET *ob = GetObject(sender);
+	if (!ob) return false;
+
+	switch (type)
+	{
+		case gEvent_MousePress: type = EVENT_MouseDown; break;
+		case gEvent_MouseRelease: type = EVENT_MouseUp; break;
+		case gEvent_MouseMove: type = EVENT_MouseMove; break;
+		case gEvent_MouseDrag: type = EVENT_MouseDrag; break;
+		case gEvent_MouseWheel: type =EVENT_MouseWheel; break;
+		case gEvent_MouseMenu: type = EVENT_Menu; break;
+		case gEvent_MouseDblClick: type = EVENT_DblClick; break;
+		default: return true;
+	}
+	
+	return GB.CanRaise(ob, type);
+}
+
 bool gb_raise_MouseEvent(gControl *sender, int type)
 {
 	CWIDGET *ob = GetObject(sender);
@@ -332,14 +352,15 @@ void InitControl(gControl *control, CWIDGET *widget)
 		
 	control->setName(name);
 	
-	control->onFinish=DeleteControl;
-	control->onMouseEvent=gb_raise_MouseEvent;
-	control->onKeyEvent=gb_raise_KeyEvent;
-	control->onFocusEvent=gb_raise_FocusEvent;
-	control->onDrag=gb_raise_Drag;
-	control->onDragMove=gb_raise_DragMove;
-	control->onDrop=gb_raise_Drop;
-	control->onEnterLeave=gb_raise_EnterLeave;
+	control->onFinish = DeleteControl;
+	control->onMouseEvent = gb_raise_MouseEvent;
+	control->onKeyEvent = gb_raise_KeyEvent;
+	control->onFocusEvent = gb_raise_FocusEvent;
+	control->onDrag = gb_raise_Drag;
+	control->onDragMove = gb_raise_DragMove;
+	control->onDrop = gb_raise_Drop;
+	control->onEnterLeave = gb_raise_EnterLeave;
+	control->canRaise = gb_can_raise;
 	
 	if (control->isContainer())
 	{

@@ -151,6 +151,7 @@ public:
 	void emit(void *signal, char *arg) { emit(signal, (intptr_t)arg); }
 
 // "Signals"
+	bool (*canRaise)(gControl *sender, int type);
 	void (*onFinish)(gControl *sender); // Special
 	void (*onFocusEvent)(gControl *sender, int type);
 	bool (*onKeyEvent)(gControl *sender, int type);

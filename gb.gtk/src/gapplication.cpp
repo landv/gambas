@@ -314,7 +314,11 @@ static void gambas_handle_event(GdkEvent *event)
 	if (grab)
 	{
 		if (widget != grab && !gtk_widget_is_ancestor(widget, grab))
+		{
 			widget = grab;
+			if (event->type == GDK_MOTION_NOTIFY)
+				fprintf(stderr, "GDK_MOTION_NOTIFY: -> %p\n", widget);
+		}
 	}
 	
 	real = true;
@@ -416,6 +420,7 @@ static void gambas_handle_event(GdkEvent *event)
 							if (win->isPopup() && (x < 0 || y < 0 || x >= win->width() || y >= win->height()))
 								win->close();
 						}
+						
 						break;
 					
 					case GDK_2BUTTON_PRESS: 
