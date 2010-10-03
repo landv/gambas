@@ -58,7 +58,7 @@ static void print_string(const char *s, int len)
 
 	for (i = 0; i < len; i++)
 	{
-		if (i > (DEBUG_BUFFER_MAX - 8))
+		if (i > (DEBUG_OUTPUT_MAX_SIZE - 8))
 		{
 			fprintf(_where, "...");
 			break;
