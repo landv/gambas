@@ -498,7 +498,9 @@ BEGIN_PROPERTY(CMUSIC_pos)
   else
   {
     pos = VPROP(GB_FLOAT);
+    if (music_ref_pos == pos) return;
     Mix_RewindMusic();
+    SDL_Delay(10);
     if (Mix_SetMusicPosition(pos) == 0)
       music_ref_pos = pos;
     else
@@ -507,7 +509,6 @@ BEGIN_PROPERTY(CMUSIC_pos)
   }
 
 END_PROPERTY
-
 
 BEGIN_PROPERTY(CMUSIC_volume)
 
