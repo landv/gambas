@@ -37,6 +37,7 @@ public:
 	static int   winChildCount(gMainWindow *win);
 	static gMenu* winChildMenu(gMainWindow *par,int pos);
 	static void updateFont(gMainWindow *win);
+	static void updateColor(gMainWindow *win);
 	static gMenu *findFromName(gMainWindow *win, const char *name);
 
 //"Properties"
@@ -67,6 +68,7 @@ public:
 	bool action() const { return _action; }
 	void setAction(bool v) { _action = v; }
 	void setFont();
+	void setColor();
 	//bool isTearOff() const;
 	//void setTearOff(bool v);
 

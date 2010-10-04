@@ -314,11 +314,7 @@ static void gambas_handle_event(GdkEvent *event)
 	if (grab)
 	{
 		if (widget != grab && !gtk_widget_is_ancestor(widget, grab))
-		{
 			widget = grab;
-			if (event->type == GDK_MOTION_NOTIFY)
-				fprintf(stderr, "GDK_MOTION_NOTIFY: -> %p\n", widget);
-		}
 	}
 	
 	real = true;

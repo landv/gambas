@@ -347,7 +347,16 @@ void gMainWindow::setStacking(int vl)
 void gMainWindow::setRealBackground(gColor color)
 {
 	if (!_picture)
+	{
 		gControl::setRealBackground(color);
+		gMenu::updateColor(this);
+	}
+}
+
+void gMainWindow::setRealForeground(gColor color)
+{
+	gControl::setRealForeground(color);
+	gMenu::updateColor(this);
 }
 
 void gMainWindow::move(int x, int y)
@@ -1340,8 +1349,9 @@ void gMainWindow::embedMenuBar(GtkWidget *border)
 		gtk_widget_show(GTK_WIDGET(menuBar));
 		gtk_widget_show(GTK_WIDGET(layout));
 		gtk_widget_show(GTK_WIDGET(widget));
-		set_gdk_fg_color(GTK_WIDGET(menuBar), foreground());
-		set_gdk_bg_color(GTK_WIDGET(menuBar), background());
+		
+		gMenu::updateFont(this);
+		gMenu::updateColor(this);
 		
 		checkMenuBar();
 	}

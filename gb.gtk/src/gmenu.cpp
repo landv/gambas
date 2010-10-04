@@ -166,7 +166,7 @@ void gMenu::update()
 				//g_debug("%p: create new menu %p", this, menu);
 				
 				hbox = gtk_hbox_new(false, 4);
-				set_gdk_bg_color(hbox, 0xFF0000);
+				//set_gdk_bg_color(hbox, 0xFF0000);
 				gtk_container_add(GTK_CONTAINER(menu), GTK_WIDGET(hbox));
 				
 				label = gtk_label_new_with_mnemonic("");
@@ -227,7 +227,6 @@ void gMenu::update()
 				if (!parent->child)
 				{
 					parent->child = (GtkMenu*)gtk_menu_new();
-					parent->setFont();
 					//g_debug("%p: creates a new child menu container in parent %p", this, parent->child);
 					
 					g_signal_connect(G_OBJECT(parent->child), "map", G_CALLBACK(cb_map), (gpointer)parent);
@@ -319,6 +318,9 @@ void gMenu::update()
 			//gtk_widget_hide(image);
 			//gtk_widget_hide(check);			
 		}
+		
+		setColor();
+		setFont();
 	}
 
 	//g_debug("%p: END UPDATE", this);	
@@ -779,14 +781,45 @@ void gMenu::hideSeparators()
 
 void gMenu::setFont()
 {
-	if (child)
-	{
-		gMainWindow *win = window();
-		//fprintf(stderr, "set menu child font\n");
-		gtk_widget_modify_font(GTK_WIDGET(child), win->ownFont() ? win->font()->desc() : NULL);
-	}
+	gMainWindow *win = window();
+	if (label) gtk_widget_modify_font(GTK_WIDGET(label), win->ownFont() ? win->font()->desc() : NULL);
+	if (aclbl) gtk_widget_modify_font(GTK_WIDGET(aclbl), win->ownFont() ? win->font()->desc() : NULL);
 }
 
+void gMenu::setColor()
+{
+	gMainWindow *win = window();
+	if (child) 
+	{
+		set_gdk_bg_color(GTK_WIDGET(child), win->realBackground());
+		set_gdk_fg_color(GTK_WIDGET(child), win->realForeground());
+	}
+	if (label) set_gdk_fg_color(GTK_WIDGET(label), win->realForeground());
+	if (aclbl) set_gdk_fg_color(GTK_WIDGET(aclbl), win->realForeground());
+}
+
+void gMenu::updateColor(gMainWindow *win)
+{
+	GList *item;
+	gMenu *mn;
+
+	if (!win->menuBar)
+		return;
+	
+	set_gdk_bg_color(GTK_WIDGET(win->menuBar), win->realBackground());
+
+	if (!menus) 
+		return;
+	
+	item = g_list_first(menus);
+	while (item)
+	{
+		mn = (gMenu*)item->data;
+		if (mn->pr == (void*)win)
+			mn->setColor();
+		item=g_list_next(item);
+	}
+}
 
 void gMenu::updateFont(gMainWindow *win)
 {
