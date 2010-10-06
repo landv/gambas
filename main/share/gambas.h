@@ -622,6 +622,16 @@ typedef
 	void *GB_COLLECTION;
 
 
+/* Opaque type of a Gambas Collection iterator */
+
+typedef
+	struct {
+		void *iter1;
+		void *iter2;
+		}
+	GB_COLLECTION_ITER;
+
+
 /* opaque type of an hash table */
 
 typedef
@@ -919,7 +929,7 @@ typedef
 			int (*Count)(GB_COLLECTION);
 			void (*Set)(GB_COLLECTION, const char *, int, GB_VARIANT *);
 			int (*Get)(GB_COLLECTION, const char *, int, GB_VARIANT *);
-			int (*Enum)(GB_COLLECTION, GB_VARIANT *, char **key, int *len);
+			int (*Enum)(GB_COLLECTION, GB_COLLECTION_ITER *, GB_VARIANT *, char **key, int *len);
 			}
 		Collection;
 

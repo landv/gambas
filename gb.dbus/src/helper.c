@@ -378,10 +378,12 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 				
 				if (col)
 				{
-					GB.Collection.Enum(col, NULL, NULL, NULL);
+					GB_COLLECTION_ITER iter;
+					
+					GB.Collection.Enum(col, &iter, NULL, NULL, NULL);
 					for(;;)
 					{
-						if (GB.Collection.Enum(col, (GB_VARIANT *)&value, &key, &len))
+						if (GB.Collection.Enum(col, &iter, (GB_VARIANT *)&value, &key, &len))
 							break;
 						
 						key = GB.TempString(key, len);

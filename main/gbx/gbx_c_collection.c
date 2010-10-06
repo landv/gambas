@@ -375,19 +375,18 @@ int GB_CollectionGet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *va
   }
 }
 
-int GB_CollectionEnum(GB_COLLECTION col, GB_VARIANT *value, char **key, int *len)
+int GB_CollectionEnum(GB_COLLECTION col, GB_COLLECTION_ITER *iter, GB_VARIANT *value, char **key, int *len)
 {
-	static HASH_ENUM iter;
   VARIANT *val;
   HASH_TABLE *hash_table = ((CCOLLECTION *)col)->hash_table;
 
 	if (!value || !key)
 	{
-		CLEAR(&iter);
+		CLEAR(iter);
 		return FALSE;
 	}
 
-  val = HASH_TABLE_next(hash_table, &iter);
+  val = HASH_TABLE_next(hash_table, (HASH_ENUM *)iter);
   if (!val)
   	return TRUE;
 

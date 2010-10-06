@@ -67,6 +67,8 @@ typedef
   }
   HASH_TABLE;
 
+// NOTE: If HASH_ENUM changes, GB_COLLECTION_ITER must be updated accordingly in gambas.h
+	
 typedef
   struct
   {

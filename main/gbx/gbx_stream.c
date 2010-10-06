@@ -1154,6 +1154,7 @@ void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
 			else if (class->quick_array == CQA_COLLECTION)
 			{
 				CCOLLECTION *col = (CCOLLECTION *)value->_object.object;
+				GB_COLLECTION_ITER iter;
 				char *key = NULL;
 				int len;
 				VALUE temp;
@@ -1167,10 +1168,8 @@ void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
 				
 				write_length(stream, CCOLLECTION_get_count(col));
 				
-				// FIXME: GB_CollectionEnum is not reentrant !!!
-				
-				GB_CollectionEnum(col, (GB_VARIANT *)&temp, NULL, NULL);
-				while (!GB_CollectionEnum(col, (GB_VARIANT *)&temp, &key, &len))
+				GB_CollectionEnum(col, &iter, (GB_VARIANT *)&temp, NULL, NULL);
+				while (!GB_CollectionEnum(col, &iter, (GB_VARIANT *)&temp, &key, &len))
 				{
 					write_length(stream, len);
 					STREAM_write(stream, key, len);

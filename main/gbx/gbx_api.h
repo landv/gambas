@@ -26,6 +26,7 @@
 #include "gambas.h"
 #include "gbx_type.h"
 #include "gbx_stream.h"
+#include "gb_hash.h"
 
 int GB_GetInterface(const char *library, int version, void *iface);
 void *GB_Hook(int type, void *hook);
@@ -139,7 +140,7 @@ void GB_CollectionNew(GB_COLLECTION *col, int mode);
 int GB_CollectionCount(GB_COLLECTION col);
 int GB_CollectionSet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *value);
 int GB_CollectionGet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *value);
-int GB_CollectionEnum(GB_COLLECTION col, GB_VARIANT *value, char **key, int *len);
+int GB_CollectionEnum(GB_COLLECTION col, GB_COLLECTION_ITER *iter, GB_VARIANT *value, char **key, int *len);
 
 void GB_Alloc(void **addr, int len);
 void GB_Free(void **addr);
