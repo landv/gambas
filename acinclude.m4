@@ -299,7 +299,7 @@ AC_DEFUN([GB_INIT],
   have_gcc_visibility=no
   
   if test $SYSTEM != "CYGWIN"; then
-		AX_CFLAGS_GCC_OPTION([-fvisibility=hidden],,
+		GB_CFLAGS_GCC_OPTION([-fvisibility=hidden],,
 		[
 			AM_CFLAGS="$AM_CFLAGS -fvisibility=hidden"
 			AM_CXXFLAGS="$AM_CXXFLAGS -fvisibility=hidden"

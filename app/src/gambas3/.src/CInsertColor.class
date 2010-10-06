@@ -65,6 +65,7 @@ Public Sub Menu_Show()
       Wend
       If Len(sDigit) = 0 Then Continue
       If IsLetter(Mid$(sText, iPos, 1)) Then Continue
+      If Len(sDigit) = 1 Then Continue
       
       sDigit = String$(6 - Len(sDigit), "0") & sDigit
       

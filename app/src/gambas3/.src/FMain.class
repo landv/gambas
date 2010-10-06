@@ -1034,6 +1034,7 @@ End
 Public Sub OnProjectChange()
   
   UpdateMenu
+  btnSearchAdd.Visible = VersionControl.Enabled()
   'UpdateTranslate
   'RefreshInfo
   'IF $bHidden THEN HideAll
@@ -1808,6 +1809,7 @@ End
 Public Sub btnClearSearchProject_Click()
   
   txtSearchProject.Clear
+  Project.ProjectFilter = ""
   timSearchProject_Timer
   
 End
@@ -1843,5 +1845,13 @@ End
 Public Sub txtSearch_Activate()
 
   txtSearch_Click
+
+End
+
+Public Sub btnSearchAdd_Click()
+
+  txtSearchProject.Clear
+  Project.ProjectFilter = Project.FILTER_ADDED
+  timSearchProject_Timer
 
 End

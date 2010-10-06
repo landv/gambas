@@ -169,7 +169,7 @@ Public Sub Main()
   
   $eTime = Timer
   
-  $aLang = [DEFAULT_LANG, "fr", "de", "es", "it", "nl", "pl", "pt", "pt_BR", "mk", "sq", "ca", "hu", "cz", "tr", "ar", "fa", "vi", "ko", "ja", "ru", "zh", "zh_TW", "eo"]
+  $aLang = [DEFAULT_LANG, "fr", "de", "es", "it", "nl", "pl", "pt", "pt_BR", "mk", "sq", "ca", "hu", "cs", "tr", "ar", "fa", "vi", "ko", "ja", "ru", "zh", "zh_TW", "eo"]
   
   $sRoot = File.Dir(File.Dir(Application.Path)) 'Application.Env["DOCUMENT_ROOT"]
   If Not Exist($sRoot &/ ".htaccess") Then $sRoot = User.Home &/ "www/help"
@@ -899,7 +899,7 @@ Private Function Encode(sText As String) As String
     Endif
     
     If $bCode Then
-      $sRes &= HighlightCode(sStr) & "\n"
+      '$sRes &= HighlightCode(sStr) & "\n"
     Endif
     
     If $bVerbatim Then
@@ -1259,8 +1259,8 @@ Private Function Encode(sText As String) As String
         ' 
         ' If bBegin And bEnd And If Asc(sPrev) <= 32 And If Asc(sNext) <= 32 Then Goto NEXT_CAR
         
-        bBegin = True
-        bEnd = True
+        bBegin = Asc(sNext) > 32
+        bEnd = Asc(sPrev) > 32
         
         If sCar = "*" Then
           If Not bBold And If bBegin Then

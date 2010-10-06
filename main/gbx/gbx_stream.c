@@ -1129,6 +1129,10 @@ void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
 				void *data;
 				int i;
 				
+				if (OBJECT_is_locked((OBJECT *)array))
+					THROW(E_SERIAL);
+				OBJECT_lock((OBJECT *)array, TRUE);
+				
 				buffer._byte = 'A';
 				STREAM_write(stream, &buffer._byte, 1);
 				
@@ -1144,6 +1148,7 @@ void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
 					STREAM_write_type(stream, array->type, &temp, 0);
 				}
 				
+				OBJECT_lock((OBJECT *)array, FALSE);
 				break;
 			}
 			else if (class->quick_array == CQA_COLLECTION)
@@ -1153,10 +1158,16 @@ void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
 				int len;
 				VALUE temp;
 				
+				if (OBJECT_is_locked((OBJECT *)col))
+					THROW(E_SERIAL);
+				OBJECT_lock((OBJECT *)col, TRUE);
+				
 				buffer._byte = col->mode ? 'c' : 'C';
 				STREAM_write(stream, &buffer._byte, 1);
 				
 				write_length(stream, CCOLLECTION_get_count(col));
+				
+				// FIXME: GB_CollectionEnum is not reentrant !!!
 				
 				GB_CollectionEnum(col, (GB_VARIANT *)&temp, NULL, NULL);
 				while (!GB_CollectionEnum(col, (GB_VARIANT *)&temp, &key, &len))
@@ -1166,6 +1177,7 @@ void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
 					STREAM_write_type(stream, T_VARIANT, &temp, 0);
 				}
 				
+				OBJECT_lock((OBJECT *)col, FALSE);
 				break;
 			}
 			// continue;

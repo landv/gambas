@@ -102,7 +102,8 @@ enum {
 	E_OVERRIDE,
 	E_VKEY,
 	E_SARRAY,
-	E_EXTCB
+	E_EXTCB,
+	E_SERIAL
 	};
 
 #ifndef __GB_ERROR_C

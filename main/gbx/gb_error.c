@@ -112,6 +112,7 @@ static const char *_message[67] =
 	/* 64 E_NKEY */ "Void key",
 	/* 65 E_SARRAY */ "Static array",
 	/* 66 E_EXTCB */ ".1Cannot create callback: &1"
+	/* 67 E_SERIAL */ "Serialization error"
 };
 
 #if DEBUG_ERROR

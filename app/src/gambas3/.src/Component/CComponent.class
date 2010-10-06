@@ -130,6 +130,10 @@ Static Private Sub InitComponentNames()
   $cName["gb.xml.xslt"] = ("XSLT tools based on libxslt")
   $cName["gb.web"] = ("Web applications tools")
 
+  ' For Each $cName
+  '   Print "gambas3-"; Replace($cName.Key, ".", "-")
+  ' Next
+
   Features["form"] = ("Graphical form management")
   Features["eventloop"] = ("Event loop management")
   Features["imageio"] = ("Image loading and saving")

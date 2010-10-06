@@ -107,6 +107,8 @@ Public Const DEFAULT_FONT As String = "Monospace,9"
 
 Public Const DEFAULT_URL As String = "http://www.endoftheinternet.com/"
 
+Public Const FILTER_ADDED As String = " +"
+
 Public Files As New Collection
 
 Public AboutToQuit As Boolean
@@ -154,7 +156,7 @@ Public RestoringFiles As Boolean
 Private $aRefreshAfter As New String[]
 Private $iNoRefresh As Integer
 Private $bDoRefresh As Boolean
-Private $aProjectFilter As Collection
+Private $cProjectFilter As Collection
 
 Private $cImageCache As New Collection
 
@@ -932,7 +934,7 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
   Dim hModule As CModule
   Dim bSource As Boolean
   
-  If $aProjectFilter And If Not $aProjectFilter.Exist(sDir &/ sFile) Then Return
+  If $cProjectFilter And If Not $cProjectFilter.Exist(sDir &/ sFile) Then Return
   
   sPath = sDir &/ sFile
   sKey = sPath
@@ -1082,7 +1084,7 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
       
       With ProjectTree.Add(sKey, sFile, hPict, sParent)        
         .Editable = Not IsLocked(sKey)
-        'If $aProjectFilter Then .Expanded = True
+        'If $cProjectFilter Then .Expanded = True
         If bAfter Then .MoveAfter(sAfter)
         If bShow Then
           ProjectTree.MoveTo(sKey)
@@ -1309,33 +1311,49 @@ Private Sub InitProjectFilter()
   Dim bVal As Boolean
   Dim sFilter As String
   
-  $aProjectFilter = Null
+  $cProjectFilter = Null
   If Not ProjectFilter Then Return
   
-  sFilter = String.LCase(ProjectFilter)
+  If ProjectFilter = FILTER_ADDED Then
+    
+    $cProjectFilter = New Collection
+    
+    For Each sPath In AddedPaths
+      $cProjectFilter[sPath] = True
+      While Len(sPath) > Len(Project.Dir)
+        sPath = File.Dir(sPath)
+        $cProjectFilter[sPath] = True
+      Wend
+    Next
+    
+  Else
   
-  $aProjectFilter = New Collection
-  
-  For Each sFile In RDir(Project.Dir)
+    sFilter = String.LCase(ProjectFilter)
     
-    sPath = Project.Dir &/ sFile
+    $cProjectFilter = New Collection
     
-    If IsDir(sPath) Then Continue
-    If Right(sPath) = "~" Then Continue
-    If Left(File.Name(sFile)) = "." Then Continue
-    If InStr(sPath, "/.svn/") Then Continue
+    For Each sFile In RDir(Project.Dir)
+      
+      sPath = Project.Dir &/ sFile
+      
+      If IsDir(sPath) Then Continue
+      If Right(sPath) = "~" Then Continue
+      If Left(File.Name(sFile)) = "." Then Continue
+      If InStr(sPath, "/.svn/") Then Continue
+      
+      sFile = File.Name(sFile)
+      If sPath Begins (Project.Dir &/ ".src") Then sFile = File.BaseName(sFile)
+      If InStr(String.LCase(sFile), sFilter) = 0 Then Continue
+      
+      $cProjectFilter[sPath] = True
+      While Len(sPath) > Len(Project.Dir)
+        sPath = File.Dir(sPath)
+        $cProjectFilter[sPath] = True
+      Wend
+      
+    Next
     
-    sFile = File.Name(sFile)
-    If sPath Begins (Project.Dir &/ ".src") Then sFile = File.BaseName(sFile)
-    If InStr(String.LCase(sFile), sFilter) = 0 Then Continue
-    
-    $aProjectFilter[sPath] = True
-    While Len(sPath) > Len(Project.Dir)
-      sPath = File.Dir(sPath)
-      $aProjectFilter[sPath] = True
-    Wend
-    
-  Next
+  Endif
   
 End
 
@@ -1429,9 +1447,9 @@ Private Sub DoRefresh(Optional bReset As Boolean)
     Try ProjectTree[sPath].EnsureVisible
   Next
   
-  If $aProjectFilter Then
-    For Each $aProjectFilter
-      sPath = $aProjectFilter.Key
+  If $cProjectFilter Then
+    For Each $cProjectFilter
+      sPath = $cProjectFilter.Key
       EnsureKey(sPath)
       Try ProjectTree[sPath].EnsureVisible
     Next
