@@ -3,7 +3,7 @@
 Private iNr As Integer
 Private iLast As Integer
 Private aRecentDirs As New String[]
-Private atxLabel As New Object[]
+Private atxLabel As New TextLabel[]
 
 Public Sub Form_Open()
 
@@ -24,17 +24,18 @@ Public Sub Form_Open()
     sShort = Right$(aRecentDirs[i], Len(aRecentDirs[i]) - lastpos)
     sPath = Left$(aRecentDirs[i], Len(aRecentDirs[i]) - Len(sShort))
     
-    atxLabel[i] = New TextLabel(Me) As "lblRecent"
+    atxLabel[i] = New TextLabel(svwLast) As "lblRecent"
     With atxLabel[i]
-      .X = 406
-      .Y = 49 + (i * 35)
-      .Width = 287
-      .Height = 35
-      .Border = 3 ' or 0 ?
+      '.X = 406
+      '.Y = 49 + (i * 35)
+      '.Width = 287
+      '.Height = 35
+      .Border = Border.Raised 
       .Font.Grade = -1
       .Padding = 1
       .Tag = i
       .Text = "<b>" & sShort & "</b><br>" & sPath
+      .AutoResize = True
     End With
   Next
   Me.Center
