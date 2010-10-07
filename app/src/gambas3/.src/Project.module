@@ -422,6 +422,7 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
   Name = File.Name(sDir)
   Project.Dir = sDir
   SourceDir = sDir &/ ".src"
+  ProjectFilter = ""
   
   VersionControl.Refresh
   
@@ -1318,7 +1319,8 @@ Private Sub InitProjectFilter()
     
     $cProjectFilter = New Collection
     
-    For Each sPath In AddedPaths
+    For Each AddedPaths
+      sPath = AddedPaths.Key
       $cProjectFilter[sPath] = True
       While Len(sPath) > Len(Project.Dir)
         sPath = File.Dir(sPath)

@@ -374,14 +374,15 @@ void PRINT_object(FILE *where, VALUE *value)
 	
 	if (GB.Is(object, GB.FindClass("Collection")))
 	{
+		GB_COLLECTION_ITER iter;
 		count = GB.Collection.Count(object);
 		fprintf(_where, "C [%d]", count);
 		
-		GB_DEBUG.EnumCollection(object, NULL, NULL, NULL);
+		GB_DEBUG.EnumCollection(object, &iter, NULL, NULL, NULL);
 		
 		for (i = 0; i < count; i++)
 		{
-			if (GB_DEBUG.EnumCollection(object, (GB_VARIANT *)&conv, &key, &len))
+			if (GB_DEBUG.EnumCollection(object, &iter, (GB_VARIANT *)&conv, &key, &len))
 				break;
 			fprintf(_where, " ");
 			print_string(key, len);

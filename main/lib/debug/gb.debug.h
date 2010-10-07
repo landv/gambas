@@ -71,7 +71,7 @@ typedef
 		bool (*GetValue)(const char *sym, int len, GB_VARIANT *ret);
 		int (*SetValue)(const char *sym, int len, VALUE *value);
 		void (*GetArrayValue)(GB_ARRAY array, int index, GB_VALUE *value);
-		int (*EnumCollection)(GB_COLLECTION col, GB_VARIANT *value, char **key, int *len);
+		int (*EnumCollection)(GB_COLLECTION col, GB_COLLECTION_ITER *iter, GB_VARIANT *value, char **key, int *len);
 		void *(*GetNextSortedSymbol)(void *klass, int *index);
 		int (*GetObjectAccessType)(void *object, CLASS *klass, int *count);
 		GB_CLASS (*FindClass)(const char *name);
