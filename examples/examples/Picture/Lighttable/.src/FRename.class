@@ -1,0 +1,58 @@
+' Gambas class file
+
+Private sOldName As String
+
+Public Sub Form_Open()
+
+  txtRename.Text = Me.Tag
+  sOldName = Me.Tag
+  MarkFilename
+
+End
+
+Public Sub MarkFilename()
+
+  Dim lentext, posp As Integer
+  Dim right3 As String
+  
+  right3 = Right$(txtRename.Text, 3)
+  lentext = Len(txtRename.Text)
+  If right3 = "jpg" Or right3 = "JPG" Then
+    posp = lentext - 4
+  Else 
+    posp = lentext - 5
+  Endif
+  Me.SetFocus
+  txtRename.SetFocus
+  txtRename.Select(0, posp)
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+Public Sub btnOK_Click()
+
+  Dim sNewName As String
+  
+  sNewName = txtRename.Text
+  If sOldName = sNewName Then
+    Message.Error(("Old and new filename are identical."))
+    MarkFilename
+    Return
+  Endif
+  If FMain.TestRenameOne(sOldName, sNewName) = False Then  ' if name already exists, cancel
+    txtRename.Text = sOldName
+    MarkFilename
+    Return
+  Endif
+  FMain.FileRename(sOldName, sNewName)
+  If FMain.Tag = "alpha" Then   ' if sorted alphabetically, sort anew
+    FMain.mnuSortA_Click
+  Endif
+  Me.Close
+
+End

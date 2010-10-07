@@ -1,0 +1,46 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,81,37)
+  Background = Color.Background
+  Resizable = False
+  SkipTaskbar = True
+  { PicBox1 PictureBox
+    MoveScaled(22,12,10,9)
+    Visible = False
+    Stretch = True
+  }
+  { panControl Panel
+    MoveScaled(0,31,79,4)
+    Background = Color.Background
+    Arrangement = Arrange.Horizontal
+    Border = Border.Raised
+    { Panel1 Panel
+      MoveScaled(0,1,7,2)
+      Expand = True
+    }
+    { Label1 Label
+      MoveScaled(8,0,25,4)
+      Text = ("Pause between pictures:")
+      Alignment = Align.Right
+    }
+    { spinDelay SpinBox
+      MoveScaled(34,0,7,4)
+      MaxValue = 60
+    }
+    { Label2 Label
+      MoveScaled(42,0,10,4)
+      Text = ("sec")
+    }
+    { btnStop Button
+      MoveScaled(59,0,15,4)
+      Text = ("Stop")
+      Picture = Picture["icon:/16/stop"]
+      Default = True
+      Cancel = True
+    }
+    { Panel2 Panel
+      MoveScaled(75,0,4,3)
+    }
+  }
+}

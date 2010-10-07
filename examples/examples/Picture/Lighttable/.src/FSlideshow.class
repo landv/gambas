@@ -1,0 +1,56 @@
+' Gambas class file
+
+Public Sub Form_Open()
+
+  Dim sDelay As String
+  
+  Me.Width = Desktop.Width
+  Me.Height = Desktop.Height
+  panControl.Y = Me.Height - 55
+  panControl.Width = Me.Width
+  sDelay = Settings["SlideShow/Delay"]
+  If sDelay = "" Then sDelay = "5"
+  spinDelay.Value = sDelay
+  FMain.GetDelay(sDelay)
+  btnStop.SetFocus
+
+End
+
+Public Function PictureLoad(sPath As String, iOri As String) As Boolean
+
+  Dim hPic As Image
+  Dim iFormat As Single
+  
+  hPic = Image.Load(sPath)
+  If iOri = 6 Then 
+    hPic = hPic.Rotate(Rad(-90))
+  Else If iOri = 8 Then 
+    hPic = hPic.Rotate(Rad(90))
+  Endif
+  PicBox1.Picture = hPic.Picture
+  Wait
+  
+  iFormat = PicBox1.Picture.Width / PicBox1.Picture.Height
+  PicBox1.Y = 0
+  PicBox1.Height = Me.Height - 35
+  PicBox1.Width = Me.Height * iFormat
+  If PicBox1.Width > Me.Width Then
+    PicBox1.Width = Me.Width
+    PicBox1.Height = Me.Width / iFormat
+  Endif
+  PicBox1.X = (Me.Width - PicBox1.Width) / 2
+  PicBox1.Visible = True
+
+End
+
+Public Sub spinDelay_Change()
+
+  FMain.GetDelay(spinDelay.Value)
+
+End
+
+Public Sub btnStop_Click()
+
+  Me.Close
+
+End

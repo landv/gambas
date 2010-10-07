@@ -1,0 +1,37 @@
+' Gambas class file
+
+sCommon As String = ""
+sDetail As String = ""
+
+Public Sub Form_Open()
+
+  sCommon = FMain.GetExifInfoCommon(Me.Tag)
+  If sCommon = "" Then
+    Message.Info(("There are no Exif informations in this file."))
+    Me.Close
+  Endif
+  txlExif.Text = sCommon
+
+End
+
+Public Sub btnClose_Click()
+
+  Me.Close
+
+End
+
+Public Sub btnDetails_Click()
+
+  If btnDetails.Text = ("&More") Then
+    If sDetail = "" Then sDetail = FMain.GetExifInfoAll(Me.Tag)
+    txlExif.Text = sDetail
+    txlExif.Adjust
+    btnDetails.Text = ("&Less")
+  Else
+    txlExif.Text = sCommon
+    txlExif.Width = 567
+    txlExif.Height = 259
+    btnDetails.Text = ("&More")
+  Endif
+
+End

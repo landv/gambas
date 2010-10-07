@@ -1,0 +1,53 @@
+' Gambas module file
+
+Private sPath As String
+Private aFiles As String[]
+
+Public Sub Main()
+
+  Dim sTest As String
+  
+  Try Shell "exiftool -ver" To sTest
+  If Error Or sTest = "" Then
+    Message.Error(("To run this program, exiftool must be installed."))
+    Return
+  Endif
+  
+  Try Shell "convert -version" To sTest
+  If Error Or sTest = "" Then
+    Message.Error(("To run this program, convert must be installed."))
+    Return
+  Endif
+  
+  FStart.Show
+
+End
+
+Public Sub ReadDir(sDir As String) As Boolean
+
+  Dim iCount As Integer
+  
+  aFiles = Dir(sDir, "*.{jpg,jpeg}").Sort(1)  ' Sorted by file names, 1 = case insensitive
+  iCount = aFiles.Count
+  If iCount > 0 Then
+    sPath = sDir
+    Return True
+  Endif
+
+End
+
+Public Sub GoAhead(bOk As Boolean)
+
+  FStart.Close
+  If bOk = False Then Return
+  FMain.Tag = sPath
+  FMain.Show
+
+End
+
+Public Function GetFiles() As String[]
+
+  Return aFiles
+  aFiles.Delete
+
+End

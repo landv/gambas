@@ -1,0 +1,19 @@
+' Gambas class file
+
+Public Sub Form_Open()
+
+  txaList.Text = Me.Tag
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close(0)
+
+End
+
+Public Sub btnContinue_Click()
+
+  Me.Close(1)
+
+End

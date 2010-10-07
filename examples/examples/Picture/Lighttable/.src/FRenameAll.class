@@ -1,0 +1,101 @@
+' Gambas class file
+
+Private sExpl As String
+Private sDigits As String = "000"
+Private sOldStart As String = "1"
+Private iStartVal As Integer = 1
+
+Public Sub Form_Open()
+
+  FMain.Enabled = False
+  sExpl = ("MyPicture.JPG")
+  SpinBox1.Value = 3
+  RenewExample
+
+End
+
+Public Sub txtPre_Change()
+
+  RenewExample
+
+End
+
+Public Sub SpinBox1_Change()
+
+  If SpinBox1.Value < Len(txtStart.Text) Then
+    SpinBox1.Value = Len(txtStart.Text)
+    Return
+  Endif
+  sDigits = String$(SpinBox1.Value, "0")
+  RenewExample
+
+End
+
+Public Sub CheckFile_Click()
+
+  RenewExample
+
+End
+
+Public Sub txtStart_Change()
+
+  Dim sNewStart As String
+  Dim iLenStart As Integer
+  
+  sNewStart = txtStart.Text
+  If Not IsDigit(sNewStart) Then
+    txtStart.Text = sOldStart
+    Return
+  Endif
+  
+  iLenStart = Len(sNewStart)
+  iStartVal = Val(sNewStart)
+  If iLenStart > SpinBox1.Value Then SpinBox1.Value = iLenStart
+  sOldStart = sNewStart
+  RenewExample
+
+End
+
+Public Sub RenewExample()
+
+  lblExample.Text = txtPre.Text & Format$(iStartVal, sDigits)
+  If CheckFile.Value = True Then
+    lblExample.Text = lblExample.Text & "_" & sExpl
+  Else
+    lblExample.Text = lblExample.Text & ".jpg"
+  Endif
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+Public Sub btnOK_Click()
+
+  Dim sProblems As String
+  Dim iContinue As Integer
+  
+  sProblems = FMain.TestRenameAll(txtPre.Text, sDigits, iStartVal, CheckFile.Value)
+  If sProblems <> "" Then
+    FRenameAllWarning.Tag = sProblems
+    iContinue = FRenameAllWarning.ShowModal()
+  Else
+    iContinue = 1
+  Endif
+  
+  If iContinue = 0 Then Return
+  
+  Inc Application.Busy
+  FMain.RenameAll(txtPre.Text, sDigits, iStartVal, CheckFile.Value)
+  Me.Close
+
+End
+
+Public Sub form_Close()
+
+  FMain.Enabled = True
+
+End

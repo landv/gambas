@@ -1,0 +1,25 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,51,15)
+  Text = ("Rename")
+  Resizable = False
+  SkipTaskbar = True
+  { lblRename Label
+    MoveScaled(2,1,23,3)
+    Text = ("New filename:")
+  }
+  { txtRename TextBox
+    MoveScaled(1,4,48,4)
+  }
+  { btnOK Button
+    MoveScaled(34,10,15,4)
+    Text = ("&OK")
+    Default = True
+  }
+  { btnCancel Button
+    MoveScaled(18,10,15,4)
+    Text = ("&Cancel")
+    Cancel = True
+  }
+}

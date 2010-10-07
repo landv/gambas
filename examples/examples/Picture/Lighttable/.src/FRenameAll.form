@@ -1,0 +1,77 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,64,59)
+  Text = ("Rename all pictures")
+  Resizable = False
+  { Panel1 Panel
+    MoveScaled(2,21,60,22)
+    Border = Border.Sunken
+    { txtPre TextBox
+      MoveScaled(17,2,41,4)
+    }
+    { SpinBox1 SpinBox
+      MoveScaled(17,7,6,4)
+      MinValue = 1
+      MaxValue = 5
+    }
+    { txtStart TextBox
+      MoveScaled(17,12,10,4)
+      Text = ("1")
+      MaxLength = 5
+    }
+    { CheckFile CheckBox
+      MoveScaled(2,17,55,3)
+      Text = ("Keep original filename as suffix")
+      Value = CheckBox.True
+    }
+    { Label2 Label
+      MoveScaled(2,7,16,4)
+      Text = ("Number format")
+    }
+    { Label3 Label
+      MoveScaled(24,7,13,4)
+      Text = ("digits")
+    }
+    { Label5 Label
+      MoveScaled(2,2,11,4)
+      Text = ("Prefix")
+    }
+    { Label6 Label
+      MoveScaled(2,12,14,4)
+      Text = ("Start value")
+    }
+  }
+  { btnOK Button
+    MoveScaled(46,53,16,4)
+    Text = ("&OK")
+    Default = True
+  }
+  { btnCancel Button
+    MoveScaled(28,53,16,4)
+    Text = ("&Cancel")
+    Cancel = True
+  }
+  { TextLabel1 TextLabel
+    MoveScaled(2,2,60,14)
+    Background = &HFFFCCC&
+    Padding = 7
+    Text = ("This function will rename <b>all</b> .jp(e)g files in the directory and add serial numbers to the filenames.<br>The pictures will be handled in the order they are shown right now, in rows from left to right, rows from top to bottom.")
+    Border = Border.Etched
+  }
+  { Label1 Label
+    MoveScaled(2,18,19,3)
+    Text = ("Options")
+  }
+  { Label4 Label
+    MoveScaled(2,46,11,4)
+    Text = ("Example:")
+  }
+  { lblExample Label
+    MoveScaled(13,46,49,4)
+    Font = Font["Bold"]
+    Background = Color.TextBackground
+    Alignment = Align.Center
+    Border = Border.Etched
+  }
+}

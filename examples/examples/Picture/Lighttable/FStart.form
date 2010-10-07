@@ -1,0 +1,35 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,101,66)
+  Text = ("Lighttable  -  Choose picture folder")
+  { btnOK Button
+    MoveScaled(84,60,15,4)
+    Text = ("&OK")
+    Default = True
+  }
+  { btnCancel Button
+    MoveScaled(67,60,15,4)
+    Text = ("&Cancel")
+    Cancel = True
+  }
+  { DirChooser1 DirChooser
+    MoveScaled(2,6,51,51)
+  }
+  { Separator1 Separator
+    MoveScaled(2,58,97,1)
+  }
+  { Label1 Label
+    MoveScaled(3,2,27,3)
+    Font = Font["Bold,+1"]
+    Text = ("New selection")
+  }
+  { Separator2 Separator
+    MoveScaled(54,0,2,58)
+  }
+  { Label2 Label
+    MoveScaled(58,2,23,3)
+    Font = Font["Bold,+1"]
+    Text = ("Last selections")
+  }
+}
