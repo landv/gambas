@@ -288,7 +288,7 @@ Public Sub EnsureVisible()
 End
 
 
-Public Sub Select(hChild As control)
+Public Sub Select(hChild As Control)
   
   SetSelected(hChild)
   EnsureVisible
@@ -338,4 +338,57 @@ Public Sub Unlock()
   Dec $iLock
   If $iLock = 0 Then Me.Arrangement = Arrange.Vertical
   
+End
+
+Public Sub ScrollView_KeyPress()
+
+  Dim hCurrent As Control
+  Dim iIndex As Integer
+
+  If Not Key.Normal Then Return
+
+  iIndex = Index_Read()
+
+  If Key.Code = Key.Up Then
+    While iIndex > 0
+      Dec iIndex
+      Index_Write(iIndex)
+      If Index_Read() = iIndex Then
+        Stop Event
+        Return
+      Endif
+    Wend
+  Else If Key.Code = Key.Down Then
+    While iIndex < (Count_Read() - 1)
+      Inc iIndex
+      Index_Write(iIndex)
+      If Index_Read() = iIndex Then
+        Stop Event
+        Return
+      Endif
+    Wend
+  Else If Key.Code = Key.Home Then
+    iIndex = 0
+    While iIndex < Count_Read()
+      Index_Write(iIndex)
+      If Index_Read() = iIndex Then
+        Stop Event
+        Return
+      Endif
+      Inc iIndex
+    Wend
+  Else If Key.Code = Key.End Then
+    iIndex = Count_Read() - 1
+    While iIndex > 0
+      Index_Write(iIndex)
+      If Index_Read() = iIndex Then
+        Stop Event
+        Return
+      Endif
+      Dec iIndex
+    Wend
+  Else If Key.Code = Key.Space Then
+    If GetSelected() Then Raise Activate
+  Endif
+
 End

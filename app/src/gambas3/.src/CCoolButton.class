@@ -10,6 +10,7 @@ Private $hPanel As DrawingArea
 Private $hImage As PictureBox
 Private $hLabel As TextLabel
 Private $iColor As Integer
+Private $bInside As Boolean
 
 Event Click()
 
@@ -52,7 +53,7 @@ End
 
 Private Sub UpdateBorder()
   
-  $hPanel.Border = If($hPanel.Hovered Or $hPanel.HasFocus, Border.Plain, Border.None)
+  $hPanel.Border = If($bInside Or $hPanel.HasFocus, Border.Plain, Border.None)
   
 End
 
@@ -67,6 +68,7 @@ Public Sub Panel_Enter()
   $iColor = hPanel.Foreground
   hPanel.Background = Color.LightBackground '&88D5FF&
   hPanel.Foreground = Color.Foreground '&88D5FF&
+  $bInside = True
   UpdateBorder
 
 End
@@ -80,6 +82,7 @@ Public Sub Panel_Leave()
 
   hPanel.Background = Color.Default 'Last.Parent.Background
   hPanel.Foreground = $iColor
+  $bInside = False
   UpdateBorder
 
 End
