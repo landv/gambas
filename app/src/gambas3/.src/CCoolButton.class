@@ -6,7 +6,7 @@ Property Foreground As Integer
 
 Public Tag As String
 
-Private $hPanel As Panel
+Private $hPanel As DrawingArea
 Private $hImage As PictureBox
 Private $hLabel As TextLabel
 Private $iColor As Integer
@@ -18,12 +18,13 @@ Public Sub _new(hContainer As Container, X As Integer, Y As Integer, W As Intege
 
   Dim hPict As Picture
 
-  $hPanel = New Panel(hContainer) As "Panel"
+  $hPanel = New DrawingArea(hContainer) As "Panel"
   $hPanel.Move(X, Y, W, H)
   $hPanel.Mouse = Mouse.Pointing
   $hPanel.Arrangement = Arrange.Horizontal
   $hPanel.Padding = 2
   $hPanel.Spacing = 8
+  $hPanel.Focus = True
 
   If TypeOf(vIcon) = gb.String Then
     hPict = Picture[vIcon]
@@ -49,9 +50,16 @@ Public Sub _new(hContainer As Container, X As Integer, Y As Integer, W As Intege
 
 End
 
+Private Sub UpdateBorder()
+  
+  $hPanel.Border = If($hPanel.Hovered Or $hPanel.HasFocus, Border.Plain, Border.None)
+  
+End
+
+
 Public Sub Panel_Enter()
 
-  Dim hPanel As Panel
+  Dim hPanel As DrawingArea
 
   Try hPanel = Last
   If Not hPanel Then Return
@@ -59,26 +67,54 @@ Public Sub Panel_Enter()
   $iColor = hPanel.Foreground
   hPanel.Background = Color.LightBackground '&88D5FF&
   hPanel.Foreground = Color.Foreground '&88D5FF&
-  hPanel.Border = Border.Plain
+  UpdateBorder
 
 End
 
 Public Sub Panel_Leave()
 
-  Dim hPanel As Panel
+  Dim hPanel As DrawingArea
 
   Try hPanel = Last
   If Not hPanel Then Return
 
   hPanel.Background = Color.Default 'Last.Parent.Background
   hPanel.Foreground = $iColor
-  hPanel.Border = Border.None
+  UpdateBorder
 
 End
 
-Private Function GetPanel() As Panel
+Public Sub Panel_GotFocus()
+  
+  UpdateBorder
+  
+End
 
-  Dim hPanel As Panel
+Public Sub Panel_LostFocus()
+  
+  UpdateBorder
+  
+End
+
+Public Sub Panel_KeyPress()
+  
+  If Key.Code = Key.Space Then Panel_MouseDown
+  
+End
+
+Public Sub Panel_KeyRelease()
+  
+  If Key.Code = Key.Space Then
+    Panel_MouseUp
+    Panel_Leave
+  Endif
+  
+End
+
+
+Private Function GetPanel() As DrawingArea
+
+  Dim hPanel As DrawingArea
 
   Try hPanel = Last
   If Error Then
@@ -103,35 +139,26 @@ End
 
 Public Sub Panel_MouseUp()
 
-  Dim hPanel As Panel
+  Dim hPanel As DrawingArea
   Dim X As Integer
   Dim Y As Integer
 
-  'If Last Is Panel Then Return
   hPanel = GetPanel()
   hPanel.Background = Color.LightBackground
   hPanel.Foreground = $iColor
 
-  X = Mouse.X
-  Y = Mouse.Y
+  Try X = Mouse.X
+  Try Y = Mouse.Y
 
   If Last <> hPanel Then
     X = X + Last.X
     Y = Y + Last.Y
   Endif
 
-  '$hLabel.Move($hLabel.X - 1, $hLabel.Y - 1)
-  '$hImage.Move($hImage.X - 1, $hImage.Y - 1)
-
-
   If (X >= 0 And Y >= 0 And X < hPanel.W And Y < hPanel.H) Then
 
     Raise Click
     Stop Event
-
-  Else
-
-    'PRINT "Pas Click !"; X; " "; Y; " "; hPanel.W; " "; hPanel.H
 
   Endif
 

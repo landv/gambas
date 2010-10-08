@@ -1,22 +1,22 @@
 /***************************************************************************
 
-  CDrawingArea.cpp
+	CDrawingArea.cpp
 
-  (c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
+	(c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -37,7 +37,7 @@ DECLARE_EVENT(EVENT_draw);
 
 /***************************************************************************
 
-  DrawingArea
+	DrawingArea
 
 ***************************************************************************/
 
@@ -86,9 +86,9 @@ BEGIN_PROPERTY(CDRAWINGAREA_border)
 END_PROPERTY
 
 /*********************************************************
- GTK+ manages the event compression internally,
- this function is placed here only for compatibility
- with gb.qt
+GTK+ manages the event compression internally,
+this function is placed here only for compatibility
+with gb.qt
 **********************************************************/
 BEGIN_PROPERTY(CDRAWINGAREA_merge)
 
@@ -139,27 +139,34 @@ END_PROPERTY*/
 
 GB_DESC CDrawingAreaDesc[] =
 {
-  GB_DECLARE("DrawingArea", sizeof(CDRAWINGAREA)), GB_INHERITS("Container"),
+	GB_DECLARE("DrawingArea", sizeof(CDRAWINGAREA)), GB_INHERITS("Container"),
 
-  GB_METHOD("_new", 0, CDRAWINGAREA_new, "(Parent)Container;"),
+	GB_METHOD("_new", 0, CDRAWINGAREA_new, "(Parent)Container;"),
 
-  GB_PROPERTY("Cached", "b", CDRAWINGAREA_cached),
-  GB_PROPERTY("Border", "i", CDRAWINGAREA_border),
-  GB_PROPERTY("Merge","b",CDRAWINGAREA_merge),
-  GB_PROPERTY("Focus","b",CDRAWINGAREA_focus),
+	GB_PROPERTY("Arrangement", "i", CCONTAINER_arrangement),
+	GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
+	GB_PROPERTY("Padding", "i", CCONTAINER_padding),
+	GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
+	GB_PROPERTY("Margin", "b", CCONTAINER_margin),
+	GB_PROPERTY("Indent", "b", CCONTAINER_indent),
+
+	GB_PROPERTY("Cached", "b", CDRAWINGAREA_cached),
+	GB_PROPERTY("Border", "i", CDRAWINGAREA_border),
+	GB_PROPERTY("Merge","b",CDRAWINGAREA_merge),
+	GB_PROPERTY("Focus","b",CDRAWINGAREA_focus),
 	GB_PROPERTY("Painted", "b", CDRAWINGAREA_painted),
 	//GB_PROPERTY("Transparent", "b", CDRAWINGAREA_transparent),
 
-  GB_METHOD("Clear", 0, CDRAWINGAREA_clear, 0),
+	GB_METHOD("Clear", 0, CDRAWINGAREA_clear, 0),
 
-  GB_EVENT("Draw", 0, 0, &EVENT_draw),
-  
-  GB_INTERFACE("Draw", &DRAW_Interface),
-  GB_INTERFACE("Paint", &PAINT_Interface),
-  
-  DRAWINGAREA_DESCRIPTION,
+	GB_EVENT("Draw", 0, 0, &EVENT_draw),
+	
+	GB_INTERFACE("Draw", &DRAW_Interface),
+	GB_INTERFACE("Paint", &PAINT_Interface),
+	
+	DRAWINGAREA_DESCRIPTION,
 
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
 
 

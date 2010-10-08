@@ -1979,6 +1979,8 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		case QEvent::KeyPress:
 		case QEvent::KeyRelease:
 			jump = &&__KEY; break;
+		case QEvent::Shortcut:
+			goto _DESIGN;
 		case QEvent::InputMethod:
 			jump = &&__INPUT_METHOD; break;
 		case QEvent::Wheel:
@@ -1991,8 +1993,6 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			jump = &&__DROP; break;
 		case QEvent::DragLeave:
 			jump = &&__DRAG_LEAVE; break;
-		case QEvent::Shortcut:
-			jump = &&_DESIGN; break;
 		case QEvent::DeferredDelete:
 			control = CWidget::getDesign(widget);
 			if (!control || CWIDGET_test_flag(control, WF_DELETED))
@@ -2237,11 +2237,11 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			goto _DESIGN;
 		#endif
 
-// 		qDebug("QKeyEvent: %s (%s %p) (%s %p) TL:%d -> %d %s",
-// 			type == QEvent::KeyPress ? "KeyPress" : "KeyRelease",
-// 			widget->className(), widget, GB.GetClassName(control), control,
-// 			((QWidget *)widget)->isWindow(),  
-// 			kevent->key(), (char *)kevent->text().latin1());
+		/*qDebug("QKeyEvent: %s: (%s %s) window:%d -> %d %s",
+			type == QEvent::KeyPress ? "KeyPress" : "KeyRelease",
+			GB.GetClassName(control), control->name,
+			((QWidget *)widget)->isWindow(),  
+			kevent->key(), (const char *)kevent->text().toLatin1());*/
 
 		event_id = (type == QEvent::KeyRelease) ? EVENT_KeyRelease : EVENT_KeyPress;
 

@@ -507,6 +507,13 @@ GB_DESC CDrawingAreaDesc[] =
 	GB_PROPERTY("Cached", "b", CDRAWINGAREA_cached),
 	GB_PROPERTY("Merge", "b", CDRAWINGAREA_merge),
 	
+  GB_PROPERTY("Arrangement", "i", CCONTAINER_arrangement),
+  GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
+  GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
+  GB_PROPERTY("Margin", "b", CCONTAINER_margin),
+  GB_PROPERTY("Padding", "i", CCONTAINER_padding),
+  GB_PROPERTY("Indent", "b", CCONTAINER_indent),
+
 	GB_PROPERTY("Border", "i", CDRAWINGAREA_border),
 	GB_PROPERTY("Background", "i", CDRAWINGAREA_background),
 	

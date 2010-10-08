@@ -3872,10 +3872,11 @@ Private Function GetTodo() As String
   For Each hClass In CComponent.Classes
     
     If hClass.Name = "." Then Continue
+    If InStr(hClass.Name, "*") Then Continue
     
     bPrintClass = True
     
-    If $cCompRedirect And If $cCompRedirect.Exist(sComp) Then Continue
+    'If $cCompRedirect And If $cCompRedirect.Exist(sComp) Then Continue
     sComp = hClass.Component
     If aIgnore.Find(sComp) >= 0 Then Continue
     
@@ -3892,7 +3893,7 @@ Private Function GetTodo() As String
       If Not rPage.Available Then 
         
         If bPrintClass Then
-          sRes &= "<h3>" & GetLink("/comp" &/ sComp &/ LCase(hClass.Name), hClass.Name) & "</h3>\n"
+          sRes &= "<h3>" & GetLink("/comp" &/ sComp &/ LCase(hClass.Name), hClass.Name & " (" & sComp & ")") & "</h3>\n"
           bPrintClass = False
         Endif
         sRes &= GetSymbolLink(hSymbol, hClass, hClass.Name & "." & hSymbol.Name) & "&nbsp;\n"
