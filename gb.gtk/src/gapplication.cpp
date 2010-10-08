@@ -64,8 +64,13 @@ int gKey::code()
 {
 	if (!_valid)
 		return 0;
-	else
-		return _event.keyval;
+	
+	int code = _event.keyval;
+	
+	if (code >= GDK_a && code <= GDK_z)
+		code += GDK_A - GDK_a;
+	
+	return code;
 }
 
 int gKey::state()
