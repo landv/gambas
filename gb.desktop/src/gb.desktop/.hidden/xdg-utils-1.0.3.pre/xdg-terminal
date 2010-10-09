@@ -1,15 +1,12 @@
 #!/bin/sh
 #---------------------------------------------
-#   xdg-open
+#   xdg-terminal
 #
-#   Utility script to open a URL in the registered default application.
+#   Utility script to open the registered terminal emulator
 #
 #   Refer to the usage() function below for usage.
 #
-#   Copyright 2009-2010, Fathi Boudra <fabo@freedesktop.org>
-#   Copyright 2009-2010, Rex Dieter <rdieter@fedoraproject.org>
 #   Copyright 2006, Kevin Krammer <kevin.krammer@gmx.at>
-#   Copyright 2006, Jeremy White <jwhite@codeweavers.com>
 #
 #   LICENSE:
 #
@@ -38,23 +35,22 @@ manualpage()
 cat << _MANUALPAGE
 Name
 
-xdg-open - opens a file or URL in the user's preferred application
+xdg-terminal - opens the user's preferred terminal emulator application
 
 Synopsis
 
-xdg-open { file | URL }
+xdg-terminal [command]
 
-xdg-open { --help | --manual | --version }
+xdg-terminal { --help | --manual | --version }
 
 Description
 
-xdg-open opens a file or URL in the user's preferred application. If a URL is
-provided the URL will be opened in the user's preferred web browser. If a file
-is provided the file will be opened in the preferred application for files of
-that type. xdg-open supports file, ftp, http and https URLs.
+xdg-terminal opens the user's preferred terminal emulator application. If a
+command is provided the command will be executed by the shell within the newly
+opened terminal window.
 
-xdg-open is for use inside a desktop session only. It is not recommended to use
-xdg-open as root.
+xdg-terminal is for use inside a desktop session only. It is not recommended to
+use xdg-terminal as root.
 
 Options
 
@@ -72,8 +68,6 @@ failure. The following failure codes can be returned:
 
 1
     Error in command line syntax.
-2
-    One of the files passed on the command line did not exist.
 3
     A required tool could not be found.
 4
@@ -81,14 +75,13 @@ failure. The following failure codes can be returned:
 
 Examples
 
-xdg-open 'http://www.freedesktop.org/'
+xdg-terminal
 
-Opens the Freedesktop.org website in the user's default browser
+Opens the user's default terminal emulator, just starting an interactive shell.
 
-xdg-open /tmp/foobar.png
+xdg-terminal top
 
-Opens the PNG image file /tmp/foobar.png in the user's default image viewing
-application.
+Opens the user's default terminal emulator and lets it run the top executable.
 
 _MANUALPAGE
 }
@@ -96,13 +89,13 @@ _MANUALPAGE
 usage()
 {
 cat << _USAGE
-xdg-open - opens a file or URL in the user's preferred application
+xdg-terminal - opens the user's preferred terminal emulator application
 
 Synopsis
 
-xdg-open { file | URL }
+xdg-terminal [command]
 
-xdg-open { --help | --manual | --version }
+xdg-terminal { --help | --manual | --version }
 
 _USAGE
 }
@@ -143,11 +136,11 @@ exit_success()
 exit_failure_syntax()
 {
     if [ $# -gt 0 ]; then
-        echo "xdg-open: $@" >&2
-        echo "Try 'xdg-open --help' for more information." >&2
+        echo "xdg-terminal: $@" >&2
+        echo "Try 'xdg-terminal --help' for more information." >&2
     else
         usage
-        echo "Use 'man xdg-open' or 'xdg-open --manual' for additional info."
+        echo "Use 'man xdg-terminal' or 'xdg-terminal --manual' for additional info."
     fi
 
     exit 1
@@ -159,7 +152,7 @@ exit_failure_syntax()
 exit_failure_file_missing()
 {
     if [ $# -gt 0 ]; then
-        echo "xdg-open: $@" >&2
+        echo "xdg-terminal: $@" >&2
     fi
 
     exit 2
@@ -171,7 +164,7 @@ exit_failure_file_missing()
 exit_failure_operation_impossible()
 {
     if [ $# -gt 0 ]; then
-        echo "xdg-open: $@" >&2
+        echo "xdg-terminal: $@" >&2
     fi
 
     exit 3
@@ -183,7 +176,7 @@ exit_failure_operation_impossible()
 exit_failure_operation_failed()
 {
     if [ $# -gt 0 ]; then
-        echo "xdg-open: $@" >&2
+        echo "xdg-terminal: $@" >&2
     fi
 
     exit 4
@@ -195,19 +188,19 @@ exit_failure_operation_failed()
 exit_failure_file_permission_read()
 {
     if [ $# -gt 0 ]; then
-        echo "xdg-open: $@" >&2
+        echo "xdg-terminal: $@" >&2
     fi
 
     exit 5
 }
 
 #------------------------------------------------------------
-# Exit script on insufficient permission to write a specified file
+# Exit script on insufficient permission to read a specified file
 
 exit_failure_file_permission_write()
 {
     if [ $# -gt 0 ]; then
-        echo "xdg-open: $@" >&2
+        echo "xdg-terminal: $@" >&2
     fi
 
     exit 6
@@ -234,10 +227,10 @@ check_vendor_prefix()
          ;;
     esac
 
-    echo "xdg-open: $file_label '$file' does not have a proper vendor prefix" >&2
+    echo "xdg-terminal: $file_label '$file' does not have a proper vendor prefix" >&2
     echo 'A vendor prefix consists of alpha characters ([a-zA-Z]) and is terminated' >&2
     echo 'with a dash ("-"). An example '"$file_label"' is '"'example-$file'" >&2
-    echo "Use --novendor to override or 'xdg-open --manual' for additional info." >&2
+    echo "Use --novendor to override or 'xdg-terminal --manual' for additional info." >&2
     exit 1
 }
 
@@ -269,7 +262,7 @@ check_common_commands()
         case "$parm" in
             --help)
             usage
-            echo "Use 'man xdg-open' or 'xdg-open --manual' for additional info."
+            echo "Use 'man xdg-terminal' or 'xdg-terminal --manual' for additional info."
             exit_success
             ;;
 
@@ -279,7 +272,7 @@ check_common_commands()
             ;;
 
             --version)
-            echo "xdg-open 1.0.2"
+            echo "xdg-terminal 1.0.1"
             exit_success
             ;;
         esac
@@ -305,8 +298,7 @@ detectDE()
 {
     if [ x"$KDE_FULL_SESSION" = x"true" ]; then DE=kde;
     elif [ x"$GNOME_DESKTOP_SESSION_ID" != x"" ]; then DE=gnome;
-    elif `dbus-send --print-reply --dest=org.freedesktop.DBus /org/freedesktop/DBus org.freedesktop.DBus.GetNameOwner string:org.gnome.SessionManager > /dev/null 2>&1` ; then DE=gnome;
-    elif xprop -root _DT_SAVE_MODE 2> /dev/null | grep ' = \"xfce4\"$' >/dev/null 2>&1; then DE=xfce;
+    elif xprop -root _DT_SAVE_MODE | grep ' = \"xfce4\"$' >/dev/null 2>&1; then DE=xfce;
     fi
 }
 
@@ -327,24 +319,66 @@ kfmclient_fix_exit_code()
     return 0
 }
 
-# This handles backslashes but not quote marks.
-first_word()
+terminal_kde()
 {
-    read first rest
-    echo "$first"
-}
+    terminal=`kreadconfig --file kdeglobals --group General --key TerminalApplication --default konsole`
 
-open_kde()
-{
-    if kde-open -v 2>/dev/null 1>&2; then
-        kde-open "$1"
-    else
-        if [ x"$KDE_SESSION_VERSION" = x"4" ]; then
-            kfmclient openURL "$1"
+    terminal_exec=`which $terminal >/dev/null 2>/dev/null`
+
+    if [ -x "$terminal_exec" ]; then
+        if [ x"$1" == x"" ]; then
+            $terminal_exec
         else
-            kfmclient exec "$1"
-            kfmclient_fix_exit_code $?
+            $terminal_exec -e "$1"
         fi
+
+        if [ $? -eq 0 ]; then
+            exit_success
+        else
+            exit_failure_operation_failed
+        fi
+    else
+        exit_failure_operation_impossible "configured terminal program '$terminal' not found or not executable"
+    fi
+}
+
+terminal_gnome()
+{
+    term_exec_key="/desktop/gnome/applications/terminal/exec"
+    term_exec_arg_key="/desktop/gnome/applications/terminal/exec_arg"
+
+    term_exec=`gconftool-2 --get ${term_exec_key}`
+    term_exec_arg=`gconftool-2 --get ${term_exec_arg_key}`
+
+    terminal_exec=`which $term_exec 2>/dev/null`
+
+    if [ -x "$terminal_exec" ]; then
+        if [ x"$1" == x"" ]; then
+            $terminal_exec
+        else
+            if [ x"$term_exec_arg" == x"" ]; then
+                $terminal_exec "$1"
+            else
+                $terminal_exec "$term_exec_arg" "$1"
+            fi
+        fi
+
+        if [ $? -eq 0 ]; then
+            exit_success
+        else
+            exit_failure_operation_failed
+        fi
+    else
+        exit_failure_operation_impossible "configured terminal program '$term_exec' not found or not executable"
+    fi
+}
+
+terminal_xfce()
+{
+    if [ x"$1" == x"" ]; then
+        exo-open --launch TerminalEmulator
+    else
+        exo-open --launch TerminalEmulator "$1"
     fi
 
     if [ $? -eq 0 ]; then
@@ -354,116 +388,29 @@ open_kde()
     fi
 }
 
-open_gnome()
+terminal_generic()
 {
-    if gvfs-open --help 2>/dev/null 1>&2; then
-        gvfs-open "$1"
-    else
-        gnome-open "$1"
+    # if $TERM is not set, try xterm
+    if [ x"$TERM" == x"" ]; then
+        TERM=xterm
     fi
 
-    if [ $? -eq 0 ]; then
-        exit_success
-    else
-        exit_failure_operation_failed
-    fi
-}
+    terminal_exec=`which $TERM >/dev/null 2>/dev/null`
 
-open_xfce()
-{
-    exo-open "$1"
-
-    if [ $? -eq 0 ]; then
-        exit_success
-    else
-        exit_failure_operation_failed
-    fi
-}
-
-open_generic_xdg_mime()
-{
-    filetype=`xdg-mime query filetype "$1" | sed "s/;.*//"`
-    default=`xdg-mime query default "$filetype"`
-    if [ -n "$default" ] ; then
-        xdg_user_dir="$XDG_DATA_HOME"
-        [ -n "$xdg_user_dir" ] || xdg_user_dir="$HOME/.local/share"
-
-        xdg_system_dirs="$XDG_DATA_DIRS"
-        [ -n "$xdg_system_dirs" ] || xdg_system_dirs=/usr/local/share/:/usr/share/
-
-        for x in `echo "$xdg_user_dir:$xdg_system_dirs" | sed 's/:/ /g'`; do
-            file="$x/applications/$default"
-            if [ -r "$file" ] ; then
-                command="`grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | first_word`"
-                command_exec=`which $command 2>/dev/null`
-                if [ -x "$command_exec" ] ; then
-                    $command_exec "$1"
-                    if [ $? -eq 0 ]; then
-                        exit_success
-                    fi
-                fi
-            fi
-        done
-    fi
-}
-
-open_generic()
-{
-    # Paths or file:// URLs
-    if (echo "$1" | grep -q '^file://' ||
-        ! echo "$1" | egrep -q '^[a-zA-Z+\.\-]+:'); then
-
-        local file=$(echo "$1" | sed 's%^file://%%')
-
-        # Decode URLs
-        # TODO
-
-        check_input_file "$file"
-
-        open_generic_xdg_mime "$file"
-
-        if [ -f /etc/debian_version ] &&
-            which run-mailcap 2>/dev/null 1>&2; then
-            run-mailcap --action=view "$file"
-            if [ $? -eq 0 ]; then
-                exit_success
-            fi
+    if [ -x "$terminal_exec" ]; then
+        if [ $? -eq 0 ]; then
+            exit_success
+        else
+            exit_failure_operation_failed
         fi
-
-        if mimeopen -v 2>/dev/null 1>&2; then
-            mimeopen -L -n "$file"
-            if [ $? -eq 0 ]; then
-                exit_success
-            fi
-        fi
+    else
+        exit_failure_operation_impossible "configured terminal program '$TERM' not found or not executable"
     fi
-
-    IFS=":"
-    for browser in $BROWSER; do
-        if [ x"$browser" != x"" ]; then
-
-            browser_with_arg=`printf "$browser" "$1" 2>/dev/null`
-            if [ $? -ne 0 ]; then
-                browser_with_arg=$browser;
-            fi
-
-            if [ x"$browser_with_arg" = x"$browser" ]; then
-                "$browser" "$1";
-            else eval '$browser_with_arg'$xdg_redirect_output;
-            fi
-
-            if [ $? -eq 0 ]; then
-                exit_success;
-            fi
-        fi
-    done
-
-    exit_failure_operation_impossible "no method available for opening '$1'"
 }
 
-[ x"$1" != x"" ] || exit_failure_syntax
+#[ x"$1" != x"" ] || exit_failure_syntax
 
-url=
+command=
 while [ $# -gt 0 ] ; do
     parm="$1"
     shift
@@ -474,50 +421,42 @@ while [ $# -gt 0 ] ; do
         ;;
 
       *)
-        if [ -n "$url" ] ; then
+        if [ -n "$command" ] ; then
             exit_failure_syntax "unexpected argument '$parm'"
         fi
-        url="$parm"
+        command="$parm"
         ;;
     esac
 done
 
-if [ -z "${url}" ] ; then
-    exit_failure_syntax "file or URL argument missing"
-fi
-
 detectDE
 
 if [ x"$DE" = x"" ]; then
-    DE=generic
-fi
-
-# if BROWSER variable is not set, check some well known browsers instead
-if [ x"$BROWSER" = x"" ]; then
-    BROWSER=links2:links:lynx:w3m
-    if [ -n "$DISPLAY" ]; then
-        BROWSER=firefox:mozilla:epiphany:konqueror:chromium-browser:google-chrome:$BROWSER
+    # if TERM variable is not set, try xterm
+    if [ x"$TERM" = x"" ]; then
+        TERM=xterm
     fi
+    DE=generic
 fi
 
 case "$DE" in
     kde)
-    open_kde "$url"
+    terminal_kde "$command"
     ;;
 
     gnome)
-    open_gnome "$url"
+    terminal_gnome "$command"
     ;;
 
     xfce)
-    open_xfce "$url"
+    terminal_xfce "$command"
     ;;
 
     generic)
-    open_generic "$url"
+    terminal_generic "$command"
     ;;
 
     *)
-    exit_failure_operation_impossible "no method available for opening '$url'"
+    exit_failure_operation_impossible "no terminal emulator available"
     ;;
 esac
