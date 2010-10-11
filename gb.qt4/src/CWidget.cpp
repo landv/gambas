@@ -1980,7 +1980,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		case QEvent::KeyRelease:
 			jump = &&__KEY; break;
 		case QEvent::Shortcut:
-			goto _DESIGN;
+			jump = &&_DESIGN; break;
 		case QEvent::InputMethod:
 			jump = &&__INPUT_METHOD; break;
 		case QEvent::Wheel:
