@@ -14,8 +14,8 @@ The program is written under KDE - no idea, if it is useable with GTK.
 
 Recommendations:
 
-1. Before starting, use Konqueror's preview (or Gwenview, Dolphin, Nautilus, Digikam or any similar program) to create thumbnails of your picture folder. 
-   They do that 10x times faster than I can. If this program has to create thumbnails, it takes almost 1 sec / picture.
+1. Before starting, use Konqueror's preview (or Gwenview, Dolphin, Nautilus, Digikam or any similar program) to create thumbnails of your
+   picture folder. They do that 10x times faster than I can. If this program has to create thumbnails, it takes almost 1 sec / picture.
 
 2. For testing, don't choose a folder that contains hundreds of pictures. Loading takes time (but may be cancelled).
 

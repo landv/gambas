@@ -1,21 +1,25 @@
 ' Gambas class file
 
 Private iNr As Integer
-Private iLast As Integer
 Private aRecentDirs As New String[]
 Private atxLabel As New TextLabel[]
 
 Public Sub Form_Open()
 
-  Dim i, pos, lastpos As Integer
+  Dim i, j, pos, lastpos As Integer
   Dim sShort, sPath As String
   
   aRecentDirs.Resize(10)
   atxLabel.Resize(10)
   
-  For i = 0 To 9
-    aRecentDirs[i] = Settings["Recent/" & i]
+  i = 0
+  For j = 0 To 9
+    aRecentDirs[i] = Settings["Recent/" & j]
     If aRecentDirs[i] = "" Then Break
+    If Not Exist(aRecentDirs[i]) Then
+      i -= 1
+      Goto directory_does_not_exist
+    Endif
     pos = -1
     Do While pos <> 0
       lastpos = pos
@@ -26,10 +30,6 @@ Public Sub Form_Open()
     
     atxLabel[i] = New TextLabel(svwLast) As "lblRecent"
     With atxLabel[i]
-      '.X = 406
-      '.Y = 49 + (i * 35)
-      '.Width = 287
-      '.Height = 35
       .Border = Border.Raised 
       .Font.Grade = -1
       .Padding = 1
@@ -37,6 +37,8 @@ Public Sub Form_Open()
       .Text = "<b>" & sShort & "</b><br>" & sPath
       .AutoResize = True
     End With
+    directory_does_not_exist:
+    i += 1
   Next
   Me.Center
 
@@ -93,12 +95,10 @@ Public Sub lblRecent_Leave()
   If atxLabel[iNr].Background = Color.LightBackground Then
     atxLabel[iNr].Background = -1
   Endif
-
 End
 
 Public Sub lblRecent_MouseDown()
-
-  iLast = iNr
+  
   DirChooser1.SelectedPath = aRecentDirs[iNr]
 
 End
@@ -115,11 +115,11 @@ Public Sub DirChooser1_Change()
   Dim i As Integer
   
   For i = 0 To 9
+    If Not Exist(aRecentDirs[i]) Then Break
     If aRecentDirs[i] = "" Then Break
     If aRecentDirs[i] = DirChooser1.SelectedPath Then
       atxLabel[i].Background = Color.SelectedBackground
       atxLabel[i].Foreground = Color.SelectedForeground
-      iLast = i
     Else
       atxLabel[i].Background = -1
       atxLabel[i].Foreground = -1

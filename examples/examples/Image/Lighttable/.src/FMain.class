@@ -77,6 +77,7 @@ Public Sub Timer1_Timer()   ' Load the pictures in the background
 
   Dim PicInfo As String
   Dim i As Integer
+  Dim hImg As Image
   
   lblStatus.Text = ("Right-click on the background or on a frame for menus.")
   For i = 0 To iPicCount - 1
@@ -84,10 +85,9 @@ Public Sub Timer1_Timer()   ' Load the pictures in the background
     aThumbs[i] = Thumb(aFiles[i])
     Shell "exiftool -b -orientation -createdate '" & aPFiles[i] & "'" To PicInfo ' Get orientation and create time of the picture
     aOri[i] = Left$(PicInfo, 1)
-    
     aTime[i] = Right$(PicInfo, 19)
-    
-    aFrame[i] = New Panel(ScrollView1) As "Framegroup"  ' Frame
+
+    aFrame[i] = New Panel(ScrollView1) As "Framegroup"  ' Make frame
     With aFrame[i]
       .Width = 140
       .Height = 175
@@ -144,13 +144,23 @@ Public Sub Timer1_Timer()   ' Load the pictures in the background
       .Y = 5
       .Width = 128
       .Height = 128
-      Try .Picture = Picture.Load(aThumbs[i])  ' Image isn't faster
+      
+      Try hImg = Image.Load(aThumbs[i])   ' Image, because it might have to be rotated
       If Error Then   ' If thumbnail doesn't exist, it has to be created
         Shell "convert -define jpeg:size=150x150 '" & aPFiles[i] & "' -auto-orient -thumbnail 128x128 '" & aThumbs[i] & "'" Wait
-        
-        .Picture = Picture.Load(aThumbs[i])
-      Endif 
+        hImg = Image.Load(aThumbs[i])
+      Endif
+      
+      If aOri[i] > "1" And hImg.Width > hImg.Height Then  ' If a system's thumbnail isn't rotated correctly
+        If aOri[i] = 6 Then
+          hImg = hImg.Rotate(Rad(-90))
+        Else If aOri[i] = 8 Then 
+          hImg = hImg.Rotate(Rad(90))
+        Endif 
+      Endif
+      .Picture = hImg.Picture
     End With 
+
     ProgressBar1.Value = (i + 1) / iPicCount
     If bStop = True Then  'if loading is stopped
       iPicCount = i + 1
@@ -238,9 +248,6 @@ Public Sub Thumbnail_MouseDown() ' a thumbnail is clicked
   If Mouse.Left Then  ' view picture
     If PicBox.Visible = False Then mnuView_Click
   Else    ' Show menu
-    mnuDrag.Enabled = True
-    mnuView.Enabled = True
-    mnuESC.Enabled = False
     mnuFramegroup.Popup
   Endif
 
@@ -426,10 +433,19 @@ End
 Public Sub mnuDelete_Click()  ' Delete a picture
 
   Dim i, j, x, y, posx As Integer
+  Dim sPicState As String
   
   If iMark = -1 Then Return   ' Only if a picture is selected
-  PicBox.Visible = False
   FInfo.Close
+  If PicBox.Visible = True Then   ' Remember the state of PictureBox
+    If PicBox.Cursor = hCurZoom Then
+      sPicState = "on"
+    Else
+      sPicState = "full"
+    Endif
+  Else
+    sPicState = "off"
+  Endif
   If Message.Warning(Subst(("The file &1 will be deleted."), aFiles[iNr]), ("&OK"), ("&Cancel")) = 2 Then Return  ' If user aborts, cancel
   
   Try Shell "kioclient move '" & aPFiles[iNr] & "' trash:/" ' Move file to trash - kioclient preferred, because it writes the restore infos
@@ -466,20 +482,28 @@ Public Sub mnuDelete_Click()  ' Delete a picture
   
   If FindNextFrame(x, y) = False Then
     iMark = -1
+    PicBox.Visible = False
+    mnuFullscreen.Enabled = True
     Return
   Endif
   mnuView.Enabled = True
   mnuFullscreen.Enabled = True
   Mark_Frame(iNr)
   Show_marked_frame
-
+  Select Case sPicState   ' Show PictureBox again with next picture
+    Case "on"
+      mnuView_Click
+    Case "full"
+      mnuFullscreen_Click
+  End Select
 End
 
-Public Sub mnuInfo_Click()  ' Picture infos
+Public Sub mnuInfo_Click()  ' Show picture infos
 
   Dim sExif As String
   Dim posx, posy As Integer
   
+  If iMark = -1 Then Return
   posx = aFrame[iNr].X
   posy = aFrame[iNr].Y - ScrollView1.ScrollY
   If posx < Me.Width - 740 Then   ' Calculate position for FInfo
