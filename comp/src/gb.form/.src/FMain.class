@@ -1,41 +1,7 @@
 ' Gambas class file
 
-Public Sub _new()
-
-  Dim x As Collection = ["a": 1, "b": "toto", "c": Pi]
-  
-  Print x.Count
-
-End
-
 Public Sub Form_Open()
-  Dim c As Integer
-  
-  tv.Rows.Count = 10
-  tv.Columns.Count = 5
-  tv.Rows.Height = 24
-  
-  For c = 0 To tv.Columns.Count - 1
-    tv.Columns[c].text = IIf(c = 2, "ReadOnly", "")
-  Next 
-  
-End
 
-Public Sub tv_Click()
-
-  tv.Edit(["", "0", "1", "2"], tv.Column = 2)
-
-End
-
-Public Sub Button1_Click()
-
-  ComboBox1.ReadOnly = Not ComboBox1.ReadOnly
-
-End
-
-Public Sub ComboBox1_KeyPress()
-
-  Debug Key.Code;; Key.Text
-  Stop Event
+  DirChooser1.Root = "/home/benoit/Documents/Attac/"
 
 End

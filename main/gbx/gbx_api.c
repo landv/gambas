@@ -215,7 +215,7 @@ void *GAMBAS_Api[] =
   (void *)GB_AppTitle,
   (void *)GB_AppVersion,
   (void *)GB_AppPath,
-  (void *)GB_AppStartup,
+  (void *)GB_AppStartupClass,
 
   (void *)GB_SystemCharset,
   (void *)LOCAL_get_lang,
@@ -1451,9 +1451,9 @@ const char *GB_AppVersion(void)
   return PROJECT_version;
 }
 
-const char *GB_AppStartup(void)
+void *GB_AppStartupClass(void)
 {
-  return PROJECT_startup;
+  return PROJECT_class;
 }
 
 

@@ -122,7 +122,7 @@ const char *GB_AppName(void);
 const char *GB_AppTitle(void);
 const char *GB_AppVersion(void);
 const char *GB_AppPath(void);
-const char *GB_AppStartup(void);
+void *GB_AppStartupClass(void);
 
 char *GB_SystemCharset(void);
 char *GB_SystemDomainName(void);

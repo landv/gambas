@@ -79,6 +79,10 @@ End
 
 Private Sub Root_Write(sRoot As String)
 
+  sRoot = Trim(sRoot)
+  While Right(sRoot) = "/" And Len(sRoot) > 1
+    sRoot = Left(sRoot, -1)
+  Wend
   If sRoot = $sRoot Then Return
   $sRoot = sRoot
   RefreshView

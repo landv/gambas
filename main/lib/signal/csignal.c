@@ -69,7 +69,7 @@ static void init_signal(void)
 	if (_num_signal_watch > 1)
 		return;
 
-	if (GB.GetFunction(&_application_signal_func, (void *)GB.FindClass(GB.Application.Startup()), "Application_Signal", "i", ""))
+	if (GB.GetFunction(&_application_signal_func, (void *)GB.Application.StartupClass(), "Application_Signal", "i", ""))
 	{
 		GB.Error("No Application_Signal event handler defined in startup class");
 		return;

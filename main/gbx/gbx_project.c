@@ -444,8 +444,7 @@ bool PROJECT_load()
 	ARCHIVE_load_main();
 
   /* Startup class */
-  // we make the class global, because some components may look for event handler in it!
-  PROJECT_class = CLASS_find_global(PROJECT_startup);
+  PROJECT_class = CLASS_find(PROJECT_startup);
 	return FALSE;
 }
 

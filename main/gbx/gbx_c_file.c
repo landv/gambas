@@ -515,8 +515,8 @@ BEGIN_METHOD(CFILE_name, GB_STRING path)
 
   char *path;
 
-  if (LENGTH(path) && STRING(path)[LENGTH(path) - 1] == '/')
-    LENGTH(path)--;
+  //if (LENGTH(path) && STRING(path)[LENGTH(path) - 1] == '/')
+  //  LENGTH(path)--;
 
   path = GB_ToZeroString(ARG(path));
   GB_ReturnNewZeroString(FILE_get_name(path));

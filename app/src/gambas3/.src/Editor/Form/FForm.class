@@ -3309,12 +3309,14 @@ End
 
 Public Sub GetText() As String
 
-  Dim bModify As Boolean = $bModify
-  ResetSave
-  SaveOne(RootControl)
-  $bModify = bModify
-  DrawTitle
-  Return $sSave
+  Return
+  
+  ' Dim bModify As Boolean = $bModify
+  ' ResetSave
+  ' SaveOne(RootControl)
+  ' $bModify = bModify
+  ' DrawTitle
+  ' Return $sSave
   
 End
 

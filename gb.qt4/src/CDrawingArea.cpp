@@ -81,7 +81,8 @@ void MyDrawingArea::setAllowFocus(bool f)
 {
 	if (f)
 	{
-		setFocusPolicy(Qt::WheelFocus);
+		void *_object = CWidget::getReal(this);
+		setFocusPolicy(GB.CanRaise(THIS, EVENT_MouseWheel) ? Qt::WheelFocus : Qt::StrongFocus);
 		setAttribute(Qt::WA_InputMethodEnabled, true);
 	}
 	else

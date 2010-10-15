@@ -604,7 +604,7 @@ static void QT_Init(void)
 
 	MAIN_update_scale();
 
-	if (GB.GetFunction(&_application_keypress_func, (void *)GB.FindClass(GB.Application.Startup()), "Application_KeyPress", "", "") == 0)
+	if (GB.GetFunction(&_application_keypress_func, (void *)GB.Application.StartupClass(), "Application_KeyPress", "", "") == 0)
 	{
 		_application_keypress = true;
 		MyApplication::setEventFilter(true);

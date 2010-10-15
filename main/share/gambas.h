@@ -903,7 +903,7 @@ typedef
 			char *(*Title)(void);
 			char *(*Version)(void);
 			char *(*Path)(void);
-			char *(*Startup)(void);
+			GB_CLASS (*StartupClass)(void);
 			}
 		Application;
 
