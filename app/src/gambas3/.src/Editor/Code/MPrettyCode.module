@@ -65,7 +65,11 @@ Private Sub IndentLine(sLine As String) As String
   
   If sLine Then
     
-    aSym = Highlight.Analyze(Trim(Highlight.Purge(sLine)))
+    If Left(sLine) = "'" Then
+      Return Space$(Project.TabSize * $iLevel) & sLine
+    Endif
+    
+    aSym = Highlight.Analyze(Highlight.Purge(Trim(sLine)))
     While aSym.Count
       iType = Highlight.Types[aSym.Max]
       If iType <> Highlight.Comment And If iType <> Highlight.Help Then Break
@@ -73,7 +77,7 @@ Private Sub IndentLine(sLine As String) As String
     Wend
     
     If aSym.Count Then
-    
+      
       If $bNeedNewLine Then
         If Not $bLastNewLine Then sAdd = "\n"
         $bNeedNewLine = False
@@ -128,11 +132,11 @@ Private Sub IndentLine(sLine As String) As String
       $iLevel = iNextLevel
       
       Return sLine
-    
+      
     Endif
     
   Endif
-    
+  
   $bLastNewLine = True
   sLine = Space$(Project.TabSize * $iLevel)
   Return sLine
