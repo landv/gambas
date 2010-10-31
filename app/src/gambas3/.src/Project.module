@@ -1139,7 +1139,7 @@ Private Sub DoRefreshAfter()
       AddFile(File.Dir(sKey), File.Name(sKey), True, True)
       $aRefreshAfter[iInd] = File.BaseName(sKey)
     Next
-    FMain.ShowError("<b>" & ("The following classes have circular inheritance:") & "</b>\n\n" & $aRefreshAfter.Join(", "))
+    If Not ProjectFilter Then FMain.ShowError("<b>" & ("The following classes have circular inheritance:") & "</b>\n\n" & $aRefreshAfter.Join(", "))
     $aRefreshAfter.Clear
   Endif
   
@@ -1386,6 +1386,8 @@ Private Sub DoRefresh(Optional bReset As Boolean)
   With ProjectTree
     
     .Clear()
+    
+    .Background = If(Len(ProjectFilter), Color.LightBackground, Color.Default)
     
     sKey = Project.Dir
     .Add(sKey, Name, GetIcon(Project.Dir, 16))
@@ -2378,6 +2380,8 @@ Public Sub Activate(hForm As Object)
   FToolBox.OnProjectActivate
   
   Try ActiveForm.SetFocus
+  
+  FMain.HideDebug(sType = "FConnectionEditor")
   
   FSearch.Update
   
