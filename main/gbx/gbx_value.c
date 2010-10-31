@@ -629,8 +629,8 @@ __s2v:
 			STRING_unref(&value->_string.addr);
 	}
 
+	value->_variant.vtype = T_STRING; //value->type;
 	value->_variant.value._string = addr;
-	value->_variant.vtype = T_STRING;
 	value->type = T_VARIANT;
 	return;
 
@@ -1859,7 +1859,7 @@ __CSTRING:
 	{
 		char *str = value->_variant.value._string;
 
-		value->type = T_STRING;
+		value->type = T_CSTRING;
 		value->_string.addr = str;
 		value->_string.start = 0;
 		value->_string.len = strlen(str);
