@@ -538,7 +538,7 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 		}
 
 		// Return to the parent working directory
-		chdir(PROJECT_oldcwd);
+		FILE_chdir(PROJECT_oldcwd);
 		
 		if (env)
 		{
@@ -569,7 +569,8 @@ static void callback_child(int fd, int type, void *data)
 
 	/*old = signal(SIGCHLD, signal_child);*/
 
-	read(fd, (char *)&buffer, 1);
+	if (read(fd, (char *)&buffer, 1) != 1)
+		ERROR_panic("Cannot read from SIGCHLD pipe");
 
 	#ifdef DEBUG_ME
 	fprintf(stderr, "<< callback_child\n");
@@ -615,7 +616,8 @@ static void signal_child(int sig)
 		return;
 
 	buffer = 42;
-	write(_pipe_child[1], &buffer, 1);
+	if (write(_pipe_child[1], &buffer, 1) != 1)
+		ERROR_panic("Cannot write into SIGCHLD pipe");
 }
 
 

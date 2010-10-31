@@ -346,7 +346,7 @@ void PROJECT_init(const char *file)
   {
     path = FILE_get_dir(file);
 
-    chdir(path);
+    FILE_chdir(path);
 
     path = FILE_getcwd(NULL);
     if (path == NULL)
@@ -389,7 +389,7 @@ void PROJECT_init(const char *file)
 
   PROJECT_path = STRING_new(path, len);
 
-  chdir(PROJECT_path);
+  FILE_chdir(PROJECT_path);
 
   /* Project name */
 

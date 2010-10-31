@@ -86,10 +86,10 @@ const char *FILE_set_ext(const char *path, const char *ext);
 
 const char *FILE_getcwd(const char *subdir);
 #define FILE_get_current_dir() FILE_getcwd(NULL)
+void FILE_chdir(const char *path);
 
 const char *FILE_readlink(const char *link);
 bool FILE_is_dir(const char *path);
-#define FILE_isdir FILE_is_dir
 
 const char *FILE_find_gambas(void);
 

@@ -215,7 +215,7 @@ static void get_arguments(int argc, char **argv)
 
 	/*COMP_project = STR_copy(FILE_cat(argv[optind], "Gambas", NULL));*/
 	if (optind < argc)
-		chdir(argv[optind]);
+		FILE_chdir(argv[optind]);
 
 	dir = FILE_get_current_dir();
 	if (!dir)
@@ -374,17 +374,11 @@ static void init_files(const char *first)
 	ARRAY_create(&_files);
 
 	if (*first)
-	{
-		if (chdir(first))
-		{
-			fprintf(stderr, "gbc: cannot switch to directory: %s\n", first);
-			exit(1);
-		}
-	}
+		FILE_chdir(first);
 	
 	recursive = chdir(".src") == 0;
 	fill_files(FILE_get_current_dir(), recursive);
-	if (recursive) chdir("..");
+	if (recursive) FILE_chdir("..");
 
 	// Sort paths
 	qsort(_files, ARRAY_count(_files), sizeof(*_files), (int (*)(const void *, const void *))compare_path);
@@ -424,7 +418,7 @@ int main(int argc, char **argv)
 		{
 			if (main_verbose)
 				puts("Removing .info and .list files");
-			chdir(FILE_get_dir(COMP_project));
+			FILE_chdir(FILE_get_dir(COMP_project));
 			unlink(".info");
 			unlink(".list");
 		}

@@ -9,10 +9,9 @@ Property Control As Boolean
 Property Read View As TableView
 Property Header As Boolean
 Property Orientation As Integer
-Property Adjust As Boolean
 Property Editable As Boolean
 
-Public Const _Properties As String = "*,Control=True,Adjust,Columns{Field[]},Editable,Header=True,Orientation{Align.Bottom;Left;Right;Top}=Bottom"
+Public Const _Properties As String = "*,Control=True,Columns{Field[]},Editable,Header=True,Orientation{Align.Bottom;Left;Right;Top}=Bottom"
 Public Const _Group As String = "Data"
 
 Private $hForm As FBrowser
@@ -97,17 +96,17 @@ Private Sub Orientation_Write(Value As Integer)
 
 End
 
-Private Function Adjust_Read() As Boolean
-
-  Return $hForm.DataView.Adjust
-
-End
-
-Private Sub Adjust_Write(Value As Boolean)
-
-  $hForm.DataView.Adjust = Value
-
-End
+' Private Function Adjust_Read() As Boolean
+' 
+'   Return $hForm.DataView.Adjust
+' 
+' End
+' 
+' Private Sub Adjust_Write(Value As Boolean)
+' 
+'   $hForm.DataView.Adjust = Value
+' 
+' End
 
 Public Sub _OnDatabaseChange()
   

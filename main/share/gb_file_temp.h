@@ -433,7 +433,7 @@ bool FILE_exist_real(const char *path)
 {
 	struct stat buf;
 
-	chdir(PROJECT_path);
+	if (chdir(PROJECT_path)) return FALSE;
 	return (stat(path, &buf) == 0);
 }
 
@@ -941,3 +941,13 @@ const char *FILE_find_gambas(void)
 	return path;
 }
 
+void FILE_chdir(const char *path)
+{
+	#ifdef PROJECT_EXEC
+	if (chdir(path))
+		THROW_SYSTEM(errno, path);
+	#else
+	if (chdir(path))
+		THROW("Cannot change current directory: &1: &2", path, strerror(errno));
+	#endif
+}

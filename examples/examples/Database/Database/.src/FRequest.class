@@ -82,35 +82,35 @@ Public Sub tbvData_Data(Row As Integer, Column As Integer)
 End
 
 
-Private Function WidthFromType(hCtrl As control, iType As Integer, iLength As Integer, sTitle As String) As Integer
+Private Function WidthFromType(hCtrl As Control, iType As Integer, iLength As Integer, sTitle As String) As Integer
 
   Dim iWidth As Integer
 
   Select Case iType
 
     Case gb.Boolean
-      iWidth = hCtrl.Font.Width(Str(False)) + 32
+      iWidth = hCtrl.Font.TextWidth(Str(False)) + 32
 
     Case gb.Integer
-      iWidth = hCtrl.Font.Width("1234567890") + 16
+      iWidth = hCtrl.Font.TextWidth("1234567890") + 16
 
     Case gb.Long
-      iWidth = hCtrl.Font.Width("12345678901234567890") + 16
+      iWidth = hCtrl.Font.TextWidth("12345678901234567890") + 16
 
     Case gb.Float
-      iWidth = hCtrl.Font.Width(CStr(Pi) & "E+999") + 16
+      iWidth = hCtrl.Font.TextWidth(CStr(Pi) & "E+999") + 16
 
     Case gb.Date
-      iWidth = hCtrl.Font.Width(Str(Now)) + 16
+      iWidth = hCtrl.Font.TextWidth(Str(Now)) + 16
 
     Case gb.String
       If iLength = 0 Then iLength = 255
       iLength = Min(32, iLength)
-      iWidth = hCtrl.Font.Width("X") * iLength + 16
+      iWidth = hCtrl.Font.TextWidth("X") * iLength + 16
 
   End Select
 
-  iWidth = Max(iWidth, hCtrl.Font.Width(sTitle) + 8)
+  iWidth = Max(iWidth, hCtrl.Font.TextWidth(sTitle) + 8)
 
   Return iWidth
 

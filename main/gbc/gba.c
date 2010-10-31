@@ -63,7 +63,7 @@ static char **path_list;
 static int path_current;
 
 static const char *allowed_hidden_files[] = { ".gambas", ".info", ".list", ".lang", ".action", ".connection", NULL };
-static const char *remove_ext_root[] = { "module", "class", "form", "gambas", NULL };
+//static const char *remove_ext_root[] = { "module", "class", "form", "gambas", NULL };
 static const char *remove_ext_lang[] = { "pot", "po", NULL };
 
 static bool _extract = FALSE;
@@ -193,7 +193,7 @@ static void path_init(const char *first)
   ARRAY_create(&path_list);
 
   if (*first)
-    chdir(first);
+    FILE_chdir(first);
 
   path_add(FILE_get_current_dir());
 
@@ -314,6 +314,10 @@ int main(int argc, char **argv)
 						continue;
 
 					file = FILE_cat(path, file_name, NULL);
+					
+					// Do not put the archive file inside itself.
+					if (!strcmp(file, ARCH_output))
+						continue;
 
 					if (stat(file_name, &info))
 					{
@@ -335,9 +339,9 @@ int main(int argc, char **argv)
 
 						//printf("path = %s\n", &path[len_prefix]);
 
-						if (path[len_prefix] == 0)
-							remove_ext = remove_ext_root;
-						else if (strcmp(&path[len_prefix], "/.lang") == 0)
+						//if (path[len_prefix] == 0)
+						//	remove_ext = remove_ext_root;
+						if (strcmp(&path[len_prefix], "/.lang") == 0)
 							remove_ext = remove_ext_lang;
 						else
 							remove_ext = 0;
@@ -353,6 +357,9 @@ int main(int argc, char **argv)
 							if (*p != NULL)
 								continue;
 						}
+						
+						if (strcmp(ext, "gambas") == 0)
+							continue;
 
 						ARCH_add_file(file);
 					}

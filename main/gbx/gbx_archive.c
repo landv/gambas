@@ -280,7 +280,7 @@ bool ARCHIVE_get(ARCHIVE *arch, const char **ppath, ARCHIVE_FIND *find)
   if (get_current(&arch, ppath))
   {
   	// no archive found, we try a lstat
-		chdir(PROJECT_path);
+		FILE_chdir(PROJECT_path);
     if (stat(*ppath, &buf))
     	return TRUE;
 		

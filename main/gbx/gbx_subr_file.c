@@ -669,7 +669,7 @@ void SUBR_isdir(void)
 
   path = get_path(PARAM);
 
-  isdir = FILE_isdir(path);
+  isdir = FILE_is_dir(path);
 
   RETURN->type = T_BOOLEAN;
   RETURN->_integer.value = isdir ? -1 : 0;

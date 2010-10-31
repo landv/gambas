@@ -354,8 +354,10 @@ BEGIN_PROPERTY(System_Domain)
 
   char buffer[256];
 
-  getdomainname(buffer, 255);
-  GB_ReturnNewZeroString(buffer);
+  if (getdomainname(buffer, 255))
+		GB_Error("Unable to retrieve domain name: &1", strerror(errno));
+	else
+		GB_ReturnNewZeroString(buffer);
 
 END_PROPERTY
 

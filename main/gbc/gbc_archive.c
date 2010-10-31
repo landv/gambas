@@ -45,6 +45,8 @@
 
 /*#define DEBUG*/
 
+#define TEMP_EXEC ".temp.gambas"
+
 char *ARCH_project;
 char *ARCH_project_name;
 char *ARCH_output = NULL;
@@ -101,22 +103,46 @@ static void write_string(const char *str, int len)
 
 static void make_executable(void)
 {
+	const char *err;
   struct stat info;
 
-  if (stat(ARCH_output, &info) == 0)
-    if (chmod(ARCH_output, info.st_mode | S_IXUSR | S_IXGRP | S_IXOTH) == 0)
-    {
-    	FILE_set_owner(ARCH_output, FILE_cat(FILE_get_dir(ARCH_project), ".project", NULL));
-      return;
-    }
+	FILE_chdir(FILE_get_dir(ARCH_project));
+	
+	if (stat(TEMP_EXEC, &info) || chmod(TEMP_EXEC, info.st_mode | S_IXUSR | S_IXGRP | S_IXOTH))
+	{
+		err = "Cannot change executable permissions";
+		goto __ERROR;
+	}
 
-  THROW("Cannot make executable: &1", strerror(errno));
+	FILE_set_owner(TEMP_EXEC, FILE_cat(FILE_get_dir(ARCH_project), ".project", NULL));
+
+	if (FILE_exist(ARCH_output) && unlink(ARCH_output))
+	{
+		err = "Cannot remove previous executable";
+		goto __ERROR;
+	}
+	
+	if (rename(TEMP_EXEC, ARCH_output))
+	{
+		err = "Cannot create executable";
+		goto __ERROR;
+	}
+	
+	return;
+
+__ERROR:
+
+  THROW("Cannot make executable: &1: &2", err, strerror(errno));
 }
 
 
 void ARCH_define_output(const char *path)
 {
 	STR_free(ARCH_output);
+	
+	if (path && *path != '/')
+		path = FILE_cat(FILE_get_current_dir(), path, NULL);
+	
   ARCH_output = STR_copy(path);
 }
 
@@ -129,7 +155,7 @@ void ARCH_define_project(const char *project)
   if (project == NULL)
     project = FILE_get_current_dir();
 
-  chdir(project);
+  FILE_chdir(project);
   dir = STR_copy(FILE_get_current_dir());
 
   arch_dir_pos = strlen(dir) + 1;
@@ -159,7 +185,7 @@ void ARCH_init(void)
 
 	ALLOC(&arch_buffer, 4096, "ARCH_init");
 
-  arch_file = fopen(ARCH_output, "w");
+  arch_file = fopen(".temp.gambas", "w");
   if (arch_file == NULL)
     THROW("Cannot create temporary archive file: &1", ARCH_output);
 

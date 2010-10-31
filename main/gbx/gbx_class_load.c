@@ -532,13 +532,16 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
   {
   	int fd;
   	
-  	fd = open("/tmp/gambas-bad-header.out", O_CREAT | O_WRONLY, 0666);
+  	fd = open("/tmp/gambas-bad-header.dump", O_CREAT | O_WRONLY, 0666);
 		if (fd >= 0)
 		{
-			write(fd, class->data, len_data);
+			if (write(fd, class->data, len_data) != len_data)
+				fprintf(stderr, "Cannot dump bad class file.\n");
+			else
+				fprintf(stderr, "Bad class file dumped at /tmp/gambas-bad-header.dump\n");
 			close(fd);
-			fprintf(stderr, "Bad class file dumped at /tmp/gambas-bad-header.out: %d bytes\n", len_data);
 		}
+		
     THROW(E_CLASS, ClassName, "Bad header", "");
 	}
 	
