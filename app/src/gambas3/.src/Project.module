@@ -1826,9 +1826,9 @@ Private Sub CompileError(sMsg As String)
   iPos = RInStr(sMsg, "\n")
   If iPos Then sMsg = Mid$(sMsg, iPos + 1)
   
-  If sMsg Begins "gbc: ERROR: " Then
+  If LCase(sMsg) Begins "gbc: error: " Then
     
-    sMsg = TranslateMessage(Mid$(sMsg, Len("gbc: ERROR: ") + 1))
+    sMsg = TranslateMessage(Mid$(sMsg, Len("gbc: error: ") + 1))
     SetMessage(sMsg)
     'Message.Error(("Cannot compile the project.") & "\n" & sMsg)
     
