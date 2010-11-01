@@ -61,9 +61,9 @@ Static Public Sub SendMail({To} As String[], Optional Cc As String[], Optional B
   
 End
 
-Static Public Sub {Open}(URL As String)
+Static Public Sub {Open}(URL As String, Optional {Wait} As Boolean)
   
-  Main.RunXdgUtil("xdg-open", [URL])
+  Main.RunXdgUtil("xdg-open", [URL], {Wait})
   
 End
 

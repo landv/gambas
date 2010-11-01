@@ -6,7 +6,7 @@ Private $cTool As New Collection
 
 Private _NET_CLIENT_LIST As Integer
 
-Public Sub RunXdgUtil(sProg As String, aArg As String[]) 
+Public Sub RunXdgUtil(sProg As String, aArg As String[], Optional bWait As Boolean) 
   
   Dim sCmd As String
   Dim sPath As String
@@ -31,20 +31,29 @@ Public Sub RunXdgUtil(sProg As String, aArg As String[])
   
   aCmd = [sCmd]
   aCmd.Insert(aArg)
-  Exec aCmd To Result 
   
-  Select Case Process.LastValue  
-    Case 1
-      Error.Raise("Syntax error")
-    Case 2
-      Error.Raise("File does not exist")
-    Case 3
-      Error.Raise("A required tool could not be found")
-    Case 4
-      Error.Raise("The action has failed")
-    Case 5
-      Error.Raise("File access forbidden")
-  End Select 
+  If bWait Then
+  
+    Exec aCmd To Result 
+    
+    Select Case Process.LastValue  
+      Case 1
+        Error.Raise("Syntax error")
+      Case 2
+        Error.Raise("File does not exist")
+      Case 3
+        Error.Raise("A required tool could not be found")
+      Case 4
+        Error.Raise("The action has failed")
+      Case 5
+        Error.Raise("File access forbidden")
+    End Select 
+    
+  Else
+  
+    Exec aCmd
+    
+  Endif
   
 End
 
