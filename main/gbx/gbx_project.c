@@ -344,9 +344,11 @@ void PROJECT_init(const char *file)
 
   if (EXEC_arch)
   {
-    path = FILE_get_dir(file);
-
-    FILE_chdir(path);
+		if (FILE_is_absolute(file))
+		{
+			path = FILE_get_dir(file);
+			FILE_chdir(path);
+		}
 
     path = FILE_getcwd(NULL);
     if (path == NULL)

@@ -117,6 +117,8 @@ static STREAM *get_default(intptr_t val)
 ({ \
 	STREAM *stream; \
 	\
+	VARIANT_undo(_value); \
+	\
 	if ((_can_default) && TYPE_is_integer((_value)->type) && (_value)->_integer.value >= 0 && (_value)->_integer.value <= 2) \
 		stream = get_default((intptr_t)(_value)->_integer.value); \
 	else \
