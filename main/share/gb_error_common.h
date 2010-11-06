@@ -164,6 +164,7 @@ do { \
 			{ \
 				ERROR_reset(&ERROR_current->info); \
 				ERROR_current->info = _prev->info; \
+				ERROR_current->info.native = FALSE; \
 			} \
 		} \
 		else \

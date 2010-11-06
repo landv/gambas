@@ -597,11 +597,32 @@ BEGIN_METHOD(CFILE_load, GB_STRING path)
     STREAM_lof(&stream, &len);
     if (len >> 31)
       THROW(E_MEMORY);
-    rlen = len;
+		
+		if (len == 0)
+		{
+			char buffer[4096];
+			
+			str = NULL;
+			
+			for(;;)
+			{
+				len = STREAM_read_max(&stream, buffer, sizeof(buffer));
+				if (len) STRING_add(&str, buffer, len);
+				if (len < sizeof(buffer))
+					break;
+			}
+			
+			if (str) STRING_free_later(str);
+		}
+		else
+		{
+			rlen = len;
 
-    str = STRING_new_temp(NULL, rlen);
+			str = STRING_new_temp(NULL, rlen);
 
-    STREAM_read(&stream, str, rlen);
+			STREAM_read(&stream, str, rlen);
+		}
+		
     STREAM_close(&stream);
 
     GB_ReturnString(str);
