@@ -95,7 +95,7 @@ public:
 //"Private"
 	GtkWidget *radiogroup;
 	GList *ch_list;
-	int _client_w, _client_h;
+	int _client_x, _client_y, _client_w, _client_h;
 	
 	virtual void insert(gControl *child, bool realize = false);
 	virtual void remove(gControl *child);

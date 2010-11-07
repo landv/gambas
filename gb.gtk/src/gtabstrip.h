@@ -71,6 +71,7 @@ public:
 
 //"Private"
 	virtual GtkWidget *getContainer();
+	int getRealIndex(GtkWidget *page);
 
 	GdkPixbuf *_button_pixbuf_normal;
 	GdkPixbuf *_button_pixbuf_disabled;
@@ -79,7 +80,6 @@ private:
 	GPtrArray *_pages;
 	gFont *_textFont;
 	gTabStripPage *get(int ind);
-	int getRealIndex(GtkWidget *page);
 	void updateFont();
 	void destroyTab(int ind);
 };

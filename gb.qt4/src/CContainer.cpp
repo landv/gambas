@@ -284,9 +284,9 @@ static void resize_container(void *_object, QWidget *cont, int w, int h)
 
 #define INIT_CHECK_CHILDREN_LIST(_widget) \
 	QObjectList list = (_widget)->children(); \
-	int list_index = 0; \
-	if (list.count() == 0) \
-		return;
+	int list_index = 0;
+	
+#define HAS_CHILDREN() (list.count() != 0)
 
 #define RESET_CHILDREN_LIST() list_index = 0
 #define GET_NEXT_CHILD_WIDGET() get_next_widget(list, list_index)

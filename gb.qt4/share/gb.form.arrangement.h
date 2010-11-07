@@ -1,22 +1,22 @@
 /***************************************************************************
 
-  gb.form.arrangement.h
+	gb.form.arrangement.h
 
-  (c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -130,43 +130,43 @@ This is the name of the arrangement function
 
 void FUNCTION_NAME(void *_object) //(QFrame *cont)
 {
-  CONTAINER_TYPE cont;
-  ARRANGEMENT_TYPE arr;
+	CONTAINER_TYPE cont;
+	ARRANGEMENT_TYPE arr;
 
-  WIDGET_TYPE wid;
-  int x, y, w, h, i;
-  int xc, yc, wc, hc;
-  int wf, hf;
-  int dmax = 0, d;
-  int sexp, nexp;
-  bool swap, autoresize, has_expand_children = false;
-  bool redo;
-  bool first;
-  void *ob;
-  bool rtl = IS_RIGHT_TO_LEFT();
-  int rtlm = rtl ? -1 : 1;
-  int padding;
+	WIDGET_TYPE wid;
+	int x, y, w, h, i;
+	int xc, yc, wc, hc;
+	int wf, hf;
+	int dmax = 0, d;
+	int sexp, nexp;
+	bool swap, autoresize, has_expand_children = false;
+	bool redo;
+	bool first;
+	void *ob;
+	bool rtl = IS_RIGHT_TO_LEFT();
+	int rtlm = rtl ? -1 : 1;
+	int padding;
 	int indent;
 
-  if (!CAN_ARRANGE(_object))
-    return;
-    
-  cont = (CONTAINER_TYPE)GET_CONTAINER(_object);
-  arr = GET_ARRANGEMENT(_object);
+	if (!CAN_ARRANGE(_object))
+		return;
+		
+	cont = (CONTAINER_TYPE)GET_CONTAINER(_object);
+	arr = GET_ARRANGEMENT(_object);
 
-  //if (!IS_WIDGET_VISIBLE(cont) && !IS_WIDGET_VISIBLE(GET_WIDGET(_object)))
-  //  return;
-  
-  //fprintf(stderr, "CCONTAINER_arrange: %s: locked %d: mode %d: autoresize: %d\n", GET_OBJECT_NAME(_object), arr->locked, arr->mode, arr->autoresize);
+	//if (!IS_WIDGET_VISIBLE(cont) && !IS_WIDGET_VISIBLE(GET_WIDGET(_object)))
+	//  return;
+	
+	//fprintf(stderr, "CCONTAINER_arrange: %s: locked %d: mode %d: autoresize: %d\n", GET_OBJECT_NAME(_object), arr->locked, arr->mode, arr->autoresize);
 
-  if (arr->locked)
-    return;
-    
+	if (arr->locked)
+		return;
+		
 // 	if (GET_WIDGET_W(cont) <= 1 || GET_WIDGET_H(cont) <= 1)
 // 		return;
 
 	//if (qstrcmp(GB.GetClassName(THIS), "FOutput") == 0)
-  //	qDebug("CCONTAINER_arrange: do it!");
+	//	qDebug("CCONTAINER_arrange: do it!");
 	
 	arr->locked = true;
 
@@ -185,8 +185,13 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 		// INIT_CHECK_CHILDREN_LIST() can return
 		arr->locked = false;
 		if (!cont)
-			return;
+			goto __RETURN;
+		
 		INIT_CHECK_CHILDREN_LIST(cont);
+		
+		if (!HAS_CHILDREN())
+			goto __RETURN;
+		
 		arr->locked = true;
 
 		//fprintf(stderr, "CCONTAINER_arrange: %s: mode %d: autoresize: %d\n", THIS->widget.name, arr->mode, arr->autoresize);
@@ -303,7 +308,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 
 					if (autoresize)
 					{
-					 // TODO: use rtl
+					// TODO: use rtl
 						if (swap)
 							wc = dmax + indent;
 						else
@@ -423,7 +428,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 								}
 								else
 								{
-	   							MOVE_WIDGET(ob, wid, x - GET_WIDGET_W(wid), y);
+									MOVE_WIDGET(ob, wid, x - GET_WIDGET_W(wid), y);
 									y += GET_WIDGET_H(wid) + arr->spacing;
 								}
 
@@ -601,6 +606,8 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 
 	}
 
+__RETURN:
+
 	#ifdef RAISE_ARRANGE_EVENT
 	RAISE_ARRANGE_EVENT(_object);
 	#endif
@@ -608,11 +615,9 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 	arr->locked = false;
 
 	//qDebug("%p: dirty = FALSE", THIS);
-  //arr->dirty = false;
+	//arr->dirty = false;
 
-  //qDebug("CCONTAINER_arrange: END %p", THIS);
+	//qDebug("CCONTAINER_arrange: END %p", THIS);
 
-  //qDebug("CCONTAINER_arrange: %p: END", cont);
+	//qDebug("CCONTAINER_arrange: %p: END", cont);
 }
-
-

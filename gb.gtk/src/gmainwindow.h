@@ -102,7 +102,7 @@ public:
 	virtual void move(int x, int y);
 	virtual void resize(int w, int h);
 	bool close();
-	virtual void reparent(gContainer *newpr, int x, int y, GtkWindowType type = GTK_WINDOW_TOPLEVEL);
+	virtual void reparent(gContainer *newpr, int x, int y);
 
 //"Signals"
 	void (*onOpen)(gMainWindow *sender);

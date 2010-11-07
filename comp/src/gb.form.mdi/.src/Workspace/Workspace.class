@@ -124,6 +124,6 @@ End
 
 Private Sub Orientation_Write(Value As Integer)
 
-  hWorkspace.SetOrientation(Value)
+  If Value = Align.Top Or If Value = Align.Bottom Then hWorkspace.SetOrientation(Value)
 
 End

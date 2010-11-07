@@ -104,7 +104,7 @@ Public Sub End()
     
     sFile = Temp$("response")
     
-    If Split(CGI["HTTP_ACCEPT_ENCODING"], ",").Exist("gzip") Then
+    If Split(CGI["HTTP_ACCEPT_ENCODING"], ",").Exist("gzip*", gb.Like) Then
       If Stat(sFile).Size >= 128 Then
         AddHeader("Content-Encoding", "gzip")
         Exec ["gzip", "-9", sFile] Wait

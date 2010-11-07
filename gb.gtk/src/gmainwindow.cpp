@@ -143,7 +143,7 @@ static gboolean cb_expose(GtkWidget *wid, GdkEventExpose *e, gMainWindow *data)
 	if (data->_background)
 	{
 		gdk_window_clear(data->border->window);
-		gdk_window_clear(GTK_LAYOUT(data->widget)->bin_window);
+		//gdk_window_clear(GTK_LAYOUT(data->widget)->bin_window);
 	}
 	
 	return false;
@@ -254,7 +254,7 @@ gMainWindow::gMainWindow(int plug) : gContainer(NULL)
 	else
 		border = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	
-	widget = gtk_layout_new(0,0);
+	widget = gtk_fixed_new(); //gtk_layout_new(0,0);
 	
 	realize(false);
 	initWindow();
@@ -271,7 +271,7 @@ gMainWindow::gMainWindow(gContainer *par) : gContainer(par)
 	g_typ = Type_gMainWindow;
 	
 	border = gtk_event_box_new();
-	widget = gtk_layout_new(0,0);
+	widget = gtk_fixed_new();
 	
 	realize(false);
 	
@@ -299,6 +299,9 @@ gMainWindow::~gMainWindow()
 	g_object_unref(accel);
 	if (_background) g_object_unref(_background);
 	if (_style) g_object_unref(_style);
+	
+	if (_active == this)
+		_active = NULL;
 	
 	windows = g_list_remove(windows, (gpointer)this);
 }
@@ -875,9 +878,9 @@ void gMainWindow::drawMask()
 		gtk_widget_realize(border);
 		gtk_widget_realize(widget);
 		gdk_window_set_back_pixmap(border->window, back, FALSE);
-		gdk_window_set_back_pixmap(GTK_LAYOUT(widget)->bin_window, back, FALSE);
+		//gdk_window_set_back_pixmap(GTK_LAYOUT(widget)->bin_window, back, FALSE);
 		gdk_window_clear(border->window);
-		gdk_window_clear(GTK_LAYOUT(widget)->bin_window);
+		//gdk_window_clear(GTK_LAYOUT(widget)->bin_window);
 		gtk_widget_set_app_paintable(border, true);
 		gtk_widget_set_app_paintable(widget, true);
 	}
@@ -1016,11 +1019,13 @@ bool gMainWindow::close()
 	return doClose();
 }
 
-void gMainWindow::reparent(gContainer *newpr, int x, int y, GtkWindowType type)
+void gMainWindow::reparent(gContainer *newpr, int x, int y)
 {
 	GtkWidget *new_border;
 	int w, h;
 	gColor fg, bg;
+	int i;
+	gControl *child;
 	
 	if (_xembed)
 		return;
@@ -1055,13 +1060,24 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y, GtkWindowType type)
 		
 		move(x, y);
 		gtk_widget_set_size_request(border, width(), height());
+		
+		// Hidden children are incorrectly shown. Fix that!
+		for (i = 0;; i++)
+		{
+			child = getControl(i);
+			if (!child)
+				break;
+			if (!child->isVisible())
+				child->setVisible(false);
+		}
 	}
 	else if ((!isTopLevel() && !newpr)
-	         || (isTopLevel() && (isPopup() ^ (type == GTK_WINDOW_POPUP))))
+	         || (isTopLevel() && isPopup()))
+	         //|| (isTopLevel() && (isPopup() ^ (type == GTK_WINDOW_POPUP))))
 	{
 		gtk_window_remove_accel_group(GTK_WINDOW(topLevel()->border), accel);
 		// TODO: test that
-		new_border = gtk_window_new(type);
+		new_border = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 		gtk_widget_reparent(widget, new_border);
 		embedMenuBar(new_border);
 		_no_delete = true;
@@ -1089,7 +1105,7 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y, GtkWindowType type)
 		bufW = bufH = -1;
 		resize(w, h);
 		
-		_popup = type == GTK_WINDOW_POPUP;
+		_popup = false; //type == GTK_WINDOW_POPUP;
 	}
 	else
 		gControl::reparent(newpr, x, y);	
@@ -1188,11 +1204,12 @@ int gMainWindow::clientWidth()
 
 int gMainWindow::menuBarHeight()
 {
-	GtkRequisition req;
+	GtkRequisition req = { 0, 0 };
 	int h = 0;
 
 	if (menuBar)
 	{
+		gtk_widget_show(GTK_WIDGET(menuBar));
 		gtk_widget_size_request(GTK_WIDGET(menuBar), &req);
 		h = req.height;
 	}
@@ -1265,7 +1282,8 @@ void gMainWindow::configure()
 	if (isMenuBarVisible())
 	{
 		gtk_fixed_move(layout, GTK_WIDGET(menuBar), 0, 0);
-		gtk_widget_set_size_request(GTK_WIDGET(menuBar), width(), h);
+		if (h > 1)
+			gtk_widget_set_size_request(GTK_WIDGET(menuBar), width(), h);
 		gtk_fixed_move(layout, widget, 0, h);
 		gtk_widget_set_size_request(widget, width(), height() - h);
 	}

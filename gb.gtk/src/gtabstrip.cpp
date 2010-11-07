@@ -69,9 +69,10 @@ static void cb_size_allocate(GtkWidget *wid, GtkAllocation *alloc, gTabStrip *da
 {
 	if (wid == data->getContainer() && (alloc->width != data->_client_w || alloc->height != data->_client_h))
 	{
+		data->_client_x = alloc->x;
+		data->_client_y = alloc->y;
 		data->_client_w = alloc->width;
 		data->_client_h = alloc->height;
-		//g_debug("gTabStripPage: %s: cb_size_allocate: %d %d", data->name(), data->_client_w, data->_client_h);
 		data->performArrange();
 	}
 }
@@ -150,7 +151,7 @@ static bool cb_button_expose(GtkWidget *wid, GdkEventExpose *e, gTabStrip *data)
 static void cb_button_clicked(GtkWidget *wid, gTabStrip *data)
 {
 	if (data->onClose)
-		(*data->onClose)(data, (int)(intptr_t)g_object_get_data(G_OBJECT(wid), "gambas-tab-index"));
+		(*data->onClose)(data, data->getRealIndex((GtkWidget *)g_object_get_data(G_OBJECT(wid), "gambas-tab-page")));
 }
 
 
@@ -199,7 +200,7 @@ gTabStripPage::gTabStripPage(gTabStrip *tab)
 
 	parent = tab;
 	
-	widget = gtk_layout_new(0,0);
+	widget = gtk_fixed_new();
 	
 	//fix = gtk_event_box_new(); 
 	
@@ -408,7 +409,7 @@ void gTabStripPage::updateButton()
 		gtk_button_set_relief(GTK_BUTTON(_button), GTK_RELIEF_NONE);
 		g_signal_connect_after(G_OBJECT(_button), "expose-event", G_CALLBACK(cb_button_expose), (gpointer)parent);
 		g_signal_connect(G_OBJECT(_button), "clicked", G_CALLBACK(cb_button_clicked), (gpointer)parent);
-		g_object_set_data(G_OBJECT(_button), "gambas-tab-index", (void *)index);
+		g_object_set_data(G_OBJECT(_button), "gambas-tab-page", (void *)widget);
 		
 		gtk_widget_show(_button);
 		

@@ -109,8 +109,9 @@ static void resize_container(gControl *cont, int w, int h)
 #define INIT_CHECK_CHILDREN_LIST(_widget) \
 	gContainer *gtk_control=(gContainer*)_widget; \
 	int gtk_list=0; \
-	int gtk_count = gtk_control->childCount(); \
-	if (!gtk_count) return;
+	int gtk_count = gtk_control->childCount();
+
+#define HAS_CHILDREN() (gtk_count != 0)
 
 #define RESET_CHILDREN_LIST() gtk_list=0;
 
@@ -150,16 +151,18 @@ void gContainer::initialize()
 	onArrange = NULL;
 	onBeforeArrange = NULL;
 	_proxy = NULL;
+	_client_x = -1;
+	_client_y = -1;
 	_client_w = 0;
 	_client_h = 0;
 	//onInsert = NULL;
 	
-	arrangement.mode=0;
-	arrangement.spacing=0;
-	arrangement.padding=0;
-	arrangement.autoresize=false;
-	arrangement.locked=false;
-	arrangement.user=false;
+	arrangement.mode = 0;
+	arrangement.spacing = 0;
+	arrangement.padding = 0;
+	arrangement.autoresize = false;
+	arrangement.locked = false;
+	arrangement.user = false;
 	arrangement.margin = false;
 	arrangement.indent = 0;
 }
@@ -306,6 +309,9 @@ int gContainer::clientX()
 	gint xc, yc;
 	GtkWidget *cont = getContainer();
 	
+	if (_client_x >= 0)
+		return _client_x;
+	
 	if (cont->window && border->window)
 	{
 		gtk_widget_translate_coordinates(cont, border, 0, 0, &xc, &yc);
@@ -331,6 +337,9 @@ int gContainer::clientY()
 {
 	gint xc, yc;
 	GtkWidget *cont = getContainer();
+	
+	if (_client_y >= 0)
+		return _client_y;
 	
 	if (cont->window && border->window)
 	{

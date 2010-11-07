@@ -12,7 +12,6 @@ Private $X As Integer
 Private $Y As Integer
 Private $W As Integer
 Private $H As Integer
-Private $bShowTitle As Boolean
 Private $iNoWait As Integer
 Private $hWatcher As Watcher
 Private $iBackground As Integer = Color.Default
@@ -30,8 +29,15 @@ Public Sub _new()
   '   picLogo.Picture = Picture.Load("img/logo.png")
   '   picLogo.Resize(picLogo.Picture.W, picLogo.Picture.H)
   ' Endif
+
+End
+
+Public Sub Form_Open()
+  
+  UpdateSize
   
 End
+
 
 Public Function GetActiveWindow() As Window
 
@@ -89,7 +95,7 @@ Public Sub Add(hWin As Window, Optional bResize As Boolean, Optional iGrid As In
     tabWorkspace.Index = iInd
     tabWorkspace.Current.Text = ""
     Object.Unlock(tabWorkspace)
-    Form_Resize
+    UpdateSize
     
   Else
 
@@ -358,87 +364,30 @@ Public Sub tabWorkspace_Click()
 End
 
 
-Public Sub Form_Resize()
+Public Sub UpdateSize()
 
-  Dim H As Integer
-  Dim HH As Integer
+  Dim Y, H, D As Integer
 
   If tabWorkspace.Visible Then
 
     'If $bLogo Then picLogo.Hide
     
-    HH = Me.ClientH
-      
-    If tabWorkspace.Orientation = Align.Top Then
+    With tabWorkspace
+
+      D = .ClientY - .Y - 2
+      H = Me.ClientH - D
+      If .Orientation = Align.Top Then
+        Y = Me.ClientH - H
+      Else
+        Y = 0
+      Endif
     
-      H = tabWorkspace.ClientY - 2
-
-      ' If btnTabClose.W <> H Or btnTabClose.H <> H Then 
-      '   btnTabClose.Resize(H - 2, H - 2)
-      '   btnTabClose.Picture = Picture["icon:/" & (H - 10) & "/close"]
-      ' Endif
+      ' panWorkspace.Move(.ScreenX + .ClientX - panWorkspace.Parent.ScreenX, .ScreenY + .ClientY - panWorkspace.Parent.ScreenY, .ClientW, .ClientH)
+      ' svwWorkspace.Move(.ScreenX + .ClientX - panWorkspace.Parent.ScreenX, .ScreenY + .ClientY - panWorkspace.Parent.ScreenY, .ClientW, .ClientH)
+      panWorkspace.Move(0, Y, Me.ClientW, H)
+      svwWorkspace.Move(0, Y, Me.ClientW, H)
+    End With
       
-      ' If $bButtonLeft Then
-      ' 
-      '   btnTabClose.Move(0, 1)
-      '   tabWorkspace.Move(H, 0, Me.ClientW - H, HH)
-      '   
-      ' Else
-      ' 
-      '   btnTabClose.Move(Me.ClientW - H + 1, 1)
-      '   tabWorkspace.Move(0, 0, Me.ClientW - H, HH)
-      '   'tabWorkspace.Move(0, 0, Me.ClientW - H, tabWorkspace.ClientY + 2)
-      '   
-      ' Endif
-
-      tabWorkspace.Move(0, 0, Me.ClientW, HH)
-      
-      With tabWorkspace
-        If $bShowTitle Then
-          panTitle.Move(.X, H, .W, panTitle.H)
-          svwWorkspace.Move(0, panTitle.H + H, .W, HH - panTitle.H - H)
-          panWorkspace.Move(0, panTitle.H + H, .W, HH - panTitle.H - H)
-        Else 
-          svwWorkspace.Move(0, H, .W, HH - H)
-          panWorkspace.Move(0, H, .W, HH - H)
-        Endif 
-      End With 
-      
-    Else
-    
-      H = tabWorkspace.H - tabWorkspace.ClientY - tabWorkspace.ClientH - 2
-      ' If btnTabClose.W <> H Or btnTabClose.H <> H Then 
-      '   btnTabClose.Resize(H - 2, H - 2)
-      '   btnTabClose.Picture = Picture["icon:/" & (H - 10) & "/close"]
-      ' Endif
-
-      ' If $bButtonLeft Then
-      ' 
-      '   btnTabClose.Move(0, Me.ClientH - H + 1)
-      '   tabWorkspace.Move(H, 0, Me.ClientW - H, Me.ClientH)
-      '   
-      ' Else
-      ' 
-      '   btnTabClose.Move(Me.ClientW - H + 1, Me.ClientH - H + 1)
-      '   tabWorkspace.Move(0, 0, Me.ClientW - H, Me.ClientH)
-      '   
-      ' Endif
-
-      tabWorkspace.Move(H, 0, Me.ClientW, Me.ClientH)
-      
-      With tabWorkspace
-        If $bShowTitle Then
-          panTitle.Move(.X, Me.ClientH - H, .W, panTitle.H)
-          svwWorkspace.Move(0, Me.ClientH - panTitle.H - H, .W, .H - panTitle.H - H)
-          panWorkspace.Move(0, Me.ClientH - panTitle.H - H, .W, .H - panTitle.H - H)
-        Else 
-          svwWorkspace.Move(0, Me.ClientY, .W, .H - H)
-          panWorkspace.Move(0, Me.ClientY, .W, .H - H)
-        Endif 
-      End With 
-
-    Endif  
-    
     panWorkspace.Background = Color.Background
     panWorkspace.Border = Border.Plain
 
@@ -446,13 +395,9 @@ Public Sub Form_Resize()
 
     svwWorkspace.Move(0, 0, Me.ClientW, Me.ClientH)
     panWorkspace.Move(0, 0, Me.ClientW, Me.ClientH)
+    
     panWorkspace.Background = If($iBackground = Color.Default, Color.Merge(Color.Background, Color.Foreground), $iBackground)
     panWorkspace.Border = Border.None
-
-    ' If $bLogo Then
-    '   picLogo.Move(picLogo.Parent.W - picLogo.W - Desktop.Scale, picLogo.Parent.H - picLogo.H - Desktop.Scale)
-    '   picLogo.Show
-    ' Endif
 
     panWorkspace.Raise
 
@@ -592,19 +537,6 @@ Public Sub lblTitle_MouseDown()
 
 End
 
-Public Sub IsShowTitle() As Boolean
-  
-  Return $bShowTitle
-  
-End
-
-Public Sub SetShowTitle(bVal As Boolean)
-  
-  $bShowTitle = bVal
-  panTitle.Visible = bVal
-  
-End
-
 Public Sub tabWorkspace_MouseUp()
 
   Activate
@@ -692,7 +624,7 @@ End
 Public Sub SetBackground(iColor As Integer)
   
   $iBackground = iColor
-  Form_Resize
+  UpdateSize
   
 End
 
@@ -705,8 +637,7 @@ End
 Private Sub HideTabStrip()
   
   tabWorkspace.Hide
-  panTitle.Visible = $bShowTitle
-  Form_Resize  
+  UpdateSize  
   
 End
 
@@ -715,7 +646,7 @@ Private Sub ShowTabStrip()
   
   If $aWindow.Count Then 
     tabWorkspace.Show
-    Form_Resize
+    UpdateSize
   Endif
   
 End
@@ -754,7 +685,7 @@ End
 Public Sub SetOrientation(iOrientation As Integer)
   
   tabWorkspace.Orientation = iOrientation
-  Form_Resize
+  UpdateSize
   
 End
 
@@ -807,5 +738,17 @@ End
 Public Sub tabWorkspace_Close(Index As Integer)
 
   $aWindow[Index].Window.Close
+
+End
+
+Public Sub tabWorkspace_Arrange()
+
+  UpdateSize
+  
+End
+
+Public Sub Form_Resize()
+
+  UpdateSize
 
 End
