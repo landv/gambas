@@ -1,13 +1,15 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,85,39)
+  MoveScaled(0,0,83,32)
   Action = "find"
   Text = ("Search & Replace")
   Icon = Picture["icon:/small/find"]
   Persistent = True
+  Resizable = False
   Utility = True
-  Arrangement = Arrange.Fill
+  Arrangement = Arrange.Horizontal
+  Spacing = True
   Margin = True
   { mnuBrowse Menu
     { mnuBrowseAll Menu
@@ -17,183 +19,121 @@
       Text = ("Browse &source files only")
     }
   }
-  { tabSearch TabStrip
-    MoveScaled(0,1,84,37)
-    Arrangement = Arrange.Horizontal
+  { VBox3 VBox
+    MoveScaled(1,1,59,29)
+    Expand = True
     Spacing = True
-    Margin = True
-    Count = 2
-    Index = 0
-    Text = ("Search")
-    { VBox3 VBox
-      MoveScaled(1,1,59,29)
+    { HBox1 HBox
+      MoveScaled(0,0,51,4)
+      { Label1 Label
+        MoveScaled(0,0,16,4)
+        Text = ("Search")
+      }
+      { cmbSearch ComboBox
+        MoveScaled(18,0,32,4)
+        Expand = True
+      }
+    }
+    { HBox2 HBox
+      MoveScaled(0,5,51,4)
+      { Label2 Label
+        MoveScaled(0,0,16,4)
+        Text = ("Replace")
+      }
+      { cmbReplace ComboBox
+        MoveScaled(18,0,32,4)
+        Expand = True
+      }
+    }
+    { Separator1 Separator
+      MoveScaled(0,9,51,1)
+    }
+    { HBox4 HBox
+      MoveScaled(0,11,58,17)
       Expand = True
-      Spacing = True
-      { HBox1 HBox
-        MoveScaled(0,0,51,4)
-        { Label1 Label
-          MoveScaled(0,0,16,4)
-          Text = ("Search")
-        }
-        { cmbSearch ComboBox
-          MoveScaled(18,0,32,4)
-          Expand = True
-        }
-      }
-      { timRefresh #Timer
-        #MoveScaled(48,2)
-        Delay = 500
-      }
-      { HBox2 HBox
-        MoveScaled(0,5,51,4)
-        { Label2 Label
-          MoveScaled(0,0,16,4)
-          Text = ("Replace")
-        }
-        { cmbReplace ComboBox
-          MoveScaled(18,0,32,4)
-          Expand = True
-        }
-      }
-      { Separator1 Separator
-        MoveScaled(0,9,51,1)
-      }
-      { HBox4 HBox
-        MoveScaled(0,11,58,17)
+      { VBox2 VBox
+        MoveScaled(1,0,26,17)
         Expand = True
-        { VBox2 VBox
-          MoveScaled(1,0,26,17)
-          Expand = True
-          { chkCaseSensitive CheckBox
-            MoveScaled(0,0,25,4)
-            Text = ("&Case sensitive")
-          }
-          { chkWordOnly CheckBox
-            MoveScaled(0,4,25,4)
-            Text = ("&Words only")
-          }
-          { chkRegularExpression CheckBox
-            MoveScaled(0,8,25,4)
-            Text = ("Regular e&xpression")
-          }
-          { chkHighlight CheckBox
-            MoveScaled(0,12,25,4)
-            Text = ("&Highlight result")
-          }
+        { chkCaseSensitive CheckBox
+          MoveScaled(0,0,25,4)
+          Text = ("&Case sensitive")
         }
-        { VBox1 VBox
-          MoveScaled(28,0,28,17)
-          Expand = True
-          { chkIgnoreStrings CheckBox
-            MoveScaled(0,0,25,4)
-            Text = ("&Ignore strings")
-          }
-          { chkIgnoreComments CheckBox
-            MoveScaled(0,4,25,4)
-            Text = ("I&gnore comments")
-          }
-          { chkCurrentProcedure CheckBox
-            MoveScaled(0,8,25,4)
-            Text = ("C&urrent procedure")
-          }
+        { chkWordOnly CheckBox
+          MoveScaled(0,4,25,4)
+          Text = ("&Words only")
+        }
+        { chkRegularExpression CheckBox
+          MoveScaled(0,8,25,4)
+          Text = ("Regular e&xpression")
+        }
+        { chkHighlight CheckBox
+          MoveScaled(0,12,25,4)
+          Text = ("&Highlight result")
         }
       }
-    }
-    { Separator2 Separator
-      MoveScaled(60,1,1,29)
-    }
-    { HBox5 VBox
-      MoveScaled(61,1,21,29)
-      Spacing = True
-      { btnNext Button
-        MoveScaled(0,0,17,4)
-        Text = ("&Next")
-        Picture = Picture["icon:/small/down"]
-      }
-      { btnPrevious Button
-        MoveScaled(0,4,17,4)
-        Text = ("&Previous")
-        Picture = Picture["icon:/small/up"]
-      }
-      { btnReplace Button
-        MoveScaled(0,8,17,4)
-        Text = ("&Replace")
-        Picture = Picture["icon:/small/replace"]
-      }
-      { btnReplaceAll Button
-        MoveScaled(0,12,17,4)
-        Text = ("Replace &all")
-        Picture = Picture["icon:/small/wizard"]
-      }
-      { Panel1 Panel
-        MoveScaled(5,18,2,1)
+      { VBox1 VBox
+        MoveScaled(28,0,28,17)
         Expand = True
-      }
-      { btnBrowse MenuButton
-        MoveScaled(0,20,18,4)
-        Text = ("&Browse")
-        Picture = Picture["icon:/small/find"]
-        Menu = "mnuBrowse"
-      }
-      { btnClose Button
-        MoveScaled(0,25,18,4)
-        Text = ("Close")
-        Picture = Picture["icon:/small/close"]
+        { chkIgnoreStrings CheckBox
+          MoveScaled(0,0,25,4)
+          Text = ("&Ignore strings")
+        }
+        { chkIgnoreComments CheckBox
+          MoveScaled(0,4,25,4)
+          Text = ("I&gnore comments")
+        }
+        { chkCurrentProcedure CheckBox
+          MoveScaled(0,8,25,4)
+          Text = ("C&urrent procedure")
+        }
       }
     }
-    Index = 1
-    Text = ("Browse")
-    { VBox4 VBox
-      MoveScaled(1,1,81,31)
+  }
+  { timRefresh #Timer
+    #MoveScaled(57,2)
+    Delay = 500
+  }
+  { Separator2 Separator
+    MoveScaled(60,1,1,29)
+  }
+  { HBox5 VBox
+    MoveScaled(61,1,21,29)
+    Spacing = True
+    { btnNext Button
+      MoveScaled(0,0,17,4)
+      Text = ("&Next")
+      Picture = Picture["icon:/small/down"]
+    }
+    { btnPrevious Button
+      MoveScaled(0,4,17,4)
+      Text = ("&Previous")
+      Picture = Picture["icon:/small/up"]
+    }
+    { btnReplace Button
+      MoveScaled(0,8,17,4)
+      Text = ("&Replace")
+      Picture = Picture["icon:/small/replace"]
+    }
+    { btnReplaceAll Button
+      MoveScaled(0,12,17,4)
+      Text = ("Replace &all")
+      Picture = Picture["icon:/small/wizard"]
+    }
+    { Panel1 Panel
+      MoveScaled(5,18,2,1)
       Expand = True
-      Spacing = True
-      { panBrowse Panel
-        MoveScaled(1,1,79,22)
-        Expand = True
-        Arrangement = Arrange.Fill
-        { gvwFind GridView
-          MoveScaled(5,5,47,16)
-          Mode = Select.Single
-          Header = GridView.Horizontal
-          Scrollbar = Scroll.Vertical
-          AutoResize = False
-        }
-        { lblNotFound TextLabel
-          MoveScaled(1,1,26,12)
-          Visible = False
-          Font = Font["Bold,+2"]
-          Padding = 4
-          Text = ("Search string cannot be found.")
-          Border = Border.Sunken
-        }
-      }
-      { panSearch HBox
-        MoveScaled(1,26,79,4)
-        Spacing = True
-        { lblBrowse Label
-          MoveScaled(0,0,19,4)
-          Visible = False
-          Padding = 4
-          AutoResize = True
-        }
-        { Panel2 Panel
-          MoveScaled(30,0,3,4)
-          Expand = True
-        }
-        { btnBrowseReplace Button
-          MoveScaled(35,0,21,4)
-          Text = ("Replace &all")
-          Picture = Picture["icon:/small/wizard"]
-        }
-        { btnClose2 Button btnClose
-          Name = "btnClose2"
-          MoveScaled(57,0,21,4)
-          Text = ("Close")
-          Picture = Picture["icon:/small/close"]
-        }
-      }
     }
-    Index = 0
+    { btnBrowse MenuButton
+      MoveScaled(0,20,18,4)
+      Text = ("&Browse")
+      Picture = Picture["icon:/small/find"]
+      Menu = "mnuBrowse"
+    }
+    { btnClose Button
+      MoveScaled(0,25,18,4)
+      Text = ("Close")
+      Picture = Picture["icon:/small/close"]
+    }
   }
 }
 

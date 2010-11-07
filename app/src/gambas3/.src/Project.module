@@ -1605,7 +1605,7 @@ Public Function LoadFile(sPath As String) As Object
           If Not IsTextFile(sPath) Then 
             Dec Application.Busy
             Files[sPath] = Null
-            FMain.ShowError(("Cannot open a binary file."), sPath)
+            FMain.ShowError(("Cannot open a binary file.") & "\n\n" & sPath, sPath)
             Return
           Endif
           hForm = New FTextEditor(sPath)

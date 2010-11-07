@@ -12,17 +12,21 @@ Public ReplaceString As String
 Public BrowseTimeStamp As Integer
 'Private OnlySource As Boolean
 
+Public InBrowse As Boolean
+
 Private $hCurrent As Object
 Private $sGrep As String
 Private $bReplace As Boolean
 Private $aBrowse As New CFindResult[]
-Private $hFont As Font
 Private $aExt As String[] = ["JPG", "JPEG", "BMP", "GIF", "PNG", "ICO", "XPM", "GAMBAS"]
 Private $bCancel As Boolean
 
 Private $cGrepCache As New Collection
 Private $cRefreshBrowse As New Collection
 Private $bMustRefreshBrowse As Boolean
+Private $hFont As Font
+
+Private gvwFind As GridView
 
 Private Const GO_FORWARD As Integer = 0
 Private Const GO_BACKWARD As Integer = 1
@@ -31,20 +35,13 @@ Private Const DO_ALL As Integer = 4
 
 Public Sub _new()
   
-  With gvwFind
-    .Columns.Count = 4  
-    .Columns[0].Width = Desktop.Scale * 16
-    .Columns[0].Text = ("File")
-    .Columns[1].Width = Desktop.Scale * 6
-    .Columns[1].Text = ("Line")
-    .Columns[2].Width = Desktop.Scale * 6
-    .Columns[2].Text = ("Col.")
-    .Columns[3].Width = 1024
-    .Columns[3].Text = ("Text")    
-  End With
-  
   Me.Utility = Settings["/UseUtilityWindows", 1]
   
+  gvwFind = FDebugInfo.GetSearchList()
+  Object.Attach(gvwFind, Me, "gvwFind")
+  
+  ReadConfig
+
 End
 
 Public Sub Form_Open()
@@ -59,8 +56,6 @@ Public Sub Form_Open()
   chkRegularExpression.Value = Settings["/FSearch/RegularExpression", False]
   chkWordOnly.Value = Settings["/FSearch/WordOnly", False]
   
-  ReadConfig
-
 End
 
 Public Sub Form_Close()
@@ -517,16 +512,6 @@ Public Sub AddFound(hResult As CFindResult, Optional iIndex As Integer = -1)
   
 End
 
-Private Sub EnableGUI(bOn As Boolean)
-  
-  Dim hCtrl As Control
-  
-  For Each hCtrl In tabSearch[0].Children
-    hCtrl.Enabled = bOn
-  Next
-  
-End
-
 Private Sub FindPathInBrowseResult(sPath As String) As Integer
   
   Dim iInd As Integer
@@ -590,23 +575,18 @@ Private Sub Browse(Optional bOnlySource As Boolean)
   If InitSearch() Then Return
   'OnlySource = bOnlySource
   
+  InBrowse = True
+  
   CurrentProcedure = False
   BrowseTimeStamp = Project.TimeStamp
   
-  tabSearch.Index = 1
-
-  gvwFind.Show
-  lblNotFound.Hide
-  lblBrowse.Text = ""
-  lblBrowse.Show
+  FDebugInfo.ShowSearchList
   
   Inc Application.Busy
-  FMain.Enabled = False
-  EnableGUI(False)
+  FDebugInfo.EnableGUI(False)
   'tabSearch.Enabled = False
   
-  btnClose.Text = ("Cancel")
-  btnClose2.Text = ("Cancel")
+  'btnClose.Text = ("Cancel")
   $bCancel = False
   
   gvwFind.Rows.Count = 0
@@ -642,9 +622,9 @@ Private Sub Browse(Optional bOnlySource As Boolean)
     If sName Begins "cachegrind.out." Then Continue
     
     If sFile Begins ".src/" Then
-      lblBrowse.Text = sName
+      FDebugInfo.SetSearchListInfo(sName)
     Else
-      lblBrowse.Text = sFile
+      FDebugInfo.SetSearchListInfo(sFile)
     Endif
   
     BrowseFile(sPath)
@@ -659,16 +639,15 @@ Finally
   Dec FMain.NoMessage
   
   If gvwFind.Rows.Count = 0 Then
-    gvwFind.Hide
-    lblNotFound.Show
+    FDebugInfo.HideSearchList
   Endif
 
-  lblBrowse.Hide
-  EnableGUI(True)
-  FMain.Enabled = True
-  btnClose.Text = ("Close")
-  btnClose2.Text = ("Close")
+  'lblBrowse.Hide
+  FDebugInfo.EnableGUI(True)
+  'btnClose.Text = ("Close")
   Dec Application.Busy
+  
+  InBrowse = False
 
 End
 
@@ -688,13 +667,16 @@ End
 
 Public Sub btnClose_Click()
 
-  If FMain.Enabled Then
-    Me.Close
-  Else 
-    $bCancel = True
-  Endif
+  Me.Close
 
 End
+
+Public Sub Cancel()
+  
+  $bCancel = True
+  
+End
+
 
 Public Sub FindNext()
   
@@ -712,8 +694,14 @@ End
 
 Public Sub FindProject(sText As String)
   
-  WakeUp(False)
+  'WakeUp(False)
   cmbSearch.Text = sText
+  Browse
+  
+End
+
+Public Sub BrowseAgain()
+  
   Browse
   
 End
@@ -785,7 +773,6 @@ Public Sub WakeUp(bReplace As Boolean)
 
   $bReplace = bReplace
   Me.Show
-  tabSearch.Index = 0
 
   Update()
   
@@ -889,12 +876,18 @@ Public Sub gvwFind_Select()
   hForm.SetPosition(hFind, False)
   Project.Activate(hForm)
 
+  gvwFind.ScrollX = 0
+  
 End
 
 Public Sub Form_KeyPress()
 
   If Key.Code = Key.Esc Then 
-    btnClose_Click
+    If InBrowse Then
+      Cancel
+    Else
+      btnClose.Value = True
+    Endif
   Endif
 
 End

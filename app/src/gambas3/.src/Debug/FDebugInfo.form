@@ -1,17 +1,17 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2,115,47)
+  MoveScaled(0,2,118,47)
   Text = ("Debug")
   Persistent = True
   Arrangement = Arrange.Fill
   { splDebug HSplit
-    MoveScaled(1,1,113,45)
+    MoveScaled(1,1,116,45)
     { tabDebug TabStrip
-      MoveScaled(1,2,88,41)
+      MoveScaled(1,2,92,41)
       Expand = True
       Arrangement = Arrange.Vertical
-      Count = 5
+      Count = 6
       Index = 0
       Text = ("Console")
       Picture = Picture["icon:/small/terminal"]
@@ -24,7 +24,7 @@
       Text = ("Local variables")
       Picture = Picture["img/16/local.png"]
       { Separator4 Separator
-        MoveScaled(7,7,5,0)
+        MoveScaled(7,7,24,0)
       }
       { tbvLocal TableView
         MoveScaled(3,8,63,18)
@@ -39,7 +39,7 @@
       Text = ("Current object")
       Picture = Picture["img/16/current.png"]
       { Separator2 Separator
-        MoveScaled(24,7,8,0)
+        MoveScaled(24,7,27,0)
       }
       { tbvObject TableView
         MoveScaled(1,12,69,20)
@@ -54,7 +54,7 @@
       Text = ("Watch")
       Picture = Picture["icon:/small/watch"]
       { HBox1 HBox
-        MoveScaled(2,2,84,4)
+        MoveScaled(1,1,84,4)
         Font = Font["-2"]
         { cmbWatch ComboBox
           MoveScaled(0,0,27,4)
@@ -139,10 +139,79 @@
         #MoveScaled(74,8)
         Delay = 250
       }
+      Index = 5
+      Text = ("Search list")
+      Picture = Picture["icon:/small/find"]
+      { VBox2 HBox
+        MoveScaled(1,0,83,4)
+        Font = Font["-2"]
+        { btnCancelSearch ToolButton
+          MoveScaled(0,0,10,4)
+          Visible = False
+          ToolTip = ("Cancel current search")
+          AutoResize = True
+          Text = ("Cancel")
+          Picture = Picture["icon:/small/halt"]
+        }
+        { btnRefreshSearch ToolButton
+          MoveScaled(11,0,13,4)
+          AutoResize = True
+          Text = ("Search again")
+          Picture = Picture["icon:/small/refresh"]
+        }
+        { btnReplaceAll ToolButton
+          MoveScaled(26,0,13,4)
+          Visible = False
+          AutoResize = True
+          Text = ("Replace all")
+          Picture = Picture["icon:/small/replace"]
+        }
+        { btnShowSearch ToolButton
+          MoveScaled(41,0,19,4)
+          AutoResize = True
+          Text = ("Show search window")
+          Picture = Picture["icon:/small/find"]
+        }
+        { Panel1 Panel
+          MoveScaled(62,1,2,3)
+          Expand = True
+        }
+        { lblBrowse Label
+          MoveScaled(68,0,11,4)
+          Visible = False
+          Font = Font["Italic"]
+          Padding = 4
+          AutoResize = True
+        }
+      }
+      { Separator5 Separator
+        MoveScaled(35,5,8,0)
+      }
+      { panBrowse Panel
+        MoveScaled(1,9,79,22)
+        Expand = True
+        Arrangement = Arrange.Fill
+        { gvwFind GridView
+          MoveScaled(23,4,47,16)
+          Visible = False
+          Mode = Select.Single
+          Header = GridView.Horizontal
+          Scrollbar = Scroll.Vertical
+          Border = False
+          AutoResize = False
+        }
+        { lblNotFound TextLabel
+          MoveScaled(1,1,26,12)
+          Visible = False
+          Font = Font["Bold,+2"]
+          Padding = 8
+          Text = ("Search string cannot be found.")
+        }
+      }
       Index = 0
     }
     { panStack ScrollView
-      MoveScaled(90,1,22,41)
+      MoveScaled(94,2,22,41)
       Visible = False
       Background = Color.TextBackground
       Expand = True

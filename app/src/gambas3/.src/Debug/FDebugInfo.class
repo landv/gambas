@@ -7,6 +7,7 @@ Private Const TAB_LOCAL As Integer = 1
 Private Const TAB_ME As Integer = 2
 Private Const TAB_WATCH As Integer = 3
 Private Const TAB_BREAK As Integer = 4
+Private Const TAB_SEARCH As Integer = 5
 
 Private $cRefresh As New Collection
 
@@ -19,7 +20,6 @@ Private $aObject As New String[]
 Private $aValObject As New String[]
 Private $cObject As New Collection
 Private $bSortObject As Boolean
-
 
 Public Sub _new()
   
@@ -49,6 +49,18 @@ Public Sub _new()
     .Columns[0].Text = ("Class")
     .Columns[1].Text = ("Function")
     .Columns[2].Text = ("Line")
+  End With
+  
+  With gvwFind
+    .Columns.Count = 4  
+    .Columns[0].Width = Desktop.Scale * 16
+    .Columns[0].Text = ("File")
+    .Columns[1].Width = Desktop.Scale * 6
+    .Columns[1].Text = ("Line")
+    .Columns[2].Width = Desktop.Scale * 6
+    .Columns[2].Text = ("Col.")
+    .Columns[3].Width = 1024
+    .Columns[3].Text = ("Text")    
   End With
   
   ReadConfig
@@ -964,5 +976,121 @@ Public Sub btnShow_Click()
   
   If Not sText Then Return
   WatchExpression(sText)
+
+End
+
+Public Sub GetSearchList() As Control
+  
+  Return gvwFind
+  
+End
+
+Public Sub ShowSearchList()
+  
+  FMain.ShowDebug(True)
+  gvwFind.Show
+  lblNotFound.Hide
+  lblBrowse.Hide
+  tabDebug.Index = TAB_SEARCH
+  
+End
+
+Public Sub HideSearchList()
+  
+  gvwFind.Hide
+  lblNotFound.Show
+  
+End
+
+Public Sub SetSearchListInfo(sText As String)
+  
+  lblBrowse.Text = sText
+  lblBrowse.Show
+  
+End
+
+Public Sub btnShowSearch_Click()
+
+  FSearch.WakeUp(False)
+
+End
+
+Public Sub btnRefreshSearch_Click()
+
+  FSearch.BrowseAgain
+
+End
+
+Private Sub DisableRec(hCtrl As Control, aExcept As Control[], bOn As Boolean)
+  
+  Dim hCont As Container
+  Dim iCount As Integer
+  Dim hMulti As Object
+  Dim iInd As Integer
+  
+  If Not aExcept.Exist(hCtrl) Then
+    hCtrl.Enabled = bOn
+    Return
+  Endif
+  
+  If Not hCtrl Is Container Then Return
+  
+  hCont = hCtrl
+  hMulti = hCtrl
+  
+  Try iCount = hMulti.Count
+  If Not Error Then
+    For iInd = 0 To iCount - 1
+      If iInd <> hMulti.Index Then
+        hMulti[iInd].Enabled = bOn
+      Endif
+    Next
+  Endif
+  
+  For Each hCtrl In hCont.Children
+    DisableRec(hCtrl, aExcept, bOn)
+  Next
+  
+End
+
+
+Private Sub DisableEverythingExcept(hExcept As Control, bOn As Boolean)
+  
+  Dim aCtrl As New Control[]
+  Dim hCtrl As Control
+  Dim hWin As Window
+  
+  For Each hWin In Windows
+    If hWin = FMain.Window Or If hWin = FSearch.Window Then Continue
+    hWin.Enabled = bOn
+  Next
+  
+  hCtrl = hExcept
+  
+  While hCtrl
+    aCtrl.Add(hCtrl)
+    hCtrl = hCtrl.Parent
+  Wend
+  
+  DisableRec(FMain.Window, aCtrl, bOn)
+  
+  aCtrl.Clear
+  aCtrl.Add(FSearch.Window)
+  
+  DisableRec(FSearch.Window, aCtrl, bOn)
+  
+End
+
+Public Sub EnableGUI(bOn As Boolean)
+  
+  lblBrowse.Visible = Not bOn
+  btnCancelSearch.Visible = Not bOn
+  DisableEverythingExcept(btnCancelSearch, bOn)
+  
+End
+
+Public Sub btnCancelSearch_Click()
+
+  FSearch.Cancel()
 
 End

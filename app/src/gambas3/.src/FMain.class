@@ -1529,6 +1529,10 @@ End
 Public Sub Form_KeyPress()
   
   If Key.Code = Key.Escape Then 
+    If FSearch.InBrowse Then
+      FSearch.Cancel
+      Return
+    Endif
     HidePanels
     FProperty.HideProperty
     Try Project.ActiveForm.SetFocus
