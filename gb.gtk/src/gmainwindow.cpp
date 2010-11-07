@@ -1036,7 +1036,9 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y)
 	GtkWidget *new_border;
 	int w, h;
 	gColor fg, bg;
-	
+	int i;
+	gControl *child;
+
 	if (_xembed)
 		return;
 	
@@ -1070,6 +1072,16 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y)
 		
 		move(x, y);
 		gtk_widget_set_size_request(border, width(), height());
+
+		// Hidden children are incorrectly shown. Fix that!
+		for (i = 0;; i++)
+		{
+			child = getControl(i);
+			if (!child)
+				break;
+			if (!child->isVisible())
+				child->setVisible(false);
+		}
 	}
 	else if (!isTopLevel() && !newpr)
 	{

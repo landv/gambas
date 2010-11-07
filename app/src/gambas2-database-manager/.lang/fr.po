@@ -226,9 +226,14 @@ msgstr ""
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: .project:1
+msgid "Gambas database manager"
+msgstr "Gestionnaire de base de données de Gambas"
 
 #: CConnection.class:213
 msgid "Cannot open table."
@@ -351,7 +356,7 @@ msgid "Server"
 msgstr "Serveur"
 
 #: FCode.class:330 FDatabase.class:145 FNewTable.class:122
-#: FPasteDatabase.class:283 FPasteTable.class:259 FTable.class:57
+#: FPasteDatabase.class:283 FPasteTable.class:259 FTable.class:58
 #: FUser.class:165
 msgid "Name"
 msgstr "Nom"
@@ -381,19 +386,6 @@ msgstr "Fermer"
 msgid "Project"
 msgstr "Projet"
 
-#: FDatabase.class:58
-msgid "Create database"
-msgstr "Créer une base de données"
-
-#: FDatabase.class:80
-msgid "Please type a database name."
-msgstr "Vous devez saisir un nom de base de données."
-
-#: FDatabase.class:161 FData.class:520 FImport.class:34 FMain.class:565
-#: FNewTable.class:116 FServer.class:176 FTable.class:779 FUser.class:197
-msgid "Cancel"
-msgstr "Annuler"
-
 #: FData.class:152
 msgid "Cannot read table data."
 msgstr "Impossible de lire le contenu de la table."
@@ -402,7 +394,7 @@ msgstr "Impossible de lire le contenu de la table."
 msgid "Cannot write table data."
 msgstr "Impossible d'enregistrer les données de la table."
 
-#: FData.class:417 FTable.class:644
+#: FData.class:417 FTable.class:663
 msgid "Incorrect value."
 msgstr "Valeur incorrecte."
 
@@ -414,13 +406,18 @@ msgstr ""
 "Les données de la table '&1' ont été modifiées.\n"
 "Désirez-vous les enregistrer ?"
 
-#: FData.class:520 FTable.class:1099
+#: FData.class:520 FTable.class:1118
 msgid "Save"
 msgstr "Enregistrer"
 
-#: FData.class:520 FTable.class:1099
+#: FData.class:520 FTable.class:1118
 msgid "Do not save"
 msgstr "Ne pas sauver"
+
+#: FData.class:520 FDatabase.class:161 FImport.class:34 FMain.class:565
+#: FNewTable.class:116 FServer.class:176 FTable.class:798 FUser.class:197
+msgid "Cancel"
+msgstr "Annuler"
 
 #: FData.class:587
 msgid "Save data"
@@ -438,6 +435,14 @@ msgstr "Nouvel enregistrement"
 msgid "Delete record"
 msgstr "Supprimer l'enregistrement"
 
+#: FDatabase.class:58
+msgid "Create database"
+msgstr "Créer une base de données"
+
+#: FDatabase.class:80
+msgid "Please type a database name."
+msgstr "Vous devez saisir un nom de base de données."
+
 #: FImport.class:37
 msgid "Import"
 msgstr "Importer"
@@ -450,7 +455,7 @@ msgstr "(Clef automatique)"
 msgid "Field_&1"
 msgstr "Champ_&1"
 
-#: FImport.class:331 FTable.class:93
+#: FImport.class:331 FTable.class:94
 msgid "Field"
 msgstr "Champ"
 
@@ -646,7 +651,7 @@ msgstr ""
 msgid "Select the CSV file to import"
 msgstr "Choisissez le fichier CSV à importer"
 
-#: FMain.class:649 FRequest.class:305
+#: FMain.class:649 FRequest.class:307
 msgid "CSV files"
 msgstr "Fichiers CSV"
 
@@ -790,7 +795,7 @@ msgstr "&Renommer..."
 msgid "&?"
 msgstr "-"
 
-#: FNewTable.class:28 FTable.class:1261
+#: FNewTable.class:28 FTable.class:1280
 msgid "Rename table"
 msgstr "Renommer la table"
 
@@ -802,7 +807,7 @@ msgstr "Créer une table"
 msgid "Please enter a table name."
 msgstr "Veuillez saisir le nom de la table."
 
-#: FNewTable.class:127 FServer.class:165 FTable.class:62
+#: FNewTable.class:127 FServer.class:165 FTable.class:63
 msgid "Type"
 msgstr "Type"
 
@@ -861,7 +866,7 @@ msgstr "La table existe déjà."
 msgid "Duplicate table"
 msgstr "Dupliquer la table"
 
-#: FRequest.class:40 FTable.class:1268
+#: FRequest.class:40 FTable.class:1287
 msgid "SQL request"
 msgstr "Requête SQL"
 
@@ -897,35 +902,35 @@ msgstr "Impossible de charger le script SQL."
 msgid "Cannot save SQL script file."
 msgstr "Impossible d'enregistrer le script SQL."
 
-#: FRequest.class:322
+#: FRequest.class:324
 msgid "Cannot export data."
 msgstr "Impossible d'exporter les données."
 
-#: FRequest.class:387
+#: FRequest.class:389
 msgid "Run"
 msgstr "Exécuter"
 
-#: FRequest.class:394
+#: FRequest.class:396
 msgid "New request"
 msgstr "Nouvelle requête"
 
-#: FRequest.class:401
+#: FRequest.class:403
 msgid "Load request"
 msgstr "Charger une requête"
 
-#: FRequest.class:408
+#: FRequest.class:410
 msgid "Save request"
 msgstr "Enregistrer la requête"
 
-#: FRequest.class:416
+#: FRequest.class:418
 msgid "Find"
 msgstr "Rechercher"
 
-#: FRequest.class:455
+#: FRequest.class:457
 msgid "Export data"
 msgstr "Exporter les données"
 
-#: FRequest.class:462
+#: FRequest.class:464
 msgid "Copy data in clipboard"
 msgstr "Copier les données dans le presse-papier"
 
@@ -989,95 +994,95 @@ msgstr "Mot de passe"
 msgid "New server"
 msgstr "Nouveau serveur"
 
-#: FTable.class:67
+#: FTable.class:68
 msgid "Length"
 msgstr "Longueur"
 
-#: FTable.class:72
+#: FTable.class:73
 msgid "Default value"
 msgstr "Valeur par défaut"
 
-#: FTable.class:83
+#: FTable.class:84
 msgid "Index"
 msgstr "Index"
 
-#: FTable.class:88
+#: FTable.class:89
 msgid "Unique"
 msgstr "Unique"
 
-#: FTable.class:135
+#: FTable.class:136
 msgid "modified"
 msgstr "modifié"
 
-#: FTable.class:280
+#: FTable.class:298
 msgid "You must define a primary key."
 msgstr "Vous devez définir une clef primaire."
 
-#: FTable.class:363
+#: FTable.class:382
 msgid "Cannot write table."
 msgstr "Impossible d'enregistrer la table."
 
-#: FTable.class:438
+#: FTable.class:457
 msgid "unlimited"
 msgstr "illimité"
 
-#: FTable.class:456
+#: FTable.class:475
 msgid "Integer"
 msgstr "Entier"
 
-#: FTable.class:458
+#: FTable.class:477
 msgid "Long"
 msgstr "Entier long"
 
-#: FTable.class:460
+#: FTable.class:479
 msgid "Float"
 msgstr "Décimal"
 
-#: FTable.class:462
+#: FTable.class:481
 msgid "Date"
 msgstr "Date"
 
-#: FTable.class:464
+#: FTable.class:483
 msgid "Boolean"
 msgstr "Booléen"
 
-#: FTable.class:466
+#: FTable.class:485
 msgid "String"
 msgstr "Chaîne"
 
-#: FTable.class:468
+#: FTable.class:487
 msgid "Serial"
 msgstr "Compteur"
 
-#: FTable.class:470
+#: FTable.class:489
 msgid "Blob"
 msgstr "-"
 
-#: FTable.class:589
+#: FTable.class:608
 msgid "This name already exists."
 msgstr "Ce nom est déjà utilisé."
 
-#: FTable.class:614
+#: FTable.class:633
 msgid "Please enter a number."
 msgstr "Vous devez saisir un nombre."
 
-#: FTable.class:619
+#: FTable.class:638
 msgid "The length must be greater than 1 and lower than 255."
 msgstr "La longueur doit être comprise entre 1 et 255."
 
-#: FTable.class:708
+#: FTable.class:727
 msgid "This field is used in an index."
 msgstr "Ce champ est utilisé dans un index."
 
-#: FTable.class:779
+#: FTable.class:798
 msgid "Do you really want to reload the table definition ?"
 msgstr "Désirez-vous réellement recharger la définition de la table ?"
 
-#: FTable.class:779
+#: FTable.class:798
 msgid "Reload"
 msgstr "Recharger"
 
-#: FTable.class:1099
+#: FTable.class:1118
 msgid ""
 "The table '&1' has been modified.\n"
 "Do you want to save it ?"
@@ -1085,59 +1090,59 @@ msgstr ""
 "La table '&1' a été modifiée.\n"
 "Désirez-vous l'enregistrer ?"
 
-#: FTable.class:1152
+#: FTable.class:1170
 msgid "This table name is already in use."
 msgstr "Ce nom de table est déjà utilisé."
 
-#: FTable.class:1247
+#: FTable.class:1266
 msgid "Save table"
 msgstr "Enregistrer la table"
 
-#: FTable.class:1254
+#: FTable.class:1273
 msgid "Reload table"
 msgstr "Recharger la table"
 
-#: FTable.class:1279
+#: FTable.class:1298
 msgid "Fields"
 msgstr "Champs"
 
-#: FTable.class:1284
+#: FTable.class:1303
 msgid "Move field up"
 msgstr "Déplacer le champ vers le haut"
 
-#: FTable.class:1291
+#: FTable.class:1310
 msgid "Move field down"
 msgstr "Déplacer le champ vers le bas"
 
-#: FTable.class:1298
+#: FTable.class:1317
 msgid "Toggle primary key"
 msgstr "Clef primaire"
 
-#: FTable.class:1305
+#: FTable.class:1324
 msgid "Delete field"
 msgstr "Supprimer le champ"
 
-#: FTable.class:1312
+#: FTable.class:1331
 msgid "New field"
 msgstr "Nouveau champ"
 
-#: FTable.class:1323
+#: FTable.class:1342
 msgid "Indexes"
 msgstr "Index"
 
-#: FTable.class:1328
+#: FTable.class:1347
 msgid "New index"
 msgstr "Nouvel index"
 
-#: FTable.class:1335
+#: FTable.class:1354
 msgid "New index field"
 msgstr "Nouveau champ d'index"
 
-#: FTable.class:1342
+#: FTable.class:1361
 msgid "Delete index field"
 msgstr "Supprimer le champ d'index"
 
-#: FTable.class:1367
+#: FTable.class:1386
 msgid "Data"
 msgstr "Données"
 
@@ -1156,7 +1161,3 @@ msgstr "Vous devez saisir un nom d'utilisateur."
 #: FUser.class:186
 msgid "This user is a database administrator"
 msgstr "Administrateur de la base de données"
-
-#: .project:1
-msgid "Gambas database manager"
-msgstr "Gestionnaire de base de données de Gambas"
