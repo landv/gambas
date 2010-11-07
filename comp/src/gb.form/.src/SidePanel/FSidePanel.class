@@ -322,6 +322,7 @@ End
 Public Sub btnSide_MouseUp()
 
   If Me.Parent.Design Then Return
+  If Not Me.Parent.Enabled Then Return
 
   'Last.Tag = 1
   'Last.Refresh

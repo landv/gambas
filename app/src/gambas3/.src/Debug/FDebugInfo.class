@@ -667,6 +667,8 @@ Public Sub tabDebug_Click()
       FOutput.SetFocus
     Case TAB_BREAK
       timBreakpoint_Timer
+    Case TAB_SEARCH
+      FSearch.RefreshBrowse
     ' Case TAB_HELP
     '   FHelp.Background = Color.Background
     '   FHelp.Reparent(panHelp)
@@ -1054,7 +1056,7 @@ Private Sub DisableRec(hCtrl As Control, aExcept As Control[], bOn As Boolean)
 End
 
 
-Private Sub DisableEverythingExcept(hExcept As Control, bOn As Boolean)
+Private Sub DisableEverything(bOn As Boolean)
   
   Dim aCtrl As New Control[]
   Dim hCtrl As Control
@@ -1065,12 +1067,12 @@ Private Sub DisableEverythingExcept(hExcept As Control, bOn As Boolean)
     hWin.Enabled = bOn
   Next
   
-  hCtrl = hExcept
-  
+  hCtrl = btnCancelSearch
   While hCtrl
     aCtrl.Add(hCtrl)
     hCtrl = hCtrl.Parent
   Wend
+  aCtrl.Add(lblBrowse)
   
   DisableRec(FMain.Window, aCtrl, bOn)
   
@@ -1085,12 +1087,24 @@ Public Sub EnableGUI(bOn As Boolean)
   
   lblBrowse.Visible = Not bOn
   btnCancelSearch.Visible = Not bOn
-  DisableEverythingExcept(btnCancelSearch, bOn)
+  DisableEverything(bOn)
   
 End
 
 Public Sub btnCancelSearch_Click()
 
   FSearch.Cancel()
+
+End
+
+Public Sub IsSearchListVisible() As Boolean
+  
+  Return tabDebug.Index = TAB_SEARCH
+  
+End
+
+Public Sub Form_Resize()
+
+  gvwFind.Columns[3].Width = Me.W - gvwFind.Columns[3].X - 8
 
 End

@@ -557,7 +557,7 @@ Private Sub BrowseFile(sPath As String, Optional iIndex As Integer = -1, Optiona
   Next
   
   gvwFind.Rows.Count = $aBrowse.Count
-  UpdateSpan(iStart)
+  'UpdateSpan(iStart)
   
 End
 
@@ -878,6 +878,8 @@ Public Sub gvwFind_Select()
 
   gvwFind.ScrollX = 0
   
+  Me.Hide
+  
 End
 
 Public Sub Form_KeyPress()
@@ -902,6 +904,9 @@ End
 Public Sub OnProjectChange()
   
   ClearCache
+  gvwFind.Rows.Count = 0
+  gvwFind.Hide
+  $aBrowse.Clear
   
 End
 
@@ -912,15 +917,16 @@ Public Sub OnFileChange(sPath As String)
   $cRefreshBrowse[sPath] = True
   
   timRefresh.Stop
-  If Me.Visible Then timRefresh.Start
+  timRefresh.Start
   
 End
 
-Private Sub RefreshBrowse()
+Public Sub RefreshBrowse()
   
   Dim sPath As String
   Dim iIndex As Integer
   
+  If Not FDebugInfo.IsSearchListVisible() Then Return
   If $cRefreshBrowse.Count = 0 Then Return
   
   Object.Lock(gvwFind)
@@ -944,6 +950,7 @@ Private Sub RefreshBrowse()
   $cRefreshBrowse.Clear
   Object.Unlock(gvwFind)
   gvwFind.Refresh
+  gvwFind.ScrollX = 0
   timRefresh.Stop
   BrowseTimeStamp = Project.TimeStamp
   
