@@ -339,6 +339,7 @@ void gTabStripPage::setVisible(bool v)
 				n++;
 		}
 		gtk_notebook_insert_page(GTK_NOTEBOOK(parent->widget), widget, fix, n);
+		//gtk_notebook_set_tab_reorderable(GTK_NOTEBOOK(parent->widget), widget, TRUE);
 		gtk_widget_realize(widget);
 		gtk_widget_realize(fix);
 		gtk_widget_show_all(widget);

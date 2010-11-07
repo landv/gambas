@@ -879,6 +879,7 @@ Public Sub gvwFind_Select()
   Dim hForm As Object
 
   If $aBrowse.Count = 0 Then Return
+  If gvwFind.Row < 0 Then Return
   
   hFind = $aBrowse[gvwFind.Row]
   

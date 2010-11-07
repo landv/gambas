@@ -197,6 +197,7 @@ void CTab::updateText()
 MyTabWidget::MyTabWidget(QWidget *parent) : QTabWidget(parent)
 {
 	_oldw = _oldh = 0;
+	//setMovable(true);
 	//tabBar()->installEventFilter(this);
 }
 

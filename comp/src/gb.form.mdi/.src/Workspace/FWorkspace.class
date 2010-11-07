@@ -358,7 +358,6 @@ End
 
 Public Sub tabWorkspace_Click()
   
-  'DEBUG tabWorkspace.Index
   Activate()
   
 End
@@ -737,6 +736,7 @@ End
 
 Public Sub tabWorkspace_Close(Index As Integer)
 
+  'Debug tabWorkspace.Index
   $aWindow[Index].Window.Close
 
 End
