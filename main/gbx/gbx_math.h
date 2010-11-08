@@ -63,11 +63,11 @@ long double fabsl(long double x);
 #endif
 
 #ifndef HAVE_POWL
-long double powl(long double x);
+long double powl(long double x, long double y);
 #endif
 
 #ifndef HAVE_MODFL
-long double modfl(long double x);
+long double modfl(long double x, long double *iptr);
 #endif
 
 #endif
