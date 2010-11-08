@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2,93,79)
+  MoveScaled(0,2,93,73)
   Text = ("Project properties")
   Icon = Picture["icon:/small/properties"]
   Persistent = True
@@ -19,21 +19,21 @@
     }
   }
   { btnOK Button
-    MoveScaled(59,74,16,4)
+    MoveScaled(59,68,16,4)
     Text = ("OK")
     Default = True
   }
   { btnCancel Button
-    MoveScaled(76,74,16,4)
+    MoveScaled(76,68,16,4)
     Text = ("Cancel")
     Cancel = True
   }
   { tabProject TabStrip
-    MoveScaled(1,1,91,72)
+    MoveScaled(1,1,91,66)
     Arrangement = Arrange.Vertical
     Spacing = True
     Margin = True
-    Count = 7
+    Count = 6
     Index = 0
     Text = ("General")
     { Panel1 Panel
@@ -54,7 +54,7 @@
       }
     }
     { HPanel1 HPanel
-      MoveScaled(1,12,84,53)
+      MoveScaled(1,12,84,48)
       Spacing = True
       { Label10 Label
         MoveScaled(0,0,16,4)
@@ -93,17 +93,17 @@
         Text = ("Description")
       }
       { txtDesc TextArea
-        MoveScaled(18,10,60,21)
+        MoveScaled(18,10,60,18)
         Expand = True
         Wrap = True
       }
       { Label11 Label
-        MoveScaled(0,31,16,4)
+        MoveScaled(0,29,16,4)
         Font = Font["Bold"]
         Text = ("Author(s)")
       }
       { txtAuthor TextArea
-        MoveScaled(18,32,57,21)
+        MoveScaled(18,29,57,18)
         Expand = True
         Wrap = True
       }
@@ -261,21 +261,6 @@
         List = [("Yes"), ("No")]
       }
     }
-    { HBox5 HBox
-      MoveScaled(2,61,83,4)
-      Spacing = True
-      Indent = True
-      { Label26 Label
-        MoveScaled(0,0,46,4)
-        Text = ("Component advancement")
-      }
-      { cmbComponentState ComboBox
-        MoveScaled(47,0,36,4)
-        Expand = True
-        ReadOnly = True
-        List = [("Finished and stable"), ("Not finished but stable"), ("Beta version")]
-      }
-    }
     Index = 2
     Text = ("Components")
     { chkShowUsed CheckBox
@@ -322,11 +307,11 @@
     Index = 3
     Text = ("Libraries")
     { lstLibraries ListContainer
-      MoveScaled(1,1,81,59)
+      MoveScaled(1,1,81,55)
       Expand = True
     }
     { HBox18 HBox
-      MoveScaled(1,62,84,4)
+      MoveScaled(1,58,84,4)
       Spacing = True
       { btnInsertLib Button
         MoveScaled(0,0,17,4)
@@ -359,7 +344,7 @@
     Index = 4
     Text = ("Environment")
     { VBox1 VBox
-      MoveScaled(1,1,84,66)
+      MoveScaled(1,1,84,62)
       Expand = True
       Spacing = True
       { Label17 Label
@@ -395,21 +380,21 @@
         }
       }
       { Separator1 Separator
-        MoveScaled(7,36,42,1)
+        MoveScaled(7,34,42,1)
       }
       { Label18 Label
-        MoveScaled(2,39,24,3)
+        MoveScaled(2,37,24,3)
         Font = Font["Bold"]
         Text = ("Environment variables")
       }
       { tvwEnv TableView
-        MoveScaled(2,43,47,16)
+        MoveScaled(2,41,47,16)
         Expand = True
         Header = GridView.Horizontal
         Scrollbar = Scroll.Vertical
       }
       { HBox3 HBox
-        MoveScaled(2,59,40,4)
+        MoveScaled(2,57,40,4)
         Spacing = True
         { btnInsertEnv MenuButton
           MoveScaled(0,0,19,4)
@@ -459,86 +444,6 @@
         MoveScaled(42,0,20,4)
         Text = ("&Commit...")
         Picture = Picture["icon:/small/ok"]
-      }
-    }
-    Index = 6
-    Text = ("Requires")
-    { Label15 Label
-      MoveScaled(1,1,79,3)
-      Font = Font["Bold"]
-      Text = ("Features")
-    }
-    { HBox7 HBox
-      MoveScaled(1,4,82,18)
-      Indent = True
-      { panNeed Panel
-        MoveScaled(1,0,80,16)
-        Expand = True
-        Arrangement = Arrange.Vertical
-        { CheckBox5 CheckBox
-          MoveScaled(0,0,77,4)
-          Tag = "Form"
-          Text = ("Graphical form management")
-        }
-        { CheckBox6 CheckBox
-          MoveScaled(0,4,44,4)
-          Tag = "EventLoop"
-          Text = ("Event loop management")
-        }
-        { CheckBox7 CheckBox
-          MoveScaled(0,8,37,4)
-          Tag = "ImageIO"
-          Text = ("Image loading and saving")
-        }
-        { CheckBox8 CheckBox
-          MoveScaled(0,12,27,4)
-          Tag = "OpenGLViewer"
-          Text = ("OpenGL display")
-        }
-      }
-    }
-    { Label14 Label
-      MoveScaled(1,22,79,3)
-      Font = Font["Bold"]
-      Text = ("Components")
-    }
-    { HBox4 HBox
-      MoveScaled(1,26,84,48)
-      Expand = True
-      Spacing = True
-      Indent = True
-      { VBox4 VBox
-        MoveScaled(1,1,56,35)
-        Expand = True
-        Spacing = True
-        { cmbRequire ComboBox
-          MoveScaled(0,0,55,4)
-          ReadOnly = True
-        }
-        { lstRequire ListBox
-          MoveScaled(0,4,55,29)
-          Expand = True
-          Sorted = True
-        }
-      }
-      { VBox5 VBox
-        MoveScaled(58,1,21,35)
-        Spacing = True
-        { btnAdd Button
-          MoveScaled(0,0,17,4)
-          Text = ("&Add")
-          Picture = Picture["icon:/small/add"]
-        }
-        { btnRemove Button
-          MoveScaled(0,5,17,4)
-          Text = ("&Remove")
-          Picture = Picture["icon:/small/remove"]
-        }
-        { btnRemoveAll Button
-          MoveScaled(0,10,17,4)
-          Text = ("Remove All")
-          Picture = Picture["icon:/small/trash"]
-        }
       }
     }
     Index = 0

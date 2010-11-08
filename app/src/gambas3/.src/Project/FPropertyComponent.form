@@ -1,0 +1,170 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,88,62)
+  Text = ("Component properties")
+  Icon = Picture["icon:/small/component"]
+  Resizable = False
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { tabComponent TabStrip
+    MoveScaled(1,1,86,55)
+    Arrangement = Arrange.Vertical
+    Spacing = True
+    Margin = True
+    Count = 2
+    Index = 0
+    Text = ("General")
+    { lblTitle Label
+      MoveScaled(1,1,83,5)
+      Font = Font["Bold,+2"]
+      Background = Color.SelectedBackground
+      Foreground = Color.SelectedForeground
+      Padding = 8
+    }
+    { Label2 Label
+      MoveScaled(1,7,17,4)
+      Font = Font["Bold"]
+      Text = ("Options")
+    }
+    { HBox5 HBox
+      MoveScaled(1,11,83,4)
+      Spacing = True
+      Indent = True
+      { Label26 Label
+        MoveScaled(0,0,46,4)
+        Text = ("Component advancement")
+      }
+      { cmbComponentState ComboBox
+        MoveScaled(47,0,36,4)
+        Expand = True
+        ReadOnly = True
+        List = [("Finished and stable"), ("Not finished but stable"), ("Beta version")]
+      }
+    }
+    { HBox6 HBox
+      MoveScaled(1,16,83,4)
+      Spacing = True
+      Indent = True
+      { Label25 Label
+        MoveScaled(0,0,46,4)
+        Text = ("This component is hidden")
+      }
+      { cmbHidden ComboBox
+        MoveScaled(47,0,10,4)
+        ReadOnly = True
+        List = [("Yes"), ("No")]
+      }
+    }
+    { Label1 Label
+      MoveScaled(1,21,17,4)
+      Font = Font["Bold"]
+      Text = ("Exported classes")
+    }
+    { lstExport ListBox
+      MoveScaled(1,26,83,23)
+      Expand = True
+      Mode = Select.None
+    }
+    Index = 1
+    Text = ("Requires")
+    { Label15 Label
+      MoveScaled(1,1,79,3)
+      Font = Font["Bold"]
+      Text = ("Features")
+    }
+    { HBox7 HBox
+      MoveScaled(1,4,55,17)
+      Indent = True
+      { panNeed Panel
+        MoveScaled(1,0,49,16)
+        Expand = True
+        Arrangement = Arrange.Vertical
+        { CheckBox5 CheckBox
+          MoveScaled(0,0,44,4)
+          Tag = "Form"
+          Text = ("Graphical form management")
+        }
+        { CheckBox6 CheckBox
+          MoveScaled(0,4,44,4)
+          Tag = "EventLoop"
+          Text = ("Event loop management")
+        }
+        { CheckBox7 CheckBox
+          MoveScaled(0,8,44,4)
+          Tag = "ImageIO"
+          Text = ("Image loading and saving")
+        }
+        { CheckBox8 CheckBox
+          MoveScaled(0,12,44,4)
+          Tag = "OpenGLViewer"
+          Text = ("OpenGL display")
+        }
+      }
+    }
+    { Label14 Label
+      MoveScaled(1,22,79,3)
+      Font = Font["Bold"]
+      Text = ("Components")
+    }
+    { HBox4 HBox
+      MoveScaled(1,26,61,23)
+      Expand = True
+      Spacing = True
+      Indent = True
+      { VBox4 VBox
+        MoveScaled(1,1,36,21)
+        Expand = True
+        Spacing = True
+        { cmbRequire ComboBox
+          MoveScaled(0,0,35,4)
+          ReadOnly = True
+        }
+        { lstRequire ListBox
+          MoveScaled(0,4,35,17)
+          Expand = True
+          Sorted = True
+        }
+      }
+      { VBox5 VBox
+        MoveScaled(38,1,21,21)
+        Spacing = True
+        { btnAdd Button
+          MoveScaled(0,0,17,4)
+          Text = ("&Add")
+          Picture = Picture["icon:/small/add"]
+        }
+        { btnRemove Button
+          MoveScaled(0,5,17,4)
+          Text = ("&Remove")
+          Picture = Picture["icon:/small/remove"]
+        }
+        { btnRemoveAll Button
+          MoveScaled(0,10,17,4)
+          Text = ("Remove All")
+          Picture = Picture["icon:/small/trash"]
+        }
+      }
+    }
+    Index = 0
+  }
+  { HBox1 HBox
+    MoveScaled(1,57,85,4)
+    Spacing = True
+    { Panel1 Panel
+      MoveScaled(4,0,4,4)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(51,0,16,4)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(68,0,16,4)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

@@ -2937,7 +2937,6 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If CreateShortcut Then Print #hFic, "CreateShortcut=1"
   If RunAfterMakingExec Then Print #hFic, "RunAfter="; RunAfterMakingExec
   If CreateComponent Then Print #hFic, "MakeComponent=1"
-  If ComponentState Then Print #hFic, "State="; ComponentState
   If ControlPublic Then Print #hFic, "ControlPublic=1"
   If ModulePublic Then Print #hFic, "ModulePublic=1"
   If ExecPath <> (Project.Dir &/ Project.Name & ".gambas") Then
@@ -3053,6 +3052,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   Endif
   
   FMain.UpdateTranslate
+  FMain.UpdateMenu
   UpdateTitle
   'CreateConnectionDirectory
   

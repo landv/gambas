@@ -17,10 +17,6 @@ Private $sIcon As String
 Private $bCanInitComponents As Boolean
 'PRIVATE $bLibModify AS Boolean
 
-' Component
-Private $aNeed As String[]
-Private $aRequire As String[]
-Private $aImplement As String[]
 Private $iRow As Integer
 Private $iCol As Integer
 
@@ -41,7 +37,7 @@ Private Const REQUIRES_TAB As Integer = 6
 
 Static Public Function Run() As Boolean
 
-  Return FPropertyProject.ShowModal()
+  Return Not FPropertyProject.ShowModal()
 
 End
 
@@ -60,7 +56,7 @@ Public Sub Form_Open()
 
   'cmbStackSize.List = [("(Default)"), "1 K", "2 K", "4 K", "8 K", "16 K", "32 K", "64 K"]
   
-  cmbComponent_Click
+  'cmbComponent_Click
 
   With Project
 
@@ -74,7 +70,6 @@ Public Sub Form_Open()
     txtRelease.Value = .ReleaseVersion
     cmbTranslate.Index = If(.Localize, 0, 1)
     cmbComponent.Index = If(.CreateComponent, 0, 1)
-    cmbComponentState.Index = .ComponentState
     $sIcon = .Icon
     UpdateIcon
     txtTabSize.Value = .TabSize
@@ -159,7 +154,7 @@ End
 
 Public Sub btnCancel_Click()
 
-  Me.Close(True)
+  Me.Close
 
 End
 
@@ -232,7 +227,6 @@ Private Function DoApply() As Boolean
       .Language = ""
     Endif
     .CreateComponent = cmbComponent.Index = 0
-    .ComponentState = cmbComponentState.Index
 
     If .TabSize <> txtTabSize.Value Then
       bRefreshEditor = True
@@ -248,6 +242,7 @@ Private Function DoApply() As Boolean
   SaveEnvironment
 
   Project.WriteProject
+  If Project.CreateComponent Then FPropertyComponent.UpdateComponent
   Project.MakeDirectoryIcon
   Project.Compile
 
@@ -271,10 +266,6 @@ Public Sub btnOK_Click()
 
   If DoApply() Then Return
   
-  If cmbComponent.Index = 0 Then
-    If WriteComponent() Then Return 
-  Endif
-
   Me.Close(True)
 
 End
@@ -365,6 +356,7 @@ Private Sub RefreshComponents()
 
   For Each sLib In aComp
     hComp = CComponent.All[sLib]
+    If hComp.Hidden Then Continue
     If $bShowUsed Then
       If sLib <> "gb" And If Not Project.Components.Exist(hComp.Key) Then Continue
     Endif
@@ -699,17 +691,17 @@ Public Sub btnHelp_Click()
 End
 
 
-Public Sub cmbComponent_Click()
-
-  Dim bComp As Boolean = cmbComponent.Index = 0
-
-  If bComp Then InitRequires
-
-  tabProject[REQUIRES_TAB].Visible = bComp
-  'tabProject[COMPONENT_TAB + 1].Visible = bComp
-  cmbComponentState.Enabled = bComp
-
-End
+' Public Sub cmbComponent_Click()
+' 
+'   Dim bComp As Boolean = cmbComponent.Index = 0
+' 
+'   If bComp Then InitRequires
+' 
+'   tabProject[REQUIRES_TAB].Visible = bComp
+'   'tabProject[COMPONENT_TAB + 1].Visible = bComp
+'   cmbComponentState.Enabled = bComp
+' 
+' End
 
 ' Private Sub GetParent(sPath As String) As String
 '   
@@ -736,253 +728,9 @@ End
 '   
 ' End
 
-Private Sub ReadComponentFile()
-  
-  Dim sPath As String = Project.Dir &/ ".component"
-  Dim hFile As File
-  Dim sLine As String
-  Dim sGroup As String
-  Dim iPos As Integer
-  Dim sKey As String
-  
-  $aNeed = New String[]
-  $aRequire = New String[]
-  $aImplement = New String[]
-  
-  If Not Exist(sPath) Then Return
-  
-  hFile = Open sPath
-  
-  Line Input #hFile, sLine
-  If Trim(sLine) <> "[Component]" Then Return
-  
-  While Not Eof(hFile)
-    
-    Line Input #hFile, sLine
-    sLine = Trim(sLine)
-    If Not sLine Then Continue 
-    If Left(sLine) = ";" Then Continue
-    
-    If Left(sLine) = "[" Then 
-      If sLine = "[Component]" Then Break 
-      sGroup = Mid$(sLine, 2, -1)
-      Continue
-    Endif 
-    
-    iPos = InStr(sLine, "=")
-    If iPos = 0 Then Continue
-    sKey = LCase(Left(sLine, iPos - 1))
-    sLine = Mid$(sLine, iPos + 1)
-    
-    Select Case sKey
-      Case "need", "needs"
-        $aNeed = Split(sLine, ",")
-      Case "require", "requires"
-        $aRequire = Split(sLine, ",")
-      Case "implement", "implements"
-        $aImplement = Split(sLine, ",")
-      ' Case "control", "controls"
-      '   For Each sKey In Split(sLine, ",")
-      '     If CExportInfo.All.Exist(sKey) Then
-      '       CExportInfo.All[sKey].Control = True
-      '       CExportInfo.All[sKey].Group = sGroup
-      '     Else 
-      '       Debug "Control="; sKey; "?"
-      '     Endif
-      '   Next
-      ' Case "virtual"
-      '   For Each sKey In Split(sLine, ",")
-      '     If CExportInfo.All.Exist(sKey) Then
-      '       CExportInfo.All[sKey].Virtual = True
-      '     Else 
-      '       Debug "Virtual="; sKey; "?"
-      '     Endif 
-      '   Next
-      ' Case "container"
-      '   For Each sKey In Split(sLine, ",")
-      '     If CExportInfo.All.Exist(sKey) Then
-      '       CExportInfo.All[sKey].Container = True
-      '     Else 
-      '       Debug "Container="; sKey; "?"
-      '     Endif
-      '   Next
-      ' Case "multicontainer"
-      '   For Each sKey In Split(sLine, ",")
-      '     If CExportInfo.All.Exist(sKey) Then
-      '       CExportInfo.All[sKey].MultiContainer = True
-      '     Else 
-      '       Debug "MultiContainer="; sKey; "?"
-      '     Endif
-      '   Next
-      ' Case "type"
-      '   Try CExportInfo.All[sLine].Form = True
-        
-    End Select 
-    
-  Wend
-  
-Catch 
-
-  Debug Error.Text;; Error.Where
-  
-End
 
 
-Private Sub WriteComponent() As Boolean
 
-  Dim sPath As String = Project.Dir &/ ".component"
-  Dim hFile As File
-  Dim cGroup As New Collection
-  Dim sGroup As String
-  'Dim hExportInfo As CExportInfo
-  Dim sClass As String
-  Dim aControl As String[]
-  Dim aVirtual As String[]
-  Dim aContainer As String[]
-  Dim aMultiContainer As String[]
-  Dim bNew As Boolean
-
-  'HideEditor
-  WriteFeatures(panNeed, $aNeed)
-
-  hFile = Open Temp$("component") For Create 
-  
-  Print #hFile, "[Component]"
-  Print #hFile, "Key="; Project.Name
-  Print #hFile, "Version="; Project.MajorVersion; "."; Project.MinorVersion; "."; Project.ReleaseVersion
-  If cmbComponentState.Index Then Print #hFile, "State="; cmbComponentState.Index
-  If Project.Authors Then Print #hFile, "Authors="; Replace(Project.Authors, "\n", ",")
-  If $aImplement.Count Then Print #hFile, "Implements="; $aImplement.Join(",")
-  If $aNeed.Count Then Print #hFile, "Needs="; $aNeed.Join(",")
-  If $aRequire.Count Then Print #hFile, "Requires="; $aRequire.Join(",")
-  Print #hFile
-  
-  ' For Each sGroup In GetGroups()
-  '   cGroup[sGroup] = New String[]
-  '   
-  '   Print #hFile, "["; sGroup; "]"
-  '   
-  '   aControl = New String[]
-  '   aVirtual = New String[]
-  '   aContainer = New String[]
-  '   aMultiContainer = New String[]
-  '   
-  '   For Each sClass In CExportInfo.List
-  '     hExportInfo = CExportInfo.All[sClass]
-  '     If hExportInfo.Group <> sGroup Then Continue
-  '     If hExportInfo.Control Then aControl.Add(sClass)
-  '     If hExportInfo.Virtual Then aVirtual.Add(sClass)
-  '     If hExportInfo.Container Then aContainer.Add(sClass)
-  '     If hExportInfo.MultiContainer Then aMultiContainer.Add(sClass)
-  '   Next
-  '   
-  '   If aControl.Count Then Print #hFile, "Control="; aControl.Join(",")
-  '   If aContainer.Count Then Print #hFile, "Container="; aContainer.Join(",")
-  '   If aMultiContainer.Count Then Print #hFile, "MultiContainer="; aMultiContainer.Join(",")
-  '   If aVirtual.Count Then Print #hFile, "Virtual="; aVirtual.Join(",")
-  '   Print #hFile
-  '   
-  ' Next
-  ' 
-  ' Print #hFile, "[Change]"
-  ' For Each sClass In CExportInfo.List
-  '   hExportInfo = CExportInfo.All[sClass]
-  '   If hExportInfo.Similar Then Print #hFile, sClass; "="; hExportInfo.Similar
-  ' Next
-
-  Close #hFile    
-  
-  bNew = Not Exist(sPath)
-  Try Kill sPath
-  Copy Temp$("component") To sPath
-  If bNew Then VersionControl.AddFile(sPath)
-  
-Catch 
-
-  Message.Error(("Cannot write component description file.") & "\n\n" & Error.Text & "\n" & Error.Where)
-  Return True
-  
-End
-
-
-Private Sub InitRequires()
-
-  Dim sPath As String
-  Dim sClass As String
-  Dim hComp As CComponent
-  Dim aComp As New String[]
-  Dim sComp As String
-
-  ReadComponentFile
-  
-  For Each hComp In CComponent.All
-    If hComp.Key = Project.Name Then Continue 
-    If hComp.Key = "gb" Then Continue
-    aComp.Add(hComp.Key)
-  Next
-  aComp.Sort
-  cmbRequire.List = aComp
- 
-  lstRequire.List = $aRequire
-  
-  ReadFeatures(panNeed, $aNeed)
-  'ReadFeatures(panImplement, $aImplement)
-  
-  'txtImplement.Text = GetForm()
-
-End
-
-Private Sub ReadFeatures(hCont As Container, aFeature As String[])
-  
-  Dim hCtrl As CheckBox
-  
-  For Each hCtrl In hCont.Children
-    hCtrl.Value = aFeature.Find(hCtrl.Tag, gb.IgnoreCase) >= 0
-  Next
-  
-End
-
-Private Sub WriteFeatures(hCont As Container, aFeature As String[])
-  
-  Dim hCtrl As CheckBox
-  
-  aFeature.Clear
-  For Each hCtrl In hCont.Children
-    If hCtrl.Value Then aFeature.Add(hCtrl.Tag)
-  Next
-  
-End
-
-Private Sub AddRequire(sComp As String)
-
-  If sComp = Project.Name Then Return  
-  If $aRequire.Find(sComp) >= 0 Then Return 
-  $aRequire.Add(sComp)
-  lstRequire.Add(sComp)
-  
-End
-
-
-Public Sub btnAdd_Click()
-
-  AddRequire(cmbRequire.Text)
-
-End
-
-Public Sub btnRemove_Click()
-
-  If lstRequire.Index < 0 Then Return 
-  $aRequire.Remove($aRequire.Find(lstRequire.Text))
-  lstRequire.Remove(lstRequire.Index)
-
-End
-
-Public Sub btnRemoveAll_Click()
-
-  lstRequire.Clear
-  $aRequire.Clear
-
-End
 
 ' PUBLIC SUB cmbRequire_Click()
 ' 

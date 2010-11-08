@@ -1,0 +1,237 @@
+' Gambas class file
+
+' Component
+Private $aNeed As String[]
+Private $aRequire As String[]
+Private $aImplement As String[]
+
+Public Sub Run() As Boolean
+
+  Return Not Me.ShowModal()
+
+End
+
+Public Sub btnOK_Click()
+
+  If WriteComponent() Then Return 
+
+  Me.Close(True)
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+Private Sub ReadComponentFile()
+  
+  Dim sPath As String = Project.Dir &/ ".component"
+  Dim hFile As File
+  Dim sLine As String
+  Dim sGroup As String
+  Dim iPos As Integer
+  Dim sKey As String
+  
+  $aNeed = New String[]
+  $aRequire = New String[]
+  $aImplement = New String[]
+  cmbComponentState.Index = Project.ComponentState
+  cmbHidden.Index = 1
+  
+  If Not Exist(sPath) Then Return
+  
+  hFile = Open sPath
+  
+  Line Input #hFile, sLine
+  If Trim(sLine) <> "[Component]" Then Return
+  
+  While Not Eof(hFile)
+    
+    Line Input #hFile, sLine
+    sLine = Trim(sLine)
+    If Not sLine Then Continue 
+    If Left(sLine) = ";" Then Continue
+    
+    If Left(sLine) = "[" Then 
+      If sLine = "[Component]" Then Break 
+      sGroup = Mid$(sLine, 2, -1)
+      Continue
+    Endif 
+    
+    iPos = InStr(sLine, "=")
+    If iPos = 0 Then Continue
+    sKey = LCase(Left(sLine, iPos - 1))
+    sLine = Mid$(sLine, iPos + 1)
+    
+    Select Case sKey
+      Case "need", "needs"
+        $aNeed = Split(sLine, ",")
+      Case "require", "requires"
+        $aRequire = Split(sLine, ",")
+      Case "implement", "implements"
+        $aImplement = Split(sLine, ",")
+      Case "state"
+        Try cmbComponentState.Index = CInt(sLine)
+      Case "hidden"
+        cmbHidden.Index = If(sLine = "True", 0, 1)
+    End Select 
+    
+  Wend
+  
+Catch 
+
+  Debug Error.Text;; Error.Where
+  
+End
+
+Private Sub WriteFeatures(hCont As Container, aFeature As String[])
+  
+  Dim hCtrl As CheckBox
+  
+  aFeature.Clear
+  For Each hCtrl In hCont.Children
+    If hCtrl.Value Then aFeature.Add(hCtrl.Tag)
+  Next
+  
+End
+
+Public Sub UpdateComponent()
+  
+  ReadComponent
+  WriteComponent
+  
+End
+
+
+Private Sub WriteComponent() As Boolean
+
+  Dim sPath As String = Project.Dir &/ ".component"
+  Dim hFile As File
+  Dim cGroup As New Collection
+  Dim sGroup As String
+  'Dim hExportInfo As CExportInfo
+  Dim sClass As String
+  Dim aControl As String[]
+  Dim aVirtual As String[]
+  Dim aContainer As String[]
+  Dim aMultiContainer As String[]
+  Dim bNew As Boolean
+
+  'HideEditor
+  Project.ComponentState = cmbComponentState.Index
+  
+  WriteFeatures(panNeed, $aNeed)
+
+  hFile = Open Temp$("component") For Create 
+  
+  Print #hFile, "[Component]"
+  Print #hFile, "Key="; Project.Name
+  Print #hFile, "Version="; Project.MajorVersion; "."; Project.MinorVersion; "."; Project.ReleaseVersion
+  If cmbComponentState.Index Then Print #hFile, "State="; cmbComponentState.Index
+  If cmbHidden.Index = 0 Then Print #hFile, "Hidden=True"
+  If Project.Authors Then Print #hFile, "Authors="; Replace(Project.Authors, "\n", ",")
+  If $aImplement.Count Then Print #hFile, "Implements="; $aImplement.Join(",")
+  If $aNeed.Count Then Print #hFile, "Needs="; $aNeed.Join(",")
+  If $aRequire.Count Then Print #hFile, "Requires="; $aRequire.Join(",")
+  Print #hFile
+  
+  Close #hFile    
+  
+  bNew = Not Exist(sPath)
+  Try Kill sPath
+  Copy Temp$("component") To sPath
+  If bNew Then VersionControl.AddFile(sPath)
+  
+Catch 
+
+  Message.Error(("Cannot write component description file.") & "\n\n" & Error.Text & "\n" & Error.Where)
+  Return True
+  
+End
+
+Private Sub ReadComponent()
+
+  Dim sPath As String
+  Dim sClass As String
+  Dim hComp As CComponent
+  Dim aComp As New String[]
+  Dim sComp As String
+
+  ReadComponentFile
+  
+  For Each hComp In CComponent.All
+    If hComp.Key = Project.Name Then Continue 
+    If hComp.Key = "gb" Then Continue
+    aComp.Add(hComp.Key)
+  Next
+  aComp.Sort
+  cmbRequire.List = aComp
+ 
+  lstRequire.List = $aRequire
+  
+  ReadFeatures(panNeed, $aNeed)
+  'ReadFeatures(panImplement, $aImplement)
+  
+  'txtImplement.Text = GetForm()
+
+End
+
+Private Sub ReadFeatures(hCont As Container, aFeature As String[])
+  
+  Dim hCtrl As CheckBox
+  
+  For Each hCtrl In hCont.Children
+    hCtrl.Value = aFeature.Find(hCtrl.Tag, gb.IgnoreCase) >= 0
+  Next
+  
+End
+
+Private Sub AddRequire(sComp As String)
+
+  If sComp = Project.Name Then Return  
+  If $aRequire.Find(sComp) >= 0 Then Return 
+  $aRequire.Add(sComp)
+  lstRequire.Add(sComp)
+  
+End
+
+
+Public Sub btnAdd_Click()
+
+  AddRequire(cmbRequire.Text)
+
+End
+
+Public Sub btnRemove_Click()
+
+  If lstRequire.Index < 0 Then Return 
+  $aRequire.Remove($aRequire.Find(lstRequire.Text))
+  lstRequire.Remove(lstRequire.Index)
+
+End
+
+Public Sub btnRemoveAll_Click()
+
+  lstRequire.Clear
+  $aRequire.Clear
+
+End
+
+Public Sub Form_Open()
+
+  Dim aClass As String[]
+  Dim iInd As Integer
+
+  ReadComponent
+
+  lblTitle.Text = Project.Name
+  
+  aClass = Split(File.Load(Project.Dir &/ ".list"), "\n", "", True)
+  For iInd = 0 To aClass.Max
+    If Left(aClass[iInd]) = "?" Then aClass[iInd] = Mid$(aClass[iInd], 2)
+  Next
+  lstExport.List = aClass
+  
+End

@@ -30,6 +30,7 @@ Public SortKey As Integer
 Public Version As String
 Public Family As String
 Public ThirdParty As Boolean
+Public Hidden As Boolean
 
 Public {Library} As Boolean
 Public Path As String
@@ -247,56 +248,8 @@ Static Private Sub InitComponent(sFile As String)
 
       With hComponent
       
-        ' If sGroup = "Change" Then
-        ' 
-        '   aChange = Changes["." & sKey]
-        '   If Not aChange Then
-        '     aChange = New String[]
-        '     Changes["." & sKey] = aChange
-        '   Endif
-        '   
-        '   aStr = Split(sLig, ",")
-        '   aStr.Add(sKey)
-        '   aChange.Insert(aStr)
-        '   aChange.Sort()
-        ' 
-        '   For Each sChange In aStr
-        ' 
-        '     aChange = Changes[sChange]
-        '     If Not aChange Then
-        '       aChange = New String[]
-        '       Changes[sChange] = aChange
-        '     Endif
-        '     
-        '     aChange.Add("." & sKey)
-        '     
-        '   Next
-        ' 
-        ' Else
-
-          ' IF sKey = "Key" THEN
-          '   .Key = sLig
-          ' ELSE IF sKey = "Name" THEN 'OR sKey = "Name[" & sLangShort & "]" OR sKey = "Name[" & sLang & "]" THEN
-          '   PRINT "cName[\""; .Key; "\"] = (\""; sLig; "\")"
-          '   .Name = sLig
           If sKey = "Author" Or sKey = "Authors" Then
             .Authors = Split(sLig)
-          'Else If sKey = "Type" Then
-          '  .Type = sLig
-          ' Else If sKey = "Group" Then
-          '   sGroup = sLig
-          ' Else If sKey = "Hidden" Then
-          '   .Hiddens = Split(sLig)
-          ' Else If sKey = "Control" Or If sKey = "Controls" Then
-          '   .AddControls(sGroup, Split(sLig))
-          ' Else If sKey = "Container" Then
-          '   .AddContainers(sGroup, Split(sLig))
-          ' Else If sKey = "MultiContainer" Then
-          '   .AddContainers(sGroup, Split(sLig))
-          '   .MultiContainers.Insert(Split(sLig))
-          ' Else If sKey = "Virtual" Then
-          '   .AddControls(sGroup, Split(sLig))
-          '   .Virtuals.Insert(Split(sLig))
           Else If sKey = "Require" Or sKey = "Requires" Then
             .Require = Split(sLig)
           Else If sKey = "Exclude" Or sKey = "Excludes" Then
@@ -311,6 +264,8 @@ Static Private Sub InitComponent(sFile As String)
             .State = CInt(sLig)
           Else If sKey = "Version" Then
             .Version = sLig
+          Else If sKey = "Hidden" Then
+            .Hidden = sLig = "True"
           Endif
           
         ' Endif

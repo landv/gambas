@@ -997,7 +997,7 @@ Private Sub UpdateProperty()
   
 End
 
-Private Sub UpdateMenu()
+Public Sub UpdateMenu()
   
   Dim bVisible As Boolean
   Dim bEnabled As Boolean
@@ -1028,6 +1028,8 @@ Private Sub UpdateMenu()
   mnuEditFile.Visible = bVisible
   
   mnuClearDebugWindows.Enabled = Project.Running
+  
+  Action["component-property"].Visible = Project.CreateComponent
   
 End
 
@@ -1166,6 +1168,8 @@ Public Sub Action_Activate(Key As String) As Boolean
       Project.Refresh
     Case "project-property"
       FPropertyProject.Run
+    Case "component-property"
+      FPropertyComponent.Run
     Case "translate"
       Translate
     Case "compile"
