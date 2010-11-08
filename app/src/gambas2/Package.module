@@ -419,7 +419,7 @@ PRIVATE FUNCTION MakeDebPackage(sSys AS String)
   'debian/menu
   IF NOT Project.CreateComponent THEN
       hFile = OPEN sPackagePath &/ "debian/menu" FOR CREATE 
-      PRINT #hFile, "?package("; $sPackageName; "):needs=\""; IIf(IsConsoleProject(), "text", "X11"); "\" section \""; Project.Menus[sSys]; "\"\\"
+      PRINT #hFile, "?package("; $sPackageName; "):needs=\""; IIf(IsConsoleProject(), "text", "X11"); "\" section=\""; Project.Menus[sSys]; "\"\\"
       PRINT #hFile, "title=\""; IIf(Project.Title <> "", Project.Title, Project.Name); "\"\\" 
       PRINT #hFile, "command=\"/usr/bin/"; $sPackageName; ".gambas\"\\"
       PRINT #hFile, "icon=\"/usr/share/pixmaps/"; sIcon; "\""
