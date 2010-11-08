@@ -324,10 +324,19 @@ End
 '
 ' END
 
+Private Sub GetRequire(sComp As String) As String[]
+  
+  Dim hComp As CComponent = CComponent.All[sComp]
+  
+  Return hComp.Require
+  
+End
+
 
 Private Sub RefreshComponents()
 
   Dim sLib As String
+  Dim sDep As String
   Dim hComp As CComponent
   Dim hSep As Label
   Dim aRemove As New String[]
@@ -359,16 +368,19 @@ Private Sub RefreshComponents()
     If $bShowUsed Then
       If sLib <> "gb" And If Not Project.Components.Exist(hComp.Key) Then Continue
     Endif
-    hCompBox = New CComponentBox(lstComponent, hComp, bDark)
+    hCompBox = New CComponentBox(lstComponent, hComp, bDark) As "Component"
     bDark = Not bDark
     $cComp[hComp.Key] = hCompBox 
     hCompBox.Locked = sLib = "gb" Or $bShowUsed
   Next
   
   For Each sLib In Project.Components
-    $cComp[sLib].Value = True
+    $cComp[sLib].Check("")
+    For Each sDep In GetRequire(sLib)
+      $cComp[sDep].Check(sLib)
+    Next
   Next
-  $cComp["gb"].Value = True
+  $cComp["gb"].Check("") 
   
   CComponentBox.ResizeNames(lstComponent)
   
@@ -468,16 +480,40 @@ Private Sub CheckComponentConfig() As Boolean
 End
 
 
-Private Function CheckComponent(sKey As String, bCheck As Boolean) As Boolean
+' Private Function CheckComponent(sKey As String, bCheck As Boolean) As Boolean
+' 
+'   Dim bBefore As Boolean
+'   Dim sDep As String
+' 
+'   bBefore = IsChecked(sKey)
+'   If bBefore = bCheck Then Return 
+' 
+'   If bCheck Then
+'     $cComp[sKey].Check("")
+'     For Each sDep In GetRequire(sKey)
+'       $cComp[sDep].Check(sKey)
+'     Next
+'   Else
+'     $cComp[sKey].Uncheck("")
+'   Endif
+'   
+' End
 
-  Dim bBefore As Boolean
-
-  bBefore = IsChecked(sKey)
-  If bBefore = bCheck Then Return 
-
-  $cComp[sKey].Value = bCheck
+Public Sub Component_Click()
   
+  Dim hCompBox As CComponentBox = Last
+  Dim sDep As String
+  
+  For Each sDep In GetRequire(hCompBox.Key)
+    If hCompBox.Value Then
+      $cComp[sDep].Check(hCompBox.Key)
+    Else
+      $cComp[sDep].Uncheck(hCompBox.Key)
+    Endif
+  Next
+
 End
+
 
 ' PRIVATE FUNCTION CheckComponent(sKey AS String, bCheck AS Boolean) AS Boolean
 ' 

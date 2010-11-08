@@ -5,7 +5,7 @@ Inherits UserControl
 Event Click
 
 Property Read Key As String
-Property Value As Boolean
+Property Read Value As Boolean
 Property Locked As Boolean
 Property Expanded As Boolean
 
@@ -20,6 +20,9 @@ Private txtInfo As TextLabel
 Private panVBox As VBox
 
 Private $bCheck As Boolean
+Private $bGray As Boolean
+Private $aComp As New String[]
+
 Private $bLock As Boolean
 Private $sKey As String
 Private $sInfo As String
@@ -131,14 +134,30 @@ End
 
 Private Sub RefreshCheck()
   
-  picCheck.Picture = Picture[If($bCheck, "img/16/checked.png", "img/16/unchecked.png")]  
+  Dim sImage As String
+  
+  If $bCheck Then
+    If $bGray Then
+      sImage = "checked-gray"
+    Else
+      sImage = "checked"
+    Endif
+  Else
+    sImage = "unchecked"
+  Endif
+  
+  picCheck.Picture = Picture["img/16/" & sImage & ".png"]
   
 End
 
 Public Sub picCheck_MouseDown()
   
   If $bLock Then Return
-  $bCheck = Not $bCheck
+  If $bCheck And If Not $bGray Then
+    Uncheck("")
+  Else
+    Check("")
+  Endif
   RefreshCheck
   Raise Click
   
@@ -150,12 +169,12 @@ Private Function Value_Read() As Boolean
 
 End
 
-Private Sub Value_Write(Value As Boolean)
-
-  $bCheck = Value
-  RefreshCheck
-
-End
+' Private Sub Value_Write(Value As Boolean)
+' 
+'   $bCheck = Value
+'   RefreshCheck
+' 
+' End
 
 Private Function Locked_Read() As Boolean
 
@@ -274,4 +293,34 @@ Public Sub Watcher_Arrange()
     $bAnim = True
   Endif
   
+End
+
+Public Sub Check(Optional sComponent As String)
+  
+  If $aComp.Exist(sComponent) Then Return
+  
+  $aComp.Add(sComponent)
+  If Not $bCheck Then
+    $bCheck = True
+    $bGray = sComponent <> ""
+  Else
+    If Not sComponent Then $bGray = False
+  Endif
+  
+  RefreshCheck
+  
+End
+
+Public Sub Uncheck(Optional sComponent As String)
+  
+  Dim iFind As Integer = $aComp.Find(sComponent)
+  
+  If iFind < 0 Then Return
+  
+  $aComp.Remove(iFind)
+  
+  $bCheck = $aComp.Count > 0
+  If sComponent = "" Then $bGray = $bCheck
+  RefreshCheck
+
 End
