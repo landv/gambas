@@ -67,6 +67,7 @@ Private Sub GetInfo(sPath As String)
         sInfo = GetCount(("Modules"), "module")
         sInfo &= GetCount(("Classes"), "class", "form")
         sInfo &= GetCount(("Forms"), "form")
+        sInfo &= Subst(("Lines of code: &1"), CStr(Project.GetLinesOfCode()))
       Else 
         sType = ("Directory")
       Endif

@@ -4857,6 +4857,30 @@ Public Sub GetCount(sType As String) As Integer
   
 End
 
+Public Sub GetLinesOfCode() As Integer
+  
+  Dim sPath As String
+  Dim iCount As Integer
+  Dim aLine As String[]
+  Dim iPos As Integer
+  Dim iComment As Integer
+  Dim sCar As String
+  
+  For Each sPath In $cSourceDir
+    aLine = Split(File.Load(sPath), "\n", "", True)
+    iComment = 0
+    For iPos = 0 To aLine.Max
+       sCar = Left(LTrim(aLine[iPos]))
+       If sCar = "'" Or If sCar = "#" Then Inc iComment
+    Next
+    iCount += aLine.Count - iComment
+  Next
+  
+  Return iCount
+  
+End
+
+
 Public Sub UpdateForms()
   
   Dim sForm As String
