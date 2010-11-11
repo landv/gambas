@@ -838,3 +838,32 @@ Public Sub btnPaste_Click()
   ReadMenu
 
 End
+
+Public Sub txtSearch_Click()
+
+  Dim iIndex, iStart As Integer
+  Dim sFind As String = txtSearch.Text
+  
+  If Not sFind Then Return
+  
+  iStart = lstMenu.Index
+  If iStart < 0 Then iStart = 0
+  
+  iIndex = iStart
+  Do
+    Inc iIndex
+    If iIndex >= lstMenu.Count Then iIndex = 0
+    If iIndex = iStart Then Break
+    If lstMenu[iIndex].Text Like ("*" & sFind & "*") Then 
+      lstMenu.Index = iIndex
+      Break
+    Endif
+  Loop
+
+End
+
+Public Sub txtSearch_Activate()
+
+  txtSearch_Click
+
+End

@@ -22,12 +22,15 @@
 
 #define __CWEBVIEW_CPP
 
+#include <QNetworkCookieJar>
 #include <QNetworkAccessManager>
 #include <QWebPage>
 #include <QWebFrame>
 
+#include "ccookiejar.h"
 #include "cwebsettings.h"
 #include "cwebframe.h"
+#include "cwebhittest.h"
 #include "cwebview.h"
 
 DECLARE_EVENT(EVENT_CLICK);
@@ -42,14 +45,24 @@ DECLARE_EVENT(EVENT_STATUS);
 DECLARE_EVENT(EVENT_NEW_WINDOW);
 DECLARE_EVENT(EVENT_NEW_FRAME);
 DECLARE_EVENT(EVENT_AUTH);
+DECLARE_EVENT(EVENT_DOWNLOAD);
 
-//static QNetworkAccessManager *_network_access_manager = 0;
+static QNetworkAccessManager *_network_access_manager = 0;
 
 BEGIN_METHOD(WebView_new, GB_OBJECT parent)
 
   MyWebView *wid = new MyWebView(QT.GetContainer(VARG(parent)));
 
   QT.InitWidget(wid, _object, false);
+	
+	if (!_network_access_manager)
+	{
+		_network_access_manager = new QNetworkAccessManager();
+		_network_access_manager->setCookieJar(new MyCookieJar);
+	}
+	
+	wid->page()->setNetworkAccessManager(_network_access_manager);
+	wid->page()->setForwardUnsupportedContent(true);
 
   //QObject::connect(wid, SIGNAL(linkClicked(const QUrl &)), &CWebView::manager, SLOT(linkClicked(const QUrl &)));
   QObject::connect(wid, SIGNAL(loadFinished(bool)), &CWebView::manager, SLOT(loadFinished(bool)));
@@ -61,11 +74,10 @@ BEGIN_METHOD(WebView_new, GB_OBJECT parent)
   
 	QObject::connect(wid->page(), SIGNAL(linkHovered(const QString &, const QString &, const QString &)), &CWebView::manager, 
 										SLOT(linkHovered(const QString &, const QString &, const QString &)));
-	
 	QObject::connect(wid->page(), SIGNAL(frameCreated(QWebFrame *)), &CWebView::manager, SLOT(frameCreated(QWebFrame *)));
-	
 	QObject::connect(wid->page()->networkAccessManager(), SIGNAL(authenticationRequired(QNetworkReply *, QAuthenticator *)), &CWebView::manager,
 										SLOT(authenticationRequired(QNetworkReply *, QAuthenticator *)));
+	QObject::connect(wid->page(), SIGNAL(downloadRequested(QNetworkRequest)), &CWebView::manager, SLOT(downloadRequested(QNetworkRequest)));
 	
   QObject::connect(wid->page()->mainFrame(), SIGNAL(iconChanged()), &CWebView::manager, SLOT(iconChanged()));
 	QObject::connect(wid->page()->mainFrame(), SIGNAL(urlChanged(const QUrl &)), &CWebView::manager, SLOT(urlChanged(const QUrl &)));
@@ -81,7 +93,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(WebView_exit)
 
-	//delete _network_access_manager;
+	delete _network_access_manager;
 	
 END_METHOD
 
@@ -289,6 +301,40 @@ BEGIN_PROPERTY(WebView_Cached)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(WebView_Cookies)
+
+	MyCookieJar *cookieJar = static_cast<MyCookieJar *>(_network_access_manager->cookieJar());
+
+	if (READ_PROPERTY)
+	{
+		QList<QNetworkCookie> list = cookieJar->allCookies();
+		GB_ARRAY cookies;
+		int i;
+		
+		GB.Array.New(POINTER(&cookies), GB.FindClass("Cookie"), list.count());
+		
+		for (i = 0; i < list.count(); i++)
+		{
+			CCOOKIE *cookie = WEB_create_cookie(list.at(i));
+			*((CCOOKIE **)(GB.Array.Get(cookies, i))) = cookie;
+			GB.Ref(cookie);
+		}
+		
+		GB.ReturnObject(cookies);
+	}
+	else
+	{
+		// TODO
+	}
+
+END_PROPERTY
+
+BEGIN_METHOD(WebView_HitTest, GB_INTEGER X; GB_INTEGER Y)
+
+	GB.ReturnObject(WEB_create_hit_test(WIDGET->page()->mainFrame()->hitTestContent(QPoint(VARG(X), VARG(Y)))));
+
+END_METHOD
+
 
 GB_DESC CWebViewAuthDesc[] =
 {
@@ -340,6 +386,10 @@ GB_DESC CWebViewDesc[] =
 	GB_PROPERTY("NewView", "WebView", WebView_NewView),
 
 	GB_PROPERTY("Cached", "b", WebView_Cached),
+	
+	GB_PROPERTY("Cookies", "Cookie[]", WebView_Cookies),
+	
+	GB_METHOD("HitTest", "WebHitTest", WebView_HitTest, "(X)i(Y)i"),
 
 	GB_CONSTANT("_Properties", "s", "*,Url,Cached"),
 	
@@ -355,6 +405,7 @@ GB_DESC CWebViewDesc[] =
 	GB_EVENT("NewWindow", NULL, "(Modal)b", &EVENT_NEW_WINDOW),
 	GB_EVENT("NewFrame", NULL, "(Frame)WebFrame", &EVENT_NEW_FRAME),
 	GB_EVENT("Auth", NULL, NULL, &EVENT_AUTH),
+	GB_EVENT("Download", NULL, "(Url)s", &EVENT_DOWNLOAD),
 
 	GB_END_DECLARE
 };
@@ -472,7 +523,6 @@ void CWebView::iconChanged()
 	void *_object = QT.GetObject(((QWebFrame *)sender())->page()->view());
 	GB.Unref(POINTER(&THIS->icon));
 	THIS->icon = NULL;
-	qDebug("iconChanged");
 	GB.Raise(THIS, EVENT_ICON, 0);
 }
 
@@ -481,4 +531,11 @@ void CWebView::urlChanged(const QUrl &)
 	QWebFrame *frame = (QWebFrame *)sender();
 	void *_object = QT.GetObject(frame->page()->view());
 	GB.Raise(THIS, EVENT_CLICK, 1, GB_T_OBJECT, CWEBFRAME_get(frame));
+}
+
+void CWebView::downloadRequested(const QNetworkRequest &request)
+{
+	void *_object = QT.GetObject(((QWebPage*)sender())->view());
+	const char *str = TO_UTF8(request.url().toString());
+	GB.Raise(THIS, EVENT_DOWNLOAD, 1, GB_T_STRING, str, strlen(str));
 }

@@ -141,7 +141,9 @@ End
 
 Public Sub btnReload_Click()
 
-  GetView().Reload
+  Dim hView As WebView = GetView()
+
+  hView.Reload
 
 End
 
@@ -290,5 +292,26 @@ End
 Public Sub WebView_NewFrame(Frame As WebFrame)
   
   Debug Frame.Name
+  
+End
+
+Public Sub WebView_Download(Url As String)
+  
+  Debug Url
+  
+End
+
+Public Sub WebView_MouseDown()
+  
+  Dim hView As WebView = Last
+  Dim hTest As WebHitTest = hView.HitTest(Mouse.X, Mouse.Y)
+  Dim sMsg As String
+  
+  If hTest.Document Then sMsg &= "DOCUMENT "
+  If hTest.Link Then sMsg &= "LINK "
+  If hTest.Image Then sMsg &= "IMAGE "
+  If hTest.Selected Then sMsg &= "SELECTED "
+  If hTest.Editable Then sMsg &= "EDITABLE "
+  Debug sMsg; hTest.Url
   
 End

@@ -15,63 +15,71 @@
     { HBox5 HBox
       MoveScaled(0,0,79,4)
       { btnInsert ToolButton
-        MoveScaled(0,0,11,4)
+        MoveScaled(0,0,4,4)
+        ToolTip = ("Insert menu")
         AutoResize = True
-        Text = ("&Insert")
         Picture = Picture["icon:/small/add"]
       }
       { btnNext ToolButton
-        MoveScaled(11,0,9,4)
+        MoveScaled(4,0,4,4)
+        ToolTip = ("Next menu")
         AutoResize = True
-        Text = ("&Next")
         Picture = Picture["icon:/small/next"]
       }
       { btnDelete ToolButton
-        MoveScaled(20,0,11,4)
+        MoveScaled(8,0,4,4)
         AutoResize = True
-        Text = ("&Delete")
+        Text = ("Delete menu")
         Picture = Picture["icon:/small/delete"]
       }
       { Separator2 Separator
-        MoveScaled(35,0,1,4)
+        MoveScaled(12,0,1,4)
       }
       { btnCut ToolButton
-        MoveScaled(36,0,4,4)
+        MoveScaled(13,0,4,4)
         ToolTip = ("Cut")
         Picture = Picture["icon:/small/cut"]
       }
       { btnCopy ToolButton
-        MoveScaled(40,0,4,4)
+        MoveScaled(17,0,4,4)
         ToolTip = ("Copy")
         Picture = Picture["icon:/small/copy"]
       }
       { btnPaste ToolButton
-        MoveScaled(44,0,4,4)
+        MoveScaled(21,0,4,4)
         ToolTip = ("Paste")
         Picture = Picture["icon:/small/paste"]
       }
       { Separator1 Separator
-        MoveScaled(48,0,1,4)
+        MoveScaled(25,0,1,4)
       }
       { btnRight ToolButton
-        MoveScaled(49,0,4,4)
+        MoveScaled(26,0,4,4)
         ToolTip = ("Indent")
         Picture = Picture["icon:/small/indent"]
       }
       { btnLeft ToolButton
-        MoveScaled(53,0,4,4)
+        MoveScaled(30,0,4,4)
         ToolTip = ("Unindent")
         Picture = Picture["icon:/small/unindent"]
       }
       { btnUp ToolButton
-        MoveScaled(57,0,4,4)
+        MoveScaled(34,0,4,4)
         ToolTip = ("Move up")
         Picture = Picture["icon:/small/up"]
       }
       { btnDown ToolButton
-        MoveScaled(61,0,4,4)
+        MoveScaled(38,0,4,4)
         ToolTip = ("Move down")
         Picture = Picture["icon:/small/down"]
+      }
+      { Separator4 Separator
+        MoveScaled(42,0,1,4)
+      }
+      { txtSearch ButtonBox
+        MoveScaled(44,0,21,4)
+        Expand = True
+        Picture = Picture["icon:/small/find"]
       }
       { btnSave Button
         MoveScaled(68,0,4,4)

@@ -94,6 +94,7 @@ public slots:
 	void frameCreated(QWebFrame *);
 	void authenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator);
 	void urlChanged(const QUrl &);
+	void downloadRequested(const QNetworkRequest &);
 };
 
 #endif

@@ -27,6 +27,8 @@
 #include <stdarg.h>
 #include <string.h>
 
+#include "ccookiejar.h"
+#include "cwebhittest.h"
 #include "cwebsettings.h"
 #include "cwebframe.h"
 #include "cwebview.h"
@@ -39,6 +41,8 @@ QT_INTERFACE QT;
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {
+	CWebHitTestDesc,
+	CCookieDesc,
 	CWebSettingsIconDatabaseDesc,
 	CWebSettingsCacheDesc,
 	CWebSettingsFontDesc,
