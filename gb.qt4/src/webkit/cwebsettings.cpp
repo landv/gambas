@@ -139,7 +139,7 @@ END_METHOD
 
 GB_DESC CWebViewSettingsDesc[] =
 {
-  GB_DECLARE(".WebViewSettings", 0),
+  GB_DECLARE(".WebView.Settings", 0),
 	
 	GB_METHOD("_get", "b", WebSettings_get, "(Flag)i"),
 	GB_METHOD("_put", NULL, WebSettings_put, "(Value)b(Flag)i"),
@@ -152,7 +152,7 @@ GB_DESC CWebViewSettingsDesc[] =
 
 GB_DESC CWebSettingsFontDesc[] =
 {
-  GB_DECLARE(".WebSettingsFont", 0), GB_VIRTUAL_CLASS(),
+  GB_DECLARE(".WebSettings.Font", 0), GB_VIRTUAL_CLASS(),
 	
 	GB_STATIC_METHOD("_get", "s", WebSettingsFont_get, "(Font)i"),
 	GB_STATIC_METHOD("_put", NULL, WebSettingsFont_get, "(Family)s(Font)i"),
@@ -162,7 +162,7 @@ GB_DESC CWebSettingsFontDesc[] =
 
 GB_DESC CWebSettingsIconDatabaseDesc[] =
 {
-  GB_DECLARE(".WebSettingsIconDatabase", 0), GB_VIRTUAL_CLASS(),
+  GB_DECLARE(".WebSettings.IconDatabase", 0), GB_VIRTUAL_CLASS(),
 	
 	GB_STATIC_METHOD("Clear", NULL, WebSettingsIconDatabase_Clear, NULL),
 	GB_STATIC_PROPERTY("Path", "s", WebSettingsIconDatabase_Path),
@@ -172,7 +172,7 @@ GB_DESC CWebSettingsIconDatabaseDesc[] =
 
 GB_DESC CWebSettingsCacheDesc[] =
 {
-  GB_DECLARE(".WebSettingsCache", 0), GB_VIRTUAL_CLASS(),
+  GB_DECLARE(".WebSettings.Cache", 0), GB_VIRTUAL_CLASS(),
 	
 	GB_STATIC_PROPERTY("Path", "s", WebSettingsCache_Path),
 	
@@ -205,9 +205,9 @@ GB_DESC CWebSettingsDesc[] =
 	GB_CONSTANT("OfflineWebApplicationCacheEnabled", "i", QWebSettings::OfflineWebApplicationCacheEnabled),
 	GB_CONSTANT("LocalStorageDatabaseEnabled", "i", QWebSettings::LocalStorageDatabaseEnabled),
 	
-	GB_STATIC_PROPERTY_SELF("Font", ".WebSettingsFont"),
-	GB_STATIC_PROPERTY_SELF("IconDatabase", ".WebSettingsIconDatabase"),
-	GB_STATIC_PROPERTY_SELF("Cache", ".WebSettingsCache"),
+	GB_STATIC_PROPERTY_SELF("Font", ".WebSettings.Font"),
+	GB_STATIC_PROPERTY_SELF("IconDatabase", ".WebSettings.IconDatabase"),
+	GB_STATIC_PROPERTY_SELF("Cache", ".WebSettings.Cache"),
 	GB_STATIC_METHOD("_get", "b", WebSettings_get, "(Flag)i"),
 	GB_STATIC_METHOD("_put", NULL, WebSettings_put, "(Value)b(Flag)i"),
 	

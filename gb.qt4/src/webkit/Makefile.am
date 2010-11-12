@@ -15,4 +15,5 @@ gb_qt4_webkit_la_SOURCES = \
  cwebframe.h cwebframe.cpp cwebframe_moc.cpp \
  cwebview.h cwebview.cpp cwebview_moc.cpp \
  ccookiejar.h ccookiejar.cpp ccookiejar_moc.cpp \
- cwebhittest.h cwebhittest.cpp
+ cwebhittest.h cwebhittest.cpp \
+ cwebdownload.h cwebdownload.cpp cwebdownload_moc.cpp

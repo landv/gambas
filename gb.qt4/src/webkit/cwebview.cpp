@@ -81,6 +81,7 @@ BEGIN_METHOD(WebView_new, GB_OBJECT parent)
 	
   QObject::connect(wid->page()->mainFrame(), SIGNAL(iconChanged()), &CWebView::manager, SLOT(iconChanged()));
 	QObject::connect(wid->page()->mainFrame(), SIGNAL(urlChanged(const QUrl &)), &CWebView::manager, SLOT(urlChanged(const QUrl &)));
+  QObject::connect(wid->page(), SIGNAL(unsupportedContent(QNetworkReply*)), &CWebView::manager, SLOT(handleUnsupportedContent(QNetworkReply*)));
 
 END_METHOD
 
@@ -335,10 +336,9 @@ BEGIN_METHOD(WebView_HitTest, GB_INTEGER X; GB_INTEGER Y)
 
 END_METHOD
 
-
 GB_DESC CWebViewAuthDesc[] =
 {
-  GB_DECLARE(".WebViewAuth", sizeof(CWEBVIEW)), GB_VIRTUAL_CLASS(),
+  GB_DECLARE(".WebView.Auth", sizeof(CWEBVIEW)), GB_VIRTUAL_CLASS(),
 	
 	GB_PROPERTY_READ("Url", "s", WebViewAuth_Url),
 	GB_PROPERTY_READ("Realm", "s", WebViewAuth_Realm),
@@ -375,8 +375,8 @@ GB_DESC CWebViewDesc[] =
 	GB_PROPERTY_READ("Frame", "WebFrame", WebView_Frame),
 	GB_PROPERTY_READ("Current", "WebFrame", WebView_Current),
 	
-	GB_PROPERTY_SELF("Settings", ".WebViewSettings"),
-	GB_PROPERTY_SELF("Auth", ".WebViewAuth"),
+	GB_PROPERTY_SELF("Settings", ".WebView.Settings"),
+	GB_PROPERTY_SELF("Auth", ".WebView.Auth"),
 
 	GB_METHOD("Back", NULL, WebView_Back, NULL),
 	GB_METHOD("Forward", NULL, WebView_Forward, NULL),
@@ -405,7 +405,7 @@ GB_DESC CWebViewDesc[] =
 	GB_EVENT("NewWindow", NULL, "(Modal)b", &EVENT_NEW_WINDOW),
 	GB_EVENT("NewFrame", NULL, "(Frame)WebFrame", &EVENT_NEW_FRAME),
 	GB_EVENT("Auth", NULL, NULL, &EVENT_AUTH),
-	GB_EVENT("Download", NULL, "(Url)s", &EVENT_DOWNLOAD),
+	GB_EVENT("Download", NULL, "(Download)WebDownload", &EVENT_DOWNLOAD),
 
 	GB_END_DECLARE
 };
@@ -536,6 +536,24 @@ void CWebView::urlChanged(const QUrl &)
 void CWebView::downloadRequested(const QNetworkRequest &request)
 {
 	void *_object = QT.GetObject(((QWebPage*)sender())->view());
-	const char *str = TO_UTF8(request.url().toString());
-	GB.Raise(THIS, EVENT_DOWNLOAD, 1, GB_T_STRING, str, strlen(str));
+	CWEBDOWNLOAD *download;
+	
+	download = WEB_create_download(_network_access_manager->get(request));
+	
+	if (GB.Raise(THIS, EVENT_DOWNLOAD, 1, GB_T_OBJECT, download) || !download->path || !*download->path)
+		WEB_remove_download(download);
+}
+
+void CWebView::handleUnsupportedContent(QNetworkReply *reply)
+{
+	void *_object = QT.GetObject(((QWebPage*)sender())->view());
+	CWEBDOWNLOAD *download;
+	
+	if (reply->error() == QNetworkReply::NoError) 
+	{
+		download = WEB_create_download(reply);
+		
+		if (GB.Raise(THIS, EVENT_DOWNLOAD, 1, GB_T_OBJECT, download) || !download->path || !*download->path)
+			WEB_remove_download(download);
+	}
 }

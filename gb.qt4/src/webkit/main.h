@@ -26,6 +26,8 @@
 #include "gambas.h"
 #include "../gb.qt.h"
 
+#include <QUrl>
+
 #ifndef __MAIN_CPP
 extern "C" GB_INTERFACE GB;
 extern "C" QT_INTERFACE QT;

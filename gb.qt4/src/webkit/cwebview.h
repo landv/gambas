@@ -23,8 +23,6 @@
 #ifndef __CWEBVIEW_H
 #define __CWEBVIEW_H
 
-#include "main.h"
-
 #include <QUrl>
 #include <QAuthenticator>
 #include <QNetworkReply>
@@ -32,10 +30,14 @@
 #include <QWebFrame>
 #include <QWebView>
 
+#include "cwebdownload.h"
+#include "main.h"
+
 #ifndef __CWEBVIEW_CPP
 
 extern GB_DESC CWebViewAuthDesc[];
 extern GB_DESC CWebViewDesc[];
+extern GB_DESC CWebViewDownloadsDesc[];
 
 #else
 
@@ -95,6 +97,7 @@ public slots:
 	void authenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator);
 	void urlChanged(const QUrl &);
 	void downloadRequested(const QNetworkRequest &);
+	void handleUnsupportedContent(QNetworkReply*);
 };
 
 #endif
