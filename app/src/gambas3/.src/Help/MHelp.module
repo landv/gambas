@@ -395,7 +395,7 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
     Endif
     If hSymbol Then 
       If Not hSymbol.Component Then
-        sUrl = hSymbol.GetHelpURL()
+        sHtml = hSymbol.GetHelpHTML()
       Else If CComponent.All.Exist(hSymbol.Component) And If Not CComponent.All[hSymbol.Component].Library Then 
         sUrl = hSymbol.GetHelpURL()
       Else

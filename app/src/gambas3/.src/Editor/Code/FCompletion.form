@@ -2,7 +2,6 @@
 
 { Form Form
   MoveScaled(0,2.1429,69,17)
-  Background = Color.Background
   Icon = Picture["img/16/magic.png"]
   Persistent = True
   Border = False
@@ -10,6 +9,7 @@
   Arrangement = Arrange.Fill
   { panComp Panel
     MoveScaled(1,1,67,15)
+    Background = Color.Background
     Arrangement = Arrange.Horizontal
     Border = Border.Plain
     { timHelp #Timer
