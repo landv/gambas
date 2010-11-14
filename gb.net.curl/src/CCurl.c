@@ -478,6 +478,7 @@ BEGIN_METHOD_VOID(CCURL_free)
 	Adv_proxy_CLEAR(&THIS->proxy.proxy);
 	tmp=THIS_PROTOCOL;
 	GB.Free(POINTER(&tmp));
+	GB.StoreVariant(NULL, (void *)&THIS->tag);
 	
 END_METHOD
 
