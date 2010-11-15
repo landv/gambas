@@ -33,7 +33,7 @@ void gt_shortcut_parse(char *shortcut, guint *key, GdkModifierType *mods);
 
 // Converts HTML to Pango format
 
-char* gt_html_to_pango_string(char *html, int len_html, bool newline);
+char* gt_html_to_pango_string(const char *html, int len_html, bool newline);
 
 // Converts to/from GTK+ alignment
 
