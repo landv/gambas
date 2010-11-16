@@ -139,7 +139,6 @@ static void init_process(CPROCESS *process)
 	process->watch = GB_WATCH_NONE;
 	process->in = process->out = process->err = -1;
 	update_stream(process);
-	process->tag.type = GB_T_NULL;
 }
 
 static void exit_process(CPROCESS *_object)
@@ -181,7 +180,6 @@ static void exit_process(CPROCESS *_object)
 	// Why that ? This should be done only at process creation
 	// update_stream(THIS);
 	STREAM_close(&THIS->ob.stream);
-	GB_StoreVariant(NULL, &THIS->tag);
 }
 
 static void stop_process_after(CPROCESS *_object)
@@ -890,15 +888,6 @@ BEGIN_PROPERTY(CPROCESS_last_value)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CPROCESS_tag)
-
-	if (READ_PROPERTY)
-		GB_ReturnVariant(&THIS->tag);
-	else
-		GB_StoreVariant(PROP(GB_VARIANT), (void *)&THIS->tag);
-
-END_METHOD
-
 BEGIN_METHOD_VOID(CPROCESS_wait)
 
 	CPROCESS_wait_for(THIS);
@@ -924,9 +913,7 @@ GB_DESC NATIVE_Process[] =
 	GB_PROPERTY_READ("Handle", "i", CPROCESS_id),
 	GB_PROPERTY_READ("State", "i", CPROCESS_state),
 	GB_PROPERTY_READ("Value", "i", CPROCESS_value),
-	GB_PROPERTY("Tag", "v", CPROCESS_tag),
 
-	//GB_STATIC_METHOD("_init", NULL, CPROCESS_init, NULL),
 	GB_STATIC_METHOD("_exit", NULL, CPROCESS_exit, NULL),
 	GB_METHOD("_new", NULL, CPROCESS_new, NULL),
 	GB_METHOD("_free", NULL, CPROCESS_free, NULL),

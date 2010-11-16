@@ -437,17 +437,22 @@ int main(int argc, char **argv)
 	CATCH
 	{
 		fflush(NULL);
-		if (JOB->line)
+		if (JOB->name)
 		{
 			const char *name = FILE_get_name(JOB->name);
-			
-			if (JOB->column)
-				fprintf(stderr, "%s:%d:%d: error: ", name, JOB->line, READ_get_column());
+			if (JOB->line)
+			{
+				
+				if (JOB->column)
+					fprintf(stderr, "%s:%d:%d: error: ", name, JOB->line, READ_get_column());
+				else
+					fprintf(stderr, "%s:%d: error: ", name, JOB->line);
+			}
 			else
-				fprintf(stderr, "%s:%d: error: ", name, JOB->line);
+				fprintf(stderr, "%s: error: ", name);
 		}
 		else
-			fprintf(stderr, "error: ");
+			fprintf(stderr, "gbc: error: ");
 		ERROR_print();
 		exit(1);
 	}

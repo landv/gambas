@@ -180,6 +180,20 @@ typedef
   GB_BOOLEAN;
 
 
+/* Gambas SINGLE datatype definition */
+
+typedef
+  struct {
+    GB_TYPE type;
+    float value;
+    #if __WORDSIZE == 64
+    float _pad;
+    #endif
+		intptr_t _reserved[2];
+    }
+  GB_SINGLE;
+
+
 /* Gambas FLOAT datatype definition */
 
 typedef

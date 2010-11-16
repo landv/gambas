@@ -110,6 +110,14 @@ int fsgn(double x)
   return ((x > 0) ? 1 : ((x < 0) ? (-1) : 0));
 }
 
+float fixf(float x)
+{
+  if (x >= 0)
+    return floorf(x);
+  else
+    return -floorf(fabsf(x));
+}
+
 double fix(double x)
 {
   if (x >= 0)

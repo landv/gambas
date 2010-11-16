@@ -146,7 +146,7 @@ __LONG:
 
 __SINGLE:
 
-	*((float *)addr) = (float)value->_float.value;
+	*((float *)addr) = value->_single.value;
 	return;
 
 __FLOAT:
@@ -227,6 +227,9 @@ __LONG:
 	return;
 
 __SINGLE:
+	value->_single.value = 0;
+	return;
+
 __FLOAT:
 	value->_float.value = 0;
 	return;
@@ -277,14 +280,14 @@ void VALUE_convert(VALUE *value, TYPE type)
 	/* h      */ { &&__N,     &&__h2b,   &&__h2c,   &&__OK,    &&__TYPE,  &&__h2l,   &&__h2g,   &&__h2f,   &&__h2d,   &&__h2s,   &&__h2s,   &&__N,     &&__2v,    &&__N,     &&__N,     &&__N,     },
 	/* i      */ { &&__N,     &&__i2b,   &&__i2c,   &&__i2h,   &&__OK,    &&__i2l,   &&__i2g,   &&__i2f,   &&__i2d,   &&__i2s,   &&__i2s,   &&__i2p,   &&__2v,    &&__N,     &&__N,     &&__N,     },
 	/* l      */ { &&__N,     &&__l2b,   &&__l2c,   &&__l2h,   &&__l2i,   &&__OK,    &&__l2g,   &&__l2f,   &&__l2d,   &&__l2s,   &&__l2s,   &&__l2p,   &&__2v,    &&__N,     &&__N,     &&__N,     },
-	/* g      */ { &&__N,     &&__f2b,   &&__f2c,   &&__f2h,   &&__f2i,   &&__f2l,   &&__OK,    &&__TYPE,  &&__f2d,   &&__f2s,   &&__g2s,   &&__N,     &&__2v,    &&__N,     &&__N,     &&__N,     },
+	/* g      */ { &&__N,     &&__g2b,   &&__g2c,   &&__g2h,   &&__g2i,   &&__g2l,   &&__OK,    &&__g2f,   &&__g2d,   &&__g2s,   &&__g2s,   &&__N,     &&__2v,    &&__N,     &&__N,     &&__N,     },
 	/* f      */ { &&__N,     &&__f2b,   &&__f2c,   &&__f2h,   &&__f2i,   &&__f2l,   &&__f2g,   &&__OK,    &&__f2d,   &&__f2s,   &&__f2s,   &&__N,     &&__2v,    &&__N,     &&__N,     &&__N,     },
 	/* d      */ { &&__N,     &&__d2b,   &&__d2c,   &&__d2h,   &&__d2i,   &&__d2l,   &&__d2g,   &&__d2f,   &&__OK,    &&__d2s,   &&__d2s,   &&__N,     &&__2v,    &&__N,     &&__N,     &&__N,     },
 	/* cs     */ { &&__N,     &&__s2b,   &&__s2c,   &&__s2h,   &&__s2i,   &&__s2l,   &&__s2g,   &&__s2f,   &&__s2d,   &&__OK,    &&__OK,    &&__N,     &&__s2v,   &&__N,     &&__N,     &&__N,     },
 	/* s      */ { &&__N,     &&__s2b,   &&__s2c,   &&__s2h,   &&__s2i,   &&__s2l,   &&__s2g,   &&__s2f,   &&__s2d,   &&__OK,    &&__OK,    &&__N,     &&__s2v,   &&__N,     &&__N,     &&__N,     },
 	/* p      */ { &&__N,     &&__N,     &&__N,     &&__N,     &&__p2i,   &&__p2l,   &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__OK,    &&__2v,    &&__N,     &&__N,     &&__N,     },
 	/* v      */ { &&__N,     &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__OK,    &&__N,     &&__v2,    &&__v2,    },
-	/* func   */ { &&__N,     &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__f2p,   &&__func,  &&__OK,    &&__N,     &&__func,  },
+	/* func   */ { &&__N,     &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__F2p,   &&__func,  &&__OK,    &&__N,     &&__func,  },
 	/* class  */ { &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__2v,    &&__N,     &&__OK,    &&__N,     },
 	/* null   */ { &&__N,     &&__n2b,   &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__n2d,   &&__n2s,   &&__n2s,   &&__N,     &&__2v,    &&__N,     &&__N,     &&__OK,    },
 	};
@@ -315,6 +318,12 @@ __l2b:
 	value->type = T_BOOLEAN;
 	return;
 
+__g2b:
+
+	value->_integer.value = -(value->_single.value != 0);
+	value->type = T_BOOLEAN;
+	return;
+
 __f2b:
 
 	value->_integer.value = -(value->_float.value != 0);
@@ -340,6 +349,12 @@ __l2c:
 	value->type = T_BYTE;
 	return;
 
+__g2c:
+
+	value->_integer.value = (unsigned char)value->_single.value;
+	value->type = T_BYTE;
+	return;
+
 __f2c:
 
 	value->_integer.value = (unsigned char)value->_float.value;
@@ -360,6 +375,12 @@ __l2h:
 	value->type = T_SHORT;
 	return;
 
+__g2h:
+
+	value->_integer.value = (short)value->_single.value;
+	value->type = T_SHORT;
+	return;
+
 __f2h:
 
 	value->_integer.value = (short)value->_float.value;
@@ -372,6 +393,12 @@ __l2i:
 	value->type = T_INTEGER;
 	return;
 
+__g2i:
+
+	value->_integer.value = (int)value->_single.value;
+	value->type = T_INTEGER;
+	return;
+	
 __f2i:
 
 	value->_integer.value = (int)value->_float.value;
@@ -393,6 +420,12 @@ __i2l:
 	value->type = T_LONG;
 	return;
 
+__g2l:
+
+	value->_long.value = (int64_t)value->_single.value;
+	value->type = T_LONG;
+	return;
+
 __f2l:
 
 	value->_long.value = (int64_t)value->_float.value;
@@ -410,22 +443,22 @@ __c2g:
 __h2g:
 __i2g:
 
-	value->_float.value = value->_integer.value;
+	value->_single.value = value->_integer.value;
 	value->type = T_SINGLE;
 	return;
 
 __l2g:
 
-	value->_float.value = (float)value->_long.value;
-	if (!finite(value->_float.value))
+	value->_single.value = (float)value->_long.value;
+	if (!finitef(value->_single.value))
 		THROW(E_OVERFLOW);
 	value->type = T_SINGLE;
 	return;
 
 __f2g:
 
-	value->_float.value = (float)value->_float.value;
-	if (!finite(value->_float.value))
+	value->_single.value = (float)value->_float.value;
+	if (!finitef(value->_single.value))
 		THROW(E_OVERFLOW);
 	value->type = T_SINGLE;
 	return;
@@ -442,6 +475,12 @@ __i2f:
 __l2f:
 
 	value->_float.value = value->_long.value;
+	value->type = T_FLOAT;
+	return;
+
+__g2f:
+
+	value->_float.value = value->_single.value;
 	value->type = T_FLOAT;
 	return;
 
@@ -464,6 +503,15 @@ __l2d:
 		value->_date.date = (int)value->_long.value;
 
 	value->_date.time = 0;
+	value->type = T_DATE;
+	return;
+
+__g2d:
+	{
+		int date = (int)fixf(value->_single.value);
+		value->_date.time = (int)((value->_single.value - date) * 86400000.0 + 0.5);
+		value->_date.date = date;
+	}
 	value->type = T_DATE;
 	return;
 
@@ -492,7 +540,7 @@ __d2l:
 
 __d2g:
 
-	value->_float.value = (double)value->_date.date + (double)value->_date.time / 86400000.0;
+	value->_single.value = (float)value->_date.date + (float)value->_date.time / 86400000.0;
 	value->type = T_SINGLE;
 	return;
 
@@ -529,6 +577,12 @@ __l2s:
 	return;
 
 __g2s:
+
+	LOCAL_format_number(value->_single.value, LF_GENERAL_NUMBER, NULL, 0, &addr, &len, FALSE);
+	STRING_new_temp_value(value, addr, len);
+	BORROW(value);
+	return;
+
 __f2s:
 
 	LOCAL_format_number(value->_float.value, LF_GENERAL_NUMBER, NULL, 0, &addr, &len, FALSE);
@@ -574,8 +628,20 @@ __s2l:
 	STRING_unref(&addr);
 	return;
 
-__s2f:
 __s2g:
+
+	addr = value->type == T_STRING ? value->_string.addr : NULL;
+
+	if (NUMBER_from_string(NB_READ_FLOAT, value->_string.addr + value->_string.start, value->_string.len, value))
+		goto __N;
+	
+	value->_single.value = value->_float.value;
+
+	STRING_unref(&addr);
+	value->type = type;
+	return;
+
+__s2f:
 
 	addr = value->type == T_STRING ? value->_string.addr : NULL;
 
@@ -661,7 +727,7 @@ __l2p:
 	value->type = T_POINTER;
 	return;
 	
-__f2p:
+__F2p:
 
 	value->_pointer.value = EXTERN_make_callback(&value->_function);
 	value->type = T_POINTER;
@@ -825,7 +891,7 @@ __LONG:
 __SINGLE:
 
 	VALUE_conv(value, T_SINGLE);
-	*((float *)addr) = (float)value->_float.value;
+	*((float *)addr) = value->_single.value;
 	return;
 
 __FLOAT:
@@ -1100,6 +1166,10 @@ __DATE:
 	return;
 
 __SINGLE:
+
+	LOCAL_format_number(value->_single.value, LF_STANDARD, NULL, 0, addr, len, TRUE);
+	return;
+
 __FLOAT:
 
 	LOCAL_format_number(value->_float.value, LF_STANDARD, NULL, 0, addr, len, TRUE);

@@ -1306,7 +1306,7 @@ _JUMP_NEXT:
       }
     }
     else
-      THROW(E_TYPE, "Number", TYPE_get_name(type));
+      THROW(E_TYPE, "Integer, Float or Long", TYPE_get_name(type));
 
   _JN_NEXT_1:
 
@@ -1556,7 +1556,7 @@ _ADD_QUICK:
 
 	{
 		static void *_aq_jump[] = {
-			NULL, &&__AQ_BOOLEAN, &&__AQ_BYTE, &&__AQ_SHORT, &&__AQ_INTEGER, &&__AQ_LONG, &&__AQ_FLOAT, &&__AQ_FLOAT, &&__AQ_DATE, &&__AQ_STRING, &&__AQ_STRING
+			NULL, &&__AQ_BOOLEAN, &&__AQ_BYTE, &&__AQ_SHORT, &&__AQ_INTEGER, &&__AQ_LONG, &&__AQ_SINGLE, &&__AQ_FLOAT, &&__AQ_DATE, &&__AQ_STRING, &&__AQ_STRING
 			};
 	
 		TYPE NO_WARNING(type);
@@ -1615,6 +1615,11 @@ _ADD_QUICK:
 	__AQ_STRING:
 		
 		VALUE_conv_float(P1);
+	
+	__AQ_SINGLE:
+	
+		P1->_single.value += (float)value;
+		goto *jump_end;
 	
 	__AQ_FLOAT:
 	
@@ -2172,6 +2177,13 @@ __STRING:
 	goto __END;
 
 __SINGLE:
+
+	VALUE_conv(P1, T_SINGLE);
+	VALUE_conv(P2, T_SINGLE);
+
+	result = P1->_single.value == P2->_single.value;
+	goto __END;
+
 __FLOAT:
 
 	VALUE_conv_float(P1);
@@ -2312,6 +2324,13 @@ __STRING:
 	goto __END;
 
 __SINGLE:
+
+	VALUE_conv(P1, T_SINGLE);
+	VALUE_conv(P2, T_SINGLE);
+
+	result = P1->_single.value == P2->_single.value;
+	goto __END;
+
 __FLOAT:
 
 	VALUE_conv_float(P1);
@@ -2424,7 +2443,7 @@ static void my_VALUE_class_constant(CLASS *class, VALUE *value, int ind)
 static void _SUBR_add(ushort code)
 {
   static void *jump[] = {
-    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__FLOAT, &&__FLOAT, &&__DATE
+    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE
     };
 
   TYPE type;
@@ -2463,6 +2482,13 @@ __LONG:
 
 	P1->_long.value += P2->_long.value; goto __END;
 
+__SINGLE:
+
+  VALUE_conv(P1, T_SINGLE);
+  VALUE_conv(P2, T_SINGLE);
+
+	P1->_single.value += P2->_single.value; goto __END;
+
 __DATE:
 __FLOAT:
 
@@ -2488,7 +2514,7 @@ __END:
 static void _SUBR_sub(ushort code)
 {
   static void *jump[] = {
-    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__FLOAT, &&__FLOAT, &&__DATE
+    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE
     };
 
   TYPE type;
@@ -2527,6 +2553,13 @@ __LONG:
 
 	P1->_long.value -= P2->_long.value; goto __END;
 
+__SINGLE:
+
+  VALUE_conv(P1, T_SINGLE);
+  VALUE_conv(P2, T_SINGLE);
+
+	P1->_single.value -= P2->_single.value; goto __END;
+
 __DATE:
 __FLOAT:
 
@@ -2552,7 +2585,7 @@ __END:
 static void _SUBR_mul(ushort code)
 {
   static void *jump[] = {
-    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__FLOAT, &&__FLOAT, &&__ERROR
+    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__ERROR
     };
 
   TYPE type;
@@ -2591,6 +2624,13 @@ __LONG:
 
 	P1->_long.value *= P2->_long.value; goto __END;
 
+__SINGLE:
+
+  VALUE_conv(P1, T_SINGLE);
+  VALUE_conv(P2, T_SINGLE);
+
+	P1->_single.value *= P2->_single.value; goto __END;
+
 __FLOAT:
 
   VALUE_conv_float(P1);
@@ -2615,7 +2655,7 @@ __END:
 static void _SUBR_div(ushort code)
 {
   static void *jump[] = {
-    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__FLOAT, &&__FLOAT, &&__ERROR
+    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__ERROR
     };
 
   TYPE type;
@@ -2632,6 +2672,7 @@ __BYTE:
 __SHORT:
 __INTEGER:
 __LONG:
+__SINGLE:
 __FLOAT:
 
   VALUE_conv_float(P1);

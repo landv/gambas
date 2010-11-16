@@ -693,6 +693,7 @@ END_METHOD
 IMPLEMENT_add(integer, INTEGER)
 IMPLEMENT_add(long, LONG)
 IMPLEMENT_add(float, FLOAT)
+IMPLEMENT_add(single, SINGLE)
 IMPLEMENT_add(date, DATE)
 IMPLEMENT_add(string, STRING)
 IMPLEMENT_add(object, OBJECT)
@@ -754,7 +755,7 @@ IMPLEMENT_put2(byte, INTEGER, BYTE)
 IMPLEMENT_put2(boolean, INTEGER, BOOLEAN)
 IMPLEMENT_put(long, LONG)
 IMPLEMENT_put(float, FLOAT)
-IMPLEMENT_put2(single, FLOAT, SINGLE)
+IMPLEMENT_put(single, SINGLE)
 IMPLEMENT_put(date, DATE)
 IMPLEMENT_put(string, STRING)
 IMPLEMENT_put(object, OBJECT)
@@ -923,6 +924,7 @@ IMPLEMENT_find(integer, GB_INTEGER)
 IMPLEMENT_find(byte, GB_INTEGER)*/
 IMPLEMENT_find(long, GB_LONG)
 IMPLEMENT_find(float, GB_FLOAT)
+IMPLEMENT_find(single, GB_SINGLE)
 IMPLEMENT_find(date, GB_DATE)
 
 static int find_object(CARRAY *_object, void *value, int start)
@@ -1589,11 +1591,11 @@ GB_DESC NATIVE_SingleArray[] =
 
 	GB_METHOD("_new", NULL, CARRAY_new, "[(Size)i.]"),
 
-	GB_METHOD("Add", NULL, CARRAY_float_add, "(Value)g[(Index)i]"),
-	GB_METHOD("Push", NULL, CARRAY_float_push, "(Value)g"),
+	GB_METHOD("Add", NULL, CARRAY_single_add, "(Value)g[(Index)i]"),
+	GB_METHOD("Push", NULL, CARRAY_single_push, "(Value)g"),
 	GB_METHOD("_put", NULL, CARRAY_single_put, "(Value)g(Index)i."),
-	GB_METHOD("Find", "i", CARRAY_float_find, "(Value)g[(Start)i]"),
-	GB_METHOD("Exist", "b", CARRAY_float_exist, "(Value)g"),
+	GB_METHOD("Find", "i", CARRAY_single_find, "(Value)g[(Start)i]"),
+	GB_METHOD("Exist", "b", CARRAY_single_exist, "(Value)g"),
 
 	GB_METHOD("Pop", "g", CARRAY_pop, NULL),
 	GB_METHOD("_get", "g", CARRAY_get, "(Index)i."),
@@ -1959,6 +1961,11 @@ void *GB_ArrayGet(GB_ARRAY array, int index)
 TYPE GB_ArrayType(GB_ARRAY array)
 {
 	return ((CARRAY *)array)->type;
+}
+
+void GB_ArrayRemove(GB_ARRAY array, int index)
+{
+	copy_remove((CARRAY *)array, index, 1, FALSE, TRUE);
 }
 
 #endif

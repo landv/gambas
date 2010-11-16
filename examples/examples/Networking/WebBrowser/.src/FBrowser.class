@@ -176,10 +176,10 @@ End
 
 Public Sub WebView_Icon()
 
-  ' Dim hView As WebView = Last
-  ' tabBrowser[hView.Tag].Picture = hView.Icon
-  ' If Not IsLastCurrentView() Then Return
-  ' Me.Icon = hView.Icon
+  Dim hView As WebView = Last
+  tabBrowser[hView.Tag].Picture = hView.Icon
+  If Not IsLastCurrentView() Then Return
+  Me.Icon = hView.Icon
 
 End
 
@@ -248,25 +248,10 @@ Public Sub tabBrowser_Click()
   
 End
 
-Public Sub btnClose_Click()
+Public Sub btnDownloadList_Click()
 
-  GetView().Delete
-  
-  Object.Lock(tabBrowser)
-  tabBrowser[tabBrowser.Index].Delete
-  Object.UnLock(tabBrowser)
-  If tabBrowser.Index = (tabBrowser.Count - 1) And If tabBrowser.Index > 0 Then
-    tabBrowser.Index = tabBrowser.Index - 1
-  Else
-    tabBrowser_Click
-  Endif
-  
-  ' If (tabBrowser.Count - $iHidden) = 1 Then
-  '   tabBrowser.Count = 1
-  '   $iHidden = 0
-  '   tabBrowser_Click
-  ' Endif
-  
+  FDownloadList.Show
+
 End
 
 Public Sub WebView_Auth()
@@ -295,9 +280,14 @@ Public Sub WebView_NewFrame(Frame As WebFrame)
   
 End
 
-Public Sub WebView_Download(Url As String)
+Public Sub WebView_Download(Download As WebDownload)
   
-  Debug Url
+  Dialog.Path = System.User.Home &/ File.Name(Download.Url)
+  If Not Dialog.SaveFile() Then 
+    Download.Path = Dialog.Path
+    FDownloadList.AddDownload(Download)
+    FDownloadList.Show
+  Endif
   
 End
 
@@ -314,4 +304,26 @@ Public Sub WebView_MouseDown()
   If hTest.Editable Then sMsg &= "EDITABLE "
   Debug sMsg; hTest.Url
   
+End
+
+Public Sub tabBrowser_Close(Index As Integer)
+
+  Dim hView As WebView
+  
+  Try hView = tabBrowser[Index].Children[0]
+  If Not hView Then Return
+  
+  hView.Delete
+  
+  Object.Lock(tabBrowser)
+  tabBrowser[Index].Delete
+  Object.UnLock(tabBrowser)
+  If Index = tabBrowser.Index Then
+    If tabBrowser.Index = (tabBrowser.Count - 1) And If tabBrowser.Index > 0 Then
+      tabBrowser.Index = tabBrowser.Index - 1
+    Else
+      tabBrowser_Click
+    Endif
+  Endif  
+
 End

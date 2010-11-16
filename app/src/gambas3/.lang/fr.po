@@ -621,7 +621,7 @@ msgstr ""
 
 #: Design.module:381 FColorChooser.class:209 FCommit.class:380
 #: FConnectionEditor.class:411 FCreateFile.class:922 FFontChooser.class:79
-#: FGotoLine.class:57 FList.class:331 FMain.class:1635 FMenu.class:1237
+#: FGotoLine.class:57 FList.class:331 FMain.class:1635 FMenu.class:1238
 #: FNewConnection.class:573 FNewTable.class:159 FNewTranslation.class:64
 #: FOpenProject.class:496 FPasteSpecial.class:273 FPropertyComponent.class:465
 #: FPropertyProject.class:253 FReportBorderChooser.class:213
@@ -701,7 +701,7 @@ msgstr "Libre"
 #: FEditor.class:2217 FFontChooser.class:85 FForm.class:2955
 #: FGotoLine.class:63 FHelpBrowser.class:342 FIconEditor.class:1396
 #: FImportTable.class:39 FList.class:155 FMain.class:193
-#: FMakeInstall.class:318 FMenu.class:1242 FNewConnection.class:317
+#: FMakeInstall.class:318 FMenu.class:1243 FNewConnection.class:317
 #: FNewTable.class:165 FNewTranslation.class:70 FOpenProject.class:502
 #: FOption.class:600 FPasteSpecial.class:279 FPropertyComponent.class:471
 #: FPropertyProject.class:801 FReportBorderChooser.class:207
@@ -742,21 +742,21 @@ msgstr "Certains fichiers ne sont pas versionnés et doivent être ajoutés manu
 
 #: FCommit.class:234 FConflict.class:325 FConnectionEditor.class:1808
 #: FEditor.class:3381 FForm.class:3547 FIconEditor.class:2165
-#: FImageEditor.class:77 FMenu.class:978 FOutput.class:378
+#: FImageEditor.class:77 FMenu.class:979 FOutput.class:378
 #: FTextEditor.class:798
 msgid "Cut"
 msgstr "Couper"
 
 #: FCommit.class:240 FConflict.class:331 FConnectionEditor.class:1708
 #: FEditor.class:3387 FForm.class:3554 FIconEditor.class:2173
-#: FImageEditor.class:86 FMenu.class:984 FOutput.class:385
+#: FImageEditor.class:86 FMenu.class:985 FOutput.class:385
 #: FTextEditor.class:805
 msgid "Copy"
 msgstr "Copier"
 
 #: FCommit.class:246 FConflict.class:337 FConnectionEditor.class:1829
 #: FEditor.class:3394 FForm.class:3567 FIconEditor.class:2181
-#: FImageEditor.class:95 FMenu.class:990 FOutput.class:392
+#: FImageEditor.class:95 FMenu.class:991 FOutput.class:392
 #: FTextEditor.class:812
 msgid "Paste"
 msgstr "Coller"
@@ -774,12 +774,12 @@ msgstr "Annuler"
 msgid "Redo"
 msgstr "Rétablir"
 
-#: FCommit.class:264 FConflict.class:355 FEditor.class:3609 FMenu.class:1000
+#: FCommit.class:264 FConflict.class:355 FEditor.class:3609 FMenu.class:1001
 #: FTextEditor.class:984
 msgid "Indent"
 msgstr "Indenter"
 
-#: FCommit.class:270 FConflict.class:361 FEditor.class:3617 FMenu.class:1006
+#: FCommit.class:270 FConflict.class:361 FEditor.class:3617 FMenu.class:1007
 #: FTextEditor.class:991
 msgid "Unindent"
 msgstr "Désindenter"
@@ -1841,11 +1841,11 @@ msgstr "Cliquez sur un formulaire pour afficher la hiérarchie de ses contrôles
 msgid "Move top"
 msgstr "Déplacer tout en haut"
 
-#: FFormStack.class:316 FMenu.class:1012
+#: FFormStack.class:316 FMenu.class:1013
 msgid "Move up"
 msgstr "Déplacer vers le haut"
 
-#: FFormStack.class:322 FMenu.class:1018
+#: FFormStack.class:322 FMenu.class:1019
 msgid "Move down"
 msgstr "Déplacer vers le bas"
 
@@ -2636,6 +2636,10 @@ msgstr "Enregistrer le projet sous"
 msgid "Project properties"
 msgstr "Propriétés du projet"
 
+#: FMain.class:2754 FPropertyComponent.class:279
+msgid "Component properties"
+msgstr "Propriétés du composant"
+
 #: FMain.class:2762
 msgid "Refresh project"
 msgstr "Rafraîchir le projet"
@@ -3037,47 +3041,47 @@ msgstr "Nom de groupe incorrect !"
 msgid "This menu is too deep !"
 msgstr "Ce menu est trop profond !"
 
-#: FMenu.class:953
+#: FMenu.class:954
 msgid "Insert menu"
 msgstr "Insérer un menu"
 
-#: FMenu.class:960
+#: FMenu.class:961
 msgid "Next menu"
 msgstr "Menu suivant"
 
-#: FMenu.class:968
+#: FMenu.class:969
 msgid "Delete menu"
 msgstr "Effacer le menu"
 
-#: FMenu.class:1126
+#: FMenu.class:1127
 msgid "CTRL"
 msgstr "-"
 
-#: FMenu.class:1131
+#: FMenu.class:1132
 msgid "SHIFT"
 msgstr "-"
 
-#: FMenu.class:1136
+#: FMenu.class:1137
 msgid "ALT"
 msgstr "-"
 
-#: FMenu.class:1184
+#: FMenu.class:1185
 msgid "Visible"
 msgstr "-"
 
-#: FMenu.class:1189
+#: FMenu.class:1190
 msgid "Enabled"
 msgstr "-"
 
-#: FMenu.class:1194
+#: FMenu.class:1195
 msgid "Toggle"
 msgstr "-"
 
-#: FMenu.class:1199
+#: FMenu.class:1200
 msgid "Checked"
 msgstr "Checked"
 
-#: FMenu.class:1221
+#: FMenu.class:1222
 msgid "Click on Insert to add a new menu."
 msgstr "Cliquez sur Insérer pour ajouter un nouveau menu."
 
@@ -3576,10 +3580,6 @@ msgstr "-"
 #: FPropertyComponent.class:149
 msgid "Cannot write component description file."
 msgstr "Impossible d'écrire le fichier de description du composant."
-
-#: FPropertyComponent.class:279
-msgid "Component properties"
-msgstr "Propriétés du composant"
 
 #: FPropertyComponent.class:316
 msgid "Component advancement"

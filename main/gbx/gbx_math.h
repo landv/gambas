@@ -33,6 +33,7 @@ int llsgn(int64_t x);
 
 double frac(double x);
 int fsgn(double x);
+float fixf(float x);
 double fix(double x);
 double frexp10(double x, int *exp);
 

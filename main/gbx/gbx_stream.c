@@ -861,7 +861,7 @@ void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
 			STREAM_read(stream, &buffer._single, sizeof(float));
 			if (stream->common.swap)
 				SWAP_float(&buffer._single);
-			value->_float.value = buffer._single;
+			value->_single.value = buffer._single;
 			break;
 
 		case T_FLOAT:
@@ -1056,7 +1056,7 @@ void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
 
 		case T_SINGLE:
 
-			buffer._single = (float)value->_float.value;
+			buffer._single = value->_single.value;
 			if (stream->common.swap)
 				SWAP_float(&buffer._single);
 			STREAM_write(stream, &buffer._single, sizeof(float));

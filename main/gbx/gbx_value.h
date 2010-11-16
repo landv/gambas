@@ -88,10 +88,7 @@ typedef
 typedef
   struct {
     TYPE type;
-		#ifndef OS_64BITS
-		int _padding;
-		#endif
-    double value;
+    float value;
     }
   PACKED
   VALUE_SINGLE;

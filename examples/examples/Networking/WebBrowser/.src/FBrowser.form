@@ -1,10 +1,9 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,93,83)
+  MoveScaled(0,0,117,85)
   Text = ("Gambas WebKit")
   Icon = Picture["icon:/small/gambas"]
-  Maximized = True
   Arrangement = Arrange.Vertical
   { HBox2 HBox
     MoveScaled(1,1,87,4)
@@ -54,18 +53,18 @@
     { Separator2 Separator
       MoveScaled(75,0,1,4)
     }
-    { btnClose ToolButton
-      MoveScaled(77,0,4,4)
-      Picture = Picture["icon:/small/close"]
+    { btnDownloadList ToolButton
+      MoveScaled(78,0,4,4)
+      Picture = Picture["icon:/small/archive"]
     }
   }
   { tabBrowser TabStrip
     MoveScaled(1,6,76,43)
     Expand = True
     Arrangement = Arrange.Fill
+    Closable = True
     Index = 0
     Text = ("")
-    Picture = Picture["icon:/small/add"]
     Index = 0
   }
   { HBox1 HBox

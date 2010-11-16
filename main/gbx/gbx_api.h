@@ -65,6 +65,7 @@ void GB_ReturnPointer(void *val);
 void GB_ReturnBoolean(int val);
 void GB_ReturnObject(void *val);
 void GB_ReturnNull(void);
+void GB_ReturnSingle(float val);
 void GB_ReturnFloat(double val);
 void GB_ReturnPtr(GB_TYPE type, void *value);
 void GB_ReturnDate(GB_DATE *date);

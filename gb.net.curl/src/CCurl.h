@@ -63,7 +63,6 @@ typedef
 		char* protocol;
 		CPROXY proxy;
 		Adv_user user;
-		GB_VARIANT_VALUE tag;
 		bool async;
 		int TimeOut;
 		int iMethod; // 0->Get, 1->Put

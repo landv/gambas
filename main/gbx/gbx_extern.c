@@ -211,7 +211,7 @@ void EXTERN_call(void)
 		&&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
 		&&__STRING, &&__STRING, &&__POINTER, &&__VARIANT, &&__FUNCTION, &&__CLASS, &&__NULL, &&__OBJECT
 		};
-	static const int use_temp[17] = { 0, 0, 0, 0, 0, 0, sizeof(float), 0, 0, sizeof(char *), sizeof(char *), 0, 0, 0, 0, 0, sizeof(void *) };
+	static const int use_temp[17] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, sizeof(char *), sizeof(char *), 0, 0, 0, 0, 0, sizeof(void *) };
 	static char temp[16 * sizeof(void *)];
 	static void *null = 0;
 		
@@ -279,7 +279,7 @@ void EXTERN_call(void)
 		continue;
 	
 	__SINGLE:
-		*((float *)tmp) = (float)value->_float.value;
+		args[i] = &value->_single.value;
 		continue;
 	
 	__FLOAT:
@@ -347,7 +347,7 @@ void EXTERN_call(void)
 			break;
 		
 		case T_SINGLE:
-			GB_ReturnFloat(rvalue._single);
+			GB_ReturnSingle(rvalue._single);
 			break;
 			
 		case T_FLOAT:
@@ -478,15 +478,15 @@ static void callback(ffi_cif *cif, void *result, void **args, void *user_data)
 		continue;
 	
 	__LONG:
-		arg->_integer.value = *((int64_t *)args[i]);
+		arg->_long.value = *((int64_t *)args[i]);
 		continue;
 	
 	__SINGLE:
-		arg->_integer.value = *((float *)args[i]);
+		arg->_single.value = *((float *)args[i]);
 		continue;
 	
 	__FLOAT:
-		arg->_integer.value = *((double *)args[i]);
+		arg->_float.value = *((double *)args[i]);
 		continue;
 	
 	__STRING:

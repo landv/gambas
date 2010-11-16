@@ -728,6 +728,13 @@ __STRING:
 	goto __END;
 
 __SINGLE:
+
+	VALUE_conv(P1, T_SINGLE);
+	VALUE_conv(P2, T_SINGLE);
+
+	result = P1->_single.value > P2->_single.value ? 1 : P1->_single.value < P2->_single.value ? -1 : 0;
+	goto __END;
+
 __FLOAT:
 
 	VALUE_conv_float(P1);

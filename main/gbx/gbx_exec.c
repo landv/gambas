@@ -363,6 +363,9 @@ static void init_local_var(CLASS *class, FUNCTION *func)
 		continue;
 
 	__SINGLE:
+		value->_single.value = 0;
+		continue;
+	
 	__FLOAT:
 		value->_float.value = 0;
 		continue;

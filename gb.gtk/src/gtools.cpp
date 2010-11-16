@@ -968,18 +968,30 @@ char *gt_html_to_pango_string(const char *html, int len_html, bool newline)
 				
 			entity_len = p - entity_start;
 			if (*p != ';')
-				p--;
+				entity_len = 0;
 				
 			if (entity_len > 1)
 			{
-				const struct entity *e = kde_findEntity(entity_start, entity_len);
-				if (e)
+				if ((entity_len == 3 && !strncasecmp(entity_start, "amp", 3))
+					  || (entity_len == 2 && (!strncasecmp(entity_start, "lt", 2) || !strncasecmp(entity_start, "gt", 2))))
 				{
-					entity_unicode = e->code;
-					g_string_append_unichar(pango, entity_unicode);
+					g_string_append_len(pango, entity_start - 1, entity_len + 2);
+					continue;
+				}
+				else
+				{
+					const struct entity *e = kde_findEntity(entity_start, entity_len);
+					if (e)
+					{
+						entity_unicode = e->code;
+						g_string_append_unichar(pango, entity_unicode);
+						continue;
+					}
 				}
 			}
 			
+			g_string_append(pango, "&amp;");
+			p = entity_start - 1;
 			continue;
 		}
 	

@@ -1095,6 +1095,12 @@ void GB_ReturnPointer(void *val)
 }
 
 
+void GB_ReturnSingle(float val)
+{
+	TEMP.type = T_SINGLE;
+  TEMP._single.value = val;
+}
+
 void GB_ReturnFloat(double val)
 {
 	TEMP.type = T_FLOAT;

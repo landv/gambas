@@ -187,6 +187,9 @@ void SUBR_varptr(void)
 				break;
 				
 			case T_SINGLE:
+				ptr = &val->_single.value;
+				break;
+				
 			case T_FLOAT:
 				ptr = &val->_float.value;
 				break;

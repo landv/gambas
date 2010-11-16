@@ -147,8 +147,8 @@ void MEMORY_alloc(void *p_ptr, size_t size, const char *src)
   fprintf(MEMORY_log, "%s: ", DEBUG_get_current_position());
   fprintf(MEMORY_log, "<%d> %s: MEMORY_alloc(%d) -> %p\n", _id, src, (int)size, (char *)alloc + sizeof(ALLOC));
   fflush(MEMORY_log);
-	/*if (_id == 2150)
-		BREAKPOINT();*/
+	//if (_id == 1700)
+		//BREAKPOINT();
   #endif
 }
 #else
