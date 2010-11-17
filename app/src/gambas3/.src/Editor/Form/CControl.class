@@ -814,6 +814,8 @@ Public Sub UpdateName()
         Control.Clear
         Control.Add(Name)
         Control.Index = 0
+      Else
+        If Not HasText() Then Control.Text = Name
       Endif
 
     Case "GridView"
