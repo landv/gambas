@@ -1263,7 +1263,7 @@ Public Function CreateControl(sClass As String, hParent As CControl, Optional sN
   Endif
 
   Control[sName] = hCtrl
-  If bSetText Then Try hCtrl.SetProperty("Text", sName)
+  'If bSetText Then Try hCtrl.SetProperty("Text", sName)
 
   If sClass = "Menu" Then
     If hParent = RootControl Then

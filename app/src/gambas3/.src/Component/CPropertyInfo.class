@@ -83,15 +83,26 @@ Static Public Sub _init()
   $cRedirect["*.AutoResize"] = True
   $cRedirect["*.Connection"] = True
 
-  $cTranslate["Text"] = True
-  $cTranslate["Title"] = True
-  $cTranslate["List"] = True
+  $cTranslate["*.Text"] = True
+  $cTranslate["*.Title"] = True
+  $cTranslate["*.List"] = True
   $cTranslate["FileChooser.Filter"] = True
-  $cTranslate["Caption"] = True
-  $cTranslate["ToolTip"] = True
+  $cTranslate["*.Caption"] = True
+  $cTranslate["*.ToolTip"] = True
 
   $cUpdateName["ComboBox.ReadOnly"] = True
+  $cUpdateName["*.Text"] = True
 
+End
+
+Private Sub GetFlag(cCol As Collection, sClass As String, sName As String) As Boolean
+  
+  If cCol.Exist(sClass & "." & sName) Then
+    Return cCol[sClass & "." & sName]
+  Else If cCol.Exist("*." & sName) Then 
+    Return True
+  Endif
+  
 End
 
 
@@ -277,12 +288,11 @@ Public Sub _new(sComponent As String, sClass As String, sName As String, sKind A
 
   If bDoNotApply Then
     DoNotApply = True
-  Else If $cRedirect.Exist(sClass & "." & Name) Then
-    DoNotApply = $cRedirect[sClass & "." & Name]
-  Else If $cRedirect.Exist("*." & Name) Then
-    DoNotApply = $cRedirect["*." & Name]
-  Else If Name = "Enabled" And If CComponent.Classes[sClass].Container Then 
-    DoNotApply = True
+  Else
+    DoNotApply = GetFlag($cRedirect, sClass, Name)
+    If Not DoNotApply And If Name = "Enabled" And If CComponent.Classes[sClass].Container Then 
+      DoNotApply = True
+    Endif
   Endif
 
   'IF DoNotApply THEN PRINT "DoNotApply: "; sClass; "."; Name
@@ -310,8 +320,9 @@ Public Sub _new(sComponent As String, sClass As String, sName As String, sKind A
     Hidden = Name = "Index"
   Endif
 
-  Translate = $cTranslate.Exist(Name) Or $cTranslate.Exist(sClass & "." & Name)
-  UpdateName = $cUpdateName.Exist(sClass & "." & Name) Or $cUpdateName.Exist("*." & Name)
+  'Translate = $cTranslate.Exist(Name) Or $cTranslate.Exist(sClass & "." & Name)
+  Translate = GetFlag($cTranslate, sClass, Name)
+  UpdateName = GetFlag($cUpdateName, sClass, Name)
   
   Virtual = bVirtual
 

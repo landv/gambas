@@ -121,17 +121,17 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
 
     Case "textbox"
       hCtrl = New TextBox(hParent)
-      hCtrl.Text = sName
+      'hCtrl.Text = sName
       hCtrl.Mouse = Mouse.Arrow
 
     Case "textarea"
       hCtrl = New TextArea(hParent)
-      hCtrl.Text = sName
+      'hCtrl.Text = sName
       hCtrl.Mouse = Mouse.Arrow
 
     Case "combobox"
       hCtrl = New ComboBox(hParent)
-      hCtrl.Text = sName
+      'hCtrl.Text = sName
       'hCtrl.Add(" ")
       hCtrl.Mouse = Mouse.Arrow
 
@@ -265,7 +265,7 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
   'Try hCtrl.Tracking = True
   hCtrl.Raise
   Try hCtrl.Design = True
-  'ENDIF
+  
   Return hCtrl
 
 End
@@ -366,12 +366,11 @@ Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As
 
   InitControl(hCtrl)
 
-  'IF Kind = "TabStrip" THEN
   If IsMultiContainer() Then
     Tag = New Collection
   Endif
 
-  'RefLibrary(CComponent.Classes[Kind].Component)
+  UpdateName
 
 End
 
@@ -785,17 +784,21 @@ Static Public Function CheckName(sName As String) As Boolean
 
 End
 
+Private Sub HasText() As Boolean
+  
+  Return $cValue.Exist("Text")
+  
+End
+
+
 Public Sub UpdateName()
   
   Dim hLabel As Label
   
   Select Case Object.Type(Control)
 
-    Case "TextBox", "TextArea"
-      If DrawWith Then Control.Text = Name
-
-    Case "TextEdit", "Editor"
-      Control.Text = Name
+    Case "TextBox", "TextArea", "TextEdit", "Editor", "Label", "TextLabel", "Button", "ToolButton", "ToggleButton", "CheckBox", "RadioButton"
+      If Not HasText() Then Control.Text = Name
 
     Case "TreeView", "ListView", "ColumnView", "IconView"
       Control["A"].Text = Name
@@ -833,7 +836,7 @@ Public Sub UpdateName()
 
       If Unknown Then 
         If Not IsMultiContainer() Then
-          Try Control.Text = Name
+          If Not HasText() Then Try Control.Text = Name
         Endif
         Control.Refresh
       Endif
