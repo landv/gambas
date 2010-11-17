@@ -857,6 +857,7 @@ Public Function GetHelpHTML() As String
   Try hEdit = hForm.Editor
   If Not hEdit Then Return  
   iLine = Me.LineNumber - 1
+  If iLine < 0 Then Return
   
   ' Try to find help on the line of the declaration
   
