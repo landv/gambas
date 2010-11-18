@@ -22,9 +22,9 @@
 
 #define __CCOOKIEJAR_CPP
 
-#include <QDateTime>
-
 #include "ccookiejar.h"
+
+#include <QDateTime>
 
 BEGIN_PROPERTY(Cookie_Domain)
 
