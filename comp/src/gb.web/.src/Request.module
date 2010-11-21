@@ -13,6 +13,7 @@ Property Read InternetExplorer As Integer
 Property Read Get As _RequestGet
 Property Read Post As _RequestPost
 
+
 Private $cCookies As Collection
 Private $cVal As Collection
 Private $aField As String[]
@@ -158,5 +159,11 @@ End
 Private Function Get_Read() As _RequestGet
 
   Return _RequestGet
+
+End
+
+Private Function Post_Read() As _RequestPost
+
+  Return _RequestPost
 
 End
