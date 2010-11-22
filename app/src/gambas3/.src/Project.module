@@ -2620,7 +2620,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   Snap = Desktop.Scale 'Settings["/DefaultGridResolution", 8]
   ControlPublic = False
   ModulePublic = False
-  KeepDebugInfo = False
+  KeepDebugInfo = True
   Localize = False
   Description = ""
   Authors = ""
@@ -2936,7 +2936,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   Print #hFic, "TabSize="; CStr(TabSize)
   If Localize Then Print #hFic, "Translate=1"
   If Language Then Print #hFic, "Language="; Language
-  If KeepDebugInfo Then Print #hFic, "KeepDebugInfo=1"
+  If Not KeepDebugInfo Then Print #hFic, "KeepDebugInfo=0"
   If CreateShortcut Then Print #hFic, "CreateShortcut=1"
   If RunAfterMakingExec Then Print #hFic, "RunAfter="; RunAfterMakingExec
   If CreateComponent Then Print #hFic, "MakeComponent=1"
