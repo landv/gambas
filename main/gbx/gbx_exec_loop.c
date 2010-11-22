@@ -1611,15 +1611,15 @@ _ADD_QUICK:
 		P1->_long.value += (int64_t)value;
 		goto *jump_end;
 	
-	__AQ_DATE:
-	__AQ_STRING:
-		
-		VALUE_conv_float(P1);
-	
 	__AQ_SINGLE:
 	
 		P1->_single.value += (float)value;
 		goto *jump_end;
+	
+	__AQ_DATE:
+	__AQ_STRING:
+		
+		VALUE_conv_float(P1);
 	
 	__AQ_FLOAT:
 	

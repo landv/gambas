@@ -837,6 +837,12 @@ BEGIN_PROPERTY(Object_LastEventName)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Object_Address)
+
+	GB_ReturnPointer(VPROP(GB_OBJECT));
+
+END_PROPERTY
+
 #endif
 
 
@@ -941,6 +947,7 @@ GB_DESC NATIVE_Object[] =
 	GB_STATIC_METHOD("IsLocked", "b", Object_IsLocked, "(Object)o"),
 	GB_STATIC_METHOD("Count", "i", Object_Count, "(Object)o"),
 	GB_STATIC_METHOD("SizeOf", "i", Object_SizeOf, "(Object)o"),
+	GB_STATIC_METHOD("Address", "p", Object_Address, "(Object)o"),
 	GB_STATIC_PROPERTY_READ("LastEventName", "s", Object_LastEventName),
 
 	GB_END_DECLARE

@@ -1821,7 +1821,7 @@ void *EXEC_create_object(CLASS *class, int np, char *event)
 	CATCH
 	{
 		// _free() methods should not be called, but we must
-		OBJECT_UNREF(object, "EXEC_new");
+		OBJECT_UNREF(object, "EXEC_create_object");
 		PROPAGATE();
 //     SP--; /* class */
 //     SP->type = T_NULL;

@@ -194,11 +194,19 @@ void SUBR_varptr(void)
 				ptr = &val->_float.value;
 				break;
 			
+			case T_DATE:
+				ptr = &val->_date.date;
+				break;
+			
 			case T_STRING:
 			case T_CSTRING:
 				ptr = val->_string.addr + val->_string.start;
 				break;
 				
+			case T_POINTER:
+				ptr = &val->_pointer.value;
+				break;
+			
 			default:
 			  THROW(E_TYPE, "Number", TYPE_get_name(val->type));
 		}
