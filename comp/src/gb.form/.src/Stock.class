@@ -112,7 +112,7 @@ Static Private Sub InitTheme()
       
     Case "gnome"
       
-      Try Exec ["gconftool", "-g", "/desktop/gnome/interface/icon_theme"] To sTheme
+      Try Exec ["gconftool-2", "-g", "/desktop/gnome/interface/icon_theme"] To sTheme
       
       If sTheme Then 
         sTheme = Trim(sTheme)
