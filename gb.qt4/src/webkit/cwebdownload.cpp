@@ -359,7 +359,10 @@ void CWebDownload::finished()
 	GET_DOWNLOAD();
 	
 	if (THIS->status == STATUS_DOWNLOADING)
+	{
+		THIS->output->close();
 		THIS->status = STATUS_FINISHED;
+	}
 	
 	THIS->progress = 1;
 }

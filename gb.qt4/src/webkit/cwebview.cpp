@@ -305,12 +305,13 @@ END_PROPERTY
 BEGIN_PROPERTY(WebView_Cookies)
 
 	MyCookieJar *cookieJar = static_cast<MyCookieJar *>(_network_access_manager->cookieJar());
-
+	QList<QNetworkCookie> list;
+	GB_ARRAY cookies;
+	int i;
+	
 	if (READ_PROPERTY)
 	{
-		QList<QNetworkCookie> list = cookieJar->allCookies();
-		GB_ARRAY cookies;
-		int i;
+		list = cookieJar->allCookies();
 		
 		GB.Array.New(POINTER(&cookies), GB.FindClass("Cookie"), list.count());
 		
@@ -326,6 +327,19 @@ BEGIN_PROPERTY(WebView_Cookies)
 	else
 	{
 		// TODO
+		cookies = VPROP(GB_OBJECT);
+		if (GB.CheckObject(cookies))
+			return;
+		
+		for (i = 0; i < GB.Array.Count(cookies); i++)
+		{
+			CCOOKIE *cookie = *((CCOOKIE **)GB.Array.Get(cookies, i));
+			if (GB.CheckObject(cookie))
+				continue;
+			list.append(*(cookie->cookie));
+		}
+		
+		cookieJar->setAllCookies(list);
 	}
 
 END_PROPERTY
@@ -333,6 +347,20 @@ END_PROPERTY
 BEGIN_METHOD(WebView_HitTest, GB_INTEGER X; GB_INTEGER Y)
 
 	GB.ReturnObject(WEB_create_hit_test(WIDGET->page()->mainFrame()->hitTestContent(QPoint(VARG(X), VARG(Y)))));
+
+END_METHOD
+
+BEGIN_METHOD(WebView_FindText, GB_STRING text; GB_BOOLEAN backward; GB_BOOLEAN case_sensitive; GB_BOOLEAN wrap; GB_BOOLEAN highlight)
+
+	QString text = QSTRING_ARG(text);
+	QWebPage::FindFlags flags = 0;
+	
+	if (VARGOPT(backward, false)) flags |= QWebPage::FindBackward;
+	if (VARGOPT(case_sensitive, false)) flags |= QWebPage::FindCaseSensitively;
+	if (VARGOPT(wrap, false)) flags |= QWebPage::FindWrapsAroundDocument;
+	if (VARGOPT(highlight, false)) flags |= QWebPage::HighlightAllOccurrences;
+	
+	GB.ReturnBoolean(!WIDGET->findText(text, flags));
 
 END_METHOD
 
@@ -390,6 +418,7 @@ GB_DESC CWebViewDesc[] =
 	GB_PROPERTY("Cookies", "Cookie[]", WebView_Cookies),
 	
 	GB_METHOD("HitTest", "WebHitTest", WebView_HitTest, "(X)i(Y)i"),
+	GB_METHOD("FindText", "b", WebView_FindText, "(Text)s[(Backward)b(CaseSensitive)b(Wrap)b(Highlight)b]"),
 
 	GB_CONSTANT("_Properties", "s", "*,Url,Cached"),
 	
