@@ -3463,6 +3463,7 @@ Private Function RenameOneFile(sDir As String, sName As String, sNewName As Stri
   Dim sNewPath As String
   Dim sNewFormPath As String
   Dim aRename As String[]
+  Dim bRecompile As Boolean
   
   sPath = sDir &/ sName
   If sExt Then sPath = sPath & "." & sExt
@@ -3492,7 +3493,9 @@ Private Function RenameOneFile(sDir As String, sName As String, sNewName As Stri
   Endif
   
   If sExt Then
-    Try Kill sDir &/ ".gambas" &/ UCase(sName)
+    Try Kill Project.Dir &/ ".gambas" &/ UCase(sName)
+    If Not Error Then bRecompile = True
+    'Debug sDir &/ ".gambas" &/ UCase(sName); ": "; Exist(sDir &/ ".gambas" &/ UCase(sName))
   Endif
   
   ' Update source cache
@@ -3543,6 +3546,8 @@ Private Function RenameOneFile(sDir As String, sName As String, sNewName As Stri
   
   'RenamePathCollection(LockedPaths, sPath, sNewPath)
   'RenamePathCollection(AddedPaths, sPath, sNewPath)
+  
+  'If bRecompile Then Compile
   
   Return sNewPath
   

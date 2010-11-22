@@ -797,7 +797,7 @@ Public Sub UpdateName()
   
   Select Case Object.Type(Control)
 
-    Case "TextBox", "TextArea", "TextEdit", "Editor", "Label", "TextLabel", "Button", "ToolButton", "ToggleButton", "CheckBox", "RadioButton"
+    Case "TextBox", "TextArea", "TextEdit", "Editor", "Label", "TextLabel", "Button", "CheckBox", "RadioButton"
       If Not HasText() Then Control.Text = Name
 
     Case "TreeView", "ListView", "ColumnView", "IconView"
