@@ -350,15 +350,18 @@ BEGIN_METHOD(WebView_HitTest, GB_INTEGER X; GB_INTEGER Y)
 
 END_METHOD
 
-BEGIN_METHOD(WebView_FindText, GB_STRING text; GB_BOOLEAN backward; GB_BOOLEAN case_sensitive; GB_BOOLEAN wrap; GB_BOOLEAN highlight)
+BEGIN_METHOD(WebView_FindText, GB_STRING text; GB_BOOLEAN backward; GB_BOOLEAN case_sensitive; GB_BOOLEAN wrap)
 
-	QString text = QSTRING_ARG(text);
+	QString text;
 	QWebPage::FindFlags flags = 0;
+	
+	if (!MISSING(text)) 
+		text = QSTRING_ARG(text);
 	
 	if (VARGOPT(backward, false)) flags |= QWebPage::FindBackward;
 	if (VARGOPT(case_sensitive, false)) flags |= QWebPage::FindCaseSensitively;
 	if (VARGOPT(wrap, false)) flags |= QWebPage::FindWrapsAroundDocument;
-	if (VARGOPT(highlight, false)) flags |= QWebPage::HighlightAllOccurrences;
+	//if (VARGOPT(highlight, false)) flags |= QWebPage::HighlightAllOccurrences;
 	
 	GB.ReturnBoolean(!WIDGET->findText(text, flags));
 
@@ -418,7 +421,7 @@ GB_DESC CWebViewDesc[] =
 	GB_PROPERTY("Cookies", "Cookie[]", WebView_Cookies),
 	
 	GB_METHOD("HitTest", "WebHitTest", WebView_HitTest, "(X)i(Y)i"),
-	GB_METHOD("FindText", "b", WebView_FindText, "(Text)s[(Backward)b(CaseSensitive)b(Wrap)b(Highlight)b]"),
+	GB_METHOD("FindText", "b", WebView_FindText, "[(Text)s(Backward)b(CaseSensitive)b(Wrap)b]"),
 
 	GB_CONSTANT("_Properties", "s", "*,Url,Cached"),
 	
