@@ -897,10 +897,9 @@ static char *field_name(DB_RESULT result, int field)
 static int field_index(DB_RESULT Result, const char *name, DB_DATABASE *db)
 {
 	PGresult *result = (PGresult *)Result;
-
 	char *fld;
 	int index;
-	char *table;
+	char *table = NULL;
 	int numfields, oid;
 	char *qfield =
 		"select oid from pg_class where relname = '&1' "
@@ -1106,7 +1105,7 @@ static int table_init(DB_DATABASE *db, const char *table, DB_INFO *info)
 			"from pg_class, pg_attribute "
 			"where pg_class.relname = '&1' "
 				"and (pg_class.relnamespace not in (select oid from pg_namespace where nspname = 'information_schema')) "
-				"and pg_attribute.attnum > 0 "
+				"and pg_attribute.attnum > 0 and not pg_attribute.attisdropped "
 				"and pg_attribute.attrelid = pg_class.oid ";
 
 	PGresult *res;
@@ -1687,7 +1686,7 @@ static int field_exist(DB_DATABASE *db, const char *table, const char *field)
 		"where pg_class.relname = '&1' "
 		"and (pg_class.relnamespace not in (select oid from pg_namespace where nspname = 'information_schema')) "
 		"and pg_attribute.attname = '&2' "
-		"and pg_attribute.attnum > 0 "
+		"and pg_attribute.attnum > 0 and not pg_attribute.attisdropped "
 		"and pg_attribute.attrelid = pg_class.oid ";
 
 	PGresult *res;
@@ -1726,7 +1725,7 @@ static int field_list(DB_DATABASE *db, const char *table, char ***fields)
 	const char *query = "select pg_attribute.attname from pg_class, pg_attribute "
 		"where pg_class.relname = '&1' "
 		"and (pg_class.relnamespace not in (select oid from pg_namespace where nspname = 'information_schema')) "
-		"and pg_attribute.attnum > 0 "
+		"and pg_attribute.attnum > 0 and not pg_attribute.attisdropped "
 		"and pg_attribute.attrelid = pg_class.oid";
 
 	PGresult *res;
@@ -1777,7 +1776,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 		"where pg_class.relname = '&1' "
 		"and (pg_class.relnamespace not in (select oid from pg_namespace where nspname = 'information_schema')) "
 		"and pg_attribute.attname = '&2' "
-		"and pg_attribute.attnum > 0 "
+		"and pg_attribute.attnum > 0 and not pg_attribute.attisdropped "
 		"and pg_attribute.attrelid = pg_class.oid";
 
 	PGresult *res;
