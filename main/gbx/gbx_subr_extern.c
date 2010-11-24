@@ -253,3 +253,73 @@ void SUBR_ptr(ushort code)
 }
 
 
+void SUBR_mem(void)
+{
+  static void *jump[] = {
+    &&__ERROR, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, 
+		&&__DATE, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR
+    };
+		
+	TYPE type;
+	
+	SUBR_ENTER_PARAM(1);
+	
+	VARIANT_undo(PARAM);
+	
+	type = PARAM->type;
+	if (TYPE_is_object(type))
+		goto __ERROR;
+	else if (TYPE_is_string(type) || TYPE_is_null(type))
+		return;
+
+	STRING_new_temp_value(RETURN, NULL, TYPE_sizeof_memory(type));
+	goto *jump[type];
+	
+__BOOLEAN:
+
+	*(RETURN->_string.addr) = PARAM->_boolean.value != 0;
+	goto __END;
+
+__BYTE:
+
+	*(RETURN->_string.addr) = PARAM->_byte.value;
+	goto __END;
+
+__SHORT:
+
+	memcpy(RETURN->_string.addr, &PARAM->_short.value, sizeof(short));
+	goto __END;
+
+__INTEGER:
+
+	memcpy(RETURN->_string.addr, &PARAM->_integer.value, sizeof(int));
+	goto __END;
+
+__LONG:
+
+	memcpy(RETURN->_string.addr, &PARAM->_long.value, sizeof(int64_t));
+	goto __END;
+
+__SINGLE:
+
+	memcpy(RETURN->_string.addr, &PARAM->_single.value, sizeof(float));
+	goto __END;
+
+__FLOAT:
+
+	memcpy(RETURN->_string.addr, &PARAM->_float.value, sizeof(double));
+	goto __END;
+
+__DATE:
+
+	memcpy(RETURN->_string.addr, &PARAM->_date.date, sizeof(int) * 2);
+	goto __END;
+	
+__ERROR:
+
+	THROW_ILLEGAL();
+
+__END:
+
+	SUBR_LEAVE();
+}

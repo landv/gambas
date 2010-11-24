@@ -261,45 +261,46 @@ void SUBR_trim(ushort code)
 	}
 }
 
-
-
-
-#define STRING_APPLY(_func) \
-	char *str; \
-	int len, i; \
-	\
-	SUBR_ENTER_PARAM(1); \
-	\
-	if (SUBR_check_string(PARAM)) \
-		STRING_void_value(RETURN); \
-	else \
-	{ \
-		len = PARAM->_string.len; \
-		if (len > 0) \
-		{ \
-			str = STRING_new_temp(&PARAM->_string.addr[PARAM->_string.start], PARAM->_string.len); \
-			\
-			for (i = 0; i < len; i++) \
-				str[i] = _func(str[i]); \
-				\
-			RETURN->type = T_STRING; \
-			RETURN->_string.addr = str; \
-			RETURN->_string.start = 0; \
-			RETURN->_string.len = len; \
-		} \
-	} \
-	\
-	SUBR_LEAVE();
-
-
-void SUBR_upper(void)
+void SUBR_upper(ushort code)
 {
-	STRING_APPLY(toupper);
+	char *str;
+	int len, i;
+	
+	SUBR_ENTER_PARAM(1);
+	
+	if (SUBR_check_string(PARAM))
+		STRING_void_value(RETURN);
+	else
+	{
+		len = PARAM->_string.len;
+		if (len > 0)
+		{
+			str = STRING_new_temp(&PARAM->_string.addr[PARAM->_string.start], PARAM->_string.len);
+		
+			if (code & 0x3F)
+			{
+				for (i = 0; i < len; i++)
+					str[i] = tolower(str[i]);
+			}
+			else
+			{
+				for (i = 0; i < len; i++)
+					str[i] = toupper(str[i]);
+			}
+			
+			RETURN->type = T_STRING;
+			RETURN->_string.addr = str;
+			RETURN->_string.start = 0;
+			RETURN->_string.len = len;
+		}
+	}
+	
+	SUBR_LEAVE();
 }
 
 void SUBR_lower(void)
 {
-	STRING_APPLY(tolower);
+	SUBR_upper(1);
 }
 
 

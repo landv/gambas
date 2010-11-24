@@ -128,7 +128,7 @@ void SUBR_file(ushort code);
 void SUBR_trim(ushort code);
 void SUBR_space(void);
 void SUBR_string(void);
-void SUBR_upper(void);
+void SUBR_upper(ushort code);
 void SUBR_lower(void);
 void SUBR_chr(void);
 void SUBR_asc(ushort code);
@@ -222,6 +222,7 @@ void SUBR_realloc(ushort code);
 void SUBR_strptr(ushort code);
 void SUBR_varptr(void);
 void SUBR_ptr(ushort code);
+void SUBR_mem(void);
 
 /* subr_misc.c */
 

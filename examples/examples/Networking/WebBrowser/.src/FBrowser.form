@@ -6,7 +6,7 @@
   Icon = Picture["icon:/small/gambas"]
   Arrangement = Arrange.Vertical
   { HBox2 HBox
-    MoveScaled(1,1,87,4)
+    MoveScaled(1,1,89,4)
     { btnBack ToolButton
       MoveScaled(0,0,4,4)
       Picture = Picture["icon:/small/left"]
@@ -53,8 +53,13 @@
     { Separator2 Separator
       MoveScaled(75,0,1,4)
     }
+    { btnFind ToolButton
+      MoveScaled(77,0,4,4)
+      Picture = Picture["icon:/small/find"]
+      Toggle = True
+    }
     { btnDownloadList ToolButton
-      MoveScaled(78,0,4,4)
+      MoveScaled(81,0,4,4)
       Picture = Picture["icon:/small/archive"]
     }
   }
@@ -67,8 +72,42 @@
     Text = ("")
     Index = 0
   }
+  { panFind HBox
+    MoveScaled(1,49,101,4)
+    Visible = False
+    { btnClearFind ToolButton
+      MoveScaled(4,0,4,4)
+      Picture = Picture["icon:/small/clear"]
+    }
+    { txtFind TextBox
+      MoveScaled(8,0,32,4)
+      Expand = True
+    }
+    { btnNext ToolButton
+      MoveScaled(41,0,4,4)
+      Picture = Picture["icon:/small/down"]
+    }
+    { btnPrevious ToolButton
+      MoveScaled(45,0,4,4)
+      Picture = Picture["icon:/small/up"]
+    }
+    { chkCaseSensitive CheckBox
+      MoveScaled(54,0,17,4)
+      AutoResize = True
+      Text = ("Case sensitive")
+    }
+    { chkHighlight CheckBox
+      MoveScaled(70,0,20,4)
+      Visible = False
+      AutoResize = True
+      Text = ("Highlight")
+    }
+    { Panel1 Panel
+      MoveScaled(91,1,1,2)
+    }
+  }
   { HBox1 HBox
-    MoveScaled(1,54,66,3)
+    MoveScaled(1,56,66,3)
     { lblStatus Label
       MoveScaled(5,0,21,3)
       Font = Font["-1"]

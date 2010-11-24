@@ -77,7 +77,20 @@ End
 
 Public Sub WebView_Error()
 
-  GetView().Status = "Unable to load page: " & $sLastLink
+  Dim hView As WebView = GetView()
+  Dim sUrl As String
+  
+  sUrl = $sLastLink
+  If Not sUrl Then sUrl = txtURL.Text
+
+  ' If Not (sUrl Begins "www.") Then 
+  '   txtURL.Text = "www." & sUrl
+  '   btnGo.Value = True
+  '   Return
+  ' Endif
+
+  hView.Status = "Unable to load: " & sUrl
+  hView.HTML = "<h3>Unable to find the following URL:</h3>" & sUrl
   If Not IsLastCurrentView() Then Return
 
   lblStatus.Text = GetView().Status
@@ -325,5 +338,97 @@ Public Sub tabBrowser_Close(Index As Integer)
       tabBrowser_Click
     Endif
   Endif  
+
+End
+
+Public Sub btnFind_Click()
+
+  Dim hView As WebView = GetView()
+  
+  panFind.Visible = btnFind.Value
+  If btnFind.Value Then 
+    DoFind
+    txtFind.SetFocus
+  Else
+    hView.FindText("")
+  Endif
+
+End
+
+Private Sub DoFind(Optional bBackward As Boolean)
+  
+  Dim hView As WebView = GetView()
+  Dim sText As String
+  
+  sText = Trim(txtFind.Text)
+  
+  If sText And If hView.FindText(sText, bBackward, chkCaseSensitive.Value, True, chkHighlight.Value) Then
+    panFind.Background = &HFFDFDF
+  Else
+    panFind.Background = Color.Default
+    If Not sText Then hView.FindText("")
+  Endif
+  
+End
+
+
+Public Sub txtFind_Change()
+
+  DoFind
+
+End
+
+Public Sub Form_KeyPress()
+
+  If Key.Control And If Key.Code = Key["F"] Then 
+    btnFind.Value = True
+  Else If Key.Code = Key.Escape Then
+    btnFind.Value = False
+  Else If Key.Code = Key.F3 Then
+    DoFind(Key.Shift)
+  Endif
+
+End
+
+Public Sub chkCaseSensitive_Click()
+
+  DoFind
+
+End
+
+Public Sub chkHighlight_Click()
+
+  Dim hView As WebView 
+  
+  If Not chkHighlight.Value Then 
+    hView = GetView()
+    hView.FindText("",,,, True)
+  Else
+    DoFind
+  Endif
+
+End
+
+Public Sub btnNext_Click()
+
+  DoFind
+
+End
+
+Public Sub btnPrevious_Click()
+
+  DoFind(True)
+
+End
+
+Public Sub btnClearFind_Click()
+
+  txtFind.Text = ""
+
+End
+
+Public Sub txtFind_Activate()
+
+  DoFind
 
 End
