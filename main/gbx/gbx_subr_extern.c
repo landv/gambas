@@ -253,7 +253,7 @@ void SUBR_ptr(ushort code)
 }
 
 
-void SUBR_mem(void)
+void SUBR_make(ushort code)
 {
   static void *jump[] = {
     &&__ERROR, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, 
@@ -264,14 +264,8 @@ void SUBR_mem(void)
 	
 	SUBR_ENTER_PARAM(1);
 	
-	VARIANT_undo(PARAM);
-	
-	type = PARAM->type;
-	if (TYPE_is_object(type))
-		goto __ERROR;
-	else if (TYPE_is_string(type) || TYPE_is_null(type))
-		return;
-
+	type = code & 0x3F;
+	VALUE_conv(PARAM, type);
 	STRING_new_temp_value(RETURN, NULL, TYPE_sizeof_memory(type));
 	goto *jump[type];
 	

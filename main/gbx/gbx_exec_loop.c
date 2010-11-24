@@ -174,7 +174,7 @@ static void *SubrTable[] =
   SUBR_tr,         /* 91 9B */
   SUBR_quote,      /* 92 9C */
   SUBR_unquote,    /* 93 9D */
-	SUBR_mem,        /* 94 9E */
+	SUBR_make,       /* 94 9E */
 	SUBR_ptr,        /* 95 9F */
 };
 
@@ -341,8 +341,8 @@ void EXEC_loop(void)
     /* 9B Tr$             */  &&_SUBR,
     /* 9C Quote$...       */  &&_SUBR_CODE,
     /* 9D Unquote$        */  &&_SUBR,
-    /* 9E Mem$            */  &&_SUBR,
-    /* 9F BytePtr...      */  &&_SUBR_CODE,
+    /* 9E MkInt$...       */  &&_SUBR_CODE,
+    /* 9F Byte@...        */  &&_SUBR_CODE,
     /* A0 ADD QUICK       */  &&_ADD_QUICK,
     /* A1 ADD QUICK       */  &&_ADD_QUICK,
     /* A2 ADD QUICK       */  &&_ADD_QUICK,

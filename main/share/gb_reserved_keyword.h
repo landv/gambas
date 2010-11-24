@@ -360,22 +360,18 @@ SUBR_INFO COMP_subr_info[] =
 	{ "SizeOf",            38,  1,  1     },
 
 	{ "CBool",             39,  1,  1     },   /* CODE_CONV */
+	{ "CBoolean",          39,  1,  1     },   /* CODE_CONV */
 	{ "CByte",             39,  2,  1     },
 	{ "CShort",            39,  3,  1     },
 	{ "CInt",              39,  4,  1     },
 	{ "CInteger",          39,  4,  1     },
-	{ "CLng",              39,  5,  1     },
 	{ "CLong",             39,  5,  1     },
-	{ "CSng",              39,  6,  1     },
 	{ "CSingle",           39,  6,  1     },
-	{ "CFlt",              39,  7,  1     },
 	{ "CFloat",            39,  7,  1     },
 	{ "CDate",             39,  8,  1     },
 	{ "CStr",              39,  9,  1     },
 	{ "CString",           39,  9,  1     },
-	{ "CPtr",              39, 11,  1     },
 	{ "CPointer",          39, 11,  1     },
-	{ "CVar",              39, 12,  1     },
 	{ "CVariant",          39, 12,  1     },
 
 	{ "Bin$",              40,  0,  1,  2 },
@@ -471,6 +467,7 @@ SUBR_INFO COMP_subr_info[] =
 	{ "Alloc",             84,  0,  1,  2 },
 	{ "Free",              85,  0,  1     },
 	{ "Realloc",           86,  0,  2,  3 },
+	{ "Str@",              87,  0,  1,  2 },
 	{ "String@",           87,  0,  1,  2 },
 
 #ifndef __EVAL_RESERVED_C
@@ -494,10 +491,34 @@ SUBR_INFO COMP_subr_info[] =
 	{ "Unquote",           93,  0,  1     },
 	{ "Unquote$",          93,  0,  1     },
 	
-	{ "Mem",               94,  0,  1     },
-	{ "Mem$",              94,  0,  1     },
+	{ "MkBool",            94,  1,  1     },
+	{ "MkBoolean",         94,  1,  1     },
+	{ "MkByte",            94,  2,  1     },
+	{ "MkShort",           94,  3,  1     },
+	{ "MkInt",             94,  4,  1     },
+	{ "MkInteger",         94,  4,  1     },
+	{ "MkLong",            94,  5,  1     },
+	{ "MkSingle",          94,  6,  1     },
+	{ "MkFloat",           94,  7,  1     },
+	{ "MkDate",            94,  8,  1     },
+	{ "MkPtr",             94,  11, 1     },
+	{ "MkPointer",         94,  11, 1     },
+	
+	{ "MkBool$",           94,  1,  1     },
+	{ "MkBoolean$",        94,  1,  1     },
+	{ "MkByte$",           94,  2,  1     },
+	{ "MkShort$",          94,  3,  1     },
+	{ "MkInt$",            94,  4,  1     },
+	{ "MkInteger$",        94,  4,  1     },
+	{ "MkLong$",           94,  5,  1     },
+	{ "MkSingle$",         94,  6,  1     },
+	{ "MkFloat$",          94,  7,  1     },
+	{ "MkDate$",           94,  8,  1     },
+	{ "MkPtr$",            94,  11, 1     },
+	{ "MkPointer$",        94,  11, 1     },
 
 	{ "Bool@",             95,  1,  1     },
+	{ "Boolean@",          95,  1,  1     },
 	{ "Byte@",             95,  2,  1     },
 	{ "Short@",            95,  3,  1     },
 	{ "Int@",              95,  4,  1     },
@@ -506,6 +527,7 @@ SUBR_INFO COMP_subr_info[] =
 	{ "Single@",           95,  6,  1     },
 	{ "Float@",            95,  7,  1     },
 	{ "Date@",             95,  8,  1     },
+	{ "Ptr@",              95,  11, 1     },
 	{ "Pointer@",          95,  11, 1     },
 	
 	{ NULL }

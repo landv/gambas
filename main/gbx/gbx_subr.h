@@ -222,7 +222,7 @@ void SUBR_realloc(ushort code);
 void SUBR_strptr(ushort code);
 void SUBR_varptr(void);
 void SUBR_ptr(ushort code);
-void SUBR_mem(void);
+void SUBR_make(ushort code);
 
 /* subr_misc.c */
 
