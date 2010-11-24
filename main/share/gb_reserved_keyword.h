@@ -514,7 +514,6 @@ SUBR_INFO COMP_subr_info[] =
 	{ "MkSingle$",         94,  6,  1     },
 	{ "MkFloat$",          94,  7,  1     },
 	{ "MkDate$",           94,  8,  1     },
-	{ "MkPtr$",            94,  11, 1     },
 	{ "MkPointer$",        94,  11, 1     },
 
 	{ "Bool@",             95,  1,  1     },
@@ -527,7 +526,6 @@ SUBR_INFO COMP_subr_info[] =
 	{ "Single@",           95,  6,  1     },
 	{ "Float@",            95,  7,  1     },
 	{ "Date@",             95,  8,  1     },
-	{ "Ptr@",              95,  11, 1     },
 	{ "Pointer@",          95,  11, 1     },
 	
 	{ NULL }
