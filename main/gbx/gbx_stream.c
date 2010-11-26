@@ -50,6 +50,7 @@
 #include "gbx_watch.h"
 #include "gbx_c_array.h"
 #include "gbx_c_collection.h"
+#include "gbx_struct.h"
 #include "gbx_stream.h"
 
 int STREAM_eff_read;
@@ -727,6 +728,72 @@ static int read_length(STREAM *stream)
 	return len;
 }
 
+static void read_structure(STREAM *stream, CLASS *class, char *base);
+
+static void read_value_ctype(STREAM *stream, CLASS *class, CTYPE ctype, void *addr)
+{
+	TYPE type;
+	VALUE temp;
+	
+	type = (TYPE)ctype.id;
+	if (type == T_OBJECT && ctype.value >= 0)
+	{
+		class = class->load->class_ref[ctype.value];
+		if (CLASS_is_struct(class))
+		{
+			CSTRUCT *structure = (CSTRUCT *)OBJECT_create(class, NULL, NULL, 0);
+			OBJECT_REF(structure, "read_value_ctype");
+			read_structure(stream, class, (char *)structure + sizeof(CSTRUCT));
+			*((void **)addr) = structure;
+			return;
+		}
+	}
+	else if (type == TC_STRUCT)
+	{
+		class = class->load->class_ref[ctype.value];
+		read_structure(stream, class, addr);
+		return;
+	}
+	
+	STREAM_read_type(stream, type, &temp, 0);
+	VALUE_class_write(class, &temp, addr, ctype);
+}
+
+static void read_structure(STREAM *stream, CLASS *class, char *base)
+{
+	int i, n;
+	CLASS_DESC *desc;
+	char *addr;
+	CTYPE ctype;
+		
+	for (n = 0; n < class->n_desc; n++)
+	{
+		desc = class->table[n].desc;
+		ctype = desc->variable.ctype;
+		addr = base + desc->variable.offset;
+					
+		if (ctype.id == TC_STRUCT)
+		{
+			read_structure(stream, class->load->class_ref[ctype.value], addr);
+		}
+		else if (ctype.id == TC_ARRAY)
+		{
+			CLASS_ARRAY *adesc = class->load->array[ctype.value];
+			int size = CLASS_sizeof_ctype(class, adesc->ctype);
+			
+			for (i = 0; i < CARRAY_get_static_count(adesc); i++)
+			{
+				read_value_ctype(stream, desc->variable.class, adesc->ctype, addr);
+				addr += size;
+			}
+		}
+		else
+		{
+			read_value_ctype(stream, desc->variable.class, ctype, addr);
+		}
+	}
+}
+
 void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
 {
 	bool variant;
@@ -743,8 +810,21 @@ void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
 
 	variant = (type == T_VARIANT);
 	
-	if (variant || type == T_OBJECT)
+	if (variant || TYPE_is_object(type))
 	{
+		if (TYPE_is_pure_object(type) && CLASS_is_struct((CLASS *)type))
+		{
+			CLASS *class = (CLASS *)type;
+			CSTRUCT *structure = (CSTRUCT *)OBJECT_create(class, NULL, NULL, 0);
+			
+			read_structure(stream, class, (char *)structure + sizeof(CSTRUCT));
+				
+			value->_object.class = class;
+			value->_object.object = structure;
+			
+			return;
+		}
+		
 		STREAM_read(stream, &buffer._byte, 1);
 		
 		if (buffer._byte == 'A')
@@ -1121,8 +1201,9 @@ void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
 		case T_OBJECT:
 		{
 			CLASS *class = OBJECT_class(value->_object.object);
+			void *structure;
 			
-			if (class->quick_array == CQA_ARRAY)
+			if (class->quick_array == CQA_ARRAY || class->is_array_of_struct)
 			{
 				CARRAY *array = (CARRAY *)value->_object.object;
 				VALUE temp;
@@ -1133,19 +1214,38 @@ void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
 					THROW(E_SERIAL);
 				OBJECT_lock((OBJECT *)array, TRUE);
 				
-				buffer._byte = 'A';
-				STREAM_write(stream, &buffer._byte, 1);
-				
-				buffer._byte = (unsigned char)Min(T_OBJECT, array->type);
-				STREAM_write(stream, &buffer._byte, 1);
-				
-				write_length(stream, array->count);
-				
-				for (i = 0; i < array->count; i++)
+				if (!array->ref)
 				{
-					data = CARRAY_get_data(array, i);
-					VALUE_read(&temp, data, array->type);
-					STREAM_write_type(stream, array->type, &temp, 0);
+					buffer._byte = 'A';
+					STREAM_write(stream, &buffer._byte, 1);
+					
+					buffer._byte = (unsigned char)Min(T_OBJECT, array->type);
+					STREAM_write(stream, &buffer._byte, 1);
+					
+					write_length(stream, array->count);
+				}
+				
+				if (class->is_array_of_struct)
+				{
+					for (i = 0; i < array->count; i++)
+					{
+						data = CARRAY_get_data(array, i);
+						structure = CSTRUCT_create_static(array, (CLASS *)array->type, data);
+						temp._object.class = OBJECT_class(structure);
+						temp._object.object = structure;
+						OBJECT_REF(structure, "STREAM_write_type");
+						STREAM_write_type(stream, T_OBJECT, &temp, 0);
+						OBJECT_UNREF(structure, "STREAM_write_type");
+					}
+				}
+				else
+				{
+					for (i = 0; i < array->count; i++)
+					{
+						data = CARRAY_get_data(array, i);
+						VALUE_read(&temp, data, array->type);
+						STREAM_write_type(stream, array->type, &temp, 0);
+					}
 				}
 				
 				OBJECT_lock((OBJECT *)array, FALSE);
@@ -1177,6 +1277,36 @@ void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
 				}
 				
 				OBJECT_lock((OBJECT *)col, FALSE);
+				break;
+			}
+			else if (class->is_struct)
+			{
+				CSTRUCT *structure = (CSTRUCT *)value->_object.object;
+				int i;
+				CLASS_DESC *desc;
+				VALUE temp;
+				char *addr;
+				
+				if (OBJECT_is_locked((OBJECT *)structure))
+					THROW(E_SERIAL);
+				OBJECT_lock((OBJECT *)structure, TRUE);
+				
+				for (i = 0; i < class->n_desc; i++)
+				{
+					desc = class->table[i].desc;
+
+					if (structure->ref)
+						addr = (char *)((CSTATICSTRUCT *)structure)->addr + desc->variable.offset;
+					else
+						addr = (char *)structure + sizeof(CSTRUCT) + desc->variable.offset;
+					
+					VALUE_class_read(desc->variable.class, &temp, (void *)addr, desc->variable.ctype, (void *)structure);
+					BORROW(&temp);
+					STREAM_write_type(stream, temp.type, &temp, 0);
+					RELEASE(&temp);
+				}
+				
+				OBJECT_lock((OBJECT *)structure, FALSE);
 				break;
 			}
 			// continue;

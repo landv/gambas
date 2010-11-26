@@ -370,6 +370,11 @@ size_t CARRAY_get_static_size(CLASS *class, CLASS_ARRAY *desc)
   return (size_t)get_count(desc->dim) * CLASS_sizeof_ctype(class, desc->ctype);
 }
 
+int CARRAY_get_static_count(CLASS_ARRAY *desc)
+{
+  return get_count(desc->dim);
+}
+
 
 CARRAY *CARRAY_create_static(CLASS *class, void *ref, CLASS_ARRAY *desc, void *data)
 {

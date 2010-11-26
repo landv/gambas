@@ -1330,6 +1330,7 @@ void CLASS_create_array_of_struct_class(CLASS *class)
 	CLASS_register_class(desc, class);
 
 	class->is_array = TRUE;
+	class->is_array_of_struct = TRUE;
 	class->data = (char *)desc;
 	
 	STRING_free(&name_joker);

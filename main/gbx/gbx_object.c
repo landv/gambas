@@ -330,15 +330,20 @@ static void release(CLASS *class, OBJECT *ob)
   }
   else
   {
-		if (CLASS_is_struct(class) && ((CSTRUCT *)ob)->ref)
+		if (CLASS_is_struct(class))
 		{
-			CSTRUCT_release((CSTRUCT *)ob);
-			return;
+			if (((CSTRUCT *)ob)->ref)
+			{
+				CSTRUCT_release((CSTRUCT *)ob);
+				return;
+			}
+			data = (char *)ob + sizeof(CSTRUCT);
 		}
+		else
+			data = (char *)ob;
 
     var = class->load->dyn;
     nelt = class->load->n_dyn;
-    data = (char *)ob;
   }
   
   OBJECT_release_static(class, var, nelt, data);

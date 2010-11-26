@@ -53,3 +53,46 @@ void CSTRUCT_release(CSTRUCT *ob)
 {
 	OBJECT_UNREF(ob->ref, "CSTRUCT_release");
 }
+
+
+#if 0
+BEGIN_PROPERTY(Struct_Size)
+
+	GB_ReturnInteger(CLASS_sizeof(OBJECT_class(THIS)));
+
+END_PROPERTY
+
+
+BEGIN_METHOD(Struct_Read, GB_OBJECT stream)
+
+	void *stream = VARG(stream);
+	
+	if (GB.CheckObject(stream))
+		return;
+
+END_METHOD
+
+
+BEGIN_METHOD(Struct_write, GB_OBJECT stream)
+
+	void *stream = VARG(stream);
+	VALUE temp;
+	
+	if (GB.CheckObject(stream))
+		return;
+
+	temp._object.class = OBJECT_class(THIS);
+	temp._object.class = THIS;
+	STREAM_write_type(CSTREAM_stream(stream), T_OBJECT, &temp, 0);
+
+END_METHOD
+
+// Beware: if this declaration is modified, the CSTRUCT_NDESC constant must be modified accordingly.
+
+GB_DESC CSTRUCT_desc[CSTRUCT_NDESC] =
+{
+	GB_PROPERTY_READ("Size", "i", Struct_Size),
+	GB_METHOD("Read", NULL, Struct_Read, "(Stream)Stream;"),
+	GB_METHOD("Write", NULL, Struct_Write, "(Stream)Stream;"),
+};
+#endif

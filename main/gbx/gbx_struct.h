@@ -26,6 +26,16 @@
 #include "gbx_object.h"
 #include "gbx_value.h"
 
+#if 0
+#ifndef __GBX_STRUCT_C
+extern GB_DESC CSTRUCT_desc[];
+#else
+#define THIS ((CSTRUCT *)_object)
+#endif
+
+#define CSTRUCT_NDESC 3
+#endif
+
 typedef
 	struct {
 		OBJECT ob;

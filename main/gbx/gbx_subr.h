@@ -81,6 +81,7 @@ void SUBR_check_float(VALUE *param);
 int SUBR_get_integer(VALUE *param);
 double SUBR_get_float(VALUE *param);
 void *SUBR_get_pointer(VALUE *param);
+void *SUBR_get_pointer_or_string(VALUE *param);
 
 char *SUBR_get_string(VALUE *param);
 char *SUBR_copy_string(VALUE *param);

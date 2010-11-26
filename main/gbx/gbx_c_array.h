@@ -76,6 +76,7 @@ void *CARRAY_out_of_bound();
 CLASS *CARRAY_get_array_class(CLASS *class, CTYPE ctype);
 
 CARRAY *CARRAY_create_static(CLASS *class, void *ref, CLASS_ARRAY *desc, void *data);
+int CARRAY_get_static_count(CLASS_ARRAY *desc);
 size_t CARRAY_get_static_size(CLASS *class, CLASS_ARRAY *desc);
 void CARRAY_release_static(CLASS *class, CLASS_ARRAY *desc, void *data);
 

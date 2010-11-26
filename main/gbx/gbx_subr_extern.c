@@ -239,17 +239,18 @@ void SUBR_ptr(ushort code)
 {
   void *ptr;
   
-  ptr = SUBR_get_pointer(SP - 1);
-	SP--;
+	SUBR_ENTER_PARAM(1);
+	
+  ptr = SUBR_get_pointer_or_string(PARAM);
 	
 	CHECK_enter();
-	VALUE_read(SP, ptr, code & 0xF);
+	VALUE_read(RETURN, ptr, code & 0xF);
 	CHECK_leave();
 	
 	if (CHECK_got_error())
 		THROW(E_ARG);
 
-	SP++;
+	SUBR_LEAVE();
 }
 
 

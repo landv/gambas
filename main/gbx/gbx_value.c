@@ -1272,7 +1272,13 @@ void VALUE_class_write(CLASS *class, VALUE *value, char *addr, CTYPE ctype)
 		*((void **)addr) = value->_object.object;
 		//VALUE_write(value, addr, (ctype.value >= 0) ? (TYPE)class->load->class_ref[ctype.value] : T_OBJECT);
 	}
-	else if (ctype.id == TC_ARRAY || ctype.id == TC_STRUCT)
+	else if (ctype.id == TC_STRUCT)
+	{
+		TYPE type = (TYPE)class->load->class_ref[ctype.value];
+		VALUE_conv(value, type);
+		THROW_ILLEGAL();
+	}
+	else if (ctype.id == TC_ARRAY)
 	{
 		THROW_ILLEGAL();
 	}

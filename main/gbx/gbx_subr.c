@@ -115,6 +115,20 @@ void *SUBR_get_pointer(VALUE *param)
 	return (void *)param->_pointer.value;
 }
 
+void *SUBR_get_pointer_or_string(VALUE *param)
+{
+  if (param->type == T_VARIANT)
+    VARIANT_undo(param);
+
+	if (TYPE_is_string(param->type))
+		return (void *)(param->_string.addr + param->_string.start);
+	
+  if (param->type == T_POINTER)
+		return (void *)param->_pointer.value;
+	
+	THROW(E_TYPE, "Pointer", TYPE_get_name((param)->type));
+}
+
 
 double SUBR_get_float(VALUE *param)
 {

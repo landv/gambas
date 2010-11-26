@@ -303,7 +303,6 @@ void SUBR_lower(void)
 	SUBR_upper(1);
 }
 
-
 void SUBR_chr(void)
 {
 	int car;
@@ -318,8 +317,6 @@ void SUBR_chr(void)
 
 	STRING_char_value(PARAM, car);
 }
-
-
 
 void SUBR_asc(ushort code)
 {
@@ -347,8 +344,6 @@ void SUBR_asc(ushort code)
 
 	SUBR_LEAVE();
 }
-
-
 
 void SUBR_instr(ushort code)
 {
@@ -400,7 +395,6 @@ __FOUND:
 	SP++;
 }
 
-
 void SUBR_like(ushort code)
 {
 	static const void *jump[] = { &&__LIKE, &&__BEGINS, &&__ENDS, &&__RETURN };
@@ -445,7 +439,6 @@ __RETURN:
 	SUBR_LEAVE();
 }
 
-
 static int subst_nparam;
 static VALUE *subst_param;
 
@@ -459,7 +452,6 @@ static void get_subst(int np, char **str, int *len)
 		*len = 0;
 	}
 }
-
 
 void SUBR_subst(ushort code)
 {
@@ -489,8 +481,6 @@ void SUBR_subst(ushort code)
 
 	SUBR_LEAVE();
 }
-
-
 
 void SUBR_replace(ushort code)
 {
@@ -557,7 +547,6 @@ void SUBR_replace(ushort code)
 	SUBR_LEAVE();
 }
 
-
 void SUBR_split(ushort code)
 {
 	CARRAY *array;
@@ -609,7 +598,6 @@ void SUBR_split(ushort code)
 	SUBR_LEAVE();
 }
 
-
 void SUBR_scan(void)
 {
 	CARRAY *array;
@@ -633,7 +621,6 @@ void SUBR_scan(void)
 
 	SUBR_LEAVE();
 }
-
 
 void SUBR_iconv(void)
 {
@@ -665,7 +652,6 @@ void SUBR_iconv(void)
 
 	SUBR_LEAVE();
 }
-
 
 void SUBR_sconv(ushort code)
 {
@@ -754,7 +740,6 @@ static int _is_punct(int c)
 	return ((c > 32) && (c < 128) && !(_is_letter(c) || _is_digit(c)));
 }
 
-
 void SUBR_is_chr(ushort code)
 {
 	static void *jump[] =
@@ -791,7 +776,6 @@ void SUBR_is_chr(ushort code)
 	SP++;
 }
 
-
 void SUBR_tr(void)
 {
 	char *str;
@@ -814,7 +798,6 @@ void SUBR_tr(void)
 	
 	SUBR_LEAVE();
 }
-
 
 void SUBR_quote(ushort code)
 {
