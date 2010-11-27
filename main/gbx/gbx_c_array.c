@@ -1260,8 +1260,10 @@ static void *array_convert(CARRAY *src, CLASS *class)
 		{
 			data = CARRAY_get_data(src, i);
 			VALUE_read(&temp, data, src->type);
+			BORROW(&temp);
 			data = CARRAY_get_data(array, i);
 			VALUE_write(&temp, data, array->type);
+			RELEASE(&temp);
 		}
 	}
 	END_ERROR
