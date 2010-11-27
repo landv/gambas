@@ -22,7 +22,6 @@
 
 ***************************************************************************/
 
-
 #define __GBC_TRANS_C
 
 #include <stdlib.h>
@@ -66,7 +65,7 @@ boolean TRANS_newline(void)
   return FALSE;
 }
 
-static bool read_integer(char *number, int base, int64_t *result)
+static bool read_integer(char *number, int base, bool minus, int64_t *result)
 {
 	uint64_t nbr2, nbr;
 	int d, n, nmax;
@@ -100,12 +99,15 @@ static bool read_integer(char *number, int base, int64_t *result)
 
 		n++;
 		
-		nbr2 = nbr * base;
+		nbr2 = nbr * base + d;
 		
-		if (((int64_t)nbr2 / base) != (int64_t)nbr)
+		if ((nbr2 / base) != nbr || nbr2 > (LLONG_MAX + minus))
+		{
+			//fprintf(stderr, "OVERFLOW\n");
 			return TRUE;
+		}
 		
-		nbr = nbr2 + d;
+		nbr = nbr2;
 
 		c = *number++;
 		if (!c)
@@ -276,7 +278,7 @@ bool TRANS_get_number(int index, TRANS_NUMBER *result)
   errno = 0;
 	number--;
 
-	if (!read_integer(number, base, &val))
+	if (!read_integer(number, base, minus, &val))
 	{
 		if (IS_PURE_INTEGER(val))
 		{
