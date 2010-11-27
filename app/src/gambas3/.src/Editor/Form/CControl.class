@@ -795,10 +795,19 @@ Public Sub UpdateName()
   
   Dim hLabel As Label
   
+  If Virtual Then Return
+  
   Select Case Object.Type(Control)
 
-    Case "TextBox", "TextArea", "TextEdit", "Editor", "Label", "TextLabel", "Button", "CheckBox", "RadioButton"
+    Case "TextBox", "TextArea", "TextEdit", "Editor", "Label", "TextLabel", "CheckBox", "RadioButton"
       If Not HasText() Then Control.Text = Name
+
+    Case "Button"
+      If Not HasText() And If Not $cValue.Exist("Picture") Then 
+        Control.Text = Name
+      Else
+        Control.Text = $cValue["Text"]
+      Endif
 
     Case "TreeView", "ListView", "ColumnView", "IconView"
       Control["A"].Text = Name
