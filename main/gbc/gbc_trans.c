@@ -29,6 +29,7 @@
 #include <errno.h>
 #include <math.h>
 #include <float.h>
+#include <limits.h>
 
 #include "gb_common.h"
 #include "gb_error.h"
@@ -51,7 +52,7 @@ void TRANS_reset(void)
 }
 
 
-static bool read_integer(char *number, int base, int64_t *result)
+static bool read_integer(char *number, int base, bool minus, int64_t *result)
 {
 	uint64_t nbr2, nbr;
 	int d, n;
@@ -86,7 +87,7 @@ static bool read_integer(char *number, int base, int64_t *result)
 			{
 				nbr2 = nbr * 10 + d;
 			
-				if (((int64_t)nbr2 / 10) != (int64_t)nbr)
+				if ((nbr2 / 10) != nbr || nbr2 > (LLONG_MAX + minus))
 					return TRUE;
 			
 				nbr = nbr2;
@@ -305,7 +306,7 @@ bool TRANS_get_number(int index, TRANS_NUMBER *result)
   errno = 0;
 	number--;
 
-	if (!read_integer(number, base, &val))
+	if (!read_integer(number, base, minus, &val))
 	{
 		if (IS_PURE_INTEGER(val))
 		{
