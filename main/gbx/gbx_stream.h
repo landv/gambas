@@ -126,6 +126,14 @@ typedef
   PACKED
   STREAM_PROCESS;
 
+typedef
+  struct {
+    STREAM_COMMON common;
+    char *buffer;
+    }
+  PACKED
+  STREAM_STRING;
+
 
 typedef
   union STREAM {
@@ -138,22 +146,24 @@ typedef
     STREAM_MEMORY memory;
     STREAM_ARCH arch;
     STREAM_PROCESS process;
+		STREAM_STRING string;
     }
   STREAM;
 
 enum {
-  ST_READ = 1,
-  ST_WRITE = 2,
-  ST_READ_WRITE = 3,
-  ST_MODE = 3,
-  ST_APPEND = 4,
-  ST_CREATE = 8,
-  ST_ACCESS = 15,
-  ST_DIRECT = 16,
-  ST_LINE = 32,
-  ST_WATCH = 64,
-  ST_PIPE = 128,
-	ST_MEMORY = 256
+  ST_READ        = (1 << 0),
+  ST_WRITE       = (1 << 1),
+  ST_READ_WRITE  = ST_READ + ST_WRITE,
+  ST_MODE        = 0x3,
+  ST_APPEND      = (1 << 2),
+  ST_CREATE      = (1 << 3),
+  ST_ACCESS      = 0xF,
+  ST_DIRECT      = (1 << 4),
+  ST_LINE        = (1 << 5),
+  ST_WATCH       = (1 << 6),
+  ST_PIPE        = (1 << 7),
+	ST_MEMORY      = (1 << 8),
+	ST_STRING      = (1 << 9)
   };
 
 enum {
@@ -172,6 +182,7 @@ EXTERN STREAM_CLASS STREAM_pipe;
 EXTERN STREAM_CLASS STREAM_memory;
 EXTERN STREAM_CLASS STREAM_arch;
 EXTERN STREAM_CLASS STREAM_process;
+EXTERN STREAM_CLASS STREAM_string;
 /*EXTERN STREAM_CLASS STREAM_null;*/
 
 #else
@@ -238,10 +249,6 @@ void STREAM_blocking(STREAM *stream, bool block);
 #define STREAM_is_blocking(_stream) ((_stream)->common.blocking)
 void STREAM_check_blocking(STREAM *stream);
 
-#if DEBUG_STREAM
 void STREAM_exit(void);
-#else
-#define STREAM_exit()
-#endif
 
 #endif

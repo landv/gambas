@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  gbx_stream_memory.c
+  gbx_stream_string.c
 
   (c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
 
@@ -37,21 +37,13 @@
 #include <signal.h>
 #include <setjmp.h>
 
+#include "gbx_string.h"
 #include "gbx_stream.h"
 
 
 static int stream_open(STREAM *stream, const char *path, int mode)
 {
-	stream->memory.addr = (char *)path;
-
-	if (stream->memory.addr == NULL)
-	{
-		stream->type = NULL;
-		THROW(E_ARG);
-	}
-	
-  stream->memory.pos = 0;
-
+	stream->string.buffer = NULL;
 	stream->common.available_now = TRUE;
 
   return FALSE;
@@ -60,100 +52,34 @@ static int stream_open(STREAM *stream, const char *path, int mode)
 
 static int stream_close(STREAM *stream)
 {
-  /*if (munmap(stream->memory.addr, stream->memory.size) != 0)
-    return TRUE;*/
-
-  stream->memory.addr = NULL;
-  //stream->memory.size = 0;
+	STRING_free(&stream->string.buffer);
   return FALSE;
 }
 
 
 static int stream_read(STREAM *stream, char *buffer, int len)
 {
-	/*if ((stream->common.mode & ST_READ) == 0)
-		THROW(E_ACCESS);*/
-	
-  CHECK_enter();
-  
-  if (setjmp(CHECK_jump) == 0)
-    memmove(buffer, stream->memory.addr + stream->memory.pos, len);
-
-  CHECK_leave();  
-
-  if (CHECK_got_error())
-  {
-    errno = EIO;  
-    return TRUE;
-  }
-  else
-  {
-    stream->memory.pos += len;
-    STREAM_eff_read = len;
-    return FALSE;
-  }
+  return TRUE;
 }
 
 #define stream_getchar NULL
 
 static int stream_write(STREAM *stream, char *buffer, int len)
 {
-	if ((stream->common.mode & ST_WRITE) == 0)
-		THROW(E_ACCESS);
-	
-  CHECK_enter();
-  
-  if (setjmp(CHECK_jump) == 0)
-    memmove(stream->memory.addr + stream->memory.pos, buffer, len);
-
-  CHECK_leave();  
-  
-  if (CHECK_got_error())
-  {
-    errno = EIO;  
-    return TRUE;
-  }
-  else
-  {
-    stream->memory.pos += len;
-    return FALSE;
-  }
+	STRING_add(&stream->string.buffer, buffer, len);
+  return FALSE;
 }
 
 
 static int stream_seek(STREAM *stream, int64_t pos, int whence)
 {
-  int64_t new_pos;
-
-  switch(whence)
-  {
-    case SEEK_SET:
-      new_pos = pos;
-      break;
-
-    case SEEK_CUR:
-      new_pos = stream->memory.pos + pos;
-      break;
-
-    case SEEK_END:
-      return TRUE;
-
-    default:
-      return TRUE;
-  }
-
-  if (new_pos < 0)
-    return TRUE;
-
-  stream->memory.pos = new_pos;
-  return FALSE;
+  return TRUE;
 }
 
 
 static int stream_tell(STREAM *stream, int64_t *pos)
 {
-  *pos = (int64_t)stream->memory.pos;
-  return FALSE;
+  return TRUE;
 }
 
 
@@ -172,10 +98,8 @@ static int stream_eof(STREAM *stream)
 
 static int stream_lof(STREAM *stream, int64_t *len)
 {
-  //*len = stream->memory.size;
-  //return FALSE;
-  *len = 0;
-  return TRUE;
+  *len = STRING_length(stream->string.buffer);
+  return FALSE;
 }
 
 
@@ -185,4 +109,4 @@ static int stream_handle(STREAM *stream)
 }
 
 
-DECLARE_STREAM(STREAM_memory);
+DECLARE_STREAM(STREAM_string);

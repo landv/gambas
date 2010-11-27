@@ -55,18 +55,23 @@
 
 int STREAM_eff_read;
 
+static STREAM _temp_stream = { 0 };
+static STREAM *_temp_save = NULL;
+static int _temp_level;
+
 #if DEBUG_STREAM
 static unsigned char _tag = 0;
 static int _nopen = 0;
 #endif
 
-#if DEBUG_STREAM
 void STREAM_exit(void)
 {
+#if DEBUG_STREAM
 	if (_nopen)
 		ERROR_warning("%d streams yet opened", _nopen);
-}
 #endif
+	STREAM_close(&_temp_stream);
+}
 
 #define wait_for_fd_ready_to_read(_fd) WATCH_process(_fd, -1)
 
@@ -160,6 +165,10 @@ void STREAM_open(STREAM *stream, const char *path, int mode)
 	else if (mode & ST_MEMORY)
 	{
 		stream->type = &STREAM_memory;
+	}
+	else if (mode & ST_STRING)
+	{
+		stream->type = &STREAM_string;
 	}
 	else
 	{
@@ -728,6 +737,33 @@ static int read_length(STREAM *stream)
 	return len;
 }
 
+static STREAM *enter_temp_stream(STREAM *stream)
+{
+	if (stream != &_temp_stream)
+	{
+		_temp_save = stream;
+		_temp_level = 0;
+		if (&_temp_stream.type)
+			STREAM_close(&_temp_stream);
+		STREAM_open(&_temp_stream, NULL, ST_STRING | ST_WRITE);
+	}
+
+	_temp_level++;
+	
+	return &_temp_stream;
+}
+
+static STREAM *leave_temp_stream()
+{
+	_temp_level--;
+	if (_temp_level > 0)
+		return &_temp_stream;
+	
+	STREAM_write(_temp_save, _temp_stream.string.buffer, STRING_length(_temp_stream.string.buffer));
+	STREAM_close(&_temp_stream);
+	return _temp_save;
+}
+
 static void read_structure(STREAM *stream, CLASS *class, char *base);
 
 static void read_value_ctype(STREAM *stream, CLASS *class, CTYPE ctype, void *addr)
@@ -1287,6 +1323,8 @@ void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
 				VALUE temp;
 				char *addr;
 				
+				stream = enter_temp_stream(stream);
+				
 				if (OBJECT_is_locked((OBJECT *)structure))
 					THROW(E_SERIAL);
 				OBJECT_lock((OBJECT *)structure, TRUE);
@@ -1305,6 +1343,8 @@ void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
 					STREAM_write_type(stream, temp.type, &temp, 0);
 					RELEASE(&temp);
 				}
+				
+				stream = leave_temp_stream();
 				
 				OBJECT_lock((OBJECT *)structure, FALSE);
 				break;

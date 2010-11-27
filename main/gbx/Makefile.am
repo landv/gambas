@@ -36,7 +36,7 @@ gbx3_SOURCES = \
  gbx_event.h gbx_event.c \
  gb_file.h gb_file.c \
  gbx_stream.h gbx_stream.c gbx_stream_direct.c gbx_stream_buffer.c gbx_stream_memory.c \
- gbx_stream_arch.c gbx_stream_process.c gbx_stream_pipe.c \
+ gbx_stream_arch.c gbx_stream_process.c gbx_stream_pipe.c gbx_stream_string.c \
  gbx_project.h gbx_project.c \
  gbx_library.h gbx_library.c \
  gbx_subr.h gbx_subr.c \
