@@ -1146,13 +1146,13 @@ __BOOLEAN:
 
 	if (value->_boolean.value)
 	{
-		*addr = "True";
-		*len = 4;
+		*addr = LOCAL_local.true_str;
+		*len = LOCAL_local.len_true_str;
 	}
 	else
 	{
-		*addr = "False";
-		*len = 5;
+		*addr = LOCAL_local.false_str;
+		*len = LOCAL_local.len_false_str;
 	}
 	return;
 
@@ -1249,14 +1249,14 @@ void VALUE_from_string(VALUE *value, const char *addr, int len)
 	if (!NUMBER_from_string(NB_READ_ALL | NB_READ_HEX_BIN | NB_LOCAL, addr, len, value))
 		return;
 
-	if (len == 4 && strncasecmp(addr, "true", len) == 0)
+	if (len == LOCAL_local.len_true_str && strncasecmp(addr, LOCAL_local.true_str, len) == 0)
 	{
 		value->type = T_BOOLEAN;
 		value->_boolean.value = -1;
 		return;
 	}
 
-	if (len == 5 && strncasecmp(addr, "false", len) == 0)
+	if (len == LOCAL_local.len_false_str && strncasecmp(addr, LOCAL_local.false_str, len) == 0)
 	{
 		value->type = T_BOOLEAN;
 		value->_boolean.value = 0;

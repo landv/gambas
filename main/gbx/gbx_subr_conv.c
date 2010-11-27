@@ -34,57 +34,62 @@
 void SUBR_is_type(ushort code)
 {
 	static void *jump[] = {
-		&&__BAD, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
-		&&__STRING, &&__BAD, &&__POINTER, &&__VARIANT, &&__BAD, &&__BAD, &&__NULL,
-		&&__OBJECT, &&__NUMBER
+		&&__BAD, &&__BOOLEAN, &&__BAD, &&__BAD, &&__INTEGER, &&__LONG, &&__BAD, &&__FLOAT, 
+		&&__DATE, &&__BAD, &&__BAD, &&__BAD, &&__BAD, &&__BAD, &&__NUMBER, &&__NULL, 
+		&&__BAD, &&__BAD
 		};
 
 	bool test;
-	TYPE type;
+	char *addr;
+	int len;
+	VALUE temp;
 
 	SUBR_ENTER_PARAM(1);
 
-	type = code & 0x3F;
-	goto *jump[type];
+	code &= 0x3F;
+	
+	if (code < T_NULL)
+	{
+		VALUE_conv_string(PARAM);
+		VALUE_get_string(PARAM, &addr, &len);
+		VALUE_from_string(&temp, addr, len);
+	}
+	
+	goto *jump[code];
 
 __BOOLEAN:
-__BYTE:
-__SHORT:
+	
+	test = temp.type == T_BOOLEAN;
+	goto __END;
+
 __INTEGER:
+
+	test = temp.type == T_INTEGER;
+	goto __END;
+
 __LONG:
-__SINGLE:
+
+	test = temp.type == T_LONG || temp.type == T_INTEGER;
+	goto __END;
+
 __FLOAT:
+
+	test = temp.type == T_FLOAT;
+	goto __END;
+
 __DATE:
-__POINTER:
 
-	VARIANT_undo(PARAM);
-
-__VARIANT:
-
-	test = PARAM->type == type;
-	goto __END;
-
-__STRING:
-
-	VARIANT_undo(PARAM);
-
-	test = PARAM->type == T_STRING || PARAM->type == T_CSTRING;
-	if (test)
-		goto __END;
-
-__NULL:
-
-	test = VALUE_is_null(PARAM);
-	goto __END;
-
-__OBJECT:
-
-	test = TYPE_is_object_null(PARAM->type) || (PARAM->type == T_VARIANT && TYPE_is_object_null(PARAM->_variant.vtype));
+	test = temp.type == T_DATE;
 	goto __END;
 
 __NUMBER:
 
-	test = TYPE_is_number(PARAM->type) || (PARAM->type == T_VARIANT && TYPE_is_number(PARAM->_variant.vtype));
+	test = temp.type == T_FLOAT || temp.type == T_LONG || temp.type == T_INTEGER;
+	goto __END;
+
+__NULL:
+
+	test = VALUE_is_null(PARAM);
 	goto __END;
 
 __BAD:

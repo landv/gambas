@@ -86,6 +86,10 @@ typedef
     char general_date[20];
     char general_currency[20];
     char intl_currency[20];
+		char *true_str;
+		int len_true_str;
+		char *false_str;
+		int len_false_str;
     bool rtl;
     }
   PACKED

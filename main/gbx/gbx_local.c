@@ -88,12 +88,16 @@ LOCAL_INFO LOCAL_default = {
 	"hh:nn:ss",
 	"hh:nn AM/PM",
 	"hh:nn",
+	"mm/dd/yyyy hh:nn:ss",
 	"(#,##0.##)",
-	"(#,##0.##)"
+	"(#,##0.##)",
+	"True", 4,
+	"False", 5,
+	0
 	};
 
 /* User language localization */
-LOCAL_INFO LOCAL_local;
+LOCAL_INFO LOCAL_local = { 0 };
 
 // First day of weekday
 char LOCAL_first_day_of_week = -1;
@@ -343,9 +347,9 @@ static char *get_languages(void)
 
 static void free_local_info(void)
 {
+	STRING_free(&LOCAL_local.true_str);
+	STRING_free(&LOCAL_local.false_str);
 	CLEAR(&LOCAL_local);
-	//STRING_unref(&LOCAL_local.currency_symbol);
-	//STRING_unref(&LOCAL_local.intl_currency_symbol);
 }
 
 static void fill_local_info(void)
@@ -512,6 +516,11 @@ static void fill_local_info(void)
 	sprintf(LOCAL_local.intl_currency, "($$#,##0.%.*s)", Min(8, info->int_frac_digits), "########");
 
 	init_currency_flag(info);
+	
+	LOCAL_local.true_str = STRING_new_zero(LOCAL_gettext(LOCAL_default.true_str));
+	LOCAL_local.len_true_str = STRING_length(LOCAL_local.true_str);
+	LOCAL_local.false_str = STRING_new_zero(LOCAL_gettext(LOCAL_default.false_str));
+	LOCAL_local.len_false_str = STRING_length(LOCAL_local.false_str);
 }
 
 
