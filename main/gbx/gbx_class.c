@@ -1188,7 +1188,8 @@ void CLASS_search_special(CLASS *class)
 	class->special[SPEC_UNKNOWN] = CLASS_get_symbol_index_kind(class, "_unknown", CD_METHOD, CD_STATIC_METHOD);
 	class->special[SPEC_COMPARE] = CLASS_get_symbol_index_kind(class, "_compare", CD_METHOD, 0);
 	class->special[SPEC_ATTACH] = CLASS_get_symbol_index_kind(class, "_attach", CD_METHOD, 0);
-	class->special[SPEC_PRINT] = CLASS_get_symbol_index_kind(class, "_print", CD_METHOD, 0);
+	
+	class->special[SPEC_CONVERT] = CLASS_get_symbol_index_kind(class, "_@_convert", CD_CONSTANT, 0);
 
 	if (class->special[SPEC_NEXT] != NO_SYMBOL)
 		class->enum_static = CLASS_DESC_get_type(CLASS_get_desc(class, class->special[SPEC_NEXT])) == CD_STATIC_METHOD;

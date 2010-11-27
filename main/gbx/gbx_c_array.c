@@ -1232,55 +1232,48 @@ BEGIN_METHOD_VOID(ArrayOfStruct_next)
 
 END_METHOD
 
+static CARRAY *_converted_array;
 
-/*BEGIN_METHOD_VOID(CARRAY_print)
+static void error_array_convert()
+{
+	OBJECT_UNREF(_converted_array, "error_array_convert");
+}
 
-	int dim[MAX_ARRAY_DIM] = { 0 };
-	char *data = THIS->data;
-	int ndim = get_dim(THIS);
-	int i, j;
-
-	if (ARRAY_count(THIS) == 0)
+static void *array_convert(CARRAY *src, CLASS *class)
+{
+	CARRAY *array;
+	int i;
+	void *data;
+	VALUE temp;
+	
+	if (!CLASS_inherits(class, CLASS_Array))
+		return NULL;
+	
+	_converted_array = array = OBJECT_create(class, NULL, NULL, 0);
+	
+	ARRAY_add_many_void(&array->data, src->count);
+	array->count = src->count;
+		
+	ON_ERROR(error_array_convert)
 	{
-		GB_PrintString("[]", 2);
-		return;
-	}
-
-	for (i = 0; i < ndim; i++)
-		GB_PrintString("[", 1);
-
-	for(;;)
-	{
-		GB_PrintData(THIS->type, data);
-
-		for (i = 0; i < ndim; i++)
+		for (i = 0; i < src->count; i++)
 		{
-			dim[i]++;
-			if (dim[i] < get_bound(THIS, i))
-				break;
-			dim[i] = 0;
+			data = CARRAY_get_data(src, i);
+			VALUE_read(&temp, data, src->type);
+			data = CARRAY_get_data(array, i);
+			VALUE_write(&temp, data, array->type);
 		}
-
-		for (j = 0; j < i; j++)
-			GB_PrintString("]", 1);
-
-		if (i == ndim)
-			break;
-
-		for (j = 0; j < i; j++)
-			GB_PrintString("[", 1);
-
-		if (i == 0)
-			GB_PrintString(",", 1);
-
-		data += TYPE_sizeof_memory(THIS->type);
 	}
-
-END_METHOD*/
+	END_ERROR
+	
+	return array;
+}
 
 #else
 
 #include "gbx_c_array.h"
+
+#define array_convert NULL
 
 #endif /* #ifndef GBX_INFO */
 
@@ -1326,6 +1319,8 @@ GB_DESC NATIVE_Array[] =
 	GB_METHOD("Extract", "Array", CARRAY_extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Delete", "Array", CARRAY_extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Fill", NULL, CARRAY_fill, "(Value)v[(Start)i(Length)i]"),
+	
+	GB_INTERFACE("_convert", array_convert),
 
 	GB_END_DECLARE
 };

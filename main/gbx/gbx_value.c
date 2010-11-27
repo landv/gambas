@@ -821,6 +821,18 @@ __RETRY:
 		goto __RETRY;
 	}
 
+	if (class->special[SPEC_CONVERT] != NO_SYMBOL)
+	{
+		void *conv = ((void *(*)())(CLASS_get_desc(class, class->special[SPEC_CONVERT])->constant.value._pointer))(value->_object.object, type);
+		if (conv)
+		{
+			OBJECT_REF(conv, "VALUE_conv");
+			OBJECT_UNREF(value->_object.object, "VALUE_conv");
+			value->_object.object = conv;
+			goto __TYPE;
+		}
+	}
+
 	THROW(E_TYPE, TYPE_get_name(type), TYPE_get_name((TYPE)class));
 
 __TYPE:
