@@ -2,107 +2,114 @@
 
 'EXPORT
 
-PRIVATE CONST TYPE_WHERE AS Integer = 0
-PRIVATE CONST TYPE_SELECT AS Integer = 1
-PRIVATE CONST TYPE_DELETE AS Integer = 2
+Private Const TYPE_WHERE As Integer = 0
+Private Const TYPE_SELECT As Integer = 1
+Private Const TYPE_DELETE As Integer = 2
 
-PRIVATE $iType AS Integer
-PRIVATE $sField AS String
-PRIVATE $sTable AS String
-PRIVATE $sWhere AS String
-PRIVATE $sOrderBy AS String
+Private $iType As Integer
+Private $sField As String
+Private $sTable As String
+Private $sWhere As String
+Private $sOrderBy As String
 
-STATIC PUBLIC FUNCTION _call() AS Request
+Static Public Function _call() As Request
   
-  DIM hReq AS NEW Request
-  RETURN hReq
+  Dim hReq As New Request
+  Return hReq
   
-END
+End
 
 
-STATIC PUBLIC FUNCTION Select(OPTIONAL Field AS Variant) AS Request
+Static Public Function Select(Optional Field As Variant) As Request
   
-  DIM hReq AS NEW Request(Field, TYPE_SELECT)
-  RETURN hReq
+  Dim hReq As New Request(Field, TYPE_SELECT)
+  Return hReq
   
-END
+End
 
-STATIC PUBLIC FUNCTION Delete() AS Request
+Static Public Function Delete() As Request
   
-  DIM hReq AS NEW Request("", TYPE_DELETE)
-  RETURN hReq
+  Dim hReq As New Request("", TYPE_DELETE)
+  Return hReq
   
-END
+End
 
-PUBLIC SUB _new(OPTIONAL Field AS Variant, OPTIONAL Type AS Integer = TYPE_WHERE)
+Public Sub _new(Optional Field As Variant, Optional Type As Integer = TYPE_WHERE)
+  
+  Dim aField As String[]
   
   $iType = Type
 
-  IF IsObject(Field) AND IF Field IS String[] THEN
-    Field = Field.Join(",")
-  ENDIF
+  Try aField = Field
+  If aField Then 
+    $sField = aField.Join(",")
+  Else
+    $sField = Field
+  Endif
   
-  $sField = Field
-  
-END
+End
 
-PUBLIC FUNCTION From(Table AS String) AS Request
+Public Function From(Table As String) As Request
   
   $sTable = Table
-  RETURN ME
+  Return Me
   
-END
+End
 
 
-PUBLIC FUNCTION Where(Where AS String, OPTIONAL Op AS String = "AND") AS Request
+Public Function Where(Where As String, Optional Op As String = "AND") As Request
 
-  IF NOT Where THEN RETURN ME
-  IF $sWhere THEN $sWhere &= " " & Op & " "
+  If Not Where Then Return Me
+  If $sWhere Then $sWhere &= " " & Op & " "
   $sWhere &= "(" & Where & ")"
-  RETURN ME
+  Return Me
   
-END
+End
 
-PUBLIC FUNCTION OrderBy(OrderBy AS Variant) AS Request
+Public Function OrderBy(OrderBy As Variant) As Request
   
-  IF IsNull(OrderBy) THEN RETURN ME
+  Dim aOrderBy As String[]
   
-  IF IsObject(OrderBy) AND IF OrderBy IS String[] THEN
-    OrderBy = OrderBy.Join(",")
-  ENDIF
+  If IsNull(OrderBy) Then Return Me
+  
+  Try aOrderBy = OrderBy
+  
+  If aOrderBy Then
+    OrderBy = aOrderBy.Join(",")
+  Endif
 
-  IF $sOrderBy THEN $sOrderBy &= ","  
+  If $sOrderBy Then $sOrderBy &= ","  
   $sOrderBy &= OrderBy
-  RETURN ME
+  Return Me
   
-END
+End
 
-PUBLIC FUNCTION Get() AS String
+Public Function Get() As String
   
-  DIM sReq AS String
+  Dim sReq As String
   
-  IF $iType = TYPE_WHERE THEN
+  If $iType = TYPE_WHERE Then
   
     sReq = Replace($sWhere, "&", "&&")
   
-  ELSE
+  Else
   
-    IF NOT $sTable THEN RETURN
+    If Not $sTable Then Return
 
-    SELECT CASE $iType
-      CASE TYPE_SELECT
+    Select Case $iType
+      Case TYPE_SELECT
         sReq = "SELECT "
-      CASE TYPE_DELETE
+      Case TYPE_DELETE
         sReq = "DELETE "
-    END SELECT
+    End Select
   
     sReq &= $sField & " FROM " & $sTable
-    IF $sWhere THEN sReq &= " WHERE " & $sWhere
+    If $sWhere Then sReq &= " WHERE " & $sWhere
     
-  ENDIF
+  Endif
   
-  IF $sOrderBy THEN sReq &= " ORDER BY " & $sOrderBy
+  If $sOrderBy Then sReq &= " ORDER BY " & $sOrderBy
   
-  RETURN sReq
+  Return sReq
     
-END
+End

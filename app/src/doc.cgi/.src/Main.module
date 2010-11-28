@@ -41,6 +41,7 @@ Private $bOnlineHelp As Boolean
 Private $bNoTitle As Boolean
 Private $bNoImage As Boolean
 Private $bNoCache As Boolean
+Private $iIgnore As Integer
 
 Private $bNew As Boolean
 
@@ -546,9 +547,9 @@ Private Function GetLink(sPath As String, Optional sMyTitle As String, Optional 
     Endif
     
     sSuff = AddParam($sLangSuff, sMoreSuff)
-    If IsComponentPath(sPath) Then 
+    'If IsComponentPath(sPath) Then 
       If $sVersion = "3.0" Then sSuff = AddParam(sSuff, "v3")
-    Endif
+    'Endif
     
     If sTitle Then
       
@@ -572,7 +573,7 @@ Private Function GetLink(sPath As String, Optional sMyTitle As String, Optional 
           Endif
         Endif
         
-        Return "<img src=\"/image" &/ sPath & sSuff & "\" alt=\"" & EncodeHTML(sTitle) & "\"" & sMoreSuff & ">"
+        Return "<img src=\"/image" &/ sPath & sSuff & "\" alt=\"" & EncodeHTML(sTitle) & "\" title=\"" & EncodeHTML(sTitle) & "\" " & sMoreSuff & ">"
         
       Else
         
@@ -702,6 +703,8 @@ Private Sub EnterSection(sSection As String, Optional sArg As String)
   $bVerbatim = False
   $sList = ""
   
+  If $iIgnore > 0 And If $sSection <> "only" Then Return
+  
   Select Case $sSection
       
     Case "syntax"
@@ -757,18 +760,20 @@ Private Sub EnterSection(sSection As String, Optional sArg As String)
       $sRes &= "<div class=\"box\">\n"
       
     Case "only"
+      $cGotSpecial["only"] = True
       If sParam <> $sVersion Then
-        If IsComponentPath($sPath) Then
-          $sRes &= "<div style=\"display:none\">"
-        Else
-          $sRes &= "<table class=\"only-" & Left(sParam) & "\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">"
-          '$sRes &= "<tr><td class=\"only-" & Left(sParam) & "-title\" valign=\"top\">&nbsp;" & sParam & "&nbsp;</td><td width=\"100%\">&nbsp;</td></tr>"
-          $sRes &= "<tr><td class=\"only-contents\">"
-          $sRes &= "<div class=\"only-" & Left(sParam) & "-title\">&nbsp;" & sParam & "&nbsp;</div>"
-        Endif
+        'If IsComponentPath($sPath) Then
+        '  $sRes &= "<div style=\"display:none\">"
+        'Else
+        '  $sRes &= "<table class=\"only-" & Left(sParam) & "\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">"
+        '  '$sRes &= "<tr><td class=\"only-" & Left(sParam) & "-title\" valign=\"top\">&nbsp;" & sParam & "&nbsp;</td><td width=\"100%\">&nbsp;</td></tr>"
+        '  $sRes &= "<tr><td class=\"only-contents\">"
+        '  $sRes &= "<div class=\"only-" & Left(sParam) & "-title\">&nbsp;" & sParam & "&nbsp;</div>"
+        'Endif
         $sOnlyVersion = $sVersion
         $sVersion = sParam
         InitVersion($sVersion)
+        Inc $iIgnore
       Endif
       
     Case "html"
@@ -785,57 +790,62 @@ Private Sub LeaveSection()
   FinishList
   RemovePara
   
-  Select Case $sSection
-      
-    Case "syntax"
-      $sRes = RTrim($sRes) & "</pre><p>\n"
-      
-    Case "example"
-      $sRes = RTrim($sRes) & "</div>\n"
-      $bVerbatim = False
-      $bNoWiki = False
-      
-    Case "code"
-      $sRes = RTrim($sRes) & "</div>\n"
-      $bVerbatim = False
-      $bNoWiki = False
-      $bCode = False
-      
-    Case "error"
-      $sRes &= "</td></tr>\n"
-      $sRes &= "</table>\n"
-      
-    Case "seealso"
-      $sRes = Left$($sRes, $iPos) & Replace(Mid$($sRes, $iPos + 1, -4), "</a>", "</a>, ") & Right$($sRes, 4)
-      '$sRes &= "</td></tr>\n"
-      '$sRes &= "</table>\n"
-      $sRes &= "</div>\n"
-      
-    Case "warning", "info", "vb", "critical", "tip"
-      $sRes &= "</td></tr></table></div>\n"
-      
-    Case "title"
-      $sRes &= "</b></font></div>" ' no '\n' to prevent an '<p>' to be added
-      
-    Case "box"
-      $sRes &= "</div>\n"
-      
-    Case "only"
-      If $sOnlyVersion Then
-        If IsComponentPath($sPath) Then
-          $sRes &= "</div>"
-        Else
-          $sRes &= "</td></tr></table>"
+  If $iIgnore = 0 Or If $sSection = "only" Then 
+  
+    Select Case $sSection
+        
+      Case "syntax"
+        $sRes = RTrim($sRes) & "</pre><p>\n"
+        
+      Case "example"
+        $sRes = RTrim($sRes) & "</div>\n"
+        $bVerbatim = False
+        $bNoWiki = False
+        
+      Case "code"
+        $sRes = RTrim($sRes) & "</div>\n"
+        $bVerbatim = False
+        $bNoWiki = False
+        $bCode = False
+        
+      Case "error"
+        $sRes &= "</td></tr>\n"
+        $sRes &= "</table>\n"
+        
+      Case "seealso"
+        $sRes = Left$($sRes, $iPos) & Replace(Mid$($sRes, $iPos + 1, -4), "</a>", "</a>, ") & Right$($sRes, 4)
+        '$sRes &= "</td></tr>\n"
+        '$sRes &= "</table>\n"
+        $sRes &= "</div>\n"
+        
+      Case "warning", "info", "vb", "critical", "tip"
+        $sRes &= "</td></tr></table></div>\n"
+        
+      Case "title"
+        $sRes &= "</b></font></div>" ' no '\n' to prevent an '<p>' to be added
+        
+      Case "box"
+        $sRes &= "</div>\n"
+        
+      Case "only"
+        If $sOnlyVersion Then
+          'If IsComponentPath($sPath) Then
+          '  $sRes &= "</div>"
+          'Else
+          '  $sRes &= "</td></tr></table>"
+          'Endif
+          $sVersion = $sOnlyVersion
+          InitVersion($sVersion)
+          $sOnlyVersion = ""
+          Dec $iIgnore
         Endif
-        $sVersion = $sOnlyVersion
-        InitVersion($sVersion)
-        $sOnlyVersion = ""
-      Endif
-      
-    Case "html"
-      Dec $iNoEncode
-      
-  End Select
+        
+      Case "html"
+        Dec $iNoEncode
+        
+    End Select
+    
+  Endif
   
   Try $sSection = $aSection.Pop()
   
@@ -892,6 +902,8 @@ Private Function Encode(sText As String) As String
       Continue
       
     Endif
+    
+    If $iIgnore Then Continue
     
     If $iNoEncode Then
       $sRes &= sStr & "\n"
@@ -1098,6 +1110,7 @@ Private Function Encode(sText As String) As String
         
       Else If Left$(sStr) = "+" Then
         
+        $bExample = False
         iPos = 1
         While Mid$(sStr, iPos, 1) = "+"
           Inc iPos
@@ -1385,6 +1398,10 @@ Private Function Encode(sText As String) As String
     $sRes = Left$($sRes, -1)
   Wend
   
+  If Not $sRes And If $cGotSpecial.Exist("only") Then
+    Return Encode("{warning\n" & Subst(("This documentation page does not exist in version &1."), $sVersion) & "\n}\n")
+  Endif
+  
   Return $sRes
   
 End
@@ -1464,10 +1481,14 @@ End
 
 Private Sub PrintTitle(sTitle As String)
   
+  Dim iPos As Integer
+  
   If sTitle Then
     If $hSym Then
       If Not $hSym.IsHidden() Then Print $hClass.Name; ".";
     Endif
+    iPos = InStr(sTitle, "#")
+    If iPos Then sTitle = Left(sTitle, iPos - 1)
     Print EncodeHTML(sTitle)
     If $hClass Then
       Print " ("; $hComp.Key; ")";
@@ -1556,7 +1577,7 @@ Private Sub PrintVersion()
   
   If $bWget Then Return
   
-  If IsComponentPath($sPath) Then
+  'If IsComponentPath($sPath) Then
     Print "<div class=\"path\">&nbsp;&nbsp;";
     If $sVersion = "3.0" Then
       sElt = Replace($sUri, "v3", "")
@@ -1566,9 +1587,20 @@ Private Sub PrintVersion()
       Print "<a href=\"/help" &/ AddParam($sUri, "v3"); "\">[3.0]</a>";
     Endif
     Print "</div>";
+  'Endif
+  
+End
+
+Private Sub PrintDivLang()
+  
+  If $sVersion And If $sPath <> "/" Then
+    Print "<div class=\"lang"; Replace$($sVersion, ".", ""); "\">";
+  Else
+    Print "<div class=\"lang\">";
   Endif
   
 End
+
 
 Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
   
@@ -1647,7 +1679,7 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
       '  Print "<p align=\"left\">"
       'Endif
       
-      Print "<div class=\"lang\">";
+      PrintDivLang()
       
       'Print "<div style=\"padding:8px 8px 8px 0px;\">";
       Print "<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr><td>";
@@ -1664,7 +1696,8 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
           Print "<a class=\"flag\" href=\"/help" &/ $sPath;
         Endif
         Print "?"; sLang; 
-        If IsComponentPath($sPath) And If $sVersion = "3.0" Then Print "&amp;v3";
+        'If IsComponentPath($sPath) And If $sVersion = "3.0" Then Print "&amp;v3";
+        If $sVersion = "3.0" Then Print "&amp;v3";
         Print "\">"; GetImage("lang/" & sLang, "class=\"flag\" alt=\"" & sLang & "\"", "top");
         Print "</a>";
       Next
@@ -1725,9 +1758,9 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
     Endif
     
     sSuff = $sLangSuff
-    If IsComponentPath($sPath) Then 
+    'If IsComponentPath($sPath) Then 
       If $sVersion = "3.0" Then sSuff = AddParam(sSuff, "v3")
-    Endif
+    'Endif
     
     If Not $bWget Then
       
@@ -1795,7 +1828,7 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
   
 Else If Not $bView Then
   
-  Print "<div class=\"lang\">";
+  PrintDivLang()
   PrintPath
   PrintVersion
   Print "</div>";
@@ -1946,17 +1979,33 @@ Private Function FindPage(sPath As String, Optional bNoLink As Boolean) As Resul
   
 End
 
-Private Function GetTitle(sPath As String) As String
+Private Function GetTitle(sPath As String, Optional bVersion As Boolean) As String
   
   Dim rPage As Result
   Dim sNewPath As String
+  Dim sTitle As String
+  Dim iPos As Integer
+  Dim sVer As String
+  Dim aVer As String[]
   
   rPage = FindPage(sPath)
   If rPage.Available Then
     'IF sPath LIKE "/comp/*/*/*" THEN
     '  RETURN GetTitle(File.Dir(sPath)) & "." & rPage!sTitle
     'ELSE
-    Return rPage!sTitle
+    sTitle = rPage!sTitle
+    iPos = InStr(sTitle, "#")
+    If iPos Then 
+      sVer = Mid$(sTitle, iPos + 1)
+      sTitle = Left(sTitle, iPos - 1)
+      If bVersion Then
+        aVer = Split(sVer, ",")
+        If aVer.Find($sVersion) < 0 And If aVer.Find(Left($sVersion)) < 0 Then
+          sTitle = ""
+        Endif
+      Endif
+    Endif
+    Return sTitle
   Else
     sNewPath = SubstitutePath(sPath)
     If sNewPath <> sPath Then Return GetTitle(sNewPath)
@@ -3619,7 +3668,8 @@ Private Function GetIndex(sRoot As String) As String
   rPage = DB.Find("page", "sLang = &1 AND sPath LIKE &2", DEFAULT_LANG, sRoot &/ "%") ' $Lang
   For Each rPage
     sPath = GetRealPath(rPage!sPath)
-    sTitle = GetTitle(sPath)
+    sTitle = GetTitle(sPath, True)
+    If Not sTitle Then Continue
     aPath.Add(sTitle & "\n" & rPage!sPath)
   Next
   
@@ -3733,7 +3783,8 @@ Private Function GetIndex2(sRoot As String) As String
     If Left(rPage!sTitle) = "@" Then
       If sPath Like (Replace(sRoot, "[", "[[]") &/ "*") Then Continue
     Endif
-    sTitle = GetTitle(sPath)
+    sTitle = GetTitle(sPath, True)
+    If Not sTitle Then Continue
     If sTitle Like Replace(sPrefix, "[", "[[]") Then
       sTitle = LTrim(Mid$(sTitle, Len(sPrefix)))
     Endif
@@ -3847,7 +3898,7 @@ Private Function GetTranslate() As String
   
 End
 
-Private Function GetTodo() As String
+Private Function GetToDo() As String
   
   Dim hComp As CComponent
   Dim hClass As CClassInfo

@@ -792,6 +792,7 @@ void gApplication::setBusy(bool b)
     iter = g_list_next(iter);
   }
   
+  do_iteration(true, true);
 }
 
 static bool _dirty = false;

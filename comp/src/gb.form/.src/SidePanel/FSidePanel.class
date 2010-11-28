@@ -342,6 +342,7 @@ Public Sub panMove_MouseDown()
 
   If Not $bVisible Then Return
   If Me.Parent.Design Then Return
+  If Not Me.Parent.Enabled Then Return
   If $bFixed Then Return
 
   $MX = Mouse.ScreenX - Me.Parent.W
@@ -388,6 +389,7 @@ Public Sub panMove_MouseMove()
   If Not Mouse.Left Then Return
   If Not $bVisible Then Return
   If Me.Parent.Design Then Return
+  If Not Me.Parent.Enabled Then Return
   If $bFixed Then Return
 
   iMax = Max(0, $iMax - Desktop.Scale * 8)
@@ -473,6 +475,7 @@ End
 
 Public Sub panMove_DblClick()
 
+  If Not Me.Parent.Enabled Then Return
   If $bVisible Then TogglePanel
 
 End
