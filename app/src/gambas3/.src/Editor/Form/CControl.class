@@ -416,7 +416,7 @@ Private Function GetRealValue(sProp As String, vVal As Variant) As Variant
 
     Case "Color"
 
-      If IsString(vRealVal) Then
+      If TypeOf(vRealVal) = gb.String Then
         If Not IsNull(Val(vRealVal)) Then
           vRealVal = Val(vRealVal)
         Else
@@ -670,7 +670,7 @@ Private Function ConvertToString(vVal As Variant, hProp As CPropertyInfo) As Str
 
     Case "Constant"
 
-      If IsString(vVal) Then
+      If TypeOf(vVal) = gb.String Then
         Return vVal
       Else
         Return hProp.ConstantList["#" & CStr(vVal)]

@@ -699,7 +699,7 @@ msgstr "Libre"
 #: FColorChooser.class:215 FCommit.class:386 FConflict.class:191
 #: FConnectionEditor.class:261 FCreateFile.class:928 FDebugInfo.class:520
 #: FEditor.class:2217 FFontChooser.class:85 FForm.class:2955
-#: FGotoLine.class:63 FHelpBrowser.class:342 FIconEditor.class:1396
+#: FGotoLine.class:63 FHelpBrowser.class:341 FIconEditor.class:1396
 #: FImportTable.class:39 FList.class:155 FMain.class:193
 #: FMakeInstall.class:318 FMenu.class:1243 FNewConnection.class:317
 #: FNewTable.class:165 FNewTranslation.class:70 FOpenProject.class:502
@@ -911,7 +911,7 @@ msgstr "Longueur"
 msgid "Default value"
 msgstr "Valeur par défaut"
 
-#: FConnectionEditor.class:58 FDebugExpr.class:425 FHelpBrowser.class:322
+#: FConnectionEditor.class:58 FDebugExpr.class:425 FHelpBrowser.class:321
 msgid "Index"
 msgstr "Index"
 
@@ -1054,7 +1054,7 @@ msgid "Connection editor"
 msgstr "Editeur de connexion"
 
 #: FConnectionEditor.class:1572 FEditor.class:2217 FForm.class:2955
-#: FHelpBrowser.class:348 FIconEditor.class:2035 FImageEditor.class:68
+#: FHelpBrowser.class:347 FIconEditor.class:2035 FImageEditor.class:68
 #: FTextEditor.class:489 FTranslate.class:711
 msgid "Reload"
 msgstr "Recharger"
@@ -1535,7 +1535,7 @@ msgstr "Aller à la ligne..."
 msgid "Find definition"
 msgstr "Trouver la définition"
 
-#: FEditor.class:3319 FHelpBrowser.class:330
+#: FEditor.class:3319 FHelpBrowser.class:329
 msgid "Go back"
 msgstr "Revenir en arrière"
 
@@ -1865,39 +1865,39 @@ msgstr "Langage par défaut"
 msgid "Help browser"
 msgstr "Navigateur d'aide"
 
-#: FHelpBrowser.class:336
+#: FHelpBrowser.class:335
 msgid "Go forward"
 msgstr "Aller en avant"
 
-#: FHelpBrowser.class:355
+#: FHelpBrowser.class:354
 msgid "Show help tree"
 msgstr "Afficher l'arborescence de l'aide"
 
-#: FHelpBrowser.class:366 FIconEditor.class:2215 FImageEditor.class:124
+#: FHelpBrowser.class:365 FIconEditor.class:2215 FImageEditor.class:124
 msgid "Zoom in"
 msgstr "Zoom avant"
 
-#: FHelpBrowser.class:372 FIconEditor.class:2223 FImageEditor.class:136
+#: FHelpBrowser.class:371 FIconEditor.class:2223 FImageEditor.class:136
 msgid "Zoom out"
 msgstr "Zoom arrière"
 
-#: FHelpBrowser.class:378
+#: FHelpBrowser.class:377
 msgid "No zoom"
 msgstr "Taille normale"
 
-#: FHelpBrowser.class:388
+#: FHelpBrowser.class:387
 msgid "Gambas site web"
 msgstr "Site Web de Gambas"
 
-#: FHelpBrowser.class:390
+#: FHelpBrowser.class:389
 msgid "http://gambas.sourceforge.net"
 msgstr "-"
 
-#: FHelpBrowser.class:397
+#: FHelpBrowser.class:396
 msgid "Print"
 msgstr "Imprimer"
 
-#: FHelpBrowser.class:404
+#: FHelpBrowser.class:403
 msgid "Modify documentation..."
 msgstr "Modifier la documentation..."
 
@@ -2789,7 +2789,7 @@ msgid "Please enter your e-mail address."
 msgstr "Veuillez saisir votre adresse e-mail."
 
 #: FMakeInstall.class:318 FPropertyProject.class:801 FSave.class:111
-#: Project.module:2856
+#: Project.module:2859
 msgid "Continue"
 msgstr "Continuer"
 
@@ -5485,7 +5485,12 @@ msgstr "&1ème"
 msgid "in form definition"
 msgstr "dans la définition du formulaire"
 
-#: Project.module:2008
+#: Project.module:1864
+#, fuzzy
+msgid "In class &1."
+msgstr "Dans la classe &1 à la ligne &2."
+
+#: Project.module:2011
 msgid ""
 "Some project source files are in conflict.\n"
 "Please solve them if you want to compile the project."
@@ -5493,143 +5498,143 @@ msgstr ""
 "Certains fichiers sources du projet sont en conflit.\n"
 "Veuillez résoudre ces conflits pour pouvoir compiler le projet."
 
-#: Project.module:2012
+#: Project.module:2015
 msgid "Compiling project"
 msgstr "Compilation du projet"
 
-#: Project.module:2024
+#: Project.module:2027
 msgid "Nothing to do."
 msgstr "Rien à faire."
 
-#: Project.module:2217
+#: Project.module:2220
 msgid "File already exists."
 msgstr "Ce fichier existe déja."
 
-#: Project.module:2250
+#: Project.module:2253
 msgid "Directory already exists."
 msgstr "Le répertoire existe déja."
 
-#: Project.module:2262
+#: Project.module:2265
 msgid "Cannot link template file."
 msgstr "Impossible de créer le lien vers le fichier modèle."
 
-#: Project.module:2268
+#: Project.module:2271
 msgid "Cannot copy template file."
 msgstr "Impossible de copier le fichier modèle."
 
-#: Project.module:2466
+#: Project.module:2469
 msgid "Making executable..."
 msgstr "Génération de l'exécutable..."
 
-#: Project.module:2510
+#: Project.module:2513
 msgid "Cannot make executable."
 msgstr "Impossible de créer l'exécutable."
 
-#: Project.module:2855
+#: Project.module:2858
 msgid "Some components are missing: &1"
 msgstr "Certains composants ne sont pas installés: &1"
 
-#: Project.module:3061
+#: Project.module:3064
 msgid "Cannot write project file."
 msgstr "Impossible d'écrire le fichier projet."
 
-#: Project.module:3093
+#: Project.module:3096
 msgid "Unable to create desktop shortcut."
 msgstr "Imposible de créer le raccourci sur le bureau."
 
-#: Project.module:3335
+#: Project.module:3338
 msgid "The directory will be removed at the next commit."
 msgstr "Le répertoire sera supprimé au prochain 'commit'."
 
-#: Project.module:3352
+#: Project.module:3355
 msgid "You must define a startup class or form!"
 msgstr "Vous devez définir une classe ou un formulaire de démarrage !"
 
-#: Project.module:3383
+#: Project.module:3386
 msgid "Please type a name."
 msgstr "Veuillez saisir un nom."
 
-#: Project.module:3387
+#: Project.module:3390
 msgid "This name contains a forbidden character:"
 msgstr "Ce nom contient un caractère interdit:"
 
-#: Project.module:3391
+#: Project.module:3394
 msgid "The name cannot begins with a dot."
 msgstr "Le nom ne peut pas commencer par un point."
 
-#: Project.module:3395
+#: Project.module:3398
 msgid "This name is already used. Choose another one."
 msgstr "Ce nom est déjà utilisé. Choisissez-en un autre."
 
-#: Project.module:3425
+#: Project.module:3428
 msgid "A class name must begin with a letter or an underscore, followed by any letter or digit."
 msgstr "Un nom de classe doit commencer par une lettre ou un caractère '_', et être suivi par des lettres ou des chiffres. "
 
-#: Project.module:3472
+#: Project.module:3476
 msgid "Destination already exists"
 msgstr "La destination existe déjà."
 
-#: Project.module:3672
+#: Project.module:3680
 msgid "Unable to rename '&1'"
 msgstr "Impossible de renommer « &1 »"
 
-#: Project.module:3787
+#: Project.module:3795
 msgid "Please type a project name."
 msgstr "Veuillez saisir un nom de projet."
 
-#: Project.module:3795
+#: Project.module:3803
 msgid "The project name cannot begin with a dot."
 msgstr "Un nom de projet ne peut commencer par un point."
 
-#: Project.module:3798
+#: Project.module:3806
 msgid "Non-ASCII characters are forbidden in a project name."
 msgstr "Un nom de projet ne peut contenir que des caractères ASCII."
 
-#: Project.module:3799
+#: Project.module:3807
 msgid "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr "Les caractères suivants sont interdits dans un nom de projet : ? * / \\ ESPACE"
 
-#: Project.module:3806
+#: Project.module:3814
 msgid "This project already exists."
 msgstr "Ce projet existe déjà."
 
-#: Project.module:3809
+#: Project.module:3817
 msgid "The project directory already exists."
 msgstr "Le répertoire du projet existe déjà."
 
-#: Project.module:3811
+#: Project.module:3819
 msgid "The project directory cannot be created because a file with the same name already exists."
 msgstr "Le répertoire du projet ne peut être créé car un fichier avec le même nom existe déjà."
 
-#: Project.module:3856
+#: Project.module:3864
 msgid "Create source package"
 msgstr "Générer un package des sources du projet"
 
-#: Project.module:3857
+#: Project.module:3865
 msgid "Source packages"
 msgstr "Paquetages sources"
 
-#: Project.module:4133
+#: Project.module:4141
 msgid "Cannot copy file &1."
 msgstr "Impossible de copier le fichier &1."
 
-#: Project.module:4182
+#: Project.module:4190
 msgid "Cannot create link &1."
 msgstr "Impossible de créer le lien &1."
 
-#: Project.module:4199
+#: Project.module:4207
 msgid "Cannot move a directory inside itself."
 msgstr "Impossible de déplacer un répertoire à l'intérieur de lui-même."
 
-#: Project.module:4263
+#: Project.module:4271
 msgid "Cannot move file &1."
 msgstr "Impossible de déplacer le fichier &1."
 
-#: Project.module:4801
+#: Project.module:4809
 msgid "modified"
 msgstr "modifié"
 
-#: Project.module:4903
+#: Project.module:4911
 msgid "Unable to update all forms."
 msgstr "Impossible de mettre à jour tous les formulaires."
 

@@ -713,13 +713,13 @@ End
 '   
 ' End
 
-Private Sub ShowString(Optional bHide As Boolean)
+Private Sub ShowString()
 
   Dim hForm As Object
   Dim bIgnoreCase As Boolean = chkCaseSensitive.Value = False
   Dim sStr As String
   
-  If chkHighlight.Value And If Not bHide Then sStr = cmbSearch.Text
+  If chkHighlight.Value And If Me.Visible Then sStr = cmbSearch.Text
   
   For Each hForm In Project.Files
     Try hForm.OnShowString(sStr, bIgnoreCase)
@@ -738,7 +738,11 @@ End
 
 Public Sub OnNewForm(hForm As Object)
   
-  Try hForm.OnShowString(If(chkHighlight.Value, cmbSearch.Text, ""), chkCaseSensitive.Value = False)
+  Dim sStr As String
+  
+  If chkHighlight.Value And If Me.Visible Then sStr = cmbSearch.Text
+  
+  Try hForm.OnShowString(sStr, chkCaseSensitive.Value = False)
   
 End
 
@@ -776,7 +780,9 @@ Public Sub WakeUp(bReplace As Boolean)
 
   Update()
   
-  Try sFind = $hCurrent.GetSelection()
+  If Not $hCurrent Is FForm Then 
+    Try sFind = $hCurrent.GetSelection()
+  Endif
 
   If $bReplace And If sFind Then
     cmbReplace.SelectAll
@@ -794,7 +800,7 @@ End
 Public Sub Form_Hide()
 
   If Not FMain.Enabled Then $bCancel = True
-  ShowString(True)
+  ShowString
 
 End
 
