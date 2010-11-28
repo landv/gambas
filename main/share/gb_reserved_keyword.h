@@ -493,7 +493,6 @@ SUBR_INFO COMP_subr_info[] =
 	{ "MkSingle",          94,  6,  1     },
 	{ "MkFloat",           94,  7,  1     },
 	{ "MkDate",            94,  8,  1     },
-	{ "MkPtr",             94,  11, 1     },
 	{ "MkPointer",         94,  11, 1     },
 	
 	{ "MkBool$",           94,  1,  1     },
