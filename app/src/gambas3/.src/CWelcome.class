@@ -28,7 +28,6 @@ Private Sub PaintText(sText As String, X As Integer, Y As Integer, iColor As Int
   Paint.Text(sText, X + 6, Y + 6)
   Paint.Fill
 
-
   Paint.Brush = Paint.Color(Color.RGB(128, 128, 128))
   Paint.Text(sText, X - 1, Y - 1)
   Paint.Text(sText, X + 1, Y - 1)
@@ -57,12 +56,12 @@ Public Sub dwgWelcome_Draw()
   Paint.Reset
 
   Paint.Font = Font["+12,Bold"]
-  X = PaintText("Gambas", 8, 48, Color.SelectedForeground)
+  X = PaintText("Gambas", 8, 48, &HFF7F7F) 'Color.SelectedForeground)
   
   Paint.Font = Font["+8,Bold"]
-  PaintText(Project.FullVersionWithRevision, X + 8, 32, Color.SelectedForeground)
+  PaintText(Project.FullVersionWithRevision, X + 8, 32, &HFF7F7F) 'Color.SelectedForeground)
   Paint.Font = Font["+2"]
-  PaintText("http://gambas.sourceforge.net", 12, 68, Color.LightForeground)
+  PaintText("http://gambas.sourceforge.net", 12, 68, &HFF7F7F) 'Color.LightForeground)
   
   Paint.Font = Font["Italic,+1"]
   PaintText(("This program is published under\nthe GNU General Public License."), 12, 104, Color.SelectedForeground)
