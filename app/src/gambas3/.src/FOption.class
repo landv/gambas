@@ -29,7 +29,7 @@ Private Sub ReadConfig()
       Case "FontChooser"
         hCtrl.SelectedFont = vVal
       Case "ComboBox"
-        If IsBoolean(vVal) Then 
+        If TypeOf(vVal) = gb.Boolean Then 
           hCtrl.Index = If(vVal, 1, 0)
         Else
           hCtrl.Index = vVal
