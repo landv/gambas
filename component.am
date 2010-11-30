@@ -20,7 +20,7 @@ install-data-hook:
 		) \
 	fi
 	@if test -d data; then \
-		@echo "Installing the $(COMPONENT) extra data files...";
+		echo "Installing the $(COMPONENT) extra data files..."; \
 		$(INSTALL) -d $(DESTDIR)$(gbdatadir)/$(COMPONENT); \
 		$(INSTALL) data/* $(DESTDIR)$(gbdatadir)/$(COMPONENT); \
 	fi
