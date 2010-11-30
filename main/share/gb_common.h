@@ -43,6 +43,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/param.h>
+#include <limits.h>
 
 #ifdef OS_MACOSX
 #define OS_FREEBSD
@@ -62,8 +63,6 @@ typedef unsigned long ulong;
 
 #if defined(OS_FREEBSD) || defined(OS_OPENBSD)
 
-  /* Get definition for PATH_MAX */
-  #include <limits.h>
   /* sighandler_t is replaced by sig_t */
   #define sighandler_t sig_t
 
@@ -96,8 +95,6 @@ typedef unsigned long ulong;
   #define _POSIX_C_SOURCE 3
   /* Get prototype for alloca() */
   #include <alloca.h>
-  /* Get definition for PATH_MAX */
-  #include <limits.h>
   /* Get definition for index() */
   #include <strings.h>
 
@@ -143,6 +140,10 @@ typedef
 
 #if __WORDSIZE == 64
 #define OS_64BITS 1
+#endif
+
+#ifndef LLONG_MAX
+#define LLONG_MAX 9223372036854775807LL
 #endif
 
 #define CLEAR(s) (memset(s, 0, sizeof(*s)))
