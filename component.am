@@ -19,6 +19,11 @@ install-data-hook:
 			fi \
 		) \
 	fi
+	@if test -d data; then \
+		@echo "Installing the $(COMPONENT) extra data files...";
+		$(INSTALL) -d $(DESTDIR)$(gbdatadir)/$(COMPONENT); \
+		$(INSTALL) data/* $(DESTDIR)$(gbdatadir)/$(COMPONENT); \
+	fi
 	@echo "Installing the $(COMPONENT) control icons if needed...";
 	@if test -d control; then \
 		$(INSTALL) -d $(DESTDIR)$(gbdatadir)/control; \
@@ -42,6 +47,7 @@ uninstall-hook:
 	@rm -rf $(DESTDIR)$(gbdatadir)/info/$(COMPONENT).info
 	@rm -rf $(DESTDIR)$(gbdatadir)/info/$(COMPONENT).list
 	@rm -rf $(DESTDIR)$(gbdatadir)/control/$(COMPONENT);
+	@rm -rf $(DESTDIR)$(gbdatadir)/$(COMPONENT);
 
 dist-hook:
 	@if test -d $(COMPONENT); then \
