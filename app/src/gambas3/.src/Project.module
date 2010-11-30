@@ -4946,9 +4946,11 @@ Public Sub IsReadOnly(sPath As String) As Boolean
   If Not Exist(sPath) Then Return True
   
   Do
-    sPath = File.Dir(sPath)
     If sPath = Project.Dir Or If sPath = "/" Then Break
-    If Stat(sPath).Type = gb.Link Then Return True
+    If Stat(sPath).Type = gb.Link Then 
+      Return True
+    Endif
+    sPath = File.Dir(sPath)
   Loop
   
 End
