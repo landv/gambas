@@ -24,7 +24,7 @@
 
 #include "Cfont.h"
 #include "Cimage.h"
-
+#if 0
 static StringList FontList;
 
 static void init_font_list(void )
@@ -53,14 +53,13 @@ BEGIN_METHOD_VOID(CFONTS_next)
 
 END_METHOD
 
-
 BEGIN_PROPERTY(CFONTS_count)
 
 	init_font_list();
 	GB.ReturnInteger(FontList.size());
 
 END_PROPERTY
-
+#endif
 BEGIN_METHOD(CFONT_load, GB_STRING path)
 
 	CFONT *font;
@@ -97,7 +96,7 @@ BEGIN_METHOD(CFONT_image, GB_STRING text)
 
 END_METHOD
 
-BEGIN_METHOD(CFONT_new, GB_STRING font)
+BEGIN_METHOD_VOID(CFONT_new)
 
 	THIS->font = new SDLfont();
 
@@ -112,10 +111,7 @@ END_METHOD
 
 BEGIN_PROPERTY(CFONT_name)
 
-	if (READ_PROPERTY)
-		GB.ReturnNewZeroString(FONT->GetFontName());
-	else
-		FONT->SetFontName(GB.ToZeroString(PROP(GB_STRING)));
+	GB.ReturnNewZeroString(FONT->GetFontName());
 
 END_PROPERTY
 
@@ -187,7 +183,7 @@ BEGIN_PROPERTY(CFONT_scalable)
 	GB.ReturnBoolean(FONT->IsFontScalable());
 
 END_PROPERTY
-
+#if 0
 GB_DESC CFonts[] =
 {
   GB_DECLARE("Fonts", 0),
@@ -198,23 +194,23 @@ GB_DESC CFonts[] =
 
   GB_END_DECLARE
 };
-
+#endif
 GB_DESC CFont[] =
 {
   GB_DECLARE("Font", sizeof(CFONT)),
 
   GB_STATIC_METHOD("Load", "Font", CFONT_load, "(Path)s"),
 
-  GB_METHOD("_new", NULL, CFONT_new, "[(Font)s]"),
+  GB_METHOD("_new", NULL, CFONT_new, NULL),
   GB_METHOD("_free", NULL, CFONT_free, NULL),
 
-  GB_PROPERTY("Name", "s", CFONT_name),
   GB_PROPERTY("Size", "i", CFONT_size),
   GB_PROPERTY("Bold", "b", CFONT_bold),
   GB_PROPERTY("Italic", "b", CFONT_italic),
 //  GB_PROPERTY("StrikeOut", "b", CFONT_strikeout),
   GB_PROPERTY("Underline", "b", CFONT_underline),
 
+  GB_PROPERTY_READ("Name", "s", CFONT_name),
   GB_PROPERTY_READ("Ascent", "i", CFONT_ascent),
   GB_PROPERTY_READ("Descent", "i", CFONT_descent),
   GB_PROPERTY_READ("Fixed", "b", CFONT_fixed),

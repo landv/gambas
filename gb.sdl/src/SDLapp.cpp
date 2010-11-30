@@ -25,7 +25,6 @@
 #include "SDLcore.h"
 #include "SDLwindow.h"
 #include "SDL_ttf.h"
-#include "SDLfont.h"
 
 #include <iostream>
 #include <string>
@@ -74,7 +73,6 @@ SDLapplication::SDLapplication(int &argc, char **argv)
 	SDLapp = this;
 	SDLcore::Init();
 	SDLdebug::Init();
-	SDLfont::Init();
 
 	return;
 

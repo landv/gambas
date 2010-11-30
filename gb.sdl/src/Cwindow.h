@@ -55,8 +55,7 @@ private:
 typedef
 	struct {
 		GB_BASE ob;
-		CFONT *font;
-            CCURSOR *cursor;
+		CCURSOR *cursor;
 
 		myWin *id;
 		bool openGL;

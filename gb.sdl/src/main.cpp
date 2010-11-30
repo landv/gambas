@@ -66,7 +66,7 @@ extern "C"
 	GB_DESC *GB_CLASSES[] EXPORT =
 	{
 		CLine, CFill,
-		CFonts, CFont,
+		CFont,
 		CDesktop,
 		CKey,
 		CMouse, CCursor,

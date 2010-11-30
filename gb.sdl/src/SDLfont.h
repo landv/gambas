@@ -32,24 +32,23 @@
 #include <string>
 
 #include "SDLsurface.h"
-
+#if 0
 typedef std::vector<std::string> StringList;
 
 enum _fonttype {
 	SDLTTF_font = 1,
 	X_font};
-
+#endif
 class SDLfont
 {
 public:
-	SDLfont();
-	SDLfont(char* fontfile);
+	SDLfont(const char* fontfile = 0);
 	~SDLfont();
 
-	static StringList GetFontList(void );
-	static void Init(void );
+//	static StringList GetFontList(void );
+//	static void Init(void );
 	
-	void SetFontName(char* name);
+//	void SetFontName(char* name);
 	void SetFontSize(int size);
 	void SetFontBold(bool state);
 	void SetFontItalic(bool state);
@@ -74,15 +73,12 @@ public:
 private:
 	void OpenFont(const char* file);
 	
-	int hfonttype;
 	int hfontsize;
-	int hfontindex;
 	std::string hfontname;
+	int hSDLfontstyle;
 
 	/* SDL_TTF font */
 	TTF_Font *hSDLfont;
-        int hSDLfontstyle;
-	
 };
 
 #endif /* _SDLFONT_H */

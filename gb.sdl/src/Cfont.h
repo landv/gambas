@@ -29,7 +29,7 @@
 
 #ifndef __CFONT_CPP
 extern GB_DESC CFont[];
-extern GB_DESC CFonts[];
+//extern GB_DESC CFonts[];
 #else
 
 #define THIS ((CFONT *)_object)

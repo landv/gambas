@@ -50,7 +50,7 @@ SDLcursor::SDLcursor(const SDLcursor& curs)
 
 SDLcursor::~SDLcursor()
 {
-	if (!hImgCursor)
+	if (hImgCursor)
 		XcursorImageDestroy(hImgCursor);
 }
 
@@ -98,10 +98,12 @@ void SDLcursor::SetShape(int shape)
 
 void SDLcursor::SetCursor(SDLsurface *image, int xhot, int yhot)
 {
-	if (image->IsNull())
+	if (image->IsNull()) {
+		hShape = SDL::BlankCursor;
 		return;
-
-	if (!hImgCursor)
+	}
+	
+	if (hImgCursor)
 		XcursorImageDestroy(hImgCursor);
 
 	hImgCursor = XcursorImageCreate(image->GetWidth(), image->GetHeight());

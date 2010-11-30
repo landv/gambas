@@ -24,18 +24,20 @@
 #include "SDLapp.h"
 #include "gb_common.h"
 
-#include <algorithm>
-#include <iostream>
-#include <sstream>
+//#include <algorithm>
+//#include <iostream>
+//#include <sstream>
 #include <string>
 #include <ctype.h>
 
+#define DEFAULT_FONT_SIZE 20
+#define DEFAULT_FONT DATA_DIR "/DejaVuSans.ttf"
 /*
 #ifndef TTF_STYLE_STRIKETHROUGH
 #define TTF_STYLE_STRIKETHROUGH	0x08
 #endif
 */
-
+#if 0
 typedef struct {
 	std::string name;
 	std::string realname;
@@ -46,7 +48,6 @@ typedef struct {
 static std::vector<fontdesc> fontDB;
 static StringList _FontList;
 
-#define DEFAULT_FONT_SIZE 25
 #define DEFAULT_DPI 72 /* Default DPI size in SDL_TTF */
 
 inline bool cmp_db_nocase(const fontdesc x, const fontdesc y)
@@ -138,26 +139,18 @@ void SDLfont::Init()
 	
 	XCloseDisplay(disp);
 }
-
-SDLfont::SDLfont()
+#endif
+SDLfont::SDLfont(const char *fontfile)
 {
-	hfonttype = X_font;
 	hfontsize = DEFAULT_FONT_SIZE;
-	hfontindex = 0;
+
+	if (!fontfile)
+		hfontname = DEFAULT_FONT;
+	else
+		hfontname = fontfile;
 	hSDLfont = 0;
-	
-	hfontname = fontDB[hfontindex].path;
+
 	OpenFont(hfontname.c_str());
-}
-
-SDLfont::SDLfont(char *fontfile)
-{
-	hfonttype = SDLTTF_font;
-	hfontsize = DEFAULT_FONT_SIZE;
-	hfontname = fontfile;
-	hSDLfont = 0;
-
-	OpenFont(fontfile);
 }
 
 SDLfont::~SDLfont()
@@ -176,6 +169,7 @@ void SDLfont::OpenFont(const char* file)
 	if (UNLIKELY(hSDLfont == NULL))
 		SDLerror::RaiseError(TTF_GetError());
 }
+#if 0
 void SDLfont::SetFontName(char* name)
 {
 	std::string font = name;
@@ -195,13 +189,10 @@ void SDLfont::SetFontName(char* name)
 	}
 	SDLerror::RaiseError("Font not found!");
 }
-
+#endif
 const char* SDLfont::GetFontName(void )
 {
-	if (hfonttype == SDLTTF_font)
-		return hfontname.substr((hfontname.find_last_of("/"))+1).c_str();
-	else
-		return fontDB[hfontindex].name.c_str();
+	return hfontname.substr((hfontname.find_last_of("/"))+1).c_str();
 }
 
 void SDLfont::SetFontSize(int size)
