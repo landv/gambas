@@ -295,16 +295,18 @@ static void gambas_handle_event(GdkEvent *event)
 			//fprintf(stderr, "type: %s\n", G_OBJECT_TYPE_NAME(widget));
 			if (!strcmp(G_OBJECT_TYPE_NAME(gtk_widget_get_toplevel(widget)), "GtkPrintUnixDialog"))
 			{
-				//fprintf(stderr, "event: %d\n", event->type);
 				if (event->type == GDK_MAP)
 				{
+					//fprintf(stderr, "event: MAP!\n");
 					widget = gtk_window_get_default_widget(GTK_WINDOW(gtk_widget_get_toplevel(widget)));
 					if (widget && GTK_IS_BUTTON(widget))
 					{
 						gApplication::_close_next_window = false;
 						gtk_button_clicked(GTK_BUTTON(widget));
+						goto __HANDLE_EVENT;
 						//g_timeout_add(0, (GSourceFunc)close_dialog, GTK_BUTTON(widget));
 					}
+					//fprintf(stderr, "event: MAP! <<< end\n");
 				}
 			}
 		}
@@ -314,6 +316,8 @@ static void gambas_handle_event(GdkEvent *event)
 		goto __HANDLE_EVENT;
 	
 	widget = gtk_get_event_widget(event);
+	if (!widget)
+		goto __HANDLE_EVENT;
 	
 	grab = gtk_grab_get_current();
 	if (grab)

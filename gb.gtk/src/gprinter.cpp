@@ -66,7 +66,7 @@ static void cb_end(GtkPrintOperation *operation, GtkPrintContext *context, gPrin
 	#if DEBUG_ME
 	fprintf(stderr, "cb_end\n");
 	#endif
-	if (printer->onEnd)
+	if (printer->_preview && printer->onEnd)
 		(*printer->onEnd)(printer);
 }
 
