@@ -869,6 +869,9 @@ void gControl::setFocus()
 {
 	gMainWindow *win = window();
 	
+	if (!win)
+		return;
+	
 	if (win->isVisible())
 	{
 		//if (isVisible() && bufW > 0 && bufH > 0)

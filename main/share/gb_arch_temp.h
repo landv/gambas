@@ -159,6 +159,8 @@ static void load_arch(ARCH *arch, const char *path)
 		}
 	}
 
+	_path = NULL;
+
 	#if 0
   for (i = 0; i < arch->header.n_symbol; i++)
 	{

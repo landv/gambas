@@ -359,7 +359,7 @@ char* gTable::getFieldText(int col,int row)
 void gTable::setFieldText(int col,int row, const char* value)
 {
 	gTableData *d = getData(row, col, true);
-	d->setText(value);
+	if (d) d->setText(value);
 }
 
 char* gTable::getFieldRichText(int col,int row)
@@ -371,7 +371,7 @@ char* gTable::getFieldRichText(int col,int row)
 void gTable::setFieldRichText(int col,int row, const char* value)
 {
 	gTableData *d = getData(row, col, true);
-	d->setRichText(value);
+	if (d) d->setRichText(value);
 }
 
 gColor gTable::getFieldFg (int col,int row)
@@ -383,7 +383,7 @@ gColor gTable::getFieldFg (int col,int row)
 void gTable::setFieldFg (int col,int row, gColor value)
 {
 	gTableData *d = getData(row, col, true);
-	d->fg = value;
+	if (d) d->fg = value;
 }
 
 gColor gTable::getFieldBg (int col,int row)
@@ -395,7 +395,7 @@ gColor gTable::getFieldBg (int col,int row)
 void gTable::setFieldBg (int col,int row, gColor value)
 {
 	gTableData *d = getData(row, col, true);
-	d->bg = value;
+	if (d) d->bg = value;
 }
 
 int gTable::getFieldPadding(int col, int row)
@@ -407,7 +407,7 @@ int gTable::getFieldPadding(int col, int row)
 void gTable::setFieldPadding(int col, int row, int value)
 {
 	gTableData *d = getData(row, col, true);
-	d->padding = value;
+	if (d) d->padding = value;
 }
 
 int gTable::getFieldAlignment(int col, int row)
@@ -419,7 +419,7 @@ int gTable::getFieldAlignment(int col, int row)
 void gTable::setFieldAlignment(int col, int row, int value)
 {
 	gTableData *d = getData(row, col, true);
-	d->alignment = value;
+	if (d) d->alignment = value;
 }
 
 gPicture *gTable::getFieldPicture(int col, int row)
@@ -431,7 +431,7 @@ gPicture *gTable::getFieldPicture(int col, int row)
 void gTable::setFieldPicture(int col, int row, gPicture *value)
 {
 	gTableData *d = getData(row, col, true);
-	d->setPicture(value);
+	if (d) d->setPicture(value);
 }
 
 gFont *gTable::getFieldFont(int col, int row)
@@ -443,7 +443,7 @@ gFont *gTable::getFieldFont(int col, int row)
 void gTable::setFieldFont(int col, int row, gFont *value)
 {
 	gTableData *d = getData(row, col, true);
-	d->setFont(value);
+	if (d) d->setFont(value);
 }
 
 bool gTable::getFieldWordWrap(int col, int row)
@@ -455,7 +455,7 @@ bool gTable::getFieldWordWrap(int col, int row)
 void gTable::setFieldWordWrap(int col, int row, bool value)
 {
 	gTableData *d = getData(row, col, true);
-	d->wordWrap = value;
+	if (d) d->wordWrap = value;
 }
 
 

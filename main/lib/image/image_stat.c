@@ -543,7 +543,9 @@ static int handle_jpeg (IMAGE_STREAM * stream, IMAGE_INFO *result) //, zval *inf
 			case M_SOF13:
 			case M_SOF14:
 			case M_SOF15:
+				#if	0
 				if (ret == 1) {
+				#endif
 					/* handle SOFn block */
 					length = php_read2(stream);
 					stream_getc(stream);
@@ -560,11 +562,13 @@ static int handle_jpeg (IMAGE_STREAM * stream, IMAGE_INFO *result) //, zval *inf
 						return result;
 					}
 					#endif
+				#if 0
 				} else {
 					if (!php_skip_variable(stream)) {
 						return ret;
 					}
 				}
+				#endif
 				break;
 
 			case M_APP0:

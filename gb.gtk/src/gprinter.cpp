@@ -175,11 +175,11 @@ bool gPrinter::run(bool configure)
 	operation = gtk_print_operation_new();
 	_operation = operation;
 	
+	gtk_print_operation_set_embed_page_setup(operation, true);
 	gtk_print_operation_set_n_pages(operation, _page_count);
 	gtk_print_operation_set_use_full_page(operation, _use_full_page);
-  
 	gtk_print_operation_set_print_settings(operation, _settings);
-	//gtk_print_operation_set_default_page_setup(_operation, _page);
+	gtk_print_operation_set_default_page_setup(_operation, _page);
   
 	if (configure)
 	{
@@ -234,11 +234,17 @@ bool gPrinter::run(bool configure)
 		#endif
 	}
 
-	g_object_unref(G_OBJECT(operation));
-	_operation = NULL;
-	
 	if (!configure)
 		_page_count_set = false;
+	
+	if (configure && res == GTK_PRINT_OPERATION_RESULT_APPLY)
+	{
+		g_object_unref(G_OBJECT(_page));
+		_page = gtk_page_setup_copy(gtk_print_operation_get_default_page_setup(operation));
+	}
+	
+	g_object_unref(G_OBJECT(operation));
+	_operation = NULL;
 	
 	return res != GTK_PRINT_OPERATION_RESULT_APPLY;
 }
@@ -269,10 +275,10 @@ int gPrinter::orientation() const
 {
 	switch(gtk_print_settings_get_orientation(_settings))
 	{
-		case GTK_PAGE_ORIENTATION_PORTRAIT: return GB_PRINT_PORTRAIT;
 		case GTK_PAGE_ORIENTATION_LANDSCAPE: return GB_PRINT_LANDSCAPE;
 		case GTK_PAGE_ORIENTATION_REVERSE_PORTRAIT: return GB_PRINT_PORTRAIT;
 		case GTK_PAGE_ORIENTATION_REVERSE_LANDSCAPE: return GB_PRINT_LANDSCAPE;
+		case GTK_PAGE_ORIENTATION_PORTRAIT: default: return GB_PRINT_PORTRAIT;
 	}
 }
 
@@ -289,6 +295,7 @@ void gPrinter::setOrientation(int v)
 	}
 	
 	gtk_print_settings_set_orientation(_settings, orient);
+	gtk_page_setup_set_orientation(_page, orient);
 }
 
 GtkPaperSize *gPrinter::getPaperSize()
@@ -317,6 +324,7 @@ void gPrinter::setPaperModel(int v)
 	_paper_size = v;
 	paper = getPaperSize();
 	gtk_print_settings_set_paper_size(_settings, paper);
+	gtk_page_setup_set_paper_size(_page, paper);
 	gtk_paper_size_free(paper);
 }
 
@@ -499,6 +507,6 @@ void gPrinter::setOutputFileName(const char *file)
 	gtk_print_settings_set(_settings, GTK_PRINT_SETTINGS_OUTPUT_URI, uri);	
 
 	// It does not work!!!
-	//if (format)
-	//	gtk_print_settings_set(_settings, GTK_PRINT_SETTINGS_OUTPUT_FILE_FORMAT, format);
+	if (format)
+		gtk_print_settings_set(_settings, GTK_PRINT_SETTINGS_OUTPUT_FILE_FORMAT, format);
 }

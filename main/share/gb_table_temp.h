@@ -320,14 +320,16 @@ bool SYMBOL_find_old(void *symbol, int n_symbol, size_t s_symbol, int flag,
 const char *TABLE_get_symbol_name(TABLE *table, int index)
 {
 	SYMBOL *sym;
+	int len;
 
 	if (UNLIKELY((index < 0) || (index >= ARRAY_count(table->symbol))))
 		strcpy(_buffer, "?");
 	else
 	{
 		sym = SYM(table, index);
-		memcpy(_buffer, sym->name, Min(MAX_SYMBOL_LEN, sym->len));
-		_buffer[sym->len] = 0;
+		len = Min(MAX_SYMBOL_LEN, sym->len);
+		memcpy(_buffer, sym->name, len);
+		_buffer[len] = 0;
 	}
 
 	return _buffer;

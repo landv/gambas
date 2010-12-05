@@ -249,7 +249,7 @@ static int strnatcmp_compare_right(const char *a, int la, const char *b, int lb)
 			if (!bias)
 				bias = +1;
 		} 
-		else if (!ca  &&  !cb)
+		else if (!ca) // && !cb)
 			return bias;
 	}
 

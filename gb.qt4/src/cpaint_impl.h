@@ -71,11 +71,14 @@ public:
 	virtual Type type() const;
 };
 
-class MyPaintDevice: public QImage
+class MyPaintDevice: public QPaintDevice
 {
 public:
 	MyPaintDevice();
 	virtual QPaintEngine *paintEngine() const;
+	
+protected:
+	virtual int metric(PaintDeviceMetric m) const;
 
 private:
 	static MyPaintEngine engine;

@@ -624,6 +624,7 @@ BEGIN_METHOD(CFILE_load, GB_STRING path)
 		}
 		
 		STREAM_close(&stream);
+		_stream = NULL;
 
 		GB_ReturnString(str);
 	}

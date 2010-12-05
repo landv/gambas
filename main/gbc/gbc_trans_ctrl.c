@@ -299,7 +299,7 @@ void TRANS_control_exit()
 	TRANS_LABEL *label;
 	short id;
 
-	/* R�olution des GOTO */
+	/* GOTO are resolved */
 
 	if (goto_info)
 	{

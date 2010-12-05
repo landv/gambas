@@ -200,13 +200,17 @@ static CLASS *class_replace_global(const char *name)
 
 		new_name = (char *)new_class->name;
 
-		TABLE_find_symbol(&_global_table, name, len, &index);
-		csym = (CLASS_SYMBOL *)TABLE_get_symbol(&_global_table, index);
-		csym->class = new_class;
+		if (TABLE_find_symbol(&_global_table, name, len, &index))
+		{
+			csym = (CLASS_SYMBOL *)TABLE_get_symbol(&_global_table, index);
+			csym->class = new_class;
+		}
 
-		TABLE_find_symbol(&_global_table, new_name, len + 1, &index);
-		csym = (CLASS_SYMBOL *)TABLE_get_symbol(&_global_table, index);
-		csym->class = class;
+		if (TABLE_find_symbol(&_global_table, new_name, len + 1, &index))
+		{
+			csym = (CLASS_SYMBOL *)TABLE_get_symbol(&_global_table, index);
+			csym->class = class;
+		}
 
 		new_class->name = class->name;
 		class->name = new_name;

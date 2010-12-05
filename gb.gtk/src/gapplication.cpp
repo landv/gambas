@@ -303,6 +303,7 @@ static void gambas_handle_event(GdkEvent *event)
 					{
 						gApplication::_close_next_window = false;
 						gtk_button_clicked(GTK_BUTTON(widget));
+						return;
 						goto __HANDLE_EVENT;
 						//g_timeout_add(0, (GSourceFunc)close_dialog, GTK_BUTTON(widget));
 					}

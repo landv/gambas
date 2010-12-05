@@ -300,7 +300,6 @@ long SqliteDatabase::nextid(const char* sname) {
     if ((last_err = sqlite_exec(conn,sqlcmd,NULL,NULL,NULL)) != SQLITE_OK) return DB_UNEXPECTED_RESULT;
     return id;    
   }
-  return DB_UNEXPECTED_RESULT;
 }
 
 

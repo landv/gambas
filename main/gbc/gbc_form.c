@@ -44,7 +44,7 @@
 
 /*#define DEBUG*/
 
-static const char *_source;
+static char *_source;
 static const char *_current;
 
 static FORM_PARENT form_parent[MAX_FORM_PARENT];

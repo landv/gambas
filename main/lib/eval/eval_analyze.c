@@ -227,6 +227,7 @@ static void analyze(EVAL_ANALYZE *result)
   pattern = EVAL->pattern;
   src = EVAL->source;
   colors_len = 0;
+	nspace = 0;
 
   if (EVAL->len <= 0)
     return;

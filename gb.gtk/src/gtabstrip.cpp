@@ -517,9 +517,11 @@ void gTabStrip::destroyTab(int ind)
 
 bool gTabStrip::removeTab(int ind)
 {
-	if (get(ind)->count())
+	gTabStripPage *page = get(ind);
+	
+	if (!page || page->count())
 		return true;
-		
+	
 	destroyTab(ind);
 	return false;
 }

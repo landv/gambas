@@ -563,7 +563,6 @@ long SqliteDatabase::nextid(const char *sname)
 			return DB_UNEXPECTED_RESULT;
 		return id;
 	}
-	return DB_UNEXPECTED_RESULT;
 }
 
 

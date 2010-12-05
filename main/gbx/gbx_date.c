@@ -612,7 +612,10 @@ bool DATE_timer(double *result, int from_start)
   struct timeval tv;
 
 	if (gettimeofday(&tv, NULL))
+	{
+		*result = 0;
 		return TRUE;
+	}
 	
 	*result = DATE_to_double(&tv, from_start);
 	return FALSE;

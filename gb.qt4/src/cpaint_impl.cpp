@@ -667,6 +667,7 @@ static void draw_text(GB_PAINT *d, bool rich, const char *text, int len, float w
 		DRAW_text(&p, QString::fromUtf8(text, len), 0, 0, w, h, CCONST_alignment(align, ALIGN_TOP_NORMAL, true));	
 	
 	p.end();
+	_draw_path = NULL;
 }
 
 static void Text(GB_PAINT *d, const char *text, int len, float w, float h, int align)
@@ -698,6 +699,7 @@ static void get_text_extents(GB_PAINT *d, bool rich, const char *text, int len, 
 	p.end();
 	
 	get_path_extents(&path, ext, QTransform());
+	_draw_path = NULL;
 }
 
 static void TextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext)
@@ -1069,11 +1071,31 @@ void MyPaintEngine::drawTextItem(const QPointF &p, const QTextItem &textItem)
 
 MyPaintEngine MyPaintDevice::engine;
 
-MyPaintDevice::MyPaintDevice() : QImage(1, 1, QImage::Format_ARGB32)
+MyPaintDevice::MyPaintDevice() : QPaintDevice() //QImage(1, 1, QImage::Format_ARGB32)
 {
 }
 
 QPaintEngine *MyPaintDevice::paintEngine() const
 { 
 	return &engine; 
+}
+
+int MyPaintDevice::metric(PaintDeviceMetric m) const
+{
+	QPaintDevice *d = PAINT_get_current()->device();
+
+	switch(m)
+	{
+		case PdmWidth: return d->width();
+		case PdmHeight: return d->height();
+		case PdmWidthMM: return d->widthMM();
+		case PdmHeightMM: return d->heightMM();
+		case PdmNumColors: return d->colorCount();
+		case PdmDepth: return d->depth();
+		case PdmDpiX: return d->logicalDpiX();
+		case PdmDpiY: return d->logicalDpiY();
+		case PdmPhysicalDpiX: return d->physicalDpiX();
+		case PdmPhysicalDpiY: return d->physicalDpiY();
+		default: return 0;
+	}
 }

@@ -158,8 +158,12 @@ static void init(void)
 
 	if (!_root[0])
 	{
+		const char *dir;
+		
 		path = FILE_find_gambas();
-		strncpy(_root, FILE_get_dir(FILE_get_dir(path)), PATH_MAX);
+		dir = FILE_get_dir(FILE_get_dir(path));
+		if (dir)
+			strncpy(_root, dir, PATH_MAX);
 	}
 
 	#ifdef OS_64BITS

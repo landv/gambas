@@ -414,7 +414,7 @@ static void analyze_single(int op)
 
 static void analyze_call()
 {
-  static PATTERN *byref_pattern[MAX_PARAM_OP];
+  static PATTERN *byref_pattern[MAX_PARAM_FUNC];
 
   int i, nparam_post = 0;
   PATTERN subr_pattern = NULL_PATTERN;
@@ -499,7 +499,7 @@ static void analyze_call()
 	
 			nparam_post++;
 	
-			if (nparam_post > MAX_PARAM_FUNC)
+			if (nparam_post >= MAX_PARAM_FUNC)
 				THROW("Too many arguments");
 		}
 
