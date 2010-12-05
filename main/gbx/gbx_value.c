@@ -450,7 +450,7 @@ __i2g:
 __l2g:
 
 	value->_single.value = (float)value->_long.value;
-	if (!finitef(value->_single.value))
+	if (!isfinite(value->_single.value))
 		THROW(E_OVERFLOW);
 	value->type = T_SINGLE;
 	return;
@@ -458,7 +458,7 @@ __l2g:
 __f2g:
 
 	value->_single.value = (float)value->_float.value;
-	if (!finitef(value->_single.value))
+	if (!isfinite(value->_single.value))
 		THROW(E_OVERFLOW);
 	value->type = T_SINGLE;
 	return;

@@ -110,7 +110,7 @@ static const char *_message[67] =
   /* 62 E_BYREF */ "Argument cannot be passed by reference",
   /* 63 E_OVERRIDE */ ".3'&1.&2' is badly overridden in class '&3'",
 	/* 64 E_NKEY */ "Void key",
-	/* 65 E_SARRAY */ "Static array",
+	/* 65 E_SARRAY */ "Embedded array",
 	/* 66 E_EXTCB */ ".1Cannot create callback: &1"
 	/* 67 E_SERIAL */ "Serialization error"
 };
