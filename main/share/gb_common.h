@@ -46,6 +46,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/param.h>
+#include <limits.h>
 
 #if defined(__GNU_LIBRARY__) || defined(OS_FREEBSD) 
 #include <getopt.h>
@@ -128,6 +129,10 @@ typedef
 
 #if __WORDSIZE == 64
 #define OS_64BITS 1
+#endif
+
+#ifndef LLONG_MAX
+#define LLONG_MAX 9223372036854775807LL
 #endif
 
 #define CLEAR(s) (memset(s, 0, sizeof(*s)))
