@@ -932,7 +932,7 @@ fflush(stderr);
 	SQLULEN precision;
 	SQLSMALLINT scale;
 	SQLINTEGER i;
-	SQLINTEGER displaysize;
+	SQLLEN displaysize;
 	ODBC_FIELDS *field, *current;
 	SQLINTEGER collen;
 	int nresultcols;
@@ -1862,7 +1862,12 @@ fflush(stderr);
 	SQLLEN nIndicatorRemarks;
 	int compare = -1;
 	ODBC_CONN *han = (ODBC_CONN *)db->handle;
+	int len;
 
+	len = strlen(table);
+	if (len == 0)
+		return FALSE;
+	
 	retcode = SQLAllocHandle(SQL_HANDLE_STMT, han->odbcHandle, &statHandle);
 
 	if ((retcode != SQL_SUCCESS) && (retcode != SQL_SUCCESS_WITH_INFO))
@@ -1892,7 +1897,7 @@ fflush(stderr);
 	{
 
 		//printf("le tabelle in comparazione %s : %s\n",szTableName,table);
-		compare = strncmp((char *)szTableName, table, sizeof(table));
+		compare = strncmp((char *)szTableName, table, len);
 		szTableName[0] = '\0';
 		szTableType[0] = '\0';
 		szTableRemarks[0] = '\0';
@@ -2516,7 +2521,7 @@ fflush(stderr);
 	SQLHSTMT statHandle1;
 	SQLRETURN retcode;
 	//SQLRETURN V_OD_erg;
-	SQLINTEGER auton=SQL_FALSE;
+	SQLLEN auton=SQL_FALSE;
 	int i;
 	
 	ODBC_CONN *han = (ODBC_CONN *)db->handle;
