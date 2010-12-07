@@ -48,6 +48,8 @@ public:
 	void setStep(int vl);
 	void setPageStep(int vl);
 	
+	int getDefaultSize();
+	
 	virtual void resize(int w, int h);
 
 //"Signals"

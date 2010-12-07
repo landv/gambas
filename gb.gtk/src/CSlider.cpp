@@ -109,6 +109,12 @@ BEGIN_PROPERTY(CSLIDER_mark)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Slider_DefaultSize)
+
+	GB.ReturnInteger(SLIDER->getDefaultSize());
+
+END_PROPERTY
+
 GB_DESC CSliderDesc[] =
 {
   GB_DECLARE("Slider", sizeof(CSLIDER)), GB_INHERITS("Control"),
@@ -142,6 +148,7 @@ GB_DESC CScrollBarDesc[] =
   GB_PROPERTY("MaxValue", "i", CSLIDER_maxval),
   GB_PROPERTY("Step", "i", CSLIDER_linestep),
   GB_PROPERTY("PageStep", "i", CSLIDER_pagestep),
+  GB_PROPERTY("DefaultSize", "i", Slider_DefaultSize),
 
   GB_EVENT("Change", 0, 0, &EVENT_Change),
 

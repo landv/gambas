@@ -25,9 +25,9 @@
 #include "main.h"
 #include "gambas.h"
 
-#include <qapplication.h>
-#include <qscrollbar.h>
-//Added by qt3to4:
+#include <QApplication>
+#include <QStyle>
+#include <QScrollBar>
 #include <QResizeEvent>
 
 #include "CWidget.h"
@@ -165,6 +165,11 @@ BEGIN_PROPERTY(CSCROLLBAR_pagestep)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(ScrollBar_DefaultSize)
+
+	GB.ReturnInteger(WIDGET->style()->pixelMetric(QStyle::PM_ScrollBarExtent));
+
+END_PROPERTY
 
 /***************************************************************************
 
@@ -204,6 +209,8 @@ GB_DESC CScrollBarDesc[] =
   GB_DECLARE("ScrollBar", sizeof(CSCROLLBAR)), GB_INHERITS("Control"),
 
   GB_METHOD("_new", NULL, CSCROLLBAR_new, "(Parent)Container;"),
+
+	GB_PROPERTY_READ("DefaultSize", "i", ScrollBar_DefaultSize),
 
   //GB_CONSTANT("Vertical","i", Qt::Vertical),
   //GB_CONSTANT("Horizontal","i", Qt::Horizontal),

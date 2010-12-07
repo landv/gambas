@@ -370,3 +370,15 @@ void gScrollBar::resize(int w, int h)
 		}
 	}
 }
+
+int gSlider::getDefaultSize()
+{
+	GtkRequisition req;
+	
+	gtk_widget_size_request(GTK_WIDGET(widget), &req);
+	
+	if (width() < height())
+		return req.width;
+	else
+		return req.height;
+}
