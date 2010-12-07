@@ -86,6 +86,9 @@ static bool init_painting(GB_PAINT *d, QPaintDevice *device)
 		EXTRA(d)->painter = new QPainter(device);
 	}
 	
+	MyPaintEngine *engine = (MyPaintEngine *)device->paintEngine();
+	engine->patchFeatures();
+	
 	EXTRA(d)->path = 0;
 	EXTRA(d)->clip = 0;
 	PAINTER(d)->setRenderHints(QPainter::Antialiasing, true);
@@ -739,6 +742,13 @@ static void SetBrush(GB_PAINT *d, GB_BRUSH brush)
 	//PAINTER(d)->setBrushOrigin(QPointF((qreal)x, (qreal)y));
 }
 
+static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, float h)
+{
+	QImage *img = CIMAGE_get((CIMAGE *)image);
+	QRectF rect(x, y, w, h);
+	
+	PAINTER(d)->drawImage(rect, *img);
+}
 		
 static void BrushFree(GB_BRUSH brush)
 {
@@ -925,6 +935,7 @@ GB_PAINT_DESC PAINT_Interface = {
 	RichTextExtents,
 	Matrix,
 	SetBrush,
+	DrawImage,
 	{
 		BrushFree,
 		BrushColor,
@@ -988,6 +999,21 @@ void PAINT_clip(int x, int y, int w, int h)
 
 MyPaintEngine::MyPaintEngine() : QPaintEngine(0) {}
 MyPaintEngine::~MyPaintEngine() {}
+
+void MyPaintEngine::patchFeatures()
+{
+	if (!(gccaps & QPaintEngine::PerspectiveTransform))
+	{
+		QPaintEngine::PaintEngineFeatures f = QPaintEngine::AllFeatures;
+    f &= (QPaintEngine::PorterDuff | QPaintEngine::PerspectiveTransform
+           | QPaintEngine::ObjectBoundingModeGradients
+           | QPaintEngine::LinearGradientFill
+           | QPaintEngine::RadialGradientFill
+           | QPaintEngine::ConicalGradientFill);
+		qWarning("warning: patching current paint engine");
+		gccaps = f; //PerspectiveTransform;
+	}
+}
 
 bool MyPaintEngine::begin(QPaintDevice *pdev) 
 {

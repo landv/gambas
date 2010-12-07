@@ -989,6 +989,7 @@ GB_PAINT_DESC PAINT_Interface =
 	RichTextExtents,
 	Matrix,
 	SetBrush,
+	NULL,
 	{
 		BrushFree,
 		BrushColor,

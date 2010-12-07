@@ -1,21 +1,21 @@
 /***************************************************************************
 
-  gb_common.h
+	gb_common.h
 
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -63,8 +63,8 @@ typedef unsigned long ulong;
 
 #if defined(OS_FREEBSD) || defined(OS_OPENBSD)
 
-  /* sighandler_t is replaced by sig_t */
-  #define sighandler_t sig_t
+	/* sighandler_t is replaced by sig_t */
+	#define sighandler_t sig_t
 
 	typedef unsigned long ulong;
 
@@ -75,28 +75,28 @@ typedef unsigned long ulong;
 #endif
 
 #ifdef OS_FREEBSD
-  /* finite is replaced by isfinite */
-  #define finite isfinite
+	/* finite is replaced by isfinite */
+	#define finite isfinite
 #endif
 
 #ifdef OS_SOLARIS
 
- /* PGS: The following #define prevents /usr/include/sys/mman.h on solaris
-    from #define'ing PRIVATE to 0x20, thus breaking Gambas.
-    Perhaps Gambas should use a different name?
-    BM: I don't use PRIVATE anymore!
- */
-  #ifdef _POSIX_C_SOURCE
-  /* PGS: Stop compiler warnings when gcc on solaris does remember to define
-    _POSIX_C_SOURCE, e.g. when compiling qt related files. */
-    #undef _POSIX_C_SOURCE
-  #endif
+/* PGS: The following #define prevents /usr/include/sys/mman.h on solaris
+		from #define'ing PRIVATE to 0x20, thus breaking Gambas.
+		Perhaps Gambas should use a different name?
+		BM: I don't use PRIVATE anymore!
+*/
+	#ifdef _POSIX_C_SOURCE
+	/* PGS: Stop compiler warnings when gcc on solaris does remember to define
+		_POSIX_C_SOURCE, e.g. when compiling qt related files. */
+		#undef _POSIX_C_SOURCE
+	#endif
 
-  #define _POSIX_C_SOURCE 3
-  /* Get prototype for alloca() */
-  #include <alloca.h>
-  /* Get definition for index() */
-  #include <strings.h>
+	#define _POSIX_C_SOURCE 3
+	/* Get prototype for alloca() */
+	#include <alloca.h>
+	/* Get definition for index() */
+	#include <strings.h>
 
 #endif
 
@@ -109,28 +109,28 @@ typedef unsigned long ulong;
 
 #if !defined(__cplusplus)
 
-  #ifndef FALSE
-    enum
-    {
-      FALSE = 0,
-      TRUE = 1
-    };
-  #endif
+	#ifndef FALSE
+		enum
+		{
+			FALSE = 0,
+			TRUE = 1
+		};
+	#endif
 
-  typedef
-    char boolean;
+	typedef
+		char boolean;
 
-  typedef
-    char bool;
+	typedef
+		char bool;
 
 #endif
 
 typedef
-  unsigned char uchar;
-  
+	unsigned char uchar;
+	
 typedef
 	size_t offset_t;
-  
+	
 #define PUBLIC
 #define INLINE __inline__
 #define EXTERN extern
@@ -152,7 +152,7 @@ typedef
 #define NO_WARNING(var) var = var
 
 #ifndef offsetof
-  #define offsetof(_type, _arg) ((size_t)&(((_type *)0)->_arg))
+	#define offsetof(_type, _arg) ((size_t)&(((_type *)0)->_arg))
 #endif
 
 #define Max(a, b) ({ int _a = (a), _b = (b); _a > _b ? _a : _b; })
@@ -170,10 +170,10 @@ typedef
 #endif	/* __i386__ */
 
 #define COPYRIGHT "(c) 2000-2010 Benoit Minisini\n\n" \
-  "This program is free software; you can redistribute it and/or \n" \
-  "modify it under the terms of the GNU General Public License as \n" \
-  "published by the Free Software Foundation; either version 2, or \n" \
-  "(at your option) any later version.\n\n"
+	"This program is free software; you can redistribute it and/or \n" \
+	"modify it under the terms of the GNU General Public License as \n" \
+	"published by the Free Software Foundation; either version 2, or \n" \
+	"(at your option) any later version.\n\n"
 
 #define LIKELY(_x) __builtin_expect((_x), 1)
 #define UNLIKELY(_x) __builtin_expect((_x), 0)

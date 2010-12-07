@@ -171,6 +171,8 @@ typedef
 		
 		void (*SetBrush)(GB_PAINT *d, GB_BRUSH brush);
 		
+		void (*DrawImage)(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, float h);
+		
 		struct {
 			void (*Free)(GB_BRUSH brush);
 			void (*Color)(GB_BRUSH *brush, GB_COLOR color);

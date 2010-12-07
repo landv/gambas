@@ -167,6 +167,7 @@ BEGIN_METHOD_VOID(Printer_new)
 
 	THIS->printer = new QPrinter(QPrinter::HighResolution);
 	THIS->num_copies = 1;
+	THIS->page_count = 1;
 
 END_METHOD
 

@@ -828,6 +828,72 @@ BEGIN_METHOD(Paint_Rotate, GB_FLOAT angle)
 
 END_METHOD
 
+BEGIN_METHOD(Paint_DrawImage, GB_OBJECT image; GB_FLOAT x; GB_FLOAT y; GB_FLOAT width; GB_FLOAT height)
+
+	PAINT_BRUSH *pb;
+	GB_BRUSH brush;
+	GB_IMG *image;
+	GB_TRANSFORM transform;
+	float x, y, w, h;
+
+	CHECK_DEVICE();
+	
+	if (GB.CheckObject(VARG(image)))
+		return;
+	
+	x = VARG(x);
+	y = VARG(y);
+	w = VARG(width);
+	h = VARG(height);
+	
+	if (GB.CheckObject(VARG(image)))
+		return;
+	
+	if (w <= 0.0 || h <= 0.0)
+		return;
+	
+	if (PAINT->DrawImage)
+	{
+		PAINT->DrawImage(THIS, VARG(image), x, y, w, h);
+		return;
+	}
+	
+	image = (GB_IMG *)VARG(image);
+	
+	if (image->width <= 0 || image->height <= 0)
+		return;
+	
+	PAINT->Brush.Image(&brush, (GB_IMAGE)image);
+	pb = make_brush(THIS, brush);
+	GB.Ref(pb);
+	
+//   hBrush = Paint.Image(hImage)
+//   hBrush.Translate(X, Y)
+//   hBrush.Scale(W / hImage.W, H / hImage.H)
+	
+	PAINT->Transform.Create(&transform);
+	PAINT->Transform.Translate(transform, x, y);
+	//PAINT->Transform.Scale(transform, w / image->width, h / image->height);
+	fprintf(stderr, "brush %g %g %g %g %d %d\n", x, y, w, h, image->width, image->height);
+	PAINT->Brush.Matrix(brush, TRUE, transform);
+	PAINT->Transform.Delete(&transform);
+	
+//   Paint.Brush = hBrush
+
+	PAINT->SetBrush(THIS, brush);
+	
+//   Paint.Rectangle(X, Y, W, H)
+	PAINT->NewPath(THIS);
+	PAINT->Rectangle(THIS, x, y, w, h);
+	PAINT->Fill(THIS, FALSE);
+
+	if (THIS->brush)
+		PAINT->SetBrush(THIS, THIS->brush->brush);
+	
+	GB.Unref(POINTER(&pb));
+
+END_METHOD
+
 GB_DESC PaintDesc[] =
 {
 	GB_DECLARE("Paint", 0), GB_VIRTUAL_CLASS(),
@@ -893,6 +959,7 @@ GB_DESC PaintDesc[] =
 	GB_STATIC_METHOD("Stroke", NULL, Paint_Stroke, "[(Preserve)b]"),
 	//GB_STATIC_PROPERTY_READ("StrokeExtents", "PaintExtents", Paint_StrokeExtents),
 	//GB_STATIC_METHOD("InStroke", "b", Paint_InStroke, "(X)f(Y)f"),
+	GB_STATIC_METHOD("DrawImage", NULL, Paint_DrawImage, "(Image)Image;(X)f(Y)f(Width)f(Height)f"),
 
 	GB_STATIC_PROPERTY_READ("PathExtents", "PaintExtents", Paint_PathExtents),
 	GB_STATIC_METHOD("PathContains", "b", Paint_PathContains, "(X)f(Y)f"),

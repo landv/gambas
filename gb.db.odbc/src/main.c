@@ -1843,7 +1843,12 @@ fflush(stderr);
 	SQLLEN nIndicatorRemarks;
 	int compare = -1;
 	ODBC_CONN *han = (ODBC_CONN *)db->handle;
+	int len;
 
+	len = strlen(table);
+	if (len == 0)
+		return FALSE;
+	
 	retcode = SQLAllocHandle(SQL_HANDLE_STMT, han->odbcHandle, &statHandle);
 
 	if ((retcode != SQL_SUCCESS) && (retcode != SQL_SUCCESS_WITH_INFO))
@@ -1851,12 +1856,9 @@ fflush(stderr);
 		return FALSE; //V_OD_erg;
 	}
 
-
-
 	// EXECUTE OUR SQL/CALL
 	if (SQL_SUCCESS != (nReturn = SQLTables(statHandle, 0, 0, 0, 0, 0, 0, 0, 0)))
 	{
-
 		return FALSE; //nReturn;
 	}
 
@@ -1871,9 +1873,8 @@ fflush(stderr);
 	while ((nReturn == SQL_SUCCESS || nReturn == SQL_SUCCESS_WITH_INFO)
 				 && compare != 0)
 	{
-
 		//printf("le tabelle in comparazione %s : %s\n",szTableName,table);
-		compare = strncmp((char *)szTableName, table, sizeof(table));
+		compare = strncmp((char *)szTableName, table, len);
 		szTableName[0] = '\0';
 		szTableType[0] = '\0';
 		szTableRemarks[0] = '\0';

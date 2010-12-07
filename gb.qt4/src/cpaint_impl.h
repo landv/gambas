@@ -69,6 +69,8 @@ public:
 	//virtual QPoint coordinateOffset() const;
 
 	virtual Type type() const;
+	
+	void patchFeatures();
 };
 
 class MyPaintDevice: public QPaintDevice
