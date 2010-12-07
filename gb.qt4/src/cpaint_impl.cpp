@@ -1002,7 +1002,7 @@ MyPaintEngine::~MyPaintEngine() {}
 
 void MyPaintEngine::patchFeatures()
 {
-	if (!(gccaps & QPaintEngine::PerspectiveTransform))
+	if (type() == PostScript || type() == Pdf)
 	{
 		QPaintEngine::PaintEngineFeatures f = QPaintEngine::AllFeatures;
     f &= (QPaintEngine::PorterDuff | QPaintEngine::PerspectiveTransform
