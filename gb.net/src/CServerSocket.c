@@ -149,6 +149,7 @@ static int do_srvsock_listen(CSERVERSOCKET* _object,int mymax)
 	setsockopt(SOCKET->socket, SOL_SOCKET, SO_REUSEADDR, &auth, sizeof(int));
 	
 	// Define specific interface: does not really work... :-/
+	#ifdef SO_BINDTODEVICE
 	if (THIS->interface)
 	{
 		if (setsockopt(SOCKET->socket, SOL_SOCKET, SO_BINDTODEVICE, THIS->interface, GB.StringLength(THIS->interface)))
@@ -158,6 +159,7 @@ static int do_srvsock_listen(CSERVERSOCKET* _object,int mymax)
 			return 15;
 		}
 	}
+	#endif
 	
 	SOCKET_update_timeout(SOCKET);
 	//
