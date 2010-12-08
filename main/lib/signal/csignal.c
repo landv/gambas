@@ -31,6 +31,16 @@
 #include "main.h"
 #include "csignal.h"
 
+#ifndef SIGPOLL
+#define SIGPOLL SIGIO
+#endif
+
+#ifndef SIGPWR
+#define SIGPWR -1
+#endif
+
+// The -1 signal is used for ignored signal numbers
+
 /*#define DEBUG*/
 
 #define SIGNAL_MAX 31
@@ -45,7 +55,7 @@ typedef
 	}
 	SIGNAL_HANDLER;
 
-static int _signal = 0;
+static int _signal = -1;
 static SIGNAL_HANDLER *_handlers = NULL;
 static bool _init_signal = FALSE;
 static int _num_signal_watch = 0;
@@ -57,7 +67,8 @@ static void callback_signal(int fd, int type, void *data)
 	char num;
 
 	fprintf(stderr, "callback_signal\n");
-	read(fd, &num, 1);
+	if (read(fd, &num, 1) != 1)
+		return;
 
 	GB.Push(1, GB_T_INTEGER, num);
 	GB.Call(&_application_signal_func, 1, TRUE);
@@ -166,12 +177,18 @@ static void add_handler(int num, struct sigaction *action)
 static void handle_signal(int num, struct siginfo *info, void *context)
 {
 	char cnum = (char)num;
-	write(_pipe_signal[1], &cnum, 1); 
+	if (write(_pipe_signal[1], &cnum, 1) != 1)
+		return;
 }
 
 BEGIN_METHOD_VOID(Signal_Reset)
 
-	SIGNAL_HANDLER *sh = find_handler(_signal);
+	SIGNAL_HANDLER *sh;
+	
+	if (_signal < 0)
+		return;
+
+	sh = find_handler(_signal);
 	
 	if (!sh)
 		return;
@@ -190,6 +207,9 @@ BEGIN_METHOD_VOID(Signal_Ignore)
 
 	struct sigaction action;
 
+	if (_signal < 0)
+		return;
+	
 	action.sa_handler = SIG_IGN;
 	sigemptyset(&action.sa_mask);
 	action.sa_flags = 0;
@@ -202,6 +222,9 @@ BEGIN_METHOD_VOID(Signal_Catch)
 
 	struct sigaction action;
 
+	if (_signal < 0)
+		return;
+	
 	action.sa_sigaction = handle_signal;
 	sigemptyset(&action.sa_mask);
 	action.sa_flags = SA_SIGINFO;
@@ -214,7 +237,7 @@ BEGIN_METHOD(Signal_get, GB_INTEGER num)
 
 	int num = VARG(num);
 
-	if (num < 0 || num > SIGNAL_MAX)
+	if (num < -1 || num > SIGNAL_MAX)
 	{
 		GB.Error("Bad signal number");
 		return;
@@ -246,7 +269,6 @@ GB_DESC CSignalHandlerDesc[] =
   GB_END_DECLARE
 };
 
-
 GB_DESC CSignalDesc[] =
 {
   GB_DECLARE("Signal", 0),
@@ -268,8 +290,8 @@ GB_DESC CSignalDesc[] =
 	GB_CONSTANT("SIGPIPE", "i", SIGPIPE),
 	GB_CONSTANT("SIGALRM", "i", SIGALRM),
 	GB_CONSTANT("SIGTERM", "i", SIGTERM),
-	GB_CONSTANT("SIGSTKFLT", "i", SIGSTKFLT),
-	GB_CONSTANT("SIGCLD", "i", SIGCLD),
+	//GB_CONSTANT("SIGSTKFLT", "i", SIGSTKFLT),
+	//GB_CONSTANT("SIGCLD", "i", SIGCLD),
 	GB_CONSTANT("SIGCHLD", "i", SIGCHLD),
 	GB_CONSTANT("SIGCONT", "i", SIGCONT),
 	GB_CONSTANT("SIGSTOP", "i", SIGSTOP),
