@@ -30,6 +30,7 @@
 #include <QChildEvent>
 #include <QFrame>
 #include <QHash>
+#include <QStyleOptionFrameV3>
 
 #include "gambas.h"
 #include "gb_common.h"
@@ -543,6 +544,7 @@ void MyContainer::setFrameStyle(int frame)
 void CCONTAINER_draw_frame(QPainter *p, int frame, QStyleOptionFrame &opt, QWidget *w)
 {
 	QStyle *style;
+	QStyleOptionFrameV3 optv3;
 	//QRect rect = opt.rect;
 	
 	if (frame == 0)
@@ -561,19 +563,22 @@ void CCONTAINER_draw_frame(QPainter *p, int frame, QStyleOptionFrame &opt, QWidg
 			break;
 			
 		case BORDER_SUNKEN:
-			opt.lineWidth = 2;
-			opt.midLineWidth = 2;
-			opt.state |= QStyle::State_Sunken;
-			style->drawPrimitive(QStyle::PE_Frame, &opt, p, w);
-			//p->setPen(opt.palette.shadow().color());
+			optv3.rect = opt.rect;
+			optv3.state = opt.state | QStyle::State_Sunken;
+			optv3.frameShape = QFrame::StyledPanel;
+			style->drawPrimitive(QStyle::PE_Frame, &optv3, p, w);
+			//style->drawControl(QStyle::CE_ShapedFrame, &optv3, p, w);
 			break;
 			
 		case BORDER_RAISED:
-			opt.lineWidth = 2;
+			optv3.rect = opt.rect;
+			optv3.state = opt.state | QStyle::State_Raised;
+			optv3.frameShape = QFrame::StyledPanel;
+			style->drawPrimitive(QStyle::PE_Frame, &optv3, p, w);
+			/*opt.lineWidth = 2;
 			opt.midLineWidth = 2;
 			opt.state |= QStyle::State_Raised;
-			style->drawPrimitive(QStyle::PE_Frame, &opt, p, w);
-			//p->setPen(opt.palette.shadow().color());
+			style->drawPrimitive(QStyle::PE_Frame, &opt, p, w);*/
 			break;
 			
 		case BORDER_ETCHED:
@@ -616,11 +621,19 @@ int MyContainer::frameWidth()
 {
 	switch (_frame)
 	{
-		case BORDER_PLAIN: return 1;
+		case BORDER_PLAIN:
+			return 1;
+		
 		case BORDER_SUNKEN:
 		case BORDER_RAISED:
-		case BORDER_ETCHED:  return 2;
-		default: return 0;
+			
+			return style()->pixelMetric(QStyle::PM_ComboBoxFrameWidth);
+			
+		case BORDER_ETCHED:
+			return 2;
+			
+		default:
+			return 0;
 	}
 }
 

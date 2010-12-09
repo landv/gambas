@@ -106,7 +106,6 @@ End
 ' 
 ' END
 
-
 Public Sub RefreshToolbar(Optional bForce As Boolean)
 
   Dim hToolBar As FToolPanel
@@ -170,7 +169,7 @@ Public Sub RefreshToolbar(Optional bForce As Boolean)
 
       With hComp
 
-        If .Key <> "gb" And If Project.Components.Find(.Key) < 0 Then Continue
+        If Not hComp.UsedByProject() Then Continue
 
         For Each sCtrl In .Controls
           sGroup = CComponent.Classes[sCtrl].Group
@@ -201,7 +200,7 @@ Public Sub RefreshToolbar(Optional bForce As Boolean)
 
       With hComp
 
-        If .Key <> "gb" And If Project.Components.Find(.Key) < 0 Then Continue
+        If Not hComp.UsedByProject() Then Continue
 
         For Each sCtrl In .Controls
           hClass = CComponent.Classes[sCtrl]

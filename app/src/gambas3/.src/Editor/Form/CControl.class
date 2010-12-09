@@ -73,10 +73,15 @@ Static Public Sub GetIcon(sClass As String, sComp As String, Optional iSize As I
   Dim sPath As String
   
   If sComp Then 
-    sPath = "share/gambas" & System.Version &/ "control" &/ sComp &/ LCase(sClass) & ".png"
+    If sComp = CComponent.PROJECT_NAME Then
+      sPath = Project.Dir &/ ".hidden/control" &/ LCase(sClass) & ".png"
+    Else
+      sPath = File.Dir(File.Dir(Component.Path)) &/ "share/gambas" & System.Version &/ "control" &/ sComp &/ LCase(sClass) & ".png"
+    Endif
+    Try hPict = Picture.Load(sPath)
     'DEBUG File.Dir(File.Dir(Component.UserPath)) &/ "share/control" &/ sComp &/ LCase(sControl) & ".png"
     'Try hPict = Picture.Load(File.Dir(File.Dir(Component.UserPath)) &/ sPath)
-    If Not hPict Then Try hPict = Picture.Load(File.Dir(File.Dir(Component.Path)) &/ sPath)
+    'If Not hPict Then Try hPict = Picture.Load(File.Dir(File.Dir(Component.Path)) &/ sPath)
   Endif
   If Not hPict Then Try hPict = Picture["img/control" &/ LCase(sClass) & ".png"]
   If Not hPict Then Try hPict = Picture["img/control/unknown.png"]

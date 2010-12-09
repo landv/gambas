@@ -5,6 +5,8 @@ Static Public Libraries As New String[]
 Static Public Classes As Collection
 Static Private $iKey As Integer
 
+Public Const PROJECT_NAME As String = "$"
+
 Public Const STABLE As Integer = 0
 Public Const STABLE_NOT_FINISHED As Integer = 1
 Public Const UNSTABLE As Integer = 2
@@ -301,6 +303,7 @@ Static Public Sub _init()
 
   Dim aComp As String[]
   Dim sFile As String
+  Dim hComp As CComponent
 
   $cName = New Collection
   InitComponentNames
@@ -331,6 +334,11 @@ Static Public Sub _init()
   '     InitComponent(sFile, True)
   '   Next
   ' Endif
+
+  hComp = New CComponent
+  hComp.Key = PROJECT_NAME
+  hComp.Name = " "
+  All[hComp.Key] = hComp
 
   SortComponents
   
@@ -428,6 +436,7 @@ Public Sub Load()
   Project.SetMessage(Subst(("Loading information on component &1..."), Key))
 
   ClassList = New String[]
+  Controls = New String[]
 
   For Each sLig In Require
     All[sLig].Load
@@ -443,12 +452,17 @@ Public Sub Load()
   
   Else
   
-    sPath = System.Path &/ "share/" & "gambas" & System.Version & "/info" &/ Key & ".info"
-    
-    If Not Exist(sPath) Then
-      Error "Warning: cannot find "; sPath
-      Return
+    If Key = PROJECT_NAME Then
+      sPath = Project.Dir &/ ".info"
+      If Not Exist(sPath) Then Return
+    Else
+      sPath = System.Path &/ "share/" & "gambas" & System.Version & "/info" &/ Key & ".info"
+      If Not Exist(sPath) Then
+        Error "Warning: cannot find "; sPath
+        Return
+      Endif
     Endif
+    
   
     ' List of exported classes
   
@@ -1196,5 +1210,19 @@ Static Public Sub AddLibrary(sPath As String)
   All[hComp.Key] = hComp
   
   hComp.Load
+  
+End
+
+Static Public Sub LoadProjectComponent()
+  
+  All[PROJECT_NAME].Load
+  
+End
+
+Public Sub UsedByProject() As Boolean
+  
+  If Key = "gb" Then Return True
+  If Key = CComponent.PROJECT_NAME Then Return True
+  If Project.Components.Exist(Key) Then Return True
   
 End

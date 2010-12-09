@@ -156,6 +156,8 @@ void MyDrawingArea::redraw(QRect &r, bool frame)
 		p->translate(-r.x(), -r.y());
 	}*/
 	
+	p->save();
+	
 	if (!_use_paint)
 	{
 		//p->setBrushOrigin(-r.x(), -r.y());
@@ -166,8 +168,6 @@ void MyDrawingArea::redraw(QRect &r, bool frame)
 	
 	//p->setClipRegion(event->region().intersect(contentsRect()));
 	//p->setBrushOrigin(-r.x(), -r.y());
-	
-	p->save();
 	
 	GB.Raise(THIS, EVENT_draw, 0);
 		
@@ -203,7 +203,7 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 		//QPainter paint( this );
 		QRect r;
 
-		r = event->rect().intersect(rect());
+		r = event->rect().intersect(contentsRect());
 		if (r.isValid())
 		{
 			/*if (!isTransparent())
@@ -426,7 +426,9 @@ BEGIN_PROPERTY(CDRAWINGAREA_border)
 	CCONTAINER_border(_object, _param);
 
 	if (!READ_PROPERTY)
+	{
 		WIDGET->clearBackground();
+	}
 
 END_PROPERTY
 
