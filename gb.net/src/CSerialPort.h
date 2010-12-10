@@ -37,8 +37,6 @@ extern GB_STREAM_DESC SerialStream;
 
 #endif
 
-GB_STREAM_DESC SerialStream;
-
 typedef 
 	struct
 	{
