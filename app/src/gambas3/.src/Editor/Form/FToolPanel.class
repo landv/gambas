@@ -147,11 +147,23 @@ End
 
 Public Procedure btnControl_MouseUp()
 
+  Dim sComp As String
+  Dim sClass As String
+
   If $bNoEvent Then Return 
 
   If Mouse.Right Then
   
-    MHelp.GotoClass(CComponent.Classes[Last.Tag[0]].Component, Last.Tag[0])
+    'MHelp.GotoClass(CComponent.Classes[Last.Tag[0]].Component, Last.Tag[0])
+    sClass = Last.Tag[0]
+    If sClass <> SELECT_TOOL Then
+      sComp = CComponent.Classes[sClass].Component
+      If sComp = CComponent.PROJECT_NAME Then
+        Project.OpenFile(Last.Tag[0])
+      Else
+        MHelp.ShowHelpBrowserWith(Null, MHelp.TYPE_CLASS, Last.Tag[0])
+      Endif
+    Endif
 
   Else
 
