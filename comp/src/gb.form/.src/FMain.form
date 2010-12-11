@@ -2,24 +2,9 @@
 
 { Form Form
   MoveScaled(0,0,97,56)
-  { Panel1 Panel
-    MoveScaled(27,3,57,47)
-    Enabled = False
-    Border = Border.Plain
-    { SidePanel1 SidePanel
-      MoveScaled(2,1,43,42)
-      Expand = True
-      { Label1 Label
-        MoveScaled(9,11,24,6)
-        Text = ("Test")
-      }
-      { Button1 Button
-        MoveScaled(10,19,16,5)
-        Text = ("Test")
-      }
-    }
-  }
-  { TableView1 TableView
-    MoveScaled(1,1,24,31)
+  Arrangement = Arrange.Fill
+  Margin = True
+  { FileChooser1 FileChooser
+    MoveScaled(2,3,73,43)
   }
 }

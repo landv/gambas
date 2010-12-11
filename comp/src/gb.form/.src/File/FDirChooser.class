@@ -18,6 +18,7 @@ Private $bFile As Boolean
 Private $iMaxWidth As Integer
 Private $hBookmarkList As CBookmarkList
 Private $hCurrentBookmark As CBookmark
+Private mnuEditBookmark As Menu
 
 Static Private $aHistory As New String[]
 
@@ -68,12 +69,16 @@ Private Sub UpdateLabelDir()
   Dim sDir As String
 
   sDir = Mid$(dvwChoose.Current, Len(dvwChoose.Root) + 1)
+
   If Left(sDir) <> "/" Then sDir = "/" & sDir
+  'If Left(sDir) = "/" Then sDir = Mid$(sDir, 2)
+  sDir = Trim(Replace(sDir, "/", "  /  "))
   
-  'sDir = Html(sDir)
-  sDir = Replace(sDir, "/", " ‣ ")
-  
-  txtDir.Text = sDir
+  If sDir = "/" Then
+    txtDir.Text = ""
+  Else
+    txtDir.Text = sDir
+  Endif
   
 End
 
@@ -162,6 +167,7 @@ Private Sub UpdateBookmarkButton()
   If IsBookmarkVisible() Then
     btnBookmark.Text = $hCurrentBookmark.Name
     btnBookmark.Picture = Picture[$hCurrentBookmark.Icon]
+    mnuEditBookmark.Enabled = $hCurrentBookmark.IsEditable()
   Else
     btnBookmark.Text = File.Name(dvwChoose.Root)
     btnBookmark.Picture = dvwChoose.Picture 'Picture["icon:/small/directory"]
@@ -769,6 +775,11 @@ Private Sub FillMenu()
   hMenu.Text = ("&Remove bookmark")
   hMenu.Picture = Picture["icon:/small/remove"]
   
+  hMenu = New Menu(mnuBookmark) As "mnuEditBookmark"
+  hMenu.Text = ("&Edit bookmark...")
+  hMenu.Picture = Picture["icon:/small/edit"]
+  mnuEditBookmark = hMenu
+  
 End
 
 Public Sub IsBookmarkVisible() As Boolean
@@ -785,3 +796,20 @@ Public Sub ShowBookmark(bShow As Boolean)
   
 End
 
+Public Sub mnuEditBookmark_Click()
+  
+  If Not $hCurrentBookmark Then Return
+  If Not $hCurrentBookmark.IsEditable() Then Return
+  If FEditBookmark.Run($hCurrentBookmark) Then Return
+  
+  $hBookmarkList.Save
+  UpdateBookmarkButton
+  FillMenu
+  
+End
+
+Public Sub btnBookmark_Click()
+
+  SetDir($hCurrentBookmark.Path)
+
+End

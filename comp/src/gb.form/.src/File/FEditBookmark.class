@@ -1,0 +1,47 @@
+' Gambas class file
+
+Private $hBookmark As CBookmark
+
+Public Sub Run(hBookmark As CBookmark) As Boolean
+  
+  $hBookmark = hBookmark
+  Return Not FEditBookmark.ShowModal()
+  
+End
+
+
+Public Sub Form_Open()
+
+  txtName.Text = $hBookmark.Name
+  txtPath.Text = $hBookmark.Link
+  txtName.SetFocus
+
+End
+
+Public Sub btnOK_Click()
+
+  Dim sName As String
+  
+  sName = Trim(txtName.Text)
+  If Not sName Then Return
+  
+  $hBookmark.Name = sName
+  $hBookmark.Link = txtPath.Text
+  
+  Me.Close(True)
+
+End
+
+Public Sub txtPath_Click()
+
+  Dialog.Path = txtPath.Text
+  If Dialog.SelectDirectory() Then Return
+  txtPath.Text = Dialog.Path
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End

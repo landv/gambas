@@ -1,0 +1,42 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,63,17)
+  Text = ("Edit bookmark")
+  Icon = Picture["icon:/small/bookmark"]
+  Resizable = False
+  { HBox1 HBox
+    MoveScaled(1,1,61,4)
+    { Label1 Label
+      MoveScaled(0,0,16,4)
+      Text = ("Name")
+    }
+    { txtName TextBox
+      MoveScaled(17,0,43,4)
+      Expand = True
+    }
+  }
+  { HBox2 HBox
+    MoveScaled(1,6,61,4)
+    { Label2 Label
+      MoveScaled(0,0,16,4)
+      Text = ("Path")
+    }
+    { txtPath ButtonBox
+      MoveScaled(17,0,43,4)
+      Expand = True
+      Picture = Picture["icon:/small/directory"]
+      ReadOnly = True
+    }
+  }
+  { btnOK Button
+    MoveScaled(29,12,16,4)
+    Text = ("OK")
+    Default = True
+  }
+  { btnCancel Button
+    MoveScaled(46,12,16,4)
+    Text = ("Cancel")
+    Cancel = True
+  }
+}

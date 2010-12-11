@@ -21,18 +21,15 @@
 ***************************************************************************/
 #include "CSocket.h"
 
-typedef struct
-{
-	int (*ConnectLocal)	(void *_object,char *sPath,int lenpath);
-	int (*ConnectTCP)	(void *_object,char *sHost,int lenhost,int myport);
-	int (*Peek)		(void *_object,char **buf,int MaxLen);
-	
-} SOCKET_INTERFACE;
-
-typedef struct
-{
-	SOCKET_INTERFACE Socket;
-	
-	
-} NETWORK_INTERFACE;
+typedef 
+	struct
+	{
+		struct
+		{
+			int (*ConnectLocal)(void *_object, char *sPath, int lenpath);
+			int (*ConnectTCP)(void *_object, char *sHost, int lenhost, int myport);
+			int (*Peek)(void *_object, char **buf, int MaxLen);
+		} Socket;
+	} 
+	NETWORK_INTERFACE;
 

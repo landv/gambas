@@ -42,8 +42,6 @@ NETWORK_INTERFACE NET EXPORT;
 
 GB_INTERFACE GB EXPORT;
 
-
-
 GB_DESC *GB_CLASSES[] EXPORT =
 {
   CDnsClientDesc,
@@ -56,7 +54,6 @@ GB_DESC *GB_CLASSES[] EXPORT =
 };
 
 
-
 int EXPORT GB_INIT(void)
 {
 	NET.Socket.ConnectLocal=CSocket_connect_unix;
@@ -65,8 +62,6 @@ int EXPORT GB_INIT(void)
 
 	return 0;
 }
-
-
 
 void EXPORT GB_EXIT()
 {

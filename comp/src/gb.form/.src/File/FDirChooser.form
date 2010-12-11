@@ -11,7 +11,7 @@
     MoveScaled(0,0,79,50)
     Expand = True
     { VBox1 VBox
-      MoveScaled(3,3,76,46)
+      MoveScaled(2,3,76,46)
       Expand = True
       { HBox1 HBox
         MoveScaled(1,1,74,4)
@@ -21,32 +21,33 @@
           ToolTip = ("Bookmarks")
           AutoResize = True
           Picture = Picture["icon:/small/home"]
-          Arrow = False
           Border = False
           Menu = "mnuBookmark"
         }
         { txtDir Label
           MoveScaled(15,0,11,4)
           Expand = True
-        }
-        { Separator1 Separator
-          MoveScaled(36,0,1,4)
-          Visible = False
+          AutoResize = True
         }
         { btnParent ToolButton
-          MoveScaled(38,0,4,4)
+          MoveScaled(28,0,4,4)
           ToolTip = ("Parent directory")
           Picture = Picture["icon:/small/up"]
         }
         { btnRefresh ToolButton
-          MoveScaled(42,0,4,4)
+          MoveScaled(32,0,4,4)
           ToolTip = ("Refresh")
           Picture = Picture["icon:/small/refresh"]
         }
         { btnNewDir ToolButton
-          MoveScaled(47,0,4,4)
+          MoveScaled(37,0,4,4)
           ToolTip = ("Create directory")
           Picture = Picture["icon:/small/new-dir"]
+        }
+        { Panel1 Panel
+          MoveScaled(42,0,1,4)
+          Visible = False
+          Expand = True
         }
         { btnShowHidden ToolButton
           MoveScaled(51,0,4,4)
@@ -67,11 +68,11 @@
         }
       }
       { Separator2 Separator
-        MoveScaled(30,6,11,0)
+        MoveScaled(30,6,39,0)
         Visible = False
       }
       { splChoose HSplit
-        MoveScaled(5,8,56,37)
+        MoveScaled(6,7,56,37)
         Expand = True
         { dvwChoose DirView
           MoveScaled(2,3,25,33)
@@ -82,9 +83,13 @@
           Visible = False
           Arrangement = Arrange.Fill
           { fvwChoose FileView
-            MoveScaled(0,0,23,31)
+            MoveScaled(1,1,23,31)
           }
         }
+      }
+      { Separator4 Separator
+        MoveScaled(22,45,46,0)
+        Visible = False
       }
     }
   }

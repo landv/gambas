@@ -6,14 +6,13 @@ Public Icon As String
 
 Property Read Path As String
 
+
 Public Sub _new(sLink As String, Optional sName As String, sIcon As String)
   
-  If Not sName Then sName = File.Name(sLink)
-  If Not sIcon Then sIcon = "icon:/small/bookmark"
+  SetName(sName)
+  SetIcon(sIcon)
   
-  Name = sName
   {Link} = sLink
-  Icon = sIcon
   
 End
 
@@ -24,4 +23,24 @@ Private Function Path_Read() As String
   If Left(sLink) <> "/" Then sLink = Mid$(sLink, 2)
   Return sLink  
 
+End
+
+Public Sub SetName(sName As String)
+  
+  If Not sName Then sName = File.Name({Link})
+  Name = sName
+  
+End
+
+Public Sub SetIcon(sIcon As String)
+  
+  If Not sIcon Then sIcon = "icon:/small/bookmark"
+  Icon = sIcon
+  
+End
+
+Public Sub IsEditable() As Boolean
+  
+  Return Left({Link}) = "/"
+  
 End
