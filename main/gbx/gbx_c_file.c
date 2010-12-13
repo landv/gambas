@@ -468,32 +468,41 @@ static void split_path(char *path)
 
 static void return_path(void)
 {
-  char *tmp = NULL;
-  int len;
+	char *tmp = NULL;
+	int len = strlen(_dir);
+	
+	STRING_add(&tmp, _dir, len);
+	
+	if (_name && *_name)
+	{
+		_basename = _name;
+		_ext = "";
+		_name = NULL;
+	}
 
-  len = strlen(_dir);
+	if (*_basename || *_ext)
+	{
+		if (*_dir && _dir[len - 1] != '/')
+		{
+			if (*_basename)
+			{
+				if (*_basename != '/')
+					STRING_add(&tmp, "/", 1);
+				STRING_add(&tmp, _basename, 0);
+			}
+			else if (*_ext)
+				STRING_add(&tmp, "/", 1);
+		}
+		
+		if (*_ext && *_ext != '.')
+			STRING_add(&tmp, ".", 1);
+		
+		STRING_add(&tmp, _ext, 0);
+	}
 
-  STRING_add(&tmp, _dir, len);
-  if (_name && *_name)
-  {
-    _basename = _name;
-    _ext = "";
-    _name = NULL;
-  }
+	STRING_extend_end(&tmp);
 
-  if (*_basename || *_ext)
-  {
-    if (*_dir && _dir[len - 1] != '/' && *_basename && *_basename != '/')
-      STRING_add(&tmp, "/", 1);
-    STRING_add(&tmp, _basename, 0);
-    if (*_ext && *_ext != '.')
-      STRING_add(&tmp, ".", 1);
-    STRING_add(&tmp, _ext, 0);
-  }
-
-  STRING_extend_end(&tmp);
-
-  GB_ReturnString(tmp);
+	GB_ReturnString(tmp);
 }
 
 BEGIN_METHOD(CFILE_dir, GB_STRING path)

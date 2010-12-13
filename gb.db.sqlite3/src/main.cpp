@@ -1492,7 +1492,7 @@ static int table_primary_key(DB_DATABASE * db, const char *table, char ***primar
 
 		for (i = 0; i < (int) r->records.size(); i++)
 		{
-			if (strcmp(r->records[i][2].get_asString().data(), "INTEGER") == 0)
+			if (strcasecmp(r->records[i][2].get_asString().data(), "INTEGER") == 0)
 			{
 				GB.NewString((char **) GB.Add(primary),
 										 r->records[i][1].get_asString().data(), 0);
