@@ -23,6 +23,7 @@
 #define __GBC_RESERVED_MAKE_C
 
 #include <ctype.h>
+#include <errno.h>
 
 #include "gb_common.h"
 #include "gb_reserved.h"
@@ -42,6 +43,30 @@
 	return h % HASH_SIZE;
 }*/
 
+char buffer[1024];
+
+char *read_line(FILE *f)
+{
+	return fgets(buffer, sizeof(buffer), f);
+}
+
+void read_write_until(FILE *in, FILE *out, char *until)
+{
+	char *line;
+	
+	for(;;)
+	{
+		line = read_line(in);
+		if (!line)
+			break;
+		if (out) fputs(line, out);
+		while (*line && ((unsigned char)*line <= ' '))
+			line++;
+		if (!strncmp(line, until, strlen(until)))
+			break;
+	}
+}
+
 int main(int argc, char **argv)
 {
   COMP_INFO *info;
@@ -52,25 +77,39 @@ int main(int argc, char **argv)
 	char c;
 	char last[16];
 	char next[16];
+	FILE *in, *out;
 
-	printf("//-----------------------------------------------\n");
-	printf("  static void *jump[] = {\n");
+	in = fopen("../share/gb_reserved_temp.h", "r");
+	if (!in)
+	{
+		fprintf(stderr, "unable to open '../share/gb_reserved_temp.h': %s\n", strerror(errno));
+		exit(1);
+	}
+	
+	out = fopen("../share/gb_reserved_temp.h.tmp", "w");
+	
+	read_write_until(in, out, "int RESERVED_find_word(const char *word, int len)");
+
+	read_write_until(in, out, "static void *jump[] = {");
+	
 	for (h = 0; h < 12; h++)
 	{
-		printf("    &&__%02d, ", h);
+		if ((h % 8) == 0)
+			fprintf(out, "\t\t");
+		fprintf(out, "&&__%02d, ", h);
 		if ((h % 8) == 7)
-			printf("\n");
+			fprintf(out, "\n");
 	}
-	printf("\n  };\n\n");
+	fprintf(out, "\n\t};\n\n");
 
 	//printf("  goto *jump[h %% %d];\n\n", HASH_SIZE);
-	printf("  goto *jump[len];\n\n");
+	fprintf(out, "\tgoto *jump[len];\n\n");
 	
-	printf("__00:\n__01:\n  return -1;\n");
+	fprintf(out, "__00:\n__01:\n\treturn -1;\n");
 	
 	for (h = 2; h < 12; h++)
 	{
-		printf("__%02d:\n", h);
+		fprintf(out, "__%02d:\n", h);
 		
 		*last = 0;
 	
@@ -104,18 +143,18 @@ int main(int argc, char **argv)
 
 			strcpy(last, info->name);
 			
-			printf("  if (");
+			fprintf(out, "\tif (");
 			for (p = 0; p < len; p++)
 			{
 				if (p)
-					printf(" && ");
+					fprintf(out, " && ");
 				c = info->name[p];
 				if (isalpha(c))
-					printf("tolower(word[%d]) == '%c'", p, tolower(info->name[p]));
+					fprintf(out, "tolower(word[%d]) == '%c'", p, tolower(info->name[p]));
 				else if (c == '\\')
-					printf("word[%d] == '\\\\'", p);
+					fprintf(out, "word[%d] == '\\\\'", p);
 				else
-					printf("word[%d] == '%c'", p, info->name[p]);
+					fprintf(out, "word[%d] == '%c'", p, info->name[p]);
 			}
 			/*printf("  if (!strncmp(\"");
 			for (p = 0; p < len; p++) 
@@ -127,29 +166,35 @@ int main(int argc, char **argv)
 					putchar(tolower(info->name[p]));
 			}
 			printf("\", word, %d)", len);*/
-			printf(") return %d;\n", n);
+			fprintf(out, ") return %d;\n", n);
 		}
 		
-		printf("  return -1;\n");
+		fprintf(out, "\treturn -1;\n");
 	}
 	
-	printf("//-----------------------------------------------\n");
-	printf("  static void *jump[] = {\n");
+	read_write_until(in, NULL, "}");
+	read_write_until(in, NULL, "}");
+	fprintf(out, "}\n");
+
+	read_write_until(in, out, "static void *jump[] = {");
+	
 	for (h = 0; h < 12; h++)
 	{
-		printf("    &&__%02d, ", h);
+		if ((h % 8) == 0)
+			fprintf(out, "\t\t");
+		fprintf(out, "&&__%02d, ", h);
 		if ((h % 8) == 7)
-			printf("\n");
+			fprintf(out, "\n");
 	}
-	printf("\n  };\n\n");
+	fprintf(out, "\n\t};\n\n");
 
-	printf("  goto *jump[len];\n\n");
+	fprintf(out, "\tgoto *jump[len];\n\n");
 	
-	printf("__00:\n__01:\n  return -1;\n");
+	fprintf(out, "__00:\n__01:\n\treturn -1;\n");
 
 	for (h = 2; h < 12; h++)
 	{
-		printf("__%02d:\n", h);
+		fprintf(out, "__%02d:\n", h);
 		
 		*last = 0;
 		
@@ -183,24 +228,32 @@ int main(int argc, char **argv)
 
 			strcpy(last, subr->name);
 			
-			printf("  if ("); //COMPARE_%d(\"%s\", word)) return %d;\n", len, len, info->name, i);
+			fprintf(out, "\tif ("); //COMPARE_%d(\"%s\", word)) return %d;\n", len, len, info->name, i);
 			for (p = 0; p < len; p++)
 			{
 				if (p)
-					printf(" && ");
+					fprintf(out, " && ");
 				c = subr->name[p];
 				if (isalpha(c))
-					printf("tolower(word[%d]) == '%c'", p, tolower(subr->name[p]));
+					fprintf(out, "tolower(word[%d]) == '%c'", p, tolower(subr->name[p]));
 				else if (c == '\\')
-					printf("word[%d] == '\\\\'", p);
+					fprintf(out, "word[%d] == '\\\\'", p);
 				else
-					printf("word[%d] == '%c'", p, subr->name[p]);
+					fprintf(out, "word[%d] == '%c'", p, subr->name[p]);
 			}
-			printf(") return %d;\n", n);
+			fprintf(out, ") return %d;\n", n);
 		}
 		
-		printf("  return -1;\n");
+		fprintf(out, "\treturn -1;\n");
 	}
+	
+	fprintf(out, "}\n");
+	
+	fclose(in);
+	fclose(out);
+	
+	unlink("../share/gb_reserved_temp.h");
+	rename("../share/gb_reserved_temp.h.tmp", "../share/gb_reserved_temp.h");
 	
 	return 0;
 }

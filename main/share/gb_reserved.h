@@ -221,6 +221,7 @@ typedef
     RS_XOR,
     RS_BSLASH,
     RS_DIV,
+		RS_PERCENT,
     RS_MOD,
     RS_IS,
     RS_LIKE,
@@ -233,6 +234,7 @@ typedef
     RS_STAR_EQ,
     RS_SLASH_EQ,
     RS_DIV_EQ,
+    RS_MOD_EQ,
     RS_AMP_EQ,
     RS_FILE_EQ,
     }
