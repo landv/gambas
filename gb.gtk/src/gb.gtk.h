@@ -26,6 +26,10 @@
 #include "gambas.h"
 #include <gdk/gdk.h>
 
+#ifndef GDK_WINDOWING_X11
+#define NO_X_WINDOW 1
+#endif
+
 #define GTK_INTERFACE_VERSION 1
 
 typedef

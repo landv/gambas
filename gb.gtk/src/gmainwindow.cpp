@@ -994,7 +994,7 @@ bool gMainWindow::doClose()
 			opened = false;
 		_closing = false;
 		
-		if (modal())
+		if (!opened && modal())
 			gApplication::exitLoop(this);
   }
   
