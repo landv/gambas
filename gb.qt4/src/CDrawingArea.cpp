@@ -94,7 +94,8 @@ void MyDrawingArea::setAllowFocus(bool f)
 
 void MyDrawingArea::setMerge(bool m)
 {
-	qDebug("warning: DrawingArea.Merge property has been deprecated");
+	if (m)
+		qDebug("warning: DrawingArea.Merge property has been deprecated");
 	_merge = m;
 }
 
