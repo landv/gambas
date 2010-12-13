@@ -17,6 +17,7 @@ if test "$gb_use_qt_translation" = "yes"; then
 fi
 
 GB_CHECK_XWINDOW
+AM_CONDITIONAL(XWINDOW, test x"$have_x" = xyes)
 
 GB_COMPONENT_PKG_CONFIG(
   qt,

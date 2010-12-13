@@ -198,7 +198,7 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
 
     Case "-", "drawingarea", "panel", "vbox", "hbox", "vpanel", "hpanel", "vsplit", "hsplit", "embedder", "datasource"
       hCtrl = New DrawingArea(hParent)
-      hCtrl.Merge = True
+      'hCtrl.Merge = True
 
     Case "workspace"
       hCtrl = New Workspace(hParent)
@@ -248,7 +248,7 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
         If Not hCtrl Then
           'PRINT "DrawingArea: sClass"
           hCtrl = New DrawingArea(hParent)
-          hCtrl.Merge = True
+          'hCtrl.Merge = True
           'hCtrl.Text = sClass & " ?"
           hCtrl.Design = True
           hCtrl.Painted = $hFamily.IsPainted(Me)
