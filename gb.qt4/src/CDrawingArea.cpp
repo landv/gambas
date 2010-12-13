@@ -94,11 +94,8 @@ void MyDrawingArea::setAllowFocus(bool f)
 
 void MyDrawingArea::setMerge(bool m)
 {
+	qDebug("warning: DrawingArea.Merge property has been deprecated");
 	_merge = m;
-	/*if (_merge)
-		clearWFlags(Qt::WPaintClever);
-	else
-		setWFlags(Qt::WPaintClever);*/
 }
 
 void MyDrawingArea::setFrozen(bool f)
@@ -189,11 +186,13 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 {
 	if (_background)
 	{
+		#ifndef NO_X_WINDOW
 		if (_set_background)
 		{
 			XSetWindowBackgroundPixmap(QX11Info::display(), winId(), _background->handle());
 			_set_background = false;
 		}
+		#endif
 		QPainter paint( this );
 		drawFrame(&paint);
 		//MyContainer::paintEvent(event);

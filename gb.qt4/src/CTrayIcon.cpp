@@ -194,7 +194,7 @@ static void define_mask(CTRAYICON *_object)
 		delete p;
 	
 	#ifndef NO_X_WINDOW
-	// Needed, otherwise the icon does not appear in Gnome orf XFCE notification area!
+	// Needed, otherwise the icon does not appear in Gnome or XFCE notification area!
 	XSizeHints hints;
 	hints.flags = PMinSize;
 	hints.min_width = WIDGET->width();
@@ -285,6 +285,8 @@ BEGIN_METHOD_VOID(CTRAYICON_show)
 		
 		#ifndef NO_X_WINDOW
 		WIDGET->addToTray();
+		#else
+		WIDGET->show();
 		#endif
 		define_mask(THIS);
 		define_tooltip(THIS);

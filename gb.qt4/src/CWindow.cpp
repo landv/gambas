@@ -1046,6 +1046,13 @@ BEGIN_PROPERTY(CWINDOW_type)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Window_Utility)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(FALSE);
+
+END_PROPERTY
+
 #else //-------------------------------------------------------------------------------------------
 
 static void manage_window_property(void *_object, void *_param, Atom property)
