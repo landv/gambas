@@ -22,10 +22,6 @@
 
 #define __GBX_VALUE_C
 
-#include <float.h>
-#include <math.h>
-#include <limits.h>
-
 #include "gb_common.h"
 #include "gb_common_case.h"
 
