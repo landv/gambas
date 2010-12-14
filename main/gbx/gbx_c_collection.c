@@ -60,7 +60,7 @@ static void collection_free(CCOLLECTION *col)
 	col->locked = FALSE;
 }
 
-/*static void *collection_get_key(CCOLLECTION *col, const char *key, int len)
+/*static void *Collection_get_key(CCOLLECTION *col, const char *key, int len)
 {
   if (len == 0)
     return NULL;
@@ -71,10 +71,10 @@ static void collection_free(CCOLLECTION *col)
   return HASH_TABLE_lookup(col->hash_table, key, len);
 }*/
 
-#define collection_get_key(_col, _key, _len) HASH_TABLE_lookup((_col)->hash_table, (_key), (_len))
+#define Collection_get_key(_col, _key, _len) HASH_TABLE_lookup((_col)->hash_table, (_key), (_len))
 
 
-static void *collection_add_key(CCOLLECTION *col, const char *key, int len)
+static void *Collection_Add_key(CCOLLECTION *col, const char *key, int len)
 {
   if (len == 0)
   {
@@ -89,7 +89,7 @@ static void *collection_add_key(CCOLLECTION *col, const char *key, int len)
 }
 
 
-static void collection_remove_key(CCOLLECTION *col, const char *key, int len)
+static void Collection_Remove_key(CCOLLECTION *col, const char *key, int len)
 {
   void *value;
   HASH_NODE *last;
@@ -157,14 +157,14 @@ BEGIN_METHOD_VOID(CCOLLECTION_free)
 END_METHOD
 
 
-BEGIN_PROPERTY(collection_count)
+BEGIN_PROPERTY(Collection_Count)
 
   GB_ReturnInt(CCOLLECTION_get_count(THIS));
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(collection_key)
+BEGIN_PROPERTY(Collection_Key)
 
   char *key;
   int len;
@@ -177,11 +177,11 @@ BEGIN_PROPERTY(collection_key)
 END_PROPERTY
 
 
-BEGIN_METHOD(collection_add, GB_VARIANT value; GB_STRING key)
+BEGIN_METHOD(Collection_Add, GB_VARIANT value; GB_STRING key)
 
   void *data;
 
-  data = collection_add_key(THIS, STRING(key), LENGTH(key));
+  data = Collection_Add_key(THIS, STRING(key), LENGTH(key));
   if (!data)
     return;
 
@@ -190,24 +190,24 @@ BEGIN_METHOD(collection_add, GB_VARIANT value; GB_STRING key)
 END_METHOD
 
 
-BEGIN_METHOD(collection_exist, GB_STRING key)
+BEGIN_METHOD(Collection_Exist, GB_STRING key)
 
 	/*if (LENGTH(key) == 0)
 		GB_ReturnBoolean(FALSE);
 	else*/
-  	GB_ReturnBoolean(collection_get_key(THIS, STRING(key), LENGTH(key)) != NULL);
+  	GB_ReturnBoolean(Collection_get_key(THIS, STRING(key), LENGTH(key)) != NULL);
 
 END_METHOD
 
 
-BEGIN_METHOD(collection_remove, GB_STRING key)
+BEGIN_METHOD(Collection_Remove, GB_STRING key)
 
-  collection_remove_key(THIS, STRING(key), LENGTH(key));
+  Collection_Remove_key(THIS, STRING(key), LENGTH(key));
 
 END_METHOD
 
 
-BEGIN_METHOD_VOID(collection_clear)
+BEGIN_METHOD_VOID(Collection_Clear)
 
   int mode = THIS->hash_table->mode;
 
@@ -232,7 +232,7 @@ END_METHOD
 #endif
 
 
-BEGIN_METHOD_VOID(collection_next)
+BEGIN_METHOD_VOID(Collection_next)
 
   void *value;
   HASH_TABLE *hash_table = OBJECT(CCOLLECTION)->hash_table;
@@ -256,7 +256,7 @@ BEGIN_METHOD(collection_copy, CCOLLECTION *copy)
   CCOL_ENUM enum_state;
   void *value;
 
-  collection_clear(THIS, NULL);
+  Collection_Clear(THIS, NULL);
 
   enum_state.i = -1;
   enum_state.node = NULL;
@@ -268,32 +268,56 @@ BEGIN_METHOD(collection_copy, CCOLLECTION *copy)
       break;
 
     GB_ReturnPtr(OBJECT(CCOLLECTION)->type, value);
-    data = collection_add_key(THIS, PARAM(key).addr, PARAM(key).len);
+    data = Collection_Add_key(THIS, PARAM(key).addr, PARAM(key).len);
     GB_Store(T_VARIANT, &PARAM(value), data);
 
 END_METHOD
 */
 
-BEGIN_METHOD(collection_get, GB_STRING key)
+BEGIN_METHOD(Collection_get, GB_STRING key)
 
-	GB_ReturnVariant(collection_get_key(THIS, STRING(key), LENGTH(key)));
+	GB_ReturnVariant(Collection_get_key(THIS, STRING(key), LENGTH(key)));
 
 END_METHOD
 
 
-BEGIN_METHOD(collection_put, GB_VARIANT value; GB_STRING key)
+BEGIN_METHOD(Collection_put, GB_VARIANT value; GB_STRING key)
 
   void *data;
 
   if (VARIANT_is_null((VARIANT *)&VARG(value)))
-    collection_remove_key(THIS, STRING(key), LENGTH(key));
+    Collection_Remove_key(THIS, STRING(key), LENGTH(key));
   else
   {
-    data = collection_add_key(THIS, STRING(key), LENGTH(key));
+    data = Collection_Add_key(THIS, STRING(key), LENGTH(key));
     if (!data)
       return;
     GB_StoreVariant(ARG(value), data);
   }
+
+END_METHOD
+
+BEGIN_METHOD_VOID(Collection_Copy)
+
+	GB_COLLECTION col;
+	GB_COLLECTION_ITER iter;;
+	GB_VARIANT value;
+	char *key;
+	int len;
+	
+	GB_CollectionNew(&col, THIS->mode);
+	
+	CLEAR(&iter);
+	
+	for(;;)
+	{
+		if (GB_CollectionEnum(THIS, &iter, &value, &key, &len))
+			break;
+		
+		GB_CollectionSet(col, key, len, &value);
+	}
+	
+	GB_ReturnObject(col);
 
 END_METHOD
 
@@ -307,18 +331,19 @@ GB_DESC NATIVE_Collection[] =
   GB_METHOD("_new", NULL, CCOLLECTION_new, "[(Mode)i]"),
   GB_METHOD("_free", NULL, CCOLLECTION_free, NULL),
 
-  GB_PROPERTY_READ("Count", "i", collection_count),
-  GB_PROPERTY_READ("Length", "i", collection_count),
-  GB_PROPERTY_READ("Key", "s", collection_key),
+  GB_PROPERTY_READ("Count", "i", Collection_Count),
+  GB_PROPERTY_READ("Length", "i", Collection_Count),
+  GB_PROPERTY_READ("Key", "s", Collection_Key),
 
-  GB_METHOD("Add", NULL, collection_add, "(Value)v(Key)s"),
-  GB_METHOD("Exist", "b", collection_exist, "(Key)s"),
-  GB_METHOD("Remove", NULL, collection_remove, "(Key)s"),
-  GB_METHOD("Clear", NULL, collection_clear, NULL),
+  GB_METHOD("Add", NULL, Collection_Add, "(Value)v(Key)s"),
+  GB_METHOD("Exist", "b", Collection_Exist, "(Key)s"),
+  GB_METHOD("Remove", NULL, Collection_Remove, "(Key)s"),
+  GB_METHOD("Clear", NULL, Collection_Clear, NULL),
   /*GB_METHOD("_first", NULL, collection_first, NULL),*/
-  GB_METHOD("_next", "v", collection_next, NULL),
-  GB_METHOD("_get", "v", collection_get, "(Key)s"),
-  GB_METHOD("_put", NULL, collection_put, "(Value)v(Key)s"),
+  GB_METHOD("_next", "v", Collection_next, NULL),
+  GB_METHOD("_get", "v", Collection_get, "(Key)s"),
+  GB_METHOD("_put", NULL, Collection_put, "(Value)v(Key)s"),
+  GB_METHOD("Copy", "Collection", Collection_Copy, NULL),
 
   GB_END_DECLARE
 };
@@ -345,10 +370,10 @@ int GB_CollectionSet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *va
   VARIANT *data;
 
   if (VARIANT_is_null((VARIANT *)&value->value))
-    collection_remove_key((CCOLLECTION *)col, key, len);
+    Collection_Remove_key((CCOLLECTION *)col, key, len);
   else
   {
-    data = (VARIANT *)collection_add_key((CCOLLECTION *)col, key, len);
+    data = (VARIANT *)Collection_Add_key((CCOLLECTION *)col, key, len);
     if (!data)
     	return TRUE;
     GB_StoreVariant(value, data);
@@ -360,7 +385,7 @@ int GB_CollectionGet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *va
 {
   VARIANT *var;
 
-  var = (VARIANT *)collection_get_key((CCOLLECTION *)col, key, len);
+  var = (VARIANT *)Collection_get_key((CCOLLECTION *)col, key, len);
   value->type = T_VARIANT;
   if (var)
   {
