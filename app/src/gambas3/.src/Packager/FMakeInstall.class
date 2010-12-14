@@ -112,6 +112,11 @@ Public Sub Form_Open()
   chkFile.Value = Project.SameFiles
   
   txtMime.Text = Project.MimeTypes.Join("\n")
+  txtDesktop.Text = Project.ExtraDesktop
+
+  FTextEditor.ReadConfigEditor(edtLog)
+  edtLog.Flags[Editor.ShowModifiedLines] = False
+  edtLog.Font = Font[Settings["/ConsoleFont", Project.DEFAULT_FONT]]
 
 End
 
@@ -378,6 +383,7 @@ Public Sub wizInstall_BeforeChange()
       
     Case TAB_MIME
       Project.MimeTypes = Split(Trim(txtMime.Text), "\n")
+      Project.ExtraDesktop = Trim(txtDesktop.Text)
       
     Case TAB_DEP
     
@@ -511,8 +517,11 @@ End
 
 Public Sub AddLog(sText As String, Optional bNoNewLine As Boolean)
 
-  txtLog.Insert(sText)
-  If Not bNoNewLine Then txtLog.Insert("\n")
+  If Not bNoNewLine Then sText &= "\n"
+  edtLog.Goto(edtLog.Lines.Count, 0)
+  edtLog.ReadOnly = False
+  edtLog.Insert(sText)
+  edtLog.ReadOnly = True
   Wait
 
 End

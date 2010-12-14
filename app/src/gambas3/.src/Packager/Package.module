@@ -399,6 +399,35 @@ Private Sub PrintOnlyShowIn(hFile As File, sCategories As String)
   
 End
 
+Private Sub PrintDesktopFile(hFile As File, sExec As String, sIcon As String, Optional sExtraCat As String)
+  
+  Print #hFile, "[Desktop Entry]"
+  Print #hFile, "Version=1.0"
+  Print #hFile, "Name=";    
+  If Project.Title Then
+   Print #hFile, Project.Title
+  Else
+    Print #hFile, Project.Name
+  Endif
+  Print #hFile, "Comment=";    
+  If $sDescription Then
+    Print #hFile, Replace($sDescription, "\n", " ")
+  Else
+    Print #hFile, Project.Name
+  Endif
+  Print #hFile, "Exec="; sExec '/usr/bin/"; $sName & ".gambas"
+  Print #hFile, "Icon="; sIcon '/usr/share/pixmaps/" & sIcon
+  Print #hFile, "Terminal="; IIf(IsConsoleProject(), "true", "false")
+  Print #hFile, "Type=Application"
+  Print #hFile, "StartupNotify=true"
+  Print #hFile, "Categories="; sExtraCat; $sCategories
+  If Project.MimeTypes.Count Then Print #hFile, "MimeType="; Project.MimeTypes.Join(";")
+  PrintOnlyShowIn(hFile, $sCategories)
+  If Trim(Project.ExtraDesktop) Then Print #hFile, Trim(Project.ExtraDesktop)
+  
+End
+
+
 Private Sub RunCommand(sCmd As String, Optional sDir As String)
   
   AddLog(sCmd)
@@ -502,32 +531,10 @@ Private Function MakeDebPackage(sSys As String)
 
   ' Step 2. Make the desktop file
   If Not Project.CreateComponent Then
-      AddLog(("Creating desktop file..."))
-      hFile = Open sPackagePath &/ "debian/" & $sPackageName & ".desktop" For Create
-
-      Print #hFile, "[Desktop Entry]"
-      Print #hFile, "Version=1.0"
-      Print #hFile, "Name=";    
-      If Project.Title Then
-       Print #hFile, Project.Title
-      Else
-        Print #hFile, Project.Name
-      Endif
-      Print #hFile, "Comment=";    
-      If $sDescription Then
-        Print #hFile, Replace($sDescription, "\n", " ")
-      Else
-        Print #hFile, Project.Name
-      Endif
-      Print #hFile, "Exec=/usr/bin/"; $sName & ".gambas"
-      Print #hFile, "Icon=/usr/share/pixmaps/" & sIcon
-      Print #hFile, "Terminal="; IIf(IsConsoleProject(), "true", "false")
-      Print #hFile, "Type=Application"
-      Print #hFile, "StartupNotify=true"
-      Print #hFile, "Categories="; $sCategories
-      If Project.MimeTypes.Count Then Print #hFile, "MimeType="; Project.MimeTypes.Join(";")
-      PrintOnlyShowIn(hFile, $sCategories)
-      Close #hFile
+    AddLog(("Creating desktop file..."))
+    hFile = Open sPackagePath &/ "debian/" & $sPackageName & ".desktop" For Create
+    PrintDesktopFile(hFile, "/usr/bin/" & $sName & ".gambas", "/usr/share/pixmaps/" & sIcon)
+    Close #hFile
   Endif 
   
   'Step 3. Create debianization needed files: control, rules
@@ -926,28 +933,9 @@ Private Function MakeRpmPackage(sSys As String)
   
         Print #hFile, "install -d %{buildroot}/%{_datadir}/applications"
         Print #hFile, "cat << EOF > %{buildroot}/%{_datadir}/applications/%{name}.desktop"
-        Print #hFile, "[Desktop Entry]"
-        Print #hFile, "Version=1.0"
-        Print #hFile, "Name=";    
-        If Project.Title Then
-          Print #hFile, Project.Title
-        Else
-          Print #hFile, Project.Name
-        Endif
-        Print #hFile, "Comment=";    
-        If $sDescription Then
-          Print #hFile, Replace($sDescription, "\n", " ")
-        Else
-          Print #hFile, Project.Name
-        Endif
-        Print #hFile, "Exec=%{_bindir}/"; Shell$($sName)
-        Print #hFile, "Icon="; sIcon
-        Print #hFile, "Terminal="; IIf(IsConsoleProject(), "true", "false")
-        Print #hFile, "Type=Application"
-        Print #hFile, "StartupNotify=true"
-        Print #hFile, "Categories=X-MandrivaLinux-"; Replace(Replace(Project.Menus[sSys], " ", ""), "/", "-"); ";"; $sCategories
-        If Project.MimeTypes.Count Then Print #hFile, "MimeType="; Project.MimeTypes.Join(";")
-        PrintOnlyShowIn(hFile, $sCategories)
+        
+        PrintDesktopFile(hFile, "%{_bindir}/" & Shell$($sName), sIcon, "X-MandrivaLinux-" & Replace(Replace(Project.Menus[sSys], " ", ""), "/", "-") & ";")
+        
         Print #hFile, "EOF"
   
         Print #hFile, "\n%post"
@@ -963,28 +951,9 @@ Private Function MakeRpmPackage(sSys As String)
         Print #hFile, "install -p .icon/48.png %{buildroot}/%{_datadir}/pixmaps" &/ sIcon
   
         Print #hFile, "cat << EOF > %{buildroot}%{_datadir}/applications/%{name}.desktop"
-        Print #hFile, "[Desktop Entry]"
-        Print #hFile, "Version=1.0"
-        Print #hFile, "Name=";    
-        If Project.Title Then
-          Print #hFile, Project.Title
-        Else
-          Print #hFile, Project.Name
-        Endif
-        Print #hFile, "Comment=";    
-        If $sDescription Then
-          Print #hFile, Replace($sDescription, "\n", " ")
-        Else
-          Print #hFile, Project.Name
-        Endif
-        Print #hFile, "Exec=%{_bindir}/"; Shell$($sName)
-        Print #hFile, "Icon="; sIcon
-        Print #hFile, "Terminal="; IIf(IsConsoleProject(), "true", "false")
-        Print #hFile, "Type=Application"
-        Print #hFile, "StartupNotify=true"
-        Print #hFile, "Categories=X-RedHat-Extra;"; $sCategories
-        If Project.MimeTypes.Count Then Print #hFile, "MimeType="; Project.MimeTypes.Join(";")
-        PrintOnlyShowIn(hFile, $sCategories)
+        
+        PrintDesktopFile(hFile, "%{_bindir}/" & Shell$($sName), sIcon, "X-RedHat-Extra;")
+        
         Print #hFile, "EOF"
   
       Case "suse"
@@ -994,28 +963,9 @@ Private Function MakeRpmPackage(sSys As String)
         Print #hFile, "install -p .icon/48.png %{buildroot}/%{_datadir}/pixmaps" &/ sIcon
   
         Print #hFile, "cat << EOF > %{buildroot}%{_datadir}/applications/%{name}.desktop"
-        Print #hFile, "[Desktop Entry]"
-        Print #hFile, "Version=1.0"
-        Print #hFile, "Name=";    
-        If Project.Title Then
-          Print #hFile, Project.Title
-        Else
-          Print #hFile, Project.Name
-        Endif
-        Print #hFile, "Comment=";    
-        If $sDescription Then
-          Print #hFile, Replace($sDescription, "\n", " ")
-        Else
-          Print #hFile, Project.Name
-        Endif
-        Print #hFile, "Exec=%{_bindir}/"; Shell$($sName)
-        Print #hFile, "Icon="; sIcon
-        Print #hFile, "Terminal="; IIf(IsConsoleProject(), "true", "false")
-        Print #hFile, "Type=Application"
-        Print #hFile, "StartupNotify=true"
-        Print #hFile, "Categories="; $sCategories
-        If Project.MimeTypes.Count Then Print #hFile, "MimeType="; Project.MimeTypes.Join(";")
-        PrintOnlyShowIn(hFile, $sCategories)
+        
+        PrintDesktopFile(hFile, "%{_bindir}/" & Shell$($sName), sIcon)
+        
         Print #hFile, "EOF"
   
     End Select
@@ -1262,28 +1212,7 @@ Private Sub MakeTgzPackage(sSys As String)
   
     hFile = Open sBuildDir &/ "/usr/share/applications/" & $sPackageName & ".desktop" For Create
   
-    Print #hFile, "[Desktop Entry]"
-    Print #hFile, "Version=1.0"
-    Print #hFile, "Name=";    
-    If Project.Title Then
-      Print #hFile, Project.Title
-    Else
-      Print #hFile, Project.Name
-    Endif
-    Print #hFile, "Comment=";    
-    If $sDescription Then
-      Print #hFile, Replace($sDescription, "\n", " ")
-    Else
-      Print #hFile, Project.Name
-    Endif
-    Print #hFile, "Exec=/usr/bin/"; $sName
-    Print #hFile, "Icon=/usr/share/pixmaps/"; $sName & ".png"
-    Print #hFile, "Terminal="; IIf(IsConsoleProject(), "true", "false")
-    Print #hFile, "Type=Application"
-    Print #hFile, "StartupNotify=true"
-    Print #hFile, "Categories="; $sCategories
-    If Project.MimeTypes.Count Then Print #hFile, "MimeType="; Project.MimeTypes.Join(";")
-    PrintOnlyShowIn(hFile, $sCategories)
+    PrintDesktopFile(hFile, "/usr/bin/" & $sName, "/usr/share/pixmaps/" & $sName & ".png")
   
     Close #hFile
   
@@ -1456,31 +1385,13 @@ Private Function MakeArchPackage(sSys As String)
   File.Save(sBuilddir &/ "license.txt", "This program is under : " & Project.License)
   
   If Not Project.CreateComponent Then
+
     Project.StretchIcon(Project.Dir &/ Project.Icon, 48).Save(sBuildDir &/ Project.Name & ".png")
+
     hFile = Open sBuildDir &/ $sPackageName & ".desktop" For Create
-    Print #hFile, "[Desktop Entry]"
-    Print #hFile, "Version=1.0"
-    Print #hFile, "Name=";    
-    If Project.Title Then
-      Print #hFile, Project.Title
-    Else
-      Print #hFile, Project.Name
-    Endif
-    Print #hFile, "Comment=";    
-    If $sDescription Then
-      Print #hFile, Replace($sDescription, "\n", " ")
-    Else
-      Print #hFile, Project.Name
-    Endif
-    Print #hFile, "Exec=/usr/bin/"; $sName
-    Print #hFile, "Icon=/usr/share/pixmaps/"; $sName & ".png"
-    Print #hFile, "Terminal="; IIf(IsConsoleProject(), "true", "false")
-    Print #hFile, "Type=Application"
-    Print #hFile, "StartupNotify=true"
-    Print #hFile, "Categories="; $sCategories
-    If Project.MimeTypes.Count Then Print #hFile, "MimeType="; Project.MimeTypes.Join(";")
-    PrintOnlyShowIn(hFile, $sCategories)
+    PrintDesktopFile(hFile, "/usr/bin/" & $sName, "/usr/share/pixmaps/" & $sName & ".png")
     Close #hFile
+    
   Endif 
    
   hFile = Open sBuildDir &/ "PKGBUILD" For Create

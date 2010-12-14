@@ -65,6 +65,7 @@ Public SameFiles As Boolean
 Public ExtraAutoconfTest As String
 Public Categories As Collection
 Public MimeTypes As String[]
+Public ExtraDesktop As String
 Public Prefix As Boolean
 Public UseRelease As Boolean
 Public PackageName As String
@@ -2648,6 +2649,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   Groups = New Collection
   ExtraDependencies = New Collection
   ExtraFiles = New Collection
+  ExtraDesktop = ""
   SameDependencies = False
   SameFiles = False
   ExtraAutoconfTest = ""
@@ -2818,6 +2820,9 @@ Public Sub ReadProject(Optional bConvert As Boolean)
       Case "extraautoconftest"
         ExtraAutoconfTest = Unquote(sVal)
         
+      Case "extradesktop"
+        ExtraDesktop = Unquote(sVal)
+        
       Case "prefix"
         Prefix = Val(sVal)
         
@@ -2972,6 +2977,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If PackageName Then Print #hFic, "PackageName="; PackageName
   If CreateEachDirectory Then Print #hFic, "CreateEachDirectory=1"
   If MimeTypes.Count Then Print #hFic, "MimeTypes="; MimeTypes.Join(",", Chr$(34))
+  If ExtraDesktop Then Print #hFic, "ExtraDesktop=" & Quote(ExtraDesktop)
   
   If Systems.Count Then
     

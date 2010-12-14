@@ -328,14 +328,37 @@
       Sorted = True
     }
     Index = 5
-    Text = ("Mimetypes")
-    { TextLabel5 TextLabel
-      MoveScaled(1,1,86,7)
+    Text = ("Desktop configuration file")
+    { TextLabel6 TextLabel
+      MoveScaled(0,0,64,4)
+      Font = Font["Bold"]
       AutoResize = True
-      Text = ("Enter the mimetypes handled by your application there.\n<p>\nPlease enter one mimetype by line.\n")
+      Text = ("Mimetypes")
+      Alignment = Align.BottomNormal
+    }
+    { TextLabel5 TextLabel
+      MoveScaled(0,5,86,7)
+      AutoResize = True
+      Text = ("Enter the mimetypes handled by your application there.<br>\nPlease enter one mimetype by line.\n")
     }
     { txtMime TextArea
-      MoveScaled(1,9,81,53)
+      MoveScaled(0,11,81,17)
+      Expand = True
+    }
+    { TextLabel7 TextLabel
+      MoveScaled(0,29,64,4)
+      Font = Font["Bold"]
+      AutoResize = True
+      Text = ("Additional configuration")
+      Alignment = Align.BottomNormal
+    }
+    { TextLabel8 TextLabel
+      MoveScaled(0,34,86,3)
+      AutoResize = True
+      Text = ("The following will be added to the end of the desktop configuration file.")
+    }
+    { txtDesktop TextArea
+      MoveScaled(0,38,81,17)
       Expand = True
     }
     Index = 6
@@ -467,12 +490,10 @@
       AutoResize = True
       Text = ("All needed information have been collected. You can now create the installation packages for your application...\n<p>Click on the <b>OK</b> button to create the packages.\n<p>Click on the <b>Previous</b> button if you had made a mistake.\n<p>Click on the <b>Cancel</b> button to cancel the operation.\n\n")
     }
-    { txtLog TextArea
+    { edtLog Editor
       MoveScaled(1,21,68,33)
-      Font = Font["Monospace"]
       Expand = True
       ReadOnly = True
-      Wrap = True
     }
     Index = 0
   }
