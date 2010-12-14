@@ -3287,6 +3287,7 @@ Public Sub DeleteFile(sPath As String)
   
   bLink = Stat(sPath).Type = gb.Link
   bProject = IsSourcePath(sPath)
+  If bProject Then bReloadComponent = IsExported(sPath)
   
   hForm = Files[sPath]
   
@@ -3311,10 +3312,9 @@ Public Sub DeleteFile(sPath As String)
     sName = File.BaseName(sPath)
     sExt = File.Ext(sPath)
     
-    If IsSourcePath(sPath) Then
-      bReloadComponent = IsExported(sPath)
-      Try Kill Project.Dir &/ ".gambas" &/ UCase(sName)
-      sPathPot = Project.Dir &/ ".lang" &/ sName & ".pot"
+    Try Kill Project.Dir &/ ".gambas" &/ UCase(sName)
+    sPathPot = Project.Dir &/ ".lang" &/ sName & ".pot"
+    If Exist(sPathPot) Then
       Try Kill sPathPot
       VersionControl.RemoveFile(sPathPot)
     Endif

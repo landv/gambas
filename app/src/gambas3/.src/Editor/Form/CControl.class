@@ -70,7 +70,10 @@ End
 Static Public Sub GetIcon(sClass As String, sComp As String, Optional iSize As Integer) As Picture
   
   Dim hPict As Picture
+  Dim hImage As Image
   Dim sPath As String
+  Dim sText As String
+  Dim X, Y As Float
   
   If sComp Then 
     If sComp = CComponent.PROJECT_NAME Then
@@ -84,7 +87,28 @@ Static Public Sub GetIcon(sClass As String, sComp As String, Optional iSize As I
     'If Not hPict Then Try hPict = Picture.Load(File.Dir(File.Dir(Component.Path)) &/ sPath)
   Endif
   If Not hPict Then Try hPict = Picture["img/control" &/ LCase(sClass) & ".png"]
-  If Not hPict Then Try hPict = Picture["img/control/unknown.png"]
+  If Not hPict Then
+    hImage = Image.Load("img/control/unknown.png")
+    Paint.Begin(hImage)
+    Paint.Rectangle(2, 2, hImage.W - 5, hImage.H - 5)
+    Paint.Clip
+    Paint.Font.Size = 10
+    'Paint.Brush = Paint.Color(Color.RGB(0, 0, 0, 128))
+    sText = sClass
+    While Len(sText) < 32
+      sText &= sClass
+    Wend
+    X = 3
+    Y = Paint.Font.Ascent - 1
+    While Y < hImage.H
+      Paint.Text(sText, X, Y)
+      Paint.Fill
+      Y += Paint.Font.Height - 1.5
+      X -= hImage.W * 0.8
+    Wend
+    Paint.End
+    hPict = hImage.Picture
+  Endif
 
   If iSize Then
     If hPict.Width <> iSize Then hPict = hPict.Image.Stretch(iSize, iSize).Picture

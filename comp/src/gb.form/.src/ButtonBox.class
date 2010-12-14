@@ -18,6 +18,7 @@ Property Text As String
 Property Read Length As Integer
 Property ReadOnly As Boolean
 Property Border As Boolean
+Property Read Editor As TextBox
 
 'Private $hPanel As Panel
 Private $hBackground As DrawingArea
@@ -165,3 +166,10 @@ Public Sub Background_Draw()
   If $bBorder Then Draw.Style.Box(0, 0, $hBackground.W, $hBackground.H)
   
 End
+
+Private Function Editor_Read() As TextBox
+
+  Return $hTextBox
+
+End
+

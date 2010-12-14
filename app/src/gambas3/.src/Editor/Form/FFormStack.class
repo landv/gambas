@@ -27,6 +27,8 @@ End
 Public Sub Form_Show()
 
   RefreshAll
+  txtSearch.Editor.SelectAll
+  txtSearch.Editor.SetFocus
 
 End
 
@@ -273,3 +275,29 @@ Public Sub tvwControl_Activate()
   FMain.ActivatePropertyTab
 
 End
+
+Public Sub txtSearch_Click()
+
+  Dim sName As String
+  
+  sName = LCase(Trim(txtSearch.Text))
+  If Not sName Then Return
+  
+  tvwControl.MoveCurrent
+  Do
+    If tvwControl.MoveBelow() Then tvwControl.MoveFirst
+    If tvwControl.Item.Key = tvwControl.Key Then Break
+    If InStr(LCase(tvwControl.Item.Text), sName) Then
+      tvwControl.Item.Selected = True
+      Break
+    Endif
+  Loop
+
+End
+
+Public Sub txtSearch_Activate()
+  
+  txtSearch_Click
+  
+End
+
