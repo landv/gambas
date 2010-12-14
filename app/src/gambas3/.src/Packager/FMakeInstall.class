@@ -11,10 +11,11 @@ Private $aFile As String[]
 
 Private Const TAB_GROUP As Integer = 3
 Private Const TAB_MENU As Integer = 4
-Private Const TAB_DEP As Integer = 5
-Private Const TAB_FILE As Integer = 6
-Private Const TAB_TEST As Integer = 7
-Private Const TAB_DIR As Integer = 8
+Private Const TAB_MIME As Integer = 5
+Private Const TAB_DEP As Integer = 6
+Private Const TAB_FILE As Integer = 7
+Private Const TAB_TEST As Integer = 8
+Private Const TAB_DIR As Integer = 9
 
 
 Private Sub MakeChangeLog() As String
@@ -109,6 +110,8 @@ Public Sub Form_Open()
  
   chkDep.Value = Project.SameDependencies
   chkFile.Value = Project.SameFiles
+  
+  txtMime.Text = Project.MimeTypes.Join("\n")
 
 End
 
@@ -373,15 +376,8 @@ Public Sub wizInstall_BeforeChange()
         Return
       Endif
       
-      ' IF CheckSys(Project.Categories) THEN
-      '   IF cmbMenu.Count > 1 THEN
-      '     Message.Warning(("Please choose at least one category for each target distribution."))
-      '   ELSE 
-      '     Message.Warning(("Please choose at least one category."))          
-      '   ENDIF 
-      '   STOP EVENT
-      '   RETURN
-      ' ENDIF
+    Case TAB_MIME
+      Project.MimeTypes = Split(Trim(txtMime.Text), "\n")
       
     Case TAB_DEP
     
@@ -441,6 +437,9 @@ Public Sub wizInstall_Change()
     Case TAB_MENU
       InitMenuTree
       cmbMenu.Visible = cmbMenu.Count > 1
+      
+    Case TAB_MIME
+      txtMime.SetFocus
     
     Case TAB_DEP
       FillComboWithSystems(cmbDep)
@@ -949,12 +948,14 @@ End
 
 Public Sub chkDep_Click()
 
+  Project.SameDependencies = chkDep.Value
   UpdateDepCombo
 
 End
 
 Public Sub chkFile_Click()
 
+  Project.SameFiles = chkFile.Value
   UpdateFileCombo
 
 End

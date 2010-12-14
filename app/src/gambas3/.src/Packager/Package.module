@@ -507,7 +507,6 @@ Private Function MakeDebPackage(sSys As String)
 
       Print #hFile, "[Desktop Entry]"
       Print #hFile, "Version=1.0"
-      Print #hFile, "Encoding=UTF-8"
       Print #hFile, "Name=";    
       If Project.Title Then
        Print #hFile, Project.Title
@@ -526,6 +525,7 @@ Private Function MakeDebPackage(sSys As String)
       Print #hFile, "Type=Application"
       Print #hFile, "StartupNotify=true"
       Print #hFile, "Categories="; $sCategories
+      If Project.MimeTypes.Count Then Print #hFile, "MimeType="; Project.MimeTypes.Join(";")
       PrintOnlyShowIn(hFile, $sCategories)
       Close #hFile
   Endif 
@@ -928,7 +928,6 @@ Private Function MakeRpmPackage(sSys As String)
         Print #hFile, "cat << EOF > %{buildroot}/%{_datadir}/applications/%{name}.desktop"
         Print #hFile, "[Desktop Entry]"
         Print #hFile, "Version=1.0"
-        Print #hFile, "Encoding=UTF-8"
         Print #hFile, "Name=";    
         If Project.Title Then
           Print #hFile, Project.Title
@@ -947,6 +946,7 @@ Private Function MakeRpmPackage(sSys As String)
         Print #hFile, "Type=Application"
         Print #hFile, "StartupNotify=true"
         Print #hFile, "Categories=X-MandrivaLinux-"; Replace(Replace(Project.Menus[sSys], " ", ""), "/", "-"); ";"; $sCategories
+        If Project.MimeTypes.Count Then Print #hFile, "MimeType="; Project.MimeTypes.Join(";")
         PrintOnlyShowIn(hFile, $sCategories)
         Print #hFile, "EOF"
   
@@ -965,7 +965,6 @@ Private Function MakeRpmPackage(sSys As String)
         Print #hFile, "cat << EOF > %{buildroot}%{_datadir}/applications/%{name}.desktop"
         Print #hFile, "[Desktop Entry]"
         Print #hFile, "Version=1.0"
-        Print #hFile, "Encoding=UTF-8"
         Print #hFile, "Name=";    
         If Project.Title Then
           Print #hFile, Project.Title
@@ -984,6 +983,7 @@ Private Function MakeRpmPackage(sSys As String)
         Print #hFile, "Type=Application"
         Print #hFile, "StartupNotify=true"
         Print #hFile, "Categories=X-RedHat-Extra;"; $sCategories
+        If Project.MimeTypes.Count Then Print #hFile, "MimeType="; Project.MimeTypes.Join(";")
         PrintOnlyShowIn(hFile, $sCategories)
         Print #hFile, "EOF"
   
@@ -996,7 +996,6 @@ Private Function MakeRpmPackage(sSys As String)
         Print #hFile, "cat << EOF > %{buildroot}%{_datadir}/applications/%{name}.desktop"
         Print #hFile, "[Desktop Entry]"
         Print #hFile, "Version=1.0"
-        Print #hFile, "Encoding=UTF-8"
         Print #hFile, "Name=";    
         If Project.Title Then
           Print #hFile, Project.Title
@@ -1015,6 +1014,7 @@ Private Function MakeRpmPackage(sSys As String)
         Print #hFile, "Type=Application"
         Print #hFile, "StartupNotify=true"
         Print #hFile, "Categories="; $sCategories
+        If Project.MimeTypes.Count Then Print #hFile, "MimeType="; Project.MimeTypes.Join(";")
         PrintOnlyShowIn(hFile, $sCategories)
         Print #hFile, "EOF"
   
@@ -1264,7 +1264,6 @@ Private Sub MakeTgzPackage(sSys As String)
   
     Print #hFile, "[Desktop Entry]"
     Print #hFile, "Version=1.0"
-    Print #hFile, "Encoding=UTF-8"
     Print #hFile, "Name=";    
     If Project.Title Then
       Print #hFile, Project.Title
@@ -1283,6 +1282,7 @@ Private Sub MakeTgzPackage(sSys As String)
     Print #hFile, "Type=Application"
     Print #hFile, "StartupNotify=true"
     Print #hFile, "Categories="; $sCategories
+    If Project.MimeTypes.Count Then Print #hFile, "MimeType="; Project.MimeTypes.Join(";")
     PrintOnlyShowIn(hFile, $sCategories)
   
     Close #hFile
@@ -1460,7 +1460,6 @@ Private Function MakeArchPackage(sSys As String)
     hFile = Open sBuildDir &/ $sPackageName & ".desktop" For Create
     Print #hFile, "[Desktop Entry]"
     Print #hFile, "Version=1.0"
-    Print #hFile, "Encoding=UTF-8"
     Print #hFile, "Name=";    
     If Project.Title Then
       Print #hFile, Project.Title
@@ -1479,6 +1478,7 @@ Private Function MakeArchPackage(sSys As String)
     Print #hFile, "Type=Application"
     Print #hFile, "StartupNotify=true"
     Print #hFile, "Categories="; $sCategories
+    If Project.MimeTypes.Count Then Print #hFile, "MimeType="; Project.MimeTypes.Join(";")
     PrintOnlyShowIn(hFile, $sCategories)
     Close #hFile
   Endif 

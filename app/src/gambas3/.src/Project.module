@@ -64,6 +64,7 @@ Public SameDependencies As Boolean
 Public SameFiles As Boolean
 Public ExtraAutoconfTest As String
 Public Categories As Collection
+Public MimeTypes As String[]
 Public Prefix As Boolean
 Public UseRelease As Boolean
 Public PackageName As String
@@ -2643,6 +2644,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   Systems = New String[]
   Menus = New Collection
   Categories = New Collection
+  MimeTypes = New String[]
   Groups = New Collection
   ExtraDependencies = New Collection
   ExtraFiles = New Collection
@@ -2846,12 +2848,6 @@ Public Sub ReadProject(Optional bConvert As Boolean)
       Case "sourcepath"
         SourcePath = sVal
         
-        'Case "stack"
-        '  Stack = Val(sVal)
-        
-        'Case "stacktrace"
-        '  StackTrace = Val(sVal) <> 0
-        
       Case "useterminal"
         UseTerminal = Val(sVal) <> 0
         
@@ -2860,8 +2856,12 @@ Public Sub ReadProject(Optional bConvert As Boolean)
         
       Case "samedependencies"
         SameDependencies = Val(sVal) <> 0
+      
       Case "samefiles"
         SameFiles = Val(sVal) <> 0
+        
+      Case "mimetypes"
+        MimeTypes = Split(sVal, ",", Chr$(34), True)
         
     End Select
     
@@ -2971,6 +2971,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If UseRelease Then Print #hFic, "UseRelease=1"
   If PackageName Then Print #hFic, "PackageName="; PackageName
   If CreateEachDirectory Then Print #hFic, "CreateEachDirectory=1"
+  If MimeTypes.Count Then Print #hFic, "MimeTypes="; MimeTypes.Join(",", Chr$(34))
   
   If Systems.Count Then
     

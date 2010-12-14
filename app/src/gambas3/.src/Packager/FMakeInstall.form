@@ -10,7 +10,7 @@
     MoveScaled(1,1,89,79)
     Arrangement = Arrange.Vertical
     Spacing = True
-    Count = 10
+    Count = 11
     ShowIndex = True
     Border = False
     Index = 0
@@ -288,8 +288,8 @@
     Text = ("Package group")
     { cmbGroup ComboBox
       MoveScaled(1,1,68,4)
-      Text = (" ")
       ReadOnly = True
+      Text = (" ")
     }
     { tvwGroup TreeView
       MoveScaled(1,6,68,40)
@@ -305,8 +305,8 @@
     Text = ("Menu entry")
     { cmbMenu ComboBox
       MoveScaled(1,1,68,4)
-      Text = (" ")
       ReadOnly = True
+      Text = (" ")
     }
     { tvwMenu TreeView
       MoveScaled(1,6,68,32)
@@ -328,6 +328,17 @@
       Sorted = True
     }
     Index = 5
+    Text = ("Mimetypes")
+    { TextLabel5 TextLabel
+      MoveScaled(1,1,86,4)
+      AutoResize = True
+      Text = ("Enter the mimetypes handled by your application there, one by line.\n")
+    }
+    { txtMime TextArea
+      MoveScaled(1,6,81,56)
+      Expand = True
+    }
+    Index = 6
     Text = ("Extra dependencies")
     { chkDep CheckBox
       MoveScaled(0,1,55,3)
@@ -335,8 +346,8 @@
     }
     { cmbDep ComboBox
       MoveScaled(0,6,68,4)
-      Text = (" ")
       ReadOnly = True
+      Text = (" ")
     }
     { HBox12 HBox
       MoveScaled(1,15,79,41)
@@ -377,7 +388,7 @@
         }
       }
     }
-    Index = 6
+    Index = 7
     Text = ("Extra files")
     { chkFile CheckBox
       MoveScaled(0,1,55,3)
@@ -385,8 +396,8 @@
     }
     { cmbFile ComboBox
       MoveScaled(0,6,68,4)
-      Text = (" ")
       ReadOnly = True
+      Text = (" ")
     }
     { HBox13 HBox
       MoveScaled(0,12,79,41)
@@ -428,7 +439,7 @@
         }
       }
     }
-    Index = 7
+    Index = 8
     Text = ("Extra autoconf tests")
     { TextLabel4 TextLabel
       MoveScaled(2,1,66,9)
@@ -439,7 +450,7 @@
       MoveScaled(1,15,71,49)
       Expand = True
     }
-    Index = 8
+    Index = 9
     Text = ("Destination directory")
     { dchInstall DirChooser
       MoveScaled(1,0,72,58)
@@ -449,7 +460,7 @@
       MoveScaled(1,60,69,4)
       Text = ("Create directories for each distribution")
     }
-    Index = 9
+    Index = 10
     Text = ("Create package")
     { TextLabel3 TextLabel
       MoveScaled(2,2,67,17)
