@@ -87,6 +87,8 @@ void DRAW_init()
 
 static bool init_drawing(GB_DRAW *d, QPaintDevice *device, int w, int h, int dpi = 0)
 {
+	QPen pen;
+	
 	if (device->paintingActive())
 	{
 		GB.Error("Device already being painted");
@@ -110,6 +112,12 @@ static bool init_drawing(GB_DRAW *d, QPaintDevice *device, int w, int h, int dpi
 			d->resolution = QX11Info::appDpiY();
 		#endif
 	
+	pen = DP(d)->pen();
+	pen.setCapStyle(Qt::FlatCap);
+	pen.setJoinStyle(Qt::MiterJoin);
+	DP(d)->setPen(pen);
+	//DP(d)->setBrush(Qt::black);
+
 	return FALSE;
 }
 
