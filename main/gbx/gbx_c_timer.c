@@ -36,25 +36,6 @@
 DECLARE_EVENT(EVENT_Timer);
 
 
-void CTIMER_raise(void *_object)
-{
-	GB_Raise(THIS, EVENT_Timer, 0);
-}
-
-BEGIN_METHOD_VOID(CTIMER_new)
-
-	THIS->id = 0;
-	THIS->delay = 1000;
-
-END_METHOD
-
-BEGIN_METHOD_VOID(CTIMER_free)
-
-	if (THIS->id)
-		HOOK_DEFAULT(timer, WATCH_timer)((GB_TIMER *)THIS, FALSE);
-
-END_METHOD
-
 static void enable_timer(CTIMER *_object, bool on)
 {
 	if (on != (THIS->id != 0))
@@ -63,19 +44,45 @@ static void enable_timer(CTIMER *_object, bool on)
 		GB_Error("Too many active timers");
 }
 
-BEGIN_METHOD_VOID(CTIMER_start)
+
+void CTIMER_raise(void *_object)
+{
+	if (GB_Raise(THIS, EVENT_Timer, 0))
+		enable_timer(THIS, FALSE);
+}
+
+
+BEGIN_METHOD_VOID(Timer_new)
+
+	THIS->id = 0;
+	THIS->delay = 1000;
+
+END_METHOD
+
+
+BEGIN_METHOD_VOID(Timer_free)
+
+	if (THIS->id)
+		HOOK_DEFAULT(timer, WATCH_timer)((GB_TIMER *)THIS, FALSE);
+
+END_METHOD
+
+
+BEGIN_METHOD_VOID(Timer_Start)
 
 	enable_timer(THIS, TRUE);
 
 END_METHOD
 
-BEGIN_METHOD_VOID(CTIMER_stop)
+
+BEGIN_METHOD_VOID(Timer_Stop)
 
 	enable_timer(THIS, FALSE);
 
 END_METHOD
 
-BEGIN_PROPERTY(CTIMER_enabled)
+
+BEGIN_PROPERTY(Timer_Enabled)
 
 	if (READ_PROPERTY)
 		GB_ReturnBoolean(THIS->id != 0);
@@ -83,6 +90,7 @@ BEGIN_PROPERTY(CTIMER_enabled)
 		enable_timer(THIS, VPROP(GB_BOOLEAN));
 
 END_PROPERTY
+
 
 BEGIN_PROPERTY(CTIMER_delay)
 
@@ -107,17 +115,12 @@ BEGIN_PROPERTY(CTIMER_delay)
 
 END_PROPERTY
 
-BEGIN_METHOD_VOID(CTIMER_trigger)
+
+BEGIN_METHOD_VOID(Timer_Trigger)
 
 	EVENT_post_event(THIS, EVENT_Timer);
 
 END_METHOD
-
-/*BEGIN_PROPERTY(Timer_Timeout)
-
-	GB_ReturnFloat(THIS->id ? HOOK_DEFAULT(timeout, WATCH_get_timeout)((GB_TIMER *)THIS) : 0);
-
-END_PROPERTY*/
 
 #endif
 
@@ -125,17 +128,16 @@ GB_DESC NATIVE_Timer[] =
 {
   GB_DECLARE("Timer", sizeof(CTIMER)),
 
-  GB_METHOD("_new", NULL, CTIMER_new, NULL),
-  GB_METHOD("_free", NULL, CTIMER_free, NULL),
+  GB_METHOD("_new", NULL, Timer_new, NULL),
+  GB_METHOD("_free", NULL, Timer_free, NULL),
 
-  GB_PROPERTY("Enabled", "b", CTIMER_enabled),
+  GB_PROPERTY("Enabled", "b", Timer_Enabled),
   GB_PROPERTY("Delay", "i", CTIMER_delay),
   //GB_PROPERTY_READ("Timeout", "f", Timer_Timeout),
 
-  GB_METHOD("Start", NULL, CTIMER_start, NULL),
-  GB_METHOD("Stop", NULL, CTIMER_stop, NULL),
-
-  GB_METHOD("Trigger", NULL, CTIMER_trigger, NULL),
+  GB_METHOD("Start", NULL, Timer_Start, NULL),
+  GB_METHOD("Stop", NULL, Timer_Stop, NULL),
+  GB_METHOD("Trigger", NULL, Timer_Trigger, NULL),
   
   GB_CONSTANT("_IsControl", "b", TRUE),
   GB_CONSTANT("_IsVirtual", "b", TRUE),

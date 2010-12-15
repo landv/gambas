@@ -636,10 +636,17 @@ static void draw_image(GB_DRAW *d, GB_IMAGE image, int x, int y, int w, int h, i
 {
 	bool xform;
 	QImage *p = CIMAGE_get((CIMAGE *)image);
+	Qt::TransformationMode mode;
 
 	DRAW_NORMALIZE(x, y, w, h, sx, sy, sw, sh, p->width(), p->height());
 	xform = (w != sw || h != sh);
 
+	
+	if (w >= sw && h >= sw && (w % sw) == 0 && (h % sh) == 0)
+		mode = Qt::FastTransformation;
+	else
+		mode = Qt::SmoothTransformation;
+	
 	if (!xform)
 	{
 		DP(d)->drawImage(x, y, *p, sx, sy, sw, sh);
@@ -667,7 +674,7 @@ static void draw_image(GB_DRAW *d, GB_IMAGE image, int x, int y, int w, int h, i
 				img = img.copy(sx, sy, sw, sh);
 			
 			if (w != sw || h != sh)
-				img = img.smoothScale(w, h);
+				img = img.scaled(w, h, Qt::IgnoreAspectRatio, mode);
 			
 			DP(d)->drawImage(x, y, img);
 
@@ -681,12 +688,19 @@ static void draw_image(GB_DRAW *d, GB_IMAGE image, int x, int y, int w, int h, i
 			else
 				DPM(d)->fillRect(x, y, w, h, Qt::color1);
 		}
+		else if (mode == Qt::FastTransformation)
+		{
+			QImage img = p->copy(sx, sy, sw, sh);
+			img = img.scaled(w, h, Qt::IgnoreAspectRatio, mode);
+			DP(d)->drawImage(x, y, img);
+		}
 		else
 		{
+		
 			DP(d)->save();
 			DP(d)->translate(x, y);
 			x = y = 0;
-			DP(d)->scale((double)w / p->width(), (double)h / p->height());
+			DP(d)->scale((double)w / sw, (double)h / sh);
 			DP(d)->drawImage(x, y, *p, sx, sy, sw, sh);
 			DP(d)->restore();
 		}

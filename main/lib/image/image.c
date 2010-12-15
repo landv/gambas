@@ -172,7 +172,7 @@ static inline bool is_valid(GB_IMG *img, int x, int y)
 
 static void free_image(GB_IMG *img, void *image)
 {
-	//fprintf(stderr, "free_image: %p %p\n", img, img->data);
+	//fprintf(stderr, "free_image: %p %p : %d\n", img, img->data, IMAGE_size(img));
 	GB.Free(POINTER(&img->data));
 }
 
@@ -806,10 +806,10 @@ void IMAGE_bitblt(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int 
 	if ( sy < 0 ) { dy -= sy; sh += sy; sy = 0; }
 	if ( dx < 0 ) { sx -= dx; sw += dx; dx = 0; }
 	if ( dy < 0 ) { sy -= dy; sh += dy; dy = 0; }
-	if ( sx + sw > src->width ) sw = src->width - sx;
-	if ( sy + sh > src->height ) sh = src->height - sy;
-	if ( dx + sw > dst->width ) sw = dst->width - dx;
-	if ( dy + sh > dst->height ) sh = dst->height - dy;
+	if ( (sx + sw) > src->width ) sw = src->width - sx;
+	if ( (sy + sh) > src->height ) sh = src->height - sy;
+	if ( (dx + sw) > dst->width ) sw = dst->width - dx;
+	if ( (dy + sh) > dst->height ) sh = dst->height - dy;
 	if ( sw <= 0 || sh <= 0 ) return; // Nothing left to copy
 	
 	SYNCHRONIZE(src);

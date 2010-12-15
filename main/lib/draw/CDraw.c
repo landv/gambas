@@ -808,12 +808,12 @@ BEGIN_METHOD(CDRAW_zoom, GB_OBJECT image; GB_INTEGER zoom; GB_INTEGER x; GB_INTE
 	
 	border = DRAW->Line.GetStyle(THIS);
 
-	if (zoom == 1 && !border)
+	if (zoom < 6 && !border)
 	{
 		DRAW->Fill.SetStyle(THIS, 1);
 		DRAW->Fill.SetColor(THIS, 0x979797);
-		DRAW->Draw.Rect(THIS, x, y, sw, sh);
-		DRAW->Draw.Image(THIS, image, x, y, -1, -1, sx, sy, sw, sh);
+		DRAW->Draw.Rect(THIS, x, y, sw * zoom, sh * zoom);
+		DRAW->Draw.Image(THIS, image, x, y, sw * zoom, sh * zoom, sx, sy, sw, sh);
 	}
 	else
 	{

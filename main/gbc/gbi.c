@@ -466,6 +466,7 @@ static bool analyze_gambas_component(const char *path)
 {
 	ARCH *arch;
 	ARCH_FIND find;
+	bool ret = TRUE;
 
 	if (_verbose)
 		fprintf(stderr, "Loading gambas component: %s\n", path);
@@ -475,7 +476,7 @@ static bool analyze_gambas_component(const char *path)
 	if (ARCH_find(arch, ".info", 0, &find))
 	{
 		warning(".info file not found in component archive.");
-		return TRUE;
+		goto __RETURN;
 	}
 
 	fwrite(&arch->addr[find.pos], 1, find.len, out_info);
@@ -483,13 +484,16 @@ static bool analyze_gambas_component(const char *path)
 	if (ARCH_find(arch, ".list", 0, &find))
 	{
 		warning(".list file not found in component archive.");
-		return TRUE;
+		goto __RETURN;
 	}
 
 	fwrite(&arch->addr[find.pos], 1, find.len, out_list);
+	ret = FALSE;
 
+__RETURN:
+	
 	ARCH_close(arch);
-	return FALSE;
+	return ret;
 }
 
 

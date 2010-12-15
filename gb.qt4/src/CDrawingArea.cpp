@@ -64,7 +64,7 @@ MyDrawingArea::MyDrawingArea(QWidget *parent) : MyContainer(parent)
 	setAttribute(Qt::WA_NativeWindow, true);
 	setAttribute(Qt::WA_DontCreateNativeAncestors, true);
 	
-	//setAttribute(Qt::WA_NoSystemBackground, true);
+	setAttribute(Qt::WA_NoSystemBackground, true);
 }
 
 
@@ -417,7 +417,10 @@ BEGIN_PROPERTY(CDRAWINGAREA_background)
 	Control_Background(_object, _param);
 
 	if (!READ_PROPERTY)
+	{
 		WIDGET->clearBackground();
+		WIDGET->setAttribute(Qt::WA_NoSystemBackground, THIS->widget.bg == COLOR_DEFAULT);
+	}
 
 END_PROPERTY
 

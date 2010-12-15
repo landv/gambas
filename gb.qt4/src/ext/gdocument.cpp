@@ -1005,7 +1005,7 @@ void GDocument::setLine(int y, GString & str)
 
 bool GDocument::getLineFlag(int y, int f) const
 {
-  if (y >= 0 || y < (int)lines.count())
+  if (y >= 0 && y < (int)lines.count())
     return lines.at(y)->flag & (1 << f);
   else
     return false;

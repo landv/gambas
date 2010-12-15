@@ -99,7 +99,7 @@ static GB_IMG_OWNER _image_owner = {
 	"gb.qt4",
 	GB_IMAGE_BGRA,
 	free_image,
-	free_image,
+ 	free_image,
 	temp_image,
 	NULL,
 	};
@@ -113,7 +113,13 @@ QImage *CIMAGE_get(CIMAGE *_object)
 
 static void take_image(CIMAGE *_object, QImage *image)
 {
-	IMAGE.Take(THIS_IMAGE, &_image_owner, image, image->width(), image->height(), image->bits());
+	bool d = image->isDetached();
+	//qDebug("take_image: %d x %d / %d [%c]", image->width(), image->height(), image->bytesPerLine(), image->isDetached() ? 'D' : '+');
+	const uchar *data = ((const QImage *)image)->bits();
+	//qDebug("take_image: [%c]", image->isDetached() ? 'D' : '+');
+	if (image->isDetached() != d)
+		qDebug("image has been detached! %d x %d", image->width(), image->height());
+	IMAGE.Take(THIS_IMAGE, &_image_owner, image, image->width(), image->height(), (uchar *)data);
 }
 
 CIMAGE *CIMAGE_create(QImage *image)
@@ -221,12 +227,8 @@ BEGIN_METHOD(CIMAGE_stretch, GB_INTEGER width; GB_INTEGER height)
 	else
 	{
 		stretch = new QImage();
-		//count++;
-		//qDebug("CIMAGE_stretch: %d: (%dx%d)->(%dx%d): %d", count, QIMAGE->width(), QIMAGE->height(), VARG(width), VARG(height), VARGOPT(smooth, TRUE) != 0);
-		//if (VARGOPT(smooth, TRUE))
 		*stretch = QIMAGE->scaled(VARG(width), VARG(height), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-		//else
-		//	*stretch = QIMAGE->scaled(VARG(width), VARG(height));
+		stretch->detach();
 	}
 
   GB.ReturnObject(CIMAGE_create(stretch));

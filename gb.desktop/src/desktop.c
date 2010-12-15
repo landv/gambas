@@ -346,7 +346,10 @@ BEGIN_METHOD(CDESKTOP_set_window_property, GB_STRING name; GB_STRING type; GB_VA
 									memcpy(p, d[i], len + 1);
 									p += len + 1;
 								}
+								
+								break;
 							}
+							
 						default:
 							goto __ERROR;
 					}

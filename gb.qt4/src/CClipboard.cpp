@@ -201,14 +201,15 @@ BEGIN_METHOD(CCLIPBOARD_copy, GB_VARIANT data; GB_STRING format)
   }
   else if (VARG(data).type >= GB_T_OBJECT && GB.Is(VARG(data).value._object, CLASS_Image))
   {
-    CIMAGE *img;
+		QImage img;
 
     if (!MISSING(format))
       goto _BAD_FORMAT;
 
-    img = (CIMAGE *)VARG(data).value._object;
+    img = *CIMAGE_get((CIMAGE *)VARG(data).value._object);
+		img.detach();
 
-    QApplication::clipboard()->setImage(*CIMAGE_get(img));
+    QApplication::clipboard()->setImage(img);
   }
   else
     goto _BAD_FORMAT;
@@ -361,7 +362,6 @@ void *CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, GB_STRING *fmt)
   QDrag *drag;
   QMimeData *mimeData;
   QString format;
-  CIMAGE *img;
   void *dest;
 
   if (GB.CheckObject(source))
@@ -392,13 +392,16 @@ void *CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, GB_STRING *fmt)
   }
   else if (data->type >= GB_T_OBJECT && GB.Is(data->value._object, CLASS_Image))
   {
+		QImage img;
+
     if (fmt)
       goto _BAD_FORMAT;
 
-    img = (CIMAGE *)data->value._object;
-
-		mimeData->setImageData(*CIMAGE_get(img));
-  }
+    img = *CIMAGE_get((CIMAGE *)data->value._object);
+		img.detach();
+		
+		mimeData->setImageData(img);
+	}
   else
     goto _BAD_FORMAT;
 

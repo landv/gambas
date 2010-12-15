@@ -17,7 +17,8 @@ Private $X2 As Integer
 Private $Y2 As Integer
 Private $iColor As Integer
 
-Private $bGhost As Boolean
+'Private $bGhost As Boolean
+Private $bShowSelection As Boolean
 
 Private Const MAX_UNDO As Integer = 32
 Private $hUndo As New Image[32]
@@ -148,6 +149,83 @@ Public Sub LoadFile() As Boolean
 End
 
 
+Private Sub DrawSelection()
+
+  Dim iS2 As Integer
+  Dim iSH As Integer
+  Dim iWH As Integer
+
+  'WITH FIconTool
+
+    If $sTool = "select" And Not $bSelect Then Return
+
+    iS2 = $iScale \ 2
+    iSH = $iScale
+    iWH = iSH * 2 + 1
+
+    'If Not bNoBegin Then Draw.Begin(dwgIcon)
+
+    Select Case $sTool
+
+      Case "line"
+
+        Draw.Invert = True
+        Draw.LineStyle = Line.Solid
+        Draw.LineWidth = 3
+        Draw.FillStyle = Fill.None
+        Draw.Foreground = Color.White
+        Draw.Line($X * $iScale + iS2, $Y * $iScale + iS2, $X2 * $iScale + iS2, $Y2 * $iScale + iS2)
+        Draw.Rect($X * $iScale, $Y * $iScale - 1, $iScale1, $iScale1)
+        Draw.Rect($X2 * $iScale, $Y2 * $iScale - 1, $iScale1, $iScale1)
+
+      Case "select"
+
+        Draw.Invert = True
+        Draw.LineStyle = Line.Solid
+        Draw.LineWidth = 3
+        Draw.FillStyle = Fill.None
+        Draw.Foreground = Color.White
+        Draw.Rect(Min($X, $X2) * $iScale, Min($Y, $Y2) * $iScale, (Abs($X - $X2) + 1) * $iScale + 1, (Abs($Y - $Y2) + 1) * $iScale + 1)
+
+      Case "rect"
+
+        Draw.Invert = True
+        Draw.LineStyle = Line.Solid
+        Draw.LineWidth = 3
+        Draw.FillStyle = Fill.None
+        Draw.Foreground = Color.White
+        Draw.Rect(Min($X, $X2) * $iScale, Min($Y, $Y2) * $iScale, (Abs($X - $X2) + 1) * $iScale + 1, (Abs($Y - $Y2) + 1) * $iScale + 1)
+        If $iMode = 0 Then
+          If Abs($X - $X2) > 1 And Abs($Y - $Y2) > 1 Then
+            Draw.Rect((Min($X, $X2) + 1) * $iScale, (Min($Y, $Y2) + 1) * $iScale, (Abs($X - $X2) - 1) * $iScale + 1, (Abs($Y - $Y2) - 1) * $iScale + 1)
+          Endif
+        Endif
+
+      Case "circle"
+
+        Draw.Invert = True
+        Draw.LineStyle = LINE.Solid
+        Draw.LineWidth = 3
+        Draw.FillStyle = Fill.None
+        Draw.Foreground = Color.White
+        Draw.Ellipse(Min($X, $X2) * $iScale, Min($Y, $Y2) * $iScale, (Abs($X - $X2) + 1) * $iScale + 1, (Abs($Y - $Y2) + 1) * $iScale + 1)
+        If $iMode = 0 Then
+          If Abs($X - $X2) > 1 And Abs($Y - $Y2) > 1 Then
+            Draw.Ellipse((Min($X, $X2) + 1) * $iScale, (Min($Y, $Y2) + 1) * $iScale, (Abs($X - $X2) - 1) * $iScale + 1, (Abs($Y - $Y2) - 1) * $iScale + 1)
+          Endif
+        Endif
+
+    End Select
+
+    'If Not bNoBegin Then
+    '  Draw.End
+    '  $bGhost = Not $bGhost
+    'Endif
+
+  'END WITH
+
+End
+
 Public Sub dwgIcon_Draw()
 
   Dim X As Integer
@@ -159,7 +237,7 @@ Public Sub dwgIcon_Draw()
   Dim DX As Integer
   Dim DY As Integer
   Dim C As Integer
-  Dim W As Integer
+  Dim SW, SH As Integer
 
   Dim hZoom As Image
 
@@ -179,9 +257,11 @@ Public Sub dwgIcon_Draw()
 
   SX = Max(0, SX)
   DX = Min($hImage.Width - 1, DX)
+  SW = DX - SX + 1
 
   SY = Max(0, SY)
   DY = Min($hImage.Height - 1, DY)
+  SH = DY - SY + 1
 
   If $iScale > 5 Then
     Draw.LineStyle = Line.Solid
@@ -190,9 +270,13 @@ Public Sub dwgIcon_Draw()
     Draw.LineStyle = Line.None
   Endif
 
-  Draw.Zoom($hImage, $iScale, SX * $iScale, SY * $iScale, SX, SY, DX - SX + 1, DY - SY + 1)
+  'If $iScale >= 6 Then
+  Draw.Zoom($hImage, $iScale, SX * $iScale, SY * $iScale, SX, SY, SW, SH)
+  'Else
+  '  Draw.Image($hImage, SX * $iScale, SY * $iScale, SW * $iScale, SH * $iScale, SX, SY, SW, SH)
+  'Endif
 
-  If $bGhost Then DrawGhost(True)
+  If $bShowSelection Then DrawSelection()
 
 End
 
@@ -392,8 +476,10 @@ Public Sub dwgIcon_MouseDown()
         If Mouse.Right Then SetBackground($hImage[X, Y])
 
     End Select
+    
+    $bShowSelection = ["line", "select", "rect", "circle"].Exist($sTool)
 
-    DrawGhost
+    If $bShowSelection Then dwgIcon.Refresh
 
     Select $sTool
 
@@ -422,8 +508,6 @@ Public Sub dwgIcon_MouseMove()
     RefreshCoord(X \ $iScale, Y \ $iScale)
 
     If Not (Mouse.Left Or Mouse.Right) Then Return
-
-    DrawGhost
 
     If $sTool <> "move" Then
 
@@ -462,7 +546,7 @@ Public Sub dwgIcon_MouseMove()
 
     End Select
 
-    DrawGhost
+    If $bShowSelection Then dwgIcon.Refresh
 
   'END WITH
 
@@ -472,8 +556,6 @@ End
 Public Sub dwgIcon_MouseUp()
 
   'WITH FIconTool
-
-    DrawGhost
 
     Select Case $sTool
 
@@ -517,6 +599,10 @@ Public Sub dwgIcon_MouseUp()
 
     End Select
 
+   If $bShowSelection Then
+     $bShowSelection = False
+     dwgIcon.Refresh
+   Endif
   'END WITH
 
 End
@@ -794,84 +880,6 @@ Private Sub DrawEllipse(X As Integer, Y As Integer, W As Integer, H As Integer, 
 End
 
 
-Private Sub DrawGhost(Optional bNoBegin As Boolean)
-
-  Dim iS2 As Integer
-  Dim iSH As Integer
-  Dim iWH As Integer
-
-  'WITH FIconTool
-
-    If $sTool = "select" And Not $bSelect Then Return
-
-    iS2 = $iScale \ 2
-    iSH = $iScale
-    iWH = iSH * 2 + 1
-
-    If Not bNoBegin Then Draw.Begin(dwgIcon)
-
-    Select Case $sTool
-
-      Case "line"
-
-        Draw.Invert = True
-        Draw.LineStyle = Line.Solid
-        Draw.LineWidth = 3
-        Draw.FillStyle = Fill.None
-        Draw.Foreground = Color.White
-        Draw.Line($X * $iScale + iS2, $Y * $iScale + iS2, $X2 * $iScale + iS2, $Y2 * $iScale + iS2)
-        Draw.Rect($X * $iScale, $Y * $iScale - 1, $iScale1, $iScale1)
-        Draw.Rect($X2 * $iScale, $Y2 * $iScale - 1, $iScale1, $iScale1)
-
-      Case "select"
-
-        Draw.Invert = True
-        Draw.LineStyle = Line.Solid
-        Draw.LineWidth = 3
-        Draw.FillStyle = Fill.None
-        Draw.Foreground = Color.White
-        Draw.Rect(Min($X, $X2) * $iScale, Min($Y, $Y2) * $iScale, (Abs($X - $X2) + 1) * $iScale + 1, (Abs($Y - $Y2) + 1) * $iScale + 1)
-
-      Case "rect"
-
-        Draw.Invert = True
-        Draw.LineStyle = Line.Solid
-        Draw.LineWidth = 3
-        Draw.FillStyle = Fill.None
-        Draw.Foreground = Color.White
-        Draw.Rect(Min($X, $X2) * $iScale, Min($Y, $Y2) * $iScale, (Abs($X - $X2) + 1) * $iScale + 1, (Abs($Y - $Y2) + 1) * $iScale + 1)
-        If $iMode = 0 Then
-          If Abs($X - $X2) > 1 And Abs($Y - $Y2) > 1 Then
-            Draw.Rect((Min($X, $X2) + 1) * $iScale, (Min($Y, $Y2) + 1) * $iScale, (Abs($X - $X2) - 1) * $iScale + 1, (Abs($Y - $Y2) - 1) * $iScale + 1)
-          Endif
-        Endif
-
-      Case "circle"
-
-        Draw.Invert = True
-        Draw.LineStyle = LINE.Solid
-        Draw.LineWidth = 3
-        Draw.FillStyle = Fill.None
-        Draw.Foreground = Color.White
-        Draw.Ellipse(Min($X, $X2) * $iScale, Min($Y, $Y2) * $iScale, (Abs($X - $X2) + 1) * $iScale + 1, (Abs($Y - $Y2) + 1) * $iScale + 1)
-        If $iMode = 0 Then
-          If Abs($X - $X2) > 1 And Abs($Y - $Y2) > 1 Then
-            Draw.Ellipse((Min($X, $X2) + 1) * $iScale, (Min($Y, $Y2) + 1) * $iScale, (Abs($X - $X2) - 1) * $iScale + 1, (Abs($Y - $Y2) - 1) * $iScale + 1)
-          Endif
-        Endif
-
-    End Select
-
-    If Not bNoBegin Then
-      Draw.End
-      $bGhost = Not $bGhost
-    Endif
-
-  'END WITH
-
-End
-
-
 Private Sub BeginUndo()
 
   If $iBeginUndo = 0 Then
@@ -1105,13 +1113,17 @@ End
 
 Private Sub CopySelection()
 
-  'IF dwgPaste.Visible THEN RETURN
-
+  Dim hCopy As Image
+  
   If $bSelect Then
-    Clipboard.Copy($hImage.Copy($XS, $YS, $WS, $HS))
+    hCopy = $hImage.Copy($XS, $YS, $WS, $HS)
   Else
-    Clipboard.Copy($hImage)
+    hCopy = $hImage
   Endif
+  
+  hCopy.Save("~/copy.png")
+  
+  Clipboard.Copy(hCopy)
 
 End
 
@@ -1399,12 +1411,6 @@ Public Sub Clear()
   $hImage.Fill(-1)
   RefreshAllImage()
   Modify
-
-End
-
-Public Sub dwgIcon_DblClick()
-
-  DrawGhost
 
 End
 
