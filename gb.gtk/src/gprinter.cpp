@@ -204,7 +204,8 @@ bool gPrinter::run(bool configure)
 	if (!configure)
 	{
 		file = outputFileName();
-		if (file) unlink(file);
+		if (file) 
+			unlink(file);
 		gApplication::_close_next_window = true;
 	}
 	
@@ -475,6 +476,7 @@ void gPrinter::setName(const char *name)
 const char *gPrinter::outputFileName() const
 {
 	const char *uri;
+	char *path;
 	
 	uri = gtk_print_settings_get(_settings, GTK_PRINT_SETTINGS_OUTPUT_URI);
 	
@@ -484,16 +486,22 @@ const char *gPrinter::outputFileName() const
 	if (strncmp(uri, "file://", 7))
 		return NULL;
 	
-	return &uri[7];
+	path = g_uri_unescape_string(&uri[7], "/");
+	gt_free_later(path);
+	
+	return path;
 }
 
 void gPrinter::setOutputFileName(const char *file)
 {
-	char uri[strlen(file) + 7];
+	char *escaped;
+	char *uri = NULL; //[strlen(file) + 7];
 	const char *format;
 	
-	strcpy(uri, "file://");
-	strcat(uri, file);
+	escaped = g_uri_escape_string(file, "/", true);
+	g_stradd(&uri, "file://");
+	g_stradd(&uri, escaped);
+	g_free(escaped);
 	
 	if (g_str_has_suffix(uri, ".ps"))
 		format = "ps";
@@ -505,6 +513,8 @@ void gPrinter::setOutputFileName(const char *file)
 		format = NULL;
 
 	gtk_print_settings_set(_settings, GTK_PRINT_SETTINGS_OUTPUT_URI, uri);	
+	
+	g_free(uri);
 
 	// It does not work!!!
 	if (format)

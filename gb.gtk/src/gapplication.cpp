@@ -295,7 +295,7 @@ static void gambas_handle_event(GdkEvent *event)
 			//fprintf(stderr, "type: %s\n", G_OBJECT_TYPE_NAME(widget));
 			if (!strcmp(G_OBJECT_TYPE_NAME(gtk_widget_get_toplevel(widget)), "GtkPrintUnixDialog"))
 			{
-				if (event->type == GDK_MAP)
+				if (event->type == GDK_WINDOW_STATE)
 				{
 					//fprintf(stderr, "event: MAP!\n");
 					widget = gtk_window_get_default_widget(GTK_WINDOW(gtk_widget_get_toplevel(widget)));
@@ -922,9 +922,7 @@ void gApplication::enterPopup(gMainWindow *owner)
 	void *old_owner = _loop_owner;
 	int l = _loopLevel;
 	GtkWindowGroup *oldGroup;
-	GtkWidget *toplevel;
 	GtkWindow *window = GTK_WINDOW(owner->border);
-	gControl *active;
 	
 	oldGroup = enterGroup();
 	
