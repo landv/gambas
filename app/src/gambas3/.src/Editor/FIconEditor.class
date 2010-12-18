@@ -295,6 +295,7 @@ Public Sub dwgPaste_Draw()
   Dim CP As Integer
   Dim W As Integer
   Dim hTemp As Image
+  Dim XD,WD As Integer
 
   If Not $hPaste Then Return
 
@@ -344,13 +345,17 @@ Public Sub dwgPaste_Draw()
 
   Draw.FillStyle = Fill.None
   Draw.LineStyle = Line.Dot
-  Draw.LineWidth = 3
+  Draw.LineWidth = 1 + $iScale \ 2
   Draw.Foreground = Color.Black
   Draw.Background = Color.White
   Draw.Transparent = False
   'Draw.Invert = TRUE
-  Draw.Rect(1, 1, dwgPaste.Width - 2, dwgPaste.Height - 2)
-
+  
+  XD = Draw.LineWidth \ 2
+  WD = Draw.LineWidth - 1
+  
+  Draw.Rect(XD, XD, dwgPaste.Width - WD, dwgPaste.Height - WD)
+  
 End
 
 

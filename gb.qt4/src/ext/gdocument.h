@@ -48,7 +48,7 @@ public:
 		Operator, Symbol, Number, String,
 		Comment, Breakpoint, Current, Datatype,
 		Selection, Highlight, Line, Error, 
-		Alternate, Help,
+		Alternate, Help, Preprocessor,
 		NUM_STATE
 	};
 

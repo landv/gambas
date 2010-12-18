@@ -137,6 +137,10 @@ COMP_INFO COMP_res_info[] =
 	{ "Randomize"                                                 },
 	{ "ByRef"                                                     },
 	{ "Memory"                                                    },
+	
+	{ "#If"                                                       },
+	{ "#Else"                                                     },
+	{ "#Endif"                                                    },
 
 	{ ":",            RSF_NONE,                 OP_COLON,     0,                       },  // Use for the immediate collection syntax
 	{ ";"                                                                              },

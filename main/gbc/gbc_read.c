@@ -42,17 +42,21 @@
 
 #include "gbc_compile.h"
 #include "gbc_class.h"
+#include "gbc_preprocess.h"
 #include "gbc_read.h"
 
-//#define DEBUG
+#define DEBUG
 //#define BIG_COMMENT 1
 
 static bool is_init = FALSE;
 static COMPILE *comp;
 static const char *source_ptr;
 static int source_length;
-static bool begin_line = FALSE;
+static bool _begin_line = FALSE;
 static bool _no_quote = FALSE;
+
+static bool _prep = FALSE;
+static int _prep_index;
 
 static char ident_car[256];
 static char first_car[256];
@@ -70,6 +74,8 @@ enum
 	GOTO_QUOTED_IDENT, 
 	GOTO_NUMBER,
 	GOTO_ERROR,
+	GOTO_SHARP,
+	GOTO_AT,
 	GOTO_OTHER
 };
 
@@ -97,6 +103,10 @@ static void READ_init(void)
 				first_car[i] = GOTO_COMMENT;
 			else if (i == '"')
 				first_car[i] = GOTO_STRING;
+			else if (i == '#')
+				first_car[i] = GOTO_SHARP;
+			else if (i == '@')
+				first_car[i] = GOTO_AT;
 			else if ((i >= 'A' && i <= 'Z') || (i >= 'a' && i <= 'z') || i == '$' || i == '_')
 				first_car[i] = GOTO_IDENT;
 			else if (i == '{')
@@ -352,9 +362,12 @@ static void add_pattern(int type, int index)
 	READ_dump_pattern(&comp->pattern[comp->pattern_count - 1]);
 }
 
+#define add_pattern_no_dump(_type, _index) comp->pattern[comp->pattern_count++] = PATTERN_make((_type), (_index));
+
 #else
 
 #define add_pattern(_type, _index) comp->pattern[comp->pattern_count++] = PATTERN_make((_type), (_index));
+#define add_pattern_no_dump add_pattern
 
 #endif
 
@@ -368,10 +381,67 @@ static PATTERN get_last_last_pattern()
 
 #define get_last_pattern() (comp->pattern[comp->pattern_count - 1])
 
+static void jump_to_next_prep(void)
+{
+	unsigned char car;
+	const char *line_start;
+	
+	for (;;)
+	{
+		line_start = source_ptr;
+		
+		for(;;)
+		{
+			car = get_char();
+			if (!car)
+				return;
+			if (car == '\n' || !isspace(car))
+				break;
+			source_ptr++;
+		}
+		
+		if (car == '#')
+		{
+			source_ptr = line_start;
+			return;
+		}
+		
+		for(;;)
+		{
+			car = get_char();
+			if (!car)
+				return;
+			source_ptr++;
+			if (car == '\n')
+				break;
+		}
+		
+		add_pattern(RT_NEWLINE, comp->line);
+		comp->line++;
+	}
+}
+
 static void add_newline()
 {
+	bool jump = FALSE;
+	
+	if (_prep)
+	{
+		int line = comp->line;
+		
+		add_pattern_no_dump(RT_NEWLINE, comp->line);
+		jump = PREP_analyze(&comp->pattern[_prep_index]);
+		_prep = FALSE;
+		
+		comp->pattern_count = _prep_index;
+		comp->line = line;
+	}
+	
 	add_pattern(RT_NEWLINE, comp->line);
 	comp->line++;
+	
+	if (jump)
+		jump_to_next_prep();
 }
 
 static void add_end()
@@ -618,23 +688,23 @@ static void add_identifier()
 			break;
 			
 		__CLASS:
-			can_be_reserved = canres_car[car] && begin_line;
+			can_be_reserved = canres_car[car] && _begin_line;
 			break;
 			
 		__STRUCT:
-			can_be_reserved = canres_car[car] && (begin_line || last_pub || PATTERN_is(last_pattern, RS_AS) || PATTERN_is(last_pattern, RS_END) || PATTERN_is(last_pattern, RS_NEW));
+			can_be_reserved = canres_car[car] && (_begin_line || last_pub || PATTERN_is(last_pattern, RS_AS) || PATTERN_is(last_pattern, RS_END) || PATTERN_is(last_pattern, RS_NEW));
 			break;
 			
 		__SUB_PROCEDURE_FUNCTION:
-			can_be_reserved = canres_car[car] && (begin_line || last_pub || PATTERN_is(last_pattern, RS_END));
+			can_be_reserved = canres_car[car] && (_begin_line || last_pub || PATTERN_is(last_pattern, RS_END));
 			break;
 		
 		__CONST_EXTERN:
-			can_be_reserved = canres_car[car] && (begin_line || last_pub);
+			can_be_reserved = canres_car[car] && (_begin_line || last_pub);
 			break;
 			
 		__ENUM:
-			can_be_reserved = canres_car[car] && (begin_line || last_pub);
+			can_be_reserved = canres_car[car] && (_begin_line || last_pub);
 			break;
 			
 		__READ:
@@ -945,7 +1015,7 @@ static void add_command()
 
 void READ_do(void)
 {
-	static void *jump_char[9] =
+	static void *jump_char[] =
 	{
 		&&__BREAK, 
 		&&__SPACE, 
@@ -955,6 +1025,8 @@ void READ_do(void)
 		&&__QUOTED_IDENT,
 		&&__NUMBER,
 		&&__ERROR, 
+		&&__SHARP,
+		&&__AT,
 		&&__OTHER
 	};
 	
@@ -963,12 +1035,14 @@ void READ_do(void)
 	comp = JOB;
 
 	READ_init();
+	PREP_init();
 	
 	add_pattern(RT_NEWLINE, 0);
 
 	source_ptr = comp->source;
 	source_length = BUFFER_length(comp->source);
-	begin_line = TRUE;
+	_begin_line = TRUE;
+	_prep = FALSE;
 
 	//while (source_ptr < source_length)
 	for(;;)
@@ -986,7 +1060,7 @@ void READ_do(void)
 		if (car == '\n')
 		{
 			add_newline();
-			begin_line = TRUE;
+			_begin_line = TRUE;
 		}
 		continue;
 
@@ -999,43 +1073,61 @@ void READ_do(void)
 		}
 		while (car != '\n');
 
-		begin_line = FALSE;
+		_begin_line = FALSE;
 		continue;
 
 	__STRING:
 			
 		add_string();
-		begin_line = FALSE;
+		_begin_line = FALSE;
 		continue;
 
 	__IDENT:
 		
 		add_identifier();
-		begin_line = FALSE;
+		_begin_line = FALSE;
 		continue;
 
 	__QUOTED_IDENT:
 	
 		source_ptr++;
 		add_quoted_identifier();
-		begin_line = FALSE;
+		_begin_line = FALSE;
 		continue;
 		
 	__NUMBER:
 	
 		add_number();
-		begin_line = FALSE;
+		_begin_line = FALSE;
 		continue;
+		
+	__SHARP:
+	
+		if (_begin_line)
+		{
+			_prep = TRUE;
+			_prep_index = comp->pattern_count;
+			
+			add_identifier();
+			_begin_line = FALSE;
+			continue;
+		}
+		else
+			goto __OTHER;
+		
+	__AT:
+		
+		if (_begin_line)
+		{
+			add_command();
+			_begin_line = FALSE;
+			continue;
+		}
+		else
+			goto __OTHER;
 	
 	__OTHER:
 	
-		if (car == '#' && begin_line)
-		{
-			add_command();
-			begin_line = FALSE;
-			continue;
-		}
-		
 #if BIG_COMMENT
 		if (car == '/' && get_char_offset(1) == '*')
 		{
@@ -1054,7 +1146,7 @@ void READ_do(void)
 					add_newline();
 			}
 
-			begin_line = FALSE;
+			_begin_line = FALSE;
 			continue;
 		}
 #endif
@@ -1062,7 +1154,7 @@ void READ_do(void)
 		if (add_number())
 			add_operator();
 		
-		begin_line = FALSE;
+		_begin_line = FALSE;
 	}
 
 __BREAK:
@@ -1076,6 +1168,7 @@ __BREAK:
 	add_end();
 	add_end();
 
+	PREP_exit();
 	READ_exit();
 }
 

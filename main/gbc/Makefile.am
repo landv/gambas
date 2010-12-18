@@ -20,6 +20,7 @@ gbc3_SOURCES = \
  gb_alloc.c gb_array.c \
  gbc_class.h \
  gbc_read.h gbc_read.c \
+ gbc_preprocess.h gbc_preprocess.c \
  gbc_type.h gbc_compile.h gbc_header.h \
  gbc_output.h gbc_trans.h \
  gbc_reserved.c \

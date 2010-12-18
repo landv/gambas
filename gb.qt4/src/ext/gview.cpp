@@ -84,7 +84,8 @@ static QColor defaultColors[GLine::NUM_STATE] =
 	QColor(0xE8, 0xE8, 0xF8),
 	Qt::red,
 	Qt::black,
-	Qt::gray
+	Qt::gray,
+	Qt::green
 };
 
 /**---- GEditor -----------------------------------------------------------*/
@@ -1900,10 +1901,7 @@ void GEditor::setNumRows(int n)
 void GEditor::getStyle(int index, GHighlightStyle *style) const
 {
 	if (index < 0 || index >= GLine::NUM_STATE)
-	{
-		*style = styles[GLine::Background];
-		return;
-	}
+		index = GLine::Background;
 
 	*style = styles[index];
 }

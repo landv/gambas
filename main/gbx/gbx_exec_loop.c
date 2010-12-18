@@ -213,8 +213,8 @@ void EXEC_loop(void)
     /* 1B NEW             */  &&_NEW,
     /* 1C CALL            */  &&_CALL,
     /* 1D CALL QUICK      */  &&_CALL_QUICK,
-    /* 1E CALL EASY       */  &&_CALL_EASY,
-    /* 1F CALL SLOW       */  &&_CALL_SLOW,
+    /* 1E CALL EASY       */  &&_CALL_SLOW,
+    /* 1F CALL SLOW       */  &&_ILLEGAL,
     /* 20 JUMP            */  &&_JUMP,
     /* 21 JUMP IF TRUE    */  &&_JUMP_IF_TRUE,
     /* 22 JUMP IF FALSE   */  &&_JUMP_IF_FALSE,
@@ -1113,8 +1113,8 @@ _CALL_QUICK:
 
 /*-----------------------------------------------*/
 
-_CALL_EASY:
 #if 0
+_CALL_EASY:
   {
     static const void *call_jump[] =
       { &&__CALL_NULL, &&__CALL_NATIVE_E, &&__CALL_PRIVATE_E, &&__CALL_PUBLIC_E };

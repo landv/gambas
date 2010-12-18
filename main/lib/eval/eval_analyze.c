@@ -223,11 +223,13 @@ static void analyze(EVAL_ANALYZE *result)
   bool space_before, space_after, in_quote;
   //bool me = FALSE;
   int len, i;
+	bool preprocessor;
 
   pattern = EVAL->pattern;
   src = EVAL->source;
   colors_len = 0;
 	nspace = 0;
+	preprocessor = FALSE;
 
   if (EVAL->len <= 0)
     return;
@@ -241,7 +243,7 @@ static void analyze(EVAL_ANALYZE *result)
   if (empty)
     return;
 
-  if (!EVAL->pattern)
+  if (!pattern)
     return;
 
   if (nspace)
@@ -282,6 +284,9 @@ static void analyze(EVAL_ANALYZE *result)
           if (old_type != EVAL_TYPE_OPERATOR)
             space_before = TRUE;
         }
+        
+        if (preprocessor && PATTERN_is(pattern[-1], RS_SHARP))
+					space_before = FALSE;
 
         /*if (PATTERN_index(*pattern) >= RS_COLON)
         {
@@ -352,6 +357,9 @@ static void analyze(EVAL_ANALYZE *result)
             space_before = TRUE;
           space_after = FALSE;
           //in_quote = *symbol == '{';
+					
+					if (!preprocessor && *symbol == '#' && old_type == EVAL_TYPE_END)
+						preprocessor = TRUE;
         }
         else if (index("}", *symbol))
         {
@@ -397,7 +405,7 @@ static void analyze(EVAL_ANALYZE *result)
     if (space_before && old_type != EVAL_TYPE_END)
     {
       GB.AddString(&result->str, " ", 1);
-      add_data(EVAL_TYPE_END, 1);
+      add_data(preprocessor ? EVAL_TYPE_PREPROCESSOR : EVAL_TYPE_END, 1);
     }
 
     if (type == EVAL_TYPE_STRING)
@@ -423,7 +431,10 @@ static void analyze(EVAL_ANALYZE *result)
       len += 2;
     }
 
-    add_data(type, len);
+		if (preprocessor)
+			add_data(EVAL_TYPE_PREPROCESSOR, len);
+		else
+			add_data(type, len);
     //printf("add_data: %.d (%d)\n", type, len);
 
     pattern++;
