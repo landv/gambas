@@ -431,7 +431,7 @@ static void analyze(EVAL_ANALYZE *result)
       len += 2;
     }
 
-		if (preprocessor)
+		if (preprocessor && type != EVAL_TYPE_COMMENT && type != EVAL_TYPE_HELP)
 			add_data(EVAL_TYPE_PREPROCESSOR, len);
 		else
 			add_data(type, len);

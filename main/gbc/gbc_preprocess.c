@@ -61,7 +61,7 @@ static bool is_current(int res)
 		return FALSE;
 }
 
-static bool compare_version(void)
+static bool compare_value(const char *value)
 {
 	PATTERN op;
 	SYMBOL *sym;
@@ -74,125 +74,67 @@ static bool compare_version(void)
 		THROW("Missing operator");
 	
 	if (!PATTERN_is_string(*_current))
-		THROW("Version string expected");
+		THROW("String expected");
 	
 	sym = TABLE_get_symbol(JOB->class->string, PATTERN_index(*_current));
 	_current++;
 	
-	if (sym->len < 1 || sym->len > 8)
-		THROW("Bad version string");
-	
-	memcpy(version, sym->name, sym->len);
-	version[sym->len] = 0;
-	n = sscanf(version, "%d.%d", &major, &minor);
-	if (n == 0)
-		THROW("Bad version string");
-	else if (n == 1)
-		minor = 0;
-	
-	diff = GAMBAS_VERSION - major;
-	if (!diff) 
-		diff = GAMBAS_MINOR_VERSION - minor;
-	
-	switch (PATTERN_index(op))
+	if (value)
 	{
-		case RS_EQUAL: return diff == 0;
-		case RS_NE: return diff != 0;
-		case RS_GT: return diff > 0;
-		case RS_LT: return diff < 0;
-		case RS_GE: return diff >= 0;
-		case RS_LE: return diff <= 0;
-		default: THROW("Comparison operator expected");
+		if (strlen(value) != sym->len)
+			diff = 1;
+		else
+			diff = strncasecmp(value, sym->name, sym->len);
+		
+		switch (PATTERN_index(op))
+		{
+			case RS_EQUAL: return diff == 0;
+			case RS_NE: return diff != 0;
+			default: THROW("Equality or inequality operator expected");
+		}
+	}
+	else
+	{
+		if (sym->len < 1 || sym->len > 8)
+			THROW("Bad version string");
+		
+		memcpy(version, sym->name, sym->len);
+		version[sym->len] = 0;
+		n = sscanf(version, "%d.%d", &major, &minor);
+		if (n == 0)
+			THROW("Bad version string");
+		else if (n == 1)
+			minor = 0;
+		
+		diff = GAMBAS_VERSION - major;
+		if (!diff) 
+			diff = GAMBAS_MINOR_VERSION - minor;
+		
+		switch (PATTERN_index(op))
+		{
+			case RS_EQUAL: return diff == 0;
+			case RS_NE: return diff != 0;
+			case RS_GT: return diff > 0;
+			case RS_LT: return diff < 0;
+			case RS_GE: return diff >= 0;
+			case RS_LE: return diff <= 0;
+			default: THROW("Comparison operator expected");
+		}
 	}
 }
 
-#define compare_symbol(_symbol, _len_symbol, _name, _len) (((_len_symbol) == (_len)) && !strncasecmp((_symbol), (_name), (_len)))
+#define compare_symbol(_symbol, _name, _len) ((strlen(_symbol) == _len) && !strncasecmp((_symbol), (_name), (_len)))
 
 static int get_symbol(const char *name, int len)
 {
-	if (compare_symbol("os_linux", 8, name, len))
-	{
-		#if OS_LINUX
-	    return TRUE;
-		#else
-			return FALSE;
-		#endif
-	}
+	if (compare_symbol("system", name, len))
+		return compare_value(SYSTEM);
 
-	if (compare_symbol("os_bsd", 6, name, len))
-	{
-		#if OS_BSD
-	    return TRUE;
-		#else
-			return FALSE;
-		#endif
-	}
+	if (compare_symbol("arch", name, len) || compare_symbol("architecture", name, len))
+		return compare_value(ARCHITECTURE);
 
-	if (compare_symbol("os_freebsd", 10, name, len))
-	{
-		#if OS_FREEBSD
-	    return TRUE;
-		#else
-			return FALSE;
-		#endif
-	}
-
-	if (compare_symbol("os_netbsd", 9, name, len))
-	{
-		#if OS_NETBSD
-	    return TRUE;
-		#else
-			return FALSE;
-		#endif
-	}
-
-	if (compare_symbol("os_macosx", 9, name, len))
-	{
-		#if OS_MACOSX
-	    return TRUE;
-		#else
-			return FALSE;
-		#endif
-	}
-
-	if (compare_symbol("arch_x86", 8, name, len))
-	{
-		#if ARCH_X86
-	    return TRUE;
-		#else
-			return FALSE;
-		#endif
-	}
-
-	if (compare_symbol("arch_x86_64", 11, name, len))
-	{
-		#if ARCH_X86_64
-	    return TRUE;
-		#else
-			return FALSE;
-		#endif
-	}
-
-	if (compare_symbol("arch_ppc", 8, name, len))
-	{
-		#if ARCH_PPC
-	    return TRUE;
-		#else
-			return FALSE;
-		#endif
-	}
-
-	if (compare_symbol("arch_arm", 8, name, len))
-	{
-		#if ARCH_ARM
-	    return TRUE;
-		#else
-			return FALSE;
-		#endif
-	}
-
-	if (compare_symbol("version", 7, name, len) || compare_symbol("gambas", 6, name, len) )
-		return compare_version();
+	if (compare_symbol("version", name, len) || compare_symbol("gambas", name, len))
+		return compare_value(NULL);
 
 	return FALSE;
 }
