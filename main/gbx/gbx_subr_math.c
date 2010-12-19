@@ -137,7 +137,7 @@ void SUBR_math(ushort code)
 	static void *jump[] = {
 		NULL, &&__FRAC, &&__LOG, &&__EXP, &&__SQRT, &&__SIN, &&__COS, &&__TAN, &&__ATAN, &&__ASIN, &&__ACOS,
 		&&__DEG, &&__RAD, &&__LOG10, &&__SINH, &&__COSH, &&__TANH, &&__ASINH, &&__ACOSH, &&__ATANH,
-		&&__EXP2, &&__EXP10, &&__LOG2, &&__CBRT, &&__EXPM1, &&__LOG1P
+		&&__EXP2, &&__EXP10, &&__LOG2, &&__CBRT, &&__EXPM1, &&__LOG1P, &&__FLOOR, &&__CEIL
 	};
 	
 	
@@ -171,6 +171,8 @@ __LOG2: PARAM->_float.value = __builtin_log2(PARAM->_float.value); goto __END;
 __CBRT: PARAM->_float.value = __builtin_cbrt(PARAM->_float.value); goto __END;
 __EXPM1: PARAM->_float.value = __builtin_expm1(PARAM->_float.value); goto __END;
 __LOG1P: PARAM->_float.value = __builtin_log1p(PARAM->_float.value); goto __END;
+__FLOOR: PARAM->_float.value = __builtin_floor(PARAM->_float.value); goto __END;
+__CEIL: PARAM->_float.value = __builtin_ceil(PARAM->_float.value); goto __END;
 
 __END:
 
