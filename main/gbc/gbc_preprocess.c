@@ -135,6 +135,9 @@ static int get_symbol(const char *name, int len)
 
 	if (compare_symbol("version", name, len) || compare_symbol("gambas", name, len))
 		return compare_value(NULL);
+	
+	if (compare_symbol("debug", name, len))
+		return JOB->debug;
 
 	return FALSE;
 }

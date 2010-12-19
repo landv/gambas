@@ -1116,7 +1116,7 @@ int MyPaintDevice::metric(PaintDeviceMetric m) const
 		case PdmHeight: return d->height();
 		case PdmWidthMM: return d->widthMM();
 		case PdmHeightMM: return d->heightMM();
-		#if QT_VERSION <= 0x040502
+		#if QT_VERSION <= 0x040600
 		case PdmNumColors: return d->numColors();
 		#else
 		case PdmNumColors: return d->colorCount();
