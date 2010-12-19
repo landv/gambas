@@ -7,13 +7,16 @@ Public Sub _new()
   Dim sDest As String
   
   sLanguage = Left$(System.Language, 2)
-  If sLanguage = "de" Then 
-    sPath = "Hilfe.html"
-  Else 
-    sPath = "Help.html"
-  Endif 
+  sPath = "Help_" & sLanguage & ".html"
   sDest = File.SetExt(Temp$("help"), "html")
   Try Copy sPath To sDest
+  
+  If Error Then
+    sPath = "Help_en.html"
+    sDest = File.SetExt(Temp$("help"), "html")
+    Try Copy sPath To sDest
+  Endif
+
   WebViewHelp.Url = sDest
 
 End
