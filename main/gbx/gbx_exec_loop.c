@@ -422,7 +422,7 @@ void EXEC_loop(void)
     /* EC PUSH CONST      */  &&_PUSH_CONST,
     /* ED PUSH CONST      */  &&_PUSH_CONST,
     /* EE PUSH CONST      */  &&_PUSH_CONST,
-    /* EF PUSH CONST      */  &&_PUSH_CONST,
+    /* EF PUSH CONST      */  &&_PUSH_CONST_EX,
     /* F0 PUSH QUICK      */  &&_PUSH_QUICK,
     /* F1 PUSH QUICK      */  &&_PUSH_QUICK,
     /* F2 PUSH QUICK      */  &&_PUSH_QUICK,
@@ -1537,6 +1537,16 @@ _PUSH_CONST:
 
 	ind = GET_UXX();
   my_VALUE_class_constant(CP, SP, ind);
+  SP++;
+  goto _NEXT;
+
+
+/*-----------------------------------------------*/
+
+_PUSH_CONST_EX:
+
+	PC++;
+  my_VALUE_class_constant(CP, SP, *PC);
   SP++;
   goto _NEXT;
 

@@ -372,7 +372,7 @@ void CODE_push_number(int value)
 }
 
 
-void CODE_push_const(short value)
+void CODE_push_const(ushort value)
 {
   LAST_CODE;
 
@@ -381,7 +381,14 @@ void CODE_push_const(short value)
   #ifdef DEBUG
   printf("PUSH CONST %d %s\n", value, TABLE_get_symbol_name(JOB->class->table, JOB->class->constant[value].index));
   #endif
-  write_Zxxx(C_PUSH_CONST, value);
+	
+	if (value < 0xF00)
+		write_Zxxx(C_PUSH_CONST, value);
+	else
+	{
+		write_Zxxx(C_PUSH_CONST, 0xF00);
+		write_short((short)value);
+	}
 }
 
 

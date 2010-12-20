@@ -42,7 +42,7 @@
 #define MAX_SYMBOL_LEN      255
 
 /* Maximum number of constants in the same class - CANNOT CHANGE */
-#define MAX_CLASS_CONST     4096
+#define MAX_CLASS_CONST     65536
 
 /* Maximum number of static or dynamic symbols in the same class - CANNOT CHANGE */
 #define MAX_CLASS_SYMBOL    2048
