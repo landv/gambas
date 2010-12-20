@@ -702,6 +702,8 @@ Static Private Sub ScanStruct(hModule As Object, iLine As Integer) As Integer
   For iInd = 0 To aSym.Max - 1
     If aSym[iInd] = "STRUCT" Then Break
   Next
+  If iInd = aSym.Max Then Return iLine
+  
   sClass = aSym[iInd + 1]
   
   Do
