@@ -120,8 +120,8 @@ static void *SubrTable[] =
   SUBR_is_type,    /* 37 65 */
   SUBR_type,       /* 38 66 */
   SUBR_conv,       /* 39 67 */
-  SUBR_bin,        /* 40 68 */
-  SUBR_hex,        /* 41 69 */
+  SUBR_hex_bin,    /* 40 68 */
+  SUBR_hex_bin,    /* 41 69 */
   SUBR_val,        /* 42 6A */
   SUBR_str,        /* 43 6B */
   SUBR_format,     /* 44 6C */

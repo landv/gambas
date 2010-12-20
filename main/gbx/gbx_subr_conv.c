@@ -239,49 +239,31 @@ void SUBR_format(ushort code)
 }
 
 
-void SUBR_hex(ushort code)
+void SUBR_hex_bin(ushort code)
 {
+	static const int base[] = { 2, 16, 8 };
+	static const int max_prec[] = { 64, 16, 22 };
+	
+	int mode;
   int prec = 0;
 
   SUBR_ENTER();
 
   VALUE_conv(PARAM, T_LONG);
 
+	mode = (code >> 8) - CODE_BIN;
+	
   if (NPARAM == 2)
   {
     VALUE_conv_integer(&PARAM[1]);
 
     prec = PARAM[1]._integer.value;
 
-    if (prec < 1 || prec > 16)
+    if (prec < 1 || prec > max_prec[mode])
       THROW(E_ARG);
   }
 
-  NUMBER_int_to_string(PARAM->_long.value, prec, 16, RETURN);
-
-  SUBR_LEAVE();
-}
-
-
-void SUBR_bin(ushort code)
-{
-  int prec = 0;
-
-  SUBR_ENTER();
-
-  VALUE_conv(PARAM, T_LONG);
-
-  if (NPARAM == 2)
-  {
-    VALUE_conv_integer(&PARAM[1]);
-
-    prec = PARAM[1]._integer.value;
-
-    if (prec < 1 || prec > 64)
-      THROW(E_ARG);
-  }
-
-  NUMBER_int_to_string(PARAM->_long.value, prec, 2, RETURN);
+  NUMBER_int_to_string(PARAM->_long.value, prec, base[mode], RETURN);
 
   SUBR_LEAVE();
 }

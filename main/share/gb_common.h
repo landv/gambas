@@ -74,11 +74,6 @@ typedef unsigned long ulong;
 
 #endif
 
-#ifdef OS_FREEBSD
-	/* finite is replaced by isfinite */
-	#define finite isfinite
-#endif
-
 #ifdef OS_SOLARIS
 
 /* PGS: The following #define prevents /usr/include/sys/mman.h on solaris

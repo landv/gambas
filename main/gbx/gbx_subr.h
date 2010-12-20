@@ -168,8 +168,7 @@ void SUBR_type(ushort code);
 void SUBR_str(void);
 void SUBR_val(void);
 void SUBR_format(ushort code);
-void SUBR_hex(ushort code);
-void SUBR_bin(ushort code);
+void SUBR_hex_bin(ushort code);
 
 /* subr_time.c */
 

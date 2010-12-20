@@ -360,8 +360,8 @@ SUBR_INFO COMP_subr_info[] =
 	{ "TypeOf",            38,  0,  1     },
 	{ "SizeOf",            38,  1,  1     },
 
-	{ "CBool",             39,  1,  1     },   /* CODE_CONV */
-	{ "CBoolean",          39,  1,  1     },   /* CODE_CONV */
+	{ "CBool",             39,  1,  1     },  // CODE_CONV
+	{ "CBoolean",          39,  1,  1     },
 	{ "CByte",             39,  2,  1     },
 	{ "CShort",            39,  3,  1     },
 	{ "CInt",              39,  4,  1     },
@@ -375,7 +375,7 @@ SUBR_INFO COMP_subr_info[] =
 	{ "CPointer",          39, 11,  1     },
 	{ "CVariant",          39, 12,  1     },
 
-	{ "Bin$",              40,  0,  1,  2 },
+	{ "Bin$",              40,  0,  1,  2 },  // CODE_BIN
 	{ "Bin",               40,  0,  1,  2 },
 
 	{ "Hex$",              41,  0,  1,  2 },

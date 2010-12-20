@@ -1236,7 +1236,13 @@ void VALUE_from_string(VALUE *value, const char *addr, int len)
 {
 	value->type = T_NULL;
 
-	if (!len || *addr == 0)
+	while (len > 0 && isspace(*addr))
+		addr++, len--;
+	
+	while (len > 0 && isspace(addr[len - 1]))
+		len--;
+	
+	if (len <= 0)
 		return;
 
 	if (!DATE_from_string(addr, len, value, TRUE))
