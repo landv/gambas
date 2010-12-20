@@ -25,8 +25,10 @@
 
 #include "gambas.h"
 #include "gb.qt.h"
-#include <qlabel.h>
 
+#include <QLabel>
+#include <QMovie>
+#include <QBuffer>
 
 #ifndef __CMOVIEBOX_CPP
 extern GB_DESC CMovieBoxDesc[];
@@ -41,10 +43,11 @@ typedef
   struct {
     QT_WIDGET widget;
     char *path;
+    QByteArray *data;
+		QBuffer *buffer;
     QMovie *movie;
     char *addr;
     int len;
-    QByteArray *ba;
     }
   CMOVIEBOX;
 

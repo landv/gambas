@@ -40,8 +40,12 @@ static void free_movie(void *_object)
   
   delete THIS->movie;
   THIS->movie = 0;
-  THIS->ba->clear();
-  delete THIS->ba;
+
+	THIS->buffer->close();
+	delete THIS->buffer;
+	
+	THIS->data->clear();
+  delete THIS->data;
   
   GB.ReleaseFile(THIS->addr, THIS->len);
   
@@ -61,9 +65,11 @@ static bool load_movie(void *_object, char *path, int len)
 		if (GB.LoadFile(path, len, &THIS->addr, &THIS->len))
 			return true;
 
-		THIS->ba = new QByteArray();    
-		THIS->ba->fromRawData((const char *)THIS->addr, THIS->len);
-		THIS->movie = new QMovie(*(THIS->ba));
+		THIS->data = new QByteArray();    
+		*THIS->data = QByteArray::fromRawData((const char *)THIS->addr, THIS->len);
+		THIS->buffer = new QBuffer(THIS->data);
+		THIS->buffer->open(QIODevice::ReadOnly);
+		THIS->movie = new QMovie(THIS->buffer);
 		
 		THIS->path = GB.NewString(path, len);
 		
