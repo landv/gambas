@@ -286,6 +286,7 @@ static void gambas_handle_event(GdkEvent *event)
 	gControl *control;
 	int x, y, xc, yc;
 	bool real;
+	bool cancel;
 	
 	if (gApplication::_close_next_window)
 	{
@@ -375,6 +376,8 @@ static void gambas_handle_event(GdkEvent *event)
 		}
 	}
 	
+	cancel = false;
+	
 	gApplication::updateLastEventTime(event);
 	
 	switch ((int)event->type)
@@ -406,6 +409,11 @@ static void gambas_handle_event(GdkEvent *event)
 		case GDK_2BUTTON_PRESS:
 		case GDK_BUTTON_RELEASE:
 			
+			if (control->_proxy_for)
+				control = control->_proxy_for;
+		
+		__BUTTON_TRY_PROXY:
+		
 			if (control->onMouseEvent)
 			{
 				control->getScreenPos(&xc, &yc);
@@ -445,10 +453,22 @@ static void gambas_handle_event(GdkEvent *event)
 				if (event->button.button == 3 && event->type == GDK_BUTTON_PRESS)
 					control->onMouseEvent(control, gEvent_MouseMenu);
 			}
+			
+			if (control->_proxy)
+			{
+				control = control->_proxy;
+				goto __BUTTON_TRY_PROXY;
+			}
+			
 			break;
 			
 		case GDK_MOTION_NOTIFY:
 
+			if (control->_proxy_for)
+				control = control->_proxy_for;
+		
+		__MOTION_TRY_PROXY:
+		
 			if (control->onMouseEvent && (control->isTracking() || (event->motion.state & (GDK_BUTTON1_MASK | GDK_BUTTON2_MASK | GDK_BUTTON3_MASK))))
 			{
 				control->getScreenPos(&xc, &yc);
@@ -467,10 +487,22 @@ static void gambas_handle_event(GdkEvent *event)
 				}
 				gMouse::invalidate();
 			}
+
+			if (control->_proxy)
+			{
+				control = control->_proxy;
+				goto __MOTION_TRY_PROXY;
+			}
+			
 			break;
 			
 		case GDK_SCROLL:
 			
+			if (control->_proxy_for)
+				control = control->_proxy_for;
+		
+		__SCROLL_TRY_PROXY:
+		
 			if (control->onMouseEvent)
 			{
 				int dt, ort;
@@ -493,11 +525,17 @@ static void gambas_handle_event(GdkEvent *event)
 				control->onMouseEvent(control, gEvent_MouseWheel);
 				gMouse::invalidate();
 			}
+
+			if (control->_proxy)
+			{
+				control = control->_proxy;
+				goto __SCROLL_TRY_PROXY;
+			}
+			
 			break;
 
 		case GDK_KEY_PRESS:
 		{
-			bool cancel = false;
 			gMainWindow *win;
 			
 			control = gDesktop::activeControl();
@@ -510,6 +548,10 @@ static void gambas_handle_event(GdkEvent *event)
 				{
 					if (gApplication::onKeyEvent)
 						cancel = gApplication::onKeyEvent(gEvent_KeyPress);
+					if (!cancel && control->_proxy_for && control->_proxy_for->onKeyEvent)
+					{
+						cancel = control->_proxy_for->onKeyEvent(control->_proxy_for, gEvent_KeyPress);
+					}
 					if (!cancel && control->onKeyEvent) 
 					{
 						//fprintf(stderr, "gEvent_KeyPress on %p %s\n", control, control->name());
@@ -517,7 +559,7 @@ static void gambas_handle_event(GdkEvent *event)
 					}
 					if (!cancel && win->onKeyEvent)
 					{
-						cancel = control->onKeyEvent(win, gEvent_KeyPress);
+						cancel = win->onKeyEvent(win, gEvent_KeyPress);
 					}
 				}
 				gKey::disable();
@@ -553,14 +595,33 @@ static void gambas_handle_event(GdkEvent *event)
 		}
 			
 		case GDK_KEY_RELEASE:
+		{
+			bool cancel = false;
+			gMainWindow *win;
 			
 			control = gDesktop::activeControl();
 			
 			if (control)
 			{
+				win =  control->window();
+				
 				if (!gKey::enable(control, &event->key))
-					control->emit(SIGNAL(control->onKeyEvent), gEvent_KeyRelease);
+				{
+					if (control->_proxy_for && control->_proxy_for->onKeyEvent)
+					{
+						cancel = control->_proxy_for->onKeyEvent(control->_proxy_for, gEvent_KeyRelease);
+					}
+					if (!cancel)
+						control->emit(SIGNAL(control->onKeyEvent), gEvent_KeyRelease);
+					if (!cancel && win->onKeyEvent)
+					{
+						cancel = win->onKeyEvent(win, gEvent_KeyRelease);
+					}
+				}
 				gKey::disable();
+				
+				if (cancel)
+					return;
 				
 				if (event->key.keyval == GDK_Escape)
 				{
@@ -570,13 +631,13 @@ static void gambas_handle_event(GdkEvent *event)
 				}
 				else if (event->key.keyval == GDK_Return || event->key.keyval == GDK_KP_Enter)
 				{
-					gMainWindow *win = control->window();
 					if (check_button(win->_default))
 						win->_default->animateClick(true);
 				}
 			}
 			
 			break;
+		}
 	}
 	
 __HANDLE_EVENT:

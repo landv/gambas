@@ -30,6 +30,7 @@
 
 #ifndef __GBX_EVENT_C
 extern void *EVENT_Last;
+extern char *EVENT_PreviousName;
 extern char *EVENT_Name;
 #endif
 
@@ -51,5 +52,7 @@ bool EVENT_check_post(void);
 void EVENT_init(void);
 void EVENT_exit(void);
 void EVENT_post_event(void *object, int event);
+char *EVENT_enter_name(const char *name);
+void EVENT_leave_name(const char *save);
 
 #endif

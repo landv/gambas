@@ -581,11 +581,6 @@ void ERROR_set_last(void)
 		STRING_ref(ERROR_last.msg);
 }
 
-void ERROR_deprecated(const char *msg)
-{
-	fprintf(stderr, "%s: %s\n", DEBUG_get_current_position(), msg);
-}
-
 void ERROR_warning(const char *warning, ...)
 {
   va_list args;
@@ -594,7 +589,13 @@ void ERROR_warning(const char *warning, ...)
 
   fflush(NULL);
 
-  fprintf(stderr, "gbx" GAMBAS_VERSION_STRING ": warning:");
+  fprintf(stderr, "gbx" GAMBAS_VERSION_STRING ": warning: ");
   vfprintf(stderr, warning, args);
   putc('\n', stderr);
 }
+
+void ERROR_deprecated(const char *msg)
+{
+	ERROR_warning("%s: %s is deprecated.", DEBUG_get_current_position(), msg);
+}
+

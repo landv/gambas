@@ -257,3 +257,16 @@ void ERROR_print(void)
 void TRACE_where(void)
 {
 }
+
+void ERROR_warning(const char *warning, ...)
+{
+  va_list args;
+
+  va_start(args, warning);
+
+  fflush(NULL);
+
+  fprintf(stderr, "gbc" GAMBAS_VERSION_STRING ": warning: ");
+  vfprintf(stderr, warning, args);
+  putc('\n', stderr);
+}

@@ -52,6 +52,26 @@ Public Sub Run(sText As String, Optional iLevel As Integer) As String
   
 End
 
+Private Sub IsStruct() As Boolean
+  
+  Dim aSym As String[] = Highlight.Symbols
+  Dim iInd As Integer
+  
+  If aSym.Count >= 3 Then
+    If aSym[iInd] = "PUBLIC" Then Inc iInd
+    Return aSym[iInd] = "STRUCT"
+  Endif
+  
+End
+
+Private Sub IsEndStruct() As Boolean
+  
+  Dim aSym As String[] = Highlight.Symbols
+  
+  If aSym.Count = 2 And If aSym[0] = "END" And If aSym[1] = "STRUCT" Then Return True
+  
+End
+
 Private Sub IndentLine(sLine As String) As String
   
   Dim aSym As String[]
@@ -93,6 +113,14 @@ Private Sub IndentLine(sLine As String) As String
         iNextLevel = 0
         $bNeedNewLine = True
         If Not $bLastNewLine Then sAdd = "\n"
+      Else If IsStruct() Then
+        $iLevel = 0
+        iNextLevel = 1
+        If Not $bLastNewLine Then sAdd = "\n"
+      Else If IsEndStruct() Then
+        $iLevel = 0
+        iNextLevel = 0
+        $bNeedNewLine = True
       Else
         sSym = aSym[0]
         If sSym = "END" And If aSym.Count >= 2 Then sSym &= " " & aSym[1]

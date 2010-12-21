@@ -25,31 +25,10 @@
 
 #include "gambas.h"
 #include "gbx_object.h"
-#include "gb_list.h"
 
 #ifndef __GBX_C_GAMBAS_C
 extern GB_DESC NATIVE_Gambas[];
 extern GB_DESC NATIVE_Param[];
-extern GB_DESC NATIVE_Observer[];
 #endif
-
-// Note: the interpreter automatically allocates an extra OBJECT_EVENT structure. See CLASS_calc_info().
-
-typedef
-	struct {
-		OBJECT ob;
-		LIST list;
-		ushort *event;
-		void *object;
-		unsigned after : 1;
-		unsigned locked : 1;
-	}
-	COBSERVER;
-
-void COBSERVER_attach(COBSERVER *this, void *parent, const char *name);
-void COBSERVER_detach(COBSERVER *this);
-
-#define COBSERVER_lock(_this, _lock) (((COBSERVER *)_this)->locked = (_lock))
-#define COBSERVER_is_locked(_this) (((COBSERVER *)_this)->locked)
 
 #endif

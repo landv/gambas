@@ -33,7 +33,7 @@
 #include "gbx_subr.h"
 #include "gbx_stack.h"
 #include "gbx_debug.h"
-
+#include "gbx_event.h"
 #include "gbx_string.h"
 #include "gbx_date.h"
 
@@ -1842,6 +1842,7 @@ void EXEC_new(void)
 	void *object;
 	char *name = NULL;
 	char *cname = NULL;
+	char *save;
 
 	np = *PC & 0xFF;
 	event = np & CODE_NEW_EVENT;
@@ -1901,15 +1902,14 @@ void EXEC_new(void)
 		np--;
 	}
 
-	/*OBJECT_REF(object, "EXEC_new");*/
-
-	/* On retourne l'objet cr� */
-
+	save = EVENT_enter_name(name);
+	
 	TRY
 	{
 		OBJECT_lock(object, TRUE);
 		EXEC_special_inheritance(SPEC_NEW, class, object, np, TRUE);
 		OBJECT_lock(object, FALSE);
+		EVENT_leave_name(save);
 
 		SP--; /* class */
 
@@ -1919,6 +1919,7 @@ void EXEC_new(void)
 	}
 	CATCH
 	{
+		EVENT_leave_name(save);
 		// _free() methods should not be called, but we must
 		OBJECT_UNREF(object, "EXEC_new");
 		//(*class->free)(class, object);
@@ -1928,14 +1929,6 @@ void EXEC_new(void)
 		PROPAGATE();
 	}
 	END_TRY
-
-	/*  PUSH(); */
-
-	/* L'objet a ��cr� avec un nombre de r��ence �al �1.
-		On remet ce nombre �0 maintenant que l'objet est pr�.
-		Mais on ne le d�ruit pas ! */
-
-	/* OBJECT_UNREF(&object, "EXEC_new"); */
 }
 
 

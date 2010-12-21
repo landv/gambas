@@ -33,8 +33,6 @@
 #include <QEvent>
 #include <QHash>
 
-/* (!) Reporter les modifications de CWIDGET dans gb.qt.h */
-
 typedef
 	struct CWIDGET {
 		GB_BASE ob;
@@ -58,13 +56,13 @@ typedef
 		void *cursor;
 		void *font;
 		char *popup;
-		//CWIDGET *next;
-		//CWIDGET *prev;
+		void *proxy;
+		void *proxy_for;
 		int level;
 		int fg;
 		int bg;
 		}
-	CWIDGET;
+	CWIDGET; // BEWARE: gb.qt.h MUST be updated accordingly!
 
 typedef
 	CWIDGET CCONTROL;

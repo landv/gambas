@@ -40,8 +40,6 @@ int MEMORY_count = 0;
 
 #if DEBUG_MEMORY
 
-#include "gb_error.h"
-
 int MEMORY_size = 0;
 
 static int _id = 0;
@@ -112,7 +110,7 @@ void MEMORY_exit(void)
 	fclose(MEMORY_log);
 #else
   if (MEMORY_count)
-    fprintf(stderr, "warning: %d allocation(s) non freed.\n", MEMORY_count);
+		ERROR_warning("%d allocation(s) non freed.\n", MEMORY_count);
 #endif
 }
 

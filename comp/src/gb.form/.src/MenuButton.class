@@ -38,11 +38,9 @@ Private $bPressed As Boolean
 Private $bArrow As Boolean
 Private $bAutoResize As Boolean
 
-Private $hObserver As Observer
-
 Public Sub _new()
   
-  Dim sEventName As String = Object.LastEventName
+  'Dim hObs As Observer
   
   $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
   $hDrawingArea.Focus = True
@@ -50,8 +48,9 @@ Public Sub _new()
   $bBorder = True
   $bArrow = True
   
-  $hObserver = New Observer($hDrawingArea)
-  Object.Attach($hObserver, Me.Parent, sEventName)
+  Me.Proxy = $hDrawingArea
+  'hObs = New Observer($hDrawingArea)
+  'Object.Attach(hObs, Me.Parent, sEventName)   
   
 End
 
@@ -345,7 +344,7 @@ Public Sub DrawingArea_Draw()
   Dim sText As String
   Dim bFlat As Boolean
   
-  If $bInside Then iFlag += Draw.Hover
+  If $bInside And If Me.Enabled Then iFlag += Draw.Hover
   If Not Me.Enabled Then iFlag += Draw.Disabled
   If $hDrawingArea.HasFocus Then iFlag += Draw.Focus
   

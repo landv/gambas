@@ -131,6 +131,8 @@ static GB_DESC NATIVE_GambasLanguage[] =
   GB_METHOD("Cbr", "f", NULL, "(Value)f"),
   GB_METHOD("Expm", "f", NULL, "(Value)f"),
   GB_METHOD("Logp", "f", NULL, "(Value)f"),
+  GB_METHOD("Ceil", "f", NULL, "(Value)f"),
+  GB_METHOD("Floor", "f", NULL, "(Value)f"),
 
   GB_METHOD("Atan2", "f", NULL, "(X)f(Y)f"),
   GB_METHOD("Ang", "f", NULL, "(X)f(Y)f"),
@@ -164,17 +166,13 @@ static GB_DESC NATIVE_GambasLanguage[] =
   GB_METHOD("Rol", "i", NULL, "(Value)i(Shift)i"),
   GB_METHOD("Ror", "i", NULL, "(Value)i(Shift)i"),
 
-  GB_METHOD("IsBoolean", "b", NULL, "(Value)v"),
-  GB_METHOD("IsByte", "b", NULL, "(Value)v"),
-  GB_METHOD("IsShort", "b", NULL, "(Value)v"),
-  GB_METHOD("IsInteger", "b", NULL, "(Value)v"),
-  GB_METHOD("IsLong", "b", NULL, "(Value)v"),
-  GB_METHOD("IsFloat", "b", NULL, "(Value)v"),
-  GB_METHOD("IsDate", "b", NULL, "(Value)v"),
-  GB_METHOD("IsString", "b", NULL, "(Value)v"),
+  GB_METHOD("IsBoolean", "b", NULL, "(Value)s"),
+  GB_METHOD("IsInteger", "b", NULL, "(Value)s"),
+  GB_METHOD("IsLong", "b", NULL, "(Value)s"),
+  GB_METHOD("IsFloat", "b", NULL, "(Value)s"),
+  GB_METHOD("IsDate", "b", NULL, "(Value)s"),
+  GB_METHOD("IsNumber", "b", NULL, "(Value)s"),
   GB_METHOD("IsNull", "b", NULL, "(Value)v"),
-  GB_METHOD("IsObject", "b", NULL, "(Value)v"),
-  GB_METHOD("IsNumber", "b", NULL, "(Value)v"),
 
   GB_METHOD("IsAscii", "b", NULL, "(String)s"),
   GB_METHOD("IsLetter", "b", NULL, "(String)s"),
@@ -187,16 +185,22 @@ static GB_DESC NATIVE_GambasLanguage[] =
   GB_METHOD("IsPunct", "b", NULL, "(String)s"),
 
   GB_METHOD("TypeOf", "i", NULL, "(Value)v"),
+  GB_METHOD("SizeOf", "i", NULL, "(Value)v"),
 
   GB_METHOD("CBool", "b", NULL, "(Value)v"),
+  GB_METHOD("CBoolean", "b", NULL, "(Value)v"),
   GB_METHOD("CByte", "c", NULL, "(Value)v"),
   GB_METHOD("CShort", "h", NULL, "(Value)v"),
   GB_METHOD("CInt", "i", NULL, "(Value)v"),
   GB_METHOD("CInteger", "i", NULL, "(Value)v"),
+  GB_METHOD("CLong", "l", NULL, "(Value)v"),
+  GB_METHOD("CSingle", "g", NULL, "(Value)v"),
   GB_METHOD("CFloat", "f", NULL, "(Value)v"),
   GB_METHOD("CDate", "d", NULL, "(Value)v"),
   GB_METHOD("CStr", "s", NULL, "(Value)v"),
   GB_METHOD("CString", "s", NULL, "(Value)v"),
+  GB_METHOD("CPointer", "p", NULL, "(Value)v"),
+  GB_METHOD("CVariant", "v", NULL, "(Value)v"),
 
   GB_METHOD("Bin$", "s", NULL, "(Value)v[(Digits)i]"),
   GB_METHOD("Bin", "s", NULL, "(Value)v[(Digits)i]"),
@@ -254,8 +258,8 @@ static GB_DESC NATIVE_GambasLanguage[] =
   GB_METHOD("Alloc", "p", NULL, "(SizeOrString)v[(Count)i]"),
   GB_METHOD("Free", NULL, NULL, "(Pointer)p"),
   GB_METHOD("Realloc", "i", NULL, "(Pointer)p(Size)i[(Count)i]"),
+  GB_METHOD("Str@", "s", NULL, "(Pointer)p"),
   GB_METHOD("String@", "s", NULL, "(Pointer)p"),
-  GB_METHOD("StrPtr", "s", NULL, "(Pointer)p"),
   GB_METHOD("VarPtr", "p", NULL, "(Variable)v"),
   
 	GB_METHOD("MkBool", "s", NULL, "(Value)b"),
@@ -353,6 +357,7 @@ EXTERN GB_DESC NATIVE_SubCollection[];
 EXTERN GB_DESC NATIVE_String[];
 EXTERN GB_DESC NATIVE_Timer[];
 EXTERN GB_DESC NATIVE_Observer[];
+EXTERN GB_DESC NATIVE_Proxy[];
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {
@@ -398,6 +403,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
   NATIVE_String,
   NATIVE_Timer,
   NATIVE_Observer,
+  //NATIVE_Proxy,
   NULL
 };
 

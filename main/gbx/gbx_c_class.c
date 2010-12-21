@@ -38,7 +38,7 @@
 #include "gbx_event.h"
 #include "gbx_object.h"
 #include "gbx_c_array.h"
-#include "gbx_c_gambas.h"
+#include "gbx_c_observer.h"
 #include "gbx_c_class.h"
 
 static CLASS_DESC_SYMBOL *_current_symbol = NULL;
@@ -833,7 +833,8 @@ END_METHOD
 
 BEGIN_PROPERTY(Object_LastEventName)
 
-	GB_ReturnString(EVENT_Name);
+	ERROR_deprecated("Object.LastEventName");
+	GB_ReturnConstZeroString(EVENT_Name);
 
 END_PROPERTY
 

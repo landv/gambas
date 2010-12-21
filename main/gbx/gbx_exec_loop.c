@@ -736,7 +736,7 @@ _PUSH_MISC:
 
   {
     static const void *_jump[] =
-      { &&__PUSH_NULL, &&__PUSH_VOID, &&__PUSH_FALSE, &&__PUSH_TRUE, &&__PUSH_LAST, &&__PUSH_STRING };
+      { &&__PUSH_NULL, &&__PUSH_VOID, &&__PUSH_FALSE, &&__PUSH_TRUE, &&__PUSH_LAST, &&__PUSH_STRING }; //, &&__POP_LAST };
 
     goto *_jump[GET_UX()];
 
@@ -771,7 +771,8 @@ _PUSH_MISC:
 
     SP->type = T_OBJECT;
     SP->_object.object = EVENT_Last;
-    PUSH();
+		OBJECT_REF(EVENT_Last, "EXEC_loop");
+    SP++;
     goto _NEXT;
 
   __PUSH_STRING:
@@ -779,8 +780,16 @@ _PUSH_MISC:
 		SP->type = T_STRING;
     SP->_string.addr = NULL;
 		SP->_string.start = SP->_string.len = 0;
-    PUSH();
+    SP++;
     goto _NEXT;
+		
+	/*__POP_LAST:
+	
+    VALUE_conv(&SP[-1], T_OBJECT);
+		OBJECT_UNREF(EVENT_Last, "EXEC_loop");
+    SP--;
+    EVENT_Last = SP->_object.object;
+		goto _NEXT;*/
 	}
 
 /*-----------------------------------------------*/
@@ -973,28 +982,6 @@ _CALL:
   __CALL_EVENT:
 
 		ind = GB_Raise(OP, val->_function.index, (-EXEC.nparam));
-
-		#if 0
-    EXEC.desc = &EXEC.class->table[val->_function.index].desc->method;
-    EXEC.class = EXEC.desc->class;
-    EXEC.native = FUNCTION_is_native(EXEC.desc);
-
-		old_last = EVENT_Last;
-    EVENT_Last = OP;
-
-    if (EXEC.native)
-    { 
-      //EXEC.use_stack = TRUE;
-      EXEC_native();
-    }
-    else
-    {
-      EXEC.index = (int)(EXEC.desc->exec);
-      EXEC_function();
-    }
-
-		ind = GAMBAS_StopEvent ? -1 : 0;
-		#endif
 
 		POP(); // function
 

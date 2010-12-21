@@ -1,22 +1,22 @@
 /***************************************************************************
 
-  gbx_object.c
+	gbx_object.c
 
-  (c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -29,7 +29,7 @@
 #include "gbx_event.h"
 #include "gbx_exec.h"
 #include "gbx_compare.h"
-#include "gbx_c_gambas.h"
+#include "gbx_c_observer.h"
 #include "gbx_c_array.h"
 #include "gbx_struct.h"
 #include "gbx_object.h"
@@ -44,27 +44,21 @@ void *OBJECT_new(CLASS *class, const char *name, OBJECT *parent)
 {
 	OBJECT *object;
 	
-  //if (size < sizeof(OBJECT))
-  //  size = sizeof(OBJECT);
+	ALLOC_ZERO(&object, class->size, "OBJECT_new");
 
-  ALLOC_ZERO(&object, class->size, "OBJECT_new");
-
-  object->class = class;
+	object->class = class;
 	#if DEBUG_REF
 	object->ref = 0;
 	OBJECT_REF(object, "OBJECT_new");
 	#else
-  object->ref = 1;
+	object->ref = 1;
 	#endif
 
-  class->count++;
+	class->count++;
 
-  OBJECT_attach(object, parent, name);
+	OBJECT_attach(object, parent, name);
 
 	return object;
-  //#if DEBUG_EVENT
-  //printf("OBJECT_new: %s %p %d\n", class->name, *ptr, class->off_event);
-  //#endif
 }
 
 
@@ -81,12 +75,36 @@ static void dump_attach(char *title)
 }
 #endif
 
+static void call_attach_special_method(CLASS *class, void *ob, void *parent, const char *name)
+{
+	STACK_check(2);
+		
+	SP->_object.class = OBJECT_class(parent);
+	SP->_object.object = parent;
+	PUSH();
+	
+	if (name)
+	{
+		SP->type = T_CSTRING;
+		SP->_string.addr = (char *)name;
+		SP->_string.start = 0;
+		SP->_string.len = strlen(name);
+	}
+	else
+	{
+		SP->type = T_NULL;
+	}
+	SP++;
+		
+	EXEC_special(SPEC_ATTACH, class, ob, 2, TRUE);
+}
+
 void OBJECT_detach(OBJECT *ob)
 {
-  CLASS *class = OBJECT_class(ob);
-  OBJECT *parent;
-  OBJECT_EVENT *ev;
-  bool lock;
+	CLASS *class = OBJECT_class(ob);
+	OBJECT *parent;
+	OBJECT_EVENT *ev;
+	bool lock;
 
 	if (!class->is_observer && class->n_event == 0)
 		return;
@@ -96,6 +114,8 @@ void OBJECT_detach(OBJECT *ob)
 	//if (!ev->parent)
 	//	return;
 
+	// Do not free the observers there
+	
 	if (ev->prev)
 		OBJECT_event(ev->prev)->next = ev->next;
 
@@ -110,80 +130,59 @@ void OBJECT_detach(OBJECT *ob)
 
 	//dump_attach("OBJECT_detach");
 
-	// Do not free the observers there anymore
-	
 	/* Avoids an infinite recursion, if freeing the parent implies freeing the object */
 	parent = OBJECT_parent(ob);
 
-  if (parent)
-  {
+	if (parent)
+	{
 		if (class->special[SPEC_ATTACH] != NO_SYMBOL)
-		{
-			STACK_check(2);
-			
-			SP->_object.class = OBJECT_class(parent);
-			SP->_object.object = parent;
-			PUSH();
-			
-			SP->type = T_NULL;
-			SP++;
-			
-			EXEC_special(SPEC_ATTACH, class, ob, 2, TRUE);
-		}
-  	
+			call_attach_special_method(class, ob, parent, NULL);
+		
 		lock = OBJECT_is_locked(ob);
-    ev->parent = NULL;
-    OBJECT_lock(ob, lock);
-    #if DEBUG_EVENT || DEBUG_REF
-      fprintf(stderr, "OBJECT_detach : Detach (%s %p) from (%s %p)\n",
-        ob->class->name, ob, parent->class->name, parent);
-    #endif
-    OBJECT_UNREF(parent, "OBJECT_detach");
-  }  
+		ev->parent = NULL;
+		OBJECT_lock(ob, lock);
+		#if DEBUG_EVENT || DEBUG_REF
+			fprintf(stderr, "OBJECT_detach : Detach (%s %p) from (%s %p)\n",
+				ob->class->name, ob, parent->class->name, parent);
+		#endif
+		OBJECT_UNREF(parent, "OBJECT_detach");
+	}  
 }
 
 static void remove_observers(OBJECT *ob)
 {
 	CLASS *class = OBJECT_class(ob);
-  OBJECT_EVENT *ev;
-  COBSERVER *obs, *next;
+	OBJECT_EVENT *ev;
+	COBSERVER *obs, *next;
 
 	//fprintf(stderr, "Remove observers: %s %p\n", class->name, ob);
 	
 	if (!class->is_observer && class->n_event == 0)
 		return;
 	
-  ev = (OBJECT_EVENT *)((char *)ob + class->off_event);
-  obs = ev->observer;
+	ev = (OBJECT_EVENT *)((char *)ob + class->off_event);
+	obs = ev->observer;
+	ev->observer = NULL;
 
-  while (obs)
-  {
-  	next = obs->list.next;
-  	#if DEBUG_EVENT
-  	fprintf(stderr, "Remove observer %p\n", obs);
-  	#endif
-  	OBJECT_UNREF(obs, "remove_observers");
-  	obs = next;  	
+	while (obs)
+	{
+		next = obs->list.next;
+		#if DEBUG_EVENT
+		fprintf(stderr, "Remove observer %p %d: %p: %p %p\n", obs, (int)obs->ob.ref, ob, obs->object, obs->proxy);
+		#endif
+		OBJECT_UNREF(obs, "remove_observers");
+		obs = next;  	
 	}
-  
-  ev->observer = NULL;
+	
+	//ev->observer = NULL;
 }
 
 void OBJECT_attach(OBJECT *ob, OBJECT *parent, const char *name)
 {
-  CLASS *class = OBJECT_class(ob);
-  OBJECT_EVENT *ev;
-  bool lock;
-
-	if (EVENT_Name != name)
-	{
-		STRING_unref(&EVENT_Name);
-		if (name)
-			EVENT_Name = STRING_new_zero(name);
-		else
-			EVENT_Name = NULL;
-	}
-
+	CLASS *class = OBJECT_class(ob);
+	OBJECT_EVENT *ev;
+	bool lock;
+	
 	if (!name)
 		return;
 
@@ -217,21 +216,7 @@ void OBJECT_attach(OBJECT *ob, OBJECT *parent, const char *name)
 	EventObject = ob;
 
 	if (class->special[SPEC_ATTACH] != NO_SYMBOL)
-	{
-		STACK_check(2);
-		
-		SP->_object.class = OBJECT_class(parent);
-		SP->_object.object = parent;
-		PUSH();
-		
-		SP->type = T_STRING;
-		SP->_string.addr = EVENT_Name;
-		SP->_string.start = 0;
-		SP->_string.len = STRING_length(EVENT_Name);
-		PUSH();
-		
-		EXEC_special(SPEC_ATTACH, class, ob, 2, TRUE);
-	}
+		call_attach_special_method(class, ob, parent, name);
 	
 	//dump_attach("OBJECT_attach");
 }
@@ -239,29 +224,29 @@ void OBJECT_attach(OBJECT *ob, OBJECT *parent, const char *name)
 
 void OBJECT_free(CLASS *class, OBJECT *ob)
 {
-  OBJECT_detach(ob);
-  remove_observers(ob);
+	OBJECT_detach(ob);
+	remove_observers(ob);
 
-  class->count--;
+	class->count--;
 
-  #if DEBUG_REF
-  ob->class = FREE_MARK;
-  #endif
+	#if DEBUG_REF
+	ob->class = FREE_MARK;
+	#endif
 
-  FREE(&ob, "OBJECT_free");
+	FREE(&ob, "OBJECT_free");
 }
 
 
 bool OBJECT_comp_value(VALUE *ob1, VALUE *ob2)
 {
-  if (ob1->type == T_NULL && ob2->type == T_NULL)
-    return FALSE;
-  else if (ob1->type == T_NULL)
-    return ob2->_object.object != NULL;
-  else if (ob2->type == T_NULL)
-    return ob1->_object.object != NULL;
-  else
-    return COMPARE_object(&ob1->_object.object, &ob2->_object.object);
+	if (ob1->type == T_NULL && ob2->type == T_NULL)
+		return FALSE;
+	else if (ob1->type == T_NULL)
+		return ob2->_object.object != NULL;
+	else if (ob2->type == T_NULL)
+		return ob1->_object.object != NULL;
+	else
+		return COMPARE_object(&ob1->_object.object, &ob2->_object.object);
 }
 
 void OBJECT_release_static(CLASS *class, CLASS_VAR *var, int nelt, char *data)
@@ -312,24 +297,24 @@ void OBJECT_release_static(CLASS *class, CLASS_VAR *var, int nelt, char *data)
 
 static void release(CLASS *class, OBJECT *ob)
 {
-  CLASS_VAR *var;
-  int nelt;
-  char *data;
+	CLASS_VAR *var;
+	int nelt;
+	char *data;
 
-  if (class->parent != NULL && ob)
-    release(class->parent, ob);
+	if (class->parent != NULL && ob)
+		release(class->parent, ob);
 
-  if (CLASS_is_native(class))
-    return;
+	if (CLASS_is_native(class))
+		return;
 	
-  if (ob == NULL)
-  {
-    var = class->load->stat;
-    nelt = class->load->n_stat;
-    data = class->stat;
-  }
-  else
-  {
+	if (ob == NULL)
+	{
+		var = class->load->stat;
+		nelt = class->load->n_stat;
+		data = class->stat;
+	}
+	else
+	{
 		if (CLASS_is_struct(class))
 		{
 			if (((CSTRUCT *)ob)->ref)
@@ -342,27 +327,27 @@ static void release(CLASS *class, OBJECT *ob)
 		else
 			data = (char *)ob;
 
-    var = class->load->dyn;
-    nelt = class->load->n_dyn;
-  }
-  
-  OBJECT_release_static(class, var, nelt, data);
+		var = class->load->dyn;
+		nelt = class->load->n_dyn;
+	}
+	
+	OBJECT_release_static(class, var, nelt, data);
 }
 
 
 void OBJECT_release(CLASS *class, OBJECT *ob)
 {
 #if TRACE_MEMORY
-  printf("> OBJECT_release %s %p\n", class->name, ob);
+	printf("> OBJECT_release %s %p\n", class->name, ob);
 #endif
 
-  release(class, ob);
+	release(class, ob);
 
-  if (ob)
-    OBJECT_free(class, ob);
+	if (ob)
+		OBJECT_free(class, ob);
 
 #if TRACE_MEMORY
-  printf("< OBJECT_release %s %p\n", class->name, ob);
+	printf("< OBJECT_release %s %p\n", class->name, ob);
 #endif
 }
 
@@ -372,43 +357,51 @@ void OBJECT_exit(void)
 	#if DEBUG_LOAD
 	fprintf(stderr, "------------ OBJECT_exit - BEGIN---------\n");
 	#endif
-  while (EventObject)
-    OBJECT_detach(EventObject);
+	while (EventObject)
+		OBJECT_detach(EventObject);
 	#if DEBUG_LOAD
 	fprintf(stderr, "------------ OBJECT_exit - END ----------\n");
 	#endif
 }
 
 static void *_object;
+static char *_object_name;
 
 static void error_OBJECT_create(void)
 {
 	OBJECT_UNREF_KEEP(_object, "OBJECT_create");
+	EVENT_leave_name(_object_name);
 }
 
 void *OBJECT_create(CLASS *class, const char *name, void *parent, int nparam)
 {
+	void *ob;
 	void *save;
-  void *ob;
+	char *save_name;
 
-  if (class->no_create)
-    THROW(E_CSTATIC, class->name);
+	if (class->no_create)
+		THROW(E_CSTATIC, class->name);
 
 	save = _object;
-  ON_ERROR(error_OBJECT_create)
-  {
-		_object = NULL;
-    ob = OBJECT_new(class, name, parent);
-		_object = ob;
+	save_name = _object_name;
+	
+	ON_ERROR(error_OBJECT_create)
+	{
+		_object_name = EVENT_enter_name(name);
+		_object = ob = OBJECT_new(class, name, parent);
+		
 		OBJECT_lock(ob, TRUE);
-    EXEC_special_inheritance(SPEC_NEW, class, ob, nparam, TRUE);
+		EXEC_special_inheritance(SPEC_NEW, class, ob, nparam, TRUE);
 		OBJECT_lock(ob, FALSE);
-		OBJECT_UNREF_KEEP(ob, "OBJECT_create");
-  }
-  END_ERROR
-  _object = save;
-  
-  return ob;
+		
+		error_OBJECT_create();
+	}
+	END_ERROR
+	
+	_object = save;
+	_object_name = save_name;
+	
+	return ob;
 }
 
 
@@ -416,37 +409,37 @@ void *OBJECT_create(CLASS *class, const char *name, void *parent, int nparam)
 
 void *OBJECT_create_native(CLASS *class, VALUE *param)
 {
-  CLASS_DESC *desc;
-  short index;
+	CLASS_DESC *desc;
+	short index;
 	void *object;
 
-  object = OBJECT_new(class, NULL, NULL);
+	object = OBJECT_new(class, NULL, NULL);
 
-  for(;;)
-  {
-    index = class->special[SPEC_NEW];
-    if (index != NO_SYMBOL)
-    {
-      desc = CLASS_get_desc(class, index);
-      EXEC_call_native(desc->method.exec, object, desc->method.type, param);
-    }
-    class = class->parent;
-    if (!class)
-      break;
-  }
+	for(;;)
+	{
+		index = class->special[SPEC_NEW];
+		if (index != NO_SYMBOL)
+		{
+			desc = CLASS_get_desc(class, index);
+			EXEC_call_native(desc->method.exec, object, desc->method.type, param);
+		}
+		class = class->parent;
+		if (!class)
+			break;
+	}
 
-  OBJECT_UNREF_KEEP(object, "OBJECT_create");
+	OBJECT_UNREF_KEEP(object, "OBJECT_create");
 	return object;
 }
 
 void OBJECT_lock(OBJECT *object, bool block)
 {
-  CLASS *class;
+	CLASS *class;
 
-  if (!object)
-    return;
+	if (!object)
+		return;
 
-  class = object->class;
+	class = object->class;
 	
 	if (class->is_observer)
 	{
@@ -454,32 +447,32 @@ void OBJECT_lock(OBJECT *object, bool block)
 		return;
 	}
 	
-  if (class->n_event == 0)
-    return;
+	if (class->n_event == 0)
+		return;
 
 	// fprintf(stderr, "OBJECT_lock: (%s %p) %s\n", class->name, object, block ? "lock" : "unlock");
 
-  if (block)
-    OBJECT_event(object)->parent = (OBJECT *)((intptr_t)OBJECT_event(object)->parent | 1);
-  else
-    OBJECT_event(object)->parent = (OBJECT *)((intptr_t)OBJECT_event(object)->parent & ~1);
+	if (block)
+		OBJECT_event(object)->parent = (OBJECT *)((intptr_t)OBJECT_event(object)->parent | 1);
+	else
+		OBJECT_event(object)->parent = (OBJECT *)((intptr_t)OBJECT_event(object)->parent & ~1);
 }
 
 
 bool OBJECT_is_locked(OBJECT *object)
 {
-  CLASS *class;
+	CLASS *class;
 
-  if (!object)
-    return FALSE;
+	if (!object)
+		return FALSE;
 
-  class = object->class;
+	class = object->class;
 	
 	if (class->is_observer)
 		return COBSERVER_is_locked((COBSERVER *)object);
 	
-  if (class->n_event == 0)
-    return FALSE;
+	if (class->n_event == 0)
+		return FALSE;
 
 	return (((intptr_t)OBJECT_event(object)->parent & 1) != 0);
 }
@@ -492,7 +485,7 @@ OBJECT *OBJECT_parent(void *object)
 	if (!class->is_observer && class->n_event == 0)
 		return NULL;
 	
-  return ((OBJECT *)((intptr_t)OBJECT_event(object)->parent & ~1));
+	return ((OBJECT *)((intptr_t)OBJECT_event(object)->parent & ~1));
 }
 
 

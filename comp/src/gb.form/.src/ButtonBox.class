@@ -29,8 +29,6 @@ Private $hObserver As Observer
 
 Public Sub _new()
   
-  Dim sEventName As String = Object.LastEventName
-  
   $hObserver = New Observer(Me) As "Observer"
   
   '$hPanel = New Panel(Me) As "Panel"
@@ -49,7 +47,8 @@ Public Sub _new()
   $hTextBox = New TextBox($hBackground) 
   $hTextBox.Expand = True
   $hTextBox.Border = False
-  Object.Attach($hTextBox, Object.Parent(Me), sEventName)
+  
+  Me.Proxy = $hTextBox
   
   $hButton = New ToolButton($hBackground) As "Button"
   $hButton.W = Desktop.Scale * 4

@@ -108,7 +108,10 @@ public:
 	virtual gFont *font();
 	virtual void setFont(gFont *ft);
 	bool ownFont() { return fnt != 0; }
-	
+
+	gControl *proxy() const { return _proxy; }
+	bool setProxy(gControl *proxy);
+
 	int scrollX();
 	int scrollY();
 	void scroll(int x, int y);
@@ -173,6 +176,7 @@ public:
 	GtkScrolledWindow *_scroll;
 	short g_typ;
 	short mous;
+	gControl *_proxy, *_proxy_for;
 	
 	unsigned dsg : 1;
 	unsigned expa : 1;

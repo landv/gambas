@@ -51,6 +51,7 @@
 #include "gbx_c_timer.h"
 #include "gbx_component.h"
 #include "gbx_c_gambas.h"
+#include "gbx_c_observer.h"
 #include "gbx_debug.h"
 #include "gbx_c_file.h"
 
@@ -455,6 +456,7 @@ static bool raise_event(OBJECT *observer, void *object, int func_id, int nparam)
 
 	old_last = EVENT_Last;
 	EVENT_Last = object;
+	//OBJECT_REF(object, "raise_event");
 	
 // 	if (arg)
 // 	{
@@ -481,6 +483,8 @@ static bool raise_event(OBJECT *observer, void *object, int func_id, int nparam)
 		result = TRUE;
 		
 	GAMBAS_StopEvent = stop_event;
+	
+	//OBJECT_UNREF(object, "raise_event");
 	EVENT_Last = old_last;
 
 	EXEC_release_return_value();
@@ -530,6 +534,8 @@ int GB_Raise(void *object, int event_id, int nparam, ...)
 				continue;
 			if (obs->after)
 				continue;
+			//if (obs->object != object)
+			//	continue;
 				
 			func_id = get_event_func_id(obs->event, event_id);
 			if (!func_id)
@@ -586,6 +592,8 @@ int GB_Raise(void *object, int event_id, int nparam, ...)
 				continue;
 			if (!obs->after)
 				continue;
+			//if (obs->object != object)
+			//	continue;
 				
 			func_id = get_event_func_id(obs->event, event_id);
 			if (!func_id)

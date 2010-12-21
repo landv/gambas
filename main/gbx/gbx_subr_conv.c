@@ -73,18 +73,14 @@ __LONG:
 	goto __END;
 
 __FLOAT:
+__NUMBER:
 
-	test = temp.type == T_FLOAT;
+	test = temp.type == T_FLOAT || temp.type == T_LONG || temp.type == T_INTEGER;
 	goto __END;
 
 __DATE:
 
 	test = temp.type == T_DATE;
-	goto __END;
-
-__NUMBER:
-
-	test = temp.type == T_FLOAT || temp.type == T_LONG || temp.type == T_INTEGER;
 	goto __END;
 
 __NULL:

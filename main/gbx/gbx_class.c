@@ -69,9 +69,6 @@ static CLASS *Class;
 
 void CLASS_init(void)
 {
-	//if (sizeof(CLASS) > 128)
-	//  fprintf(stderr, "Warning: Use the 64 bits version of Gambas at your own risk!\n");
-
 	TABLE_create_static(&_global_table, sizeof(CLASS_SYMBOL), TF_IGNORE_CASE);
 
 	CLASS_init_native();
@@ -310,13 +307,13 @@ void CLASS_clean_up(bool silent)
 	if (n < nc)
 	{
 		if (!silent)
-			ERROR_warning("circular references detected");
+			ERROR_warning("circular references detected:");
 		for (class = _classes; class; class = class->next)
 		{
 			if (!CLASS_is_native(class) && class->state && !class->exit)
 			{
 				if (!silent)
-					fprintf(stderr, "%s (%d)\n", class->name, class->count);
+					fprintf(stderr, "gbx" GAMBAS_VERSION_STRING ": % 4d %s\n", class->count, class->name);
 				OBJECT_release(class, NULL);
 				class->exit = TRUE;
 				n++;

@@ -77,7 +77,10 @@ short PCODE_dump(FILE *out, short addr, PCODE *code)
 
 		default:
 
-			ncode = 1;
+			if ((op & 0xFF00) == (C_PUSH_CONST | 0xF00))
+				ncode = 2;
+			else
+				ncode = 1;
 	}
 
 	fprintf(out, "%04d : ", addr);
@@ -103,7 +106,12 @@ short PCODE_dump(FILE *out, short addr, PCODE *code)
 			break;
 
 		case 0xE:
-			fprintf(out, "PUSH CONST %d", (short)value);
+			if ((op & 0xF00) == 0xF00)
+			{
+				value = code[1];
+			}
+
+			fprintf(out, "PUSH CONST %d", value);
 
 			switch(JOB->class->constant[value].type.t.id)
 			{
@@ -241,8 +249,6 @@ short PCODE_dump(FILE *out, short addr, PCODE *code)
 						fprintf(out, "CALL ");
 					else if (digit == C_CALL_QUICK)
 						fprintf(out, "CALL QUICK ");
-					//else if (digit == C_CALL_EASY)
-					//  fprintf(out, "CALL EASY ");
 					else
 						fprintf(out, "CALL SLOW ");
 					if (value & CODE_CALL_VARIANT)

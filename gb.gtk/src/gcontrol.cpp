@@ -266,6 +266,11 @@ gControl::~gControl()
 	if (win && win->focus == this)
 		win->focus = 0;
 	
+	if (_proxy)
+		_proxy->_proxy_for = NULL;
+	if (_proxy_for)
+		_proxy_for->_proxy = NULL;
+	
 	if (gDrag::getSource() == this)
 		gDrag::cancel();
 	
@@ -867,6 +872,12 @@ void gControl::setDesign(bool vl)
 
 void gControl::setFocus()
 {
+	if (_proxy)
+	{
+		_proxy->setFocus();
+		return;
+	}
+	
 	gMainWindow *win = window();
 	
 	if (!win)
@@ -886,7 +897,10 @@ void gControl::setFocus()
 
 bool gControl::hasFocus()
 {
-	return (border && GTK_WIDGET_HAS_FOCUS(border)) || (widget && GTK_WIDGET_HAS_FOCUS(widget)) || gDesktop::activeControl() == this;
+	if (_proxy)
+		return _proxy->hasFocus();
+	else
+		return (border && GTK_WIDGET_HAS_FOCUS(border)) || (widget && GTK_WIDGET_HAS_FOCUS(widget)) || gDesktop::activeControl() == this;
 }
 
 gControl* gControl::next()
@@ -1745,4 +1759,23 @@ bool gControl::hovered()
 	gMouse::getScreenPos(&xm, &ym);
 	
 	return (xm >= x && ym >= y && xm < (x + width()) && ym < (y + height()));
+}
+
+bool gControl::setProxy(gControl *proxy)
+{
+	if (proxy)
+	{
+		if (proxy->_proxy || proxy->_proxy_for)
+			return true;
+	}
+		
+	if (_proxy)
+		_proxy->_proxy_for = NULL;
+	
+	_proxy = proxy;
+	
+	if (_proxy)
+		_proxy->_proxy_for = this;
+	
+	return false;
 }

@@ -213,6 +213,26 @@ static bool is_visible(void *_object)
 	return THIS->flag.visible; // || !QWIDGET(_object)->isHidden();
 }
 
+static void register_proxy(void *_object, void *proxy)
+{
+	if (proxy)
+	{
+		if (((CWIDGET *)proxy)->proxy || ((CWIDGET *)proxy)->proxy_for)
+		{
+			GB.Error("That control has a proxy or is already a proxy");
+			return;
+		}
+	}
+		
+	if (THIS->proxy)
+		((CWIDGET *)THIS->proxy)->proxy_for = NULL;
+	
+	THIS->proxy = proxy;
+	
+	if (THIS->proxy)
+		((CWIDGET *)THIS->proxy)->proxy_for = THIS;
+}
+
 int CWIDGET_check(void *_object)
 {
 	return WIDGET == NULL || CWIDGET_test_flag(THIS, WF_DELETED);
@@ -656,6 +676,9 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Control_HasFocus)
 
+	if (THIS->proxy)
+		_object = THIS->proxy;
+	
 	GB.ReturnBoolean(WIDGET->hasFocus());
 
 END_PROPERTY
@@ -960,11 +983,17 @@ BEGIN_METHOD_VOID(Control_SetFocus)
 	if (QWIDGET(win)->isVisible())
 	{
 		//qDebug("setFocus: now");
+		if (THIS->proxy)
+			_object = THIS->proxy;
+		
 		WIDGET->setFocus();
 	}
 	else if ((CWIDGET *)win != THIS)
 	{
 		//qDebug("setFocus: later");
+		if (THIS->proxy)
+			_object = THIS->proxy;
+
 		GB.Unref(POINTER(&win->focus));
 		win->focus = THIS;
 		GB.Ref(THIS);
@@ -978,10 +1007,7 @@ BEGIN_PROPERTY(Control_Tag)
 	if (READ_PROPERTY)
 		GB.ReturnPtr(GB_T_VARIANT, &OBJECT(CWIDGET)->tag);
 	else
-	{
 		GB.StoreVariant(PROP(GB_VARIANT), (void *)&(OBJECT(CWIDGET)->tag));
-		//printf("Set Tag %p : %i\n", _object, OBJECT(CWIDGET)->tag.type);
-	}
 
 END_METHOD
 
@@ -1342,6 +1368,16 @@ BEGIN_PROPERTY(Control_Action)
 		CACTION_get(THIS);
 	else
 		CACTION_register(THIS, GB.ToZeroString(PROP(GB_STRING)));
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(Control_Proxy)
+
+	if (READ_PROPERTY)
+		GB.ReturnObject(THIS->proxy);
+	else
+		register_proxy(THIS, VPROP(GB_OBJECT));
 
 END_PROPERTY
 
@@ -1889,6 +1925,11 @@ void CWidget::destroy()
 	
 	CACTION_register(ob, NULL);
 	
+	if (ob->proxy)
+		((CWIDGET *)ob->proxy)->proxy_for = NULL;
+	if (ob->proxy_for)
+		((CWIDGET *)ob->proxy_for)->proxy = NULL;
+	
 	set_name(ob, 0);
 
 	dict.remove(w);
@@ -2071,6 +2112,11 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
   
 	__CONTEXT_MENU:
 	{
+		if (control->proxy_for)
+			control = (CWIDGET *)control->proxy_for;
+
+	__MENU_TRY_PROXY:
+	
 		// if (real && GB.CanRaise(control, EVENT_Menu))
 		//qDebug("Menu event! %p %d", control, EVENT_Menu);
 		if (GB.CanRaise(control, EVENT_Menu))
@@ -2087,6 +2133,13 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 				CMENU_popup(menu, QCursor::pos());
 			return true;
 		}
+
+		if (control->proxy)
+		{
+			control = (CWIDGET *)control->proxy;
+			goto __MENU_TRY_PROXY;
+		}
+		
 		goto __NEXT;		
 	}
 	
@@ -2119,6 +2172,11 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			}
 		}
 		
+		if (control->proxy_for)
+			control = (CWIDGET *)control->proxy_for;
+
+	__MOUSE_TRY_PROXY:
+	
 		p.setX(mevent->globalX());
 		p.setY(mevent->globalY());
 		p = QWIDGET(control)->mapFromGlobal(p);
@@ -2209,6 +2267,12 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		if (cancel)
 			return true;
 		
+		if (control->proxy)
+		{
+			control = (CWIDGET *)control->proxy;
+			goto __MOUSE_TRY_PROXY;
+		}
+		
 		goto __NEXT;
 	}
 	
@@ -2244,6 +2308,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			kevent->key(), (const char *)kevent->text().toLatin1());*/
 
 		event_id = (type == QEvent::KeyRelease) ? EVENT_KeyRelease : EVENT_KeyPress;
+		cancel = false;
 
 		#if QT_VERSION > 0x030005
 		if (!original && type != QEvent::InputMethod)
@@ -2278,7 +2343,10 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			}
 			#endif
 			
-			cancel = GB.Raise(control, event_id, 0);
+			if (control->proxy_for)
+				cancel = GB.Raise(control->proxy_for, event_id, 0);
+			if (!cancel)
+				cancel = GB.Raise(control, event_id, 0);
 
 			CKEY_clear(false);
 
@@ -2327,6 +2395,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			// 			((QWidget *)widget)->isWindow());
 	
 			event_id = EVENT_KeyPress;
+			cancel = false;
 	
 			if (GB.CanRaise(control, event_id))
 			{
@@ -2338,7 +2407,10 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 				CKEY_info.state = 0;
 				CKEY_info.code = 0;
 	
-				cancel = GB.Raise(control, event_id, 0);
+				if (control->proxy_for)
+					cancel = GB.Raise(control->proxy_for, event_id, 0);
+				if (!cancel)
+					cancel = GB.Raise(control, event_id, 0);
 	
 				CKEY_clear(false);
 	
@@ -2590,6 +2662,7 @@ GB_DESC CControlDesc[] =
 	GB_PROPERTY("Drop", "b", Control_Drop),
 	GB_PROPERTY("Action", "s", Control_Action),
 	GB_PROPERTY("PopupMenu", "s", Control_PopupMenu),
+	GB_PROPERTY("Proxy", "Control", Control_Proxy),
 
 	GB_PROPERTY_READ("Parent", "Container", Control_Parent),
 	GB_PROPERTY_READ("Window", "Window", Control_Window),

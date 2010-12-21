@@ -248,7 +248,15 @@ bool CODE_popify_last(void)
     #endif
     return TRUE;
   }
-
+  
+  /*
+  if (*last_code == (C_PUSH_MISC | CPM_LAST))
+	{
+		*last_code = C_PUSH_MISC | CPM_POP_LAST;
+		use_stack(-2);
+		return TRUE;
+	}
+	*/
   /*
   if (op == C_CALL)
   {

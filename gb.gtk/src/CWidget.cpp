@@ -227,8 +227,9 @@ bool gb_raise_KeyEvent(gControl *sender, int type)
 		case gEvent_KeyRelease:
 			GB.Raise((void*)_ob,EVENT_KeyRelease,0);
 			return false;
+		default:
+			return false;
 	}
-        return false;
 }
 
 void gb_raise_EnterLeave(gControl *sender, int type)
@@ -725,10 +726,10 @@ END_METHOD
 
 BEGIN_PROPERTY(CWIDGET_tag)
 
-	if (READ_PROPERTY) { GB.ReturnPtr(GB_T_VARIANT, &THIS->tag); return; }
- 
-    GB.StoreVariant(PROP(GB_VARIANT), (void *)&THIS->tag);
-  
+	if (READ_PROPERTY)
+		GB.ReturnPtr(GB_T_VARIANT, &THIS->tag);
+	else
+		GB.StoreVariant(PROP(GB_VARIANT), (void *)&THIS->tag);
 
 END_METHOD
 
@@ -873,6 +874,21 @@ BEGIN_PROPERTY(CCONTROL_action)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(Control_Proxy)
+
+	if (READ_PROPERTY)
+		GB.ReturnObject(GetObject(CONTROL->proxy()));
+	else
+	{
+		CWIDGET *proxy = (CWIDGET *)VPROP(GB_OBJECT);
+		if (GB.CheckObject(proxy))
+			return;
+		CONTROL->setProxy(proxy->widget);
+	}
+
+END_PROPERTY
+
+
 BEGIN_PROPERTY(Control_PopupMenu)
 
 	if (READ_PROPERTY)
@@ -946,6 +962,7 @@ GB_DESC CWidgetDesc[] =
 	GB_PROPERTY("Drop", "b", CWIDGET_drop),
 	GB_PROPERTY("Action", "s", CCONTROL_action),
 	GB_PROPERTY("PopupMenu", "s", Control_PopupMenu),
+	GB_PROPERTY("Proxy", "Control", Control_Proxy),
 
 	GB_PROPERTY_READ("Parent", "Container", CWIDGET_parent),
 	GB_PROPERTY_READ("Window", "Window", CWIDGET_window),

@@ -185,6 +185,7 @@ CPICTURE *CPICTURE_create(const QPixmap *pixmap)
 
 BEGIN_METHOD(CPICTURE_get, GB_STRING path)
 
+	//fprintf(stderr, "CPICTURE_get: %.*s\n", LENGTH(path), STRING(path));
   GB.ReturnObject(get_picture(STRING(path), LENGTH(path)));
 
 END_METHOD

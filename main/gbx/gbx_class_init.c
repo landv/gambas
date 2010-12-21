@@ -30,6 +30,7 @@
 #include "gbx_component.h"
 
 #include "gbx_c_gambas.h"
+#include "gbx_c_observer.h"
 #include "gbx_c_class.h"
 #include "gbx_c_error.h"
 #include "gbx_c_collection.h"
@@ -56,6 +57,7 @@ CLASS *CLASS_AppEnv = NULL;
 CLASS *CLASS_Process = NULL;
 CLASS *CLASS_Component = NULL;
 CLASS *CLASS_Observer = NULL;
+//CLASS *CLASS_Proxy = NULL;
 
 CLASS *CLASS_Array = NULL;
 CLASS *CLASS_BooleanArray = NULL;
@@ -110,6 +112,7 @@ static const CLASS_INIT init_list[] =
   { NATIVE_String, NULL },
   { NATIVE_Timer, NULL },
   { NATIVE_Observer, &CLASS_Observer },
+  //{ NATIVE_Proxy, &CLASS_Proxy },
 
   { NATIVE_ArrayBounds, NULL },
   { NATIVE_Array, &CLASS_Array },
@@ -160,6 +163,8 @@ void CLASS_init_native(void)
 	
 	CLASS_Observer->is_observer = TRUE;
 	CLASS_Observer->size += sizeof(OBJECT_EVENT);
+	//CLASS_Proxy->is_observer = TRUE;
+	//CLASS_Proxy->size += sizeof(OBJECT_EVENT);
 }
 
 
