@@ -51,8 +51,8 @@ void SUBR_is_type(ushort code)
 	if (code == T_NULL)
 		goto __NULL;
 		
-	VALUE_conv_string(PARAM);
-	VALUE_get_string(PARAM, &addr, &len);
+	//VALUE_conv_string(PARAM);
+	SUBR_get_string_len(PARAM, &addr, &len);
 	VALUE_from_string(&temp, addr, len);
 	
 	goto *jump[code];

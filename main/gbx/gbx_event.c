@@ -246,12 +246,12 @@ char *EVENT_enter_name(const char *name)
 {
 	char *save = EVENT_PreviousName;
 	EVENT_PreviousName = EVENT_Name;
-	EVENT_Name = name;
+	EVENT_Name = (char *)name;
 	return save;
 }
 
 void EVENT_leave_name(const char *save)
 {
 	EVENT_Name = EVENT_PreviousName;
-	EVENT_PreviousName = save;
+	EVENT_PreviousName = (char *)save;
 }
