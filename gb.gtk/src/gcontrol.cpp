@@ -229,6 +229,7 @@ void gControl::initAll(gContainer *parent)
 	_tracking = false;
 	no_input_method = false;
 	_no_default_mouse_event = false;
+	_proxy = _proxy_for = NULL;
 
 	onFinish = NULL;
 	onFocusEvent = NULL;
