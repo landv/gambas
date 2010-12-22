@@ -66,7 +66,7 @@ gDrawingArea::gDrawingArea(gContainer *parent) : gContainer(parent)
 	buffer = NULL;
 	_old_bg_id = 0;
 	_resize_cache = false;
-	_transparent = false;
+	_no_background = false;
 	
 	border = gtk_event_box_new();
 	widget = gtk_fixed_new();
@@ -90,10 +90,6 @@ gDrawingArea::gDrawingArea(gContainer *parent) : gContainer(parent)
 	g_signal_connect(G_OBJECT(widget), "expose-event", G_CALLBACK(cb_expose), (gpointer)this);
 	g_signal_connect(G_OBJECT(widget), "size-allocate", G_CALLBACK(cb_size), (gpointer)this);
 	g_signal_connect(G_OBJECT(border), "button-press-event",G_CALLBACK(cb_button_press),(gpointer)this);
-  
-	setTransparent(true);
-	
-	//resize(100,30);
 }
 
 gDrawingArea::~gDrawingArea()
@@ -271,9 +267,13 @@ void gDrawingArea::refreshCache()
 	}
 }
 
-void gDrawingArea::setTransparent(bool vl)
+void gDrawingArea::setNoBackground(bool vl)
 {
-	_transparent = vl;
-	//gtk_widget_set_double_buffered(widget, !_transparent);
-	//gtk_widget_set_app_paintable(border, _transparent);
+	GdkWindow *win = widget->window;
+	
+	if (vl)
+		gdk_window_set_back_pixmap(win, NULL, FALSE);
+	else
+		setBackground(background());
 }
+

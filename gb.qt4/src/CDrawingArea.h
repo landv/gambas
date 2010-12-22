@@ -67,7 +67,7 @@ public:
 
 	void updateCache();
 	void setCached(bool);
-	bool isCached() { return _background != 0; }
+	bool isCached() const { return _background != 0; }
 	//QPixmap *getCache(void) { return cache; }
 	//void refreshCache(void) { if (cache) setBackgroundPixmap(*cache); }
 
@@ -78,17 +78,18 @@ public:
 	void updateBackground();
 
 	void setFrozen(bool f);
-	bool isFrozen() { return _frozen; }
-
-	void setMerge(bool m);
-	bool isMerge() { return _merge; }
+	bool isFrozen() const { return _frozen; }
 
 	void setAllowFocus(bool f);
-	bool isAllowFocus() { return focusPolicy() != Qt::NoFocus; }
+	bool isAllowFocus() const { return focusPolicy() != Qt::NoFocus; }
 	
-	bool isPaint() { return _use_paint; }
+	bool isPaint() const { return _use_paint; }
 	void setPaint(bool on) { _use_paint = on; }
 	void redraw(QRect &r, bool frame = false);
+	
+	bool hasNoBackground() const { return _no_background; }
+	void setNoBackground(bool on);
+	void updateNoBackground();
 	
 	//bool isTransparent() { return _transparent; }
 	//void setTransparent(bool on);
@@ -112,7 +113,7 @@ private:
 	bool _use_paint;
 	bool _set_background;
 	bool _cached;
-	bool _transparent;
+	bool _no_background;
 };
 
 #endif

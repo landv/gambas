@@ -361,6 +361,8 @@ bool NUMBER_from_string(int option, const char *str, int len, VALUE *value)
 
 	if (!read_integer(base, &val, (option & NB_LOCAL) != 0))
 	{
+		if (minus) val = (-val);
+		
 		if ((option & NB_READ_INTEGER) && IS_PURE_INTEGER(val))
 		{
 			type = T_INTEGER;
@@ -385,6 +387,7 @@ bool NUMBER_from_string(int option, const char *str, int len, VALUE *value)
 		get_char();
 		if (!read_float(&dval, (option & NB_LOCAL) != 0))
 		{
+			if (minus) val = (-val);
 			type = T_FLOAT;
 			goto __END;
 		}
@@ -400,11 +403,11 @@ __END:
 	value->type = type;
 
 	if (type == T_INTEGER)
-		value->_integer.value = minus ? (-val) : val;
+		value->_integer.value = val;
 	else if (type == T_LONG)
-		value->_long.value = minus ? (-val) : val;
+		value->_long.value = val;
 	else
-		value->_float.value = minus ? (-dval) : dval;
+		value->_float.value = dval;
 
 	return FALSE;
 }

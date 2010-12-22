@@ -308,6 +308,8 @@ bool TRANS_get_number(int index, TRANS_NUMBER *result)
 
 	if (!read_integer(number, base, minus, &val))
 	{
+		if (minus) val = (-val);
+		
 		if (IS_PURE_INTEGER(val))
 		{
 			type = T_INTEGER;
@@ -324,6 +326,7 @@ bool TRANS_get_number(int index, TRANS_NUMBER *result)
   {
     if (!read_float(number, &dval))
     {
+			if (minus) dval = (-dval);
       type = T_FLOAT;
       goto __END;
     }
@@ -336,11 +339,11 @@ __END:
   result->type = type;
 
   if (type == T_INTEGER)
-    result->lval = result->ival = minus ? (-val) : val;
+    result->lval = result->ival = val;
   else if (type == T_LONG)
-    result->lval = minus ? (-val) : val;
+    result->lval = val;
   else
-    result->dval = minus ? (-dval) : dval;
+    result->dval = dval;
 
   return FALSE;
 }

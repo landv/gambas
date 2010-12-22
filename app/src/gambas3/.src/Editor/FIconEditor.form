@@ -295,11 +295,13 @@
         Tracking = True
         Mouse = Mouse.Cross
         Border = Border.Plain
+        NoBackground = True
         { dwgPaste DrawingArea
           MoveScaled(10,12,8,4)
           Visible = False
           Tracking = True
           Mouse = Mouse.SizeAll
+          NoBackground = True
         }
       }
     }

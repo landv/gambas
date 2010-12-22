@@ -85,15 +85,9 @@ BEGIN_PROPERTY(CDRAWINGAREA_border)
 
 END_PROPERTY
 
-/*********************************************************
-GTK+ manages the event compression internally,
-this function is placed here only for compatibility
-with gb.qt
-**********************************************************/
 BEGIN_PROPERTY(CDRAWINGAREA_merge)
 
-	if (READ_PROPERTY) GB.ReturnBoolean(THIS->merge);
-	else               THIS->merge=VPROP(GB_BOOLEAN);
+	fprintf(stderr, "warning: DrawingArea.Merge property has been deprecated\n");
 
 END_PROPERTY
 
@@ -127,15 +121,14 @@ BEGIN_PROPERTY(CDRAWINGAREA_painted)
 
 END_PROPERTY
 
-/*BEGIN_PROPERTY(CDRAWINGAREA_transparent)
+BEGIN_PROPERTY(DrawingArea_NoBackground)
 
 	if (READ_PROPERTY)
-		GB.ReturnBoolean(WIDGET->isTransparent());
+		GB.ReturnBoolean(WIDGET->hasNoBackground());
 	else
-		WIDGET->setTransparent(VPROP(GB_BOOLEAN));
+		WIDGET->setNoBackground(VPROP(GB_BOOLEAN));
 
-END_PROPERTY*/
-
+END_PROPERTY
 
 GB_DESC CDrawingAreaDesc[] =
 {
@@ -155,7 +148,7 @@ GB_DESC CDrawingAreaDesc[] =
 	GB_PROPERTY("Merge","b",CDRAWINGAREA_merge),
 	GB_PROPERTY("Focus","b",CDRAWINGAREA_focus),
 	GB_PROPERTY("Painted", "b", CDRAWINGAREA_painted),
-	//GB_PROPERTY("Transparent", "b", CDRAWINGAREA_transparent),
+	GB_PROPERTY("NoBackground", "b", DrawingArea_NoBackground),
 
 	GB_METHOD("Clear", 0, CDRAWINGAREA_clear, 0),
 

@@ -2620,6 +2620,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   Dim iElt As Integer
   Dim aMissing As New String[]
   Dim sMsg As String
+  dim hComp as CComponent
   
   hFic = Open Path For Input
   
@@ -2698,7 +2699,8 @@ Public Sub ReadProject(Optional bConvert As Boolean)
         Startup = sVal
         
       Case "component"
-        If CComponent.All.Exist(sVal) Then
+        hComp = CComponent.All[sVal]
+        If hComp And If Not hComp.Hidden Then
           Components.Add(sVal)
         Else
           aMissing.Add(sVal)

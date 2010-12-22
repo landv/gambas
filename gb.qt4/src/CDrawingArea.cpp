@@ -1,22 +1,22 @@
 /***************************************************************************
 
-  CDrawingArea.cpp
+	CDrawingArea.cpp
 
-  (c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -55,16 +55,14 @@ MyDrawingArea::MyDrawingArea(QWidget *parent) : MyContainer(parent)
 	_use_paint = false;
 	_set_background = false;
 	_cached = false;
+	_no_background = false;
 	
-	setMerge(false);
 	setCached(false);
 	setAllowFocus(false);
 	
 	setAttribute(Qt::WA_KeyCompression, false);
 	setAttribute(Qt::WA_NativeWindow, true);
 	setAttribute(Qt::WA_DontCreateNativeAncestors, true);
-	
-	setAttribute(Qt::WA_NoSystemBackground, true);
 }
 
 
@@ -92,13 +90,6 @@ void MyDrawingArea::setAllowFocus(bool f)
 }
 
 
-void MyDrawingArea::setMerge(bool m)
-{
-	if (m)
-		qDebug("warning: DrawingArea.Merge property has been deprecated");
-	_merge = m;
-}
-
 void MyDrawingArea::setFrozen(bool f)
 {
 	if (f == _frozen)
@@ -120,7 +111,6 @@ void MyDrawingArea::setFrozen(bool f)
 	{
 		//setBackgroundMode(Qt::PaletteBackground);
 		XSelectInput(QX11Info::display(), winId(), _event_mask);
-		setMerge(_merge);
 		//qDebug("unfrozen");
 	}
 	#endif
@@ -254,7 +244,7 @@ void MyDrawingArea::refreshBackground()
 			XClearWindow(QX11Info::display(), winId());
 		else
 		{
-			XClearArea(QX11Info::display(), winId(), fw, fw, 0, 0, False);
+			XClearArea(QX11Info::display(), winId(), fw, fw, width() - fw * 2, height() - fw * 2, False);
 			repaint();
 		}
 		#endif
@@ -339,13 +329,9 @@ void MyDrawingArea::updateCache()
 		setAttribute(Qt::WA_PaintOnScreen, false);
 		setAttribute(Qt::WA_OpaquePaintEvent, false);
 		setAttribute(Qt::WA_StaticContents, false);
-		#ifdef NO_X_WINDOW
-		setBackgroundMode(Qt::NoBackground);
-		#else
-		XSetWindowBackgroundPixmap(QX11Info::display(), winId(), None);
-		XClearArea(QX11Info::display(), winId(), 0, 0, 0, 0, True);
-		#endif
 	}
+	
+	updateNoBackground();
 }
 
 void MyDrawingArea::setCached(bool c)
@@ -360,11 +346,18 @@ void MyDrawingArea::setPalette(const QPalette &pal)
 	repaint();
 }
 
-/*void MyDrawingArea::setTransparent(bool on)
+void MyDrawingArea::updateNoBackground()
 {
-	_transparent = on;
-	updateCache();
-}*/
+	setAttribute(Qt::WA_NoSystemBackground, _no_background);
+	if (_cached)
+		setBackground();
+}
+
+void MyDrawingArea::setNoBackground(bool on)
+{
+	_no_background = on;
+	updateNoBackground();
+}
 
 void MyDrawingArea::hideEvent(QHideEvent *e)
 {
@@ -417,12 +410,20 @@ BEGIN_PROPERTY(CDRAWINGAREA_background)
 	Control_Background(_object, _param);
 
 	if (!READ_PROPERTY)
-	{
 		WIDGET->clearBackground();
-		WIDGET->setAttribute(Qt::WA_NoSystemBackground, THIS->widget.bg == COLOR_DEFAULT);
-	}
 
 END_PROPERTY
+
+
+BEGIN_PROPERTY(DrawingArea_NoBackground)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(WIDGET->hasNoBackground());
+	else
+		WIDGET->setNoBackground(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
 
 BEGIN_PROPERTY(CDRAWINGAREA_border)
 
@@ -446,11 +447,8 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CDRAWINGAREA_merge)
 
-	if (READ_PROPERTY)
-		GB.ReturnBoolean(WIDGET->isMerge());
-	else
-		WIDGET->setMerge(VPROP(GB_BOOLEAN));
-
+	qDebug("warning: DrawingArea.Merge property has been deprecated");
+	
 END_PROPERTY
 
 BEGIN_PROPERTY(CDRAWINGAREA_focus)
@@ -513,20 +511,20 @@ GB_DESC CDrawingAreaDesc[] =
 	GB_PROPERTY("Cached", "b", CDRAWINGAREA_cached),
 	GB_PROPERTY("Merge", "b", CDRAWINGAREA_merge),
 	
-  GB_PROPERTY("Arrangement", "i", CCONTAINER_arrangement),
-  GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
-  GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
-  GB_PROPERTY("Margin", "b", CCONTAINER_margin),
-  GB_PROPERTY("Padding", "i", CCONTAINER_padding),
-  GB_PROPERTY("Indent", "b", CCONTAINER_indent),
+	GB_PROPERTY("Arrangement", "i", CCONTAINER_arrangement),
+	GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
+	GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
+	GB_PROPERTY("Margin", "b", CCONTAINER_margin),
+	GB_PROPERTY("Padding", "i", CCONTAINER_padding),
+	GB_PROPERTY("Indent", "b", CCONTAINER_indent),
 
 	GB_PROPERTY("Border", "i", CDRAWINGAREA_border),
+	GB_PROPERTY("NoBackground", "b", DrawingArea_NoBackground),
 	GB_PROPERTY("Background", "i", CDRAWINGAREA_background),
 	
 	GB_PROPERTY("Focus", "b", CDRAWINGAREA_focus),
 	GB_PROPERTY("Enabled", "b", CDRAWINGAREA_enabled),
 	GB_PROPERTY("Painted", "b", CDRAWINGAREA_painted),
-	//GB_PROPERTY("Transparent", "b", CDRAWINGAREA_transparent),
 
 	GB_METHOD("Clear", NULL, CDRAWINGAREA_clear, NULL),
 	GB_METHOD("Refresh", NULL, DrawingArea_Refresh, "[(X)i(Y)i(Width)i(Height)i]"),
