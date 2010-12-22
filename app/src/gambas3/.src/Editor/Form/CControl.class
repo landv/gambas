@@ -74,6 +74,7 @@ Static Public Sub GetIcon(sClass As String, sComp As String, Optional iSize As I
   Dim sPath As String
   Dim sText As String
   Dim X, Y As Float
+  Dim iInd As Integer
   
   If sComp Then 
     If sComp = CComponent.PROJECT_NAME Then
@@ -98,14 +99,22 @@ Static Public Sub GetIcon(sClass As String, sComp As String, Optional iSize As I
     While Len(sText) < 32
       sText &= sClass
     Wend
-    X = 3
+    X = 2
     Y = Paint.Font.Ascent - 1
+    
     While Y < hImage.H
+      
       Paint.Text(sText, X, Y)
       Paint.Fill
       Y += Paint.Font.Height - 1.5
-      X -= hImage.W * 0.8
+      
+      For iInd = 1 To Len(sText)
+        If Paint.TextExtents(Left$(sText, iInd)).Width >= (hImage.Width - 7) Then Break
+      Next
+      sText = Mid$(sText, iInd)
+    
     Wend
+    
     Paint.End
     hPict = hImage.Picture
   Endif
@@ -264,7 +273,7 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
 
         If bExist Then
           Try hCtrl = New (sClass, hParent)
-          If Error And If hClass.Family = "Form" Then Debug sClass; ": "; Error.Text
+          'If Error And If hClass.Family = "Form" Then Debug sClass; ": "; Error.Text
           'ENDIF
           'hCtrl = NEW (sClass, hParent)
         Endif

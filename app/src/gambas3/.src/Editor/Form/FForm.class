@@ -178,9 +178,11 @@ Public Sub UpdateSnap()
     hPict.Fill(iColor)
     Draw.Begin(hPict)
     If (Color[iColor].Value > 128) Then
-      iColor = Color.Black
+      iColor = Color[iColor].Value - &H40
+      iColor = Color.RGB(iColor, iColor, iColor)
     Else
-      iColor = Color.White
+      iColor = Color[iColor].Value + &H60
+      iColor = Color.RGB(iColor, iColor, iColor)
     Endif
     Draw.Foreground = iColor
     For X = 0 To Project.Snap * nPts - 1 Step Project.Snap

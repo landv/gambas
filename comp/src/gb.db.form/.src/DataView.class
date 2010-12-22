@@ -396,9 +396,9 @@ Public Sub TableView_Click()
         Return
       Case db.Boolean
         If IsNull(hField.Default) Then
-          $hCtrl.Edit(["", "False", "True"], True)
+          $hCtrl.Edit(["", ("False"), ("True")], True)
         Else
-          $hCtrl.Edit(["False", "True"], True)
+          $hCtrl.Edit([("False"), ("True")], True)
         Endif
       Case db.String
         If hField.Length = 0 Then
@@ -485,13 +485,13 @@ Public Sub TableView_Save(Row As Integer, Column As Integer, Value As String)
     Case db.Date
       If Trim(Value) Then
         vVal = Val(Value)
-        If Not IsDate(vVal) Then Error.Raise("Bad date")
+        If TypeOf(vVal) <> gb.Date Then Error.Raise("Bad date")
       Endif
     
     Case db.Boolean
-      If Value = "False" Then
+      If Value = ("False") Then
         vVal = False
-      Else If Value = "True" Then
+      Else If Value = ("True") Then
         vVal = True
       Endif
         

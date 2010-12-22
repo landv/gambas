@@ -22,11 +22,9 @@ Private $hCtrl As Object
 Private $hInfo As DataField
 Private $vVal As Variant
 Private $hSource As DataSource
-Private $sEventName As String
 
 Public Sub _new()
   
-  $sEventName = Object.LastEventName
   Me._AutoResize = True
   
 End
@@ -67,7 +65,8 @@ Private Sub CreateControl()
 
   If Not $hCtrl Then 
     $hCtrl = Object.New(sType, [Me])
-    Object.Attach($hCtrl, Object.Parent(Me), $sEventName)
+    'Object.Attach($hCtrl, Object.Parent(Me), $sEventName)
+    Me.Proxy = $hCtrl
   Endif
   
   Select $hInfo.Type
@@ -292,7 +291,7 @@ Private Function GetValue() As Variant
         Return Null
       Else
         vVal = Val($hCtrl.Text)
-        If Not IsDate(vVal) Then Error.Raise("Bad date")
+        If TypeOf(vVal) <> gb.Date Then Error.Raise("Bad date")
         Return vVal
       Endif
     
