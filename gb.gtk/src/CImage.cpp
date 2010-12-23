@@ -143,8 +143,10 @@ BEGIN_PROPERTY(CIMAGE_picture)
 
 	check_image(THIS);
 	
+	//GB.ReturnObject(THIS);
+	
 	CPICTURE *pic = CPICTURE_create(PICTURE->copy());
-	pic->picture->getPixmap();
+	//pic->picture->getPixmap();
 	GB.ReturnObject(pic);
 
 END_PROPERTY

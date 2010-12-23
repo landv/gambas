@@ -40,7 +40,7 @@ CPICTURE *CPICTURE_create(gPicture *picture)
 	{
 		pic->picture->unref();
 		pic->picture = picture;
-		picture->getPixmap();
+		//picture->getPixmap();
 		picture->setTag(new gGambasTag((void *)pic));
 	}
 	return pic;
@@ -286,7 +286,7 @@ END_METHOD
 BEGIN_PROPERTY(CPICTURE_image)
 
 	CIMAGE *img = CIMAGE_create(PICTURE->copy());
-	CIMAGE_get(img)->getPixbuf();
+	//CIMAGE_get(img)->getPixbuf();
 	GB.ReturnObject((void*)img);
 
 END_PROPERTY
