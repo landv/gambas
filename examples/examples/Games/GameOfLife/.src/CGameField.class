@@ -88,8 +88,14 @@ Public Sub DrawGame(bBorder As Boolean)
   'Draw.FillColor = Color.LightBackground
   'Draw.Rect(4, 4, Game.Width * $iZoom, Game.Height * $iZoom)
   
-  Draw.LineStyle = If(bBorder, Line.Solid, Line.None)
-  Draw.FillColor = Color.red
+  If bBorder Then
+    Draw.LineStyle = Line.Solid
+  Else
+    Draw.FillRect(0, 0, dw.W, dw.H, Color.Background)
+    Draw.LineStyle = Line.None
+  Endif
+  
+  Draw.FillColor = Color.Red
   Draw.Foreground = Color.LightBackground
 
   Draw.Zoom(Game, $iZoom, 4, 4)

@@ -12,7 +12,7 @@ End
 
 Public Sub Form_Open()
 
-  Draw.Begin(dw)
+  Draw.Begin(dwgGame)
   Draw.FillRect(0, 0, Draw.W, Draw.H, Color.White)
   Draw.End
   Button1_Click
@@ -22,7 +22,7 @@ End
 Public Sub Button1_Click()
 
   Game.Init(chkSmall.Value, Slider2.Value, chkSymetryH.Value, chkSymetryV.Value)
-  Game.SetDrawArea(dW)
+  Game.SetDrawArea(dwgGame)
   DrawGame
 
 End
@@ -76,7 +76,9 @@ End
 
 Public Sub chkBorder_Click()
 
-  If Not togEvolution.Value Then DrawGame
+  If Not togEvolution.Value Then 
+    DrawGame
+  Endif
 
 End
 

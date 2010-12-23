@@ -228,6 +228,7 @@ void MyDrawingArea::setBackground()
 		//else
 		_set_background = true;
 		refreshBackground();
+		//XSetWindowBackgroundPixmap(QX11Info::display(), winId(), _background->handle());
 		#endif
 	}
 }
@@ -283,8 +284,8 @@ void MyDrawingArea::updateBackground()
 	{
 		w = QMAX(width(), 1);
 		h = QMAX(height(), 1);
-
-		if (w != _background->width() && h != _background->height())
+		
+		if (w != _background->width() || h != _background->height())
 		{		
 			QPixmap *p = new QPixmap(w, h);
 			p->fill(palette().color(backgroundRole()));

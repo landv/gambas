@@ -649,7 +649,6 @@ static void draw_image(GB_DRAW *d, GB_IMAGE image, int x, int y, int w, int h, i
 	DRAW_NORMALIZE(x, y, w, h, sx, sy, sw, sh, p->width(), p->height());
 	xform = (w != sw || h != sh);
 
-	
 	if (w >= sw && h >= sw && (w % sw) == 0 && (h % sh) == 0)
 		mode = Qt::FastTransformation;
 	else

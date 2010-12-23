@@ -911,9 +911,16 @@ void gDraw::picture(gPicture *pic, int x, int y, int w, int h, int sx, int sy, i
   {
   	if (w != sw || h != sh)
   	{
+			bool smooth;
+			
+			if (w >= sw && h >= sw && (w % sw) == 0 && (h % sh) == 0)
+				smooth = false;
+			else
+				smooth = true;
+			
   		gPicture *pic2;
   		pic2 = pic->copy(sx, sy, sw, sh);
-  		pic = pic2->stretch(w, h, true);
+  		pic = pic2->stretch(w, h, smooth);
   		delete pic2;
   		del = true;
   		sx = 0; sy = 0; sw = w; sh = h;

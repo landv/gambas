@@ -28,10 +28,10 @@
       Text = ("Written in Gambas<br>\nby <b>Iman Karim</b><br>\nand <b>Benoît Minisini</b>\n<p>\n<i>Thanks to the Gambas team!</i>")
     }
   }
-  { dW DrawingArea
+  { dwgGame DrawingArea
     MoveScaled(31,1,93,93)
-    Cached = True
     Border = Border.Plain
+    Cached = True
   }
   { Button1 Button
     MoveScaled(1,26,29,6)
@@ -132,11 +132,11 @@
       Value = 50
     }
     { Label1 Label
-      MoveScaled(1,17,7,3)
+      MoveScaled(1,18,7,3)
       Text = ("Alive")
     }
     { Label2 Label
-      MoveScaled(19,17,7,3)
+      MoveScaled(19,18,7,3)
       Text = ("Dead")
       Alignment = Align.Right
     }
