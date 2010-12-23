@@ -330,6 +330,12 @@ void MyDrawingArea::updateCache()
 		setAttribute(Qt::WA_PaintOnScreen, false);
 		setAttribute(Qt::WA_OpaquePaintEvent, false);
 		setAttribute(Qt::WA_StaticContents, false);
+		#ifdef NO_X_WINDOW
+		setBackgroundMode(Qt::NoBackground);
+		#else
+		XSetWindowBackgroundPixmap(QX11Info::display(), winId(), None);
+		XClearArea(QX11Info::display(), winId(), 0, 0, 0, 0, True);
+		#endif
 	}
 	
 	updateNoBackground();

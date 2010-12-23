@@ -1984,7 +1984,6 @@ static void handle_focus_change()
 	GB.Post((void (*)())post_focus_change, NULL);
 }
 
-
 bool CWidget::eventFilter(QObject *widget, QEvent *event)
 {
 	CWIDGET *control;
