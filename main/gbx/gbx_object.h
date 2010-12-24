@@ -27,6 +27,10 @@
 #include "gbx_value.h"
 #include "gbx_class.h"
 
+#ifndef __OBJECT_C
+EXTERN void **OBJECT_set_pointer;
+#endif
+
 typedef
   struct {
     CLASS *class;
@@ -65,6 +69,10 @@ bool OBJECT_comp_value(VALUE *ob1, VALUE *ob2);
 void OBJECT_exit(void);
 void *OBJECT_create(CLASS *class, const char *name, void *parent, int nparam);
 void *OBJECT_create_native(CLASS *class, VALUE *param);
+
+#define OBJECT_create_and_set(_ptr, _class, _name, _parent, _nparam) \
+	((OBJECT_set_pointer = (_ptr)), \
+	OBJECT_create((_class), (_name), (_parent), (_nparam)))
 
 #define OBJECT_is_valid(_object) ((_object) && !(((OBJECT *)_object)->class->check && (*((OBJECT *)_object)->class->check)(_object)))
 #define OBJECT_has_events(_object) (((OBJECT *)_object)->class->n_event != 0)

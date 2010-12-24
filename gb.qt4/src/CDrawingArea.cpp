@@ -163,6 +163,7 @@ void MyDrawingArea::redraw(QRect &r, bool frame)
 	
 	if (frame)
 	{
+		p->initFrom(this);
 		p->setRenderHint(QPainter::Antialiasing, false);
 		drawFrame(p);
 	}

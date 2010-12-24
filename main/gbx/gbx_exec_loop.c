@@ -1581,10 +1581,7 @@ _ADD_QUICK:
 	
 	__AQ_BOOLEAN:
 		
-		fprintf(stderr, "warning: ");
-		DEBUG_where();
-		fprintf(stderr, "ADD QUICK with Boolean\n");
-		
+		ERROR_deprecated("Boolean incrementation");
 		P1->_integer.value ^= (value & 1) ? -1 : 0;
 		goto *jump_end;
 	

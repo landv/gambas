@@ -112,11 +112,11 @@ Public Sub Reload()
 
   sData = File.Load(Path)
 
-  If Left$(sData, Len(Project.FORM_MAGIC_1)) = Project.FORM_MAGIC_1 Then
-    $bConvert = True
-  Else If Left$(sData, Len(Project.FORM_MAGIC_2)) = Project.FORM_MAGIC_2 Then
-    $bConvert = True
-  Else If Left$(sData, Len(Project.FORM_MAGIC)) <> Project.FORM_MAGIC Then
+  'If Left$(sData, Len(Project.FORM_MAGIC_1)) = Project.FORM_MAGIC_1 Then
+  '  $bConvert = True
+  'Else If Left$(sData, Len(Project.FORM_MAGIC_2)) = Project.FORM_MAGIC_2 Then
+  '  $bConvert = True
+  If Left$(sData, Len(Project.FORM_MAGIC)) <> Project.FORM_MAGIC Then
     FMain.ShowWarning(("Bad form file"))
     Return
   Endif

@@ -1417,6 +1417,44 @@ Private Sub FormatScaledCoord(eCoord As Float) As String
   
 End
 
+Static Public Sub StringArrayPropertyToString(aVal As String[], bTranslate As Boolean) As String
+  
+  Dim sLine As String
+  Dim iInd As Integer
+  Dim sVal As String
+  
+  If Not aVal Then
+  
+    sLine = "Null"
+    
+  Else
+  
+    sLine = "["
+  
+    For iInd = 0 To aVal.Max
+      sVal = Quote(aVal[iInd])
+      If bTranslate Then sVal = "(" & sVal & ")"
+      If iInd Mod 32 = 0 Then
+        If iInd Then 
+          sLine &= "]"
+          If iInd > 32 Then sLine &= ")"
+          sLine &= ".Insert([" 
+        Endif
+      Else
+        sLine &= ", "
+      Endif
+      sLine &= sVal
+    Next
+  
+    sLine &= "]"
+    If iInd > 32 Then sLine &= ")"
+  
+  Endif
+  
+  Return sLine
+  
+End
+
 
 Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale As Boolean) As String[]
 
@@ -1482,33 +1520,7 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
       
         aVal = vVal.Copy()
         
-        If Not aVal Then
-        
-          sLine &= "NULL"
-          
-        Else
-        
-          sLine &= "["
-        
-          For iInd = 0 To aVal.Max
-            sVal = Quote(aVal[iInd])
-            If hProp.Translate Then sVal = "(" & sVal & ")"
-            If iInd Mod 32 = 0 Then
-              If iInd Then 
-                sLine &= "]"
-                If iInd > 32 Then sLine &= ")"
-                sLine &= ".Insert([" 
-              Endif
-            Else
-              sLine &= ", "
-            Endif
-            sLine &= sVal
-          Next
-        
-          sLine &= "]"
-          If iInd > 32 Then sLine &= ")"
-        
-        Endif
+        sLine &= StringArrayPropertyToString(aVal, hProp.Translate)
 
       Case "Font"
         sLine = sLine & "Font[" & Quote(vVal) & "]"

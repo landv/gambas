@@ -1168,7 +1168,7 @@ void *CLASS_auto_create(CLASS *class, int nparam)
 
 	/*fprintf(stderr, "CLASS_auto_create: create %s\n", class->name);*/
 
-	class->instance = OBJECT_create(class, NULL, NULL, nparam);
+	OBJECT_create_and_set(&class->instance, class, NULL, NULL, nparam);
 	ob = class->instance;
 	OBJECT_REF(ob, "CLASS_auto_create");
 

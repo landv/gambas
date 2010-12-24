@@ -38,6 +38,8 @@
 const char *OBJECT_ref_where = 0;
 #endif
 
+void **OBJECT_set_pointer = NULL;
+
 static OBJECT *EventObject = NULL;
 
 void *OBJECT_new(CLASS *class, const char *name, OBJECT *parent)
@@ -389,6 +391,11 @@ void *OBJECT_create(CLASS *class, const char *name, void *parent, int nparam)
 	{
 		_object_name = EVENT_enter_name(name);
 		_object = ob = OBJECT_new(class, name, parent);
+		if (OBJECT_set_pointer)
+		{
+			*OBJECT_set_pointer = ob;
+			OBJECT_set_pointer = NULL;
+		}
 		
 		OBJECT_lock(ob, TRUE);
 		EXEC_special_inheritance(SPEC_NEW, class, ob, nparam, TRUE);

@@ -1255,14 +1255,6 @@ Public Sub wrkProject_WindowMenu()
   
 End
 
-Public Sub mnuUpdateForm_Click()
-  
-  If Message.Warning(("Do you really want to update all forms?"), ("Update"), ("Cancel")) <> 1 Then Return
-  
-  Project.UpdateForms
-  
-End
-
 Public Sub tvwProject_Rename()
   
   Dim sPath As String

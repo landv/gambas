@@ -1,0 +1,31 @@
+' Gambas class file
+
+Public Sub Start(sMsg As String)
+  
+  Inc Application.Busy
+  lblConvert.Text = sMsg
+  pgbConvert.Value = 0
+  Me.Show
+  Wait
+  
+End
+
+Public Sub SetProgress(fValue As Float)
+  
+  pgbConvert.Value = fValue
+  Wait
+  
+End
+
+Public Sub Stop()
+  
+  Me.Hide
+  Dec Application.Busy
+  
+End
+
+Public Sub Form_Open()
+
+  Me.Center
+
+End

@@ -373,10 +373,12 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
   
   Dim sOldPath As String
   Dim sOldName As String
-  Dim bSave As Boolean
+  Dim bConvert As Boolean
   Dim sVer As String
   Dim sFile As String
   Dim hLock As Stream
+  Dim aDir As String[]
+  Dim iStep As Integer
   
   If Not Exist(sDir &/ ".project") Then 
     FMain.ShowError(("This project does not exist.") & "\n\n" & sDir)
@@ -396,10 +398,15 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
     If sVer = "?" Then
       Message.Error(("This is not a Gambas project."))
       Return True
-    Else If Message.Warning(Subst(("This is a Gambas &1 project.\n\nDo you want to open it anyway?"), sVer), ("Open"), ("Cancel")) = 2 Then 
+    Else If sVer = "1.0" Then
+      Message.Error(("This is a Gambas 1.0 project. Use Gambas 2 to convert it."))
       Return True
-    Else 
-      bSave = True
+    Else If sVer = "2.0" Then
+      If Message.Warning(Subst(("This is a Gambas 2.0 project.\n\nDo you want to convert it?"), sVer), ("Convert"), ("Cancel")) = 2 Then 
+        Return True
+      Else 
+        bConvert = True
+      Endif
     Endif
   Endif
   
@@ -421,6 +428,11 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
     If Exist(sDir &/ ".startup") And If Not Access(sDir &/ ".startup", gb.Write) Then ReadOnly = True
   Endif
   
+  If bConvert And If ReadOnly Then
+    Message.Error(("This project is read-only.") & " " & ("It cannot be converted."))
+    Return True
+  Endif
+
   Path = sDir &/ PROJECT_FILE
   Name = File.Name(sDir)
   Project.Dir = sDir
@@ -430,26 +442,38 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
   VersionControl.Refresh
   
   If Not Exist(SourceDir) Then 
+    
     If ReadOnly Then
       Message.Error(("This project is read-only.") & " " & ("It cannot be converted."))
       Return True
     Endif
-    Inc Application.Busy
+    
+    FConvert.Start(("Converting project structure..."))
+    
+    ' Needed for MoveFile()
+    RefreshSourceCache
+    VersionControl.CheckPaths()
+    
     InsertDirectory(SourceDir)
-    For Each sFile In Dir(sDir, "*")
-      If Not CModule.Ext.Exist(File.Ext(sFile)) Then Continue
-      MoveFile(sDir &/ sFile, SourceDir &/ sFile)
+    aDir = Dir(sDir, "*")
+    iStep = 0
+    For Each sFile In aDir
+      If CModule.Ext.Exist(File.Ext(sFile)) Then MoveFile(sDir &/ sFile, SourceDir &/ sFile)
+      Inc iStep
+      FConvert.SetProgress(iStep / aDir.Count)
     Next
-    Dec Application.Busy
+    
+    FConvert.Stop
+    
   Endif
   
   Config = New Settings(sDir &/ ".settings")
   
   Inc $iNoRefresh
-  ReadProject(bSave)
+  ReadProject(bConvert)
   If Not ReadOnly Then
     If Not Exist(Project.Dir &/ ".hidden") Then Project.InsertDirectory(Project.Dir &/ ".hidden")
-    If bSave Then WriteProject(True)
+    If bConvert Then WriteProject(True)
   Endif
   Dec $iNoRefresh
   
@@ -475,9 +499,14 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
   
   $hLock = hLock
   
+  If bConvert Then 
+    MakeDirectoryIcon
+    If ConvertProject() Then Goto _CANCEL
+  Endif
+  
   LastOpenedFiles
   
-  If ReadOnly Then FMain.ShowMessage(("This project is read-only."), "warning")
+  If ReadOnly Then FMain.ShowWarning(("This project is read-only."))
   
   'SetMessage(("OK"))
   Return
@@ -488,7 +517,7 @@ Catch
     Message.Error(("Cannot open project file :\n") & sDir & "\n\n" & Error.Text & "\n" & Error.Where)
   Endif
   
-  _CANCEL:
+_CANCEL:
   
   If hLock Then Try Unlock #hLock
   
@@ -2593,21 +2622,6 @@ End
 '   
 ' End
 
-Private Sub ConvertComponent(sComp As String) As String
-  
-  Select Case sComp
-    Case "gb.qt"
-      Return "gb.qt4"
-    Case "gb.qt.ext"
-      Return "gb.qt4.ext"
-    Case "gb.qt.kde.html"
-      Return "gb.qt4.webkit"
-    Default
-      Return sComp
-  End Select
-  
-End
-
 Public Sub ReadProject(Optional bConvert As Boolean) 
   
   Dim hFic As File
@@ -2620,7 +2634,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   Dim iElt As Integer
   Dim aMissing As New String[]
   Dim sMsg As String
-  dim hComp as CComponent
+  Dim hComp As CComponent
   
   hFic = Open Path For Input
   
@@ -2708,12 +2722,13 @@ Public Sub ReadProject(Optional bConvert As Boolean)
         
       Case "library"
         If bConvert Then
-          sVal = ConvertComponent(sVal)
-          If CComponent.All.Exist(sVal) Then
-            Components.Add(sVal)
-          Else
-            aMissing.Add(sVal)
-          Endif
+          For Each sVal In MConvert.ConvertComponent(sVal)
+            If CComponent.All.Exist(sVal) Then
+              If Not Components.Exist(sVal) Then Components.Add(sVal)
+            Else
+              aMissing.Add(sVal)
+            Endif
+          Next
         Else
           If Not Libraries.Exist(sVal) Then Libraries.Add(sVal)
         Endif
@@ -4282,7 +4297,7 @@ Public Sub MoveFile(sSrc As String, sDst As String, Optional bOther As Boolean)
     Files[sDst] = hForm
   Endif
   
-  If IsSourcePath(sSrc) Then
+  If $cSourceDir And If IsSourcePath(sSrc) Then
     If bIsDir Then
       RefreshSourceCache
     Else
@@ -4919,29 +4934,6 @@ Public Sub GetLinesOfCode() As Integer
 End
 
 
-Public Sub UpdateForms()
-  
-  Dim sForm As String
-  Dim hForm As FForm
-  
-  Inc Application.Busy
-  
-  For Each sForm In $cSourceDir
-    If Not CFamily.List.Exist(File.Ext(sForm)) Then Continue
-    hForm = Project.LoadFile(sForm)
-    hForm.Modify
-    hForm.Save
-  Next
-  
-  Dec Application.Busy
-  
-Catch 
-  
-  Dec Application.Busy
-  FMain.ShowError(("Unable to update all forms.") & "\n\n" & Error.Text)
-  
-End
-
 Public Sub GetFileSize(iSize As Long) As String
   
   If iSize < 1000 Then
@@ -4996,5 +4988,30 @@ Public Sub StoreCombo(hCombo As ComboBox)
   If iInd >= 0 Then hCombo.Remove(iInd)
   hCombo.Add(sText, 0)
   hCombo.Text = sText
+  
+End
+
+Private Sub ConvertProject() As Boolean
+  
+  Dim sPath As String
+  Dim iStep As Integer
+  
+  FConvert.Start(("Project files conversion..."))
+  
+  For Each sPath In $cSourceDir
+    
+    MConvert.ConvertFile(sPath)
+    Inc iStep
+    FConvert.SetProgress(iStep / $cSourceDir.Count)
+    
+  Next
+  
+  FConvert.Stop
+  
+Catch
+  
+  FConvert.Stop
+  Message.Error(Subst(("Unable to convert &1"), File.Name(sPath)) & "\n\n" & Error.Text)
+  Return True
   
 End

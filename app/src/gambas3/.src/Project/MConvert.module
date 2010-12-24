@@ -1,0 +1,191 @@
+' Gambas module file
+
+Private $aLine As String[]
+
+' Public Sub UpdateForms()
+'   
+'   Dim sForm As String
+'   Dim hForm As FForm
+'   
+'   Inc Application.Busy
+'   
+'   For Each sForm In $cSourceDir
+'     If Not CFamily.List.Exist(File.Ext(sForm)) Then Continue
+'     hForm = Project.LoadFile(sForm)
+'     hForm.Modify
+'     hForm.Save
+'   Next
+'   
+'   Dec Application.Busy
+'   
+' Catch 
+'   
+'   Dec Application.Busy
+'   FMain.ShowError(("Unable to update all forms.") & "\n\n" & Error.Text)
+'   
+' End
+
+Private Sub AddDeclarationToClass(sPath As String, sDeclare As String)
+  
+  Dim aLine As String[]
+  
+  aLine = Split(File.Load(sPath), "\n")
+  aLine.Add("", 1)
+  aLine.Add(sDeclare, 2)
+  If aLine[3] Then aLine.Add("", 3)
+  File.Save(sPath, aLine.Join("\n"))
+  
+End
+
+
+Private Sub ConvertForm(sPath As String)
+  
+  Dim hFile As File
+  Dim sFullLine, sLine As String
+  Dim sClass As String
+  Dim aCoord As String[]
+  Dim fW, fH As Float
+  Dim iIndent As Integer
+  Dim sVal As String
+  Dim aVal As String[]
+  Dim sName As String
+  Dim sGroup As String
+  Dim iLevel As Integer
+  Dim cVirtualPos As New Collection
+  
+  $aLine = New String[]
+  hFile = Open sPath 
+  Line Input #hFile, sFullLine
+  If sFullLine <> Project.FORM_MAGIC_2 Then Return
+  $aLine.Add(Project.FORM_MAGIC)
+  While Not Eof(hFile)
+    Line Input #hFile, sFullLine
+    sLine = LTrim(sFullLine)
+    iIndent = Len(sFullLine) - Len(sLine)
+    sLine = RTrim(sLine)
+    'If Left(sLine) = "#" Then sLine = Mid$(sLine, 2)
+    
+    If Left(sLine) = "{" Then
+      
+      aVal = Split(Mid$(sLine, 2), " ", "", True)
+      sName = aVal[0]
+      sClass = aVal[1]
+      sGroup = ""
+      Try sGroup = aVal[2]
+      If Left(sClass) = "#" Then sClass = Mid$(sClass, 2)
+      
+      If sClass = "TrayIcon" Then
+        
+        AddDeclarationToClass(File.SetExt(sPath, "class"), 
+          If(Project.ControlPublic, "Public", "Private") & " " & sName & " As TrayIcon = New TrayIcon As " & Quote(If(sGroup, sGroup, sName)))
+          
+        Repeat
+          Line Input #hFile, sFullLine
+        Until Trim(sFullLine) = "}"
+        Continue
+        
+      Endif
+      
+      If sClass = "URLLabel" Then
+        sFullLine = "{ " & sName & " Label " & sGroup
+      Endif
+      
+      Inc iLevel
+      cVirtualPos[iLevel] = 0
+      
+    Else If sLine = "}"
+      Dec iLevel
+    Else If sLine Begins "MoveScaled(" Then
+      aCoord = Split(Mid$(sLine, 12, -1))
+      If aCoord.Count = 4 Then
+        fW = CFloat(aCoord[2])
+        fH = CFloat(aCoord[3])
+        If fW <= 3 Then Inc fW
+        If fH <= 3 Then Inc fH
+        sFullLine = "MoveScaled(" & aCoord[0] & "," & aCoord[1] & "," & CStr(fW) & "," & CStr(fH) & ")"
+      Endif
+    Else If sLine Begins "Border =" Then
+      If sClass = "Form" Then
+        Select Case Trim(Scan(sLine, "*=*")[1])
+          Case "Window.None"
+            sFullLine = "Border = False"
+          Case "Window.Resizable"
+            Continue
+          Case "Window.Fixed"
+            sFullLine = "Resizable = False"
+        End Select
+      Endif
+    Else If sLine Begins "List = " & Chr$(34) Then
+      If sClass = "ListBox" Or If sClass = "ComboBox" Then
+        sVal = Unquote$(Trim(Mid$(sLine, 7)))
+        aVal = Split(sVal, "\n")
+        sFullLine = "List = " & CControl.StringArrayPropertyToString(aVal, True)
+      Endif
+    Else If sLine = "Text = (\"\")" Then
+      Continue
+    Else If sLine = "#(Scaled) = False" Then
+      sFullLine = "Scaled = False"
+    Else If sLine Begins "URL =" Then
+      If sClass = "URLLabel" Then Continue
+    Else If sLine Begins "#X =" Then
+      sFullLine = "#MoveScaled(" & cVirtualPos[iLevel - 1] & "," & cVirtualPos[iLevel - 1] & ")"
+      Inc cVirtualPos[iLevel - 1]
+    Else If sLine Begins "#Y =" Then
+      Continue
+    Else
+      $aLine.Add(sFullLine)
+      Continue
+    Endif
+    
+    If Left(sFullLine) <> " " And If iIndent > 0 Then sFullLine = Space$(iIndent) & sFullLine
+    $aLine.Add(sFullLine)
+    
+  Wend
+  
+  File.Save(sPath, $aLine.Join("\n"))
+  
+End
+
+Private Sub ConvertClass(sPath As String)
+  
+  
+  
+End
+
+
+Public Sub ConvertFile(sPath As String)
+  
+  Select Case File.Ext(sPath)
+    
+    Case "module", "class"
+      ConvertClass(sPath)
+    Case "form"
+      ConvertForm(sPath)
+    
+  End Select
+  
+End
+
+Public Sub ConvertComponent(sComp As String) As String[]
+  
+  Select Case sComp
+    Case "gb.qt"
+      Return ["gb.image", "gb.qt4"]
+    Case "gb.qt.ext"
+      Return ["gb.qt4.ext"]
+    Case "gb.qt.kde.html"
+      Return ["gb.qt4.webkit"]
+    Case "gb.gtk"
+      Return ["gb.image", "gb.gtk"]
+    Case "gb.gui"
+      Return ["gb.image", "gb.gui"]
+    Case "gb.gtk.svg"
+      Return New String[]
+    Case "gb.image"
+      Return ["gb.image", "gb.image.effect"]
+    Default
+      Return [sComp]
+  End Select
+  
+End
+

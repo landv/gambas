@@ -654,7 +654,7 @@ gPicture *gPicture::copy(int x, int y, int w, int h)
   else if (_type == MEMORY)
   {
   	GdkPixbuf *buf;
-  	if (w == width() && h == height())
+  	if (x == 0 && y == 0 && w == width() && h == height())
   		buf = gdk_pixbuf_copy(img);
   	else
   	{
