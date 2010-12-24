@@ -52,11 +52,13 @@ Private Sub ConvertForm(sPath As String)
   Dim sGroup As String
   Dim iLevel As Integer
   Dim cVirtualPos As New Collection
+  Dim sNewClass As String
+  Dim sProp As String
   
   $aLine = New String[]
   hFile = Open sPath 
   Line Input #hFile, sFullLine
-  If sFullLine <> Project.FORM_MAGIC_2 Then Return
+  'If sFullLine <> Project.FORM_MAGIC_2 Then Return
   $aLine.Add(Project.FORM_MAGIC)
   While Not Eof(hFile)
     Line Input #hFile, sFullLine
@@ -87,8 +89,14 @@ Private Sub ConvertForm(sPath As String)
       Endif
       
       If sClass = "URLLabel" Then
-        sFullLine = "{ " & sName & " Label " & sGroup
+        sNewClass = "Label"
+      Else If sClass = "WebBrowser" Then
+        sNewClass = "WebView"
+      Else
+        sNewClass = sClass
       Endif
+      
+      sFullLine = "{ " & sName & " " & sNewClass & " " & sGroup
       
       Inc iLevel
       cVirtualPos[iLevel] = 0
@@ -104,37 +112,44 @@ Private Sub ConvertForm(sPath As String)
         If fH <= 3 Then Inc fH
         sFullLine = "MoveScaled(" & aCoord[0] & "," & aCoord[1] & "," & CStr(fW) & "," & CStr(fH) & ")"
       Endif
-    Else If sLine Begins "Border =" Then
-      If sClass = "Form" Then
-        Select Case Trim(Scan(sLine, "*=*")[1])
-          Case "Window.None"
-            sFullLine = "Border = False"
-          Case "Window.Resizable"
-            Continue
-          Case "Window.Fixed"
-            sFullLine = "Resizable = False"
-        End Select
-      Endif
-    Else If sLine Begins "List = " & Chr$(34) Then
-      If sClass = "ListBox" Or If sClass = "ComboBox" Then
-        sVal = Unquote$(Trim(Mid$(sLine, 7)))
-        aVal = Split(sVal, "\n")
-        sFullLine = "List = " & CControl.StringArrayPropertyToString(aVal, True)
-      Endif
-    Else If sLine = "Text = (\"\")" Then
-      Continue
-    Else If sLine = "#(Scaled) = False" Then
-      sFullLine = "Scaled = False"
-    Else If sLine Begins "URL =" Then
-      If sClass = "URLLabel" Then Continue
-    Else If sLine Begins "#X =" Then
-      sFullLine = "#MoveScaled(" & cVirtualPos[iLevel - 1] & "," & cVirtualPos[iLevel - 1] & ")"
-      Inc cVirtualPos[iLevel - 1]
-    Else If sLine Begins "#Y =" Then
+    Else If sLine Begins "'Move" Then
       Continue
     Else
-      $aLine.Add(sFullLine)
-      Continue
+      
+      sProp = ""
+      Try sProp = Scan(sLine, "* = *")[0]
+      
+      If sProp = "Border" Then
+        If sClass = "Form" Then
+          Select Case Trim(Scan(sLine, "*=*")[1])
+            Case "Window.None"
+              sFullLine = "Border = False"
+            Case "Window.Resizable"
+              Continue
+            Case "Window.Fixed"
+              sFullLine = "Resizable = False"
+          End Select
+        Endif
+      Else If sLine Begins "List = " & Chr$(34) Then
+        If sClass = "ListBox" Or If sClass = "ComboBox" Then
+          sVal = Unquote$(Trim(Mid$(sLine, 7)))
+          aVal = Split(sVal, "\n")
+          sFullLine = "List = " & CControl.StringArrayPropertyToString(aVal, True)
+        Endif
+      Else If sLine = "Text = (\"\")" Then
+        Continue
+      Else If sLine = "#(Scaled) = False" Then
+        sFullLine = "Scaled = False"
+      Else If sProp = "URL" Then
+        If sClass = "URLLabel" Then Continue
+      Else If sProp = "#X" Then
+        sFullLine = "#MoveScaled(" & cVirtualPos[iLevel - 1] & "," & cVirtualPos[iLevel - 1] & ")"
+        Inc cVirtualPos[iLevel - 1]
+      Else If sProp = "#Y" Then
+        Continue
+      Else If sClass = "WebBrowser" Then
+        If ["Java", "JavaScript", "Path", "Plugins", "Zoom"].Exist(sProp) Then Continue
+      Endif
     Endif
     
     If Left(sFullLine) <> " " And If iIndent > 0 Then sFullLine = Space$(iIndent) & sFullLine
