@@ -736,6 +736,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
   Dim hPict As Picture
   Dim hStartup As Picture
   Dim sKey As String
+  Dim sCacheKey As String
   Dim bLink As Boolean
   Dim sIcon As String
   Dim sExt As String
@@ -880,7 +881,8 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
     'hPict = NULL
     'IF NOT bNoStartup THEN hPict = Picture[sKey]
     
-    Try hPict = Picture[sKey]
+    sCacheKey = Replace(sKey, "icon:/", "$/")
+    Try hPict = Picture[sCacheKey]
     If Not hPict Then 
       
       If sModule Then
@@ -908,7 +910,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
       
       hPict = hImage.Picture
       
-      If Not bNoStartup Then Picture[sKey] = hPict
+      If Not bNoStartup Then Picture[sCacheKey] = hPict
       
     Endif  
     

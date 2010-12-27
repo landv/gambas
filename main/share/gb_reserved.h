@@ -189,6 +189,7 @@ typedef
 		RS_P_IF,
 		RS_P_ELSE,
 		RS_P_ENDIF,
+		RS_P_CONST,
 
 		RS_COLON,
 		RS_SCOLON,

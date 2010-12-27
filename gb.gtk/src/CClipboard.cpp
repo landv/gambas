@@ -480,11 +480,11 @@ BEGIN_METHOD(CDRAG_show, GB_OBJECT control; GB_INTEGER x; GB_INTEGER y; GB_INTEG
 	if (GB.CheckObject(VARG(control)))
 		return;
 		
-	if (!gDrag::isActive())
+	/*if (!gDrag::isActive())
 	{
 		GB.Error("No undergoing drag");
 		return;
-	}
+	}*/
 
 	if (MISSING(x) || MISSING(y) || MISSING(w) || MISSING(h))
 		gDrag::show(((CWIDGET *)VARG(control))->widget);

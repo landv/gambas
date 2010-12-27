@@ -9,12 +9,15 @@ Public Sub Main()
   Dim sPath As String
   Dim sTheme As String
   Dim sSize As String
+  Dim sTemplate As String
+  Dim sExt As String
   
   hFile = Open "~/gambas/3.0/trunk/comp/src/gb.form/map/gnome.map"
   
   Try Mkdir "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock/16"
   Try Mkdir "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock/22"
   Try Mkdir "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock/32"
+  Try Mkdir "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock/scalable"
   
   While Not Eof(hFile)
   
@@ -22,16 +25,24 @@ Public Sub Main()
     aLine = Scan(sLine, "* *")
     If aLine.Count < 2 Then Continue
     sIcon = aLine[0]
+    If Left(sIcon) = ";" Then Continue
     sPath = Trim(aLine[1])
     If Not sPath Then Continue
+    sPath = Split(sPath, ";")[0]
     
     Print sIcon
-    sIcon &= ".png"
     
-    For Each sTheme In ["gnome", "Tango", "hicolor"]
-      For Each sSize In ["16", "22", "32"]
+    For Each sTheme In ["Tango", "gnome", "hicolor"]
+      For Each sSize In ["16", "22", "32", "scalable"]
     
-        Try Copy Subst("/usr/share/icons/&1/&2x&2", sTheme, sSize) &/ sPath To "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon
+        If sSize = "scalable" Then
+          sTemplate = "/usr/share/icons/&1/&2"
+          sExt = ".svg"
+        Else
+          sTemplate = "/usr/share/icons/&1/&2x&2"
+          sExt = ".png"
+        Endif
+        Try Copy Subst(sTemplate, sTheme, sSize) &/ File.SetExt(sPath, sExt) To "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & sExt
     
       Next
     Next

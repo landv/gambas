@@ -161,9 +161,23 @@ Private Sub ConvertForm(sPath As String)
   
 End
 
+'Private 
+
 Private Sub ConvertClass(sPath As String)
   
+  Dim hFile As File
+  Dim sLine As String
   
+  $aLine = New String[]
+  
+  hFile = Open sPath
+  While Not Eof(hFile)
+    Line Input #hFile, sLine
+    sLine = Highlight.Purge(sLine)
+    Highlight.Analyze(sLine)
+    
+  Wend
+  Close #hFile
   
 End
 

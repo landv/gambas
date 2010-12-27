@@ -1723,7 +1723,7 @@ _QUIT:
 			break;
 			
 		case 1:
-			if (EXEC_debug && CP && CP->component == COMPONENT_main)
+			if (EXEC_debug && CP) // && CP->component == COMPONENT_main)
 				DEBUG.Breakpoint(0);
 			break;
 			

@@ -3,10 +3,18 @@
 Export
 
 Class Image
+Class SvgImage
 
-Static Public Sub Load(sPath As String) As Image
+Static Public Sub LoadImage(sKey As String, iSize As Integer) As Image
   
   'Debug sPath
-  Return Image.Load("stock" &/ sPath)
+  Return Image.Load("stock" &/ CStr(iSize) &/ sKey & ".png")
+  
+End
+
+Static Public Sub LoadSvgImage(sKey As String) As SvgImage
+  
+  'Debug sPath
+  Return SvgImage.Load("stock" &/ "scalable" &/ sKey & ".svg")
   
 End

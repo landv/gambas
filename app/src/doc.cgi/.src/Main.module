@@ -891,29 +891,6 @@ Private Function Encode(sText As String) As String
   
   For Each sStr In Split(RTrim(sText), "\n")
     
-    If Left$(sStr) = "{" And If Len(sStr) >= 2 Then
-      
-      EnterSection(Trim(Mid$(sStr, 2)))
-      Continue
-      
-    Else If RTrim(sStr) = "}" Then
-      
-      LeaveSection()
-      Continue
-      
-    Endif
-    
-    If $iIgnore Then Continue
-    
-    If $iNoEncode Then
-      $sRes &= sStr & "\n"
-      Continue
-    Endif
-    
-    If $bCode Then
-      '$sRes &= HighlightCode(sStr) & "\n"
-    Endif
-    
     If $bVerbatim Then
       
       If sStr = "==" Then
@@ -940,6 +917,29 @@ Private Function Encode(sText As String) As String
       Endif
       Continue
       
+    Endif
+    
+    If Left$(sStr) = "{" And If Len(sStr) >= 2 Then
+      
+      EnterSection(Trim(Mid$(sStr, 2)))
+      Continue
+      
+    Else If RTrim(sStr) = "}" Then
+      
+      LeaveSection()
+      Continue
+      
+    Endif
+    
+    If $iIgnore Then Continue
+    
+    If $iNoEncode Then
+      $sRes &= sStr & "\n"
+      Continue
+    Endif
+    
+    If $bCode Then
+      '$sRes &= HighlightCode(sStr) & "\n"
     Endif
     
     If Not $bNoWiki Then
@@ -2761,15 +2761,24 @@ Private Function AutoLink(sStr As String) As String
             If rPage.Available Then
               If rPage!sPath <> $sPath Then
                 If Not cCache.Exist("#" & rPage!sPath) Then
+                  
+                  iInd = iWord + Len(sOrig)
+                  cCache["#" & rPage!sPath] = True
+                  iWord = 0
+                  nSpace = 0
+                  
+                  If Mid$(sStr, iInd, 2) = "()" Then
+                    If Not sTitle Then sTitle = GetTitle(rPage!sPath) 
+                    sTitle &= "()"
+                    iInd += 2
+                    sCar = Mid$(sStr, iInd, 1)
+                  Endif
+                  
                   If sTitle Then 
                     sRes &= "[" & MakeRelative(rPage!sPath) & "|" & sTitle & "]" & sCar
                   Else
                     sRes &= "[" & MakeRelative(rPage!sPath) & "]" & sCar
                   Endif
-                  cCache["#" & rPage!sPath] = True
-                  iInd = iWord + Len(sOrig)
-                  iWord = 0
-                  nSpace = 0
                   Continue
                   'sTitle = ""
                 Endif

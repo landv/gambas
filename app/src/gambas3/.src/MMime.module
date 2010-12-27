@@ -33,3 +33,24 @@ Public Sub GetName(sFormat As String) As String
   Endif
   
 End
+
+Public Sub UnEscapeURI(URL As String) As String
+  
+  Dim iInd As Integer
+  Dim sRes As String
+  Dim sCar As String
+  
+  For iInd = 1 To Len(URL)
+    sCar = Mid$(URL, iInd, 1)
+    If sCar = "%" Then 
+      sCar = Chr$(Val("&H" & Mid$(URL, iInd + 1, 2)))
+      iInd += 2
+    Else If sCar = "+" Then 
+      sCar = " "
+    Endif
+    sRes &= sCar
+  Next
+
+  Return sRes  
+  
+End

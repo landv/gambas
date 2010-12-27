@@ -138,6 +138,12 @@ static int get_symbol(const char *name, int len)
 	
 	if (compare_symbol("debug", name, len))
 		return JOB->debug;
+	
+	if (compare_symbol("true", name, len))
+		return TRUE;
+
+	if (compare_symbol("false", name, len))
+		return FALSE;
 
 	return FALSE;
 }
@@ -280,6 +286,9 @@ bool PREP_analyze(PATTERN *line)
 		_level--;
 		_ignore = _stack[_level].ignore;
 		_ignore_level = _stack[_level].ignore_level;
+	}
+	else if (PATTERN_is(*line, RS_P_CONST))
+	{
 	}
 	else
 		THROW(E_SYNTAX);

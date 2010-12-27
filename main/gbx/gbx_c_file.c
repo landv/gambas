@@ -427,7 +427,6 @@ END_METHOD
 static char *_dir;
 static char *_basename;
 static char *_ext;
-static char *_name = NULL;
 
 static void split_path(char *path)
 {
@@ -468,33 +467,24 @@ static void return_path(void)
 {
 	char *tmp = NULL;
 	int len = strlen(_dir);
+	char *test;
 	
-	STRING_add(&tmp, _dir, len);
-	
-	if (_name && *_name)
+	if (len) 
 	{
-		_basename = _name;
-		_ext = "";
-		_name = NULL;
+		STRING_add(&tmp, _dir, len);
+		test = _basename ? _basename : _ext;
+		if (tmp[len - 1] != '/' && *test != '/')
+			STRING_add(&tmp, "/", 1);
 	}
-
-	if (*_basename || *_ext)
+	
+	if (*_basename)
+		STRING_add(&tmp, _basename, 0);
+	
+	if (*_ext)
 	{
-		if (*_dir && _dir[len - 1] != '/')
-		{
-			if (*_basename)
-			{
-				if (*_basename != '/')
-					STRING_add(&tmp, "/", 1);
-				STRING_add(&tmp, _basename, 0);
-			}
-			else if (*_ext)
-				STRING_add(&tmp, "/", 1);
-		}
-		
-		if (*_ext && *_ext != '.')
+		if (*_ext != '.')
 			STRING_add(&tmp, ".", 1);
-		
+	
 		STRING_add(&tmp, _ext, 0);
 	}
 
@@ -543,7 +533,8 @@ BEGIN_METHOD(CFILE_set_name, GB_STRING path; GB_STRING new_name)
 	path = GB_ToZeroString(ARG(path));
 
 	split_path(path);
-	_name = GB_ToZeroString(ARG(new_name));
+	_basename = GB_ToZeroString(ARG(new_name));
+	_ext = "";
 	return_path();
 
 END_METHOD

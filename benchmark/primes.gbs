@@ -1,0 +1,56 @@
+#!/usr/bin/env gbs3
+
+Sub GetPrimes(N As Integer) As Integer[]
+
+  Dim aRes As New Integer[]
+  Dim S As Integer[]
+  Dim I, J, M As Integer
+  Dim iMRoot, iHalf As Integer
+ 
+  If N < 2 Then Return aRes
+
+  If N = 2 Then Return [ 2 ]
+
+  S = New Integer[(N - 3 + 1) \ 2]
+  For J = 3 To N Step 2
+    S[I] = J
+    Inc I
+  Next
+
+  iMRoot = Sqr(N)
+  iHalf = S.Count
+  I = 0
+  M = 3
+  
+  While M <= iMRoot
+  
+    If S[I] Then
+      J = (M * M - 3) \ 2
+      S[J] = 0
+      While J < iHalf
+	S[J] = 0
+	J += M
+      Wend
+    Endif
+
+    Inc I
+    M = 2 * I + 3
+
+  Wend
+
+  aRes.Add(2)
+  For Each I In S
+    If I Then aRes.Add(I)
+  Next
+
+  Return aRes
+
+End
+
+Dim aRes As Integer[]
+Dim I As Integer
+
+For I = 1 To 10
+  aRes = GetPrimes(10000000)
+  Print aRes.Count
+Next

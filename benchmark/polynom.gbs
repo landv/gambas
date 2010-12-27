@@ -1,0 +1,33 @@
+#!/usr/bin/env gbs3
+
+Sub Test(X As Float) As Float
+
+  Dim Mu As Float = 10.0
+  Dim Pu, Su As Float
+  Dim I, J, N As Integer
+  Dim aPoly As New Float[100]
+
+  N = 500000
+
+  For I = 0 To N - 1
+    For J = 0 To 99
+      Mu =  (Mu + 2.0) / 2.0
+      aPoly[J] = Mu
+    Next
+    Su = 0.0
+    For J = 0 To 99
+      Su = X * Su + aPoly[J]
+    Next
+    Pu += Su
+  Next
+
+  Return Pu
+
+End
+
+Dim I as Integer
+
+For I = 1 To 10
+  Print Test(0.2)
+Next
+

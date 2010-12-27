@@ -552,7 +552,11 @@ bool CDRAG_drag_drop(QWidget *w, CWIDGET *control, QDropEvent *e)
 
 	GB.Raise(control, EVENT_Drop, 0);
 
+	if (!CDRAG_dragging)
+		hide_frame(control);
+	
 	CDRAG_clear(false);
+	
 	return true;
 }
 
@@ -722,11 +726,11 @@ BEGIN_METHOD(CDRAG_show, GB_OBJECT control; GB_INTEGER x; GB_INTEGER y; GB_INTEG
 	if (GB.CheckObject(VARG(control)))
 		return;
 		
-	if (!CDRAG_dragging)
+	/*if (!CDRAG_dragging)
 	{
 		GB.Error("No undergoing drag");
 		return;
-	}
+	}*/
 
 	if (MISSING(x) || MISSING(y) || MISSING(w) || MISSING(h))
 		show_frame((CWIDGET *)VARG(control), 0, 0, -1, -1);

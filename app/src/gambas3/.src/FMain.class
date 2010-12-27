@@ -1311,6 +1311,8 @@ Public Sub tvwProject_DragMove()
       If $sKey <> Project.KEY_SOURCE Then
         If Not Project.IsSourcePath($sKey) Then Goto STOP_EVENT
       Endif
+    Else If Drag.Format = MMime.URI Then
+      If Not IsDataKey($sKey) Then Goto STOP_EVENT
     Else
       Goto STOP_EVENT
     Endif
@@ -1335,22 +1337,70 @@ Public Sub tvwProject_DragMove()
   
 End
 
+Private Sub AddDataFiles(aFile As String[], bLink As Boolean)
+
+  Dim sPath As String
+  Dim sDir As String
+  Dim sName As String
+  
+  Inc Application.Busy
+  
+  sDir = GetCurrentDir($sKey)
+  
+  For Each sPath In aFile
+    
+    If Not (sPath Begins "file://") Then Continue
+    
+    sPath = MMime.UnEscapeURI(Mid$(sPath, 8))
+    If IsDir(sPath) Then Continue
+    
+    sName = Project.GetUniqueName(sDir, File.Name(sPath))
+    Project.InsertFile(sName, sDir, sPath, True, bLink)
+      
+  Next
+  
+  Project.SelectKey(sDir &/ sName)
+  
+  Dec Application.Busy
+  
+Catch
+  
+  Application.Busy = 0
+  ShowError(("Unable to drop file into the project.") & "\n\n" & Error.Text, $sKey)
+  
+End
+
+
 Public Sub tvwProject_Drop()
   
+  Dim aFile As String[]
   Dim sSrc As String = Drag.Data
   
-  'DEBUG Drag.Format;; Drag.Data
+  'Debug Drag.Format;; Drag.Data
   
-  If Drag.Action = Drag.Move Then
-    Project.MoveFile(sSrc, GetCurrentDir($sKey) &/ File.Name(sSrc), Drag.Format = MMime.CLASS)
-  Else If Drag.Action = Drag.Copy Then
-    If Drag.Format <> MMime.CLASS Then
-      Project.CopyFile(sSrc, GetCurrentDir($sKey) &/ File.Name(sSrc))
+  If Drag.Format = MMime.URI Then
+    
+    aFile = Split(Replace(sSrc, "\r", ""), "\n")
+    If Drag.Action = Drag.Copy Or If Drag.Action = Drag.Move Then
+      AddDataFiles(aFile, False)
+    Else If Drag.Action = Drag.Link Then
+      AddDataFiles(aFile, True)
     Endif
-  Else If Drag.Action = Drag.Link Then
-    If Drag.Format <> MMime.CLASS Then
-      Project.LinkFile(sSrc, GetCurrentDir($sKey) &/ File.Name(sSrc))
+    
+  Else
+  
+    If Drag.Action = Drag.Move Then
+      Project.MoveFile(sSrc, GetCurrentDir($sKey) &/ File.Name(sSrc), Drag.Format = MMime.CLASS)
+    Else If Drag.Action = Drag.Copy Then
+      If Drag.Format <> MMime.CLASS Then
+        Project.CopyFile(sSrc, GetCurrentDir($sKey) &/ File.Name(sSrc))
+      Endif
+    Else If Drag.Action = Drag.Link Then
+      If Drag.Format <> MMime.CLASS Then
+        Project.LinkFile(sSrc, GetCurrentDir($sKey) &/ File.Name(sSrc))
+      Endif
     Endif
+    
   Endif
   
 End
