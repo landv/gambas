@@ -136,14 +136,14 @@ static int get_symbol(const char *name, int len)
 	if (compare_symbol("version", name, len) || compare_symbol("gambas", name, len))
 		return compare_value(NULL);
 	
-	if (compare_symbol("debug", name, len))
-		return JOB->debug;
+	/*if (compare_symbol("debug", name, len))
+		return JOB->debug;*/
 	
-	if (compare_symbol("true", name, len))
+	/*if (compare_symbol("true", name, len))
 		return TRUE;
 
 	if (compare_symbol("false", name, len))
-		return FALSE;
+		return FALSE;*/
 
 	return FALSE;
 }
@@ -171,6 +171,12 @@ static int get_value(void)
 		value = get_symbol(sym->name, sym->len);
 		return value;
 	}
+	else if (is_current(RS_FALSE))
+		return 0;
+	else if (is_current(RS_TRUE))
+		return 1;
+	else if (is_current(RS_DEBUG))
+		return JOB->debug;
 	
 	return 0;
 }
