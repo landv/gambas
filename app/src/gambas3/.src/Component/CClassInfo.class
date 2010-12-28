@@ -303,9 +303,13 @@ End
 
 Public Function Inherits(sClass As String) As Boolean
 
+  Dim hClass As CClassInfo
+  
   If {Parent} = sClass Then Return True
   If Not Parent Then Return False
-  Return CComponent.Classes[ParentComponent &/ Parent].Inherits(sClass)
+  
+  hClass = CComponent.Classes[ParentComponent &/ Parent] 
+  Return hClass.Inherits(sClass)
 
 End
 

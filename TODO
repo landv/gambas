@@ -3,7 +3,7 @@ TODO list: always incomplete :-)
 
 COMPILER
 
-- Compilation error must indicate the column, not only the line.
+- Compilation error must always indicate the column, not sometimes only the line.
 - Warn for unused local or private variables.
 
 INTERPRETER
@@ -23,6 +23,7 @@ INTERPRETER
 - MOD with floats.
 - Make the error information associated with the current stack frame.
 - Timer.TimeLeft.
+- NOT LIKE, NOT BEGINS and NOT ENDS.
 
 DEVELOPMENT ENVIRONMENT
 
@@ -40,6 +41,7 @@ GUI RELATED STUFF
 - GridView automatic column resizing by code in gb.gtk, and in gb.qt.
 - Moveable tabs.
 - ListView and GridView selection interface should be the same.
+- Desktop.X and Desktop.Y in gb.gtk and gb.qt4.
 
 DESKTOP COMPONENT
 

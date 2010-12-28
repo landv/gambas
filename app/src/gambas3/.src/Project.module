@@ -217,7 +217,12 @@ Public Sub Main()
   Dim iInd As Integer
   Dim sArg As String
   
-  Application.Theme = Settings["/Theme"]
+  Select Case LCase(Settings["/Theme"])
+    Case "kde"
+      Application.Theme = "kde4"
+    Case "gnome"
+      Application.Theme = "gnome"
+  End Select
   'DB.Debug = True
   
   OUTPUT_FILE = Temp$()
@@ -379,6 +384,7 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
   Dim hLock As Stream
   Dim aDir As String[]
   Dim iStep As Integer
+  Dim bStopConvert As Boolean
   
   If Not Exist(sDir &/ ".project") Then 
     FMain.ShowError(("This project does not exist.") & "\n\n" & sDir)
@@ -448,6 +454,7 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
       Return True
     Endif
     
+    bStopConvert = True
     FConvert.Start(("Converting project structure..."))
     
     ' Needed for MoveFile()
@@ -462,8 +469,6 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
       Inc iStep
       FConvert.SetProgress(iStep / aDir.Count)
     Next
-    
-    FConvert.Stop
     
   Endif
   
@@ -504,6 +509,8 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
     If ConvertProject() Then Goto _CANCEL
   Endif
   
+  If bStopConvert Then FConvert.Stop
+  
   LastOpenedFiles
   
   If ReadOnly Then FMain.ShowWarning(("This project is read-only."))
@@ -512,6 +519,8 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
   Return
   
 Catch
+  
+  If bStopConvert Then FConvert.Stop
   
   If Error.Text Then
     Message.Error(("Cannot open project file :\n") & sDir & "\n\n" & Error.Text & "\n" & Error.Where)
@@ -4998,9 +5007,27 @@ Private Sub ConvertProject() As Boolean
   Dim sPath As String
   Dim iStep As Integer
   
-  FConvert.Start(("Project files conversion..."))
+  FConvert.Start(("Project cleanup..."))
+  
+  Inc $iNoRefresh
+  Project.CleanUp
+  Dec $iNoRefresh
+  
+  FConvert.SetMessage(("Project files conversion..."))
   
   For Each sPath In $cSourceDir
+    
+    If File.Ext(sPath) <> "form" Then Continue
+    
+    MConvert.ConvertFile(sPath)
+    Inc iStep
+    FConvert.SetProgress(iStep / $cSourceDir.Count)
+    
+  Next
+  
+  For Each sPath In $cSourceDir
+    
+    If File.Ext(sPath) = "form" Then Continue
     
     MConvert.ConvertFile(sPath)
     Inc iStep
@@ -5013,7 +5040,8 @@ Private Sub ConvertProject() As Boolean
 Catch
   
   FConvert.Stop
-  Message.Error(Subst(("Unable to convert &1"), File.Name(sPath)) & "\n\n" & Error.Text)
+  Application.Busy = 0
+  Message.Error("<b>" & Subst(("Unable to convert &1"), File.Name(sPath)) & "</b><p>" & Error.Text & "<br>" & Error.Where)
   Return True
   
 End

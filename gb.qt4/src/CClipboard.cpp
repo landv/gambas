@@ -552,22 +552,22 @@ bool CDRAG_drag_drop(QWidget *w, CWIDGET *control, QDropEvent *e)
 
 	GB.Raise(control, EVENT_Drop, 0);
 
-	if (!CDRAG_dragging)
+	if (!CDRAG_dragging) // DnD run outside of the application
+	{
+		GB.Unref(&CDRAG_destination);
 		hide_frame(control);
+	}
 	
 	CDRAG_clear(false);
 	
 	return true;
 }
 
-
-
 BEGIN_METHOD(CDRAG_call, GB_OBJECT source; GB_VARIANT data; GB_STRING format)
 
   GB.ReturnObject(CDRAG_drag((CWIDGET *)VARG(source), &VARG(data), MISSING(format) ? NULL : ARG(format)));
 
 END_METHOD
-
 
 BEGIN_METHOD_VOID(CDRAG_exit)
 

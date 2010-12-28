@@ -1755,7 +1755,7 @@ Private Function IsTypeSymbol(sPattern As String, iType As Integer) As Boolean
   
 End
 
-Private Function GetExpressionType(aExpr As String[], aType As Integer[], bPointAfter As Boolean) As String
+Public Function GetExpressionType(aExpr As String[], aType As Integer[], bPointAfter As Boolean) As String
   
   Dim aWith As String[]
   Dim iInd As Integer

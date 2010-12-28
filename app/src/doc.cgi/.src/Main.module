@@ -891,6 +891,20 @@ Private Function Encode(sText As String) As String
   
   For Each sStr In Split(RTrim(sText), "\n")
     
+    If Left$(sStr) = "{" And If Len(sStr) >= 2 Then
+      
+      EnterSection(Trim(Mid$(sStr, 2)))
+      Continue
+      
+    Endif
+      
+    If RTrim(sStr) = "}" Then
+      
+      LeaveSection()
+      Continue
+      
+    Endif
+    
     If $bVerbatim Then
       
       If sStr = "==" Then
@@ -903,6 +917,7 @@ Private Function Encode(sText As String) As String
           $sRes &= "<hr>"
           sStr = Mid$(sStr, 5)
         Endif
+        If Left(sStr) = "\\" Then sStr = Mid$(sStr, 2)
         If $sSection = "example" Or If $sSection = "code" Then
           sStr = EncodeHTML(sStr)
           iPos = Len(sStr) - Len(LTrim(sStr))
@@ -915,18 +930,6 @@ Private Function Encode(sText As String) As String
           $sRes &= sStr & "\n"
         Endif
       Endif
-      Continue
-      
-    Endif
-    
-    If Left$(sStr) = "{" And If Len(sStr) >= 2 Then
-      
-      EnterSection(Trim(Mid$(sStr, 2)))
-      Continue
-      
-    Else If RTrim(sStr) = "}" Then
-      
-      LeaveSection()
       Continue
       
     Endif
@@ -1487,8 +1490,8 @@ Private Sub PrintTitle(sTitle As String)
     If $hSym Then
       If Not $hSym.IsHidden() Then Print $hClass.Name; ".";
     Endif
-    iPos = InStr(sTitle, "#")
-    If iPos Then sTitle = Left(sTitle, iPos - 1)
+    iPos = RInStr(sTitle, "#")
+    If iPos > 1 Then sTitle = Left(sTitle, iPos - 1)
     Print EncodeHTML(sTitle)
     If $hClass Then
       Print " ("; $hComp.Key; ")";
@@ -1994,8 +1997,8 @@ Private Function GetTitle(sPath As String, Optional bVersion As Boolean) As Stri
     '  RETURN GetTitle(File.Dir(sPath)) & "." & rPage!sTitle
     'ELSE
     sTitle = rPage!sTitle
-    iPos = InStr(sTitle, "#")
-    If iPos Then 
+    iPos = RInStr(sTitle, "#")
+    If iPos > 1 Then 
       sVer = Mid$(sTitle, iPos + 1)
       sTitle = Left(sTitle, iPos - 1)
       If bVersion Then

@@ -1,29 +1,15 @@
 ' Gambas module file
 
 Private $aLine As String[]
+Private $sId As String
+Private $hForm As FEditor
 
-' Public Sub UpdateForms()
-'   
-'   Dim sForm As String
-'   Dim hForm As FForm
-'   
-'   Inc Application.Busy
-'   
-'   For Each sForm In $cSourceDir
-'     If Not CFamily.List.Exist(File.Ext(sForm)) Then Continue
-'     hForm = Project.LoadFile(sForm)
-'     hForm.Modify
-'     hForm.Save
-'   Next
-'   
-'   Dec Application.Busy
-'   
-' Catch 
-'   
-'   Dec Application.Busy
-'   FMain.ShowError(("Unable to update all forms.") & "\n\n" & Error.Text)
-'   
-' End
+Private $aIsType As String[] = ["IsBoolean", "IsByte", "IsShort", "IsInteger", "IsLong", "IsSingle", "IsFloat", "IsDate", "IsString", "IsObject"]
+
+Private $aTestFunc As String[] = 
+  ["Boolean?", "Byte?", "Short?", "Integer?", "Long?", "Single?", "Float?", "Date?", "String?", "Object?", "Number?", "Null?", "Dir?",
+    "Ascii?", "Letter?", "LCase?", "Lower?", "UCase?", "Upper?", "Digit?", "Hexa?", "Space?", "Blank?", "Punct?"]
+
 
 Private Sub AddDeclarationToClass(sPath As String, sDeclare As String)
   
@@ -54,6 +40,8 @@ Private Sub ConvertForm(sPath As String)
   Dim cVirtualPos As New Collection
   Dim sNewClass As String
   Dim sProp As String
+  Dim sValue As String
+  Dim aScan As String[]
   
   $aLine = New String[]
   hFile = Open sPath 
@@ -74,9 +62,9 @@ Private Sub ConvertForm(sPath As String)
       sClass = aVal[1]
       sGroup = ""
       Try sGroup = aVal[2]
-      If Left(sClass) = "#" Then sClass = Mid$(sClass, 2)
+      'If Left(sClass) = "#" Then sClass = Mid$(sClass, 2)
       
-      If sClass = "TrayIcon" Then
+      If sClass = "#TrayIcon" Then
         
         AddDeclarationToClass(File.SetExt(sPath, "class"), 
           If(Project.ControlPublic, "Public", "Private") & " " & sName & " As TrayIcon = New TrayIcon As " & Quote(If(sGroup, sGroup, sName)))
@@ -116,8 +104,10 @@ Private Sub ConvertForm(sPath As String)
       Continue
     Else
       
+      aScan = Scan(sLine, "* = *")
       sProp = ""
-      Try sProp = Scan(sLine, "* = *")[0]
+      Try sProp = aScan[0]
+      Try sValue = aScan[1]
       
       If sProp = "Border" Then
         If sClass = "Form" Then
@@ -129,6 +119,10 @@ Private Sub ConvertForm(sPath As String)
             Case "Window.Fixed"
               sFullLine = "Resizable = False"
           End Select
+        Endif
+      Else If sProp == "ToolBox" Then
+        If sClass = "Form" Then
+          sFullLine = "Utility = " & sValue
         Endif
       Else If sLine Begins "List = " & Chr$(34) Then
         If sClass = "ListBox" Or If sClass = "ComboBox" Then
@@ -161,24 +155,310 @@ Private Sub ConvertForm(sPath As String)
   
 End
 
-'Private 
+' Private Sub CheckAnalyze(aCheck As String[]) As Boolean
+'   
+'   Dim I, J As Integer
+'   Dim aSym As String[] = Highlight.Symbols
+'   Dim bNot As Boolean
+'   Dim bTest As Boolean
+'   
+'   Highlight.Analyze(sLine)
+'   
+'   Do
+'     If J >= aSym.Count And If I >= aCheck.Count Then Return False
+'     If J >= aSym.Count Or If I >= aCheck.Count Then Return True
+'     
+'     sCheck = aCheck[I]
+'     If Left(sCheck) = "!" Then
+'       bTest = Not (aSym[J] Like Mid$(sCheck, 2))
+'     Else
+'       bTest = aSym[J] Like sCheck
+'     Endif
+'     
+'     If bTest Then
+'       Inc I
+'     Else
+'       J -= I
+'       I = 0
+'     Endif
+'     Inc J
+'   Loop
+'   
+' End
+
+
+Private Sub CheckArrayInstanciation(sLine As String) As String
+  
+  Dim aSym As String[]
+  Dim iPos As Integer
+  
+  aSym = Highlight.Analyze(sLine, True)
+  
+  If aSym.Count < 6 Then Return
+  If Not ["DIM", "PRIVATE", "PUBLIC"].Exist(aSym[0], gb.IgnoreCase) Then Return
+  If Highlight.Types[1] <> Highlight.Symbol Then Return
+  If UCase(aSym[2]) <> "AS" Then Return
+  If Highlight.Types[3] <> Highlight.DataType Then Return
+  If aSym[4] <> "[" Then Return
+  If aSym[5] = "]" Then Return
+
+  iPos = InStr(sLine, "AS " & aSym[3], 1, gb.IgnoreCase)
+  sLine = Left(sLine, iPos - 1) & "As New " & Mid$(sLine, iPos + 3)
+  
+  $sId = "ARRD"
+  Return sLine
+  
+Catch
+  
+End
+
+Private Sub CheckOpen(sLine As String) As String
+  
+  Dim aSym As String[]
+  Dim iPos As Integer
+  Dim sVar As String
+  
+  aSym = Highlight.Analyze(sLine, True)
+  
+  If aSym.Count < 5 Then Return
+  If UCase(aSym[0]) <> "OPEN" Then Return
+
+  iPos = InStr(sLine, " AS ", 1, gb.IgnoreCase)
+  If iPos = 0 Then Return
+  
+  sVar = Mid$(sLine, iPos + 4)
+  If Left(sVar) = "#" Then sVar = Trim(Mid$(sVar, 2))
+  sLine = sVar & " = " & Left(sLine, iPos - 1)
+  
+  $sId = "OPEN"
+  Return sLine
+  
+Catch
+  
+End
+
+Private Sub FindRightBrace(aSym As String[], iPos As Integer) As Integer
+  
+  Dim iLevel As Integer
+  
+  While iPos < aSym.Count
+    Select Case aSym[iPos]
+      Case ")", "]"
+        Dec iLevel
+        If iLevel = 0 Then Return iPos
+      Case "(", "["
+        Inc iLevel
+    End Select
+    Inc iPos
+  Wend
+  
+  Return -1
+  
+End
+
+Private Sub CheckQuestionMark(sLine As String) As String
+  
+  Dim aSym As String[]
+  Dim I As Integer
+  Dim bFound As Boolean
+  
+  aSym = Highlight.Analyze(sLine, True)
+  
+  For I = aSym.Max - 1 DownTo 0
+    If $aTestFunc.Exist(aSym[I], gb.IgnoreCase) And aSym[I + 1] = "(" Then
+      sLine = Left(sLine, Highlight.Positions[I]) & "Is" & Left(aSym[I], -1) & Mid$(sLine, Highlight.Positions[I + 1] + 1) 
+      bFound = True
+    Endif
+  Next
+  
+  If Not bFound Then Return
+
+  $sId = "QUES"
+  Return sLine
+  
+Catch
+  
+End
+
+
+Private Sub CheckIsType(sLine As String) As String
+  
+  Dim aSym As String[]
+  Dim I, J As Integer
+  Dim bFound As Boolean
+  
+  aSym = Highlight.Analyze(sLine, True)
+  
+  For I = aSym.Max DownTo 0 
+    If $aIsType.Exist(aSym[I], gb.IgnoreCase) Then 
+      J = FindRightBrace(aSym, I + 1)
+      If J < 0 Then Continue
+      sLine = Left(sLine, Highlight.Positions[I]) & "TypeOf" & Mid$(sLine, Highlight.Positions[I + 1] + 1, Highlight.Positions[J] - Highlight.Positions[I + 1] + 1) & " = gb." & Mid$(aSym[I], 3) & " " & Mid$(sLine, Highlight.Positions[J] + 2) 
+      bFound = True
+    Else If aSym[I] == "IsNumber" Then
+      J = FindRightBrace(aSym, I + 1)
+      If J < 0 Then Continue
+      sLine = Left(sLine, Highlight.Positions[I]) & "TypeOf" & Mid$(sLine, Highlight.Positions[I + 1] + 1, Highlight.Positions[J] - Highlight.Positions[I + 1] + 1) & " <= gb.Float " & Mid$(sLine, Highlight.Positions[J] + 2) 
+      bFound = True
+    Endif
+  Next
+  
+  If Not bFound Then Return
+  
+  $sId = "ISTY"
+  Return sLine
+  
+Catch
+  
+End
+
+
+Private Sub CheckQuoteShell(sLine As String) As String
+  
+  Dim aSym As String[]
+  Dim I As Integer
+  Dim bFound As Boolean
+  
+  aSym = Highlight.Analyze(sLine, True)
+  
+  For I = aSym.Max - 3 DownTo 0 
+    If aSym[I] = "Quote" And If aSym[I + 1] = "." And If aSym[I + 2] = "Shell" And If aSym[I + 3] = "(" Then
+      sLine = Left$(sLine, Highlight.Positions[I]) & "Shell$" & Mid$(sLine, Highlight.Positions[I + 3] + 1)
+      bFound = True
+    Endif
+  Next
+  
+  If Not bFound Then Return
+  
+  $sId = "QUOT"
+  Return sLine
+  
+End
+
+Private Sub CheckReplaceClassSymbol(sId As String, sLine As String, sClass As String, sSymbol As String, sNewSymbol As String, Optional bAllowAnonymous As Boolean) As String
+  
+  Dim aSym As String[]
+  Dim I As Integer
+  Dim bFound As Boolean
+  Dim sType As String
+  Dim aPos As Integer[]
+  Dim aType As Integer[]
+  Dim sRest As String
+  Dim hClass As CClassInfo
+  
+  aSym = Highlight.Analyze(sLine, False).Copy()
+  aType = Highlight.Types.Copy()
+  aPos = Highlight.Positions.Copy()
+  
+  For I = aSym.Max DownTo 1
+    
+    If aSym[I] == sSymbol And If aSym[I - 1] = "." Then
+      
+      sType = $hForm.GetExpressionType(aSym.Copy(0, I - 1), aType.Copy(0, I - 1), True)
+      
+      If Not sType Then
+        If bAllowAnonymous Then
+          sType = sClass
+        Else
+          Continue
+        Endif
+      Endif
+      
+      If sType <> sClass Then
+        hClass = CComponent.Classes[sType]
+        If Not hClass Then Continue
+        If Not hClass.Inherits(sClass) Then Continue
+      Endif
+      
+      sRest = Mid$(sLine, aPos[I] + Len(sSymbol) + 1)
+      If sId = "FNTH" And If sRest Begins "()" Then sRest = "(\"\")" & Mid$(sRest, 3)
+      sLine = Left$(sLine, aPos[I]) & sNewSymbol & sRest
+      bFound = True
+      
+    Endif
+    
+  Next
+  
+  If Not bFound Then Return
+  
+  $sId = sId
+  Return sLine
+  
+End
+
+
+
 
 Private Sub ConvertClass(sPath As String)
   
   Dim hFile As File
   Dim sLine As String
+  Dim hForm As FEditor
+  Dim hEditor As Editor
+  Dim iLine As Integer
+  Dim sOldLine As String
+  Dim sNewLine As String
+  Dim sIndent As String
   
   $aLine = New String[]
   
-  hFile = Open sPath
-  While Not Eof(hFile)
-    Line Input #hFile, sLine
-    sLine = Highlight.Purge(sLine)
-    Highlight.Analyze(sLine)
-    
-  Wend
-  Close #hFile
+  $hForm = Project.LoadFile(sPath)
+  hEditor = $hForm.Editor
   
+  For iLine = 0 To hEditor.Lines.Count - 1
+    
+    hEditor.Goto(iLine, 0)
+    sLine = hEditor.Lines[iLine].Text
+    
+    If Left(LTrim(sLine)) <> "'" Then
+      
+      sIndent = Space$(hEditor.GetIndent(sLine))
+      sLine = Trim(sLine)
+      
+      Do
+      
+        $sId = ""
+        
+        sNewLine = CheckArrayInstanciation(sLine) 
+        If Not sNewLine Then sNewLine = CheckOpen(sLine)
+        If Not sNewLine Then sNewLine = CheckQuestionMark(sLine)
+        If Not sNewLine Then sNewLine = CheckIsType(sLine)
+        If Not sNewLine Then sNewLine = CheckQuoteShell(sLine)
+        If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("FNTH", sLine, "Font", "Height", "TextHeight")
+        If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("FNTW", sLine, "Font", "Width", "TextWidth")
+        If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("BCOL", sLine, "Control", "BackColor", "Background", True)
+        If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("FCOL", sLine, "Control", "ForeColor", "Foreground", True)
+        If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("DBGV", sLine, "DataBrowser", "GridView", "View")
+        If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("TEXT", sLine, "gb", "Text", "IgnoreCase")
+        
+        If Not sNewLine Then 
+          $aLine.Add(sIndent & sLine)
+          Break
+        Endif
+
+        $aLine.Add(sIndent & "' [GB2:" & $sId & "] " & sLine)
+        '$aLine.Add(sIndent & sNewLine)
+        sLine = sNewLine
+        
+      Loop
+      
+    Else
+      
+      $aLine.Add(sLine)
+      
+    Endif
+    
+  Next
+  
+  File.Save(sPath, $aLine.Join("\n"))
+  $hForm.Delete
+  $hForm = Null
+  Project.Files[sPath] = Null
+  
+'Catch
+  
+'  Print Error.Where; ": "; Error.Text
+    
 End
 
 

@@ -827,6 +827,7 @@ void TRANS_for(void)
 {
 	PATTERN *loop_var;
 	short local;
+	bool downto = FALSE;
 
 	control_enter(RS_FOR);
 
@@ -839,7 +840,10 @@ void TRANS_for(void)
 
 	control_check_loop_var(local);
 
-	TRANS_want(RS_TO, "TO");
+	if (TRANS_is(RS_DOWNTO))
+		downto = TRUE;
+	else
+		TRANS_want(RS_TO, "TO");
 
 	TRANS_expression(FALSE);
 
@@ -847,10 +851,12 @@ void TRANS_for(void)
 	{
 		JOB->current++;
 		TRANS_expression(FALSE);
+		if (downto)
+			CODE_op(C_NEG, 0, 1, TRUE);
 	}
 	else
 	{
-		CODE_push_number(1);
+		CODE_push_number(downto ? -1 : 1);
 	}
 
 	/*CODE_pop_ctrl(current_ctrl->local + 1);

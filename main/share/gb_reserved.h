@@ -121,6 +121,7 @@ typedef
 		RS_END,
 		RS_FOR,
 		RS_TO,
+		RS_DOWNTO,
 		RS_FROM,
 		RS_STEP,
 		RS_NEXT,

@@ -73,6 +73,7 @@ COMP_INFO COMP_res_info[] =
 	{ "End"                                                       },
 	{ "For"                                                       },
 	{ "To"                                                        },
+	{ "DownTo"                                                    },
 	{ "From"                                                      },
 	{ "Step"                                                      },
 	{ "Next"                                                      },
