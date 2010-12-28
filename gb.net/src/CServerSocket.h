@@ -56,13 +56,10 @@ typedef
 		int iPause;
 		int iMaxConn;
 		int iCurConn;
-		//struct sockaddr_in Server; /* Struct for TCP connections */
-		//struct sockaddr_un UServer; /* Struct for UNIX connections */
 		st_so_sock so_server;
 		st_so_sock so_client;
 		int Client;
-		void **children;
-		int nchildren;
+		CSOCKET **children;
 		char *interface;
 	}  
 	CSERVERSOCKET;

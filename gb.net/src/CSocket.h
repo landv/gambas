@@ -72,7 +72,7 @@ typedef
 		char *Host;
 		char *Path;
 		CDNSCLIENT *DnsTool;
-		void *c_parent;
+		void *parent;
 		void (*OnClose)(void *sck);
 		bool watch_write;
 	}  

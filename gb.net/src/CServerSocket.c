@@ -215,61 +215,48 @@ static void srvsock_listen(CSERVERSOCKET *_object, int max)
 
 // BM: Fix bug in allocations
 
-void CServerSocket_NewChild(CSERVERSOCKET *_object, void *cli_obj)
+static void add_child(CSERVERSOCKET *_object, CSOCKET *child)
 {
-	if (THIS->nchildren++)
-		GB.Realloc ( POINTER(&THIS->children),THIS->nchildren * sizeof(*THIS->children));
-	else
-		GB.Alloc   ( POINTER(&THIS->children),THIS->nchildren * sizeof(*THIS->children));
-
-	THIS->children[THIS->nchildren-1]=cli_obj;
+	*((CSOCKET **)GB.Add(&THIS->children)) = child;
+	child->parent = THIS;
+	GB.Ref(child);
 }
 
-void CServerSocket_DeleteChild(CSERVERSOCKET *_object, void *cli_obj)
+static void remove_child(CSERVERSOCKET *_object, CSOCKET *child)
 {
-	int myloop;
-	int myloop2;
-
-	if (!THIS->nchildren) return;
-
-	for (myloop=0;myloop<THIS->nchildren;myloop++)
+	int i;
+	
+	for (i = 0; i < GB.Count(THIS->children); i++)
 	{
-		if (THIS->children[myloop]==cli_obj)
+		if (THIS->children[i] == child)
 		{
-			for (myloop2=myloop;myloop2<(THIS->nchildren-1);myloop2++)
-				THIS->children[myloop2]=THIS->children[myloop2+1];
-			if ( --THIS->nchildren)
-			{
-				GB.Realloc ( POINTER(&THIS->children),THIS->nchildren * sizeof(*THIS->children));
-			}
-			else
-			{
-				GB.Free (POINTER(&THIS->children));
-				THIS->children=NULL;
-			}
+			child->parent = NULL;
+			GB.Remove(&THIS->children, i, 1);
+			GB.Unref(POINTER(&child));
 			return;
 		}
 	}
 }
 
-void CServerSocket_OnClose(void *sck)
+void CServerSocket_OnClose(void *child)
 {
-	CSOCKET *chd=(CSOCKET*)sck;
 	CSERVERSOCKET *_object;
 
-	if (!chd) return;
-	if (!chd->c_parent) return;
-	CServerSocket_DeleteChild(chd->c_parent,sck);
-	_object=(CSERVERSOCKET*)chd->c_parent;
-	THIS->iCurConn--;
+	if (!child) return;
 
+	_object = (CSERVERSOCKET*)(((CSOCKET *)child)->parent);
+
+	if (!THIS) return;
+	
+	remove_child(THIS, child);
+	THIS->iCurConn--;
 }
 
 /***************************************************
  This property reflects current status of the
  socket (closed, listening...)
  ***************************************************/
-BEGIN_PROPERTY ( ServerSocket_Status )
+BEGIN_PROPERTY(ServerSocket_Status)
 
 	GB.ReturnInteger(SOCKET->status);
 
@@ -278,7 +265,7 @@ END_PROPERTY
 /******************************************************************
  This property gets/sets the port to listen to (TCP or UDP sockets)
  ******************************************************************/
-BEGIN_PROPERTY ( ServerSocket_Port )
+BEGIN_PROPERTY(ServerSocket_Port)
 
 	if (READ_PROPERTY)
 	{
@@ -373,16 +360,16 @@ BEGIN_PROPERTY ( ServerSocket_Type )
 	THIS->type=VPROP(GB_INTEGER);
 
 END_PROPERTY
-/***********************************************
- Gambas object "Constructor"
- ***********************************************/
-BEGIN_METHOD(ServerSocket_new,GB_STRING sPath;GB_INTEGER iMaxConn;)
+
+
+BEGIN_METHOD(ServerSocket_new, GB_STRING sPath; GB_INTEGER iMaxConn)
 
 	char *buf=NULL;
 	int nport=0;
 	int iMax;
 
 	THIS->type=1;
+	GB.NewArray(&THIS->children, sizeof(void *), 0);
 
 	if (MISSING(sPath)) return;
 	if (!STRING(sPath)) return;
@@ -423,7 +410,7 @@ BEGIN_METHOD(ServerSocket_new,GB_STRING sPath;GB_INTEGER iMaxConn;)
 			GB.StoreString(ARG(sPath), &THIS->sPath);
 			break;
 	}
-
+	
 END_METHOD
 
 void close_server(CSERVERSOCKET *_object)
@@ -436,22 +423,18 @@ void close_server(CSERVERSOCKET *_object)
 	close(SOCKET->socket);
 	SOCKET->status=0;
 
-	if (!THIS->nchildren) return;
-
-	while(THIS->nchildren)
+	while (GB.Count(THIS->children))
 	{
-		chd=(CSOCKET*)THIS->children[0];
+		chd = THIS->children[0];
 		if (chd->common.stream.desc) CSocket_stream_close(&chd->common.stream);
-		CServerSocket_DeleteChild(THIS,(void*)chd);
+		remove_child(THIS, chd);
 	}
-
 }
-/*************************************************
- Gambas object "Destructor"
- *************************************************/
+
 BEGIN_METHOD_VOID(ServerSocket_free)
 
 	close_server(THIS);
+	GB.FreeArray(&THIS->children);
 	GB.FreeString(&THIS->sPath);
 	GB.FreeString(&THIS->interface);
 
@@ -506,7 +489,6 @@ BEGIN_METHOD_VOID(ServerSocket_Accept)
 	GB.New(POINTER(&cli_obj),GB.FindClass("Socket"),"Socket",NULL);
 	cli_obj->common.socket = THIS->Client;
 	cli_obj->common.status=7;
-	cli_obj->c_parent=(void*)THIS;
 	cli_obj->OnClose=CServerSocket_OnClose;
 	THIS->iCurConn++;
 	GB.FreeString ( &cli_obj->sRemoteHostIP);
@@ -533,16 +515,17 @@ BEGIN_METHOD_VOID(ServerSocket_Accept)
 		cli_obj->Path = GB.NewZeroString(THIS->sPath);
 	}
 
+	add_child(THIS, cli_obj);
+
 	CSOCKET_init_connected(cli_obj);
 	// Socket returned by accept is non-blocking by default
 	GB.Stream.Block(&cli_obj->common.stream, FALSE);
 	//cli_obj->stream._free[0]=(intptr_t)cli_obj;
 
-	CServerSocket_NewChild(THIS,cli_obj);
-
 	GB.Ref(cli_obj);
 	GB.Post(CSocket_post_connected,(intptr_t)cli_obj);
 	SOCKET->status=3;
+	
 	GB.ReturnObject((void*)cli_obj);
 
 END_METHOD
@@ -553,7 +536,7 @@ BEGIN_METHOD_VOID(ServerSocket_next)
 
   int *index = (int *)GB.GetEnum();
 
-  if (*index >= THIS->nchildren)
+  if (*index >= GB.Count(THIS->children))
     GB.StopEnum();
   else
   {
@@ -565,7 +548,7 @@ END_METHOD
 
 BEGIN_PROPERTY(ServerSocket_count)
 
-	GB.ReturnInteger(THIS->nchildren);
+	GB.ReturnInteger(GB.Count(THIS->children));
 
 END_PROPERTY
 
@@ -580,7 +563,7 @@ GB_DESC CServerSocketDesc[] =
   GB_EVENT("Connection", NULL, "(RemoteHostIP)s", &EVENT_Connection),
   GB_EVENT("Error", NULL,NULL, &EVENT_Error),
 
-  GB_METHOD("_new", NULL, ServerSocket_new,"[(Path)s(MaxConn)i]"),
+  GB_METHOD("_new", NULL, ServerSocket_new, "[(Path)s(MaxConn)i]"),
   GB_METHOD("_free", NULL, ServerSocket_free, NULL),
   GB_METHOD("Listen",NULL, ServerSocket_Listen, "[(MaxConn)i]"),
   GB_METHOD("Pause", NULL, ServerSocket_Pause, NULL),

@@ -959,6 +959,12 @@ BEGIN_PROPERTY(CSOCKET_Timeout)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Socket_Server)
+
+	GB.ReturnObject(THIS->parent);
+
+END_PROPERTY
+
 /**********************************************************
  Here we declare public structure of Socket Class
  ***********************************************************/
@@ -992,6 +998,7 @@ GB_DESC CSocketDesc[] =
   GB_PROPERTY("Host","s",CSOCKET_Host),
   GB_PROPERTY("Path","s",CSOCKET_Path),
   GB_PROPERTY("Port","i",CSOCKET_Port),
+  GB_PROPERTY_READ("Server", "ServerSocket", Socket_Server),
 
   GB_CONSTANT("_IsControl", "b", TRUE),
   GB_CONSTANT("_IsVirtual", "b", TRUE),
