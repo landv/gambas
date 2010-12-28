@@ -83,12 +83,7 @@ void CSocket_CallBackConnecting(int t_sock,int type,intptr_t lParam);
 
 void CSOCKET_init_connected(CSOCKET *_object);
 
-//
-void CSocket_post_error(void *_object);
-void CSocket_post_closed(void *_object);
-void CSocket_post_hostfound(void *_object);
 void CSocket_post_connected(void *_object);
-void CSocket_post_data_available(void *_object);
 //
 int CSocket_connect_unix(void *_object, char *sPath, int lenpath);
 int CSocket_connect_socket(void *_object, char *sHost,int lenhost,int myport);
@@ -109,6 +104,6 @@ int CSocket_stream_handle(GB_STREAM *stream);
 
 bool SOCKET_update_timeout(CSOCKET_COMMON *socket);
 
-DECLARE_METHOD(CSOCKET_Timeout);
+DECLARE_METHOD(Socket_Timeout);
 
 #endif

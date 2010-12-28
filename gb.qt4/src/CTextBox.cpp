@@ -463,6 +463,12 @@ static void combo_set_list(void *_object, GB_ARRAY array)
 	COMBOBOX->setDirty();
 	combo_set_text(THIS, text);
 	
+	if (!COMBOBOX->isEditable())
+	{
+		if (combo_get_current_item(THIS) < 0)
+			combo_set_current_item(THIS, 0);
+	}
+	
 	COMBOBOX->blockSignals(false);
 }
 

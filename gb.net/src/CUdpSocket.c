@@ -112,7 +112,7 @@ static void fill_buffer(CUDPSOCKET *_object)
 	if (ret < 0)
 	{
 		CUdpSocket_stream_close(&SOCKET->stream);
-		SOCKET->status=-4;
+		SOCKET->status = NET_CANNOT_READ;
 		return;
 	}
 
@@ -133,7 +133,7 @@ void CUdpSocket_CallBack(int t_sock,int type, intptr_t param)
 	mywait.tv_nsec=100000;
 	nanosleep(&mywait,NULL);
 
-	if (SOCKET->status<=0) return;
+	if (SOCKET->status <= NET_INACTIVE) return;
 
 	//t_test.sin_port=0;
 	//t_test_len=sizeof(struct sockaddr);
@@ -173,11 +173,11 @@ int CUdpSocket_stream_close(GB_STREAM *stream)
 
 	if ( !_object ) return -1;
 	stream->desc=NULL;
-	if (SOCKET->status > 0)
+	if (SOCKET->status > NET_INACTIVE)
 	{
 		GB.Watch (SOCKET->socket,GB_WATCH_NONE,(void *)CUdpSocket_CallBack,(intptr_t)THIS);
 		close(SOCKET->socket);
-		SOCKET->status=0;
+		SOCKET->status = NET_INACTIVE;
 	}
 	GB.FreeString(&THIS->thost);
 	GB.FreeString(&THIS->tpath);
@@ -189,7 +189,7 @@ int CUdpSocket_stream_close(GB_STREAM *stream)
 	}
 	
 	THIS->tport=0;
-	SOCKET->status=0;
+	SOCKET->status = NET_INACTIVE;
 	clear_buffer(THIS);
 	return 0;
 }
@@ -278,7 +278,7 @@ int CUdpSocket_stream_write(GB_STREAM *stream, char *buffer, int len)
 		return 0;
 	
 	CUdpSocket_stream_close(stream);
-	SOCKET->status= -5;
+	SOCKET->status= NET_CANNOT_WRITE;
 	return -1;
 }
 
@@ -309,7 +309,7 @@ static void dgram_start(CUDPSOCKET *_object)
 	struct stat info;
 	struct sockaddr *addr;
 
-	if (SOCKET->status > 0)
+	if (SOCKET->status > NET_INACTIVE)
 	{
 		GB.Error("Socket is active");
 		return;
@@ -336,7 +336,7 @@ static void dgram_start(CUDPSOCKET *_object)
 
 	if ((SOCKET->socket = socket(domain, SOCK_DGRAM, 0)) < 0)
 	{
-		SOCKET->status = -2;
+		SOCKET->status = NET_CANNOT_CREATE_SOCKET;
 		GB.Ref(THIS);
 		GB.Post(CUdpSocket_post_error, (intptr_t)THIS);
 		return;
@@ -344,7 +344,7 @@ static void dgram_start(CUDPSOCKET *_object)
 
 	if (update_broadcast(THIS) || SOCKET_update_timeout(SOCKET))
 	{
-		SOCKET->status = -2;
+		SOCKET->status = NET_CANNOT_CREATE_SOCKET;
 		GB.Ref(THIS);
 		GB.Post(CUdpSocket_post_error,(intptr_t)THIS);
 		return;
@@ -374,13 +374,13 @@ static void dgram_start(CUDPSOCKET *_object)
 	if (bind(SOCKET->socket, addr, size) < 0)
 	{
 		close(SOCKET->socket);
-		SOCKET->status = -10;
+		SOCKET->status = NET_CANNOT_BIND_SOCKET;
 		GB.Ref(THIS);
 		GB.Post(CUdpSocket_post_error, (intptr_t)THIS);
 		return;
 	}
 
-	SOCKET->status = 1;
+	SOCKET->status = NET_ACTIVE;
 	SOCKET->stream.desc = &UdpSocketStream;
 	GB.Stream.SetSwapping(&SOCKET->stream, htons(0x1234) != 0x1234);
 	
@@ -388,19 +388,12 @@ static void dgram_start(CUDPSOCKET *_object)
 }
 
 
-/**********************************************************
-This property gets status : 0 --> Inactive, 1 --> Working
-**********************************************************/
-
-BEGIN_PROPERTY ( CUDPSOCKET_Status )
+BEGIN_PROPERTY(CUDPSOCKET_Status)
 
 	GB.ReturnInteger(SOCKET->status);
 
 END_PROPERTY
 
-// 	THIS->sport = ntohs(host.sin_port);
-// 	GB.FreeString(&THIS->shost);
-// 	GB.NewString (&THIS->shost , inet_ntoa(host.sin_addr) ,0);
 
 BEGIN_PROPERTY(CUDPSOCKET_SourceHost)
 
@@ -442,7 +435,7 @@ BEGIN_PROPERTY ( CUDPSOCKET_TargetHost )
 		strtmp=GB.ToZeroString(PROP(GB_STRING));
 		if ( !inet_aton(strtmp,&rem_ip) )
 	{
-		GB.Error ("Invalid IP address");
+		GB.Error("Invalid IP address");
 		return;
 	}
 		GB.StoreString(PROP(GB_STRING), &THIS->thost);
@@ -512,9 +505,9 @@ BEGIN_METHOD_VOID (CUDPSOCKET_Peek)
 	//int NoBlock=0;
 	int peeking;
 	int bytes=0;
-	if (SOCKET->status <= 0)
+	if (SOCKET->status <= NET_INACTIVE)
 	{
-		GB.Error ("Inactive");
+		GB.Error("Socket is inactive");
 		return;
 	}
 
@@ -531,7 +524,7 @@ BEGIN_METHOD_VOID (CUDPSOCKET_Peek)
 		{
 			GB.Free(POINTER(&sData));
 			CUdpSocket_stream_close(&SOCKET->stream);
-			SOCKET->status=-4;
+			SOCKET->status = NET_CANNOT_READ;
 			GB.Raise(THIS,CUDPSOCKET_SocketError,0);
 			GB.ReturnNull();
 			return;
@@ -584,7 +577,7 @@ BEGIN_PROPERTY(CUDPSOCKET_Port)
 			GB.Error("Invalid port value");
 			return;
 		}
-		if (SOCKET->status > 0)
+		if (SOCKET->status > NET_INACTIVE)
 		{
 			GB.Error("Socket is active");
 			return;
@@ -600,7 +593,7 @@ BEGIN_PROPERTY(CUDPSOCKET_Path)
 		GB.ReturnString(THIS->path);
 	else
 	{
-		if (SOCKET->status > 0)
+		if (SOCKET->status > NET_INACTIVE)
 		{
 			GB.Error("Socket is active");
 			return;
@@ -640,7 +633,7 @@ GB_DESC CUdpSocketDesc[] =
 	GB_PROPERTY("Path", "s", CUDPSOCKET_Path),
 	
 	GB_PROPERTY("Broadcast", "b", CUDPSOCKET_broadcast),
-	GB_PROPERTY("Timeout", "i", CSOCKET_Timeout),
+	GB_PROPERTY("Timeout", "i", Socket_Timeout),
 
   GB_CONSTANT("_IsControl", "b", TRUE),
   GB_CONSTANT("_IsVirtual", "b", TRUE),

@@ -12,82 +12,87 @@ Private CurProtocol As Integer
 Public Sub Form_Open()
   
   CurProtocol = 0
-
+  
 End
 
-Public Sub MySock_Ready()
+Public Sub MySocket_Ready()
   '***********************************
   ' When connection proccess has finished
   ' successfully, "Connected" event will raise
   '***********************************
   
-  Timer1.Enabled = False
+  timTimeout.Enabled = False
   If CurProtocol = 1 Then
-    Label3.Text = "Connected to path " & MySock.Path
+    lblMessage.Text = "Connected to path " & MySocket.Path
   Else
-    Label3.Text = "Connected to remote host " & MySock.Path
-    Label3.Text = Label3.Text & " - Using local address : " & MySock.LocalHost & ":" & MySock.LocalPort
+    lblMessage.Text = "Connected to remote host " & MySocket.Path
+    lblMessage.Text = lblMessage.Text & " - Using local address : " & MySocket.LocalHost & ":" & MySocket.LocalPort
   End If
   Me.Enabled = True
   Set_Interface(True)
+
 End
 
-Public Sub MySock_Closed()
+Public Sub MySocket_Closed()
   '********************************************
   ' this event will raise when foreing host
   ' closes the socket by any reason
   '********************************************
-  Label3.Caption = "Connection Closed by foreign host."
+
+  lblMessage.Caption = "Connection Closed by foreign host."
   Me.Enabled = True
   Set_Interface(False)
   
 End
 
-Public Sub MySock_Found()
+Public Sub MySocket_Found()
   '********************************************
   ' this event will raise when foreing host
   ' name has been translated to IP
   '********************************************
-  Label3.Caption = "Host Found. Connecting..."
+
+  lblMessage.Caption = "Host Found. Connecting..."
   
 End
 
-
-Public Sub MySock_Read()
+Public Sub MySocket_Read()
   '****************************************
   ' When some data arrives from the remote
   ' part of the socket, "DataAvailable" event
   ' is raised
   '****************************************
+
   Dim S As String
-  If MySock.Status = Net.Connected Then
-      Read #MySock, S, Lof(MySock)
-      TextArea1.Pos = TextArea1.Length
-      TextArea1.Insert(S)
+
+  If MySocket.Status = Net.Connected Then
+    Read #MySocket, S, Lof(MySocket)
+    txtReceive.Pos = txtReceive.Length
+    txtReceive.Insert(S)
   End If
-  
   
 End
 
-Public Sub MySock_Error()
+Public Sub MySocket_Error()
   '**********************************
   ' this is the function to
   ' handle Errors when trying
   ' to read or write to the socket
   '**********************************
-  Select Case MySock.Status
+
+  Select Case MySocket.Status
     Case Net.CannotCreateSocket
-      label3.Text = "The system does not allow to create a socket"
+      lblMessage.Text = "The system does not allow to create a socket"
     Case Net.HostNotFound
-      label3.Text = "Host not Found"
+      lblMessage.Text = "Host not Found"
     Case Net.ConnectionRefused
-      label3.Text = "Unable to Connect. Connection Refused"
+      lblMessage.Text = "Unable to Connect. Connection Refused"
     Case Net.CannotRead
-      label3.Text = "Error Reading Data"
+      lblMessage.Text = "Error Reading Data"
     Case Net.CannotWrite
-      label3.Text = "Error Writing Data"
+      lblMessage.Text = "Error Writing Data"
   End Select
   Set_Interface(False)
+
 End
 
 Private Sub Set_Interface(bState As Boolean)
@@ -96,129 +101,131 @@ Private Sub Set_Interface(bState As Boolean)
   ' controls in the formulary , when
   ' connection is stablished or closed
   '****************************************
-  Button1.Enabled = Not bState
-  TextBox1.Enabled = Not bState
-  TextBox2.Enabled = Not bState
-  CmbProtocol.Enabled = Not bState
+
+  btnConnect.Enabled = Not bState
+  txtHost.Enabled = Not bState
+  txtPort.Enabled = Not bState
+  cmbProtocol.Enabled = Not bState
   Label5.Enabled = Not bState
-  Button2.Enabled = bState
-  Timer1.Enabled = bState
+  btnClose.Enabled = bState
+  timTimeout.Enabled = bState
   'TextArea1.Enabled=bState
-  Button3.Enabled = bState
-  TextArea2.Enabled = bState
+  btnSend.Enabled = bState
+  txtSend.Enabled = bState
   
   If bState Then
-    TextArea1.Text = ""
-    TextArea1.SetFocus
+    txtReceive.Text = ""
+    txtReceive.SetFocus
   Endif
   
 End
 
-
-Public Sub Button1_Click()
- 
+Public Sub btnConnect_Click()
+  
   '******************************************
   ' To connect to remote host we call to
   ' connectsocket method, passing Host Name
   ' and port as arguments
   '******************************************
   Dim RetVal As Integer
-  Button1.Enabled = False
+
+  btnConnect.Enabled = False
   Select Case CurProtocol
     Case 0 
       ' Stablishing a TCP connection.
       ' Here we use Host and
       ' Port properties, we could also
       ' do directly MySock.Connect(TextBox1.Text,VAL(TextBox2.Text))
-      MySock.Host = TextBox1.Text
-      MySock.Port = Val(TextBox2.Text)
-      MySock.Connect()
+      MySocket.Host = txtHost.Text
+      MySocket.Port = Val(txtPort.Text)
+      MySocket.Connect()
     Case 1
       ' Stablishing a Local connection.
       ' Here we use Path and
       ' Port properties, we could also
       ' do directly MySock.Connect(TextBox1.Text,0)
-      MySock.Path = TextBox1.Text
-      MySock.Port = Net.Local
-      MySock.Connect()
+      MySocket.Path = txtHost.Text
+      MySocket.Port = Net.Local
+      MySocket.Connect()
   End Select
-  If MySock.Status > Net.Inactive Then 
+  If MySocket.Status > Net.Inactive Then 
     If CurProtocol = 0 Then
       '**************************
       ' TCP : connection in progress...
       '**************************
-      Button2.Enabled = True
+      btnClose.Enabled = True
       'ME.Enabled=FALSE
-      Label3.Text = "Looking up host name..."
-      Timer1.Delay = 10000 ' we'll wait a maximun time of  10 seconds
-      Timer1.Enabled = True
+      lblMessage.Text = "Looking up host name..."
+      timTimeout.Delay = 10000 ' we'll wait a maximun time of  10 seconds
+      timTimeout.Enabled = True
     End If
   End If
- 
+  
 End
 
-Public Sub Timer1_Timer()
-
+Public Sub timTimeout_Timer()
+  
   '***************************
   ' timeout trying to connect
   '***************************
   Me.Enabled = True
-  Timer1.Enabled = False
-  If MySock.Status <> Net.Connected Then
-    Close MySock
+  timTimeout.Enabled = False
+  If MySocket.Status <> Net.Connected Then
+    Close MySocket
     Set_Interface(False)
-    Label3.Text = "Timeout trying to stablish connection"
+    lblMessage.Text = "Timeout trying to stablish connection"
   End If
+
 End
 
-
-Public Sub Button2_Click()
+Public Sub btnClose_Click()
   
   '**********************************
   ' Here we close the connection
   ' to remote host
   '**********************************
-  Close MySock
+  Close MySocket
   Set_Interface(False)
-  Label3.Text = "Connection closed by user"
-
+  lblMessage.Text = "Connection closed by user"
+  
 End
 
-Public Sub Button3_Click()
+Public Sub btnSend_Click()
   '****************************************************
   ' Here we send data to the remote part of the socket.
   ' We have to be sure that connection is active 
   '****************************************************
-  If MySock.Status = Net.Connected Then 
-    Write #MySock, TextArea2.Text, Len(TextArea2.Text)
-    TextArea2.Text = ""
+
+  If MySocket.Status = Net.Connected Then 
+    Write #MySocket, txtSend.Text, Len(txtSend.Text)
+    txtSend.Text = ""
   End If
   
 End
 
 Public Sub Form_Close()
-
+  
   '*********************
   ' Close possible Stablished connections
   '*********************
-  If MySock.Status > 0 Then Close #MySock
-
+  If MySocket.Status > 0 Then Close #MySocket
+  
 End
 
-Public Sub CmbProtocol_Click()
+Public Sub cmbProtocol_Click()
   '**************************************************
   ' Here we select protocol to use : TCP,UDP or UNIX
   '**************************************************
-  CurProtocol = CmbProtocol.Index
+
+  CurProtocol = cmbProtocol.Index
   If CurProtocol = 0 Then
-      Label2.Visible = True
-      TextBox2.Visible = True
-      Label1.Text = "Host :"
+    Label2.Visible = True
+    txtPort.Visible = True
+    Label1.Text = "Host :"
   Else
-      Label2.Visible = False
-      TextBox2.Visible = False
-      Label1.Text = "Path :"
+    Label2.Visible = False
+    txtPort.Visible = False
+    Label1.Text = "Path :"
   End If
+
 End
-
-

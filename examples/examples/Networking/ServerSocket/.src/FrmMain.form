@@ -3,19 +3,20 @@
 { Form Form
   MoveScaled(36,28,63,51)
   Text = ("Server Socket Example")
+  Icon = Picture["serversocket.png"]
   Resizable = False
-  { Button1 Button
+  { btnListen Button
     MoveScaled(44,1,18,4)
     Text = ("Listen")
   }
-  { TextBox1 TextBox
+  { txtPort TextBox
     MoveScaled(22,6,21,4)
     Text = ("32340")
   }
-  { TextArea1 TextArea
+  { txtLog TextArea
     MoveScaled(1,22,61,28)
   }
-  { Button2 Button
+  { btnClose Button
     MoveScaled(44,6,18,4)
     Enabled = False
     Text = ("Close")
@@ -24,7 +25,7 @@
     MoveScaled(1,6,15,4)
     Text = ("Port")
   }
-  { CmdWait Button
+  { btnPause Button
     MoveScaled(1,17,16,4)
     Text = ("Pause")
   }
@@ -33,18 +34,17 @@
     Text = ("Max. number of clients")
     Alignment = Align.Right
   }
-  { ComboBox1 ComboBox
+  { cmbMaxClient ComboBox
     MoveScaled(47,17,15,4)
-    Text = (" ")
-    List = [("(no Limit)"), ("1"), ("2"), ("3"), ("4"), ("5"), ("6"), ("7"), ("8"), ("9"), ("10")]
+    ReadOnly = True
+    List = [("No limit"), ("1"), ("2"), ("3"), ("4"), ("5"), ("6"), ("7"), ("8"), ("9"), ("10")]
   }
   { TextLabel2 TextLabel
     MoveScaled(1,1,15,4)
     Text = ("Type")
   }
-  { ComboBox2 ComboBox
+  { cmbType ComboBox
     MoveScaled(22,1,21,4)
-    Text = (" ")
     ReadOnly = True
     List = [("TCP"), ("UNIX")]
   }
@@ -52,10 +52,10 @@
     MoveScaled(1,11,20,4)
     Text = ("Path")
   }
-  { TxtPath TextBox
+  { txtPath TextBox
     MoveScaled(22,11,40,4)
   }
-  { Server #ServerSocket
+  { MyServerSocket #ServerSocket
     #MoveScaled(13,8)
   }
 }

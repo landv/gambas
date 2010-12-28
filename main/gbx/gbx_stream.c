@@ -293,6 +293,9 @@ void STREAM_read(STREAM *stream, void *addr, int len)
 	if (!stream->type)
 		THROW(E_CLOSED);
 	
+	if (len <= 0)
+		return;
+	
 	if (stream->common.buffer)
 		read_buffer(stream, &addr, &len);
 	
@@ -420,7 +423,10 @@ void STREAM_write(STREAM *stream, void *addr, int len)
 {
 	if (!stream->type)
 		THROW(E_CLOSED);
-		
+	
+	if (len <= 0)
+		return;
+	
 	while ((*(stream->type->write))(stream, addr, len))
 	{
 		switch(errno)
@@ -432,6 +438,19 @@ void STREAM_write(STREAM *stream, void *addr, int len)
 			default:
 				THROW_SYSTEM(errno, NULL);
 		}
+	}
+}
+
+void STREAM_write_zeros(STREAM *stream, int len)
+{
+	static const char buffer[32] = { 0 };
+	int lenw;
+	
+	while (len > 0)
+	{
+		lenw = Min(len, sizeof(buffer));
+		STREAM_write(stream, (void *)buffer, lenw);
+		len -= lenw;
 	}
 }
 
@@ -791,7 +810,7 @@ static void read_value_ctype(STREAM *stream, CLASS *class, CTYPE ctype, void *ad
 		return;
 	}
 	
-	STREAM_read_type(stream, type, &temp, 0);
+	STREAM_read_type(stream, type, &temp);
 	VALUE_class_write(class, &temp, addr, ctype);
 }
 
@@ -830,9 +849,10 @@ static void read_structure(STREAM *stream, CLASS *class, char *base)
 	}
 }
 
-void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
+void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value)
 {
 	bool variant;
+	int len;
 	
 	union
 	{
@@ -879,7 +899,7 @@ void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
 			for (i = 0; i < size; i++)
 			{
 				data = CARRAY_get_data(array, i);
-				STREAM_read_type(stream, type, &temp, 0);
+				STREAM_read_type(stream, type, &temp);
 				VALUE_write(&temp, data, type);
 			}
 			
@@ -910,7 +930,7 @@ void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
 				else
 					key = STRING_new(NULL, len);
 				STREAM_read(stream, key, len);
-				STREAM_read_type(stream, T_VARIANT, &temp, 0);
+				STREAM_read_type(stream, T_VARIANT, &temp);
 				GB_CollectionSet(col, key, len, (GB_VARIANT *)&temp);
 				if (len >= 32)
 					STRING_free_real(key);
@@ -1004,51 +1024,22 @@ void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
 		
 		case T_STRING:
 
-			if (len == 0)
+			if (stream->type == &STREAM_memory)
 			{
-				if (stream->type == &STREAM_memory)
-				{
-					size_t slen;
-					if (CHECK_strlen(stream->memory.addr + stream->memory.pos, &slen))
-						THROW(E_READ);
-					len = (int)slen;
-				}
-				else
-				{
-					len = read_length(stream);
-				}
+				size_t slen;
+				if (CHECK_strlen(stream->memory.addr + stream->memory.pos, &slen))
+					THROW(E_READ);
+				len = (int)slen;
+			}
+			else
+			{
+				len = read_length(stream);
 			}
 
 			if (len > 0)
 			{
 				STRING_new_temp_value(value, NULL, labs(len));
 				STREAM_read(stream, value->_string.addr, len);
-			}
-			else
-			{
-				len = (-len);
-				
-				value->type = T_STRING;
-				value->_string.addr = STRING_new(NULL, len);
-				value->_string.start = 0;
-				value->_string.len = len;
-				
-				STREAM_read_max(stream, value->_string.addr, len);
-				
-				if (STREAM_eff_read == 0)
-				{
-					value->type = T_NULL;
-					STRING_free(&value->_string.addr);
-				}
-				else
-				{
-					if (STREAM_eff_read < len)
-					{
-						STRING_extend(&value->_string.addr, STREAM_eff_read);
-						value->_string.len = STREAM_eff_read;
-					}
-					STRING_extend_end(&value->_string.addr);
-				}
 			}
 
 			break;
@@ -1093,7 +1084,7 @@ static void write_length(STREAM *stream, int len)
 	}
 }
 
-void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
+void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value)
 {
 	union
 	{
@@ -1108,8 +1099,6 @@ void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
 	}
 	buffer;
 	
-	bool write_zero;
-
 	if (type == T_VARIANT)
 	{
 		VARIANT_undo(value);
@@ -1203,29 +1192,8 @@ void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
 		case T_STRING:
 		case T_CSTRING:
 
-			write_zero = (stream->type == &STREAM_memory) && len == 0;
-
-			if (len == 0)
-			{
-				len = value->_string.len;
-
-				if (stream->type != &STREAM_memory)
-					write_length(stream, len);
-			}
-
-			STREAM_write(stream, value->_string.addr + value->_string.start, Min(len, value->_string.len));
-
-			buffer._byte = 0;
-
-			while (len > value->_string.len)
-			{
-				STREAM_write(stream, &buffer._byte, 1);
-				len--;
-			}
-
-			if (write_zero)
-				STREAM_write(stream, &buffer._byte, 1);
-
+			write_length(stream, value->_string.len);
+			STREAM_write(stream, value->_string.addr + value->_string.start, value->_string.len);
 			break;
 			
 		case T_NULL:
@@ -1270,7 +1238,7 @@ void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
 						temp._object.class = OBJECT_class(structure);
 						temp._object.object = structure;
 						OBJECT_REF(structure, "STREAM_write_type");
-						STREAM_write_type(stream, T_OBJECT, &temp, 0);
+						STREAM_write_type(stream, T_OBJECT, &temp);
 						OBJECT_UNREF(structure, "STREAM_write_type");
 					}
 				}
@@ -1280,7 +1248,7 @@ void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
 					{
 						data = CARRAY_get_data(array, i);
 						VALUE_read(&temp, data, array->type);
-						STREAM_write_type(stream, array->type, &temp, 0);
+						STREAM_write_type(stream, array->type, &temp);
 					}
 				}
 				
@@ -1309,7 +1277,7 @@ void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
 				{
 					write_length(stream, len);
 					STREAM_write(stream, key, len);
-					STREAM_write_type(stream, T_VARIANT, &temp, 0);
+					STREAM_write_type(stream, T_VARIANT, &temp);
 				}
 				
 				OBJECT_lock((OBJECT *)col, FALSE);
@@ -1340,7 +1308,7 @@ void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
 					
 					VALUE_class_read(desc->variable.class, &temp, (void *)addr, desc->variable.ctype, (void *)structure);
 					BORROW(&temp);
-					STREAM_write_type(stream, temp.type, &temp, 0);
+					STREAM_write_type(stream, temp.type, &temp);
 					RELEASE(&temp);
 				}
 				

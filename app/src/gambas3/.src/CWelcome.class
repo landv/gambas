@@ -1,18 +1,36 @@
 ' Gambas class file
 
-Static Private $hLogo As Image
+Private $hLogo As Image
+Private $hText As Image
 
 Public Sub _new(hDrawingArea As DrawingArea)
   
   Dim hSvgLogo As SvgImage
+  Dim X As Integer
   
   If Not $hLogo Then 
+    
     hSvgLogo = SvgImage.Load("img/logo/gambas.svg")
     $hLogo = New Image(hSvgLogo.Width, 256, Color.Transparent)
     Paint.Begin($hLogo)
     Paint.Scale(1.1, 1.1)
     hSvgLogo.Paint
     Paint.End
+    
+    $hText = New Image(hDrawingArea.Width, hDrawingArea.Height, Color.Transparent)
+    Paint.Begin($hText)
+    Paint.Font = Font["+12,Bold"]
+    X = PaintText("Gambas", 8, 48, &HFF7F7F) 'Color.SelectedForeground)
+    
+    Paint.Font = Font["+8,Bold"]
+    PaintText(Project.FullVersionWithRevision, X + 8, 32, &HFF7F7F) 'Color.SelectedForeground)
+    Paint.Font = Font["+2"]
+    PaintText("http://gambas.sourceforge.net", 12, 68, &HFF7F7F) 'Color.LightForeground)
+    
+    Paint.Font = Font["Italic,+1"]
+    PaintText(("This program is published under\nthe GNU General Public License."), 12, 104, Color.SelectedForeground)
+    Paint.End
+    
   Endif
 
   Object.Attach(hDrawingArea, Me, "dwgWelcome")
@@ -47,24 +65,8 @@ End
 
 Public Sub dwgWelcome_Draw()
 
-  Dim X As Integer
-
-  Paint.Brush = Paint.Image($hLogo)
-  Paint.Translate(Last.W - $hLogo.Width, -20)
-  Paint.Rectangle(0, 0, $hLogo.Width, $hLogo.Height)
-  Paint.Fill
-  Paint.Reset
-
-  Paint.Font = Font["+12,Bold"]
-  X = PaintText("Gambas", 8, 48, &HFF7F7F) 'Color.SelectedForeground)
-  
-  Paint.Font = Font["+8,Bold"]
-  PaintText(Project.FullVersionWithRevision, X + 8, 32, &HFF7F7F) 'Color.SelectedForeground)
-  Paint.Font = Font["+2"]
-  PaintText("http://gambas.sourceforge.net", 12, 68, &HFF7F7F) 'Color.LightForeground)
-  
-  Paint.Font = Font["Italic,+1"]
-  PaintText(("This program is published under\nthe GNU General Public License."), 12, 104, Color.SelectedForeground)
+  Draw.Image($hLogo, Last.W - $hLogo.Width, -20)
+  Draw.Image($hText, 0, 0)
 
 End
 

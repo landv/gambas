@@ -3,21 +3,22 @@
 { Form Form
   MoveScaled(34,23.4286,49,60)
   Text = ("Client socket example ")
+  Icon = Picture["socket.png"]
   Resizable = False
-  { Button1 Button
+  { btnConnect Button
     MoveScaled(31,7,17,4)
     Text = ("Connect")
   }
-  { TextArea1 TextArea
+  { txtReceive TextArea
     MoveScaled(1,44,47,15)
     ReadOnly = True
   }
-  { Button2 Button
+  { btnClose Button
     MoveScaled(31,12,17,4)
     Enabled = False
     Text = ("Close")
   }
-  { TextBox1 TextBox
+  { txtHost TextBox
     MoveScaled(11,7,18,4)
     Text = ("localhost")
   }
@@ -29,19 +30,15 @@
     MoveScaled(1,12,9,4)
     Text = ("Port :")
   }
-  { TextBox2 TextBox
+  { txtPort TextBox
     MoveScaled(11,12,18,4)
     Text = ("32340")
   }
-  { TextLabel1 TextLabel
-    MoveScaled(1,40,47,4)
-    Text = ("Data Received :")
-  }
-  { TextArea2 TextArea
+  { txtSend TextArea
     MoveScaled(1,27,47,6)
     Enabled = False
   }
-  { Button3 Button
+  { btnSend Button
     MoveScaled(13,34,23,4)
     Enabled = False
     Text = ("Send Data")
@@ -54,25 +51,25 @@
     MoveScaled(1,1,17,4)
     Text = ("Select protocol :")
   }
-  { CmbProtocol ComboBox
+  { cmbProtocol ComboBox
     MoveScaled(19,1,29,4)
-    Text = (" ")
     ReadOnly = True
     List = [("TCP"), ("UNIX")]
   }
-  { MySock #Socket
-    #MoveScaled(39,36)
-    Port = 7
-    Timeout = 1000
-  }
-  { Label3 TextLabel
+  { lblMessage TextLabel
     MoveScaled(1,17,47,6)
     Font = Font["Bold"]
     Alignment = Align.Center
     Border = Border.Sunken
   }
-  { Timer1 #Timer
+  { timTimeout #Timer
     #MoveScaled(26,47)
-    Delay = 10
+  }
+  { Label3 Label
+    MoveScaled(1,40,47,4)
+    Text = ("Data Received :")
+  }
+  { MySocket #Socket
+    #MoveScaled(38,35)
   }
 }

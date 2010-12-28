@@ -1951,9 +1951,9 @@ void MyMainWindow::setBorder(bool b, bool force)
 	flags = windowFlags();
 	
 	if (b)
-		flags &= ~(Qt::FramelessWindowHint|Qt::ToolTip);
+		flags &= ~(Qt::FramelessWindowHint); //|Qt::ToolTip);
 	else
-		flags |= Qt::FramelessWindowHint|Qt::ToolTip;
+		flags |= Qt::FramelessWindowHint; //|Qt::ToolTip;
 	
 	doReparent(parentWidget(), flags, pos());
 }

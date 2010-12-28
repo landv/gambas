@@ -386,7 +386,6 @@ void SUBR_read(ushort code)
 {
   STREAM *stream;
   int len = 0;
-	TYPE type;
   bool do_not = FALSE;
 
   SUBR_ENTER_PARAM(2);
@@ -397,18 +396,48 @@ void SUBR_read(ushort code)
 	{
     VALUE_conv_integer(&PARAM[1]);
 		len = PARAM[1]._integer.value;
-		do_not = len == 0;
-		type = T_STRING;
+		
+		if (len == 0)
+		{
+			RETURN->type = T_NULL;
+		}
+		else if (len > 0)
+		{
+			STRING_new_temp_value(RETURN, NULL, len);
+			STREAM_read(stream, RETURN->_string.addr, len);
+		}
+		else
+		{
+			len = (-len);
+			
+			RETURN->type = T_STRING;
+			RETURN->_string.addr = STRING_new(NULL, len);
+			RETURN->_string.start = 0;
+			RETURN->_string.len = len;
+			
+			STREAM_read_max(stream, RETURN->_string.addr, len);
+			
+			if (STREAM_eff_read == 0)
+			{
+				RETURN->type = T_NULL;
+				STRING_free(&RETURN->_string.addr);
+			}
+			else
+			{
+				if (STREAM_eff_read < len)
+				{
+					STRING_extend(&RETURN->_string.addr, STREAM_eff_read);
+					RETURN->_string.len = STREAM_eff_read;
+				}
+				STRING_extend_end(&RETURN->_string.addr);
+			}
+		}
 	}
 	else
 	{
-		type = SUBR_get_type(&PARAM[1]);
+		TYPE type = SUBR_get_type(&PARAM[1]);
+    STREAM_read_type(stream, type, RETURN);
 	}
-
-  if (do_not)
-    RETURN->type = T_NULL;
-  else
-    STREAM_read_type(stream, type, RETURN, len);
 
 	SUBR_LEAVE();
 }
@@ -417,8 +446,6 @@ void SUBR_read(ushort code)
 void SUBR_write(ushort code)
 {
   STREAM *stream;
-  int len;
-	TYPE type;
 
   SUBR_ENTER_PARAM(3);
 
@@ -426,22 +453,32 @@ void SUBR_write(ushort code)
 
 	if (code & 0x3F)
 	{
-    VALUE_conv_string(&PARAM[1]);
-		type = T_STRING;
-    VALUE_conv_integer(&PARAM[2]);
-    len = PARAM[2]._integer.value;
-		if (len < 0)
-			len = PARAM[1]._string.len;
+		char *str;
+		int len;
+		int lenw;
+		
+		SUBR_get_string_len(&PARAM[1], &str, &len);
+    
+		VALUE_conv_integer(&PARAM[2]);
+		lenw = PARAM[2]._integer.value;
+		if (lenw < 0)
+			lenw = len;
+		
+		if (lenw > 0)
+		{
+			STREAM_write(stream, str, Min(len, lenw));
+			if (lenw > len)
+				STREAM_write_zeros(stream, lenw - len);
+		}
 	}
 	else
 	{
+		TYPE type;
 		type = SUBR_get_type(&PARAM[2]);
 		VALUE_conv(&PARAM[1], type);
-		len = 0;
+		STREAM_write_type(stream, type, &PARAM[1]);
 	}
 	
-  STREAM_write_type(stream, type, &PARAM[1], len);
-
   SUBR_LEAVE_VOID();
 }
 

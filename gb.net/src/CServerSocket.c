@@ -56,23 +56,23 @@ static void CServerSocket_CallBack(int fd, int type, intptr_t lParam)
 	unsigned int ClientLen;
 	CSERVERSOCKET *_object = (CSERVERSOCKET*)lParam;
 	
-	if ( SOCKET->status != 1) return;
+	if ( SOCKET->status != NET_ACTIVE) return;
 
-	SOCKET->status=2;
+	SOCKET->status = NET_PENDING;
 	ClientLen=sizeof(struct sockaddr_in);
 	THIS->Client=accept(SOCKET->socket,(struct sockaddr*)&THIS->so_client.in,&ClientLen);
 	if (THIS->Client == -1)
 	{
 		close(THIS->Client);
-		SOCKET->status=1;
+		SOCKET->status = NET_ACTIVE;
 		return;
 	}
 	rem_ip_buf=inet_ntoa(THIS->so_client.in.sin_addr);
 	if ( (!THIS->iMaxConn) || (THIS->iCurConn < THIS->iMaxConn) ) okval=1;
 	if ( (!THIS->iPause) && (okval) )
 		GB.Raise(THIS,EVENT_Connection,1,GB_T_STRING,rem_ip_buf,0);
-	if  ( SOCKET->status == 2) close(THIS->Client);
-	SOCKET->status=1;
+	if  ( SOCKET->status == NET_PENDING) close(THIS->Client);
+	SOCKET->status = NET_ACTIVE;
 }
 
 static void CServerSocket_CallBackUnix(int fd, int type, intptr_t lParam)
@@ -82,22 +82,22 @@ static void CServerSocket_CallBackUnix(int fd, int type, intptr_t lParam)
 	unsigned int ClientLen;
 	CSERVERSOCKET *_object = (CSERVERSOCKET*)lParam;
 	
-	if ( SOCKET->status != 1) return;
+	if ( SOCKET->status != NET_ACTIVE) return;
 
-	SOCKET->status=2;
+	SOCKET->status = NET_PENDING;
 	ClientLen=sizeof(struct sockaddr_un);
 	THIS->Client=accept(SOCKET->socket,(struct sockaddr*)&THIS->so_client.un,&ClientLen);
 	if (THIS->Client == -1)
 	{
 		close(THIS->Client);
-		SOCKET->status=1;
+		SOCKET->status = NET_ACTIVE;
 		return;
 	}
 	if ( (!THIS->iMaxConn) || (THIS->iCurConn < THIS->iMaxConn) ) okval=1;
 	if ( (!THIS->iPause) && (okval) )
 		GB.Raise(THIS,EVENT_Connection,1,GB_T_STRING,NULL,0);
-	if  ( SOCKET->status == 2) close(THIS->Client);
-	SOCKET->status=1;
+	if  ( SOCKET->status == NET_PENDING) close(THIS->Client);
+	SOCKET->status = NET_ACTIVE;
 
 }
 
@@ -113,7 +113,7 @@ static int do_srvsock_listen(CSERVERSOCKET* _object,int mymax)
 
 	if ( (!THIS->iPort) && (THIS->type) ) return 8;
 
-	if ( SOCKET->status >0 ) return 1;
+	if (SOCKET->status > NET_INACTIVE) return 1;
 
 	if (mymax<0) return 13;
 
@@ -137,7 +137,7 @@ static int do_srvsock_listen(CSERVERSOCKET* _object,int mymax)
 
 	if ( SOCKET->socket==-1 )
 	{
-		SOCKET->status=-2;
+		SOCKET->status = NET_CANNOT_CREATE_SOCKET;
 		GB.Ref(THIS);
 		GB.Post(srvsock_post_error,(intptr_t)THIS);
 		return 2;
@@ -155,7 +155,7 @@ static int do_srvsock_listen(CSERVERSOCKET* _object,int mymax)
 		if (setsockopt(SOCKET->socket, SOL_SOCKET, SO_BINDTODEVICE, THIS->interface, GB.StringLength(THIS->interface)))
 		{
 			fprintf(stderr, "unable to bind socket to interface: %s\n", strerror(errno));
-			SOCKET->status = -15;
+			SOCKET->status = NET_CANNOT_BIND_INTERFACE;
 			return 15;
 		}
 	}
@@ -172,7 +172,7 @@ static int do_srvsock_listen(CSERVERSOCKET* _object,int mymax)
 	if (retval==-1)
 	{
 		close(SOCKET->socket);
-		SOCKET->status=-10;
+		SOCKET->status = NET_CANNOT_BIND_SOCKET;
 		GB.Ref(THIS);
 		GB.Post(srvsock_post_error,(intptr_t)THIS);
 		return 10;
@@ -183,14 +183,14 @@ static int do_srvsock_listen(CSERVERSOCKET* _object,int mymax)
 	if ( listen(SOCKET->socket,mymax) == -1 )
 	{
 		close(SOCKET->socket);
-		SOCKET->status=-14;
+		SOCKET->status = NET_CANNOT_LISTEN;
 		GB.Ref(THIS);
 		GB.Post(srvsock_post_error,(intptr_t)THIS);
 		return 14;
 	}
 	THIS->iCurConn=0;
 	THIS->iMaxConn=mymax;
-	SOCKET->status=1;
+	SOCKET->status = NET_ACTIVE;
 
 	//CServerSocket_AssignCallBack((intptr_t)THIS,SOCKET->socket);
 	if (THIS->type)
@@ -213,13 +213,16 @@ static void srvsock_listen(CSERVERSOCKET *_object, int max)
 	}
 }
 
-// BM: Fix bug in allocations
-
 static void add_child(CSERVERSOCKET *_object, CSOCKET *child)
 {
 	*((CSOCKET **)GB.Add(&THIS->children)) = child;
 	child->parent = THIS;
 	GB.Ref(child);
+}
+
+static void unref_child_later(CSOCKET *child)
+{
+	GB.Unref(POINTER(&child));
 }
 
 static void remove_child(CSERVERSOCKET *_object, CSOCKET *child)
@@ -232,7 +235,7 @@ static void remove_child(CSERVERSOCKET *_object, CSOCKET *child)
 		{
 			child->parent = NULL;
 			GB.Remove(&THIS->children, i, 1);
-			GB.Unref(POINTER(&child));
+			GB.Post(unref_child_later, (intptr_t)child);
 			return;
 		}
 	}
@@ -272,14 +275,14 @@ BEGIN_PROPERTY(ServerSocket_Port)
 		GB.ReturnInteger(THIS->iPort);
 		return;
 	}
-	if (SOCKET->status>0)
+	if (SOCKET->status > NET_INACTIVE)
 	{
-		GB.Error("Port value can not be changed when socket is active");
+		GB.Error("Port cannot be changed when socket is active");
 		return;
 	}
 	if ( (VPROP(GB_INTEGER)<1) || (VPROP(GB_INTEGER)>65535) )
 	{
-		GB.Error("Invalid Port Value");
+		GB.Error("Invalid port Value");
 		return;
 	}
 	THIS->iPort=VPROP(GB_INTEGER);
@@ -297,7 +300,7 @@ BEGIN_PROPERTY(ServerSocket_Path)
 		GB.ReturnString(THIS->sPath);
 		return;
 	}
-	if (SOCKET->status>0)
+	if (SOCKET->status > NET_INACTIVE)
 	{
 		GB.Error("Path cannot be changed while socket is active");
 		return;
@@ -320,7 +323,7 @@ BEGIN_PROPERTY(ServerSocket_Interface)
 	}
 	else
 	{
-		if (SOCKET->status>0)
+		if (SOCKET->status > NET_INACTIVE)
 		{
 			GB.Error("Interface cannot be changed while socket is active");
 			return;
@@ -347,7 +350,7 @@ BEGIN_PROPERTY ( ServerSocket_Type )
 		GB.ReturnInteger(THIS->type);
 		return;
 	}
-	if (SOCKET->status>0)
+	if (SOCKET->status > NET_INACTIVE)
 	{
 		GB.Error("Socket Type can not be changed when socket is active");
 		return;
@@ -417,11 +420,11 @@ void close_server(CSERVERSOCKET *_object)
 {
 	CSOCKET *chd;
 
-	if (SOCKET->status <= 0) return;
+	if (SOCKET->status <= NET_INACTIVE) return;
 
 	GB.Watch (SOCKET->socket , GB_WATCH_NONE , (void *)CServerSocket_CallBack,0);
 	close(SOCKET->socket);
-	SOCKET->status=0;
+	SOCKET->status = NET_INACTIVE;
 
 	while (GB.Count(THIS->children))
 	{
@@ -484,11 +487,11 @@ BEGIN_METHOD_VOID(ServerSocket_Accept)
 	struct sockaddr_in myhost;
 	unsigned int mylen;
 
-	if ( SOCKET->status != 2){ GB.Error("No connection to accept");return; }
+	if ( SOCKET->status != NET_PENDING){ GB.Error("No connection to accept");return; }
 
 	GB.New(POINTER(&cli_obj),GB.FindClass("Socket"),"Socket",NULL);
 	cli_obj->common.socket = THIS->Client;
-	cli_obj->common.status=7;
+	cli_obj->common.status = NET_CONNECTED;
 	cli_obj->OnClose=CServerSocket_OnClose;
 	THIS->iCurConn++;
 	GB.FreeString ( &cli_obj->sRemoteHostIP);
@@ -524,7 +527,7 @@ BEGIN_METHOD_VOID(ServerSocket_Accept)
 
 	GB.Ref(cli_obj);
 	GB.Post(CSocket_post_connected,(intptr_t)cli_obj);
-	SOCKET->status=3;
+	SOCKET->status = NET_ACCEPTING;
 	
 	GB.ReturnObject((void*)cli_obj);
 
@@ -580,7 +583,7 @@ GB_DESC CServerSocketDesc[] =
   GB_METHOD("_next", "Socket", ServerSocket_next, NULL),
   GB_PROPERTY_READ("Count", "i", ServerSocket_count),
 
-	GB_PROPERTY("Timeout", "i", CSOCKET_Timeout),
+	GB_PROPERTY("Timeout", "i", Socket_Timeout),
 
   GB_CONSTANT("_IsControl", "b", TRUE),
   GB_CONSTANT("_IsVirtual", "b", TRUE),
