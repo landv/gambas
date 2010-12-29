@@ -1,22 +1,22 @@
 /***************************************************************************
 
-  gbc_trans_subr.c
+	gbc_trans_subr.c
 
-  (c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -37,44 +37,44 @@
 
 
 typedef
-  struct {
-    char *name;
-    SUBR_INFO *info;
-    }
-  TRANS_SUBR_INFO;
+	struct {
+		char *name;
+		SUBR_INFO *info;
+		}
+	TRANS_SUBR_INFO;
 
 
 static void trans_subr(int subr, int nparam)
 {
-  static TRANS_SUBR_INFO subr_info[] =
-  {
-    { ".Print" }, { ".Input" }, { ".Write" }, { ".WriteBytes" }, { ".Read" }, 
+	static TRANS_SUBR_INFO subr_info[] =
+	{
+		{ ".Print" }, { ".Input" }, { ".Write" }, { ".WriteBytes" }, { ".Read" }, 
 		{ ".ReadBytes" }, { ".Open" },  { ".Close" }, { "Seek" }, { ".LineInput" }, 
 		{ ".Flush" }, { ".Exec" }, { ".Shell" }, { ".Wait" }, { ".Kill" }, 
 		{ ".Move" }, { ".Mkdir" }, { ".Rmdir" }, { ".Array" }, {".Collection" }, 
 		{ ".Copy" }, { ".Link" },  { ".Error" }, { ".Lock" }, { ".Unlock" }, 
 		{ ".InputFrom" }, { ".OutputTo" }, { ".Debug" }, { ".Sleep" }, { ".Randomize" }, 
 		{ ".ErrorTo" }, { "Left" }, { "Mid" }, { ".OpenMemory" }
-  };
+	};
 
-  TRANS_SUBR_INFO *tsi = &subr_info[subr];
+	TRANS_SUBR_INFO *tsi = &subr_info[subr];
 
-  if (tsi->info == NULL)
-  {
-    tsi->info = SUBR_get(tsi->name);
-    if (!tsi->info)
-    	ERROR_panic("Unknown intern subroutine: %s", tsi->name);
-  }
+	if (tsi->info == NULL)
+	{
+		tsi->info = SUBR_get(tsi->name);
+		if (!tsi->info)
+			ERROR_panic("Unknown intern subroutine: %s", tsi->name);
+	}
 
-  CODE_subr(tsi->info->opcode, nparam, tsi->info->optype, FALSE, tsi->info->min_param == tsi->info->max_param);
+	CODE_subr(tsi->info->opcode, nparam, tsi->info->optype, FALSE, tsi->info->min_param == tsi->info->max_param);
 }
 
 
 static bool trans_stream_check(int default_stream, bool check)
 {
-  if (TRANS_is(RS_SHARP))
-  {
-    TRANS_expression(FALSE);
+	if (TRANS_is(RS_SHARP))
+	{
+		TRANS_expression(FALSE);
 		
 		if (check)
 		{
@@ -92,15 +92,15 @@ static bool trans_stream_check(int default_stream, bool check)
 		}
 		
 		return FALSE;
-  }
-  else
-  {
-    if (default_stream == TS_NONE)
-      THROW("Syntax error. &1 expected", "'#'");
+	}
+	else
+	{
+		if (default_stream == TS_NONE)
+			THROW("Syntax error. &1 expected", "'#'");
 
-    CODE_push_number(default_stream);
-    return TRUE;
-  }
+		CODE_push_number(default_stream);
+		return TRUE;
+	}
 }
 
 #define trans_stream(_default_stream) trans_stream_check(_default_stream, TRUE)
@@ -108,55 +108,55 @@ static bool trans_stream_check(int default_stream, bool check)
 
 static void trans_print_debug()
 {
-  int nparam = 1;
-  bool semicolon = FALSE;
+	int nparam = 1;
+	bool semicolon_or_comma = FALSE;
 
-  for(;;)
-  {
-    if (PATTERN_is_newline(*JOB->current))
-      break;
+	for(;;)
+	{
+		if (PATTERN_is_newline(*JOB->current))
+			break;
 
-    TRANS_expression(FALSE);
-    nparam++;
-    semicolon = FALSE;
+		TRANS_expression(FALSE);
+		nparam++;
+		semicolon_or_comma = FALSE;
 
-    if (PATTERN_is_newline(*JOB->current))
-      break;
+		if (PATTERN_is_newline(*JOB->current))
+			break;
 
-    if (TRANS_is(RS_SCOLON))
-    {
-      if (TRANS_is(RS_SCOLON))
-      {
-        CODE_push_char(' ');
-        nparam++;
-      }
-      semicolon = TRUE;
-    }
-    else if (TRANS_is(RS_COMMA))
-    {
-      CODE_push_char('\t');
-      nparam++;
-      semicolon = FALSE;
-    }
-    else
-      THROW(E_SYNTAX);
-  }
+		if (TRANS_is(RS_SCOLON))
+		{
+			if (TRANS_is(RS_SCOLON))
+			{
+				CODE_push_char(' ');
+				nparam++;
+			}
+			semicolon_or_comma = TRUE;
+		}
+		else if (TRANS_is(RS_COMMA))
+		{
+			CODE_push_char('\t');
+			nparam++;
+			semicolon_or_comma = TRUE;
+		}
+		else
+			THROW(E_SYNTAX);
+	}
 
-  if (!semicolon)
-  {
-    CODE_push_char('\n');
-    nparam++;
-  }
+	if (!semicolon_or_comma)
+	{
+		CODE_push_char('\n');
+		nparam++;
+	}
 
-  trans_subr(TS_SUBR_PRINT, nparam);
-  CODE_drop();
+	trans_subr(TS_SUBR_PRINT, nparam);
+	CODE_drop();
 }
 
 
 void TRANS_print(void)
 {
 	trans_stream(TS_STDOUT);
-  trans_print_debug();
+	trans_print_debug();
 }
 
 
@@ -199,21 +199,21 @@ void TRANS_error(void)
 
 static int trans_binary_type(void)
 {
-  int index;
+	int index;
 	bool string = FALSE;
 	int nparam = 0;
 
-  if (PATTERN_is_class(*JOB->current))
-  {
-    index = CLASS_add_class(JOB->class, PATTERN_index(*JOB->current));
-    if (PATTERN_is(JOB->current[1], RS_LSQR))
-    	index = CLASS_get_array_class(JOB->class, T_OBJECT, index);
-   	
+	if (PATTERN_is_class(*JOB->current))
+	{
+		index = CLASS_add_class(JOB->class, PATTERN_index(*JOB->current));
+		if (PATTERN_is(JOB->current[1], RS_LSQR))
+			index = CLASS_get_array_class(JOB->class, T_OBJECT, index);
+		
 		CODE_push_class(index);
-  }
-  else if (PATTERN_is_type(*JOB->current))
-  {
-    if (PATTERN_is(JOB->current[1], RS_LSQR))
+	}
+	else if (PATTERN_is_type(*JOB->current))
+	{
+		if (PATTERN_is(JOB->current[1], RS_LSQR))
 		{
 			index = CLASS_get_array_class(JOB->class, RES_get_type(PATTERN_index(*JOB->current)), -1);
 			CODE_push_class(index);
@@ -224,16 +224,16 @@ static int trans_binary_type(void)
 			CODE_push_number(index);
 			string = (index == T_STRING);
 		}
-  }
-  else
-  	THROW(E_SYNTAX);
+	}
+	else
+		THROW(E_SYNTAX);
 
-  JOB->current++;
+	JOB->current++;
 	nparam++;
 
 	#if 0
-  if (TRANS_is(RS_LSQR))
-  {
+	if (TRANS_is(RS_LSQR))
+	{
 		TRANS_expression(FALSE);
 		nparam++;
 		TRANS_want(RS_RSQR, NULL);
@@ -253,9 +253,9 @@ static int trans_binary_type(void)
 
 void TRANS_write(void)
 {
-  trans_stream(TS_STDOUT);
+	trans_stream(TS_STDOUT);
 
-  TRANS_expression(FALSE);
+	TRANS_expression(FALSE);
 	
 	if (TRANS_is(RS_AS))
 	{
@@ -276,67 +276,67 @@ void TRANS_write(void)
 		trans_subr(TS_SUBR_WRITE_BYTES, 3);
 	}
 	
-  CODE_drop();
+	CODE_drop();
 }
 
 
 void TRANS_output_to()
 {
-  TRANS_want(RS_TO, NULL);
+	TRANS_want(RS_TO, NULL);
 
-  if (TRANS_is(RS_DEFAULT))
-    CODE_push_null();
-  else
-    trans_stream(TS_NONE);
+	if (TRANS_is(RS_DEFAULT))
+		CODE_push_null();
+	else
+		trans_stream(TS_NONE);
 
-  trans_subr(TS_SUBR_OUTPUT_TO, 1);
+	trans_subr(TS_SUBR_OUTPUT_TO, 1);
 
-  if (TRANS_in_affectation == 0)
-    CODE_drop();
+	if (TRANS_in_affectation == 0)
+		CODE_drop();
 }
 
 void TRANS_input_from()
 {
-  if (TRANS_is(RS_DEFAULT))
-    CODE_push_null();
-  else
-    trans_stream(TS_NONE);
+	if (TRANS_is(RS_DEFAULT))
+		CODE_push_null();
+	else
+		trans_stream(TS_NONE);
 
-  trans_subr(TS_SUBR_INPUT_FROM, 1);
+	trans_subr(TS_SUBR_INPUT_FROM, 1);
 
-  if (TRANS_in_affectation == 0)
-    CODE_drop();
+	if (TRANS_in_affectation == 0)
+		CODE_drop();
 }
 
 
 void TRANS_input(void)
 {
-  bool stream = TRUE;
+	bool stream = TRUE;
 
-  if (TRANS_is(RS_FROM))
-  {
-    TRANS_input_from();
-    return;
-  }
+	if (TRANS_is(RS_FROM))
+	{
+		TRANS_input_from();
+		return;
+	}
 
-  trans_stream(TS_STDIN);
+	trans_stream(TS_STDIN);
 
-  for(;;)
-  {
-    trans_subr(TS_SUBR_INPUT, (stream ? 1 : 0));
-    stream = FALSE;
+	for(;;)
+	{
+		trans_subr(TS_SUBR_INPUT, (stream ? 1 : 0));
+		stream = FALSE;
 
-    TRANS_reference();
+		TRANS_reference();
 
-    if (PATTERN_is_newline(*JOB->current))
-      break;
+		if (PATTERN_is_newline(*JOB->current))
+			break;
 
-    if (!PATTERN_is(*JOB->current, RS_COMMA)
-        && !PATTERN_is(*JOB->current, RS_SCOLON))
-      THROW(E_SYNTAX);
+		if (!PATTERN_is(*JOB->current, RS_COMMA)
+				&& !PATTERN_is(*JOB->current, RS_SCOLON))
+			THROW(E_SYNTAX);
 
-    JOB->current++;
-  }
+		JOB->current++;
+	}
 }
 
 void TRANS_read_old(void)
@@ -393,216 +393,216 @@ void TRANS_read(void)
 
 void TRANS_open(void)
 {
-  int mode = TS_MODE_READ;
+	int mode = TS_MODE_READ;
 
-  /* Nom du fichier */
+	/* Nom du fichier */
 
-  TRANS_expression(FALSE);
+	TRANS_expression(FALSE);
 
-  /* mode d'ouverture */
+	/* mode d'ouverture */
 
-  if (TRANS_is(RS_FOR))
-  {
-    if (TRANS_is(RS_READ))
-      mode |= TS_MODE_READ | TS_MODE_DIRECT;
-    else if (TRANS_is(RS_INPUT))
-      mode |= TS_MODE_READ;
+	if (TRANS_is(RS_FOR))
+	{
+		if (TRANS_is(RS_READ))
+			mode |= TS_MODE_READ | TS_MODE_DIRECT;
+		else if (TRANS_is(RS_INPUT))
+			mode |= TS_MODE_READ;
 
-    if (TRANS_is(RS_WRITE))
-      mode |= TS_MODE_WRITE | TS_MODE_DIRECT;
-    else if (TRANS_is(RS_OUTPUT))
-      mode |= TS_MODE_WRITE;
+		if (TRANS_is(RS_WRITE))
+			mode |= TS_MODE_WRITE | TS_MODE_DIRECT;
+		else if (TRANS_is(RS_OUTPUT))
+			mode |= TS_MODE_WRITE;
 
-    if (TRANS_is(RS_CREATE))
-      mode |= TS_MODE_CREATE;
-    else if (TRANS_is(RS_APPEND))
-      mode |= TS_MODE_APPEND;
+		if (TRANS_is(RS_CREATE))
+			mode |= TS_MODE_CREATE;
+		else if (TRANS_is(RS_APPEND))
+			mode |= TS_MODE_APPEND;
 
-    //if (TRANS_is(RS_DIRECT))
-    //  mode |= TS_MODE_DIRECT;
+		//if (TRANS_is(RS_DIRECT))
+		//  mode |= TS_MODE_DIRECT;
 
-    if (TRANS_is(RS_WATCH))
-      mode |= TS_MODE_WATCH;
+		if (TRANS_is(RS_WATCH))
+			mode |= TS_MODE_WATCH;
 
-    /*if (TRANS_is(RS_BIG))
-      mode |= TS_MODE_BIG;
-    else if (TRANS_is(RS_LITTLE))
-      mode |= TS_MODE_LITTLE;*/
+		/*if (TRANS_is(RS_BIG))
+			mode |= TS_MODE_BIG;
+		else if (TRANS_is(RS_LITTLE))
+			mode |= TS_MODE_LITTLE;*/
 
-    /*JOB->current--;
-    if (PATTERN_is(*JOB->current, RS_FOR))
-      THROW("Syntax error in file open mode");
-    JOB->current++;*/
-  }
+		/*JOB->current--;
+		if (PATTERN_is(*JOB->current, RS_FOR))
+			THROW("Syntax error in file open mode");
+		JOB->current++;*/
+	}
 
-  CODE_push_number(mode);
+	CODE_push_number(mode);
 
-  trans_subr(TS_SUBR_OPEN, 2);
+	trans_subr(TS_SUBR_OPEN, 2);
 
-  /*if (TRANS_in_affectation == 0)
-  {
-    //CODE_drop();
+	/*if (TRANS_in_affectation == 0)
+	{
+		//CODE_drop();
 
-    TRANS_want(RS_AS, NULL);
-    TRANS_ignore(RS_SHARP);
+		TRANS_want(RS_AS, NULL);
+		TRANS_ignore(RS_SHARP);
 
-    TRANS_reference();
-  }*/
+		TRANS_reference();
+	}*/
 }
 
 
 void TRANS_pipe(void)
 {
-  int mode = TS_MODE_READ;
+	int mode = TS_MODE_READ;
 
-  /* Nom du fichier */
+	/* Nom du fichier */
 
-  TRANS_expression(FALSE);
+	TRANS_expression(FALSE);
 
-  /* mode d'ouverture */
+	/* mode d'ouverture */
 
-  if (TRANS_is(RS_FOR))
-  {
-    if (TRANS_is(RS_READ))
-      mode |= TS_MODE_READ | TS_MODE_DIRECT;
-    //else if (TRANS_is(RS_INPUT))
-    //  mode |= TS_MODE_READ;
+	if (TRANS_is(RS_FOR))
+	{
+		if (TRANS_is(RS_READ))
+			mode |= TS_MODE_READ | TS_MODE_DIRECT;
+		//else if (TRANS_is(RS_INPUT))
+		//  mode |= TS_MODE_READ;
 
-    if (TRANS_is(RS_WRITE))
-      mode |= TS_MODE_WRITE | TS_MODE_DIRECT;
-    //else if (TRANS_is(RS_OUTPUT))
-    //  mode |= TS_MODE_WRITE;
+		if (TRANS_is(RS_WRITE))
+			mode |= TS_MODE_WRITE | TS_MODE_DIRECT;
+		//else if (TRANS_is(RS_OUTPUT))
+		//  mode |= TS_MODE_WRITE;
 
-    if (TRANS_is(RS_WATCH))
-      mode |= TS_MODE_WATCH;
-  }
+		if (TRANS_is(RS_WATCH))
+			mode |= TS_MODE_WATCH;
+	}
 
-  CODE_push_number(mode | TS_MODE_PIPE);
+	CODE_push_number(mode | TS_MODE_PIPE);
 
-  trans_subr(TS_SUBR_OPEN, 2);
+	trans_subr(TS_SUBR_OPEN, 2);
 }
 
 
 void TRANS_memory(void)
 {
-  int mode = TS_MODE_READ;
+	int mode = TS_MODE_READ;
 
-  /* Memory address */
+	/* Memory address */
 
-  TRANS_expression(FALSE);
+	TRANS_expression(FALSE);
 
-  /* Open mode */
+	/* Open mode */
 
-  if (TRANS_is(RS_FOR))
-  {
-    if (TRANS_is(RS_READ))
-      mode |= TS_MODE_READ | TS_MODE_DIRECT;
+	if (TRANS_is(RS_FOR))
+	{
+		if (TRANS_is(RS_READ))
+			mode |= TS_MODE_READ | TS_MODE_DIRECT;
 
-    if (TRANS_is(RS_WRITE))
-      mode |= TS_MODE_WRITE | TS_MODE_DIRECT;
-  }
+		if (TRANS_is(RS_WRITE))
+			mode |= TS_MODE_WRITE | TS_MODE_DIRECT;
+	}
 
-  CODE_push_number(mode);
+	CODE_push_number(mode);
 
-  trans_subr(TS_SUBR_OPEN_MEMORY, 2);
+	trans_subr(TS_SUBR_OPEN_MEMORY, 2);
 }
 
 
 void TRANS_close(void)
 {
-  if (PATTERN_is_newline(*JOB->current))
-    THROW(E_SYNTAX);
+	if (PATTERN_is_newline(*JOB->current))
+		THROW(E_SYNTAX);
 
-  TRANS_ignore(RS_SHARP);
-  TRANS_expression(FALSE);
+	TRANS_ignore(RS_SHARP);
+	TRANS_expression(FALSE);
 
-  trans_subr(TS_SUBR_CLOSE, 1);
-  CODE_drop();
+	trans_subr(TS_SUBR_CLOSE, 1);
+	CODE_drop();
 }
 
 
 void TRANS_lock(void)
 {
-  if (PATTERN_is_newline(*JOB->current))
-    THROW(E_SYNTAX);
-  
+	if (PATTERN_is_newline(*JOB->current))
+		THROW(E_SYNTAX);
+	
 	if (!TRANS_in_affectation)
 		THROW("Useless LOCK");
 		
-  TRANS_expression(FALSE);
-  
-  trans_subr(TS_SUBR_LOCK, 1);
+	TRANS_expression(FALSE);
+	
+	trans_subr(TS_SUBR_LOCK, 1);
 }
 
 
 void TRANS_unlock(void)
 {
-  if (PATTERN_is_newline(*JOB->current))
-    THROW(E_SYNTAX);
+	if (PATTERN_is_newline(*JOB->current))
+		THROW(E_SYNTAX);
 
-  TRANS_ignore(RS_SHARP);
-  TRANS_expression(FALSE);
+	TRANS_ignore(RS_SHARP);
+	TRANS_expression(FALSE);
 
-  trans_subr(TS_SUBR_UNLOCK, 1);
-  CODE_drop();
+	trans_subr(TS_SUBR_UNLOCK, 1);
+	CODE_drop();
 }
 
 
 void TRANS_seek(void)
 {
-  int nparam;
+	int nparam;
 
-  trans_stream(TS_NONE);
+	trans_stream(TS_NONE);
 
-  TRANS_expression(FALSE);
-  nparam = 2;
+	TRANS_expression(FALSE);
+	nparam = 2;
 
-  /*
-  if (TRANS_is(RS_COMMA))
-  {
-    TRANS_expression(FALSE);
-    nparam++;
-  }
-  */
+	/*
+	if (TRANS_is(RS_COMMA))
+	{
+		TRANS_expression(FALSE);
+		nparam++;
+	}
+	*/
 
-  trans_subr(TS_SUBR_SEEK, nparam);
-  CODE_drop();
+	trans_subr(TS_SUBR_SEEK, nparam);
+	CODE_drop();
 }
 
 
 void TRANS_line_input(void)
 {
-  if (TRANS_is(RS_INPUT))
-  {
-    trans_stream(TS_STDIN);
-    trans_subr(TS_SUBR_LINE_INPUT, 1);
-    TRANS_reference();
-  }
-  else
-    THROW(E_SYNTAX);
+	if (TRANS_is(RS_INPUT))
+	{
+		trans_stream(TS_STDIN);
+		trans_subr(TS_SUBR_LINE_INPUT, 1);
+		TRANS_reference();
+	}
+	else
+		THROW(E_SYNTAX);
 }
 
 
 void TRANS_flush(void)
 {
-  trans_stream(TS_STDOUT);
-  trans_subr(TS_SUBR_FLUSH, 1);
-  CODE_drop();
+	trans_stream(TS_STDOUT);
+	trans_subr(TS_SUBR_FLUSH, 1);
+	CODE_drop();
 }
 
 
 void TRANS_stop(void)
 {
-  if (TRANS_is(RS_EVENT))
-    CODE_stop_event();
-  else
-    CODE_stop();
+	if (TRANS_is(RS_EVENT))
+		CODE_stop_event();
+	else
+		CODE_stop();
 }
 
 
 void TRANS_quit(void)
 {
-  CODE_quit();
+	CODE_quit();
 }
 
 void TRANS_randomize(void)
@@ -622,192 +622,192 @@ void TRANS_randomize(void)
 
 static void trans_exec_shell(bool shell)
 {
-  int mode = TS_EXEC_NONE;
-  bool wait;
-  bool as = TRUE;
+	int mode = TS_EXEC_NONE;
+	bool wait;
+	bool as = TRUE;
 
-  TRANS_expression(FALSE);
+	TRANS_expression(FALSE);
 
 	if (TRANS_is(RS_WITH))
 		TRANS_expression(FALSE);
 	else
 		CODE_push_null();
 	
-  wait = TRANS_is(RS_WAIT);
+	wait = TRANS_is(RS_WAIT);
 
-  if (TRANS_is(RS_FOR))
-  {
-    if (TRANS_is(RS_READ))
-      mode |= TS_EXEC_READ;
-    if (TRANS_is(RS_WRITE))
-      mode |= TS_EXEC_WRITE;
+	if (TRANS_is(RS_FOR))
+	{
+		if (TRANS_is(RS_READ))
+			mode |= TS_EXEC_READ;
+		if (TRANS_is(RS_WRITE))
+			mode |= TS_EXEC_WRITE;
 
-    if (mode == 0)
-    {
-      mode |= TS_EXEC_TERM;
-      if (TRANS_is(RS_INPUT))
-        mode |= TS_EXEC_READ;
-      if (TRANS_is(RS_OUTPUT))
-        mode |= TS_EXEC_WRITE;
-    }
-  }
-  else if (TRANS_is(RS_TO))
-  {
-    if (TRANS_in_affectation)
-      THROW("Syntax error. Cannot use this syntax in assignment");
+		if (mode == 0)
+		{
+			mode |= TS_EXEC_TERM;
+			if (TRANS_is(RS_INPUT))
+				mode |= TS_EXEC_READ;
+			if (TRANS_is(RS_OUTPUT))
+				mode |= TS_EXEC_WRITE;
+		}
+	}
+	else if (TRANS_is(RS_TO))
+	{
+		if (TRANS_in_affectation)
+			THROW("Syntax error. Cannot use this syntax in assignment");
 
-    mode = TS_EXEC_STRING;
-    wait = TRUE;
-    as = FALSE;
-  }
-  
-  if (wait) mode |= TS_EXEC_WAIT;
-  CODE_push_number(mode);
+		mode = TS_EXEC_STRING;
+		wait = TRUE;
+		as = FALSE;
+	}
+	
+	if (wait) mode |= TS_EXEC_WAIT;
+	CODE_push_number(mode);
 
 	if (as && TRANS_is(RS_AS))
 		TRANS_expression(FALSE);
 	else
 		CODE_push_null();
 
-  trans_subr(shell ? TS_SUBR_SHELL : TS_SUBR_EXEC, 4);
+	trans_subr(shell ? TS_SUBR_SHELL : TS_SUBR_EXEC, 4);
 
-  if (mode & TS_EXEC_STRING)
-    TRANS_reference();
-  else if (TRANS_in_affectation == 0)
-    CODE_drop();
+	if (mode & TS_EXEC_STRING)
+		TRANS_reference();
+	else if (TRANS_in_affectation == 0)
+		CODE_drop();
 }
 
 
 void TRANS_exec(void)
 {
-  trans_exec_shell(FALSE);
+	trans_exec_shell(FALSE);
 }
 
 void TRANS_shell(void)
 {
-  trans_exec_shell(TRUE);
+	trans_exec_shell(TRUE);
 }
 
 
 void TRANS_wait(void)
 {
-  int nparam = 0;
+	int nparam = 0;
 
-  if (!PATTERN_is_newline(*JOB->current))
-  {
-    TRANS_expression(FALSE);
-    nparam = 1;
-  }
+	if (!PATTERN_is_newline(*JOB->current))
+	{
+		TRANS_expression(FALSE);
+		nparam = 1;
+	}
 
-  trans_subr(TS_SUBR_WAIT, nparam);
-  CODE_drop();
+	trans_subr(TS_SUBR_WAIT, nparam);
+	CODE_drop();
 }
 
 
 void TRANS_sleep(void)
 {
-  TRANS_expression(FALSE);
-  trans_subr(TS_SUBR_SLEEP, 1);
-  CODE_drop();
+	TRANS_expression(FALSE);
+	trans_subr(TS_SUBR_SLEEP, 1);
+	CODE_drop();
 }
 
 
 void TRANS_kill(void)
 {
-  TRANS_expression(FALSE);
-  trans_subr(TS_SUBR_KILL, 1);
-  CODE_drop();
+	TRANS_expression(FALSE);
+	trans_subr(TS_SUBR_KILL, 1);
+	CODE_drop();
 }
 
 void TRANS_move(void)
 {
-  TRANS_expression(FALSE);
-  TRANS_want(RS_TO, NULL);
-  TRANS_expression(FALSE);
-  trans_subr(TS_SUBR_MOVE, 2);
-  CODE_drop();
+	TRANS_expression(FALSE);
+	TRANS_want(RS_TO, NULL);
+	TRANS_expression(FALSE);
+	trans_subr(TS_SUBR_MOVE, 2);
+	CODE_drop();
 }
 
 void TRANS_copy(void)
 {
-  TRANS_expression(FALSE);
-  TRANS_want(RS_TO, NULL);
-  TRANS_expression(FALSE);
-  trans_subr(TS_SUBR_COPY, 2);
-  CODE_drop();
+	TRANS_expression(FALSE);
+	TRANS_want(RS_TO, NULL);
+	TRANS_expression(FALSE);
+	trans_subr(TS_SUBR_COPY, 2);
+	CODE_drop();
 }
 
 void TRANS_link(void)
 {
-  TRANS_expression(FALSE);
-  TRANS_want(RS_TO, NULL);
-  TRANS_expression(FALSE);
-  trans_subr(TS_SUBR_LINK, 2);
-  CODE_drop();
+	TRANS_expression(FALSE);
+	TRANS_want(RS_TO, NULL);
+	TRANS_expression(FALSE);
+	trans_subr(TS_SUBR_LINK, 2);
+	CODE_drop();
 }
 
 void TRANS_inc(void)
 {
-  PATTERN *save = JOB->current;
+	PATTERN *save = JOB->current;
 
-  TRANS_expression(FALSE);
-  CODE_push_number(1);
-  CODE_op(C_ADD, 0, 2, TRUE);
+	TRANS_expression(FALSE);
+	CODE_push_number(1);
+	CODE_op(C_ADD, 0, 2, TRUE);
 
-  JOB->current = save;
-  TRANS_reference();
+	JOB->current = save;
+	TRANS_reference();
 }
 
 void TRANS_dec(void)
 {
-  PATTERN *save = JOB->current;
+	PATTERN *save = JOB->current;
 
-  TRANS_expression(FALSE);
-  CODE_push_number(1);
-  CODE_op(C_SUB, 0, 2, TRUE);
+	TRANS_expression(FALSE);
+	CODE_push_number(1);
+	CODE_op(C_SUB, 0, 2, TRUE);
 
-  JOB->current = save;
-  TRANS_reference();
+	JOB->current = save;
+	TRANS_reference();
 }
 
 
 void TRANS_swap(void)
 {
-  PATTERN *sa;
-  PATTERN *sb;
-  PATTERN *current;
+	PATTERN *sa;
+	PATTERN *sb;
+	PATTERN *current;
 
-  sa = JOB->current;
-  TRANS_expression(FALSE);
+	sa = JOB->current;
+	TRANS_expression(FALSE);
 
-  TRANS_want(RS_COMMA, "Comma");
+	TRANS_want(RS_COMMA, "Comma");
 
-  sb = JOB->current;
-  TRANS_expression(FALSE);
+	sb = JOB->current;
+	TRANS_expression(FALSE);
 
-  current = JOB->current;
+	current = JOB->current;
 
-  JOB->current = sa;
-  TRANS_reference();
+	JOB->current = sa;
+	TRANS_reference();
 
-  JOB->current = sb;
-  TRANS_reference();
+	JOB->current = sb;
+	TRANS_reference();
 
-  JOB->current = current;
+	JOB->current = current;
 }
 
 void TRANS_mkdir(void)
 {
-  TRANS_expression(FALSE);
-  trans_subr(TS_SUBR_MKDIR, 1);
-  CODE_drop();
+	TRANS_expression(FALSE);
+	trans_subr(TS_SUBR_MKDIR, 1);
+	CODE_drop();
 }
 
 void TRANS_rmdir(void)
 {
-  TRANS_expression(FALSE);
-  trans_subr(TS_SUBR_RMDIR, 1);
-  CODE_drop();
+	TRANS_expression(FALSE);
+	trans_subr(TS_SUBR_RMDIR, 1);
+	CODE_drop();
 }
 
 void TRANS_mid()
@@ -870,8 +870,8 @@ void TRANS_mid()
 #if 0
 void TRANS_scan(void)
 {
-  PATTERN *save;
-  int noutput = 0;
+	PATTERN *save;
+	int noutput = 0;
 
 	TRANS_expression(FALSE);
 	TRANS_want(RS_WITH, NULL);
@@ -879,21 +879,21 @@ void TRANS_scan(void)
 
 	TRANS_want(RS_TO, NULL);
 
-  save = JOB->current;
+	save = JOB->current;
 	for(;;)
 	{
-	  TRANS_expression(FALSE);
+		TRANS_expression(FALSE);
 		noutput++;
 		if (!TRANS_is(RS_COMMA))
 			break;
 	}
-  JOB->current = save;
+	JOB->current = save;
 
-  trans_subr_output(TSO_SUBR_SCAN, 2 + noutput, noutput);
+	trans_subr_output(TSO_SUBR_SCAN, 2 + noutput, noutput);
 
 	for(;;)
 	{
-	  TRANS_reference();
+		TRANS_reference();
 		if (!TRANS_is(RS_COMMA))
 			break;
 	}
@@ -902,7 +902,7 @@ void TRANS_scan(void)
 
 void TRANS_subr(int subr, int nparam)
 {
-  trans_subr(subr, nparam);
+	trans_subr(subr, nparam);
 }
 
 
