@@ -538,7 +538,8 @@ static void gambas_handle_event(GdkEvent *event)
 		{
 			gMainWindow *win;
 			
-			control = gDesktop::activeControl();
+			if (gDesktop::activeControl())
+				control = gDesktop::activeControl();
 			
 			if (control)
 			{
@@ -557,7 +558,7 @@ static void gambas_handle_event(GdkEvent *event)
 						//fprintf(stderr, "gEvent_KeyPress on %p %s\n", control, control->name());
 						cancel = control->onKeyEvent(control, gEvent_KeyPress);
 					}
-					if (!cancel && win->onKeyEvent)
+					if (!cancel && win != control && win->onKeyEvent)
 					{
 						cancel = win->onKeyEvent(win, gEvent_KeyPress);
 					}
@@ -599,7 +600,8 @@ static void gambas_handle_event(GdkEvent *event)
 			bool cancel = false;
 			gMainWindow *win;
 			
-			control = gDesktop::activeControl();
+			if (gDesktop::activeControl())
+				control = gDesktop::activeControl();
 			
 			if (control)
 			{
@@ -613,7 +615,7 @@ static void gambas_handle_event(GdkEvent *event)
 					}
 					if (!cancel)
 						control->emit(SIGNAL(control->onKeyEvent), gEvent_KeyRelease);
-					if (!cancel && win->onKeyEvent)
+					if (!cancel && win != control && win->onKeyEvent)
 					{
 						cancel = win->onKeyEvent(win, gEvent_KeyRelease);
 					}
