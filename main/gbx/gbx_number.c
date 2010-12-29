@@ -387,7 +387,7 @@ bool NUMBER_from_string(int option, const char *str, int len, VALUE *value)
 		get_char();
 		if (!read_float(&dval, (option & NB_LOCAL) != 0))
 		{
-			if (minus) val = (-val);
+			if (minus) dval = (-dval);
 			type = T_FLOAT;
 			goto __END;
 		}

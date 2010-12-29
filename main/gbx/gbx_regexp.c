@@ -1,21 +1,21 @@
 /***************************************************************************
 
-  gbx_regexp.c
+	gbx_regexp.c
 
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -40,151 +40,135 @@ static CARRAY *_scan_array;
 
 bool REGEXP_match(const char *pattern, int len_pattern, const char *string, int len_string)
 {
-  unsigned char cp;
-  unsigned char cs;
+	unsigned char cp;
+	unsigned char cs;
 
-  void _next_pattern(void)
-  {
-    cp = *pattern;
-    pattern++; len_pattern--;
-  }
+	void _next_pattern(void)
+	{
+		cp = *pattern;
+		pattern++; len_pattern--;
+	}
 
-  void _next_string(void)
-  {
-    cs = *string;
-    string++; len_string--;
-  }
+	void _next_string(void)
+	{
+		cs = *string;
+		string++; len_string--;
+	}
 
-  /*if (len_pattern == 0 || len_string == 0)
-    return FALSE;*/
+	/*if (len_pattern == 0 || len_string == 0)
+		return FALSE;*/
 
-  for(;;)
-  {
-    if (len_pattern == 0)
-      return (len_string == 0);
+	for(;;)
+	{
+		if (len_pattern == 0)
+			return (len_string == 0);
 
-    _next_pattern();
+		_next_pattern();
 
-    if (cp == '*')
-    {
-    	const char *p;
+		if (cp == '*')
+		{
+			const char *p;
 
-      if (len_pattern == 0)
-      {
-      	if (_scan_cb)
-      		(*_scan_cb)(string, len_string);
-        return TRUE;
+			if (len_pattern == 0)
+			{
+				if (_scan_cb)
+					(*_scan_cb)(string, len_string);
+				return TRUE;
 			}
 
 			p = string;
 
-      for(;;)
-      {
-        if (REGEXP_match(pattern, len_pattern, string, len_string))
-        {
-      		if (_scan_cb)
-      			(*_scan_cb)(p, string - p);
-          return TRUE;
+			for(;;)
+			{
+				if (REGEXP_match(pattern, len_pattern, string, len_string))
+				{
+					if (_scan_cb)
+						(*_scan_cb)(p, string - p);
+					return TRUE;
 				}
-        if (len_string == 0)
-          return FALSE;
-        _next_string();
-      }
-      return FALSE;
-    }
-
-    if (len_string == 0)
-      return FALSE; /*end || (len_pattern == 0);*/
-
-    _next_string();
-
-    if (cp == '?')
-      continue;
-
-    /*if (cp == ' ')
-    {
-    	if (cs > ' ')
-    		return FALSE;
-
-    	while (len_string && cs <= ' ')
-    		_next_string();
-
-			if (cs > ' ')
-			{
-				string--;
-				len_string++;
+				if (len_string == 0)
+					return FALSE;
+				_next_string();
 			}
+			return FALSE;
+		}
+
+		if (len_string == 0)
+			return FALSE; /*end || (len_pattern == 0);*/
+
+		_next_string();
+
+		if (cp == '?')
 			continue;
-    }*/
 
-    if (cp == '[' && len_pattern > 0)
-    {
-      bool not = FALSE;
-      bool in = FALSE;
-      unsigned char cb = 0;
+		if (cp == '[' && len_pattern > 0)
+		{
+			bool not = FALSE;
+			bool in = FALSE;
+			unsigned char cb = 0;
 
-      _next_pattern();
-      if (cp == '^')
-      {
-        not = TRUE;
-        _next_pattern();
-      }
+			_next_pattern();
+			if (cp == '^')
+			{
+				not = TRUE;
+				_next_pattern();
+			}
 
-      if (cp == cs)
-      {
-        in = TRUE;
-        _next_pattern();
-      }
-      else
-      {
-        for(;;)
-        {
-          if (cp == '-' && len_pattern > 1 && cb && cb != '-')
-          {
-            _next_pattern();
-            if (cb <= cs && cs <= cp)
-            {
-              in = TRUE;
-              break;
-            }
-            cb = 0;
-          }
-          else if (cp == cs)
-          {
-            in = TRUE;
-            break;
-          }
-          else
-          	cb = cp;
+			if (cp == cs)
+			{
+				in = TRUE;
+				_next_pattern();
+			}
+			else
+			{
+				for(;;)
+				{
+					if (cp == '-' && len_pattern > 1 && cb && cb != '-')
+					{
+						_next_pattern();
+						if (cb <= cs && cs <= cp)
+						{
+							in = TRUE;
+							break;
+						}
+						cb = 0;
+					}
+					else if (cp == cs)
+					{
+						in = TRUE;
+						break;
+					}
+					else
+						cb = cp;
 
-          _next_pattern();
-          if (cp == ']')
-            break;
-        }
-      }
+					_next_pattern();
+					if (cp == ']')
+						break;
+				}
+			}
 
-      for(;;)
-      {
-        if (cp == ']')
-          break;
-        if (len_pattern == 0)
-          THROW(E_REGEXP, "Missing ']'");
-        _next_pattern();
-      }
+			for(;;)
+			{
+				if (cp == ']')
+					break;
+				if (len_pattern == 0)
+					THROW(E_REGEXP, "Missing ']'");
+				_next_pattern();
+			}
 
-      if (in ^ not)
-        continue;
+			if (in ^ not)
+				continue;
 
-      return FALSE;
-    }
+			return FALSE;
+		}
 		
-    if (cp == ' ')
-    {
-    	if (cs > ' ')
-    		return FALSE;
+		if (cp == ' ')
+		{
+			if (cs > ' ')
+				return FALSE;
 
-    	while (len_string && cs <= ' ')
-    		_next_string();
+			while (len_string && cs <= ' ')
+				_next_string();
 
 			if (cs > ' ')
 			{
@@ -192,7 +176,7 @@ bool REGEXP_match(const char *pattern, int len_pattern, const char *string, int 
 				len_string++;
 			}
 			continue;
-    }
+		}
 
 		if (cp == '{' && len_pattern > 0)
 		{
@@ -242,16 +226,16 @@ bool REGEXP_match(const char *pattern, int len_pattern, const char *string, int 
 			continue;
 		}
 
-    if (cp == '\\')
-    {
-      if (len_pattern == 0)
-        THROW(E_REGEXP, "Trailing backslash");
-      _next_pattern();
-    }
+		if (cp == '\\')
+		{
+			if (len_pattern == 0)
+				THROW(E_REGEXP, "Trailing backslash");
+			_next_pattern();
+		}
 
-    if (tolower(cp) != tolower(cs))
-      return FALSE;
-  }
+		if (tolower(cp) != tolower(cs))
+			return FALSE;
+	}
 }
 
 

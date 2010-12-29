@@ -159,7 +159,7 @@ PUBLIC boolean TRANS_get_number(int index, TRANS_NUMBER *result)
 }
 #endif
 
-PUBLIC boolean TRANS_get_number(int index, TRANS_NUMBER *result)
+bool TRANS_get_number(int index, TRANS_NUMBER *result)
 {
   GB_VALUE value;
   SYMBOL *sym = TABLE_get_symbol(EVAL->table, index);
