@@ -279,6 +279,25 @@ static GtkWindowGroup *get_window_group(GtkWidget *widget)
 	return FALSE;
 }*/
 
+static bool raise_key_event_to_parent_window(gControl *control, int type)
+{
+	gMainWindow *win;
+	
+	while (control->parent())
+	{
+		win = control->parent()->window();
+		if (win->onKeyEvent && win->canRaise(win, type))
+		{
+			if (win->onKeyEvent(win, type))
+				return true;
+		}
+		
+		control = win;
+	}
+	
+	return false;
+}
+
 static void gambas_handle_event(GdkEvent *event)
 {
   GtkWidget *widget;
@@ -558,10 +577,8 @@ static void gambas_handle_event(GdkEvent *event)
 						//fprintf(stderr, "gEvent_KeyPress on %p %s\n", control, control->name());
 						cancel = control->onKeyEvent(control, gEvent_KeyPress);
 					}
-					if (!cancel && win != control && win->onKeyEvent)
-					{
-						cancel = win->onKeyEvent(win, gEvent_KeyPress);
-					}
+					if (!cancel)
+						cancel = raise_key_event_to_parent_window(control, gEvent_KeyPress);
 				}
 				gKey::disable();
 				
@@ -615,10 +632,8 @@ static void gambas_handle_event(GdkEvent *event)
 					}
 					if (!cancel)
 						control->emit(SIGNAL(control->onKeyEvent), gEvent_KeyRelease);
-					if (!cancel && win != control && win->onKeyEvent)
-					{
-						cancel = win->onKeyEvent(win, gEvent_KeyRelease);
-					}
+					if (!cancel)
+						cancel = raise_key_event_to_parent_window(control, gEvent_KeyRelease);
 				}
 				gKey::disable();
 				

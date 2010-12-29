@@ -136,22 +136,32 @@ void gb_plug_raise_error(gControl *sender)
 // 	GB.Unref(POINTER(&_object));
 // }
 
+static int to_gambas_event(int type)
+{
+	switch (type)
+	{
+		case gEvent_MousePress: return EVENT_MouseDown;
+		case gEvent_MouseRelease: return EVENT_MouseUp;
+		case gEvent_MouseMove: return EVENT_MouseMove;
+		case gEvent_MouseDrag: return EVENT_MouseDrag;
+		case gEvent_MouseWheel: return EVENT_MouseWheel;
+		case gEvent_MouseMenu: return EVENT_Menu;
+		case gEvent_MouseDblClick: return EVENT_DblClick;
+		case gEvent_KeyPress: return EVENT_KeyPress;
+		case gEvent_KeyRelease: return EVENT_KeyRelease;
+		default: return -1;
+	}
+}
+
 static bool gb_can_raise(gControl *sender, int type)
 {
 	CWIDGET *ob = GetObject(sender);
-	if (!ob) return false;
-
-	switch (type)
-	{
-		case gEvent_MousePress: type = EVENT_MouseDown; break;
-		case gEvent_MouseRelease: type = EVENT_MouseUp; break;
-		case gEvent_MouseMove: type = EVENT_MouseMove; break;
-		case gEvent_MouseDrag: type = EVENT_MouseDrag; break;
-		case gEvent_MouseWheel: type =EVENT_MouseWheel; break;
-		case gEvent_MouseMenu: type = EVENT_Menu; break;
-		case gEvent_MouseDblClick: type = EVENT_DblClick; break;
-		default: return true;
-	}
+	if (!ob) 
+		return false;
+	
+	type = to_gambas_event(type);
+	if (type < 0) 
+		return false;
 	
 	return GB.CanRaise(ob, type);
 }
@@ -164,25 +174,9 @@ bool gb_raise_MouseEvent(gControl *sender, int type)
 	
 	switch(type)
 	{
-		case gEvent_MousePress:
-			GB.Raise(ob, EVENT_MouseDown, 0);
-			break;
-			
-		case gEvent_MouseRelease:
-			GB.Raise(ob, EVENT_MouseUp, 0);
-			break;
-			
-		case gEvent_MouseMove:
-			GB.Raise(ob, EVENT_MouseMove, 0);
-			break;
-			
 		case gEvent_MouseDrag:
 			if (gMouse::button() && GB.CanRaise(ob, EVENT_MouseDrag))
 				GB.Raise(ob, EVENT_MouseDrag, 0);
-			break;
-			
-		case gEvent_MouseWheel:
-			GB.Raise(ob, EVENT_MouseWheel, 0);
 			break;
 			
 		case gEvent_MouseMenu:
@@ -204,10 +198,8 @@ bool gb_raise_MouseEvent(gControl *sender, int type)
 			
 			break;
 			
-		case gEvent_MouseDblClick:
-			//fprintf(stderr, "dblclick: %s (%p)\n", sender->name(), _ob);
-			GB.Raise(ob, EVENT_DblClick, 0);
-			break;
+		default:
+			GB.Raise(ob, to_gambas_event(type), 0);
 		
 	}
 	
@@ -216,35 +208,12 @@ bool gb_raise_MouseEvent(gControl *sender, int type)
 
 bool gb_raise_KeyEvent(gControl *sender, int type)
 {
-	CWIDGET *_ob=GetObject(sender);
-	
-	if (!_ob) return false;
-	
-	switch(type)
-	{
-		case gEvent_KeyPress:
-			return GB.Raise((void*)_ob,EVENT_KeyPress,0);
-		case gEvent_KeyRelease:
-			GB.Raise((void*)_ob,EVENT_KeyRelease,0);
-			return false;
-		default:
-			return false;
-	}
+	return GB.Raise(GetObject(sender), to_gambas_event(type), 0);
 }
 
 void gb_raise_EnterLeave(gControl *sender, int type)
 {
-	CWIDGET *_ob=GetObject(sender);
-	
-	if (!_ob) return;
-	
-	switch(type)
-	{
-		case gEvent_Enter:
-			GB.Raise((void*)_ob,EVENT_Enter,0); break;
-		case gEvent_Leave:
-			GB.Raise((void*)_ob,EVENT_Leave,0); break;
-	}
+	GB.Raise(GetObject(sender), to_gambas_event(type), 0);
 }
 
 static void post_focus_change(void *)

@@ -2,7 +2,6 @@
 
 { Form Form
   MoveScaled(0,0,118,86)
-  Text = ("")
   Arrangement = Arrange.Fill
   { HSplit1 HSplit
     MoveScaled(1,1,96,84)
@@ -164,14 +163,14 @@
       { DrawingArea1 DrawingArea
         MoveScaled(2,1,38,45)
         Background = &HFFFFFF&
-        Painted = True
         Border = Border.Plain
+        Painted = True
       }
       Index = 1
       Text = ("Source")
       { Editor1 TextArea
         MoveScaled(8,2,32,37)
-        Font = Font["Monospace"]
+        Font = Font["Monospace,-1"]
         Text = ("TextArea1")
         ReadOnly = True
       }

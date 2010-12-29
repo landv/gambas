@@ -195,6 +195,10 @@ void gControl::cleanRemovedControls()
 	controls_destroyed = NULL;
 }
 
+static bool always_can_raise(gControl *sender, int type)
+{
+	return true;
+}
 
 void gControl::initAll(gContainer *parent)
 {
@@ -239,6 +243,7 @@ void gControl::initAll(gContainer *parent)
 	onDragMove = NULL;
 	onDrop = NULL;
 	onEnterLeave = NULL;
+	canRaise = always_can_raise;
 
 	frame = border = widget = NULL;
 	_scroll = NULL;
