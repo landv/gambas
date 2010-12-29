@@ -279,11 +279,7 @@ void gTextArea::paste()
 	
 	txt = gClipboard::getText();
 	if (txt)
-	{
 		gtk_text_buffer_insert_at_cursor(buf,(const gchar *)txt,-1);
-		g_free(txt);
-	}
-	
 }
 
 void gTextArea::insert(const char *txt)
@@ -471,11 +467,3 @@ int gTextArea::textHeight()
 	waitForLayout(&w, &h);
 	return h;
 }
-
-
-
-
-
-
-
-
