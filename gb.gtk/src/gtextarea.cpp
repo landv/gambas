@@ -100,22 +100,25 @@ gTextArea::gTextArea(gContainer *parent) : gControl(parent)
 
 char *gTextArea::text()
 {
-        GtkTextBuffer *buf=gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
-        GtkTextIter start;
-        GtkTextIter end;
-        
-        if (!buf) return NULL;
-        
-        gtk_text_buffer_get_bounds(buf,&start,&end);
-        return gtk_text_buffer_get_text(buf,&start,&end,true);
+	GtkTextBuffer *buf=gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
+	GtkTextIter start;
+	GtkTextIter end;
+	char *text;
+	
+	if (!buf) return NULL;
+	
+	gtk_text_buffer_get_bounds(buf, &start, &end);
+	text = gtk_text_buffer_get_text(buf, &start, &end, true);
+	gt_free_later(text);
+	return text;
 }
 
 void gTextArea::setText(const char *txt)
 {
-        GtkTextBuffer *buf=gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
-        if (!txt) txt="";
-        
-        gtk_text_buffer_set_text(buf,(const gchar *)txt,-1);
+	GtkTextBuffer *buf=gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
+	if (!txt) txt="";
+	
+	gtk_text_buffer_set_text(buf,(const gchar *)txt,-1);
 }
 
 bool gTextArea::readOnly()
@@ -277,19 +280,15 @@ void gTextArea::ensureVisible()
 
 void gTextArea::paste()
 {
-        GtkTextBuffer *buf=gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
-        char *txt;
+	GtkTextBuffer *buf=gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
+	char *txt;
 
-        if (gClipboard::getType() != gClipboard::Text) 
-                return;
-        
-        txt = gClipboard::getText();
+	if (gClipboard::getType() != gClipboard::Text) 
+					return;
+	
+	txt = gClipboard::getText();
 	if (txt)
-	{
 		gtk_text_buffer_insert_at_cursor(buf,(const gchar *)txt,-1);
-		g_free(txt);
-        }
-        
 }
 
 void gTextArea::insert(const char *txt)

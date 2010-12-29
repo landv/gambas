@@ -67,18 +67,10 @@ END_METHOD
 
 BEGIN_PROPERTY(CTEXTAREA_text)
 
-	char *buf;
-
 	if (READ_PROPERTY)
-	{
-		buf=TEXTAREA->text();
-		GB.ReturnNewString(buf,0);
-		free(buf);
-		return;
-	}
-	
-	TEXTAREA->setText( GB.ToZeroString(PROP(GB_STRING)) );
-	
+		GB.ReturnNewString(TEXTAREA->text(),0);
+	else
+		TEXTAREA->setText(GB.ToZeroString(PROP(GB_STRING)));
 
 END_PROPERTY
 
