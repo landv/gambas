@@ -1,22 +1,22 @@
 /***************************************************************************
 
-  gbc_trans_expr.c
+	gbc_trans_expr.c
 
-  (c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -40,18 +40,18 @@
 
 static short get_nparam(PATTERN *tree, int count, int *pindex, uint64_t *byref)
 {
-  PATTERN pattern;
-  int nparam = 0;
+	PATTERN pattern;
+	int nparam = 0;
 	int index = *pindex;
 
-  if (index < count)
-  {
-    pattern = tree[index + 1];
-    if (PATTERN_is_param(pattern))
-    {
-      index++;
-      nparam = PATTERN_index(pattern);
-    }
+	if (index < count)
+	{
+		pattern = tree[index + 1];
+		if (PATTERN_is_param(pattern))
+		{
+			index++;
+			nparam = PATTERN_index(pattern);
+		}
 
 		if (byref)
 		{
@@ -81,44 +81,44 @@ static short get_nparam(PATTERN *tree, int count, int *pindex, uint64_t *byref)
 		*pindex = index;
 	}
 
-  /*
-     Gère le cas où on a codé un subr sans mettre de parenthèses
-     => nparam = 0
-  */
+	/*
+		Gère le cas où on a codé un subr sans mettre de parenthèses
+		=> nparam = 0
+	*/
 
-  return (short)nparam;
+	return (short)nparam;
 }
 
 
 static void push_number(int index)
 {
-  TRANS_NUMBER number;
-  TRANS_DECL decl;
+	TRANS_NUMBER number;
+	TRANS_DECL decl;
 
-  if (TRANS_get_number(index, &number))
-    THROW(E_SYNTAX);
+	if (TRANS_get_number(index, &number))
+		THROW(E_SYNTAX);
 
-  if (number.type == T_INTEGER)
-  {
-    CODE_push_number(number.ival);
-    return;
-  }
+	if (number.type == T_INTEGER)
+	{
+		CODE_push_number(number.ival);
+		return;
+	}
 
-  CLEAR(&decl);
-  decl.type = TYPE_make(number.type, 0, 0);
-  decl.index = NO_SYMBOL;
-  decl.value = index;
-  if (number.type == T_LONG)
-  	decl.lvalue = number.lval;
-  CODE_push_const(CLASS_add_constant(JOB->class, &decl));
+	CLEAR(&decl);
+	decl.type = TYPE_make(number.type, 0, 0);
+	decl.index = NO_SYMBOL;
+	decl.value = index;
+	if (number.type == T_LONG)
+		decl.lvalue = number.lval;
+	CODE_push_const(CLASS_add_constant(JOB->class, &decl));
 }
 
 
 static void push_string(int index, bool trans)
 {
-  TRANS_DECL decl;
-  SYMBOL *sym;
-  int len;
+	TRANS_DECL decl;
+	SYMBOL *sym;
+	int len;
 
 	if (index == VOID_STRING)
 		len = 0;
@@ -128,116 +128,116 @@ static void push_string(int index, bool trans)
 		len = sym->len;
 	}
 
-  if (len == 0)
-  {
-    CODE_push_void_string();
-  }
-  else if (len == 1 && !trans)
-  {
-    CODE_push_char(*(sym->name));
-  }
-  else
-  {
-    //CLEAR(&decl);
+	if (len == 0)
+	{
+		CODE_push_void_string();
+	}
+	else if (len == 1 && !trans)
+	{
+		CODE_push_char(*(sym->name));
+	}
+	else
+	{
+		//CLEAR(&decl);
 
-    if (trans)
-      decl.type = TYPE_make(T_CSTRING, 0, 0);
-    else
-      decl.type = TYPE_make(T_STRING, 0, 0);
-    decl.index = NO_SYMBOL;
-    decl.value = index;
+		if (trans)
+			decl.type = TYPE_make(T_CSTRING, 0, 0);
+		else
+			decl.type = TYPE_make(T_STRING, 0, 0);
+		decl.index = NO_SYMBOL;
+		decl.value = index;
 
-    CODE_push_const(CLASS_add_constant(JOB->class, &decl));
-  }
+		CODE_push_const(CLASS_add_constant(JOB->class, &decl));
+	}
 }
 
 
 void TRANS_class(int index)
 {
-  const char *name;
+	const char *name;
 
-  if (CLASS_exist_class(JOB->class, index))
-    CODE_push_class(CLASS_add_class(JOB->class, index));
-  else
-  {
-    name = TABLE_get_symbol_name(JOB->class->table, index);
-    THROW("Unknown identifier: &1", name);
-  }
+	if (CLASS_exist_class(JOB->class, index))
+		CODE_push_class(CLASS_add_class(JOB->class, index));
+	else
+	{
+		name = TABLE_get_symbol_name(JOB->class->table, index);
+		THROW("Unknown identifier: &1", name);
+	}
 }
 
 static void trans_identifier(int index, bool first, bool point, PATTERN next)
 {
-  CLASS_SYMBOL *sym = CLASS_get_symbol(JOB->class, index);
-  bool is_static;
-  bool is_func;
-  int type;
-  CONSTANT *constant;
+	CLASS_SYMBOL *sym = CLASS_get_symbol(JOB->class, index);
+	bool is_static;
+	bool is_func;
+	int type;
+	CONSTANT *constant;
 
-  if (!TYPE_is_null(sym->local.type) && !point)
-  {
-    CODE_push_local(sym->local.value);
-  }
-  else if (!TYPE_is_null(sym->global.type) && !point)
-  {
-    type = TYPE_get_kind(sym->global.type);
+	if (!TYPE_is_null(sym->local.type) && !point)
+	{
+		CODE_push_local(sym->local.value);
+	}
+	else if (!TYPE_is_null(sym->global.type) && !point)
+	{
+		type = TYPE_get_kind(sym->global.type);
 
-    if (type == TK_CONST)
-    {
-      if (PATTERN_is_point(next))
-        goto __CLASS;
+		if (type == TK_CONST)
+		{
+			if (PATTERN_is_point(next))
+				goto __CLASS;
 
-      constant = &JOB->class->constant[sym->global.value];
-      type = TYPE_get_id(constant->type);
+			constant = &JOB->class->constant[sym->global.value];
+			type = TYPE_get_id(constant->type);
 			if (type == T_BOOLEAN)
 				CODE_push_boolean(constant->value);
 			else if (type == T_INTEGER)
-        CODE_push_number(constant->value);
-      else
-        CODE_push_const(sym->global.value);
-    }
-    else if (type == TK_EXTERN)
-    {
-      if (PATTERN_is_point(next))
-        goto __CLASS;
+				CODE_push_number(constant->value);
+			else
+				CODE_push_const(sym->global.value);
+		}
+		else if (type == TK_EXTERN)
+		{
+			if (PATTERN_is_point(next))
+				goto __CLASS;
 
-      CODE_push_extern(sym->global.value);
-    }
-    /* That breaks some code if the property has the same name as a class!
-    else if (type == TK_PROPERTY)
-    {
-    	CODE_push_me(FALSE);
-      CODE_push_unknown(CLASS_add_unknown(JOB->class, index));
-    }*/
-    else if (type == TK_EVENT || type == TK_LABEL || type == TK_PROPERTY)
-    {
-      goto __CLASS;
-    }
-    else /* TK_FUNCTION || TK_VARIABLE */
-    {
-      is_static = TYPE_is_static(sym->global.type);
-      is_func = type == TK_FUNCTION;
+			CODE_push_extern(sym->global.value);
+		}
+		/* That breaks some code if the property has the same name as a class!
+		else if (type == TK_PROPERTY)
+		{
+			CODE_push_me(FALSE);
+			CODE_push_unknown(CLASS_add_unknown(JOB->class, index));
+		}*/
+		else if (type == TK_EVENT || type == TK_LABEL || type == TK_PROPERTY)
+		{
+			goto __CLASS;
+		}
+		else /* TK_FUNCTION || TK_VARIABLE */
+		{
+			is_static = TYPE_is_static(sym->global.type);
+			is_func = type == TK_FUNCTION;
 
-      if (!is_static && TYPE_is_static(JOB->func->type))
-        THROW("Dynamic symbols cannot be used in static function");
+			if (!is_static && TYPE_is_static(JOB->func->type))
+				THROW("Dynamic symbols cannot be used in static function");
 
-      if (is_func && PATTERN_is_point(next))
-        goto __CLASS;
-      else
-        CODE_push_global(sym->global.value, is_static, is_func);
-    }
-  }
-  else
-  {
-    /*index = CLASS_add_symbol(JOB->class, index);*/
+			if (is_func && PATTERN_is_point(next))
+				goto __CLASS;
+			else
+				CODE_push_global(sym->global.value, is_static, is_func);
+		}
+	}
+	else
+	{
+		/*index = CLASS_add_symbol(JOB->class, index);*/
 
-    if (point)
-      CODE_push_unknown(CLASS_add_unknown(JOB->class, index));
-    /* Class must be declared now ! */
-    else
-      goto __CLASS;
-  }
+		if (point)
+			CODE_push_unknown(CLASS_add_unknown(JOB->class, index));
+		/* Class must be declared now ! */
+		else
+			goto __CLASS;
+	}
 
-  return;
+	return;
 
 __CLASS:
 
@@ -247,7 +247,7 @@ __CLASS:
 
 static void trans_subr(int subr, short nparam)
 {
-  SUBR_INFO *info = &COMP_subr_info[subr];
+	SUBR_INFO *info = &COMP_subr_info[subr];
 
 	if (subr == SUBR_VarPtr)
 	{
@@ -260,53 +260,51 @@ static void trans_subr(int subr, short nparam)
 	else if (nparam > info->max_param)
 		THROW("Too many arguments to &1()", info->name);
 
-  CODE_subr(info->opcode, nparam, info->optype, FALSE /* output */, (info->max_param == info->min_param));
+	CODE_subr(info->opcode, nparam, info->optype, FALSE /* output */, (info->max_param == info->min_param));
 }
 
 
 static void trans_operation(short op, short nparam, PATTERN previous)
 {
-  COMP_INFO *info = &COMP_res_info[op];
+	COMP_INFO *info = &COMP_res_info[op];
 
-  switch (info->value)
-  {
-    case OP_PT:
+	switch (info->value)
+	{
+		case OP_PT:
+			if (nparam == 0)
+				TRANS_use_with();
+			else if (!PATTERN_is_identifier(previous))
+				THROW(E_SYNTAX);
 
-      if (nparam == 0)
-        TRANS_use_with();
-      else if (!PATTERN_is_identifier(previous))
-        THROW(E_SYNTAX);
+			break;
 
-      break;
+		case OP_EXCL:
+			if (!PATTERN_is_identifier(previous))
+				THROW(E_SYNTAX);
+			break;
 
-    case OP_EXCL:
-      if (!PATTERN_is_identifier(previous))
-        THROW(E_SYNTAX);
-      break;
+		case OP_LSQR:
+			CODE_push_array(nparam);
+			break;
 
-    case OP_LSQR:
-      CODE_push_array(nparam);
-      break;
+		case OP_RSQR:
+			TRANS_subr(TS_SUBR_ARRAY, nparam);
+			break;
 
-    case OP_RSQR:
-      TRANS_subr(TS_SUBR_ARRAY, nparam);
-      break;
+		case OP_COLON:
+			TRANS_subr(TS_SUBR_COLLECTION, nparam);
+			break;
 
-    case OP_COLON:
-      TRANS_subr(TS_SUBR_COLLECTION, nparam);
-      break;
-
-    case OP_MINUS:
-      if (nparam == 1)
-        CODE_op(C_NEG, 0, nparam, TRUE);
-      else
-        CODE_op(info->code, info->subcode, nparam, TRUE);
-      break;
-      
-    default:
-
-      CODE_op(info->code, info->subcode, nparam, (info->flag != RSF_OPN));
-  }
+		case OP_MINUS:
+			if (nparam == 1)
+				CODE_op(C_NEG, 0, nparam, TRUE);
+			else
+				CODE_op(info->code, info->subcode, nparam, TRUE);
+			break;
+			
+		default:
+			CODE_op(info->code, info->subcode, nparam, (info->flag != RSF_OPN));
+	}
 }
 
 
@@ -323,234 +321,234 @@ static void trans_call(short nparam, uint64_t byref)
 
 static void trans_expr_from_tree(TRANS_TREE *tree, int count)
 {
-  int i, op;
-  short nparam;
-  PATTERN pattern, next_pattern, prev_pattern;
-  uint64_t byref;
+	int i, op;
+	short nparam;
+	PATTERN pattern, next_pattern, prev_pattern;
+	uint64_t byref;
 
 	count--;
-  pattern = NULL_PATTERN;
+	pattern = NULL_PATTERN;
 
-  for (i = 0; i <= count; i++)
-  {
-    prev_pattern = pattern;
-    pattern = tree[i];
-    if (i < count)
-      next_pattern = tree[i + 1];
-    else
-      next_pattern = NULL_PATTERN;
+	for (i = 0; i <= count; i++)
+	{
+		prev_pattern = pattern;
+		pattern = tree[i];
+		if (i < count)
+			next_pattern = tree[i + 1];
+		else
+			next_pattern = NULL_PATTERN;
 
-    if (PATTERN_is_number(pattern))
-      push_number(PATTERN_index(pattern));
+		if (PATTERN_is_number(pattern))
+			push_number(PATTERN_index(pattern));
 
-    else if (PATTERN_is_string(pattern))
-      push_string(PATTERN_index(pattern), FALSE);
+		else if (PATTERN_is_string(pattern))
+			push_string(PATTERN_index(pattern), FALSE);
 
-    else if (PATTERN_is_tstring(pattern))
-      push_string(PATTERN_index(pattern), TRUE);
+		else if (PATTERN_is_tstring(pattern))
+			push_string(PATTERN_index(pattern), TRUE);
 
-    else if (PATTERN_is_identifier(pattern))
-      trans_identifier(PATTERN_index(pattern), PATTERN_is_first(pattern), PATTERN_is_point(pattern), next_pattern);
+		else if (PATTERN_is_identifier(pattern))
+			trans_identifier(PATTERN_index(pattern), PATTERN_is_first(pattern), PATTERN_is_point(pattern), next_pattern);
 
-    else if (PATTERN_is_class(pattern))
-      TRANS_class(PATTERN_index(pattern));
+		else if (PATTERN_is_class(pattern))
+			TRANS_class(PATTERN_index(pattern));
 
-    else if (PATTERN_is_subr(pattern))
-    {
-      nparam = get_nparam(tree, count, &i, NULL);
-      trans_subr(PATTERN_index(pattern), nparam);
-    }
+		else if (PATTERN_is_subr(pattern))
+		{
+			nparam = get_nparam(tree, count, &i, NULL);
+			trans_subr(PATTERN_index(pattern), nparam);
+		}
 
-    else if (PATTERN_is_reserved(pattern))
-    {
-      if (PATTERN_is(pattern, RS_TRUE))
-      {
-        CODE_push_boolean(TRUE);
-      }
-      else if (PATTERN_is(pattern, RS_FALSE))
-      {
-        CODE_push_boolean(FALSE);
-      }
-      else if (PATTERN_is(pattern, RS_NULL))
-      {
-        CODE_push_null();
-      }
-      else if (PATTERN_is(pattern, RS_ME))
-      {
-        /*if (FUNCTION_is_static(JOB->func))
-          THROW("ME cannot be used in a static function");*/
+		else if (PATTERN_is_reserved(pattern))
+		{
+			if (PATTERN_is(pattern, RS_TRUE))
+			{
+				CODE_push_boolean(TRUE);
+			}
+			else if (PATTERN_is(pattern, RS_FALSE))
+			{
+				CODE_push_boolean(FALSE);
+			}
+			else if (PATTERN_is(pattern, RS_NULL))
+			{
+				CODE_push_null();
+			}
+			else if (PATTERN_is(pattern, RS_ME))
+			{
+				/*if (FUNCTION_is_static(JOB->func))
+					THROW("ME cannot be used in a static function");*/
 
-        CODE_push_me(FALSE);
-      }
-      else if (PATTERN_is(pattern, RS_SUPER))
-      {
-        /*if (FUNCTION_is_static(JOB->func))
-          THROW("ME cannot be used in a static function");*/
+				CODE_push_me(FALSE);
+			}
+			else if (PATTERN_is(pattern, RS_SUPER))
+			{
+				/*if (FUNCTION_is_static(JOB->func))
+					THROW("ME cannot be used in a static function");*/
 
-        CODE_push_super(FALSE);
-      }
-      else if (PATTERN_is(pattern, RS_LAST))
-      {
-        CODE_push_last();
-      }
-      else if (PATTERN_is(pattern, RS_AT))
-      {
+				CODE_push_super(FALSE);
+			}
+			else if (PATTERN_is(pattern, RS_LAST))
+			{
+				CODE_push_last();
+			}
+			else if (PATTERN_is(pattern, RS_AT))
+			{
 				if (!CODE_popify_last())
 					THROW("This expression cannot be passed by reference");
-      }
-      else if (PATTERN_is(pattern, RS_COMMA))
-      {
-        CODE_drop();
-      }
-      else if (PATTERN_is(pattern, RS_ERROR))
-      {
-        TRANS_subr(TS_SUBR_ERROR, 0);
-      }
-      else if (PATTERN_is(pattern, RS_OPTIONAL))
-      {
-        CODE_push_void();
-      }
-      else
-      {
-      	op = PATTERN_index(pattern);
-      	if (op == RS_LBRA)
-      	{
-        	nparam = get_nparam(tree, count, &i, &byref);
-        	trans_call(nparam, byref);
-        }
-      	else
-      	{
-        	nparam = get_nparam(tree, count, &i, NULL);
-        	trans_operation((short)op, nparam, prev_pattern);
-        }
-      }
+			}
+			else if (PATTERN_is(pattern, RS_COMMA))
+			{
+				CODE_drop();
+			}
+			else if (PATTERN_is(pattern, RS_ERROR))
+			{
+				TRANS_subr(TS_SUBR_ERROR, 0);
+			}
+			else if (PATTERN_is(pattern, RS_OPTIONAL))
+			{
+				CODE_push_void();
+			}
+			else
+			{
+				op = PATTERN_index(pattern);
+				if (op == RS_LBRA)
+				{
+					nparam = get_nparam(tree, count, &i, &byref);
+					trans_call(nparam, byref);
+				}
+				else
+				{
+					nparam = get_nparam(tree, count, &i, NULL);
+					trans_operation((short)op, nparam, prev_pattern);
+				}
+			}
 		}
-  }
+	}
 }
 
 
 void TRANS_new(void)
 {
-  int index;
-  int i, nparam;
-  bool array = FALSE;
-  bool event = FALSE;
-  bool collection = FALSE;
-  bool check_param = FALSE;
+	int index;
+	int i, nparam;
+	bool array = FALSE;
+	bool event = FALSE;
+	bool collection = FALSE;
+	bool check_param = FALSE;
 
-  nparam = 0;
+	nparam = 0;
 
-  if (PATTERN_is_class(*JOB->current))
-  {
-    index = CLASS_add_class(JOB->class, PATTERN_index(*JOB->current));
-    if (PATTERN_is(JOB->current[1], RS_LSQR))
-    	index = CLASS_get_array_class(JOB->class, T_OBJECT, index);
-   	
-   	CODE_push_class(index);
-    nparam = 1;
-  }
-  else if (PATTERN_is_type(*JOB->current))
-  {
-    if (!PATTERN_is(JOB->current[1], RS_LSQR))
-      THROW("Cannot instanciate native types");
+	if (PATTERN_is_class(*JOB->current))
+	{
+		index = CLASS_add_class(JOB->class, PATTERN_index(*JOB->current));
+		if (PATTERN_is(JOB->current[1], RS_LSQR))
+			index = CLASS_get_array_class(JOB->class, T_OBJECT, index);
+		
+		CODE_push_class(index);
+		nparam = 1;
+	}
+	else if (PATTERN_is_type(*JOB->current))
+	{
+		if (!PATTERN_is(JOB->current[1], RS_LSQR))
+			THROW("Cannot instanciate native types");
 
-    //CODE_push_number(RES_get_type(PATTERN_index(*JOB->current)));
-    CODE_push_class(CLASS_get_array_class(JOB->class, RES_get_type(PATTERN_index(*JOB->current)), -1));
-    nparam = 1;
-  }
-  else if (PATTERN_is(*JOB->current, RS_LBRA))
-  {
-    /* NEW ("Class", ...) */
-    nparam = 0;
-    JOB->current--;
-    check_param = TRUE;
-  }
-  else
-  	THROW(E_SYNTAX);
+		//CODE_push_number(RES_get_type(PATTERN_index(*JOB->current)));
+		CODE_push_class(CLASS_get_array_class(JOB->class, RES_get_type(PATTERN_index(*JOB->current)), -1));
+		nparam = 1;
+	}
+	else if (PATTERN_is(*JOB->current, RS_LBRA))
+	{
+		/* NEW ("Class", ...) */
+		nparam = 0;
+		JOB->current--;
+		check_param = TRUE;
+	}
+	else
+		THROW(E_SYNTAX);
 
-  JOB->current++;
+	JOB->current++;
 
-  if (TRANS_is(RS_LSQR))
-  {
-    if (collection)
-      THROW("Array declaration is forbidden with typed collection");
+	if (TRANS_is(RS_LSQR))
+	{
+		if (collection)
+			THROW("Array declaration is forbidden with typed collection");
 
-    if (!PATTERN_is(*JOB->current, RS_RSQR))
-    {
-      for (i = 0;; i++)
-      {
-        if (i > MAX_ARRAY_DIM)
-          THROW("Too many dimensions");
+		if (!PATTERN_is(*JOB->current, RS_RSQR))
+		{
+			for (i = 0;; i++)
+			{
+				if (i > MAX_ARRAY_DIM)
+					THROW("Too many dimensions");
 
-        TRANS_expression(FALSE);
-        nparam++;
+				TRANS_expression(FALSE);
+				nparam++;
 
-        if (PATTERN_is(*JOB->current, RS_RSQR))
-          break;
+				if (PATTERN_is(*JOB->current, RS_RSQR))
+					break;
 
-        if (!PATTERN_is(*JOB->current, RS_COMMA))
-          THROW(E_MISSING, "']'");
+				if (!PATTERN_is(*JOB->current, RS_COMMA))
+					THROW(E_MISSING, "']'");
 
-        JOB->current++;
-      }
-    }
+				JOB->current++;
+			}
+		}
 
-    JOB->current++;
-    array = TRUE;
-  }
-  else
-  {
-    if (TRANS_is(RS_LBRA))
-    {
-      for(;;)
-      {
-        if (nparam > MAX_PARAM_FUNC)
-          THROW("Too many arguments");
+		JOB->current++;
+		array = TRUE;
+	}
+	else
+	{
+		if (TRANS_is(RS_LBRA))
+		{
+			for(;;)
+			{
+				if (nparam > MAX_PARAM_FUNC)
+					THROW("Too many arguments");
 
-        if (PATTERN_is(*JOB->current, RS_AT) || PATTERN_is(*JOB->current, RS_BYREF))
-          THROW("NEW cannot have arguments passed by reference");
+				if (PATTERN_is(*JOB->current, RS_AT) || PATTERN_is(*JOB->current, RS_BYREF))
+					THROW("NEW cannot have arguments passed by reference");
 
-        TRANS_expression(FALSE);
-        nparam++;
+				TRANS_expression(FALSE);
+				nparam++;
 
-        if (PATTERN_is(*JOB->current, RS_RBRA))
-          break;
+				if (PATTERN_is(*JOB->current, RS_RBRA))
+					break;
 
-        if (!PATTERN_is(*JOB->current, RS_COMMA))
-          THROW(E_MISSING, "')'");
+				if (!PATTERN_is(*JOB->current, RS_COMMA))
+					THROW(E_MISSING, "')'");
 
-        JOB->current++;
-      }
+				JOB->current++;
+			}
 
-      JOB->current++;
+			JOB->current++;
 
-      if (check_param && nparam == 0)
-        THROW("Not enough argument to New()");
-    }
+			if (check_param && nparam == 0)
+				THROW("Not enough argument to New()");
+		}
 
-    if (TRANS_is(RS_AS))
-    {
-      TRANS_expression(FALSE);
-      nparam++;
-      event = TRUE;
-    }
+		if (TRANS_is(RS_AS))
+		{
+			TRANS_expression(FALSE);
+			nparam++;
+			event = TRUE;
+		}
 
-    /*
-    CODE_call(nparam, FALSE);
-    CODE_drop();
-    */
-  }
+		/*
+		CODE_call(nparam, FALSE);
+		CODE_drop();
+		*/
+	}
 
-  if (collection)
-    CODE_new(nparam, TRUE, event);
-  else
-    CODE_new(nparam, array, event);
+	if (collection)
+		CODE_new(nparam, TRUE, event);
+	else
+		CODE_new(nparam, array, event);
 }
 
 
 void TRANS_expression(bool check_statement)
 {
-  TRANS_TREE *tree;
+	TRANS_TREE *tree;
 	int tree_length;
 
 	if (TRANS_is(RS_NEW))
@@ -564,21 +562,21 @@ void TRANS_expression(bool check_statement)
 		return;
 	}
 	
-  TRANS_tree(check_statement, &tree, &tree_length);
+	TRANS_tree(check_statement, &tree, &tree_length);
 
-  trans_expr_from_tree(tree, tree_length);
+	trans_expr_from_tree(tree, tree_length);
 
-  FREE(&tree, "TRANS_expression");
+	FREE(&tree, "TRANS_expression");
 
-  if (check_statement)
-  {
-    /*
-    if (!CODE_check_statement_last())
-      THROW("This expression cannot be a statement");
-    */
+	if (check_statement)
+	{
+		/*
+		if (!CODE_check_statement_last())
+			THROW("This expression cannot be a statement");
+		*/
 
-    CODE_drop();
-  }
+		CODE_drop();
+	}
 }
 
 void TRANS_ignore_expression()
@@ -589,7 +587,7 @@ void TRANS_ignore_expression()
 TYPE TRANS_variable_get_type()
 {
 	TYPE type = TYPE_make(T_VOID, 0, 0);
-  TRANS_TREE *tree;
+	TRANS_TREE *tree;
 	int count;
 	int index;
 	CLASS_SYMBOL *sym;
@@ -613,7 +611,7 @@ TYPE TRANS_variable_get_type()
 		}
 	}
 	
-  FREE(&tree, "TRANS_variable_get_type");
+	FREE(&tree, "TRANS_variable_get_type");
 	
 	return type;
 }
@@ -621,129 +619,129 @@ TYPE TRANS_variable_get_type()
 
 void TRANS_reference(void)
 {
-  TRANS_expression(FALSE);
+	TRANS_expression(FALSE);
 
-  if (!CODE_popify_last())
-    THROW("Invalid assignment");
+	if (!CODE_popify_last())
+		THROW("Invalid assignment");
 }
 
 
 bool TRANS_affectation(bool dup)
 {
-  static TRANS_STATEMENT statement[] = {
-    //{ RS_NEW, TRANS_new },
-    { RS_OPEN, TRANS_open },
-    { RS_SHELL, TRANS_shell },
-    { RS_EXEC, TRANS_exec },
-    { RS_RAISE, TRANS_raise },
-    { RS_PIPE, TRANS_pipe },
-    { RS_LOCK, TRANS_lock },
-    { RS_MEMORY, TRANS_memory },
+	static TRANS_STATEMENT statement[] = {
+		//{ RS_NEW, TRANS_new },
+		{ RS_OPEN, TRANS_open },
+		{ RS_SHELL, TRANS_shell },
+		{ RS_EXEC, TRANS_exec },
+		{ RS_RAISE, TRANS_raise },
+		{ RS_PIPE, TRANS_pipe },
+		{ RS_LOCK, TRANS_lock },
+		{ RS_MEMORY, TRANS_memory },
 		//{ RS_READ, TRANS_read },
-    { RS_NONE, NULL }
-  };
+		{ RS_NONE, NULL }
+	};
 
-  TRANS_STATEMENT *st;
-  PATTERN *look = JOB->current;
-  PATTERN *left, *expr, *after;
-  int niv = 0;
-  bool equal = FALSE;
-  bool stat = FALSE;
-  int op;
+	TRANS_STATEMENT *st;
+	PATTERN *look = JOB->current;
+	PATTERN *left, *expr, *after;
+	int niv = 0;
+	bool equal = FALSE;
+	bool stat = FALSE;
+	int op;
 
-  for(;;)
-  {
-    if (PATTERN_is_newline(*look)) // || PATTERN_is_end(*look))
-      break;
+	for(;;)
+	{
+		if (PATTERN_is_newline(*look)) // || PATTERN_is_end(*look))
+			break;
 
-    if (PATTERN_is(*look, RS_LBRA) || PATTERN_is(*look, RS_LSQR))
-    {
-      niv++;
-    }
-    else if (PATTERN_is(*look, RS_RBRA) || PATTERN_is(*look, RS_RSQR))
-    {
-      if (niv > 0)
-        niv--;
-    }
-    else if (niv == 0)
-    {
-      if (PATTERN_is(*look, RS_EQUAL))
-      {
-        equal = TRUE;
-        op = RS_NONE;
-        break;
-      }
-      else if (PATTERN_is_reserved(*look) && RES_is_assignment(PATTERN_index(*look)))
-      {
-        equal = TRUE;
-        op = RES_get_assignment_operator(PATTERN_index(*look));
-        break;
-      }
-    }
+		if (PATTERN_is(*look, RS_LBRA) || PATTERN_is(*look, RS_LSQR))
+		{
+			niv++;
+		}
+		else if (PATTERN_is(*look, RS_RBRA) || PATTERN_is(*look, RS_RSQR))
+		{
+			if (niv > 0)
+				niv--;
+		}
+		else if (niv == 0)
+		{
+			if (PATTERN_is(*look, RS_EQUAL))
+			{
+				equal = TRUE;
+				op = RS_NONE;
+				break;
+			}
+			else if (PATTERN_is_reserved(*look) && RES_is_assignment(PATTERN_index(*look)))
+			{
+				equal = TRUE;
+				op = RES_get_assignment_operator(PATTERN_index(*look));
+				break;
+			}
+		}
 
-    look++;
-  }
+		look++;
+	}
 
-  if (!equal)
-    return FALSE;
+	if (!equal)
+		return FALSE;
 
-  left = JOB->current;
-  *look++ = PATTERN_make(RT_NEWLINE, 0);
-  expr = look;
+	left = JOB->current;
+	*look++ = PATTERN_make(RT_NEWLINE, 0);
+	expr = look;
 
-  JOB->current = expr;
+	JOB->current = expr;
 
-  if (op == RS_NONE && (PATTERN_is_reserved(*JOB->current)))
-  {
-    if (TRANS_is(RS_NEW))
-    {
-      TRANS_in_affectation++;
-      TRANS_new();
-      TRANS_in_affectation--;
-      stat = TRUE;
-    }
-    else
-    {
-      for (st = statement; st->id; st++)
-      {
-        if (TRANS_is(st->id))
-        {
-          TRANS_in_affectation++;
-          (*st->func)();
-          TRANS_in_affectation--;
-          stat = TRUE;
-        }
-      }
-    }
-  }
+	if (op == RS_NONE && (PATTERN_is_reserved(*JOB->current)))
+	{
+		if (TRANS_is(RS_NEW))
+		{
+			TRANS_in_affectation++;
+			TRANS_new();
+			TRANS_in_affectation--;
+			stat = TRUE;
+		}
+		else
+		{
+			for (st = statement; st->id; st++)
+			{
+				if (TRANS_is(st->id))
+				{
+					TRANS_in_affectation++;
+					(*st->func)();
+					TRANS_in_affectation--;
+					stat = TRUE;
+				}
+			}
+		}
+	}
 
-  if (!stat)
-  {
-    if (op != RS_NONE)
-    {
-      JOB->current = left;
-      TRANS_expression(FALSE);
-    }
+	if (!stat)
+	{
+		if (op != RS_NONE)
+		{
+			JOB->current = left;
+			TRANS_expression(FALSE);
+		}
 
-    JOB->current = expr;
-    TRANS_expression(FALSE);
-    after = JOB->current;
+		JOB->current = expr;
+		TRANS_expression(FALSE);
+		after = JOB->current;
 
-    if (op != RS_NONE)
-      trans_operation(op, 2, NULL_PATTERN);
-  }
+		if (op != RS_NONE)
+			trans_operation(op, 2, NULL_PATTERN);
+	}
 
-  after = JOB->current;
+	after = JOB->current;
 
-  if (dup)
-    CODE_dup();
+	if (dup)
+		CODE_dup();
 
-  JOB->current = left;
-  TRANS_reference();
+	JOB->current = left;
+	TRANS_reference();
 
-  JOB->current = after;
+	JOB->current = after;
 
-  return TRUE;
+	return TRUE;
 }
 
 

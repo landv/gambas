@@ -165,6 +165,7 @@ COMP_INFO COMP_res_info[] =
 	{ "/",            RSF_OP2,                  OP_SLASH,     0,   6,    C_DIV         },
 	{ "^",            RSF_OP2S,                 OP_FLEX,      0,   7,    C_POW         },
 	{ "&",            RSF_OPN,                  OP_AMP,       0,   9,    C_CAT         },
+	{ "&/",           RSF_OPN,                  OP_FILE,      0,   8,    C_FILE        },
 	{ ">",            RSF_OP2S,                 OP_GT,        0,   4,    C_GT          },
 	{ "<",            RSF_OP2S,                 OP_LT,        0,   4,    C_LT          },
 	{ ">=",           RSF_OP2S,                 OP_GE,        0,   4,    C_GE          },
@@ -180,11 +181,14 @@ COMP_INFO COMP_res_info[] =
 	{ "Div",          RSF_OP2S,                 OP_DIV,       0,   6,    C_QUO         },
 	{ "%",            RSF_OP2S,                 OP_MOD,       0,   6,    C_REM         },
 	{ "Mod",          RSF_OP2S,                 OP_MOD,       0,   6,    C_REM         },
-	{ "Is",           RSF_OP2|RSF_AS,           OP_IS,        0,   11,   C_IS          },
-	{ "Like",         RSF_OP2S,                 OP_LIKE,      0,   4,    C_LIKE, 0     },
-	{ "Begins",       RSF_OP2S,                 OP_LIKE,      0,   4,    C_LIKE, 1     },
-	{ "Ends",         RSF_OP2S,                 OP_LIKE,      0,   4,    C_LIKE, 2     },
-	{ "&/",           RSF_OPN,                  OP_FILE,      0,   8,    C_FILE        },
+	{ "Is",           RSF_OP2|RSF_AS|RSF_NOT,   OP_IS,        0,   11,   C_IS,   0     },
+	{ "",             RSF_OP2|RSF_AS,           OP_IS,        0,   11,   C_IS,   1     },
+	{ "Like",         RSF_OP2S|RSF_NOT,         OP_LIKE,      0,   4,    C_LIKE, 0     },
+	{ "",             RSF_OP2S,                 OP_LIKE,      0,   4,    C_LIKE, 4     }, // NOT LIKE
+	{ "Begins",       RSF_OP2S|RSF_NOT,         OP_LIKE,      0,   4,    C_LIKE, 1     },
+	{ "",             RSF_OP2S,                 OP_LIKE,      0,   4,    C_LIKE, 5     }, // NOT BEGINS
+	{ "Ends",         RSF_OP2S|RSF_NOT,         OP_LIKE,      0,   4,    C_LIKE, 2     },
+	{ "",             RSF_OP2S,                 OP_LIKE,      0,   4,    C_LIKE, 6     }, // NOT ENDS
 
 	{ "+=",           RSF_ASGN,                 RS_PLUS                                },
 	{ "-=",           RSF_ASGN,                 RS_MINUS                               },

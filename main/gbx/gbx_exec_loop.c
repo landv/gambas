@@ -246,7 +246,7 @@ void EXEC_loop(void)
     /* 3C &               */  &&_SUBR_CODE,
     /* 3D LIKE            */  &&_SUBR_CODE,
     /* 3E &/              */  &&_SUBR_CODE,
-    /* 3F Is              */  &&_SUBR,
+    /* 3F Is              */  &&_SUBR_CODE,
     /* 40 Left$           */  &&_SUBR_LEFT,
     /* 41 Mid$            */  &&_SUBR_MID,
     /* 42 Right$          */  &&_SUBR_RIGHT,

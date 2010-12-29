@@ -412,7 +412,7 @@ void SUBR_like(ushort code)
 	
 __LIKE:
 	
-	ret = REGEXP_match(pattern, len_pattern, string, len_string) ? -1 : 0;
+	ret = REGEXP_match(pattern, len_pattern, string, len_string);
 	goto __RETURN;
 
 __BEGINS:
@@ -434,7 +434,7 @@ __ENDS:
 __RETURN:
 	
 	RETURN->type = T_BOOLEAN;
-	RETURN->_boolean.value = ret;
+	RETURN->_boolean.value = -(ret ^ !!(code & 0x4));
 
 	SUBR_LEAVE();
 }

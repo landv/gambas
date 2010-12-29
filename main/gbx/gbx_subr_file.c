@@ -386,7 +386,6 @@ void SUBR_read(ushort code)
 {
   STREAM *stream;
   int len = 0;
-  bool do_not = FALSE;
 
   SUBR_ENTER_PARAM(2);
 

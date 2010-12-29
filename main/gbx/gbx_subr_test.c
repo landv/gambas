@@ -868,7 +868,7 @@ void SUBR_strcomp(ushort code)
 }
 
 
-void SUBR_is(void)
+void SUBR_is(ushort code)
 {
 	VALUE *P1 = SP - 2;
 	VALUE *P2 = SP - 1;
@@ -888,7 +888,7 @@ void SUBR_is(void)
 	OBJECT_UNREF(object, "SUBR_is");
 
 	P1->type = T_BOOLEAN;
-	P1->_boolean.value = res ? -1 : 0;
+	P1->_boolean.value = -(res ^ (code & 1));
 	SP--;
 }
 

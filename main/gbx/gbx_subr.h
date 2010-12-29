@@ -158,7 +158,7 @@ void SUBR_if(ushort code);
 void SUBR_choose(ushort code);
 void SUBR_near(void);
 void SUBR_strcomp(ushort code);
-void SUBR_is(void);
+void SUBR_is(ushort code);
 
 /* subr_conv.c */
 

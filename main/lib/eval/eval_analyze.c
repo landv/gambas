@@ -372,11 +372,7 @@ static void analyze(EVAL_ANALYZE *result)
           //space_before = FALSE;
           space_after = FALSE;
         }
-        else if (PATTERN_is(*pattern, RS_NOT))
-        {
-        	space_after = TRUE;
-        }
-        else if (*symbol == '-')
+        else if (PATTERN_is(*pattern, RS_NOT) || *symbol == '-')
         {
 					if (old_type == EVAL_TYPE_OPERATOR && (PATTERN_is(pattern[-1], RS_LBRA) || PATTERN_is(pattern[-1],RS_LSQR)))
         		space_before = FALSE;
@@ -395,7 +391,6 @@ static void analyze(EVAL_ANALYZE *result)
           space_before = TRUE;
 
         break;
-
 
       case EVAL_TYPE_ERROR:
         space_before = TRUE;

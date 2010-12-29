@@ -26,32 +26,35 @@
 #include "gb_common.h"
 #include "gb_table.h"
 
-#define RSF_NONE          0x0
-#define RSF_OP            0x1
-#define RSF_TYPE          0x2
-#define RSF_ASGN          0x4
-#define RSF_N_ARY         0x00
-#define RSF_UNARY         0x10
-#define RSF_BINARY        0x20
-#define RSF_POST          0x30
-#define RSF_ONLY          0x40
-
-#define RSF_OPN       0x01
-#define RSF_OP1       0x11
-#define RSF_OP2       0x21
-#define RSF_OPP       0x31
-#define RSF_OP2S      0x61
-#define RSF_OP2SM     0xA1
-
 enum
 {
-	RSF_POINT  = 0x0100,   // last pattern is a point or an exclamation mark
-	RSF_IDENT  = 0x0200,   // last pattern waits for an identifier
-	RSF_CLASS  = 0x0400,   // last pattern waits for a class
-	RSF_AS     = 0x0800,   // last pattern waits for a datatype
-	RSF_PREV   = 0x1000,   // last pattern use the flags of the last last pattern
-	RSF_EVENT  = 0x2000,   // last pattern waits for an event name
-	RSF_PUB    = 0x4000,   // last pattern is PUBLIC, PRIVATE or STATIC
+	RSF_NONE   = 0x0000,
+	RSF_OP     = 0x0001,
+	RSF_TYPE   = 0x0002,
+	RSF_ASGN   = 0x0004,
+	RSF_NOT    = 0x0008,    // operator can have NOT before it
+	
+	RSF_N_ARY  = 0x0000,
+	RSF_UNARY  = 0x0010,
+	RSF_BINARY = 0x0020,
+	RSF_POST   = 0x0030,
+	RSF_ONLY   = 0x0040,
+	
+	RSF_OPN    = 0x0001,
+	RSF_OP1    = 0x0011,
+	RSF_OP2    = 0x0021,
+	RSF_OPP    = 0x0031,
+	RSF_OP2S   = 0x0061,
+	RSF_OP2SM  = 0x00A1,
+
+	RSF_POINT  = 0x0100,    // last pattern is a point or an exclamation mark
+	RSF_IDENT  = 0x0200,    // last pattern waits for an identifier
+	RSF_CLASS  = 0x0400,    // last pattern waits for a class
+	RSF_AS     = 0x0800,    // last pattern waits for a datatype
+	RSF_PREV   = 0x1000,    // last pattern use the flags of the last last pattern
+	RSF_EVENT  = 0x2000,    // last pattern waits for an event name
+	RSF_PUB    = 0x4000,    // last pattern is PUBLIC, PRIVATE or STATIC
+	
 	RSF_IMASK  = 0xFF00
 };
 
@@ -71,6 +74,8 @@ enum
 
 #define RES_get_type(_res) (COMP_res_info[_res].value)
 #define RES_get_assignment_operator(_res) (COMP_res_info[_res].value)
+
+#define RES_can_have_not_before(value) (COMP_res_info[value].flag & RSF_NOT)
 
 typedef
 	enum {
@@ -213,6 +218,7 @@ typedef
 		RS_SLASH,
 		RS_FLEX,
 		RS_AMP,
+		RS_FILE,
 		RS_GT,
 		RS_LT,
 		RS_GE,
@@ -229,10 +235,13 @@ typedef
 		RS_PERCENT,
 		RS_MOD,
 		RS_IS,
+		RS_NOT_IS,
 		RS_LIKE,
+		RS_NOT_LIKE,
 		RS_BEGINS,
+		RS_NOT_BEGINS,
 		RS_ENDS,
-		RS_FILE,
+		RS_NOT_ENDS,
 
 		RS_PLUS_EQ,
 		RS_MINUS_EQ,
@@ -263,6 +272,7 @@ enum
 	OP_SLASH ,
 	OP_FLEX  ,
 	OP_AMP   ,
+	OP_FILE  ,
 	OP_GT    ,
 	OP_LT    ,
 	OP_GE    ,
@@ -277,8 +287,7 @@ enum
 	OP_DIV   ,
 	OP_MOD   ,
 	OP_IS    ,
-	OP_LIKE  ,
-	OP_FILE
+	OP_LIKE
 };
 
 typedef
