@@ -53,7 +53,7 @@ static gboolean sg_menu(GtkWidget *widget, gControl *data)
 }
 
 gboolean gcb_focus_in(GtkWidget *widget,GdkEventFocus *event,gControl *data)
-{	
+{
 	if (!gApplication::allEvents()) return false;
 
 	gMainWindow::setActiveWindow(data);

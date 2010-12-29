@@ -337,6 +337,8 @@ void gControl::setVisible(bool vl)
 	}
 	else
 	{
+		if (parent() && hasFocus())
+			gtk_widget_child_focus(GTK_WIDGET(gtk_widget_get_toplevel(border)), GTK_DIR_TAB_FORWARD);
 		gtk_widget_hide(border);
 	}
 	
