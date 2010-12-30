@@ -105,9 +105,11 @@ extern "C"
 
 	GB_DESC *GB_CLASSES[] EXPORT =
 	{
-		CDesktopDesc,
-		CApplicationTooltipDesc,
-		CApplicationDesc,
+		ScreenDesc,
+		ScreensDesc,
+		DesktopDesc,
+		ApplicationTooltipDesc,
+		ApplicationDesc,
 		CSelectDesc,
 		CAlignDesc,
 		CArrangeDesc,

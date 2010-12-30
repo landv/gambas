@@ -692,6 +692,11 @@ BEGIN_PROPERTY(Window_Opacity)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Window_Screen)
+
+	GB.ReturnInteger(WINDOW->screen());
+
+END_PROPERTY
 
 BEGIN_METHOD_VOID(CFORM_new)
 
@@ -828,6 +833,8 @@ GB_DESC CWindowDesc[] =
 
 	GB_PROPERTY("Mask","b",CWINDOW_mask),
 	GB_PROPERTY("Picture", "Picture", CWINDOW_picture),
+	
+	GB_PROPERTY_READ("Screen", "i", Window_Screen),
 
 	GB_PROPERTY_SELF("Menus", ".WindowMenus"),
 	GB_PROPERTY_SELF("Controls", ".WindowControls"),

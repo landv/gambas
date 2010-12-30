@@ -52,6 +52,7 @@ public:
 	bool isClosed() const { return !opened; }
 	bool isHidden() const { return _hidden; }
 	bool isPopup() const { return _popup; }
+	int screen();
 	
 	int controlCount();
 	gControl *getControl(char *name);

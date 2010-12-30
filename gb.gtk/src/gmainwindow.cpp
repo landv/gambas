@@ -1388,3 +1388,9 @@ void gMainWindow::setOpacity(double v)
 	if (isTopLevel())
 		gtk_window_set_opacity(GTK_WINDOW(border), v);
 }
+
+int gMainWindow::screen()
+{
+	gMainWindow *tl = topLevel();
+	return gdk_screen_get_monitor_at_window(gtk_window_get_screen(GTK_WINDOW(tl->border)), tl->border->window);
+}

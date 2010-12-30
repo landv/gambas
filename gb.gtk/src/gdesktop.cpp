@@ -293,4 +293,19 @@ gPicture* gDesktop::screenshot(int x, int y, int w, int h)
 	return gt_grab_window(gdk_get_default_root_window(), x, y, w, h);	
 }
 
+int gDesktop::count()
+{
+	return gdk_screen_get_n_monitors(gdk_screen_get_default());
+}
+
+void gDesktop::geometry(int screen, GdkRectangle *rect)
+{
+	gdk_screen_get_monitor_geometry(gdk_screen_get_default(), screen, rect);
+}
+
+void gDesktop::availableGeometry(int screen, GdkRectangle *rect)
+{
+	// TODO: implement Qt4 QDesktop::availableGeometry()
+	gdk_screen_get_monitor_geometry(gdk_screen_get_default(), screen, rect);
+}
 

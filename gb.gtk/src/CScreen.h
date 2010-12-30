@@ -28,11 +28,26 @@
 #include "gapplication.h"
 
 #ifndef __CSCREEN_CPP
-extern GB_DESC CDesktopDesc[];
-extern GB_DESC CApplicationTooltipDesc[];
-extern GB_DESC CApplicationDesc[];
+extern GB_DESC ScreenDesc[];
+extern GB_DESC ScreensDesc[];
+extern GB_DESC DesktopDesc[];
+extern GB_DESC ApplicationTooltipDesc[];
+extern GB_DESC ApplicationDesc[];
 
 extern char *CAPPLICATION_Theme;
+
+#else
+
+#define SCREEN ((CSCREEN *)_object)
+
 #endif
 
+typedef
+	struct
+	{
+		GB_BASE ob;
+		int index;
+	}
+	CSCREEN;
+	
 #endif

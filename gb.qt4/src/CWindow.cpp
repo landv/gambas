@@ -1380,6 +1380,12 @@ BEGIN_PROPERTY(Window_Opacity)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Window_Screen)
+
+	GB.ReturnInteger(QApplication::desktop()->screenNumber(WIDGET));
+
+END_PROPERTY
+
 
 /***************************************************************************/
 
@@ -1485,6 +1491,8 @@ GB_DESC CWindowDesc[] =
 	GB_PROPERTY("Utility", "b", Window_Utility),
 	GB_PROPERTY("Border", "b", CWINDOW_border),
 	GB_PROPERTY("Resizable", "b", CWINDOW_resizable),
+
+	GB_PROPERTY_READ("Screen", "i", Window_Screen),
 
 	GB_PROPERTY_SELF("Menus", ".WindowMenus"),
 	GB_PROPERTY_SELF("Controls", ".WindowControls"),
@@ -2383,16 +2391,16 @@ void MyMainWindow::center(bool force = false)
 {
 	CWINDOW *_object = (CWINDOW *)CWidget::get(this);
 	QPoint p;
+	QRect r;
 
 	if (!force && !mustCenter)
 		return;
 
 	mustCenter = false;
 
-	p.setX((qApp->desktop()->availableGeometry().width() - width()) / 2);
-	p.setY((qApp->desktop()->availableGeometry().height() - height()) / 2);
+	r = QApplication::desktop()->availableGeometry(QApplication::desktop()->screenNumber(this));
 
-	CWIDGET_move(THIS, p.x(), p.y());
+	CWIDGET_move(THIS, r.x() + (r.width() - width()) / 2, r.y() + (r.height() - height()) / 2);
 }
 
 void MyMainWindow::configure()

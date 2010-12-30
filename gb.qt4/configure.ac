@@ -24,7 +24,7 @@ GB_COMPONENT_PKG_CONFIG(
   QT,
   [QT4 toolkit],
   [src],
-  QtCore ">= 4.3.4" QtGui Qt3Support QtSvg
+  QtCore ">= 4.5.0" QtGui Qt3Support QtSvg
 )
 
 GB_COMPONENT_PKG_CONFIG(
@@ -32,7 +32,7 @@ GB_COMPONENT_PKG_CONFIG(
   QTEXT,
   [QT4 toolkit extension],
   [ext],
-  QtCore ">= 4.3.4" QtGui Qt3Support
+  QtCore ">= 4.5.0" QtGui Qt3Support
 )
 
 GB_COMPONENT_PKG_CONFIG(
@@ -40,7 +40,7 @@ GB_COMPONENT_PKG_CONFIG(
   QTWEBKIT,
   [QT4 webkit component],
   [webkit],
-  QtCore ">= 4.3.4" QtGui QtNetwork QtDBus QtXml QtWebKit ">= 4.5.0"
+  QtCore ">= 4.5.0" QtGui QtNetwork QtDBus QtXml QtWebKit ">= 4.5.0"
 )
 
 GB_COMPONENT_PKG_CONFIG(
@@ -48,7 +48,7 @@ GB_COMPONENT_PKG_CONFIG(
   QTOPENGL,
   [QT4 OpenGL],
   [opengl],
-  QtCore ">= 4.3.4" QtGui QtOpenGL
+  QtCore ">= 4.5.0" QtGui QtOpenGL
 )
 
 MOC=`pkg-config --variable=moc_location QtCore`

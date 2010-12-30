@@ -381,8 +381,9 @@ void *OBJECT_create(CLASS *class, const char *name, void *parent, int nparam)
 	void *save;
 	char *save_name;
 
-	if (class->no_create)
-		THROW(E_CSTATIC, class->name);
+	// The "no create" flag only concerns users of NEW
+	//if (class->no_create)
+	//	THROW(E_CSTATIC, class->name);
 
 	save = _object;
 	save_name = _object_name;

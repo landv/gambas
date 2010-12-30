@@ -59,6 +59,13 @@ public:
 	static gControl* activeControl() { return _active_control; }
 	static void setActiveControl(gControl *control);
 	
+	static int count();
+	static void geometry(int screen, GdkRectangle *rect);
+	static void availableGeometry(int screen, GdkRectangle *rect);
+	
+	static void geometry(GdkRectangle *rect) { geometry(0, rect); }
+	static void availableGeometry(GdkRectangle *rect) { availableGeometry(0, rect); }
+	
 private:
 
 	static gControl *_active_control;
