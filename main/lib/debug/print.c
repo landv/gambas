@@ -210,13 +210,19 @@ __LONG:
 __DATE:
 
   GB_DEBUG.FormatDate(GB.SplitDate((GB_DATE *)value), LF_STANDARD, NULL, 0, &addr, &len);
-  fprintf(_where, "%.*s", (int)len, addr);
-  goto __RETURN;
+  goto __PRINT;
 
 __SINGLE:
+
+  GB_DEBUG.FormatNumber(value->_single.value, LF_SHORT_NUMBER, NULL, 0, &addr, &len, TRUE);
+  goto __PRINT;
+	
 __FLOAT:
 
   GB_DEBUG.FormatNumber(value->_float.value, LF_STANDARD, NULL, 0, &addr, &len, TRUE);
+	
+__PRINT:
+	
   fprintf(_where, "%.*s", (int)len, addr);
   goto __RETURN;
 

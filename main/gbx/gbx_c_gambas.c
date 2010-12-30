@@ -184,6 +184,7 @@ GB_DESC NATIVE_Gambas[] =
 
 	GB_CONSTANT("Standard", "i", LF_STANDARD),
 	GB_CONSTANT("GeneralNumber", "i", LF_GENERAL_NUMBER),
+	GB_CONSTANT("ShortNumber", "i", LF_SHORT_NUMBER),
 	GB_CONSTANT("Fixed", "i", LF_FIXED),
 	GB_CONSTANT("Percent", "i", LF_PERCENT),
 	GB_CONSTANT("Scientific", "i", LF_SCIENTIFIC),

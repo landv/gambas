@@ -1175,7 +1175,7 @@ __DATE:
 
 __SINGLE:
 
-	LOCAL_format_number(value->_single.value, LF_STANDARD, NULL, 0, addr, len, TRUE);
+	LOCAL_format_number(value->_single.value, LF_SHORT_NUMBER, NULL, 0, addr, len, TRUE);
 	return;
 
 __FLOAT:
@@ -1846,6 +1846,18 @@ __RETRY:
 		goto __RETRY;
 	}
 
+	if (class->special[SPEC_CONVERT] != NO_SYMBOL)
+	{
+		void *conv = ((void *(*)())(CLASS_get_desc(class, class->special[SPEC_CONVERT])->constant.value._pointer))(value->_object.object, type);
+		if (conv)
+		{
+			OBJECT_REF(conv, "VALUE_conv");
+			OBJECT_UNREF(value->_object.object, "VALUE_conv");
+			value->_object.object = conv;
+			goto __TYPE;
+		}
+	}
+	
 	THROW(E_TYPE, TYPE_get_name(type), TYPE_get_name((TYPE)class));
 
 __v2:
@@ -1869,6 +1881,7 @@ __N:
 
 	THROW(E_TYPE, TYPE_get_name(type), TYPE_get_name(value->type));
 }
+
 
 void VALUE_undo_variant(VALUE *value)
 {

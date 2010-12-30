@@ -664,6 +664,13 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 				fmt = "0.################";
 			break;
 
+		case LF_SHORT_NUMBER:
+			if ((number != 0.0) && ((fabs(number) < 1E-4) || (fabs(number) >= 1E10)))
+				fmt = "0.#######E+#";
+			else
+				fmt = "0.#######";
+			break;
+
 		case LF_FIXED:
 			fmt = "0.00";
 			break;
