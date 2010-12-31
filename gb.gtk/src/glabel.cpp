@@ -176,12 +176,13 @@ void gLabel::updateLayout()
 	gt_add_layout_from_font(layout, font());
 }
 
+
 void gLabel::updateSize(bool adjust, bool noresize)
 {
 	gint w, h;
 	int fw;
 	
-	if (_locked)
+	if (_locked || !textdata || !*textdata)
 		return;
 	
 	fw = getFrameWidth();
@@ -202,9 +203,15 @@ void gLabel::updateSize(bool adjust, bool noresize)
 		return;
 		
 	pango_layout_get_pixel_size(layout, &w, &h);
-	//fprintf(stderr, "gLabel::updateSize: %s (%d %d) -> (%d %d)\n", name(), width(), height(), w + fw * 2, h + fw * 2);
+	
+	w += fw * 2;
+	h += fw * 2;
+	
+	if ((align == ALIGN_CENTER || align == ALIGN_LEFT || align == ALIGN_NORMAL || align == ALIGN_RIGHT) && h < height())
+		h = height();
+	
 	_locked = true;
-	resize(width(), h + fw * 2);	
+	resize(w, h);	
 	_locked = false;
 }
 
