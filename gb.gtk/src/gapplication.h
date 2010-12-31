@@ -40,6 +40,9 @@ public:
   static void setBusy(bool b);
   static bool isBusy() { return _busy; }
 
+	static gControl* activeControl() { return _active_control; }
+	static void setActiveControl(gControl *control, bool on);
+	
 	static void suspendEvents(bool vl);
 	static void enableEvents();
 	static bool userEvents();
@@ -80,6 +83,8 @@ public:
 	//static void dispatchEnterLeave(gControl *enter);
 	static gControl *_enter;
 	static gControl *_leave;
+	static gControl *_active_control;
+	static gControl *_old_active_control;
 	static guint32 _event_time;
 	static bool _close_next_window;
 };

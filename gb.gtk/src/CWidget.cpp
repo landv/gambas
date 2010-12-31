@@ -23,7 +23,7 @@
 #define __CWIDGET_CPP
 
 #include "widgets.h"
-#include "gdesktop.h"
+#include "gapplication.h"
  
 #include "CWidget.h"
 #include "CWindow.h"
@@ -62,9 +62,6 @@ DECLARE_EVENT(EVENT_PlugError);
 //static void *CLASS_Image = NULL;
 static GB_CLASS CLASS_UserContainer = 0;
 static GB_CLASS CLASS_UserControl = 0;
-
-static CWIDGET *_old_active_control = 0;
-static bool _focus_change = false;
 
 /** Action *****************************************************************/
 
@@ -149,6 +146,8 @@ static int to_gambas_event(int type)
 		case gEvent_MouseDblClick: return EVENT_DblClick;
 		case gEvent_KeyPress: return EVENT_KeyPress;
 		case gEvent_KeyRelease: return EVENT_KeyRelease;
+		case gEvent_FocusIn: return EVENT_GotFocus;
+		case gEvent_FocusOut: return EVENT_LostFocus;
 		default: return -1;
 	}
 }
@@ -216,41 +215,9 @@ void gb_raise_EnterLeave(gControl *sender, int type)
 	GB.Raise(GetObject(sender), to_gambas_event(type), 0);
 }
 
-static void post_focus_change(void *)
-{
-	CWIDGET *active;
-	
-	for(;;)
-	{
-		active = GetObject(gDesktop::activeControl());
-	
-		if (active == _old_active_control)
-			break;
-
-		if (_old_active_control)
-			GB.Raise(_old_active_control, EVENT_LostFocus, 0);
-		
-		_old_active_control = active;
-		
-		if (active)
-			GB.Raise(active, EVENT_GotFocus, 0);
-	}
-	
-	_focus_change = FALSE;
-}
-
 void gb_raise_FocusEvent(gControl *sender, int type)
 {
-	CWIDGET *control = GetObject(sender);
-	
-	if (!control) 
-		return;
-	
-	if (_focus_change)
-		return;
-	
-	_focus_change = TRUE;
-	GB.Post((void (*)())post_focus_change, NULL);
+	GB.Raise(GetObject(sender), to_gambas_event(type), 0);
 }
 
 bool gb_raise_Drag(gControl *sender)
@@ -285,9 +252,6 @@ void DeleteControl(gControl *control)
 		return;
 	
 	GB.Detach(widget);
-	
-	if (_old_active_control == widget)
-		_old_active_control = NULL;
 	
 	GB.StoreVariant(NULL, POINTER(&widget->tag));
 	GB.StoreObject(NULL, POINTER(&widget->cursor));
@@ -501,7 +465,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CWIDGET_has_focus)
 
-	GB.ReturnBoolean(CONTROL == gDesktop::activeControl());
+	GB.ReturnBoolean(CONTROL == gApplication::activeControl());
 
 END_PROPERTY
 

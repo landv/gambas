@@ -431,7 +431,8 @@ static int my_loop()
 	while (!must_quit())
 		do_iteration(false);
 
-	while (gtk_events_pending ()) 	gtk_main_iteration();
+	while (gtk_events_pending ())
+		gtk_main_iteration();
   
 	CWatcher::Clear();
 	gApplication::exit();

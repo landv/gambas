@@ -56,11 +56,9 @@ gboolean gcb_focus_in(GtkWidget *widget,GdkEventFocus *event,gControl *data)
 {
 	if (!gApplication::allEvents()) return false;
 
-	gMainWindow::setActiveWindow(data);
-	gDesktop::setActiveControl(data);
-	gKey::setActiveControl(data);
+	//fprintf(stderr, "gcb_focus_in: %s\n", data->name());
 	
-	if (data->onFocusEvent) data->onFocusEvent(data,gEvent_FocusIn);
+	gApplication::setActiveControl(data, true);
 	
 	return false;
 }
@@ -69,12 +67,9 @@ gboolean gcb_focus_out(GtkWidget *widget,GdkEventFocus *event,gControl *data)
 {	
 	if (!gApplication::allEvents()) return false;
 	
-	gDesktop::setActiveControl(NULL);
-
-	if (data->onFocusEvent) data->onFocusEvent(data,gEvent_FocusOut);
+	//fprintf(stderr, "gcb_focus_out: %s\n", data->name());
 	
-	gKey::setActiveControl(NULL);
-	//gMainWindow::setActiveWindow(NULL);
+	gApplication::setActiveControl(data, false);
 	
 	return false;
 }

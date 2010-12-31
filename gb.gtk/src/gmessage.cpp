@@ -40,8 +40,7 @@ static char **DIALOG_paths=NULL;
 static char *DIALOG_title=NULL;
 static gFont *DIALOG_font=NULL;
 
-
-int gDialog_run(GtkDialog *window)
+static int run_dialog(GtkDialog *window)
 {
   gMainWindow *active;
 	GtkWindowGroup *oldGroup;
@@ -50,6 +49,9 @@ int gDialog_run(GtkDialog *window)
 	active = gDesktop::activeWindow();
 	if (active)
     gtk_window_set_transient_for(GTK_WINDOW(window), GTK_WINDOW(active->border));
+	
+	//gApplication::setActiveControl(gApplication::activeControl(), false);
+	//GB.CheckPost();
 	
 	gtk_window_present(GTK_WINDOW(window));
 	oldGroup = gApplication::enterGroup();
@@ -123,7 +125,7 @@ guint custom_dialog(const gchar *icon,GtkButtonsType btn,char *sg)
 	gdk_window_set_type_hint(msg->window,GDK_WINDOW_TYPE_HINT_UTILITY);
 	gtk_window_set_position(GTK_WINDOW(msg),GTK_WIN_POS_CENTER_ALWAYS);
 	
-	resp = gDialog_run(GTK_DIALOG(msg));
+	resp = run_dialog(GTK_DIALOG(msg));
 	gtk_widget_destroy(msg);
 	
 	if (resp<0)
@@ -268,21 +270,20 @@ static void gDialog_filters(GtkFileChooser* ch)
 	}
 }
 	
-static bool gDialog_runFile(GtkFileChooserDialog *msg)
+static bool run_file_dialog(GtkFileChooserDialog *msg)
 {
 	GSList *names,*iter;
 	char *buf;
 	long b=0;
 	
 	gDialog_filters((GtkFileChooser*)msg);
-	gtk_window_present(GTK_WINDOW(msg));
 	
-	if (gDialog_run(GTK_DIALOG(msg)) != GTK_RESPONSE_OK)
-  	{
-  		gtk_widget_destroy(GTK_WIDGET(msg));
+	if (run_dialog(GTK_DIALOG(msg)) != GTK_RESPONSE_OK)
+ 	{
+ 		gtk_widget_destroy(GTK_WIDGET(msg));
 		gDialog::setTitle(NULL);
 		return true;
-  	}
+ 	}
 	
 	if (DIALOG_path) { g_free(DIALOG_path); DIALOG_path=NULL; }
 	if (DIALOG_paths)
@@ -459,7 +460,7 @@ bool gDialog::openFile(bool multi)
 			gtk_file_chooser_set_current_folder((GtkFileChooser*)msg, DIALOG_path);
 	}
 	
-	return gDialog_runFile(msg);
+	return run_dialog(GTK_DIALOG(msg));
 }
 
 bool gDialog::saveFile()
@@ -484,7 +485,7 @@ bool gDialog::saveFile()
 		gtk_file_chooser_select_filename ((GtkFileChooser*)msg,DIALOG_path);
 	}
 		
-	return gDialog_runFile(msg);
+	return run_file_dialog(msg);
 }
 
 bool gDialog::selectFolder()
@@ -506,7 +507,7 @@ bool gDialog::selectFolder()
 	if (DIALOG_path)
 		gtk_file_chooser_select_filename ((GtkFileChooser*)msg,DIALOG_path);
 	
-	return gDialog_runFile(msg);
+	return run_file_dialog(msg);
 
 }
 	
@@ -531,13 +532,12 @@ bool gDialog::selectFont()
 		g_free(buf);
 	}
 	
-	gtk_window_present(GTK_WINDOW(msg));
-	if (gtk_dialog_run(GTK_DIALOG(msg)) != GTK_RESPONSE_OK)
-  	{
-  		gtk_widget_destroy(GTK_WIDGET(msg));
+	if (run_dialog(GTK_DIALOG(msg)) != GTK_RESPONSE_OK)
+ 	{
+ 		gtk_widget_destroy(GTK_WIDGET(msg));
 		gDialog::setTitle(NULL);
 		return true;
-  	}
+ 	}
 	
 	buf = gtk_font_selection_dialog_get_font_name(msg);
 	//printf("gDialog::selectFont: %s\n", buf);
@@ -573,12 +573,12 @@ bool gDialog::selectColor()
 	gtk_color_selection_set_current_color((GtkColorSelection*)msg->colorsel,&gcol);
 	
 	gtk_window_present(GTK_WINDOW(msg));
-	if (gtk_dialog_run(GTK_DIALOG(msg)) != GTK_RESPONSE_OK)
-  	{
-  		gtk_widget_destroy(GTK_WIDGET(msg));
+	if (run_dialog(GTK_DIALOG(msg)) != GTK_RESPONSE_OK)
+ 	{
+ 		gtk_widget_destroy(GTK_WIDGET(msg));
 		gDialog::setTitle(NULL);
 		return true;
-  	}
+ 	}
 	
 	gtk_color_selection_get_current_color((GtkColorSelection*)msg->colorsel,&gcol);
 	

@@ -267,6 +267,17 @@ gControl::~gControl()
 {
 	gMainWindow *win = window();
 	
+	/* Useless, as the control won't raise events anymore apparently.
+	if (gApplication::_old_active_control == this)
+	{
+		if (onFocusEvent) 
+		{
+			fprintf(stderr, "focus out ??\n");
+			onFocusEvent(this, gEvent_FocusOut);
+		}
+		gApplication::_old_active_control = NULL;
+	}*/
+	
 	emit(SIGNAL(onFinish));
 	
 	if (win && win->focus == this)
@@ -291,6 +302,10 @@ gControl::~gControl()
 		gApplication::_enter = NULL;
 	if (gApplication::_leave == this)
 		gApplication::_leave = NULL;
+	if (gApplication::_active_control == this)
+		gApplication::_active_control = NULL;
+	if (gApplication::_old_active_control == this)
+		gApplication::_old_active_control = NULL;
 }
 
 void gControl::destroy()
@@ -908,7 +923,7 @@ bool gControl::hasFocus()
 	if (_proxy)
 		return _proxy->hasFocus();
 	else
-		return (border && GTK_WIDGET_HAS_FOCUS(border)) || (widget && GTK_WIDGET_HAS_FOCUS(widget)) || gDesktop::activeControl() == this;
+		return (border && GTK_WIDGET_HAS_FOCUS(border)) || (widget && GTK_WIDGET_HAS_FOCUS(widget)) || gApplication::activeControl() == this;
 }
 
 gControl* gControl::next()

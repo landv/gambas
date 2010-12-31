@@ -39,7 +39,7 @@ public:
 	gPicture *picture() { return _picture; }
 	bool mask() { return _mask; }
 	int menuCount();
-	bool modal();
+	bool isModal() const;
 	const char* text();
 	bool topOnly();
 	bool skipTaskBar();

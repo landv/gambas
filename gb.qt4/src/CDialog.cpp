@@ -71,7 +71,6 @@ static QString get_filter(void)
   return s;
 }
 
-
 BEGIN_METHOD_VOID(CDIALOG_exit)
 
 	GB.StoreObject(NULL, POINTER(&dialog_filter));

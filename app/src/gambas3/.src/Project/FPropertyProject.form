@@ -262,86 +262,6 @@
       }
     }
     Index = 2
-    Text = ("Components")
-    { chkShowUsed CheckBox
-      MoveScaled(1,1,83,3)
-      Text = ("Show only components used in project")
-    }
-    { chkShowBeta CheckBox
-      MoveScaled(1,5,56,4)
-      Visible = False
-      Text = ("Show components in beta version")
-    }
-    { lstComponent ListContainer
-      MoveScaled(1,5,80,35)
-      Expand = True
-    }
-    { HBox14 HBox
-      MoveScaled(1,41,84,4)
-      { btnHelp Button
-        MoveScaled(0,0,35,4)
-        Text = ("About &component...")
-        Picture = Picture["icon:/small/up"]
-      }
-      { Panel3 Panel
-        MoveScaled(39,0,7,4)
-        Expand = True
-      }
-      { btnUndo Button
-        MoveScaled(62,0,17,4)
-        Text = ("&Reset")
-        Picture = Picture["icon:/small/undo"]
-      }
-    }
-    { panAboutComponent Panel
-      MoveScaled(1,46,84,17)
-      Visible = False
-      Expand = True
-      Arrangement = Arrange.Vertical
-      Border = Border.Plain
-      { webAboutComponent WebView
-        MoveScaled(2,2,24,13)
-        Expand = True
-      }
-    }
-    Index = 3
-    Text = ("Libraries")
-    { lstLibraries ListContainer
-      MoveScaled(1,1,81,55)
-      Expand = True
-    }
-    { HBox18 HBox
-      MoveScaled(1,58,84,4)
-      Spacing = True
-      { btnInsertLib Button
-        MoveScaled(0,0,17,4)
-        Text = ("&Add...")
-        Picture = Picture["icon:/small/add"]
-      }
-      { btnRemoveLib Button
-        MoveScaled(18,0,17,4)
-        Text = ("&Remove")
-        Picture = Picture["icon:/small/remove"]
-      }
-      { btnMoveUpLib Button
-        MoveScaled(35,0,6,4)
-        Picture = Picture["icon:/small/up"]
-      }
-      { btnMoveDownLib Button
-        MoveScaled(41,0,6,4)
-        Picture = Picture["icon:/small/down"]
-      }
-      { Panel2 Panel
-        MoveScaled(59,0,1,4)
-        Expand = True
-      }
-      { btnUndoLib Button
-        MoveScaled(65,0,17,4)
-        Text = ("&Reset")
-        Picture = Picture["icon:/small/undo"]
-      }
-    }
-    Index = 4
     Text = ("Environment")
     { VBox1 VBox
       MoveScaled(1,1,84,62)
@@ -407,6 +327,86 @@
           Text = ("&Remove")
           Picture = Picture["icon:/small/remove"]
         }
+      }
+    }
+    Index = 3
+    Text = ("Components")
+    { chkShowUsed CheckBox
+      MoveScaled(1,1,83,3)
+      Text = ("Show only components used in project")
+    }
+    { chkShowBeta CheckBox
+      MoveScaled(1,5,56,4)
+      Visible = False
+      Text = ("Show components in beta version")
+    }
+    { lstComponent ListContainer
+      MoveScaled(1,5,80,35)
+      Expand = True
+    }
+    { HBox14 HBox
+      MoveScaled(1,41,84,4)
+      { btnHelp Button
+        MoveScaled(0,0,35,4)
+        Text = ("About &component...")
+        Picture = Picture["icon:/small/up"]
+      }
+      { Panel3 Panel
+        MoveScaled(39,0,7,4)
+        Expand = True
+      }
+      { btnUndo Button
+        MoveScaled(62,0,17,4)
+        Text = ("&Reset")
+        Picture = Picture["icon:/small/undo"]
+      }
+    }
+    { panAboutComponent Panel
+      MoveScaled(1,46,84,17)
+      Visible = False
+      Expand = True
+      Arrangement = Arrange.Vertical
+      Border = Border.Plain
+      { webAboutComponent WebView
+        MoveScaled(2,2,24,13)
+        Expand = True
+      }
+    }
+    Index = 4
+    Text = ("Libraries")
+    { lstLibraries ListContainer
+      MoveScaled(1,1,81,55)
+      Expand = True
+    }
+    { HBox18 HBox
+      MoveScaled(1,58,84,4)
+      Spacing = True
+      { btnInsertLib Button
+        MoveScaled(0,0,17,4)
+        Text = ("&Add...")
+        Picture = Picture["icon:/small/add"]
+      }
+      { btnRemoveLib Button
+        MoveScaled(18,0,17,4)
+        Text = ("&Remove")
+        Picture = Picture["icon:/small/remove"]
+      }
+      { btnMoveUpLib Button
+        MoveScaled(35,0,6,4)
+        Picture = Picture["icon:/small/up"]
+      }
+      { btnMoveDownLib Button
+        MoveScaled(41,0,6,4)
+        Picture = Picture["icon:/small/down"]
+      }
+      { Panel2 Panel
+        MoveScaled(59,0,1,4)
+        Expand = True
+      }
+      { btnUndoLib Button
+        MoveScaled(65,0,17,4)
+        Text = ("&Reset")
+        Picture = Picture["icon:/small/undo"]
       }
     }
     Index = 5

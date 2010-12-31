@@ -62,8 +62,8 @@ static void cb_hide (GtkWidget *widget, gMainWindow *data)
 {
 	data->emit(SIGNAL(data->onHide));
 	data->_not_spontaneous = false;
-	if (data == gDesktop::activeWindow())
-		gMainWindow::setActiveWindow(NULL);
+	//if (data == gDesktop::activeWindow())
+	//	gMainWindow::setActiveWindow(NULL);
 }
 
 static gboolean win_close(GtkWidget *widget,GdkEvent  *event,gMainWindow *data)
@@ -286,7 +286,7 @@ gMainWindow::~gMainWindow()
 	{
 		emit(SIGNAL(onClose));
 		opened = false;
-		if (GTK_IS_WINDOW(border) && modal())
+		if (GTK_IS_WINDOW(border) && isModal())
 			gApplication::exitLoop(this);
 	}
 	
@@ -483,9 +483,8 @@ void gMainWindow::setVisible(bool vl)
 			if (!_xembed)
 			{
 				gtk_window_group_add_window(gApplication::currentGroup(), GTK_WINDOW(border));
-
 				active = gDesktop::activeWindow();
-				if (active && active != this)
+				if (isModal() && active && active != this)
 					gtk_window_set_transient_for(GTK_WINDOW(border), GTK_WINDOW(active->border));
 			}
 			
@@ -516,7 +515,7 @@ void gMainWindow::setVisible(bool vl)
 	else
 	{
 		if (this == _active)
-			focus = gDesktop::activeControl();
+			focus = gApplication::activeControl();
 			
 		_not_spontaneous = visible;
 		_hidden = true;
@@ -582,11 +581,11 @@ void gMainWindow::center()
 	move(myx,myy);
 }
 
-bool gMainWindow::modal()
+bool gMainWindow::isModal() const
 {
 	if (!isTopLevel()) return false;
 
-	return gtk_window_get_modal (GTK_WINDOW(border));
+	return gtk_window_get_modal(GTK_WINDOW(border));
 }
 
 void gMainWindow::showModal()
@@ -594,7 +593,7 @@ void gMainWindow::showModal()
   gMainWindow *save;
 	
 	if (!isTopLevel()) return;
-	if (modal()) return;
+	if (isModal()) return;
 	
 	save = _current;
 	_current = this;
@@ -627,7 +626,7 @@ void gMainWindow::showPopup(int x, int y)
 	int oldx, oldy;
 	
 	if (!isTopLevel()) return;
-	if (modal()) return;
+	if (isModal()) return;
 	
 	//gtk_widget_unrealize(border);
 	//((GtkWindow *)border)->type = GTK_WINDOW_POPUP;
@@ -981,7 +980,7 @@ bool gMainWindow::doClose()
 	
 	if (opened)
 	{
-		if (modal() && !gApplication::hasLoop(this))
+		if (isModal() && !gApplication::hasLoop(this))
 			return true;
 		
 		_closing = true;
@@ -994,13 +993,16 @@ bool gMainWindow::doClose()
 			opened = false;
 		_closing = false;
 		
-		if (!opened && modal())
+		if (!opened && isModal())
 			gApplication::exitLoop(this);
   }
   
   if (!opened) // && !modal())
   {
-  	if (!modal())
+		if (_active == this)
+			setActiveWindow(NULL);
+		
+  	if (!isModal())
   	{
 			if (persistent)
 				hide();
@@ -1235,13 +1237,13 @@ void gMainWindow::setActiveWindow(gControl *control)
 		
 	_active = window;
 	
+	//fprintf(stderr, "setActiveWindow: %p %s\n", _active, _active ? _active->name() : "");
+	
 	if (old)
 		old->emit(SIGNAL(old->onDeactivate));
 		
 	if (window)
 		window->emit(SIGNAL(window->onActivate));
-	
-	//fprintf(stderr, "setActiveWindow: %p %s\n", _active, _active ? _active->name() : "");
 }
 
 #ifdef GDK_WINDOWING_X11

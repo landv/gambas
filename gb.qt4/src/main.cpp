@@ -394,6 +394,31 @@ bool MyApplication::eventFilter(QObject *o, QEvent *e)
 			if (_tooltip_disable)
 				return true;
 		}
+		else
+		{
+			QWidget *widget = (QWidget *)o;
+			CWIDGET *control;
+			
+			if (widget->isWindow())
+			{
+				if (e->type() == QEvent::WindowActivate)
+				{
+					control = CWidget::getReal(widget);
+					//qDebug("WindowActivate: %p %s", widget, control ? control->name : "NULL");
+					if (control)
+						CWIDGET_handle_focus(control, true);
+					else
+						CWINDOW_activate(NULL);
+				}
+				else if (e->type() == QEvent::WindowDeactivate)
+				{
+					control = CWidget::getReal(widget);
+					//qDebug("WindowDeactivate: %p %s", widget, control ? control->name : "NULL");
+					if (control)
+						CWIDGET_handle_focus(control, false);
+				}
+			}
+		}
 	}
 
 	return QApplication::eventFilter(o, e);
@@ -604,6 +629,8 @@ static void QT_Init(void)
 
 	MAIN_update_scale();
 
+	MyApplication::setEventFilter(true);
+	
 	if (GB.GetFunction(&_application_keypress_func, (void *)GB.Application.StartupClass(), "Application_KeyPress", "", "") == 0)
 	{
 		_application_keypress = true;
@@ -1034,7 +1061,7 @@ int EXPORT GB_INIT(void)
 	#endif
 	#endif
 	
-	putenv((char *)"QT_NO_GLIB=1");
+	//putenv((char *)"QT_NO_GLIB=1");
 	//putenv((char *)"QT_SLOW_TOPLEVEL_RESIZE=1");
 
 	GB.Hook(GB_HOOK_MAIN, (void *)hook_main);

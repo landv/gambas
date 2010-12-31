@@ -94,7 +94,6 @@ Desktop
 
 ************************************************************************/
 
-gControl *gDesktop::_active_control = NULL;
 gFont *gDesktop::_desktop_font = NULL;
 int gDesktop::_desktop_scale = 0;
 
@@ -148,11 +147,6 @@ void gDesktop::setFont(gFont *ft)
 	return curr;
 	
 }*/
-
-void gDesktop::setActiveControl(gControl *control)
-{
-	_active_control = control;
-}
 
 gMainWindow* gDesktop::activeWindow()
 {

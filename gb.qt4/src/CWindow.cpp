@@ -246,13 +246,14 @@ static void handle_focus(CWINDOW *_object)
 		THIS->focus->widget->setFocus();
 		GB.Unref(POINTER(&THIS->focus));
 		THIS->focus = NULL;
-	}	
+	}
 }
 
 static void post_show_event(void *_object)
 {
 	GB.Raise(THIS, EVENT_Move, 0);
 	GB.Raise(THIS, EVENT_Resize, 0);
+	handle_focus(THIS);
 }
 
 static void reparent_window(CWINDOW *_object, void *parent, bool move, int x = 0, int y = 0)
@@ -1563,12 +1564,12 @@ MyMainWindow::MyMainWindow(QWidget *parent, const char *name, bool embedded) :
 	_type = _NET_WM_WINDOW_TYPE_NORMAL;
 	_enterLoop = false;
 	
-	setAttribute(Qt::WA_KeyCompression, true);
-	setAttribute(Qt::WA_InputMethodEnabled, true);
+	//setAttribute(Qt::WA_KeyCompression, true);
+	//setAttribute(Qt::WA_InputMethodEnabled, true);
 	setAttribute(Qt::WA_QuitOnClose, false);
 	setAttribute(Qt::WA_StaticContents, true);
 	setObjectName(name);
-	//setFocusPolicy(ClickFocus);
+	setFocusPolicy(Qt::NoFocus);
 
 	_activate = false;
 }
@@ -2254,6 +2255,21 @@ void MyMainWindow::closeEvent(QCloseEvent *e)
 	CWIDGET_set_flag(THIS, WF_CLOSED);
 	//qApp->sendEvent(WIDGET, new QEvent(EVENT_CLOSE));
 
+	/*if (CWINDOW_Active == THIS)
+	{
+		//qDebug("closeEvent activate: %p %p", CWidget::get(WIDGET->parentWidget()), CWINDOW_Active);
+		CWINDOW_activate(CWidget::get(WIDGET->parentWidget()));
+	}*/
+	if (CWINDOW_LastActive == THIS)
+	{
+		//GB.Unref(POINTER(&CWINDOW_LastActive));
+		CWINDOW_LastActive = NULL;
+		//qDebug("CWINDOW_LastActive = 0");
+	}
+
+	if (THIS == CWINDOW_Active)
+		CWINDOW_activate(NULL);
+
 	if (!CWIDGET_test_flag(THIS, WF_PERSISTENT))
 	{
 		if (CWINDOW_Main == THIS)
@@ -2270,16 +2286,6 @@ void MyMainWindow::closeEvent(QCloseEvent *e)
 
 	e->accept();
 
-	if (CWINDOW_Active == THIS)
-		CWINDOW_activate(CWidget::get(WIDGET->parentWidget()));
-	if (CWINDOW_LastActive == THIS)
-	{
-		//GB.Unref(POINTER(&CWINDOW_LastActive));
-		CWINDOW_LastActive = NULL;
-		//qDebug("CWINDOW_LastActive = 0");
-	}
-
-
 	if (isModal() && _enterLoop)
 		MyApplication::eventLoop->exit();
 
@@ -2295,7 +2301,6 @@ IGNORE:
 	CWIDGET_clear_flag(THIS, WF_CLOSED);
 	e->ignore();
 }
-
 
 
 bool MyMainWindow::isPersistent(void)
@@ -2510,6 +2515,8 @@ void CWINDOW_activate(CWIDGET *ob)
 {
 	CWINDOW *active;
 
+	//qDebug("CWINDOW_activate: %s", ob ? ob->name : "NULL");
+	
 	if (ob)
 	{
 		active = CWidget::getWindow(ob);
@@ -2533,27 +2540,13 @@ void CWINDOW_activate(CWIDGET *ob)
 	if (CWINDOW_Active)
 	{
 		GB.Raise(CWINDOW_Active, EVENT_Deactivate, 0);
-		/*if (GB.CanRaise(CWINDOW_Active, EVENT_Deactivate))
-		{
-			GB.Ref(CWINDOW_Active);
-			GB.Post((void (*)())post_deactivate_event, (intptr_t)CWINDOW_Active);
-		}*/
 		CWINDOW_Active = 0;
 	}
-
+	
 	if (active)
-	{
 		GB.Raise(active, EVENT_Activate, 0);
-		/*if (GB.CanRaise(active, EVENT_Activate))
-		{
-			GB.Ref(active);
-			GB.Post((void (*)())post_activate_event, (intptr_t)active);
-		}*/
-	}
 
-	//CWINDOW_LastActive = CWINDOW_Active;
 	CWINDOW_Active = active;
-	//qDebug("CWINDOW_Active = (%s %p) %p", active ? GB.GetClassName(active) : "", active, active ? QWIDGET(active) : 0);
 }
 
 void CWINDOW_set_default_button(CWINDOW *win, QPushButton *button, bool on)
@@ -2595,40 +2588,20 @@ bool CWindow::eventFilter(QObject *o, QEvent *e)
 {
 	CWINDOW *_object = (CWINDOW *)CWidget::get(o);
 
-	if (THIS != NULL && !	CWIDGET_test_flag(THIS, WF_DELETED))
+	if (THIS && !CWIDGET_test_flag(THIS, WF_DELETED))
 	{
-		if (e->type() == QEvent::WindowActivate && e->spontaneous())
+		/*if (e->type() == QEvent::WindowActivate && e->spontaneous())
 		{
-			if (THIS->toplevel)
-			{
-				CWINDOW_activate((CWIDGET *)(CWINDOW_LastActive ? CWINDOW_LastActive : THIS));
-				//GB.Unref(POINTER(&CWINDOW_LastActive));
-				CWINDOW_LastActive = 0;
-				//qDebug("CWINDOW_LastActive = 0");
-			}
-			
-			handle_focus(THIS);
+			//qDebug("Activate: fake focus");
+			CWIDGET_handle_focus((CWIDGET *)THIS, true);
 		}
 		else if (e->type() == QEvent::WindowDeactivate && e->spontaneous())
 		{
-			if (THIS->toplevel)
-			{
-				//qDebug("Deactivate: ob = %p", THIS);
-				/*#if QT_VERSION >= 0x030100
-				if ((THIS == CWINDOW_Current) || (qApp->eventLoop()->loopLevel() <= 1))
-				#else
-				if ((THIS == CWINDOW_Current) || (qApp->loopLevel() <= 1))
-				#endif*/
-				if (!CWINDOW_LastActive)
-				{
-					CWINDOW_LastActive = CWINDOW_Active;
-					//qDebug("CWINDOW_LastActive = %p", CWINDOW_LastActive);
-					//GB.Ref(CWINDOW_LastActive);
-				}
-				CWINDOW_activate(0);
-			}
+			//qDebug("Activate: fake focus");
+			CWIDGET_handle_focus((CWIDGET *)THIS, false);
 		}
- 		else if (e->type() == QEvent::Show) // && !e->spontaneous())
+		else */
+		if (e->type() == QEvent::Show) // && !e->spontaneous())
 		{
 			MyMainWindow *w = (MyMainWindow *)o;
 
@@ -2636,7 +2609,7 @@ bool CWindow::eventFilter(QObject *o, QEvent *e)
 			
 			if (THIS->toplevel)
 				w->center();
-				
+			
 			//handle_focus(THIS);
 			post_show_event(THIS);
 			//CWINDOW_define_mask(THIS);

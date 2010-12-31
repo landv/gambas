@@ -209,9 +209,6 @@ void gComboBox::create(bool readOnly)
 	if (ind >= 0)
 		setIndex(ind);
 	
-	//if (focus)
-	//	gDesktop::setActiveControl(this);
-	
 	unlock();
 }
 

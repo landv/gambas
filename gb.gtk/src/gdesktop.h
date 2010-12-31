@@ -56,9 +56,6 @@ public:
 
 	static bool rightToLeft();
 	
-	static gControl* activeControl() { return _active_control; }
-	static void setActiveControl(gControl *control);
-	
 	static int count();
 	static void geometry(int screen, GdkRectangle *rect);
 	static void availableGeometry(int screen, GdkRectangle *rect);
@@ -68,7 +65,6 @@ public:
 	
 private:
 
-	static gControl *_active_control;
 	static int _desktop_scale;
 	static gFont *_desktop_font;
 };

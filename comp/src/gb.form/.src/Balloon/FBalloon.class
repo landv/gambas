@@ -332,26 +332,24 @@ Public Sub timCheck_Timer()
   'Debug Me.X;; Me.Y;; Me.Visible;; Me.Picture.W;; Me.Picture.H
 
   If $bInside Then 
-    'Debug "HIDE"
     Me.Hide
     Return 
   Endif 
 
   If (Timer - $dShow) > ($iDelay / 1000) Then 
-    'Debug "HIDE"
     Me.Hide
     Return 
   Endif
   
-  hWin = GetTopLevel($hCtrl)
-  If Not hWin.TopOnly Then
-    'Debug Application.ActiveWindow
-    If GetTopLevel(Application.ActiveWindow) <> hWin Then 
-      'Debug "HIDE"
-      Me.Hide
-      Return
-    Endif
-  Endif
+  ' hWin = GetTopLevel($hCtrl)
+  ' If Not hWin.TopOnly Then
+  '   Debug Application.ActiveWindow;; GetTopLevel(Application.ActiveWindow);; hWin
+  '   If GetTopLevel(Application.ActiveWindow) <> hWin Then 
+  '     Debug "HIDE 3"
+  '     Me.Hide
+  '     Return
+  '   Endif
+  ' Endif
   
   If Abs($hCtrl.ScreenX - $X) >= 4 Or Abs($hCtrl.ScreenY - $Y) >= 4 Then
     MakeBorder

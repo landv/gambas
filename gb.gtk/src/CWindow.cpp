@@ -393,7 +393,7 @@ END_METHOD
 
 BEGIN_PROPERTY(CWINDOW_modal)
 
-	GB.ReturnBoolean(WINDOW->modal());
+	GB.ReturnBoolean(WINDOW->isModal());
 
 END_PROPERTY
 

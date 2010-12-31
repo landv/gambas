@@ -167,10 +167,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Application_ActiveControl)
 
-	gControl *win=gDesktop::activeControl();
-	
-	if (!win) { GB.ReturnNull(); return; }
-	GB.ReturnObject(GetObject(win));
+	GB.ReturnObject(GetObject(gApplication::activeControl()));
 
 END_PROPERTY
 

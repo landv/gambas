@@ -1723,8 +1723,10 @@ CWIDGET *CWidget::get(QObject *o)
 	while (o)
 	{
 		ob = dict[o];
-		if (ob != NULL)
+		if (ob)
 			return ob;
+		if (((QWidget *)o)->isWindow())
+			return NULL;
 
 		o = o->parent();
 		real = false;
@@ -1758,6 +1760,8 @@ CWIDGET *CWidget::getDesign(QObject *o)
 		ob = dict[o];
 		if (ob)
 			break;
+		if (((QWidget *)o)->isWindow())
+			return NULL;
 
 		o = o->parent();
 		real = false;
@@ -1774,6 +1778,8 @@ CWIDGET *CWidget::getDesign(QObject *o)
 		ob = dict[o];
 		if (ob && CWIDGET_test_flag(ob, WF_DESIGN_LEADER))
 			return ob;
+		if (((QWidget *)o)->isWindow())
+			return NULL;
 
 		o = o->parent();
 		real = false;
@@ -1913,13 +1919,10 @@ void CWidget::destroy()
 
 	if (CWIDGET_active_control == ob)
 		CWIDGET_active_control = NULL;
-	
 	if (_old_active_control == ob)
 		_old_active_control = NULL;
-	
 	if (_hovered == ob)
 		_hovered = NULL;
-	
 	if (_official_hovered == ob)
 		_official_hovered = NULL;
 	
@@ -1957,6 +1960,8 @@ static void post_focus_change(void *)
 {
 	CWIDGET *current;
 	
+	//qDebug("post_focus_change");
+
 	for(;;)
 	{
 		current = CWIDGET_active_control;
@@ -1967,6 +1972,7 @@ static void post_focus_change(void *)
 			GB.Raise(_old_active_control, EVENT_LostFocus, 0);
 		
 		_old_active_control = current;
+		CWINDOW_activate(_old_active_control);
 		
 		if (current)
 			GB.Raise(current, EVENT_GotFocus, 0);
@@ -1982,6 +1988,26 @@ static void handle_focus_change()
 	
 	_focus_change = TRUE;
 	GB.Post((void (*)())post_focus_change, NULL);
+}
+
+void CWIDGET_handle_focus(CWIDGET *control, bool on) 
+{
+	static int cpt = 0;
+	
+	if (on == (CWIDGET_active_control == control))
+		return;
+	
+	//qDebug("CWIDGET_handle_focus: %s %d", control->name, on);
+	
+	/*if (!qstrcmp(control->name, "Form1") && on)
+	{
+		cpt++;
+		if (cpt == 2)
+			BREAKPOINT();
+	}*/
+	
+	CWIDGET_active_control = on ? control : NULL;
+	handle_focus_change();
 }
 
 bool CWidget::eventFilter(QObject *widget, QEvent *event)
@@ -2094,18 +2120,13 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	
   __FOCUS_IN:
   {
-		//qDebug("FocusIn: %p %s (%p %s)", control, control->name, CWIDGET_active_control, CWIDGET_active_control ? CWIDGET_active_control->name : "");
-		CWIDGET_active_control = control;
-		handle_focus_change();
-		CWINDOW_activate(control);
+		CWIDGET_handle_focus(control, true);
 		goto __NEXT;
   }
   
   __FOCUS_OUT:
   {
-		//qDebug("FocusOut: %p %s (%p %s)", control, control->name, CWIDGET_active_control, CWIDGET_active_control ? CWIDGET_active_control->name : "");
-		CWIDGET_active_control = NULL;
-		handle_focus_change();
+		CWIDGET_handle_focus(control, false);
 		goto __NEXT;
   }
   

@@ -186,6 +186,7 @@ void CWIDGET_move_resize(void *_object, int x, int y, int w, int h);
 void CWIDGET_move_cached(void *_object, int x, int y);
 void CWIDGET_resize_cached(void *_object, int w, int h);
 void CWIDGET_move_resize_cached(void *_object, int x, int y, int w, int h);
+void CWIDGET_handle_focus(CWIDGET *control, bool on);
 
 void CACTION_register(void *control, const char *key);
 void CACTION_raise(void *control);

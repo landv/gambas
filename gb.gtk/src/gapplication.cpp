@@ -253,6 +253,8 @@ void gKey::setActiveControl(gControl *control)
 	
 **************************************************************************/
 
+static bool _focus_change = false;
+
 static bool check_button(gControl *w)
 {
 	return w && w->isVisible() && w->enabled();
@@ -333,12 +335,25 @@ static void gambas_handle_event(GdkEvent *event)
 		}
 	}
 
-	if (!((event->type >= GDK_MOTION_NOTIFY && event->type <= GDK_LEAVE_NOTIFY) || event->type == GDK_SCROLL))
+	if (!((event->type >= GDK_MOTION_NOTIFY && event->type <= GDK_FOCUS_CHANGE) || event->type == GDK_SCROLL))
 		goto __HANDLE_EVENT;
 	
 	widget = gtk_get_event_widget(event);
 	if (!widget)
 		goto __HANDLE_EVENT;
+	
+	if (event->type == GDK_FOCUS_CHANGE)
+	{
+		if (GTK_IS_WINDOW(widget))
+		{
+			control = (gControl *)g_object_get_data(G_OBJECT(widget), "gambas-control");
+			if (control)
+				gApplication::setActiveControl(control, event->focus_change.in);
+			else if (event->focus_change.in);
+				gMainWindow::setActiveWindow(NULL);
+		}
+		goto __HANDLE_EVENT;
+	}
 	
 	grab = gtk_grab_get_current();
 	if (grab)
@@ -557,8 +572,8 @@ static void gambas_handle_event(GdkEvent *event)
 		{
 			gMainWindow *win;
 			
-			if (gDesktop::activeControl())
-				control = gDesktop::activeControl();
+			if (gApplication::activeControl())
+				control = gApplication::activeControl();
 			
 			if (control)
 			{
@@ -617,8 +632,8 @@ static void gambas_handle_event(GdkEvent *event)
 			bool cancel = false;
 			gMainWindow *win;
 			
-			if (gDesktop::activeControl())
-				control = gDesktop::activeControl();
+			if (gApplication::activeControl())
+				control = gApplication::activeControl();
 			
 			if (control)
 			{
@@ -683,6 +698,8 @@ void *gApplication::_loop_owner = 0;
 GtkWindowGroup *gApplication::_group = NULL;
 gControl *gApplication::_enter = NULL;
 gControl *gApplication::_leave = NULL;
+gControl *gApplication::_active_control = NULL;
+gControl *gApplication::_old_active_control = NULL;
 bool (*gApplication::onKeyEvent)(int) = NULL;
 guint32 gApplication::_event_time = 0;
 bool gApplication::_close_next_window = false;
@@ -1068,5 +1085,51 @@ void gApplication::updateLastEventTime(GdkEvent *e)
 	}
 	
 	_event_time = time;
+}
+
+static void post_focus_change(void *)
+{
+	gControl *current;
+	
+	//fprintf(stderr, "post_focus_change\n");
+	
+	for(;;)
+	{
+		current = gApplication::activeControl();
+		if (current == gApplication::_old_active_control)
+			break;
+
+		if (gApplication::_old_active_control && gApplication::_old_active_control->onFocusEvent)
+			gApplication::_old_active_control->onFocusEvent(gApplication::_old_active_control, gEvent_FocusOut);
+		
+		gApplication::_old_active_control = current;
+		gMainWindow::setActiveWindow(current);
+		
+		if (current && current->onFocusEvent)
+			current->onFocusEvent(current, gEvent_FocusIn);
+	}
+	
+	_focus_change = FALSE;
+}
+
+static void handle_focus_change()
+{
+	if (_focus_change)
+		return;
+	
+	_focus_change = TRUE;
+	GB.Post((void (*)())post_focus_change, NULL);
+}
+
+void gApplication::setActiveControl(gControl *control, bool on)
+{
+	if (on == (_active_control == control))
+		return;
+	
+	//fprintf(stderr, "setActiveControl: %s %d\n", control->name(), on);
+
+	_active_control = on ? control : NULL;
+	gKey::setActiveControl(_active_control);
+	handle_focus_change();
 }
 
