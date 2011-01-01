@@ -29,21 +29,8 @@ static gboolean cb_expose(GtkWidget *draw, GdkEventExpose *e, gLabel *d)
 {
 	GtkStyle *style = gtk_widget_get_style(draw);
 	GdkGC *gc;
-	int vw,vh,lw,lh;
+	int vw, vh, lw, lh;
 	int fw = d->getFrameWidth();
-/*	int width;
-	
-	if (d->markup)
-	{
-		width = d->width() - fw * 2;
-		if (width < 0)
-			return false;
-		width *= PANGO_SCALE;
-	}
-	else
-		width = -1;
-		
-	pango_layout_set_width(d->layout, width);*/
 	
 	gc = gdk_gc_new(draw->window);
 	
@@ -65,30 +52,33 @@ static gboolean cb_expose(GtkWidget *draw, GdkEventExpose *e, gLabel *d)
 	{
 		switch (d->lay_x)
 		{
-			case 0: vw=0; break;
-			case 1: vw=(vw/2)-(lw/2); break;
-			case 2: vw=vw-lw; break;
-			case 3: if (gtk_widget_get_default_direction()==GTK_TEXT_DIR_RTL ) vw=vw-lw;
-					else vw=0;
-					break;
+			case 0: vw = fw; break;
+			case 1: vw = (vw - lw) / 2; break;
+			case 2: vw =  vw - lw - fw; break;
+			case 3: 
+				if (gtk_widget_get_default_direction()==GTK_TEXT_DIR_RTL ) 
+					vw = vw - lw - fw;
+				else 
+					vw = fw;
+				break;
 		}
 	}
 	else
-		vw=0;
+		vw = fw;
 
 	
 	switch (d->lay_y)
 	{
-		case 0: vh=0; break;
-		case 1: vh=(vh/2)-(lh/2); break;
-		case 2: vh=vh-lh; break;
+		case 0: vh = fw; break;
+		case 1: vh = (vh - lh) / 2; break;
+		case 2: vh = vh - lh - fw; break;
 	}
 	
-	if (vh<0) vh=0;
+	if (vh < 0) vh = 0;
 	
 	if (d->_transparent && d->_mask_dirty)
 	{
-		GdkBitmap *mask = gt_make_text_mask(draw->window, d->width(), d->height(), d->layout, vw + fw, vh + fw);
+		GdkBitmap *mask = gt_make_text_mask(draw->window, d->width(), d->height(), d->layout, vw, vh);
 		
 		if (fw)
 		{
@@ -127,9 +117,8 @@ gLabel::gLabel(gContainer *parent) : gControl(parent)
 	_locked = false;
 	_wrap = true;
 	
-	border = gtk_event_box_new();
-	widget = gtk_event_box_new();
-	layout = gtk_widget_create_pango_layout(widget, "");
+	border = widget = gtk_event_box_new();
+	layout = gtk_widget_create_pango_layout(border, "");
 	
 	realize(true);
 
@@ -252,6 +241,8 @@ char *gLabel::text()
 
 void gLabel::setText(char *vl)
 {
+	bool no_text_before = !textdata || !*textdata;
+	
 	g_free(textdata);
 	
 	if (vl)
@@ -261,6 +252,10 @@ void gLabel::setText(char *vl)
 
 	updateLayout();
 	updateSize();
+	
+	if (no_text_before && _transparent)
+		gtk_widget_shape_combine_mask(border, NULL, 0, 0);
+	
 	refresh();
 }
 
