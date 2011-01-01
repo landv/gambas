@@ -310,16 +310,18 @@ Public Sub ReadWindow(hWindow As Window, sKey As String)
   Dim sPos As String
 
   aPos = Me[sKey &/ "Geometry"]
-  If Not aPos Or If aPos.Count < 2 Then Return
 
-  X = aPos[0]
-  Y = aPos[1]
-  If aPos.Count >= 2 Then
-    W = aPos[2]
-    H = aPos[3]
-    If aPos.Count >= 5 Then
-      S = aPos[4]
-      If S >= Screens.Count Then S = 0
+  If Not aPos Or If aPos.Count < 2 Then 
+  Else
+    X = aPos[0]
+    Y = aPos[1]
+    If aPos.Count > 2 Then
+      W = aPos[2]
+      H = aPos[3]
+      If aPos.Count > 4 Then
+        S = aPos[4]
+        If S >= Screens.Count Then S = 0
+      Endif
     Endif
   Endif
 
