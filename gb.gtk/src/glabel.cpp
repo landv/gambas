@@ -37,19 +37,6 @@ static gboolean cb_expose(GtkWidget *draw, GdkEventExpose *e, gLabel *d)
 	GdkGC *gc;
 	int vw,vh,lw,lh;
 	int fw = d->getFrameWidth();
-/*	int width;
-	
-	if (d->markup)
-	{
-		width = d->width() - fw * 2;
-		if (width < 0)
-			return false;
-		width *= PANGO_SCALE;
-	}
-	else
-		width = -1;
-		
-	pango_layout_set_width(d->layout, width);*/
 	
 	gc = gdk_gc_new(draw->window);
 	
@@ -258,6 +245,8 @@ char *gLabel::text()
 
 void gLabel::setText(char *vl)
 {
+	bool no_text_before = !textdata || !*textdata;
+	
 	g_free(textdata);
 	
 	if (vl)
@@ -267,6 +256,10 @@ void gLabel::setText(char *vl)
 
 	updateLayout();
 	updateSize();
+	
+	if (no_text_before && _transparent)
+		gtk_widget_shape_combine_mask(border, NULL, 0, 0);
+	
 	refresh();
 }
 
