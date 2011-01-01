@@ -720,8 +720,14 @@ static gboolean cb_keypress(GtkWidget *wid,GdkEventKey *e,gGridView *data)
 		return TRUE;
 	}
 
-	return false;
+	return FALSE;
 }
+
+void cb_map(GtkWidget *widget, gGridView *data)
+{
+	data->afterMap();
+}
+
 
 gGridView::gGridView(gContainer *parent) : gControl(parent)
 {
@@ -754,6 +760,8 @@ gGridView::gGridView(gContainer *parent) : gControl(parent)
 	scroll_timer = 0;
 	_updating_last_column = false;
 	_autoresize = true;
+	_show_headers = 0;
+	_show_footers = false;
 
 	border=gtk_event_box_new();
 	//gtk_event_box_set_visible_window(GTK_EVENT_BOX(border), false);
@@ -805,6 +813,7 @@ gGridView::gGridView(gContainer *parent) : gControl(parent)
 	g_signal_connect_after(G_OBJECT(border),"size-allocate",G_CALLBACK(gGridView_configure),(void*)this);
 	g_signal_connect(G_OBJECT(border), "key-press-event", G_CALLBACK(cb_keypress), this);
 	g_signal_connect(G_OBJECT(border), "scroll-event", G_CALLBACK(cb_scroll), this);
+	g_signal_connect(G_OBJECT(border), "map", G_CALLBACK(cb_map), this);
 	
 	g_signal_connect(G_OBJECT(header),"expose-event",G_CALLBACK(tbheader_expose),this);
 	g_signal_connect(G_OBJECT(header),"motion-notify-event",G_CALLBACK(tbheader_move),this);
@@ -830,7 +839,6 @@ gGridView::gGridView(gContainer *parent) : gControl(parent)
 	g_signal_connect(G_OBJECT(contents),"button-press-event",G_CALLBACK(tblateral_press),this);
 	g_signal_connect(G_OBJECT(contents),"button-release-event",G_CALLBACK(tblateral_release),this);
 	
-
 	//g_signal_connect(G_OBJECT(contents),"event",G_CALLBACK(gridview_release),this);
 
 	g_object_set(G_OBJECT(vbar),"visible",FALSE,(void *)NULL);
@@ -1606,15 +1614,7 @@ Headers, Footers and Row Separators
 ********************************************************************/
 int gGridView::headersVisible()
 {	
-	int val = 0;
-	
-	//g_object_get(G_OBJECT(header),"visible",&hv,NULL);
-	//g_object_get(G_OBJECT(lateral),"visible",&lv,NULL);
-	
-	if (GTK_WIDGET_VISIBLE(header)) val += 1;
-	if (GTK_WIDGET_VISIBLE(lateral)) val += 2;
-	
-	return val;
+	return _show_headers;
 }
 
 void gGridView::setHeadersVisible(int vl)
@@ -1624,6 +1624,8 @@ void gGridView::setHeadersVisible(int vl)
 	g_object_get(G_OBJECT(header),"visible",&now,NULL);
 	if (vl==now) return;
 	g_object_set(G_OBJECT(header),"visible",vl,NULL);*/
+	
+	_show_headers = vl;
 	
 	if (vl & 1)
 		gtk_widget_show(header);
@@ -1638,11 +1640,13 @@ void gGridView::setHeadersVisible(int vl)
 
 bool gGridView::footersVisible()
 {
-	return GTK_WIDGET_VISIBLE(footer);
+	return _show_footers;
 }
 
 void gGridView::setFootersVisible(bool vl)
 {
+	_show_footers = vl;
+	
 	if (vl)
 		gtk_widget_show(footer);
 	else
@@ -1987,3 +1991,10 @@ void gGridView::setItemSpan(int row, int col, int rowspan, int colspan)
 	render->setSpan(col, row, colspan, rowspan);
 	refresh();
 }
+
+void gGridView::afterMap()
+{
+	setHeadersVisible(_show_headers);
+	setFootersVisible(_show_footers);
+}
+

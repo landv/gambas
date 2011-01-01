@@ -168,10 +168,13 @@ public:
 	int mouse_pos;
 	bool _updating_last_column;
 	bool _autoresize;
+	int _show_headers;
+	bool _show_footers;
 	
-	void          calculateBars();
+	void calculateBars();
 	void updateLateralWidth(int w);
 	void updateHeaders();
+	void afterMap();
 	int findColumn(int pos) { return render->findColumn(pos); }
 	int findRow(int pos) { return render->findRow(pos); }
 	int findColumnSeparation(int pos);

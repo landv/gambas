@@ -573,16 +573,14 @@ BEGIN_METHOD(CWIDGET_reparent, GB_OBJECT parent; GB_INTEGER x; GB_INTEGER y)
 	if (GB.CheckObject(parent))
 		return;
 	
-	x = CONTROL->left();
-	y = CONTROL->top();
+	x = CONTROL->x();
+	y = CONTROL->y();
 	
 	if (!MISSING(x) && !MISSING(y))
 	{
     x = VARG(x);
     y = VARG(y);
 	}
-	
-	//if (!CONTROL->parent()) { GB.Error("Unable to reparent a top level window"); return; }
 	
 	CONTROL->reparent((gContainer*)parent->ob.widget, x, y);
 

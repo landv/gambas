@@ -1555,12 +1555,16 @@ void gControl::emit(void *signal, intptr_t arg)
 void gControl::reparent(gContainer *newpr, int x, int y)
 {
 	gContainer *oldpr;
+	bool was_visible = isVisible();
 	
 	// newpr can be equal to pr: for example, to move a control for one
 	// tab to another tab of the same TabStrip!
 	
 	if (!newpr || !newpr->getContainer())
 		return;
+	
+	if (was_visible) hide();
+	gtk_widget_unrealize(border);
 	
 	oldpr = pr;
 	pr = newpr;	
@@ -1582,7 +1586,9 @@ void gControl::reparent(gContainer *newpr, int x, int y)
 		newpr->insert(this);
 	}
 
+	gtk_widget_realize(border);
 	move(x, y);
+	if (was_visible) show();
 }
 
 int gControl::scrollX()
