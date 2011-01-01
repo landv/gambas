@@ -501,6 +501,42 @@ void CWIDGET_move_resize(void *_object, int x, int y, int w, int h)
 
 	if (wid)
 	{
+		if (w < 0)
+			w = wid->width();
+
+		if (h < 0)
+			h = wid->height();
+
+		if (x == wid->x() && y == wid->y() && w == wid->width() && h == wid->height())
+			return;
+		
+		if (GB.Is(THIS, CLASS_Window))
+		{
+			wid->move(x, y);
+			wid->resize(qMax(0, w), qMax(0, h));
+		}
+		else
+			wid->setGeometry(x, y, qMax(0, w), qMax(0, h));
+	}
+
+  if (GB.Is(THIS, CLASS_Window))
+  {
+    ((CWINDOW *)_object)->x = x;
+    ((CWINDOW *)_object)->y = y;
+    ((CWINDOW *)_object)->w = w;
+    ((CWINDOW *)_object)->h = h;
+  }
+
+	CWIDGET_after_geometry_change(THIS, true);
+}
+
+#if 0
+void CWIDGET_move_resize(void *_object, int x, int y, int w, int h)
+{
+  QWidget *wid = get_widget(THIS);
+
+	if (wid)
+	{
 // 		if (wid->isA("QWorkspaceChild"))
 // 		{
 // 			CWIDGET_move(THIS, x, y);
@@ -530,6 +566,7 @@ void CWIDGET_move_resize(void *_object, int x, int y, int w, int h)
 
 	CWIDGET_after_geometry_change(THIS, true);
 }
+#endif
 
 void CWIDGET_move_resize_cached(void *_object, int x, int y, int w, int h)
 {
@@ -1992,19 +2029,8 @@ static void handle_focus_change()
 
 void CWIDGET_handle_focus(CWIDGET *control, bool on) 
 {
-	static int cpt = 0;
-	
 	if (on == (CWIDGET_active_control == control))
 		return;
-	
-	//qDebug("CWIDGET_handle_focus: %s %d", control->name, on);
-	
-	/*if (!qstrcmp(control->name, "Form1") && on)
-	{
-		cpt++;
-		if (cpt == 2)
-			BREAKPOINT();
-	}*/
 	
 	CWIDGET_active_control = on ? control : NULL;
 	handle_focus_change();

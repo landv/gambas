@@ -4,6 +4,8 @@ Export
 Create Static
 
 Class Window
+Class Desktop
+Class Screens
 
 Static Property Read Path As String
 
@@ -303,26 +305,39 @@ End
 
 Public Sub ReadWindow(hWindow As Window, sKey As String)
 
-  Dim sPos As String
   Dim aPos As Integer[]
+  Dim X, Y, W, H, S As Integer
+  Dim sPos As String
 
   aPos = Me[sKey &/ "Geometry"]
   If Not aPos Or If aPos.Count < 2 Then Return
 
-  aPos[0] = Max(0, aPos[0])
-  aPos[1] = Max(0, aPos[1])
-  If aPos.Count = 4 Then
-    aPos[2] = Max(32, aPos[2])
-    aPos[3] = Max(32, aPos[3])
+  X = aPos[0]
+  Y = aPos[1]
+  If aPos.Count >= 2 Then
+    W = aPos[2]
+    H = aPos[3]
+    If aPos.Count >= 5 Then
+      S = aPos[4]
+      If S >= Screens.Count Then S = 0
+    Endif
   Endif
 
-  'cPos = Split(sPos, ",")
-  If aPos.Count = 4 And hWindow.Resizable Then
+  X += Screens[S].AvailableX
+  Y += Screens[S].AvailableY
+
+  ' If Object.Type(hWindow) = "FHelpBrowser" Then
+  '   Print "ReadWindow: "; X;; Y; " / "; S;; Screens[S].AvailableX;; Screens[S].AvailableY
+  ' Endif
+  
+  If aPos.Count >= 4 And hWindow.Resizable Then
+    W = Max(32, W)
+    H = Max(32, H)
     If hWindow.Modal Then
-      hWindow.Resize(aPos[2], aPos[3])
+      hWindow.Resize(W, H)
       hWindow.Center
     Else
-      hWindow.Move(Max(0, aPos[0]), Max(0, aPos[1]), aPos[2], aPos[3])
+      hWindow.Move(X, Y, W, H)
     Endif
   Else
     If Not hWindow.Modal Then hWindow.Move(aPos[0], aPos[1])
@@ -333,7 +348,19 @@ End
 
 Public Sub WriteWindow(hWindow As Window, sKey As String)
 
-  Me[sKey &/ "Geometry"] = [hWindow.X, hWindow.Y, hWindow.Width, hWindow.Height]
+  Dim X, Y, W, H, S As Integer
+  
+  ' If Object.Type(hWindow) = "FHelpBrowser" Then
+  '   Print "WriteWindow: "; hWindow.X;; hWindow.Y; " / "; S;; Screens[S].AvailableX;; Screens[S].AvailableY
+  ' Endif
+  
+  S = hWindow.Screen
+  X = hWindow.X - Screens[S].AvailableX
+  Y = hWindow.Y - Screens[S].AvailableY
+  W = hWindow.Width
+  H = hWindow.Height
+
+  Me[sKey &/ "Geometry"] = [X, Y, W, H, S]
 
 End
 
