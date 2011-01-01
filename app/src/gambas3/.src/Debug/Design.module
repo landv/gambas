@@ -359,6 +359,7 @@ Private Sub AfterStop()
   'FMain.ShowTool(TRUE)
   FMain.OnProjectDebug
   FOutput.OnProjectDebug
+  FSearch.OnProjectDebug
 
   'hForm = FDebugInfo.Parent
   'Settings["/FMain/Splitter"] = hForm.Layout
@@ -738,6 +739,7 @@ Private Sub Start(sCmd As String)
   Next
   FOutput.OnProjectDebug
   FMain.OnProjectDebug
+  FSearch.OnProjectDebug
 
   FMain.ShowDebug(True)
   FDebugInfo.UpdateView

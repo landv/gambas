@@ -972,3 +972,10 @@ Public Sub timRefresh_Timer()
   RefreshBrowse
   
 End
+
+Public Sub OnProjectDebug()
+  
+  btnReplace.Enabled = Not Project.Running
+  btnReplaceAll.Enabled = btnReplace.Enabled
+  
+End
