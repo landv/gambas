@@ -11,13 +11,13 @@ Property Expanded As Boolean
 
 Static Private $iMaxWidth As Integer
 
-Private panName As HPanel
+'Private panName As HPanel
 Private picCheck As PictureBox
-Private txtName As TextLabel
+Private txtName As Label
 Private txtDesc As TextLabel
-Private panInfo As Panel
-Private txtInfo As TextLabel
-Private panVBox As VBox
+'Private panInfo As Panel
+'Private txtInfo As TextLabel
+'Private panVBox As VBox
 
 Private $bCheck As Boolean
 Private $bGray As Boolean
@@ -25,10 +25,13 @@ Private $aComp As New String[]
 
 Private $bLock As Boolean
 Private $sKey As String
+Private $sDesc As String
 Private $sInfo As String
 Private $hWatch As Observer
 Private $bAnim As Boolean
 Private $iLastW As Integer
+Private $bExpanded As Boolean
+Private $bCanArrange As Boolean
 
 Private Sub AddInfo(aInfo As String[], sTitle As String)
 
@@ -51,7 +54,6 @@ Static Public Sub ResizeNames(hCont As Container)
   
 End
 
-
 Public Sub _new(hComp As CComponent, bDark As Boolean)
 
   Dim W, H As Integer
@@ -68,66 +70,53 @@ Public Sub _new(hComp As CComponent, bDark As Boolean)
     If bDark Then Me.Background = Color.LightBackground
   Endif
   
-  panVBox = New VBox(Me)
+  Me._Arrangement = Arrange.None
   
-  panName = New HPanel(panVBox) As "panComp"
-  
-  hVBox = New VBox(panName)
-  hVBox.Resize(24, 24)
-  
-  hSpace = New Panel(hVBox)
-  hSpace.H = 4
-  
-  picCheck = New PictureBox(hVBox) As "picCheck"
+  picCheck = New PictureBox(Me) As "picCheck"
   picCheck.Alignment = Align.Top
   picCheck.Picture = Picture["img/16/unchecked.png"]
-  picCheck.Resize(24, 16)
+  'picCheck.Resize(24, 16)
   
-  txtName = New TextLabel(panName)
+  txtName = New Label(Me)
   txtName.Padding = 2
   txtName.Text = hComp.Key
   txtName.Alignment = Align.TopNormal
-  txtName.Adjust 'AutoResize = True
+  'txtName.Background = Color.Yellow
+  txtName.Adjust
   
-  txtDesc = New TextLabel(panName)
+  txtDesc = New TextLabel(Me)
   txtDesc.Expand = True
   txtDesc.Padding = 2
   txtDesc.Alignment = Align.TopNormal
+  'txtDesc.Background = Color.Yellow
+  txtDesc.AutoResize = True
   
-  txtDesc.Text = hComp.Name
-  Select Case hComp.State
-    Case CComponent.UNSTABLE
-      txtDesc.Text &= " <b>(" & ("Experimental") & ")</b>"
-    Case CComponent.STABLE_NOT_FINISHED
-      txtDesc.Text &= " <b>(" & ("Not finished but stable") & ")</b>"
-  End Select 
-  'txtDesc.Adjust
-  
+  Expanded_Write(False)
+
   $hWatch = New Observer(Me) As "Watcher"
-  
-  panInfo = New Panel(panVBox)
-  panInfo.Visible = False
+  ' 
+  ' panInfo = New Panel(panVBox)
+  ' panInfo.Visible = False
+  ' 
+  ' txtInfo = New TextLabel(panInfo)
+  ' txtInfo.Padding = 2
+  ' txtInfo.AutoResize = True
+  ' 'txtInfo.Background = Color.Yellow
 
-  txtInfo = New TextLabel(panInfo)
-  txtInfo.Padding = 2
-  'txtInfo.Background = Color.Yellow
-
-  W = txtName.Font.TextWidth(txtName.Text)
+  W = txtName.Font.TextWidth(txtName.Text) + 12
   If W > $iMaxWidth Then 
     $iMaxWidth = W
   Endif
   
-  Expanded_Write(False)
-  $bAnim = True
-  
-  Watcher_Arrange
+  ' $bAnim = True
   
 End
 
 Public Sub _SetLabelWidth()
   
   txtName.Width = $iMaxWidth + 16
-  'picCheck.H = txtName.H
+  $bCanArrange = True
+  Watcher_Arrange
   
 End
 
@@ -202,7 +191,7 @@ End
 
 Private Function Expanded_Read() As Boolean
 
-  Return panInfo.Visible  
+  Return $bExpanded
 
 End
 
@@ -213,14 +202,24 @@ Private Sub Expanded_Write(Value As Boolean)
   Dim I As Integer
   Dim H As Integer
 
-  panInfo.Visible = Value
+  $bExpanded = Value
 
+  hComp = CComponent.All[$sKey]
+
+  If Not $sDesc Then
+    $sDesc = hComp.Name
+    Select Case hComp.State
+      Case CComponent.UNSTABLE
+        $sDesc &= " <b>(" & ("Experimental") & ")</b>"
+      Case CComponent.STABLE_NOT_FINISHED
+        $sDesc &= " <b>(" & ("Not finished but stable") & ")</b>"
+    End Select 
+  Endif
+  
   If Value Then 
       
     If Not $sInfo Then 
     
-      hComp = CComponent.All[$sKey]
-
       AddInfo(hComp.Authors, ("Authors"))
       
       aInfo = hComp.Need.Copy()
@@ -254,44 +253,54 @@ Private Sub Expanded_Write(Value As Boolean)
       
     Endif
     
-    txtInfo.Text = $sInfo
-    txtInfo.Move(txtDesc.X, 0, panInfo.W - txtDesc.X - 24, 8)
-    txtInfo.Adjust
-    panInfo.H = txtInfo.H
-    H = panInfo.Height + panName.Height + panVBox.Padding * 2
-
-  Else 
-
-    H = panName.Height + panVBox.Padding * 2
-
+    txtDesc.Text = $sDesc & "<p>" & $sInfo
+    
+  Else
+    
+    txtDesc.Text = $sDesc
+    
   Endif
 
-  If False '$bAnim Then  
-    While Abs(Me.Height - H) >= 2
-      If Me.Height > H Then
-        Me.Height -= 2
-      Else
-        Me.Height += 2
-      Endif
-      Wait
-    Wend
-  Endif
+  'txtInfo.Move(txtDesc.X, 0, panInfo.W - txtDesc.X - 24, 8)
+  'txtInfo.Adjust
+  'panInfo.H = txtInfo.H
+  'H = panInfo.Height + panName.Height + panVBox.Padding * 2
+  ' 
+  ' If False '$bAnim Then  
+  '   While Abs(Me.Height - H) >= 2
+  '     If Me.Height > H Then
+  '       Me.Height -= 2
+  '     Else
+  '       Me.Height += 2
+  '     Endif
+  '     Wait
+  '   Wend
+  ' Endif
   
-  Me.Height = H
+  ' Me.Height = H
+  
+  Watcher_Arrange
   
 End
 
 Public Sub Watcher_Arrange()
 
-  If txtDesc.W = $iLastW Then Return
-  txtDesc.Adjust
-  $iLastW = txtDesc.W
-  If panName.H <> txtDesc.H Then
-    panName.H = txtDesc.H
-    $bAnim = False
-    Expanded_Write(panInfo.Visible)
-    $bAnim = True
-  Endif
+  If Not $bCanArrange Then Return
+  
+  picCheck.Move(0, 4, 24, 16)
+  txtName.Move(24, 0, $iMaxWidth, txtName.H)
+  txtDesc.Move(24 + $iMaxWidth, 0, Me.W - 24 - $iMaxWidth)
+  Me.H = Max(24, Max(txtName.H, txtDesc.H))
+
+  ' If txtDesc.W = $iLastW Then Return
+  ' txtDesc.Adjust
+  ' $iLastW = txtDesc.W
+  ' If panName.H <> txtDesc.H Then
+  '   panName.H = txtDesc.H
+  '   $bAnim = False
+  '   Expanded_Write(panInfo.Visible)
+  '   $bAnim = True
+  ' Endif
   
 End
 

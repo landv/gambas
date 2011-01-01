@@ -40,12 +40,6 @@
 #include "CColor.h"
 #include "CLabel.h"
 
-/*#undef CLABEL_PROPERTIES
-#define CLABEL_PROPERTIES "*,Padding{Range:0;63},AutoResize,Text,Alignment{Align.*}=Normal,Border{Border.*},Transparent=True"
-#undef CTEXTLABEL_PROPERTIES
-#define CTEXTLABEL_PROPERTIES "*,Padding{Range:0;63},AutoResize,Text,Alignment{Align.*}=TopNormal,Border{Border.*},Transparent=True"*/
-
-
 /*#define DEBUG_CBUTTON*/
 
 
@@ -257,8 +251,8 @@ void MyLabel::calcMinimumHeight(bool adjust)
 	int f = frameWidth() + margin();
 	QRect br;
 	
-	if (f > 0 && f < 4)
-		f = 4;
+	//if (f > 0 && f < 4)
+	//	f = 4;
 
 	//qDebug("calcMinimumHeight: f = %d", f);
 	
@@ -266,14 +260,28 @@ void MyLabel::calcMinimumHeight(bool adjust)
 	{
 		QTextDocument doc;
 		
-		doc.setHtml(text());
 		doc.setDefaultFont(font());
+		doc.setDocumentMargin(0);
+		doc.setHtml(text());
 		
 		w = width() - f * 2;
 		
-		doc.setTextWidth(w);
-		nh = doc.size().height() - 6; // Why (- 6) ? Don't know...
-		nw = adjust ? doc.idealWidth() : w;
+		if (adjust)
+		{
+			//doc.adjustSize();
+			doc.setTextWidth(w);
+			nw = doc.idealWidth();
+			doc.setTextWidth(nw);
+			nh = doc.size().height(); // Why (- 6) ? Don't know...
+			nw = doc.size().width();
+			
+		}
+		else
+		{
+			doc.setTextWidth(w);
+			nh = doc.size().height(); // Why (- 6) ? Don't know...
+			nw = w;
+		}
 	}
 	else
 	{

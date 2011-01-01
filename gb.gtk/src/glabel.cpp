@@ -171,7 +171,7 @@ void gLabel::updateLayout()
 	gt_add_layout_from_font(layout, font());
 }
 
-void gLabel::updateSize(bool adjust, bool noresize)
+void gLabel::updateSize(bool adjust, bool noresize_width)
 {
 	gint w, h;
 	int fw;
@@ -190,17 +190,17 @@ void gLabel::updateSize(bool adjust, bool noresize)
 	}
 	else
 		w = -1;
-		
+	
 	pango_layout_set_width(layout, w);
 	
-	if ((!autoresize && !adjust) || noresize)
-		return;
-		
 	pango_layout_get_pixel_size(layout, &w, &h);
-	
+
 	w += fw * 2;
 	h += fw * 2;
 	
+	if ((!autoresize && !adjust) || (noresize_width && w != width()))
+		return;
+		
 	if ((align == ALIGN_CENTER || align == ALIGN_LEFT || align == ALIGN_NORMAL || align == ALIGN_RIGHT) && h < height())
 		h = height();
 	
@@ -317,7 +317,7 @@ void gLabel::resize(int w, int h)
 	bool update = markup && width() != w;
 	gControl::resize(w, h);
 	if (update)
-		updateSize(false, true);
+		updateSize(false);
 }
 
 void gLabel::setWrap(bool v)

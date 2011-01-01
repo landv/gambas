@@ -1055,13 +1055,13 @@ const char *GB_INCLUDE EXPORT = "gb.draw";
 
 int EXPORT GB_INIT(void)
 {
-	#if 0
-	#if QT_VERSION >= 0x030304
-	qInstallMsgHandler(myMessageHandler);
-	#endif
-	#endif
+	char *env;
 	
-	//putenv((char *)"QT_NO_GLIB=1");
+	// Disable GLib support on KDE only
+	env = getenv("KDE_FULL_SESSION");
+	if (env && !strcasecmp(env, "true"))
+		putenv((char *)"QT_NO_GLIB=1");
+	
 	//putenv((char *)"QT_SLOW_TOPLEVEL_RESIZE=1");
 
 	GB.Hook(GB_HOOK_MAIN, (void *)hook_main);
