@@ -56,15 +56,16 @@ typedef
 #endif
   
 enum {
-  DP_SECOND = 1,
-  DP_MINUTE = 2,
-  DP_HOUR = 3,
-  DP_DAY = 4,
-  DP_WEEK = 5,
-  DP_WEEKDAY = 6,
-  DP_MONTH = 7,
-  DP_QUARTER = 8,
-  DP_YEAR = 9,
+	DP_MILLISECOND = 1,
+  DP_SECOND = 2,
+  DP_MINUTE = 3,
+  DP_HOUR = 4,
+  DP_DAY = 5,
+  DP_WEEK = 6,
+  DP_WEEKDAY = 7,
+  DP_MONTH = 8,
+  DP_QUARTER = 9,
+  DP_YEAR = 10,
   };
   
 #ifndef GBX_INFO

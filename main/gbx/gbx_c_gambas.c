@@ -214,6 +214,7 @@ GB_DESC NATIVE_Gambas[] =
 	GB_CONSTANT("Friday", "i", 5),
 	GB_CONSTANT("Saturday", "i", 6),
 
+	GB_CONSTANT("Millisecond", "i", DP_MILLISECOND),
 	GB_CONSTANT("Second", "i", DP_SECOND),
 	GB_CONSTANT("Minute", "i", DP_MINUTE),
 	GB_CONSTANT("Hour", "i", DP_HOUR),
