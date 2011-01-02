@@ -6,6 +6,7 @@ Public Sub _new()
   
   Dim i As Integer
   Dim c As Collection
+  ReportHBox1.Fixed = True
   'Report.Debug = True
   For i = 0 To 199
     c = New Collection

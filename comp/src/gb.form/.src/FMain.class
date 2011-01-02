@@ -6,3 +6,13 @@ Public Sub ValueBox1_KeyPress()
   Debug Last;; Key.Code
 
 End
+
+Public Sub Form_Open()
+
+  Dim s As String
+  For Each s In Stock.List
+   MyIconView1.Add(s, s, Picture["icon:/48/" & s])
+  Next
+  
+
+End

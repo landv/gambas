@@ -143,7 +143,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   
   X += hControl.RealLeft
   Y += hControl.RealTop
-
+  
   For Each hChild In Me.Children
     'Print object.Type(hchild.Ctrl), hControl.RelPage, hControl.RealPage + hchild.RelPage, Page - 1
     
@@ -251,101 +251,106 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
   Dim tmpX As Float
   Dim aIgnored As New TControl[]  
   
+  '************************************************
   If _Arrangement = Arrange.Vertical Then 
+    '*************************************************
+    
     Return _SetVerticalChildGeometry(X, Y, W, H, ContPage)
     
-    fSpc = IIf(Me._RelativeSpacing, H * Me._Spacing / 100, Me._Spacing) 'ME._Spacing
-    fPdg = Me._Padding
-    
-    X = fPdg
-    Y = fPdg
-    W -= fPdg * 2
-    H -= fPdg * 2
-    tmpX = X
-    
-    For Each hChild In Me.Children
-      
-      hChildHints = hChild.ctrl._GetSizeHints(W, H - fSExp, W, H)
-      
-      hchild.SizeHint = hChildHints
-      If hChild.Ctrl.Ignore Then 
-        aIgnored.Add(hchild)
-        Continue
-      Endif
-      
-      If hChild.ctrl.Expand Then Inc iNExp
-      
-      If fSExp + hChildHints.Height > H And Not Me Is Report Then 
-        fSExp -= fSpc
-        aPageItems.SExp = H - fsExp
-        aPageItems.NExp = iNExp
-        aPage.Add(aPageItems)
-        aPageItems = New CPageInfo
-        fsExp = 0
-        iNExp = 0
-        
-      Endif
-      
-      fSExp += hChildHints.Height
-      
-      hChild.RelPage = aPage.Count
-      hChild.RealPage = ContPage + aPage.Count
-      
-      aPageItems.Children.Add(hChild)
-      fSExp += fSpc
-    Next
-    
-    fSExp -= fSpc 
-    fSExp = H - fSExp
-    aPage.Add(aPageItems)
-    aPageItems.SExp = fSExp
-    aPageItems.NExp = iNExp
-    
-    If aPage.Count = 1 Then 
-      For Each hChild In aPage[0].Children
-        hChild.RelPage = -1
-      Next 
-    Endif
-    
-    For i = 0 To aPage.Max
-      
-      X = fPdg
-      Y = fPdg
-      
-      bFirst = True
-      
-      For Each hChild In aPage[i].Children
-        
-        hChildHints = hChild.ctrl._GetSizeHints(W, H - Y, W, H) '.SizeHint '.ctrl._GetSizeHints(W, H - Y, W, H)
-        
-        If Not bFirst Then 
-          Y += fSpc
-        Endif
-        
-        bFirst = False
-        
-        If hChild.ctrl.Expand Then 
-          Try fH = hChildHints.Height + (aPage[i].SExp / aPage[i].NExp) '- fSpc
-        Else 
-          fH = hChildHints.Height '- fSpc
-        Endif 
-        If fH = 0 Then 
-          Break
-          
-        Endif
-        iPage = iPage + hChild._SetGeometry(X, Y, W, fH)
-        
-        Y += fH
-        
-      Next
-      
-    Next 
-    
-    Return aPage.Max + iPage
+    ' fSpc = IIf(Me._RelativeSpacing, H * Me._Spacing / 100, Me._Spacing) 'ME._Spacing
+    ' fPdg = Me._Padding
+    ' 
+    ' X = fPdg
+    ' Y = fPdg
+    ' W -= fPdg * 2
+    ' H -= fPdg * 2
+    ' tmpX = X
+    ' 
+    ' For Each hChild In Me.Children
+    '   
+    '   hChildHints = hChild.ctrl._GetSizeHints(W, H - fSExp, W, H)
+    '   
+    '   hchild.SizeHint = hChildHints
+    '   If hChild.Ctrl.Ignore Then 
+    '     aIgnored.Add(hchild)
+    '     Continue
+    '   Endif
+    '   
+    '   If hChild.ctrl.Expand Then Inc iNExp
+    '   
+    '   If fSExp + hChildHints.Height > H And Not Me Is Report Then 
+    '     fSExp -= fSpc
+    '     aPageItems.SExp = H - fsExp
+    '     aPageItems.NExp = iNExp
+    '     aPage.Add(aPageItems)
+    '     aPageItems = New CPageInfo
+    '     fsExp = 0
+    '     iNExp = 0
+    '     
+    '   Endif
+    '   
+    '   fSExp += hChildHints.Height
+    '   
+    '   hChild.RelPage = aPage.Count
+    '   hChild.RealPage = ContPage + aPage.Count
+    '   
+    '   aPageItems.Children.Add(hChild)
+    '   fSExp += fSpc
+    ' Next
+    ' 
+    ' fSExp -= fSpc 
+    ' fSExp = H - fSExp
+    ' aPage.Add(aPageItems)
+    ' aPageItems.SExp = fSExp
+    ' aPageItems.NExp = iNExp
+    ' 
+    ' If aPage.Count = 1 Then 
+    '   For Each hChild In aPage[0].Children
+    '     hChild.RelPage = -1
+    '   Next 
+    ' Endif
+    ' 
+    ' For i = 0 To aPage.Max
+    '   
+    '   X = fPdg
+    '   Y = fPdg
+    '   
+    '   bFirst = True
+    '   
+    '   For Each hChild In aPage[i].Children
+    '     
+    '     hChildHints = hChild.ctrl._GetSizeHints(W, H - Y, W, H) '.SizeHint '.ctrl._GetSizeHints(W, H - Y, W, H)
+    '     
+    '     If Not bFirst Then 
+    '       Y += fSpc
+    '     Endif
+    '     
+    '     bFirst = False
+    '     
+    '     If hChild.ctrl.Expand Then 
+    '       Try fH = hChildHints.Height + (aPage[i].SExp / aPage[i].NExp) '- fSpc
+    '     Else 
+    '       fH = hChildHints.Height '- fSpc
+    '     Endif 
+    '     If fH = 0 Then 
+    '       Break
+    '       
+    '     Endif
+    '     iPage = iPage + hChild._SetGeometry(X, Y, W, fH)
+    '     
+    '     Y += fH
+    '     
+    '   Next
+    '   
+    ' Next 
+    ' 
+    ' Return aPage.Max + iPage
     
   Endif
   
+  '**********************************************
   If _Arrangement = Arrange.Horizontal Then
+    '**********************************************
     
     fSpc = IIf(Me._RelativeSpacing, W * Me._Spacing / 100, Me._Spacing) 'ME._Spacing
     fPdg = Me._Padding
@@ -412,7 +417,10 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
     Return iPage
   Endif
   
+  '********************************************************
   If _Arrangement = Arrange.Fill Then
+    '*******************************************************
+    
     fPdg = Me._Padding
     
     X = fPdg
@@ -467,8 +475,6 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
       If hMyHints.Width < hChildHints.Width Then hMyHints.Width = hChildHints.Width
       
     Next 
-    
-    
     
     hMyHints.Height -= fSpacing 
     
@@ -611,6 +617,7 @@ Public Function _SetVerticalChildGeometry(X As Float, Y As Float, W As Float, H 
   Dim i As Integer
   Dim tmpX As Float
   Dim aIgnored As New TControl[]  
+
   Inc $iLevel
   fSpc = IIf(Me._RelativeSpacing, H * Me._Spacing / 100, Me._Spacing) 'ME._Spacing
   fPdg = Me._Padding
@@ -642,7 +649,6 @@ Public Function _SetVerticalChildGeometry(X As Float, Y As Float, W As Float, H 
     Endif
     
     fsExp += hChildHints.Height  'ajoute la hauteur de cet enfant
-
     
     If Not hchild.Ctrl.Fixed Then hChild.RelPage = aPage.Count 'stocke la page relative dans le controle
     hChild.RealPage = ContPage + aPage.Count 'Stocke la page précalculée 
@@ -656,8 +662,6 @@ Public Function _SetVerticalChildGeometry(X As Float, Y As Float, W As Float, H 
   aPageItems.SExp = H - fSExp  'Enregistre la place disponible pour les expendable
   aPageItems.NExp = iNExp 'enregistre le nombre d'expendable
   aPage.Add(aPageItems) 'Ajoute la page aux dossier
-
-
   
   For Each aPageItems In aPage
     X = fPdg  'L'élément premier commence après le padding
@@ -674,22 +678,20 @@ Public Function _SetVerticalChildGeometry(X As Float, Y As Float, W As Float, H 
       Else
         fH = hChildHints.Height
       Endif
-       'If fH = 0 Then 
-       '   Break
-          
-        'Endif
-        'Print hchild.RealPage
+      'If fH = 0 Then 
+      '   Break
+      
+      'Endif
+      'Print hchild.RealPage
       iChildPage = hchild._SetGeometry(X, Y, W, fH)
       If iChildPage > 0 Then hchild.RelPage = -1
       iPage += iChildPage
       
-      
       y += fH
       
     Next
-  
+    
   Next
-  
   
   'If $iLevel = 1 Then Form1.Run(aPage)
   

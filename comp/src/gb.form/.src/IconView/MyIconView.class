@@ -1,0 +1,1033 @@
+' Gambas class file
+
+'IconView Gambas Version
+
+Inherits UserControl
+Export
+
+Public Const _Properties As String = "*,Mode{Select.*}=Single,Sorted,Editable,GridWidth{Range:0;64}=0,Border=True,ScrollBar{Scroll.*}=Both"
+
+Private $iMode As Integer = Select.multiple
+Private $bEditable As Boolean
+Private $bSorted As Boolean
+Private $bAscending As Boolean = True
+Private $iGridWidth As Integer
+
+Private $aItems As New _IconViewItem[]
+
+Private $cKeys As New Collection
+Private iColumns As Integer
+Private iRows As Integer
+Private iVisibleRows As Integer
+Private iStartRow As Integer
+Private $aSelected As New Integer[]
+Private $bBorder As Boolean
+Private $bScrollBar As Boolean
+Private $iCompare As Integer
+Private $bCompareSet As Boolean
+Private $iScollBar As Integer
+Private $hDrawingArea As DrawingArea 
+Private $hTimerPos As Timer
+Private $hHScroll As ScrollBar 
+Private $hVScroll As ScrollBar 
+Private $hpnlMain As Panel
+Private $hvBox As VBox
+Private $iItemMaxW As Integer
+Private $iItemMaxH As Integer
+Private $iIntern As Integer
+Private $iCurrent As Integer
+Private $iEndSelItem As Integer
+Private $iMouseOver As Integer
+Private $hPicture As Picture
+Private $bDrawSelRect As Boolean
+Private $iSelX As Integer
+Private $iSelY As Integer
+Private $hSelRect As New TRect
+Private $bUnselectMode As Boolean
+Private $iCurMouseX As Integer
+Private $iCurMouseY As Integer
+Private $iBackground As Integer = -1
+
+
+Public _HaveFocus As Boolean
+
+Private $txtRename As TextBox
+
+
+Static Private MyTile As Picture
+Public _Style As Integer = 1
+
+Public Const {Free} As Integer = -1
+Public Const Row As Integer = 0
+Public Const Column As Integer = 1
+Public Const LeftRight As Integer = 0
+Public Const TopBottom As Integer = 1
+
+Property Mode As Integer
+Property Sorted As Boolean ''this is for sort
+Property Editable As Boolean
+Property Ascending As Boolean
+Property GridWidth As Integer
+Property Picture As Picture
+
+'Property
+
+'/ / GB_PROPERTY("Arrangement", "i", CICONVIEW_arrangement),
+
+'/ / GB_PROPERTY("GridHeight", "i", CICONVIEW_grid_h),
+'/ / GB_PROPERTY("WordWrap", "b", CICONVIEW_word_wrap),
+Property Border As Boolean
+Property ScrollBar As Integer
+Property Compare As Integer
+Property Read Count As Integer
+Property Read Available As Boolean
+Property Read Current As _IconViewItem  
+'Property Read {Key} As String
+Property Read Item As _IconViewItem
+Property Read ClientWidth As Integer
+Property Read ClientW As Integer
+Property Read ClientHeight As Integer
+Property Read ClientH As Integer
+Property Background As Integer
+
+Event Select
+Event Activate 
+Event Click 
+Event Rename 
+Event Cancel
+Event Compare(Key As String, OtherKey As String)
+
+'Standart Events
+Event MouseMove
+Event MouseDown
+Event MouseUp
+Event MouseWheel
+Event KeyPress
+Event GotFocus
+Event LostFocus
+'Event Compare(Key As String, OtherKey As String)
+
+Static Public Sub _init()
+  
+  Dim himg As Image
+  
+  himg = New Image(1, 1, Color.RGB(Color[Color.SelectedBackground].Red, Color[Color.SelectedBackground].Green, Color[Color.SelectedBackground].Blue, 172))
+  
+  MyTile = himg.Picture
+  
+End
+
+Public Sub _new()
+  
+  '_Instance.Add(Me, Me.Handle)
+  
+  $hpnlMain = New Panel(Me)
+  
+  $hpnlMain.Arrangement = Arrange.Horizontal
+  
+  $hvBox = New VBox($hpnlMain)
+  $hvBox.Expand = True
+  $hDrawingArea = New DrawingArea($hvBox) As "MyDrawingArea"
+  $hDrawingArea.Background = Color.TextBackground
+  $hDrawingArea.Border = Border.Sunken
+  $hDrawingArea.Tracking = True
+  $hDrawingArea.Expand = True
+  $hDrawingArea.Focus = True
+  $txtRename = New TextBox($hDrawingArea) As "TextBox"
+  $txtRename.Border = Border.None
+  $txtRename.Hide
+  $txtRename.Alignment = Align.Center
+  '$hDrawingArea.Tracking = True
+  '$hDrawingArea.Arrangement = Arrange.Vertical
+  $hHScroll = New ScrollBar($hvBox) As "HScroll"
+  $hHScroll.Height = $hHScroll.DefaultSize
+  $hHScroll.Visible = False
+  $hVScroll = New ScrollBar($hpnlMain) As "VScroll"
+  $hVScroll.Width = $hVScroll.DefaultSize
+  
+  $hTimerPos = New Timer As "TimerPos"
+  $hTimerPos.Delay = 50
+  
+End
+
+Public Sub _attach(Parent As Object, EventName As String)
+  
+  If Parent = Null Then 
+    
+    $aItems = Null
+    
+  Endif
+  
+End
+
+Public Sub _free()
+  '  _cInstance.Remove(Me.Handle)
+  
+End
+
+Public Function MoveTo(Key As String) As Boolean
+  
+  If Not $aItems.Exist(Key) Then Return True
+  $iIntern = $aItems.Find(Key)
+  
+End
+
+Public Function MoveFirst() As Boolean
+  
+  $iIntern = 0
+  
+End
+
+Public Function MoveNext() As Boolean
+  
+  Inc $iIntern
+  If $iIntern > $aItems.Max Then Return True
+  
+End
+
+Public Function MoveBack() As Boolean
+  
+  Dec $iIntern
+  If $iIntern < 0 Then Return True
+  
+End
+
+Public Function _get(Key As String) As _IconViewItem
+  
+  Return $aItems[$cKeys[Key]]
+  
+End
+
+Public Sub Clear()
+  
+  $cKeys.Clear
+  $aItems.Clear
+  $aSelected.Clear
+  $hDrawingArea.Refresh
+  
+End
+
+Public Function Add(Key As String, Text As String, Optional {Picture} As Picture, Optional After As String) As _IconViewItem
+  
+  Dim hItem As New _IconViewItem(Me) As "MyItem"
+  
+  hItem._$sKey = Key
+  hItem.Text = Text
+  hitem.Editable = $bEditable
+  If {Picture} Then hItem.Picture = {Picture}
+  If After And $cKeys.Exist(After) And Not $bSorted Then 
+    $aItems.add($aItems, $cKeys[After])
+    RefreshKeys
+    $iItemMaxW = 0
+    '$aItems.Add(KEY, $aItems.Find(After))
+    '$cKeys.Add(hItem, key)
+  Else
+    
+    If $bSorted Then
+      
+      $aItems.Add(hitem, FindPlace(hItem))
+      RefreshKeys
+    Else
+      $aItems.Add(hItem)
+      $iItemMaxW = 0
+      $cKeys.Add($aItems.Max, Key)
+    Endif
+  Endif
+  
+  Return hItem
+  
+End
+
+Public Sub Remove(Key As String)
+  
+  ' $aItems.Remove($cKeys[key])
+  ' RefreshKeys
+  If Not $cKeys.Exist(Key) Then Return
+  $aItems.Remove($cKeys[Key])
+  $cKeys.Remove(Key)
+  
+End
+
+Public Function Exist(Key As String) As Boolean
+  
+  Return $cKeys.Exist(Key)
+  
+End
+
+Public Function Find(X As Integer, Y As Integer) As Boolean
+  
+  Dim i As Integer
+  
+  $iIntern = GetItemByPos(X, Y)
+  Return $iIntern = -1
+  
+End
+
+Public Sub SelectAll(Optional {Select} As Boolean)
+  
+  Dim i As Integer
+  
+  If {Select} Then
+    UnselectAll
+    
+    $bUnselectMode = True
+    For i = 0 To $aItems.Max
+      
+      $aItems[i].Selected = True
+      $aSelected.Add(i)
+    Next
+    $bUnselectMode = False
+    
+  Else
+    UnselectAll
+  Endif
+  $hDrawingArea.Refresh
+  
+End
+
+Private Function Mode_Read() As Integer
+  
+  Return $iMode
+  
+End
+
+Private Sub Mode_Write(Value As Integer)
+  
+  $iMode = Value
+  
+End
+
+Private Function Sorted_Read() As Boolean
+  
+  Return $bSorted
+  
+End
+
+Private Sub Sorted_Write(Value As Boolean)
+  
+  $bSorted = Value
+  If $bSorted Then 
+    'QuickSort($aItems, 0, $aItems.Max)
+    $aItems.Sort()
+    If Not $bAscending Then $aItems.Reverse
+    RefreshKeys
+  Endif
+  
+End
+
+Private Function Editable_Read() As Boolean
+  
+  Return $bEditable
+  
+End
+
+Private Sub Editable_Write(Value As Boolean)
+  
+  $bEditable = Value
+  
+End
+
+Private Function Ascending_Read() As Boolean
+  
+  Return $bAscending
+  
+End
+
+Private Sub Ascending_Write(Value As Boolean)
+  
+  $bAscending = Value
+  
+End
+
+Private Function GridWidth_Read() As Integer
+  Return $iGridWidth 
+End
+
+Private Sub GridWidth_Write(Value As Integer)
+  $iGridWidth = Value
+End
+
+Private Function Border_Read() As Boolean
+  
+  Return $hDrawingArea.Border = Border.Sunken
+  
+End
+
+Private Sub Border_Write(Value As Boolean)
+  
+  If Value Then
+    $hDrawingArea.Border = Border.Sunken
+  Else
+    $hDrawingArea.Border = Border.None
+  Endif
+  
+End
+
+Private Function ScrollBar_Read() As Integer
+  
+  Return $iScollBar
+  
+End
+
+Private Sub ScrollBar_Write(Value As Integer)
+  
+  $iScollBar = Value
+  
+End
+
+Private Function Compare_Read() As Integer
+  
+  Return $iCompare
+  
+End
+
+Private Sub Compare_Write(Value As Integer)
+  
+  $iCompare = Value
+  $bCompareSet = True
+  
+End
+
+Private Function Count_Read() As Integer
+  
+  Return $aItems.Count
+  
+End
+
+Private Function Available_Read() As Boolean
+  
+  Return $iIntern > -1
+  
+End
+
+Private Function Current_Read() As _IconViewItem
+  
+  Return $aItems[$iCurrent]
+  
+End
+
+Private Function Key_Read() As String
+  
+  Return $aItems[$iIntern]._$sKey
+  
+End
+
+Private Function Item_Read() As _IconViewItem
+  
+  Return $aItems[$iIntern]
+  
+End
+
+Private Function ClientWidth_Read() As Integer
+  
+  Return $hDrawingArea.Width
+  
+End
+
+Private Function ClientW_Read() As Integer
+  
+  Return $hDrawingArea.Width
+  
+End
+
+Private Function ClientHeight_Read() As Integer
+  
+  Return $hDrawingArea.Height
+  
+End
+
+Private Function ClientH_Read() As Integer
+  
+  Return $hDrawingArea.Height
+  
+End
+
+Private Sub SelectInRect()
+  
+  Dim iStartRow As Integer  ''ligne de départ
+  Dim iNbRow As Integer   ''Nombre de ligne dans la sélection
+  Dim iStartCol As Integer
+  Dim iNbCol As Integer
+  Dim iSpace As Integer = 10 + $iGridWidth
+  Dim i, j, k As Integer
+  Dim X, Y As Integer
+  Dim $bChanged As Boolean
+  Dim iCurSelectCnt As Integer ''Store the number of selected items before to analyze
+  Dim hItem As _IconViewItem
+  
+  iCurSelectCnt = $aSelected.Count
+  UnselectAll
+  $bUnselectMode = True
+  
+  iStartCol = CInt($hSelRect.X / ($iItemMaxW + iSpace)) 
+  iNbCol = Max(Floor(Min($hSelRect.X2 - $hSelRect.X, $hDrawingArea.Width) / ($iItemMaxW + iSpace)), iColumns)
+  iNbRow = CInt(Abs($hSelRect.Y2 - $hSelRect.Y) / ($iItemMaxH + iSpace)) + 1
+  iStartRow = If(($hSelRect.Y2 - $hSelRect.Y) < 0, Ceil($hSelRect.Y / ($iItemMaxH + iSpace)) - iNbRow, CInt($hSelRect.Y / ($iItemMaxH + iSpace)))
+  'Debug $hSelRect.Height
+  'Debug "StartRow", iStartRow, "nbrow", iNbRow, "startcol", iStartCol, "nbcol", iNbCol
+  For j = iStartRow To iNbRow + iStartRow 
+    For i = iStartCol To iNbCol + iStartCol - 1
+      k = j * iColumns + i
+      'Print k; "   ";
+      If k > $aItems.Max Then Break
+      
+      hitem = $aItems[k]
+      
+      x = hItem.Left '10 + i * ($iItemMaxW + iSpace) '+ (iItemW - hitem.Width) / 2
+      y = 10 + (iStartRow * ($iItemMaxH + iSpace)) + (j - iStartRow) * ($iItemMaxH + iSpace)
+      'Print $hSelRect.x, $hSelRect.y, $hSelRect.X2, $hSelRect.Y2
+      
+      If x < ($hSelRect.X2) Then
+        
+        If (x + hItem.W) > $hSelRect.x Then
+          If y < ($hSelRect.Y2) Then
+            If (y + hItem.H) > $hSelRect.y Then
+              
+              $aSelected.Add(k)
+              
+            Endif
+          Endif
+        Endif
+      Endif
+      
+    Next
+    
+  Next
+  
+  For Each i In $aSelected
+    
+    $aItems[i].Selected = True
+  Next
+  
+  If $aSelected.Count <> iCurSelectCnt Then Raise {Select}
+  
+  $bUnselectMode = False
+  
+End
+
+Public Sub MyDrawingArea_Draw()
+  
+  Dim hitem As _IconViewItem
+  Dim i, j, k, x, y As Integer
+  'Dim hrect As TRect
+  Dim iSpace As Integer = 10 + $iGridWidth
+  Dim iMarge As Integer
+  Dim hItemHover As _IconViewItem
+  'Dim iItemW As Integer 
+  Draw.Font = Me.Font
+  If $iItemMaxW = 0 Then 
+    GetItemMaxWH
+    $iItemMaxW += 8  'largeur d'un élément + un peu de champ
+    $iItemMaxH += 10  'idem
+  Endif
+  
+  
+  'Nombre de colonnes affichable
+  iColumns = Max((Draw.Width - (iSpace * 2)) / ($iItemMaxW + iSpace), 1)
+  iMarge = (Draw.Width - (($iItemMaxW + iSpace) * iColumns - iSpace)) / 2
+  'Nombre de lignes affichables
+  iVisibleRows = Floor($hDrawingArea.Height + $iItemMaxH) / ($iItemMaxH + iSpace) 
+  
+  $hVScroll.MaxValue = iSpace * 2 + Ceil($aItems.Count / iColumns) * ($iItemMaxH + iSpace) - Draw.Height
+  $hVScroll.Step = ($iItemMaxH + iSpace) / 3
+  $hVScroll.PageStep = Draw.Height
+  
+  iStartRow = $hVScroll.Value / ($iItemMaxH + iSpace) 'nombre de ligne cachée
+  
+  
+  If $hPicture Then 
+  'Si image alors on la dessine
+    Draw.Tile($hPicture, 0, 0, Draw.Width, Draw.Height)
+  Else
+    'Sinon on dessine la couleur de fond
+    Draw.FillColor = IIf($iBackground = Color.Default, Color.TextBackground, $iBackground)
+    Draw.FillStyle = Fill.Solid
+    Draw.Rect(0, 0, Draw.Width, Draw.Height)
+  Endif
+  
+  For j = iStartRow To iStartRow + iVisibleRows 
+    For i = 0 To iColumns - 1
+      
+      k = j * iColumns + i
+      
+      If K > $aItems.Max Then Break
+      
+      hitem = $aItems[k]
+      
+      x = iMarge + i * ($iItemMaxW + iSpace) '+ (iItemW - hitem.Width) / 2
+      y = iSpace + (iStartRow * ($iItemMaxH + iSpace) - $hVScroll.Value) + (j - iStartRow) * ($iItemMaxH + iSpace)
+      
+      
+      Select Case _Style
+        Case 1 
+          hiTem._Draw(x, y, $iItemMaxW, $iItemMaxH, _HaveFocus, $iMouseOver = k And Me.Tracking)
+        Case 2
+          hitem._Draw2(x, y, $iItemMaxW, $iItemMaxH, _HaveFocus, $iMouseOver = k And Me.Tracking)
+      End Select
+    Next
+  Next
+  
+  If $bDrawSelRect Then
+    Draw.Foreground = Color.Black
+    Draw.FillStyle = Fill.None
+    Draw.LineStyle = Line.DashDotDot
+    Draw.Rect($hSelRect.X, $hSelRect.Y - $hVScroll.Value, $hSelRect.X2 - $hSelRect.X, $hSelRect.Y2 - $hSelRect.Y)
+    SelectInRect
+  Endif
+  
+End 
+
+Private Sub GetItemMaxWH()
+  
+  Dim hItem As _Iconviewitem
+  Dim iW, iH As Integer
+  
+  For Each hItem In $aItems
+    
+    If hItem.Width > iW Then iW = hItem.Width
+    If hiTem.Height > iH Then iH = hItem.Height
+    
+  Next
+  $iItemMaxW = iW
+  $iItemMaxH = iH
+  
+End
+
+Public Sub VScroll_Change()
+  TextBox_LostFocus
+  $hDrawingArea.SetFocus
+  $hDrawingArea.Refresh
+  
+End
+
+Public Sub MyDrawingArea_MouseWheel()
+  
+  $hVScroll.Value -= Mouse.Delta * $iItemMaxH
+  MyDrawingArea_MouseMove
+  
+End
+
+Public Sub MyDrawingArea_DblClick()
+  
+  If $iCurrent > -1 And If $aItems[$iCurrent]._MouseInto(Mouse.x, Mouse.Y) Then Raise Activate
+  
+End
+
+Private Function GetItemByPos(x As Integer, y As Integer) As Integer
+  
+  Dim i As Integer
+  
+  For i = iStartRow * iColumns To (iStartRow + iVisibleRows) * iColumns
+    If i > $aItems.Max Then Break
+    If $aItems[i]._MouseInto(X, Y) Then Return i
+    
+  Next
+  Return -1
+  
+End
+
+Public Sub MyDrawingArea_MouseDown()
+  
+  Dim bNosel As Boolean = True
+  'Dim hItem As _IconViewItem
+  'Dim iStartCol, iStartRow As Integer
+  'Dim iNbRow, iEndCol, iEndRow, i, j, k As Integer
+  'Dim iItem As Integer
+  
+  If $iMode = Select.None Then Return
+  
+  If Mouse.Left Then
+  $iCurMouseX = Mouse.X
+    $iCurMouseY = Mouse.Y
+  Endif
+  
+  
+  If Not ($iMode = Select.Multiple) Then 
+    UnselectAll
+  Else
+    If Not Mouse.Control Then
+      UnselectAll
+      
+    Endif
+  Endif
+  
+  $iEndSelItem = GetItemByPos(Mouse.x, Mouse.y)
+  
+  
+  If $iEndSelItem > -1 Then 
+    If Mouse.Shift And $iMode = Select.Multiple Then
+      
+      SelSquare($iCurrent, $iEndSelItem)
+      bNosel = False
+    Else 
+      
+      $aItems[$iEndSelItem].Selected = Not $aItems[$iEndSelItem].Selected
+      bNosel = False
+      $iCurrent = $iEndSelItem
+      '$iEndSelItem = $iCurrent
+      '$aSelected.Add(i)
+    Endif
+  Endif
+  
+  If bNosel And $iMode = Select.Multiple Then 
+    
+    $iSelX = Mouse.X 
+    $iSelY = Mouse.Y + $hVScroll.Value
+    $hSelRect.clear
+    $bDrawSelRect = True
+    $hTimerPos.Start
+  Endif
+  $hDrawingArea.Refresh
+  Raise MouseDown
+  
+End
+
+Public Sub MyDrawingArea_MouseMove()
+  
+  If Me.Tracking Then $iMouseOver = GetItemByPos(Mouse.x, Mouse.y)
+  If $bDrawSelRect Then
+    SetSelRect(Mouse.X, Mouse.Y)
+    $hDrawingArea.Refresh
+  Endif
+  $iCurMouseX = Mouse.X
+  $iCurMouseY = Mouse.Y
+  If Me.Tracking And Not $bDrawSelRect Then $hDrawingArea.Refresh
+  
+  Raise MouseMove
+  
+End
+
+Private Sub SetSelRect(MouseX As Integer, MouseY As Integer)
+  
+  Dim iTrueMouseX, iTrueMouseY As Integer
+  
+  iTrueMouseX = MouseX 
+  If iTrueMouseX < 0 Then iTrueMouseX = 0
+  iTrueMouseY = MouseY + $hVScroll.Value
+  If iTrueMouseY < 0 Then iTrueMouseY = 0
+  With $hSelRect
+    If $iSelX > iTrueMouseX Then
+      
+      .X = iTrueMouseX
+      .X2 = $iSelX
+    Else
+      .X = $iSelX
+      .X2 = iTrueMouseX
+    Endif
+    
+    If $iSelY > iTrueMouseY
+      .Y = iTrueMouseY
+      .Y2 = $iSelY
+    Else
+      .Y = $iSelY
+      .Y2 = iTrueMouseY
+    Endif
+  End With
+ 
+
+  
+End
+
+Public Sub MyDrawingArea_MouseUp()
+  
+  If $bDrawSelRect Then
+    $bDrawSelRect = False
+    $hTimerPos.Stop
+    $hDrawingArea.Refresh
+  Endif
+  If $iCurrent > -1 Then Raise Click
+  
+  Raise MouseUp
+  
+End
+
+Public Sub MyDrawingArea_LostFocus()
+  
+  _HaveFocus = False
+  $hDrawingArea.Refresh
+  
+  Raise LostFocus
+  
+End
+
+Public Sub MyDrawingArea_GotFocus()
+  
+  _HaveFocus = True
+  $hDrawingArea.Refresh
+  Raise GotFocus
+  
+End
+
+''Unselect all the items
+Private Sub UnselectAll()
+  
+  Dim i As Integer
+  
+  $bUnselectMode = True
+  For Each i In $aSelected
+    $aItems[i].Selected = False
+  Next
+  
+  $aSelected.Clear
+  $bUnselectMode = False
+  
+End
+
+''CallBack Entry to allow the items to
+''access to the selection array
+Public Sub _SelectItem(sKey As String, Value As Boolean)
+  
+  If $bUnselectMode Then Return
+  If Value Then 
+    $iCurrent = $cKeys[sKey]
+    $aSelected.Add($iCurrent)
+    
+  Else
+    Try $aSelected.Remove($aSelected.Find(sKey))
+    
+  Endif
+  Raise {Select}
+  
+End
+
+Private Function Background_Read() As Integer
+  
+  Return $iBackground
+  
+End
+
+Private Sub Background_Write(Value As Integer)
+  
+  $iBackground = Value
+  
+End
+
+Private Function Picture_Read() As Picture
+  
+  Return $hPicture 
+  
+End
+
+Private Sub Picture_Write(Value As Picture)
+  
+  $hPicture = Value
+  
+End
+
+Public Sub Refresh()
+  
+  $hDrawingArea.Refresh
+  
+End
+
+
+
+Public Sub MyDrawingArea_KeyPress()
+  
+  If key.Code = key.Left Then
+    $iEndSelItem = Max($iEndSelItem - 1, 0)
+  
+  Else If key.Code = key.Right Then
+    $iEndSelItem = Min($iEndSelItem + 1, $aItems.Max)
+  Else If key.Code = key.Up Then
+    $iEndSelItem = Max($iEndSelItem - iColumns, 0)
+  Else If key.code = key.Down Then
+    $iEndSelItem = Min($iEndSelItem + iColumns, $aItems.Max)
+  Else If key.code = key["a"] Then
+    SelectAll
+    Return
+  Else If key.Code = key.Home Then
+    $iEndSelItem = 0
+  Else If key.Code = key.End Then
+    $iEndSelItem = $aItems.Max
+  Else If key.Code = key.PageDown Then
+    $iEndSelItem = Max($iEndSelItem + (iVisibleRows * iColumns), $aItems)
+  Else If key.Code = key.PageUp Then
+    $iEndSelItem = Min($iEndSelItem - (iVisibleRows * iColumns), 0)
+  Else 
+    'ici la recherche
+    Return
+  Endif
+  
+  If Not key.Shift Then
+    UnselectAll
+    $iCurrent = $iEndSelItem
+    $aItems[$iCurrent].Selected = True
+    $aItems[$iCurrent].EnsureVisible
+  Else
+    UnselectAll
+    
+    SelSquare($iCurrent, $iEndSelItem)
+    $aItems[$iEndSelItem].EnsureVisible
+    
+  Endif
+  
+  $hDrawingArea.Refresh
+  
+End
+
+
+
+''CallBack Entry to make the icon Visible  (Item.EnsureVisible)
+Public Sub _SetItemVisible(sKey As String)
+  
+  Dim iCurrentCol, iItemRow As Integer
+  Dim iiVisibleRows As Integer = ($hDrawingArea.Height - 20) / ($iItemMaxH + 10)
+  Dim iPos As Integer
+  Dim iSpace As Integer = 10 + $iGridWidth
+  Dim y As Integer
+  iPos = $cKeys[sKey]
+  iItemRow = CInt((iPos / iColumns))
+  y = iSpace + (iStartRow * ($iItemMaxH + iSpace) - $hVScroll.Value) + (iItemRow - iStartRow) * ($iItemMaxH + iSpace)
+  If y < iSpace Then
+    
+    $hVScroll.Value = ($iItemMaxH + iSpace) * iItemRow
+    
+  Else If Y + $iItemMaxH > $hDrawingArea.ClientH - 10 Then 
+    
+    '$hVScroll.Value = ($iItemMaxH + iSpace) * (iItemRow - (iStartRow + iiVisibleRows - 1)) - (($hDrawingArea.H) - iiVisibleRows * ($iItemMaxH + 10))
+    $hVScroll.Value = (iItemRow * ($iItemMaxH + iSpace)) - ($hDrawingArea.ClientHeight - ($iItemMaxH + iSpace))
+    
+  Endif
+  
+  $hDrawingArea.Refresh
+  
+End
+
+Public Sub _ChangeItem(sKey As String)
+  
+  $iItemMaxW = 0
+  $hDrawingArea.Refresh
+  
+End
+
+Private Sub RefreshKeys()
+  
+  Dim i As Integer
+  
+  $cKeys.Clear
+  
+  For i = 0 To $aItems.Max
+    
+    $cKeys[$aItems[i]._$sKey] = i
+    
+  Next
+  
+End
+
+Public Sub _CompareKey(sKey1 As String, sKey2 As String) As Boolean
+  
+  Raise Compare(sKey1, sKey2)
+  If $bCompareSet Then
+    $bCompareSet = False
+    Return False
+  Else 
+    Return True
+  Endif
+  
+End
+
+Public Sub TimerPos_Timer()
+  
+  If $iCurMouseY < 10 And $bDrawSelRect Then 
+    $hVScroll.Value -= (10 - $iCurMouseY) * 2
+    SetSelRect($iCurMouseX, $iCurMouseY)
+    $hDrawingArea.Refresh
+  Endif
+  If $iCurMouseY > ($hDrawingArea.ClientH - 10) And $bDrawSelRect Then 
+    $hVScroll.Value += ($iCurMouseY - ($hDrawingArea.ClientH - 10)) * 2
+    SetSelRect($iCurMouseX, $iCurMouseY)
+    $hDrawingArea.Refresh
+  Endif
+  
+End
+
+Private Sub SelSquare(iFrom As Integer, iTo As Integer)
+  
+  Dim ItemCol1, ItemRow1 As Integer
+  Dim ItemCol2, ItemRow2 As Integer
+  Dim i, j As Integer
+
+
+  UnselectAll
+  $aSelected.Add(iFrom)
+  
+  If iFrom < iTo Then Swap iFrom, iTo
+  ItemRow1 = Int(iFrom / iColumns)
+  ItemCol1 = ifrom - (ItemRow1 * iColumns)
+  
+  ItemRow2 = Int(iTo / iColumns)
+  ItemCol2 = ito - (ItemRow2 * iColumns)
+  
+  If ItemRow1 > ItemRow2 Then Swap ItemRow1, ItemRow2
+  If ItemCol1 > ItemCol2 Then Swap ItemCol1, ItemCol2
+  
+
+  
+  $bUnselectMode = True
+  For i = ItemRow1 To ItemRow2 
+    For j = ItemCol1 To ItemCol2 
+
+      $aSelected.Add(i * iColumns + j)
+      $aItems[i * iColumns + j].Selected = True
+      
+    Next
+  Next
+  $bUnselectMode = False
+  
+End
+
+
+Public Sub _ShowRenameTB(key As String)
+   Dim hItem As _IconViewItem
+   hItem = $aItems[$cKeys[key]]
+  If $txtRename.Visible Then Return
+  If $aSelected.Count > 1 Then Return
+  $txtRename.Move(hitem._TextX, hItem._TextY, hItem._textWidth, hItem._TextHeight)
+  $txtRename.Tag = key
+  $txtRename.Text = hItem.Text
+  $txtRename.SelectAll
+  $txtRename.Show
+  $txtRename.SetFocus
+  
+  
+  
+  
+End
+
+Public Sub TextBox_LostFocus()
+  'Dim hItem As _IconViewItem
+  'If Not $txtRename.Visible Then Return
+  'hItem = $aItems[$cKeys[$txtRename.tag]]
+  'hitem._Isrename = False
+  $txtRename.Hide
+End
+
+Public Sub TextBox_KeyPress()
+  Dim hItem As _IconViewItem
+  hItem = $aItems[$cKeys[Last.tag]]
+  If key.Code = Key.Return Then
+    Raise Rename
+    hiTem.Text = Last.Text
+    hitem._Isrename = False
+    Last.hide
+  Endif
+  If key.Code = key.Esc Then
+    Raise Cancel
+    hitem._Isrename = False
+    Last.hide
+  Endif
+  
+  
+End
+
+Public Function FindPlace(hItem As _IconViewItem) As Integer
+  
+  Dim i As Integer
+  For i = 0 To $aItems.Max
+    
+    If Comp($aItems[i].Text, hitem.Text) > 0 Then Return i
+    
+  Next
+  
+End
