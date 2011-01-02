@@ -196,6 +196,8 @@ void SUBR_format(ushort code)
     {
       fmt_type = LF_USER;
       VALUE_get_string(&PARAM[1], &format, &len);
+			if (!len)
+				fmt_type = LF_STANDARD;
     }
     else if (TYPE_is_integer(PARAM[1].type))
     {
@@ -205,9 +207,6 @@ void SUBR_format(ushort code)
     }
     else
       THROW(E_TYPE, TYPE_get_name(T_INTEGER), TYPE_get_name(PARAM[1].type));
-		
-		if (!len)
-			fmt_type = LF_STANDARD;
   }
 
 	if (PARAM->type == T_VARIANT)
