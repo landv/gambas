@@ -44,11 +44,32 @@ static void enable_timer(CTIMER *_object, bool on)
 		GB_Error("Too many active timers");
 }
 
+CTIMER *CTIMER_every(int delay, GB_TIMER_CALLBACK callback)
+{
+	CTIMER *timer;
+	
+	timer = OBJECT_create_native(CLASS_Timer, NULL);
+	OBJECT_REF(timer, "CTIMER_every");
+	timer->callback = callback;
+	timer->delay = delay;
+	enable_timer(timer, TRUE);
+	return timer;
+}
 
 void CTIMER_raise(void *_object)
 {
-	if (GB_Raise(THIS, EVENT_Timer, 0))
-		enable_timer(THIS, FALSE);
+	if (THIS->callback)
+	{
+		if (!(*(THIS->callback))())
+			return;
+	}
+	else
+	{
+		if (!GB_Raise(THIS, EVENT_Timer, 0))
+			return;
+	}
+	
+	enable_timer(THIS, FALSE);
 }
 
 

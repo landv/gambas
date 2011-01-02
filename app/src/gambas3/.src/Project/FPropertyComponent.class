@@ -162,6 +162,8 @@ Private Sub ReadComponent()
   ReadComponentFile
   
   For Each hComp In CComponent.All
+    If hComp.Hidden Then Continue
+    If hComp.Key = CComponent.PROJECT_NAME Then Continue
     If hComp.Key = Project.Name Then Continue 
     If hComp.Key = "gb" Then Continue
     aComp.Add(hComp.Key)

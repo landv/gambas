@@ -566,6 +566,12 @@ typedef
 #define GB_WATCH_WRITE        2
 
 
+/* Type of a generic callback */
+
+typedef
+	void (*GB_CALLBACK)();
+
+
 /* Type of a watch callback function */
 
 typedef
@@ -588,6 +594,12 @@ typedef
 
 typedef
 	void (*GB_BROWSE_CALLBACK)(const char *, int64_t);
+
+
+/* Type of a timer callback */
+
+typedef
+	int (*GB_TIMER_CALLBACK)();
 
 
 /* Type of a posted function */
@@ -751,6 +763,7 @@ typedef
 		intptr_t id;
 		intptr_t tag;
 		int delay;
+		GB_TIMER_CALLBACK callback;
 		}
 	GB_TIMER;
 
@@ -781,8 +794,9 @@ typedef
 		void *(*GetClassInterface)(GB_CLASS, const char *);
 
 		int (*Loop)(int);
-		void (*Post)(void (*)(), intptr_t);
-		void (*Post2)(void (*)(), intptr_t, intptr_t);
+		void (*Post)(GB_CALLBACK, intptr_t);
+		void (*Post2)(GB_CALLBACK, intptr_t, intptr_t);
+		GB_TIMER *(*Every)(int, GB_TIMER_CALLBACK);
 		int (*Raise)(void *, int, int, ...);
 		void (*RaiseLater)(void *, int);
 		void (*CheckPost)(void);

@@ -57,7 +57,7 @@ CLASS *CLASS_AppEnv = NULL;
 CLASS *CLASS_Process = NULL;
 CLASS *CLASS_Component = NULL;
 CLASS *CLASS_Observer = NULL;
-//CLASS *CLASS_Proxy = NULL;
+CLASS *CLASS_Timer = NULL;
 
 CLASS *CLASS_Array = NULL;
 CLASS *CLASS_BooleanArray = NULL;
@@ -110,7 +110,7 @@ static const CLASS_INIT init_list[] =
   { NATIVE_System, NULL },
   { NATIVE_User, NULL },
   { NATIVE_String, NULL },
-  { NATIVE_Timer, NULL },
+  { NATIVE_Timer, &CLASS_Timer },
   { NATIVE_Observer, &CLASS_Observer },
   //{ NATIVE_Proxy, &CLASS_Proxy },
 

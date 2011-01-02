@@ -235,12 +235,25 @@ END_METHOD
 
 BEGIN_METHOD(CDEBUG_write, GB_STRING data)
 
+	const char *data = STRING(data);
+	int len = LENGTH(data);
+
   if (_fdw < 0)
   	return;
   	
-  if (STRING(data))
-    write(_fdw, STRING(data), LENGTH(data));
-  write(_fdw, "\n", 1);
+  if (data && len > 0)
+	{
+    if (write(_fdw, data, len) != len)
+			goto __ERROR;
+	}
+  if (write(_fdw, "\n", 1) != 1)
+		goto __ERROR;
+	
+	return;
+	
+__ERROR:
+
+	fprintf(stderr, "gb.debug: warning: unable to send data to the debugger: %s\n", strerror(errno));
 
 END_METHOD
 

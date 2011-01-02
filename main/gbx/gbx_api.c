@@ -86,6 +86,7 @@ void *GAMBAS_Api[] =
   (void *)WATCH_one_loop,
   (void *)EVENT_post,
   (void *)EVENT_post2,
+  (void *)CTIMER_every,
   (void *)GB_Raise,
   (void *)EVENT_post_event,
   (void *)EVENT_check_post,

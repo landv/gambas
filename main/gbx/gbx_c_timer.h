@@ -39,5 +39,6 @@ extern GB_DESC NATIVE_Timer[];
 #endif
 
 void CTIMER_raise(void *_object);
+CTIMER *CTIMER_every(int delay, GB_TIMER_CALLBACK callback);
 
 #endif

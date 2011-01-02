@@ -775,7 +775,6 @@ static void hook_post(void)
 static void hook_quit()
 {
 	QWidgetList list;
-	QWidget *w;
 	int i;
 
 	//qApp->closeAllWindows();
@@ -783,10 +782,10 @@ static void hook_quit()
 	list = QApplication::topLevelWidgets();
 
 	for (i = 0; i < list.count(); i++)
-	{
-		w = list.at(i);
-		w->close();
-	}
+		list.at(i)->close();
+
+	for (i = 0; i < list.count(); i++)
+		list.at(i)->deleteLater();
 }
 
 
