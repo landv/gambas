@@ -301,9 +301,12 @@ Private Sub GetEvents(sCtrl As String) As String[]
   Dim sLine As String
   Dim aLine As String[]
   Dim iPos As Integer
+  Dim sPath As String
   
-  hForm = Project.FindForm(GetClass())
-  If Not hForm Then Return  
+  sPath = Project.FindForm(GetClass())
+  If Not sPath Then Return  
+  hForm = Project.LoadFile(sPath)
+  If Not hForm Then Return
 
   sCtrl = LCase(sCtrl)
 

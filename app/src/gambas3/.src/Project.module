@@ -1785,14 +1785,14 @@ Public Function ExistForm(sClass As String) As Boolean
   
 End
 
-Public Sub FindForm(sClass As String) As FForm
+Public Sub FindForm(sClass As String) As String
   
   Dim sFamily As String
   Dim sPath As String
   
   For Each sFamily In CFamily.List
     sPath = $cSourceDir[sClass & "." & sFamily]
-    If Exist(sPath) Then Return LoadFile(sPath)
+    If Exist(sPath) Then Return sPath
   Next
   
 End

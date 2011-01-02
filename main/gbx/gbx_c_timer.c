@@ -44,7 +44,7 @@ static void enable_timer(CTIMER *_object, bool on)
 		GB_Error("Too many active timers");
 }
 
-CTIMER *CTIMER_every(int delay, GB_TIMER_CALLBACK callback)
+CTIMER *CTIMER_every(int delay, GB_TIMER_CALLBACK callback, intptr_t param)
 {
 	CTIMER *timer;
 	
@@ -52,6 +52,7 @@ CTIMER *CTIMER_every(int delay, GB_TIMER_CALLBACK callback)
 	OBJECT_REF(timer, "CTIMER_every");
 	timer->callback = callback;
 	timer->delay = delay;
+	timer->tag = param;
 	enable_timer(timer, TRUE);
 	return timer;
 }
@@ -60,7 +61,7 @@ void CTIMER_raise(void *_object)
 {
 	if (THIS->callback)
 	{
-		if (!(*(THIS->callback))())
+		if (!(*(THIS->callback))(THIS->tag))
 			return;
 	}
 	else

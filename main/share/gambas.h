@@ -599,7 +599,7 @@ typedef
 /* Type of a timer callback */
 
 typedef
-	int (*GB_TIMER_CALLBACK)();
+	int (*GB_TIMER_CALLBACK)(intptr_t);
 
 
 /* Type of a posted function */
@@ -796,7 +796,7 @@ typedef
 		int (*Loop)(int);
 		void (*Post)(GB_CALLBACK, intptr_t);
 		void (*Post2)(GB_CALLBACK, intptr_t, intptr_t);
-		GB_TIMER *(*Every)(int, GB_TIMER_CALLBACK);
+		GB_TIMER *(*Every)(int, GB_TIMER_CALLBACK, intptr_t);
 		int (*Raise)(void *, int, int, ...);
 		void (*RaiseLater)(void *, int);
 		void (*CheckPost)(void);
