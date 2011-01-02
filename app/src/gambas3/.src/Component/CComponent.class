@@ -866,6 +866,10 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
           sKind = "m"
           Inc iInd
           Break
+        Case "EXTERN"
+          sKind = "X"
+          Inc iInd
+          Break
         Case "CONST"
           sKind = "C"
           bStatic = True
@@ -928,7 +932,7 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
       .NotPublic = Not bPublic
       .LineNumber = iLine + 1
 
-      If sKind = "m" Then
+      If InStr(":mX", sKind) Then
 
         For iStart = iInd + 1 To aSym.Count - 1
           If aSym[iStart] = "(" Then Break

@@ -103,6 +103,7 @@ Static Public Sub _init()
   $cType["String"] = "s"
   $cType["Variant"] = "v"
   $cType["Object"] = "o"
+  $cType["Pointer"] = "p"
   
   $cStructClose["DO"] = "Loop"
   $cStructClose["WHILE"] = "Wend"
@@ -2134,6 +2135,7 @@ Private Sub CheckSignature(Optional sText As String)
   
   Dim sLig As String
   Dim hSymbol As CSymbolInfo
+  Dim sKind As String
   
   If Not $bCompletion Then Return
   
@@ -2146,7 +2148,11 @@ Private Sub CheckSignature(Optional sText As String)
     hSymbol = GetExpressionSignature(Highlight.Symbols, Highlight.Types)
     
     If hSymbol Then
-      If LCase(hSymbol.Kind) = "m" Then
+      sKind = LCase(hSymbol.Kind)
+      If InStr(":mx", sKind) Then
+        If sKind = ":" Then
+          If sLig Not Like ("*RAISE*" & hSymbol.Name & "*") Then Return
+        Endif
         FSignature.Open(Me, $iPosSignature, hSymbol, $iArgSignature, Not sText)
       Endif
       Return

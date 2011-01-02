@@ -87,23 +87,25 @@ Public Function GetIcon() As String
   Select Case LCase(Kind)
 
     Case "r"
-      sIcon = "img/16" &/ If(bStatic, "s-property-ro.png", "property-ro.png")
+      sIcon = If(bStatic, "s-property-ro.png", "property-ro.png")
     Case "p"
-      sIcon = "img/16" &/ If(bStatic, "s-property.png", "property.png")
+      sIcon = If(bStatic, "s-property.png", "property.png")
     Case "v"
-      sIcon = "img/16" &/ If(bStatic, "s-variable.png", "variable.png")
+      sIcon = If(bStatic, "s-variable.png", "variable.png")
     Case "c"
-      sIcon = "img/16/constant.png"
+      sIcon = "constant.png"
     Case ":"
-      sIcon = "img/16/event.png"
+      sIcon = "event.png"
     Case "t"
-      sIcon = "img/16/control.png"
-    Case "m"
-      sIcon = "img/16" &/ If(bStatic, "s-method.png", "method.png")
+      sIcon = "control.png"
+    Case "m", "x"
+      sIcon = If(bStatic, "s-method.png", "method.png")
+    Default
+      sIcon = "unknown.png"
 
   End Select
 
-  Return sIcon
+  Return "img/symbol" &/ sIcon
 
 End
 
@@ -538,6 +540,8 @@ Public Function GetDescription(Optional bBalise As Boolean) As String
       sDesc = sStatic & sAccess
     Case "l"
       sDesc = "Dim"
+    Case "x"
+      sDesc = sAccess & " Extern"
 
   End Select  
   
@@ -549,7 +553,7 @@ Public Function GetDescription(Optional bBalise As Boolean) As String
     sDesc &= " " & Name & " "
   Endif
   
-  If InStr(":m", LCase(Kind)) Then 
+  If InStr(":mx", LCase(Kind)) Then 
     sSign = GetSignature(False)
     If sSign Then
       sDesc &= sSign

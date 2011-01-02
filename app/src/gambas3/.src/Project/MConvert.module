@@ -477,24 +477,36 @@ End
 
 Public Sub ConvertComponent(sComp As String) As String[]
   
+  Dim aComp As String[]
+  Dim iInd As Integer
+  Dim hComp As CComponent
+  
   Select Case sComp
     Case "gb.qt"
-      Return ["gb.image", "gb.qt4"]
+      aComp = ["gb.qt4"]
     Case "gb.qt.ext"
-      Return ["gb.qt4.ext"]
+      aComp = ["gb.qt4.ext"]
     Case "gb.qt.kde.html"
-      Return ["gb.qt4.webkit"]
-    Case "gb.gtk"
-      Return ["gb.image", "gb.gtk"]
-    Case "gb.gui"
-      Return ["gb.image", "gb.gui"]
+      aComp = ["gb.qt4.webkit"]
     Case "gb.gtk.svg"
-      Return New String[]
+      aComp = New String[]
     Case "gb.image"
-      Return ["gb.image", "gb.image.effect"]
+      aComp = ["gb.image.effect"]
     Default
-      Return [sComp]
+      aComp = [sComp]
   End Select
+  
+  While iInd < aComp.Count
+    
+    hComp = CComponent.All[aComp[iInd]]
+    For Each sComp In hComp.Require
+      If Not aComp.Exist(sComp) Then aComp.Add(sComp)
+    Next
+    Inc iInd
+    
+  Wend
+  
+  Return aComp
   
 End
 

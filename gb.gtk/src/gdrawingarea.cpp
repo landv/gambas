@@ -212,7 +212,7 @@ void gDrawingArea::setCache()
 {
 	GdkWindow *win;
 	
-	win = GTK_WIDGET(widget)->window;
+	win = widget->window;
 	if (!win)
 		return;
 	
@@ -274,7 +274,10 @@ void gDrawingArea::refreshCache()
 
 void gDrawingArea::setNoBackground(bool vl)
 {
-	GdkWindow *win = widget->window;
+	GdkWindow *win;
+	
+	gtk_widget_realize(widget);
+	win = widget->window;
 	
 	if (vl)
 		gdk_window_set_back_pixmap(win, NULL, FALSE);

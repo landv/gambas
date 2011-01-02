@@ -677,6 +677,7 @@ Public Sub ManageSpecialLink(hWebView As WebView, sUrl As String)
     If iPos Then
       Try iLine = CInt(Mid$(sLast, iPos + 1))
       aValues[aValues.Max] = Left$(sLast, iPos - 1)
+      sClass = aValues[3]
     Endif
     If bShowFile Then 
       Project.OpenFile(Project.FindPath(sClass), iLine)

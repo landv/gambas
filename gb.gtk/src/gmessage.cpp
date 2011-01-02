@@ -460,7 +460,7 @@ bool gDialog::openFile(bool multi)
 			gtk_file_chooser_set_current_folder((GtkFileChooser*)msg, DIALOG_path);
 	}
 	
-	return run_dialog(GTK_DIALOG(msg));
+	return run_file_dialog(msg);
 }
 
 bool gDialog::saveFile()
