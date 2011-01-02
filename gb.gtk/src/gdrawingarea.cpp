@@ -76,6 +76,11 @@ gDrawingArea::gDrawingArea(gContainer *parent) : gContainer(parent)
   
 	//gtk_event_box_set_visible_window(GTK_EVENT_BOX(border), false);	
   
+	gtk_widget_add_events(border, GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK
+		| GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK
+		| GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK 
+		| GDK_SCROLL_MASK | GDK_POINTER_MOTION_MASK);
+
 	gtk_widget_add_events(widget, GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK
 		| GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK
 		| GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK 

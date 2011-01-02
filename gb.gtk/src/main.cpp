@@ -31,6 +31,7 @@
 #include "watcher.h"
 
 #include "x11.h"
+#include "crect.h"
 #include "CScreen.h"
 #include "CDraw.h"
 #include "CConst.h"
@@ -105,6 +106,7 @@ extern "C"
 
 	GB_DESC *GB_CLASSES[] EXPORT =
 	{
+		RectDesc,
 		ScreenDesc,
 		ScreensDesc,
 		DesktopDesc,

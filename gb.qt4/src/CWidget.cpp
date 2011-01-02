@@ -510,7 +510,7 @@ void CWIDGET_move_resize(void *_object, int x, int y, int w, int h)
 		if (x == wid->x() && y == wid->y() && w == wid->width() && h == wid->height())
 			return;
 		
-		if (GB.Is(THIS, CLASS_Window))
+		if (wid->isTopLevel())
 		{
 			wid->move(x, y);
 			wid->resize(qMax(0, w), qMax(0, h));
