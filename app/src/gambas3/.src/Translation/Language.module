@@ -186,3 +186,12 @@ Public Function GetAll() As String[]
   Return aLang
 
 End
+
+
+Public Sub GetPath(sLang As String, sExt As String) As String
+  
+  Return Project.Dir &/ ".lang" &/ sLang & "." & sExt
+  
+End
+
+

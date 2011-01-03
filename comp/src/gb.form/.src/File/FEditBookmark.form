@@ -1,42 +1,45 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,63,17)
-  Text = ("Edit bookmark")
+  MoveScaled(0,0,90,47)
+  Text = ("Edit bookmarks")
   Icon = Picture["icon:/small/bookmark"]
-  Resizable = False
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { tvwBookmark TableView
+    MoveScaled(1,1,88,38)
+    Expand = True
+    Mode = Select.Single
+    Header = GridView.Horizontal
+  }
   { HBox1 HBox
-    MoveScaled(1,1,61,4)
-    { Label1 Label
-      MoveScaled(0,0,16,4)
-      Text = ("Name")
+    MoveScaled(2,41,87,4)
+    Spacing = True
+    { btnUp Button
+      MoveScaled(0,0,18,4)
+      Text = ("&Up")
+      Picture = Picture["icon:/small/up"]
     }
-    { txtName TextBox
-      MoveScaled(17,0,43,4)
+    { btnDown Button
+      MoveScaled(19,0,18,4)
+      Text = ("&Down")
+      Picture = Picture["icon:/small/down"]
+    }
+    { btnDelete Button
+      MoveScaled(38,0,18,4)
+      Text = ("&Remove")
+      Picture = Picture["icon:/small/delete"]
+    }
+    { Panel1 Panel
+      MoveScaled(64,0,1,4)
       Expand = True
     }
-  }
-  { HBox2 HBox
-    MoveScaled(1,6,61,4)
-    { Label2 Label
-      MoveScaled(0,0,16,4)
-      Text = ("Path")
+    { btnClose Button
+      MoveScaled(68,0,18,4)
+      Text = ("Close")
+      Picture = Picture["icon:/small/close"]
+      Cancel = True
     }
-    { txtPath ButtonBox
-      MoveScaled(17,0,43,4)
-      Expand = True
-      Picture = Picture["icon:/small/directory"]
-      ReadOnly = True
-    }
-  }
-  { btnOK Button
-    MoveScaled(29,12,16,4)
-    Text = ("OK")
-    Default = True
-  }
-  { btnCancel Button
-    MoveScaled(46,12,16,4)
-    Text = ("Cancel")
-    Cancel = True
   }
 }

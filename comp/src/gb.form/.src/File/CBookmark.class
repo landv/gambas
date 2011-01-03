@@ -3,16 +3,17 @@
 Public Name As String
 Public Link As String
 Public Icon As String
+Public Index As Integer
 
 Property Read Path As String
 
 
 Public Sub _new(sLink As String, Optional sName As String, sIcon As String)
   
+  {Link} = sLink
+  
   SetName(sName)
   SetIcon(sIcon)
-  
-  {Link} = sLink
   
 End
 

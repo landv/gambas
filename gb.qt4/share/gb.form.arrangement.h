@@ -146,6 +146,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 	bool rtl = IS_RIGHT_TO_LEFT();
 	int rtlm = rtl ? -1 : 1;
 	int padding;
+	int spacing;
 	int indent;
 
 	if (!CAN_ARRANGE(_object))
@@ -198,12 +199,26 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 		//if (!strcmp(GET_OBJECT_NAME(_object), "HBox1"))
 		//	fprintf(stderr, "HBox1: child count: %d\n", gtk_count);
 
-		swap = (arr->mode & 1) == 0; // --> means "vertical"
-		autoresize = arr->autoresize; // && !IS_EXPAND(_object);
-		padding = arr->padding;
-		if (arr->margin) padding += DESKTOP_SCALE;
-		indent = arr->indent * DESKTOP_SCALE;
+		swap = (arr->mode & 1) == 0; // means "vertical"
 
+		autoresize = arr->autoresize; // && !IS_EXPAND(_object);
+		
+		//padding = arr->padding;
+		
+		/*if (arr->margin) 
+			padding = arr->padding ? arr->padding : DESKTOP_SCALE;
+		else
+			padding = 0;*/
+		
+		padding = arr->padding + (arr->margin ? DESKTOP_SCALE : 0);
+		
+		if (arr->spacing)
+			spacing = arr->spacing; //arr->padding ? arr->padding : arr->spacing;
+		else
+			spacing = 0;
+
+		indent = arr->indent * DESKTOP_SCALE;
+		
 		for(i = 0; i < 3; i++)
 		{
 			redo = false;
@@ -301,7 +316,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 							//fprintf(stderr, "%s: %s: d = %d dmax = %d\n", ((gControl *)_object)->name(), wid->name(), d, dmax);
 						}
 
-						sexp += arr->spacing;
+						sexp += spacing;
 					}
 					
 					has_expand_children = nexp > 0;
@@ -316,7 +331,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 						//fprintf(stderr, "%s: dmax = %d\n", ((CWIDGET *)_object)->name, dmax);
 					}
 
-					sexp -= arr->spacing;
+					sexp -= spacing;
 					sexp = (swap ? hc : wc) - sexp;
 
 					RESET_CHILDREN_LIST();
@@ -337,9 +352,9 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 						if (!first)
 						{
 							if (swap)
-								y += arr->spacing;
+								y += spacing;
 							else
-								x += arr->spacing * rtlm;
+								x += spacing * rtlm;
 						}
 
 						if (swap)
@@ -417,19 +432,19 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 								if ((y > yc) && ((y + (IS_EXPAND(ob) ? DESKTOP_SCALE : GET_WIDGET_H(wid))) > hc))
 								{
 									y = yc;
-									x -= w + arr->spacing;
+									x -= w + spacing;
 									w = 0;
 								}
 
 								if (IS_EXPAND(ob))
 								{
 									MOVE_RESIZE_WIDGET(ob, wid, x - GET_WIDGET_W(wid), y, GET_WIDGET_W(wid), hc - y);
-									y = hc + arr->spacing;
+									y = hc + spacing;
 								}
 								else
 								{
 									MOVE_WIDGET(ob, wid, x - GET_WIDGET_W(wid), y);
-									y += GET_WIDGET_H(wid) + arr->spacing;
+									y += GET_WIDGET_H(wid) + spacing;
 								}
 
 								if (GET_WIDGET_W(wid) > w)
@@ -440,19 +455,19 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 								if ((y > yc) && ((y + (IS_EXPAND(ob) ? DESKTOP_SCALE : GET_WIDGET_H(wid))) > hc))
 								{
 									y = yc;
-									x += w + arr->spacing;
+									x += w + spacing;
 									w = 0;
 								}
 
 								if (IS_EXPAND(ob))
 								{
 									MOVE_RESIZE_WIDGET(ob, wid, x, y, GET_WIDGET_W(wid), hc - y);
-									y = hc + arr->spacing;
+									y = hc + spacing;
 								}
 								else
 								{
 									MOVE_WIDGET(ob, wid, x, y);
-									y += GET_WIDGET_H(wid) + arr->spacing;
+									y += GET_WIDGET_H(wid) + spacing;
 								}
 
 								if (GET_WIDGET_W(wid) > w)
@@ -466,19 +481,19 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 								if ((x < (xc + wc)) && ((x - (IS_EXPAND(ob) ? DESKTOP_SCALE : GET_WIDGET_W(wid))) < xc))
 								{
 									x = xc + wc;
-									y += h + arr->spacing;
+									y += h + spacing;
 									h = 0;
 								}
 
 								if (IS_EXPAND(ob))
 								{
 									MOVE_RESIZE_WIDGET(ob, wid, xc, y, x - xc, GET_WIDGET_H(wid));
-									x = xc - arr->spacing;
+									x = xc - spacing;
 								}
 								else
 								{
 									MOVE_WIDGET(ob, wid, x - GET_WIDGET_W(wid), y);
-									x -= GET_WIDGET_W(wid) + arr->spacing;
+									x -= GET_WIDGET_W(wid) + spacing;
 								}
 
 								if (GET_WIDGET_H(wid) > h)
@@ -489,19 +504,19 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 								if ((x > xc) && ((x + (IS_EXPAND(ob) ? DESKTOP_SCALE : GET_WIDGET_W(wid))) > wc))
 								{
 									x = xc;
-									y += h + arr->spacing;
+									y += h + spacing;
 									h = 0;
 								}
 
 								if (IS_EXPAND(ob))
 								{
 									MOVE_RESIZE_WIDGET(ob, wid, x, y, wc - x, GET_WIDGET_H(wid));
-									x = wc + arr->spacing;
+									x = wc + spacing;
 								}
 								else
 								{
 									MOVE_WIDGET(ob, wid, x, y);
-									x += GET_WIDGET_W(wid) + arr->spacing;
+									x += GET_WIDGET_W(wid) + spacing;
 								}
 
 								if (GET_WIDGET_H(wid) > h)
@@ -544,11 +559,11 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 					case ARRANGE_HORIZONTAL:
 // 						#ifndef QNAMESPACE_H
 // 						fprintf(stderr, "%s: HORIZONTAL: x = %d autoresize (%d, %d) pad %d spc %d [%d] rtl %d\n", 
-// 						((gControl *)_object)->name(), x, x + arr->padding + wf, GET_WIDGET_H(cont), arr->padding, arr->spacing, i, rtl);
+// 						((gControl *)_object)->name(), x, x + arr->padding + wf, GET_WIDGET_H(cont), arr->padding, spacing, i, rtl);
 // 						#else
 // 						fprintf(stderr, "%s: HORIZONTAL: x = %d autoresize (%d, %d) pad %d spc %d [%d] rtl %d hec %d\n", 
 // 							((CWIDGET *)_object)->name, x, has_expand_children ? GET_WIDGET_W(cont) : x + arr->padding + wf, 
-// 							dmax + hf, arr->padding, arr->spacing, i, rtl, has_expand_children);						
+// 							dmax + hf, arr->padding, spacing, i, rtl, has_expand_children);						
 // 						#endif
 						//cont->resize(x + cont->width() - wc - xc, cont->height());
 						if (dmax > 0)
@@ -566,11 +581,11 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 					case ARRANGE_VERTICAL:
 // 						#ifndef QNAMESPACE_H
 // 						fprintf(stderr, "%s: VERTICAL: x = %d autoresize (%d, %d) pad %d spc %d [%d] rtl %d\n", 
-// 						((gControl *)_object)->name(), x, x + arr->padding + wf, GET_WIDGET_H(cont), arr->padding, arr->spacing, i, rtl);
+// 						((gControl *)_object)->name(), x, x + arr->padding + wf, GET_WIDGET_H(cont), arr->padding, spacing, i, rtl);
 // 						#else
 // 						fprintf(stderr, "%s: VERTICAL: y = %d autoresize (%d, %d) pad %d spc %d [%d] rtl %d hec %d\n", 
 // 							((CWIDGET *)_object)->name, y, dmax + wf, has_expand_children ? GET_WIDGET_H(cont) : y + arr->padding + hf, 
-// 							arr->padding, arr->spacing, i, rtl, has_expand_children);						
+// 							arr->padding, spacing, i, rtl, has_expand_children);						
 // 						#endif
 						//RESIZE_WIDGET(cont, GET_WIDGET_W(cont), y + arr->padding + hf);
 						if (dmax > 0)

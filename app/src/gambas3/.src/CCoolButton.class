@@ -23,8 +23,9 @@ Public Sub _new(hContainer As Container, X As Integer, Y As Integer, W As Intege
   $hPanel.Move(X, Y, W, H)
   $hPanel.Mouse = Mouse.Pointing
   $hPanel.Arrangement = Arrange.Horizontal
-  $hPanel.Padding = 2
-  $hPanel.Spacing = 8
+  $hPanel.Padding = 1
+  $hPanel.Spacing = True
+  '$hPanel.Margin = True
   $hPanel.Focus = True
 
   If TypeOf(vIcon) = gb.String Then

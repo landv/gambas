@@ -47,17 +47,17 @@ Public Sub _new()
   
   With cvwTranslate
     .AutoResize = False
-    .Columns.Count = 3
-    .Columns[0].Text = ("Untranslated")
-    .Columns[2].Text = ("Comments")
+    .Columns.Count = 4
+    '.Columns[0].Text = ("Untranslated")
+    '.Columns[2].Text = ("Comments")
   End With
   cvwTranslateOrg = New ColumnView(Me)
   With cvwTranslateOrg
     .AutoResize = False
     .Visible = False
-    .Columns.Count = 3
-    .Columns[0].Text = ("Untranslated")
-    .Columns[2].Text = ("Comments")
+    .Columns.Count = 4
+    '.Columns[0].Text = ("Untranslated")
+    '.Columns[2].Text = ("Comments")
   End With
 
   With cvwLang
@@ -74,21 +74,14 @@ Public Sub _new()
   
 End
 
-Private Sub GetLangPath(sLang As String, sExt As String) As String
-  
-  Return Project.Dir &/ ".lang" &/ sLang & "." & sExt
-  
-End
-
-
 Private Sub GetTransCount(sLang As String) As Integer
   
   Dim hFile As File
   Dim iVal As Integer
   
-  If Not Exist(GetLangPath(sLang, "mo")) Then Return 
+  If Not Exist(Language.GetPath(sLang, "mo")) Then Return 
   
-  hFile = Open GetLangPath(sLang, "mo")
+  hFile = Open Language.GetPath(sLang, "mo")
   
   iVal = Read #hFile As Integer
   If (iVal = &H950412DE) Xor (System.ByteOrder = gb.BigEndian) Then
@@ -119,7 +112,7 @@ Private Sub DisplayCompiledTrans(sLang As String, Optional nTrans As Integer)
     cvwLang[sLang][1] = "?"
   Endif
   cvwLang[sLang][2] = sLang & ".po"
-  Try cvwLang[sLang][3] = Project.GetFileSize(Stat(GetLangPath(sLang, "po")).Size)
+  Try cvwLang[sLang][3] = Project.GetFileSize(Stat(Language.GetPath(sLang, "po")).Size)
   
 End
 
@@ -138,10 +131,13 @@ Public Sub Form_Open()
 
   cvwLang.Clear
   cmbLang.Clear
+  cmbLangSource.Clear
+  cmbLangSource.Add(("(Default)"))
   For Each sLang In Language.GetAll()
     If Project.HasTranslation(sLang) Then 
       cvwLang.Add(sLang, Language.ToName(sLang))
       cmbLang.Add(Language.ToName(sLang))
+      cmbLangSource.Add(Language.ToName(sLang))
     Endif
   Next
 
@@ -166,6 +162,7 @@ Public Sub Form_Open()
 End
 
 
+
 Private Sub SetLang(Optional sLang As String) As Boolean
 
   Dim sDir As String
@@ -182,6 +179,8 @@ Private Sub SetLang(Optional sLang As String) As Boolean
   Dim sMsg As String
   Dim sCurrent As String
   Dim sName As String
+  Dim hTrans, hTransSrc As CTranslation
+  Dim sLangSrc As String
 
   Inc Application.Busy
 
@@ -192,7 +191,7 @@ Private Sub SetLang(Optional sLang As String) As Boolean
   If Not sLang Then sLang = Language.Find(System.Language)
 
   sDir = Project.Dir &/ ".lang"
-  sPath = GetLangPath(sLang, "po")
+  sPath = Language.GetPath(sLang, "po")
 
   'lblFile.Text = File.Name(sPath)
   cmbLang.ToolTip = File.Name(sPath)
@@ -226,99 +225,119 @@ Private Sub SetLang(Optional sLang As String) As Boolean
   cvwTranslate.Clear
   'cvwTranslate.Columns[2].AutoResize = FALSE
 
-  $sHeader = ""
+  hTrans = New CTranslation(sLang)
+  If cmbLangSource.Index > 0 Then
+    sLangSrc = Language.FromName(cmbLangSource.Text)
+    hTransSrc = New CTranslation(sLangSrc)
+  Endif
+
+  $sHeader = hTrans.Header
 
   'PRINT "Loading "; sPath
 
-  hFic = Open sPath 
-
-  While Not Eof(hFic)
-    Line Input #hFic, sLine
-    If Not sLine Then Break
-    $sHeader = $sHeader & sLine & "\n"
-  Wend
-
-  $bIgnore = True
-  $nTrans = 0
-
-  Do
-
-    If Not Eof(hFic) Then
-
-      Line Input #hFic, sLine
-
-      If Left$(sLine) = "#" Then
-
-        If Left$(sLine, 2) = "#:" Then
-          sMsgComment = Trim(Mid$(sLine, 3))
-          Continue
-        Endif
-
-        If Left$(sLine, 2) = "#," Then
-          If InStr(sLine, "fuzzy") Then
-            bFuzzy = True
-            Continue
-          Endif
-        Endif
-
-      Endif
-
-      If Left$(sLine, 6) = "msgid " Then
-        sMsgId = Mid$(sLine, 8, -1)
-        iMode = MODE_MSGID
-        Continue
-      Endif
-
-      If Left$(sLine, 7) = "msgstr " Then
-        sMsgStr = Mid$(sLine, 9, -1)
-        iMode = MODE_MSGSTR
-        Continue
-      Endif
-
-      If Left$(sLine) = Chr$(34) Then
-        If iMode = MODE_MSGID Then
-          sMsgId = sMsgId & Mid$(sLine, 2, -1)
-        Else If iMode = MODE_MSGSTR Then
-          sMsgStr = sMsgStr & Mid$(sLine, 2, -1)
-        Endif
-        Continue
-      Endif
-
-    Endif
-
-    If Trim(sMsgId) Then
-
-      Inc iIndex
-
-      If sMsgStr = "-\\n" Then sMsgStr = "-"
-      
-      'sMsgId = UnQuoteTranslation(sMsgId)
-      'sMsgStr = UnQuoteTranslation(sMsgStr)
-
-      cvwTranslate.Add(iIndex, sMsgId)
-      If bFuzzy Then
-        bFuzzy = False
-      Else
-        cvwTranslate[iIndex][1] = sMsgStr
-        If sMsgStr Then Inc $nTrans
-      Endif
-      cvwTranslate[iIndex][2] = sMsgComment
-      sMsgId = ""
-      sMsgComment = ""
-      sMsgStr = ""
-
-    Endif
-
-    If Eof(hFic) Then Break
-
-  Loop
+  ' hFic = Open sPath 
+  ' 
+  ' While Not Eof(hFic)
+  '   Line Input #hFic, sLine
+  '   If Not sLine Then Break
+  '   $sHeader = $sHeader & sLine & "\n"
+  ' Wend
+  ' 
+  ' $bIgnore = True
+  ' $nTrans = 0
+  ' 
+  ' Do
+  ' 
+  '   If Not Eof(hFic) Then
+  ' 
+  '     Line Input #hFic, sLine
+  ' 
+  '     If Left$(sLine) = "#" Then
+  ' 
+  '       If Left$(sLine, 2) = "#:" Then
+  '         sMsgComment = Trim(Mid$(sLine, 3))
+  '         Continue
+  '       Endif
+  ' 
+  '       If Left$(sLine, 2) = "#," Then
+  '         If InStr(sLine, "fuzzy") Then
+  '           bFuzzy = True
+  '           Continue
+  '         Endif
+  '       Endif
+  ' 
+  '     Endif
+  ' 
+  '     If Left$(sLine, 6) = "msgid " Then
+  '       sMsgId = Mid$(sLine, 8, -1)
+  '       iMode = MODE_MSGID
+  '       Continue
+  '     Endif
+  ' 
+  '     If Left$(sLine, 7) = "msgstr " Then
+  '       sMsgStr = Mid$(sLine, 9, -1)
+  '       iMode = MODE_MSGSTR
+  '       Continue
+  '     Endif
+  ' 
+  '     If Left$(sLine) = Chr$(34) Then
+  '       If iMode = MODE_MSGID Then
+  '         sMsgId = sMsgId & Mid$(sLine, 2, -1)
+  '       Else If iMode = MODE_MSGSTR Then
+  '         sMsgStr = sMsgStr & Mid$(sLine, 2, -1)
+  '       Endif
+  '       Continue
+  '     Endif
+  ' 
+  '   Endif
+  ' 
+  '   If Trim(sMsgId) Then
+  ' 
+  '     Inc iIndex
+  ' 
+  '     If sMsgStr = "-\\n" Then sMsgStr = "-"
+  '     
+  '     'sMsgId = UnQuoteTranslation(sMsgId)
+  '     'sMsgStr = UnQuoteTranslation(sMsgStr)
+  ' 
+  '     cvwTranslate.Add(iIndex, sMsgId)
+  '     If bFuzzy Then
+  '       bFuzzy = False
+  '     Else
+  '       cvwTranslate[iIndex][1] = sMsgStr
+  '       If sMsgStr Then Inc $nTrans
+  '     Endif
+  '     cvwTranslate[iIndex][2] = sMsgComment
+  '     sMsgId = ""
+  '     sMsgComment = ""
+  '     sMsgStr = ""
+  ' 
+  '   Endif
+  ' 
+  '   If Eof(hFic) Then Break
+  ' 
+  ' Loop
+  ' 
+  ' Close #hFic
   
+  For Each sMsgId In hTrans.Keys
+    Inc iIndex
+    If hTransSrc Then
+      cvwTranslate.Add(iIndex, hTransSrc.Translations[sMsgId])
+    Else
+      cvwTranslate.Add(iIndex, sMsgId)
+    Endif
+    cvwTranslate[iIndex][1] = hTrans.Translations[sMsgId]
+    cvwTranslate[iIndex][2] = hTrans.Comments[sMsgId]
+    cvwTranslate[iIndex][3] = sMsgId
+  Next
+  
+  $nTrans = hTrans.Translations.Count
+
   MakeFileChoice
   UpdateOrg(True)
   
-  Close #hFic
-
-  cvwTranslate.Columns[1].Text = Language.ToName(sLang)
+  'cvwTranslate.Columns[1].Text = Language.ToName(sLang)
 
   txtOrig.Text = ""
   txtTranslate.Text = ""
@@ -370,7 +389,7 @@ Public Sub cvwTranslate_Select()
 
   With cvwTranslate
 
-    txtOrig.Text = .Current[0]
+    txtOrig.Text = Html$(.Current[0])
     $bIgnore = True
     txtTranslate.Text = .Current[1]
     $bIgnore = False
@@ -446,7 +465,7 @@ Private Sub SaveTranslate(Optional bForce As Boolean)
       sStr = .Item[1]
 
       If sStr Then
-        If Right$(.Item[0], 2) = "\\n" Then
+        If Right$(.Item[3], 2) = "\\n" Then
           If Right$(sStr, 2) <> "\\n" Then
             sStr = sStr & "\\n"
           Endif
@@ -454,7 +473,7 @@ Private Sub SaveTranslate(Optional bForce As Boolean)
       Endif
 
       Print #hFic, "#: "; .Item[2]
-      Print #hFic, "msgid "; QuoteTranslation(.Item[0])
+      Print #hFic, "msgid "; QuoteTranslation(.Item[3])
       Print #hFic, "msgstr "; QuoteTranslation(sStr)
       Print #hFic
 
@@ -540,13 +559,11 @@ End
 
 Public Sub btnCopy_Click()
 
-  'IF NOT txtTranslate.Text THEN
-    txtTranslate.Text = txtOrig.Text
-  'ENDIF
+  txtTranslate.Text = cvwTranslate.Current[0]
 
 End
 
-Public Sub btnFind_Click()
+Public Sub txtFind_Click()
 
   Dim sStr As String
   Dim sFind As String
@@ -587,7 +604,7 @@ End
 
 Public Sub txtFind_Activate()
 
-  btnFind_Click
+  txtFind_Click
 
 End
 
@@ -691,7 +708,7 @@ Public Sub txtTranslate_KeyPress()
   Else If Key.Normal Then
     Select Case Key.Code
       Case Key.F3 
-        btnFind_Click
+        txtFind_Click
       Case Key.F4
         btnNext_Click
       Case Key.F5
@@ -732,7 +749,7 @@ Public Sub btnExport_Click()
   Settings["/FTranslate/ExportPath"] = File.Dir(Dialog.Path)
 
   SaveTranslate
-  Shell "cp -f " & Shell$(GetLangPath($sLang, "po")) & " " & Shell$(Dialog.Path) Wait
+  Shell "cp -f " & Shell$(Language.GetPath($sLang, "po")) & " " & Shell$(Dialog.Path) Wait
 
 End
 
@@ -917,7 +934,7 @@ Public Sub btnImport_Click()
 
   Inc Application.Busy
 
-  sPath = GetLangPath($sLang, "po")
+  sPath = Language.GetPath($sLang, "po")
 
   'SHELL "msgmerge -o " & Project.Quote(sPath & ".new") & " " & Project.Quote(Dialog.Path) & " " & Project.Quote(sPath) & " 2>/dev/null" WAIT
   'MergeMessage(sPath, "-o " & Quote.Shell(sPath & ".new") & " " & Quote.Shell(Dialog.Path) & " " & Quote.Shell(sPath))
@@ -1032,7 +1049,17 @@ End
 
 Private Sub DisplayTrans()
 
-  lblInfo.Text = Subst(("&1 strings (&2 not translated) - &3 % done"), cvwTranslate.Count, cvwTranslate.Count - $nTrans, ($nTrans * 100) \ cvwTranslate.Count)
+  Dim nNotTrans As Integer
+  
+  nNotTrans = cvwTranslate.Count - $nTrans
+
+  If nNotTrans = 0 Then
+    lblInfo.Text = Subst(("&1 strings. Everything is translated!"), cvwTranslate.Count, nNotTrans)
+  Else If nNotTrans = 1 Then
+    lblInfo.Text = Subst(("&1 strings. One is not translated. &3% done."), cvwTranslate.Count, nNotTrans, ($nTrans * 100) \ cvwTranslate.Count)
+  Else
+    lblInfo.Text = Subst(("&1 strings. &2 are not translated. &3% done."), cvwTranslate.Count, nNotTrans, ($nTrans * 100) \ cvwTranslate.Count)
+  Endif
   btnNext.Enabled = cvwTranslate.Count - $nTrans
   btnPrevious.Enabled = btnNext.Enabled
 
@@ -1307,7 +1334,7 @@ Private Sub UpdateOrg(Optional bNew As Boolean)
     Do While .Available
       sKey = .Item.Key
       If bNew Then 
-        cvwTranslateOrg.Add(sKey, .item[0])
+        cvwTranslateOrg.Add(sKey, .Item[0])
         For ni = 1 To .Columns.Count - 1
           cvwTranslateOrg.Item[nI] = .Item[nI]
         Next  
@@ -1382,8 +1409,8 @@ Public Sub cvwLang_Compare(Key As String, OtherKey As String)
   Select Case cvwLang.Columns.Sort
   
     Case 1
-      iVal = CInt(Replace(cvwLang[Key][1], "%", ""))
-      iOtherVal = CInt(Replace(cvwLang[OtherKey][1], "%", ""))
+      iVal = CInt(Trim$(Replace(cvwLang[Key][1], "%", "")))
+      iOtherVal = CInt(Trim(Replace(cvwLang[OtherKey][1], "%", "")))
       If iVal < iOtherVal Then 
         iComp = 1
       Else If iVal > iOtherVal Then 
@@ -1394,8 +1421,8 @@ Public Sub cvwLang_Compare(Key As String, OtherKey As String)
       iComp = String.Comp(cvwLang[Key][2], cvwLang[OtherKey][2])
       
     Case 3
-      iVal = Stat(GetLangPath(Key, "po")).Size
-      iOtherVal = Stat(GetLangPath(OtherKey, "po")).Size
+      iVal = Stat(Language.GetPath(Key, "po")).Size
+      iOtherVal = Stat(Language.GetPath(OtherKey, "po")).Size
       If iVal < iOtherVal Then
         iComp = -1
       Else If iVal > iOtherVal Then
@@ -1407,7 +1434,7 @@ Public Sub cvwLang_Compare(Key As String, OtherKey As String)
 Finally
 
   cvwLang.Compare = iComp
-
+  
 End
 
 Public Sub panTranslate_Arrange()
@@ -1431,5 +1458,11 @@ End
 Public Sub dchImport_Change()
 
   Try fvwImport.Dir = dchImport.SelectedPath
+
+End
+
+Public Sub cmbLangSource_Click()
+
+  SetLang($sLang)
 
 End

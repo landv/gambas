@@ -148,3 +148,29 @@ Public Sub FindBest(sDir As String) As CBookmark
   Return FindBookmark(sBest)
   
 End
+
+Public Sub GetEditableCount() As Integer
+  
+  Dim hBookmark As CBookmark
+  Dim iCount As Integer
+  
+  For Each hBookmark In Me
+    If hBookmark.IsEditable() Then Inc iCount
+  Next
+  
+  Return iCount
+  
+End
+
+Public Sub GetEditableBookmarks() As CBookmark[]
+  
+  Dim hBookmark As CBookmark
+  Dim hBookmarks As New CBookmark[]
+  
+  For Each hBookmark In Me
+    If hBookmark.IsEditable() Then hBookmarks.Add(hBookmark)
+  Next
+  
+  Return hBookmarks
+  
+End

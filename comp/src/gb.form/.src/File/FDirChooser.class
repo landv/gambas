@@ -167,7 +167,7 @@ Private Sub UpdateBookmarkButton()
   If IsBookmarkVisible() Then
     btnBookmark.Text = $hCurrentBookmark.Name
     btnBookmark.Picture = Picture[$hCurrentBookmark.Icon]
-    mnuEditBookmark.Enabled = $hCurrentBookmark.IsEditable()
+    mnuEditBookmark.Enabled = $hBookmarkList.GetEditableCount() > 0
   Else
     btnBookmark.Text = File.Name(dvwChoose.Root)
     btnBookmark.Picture = dvwChoose.Picture 'Picture["icon:/small/directory"]
@@ -768,15 +768,15 @@ Private Sub FillMenu()
   hMenu = New Menu(mnuBookmark)
   
   hMenu = New Menu(mnuBookmark) As "mnuAddBookmark"
-  hMenu.Text = ("&Add bookmark")
+  hMenu.Text = ("&Bookmark current directory")
   hMenu.Picture = Picture["icon:/small/add"]
   
-  hMenu = New Menu(mnuBookmark) As "mnuRemoveBookmark"
-  hMenu.Text = ("&Remove bookmark")
-  hMenu.Picture = Picture["icon:/small/remove"]
+  'hMenu = New Menu(mnuBookmark) As "mnuRemoveBookmark"
+  'hMenu.Text = ("&Remove bookmark")
+  'hMenu.Picture = Picture["icon:/small/remove"]
   
   hMenu = New Menu(mnuBookmark) As "mnuEditBookmark"
-  hMenu.Text = ("&Edit bookmark...")
+  hMenu.Text = ("&Edit bookmarks...")
   hMenu.Picture = Picture["icon:/small/edit"]
   mnuEditBookmark = hMenu
   
@@ -798,9 +798,9 @@ End
 
 Public Sub mnuEditBookmark_Click()
   
-  If Not $hCurrentBookmark Then Return
-  If Not $hCurrentBookmark.IsEditable() Then Return
-  If FEditBookmark.Run($hCurrentBookmark) Then Return
+  'If Not $hCurrentBookmark Then Return
+  'If Not $hCurrentBookmark.IsEditable() Then Return
+  FEditBookmark.Run($hBookmarkList)
   
   $hBookmarkList.Save
   UpdateBookmarkButton

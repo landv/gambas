@@ -570,7 +570,7 @@ Public Sub MyDrawingArea_Draw()
   If $bDrawSelRect Then
     Draw.Foreground = Color.Black
     Draw.FillStyle = Fill.None
-    Draw.LineStyle = Line.DashDotDot
+    Draw.LineStyle = Line.Dot
     Draw.Rect($hSelRect.X, $hSelRect.Y - $hVScroll.Value, $hSelRect.X2 - $hSelRect.X, $hSelRect.Y2 - $hSelRect.Y)
     SelectInRect
   Endif
@@ -841,7 +841,7 @@ Public Sub MyDrawingArea_KeyPress()
   Else If key.Code = key.End Then
     $iEndSelItem = $aItems.Max
   Else If key.Code = key.PageDown Then
-    $iEndSelItem = Max($iEndSelItem + (iVisibleRows * iColumns), $aItems)
+    $iEndSelItem = Max($iEndSelItem + (iVisibleRows * iColumns), $aItems.Max)
   Else If key.Code = key.PageUp Then
     $iEndSelItem = Min($iEndSelItem - (iVisibleRows * iColumns), 0)
   Else 

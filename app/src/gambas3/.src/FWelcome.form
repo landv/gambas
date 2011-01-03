@@ -28,12 +28,14 @@
       Mouse = Mouse.Arrow
       Expand = True
       Arrangement = Arrange.Vertical
-      Padding = 4
+      Padding = 1
       Border = Border.Plain
       { lblList Label
         MoveScaled(1,0,24,3)
         Font = Font["Bold"]
         Foreground = Color.SelectedForeground
+        Padding = 4
+        AutoResize = True
         Alignment = Align.TopNormal
       }
       { panSort HBox
