@@ -322,6 +322,9 @@ Public Sub ReadWindow(hWindow As Window, sKey As String)
         S = aPos[4]
         If S >= Screens.Count Then S = 0
       Endif
+    Else
+      W = hWindow.W
+      H = hWindow.H
     Endif
   Endif
 
@@ -332,7 +335,7 @@ Public Sub ReadWindow(hWindow As Window, sKey As String)
   '   Print "ReadWindow: "; X;; Y; " / "; S;; Screens[S].AvailableX;; Screens[S].AvailableY
   ' Endif
   
-  If aPos.Count >= 4 And hWindow.Resizable Then
+  If hWindow.Resizable Then
     W = Max(32, W)
     H = Max(32, H)
     If hWindow.Modal Then
@@ -342,7 +345,7 @@ Public Sub ReadWindow(hWindow As Window, sKey As String)
       hWindow.Move(X, Y, W, H)
     Endif
   Else
-    If Not hWindow.Modal Then hWindow.Move(aPos[0], aPos[1])
+    If Not hWindow.Modal Then hWindow.Move(X, Y)
   Endif
 
 End
