@@ -7,20 +7,20 @@ public:
 	gSpinBox(gContainer *parent);
 
 //"Properties"
-	long background();
-	long foreground();
-	long maxValue() { return _max; }
-	long minValue() { return _min; }
-	long step();
-	long value();
+	//int background();
+	//int foreground();
+	int maxValue() { return _max; }
+	int minValue() { return _min; }
+	int step();
+	int value();
 	bool wrap();
 
-	void setBackground(long vl);
-	void setForeground(long vl);
-	void setMaxValue  (long vl);
-	void setMinValue  (long vl);
-	void setStep      (long vl);
-	void setValue     (long vl);
+	//void setBackground(int vl);
+	//void setForeground(int vl);
+	void setMaxValue  (int vl);
+	void setMinValue  (int vl);
+	void setStep      (int vl);
+	void setValue     (int vl);
 	void setWrap      (bool vl);
 
 //"Methods"

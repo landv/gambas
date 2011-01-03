@@ -89,7 +89,7 @@ gSlider::gSlider(gContainer *par) : gControl(par)
 	bDraw=false;
 	g_typ=Type_gSlider;
 	border=gtk_event_box_new();
-	widget=gtk_vscale_new_with_range(0,99,1);
+	widget=gtk_vscale_new_with_range(0,100,1);
 		
 	gtk_container_add (GTK_CONTAINER(border),widget);
 	gtk_scale_set_draw_value(GTK_SCALE(widget),false);
