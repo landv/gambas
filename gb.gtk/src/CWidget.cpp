@@ -148,7 +148,9 @@ static int to_gambas_event(int type)
 		case gEvent_KeyRelease: return EVENT_KeyRelease;
 		case gEvent_FocusIn: return EVENT_GotFocus;
 		case gEvent_FocusOut: return EVENT_LostFocus;
-		default: return -1;
+		case gEvent_Enter: return EVENT_Enter;
+		case gEvent_Leave: return EVENT_Leave;
+		default: fprintf(stderr, "warning: to_gambas_event: unhandled event: %d\n", type); return -1;
 	}
 }
 

@@ -114,7 +114,8 @@ static void delete_menu(CMENU *_object)
 	
 	if (THIS->menu)
 	{
-		delete THIS->menu;
+		//GB.Post((GB_CALLBACK)delete_later, (intptr_t)THIS->menu);
+		THIS->menu->deleteLater();
 		THIS->menu = 0;
 	}
 	
@@ -753,6 +754,7 @@ void CMenu::slotTriggered(QAction *action)
 void CMenu::slotShown(void)
 {
   GET_MENU_SENDER(menu);
+	
 	GB.Raise(menu, EVENT_Show, 0);
 }
 

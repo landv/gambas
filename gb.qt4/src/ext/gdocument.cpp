@@ -239,6 +239,11 @@ GString GDocument::getText()
 
   if (lines.count())
   {
+		FOR_EACH_VIEW(v)
+		{
+			if (v->viewport()->hasFocus())
+				v->leaveCurrentLine();
+		}
     //for (uint i = 0; i < lines.count(); i++)
     //  colorize(i);
 

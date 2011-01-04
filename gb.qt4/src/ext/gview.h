@@ -232,6 +232,7 @@ public:
 	int lastVisibleRow() const { return lastVisibleRow(contentsY()); }
 	void updateLine(int y);
 	void setNumRows(int);
+	void leaveCurrentLine();
 	
 	virtual void resizeContents(int w, int h);
 	

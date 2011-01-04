@@ -1128,6 +1128,8 @@ Public Function CanSetBreakpoint(iLine As Integer) As Boolean
   Dim sLine As String
   Dim iPos As Integer
   
+  If iLine < 0 Or If iLine >= Editor.Lines.Count Then Return
+  
   sLine = Trim(Editor.Lines[iLine].Text)
   iPos = InStr(sLine, "'")
   If iPos Then sLine = Trim(Left$(sLine, iPos - 1))

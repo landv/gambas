@@ -50,6 +50,16 @@ static int CMENU_check(void *_object)
   	return false;
 }
 
+static void delete_later(gMenu *menu)
+{
+	delete menu;
+}
+
+static void delete_menu(gMenu *menu)
+{
+	GB.Post((GB_CALLBACK)delete_later, (intptr_t)menu);
+}
+
 static void cb_finish(gMenu *sender)
 {
 	CMENU *_object = (CMENU*)sender->hFree;
@@ -252,7 +262,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CMENU_delete)
 
-	MENU->destroy();
+	delete_menu(MENU);
 
 END_METHOD
 
@@ -305,10 +315,8 @@ BEGIN_METHOD_VOID(CMENU_clear)
 	
 	for (bucle=0;bucle<max;bucle++)
 	{
-		mn = MENU->childMenu(0);
-		if (!mn)
-			break;
-		mn->destroy();
+		mn = MENU->childMenu(bucle);
+		delete_menu(mn);
 	}
 
 END_PROPERTY

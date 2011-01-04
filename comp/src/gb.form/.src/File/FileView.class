@@ -61,6 +61,13 @@ Static Public Sub _init()
   $cExt["avi"] = "video"
   $cExt["wmv"] = "video"
   $cExt["mov"] = "video"
+  $cExt["gambas"] = "gambas"
+  $cExt["c"] = "text"
+  $cExt["cpp"] = "text"
+  $cExt["h"] = "text"
+  $cExt["deb"] = "package"
+  $cExt["rpm"] = "package"
+  $cExt["iso"] = "cdrom"
 
 End
 
@@ -118,19 +125,26 @@ Private Sub GetIcon(sPath As String, iSize As Integer) As Picture
   Try sIcon = $cExt[File.Ext(sPath)]
   If sIcon Then Return Picture["icon:/" & CStr(iSize) &/ sIcon]
 
-  If $aImgExt.Find(File.Ext(sPath)) < 0 Then Return
-  If Stat(sPath).Size > 65536 Then Return Picture["icon:/" & iSize & "/image"]
-  
-  hImage = Image.Load(sPath)
-  If Not (hImage.Width = iSize And hImage.Height = iSize) Then 
-    If hImage.Width > hImage.Height Then 
-      hImage = hImage.Stretch(iSize, (iSize * hImage.Height) \ hImage.Width)
-    Else
-      hImage = hImage.Stretch((iSize * hImage.Width) \ hImage.Height, iSize)
+  If $aImgExt.Exist(File.Ext(sPath)) < 0 Then
+    If Stat(sPath).Size > 65536 Then Return Picture["icon:/" & iSize & "/image"]
+    
+    hImage = Image.Load(sPath)
+    If Not (hImage.Width = iSize And hImage.Height = iSize) Then 
+      If hImage.Width > hImage.Height Then 
+        hImage = hImage.Stretch(iSize, (iSize * hImage.Height) \ hImage.Width)
+      Else
+        hImage = hImage.Stretch((iSize * hImage.Width) \ hImage.Height, iSize)
+      Endif
     Endif
+    
+    Return hImage.Picture
   Endif
   
-  Return hImage.Picture
+  With Stat(sPath)
+    
+    If InStr(.Perm[System.User.Name], "x") Then Return Picture["icon:/" & CStr(iSize) &/ "exec"]
+    
+  End With
   
 Catch
   

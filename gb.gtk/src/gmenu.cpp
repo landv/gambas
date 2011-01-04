@@ -45,7 +45,7 @@ static void mnu_destroy (GtkWidget *object, gMenu *data)
 
 static void mnu_activate(GtkMenuItem *menuitem, gMenu *data)
 {
-	if (data->onClick) data->onClick(data);
+	if (!data->child && data->onClick) data->onClick(data);
 }
 
 static gboolean cb_map(GtkWidget *menu, gMenu *data)
@@ -426,6 +426,8 @@ gMenu::~gMenu()
 		item = g_list_next(item);
 	}
 	
+	menus = g_list_remove(menus, (gpointer)this);
+	
 	_no_update = true;
 	setText(NULL);
 	setShortcut(NULL);
@@ -460,8 +462,6 @@ gMenu::~gMenu()
 		gtk_widget_destroy(GTK_WIDGET(menu));
 	
 	if (onFinish) onFinish(this);
-	
-	menus = g_list_remove(menus, (gpointer)this);
 }
 
 bool gMenu::enabled()
@@ -609,7 +609,7 @@ void gMenu::doPopup(bool move, int x, int y)
 	
 	gtk_menu_popup(child, NULL, NULL, move ? (GtkMenuPositionFunc)position_menu : NULL, (gpointer)pos, 0, gApplication::lastEventTime());
 	
-	while (GTK_WIDGET_MAPPED(child))
+	while (child && GTK_WIDGET_MAPPED(child))
 		do_iteration(false);
 }
 

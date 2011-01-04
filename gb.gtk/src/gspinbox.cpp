@@ -85,6 +85,7 @@ int gSpinBox::step()
 
 int gSpinBox::value()
 {
+	gtk_spin_button_update(GTK_SPIN_BUTTON(widget));
 	return (int)gtk_spin_button_get_value(GTK_SPIN_BUTTON(widget));
 }
 

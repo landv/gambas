@@ -961,6 +961,11 @@ __OK:
 	}
 }
 
+void GEditor::leaveCurrentLine()
+{
+	doc->colorize(y);
+}
+
 
 bool GEditor::cursorGoto(int ny, int nx, bool mark)
 {
@@ -1012,10 +1017,7 @@ bool GEditor::cursorGoto(int ny, int nx, bool mark)
 	}
 	
 	if (ny != y)
-	{
-		if (getFlag(HighlightCurrent))
-			doc->colorize(y);
-	}
+		leaveCurrentLine();
 
 	if (y != ny || x != nx)
 	{
@@ -1854,8 +1856,7 @@ void GEditor::focusInEvent(QFocusEvent *e)
 void GEditor::focusOutEvent(QFocusEvent *e)
 {
 	stopBlink();
-	if (!getFlag(HighlightCurrent))
-		doc->colorize(y);
+	leaveCurrentLine();
 	Q3ScrollView::focusOutEvent(e);
 }
 

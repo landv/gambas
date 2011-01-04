@@ -118,3 +118,11 @@ Public Sub btnDelete_Click()
   tvwBookmark.Row = -1
 
 End
+
+Public Sub tvwBookmark_Save(Row As Integer, Column As Integer, Value As String)
+
+  If Column = 0 Then
+    If Value Then $hBookmarks[Row].SetName(Trim(Value))
+  Endif
+
+End
