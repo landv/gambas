@@ -64,7 +64,7 @@ bool EXEC_enum_next(PCODE code)
   CLASS *class;
   bool defined;
   VALUE *local;
-  bool drop = (code & 0xFF);
+  bool drop = (code & 1);
   bool err;
   CENUM *old = EXEC_enum;
   CENUM *cenum;

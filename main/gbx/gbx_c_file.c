@@ -406,18 +406,18 @@ BEGIN_METHOD(CFILE_perm_get, GB_STRING user)
 	who = get_file_user(THIS);
 	if (strcmp(user, who) == 0)
 	{
-		return_perm(THIS_STAT, S_IRUSR, S_IWUSR, S_IWUSR);
+		return_perm(THIS_STAT, S_IRUSR, S_IWUSR, S_IXUSR);
 		return;
 	}
 
 	who = get_file_group(THIS);
 	if (strlen(user) > 2 && user[0] == '*' && user[1] == '.' && strcmp(&user[2], who) == 0)
 	{
-		return_perm(THIS_STAT, S_IRGRP, S_IWGRP, S_IWGRP);
+		return_perm(THIS_STAT, S_IRGRP, S_IWGRP, S_IXGRP);
 		return;
 	}
 
-	return_perm(THIS_STAT, S_IROTH, S_IWOTH, S_IWOTH);
+	return_perm(THIS_STAT, S_IROTH, S_IWOTH, S_IXOTH);
 
 END_METHOD
 

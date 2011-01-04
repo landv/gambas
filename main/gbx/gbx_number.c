@@ -171,6 +171,7 @@ static bool read_float(double *result, bool local)
 	uint64_t mantisse;
 	int ndigit_frac;
 	bool frac;
+	bool nozero;
 
 	int nexp;
 	bool nexp_minus;
@@ -194,6 +195,7 @@ static bool read_float(double *result, bool local)
 	ndigit_frac = 0;
 	nexp = 0;
 	nexp_minus = FALSE;
+	nozero = FALSE;
 	
 	for(;;)
 	{
@@ -218,7 +220,12 @@ static bool read_float(double *result, bool local)
 		if (!isdigit(c) || (c < 0))
 			break;
 		
-		n++;
+		if (c != '0')
+			nozero = TRUE;
+		
+		if (nozero)
+			n++;
+		
 		if (n > DBL_DIG)
 		{
 			if (n == (DBL_DIG + 1) && (c >= '5'))

@@ -928,11 +928,16 @@ _FORMAT:
 	/* the number */
 
 	number_mant = frexp10(fabs(number), &number_exp);
-	ndigit = MinMax(after + number_exp, 0, DBL_DIG);
+
+	ndigit = after;
+	if (!exposant) ndigit += number_exp;
+	ndigit = MinMax(ndigit, 0, DBL_DIG);
+	
 	mantisse = number_mant * pow(10, ndigit + 1);
 	if ((mantisse % 10) >= 5)
 		mantisse += 10;
 	mantisse /= 10;
+	
 	ndigit = sprintf(buf, "0.%" PRId64, mantisse);
 
 	/* 0.0 <= number_mant < 1.0 */
@@ -942,23 +947,6 @@ _FORMAT:
 	number_real_exp = number_exp;
 	if (exposant)
 		number_exp = number != 0.0;
-
-	#if 0
-	// FIXME: Format(0.25, "0.0") -> 0.2, but Format(0.45, "0.0") -> 0.5
-	//ndigit = snprintf(buf, sizeof(buf), "%.*f", MinMax(after + number_exp, 0, DBL_DIG + 1), number_mant);
-	n = MinMax(after + number_exp, 0, DBL_DIG + 1);
-	ndigit = n + 2;
-	buf_start = buf;
-	*buf_start++ = '0';
-	*buf_start++ = '.';
-	while (n)
-	{
-		number_mant *= 10;
-		number_mant = modf(number_mant, &int_mant);
-		*buf_start++ = '0' + (int)int_mant;
-		n--;
-	}
-	#endif
 
 	// should return "0[.]...", or "1[.]..." if the number is rounded up.
 
