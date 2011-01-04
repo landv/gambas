@@ -643,12 +643,12 @@ bool CLASS_unref(void *ob, boolean can_free)
 		DEBUG_get_current_position(),
 		OBJECT_class(object)->name, GET_ALLOC_ID(object), object->ref - 1);
 	#else
-	if (object->ref <= 0)
-		fprintf(stderr, "*** %p REF = %d !\n", object, object->ref);
-
 	fprintf(stderr, "%s, %s: unref(%s %p) -> %d\n", OBJECT_ref_where,
 		DEBUG_get_current_position(),
 		OBJECT_class(object)->name, object, object->ref - 1);
+
+	if (object->ref <= 0)
+		fprintf(stderr, "*** %p REF = %d !\n", object, object->ref);
 	#endif
 	fflush(stdout);
 
