@@ -35,6 +35,7 @@ Public Sub _new()
   
   $hButtonBox = New ButtonBox(Me) As "ButtonBox"
   $hButtonBox.Picture = Picture["icon:/small/calendar"]
+  $hButtonBox.Editor.Mask = Replace(Format(Date(1111, 11, 11), gb.ShortDate), "1", "0")
   
   $hPopup = New Window As "PopupWindow"
   $hPopup.Persistent = True
@@ -55,7 +56,7 @@ Private Function Value_Read() As Date
 
   Dim vVal As Variant = Val($hButtonBox.Text)
   
-  If vVal And If IsDate(vVal) Then Return vVal
+  If vVal And If TypeOf(vVal) = gb.Date Then Return vVal
 
 End
 
@@ -68,6 +69,7 @@ End
 Public Sub ButtonBox_Click()
   
   Dim X, Y, iPad As Integer
+  Dim dDate As Date
   
   iPad = If($hButtonBox.Border, 3, 0)
   X = $hButtonBox.ScreenX + $hButtonBox.W - $hPopup.W - iPad
@@ -77,6 +79,8 @@ Public Sub ButtonBox_Click()
     Y = $hButtonBox.ScreenY - $hPopup.H
   Endif
   
+  dDate = Me.Value
+  If dDate Then $hChooser.Value = dDate
   $hPopup.ShowPopup(X, Y)
   '$hPopup.ShowModal
   

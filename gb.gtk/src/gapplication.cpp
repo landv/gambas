@@ -468,13 +468,6 @@ static void gambas_handle_event(GdkEvent *event)
 				{
 					case GDK_BUTTON_PRESS: 
 						control->onMouseEvent(control, gEvent_MousePress);
-						if (control->isTopLevel())
-						{
-							gMainWindow *win = ((gMainWindow *)control);
-							if (win->isPopup() && (x < 0 || y < 0 || x >= win->width() || y >= win->height()))
-								win->close();
-						}
-						
 						break;
 					
 					case GDK_2BUTTON_PRESS: 
@@ -483,8 +476,6 @@ static void gambas_handle_event(GdkEvent *event)
 					
 					case GDK_BUTTON_RELEASE: 
 						control->onMouseEvent(control, gEvent_MouseRelease); 
-						if (control->_grab)
-							gApplication::exitLoop(control);
 						break;
 				}
 				
@@ -493,6 +484,26 @@ static void gambas_handle_event(GdkEvent *event)
 				if (event->button.button == 3 && event->type == GDK_BUTTON_PRESS)
 					control->onMouseEvent(control, gEvent_MouseMenu);
 			}
+			
+			if (type == gEvent_MousePress && control->isTopLevel())
+			{
+				gMainWindow *win = ((gMainWindow *)control);
+				if (win->isPopup())
+				{
+					control->getScreenPos(&xc, &yc);
+					x = (int)event->button.x_root - xc;
+					y = (int)event->button.y_root - yc;
+				
+					if (x < 0 || y < 0 || x >= win->width() || y >= win->height())
+						win->close();
+				}
+			}
+			else if (type == gEvent_MouseRelease && control->_grab)
+			{
+				gApplication::exitLoop(control);
+			}
+						
+
 			
 			if (control->_proxy_for)
 			{

@@ -29,9 +29,17 @@ Private $hObserver As Observer
 
 Private Const MASK_CHARACTER As String = "90A6?"
 Private Const MASK_DEFAULT As String = "_0___"
+
 Private $sMaskOrg As String
-Private $sMask As String
+
+Private $aMask As String[]
+Private $sDefault As String
 Private $sSeparator As String
+Private $sAlign As String
+
+Private $bUpperCase As Boolean
+Private $bLowerCase As Boolean
+
 Private $sMaskChar As String
 
 Public Sub _new()
@@ -42,26 +50,15 @@ End
 
 Private Function Mask_Read() As String
 
-  Return $sMask
+  Return $sMaskOrg
 
 End
 
 Private Sub GetDefaultCharacter(iPos As Integer) As String
   
-  Dim sCar As String
-  
-  Inc iPos
-  sCar = String.Mid$($sMask, iPos, 1)
-  If sCar <> " " Then
-    iPos = InStr(MASK_CHARACTER, sCar)
-    If iPos Then
-      sCar = String.Mid$(MASK_DEFAULT, iPos, 1)
-      If sCar = "_" And If $sMaskChar Then sCar = $sMaskChar
-    Endif
-    Return sCar
-  Else
-    Return String.Mid$($sSeparator, iPos, 1)
-  Endif
+  Dim sCar As String = String.Mid$($sDefault, iPos + 1, 1)
+  If sCar = " " Then sCar = String.Mid$($sSeparator, iPos + 1, 1)
+  Return sCar
   
 End
 
@@ -72,63 +69,97 @@ Private Sub MakeDefault() As String
   Dim sCar As String
   Dim iInd As Integer
   
-  For iInd = 1 To String.Len($sMask)
-    sDefault &= GetDefaultCharacter(iInd - 1)
+  For iInd = 0 To $aMask.Max
+    sDefault &= GetDefaultCharacter(iInd)
   Next
   
-  Return sDefault
+  Return RTrim(sDefault)
   
 End
 
 Private Sub GetFirstCharacterPos() As Integer
   
-  Return Len($sMask) - Len(LTrim($sMask))
+  Dim iPos As Integer
+  
+  For iPos = 0 To $aMask.Max
+    If $aMask[iPos] Then Return iPos
+  Next
   
 End
 
 Private Sub GetLastCharacterPos() As Integer
   
-  Return Len(RTrim($sMask))
+  Dim iPos As Integer
+  
+  For iPos = $aMask.Max DownTo 0
+    If $aMask[iPos] Then Return iPos + 1
+  Next
   
 End
 
-Private Sub UpdateMaskAndSeparator()
+Private Sub UpdateMaskAndSeparator(sMask As String)
   
-  Dim iPos As Integer
+  Dim iPos, iPos2 As Integer
   Dim sCar As String
   Dim iLen As Integer
+  Dim aMask As New String[]
+  Dim sSeparator As String
+  Dim sAlign As String
+  Dim sDefault As String
 
-  iLen = String.Len($sMaskOrg)
+  iLen = String.Len(sMask)
 
-  $sMask = ""
-  $sSeparator = ""
-  
   For iPos = 1 To iLen
-    sCar = String.Mid$($sMaskOrg, iPos, 1)
-    If IsMaskCharacter(sCar) Then
-      $sMask &= sCar
-      $sSeparator &= " "
+    sCar = String.Mid$(sMask, iPos, 1)
+    If sCar = "[" Then
+      iPos2 = String.InStr(sMask, "]", iPos)
+      If iPos2 = 0 Then Error.Raise("Bad mask")
+      aMask.Add(String.Mid$(sMask, iPos, iPos2 - iPos + 1))
+      iPos = iPos2
+      sSeparator &= " "
+      sDefault &= "_"
       Continue
+    Else If sCar = "?" Then
+      aMask.Add(sCar)
+      sSeparator &= " "
+      sDefault &= "_"
+    Else If sCar = "0" Then
+      aMask.Add("[0-9]")
+      sSeparator &= " "
+      sDefault &= "0"
+    Else If sCar = "9" Then
+      aMask.Add("[0-9]")
+      sSeparator &= " "
+      sDefault &= "_"
+    Else If sCar = "A" Then
+      aMask.Add("[A-Za-z]")
+      sSeparator &= " "
+      sDefault &= "_"
     Else If sCar = "\\" And If iPos < iLen Then
-      $sMask &= " "
+      aMask.Add("")
       Inc iPos
-      $sSeparator &= String.Mid$($sMaskOrg, iPos, 1)
+      sSeparator &= String.Mid$(sMask, iPos, 1)
+      sDefault &= " "
     Else
-      $sMask &= " "
-      $sSeparator &= sCar
+      aMask.Add("")
+      sSeparator &= sCar
+      sDefault &= " "
     Endif
   Next
   
-  Debug Quote($sMask);; Quote($sSeparator)
+  $sMaskOrg = sMask
+  $aMask = aMask
+  $sSeparator = sSeparator
+  $sAlign = sAlign
+  $sDefault = sDefault
+  If $sMaskChar Then $sDefault = Replace($sDefault, "_", $sMaskChar)
   
 End
 
 
 Private Sub Mask_Write(Value As String)
 
-  $sMaskOrg = Value
-  
-  UpdateMaskAndSeparator
+  UpdateMaskAndSeparator(Value)
   
   If Not $sMaskOrg Then Return
   
@@ -137,20 +168,25 @@ Private Sub Mask_Write(Value As String)
 
 End
 
-Private Sub IsMaskCharacter(sCar As String) As Boolean
-  
-  Return InStr(MASK_CHARACTER, sCar)
-  
-End
+' Private Sub IsMaskCharacter(sCar As String) As Boolean
+'   
+'   Return InStr(MASK_CHARACTER, sCar)
+'   
+' End
 
-Private Sub GetNextSeparator(sText As String, iPos As Integer) As Integer
+Private Sub GetNextSeparator(sText As String, iPos As Integer, Optional sSep As String) As Integer
   
   Dim iLen As Integer = String.Len(sText)
+  Dim sCar As String
   
   If iPos < 0 Then Return 0
   
   While iPos < iLen
-    If Not IsMaskCharacter(String.Mid$($sMask, iPos + 1, 1)) Then Break
+    sCar = $aMask[iPos]
+    If Not sCar Then
+      If Not sSep Then Break
+      If sSep = String.Mid$(sText, iPos + 1, 1) Then Break
+    Endif
     Inc iPos
   Wend
   
@@ -165,7 +201,7 @@ Private Sub GetNextCharacter(sText As String, iPos As Integer) As Integer
   If iPos < 0 Then Return 0
   
   While iPos < iLen
-    If IsMaskCharacter(String.Mid$($sMask, iPos + 1, 1)) Then Break
+    If $aMask[iPos] Then Break
     Inc iPos
   Wend
   
@@ -186,7 +222,7 @@ Public Sub TextBox_KeyPress()
   Dim sDefault As String
   Dim bChange As Boolean
   
-  If Not $sMask Then Return
+  If Not $sMaskOrg Then Return
   
   sText = Me.Text
   If Me.Selected Then
@@ -232,37 +268,18 @@ Public Sub TextBox_KeyPress()
         Return
       Endif
       
-      If Key.Text Then
+      If Key.Text And iPos < $aMask.Count Then
         
-        sCar = String.Mid$($sMask, iPos + 1, 1)
-        If sCar Then
+        sCar = $aMask[iPos]
+        If sCar And If Key.Text Like sCar Then sInsert = Key.Text
           
-          Select Case sCar
-            
-            Case "9", "0"
-              If IsDigit(Key.Text) Then sInsert = Key.Text
-              
-            Case "A"
-              If IsLetter(Key.Text) Then sInsert = Key.Text
-            
-            Case "6"
-              If IsHexa(Key.Text) Then sInsert = Key.Text
-              
-            Case "?"
-              sInsert = Key.Text
-              
-          End Select
-          
-          If Not sInsert Then
-            iPosNext = GetNextSeparator(sText, iPos - 1)
-            sCar = String.Mid$($sSeparator, iPosNext + 1, 1)
-            If Key.Text <> sCar Then Goto DO_NOTHING
-            iPos = iPosNext
-          Endif
-          iMove = 1
-          
+        If Not sInsert Then
+          iPosNext = GetNextSeparator(sText, iPos - 1, Key.Text)
+          If iPosNext >= Me.Length Then Goto DO_NOTHING
+          iPos = iPosNext
         Endif
-        
+        iMove = 1
+          
       Endif
     
   End Select
@@ -293,7 +310,7 @@ Public Sub TextBox_KeyPress()
         iPos = GetLastCharacterPos()
         Break
       Endif
-      If IsMaskCharacter(String.Mid$($sMask, iPos + 1, 1)) Then Break
+      If $aMask[iPos] Then Break
     Loop
     
   Endif
@@ -301,7 +318,7 @@ Public Sub TextBox_KeyPress()
   If bDelete Then
     iPosNext = GetNextSeparator(sText, iPos)
     If iPosNext > iPos Then
-      sText = String.Left(sText, iPos) & String.Mid$(sText, iPos + 2, iPosNext - iPos - 1) & GetDefaultCharacter(iPosNext - 1) & String.Mid$(sText, iPosNext + 1)
+      sText = RTrim(String.Left(sText, iPos) & String.Mid$(sText, iPos + 2, iPosNext - iPos - 1) & GetDefaultCharacter(iPosNext - 1) & String.Mid$(sText, iPosNext + 1))
     Endif
   Endif
   
@@ -331,19 +348,20 @@ Private Sub MaskChar_Write(Value As String)
   Value = String.Left(Value)
   sText = Me.Text
   
-  For iPos = 1 To String.Len($sMask)
-    sCar = String.Mid$($sMask, iPos, 1)
-    If sCar = " " Or If Mid$(MASK_DEFAULT, InStr(MASK_CHARACTER, sCar), 1) <> "_" Then Continue
-    If String.Mid$(sText, iPos, 1) = GetDefaultCharacter(iPos - 1) Then aPos.Add(iPos)
+  For iPos = 0 To $aMask.Max
+    sCar = $aMask[iPos]
+    If Not sCar Or If String.Mid$($sDefault, iPos + 1, 1) <> "_" Then Continue
+    If String.Mid$(sText, iPos + 1, 1) = GetDefaultCharacter(iPos) Then aPos.Add(iPos)
   Next
   
   $sMaskChar = Value
+  UpdateMaskAndSeparator($sMaskOrg)
   
   For Each iPos In aPos
-    sText = String.Left(sText, iPos - 1) & GetDefaultCharacter(iPos - 1) & String.Mid$(sText, iPos + 1)
+    sText = String.Left(sText, iPos) & GetDefaultCharacter(iPos) & String.Mid$(sText, iPos + 2)
   Next
   
-  Me.Text = sText
+  Me.Text = RTrim(sText)
   Me.Pos = GetFirstCharacterPos()
 
 End

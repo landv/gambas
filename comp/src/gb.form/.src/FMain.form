@@ -8,7 +8,11 @@
   }
   { MaskBox1 MaskBox
     MoveScaled(6,18,24,4)
-    Mask = "IP: 999.999.999.999"
+    Alignment = Align.Right
+    Mask = "[0-9][0-9][0-9],00 €"
     MaskChar = " "
+  }
+  { DateBox1 DateBox
+    MoveScaled(8,5,19,4)
   }
 }
