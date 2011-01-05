@@ -380,6 +380,12 @@ void gControl::getScreenPos(int *x, int *y)
 	}
 	
 	gdk_window_get_origin(border->window, x, y);
+	
+	if (!gtk_widget_get_has_window(border))
+	{
+		*x += border->allocation.x;
+		*y += border->allocation.y;
+	}
 }
 
 int gControl::screenX()
@@ -1792,12 +1798,16 @@ bool gControl::hovered()
 
 bool gControl::setProxy(gControl *proxy)
 {
-	if (proxy)
+	gControl *check = proxy;
+
+	while (check)
 	{
-		if (proxy->_proxy || proxy->_proxy_for)
+		if (check == this)
 			return true;
-	}
 		
+		check = check->_proxy;
+	}
+	
 	if (_proxy)
 		_proxy->_proxy_for = NULL;
 	

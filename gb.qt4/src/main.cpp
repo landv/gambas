@@ -405,7 +405,7 @@ bool MyApplication::eventFilter(QObject *o, QEvent *e)
 				if (e->type() == QEvent::WindowActivate)
 				{
 					control = CWidget::getReal(widget);
-					//qDebug("WindowActivate: %p %s", widget, control ? control->name : "NULL");
+					qDebug("WindowActivate: %p %s", widget, control ? control->name : "NULL");
 					if (control)
 						CWIDGET_handle_focus(control, true);
 					else
@@ -414,7 +414,7 @@ bool MyApplication::eventFilter(QObject *o, QEvent *e)
 				else if (e->type() == QEvent::WindowDeactivate)
 				{
 					control = CWidget::getReal(widget);
-					//qDebug("WindowDeactivate: %p %s", widget, control ? control->name : "NULL");
+					qDebug("WindowDeactivate: %p %s", widget, control ? control->name : "NULL");
 					if (control)
 						CWIDGET_handle_focus(control, false);
 				}

@@ -71,6 +71,7 @@ public:
 	bool _model_dirty;
 	int _last_key;
 	GtkWidget *_button;
+	int _model_dirty_timeout;
 	
 	void updateModel();
 	void updateSort();

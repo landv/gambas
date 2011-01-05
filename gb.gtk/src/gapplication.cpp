@@ -443,7 +443,7 @@ static void gambas_handle_event(GdkEvent *event)
 		case GDK_2BUTTON_PRESS:
 		case GDK_BUTTON_RELEASE:
 			
-			if (control->_proxy_for)
+			while (control->_proxy_for)
 				control = control->_proxy_for;
 		
 		__BUTTON_TRY_PROXY:
@@ -498,7 +498,7 @@ static void gambas_handle_event(GdkEvent *event)
 			
 		case GDK_MOTION_NOTIFY:
 
-			if (control->_proxy_for)
+			while (control->_proxy_for)
 				control = control->_proxy_for;
 		
 		__MOTION_TRY_PROXY:
@@ -532,7 +532,7 @@ static void gambas_handle_event(GdkEvent *event)
 			
 		case GDK_SCROLL:
 			
-			if (control->_proxy_for)
+			while (control->_proxy_for)
 				control = control->_proxy_for;
 		
 		__SCROLL_TRY_PROXY:
@@ -574,6 +574,8 @@ static void gambas_handle_event(GdkEvent *event)
 			
 			if (gApplication::activeControl())
 				control = gApplication::activeControl();
+			
+			// TODO: proxy recursion
 			
 			if (control)
 			{

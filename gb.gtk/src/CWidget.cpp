@@ -816,7 +816,8 @@ BEGIN_PROPERTY(Control_Proxy)
 		CWIDGET *proxy = (CWIDGET *)VPROP(GB_OBJECT);
 		if (GB.CheckObject(proxy))
 			return;
-		CONTROL->setProxy(proxy->widget);
+		if (CONTROL->setProxy(proxy->widget))
+			GB.Error("Circular proxy chain");
 	}
 
 END_PROPERTY

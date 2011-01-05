@@ -231,6 +231,7 @@ gComboBox::gComboBox(gContainer *parent) : gTextBox(parent, true)
 	
 	_last_key = 0;
 	_model_dirty = false;
+	_model_dirty_timeout = 0;
 	sort = false;
 	border = widget = NULL;
 	entry = NULL;
@@ -249,9 +250,12 @@ gComboBox::gComboBox(gContainer *parent) : gTextBox(parent, true)
 
 gComboBox::~gComboBox()
 {
+	if (_model_dirty_timeout)
+		g_source_remove(_model_dirty_timeout);
+	
 	if (cell) g_object_unref(cell);
+	
 	delete tree;
-	//g_object_unref(G_OBJECT(tree->store));
 }
 
 void gComboBox::popup()
@@ -406,18 +410,26 @@ void gComboBox::setText(const char *vl)
 static gboolean combo_set_model_and_sort(gComboBox *combo)
 {
 	gtk_combo_box_set_model(GTK_COMBO_BOX(combo->widget), GTK_TREE_MODEL(combo->tree->store));
+	
 	if (combo->isSorted())
 		combo->tree->sort();
+	
 	combo->_model_dirty = false;
+	combo->_model_dirty_timeout = 0;
+	
 	if (combo->isReadOnly())
 		combo->checkIndex();
+	
 	return FALSE;
 }
 
 void gComboBox::updateModel()
 {
 	if (_model_dirty)
+	{
+		g_source_remove(_model_dirty_timeout);
 		combo_set_model_and_sort(this);
+	}
 }
 
 void gComboBox::updateSort()
@@ -426,8 +438,9 @@ void gComboBox::updateSort()
 		return;
 		
 	_model_dirty = true;
+	_model_dirty_timeout = g_timeout_add(0, (GSourceFunc)combo_set_model_and_sort, this);
+	
 	gtk_combo_box_set_model(GTK_COMBO_BOX(widget), NULL);
-	g_timeout_add(0, (GSourceFunc)combo_set_model_and_sort, this);
 }
 
 void gComboBox::add(const char *text, int pos)

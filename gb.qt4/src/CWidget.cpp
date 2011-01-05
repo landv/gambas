@@ -215,15 +215,18 @@ static bool is_visible(void *_object)
 
 static void register_proxy(void *_object, void *proxy)
 {
-	if (proxy)
+	void *check = proxy;
+
+	while (check)
 	{
-		if (((CWIDGET *)proxy)->proxy || ((CWIDGET *)proxy)->proxy_for)
+		if (check == THIS)
 		{
-			GB.Error("That control has a proxy or is already a proxy");
+			GB.Error("Circular proxy chain");	
 			return;
 		}
+		check = ((CWIDGET *)check)->proxy;
 	}
-		
+	
 	if (THIS->proxy)
 		((CWIDGET *)THIS->proxy)->proxy_for = NULL;
 	
@@ -1012,29 +1015,30 @@ BEGIN_METHOD(Control_Refresh, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEG
 
 END_METHOD
 
+static void set_focus(void *_object)
+{
+	CWINDOW *win;
 
-BEGIN_METHOD_VOID(Control_SetFocus)
-
-	CWINDOW *win = CWidget::getTopLevel(THIS);
+	while (THIS->proxy)
+		_object = THIS->proxy;
+	
+	win = CWidget::getTopLevel(THIS);
 
 	if (QWIDGET(win)->isVisible())
 	{
-		//qDebug("setFocus: now");
-		if (THIS->proxy)
-			_object = THIS->proxy;
-		
 		WIDGET->setFocus();
 	}
 	else if ((CWIDGET *)win != THIS)
 	{
-		//qDebug("setFocus: later");
-		if (THIS->proxy)
-			_object = THIS->proxy;
-
 		GB.Unref(POINTER(&win->focus));
 		win->focus = THIS;
 		GB.Ref(THIS);
 	}
+}
+
+BEGIN_METHOD_VOID(Control_SetFocus)
+
+	set_focus(THIS);
 
 END_METHOD
 
@@ -1954,6 +1958,8 @@ void CWidget::destroy()
 	if (ob == NULL)
 		return;
 
+	//qDebug("CWidget::destroy: (%s %p) %s", GB.GetClassName(ob), ob, ob->name);
+	
 	if (CWIDGET_active_control == ob)
 		CWIDGET_active_control = NULL;
 	if (_old_active_control == ob)
@@ -2006,14 +2012,24 @@ static void post_focus_change(void *)
 			break;
 
 		if (_old_active_control)
+		{
 			GB.Raise(_old_active_control, EVENT_LostFocus, 0);
+			// TODO: follow proxy chain
+			if (_old_active_control->proxy_for)
+				GB.Raise(_old_active_control->proxy_for, EVENT_LostFocus, 0);
+		}
 		
 		_old_active_control = current;
 		CWINDOW_activate(_old_active_control);
 		
 		if (current)
+		{
 			GB.Raise(current, EVENT_GotFocus, 0);
-	}
+			// TODO: follow proxy chain
+			if (current->proxy_for)
+				GB.Raise(current->proxy_for, EVENT_GotFocus, 0);
+		}
+}
 	
 	_focus_change = FALSE;
 }
@@ -2032,6 +2048,7 @@ void CWIDGET_handle_focus(CWIDGET *control, bool on)
 	if (on == (CWIDGET_active_control == control))
 		return;
 	
+	//qDebug("CWIDGET_handle_focus: %p %s %d", control, control->name, on);
 	CWIDGET_active_control = on ? control : NULL;
 	handle_focus_change();
 }
@@ -2158,7 +2175,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
   
 	__CONTEXT_MENU:
 	{
-		if (control->proxy_for)
+		while (control->proxy_for)
 			control = (CWIDGET *)control->proxy_for;
 
 	__MENU_TRY_PROXY:
@@ -2218,7 +2235,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			}
 		}
 		
-		if (control->proxy_for)
+		while (control->proxy_for)
 			control = (CWIDGET *)control->proxy_for;
 
 	__MOUSE_TRY_PROXY:
@@ -2366,6 +2383,8 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			
 		//qDebug("CWidget::eventFilter: KeyPress on %s %p", GB.GetClassName(control), control);
 
+		// TODO: follow proxy chain
+			
 		if (GB.CanRaise(control, event_id))
 		{
 			CKEY_clear(true);
@@ -2478,10 +2497,15 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		if (!original)
 			goto _DESIGN;
 
+		while (control->proxy_for)
+			control = (CWIDGET *)control->proxy_for;
+
+	__MOUSE_WHEEL_TRY_PROXY:
+		
 		if (GB.CanRaise(control, EVENT_MouseWheel))
 		{
 			// Automatic focus for wheel events
-			((QWidget *)widget)->setFocus();
+			set_focus(control);
 			
 			p.setX(ev->x());
 			p.setY(ev->y());
@@ -2499,6 +2523,12 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			cancel = GB.Raise(control, EVENT_MouseWheel, 0);
 
 			CMOUSE_clear(false);
+		}
+		
+		if (control->proxy)
+		{
+			control = (CWIDGET *)control->proxy;
+			goto __MOUSE_WHEEL_TRY_PROXY;
 		}
 		
 		goto __NEXT;
