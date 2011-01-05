@@ -716,7 +716,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Control_HasFocus)
 
-	if (THIS->proxy)
+	while (THIS->proxy)
 		_object = THIS->proxy;
 	
 	GB.ReturnBoolean(WIDGET->hasFocus());
