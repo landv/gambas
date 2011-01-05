@@ -2235,8 +2235,8 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			}
 		}
 		
-		while (control->proxy_for)
-			control = (CWIDGET *)control->proxy_for;
+		//while (control->proxy_for)
+		//	control = (CWIDGET *)control->proxy_for;
 
 	__MOUSE_TRY_PROXY:
 	
@@ -2330,9 +2330,9 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		if (cancel)
 			return true;
 		
-		if (control->proxy)
+		if (control->proxy_for)
 		{
-			control = (CWIDGET *)control->proxy;
+			control = (CWIDGET *)control->proxy_for;
 			goto __MOUSE_TRY_PROXY;
 		}
 		
@@ -2383,7 +2383,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			
 		//qDebug("CWidget::eventFilter: KeyPress on %s %p", GB.GetClassName(control), control);
 
-		// TODO: follow proxy chain
+	__KEY_TRY_PROXY:
 			
 		if (GB.CanRaise(control, event_id))
 		{
@@ -2408,8 +2408,6 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			}
 			#endif
 			
-			if (control->proxy_for)
-				cancel = GB.Raise(control->proxy_for, event_id, 0);
 			if (!cancel)
 				cancel = GB.Raise(control, event_id, 0);
 
@@ -2419,28 +2417,16 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 				return true;
 		}
 
+		if (control->proxy_for)
+		{
+			control = (CWIDGET *)control->proxy_for;
+			goto __KEY_TRY_PROXY;
+		}
+		
 		if (control->flag.grab && event_id == EVENT_KeyPress && kevent->key() == Qt::Key_Escape)
 			MyApplication::eventLoop->exit();
 
 		goto __NEXT;
-		
-	/*_ACCEL:
-
-		if (event_id == EVENT_KeyPress && CWINDOW_Main && ((QWidget *)widget)->isWindow())
-		{
-			//CWIDGET *top = CWidget::get(((QWidget *)widget)->topLevelWidget());
-			CWIDGET *top = CWidget::get((QWidget *)widget);
-
-			//qDebug("top = %p", top);
-
-			if (!CWINDOW_Current && top && top != (CWIDGET *)CWINDOW_Main && QWIDGET(CWINDOW_Main))
-			{
-				//qDebug("post Accel to %p", CWINDOW_Main);
-				//QMAINWINDOW(CWINDOW_Main)->setState(MyMainWindow::StateNormal);
-				qApp->postEvent(QWIDGET(CWINDOW_Main),
-					new QKeyEvent(QEvent::Accel, kevent->key(), kevent->ascii(), kevent->state(), kevent->text(), kevent->isAutoRepeat(), kevent->count()));
-			}
-		}*/
 	}
 	
 	__INPUT_METHOD:
@@ -2461,6 +2447,8 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	
 			event_id = EVENT_KeyPress;
 			cancel = false;
+			
+		__IM_TRY_PROXY:
 	
 			if (GB.CanRaise(control, event_id))
 			{
@@ -2482,6 +2470,12 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 				if (cancel)
 					return true;
 			}
+
+			if (control->proxy_for)
+			{
+				control = (CWIDGET *)control->proxy_for;
+				goto __IM_TRY_PROXY;
+			}
 		}
 		
 		goto __NEXT;
@@ -2496,9 +2490,6 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 
 		if (!original)
 			goto _DESIGN;
-
-		while (control->proxy_for)
-			control = (CWIDGET *)control->proxy_for;
 
 	__MOUSE_WHEEL_TRY_PROXY:
 		
@@ -2525,9 +2516,9 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			CMOUSE_clear(false);
 		}
 		
-		if (control->proxy)
+		if (control->proxy_for)
 		{
-			control = (CWIDGET *)control->proxy;
+			control = (CWIDGET *)control->proxy_for;
 			goto __MOUSE_WHEEL_TRY_PROXY;
 		}
 		

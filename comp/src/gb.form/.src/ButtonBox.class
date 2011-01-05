@@ -4,7 +4,7 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Action,Text,Picture,ReadOnly,Border=True"
+Public Const _Properties As String = "*,Action,Text,Picture,ReadOnly,Border=True,Button=True"
 Public Const _DefaultEvent As String = "Click"
 Public Const _DefaultSize As String = "24,4"
 Public Const _Similar As String = "TextBox"
@@ -19,6 +19,7 @@ Property Read Length As Integer
 Property ReadOnly As Boolean
 Property Border As Boolean
 Property Read Editor As TextBox
+Property Button As Boolean
 
 'Private $hPanel As Panel
 Private $hBackground As DrawingArea
@@ -154,8 +155,13 @@ Public Sub Background_Arrange()
   
   '$hBackground.Move(0, 0, $hPanel.W, $hPanel.H)
   Dim iPad As Integer = If($bBorder, 3, 0)
-  $hTextBox.Move(iPad, iPad, $hBackground.W - $hButton.W - iPad * 2, $hBackground.H - iPad * 2)
-  $hButton.Move($hBackground.W - $hButton.W - iPad, iPad, $hButton.W, $hBackground.H - iPad * 2)
+  
+  If $hButton.Visible Then
+    $hTextBox.Move(iPad, iPad, $hBackground.W - $hButton.W - iPad * 2, $hBackground.H - iPad * 2)
+    $hButton.Move($hBackground.W - $hButton.W - iPad, iPad, $hButton.W, $hBackground.H - iPad * 2)
+  Else
+    $hTextBox.Move(iPad, iPad, $hBackground.W - iPad * 2, $hBackground.H - iPad * 2)
+  Endif
   
 End
 
@@ -172,3 +178,15 @@ Private Function Editor_Read() As TextBox
 
 End
 
+
+Private Function Button_Read() As Boolean
+
+  Return $hButton.Visible
+
+End
+
+Private Sub Button_Write(Value As Boolean)
+
+  $hButton.Visible = Value
+
+End

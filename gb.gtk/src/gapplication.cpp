@@ -308,6 +308,7 @@ static void gambas_handle_event(GdkEvent *event)
 	int x, y, xc, yc;
 	bool real;
 	bool cancel;
+	int type;
 	
 	if (gApplication::_close_next_window)
 	{
@@ -429,6 +430,7 @@ static void gambas_handle_event(GdkEvent *event)
 			break;
 		
 		case GDK_LEAVE_NOTIFY:
+			
 			if (gdk_events_pending())
 				gApplication::_leave = control;
 			else
@@ -443,12 +445,16 @@ static void gambas_handle_event(GdkEvent *event)
 		case GDK_2BUTTON_PRESS:
 		case GDK_BUTTON_RELEASE:
 			
-			while (control->_proxy_for)
-				control = control->_proxy_for;
-		
+			switch ((int)event->type)
+			{
+				case GDK_BUTTON_PRESS: type = gEvent_MousePress; break;
+				case GDK_2BUTTON_PRESS: type = gEvent_MouseDblClick; break;
+				default: type = gEvent_MouseRelease; break;
+			}
+			
 		__BUTTON_TRY_PROXY:
 		
-			if (control->onMouseEvent)
+			if (control->onMouseEvent && control->canRaise(control, type))
 			{
 				control->getScreenPos(&xc, &yc);
 				x = (int)event->button.x_root - xc;
@@ -488,9 +494,9 @@ static void gambas_handle_event(GdkEvent *event)
 					control->onMouseEvent(control, gEvent_MouseMenu);
 			}
 			
-			if (control->_proxy)
+			if (control->_proxy_for)
 			{
-				control = control->_proxy;
+				control = control->_proxy_for;
 				goto __BUTTON_TRY_PROXY;
 			}
 			
@@ -498,12 +504,10 @@ static void gambas_handle_event(GdkEvent *event)
 			
 		case GDK_MOTION_NOTIFY:
 
-			while (control->_proxy_for)
-				control = control->_proxy_for;
-		
 		__MOTION_TRY_PROXY:
 		
-			if (control->onMouseEvent && (control->isTracking() || (event->motion.state & (GDK_BUTTON1_MASK | GDK_BUTTON2_MASK | GDK_BUTTON3_MASK))))
+			if (control->onMouseEvent && (control->canRaise(control, gEvent_MouseMove) || control->canRaise(control, gEvent_MouseDrag))
+					&& (control->isTracking() || (event->motion.state & (GDK_BUTTON1_MASK | GDK_BUTTON2_MASK | GDK_BUTTON3_MASK))))
 			{
 				control->getScreenPos(&xc, &yc);
 				x = (int)event->motion.x_root - xc;
@@ -522,9 +526,9 @@ static void gambas_handle_event(GdkEvent *event)
 				gMouse::invalidate();
 			}
 
-			if (control->_proxy)
+			if (control->_proxy_for)
 			{
-				control = control->_proxy;
+				control = control->_proxy_for;
 				goto __MOTION_TRY_PROXY;
 			}
 			
@@ -532,12 +536,9 @@ static void gambas_handle_event(GdkEvent *event)
 			
 		case GDK_SCROLL:
 			
-			while (control->_proxy_for)
-				control = control->_proxy_for;
-		
 		__SCROLL_TRY_PROXY:
 		
-			if (control->onMouseEvent)
+			if (control->onMouseEvent && control->canRaise(control, gEvent_MouseWheel))
 			{
 				int dt, ort;
 				
@@ -560,68 +561,76 @@ static void gambas_handle_event(GdkEvent *event)
 				gMouse::invalidate();
 			}
 
-			if (control->_proxy)
+			if (control->_proxy_for)
 			{
-				control = control->_proxy;
+				control = control->_proxy_for;
 				goto __SCROLL_TRY_PROXY;
 			}
 			
 			break;
 
 		case GDK_KEY_PRESS:
+		case GDK_KEY_RELEASE:
 		{
 			gMainWindow *win;
 			
 			if (gApplication::activeControl())
 				control = gApplication::activeControl();
 			
-			// TODO: proxy recursion
+			type =  (event->type == GDK_KEY_PRESS) ? gEvent_KeyPress : gEvent_KeyRelease;
 			
 			if (control)
 			{
+			__KEY_TRY_PROXY:
+			
 				win = control->window();
 				
 				if (!gKey::enable(control, &event->key))
 				{
 					if (gApplication::onKeyEvent)
-						cancel = gApplication::onKeyEvent(gEvent_KeyPress);
-					if (!cancel && control->_proxy_for && control->_proxy_for->onKeyEvent)
-					{
-						cancel = control->_proxy_for->onKeyEvent(control->_proxy_for, gEvent_KeyPress);
-					}
-					if (!cancel && control->onKeyEvent) 
+						cancel = gApplication::onKeyEvent(type);
+					if (!cancel && control->onKeyEvent && control->canRaise(control, type)) 
 					{
 						//fprintf(stderr, "gEvent_KeyPress on %p %s\n", control, control->name());
-						cancel = control->onKeyEvent(control, gEvent_KeyPress);
+						cancel = control->onKeyEvent(control, type);
 					}
 					if (!cancel)
-						cancel = raise_key_event_to_parent_window(control, gEvent_KeyPress);
+						cancel = raise_key_event_to_parent_window(control, type);
 				}
 				gKey::disable();
 				
 				if (cancel)
 					return;
 				
-				if (event->key.keyval == GDK_Escape)
+				if (control->_proxy_for)
 				{
-					if (control->_grab)
-					{
-						gApplication::exitLoop(control);
-						return;
-					}
-					
-					if (check_button(win->_cancel))
-					{
-						win->_cancel->animateClick(false);
-						return;
-					}
+					control = control->_proxy_for;
+					goto __KEY_TRY_PROXY;
 				}
-				else if (event->key.keyval == GDK_Return || event->key.keyval == GDK_KP_Enter)
+				
+				if (type == gEvent_KeyPress)
 				{
-					if (check_button(win->_default))
+					if (event->key.keyval == GDK_Escape)
 					{
-						win->_default->animateClick(false);
-						return;
+						if (control->_grab)
+						{
+							gApplication::exitLoop(control);
+							return;
+						}
+						
+						if (check_button(win->_cancel))
+						{
+							win->_cancel->animateClick(false);
+							return;
+						}
+					}
+					else if (event->key.keyval == GDK_Return || event->key.keyval == GDK_KP_Enter)
+					{
+						if (check_button(win->_default))
+						{
+							win->_default->animateClick(false);
+							return;
+						}
 					}
 				}
 			}
@@ -629,6 +638,7 @@ static void gambas_handle_event(GdkEvent *event)
 			break;
 		}
 			
+		#if 0
 		case GDK_KEY_RELEASE:
 		{
 			bool cancel = false;
@@ -672,6 +682,7 @@ static void gambas_handle_event(GdkEvent *event)
 			
 			break;
 		}
+		#endif
 	}
 	
 __HANDLE_EVENT:

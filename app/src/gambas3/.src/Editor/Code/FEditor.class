@@ -77,7 +77,7 @@ Private VIEWMODE_VERTICAL As Integer = 2
 Private $hEditor1 As Editor
 Private $hEditor2 As Editor
 
-Private $cProc As New Collection
+Private $cProc As New Collection(gb.IgnoreCase)
 Private $aProc As New String[]
 Private $iFirstProcLine As Integer
 
@@ -2685,7 +2685,7 @@ Private Sub FillProcCombo()
   
   'cmbProc.Clear
   
-  $cProc = New Collection
+  $cProc = New Collection(gb.IgnoreCase)
   $aProc = New String[]
   $iFirstProcLine = 1000000
   
