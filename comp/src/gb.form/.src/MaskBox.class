@@ -27,8 +27,8 @@ Property MaskChar As String
 'Private $hButton As ToolButton
 Private $hObserver As Observer
 
-Private Const MASK_CHARACTER As String = "90A"
-Private Const MASK_DEFAULT As String = "_0_"
+Private Const MASK_CHARACTER As String = "90A6?"
+Private Const MASK_DEFAULT As String = "_0___"
 Private $sMaskOrg As String
 Private $sMask As String
 Private $sSeparator As String
@@ -242,8 +242,14 @@ Public Sub TextBox_KeyPress()
             Case "9", "0"
               If IsDigit(Key.Text) Then sInsert = Key.Text
               
-            Case "a", "A"
+            Case "A"
               If IsLetter(Key.Text) Then sInsert = Key.Text
+            
+            Case "6"
+              If IsHexa(Key.Text) Then sInsert = Key.Text
+              
+            Case "?"
+              sInsert = Key.Text
               
           End Select
           
