@@ -251,7 +251,9 @@ static void set_selection(QLineEdit *textbox, int start, int length)
 
 static void get_selection(QLineEdit *textbox, int *start, int *length)
 {
-	*start = textbox->cursorPosition();
+	*start = textbox->selectionStart();
+	if (*start < 0)
+		*start = textbox->cursorPosition();
 	if (!textbox->hasSelectedText())
 		*length = 0;
 	else

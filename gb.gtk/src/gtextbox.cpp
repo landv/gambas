@@ -227,7 +227,7 @@ int gTextBox::selLength()
 		return 0;
 
 	gtk_editable_get_selection_bounds(GTK_EDITABLE(entry),&start,&end);
-	return start - end;
+	return end - start;
 }
 
 char* gTextBox::selText()

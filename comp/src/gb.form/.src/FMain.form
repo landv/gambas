@@ -1,10 +1,14 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,68,64)
+  MoveScaled(0,0,49,34)
   Margin = True
   { ButtonBox1 ButtonBox
-    MoveScaled(26,21,22,4)
-    Text = ("Ceci est un texte long")
+    MoveScaled(6,10,24,4)
+  }
+  { MaskBox1 MaskBox
+    MoveScaled(6,18,24,4)
+    Mask = "IP: 999.999.999.999"
+    MaskChar = " "
   }
 }

@@ -98,7 +98,7 @@ b
 
 Editor
 r
-TextBox
+MaskBox
 
 Button
 p
@@ -108,10 +108,6 @@ _new
 m
 
 
-_attach
-m
-
-(Parent)o(Name)s
 Button_Click
 m
 
@@ -1057,6 +1053,37 @@ m
 
 
 ScrollView_KeyPress
+m
+
+
+#MaskBox
+TextBox
+C
+_Properties
+C
+s
+*,Mask,MaskChar
+_Similar
+C
+s
+TextBox
+_DrawWith
+C
+s
+TextBox
+Mask
+p
+s
+
+MaskChar
+p
+s
+
+_new
+m
+
+
+TextBox_KeyPress
 m
 
 
