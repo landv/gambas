@@ -1,0 +1,62 @@
+' Gambas class file
+
+Private $sTable As String
+Private $sTrigger As String
+Private $bEdit As Boolean = False
+
+Public Sub _new(Table As String, Optional Trigger As String)
+
+  $sTable = Table
+  $sTrigger = Trigger
+  cmbTime.Add("AFTER")
+  cmbTime.Add("BEFORE")
+  cmbEvent.Add("DELETE")
+  cmbEvent.Add("INSERT")
+  cmbEvent.Add("UPDATE")
+  If Trigger Then
+    txtName.Text = Trigger
+    cmbTime.Text = modMain.$Connection.MySQL.Trigger.Time($sTrigger)
+    cmbEvent.Text = modMain.$Connection.MySQL.Trigger.Event($sTrigger)
+    $bEdit = True
+  Endif
+
+End
+
+Public Sub Form_Open()
+
+  If $bEdit Then
+    Me.Text = ("Edit Trigger")
+    lblTitle.Text = Me.Text
+    txtName.Enabled = False
+  Endif
+  If $sTrigger Then txtData.Text = modMain.$Connection.MySQL.Trigger.Info($sTrigger)
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close()
+
+End
+
+Public Sub tbnOK_Click()
+
+  If $bEdit Then
+    modMain.$Connection.MySQL.Trigger.Modify($sTrigger, $sTable, cmbTime.Text, cmbEvent.Text, txtData.Text)
+  Else
+    modMain.$Connection.MySQL.Trigger.Add(txtName.Text, $sTable, cmbTime.Text, cmbEvent.Text, txtData.Text)
+  Endif
+  Me.Close()
+  Catch
+    modMain.Error()
+
+End
+
+Public Sub btnClue_Click()
+
+  txtName.Text = "FooTrigger"
+  cmbEvent.Index = 0
+  cmbTime.Index = 0
+  txtData.Text = "BEGIN\n  INSERT INTO `MyTABLE` VALUES ('VALUES');\nEND)"
+
+End

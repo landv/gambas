@@ -1,0 +1,55 @@
+' Gambas class file
+
+Private $sTable As String
+Private $bEdit As Boolean = False
+
+Public Sub _new(Optional Table As String)
+
+  If Table Then
+    $sTable = Table
+    $bEdit = True
+  Endif
+  txtName.Text = $sTable
+
+End
+
+Public Sub Form_Open()
+
+  cmbEngine.List = modMain.$Connection.MySQL.Engines
+  cmbCharset.List = modMain.$Connection.MySQL.Charsets
+  If $bEdit Then
+    Me.Text = ("Edit Table")
+    lblTitle.Text = Me.Text
+    txtName.Enabled = False
+    cmbEngine.Index = cmbEngine.Find(modMain.$Connection.MySQL.Table.Engine($sTable))
+    cmbCharset.Index = cmbCharset.Find(modMain.$Connection.MySQL.Table.Charset($sTable))
+  Else
+    cmbEngine.Index = cmbEngine.Find("InnoDB")
+    cmbCharset.Index = cmbCharset.Find("utf8")
+  Endif
+  Catch
+    modMain.Error()
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close()
+
+End
+
+Public Sub tbnOK_Click()
+
+  If $bEdit Then
+    modMain.$Connection.MySQL.Table.Modify($sTable,, cmbEngine.Text, cmbCharset.Text)
+  Else
+    modMain.$Connection.MySQL.Field.Add("Field01", modMain.$Connection.MySQL.DataTypes.Serial)
+    modMain.$Connection.MySQL.Table.Add(txtName.Text, cmbEngine.Text, cmbCharset.Text)
+  Endif
+  modMain.$hFBrowser.LoadDatabases()
+  modMain.$hFTables.SearchInfo()
+  Me.Close()
+  Catch
+    modMain.Error()
+
+End

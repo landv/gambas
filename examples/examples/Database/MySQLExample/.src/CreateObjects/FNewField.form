@@ -1,0 +1,77 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,40,37)
+  Text = ("Add Field")
+  Icon = Picture["icons/16/Field.png"]
+  { lblTitle Label
+    MoveScaled(1,1,38,5)
+    Font = Font["+4"]
+    Background = Color.LightBackground
+    Text = ("Add Field")
+    Alignment = Align.Center
+    Border = Border.Sunken
+  }
+  { lblName Label
+    MoveScaled(1,8,11,3)
+    Font = Font["+1"]
+    Text = ("Name:")
+  }
+  { txtName TextBox
+    MoveScaled(13,8,26,3)
+  }
+  { lblDatatype Label
+    MoveScaled(1,12,15,3)
+    Font = Font["+1"]
+    Text = ("Data Type:")
+  }
+  { txtDatatype TextBox
+    MoveScaled(17,12,22,3)
+  }
+  { lblNull Label
+    MoveScaled(1,16,15,3)
+    Font = Font["+1"]
+    Text = ("Acepts NULLs:")
+  }
+  { cmbNull ComboBox
+    MoveScaled(17,16,8,3)
+    ReadOnly = True
+    List = [("No"), ("Yes")]
+  }
+  { lblDefault Label
+    MoveScaled(1,20,11,3)
+    Font = Font["+1"]
+    Text = ("Default:")
+  }
+  { txtDefault TextBox
+    MoveScaled(13,20,26,3)
+  }
+  { lblExtra Label
+    MoveScaled(1,24,11,3)
+    Font = Font["+1"]
+    Text = ("Extra:")
+  }
+  { txtExtra TextBox
+    MoveScaled(13,24,26,3)
+  }
+  { lblComment Label
+    MoveScaled(1,28,15,3)
+    Font = Font["+1"]
+    Text = ("Comment:")
+  }
+  { txtComment TextBox
+    MoveScaled(17,28,22,3)
+  }
+  { tbnOK Button
+    MoveScaled(1,32,13,4)
+    Text = ("&Ok")
+    Picture = Picture["icon:/16/ok"]
+    Default = True
+  }
+  { btnCancel Button
+    MoveScaled(26,32,13,4)
+    Text = ("&Cancel")
+    Picture = Picture["icon:/16/cancel"]
+    Cancel = True
+  }
+}

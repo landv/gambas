@@ -1,0 +1,45 @@
+' Gambas class file
+
+Private $bEdit As Boolean = False
+
+Public Sub _new(Optional View As String)
+
+  If View Then
+    txtName.Text = View
+    $bEdit = True
+    txtData.Text = modMain.$Connection.MySQL.View.Definition(txtName.Text) & "\n"
+    Endif
+
+End
+
+Public Sub Form_Open()
+
+  If $bEdit Then
+    Me.Text = ("Edit View")
+    lblTitle.Text = Me.Text
+    txtName.Enabled = False
+  Endif
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close()
+
+End
+
+Public Sub tbnOK_Click()
+
+  modMain.$Connection.MySQL.View.Add(txtName.Text, txtData.Text, $bEdit)
+  Me.Close()
+  Catch
+    modMain.Error()
+
+End
+
+Public Sub btnClue_Click()
+
+  txtName.Text = "FooView"
+  txtData.Text = "SELECT * FROM `mysql`.`user`"
+
+End

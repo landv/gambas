@@ -1,0 +1,70 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,36,46)
+  Text = ("Create Index")
+  Icon = Picture["icons/16/Index.png"]
+  Resizable = False
+  { mnuDelete Menu
+    Text = ("Delete")
+    Visible = False
+    { mnuDelete2 Menu
+      Action = "Delete"
+      Text = ("Delete")
+      Picture = Picture["icon:/16/trash"]
+      Shortcut = "Del"
+    }
+  }
+  { lblTitle Label
+    MoveScaled(1,1,34,5)
+    Font = Font["+4"]
+    Background = Color.LightBackground
+    Text = ("Create Index")
+    Alignment = Align.Center
+  }
+  { lblName Label
+    MoveScaled(1,8,11,3)
+    Font = Font["+1"]
+    Text = ("Name:")
+  }
+  { txtName TextBox
+    MoveScaled(13,8,22,3)
+  }
+  { lblFields Label
+    MoveScaled(1,12,11,3)
+    Font = Font["+1"]
+    Text = ("Fields:")
+  }
+  { lstFields ListBox
+    MoveScaled(13,12,22,19)
+  }
+  { cmbFields ComboBox
+    MoveScaled(13,32,22,3)
+  }
+  { chkPrimaryKey CheckBox
+    MoveScaled(1,37,34,3)
+    Text = ("Primary Key")
+  }
+  { tbnOK Button
+    MoveScaled(1,41,13,4)
+    Text = ("&Ok")
+    Picture = Picture["icon:/16/ok"]
+    Default = True
+  }
+  { btnCancel Button
+    MoveScaled(22,41,13,4)
+    Text = ("&Cancel")
+    Picture = Picture["icon:/16/cancel"]
+    Cancel = True
+  }
+}
+
+# Gambas Action File 3.0
+
+{ Actions
+  { Action Delete
+    Text = "Delete"
+    Shortcut = "Del"
+    Picture = "icon:/16/trash"
+  }
+}

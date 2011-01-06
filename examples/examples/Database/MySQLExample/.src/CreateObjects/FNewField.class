@@ -1,0 +1,53 @@
+' Gambas class file
+
+Private $sTable As String
+Private $sFlied As String
+Private $bEdit As Boolean = False
+
+Public Sub _new(Table As String, Optional Field As String)
+
+  If Field Then
+    $sFlied = Field
+    $bEdit = True
+  Endif
+  $sTable = Table
+
+End
+
+Public Sub Form_Open()
+
+  txtName.Text = $sFlied
+  If $bEdit Then
+    txtName.Enabled = False
+    Me.Text = ("Edit Field")
+    lblTitle.Text = Me.Text
+    txtDatatype.Text = modMain.$Connection.MySQL.Field.FieldEspecifications($sFlied, $sTable).Datatype()
+    txtComment.Text = modMain.$Connection.MySQL.Field.FieldEspecifications($sFlied, $sTable).Commnet()
+    txtDefault.Text = modMain.$Connection.MySQL.Field.FieldEspecifications($sFlied, $sTable).DefaultValue()
+    txtExtra.Text = modMain.$Connection.MySQL.Field.FieldEspecifications($sFlied, $sTable).Extra()
+    cmbNull.Index = CInt(modMain.$Connection.MySQL.Field.FieldEspecifications($sFlied, $sTable).IsNullable())
+  Endif
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close()
+
+End
+
+Public Sub tbnOK_Click()
+
+  Dim sDefinition As String
+
+  sDefinition = txtDatatype.Text & " "
+  If cmbNull.Index = 0 Then sDefinition &= "NOT NULL"
+  If txtDefault.Text <> "" Then sDefinition &= " DEFAULT '" & txtDefault.Text & "'"
+  If txtExtra.Text <> "" Then sDefinition &= " " & txtExtra.Text
+  If txtComment.Text <> "" Then sDefinition &= " COMMENT '" & txtComment.Text & "'"
+  modMain.$Connection.MySQL.Table.ModifyColumn($sTable, IIf($bEdit, "MODIFY", "ADD"), txtName.Text, sDefinition)
+  Me.Close()
+  Catch
+    modMain.Error()
+
+End

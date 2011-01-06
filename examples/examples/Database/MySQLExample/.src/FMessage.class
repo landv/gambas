@@ -1,0 +1,21 @@
+' Gambas class file
+
+Public Sub _new(Message As String)
+
+  txaMesage.Text = Message
+
+End
+
+Public Sub Form_KeyPress()
+
+  If Key.Code = Key.Esc Then Me.Close()
+
+End
+
+Public Sub txaMesage_KeyPress()
+
+  If Key.Code = 81 Then '81 is q (in lowercase)
+    If Key.Alt Then txaMesage.Text &= "\n\n\n" & modMain.$Connection.MySQL.Query
+  Endif
+
+End

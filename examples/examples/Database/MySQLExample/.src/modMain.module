@@ -1,0 +1,69 @@
+' Gambas module file
+
+Public $Connection As New Connection
+Public $hResult As Result
+Public $Host As String
+Public $Password As String
+Public $Port As String
+Public $User As String
+Public $bSchemaOk As Boolean = True
+Public $hFTables As FTables
+Public $hFNewTable As FNewTable
+Public $hFNewView As FNewView
+Public $hFNewDatabase As FNewDatabase
+Public $hFNewIndex As FNewIndex
+Public $hFNewRoutine As FNewRoutine
+Public $hFMessage As FMessage
+Public $hFNewTrigger As FNewTrigger
+Public $hFNewField As FNewField
+Public $hFNewEvent As FNewEvent
+Public $hFConnect As FConnect
+
+Public Procedure Main()
+
+  $hFConnect = New FConnect
+  If $hFConnect.ShowModal() Or Not $Host Or Not $Password Or Not $Port Or Not $User Then Return
+  With $Connection
+    .Type = "mysql"
+    .Name = "mysql"
+    .Host = $Host
+    .Password = $Password
+    .Port = $Port
+    .User = $User
+    .Open()
+  End With
+  If Not $Connection.Opened Then Return
+  If CInt($Connection.MySQL.Version.MinorVersion()) < 1 Then
+    $bSchemaOk = False
+    Message.Warning("Seems that your MySQL version is lower than 5.1.\ntherefore you will get some error and warning messages.")
+  Endif
+  Try $Connection.MySQL.Use(Settings["/General/LastDatabase", "mysql"])
+  $hFTables = New FTables
+  $hFTables.ShowModal()
+  Catch
+    Message.Error(Error.Where & "::" & Error.Text)
+
+End
+
+Public Procedure Error(Optional Message As String)
+
+  Dec Application.Busy
+  If Error.Text Like "*MySQL server has gone away" Then
+    $Connection.Close()
+    $Connection = Null
+    $Connection = New Connection
+    With $Connection
+      .Type = "mysql"
+      .Name = "mysql"
+      .Host = $Host
+      .Password = $Password
+      .Port = $Port
+      .User = $User
+      .Open()
+    End With
+  Endif
+  If Not Message Then Message = Error.Where & "::" & Error.Text
+  modMain.$hFMessage = New FMessage(Message)
+  modMain.$hFMessage.ShowModal()
+
+End
