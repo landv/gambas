@@ -88,6 +88,15 @@ Public Sub Begin()
   
 End
 
+Private Sub ShouldCompress() As Boolean
+  
+  If $sContentType = "image/jpeg" Then Return False
+  If $sContentType = "image/png" Then Return False
+  Return True
+  
+End
+
+
 Public Sub End()
   
   Dim sBuffer As String
@@ -104,11 +113,14 @@ Public Sub End()
     
     sFile = Temp$("response")
     
-    If Split(CGI["HTTP_ACCEPT_ENCODING"], ",").Exist("gzip*", gb.Like) Then
-      If Stat(sFile).Size >= 128 Then
-        AddHeader("Content-Encoding", "gzip")
-        Exec ["gzip", "-9", sFile] Wait
-        If Exist(sFile & ".gz") Then sFile &= ".gz"
+    If ShouldCompress() Then
+      If Split(CGI["HTTP_ACCEPT_ENCODING"], ",").Exist("gzip*", gb.Like) Then
+        If Stat(sFile).Size >= 128 Then
+          AddHeader("Content-Encoding", "gzip")
+          AddHeader("Vary", "Accept-Encoding")
+          Exec ["gzip", "-9", sFile] Wait
+          If Exist(sFile & ".gz") Then sFile &= ".gz"
+        Endif
       Endif
     Endif
 
