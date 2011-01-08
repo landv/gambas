@@ -25,12 +25,14 @@
 #include "gb.image.h"
 #include "matrix.h"
 #include "main.h"
+#include "cpaint.h"
 #include "CDraw.h"
 
 static GB_DRAW *_current = NULL;
 #define THIS _current
 #define DRAW _current->desc
 #define THIS_MATRIX ((MATRIX *)&(THIS->matrix))
+#define CHECK_DEVICE() if (check_device()) return
 
 static bool check_device()
 {
@@ -43,19 +45,55 @@ static bool check_device()
 		return FALSE;
 }
 
+GB_DRAW *DRAW_from_device(void *device)
+{
+	GB_DRAW *d;
+	
+	for (d = _current; d; d = d->previous)
+	{
+		if (d->device == device && d->opened)
+			break;
+	}
+	
+	return d;
+}
+
 PUBLIC GB_DRAW *DRAW_get_current()
 {
 	check_device();
 	return _current;
 }
 
-#define CHECK_DEVICE() if (check_device()) return
+bool DRAW_open(GB_DRAW *draw)
+{
+	if (draw->opened)
+		return FALSE;
+	
+	//fprintf(stderr, "DRAW_open: %p\n", draw);
+	GB.Alloc(POINTER(&draw->extra), draw->desc->size);
+	memset(draw->extra, 0, draw->desc->size);
+		
+	draw->opened = !draw->desc->Begin(draw);
+	return !draw->opened;
+}
+
+void DRAW_close(GB_DRAW *draw)
+{
+	if (draw->opened)
+	{
+		//fprintf(stderr, "DRAW_close: %p\n", draw);
+		draw->desc->End(draw);
+		GB.Free(POINTER(&draw->extra));
+		draw->opened = FALSE;
+	}
+}
 
 bool DRAW_begin(void *device)
 {
 	GB_DRAW_DESC *desc;
 	GB_DRAW *draw;
 	GB_CLASS klass;
+	GB_DRAW *other;
 	
 	klass = GB.GetClass(device);
 	if (klass == GB.FindClass("Class"))
@@ -75,28 +113,59 @@ bool DRAW_begin(void *device)
 	}
 
 	GB.Alloc(POINTER(&draw), sizeof(GB_DRAW));
-	GB.Alloc(POINTER(&draw->extra), desc->size);
-	memset(draw->extra, 0, desc->size);
 
+	other = DRAW_from_device(device);
+	
 	draw->desc = desc;
-	draw->previous = _current;
 	GB.Ref(device);
 	draw->device = device;
-	_current = draw;
-	
-	MATRIX_init(THIS_MATRIX);
+	MATRIX_init(&draw->matrix);
 	draw->save = NULL;
+	draw->opened = FALSE;
 	draw->xform = FALSE;
 	
-	if (!draw->desc->Begin(draw))
+	draw->previous = _current;
+	_current = draw;
+	
+	draw->paint = PAINT_from_device(device);
+	if (draw->paint)
+		PAINT_close(draw->paint);
+	
+	if (other)
 	{
+		draw->extra = other->extra;
+	}
+	else
+	{
+		if (DRAW_open(draw))
+			return TRUE;
+		
 		DRAW->SetBackground(draw, GB_DRAW_COLOR_DEFAULT);
 		DRAW->SetForeground(draw, GB_DRAW_COLOR_DEFAULT);
 		DRAW->Fill.SetColor(draw, GB_DRAW_COLOR_DEFAULT);
-		return FALSE;
 	}
-	else
-		return TRUE;
+
+	return FALSE;
+}
+
+
+void DRAW_end()
+{
+	GB_DRAW *draw;
+
+	if (!_current)
+		return;
+		
+	draw = _current;
+	_current = _current->previous;
+	
+	DRAW_close(draw);
+	
+	if (draw->paint)
+		PAINT_open(draw->paint);
+	
+	GB.Unref(POINTER(&draw->device));
+	GB.Free(POINTER(&draw));
 }
 
 
@@ -110,24 +179,6 @@ BEGIN_METHOD(CDRAW_begin, GB_OBJECT device)
 	DRAW_begin(device);
 
 END_METHOD
-
-
-void DRAW_end()
-{
-	GB_DRAW *draw;
-
-	if (!_current)
-		return;
-		
-	draw = _current;
-	_current = _current->previous;
-	
-	draw->desc->End(draw);
-	
-	GB.Unref(POINTER(&draw->device));
-	GB.Free(POINTER(&draw->extra));
-	GB.Free(POINTER(&draw));
-}
 
 
 BEGIN_METHOD_VOID(CDRAW_end)

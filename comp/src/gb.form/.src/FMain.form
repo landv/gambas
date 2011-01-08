@@ -3,16 +3,22 @@
 { Form Form
   MoveScaled(0,0,49,34)
   Margin = True
-  { ButtonBox1 ButtonBox
-    MoveScaled(6,10,24,4)
-  }
   { MaskBox1 MaskBox
-    MoveScaled(6,18,24,4)
+    MoveScaled(11,6,24,4)
     Alignment = Align.Right
-    Mask = "[0-9][0-9][0-9],00 €"
+    Mask = "9999999!<,00 €"
     MaskChar = " "
   }
   { DateBox1 DateBox
-    MoveScaled(8,5,19,4)
+    MoveScaled(18,18,18,4)
+  }
+  { ButtonBox1 ButtonBox
+    MoveScaled(11,25,24,4)
+  }
+  { MaskBox2 MaskBox
+    MoveScaled(12,12,24,4)
+    Alignment = Align.Right
+    Mask = "00</00</0000<"
+    MaskChar = " "
   }
 }

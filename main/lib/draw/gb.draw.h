@@ -82,9 +82,12 @@ typedef
 		int width;                         // device width in device coordinates
 		int height;                        // device height in device coordinates
 		int resolution;                    // device resolution in DPI
-		int xform;                         // if the matrix must be used
+		unsigned xform : 1;                // if the matrix must be used
+		unsigned opened : 1;               // if the drawing has been opened
+		unsigned _reserved : 30;
 		GB_MATRIX matrix;                  // transformation matrix (do not manage rotations)
 		GB_MATRIX *save;                   // transformation matrix stack
+		void *paint;                       // if the device was painted before calling Draw.Begin
 		void *extra;                       // driver-specific state
 	}
 	PACKED

@@ -144,7 +144,7 @@ void MyDrawingArea::redraw(QRect &r, bool frame)
 		p->translate(-r.x(), -r.y());
 	}*/
 	
-	//p->save();
+	p->save();
 	
 	if (!_use_paint)
 	{
@@ -159,11 +159,10 @@ void MyDrawingArea::redraw(QRect &r, bool frame)
 	
 	GB.Raise(THIS, EVENT_draw, 0);
 		
-	//p->restore();
+	p->restore();
 	
 	if (frame)
 	{
-		p->setClipping(false);
 		p->initFrom(this);
 		p->setRenderHint(QPainter::Antialiasing, false);
 		drawFrame(p);

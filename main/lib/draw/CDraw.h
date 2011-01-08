@@ -35,7 +35,10 @@ extern GB_DESC CDrawStyleDesc[];
 #endif
 
 GB_DRAW *DRAW_get_current();
+GB_DRAW *DRAW_from_device(void *device);
 bool DRAW_begin(void *device);
 void DRAW_end();
+bool DRAW_open(GB_DRAW *draw);
+void DRAW_close(GB_DRAW *draw);
 
 #endif

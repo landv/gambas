@@ -934,6 +934,8 @@ static void add_string()
 					*p = '\f';
 				else if (car == 'e')
 					*p = '\x1B';
+				else if (car == '0')
+					*p = 0;
 				else if (car == '\"' || car == '\'' || car == '\\')
 					*p = car;
 				else

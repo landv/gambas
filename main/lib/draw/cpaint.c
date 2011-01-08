@@ -24,6 +24,7 @@
 
 #include "gb.image.h"
 #include "main.h"
+#include "CDraw.h"
 #include "cpaint.h"
 
 static GB_PAINT *_current = NULL;
@@ -37,6 +38,8 @@ static GB_PAINT *_current = NULL;
 
 #define BTHIS ((PAINT_BRUSH *)_object)
 #define BPAINT (BTHIS->desc)
+
+#define CHECK_DEVICE() if (check_device()) return
 
 static bool check_device()
 {
@@ -55,12 +58,46 @@ GB_PAINT *PAINT_get_current()
 	return _current;
 }
 
-#define CHECK_DEVICE() if (check_device()) return
+GB_PAINT *PAINT_from_device(void *device)
+{
+	GB_PAINT *d;
+	
+	for (d = _current; d; d = d->previous)
+	{
+		if (d->device == device && d->opened)
+			break;
+	}
+	
+	return d;
+}
+
+bool PAINT_open(GB_PAINT *paint)
+{
+	if (paint->opened)
+		return FALSE;
+	
+	//fprintf(stderr, "PAINT_open: %p\n", paint);
+	GB.Alloc(POINTER(&paint->extra), paint->desc->size);
+	memset(paint->extra, 0, paint->desc->size);
+	paint->opened = !paint->desc->Begin(paint);
+	return !paint->opened;
+}
+
+void PAINT_close(GB_PAINT *paint)
+{
+	if (paint->opened)
+	{
+		//fprintf(stderr, "PAINT_close: %p\n", paint);
+		paint->desc->End(paint);
+		GB.Free(POINTER(&paint->extra));
+		paint->opened = FALSE;
+	}
+}
 
 bool PAINT_begin(void *device)
 {
 	GB_PAINT_DESC *desc;
-	GB_PAINT *paint;
+	GB_PAINT *paint, *other;
 	GB_CLASS klass;
 	
 	klass = GB.GetClass(device);
@@ -73,23 +110,32 @@ bool PAINT_begin(void *device)
 	}
 
 	GB.Alloc(POINTER(&paint), sizeof(GB_PAINT));
-	GB.Alloc(POINTER(&paint->extra), desc->size);
-	memset(paint->extra, 0, desc->size);
+	
+	other = PAINT_from_device(device);
 	
 	paint->desc = desc;
-	paint->previous = _current;
 	GB.Ref(device);
 	paint->device = device;
 	paint->brush = NULL;
+	paint->opened = FALSE;
 
+	paint->previous = _current;
 	_current = paint;
 	
-	if (PAINT->Begin(paint))
-		return TRUE;
+	paint->draw = DRAW_from_device(device);
+	if (paint->draw)
+		DRAW_close(paint->draw);
 	
-	//DRAW->SetBackground(draw, GB_PAINT_COLOR_DEFAULT);
-	//DRAW->SetForeground(draw, GB_PAINT_COLOR_DEFAULT);
-	//DRAW->Fill.SetColor(draw, GB_PAINT_COLOR_DEFAULT);
+	if (other)
+	{
+		paint->extra = other->extra;
+	}
+	else
+	{
+		if (PAINT_open(paint))
+			return TRUE;
+	}
+	
 	return FALSE;
 }
 
@@ -103,12 +149,14 @@ void PAINT_end()
 	paint = _current;
 	_current = _current->previous;
 	
-	paint->desc->End(paint);
+	PAINT_close(paint);
 
+	if (paint->draw)
+		DRAW_open(paint->draw);
+	
 	if (paint->brush)
 		GB.Unref(POINTER(&paint->brush));
 	GB.Unref(POINTER(&paint->device));
-	GB.Free(POINTER(&paint->extra));
 	GB.Free(POINTER(&paint));
 }
 

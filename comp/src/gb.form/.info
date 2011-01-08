@@ -51,7 +51,7 @@ C
 _Properties
 C
 s
-*,Action,Text,Picture,ReadOnly,Border=True,Button=True
+*,Action,Text,Alignment{Align.Normal;Left;Center;Right}=Normal,Picture,ReadOnly,Border=True,Button=True
 _DefaultEvent
 C
 s
@@ -103,6 +103,10 @@ MaskBox
 Button
 p
 b
+
+Alignment
+p
+i
 
 _new
 m
@@ -1084,6 +1088,10 @@ m
 
 
 TextBox_KeyPress
+m
+
+
+TextBox_GotFocus
 m
 
 

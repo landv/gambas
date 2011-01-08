@@ -4,7 +4,7 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Action,Text,Picture,ReadOnly,Border=True,Button=True"
+Public Const _Properties As String = "*,Action,Text,Alignment{Align.Normal;Left;Center;Right}=Normal,Picture,ReadOnly,Border=True,Button=True"
 Public Const _DefaultEvent As String = "Click"
 Public Const _DefaultSize As String = "24,4"
 Public Const _Similar As String = "TextBox"
@@ -20,6 +20,7 @@ Property ReadOnly As Boolean
 Property Border As Boolean
 Property Read Editor As MaskBox
 Property Button As Boolean
+Property Alignment As Integer
 
 'Private $hPanel As Panel
 Private $hBackground As DrawingArea
@@ -42,7 +43,7 @@ Public Sub _new()
   Me.Proxy = $hTextBox
   
   $hButton = New ToolButton($hBackground) As "Button"
-  $hButton.W = Desktop.Scale * 4
+  $hButton.W = 24
   $hButton.Picture = Picture["./img/select.png"]
   
 End
@@ -174,5 +175,17 @@ End
 Private Sub Button_Write(Value As Boolean)
 
   $hButton.Visible = Value
+
+End
+
+Private Function Alignment_Read() As Integer
+
+  Return $hTextBox.Alignment
+
+End
+
+Private Sub Alignment_Write(Value As Integer)
+
+  $hTextBox.Alignment = Value
 
 End

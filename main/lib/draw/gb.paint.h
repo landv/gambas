@@ -114,6 +114,8 @@ typedef
 		int resolutionX;                   // device horizontal resolution in DPI
 		int resolutionY;                   // device vertical resolution in DPI
 		PAINT_BRUSH *brush;                // current brush
+		unsigned opened : 1;               // if the painting has been opened
+		void *draw;                        // if the device was drawn when calling Paint.Begin
 		void *extra;                       // driver-specific state
 	}
 	GB_PAINT;

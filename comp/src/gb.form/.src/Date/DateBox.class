@@ -36,6 +36,7 @@ Public Sub _new()
   $hButtonBox = New ButtonBox(Me) As "ButtonBox"
   $hButtonBox.Picture = Picture["icon:/small/calendar"]
   $hButtonBox.Editor.Mask = Replace(Format(Date(1111, 11, 11), gb.ShortDate), "1", "0")
+  $hButtonBox.Alignment = Align.Right
   
   $hPopup = New Window As "PopupWindow"
   $hPopup.Persistent = True
