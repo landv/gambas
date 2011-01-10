@@ -80,7 +80,7 @@ typedef
 typedef
   struct {
     TYPE type;
-    void *value;
+    char *value;
     }
   PACKED
   VALUE_POINTER;

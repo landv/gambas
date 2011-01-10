@@ -1553,7 +1553,8 @@ _ADD_QUICK:
 
 	{
 		static void *_aq_jump[] = {
-			NULL, &&__AQ_BOOLEAN, &&__AQ_BYTE, &&__AQ_SHORT, &&__AQ_INTEGER, &&__AQ_LONG, &&__AQ_SINGLE, &&__AQ_FLOAT, &&__AQ_DATE, &&__AQ_STRING, &&__AQ_STRING
+			NULL, &&__AQ_BOOLEAN, &&__AQ_BYTE, &&__AQ_SHORT, &&__AQ_INTEGER, &&__AQ_LONG, &&__AQ_SINGLE, &&__AQ_FLOAT, 
+			&&__AQ_DATE, &&__AQ_STRING, &&__AQ_STRING, &&__AQ_POINTER
 			};
 	
 		TYPE NO_WARNING(type);
@@ -1574,7 +1575,7 @@ _ADD_QUICK:
 		type = P1->type;
 		value = GET_XXX();
 	
-		if (LIKELY(type <= T_CSTRING))
+		if (LIKELY(type <= T_POINTER))
 			goto *_aq_jump[type];
 		else
 			THROW(E_TYPE, "Number", TYPE_get_name(type));
@@ -1618,6 +1619,11 @@ _ADD_QUICK:
 	__AQ_FLOAT:
 	
 		P1->_float.value += (double)value;
+		goto *jump_end;
+	
+	__AQ_POINTER:
+	
+		P1->_pointer.value += value;
 		goto *jump_end;
 	
 	__AQ_VARIANT_END:
@@ -2433,11 +2439,43 @@ static void my_VALUE_class_constant(CLASS *class, VALUE *value, int ind)
 	} \
 })
 
+#define MANAGE_VARIANT_POINTER(_func) \
+({ \
+	type = Max(P1->type, P2->type); \
+	\
+	if (TYPE_is_number_date(type) || TYPE_is_pointer(type)) \
+	{ \
+		*PC |= type; \
+		goto *jump[type]; \
+	} \
+	\
+	VARIANT_undo(P1); \
+	VARIANT_undo(P2); \
+	\
+	if (TYPE_is_string(P1->type)) \
+		VALUE_conv_float(P1); \
+	\
+	if (TYPE_is_string(P2->type)) \
+		VALUE_conv_float(P2); \
+	\
+	if (TYPE_is_null(P1->type) || TYPE_is_null(P2->type)) \
+		type = T_NULL; \
+	else \
+		type = Max(P1->type, P2->type); \
+	\
+	if (TYPE_is_number_date(type) || TYPE_is_pointer(type)) \
+	{ \
+		(_func)(code | type); \
+		VALUE_conv_variant(P1); \
+		return; \
+	} \
+})
+
 
 static void _SUBR_add(ushort code)
 {
   static void *jump[] = {
-    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE
+    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE, NULL, NULL, &&__POINTER
     };
 
   TYPE type;
@@ -2490,10 +2528,17 @@ __FLOAT:
   VALUE_conv_float(P2);
 
 	P1->_float.value += P2->_float.value; goto __END;
+	
+__POINTER:
+
+  VALUE_conv(P1, T_POINTER);
+  VALUE_conv(P2, T_POINTER);
+
+	P1->_pointer.value += (intptr_t)P2->_pointer.value; goto __END;
 
 __VARIANT:
 
-	MANAGE_VARIANT(_SUBR_add);
+	MANAGE_VARIANT_POINTER(_SUBR_add);
   goto __ERROR;
 
 __ERROR:
@@ -2508,7 +2553,7 @@ __END:
 static void _SUBR_sub(ushort code)
 {
   static void *jump[] = {
-    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE
+    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE, NULL, NULL, &&__POINTER
     };
 
   TYPE type;
@@ -2562,9 +2607,16 @@ __FLOAT:
 
 	P1->_float.value -= P2->_float.value; goto __END;
 
+__POINTER:
+
+  VALUE_conv(P1, T_POINTER);
+  VALUE_conv(P2, T_POINTER);
+
+	P1->_pointer.value -= (intptr_t)P2->_pointer.value; goto __END;
+
 __VARIANT:
 
-	MANAGE_VARIANT(_SUBR_sub);
+	MANAGE_VARIANT_POINTER(_SUBR_sub);
   goto __ERROR;
 
 __ERROR:
