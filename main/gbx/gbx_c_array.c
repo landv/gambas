@@ -1217,6 +1217,41 @@ BEGIN_METHOD(ArrayOfStruct_get, GB_INTEGER index)
 
 END_METHOD
 
+	
+BEGIN_METHOD(ArrayOfStruct_put, GB_OBJECT value; GB_INTEGER index)
+
+	int i;
+	CLASS *class = (CLASS *)THIS->type;
+	char *addr;
+	void *object = VARG(value);
+	void *data;
+	VALUE temp;
+	CLASS_DESC *desc;
+	
+	if (GB_CheckObject(object))
+		return;
+	
+	data = get_data_multi(THIS, ARG(index), GB_NParam() + 1);
+	if (!data)
+		return;
+	
+	for (i = 0; i < class->n_desc; i++)
+	{
+		desc = class->table[i].desc;
+		
+		if (((CSTRUCT *)object)->ref)
+			addr = (char *)((CSTATICSTRUCT *)object)->addr + desc->variable.offset;
+		else
+			addr = (char *)object + sizeof(CSTRUCT) + desc->variable.offset;
+	
+		VALUE_class_read(desc->variable.class, &temp, (void *)addr, desc->variable.ctype, object);
+
+		addr = (char *)data + desc->variable.offset;
+		VALUE_write(&temp, (void *)addr, desc->variable.type);
+	}
+
+END_METHOD
+
 
 BEGIN_METHOD_VOID(ArrayOfStruct_next)
 
@@ -1746,6 +1781,7 @@ GB_DESC NATIVE_TemplateArrayOfStruct[ARRAY_OF_STRUCT_TEMPLATE_NDESC] =
 	GB_PROPERTY_SELF("Bounds", ".Array.Bounds"),
 
 	GB_METHOD("_get", "*", ArrayOfStruct_get, "(Index)i."),
+	GB_METHOD("_put", NULL, ArrayOfStruct_put, "(Value)*;(Index)i."),
 	GB_METHOD("_next", "*", ArrayOfStruct_next, NULL),
 
 	GB_END_DECLARE

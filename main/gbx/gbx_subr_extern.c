@@ -87,7 +87,7 @@ void SUBR_free(void)
 
   ptr = SUBR_get_pointer(PARAM);
   
-  FREE(&ptr, "SUBR_free");
+  IFREE(ptr, "SUBR_free");
   
   SUBR_LEAVE_VOID();
 }
@@ -259,7 +259,7 @@ void SUBR_make(ushort code)
 {
   static void *jump[] = {
     &&__ERROR, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, 
-		&&__DATE, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR
+		&&__DATE, &&__ERROR, &&__ERROR, &&__POINTER, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR
     };
 		
 	TYPE type;
@@ -309,6 +309,11 @@ __FLOAT:
 __DATE:
 
 	memcpy(RETURN->_string.addr, &PARAM->_date.date, sizeof(int) * 2);
+	goto __END;
+	
+__POINTER:
+
+	memcpy(RETURN->_string.addr, &PARAM->_pointer.value, sizeof(void *));
 	goto __END;
 	
 __ERROR:
