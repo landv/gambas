@@ -1041,6 +1041,8 @@ void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value)
 				STRING_new_temp_value(value, NULL, labs(len));
 				STREAM_read(stream, value->_string.addr, len);
 			}
+			else
+				value->type = T_NULL;
 
 			break;
 
