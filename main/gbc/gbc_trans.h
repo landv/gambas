@@ -33,7 +33,7 @@
 enum {
   TT_NOTHING = 0,
   TT_DO_NOT_CHECK_AS = 1,
-  TT_CAN_STATIC = 2,
+  TT_CAN_EMBED = 2,
   TT_CAN_ARRAY = 4,
   TT_CAN_NEW = 8
   };

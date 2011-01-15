@@ -442,7 +442,7 @@ static bool header_declaration(TRANS_DECL *decl)
   save = JOB->current;
   JOB->current = look;
 
-  if (!TRANS_type((!is_const ? TT_CAN_ARRAY | TT_CAN_STATIC : 0) | TT_CAN_NEW, decl))
+  if (!TRANS_type((!is_const ? TT_CAN_ARRAY | TT_CAN_EMBED : 0) | TT_CAN_NEW, decl))
   {
     JOB->current = save;
     return FALSE;
@@ -874,7 +874,7 @@ static bool header_structure(void)
     JOB->current++;
     
 		CLEAR(&decl);
-    if (!TRANS_type(TT_CAN_ARRAY | TT_CAN_STATIC, &decl))
+    if (!TRANS_type(TT_CAN_ARRAY | TT_CAN_EMBED, &decl))
       THROW("Syntax error. Invalid type description of &1 field", TRANS_get_num_desc(nfield + 1));
 
 		TRANS_want_newline();

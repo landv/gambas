@@ -50,7 +50,7 @@
 
 #include "gbx_class.h"
 
-//#define DEBUG
+//#define DEBUG DEBUG
 //#define DEBUG_LOAD 1
 //#define DEBUG_STRUCT 1
 
@@ -214,7 +214,7 @@ static char *get_section(char *sec_name, char **section, short *pcount, const ch
 
   #ifdef DEBUG
   NSection++;
-  fprintf(stderr, "Section #%d %s %08lX %d %d\n", NSection + 1, sec_name, (int)(current - (char *)Class->data), one, section_size);
+  fprintf(stderr, "Section #%d %s %08lX %d %d\n", NSection + 1, sec_name, (int)(current - (char *)Class->data), (int)size_one, (int)section_size);
   #endif
 
   *section += section_size + sizeof(int);

@@ -354,10 +354,10 @@ static PATTERN *trans_embedded_array(PATTERN *look, int mode, TRANS_DECL *result
   TRANS_NUMBER tnum;
   int i;
 
-  if (!(mode & TT_CAN_STATIC))
+  if (!(mode & TT_CAN_EMBED))
   {
     if (PATTERN_is(*look, RS_LSQR))
-      THROW("Static arrays are forbidden here");
+      THROW("Embedded arrays are forbidden here");
     return look;
   }
 
@@ -444,9 +444,9 @@ static int TRANS_get_class(PATTERN pattern, bool array)
   return CLASS_add_class(JOB->class, index);
 }
 
-static bool check_structure(int cindex)
+static bool check_structure(int *cindex)
 {
-	SYMBOL *sym = TABLE_get_symbol(JOB->class->table, JOB->class->class[cindex].index);
+	SYMBOL *sym = TABLE_get_symbol(JOB->class->table, JOB->class->class[*cindex].index);
 	int len = sym->len;
 	char name[sym->len + 1];
 	int index;
@@ -467,12 +467,15 @@ static bool check_structure(int cindex)
 	}
 	else
 	{
-		index = cindex;
+		index = *cindex;
 		is_array = FALSE;
 	}
 	
 	if (JOB->class->class[index].structure)
+	{
+		*cindex = index;
 		return is_array;
+	}
 
 __ERROR:
 
@@ -520,7 +523,7 @@ bool TRANS_type(int mode, TRANS_DECL *result)
     }
   }
 
-	if ((mode & TT_CAN_STATIC) && PATTERN_is(*look, RS_STRUCT))
+	if ((mode & TT_CAN_EMBED) && PATTERN_is(*look, RS_STRUCT))
 	{
 		id = T_STRUCT;
 		look++;
@@ -529,7 +532,7 @@ bool TRANS_type(int mode, TRANS_DECL *result)
 			THROW_UNEXPECTED(look);
 		
 		value = TRANS_get_class(*look, TRUE);
-		is_array = check_structure(value);
+		is_array = check_structure(&value);
 		
 		if (!is_array)
 		{
@@ -538,6 +541,8 @@ bool TRANS_type(int mode, TRANS_DECL *result)
 			//if (result->array.ndim > 0)
 			//	THROW("Cannot mix embedded array and embedded structure");
 		}
+		else
+			THROW("Arrays of structure are not supported");
 		
 		look++;
 	}
