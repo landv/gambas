@@ -118,9 +118,9 @@ _bInExec
 v
 b
 
-_cPages
+_LayoutLoop
 v
-Object[]
+b
 
 $bLayoutIsDirty
 v
@@ -194,28 +194,36 @@ C
 i
 1
 Top
-v
-b
+r
+_ReportBorderSide
 
 Left
-v
-b
+r
+_ReportBorderSide
 
-Bottom
-v
-b
+bottom
+r
+_ReportBorderSide
 
 Right
-v
-b
+r
+_ReportBorderSide
 
 Width
-v
+p
 s
 
-Color
-v
-i
+Brush
+p
+ReportBrush
+
+Round1
+p
+s
+
+Round2
+p
+s
 
 Style
 v
@@ -272,6 +280,14 @@ _iValue
 v
 i
 
+_PaintBrush
+m
+PaintBrush
+(X1)i(Y1)i(X2)i(Y2)i
+_get
+M
+ReportBrush
+(sValue)s
 #ReportContainer
 ReportFrame
 
@@ -291,13 +307,21 @@ _DefaultEvent
 C
 s
 Data
+_PageChildren
+v
+Collection
+
+_CurItem
+v
+i
+
 _Arrangement
 v
 i
 
 Children
 r
-TControl[]
+ReportControl[]
 
 Index
 r
@@ -329,7 +353,7 @@ i
 
 _Add
 m
-TControl
+
 (cControl)ReportControl;
 _Remove
 m
@@ -371,6 +395,10 @@ _GetData
 m
 v
 (sKey)s
+_Reset
+m
+
+
 #ReportControl
 
 
@@ -534,6 +562,10 @@ _SetUnifiedValues
 m
 
 
+_Reset
+m
+
+
 #ReportFrame
 ReportControl
 
@@ -588,6 +620,14 @@ _Free
 m
 
 
+_GetSizeHints
+m
+TSizeHint
+(AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f
+_SetChildGeometry
+m
+f
+(X)f(Y)f(W)f(H)f(ContPage)i
 #ReportImage
 ReportControl
 C
@@ -780,3 +820,11 @@ _Free
 m
 
 
+_SetChildGeometry
+m
+f
+(X)f(Y)f(W)f(H)f(ContPage)i
+_GetSizeHints
+m
+TSizeHint
+(AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f

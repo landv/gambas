@@ -49,8 +49,8 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
     Dim ix, iy As Float
     Dim hBrush As PaintBrush
     
-    ix = x + hControl.RealLeft + MTools.UnitsToPixels(Me.Padding)
-    iy = y + hControl.RealTop + MTools.UnitsToPixels(Me.Padding)
+    ix = x + hControl.RealLeft + MTools.UnitsToPixels(Me._Padding)
+    iy = y + hControl.RealTop + MTools.UnitsToPixels(Me._Padding)
     
     '$hPic = $hPic.Stretch(hControl.RealWidth, hControl.RealHeight)
     

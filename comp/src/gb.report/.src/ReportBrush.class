@@ -11,3 +11,60 @@ Public _Image As Image
 Public _Color As Integer[]
 Public _Pos As Float[]
 Public _iValue As Integer
+
+Public Function _PaintBrush(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer) As PaintBrush
+
+  Dim hBrush As PaintBrush
+  Dim fradius As Float
+
+  Select Case Me._Type
+    Case 0
+      hBrush = Paint.Color(_iValue)
+    Case 1
+      hBrush = paint.Image(_Image, X1, Y1)
+    Case 2
+      hBrush = paint.LinearGradient(X1, Y1, X1, Y2, _Color, _Pos)
+    Case 3
+      fradius = If((X2 - X1) > (Y2 - Y1), X2 - X1, Y2 - Y1)
+      hBrush = paint.RadialGradient(X1, Y1, fradius, X1, Y1, _Color, _Pos)
+  End Select
+  Return hBrush
+
+End
+
+Static Public Sub _get(sValue As String) As ReportBrush
+  
+  Dim hBrush As New ReportBrush
+  Dim sWord As String
+  Dim ars1, ars2 As String[]
+  Dim s As String
+
+  ars1 = Scan(sValue, "*(*)")
+  If ars1.Count > 0 Then
+  Select Case LCase(ars1[0])
+      
+    Case "image"
+      hBrush._Type = 1
+      hBrush._Image = Image.Load(ars1[1])
+    Case "lineargradient"
+      
+    Case "radialgradient"
+      
+    Case Else
+      
+  End Select
+  Else
+    hBrush._iValue = Val(Replace(sValue, "#", "&h"))
+    
+  Endif
+  Return hBrush
+  
+'Catch
+  
+End
+
+Static Private Function GetArray(sValue As String) As String[]
+  
+  Dim ars As New String[]
+  
+End

@@ -6,7 +6,10 @@ Inherits ReportControl
 
 Public Const _Properties As String = "*,Border"
 
-Private $fBorderWidth As Float
+Private $fLeftBorderWidth As Float
+Private $fRightBorderWidth As Float
+Private $fTopBorderWidth As Float
+Private $fBottomBorderWidth As Float
 
 Private $hBorder As New ReportBorder
 
@@ -52,17 +55,7 @@ Public Sub _PaintBefore(Page As Integer, X As Float, Y As Float, hControl As TCo
   Else 
     
     If Me.Brush = Null Then Return
-    Select Case Me.Brush._Type
-      Case 0
-        Paint.Brush = Paint.Color(Me.Brush._iValue)
-      Case 1
-        Paint.Brush = paint.Image(Me.Brush._Image, X1, Y1)
-      Case 2
-        Paint.Brush = paint.LinearGradient(X1, Y1, X1, Y2, Me.Brush._Color, Me.Brush._Pos)
-      Case 3
-        fradius = If((X2 - X1) > (Y2 - Y1), X2 - X1, Y2 - Y1)
-        Paint.Brush = paint.RadialGradient(X1, Y1, fradius, X1, Y1, Me.Brush._Color, Me.Brush._Pos)
-    End Select
+    paint.Brush = Me.Brush._PaintBrush(X1, Y1, X2, Y2)
     
     Paint.Rectangle(X1, Y1, X2 - X1, Y2 - Y1)
     Paint.Fill
@@ -82,26 +75,52 @@ End
 Public Sub _PaintAfter(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
   
   Dim X1, Y1, X2, Y2 As Integer
-  Dim fWidth As Float
-
-  X1 = (x + hControl.RealLeft) 
-  Y1 = (y + hControl.RealTop) 
-  X2 = (x + hControl.RealLeft + hControl.RealWidth) 
-  Y2 = (y + hControl.RealTop + hControl.RealHeight) 
+  'Dim fWidth As Float
   
-  If $hBorder.Style <> Line.None Then 
-    fWidth = MTools.UnitsToPixels($fBorderWidth)
+  Dim fTopWidth, fBottomWidth, fLeftWidth, fRighWidth As Float
+  fLeftWidth = MTools.UnitsToPixels($fLeftBorderWidth)
+  fRighWidth = MTools.UnitsToPixels($fRightBorderWidth)
+  fTopWidth = MTools.UnitsToPixels($fTopBorderWidth)
+  fBottomWidth = MTools.UnitsToPixels($fBottomBorderWidth)
+
+  
+  'If $hBorder.Style <> Line.None Then 
+      
+      'fWidth = MTools.UnitsToPixels($fBorderWidth)
+      
+      X1 = (x + hControl.RealLeft) 
+      Y1 = (y + hControl.RealTop) 
+      X2 = (x + hControl.RealLeft + hControl.RealWidth) 
+      Y2 = (y + hControl.RealTop + hControl.RealHeight) 
+  
     
-    Paint.Brush = Paint.Color($hBorder.Color)
     
-    If $hBorder.Top Then paint.Rectangle(X1, Y1, X2 - X1, fWidth)
-    If $hBorder.Right Then paint.Rectangle(X2 - fWidth, Y1, fWidth, Y2 - Y1)
-    If $hBorder.Bottom Then paint.Rectangle(X1, Y2 - fWidth, X2 - X1, fWidth)
-    If $hBorder.Left Then paint.Rectangle(X1, Y1, fWidth, Y2 - Y1)
+    'Paint.Brush = Paint.Color($hBorder.Brush._iValue)
     
-    paint.Fill
+    If fTopWidth > 0 Then 
+      paint.Brush = $hBorder.Top.Brush._PaintBrush(X1, Y1, X2, Y2)
+      paint.Rectangle(X1, Y1, X2 - X1, fTopWidth)
+      paint.Fill
+    Endif
+    If fRighWidth > 0 Then 
+      paint.Brush = $hBorder.Right.Brush._PaintBrush(X1, Y1, X2, Y2)
+      paint.Rectangle(X2 - fRighWidth, Y1, fRighWidth, Y2 - Y1)
+      paint.Fill
+    Endif
+    If fBottomWidth > 0 Then 
+      paint.Brush = $hBorder.Bottom.Brush._PaintBrush(X1, Y1, X2, Y2)
+      paint.Rectangle(X1, Y2 - fBottomWidth, X2 - X1, fBottomWidth)
+      paint.Fill
+    Endif
+    If fLeftWidth > 0 Then 
+      paint.Brush = $hBorder.Left.Brush._PaintBrush(X1, Y1, X2, Y2)
+      paint.Rectangle(X1, Y1, fLeftWidth, Y2 - Y1)
+      paint.Fill
+    Endif
     
-  Endif
+    
+    
+  'Endif
   
 End
 
@@ -123,9 +142,14 @@ Public Sub _SetUnifiedValues()
   
   Super._SetUnifiedValues()
   
-  hSizeParse = New TSizeParse($hBorder.Width)
-  $fBorderWidth = hSizeParse.GetValue()
-  
+  hSizeParse = New TSizeParse($hBorder.Left.Width)
+  $fLeftBorderWidth = hSizeParse.GetValue()
+  hSizeParse = New TSizeParse($hBorder.Right.Width)
+  $fRightBorderWidth = hSizeParse.GetValue()
+  hSizeParse = New TSizeParse($hBorder.Top.Width)
+  $fTopBorderWidth = hSizeParse.GetValue()
+  hSizeParse = New TSizeParse($hBorder.Bottom.Width)
+  $fBottomBorderWidth = hSizeParse.GetValue()
 End
 
 Public Sub _GetSizeHints(AvailableW As Integer, AvailableH As Integer, TotalWidth As Integer, TotalHeight As Integer) As TSizeHint
@@ -140,6 +164,6 @@ End
 
 Private Function _BorderWidth_Read() As Float
   
-  Return $fBorderWidth
+  'Return $fBorderWidth
   
 End

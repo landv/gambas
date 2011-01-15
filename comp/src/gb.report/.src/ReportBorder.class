@@ -4,12 +4,32 @@ Export
 Static Public Const None As Integer = 0
 Static Public Const Solid As Integer = 1
 
-Public Top As Boolean = True
-Public {Left} As Boolean = True
-Public Bottom As Boolean = True
-Public {Right} As Boolean = True
-Public Width As String = "1 px"
-Public Color As Integer 
+Private hTop As New _ReportBorderSide
+Private hBottom As New _ReportBorderSide
+Private hLeft As New _ReportBorderSide
+Private hRight As New _ReportBorderSide
+
+
+
+
+Property Read Top As _ReportBorderSide
+
+
+Property Read {Left} As _ReportBorderSide
+
+Property Read bottom As _ReportBorderSide
+
+Property Read {Right} As _ReportBorderSide
+
+
+Property Width As String
+Property Brush As ReportBrush
+Property Round1 As String
+Property Round2 As String
+
+
+
+
 Public Style As Integer
 
 Static Private Sub ResetBorder(hReportBorder As ReportBorder) As Boolean
@@ -26,47 +46,63 @@ Static Private Sub ResetBorder(hReportBorder As ReportBorder) As Boolean
 End
 
 
+
+
+
+
 Static Public Function _get(sValue As String) As ReportBorder
 
   Dim sElt As String
   Dim hReportBorder As New ReportBorder
   Dim bReset As Boolean
+  Dim sBorder As String
+  Dim ars As String[]
   
   If Not sValue Then Return hReportBorder
-  
   hReportBorder.Style = ReportBorder.Solid
+  For Each sBorder In Split(sValue, ";")
   
-  For Each sElt In Split(sValue, ",", "[]", True, True)
-  
-    Select Case UCase(sElt)
-    
-      Case "TOP"
-        If Not bReset Then bReset = ResetBorder(hReportBorder)
-        hReportBorder.Top = True
-      Case "BOTTOM"
-        If Not bReset Then bReset = ResetBorder(hReportBorder)
-        hReportBorder.Bottom = True
-      Case "LEFT"
-        If Not bReset Then bReset = ResetBorder(hReportBorder)
-        hReportBorder.Left = True
-      Case "RIGHT"
-        If Not bReset Then bReset = ResetBorder(hReportBorder)
-        hReportBorder.Right = True
+    ars = Scan(sBorder, "*=*")
+    Select Case LCase(Trim(ars[0]))
+      Case "border"
+        FillObject(hReportBorder, ars[1])
+      Case "left"
+        FillObject(hReportBorder.Left, ars[1])
+      Case "right"
+        FillObject(hReportBorder.Right, ars[1])
+      Case "bottom"
+        FillObject(hReportBorder.bottom, ars[1])
+      Case "top"
+        FillObject(hReportBorder.Top, ars[1])
       
-      Case Else
-        If sElt Begins "&H" Then
-          hReportBorder.Color = Val(sElt)
-        Else If IsDigit(Left$(sElt)) Then 
-          hReportBorder.Width = sElt
-        Endif
-        
     End Select
-    
+
   Next
+
+
+
   
   Return hReportBorder
   
 End
+
+Static Private Sub FillObject(hObj As Object, sValue As String)
+Dim ars As String[]
+  ars = Split(sValue, " ")
+  
+  Try hObj.Width = ars[0]
+  
+   Try hObj.Brush = ReportBrush[ars[1]]
+  
+  Try hObj.Round1 = ars[2]
+  
+  Try hObj.Round2 = ars[3]
+  
+  
+  
+End
+
+
 
 Public Function ToString() As String
   
@@ -82,4 +118,88 @@ Public Function ToString() As String
   aValue.Add("&H" & Hex(Me.Color, 6))
   Return aValue.Join()
   
+End
+
+Private Function Top_Read() As _ReportBorderSide
+
+  Return hTop
+
+End
+
+Private Function Left_Read() As _ReportBorderSide
+
+  Return hLeft
+
+End
+
+Private Function bottom_Read() As _ReportBorderSide
+
+  Return hBottom
+
+End
+
+Private Function Width_Read() As String
+
+  Return hLeft.Width
+
+End
+
+Private Sub Width_Write(Value As String)
+
+  hLeft.Width = Value
+  hTop.Width = Value
+  hBottom.Width = Value
+  hRight.Width = Value
+
+End
+
+Private Function Brush_Read() As ReportBrush
+
+  Return hLeft.Brush 
+
+End
+
+Private Sub Brush_Write(Value As ReportBrush)
+
+  hLeft.Brush = Value
+  hTop.Brush = Value
+  hBottom.Brush = Value
+  hRight.Brush = Value
+
+End
+
+Private Function Right_Read() As _ReportBorderSide
+
+  Return hRight
+
+End
+
+Private Function Round1_Read() As String
+
+  Return hLeft.Round2
+
+End
+
+Private Sub Round1_Write(Value As String)
+
+    hLeft.Round1 = Value
+  hTop.Round1 = Value
+  hBottom.Round1 = Value
+  hRight.Round1 = Value
+
+End
+
+Private Function Round2_Read() As String
+
+  Return hLeft.Round2
+
+End
+
+Private Sub Round2_Write(Value As String)
+
+      hLeft.Round2 = Value
+  hTop.Round2 = Value
+  hBottom.Round2 = Value
+  hRight.Round2 = Value
+
 End

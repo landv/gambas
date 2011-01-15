@@ -23,7 +23,7 @@ Public Sub _new(Size As String, Optional bAllowRelative As Boolean)
   Next
   
   Value = CFloat(Left$(Size, I - 1))
-  Unit = Trim(Mid$(Size, I + 1))
+  Unit = Trim(Mid$(Size, I))
   
   If Not Unit Then Unit = "%"
   

@@ -10,9 +10,186 @@ Public Sub _new()
   
 End
 
-
 Public Sub _Free()
   
   Super._Free
+  
+End
+
+Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer) As Float
+  
+  Dim hChildHints As TSizeHint
+  Dim hChild As ReportControl
+  
+  
+  'Dim aPageItems As New CPageInfo
+  Dim iNExp As Integer      ' Nombre d'objet a taille étendue
+  Dim fSExp As Float        'Place consommée par les objet a taille fixe
+  Dim fSpc As Float
+  Dim fPdg As Float
+  Dim bFirst As Boolean 
+
+  Dim i As Integer
+
+  
+  Dim aPageItems As New TControl[]
+  Dim hTItem As TControl
+  Dim fFixedSpc As Float
+  Dim iExpSpc As Integer
+  Dim fHeight As Float
+  Dim oChild As Object
+  'Dim aIgnored As New TControl[]  
+  fSpc = IIf(Me._RelativeSpacing, H * Me._Spacing / 100, Me._Spacing) 'ME._Spacing
+  fPdg = Me._Padding
+  X = fPdg
+  Y = fPdg
+  
+  w -= 2 * fPdg
+  
+  
+  
+  For i = 0 To Me.Children.Max
+    hChild = Super.Children[i]
+    If hChild.Fixed Then
+      
+      hChildHints = hChild._GetSizeHints(W, H - fSExp, W, H)
+      fFixedSpc += hChildHints.Height
+      
+      If i < Me._CurItem Then
+        hTItem = New TControl
+        hTItem.Ctrl = hChild
+        hTItem.SizeHint = hChildHints
+        'hTItem._SetGeometry(X, Y, W, hChildHints.Height)
+        
+        'hChild._SetChildGeometry(X, Y, W, hChildHints.Height, ContPage)
+        
+        aPageItems.Add(hTItem) 
+        Y += hChildHints.Height + fSpc
+        If hChild.Expand Then Inc iNExp
+      Endif
+      
+    Endif
+    
+  Next
+  
+  For i = Me._CurItem To Me.Children.Max
+    hChild = Super.Children[i]
+    
+    'Obtenir la taille verticale de l'enfant en déduisant l'espace consommé
+    hChildHints = hChild._GetSizeHints(W, H - fFixedSpc - Y, W, H)
+'     If hChild.Tag = "*" Then Stop
+    If Y + hChildHints.Height > H - fFixedSpc Then Break
+    
+    
+    hTItem = New TControl
+    hTItem.Ctrl = hChild
+    hTItem.SizeHint = hChildHints
+    'hTItem._SetGeometry(X, Y, W, hChildHints.Height)
+    'hChild._SetChildGeometry(X, Y, W, hChildHints.Height, ContPage)
+    aPageItems.Add(hTItem) 
+    Y += hChildHints.Height + fSpc
+    If hChild.Expand Then Inc iNExp
+    Inc Me._CurItem
+    
+  Next
+  
+  For i = Me._CurItem To Me.Children.Max
+    hChild = Super.Children[i]
+    If hChild.Fixed Then
+      
+      hChildHints = hChild._GetSizeHints(W, H - fFixedSpc, W, H)
+      hTItem = New TControl
+      hTItem.Ctrl = hChild
+      hTItem.SizeHint = hChildHints
+      'hTItem._SetGeometry(X, Y, W, hChildHints.Height)
+      'hChild._SetChildGeometry(X, Y, W, hChildHints.Height, ContPage)
+      aPageItems.Add(hTItem) 
+      Y += hChildHints.Height + fSpc
+      If hChild.Expand Then Inc iNExp
+    Endif
+    
+  Next
+  
+If iNExp > 0 Then fSExp = (H - Y) / iNExp
+  
+  Y = fPdg
+  
+  For Each hTItem In aPageItems
+    oChild = hTItem.Ctrl
+    If hTItem.Ctrl.Expand Then 
+      fHeight = hTItem.SizeHint.Height + fSExp
+    Else
+      fHeight = hTItem.SizeHint.Height
+    Endif
+    
+    hTItem._SetGeometry(X, Y, W, fHeight)
+    oChild._SetChildGeometry(X, Y, W, fHeight, ContPage)
+    
+    If oChild Is ReportContainer Then
+      
+      If oChild._CurItem < oChild.Children.Max Then
+        Me._CurItem = Me.Children.Find(oChild)
+      Endif
+      
+    Endif
+    
+    
+    Y += fHeight + fspc
+  Next
+  
+  
+  
+  
+  Me._PageChildren[ContPage] = aPageItems
+  
+End
+
+Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float) As TSizeHint
+  
+  Dim hChild As ReportControl
+  Dim fHeight As Float
+  Dim hChildHints As TSizeHint
+  Dim hMyHints As New TSizeHint
+  Dim fSpacing As Float
+  Dim fPadding As Float
+  
+  fSpacing = IIf(Me._RelativeSpacing, TotalHeight * Me._Spacing / 100, Me._Spacing)
+  
+  For Each hChild In Me.Children
+    
+    hChildHints = hChild._GetSizeHints(AvailableW, AvailableH - hMyHints.Height, AvailableW, AvailableH)
+    
+    hMyHints.Height += hChildHints.Height + fSpacing 'ME._Spacing
+    
+    If hMyHints.Width < hChildHints.Width Then hMyHints.Width = hChildHints.Width
+    
+  Next 
+  
+  hMyHints.Height -= fSpacing 
+  
+  hMyHints.Height += 2 * Me._Padding '+ 2 * Me._BorderWidth
+  
+  fHeight = Me._Height 
+  
+  If hMyHints.Height < fHeight And Not Me.Autoresize Then hMyHints.Height = fHeight
+  
+  'If Me._RelativeHeight Then hMyHints.Height = AvailableH * Me._Height / 100
+  
+  If hMyHints.Height > AvailableH Then 
+    'If Me.Expand Then
+     ' hMyHints.Height = AvailableH
+    'Else 
+      hMyHints.Height = fHeight
+    'Endif
+  Endif
+  
+  'If Not Me.Autoresize Then 
+  If Me._RelativeWidth Then hMyHints.Width = AvailableW * Me._Width / 100
+  hMyHints.Width = Me._Width 
+  'Endif
+  
+  'Me._SizeInt = hMyHints
+  
+  Return hMyHints
   
 End

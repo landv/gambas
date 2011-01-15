@@ -11,7 +11,9 @@ Public Const _IsForm As Boolean = True
 'Public Constants
 Public {Debug} As Boolean = False
 Public _bInExec As Boolean
-Public _cPages As New Object[]
+'Public _cPages As New Object[]
+Public _LayoutLoop As Boolean
+
 
 Private iCurPage As Integer = 0
 Private $iCount As Integer = -1
@@ -60,7 +62,7 @@ End
 
 
 Public Sub Layout()
-  
+  Dim iCurPage As Integer
   Print "layout"
   If _bInExec Then Return
   'Set execution Flag to true
@@ -74,12 +76,24 @@ Public Sub Layout()
   Endif
   $sOldHeight = Me.Height
   $sOldWidth = Me.Width
-  
+  Me._Reset
   Me._SetUnifiedValues()
-  Me._GenerateClones()
-  $hReportTControl.ctrl = Me
+  'Me._GenerateClones()
+  '$hReportTControl.ctrl = Me
   
-  $iCount = $hReportTControl._SetGeometry(0, 0, Me._Width, Me._Height) + 1
+   $hReportTControl._SetGeometry(0, 0, Me._Width, Me._Height) 
+   Do
+   If Me._CurItem >= Me.Children.Max Then Break
+     
+     Me._SetChildGeometry(0, 0, Me._Width, Me._Height, iCurPage)
+     
+   Inc iCurPage
+   
+   Loop
+     
+   
+   Print Me._PageChildren.Count
+   
   'MTools.PageCount = $iCount
   $bLayoutIsDirty = False
   
@@ -102,9 +116,9 @@ Public Sub Paint(Page As Integer)
   'Set execution Flag to true
   _bInExec = True
    
-  If page < 1 Or page > $iCount Then 
-    Error.Raise("This page does not exist")
-  Endif
+  ' If page < 1 Or page > $iCount Then 
+  '   Error.Raise("This page does not exist")
+  ' Endif
   'Dec page
   
   'Paint.Clip
@@ -115,8 +129,8 @@ Public Sub Paint(Page As Integer)
   With Paint.ClipExtents
     'Debug .X;; .Y;; .Width;; .Height
   End With
-  
-  Me._ClipChildren(Page, 0, 0, $hReportTControl, -1, $fSCale)
+  Dec page
+  'Me._ClipChildren(Page, 0, 0, $hReportTControl, -1, $fSCale)
   Me._PaintBefore(Page, 0, 0, $hReportTControl, -1)
   Me._Paint(Page, 0, 0, $hReportTControl, -1)
   Me._PaintAfter(Page, 0, 0, $hReportTControl, -1)
@@ -126,16 +140,6 @@ Public Sub Paint(Page As Integer)
   _bInExec = False
 End
 
-' Private Sub FillPages(ctrl As ReportContainer)
-' 
-'   Dim hChild As TControl
-'   Dim relHeight As Integer
-'   For Each hChild In ctrl.Children
-'     hChild._Paint(ctrl._Left, ctrl._Top)
-'     If hChild Is ReportContainer Then FillPages(hChild)
-'   Next 
-' 
-' End
 
 
 Private Function Count_Read() As Integer
