@@ -24,7 +24,7 @@ Private $hWebView As WebView
 
 Private $iHighlightColor As Integer
 
-Static Private $aFieldUseDelete As String[] = ["Font", "Picture", "String[]", "Path", "Color", "Field[]", "Image", "ReportCoord", "ReportBorder"]
+Static Private $aFieldUseDelete As String[] = ["Font", "Picture", "String[]", "Path", "Color", "Field[]", "Image", "ReportCoord", "ReportBorder", "ReportBrush"]
 
 Public Sub _new()
   
@@ -388,7 +388,7 @@ Public Function SaveProperty() As Boolean
 
       If Not IsNull(Val(vVal)) Then vVal = Val(vVal)
 
-    Case "s", "Font", "Picture", "Constant", "List", "Path", "Image", "ReportCoord", "ReportBorder"
+    Case "s", "Font", "Picture", "Constant", "List", "Path", "Image", "ReportCoord", "ReportBorder", "ReportBrush"
     
     Case "String[]", "Field[]"
     
@@ -649,7 +649,7 @@ Private Sub ShowProperty(Optional sFocus As String)
     Case "s"
       bButton = True
 
-    Case "String[]", "Field[]", "ReportCoord", "ReportBorder"
+    Case "String[]", "Field[]", "ReportCoord", "ReportBorder", "ReportBrush"
       bButton = True
       txtProperty.ReadOnly = True
 
@@ -919,7 +919,9 @@ Public Sub btnProperty_Click()
     Case "ReportCoord"
       If FReportCoordChooser.Run($sOldVal) Then Goto _EXIT
       $hEditor.Text = FReportCoordChooser.Coord
-
+    Case "ReportBrush"
+      If FReportBrushChooser.Run($sOldVal) Then Goto _EXIT
+      $hEditor.Text = FReportBrushChooser.Value
     Case "ReportBorder"
       If FReportBorderChooser.Run($sOldVal) Then Goto _EXIT
       $hEditor.Text = FReportBorderChooser.Value

@@ -13,7 +13,7 @@ End
 Public Sub btnOK_Click()
 
   If Trim(txtCoord.Text) Then
-    Try Coord = CStr(Val(Trim(txtCoord.Text))) & " " & cmbUnit.Text
+    Try Coord = CStr(Val(Trim(txtCoord.Text))) & cmbUnit.Text
     If Error Then
       Balloon.Error(("Incorrect value."), txtCoord)
       Return

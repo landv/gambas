@@ -7,7 +7,7 @@ Public Const DropImageClass As String = "ReportImage"
 Public Const DropImageProperty As String = "Image"
 
 Static Private Function GetFactor(Unit As String) As Float
-
+  
   Select Case Unit
     Case "cm"
       Return 0.3937
@@ -22,11 +22,10 @@ Static Private Function GetFactor(Unit As String) As Float
     Case Else
       Return 1 / 96
   End Select
-
+  
 End
 
 Static Public Function ToPixel(sSize As String) As Float
-  
   
   Dim fValue As Float
   Dim I As Integer
@@ -45,7 +44,7 @@ Static Public Function ToPixel(sSize As String) As Float
     If Not IsDigit(sCar) And If sCar <> "." Then Break
   Next
   
-   Try fValue = CFloat(Left$(sSize, I - 1))
+  Try fValue = CFloat(Left$(sSize, I - 1))
   Try sUnit = Trim(Mid$(sSize, I))
   
   Return fValue * GetFactor(sUnit) / GetFactor("px")
@@ -58,7 +57,8 @@ Static Private Sub HasBorder(sBorder As String, sSide As String) As Boolean
   Dim sTest As String
   Dim bBorder As Boolean
   
-  For Each sTest In ["left", "right", "top", "bottom"]
+  
+  For Each sTest In ["left", "right", "top", "bottom", "border"]
     If aBorder.Exist(sTest, gb.IgnoreCase) Then
       bBorder = True
       If UCase(sTest) = UCase(sSide) Then Return True
@@ -69,50 +69,79 @@ Static Private Sub HasBorder(sBorder As String, sSide As String) As Boolean
   
 End
 
-
-
 Static Public Sub PaintBorder(sBorder As String) As Float
   
   Dim sElt As String
   Dim fWidth As Float 
   Dim cBorder As New Collection
   Dim iColor As Integer
-  
+  Dim ars, ars2 As String[]
+
   If Not sBorder Then Return
   
-  For Each sElt In Split(sBorder)
-  
-    If IsDigit(Left(sElt)) Then
-      fWidth = ToPixel(sElt)
-    Else If sElt Begins "&H" Then
-      Try iColor = Val(sElt)
+  For Each sElt In Split(LCase(sBorder), ";")
+    ars = Scan(sElt, "*=*")
+    If ars.Count < 2 Then Return
+    ars2 = Split(ars[1], " ")
+    ars[0] = Trim(ars[0])
+    If Draw.Device Then
+      
+      Draw.LineStyle = Line.None
+      
+      If ars[0] = "left" Or If ars[0] = "border" Then 
+        Try fWidth = CFamilyReport.ToPixel(ars2[0])
+        Try iColor = CReportBrush[ars2[1]]._Color[0]
+        Draw.FillRect(0, 0, fWidth, Draw.Height, iColor)
+      Endif
+      
+      If ars[0] = "right" Or If ars[0] = "border" Then 
+        Try fWidth = CFamilyReport.ToPixel(ars2[0])
+        Try iColor = CReportBrush[ars2[1]]._Color[0]
+        Draw.FillRect(Draw.Width - fWidth, 0, fWidth, Draw.Height, iColor)
+      Endif
+      If ars[0] = "top" Or If ars[0] = "border" Then
+        Try fWidth = CFamilyReport.ToPixel(ars2[0])
+        Try iColor = CReportBrush[ars2[1]]._Color[0]
+        Draw.FillRect(0, 0, Draw.Width, fWidth, iColor)
+      Endif
+      If ars[0] = "bottom" Or If ars[0] = "border" Then
+        Try fWidth = CFamilyReport.ToPixel(ars2[0])
+        Try iColor = CReportBrush[ars2[1]]._Color[0]
+        Draw.FillRect(0, Draw.Height - fWidth, Draw.Width, fWidth, iColor)
+      Endif
+      
+    Else
+      
+      'Paint.Brush = Paint.Color(iColor)
+      
+      If ars[0] = "left" Or If ars[0] = "border" Then 
+        Try fWidth = CFamilyReport.ToPixel(ars2[0])
+         Try Paint.Brush = CReportBrush[ars2[1]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
+        Paint.Rectangle(0, 0, fWidth, Paint.Height)
+      Endif
+      If ars[0] = "right" Or If ars[0] = "border" Then
+        Try fWidth = CFamilyReport.ToPixel(ars2[0])
+         Try Paint.Brush = CReportBrush[ars2[1]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
+        Paint.Rectangle(Paint.Width - fWidth, 0, fWidth, Paint.Height)
+      Endif
+      If ars[0] = "top" Or If ars[0] = "border" Then
+        Try fWidth = CFamilyReport.ToPixel(ars2[0])
+         Try Paint.Brush = CReportBrush[ars2[1]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
+        Paint.Rectangle(0, 0, Paint.Width, fWidth)
+      Endif
+      If ars[0] = "bottom" Or If ars[0] = "border" Then 
+        Try fWidth = CFamilyReport.ToPixel(ars2[0])
+         Try Paint.Brush = CReportBrush[ars2[1]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
+        Paint.Rectangle(0, Paint.Height - fWidth, Paint.Width, fWidth)
+      Endif
+      
+      Paint.Fill
+      
     Endif
+      If ars[0] = "border" Then Break
+    Next
+    Return fWidth
     
-  Next
-  
-  If Draw.Device Then
-  
-    Draw.LineStyle = Line.None
-    If HasBorder(sBorder, "Left") Then Draw.FillRect(0, 0, fWidth, Draw.Height, iColor)
-    If HasBorder(sBorder, "Right") Then Draw.FillRect(Draw.Width - fWidth, 0, fWidth, Draw.Height, iColor)
-    If HasBorder(sBorder, "Top") Then Draw.FillRect(0, 0, Draw.Width, fWidth, iColor)
-    If HasBorder(sBorder, "Bottom") Then Draw.FillRect(0, Draw.Height - fWidth, Draw.Width, fWidth, iColor)
-
-  Else
-  
-    Paint.Brush = Paint.Color(iColor)
-  
-    If HasBorder(sBorder, "Left") Then Paint.Rectangle(0, 0, fWidth, Paint.Height)
-    If HasBorder(sBorder, "Right") Then Paint.Rectangle(Paint.Width - fWidth, 0, fWidth, Paint.Height)
-    If HasBorder(sBorder, "Top") Then Paint.Rectangle(0, 0, Paint.Width, fWidth)
-    If HasBorder(sBorder, "Bottom") Then Paint.Rectangle(0, Paint.Height - fWidth, Paint.Width, fWidth)
-    
-    Paint.Fill
-    
-  Endif
-  
-  Return fWidth
-  
 End
 
 Public Sub _new()
@@ -122,7 +151,7 @@ Public Sub _new()
 End
 
 Public Sub IsPainted(hCtrl As CControl) As Boolean
-
+  
   If hCtrl.Kind = "ReportLabel" Then Return True
   'If hCtrl.Kind = "ReportTextLabel" Then Return True
   If hCtrl.Kind = "ReportLine" Then Return True
@@ -130,7 +159,7 @@ Public Sub IsPainted(hCtrl As CControl) As Boolean
 End
 
 Public Sub IsTransparent(hCtrl As CControl) As Boolean
-
+  
   If hCtrl.Kind = "Report" Then Return False
   If hCtrl.Kind = "ReportHBox" Then Return False
   If hCtrl.Kind = "ReportVBox" Then Return False
@@ -153,6 +182,22 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
   W = hCtrl.Width
   H = hCtrl.Height
   
+  If hCtrl["Brush"] Then
+    
+    If Draw.Device Then
+      
+      Try Draw.FillRect(0, 0, Draw.Width, Draw.Height, CReportBrush[hCtrl["Brush"]]._Color[0])
+      
+    Else
+     Paint.Brush = CReportBrush[hCtrl["Brush"]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
+    Paint.Rectangle(0, 0, Paint.Width, Paint.Height)
+    Paint.Fill
+    Endif
+  Endif
+  
+  
+  
+  
   fVal = PaintBorder(hCtrl["Border"])
   
   If Not hCtrl.IsContainer() And If hCtrl["Padding"] Then
@@ -169,21 +214,21 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
   If W <= 0 Or If H <= 0 Then Return
   
   Select Case hCtrl.Kind
-  
+      
     Case "ReportLabel"
-    
+      
       Try Paint.Font = Font[hCtrl["Font"]]
       Paint.Text(hCtrl["Text"], X, Y, W, H, Classes["Align"][hCtrl["Alignment"]].Value)
       Paint.Fill
       
     Case "ReportTextLabel"
-    
+      
       Try Draw.Font = Font[hCtrl["Font"]]
       Draw.RichText(hCtrl["Text"], X, Y, W, H, Classes["Align"][hCtrl["Alignment"]].Value)
       'Paint.Fill
       
     Case "ReportLine"
-    
+      
       Paint.LineWidth = 1
       Paint.Brush = Paint.Color(Color.Black)
       Try Paint.LineWidth = hCtrl["LineWidth"]
@@ -221,21 +266,21 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
           Paint.LineTo(W, H)
       End Select
       Paint.Stroke
-
+      
     Case "ReportHBox"
-    
+      
       Draw.Foreground = &HFF8080&
       Draw.LineStyle = Line.Dash
       Draw.Rect(0, 0, hCtrl.W, hCtrl.H)
-    
+      
     Case "ReportVBox", "Report"
-
+      
       Draw.Foreground = &HFF8080&
       Draw.LineStyle = Line.Dash
       Draw.Rect(0, 0, hCtrl.W, hCtrl.H)
-
+      
     Case "ReportImage"
-    
+      
       sPath = hCtrl["Image"]
       If Not sPath Then Return True
       If hCtrl["#Image"] <> sPath Then
@@ -243,11 +288,11 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
         hCtrl["#ImageObject"] = Image.Load(Project.Dir &/ sPath)
       Endif
       Try Draw.Image(hCtrl["#ImageObject"], X, Y, W, H)
-
+      
     Case Else
-    
+      
       Return True
-  
+      
   End Select
   
 End
@@ -257,10 +302,10 @@ Public Sub EnterControl(hCont As Container, hCCtrl As CControl)
   Dim sImage As String
   
   Select hCCtrl.Kind
-  
+      
     Case "ReportHBox"
       sImage = "horizontal"
-    
+      
     Case "ReportVBox"
       sImage = "vertical"
       
