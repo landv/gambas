@@ -278,12 +278,12 @@ void gMenu::update()
 			
 			if (_shortcut)
 			{
-				buf = g_strconcat("    ", _shortcut ,"  ",(void *)NULL);
+				buf = g_strconcat("\t", _shortcut ,"  ",(void *)NULL);
 				gtk_label_set_text(GTK_LABEL(aclbl), buf);
 				g_free(buf);
 			}
 			else
-				gtk_label_set_text(GTK_LABEL(aclbl), "      ");
+				gtk_label_set_text(GTK_LABEL(aclbl), "\t");
 		}
 		
 		if (!top_level)

@@ -34,7 +34,7 @@ public:
 	int getBorder() const { return getFrameBorder(); }
 	char* text();
 	bool isTransparent() const { return _transparent; }
-	bool autoResize();
+	bool autoResize() const { return _autoresize; }
 	int padding() const { return getFramePadding(); }
 	bool wrap() const { return _wrap; }
 
@@ -59,7 +59,7 @@ public:
 	PangoLayout *layout;
 	int align,lay_x,lay_y;
 	unsigned markup : 1;
-	unsigned autoresize : 1;
+	unsigned _autoresize : 1;
 	unsigned _transparent : 1;
 	unsigned _mask_dirty : 1;
 	unsigned _locked : 1;

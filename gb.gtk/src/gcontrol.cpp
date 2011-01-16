@@ -352,7 +352,7 @@ void gControl::setVisible(bool vl)
 	{
 		if (bufW <= 0 || bufH <= 0)
 			return;
-			
+		
 		gtk_widget_show(border);
 	}
 	else
@@ -522,18 +522,18 @@ void gControl::resize(int w, int h)
 	
 	if (w < 1 || h < 1)
 	{
-		this->bufW = w;
-		this->bufH = h;
+		bufW = w;
+		bufH = h;
 		
 		if (visible)
 			gtk_widget_hide(border);
 	}
 	else
 	{
-		this->bufW = w;
-		this->bufH = h;
+		bufW = w;
+		bufH = h;
 		
-		if (frame)
+		if (frame && widget != border)
 		{
 			int fw = getFrameWidth() * 2;
 			if (w < fw || h < fw)
@@ -877,7 +877,7 @@ void gControl::refresh()
 
 void gControl::refresh(int x, int y, int w, int h)
 {
-	if ( (x<0) || (y<0) || (w<0) || (h<0) )
+	if (x < 0 || y < 0 || w < 0 || h < 0)
 	  gtk_widget_queue_draw(border);
 	else	
 	  gtk_widget_queue_draw_area(border, x, y, w, h);

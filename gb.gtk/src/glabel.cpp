@@ -111,7 +111,7 @@ gLabel::gLabel(gContainer *parent) : gControl(parent)
 	textdata = NULL;
 	g_typ = Type_gLabel;
 	markup = false;
-	autoresize = false;
+	_autoresize = false;
 	_mask_dirty = false;
 	_transparent = false;
 	_locked = false;
@@ -187,7 +187,7 @@ void gLabel::updateSize(bool adjust, bool noresize_width)
 	w += fw * 2;
 	h += fw * 2;
 	
-	if ((!autoresize && !adjust) || (noresize_width && w != width()))
+	if ((!_autoresize && !adjust) || (noresize_width && w != width()))
 		return;
 		
 	if ((align == ALIGN_CENTER || align == ALIGN_LEFT || align == ALIGN_NORMAL || align == ALIGN_RIGHT) && h < height())
@@ -205,24 +205,16 @@ void gLabel::adjust()
 
 void gLabel::setAutoResize(bool vl)
 {
-	autoresize = vl;
+	_autoresize = vl;
 	updateSize();
-}
-
-bool gLabel::autoResize()
-{
-	return autoresize;
 }
 
 void gLabel::afterRefresh()
 {
-	if (!_transparent)
-	{
-		gtk_widget_shape_combine_mask(border, NULL, 0, 0);
-		_mask_dirty = false;
-	}
-	else
-		_mask_dirty = true;
+	if (!isVisible())
+		return;
+	
+	_mask_dirty = _transparent;
 }
 
 void gLabel::setTransparent(bool vl)
@@ -231,6 +223,7 @@ void gLabel::setTransparent(bool vl)
 		return;
 		
 	_transparent = vl;
+	gtk_widget_shape_combine_mask(border, NULL, 0, 0);
 	refresh();
 }
 
@@ -253,8 +246,11 @@ void gLabel::setText(char *vl)
 	updateLayout();
 	updateSize();
 	
-	if (no_text_before && _transparent)
-		gtk_widget_shape_combine_mask(border, NULL, 0, 0);
+	if (_transparent)
+	{
+		if (no_text_before)
+			gtk_widget_shape_combine_mask(border, NULL, 0, 0);
+	}
 	
 	refresh();
 }
@@ -276,7 +272,10 @@ int gLabel::alignment()
 }
 
 void gLabel::setAlignment(int al)
-{	
+{
+	if (align == al)
+		return;
+	
 	switch (al)
 	{
 		case ALIGN_BOTTOM:        lay_y=2;  lay_x=1; break;
@@ -294,7 +293,7 @@ void gLabel::setAlignment(int al)
 		default: return;
 	}
 	
-	align=al;
+	align = al;
 	refresh();
 }
 
