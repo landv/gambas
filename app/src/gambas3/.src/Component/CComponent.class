@@ -756,6 +756,7 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
   Dim sKind As String
   Dim iInd As Integer
   Dim hSymbol As CSymbolInfo
+  Dim aSymbol As CSymbolInfo[]
   Dim iStart As Integer
   Dim iEnd As Integer
   Dim iSign As Integer
@@ -916,6 +917,8 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
     If Not sKind Then Continue
     If iInd >= aSym.Count Then Continue
 
+  'ANOTHER_SYMBOL:
+
     sName = aSym[iInd]
     If Left(sName) = "{" Then
       If iInd + 2 > aSym.Max Then Continue
@@ -962,7 +965,22 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
 
       Else
         Inc iInd
+        
+        ' If iInd <= aSym.Max And If aSym[iInd] = "," Then
+        '   If Not aSymbol Then aSymbol = New CSymbolInfo[]
+        '   aSymbol.Add(hSymbol)
+        '   Inc iInd
+        '   Goto ANOTHER_SYMBOL
+        ' Endif
+        
         .Type = FEditor.ReadSymbolType(aSym, iInd)
+        
+        If aSymbol Then
+          For Each hSymbol In aSymbol
+            hSymbol.Type = .Type
+          Next
+        Endif
+        
       Endif
 
       If bStatic Then .Kind = UCase(.Kind)
@@ -1102,7 +1120,7 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
   Dim sFamily As String
 
   If Len(sClass) <= 1 Then
-    If sClass <> "." Then Return
+    If sClass <> "." And If Not IsLetter(sClass) Then Return
   Endif
   
   'Debug sClass

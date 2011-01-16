@@ -145,20 +145,30 @@ Private Sub UpdatePathFromStatus(sStatus As String)
   
   Dim sFile As String
   Dim sExt As String
+  Dim sPath As String
+  Dim sForm As String
 
   For Each sStatus In Split(sStatus, "\n")
 
     sFile = Mid$(sStatus, 9)
+    sPath = Project.Dir &/ sFile
   
     If Left(sStatus) = "D" Then
-      Project.LockedPaths[Project.Dir &/ sFile] = True
+      Project.LockedPaths[sPath] = True
     Else If Left(sStatus) = "?" Then
       If Left(File.Name(sFile)) = "." Then Continue
       If sFile Begins ".lang/" Then Continue
       If sFile = Project.Name & ".gambas" Then Continue
       sExt = File.Ext(sFile)
       If Left(sExt) = "r" And IsDigit(Mid$(sExt, 2)) And If Exist(Project.Dir &/ File.Dir(sFile) &/ File.BaseName(sFile)) Then Continue
-      Project.AddedPaths[Project.Dir &/ sFile] = True
+      Project.AddedPaths[sPath] = True
+
+      ' If Project.IsSourcePath(sPath) And If sExt = "class" Then
+      '   For Each sForm In Dir(Project.Dir &/ File.Dir(sFile), File.BaseName(sFile) & ".*")
+      '     Project.AddedPaths[Project.Dir &/ File.Dir(sFile) &/ sForm] = True
+      '   Next
+      ' Endif
+      
     Endif
     
   Next

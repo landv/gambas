@@ -14,6 +14,7 @@ Private $bInTreeView As Boolean
 Private $bInRename As Boolean
 Private $sKeyInfo As String
 Private $bNoSelect As String
+Private $bHasJustCollapsed As Boolean
 Private $bExpandOnMouseUp As Boolean
 
 Public Sub _new()
@@ -449,7 +450,7 @@ Public Sub UpdateRecentMenu()
   Inc Application.Busy
   
   bSort = Settings["/FWelcome/SortRecent", False]
-    
+  
   mnuOpenRecent.Children.Clear
   mnuOpenRecent.Enabled = CRecentFile.All.Count > 0
   
@@ -475,7 +476,7 @@ Public Sub UpdateRecentMenu()
         Until sPath = "/"
         
       Next
-        
+      
       For Each iVal In cParent
         If iVal >= 2 Then aMenu.Add(cParent.Key)
       Next
@@ -518,7 +519,7 @@ Public Sub UpdateRecentMenu()
       Next
       
     Else
-    
+      
       For Each hRecentFile In aList
         
         sPath = hRecentFile.Path
@@ -555,7 +556,7 @@ Public Sub UpdateRecentMenu()
     hMenu = New Menu(mnuOpenRecent) As "mnuClearRecent"
     hMenu.Text = ("&Clear history")
     hMenu.Picture = Picture["icon:/small/trash"]
-  
+    
   Endif
   
   Dec Application.Busy
@@ -912,17 +913,21 @@ Public Sub tvwProject_Select()
   RefreshMenu
   
   If tvwProject.Current.Children Then 
-    $bExpandOnMouseUp = True
+    ' Print Mouse.X ;; Mouse.Y ' generates crashes on random places, strange...
+    'If Not tvwProject.Find(Mouse.X, Mouse.Y) Then
+      $bExpandOnMouseUp = True
+    'Endif
   Endif
   
 End
 
 Public Sub tvwProject_MouseUp()
   
-  If $bExpandOnMouseUp Then
+  If $bExpandOnMouseUp And If Not $bHasJustCollapsed Then
     Try tvwProject.Current.Expanded = True
-    $bExpandOnMouseUp = False
   Endif
+  $bExpandOnMouseUp = False
+  $bHasJustCollapsed = False
   
 End
 
@@ -1192,7 +1197,7 @@ Public Sub Action_Activate(Key As String) As Boolean
       FSearch.FindNext
     Case "find-previous"
       FSearch.FindPrevious
-    'Case "find-project"
+      'Case "find-project"
       'cmbFind_Activate
       
     Case "console"
@@ -1338,7 +1343,7 @@ Public Sub tvwProject_DragMove()
 End
 
 Private Sub AddDataFiles(aFile As String[], bLink As Boolean)
-
+  
   Dim sPath As String
   Dim sDir As String
   Dim sName As String
@@ -1356,7 +1361,7 @@ Private Sub AddDataFiles(aFile As String[], bLink As Boolean)
     
     sName = Project.GetUniqueName(sDir, File.Name(sPath))
     Project.InsertFile(sName, sDir, sPath, True, bLink)
-      
+    
   Next
   
   Project.SelectKey(sDir &/ sName)
@@ -1369,7 +1374,6 @@ Catch
   ShowError(("Unable to drop file into the project.") & "\n\n" & Error.Text, $sKey)
   
 End
-
 
 Public Sub tvwProject_Drop()
   
@@ -1388,7 +1392,7 @@ Public Sub tvwProject_Drop()
     Endif
     
   Else
-  
+    
     If Drag.Action = Drag.Move Then
       Project.MoveFile(sSrc, GetCurrentDir($sKey) &/ File.Name(sSrc), Drag.Format = MMime.CLASS)
     Else If Drag.Action = Drag.Copy Then
@@ -1468,7 +1472,7 @@ End
 Public Sub tvwProject_Expand()
   
   Dim sKey As String = tvwProject.Item.Key
-
+  
   If Not sKey Then Return
   If Left(sKey) = "$" Then Return
   Project.FillDir(sKey)  
@@ -1478,7 +1482,8 @@ End
 Public Sub tvwProject_Collapse()
   
   Dim sKey As String = tvwProject.Item.Key
-
+  
+  $bHasJustCollapsed = True
   If Not sKey Then Return
   If File.Dir(sKey) = Project.Dir And If Not IsDir(sKey) Then tvwProject[sKey].Expanded = True
   
@@ -1779,6 +1784,7 @@ Public Sub mnuAddVersion_Click()
   If Message.Question(("Do you really want to add this file to the repository?"), ("Add"), ("Cancel")) = 2 Then Return
   
   VersionControl.AddFile($sKey)
+  If Project.IsFormPath($sKey) Then VersionControl.AddFile(File.SetExt($sKey, "class"))
   Project.Refresh
   
 End
@@ -1886,24 +1892,24 @@ End
 ' End
 
 Public Sub txtSearch_Click()
-
+  
   'Project.StoreCombo(cmbFind)
   FSearch.FindProject(txtSearch.Text)
-
+  
 End
 
 Public Sub txtSearch_Activate()
-
+  
   txtSearch_Click
-
+  
 End
 
 Public Sub btnSearchAdd_Click()
-
+  
   txtSearchProject.Clear
   Project.ProjectFilter = Project.FILTER_ADDED
   timSearchProject_Timer
-
+  
 End
 
 ' Public Sub tabProperty_Click()

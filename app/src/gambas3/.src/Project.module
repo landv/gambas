@@ -4903,6 +4903,7 @@ End
 Public Sub IsAdded(sPath As String, Optional bNoRec As Boolean) As Boolean
   
   If AddedPaths.Exist(sPath) Then Return True
+  'If IsSourcePath(sPath) And If File.Ext(sPath) = "form" And If AddedPaths.Exist(File.SetExt(sPath, "class")) Then Return True
   If bNoRec Then Return False
   If sPath = "" Or sPath = "/" Then Return False
   Return IsAdded(File.Dir(sPath))

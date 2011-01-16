@@ -298,7 +298,7 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
       
       Inc iLevel
 
-    Else If Left$(sLine, 1) = "}" Then
+    Else If Left$(sLine) = "}" Then
 
       'IF hCtrl = hParent THEN RETURN
       Dec iLevel

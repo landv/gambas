@@ -327,7 +327,7 @@ msgstr ""
 msgid "Gambas reports"
 msgstr ""
 
-#: CProjectTree.class:290 FMain.class:2866 FSearch.class:93
+#: CProjectTree.class:290 FMain.class:2872 FSearch.class:93
 #: FSelectIcon.class:216 Project.module:1437
 msgid "Project"
 msgstr ""
@@ -344,7 +344,7 @@ msgstr ""
 msgid "Data"
 msgstr ""
 
-#: CRecentFile.class:49 FMain.class:529
+#: CRecentFile.class:49 FMain.class:530
 msgid "Today"
 msgstr ""
 
@@ -391,13 +391,13 @@ msgstr ""
 
 #: Design.module:387 FColorChooser.class:209 FCommit.class:380
 #: FConnectionEditor.class:411 FCreateFile.class:922 FFontChooser.class:79
-#: FGotoLine.class:57 FList.class:331 FMain.class:1677 FMenu.class:1238
+#: FGotoLine.class:57 FList.class:331 FMain.class:1682 FMenu.class:1238
 #: FNewConnection.class:573 FNewTable.class:159 FNewTranslation.class:64
 #: FOpenProject.class:496 FPasteSpecial.class:273 FPropertyComponent.class:467
-#: FPropertyProject.class:252 FReportBorderChooser.class:213
-#: FReportCoordChooser.class:120 FSaveProjectAs.class:124
-#: FSelectExtraFile.class:72 FSelectIcon.class:268 FSnippet.class:136
-#: FTableChooser.class:138 FText.class:100
+#: FPropertyProject.class:252 FReportBorderChooser.class:231
+#: FReportBrushChooser.class:488 FReportCoordChooser.class:120
+#: FSaveProjectAs.class:124 FSelectExtraFile.class:72 FSelectIcon.class:268
+#: FSnippet.class:136 FTableChooser.class:138 FText.class:100
 msgid "OK"
 msgstr ""
 
@@ -456,7 +456,7 @@ msgstr ""
 msgid "System information"
 msgstr ""
 
-#: FAbout.class:621 FList.class:308 FMain.class:2574
+#: FAbout.class:621 FList.class:308 FMain.class:2580
 msgid "&Copy"
 msgstr ""
 
@@ -476,15 +476,15 @@ msgstr ""
 #: FConnectionEditor.class:261 FCreateFile.class:928 FDebugInfo.class:520
 #: FEditor.class:2225 FFontChooser.class:85 FForm.class:2957
 #: FGotoLine.class:63 FHelpBrowser.class:341 FIconEditor.class:1413
-#: FImportTable.class:39 FList.class:155 FMain.class:193
+#: FImportTable.class:39 FList.class:155 FMain.class:194
 #: FMakeInstall.class:326 FMenu.class:1243 FNewConnection.class:317
 #: FNewTable.class:165 FNewTranslation.class:70 FOpenProject.class:502
 #: FOption.class:600 FPasteSpecial.class:279 FPropertyComponent.class:473
-#: FPropertyProject.class:801 FReportBorderChooser.class:207
-#: FReportCoordChooser.class:114 FSave.class:118 FSaveProjectAs.class:130
-#: FSelectExtraFile.class:78 FSelectIcon.class:273 FSnippet.class:142
-#: FTableChooser.class:144 FText.class:106 FTextEditor.class:489
-#: FTranslate.class:634 Project.module:411
+#: FPropertyProject.class:801 FReportBorderChooser.class:225
+#: FReportBrushChooser.class:482 FReportCoordChooser.class:114 FSave.class:118
+#: FSaveProjectAs.class:130 FSelectExtraFile.class:78 FSelectIcon.class:273
+#: FSnippet.class:142 FTableChooser.class:144 FText.class:106
+#: FTextEditor.class:489 FTranslate.class:634 Project.module:411
 msgid "Cancel"
 msgstr ""
 
@@ -595,7 +595,7 @@ msgid ""
 "You must resolve the conflict in order to use the file."
 msgstr ""
 
-#: FConflict.class:25 FMain.class:2547
+#: FConflict.class:25 FMain.class:2553
 msgid "&Edit"
 msgstr ""
 
@@ -640,7 +640,8 @@ msgstr ""
 msgid "Text"
 msgstr ""
 
-#: FConflict.class:392 FCreateFile.class:708 Project.module:186
+#: FConflict.class:392 FCreateFile.class:708 FReportBrushChooser.class:495
+#: Project.module:186
 msgid "Image"
 msgstr ""
 
@@ -791,7 +792,7 @@ msgstr ""
 msgid "Do you really want to delete table '&1'?"
 msgstr ""
 
-#: FConnectionEditor.class:1330 FForm.class:3582 FMain.class:193
+#: FConnectionEditor.class:1330 FForm.class:3582 FMain.class:194
 #: FNewConnection.class:317 FOption.class:747 FTranslate.class:634
 msgid "Delete"
 msgstr ""
@@ -862,7 +863,7 @@ msgstr ""
 msgid "Fields"
 msgstr ""
 
-#: FConnectionEditor.class:1681 FMain.class:1779
+#: FConnectionEditor.class:1681 FMain.class:1784
 msgid "Add"
 msgstr ""
 
@@ -930,7 +931,7 @@ msgstr ""
 msgid "New file"
 msgstr ""
 
-#: FCreateFile.class:582 FMain.class:2451
+#: FCreateFile.class:582 FMain.class:2457
 msgid "New"
 msgstr ""
 
@@ -955,7 +956,7 @@ msgstr ""
 msgid "Options"
 msgstr ""
 
-#: FCreateFile.class:800 FReportBorderChooser.class:235
+#: FCreateFile.class:800 FReportBorderChooser.class:253
 msgid "Width"
 msgstr ""
 
@@ -1019,7 +1020,7 @@ msgstr ""
 msgid "The project has been successfully created."
 msgstr ""
 
-#: FCreateProject.class:336 FMain.class:2759
+#: FCreateProject.class:336 FMain.class:2765
 msgid "New project"
 msgstr ""
 
@@ -1184,11 +1185,11 @@ msgstr ""
 msgid "Dynamic variables"
 msgstr ""
 
-#: FDebugInfo.class:1159 FMain.class:3149
+#: FDebugInfo.class:1159 FMain.class:3155
 msgid "Debug"
 msgstr ""
 
-#: FDebugInfo.class:1172 FMain.class:2894 FOption.class:1478 FSearch.class:89
+#: FDebugInfo.class:1172 FMain.class:2900 FOption.class:1478 FSearch.class:89
 msgid "Console"
 msgstr ""
 
@@ -1216,7 +1217,7 @@ msgstr ""
 msgid "Remove current expression"
 msgstr ""
 
-#: FDebugInfo.class:1239 FMain.class:2661 FMakeInstall.class:1661
+#: FDebugInfo.class:1239 FMain.class:2667 FMakeInstall.class:1661
 #: FOption.class:1581 FPropertyComponent.class:442 FPropertyProject.class:1586
 msgid "&Remove"
 msgstr ""
@@ -1308,7 +1309,7 @@ msgstr ""
 msgid "Open form"
 msgstr ""
 
-#: FEditor.class:3342 FForm.class:3487 FMain.class:2614
+#: FEditor.class:3342 FForm.class:3487 FMain.class:2620
 msgid "&Startup class"
 msgstr ""
 
@@ -1591,7 +1592,7 @@ msgstr ""
 msgid "Move tab last"
 msgstr ""
 
-#: FFormStack.class:322 FMain.class:3177
+#: FFormStack.class:322 FMain.class:3183
 msgid "Hierarchy"
 msgstr ""
 
@@ -1623,7 +1624,7 @@ msgstr ""
 msgid "Default language"
 msgstr ""
 
-#: FHelpBrowser.class:309 FMain.class:2912
+#: FHelpBrowser.class:309 FMain.class:2918
 msgid "Help browser"
 msgstr ""
 
@@ -2026,7 +2027,7 @@ msgstr ""
 msgid "Cl&ear"
 msgstr ""
 
-#: FList.class:314 FMain.class:2581
+#: FList.class:314 FMain.class:2587
 msgid "&Paste"
 msgstr ""
 
@@ -2034,451 +2035,451 @@ msgstr ""
 msgid "&Undo"
 msgstr ""
 
-#: FMain.class:193
+#: FMain.class:194
 msgid "Do you really want to delete this link ?"
 msgstr ""
 
-#: FMain.class:196
+#: FMain.class:197
 msgid "Do you really want to delete this directory ?"
 msgstr ""
 
-#: FMain.class:208
+#: FMain.class:209
 msgid "Do you really want to delete this file ?"
 msgstr ""
 
-#: FMain.class:215
+#: FMain.class:216
 msgid "Cannot delete file or directory"
 msgstr ""
 
-#: FMain.class:550
+#: FMain.class:551
 msgid "&Sort by path"
 msgstr ""
 
-#: FMain.class:556
+#: FMain.class:557
 msgid "&Clear history"
 msgstr ""
 
-#: FMain.class:725
+#: FMain.class:726
 msgid "New folder"
 msgstr ""
 
-#: FMain.class:792
+#: FMain.class:793
 msgid ""
 "The GNU translation tools are not installed on your system.\n"
 "\n"
 "Please install them to be able to do the translation."
 msgstr ""
 
-#: FMain.class:1369
+#: FMain.class:1374
 msgid "Unable to drop file into the project."
 msgstr ""
 
-#: FMain.class:1489
+#: FMain.class:1494
 msgid ""
 "All backup or generated files will be removed from the project directory."
 msgstr ""
 
-#: FMain.class:1489
+#: FMain.class:1494
 msgid "Clean"
 msgstr ""
 
-#: FMain.class:1677
+#: FMain.class:1682
 msgid "To show the menu bar again, hit the following keys:<p><b>&1</b>"
 msgstr ""
 
-#: FMain.class:1779
+#: FMain.class:1784
 msgid "Do you really want to add this file to the repository?"
 msgstr ""
 
-#: FMain.class:2116
+#: FMain.class:2122
 msgid "&File"
 msgstr ""
 
-#: FMain.class:2120
+#: FMain.class:2126
 msgid "&New project..."
 msgstr ""
 
-#: FMain.class:2127
+#: FMain.class:2133
 msgid "&Open project..."
 msgstr ""
 
-#: FMain.class:2133
+#: FMain.class:2139
 msgid "Open &recent"
 msgstr ""
 
-#: FMain.class:2140
+#: FMain.class:2146
 msgid "Open &example"
 msgstr ""
 
-#: FMain.class:2151
+#: FMain.class:2157
 msgid "&Save project"
 msgstr ""
 
-#: FMain.class:2158
+#: FMain.class:2164
 msgid "Save project &as..."
 msgstr ""
 
-#: FMain.class:2168
+#: FMain.class:2174
 msgid "&Quit"
 msgstr ""
 
-#: FMain.class:2175
+#: FMain.class:2181
 msgid "&Project"
 msgstr ""
 
-#: FMain.class:2179
+#: FMain.class:2185
 msgid "&Compile"
 msgstr ""
 
-#: FMain.class:2186
+#: FMain.class:2192
 msgid "Compile &All"
 msgstr ""
 
-#: FMain.class:2196
+#: FMain.class:2202
 msgid "&Translate..."
 msgstr ""
 
-#: FMain.class:2205
+#: FMain.class:2211
 msgid "Make"
 msgstr ""
 
-#: FMain.class:2209
+#: FMain.class:2215
 msgid "E&xecutable..."
 msgstr ""
 
-#: FMain.class:2216
+#: FMain.class:2222
 msgid "&Source archive..."
 msgstr ""
 
-#: FMain.class:2223
+#: FMain.class:2229
 msgid "&Installation package..."
 msgstr ""
 
-#: FMain.class:2234
+#: FMain.class:2240
 msgid "&Clean up"
 msgstr ""
 
-#: FMain.class:2240
+#: FMain.class:2246
 msgid "&Refresh"
 msgstr ""
 
-#: FMain.class:2246
+#: FMain.class:2252
 msgid "Put on &version control"
 msgstr ""
 
-#: FMain.class:2256
+#: FMain.class:2262
 msgid "&Properties..."
 msgstr ""
 
-#: FMain.class:2263
+#: FMain.class:2269
 msgid "Co&mponent properties..."
 msgstr ""
 
-#: FMain.class:2271
+#: FMain.class:2277
 msgid "&Debug"
 msgstr ""
 
-#: FMain.class:2275
+#: FMain.class:2281
 msgid "&Run"
 msgstr ""
 
-#: FMain.class:2285
+#: FMain.class:2291
 msgid "&Pause"
 msgstr ""
 
-#: FMain.class:2292
+#: FMain.class:2298
 msgid "&Stop"
 msgstr ""
 
-#: FMain.class:2299
+#: FMain.class:2305
 msgid "St&ep"
 msgstr ""
 
-#: FMain.class:2306
+#: FMain.class:2312
 msgid "&Forward"
 msgstr ""
 
-#: FMain.class:2313
+#: FMain.class:2319
 msgid "Finis&h"
 msgstr ""
 
-#: FMain.class:2320
+#: FMain.class:2326
 msgid "Run &until"
 msgstr ""
 
-#: FMain.class:2330
+#: FMain.class:2336
 msgid "Clear &all breakpoints"
 msgstr ""
 
-#: FMain.class:2335
+#: FMain.class:2341
 msgid "Close all &debug windows"
 msgstr ""
 
-#: FMain.class:2340
+#: FMain.class:2346
 msgid "&View"
 msgstr ""
 
-#: FMain.class:2344
+#: FMain.class:2350
 msgid "Pro&ject"
 msgstr ""
 
-#: FMain.class:2353
+#: FMain.class:2359
 msgid "&Properties"
 msgstr ""
 
-#: FMain.class:2361
+#: FMain.class:2367
 msgid "&Toolbox"
 msgstr ""
 
-#: FMain.class:2369
+#: FMain.class:2375
 msgid "&Console"
 msgstr ""
 
-#: FMain.class:2379
+#: FMain.class:2385
 msgid "Status bar"
 msgstr ""
 
-#: FMain.class:2386
+#: FMain.class:2392
 msgid "Hide menubar"
 msgstr ""
 
-#: FMain.class:2392
+#: FMain.class:2398
 msgid "Close &all windows"
 msgstr ""
 
-#: FMain.class:2398
+#: FMain.class:2404
 msgid "&Tools"
 msgstr ""
 
-#: FMain.class:2401
+#: FMain.class:2407
 msgid "&Find..."
 msgstr ""
 
-#: FMain.class:2407
+#: FMain.class:2413
 msgid "&Replace..."
 msgstr ""
 
-#: FMain.class:2417
+#: FMain.class:2423
 msgid "&Browse project..."
 msgstr ""
 
-#: FMain.class:2424
+#: FMain.class:2430
 msgid "&Open a terminal..."
 msgstr ""
 
-#: FMain.class:2434
+#: FMain.class:2440
 msgid "&Shortcuts..."
 msgstr ""
 
-#: FMain.class:2440
+#: FMain.class:2446
 msgid "&Preferences..."
 msgstr ""
 
-#: FMain.class:2455
+#: FMain.class:2461
 msgid "&Directory"
 msgstr ""
 
-#: FMain.class:2461
+#: FMain.class:2467
 msgid "&Project link..."
 msgstr ""
 
-#: FMain.class:2472
+#: FMain.class:2478
 msgid "&Module..."
 msgstr ""
 
-#: FMain.class:2480
+#: FMain.class:2486
 msgid "&Class..."
 msgstr ""
 
-#: FMain.class:2488
+#: FMain.class:2494
 msgid "&Form..."
 msgstr ""
 
-#: FMain.class:2496
+#: FMain.class:2502
 msgid "&WebPage..."
 msgstr ""
 
-#: FMain.class:2504
+#: FMain.class:2510
 msgid "&Report..."
 msgstr ""
 
-#: FMain.class:2515
+#: FMain.class:2521
 msgid "&Image..."
 msgstr ""
 
-#: FMain.class:2522
+#: FMain.class:2528
 msgid "&HTML file..."
 msgstr ""
 
-#: FMain.class:2529
+#: FMain.class:2535
 msgid "&Style sheet..."
 msgstr ""
 
-#: FMain.class:2537
+#: FMain.class:2543
 msgid "&Other..."
 msgstr ""
 
-#: FMain.class:2552
+#: FMain.class:2558
 msgid "Edit &code"
 msgstr ""
 
-#: FMain.class:2556
+#: FMain.class:2562
 msgid "Edit with"
 msgstr ""
 
-#: FMain.class:2567
+#: FMain.class:2573
 msgid "&Cut"
 msgstr ""
 
-#: FMain.class:2588
+#: FMain.class:2594
 msgid "&Rename..."
 msgstr ""
 
-#: FMain.class:2595
+#: FMain.class:2601
 msgid "&Delete..."
 msgstr ""
 
-#: FMain.class:2605
+#: FMain.class:2611
 msgid "Copy file pat&h"
 msgstr ""
 
-#: FMain.class:2622
+#: FMain.class:2628
 msgid "&Add to repository"
 msgstr ""
 
-#: FMain.class:2647
+#: FMain.class:2653
 msgid "&New connection..."
 msgstr ""
 
-#: FMain.class:2655
+#: FMain.class:2661
 msgid "&Open"
 msgstr ""
 
-#: FMain.class:2715
+#: FMain.class:2721
 msgid "&?"
 msgstr ""
 
-#: FMain.class:2724
+#: FMain.class:2730
 msgid "&Help browser"
 msgstr ""
 
-#: FMain.class:2732
+#: FMain.class:2738
 msgid "&Tips of the day"
 msgstr ""
 
-#: FMain.class:2741
+#: FMain.class:2747
 msgid "&About Gambas..."
 msgstr ""
 
-#: FMain.class:2766
+#: FMain.class:2772
 msgid "Open project"
 msgstr ""
 
-#: FMain.class:2775
+#: FMain.class:2781
 msgid "Save project"
 msgstr ""
 
-#: FMain.class:2782 FSaveProjectAs.class:86
+#: FMain.class:2788 FSaveProjectAs.class:86
 msgid "Save project as"
 msgstr ""
 
-#: FMain.class:2789 FPropertyProject.class:49
+#: FMain.class:2795 FPropertyProject.class:49
 msgid "Project properties"
 msgstr ""
 
-#: FMain.class:2796 FPropertyComponent.class:281
+#: FMain.class:2802 FPropertyComponent.class:281
 msgid "Component properties"
 msgstr ""
 
-#: FMain.class:2804
+#: FMain.class:2810
 msgid "Refresh project"
 msgstr ""
 
-#: FMain.class:2811 FOption.class:907
+#: FMain.class:2817 FOption.class:907
 msgid "Preferences"
 msgstr ""
 
-#: FMain.class:2820
+#: FMain.class:2826
 msgid "Shortcuts"
 msgstr ""
 
-#: FMain.class:2831 FTranslate.class:1583
+#: FMain.class:2837 FTranslate.class:1583
 msgid "Translate"
 msgstr ""
 
-#: FMain.class:2839
+#: FMain.class:2845
 msgid "Make source archive"
 msgstr ""
 
-#: FMain.class:2846 FMakeExecutable.class:76
+#: FMain.class:2852 FMakeExecutable.class:76
 msgid "Make executable"
 msgstr ""
 
-#: FMain.class:2854 FMakeInstall.class:1199
+#: FMain.class:2860 FMakeInstall.class:1199
 msgid "Make installation package"
 msgstr ""
 
-#: FMain.class:2876
+#: FMain.class:2882
 msgid "Properties sheet"
 msgstr ""
 
-#: FMain.class:2885
+#: FMain.class:2891
 msgid "Toolbox"
 msgstr ""
 
-#: FMain.class:2903 FSearch.class:1054
+#: FMain.class:2909 FSearch.class:1054
 msgid "Search"
 msgstr ""
 
-#: FMain.class:2920
+#: FMain.class:2926
 msgid "Compile"
 msgstr ""
 
-#: FMain.class:2927
+#: FMain.class:2933
 msgid "Compile all"
 msgstr ""
 
-#: FMain.class:2934
+#: FMain.class:2940
 msgid "Run"
 msgstr ""
 
-#: FMain.class:2941
+#: FMain.class:2947
 msgid "Pause"
 msgstr ""
 
-#: FMain.class:2948
+#: FMain.class:2954
 msgid "Stop"
 msgstr ""
 
-#: FMain.class:2955
+#: FMain.class:2961
 msgid "Step"
 msgstr ""
 
-#: FMain.class:2962
+#: FMain.class:2968
 msgid "Forward"
 msgstr ""
 
-#: FMain.class:2969
+#: FMain.class:2975
 msgid "Finish current function"
 msgstr ""
 
-#: FMain.class:2977
+#: FMain.class:2983
 msgid "Run until current line"
 msgstr ""
 
-#: FMain.class:2988
+#: FMain.class:2994
 msgid "Browse project..."
 msgstr ""
 
-#: FMain.class:3102
+#: FMain.class:3108
 msgid "Show added files"
 msgstr ""
 
-#: FMain.class:3108
+#: FMain.class:3114
 msgid "Reset filter"
 msgstr ""
 
-#: FMain.class:3158 FProperty.class:1146 MHelp.module:585
+#: FMain.class:3164 FProperty.class:1148 MHelp.module:585
 msgid "Properties"
 msgstr ""
 
@@ -3334,15 +3335,15 @@ msgstr ""
 msgid "Edit field list"
 msgstr ""
 
-#: FProperty.class:1156
+#: FProperty.class:1158
 msgid "Click on a form or a control to modify its properties..."
 msgstr ""
 
-#: FProperty.class:1171
+#: FProperty.class:1173
 msgid "Lock property"
 msgstr ""
 
-#: FProperty.class:1223
+#: FProperty.class:1225
 msgid "..."
 msgstr ""
 
@@ -3550,16 +3551,44 @@ msgstr ""
 msgid "&Commit..."
 msgstr ""
 
-#: FReportBorderChooser.class:201
-msgid "Select a border"
+#: FReportBorderChooser.class:237
+msgid "Choose the style and then click on border to setup each borders"
 msgstr ""
 
-#: FReportBorderChooser.class:219
-msgid "Draw a border"
+#: FReportBorderChooser.class:246
+msgid "2px"
 msgstr ""
 
-#: FReportBorderChooser.class:241
+#: FReportBorderChooser.class:258
+msgid "Brush"
+msgstr ""
+
+#: FReportBrushChooser.class:477
+msgid "Report Brush"
+msgstr ""
+
+#: FReportBrushChooser.class:495
 msgid "Color"
+msgstr ""
+
+#: FReportBrushChooser.class:495
+msgid "Gradient"
+msgstr ""
+
+#: FReportBrushChooser.class:525
+msgid "Radial"
+msgstr ""
+
+#: FReportBrushChooser.class:534
+msgid "F"
+msgstr ""
+
+#: FReportBrushChooser.class:541
+msgid "C"
+msgstr ""
+
+#: FReportBrushChooser.class:556
+msgid "Radius"
 msgstr ""
 
 #: FReportCoordChooser.class:18
@@ -4275,710 +4304,714 @@ msgid "Array declaration is forbidden with typed collection"
 msgstr ""
 
 #: MErrorMessage.module:30
-msgid "Bad archive: &1: &2"
+msgid "Arrays of structure are not supported"
 msgstr ""
 
 #: MErrorMessage.module:31
-msgid "Bad argument"
+msgid "Bad archive: &1: &2"
 msgstr ""
 
 #: MErrorMessage.module:32
-msgid "Bad character constant in string"
+msgid "Bad argument"
 msgstr ""
 
 #: MErrorMessage.module:33
-msgid "Bad constant type"
+msgid "Bad character constant in string"
 msgstr ""
 
 #: MErrorMessage.module:34
-msgid "Bad event handler in &1.&2(): &3"
+msgid "Bad constant type"
 msgstr ""
 
 #: MErrorMessage.module:35
-msgid "Bad expression: &1"
+msgid "Bad event handler in &1.&2(): &3"
 msgstr ""
 
 #: MErrorMessage.module:36
-msgid "Bad form file version"
+msgid "Bad expression: &1"
 msgstr ""
 
 #: MErrorMessage.module:37
-msgid "Bad format string"
+msgid "Bad form file version"
 msgstr ""
 
 #: MErrorMessage.module:38
-msgid "Bad number of dimensions"
+msgid "Bad format string"
 msgstr ""
 
 #: MErrorMessage.module:39
-msgid "Bad project file: line &1: &2"
+msgid "Bad number of dimensions"
 msgstr ""
 
 #: MErrorMessage.module:40
-msgid "Bad regular expression: &1"
+msgid "Bad project file: line &1: &2"
 msgstr ""
 
 #: MErrorMessage.module:41
-msgid "Bad string conversion"
+msgid "Bad regular expression: &1"
 msgstr ""
 
 #: MErrorMessage.module:42
-msgid "Bad subscript range"
+msgid "Bad string conversion"
 msgstr ""
 
 #: MErrorMessage.module:43
-msgid "Bad use of virtual class"
+msgid "Bad subscript range"
 msgstr ""
 
 #: MErrorMessage.module:44
-msgid "Bad version string"
+msgid "Bad use of virtual class"
 msgstr ""
 
 #: MErrorMessage.module:45
-msgid "Cannot create .startup file"
+msgid "Bad version string"
 msgstr ""
 
 #: MErrorMessage.module:46
-msgid "Cannot create action file: &1"
+msgid "Cannot create .startup file"
 msgstr ""
 
 #: MErrorMessage.module:47
-msgid "Cannot create callback: &1"
+msgid "Cannot create action file: &1"
 msgstr ""
 
 #: MErrorMessage.module:48
-msgid "Cannot create class information: &1: &2"
+msgid "Cannot create callback: &1"
 msgstr ""
 
 #: MErrorMessage.module:49
-msgid "Cannot create file: &1"
+msgid "Cannot create class information: &1: &2"
 msgstr ""
 
 #: MErrorMessage.module:50
-msgid "Cannot create temporary archive file: &1"
+msgid "Cannot create file: &1"
 msgstr ""
 
 #: MErrorMessage.module:51
-msgid "Cannot find dynamic library '&1': &2"
+msgid "Cannot create temporary archive file: &1"
 msgstr ""
 
 #: MErrorMessage.module:52
-msgid "Cannot find symbol '&2' in dynamic library '&1'"
+msgid "Cannot find dynamic library '&1': &2"
 msgstr ""
 
 #: MErrorMessage.module:53
-msgid "Cannot inherit twice"
+msgid "Cannot find symbol '&2' in dynamic library '&1'"
 msgstr ""
 
 #: MErrorMessage.module:54
-msgid "Cannot instanciate native types"
+msgid "Cannot inherit twice"
 msgstr ""
 
 #: MErrorMessage.module:55
-msgid "Cannot load class '&1': &2&3"
+msgid "Cannot instanciate native types"
 msgstr ""
 
 #: MErrorMessage.module:56
-msgid "Cannot load component '&1': &2"
+msgid "Cannot load class '&1': &2&3"
 msgstr ""
 
 #: MErrorMessage.module:57
-msgid "Cannot make executable: &1: &2"
+msgid "Cannot load component '&1': &2"
 msgstr ""
 
 #: MErrorMessage.module:58
-msgid "Cannot mix NEW and embedded array"
+msgid "Cannot make executable: &1: &2"
 msgstr ""
 
 #: MErrorMessage.module:59
-msgid "Cannot mix NEW and embedded structure"
+msgid "Cannot mix NEW and embedded array"
 msgstr ""
 
 #: MErrorMessage.module:60
-msgid "Cannot open file '&1': &2"
+msgid "Cannot mix NEW and embedded structure"
 msgstr ""
 
 #: MErrorMessage.module:61
-msgid "Cannot open file: &1"
+msgid "Cannot open file '&1': &2"
 msgstr ""
 
 #: MErrorMessage.module:62
-msgid "Cannot raise events in static function"
+msgid "Cannot open file: &1"
 msgstr ""
 
 #: MErrorMessage.module:63
-msgid "Cannot read file: &1"
+msgid "Cannot raise events in static function"
 msgstr ""
 
 #: MErrorMessage.module:64
-msgid "Cannot read file: &1: &2"
+msgid "Cannot read file: &1"
 msgstr ""
 
 #: MErrorMessage.module:65
-msgid "Cannot register class '&1'"
+msgid "Cannot read file: &1: &2"
 msgstr ""
 
 #: MErrorMessage.module:66
-msgid "Cannot set file owner: &1: &2"
+msgid "Cannot register class '&1'"
 msgstr ""
 
 #: MErrorMessage.module:67
-msgid "Cannot use NEW operator there"
+msgid "Cannot set file owner: &1: &2"
 msgstr ""
 
 #: MErrorMessage.module:68
-msgid "Cannot use TRY twice"
+msgid "Cannot use NEW operator there"
 msgstr ""
 
 #: MErrorMessage.module:69
-msgid "Class '&1' is not creatable"
+msgid "Cannot use TRY twice"
 msgstr ""
 
 #: MErrorMessage.module:70
-msgid "Comparison operator expected"
+msgid "Class '&1' is not creatable"
 msgstr ""
 
 #: MErrorMessage.module:71
-msgid "Component not found: &1"
+msgid "Comparison operator expected"
 msgstr ""
 
 #: MErrorMessage.module:72
-msgid "Device is full"
+msgid "Component not found: &1"
 msgstr ""
 
 #: MErrorMessage.module:73
-msgid "Division by zero"
+msgid "Device is full"
 msgstr ""
 
 #: MErrorMessage.module:74
-msgid "Dynamic symbols cannot be used in static function"
+msgid "Division by zero"
 msgstr ""
 
 #: MErrorMessage.module:75
-msgid "Embedded array"
+msgid "Dynamic symbols cannot be used in static function"
 msgstr ""
 
 #: MErrorMessage.module:76
-msgid "End of file"
+msgid "Embedded array"
 msgstr ""
 
 #: MErrorMessage.module:77
-msgid "Equality or inequality operator expected"
+msgid "Embedded arrays are forbidden here"
 msgstr ""
 
 #: MErrorMessage.module:78
-msgid "Expression too complex"
+msgid "End of file"
 msgstr ""
 
 #: MErrorMessage.module:79
-msgid "Expression too complex. Too many operands"
+msgid "Equality or inequality operator expected"
 msgstr ""
 
 #: MErrorMessage.module:80
-msgid "File already exists"
+msgid "Expression too complex"
 msgstr ""
 
 #: MErrorMessage.module:81
-msgid "File is a directory"
+msgid "Expression too complex. Too many operands"
 msgstr ""
 
 #: MErrorMessage.module:82
-msgid "File is locked"
+msgid "File already exists"
 msgstr ""
 
 #: MErrorMessage.module:83
-msgid "File name is too long"
+msgid "File is a directory"
 msgstr ""
 
 #: MErrorMessage.module:84
-msgid "File or directory does not exist"
+msgid "File is locked"
 msgstr ""
 
 #: MErrorMessage.module:85
-msgid "Forbidden GOTO"
+msgid "File name is too long"
 msgstr ""
 
 #: MErrorMessage.module:86
-msgid "Illegal instruction"
+msgid "File or directory does not exist"
 msgstr ""
 
 #: MErrorMessage.module:87
-msgid "Invalid assignment"
+msgid "Forbidden GOTO"
 msgstr ""
 
 #: MErrorMessage.module:88
-msgid "Invalid date"
+msgid "Illegal instruction"
 msgstr ""
 
 #: MErrorMessage.module:89
-msgid "Invalid object"
+msgid "Invalid assignment"
 msgstr ""
 
 #: MErrorMessage.module:90
-msgid "Invalid path"
+msgid "Invalid date"
 msgstr ""
 
 #: MErrorMessage.module:91
-msgid "Label '&1' not declared"
+msgid "Invalid object"
 msgstr ""
 
 #: MErrorMessage.module:92
-msgid "Library name must be a string"
+msgid "Invalid path"
 msgstr ""
 
 #: MErrorMessage.module:93
-msgid "Loop variable already in use"
+msgid "Label '&1' not declared"
 msgstr ""
 
 #: MErrorMessage.module:94
-msgid "Loop variable must be local"
+msgid "Library name must be a string"
 msgstr ""
 
 #: MErrorMessage.module:95
-msgid "ME cannot be used in a static function"
+msgid "Loop variable already in use"
 msgstr ""
 
 #: MErrorMessage.module:96
-msgid "Mathematic error"
+msgid "Loop variable must be local"
 msgstr ""
 
 #: MErrorMessage.module:97
-msgid "Missing #Endif"
+msgid "ME cannot be used in a static function"
 msgstr ""
 
 #: MErrorMessage.module:98
-msgid "Missing &1"
+msgid "Mathematic error"
 msgstr ""
 
 #: MErrorMessage.module:99
-msgid "Missing operator"
+msgid "Missing #Endif"
 msgstr ""
 
 #: MErrorMessage.module:100
-msgid "Missing right brace"
+msgid "Missing &1"
 msgstr ""
 
 #: MErrorMessage.module:101
-msgid "NEW cannot have arguments passed by reference"
+msgid "Missing operator"
 msgstr ""
 
 #: MErrorMessage.module:102
-msgid "No instanciation method"
+msgid "Missing right brace"
 msgstr ""
 
 #: MErrorMessage.module:103
-msgid "No parent class"
+msgid "NEW cannot have arguments passed by reference"
 msgstr ""
 
 #: MErrorMessage.module:104
-msgid "No return value"
+msgid "No instanciation method"
 msgstr ""
 
 #: MErrorMessage.module:105
-msgid "No startup method"
+msgid "No parent class"
 msgstr ""
 
 #: MErrorMessage.module:106
-msgid "Non terminated string"
+msgid "No return value"
 msgstr ""
 
 #: MErrorMessage.module:107
-msgid "Not a directory: &1"
+msgid "No startup method"
 msgstr ""
 
 #: MErrorMessage.module:108
-msgid "Not a function"
+msgid "Non terminated string"
 msgstr ""
 
 #: MErrorMessage.module:109
-msgid "Not an array"
+msgid "Not a directory: &1"
 msgstr ""
 
 #: MErrorMessage.module:110
-msgid "Not an enumeration"
+msgid "Not a function"
 msgstr ""
 
 #: MErrorMessage.module:111
-msgid "Not an object"
+msgid "Not an array"
 msgstr ""
 
 #: MErrorMessage.module:112
-msgid "Not enough argument to New()"
+msgid "Not an enumeration"
 msgstr ""
 
 #: MErrorMessage.module:113
-msgid "Not enough arguments"
+msgid "Not an object"
 msgstr ""
 
 #: MErrorMessage.module:114
-msgid "Not enough arguments to &1()"
+msgid "Not enough argument to New()"
 msgstr ""
 
 #: MErrorMessage.module:115
-msgid "Null object"
+msgid "Not enough arguments"
 msgstr ""
 
 #: MErrorMessage.module:116
-msgid "Out of bounds"
+msgid "Not enough arguments to &1()"
 msgstr ""
 
 #: MErrorMessage.module:117
-msgid "Out of memory"
+msgid "Null object"
 msgstr ""
 
 #: MErrorMessage.module:118
-msgid "Out of range"
+msgid "Out of bounds"
 msgstr ""
 
 #: MErrorMessage.module:119
-msgid "Overflow"
+msgid "Out of memory"
 msgstr ""
 
 #: MErrorMessage.module:120
-msgid "Read error"
+msgid "Out of range"
 msgstr ""
 
 #: MErrorMessage.module:121
-msgid "Return value datatype not specified in function declaration"
+msgid "Overflow"
 msgstr ""
 
 #: MErrorMessage.module:122
-msgid "STOP instruction encountered"
+msgid "Read error"
 msgstr ""
 
 #: MErrorMessage.module:123
-msgid "SUPER cannot be used alone"
+msgid "Return value datatype not specified in function declaration"
 msgstr ""
 
 #: MErrorMessage.module:124
-msgid "Serialization error"
+msgid "STOP instruction encountered"
 msgstr ""
 
 #: MErrorMessage.module:125
-msgid "Stack overflow"
+msgid "SUPER cannot be used alone"
 msgstr ""
 
 #: MErrorMessage.module:126
-msgid "Static arrays are forbidden here"
+msgid "Serialization error"
 msgstr ""
 
 #: MErrorMessage.module:127
-msgid "Stream is closed"
+msgid "Stack overflow"
 msgstr ""
 
 #: MErrorMessage.module:128
-msgid "String expected"
+msgid "Stream is closed"
 msgstr ""
 
 #: MErrorMessage.module:129
-msgid "Structures must be public"
+msgid "String expected"
 msgstr ""
 
 #: MErrorMessage.module:130
-msgid "Subroutine arguments cannot be passed by reference"
+msgid "Structures must be public"
 msgstr ""
 
 #: MErrorMessage.module:131
-msgid "Syntax error"
+msgid "Subroutine arguments cannot be passed by reference"
 msgstr ""
 
 #: MErrorMessage.module:132
-msgid "Syntax error at function declaration"
+msgid "Syntax error"
 msgstr ""
 
 #: MErrorMessage.module:133
-msgid "Syntax error in event name"
+msgid "Syntax error at function declaration"
 msgstr ""
 
 #: MErrorMessage.module:134
-msgid "Syntax error in file open mode"
+msgid "Syntax error in event name"
 msgstr ""
 
 #: MErrorMessage.module:135
-msgid "Syntax error in return type"
+msgid "Syntax error in file open mode"
 msgstr ""
 
 #: MErrorMessage.module:136
-msgid "Syntax error. &1 expected"
+msgid "Syntax error in return type"
 msgstr ""
 
 #: MErrorMessage.module:137
-msgid "Syntax error. '...' must be the last argument"
+msgid "Syntax error. &1 expected"
 msgstr ""
 
 #: MErrorMessage.module:138
-msgid "Syntax error. Bad property type"
+msgid "Syntax error. '...' must be the last argument"
 msgstr ""
 
 #: MErrorMessage.module:139
-msgid "Syntax error. CASE or DEFAULT expected after SELECT"
+msgid "Syntax error. Bad property type"
 msgstr ""
 
 #: MErrorMessage.module:140
-msgid "Syntax error. CLASS needs an identifier"
+msgid "Syntax error. CASE or DEFAULT expected after SELECT"
 msgstr ""
 
 #: MErrorMessage.module:141
-msgid "Syntax error. Cannot use this syntax in assignment"
+msgid "Syntax error. CLASS needs an identifier"
 msgstr ""
 
 #: MErrorMessage.module:142
-msgid "Syntax error. INHERITS needs a class name"
+msgid "Syntax error. Cannot use this syntax in assignment"
 msgstr ""
 
 #: MErrorMessage.module:143
-msgid "Syntax error. Identifier expected."
+msgid "Syntax error. INHERITS needs a class name"
 msgstr ""
 
 #: MErrorMessage.module:144
-msgid "Syntax error. Invalid identifier in function name"
+msgid "Syntax error. Identifier expected."
 msgstr ""
 
 #: MErrorMessage.module:145
-msgid "Syntax error. Invalid identifier in property name"
+msgid "Syntax error. Invalid identifier in function name"
 msgstr ""
 
 #: MErrorMessage.module:146
-msgid "Syntax error. Invalid optional parameter"
+msgid "Syntax error. Invalid identifier in property name"
 msgstr ""
 
 #: MErrorMessage.module:147
-msgid "Syntax error. Invalid return type"
+msgid "Syntax error. Invalid optional parameter"
 msgstr ""
 
 #: MErrorMessage.module:148
-msgid "Syntax error. Invalid type description of &1 argument"
+msgid "Syntax error. Invalid return type"
 msgstr ""
 
 #: MErrorMessage.module:149
-msgid "Syntax error. Invalid type description of &1 field"
+msgid "Syntax error. Invalid type description of &1 argument"
 msgstr ""
 
 #: MErrorMessage.module:150
-msgid "Syntax error. Missing &1"
+msgid "Syntax error. Invalid type description of &1 field"
 msgstr ""
 
 #: MErrorMessage.module:151
-msgid "Syntax error. Needless arguments"
+msgid "Syntax error. Missing &1"
 msgstr ""
 
 #: MErrorMessage.module:152
-msgid "Syntax error. Point syntax used outside of WITH / END WITH"
+msgid "Syntax error. Needless arguments"
 msgstr ""
 
 #: MErrorMessage.module:153
-msgid "Syntax error. STRUCT needs an identifier"
+msgid "Syntax error. Point syntax used outside of WITH / END WITH"
 msgstr ""
 
 #: MErrorMessage.module:154
-msgid "Syntax error. The &1 argument is not a valid identifier"
+msgid "Syntax error. STRUCT needs an identifier"
 msgstr ""
 
 #: MErrorMessage.module:155
-msgid "Syntax error. The &1 field is not a valid identifier"
+msgid "Syntax error. The &1 argument is not a valid identifier"
 msgstr ""
 
 #: MErrorMessage.module:156
-msgid "Syntax error. VarPtr() takes only one identifier"
+msgid "Syntax error. The &1 field is not a valid identifier"
 msgstr ""
 
 #: MErrorMessage.module:157
-msgid "System error #&1: &2"
+msgid "Syntax error. VarPtr() takes only one identifier"
 msgstr ""
 
 #: MErrorMessage.module:158
-msgid "The '!' operator must be followed by an identifier"
+msgid "System error #&1: &2"
 msgstr ""
 
 #: MErrorMessage.module:159
-msgid "The '.' operator must be followed by an identifier"
+msgid "The '!' operator must be followed by an identifier"
 msgstr ""
 
 #: MErrorMessage.module:160
-msgid "The special method &1 cannot be a function"
+msgid "The '.' operator must be followed by an identifier"
 msgstr ""
 
 #: MErrorMessage.module:161
-msgid "The special method &1 cannot be implemented"
+msgid "The special method &1 cannot be a function"
 msgstr ""
 
 #: MErrorMessage.module:162
-msgid "The special method &1 cannot be static"
+msgid "The special method &1 cannot be implemented"
 msgstr ""
 
 #: MErrorMessage.module:163
-msgid "The special method &1 must be a function"
+msgid "The special method &1 cannot be static"
 msgstr ""
 
 #: MErrorMessage.module:164
-msgid "The special method &1 must be public"
+msgid "The special method &1 must be a function"
 msgstr ""
 
 #: MErrorMessage.module:165
-msgid "The special method &1 must be static"
+msgid "The special method &1 must be public"
 msgstr ""
 
 #: MErrorMessage.module:166
-msgid "The special method &1 must take a variable number of arguments only"
+msgid "The special method &1 must be static"
 msgstr ""
 
 #: MErrorMessage.module:167
-msgid "The special method &1 must take at least one argument"
+msgid "The special method &1 must take a variable number of arguments only"
 msgstr ""
 
 #: MErrorMessage.module:168
-msgid "The special method &1 takes no arguments"
+msgid "The special method &1 must take at least one argument"
 msgstr ""
 
 #: MErrorMessage.module:169
-msgid "The special method must return an integer"
+msgid "The special method &1 takes no arguments"
 msgstr ""
 
 #: MErrorMessage.module:170
-msgid "The special method must take exactly one argument"
+msgid "The special method must return an integer"
 msgstr ""
 
 #: MErrorMessage.module:171
-msgid "The special method must take exactly two arguments"
+msgid "The special method must take exactly one argument"
 msgstr ""
 
 #: MErrorMessage.module:172
-msgid "The special method signature is incorrect"
+msgid "The special method must take exactly two arguments"
 msgstr ""
 
 #: MErrorMessage.module:173
-msgid "This expression cannot be a statement"
+msgid "The special method signature is incorrect"
 msgstr ""
 
 #: MErrorMessage.module:174
-msgid "This expression cannot be passed by reference"
+msgid "This expression cannot be a statement"
 msgstr ""
 
 #: MErrorMessage.module:175
-msgid "Too many arguments"
+msgid "This expression cannot be passed by reference"
 msgstr ""
 
 #: MErrorMessage.module:176
-msgid "Too many arguments to &1()"
+msgid "Too many arguments"
 msgstr ""
 
 #: MErrorMessage.module:177
-msgid "Too many array declarations"
+msgid "Too many arguments to &1()"
 msgstr ""
 
 #: MErrorMessage.module:178
-msgid "Too many constants"
+msgid "Too many array declarations"
 msgstr ""
 
 #: MErrorMessage.module:179
-msgid "Too many different classes used"
+msgid "Too many constants"
 msgstr ""
 
 #: MErrorMessage.module:180
-msgid "Too many dimensions"
+msgid "Too many different classes used"
 msgstr ""
 
 #: MErrorMessage.module:181
-msgid "Too many dynamic variables"
+msgid "Too many dimensions"
 msgstr ""
 
 #: MErrorMessage.module:182
-msgid "Too many events"
+msgid "Too many dynamic variables"
 msgstr ""
 
 #: MErrorMessage.module:183
-msgid "Too many expressions in CASE"
+msgid "Too many events"
 msgstr ""
 
 #: MErrorMessage.module:184
-msgid "Too many external functions"
+msgid "Too many expressions in CASE"
 msgstr ""
 
 #: MErrorMessage.module:185
-msgid "Too many functions"
+msgid "Too many external functions"
 msgstr ""
 
 #: MErrorMessage.module:186
-msgid "Too many imbricated #If...#Endif"
+msgid "Too many functions"
 msgstr ""
 
 #: MErrorMessage.module:187
-msgid "Too many nested control structures."
+msgid "Too many imbricated #If...#Endif"
 msgstr ""
 
 #: MErrorMessage.module:188
-msgid "Too many simultaneous new strings"
+msgid "Too many nested control structures."
 msgstr ""
 
 #: MErrorMessage.module:189
-msgid "Too many static variables"
+msgid "Too many simultaneous new strings"
 msgstr ""
 
 #: MErrorMessage.module:190
-msgid "Too many unknown symbols"
+msgid "Too many static variables"
 msgstr ""
 
 #: MErrorMessage.module:191
-msgid "Type mismatch"
+msgid "Too many unknown symbols"
 msgstr ""
 
 #: MErrorMessage.module:192
-msgid "Type mismatch: wanted &1, got &2 instead"
+msgid "Type mismatch"
 msgstr ""
 
 #: MErrorMessage.module:193
-msgid "Unexpected &1"
+msgid "Type mismatch: wanted &1, got &2 instead"
 msgstr ""
 
 #: MErrorMessage.module:194
-msgid "Unexpected end of line"
+msgid "Unexpected &1"
 msgstr ""
 
 #: MErrorMessage.module:195
-msgid "Unexpected string"
+msgid "Unexpected end of line"
 msgstr ""
 
 #: MErrorMessage.module:196
-msgid "Unknown error"
+msgid "Unexpected string"
 msgstr ""
 
 #: MErrorMessage.module:197
-msgid "Unknown event"
+msgid "Unknown error"
 msgstr ""
 
 #: MErrorMessage.module:198
-msgid "Unknown file extension"
+msgid "Unknown event"
 msgstr ""
 
 #: MErrorMessage.module:199
-msgid "Unknown identifier: &1"
+msgid "Unknown file extension"
 msgstr ""
 
 #: MErrorMessage.module:200
-msgid "Unknown operator"
+msgid "Unknown identifier: &1"
 msgstr ""
 
 #: MErrorMessage.module:201
-msgid "Unknown symbol '&1' in class '&2'"
+msgid "Unknown operator"
 msgstr ""
 
 #: MErrorMessage.module:202
-msgid "Unsupported string conversion"
+msgid "Unknown symbol '&1' in class '&2'"
 msgstr ""
 
 #: MErrorMessage.module:203
-msgid "Useless LOCK"
+msgid "Unsupported string conversion"
 msgstr ""
 
 #: MErrorMessage.module:204
-msgid "VarPtr() argument must be a dynamic, a static or a local variable"
+msgid "Useless LOCK"
 msgstr ""
 
 #: MErrorMessage.module:205
-msgid "Void key"
+msgid "VarPtr() argument must be a dynamic, a static or a local variable"
 msgstr ""
 
 #: MErrorMessage.module:206
+msgid "Void key"
+msgstr ""
+
+#: MErrorMessage.module:207
 msgid "Write error"
 msgstr ""
 
@@ -5469,15 +5502,15 @@ msgstr ""
 msgid "modified"
 msgstr ""
 
-#: Project.module:5010
+#: Project.module:5011
 msgid "Project cleanup..."
 msgstr ""
 
-#: Project.module:5016
+#: Project.module:5017
 msgid "Project files conversion..."
 msgstr ""
 
-#: Project.module:5044
+#: Project.module:5045
 msgid "Unable to convert &1"
 msgstr ""
 
