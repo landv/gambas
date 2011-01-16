@@ -1,10 +1,13 @@
 ' Gambas class file
 
-Public Value As String
+Private hBrush As CReportBrush = CReportBrush["&hFF00FF&"]
+Private $hImg As New Image
 
-Private $cBorder As New Collection(gb.IgnoreCase)
-Private $iColor As Integer
-Private $sWidth As String
+Private $aBrushes As New CReportBrush[4]
+Private $aWidth As New String[4]
+Private $aSide As String[] = ["Top", "Right", "Bottom", "Left"]
+Private $iCurBorder As Integer
+Static Public Value As String
 
 Public Sub Run(sBorder As String) As Boolean
   
@@ -13,169 +16,188 @@ Public Sub Run(sBorder As String) As Boolean
   
 End
 
-Private Sub SetBorder(sBorder As String, bBorder As Boolean)
+Public Sub _new()
+
+  Dim i As Integer
   
-  If Not bBorder Then
-    If $cBorder.Count = 0 Then
-      $cBorder["Left"] = True
-      $cBorder["Right"] = True
-      $cBorder["Bottom"] = True
-      $cBorder["Top"] = True
-    Endif
-    $cBorder.Remove(sBorder)
-  Else
-    $cBorder[sBorder] = True
-    If $cBorder.Count = 4 Then $cBorder.Clear
-  Endif
+  $hImg.Resize(Button1.Width - 12, Button1.Height - 12)
+  RefreshImage
   
 End
 
-Private Sub HasBorder(sBorder As String) As Boolean
+Public Sub Button1_Click()
   
-  If $cBorder.Count = 0 Then Return True
-  Return $cBorder.Exist(sBorder)
+  If Not FReportBrushChooser.Run(hBrush.ToString()) Then hBrush = CReportBrush[FReportBrushChooser.Value]
+  RefreshImage
+
+End
+
+Public Sub RefreshImage()
+  'Dim $hImg As Image
+
+  Paint.Begin($hImg)
+  Paint.Brush = hBrush._PaintBrush(4, 4, Paint.Width - 6, Paint.Height - 6)
+  Paint.Rectangle(0, 0, Paint.Width, Paint.Height)
+  Paint.Fill
+  Paint.LineWidth = 2
+  Paint.Brush = Paint.Color(Color.Black)
+  Paint.Rectangle(0, 0, Paint.Width, Paint.Height)
+  Paint.Stroke
+  paint.Brush = Paint.Color(Color.White)
+  Paint.Rectangle(2, 2, Paint.Width - 4, Paint.Height - 4)
+  Paint.Stroke
+  
+  Paint.End
+  Button1.Picture = $hImg.Picture
+
+End
+
+Public Sub ButtonBox1_Click()
+  
+  If Not FReportCoordChooser.Run(Last.Text) Then Last.Text = FReportCoordChooser.Coord
   
 End
 
+Public Sub DrawingArea1_Draw()
+  
+  Dim i As Integer
+  Dim iSize As Integer
 
-Public Sub Form_Open()
-
-  Dim sElt As String
-  Dim bBorder As Boolean
-  
-  If Not Value Then
-    chkBorder.Value = False
-    Return
-  Endif
-
-  chkBorder.Value = True
-  
-  $cBorder.Clear
-  
-  For Each sElt In Split(Value, ",", "[]", True, True)
-  
-    Select Case UCase(sElt)
+  For i = 0 To 3
     
-      Case "TOP", "BOTTOM", "LEFT", "RIGHT"
-        SetBorder(sElt, True)
+    If $aBrushes[i] = Null Then Continue
+    iSize = CFamilyReport.ToPixel($aWidth[i])
+    Select Case i
+      Case 0
         
-      Case Else
-        ' Maybe later [...] will be a syntax for a brush
-        If sElt Begins "&H" Then 
-          Try $iColor = Val(sElt)
-        Else If IsDigit(Left(sElt)) Then 
-          $sWidth = sElt
-        Endif
-        
+        Paint.Rectangle(0, 0, Paint.Width, iSize)
+        Paint.Brush = $aBrushes[i]._PaintBrush(0, 0, Paint.Width, iSize)
+      Case 1
+        Paint.Rectangle(Paint.Width - iSize, 0, iSize, Paint.Height)
+        Paint.Brush = $aBrushes[i]._PaintBrush(Paint.Width - iSize, 0, Paint.Width, Paint.Height)
+      Case 2
+        paint.Rectangle(0, paint.Height - iSize, paint.Width, iSize)
+        Paint.Brush = $aBrushes[i]._PaintBrush(0, paint.Height - iSize, paint.Width, paint.Height)
+      Case 3
+        Paint.Rectangle(0, 0, iSize, Paint.Height)
+        Paint.Brush = $aBrushes[i]._PaintBrush(0, 0, iSize, Paint.Height)
     End Select
     
+    Paint.Fill
+    
   Next
   
-  txtWidth.Text = $sWidth
-  btnColor.Value = $iColor
-
-  dwgBorder.Refresh
-
 End
 
-Public Sub chkBorder_Click()
-
-  Dim hChild As Control
+Public Sub DrawingArea1_MouseDown()
   
-  For Each hChild In panBorder.Children
-    hChild.Enabled = chkBorder.Value
-  Next
-
-End
-
-
-Public Sub dwgBorder_Draw()
-
-  Dim fWidth As Float
+  Dim fPosX, fPosY As Float
+  Dim iPos As Integer
   
-  If Not chkBorder.Value Then Return
-  fWidth = CFamilyReport.ToPixel($sWidth)
-  If fWidth = 0 Then fWidth = 1
-  fWidth = Min(fWidth, Desktop.Scale * 6)
+  fPosX = Mouse.X / DrawingArea1.Width
+  fPosY = Mouse.Y / DrawingArea1.Height
   
-  Paint.Brush = Paint.Color($iColor)
+  If fPosY > fPosX Then
+    If fPosY > (1 - fPosX) Then
+      iPos = 2
+    Else
+      iPos = 3
+    Endif
+  Else
+    If fPosY > (1 - fPosX) Then
+      iPos = 1
+    Else
+      iPos = 0
+    Endif
+  Endif
   
-  If HasBorder("Left") Then Paint.Rectangle(1, 1, fWidth, Paint.Height - 2)
-  If HasBorder("Right") Then Paint.Rectangle(Paint.Width - fWidth - 1, 1, fWidth, Paint.Height - 2)
-  If HasBorder("Top") Then Paint.Rectangle(1, 1, Paint.Width - 2, fWidth)
-  If HasBorder("Bottom") Then Paint.Rectangle(1, Paint.Height - fWidth - 1, Paint.Width - 2, fWidth)
+  If Not $aBrushes[iPos] Then
+    $aBrushes[iPos] = hBrush
+  Else
+    If $aWidth[iPos] = ButtonBox1.Text And If $aBrushes[iPos] = hBrush Then 
+      $aBrushes[iPos] = Null
+    Else
+      $aBrushes[iPos] = hBrush
+    Endif
+    
+  Endif
+  $aWidth[iPos] = ButtonBox1.Text
   
-  Paint.Fill
-
+  'SetBorder(sWhere, Not HasBorder(sWhere))
+  DrawingArea1.Refresh
+  
 End
 
 Public Sub btnOK_Click()
-
-  Dim aBorder As String[]
-  Dim bBorder As Boolean
-
-  If Not chkBorder.Value Or If Not $sWidth Then
-    Value = ""
-  Else
-    Value = $sWidth & ",&H" & Hex$($iColor, 6) & "&"
-    If $cBorder Then
-      aBorder = New String[]
-      For Each bBorder In $cBorder
-        If bBorder Then aBorder.Add(UCase(Left($cBorder.Key)) & LCase(Mid$($cBorder.Key, 2)))
-      Next
-      If aBorder.Count And If aBorder.Count < 4 Then Value &= "," & aBorder.Join()
+  
+  Dim bAll As Boolean = True
+  Dim prevhBrush, hBrush As CReportBrush
+  Dim PrevW As String
+  Dim i As Integer
+  
+  Value = ""
+  prevhBrush = $aBrushes[0]
+  PrevW = $aWidth[0]
+  For i = 0 To 3
+    If $aBrushes[i] = Null Or If $aBrushes[i] <> prevhBrush Or If $aWidth[i] <> PrevW Then
+      
+      bAll = False
+      Break
     Endif
+    
+    prevhBrush = $aBrushes[i]
+    PrevW = $aWidth[i]
+    
+  Next
+  
+  If bAll Then 
+    If $aBrushes[0] <> Null Then Value = "Border=" & $aWidth[0] & " " & $aBrushes[0].ToString() & ";"
+    
+  Else
+    For i = 0 To 3
+      
+      If $aBrushes[i] Then
+        
+        Value &= $aSide[i] & "=" & $aWidth[i] & " " & $aBrushes[i].ToString() & "; "
+        
+      Endif
+      
+    Next
   Endif
-
   Me.Close(True)
+  
+End
 
+Public Sub Form_Open()
+  
+  Dim ars As String[]
+  Dim ars2 As String[]
+  Dim iSide, i As Integer
+  Dim sValue As String
+  For Each sValue In Split(Value, ";")
+    ars = Scan(sValue, "*=*")
+    If ars.Count < 2 Then Return
+    iSide = $aSide.Find(Trim(ars[0]))
+    If iSide = -1 Then  
+      If LCase(Trim(ars[0])) <> "border" Then Return
+      For i = 0 To 3
+        ars2 = Split(ars[1], " ")
+        $aWidth[i] = ars2[0]
+        Try $aBrushes[i] = CReportBrush[ars2[1]]
+      Next 
+      
+    Else
+      ars2 = Split(ars[1], " ")
+       $aWidth[iSide] = ars2[0]
+      Try $aBrushes[iSide] = CReportBrush[ars2[1]]
+    Endif
+  Next
+  DrawingArea1.Refresh
+  
 End
 
 Public Sub btnCancel_Click()
 
   Me.Close
-
-End
-
-Public Sub btnColor_Change()
-
-  $iColor = btnColor.Value
-  dwgBorder.Refresh
-
-End
-
-Public Sub txtWidth_Click()
-
-  If FReportCoordChooser.Run(txtWidth.Text) Then Return
-  txtWidth.Text = FReportCoordChooser.Coord
-  $sWidth = txtWidth.Text
-  dwgBorder.Refresh
-
-End
-
-Public Sub dwgBorder_MouseDown()
-
-  Dim fPosX, fPosY As Float
-  Dim sWhere As String
-  
-  fPosX = Mouse.X / dwgBorder.Width
-  fPosY = Mouse.Y / dwgBorder.Height
-  
-  If fPosY > fPosX Then
-    If fPosY > (1 - fPosX) Then
-      sWhere = "Bottom"
-    Else
-      sWhere = "Left"
-    Endif
-  Else
-    If fPosY > (1 - fPosX) Then
-      sWhere = "Right"
-    Else
-      sWhere = "Top"
-    Endif
-  Endif
-  
-  SetBorder(sWhere, Not HasBorder(sWhere))
-  dwgBorder.Refresh
 
 End

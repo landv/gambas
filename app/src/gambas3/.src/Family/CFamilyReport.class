@@ -27,12 +27,26 @@ End
 
 Static Public Function ToPixel(sSize As String) As Float
   
-  Dim aSize As String[] = Split(sSize, " ")
-  Dim fValue As Float
-  Dim sUnit As String
   
-  Try sUnit = aSize[1]
-  Try fValue = CFloat(aSize[0])
+  Dim fValue As Float
+  Dim I As Integer
+  Dim sCar As String
+  Dim sUnit As String
+  'Dim Size As String = Coord
+  sSize = Trim(sSize)
+  
+  If Not sSize Then
+    Try sUnit = "px"
+    Return
+  Endif
+  
+  For I = 1 To Len(sSize)
+    sCar = Mid$(sSize, I, 1)
+    If Not IsDigit(sCar) And If sCar <> "." Then Break
+  Next
+  
+   Try fValue = CFloat(Left$(sSize, I - 1))
+  Try sUnit = Trim(Mid$(sSize, I))
   
   Return fValue * GetFactor(sUnit) / GetFactor("px")
   
