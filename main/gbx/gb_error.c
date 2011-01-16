@@ -120,6 +120,7 @@ void ERROR_debug(const char *msg, ...)
 {
 	int i;
   va_list args;
+	ERROR_CONTEXT *err;
 
   va_start(args, msg);
 
@@ -127,6 +128,16 @@ void ERROR_debug(const char *msg, ...)
 		fprintf(stderr, "- ");
 
   vfprintf(stderr, msg, args);
+	
+	fprintf(stderr, "\t\t\t\t\t\t\t\t\t");
+	DEBUG_where();
+	err = ERROR_current;
+	while (err)
+	{
+		fprintf(stderr, "[%p] -> ", err);
+		err = err->prev;
+	}
+	fprintf(stderr, "NULL\n");
 }
 #endif
 
@@ -265,8 +276,6 @@ void ERROR_propagate()
 		(*ph->handler)();
 	}
 	
-	//fprintf(stderr, "ERROR_propagate: -> %p\n", ERROR_handler);
-
   longjmp(ERROR_current->env, 1);
 }
 

@@ -487,6 +487,17 @@ _SUBR_CODE:
 _NEXT:
 
   code = *(++PC);
+
+#if DEBUG_PCODE
+    DEBUG_where();
+    fprintf(stderr, "[%4d] ", (int)(intptr_t)(SP - (VALUE *)STACK_base));
+    if (*PC >> 8)
+      PCODE_dump(stderr, PC - FP->code, PC);
+    else
+    	fprintf(stderr, "\n");
+    fflush(stderr);
+#endif
+
   goto *jump_table[code >> 8];
 
 /*-----------------------------------------------*/
@@ -981,6 +992,8 @@ _CALL:
 
   __CALL_EVENT:
 
+		//if (OP && !strcmp(OBJECT_class(OP)->name, "Workspace"))
+		//	BREAKPOINT();
 		ind = GB_Raise(OP, val->_function.index, (-EXEC.nparam));
 
 		POP(); // function

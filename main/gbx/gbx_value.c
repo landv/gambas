@@ -1360,7 +1360,7 @@ void VALUE_convert_boolean(VALUE *value)
 {
 	static const void *jump[16] =
 	{
-		&&__NR, &&__OK, &&__c2b, &&__h2b, &&__i2b, &&__l2b, &&__f2b, &&__f2b,
+		&&__NR, &&__OK, &&__c2b, &&__h2b, &&__i2b, &&__l2b, &&__g2b, &&__f2b,
 		&&__d2b, &&__s2b, &&__s2b, &&__N, &&__v2, &&__func, &&__N, &&__n2b
 	};
 
@@ -1392,6 +1392,12 @@ __i2b:
 __l2b:
 
 	value->_integer.value = (value->_long.value != 0) ? -1 : 0;
+	value->type = T_BOOLEAN;
+	return;
+
+__g2b:
+
+	value->_integer.value = (value->_single.value != 0) ? -1 : 0;
 	value->type = T_BOOLEAN;
 	return;
 
@@ -1451,7 +1457,7 @@ void VALUE_convert_integer(VALUE *value)
 {
 	static const void *jump[16] =
 	{
-		&&__NR, &&__TYPE, &&__TYPE, &&__TYPE, &&__OK, &&__l2i, &&__f2i, &&__f2i,
+		&&__NR, &&__TYPE, &&__TYPE, &&__TYPE, &&__OK, &&__l2i, &&__g2i, &&__f2i,
 		&&__d2i, &&__s2i, &&__s2i, &&__N, &&__v2, &&__func, &&__N, &&__N
 	};
 		
@@ -1464,6 +1470,11 @@ __CONV:
 __l2i:
 
 	value->_integer.value = (int)value->_long.value;
+	goto __TYPE;
+
+__g2i:
+
+	value->_integer.value = (int)value->_single.value;
 	goto __TYPE;
 
 __f2i:
@@ -1548,9 +1559,12 @@ __i2f:
 __l2f:
 
 	value->_float.value = value->_long.value;
+	value->type = T_FLOAT;
+	return;
 	
 __g2f:
 
+	value->_float.value = value->_single.value;
 	value->type = T_FLOAT;
 	return;
 
@@ -1637,6 +1651,12 @@ __l2s:
 	return;
 
 __g2s:
+
+	LOCAL_format_number(value->_single.value, LF_GENERAL_NUMBER, NULL, 0, &addr, &len, FALSE);
+	STRING_new_temp_value(value, addr, len);
+	BORROW(value);
+	return;
+
 __f2s:
 
 	LOCAL_format_number(value->_float.value, LF_GENERAL_NUMBER, NULL, 0, &addr, &len, FALSE);
