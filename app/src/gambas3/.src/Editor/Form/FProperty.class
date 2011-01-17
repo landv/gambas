@@ -677,7 +677,7 @@ Private Sub ShowProperty(Optional sFocus As String)
       cmbProperty.Add("False")
       cmbProperty.Add("True")
 
-    Case "Font", "Picture", "Path", "Color", "Image", "ReportBorder"
+    Case "Font", "Picture", "Path", "Color", "Image", "ReportBorder", "ReportBrush"
       
       bButton = True
       txtProperty.ReadOnly = True
