@@ -110,6 +110,7 @@ void X11_set_transient_for(Window window, Window parent);
 void X11_set_window_decorated(Window window, bool decorated);
 void X11_window_remap(Window window);
 void X11_window_activate(Window window);
+bool X11_get_available_geometry(int screen, int *x, int *y, int *w, int *h);
 
 #ifdef __cplusplus
 }

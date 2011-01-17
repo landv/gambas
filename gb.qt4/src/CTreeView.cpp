@@ -409,7 +409,7 @@ BEGIN_METHOD(CCOLUMNVIEW_new, GB_OBJECT parent)
 
   //QObject::connect(wid, SIGNAL(pressed(QListViewItem *, const QPoint &, int)), &CTreeView::manager, SLOT(columnClicked(QListViewItem *, const QPoint &, int)));
   QObject::connect(wid->header(), SIGNAL(clicked(int)), &CTreeView::manager, SLOT(headerClicked(int)));
-  QObject::connect(wid->header(), SIGNAL(sizeChange(int, int, int)), &CTreeView::manager, SLOT(headerSizeChange(int, int, int)));
+  //QObject::connect(wid->header(), SIGNAL(sizeChange(int, int, int)), &CTreeView::manager, SLOT(headerSizeChange(int, int, int)));
   QObject::connect(wid, SIGNAL(expanded(Q3ListViewItem *)), &CTreeView::manager, SLOT(expanded(Q3ListViewItem *)));
   QObject::connect(wid, SIGNAL(collapsed(Q3ListViewItem *)), &CTreeView::manager, SLOT(collapsed(Q3ListViewItem *)));
 

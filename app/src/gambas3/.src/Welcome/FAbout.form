@@ -8,7 +8,7 @@
   Resizable = False
   { tabAbout TabStrip
     MoveScaled(1,22,80,48)
-    Count = 3
+    Count = 2
     Index = 0
     Text = ("About")
     { svwAuthor ScrollView
@@ -21,8 +21,8 @@
         MoveScaled(30,0,10,41)
       }
       { TextLabel4 TextLabel
-        MoveScaled(9,57,51,7)
-        Font = Font["Bold,+4"]
+        MoveScaled(0,57,76,7)
+        Font = Font["Bold,+6"]
         AutoResize = True
         Text = ("Gambas Almost Means Basic!")
         Alignment = Align.Center
@@ -72,23 +72,10 @@
       MoveScaled(0,35,79,7)
     }
     Index = 1
-    Text = ("Hall Of Fame")
-    { dwgAbout DrawingArea
-      MoveScaled(2,2,75,39)
-      Background = &HFFFFFF&
-      Expand = True
-      Cached = True
-    }
-    { timAbout #Timer
-      #MoveScaled(56,17)
-      Enabled = True
-      Delay = 20
-    }
-    Index = 2
     Text = ("System information")
     { txtInfo TextArea
       MoveScaled(1,6,77,37)
-      Font = Font["Monospace"]
+      Font = Font["Monospace,-2"]
       ReadOnly = True
     }
     { btnCopy Button

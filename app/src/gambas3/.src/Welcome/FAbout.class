@@ -1,0 +1,538 @@
+' Gambas class file
+
+Static Private $aSupport As String[]
+Static Private $iWait As Integer
+Static Private $iSupport As Integer
+
+Private $aUser As New CUser[]
+Private $hBack As Picture
+Private $iStep As Integer
+Private $iFirst As Integer
+Private $bDrawAbout As Boolean
+
+Private Const NSTEP As Integer = 100
+
+Private $hWelcome As CWelcome
+
+Static Public Sub Run()
+
+  Dim hForm As FAbout
+
+  hForm = New FAbout
+  hForm.ShowModal
+
+End
+
+
+Public Sub Form_Open()
+
+  Dim sText As String
+  Dim hImage As Image
+  Dim Y As Integer
+  Dim E As Float
+
+  $hWelcome = New CWelcome(dwgWelcome)
+
+  txtAuthor.Background = svwAuthor.Background
+
+  GetAuthor
+  GetSupport
+
+  'InitUser
+  
+  '$hBack = New Picture(dwgAbout.W, dwgAbout.H)
+  '$hBack.Fill(Color.White)
+
+  hImage = New Image(picGradientTop.W, picGradientTop.H)
+  For Y = 0 To hImage.H - 1
+    E = (Y / hImage.H)
+    hImage.FillRect(0, Y, hImage.W, 1, Color.RGB(255, 255, 255, E * 255))
+  Next
+  picGradientTop.Picture = hImage.Picture
+
+  For Y = 0 To hImage.H - 1
+    E = 1 - (Y / hImage.H)
+    hImage.FillRect(0, Y, hImage.W, 1, Color.RGB(255, 255, 255, E * 255))
+  Next
+  picGradientBottom.Picture = hImage.Picture
+
+  'lblMessage.Text = "© 2000-" & Year(Now) & " Benoît Minisini"
+  
+End
+
+
+Public Sub btnClose_Click()
+
+  Me.Close
+
+End
+
+
+Private Sub RemoveLink(sStr As String) As String
+  
+  Dim iPos As Integer
+  Dim iPos2 As Integer
+  
+  Do
+
+    iPos = InStr(sStr, "<a href=")
+    If iPos = 0 Then Break
+
+    iPos2 = InStr(sStr, ">", iPos)
+    If iPos2 = 0 Then iPos2 = Len(sStr) + 1
+    sStr = Left(sStr, iPos - 1) & Mid(sStr, iPos2 + 1)
+    
+  Loop
+  
+  Return Replace(sStr, "</a>", "")
+  
+End
+
+
+Private Sub GetAuthor()
+
+  Dim hFic As File
+  Dim sText As String
+  Dim sLig As String
+  Dim sMail As String
+  Dim sCountry As String
+  Dim sName As String
+  Dim aAuthor As New String[]
+  Dim sAuthor As String
+  Dim aSplit As String[]
+  Dim iPos As Integer
+
+  hFic = Open "authors.txt"
+
+  While Not Eof(hFic)
+
+    Line Input #hFic, sLig
+    If Not sLig Then Continue
+    If Left(sLig) = "-" Then Continue
+
+    sName = sLig
+    Line Input #hFic, sMail
+    Line Input #hFic, sCountry
+    
+    sText = ""
+    While Not Eof(hFic)
+
+      Line Input #hFic, sLig
+      If Not sLig Then Continue
+      If Left(sLig) = "-" Then Break
+      
+      sLig = RemoveLink(sLig)
+      If Right(sLig) <> "." Then sLig &= "."
+      sText &= sLig & "<br>"
+
+    Wend
+    
+    If Right(sText, 4) = "<br>" Then sText = Left(sText, -4)
+
+    aAuthor.Add(sName & "\n\n" & sMail & "\n" & sCountry & "\n" & sText)
+    
+  Wend
+
+  Close #hFic
+  
+  hFic = Open "support.txt"
+  
+  While Not Eof(hFic)
+    
+    Line Input #hFic, sLig
+    iPos = InStr(sLig, " ")
+    If iPos = 0 Then Break
+    sName = Mid$(sLig, iPos + 1)
+    sText = sName & "\n" & Left(sLig, iPos - 1)
+    
+    iPos = aAuthor.Find(sName & "\n*", gb.Like)
+    If iPos < 0 Then
+      aAuthor.Add(sText)
+    Else
+      aAuthor[iPos] = sText & Mid$(aAuthor[iPos], Len(sName) + 2)
+    Endif
+    
+  Wend
+  
+  Close #hFic
+
+  aAuthor.Sort(gb.Language + gb.IgnoreCase)
+  
+  sText = ""
+  
+  For Each sAuthor In aAuthor
+    
+    aSplit = Split(sAuthor, "\n")
+    
+    sName = aSplit[0]
+
+    If aSplit.Count = 2 Then
+      
+      sText &= "<font size=+1>" & aSplit[0] & "</font>"
+      sText &= "<blockquote>"
+      sText &= ("Financial support") & "<br>" & String$(Min(16, CInt(aSplit[1])), "★")
+      
+    Else
+      
+      sText &= "<b><font size=+1>" & aSplit[0] & "</font>"
+      If aSplit[2] Then sText &= " (" & aSplit[2] & ")"
+      sText &= "<blockquote>"
+      If aSplit[3] Then sText &= "<u>" & aSplit[3] & "</u><br>"
+      sText &= aSplit[4]
+      If aSplit[1] Then sText &= "<br>" & ("Financial support") & "<br>" & String$(Min(16, CInt(aSplit[1])), "★")
+      sText &= "</b>"
+
+    Endif
+    
+    sText &= "</blockquote><br>\n"
+    
+  Next
+
+  txtAuthor.RichText = sText
+
+Finally
+
+  txtAuthor.Height = txtAuthor.TextHeight '+ 256
+  'PRINT txtAuthor.TextHeight
+
+Catch
+
+  txtAuthor.RichText = Error.Text
+
+End
+
+Private Sub GetSupport()
+
+  Dim iInd As Integer
+
+  $aSupport = Split(Trim(File.Load("support.txt")), "\n")
+
+  For iInd = 0 To $aSupport.Count - 1
+
+    $aSupport[iInd] = "<b>" & $aSupport[iInd] & "...</b>"
+
+  Next
+
+  $aSupport.Add("<b>" & ("Thanks to") & "...</b>", 0)
+
+End
+
+
+Public Sub Form_Show()
+
+  txtAuthor.Height = txtAuthor.TextHeight + 256
+
+End
+
+Public Sub btnGift_Click()
+
+  Project.OpenWebPage("https://www.paypal.com/xclick/business=gambas%40users.sourceforge.net&no_note=1&tax=0&currency_code=EUR")
+
+End
+
+
+Private Sub DrawText(sText As String, X As Integer, Y As Integer, W As Integer, H As Integer, iColor As Integer, iShadow As Integer)
+
+  If iShadow <> Color.Default Then  
+    Draw.Foreground = iShadow
+    Draw.Text(sText, X, Y, W, H)
+    Draw.Text(sText, X + 2, Y, W, H)
+    Draw.Text(sText, X, Y + 2, W, H)
+    Draw.Text(sText, X + 2, Y + 2, W, H)
+  Endif
+  Draw.Foreground = iColor
+  Draw.Text(sText, X + 1, Y + 1, W, H)
+  
+End
+
+
+' Private Sub InitUser()
+'   
+'   Dim hFile As File
+'   Dim sLine As String
+'   Dim hUser As CUser
+'   Dim iPos As Integer
+'   Dim iGray As Integer
+'   Dim iInd As Integer
+'   Dim hPict As Picture
+'   Dim W, H As Integer
+'   Dim nTask As Integer
+'   Dim bTrans As Boolean
+'   
+'   hFile = Open "support.txt" 
+'   
+'   While Not Eof(hFile)
+'     Line Input #hFile, sLine
+'     sLine = Trim(sLine)
+'     If Not sLine Then Continue
+'     iPos = InStr(sLine, " ")
+'     If iPos = 0 Then Continue
+'     
+'     hUser = New CUser
+'     hUser.Name = Trim(Mid$(sLine, iPos + 1))
+'     hUser.Score = CInt(Left$(sLine, iPos - 1))
+'     'iGray = Int(Rnd(0, 128))
+'     iGray = 64
+'     hUser.Color = Color.RGB(iGray, iGray, iGray)
+'     $aUser.Add(hUser)
+'     
+'   Wend
+'   
+'   Close #hFile
+'   
+'   hFile = Open "authors.txt" 
+'   
+'   While Not Eof(hFile)
+'     Line Input #hFile, sLine
+'     sLine = Trim(sLine)
+'     If Not sLine Then Continue
+'     If Left$(sLine, 4) = "----" Then
+'       
+'       hUser = New CUser
+'       Line Input #hFile, sLine
+'       iPos = InStr(sLine, "(")
+'       If iPos Then sLine = Mid$(sLine, iPos + 1, -1)
+'       hUser.Name = sLine
+'       
+'       Line Input #hFile, sLine ' Mail
+'       Line Input #hFile, sLine ' country
+' 
+'       nTask = 0
+'       bTrans = False
+'       Do
+'         Line Input #hFile, sLine
+'         sLine = Trim(sLine)
+'         If Not sLine Then Break
+'         Inc nTask
+'         If InStr(sLine, "translation") = 0 Then bTrans = True
+'       Loop
+'       
+'       If nTask = 1 And If bTrans Then
+'         hUser.Score = 6
+'         iGray = Int(Rnd(64, 128))
+'         hUser.Color = Color.RGB(&H95 * iGray / 128, &HC1 * iGray / 128, &HE6 * iGray / 128)
+'         hUser.Bold = True
+'       Else
+'         hUser.Score = 12
+'         hUser.Color = Color.HSV(Int(Rnd(36)) * 10, Int(Rnd(192, 256)), 255)
+'         hUser.Bold = True
+'       Endif
+'       
+'       $aUser.Add(hUser)
+'       
+'     Endif
+'     
+'   Wend
+'   
+'   Close #hFile
+' 
+'   For Each hUser In $aUser
+'     With hUser
+'       Draw.Begin(dwgAbout)
+'       Draw.Font.Bold = .Bold
+'       Draw.Font.Size = GetFontSize(hUser)
+'       W = Draw.TextWidth(.Name)
+'       H = Draw.TextHeight(.Name)
+'       Draw.End
+' 
+'       hPict = New Picture(W + 2, H + 2)
+'       hPict.Fill(Color.White)
+'       Draw.Begin(hPict)
+'       Draw.Font.Bold = .Bold
+'       Draw.Font.Size = GetFontSize(hUser)
+'       
+'       ' If .Bold Then
+'       '   Draw.Foreground = Color.Black
+'       '   Draw.Text(.Name, 0, 0, W, H)
+'       '   Draw.Text(.Name, 2, 0, W, H)
+'       '   Draw.Text(.Name, 0, 2, W, H)
+'       '   Draw.Text(.Name, 2, 2, W, H)
+'       ' Endif
+'       
+'       DrawText(.Name, 0, 0, W, H, Color.Merge(.Color, Color.White, 0.7), Color.Default)
+'       Draw.End
+'       .Image = hPict.Image
+'       .Image.Erase()
+'     End With
+'   Next
+' 
+'   For iInd = 1 To $aUser.Count
+'     iPos = Int(Rnd(0, $aUser.Count))
+'     Swap $aUser[0], $aUser[iPos]
+'   Next
+' 
+' End
+
+Private Sub GetFontSize(hUser As CUser) As Float
+  
+  Return 8 + Min(32, hUser.Score)
+  
+End
+
+' Private Sub DisplayText(iIndex As Integer) As Boolean
+'   
+'   Dim hUser As CUser
+'   Dim iInd As Integer
+'   Dim X As Float
+'   Dim Y As Float
+'   Dim hPict As Picture
+'   Dim eSize As Float
+'   Dim W, H As Integer
+'   Dim iStep As Integer
+'   Dim eBlend As Float
+'   Dim hImage As Image
+'   Dim I, V, iShadow As Integer
+'   Dim eStep As Float
+' 
+'   hUser = $aUser[iIndex Mod $aUser.Count]
+'   With hUser
+' 
+'     iStep = $iStep - iIndex * 40
+'     If iStep < 0 Then Return
+'     If iStep > (NSTEP * 10) Then Return True
+'     
+'     If iStep = 0 Then
+'     
+'       Draw.Font.Bold = .Bold
+'       Draw.Font.Size = GetFontSize(hUser)
+'       W = Draw.TextWidth(.Name)
+'       H = Draw.TextHeight(.Name)
+'       .XD = Int(Rnd(0, dwgAbout.W - W - 0))
+'       .YD = Int(Rnd(0, dwgAbout.H - H - 0))
+'       
+'     Endif
+'     
+'     If $bDrawAbout Then
+'     
+'       If iStep < (NSTEP + 24) Then
+'     
+'         For I = iStep - 24 To iStep Step 6
+'         
+'           eStep = I / NSTEP
+'           If I < 0 Or If I > NSTEP Then Continue
+'     
+'           eSize = GetFontSize(hUser) * eStep
+'         
+'           If eSize >= 1 Then
+'           
+'             W = .Image.W * eStep + 0.5
+'             H = .Image.H * eStep + 0.5
+'             X = dwgAbout.W / 2 + (.XD - dwgAbout.W / 2) * eStep + 0.5
+'             Y = dwgAbout.H / 2 + (.YD - dwgAbout.H / 2) * eStep + 0.5 
+'             Draw.Image(.Image.Stretch(W, H), X, Y)
+'           
+'           Endif
+'           
+'         Next
+'         
+'       Endif
+'       
+'     Endif
+'     
+'     If iStep >= NSTEP And If iStep < (10 * NSTEP) Then
+'     
+'       If $bDrawAbout Then
+'       
+'         Draw.Font.Bold = .Bold
+'         Draw.Font.Size = GetFontSize(hUser)
+'         W = Draw.TextWidth(.Name)
+'         H = Draw.TextHeight(.Name)
+'         X = .XD 'dwgAbout.W / 2 + (.XD - dwgAbout.W / 2) * iStep / NSTEP
+'         Y = .YD 'dwgAbout.H / 2 + (.YD - dwgAbout.H / 2) * iStep / NSTEP
+'         
+'         ' If .Bold Then
+'         '   Draw.Foreground = Color.Black
+'         '   Draw.Text(.Name, X + 1, Y + 1, W, H)
+'         '   Draw.Text(.Name, X + 1, Y - 1, W, H)
+'         '   Draw.Text(.Name, X - 1, Y + 1, W, H)
+'         '   Draw.Text(.Name, X - 1, Y - 1, W, H)
+'         ' Endif
+'         
+'         If iStep >= (NSTEP + 36)
+'           eBlend = (iStep - NSTEP - 36) / (9 * NSTEP - 36)
+'           DrawText(.Name, X, Y, W, H, Color.Merge(.Color, Color.White, eBlend), Color.Merge(&HD0D0D0&, Color.White, eBlend))
+'         Else
+'           eBlend = 0.7 * (1 - (iStep - NSTEP) / 36)
+'           DrawText(.Name, X, Y, W, H, Color.Merge(.Color, Color.White, eBlend), Color.Default)
+'         Endif
+'         
+'       Endif
+'       
+'     Else If iStep >= (10 * NSTEP) Then
+' 
+'       If iIndex = $iFirst Then Inc $iFirst
+' 
+'     Endif
+' 
+'   End With
+'   
+' End
+
+
+' Public Sub timAbout_Timer()
+' 
+'   Dim iInd As Integer
+'   Dim iFirst As Integer
+' 
+'   Draw.Begin(dwgAbout)
+'   Draw.FillColor = Color.White
+'   Draw.FillStyle = Fill.Solid
+'   Draw.LineStyle = Line.None
+'   Draw.Rect(0, 0, dwgAbout.W, dwgAbout.H)
+'   'Draw.Picture($hBack, 0, 0)  
+'   
+'   iFirst = $iFirst
+'   For iInd = 0 To 40 
+'     If DisplayText(iFirst + iInd) Then Break
+'   Next
+'   
+'   Draw.End
+'   
+'   Inc $iStep
+' 
+'   If iInd = 0 Then '$iFirst >= $aUser.Count Then
+'     $hBack.Fill(Color.White)
+'     'InitUser
+'     $iStep = 0
+'     $iFirst = 0
+'   Endif
+' 
+' End
+
+Public Sub timAuthor_Timer()
+
+  Dim Y As Integer
+
+  Y = svwAuthor.ScrollY
+  svwAuthor.ScrollY += 1
+  If Y = svwAuthor.ScrollY Then
+    svwAuthor.ScrollY = 0
+  Endif
+
+End
+
+Public Sub tabAbout_Click()
+
+  Dim sTemp As String
+
+  If tabAbout.Index = 1 And If Not txtInfo.Text Then
+    sTemp = Temp$("report-ng")
+    Try Mkdir sTemp
+    sTemp &/= "report-ng.sh"
+    Try Kill sTemp
+    Copy "report-ng.sh" To sTemp
+    Shell "chmod a+x " & Shell$(sTemp) Wait
+    Exec [sTemp] To txtInfo.Text
+  Endif
+  
+  ' $bDrawAbout = tabAbout.Index = 1
+  ' If $bDrawAbout Then timAbout_Timer
+
+End
+
+
+Public Sub btnCopy_Click()
+
+  Clipboard.Copy(txtInfo.Text)
+
+End

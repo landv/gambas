@@ -29,6 +29,7 @@
 #include <gdk/gdkx.h>
 #include <X11/X.h>
 #include <X11/Xlib.h>
+#include "x11.h"
 #endif
 #endif
 
@@ -299,7 +300,7 @@ void gDesktop::geometry(int screen, GdkRectangle *rect)
 
 void gDesktop::availableGeometry(int screen, GdkRectangle *rect)
 {
-	// TODO: implement Qt4 QDesktop::availableGeometry()
-	gdk_screen_get_monitor_geometry(gdk_screen_get_default(), screen, rect);
+	if (X11_get_available_geometry(screen, &rect->x, &rect->y, &rect->width, &rect->height))
+		geometry(screen, rect);
 }
 

@@ -67,26 +67,25 @@ typedef
 	{ \
 		ERROR_CONTEXT __err_context; \
 		{ \
-			ERROR_CONTEXT *__err = &__err_context; \
-			ERROR_debug("TRY %s %p\n", __FUNCTION__, __err); \
+			ERROR_debug("TRY %s %p\n", __FUNCTION__, &__err_context); \
 			ERROR_depth++; \
-			ERROR_enter(__err); \
-			__err->ret = setjmp(__err->env); \
-			if (__err->ret == 0)
+			ERROR_enter(&__err_context); \
+			__err_context.ret = setjmp(__err_context.env); \
+			if (__err_context.ret == 0)
 
 /*#define CATCH \
 			fprintf(stderr, "%p == %p ? %d\n", ERROR_current, __err, __err->ret); \
 			if (__err->ret != 0 && (__err->ret = 2))*/
 
 #define CATCH \
-			if (__err->ret) { ERROR_depth--; ERROR_debug("CATCH %s %p\n", __FUNCTION__, __err); ERROR_depth++; } \
-			if (__err->ret)
+			if (__err_context.ret) { ERROR_depth--; ERROR_debug("CATCH %s %p\n", __FUNCTION__, &__err_context); ERROR_depth++; } \
+			if (__err_context.ret)
 
 #define END_TRY \
 			ERROR_depth--; \
-			ERROR_debug("END TRY %s %p\n", __FUNCTION__, __err); \
+			ERROR_debug("END TRY %s %p\n", __FUNCTION__, &__err_context); \
 			ERROR_depth++; \
-			ERROR_leave(__err); \
+			ERROR_leave(&__err_context); \
 		} \
 	}
 
@@ -94,11 +93,11 @@ typedef
 
 #define ERROR_enter(_err) \
 do { \
-	_err->prev = ERROR_current; \
-	_err->info.code = 0; \
-	_err->info.native = 0; \
-	_err->handler = ERROR_handler; \
-	ERROR_current = _err; \
+	(_err)->prev = ERROR_current; \
+	(_err)->info.code = 0; \
+	(_err)->info.native = 0; \
+	(_err)->handler = ERROR_handler; \
+	ERROR_current = (_err); \
 } while(0)
 
 #define ERROR_leave(_err) \
@@ -175,7 +174,7 @@ do { \
 
 #endif
 
-#define ERROR __err
+#define ERROR (&__err_context)
 
 #define ERROR_in_catch(_err) ((_err)->ret)
 

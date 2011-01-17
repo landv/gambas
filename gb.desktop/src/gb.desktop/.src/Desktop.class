@@ -185,6 +185,10 @@ Static Private Sub GetDesktop() As String
       $sDesktop = "GNOME"
     Else If InStr(_Desktop.GetWindowProperty("_DT_SAVE_MODE"), "xfce4") Then
       $sDesktop = "XFCE"
+    Else If Application.Env["E_BIN_DIR"] And If Application.Env["E_LIB_DIR"] Then
+      $sDesktop = "ENLIGHTENMENT"
+    Else If Application.Env["WMAKER_BIN_NAME"] Then
+      $sDesktop = "WINDOWMAKER"
     Else
       $sDesktop = "?"
     Endif

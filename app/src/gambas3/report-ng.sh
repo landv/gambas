@@ -4,10 +4,11 @@
 # Joshua Higgins
 # GPL'd
 
-# Revision 11 15/01/10
+# Revision 12 17/01/2011
 
 # Changed detection of distros using /etc/lsb-release, because before we were only expecting Ubuntu to be using it. Silly me - Josh
-# 20/01/10 - Benoît: Integration into Gambas IDE
+# 20/01/2010 - Benoît: Integration into Gambas IDE
+# 17/01/2011 - Benoît: Add detected desktop
 
 # echo "System Report for Gambas"
 
@@ -80,6 +81,29 @@ GAMBASPATH=$(which gbx 2>/dev/null)
 GAMBAS2PATH=$(which gbx2 2>/dev/null)
 GAMBAS3PATH=$(which gbx3 2>/dev/null)
 
+# ---------------- DETECT CURRENT DESKTOP
+
+DESKTOP=Unknown
+if [ x"$KDE_FULL_SESSION" = x"true" ]; then
+  DESKTOP=KDE3;
+  if [ x"$KDE_SESSION_VERSION" = x"4" ]; then
+    DESKTOP=KDE4
+  fi
+elif [ x"$GNOME_DESKTOP_SESSION_ID" != x"" ]; then DESKTOP=Gnome;
+elif `dbus-send --print-reply --dest=org.freedesktop.DBus /org/freedesktop/DBus org.freedesktop.DBus.GetNameOwner string:org.gnome.SessionManager > /dev/null 2>&1` ; then DESKTOP=Gnome;
+elif xprop -root _DT_SAVE_MODE 2> /dev/null | grep ' = \"xfce4\"$' >/dev/null 2>&1; then DESKTOP=Xfce;
+elif [ x"$E_BIN_DIR" != x"" ]; then DESKTOP=Enlightenment;
+elif [ x"$WMAKER_BIN_NAME" != x"" ]; then DESKTOP=WindowMaker;
+elif [ x"$DESKTOP_SESSION" != x"kde" ]; then 
+  DESKTOP=KDE3;
+  if [ x"$KDE_SESSION_VERSION" = x"4" ]; then
+    DESKTOP=KDE4
+  fi
+elif [ x"$DESKTOP_SESSION" != x"gnome" ]; then DESKTOP=Gnome;
+elif [ x"$DESKTOP_SESSION" != x"xfce" ]; then DESKTOP=Xfce;
+fi
+
+
 # ---------------- PRINT ALL TO FILE
 
 echo "[OperatingSystem]"
@@ -91,6 +115,7 @@ echo ""
 echo "[System]"
 echo "CPUArchitecture=$ARCH"
 echo "TotalRam=$RAM"
+echo "Desktop=$DESKTOP"
 echo ""
 echo "[Gambas]"
 
