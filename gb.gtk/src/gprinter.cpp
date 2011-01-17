@@ -109,10 +109,29 @@ static gboolean find_default_printer(GtkPrinter *gtk_printer, gPrinter *printer)
 	
 	if (gtk_printer_is_default(gtk_printer))
 	{
+		#if DEBUG_ME
+		fprintf(stderr, "find_default_printer: %s\n", gtk_printer_get_name(gtk_printer));
+		#endif
+	
 		printer->setName(gtk_printer_get_name(gtk_printer));
 		return TRUE;
 	}
 	
+	return FALSE;
+}
+
+static gboolean find_file_printer(GtkPrinter *gtk_printer, gPrinter *printer)
+{
+	if (gtk_printer_get_capabilities(gtk_printer) == 0) // heuristic
+	{
+		#if DEBUG_ME
+		fprintf(stderr, "find_file_printer: %s\n", gtk_printer_get_name(gtk_printer));
+		#endif
+
+		printer->setName(gtk_printer_get_name(gtk_printer));
+		return TRUE;
+	}
+		
 	return FALSE;
 }
 
@@ -512,6 +531,8 @@ void gPrinter::setOutputFileName(const char *file)
 	else
 		format = NULL;
 
+	gtk_enumerate_printers((GtkPrinterFunc)find_file_printer, this, NULL, TRUE);
+	
 	gtk_print_settings_set(_settings, GTK_PRINT_SETTINGS_OUTPUT_URI, uri);	
 	
 	g_free(uri);
