@@ -77,12 +77,24 @@ static void SWAP_type(CTYPE *p)
 
 static int align_pos(int pos, int size)
 {
-	if (size >= 4)
-		return (pos + 3) & ~3;
-	else if (size == 2)
-		return (pos + 1) & ~1;
-	else
-		return pos;
+	switch (size)
+	{
+		case 1:
+			return pos;
+		case 2:
+			return (pos + 1) & ~1;
+		#ifndef OS_64BITS
+		case 4:
+		default:
+			return (pos + 3) & ~3;
+		#else
+		case 4:
+			return (pos + 3) & ~3;
+		case 8:
+		default:
+			return (pos + 7) & ~7;
+		#endif
+	}
 }
 
 
@@ -455,7 +467,7 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 	}
 	
 	#ifdef OS_64BITS
-	size = (pos + 7) & ~7;
+	size = align_pos(pos, 8);
 	#else
 	size = align_pos(pos, 4);
 	#endif
@@ -795,7 +807,7 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
 		pos += size;
 	}
 	#ifdef OS_64BITS
-	info->s_static = (pos + 7) & ~7;
+	info->s_static = align_pos(pos, 8);
 	#else
 	info->s_static = align_pos(pos, 4);
 	#endif
@@ -814,7 +826,7 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
 		pos += size; //sizeof_ctype(class, var->type);
 	}
 	#ifdef OS_64BITS
-	info->s_dynamic = (pos + 7) & ~7;
+	info->s_dynamic = align_pos(pos, 8);
 	#else
 	info->s_dynamic = align_pos(pos, 4);
 	#endif
