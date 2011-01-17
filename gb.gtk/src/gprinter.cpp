@@ -122,7 +122,7 @@ static gboolean find_default_printer(GtkPrinter *gtk_printer, gPrinter *printer)
 
 static gboolean find_file_printer(GtkPrinter *gtk_printer, gPrinter *printer)
 {
-	if (gtk_printer_get_capabilities(gtk_printer) == 0) // heuristic
+	if (!strcmp(G_OBJECT_TYPE_NAME(gtk_printer_get_backend(gtk_printer)), "GtkPrintBackendFile"))
 	{
 		#if DEBUG_ME
 		fprintf(stderr, "find_file_printer: %s\n", gtk_printer_get_name(gtk_printer));
