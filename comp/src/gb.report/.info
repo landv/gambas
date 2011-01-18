@@ -193,6 +193,22 @@ Solid
 C
 i
 1
+_Left
+v
+f
+
+_Right
+v
+f
+
+_Top
+v
+f
+
+_Bottom
+v
+f
+
 Top
 r
 _ReportBorderSide
@@ -246,23 +262,23 @@ i
 
 _X
 v
-TSizeParse
+f
 
 _Y
 v
-TSizeParse
+f
 
 _X2
 v
-TSizeParse
+f
 
 _Y2
 v
-TSizeParse
+f
 
 _radius
 v
-TSizeParse
+f
 
 _Image
 v
@@ -276,10 +292,6 @@ _Pos
 v
 Float[]
 
-_iValue
-v
-i
-
 _PaintBrush
 m
 PaintBrush
@@ -288,6 +300,10 @@ _get
 M
 ReportBrush
 (sValue)s
+ToString
+m
+s
+
 #ReportContainer
 ReportFrame
 
@@ -409,7 +425,7 @@ b
 _Properties
 C
 s
-Left{ReportCoord},Top{ReportCoord},Width{ReportCoord},Height{ReportCoord},Visible=True,Font,Padding{ReportCoord},Expand,AutoResize,Tag
+Left{ReportCoord},Top{ReportCoord},Width{ReportCoord},Height{ReportCoord},Visible=True,Fixed,Font,Padding{ReportCoord},Expand,AutoResize,Tag
 _Family
 C
 s
@@ -572,7 +588,7 @@ ReportControl
 _Properties
 C
 s
-*,Border
+*,Border,Brush{ReportBrush}
 Border
 p
 ReportBorder
@@ -580,10 +596,6 @@ ReportBorder
 Brush
 p
 ReportBrush
-
-_BorderWidth
-r
-f
 
 _PaintBefore
 m

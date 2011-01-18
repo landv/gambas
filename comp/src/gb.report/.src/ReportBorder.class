@@ -9,7 +9,10 @@ Private hBottom As New _ReportBorderSide
 Private hLeft As New _ReportBorderSide
 Private hRight As New _ReportBorderSide
 
-
+Public _Left As Float
+Public _Right As Float
+Public _Top As Float
+Public _Bottom As Float
 
 
 Property Read Top As _ReportBorderSide
@@ -81,7 +84,7 @@ Static Public Function _get(sValue As String) As ReportBorder
 
 
 
-  
+Finally
   Return hReportBorder
   
 End
@@ -93,11 +96,7 @@ Dim ars As String[]
   Try hObj.Width = ars[0]
   
    Try hObj.Brush = ReportBrush[ars[1]]
-  
-  Try hObj.Round1 = ars[2]
-  
-  Try hObj.Round2 = ars[3]
-  
+   If hObj.Brush = Null Then hObj.Brush = ReportBrush["&H0"]
   
   
 End

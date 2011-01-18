@@ -45,15 +45,15 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
   Y = fPdg
   
   w -= 2 * fPdg
-  
-  
+  H -= fpdg
+  Y -= fspc
   
   For i = 0 To Me.Children.Max
     hChild = Super.Children[i]
     If hChild.Fixed Then
       
       hChildHints = hChild._GetSizeHints(W, H - fSExp, W, H)
-      fFixedSpc += hChildHints.Height
+      fFixedSpc += hChildHints.Height + fspc
       
       If i < Me._CurItem Then
         hTItem = New TControl

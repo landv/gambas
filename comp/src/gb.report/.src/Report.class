@@ -80,13 +80,13 @@ Public Sub Layout()
   Me._SetUnifiedValues()
   'Me._GenerateClones()
   '$hReportTControl.ctrl = Me
-  
+  Debug "Page Size W/H: " & Round(Me._Width, -2) & "/" & Round(Me._Height, -2)
    $hReportTControl._SetGeometry(0, 0, Me._Width, Me._Height) 
    Do
-   If Me._CurItem >= Me.Children.Max Then Break
+   
      
      Me._SetChildGeometry(0, 0, Me._Width, Me._Height, iCurPage)
-     
+   If Me._CurItem >= Me.Children.Max Then Break  
    Inc iCurPage
    
    Loop

@@ -4,12 +4,12 @@ Export
 Create Private
 Inherits ReportControl
 
-Public Const _Properties As String = "*,Border"
+Public Const _Properties As String = "*,Border,Brush{ReportBrush}"
 
-Private $fLeftBorderWidth As Float
-Private $fRightBorderWidth As Float
-Private $fTopBorderWidth As Float
-Private $fBottomBorderWidth As Float
+' Private $fLeftBorderWidth As Float
+' Private $fRightBorderWidth As Float
+' Private $fTopBorderWidth As Float
+' Private $fBottomBorderWidth As Float
 
 Private $hBorder As New ReportBorder
 
@@ -18,7 +18,7 @@ Private $hBrush As ReportBrush
 Property Border As ReportBorder
 
 Property Brush As ReportBrush
-Property Read _BorderWidth As Float
+'Property Read _BorderWidth As Float
 
 Private Function Border_Read() As ReportBorder
   
@@ -38,7 +38,7 @@ Public Sub _PaintBefore(Page As Integer, X As Float, Y As Float, hControl As TCo
   Dim hImage As Picture
   Dim fradius As Float
   
- 
+ 'If Me.tag = "*" Then Stop
   
   X1 = (x + hControl.RealLeft) 
   Y1 = (y + hControl.RealTop) 
@@ -78,10 +78,10 @@ Public Sub _PaintAfter(Page As Integer, X As Float, Y As Float, hControl As TCon
   'Dim fWidth As Float
   
   Dim fTopWidth, fBottomWidth, fLeftWidth, fRighWidth As Float
-  fLeftWidth = MTools.UnitsToPixels($fLeftBorderWidth)
-  fRighWidth = MTools.UnitsToPixels($fRightBorderWidth)
-  fTopWidth = MTools.UnitsToPixels($fTopBorderWidth)
-  fBottomWidth = MTools.UnitsToPixels($fBottomBorderWidth)
+  fLeftWidth = MTools.UnitsToPixels($hBorder._Left)
+  fRighWidth = MTools.UnitsToPixels($hBorder._Right)
+  fTopWidth = MTools.UnitsToPixels($hBorder._Top)
+  fBottomWidth = MTools.UnitsToPixels($hBorder._Bottom)
 
   
   'If $hBorder.Style <> Line.None Then 
@@ -143,13 +143,13 @@ Public Sub _SetUnifiedValues()
   Super._SetUnifiedValues()
   
   hSizeParse = New TSizeParse($hBorder.Left.Width)
-  $fLeftBorderWidth = hSizeParse.GetValue()
+  $hBorder._Left = hSizeParse.GetValue()
   hSizeParse = New TSizeParse($hBorder.Right.Width)
-  $fRightBorderWidth = hSizeParse.GetValue()
+  $hBorder._Right = hSizeParse.GetValue()
   hSizeParse = New TSizeParse($hBorder.Top.Width)
-  $fTopBorderWidth = hSizeParse.GetValue()
+  $hBorder._Top = hSizeParse.GetValue()
   hSizeParse = New TSizeParse($hBorder.Bottom.Width)
-  $fBottomBorderWidth = hSizeParse.GetValue()
+  $hBorder._Bottom = hSizeParse.GetValue()
 End
 
 Public Sub _GetSizeHints(AvailableW As Integer, AvailableH As Integer, TotalWidth As Integer, TotalHeight As Integer) As TSizeHint
@@ -162,8 +162,8 @@ Public Sub _GetSizeHints(AvailableW As Integer, AvailableH As Integer, TotalWidt
   
 End
 
-Private Function _BorderWidth_Read() As Float
-  
-  'Return $fBorderWidth
-  
-End
+' Private Function _BorderWidth_Read() As Float
+'   
+'   'Return $fBorderWidth
+'   
+' End

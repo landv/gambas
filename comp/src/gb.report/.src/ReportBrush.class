@@ -2,69 +2,170 @@
 Export
 
 Public _Type As Integer
-Public _X As TSizeParse
-Public _Y As TSizeParse
-Public _X2 As TSizeParse
-Public _Y2 As TSizeParse
-Public _radius As TSizeParse
+Public _X As Float
+Public _Y As Float
+Public _X2 As Float
+Public _Y2 As Float
+Public _radius As Float
 Public _Image As Image
-Public _Color As Integer[]
-Public _Pos As Float[]
-Public _iValue As Integer
+Public _Color As Integer[] = [0, &HFFFFFF&]
+Public _Pos As Float[] = [0, 1]
+Private _ImageDir As String
 
 Public Function _PaintBrush(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer) As PaintBrush
-
+  
   Dim hBrush As PaintBrush
   Dim fradius As Float
-
+  Dim Width As Integer = X2 - X1
+  Dim Height As Integer = Y2 - Y1
+  
   Select Case Me._Type
     Case 0
-      hBrush = Paint.Color(_iValue)
+      hBrush = Paint.Color(_Color[0])
     Case 1
       hBrush = paint.Image(_Image, X1, Y1)
     Case 2
-      hBrush = paint.LinearGradient(X1, Y1, X1, Y2, _Color, _Pos)
+      hBrush = paint.LinearGradient(Width * _X, Height * _Y, Width * _X2, Height * _Y2, _Color, _Pos)
     Case 3
-      fradius = If((X2 - X1) > (Y2 - Y1), X2 - X1, Y2 - Y1)
-      hBrush = paint.RadialGradient(X1, Y1, fradius, X1, Y1, _Color, _Pos)
+      fradius = Width * _radius
+      hBrush = paint.RadialGradient(Width * _X, Height * _Y, fradius, Width * _X2, Height * _Y2, _Color, _Pos)
   End Select
   Return hBrush
-
+  
 End
 
 Static Public Sub _get(sValue As String) As ReportBrush
   
   Dim hBrush As New ReportBrush
-  Dim sWord As String
-  Dim ars1, ars2 As String[]
-  Dim s As String
-
-  ars1 = Scan(sValue, "*(*)")
-  If ars1.Count > 0 Then
-  Select Case LCase(ars1[0])
-      
+  Dim iPos As Integer
+  Dim sType As String
+  
+  Dim ars As String[]
+  Dim i, j As Integer
+  Dim hLabel As Label
+  
+  If Not svalue Then Return Null
+  
+  sValue = Trim(sValue)
+  
+  iPos = InStr(sValue, "(")
+  
+  If iPos Then sType = Left(sValue, iPos - 1)
+  'pas de parenthese de fin
+  If ipos And Not (sValue Ends ")") Then 
+    Error.Raise
+  Else
+    svalue = Left(Mid(svalue, ipos + 1), -1)
+  Endif
+  ars = Split(sValue, ",", "[]")
+  Select Case LCase(sType)
     Case "image"
       hBrush._Type = 1
-      hBrush._Image = Image.Load(ars1[1])
+      
+      hBrush._Image = Image.Load(ars[0])
+      hBrush._ImageDir = ars[0]
+    Case "radialgradient"
+      hBrush._Type = 3
+      hBrush._X = CFloat(ars[0])
+      hBrush._Y = CFloat(ars[1])
+      hBrush._Radius = CFloat(ars[2])
+      hBrush._X2 = CFloat(ars[3])
+      hBrush._Y2 = CFloat(ars[4])
+      hBrush._Color = GetIntegerArray(ars[5])
+      hBrush._Pos = GetFloatArray(ars[6])
+      
     Case "lineargradient"
       
-    Case "radialgradient"
+      hBrush._Type = 2
+      hBrush._X = CFloat(ars[0])
+      hBrush._Y = CFloat(ars[1])
+      hBrush._X2 = CFloat(ars[2])
+      hBrush._Y2 = CFloat(ars[3])
+      hBrush._Color = GetIntegerArray(ars[4])
+      hBrush._Pos = GetFloatArray(ars[5])
       
     Case Else
-      
+      'correction de l'hexon
+      hBrush._Color[0] = Val(ars[0])
+      'CChooser.Value = IIf(Len(ars[0]) = 8, Val(ars[0]), Val(ars[0] & "FF"))
   End Select
-  Else
-    hBrush._iValue = Val(Replace(sValue, "#", "&h"))
-    
-  Endif
   Return hBrush
+Finally
+  If hBrush._Color.Count = 0 Then hBrush._Color = [0, &hFFFFFF&]
+  If hBrush._Color.Count < 2 Then hBrush._Color.Add(&hFFFFFF&)
   
-'Catch
+  If hBrush._Pos.Count < 2 Then hBrush._Pos = [0.0, 1.0]
+  
+  
+Catch
+  Return Null
+End
+
+Static Private Function GetIntegerArray(sValue As String) As Integer[]
+  
+  Dim ari As New Integer[]
+  Dim s As String
+  
+  For Each s In Split(sValue)
+    ari.Add(Val(s))
+  Next
+  
+  Return ari
   
 End
 
-Static Private Function GetArray(sValue As String) As String[]
+Static Private Function GetFloatArray(sValue As String) As Float[]
   
-  Dim ars As New String[]
+  Dim arf As New Float[]
+  Dim s As String
+  
+  For Each s In Split(sValue)
+    arf.Add(CFloat(s))
+  Next
+  
+  Return arf
   
 End
+
+Public Function ToString() As String
+  
+  Dim i As Integer
+  Dim f As Float
+  Dim sValue As String
+  
+  Select Case _Type
+    Case 0
+      sValue = "&H" & Hex(_Color[0], 8) & "&"
+    Case 2, 3
+      If _Type = 3 Then
+        sValue = "RadialGradient(" & _X & "," & _Y & "," & _Radius & "," & _X2 & "," & _Y2 & ",["
+        
+      Else
+        sValue = "LinearGradient(" & _X & "," & _Y & "," & _X2 & "," & _Y2 & ",["
+      Endif
+      
+      For Each i In _Color
+        sValue &= "&H" & Hex(i, 6) & "&,"
+        
+      Next
+      
+      sValue = Left(sValue, -1)
+      
+      sValue &= "],["
+      
+      For Each f In _Pos
+        sValue &= f & ","
+        
+      Next
+      sValue = Left(sValue, -1)
+      
+      sValue &= "])"
+    Case 1
+      sValue = "Image(" & _ImageDir & ")"
+      
+  End Select
+  
+  Return svalue
+  
+End
+

@@ -28,8 +28,8 @@ Public Sub ToolButton1_Click()
 End
 
 Public Sub DrawingArea1_Draw()
-
   $hreport.Scale = $fScale
+  $hreport.Layout
   $hreport.Paint($iPage)
   SpinBox1.MaxValue = $hreport.Count
 End
@@ -133,10 +133,12 @@ Public Sub ToolButton3_Click()
 End
 
 Public Sub Button1_Click()
-
+  Dim fScale As Float
+  
+  $hreport.Scale = 1
   If Printer1.Configure() Then Return
   Printer1.Print()
-
+  
 End
 
 
@@ -150,9 +152,18 @@ End
 Public Sub Printer1_Begin()
 
   $hreport.Layout
-  Printer1.Count = $hreport.Count
+  Printer1.Count = 1 '$hreport.Count
 
 End
+Public Sub Printer1_End()
+  
+  
+  
+End
+
+
+
+
 
 Public Sub Form_Resize()
 

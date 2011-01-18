@@ -21,8 +21,8 @@ Public Sub Test1()
   Dim ContBox As ReportVBox
   'Dim lblcoucou As ReportLabel
   Dim i, j, k As Integer
-  Report.Padding = "2 mm"
-  Report.Spacing = "2 mm"
+  Report.Padding = "2 cm"
+  Report.Spacing = "1mm"
   hHBox = New ReportVBox(Report)
   hHBox.Brush = reportBrush["&hFFFFFF"]
   hHBox.Border = ReportBorder["border=1mm &h000000"]

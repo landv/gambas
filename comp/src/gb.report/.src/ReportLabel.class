@@ -76,7 +76,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   
   
   
-  If hMyHints.Height < fTextHeight Then hMyHints.Height = fTextHeight + (2 * Me._Padding) + (2 * Me._BorderWidth)
+  If hMyHints.Height < fTextHeight Then hMyHints.Height = fTextHeight + (2 * Me._Padding) + Me.Border._Left + Me.Border._Right
   
   If Me._RelativeHeight Then hMyHints.Height = TotalHeight * Me._Height / 100
   If hMyHints.Height <= 0 Then hMyHints.Height = Me.Font.Height
@@ -85,7 +85,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
     hMyHints.Width = Me._Width
   Else 
     
-    hMyHints.Width = fTextWidth + (2 * Me._Padding) + (2 * Me._BorderWidth)
+    hMyHints.Width = fTextWidth + (2 * Me._Padding) + Me.Border._Left + Me.Border._Right
   
     'IF hMyHints.Width < ME._Width THEN hMyHints.Width = ME._Width
   Endif
@@ -100,7 +100,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   
   Dim sTempText As Variant
   Dim iPadding As Integer
-  iPadding = MTools.UnitsToPixels(Me._Padding + Me._BorderWidth)
+  iPadding = MTools.UnitsToPixels(Me._Padding + Me.Border._Left)
   
   If $sKey Then
   sTempText = Me.Parent._GetData($sKey)
@@ -114,7 +114,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
     sTempText = DecodeText(sTempText, Page)
   Endif
   'Draw.Foreground = Me.Foreground
-  Paint.Brush = Paint.Color(Me.Border.Color)
+  Paint.Brush = Paint.Color(Color.Black)
   'Set the Font if it is initialized
   If Not IsNull(Me.Font) Then Paint.Font = Me.Font
   Paint.Font.size = Paint.Font.size / 96 * Paint.ResolutionX 'mTools.ReportResolution
