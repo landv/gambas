@@ -33,7 +33,7 @@ Private Const UNMASKED_CHAR As String = "\xFF"
 
 Private $sMaskOrg As String
 
-Private $aMask As String[]
+Private $aMask As New String[]
 Private $sDefault As String
 Private $sSeparator As String
 Private $sAlign As String
@@ -242,6 +242,7 @@ End
 Private Sub IsRightAlign(iPos As Integer) As Boolean
   
   iPos = GetNextSeparator(iPos)
+  If iPos = 0 Then Return
   Return Mid$($sAlign, iPos, 1) = "<"
   
 End
