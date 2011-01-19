@@ -997,8 +997,13 @@ End
 
 Private Sub UpdateProperty()
   
+  Dim hCtrl As Control
+  
   Action["property"].Visible = (Not Project.ReadOnly) And $bNeedProperty
-  Action["property"].Enabled = Not Project.Running
+  'Action["property"].Enabled = Not Project.Running
+  For Each hCtrl In panProperty.Children
+    hCtrl.Enabled = Not Project.Running
+  Next
   
 End
 

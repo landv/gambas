@@ -23,3 +23,11 @@ Static Public Sub Rectangle(X As Float, Y As Float, W As Float, H As Float)
   Super.Rectangle(X, Y, W, H)
   
 End
+
+
+Static Public Sub Text(Text As String, Optional X As Float, Y As Float, Width As Float, Height As Float, Alignment As Integer)
+  
+  Debug Paint.Font.Size
+  Super.Text(Text, X, Y, Width, Height, Alignment)
+  
+End

@@ -54,7 +54,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   hMyHints.Height = Me._Height + (2 * Me._Padding)
   
   If Not IsNull(Me.Font) Then Paint.Font = Me.Font
-  Paint.Font.size = Paint.Font.size / Desktop.Resolution * Paint.ResolutionX 'mTools.ReportResolution
+  'Paint.Font.size = Paint.Font.size / Desktop.Resolution * Paint.ResolutionX 'mTools.ReportResolution
 
   'if the size choosed by the user is less than the font height, set the object to the font height
   'hext = Paint.TextExtents($sText)

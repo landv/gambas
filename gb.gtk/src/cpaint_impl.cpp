@@ -191,7 +191,6 @@ static int Begin(GB_PAINT *d)
 		h = gtk_print_context_get_height(context);
 		rx = (int)gtk_print_context_get_dpi_x(context);
 		ry = (int)gtk_print_context_get_dpi_y(context);
-		fprintf(stderr, "rx = %d ry = %d\n", rx, ry);
 	}
 	else if (GB.Is(device, CLASS_SvgImage))
 	{

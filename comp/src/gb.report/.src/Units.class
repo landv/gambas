@@ -15,8 +15,10 @@ Static Public Function GetFactorUnitToInch(Unit As String) As Float
       Return 39.37
     Case "mm"
       Return 0.03937
-    Case "px", "pt"
+    Case "px"
       Return 1 / Paint.ResolutionX
+    Case "pt"
+      Return 1 / 72
   End Select
 
 End

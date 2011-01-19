@@ -2,6 +2,7 @@
 Static Private $hreport As Report
 Private $fScale As Float = 1
 Private $iPage As Integer = 1
+Private $hPrint As Report
 'Private hPrinter As New Printer
 Static Public Function Run(hReport As Report)
   Dim hFPreview As FPreview
@@ -29,17 +30,18 @@ End
 
 Public Sub DrawingArea1_Draw()
   Debug $fScale
-  $hreport.Scale = $fScale
-  $hreport.Layout
-  $hreport.Paint($iPage)
-  SpinBox1.MaxValue = Max(1, $hreport.Count)
+  'Paint.Scale($fScale, $fScale)
+  '$hreport.Layout
+  $hReport.Scale = $fScale
+  $hReport.Paint($iPage)
+  SpinBox1.MaxValue = Max(1, $hReport.Count)
 End
 
 Public Sub Form_Open()
 
   If $hreport = Null Then Me.Close
   
-  Report.Debug = True
+  'Report.Debug = True
   
   ComboBox1.List = ["A3", "A4", "A5", "B5", "Executive", "Legal", "Letter", "Custom"]
   ComboBox1.Index = 1
@@ -136,31 +138,31 @@ Public Sub ToolButton3_Click()
 End
 
 Public Sub Button1_Click()
-  Dim fScale As Float
   
-  $hreport.Scale = 1
   If Printer1.Configure() Then Return
+  'Me.Enabled = False
   Printer1.Print()
+  'Me.Enabled = True
   
 End
 
-
-
 Public Sub Printer1_Draw()
 
-  $hreport.Paint($iPage)
+  $hPrint.Paint($iPage)
 
 End
 
 Public Sub Printer1_Begin()
 
-  $hreport.Layout
+  $hPrint = Object.New(Object.Type($hReport))
+  $hPrint.Layout
   Printer1.Count = 1 '$hreport.Count
 
 End
+
 Public Sub Printer1_End()
   
-  
+  $hPrint = Null
   
 End
 

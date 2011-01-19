@@ -59,7 +59,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   
   'PRINT ME.
   If Not IsNull(Me.Font) Then Paint.Font = Me.Font
-  Paint.Font.size = Paint.Font.size / 96 * paint.ResolutionX 'mTools.ReportResolution
+  'Paint.Font.size = Paint.Font.size / 96 * paint.ResolutionX 'mTools.ReportResolution
   
   'if the size choosed by the user is less than the font height, set the object to the font height
   
@@ -116,8 +116,11 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   'Draw.Foreground = Me.Foreground
   Paint.Brush = Paint.Color(Color.Black)
   'Set the Font if it is initialized
-  If Not IsNull(Me.Font) Then Paint.Font = Me.Font
-  Paint.Font.size = Paint.Font.size / 96 * Paint.ResolutionX 'mTools.ReportResolution
+  If Not IsNull(Me.Font) Then 
+    Paint.Font = Me.Font
+    'If Paint.ResolutionY <> Desktop.Resolution Then Stop
+    'Paint.Font.size = Paint.Font.size * Paint.ResolutionY / Desktop.Resolution 'mTools.ReportResolution
+  Endif
   
   'Draw.Clip((x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
     'Draw.Text($sText, (x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom, $iAlignment)
