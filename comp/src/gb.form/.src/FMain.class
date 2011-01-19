@@ -6,3 +6,10 @@ Public Sub Form_Open()
   'MaskBox1.SetFocus
 
 End
+
+Public Sub optType_Click()
+
+  ValueBox1.Type = CInt(Last.Tag)
+  ValueBox1.SetFocus
+
+End

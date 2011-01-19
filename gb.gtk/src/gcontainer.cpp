@@ -137,10 +137,13 @@ void gContainer::performArrange()
 {
 	if (!gApplication::allEvents()) return;
 
+	//if (!CAN_ARRANGE(this))
+	//	return;
+	
 	//fprintf(stderr, "gContainer::performArrange: %d: %s <<<\n", _arrangement_level, name());
-	_arrangement_level++;	
+	//_arrangement_level++;	
 	arrangeContainer((void*)this);
-	_arrangement_level--;
+	//_arrangement_level--;
 	//fprintf(stderr, ">>> gContainer::performArrange: %d: %s\n", _arrangement_level, name());
 }
 
@@ -456,20 +459,27 @@ void gContainer::insert(gControl *child, bool realize)
 		
 	ch_list = g_list_append(ch_list, child);
 	
+	if (realize)
+	{
+		child->visible = true;
+	}
+    
 	//g_debug("gContainer::insert: visible = %d", isReallyVisible());
+	//fprintf(stderr, "insert %s into %s\n", child->name(), name());
 	performArrange();
+	//fprintf(stderr, "--> %d %d %d %d\n", child->x(), child->y(), child->width(), child->height());
 	updateFocusChain();
 
 	if (realize)
 	{
     gtk_widget_realize(child->border);
 		gtk_widget_show_all(child->border);
-		child->visible = true;
 	}
     
 	child->setBackground();
 	child->setForeground();
   child->setFont(font());
+
 }
 
 void gContainer::remove(gControl *child)

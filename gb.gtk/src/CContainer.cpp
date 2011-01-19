@@ -418,13 +418,6 @@ BEGIN_PROPERTY(CUSERCONTAINER_indent)
 	
 END_PROPERTY
 
-BEGIN_METHOD_VOID(UserControl_SetFocus)
-
-	WIDGET->setFocus();
-  gtk_widget_child_focus(GTK_WIDGET(WIDGET->widget), GTK_DIR_TAB_FORWARD);
-
-END_METHOD
-
 
 GB_DESC CUserControlDesc[] =
 {
@@ -434,9 +427,8 @@ GB_DESC CUserControlDesc[] =
   GB_METHOD("_new", NULL, CUSERCONTROL_new, "(Parent)Container;"),
   GB_PROPERTY("_Container", "Container", CUSERCONTROL_container),
   GB_PROPERTY("_AutoResize", "b", CCONTAINER_auto_resize),
+	GB_PROPERTY("_Arrangement", "i", CCONTAINER_arrangement),
   
-	GB_METHOD("SetFocus", NULL, UserControl_SetFocus, NULL),
-
 	USERCONTROL_DESCRIPTION,
 
 	GB_END_DECLARE

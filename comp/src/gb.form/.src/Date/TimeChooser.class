@@ -1,0 +1,89 @@
+' Gambas class file
+
+Inherits UserControl
+
+Property Value As Date
+
+Private $hDrawingArea As DrawingArea
+Private $dTime As Date
+
+Private Sub GetTimeFormat() As String
+
+  Dim sFormat As String  
+  
+  sFormat = Format(Time(11, 22, 33), gb.ShortTime)
+  sFormat = Replace(sFormat, "11", "hh")
+  sFormat = Replace(sFormat, "22", "nn")
+  
+  Return sFormat
+  
+End
+
+
+Public Sub _new()
+  
+  $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
+  $hDrawingArea.Background = Color.TextBackground
+  $hDrawingArea.Foreground = Color.TextForeground
+  
+End
+
+Public Sub DrawingArea_Draw()
+  
+  Dim dTime, dNextTime As Date
+  Dim iInd As Integer
+  Dim X, Y, DX, DY, DW, DH, S As Integer
+  Dim sFormat As String = GetTimeFormat()
+  
+  DW = $hDrawingArea.W \ 4
+  DH = $hDrawingArea.H \ 12
+  DX = ($hDrawingArea.W - DW * 4) \ 2
+  DY = ($hDrawingArea.H - DH * 12) \ 2
+  
+  S = Min(CFloat(DH), DW / 2.5)
+  Draw.Font.Size = Draw.Font.Size * S / Draw.Font.Height
+  
+  dTime = Date(Now)
+  
+  X = DX
+  Y = DY
+  
+  For iInd = 0 To 47
+    
+    dNextTime = DateAdd(dTime, gb.Minute, 30)
+    
+    If Time($dTime) >= Time(dTime) And If Time($dTime) < Time(dNextTime) Then
+      Draw.FillColor = Color.SelectedBackground
+      Draw.Foreground = Color.SelectedForeground
+      Draw.FillStyle = Fill.Solid
+      Draw.Rect(X, Y, DW, DH)
+    Else 
+      Draw.FillColor = $hDrawingArea.Background
+      Draw.Foreground = $hDrawingArea.Foreground
+    Endif
+      
+    Draw.Text(Format$(dTime, sFormat), X, Y, DW, DH, Align.Center)
+    Y += DH
+    If (Y + DH) > $hDrawingArea.H Then
+      X += DW
+      Y = DY
+    Endif
+    
+    dTime = dNextTime
+    
+  Next
+  
+End
+
+
+Private Function Value_Read() As Date
+
+  Return Time($dTime)
+
+End
+
+Private Sub Value_Write(Value As Date)
+
+  $dTime = Time(Value)
+
+End

@@ -112,6 +112,10 @@ _new
 m
 
 
+Background_Arrange
+m
+
+
 Button_Click
 m
 
@@ -125,10 +129,6 @@ m
 
 
 Clear
-m
-
-
-Background_Arrange
 m
 
 
@@ -236,7 +236,7 @@ C
 _Properties
 C
 s
-*,Value,ReadOnly,Border=True
+*,Value,ReadOnly,Border=True,ShowTime
 _DefaultSize
 C
 s
@@ -254,6 +254,10 @@ p
 b
 
 Border
+p
+b
+
+ShowTime
 p
 b
 
@@ -308,6 +312,10 @@ Colors
 r
 _DateChooserColors
 
+ShowTime
+p
+b
+
 :Change
 :
 
@@ -323,7 +331,7 @@ _DateChooserColors
 _Properties
 C
 s
-*
+*,ShowTime
 _DefaultEvent
 C
 s
@@ -1066,7 +1074,7 @@ C
 _Properties
 C
 s
-*,Mask,MaskChar
+*,Mask
 _Similar
 C
 s
@@ -1076,10 +1084,6 @@ C
 s
 TextBox
 Mask
-p
-s
-
-MaskChar
 p
 s
 
@@ -1774,15 +1778,31 @@ C
 _Properties
 C
 s
-*,-Password,-Text,-Alignment,Type{ValueBox.Date;Identifier;Number;Time}=Number,Allowed,HeightForm=200,WidthForm=300
+*,Type{ValueBox.*}=Number,Value,ReadOnly,Border=True
 _DefaultSize
 C
 s
 24,4
-_DrawWith
+_Similar
 C
 s
 TextBox
+Type
+p
+i
+
+Value
+p
+v
+
+Border
+p
+b
+
+ReadOnly
+p
+b
+
 Number
 C
 i
@@ -1795,107 +1815,27 @@ Time
 C
 i
 2
-Identifier
+Currency
 C
 i
 3
-Value
-p
-v
-
-Type
-p
+DateTime
+C
 i
-
-Text
-r
-s
-
-Allowed
-p
-s
-
-HeightForm
-p
+4
+IPAddress
+C
 i
-
-WidthForm
-p
-i
-
+5
 _new
 m
 
 
-Pan_Arrange
+NumberBox_KeyPress
 m
 
 
-TextBox_LostFocus
-m
-
-
-TextBox_KeyPress
-m
-
-
-TextBox_Change
-m
-
-
-Timer_Timer
-m
-
-
-Form_Resize
-m
-
-
-Button_Draw
-m
-
-
-Button_Enter
-m
-
-
-Button_Leave
-m
-
-
-Button_MouseDown
-m
-
-
-LstForm_Deactivate
-m
-
-
-LstForm_Show
-m
-
-
-OBS_Move
-m
-
-
-LstForm_Hide
-m
-
-
-hTimer_Timer
-m
-
-
-DateChooser_Activate
-m
-
-
-DateChooser_Change
-m
-
-
-LstForm_KeyPress
+NumberBox_Change
 m
 
 

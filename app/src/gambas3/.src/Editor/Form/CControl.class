@@ -685,7 +685,7 @@ Private Function ConvertToString(vVal As Variant, hProp As CPropertyInfo) As Str
         Return "False"
       Endif
 
-    Case "i", "l", "f", "s", "d"
+    Case "i", "l", "f", "s", "d", "v"
 
       Return CStr(vVal)
 
@@ -1507,7 +1507,7 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
 
     Select Case hProp.Type
 
-      Case "s", "List", "Path", "Table", "Menu", "ReportCoord"
+      Case "s", "v", "List", "Path", "Table", "Menu", "ReportCoord"
         vVal = Quote(vVal)
 
         If hProp.Translate Then

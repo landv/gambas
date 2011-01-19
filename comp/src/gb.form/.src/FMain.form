@@ -1,24 +1,53 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,49,34)
+  MoveScaled(0,0,56,44)
+  Arrangement = Arrange.Vertical
+  Spacing = True
   Margin = True
-  { MaskBox1 MaskBox
-    MoveScaled(11,6,24,4)
-    Alignment = Align.Right
-    Mask = "9999999!<,00 €"
-    MaskChar = " "
+  { ValueBox1 ValueBox
+    MoveScaled(6,1,23,4)
+    Type = ValueBox.IPAddress
   }
-  { DateBox1 DateBox
-    MoveScaled(18,18,18,4)
+  { TimeBox1 DateBox
+    MoveScaled(5,6,26,4)
+    ShowTime = True
   }
-  { ButtonBox1 ButtonBox
-    MoveScaled(11,25,24,4)
+  { RadioButton1 RadioButton optType
+    Name = "RadioButton1"
+    MoveScaled(5,18,24,3)
+    Tag = "0"
+    Text = ("Number")
+    Value = True
   }
-  { MaskBox2 MaskBox
-    MoveScaled(12,12,24,4)
-    Alignment = Align.Right
-    Mask = "00</00</0000<"
-    MaskChar = " "
+  { RadioButton2 RadioButton optType
+    Name = "RadioButton2"
+    MoveScaled(5,22,24,3)
+    Tag = "1"
+    Text = ("Date")
+  }
+  { RadioButton3 RadioButton optType
+    Name = "RadioButton3"
+    MoveScaled(5,26,24,3)
+    Tag = "2"
+    Text = ("Time")
+  }
+  { RadioButton4 RadioButton optType
+    Name = "RadioButton4"
+    MoveScaled(5,30,24,3)
+    Tag = "3"
+    Text = ("Currency")
+  }
+  { RadioButton5 RadioButton optType
+    Name = "RadioButton5"
+    MoveScaled(5,34,24,3)
+    Tag = "4"
+    Text = ("DateTime")
+  }
+  { RadioButton6 RadioButton optType
+    Name = "RadioButton6"
+    MoveScaled(5,38,24,3)
+    Tag = "5"
+    Text = ("IPAddress")
   }
 }

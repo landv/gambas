@@ -3,7 +3,7 @@
 Export
 Inherits UserControl
 
-Public Const _Properties As String = "*,Value,ReadOnly,Border=True"
+Public Const _Properties As String = "*,Value,ReadOnly,Border=True,ShowTime"
 'Public Const _DefaultEvent As String = "Click"
 Public Const _DefaultSize As String = "24,4"
 Public Const _Similar As String = "TextBox"
@@ -11,10 +11,12 @@ Public Const _Similar As String = "TextBox"
 Property Value As Date
 Property ReadOnly As Boolean
 Property Border As Boolean
+Property ShowTime As Boolean
 
 Private $hButtonBox As ButtonBox
 Private $hPopup As Window
 Private $hChooser As DateChooser
+Private $bShowTime As Boolean
 
 Private Sub GetDateFormat() As String
   
@@ -24,10 +26,34 @@ Private Sub GetDateFormat() As String
   sFormat = Replace(sFormat, "3333", "yyyy")
   sFormat = Replace(sFormat, "22", "dd")
   sFormat = Replace(sFormat, "11", "mm")
+
+  If $bShowTime Then 
+    sFormat &= " " & Format(Time(11, 22, 33), gb.ShortTime)
+    sFormat = Replace(sFormat, "11", "hh")
+    sFormat = Replace(sFormat, "22", "nn")
+    sFormat = Replace(sFormat, "33", "ss")
+  Endif
   
   Return sFormat
   
 End
+
+Private Sub UpdateMask()
+  
+  Dim sMask As String
+  Dim vVal As Date
+  
+  vVal = Value_Read()
+  
+  sMask = Format(Date(1111, 11, 11), gb.ShortDate)
+  If $bShowTime Then sMask &= " " & Format(Time(11, 11, 11), gb.ShortTime)
+  
+  $hButtonBox.Editor.Mask = Replace(sMask, "1", "0")
+  
+  Value_Write(vVal)
+  
+End
+
 
 Public Sub _new()
   
@@ -35,21 +61,23 @@ Public Sub _new()
   
   $hButtonBox = New ButtonBox(Me) As "ButtonBox"
   $hButtonBox.Picture = Picture["icon:/small/calendar"]
-  $hButtonBox.Editor.Mask = Replace(Format(Date(1111, 11, 11), gb.ShortDate), "1", "0")
   $hButtonBox.Alignment = Align.Right
   
   $hPopup = New Window As "PopupWindow"
   $hPopup.Persistent = True
   $hPopup.Arrangement = Arrange.Fill
-  $hPopup.Resize(Desktop.Scale * 32, Desktop.Scale * 24)
   
   hPanel = New Panel($hPopup)
-  hPanel.Arrangement = Arrange.Fill
+  hPanel.Arrangement = Arrange.Horizontal
   hPanel.Border = Border.Plain
   
   $hChooser = New DateChooser(hPanel) As "DateChooser"
+  $hChooser.Expand = True
   
-  Me.Value = Now
+  Me.Proxy = $hButtonBox
+  
+  UpdateMask
+  Value_Write(Null)
   
 End
 
@@ -63,6 +91,7 @@ End
 
 Private Sub Value_Write(Value As Date)
 
+  If IsNull(Value) Then Value = Now
   $hButtonBox.Text = Format(Value, GetDateFormat())
 
 End
@@ -72,6 +101,13 @@ Public Sub ButtonBox_Click()
   Dim X, Y, iPad As Integer
   Dim dDate As Date
   
+  If $bShowTime Then
+    $hPopup.Resize(Desktop.Scale * 48, Desktop.Scale * 24)
+  Else
+    $hPopup.Resize(Desktop.Scale * 32, Desktop.Scale * 24)
+  Endif
+  $hChooser.ShowTime = $bShowTime
+
   iPad = If($hButtonBox.Border, 3, 0)
   X = $hButtonBox.ScreenX + $hButtonBox.W - $hPopup.W - iPad
   Y = $hButtonBox.ScreenY + $hButtonBox.H - iPad
@@ -139,4 +175,17 @@ Public Sub DateChooser_Cancel()
   
   $hPopup.Close
   
+End
+
+Private Function ShowTime_Read() As Boolean
+
+  Return $bShowTime
+
+End
+
+Private Sub ShowTime_Write(Value As Boolean)
+
+  $bShowTime = Value
+  UpdateMask
+
 End

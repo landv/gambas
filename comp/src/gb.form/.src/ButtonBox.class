@@ -27,11 +27,11 @@ Private $hBackground As DrawingArea
 Private $bBorder As Boolean
 Private $hTextBox As MaskBox
 Private $hButton As ToolButton
-Private $hObserver As Observer
+'Private $hObserver As Observer
 
 Public Sub _new()
   
-  $hObserver = New Observer(Me) As "Observer"
+  '$hObserver = New Observer(Me) As "Observer"
   
   $hBackground = New DrawingArea(Me) As "Background"
   $bBorder = True
@@ -45,6 +45,8 @@ Public Sub _new()
   $hButton = New ToolButton($hBackground) As "Button"
   $hButton.W = 24
   $hButton.Picture = Picture["./img/select.png"]
+  
+  Background_Arrange
   
 End
 
@@ -134,6 +136,7 @@ Private Sub Border_Write(Value As Boolean)
 
   $bBorder = Value
   '$hPanel.Padding = If(Value, 3, 0)
+  Background_Arrange
   Me.Refresh
 
 End

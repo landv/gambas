@@ -784,7 +784,7 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
     ' Endif
     
     If hClass Then
-      If hClass.Component <> Project.Name Then
+      If hClass.Component <> Project.Name And If hClass.Component <> CComponent.PROJECT_NAME Then
         MakeInheritance(hModule, cSymbol, hClass.Name, hClass.Component)
         bCanInherit = False
       Endif
@@ -1124,7 +1124,7 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
   Endif
   
   'Debug sClass
-  'If sClass = "TableView" Then Stop
+  'If sClass = "MaskBox" Then Stop
   
   bClass = Project.ExistClass(sClass)
   hClass = CComponent.Classes[sClass]

@@ -1258,7 +1258,7 @@ Public Function CreateControl(sClass As String, hParent As CControl, Optional sN
 
   ' If the component is not loaded, then return null
   If Not CComponent.Classes.Exist(sClass) Then
-    FMain.ShowError("Component missing")
+    FMain.ShowError(Subst(("Component missing for control &1"), sClass))
     hCtrl = New CControl(sName, "DrawingArea", hParent, Me, $hFamily)
   Else
     hCtrl = New CControl(sName, sClass, hParent, Me, $hFamily)

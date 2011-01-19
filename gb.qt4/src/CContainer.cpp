@@ -1216,7 +1216,7 @@ GB_DESC CUserControlDesc[] =
 
 	GB_PROPERTY("_Container", "Container", CUSERCONTROL_container),
 	GB_PROPERTY("_AutoResize", "b", CCONTAINER_auto_resize),
-	GB_PROPERTY("_Arrangement", "b", CCONTAINER_arrangement),
+	GB_PROPERTY("_Arrangement", "i", CCONTAINER_arrangement),
 	
 	USERCONTROL_DESCRIPTION,
 	

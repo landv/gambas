@@ -3,16 +3,14 @@
 'Export
 Inherits ButtonBox
 
-Public Const _Properties As String = "*,-Picture,-Text,ShowSecond,ShowMillisecond"
+Public Const _Properties As String = "*,-Picture,-Text,-Alignment,Precision{TimeBox.*}=Minute"
+
+Public Enum {Minute}, {Second}, Millisecond
 
 Property Value As Date
-Property ShowSecond As Boolean
-Property ShowMillisecond As Boolean
+Property Precision As Integer
 
-Private $bAMPM As Boolean
-Private $bPM As Boolean
-Private $bSecond As Boolean
-Private $bMillisecond As Boolean
+Private $iPrec As Integer
 Private $hObserver As Observer
 
 Public Sub _new()
@@ -20,6 +18,7 @@ Public Sub _new()
   $hObserver = New Observer(Me) As "TimeBox"
   
   Me.Picture = Picture["icon:/16/clock"]
+  Me.Alignment = Align.Right
   UpdateMask
   
 End
@@ -27,18 +26,22 @@ End
 Private Sub UpdateMask()
   
   Dim sMask As String
+  Dim vVal As Date
   
-  If $bSecond Then
-    sMask = Format(Time(11, 11, 11), gb.LongTime)
-  Else
-    sMask = Format(Time(11, 11, 11), gb.ShortTime)
-  Endif
+  vVal = Value_Read()
   
-  If $bMillisecond Then sMask &= ".000"
-  
-  $bAMPM = Format(Now, "AM/PM")
+  Select Case $iPrec
+    Case {Minute}
+      sMask = Format(Time(11, 11, 11), gb.ShortTime)
+    Case {Second}
+      sMask = Format(Time(11, 11, 11), gb.LongTime)
+    Case {Millisecond}
+      sMask = Format(Time(11, 11, 11), gb.LongTime) & ".000"
+  End Select
   
   Me.Editor.Mask = Replace(sMask, "1", "0")  
+  
+  Value_Write(vVal)
   
 End
 
@@ -53,49 +56,42 @@ Private Sub Value_Write(Value As Date)
 
   Dim sFormat As String
   
-  If $bSecond Then
-    sFormat = Format(Time(11, 22, 33), gb.LongTime)
-  Else
-    sFormat = Format(Time(11, 22, 33), gb.ShortTime)
-  Endif
+  Select Case $iPrec
+    Case {Minute}
+      sFormat = Format(Time(11, 22, 33), gb.ShortTime)
+    Case {Second}
+      sFormat = Format(Time(11, 22, 33), gb.LongTime)
+    Case {Millisecond}
+      sFormat = Format(Time(11, 22, 33), gb.LongTime) & ".uu"
+  End Select
+  
   sFormat = Replace(sFormat, "11", "hh")
   sFormat = Replace(sFormat, "22", "nn")
   sFormat = Replace(sFormat, "33", "ss")
   
-  If $bMillisecond Then sFormat &= ".uu"
-
+  If IsNull(Value) Then Value = Time
   Me.Text = Format(Value, sFormat)
-
-End
-
-Private Function ShowSecond_Read() As Boolean
-
-  Return $bSecond
-
-End
-
-Private Sub ShowSecond_Write(Value As Boolean)
-
-  $bSecond = Value
-  UpdateMask
-
-End
-
-Private Function ShowMillisecond_Read() As Boolean
-
-  Return $bMillisecond
-
-End
-
-Private Sub ShowMillisecond_Write(Value As Boolean)
-
-  $bMillisecond = Value
-  UpdateMask
 
 End
 
 Public Sub TimeBox_Click()
   
+  Value_Write(Null)
   Stop Event
   
+End
+
+Private Function Precision_Read() As Integer
+
+  Return $iPrec
+
+End
+
+Private Sub Precision_Write(Value As Integer)
+
+  If Value < {Minute} Or If Value > {Millisecond} Or If Value = $iPrec Then Return
+  
+  $iPrec = Value
+  UpdateMask
+
 End

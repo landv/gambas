@@ -1,6 +1,7 @@
 ' Gambas class file
 
 Private $dDate As Date
+Private $dTime As Date
 Private $dStart As Date
 Private $dMonth As Date
 Private $dLast As Date
@@ -31,8 +32,22 @@ Private Sub FillMonth(bShort As Boolean)
   
 End
 
+Private Sub GetTimeFormat() As String
+
+  Dim sFormat As String  
+  
+  sFormat = Format(Time(11, 22, 33), gb.ShortTime)
+  sFormat = Replace(sFormat, "11", "hh")
+  sFormat = Replace(sFormat, "22", "nn")
+  
+  Return sFormat
+  
+End
+
 
 Public Sub _new()
+  
+  dwgTime.W = Desktop.Scale * 16
   
   FillMonth(False)
   
@@ -119,13 +134,18 @@ End
 
 Public Sub SetValue(dDate As Date)
   
+  SetTime(Time(dDate))
   SetDate(Year(dDate), Month(dDate), Day(dDate))
   
 End
 
 Public Sub GetValue() As Date
   
-  Return Date($dDate)
+  If dwgTime.Visible Then
+    Return Date($dDate) + $dTime
+  Else
+    Return Date($dDate)
+  Endif
   
 End
 
@@ -187,7 +207,7 @@ Public Sub dwgMonth_Draw()
     For I = 0 To 6
 
       If CInt(dDate) = CInt($dDate) Then
-        Draw.FillColor = Color.SelectedBackground
+        Draw.FillColor = If(dwgMonth.HasFocus, Color.SelectedBackground, Color.LightForeground)
         Draw.Foreground = Color.SelectedForeground
       Else 
         If Month(dDate) <> Month($dMonth) Then 
@@ -382,10 +402,10 @@ End
 
 Public Sub Form_Resize()
 
-  If Me.Width < (Desktop.Scale * 36) Then
+  If panDate.Width < (Desktop.Scale * 36) Then
     btnNextMonth.Hide
     btnPrevMonth.Hide
-    If Me.Width < (Desktop.Scale * 24) Then
+    If panDate.Width < (Desktop.Scale * 24) Then
       panSepMonth.Hide
       btnReload.Hide
     Else
@@ -411,4 +431,159 @@ Public Sub SetFocus()
   
   dwgMonth.SetFocus
   
+End
+
+Public Sub SetShowTime(bShowTime As Boolean)
+  
+  sepTime.Visible = bShowTime
+  dwgTime.Visible = bShowTime
+  
+End
+
+Public Sub GetShowTime() As Boolean
+
+  Return dwgTime.Visible
+
+End
+
+Public Sub dwgTime_Draw()
+  
+  Dim dTime, dNextTime As Date
+  Dim iInd As Integer
+  Dim X, Y, DX, DY, DW, DH, S As Integer
+  Dim sFormat As String = GetTimeFormat()
+  
+  DW = dwgTime.W \ 4
+  DH = dwgTime.H \ 12
+  DX = (dwgTime.W - DW * 4) \ 2
+  DY = (dwgTime.H - DH * 12) \ 2
+  
+  S = Min(CFloat(DH), DW / 2.5)
+  Draw.Font.Size = Draw.Font.Size * S / Draw.Font.Height
+  
+  dTime = Date(Now)
+  
+  X = DX
+  Y = DY
+  
+  For iInd = 0 To 47
+    
+    dNextTime = DateAdd(dTime, gb.Minute, 30)
+    
+    If Time($dTime) >= Time(dTime) And If Time($dTime) < Time(dNextTime) Then
+      If Time($dTime) = Time(dTime) Then
+        Draw.FillColor = Color.SelectedBackground
+      Else
+        Draw.FillColor = Color.LightBackground
+      Endif
+      If Not dwgTime.HasFocus Then
+        Draw.FillColor = Color.LightForeground
+      Endif
+      Draw.Foreground = Color.SelectedForeground
+      Draw.FillStyle = Fill.Solid
+      Draw.Rect(X, Y, DW, DH)
+    Else 
+      Draw.FillColor = dwgTime.Background
+      Draw.Foreground = dwgTime.Foreground
+    Endif
+      
+    Draw.Text(Format$(dTime, sFormat), X, Y, DW, DH, Align.Center)
+    Y += DH
+    If (Y + DH) > dwgTime.H Then
+      X += DW
+      Y = DY
+    Endif
+    
+    dTime = dNextTime
+    
+  Next
+  
+End
+
+Public Sub dwgTime_MouseDown()
+
+  Dim X, Y, DX, DY, DW, DH, S As Integer
+  Dim sFormat As String = GetTimeFormat()
+  
+  DW = dwgTime.W \ 4
+  DH = dwgTime.H \ 12
+  DX = (dwgTime.W - DW * 4) \ 2
+  DY = (dwgTime.H - DH * 12) \ 2
+  
+  X = Mouse.X - DX
+  If X < 0 Or If X > (dwgTime.W - DW) Then Return
+  Y = Mouse.Y - DY
+  If Y < 0 Or If Y > (dwgTime.H - DH) Then Return
+  
+  X = (X - DX) \ DW
+  Y = (Y - DY) \ DH
+  
+  SetTime(Time(6 * X + (Y \ 2), 30 * (Y Mod 2), 0))
+
+End
+
+Public Sub dwgTime_DblClick()
+
+  GetParent()._Activate
+
+End
+
+Private Sub TimeAdd(dTime As Date, iAdd As Integer) As Date
+  
+  dTime = Date(1972, 9, 6, Hour(dTime), If(Minute(dTime) < 30, 0, 30))
+  dTime = DateAdd(dTime, gb.Minute, iAdd)
+  Return Time(dTime)
+  
+End
+
+Private Sub SetTime(dTime As Date)
+  
+  $dTime = Time(dTime)
+  dwgTime.Refresh
+  dwgTime.SetFocus
+  
+End
+
+
+Public Sub dwgTime_KeyPress()
+
+  Select Case Key.Code
+  
+    Case Key.Up
+      If Time($dTime) < Time(0, 30, 0) Then
+        Dec $dDate
+        SetDate
+      Endif
+      SetTime(TimeAdd($dTime, -30))
+      Stop Event
+  
+    Case Key.Down
+      If Time($dTime) >= Time(23, 30, 0) Then
+        Inc $dDate
+        SetDate
+      Endif
+      SetTime(TimeAdd($dTime, 30))
+      Stop Event
+  
+    Case Key.Left
+      If Time($dTime) < Time(6, 0, 0) Then
+        Dec $dDate
+        SetDate
+      Endif
+      SetTime(TimeAdd($dTime, -30 * 12))
+      Stop Event
+  
+    Case Key.Right
+      If Time($dTime) >= Time(18, 0, 0) Then
+        Inc $dDate
+        SetDate
+      Endif
+      SetTime(TimeAdd($dTime, 30 * 12))
+      Stop Event
+      
+    Case Key.Space, Key.Enter, Key.Return
+      dwgTime_DblClick
+      
+  End Select   
+
 End

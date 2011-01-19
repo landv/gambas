@@ -9,12 +9,13 @@ Property Month As Integer
 Property Day As Integer
 Property Font As Font
 Property Read Colors As _DateChooserColors
+Property ShowTime As Boolean
 
 Event Change
 Event Activate
 Event Cancel
 
-Public Const _Properties As String = "*"
+Public Const _Properties As String = "*,ShowTime"
 Public Const _DefaultEvent As String = "Change"
 Public Const _DefaultSize As String = "40,28"
 Public Const _Group As String = "Chooser"
@@ -127,4 +128,16 @@ Public Sub SetFocus()
   
   $hCal.SetFocus
   
+End
+
+Private Function ShowTime_Read() As Boolean
+
+  Return $hCal.GetShowTime()
+
+End
+
+Private Sub ShowTime_Write(Value As Boolean)
+
+  $hCal.SetShowTime(Value)
+
 End
