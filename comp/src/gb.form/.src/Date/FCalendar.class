@@ -450,7 +450,8 @@ Public Sub dwgTime_Draw()
   
   Dim dTime, dNextTime As Date
   Dim iInd As Integer
-  Dim X, Y, DX, DY, DW, DH, S As Integer
+  Dim X, Y, DX, DY, DW, DH As Integer
+  Dim SW, SH As Float
   Dim sFormat As String = GetTimeFormat()
   
   DW = dwgTime.W \ 4
@@ -458,20 +459,27 @@ Public Sub dwgTime_Draw()
   DX = (dwgTime.W - DW * 4) \ 2
   DY = (dwgTime.H - DH * 12) \ 2
   
-  S = Min(CFloat(DH), DW / 2.5)
-  Draw.Font.Size = Draw.Font.Size * S / Draw.Font.Height
+  SH = (DH - 2) / Draw.Font.Height
+  SW = (DW - 4) / Draw.Font.TextWidth(GetTimeFormat())
+  Draw.Font.Size *= Min(SH, SW)
   
-  dTime = Date(Now)
+  Draw.FillColor = Color.ButtonBackground
+  Draw.FillStyle = Fill.Solid
+  Draw.LineStyle = Line.None
+  Draw.Rect(dwgTime.W \ 2, 0, dwgTime.W - dwgTime.W \ 2, dwgTime.H)
+  
+  dTime = Time(0, 0, 0)
   
   X = DX
   Y = DY
   
   For iInd = 0 To 47
     
-    dNextTime = DateAdd(dTime, gb.Minute, 30)
+    dNextTime = TimeAdd(dTime, 30)
+    If IsNull(dNextTime) Then dNextTime = 1
     
-    If Time($dTime) >= Time(dTime) And If Time($dTime) < Time(dNextTime) Then
-      If Time($dTime) = Time(dTime) Then
+    If $dTime >= dTime And If $dTime < dNextTime Then
+      If $dTime = dTime Then
         Draw.FillColor = Color.SelectedBackground
       Else
         Draw.FillColor = Color.LightBackground
@@ -511,12 +519,14 @@ Public Sub dwgTime_MouseDown()
   DY = (dwgTime.H - DH * 12) \ 2
   
   X = Mouse.X - DX
-  If X < 0 Or If X > (dwgTime.W - DW) Then Return
+  If X < 0 Then Return
   Y = Mouse.Y - DY
-  If Y < 0 Or If Y > (dwgTime.H - DH) Then Return
+  If Y < 0 Then Return
   
   X = (X - DX) \ DW
   Y = (Y - DY) \ DH
+  
+  If X > 3 Or If Y > 11 Then Return
   
   SetTime(Time(6 * X + (Y \ 2), 30 * (Y Mod 2), 0))
 

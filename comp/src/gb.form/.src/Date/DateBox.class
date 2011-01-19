@@ -102,7 +102,7 @@ Public Sub ButtonBox_Click()
   Dim dDate As Date
   
   If $bShowTime Then
-    $hPopup.Resize(Desktop.Scale * 48, Desktop.Scale * 24)
+    $hPopup.Resize(Desktop.Scale * 48, ((Desktop.Scale * 24) \ 12) * 12 + 2)
   Else
     $hPopup.Resize(Desktop.Scale * 32, Desktop.Scale * 24)
   Endif
