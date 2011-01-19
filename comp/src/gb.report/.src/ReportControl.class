@@ -7,8 +7,8 @@ Public Const _IsControl As Boolean = True
 Public Const _Properties As String = "Left{ReportCoord},Top{ReportCoord},Width{ReportCoord},Height{ReportCoord},Visible=True,Fixed,Font,Padding{ReportCoord},Expand,AutoResize,Tag"
 Public Const _Family As String = "Report"
 Public _SizeInt As New TSizeHint
-
-
+Public _Count As Integer = 1
+Public _DataIndex As Integer
 
 
 Public Name As String
@@ -385,7 +385,7 @@ End
 
 Public Sub _Reset()
   
-  
+  Me._DataIndex = 0
   
 End
 

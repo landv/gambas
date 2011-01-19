@@ -30,6 +30,7 @@ End
 Private Sub Text_Write(Value As String)
   
   $sText = Value
+  'Me._Count = 2
 
 End
 
@@ -125,7 +126,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   'Draw.Clip((x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
     'Draw.Text($sText, (x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom, $iAlignment)
 
-    Paint.Text(sTempText, (x + hControl.RealLeft + iPadding), (y + hControl.RealTop + iPadding), hControl.RealWidth - iPadding, hControl.RealHeight - iPadding, $iAlignment)
+    Paint.Text(sTempText, (x + hControl.RealLeft + iPadding), (y + hControl.RealTop + iPadding), hControl.RealWidth - 2 * iPadding, hControl.RealHeight - 2 * iPadding, $iAlignment)
     Paint.Fill
     'If $sKey Then $sText = Null
   'Draw.Clip.Enabled = False

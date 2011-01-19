@@ -139,7 +139,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
       'If nbPage > iPage Then iPage = nbPage
       'If iPage > 0 Then hchild.RelPage = -1
       X += fW
-      
+      Inc Me._CurItem
     Next
     Me._PageChildren[ContPage] = aPageItems
     ' For Each hChild In aIgnored

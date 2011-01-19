@@ -83,10 +83,10 @@ Public Sub Layout()
   Debug "Page Size W/H: " & Round(Me._Width, -2) & "/" & Round(Me._Height, -2)
    $hReportTControl._SetGeometry(0, 0, Me._Width, Me._Height) 
    Do
-   
+     _LayoutLoop = False
      
      Me._SetChildGeometry(0, 0, Me._Width, Me._Height, iCurPage)
-   If Me._CurItem >= Me.Children.Max Then Break  
+   If Me._CurItem > Me.Children.Max Then Break  
    Inc iCurPage
    
    Loop

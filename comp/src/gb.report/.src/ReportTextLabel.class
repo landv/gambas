@@ -86,7 +86,7 @@ End
 Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
   '$fZoom = MRTools.ReportZoom
   Paint.Brush = Paint.Color(Me.BorderColor)
-  
+  If Me.Tag = "*" Then Stop
   'Set the Font if it is initialized
   If Not IsNull(Me.Font) Then Paint.Font = Me.Font
   'draw.Font.size = draw.Font.size * MRTools.ReportZoom '* MRTools.ResolutionAffichage

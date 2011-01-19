@@ -16,7 +16,7 @@ Public Sub _Free()
   
 End
 
-Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer) As Float
+Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer) As Boolean
   
   Dim hChildHints As TSizeHint
   Dim hChild As ReportControl
@@ -28,7 +28,7 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
   Dim fSpc As Float
   Dim fPdg As Float
   Dim bFirst As Boolean 
-
+  Dim bExitLoop As Boolean
   Dim i As Integer
 
   
@@ -38,7 +38,9 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
   Dim iExpSpc As Integer
   Dim fHeight As Float
   Dim oChild As Object
+  Dim j As Integer
   'Dim aIgnored As New TControl[]  
+  
   fSpc = IIf(Me._RelativeSpacing, H * Me._Spacing / 100, Me._Spacing) 'ME._Spacing
   fPdg = Me._Padding
   X = fPdg
@@ -49,7 +51,9 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
   Y -= fspc
   
   For i = 0 To Me.Children.Max
+    
     hChild = Super.Children[i]
+    'For j = 0 To hChild._Count - 1
     If hChild.Fixed Then
       
       hChildHints = hChild._GetSizeHints(W, H - fSExp, W, H)
@@ -65,20 +69,26 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
         
         aPageItems.Add(hTItem) 
         Y += hChildHints.Height + fSpc
+        fFixedSpc -= hChildHints.Height + fspc
         If hChild.Expand Then Inc iNExp
       Endif
       
     Endif
-    
+    'Next
   Next
   
   For i = Me._CurItem To Me.Children.Max
     hChild = Super.Children[i]
-    
+    For j = hChild._DataIndex To hChild._Count - 1
     'Obtenir la taille verticale de l'enfant en déduisant l'espace consommé
     hChildHints = hChild._GetSizeHints(W, H - fFixedSpc - Y, W, H)
 '     If hChild.Tag = "*" Then Stop
-    If Y + hChildHints.Height > H - fFixedSpc Then Break
+    If Y + hChildHints.Height > H - fFixedSpc Then 
+      
+      hChild._DataIndex = j
+      bExitLoop = True
+      Break
+    Endif
     
     
     hTItem = New TControl
@@ -88,7 +98,14 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
     'hChild._SetChildGeometry(X, Y, W, hChildHints.Height, ContPage)
     aPageItems.Add(hTItem) 
     Y += hChildHints.Height + fSpc
+    If hChild.Fixed Then fFixedSpc -= hChildHints.Height + fspc
     If hChild.Expand Then Inc iNExp
+    
+    Next
+    If bExitLoop Then 
+      'Me.Report._LayoutLoop = True
+      Break
+    Endif
     Inc Me._CurItem
     
   Next
@@ -113,7 +130,7 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
 If iNExp > 0 Then fSExp = (H - Y) / iNExp
   
   Y = fPdg
-  
+  If Me.Tag = "*" Then Stop
   For Each hTItem In aPageItems
     oChild = hTItem.Ctrl
     If hTItem.Ctrl.Expand Then 
@@ -127,8 +144,9 @@ If iNExp > 0 Then fSExp = (H - Y) / iNExp
     
     If oChild Is ReportContainer Then
       
-      If oChild._CurItem < oChild.Children.Max Then
-        Me._CurItem = Me.Children.Find(oChild)
+      If oChild._CurItem < oChild.Children.count Then
+        j = Me.Children.Find(oChild)
+        Me._CurItem = Min(j, Me._CurItem)
       Endif
       
     Endif
@@ -141,6 +159,7 @@ If iNExp > 0 Then fSExp = (H - Y) / iNExp
   
   
   Me._PageChildren[ContPage] = aPageItems
+  If bExitLoop Then Return True
   
 End
 

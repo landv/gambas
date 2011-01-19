@@ -1,77 +1,86 @@
 # Gambas Form File 3.0
 
 { Report Report
-  #MoveScaled(0,0,58,55)
-  Padding = "1 cm"
-  Spacing = "3mm"
+  #MoveScaled(0,0,59,57)
+  Padding = "2cm"
+  Spacing = "10mm"
   { ReportLabel2 ReportLabel
     #MoveScaled(7.7143,0.8571,37.7143,5.1429)
-    Height = "5 cm"
+    Height = "3cm"
+    Fixed = True
     Font = Font["Bitstream Charter,+7"]
+    Border = ReportBorder["Top=2mm LinearGradient(0,0.5,1,0.5,[&H000000&,&HFFFFFF&],[0,1]); Bottom=2mm LinearGradient(0,0.5,1,0.5,[&H000000&,&HFFFFFF&],[0,1]); Left=2mm &H00000000&; "]
+    Brush = ReportBrush["LinearGradient(0.96,0.44,0.04,0.44,[&HB0B0B0&,&HFFFFFF&],[0,0.98])"]
     Text = ("Base de donnée de test")
     Alignment = Align.Center
   }
   { ReportVBox1 ReportVBox
     #MoveScaled(6,6,45,32)
+    Expand = True
+    AutoResize = True
     { ReportVBox4 ReportVBox
-      #MoveScaled(2,4,41,21)
+      #MoveScaled(2,3,41,20)
       Expand = True
       AutoResize = True
       { ReportHBox2 ReportHBox
         #MoveScaled(0,0,37.7143,5.1429)
+        Fixed = True
         AutoResize = True
         { ReportLabel3 ReportLabel
           #MoveScaled(1,1,10.2857,3.4286)
           Width = "5 cm"
+          Height = "15mm"
           Font = Font["12"]
           Padding = "0.2 mm"
           Border = ReportBorder["Border=2px &H00000000&;"]
+          Brush = ReportBrush["&H00DFDFDF&"]
           Text = ("Name")
           Alignment = Align.Center
         }
         { ReportLabel4 ReportLabel
           #MoveScaled(12,1,10.2857,3.4286)
           Width = "5 cm"
+          Height = "15mm"
           Font = Font["12"]
           Padding = "0.2 mm"
           Border = ReportBorder["Top=2px &H00000000&; Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Brush = ReportBrush["&H00DFDFDF&"]
           Text = ("FirstName")
           Alignment = Align.Center
         }
         { ReportLabel5 ReportLabel
           #MoveScaled(24.8571,0.8571,10.2857,3.4286)
           Width = "5 cm"
+          Height = "15mm"
           Font = Font["12"]
           Padding = "0.2 mm"
           Expand = True
           Border = ReportBorder["Top=2px &H00000000&; Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Brush = ReportBrush["&H00DFDFDF&"]
           Text = ("Birth")
           Alignment = Align.Center
         }
       }
       { ReportHBox3 ReportHBox
         #MoveScaled(1,6,38,6)
-        Height = "1 cm"
-        Border = ReportBorder["Border=2px &H00000000&;"]
+        Height = "2cm"
+        Tag = "*"
         { ReportLabel1 ReportLabel
           #MoveScaled(2,1,10.2857,3.4286)
           Width = "5 cm"
           Height = "1cm"
           Font = Font["12"]
           Padding = "0.1 mm"
-          Expand = True
           Tag = "*"
           Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; Left=2px &H00000000&; "]
-          Text = ("qq")
-          Key = "name"
+          Text = ("ddddddd")
         }
         { ReportLabel6 ReportLabel
-          #MoveScaled(14,1,10.2857,3.4286)
+          #MoveScaled(15,1,10.2857,3.4286)
           Width = "5 cm"
           Height = "1cm"
           Font = Font["12"]
           Padding = "0.1 mm"
-          Expand = True
           Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
           Text = ("ReportLabel1")
           Key = "firstname"
@@ -89,40 +98,792 @@
           Alignment = Align.Center
         }
       }
-      { ReportHBox4 ReportHBox
-        #MoveScaled(0,13,37.7143,5.1429)
-        Height = "5cm"
-        { ReportVBox5 ReportVBox
-          #MoveScaled(2,1,11.1429,3.4286)
+      { ReportHBox1 ReportHBox
+        #MoveScaled(0,0,38,6)
+        Height = "2cm"
+        Tag = "*"
+        { ReportLabel9 ReportLabel
+          #MoveScaled(2,1,10.2857,3.4286)
           Width = "5 cm"
           Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
           Tag = "*"
           Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; Left=2px &H00000000&; "]
+          Text = ("ddddddd")
         }
-        { ReportVBox6 ReportVBox
-          #MoveScaled(13.7143,0.8571,11.1429,3.4286)
+        { ReportLabel10 ReportLabel
+          #MoveScaled(15,1,10.2857,3.4286)
           Width = "5 cm"
           Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
           Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "firstname"
         }
-        { ReportVBox7 ReportVBox
-          #MoveScaled(26,1,11.1429,3.4286)
+        { ReportLabel11 ReportLabel
+          #MoveScaled(26,1,10.2857,3.4286)
           Width = "5 cm"
           Height = "1cm"
+          Font = Font["12"]
           Expand = True
           Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "birth"
+          Format = "dddd mmm yyyy"
+          Alignment = Align.Center
+        }
+      }
+      { ReportHBox4 ReportHBox
+        #MoveScaled(0,0,38,6)
+        Height = "2cm"
+        Tag = "*"
+        { ReportLabel12 ReportLabel
+          #MoveScaled(2,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Tag = "*"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; Left=2px &H00000000&; "]
+          Text = ("ddddddd")
+        }
+        { ReportLabel13 ReportLabel
+          #MoveScaled(15,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "firstname"
+        }
+        { ReportLabel14 ReportLabel
+          #MoveScaled(26,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Expand = True
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "birth"
+          Format = "dddd mmm yyyy"
+          Alignment = Align.Center
+        }
+      }
+      { ReportHBox5 ReportHBox
+        #MoveScaled(0,0,38,6)
+        Height = "2cm"
+        Tag = "*"
+        { ReportLabel15 ReportLabel
+          #MoveScaled(2,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Tag = "*"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; Left=2px &H00000000&; "]
+          Text = ("ddddddd")
+        }
+        { ReportLabel16 ReportLabel
+          #MoveScaled(15,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "firstname"
+        }
+        { ReportLabel17 ReportLabel
+          #MoveScaled(26,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Expand = True
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "birth"
+          Format = "dddd mmm yyyy"
+          Alignment = Align.Center
+        }
+      }
+      { ReportHBox6 ReportHBox
+        #MoveScaled(0,0,38,6)
+        Height = "2cm"
+        Tag = "*"
+        { ReportLabel18 ReportLabel
+          #MoveScaled(2,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Tag = "*"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; Left=2px &H00000000&; "]
+          Text = ("ddddddd")
+        }
+        { ReportLabel19 ReportLabel
+          #MoveScaled(15,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "firstname"
+        }
+        { ReportLabel20 ReportLabel
+          #MoveScaled(26,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Expand = True
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "birth"
+          Format = "dddd mmm yyyy"
+          Alignment = Align.Center
+        }
+      }
+      { ReportHBox7 ReportHBox
+        #MoveScaled(0,0,38,6)
+        Height = "2cm"
+        Tag = "*"
+        { ReportLabel21 ReportLabel
+          #MoveScaled(2,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Tag = "*"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; Left=2px &H00000000&; "]
+          Text = ("ddddddd")
+        }
+        { ReportLabel22 ReportLabel
+          #MoveScaled(15,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "firstname"
+        }
+        { ReportLabel23 ReportLabel
+          #MoveScaled(26,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Expand = True
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "birth"
+          Format = "dddd mmm yyyy"
+          Alignment = Align.Center
+        }
+      }
+      { ReportHBox8 ReportHBox
+        #MoveScaled(0,0,38,6)
+        Height = "2cm"
+        Tag = "*"
+        { ReportLabel24 ReportLabel
+          #MoveScaled(2,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Tag = "*"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; Left=2px &H00000000&; "]
+          Text = ("ddddddd")
+        }
+        { ReportLabel25 ReportLabel
+          #MoveScaled(15,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "firstname"
+        }
+        { ReportLabel26 ReportLabel
+          #MoveScaled(26,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Expand = True
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "birth"
+          Format = "dddd mmm yyyy"
+          Alignment = Align.Center
+        }
+      }
+      { ReportHBox9 ReportHBox
+        #MoveScaled(0,0,38,6)
+        Height = "2cm"
+        Tag = "*"
+        { ReportLabel27 ReportLabel
+          #MoveScaled(2,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Tag = "*"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; Left=2px &H00000000&; "]
+          Text = ("ddddddd")
+        }
+        { ReportLabel28 ReportLabel
+          #MoveScaled(15,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "firstname"
+        }
+        { ReportLabel29 ReportLabel
+          #MoveScaled(26,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Expand = True
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "birth"
+          Format = "dddd mmm yyyy"
+          Alignment = Align.Center
+        }
+      }
+      { ReportHBox10 ReportHBox
+        #MoveScaled(0,0,38,6)
+        Height = "2cm"
+        Tag = "*"
+        { ReportLabel30 ReportLabel
+          #MoveScaled(2,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Tag = "*"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; Left=2px &H00000000&; "]
+          Text = ("ddddddd")
+        }
+        { ReportLabel31 ReportLabel
+          #MoveScaled(15,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "firstname"
+        }
+        { ReportLabel32 ReportLabel
+          #MoveScaled(26,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Expand = True
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "birth"
+          Format = "dddd mmm yyyy"
+          Alignment = Align.Center
+        }
+      }
+      { ReportHBox11 ReportHBox
+        #MoveScaled(0,0,38,6)
+        Height = "2cm"
+        Tag = "*"
+        { ReportLabel33 ReportLabel
+          #MoveScaled(2,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Tag = "*"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; Left=2px &H00000000&; "]
+          Text = ("ddddddd")
+        }
+        { ReportLabel34 ReportLabel
+          #MoveScaled(15,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "firstname"
+        }
+        { ReportLabel35 ReportLabel
+          #MoveScaled(26,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Expand = True
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "birth"
+          Format = "dddd mmm yyyy"
+          Alignment = Align.Center
+        }
+      }
+      { ReportHBox12 ReportHBox
+        #MoveScaled(0,0,38,6)
+        Height = "2cm"
+        Tag = "*"
+        { ReportLabel36 ReportLabel
+          #MoveScaled(2,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Tag = "*"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; Left=2px &H00000000&; "]
+          Text = ("ddddddd")
+        }
+        { ReportLabel37 ReportLabel
+          #MoveScaled(15,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "firstname"
+        }
+        { ReportLabel38 ReportLabel
+          #MoveScaled(26,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Expand = True
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "birth"
+          Format = "dddd mmm yyyy"
+          Alignment = Align.Center
+        }
+      }
+      { ReportHBox13 ReportHBox
+        #MoveScaled(0,0,38,6)
+        Height = "2cm"
+        Tag = "*"
+        { ReportLabel39 ReportLabel
+          #MoveScaled(2,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Tag = "*"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; Left=2px &H00000000&; "]
+          Text = ("ddddddd")
+        }
+        { ReportLabel40 ReportLabel
+          #MoveScaled(15,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "firstname"
+        }
+        { ReportLabel41 ReportLabel
+          #MoveScaled(26,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Expand = True
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "birth"
+          Format = "dddd mmm yyyy"
+          Alignment = Align.Center
+        }
+      }
+      { ReportHBox14 ReportHBox
+        #MoveScaled(0,0,38,6)
+        Height = "2cm"
+        Tag = "*"
+        { ReportLabel42 ReportLabel
+          #MoveScaled(2,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Tag = "*"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; Left=2px &H00000000&; "]
+          Text = ("ddddddd")
+        }
+        { ReportLabel43 ReportLabel
+          #MoveScaled(15,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "firstname"
+        }
+        { ReportLabel44 ReportLabel
+          #MoveScaled(26,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Expand = True
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "birth"
+          Format = "dddd mmm yyyy"
+          Alignment = Align.Center
+        }
+      }
+      { ReportHBox15 ReportHBox
+        #MoveScaled(0,0,38,6)
+        Height = "2cm"
+        Tag = "*"
+        { ReportLabel45 ReportLabel
+          #MoveScaled(2,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Tag = "*"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; Left=2px &H00000000&; "]
+          Text = ("ddddddd")
+        }
+        { ReportLabel46 ReportLabel
+          #MoveScaled(15,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "firstname"
+        }
+        { ReportLabel47 ReportLabel
+          #MoveScaled(26,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Expand = True
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "birth"
+          Format = "dddd mmm yyyy"
+          Alignment = Align.Center
+        }
+      }
+      { ReportHBox16 ReportHBox
+        #MoveScaled(0,0,38,6)
+        Height = "2cm"
+        Tag = "*"
+        { ReportLabel48 ReportLabel
+          #MoveScaled(2,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Tag = "*"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; Left=2px &H00000000&; "]
+          Text = ("ddddddd")
+        }
+        { ReportLabel49 ReportLabel
+          #MoveScaled(15,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "firstname"
+        }
+        { ReportLabel50 ReportLabel
+          #MoveScaled(26,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Expand = True
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "birth"
+          Format = "dddd mmm yyyy"
+          Alignment = Align.Center
+        }
+      }
+      { ReportHBox17 ReportHBox
+        #MoveScaled(0,0,38,6)
+        Height = "2cm"
+        Tag = "*"
+        { ReportLabel51 ReportLabel
+          #MoveScaled(2,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Tag = "*"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; Left=2px &H00000000&; "]
+          Text = ("ddddddd")
+        }
+        { ReportLabel52 ReportLabel
+          #MoveScaled(15,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "firstname"
+        }
+        { ReportLabel53 ReportLabel
+          #MoveScaled(26,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Expand = True
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "birth"
+          Format = "dddd mmm yyyy"
+          Alignment = Align.Center
+        }
+      }
+      { ReportHBox18 ReportHBox
+        #MoveScaled(0,0,38,6)
+        Height = "2cm"
+        Tag = "*"
+        { ReportLabel54 ReportLabel
+          #MoveScaled(2,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Tag = "*"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; Left=2px &H00000000&; "]
+          Text = ("ddddddd")
+        }
+        { ReportLabel55 ReportLabel
+          #MoveScaled(15,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "firstname"
+        }
+        { ReportLabel56 ReportLabel
+          #MoveScaled(26,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Expand = True
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "birth"
+          Format = "dddd mmm yyyy"
+          Alignment = Align.Center
+        }
+      }
+      { ReportHBox19 ReportHBox
+        #MoveScaled(0,0,38,6)
+        Height = "2cm"
+        Tag = "*"
+        { ReportLabel57 ReportLabel
+          #MoveScaled(2,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Tag = "*"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; Left=2px &H00000000&; "]
+          Text = ("ddddddd")
+        }
+        { ReportLabel58 ReportLabel
+          #MoveScaled(15,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "firstname"
+        }
+        { ReportLabel59 ReportLabel
+          #MoveScaled(26,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Expand = True
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "birth"
+          Format = "dddd mmm yyyy"
+          Alignment = Align.Center
+        }
+      }
+      { ReportHBox20 ReportHBox
+        #MoveScaled(0,0,38,6)
+        Height = "2cm"
+        Tag = "*"
+        { ReportLabel60 ReportLabel
+          #MoveScaled(2,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Tag = "*"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; Left=2px &H00000000&; "]
+          Text = ("ddddddd")
+        }
+        { ReportLabel61 ReportLabel
+          #MoveScaled(15,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "firstname"
+        }
+        { ReportLabel62 ReportLabel
+          #MoveScaled(26,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Expand = True
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "birth"
+          Format = "dddd mmm yyyy"
+          Alignment = Align.Center
+        }
+      }
+      { ReportHBox21 ReportHBox
+        #MoveScaled(0,0,38,6)
+        Height = "2cm"
+        Tag = "*"
+        { ReportLabel63 ReportLabel
+          #MoveScaled(2,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Tag = "*"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; Left=2px &H00000000&; "]
+          Text = ("ddddddd")
+        }
+        { ReportLabel64 ReportLabel
+          #MoveScaled(15,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "firstname"
+        }
+        { ReportLabel65 ReportLabel
+          #MoveScaled(26,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Expand = True
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "birth"
+          Format = "dddd mmm yyyy"
+          Alignment = Align.Center
+        }
+      }
+      { ReportHBox22 ReportHBox
+        #MoveScaled(0,0,38,6)
+        Height = "2cm"
+        Tag = "*"
+        { ReportLabel66 ReportLabel
+          #MoveScaled(2,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Tag = "*"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; Left=2px &H00000000&; "]
+          Text = ("ddddddd")
+        }
+        { ReportLabel67 ReportLabel
+          #MoveScaled(15,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "firstname"
+        }
+        { ReportLabel68 ReportLabel
+          #MoveScaled(26,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Expand = True
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "birth"
+          Format = "dddd mmm yyyy"
+          Alignment = Align.Center
+        }
+      }
+      { ReportHBox23 ReportHBox
+        #MoveScaled(0,0,38,6)
+        Height = "2cm"
+        Tag = "*"
+        { ReportLabel69 ReportLabel
+          #MoveScaled(2,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Tag = "*"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; Left=2px &H00000000&; "]
+          Text = ("ddddddd")
+        }
+        { ReportLabel70 ReportLabel
+          #MoveScaled(15,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Padding = "0.1 mm"
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "firstname"
+        }
+        { ReportLabel71 ReportLabel
+          #MoveScaled(26,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "1cm"
+          Font = Font["12"]
+          Expand = True
+          Border = ReportBorder["Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Text = ("ReportLabel1")
+          Key = "birth"
+          Format = "dddd mmm yyyy"
+          Alignment = Align.Center
         }
       }
     }
   }
-  { ReportVBox2 ReportVBox
-    #MoveScaled(7,40,47,8)
-    Expand = True
-  }
   { ReportLabel8 ReportLabel
-    #MoveScaled(6,51,46.2857,2.5714)
-    Fixed = True
+    #MoveScaled(6,48,46,6)
+    Height = "15mm"
+    Padding = "2mm"
     AutoResize = True
+    Border = ReportBorder["Border=1mm &H00000000&;"]
+    Brush = ReportBrush["&HA0CFFFBF&"]
     Text = ("$PAGE")
     Alignment = Align.Right
     UseField = True
