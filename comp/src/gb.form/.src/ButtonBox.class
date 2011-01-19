@@ -192,3 +192,9 @@ Private Sub Alignment_Write(Value As Integer)
   $hTextBox.Alignment = Value
 
 End
+
+Public Sub TextBox_Activate()
+  
+  Raise Activate
+  
+End

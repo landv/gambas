@@ -9,13 +9,17 @@ Property Month As Integer
 Property Day As Integer
 Property Font As Font
 Property Read Colors As _DateChooserColors
-Property ShowTime As Boolean
+Property Mode As Integer
+
+Public Const DateOnly As Integer = 0
+Public Const DateTime As Integer = 1
+Public Const TimeOnly As Integer = 2
 
 Event Change
 Event Activate
 Event Cancel
 
-Public Const _Properties As String = "*,ShowTime"
+Public Const _Properties As String = "*,Mode{DateChooser.*}=DateOnly"
 Public Const _DefaultEvent As String = "Change"
 Public Const _DefaultSize As String = "40,28"
 Public Const _Group As String = "Chooser"
@@ -130,14 +134,32 @@ Public Sub SetFocus()
   
 End
 
-Private Function ShowTime_Read() As Boolean
+Private Function Mode_Read() As Integer
 
-  Return $hCal.GetShowTime()
+  If $hCal.GetShowDate() Then
+    If $hCal.GetShowTime() Then
+      Return DateTime
+    Else
+      Return DateOnly
+    Endif
+  Else
+    Return TimeOnly
+  Endif
 
 End
 
-Private Sub ShowTime_Write(Value As Boolean)
+Private Sub Mode_Write(Value As Integer)
 
-  $hCal.SetShowTime(Value)
+  Select Case Value
+    Case DateOnly
+      $hCal.SetShowDate(True)
+      $hCal.SetShowTime(False)
+    Case DateTime
+      $hCal.SetShowDate(True)
+      $hCal.SetShowTime(True)
+    Case TimeOnly
+      $hCal.SetShowTime(True)
+      $hCal.SetShowDate(False)
+  End Select
 
 End

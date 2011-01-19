@@ -3,29 +3,34 @@
 Export
 Inherits UserControl
 
-Public Const _Properties As String = "*,Value,ReadOnly,Border=True,ShowTime"
+Public Const _Properties As String = "*,Value,ReadOnly,Border=True,Mode{DateChooser.*}=DateOnly"
 'Public Const _DefaultEvent As String = "Click"
 Public Const _DefaultSize As String = "24,4"
 Public Const _Similar As String = "TextBox"
 
+Event Activate
+
 Property Value As Date
 Property ReadOnly As Boolean
 Property Border As Boolean
-Property ShowTime As Boolean
+Property Mode As Integer
 
 Private $hButtonBox As ButtonBox
 Private $hPopup As Window
 Private $hChooser As DateChooser
+Private $bShowDate As Boolean = True
 Private $bShowTime As Boolean
 
 Private Sub GetDateFormat() As String
   
   Dim sFormat As String
   
-  sFormat = Format(Date(3333, 11, 22), gb.ShortDate)
-  sFormat = Replace(sFormat, "3333", "yyyy")
-  sFormat = Replace(sFormat, "22", "dd")
-  sFormat = Replace(sFormat, "11", "mm")
+  If $bShowDate Then
+    sFormat = Format(Date(3333, 11, 22), gb.ShortDate)
+    sFormat = Replace(sFormat, "3333", "yyyy")
+    sFormat = Replace(sFormat, "22", "dd")
+    sFormat = Replace(sFormat, "11", "mm")
+  Endif
 
   If $bShowTime Then 
     sFormat &= " " & Format(Time(11, 22, 33), gb.ShortTime)
@@ -34,7 +39,7 @@ Private Sub GetDateFormat() As String
     sFormat = Replace(sFormat, "33", "ss")
   Endif
   
-  Return sFormat
+  Return LTrim(sFormat)
   
 End
 
@@ -45,8 +50,14 @@ Private Sub UpdateMask()
   
   vVal = Value_Read()
   
-  sMask = Format(Date(1111, 11, 11), gb.ShortDate)
-  If $bShowTime Then sMask &= " " & Format(Time(11, 11, 11), gb.ShortTime)
+  If $bShowDate Then sMask = Format(Date(1111, 11, 11), gb.ShortDate)
+  If $bShowTime Then sMask = LTrim(sMask & " " & Format(Time(11, 11, 11), gb.ShortTime))
+  
+  If $bShowDate Then
+    $hButtonBox.Picture = Picture["icon:/16/calendar"]
+  Else
+    $hButtonBox.Picture = Picture["icon:/16/clock"]
+  Endif
   
   $hButtonBox.Editor.Mask = Replace(sMask, "1", "0")
   
@@ -101,12 +112,15 @@ Public Sub ButtonBox_Click()
   Dim X, Y, iPad As Integer
   Dim dDate As Date
   
-  If $bShowTime Then
-    $hPopup.Resize(Desktop.Scale * 48, ((Desktop.Scale * 24) \ 12) * 12 + 2)
+  If $bShowTime And $bShowDate Then
+    $hPopup.Resize(Desktop.Scale * 48 + 2, ((Desktop.Scale * 24) \ 12) * 12 + 2)
+  Else If $bShowDate
+    $hPopup.Resize(Desktop.Scale * 32 + 2, Desktop.Scale * 24)
   Else
-    $hPopup.Resize(Desktop.Scale * 32, Desktop.Scale * 24)
+    $hPopup.Resize(Desktop.Scale * 16 + 2, ((Desktop.Scale * 24) \ 12) * 12 + 2)
   Endif
   $hChooser.ShowTime = $bShowTime
+  $hChooser.ShowDate = $bShowDate
 
   iPad = If($hButtonBox.Border, 3, 0)
   X = $hButtonBox.ScreenX + $hButtonBox.W - $hPopup.W - iPad
@@ -131,6 +145,13 @@ Public Sub ButtonBox_KeyPress()
   Endif
   
 End
+
+Public Sub ButtonBox_Activate()
+  
+  Raise Activate
+  
+End
+
 
 
 Public Sub PopupWindow_Open()
@@ -177,15 +198,34 @@ Public Sub DateChooser_Cancel()
   
 End
 
-Private Function ShowTime_Read() As Boolean
+Private Function Mode_Read() As Integer
 
-  Return $bShowTime
+  If $bShowDate Then
+    If $bShowTime Then
+      Return DateChooser.DateTime
+    Else
+      Return DateChooser.DateOnly
+    Endif
+  Else
+    Return DateChooser.TimeOnly
+  Endif
 
 End
 
-Private Sub ShowTime_Write(Value As Boolean)
+Private Sub Mode_Write(Value As Integer)
 
-  $bShowTime = Value
+  Select Case Value
+    Case DateChooser.DateOnly
+      $bShowDate = True
+      $bShowTime = False
+    Case DateChooser.DateTime
+      $bShowDate = True
+      $bShowTime = True
+    Case DateChooser.TimeOnly
+      $bShowDate = False
+      $bShowTime = True
+  End Select
+
   UpdateMask
 
 End

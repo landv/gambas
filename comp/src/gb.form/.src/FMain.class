@@ -1,9 +1,10 @@
 ' Gambas class file
 
+Private $hObs As Observer
 
 Public Sub Form_Open()
 
-  'MaskBox1.SetFocus
+  '$hObs = New Observer(ButtonBox1) As "Observer"
 
 End
 
@@ -11,5 +12,41 @@ Public Sub optType_Click()
 
   ValueBox1.Type = CInt(Last.Tag)
   ValueBox1.SetFocus
+
+End
+
+Public Sub ValueBox1_KeyPress()
+
+  Debug Key.Code
+
+End
+
+Public Sub TimeBox1_KeyPress()
+
+  Debug Key.Code
+
+End
+
+Public Sub ButtonBox1_KeyPress()
+
+  Debug Key.Code
+
+End
+
+Public Sub Observer_KeyPress()
+  
+  Debug Key.Code
+  
+End
+
+Public Sub MaskBox1_Activate()
+
+  Debug
+
+End
+
+Public Sub ButtonBox1_Activate()
+
+  Debug
 
 End

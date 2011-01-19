@@ -367,7 +367,7 @@ Public Sub TextBox_KeyPress()
         bBefore = IsRightAlign(iPos) 
       Endif
     
-    Case Key.Tab, Key.BackTab, Key.Up, Key.Down
+    Case Key.Tab, Key.BackTab, Key.Up, Key.Down, Key.Enter, Key.Return
       Return
     
     Case Else

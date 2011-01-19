@@ -433,19 +433,6 @@ Public Sub SetFocus()
   
 End
 
-Public Sub SetShowTime(bShowTime As Boolean)
-  
-  sepTime.Visible = bShowTime
-  dwgTime.Visible = bShowTime
-  
-End
-
-Public Sub GetShowTime() As Boolean
-
-  Return dwgTime.Visible
-
-End
-
 Public Sub dwgTime_Draw()
   
   Dim dTime, dNextTime As Date
@@ -597,3 +584,32 @@ Public Sub dwgTime_KeyPress()
   End Select   
 
 End
+
+Public Sub SetShowTime(bShowTime As Boolean)
+  
+  If Not GetShowDate() And Not bShowTime Then Error.Raise("Bad argument")
+  dwgTime.Visible = bShowTime
+  sepTime.Visible = GetShowTime() And GetShowDate()
+  
+End
+
+Public Sub GetShowTime() As Boolean
+
+  Return dwgTime.Visible
+
+End
+
+Public Sub SetShowDate(bShowDate As Boolean)
+  
+  If Not GetShowTime() And Not bShowDate Then Error.Raise("Bad argument")
+  panDate.Visible = bShowDate
+  sepTime.Visible = GetShowTime() And GetShowDate()
+  
+End
+
+Public Sub GetShowDate() As Boolean
+
+  Return panDate.Visible
+
+End
+

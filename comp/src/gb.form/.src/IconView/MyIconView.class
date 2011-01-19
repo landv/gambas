@@ -6,6 +6,7 @@ Inherits UserControl
 Export
 
 Public Const _Properties As String = "*,Mode{Select.*}=Single,Sorted,Editable,GridWidth{Range:0;64}=0,Border=True,ScrollBar{Scroll.*}=Both"
+Public Const _Group As String = "View"
 
 Private $iMode As Integer = Select.multiple
 Private $bEditable As Boolean

@@ -19,8 +19,10 @@ Static Private Function GetFactor(Unit As String) As Float
       Return 39.37
     Case "mm"
       Return 0.03937
+    Case "pt"
+      Return 1 / 72
     Case Else
-      Return 1 / 96
+      Return 1 / 96 '* (300 / 96) ' Trick to get a 300 DPI like
   End Select
   
 End

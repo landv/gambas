@@ -136,6 +136,10 @@ Background_Draw
 m
 
 
+TextBox_Activate
+m
+
+
 #ColorButton
 UserControl
 C
@@ -236,7 +240,7 @@ C
 _Properties
 C
 s
-*,Value,ReadOnly,Border=True,ShowTime
+*,Value,ReadOnly,Border=True,Mode{DateChooser.*}=DateOnly
 _DefaultSize
 C
 s
@@ -245,6 +249,10 @@ _Similar
 C
 s
 TextBox
+:Activate
+:
+
+
 Value
 p
 d
@@ -257,9 +265,9 @@ Border
 p
 b
 
-ShowTime
+Mode
 p
-b
+i
 
 _new
 m
@@ -270,6 +278,10 @@ m
 
 
 ButtonBox_KeyPress
+m
+
+
+ButtonBox_Activate
 m
 
 
@@ -312,10 +324,22 @@ Colors
 r
 _DateChooserColors
 
-ShowTime
+Mode
 p
-b
+i
 
+DateOnly
+C
+i
+0
+DateTime
+C
+i
+1
+TimeOnly
+C
+i
+2
 :Change
 :
 
@@ -331,7 +355,7 @@ b
 _Properties
 C
 s
-*,ShowTime
+*,Mode{DateChooser.*}=DateOnly
 _DefaultEvent
 C
 s
@@ -486,6 +510,10 @@ _DefaultEvent
 C
 s
 Click
+_Group
+C
+s
+View
 :Select
 :
 
@@ -787,6 +815,10 @@ _DefaultEvent
 C
 s
 Click
+_Group
+C
+s
+View
 :Select
 :
 
@@ -1216,6 +1248,10 @@ _Properties
 C
 s
 *,Mode{Select.*}=Single,Sorted,Editable,GridWidth{Range:0;64}=0,Border=True,ScrollBar{Scroll.*}=Both
+_Group
+C
+s
+View
 ScrollBar
 p
 i
@@ -1617,6 +1653,10 @@ _Properties
 C
 s
 *,NoKeyboard
+_Group
+C
+s
+View
 _Similar
 C
 s

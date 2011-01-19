@@ -77,8 +77,9 @@ Private Sub UpdateType()
       $hCtrl = $hDateBox
       
     Case {Time}
-      $hTimeBox = New TimeBox(Me) As "TimeBox"
-      $hCtrl = $hTimeBox
+      $hDateBox = New DateBox(Me) As "DateBox"
+      $hDateBox.Mode = DateChooser.TimeOnly
+      $hCtrl = $hDateBox
     
     Case Currency
       $hMaskBox = New MaskBox(Me) As "CurrencyBox"
@@ -91,7 +92,7 @@ Private Sub UpdateType()
       
     Case DateTime
       $hDateBox = New DateBox(Me) As "DateBox"
-      $hDateBox.ShowTime = True
+      $hDateBox.Mode = DateChooser.DateTime
       $hCtrl = $hDateBox
       
     Case IpAddress
