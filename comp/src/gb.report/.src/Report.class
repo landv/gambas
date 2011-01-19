@@ -63,7 +63,7 @@ End
 
 Public Sub Layout()
   Dim iCurPage As Integer
-  Print "layout"
+  Debug
   If _bInExec Then Return
   'Set execution Flag to true
   _bInExec = True
@@ -92,7 +92,7 @@ Public Sub Layout()
    Loop
      
    
-   Print Me._PageChildren.Count
+   Debug Me._PageChildren.Count
    
   'MTools.PageCount = $iCount
   $bLayoutIsDirty = False
@@ -105,6 +105,7 @@ End
 
 Public Sub Paint(Page As Integer)
   
+  Debug "**** "; Page
   
   If Me.Parent = Null Then 
     'If $sOldWidth <> ((Paint.Width / $fScale) & " px") Then $bLayoutIsDirty = True
@@ -126,8 +127,13 @@ Public Sub Paint(Page As Integer)
   
   Paint.Reset
   Paint.Scale($fScale, $fScale)
+
+  Paint.Brush = Paint.Color(Color.RGB(255, 0, 0, 192))
+  Paint.Rectangle(0, 0, 100, 100)
+  Paint.Fill
+
   With Paint.ClipExtents
-    'Debug .X;; .Y;; .Width;; .Height
+    Debug "ClipExtents: "; .X;; .Y;; .Width;; .Height
   End With
   Dec page
   'Me._ClipChildren(Page, 0, 0, $hReportTControl, -1, $fSCale)

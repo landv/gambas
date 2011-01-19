@@ -95,6 +95,21 @@ DashDotDot
 C
 i
 5
+#Paint
+
+C
+Begin
+M
+
+(Device)o
+End
+M
+
+(Device)o
+Rectangle
+M
+
+(X)f(Y)f(W)f(H)f
 #Report
 ReportVBox
 CA
@@ -158,6 +173,10 @@ Paint
 m
 
 (Page)i
+Color
+m
+ReportBrush
+(iColor)i
 Clear
 m
 
@@ -174,10 +193,6 @@ RadialGradient
 m
 ReportBrush
 (Colors)Integer[];(Positions)Float[];
-Color
-m
-ReportBrush
-(iColor)i
 Refresh
 m
 

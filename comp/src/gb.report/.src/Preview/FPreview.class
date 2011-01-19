@@ -28,6 +28,7 @@ Public Sub ToolButton1_Click()
 End
 
 Public Sub DrawingArea1_Draw()
+  Debug $fScale
   $hreport.Scale = $fScale
   $hreport.Layout
   $hreport.Paint($iPage)
@@ -37,6 +38,8 @@ End
 Public Sub Form_Open()
 
   If $hreport = Null Then Me.Close
+  
+  Report.Debug = True
   
   ComboBox1.List = ["A3", "A4", "A5", "B5", "Executive", "Legal", "Letter", "Custom"]
   ComboBox1.Index = 1
