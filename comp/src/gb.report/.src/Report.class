@@ -128,13 +128,9 @@ Public Sub Paint(Page As Integer)
   Paint.Reset
   Paint.Scale($fScale, $fScale)
 
-  Paint.Brush = Paint.Color(Color.RGB(255, 0, 0, 192))
-  Paint.Rectangle(0, 0, 100, 100)
-  Paint.Fill
-
-  With Paint.ClipExtents
-    Debug "ClipExtents: "; .X;; .Y;; .Width;; .Height
-  End With
+  ' With Paint.ClipExtents
+  '   Debug "ClipExtents: "; .X;; .Y;; .Width;; .Height
+  ' End With
   Dec page
   'Me._ClipChildren(Page, 0, 0, $hReportTControl, -1, $fSCale)
   Me._PaintBefore(Page, 0, 0, $hReportTControl, -1)
