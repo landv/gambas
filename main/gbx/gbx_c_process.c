@@ -378,9 +378,10 @@ static void run_process(CPROCESS *process, int mode, void *cmd)
   pid = fork();
   if (pid == (-1))
   {
+		int err = errno;
     stop_process(process);
     sigprocmask(SIG_SETMASK, &old, &sig);
-    THROW_SYSTEM(errno, NULL);
+    THROW_SYSTEM(err, NULL);
   }
 
   if (pid)

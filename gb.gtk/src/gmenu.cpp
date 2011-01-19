@@ -52,7 +52,7 @@ static void mnu_destroy (GtkWidget *object,gMenu *data)
 
 static void mnu_activate(GtkMenuItem *menuitem,gMenu *data)
 {
-	if (data->onClick) data->onClick(data);
+	if (!data->child && data->onClick) data->onClick(data);
 }
 
 static gboolean cb_map(GtkWidget *menu, gMenu *data)
