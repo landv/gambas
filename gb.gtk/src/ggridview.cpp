@@ -780,8 +780,6 @@ gGridView::gGridView(gContainer *parent) : gControl(parent)
 	contents = gtk_drawing_area_new();
 	gtk_widget_add_events(contents, GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK);
 	GTK_WIDGET_SET_FLAGS(contents, GTK_CAN_FOCUS);
-	g_signal_connect(G_OBJECT(contents), "focus-in-event", G_CALLBACK(gcb_focus_in), (gpointer)this);
-	g_signal_connect(G_OBJECT(contents), "focus-out-event", G_CALLBACK(gcb_focus_out), (gpointer)this);
 	
 	header=gtk_drawing_area_new();
 	footer=gtk_drawing_area_new();
