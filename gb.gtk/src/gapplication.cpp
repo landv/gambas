@@ -449,32 +449,35 @@ static void gambas_handle_event(GdkEvent *event)
 			
 		__BUTTON_TRY_PROXY:
 		
-			if (control->onMouseEvent && control->canRaise(control, type))
+			if (control->onMouseEvent)
 			{
-				control->getScreenPos(&xc, &yc);
-				x = (int)event->button.x_root - xc;
-				y = (int)event->button.y_root - yc;
-				
-				gMouse::validate();
-				gMouse::setStart(x, y);
-				gMouse::setMouse(x, y, event->button.button, event->button.state);
-				//gMouse::setValid(1,(int)event->x,(int)event->y,event->button,event->state,data->screenX(),data->screenY());
-				switch ((int)event->type)
+				if (control->canRaise(control, type))
 				{
-					case GDK_BUTTON_PRESS: 
-						control->onMouseEvent(control, gEvent_MousePress);
-						break;
+					control->getScreenPos(&xc, &yc);
+					x = (int)event->button.x_root - xc;
+					y = (int)event->button.y_root - yc;
 					
-					case GDK_2BUTTON_PRESS: 
-						control->onMouseEvent(control, gEvent_MouseDblClick); 
-						break;
+					gMouse::validate();
+					gMouse::setStart(x, y);
+					gMouse::setMouse(x, y, event->button.button, event->button.state);
+					//gMouse::setValid(1,(int)event->x,(int)event->y,event->button,event->state,data->screenX(),data->screenY());
+					switch ((int)event->type)
+					{
+						case GDK_BUTTON_PRESS: 
+							control->onMouseEvent(control, gEvent_MousePress);
+							break;
+						
+						case GDK_2BUTTON_PRESS: 
+							control->onMouseEvent(control, gEvent_MouseDblClick); 
+							break;
+						
+						case GDK_BUTTON_RELEASE: 
+							control->onMouseEvent(control, gEvent_MouseRelease); 
+							break;
+					}
 					
-					case GDK_BUTTON_RELEASE: 
-						control->onMouseEvent(control, gEvent_MouseRelease); 
-						break;
+					gMouse::invalidate();
 				}
-				
-				gMouse::invalidate();
 				
 				if (event->button.button == 3 && event->type == GDK_BUTTON_PRESS)
 					control->onMouseEvent(control, gEvent_MouseMenu);
