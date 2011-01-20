@@ -648,6 +648,9 @@ static gboolean cb_contents_button_press(GtkWidget *wid, GdkEventButton *e, gGri
 {
 	int row, col;
 	
+	if (e->type == GDK_BUTTON_PRESS)
+		data->setFocus();
+	
 	if (e->type != GDK_2BUTTON_PRESS) 
 		return false;
 
