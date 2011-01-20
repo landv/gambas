@@ -4,7 +4,7 @@ Export
 Create Private
 Inherits ReportControl
 
-Public Const _Properties As String = "*,Border,Brush{ReportBrush}"
+Public Const _Properties As String = "*,Border,BackGround{ReportBrush}"
 
 ' Private $fLeftBorderWidth As Float
 ' Private $fRightBorderWidth As Float
@@ -13,11 +13,11 @@ Public Const _Properties As String = "*,Border,Brush{ReportBrush}"
 
 Private $hBorder As New ReportBorder
 
-Private $hBrush As ReportBrush
+Private $hBackGround As ReportBrush
 
 Property Border As ReportBorder
 
-Property Brush As ReportBrush
+Property BackGround As ReportBrush
 'Property Read _BorderWidth As Float
 
 Private Function Border_Read() As ReportBorder
@@ -54,8 +54,8 @@ Public Sub _PaintBefore(Page As Integer, X As Float, Y As Float, hControl As TCo
     
   Else 
     
-    If Me.Brush = Null Then Return
-    paint.Brush = Me.Brush._PaintBrush(X1, Y1, X2, Y2)
+    If Me.BackGround = Null Then Return
+    paint.Brush = Me.BackGround._PaintBrush(X1, Y1, X2, Y2)
     
     Paint.Rectangle(X1, Y1, X2 - X1, Y2 - Y1)
     Paint.Fill
@@ -124,15 +124,15 @@ Public Sub _PaintAfter(Page As Integer, X As Float, Y As Float, hControl As TCon
   
 End
 
-Private Function Brush_Read() As ReportBrush
+Private Function BackGround_Read() As ReportBrush
   
-  Return $hBrush
+  Return $hBackGround
   
 End
 
-Private Sub Brush_Write(Value As ReportBrush)
+Private Sub BackGround_Write(Value As ReportBrush)
   
-  $hBrush = Value
+  $hBackGround = Value
   
 End
 

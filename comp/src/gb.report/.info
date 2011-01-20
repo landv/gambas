@@ -137,10 +137,6 @@ _bInExec
 v
 b
 
-_LayoutLoop
-v
-b
-
 $bLayoutIsDirty
 v
 b
@@ -444,7 +440,7 @@ b
 _Properties
 C
 s
-Left{ReportCoord},Top{ReportCoord},Width{ReportCoord},Height{ReportCoord},Visible=True,Fixed,Font,Padding{ReportCoord},Expand,AutoResize,Tag
+Left{ReportCoord},Top{ReportCoord},Width{ReportCoord},Height{ReportCoord},Brush{ReportBrush},Color,Visible=True,Fixed,Font,Padding{ReportCoord},Expand,AutoResize,Tag
 _Family
 C
 s
@@ -473,6 +469,10 @@ _iCurPagePos
 V
 i
 
+Font
+p
+Font
+
 Id
 r
 i
@@ -489,9 +489,9 @@ Padding
 p
 s
 
-Font
+Brush
 p
-Font
+ReportBrush
 
 _Top
 r
@@ -530,6 +530,14 @@ p
 s
 
 Top
+p
+s
+
+X
+p
+s
+
+Y
 p
 s
 
@@ -609,18 +617,22 @@ _Reset
 m
 
 
+_GetActualBrush
+m
+PaintBrush
+(X1)i(Y1)i(X2)i(Y2)i
 #ReportFrame
 ReportControl
 
 _Properties
 C
 s
-*,Border,Brush{ReportBrush}
+*,Border,BackGround{ReportBrush}
 Border
 p
 ReportBorder
 
-Brush
+BackGround
 p
 ReportBrush
 
@@ -731,7 +743,7 @@ C
 _Properties
 C
 s
-*,Direction{Align.TopLeft;Top;TopRight;Left;Right;BottomLeft;Bottom;BottomRight}=BottomRight,LineWidth{ReportCoord}=2 px,LineColor{Color}
+*,Direction{Align.TopLeft;Top;TopRight;Left;Right;BottomLeft;Bottom;BottomRight}=BottomRight,LineWidth{ReportCoord}=2 px
 Direction
 p
 i
@@ -741,10 +753,6 @@ p
 s
 
 LineStyle
-p
-i
-
-LineColor
 p
 i
 

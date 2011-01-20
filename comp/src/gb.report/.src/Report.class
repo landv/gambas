@@ -12,7 +12,7 @@ Public Const _IsForm As Boolean = True
 Public {Debug} As Boolean = False
 Public _bInExec As Boolean
 'Public _cPages As New Object[]
-Public _LayoutLoop As Boolean
+
 
 
 Private iCurPage As Integer = 0
@@ -83,7 +83,6 @@ Public Sub Layout()
   Debug "Page Size W/H: " & Round(Me._Width, -2) & "/" & Round(Me._Height, -2)
    $hReportTControl._SetGeometry(0, 0, Me._Width, Me._Height) 
    Do
-     _LayoutLoop = False
      
      Me._SetChildGeometry(0, 0, Me._Width, Me._Height, iCurPage)
    If Me._CurItem > Me.Children.Max Then Break  

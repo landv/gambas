@@ -101,6 +101,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   
   Dim sTempText As Variant
   Dim iPadding As Integer
+  Dim iX, iY As Integer
   iPadding = MTools.UnitsToPixels(Me._Padding + Me.Border._Left)
   
   If $sKey Then
@@ -115,7 +116,11 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
     sTempText = DecodeText(sTempText, Page)
   Endif
   'Draw.Foreground = Me.Foreground
-  Paint.Brush = Paint.Color(Color.Black)
+  
+  iX = (x + hControl.RealLeft + iPadding)
+  iY = (y + hControl.RealTop + iPadding)
+  
+  Paint.Brush = Me._GetActualBrush(iX, iY, iX + hControl.RealWidth, iY + hControl.RealHeight)
   'Set the Font if it is initialized
   If Not IsNull(Me.Font) Then 
     Paint.Font = Me.Font
@@ -126,7 +131,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   'Draw.Clip((x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
     'Draw.Text($sText, (x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom, $iAlignment)
 
-    Paint.Text(sTempText, (x + hControl.RealLeft + iPadding), (y + hControl.RealTop + iPadding), hControl.RealWidth - 2 * iPadding, hControl.RealHeight - 2 * iPadding, $iAlignment)
+    Paint.Text(sTempText, iX, iY, hControl.RealWidth - 2 * iPadding, hControl.RealHeight - 2 * iPadding, $iAlignment)
     Paint.Fill
     'If $sKey Then $sText = Null
   'Draw.Clip.Enabled = False

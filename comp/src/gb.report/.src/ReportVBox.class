@@ -40,7 +40,7 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
   Dim oChild As Object
   Dim j As Integer
   'Dim aIgnored As New TControl[]  
-  
+  If Me.Tag = "*" Then Stop
   fSpc = IIf(Me._RelativeSpacing, H * Me._Spacing / 100, Me._Spacing) 'ME._Spacing
   fPdg = Me._Padding
   X = fPdg
@@ -171,11 +171,11 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   Dim hMyHints As New TSizeHint
   Dim fSpacing As Float
   Dim fPadding As Float
-  
+  Dim i As Integer
   fSpacing = IIf(Me._RelativeSpacing, TotalHeight * Me._Spacing / 100, Me._Spacing)
   
-  For Each hChild In Me.Children
-    
+  For i = Me._CurItem To Me.Children.max
+    hChild = Me.Children[i]
     hChildHints = hChild._GetSizeHints(AvailableW, AvailableH - hMyHints.Height, AvailableW, AvailableH)
     
     hMyHints.Height += hChildHints.Height + fSpacing 'ME._Spacing
@@ -195,11 +195,11 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   'If Me._RelativeHeight Then hMyHints.Height = AvailableH * Me._Height / 100
   
   If hMyHints.Height > AvailableH Then 
-    'If Me.Expand Then
-     ' hMyHints.Height = AvailableH
-    'Else 
+    If Me.Expand Then
+      hMyHints.Height = AvailableH
+    Else 
       hMyHints.Height = fHeight
-    'Endif
+    Endif
   Endif
   
   'If Not Me.Autoresize Then 
