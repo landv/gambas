@@ -316,7 +316,9 @@ End
 
 Private Function Current_Read() As String
 
-  Try Return Mid$(GetView().Current.Key, 2)
+  If GetView().Current.Selected Then Return Mid$(GetView().Current.Key, 2)
+  
+Catch
 
 End
 

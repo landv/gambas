@@ -143,13 +143,14 @@ Public Sub Form_Open()
 
   sPath = Settings["/FTranslate/ImportPath"]
   If Not sPath Then sPath = System.User.Home
-  If IsDir(sPath) Then
-    dchImport.SelectedPath = sPath
-  Else
-    dchImport.SelectedPath = File.Dir(sPath)
-    fvwImport.Current = File.Name(sPath)
-  Endif
-  fvwImport.Filter = ["*.po", ""]
+  dchImport.SelectedPath = sPath
+  ' If IsDir(sPath) Then
+  '   dchImport.SelectedPath = sPath
+  ' Else
+  '   dchImport.SelectedPath = sPath
+  '   fvwImport.Current = File.Name(sPath)
+  ' Endif
+  dchImport.FileView.Filter = ["*.po", ("Translation files")]
 
   Dec Application.Busy
 
@@ -330,6 +331,7 @@ Private Sub SetLang(Optional sLang As String) As Boolean
     cvwTranslate[iIndex][1] = hTrans.Translations[sMsgId]
     cvwTranslate[iIndex][2] = hTrans.Comments[sMsgId]
     cvwTranslate[iIndex][3] = sMsgId
+    
   Next
   
   $nTrans = hTrans.Translations.Count
@@ -340,7 +342,9 @@ Private Sub SetLang(Optional sLang As String) As Boolean
   'cvwTranslate.Columns[1].Text = Language.ToName(sLang)
 
   txtOrig.Text = ""
-  txtTranslate.Text = ""
+  Object.Lock(txtTranslate)
+  txtTranslate.Clear
+  Object.Unlock(txtTranslate)
 
   $bIgnore = False
 
@@ -569,7 +573,7 @@ Public Sub txtFind_Click()
   Dim sFind As String
   Dim sKey As String
 
-  sFind = LCase(txtFind.Text)
+  sFind = String.LCase(txtFind.Text)
   If Not sFind Then Return
   If cvwTranslate.Count = 0 Then Return
 
@@ -584,7 +588,7 @@ Public Sub txtFind_Click()
         .MoveFirst()
       Endif
 
-      sStr = LCase(.Item[0] & "\n" & .Item[1])
+      sStr = String.LCase(.Item[0] & "\n" & .Item[1])
       If InStr(sStr, sFind) Then
         .Item.EnsureVisible
         .Item.Selected = True
@@ -759,7 +763,8 @@ Private Sub InitIndex()
   
   cvwTranslate.MoveFirst
   While cvwTranslate.Available
-    $cCacheImport[cvwTranslate.Item[0]] = CInt(cvwTranslate.Item.Key)
+    'Debug cvwTranslate.Item[0]; "|"; cvwTranslate.Item[1]; "|"; cvwTranslate.Item[2]; "|"; cvwTranslate.Item[3]
+    $cCacheImport[cvwTranslate.Item[3]] = CInt(cvwTranslate.Item.Key)
     cvwTranslate.MoveNext
   Wend
   
@@ -906,21 +911,16 @@ Public Sub btnImport_Click()
   Dim sTransDir, sTrans As String
   Dim nTrans As Integer
 
-  'Dialog.Title = ("Import a translation")
-  'Dialog.Path = Settings["/FTranslate/ImportPath", System.User.Home]  
-  'Dialog.Filter = ["*.po", ("Translation files")]
-  'If Dialog.OpenFile() Then Return
-  
   sTransDir = dchImport.SelectedPath
-  If Not chkBrowse.Value Then 
-    sTrans = fvwImport.Current
-    If Not sTrans Then 
+  If Not chkBrowse.Value Then
+    sTrans = dchImport.FileView.Current
+    If Not sTrans Then
       Message.Warning(("Please select the translation file to import."))
       Return
     Endif
   Endif
   
-  Settings["/FTranslate/ImportPath"] = sTransDir &/ sTrans
+  Settings["/FTranslate/ImportPath"] = sTransDir
 
   'If IsDir(Dialog.Path) Then
   '  If Message.Warning("You have selected a directory. Do you want to browse it recursively and import all found translation files?", ("Cancel"), ("Browse")) = 1 Then Return
@@ -1451,15 +1451,10 @@ End
 
 Public Sub chkBrowse_Click()
 
-  fvwImport.Enabled = chkBrowse.Value = 0
+  dchImport.FileView.Enabled = chkBrowse.Value = 0
 
 End
 
-Public Sub dchImport_Change()
-
-  Try fvwImport.Dir = dchImport.SelectedPath
-
-End
 
 Public Sub cmbLangSource_Click()
 
