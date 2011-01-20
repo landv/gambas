@@ -309,19 +309,13 @@ static void gambas_handle_event(GdkEvent *event)
 		real = false;
 	}
 	
+	/*if (event->type == GDK_BUTTON_PRESS)
+		fprintf(stderr, "GDK_BUTTON_PRESS: %p %s\n", widget, control ? control->name() : NULL);
+	else if (event->type == GDK_KEY_PRESS)
+		fprintf(stderr, "GDK_KEY_PRESS: %p %s\n", widget, control ? control->name() : NULL);*/
+	
 	if (!widget || !control)
 		goto __HANDLE_EVENT;
-	
-	/*switch ((int)event->type)
-	{
-		case GDK_ENTER_NOTIFY:
-			fprintf(stderr, "ENTER: %p %s\n", control, control ? control->name() : 0);
-			break;
-		
-		case GDK_LEAVE_NOTIFY:
-			fprintf(stderr, "LEAVE: %p %s\n", control, control ? control->name() : 0);
-			break;
-	}*/
 	
 	grab = gtk_grab_get_current();
 	

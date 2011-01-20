@@ -660,6 +660,9 @@ static gboolean cb_contents_button_press(GtkWidget *wid, GdkEventButton *e, gGri
 {
 	int row, col;
 	
+	if (e->type == GDK_BUTTON_PRESS)
+		data->setFocus();
+	
 	if (e->type != GDK_2BUTTON_PRESS) 
 		return false;
 
@@ -759,16 +762,16 @@ gGridView::gGridView(gContainer *parent) : gControl(parent)
 	sel_row=-1;
 	sel_mode=0;
 	sel_current = -1;
-        scroll=3;
-        hdata=NULL;
-        vdata=NULL;
-        _last_col_width = 0;
-        scroll_timer = 0;
-        _updating_last_column = false;
+	scroll=3;
+	hdata=NULL;
+	vdata=NULL;
+	_last_col_width = 0;
+	scroll_timer = 0;
+	_updating_last_column = false;
 
-        border=gtk_event_box_new();
-        widget=gtk_table_new(3,3,FALSE);
-        //gtk_container_set_border_width  (GTK_CONTAINER(widget),1);
+	border=gtk_event_box_new();
+	widget=gtk_table_new(3,3,FALSE);
+	//gtk_container_set_border_width  (GTK_CONTAINER(widget),1);
 
         //gtk_container_add(GTK_CONTAINER(border),widget);
 	hbar=gtk_hscrollbar_new(NULL);
@@ -776,6 +779,9 @@ gGridView::gGridView(gContainer *parent) : gControl(parent)
 	
 	contents = gtk_drawing_area_new();
 	gtk_widget_add_events(contents, GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK);
+	GTK_WIDGET_SET_FLAGS(contents, GTK_CAN_FOCUS);
+	g_signal_connect(G_OBJECT(contents), "focus-in-event", G_CALLBACK(gcb_focus_in), (gpointer)this);
+	g_signal_connect(G_OBJECT(contents), "focus-out-event", G_CALLBACK(gcb_focus_out), (gpointer)this);
 	
 	header=gtk_drawing_area_new();
 	footer=gtk_drawing_area_new();
@@ -798,14 +804,17 @@ gGridView::gGridView(gContainer *parent) : gControl(parent)
 
 	gtk_widget_add_events(border,GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
 	gtk_widget_add_events(contents,GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK);
+
 	gtk_widget_add_events(header,GDK_POINTER_MOTION_MASK | GDK_LEAVE_NOTIFY_MASK);
-	gtk_widget_add_events(footer,GDK_POINTER_MOTION_MASK | GDK_LEAVE_NOTIFY_MASK);
-	gtk_widget_add_events(lateral,GDK_POINTER_MOTION_MASK | GDK_LEAVE_NOTIFY_MASK);	
 	gtk_widget_add_events(header,GDK_BUTTON_PRESS_MASK | GDK_BUTTON1_MOTION_MASK);
-	gtk_widget_add_events(footer,GDK_BUTTON_PRESS_MASK | GDK_BUTTON1_MOTION_MASK);
-	gtk_widget_add_events(lateral,GDK_BUTTON_PRESS_MASK | GDK_BUTTON1_MOTION_MASK);
 	gtk_widget_add_events(header,GDK_BUTTON_RELEASE_MASK);
+	
+	gtk_widget_add_events(footer,GDK_POINTER_MOTION_MASK | GDK_LEAVE_NOTIFY_MASK);
+	gtk_widget_add_events(footer,GDK_BUTTON_PRESS_MASK | GDK_BUTTON1_MOTION_MASK);
 	gtk_widget_add_events(footer,GDK_BUTTON_RELEASE_MASK);
+	
+	gtk_widget_add_events(lateral,GDK_POINTER_MOTION_MASK | GDK_LEAVE_NOTIFY_MASK);	
+	gtk_widget_add_events(lateral,GDK_BUTTON_PRESS_MASK | GDK_BUTTON1_MOTION_MASK);
 	gtk_widget_add_events(lateral,GDK_BUTTON_RELEASE_MASK);
 	
 	g_object_set(G_OBJECT(header),"name","gambas-grid-header",(void *)NULL);
