@@ -240,7 +240,7 @@ C
 _Properties
 C
 s
-*,Value,ReadOnly,Border=True,Mode{DateChooser.*}=DateOnly
+*,Action,Value,ReadOnly,Border=True,Mode{DateChooser.*}=DateOnly
 _DefaultSize
 C
 s
@@ -1106,7 +1106,7 @@ C
 _Properties
 C
 s
-*,Mask
+*,Action,Mask
 _Similar
 C
 s
@@ -1818,7 +1818,7 @@ C
 _Properties
 C
 s
-*,Type{ValueBox.*}=Number,Value,ReadOnly,Border=True
+*,Action,Text,Type{ValueBox.*}=Number,Value,ReadOnly,Border=True
 _DefaultSize
 C
 s
@@ -1842,6 +1842,10 @@ b
 ReadOnly
 p
 b
+
+Text
+p
+s
 
 Number
 C

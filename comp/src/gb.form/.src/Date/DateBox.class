@@ -3,7 +3,7 @@
 Export
 Inherits UserControl
 
-Public Const _Properties As String = "*,Value,ReadOnly,Border=True,Mode{DateChooser.*}=DateOnly"
+Public Const _Properties As String = "*,Action,Value,ReadOnly,Border=True,Mode{DateChooser.*}=DateOnly"
 'Public Const _DefaultEvent As String = "Click"
 Public Const _DefaultSize As String = "24,4"
 Public Const _Similar As String = "TextBox"
@@ -119,8 +119,6 @@ Public Sub ButtonBox_Click()
   Else
     $hPopup.Resize(Desktop.Scale * 16 + 2, ((Desktop.Scale * 24) \ 12) * 12 + 2)
   Endif
-  $hChooser.ShowTime = $bShowTime
-  $hChooser.ShowDate = $bShowDate
 
   iPad = If($hButtonBox.Border, 3, 0)
   X = $hButtonBox.ScreenX + $hButtonBox.W - $hPopup.W - iPad
@@ -224,7 +222,11 @@ Private Sub Mode_Write(Value As Integer)
     Case DateChooser.TimeOnly
       $bShowDate = False
       $bShowTime = True
+    Default
+      Return
   End Select
+
+  $hChooser.Mode = Value
 
   UpdateMask
 

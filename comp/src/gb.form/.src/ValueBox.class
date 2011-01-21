@@ -4,7 +4,7 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Type{ValueBox.*}=Number,Value,ReadOnly,Border=True"
+Public Const _Properties As String = "*,Action,Text,Type{ValueBox.*}=Number,Value,ReadOnly,Border=True"
 Public Const _DefaultSize As String = "24,4"
 Public Const _Similar As String = "TextBox"
 
@@ -12,6 +12,7 @@ Property Type As Integer
 Property Value As Variant
 Property Border As Boolean
 Property ReadOnly As Boolean
+Property Text As String
 
 Public Enum {Number}, {Date}, {Time}, Currency, DateTime, IPAddress
 
@@ -19,7 +20,6 @@ Private $iType As Integer
 Private $hCtrl As Control
 Private $hTextBox As TextBox
 Private $hDateBox As DateBox
-Private $hTimeBox As TimeBox
 Private $hMaskBox As MaskBox
 
 Private $sDecimalSep As String
@@ -60,7 +60,6 @@ Private Sub UpdateType()
     $hTextBox = Null
     $hDateBox = Null
     $hMaskBox = Null
-    $hTimeBox = Null
   Endif
   
   Select Case $iType
@@ -114,6 +113,7 @@ End
 Public Sub NumberBox_KeyPress()
 
   Dim iPos As Integer = $hTextBox.Pos
+  Dim iSep As Integer
   
   Select Case Key.Code
     
@@ -128,9 +128,12 @@ Public Sub NumberBox_KeyPress()
       Return
     
     Case ".", ","
-      If InStr($hTextBox.Text, $sDecimalSep) = 0 Then 
+      iSep = InStr($hTextBox.Text, $sDecimalSep)
+      If iSep = 0 Then
         $hTextBox.Text = $hTextBox.Text & $sDecimalSep
         $hTextBox.Pos = $hTextBox.Length
+      Else
+        $hTextBox.Pos = Max($hTextBox.Pos, iSep)
       Endif
       Stop Event
       
@@ -199,12 +202,9 @@ Private Function Value_Read() As Variant
     Case {Number}
       Return Val($hTextBox.Text)
       
-    Case {Date}, {DateTime}
+    Case {Date}, {DateTime}, {Time}
       Return $hDateBox.Value
     
-    Case {Time}
-      Return $hTimeBox.Value
-      
     Case {Currency}
       Return Val($hMaskBox.Text)
       
@@ -235,11 +235,8 @@ Private Sub Value_Write(Value As Variant)
         $hTextBox.Text = ""
       Endif
       
-    Case {Date}, {DateTime}
+    Case {Date}, {DateTime}, {Time}
       $hDateBox.Value = Value
-      
-    Case {Time}
-      $hTimeBox.Value = Value
       
     Case {Currency}
       If TypeOf(Value) = gb.String Then
@@ -294,5 +291,39 @@ Private Sub ReadOnly_Write(Value As Boolean)
 
   Dim hCtrl As Object = $hCtrl
   Try hCtrl.ReadOnly = Value
+
+End
+
+Private Function Text_Read() As String
+
+  Dim hCtrl As Object = $hCtrl
+  Return hCtrl.Text
+
+End
+
+Private Sub GetCurrency() As String
+  
+  Return Trim(Replace(Format(1, "$#"), "1", ""))
+  
+End
+
+Private Sub Text_Write(Value As String)
+
+  Select Case $iType
+    
+    Case {Number}
+      If IsNumber(Value) Then Value_Write(Val(Value))
+      
+    Case {Date}, {Time}, DateTime
+      If IsDate(Value) Then Value_Write(Val(Value))
+      
+    Case Currency
+      Value = Trim(Replace(Value, GetCurrency(), ""))
+      If IsNumber(Value) Then Value_Write(Val(Value))
+      
+    Case IPAddress
+      Value_Write(Value)
+    
+  End Select
 
 End

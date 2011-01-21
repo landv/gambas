@@ -39,6 +39,8 @@
 #include <stdint.h>
 #include <inttypes.h>
 
+#include "gb_common.h"
+
 #include "gb.form.properties.h"
 #include "gb.form.const.h"
 

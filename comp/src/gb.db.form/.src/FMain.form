@@ -2,7 +2,6 @@
 
 { Form Form
   MoveScaled(0,0,76,89)
-  Text = ("")
   Arrangement = Arrange.Fill
   Spacing = True
   Padding = 8
@@ -23,7 +22,7 @@
       { DataBrowser1 DataBrowser
         MoveScaled(2,2,59,18)
         Expand = True
-        Columns = ["id", "active", "color", "firstname", "salary"]
+        Columns = ["id", "active", "color", "firstname", "salary", "comment"]
         Editable = True
         Orientation = Align.Top
       }

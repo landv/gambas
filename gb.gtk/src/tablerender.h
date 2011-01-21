@@ -88,10 +88,10 @@ public:
 	int rowCount      ();
 	void          setRowCount      (int number);
 	void          setColumnCount   (int number);
-	char*         getFieldText     (int col,int row);
-	void          setFieldText     (int col,int row, const char * value);
-	char*         getFieldRichText     (int col,int row);
-	void          setFieldRichText     (int col,int row, const char * value);
+	char*         getFieldText     (int row, int col);
+	void          setFieldText     (int row, int col, const char * value);
+	char*         getFieldRichText     (int row, int col);
+	void          setFieldRichText     (int row, int col, const char * value);
 
 	gTableData *getData(int row, int col, bool create = false);
 	
@@ -104,29 +104,29 @@ public:
 	bool          getRowSelected   (int position);
 	void          setRowSelected   (int position,bool value);
 	
-	void          clearField       (int col,int row);
-	gColor        getFieldFg       (int col,int row);
-	void          setFieldFg       (int col,int row,gColor value);
-	gColor        getFieldBg       (int col,int row);
-	void          setFieldBg       (int col,int row,gColor value);
-	int           getFieldPadding  (int col,int row);
-	void          setFieldPadding  (int col,int row,int value);
-	int           getFieldAlignment  (int col,int row);
-	void          setFieldAlignment  (int col,int row,int value);
-	gPicture *getFieldPicture(int col, int row);
-	void setFieldPicture(int col, int row, gPicture *value);
-	gFont *getFieldFont(int col, int row);
-	void setFieldFont(int col, int row, gFont *value);
+	void          clearField       (int row, int col);
+	gColor        getFieldFg       (int row, int col);
+	void          setFieldFg       (int row, int col,gColor value);
+	gColor        getFieldBg       (int row, int col);
+	void          setFieldBg       (int row, int col,gColor value);
+	int           getFieldPadding  (int row, int col);
+	void          setFieldPadding  (int row, int col,int value);
+	int           getFieldAlignment  (int row, int col);
+	void          setFieldAlignment  (int row, int col,int value);
+	gPicture *getFieldPicture(int row, int col);
+	void setFieldPicture(int row, int col, gPicture *value);
+	gFont *getFieldFont(int row, int col);
+	void setFieldFont(int row, int col, gFont *value);
 	void clear();
 	
-	bool getFieldWordWrap(int col, int row);
-	void setFieldWordWrap(int col, int row, bool value);
+	bool getFieldWordWrap(int row, int col);
+	void setFieldWordWrap(int row, int col, bool value);
 	
-	bool          getFieldSelected (int col,int row);
-	void          setFieldSelected (int col,int row,bool value);
+	bool          getFieldSelected (int row, int col);
+	void          setFieldSelected (int row, int col,bool value);
 	
-	void setSpan(int col, int row, int colspan, int rowspan);
-	void getSpan(int col, int row, int *colspan, int *rowspan);
+	void setSpan(int row, int col, int rowspan, int colspan);
+	void getSpan(int row, int col, int *rowspan, int *colspan);
   
   void moveCell(int srow, int scol, int drow, int dcol);
 	
@@ -178,18 +178,21 @@ public:
 	void          setRowSize        (int position,int value);
 	void          setRowSelected    (int position,bool value);
 	void          setColumnSize     (int position,int value);
-	void          clearField        (int col,int row);
-	void          setFieldText      (int col,int row, const char* value);
-	void          setFieldRichText      (int col,int row, const char* value);
-	void          setFieldFg        (int col,int row,gColor value);
-	void          setFieldBg        (int col,int row,gColor value);
-	void          setFieldPadding   (int col,int row,int value);
-	//void          setFieldYPad      (int col,int row,int value);
-	void          setFieldSelected  (int col,int row,bool value);
-	void setFieldPicture(int col, int row, gPicture *value);
-	void setFieldFont(int col, int row, gFont *value);
-	void setFieldWordWrap(int col, int row, bool value);
+	void          clearField        (int row, int col);
+	void          setFieldText      (int row, int col, const char* value);
+	void          setFieldRichText      (int row, int col, const char* value);
+	void          setFieldFg        (int row, int col,gColor value);
+	void          setFieldBg        (int row, int col,gColor value);
+	void          setFieldPadding   (int row, int col,int value);
+	//void          setFieldYPad      (int row, int col,int value);
+	void          setFieldSelected  (int row, int col,bool value);
+	void setFieldPicture(int row, int col, gPicture *value);
+	void setFieldFont(int row, int col, gFont *value);
+	void setFieldWordWrap(int row, int col, bool value);
 	void clear();
+	//int getBestWidth(int row, int col);
+	int getBestHeight(int row, int col);
+	int getBestWidth(int row, int col);
 };
 
 #endif

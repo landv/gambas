@@ -336,7 +336,7 @@ void gTable::moveCell(int srow, int scol, int drow, int dcol)
 }
 
 
-void gTable::clearField (int col,int row)
+void gTable::clearField (int row, int col)
 {
 	gTableData *ptr;
 	gTablePair pair={row,col};
@@ -350,115 +350,113 @@ void gTable::clearField (int col,int row)
 	
 }
 
-char* gTable::getFieldText(int col,int row)
+char* gTable::getFieldText(int row, int col)
 {
 	gTableData *d = getData(row, col);
 	return d ? d->text : NULL;
 }
 
-void gTable::setFieldText(int col,int row, const char* value)
+void gTable::setFieldText(int row, int col, const char* value)
 {
 	gTableData *d = getData(row, col, true);
 	if (d) d->setText(value);
 }
 
-char* gTable::getFieldRichText(int col,int row)
+char* gTable::getFieldRichText(int row, int col)
 {
 	gTableData *d = getData(row, col);
 	return d ? d->richText : NULL;
 }
 
-void gTable::setFieldRichText(int col,int row, const char* value)
+void gTable::setFieldRichText(int row, int col, const char* value)
 {
 	gTableData *d = getData(row, col, true);
 	if (d) d->setRichText(value);
 }
 
-gColor gTable::getFieldFg (int col,int row)
+gColor gTable::getFieldFg (int row, int col)
 {
 	gTableData *d = getData(row, col);
 	return d ? d->fg : COLOR_DEFAULT;
 }
 
-void gTable::setFieldFg (int col,int row, gColor value)
+void gTable::setFieldFg (int row, int col, gColor value)
 {
 	gTableData *d = getData(row, col, true);
 	if (d) d->fg = value;
 }
 
-gColor gTable::getFieldBg (int col,int row)
+gColor gTable::getFieldBg (int row, int col)
 {
 	gTableData *d = getData(row, col);
 	return d ? d->bg : COLOR_DEFAULT;
 }
 
-void gTable::setFieldBg (int col,int row, gColor value)
+void gTable::setFieldBg (int row, int col, gColor value)
 {
 	gTableData *d = getData(row, col, true);
 	if (d) d->bg = value;
 }
 
-int gTable::getFieldPadding(int col, int row)
+int gTable::getFieldPadding(int row, int col)
 {
 	gTableData *d = getData(row, col);	
 	return d ? d->padding : 0;
 }
 
-void gTable::setFieldPadding(int col, int row, int value)
+void gTable::setFieldPadding(int row, int col, int value)
 {
 	gTableData *d = getData(row, col, true);
 	if (d) d->padding = value;
 }
 
-int gTable::getFieldAlignment(int col, int row)
+int gTable::getFieldAlignment(int row, int col)
 {
 	gTableData *d = getData(row, col);	
 	return d ? d->alignment : 0;
 }
 
-void gTable::setFieldAlignment(int col, int row, int value)
+void gTable::setFieldAlignment(int row, int col, int value)
 {
 	gTableData *d = getData(row, col, true);
 	if (d) d->alignment = value;
 }
 
-gPicture *gTable::getFieldPicture(int col, int row)
+gPicture *gTable::getFieldPicture(int row, int col)
 {
 	gTableData *d = getData(row, col);	
 	return d ? d->picture : 0;
 }
 
-void gTable::setFieldPicture(int col, int row, gPicture *value)
+void gTable::setFieldPicture(int row, int col, gPicture *value)
 {
 	gTableData *d = getData(row, col, true);
 	if (d) d->setPicture(value);
 }
 
-gFont *gTable::getFieldFont(int col, int row)
+gFont *gTable::getFieldFont(int row, int col)
 {
 	gTableData *d = getData(row, col);	
 	return d ? d->font : 0;
 }
 
-void gTable::setFieldFont(int col, int row, gFont *value)
+void gTable::setFieldFont(int row, int col, gFont *value)
 {
 	gTableData *d = getData(row, col, true);
 	if (d) d->setFont(value);
 }
 
-bool gTable::getFieldWordWrap(int col, int row)
+bool gTable::getFieldWordWrap(int row, int col)
 {
 	gTableData *d = getData(row, col);	
 	return d ? d->wordWrap : false;
 }
 
-void gTable::setFieldWordWrap(int col, int row, bool value)
+void gTable::setFieldWordWrap(int row, int col, bool value)
 {
 	gTableData *d = getData(row, col, true);
 	if (d) d->wordWrap = value;
 }
-
-
 
 bool gTable::getRowSelected(int row)
 {
@@ -495,7 +493,7 @@ void gTable::setRowSelected(int row,bool value)
 	if (!value) g_hash_table_foreach_remove(seldata,(GHRFunc)gTable_ecol,(gpointer)row);
 }
 
-bool gTable::getFieldSelected (int col,int row)
+bool gTable::getFieldSelected (int row, int col)
 {
 	gTablePair pair={row,col};
 
@@ -508,7 +506,7 @@ bool gTable::getFieldSelected (int col,int row)
 	return false;
 }
 
-void gTable::setFieldSelected (int col,int row,bool value)
+void gTable::setFieldSelected (int row, int col, bool value)
 {
 	gTablePair pair={row,col};
 	gTablePair *key;
@@ -545,7 +543,7 @@ void gTable::setFieldSelected (int col,int row,bool value)
 	g_hash_table_insert(seldata,(gpointer)key,(gpointer)value);
 }
 
-void gTable::getSpan(int col, int row, int *colspan, int *rowspan)
+void gTable::getSpan(int row, int col, int *rowspan, int *colspan)
 {
 	gTablePair pair = { row, col };
 	gpointer span;
@@ -568,7 +566,7 @@ void gTable::getSpan(int col, int row, int *colspan, int *rowspan)
 		*rowspan = rows - row - 1;
 }
 
-void gTable::setSpan(int col, int row, int colspan, int rowspan)
+void gTable::setSpan(int row, int col, int rowspan, int colspan)
 {
 	gTablePair pair = { row, col };
 	gTablePair *key;
@@ -750,7 +748,6 @@ void gTable::setRowSize (int position,int value)
 			rowpos[i] = -1;
 	}
 }
-
 
 //***********************************
 // gTableRender
@@ -1203,7 +1200,7 @@ void gTableRender::render(GdkRectangle *ar)
 				frow = by;
 			}
 			
-			getSpan(bx, by, &colspan, &rowspan);
+			getSpan(bx, by, &rowspan, &colspan);
 			
 			rect.x = bpos - offX;
 			rect.y = cpos - offY;
@@ -1212,7 +1209,7 @@ void gTableRender::render(GdkRectangle *ar)
 
 			if (colspan >= 0 && rowspan >= 0)
 			{
-				sel = getFieldSelected(bx, by);
+				sel = getFieldSelected(by, bx);
 				
 				for (i = 0; i <= colspan; i++)
 					rect.width += getColumnSize(bx + i);
@@ -1229,7 +1226,7 @@ void gTableRender::render(GdkRectangle *ar)
 				sbx = bx + colspan;
 				sby = by + rowspan;
 				
-				sel = getFieldSelected(sbx, sby);
+				sel = getFieldSelected(sby, sbx);
 				cell = getData(sby, sbx);
 				
 				for (i = sbx; i < bx; i++)
@@ -1309,70 +1306,70 @@ void gTableRender::setColumnSize(int position,int value)
 
 #define CHECK_COORD(_col, _row) if ((_col) < 0 || (_row) < 0 || (_col) >= columnCount() || (_row) > rowCount()) return
 
-void gTableRender::clearField (int col,int row)
+void gTableRender::clearField (int row, int col)
 {
 	CHECK_COORD(col, row);
 	gTable::clearField(col,row);
 	queryUpdate(row,col);
 }
 
-void gTableRender::setFieldText (int col,int row, const char* value)
+void gTableRender::setFieldText (int row, int col, const char* value)
 {
 	CHECK_COORD(col, row);
 	gTable::setFieldText(col,row,value);
 	queryUpdate(row,col);
 }
 
-void gTableRender::setFieldRichText (int col,int row, const char* value)
+void gTableRender::setFieldRichText (int row, int col, const char* value)
 {
 	CHECK_COORD(col, row);
 	gTable::setFieldRichText(col,row,value);
 	queryUpdate(row,col);
 }
 
-void gTableRender::setFieldFg (int col,int row,gColor value)
+void gTableRender::setFieldFg (int row, int col,gColor value)
 {
 	CHECK_COORD(col, row);
 	gTable::setFieldFg(col,row,value);
 	queryUpdate(row,col);
 }
 
-void gTableRender::setFieldBg (int col,int row,gColor value)
+void gTableRender::setFieldBg (int row, int col,gColor value)
 {
 	CHECK_COORD(col, row);
 	gTable::setFieldBg(col,row,value);
 	queryUpdate(row,col);
 }
 
-void gTableRender::setFieldPadding(int col,int row,int value)
+void gTableRender::setFieldPadding(int row, int col,int value)
 {
 	CHECK_COORD(col, row);
 	gTable::setFieldPadding(col,row,value);
 	queryUpdate(row,col);
 }
 
-void gTableRender::setFieldPicture(int col, int row, gPicture *value)
+void gTableRender::setFieldPicture(int row, int col, gPicture *value)
 {
 	CHECK_COORD(col, row);
 	gTable::setFieldPicture(col, row, value);
 	queryUpdate(row, col);
 }
 
-void gTableRender::setFieldFont(int col, int row, gFont *value)
+void gTableRender::setFieldFont(int row, int col, gFont *value)
 {
 	CHECK_COORD(col, row);
 	gTable::setFieldFont(col, row, value);
 	queryUpdate(row, col);
 }
 
-void gTableRender::setFieldWordWrap(int col, int row, bool value)
+void gTableRender::setFieldWordWrap(int row, int col, bool value)
 {
 	CHECK_COORD(col, row);
 	gTable::setFieldWordWrap(col, row, value);
 	queryUpdate(row, col);
 }
 
-void gTableRender::setFieldSelected(int col,int row,bool value)
+void gTableRender::setFieldSelected(int row, int col,bool value)
 {
 	gTable::setFieldSelected(col,row,value);
 	queryUpdate(row,-1);
@@ -1552,3 +1549,68 @@ void gTableRender::clear()
 	gTable::clear();
 	queryUpdate(-1, -1);
 }
+
+int gTableRender::getBestHeight(int row, int col)
+{
+	gTableData *d = getData(row, col);
+	int h = 0;
+	int th;
+	gFont *f;
+	
+	if (d)
+	{
+		if (d->picture)
+			h = Max(h, d->picture->height());
+		
+		f = getFieldFont(row, col);
+		if (!f) f = view->font();
+		
+		if (d->richText && *d->richText)
+		{
+			f->richTextSize(d->richText, strlen(d->richText), getColumnSize(col), NULL, &th);
+			h = Max(h, th);
+		}
+		else if (d->text && *d->text)
+		{
+			th = f->height(d->text, strlen(d->text));
+			h = Max(h, th);
+		}
+	}
+	
+	h += getFieldPadding(row, col) * 2 + 4; // Why + 4? No idea...
+	return h;
+}
+
+int gTableRender::getBestWidth(int row, int col)
+{
+	gTableData *d = getData(row, col);
+	int w = 0;
+	int padding = getFieldPadding(row, col);
+	int tw;
+	gFont *f;
+	
+	if (d)
+	{
+		if (d->picture)
+			w = d->picture->width();
+		
+		f = getFieldFont(row, col);
+		if (!f) f = view->font();
+		
+		if (d->richText && *d->richText)
+		{
+			if (w) w += padding;
+			f->richTextSize(d->richText, strlen(d->richText), getColumnSize(col), &tw, NULL);
+			w += tw;
+		}
+		else if (d->text && *d->text)
+		{
+			tw = f->width(d->text, strlen(d->text));
+			w += tw;
+		}
+	}
+	
+	w += padding * 2;
+	return w;
+}
+

@@ -39,10 +39,8 @@ public:
 	bool    rowResizable(int index);
 	bool    rowSelected(int index);
 	int    columnWidth(int index) { return render->getColumnSize(index); }
-	int minColumnWidth(int index);
 	int 	  columnPos(int index) { return render->getColumnPos(index); }
 	int    rowHeight(int index) { return render->getRowSize(index); }
-	int minRowHeight(int index);
 	int     rowPos(int index) { return render->getRowPos(index); }
 	bool    drawGrid();
 	bool    getBorder() { return getFrameBorder(); }
@@ -118,7 +116,7 @@ public:
 	void    setItemWordWrap(int row, int col, bool vl);
 	void    setItemSelected(int row,int col,bool vl);
 	
-	void getItemSpan(int row, int col, int *rowspan, int *colspan) { render->getSpan(col, row, colspan, rowspan); }
+	void getItemSpan(int row, int col, int *rowspan, int *colspan) { render->getSpan(row, col, rowspan, colspan); }
 	void setItemSpan(int row, int col, int rowspan, int colspan);
 
 	virtual void setBackground(gColor color = COLOR_DEFAULT);
@@ -170,6 +168,11 @@ public:
 	bool _autoresize;
 	int _show_headers;
 	bool _show_footers;
+
+	int minColumnWidth(int index);
+	int minRowHeight(int index);
+	int bestRowHeight(int index);
+	int bestColumnWidth(int index);
 	
 	void calculateBars();
 	void updateLateralWidth(int w);

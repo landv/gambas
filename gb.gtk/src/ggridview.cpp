@@ -168,7 +168,7 @@ static gboolean tbheader_move(GtkWidget *wid, GdkEventMotion *e, gGridView *data
 		{
 			min = data->minColumnWidth(data->_index);
 			width = pos - data->columnPos(data->_index);
-			width = MAX(width, min);
+			width = Max(width, min);
 			if (data->_index == (data->columnCount() - 1))
 				data->_last_col_width = 0;
 			data->setColumnWidth(data->_index, width);
@@ -318,7 +318,7 @@ static gboolean lateral_do_move(gGridView *data)
 
 	min = data->minRowHeight(data->_index);
 	height = pos - data->rowPos(data->_index);
-	height = MAX(height, min);
+	height = Max(height, min);
 	data->setRowHeight(data->_index, height);
 	
 	return true;
@@ -899,14 +899,14 @@ void gGridView::setSelectionMode(int vl)
 
 void gGridView::setDataFunc(void *func,void *data)
 {
-	render->voidCell=(void(*)(gTableData *,int,int,void *))func;
-	render->userData=data;
+	render->voidCell = (void(*)(gTableData *,int,int,void *))func;
+	render->userData = data;
 }
 
 
 void gGridView::queryUpdate(int row,int col)
 {
-	render->queryUpdate(row,col);
+	render->queryUpdate(row, col);
 }
 
 void gGridView::calculateBars()
@@ -1411,7 +1411,19 @@ int gGridView::minColumnWidth(int index)
 	if (w2 > w)
 		w = w2;
 		
-	return 8 + MAX(w, 8);
+	return 8 + Max(w, 8);
+}
+
+int gGridView::bestColumnWidth(int index)
+{
+	int w, i;
+	
+	w = minColumnWidth(index);
+	
+	for (i = 0; i < rowCount(); i++)
+		w = Max(w, render->getBestWidth(i, index));
+	
+	return w;
 }
 
 void gGridView::setColumnWidth(int index,int vl)
@@ -1420,7 +1432,7 @@ void gGridView::setColumnWidth(int index,int vl)
 		return;
 		
 	if (vl < 0)
-		vl = minColumnWidth(index);
+		vl = bestColumnWidth(index);
 	
 	if (vl == columnWidth(index))
 		return;
@@ -1437,7 +1449,19 @@ void gGridView::setColumnWidth(int index,int vl)
 
 int gGridView::minRowHeight(int index)
 {
-	return 8 + font()->height(" "); // rowText(index)
+	return 4 + font()->height(" "); // rowText(index)
+}
+
+int gGridView::bestRowHeight(int index)
+{
+	int h, i;
+	
+	h = minRowHeight(index);
+	
+	for (i = 0; i < columnCount(); i++)
+		h = Max(h, render->getBestHeight(index, i));
+	
+	return h;
 }
 
 void gGridView::setRowHeight(int index,int vl)
@@ -1446,7 +1470,10 @@ void gGridView::setRowHeight(int index,int vl)
 		return;
 		
 	if (vl < 0)
-		vl = minRowHeight(index);
+		vl = bestRowHeight(index);
+	
+	if (vl == render->getRowSize(index))
+		return;
 
 	render->setRowSize(index,vl);
 	
@@ -1509,107 +1536,107 @@ int gGridView::itemH(int row)
 
 char* gGridView::itemText(int row,int col)
 {
-	return render->getFieldText(col,row);
+	return render->getFieldText(row, col);
 }
 
 char* gGridView::itemRichText(int row,int col)
 {
-	return render->getFieldRichText(col,row);
+	return render->getFieldRichText(row, col);
 }
 
 gColor gGridView::itemFg(int row,int col)
 {
-	return render->getFieldFg(col,row);
+	return render->getFieldFg(row, col);
 }
 
 gColor gGridView::itemBg(int row,int col)
 {
-	return render->getFieldBg(col,row);
+	return render->getFieldBg(row, col);
 }
 
 int gGridView::itemPadding(int row,int col)
 {
-	return render->getFieldPadding(col,row);
+	return render->getFieldPadding(row, col);
 }
 
 int gGridView::itemAlignment(int row,int col)
 {
-	return render->getFieldAlignment(col,row);
+	return render->getFieldAlignment(row, col);
 }
 
 gPicture *gGridView::itemPicture(int row, int col)
 {
-	return render->getFieldPicture(col, row);
+	return render->getFieldPicture(row, col);
 }
 
 gFont *gGridView::itemFont(int row, int col)
 {
-	return render->getFieldFont(col, row);
+	return render->getFieldFont(row, col);
 }
 
-bool gGridView::itemWordWrap(int row,int col)
+bool gGridView::itemWordWrap(int row, int col)
 {
-	return render->getFieldWordWrap(col,row);
+	return render->getFieldWordWrap(row, col);
 }
 
-bool gGridView::itemSelected(int row,int col)
+bool gGridView::itemSelected(int row, int col)
 {
-	return render->getFieldSelected(col,row);
+	return render->getFieldSelected(row, col);
 }
 	
-void gGridView::setItemText(int row,int col, const char *vl)
+void gGridView::setItemText(int row, int col, const char *vl)
 {
-	render->setFieldText(col,row,vl);
+	render->setFieldText(row, col, vl);
 }
 
-void gGridView::setItemRichText(int row,int col, const char *vl)
+void gGridView::setItemRichText(int row, int col, const char *vl)
 {
-	render->setFieldRichText(col,row,vl);
+	render->setFieldRichText(row, col, vl);
 }
 
 void gGridView::setItemFg(int row, int col, gColor vl)
 {
-	render->setFieldFg(col,row,vl);
+	render->setFieldFg(row, col, vl);
 }
 
 void  gGridView::setItemBg(int row, int col, gColor vl)
 {
-	render->setFieldBg(col,row,vl);
+	render->setFieldBg(row, col, vl);
 }
 
-void gGridView::setItemPadding(int row,int col,int vl)
+void gGridView::setItemPadding(int row, int col, int vl)
 {
-	render->setFieldPadding(col,row,vl);
+	render->setFieldPadding(row, col, vl);
 }
 
-void gGridView::setItemWordWrap(int row,int col,bool vl)
+void gGridView::setItemWordWrap(int row, int col, bool vl)
 {
-	render->setFieldWordWrap(col,row,vl);
+	render->setFieldWordWrap(row, col, vl);
 }
 
-void gGridView::setItemAlignment(int row,int col,int vl)
+void gGridView::setItemAlignment(int row, int col, int vl)
 {
-	render->setFieldAlignment(col,row,vl);
+	render->setFieldAlignment(row, col, vl);
 }
 
 void gGridView::setItemPicture(int row, int col, gPicture *vl)
 {
-	render->setFieldPicture(col, row, vl);
+	render->setFieldPicture(row, col, vl);
 }
 
 void gGridView::setItemFont(int row, int col, gFont *vl)
 {
-	render->setFieldFont(col, row, vl);
+	render->setFieldFont(row, col, vl);
 }
 
 void gGridView::setItemSelected(int row,int col,bool vl)
 {
-	render->setFieldSelected(col,row,vl);
+	render->setFieldSelected(row, col, vl);
 }
 
 void gGridView::clearItem(int row,int col)
 {
-	render->clearField(col,row);
+	render->clearField(row, col);
 }
 
 /*******************************************************************
@@ -1991,7 +2018,7 @@ void gGridView::setItemSpan(int row, int col, int rowspan, int colspan)
 	if (colspan > 0 && rowspan < 0)
 		rowspan = 0;
 	
-	render->setSpan(col, row, colspan, rowspan);
+	render->setSpan(row, col, rowspan, colspan);
 	refresh();
 }
 
