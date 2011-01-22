@@ -1,0 +1,49 @@
+' Gambas class file
+
+Public Sub _new()
+  Me.Center
+End
+
+Public Sub Wizard1_Cancel()
+
+  Me.Close
+
+End
+
+Public Sub Wizard1_Change()
+
+  Select Case Wizard1.Index
+
+    Case 1
+      vbCode.setFocus
+    
+    Case 3
+      txaAddress.SetFocus
+    
+    Case 5
+      
+      txlOrder.Text = vbCode.Text & "  " & lblCode.Text & "<br>" & vbFrozen.Text & "  " & lblFrozen.Text & "<br>" & vbImg.Text & "  " & lblImg.Text
+      txlAddress.Text = Replace(txaAddress.Text, "\n", "<br>")
+
+  End Select
+
+End
+
+Public Sub Wizard1_Close()
+
+  Message.Info("Your order was submitted successfully.\nThe wizard will close now.")
+  Me.Close
+  
+End
+
+Public Sub chbTerms_Click()
+  
+  Wizard1[2].Enabled = chbTerms.Value
+  
+End
+
+Public Sub chbSave_Click()
+
+  Wizard1[4].Enabled = chbSave.Value
+  
+End
