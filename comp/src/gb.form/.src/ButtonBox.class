@@ -31,8 +31,6 @@ Private $hButton As ToolButton
 
 Public Sub _new()
   
-  '$hObserver = New Observer(Me) As "Observer"
-  
   $hBackground = New DrawingArea(Me) As "Background"
   $bBorder = True
 
@@ -196,5 +194,11 @@ End
 Public Sub TextBox_Activate()
   
   Raise Activate
+  
+End
+
+Public Sub TextBox_Change()
+  
+  Raise Change
   
 End
