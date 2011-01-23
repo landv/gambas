@@ -206,7 +206,7 @@ Private Function Value_Read() As Variant
       Return $hDateBox.Value
     
     Case {Currency}
-      Return Val($hMaskBox.Text)
+      Return Val(Trim(Replace($hMaskBox.Text, GetCurrency(), "")))
       
     Case IpAddress
       Return Replace($hMaskBox.Text, " ", "")
