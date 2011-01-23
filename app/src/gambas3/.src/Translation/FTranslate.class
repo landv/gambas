@@ -126,7 +126,7 @@ Public Sub Form_Open()
   Inc Application.Busy
 
   Settings.Read(Me)
-
+  
   $bStatValid = False
 
   cvwLang.Clear
@@ -349,8 +349,8 @@ Private Sub SetLang(Optional sLang As String) As Boolean
   $bIgnore = False
 
   If cvwTranslate.MoveTo(sCurrent) Then cvwTranslate.MoveFirst
-  cvwTranslate.Item.Selected = True
-  cvwTranslate.Item.EnsureVisible
+  Try cvwTranslate.Item.Selected = True
+  Try cvwTranslate.Item.EnsureVisible
 
   $sLang = sLang
   $sPath = sPath

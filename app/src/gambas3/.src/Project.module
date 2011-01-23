@@ -2087,7 +2087,7 @@ Public Function Compile(Optional bAll As Boolean, Optional bNoDebug As Boolean, 
     Else
       
       If Localize Then
-        CreateLangDirectory
+        WriteProjectTranslation
         sPath = sDir &/ ".lang/.pot"
         Shell "msgcat " & Shell$(sDir) &/ ".lang/*.pot > " & Shell$(sPath) & " 2>/dev/null" Wait
         sTrans = File.Load(sPath)
@@ -2915,6 +2915,37 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   
 End
 
+Public Sub WriteProjectTranslation()
+  
+  Dim sPath As String
+  Dim hFic As File
+  
+  sPath = Project.Dir &/ ".lang/#project.pot"
+  Try Kill sPath
+  If Localize Then
+    
+    CreateLangDirectory
+    
+    hFic = Open sPath For Create
+    Print #hFic, "# "; Path
+    Print #hFic, File.Load("pot-header.txt")
+    If Title Then
+      Print #hFic, "#: .project:1"
+      Print #hFic, "msgid \""; Escape(Title); "\""
+      Print #hFic, "msgstr \"\"\n"
+    Endif
+    If Description Then
+      Print #hFic, "#: .project:2"
+      Print #hFic, "msgid \""; Escape(Description); "\""
+      Print #hFic, "msgstr \"\"\n"
+    Endif
+    Close #hFic
+    
+  Endif
+  
+End
+
+
 Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMakeShortcut As Boolean)
   
   Dim hFic As File
@@ -3081,28 +3112,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   ' Try Kill sPath
   ' Move sPath & ".tmp" To sPath
   
-  sPath = Project.Dir &/ ".lang/#project.pot"
-  Try Kill sPath
-  If Localize Then
-    
-    CreateLangDirectory
-    
-    hFic = Open sPath For Create
-    Print #hFic, "# "; Path
-    Print #hFic, File.Load("pot-header.txt")
-    If Title Then
-      Print #hFic, "#: .project:1"
-      Print #hFic, "msgid \""; Escape(Title); "\""
-      Print #hFic, "msgstr \"\"\n"
-    Endif
-    If Description Then
-      Print #hFic, "#: .project:2"
-      Print #hFic, "msgid \""; Escape(Description); "\""
-      Print #hFic, "msgstr \"\"\n"
-    Endif
-    Close #hFic
-    
-  Endif
+  WriteProjectTranslation
   
   FMain.UpdateTranslate
   FMain.UpdateMenu
