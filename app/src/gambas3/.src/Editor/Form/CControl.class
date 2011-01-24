@@ -868,7 +868,7 @@ Public Sub UpdateName()
     Case "GridView"
       Control[0, 0].Text = Name
 
-    Case "DrawingArea"
+    Case "DrawingArea", "ScrollArea"
       Control.Refresh
       
     Case "Workspace"

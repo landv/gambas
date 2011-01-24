@@ -34,13 +34,14 @@ Public Sub _new()
   $hBackground = New DrawingArea(Me) As "Background"
   $bBorder = True
 
-  $hTextBox = New MaskBox($hBackground) As "TextBox"
-  $hTextBox.Expand = True
+  $hTextBox = New MaskBox(Me) As "TextBox"
+  $hTextBox.Ignore = True
   $hTextBox.Border = False
   
   Me.Proxy = $hTextBox
   
-  $hButton = New ToolButton($hBackground) As "Button"
+  $hButton = New ToolButton(Me) As "Button"
+  $hButton.Ignore = True
   $hButton.W = 24
   $hButton.Picture = Picture["./img/select.png"]
   

@@ -106,7 +106,31 @@ void CCONTAINER_remove_child(void *_object);
 void CCONTAINER_draw_frame(QPainter *p, int frame, QStyleOptionFrame &opt, QWidget *w = 0);
 void CCONTAINER_decide(CWIDGET *control, bool *width, bool *height);
 
-class MyContainer : public QWidget
+class MyFrame : public QWidget
+{
+	Q_OBJECT
+	
+public:
+	MyFrame(QWidget *);
+	
+	int frameStyle() const { return _frame; }
+	void setFrameStyle(int frame);
+	void drawFrame(QPainter *);
+	int frameWidth();
+	void setPixmap(QPixmap *pixmap);
+
+protected:
+
+	virtual void setStaticContents(bool on);
+	virtual void paintEvent(QPaintEvent *);
+
+private:
+
+	int _frame;
+	QPixmap *_pixmap;
+};
+
+class MyContainer : public MyFrame
 {
 	Q_OBJECT
 
@@ -114,23 +138,11 @@ public:
 
 	MyContainer(QWidget *);
 	~MyContainer();
-	int frameStyle() const { return _frame; }
-	void setFrameStyle(int frame);
-	void drawFrame(QPainter *);
-	void setPixmap(QPixmap *pixmap);
-	int frameWidth();
 
 protected:
 
-	virtual void setStaticContents(bool on);
 	virtual void showEvent(QShowEvent *);
 	virtual void hideEvent(QHideEvent *);
-	virtual void paintEvent(QPaintEvent *);
-
-private:
-
-	int _frame;
-	QPixmap *_pixmap;
 };
 
 #endif

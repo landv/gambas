@@ -36,7 +36,7 @@
 #include <X11/Xlib.h>
 #endif
 
-DECLARE_EVENT(EVENT_draw);
+DECLARE_EVENT(EVENT_Draw);
 
 
 /***************************************************************************
@@ -56,6 +56,7 @@ MyDrawingArea::MyDrawingArea(QWidget *parent) : MyContainer(parent)
 	_set_background = false;
 	_cached = false;
 	_no_background = false;
+	_draw_event = EVENT_Draw;
 	
 	setCached(false);
 	setAllowFocus(false);
@@ -121,12 +122,12 @@ void MyDrawingArea::setFrozen(bool f)
 void MyDrawingArea::redraw(QRect &r, bool frame)
 {
 	QPainter *p;
-	void *_object = CWidget::getReal(this);
+	void *_object = CWidget::get(this);
 	
 	if (!_object)
 		return;
 			
-	//qDebug("paint: %d %d %d %d", event->rect().x(), event->rect().y(), event->rect().width(), event->rect().height());
+	//qDebug("paint: %d %d %d %d", r.x(), r.y(), r.width(), r.height());
 
 	if (_use_paint)
 	{
@@ -157,7 +158,7 @@ void MyDrawingArea::redraw(QRect &r, bool frame)
 	//p->setClipRegion(event->region().intersect(contentsRect()));
 	//p->setBrushOrigin(-r.x(), -r.y());
 	
-	GB.Raise(THIS, EVENT_draw, 0);
+	GB.Raise(THIS, _draw_event, 0);
 		
 	//p->restore();
 	
@@ -290,6 +291,8 @@ void MyDrawingArea::updateBackground()
 		
 		if (w != _background->width() || h != _background->height())
 		{		
+			qDebug("updateBackground: %d %d", w, h);
+		
 			QPixmap *p = new QPixmap(w, h);
 			p->fill(palette().color(backgroundRole()));
 
@@ -455,12 +458,6 @@ BEGIN_PROPERTY(CDRAWINGAREA_enabled)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CDRAWINGAREA_merge)
-
-	qDebug("warning: DrawingArea.Merge property has been deprecated");
-	
-END_PROPERTY
-
 BEGIN_PROPERTY(CDRAWINGAREA_focus)
 
 	if (READ_PROPERTY)
@@ -519,7 +516,7 @@ GB_DESC CDrawingAreaDesc[] =
 	GB_METHOD("_new", NULL, CDRAWINGAREA_new, "(Parent)Container;"),
 
 	GB_PROPERTY("Cached", "b", CDRAWINGAREA_cached),
-	GB_PROPERTY("Merge", "b", CDRAWINGAREA_merge),
+	//GB_PROPERTY("Merge", "b", CDRAWINGAREA_merge),
 	
 	GB_PROPERTY("Arrangement", "i", CCONTAINER_arrangement),
 	GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
@@ -539,7 +536,7 @@ GB_DESC CDrawingAreaDesc[] =
 	GB_METHOD("Clear", NULL, CDRAWINGAREA_clear, NULL),
 	GB_METHOD("Refresh", NULL, DrawingArea_Refresh, "[(X)i(Y)i(Width)i(Height)i]"),
 
-	GB_EVENT("Draw", NULL, NULL, &EVENT_draw),
+	GB_EVENT("Draw", NULL, NULL, &EVENT_Draw),
 
 	GB_INTERFACE("Draw", &DRAW_Interface),
 	GB_INTERFACE("Paint", &PAINT_Interface),

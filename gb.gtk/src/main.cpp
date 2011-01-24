@@ -112,6 +112,7 @@ extern "C"
 		DesktopDesc,
 		ApplicationTooltipDesc,
 		ApplicationDesc,
+		StyleDesc,
 		CSelectDesc,
 		CAlignDesc,
 		CArrangeDesc,

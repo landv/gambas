@@ -53,6 +53,8 @@ gScrollView::gScrollView(gContainer *parent) : gContainer(parent)
 	_mw = _mh = 0;
 	_timer = 0;
 	
+	onScroll = NULL;
+	
 	border = gtk_event_box_new();
 	widget = gtk_layout_new(0, 0);
 	frame = 0;

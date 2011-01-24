@@ -58,24 +58,8 @@ static gboolean cb_button_press(GtkWidget *wid, GdkEventButton *event, gDrawingA
 	return false;
 }
 
-gDrawingArea::gDrawingArea(gContainer *parent) : gContainer(parent)
+void gDrawingArea::init()
 {
-	g_typ = Type_gDrawingArea;
-	
-	_cached = false;
-	buffer = NULL;
-	_old_bg_id = 0;
-	_resize_cache = false;
-	_no_background = false;
-	
-	border = gtk_event_box_new();
-	widget = gtk_fixed_new();
-	//widget = border; //gtk_layout_new(0,0);
-		
-  realize(false);
-  
-	//gtk_event_box_set_visible_window(GTK_EVENT_BOX(border), false);	
-  
 	gtk_widget_add_events(border, GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK
 		| GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK
 		| GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK 
@@ -91,10 +75,32 @@ gDrawingArea::gDrawingArea(gContainer *parent) : gContainer(parent)
 		
 	_event_mask = gtk_widget_get_events(widget);
 	
-	onExpose = NULL;
 	g_signal_connect(G_OBJECT(widget), "expose-event", G_CALLBACK(cb_expose), (gpointer)this);
 	g_signal_connect(G_OBJECT(widget), "size-allocate", G_CALLBACK(cb_size), (gpointer)this);
 	g_signal_connect(G_OBJECT(border), "button-press-event",G_CALLBACK(cb_button_press),(gpointer)this);
+}	
+
+gDrawingArea::gDrawingArea(gContainer *parent, bool scrollarea) : gContainer(parent)
+{
+	_cached = false;
+	buffer = NULL;
+	_old_bg_id = 0;
+	_resize_cache = false;
+	_no_background = false;
+	onExpose = NULL;
+		
+	if (!scrollarea)
+	{
+		g_typ = Type_gDrawingArea;
+		
+		border = gtk_event_box_new();
+		widget = gtk_fixed_new();
+		//widget = border; //gtk_layout_new(0,0);
+			
+		realize(false);
+		
+		init();
+	}
 }
 
 gDrawingArea::~gDrawingArea()

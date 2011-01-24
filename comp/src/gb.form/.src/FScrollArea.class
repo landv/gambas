@@ -1,0 +1,30 @@
+' Gambas class file
+
+Public Sub Form_Open()
+
+  Print Style.ScrollbarSize
+  Print Style.ScrollbarSpacing
+  
+  ScrollArea1.ResizeContents(300, 300)
+
+End
+
+Public Sub ScrollArea1_Draw()
+
+  Dim X, Y As Integer
+
+  Draw.FillRect(Draw.Clip.X, Draw.Clip.Y, Draw.Clip.W, Draw.Clip.H, Color.TextBackground)
+  Draw.Translate(- ScrollArea1.ScrollX, - ScrollArea1.ScrollY)
+  Draw.Font.Bold = True
+  Draw.Font.Grade = 3
+  For X = 0 To 3
+    For Y = 0 To 6
+      Draw.Text("Coucou", X * 80 + 10, Y * 24 + 10)
+    Next
+  Next
+  Draw.LineStyle = Line.Solid
+  Draw.Foreground = Color.Black
+  Draw.Rect(0, 0, 300, 300)
+  Draw.Rect(1, 1, 298, 298)
+
+End

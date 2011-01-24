@@ -46,13 +46,15 @@ typedef
 	struct {
 		CWIDGET widget;
 		QWidget *container;
-		int arrangement;
+		CARRANGEMENT arrangement;
 		}
 	CDRAWINGAREA;
 
 class MyDrawingArea : public MyContainer
 {
 	Q_OBJECT
+
+	friend class MyScrollArea;
 
 public:
 
@@ -91,6 +93,8 @@ public:
 	void setNoBackground(bool on);
 	void updateNoBackground();
 	
+	void setDrawEvent(int event) { _draw_event = event; }
+	
 	//bool isTransparent() { return _transparent; }
 	//void setTransparent(bool on);
 
@@ -114,6 +118,7 @@ private:
 	bool _set_background;
 	bool _cached;
 	bool _no_background;
+	int _draw_event;
 };
 
 #endif

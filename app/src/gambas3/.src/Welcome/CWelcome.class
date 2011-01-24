@@ -20,12 +20,12 @@ Public Sub _new(hDrawingArea As DrawingArea)
     $hText = New Image(hDrawingArea.Width, hDrawingArea.Height, Color.Transparent)
     Paint.Begin($hText)
     Paint.Font = Font["+12,Bold"]
-    X = PaintText("Gambas", 8, 48, &HFF7F7F) 'Color.SelectedForeground)
+    X = PaintText("Gambas", 8, 48, &HFFAF5F) 'Color.SelectedForeground)
     
     Paint.Font = Font["+8,Bold"]
-    PaintText(Project.FullVersionWithRevision, X + 8, 32, &HFF7F7F) 'Color.SelectedForeground)
+    PaintText(Project.FullVersionWithRevision, X + 8, 32, &HFFAF5F) 'Color.SelectedForeground)
     Paint.Font = Font["+2"]
-    PaintText("http://gambas.sourceforge.net", 12, 68, &HFF7F7F) 'Color.LightForeground)
+    PaintText("http://gambas.sourceforge.net", 12, 68, &HFFAF5F) 'Color.LightForeground)
     
     Paint.Font = Font["Italic,+1"]
     PaintText(("This program is published under\nthe GNU General Public License."), 12, 104, Color.SelectedForeground)

@@ -101,15 +101,15 @@ Private Sub FindProcedure()
   iRow = iStart
   
   Do
+    If LCase(gvwProc[iRow, 0].Text) Begins $sFind Then
+      Try gvwProc.Rows[iRow].Selected = True
+      Break
+    Endif
     Inc iRow
     If iRow >= gvwProc.Rows.Count Then
       iRow = 0
     Endif
     If iRow = iStart Then Break
-    If LCase(gvwProc[iRow, 0].Text) Begins $sFind Then
-      Try gvwProc.Rows[iRow].Selected = True
-      Break
-    Endif
   Loop
   
 End
@@ -132,7 +132,7 @@ Public Sub gvwProc_KeyPress()
   
 End
 
-Public Sub Form_Open()
+Public Sub Form_Activate()
   
   gvwProc.SetFocus
   

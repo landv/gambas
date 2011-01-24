@@ -1155,3 +1155,33 @@ void gApplication::setActiveControl(gControl *control, bool on)
 	handle_focus_change();
 }
 
+int gApplication::getScrollbarSize()
+{
+	gint focus_line_width;
+	gint focus_padding;
+	gint trough_border;
+	gint slider_width;
+	
+  gtk_style_get(gt_get_style("GtkRange", GTK_TYPE_RANGE), GTK_TYPE_RANGE,
+		"slider-width", &slider_width,
+		"trough-border", &trough_border,
+		(char *)NULL);
+	
+	gtk_style_get(gt_get_style("GtkWidget", GTK_TYPE_WIDGET), GTK_TYPE_WIDGET,
+		"focus-line-width", &focus_line_width,
+		"focus-padding", &focus_padding,
+		(char *)NULL);
+
+	return (trough_border) * 2 + slider_width;
+}
+
+int gApplication::getScrollbarSpacing()
+{
+	gint v;
+	
+	gtk_style_get(gt_get_style("GtkScrolledWindow", GTK_TYPE_SCROLLED_WINDOW), GTK_TYPE_SCROLLED_WINDOW, 
+		"scrollbar-spacing", &v, 
+		(char *)NULL);
+	
+	return v;
+}

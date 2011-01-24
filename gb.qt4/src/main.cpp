@@ -975,7 +975,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	CFontDesc, CFontsDesc,
 	CMouseDesc, CCursorDesc,
 	CClipboardDesc, CDragDesc,
-	ScreenDesc, ScreensDesc, DesktopDesc, ApplicationTooltipDesc, ApplicationDesc,
+	StyleDesc, ScreenDesc, ScreensDesc, DesktopDesc, ApplicationTooltipDesc, ApplicationDesc,
 	CControlDesc, CChildrenDesc, CContainerDesc,
 	CUserControlDesc, CUserContainerDesc,
 	CMenuChildrenDesc, CMenuDesc,

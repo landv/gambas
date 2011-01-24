@@ -422,3 +422,27 @@ GB_DESC ApplicationDesc[] =
 };
 
 
+/***************************************************************************/
+
+BEGIN_PROPERTY(Style_ScrollbarSize)
+
+	GB.ReturnInteger(gApplication::getScrollbarSize());
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Style_ScrollbarSpacing)
+
+	GB.ReturnInteger(gApplication::getScrollbarSpacing());
+
+END_PROPERTY
+
+GB_DESC StyleDesc[] =
+{
+	GB_DECLARE("Style", 0), GB_VIRTUAL_CLASS(),
+	
+	GB_STATIC_PROPERTY_READ("ScrollbarSize", "i", Style_ScrollbarSize),
+	GB_STATIC_PROPERTY_READ("ScrollbarSpacing", "i", Style_ScrollbarSpacing),
+	
+	GB_END_DECLARE
+};
+

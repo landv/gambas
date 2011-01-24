@@ -467,67 +467,22 @@ void CCONTAINER_decide(CWIDGET *control, bool *width, bool *height)
 
 /***************************************************************************
 
-	class MyContainer
+	class MyFrame
 
 ***************************************************************************/
 
-MyContainer::MyContainer(QWidget *parent)
+MyFrame::MyFrame(QWidget *parent)
 : QWidget(parent),_frame(0),_pixmap(0)
 {
-	//setStaticContents(true);
-	//setAttribute(Qt::WA_StaticContents);
-	//setAttribute(Qt::WA_OpaquePaintEvent); //, _pixmap != 0);
 }
 
-MyContainer::~MyContainer()
-{
-	CWIDGET *_object = CWidget::getReal(this);
-	if (THIS)
-		CWIDGET_set_flag(THIS, WF_DELETED);
-}
-
-void MyContainer::setPixmap(QPixmap *pixmap)
-{
-	if (_pixmap != pixmap)
-	{
-		_pixmap = pixmap;
-		setAttribute(Qt::WA_OpaquePaintEvent, _pixmap != 0);
-		setStaticContents(_pixmap != 0);
-	}
-}
-
-void MyContainer::showEvent(QShowEvent *e)
-{
-	void *_object = CWidget::get(this);
-	QWidget::showEvent(e);
-	THIS->widget.flag.shown = TRUE;
-	// 	if (!qstrcmp(GB.GetClassName(THIS), "TabStrip"))
-	// 	{
-	// 		qDebug("MyContainer::showEvent: %s %p: SHOWN = 1 (%d %d)", THIS->widget.name, THIS, THIS->widget.widget->isVisible() , !THIS->widget.widget->isHidden());
-	// 		BREAKPOINT();
-	// 	}
-	CCONTAINER_arrange(THIS);
-}
-
-void MyContainer::hideEvent(QHideEvent *e)
-{
-	void *_object = CWidget::get(this);
-	QWidget::hideEvent(e);
-	THIS->widget.flag.shown = FALSE;
-	/*if (!qstrcmp(GB.GetClassName(THIS), "ListContainer"))
-	{
-		qDebug("MyContainer::hideEvent: %s %p: SHOWN = 0", THIS->widget.name, THIS);
-		//BREAKPOINT();
-	}*/
-}
-
-void MyContainer::setStaticContents(bool on)
+void MyFrame::setStaticContents(bool on)
 {
 	void *_object = CWidget::get(this);
 	setAttribute(Qt::WA_StaticContents, on && _frame == BORDER_NONE && (_pixmap || THIS->widget.flag.fillBackground));
 }
 
-void MyContainer::setFrameStyle(int frame)
+void MyFrame::setFrameStyle(int frame)
 {
 	int margin;
 
@@ -608,7 +563,7 @@ void CCONTAINER_draw_frame(QPainter *p, int frame, QStyleOptionFrame &opt, QWidg
 	}*/
 }
 
-void MyContainer::drawFrame(QPainter *p)
+void MyFrame::drawFrame(QPainter *p)
 {
 	QStyleOptionFrame opt;
 	opt.init(this);
@@ -617,7 +572,7 @@ void MyContainer::drawFrame(QPainter *p)
 	CCONTAINER_draw_frame(p, _frame, opt, this);
 }
 
-int MyContainer::frameWidth()
+int MyFrame::frameWidth()
 {
 	switch (_frame)
 	{
@@ -637,8 +592,17 @@ int MyContainer::frameWidth()
 	}
 }
 
+void MyFrame::setPixmap(QPixmap *pixmap)
+{
+	if (_pixmap != pixmap)
+	{
+		_pixmap = pixmap;
+		setAttribute(Qt::WA_OpaquePaintEvent, _pixmap != 0);
+		setStaticContents(_pixmap != 0);
+	}
+}
 
-void MyContainer::paintEvent(QPaintEvent *e)
+void MyFrame::paintEvent(QPaintEvent *e)
 {
 	QPainter painter(this);
 	if (_pixmap)
@@ -647,6 +611,55 @@ void MyContainer::paintEvent(QPaintEvent *e)
 	//	painter.eraseRect(e->rect());
 	drawFrame(&painter);
 }
+
+
+/***************************************************************************
+
+	class MyContainer
+
+***************************************************************************/
+
+MyContainer::MyContainer(QWidget *parent)
+: MyFrame(parent)
+{
+	//setStaticContents(true);
+	//setAttribute(Qt::WA_StaticContents);
+	//setAttribute(Qt::WA_OpaquePaintEvent); //, _pixmap != 0);
+}
+
+MyContainer::~MyContainer()
+{
+	CWIDGET *_object = CWidget::getReal(this);
+	if (THIS)
+		CWIDGET_set_flag(THIS, WF_DELETED);
+}
+
+void MyContainer::showEvent(QShowEvent *e)
+{
+	void *_object = CWidget::get(this);
+	QWidget::showEvent(e);
+	THIS->widget.flag.shown = TRUE;
+	// 	if (!qstrcmp(GB.GetClassName(THIS), "TabStrip"))
+	// 	{
+	// 		qDebug("MyContainer::showEvent: %s %p: SHOWN = 1 (%d %d)", THIS->widget.name, THIS, THIS->widget.widget->isVisible() , !THIS->widget.widget->isHidden());
+	// 		BREAKPOINT();
+	// 	}
+	CCONTAINER_arrange(THIS);
+}
+
+void MyContainer::hideEvent(QHideEvent *e)
+{
+	void *_object = CWidget::get(this);
+	QWidget::hideEvent(e);
+	THIS->widget.flag.shown = FALSE;
+	/*if (!qstrcmp(GB.GetClassName(THIS), "ListContainer"))
+	{
+		qDebug("MyContainer::hideEvent: %s %p: SHOWN = 0", THIS->widget.name, THIS);
+		//BREAKPOINT();
+	}*/
+}
+
+
 
 /*void MyContainer::childEvent(QChildEvent *e)
 {

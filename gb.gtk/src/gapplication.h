@@ -70,6 +70,9 @@ public:
 	static void updateLastEventTime(GdkEvent *e);
 
 	static bool (*onKeyEvent)(int type);
+	
+	static int getScrollbarSize();
+	static int getScrollbarSpacing();
 
 //"Private"
 	static GtkTooltips *tipHandle();

@@ -211,9 +211,11 @@ static int begin(GB_DRAW *d)
 	}
 	else if (GB.Is(device, CLASS_DrawingArea))
 	{
-		MyDrawingArea *wid = (MyDrawingArea *)(((CWIDGET *)device)->widget);
+		MyDrawingArea *wid;
 		bool ret;
 
+		wid = (MyDrawingArea *)(((CWIDGET *)device)->widget);
+		
 		if (wid->isCached())
 			ret = init_drawing(d, wid->background(), wid->background()->width(), wid->background()->height());
 		else if (wid->cache)
@@ -249,13 +251,15 @@ static void end(GB_DRAW *d)
 	}
 	else if (GB.Is(device, CLASS_DrawingArea))
 	{
-		MyDrawingArea *wid =  (MyDrawingArea *)(((CWIDGET *)device)->widget);
+		MyDrawingArea *wid;
 
+		wid = (MyDrawingArea *)(((CWIDGET *)device)->widget);
+		
 		if (wid)
 		{
 			if (wid->isCached())
 				wid->refreshBackground();
-	
+
 			wid->drawn--;
 		}
 	}

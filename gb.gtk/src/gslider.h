@@ -28,8 +28,8 @@ public:
 	gSlider(gContainer *parent);
 
 //"Properties"
-	int foreground();
-	int background();
+	//int foreground();
+	//int background();
 	int max();
 	int min();
 	bool tracking();
@@ -38,8 +38,8 @@ public:
 	int step();
 	int pageStep();
 
-	void setForeground(int vl);
-	void setBackground(int vl);
+	//void setForeground(int vl);
+	//void setBackground(int vl);
 	void setMax(int vl);
 	void setMin(int vl);
 	void setTracking(bool vl);
@@ -57,9 +57,13 @@ public:
 
 //"Private"
 	virtual void orientation(int w,int h);
-	bool bDraw;
-	int p_step;
-	int p_page;
+	void init();
+	bool _mark;
+	int _step;
+	int _page_step;
+	int _value;
+	int _min, _max;
+	bool _tracking;
 };
 
 #endif

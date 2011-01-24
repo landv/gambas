@@ -25,7 +25,7 @@
 class gDrawingArea : public gContainer
 {
 public:
-	gDrawingArea(gContainer *parent);
+	gDrawingArea(gContainer *parent, bool scrollarea = false);
 	~gDrawingArea();
 
 	int getBorder() const { return getFrameBorder(); }
@@ -47,6 +47,7 @@ public:
 	void (*onExpose)(gDrawingArea *sender,int x,int y,int w,int h);
 
 //"Private"
+	void init();
 	void updateCache();
 	void resizeCache();
 	void refreshCache();

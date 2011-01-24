@@ -405,4 +405,27 @@ GB_DESC ApplicationDesc[] =
 	GB_END_DECLARE
 };
 
+/***************************************************************************/
+
+BEGIN_PROPERTY(Style_ScrollbarSize)
+
+	GB.ReturnInteger(qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Style_ScrollbarSpacing)
+
+	GB.ReturnInteger(QMAX(0, qApp->style()->pixelMetric(QStyle::PM_ScrollView_ScrollBarSpacing)));
+
+END_PROPERTY
+
+GB_DESC StyleDesc[] =
+{
+	GB_DECLARE("Style", 0), GB_VIRTUAL_CLASS(),
+	
+	GB_STATIC_PROPERTY_READ("ScrollbarSize", "i", Style_ScrollbarSize),
+	GB_STATIC_PROPERTY_READ("ScrollbarSpacing", "i", Style_ScrollbarSpacing),
+	
+	GB_END_DECLARE
+};
 

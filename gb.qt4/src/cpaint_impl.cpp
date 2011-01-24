@@ -138,7 +138,9 @@ static int Begin(GB_PAINT *d)
 	}
 	else if (GB.Is(device, CLASS_DrawingArea))
 	{
-		MyDrawingArea *wid = (MyDrawingArea *)(((CWIDGET *)device)->widget);
+		MyDrawingArea *wid;
+		
+		wid = (MyDrawingArea *)(((CWIDGET *)device)->widget);
 
 		if (wid->isCached())
 			target = wid->background();
@@ -188,7 +190,9 @@ static void End(GB_PAINT *d)
 
 	if (GB.Is(device, CLASS_DrawingArea))
 	{
-		MyDrawingArea *wid =  (MyDrawingArea *)(((CWIDGET *)device)->widget);
+		MyDrawingArea *wid;
+		
+		wid = (MyDrawingArea *)(((CWIDGET *)device)->widget);
 
 		if (wid)
 		{

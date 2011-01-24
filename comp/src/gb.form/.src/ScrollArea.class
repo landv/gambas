@@ -1,0 +1,253 @@
+' Gambas class file
+
+Export
+Inherits UserContainer
+
+Public Const _Properties As String = "*,Border=True,ScrollBar{Scroll.*}=Both,Painted,Focus,NoBackground"
+Public Const _DefaultEvent As String = "Draw"
+Public Const _DefaultSize As String = "24,24"
+'Public Const _Group As String = "View"
+
+Property Read ScrollX As Integer
+Property Read ScrollY As Integer
+Property Read ScrollWidth As Integer
+Property Read ScrollHeight As Integer
+
+Property Border As Boolean
+Property Focus As Boolean
+Property Painted As Boolean
+Property NoBackground As Boolean
+Property Scrollbar As Integer
+
+Event Scroll
+Event Draw
+
+Private $hDrawingArea As DrawingArea
+Private $hHBar As ScrollBar
+Private $hVBar As ScrollBar
+Private $hObserver As Observer
+Private $iBorder As Integer = Scroll.Both
+
+Private $W As Integer
+Private $H As Integer
+
+Public Sub _new()
+  
+  Me.Arrangement = Arrange.None
+  
+  $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
+  $hDrawingArea.Border = Border.Sunken
+
+  $hHBar = New ScrollBar(Me) As "Scrollbar"
+  $hHBar.Step = Desktop.Scale
+  $hVBar = New ScrollBar(Me) As "Scrollbar"
+  $hVBar.Step = Desktop.Scale
+  
+  $hObserver = New Observer(Me) As "ScrollArea"
+  
+  Me.Proxy = $hDrawingArea
+  Me._Container = $hDrawingArea
+  
+  ScrollArea_Arrange
+  
+End
+
+Public Sub ScrollArea_Arrange()
+  
+  Dim SB, SP, W, H, P As Integer
+  Dim bHBarAllowed, bVBarAllowed As Boolean
+  
+  SB = Style.ScrollbarSize
+  SP = Style.ScrollbarSpacing
+  
+  W = Me.Width
+  H = Me.Height
+  'Debug W;; H;; "/";; $W;; $H
+  
+  bHBarAllowed = $iBorder = Scroll.Horizontal Or $iBorder = Scroll.Both
+  bVBarAllowed = $iBorder = Scroll.Vertical Or $iBorder = Scroll.Both
+  
+  If W >= $W And If H >= $H Then
+    
+    $hHBar.Hide
+    $hVBar.Hide
+    
+  Else If bHBarAllowed And If $W > W And If $H <= (H - SB - SP) Then
+    
+    $hHBar.MinValue = 0
+    $hHBar.MaxValue = $W - W
+    $hHBar.PageStep = W
+    $hHBar.Show
+    $hVBar.Hide
+    
+  Else If bVBarAllowed And If $H > H And If $W <= (W - SB - SP) Then
+    
+    $hVBar.MinValue = 0
+    $hVBar.MaxValue = $H - H
+    $hVBar.PageStep = H
+    $hVBar.Show
+    $hHBar.Hide
+    
+  Else 
+    
+    If bHBarAllowed Then
+      $hHBar.MinValue = 0
+      If bVBarAllowed Then
+        P = W - SB - SP
+      Else
+        P = W
+      Endif
+      If $W > P Then
+        $hHBar.MaxValue = $W - P
+        $hHBar.PageStep = P
+        $hHBar.Show
+      Else
+        $hHBar.Hide
+      Endif
+    Else
+      $hHBar.Hide
+    Endif
+    If bVBarAllowed Then
+      $hVBar.MinValue = 0
+      If bHBarAllowed Then
+        P = H - SB - SP
+      Else
+        P = H 
+      Endif
+      If $H > P Then
+        $hVBar.MaxValue = $H - P
+        $hVBar.PageStep = P
+        $hVBar.Show
+      Else
+        $hVBar.Hide
+      Endif
+    Else
+      $hVBar.Hide
+    Endif
+    
+  Endif
+  
+  If $hHBar.Visible Then H -= SB + SP
+  If $hVBar.Visible Then W -= SB + SP
+  
+  $hDrawingArea.Move(0, 0, W, H)
+  If $hHBar.Visible Then $hHBar.Move(0, H + SP, W, SB)
+  If $hVBar.Visible Then $hVBar.Move(W + SP, 0, SB, H)
+  
+End
+
+Public Sub ResizeContents(Width As Integer, Height As Integer)
+  
+  $W = Width
+  $H = Height
+  ScrollArea_Arrange
+  
+End
+
+
+Private Function ScrollX_Read() As Integer
+
+  If $hHBar.Visible Then Return $hHBar.Value
+
+End
+
+Private Function ScrollY_Read() As Integer
+
+  If $hVBar.Visible Then Return $hVBar.Value
+
+End
+
+Public Sub Scroll(X As Integer, Y As Integer)
+  
+  $hHBar.Value = X
+  $hVBar.Value = Y
+  $hDrawingArea.Refresh
+  
+End
+
+Public Sub DrawingArea_Draw()
+  
+  Raise Draw
+  
+End
+
+Public Sub Scrollbar_Change()
+  
+  Raise Scroll
+  $hDrawingArea.Refresh
+  
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $hDrawingArea.Border <> Border.None
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $hDrawingArea.Border = If(Value, Border.Sunken, Border.None)
+
+End
+
+Private Function Focus_Read() As Boolean
+
+  Return $hDrawingArea.Focus
+
+End
+
+Private Sub Focus_Write(Value As Boolean)
+
+  $hDrawingArea.Focus = Value
+
+End
+
+Private Function Painted_Read() As Boolean
+
+  Return $hDrawingArea.Painted
+
+End
+
+Private Sub Painted_Write(Value As Boolean)
+
+  $hDrawingArea.Painted = Value
+
+End
+
+Private Function NoBackground_Read() As Boolean
+
+  Return $hDrawingArea.NoBackground
+
+End
+
+Private Sub NoBackground_Write(Value As Boolean)
+
+  $hDrawingArea.NoBackground = Value
+
+End
+
+Private Function Scrollbar_Read() As Integer
+
+  Return $iBorder
+
+End
+
+Private Sub Scrollbar_Write(Value As Integer)
+
+  If $iBorder < Scroll.None Or If $iBorder > Scroll.Both Then Return
+  $iBorder = Value
+  ScrollArea_Arrange
+
+End
+
+Private Function ScrollWidth_Read() As Integer
+
+  Return $W
+
+End
+
+Private Function ScrollHeight_Read() As Integer
+
+  Return $H
+
+End
