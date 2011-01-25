@@ -152,7 +152,7 @@ BEGIN_PROPERTY(Rect_Bottom)
 		if (y2 < THIS->y)
 			y2 = THIS->y;
 		
-		THIS->h = y2 - THIS->h;
+		THIS->h = y2 - THIS->y;
 	}
 
 END_PROPERTY
@@ -276,6 +276,23 @@ BEGIN_METHOD(Rect_Contains, GB_INTEGER x; GB_INTEGER y)
 
 END_METHOD
 
+BEGIN_METHOD(Rect_Adjust, GB_INTEGER left; GB_INTEGER top; GB_INTEGER right; GB_INTEGER bottom)
+
+	int left = VARG(left);
+	int top = VARGOPT(top, left);
+	int right = VARGOPT(right, left);
+	int bottom = VARGOPT(right, top);
+
+	THIS->x += left;
+	THIS->w -= (left + right);
+	THIS->y += top;
+	THIS->h -= (top + bottom);
+	
+	if (THIS->w < 1 || THIS->h < 1)
+		THIS->w = THIS->h = 0;
+	
+END_METHOD
+
 GB_DESC RectDesc[] =
 {
 	GB_DECLARE("Rect", sizeof(CRECT)),
@@ -302,6 +319,7 @@ GB_DESC RectDesc[] =
 	GB_METHOD("Union", "Rect", Rect_Union, "(Rect)Rect;"),
 	GB_METHOD("Intersection", "Rect", Rect_Intersection, "(Rect)Rect;"),
 	GB_METHOD("Contains", NULL, Rect_Contains, "(X)i(Y)i"),
+	GB_METHOD("Adjust", NULL, Rect_Adjust, "(Left)i[(Top)i(Right)i(Bottom)i]"),
 
 	GB_END_DECLARE
 };

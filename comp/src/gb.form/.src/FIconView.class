@@ -1,0 +1,23 @@
+' Gambas class file
+
+
+Public Sub Form_Open()
+
+  Dim sPath As String
+  
+  For Each sPath In Dir("~").Sort(gb.Language + gb.IgnoreCase)
+    If IsDir("~" &/ sPath) Then
+      MyIconView1.Add(sPath, sPath, Picture["icon:/48/directory"])
+    Else
+      MyIconView1.Add(sPath, sPath, Picture["icon:/48/file"])
+    Endif
+  Next
+  
+End
+
+Public Sub Button1_Click()
+
+  'MyIconView1["gambas"].Picture = Picture["icon:/48/gambas"]
+  MyIconView1["asap"].Selected = Not MyIconView1["asap"].Selected
+
+End

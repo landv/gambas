@@ -1042,7 +1042,7 @@ int gDraw::textHeight(char *txt, int len)
 	return ft->height((const char*)txt, len);
 }
 
-void gDraw::drawLayout(PangoLayout *ly, int x, int y, int w, int h, int align)
+void gDraw::drawLayout(PangoLayout *ly, bool markup, int x, int y, int w, int h, int align)
 {
 	int offx = 0, offy = 0;
 	float foffx, foffy;
@@ -1056,6 +1056,9 @@ void gDraw::drawLayout(PangoLayout *ly, int x, int y, int w, int h, int align)
 	th = (int)fth;
 	offx = (int)foffx;
 	offy = (int)foffy;
+
+	if (markup)
+		offx = 0;
 
 	if (!_transparent)
 	{
@@ -1092,7 +1095,7 @@ void gDraw::text(char *txt,int len,int x,int y,int w,int h,int align)
 
 	ly = pango_layout_new(ft->ct);
 	pango_layout_set_text(ly, txt, len);
-	drawLayout(ly, x, y, w, h, align);
+	drawLayout(ly, false, x, y, w, h, align);
 }
 
 void gDraw::richText(char *txt,int len,int x,int y,int w,int h,int align)
@@ -1107,7 +1110,8 @@ void gDraw::richText(char *txt,int len,int x,int y,int w,int h,int align)
 		pango_layout_set_width(ly, w * PANGO_SCALE);
 	html = gt_html_to_pango_string(txt, len, false);
 	pango_layout_set_markup(ly, html, -1);
-	drawLayout(ly, x, y, w, h, align);
+	pango_layout_set_wrap(ly, PANGO_WRAP_WORD_CHAR);
+	drawLayout(ly, true, x, y, w, h, align);
 	g_free(html);
 }
 

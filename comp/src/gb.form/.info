@@ -1251,6 +1251,129 @@ C
 _Properties
 C
 s
+*,Mode{Select.*}=Single,Border=True,ScrollBar{Scroll.*}=Both
+_Group
+C
+s
+View
+Mode
+p
+i
+
+Border
+p
+b
+
+ScrollBar
+p
+i
+
+Count
+r
+i
+
+Current
+r
+_IconViewItem
+
+:Select
+:
+
+
+:Activate
+:
+
+
+:Click
+:
+
+
+:Rename
+:
+
+
+:Cancel
+:
+
+
+:Compare
+:
+
+(Key)s(OtherKey)s
+_new
+m
+
+
+_get
+m
+_IconViewItem
+(Key)s
+Clear
+m
+
+
+ScrollArea_Arrange
+m
+
+
+_FindItem
+m
+i
+(hItem)_IconViewItem;
+Add
+m
+_IconViewItem
+(Key)s(Text)s[(Picture)Picture;(After)s]
+Remove
+m
+
+(Key)s
+_GetIconGeometry
+m
+
+(iPos)i(hRect)Rect;
+ScrollArea_Draw
+m
+
+
+ScrollArea_Scroll
+m
+
+
+ScrollArea_MouseMove
+m
+
+
+ScrollArea_Leave
+m
+
+
+_EnsureVisible
+m
+
+(iPos)i
+SelectAll
+m
+
+
+UnselectAll
+m
+
+
+ScrollArea_KeyPress
+m
+
+
+_SelectItem
+m
+
+(hItem)_IconViewItem;(bSelected)b
+#MyIconViewFabien
+UserControl
+C
+_Properties
+C
+s
 *,Mode{Select.*}=Single,Sorted,Editable,GridWidth{Range:0;64}=0,Border=True,ScrollBar{Scroll.*}=Both
 _Group
 C
@@ -1330,11 +1453,11 @@ b
 
 Current
 r
-_IconViewItem
+_IconViewItemFabien
 
 Item
 r
-_IconViewItem
+_IconViewItemFabien
 
 ClientWidth
 r
@@ -1450,7 +1573,7 @@ b
 
 _get
 m
-_IconViewItem
+_IconViewItemFabien
 (Key)s
 Clear
 m
@@ -1462,12 +1585,12 @@ m
 
 Add
 m
-_IconViewItem
+_IconViewItemFabien
 (Key)s(Text)s[(Picture)Picture;(After)s]
 FindPlace
 m
 i
-(hItem)_IconViewItem;
+(hItem)_IconViewItemFabien;
 Remove
 m
 
@@ -1595,9 +1718,13 @@ NoBackground
 p
 b
 
-Scrollbar
+ScrollBar
 p
 i
+
+Tracking
+p
+b
 
 :Scroll
 :
@@ -1628,6 +1755,10 @@ m
 
 
 Scrollbar_Change
+m
+
+
+DrawingArea_MouseWheel
 m
 
 
@@ -2084,7 +2215,7 @@ _get
 m
 i
 (Date)d
-#_IconViewItem
+#_IconViewItemFabien
 
 C
 Picture

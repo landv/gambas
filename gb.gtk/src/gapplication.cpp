@@ -1185,3 +1185,8 @@ int gApplication::getScrollbarSpacing()
 	
 	return v;
 }
+
+int gApplication::getFrameWidth()
+{
+	return 2; // should use style, but how?
+}

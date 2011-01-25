@@ -84,8 +84,8 @@ public:
 
 	virtual void setVisible(bool vl);
 
-	gContainer *proxy() { return _proxy ? _proxy : this; }
-	void setProxy(gContainer *proxy) { if (proxy != this) _proxy = proxy; else _proxy = 0; }
+	gContainer *proxyContainer() { return _proxyContainer ? _proxyContainer : this; }
+	void setProxyContainer(gContainer *proxy) { if (_proxyContainer != this) _proxyContainer = proxy; else _proxyContainer = 0; }
 
 //"Signals"
 	void (*onArrange)(gContainer *sender);
@@ -109,7 +109,7 @@ public:
 private:
   void initialize();
 	gContainerArrangement arrangement;
-  gContainer *_proxy;
+  gContainer *_proxyContainer;
 };
 
 #endif

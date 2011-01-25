@@ -1,385 +1,138 @@
 ' Gambas class file
 
-Export
-
-Private $iX As Integer
-Private $iY As Integer
-Private $hPicture As New Picture
-Private $bSelected As Boolean
-Private $sText As String
-Private $iParent As Integer
-Private $bDetectLarge As Boolean
-Private $iWidth As Integer
-Private $iheight As Integer
-Private $bEditable As Boolean
-Public _TextX As Integer
-Public _TextY As Integer
-Public _TextWidth As Integer
-Public _TextHeight As Integer
-
-
-
-Public _isRename As Boolean
-Public _$sKey As String
-Public _Font As New Font
-Public _RealTop As Integer
-Public _RealLeft As Integer
-
-Static Public _hBackPicture As New Image
-Static Public _hBackPictureNoFocus As New Image
-Static Public _hBackPictureMouseOver As New Image
-Static Public _hBackPictureSelOver As New Image
 Property Read Key As String
 Property {Picture} As Picture
-Property Selected As Boolean
 Property Text As String
-Property X As Integer
-Property Left As Integer
-Property Y As Integer
-Property Top As Integer
-Property Read W As Integer
-Property Read Width As Integer
-Property Read H As Integer
-Property Read Height As Integer
-Property Editable As Boolean
+Property Selected As Boolean
 
-'Event {Select}
-'Event UnSelect
-Event Change
-'Event WantToBeVisible
+Public _Key As String
+Private $sText As String
+Private $hPicture As Picture
+Private $bSelected As Boolean
 
-Public Sub _new(Parent As MyIconView)
+Event _Foo
+
+Private Sub GetIconView() As MyIconView
   
-  $iParent = Parent.Handle
+  Return Object.Parent(Me)
   
 End
 
-Public Sub _Free()
+Private Sub RefreshView()
+  
+  GetIconView().Refresh
   
 End
 
-Public Sub EnsureVisible()
-  
-  Dim hParent As MyIconView = Object.Parent(Me)
-  
-  hParent._SetItemVisible(_$sKey)
-  'Raise WantToBeVisible
-  
-End
 
-Public Sub Delete()
-  
-  Dim hParent As MyIconView = Object.Parent(Me)
-  
-  hParent.Remove(Me.Key)
-  
-End
-
-Public Sub Rename()
-  
-  Dim hParent As MyIconView = Object.Parent(Me)
-  Dim htb As TextBox
-  
-  If Not Me.Editable Then Return
-  Me.EnsureVisible
-  hParent.Refresh
-  hParent._ShowRenameTB(Me.Key)
-  '_isRename = True
-  
-End
-
-Public Function MoveNext() As Boolean
-  
-  Dim hParent As MyIconView = Object.Parent(Me)
-  
-  Return hParent.MoveNext
-  
-End
 
 Private Function Key_Read() As String
-  
-  Return _$sKey
-  
+
+  Return _Key
+
 End
 
 Private Function Picture_Read() As Picture
-  
+
   Return $hPicture
-  
+
 End
 
 Private Sub Picture_Write(Value As Picture)
-  
-  Dim hParent As MyIconView = Object.Parent(Me)
-  
+
   $hPicture = Value
-  SetWH
-  'MyIconView._Instance[$iParent].ReFresh
-  hParent._ChangeItem(_$sKey)
-  
+  RefreshView
+
 End
 
 Private Function Text_Read() As String
-  
+
   Return $sText
-  
+
 End
 
 Private Sub Text_Write(Value As String)
-  
-  Dim hParent As MyIconView = Object.Parent(Me)
-  
+
   $sText = Value
-  SetWH
-  
-  hParent._ChangeItem(_$sKey)
+  RefreshView
   
 End
 
-Private Function Selected_Read() As Boolean
-  
-  Return $bSelected
-  
-End
+' Public Sub _Draw2(X As Integer, Y As Integer, Width As Integer, Height As Integer, bFocus As Boolean, bHover As Boolean)
+'   
+'   Dim iBackColor As Integer
+'   Dim hBackImage As Image
+'   Dim hParent As MyIconView
+'   Dim ix, iy As Integer
+'   
+'   If _IconViewItem._hBackPicture.Width <> Width Then 
+'     _IconViewItem._hBackPicture = DrawBackGround(Width, Height, Color.SelectedBackground)
+'     _IconViewItem._hBackPictureNoFocus = DrawBackGround(Width, Height, Color.Gray)
+'     _IconViewItem._hBackPictureMouseOver = DrawBackGround(Width, Height, Color.Lighter(Color.SelectedBackground))
+'     _IconViewItem._hBackPictureSelOver = DrawBackGround(Width, Height, Color.Darker(Color.SelectedBackground))
+'   Endif
+'   
+'   If bHover Then
+'     hBackImage = IIf(Me.Selected, _hBackPictureSelOver, _hBackPictureMouseOver)
+'     iBackColor = Color.Transparent
+'     
+'   Else
+'     
+'     If bFocus
+'       hBackImage = _hBackPicture
+'       iBackColor = Color.SelectedBackground
+'     Else
+'       hBackImage = _hBackPictureNoFocus
+'       iBackColor = Color.Gray
+'     Endif
+'     
+'   Endif
+'   
+'   Draw.Font = _Font
+'   ix = X + (Width - $hPicture.w) / 2
+'   iy = Y + (Height - ($hPicture.Height + Draw.TextHeight($sText) + 5)) / 2
+' 
+'   
+'   If Me.Selected Or bHover Then
+'     Draw.Foreground = Color.Lighter(iBackColor)
+'     Draw.FillColor = iBackColor
+'     Draw.FillStyle = Fill.Solid
+'     Draw.Image(hBackImage, X, Y)
+'     'Draw.Rect(X, Y, Width, Height)
+'     Draw.Picture($hPicture.Image.Colorize(iBackColor).Picture, iX, iY)
+'     
+'     'Draw.Rect($iX + ($hPicture.Width - Draw.TextWidth($sText)) / 2 - 4, $iY + $hPicture.Height + 5, Draw.TextWidth($sText) + 8, Draw.TextHeight($sText))
+'     Draw.Foreground = IIf(bFocus, Color.SelectedForeground, Color.TextForeground)
+'   Else
+'     Draw.Picture($hPicture, iX, iY)
+'     Draw.Foreground = Color.TextForeground
+'     
+'   Endif
+'   Me._TextX = ix + ($hPicture.Width - Draw.TextWidth($sText)) / 2
+'   Me._TextY = Y + (Height - (Draw.TextHeight($sText) + 5))
+'   Me._TextWidth = Draw.TextWidth($sText) + 8
+'   Me._TextHeight = Draw.TextHeight($sText)
+'     
+'     Draw.Text($sText, iX + ($hPicture.Width - Draw.TextWidth($sText)) / 2, iY + $hPicture.Height + 5)
+' 
+' '  Prend le rectangle comme zone 
+'   $ix = X
+'   $iy = Y
+'   $iWidth = Width
+'   $iheight = Height
+'   
+' End
 
-Private Sub Selected_Write(Value As Boolean)
-  
-  Dim hParent As MyIconView = Object.Parent(Me)
-  
-  $bSelected = Value
-  
-  hParent._SelectItem(_$sKey, Value)
-  
-  ' If Value Then
-  '   Raise {Select}
-  '   
-  ' Else
-  '   Raise Unselect
-  ' Endif
-  
-End
-
-Private Function X_Read() As Integer
-  
-  Return $iX
-  
-End
-
-Private Sub X_Write(Value As Integer)
-  
-  $iX = Value
-  
-End
-
-Private Function Left_Read() As Integer
-  
-  Return $iX
-  
-End
-
-Private Sub Left_Write(Value As Integer)
-  
-  $iX = Value 
-  
-End
-
-Private Function Y_Read() As Integer
-  
-  Return $iY
-  
-End
-
-Private Sub Y_Write(Value As Integer)
-  
-  $iY = Value
-  
-End
-
-Private Function Top_Read() As Integer
-  
-  Return $iY
-  
-End
-
-Private Sub Top_Write(Value As Integer)
-  
-  $iy = Value
-  
-End
-
-Private Function W_Read() As Integer
-  
-  'Try Return Max($hPicture.Width, _Font.TextWidth($sText))
-  Return $iWidth
-  
-End
-
-Private Function Width_Read() As Integer
-  
-  'Try Return Max($hPicture.Width, _Font.TextWidth($sText))
-  Return $iWidth
-  
-End
-
-Private Function H_Read() As Integer
-  
-  'Try Return $hPicture.Height + _Font.TextHeight($sText) + 5
-  Return $iheight
-  
-End
-
-Private Function Height_Read() As Integer
-  
-  Return $iheight
-  'Try Return $hPicture.Height + _Font.TextHeight($sText) + 5
-  
-End
-
-Private Function Editable_Read() As Boolean
-  
-  Return $bEditable
-  
-End
-
-Private Sub Editable_Write(Value As Boolean)
-  
-  $bEditable = Value
-  
-End
-
-Public Sub _Draw(X As Integer, Y As Integer, Width As Integer, Height As Integer, bFocus As Boolean, bHover As Boolean)
-  
-  Dim iBackColor As Integer
-  Dim hParent As MyIconView 
-  
-  iBackColor = IIf(bFocus, Color.SelectedBackground, Color.gray)
-  Draw.Font = _Font
-  Me.x = X + (Width - $hPicture.w) / 2
-  Me.y = Y + (Height - Me.H) / 2
-  
-  If Me.Selected Then
-    
-    Draw.Picture($hPicture.Image.Colorize(iBackColor).Picture, $iX, $iY)
-    Draw.Foreground = iBackColor
-    Draw.FillColor = iBackColor
-    Draw.FillStyle = Fill.Solid
-    Draw.Rect($iX + ($hPicture.Width - Draw.TextWidth($sText)) / 2 - 4, $iY + $hPicture.Height + 5, Draw.TextWidth($sText) + 8, Draw.TextHeight($sText))
-    Draw.Foreground = IIf(bFocus, Color.SelectedForeground, Color.TextForeground)
-  Else
-    Draw.Picture($hPicture, $iX, $iY)
-    Draw.Foreground = Color.TextForeground
-    
-  Endif
-  Me._TextX = $iX + ($hPicture.Width - Draw.TextWidth($sText)) / 2 - 4
-  Me._TextY = $iY + $hPicture.Height + 5
-  Me._TextWidth = Draw.TextWidth($sText) + 8
-  Me._TextHeight = Draw.TextHeight($sText)
-
-    
-    Draw.Text($sText, $iX + ($hPicture.Width - Draw.TextWidth($sText)) / 2, $iY + $hPicture.Height + 5)
-
-  
-  SetWH
-  
-End
-
-Public Sub _Draw2(X As Integer, Y As Integer, Width As Integer, Height As Integer, bFocus As Boolean, bHover As Boolean)
-  
-  Dim iBackColor As Integer
-  Dim hBackImage As Image
-  Dim hParent As MyIconView
-  Dim ix, iy As Integer
-  
-  If _IconViewItem._hBackPicture.Width <> Width Then 
-    _IconViewItem._hBackPicture = DrawBackGround(Width, Height, Color.SelectedBackground)
-    _IconViewItem._hBackPictureNoFocus = DrawBackGround(Width, Height, Color.Gray)
-    _IconViewItem._hBackPictureMouseOver = DrawBackGround(Width, Height, Color.Lighter(Color.SelectedBackground))
-    _IconViewItem._hBackPictureSelOver = DrawBackGround(Width, Height, Color.Darker(Color.SelectedBackground))
-  Endif
-  
-  If bHover Then
-    hBackImage = IIf(Me.Selected, _hBackPictureSelOver, _hBackPictureMouseOver)
-    iBackColor = Color.Transparent
-    
-  Else
-    
-    If bFocus
-      hBackImage = _hBackPicture
-      iBackColor = Color.SelectedBackground
-    Else
-      hBackImage = _hBackPictureNoFocus
-      iBackColor = Color.Gray
-    Endif
-    
-  Endif
-  
-  Draw.Font = _Font
-  ix = X + (Width - $hPicture.w) / 2
-  iy = Y + (Height - ($hPicture.Height + Draw.TextHeight($sText) + 5)) / 2
-
-  
-  If Me.Selected Or bHover Then
-    Draw.Foreground = Color.Lighter(iBackColor)
-    Draw.FillColor = iBackColor
-    Draw.FillStyle = Fill.Solid
-    Draw.Image(hBackImage, X, Y)
-    'Draw.Rect(X, Y, Width, Height)
-    Draw.Picture($hPicture.Image.Colorize(iBackColor).Picture, iX, iY)
-    
-    'Draw.Rect($iX + ($hPicture.Width - Draw.TextWidth($sText)) / 2 - 4, $iY + $hPicture.Height + 5, Draw.TextWidth($sText) + 8, Draw.TextHeight($sText))
-    Draw.Foreground = IIf(bFocus, Color.SelectedForeground, Color.TextForeground)
-  Else
-    Draw.Picture($hPicture, iX, iY)
-    Draw.Foreground = Color.TextForeground
-    
-  Endif
-  Me._TextX = ix + ($hPicture.Width - Draw.TextWidth($sText)) / 2
-  Me._TextY = Y + (Height - (Draw.TextHeight($sText) + 5))
-  Me._TextWidth = Draw.TextWidth($sText) + 8
-  Me._TextHeight = Draw.TextHeight($sText)
-    
-    Draw.Text($sText, iX + ($hPicture.Width - Draw.TextWidth($sText)) / 2, iY + $hPicture.Height + 5)
-
-'  Prend le rectangle comme zone 
-  $ix = X
-  $iy = Y
-  $iWidth = Width
-  $iheight = Height
-  
-End
-
-Public Function _MouseInto(X As Integer, Y As Integer) As Boolean
-  
-  If (X >= $iX And X < $iX + Me.Width And Y >= $iY And Y < $iY + Me.Height)
-    Return True
-  Endif
-  
-End
-
-Private Sub RoundedRectV1(x As Integer, y As Integer, w As Integer, h As Integer, r As Float)
-  
-  Paint.moveto(x + r, y)
-  Paint.lineto(x + w - r, y) 
-  Paint.curveto(x + w, y, x + w, y, x + w, y + r) '#Curve To C, Control points are both at Q
-  Paint.lineto(x + w, y + h - r) ' Move To D
-  Paint.curveto(x + w, y + h, x + w, y + h, x + w - r, y + h) 'Curve To E
-  Paint.lineto(x + r, y + h) ' Line To F
-  Paint.CurveTo(x, y + h, x, y + h, x, y + h - r) 'Curve To G
-  Paint.lineto(x, y + r) ' Line To H
-  Paint.curveto(x, y, x, y, x + r, y)   
-  
-End
-
-Private Sub RoundedRectV2(x As Integer, y As Integer, w As Integer, h As Integer, r As Float)
+Private Sub PaintRoundedRect(X As Integer, Y As Integer, W As Integer, H As Integer, R As Float)
   
   Dim fArcToBezier As Float = 0.55228475
   Dim fRadiusX, fRadiusY, c1, c2 As Float
   
-  fRadiusX = r
-  fRadiusY = r
+  fRadiusX = R
+  fRadiusY = R
   
-  If fRadiusX > w - fRadiusX Then fRadiusX = w / 2
-  If fRadiusY > h - fRadiusY Then fRadiusY = h / 2
+  If fRadiusX > W - fRadiusX Then fRadiusX = W / 2
+  If fRadiusY > H - fRadiusY Then fRadiusY = H / 2
   
   '#approximate(quite Close )the arc using a bezier curve
   c1 = fArcToBezier * fRadiusX
@@ -399,41 +152,68 @@ Private Sub RoundedRectV2(x As Integer, y As Integer, w As Integer, h As Integer
   
 End
 
-Private Function DrawBackGround(Width As Integer, Height As Integer, iColor As Integer) As Image
+Public Sub _Draw(hRect As Rect, hClip As Rect, bFocus As Boolean, bHover As Boolean)
   
-  Dim hImage As New Image(Width, Height, Color.Transparent)
+  Dim Y As Integer
+  Dim iColor As Integer
   
-  Paint.Begin(hImage)
+  hRect.Adjust(4)
   
-  RoundedRectV1(0, 0, Width, Height, 15)
-  paint.Brush = paint.Color(iColor)
-  paint.Fill
-  
-  Paint.End
-  
-  Return hImage
-  
-End
+  If bHover Or If $bSelected Then
+    Paint.Begin(Draw.Device)
+    Paint.Rectangle(hClip.X, hClip.Y, hClip.Width, hClip.Height)
+    Paint.Clip()
+    PaintRoundedRect(hRect.X, hRect.Y, hRect.W, hRect.H, 15)
+    iColor = Color.TextBackground
+    If $bSelected Then iColor = Color.SelectedBackground
+    If bHover Then iColor = Color.Merge(iColor, Color.LightBackground)
+    Paint.Brush = Paint.Color(iColor)
+    Paint.Fill
+    Paint.End
+    'Draw.Foreground = Color.TextForeground
+  Endif
 
-Private Sub SetWH()
+  hRect.Adjust(4)
+  hClip = hClip.Intersection(hRect)
+  If IsNull(hClip) Then Return
   
-  Try $iWidth = Max($hPicture.Width, _Font.TextWidth($sText))
-  Try $iheight = $hPicture.Height + _Font.TextHeight($sText) + 5
+  Draw.Clip(hClip.X, hClip.Y, hClip.Width, hClip.Height)
   
-End
-
-Public Sub _compare(hItem As _IconViewItem) As Integer
+  Y = hRect.Y
   
-  Dim hParent As MyIconView = Object.Parent(Me)
+  If $hPicture Then
+    Draw.Picture($hPicture, hRect.X + (hRect.W - $hPicture.W) / 2, hRect.Y)
+    Y += $hPicture.H + 4
+  Endif
   
-  If Not hParent._comparekey($sText, hItem.Text) Then 
-    Return hParent.Compare
-  Else
-    Return Comp($sText, hItem.Text)
+  If $sText Then
+    'Draw.Clip(hRect.X, Y, hRect.W, hRect.H - Y)
+    Draw.Foreground = If($bSelected, Color.SelectedForeground, Color.TextForeground)
+    Draw.RichText($sText, hRect.X, Y, hRect.W, hRect.H - Y, Align.Top)
+    'Draw.Clip.Enabled = False
   Endif
   
 End
 
-Public Sub Move(X As Integer, Y As Integer)
+
+Private Function Selected_Read() As Boolean
+
+  Return $bSelected
+
+End
+
+Private Sub Selected_Write(Value As Boolean)
+
+  $bSelected = Value
+  GetIconView()._SelectItem(Me, Value)
+  RefreshView
+
+End
+
+Public Sub EnsureVisible()
+  
+  Dim hParent As MyIconView = GetIconView()
+  
+  hParent._EnsureVisible(hParent._FindItem(Me))
   
 End

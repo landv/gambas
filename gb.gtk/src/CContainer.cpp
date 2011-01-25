@@ -65,7 +65,7 @@ static CWIDGET *get_child(gContainer *container, int index)
 
 BEGIN_METHOD_VOID(ContainerChildren_next)
 
-	gContainer *cont = WIDGET->proxy();
+	gContainer *cont = WIDGET->proxyContainer();
 	int *ct;
 	CWIDGET *child;
 	
@@ -91,7 +91,7 @@ END_METHOD
 
 BEGIN_METHOD(ContainerChildren_get, GB_INTEGER index)
 
-	gContainer *cont = WIDGET->proxy();	
+	gContainer *cont = WIDGET->proxyContainer();	
 	int ct = VARG(index);
 	
 	if (ct < 0 || ct >= cont->childCount()) 
@@ -107,7 +107,7 @@ END_METHOD
 
 BEGIN_PROPERTY(ContainerChildren_Count)
 
-	gContainer *cont = WIDGET->proxy();
+	gContainer *cont = WIDGET->proxyContainer();
 	GB.ReturnInteger(cont->childCount());
 
 END_PROPERTY
@@ -115,7 +115,7 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(ContainerChildren_Clear)
 
-	gContainer *cont = WIDGET->proxy();
+	gContainer *cont = WIDGET->proxyContainer();
 	int i;
 	
 	for (i = 0; i < cont->childCount(); i++)
@@ -126,28 +126,28 @@ END_METHOD
 
 BEGIN_PROPERTY(CCONTAINER_x)
 
-	GB.ReturnInteger(WIDGET->clientX());
+	GB.ReturnInteger(WIDGET->proxyContainer()->clientX());
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CCONTAINER_y)
 
-	GB.ReturnInteger(WIDGET->clientY());
+	GB.ReturnInteger(WIDGET->proxyContainer()->clientY());
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CCONTAINER_width)
 
-	GB.ReturnInteger(WIDGET->clientWidth());
+	GB.ReturnInteger(WIDGET->proxyContainer()->clientWidth());
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CCONTAINER_height)
 
-	GB.ReturnInteger(WIDGET->clientHeight());
+	GB.ReturnInteger(WIDGET->proxyContainer()->clientHeight());
 	
 END_PROPERTY
 
@@ -290,7 +290,7 @@ BEGIN_PROPERTY(CUSERCONTROL_container)
 	if (!ct)
 	{
 		THIS_UC->container = THIS;
-		WIDGET->setProxy(NULL);
+		WIDGET->setProxyContainer(NULL);
 		return;
 	}
 	
@@ -319,8 +319,8 @@ BEGIN_PROPERTY(CUSERCONTROL_container)
 		return;
 	}
 	
-	THIS_UC->container = (CCONTAINER *)GetObject(((gContainer *)ct->ob.widget)->proxy());
-	WIDGET->setProxy(WIDGET_CONT->proxy());
+	THIS_UC->container = (CCONTAINER *)GetObject(((gContainer *)ct->ob.widget)->proxyContainer());
+	WIDGET->setProxyContainer(WIDGET_CONT->proxyContainer());
 	WIDGET_CONT->performArrange();
 
 END_PROPERTY

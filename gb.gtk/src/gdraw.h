@@ -102,7 +102,7 @@ private:
 	void reset();
 	void startFill();
 	void endFill();
-	void drawLayout(PangoLayout *ly, int x, int y, int w, int h, int align);
+	void drawLayout(PangoLayout *ly, bool markup, int x, int y, int w, int h, int align);
 	void initGC();
 
 	gDrawingArea *dArea;

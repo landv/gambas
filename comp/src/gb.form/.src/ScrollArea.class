@@ -17,7 +17,8 @@ Property Border As Boolean
 Property Focus As Boolean
 Property Painted As Boolean
 Property NoBackground As Boolean
-Property Scrollbar As Integer
+Property ScrollBar As Integer
+Property Tracking As Boolean
 
 Event Scroll
 Event Draw
@@ -250,4 +251,27 @@ Private Function ScrollHeight_Read() As Integer
 
   Return $H
 
+End
+
+Private Function Tracking_Read() As Boolean
+
+  Return $hDrawingArea.Tracking
+
+End
+
+Private Sub Tracking_Write(Value As Boolean)
+
+  $hDrawingArea.Tracking = Value
+  Super.Tracking = Value
+
+End
+
+Public Sub DrawingArea_MouseWheel()
+  
+  If Mouse.Orientation = Mouse.Horizontal Then
+    $hHBar.Value -= Mouse.Delta * $hHBar.PageStep / 4
+  Else
+    $hVBar.Value -= Mouse.Delta * $hVBar.PageStep / 4
+  Endif
+  
 End

@@ -855,7 +855,7 @@ void DRAW_rich_text(QPainter *p, const QString &text, float x, float y, float w,
 {
 	QString a;
 	float tw, th;
-	QString t = text;
+	QString t = "<font color=\"" + p->pen().color().name() + "\">" + text + "</font>";
 
 	switch(get_horizontal_alignment((Qt::Alignment)align))
 	{

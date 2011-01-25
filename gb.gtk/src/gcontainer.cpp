@@ -153,7 +153,7 @@ void gContainer::initialize()
 	radiogroup = NULL;
 	onArrange = NULL;
 	onBeforeArrange = NULL;
-	_proxy = NULL;
+	_proxyContainer = NULL;
 	_client_x = -1;
 	_client_y = -1;
 	_client_w = 0;

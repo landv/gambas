@@ -516,7 +516,6 @@ GB_DESC CDrawingAreaDesc[] =
 	GB_METHOD("_new", NULL, CDRAWINGAREA_new, "(Parent)Container;"),
 
 	GB_PROPERTY("Cached", "b", CDRAWINGAREA_cached),
-	//GB_PROPERTY("Merge", "b", CDRAWINGAREA_merge),
 	
 	GB_PROPERTY("Arrangement", "i", CCONTAINER_arrangement),
 	GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),

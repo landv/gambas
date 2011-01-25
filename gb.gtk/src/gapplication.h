@@ -73,6 +73,7 @@ public:
 	
 	static int getScrollbarSize();
 	static int getScrollbarSpacing();
+	static int getFrameWidth();
 
 //"Private"
 	static GtkTooltips *tipHandle();

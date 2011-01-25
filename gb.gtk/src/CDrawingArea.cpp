@@ -85,12 +85,6 @@ BEGIN_PROPERTY(CDRAWINGAREA_border)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CDRAWINGAREA_merge)
-
-	fprintf(stderr, "warning: DrawingArea.Merge property has been deprecated\n");
-
-END_PROPERTY
-
 
 BEGIN_PROPERTY(CDRAWINGAREA_cached)
 
@@ -145,7 +139,6 @@ GB_DESC CDrawingAreaDesc[] =
 
 	GB_PROPERTY("Cached", "b", CDRAWINGAREA_cached),
 	GB_PROPERTY("Border", "i", CDRAWINGAREA_border),
-	GB_PROPERTY("Merge","b",CDRAWINGAREA_merge),
 	GB_PROPERTY("Focus","b",CDRAWINGAREA_focus),
 	GB_PROPERTY("Painted", "b", CDRAWINGAREA_painted),
 	GB_PROPERTY("NoBackground", "b", DrawingArea_NoBackground),

@@ -1,22 +1,22 @@
 /***************************************************************************
 
-  CScrollView.cpp
+	CScrollView.cpp
 
-  (c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
+	(c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -40,7 +40,7 @@ void gb_raise_scrollview_Scroll(gScrollView *sender)
 
 /***************************************************************************
 
-  ScrollView
+	ScrollView
 
 ***************************************************************************/
 
@@ -109,18 +109,13 @@ END_PROPERTY
 
 BEGIN_METHOD(CSCROLLVIEW_ensure_visible, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
 
-  long w=VARG(w);
-  long h=VARG(h);
-  long x=VARG(x);
-  long y=VARG(y);
-  
-  SCROLLVIEW->ensureVisible(x,y,w,h);
+	SCROLLVIEW->ensureVisible(VARG(x),VARG(y), VARG(w), VARG(h));
 
 END_METHOD
 
 /***************************************************************************
 
-  Descriptions
+	Descriptions
 
 ***************************************************************************/
 
@@ -128,33 +123,37 @@ DECLARE_METHOD(CWIDGET_border);
 
 GB_DESC CScrollViewDesc[] =
 {
-  GB_DECLARE("ScrollView", sizeof(CSCROLLVIEW)), GB_INHERITS("Container"),
+	GB_DECLARE("ScrollView", sizeof(CSCROLLVIEW)), GB_INHERITS("Container"),
 
-  GB_METHOD("_new", 0, CSCROLLVIEW_new, "(Parent)Container;"),
+	GB_METHOD("_new", 0, CSCROLLVIEW_new, "(Parent)Container;"),
 
-  GB_PROPERTY("ScrollBar", "i", CSCROLLVIEW_scrollbar),
-  GB_PROPERTY("Border", "b", CSCROLLVIEW_border),
-  GB_PROPERTY("ScrollX", "i", CSCROLLVIEW_scroll_x),
-  GB_PROPERTY("ScrollY", "i", CSCROLLVIEW_scroll_y),
-  GB_PROPERTY_READ("ScrollW", "i", CSCROLLVIEW_scroll_w),
-  GB_PROPERTY_READ("ScrollWidth", "i", CSCROLLVIEW_scroll_w),
-  GB_PROPERTY_READ("ScrollH", "i", CSCROLLVIEW_scroll_h),
-  GB_PROPERTY_READ("ScrollHeight", "i", CSCROLLVIEW_scroll_h),
+	GB_PROPERTY("ScrollBar", "i", CSCROLLVIEW_scrollbar),
+	GB_PROPERTY("Border", "b", CSCROLLVIEW_border),
+	GB_PROPERTY("ScrollX", "i", CSCROLLVIEW_scroll_x),
+	GB_PROPERTY("ScrollY", "i", CSCROLLVIEW_scroll_y),
+	GB_PROPERTY_READ("ScrollW", "i", CSCROLLVIEW_scroll_w),
+	GB_PROPERTY_READ("ScrollWidth", "i", CSCROLLVIEW_scroll_w),
+	GB_PROPERTY_READ("ScrollH", "i", CSCROLLVIEW_scroll_h),
+	GB_PROPERTY_READ("ScrollHeight", "i", CSCROLLVIEW_scroll_h),
+	GB_PROPERTY_READ("ContentsW", "i", CSCROLLVIEW_scroll_w),
+	GB_PROPERTY_READ("ContentsWidth", "i", CSCROLLVIEW_scroll_w),
+	GB_PROPERTY_READ("ContentsH", "i", CSCROLLVIEW_scroll_h),
+	GB_PROPERTY_READ("ContentsHeight", "i", CSCROLLVIEW_scroll_h),
 
 	GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
-  GB_PROPERTY("Margin", "b", CCONTAINER_margin),
-  GB_PROPERTY("Padding", "i", CCONTAINER_padding),
-  GB_PROPERTY("Arrangement", "i", CCONTAINER_arrangement),
-  GB_PROPERTY("Indent", "b", CCONTAINER_indent),
-  
-  GB_METHOD("Scroll", 0, CSCROLLVIEW_scroll, "(X)i(Y)i"),
-  GB_METHOD("EnsureVisible", 0, CSCROLLVIEW_ensure_visible, "(X)i(Y)i(Width)i(Height)i"),
-  
-  GB_EVENT("Scroll", 0, 0, &EVENT_Scroll),
-
-  SCROLLVIEW_DESCRIPTION,
+	GB_PROPERTY("Margin", "b", CCONTAINER_margin),
+	GB_PROPERTY("Padding", "i", CCONTAINER_padding),
+	GB_PROPERTY("Arrangement", "i", CCONTAINER_arrangement),
+	GB_PROPERTY("Indent", "b", CCONTAINER_indent),
 	
-  GB_END_DECLARE
+	GB_METHOD("Scroll", 0, CSCROLLVIEW_scroll, "(X)i(Y)i"),
+	GB_METHOD("EnsureVisible", 0, CSCROLLVIEW_ensure_visible, "(X)i(Y)i(Width)i(Height)i"),
+	
+	GB_EVENT("Scroll", 0, 0, &EVENT_Scroll),
+
+	SCROLLVIEW_DESCRIPTION,
+	
+	GB_END_DECLARE
 };
 
 
