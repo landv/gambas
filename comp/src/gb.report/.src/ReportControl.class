@@ -84,16 +84,24 @@ Property Read {Report} As Report
 Property Read _ReportId As Integer
 
 Public Sub _New(Optional Parent As ReportContainer = Null)
-  
+  Dim hRep As Report
   $iMyId = $iLastId
   Inc $iLastId
-  If IsNull(Parent) Then 
+  If IsNull(Parent) Then
     $iParentId = -1
     $iReportId = $iMyId
+    
   Else
-    $iParentId = Parent.Id
-    Parent._Add(Me)
-    $iReportId = Parent._ReportId
+    If Parent Is Report Then
+      hRep = Parent
+      $iParentId = hRep._Container.id
+      hRep._Container._Add(Me)
+      $iReportId = $iParentId
+    Else
+      $iParentId = Parent.Id
+      Parent._Add(Me)
+      $iReportId = Parent._ReportId
+    Endif
   Endif
   
 End

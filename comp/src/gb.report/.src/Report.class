@@ -7,62 +7,70 @@ Inherits ReportVBox
 Public Const _Properties As String = "*,-Left,-Top,-Width,-Height"
 Public Const _HiddenControls As String = "Report,ReportControl,ReportContainer,ReportFrame"
 Public Const _IsForm As Boolean = True
-
+Public _Container As ReportContainer
 'Public Constants
 Public {Debug} As Boolean = False
 Public _bInExec As Boolean
 'Public _cPages As New Object[]
 
-
-
+Private $aSections As New TControl[]
 Private iCurPage As Integer = 0
-Private $iCount As Integer = -1
+Private $iPageCount As Integer = -1
 Public $bLayoutIsDirty As Boolean = True
 Private $fScale As Float = 1.0
-Private $hReportTControl As New TControl
+'Private $hReportTControl As New TControl
 Private $sOldDeviceName As String
 Private $sOldWidth As String
 Private $sOldHeight As String
+Private $iIndex As Integer
 
 
 Property Height As String
 Property Width As String
 Property Scale As Float
-Property Read Count As Integer
+Property Read PageCount As Integer
+Property Count As Integer
+Property Index As Integer
+
+Property Padding As String
+
+
+
 
 'EVENT Data()
 
-
 Static Public Sub Main()
-    
-   Dim hObject As Object
-   hObject = Application.Startup.AutoCreate()
-   If Not hObject Is Report Then Return
-   FPreview.Run(hObject)
+  
+  Dim hObject As Object
+
+  hObject = Application.Startup.AutoCreate()
+  If Not hObject Is Report Then Return
+  FPreview.Run(hObject)
   
 End
-
-
-
-
-
-
 
 Public Sub _New()
 
+  Dim hSection As New ReportVBox
+  Dim TSection As New TControl
+  
   object.Attach(Me, Me, "Report")
   
-  $hReportTControl.RelPage = 0
-  ReportControl._ObjectFromId[Me.id] = Me
-  
+  '$hReportTControl.RelPage = 0
+  'ReportControl._ObjectFromId[Me.id] = Me
+  ReportControl._ObjectFromId[hSection.Id] = hSection
+  TSection.Ctrl = hSection
+  $aSections.Add(TSection)
+  _Container = hSection
+
 End
 
-
-
-
-
 Public Sub Layout()
+
   Dim iCurPage As Integer
+  Dim TSection As TControl
+  Dim CSection As ReportContainer
+
   Debug
   If _bInExec Then Return
   'Set execution Flag to true
@@ -77,22 +85,28 @@ Public Sub Layout()
   $sOldHeight = Me.Height
   $sOldWidth = Me.Width
   Me._Reset
-  Me._SetUnifiedValues()
+  
+  'Me._SetUnifiedValues()
   'Me._GenerateClones()
   '$hReportTControl.ctrl = Me
   Debug "Page Size W/H: " & Round(Me._Width, -2) & "/" & Round(Me._Height, -2)
-   $hReportTControl._SetGeometry(0, 0, Me._Width, Me._Height) 
-   Do
-     
-     Me._SetChildGeometry(0, 0, Me._Width, Me._Height, iCurPage)
-   If Me._CurItem > Me.Children.Max Then Break  
-   Inc iCurPage
-   
-   Loop
-     
-   
-   Debug Me._PageChildren.Count
-   
+  
+  For Each Tsection In $aSections
+    CSection = TSection.Ctrl
+    CSection._SetUnifiedValues() 
+    TSection._SetGeometry(0, 0, Me._Width, Me._Height) 
+    
+    Do
+      
+      CSection._SetChildGeometry(0, 0, CSection._Width, CSection._Height, iCurPage)
+      If CSection._CurItem > CSection.Children.Max Then Break  
+      Inc iCurPage
+      
+    Loop
+  Next
+  
+  Debug Me._PageChildren.Count
+  
   'MTools.PageCount = $iCount
   $bLayoutIsDirty = False
   
@@ -101,9 +115,8 @@ Public Sub Layout()
   
 End
 
-
 Public Sub Paint(Page As Integer)
-  
+  Dim TSection As TControl
   Debug "**** "; Page
   
   If Me.Parent = Null Then 
@@ -111,11 +124,11 @@ Public Sub Paint(Page As Integer)
     'If $sOldHeight <> ((Paint.Height / $fScale) & " px") Then $bLayoutIsDirty = True
   Endif
   
-   If $bLayoutIsDirty Then Layout()
+  If $bLayoutIsDirty Then Layout()
   
   'Set execution Flag to true
   _bInExec = True
-   
+  
   ' If page < 1 Or page > $iCount Then 
   '   Error.Raise("This page does not exist")
   ' Endif
@@ -126,69 +139,76 @@ Public Sub Paint(Page As Integer)
   
   Paint.Reset
   Paint.Scale($fScale, $fScale)
-
+  
   ' With Paint.ClipExtents
   '   Debug "ClipExtents: "; .X;; .Y;; .Width;; .Height
   ' End With
   Dec page
   'Me._ClipChildren(Page, 0, 0, $hReportTControl, -1, $fSCale)
-  Me._PaintBefore(Page, 0, 0, $hReportTControl, -1)
-  Me._Paint(Page, 0, 0, $hReportTControl, -1)
-  Me._PaintAfter(Page, 0, 0, $hReportTControl, -1)
-  
+  For Each TSection In $aSections
+    TSection.Ctrl._PaintBefore(Page, 0, 0, TSection, -1)
+    TSection.Ctrl._Paint(Page, 0, 0, TSection, -1)
+    TSection.Ctrl._PaintAfter(Page, 0, 0, TSection, -1)
+  Next
   'Debug "DrawCount = "; MTools.DrawCount
-    'End of execution
+  'End of execution
   _bInExec = False
+
 End
 
-
-
-Private Function Count_Read() As Integer
+Private Function PageCount_Read() As Integer
   
   If $bLayoutIsDirty Then Layout() '$iCount = -1
   
-  Return $iCount
-
+  Return $iPageCount
+  
 End
 
 Private Function Height_Read() As String
-
-  Return Super.Height
-
+  
+  Return $aSections[0].Ctrl.Height
+  
 End
 
 Private Sub Height_Write(Value As String)
-  If Super.Height <> Value Then 
-    Super.Height = Value
+  Dim TSection As TControl
+  If $aSections[0].Ctrl.Height <> Value Then 
+    
+    For Each TSection In $aSections
+      TSection.Ctrl.Height = Value
+    Next 
     $bLayoutIsDirty = True
   Endif
-
+  
 End
 
 Private Function Width_Read() As String
-
-  Return Super.Width
-
+  
+  Return $aSections[0].Ctrl.Width
+  
 End
 
 Private Sub Width_Write(Value As String)
-If Super.Width <> Value Then
-  Super.Width = Value
-  $bLayoutIsDirty = True
-Endif
-
+  Dim TSection As TControl
+  If $aSections[0].Ctrl.Width <> Value Then
+    For Each TSection In $aSections
+      Tsection.Ctrl.Width = Value
+    Next
+    $bLayoutIsDirty = True
+  Endif
+  
 End
 
 Private Function Scale_Read() As Float
-
+  
   Return $fScale
-
+  
 End
 
 Private Sub Scale_Write(Value As Float)
-
+  
   $fScale = Value
-
+  
 End
 
 ' Public Sub Mosaic(Range As String, Spacing As String)
@@ -204,7 +224,7 @@ Public Sub Clear()
   
   Super._Free
   iCurPage = 0
-  $iCount = -1
+  $iPageCount = -1
   '$iResolution = Desktop.Resolution
   $bLayoutIsDirty = True
   $fScale = 1.0
@@ -212,6 +232,7 @@ Public Sub Clear()
   Me.Border = New ReportBorder
   Me.Spacing = "0 cm"
   Me.Padding = "0 cm"
+
 End
 ' 
 ' Public Function Preview()
@@ -220,10 +241,10 @@ End
 '   
 ' End
 
-
 Public Function Image(Value As String, X As String, Y As String) As ReportBrush
   
   Dim hBrush As New ReportBrush
+
   hBrush._Type = 1
   hBrush._X = New TSizeParse(X)
   hBrush._Y = New TSizeParse(Y)
@@ -232,10 +253,10 @@ Public Function Image(Value As String, X As String, Y As String) As ReportBrush
   
 End
 
-
 Public Function LinearGradient(Colors As Integer[], Positions As Float[]) As ReportBrush
   
   Dim hBrush As New ReportBrush
+
   hBrush._Type = 2
   'hBrush.X = MRTools.ScanValue(X)
   'hBrush.Y = MRTools.ScanValue(Y)
@@ -244,12 +265,12 @@ Public Function LinearGradient(Colors As Integer[], Positions As Float[]) As Rep
   hBrush._Pos = Positions
   Return hBrush
   
-  
 End
 
 Public Function RadialGradient(Colors As Integer[], Positions As Float[]) As ReportBrush
   
   Dim hBrush As New ReportBrush
+
   hBrush._Type = 3
   'hBrush.X = MRTools.ScanValue(X)
   'hBrush.Y = MRTools.ScanValue(Y)
@@ -258,11 +279,12 @@ Public Function RadialGradient(Colors As Integer[], Positions As Float[]) As Rep
   hBrush._Pos = Positions
   Return hBrush
   
-  
 End
 
 Public Sub {Color}(iColor As Integer) As ReportBrush
+
   Dim hBrush As New ReportBrush
+
   hBrush._Type = 0
   hBrush._iValue = iColor
   Return hBrush
@@ -273,4 +295,44 @@ Public Sub Refresh()
   
   $bLayoutIsDirty = True
   
+End
+
+Private Function Count_Read() As Integer
+  Return $aSections.Count
+End
+
+Private Sub Count_Write(Value As Integer)
+  
+End
+
+Private Function Index_Read() As Integer
+  Return $iIndex
+End
+
+Private Sub Index_Write(Value As Integer)
+  $iIndex = Max(Min($aSections.Max, Value), 0)
+End
+
+Public Sub _get(Index As Integer) As ReportVBox
+  
+  Return $aSections[Index].Ctrl
+  
+End
+
+
+Private Function Padding_Read() As String
+
+  Return $aSections[0].Ctrl.Padding
+
+End
+
+Private Sub Padding_Write(Value As String)
+
+  Dim TSection As TControl
+  If Me.Padding <> Value Then
+    For Each TSection In $aSections
+      Tsection.Ctrl.Padding = Value
+    Next
+  Endif
+
 End

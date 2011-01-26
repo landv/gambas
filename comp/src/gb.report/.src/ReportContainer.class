@@ -432,7 +432,7 @@ Public Function _GetData(sKey As String) As Variant
     Endif
   Endif
   
-  If Not Me.Parent Is Report Then Return Me.Parent._GetData(sKey)
+  Try Return Me.Parent._GetData(sKey)
   
   Return Null
   
