@@ -101,8 +101,8 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   
   Dim sTempText As Variant
   Dim iPadding As Integer
-  Dim iX, iY As Integer
-  iPadding = MTools.UnitsToPixels(Me._Padding + Me.Border._Left)
+  Dim iX, iY, iW, iH As Integer
+  'iPadding = MTools.UnitsToPixels(Me._Padding)
   
   If $sKey Then
   sTempText = Me.Parent._GetData($sKey)
@@ -117,9 +117,10 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   Endif
   'Draw.Foreground = Me.Foreground
   
-  iX = (x + hControl.RealLeft + iPadding)
-  iY = (y + hControl.RealTop + iPadding)
-  
+  iX = (x + hControl.RealLeft + MTools.UnitsToPixels(Me._Padding + Me.Border._Left))
+  iY = (y + hControl.RealTop + MTools.UnitsToPixels(Me._Padding + Me.Border._Top))
+  iW = (hControl.RealWidth - MTools.UnitsToPixels(2 * Me._Padding - Me.Border._Left - Me.Border._Right))
+  iH = (hControl.RealHeight - MTools.UnitsToPixels(2 * Me._Padding - Me.Border._Top - Me.Border._Bottom))
   Paint.Brush = Me._GetActualBrush(iX, iY, iX + hControl.RealWidth, iY + hControl.RealHeight)
   'Set the Font if it is initialized
   If Not IsNull(Me.Font) Then 
@@ -131,7 +132,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   'Draw.Clip((x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
     'Draw.Text($sText, (x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom, $iAlignment)
 
-    Paint.Text(sTempText, iX, iY, hControl.RealWidth - 2 * iPadding, hControl.RealHeight - 2 * iPadding, $iAlignment)
+    Paint.Text(sTempText, iX, iY, iW, iH, $iAlignment)
     Paint.Fill
     'If $sKey Then $sText = Null
   'Draw.Clip.Enabled = False
@@ -182,7 +183,7 @@ Private Function DecodeText(sText As String, Optional Page As Integer, Optional 
     If InStr(sText, "$PAGE") Then sText = Replace(sText, "$PAGE", "999")
     If InStr(sText, "$NPAGE") Then sText = Replace(sText, "$NPAGE", "999")
   Else
-    If InStr(sText, "$PAGE") Then sText = Replace(sText, "$PAGE", Str(Page))
+    If InStr(sText, "$PAGE") Then sText = Replace(sText, "$PAGE", Str(Page + 1))
     If InStr(sText, "$NPAGE") Then sText = Replace(sText, "$NPAGE", Str(Me.Report.Count))
   Endif
   

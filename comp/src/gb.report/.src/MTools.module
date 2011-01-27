@@ -5,7 +5,7 @@
 'Public ReportResolution As Float '= 72
 
 Public DrawCount As Integer
-
+Public Resolution As Integer
 Private Dash As Float[] = [2.0, 1.0]
 Private Dot As Float[] = [1.0, 1.0]
 Private DashDot As Float[] = [2.0, 1.0, 1.0, 1.0]
@@ -15,7 +15,7 @@ Public Function UnitsToPixels(Value As Float) As Float
   
   Dim f As Float
   
-  f = Units.GetFactorUnitToInch("cm") * Paint.ResolutionX 'ReportResolution
+  f = Units.GetFactorUnitToInch("cm") * Resolution 'ReportResolution
   
   Return Value * f 
 End
@@ -23,7 +23,7 @@ End
 Public Function PixelsToUnits(Value As Integer) As Float
   Dim f As Float
   
-  f = Units.GetFactorUnitToInch("cm") * Paint.ResolutionX 'ReportResolution
+  f = Units.GetFactorUnitToInch("cm") * Resolution 'ReportResolution
     
   Return (Value) / f
 End

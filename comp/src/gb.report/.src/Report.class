@@ -7,6 +7,10 @@ Inherits ReportVBox
 Public Const _Properties As String = "*,-Left,-Top,-Width,-Height"
 Public Const _HiddenControls As String = "Report,ReportControl,ReportContainer,ReportFrame"
 Public Const _IsForm As Boolean = True
+Public Const _IsContainer As Boolean = True
+'Public Const _IsMultiContainer As Boolean = True
+'Public Const _DrawWidth As String = "TabStrip"
+
 Public _Container As ReportContainer
 'Public Constants
 Public {Debug} As Boolean = False
@@ -23,7 +27,9 @@ Private $sOldDeviceName As String
 Private $sOldWidth As String
 Private $sOldHeight As String
 Private $iIndex As Integer
+Private $iResolution As Integer = -1
 
+Property Resolution As Integer 
 
 Property Height As String
 Property Width As String
@@ -77,7 +83,7 @@ Public Sub Layout()
   _bInExec = True
   'If $sOldDeviceName = Paint.Device.Name Then Return 
   '$sOldDeviceName = Paint.Device.Name"
-  'MTools.ReportResolution = Paint.ResolutionX
+  MTools.Resolution = If($iResolution < 0, Paint.ResolutionX, $iResolution)
   If Me.Parent = Null Then 
     Me.Width = (Paint.Width / $fScale) & " px"
     Me.Height = (Paint.Height / $fScale) & " px"
@@ -106,7 +112,7 @@ Public Sub Layout()
   Next
   
   Debug Me._PageChildren.Count
-  
+  $iPageCount = iCurPage + 1
   'MTools.PageCount = $iCount
   $bLayoutIsDirty = False
   
@@ -123,7 +129,7 @@ Public Sub Paint(Page As Integer)
     'If $sOldWidth <> ((Paint.Width / $fScale) & " px") Then $bLayoutIsDirty = True
     'If $sOldHeight <> ((Paint.Height / $fScale) & " px") Then $bLayoutIsDirty = True
   Endif
-  
+  MTools.Resolution = If($iResolution < 0, Paint.ResolutionX, $iResolution)
   If $bLayoutIsDirty Then Layout()
   
   'Set execution Flag to true
@@ -334,5 +340,17 @@ Private Sub Padding_Write(Value As String)
       Tsection.Ctrl.Padding = Value
     Next
   Endif
+
+End
+
+Private Function Resolution_Read() As Integer
+
+  Return $iResolution
+
+End
+
+Private Sub Resolution_Write(Value As Integer)
+
+  $iResolution = Max(0, Value)
 
 End

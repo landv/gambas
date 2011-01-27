@@ -149,7 +149,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   X += hControl.RealLeft
   Y += hControl.RealTop
   If Not Me._PageChildren.Exist(Page) Then Return
-  
+  Me._Index = hControl.Index
   For Each hChild In Me._PageChildren[Page]
     'Print object.Type(hchild.Ctrl), hControl.RelPage, hControl.RealPage + hchild.RelPage, Page - 1
     
@@ -423,12 +423,12 @@ Public Function _GetData(sKey As String) As Variant
   
   If $bDataIsResult Then
     If $hData.Fields.Exist(sKey) Then
-      $hData.MoveTo($iIndex)
+      $hData.MoveTo(Me._Index)
       Return $hData[skey]
     Endif
   Else
     If $hdata <> Null And If $hData[0].Exist(sKey) Then
-      Return $hdata[$iIndex][skey]
+      Return $hdata[Me._Index][skey]
     Endif
   Endif
   
@@ -465,7 +465,7 @@ Private Sub Data_Write(Value As Object)
       Return
     Endif
   Endif
-  
+  Me._Count = Value.Count
   $hData = Value
   
 End

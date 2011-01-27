@@ -83,6 +83,7 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
     'Obtenir la taille verticale de l'enfant en déduisant l'espace consommé
     hChildHints = hChild._GetSizeHints(W, H - fFixedSpc - Y, W, H)
 '     If hChild.Tag = "*" Then Stop
+    
     If Y + hChildHints.Height > H - fFixedSpc Then 
       
       hChild._DataIndex = j
@@ -94,6 +95,7 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
     hTItem = New TControl
     hTItem.Ctrl = hChild
     hTItem.SizeHint = hChildHints
+    hTItem.Index = j
     'hTItem._SetGeometry(X, Y, W, hChildHints.Height)
     'hChild._SetChildGeometry(X, Y, W, hChildHints.Height, ContPage)
     aPageItems.Add(hTItem) 

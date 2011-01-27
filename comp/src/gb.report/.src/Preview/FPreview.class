@@ -34,7 +34,7 @@ Public Sub DrawingArea1_Draw()
   '$hreport.Layout
   $hReport.Scale = $fScale
   $hReport.Paint($iPage)
-  SpinBox1.MaxValue = Max(5, $hReport.Count)
+  SpinBox1.MaxValue = $hReport.PageCount 
 End
 
 Public Sub Form_Open()
