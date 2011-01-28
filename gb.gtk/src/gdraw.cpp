@@ -783,8 +783,8 @@ void gDraw::ellipse(int x, int y, int w, int h, double start, double end)
 	}
 	else
 	{
-		as = (int)(start*180/M_PI*64);
-		ae = (int)(end*180/M_PI*64) - as;
+		as = (int)(start * 180 / M_PI * 64);
+		ae = (int)(end * 180 / M_PI * 64) - as;
 	}
 
 	if (fill)
@@ -797,8 +797,58 @@ void gDraw::ellipse(int x, int y, int w, int h, double start, double end)
 	
 	if (!line_style) return;
 	
-	gdk_draw_arc(dr,gc,false,x,y,w-1,h-1, as, ae);
-	if (drm) gdk_draw_arc(drm,gcm,false,x,y,w-1,h-1, as, ae);
+	gdk_draw_arc(dr, gc, false, x, y, w - 1, h - 1, as, ae);
+	if (drm) gdk_draw_arc(drm, gcm, false, x, y, w - 1, h - 1, as, ae);
+	
+	if (start != end)
+	{
+		int xc, yc;
+		int xs, ys;
+		int xe, ye;
+		
+		#define CROP_XY(_x, _y) \
+			if (_x < x) _x = x; else if (_x >= (x + w)) _x = x + w - 1; \
+			if (_y < y) _y = y; else if (_y >= (y + h)) _y = y + h - 1;
+		
+		xc = (x + x + w) / 2; //+ cos(start) / 2;
+		yc = (y + y + h) / 2; //- sin(start) / 2;
+		
+		xs = xc + ((double)w / 2) * cos(start) + 0.5;
+		ys = yc - ((double)h / 2) * sin(start) + 0.5;
+		CROP_XY(xs, ys);
+
+		line(xc, yc, xs, ys);
+		
+		//xc = (x + x + w - 1) / 2 + cos(end) / 2;
+		//yc = (y + y + h - 1) / 2 - sin(end) / 2;
+		
+		xe = xc + ((double)w / 2) * cos(end) + 0.5;
+		ye = yc - ((double)h / 2)  * sin(end) + 0.5;
+		CROP_XY(xe, ye);
+
+		line(xc, yc, xe, ye);
+	}
+} 
+
+void gDraw::arc(int x, int y, int w, int h, double start, double end)
+{
+	int as, ae;
+
+	if (start == end)
+	{
+		as = 0;
+		ae = 64 * 360;
+	}
+	else
+	{
+		as = (int)(start * 180 / M_PI * 64);
+		ae = (int)(end * 180 / M_PI * 64) - as;
+	}
+
+	if (!line_style) return;
+	
+	gdk_draw_arc(dr, gc, false, x, y, w - 1, h - 1, as, ae);
+	if (drm) gdk_draw_arc(drm, gcm, false, x, y, w - 1, h - 1, as, ae);
 } 
 
 void gDraw::polyline (int *vl, int nel)

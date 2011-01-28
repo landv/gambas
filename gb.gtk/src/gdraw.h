@@ -86,6 +86,7 @@ public:
 	void line(int x1,int y1,int x2,int y2);
 	void rect(int x,int y,int width,int height);
 	void ellipse(int x,int y,int w,int h,double start,double end);
+	void arc(int x,int y,int w,int h,double start,double end);
 	void polyline (int *vl,int nel);
 	void polygon (int *vl,int nel);
 	void setClip(int x,int y,int w,int h);

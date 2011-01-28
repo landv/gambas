@@ -592,6 +592,28 @@ BEGIN_METHOD(CDRAW_ellipse, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER
 END_METHOD
 
 
+BEGIN_METHOD(CDRAW_arc, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_FLOAT start; GB_FLOAT end)
+
+	int x, y, w, h;
+
+	CHECK_DEVICE();
+	
+	x = VARG(x);
+	y = VARG(y);
+	w = VARG(w);
+	h = VARG(h);
+	
+	if (THIS->xform)
+		MATRIX_map_rect(THIS_MATRIX, &x, &y, &w, &h);
+	
+	if (w < 1 || h < 1)
+		return;
+	
+	DRAW->Draw.Arc(THIS, x, y, w, h, VARGOPT(start, 0.0), VARGOPT(end, 0.0));
+
+END_METHOD
+
+
 BEGIN_METHOD(CDRAW_circle, GB_INTEGER x; GB_INTEGER y; GB_INTEGER radius; GB_FLOAT start; GB_FLOAT end)
 
 	int x, y, w, h;
@@ -1216,6 +1238,7 @@ GB_DESC CDrawDesc[] =
 	GB_STATIC_METHOD("FillRect", NULL, CDRAW_fill_rect, "(X)i(Y)i(Width)i(Height)i[(Color)i]"),
 	//GB_STATIC_METHOD("RoundRect", NULL, CDRAW_round_rect, "(X)i(Y)i(Width)i(Height)i[(Round)f]"),
 	GB_STATIC_METHOD("Circle", NULL, CDRAW_circle, "(X)i(Y)i(Radius)i[(Start)f(End)f]"),
+	GB_STATIC_METHOD("Arc", NULL, CDRAW_arc, "(X)i(Y)i(Width)i(Height)i[(Start)f(End)f]"),
 	GB_STATIC_METHOD("Ellipse", NULL, CDRAW_ellipse, "(X)i(Y)i(Width)i(Height)i[(Start)f(End)f]"),
 	GB_STATIC_METHOD("Text", NULL, CDRAW_text, "(Text)s(X)i(Y)i[(Width)i(Height)i(Alignment)i)]"),
 	GB_STATIC_METHOD("TextWidth", "i", CDRAW_text_width, "(Text)s"),
@@ -1242,6 +1265,9 @@ GB_DESC CDrawDesc[] =
 	GB_CONSTANT("Focus", "i", GB_DRAW_STATE_FOCUS),
 	GB_CONSTANT("Hover", "i", GB_DRAW_STATE_HOVER),
 	//GB_CONSTANT("ToolButton", "i", GB_DRAW_STATE_TOOL_BUTTON),
+	GB_CONSTANT("Arc", "i", GB_DRAW_STATE_HOVER),
+	GB_CONSTANT("Pie", "i", GB_DRAW_STATE_HOVER),
+	GB_CONSTANT("Chord", "i", GB_DRAW_STATE_HOVER),
 	
 	#if 0
 	GB_STATIC_METHOD("Drawing", NULL, CDRAW_drawing, "(Drawing)Drawing;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),

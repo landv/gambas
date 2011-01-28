@@ -141,6 +141,7 @@ typedef
 			void (*Rect)(GB_DRAW *d, int x, int y, int w, int h);
 			//void (*RoundRect)(GB_DRAW *d, int x, int y, int w, int h, double round);
 			void (*Ellipse)(GB_DRAW *d, int x, int y, int w, int h, double start, double end);
+			void (*Arc)(GB_DRAW *d, int x, int y, int w, int h, double start, double end);
 			void (*Line)(GB_DRAW *d, int x1, int y1, int x2, int y2);
 			void (*Point)(GB_DRAW *d, int x, int y);
 			void (*Picture)(GB_DRAW *d, GB_PICTURE picture, int x, int y, int w, int h, int sx, int sy, int sw, int sh); 

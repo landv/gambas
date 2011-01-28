@@ -480,6 +480,30 @@ static void draw_ellipse(GB_DRAW *d, int x, int y, int w, int h, double start, d
 	}
 }
 
+static void draw_arc(GB_DRAW *d, int x, int y, int w, int h, double start, double end)
+{
+	int as, al;
+
+	FIX_RECT(d, w, h);
+	
+	if (start == end)
+	{
+		as = 0;
+		al = 360 * 16;
+	}
+	else
+	{
+		if (end < start)
+			end += M_PI * 2 * (1 + (int)((start - end) / 2 / M_PI));
+	
+		as = (int)(start * 180 / M_PI * 16 + 0.5);
+		al = (int)((end - start) * 180 / M_PI * 16 + 0.5);
+	}
+	
+	DP(d)->drawArc(x, y, w, h, as, al);
+	if (DPM(d)) DPM(d)->drawArc(x, y, w, h, as, al);
+}
+
 static void draw_line(GB_DRAW *d, int x1, int y1, int x2, int y2)
 {
 	DP(d)->drawLine(x1, y1, x2, y2);
@@ -1283,6 +1307,7 @@ GB_DRAW_DESC DRAW_Interface = {
 	{
 		draw_rect,
 		draw_ellipse,
+		draw_arc,
 		draw_line,
 		draw_point,
 		draw_picture,

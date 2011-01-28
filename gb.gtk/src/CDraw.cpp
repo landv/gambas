@@ -229,6 +229,11 @@ static void draw_ellipse(GB_DRAW *d, int x, int y, int w, int h, double start, d
 	DR(d)->ellipse(x, y, w, h, start, end);
 }
 
+static void draw_arc(GB_DRAW *d, int x, int y, int w, int h, double start, double end)
+{
+	DR(d)->arc(x, y, w, h, start, end);
+}
+
 static void draw_line(GB_DRAW *d, int x1, int y1, int x2, int y2)
 {
 	DR(d)->line(x1, y1, x2, y2);
@@ -658,6 +663,7 @@ GB_DRAW_DESC DRAW_Interface = {
 	{
 		draw_rect,
 		draw_ellipse,
+		draw_arc,
 		draw_line,
 		draw_point,
 		draw_picture,
