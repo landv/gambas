@@ -138,7 +138,7 @@ public:
 	void setEditable(bool vl) { _editable = vl; }
 	
 	// Rows
-	gTreeRow* addRow(char *key,char *parent=NULL,char *after=NULL);
+	gTreeRow* addRow(char *key,char *parent=NULL,char *after=NULL, bool before = false);
 	gTreeRow* getRow(char *key) const;
 	gTreeRow* operator[](char *key) const { return getRow(key); }
 	

@@ -417,9 +417,7 @@ void gComboBox::add(const char *text, int pos)
 	else
 		after = indexToKey(pos);
 
-	//g_signal_lookup("rowGTK_TYPE_COMBO_BOX);
-
-	row = tree->addRow(key, NULL, after);
+	row = tree->addRow(key, NULL, after, true);
 	if (row) 
 	{
 		cell = row->get(0);

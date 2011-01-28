@@ -78,7 +78,7 @@ public:
 	void setSortAscending(bool v) { tree->setSortAscending(v); }
 
 //"Methods"
-	bool      add(char *key,char *text,gPicture *pic=NULL,char *after=NULL,char *parent=NULL);
+	bool      add(char *key,char *text,gPicture *pic=NULL,char *after=NULL,char *parent=NULL, bool before=false);
 	bool      remove(char *key);
 	bool      exists(char *key);
 	char*     find(int x, int y);

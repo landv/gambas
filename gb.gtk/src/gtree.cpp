@@ -945,9 +945,10 @@ gTreeRow* gTree::getRow(char *key) const
 		return (gTreeRow*)g_hash_table_lookup (datakey,(gconstpointer)key);
 }
 
-gTreeRow* gTree::addRow(char *key,char *parent,char *after)
+gTreeRow* gTree::addRow(char *key,char *parent,char *after, bool before)
 {
 	GtkTreeIter iter;
+	GtkTreeIter *piter;
 	gTreeRow *row,*par,*aft=NULL;
 	char *buf;
 
@@ -961,19 +962,26 @@ gTreeRow* gTree::addRow(char *key,char *parent,char *after)
 		if (!aft) return NULL;	
 	}
 	
-	if (!parent)
+	if (parent)
 	{
-		if (aft) gtk_tree_store_insert_after(store,&iter,NULL,aft->dataiter);
-		else     gtk_tree_store_append (store, &iter, NULL);
+		par = (gTreeRow*)g_hash_table_lookup (datakey,(gconstpointer)parent);
+		if (!par) 
+			return NULL;
+		piter = par->dataiter;
 	}
 	else
+		piter = NULL;
+
+	if (aft) 
 	{
-		par=(gTreeRow*)g_hash_table_lookup (datakey,(gconstpointer)parent);
-		if (!par) return NULL;
-		if (aft) gtk_tree_store_insert_after(store,&iter,par->dataiter,aft->dataiter);
-		else     gtk_tree_store_append (store,&iter,par->dataiter);
+		if (before)
+			gtk_tree_store_insert_before(store, &iter, piter, aft->dataiter);
+		else
+			gtk_tree_store_insert_after(store, &iter, piter, aft->dataiter);
 	}
-	
+	else
+		gtk_tree_store_append (store, &iter, piter);
+
 	buf = g_strdup(key); // Will be freed by ~gTreeRow()
 	row = new gTreeRow(this, buf, gtk_tree_iter_copy(&iter));
 	g_hash_table_insert(datakey,(gpointer)buf,(gpointer)row);
@@ -987,6 +995,7 @@ gTreeRow* gTree::addRow(char *key,char *parent,char *after)
   
 	return row;
 }
+
 
 static void tree_cell_text(GtkTreeViewColumn *col,GtkCellRenderer *cell,GtkTreeModel *md,GtkTreeIter *iter,gTree *Tr)
 {
