@@ -13,11 +13,11 @@
     Alignment = Align.Center
   }
   { ReportVBox1 ReportVBox
-    #MoveScaled(6,6,45,40)
+    #MoveScaled(6,6,45,38)
     Expand = True
     AutoResize = True
     { ReportVBox4 ReportVBox
-      #MoveScaled(4,13,41,20)
+      #MoveScaled(3,12,41,24)
       Expand = True
       AutoResize = True
       Spacing = "2mm"
@@ -62,7 +62,7 @@
         }
       }
       { ReportHBox1 ReportHBox
-        #MoveScaled(1,6,38,4)
+        #MoveScaled(1,8,38,4)
         Height = "1.2cm"
         { ReportLabel1 ReportLabel
           #MoveScaled(0,0,10.2857,3.4286)
@@ -99,7 +99,6 @@
   { ReportLabel8 ReportLabel
     #MoveScaled(6,51,46,3)
     Height = "6mm"
-    Fixed = True
     Padding = "2mm"
     AutoResize = True
     Text = ("$PAGE")
