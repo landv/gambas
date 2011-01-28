@@ -139,7 +139,7 @@ void gListBox::add(char *text, int pos)
 	else
 	{
 		after = indexToKey(pos);
-		gTreeView::add(key, text, NULL, after);
+		gTreeView::add(key, text, NULL, after, NULL, true);
 	}
 }
 

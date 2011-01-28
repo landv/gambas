@@ -132,12 +132,12 @@ gTreeView::~gTreeView()
 }
 
 
-bool gTreeView::add(char *key,char *text,gPicture *pic,char *after,char *parent)
+bool gTreeView::add(char *key,char *text,gPicture *pic,char *after,char *parent, bool before)
 {
 	gTreeRow *row;
 	gTreeCell *cell;
 	
-	row = tree->addRow(key,parent,after);
+	row = tree->addRow(key,parent,after,before);
 	
 	if (!row) return false;
 	
