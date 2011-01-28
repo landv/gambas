@@ -9,8 +9,6 @@
     Height = "3cm"
     Fixed = True
     Font = Font["Bitstream Charter,+7"]
-    Border = ReportBorder["Top=2mm LinearGradient(0,0.5,1,0.5,[&H000000&,&HFFFFFF&],[0,1]); Bottom=2mm LinearGradient(0,0.5,1,0.5,[&H000000&,&HFFFFFF&],[0,1]); Left=2mm &H00000000&; "]
-    BackGround = ReportBrush["LinearGradient(0.36,0.9,0.57,0.9,[&H000000&,&HFFFFFF&],[0,1])"]
     Text = ("Base de donnée de test")
     Alignment = Align.Center
   }
@@ -25,37 +23,40 @@
       Spacing = "2mm"
       { ReportHBox2 ReportHBox
         #MoveScaled(0,0.1429,37.7143,5.1429)
-        Height = "3cm"
+        Height = "20mm"
         Fixed = True
         AutoResize = True
         { ReportLabel3 ReportLabel
           #MoveScaled(1,1,10.2857,3.4286)
           Width = "5 cm"
-          Height = "15mm"
-          Font = Font["12"]
+          Height = "10mm"
+          Font = Font["Bitstream Charter,Bold,16"]
           Padding = "0.2 mm"
           Border = ReportBorder["Border=2px &H00000000&;"]
+          BackGround = ReportBrush["&H00DFDFDF&"]
           Text = ("Name")
           Alignment = Align.Center
         }
         { ReportLabel4 ReportLabel
           #MoveScaled(12,1,10.2857,3.4286)
           Width = "5 cm"
-          Height = "15mm"
-          Font = Font["12"]
+          Height = "10mm"
+          Font = Font["Bitstream Charter,Bold,16"]
           Padding = "0.2 mm"
           Border = ReportBorder["Top=2px &H00000000&; Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          BackGround = ReportBrush["&H00DFDFDF&"]
           Text = ("FirstName")
           Alignment = Align.Center
         }
         { ReportLabel5 ReportLabel
           #MoveScaled(24.8571,0.8571,10.2857,3.4286)
           Width = "5 cm"
-          Height = "15mm"
-          Font = Font["12"]
+          Height = "10mm"
+          Font = Font["Bitstream Charter,Bold,16"]
           Padding = "0.2 mm"
           Expand = True
           Border = ReportBorder["Top=2px &H00000000&; Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          BackGround = ReportBrush["&H00DFDFDF&"]
           Text = ("Birth")
           Alignment = Align.Center
         }
@@ -101,7 +102,6 @@
     Fixed = True
     Padding = "2mm"
     AutoResize = True
-    Border = ReportBorder["Border=1px &H00000000&;"]
     Text = ("$PAGE")
     Alignment = Align.Right
     UseField = True

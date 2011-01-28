@@ -8,8 +8,8 @@ Public Const _Properties As String = "*,-Left,-Top,-Width,-Height"
 Public Const _HiddenControls As String = "Report,ReportControl,ReportContainer,ReportFrame"
 Public Const _IsForm As Boolean = True
 Public Const _IsContainer As Boolean = True
-'Public Const _IsMultiContainer As Boolean = True
-'Public Const _DrawWidth As String = "TabStrip"
+Public Const _IsMultiContainer As Boolean = True
+Public Const _DrawWidth As String = "TabStrip"
 
 Public _Container As ReportContainer
 'Public Constants
@@ -31,17 +31,38 @@ Private $iResolution As Integer = -1
 
 Property Resolution As Integer 
 
-Property Height As String
-Property Width As String
 Property Scale As Float
 Property Read PageCount As Integer
 Property Count As Integer
 Property Index As Integer
 
+
+
+'All ReportControl Properties
+Property Left As String
+Property Top As String
+Property X As String
+Property Y As String
+
+Property Width As String
+Property Height As String
+
+Property Visible As Boolean
+Property {Font} As Font
+Property Expand As Boolean
+Property Ignore As Boolean
+Property Fixed As Boolean
+
+Property Autoresize As Boolean
 Property Padding As String
+'All ReportFrame Properties
+Property Border As ReportBorder
+Property BackGround As ReportBrush
 
-
-
+'All ReportContainer Properties
+Property Read Children As ReportControl[]
+Property Spacing As String
+Property Data As Object
 
 'EVENT Data()
 
@@ -309,6 +330,19 @@ End
 
 Private Sub Count_Write(Value As Integer)
   
+  Dim i As Integer
+  Dim hSection As ReportVBox
+  If Value < 0 Then Return
+  If Value < $aSections.Count Then
+    $aSections.Resize(Value)
+  Else If Value > $aSections.Count Then 
+    For i = $aSections.Max To Value - 1
+      hSection = New ReportVBox
+      $aSections.Add(hSection)
+    Next
+  Endif
+  
+  
 End
 
 Private Function Index_Read() As Integer
@@ -352,5 +386,179 @@ End
 Private Sub Resolution_Write(Value As Integer)
 
   $iResolution = Max(0, Value)
+
+End
+
+Private Function Left_Read() As String
+
+  Return _Container.Left
+
+End
+
+Private Sub Left_Write(Value As String)
+
+  _Container.Left = Value
+
+End
+
+Private Function Top_Read() As String
+
+  Return _Container.Top
+
+End
+
+Private Sub Top_Write(Value As String)
+
+  _Container.Top = Value
+
+End
+
+Private Function X_Read() As String
+
+  Return _Container.Left
+
+End
+
+Private Sub X_Write(Value As String)
+
+  _Container.Left = Value
+
+End
+
+Private Function Y_Read() As String
+
+  Return _Container.Top
+
+End
+
+Private Sub Y_Write(Value As String)
+
+  _Container.Top = Value
+
+End
+
+Private Function Visible_Read() As Boolean
+
+  Return _Container.Visible
+
+End
+
+Private Sub Visible_Write(Value As Boolean)
+
+  _Container.Visible = Value
+
+End
+
+Private Function Font_Read() As Font
+
+  Return _Container.Font
+
+End
+
+Private Sub Font_Write(Value As Font)
+
+  _Container.Font = Value
+
+End
+
+Private Function Expand_Read() As Boolean
+
+  Return _Container.Expand
+
+End
+
+Private Sub Expand_Write(Value As Boolean)
+
+  _Container.Expand = Value
+
+End
+
+Private Function Ignore_Read() As Boolean
+
+  Return _Container.Ignore
+
+End
+
+Private Sub Ignore_Write(Value As Boolean)
+
+  _Container.Ignore = Value
+
+End
+
+Private Function Fixed_Read() As Boolean
+
+  Return _Container.Fixed
+
+End
+
+Private Sub Fixed_Write(Value As Boolean)
+
+  _Container.Fixed = Value
+
+End
+
+Private Function Autoresize_Read() As Boolean
+
+  Return _Container.Autoresize
+
+End
+
+Private Sub Autoresize_Write(Value As Boolean)
+
+  _Container.Autoresize = Value
+
+End
+
+Private Function Border_Read() As ReportBorder
+
+  Return _Container.Border
+
+End
+
+Private Sub Border_Write(Value As ReportBorder)
+
+  _Container.Border = Value
+
+End
+
+Private Function BackGround_Read() As ReportBrush
+
+  Return _Container.BackGround
+
+End
+
+Private Sub BackGround_Write(Value As ReportBrush)
+
+  _Container.BackGround = Value
+
+End
+
+Private Function Children_Read() As ReportControl[]
+
+  Return _Container.Children
+
+End
+
+Private Function Spacing_Read() As String
+
+  Return _Container.Spacing
+
+End
+
+Private Sub Spacing_Write(Value As String)
+
+  _Container.Spacing = Value
+
+End
+
+Private Function Data_Read() As Object
+
+  Return _Container.Data
+
+End
+
+Private Sub Data_Write(Value As Object)
+
+  _Container.Data = Value
 
 End

@@ -27,7 +27,7 @@ Private $aChildCopy As TControl[]
 Private $iIndex As Integer
 Private $hData As Object
 Property Read Children As ReportControl[]
-Property Read Index As Integer
+'Property Read Index As Integer
 Property Spacing As String
 Property Data As Object
 
@@ -438,11 +438,11 @@ Public Function _GetData(sKey As String) As Variant
   
 End
 
-Private Function Index_Read() As Integer
-  
-  Return $iIndex
-  
-End
+' Private Function Index_Read() As Integer
+'   
+'   Return $iIndex
+'   
+' End
 
 Private Function Data_Read() As Object
   
