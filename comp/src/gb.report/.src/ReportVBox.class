@@ -173,18 +173,25 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   Dim hMyHints As New TSizeHint
   Dim fSpacing As Float
   Dim fPadding As Float
-  Dim i As Integer
-  If Me._SizeInt Then Return Me._SizeInt
+  Dim i, j As Integer
+  'If Me._SizeInt Then Return Me._SizeInt
   fSpacing = IIf(Me._RelativeSpacing, TotalHeight * Me._Spacing / 100, Me._Spacing)
   
   For i = Me._CurItem To Me.Children.max
     hChild = Me.Children[i]
+    For j = hChild._DataIndex To hChild._Count - 1
+  
+    
     hChildHints = hChild._GetSizeHints(AvailableW, AvailableH - hMyHints.Height, AvailableW, AvailableH)
     
     hMyHints.Height += hChildHints.Height + fSpacing 'ME._Spacing
     
     If hMyHints.Width < hChildHints.Width Then hMyHints.Width = hChildHints.Width
-    
+    If hMyHints.Height > AvailableH Then 
+      i = Me.Children.Max
+      Break
+    Endif
+    Next
   Next 
   
   hMyHints.Height -= fSpacing 
@@ -197,13 +204,13 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   
   If Me._RelativeHeight Then hMyHints.Height = AvailableH * Me._Height / 100
   
-  ' If hMyHints.Height > AvailableH Then 
-  '   If Me.Expand Then
-  '     hMyHints.Height = AvailableH
-  '   Else 
-  '     hMyHints.Height = fHeight
-  '   Endif
-  ' Endif
+  If hMyHints.Height > AvailableH Then 
+    If Me.Expand Then
+      hMyHints.Height = AvailableH
+    Else 
+      hMyHints.Height = fHeight
+    Endif
+  Endif
   
   If Not Me.Autoresize Then 
     If Me._RelativeWidth Then hMyHints.Width = AvailableW * Me._Width / 100
