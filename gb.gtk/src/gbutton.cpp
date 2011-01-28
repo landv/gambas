@@ -137,6 +137,7 @@ static bool button_expose(GtkWidget *wid,GdkEventExpose *e,gButton *data)
 		
 		if (bcenter) 
 		{	
+			//fprintf(stderr, "draw pixbuf: %d %d\n", rect.x + (px-rpix.width)/2, rect.y + py);
 			gdk_draw_pixbuf(GDK_DRAWABLE(win),gc,img,0,0,rect.x + (px-rpix.width)/2, rect.y + py,
                                         -1,-1,GDK_RGB_DITHER_MAX,0,0);
 			g_object_unref(gc);

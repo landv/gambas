@@ -1188,5 +1188,26 @@ int gApplication::getScrollbarSpacing()
 
 int gApplication::getFrameWidth()
 {
-	return 2; // should use style, but how?
+	return 2;
+}
+
+int gApplication::getTextBoxFrameWidth()
+{
+	GtkStyle *style;
+	gint focus_width;
+	gboolean interior_focus;
+	int v;
+
+	style = gt_get_style("GtkEntry", GTK_TYPE_ENTRY);
+	
+	gtk_style_get(style, GTK_TYPE_ENTRY,
+		"focus-line-width", &focus_width,
+		"interior-focus", &interior_focus,
+		(char *)NULL);
+	
+	v = MAX(style->xthickness, style->ythickness);
+	if (!interior_focus)
+		v += focus_width;
+	
+	return v;
 }

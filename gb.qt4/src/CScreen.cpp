@@ -432,6 +432,7 @@ GB_DESC StyleDesc[] =
 	GB_STATIC_PROPERTY_READ("ScrollbarSize", "i", Style_ScrollbarSize),
 	GB_STATIC_PROPERTY_READ("ScrollbarSpacing", "i", Style_ScrollbarSpacing),
 	GB_STATIC_PROPERTY_READ("FrameWidth", "i", Style_FrameWidth),
+	GB_STATIC_PROPERTY_READ("TextBoxFrameWidth", "i", Style_FrameWidth),
 	
 	GB_END_DECLARE
 };

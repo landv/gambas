@@ -32,20 +32,20 @@ Private $hButton As ToolButton
 Public Sub _new()
   
   $hBackground = New DrawingArea(Me) As "Background"
-  $bBorder = True
+  $hBackground.Arrangement = Arrange.Horizontal
+  Border_Write(True)
 
-  $hTextBox = New MaskBox(Me) As "TextBox"
-  $hTextBox.Ignore = True
+  $hTextBox = New MaskBox($hBackground) As "TextBox"
   $hTextBox.Border = False
+  $hTextBox.Expand = True
   
   Me.Proxy = $hTextBox
   
-  $hButton = New ToolButton(Me) As "Button"
-  $hButton.Ignore = True
+  $hButton = New ToolButton($hBackground) As "Button"
   $hButton.W = 24
   $hButton.Picture = Picture["./img/select.png"]
   
-  Background_Arrange
+  'Background_Arrange
   
 End
 
@@ -134,30 +134,32 @@ End
 Private Sub Border_Write(Value As Boolean)
 
   $bBorder = Value
-  '$hPanel.Padding = If(Value, 3, 0)
-  Background_Arrange
+  $hBackground.Padding = If(Value, Style.TextBoxFrameWidth, 0)
+  'Background_Arrange
   Me.Refresh
 
 End
 
-Public Sub Background_Arrange()
-  
-  '$hBackground.Move(0, 0, $hPanel.W, $hPanel.H)
-  Dim iPad As Integer = If($bBorder, 3, 0)
-  
-  If $hButton.Visible Then
-    $hTextBox.Move(iPad, iPad, $hBackground.W - $hButton.W - iPad * 2, $hBackground.H - iPad * 2)
-    $hButton.Move($hBackground.W - $hButton.W - iPad, iPad, $hButton.W, $hBackground.H - iPad * 2)
-  Else
-    $hTextBox.Move(iPad, iPad, $hBackground.W - iPad * 2, $hBackground.H - iPad * 2)
-  Endif
-  
-End
+' Public Sub Background_Arrange()
+'   
+'   '$hBackground.Move(0, 0, $hPanel.W, $hPanel.H)
+'   Dim iPad As Integer = If($bBorder, 3, 0)
+'   
+'   If $hButton.Visible Then
+'     $hTextBox.Move(iPad, iPad, $hBackground.W - $hButton.W - iPad * 2, $hBackground.H - iPad * 2)
+'     $hButton.Move($hBackground.W - $hButton.W - iPad, iPad, $hButton.W, $hBackground.H - iPad * 2)
+'   Else
+'     $hTextBox.Move(iPad, iPad, $hBackground.W - iPad * 2, $hBackground.H - iPad * 2)
+'   Endif
+'   
+' End
 
 
 Public Sub Background_Draw()
   
-  If $bBorder Then Draw.Style.Box(0, 0, $hBackground.W, $hBackground.H)
+  If $bBorder Then 
+    Draw.Style.Box(0, 0, $hBackground.W, $hBackground.H)
+  Endif
   
 End
 

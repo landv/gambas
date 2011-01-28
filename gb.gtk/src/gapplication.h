@@ -74,8 +74,9 @@ public:
 	static int getScrollbarSize();
 	static int getScrollbarSpacing();
 	static int getFrameWidth();
+	static int getTextBoxFrameWidth();
 
-//"Private"
+	//"Private"
 	static GtkTooltips *tipHandle();
 	static bool _busy;
 	static char *_title;
