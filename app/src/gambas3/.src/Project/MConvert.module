@@ -386,7 +386,40 @@ Private Sub CheckReplaceClassSymbol(sId As String, sLine As String, sClass As St
   
 End
 
-
+Private Sub CheckReplaceFunction(sId As String, sLine As String, sFunc As String, sNewFunc As String) As String
+  
+  Dim aSym As String[]
+  Dim I As Integer
+  Dim bFound As Boolean
+  Dim sType As String
+  Dim aPos As Integer[]
+  Dim aType As Integer[]
+  Dim sRest As String
+  Dim hClass As CClassInfo
+  
+  aSym = Highlight.Analyze(sLine, False).Copy()
+  aType = Highlight.Types.Copy()
+  aPos = Highlight.Positions.Copy()
+  
+  For I = 1 To aSym.Max - 1
+    
+    If aSym[I] == sFunc And If aSym[I + 1] = "(" Then
+      
+      sRest = Mid$(sLine, aPos[I] + Len(sFunc) + 1)
+      'If sId = "FNTH" And If sRest Begins "()" Then sRest = "(\"\")" & Mid$(sRest, 3)
+      sLine = Left$(sLine, aPos[I]) & sNewFunc & sRest
+      bFound = True
+      
+    Endif
+    
+  Next
+  
+  If Not bFound Then Return
+  
+  $sId = sId
+  Return sLine
+  
+End
 
 
 Private Sub ConvertClass(sPath As String)
@@ -430,6 +463,8 @@ Private Sub ConvertClass(sPath As String)
         If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("FCOL", sLine, "Control", "ForeColor", "Foreground", True)
         If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("DBGV", sLine, "DataBrowser", "GridView", "View")
         If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("TEXT", sLine, "gb", "Text", "IgnoreCase")
+        If Not sNewLine Then sNewLine = CheckReplaceFunction("CSNG", sLine, "CSng", "CSingle")
+        If Not sNewLine Then sNewLine = CheckReplaceFunction("CLNG", sLine, "CLong", "CSingle")
         
         If Not sNewLine Then 
           $aLine.Add(sIndent & sLine)
