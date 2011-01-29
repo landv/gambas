@@ -2,16 +2,16 @@
 
 Create Static
 Export
-Inherits ReportVBox
+Inherits ReportSection
 
-Public Const _Properties As String = "*,-Left,-Top,-Width,-Height"
-Public Const _HiddenControls As String = "Report,ReportControl,ReportContainer,ReportFrame"
+Public Const _Properties As String = "*,-Left,-Top,-Width,-Height,Count"
+Public Const _HiddenControls As String = "Report,ReportControl,ReportContainer,ReportFrame,ReportSection"
 Public Const _IsForm As Boolean = True
 Public Const _IsContainer As Boolean = True
 Public Const _IsMultiContainer As Boolean = True
 Public Const _DrawWith As String = "TabStrip"
 
-Public _Container As ReportContainer
+Public _Container As ReportSection
 'Public Constants
 Public {Debug} As Boolean = False
 Public _bInExec As Boolean
@@ -64,6 +64,9 @@ Property Read Children As ReportControl[]
 Property Spacing As String
 Property Data As Object
 
+'All ReportSection Properties
+Property Text As String
+
 'EVENT Data()
 
 Static Public Sub Main()
@@ -78,7 +81,7 @@ End
 
 Public Sub _New()
 
-  Dim hSection As New ReportVBox
+  Dim hSection As New ReportSection
   Dim TSection As New TControl
   
   object.Attach(Me, Me, "Report")
@@ -106,8 +109,8 @@ Public Sub Layout()
   '$sOldDeviceName = Paint.Device.Name"
   MTools.Resolution = If($iResolution < 0, Paint.ResolutionX, $iResolution)
   If Me.Parent = Null Then 
-    Me.Width = (Paint.Width / $fScale) & " px"
-    Me.Height = (Paint.Height / $fScale) & " px"
+    Me.Width = (Paint.Width / $fScale) & "px"
+    Me.Height = (Paint.Height / $fScale) & "px"
   Endif
   $sOldHeight = Me.Height
   $sOldWidth = Me.Width
@@ -331,13 +334,13 @@ End
 Private Sub Count_Write(Value As Integer)
   
   Dim i As Integer
-  Dim hSection As ReportVBox
+  Dim hSection As ReportSection
   If Value < 0 Then Return
   If Value < $aSections.Count Then
     $aSections.Resize(Value)
   Else If Value > $aSections.Count Then 
     For i = $aSections.Max To Value - 1
-      hSection = New ReportVBox
+      hSection = New ReportSection
       $aSections.Add(hSection)
     Next
   Endif
@@ -353,7 +356,7 @@ Private Sub Index_Write(Value As Integer)
   $iIndex = Max(Min($aSections.Max, Value), 0)
 End
 
-Public Sub _get(Index As Integer) As ReportVBox
+Public Sub _get(Index As Integer) As ReportSection
   
   Return $aSections[Index].Ctrl
   
@@ -560,5 +563,17 @@ End
 Private Sub Data_Write(Value As Object)
 
   _Container.Data = Value
+
+End
+
+Private Function Text_Read() As String
+
+  Return _Container.Text
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  _Container.Text = Value
 
 End
