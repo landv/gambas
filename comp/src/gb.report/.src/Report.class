@@ -335,13 +335,18 @@ Private Sub Count_Write(Value As Integer)
   
   Dim i As Integer
   Dim hSection As ReportSection
+  Dim TSection As TControl
   If Value < 0 Then Return
   If Value < $aSections.Count Then
     $aSections.Resize(Value)
   Else If Value > $aSections.Count Then 
     For i = $aSections.Max To Value - 1
+      
+      TSection = New TControl
       hSection = New ReportSection
-      $aSections.Add(hSection)
+      ReportControl._ObjectFromId[hSection.Id] = hSection
+      TSection.Ctrl = hSection
+      $aSections.Add(TSection)
     Next
   Endif
   
