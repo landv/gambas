@@ -70,8 +70,6 @@ Public Sub _new()
     .Columns[3].Alignment = Align.Right
   End With  
   
-  $sLang = ""
-  
 End
 
 Private Sub GetTransCount(sLang As String) As Integer
@@ -125,6 +123,8 @@ Public Sub Form_Open()
 
   Inc Application.Busy
 
+  $sLang = ""
+  
   Settings.Read(Me)
   
   $bStatValid = False

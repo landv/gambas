@@ -118,7 +118,9 @@ Public Sub InitControl()
   Endif
   
   hSym = Symbols["_IsMultiContainer"]
-  If hSym Then MultiContainer = hSym.Value
+  If hSym Then 
+    MultiContainer = hSym.Value
+  Endif
 
   hSym = Symbols["_Similar"]
   If hSym Then Similars = Split(hSym.Value, ",")

@@ -36,102 +36,97 @@
     Count = 3
     Index = 0
     Text = ("Translation")
-    { VSplit1 VSplit
-      MoveScaled(2,1,98,51)
-      Expand = True
-      { panTranslate VBox
-        MoveScaled(1,1,96,23)
-        Expand = True
-        Spacing = True
-        { HBox2 HBox
-          MoveScaled(1,1,82,4)
-          { cmbLangSource ComboBox
-            MoveScaled(17,0,21,4)
-            Expand = True
-            ReadOnly = True
-            Sorted = True
-          }
-          { PictureBox2 PictureBox
-            MoveScaled(39,0,4,4)
-            Picture = Picture["icon:/small/right"]
-            Alignment = Align.Center
-          }
-          { cmbLang ComboBox
-            MoveScaled(45,0,18,4)
-            Font = Font["Bold"]
-            Expand = True
-            ReadOnly = True
-            Sorted = True
-          }
-        }
-        { VBox3 VBox
-          MoveScaled(1,6,94,16)
+    { panTranslate VBox
+      MoveScaled(1,1,96,9)
+      Spacing = True
+      { HBox2 HBox
+        MoveScaled(1,0,82,4)
+        { cmbLangSource ComboBox
+          MoveScaled(17,0,21,4)
           Expand = True
-          { HBox5 HBox
-            MoveScaled(1,1,91,4)
-            { btnSave ToolButton
-              MoveScaled(0,0,4,4)
-              ToolTip = ("Save translation")
-              Picture = Picture["icon:/small/save"]
-            }
-            { btnClear ToolButton
-              MoveScaled(4,0,4,4)
-              ToolTip = ("Clear this translation")
-              Picture = Picture["icon:/small/clear"]
-            }
-            { btnDoNotTranslate ToolButton
-              MoveScaled(10,0,4,4)
-              ToolTip = ("This string must not be translated")
-              Picture = Picture["icon:/small/warning"]
-            }
-            { btnCopy ToolButton
-              MoveScaled(14,0,4,4)
-              ToolTip = ("Copy untranslated string")
-              Picture = Picture["icon:/small/paste"]
-            }
-            { btnVerify ToolButton
-              MoveScaled(18,0,4,4)
-              ToolTip = ("Verify the translation")
-              Picture = Picture["icon:/small/watch"]
-            }
-            { btnNext ToolButton
-              MoveScaled(22,0,4,4)
-              ToolTip = ("Find next untranslated string")
-              Picture = Picture["icon:/small/down"]
-            }
-            { btnPrevious ToolButton
-              MoveScaled(26,0,4,4)
-              ToolTip = ("Find previous untranslated string")
-              Picture = Picture["icon:/small/up"]
-            }
-            { Panel2 Panel
-              MoveScaled(31,0,1,4)
-            }
-            { txtFind ButtonBox
-              MoveScaled(33,0,16,4)
-              Expand = True
-              Picture = Picture["icon:/16/find"]
-            }
-            { Panel6 Panel
-              MoveScaled(51,0,1,4)
-            }
-            { cmbFileChoice ComboBox
-              MoveScaled(56,0,34,4)
-              ReadOnly = True
-            }
-          }
-          { cvwTranslate ColumnView
-            MoveScaled(0,5,70,10)
-            Expand = True
-            Sorted = True
-            Header = False
-            AutoResize = False
-            ScrollBar = Scroll.Vertical
-          }
+          ReadOnly = True
+          Sorted = True
+        }
+        { PictureBox2 PictureBox
+          MoveScaled(39,0,4,4)
+          Picture = Picture["icon:/small/right"]
+          Alignment = Align.Center
+        }
+        { cmbLang ComboBox
+          MoveScaled(45,0,18,4)
+          Font = Font["Bold"]
+          Expand = True
+          ReadOnly = True
+          Sorted = True
         }
       }
+      { HBox5 HBox
+        MoveScaled(1,5,91,4)
+        { btnSave ToolButton
+          MoveScaled(0,0,4,4)
+          ToolTip = ("Save translation")
+          Picture = Picture["icon:/small/save"]
+        }
+        { btnClear ToolButton
+          MoveScaled(4,0,4,4)
+          ToolTip = ("Clear this translation")
+          Picture = Picture["icon:/small/clear"]
+        }
+        { btnDoNotTranslate ToolButton
+          MoveScaled(10,0,4,4)
+          ToolTip = ("This string must not be translated")
+          Picture = Picture["icon:/small/warning"]
+        }
+        { btnCopy ToolButton
+          MoveScaled(14,0,4,4)
+          ToolTip = ("Copy untranslated string")
+          Picture = Picture["icon:/small/paste"]
+        }
+        { btnVerify ToolButton
+          MoveScaled(18,0,4,4)
+          ToolTip = ("Verify the translation")
+          Picture = Picture["icon:/small/watch"]
+        }
+        { btnNext ToolButton
+          MoveScaled(22,0,4,4)
+          ToolTip = ("Find next untranslated string")
+          Picture = Picture["icon:/small/down"]
+        }
+        { btnPrevious ToolButton
+          MoveScaled(26,0,4,4)
+          ToolTip = ("Find previous untranslated string")
+          Picture = Picture["icon:/small/up"]
+        }
+        { Panel2 Panel
+          MoveScaled(31,0,1,4)
+        }
+        { txtFind ButtonBox
+          MoveScaled(33,0,16,4)
+          Expand = True
+          Picture = Picture["icon:/16/find"]
+        }
+        { Panel6 Panel
+          MoveScaled(51,0,1,4)
+        }
+        { cmbFileChoice ComboBox
+          MoveScaled(56,0,34,4)
+          ReadOnly = True
+        }
+      }
+    }
+    { VSplit1 VSplit
+      MoveScaled(1,11,98,41)
+      Expand = True
+      { cvwTranslate ColumnView
+        MoveScaled(1,1,70,18)
+        Expand = True
+        Sorted = True
+        Header = False
+        AutoResize = False
+        ScrollBar = Scroll.Vertical
+      }
       { VBox2 VBox
-        MoveScaled(1,25,85,25)
+        MoveScaled(1,20,85,20)
         Expand = True
         Spacing = True
         { Panel5 Panel
@@ -157,14 +152,18 @@
         }
       }
     }
-    { HBox6 HBox
-      MoveScaled(2,53,86,5)
+    { HBox6 Panel
+      MoveScaled(1,53,102,5)
       Background = Color.LightBackground
+      Arrangement = Arrange.Horizontal
       AutoResize = True
+      Spacing = True
       Padding = 4
+      Border = Border.Plain
       { PictureBox3 PictureBox
-        MoveScaled(0,0,3,3)
-        Picture = Picture["icon:/small/info"]
+        MoveScaled(0,0,4,4)
+        Picture = Picture["icon:/medium/info"]
+        AutoResize = True
         Alignment = Align.Center
       }
       { lblInfo Label

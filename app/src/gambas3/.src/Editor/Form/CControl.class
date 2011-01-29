@@ -144,6 +144,8 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
 
   'PRINT "> CreateControl "; sClass
 
+  If sClass = "Report" Then Stop
+
   hClass = CComponent.Classes[sClass]
   bExist = hClass <> Null
   If bExist Then
@@ -351,7 +353,11 @@ Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As
     If hFamily.Name = "Form" Then
       hCtrl = New Form(hForm.Container)
     Else
-      hCtrl = New DrawingArea(hForm.Container)
+      If hClass.MultiContainer Then
+        hCtrl = New TabStrip(hForm.Container)
+      Else
+        hCtrl = New DrawingArea(hForm.Container)
+      Endif
     Endif
     hCtrl.Drop = True
     hCtrl.Background = CFamily.Get(hForm.Family).Background
