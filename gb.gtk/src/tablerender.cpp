@@ -1304,85 +1304,85 @@ void gTableRender::setColumnSize(int position,int value)
 
 }
 
-#define CHECK_COORD(_col, _row) if ((_col) < 0 || (_row) < 0 || (_col) >= columnCount() || (_row) > rowCount()) return
+#define CHECK_COORD(_row, _col) if ((_col) < 0 || (_row) < 0 || (_col) >= columnCount() || (_row) > rowCount()) return
 
 void gTableRender::clearField (int row, int col)
 {
-	CHECK_COORD(col, row);
-	gTable::clearField(col,row);
+	CHECK_COORD(row, col);
+	gTable::clearField(row, col);
 	queryUpdate(row,col);
 }
 
 void gTableRender::setFieldText (int row, int col, const char* value)
 {
-	CHECK_COORD(col, row);
-	gTable::setFieldText(col,row,value);
+	CHECK_COORD(row, col);
+	gTable::setFieldText(row, col, value);
 	queryUpdate(row,col);
 }
 
 void gTableRender::setFieldRichText (int row, int col, const char* value)
 {
-	CHECK_COORD(col, row);
-	gTable::setFieldRichText(col,row,value);
+	CHECK_COORD(row, col);
+	gTable::setFieldRichText(row, col, value);
 	queryUpdate(row,col);
 }
 
 void gTableRender::setFieldFg (int row, int col,gColor value)
 {
-	CHECK_COORD(col, row);
-	gTable::setFieldFg(col,row,value);
+	CHECK_COORD(row, col);
+	gTable::setFieldFg(row, col, value);
 	queryUpdate(row,col);
 }
 
 void gTableRender::setFieldBg (int row, int col,gColor value)
 {
-	CHECK_COORD(col, row);
-	gTable::setFieldBg(col,row,value);
+	CHECK_COORD(row, col);
+	gTable::setFieldBg(row, col, value);
 	queryUpdate(row,col);
 }
 
 void gTableRender::setFieldPadding(int row, int col,int value)
 {
-	CHECK_COORD(col, row);
-	gTable::setFieldPadding(col,row,value);
+	CHECK_COORD(row, col);
+	gTable::setFieldPadding(row, col, value);
 	queryUpdate(row,col);
 }
 
 void gTableRender::setFieldPicture(int row, int col, gPicture *value)
 {
-	CHECK_COORD(col, row);
-	gTable::setFieldPicture(col, row, value);
+	CHECK_COORD(row, col);
+	gTable::setFieldPicture(row, col, value);
 	queryUpdate(row, col);
 }
 
 void gTableRender::setFieldFont(int row, int col, gFont *value)
 {
-	CHECK_COORD(col, row);
-	gTable::setFieldFont(col, row, value);
+	CHECK_COORD(row, col);
+	gTable::setFieldFont(row, col, value);
 	queryUpdate(row, col);
 }
 
 void gTableRender::setFieldWordWrap(int row, int col, bool value)
 {
-	CHECK_COORD(col, row);
-	gTable::setFieldWordWrap(col, row, value);
+	CHECK_COORD(row, col);
+	gTable::setFieldWordWrap(row, col, value);
 	queryUpdate(row, col);
 }
 
 void gTableRender::setFieldSelected(int row, int col,bool value)
 {
-	gTable::setFieldSelected(col,row,value);
-	queryUpdate(row,-1);
+	gTable::setFieldSelected(row, col, value);
+	queryUpdate(row, -1);
 }
 
-void gTableRender::setRowSelected(int row,bool value)
+void gTableRender::setRowSelected(int row, bool value)
 {
 	if (row<0) return;
 	if (row>=rowCount()) return;
 	if (value == getRowSelected(row))
 		return;
 		
-	gTable::setRowSelected(row,value);
+	gTable::setRowSelected(row, value);
 	queryUpdate(row, -1);
 	//view->emit(SIGNAL(view->onSelect));
 }
