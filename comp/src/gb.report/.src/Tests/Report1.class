@@ -1,36 +1,30 @@
 ' Gambas class file
-Private $i As Integer
-Private cCol As New Collection[200]
-Private cCol2 As New Collection[1]
+Private hCon As Connection = Connections["Connection1"]
+
 Public Sub _new()
   
-  Dim i As Integer
-  Dim c As Collection
-  ReportHBox1.Fixed = True
-  'Report.Debug = True
-  For i = 0 To 199
-    c = New Collection
-      c["Index"] = i
-      c["Text"] = "Text " & i
-      
-      cCol[i] = c
-  Next
-  
-  'For i = 0 To 1
-    c = New Collection
-      c["FactIndex"] = "Facture " & i
-      
-      
-      cCol2[0] = c
-  'Next
-  ReportHBox4.Data = cCol
+  Dim hresult As Result
   'Report.debug = True
-  ReportVBox3.data = cCol2
-  
+  ' ReportLabel8.Fixed = True
+  ' ReportHBox4.Fixed = True 
+   'ReportHBox3._Count = 200
+  ' ReportLabel2.Fixed = True
+  ' hCon.Type = "sqlite"
+  ' hCon.Host = User.Home
+  ' hCon.Name = "test"
+  hresult = db.Limit(100).Exec("SELECT * FROM test")
+  'Print hresult.Count
+  ReportHBox1.Data = hresult
+  'ReportLabel1.Brush = ReportBrush["&h00FF00&"]
 End
 
-Public Sub ReportHBox2_Data()
+Public Sub Report2_Data()
 
   
 
+End
+
+Public Sub ReportHBox13_Data()
+
+  
 End

@@ -184,7 +184,7 @@ Private Function DecodeText(sText As String, Optional Page As Integer, Optional 
     If InStr(sText, "$NPAGE") Then sText = Replace(sText, "$NPAGE", "999")
   Else
     If InStr(sText, "$PAGE") Then sText = Replace(sText, "$PAGE", Str(Page + 1))
-    If InStr(sText, "$NPAGE") Then sText = Replace(sText, "$NPAGE", Str(Me.Report.Count))
+    If InStr(sText, "$NPAGE") Then sText = Replace(sText, "$NPAGE", Str(Me.Report.PageCount))
   Endif
   
   Return sText

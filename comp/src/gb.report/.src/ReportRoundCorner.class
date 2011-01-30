@@ -1,9 +1,9 @@
 ' Gambas class file
 Public _Active As Boolean = False
-Private $sTopLeft As String
-Private $sTopRight As String
-Private $sBottomLeft As String
-Private $sBottomRight As String
+Private $sTopLeft As String = "0cm"
+Private $sTopRight As String = "0cm"
+Private $sBottomLeft As String = "0cm"
+Private $sBottomRight As String = "0cm"
 
 
 Property TopLeft As String

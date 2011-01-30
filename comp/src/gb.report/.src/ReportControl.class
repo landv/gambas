@@ -31,11 +31,11 @@ Private $fLeft As Float = 0.0
 Private $fTop As Float = 0.0
 Private $fWidth As Float = 0.0
 Private $fHeight As Float = 0.0
-Private $sHeight As String = "0 cm"
-Private $sLeft As String = "0 cm"
-Private $sWidth As String = "0 cm"
-Private $sTop As String = "0 cm"
-Private $sPadding As String = "0 cm"
+Private $sHeight As String = "0cm"
+Private $sLeft As String = "0cm"
+Private $sWidth As String = "0cm"
+Private $sTop As String = "0cm"
+Private $sPadding As String = "0cm"
 
 Private $iVisible As Boolean = True
 Private $hFont As New Font
@@ -82,7 +82,7 @@ Property Fixed As Boolean
 
 Property Autoresize As Boolean
 Property Read {Report} As Report
-Property Read _ReportId As Integer
+Property _ReportId As Integer
 
 Public Sub _New(Optional Parent As ReportContainer = Null)
   Dim hRep As Report
@@ -97,7 +97,7 @@ Public Sub _New(Optional Parent As ReportContainer = Null)
       hRep = Parent
       $iParentId = hRep._Container.id
       hRep._Container._Add(Me)
-      $iReportId = $iParentId
+      $iReportId = hRep.id
     Else
       $iParentId = Parent.Id
       Parent._Add(Me)
@@ -460,4 +460,10 @@ Public Function _GetActualBrush(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 
   Endif
   Return hBrush
   
+End
+
+Private Sub _ReportId_Write(Value As Integer)
+
+  $iReportId = Value
+
 End
