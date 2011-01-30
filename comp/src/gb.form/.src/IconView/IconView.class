@@ -680,6 +680,7 @@ End
 
 Public Sub ScrollArea_KeyPress()
 
+  Dim iCode As Integer
   Dim bShift As Boolean
 
   If $iMode = Select.None Then
@@ -690,7 +691,22 @@ Public Sub ScrollArea_KeyPress()
       bShift = Key.Shift
     Endif
   
-    Select Key.Code
+    iCode = Key.Code
+  
+    If $bHorizontal Then
+      Select iCode
+        Case Key.Left
+          iCode = Key.Up
+        Case Key.Right
+          iCode = Key.Down
+        Case Key.Up
+          iCode = Key.Left
+        Case Key.Down
+          iCode = Key.Right
+      End Select
+    Endif
+  
+    Select iCode
       
       Case Key.Left
         SetCurrentItem($iCurrent - 1, True, bShift)
