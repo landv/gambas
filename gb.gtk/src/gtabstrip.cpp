@@ -265,9 +265,18 @@ void gTabStripPage::updateColors()
 
 void gTabStripPage::updateFont()
 {
-	gFont *fnt = parent->textFont();
-	gtk_widget_modify_font(widget, fnt ? fnt->desc() : NULL);
-	gtk_widget_modify_font(label, fnt ? fnt->desc() : NULL);
+	PangoFontDescription *desc = NULL;
+	gFont *fnt;
+	
+	fnt = parent->textFont();
+	if (!fnt)
+		fnt = parent->font();
+	
+	if (fnt)
+		desc = fnt->desc();
+
+	gtk_widget_modify_font(widget, desc);
+	gtk_widget_modify_font(label, desc);
 }
 
 void gTabStripPage::setText(char *text)
