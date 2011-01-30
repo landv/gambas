@@ -617,7 +617,7 @@ static void gambas_handle_event(GdkEvent *event)
 					goto __KEY_TRY_PROXY;
 				}
 				
-				if (type == gEvent_KeyPress)
+				if (type == gEvent_KeyPress || type == gEvent_KeyRelease)
 				{
 					if (event->key.keyval == GDK_Escape)
 					{
@@ -629,7 +629,7 @@ static void gambas_handle_event(GdkEvent *event)
 						
 						if (check_button(win->_cancel))
 						{
-							win->_cancel->animateClick(false);
+							win->_cancel->animateClick(type == gEvent_KeyRelease);
 							return;
 						}
 					}
@@ -637,7 +637,7 @@ static void gambas_handle_event(GdkEvent *event)
 					{
 						if (check_button(win->_default))
 						{
-							win->_default->animateClick(false);
+							win->_default->animateClick(type == gEvent_KeyRelease);
 							return;
 						}
 					}
@@ -646,52 +646,6 @@ static void gambas_handle_event(GdkEvent *event)
 
 			break;
 		}
-			
-		#if 0
-		case GDK_KEY_RELEASE:
-		{
-			bool cancel = false;
-			gMainWindow *win;
-			
-			if (gApplication::activeControl())
-				control = gApplication::activeControl();
-			
-			if (control)
-			{
-				win =  control->window();
-				
-				if (!gKey::enable(control, &event->key))
-				{
-					if (control->_proxy_for && control->_proxy_for->onKeyEvent)
-					{
-						cancel = control->_proxy_for->onKeyEvent(control->_proxy_for, gEvent_KeyRelease);
-					}
-					if (!cancel)
-						control->emit(SIGNAL(control->onKeyEvent), gEvent_KeyRelease);
-					if (!cancel)
-						cancel = raise_key_event_to_parent_window(control, gEvent_KeyRelease);
-				}
-				gKey::disable();
-				
-				if (cancel)
-					return;
-				
-				if (event->key.keyval == GDK_Escape)
-				{
-					gMainWindow *win = control->window();
-					if (check_button(win->_cancel))
-						win->_cancel->animateClick(true);
-				}
-				else if (event->key.keyval == GDK_Return || event->key.keyval == GDK_KP_Enter)
-				{
-					if (check_button(win->_default))
-						win->_default->animateClick(true);
-				}
-			}
-			
-			break;
-		}
-		#endif
 	}
 	
 __HANDLE_EVENT:
