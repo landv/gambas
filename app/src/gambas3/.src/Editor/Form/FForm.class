@@ -2198,6 +2198,8 @@ Sub RefreshMenu()
   
   Action[".move-tab*,.show-tab"].Visible = mnuShowTab.Visible
 
+  Action[".menu", Me].Visible = $hFamily.HasMenuEditor
+
 End
 
 

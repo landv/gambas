@@ -282,7 +282,7 @@ Public Sub InitControl()
 
   'IF Name = "Timer" THEN
   Try DrawWith = Symbols["_DrawWith"].Value
-  If MultiContainer And If Not DrawWith Then DrawWith = "TabStrip"
+  If Family <> "Form" And If MultiContainer And If Not DrawWith Then DrawWith = "TabStrip"
   'IF DrawWith THEN ?Me. <= CRASH!
   '  PRINT ME.Name;; "->";; DrawWith
   'ENDIF

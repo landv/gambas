@@ -147,7 +147,7 @@ Public Sub TreeView_Expand()
 
   $hTreeView[sDelete].Delete
 
-  For Each sFile In Dir(sDir, "*", gb.Directory).Sort()
+  For Each sFile In Dir(sDir, "*", gb.Directory).Sort(gb.Natural + gb.IgnoreCase)
     AddDir(sDir, sFile)
   Next
 
