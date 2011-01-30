@@ -4,6 +4,8 @@ Public Const EVENT_NAME As String = "Group"
 Public Const SCALE_NAME As String = "Scaled"
 Public Const PUBLIC_NAME As String = "Public"
 
+Static Public MULTI_CONTAINER_PROP As String[] = ["Index", "Count", "Text", "Picture"]
+
 Static Private $cRedirect As New Collection
 Static Private $cTranslate As New Collection
 Static Private $cUpdateName As New Collection
@@ -122,8 +124,6 @@ Public Sub _new(sComponent As String, sClass As String, sName As String, sKind A
   Dim sSign As String
   Dim sFirst As String
   Dim sArg As String
-
-  'If sClass == "ValInBox" And If sName = "Type" Then Stop
 
   Name = sName
 

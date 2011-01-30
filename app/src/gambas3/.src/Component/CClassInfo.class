@@ -209,7 +209,11 @@ Public Sub InitControl()
       Endif
 
       If Family <> "Form" Then 
-        bDoNotApply = True
+        If MultiContainer Then
+          bDoNotApply = Not CPropertyInfo.MULTI_CONTAINER_PROP.Exist(sProp)
+        Else
+          bDoNotApply = True
+        Endif
       Else
         bDoNotApply = VirtualControl
       Endif
@@ -278,6 +282,7 @@ Public Sub InitControl()
 
   'IF Name = "Timer" THEN
   Try DrawWith = Symbols["_DrawWith"].Value
+  If MultiContainer And If Not DrawWith Then DrawWith = "TabStrip"
   'IF DrawWith THEN ?Me. <= CRASH!
   '  PRINT ME.Name;; "->";; DrawWith
   'ENDIF

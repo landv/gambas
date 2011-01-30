@@ -1,14 +1,14 @@
 # Gambas Form File 3.0
 
 { Report Report
-  #MoveScaled(0,0,59,57)
+  #MoveScaled(0,0,65,62)
   Padding = "2cm"
   Spacing = "10mm"
   Count = 2
   Index = 0
-  Text = ("")
+  Text = ("Section n°1")
   { ReportLabel2 ReportLabel
-    #MoveScaled(8,1,37.7143,5.1429)
+    #MoveScaled(6,1,45,5)
     Height = "3cm"
     Fixed = True
     Font = Font["Bitstream Charter,+7"]
@@ -107,6 +107,11 @@
     Text = ("$PAGE")
     Alignment = Align.Right
     UseField = True
+  }
+  Index = 1
+  Text = ("Section n°2")
+  { ReportHBox3 ReportHBox
+    #MoveScaled(2,3,54,8)
   }
   Index = 0
 }

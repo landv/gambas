@@ -4,7 +4,7 @@ Create Static
 Export
 Inherits ReportSection
 
-Public Const _Properties As String = "*,-Left,-Top,-Width,-Height,Count"
+Public Const _Properties As String = "*,-Left,-Top,-Width,-Height,Count{Range:1;256}=1,Index,Text"
 Public Const _HiddenControls As String = "Report,ReportControl,ReportContainer,ReportFrame,ReportSection"
 Public Const _IsForm As Boolean = True
 Public Const _IsContainer As Boolean = True
