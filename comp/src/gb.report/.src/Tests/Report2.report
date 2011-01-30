@@ -3,20 +3,41 @@
 { Report Report
   #MoveScaled(0,0,65,62)
   Padding = "2cm"
-  Spacing = "10mm"
+  Spacing = "1cm"
   Count = 2
   Index = 0
-  Text = ("Section n°1")
+  Text = ("First Page")
+  { ReportVBox2 ReportVBox
+    #MoveScaled(3,3,51,11)
+    Expand = True
+  }
+  { ReportLabel9 ReportLabel
+    #MoveScaled(4,20,43,5)
+    Font = Font["Bitstream Charter,+9"]
+    Text = ("Report About")
+    Alignment = Align.Center
+  }
+  { ReportLabel10 ReportLabel
+    #MoveScaled(4,29,43,4)
+    Font = Font["Bitstream Charter,+9"]
+    Text = ("All my friends")
+    Alignment = Align.Center
+  }
+  { ReportVBox3 ReportVBox
+    #MoveScaled(9,41,47,10)
+    Expand = True
+  }
+  Index = 1
+  Text = ("Friend Table")
   { ReportLabel2 ReportLabel
-    #MoveScaled(6,1,45,5)
+    #MoveScaled(5,6,45,5)
     Height = "3cm"
-    Fixed = True
     Font = Font["Bitstream Charter,+7"]
-    Text = ("Base de donnée de test")
+    Text = ("Test Database")
     Alignment = Align.Center
   }
   { ReportVBox1 ReportVBox
-    #MoveScaled(6,6,45,38)
+    #MoveScaled(5,11,45,38)
     Expand = True
     AutoResize = True
     { ReportVBox4 ReportVBox
@@ -100,18 +121,14 @@
     }
   }
   { ReportLabel8 ReportLabel
-    #MoveScaled(6,51,46,3)
+    #MoveScaled(0,50,46,3)
     Height = "6mm"
+    Fixed = True
     Padding = "2mm"
     AutoResize = True
     Text = ("$PAGE")
     Alignment = Align.Right
     UseField = True
-  }
-  Index = 1
-  Text = ("Section n°2")
-  { ReportHBox3 ReportHBox
-    #MoveScaled(2,3,54,8)
   }
   Index = 0
 }

@@ -5,6 +5,8 @@
   Font = Font["+15"]
   Padding = "2 cm"
   Expand = True
+  Index = 0
+  Text = ("Section N°1")
   { ReportHBox1 ReportHBox
     #MoveScaled(2,2,99.4286,32.5714)
     Height = "6 cm"
@@ -109,24 +111,24 @@
           { ReportLabel10 ReportLabel
             #MoveScaled(3,0,17.1429,4.2857)
             Width = "3 cm"
+            Brush = ReportBrush["3661665"]
             Border = ReportBorder["Top=1px &H00FF00FF&; Right=1px &H00000000&; Bottom=1px &H00000000&; "]
-            Brush = &H0037DF61&
             Text = ("ReportLabel10")
             Key = "Index"
           }
           { ReportLabel11 ReportLabel
             #MoveScaled(23,0,18,4)
+            Brush = ReportBrush["255"]
             Expand = True
             Border = ReportBorder["0.5 mm,&H000000&,Right"]
-            Brush = &H000000FF&
             Text = ("ReportLabel11")
             Key = "Text"
           }
           { ReportLabel12 ReportLabel
             #MoveScaled(44,1,17.1429,3.4286)
             Width = "3 cm"
+            Brush = ReportBrush["255"]
             Border = ReportBorder["0.5 mm,&H000000&,Right"]
-            Brush = &H000000FF&
             Text = ("ReportLabel12")
             Key = "FactIndex"
           }
@@ -186,4 +188,5 @@
     Alignment = Align.Right
     UseField = True
   }
+  Index = 0
 }

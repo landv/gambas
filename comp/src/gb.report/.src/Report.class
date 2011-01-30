@@ -120,12 +120,12 @@ Public Sub Layout()
   'Me._GenerateClones()
   '$hReportTControl.ctrl = Me
   Debug "Page Size W/H: " & Round(Me._Width, -2) & "/" & Round(Me._Height, -2)
-  
+  iCurPage = -1
   For Each Tsection In $aSections
     CSection = TSection.Ctrl
     CSection._SetUnifiedValues() 
     TSection._SetGeometry(0, 0, Me._Width, Me._Height) 
-    
+    Inc iCurPage
     Do
       
       CSection._SetChildGeometry(0, 0, CSection._Width, CSection._Height, iCurPage)
@@ -133,6 +133,7 @@ Public Sub Layout()
       Inc iCurPage
       
     Loop
+    'Inc iCurPage
   Next
   
   Debug Me._PageChildren.Count
@@ -241,14 +242,6 @@ Private Sub Scale_Write(Value As Float)
   
 End
 
-' Public Sub Mosaic(Range As String, Spacing As String)
-' 
-'   Dim $fTempZ As Float
-'   '$fTempZ = $fZoom
-'   
-'   
-'   
-' End
 
 Public Sub Clear()
   
@@ -340,12 +333,15 @@ Private Sub Count_Write(Value As Integer)
   If Value < $aSections.Count Then
     $aSections.Resize(Value)
   Else If Value > $aSections.Count Then 
-    For i = $aSections.Max To Value - 1
+    For i = $aSections.Count To Value - 1
       
       TSection = New TControl
       hSection = New ReportSection
       ReportControl._ObjectFromId[hSection.Id] = hSection
       TSection.Ctrl = hSection
+      hSection.Padding = Me.Padding
+      hSection.Height = Me.Height
+      hSection.Width = Me.Width
       $aSections.Add(TSection)
     Next
   Endif
@@ -359,6 +355,7 @@ End
 
 Private Sub Index_Write(Value As Integer)
   $iIndex = Max(Min($aSections.Max, Value), 0)
+  _Container = $aSections[$iIndex].Ctrl
 End
 
 Public Sub _get(Index As Integer) As ReportSection
@@ -392,7 +389,7 @@ Private Function Resolution_Read() As Integer
 End
 
 Private Sub Resolution_Write(Value As Integer)
-
+  $bLayoutIsDirty = True
   $iResolution = Max(0, Value)
 
 End

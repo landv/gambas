@@ -8,7 +8,7 @@ Private hTop As New _ReportBorderSide
 Private hBottom As New _ReportBorderSide
 Private hLeft As New _ReportBorderSide
 Private hRight As New _ReportBorderSide
-
+Private hRCorner As New ReportRoundCorner
 Public _Left As Float
 Public _Right As Float
 Public _Top As Float
@@ -24,11 +24,12 @@ Property Read bottom As _ReportBorderSide
 
 Property Read {Right} As _ReportBorderSide
 
+Property Read RoundCorner As ReportRoundCorner
+
 
 Property Width As String
 Property Brush As ReportBrush
-Property Round1 As String
-Property Round2 As String
+
 
 
 
@@ -173,32 +174,9 @@ Private Function Right_Read() As _ReportBorderSide
 
 End
 
-Private Function Round1_Read() As String
 
-  Return hLeft.Round2
+Private Function RoundCorner_Read() As ReportRoundCorner
 
-End
-
-Private Sub Round1_Write(Value As String)
-
-    hLeft.Round1 = Value
-  hTop.Round1 = Value
-  hBottom.Round1 = Value
-  hRight.Round1 = Value
-
-End
-
-Private Function Round2_Read() As String
-
-  Return hLeft.Round2
-
-End
-
-Private Sub Round2_Write(Value As String)
-
-      hLeft.Round2 = Value
-  hTop.Round2 = Value
-  hBottom.Round2 = Value
-  hRight.Round2 = Value
+  Return hRCorner
 
 End

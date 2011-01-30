@@ -139,7 +139,8 @@ End
 Public Sub _SetUnifiedValues()
 
   Dim hSizeParse As TSizeParse
-  
+  Dim sValue As String
+  Dim ars As String[]
   Super._SetUnifiedValues()
   
   hSizeParse = New TSizeParse($hBorder.Left.Width)
@@ -150,6 +151,9 @@ Public Sub _SetUnifiedValues()
   $hBorder._Top = hSizeParse.GetValue()
   hSizeParse = New TSizeParse($hBorder.Bottom.Width)
   $hBorder._Bottom = hSizeParse.GetValue()
+  
+  
+  
 End
 
 Public Sub _GetSizeHints(AvailableW As Integer, AvailableH As Integer, TotalWidth As Integer, TotalHeight As Integer) As TSizeHint

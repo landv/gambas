@@ -148,7 +148,7 @@ End
 
 Public Sub Printer1_Draw()
 
-  $hPrint.Paint($iPage)
+  $hPrint.Paint(Printer1.Page)
 
 End
 
@@ -156,7 +156,7 @@ Public Sub Printer1_Begin()
 
   $hPrint = Object.New(Object.Type($hReport))
   $hPrint.Layout
-  Printer1.Count = 1 '$hreport.Count
+  Printer1.Count = $hPrint.PageCount
 
 End
 

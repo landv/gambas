@@ -340,6 +340,10 @@ Right
 r
 _ReportBorderSide
 
+RoundCorner
+r
+ReportRoundCorner
+
 Width
 p
 s
@@ -347,14 +351,6 @@ s
 Brush
 p
 ReportBrush
-
-Round1
-p
-s
-
-Round2
-p
-s
 
 Style
 v
@@ -868,21 +864,6 @@ _Paint
 m
 
 (Page)i(X)f(Y)f(hControl)TControl;(VirtualId)i
-#ReportPanel
-ReportContainer
-C
-_Properties
-C
-s
-*,Arrangement{Arrange.None;Vertical;Horizontal}=Vertical
-Arrangement
-p
-i
-
-_new
-m
-
-
 #ReportSection
 ReportVBox
 C
