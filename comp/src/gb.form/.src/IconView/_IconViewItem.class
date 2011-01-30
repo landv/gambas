@@ -171,9 +171,42 @@ Private Sub PaintRoundedRect(X As Integer, Y As Integer, W As Integer, H As Inte
   
 End
 
-Public Sub _Draw(hRect As Rect, hClip As Rect, bFocus As Boolean, bHover As Boolean)
+Public Sub _GetTextRect(hRect As Rect, bHorizontal As Boolean) As Rect
   
-  Dim Y As Integer
+  Dim hText As Rect
+  Dim X, Y, W, H As Integer
+  
+  hRect.Adjust(8)
+  
+  If bHorizontal Then
+    
+    X = hRect.X
+    If $hPicture Then X += $hPicture.W + 4
+    
+    W = hRect.W - (X - hRect.X)
+    H = GetIconView().Font.RichTextHeight(Html($sText), W - 4) + 4
+    
+    hText = New Rect(X, hRect.Y, W, H)
+    hText.Y -= (H - hRect.H) \ 2
+    
+  Else
+  
+    Y = hRect.Y
+    If $hPicture Then Y += $hPicture.H + 4
+    
+    H = GetIconView().Font.RichTextHeight(Html($sText), hRect.W - 4) + 4
+    
+    hText = New Rect(hRect.X, Y, hRect.W, H)
+    
+  Endif
+  
+  Return hText
+  
+End
+
+Public Sub _Draw(hRect As Rect, hClip As Rect, bHorizontal As Boolean, bFocus As Boolean, bHover As Boolean)
+  
+  Dim X, Y As Integer
   Dim iColor As Integer
   
   hRect.Adjust(4)
@@ -198,18 +231,42 @@ Public Sub _Draw(hRect As Rect, hClip As Rect, bFocus As Boolean, bHover As Bool
   
   Draw.Clip(hClip.X, hClip.Y, hClip.Width, hClip.Height)
   
-  Y = hRect.Y
+  If bHorizontal Then
   
-  If $hPicture Then
-    Draw.Picture($hPicture, hRect.X + (hRect.W - $hPicture.W) / 2, hRect.Y)
-    Y += $hPicture.H + 4
-  Endif
+    If System.RightToLeft Then
+      
+    Else
+      
+      X = hRect.X
   
-  If $sText Then
-    'Draw.Clip(hRect.X, Y, hRect.W, hRect.H - Y)
-    Draw.Foreground = If($bSelected, Color.SelectedForeground, Color.TextForeground)
-    Draw.RichText($sText, hRect.X, Y, hRect.W, hRect.H - Y, Align.Top)
-    'Draw.Clip.Enabled = False
+      If $hPicture Then
+        Draw.Picture($hPicture, hRect.X, hRect.Y + (hRect.H - $hPicture.H) / 2)
+        X += $hPicture.W + 4
+      Endif
+      
+      If $sText Then
+        Draw.Foreground = If($bSelected, Color.SelectedForeground, Color.TextForeground)
+        Draw.RichText($sText, X, hRect.Y, hRect.W - (X - hRect.X), hRect.H, Align.Left)
+      Endif
+      
+    Endif
+  
+  Else
+  
+    Y = hRect.Y
+    
+    If $hPicture Then
+      Draw.Picture($hPicture, hRect.X + (hRect.W - $hPicture.W) / 2, hRect.Y)
+      Y += $hPicture.H + 4
+    Endif
+    
+    If $sText Then
+      'Draw.Clip(hRect.X, Y, hRect.W, hRect.H - Y)
+      Draw.Foreground = If($bSelected, Color.SelectedForeground, Color.TextForeground)
+      Draw.RichText($sText, hRect.X, Y, hRect.W, hRect.H - (Y - hRect.Y), Align.Top)
+      'Draw.Clip.Enabled = False
+    Endif
+    
   Endif
   
 End
@@ -265,11 +322,14 @@ End
 
 Private Sub Editable_Write(Value As Boolean)
 
+  $bEditable = Value
+
 End
 
 Public Sub Rename()
   
-  
+  If Not $bEditable Then Return
+  GetIconView()._RenameItem(Me)
   
 End
 
@@ -366,7 +426,4 @@ Public Sub MoveLast()
   hParent._MoveItem(Me, hParent.Count - 1)
   
 End
-
-
-
 

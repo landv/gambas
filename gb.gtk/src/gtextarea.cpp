@@ -24,6 +24,7 @@
 #include "widgets_private.h"
 #include "gapplication.h"
 #include "gclipboard.h"
+#include "gdesktop.h"
 #include "gtextarea.h"
 
 // Private structure took from GTK+ 2.10 code. Used for setting the text area cursor.
@@ -73,6 +74,7 @@ gTextArea::gTextArea(gContainer *parent) : gControl(parent)
 	GtkTextBuffer *buf;
 	
 	g_typ = Type_gTextArea;
+	_align_normal = false;
 	
 	have_cursor = true;
 	use_base = true;
@@ -230,16 +232,15 @@ int gTextArea::length()
 
 bool gTextArea::wrap()
 {
-	if (gtk_text_view_get_wrap_mode(GTK_TEXT_VIEW(textview))==GTK_WRAP_NONE) return false;
-	return true;
+	return (gtk_text_view_get_wrap_mode(GTK_TEXT_VIEW(textview)) != GTK_WRAP_NONE);
 }
 
 void gTextArea::setWrap(bool vl)
 {
 	if (vl)
-		gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(textview),GTK_WRAP_WORD);
+		gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(textview), GTK_WRAP_WORD_CHAR);
 	else
-		gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(textview),GTK_WRAP_NONE);
+		gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(textview), GTK_WRAP_NONE);
 }
 
 /**********************************************************************************
@@ -466,4 +467,34 @@ int gTextArea::textHeight()
 	int w, h;
 	waitForLayout(&w, &h);
 	return h;
+}
+
+int gTextArea::alignment() const
+{
+	if (_align_normal)
+		return ALIGN_NORMAL;
+	
+	switch(gtk_text_view_get_justification(GTK_TEXT_VIEW(textview)))
+	{
+		case GTK_JUSTIFY_RIGHT: return ALIGN_RIGHT;
+		case GTK_JUSTIFY_CENTER: return ALIGN_CENTER;
+		case GTK_JUSTIFY_LEFT: default: return ALIGN_LEFT;
+	}
+}
+
+void gTextArea::setAlignment(int vl)
+{
+	GtkJustification align;
+	
+	_align_normal = false;
+	
+	switch(vl & 0xF)
+	{
+		case ALIGN_LEFT: align = GTK_JUSTIFY_LEFT; break;
+		case ALIGN_RIGHT: align = GTK_JUSTIFY_RIGHT; break;
+		case ALIGN_CENTER: align = GTK_JUSTIFY_CENTER; break;
+		case ALIGN_NORMAL: default: align = gDesktop::rightToLeft() ? GTK_JUSTIFY_RIGHT: GTK_JUSTIFY_LEFT; _align_normal = true; break;
+	}
+
+	gtk_text_view_set_justification(GTK_TEXT_VIEW(textview), align);
 }

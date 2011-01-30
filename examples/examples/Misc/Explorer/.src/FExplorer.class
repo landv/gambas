@@ -1,36 +1,36 @@
 ' Gambas class file
 
-PRIVATE $sPath AS String
-PRIVATE $bHidden AS Boolean
-PRIVATE $bCtrl AS Boolean
+Private $sPath As String
+Private $bHidden As Boolean
+Private $bCtrl As Boolean
 
-STATIC PUBLIC SUB Main()
+Static Public Sub Main()
 
-  DIM hForm AS Form
+  Dim hForm As Form
 
-  hForm = NEW FExplorer(System.User.Home)
+  hForm = New FExplorer(System.User.Home)
   hForm.Show
 
-END
+End
 
-PUBLIC SUB _new(sPath AS String)
+Public Sub _new(sPath As String)
 
   $sPath = sPath
   RefreshExplorer
 
-END
+End
 
-PRIVATE SUB RefreshExplorer()
+Private Sub RefreshExplorer()
 
-  DIM sFile AS String
-  DIM hPictDir AS Picture
-  DIM hPictFile AS Picture
-  DIM cDir AS NEW String[]
-  DIM sName AS String
+  Dim sFile As String
+  Dim hPictDir As Picture
+  Dim hPictFile As Picture
+  Dim cDir As New String[]
+  Dim sName As String
 
-  INC Application.Busy
+  Inc Application.Busy
 
-  ME.Title = Conv($sPath, System.Charset, Desktop.Charset)
+  Me.Title = Conv($sPath, System.Charset, Desktop.Charset)
 
   ivwExplorer.Clear
   'ivwExplorer.Arrangement = IconView.Row
@@ -38,135 +38,137 @@ PRIVATE SUB RefreshExplorer()
   hPictDir = Picture["icon:/48/directory"]
   hPictFile = Picture["icon:/48/file"]
 
-  IF $sPath <> "/" THEN ivwExplorer.Add("D..", "..", hPictDir)
+  If $sPath <> "/" Then ivwExplorer.Add("D..", "..", hPictDir)
 
-  FOR EACH sFile IN Dir($sPath)
+  For Each sFile In Dir($sPath)
 
-    IF NOT $bHidden THEN
-      IF Stat($sPath &/ sFile).Hidden THEN
-        CONTINUE
-      ENDIF
-    ENDIF
+    If Not $bHidden Then
+      If Stat($sPath &/ sFile).Hidden Then
+        Continue
+      Endif
+    Endif
 
-    IF IsDir($sPath &/ sFile) THEN
+    If IsDir($sPath &/ sFile) Then
       cDir.Add("D" & sFile)
-    ELSE
+    Else
       cDir.Add("F" & sFile)
-    ENDIF
+    Endif
 
-  NEXT
+  Next
 
   cDir.Sort
 
-  FOR EACH sFile IN cDir
+  For Each sFile In cDir
 
     sName = Mid$(sFile, 2)
 
-    IF Left$(sFile) = "D" THEN
+    If Left$(sFile) = "D" Then
       ivwExplorer.Add(sFile, sName, hPictDir)
-    ELSE
+    Else
       ivwExplorer.Add(sFile, sName, hPictFile)
-    ENDIF
+    Endif
 
     'ivwExplorer.Item.Editable = TRUE
 
-  NEXT
+  Next
 
   'ivwExplorer.Sorted = FALSE
   'ivwExplorer.Ascending = TRUE
   'ivwExplorer.Sorted = TRUE
 
-FINALLY
+Finally
 
-  DEC Application.busy
+  Dec Application.busy
 
-CATCH
+Catch
 
   Message.Error(Error.Text)
 
-END
+End
 
 
-PUBLIC SUB mnuQuit_Click()
+Public Sub mnuQuit_Click()
 
-  ME.Close
+  Me.Close
 
-END
+End
 
-PUBLIC SUB mnuViewRefresh_Click()
+Public Sub mnuViewRefresh_Click()
 
   RefreshExplorer
 
-END
+End
 
-PUBLIC SUB ivwExplorer_Activate()
+Public Sub ivwExplorer_Activate()
 
-  DIM sNewPath AS String
-  DIM hForm AS Form
+  Dim sNewPath As String
+  Dim hForm As Form
 
-  IF LAST.Current.Key = "D.." THEN
-    IF $sPath = "/" THEN RETURN
+  Debug Last.Current.Key
+
+  If Last.Current.Key = "D.." Then
+    If $sPath = "/" Then Return
     sNewPath = File.Dir($sPath)
-  ELSE
-    sNewPath = $sPath &/ Mid$(LAST.Current.Key, 2)
-  ENDIF
+  Else
+    sNewPath = $sPath &/ Mid$(Last.Current.Key, 2)
+  Endif
 
-  IF IsDir(sNewPath) THEN
+  If IsDir(sNewPath) Then
 
-    IF $bCtrl THEN
-      $bCtrl = FALSE
-      hForm = NEW FExplorer(sNewPath)
-      hForm.Move(ME.X + 16, ME.Y + 16, ME.W, ME.H)
+    If $bCtrl Then
+      $bCtrl = False
+      hForm = New FExplorer(sNewPath)
+      hForm.Move(Me.X + 16, Me.Y + 16, Me.W, Me.H)
       hForm.Show
-    ELSE
+    Else
       $sPath = sNewPath
       RefreshExplorer
-    ENDIF
+    Endif
 
-  ENDIF
+  Endif
 
-END
+End
 
 
-PRIVATE SUB ToggleViewHidden()
+Private Sub ToggleViewHidden()
 
-  $bHidden = NOT mnuViewHidden.Checked
+  $bHidden = Not mnuViewHidden.Checked
 
   mnuViewHidden.Checked = $bHidden
 
   RefreshExplorer
 
-END
+End
 
 
-PUBLIC SUB mnuViewHidden_Click()
+Public Sub mnuViewHidden_Click()
 
   ToggleViewHidden
 
-END
+End
 
-PUBLIC SUB mnuAbout_Click()
+Public Sub mnuAbout_Click()
 
   Message("IconView example written by\nBenoît Minisini")
 
-END
+End
 
-PUBLIC SUB ivwExplorer_Rename()
+Public Sub ivwExplorer_Rename()
 
-  Message("'" & Mid$(LAST.Item.Key, 2) & "' has been renamed to '" & LAST.Item.Text & "'")
+  Message("'" & Mid$(Last.Item.Key, 2) & "' has been renamed to '" & Last.Item.Text & "'")
 
-END
+End
 
-PUBLIC SUB ivwExplorer_KeyPress()
+Public Sub ivwExplorer_KeyPress()
 
-  IF Key.Control THEN $bCtrl = TRUE
+  If Key.Control Then $bCtrl = True
 
-END
+End
 
-PUBLIC SUB ivwExplorer_KeyRelease()
+Public Sub ivwExplorer_KeyRelease()
 
-  IF Key.Control THEN $bCtrl = FALSE
+  If Key.Control Then $bCtrl = False
 
-END
+End
 
 

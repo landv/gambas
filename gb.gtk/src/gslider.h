@@ -25,7 +25,7 @@
 class gSlider : public gControl
 {
 public:
-	gSlider(gContainer *parent);
+	gSlider(gContainer *parent, bool scrollbar = false);
 
 //"Properties"
 	//int foreground();

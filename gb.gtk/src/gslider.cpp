@@ -103,7 +103,7 @@ void gSlider::init()
 	gtk_range_set_update_policy(GTK_RANGE(widget), _tracking ? GTK_UPDATE_CONTINUOUS : GTK_UPDATE_DISCONTINUOUS);
 }
 
-gSlider::gSlider(gContainer *par) : gControl(par)
+gSlider::gSlider(gContainer *par, bool scrollbar) : gControl(par)
 {	
 	g_typ = Type_gSlider;
 	
@@ -117,15 +117,17 @@ gSlider::gSlider(gContainer *par) : gControl(par)
 	
 	border = gtk_event_box_new();
 	
+	if (scrollbar)
+		return;
+	
 	widget = gtk_vscale_new(NULL);
-	gtk_scale_set_draw_value(GTK_SCALE(widget),false);
+	gtk_scale_set_draw_value(GTK_SCALE(widget), false);
 		
-	gtk_container_add (GTK_CONTAINER(border),widget);
+	gtk_container_add(GTK_CONTAINER(border), widget);
 	
 	init();
 	
-	connectParent();
-	initSignals();
+	realize(false);
 	
 	onChange = NULL;
 	
@@ -133,28 +135,12 @@ gSlider::gSlider(gContainer *par) : gControl(par)
 	g_signal_connect_after(G_OBJECT(border),"expose-event",G_CALLBACK(slider_Expose),(gpointer)this);
 }
 
-gScrollBar::gScrollBar(gContainer *par) : gSlider(par)
+gScrollBar::gScrollBar(gContainer *par) : gSlider(par, true)
 {
-	GtkAdjustment* adj = gtk_range_get_adjustment(GTK_RANGE(widget));
-	GtkWidget *box;
-	GtkWidget *lbl;
-	
 	g_typ = Type_gScrollBar;
-	g_object_ref(adj);
-	gtk_widget_destroy(widget);
+	widget = gtk_hscrollbar_new(NULL);
+	realize(false);
 	
-	box = gtk_vbox_new(false,0);
-	lbl = gtk_label_new("");
-	widget = gtk_hscrollbar_new(adj);
-	g_object_unref(adj);
-	
-	gtk_box_pack_start(GTK_BOX(box),widget,false,0,0);
-	gtk_box_pack_start(GTK_BOX(box),lbl,true,0,0);
-	gtk_container_add (GTK_CONTAINER(border),box);
-	
-	setForeground(parent()->foreground());
-	setBackground(parent()->background());
-	gtk_widget_show_all(box);
 	gtk_range_set_update_policy(GTK_RANGE(widget),GTK_UPDATE_CONTINUOUS);
 	g_signal_connect(G_OBJECT(widget),"value-changed",G_CALLBACK(slider_Change),(gpointer)this);
 }
@@ -201,34 +187,6 @@ void gSlider::setPageStep(int vl)
 	init();
 	if (_mark) gtk_widget_queue_draw(widget);
 }
-
-/*void gSlider::setBackground(int color)
-{
-	set_gdk_bg_color(border,color);
-	set_gdk_bg_color(widget,color);
-	if (!border->window) gtk_widget_realize(border);
-	gdk_window_process_updates(border->window,true);
-}
-
-int gSlider::background()
-{
-	return get_gdk_bg_color(border);
-}
-
-void gSlider::setForeground(int color)
-{
-	set_gdk_fg_color(border,color);
-	set_gdk_fg_color(widget,color);
-		
-	if (!border->window) gtk_widget_realize(border);
-	gdk_window_process_updates(border->window,true);
-	if (bDraw) gtk_widget_queue_draw(widget);
-}
-
-int gSlider::foreground()
-{
-	return get_gdk_fg_color(border);
-}*/
 
 int gSlider::max()
 {
@@ -286,48 +244,34 @@ void gSlider::setValue(int vl)
 
 void gSlider::orientation(int w,int h)
 {
-	GtkAdjustment* adj;
+	GtkAdjustment *adj;
+	GtkType type;
 	
-	if (w<h)
-	{
-		if (G_OBJECT_TYPE(widget)==GTK_TYPE_HSCALE)
-		{
-			adj=gtk_range_get_adjustment(GTK_RANGE(widget));
-			g_object_ref(adj);
-			
-		 	gtk_widget_destroy(widget);
-			
-			widget=gtk_vscale_new(adj);
-			gtk_container_add (GTK_CONTAINER(border),widget);
-			
-			gtk_scale_set_draw_value(GTK_SCALE(widget),false);
-			gtk_widget_show(widget);
-			widgetSignals();
-			g_signal_connect(G_OBJECT(widget),"value-changed",G_CALLBACK(slider_Change),(gpointer)this);
-			setBackground(background());
-			g_object_unref(adj);	
-		}
-	}
-	else
-	{
-		if (G_OBJECT_TYPE(widget)==GTK_TYPE_VSCALE)
-		{
-			adj=gtk_range_get_adjustment(GTK_RANGE(widget));
-			g_object_ref(adj);
-		 	gtk_widget_destroy(widget);
-			widget=gtk_hscale_new(adj);
-			gtk_container_add (GTK_CONTAINER(border),widget);
-			gtk_scale_set_draw_value(GTK_SCALE(widget),false);
-			gtk_widget_show(widget);
-			widgetSignals();
-			g_signal_connect(G_OBJECT(widget),"value-changed",G_CALLBACK(slider_Change),(gpointer)this);
-			setBackground(background());
-			g_object_unref(adj);
-			
-		}
-	}
+	type = (w < h) ? GTK_TYPE_VSCALE : GTK_TYPE_HSCALE;
 	
-	init();
+	if (type != G_OBJECT_TYPE(widget))
+	{
+		adj = gtk_range_get_adjustment(GTK_RANGE(widget));
+		g_object_ref(adj);
+		
+		gtk_widget_destroy(widget);
+		
+		if (type == GTK_TYPE_VSCALE)
+			widget = gtk_vscale_new(adj);
+		else
+			widget = gtk_hscale_new(adj);
+		
+		gtk_container_add(GTK_CONTAINER(border), widget);
+		
+		gtk_scale_set_draw_value(GTK_SCALE(widget), false);
+		gtk_widget_show(widget);
+		widgetSignals();
+		g_signal_connect(G_OBJECT(widget),"value-changed",G_CALLBACK(slider_Change),(gpointer)this);
+		
+		g_object_unref(adj);
+		
+		init();
+	}
 }
 
 void gSlider::resize(int w, int h)
@@ -338,61 +282,34 @@ void gSlider::resize(int w, int h)
 
 void gScrollBar::resize(int w, int h)
 {
-	GtkWidget *box,*lbl;
 	GtkAdjustment* adj;
+	GType type;
 	
 	gControl::resize(w, h);
 	
-	if (w<h)
-	{
-		if (G_OBJECT_TYPE(widget)==GTK_TYPE_HSCROLLBAR)
-		{
-			adj=gtk_range_get_adjustment(GTK_RANGE(widget));
-			g_object_ref(adj);
-			
-			box=gtk_bin_get_child(GTK_BIN(border));
-			gtk_widget_destroy(box);
-			
-			lbl=gtk_label_new("");
-			box=gtk_hbox_new(false,0);
-			widget=gtk_vscrollbar_new(adj);
-			gtk_box_pack_start(GTK_BOX(box),widget,false,false,0);
-			gtk_box_pack_start(GTK_BOX(box),lbl,true,false,0);
-			gtk_container_add (GTK_CONTAINER(border),box);
-			gtk_widget_show_all(box);
-			
-			widgetSignals();
-			g_signal_connect(G_OBJECT(widget),"value-changed",G_CALLBACK(slider_Change),(gpointer)this);
-			setBackground(background());
-			g_object_unref(adj);	
-		}
-	}
-	else
-	{
-		if (G_OBJECT_TYPE(widget)==GTK_TYPE_VSCROLLBAR)
-		{
-			adj=gtk_range_get_adjustment(GTK_RANGE(widget));
-			g_object_ref(adj);
-		 	
-			box=gtk_bin_get_child(GTK_BIN(border));
-			gtk_widget_destroy(box);
-			
-			lbl=gtk_label_new("");
-			box=gtk_vbox_new(false,0);
-			widget=gtk_hscrollbar_new(adj);
-			gtk_box_pack_start(GTK_BOX(box),widget,false,false,0);
-			gtk_box_pack_start(GTK_BOX(box),lbl,true,false,0);
-			gtk_container_add (GTK_CONTAINER(border),box);
-			gtk_widget_show_all(box);
-			
-			widgetSignals();
-			g_signal_connect(G_OBJECT(widget),"value-changed",G_CALLBACK(slider_Change),(gpointer)this);
-			setBackground(background());
-			g_object_unref(adj);
-		}
-	}
+	type = (w < h) ? GTK_TYPE_VSCROLLBAR : GTK_TYPE_HSCROLLBAR;
 	
-	init();
+	if (type != G_OBJECT_TYPE(widget))
+	{
+		adj = gtk_range_get_adjustment(GTK_RANGE(widget));
+		g_object_ref(adj);
+
+		gtk_widget_destroy(widget);
+		
+		if (type == GTK_TYPE_VSCROLLBAR)
+			widget = gtk_vscrollbar_new(adj);
+		else
+			widget = gtk_hscrollbar_new(adj);
+
+		gtk_container_add(GTK_CONTAINER(border), widget);
+		gtk_widget_show(widget);
+		widgetSignals();
+		g_signal_connect(G_OBJECT(widget),"value-changed",G_CALLBACK(slider_Change),(gpointer)this);
+		
+		g_object_unref(adj);	
+		
+		init();
+	}
 }
 
 int gSlider::getDefaultSize()

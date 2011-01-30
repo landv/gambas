@@ -4,11 +4,12 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Mode{Select.*}=Single,Sorted,Editable,GridSize{Range:0;128},IconLines{Range:1;8}=2,Border=True,ScrollBar{Scroll.*}=Both"
+Public Const _Properties As String = "*,Mode{Select.*}=Single,Orientation{Arrange.Horizontal;Vertical}=Vertical,Sorted,Editable,GridSize{Range:0;128},IconLines{Range:1;8}=2,Border=True,ScrollBar{Scroll.*}=Both"
 Public Const _Group As String = "View"
 Public Const _DefaultEvent As String = "Click"
 
 Property Mode As Integer
+Property Orientation As Integer
 Property Border As Boolean
 Property ScrollBar As Integer
 
@@ -33,9 +34,11 @@ Event Rename
 Event Cancel
 Event Compare(Key As String, OtherKey As String)
 
-Private Enum EVENT_ACTIVATE, EVENT_CLICK
+Private Enum EVENT_ACTIVATE, EVENT_CLICK, EVENT_RENAME
 
 Private $iMode As Integer = Select.Single
+Private $bHorizontal As Boolean
+
 Private $hView As ScrollArea
 'Private $hObserver As Observer
 
@@ -78,6 +81,12 @@ Private $bCompareSet As Boolean
 Private $bSortDirty As Boolean
 Private $hUpdateSortTimer As Timer
 
+Private $bEditable As Boolean
+Private $hPanelRename As Panel
+Private $hRenameBox As TextArea
+Private $iRename As Integer = -1
+Private $iCurrentBefore As Integer
+
 Public Sub _new()
   
   $hView = New ScrollArea(Me) As "ScrollArea"
@@ -102,6 +111,7 @@ End
 
 Public Sub Clear()
   
+  ExitRename
   $cItems.Clear
   $aItems.Clear
   $cSelection.Clear
@@ -257,16 +267,34 @@ Private Sub FindIcon(X As Integer, Y As Integer, Optional bIgnoreOutside As Bool
   X -= $iPad
   Y -= $iPad
   
-  iPos = X \ $iGridWidth
-  If iPos >= $nColumn Then 
-    If Not bIgnoreOutside Then Return -1
-    iPos = $nColumn - 1
-  Endif
+  If $bHorizontal Then 
+    
+    iPos = Y \ $iGridHeight
+    If iPos >= $nColumn Then 
+      If Not bIgnoreOutside Then Return -1
+      iPos = $nColumn - 1
+    Endif
+    
+    iPos += (X \ $iGridWidth) * $nColumn
+    If iPos >= $aItems.Count Then 
+      If Not bIgnoreOutside Then Return -1
+      iPos = $aItems.Max
+    Endif
+
+  Else
   
-  iPos += (Y \ $iGridHeight) * $nColumn
-  If iPos >= $aItems.Count Then 
-    If Not bIgnoreOutside Then Return -1
-    iPos = $aItems.Max
+    iPos = X \ $iGridWidth
+    If iPos >= $nColumn Then 
+      If Not bIgnoreOutside Then Return -1
+      iPos = $nColumn - 1
+    Endif
+    
+    iPos += (Y \ $iGridHeight) * $nColumn
+    If iPos >= $aItems.Count Then 
+      If Not bIgnoreOutside Then Return -1
+      iPos = $aItems.Max
+    Endif
+    
   Endif
   
   Return iPos
@@ -316,10 +344,17 @@ Public Sub GetIconGeometry(iPos As Integer, hRect As Rect)
   iRow = GetRow(iPos)
   iCol = GetColumn(iPos)
   
-  hRect.X = iCol * $iGridWidth + $iPad
-  hRect.Y = iRow * $iGridHeight + $iPad
-  hRect.W = $iGridWidth
-  hRect.H = $iGridHeight
+  If $bHorizontal Then
+    hRect.X = iRow * $iGridWidth + $iPad
+    hRect.Y = iCol * $iGridHeight + $iPad
+    hRect.W = $iGridWidth
+    hRect.H = $iGridHeight
+  Else
+    hRect.X = iCol * $iGridWidth + $iPad
+    hRect.Y = iRow * $iGridHeight + $iPad
+    hRect.W = $iGridWidth
+    hRect.H = $iGridHeight
+  Endif
   
 End
 
@@ -354,15 +389,18 @@ Public Sub ScrollArea_Draw()
   Y += $hView.ScrollY
   
   iPos = FindIcon(X, Y)
-  nCol = FindIcon(X + W - 1, Y, True) - iPos + 1
+  
+  If $bHorizontal Then
+    nCol = FindIcon(X, Y + H - 1, True) - iPos + 1
+  Else
+    nCol = FindIcon(X + W - 1, Y, True) - iPos + 1
+  Endif
+
   iLast = FindIcon(X + W - 1, Y + H - 1, True)
   iCol = 0
   
   X -= $hView.ScrollX
   Y -= $hView.ScrollY
-  
-  
-  'Debug "<<<"
   
   While iPos <= iLast
     
@@ -375,7 +413,7 @@ Public Sub ScrollArea_Draw()
       hClip = New Rect(X, Y, W, H)
       hClip = hClip.Intersection(hRect)
       If hClip Then
-        hItem._Draw(hRect, hClip, False, iPos = $iHover Or iPos = $iStart) ' _HaveFocus, $iMouseOver = k And Me.Tracking)
+        hItem._Draw(hRect, hClip, $bHorizontal, False, iPos = $iHover Or iPos = $iStart) ' _HaveFocus, $iMouseOver = k And Me.Tracking)
       Endif
       
     Endif
@@ -421,6 +459,9 @@ Public Sub ScrollArea_Draw()
     
   Endif
   
+  ' GTK+ bug
+  If $hPanelRename And If $hPanelRename.Visible Then $hPanelRename.Refresh
+  
   'Debug ">>>"
   
 End
@@ -428,34 +469,61 @@ End
 Public Sub ScrollArea_Arrange()
   
   Dim W As Integer = $hView.ClientWidth
+  Dim H As Integer = $hView.ClientHeight
   Dim nRow As Integer
   Dim FW As Integer
   
   If $aItems.Count = 0 Then Return
   
-  $iGridHeight = Max(8, $iIconSize) + $iIconLines * Me.Font.Height + 28
-  If $iGridSize Then
-    $iGridWidth = $iGridSize * Desktop.Scale
+  ExitRename
+  
+  If $bHorizontal Then
+    
+    $iGridHeight = Max(8, $iIconSize) + 16
+    $iGridHeight = Max($iGridHeight, Me.Font.Height * $iIconLines + 8)
+    
+    If $iGridSize Then
+      $iGridWidth = $iGridSize * Desktop.Scale
+    Else
+      $iGridWidth = $iIconSize + 16
+    Endif
+    $iGridWidth = Max($iGridWidth, $iIconSize + 8 + Me.Font.Height * 8)
+    
+    $nColumn = Max(1, (H - $iPad * 2) \ $iGridHeight)
+    $iGridHeight = Max(1, (H - $iPad * 2) \ $nColumn)
+    
+    nRow = ($aItems.Count + $nColumn - 1) \ $nColumn
+    
+    $hView.ResizeContents(nRow * $iGridWidth + $iPad * 2, Max(H, $nColumn * $iGridHeight + $iPad * 2))
+    
   Else
-    $iGridWidth = $iIconSize + 16
+    
+    $iGridHeight = Max(8, $iIconSize) + $iIconLines * Me.Font.Height + 28
+    
+    If $iGridSize Then
+      $iGridWidth = $iGridSize * Desktop.Scale
+    Else
+      $iGridWidth = $iIconSize + 16
+    Endif
+    $iGridWidth = Max($iGridWidth, Me.Font.Height * 8)
+    
+    $nColumn = Max(1, (W - $iPad * 2) \ $iGridWidth)
+    $iGridWidth = Max(1, (W - $iPad * 2) \ $nColumn)
+    
+    nRow = ($aItems.Count + $nColumn - 1) \ $nColumn
+    
+    $hView.ResizeContents(Max(W, $nColumn * $iGridWidth + $iPad * 2), nRow * $iGridHeight + $iPad * 2)
+
   Endif
-  $iGridWidth = Max($iGridWidth, Me.Font.Height * 8)
-  
-  $nColumn = Max(1, (W - $iPad * 2) \ $iGridWidth)
-  $iGridWidth = Max(1, (W - $iPad * 2) \ $nColumn)
-  
-  nRow = ($aItems.Count + $nColumn - 1) \ $nColumn
-  
-  $hView.ResizeContents(Max(W, $nColumn * $iGridWidth + $iPad * 2), nRow * $iGridHeight + $iPad * 2)
   
 End
 
 Public Sub ScrollArea_Scroll()
   
+  ExitRename
   SetHoverItem(FindIcon(Mouse.ScreenX - $hView.ScreenX - $hView.ClientX + $hView.ScrollX, Mouse.ScreenY - $hView.ScreenY - $hView.ClientY + $hView.ScrollY))
   
 End
-
 
 Private Function Count_Read() As Integer
 
@@ -467,9 +535,11 @@ Private Sub RefreshIcon(iPos As Integer)
   
   Dim hRect As New Rect
   
+  If iPos < 0 Then Return
   GetIconGeometry(iPos, hRect)
   hRect.Translate(- $hView.ScrollX, - $hView.ScrollY)
-  $hView.Refresh(hRect.X, hRect.Y, hRect.W, hRect.H)
+  'Debug "Refresh:";; hRect.X;; hRect.Y;; hRect.W;; hRect.H
+  $hView.View.Refresh(hRect.X, hRect.Y, hRect.W, hRect.H)
   
 End
 
@@ -503,6 +573,15 @@ Public Sub _EnsureVisible(iPos As Integer)
   
 End
 
+Private Sub ToggleCurrentItem(iPos As Integer)
+  
+  $aItems[iPos].Selected = Not $aItems[iPos].Selected
+  $iCurrent = iPos
+  $iStart = iPos
+  
+  If $iCurrent >= 0 Then _EnsureVisible($iCurrent)
+  
+End
 
 Private Sub SetCurrentItem(iCurrent As Integer, Optional bIgnoreOutside As Boolean, Optional bSelect As Boolean)
   
@@ -644,6 +723,9 @@ Public Sub ScrollArea_KeyPress()
       Case Key["A"]
         If Key.Control Then SelectAll
         
+      Case Key.F2
+        If $iCurrent >= 0 Then $aItems[$iCurrent].Rename
+        
       Case Key.Space
         ScrollArea_DblClick
         
@@ -664,6 +746,8 @@ Public Sub ScrollArea_MouseDown()
   If $iMode = Select.None Then Return
   If Not Mouse.Left Then Return
   
+  $iCurrentBefore = $iCurrent
+  
   If $iMode = Select.Multiple Then
     bShift = Mouse.Shift
     bCtrl = Mouse.Control
@@ -677,7 +761,7 @@ Public Sub ScrollArea_MouseDown()
   If iPos >= 0 Then
     
     If bCtrl Then
-      $aItems[iPos].Selected = Not $aItems[iPos].Selected
+      ToggleCurrentItem(iPos)
     Else
       SetCurrentItem(iPos)
     Endif
@@ -715,7 +799,7 @@ Private Sub UpdateSelRect(X As Integer, Y As Integer)
     $X2 = X
     $Y2 = Y
     $hView.EnsureVisible($X2 - 16, $Y2 - 16, 32, 32)
-    $hView.Refresh
+    $hView.View.Refresh
     SelectRect
     
   Endif
@@ -776,7 +860,11 @@ Private Sub SelectRect(Optional iSelect As Integer = 1)
   hSel = New Rect(X, Y, W, H)
   
   iPos = FindIcon(X, Y)
-  nCol = FindIcon(X + W - 1, Y, True) - iPos + 1
+  If $bHorizontal Then
+    nCol = FindIcon(X, Y + H - 1, True) - iPos + 1
+  Else
+    nCol = FindIcon(X + W - 1, Y, True) - iPos + 1
+  Endif
   iLast = FindIcon(X + W - 1, Y + H - 1, True)
     
   iCol = 0
@@ -818,7 +906,7 @@ Public Sub ScrollArea_MouseUp()
     
     $bSelRect = False
     $hSelTimer = Null
-    $hView.Refresh
+    $hView.View.Refresh
     If $cSelection.Count And If $X1 <> $X2 Or $Y1 <> $Y2 Then SelectionChanged
     ' If Not Mouse.Control Then 
     '   UnselectAll
@@ -826,7 +914,13 @@ Public Sub ScrollArea_MouseUp()
     ' Endif
   Else
     
-    If $iCurrent >= 0 Then RaiseEvent(EVENT_CLICK, $iCurrent)
+    If $iCurrent >= 0 Then 
+      If $iCurrent = $iCurrentBefore Then
+        '$aItems[$iCurrent].Rename
+      Else
+        RaiseEvent(EVENT_CLICK, $iCurrent)
+      Endif
+    Endif
     
   Endif
   
@@ -865,7 +959,7 @@ Private Sub Border_Write(Value As Boolean)
 
   $hView.Border = Value
   $iPad = If(Value, Style.FrameWidth, 0)
-  $hView.Refresh
+  $hView.View.Refresh
 
 End
 
@@ -903,6 +997,8 @@ Private Sub RaiseEvent(iEvent As Integer, iItem As Integer)
       Raise Activate
     Case EVENT_CLICK
       Raise Click
+    Case EVENT_RENAME
+      Raise Rename
   End Select
   $iIntern = iSave
   
@@ -911,7 +1007,9 @@ End
 
 Public Sub ScrollArea_DblClick()
   
-  If $iCurrent >= 0 Then RaiseEvent(EVENT_ACTIVATE, $iCurrent)
+  If $iCurrent >= 0 Then 
+    RaiseEvent(EVENT_ACTIVATE, $iCurrent)
+  Endif
   
 End
 
@@ -967,7 +1065,7 @@ Private Sub UpdateSort()
   
   If Not $bSorted Then Return
   $aItems.Sort(If($bAscending, gb.Ascent, gb.Descent))
-  $hView.Refresh
+  $hView.View.Refresh
   
 End
 
@@ -989,13 +1087,13 @@ End
 
 Private Function Editable_Read() As Boolean
 
-  
+  Return $bEditable
 
 End
 
 Private Sub Editable_Write(Value As Boolean)
 
-  
+  $bEditable = Value
 
 End
 
@@ -1041,7 +1139,7 @@ Public Sub _MoveItem(hItem As _IconViewItem, iNewPos As Integer)
   $aItems.Remove(iPos)
   If iPos < iNewPos Then Dec iNewPos
   $aItems.Add(hItem, iNewPos)
-  $hView.Refresh
+  $hView.View.Refresh
   
 End
 
@@ -1073,6 +1171,100 @@ End
 Private Sub IconLines_Write(Value As Integer)
 
   $iIconLines = Max(1, Min(8, Value))
+  ScrollArea_Arrange
+
+End
+
+Public Sub _RenameItem(hItem As _IconViewItem)
+  
+  Dim hRect As New Rect
+  
+  ExitRename
+  $iRename = _FindItem(hItem)
+  
+  _EnsureVisible($iRename)
+  GetIconGeometry($iRename, hRect)
+  hRect = hItem._GetTextRect(hRect, $bHorizontal)
+  
+  If Not $hRenameBox Then 
+    Object.Lock(Me)
+    $hPanelRename = New Panel(Me)
+    $hPanelRename.Ignore = True
+    $hPanelRename.Arrangement = Arrange.Fill
+    '$hPanelRename.Border = Border.Plain
+    $hPanelRename.Background = Color.TextBackground
+    $hRenameBox = New TextArea($hPanelRename) As "RenameBox"
+    $hRenameBox.ScrollBar = Scroll.None
+    $hRenameBox.Wrap = True
+    $hRenameBox.Border = False
+    Object.Unlock(Me)
+  Endif
+  
+  hRect.X = hRect.X - $hView.ScrollX + $hView.ScreenX - Me.ScreenX
+  hRect.Y = hRect.Y - $hView.ScrollY + $hView.ScreenY - Me.ScreenY
+  
+  $hPanelRename.Move(hRect.X, hRect.Y, hRect.W, hRect.H)
+  $hRenameBox.Alignment = If($bHorizontal, Align.Left, Align.Center)
+  $hRenameBox.Text = hItem.Text
+  $hRenameBox.SelectAll
+  $hPanelRename.Raise
+  $hPanelRename.Show
+  $hRenameBox.SetFocus
+  
+End
+
+Private Sub ExitRename()
+  
+  If $hPanelRename Then $hPanelRename.Hide
+  $iRename = -1
+  $hView.SetFocus
+  
+End
+
+Public Sub RenameBox_Activate()
+  
+  $aItems[$iRename].Text = $hRenameBox.Text
+  RaiseEvent(EVENT_RENAME, $iRename)
+  ExitRename
+  
+End
+
+Public Sub RenameBox_KeyPress()
+  
+  If Key.Code = Key.Esc Then
+    ExitRename
+    Raise Cancel
+  Else If Key.Code = Key.Enter Or If Key.Code = Key.Return Then
+    RenameBox_Activate
+  Endif
+  
+End
+
+Public Sub RenameBox_LostFocus()
+  
+  ExitRename
+  
+End
+
+Private Function Orientation_Read() As Integer
+
+  Return If($bHorizontal, Arrange.Horizontal, Arrange.Vertical)
+
+End
+
+Private Sub Orientation_Write(Value As Integer)
+
+  Dim bHor As Boolean
+  
+  If Value = Arrange.Horizontal Then
+    bHor = True
+  Else If Value = Arrange.Vertical Then
+    bHor = False
+  Else
+    Return
+  Endif
+
+  $bHorizontal = bHor
   ScrollArea_Arrange
 
 End

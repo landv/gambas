@@ -65,7 +65,7 @@
 #define CSLIDER_PROPERTIES "*,Action,MinValue=0,MaxValue=100,Step=1,PageStep=10,Tracking=True,Mark,Value"
 #define CSPINBOX_PROPERTIES "*,Action,MinValue=0,MaxValue=100,Step=1,Wrap,Value,Border=True"
 #define CTABSTRIP_PROPERTIES "*," CARRANGEMENT_PROPERTIES ",Count{Range:1;256}=1,Index,Text,TextFont,Picture,Orientation{Align.Top;Bottom;Left;Right}=Top,Closable"
-#define CTEXTAREA_PROPERTIES "*,Text,ReadOnly,Wrap,Border=True,ScrollBar{Scroll.*}=Both"
+#define CTEXTAREA_PROPERTIES "*,Text,Alignment{Align.Normal;Left;Center;Right}=Normal,ReadOnly,Wrap,Border=True,ScrollBar{Scroll.*}=Both"
 #define CTEXTBOX_PROPERTIES "*,Action,Text,Alignment{Align.Normal;Left;Center;Right}=Normal,ReadOnly,Password,MaxLength,Border=True"
 #define CTEXTEDIT_PROPERTIES "*,ReadOnly,Wrap,Border=True,ScrollBar{Scroll.*}=Both"
 #define CTEXTLABEL_PROPERTIES "*,Padding{Range:0;63},AutoResize,Text,Alignment{Align.*}=TopNormal,Wrap=True,Border{Border.*},Transparent"

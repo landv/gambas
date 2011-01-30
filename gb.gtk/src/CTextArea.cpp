@@ -288,6 +288,14 @@ BEGIN_METHOD_VOID(CTEXTAREA_selected)
 
 END_METHOD
 
+BEGIN_PROPERTY(TextArea_Alignment)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(WIDGET->alignment());
+	else
+		WIDGET->setAlignment(VPROP(GB_INTEGER));
+
+END_PROPERTY
 
 GB_DESC CTextAreaSelectionDesc[] =
 {
@@ -313,13 +321,14 @@ GB_DESC CTextAreaDesc[] =
   GB_PROPERTY_READ("Length", "i", CTEXTAREA_length),
   GB_PROPERTY("ReadOnly", "b", CTEXTAREA_read_only),
 
+  GB_PROPERTY("ScrollBar", "i", CTEXTAREA_scrollbar),
   GB_PROPERTY("Wrap", "b", CTEXTAREA_wrap),
   GB_PROPERTY("Border", "b", CTEXTAREA_border),
+  GB_PROPERTY("Alignment", "i", TextArea_Alignment),
 
   GB_PROPERTY("Line", "i", CTEXTAREA_line),
   GB_PROPERTY("Column", "i", CTEXTAREA_column),
   GB_PROPERTY("Pos", "i", CTEXTAREA_pos),
-  GB_PROPERTY("ScrollBar", "i", CTEXTAREA_scrollbar),
 
   GB_PROPERTY_SELF("Selection", ".TextAreaSelection"),
   GB_METHOD("Select", 0, CTEXTAREA_sel_select, "[(Start)i(Length)i]"),

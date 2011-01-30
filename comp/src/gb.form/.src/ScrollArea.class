@@ -25,6 +25,7 @@ Property NoBackground As Boolean
 Property ScrollBar As Integer
 Property Tracking As Boolean
 Property Background As Integer
+Property Read View As DrawingArea
 
 Event Scroll
 Event Draw
@@ -178,6 +179,7 @@ End
 
 Public Sub Scroll(X As Integer, Y As Integer)
   
+  If $hHBar.Value = X And If $hVBar.Value = Y Then Return
   $hHBar.Value = X
   $hVBar.Value = Y
   $hDrawingArea.Refresh
@@ -187,15 +189,25 @@ End
 Public Sub DrawingArea_Draw()
   
   Dim FW As Integer
+  Dim hClip As Rect
+  Dim hFrame As Rect
   
   If $iBackground <> Color.Default Then 
     If $bBorder Then FW = Style.FrameWidth
     Draw.FillRect(FW, FW, Draw.W - FW * 2, Draw.H - FW * 2, $iBackground)
   Endif
   
-  Draw.Clip(FW, FW, Draw.W - FW * 2, Draw.H - FW * 2)
-  Raise Draw
-  Draw.Clip.Enabled = False
+  'Debug Draw.Clip.X;; Draw.Clip.Y;; Draw.Clip.W;; Draw.Clip.H
+  
+  hClip = New Rect(Draw.Clip.X, Draw.Clip.Y, Draw.Clip.W, Draw.Clip.H)
+  hFrame = New Rect(FW, FW, Draw.W - FW * 2, Draw.H - FW * 2)
+  hClip = hClip.Intersection(hFrame)
+  
+  If hClip Then
+    Draw.Clip(hClip.X, hClip.Y, hClip.W, hClip.H)
+    Raise Draw
+    Draw.Clip.Enabled = False
+  Endif
   
   If $bBorder Then Draw.Style.Panel(0, 0, Draw.W, Draw.H, Border.Sunken)
   
@@ -400,3 +412,9 @@ End
 '   Return ClientHeight_Read()
 ' 
 ' End
+
+Private Function View_Read() As DrawingArea
+
+  Return $hDrawingArea
+
+End

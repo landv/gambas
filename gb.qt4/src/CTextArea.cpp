@@ -99,26 +99,24 @@ static void get_selection(QTextEdit *wid, int *start, int *length)
 	*length = cursor.selectionEnd() - *start;
 }
 
-
-/** MyTextEdit *************************************************************/
-
-MyTextEdit::MyTextEdit(QWidget *parent) : QPlainTextEdit( parent)
+static Qt::Alignment get_alignment(void *_object)
 {
-	setTabChangesFocus(true);
-  //viewport()->setMouseTracking(true);
+	QTextCursor cursor(WIDGET->document());
+	cursor.select(QTextCursor::Document);
+	QTextBlockFormat format = cursor.blockFormat();
+	return format.alignment();
 }
 
-MyTextEdit::~MyTextEdit()
+static void set_alignment(void *_object, Qt::Alignment align)
 {
+	QTextCursor cursor(WIDGET->document());
+	cursor.select(QTextCursor::Document);
+	QTextBlockFormat format = cursor.blockFormat();
+	format.setAlignment(align);
+	cursor.setBlockFormat(format);
+	WIDGET->setTextCursor(cursor);
 }
 
-void MyTextEdit::emitLinkClicked(const QString &s) 
-{ 
-  //d->textOrSourceChanged = FALSE;
-  emit linkClicked( s );
-  //if ( !d->textOrSourceChanged )
-	//  setSource( s );
-}
 
 /** TextArea ***************************************************************/
 
@@ -145,7 +143,9 @@ BEGIN_PROPERTY(CTEXTAREA_text)
     GB.ReturnNewZeroString(TO_UTF8(WIDGET->document()->toPlainText()));
   else
 	{
+		Qt::Alignment align = get_alignment(THIS);
     WIDGET->document()->setPlainText(QSTRING_PROP());
+		set_alignment(THIS, align);
 		//THIS->length = -1;
 	}
 
@@ -523,6 +523,14 @@ BEGIN_METHOD_VOID(CTEXTAREA_ensure_visible)
 
 END_METHOD
 
+BEGIN_PROPERTY(TextArea_Alignment)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(CCONST_alignment(get_alignment(THIS) + Qt::AlignVCenter, ALIGN_NORMAL, false));
+	else
+		set_alignment(THIS, (Qt::Alignment)CCONST_alignment(VPROP(GB_INTEGER), ALIGN_NORMAL, true) & Qt::AlignHorizontal_Mask);
+
+END_PROPERTY
 
 /*
 GB_DESC CTextAreaLinesDesc[] =
@@ -566,6 +574,7 @@ GB_DESC CTextAreaDesc[] =
   GB_PROPERTY("ScrollBar", "i", CWIDGET_scrollbar),
   GB_PROPERTY("Wrap", "b", CTEXTAREA_wrap),
   GB_PROPERTY("Border", "b", CWIDGET_border_simple),
+  GB_PROPERTY("Alignment", "i", TextArea_Alignment),
 
   GB_PROPERTY("Line", "i", CTEXTAREA_line),
   GB_PROPERTY("Column", "i", CTEXTAREA_column),

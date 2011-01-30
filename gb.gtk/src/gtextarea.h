@@ -46,6 +46,9 @@ public:
 	
 	int textWidth();
 	int textHeight();
+	
+	int alignment() const;
+	void setAlignment(int vl);
 
 //"Methods"
 	void copy();
@@ -78,6 +81,7 @@ public:
 
 private:
 	GtkWidget *textview;
+	bool _align_normal;
 };
 
 #endif

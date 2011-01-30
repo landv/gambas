@@ -1381,14 +1381,7 @@ BEGIN_PROPERTY(Control_Tooltip)
 	if (READ_PROPERTY)
 		GB.ReturnNewZeroString(TO_UTF8(WIDGET->toolTip()));
 	else
-	{
-		//GB.StoreString(PROP(GB_STRING), &(THIS->tooltip));
-		/*w = WIDGET;
-		if (CWIDGET_test_flag(THIS, WF_SCROLLVIEW))
-			w = ((QScrollView *)w)->viewport();*/
-		//CWidget::resetTooltip(THIS);
 		WIDGET->setToolTip(QSTRING_PROP());
-	}
 
 END_PROPERTY
 

@@ -47,25 +47,6 @@ typedef
     }
   CTEXTAREA;
 
-class MyTextEdit: public QPlainTextEdit
-{
-  Q_OBJECT
-  
-public:
-  MyTextEdit(QWidget *parent = 0);
-  ~MyTextEdit();
-  
-signals:
-  //void highlighted(const QString&);
-  void linkClicked(const QString&);
-
-private:
-  //void popupDetail( const QString& contents, const QPoint& pos );
-  bool linksEnabled() const { return true; }
-  //void emitHighlighted( const QString &s );
-  void emitLinkClicked( const QString &s );
-};
-
 class CTextArea : public QObject
 {
   Q_OBJECT

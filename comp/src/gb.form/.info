@@ -996,7 +996,7 @@ C
 _Properties
 C
 s
-*,Mode{Select.*}=Single,Sorted,Editable,GridSize{Range:0;128},IconLines{Range:1;8}=2,Border=True,ScrollBar{Scroll.*}=Both
+*,Mode{Select.*}=Single,Orientation{Arrange.Horizontal;Vertical}=Vertical,Sorted,Editable,GridSize{Range:0;128},IconLines{Range:1;8}=2,Border=True,ScrollBar{Scroll.*}=Both
 _Group
 C
 s
@@ -1006,6 +1006,10 @@ C
 s
 Click
 Mode
+p
+i
+
+Orientation
 p
 i
 
@@ -1229,6 +1233,22 @@ _MoveItem
 m
 
 (hItem)_IconViewItem;(iNewPos)i
+_RenameItem
+m
+
+(hItem)_IconViewItem;
+RenameBox_Activate
+m
+
+
+RenameBox_KeyPress
+m
+
+
+RenameBox_LostFocus
+m
+
+
 #InputBox
 
 C
@@ -1538,6 +1558,10 @@ b
 Background
 p
 i
+
+View
+r
+DrawingArea
 
 :Scroll
 :
@@ -2091,10 +2115,14 @@ _new
 m
 
 
+_GetTextRect
+m
+Rect
+(hRect)Rect;(bHorizontal)b
 _Draw
 m
 
-(hRect)Rect;(hClip)Rect;(bFocus)b(bHover)b
+(hRect)Rect;(hClip)Rect;(bHorizontal)b(bFocus)b(bHover)b
 EnsureVisible
 m
 
