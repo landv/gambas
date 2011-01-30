@@ -1704,7 +1704,7 @@ void MyMainWindow::showActivate(QWidget *transient)
 	//CWIDGET_clear_flag(THIS, WF_CLOSED);
 
 	if (!THIS->title && _border)
-		setWindowTitle(GB.Application.Title());
+		setWindowTitle(TO_QSTRING(GB.Application.Title()));
 
 	initProperties();
 

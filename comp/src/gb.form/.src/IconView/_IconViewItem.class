@@ -1,18 +1,36 @@
 ' Gambas class file
 
+Export
+
 Property Read Key As String
 Property {Picture} As Picture
 Property Text As String
 Property Selected As Boolean
+Property Editable As Boolean
+
+Property Read X As Integer
+Property Read Y As Integer
+Property Read W As Integer
+Property Read H As Integer
+Property Read Width As Integer
+Property Read Height As Integer
 
 Public _Key As String
 Private $sText As String
 Private $hPicture As Picture
 Private $bSelected As Boolean
+Private $bEditable As Boolean
 
 Event _Foo
 
-Private Sub GetIconView() As MyIconView
+Public Sub _new()
+  
+  $bEditable = GetIconView().Editable
+  
+End
+
+
+Private Sub GetIconView() As IconView
   
   Return Object.Parent(Me)
   
@@ -20,11 +38,9 @@ End
 
 Private Sub RefreshView()
   
-  GetIconView().Refresh
+  GetIconView()._RefreshItem(Me)
   
 End
-
-
 
 Private Function Key_Read() As String
 
@@ -40,6 +56,7 @@ End
 
 Private Sub Picture_Write(Value As Picture)
 
+  If $hPicture = Value Then Return
   $hPicture = Value
   RefreshView
 
@@ -53,7 +70,9 @@ End
 
 Private Sub Text_Write(Value As String)
 
+  If $sText = Value Then Return
   $sText = Value
+  GetIconView()._SortIsDirty
   RefreshView
   
 End
@@ -62,7 +81,7 @@ End
 '   
 '   Dim iBackColor As Integer
 '   Dim hBackImage As Image
-'   Dim hParent As MyIconView
+'   Dim hParent As IconView
 '   Dim ix, iy As Integer
 '   
 '   If _IconViewItem._hBackPicture.Width <> Width Then 
@@ -204,16 +223,150 @@ End
 
 Private Sub Selected_Write(Value As Boolean)
 
-  $bSelected = Value
+  If $bSelected = Value Then Return
   GetIconView()._SelectItem(Me, Value)
+  $bSelected = Value
   RefreshView
 
 End
 
 Public Sub EnsureVisible()
   
-  Dim hParent As MyIconView = GetIconView()
+  Dim hParent As IconView = GetIconView()
   
   hParent._EnsureVisible(hParent._FindItem(Me))
   
 End
+
+Public Sub _Inside(hRect As Rect, X As Integer, Y As Integer) As Boolean
+  
+  hRect.Adjust(8)
+  Return hRect.Contains(X, Y)
+  
+End
+
+Public Sub _compare(hItem As _IconViewItem) As Integer
+  
+  Dim hParent As IconView = GetIconView()
+  
+  If Not hParent._CompareItem(_Key, hItem.Key) Then 
+    Return hParent.Compare
+  Else
+    Return Comp($sText, hItem.Text, gb.Natural + gb.IgnoreCase)
+  Endif
+  
+End
+
+Private Function Editable_Read() As Boolean
+
+  Return $bEditable
+
+End
+
+Private Sub Editable_Write(Value As Boolean)
+
+End
+
+Public Sub Rename()
+  
+  
+  
+End
+
+Private Sub GetGeometry() As Rect
+  
+  Dim hParent As IconView = GetIconView()
+  Dim hRect As New Rect
+  hParent._GetItemGeometry(Me, hRect)
+  Return hRect
+  
+End
+
+
+Private Function X_Read() As Integer
+
+  Return GetGeometry().X
+
+End
+
+Private Function Y_Read() As Integer
+
+  Return GetGeometry().Y
+
+End
+
+Private Function W_Read() As Integer
+
+  Return GetGeometry().Width
+
+End
+
+Private Function H_Read() As Integer
+
+  Return GetGeometry().Height
+
+End
+
+Private Function Width_Read() As Integer
+
+  Return GetGeometry().Width
+
+End
+
+Private Function Height_Read() As Integer
+
+  Return GetGeometry().Height
+
+End
+
+Public Sub MoveAfter(Optional Key As String)
+  
+  Dim hParent As IconView = GetIconView()
+  Dim iPos As Integer 
+  
+  If Not Key Then 
+    MoveFirst()
+    Return
+  Endif
+  
+  iPos = hParent._FindItem(hParent[Key])
+  If iPos < 0 Then Error.Raise(Subst("Unknown item: '&1'", Key))
+  
+  hParent._MoveItem(Me, iPos + 1)
+  
+End
+
+Public Sub MoveBefore(Optional Key As String)
+  
+  Dim hParent As IconView = GetIconView()
+  Dim iPos As Integer 
+  
+  If Not Key Then 
+    MoveLast()
+    Return
+  Endif
+  
+  iPos = hParent._FindItem(hParent[Key])
+  If iPos < 0 Then Error.Raise(Subst("Unknown item: '&1'", Key))
+  
+  hParent._MoveItem(Me, iPos)
+  
+End
+
+Public Sub MoveFirst()
+  
+  Dim hParent As IconView = GetIconView()
+  hParent._MoveItem(Me, 0)
+  
+End
+
+Public Sub MoveLast()
+  
+  Dim hParent As IconView = GetIconView()
+  hParent._MoveItem(Me, hParent.Count - 1)
+  
+End
+
+
+
+

@@ -94,6 +94,27 @@ QPixmap *GEditor::cache = 0;
 QPixmap *GEditor::breakpoint = 0;
 int GEditor::count = 0;
 
+void GEditor::reset()
+{
+	x = y = xx = 0;
+	x1m = x2m = 0;
+	ym = -1;
+	lastx = -1;
+	cursor = false;
+	lineNumberLength = 0;
+	center = false;
+	largestLine = 0;
+	flashed = false;
+	painting = false;
+	_showRow = -1;
+	_showCol = 0;
+	_showLen = 0;
+	_posOutside = false;
+	lineWidthCacheY = -1;
+	
+	foldClear();
+}
+
 GEditor::GEditor(QWidget *parent) 
 	: Q3ScrollView(parent),
 	fm(font())
@@ -119,29 +140,14 @@ GEditor::GEditor(QWidget *parent)
 	viewport()->setAttribute(Qt::WA_NoSystemBackground, true);
 	//viewport()->setAttribute(Qt::WA_StaticContents, true);
   viewport()->setFocusProxy(this);
-
-	x = y = xx = 0;
-	x1m = x2m = 0;
-	ym = -1;
-	lastx = -1;
-	cursor = false;
-	margin = 0;
-	lineNumberLength = 0;
-	doc = 0;
-	center = false;
-	largestLine = 0;
-	flashed = false;
-	painting = false;
-	_showStringIgnoreCase = false;
-	_showRow = -1;
-	_showCol = 0;
-	_showLen = 0;
-	_posOutside = false;
-	_insertMode = false;
-	_cellw = _cellh = 0;
-	_charWidth = fm.width(" ");
-	lineWidthCacheY = -1;
 	
+	margin = 0;
+	doc = 0;
+	_showStringIgnoreCase = false;
+	_insertMode = false;
+	_charWidth = fm.width(" ");
+	_cellw = _cellh = 0;
+
 	for (i = 0; i < GLine::NUM_STATE; i++)
 	{
 		styles[i].color = defaultColors[i];
@@ -158,6 +164,8 @@ GEditor::GEditor(QWidget *parent)
 	}
 
 	flags = 0;
+	
+	reset();
 	
 	setDocument(NULL);
 
@@ -964,6 +972,8 @@ __OK:
 void GEditor::leaveCurrentLine()
 {
 	doc->colorize(y);
+	if (!_insertMode && x > lineLength(y))
+		x = lineLength(y);
 }
 
 

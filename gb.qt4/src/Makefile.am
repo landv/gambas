@@ -59,7 +59,6 @@ gb_qt4_la_SOURCES = \
  CWatcher.h CWatcher_moc.cpp CWatcher.cpp \
  CGridView.h CGridView_moc.cpp CGridView.cpp \
  CTreeView.h CTreeView_moc.cpp CTreeView.cpp \
- CIconView.h CIconView_moc.cpp CIconView.cpp \
  cprinter.h cprinter_moc.cpp cprinter.cpp \
  csvgimage.h csvgimage_moc.cpp csvgimage.cpp \
  CEmbedder.h CEmbedder.cpp

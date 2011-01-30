@@ -13,12 +13,18 @@ Property Read ScrollY As Integer
 Property Read ScrollWidth As Integer
 Property Read ScrollHeight As Integer
 
+' Property Read ClientWidth As Integer
+' Property Read ClientHeight As Integer
+' Property Read ClientW As Integer
+' Property Read ClientH As Integer
+
 Property Border As Boolean
 Property Focus As Boolean
 Property Painted As Boolean
 Property NoBackground As Boolean
 Property ScrollBar As Integer
 Property Tracking As Boolean
+Property Background As Integer
 
 Event Scroll
 Event Draw
@@ -27,7 +33,9 @@ Private $hDrawingArea As DrawingArea
 Private $hHBar As ScrollBar
 Private $hVBar As ScrollBar
 Private $hObserver As Observer
-Private $iBorder As Integer = Scroll.Both
+Private $iScroll As Integer = Scroll.Both
+Private $iBackground As Integer = Color.Default
+Private $bBorder As Boolean 
 
 Private $W As Integer
 Private $H As Integer
@@ -36,8 +44,10 @@ Public Sub _new()
   
   Me.Arrangement = Arrange.None
   
+  '$hBorder = New DrawingArea(Me) As "Border"
+  '$hBorder.Arrangement = Arrange.Fill
+
   $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
-  $hDrawingArea.Border = Border.Sunken
 
   $hHBar = New ScrollBar(Me) As "Scrollbar"
   $hHBar.Step = Desktop.Scale
@@ -49,24 +59,26 @@ Public Sub _new()
   Me.Proxy = $hDrawingArea
   Me._Container = $hDrawingArea
   
-  ScrollArea_Arrange
+  Border_Write(True)
+  'ScrollArea_Arrange
   
 End
 
 Public Sub ScrollArea_Arrange()
   
-  Dim SB, SP, W, H, P As Integer
+  Dim SB, SP, FW, W, H, P As Integer
   Dim bHBarAllowed, bVBarAllowed As Boolean
   
   SB = Style.ScrollbarSize
   SP = Style.ScrollbarSpacing
+  'If $bBorder Then FW = Style.FrameWidth
   
-  W = Me.Width
-  H = Me.Height
+  W = Me.Width - FW * 2
+  H = Me.Height - FW * 2
   'Debug W;; H;; "/";; $W;; $H
   
-  bHBarAllowed = $iBorder = Scroll.Horizontal Or $iBorder = Scroll.Both
-  bVBarAllowed = $iBorder = Scroll.Vertical Or $iBorder = Scroll.Both
+  bHBarAllowed = $iScroll = Scroll.Horizontal Or $iScroll = Scroll.Both
+  bVBarAllowed = $iScroll = Scroll.Vertical Or $iScroll = Scroll.Both
   
   If W >= $W And If H >= $H Then
     
@@ -131,6 +143,9 @@ Public Sub ScrollArea_Arrange()
   If $hHBar.Visible Then H -= SB + SP
   If $hVBar.Visible Then W -= SB + SP
   
+  W += FW * 2
+  H += FW * 2
+  
   $hDrawingArea.Move(0, 0, W, H)
   If $hHBar.Visible Then $hHBar.Move(0, H + SP, W, SB)
   If $hVBar.Visible Then $hVBar.Move(W + SP, 0, SB, H)
@@ -139,9 +154,12 @@ End
 
 Public Sub ResizeContents(Width As Integer, Height As Integer)
   
+  If $W = Width And If $H = Height Then Return 
+  
   $W = Width
   $H = Height
   ScrollArea_Arrange
+  $hDrawingArea.Refresh
   
 End
 
@@ -168,7 +186,18 @@ End
 
 Public Sub DrawingArea_Draw()
   
+  Dim FW As Integer
+  
+  If $iBackground <> Color.Default Then 
+    If $bBorder Then FW = Style.FrameWidth
+    Draw.FillRect(FW, FW, Draw.W - FW * 2, Draw.H - FW * 2, $iBackground)
+  Endif
+  
+  Draw.Clip(FW, FW, Draw.W - FW * 2, Draw.H - FW * 2)
   Raise Draw
+  Draw.Clip.Enabled = False
+  
+  If $bBorder Then Draw.Style.Panel(0, 0, Draw.W, Draw.H, Border.Sunken)
   
 End
 
@@ -181,13 +210,14 @@ End
 
 Private Function Border_Read() As Boolean
 
-  Return $hDrawingArea.Border <> Border.None
+  Return $bBorder
 
 End
 
 Private Sub Border_Write(Value As Boolean)
 
-  $hDrawingArea.Border = If(Value, Border.Sunken, Border.None)
+  $bBorder = Value
+  ScrollArea_Arrange
 
 End
 
@@ -229,14 +259,14 @@ End
 
 Private Function Scrollbar_Read() As Integer
 
-  Return $iBorder
+  Return $iScroll
 
 End
 
 Private Sub Scrollbar_Write(Value As Integer)
 
-  If $iBorder < Scroll.None Or If $iBorder > Scroll.Both Then Return
-  $iBorder = Value
+  If $iScroll < Scroll.None Or If $iScroll > Scroll.Both Then Return
+  $iScroll = Value
   ScrollArea_Arrange
 
 End
@@ -275,3 +305,98 @@ Public Sub DrawingArea_MouseWheel()
   Endif
   
 End
+
+Public Sub EnsureVisible(X As Integer, Y As Integer, W As Integer, H As Integer)
+  
+  Dim PW, PH, CX, CY, CW, CH As Integer
+  
+  W = (W + 1) / 2
+  H = (H + 1) / 2
+  X = X + W
+  Y = Y + H
+
+  PW = $hDrawingArea.W
+  PH = $hDrawingArea.H
+
+  CX = - Me.ScrollX
+  CY = - Me.ScrollY
+  CW = Me.ScrollWidth
+  CH = Me.ScrollHeight
+
+  If PW < (W * 2) Then W = PW / 2
+  If PH < (H * 2) Then H = PH / 2
+
+  If CW <= PW Then
+    W = 0
+    CX = 0
+  Endif
+  
+  If CH <= PH Then
+    H = 0
+    CY = 0
+  Endif
+
+  If X < (- CX + W) Then
+    CX = - X + W
+  Else If X >= (- CX + PW - W) Then
+    CX = - X + PW - W
+  Endif
+  
+  If Y < (- CY + H) Then
+    CY = - Y + H
+  Else If Y >= (- CY + PH - H) Then
+    CY = - Y + PH - H
+  Endif
+
+  If CX > 0
+    CX = 0
+  Else If CX < (PW - CW) And If CW > PW Then
+    CX = PW - CW
+  Endif
+
+  If CY > 0 Then
+    CY = 0
+  Else If CY < (PH - CH) And If CH > PH Then
+    CY = PH - CH
+  Endif
+
+  Scroll(- CX, - CY)
+  
+End
+
+Private Function Background_Read() As Integer
+
+  Return $iBackground
+
+End
+
+Private Sub Background_Write(Value As Integer)
+
+  $iBackground = Value
+  $hDrawingArea.Refresh
+
+End
+
+' Private Function ClientWidth_Read() As Integer
+' 
+'   Return $hDrawingArea.Width - If($bBorder, Style.FrameWidth * 2, 0)
+' 
+' End
+' 
+' Private Function ClientHeight_Read() As Integer
+' 
+'   Return $hDrawingArea.Height - If($bBorder, Style.FrameWidth * 2, 0)
+' 
+' End
+' 
+' Private Function ClientW_Read() As Integer
+' 
+'   Return ClientWidth_Read()
+' 
+' End
+' 
+' Private Function ClientH_Read() As Integer
+' 
+'   Return ClientHeight_Read()
+' 
+' End

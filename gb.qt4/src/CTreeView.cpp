@@ -900,9 +900,16 @@ BEGIN_METHOD_VOID(CTREEVIEW_below)
 END_METHOD
 
 
-BEGIN_METHOD(CTREEVIEW_select_all, GB_BOOLEAN select)
+BEGIN_METHOD_VOID(TreeView_SelectAll)
 
-	WIDGET->selectAll(VARGOPT(select, TRUE));
+	WIDGET->selectAll(true);
+
+END_METHOD
+
+
+BEGIN_METHOD_VOID(TreeView_UnselectAll)
+
+	WIDGET->selectAll(false);
 
 END_METHOD
 
@@ -1723,7 +1730,8 @@ GB_DESC CListViewDesc[] =
   GB_METHOD("Exist", "b", CTREEVIEW_exist, "(Key)s"),
   GB_METHOD("Find", "b", CTREEVIEW_find, "(X)i(Y)i"),
   //GB_METHOD("FindText", "b", CTREEVIEW_find, "(X)i(Y)i"),
-  GB_METHOD("SelectAll", NULL, CTREEVIEW_select_all, "[(Selected)b]"),
+  GB_METHOD("SelectAll", NULL, TreeView_SelectAll, NULL),
+  GB_METHOD("UnselectAll", NULL, TreeView_UnselectAll, NULL),
 
   GB_PROPERTY_READ("Current", ".ListViewItem", CTREEVIEW_current),
   GB_PROPERTY_READ("Key", "s", CTREEVIEW_key),
@@ -1805,7 +1813,8 @@ GB_DESC CTreeViewDesc[] =
   GB_METHOD("Remove", NULL, CTREEVIEW_remove, "(Key)s"),
   GB_METHOD("Exist", "b", CTREEVIEW_exist, "(Key)s"),
   GB_METHOD("Find", "b", CTREEVIEW_find, "(X)i(Y)i"),
-  GB_METHOD("SelectAll", NULL, CTREEVIEW_select_all, "[(Selected)b]"),
+  GB_METHOD("SelectAll", NULL, TreeView_SelectAll, NULL),
+  GB_METHOD("UnselectAll", NULL, TreeView_UnselectAll, NULL),
 
   GB_PROPERTY_READ("Current", ".TreeViewItem", CTREEVIEW_current),
   GB_PROPERTY_READ("Key", "s", CTREEVIEW_key),
@@ -1898,7 +1907,8 @@ GB_DESC CColumnViewDesc[] =
   GB_METHOD("Remove", NULL, CTREEVIEW_remove, "(Key)s"),
   GB_METHOD("Exist", "b", CTREEVIEW_exist, "(Key)s"),
   GB_METHOD("Find", "b", CTREEVIEW_find, "(X)i(Y)i"),
-  GB_METHOD("SelectAll", NULL, CTREEVIEW_select_all, "[(Selected)b]"),
+  GB_METHOD("SelectAll", NULL, TreeView_SelectAll, NULL),
+  GB_METHOD("UnselectAll", NULL, TreeView_UnselectAll, NULL),
 
   GB_PROPERTY_READ("Current", ".ColumnViewItem", CTREEVIEW_current),
   GB_PROPERTY_READ("Key", "s", CTREEVIEW_key),

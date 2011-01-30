@@ -66,7 +66,6 @@
 #include "CSpinBox.h"
 #include "CSplitter.h"
 #include "CStock.h"
-#include "CIconView.h"
 #include "CGridView.h"
 #include "CSeparator.h"
 #include "cprinter.h"
@@ -181,8 +180,6 @@ extern "C"
 		CListViewDesc,
 		CTreeViewItemDesc,
 		CTreeViewDesc,
-		CIconViewItemDesc,
-		CIconViewDesc,
 		CColumnViewItemDesc,
 		CColumnViewColumnDesc,
 		CColumnViewColumnsDesc,

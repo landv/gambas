@@ -3,7 +3,7 @@
 'IconView Gambas Version
 
 Inherits UserControl
-Export
+'Export
 
 Public Const _Properties As String = "*,Mode{Select.*}=Single,Sorted,Editable,GridWidth{Range:0;64}=0,Border=True,ScrollBar{Scroll.*}=Both"
 Public Const _Group As String = "View"
@@ -43,7 +43,7 @@ Private $hPicture As Picture
 Private $bDrawSelRect As Boolean
 Private $iSelX As Integer
 Private $iSelY As Integer
-Private $hSelRect As New TRect
+Private $hSelRect As New Rect
 Private $bUnselectMode As Boolean
 Private $iCurMouseX As Integer
 Private $iCurMouseY As Integer
@@ -510,7 +510,7 @@ Public Sub MyDrawingArea_Draw()
   
   Dim hitem As _IconViewItemFabien
   Dim i, j, k, x, y As Integer
-  'Dim hrect As TRect
+  'Dim hrect As Rect
   Dim iSpace As Integer = 10 + $iGridWidth
   Dim iMarge As Integer
   Dim hItemHover As _IconViewItemFabien

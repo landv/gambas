@@ -1,12 +1,17 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,51,36)
+  MoveScaled(0,0,85,80)
+  Icon = Picture["icon:/medium/color"]
   Arrangement = Arrange.Vertical
   Margin = True
-  { MyIconView1 MyIconView
-    MoveScaled(1,1,47,25)
+  { DateBox1 DateBox
+    MoveScaled(1,1,24,4)
+  }
+  { IconView1 IconView
+    MoveScaled(1,6,24,22)
     Expand = True
+    Mode = Select.Multiple
   }
   { Button1 Button
     MoveScaled(1,31,16,4)

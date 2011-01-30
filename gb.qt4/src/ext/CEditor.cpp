@@ -188,7 +188,7 @@ END_METHOD
 
 ****************************************************************************/
 
-BEGIN_PROPERTY(CEDITOR_text)
+BEGIN_PROPERTY(Editor_Text)
 
   if (READ_PROPERTY)
     GB.ReturnNewZeroString(DOC->getText().utf8());
@@ -197,11 +197,17 @@ BEGIN_PROPERTY(CEDITOR_text)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CEDITOR_length)
+BEGIN_PROPERTY(Editor_Length)
 
   GB.ReturnInteger(DOC->getLength());
 
 END_PROPERTY
+
+BEGIN_METHOD_VOID(Editor_HighlightAll)
+
+	DOC->colorizeAll();
+
+END_METHOD
 
 BEGIN_PROPERTY(CEDITOR_tab_length)
 
@@ -579,13 +585,13 @@ BEGIN_METHOD(CEDITOR_lines_get, GB_INTEGER line)
 
 END_METHOD
 
-BEGIN_METHOD_VOID(CEDITOR_lines_expand_all)
+BEGIN_METHOD_VOID(Editor_ExpandAll)
 
 	WIDGET->unfoldAll();
 
 END_METHOD
 
-BEGIN_METHOD_VOID(CEDITOR_lines_collapse_all)
+BEGIN_METHOD_VOID(Editor_CollapseAll)
 
 	WIDGET->foldAll();
 
@@ -629,11 +635,17 @@ BEGIN_PROPERTY(CEDITOR_line_expanded)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CEDITOR_line_limit)
+BEGIN_PROPERTY(EditorLine_Limit)
 
 	GB.ReturnBoolean(DOC->hasLimit(THIS->line));
 
 END_PROPERTY
+
+/*BEGIN_PROPERTY(EditorLine_Edited)
+
+	GB.ReturnBoolean(DOC->isLineEditedSomewhere(THIS->line));
+
+END_PROPERTY*/
 
 BEGIN_METHOD_VOID(CEDITOR_line_get_initial_state)
 
@@ -1135,7 +1147,8 @@ GB_DESC CEditorLineDesc[] =
   GB_PROPERTY("Expanded", "b", CEDITOR_line_expanded),
   GB_PROPERTY("Current", "b", CEDITOR_line_current),
   GB_PROPERTY("Breakpoint", "b", CEDITOR_line_breakpoint),
-  GB_PROPERTY_READ("Limit", "b", CEDITOR_line_limit),
+  GB_PROPERTY_READ("Limit", "b", EditorLine_Limit),
+  //GB_PROPERTY_READ("Edited", "b", EditorLine_Edited),
 	GB_METHOD("GetInitialState", NULL, CEDITOR_line_get_initial_state, NULL),
 	GB_METHOD("Refresh", NULL, CEDITOR_line_refresh, NULL),
   GB_METHOD("Purge", "s", CEDITOR_line_purge, "[(Comment)b(String)b(Replace)s]"),
@@ -1148,8 +1161,6 @@ GB_DESC CEditorLinesDesc[] =
   GB_DECLARE(".Editor.Lines", 0), GB_VIRTUAL_CLASS(),
 
   GB_METHOD("_get", ".Editor.Line", CEDITOR_lines_get, "(Line)i"),
-  GB_METHOD("ExpandAll", NULL, CEDITOR_lines_expand_all, NULL),
-  GB_METHOD("CollapseAll", NULL, CEDITOR_lines_collapse_all, NULL),
   GB_PROPERTY_READ("Count", "i", CEDITOR_lines_count),
 
   GB_END_DECLARE
@@ -1242,8 +1253,12 @@ GB_DESC CEditorDesc[] =
   GB_PROPERTY("Border", "b", CEDITOR_border),
   //GB_PROPERTY("Background", "i", CEDITOR_background),
 
-  GB_PROPERTY("Text", "s", CEDITOR_text),
-  GB_PROPERTY_READ("Length", "i", CEDITOR_length),
+  GB_METHOD("ExpandAll", NULL, Editor_ExpandAll, NULL),
+  GB_METHOD("CollapseAll", NULL, Editor_CollapseAll, NULL),
+
+	GB_METHOD("HighlightAll", NULL, Editor_HighlightAll, NULL),
+  GB_PROPERTY("Text", "s", Editor_Text),
+  GB_PROPERTY_READ("Length", "i", Editor_Length),
 
   GB_PROPERTY("Highlight", "i", CEDITOR_highlight),
   GB_PROPERTY("KeywordsUseUpperCase", "b", CEDITOR_keywords_ucase),

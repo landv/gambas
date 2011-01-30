@@ -77,7 +77,6 @@ Public Sub _new()
 
   With $hIconView = New IconView(Me) As "View"
     .Sorted = True
-    .GridWidth = 24
   End With
 
   With $hColumnView = New ColumnView(Me) As "View"
@@ -327,7 +326,7 @@ Private Sub Current_Write(sFile As String)
 
   Dim sKey As String
 
-  GetView().SelectAll(False)
+  GetView().UnselectAll
   sKey = "0" & sFile
   If Not GetView().Exist(sKey) Then sKey = "1" & sFile
   If Not GetView().Exist(sKey) Then Return
@@ -506,7 +505,7 @@ Private Sub TakeSelection()
     Return
   Endif
 
-  hDst.SelectAll(False)
+  hDst.UnselectAll
   hSrc.MoveFirst
   While hSrc.Available
     If hSrc.Item.Selected Then

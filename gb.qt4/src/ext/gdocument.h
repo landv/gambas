@@ -175,6 +175,7 @@ public:
 	bool isKeywordsUseUpperCase() const { return keywordsUseUpperCase; }
 	
 	void colorize(int y);
+	void colorizeAll();
 	void baptizeUntil(int y);
 	void invalidate(int y);
 

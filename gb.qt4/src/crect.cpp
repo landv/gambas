@@ -45,7 +45,7 @@ BEGIN_METHOD(Rect_new, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
 	if (!MISSING(x) && !MISSING(y) && !MISSING(w) && !MISSING(h))
 	{
 		THIS->x = VARG(x);
-		THIS->y = VARG(x);
+		THIS->y = VARG(y);
 		THIS->w = VARG(w);
 		THIS->h = VARG(h);
 		normalize(THIS);
@@ -318,7 +318,7 @@ GB_DESC RectDesc[] =
 	GB_METHOD("Translate", NULL, Rect_Translate, "(DX)i(DY)i"),
 	GB_METHOD("Union", "Rect", Rect_Union, "(Rect)Rect;"),
 	GB_METHOD("Intersection", "Rect", Rect_Intersection, "(Rect)Rect;"),
-	GB_METHOD("Contains", NULL, Rect_Contains, "(X)i(Y)i"),
+	GB_METHOD("Contains", "b", Rect_Contains, "(X)i(Y)i"),
 	GB_METHOD("Adjust", NULL, Rect_Adjust, "(Left)i[(Top)i(Right)i(Bottom)i]"),
 
 	GB_END_DECLARE

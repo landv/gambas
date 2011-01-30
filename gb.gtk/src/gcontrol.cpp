@@ -639,23 +639,14 @@ void gControl::setIgnore (bool vl)
 
 char* gControl::toolTip()
 {
-	GtkTooltipsData* data;
-	
-	data=gtk_tooltips_data_get(border);
-	if (!data) return NULL;
-	return data->tip_text;
-	
+	char *text = gtk_widget_get_tooltip_text(border);
+	gt_free_later(text);
+	return text;
 }
 
 void gControl::setToolTip(char* vl)
 {
-	char *txt=NULL;
-	
-	if (vl)
-		if (vl[0]) txt=vl;
-	
-	gtk_tooltips_set_tip(gApplication::tipHandle(),border,txt,NULL);
-	
+	gtk_widget_set_tooltip_text(border, vl ? vl : "");
 }
 
 gFont* gControl::font()

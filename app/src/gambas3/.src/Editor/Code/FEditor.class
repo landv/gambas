@@ -315,7 +315,7 @@ Public Function Save(Optional bReset As Boolean) As Boolean
     Editor.Insert("", 1, 0)
   Endif
   
-  File.Save(Path, Editor.Text)
+  File.Save(Path, GetHighlightedText())
   
   ' ENDIF
   
@@ -913,9 +913,9 @@ Public Sub Editors_KeyPress()
       
       If Key.Shift Then 
         If Editor.Lines[Editor.Line].Expanded Then
-          Editor.Lines.CollapseAll
+          Editor.CollapseAll
         Else
-          Editor.Lines.ExpandAll
+          Editor.ExpandAll
         Endif
       Else
         Editor.Lines[Editor.Line].Expanded = Not Editor.Lines[Editor.Line].Expanded
@@ -2203,7 +2203,7 @@ Public Sub Reload()
   If Right(sText) <> "\n" Then sText &= "\n"
   edtEditor.Text = sText
   If Not Project.RestoringFiles Then
-    If Settings["/Editor/Fold"] Then edtEditor.Lines.CollapseAll
+    If Settings["/Editor/Fold"] Then edtEditor.CollapseAll
   Endif
   Editor.SetFocus
   Modify(True)
@@ -3137,6 +3137,13 @@ Public Sub GetText() As String
   
 End
 
+Public Sub GetHighlightedText() As String
+  
+  Editor.HighlightAll
+  Return Editor.Text
+  
+End
+
 Public Sub GetPosition() As Integer
   
   Return Editor.GetPosition()
@@ -3202,8 +3209,8 @@ Public Sub mnuPretty_Click()
   Dim X, Y As Integer
   Dim sText, sNewText As String
   
-  sText = Editor.Text
-  sNewText = MPrettyCode.Run(Editor.Text)
+  sText = GetHighlightedText()
+  sNewText = MPrettyCode.Run(sText)
   If sNewText = sText Then Return
   
   X = Editor.Column

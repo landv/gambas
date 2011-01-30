@@ -7,9 +7,9 @@ Public Sub Form_Open()
   
   For Each sPath In Dir("~").Sort(gb.Language + gb.IgnoreCase)
     If IsDir("~" &/ sPath) Then
-      MyIconView1.Add(sPath, sPath, Picture["icon:/48/directory"])
+      IconView1.Add(sPath, sPath, Picture["icon:/48/directory"])
     Else
-      MyIconView1.Add(sPath, sPath, Picture["icon:/48/file"])
+      IconView1.Add(sPath, sPath, Picture["icon:/48/file"])
     Endif
   Next
   
@@ -18,6 +18,24 @@ End
 Public Sub Button1_Click()
 
   'MyIconView1["gambas"].Picture = Picture["icon:/48/gambas"]
-  MyIconView1["asap"].Selected = Not MyIconView1["asap"].Selected
+  Try IconView1.Current.Selected = Not IconView1.Current.Selected
+
+End
+
+Public Sub IconView1_Activate()
+
+  Debug IconView1.Item.Key
+
+End
+
+Public Sub IconView1_Select()
+
+  Debug
+
+End
+
+Public Sub IconView1_Click()
+
+  Debug IconView1.Item.Key
 
 End

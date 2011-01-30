@@ -77,7 +77,6 @@
 #include "CFrame.h"
 #include "CRadioButton.h"
 #include "CTreeView.h"
-#include "CIconView.h"
 #include "CGridView.h"
 #include "CTabStrip.h"
 #include "CDialog.h"
@@ -988,7 +987,6 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	CListViewItemDesc, CListViewDesc,
 	CTreeViewItemDesc, CTreeViewDesc,
 	CColumnViewItemDesc, CColumnViewColumnDesc, CColumnViewColumnsDesc, CColumnViewDesc,
-	CIconViewItemDesc, CIconViewDesc,
 	CGridItemDesc, CGridRowDesc, CGridColumnDesc, CGridRowsDesc, CGridColumnsDesc, CGridViewDataDesc, CGridViewDesc,
 	CFrameDesc, CPanelDesc, CHBoxDesc, CVBoxDesc, CHPanelDesc, CVPanelDesc,
 	CHSplitDesc, CVSplitDesc,

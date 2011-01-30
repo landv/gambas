@@ -1,6 +1,6 @@
 ' Gambas class file
 
-Export
+'Export
 
 Private $iX As Integer
 Private $iY As Integer
@@ -48,7 +48,7 @@ Property Editable As Boolean
 Event Change
 'Event WantToBeVisible
 
-Public Sub _new(Parent As MyIconView)
+Public Sub _new(Parent As MyIconViewFabien)
   
   $iParent = Parent.Handle
   
@@ -60,7 +60,7 @@ End
 
 Public Sub EnsureVisible()
   
-  Dim hParent As MyIconView = Object.Parent(Me)
+  Dim hParent As MyIconViewFabien = Object.Parent(Me)
   
   hParent._SetItemVisible(_$sKey)
   'Raise WantToBeVisible
@@ -69,7 +69,7 @@ End
 
 Public Sub Delete()
   
-  Dim hParent As MyIconView = Object.Parent(Me)
+  Dim hParent As MyIconViewFabien = Object.Parent(Me)
   
   hParent.Remove(Me.Key)
   
@@ -77,7 +77,7 @@ End
 
 Public Sub Rename()
   
-  Dim hParent As MyIconView = Object.Parent(Me)
+  Dim hParent As MyIconViewFabien = Object.Parent(Me)
   Dim htb As TextBox
   
   If Not Me.Editable Then Return
@@ -90,7 +90,7 @@ End
 
 Public Function MoveNext() As Boolean
   
-  Dim hParent As MyIconView = Object.Parent(Me)
+  Dim hParent As MyIconViewFabien = Object.Parent(Me)
   
   Return hParent.MoveNext
   
@@ -110,11 +110,11 @@ End
 
 Private Sub Picture_Write(Value As Picture)
   
-  Dim hParent As MyIconView = Object.Parent(Me)
+  Dim hParent As MyIconViewFabien = Object.Parent(Me)
   
   $hPicture = Value
   SetWH
-  'MyIconView._Instance[$iParent].ReFresh
+  'MyIconViewFabien._Instance[$iParent].ReFresh
   hParent._ChangeItem(_$sKey)
   
 End
@@ -127,7 +127,7 @@ End
 
 Private Sub Text_Write(Value As String)
   
-  Dim hParent As MyIconView = Object.Parent(Me)
+  Dim hParent As MyIconViewFabien = Object.Parent(Me)
   
   $sText = Value
   SetWH
@@ -144,7 +144,7 @@ End
 
 Private Sub Selected_Write(Value As Boolean)
   
-  Dim hParent As MyIconView = Object.Parent(Me)
+  Dim hParent As MyIconViewFabien = Object.Parent(Me)
   
   $bSelected = Value
   
@@ -250,7 +250,7 @@ End
 Public Sub _Draw(X As Integer, Y As Integer, Width As Integer, Height As Integer, bFocus As Boolean, bHover As Boolean)
   
   Dim iBackColor As Integer
-  Dim hParent As MyIconView 
+  Dim hParent As MyIconViewFabien 
   
   iBackColor = IIf(bFocus, Color.SelectedBackground, Color.gray)
   Draw.Font = _Font
@@ -287,7 +287,7 @@ Public Sub _Draw2(X As Integer, Y As Integer, Width As Integer, Height As Intege
   
   Dim iBackColor As Integer
   Dim hBackImage As Image
-  Dim hParent As MyIconView
+  Dim hParent As MyIconViewFabien
   Dim ix, iy As Integer
   
   If _IconViewItem._hBackPicture.Width <> Width Then 
@@ -424,12 +424,12 @@ End
 
 Public Sub _compare(hItem As _IconViewItem) As Integer
   
-  Dim hParent As MyIconView = Object.Parent(Me)
+  Dim hParent As MyIconViewFabien = Object.Parent(Me)
   
   If Not hParent._comparekey($sText, hItem.Text) Then 
     Return hParent.Compare
   Else
-    Return Comp($sText, hItem.Text)
+    Return Comp($sText, hItem.Text, gb.IgnoreCase + gb.Language)
   Endif
   
 End

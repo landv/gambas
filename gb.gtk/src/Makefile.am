@@ -19,7 +19,7 @@ gb_gtk_la_SOURCES = \
 	gcontrol.cpp gcontainer.cpp gseparator.cpp \
 	gbutton.cpp gprogressbar.cpp gslider.cpp glabel.cpp gsignals.cpp \
 	gpicturebox.cpp gcombobox.cpp gtextbox.cpp gtextarea.cpp glistbox.cpp \
-	gspinbox.cpp ggridview.cpp gtreeview.cpp giconview.cpp \
+	gspinbox.cpp ggridview.cpp gtreeview.cpp \
 	gframe.cpp gsplitter.cpp gtabstrip.cpp gscrollview.cpp \
 	gmenu.cpp gtrayicon.cpp gmainwindow.cpp \
 	watcher.h watcher.cpp \
@@ -50,7 +50,6 @@ gb_gtk_la_SOURCES = \
 	CListBox.h CListBox.cpp \
 	tablerender.h tablerender.cpp CGridView.h CGridView.cpp \
 	CTreeView.h CTreeView.cpp \
-	CIconView.h CIconView.cpp \
 	CFrame.h CFrame.cpp \
 	CSplitter.h CSplitter.cpp \
 	CTabStrip.h CTabStrip.cpp \
@@ -80,7 +79,6 @@ gb_gtk_la_SOURCES = \
 	gpicturebox.h \
 	ggridview.h \
 	gtreeview.h \
-	giconview.h \
 	glistbox.h \
 	gspinbox.h \
 	gcombobox.h \

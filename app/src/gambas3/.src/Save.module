@@ -36,7 +36,7 @@ Public Function Error() As Boolean
     Try Move $sPath & "~" To $sPath
   Endif
   
-  FMain.ShowError(("Cannot save file !") & "\n\n" & $sPath & "\n\n" & sError, $sPath)
+  FMain.ShowError("<b>" & ("Cannot save file !") & "</b>\n\n" & $sPath & "\n\n" & sError, $sPath)
   Save.End
   Return True
   

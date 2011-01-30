@@ -217,10 +217,7 @@ void GDocument::clear()
   updateViews();
 
   for (i = 0; i < views.count(); i++)
-  {
-    views.at(i)->cursorGoto(0, 0, false);
-  	views.at(i)->foldClear();
-  }
+		views.at(i)->reset();
 }
 
 
@@ -239,14 +236,6 @@ GString GDocument::getText()
 
   if (lines.count())
   {
-		FOR_EACH_VIEW(v)
-		{
-			if (v->viewport()->hasFocus())
-				v->leaveCurrentLine();
-		}
-    //for (uint i = 0; i < lines.count(); i++)
-    //  colorize(i);
-
     for (uint i = 0; i < (lines.count() - 1); i++)
     {
       tmp += lines.at(i)->s;
@@ -1231,6 +1220,22 @@ void GDocument::colorize(int y)
 		updateViews(y - nupd + 1, nupd);
 }
 
+void GDocument::colorizeAll()
+{
+	int y;
+	
+  if (highlightMode == None)
+    return;
+	
+	FOR_EACH_VIEW(v)
+	{
+		if (v->viewport()->hasFocus())
+			v->leaveCurrentLine();
+	}
+
+	for (y = 0; y < numLines(); y++)
+		colorize(y);
+}
 
 void GDocument::baptizeUntil(int y)
 {

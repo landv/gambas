@@ -181,6 +181,7 @@ public:
 	
 	GEditor(QWidget *parent);
 	~GEditor();
+	void reset();
 
 	virtual QVariant inputMethodQuery(Qt::InputMethodQuery property) const;
 

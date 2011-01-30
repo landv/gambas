@@ -422,6 +422,15 @@ BEGIN_METHOD(CCOLOR_blend, GB_INTEGER src; GB_INTEGER dst)
 END_METHOD
 
 
+BEGIN_METHOD(Color_SetAlpha, GB_INTEGER color; GB_INTEGER alpha)
+	int r, g, b, a;
+	
+	gt_color_to_rgba(VARG(color), &r, &g, &b, &a);
+	a = VARG(alpha);
+	GB.ReturnInteger(gt_rgba_to_color(r, g, b, a));
+
+END_METHOD
+
 
 GB_DESC CColorInfoDesc[] =
 {
@@ -435,7 +444,7 @@ GB_DESC CColorInfoDesc[] =
   GB_PROPERTY("Saturation", "i", CCOLOR_info_saturation),
   GB_PROPERTY("Value", "i", CCOLOR_info_value),
   GB_PROPERTY("Color", "i", CCOLOR_info_color),
-
+  
   GB_END_DECLARE
 };
 
@@ -484,6 +493,8 @@ GB_DESC CColorDesc[] =
   GB_STATIC_METHOD("Merge", "i", CCOLOR_merge, "(Color1)i(Color2)i[(Weight)f]"),
   GB_STATIC_METHOD("Blend", "i", CCOLOR_blend, "(Source)i(Destination)i"),
 
+	GB_STATIC_METHOD("SetAlpha", "i", Color_SetAlpha, "(Color)i(Alpha)i"),
+									 
   GB_STATIC_METHOD("_get", "ColorInfo", CCOLOR_get, "(Color)i"),
   //GB_STATIC_METHOD("_call", "ColorInfo", CCOLOR_get, "(Color)i"),
 	
