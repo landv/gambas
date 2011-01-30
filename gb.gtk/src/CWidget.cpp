@@ -182,19 +182,27 @@ bool gb_raise_MouseEvent(gControl *sender, int type)
 			
 		case gEvent_MouseMenu:
 			
-			if (GB.CanRaise(ob, EVENT_Menu))
+			for(;;)
 			{
-				GB.Raise(ob, EVENT_Menu, 0);
-				return true;
-			}
-			
-			if (ob->popup)
-			{
-				gMainWindow *window = sender->window();
-				gMenu *menu = gMenu::findFromName(window, ob->popup);
-				if (menu)
-					menu->popup();
-				return true;
+				if (GB.CanRaise(ob, EVENT_Menu))
+				{
+					GB.Raise(ob, EVENT_Menu, 0);
+					return true;
+				}
+				
+				if (ob->popup)
+				{
+					gMainWindow *window = sender->window();
+					gMenu *menu = gMenu::findFromName(window, ob->popup);
+					if (menu)
+						menu->popup();
+					return true;
+				}
+				
+				if (sender->isTopLevel())
+					break;
+				
+				ob = GetObject(sender->parent());
 			}
 			
 			break;

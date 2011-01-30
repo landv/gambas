@@ -500,8 +500,6 @@ static void gambas_handle_event(GdkEvent *event)
 			{
 				gApplication::exitLoop(control);
 			}
-						
-
 			
 			if (control->_proxy_for)
 			{
