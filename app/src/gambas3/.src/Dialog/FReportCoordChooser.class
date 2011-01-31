@@ -35,10 +35,18 @@ End
 
 Public Sub Form_Open()
 
-  Dim aCoord As String[] = Split(Coord, " ")
+  Dim iPos As Integer
+  Dim sCar As Integer
   
-  Try txtCoord.Text = Str(CFloat(Replace(aCoord[0], ",", ".")))
-  Try cmbUnit.Text = aCoord[1]
+  For iPos = 1 To Len(Coord)
+    If Not IsNumber(Left$(Coord, iPos)) Then Break
+  Next
+
+  txtCoord.Text = ""
+  cmbUnit.Index = 0
+  
+  Try txtCoord.Text = Str(CFloat(Replace(Left(Coord, iPos - 1), ",", ".")))
+  Try cmbUnit.Text = Mid$(Coord, iPos)
   
   txtCoord.SelectAll
   txtCoord.SetFocus
