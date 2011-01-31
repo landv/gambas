@@ -1,0 +1,309 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+Public Const _Properties As String = "*,Action,Text,Alignment{Align.Normal;Left;Center;Right}=Normal,ReadOnly,Border=True,Button=True,AllowRelative,AutoConvert"
+Public Const _DefaultEvent As String = "Change"
+Public Const _DefaultSize As String = "24,4"
+Public Const _Similar As String = "TextBox"
+
+Event Change
+Event Activate
+
+Property Value As String
+Property Read Length As Integer
+Property ReadOnly As Boolean
+Property Border As Boolean
+Property Read Editor As MaskBox
+Property Alignment As Integer
+Property AllowRelative As Boolean
+Property AutoConvert As Boolean
+
+'Private $hPanel As Panel
+Private $hBackground As DrawingArea
+Private $bBorder As Boolean
+Private $hTextBox As TextBox
+Private $hButton As ToolButton
+Private $hMenu As Menu
+Private $aUnits As String[] = ["m", "cm", "mm", "in", "in", "px", "pt"]
+Private $bAllowRelative As Boolean
+Private $bAutoConvert As Boolean
+Private $fCurVal As Float
+
+Public Sub _new()
+  
+  $hBackground = New DrawingArea(Me) As "Background"
+  $hBackground.Arrangement = Arrange.Horizontal
+  Border_Write(True)
+
+  $hTextBox = New TextBox($hBackground) As "TextBox"
+  $hTextBox.Border = False
+  $hTextBox.Expand = True
+  $hTextBox.Alignment = Align.Right
+  $hTextBox.Text = "0"
+  Me.Proxy = $hTextBox
+  
+  $hButton = New ToolButton($hBackground) As "Button"
+  '$hButton.W = 30
+  $hButton.AutoResize = True
+  $hButton.Text = "cm"
+  $hButton.Tag = 0
+
+  
+End
+
+
+
+
+Private Function Value_Read() As String
+
+  Return $hTextBox.Text & $hButton.Text
+
+End
+
+Private Sub Value_Write(Value As String)
+
+    Dim I As Integer
+  Dim sCar As String
+  Dim Unit As String
+  Balloon.Hide
+  Value = Trim(Value)
+  
+  If Not Value Then
+    
+    Return
+  Endif
+  
+  For I = 1 To Len(Value)
+    sCar = Mid$(Value, I, 1)
+    If Not IsDigit(sCar) And If sCar <> "." Then Break
+  Next
+  
+  Try $hTextBox.Text = CFloat(Left$(Value, I - 1))
+  Unit = Trim(Mid$(Value, I))
+  
+  If Not Unit Then Unit = "%"
+  
+  If Not $aUnits.Exist(Unit) Then 
+    If Not $bAllowRelative Or Unit <> "%" Then
+      Balloon.Delay = 3000
+      Balloon.Error("Unknown unit", $hButton)
+      Return
+    Endif
+  Endif
+  $hButton.Text = Unit
+End
+
+Public Sub Button_Click()
+  
+  $hTextBox.SetFocus
+  If Not $hMenu Then RefreshMenu
+  $hMenu.Popup($hButton.ScreenX, $hButton.ScreenY + $hButton.Height)
+  
+End
+
+Private Function ReadOnly_Read() As Boolean
+
+  Return $hTextBox.ReadOnly
+
+End
+
+Private Sub ReadOnly_Write(Value As Boolean)
+
+  $hTextBox.ReadOnly = Value
+
+End
+
+Public Sub Background_GotFocus()
+  
+  $hTextBox.SetFocus
+  
+End
+
+Public Sub Observer_GotFocus()
+  
+  $hTextBox.SetFocus
+  
+End
+
+Public Sub Clear()
+  
+  $hTextBox.Clear
+  
+End
+
+Private Function Length_Read() As Integer
+
+  Return $hTextBox.Length
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $bBorder
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $bBorder = Value
+  $hBackground.Padding = If(Value, Style.TextBoxFrameWidth, 0)
+  Me.Refresh
+
+End
+
+
+
+
+Public Sub Background_Draw()
+  
+  If $bBorder Then 
+    Draw.Style.Box(0, 0, $hBackground.W, $hBackground.H)
+  Endif
+  
+End
+
+Private Function Editor_Read() As MaskBox
+
+  Return $hTextBox
+
+End
+
+
+
+Public Sub Button_MouseWheel()
+  
+  
+  $hButton.Tag = Max(0, Min($hButton.Tag - Mouse.Delta, $aUnits.Max))
+  If $bAutoConvert Then 
+    Try $fCurVal = $fCurVal * GetFactor($hButton.Text) / GetFactor($aUnits[$hButton.Tag])
+    $hTextBox.Text = Replace(Format($fCurVal, "0.####"), ",", ".")
+  Endif
+  $hButton.Text = $aUnits[$hButton.Tag]
+  'Raise Change
+End
+
+
+
+Private Function Alignment_Read() As Integer
+
+  Return $hTextBox.Alignment
+
+End
+
+Private Sub Alignment_Write(Value As Integer)
+
+  $hTextBox.Alignment = Value
+
+End
+
+Public Sub TextBox_Activate()
+  
+  Raise Activate
+  
+End
+
+Public Sub TextBox_Change()
+  
+  'Try $fCurVal = CFloat(Last.Text)
+
+  Raise Change
+  
+End
+
+Public Sub TextBox_KeyPress()
+  
+  Try $fCurVal = CFloat(Last.Text)
+  
+End
+
+
+Public Sub TextBox_MouseWheel()
+  
+  Dim f As Float
+  Try f = CFloat($hTextBox.Text)
+  f += Mouse.Delta
+  $fCurVal = Max(0, f)
+  $hTextBox.Text = $fCurVal
+  'Raise Change
+End
+
+
+Private Sub RefreshMenu()
+  Dim hMenu As Menu
+  Dim s As String
+  Try $hMenu.Delete
+  $hMenu = New Menu(Me.Window)
+  
+  For Each s In $aUnits
+    hMenu = New Menu($hMenu) As "Menu"
+    hMenu.Text = s
+  Next
+  
+  
+End
+
+Public Sub Menu_Click()
+  
+  
+  If $bAutoConvert Then 
+    Try $fCurVal = $fCurVal * GetFactor($hButton.Text) / GetFactor(Last.Text)
+    $hTextBox.Text = Replace(Format($fCurVal, "0.####"), ",", ".")
+  Endif
+  $hButton.Text = Last.Text
+  
+  Raise Change
+  
+End
+
+
+
+Private Function AllowRelative_Read() As Boolean
+
+  Return $bAllowRelative
+
+End
+
+Private Sub AllowRelative_Write(Value As Boolean)
+
+  If Not Value And $aUnits[$aUnits.Max] = "%" Then $aUnits.Remove($aUnits.Max)
+  If Value And $aUnits[$aUnits.Max] <> "%" Then $aUnits.Add("%")
+  RefreshMenu
+  $bAllowRelative = Value
+End
+
+Private Function AutoConvert_Read() As Boolean
+
+  Return $bAutoConvert
+
+End
+
+Private Sub AutoConvert_Write(Value As Boolean)
+
+  $bAutoConvert = Value
+
+End
+
+
+Private Function GetFactor(Unit As String) As Float
+  
+  Select Case Unit
+    Case "cm"
+      Return 0.3937
+    Case "ft"
+      Return 12
+    Case "in"
+      Return 1
+    Case "m"
+      Return 39.37
+    Case "mm"
+      Return 0.03937
+    Case "pt"
+      Return 1 / 72
+    Case Else
+      Error.Raise("")  '* (300 / 96) ' Trick to get a 300 DPI like
+  End Select
+  
+End

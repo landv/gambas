@@ -734,7 +734,12 @@ Private Sub ShowProperty(Optional sFocus As String)
       cmbProperty.ReadOnly = True
       aElt.Add("", 0)
       cmbProperty.List = aElt
-    
+      
+    Case "ReportCoord"
+      hEditor = coordProperty
+      coordProperty.AllowRelative = True
+      coordProperty.AutoConvert = True
+      
     Case Else 'object
     
       hEditor = cmbProperty

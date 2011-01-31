@@ -32,7 +32,7 @@
     MoveScaled(8,21,14,0)
   }
   { Panel1 Panel
-    MoveScaled(3,23,56,21)
+    MoveScaled(3,23,56,22)
     Expand = True
     Arrangement = Arrange.Fill
     { grdProperty GridView
@@ -63,12 +63,19 @@
       Border = False
     }
     { btnProperty ToolButton
-      MoveScaled(16,14,3,3)
+      MoveScaled(14,14,3,3)
       Visible = False
       Font = Font["Bold,-2"]
       Background = Color.TextBackground
       Ignore = True
       Text = ("...")
+    }
+    { coordProperty CoordBox
+      MoveScaled(2,18,14,3)
+      Visible = False
+      Background = Color.TextBackground
+      Ignore = True
+      Border = False
     }
   }
   { spnHelp SidePanel
