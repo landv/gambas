@@ -12,8 +12,12 @@ End
 
 Public Sub btnOK_Click()
 
-  If Trim(txtCoord.Text) Then
-    Try Coord = CStr(Val(Trim(txtCoord.Text))) & cmbUnit.Text
+  Dim fVal As Float
+  
+  Try fVal = Val(Trim(txtCoord.Text))
+
+  If fVal > 0 Then
+    Try Coord = CStr(fVal) & cmbUnit.Text
     If Error Then
       Balloon.Error(("Incorrect value."), txtCoord)
       Return
@@ -39,16 +43,16 @@ Public Sub Form_Open()
   Dim sCar As Integer
   
   For iPos = 1 To Len(Coord)
-    If Not IsNumber(Left$(Coord, iPos)) Then Break
+    If InStr("0123456789.", Mid$(Coord, iPos, 1)) = 0 Then Break
   Next
 
   txtCoord.Text = ""
   cmbUnit.Index = 0
   
-  Try txtCoord.Text = Str(CFloat(Replace(Left(Coord, iPos - 1), ",", ".")))
-  Try cmbUnit.Text = Mid$(Coord, iPos)
+  Try txtCoord.Text = Str(CFloat(Left(Coord, iPos - 1)))
+  Try cmbUnit.Text = Trim(Mid$(Coord, iPos))
   
-  txtCoord.SelectAll
+  'txtCoord.SelectAll
   txtCoord.SetFocus
 
 End
