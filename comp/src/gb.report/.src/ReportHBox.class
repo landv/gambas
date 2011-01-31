@@ -87,6 +87,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
     For Each hChild In Me.Children
       'If hChild.Ignore Then Continue
       
+      'If Me.Tag = "*" Then Stop
       hChildHints = hChild._GetSizeHints(W - fSExp, H, W, H)
       'hchild.SizeHint = hChildHints
       If hChild.Expand Then 

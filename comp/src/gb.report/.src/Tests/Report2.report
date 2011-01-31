@@ -1,0 +1,154 @@
+# Gambas Form File 3.0
+
+{ Report Report
+  #MoveScaled(0,0,104,81)
+  Padding = "1cm"
+  Spacing = "2cm"
+  Index = 0
+  Text = ("Section 1")
+  { ReportHBox1 ReportHBox
+    #MoveScaled(4,1,90,26)
+    AutoResize = True
+    Spacing = "4cm"
+    { ReportImage1 ReportImage
+      #MoveScaled(1,2,23,23)
+      Width = "5cm"
+      Height = "5cm"
+      Image = Image.Load("new-logo.png")
+    }
+    { ReportVBox2 ReportVBox
+      #MoveScaled(32,2,56,23)
+      Expand = True
+      { ReportLabel9 ReportLabel
+        #MoveScaled(2,2,52,7)
+        Font = Font["Bitstream Charter,+8"]
+        Text = ("FACTURE")
+        Alignment = Align.Center
+      }
+      { ReportHBox5 ReportHBox
+        #MoveScaled(2,7,44,6)
+        Height = "2cm"
+      }
+      { ReportLabel10 ReportLabel
+        #MoveScaled(4,13,31,3)
+        Key = "nom"
+      }
+      { ReportLabel11 ReportLabel
+        #MoveScaled(4,16,32,3)
+        Key = "adresse"
+      }
+      { ReportHBox6 ReportHBox
+        #MoveScaled(4,16,41,5)
+        AutoResize = True
+        Tag = "*"
+        Spacing = "2mm"
+        { ReportLabel12 ReportLabel
+          #MoveScaled(2,0,12,3)
+          Width = "3cm"
+          AutoResize = True
+          Border = ReportBorder["Right= &H00000000&; "]
+          Key = "CP"
+        }
+        { ReportLabel13 ReportLabel
+          #MoveScaled(19,1,18,3)
+          Width = "3cm"
+          AutoResize = True
+          Key = "ville"
+        }
+      }
+    }
+  }
+  { ReportVBox1 ReportVBox
+    #MoveScaled(4,28,90,42)
+    { ReportHBox2 ReportHBox
+      #MoveScaled(2,0,86,5)
+      Height = "1cm"
+      { ReportLabel1 ReportLabel
+        #MoveScaled(1,1,21,4)
+        Width = "40%"
+        Font = Font["Bitstream Charter,Bold"]
+        Expand = True
+        Border = ReportBorder["Top=1mm &H00000000&; Bottom=1mm &H00000000&; Left=1mm &H00000000&; "]
+        Text = ("Designation")
+        Alignment = Align.Center
+      }
+      { ReportLabel2 ReportLabel
+        #MoveScaled(22,1,13,4)
+        Width = "3cm"
+        Font = Font["Bitstream Charter,Bold"]
+        Border = ReportBorder["Top=1mm &H00000000&; Right= &H00000000&; Bottom=1mm &H00000000&; Left=1mm &H00000000&; "]
+        Text = ("PU HT")
+        Alignment = Align.Center
+      }
+      { ReportLabel3 ReportLabel
+        #MoveScaled(35,1,13,4)
+        Width = "3cm"
+        Font = Font["Bitstream Charter,Bold"]
+        Tag = "*"
+        Border = ReportBorder["Top=1mm &H00000000&; Right= &H00000000&; Bottom=1mm &H00000000&; Left=1mm &H00000000&; "]
+        Text = ("Quantité")
+        Alignment = Align.Center
+      }
+      { ReportLabel4 ReportLabel
+        #MoveScaled(52,1,13,4)
+        Width = "3cm"
+        Font = Font["Bitstream Charter,Bold"]
+        Border = ReportBorder["Border=1mm &H00000000&;"]
+        Text = ("Total HT")
+        Alignment = Align.Center
+      }
+    }
+    { ReportHBox3 ReportHBox
+      #MoveScaled(2,7,86,5)
+      Height = "8mm"
+      { ReportLabel5 ReportLabel
+        #MoveScaled(2,0,21,4)
+        Width = "40%"
+        Padding = "1mm"
+        Expand = True
+        Border = ReportBorder["Bottom= &H00000000&; Left=1mm &H00000000&; "]
+        Key = "designation"
+      }
+      { ReportLabel6 ReportLabel
+        #MoveScaled(22,1,13,4)
+        Width = "3cm"
+        Padding = "1mm"
+        Border = ReportBorder["Right= &H00000000&; Left=1mm &H00000000&; "]
+        Key = "PU"
+        Alignment = Align.Right
+      }
+      { ReportLabel7 ReportLabel
+        #MoveScaled(35,1,13,4)
+        Width = "3cm"
+        Padding = "1mm"
+        Border = ReportBorder["Right= &H00000000&; Left=1mm &H00000000&; "]
+        Key = "Q"
+        Alignment = Align.Right
+      }
+      { ReportLabel8 ReportLabel
+        #MoveScaled(52,1,13,4)
+        Width = "3cm"
+        Border = ReportBorder["Right=1mm &H00000000&; Left=1mm &H00000000&; "]
+        Key = "THT"
+        Alignment = Align.Right
+      }
+    }
+    { ReportHBox4 ReportHBox
+      #MoveScaled(3,14,85,6)
+      Height = "1cm"
+      Border = ReportBorder["Top=1mm &H00000000&; "]
+      { ReportHBox7 ReportHBox
+        #MoveScaled(4,1,50,4)
+        Expand = True
+      }
+      { ReportLabel14 ReportLabel
+        #MoveScaled(59,1,14,4)
+        Width = "3cm"
+        Border = ReportBorder["Right=1mm &H00000000&; Bottom=1mm &H00000000&; Left=1mm &H00000000&; "]
+        Key = "TOTALHT"
+        Alignment = Align.Right
+      }
+    }
+  }
+  Index = 0
+}

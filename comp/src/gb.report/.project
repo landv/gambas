@@ -1,7 +1,7 @@
 # Gambas Project File 3.0
 # Compiled with Gambas 2.99.0
 Title=gb.report
-Startup=Report1
+Startup=Report2
 Icon=printer1.png
 Version=2.99.0
 VersionProgram=gbx3 -V
@@ -11,6 +11,7 @@ Component=gb.form
 Component=gb.db
 Description="Report engine for gambas"
 Authors="Fabien Bodard"
+Environment="GB_GUI=gb.qt4"
 TabSize=2
 MakeComponent=1
 Maintainer=benoit

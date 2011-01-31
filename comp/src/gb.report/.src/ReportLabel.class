@@ -65,10 +65,13 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   'if the size choosed by the user is less than the font height, set the object to the font height
   
   
-  hext = Paint.TextExtents($sText)
+  
   If $sKey Then 
-    fTextWidth = AvailableW
+    
+    hext = Paint.TextExtents(Me.Parent._GetData($sKey))
+    fTextWidth = MTools.PixelsToUnits(hext.Width)
   Else
+    hext = Paint.TextExtents($sText)
     fTextWidth = MTools.PixelsToUnits(hext.Width)
   Endif
   hext = Paint.TextExtents("Fjitgp,")
@@ -77,7 +80,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   
   
   
-  If hMyHints.Height < fTextHeight Then hMyHints.Height = fTextHeight + (2 * Me._Padding) + Me.Border._Left + Me.Border._Right
+  If hMyHints.Height < fTextHeight Then hMyHints.Height = fTextHeight + (2 * Me._Padding) + Me.Border._Top + Me.Border._Bottom
   
   If Me._RelativeHeight Then hMyHints.Height = TotalHeight * Me._Height / 100
   If hMyHints.Height <= 0 Then hMyHints.Height = Me.Font.Height
@@ -117,11 +120,24 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   Endif
   'Draw.Foreground = Me.Foreground
   
+
+  
   iX = (x + hControl.RealLeft + MTools.UnitsToPixels(Me._Padding + Me.Border._Left))
   iY = (y + hControl.RealTop + MTools.UnitsToPixels(Me._Padding + Me.Border._Top))
-  iW = (hControl.RealWidth - MTools.UnitsToPixels(2 * Me._Padding - Me.Border._Left - Me.Border._Right))
-  iH = (hControl.RealHeight - MTools.UnitsToPixels(2 * Me._Padding - Me.Border._Top - Me.Border._Bottom))
+  iW = (hControl.RealWidth - MTools.UnitsToPixels(2 * Me._Padding + Me.Border._Left + Me.Border._Right))
+  
+  iH = (hControl.RealHeight - MTools.UnitsToPixels(2 * Me._Padding + Me.Border._Top + Me.Border._Bottom))
   Paint.Brush = Me._GetActualBrush(iX, iY, iX + hControl.RealWidth, iY + hControl.RealHeight)
+    If Report.Debug Then
+      
+    
+    Paint.Brush = Paint.Color(Color.Red)
+    Paint.Rectangle(ix, iy, iw, ih)
+    Paint.Stroke
+    
+    
+  Endif
+  
   'Set the Font if it is initialized
   If Not IsNull(Me.Font) Then 
     Paint.Font = Me.Font

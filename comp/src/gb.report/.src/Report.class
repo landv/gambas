@@ -102,11 +102,12 @@ Public Sub Layout()
   Dim iCurPage As Integer
   Dim TSection As TControl
   Dim CSection As ReportContainer
-
+  Dim CBaseSection As ReportContainer
   Debug
   If _bInExec Then Return
   'Set execution Flag to true
   _bInExec = True
+  CBaseSection = $aSections[0].Ctrl
   'If $sOldDeviceName = Paint.Device.Name Then Return 
   '$sOldDeviceName = Paint.Device.Name"
   MTools.Resolution = If($iResolution < 0, Paint.ResolutionX, $iResolution)
@@ -125,6 +126,8 @@ Public Sub Layout()
   iCurPage = -1
   For Each Tsection In $aSections
     CSection = TSection.Ctrl
+    CSection.Padding = CBaseSection.Padding
+    CSection.Spacing = CBaseSection.Spacing
     CSection._SetUnifiedValues() 
     TSection._SetGeometry(0, 0, Me._Width, Me._Height) 
     Inc iCurPage
@@ -555,7 +558,14 @@ End
 
 Private Sub Spacing_Write(Value As String)
 
-  _Container.Spacing = Value
+    Dim TSection As TControl
+    Dim hCont As ReportContainer
+  If Me.Spacing <> Value Then
+    For Each TSection In $aSections
+      hCont = Tsection.Ctrl
+       hCont.Spacing = Value
+    Next
+  Endif
 
 End
 
