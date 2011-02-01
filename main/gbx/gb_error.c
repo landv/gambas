@@ -414,8 +414,16 @@ void ERROR_define(const char *pattern, char *arg[])
   }
   else if (ERROR_current->info.code == E_CUSTOM)
 	{
-    ERROR_current->info.msg = STRING_new_zero(pattern);
-    ERROR_current->info.free = TRUE;
+		if (pattern && *pattern)
+		{
+			ERROR_current->info.msg = STRING_new_zero(pattern);
+			ERROR_current->info.free = TRUE;
+		}
+		else
+		{
+    ERROR_current->info.msg = (char *)_message[E_UNKNOWN];
+    ERROR_current->info.free = FALSE;
+		}
 	}
 	else
   {
@@ -530,17 +538,21 @@ void ERROR_print_at(FILE *where, bool msgonly, bool newline)
 			fprintf(where, "%ld:", ERROR_current->info.code);*/
 		if (ERROR_current->info.code > 0)
 			fprintf(where, "#%d: ", ERROR_current->info.code);
-		fprintf(where, "%s", ERROR_current->info.msg);
+		if (ERROR_current->info.msg)
+			fprintf(where, "%s", ERROR_current->info.msg);
 	}
 	else
 	{
 		char *p = ERROR_current->info.msg;
 		unsigned char c;
 		
-		while ((c = *p++))
+		if (p)
 		{
-			if (c < ' ') c = ' ';
-			fputc(c, where);
+			while ((c = *p++))
+			{
+				if (c < ' ') c = ' ';
+				fputc(c, where);
+			}
 		}
 	}
 
