@@ -971,6 +971,9 @@ __OK:
 
 void GEditor::leaveCurrentLine()
 {
+	if (y < 0 || y >= numLines())
+		return;
+	
 	doc->colorize(y);
 	if (!_insertMode && x > lineLength(y))
 		x = lineLength(y);
