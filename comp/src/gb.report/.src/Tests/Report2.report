@@ -8,6 +8,7 @@
   Text = ("Section 1")
   { ReportHBox1 ReportHBox
     #MoveScaled(4,1,90,26)
+    Fixed = True
     AutoResize = True
     Spacing = "4cm"
     { ReportImage1 ReportImage
@@ -18,6 +19,7 @@
     }
     { ReportVBox2 ReportVBox
       #MoveScaled(32,2,56,23)
+      Fixed = True
       Expand = True
       { ReportLabel9 ReportLabel
         #MoveScaled(2,2,52,7)
@@ -59,10 +61,12 @@
     }
   }
   { ReportVBox1 ReportVBox
-    #MoveScaled(4,28,90,42)
+    #MoveScaled(6,29,90,42)
+    Expand = True
     { ReportHBox2 ReportHBox
       #MoveScaled(2,0,86,5)
       Height = "1cm"
+      Fixed = True
       { ReportLabel1 ReportLabel
         #MoveScaled(1,1,21,4)
         Width = "40%"
@@ -133,20 +137,25 @@
         Alignment = Align.Right
       }
     }
-    { ReportHBox4 ReportHBox
-      #MoveScaled(3,14,85,6)
-      Height = "1cm"
+    { ReportHBox8 ReportHBox
+      #MoveScaled(3,13,83,2)
+      Fixed = True
+      Padding = "1mm"
       Border = ReportBorder["Top=1mm &H00000000&; "]
+    }
+    { ReportHBox4 ReportHBox
+      #MoveScaled(4,17,81,5)
       { ReportHBox7 ReportHBox
-        #MoveScaled(4,1,50,4)
+        #MoveScaled(4,2,62,2)
         Expand = True
       }
       { ReportLabel14 ReportLabel
-        #MoveScaled(59,1,14,4)
+        #MoveScaled(68,1,11,4)
         Width = "3cm"
+        Height = "8mm"
         Border = ReportBorder["Right=1mm &H00000000&; Bottom=1mm &H00000000&; Left=1mm &H00000000&; "]
         Key = "TOTALHT"
-        Alignment = Align.Right
+        Alignment = Align.Center
       }
     }
   }

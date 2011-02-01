@@ -7,6 +7,7 @@ Private cFactHead As New Collection[]
 Public Sub _new()
   
   Dim cLine As Collection
+  Dim i As Integer
   'Report.Debug = True
   
   cLine = New Collection
@@ -17,9 +18,8 @@ Public Sub _new()
   cLine["TOTALHT"] = 0
   cFactHead.Add(cLine)
   Me.Data = cFactHead
+  For i = 0 To 5
   cLine = New Collection
-  
-  
   cLine["designation"] = "Patin a roulette"
   cLine["PU"] = 19.90
   cLine["Q"] = 1
@@ -49,6 +49,7 @@ Public Sub _new()
   cLine["PU"] = 2
   cLine["Q"] = 3
   cList.Add(cLine)
+  Next
   ReportHBox3.Data = cList
   
   'Compute Summaries

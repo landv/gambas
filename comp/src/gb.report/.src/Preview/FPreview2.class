@@ -1,0 +1,40 @@
+' Gambas class file
+Private PageW As Integer
+Private PageH As Integer
+Static Private $hreport As Report
+Private $fScale As Float = 0.5
+Static Public Function Run(hReport As Report)
+  Dim hFPreview As FPreview
+  $hreport = hReport
+  
+  hFpreview = New FPreview
+  hFpreview.Show
+  
+End
+
+
+
+Public Sub _New()
+  PageW = 21 * Units.GetFactorUnitToInch("cm") / Units.GetFactorUnitToInch("px", Desktop.Resolution) * $fScale
+  PageH = 29.7 * Units.GetFactorUnitToInch("cm") / Units.GetFactorUnitToInch("px", Desktop.Resolution) * $fScale
+  daPage.move(10, 10, PageW, PageH)
+  
+End
+
+Public Sub Form_Open()
+
+  
+
+End
+
+Public Sub daPage_MouseWheel()
+
+  $fScale = Max(0, Min(1, $fScale + Mouse.Delta * 0.1))
+
+End
+
+Public Sub svPage_MouseWheel()
+
+  Print "coucou"
+
+End

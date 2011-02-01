@@ -90,8 +90,8 @@ Public Sub _PaintAfter(Page As Integer, X As Float, Y As Float, hControl As TCon
       
       X1 = (x + hControl.RealLeft) 
       Y1 = (y + hControl.RealTop) 
-      X2 = (x + hControl.RealLeft + hControl.RealWidth) 
-      Y2 = (y + hControl.RealTop + hControl.RealHeight) 
+      X2 = (x + hControl.RealLeft + hControl.RealWidth) + 1
+      Y2 = (y + hControl.RealTop + hControl.RealHeight) + 1
   
     
     
