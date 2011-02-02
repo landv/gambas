@@ -82,7 +82,7 @@ Static Public Sub PaintBorder(sBorder As String) As Float
   If Not sBorder Then Return
   
   For Each sElt In Split(LCase(sBorder), ";")
-    ars = Scan(sElt, "*=*")
+    ars = Scan(sElt, "*:*")
     If ars.Count < 2 Then Return
     ars2 = Split(ars[1], " ")
     ars[0] = Trim(ars[0])
@@ -184,21 +184,18 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
   W = hCtrl.Width
   H = hCtrl.Height
   
-  If hCtrl["Brush"] Then
+  If hCtrl["Background"] Then
     
     If Draw.Device Then
       
-      Try Draw.FillRect(0, 0, Draw.Width, Draw.Height, CReportBrush[hCtrl["Brush"]]._Color[0])
+      Try Draw.FillRect(0, 0, Draw.Width, Draw.Height, CReportBrush[hCtrl["Background"]]._Color[0])
       
     Else
-     Paint.Brush = CReportBrush[hCtrl["Brush"]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
+     Paint.Brush = CReportBrush[hCtrl["Background"]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
     Paint.Rectangle(0, 0, Paint.Width, Paint.Height)
     Paint.Fill
     Endif
   Endif
-  
-  
-  
   
   fVal = PaintBorder(hCtrl["Border"])
   
@@ -214,6 +211,10 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
   Endif
   
   If W <= 0 Or If H <= 0 Then Return
+  
+  If hCtrl["Brush"] Then
+    Paint.Brush = CReportBrush[hCtrl["Brush"]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
+  Endif
   
   Select Case hCtrl.Kind
       

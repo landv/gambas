@@ -1,40 +1,81 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,68,43)
+  MoveScaled(0,0,54,58)
+  Text = ("Configure border")
   { btnCancel Button
-    MoveScaled(51,7,16,4)
+    MoveScaled(37,6,16,4)
     Text = ("Cancel")
     Cancel = True
   }
   { btnOK Button
-    MoveScaled(51,2,16,4)
+    MoveScaled(37,1,16,4)
     Text = ("OK")
     Default = True
   }
-  { TextLabel1 TextLabel
-    MoveScaled(1,2,47,6)
-    Text = ("Choose the style and then click on border to setup each borders")
-  }
-  { Button1 Button
-    MoveScaled(11,18,36,6)
-  }
-  { ButtonBox1 ButtonBox
-    MoveScaled(11,12,36,4)
-    Alignment = Align.Right
-    ReadOnly = True
-  }
-  { Label1 Label
-    MoveScaled(1,12,8,4)
-    Text = ("Width")
-  }
-  { Label2 Label
-    MoveScaled(1,19,13,4)
-    Text = ("Brush")
-  }
-  { DrawingArea1 DrawingArea
-    MoveScaled(2,26,46,15)
+  { dwgBorder DrawingArea
+    MoveScaled(1,25,31,32)
     Background = Color.SelectedForeground
     Painted = True
+  }
+  { crdTop CoordBox crdBrush
+    Name = "crdTop"
+    MoveScaled(10,1,16,4)
+  }
+  { btnTop Button btnBrush
+    Name = "btnTop"
+    MoveScaled(27,1,5,4)
+    Tag = "Top"
+    Picture = Picture["icon:/small/color"]
+  }
+  { crdBottom CoordBox crdBrush
+    Name = "crdBottom"
+    MoveScaled(10,6,16,4)
+  }
+  { btnBottom Button btnBrush
+    Name = "btnBottom"
+    MoveScaled(27,6,5,4)
+    Tag = "Bottom"
+    Picture = Picture["icon:/small/color"]
+  }
+  { crdLeft CoordBox crdBrush
+    Name = "crdLeft"
+    MoveScaled(10,11,16,4)
+  }
+  { btnLeft Button btnBrush
+    Name = "btnLeft"
+    MoveScaled(27,11,5,4)
+    Tag = "Left"
+    Picture = Picture["icon:/small/color"]
+  }
+  { crdRight CoordBox crdBrush
+    Name = "crdRight"
+    MoveScaled(10,16,16,4)
+  }
+  { btnRight Button btnBrush
+    Name = "btnRight"
+    MoveScaled(27,16,5,4)
+    Tag = "Right"
+    Picture = Picture["icon:/small/color"]
+  }
+  { Label3 Label
+    MoveScaled(1,1,9,4)
+    Text = ("Top")
+  }
+  { Label4 Label
+    MoveScaled(1,6,9,4)
+    Text = ("Bottom")
+  }
+  { Label5 Label
+    MoveScaled(1,11,9,4)
+    Text = ("Left")
+  }
+  { Label6 Label
+    MoveScaled(1,16,9,4)
+    Text = ("Right")
+  }
+  { chkSynchro CheckBox
+    MoveScaled(1,21,32,3)
+    Text = ("Synchronize")
   }
 }

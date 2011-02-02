@@ -1,6 +1,8 @@
 ' Gambas class file
 Export
 
+Public Enum TYPE_COLOR, TYPE_IMAGE, TYPE_LINEAR_GRADIENT, TYPE_RADIAL_GRADIENT
+
 Public _Type As Integer
 Public _X As Float
 Public _Y As Float
@@ -20,13 +22,13 @@ Public Function _PaintBrush(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As I
   Dim Height As Integer = Y2 - Y1
   
   Select Case Me._Type
-    Case 0
+    Case TYPE_COLOR
       hBrush = Paint.Color(_Color[0])
-    Case 1
+    Case TYPE_IMAGE
       hBrush = paint.Image(_Image, X1, Y1)
-    Case 2
+    Case TYPE_LINEAR_GRADIENT
       hBrush = paint.LinearGradient(Width * _X, Height * _Y, Width * _X2, Height * _Y2, _Color, _Pos)
-    Case 3
+    Case TYPE_RADIAL_GRADIENT
       fradius = Width * _radius
       hBrush = paint.RadialGradient(Width * _X, Height * _Y, fradius, Width * _X2, Height * _Y2, _Color, _Pos)
   End Select
@@ -48,64 +50,73 @@ Static Public Sub _get(sValue As String) As CReportBrush
   
   iPos = InStr(sValue, "(")
   
-  If iPos Then sType = Left(sValue, iPos - 1)
-  'pas de parenthese de fin
-  If ipos And Not (sValue Ends ")") Then 
-    Error.Raise
+  If iPos Then 
+    If Right(sValue) <> ")" Then Error.Raise("Bad brush")
+    sType = Left(sValue, iPos - 1)
+    sValue = Mid$(sValue, iPos + 1, -1)
+    ars = Split(sValue, ",", "[]")
   Else
-    svalue = Left(Mid(svalue, ipos + 1), -1)
+    If Left(sValue) <> "#" Then Error.Raise("Bad brush")
+    ars = [sValue]
   Endif
-  ars = Split(sValue, ",", "[]")
+  
   Select Case LCase(sType)
+    
     Case "image"
-      hBrush._Type = 1
       
+      hBrush._Type = TYPE_IMAGE
       hBrush._Image = Image.Load(ars[0])
       hBrush._ImageDir = ars[0]
+      
     Case "radialgradient"
-      hBrush._Type = 3
+      
+      hBrush._Type = TYPE_RADIAL_GRADIENT
       hBrush._X = CFloat(ars[0])
       hBrush._Y = CFloat(ars[1])
       hBrush._Radius = CFloat(ars[2])
       hBrush._X2 = CFloat(ars[3])
       hBrush._Y2 = CFloat(ars[4])
-      hBrush._Color = GetIntegerArray(ars[5])
+      hBrush._Color = GetColorArray(ars[5])
       hBrush._Pos = GetFloatArray(ars[6])
       
     Case "lineargradient"
       
-      hBrush._Type = 2
+      hBrush._Type = TYPE_LINEAR_GRADIENT
       hBrush._X = CFloat(ars[0])
       hBrush._Y = CFloat(ars[1])
       hBrush._X2 = CFloat(ars[2])
       hBrush._Y2 = CFloat(ars[3])
-      hBrush._Color = GetIntegerArray(ars[4])
+      hBrush._Color = GetColorArray(ars[4])
       hBrush._Pos = GetFloatArray(ars[5])
       
     Case Else
       'correction de l'hexon
-      hBrush._Color[0] = Val(ars[0])
+      hBrush._Color[0] = StringToColor(ars[0])
       'CChooser.Value = IIf(Len(ars[0]) = 8, Val(ars[0]), Val(ars[0] & "FF"))
   End Select
   
 Finally
+  
   If hBrush._Color.Count = 0 Then hBrush._Color = [0, &hFFFFFF&]
   If hBrush._Color.Count < 2 Then hBrush._Color.Add(&hFFFFFF&)
   
   If hBrush._Pos.Count < 2 Then hBrush._Pos = [0.0, 1.0]
   
   Return hBrush
+  
 Catch
+  
+  Error.Raise("Bad brush")
   
 End
 
-Static Private Function GetIntegerArray(sValue As String) As Integer[]
+Static Private Function GetColorArray(sValue As String) As Integer[]
   
   Dim ari As New Integer[]
   Dim s As String
   
   For Each s In Split(sValue)
-    ari.Add(Val(s))
+    ari.Add(StringToColor(s))
   Next
   
   Return ari
@@ -125,6 +136,24 @@ Static Private Function GetFloatArray(sValue As String) As Float[]
   
 End
 
+Static Public Sub ColorToString(iColor As Integer) As String
+  
+  If iColor And &HFF000000 Then
+    Return "#" & Hex$(iColor, 8)
+  Else
+    Return "#" & Hex$(iColor, 6)
+  Endif
+  
+End
+
+Static Public Sub StringToColor(sColor As String) As Integer
+  
+  Return Val("&H" & Mid$(sColor, 2) & "&")
+  
+End
+
+
+
 Public Function ToString() As String
   
   Dim i As Integer
@@ -132,19 +161,21 @@ Public Function ToString() As String
   Dim sValue As String
   
   Select Case _Type
-    Case 0
-      sValue = "&H" & Hex(_Color[0], 8) & "&"
-    Case 2, 3
-      If _Type = 3 Then
+    
+    Case TYPE_COLOR
+      
+      sValue = ColorToString(_Color[0])
+      
+    Case TYPE_LINEAR_GRADIENT, TYPE_RADIAL_GRADIENT
+      
+      If _Type = TYPE_RADIAL_GRADIENT Then
         sValue = "RadialGradient(" & _X & "," & _Y & "," & _Radius & "," & _X2 & "," & _Y2 & ",["
-        
       Else
         sValue = "LinearGradient(" & _X & "," & _Y & "," & _X2 & "," & _Y2 & ",["
       Endif
       
       For Each i In _Color
-        sValue &= "&H" & Hex(i, 6) & "&,"
-        
+        sValue &= ColorToString(i) & ","
       Next
       
       sValue = Left(sValue, -1)
@@ -158,8 +189,10 @@ Public Function ToString() As String
       sValue = Left(sValue, -1)
       
       sValue &= "])"
-    Case 1
-      sValue = "Image(" & _ImageDir & ")"
+    
+    Case TYPE_IMAGE
+      
+      sValue = "Image(" & Quote(_ImageDir) & ")"
       
   End Select
   

@@ -14,7 +14,7 @@
     Text = ("OK")
     Default = True
   }
-  { ComboBox1 ComboBox
+  { cmbType ComboBox
     MoveScaled(1,1,62,4)
     ReadOnly = True
     List = [("Color"), ("Gradient"), ("Image")]
@@ -23,7 +23,6 @@
     MoveScaled(1,6,62,44)
     Arrangement = Arrange.Fill
     Padding = 5
-    Border = Border.Etched
     { pnlImage Panel
       MoveScaled(1,1,60,41)
       Background = Color.Background
@@ -77,7 +76,7 @@
       }
     }
     { CChooser ColorChooser
-      MoveScaled(1,1,59,42)
+      MoveScaled(0,0,59,42)
       ShowAlpha = True
     }
   }

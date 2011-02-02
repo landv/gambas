@@ -70,12 +70,15 @@
       Ignore = True
       Text = ("...")
     }
-    { coordProperty CoordBox
-      MoveScaled(2,18,14,3)
+    { crdProperty CoordBox txtProperty
+      Name = "crdProperty"
+      MoveScaled(2,18,15,3)
       Visible = False
       Background = Color.TextBackground
       Ignore = True
       Border = False
+      AllowRelative = True
+      AutoConvert = True
     }
   }
   { spnHelp SidePanel

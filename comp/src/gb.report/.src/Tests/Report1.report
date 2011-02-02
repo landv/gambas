@@ -12,13 +12,16 @@
     Expand = True
   }
   { ReportLabel9 ReportLabel
-    #MoveScaled(4,20,43,5)
-    Font = Font["Bitstream Charter,+9"]
+    #MoveScaled(3,17,47,12)
+    Brush = ReportBrush["LinearGradient(0,0.5,1,0.5,[#89BEFF,#FFFFFF,#FFFF00],[0,1,0.56])"]
+    Font = Font["Bitstream Charter,Bold,+9"]
+    Border = ReportBorder["Top:1mm #FFFF00;Bottom:5mm LinearGradient(0.04,0.96,0.92,0.04,[#FF2D08,#FFFFFF],[0,0.76]);Left:1mm #FFFF00;Right:1mm #FFFF00"]
+    BackGround = ReportBrush["#7FFF00"]
     Text = ("Report About")
     Alignment = Align.Center
   }
   { ReportLabel10 ReportLabel
-    #MoveScaled(4,29,43,4)
+    #MoveScaled(5,31,43,4)
     Font = Font["Bitstream Charter,+9"]
     Text = ("All my friends")
     Alignment = Align.Center

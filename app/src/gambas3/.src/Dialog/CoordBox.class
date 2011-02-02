@@ -4,7 +4,7 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Action,Text,Alignment{Align.Normal;Left;Center;Right}=Normal,ReadOnly,Border=True,Button=True,AllowRelative,AutoConvert"
+Public Const _Properties As String = "*,Action,Text,Alignment{Align.Normal;Left;Center;Right}=Normal,ReadOnly,Border=True,AllowRelative,AutoConvert"
 Public Const _DefaultEvent As String = "Change"
 Public Const _DefaultSize As String = "24,4"
 Public Const _Similar As String = "TextBox"
@@ -12,6 +12,7 @@ Public Const _Similar As String = "TextBox"
 Event Change
 Event Activate
 
+Property Text As String
 Property Value As String
 Property Read Length As Integer
 Property ReadOnly As Boolean
@@ -25,9 +26,10 @@ Property AutoConvert As Boolean
 Private $hBackground As DrawingArea
 Private $bBorder As Boolean
 Private $hTextBox As TextBox
-Private $hButton As ToolButton
+Private $hButton As MenuButton
+Private $hClear As ToolButton
 Private $hMenu As Menu
-Private $aUnits As String[] = ["m", "cm", "mm", "in", "in", "px", "pt"]
+Private $aUnits As String[] = ["m", "cm", "mm", "in", "ft", "px", "pt"]
 Private $bAllowRelative As Boolean
 Private $bAutoConvert As Boolean
 Private $fCurVal As Float
@@ -37,42 +39,44 @@ Public Sub _new()
   $hBackground = New DrawingArea(Me) As "Background"
   $hBackground.Arrangement = Arrange.Horizontal
   Border_Write(True)
-
+  
+  $hClear = New ToolButton($hBackground) As "ClearButton"
+  $hClear.Picture = Picture["icon:/small/clear"]
+  $hClear.AutoResize = True
+  
   $hTextBox = New TextBox($hBackground) As "TextBox"
   $hTextBox.Border = False
   $hTextBox.Expand = True
   $hTextBox.Alignment = Align.Right
-  $hTextBox.Text = "0"
   Me.Proxy = $hTextBox
   
-  $hButton = New ToolButton($hBackground) As "Button"
+  $hButton = New MenuButton($hBackground) As "Button"
   '$hButton.W = 30
+  $hButton.Border = False
   $hButton.AutoResize = True
   $hButton.Text = "cm"
   $hButton.Tag = 0
-
   
 End
 
-
-
-
 Private Function Value_Read() As String
-
-  Return $hTextBox.Text & $hButton.Text
-
+  
+  If IsNumber($hTextBox.Text) Then Return $hTextBox.Text & $hButton.Text
+  
 End
 
 Private Sub Value_Write(Value As String)
-
-    Dim I As Integer
+  
+  Dim I As Integer
   Dim sCar As String
   Dim Unit As String
+
   Balloon.Hide
   Value = Trim(Value)
   
-  If Not Value Then
-    
+  If Not Value Then 
+    $hTextBox.Text = ""
+    $hButton.Text = "cm"
     Return
   Endif
   
@@ -94,6 +98,7 @@ Private Sub Value_Write(Value As String)
     Endif
   Endif
   $hButton.Text = Unit
+
 End
 
 Public Sub Button_Click()
@@ -105,15 +110,15 @@ Public Sub Button_Click()
 End
 
 Private Function ReadOnly_Read() As Boolean
-
+  
   Return $hTextBox.ReadOnly
-
+  
 End
 
 Private Sub ReadOnly_Write(Value As Boolean)
-
+  
   $hTextBox.ReadOnly = Value
-
+  
 End
 
 Public Sub Background_GotFocus()
@@ -130,32 +135,29 @@ End
 
 Public Sub Clear()
   
-  $hTextBox.Clear
+  Value_Write("")
   
 End
 
 Private Function Length_Read() As Integer
-
+  
   Return $hTextBox.Length
-
+  
 End
 
 Private Function Border_Read() As Boolean
-
+  
   Return $bBorder
-
+  
 End
 
 Private Sub Border_Write(Value As Boolean)
-
+  
   $bBorder = Value
   $hBackground.Padding = If(Value, Style.TextBoxFrameWidth, 0)
   Me.Refresh
-
+  
 End
-
-
-
 
 Public Sub Background_Draw()
   
@@ -166,15 +168,12 @@ Public Sub Background_Draw()
 End
 
 Private Function Editor_Read() As MaskBox
-
+  
   Return $hTextBox
-
+  
 End
 
-
-
 Public Sub Button_MouseWheel()
-  
   
   $hButton.Tag = Max(0, Min($hButton.Tag - Mouse.Delta, $aUnits.Max))
   If $bAutoConvert Then 
@@ -182,21 +181,20 @@ Public Sub Button_MouseWheel()
     $hTextBox.Text = Replace(Format($fCurVal, "0.####"), ",", ".")
   Endif
   $hButton.Text = $aUnits[$hButton.Tag]
-  'Raise Change
+  Raise Change
+
 End
 
-
-
 Private Function Alignment_Read() As Integer
-
+  
   Return $hTextBox.Alignment
-
+  
 End
 
 Private Sub Alignment_Write(Value As Integer)
-
+  
   $hTextBox.Alignment = Value
-
+  
 End
 
 Public Sub TextBox_Activate()
@@ -208,7 +206,7 @@ End
 Public Sub TextBox_Change()
   
   'Try $fCurVal = CFloat(Last.Text)
-
+  
   Raise Change
   
 End
@@ -219,21 +217,23 @@ Public Sub TextBox_KeyPress()
   
 End
 
-
 Public Sub TextBox_MouseWheel()
   
   Dim f As Float
+
   Try f = CFloat($hTextBox.Text)
   f += Mouse.Delta
   $fCurVal = Max(0, f)
   $hTextBox.Text = $fCurVal
   'Raise Change
+
 End
 
-
 Private Sub RefreshMenu()
+
   Dim hMenu As Menu
   Dim s As String
+
   Try $hMenu.Delete
   $hMenu = New Menu(Me.Window)
   
@@ -242,11 +242,9 @@ Private Sub RefreshMenu()
     hMenu.Text = s
   Next
   
-  
 End
 
 Public Sub Menu_Click()
-  
   
   If $bAutoConvert Then 
     Try $fCurVal = $fCurVal * GetFactor($hButton.Text) / GetFactor(Last.Text)
@@ -258,34 +256,32 @@ Public Sub Menu_Click()
   
 End
 
-
-
 Private Function AllowRelative_Read() As Boolean
-
+  
   Return $bAllowRelative
-
+  
 End
 
 Private Sub AllowRelative_Write(Value As Boolean)
-
+  
   If Not Value And $aUnits[$aUnits.Max] = "%" Then $aUnits.Remove($aUnits.Max)
   If Value And $aUnits[$aUnits.Max] <> "%" Then $aUnits.Add("%")
   RefreshMenu
   $bAllowRelative = Value
+
 End
 
 Private Function AutoConvert_Read() As Boolean
-
+  
   Return $bAutoConvert
-
+  
 End
 
 Private Sub AutoConvert_Write(Value As Boolean)
-
+  
   $bAutoConvert = Value
-
+  
 End
-
 
 Private Function GetFactor(Unit As String) As Float
   
@@ -305,5 +301,24 @@ Private Function GetFactor(Unit As String) As Float
     Case Else
       Error.Raise("")  '* (300 / 96) ' Trick to get a 300 DPI like
   End Select
+  
+End
+
+Private Function Text_Read() As String
+  
+  Return Value_Read()
+  
+End
+
+Private Sub Text_Write(Value As String)
+  
+  Value_Write(Value)
+  
+End
+
+Public Sub ClearButton_Click()
+  
+  $hTextBox.Text = ""
+  $hButton.Text = "cm"
   
 End

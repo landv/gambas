@@ -163,10 +163,10 @@ Public Sub LeaveControl(hCont As Container, hCCtrl As CControl)
   'CheckIcon(hCCtrl)
   'Return
   
-  X = Mouse.ScreenX - hCont.ScreenX
-  Y = Mouse.ScreenY - hCont.ScreenY
+  X = Mouse.ScreenX - hCont.ScreenX - hCont.ClientX
+  Y = Mouse.ScreenY - hCont.ScreenY - hCont.ClientY
   
-  If hCont.Window.Menus.Visible Then Y -= hCont.Window.ClientY
+  'If hCont.Window.Menus.Visible Then Y -= hCont.Window.ClientY
 
   hIcon = hCont.Find(X, Y)
   If hIcon And If $cCtrlFromIcon.Exist(Str(hIcon)) Then Return

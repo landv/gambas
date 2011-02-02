@@ -394,8 +394,8 @@ msgstr ""
 #: FGotoLine.class:57 FList.class:331 FMain.class:1687 FMenu.class:1238
 #: FNewConnection.class:573 FNewTable.class:159 FNewTranslation.class:64
 #: FOpenProject.class:496 FPasteSpecial.class:273 FPropertyComponent.class:467
-#: FPropertyProject.class:252 FReportBorderChooser.class:231
-#: FReportBrushChooser.class:494 FReportCoordChooser.class:132
+#: FPropertyProject.class:252 FReportBorderChooser.class:335
+#: FReportBrushChooser.class:491 FReportCoordChooser.class:132
 #: FSaveProjectAs.class:124 FSelectExtraFile.class:72 FSelectIcon.class:267
 #: FSnippet.class:136 FTableChooser.class:138 FText.class:100
 msgid "OK"
@@ -480,8 +480,8 @@ msgstr ""
 #: FMakeInstall.class:326 FMenu.class:1243 FNewConnection.class:317
 #: FNewTable.class:165 FNewTranslation.class:70 FOpenProject.class:502
 #: FOption.class:600 FPasteSpecial.class:279 FPropertyComponent.class:473
-#: FPropertyProject.class:801 FReportBorderChooser.class:225
-#: FReportBrushChooser.class:488 FReportCoordChooser.class:126 FSave.class:118
+#: FPropertyProject.class:801 FReportBorderChooser.class:329
+#: FReportBrushChooser.class:485 FReportCoordChooser.class:126 FSave.class:118
 #: FSaveProjectAs.class:130 FSelectExtraFile.class:78 FSelectIcon.class:272
 #: FSnippet.class:142 FTableChooser.class:144 FText.class:106
 #: FTextEditor.class:489 FTranslate.class:638 Project.module:411
@@ -640,7 +640,7 @@ msgstr ""
 msgid "Text"
 msgstr ""
 
-#: FConflict.class:392 FCreateFile.class:708 FReportBrushChooser.class:501
+#: FConflict.class:392 FCreateFile.class:708 FReportBrushChooser.class:498
 #: Project.module:186
 msgid "Image"
 msgstr ""
@@ -956,7 +956,7 @@ msgstr ""
 msgid "Options"
 msgstr ""
 
-#: FCreateFile.class:800 FReportBorderChooser.class:252
+#: FCreateFile.class:800
 msgid "Width"
 msgstr ""
 
@@ -2483,7 +2483,7 @@ msgstr ""
 msgid "Reset filter"
 msgstr ""
 
-#: FMain.class:3169 FProperty.class:1154 MHelp.module:585
+#: FMain.class:3169 FProperty.class:1155 MHelp.module:585
 msgid "Properties"
 msgstr ""
 
@@ -3136,7 +3136,7 @@ msgstr ""
 msgid "Procedure separation"
 msgstr ""
 
-#: FOption.class:1183 FProperty.class:748
+#: FOption.class:1183 FProperty.class:747
 msgid "None"
 msgstr ""
 
@@ -3312,42 +3312,42 @@ msgstr ""
 msgid "Incorrect property value."
 msgstr ""
 
-#: FProperty.class:575
+#: FProperty.class:576
 msgid "The name of the control."
 msgstr ""
 
-#: FProperty.class:586
+#: FProperty.class:587
 msgid "The event group that the control belongs to."
 msgstr ""
 
-#: FProperty.class:600
+#: FProperty.class:601
 msgid ""
 "If the form and controls dimensions must follow the size of the default font."
 msgstr ""
 
-#: FProperty.class:604
+#: FProperty.class:605
 msgid "If the control is public."
 msgstr ""
 
-#: FProperty.class:624
+#: FProperty.class:625
 msgid ""
 "This property is virtual: it is only implemented in the IDE, and has no "
 "existence at runtime."
 msgstr ""
 
-#: FProperty.class:921
+#: FProperty.class:920
 msgid "Edit field list"
 msgstr ""
 
-#: FProperty.class:1164
+#: FProperty.class:1165
 msgid "Click on a form or a control to modify its properties..."
 msgstr ""
 
-#: FProperty.class:1179
+#: FProperty.class:1180
 msgid "Lock property"
 msgstr ""
 
-#: FProperty.class:1231
+#: FProperty.class:1232
 msgid "..."
 msgstr ""
 
@@ -3555,39 +3555,55 @@ msgstr ""
 msgid "&Commit..."
 msgstr ""
 
-#: FReportBorderChooser.class:237
-msgid "Choose the style and then click on border to setup each borders"
+#: FReportBorderChooser.class:325
+msgid "Configure border"
 msgstr ""
 
-#: FReportBorderChooser.class:257
-msgid "Brush"
+#: FReportBorderChooser.class:395
+msgid "Top"
 msgstr ""
 
-#: FReportBrushChooser.class:483
+#: FReportBorderChooser.class:400
+msgid "Bottom"
+msgstr ""
+
+#: FReportBorderChooser.class:405
+msgid "Left"
+msgstr ""
+
+#: FReportBorderChooser.class:410
+msgid "Right"
+msgstr ""
+
+#: FReportBorderChooser.class:415
+msgid "Synchronize"
+msgstr ""
+
+#: FReportBrushChooser.class:480
 msgid "Report Brush"
 msgstr ""
 
-#: FReportBrushChooser.class:501
+#: FReportBrushChooser.class:498
 msgid "Color"
 msgstr ""
 
-#: FReportBrushChooser.class:501
+#: FReportBrushChooser.class:498
 msgid "Gradient"
 msgstr ""
 
-#: FReportBrushChooser.class:531
+#: FReportBrushChooser.class:527
 msgid "Radial"
 msgstr ""
 
-#: FReportBrushChooser.class:540
+#: FReportBrushChooser.class:536
 msgid "F"
 msgstr ""
 
-#: FReportBrushChooser.class:547
+#: FReportBrushChooser.class:543
 msgid "C"
 msgstr ""
 
-#: FReportBrushChooser.class:562
+#: FReportBrushChooser.class:558
 msgid "Radius"
 msgstr ""
 

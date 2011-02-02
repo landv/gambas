@@ -37,9 +37,6 @@ End
 
 Public Sub _new()
   
-  
-  
-  
   aStack = [CChooser, pnlGradient, pnlImage]
   
   FileChooser1.Filter = ["*.jpg;*.png;*.bmp;*.gif", "Image Files", "*.*", "All Files"]
@@ -60,48 +57,48 @@ Public Sub Form_Open()
   Dim i, j As Integer
   Dim hLabel As Label
   
-  
   sValue = Trim(Value)
-  ComboBox1.Index = 0
   
-  iPos = InStr(Value, "(")
+  iPos = InStr(sValue, "(")
   
-  If iPos Then sType = Left(Value, iPos - 1)
-  'pas de parenthese de fin
-  If ipos And Not (sValue Ends ")") Then 
-    Error.Raise
+  If iPos Then 
+    If Right(sValue) <> ")" Then Error.Raise("Bad brush")
+    sType = Left(sValue, iPos - 1)
+    sValue = Mid$(sValue, iPos + 1, -1)
+    ars = Split(sValue, ",", "[]")
   Else
-    svalue = Left(Mid(svalue, ipos + 1), -1)
+    If Left(sValue) <> "#" Then Error.Raise("Bad brush")
+    ars = [sValue]
   Endif
-  ars = Split(sValue, ",", "[]")
+
   Select Case LCase(sType)
     Case "image"
-      ComboBox1.Index = 2
+      cmbType.Index = 2
       FileChooser1.Value = ars[0]
     Case "radialgradient"
-      ComboBox1.Index = 1
+      cmbType.Index = 1
       CheckBox1.Value = True
       $cX = CFloat(ars[0])
       $cy = CFloat(ars[1])
       $fRadius = CFloat(ars[2])
       $fX = CFloat(ars[3])
       $fY = CFloat(ars[4])
-      $aGradientColors = GetIntegerArray(ars[5])
+      $aGradientColors = GetColorArray(ars[5])
       $aGradientPos = GetFloatArray(ars[6])
       
     Case "lineargradient"
-      ComboBox1.Index = 1
+      cmbType.Index = 1
       $flX1 = CFloat(ars[0])
       $flY1 = CFloat(ars[1])
       $flX2 = CFloat(ars[2])
       $flY2 = CFloat(ars[3])
-      $aGradientColors = GetIntegerArray(ars[4])
+      $aGradientColors = GetColorArray(ars[4])
       $aGradientPos = GetFloatArray(ars[5])
       
     Case Else
-      ComboBox1.Index = 0
+      cmbType.Index = 0
       'correction de l'hexon
-      CChooser.Value = Val(ars[0])
+      CChooser.Value = CReportBrush.StringToColor(ars[0])
       'CChooser.Value = IIf(Len(ars[0]) = 8, Val(ars[0]), Val(ars[0] & "FF"))
   End Select
   
@@ -139,7 +136,7 @@ Finally
   $lblA2.Move((DrawingArea1.Width - 10) * $flX2, (DrawingArea1.Height - 10) * $flY2)
   $lblA2.Tag = 2
   
-  ComboBox1_Click
+  cmbType_Click
   CheckBox1_Click
   
   
@@ -298,16 +295,16 @@ Public Sub DrawingArea2_KeyPress()
   
 End
 
-Public Sub ComboBox1_Change()
+Public Sub cmbType_Change()
   
 End
 
-Public Sub ComboBox1_Click()
+Public Sub cmbType_Click()
   
   Dim o As Object
   
   For Each o In aStack
-    If o = aStack[ComboBox1.Index] Then
+    If o = aStack[cmbType.Index] Then
       o.visible = True
     Else
       o.Visible = False
@@ -324,9 +321,9 @@ Public Sub btnOK_Click()
   Dim f As Float
   Dim sValue As String
   
-  Select Case ComboBox1.Index
+  Select Case cmbType.Index
     Case 0
-      sValue = "&H" & Hex($aGradientColors[0], 8) & "&"
+      sValue = CReportBrush.ColorToString($aGradientColors[0])
     Case 1
       If CheckBox1.Value Then
         sValue = "RadialGradient(" & $cx & "," & $cy & "," & $fRadius & "," & $fx & "," & $fy & ",["
@@ -336,7 +333,7 @@ Public Sub btnOK_Click()
       Endif
       
       For Each i In $aGradientColors
-        sValue &= "&H" & Hex(i, 6) & "&,"
+        sValue &= CReportBrush.ColorToString(i) & ","
         
       Next
       
@@ -416,13 +413,13 @@ Public Sub CChooser_Change()
   
 End
 
-Private Function GetIntegerArray(sValue As String) As Integer[]
+Private Function GetColorArray(sValue As String) As Integer[]
 
   Dim ari As New Integer[]
   Dim s As String
   
   For Each s In Split(sValue)
-    ari.Add(Val(s))
+    ari.Add(CReportBrush.StringToColor(s))
   Next
   
   Return ari

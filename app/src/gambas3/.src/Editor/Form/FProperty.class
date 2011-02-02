@@ -444,10 +444,11 @@ Public Sub HideProperty() As Boolean
 
     If SaveProperty() Then Return True
 
-    cmbProperty.Visible = False
-    txtProperty.Visible = False
-    btnProperty.Visible = False
-    spnProperty.Visible = False
+    cmbProperty.Hide
+    txtProperty.Hide
+    btnProperty.Hide
+    spnProperty.Hide
+    crdProperty.Hide
 
     ' If btnLock.Value Then
     '   $sFocus = $sLast
@@ -649,10 +650,10 @@ Private Sub ShowProperty(Optional sFocus As String)
     Case "s"
       bButton = True
 
-    Case "String[]", "Field[]", "ReportCoord", "ReportBorder", "ReportBrush"
+    Case "String[]", "Field[]", "ReportBorder", "ReportBrush"
       bButton = True
       txtProperty.ReadOnly = True
-
+      
     Case "Constant"
 
       If hProp.ConstantClass Then
@@ -736,9 +737,7 @@ Private Sub ShowProperty(Optional sFocus As String)
       cmbProperty.List = aElt
       
     Case "ReportCoord"
-      hEditor = coordProperty
-      coordProperty.AllowRelative = True
-      coordProperty.AutoConvert = True
+      hEditor = crdProperty
       
     Case Else 'object
     
@@ -1020,8 +1019,10 @@ Public Sub ReadConfig()
   cmbProperty.Font = grdProperty.Font
   spnProperty.Font = grdProperty.Font
   panProperty.Font = grdProperty.Font
+  crdProperty.Font = grdProperty.Font
   MTheme.InitControl(grdProperty)
   MTheme.InitControl(cmbProperty)
+  MTheme.InitControl(crdProperty)
   MTheme.InitControl(spnProperty)
   MTheme.InitControl(txtProperty)
   MTheme.InitControl(btnProperty)
