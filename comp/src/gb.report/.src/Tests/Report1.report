@@ -12,17 +12,16 @@
     Expand = True
   }
   { ReportLabel9 ReportLabel
-    #MoveScaled(3,17,47,12)
-    Brush = ReportBrush["LinearGradient(0,0.5,1,0.5,[#89BEFF,#FFFFFF,#FFFF00],[0,1,0.56])"]
+    #MoveScaled(8,18,47,12)
     Font = Font["Bitstream Charter,Bold,+9"]
-    Border = ReportBorder["Top:1mm #FFFF00;Bottom:5mm LinearGradient(0.04,0.96,0.92,0.04,[#FF2D08,#FFFFFF],[0,0.76]);Left:1mm #FFFF00;Right:1mm #FFFF00"]
-    BackGround = ReportBrush["#7FFF00"]
+    Border = ReportBorder["Top:1mm #FFFF00;Bottom:4mm LinearGradient(0.04,0.96,0.92,0.04,[#FF2D08,#FFFFFF],[0,0.76]);Left:1mm #FFFF00;Right:1mm #FFFF00"]
     Text = ("Report About")
     Alignment = Align.Center
   }
   { ReportLabel10 ReportLabel
-    #MoveScaled(5,31,43,4)
+    #MoveScaled(8,32,43,4)
     Font = Font["Bitstream Charter,+9"]
+    Border = ReportBorder["Top:1mm #FFFF00;Bottom:1mm #FFFF00;Left:1mm #FFFF00;Right:1mm #FFFF00"]
     Text = ("All my friends")
     Alignment = Align.Center
   }
@@ -35,7 +34,7 @@
   { ReportLabel11 ReportLabel
     #MoveScaled(5,3,57,2)
     Height = "15mm"
-    Brush = ReportBrush["&H009F9F9F&"]
+    Brush = ReportBrush["#BFBFBF"]
     Fixed = True
     Text = ("Report about all my frends")
     Alignment = Align.TopRight
@@ -66,9 +65,8 @@
           Width = "5 cm"
           Height = "10mm"
           Font = Font["Bitstream Charter,Bold,16"]
-          Padding = "0.2 mm"
-          Border = ReportBorder["Border=2px &H00000000&;"]
-          BackGround = ReportBrush["&H00DFDFDF&"]
+          Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:1px #000000;Right:0mm #000000"]
+          BackGround = ReportBrush["#BFBFBF"]
           Text = ("Name")
           Alignment = Align.Center
         }
@@ -78,8 +76,8 @@
           Height = "10mm"
           Font = Font["Bitstream Charter,Bold,16"]
           Padding = "0.2 mm"
-          Border = ReportBorder["Top=2px &H00000000&; Right=2px &H00000000&; Bottom=2px &H00000000&; "]
-          BackGround = ReportBrush["&H00DFDFDF&"]
+          Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:1px #000000;Right:1px #000000"]
+          BackGround = ReportBrush["#BFBFBF"]
           Text = ("FirstName")
           Alignment = Align.Center
         }
@@ -90,8 +88,8 @@
           Font = Font["Bitstream Charter,Bold,16"]
           Padding = "0.2 mm"
           Expand = True
-          Border = ReportBorder["Top=2px &H00000000&; Right=2px &H00000000&; Bottom=2px &H00000000&; "]
-          BackGround = ReportBrush["&H00DFDFDF&"]
+          Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:0mm #000000;Right:1px #000000"]
+          BackGround = ReportBrush["#BFBFBF"]
           Text = ("Birth")
           Alignment = Align.Center
         }
@@ -99,12 +97,13 @@
       { ReportHBox1 ReportHBox
         #MoveScaled(1,8,38,4)
         Height = "1.2cm"
+        Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:1px #000000;Right:1px #000000"]
         { ReportLabel1 ReportLabel
           #MoveScaled(0,0,10.2857,3.4286)
           Width = "5 cm"
           Font = Font["12"]
           Padding = "0.2 mm"
-          Border = ReportBorder["Border=2px &H00000000&;"]
+          Border = ReportBorder["Right:1px #000000"]
           Key = "name"
           Alignment = Align.Center
           UseField = True
@@ -114,7 +113,7 @@
           Width = "5 cm"
           Font = Font["12"]
           Padding = "0.2 mm"
-          Border = ReportBorder["Top=2px &H00000000&; Right=2px &H00000000&; Bottom=2px &H00000000&; "]
+          Border = ReportBorder["Right:1px #000000"]
           Key = "firstname"
           Alignment = Align.Center
         }

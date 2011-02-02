@@ -127,7 +127,9 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   iW = (hControl.RealWidth - MTools.UnitsToPixels(2 * Me._Padding + Me.Border._Left + Me.Border._Right))
   
   iH = (hControl.RealHeight - MTools.UnitsToPixels(2 * Me._Padding + Me.Border._Top + Me.Border._Bottom))
+  
   Paint.Brush = Me._GetActualBrush(iX, iY, iX + hControl.RealWidth, iY + hControl.RealHeight)
+  
     If Report.Debug Then
       
     

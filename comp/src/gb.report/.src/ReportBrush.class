@@ -55,7 +55,7 @@ Static Public Sub _get(sValue As String) As ReportBrush
   If ipos And Not (sValue Ends ")") Then 
     Error.Raise
   Else
-    svalue = Left(Mid(svalue, ipos + 1), -1)
+    If iPos Then svalue = Left(Mid(svalue, ipos + 1), -1)
   Endif
   ars = Split(sValue, ",", "[]")
   Select Case LCase(sType)
@@ -86,19 +86,21 @@ Static Public Sub _get(sValue As String) As ReportBrush
       
     Case Else
       'correction de l'hexon
-      hBrush._Color[0] = Val(ars[0])
-      'CChooser.Value = IIf(Len(ars[0]) = 8, Val(ars[0]), Val(ars[0] & "FF"))
+       '= Val(Replace(ars[0], "#", "&H") & "00&")
+      If ars[0] Begins "#" Then ars[0] = Mid(ars[0], 2)
+      hBrush._Color[0] = Val("&H" & IIf(Len(ars[0]) = 8, ars[0], 00 & ars[0]))
   End Select
   Return hBrush
+  
 Finally
   If hBrush._Color.Count = 0 Then hBrush._Color = [0, &hFFFFFF&]
   If hBrush._Color.Count < 2 Then hBrush._Color.Add(&hFFFFFF&)
-  
   If hBrush._Pos.Count < 2 Then hBrush._Pos = [0.0, 1.0]
   
   
 Catch
-  Return Null
+  Return hBrush
+  
 End
 
 Static Private Function GetIntegerArray(sValue As String) As Integer[]
@@ -107,7 +109,9 @@ Static Private Function GetIntegerArray(sValue As String) As Integer[]
   Dim s As String
   
   For Each s In Split(sValue)
-    ari.Add(Val(s))
+    If s Begins "#" Then s = Mid(s, 2)
+      
+    ari.Add(Val("&H" & IIf(Len(s) = 8, s, "00" & s)))
   Next
   
   Return ari

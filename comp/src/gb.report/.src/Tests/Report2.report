@@ -7,7 +7,7 @@
   Index = 0
   Text = ("Section 1")
   { ReportHBox1 ReportHBox
-    #MoveScaled(4,1,90,26)
+    #MoveScaled(4,2,90,26)
     Fixed = True
     AutoResize = True
     Spacing = "4cm"
@@ -29,7 +29,8 @@
       }
       { ReportHBox5 ReportHBox
         #MoveScaled(2,7,44,6)
-        Height = "2cm"
+        Height = "1cm"
+        Border = ReportBorder["Top:1mm #E0459F27"]
       }
       { ReportLabel10 ReportLabel
         #MoveScaled(4,13,31,3)
@@ -67,6 +68,7 @@
       #MoveScaled(2,0,86,5)
       Height = "1cm"
       Fixed = True
+      Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
       { ReportLabel1 ReportLabel
         #MoveScaled(1,1,21,4)
         Width = "40%"
@@ -140,7 +142,6 @@
     { ReportHBox8 ReportHBox
       #MoveScaled(3,13,83,2)
       Fixed = True
-      Padding = "1mm"
       Border = ReportBorder["Top=1mm &H00000000&; "]
     }
     { ReportHBox4 ReportHBox
@@ -152,7 +153,6 @@
       { ReportLabel14 ReportLabel
         #MoveScaled(68,1,11,4)
         Width = "3cm"
-        Height = "8mm"
         Border = ReportBorder["Right=1mm &H00000000&; Bottom=1mm &H00000000&; Left=1mm &H00000000&; "]
         Key = "TOTALHT"
         Alignment = Align.Center
