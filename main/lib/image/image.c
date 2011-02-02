@@ -522,7 +522,7 @@ void IMAGE_take(GB_IMG *img, GB_IMG_OWNER *owner, void *owner_handle, int width,
 
 void IMAGE_delete(GB_IMG *img)
 {
-	IMAGE_take(img, NULL, NULL, 0, 0, NULL);
+	IMAGE_take(img, &_image_owner, NULL, 0, 0, NULL);
 	img->format = 0;
 }
 

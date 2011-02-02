@@ -273,7 +273,7 @@ GB_DESC CImageDesc[] =
   GB_PROPERTY_READ("Depth", "i", CIMAGE_depth),
   GB_PROPERTY_READ("Data", "p", CIMAGE_data),
   
-  GB_METHOD("Clear", "Image", CIMAGE_clear, NULL),
+  GB_METHOD("Clear", NULL, CIMAGE_clear, NULL),
   GB_METHOD("Fill", "Image", CIMAGE_fill, "(Color)i"),
   GB_METHOD("Gray", "Image", CIMAGE_gray, NULL),
   GB_METHOD("Transparent", "Image", CIMAGE_transparent, "[(Color)i]"),
