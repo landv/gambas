@@ -34,6 +34,8 @@ Private $bAllowRelative As Boolean
 Private $bAutoConvert As Boolean
 Private $fCurVal As Float
 
+Private Const DEFAULT_UNIT As String = "mm"
+
 Public Sub _new()
   
   $hBackground = New DrawingArea(Me) As "Background"
@@ -54,14 +56,14 @@ Public Sub _new()
   '$hButton.W = 30
   $hButton.Border = False
   $hButton.AutoResize = True
-  $hButton.Text = "cm"
+  $hButton.Text = DEFAULT_UNIT
   $hButton.Tag = 0
   
 End
 
 Private Function Value_Read() As String
   
-  If IsNumber($hTextBox.Text) Then Return $hTextBox.Text & $hButton.Text
+  If IsNumber($hTextBox.Text) And If Val($hTextBox.Text) > 0 Then Return $hTextBox.Text & $hButton.Text
   
 End
 
@@ -76,7 +78,7 @@ Private Sub Value_Write(Value As String)
   
   If Not Value Then 
     $hTextBox.Text = ""
-    $hButton.Text = "cm"
+    $hButton.Text = DEFAULT_UNIT
     Return
   Endif
   
@@ -319,6 +321,6 @@ End
 Public Sub ClearButton_Click()
   
   $hTextBox.Text = ""
-  $hButton.Text = "cm"
+  $hButton.Text = DEFAULT_UNIT
   
 End

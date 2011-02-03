@@ -1,11 +1,16 @@
 ' Gambas class file
+
+Private $hBrush As CReportBrush
+
 Private $aGradientPos As Float[]
 Private $aGradientColors As Integer[]
+Private $iColor As Integer
+
 Private iCurrentColor As Integer = -1
 
-Private aLabel As New Label[]
-Private $lblA1 As Label
-Private $lblA2 As Label
+Private aLabel As Label[]
+Private $lblA1 As DrawingArea
+Private $lblA2 As DrawingArea
 
 'tampon souris
 Private $MX As Integer
@@ -22,10 +27,6 @@ Private $flY1 As Float = 0.5
 Private $flX2 As Float = 1
 Private $flY2 As Float = 0.5
 
-Private sBrushType As String
-Private aStack As Object[]
-Private sImageDir As String
-
 Static Public Value As String  '"radialgradient(0.5,0.5,1,0.5,0.5,[&hFFFFFF,&h000000,&h00FF00],[0,0.5,1])" '"lineargradient(0,0.5,1,0.5,[&hFFFFFF,&h000000,&h00FF00],[0,0.5,1])"
 
 Public Sub Run(sBrush As String) As Boolean
@@ -37,15 +38,17 @@ End
 
 Public Sub _new()
   
-  aStack = [CChooser, pnlGradient, pnlImage]
+  'fchIcon.Filter = ["*.png,*.jpg,*.jpeg,*.xpm,*.gif", ("Image files")]
+  'fchIcon.Root = Project.Dir
   
-  FileChooser1.Filter = ["*.jpg;*.png;*.bmp;*.gif", "Image Files", "*.*", "All Files"]
-  FileChooser1.Dir = User.Home
   $aGradientColors = [0, &hFFFFFF&]
   $aGradientPos = [0, 1]
   
-   $lblA1 = New Label(DrawingArea1) As "lblAngle"
-   $lblA2 = New Label(DrawingArea1) As "lblAngle"
+  $lblA1 = New DrawingArea(dwgGradient) As "lblAngle"
+  $lblA2 = New DrawingArea(dwgGradient) As "lblAngle"
+  $lblA1.Mouse = Mouse.Cross
+  $lblA2.Mouse = Mouse.Cross
+   
 End
 
 Public Sub Form_Open()
@@ -54,97 +57,73 @@ Public Sub Form_Open()
   Dim sType As String
   Dim sValue As String
   Dim ars As String[]
-  Dim i, j As Integer
+  Dim I As Integer
   Dim hLabel As Label
   
-  sValue = Trim(Value)
+  $hBrush = New CReportBrush
+  Try $hBrush = CReportBrush[Value]
   
-  iPos = InStr(sValue, "(")
+  cmbType.Index = $hBrush.Type
   
-  If iPos Then 
-    If Right(sValue) <> ")" Then Error.Raise("Bad brush")
-    sType = Left(sValue, iPos - 1)
-    sValue = Mid$(sValue, iPos + 1, -1)
-    ars = Split(sValue, ",", "[]")
-  Else
-    If Left(sValue) <> "#" Then Error.Raise("Bad brush")
-    ars = [sValue]
-  Endif
-
-  Select Case LCase(sType)
-    Case "image"
-      cmbType.Index = 2
-      FileChooser1.Value = ars[0]
-    Case "radialgradient"
-      cmbType.Index = 1
-      CheckBox1.Value = True
-      $cX = CFloat(ars[0])
-      $cy = CFloat(ars[1])
-      $fRadius = CFloat(ars[2])
-      $fX = CFloat(ars[3])
-      $fY = CFloat(ars[4])
-      $aGradientColors = GetColorArray(ars[5])
-      $aGradientPos = GetFloatArray(ars[6])
+  Select Case $hBrush.Type
+    
+    Case CReportBrush.TYPE_IMAGE
       
-    Case "lineargradient"
-      cmbType.Index = 1
-      $flX1 = CFloat(ars[0])
-      $flY1 = CFloat(ars[1])
-      $flX2 = CFloat(ars[2])
-      $flY2 = CFloat(ars[3])
-      $aGradientColors = GetColorArray(ars[4])
-      $aGradientPos = GetFloatArray(ars[5])
+      'fchIcon.SelectedPath = Project.Dir &/ $hBrush.Path
+      txtImage.Text = $hBrush.Path
       
-    Case Else
-      cmbType.Index = 0
-      'correction de l'hexon
-      CChooser.Value = CReportBrush.StringToColor(ars[0])
-      'CChooser.Value = IIf(Len(ars[0]) = 8, Val(ars[0]), Val(ars[0] & "FF"))
+    Case CReportBrush.TYPE_RADIAL_GRADIENT
+      $cX = $hBrush.X1
+      $cy = $hBrush.Y1
+      $fRadius = $hBrush.Radius
+      $fX = $hBrush.X2
+      $fY = $hBrush.Y2
+      $aGradientColors = $hBrush.Colors
+      $aGradientPos = $hBrush.Positions
+      
+    Case CReportBrush.TYPE_LINEAR_GRADIENT
+      $flX1 = $hBrush.X1
+      $flY1 = $hBrush.Y1
+      $flX2 = $hBrush.X2
+      $flY2 = $hBrush.Y2
+      $aGradientColors = $hBrush.Colors
+      $aGradientPos = $hBrush.Positions
+      
+    Case CReportBrush.TYPE_COLOR
+      $iColor = $hBrush.Color
+      $aGradientColors = $hBrush.Colors
+      
   End Select
   
+  cchColor.Value = $aGradientColors[0]
   
-  
-Finally
-  If $aGradientColors.Count = 0 Then $aGradientColors = [0, &hFFFFFF&]
-  If $aGradientColors.Count < 2 Then $aGradientColors.Add(&hFFFFFF&)
-  
-  If $aGradientPos.Count < 2 Then $aGradientPos = [0.0, 1.0]
-  
-  CChooser.Value = $aGradientColors[0]
-  
-  For Each i In $aGradientColors
-    hLabel = New Label(DrawingArea2) As "Label"
-    hLabel.Background = i
+  aLabel = New Label[$aGradientColors.Count]
+  For I = 0 To $aGradientColors.Max
+    hLabel = New Label(dwgGradientColor) As "Label"
+    hLabel.Background = $aGradientColors[I]
     hLabel.Border = Border.Plain
     hLabel.Resize(10, 10)
-    hLabel.Tag = j
-    Inc j
-    aLabel.Add(hLabel)
-    
+    hLabel.Tag = I
+    aLabel[I] = hLabel
   Next
-  
  
   $lblA1.Border = Border.Plain
   $lblA1.Resize(10, 10)
   $lblA1.Background = Color.Red
-  $lblA1.Move((DrawingArea1.Width - 10) * $flX1, (DrawingArea1.Height - 10) * $flY1)
+  $lblA1.Move((dwgGradient.Width - 10) * $hBrush.X1, (dwgGradient.Height - 10) * $hBrush.Y1)
   $lblA1.Tag = 1
  
   $lblA2.Border = Border.Plain
   $lblA2.Resize(10, 10)
   $lblA2.Background = Color.Red
-  $lblA2.Move((DrawingArea1.Width - 10) * $flX2, (DrawingArea1.Height - 10) * $flY2)
+  $lblA2.Move((dwgGradient.Width - 10) * $hBrush.X2, (dwgGradient.Height - 10) * $hBrush.Y2)
   $lblA2.Tag = 2
   
   cmbType_Click
-  CheckBox1_Click
   
-  
-Catch
-
 End
 
-Public Sub DrawingArea2_Draw()
+Public Sub dwgGradientColor_Draw()
   
   Dim hLabel As Label
   Dim iPos, i As Integer
@@ -165,7 +144,7 @@ Public Sub DrawingArea2_Draw()
     Inc i
   Next
   
-  DrawingArea1.Refresh
+  dwgGradient.Refresh
   
 End
 
@@ -174,7 +153,7 @@ Public Sub Label_MouseDown()
   $MX = Mouse.ScreenX - Last.X
   iCurrentColor = Last.Tag
   '$MY = Mouse.ScreenY - Last.Y
-  DrawingArea2.Refresh
+  dwgGradientColor.Refresh
   
 End
 
@@ -183,20 +162,22 @@ Public Sub Label_MouseMove()
   Dim hLabel As Label = Last
   Dim iRealPos As Integer = Mouse.ScreenX - $MX + hLabel.Width / 2
   
-  If iRealPos < 5 Or iRealPos > DrawingArea2.Width - 5 Then Return
+  If iRealPos < 5 Or iRealPos > dwgGradientColor.Width - 5 Then Return
   hLabel.Move(Mouse.ScreenX - $MX, hLabel.Y)
-  $aGradientPos[hLabel.Tag] = Round((hLabel.X + hLabel.Width / 2 - 5) / (DrawingArea2.Width - 10), -2)
-  DrawingArea2.Refresh
+  $aGradientPos[hLabel.Tag] = Round((hLabel.X + hLabel.Width / 2 - 5) / (dwgGradientColor.Width - 10), -2)
+  dwgGradientColor.Refresh
   'Print $aGradientPos[hLabel.Tag]
   
 End
 
-Public Sub DrawingArea1_Draw()
+Public Sub dwgGradient_Draw()
   
-  If CheckBox1.Value Then
+  If cmbType.Index = CReportBrush.TYPE_RADIAL_GRADIENT Then
+    
     Paint.Brush = Paint.RadialGradient((Paint.Width - 10) * $cX, (Paint.Height - 10) * $cY, (Paint.Width - 10) * 2 * $fRadius, (Paint.Width - 10) * $fX, (Paint.Height - 10) * $fY, $aGradientColors, $aGradientPos)
     Paint.Rectangle(5, 5, Paint.Width - 10, Paint.Height - 10)
     Paint.fill
+    
   Else
     
     Paint.Brush = Paint.LinearGradient((Paint.Width - 10) * $flX1, (Paint.Height - 10) * $flY1, (Paint.Width - 10) * $flX2, (Paint.Height - 10) * $flY2, $aGradientColors, $aGradientPos)
@@ -209,46 +190,26 @@ Public Sub DrawingArea1_Draw()
     
   Endif
   
-
-  
 End
 
-Public Sub DrawingArea2_DblClick()
+Public Sub dwgGradientColor_DblClick()
   
   Dim hLabel As New Label(Last) As "Label"
   
   $aGradientColors.Add(0)
-  $aGradientPos.Add(Round((Mouse.x - 5) / (DrawingArea2.Width - 10), -2))
+  $aGradientPos.Add(Round((Mouse.x - 5) / (dwgGradientColor.Width - 10), -2))
   hLabel.Background = 0
   hLabel.Resize(10, 10)
   hLabel.Tag = $aGradientColors.Max
   aLabel.Add(hLabel)
-  DrawingArea2.Refresh
+  dwgGradientColor.Refresh
   
 End
 
-Public Sub DrawingArea1_MouseMove()
-  
-  If CheckBox1 Then 
-    If ToggleButton1.Value Then
-      $fX = Round(Mouse.X / DrawingArea1.Width, -2)
-      $fY = Round(Mouse.Y / DrawingArea1.Height, -2)
-    Else
-      $cX = Round(Mouse.X / DrawingArea1.Width, -2)
-      $cY = Round(Mouse.Y / DrawingArea1.Height, -2)
-    Endif
-    
-  Else
-    
-  Endif
-  Last.refresh
-  
-End
-
-Public Sub Slider1_Change()
+Public Sub sldRadius_Change()
   
   $fRadius = Last.value / 100
-  DrawingArea1.Refresh
+  dwgGradient.Refresh
   
 End
 
@@ -260,23 +221,12 @@ Public Sub Label_DblClick()
   If Not Dialog.SelectColor() Then
     hLabel.Background = Dialog.Color
     $aGradientColors[hLabel.Tag] = Dialog.Color
-    DrawingArea2.Refresh
+    dwgGradientColor.Refresh
   Endif
   
 End
 
-Public Sub CheckBox1_Click()
-  
-  $lblA2.Visible = Not CheckBox1.Value
-  $lblA1.Visible = Not CheckBox1.Value
-  ToggleButton1.Visible = CheckBox1.Value
-  ToggleButton2.Visible = CheckBox1.Value
-  HBox1.Visible = CheckBox1.Value
-  DrawingArea1.Refresh
-  
-End
-
-Public Sub DrawingArea2_KeyPress()
+Public Sub dwgGradientColor_KeyPress()
   
   Dim i As Integer
   
@@ -291,27 +241,19 @@ Public Sub DrawingArea2_KeyPress()
     aLabel[i].Tag = i
     
   Next
-  DrawingArea2.Refresh
-  
-End
-
-Public Sub cmbType_Change()
+  dwgGradientColor.Refresh
   
 End
 
 Public Sub cmbType_Click()
   
-  Dim o As Object
+  Dim hCtrl As Control
   
-  For Each o In aStack
-    If o = aStack[cmbType.Index] Then
-      o.visible = True
-    Else
-      o.Visible = False
-      
-    Endif
-    
+  For Each hCtrl In panBrush.Children
+    hCtrl.Visible = Split(hCtrl.Tag, ",").Exist(cmbType.Index)
   Next
+  
+  UpdateGradient
   
 End
 
@@ -322,19 +264,18 @@ Public Sub btnOK_Click()
   Dim sValue As String
   
   Select Case cmbType.Index
-    Case 0
-      sValue = CReportBrush.ColorToString($aGradientColors[0])
-    Case 1
-      If CheckBox1.Value Then
+    Case CReportBrush.TYPE_COLOR
+      sValue = CReportBrush.ColorToString($iColor)
+      
+    Case CReportBrush.TYPE_LINEAR_GRADIENT, CReportBrush.TYPE_RADIAL_GRADIENT
+      If cmbType.Index = CReportBrush.TYPE_RADIAL_GRADIENT Then
         sValue = "RadialGradient(" & $cx & "," & $cy & "," & $fRadius & "," & $fx & "," & $fy & ",["
-        
       Else
         sValue = "LinearGradient(" & $flX1 & "," & $flY1 & "," & $flX2 & "," & $flY2 & ",["
       Endif
       
       For Each i In $aGradientColors
         sValue &= CReportBrush.ColorToString(i) & ","
-        
       Next
       
       sValue = Left(sValue, -1)
@@ -343,17 +284,20 @@ Public Sub btnOK_Click()
       
       For Each f In $aGradientPos
         sValue &= f & ","
-        
       Next
       sValue = Left(sValue, -1)
       
       sValue &= "])"
-    Case 2
-      sValue = "Image(" & sImageDir & ")"
+    
+    Case CReportBrush.TYPE_IMAGE
+      
+      sValue = "Image(" & Quote(txtImage.Text) & ")"
       
   End Select
+  
   Value = sValue
   Me.Close(True)
+  
 End
 
 Public Sub lblAngle_MouseDown()
@@ -361,42 +305,60 @@ Public Sub lblAngle_MouseDown()
   $MX = Mouse.ScreenX - Last.X
   'iCurrentColor = Last.Tag
   $MY = Mouse.ScreenY - Last.Y
-  DrawingArea2.Refresh
+  dwgGradientColor.Refresh
   
 End
+
+Private Sub UpdateAngle()
+  
+  Dim hLabel As DrawingArea
+  Dim X, Y As Float
+  
+  For Each hLabel In [$lblA1, $lblA2]
+    
+    X = Round((hLabel.X + 5) / dwgGradient.Width, -2)
+    Y = Round((hLabel.Y + 5) / dwgGradient.Height, -2)
+    
+    If hLabel.Tag = 1 Then
+      If cmbType.Index = CReportBrush.TYPE_LINEAR_GRADIENT Then
+        $flX1 = X
+        $flY1 = Y
+      Else
+        $cX = X
+        $cY = Y
+      Endif
+    Else
+      If cmbType.Index = CReportBrush.TYPE_LINEAR_GRADIENT Then
+        $flX2 = X
+        $flY2 = Y
+      Else
+        $fX = X
+        $fY = Y
+      Endif
+    Endif
+    
+    dwgGradient.Refresh
+
+  Next
+  
+End
+
+
 
 Public Sub lblAngle_MouseMove()
   
-  Dim hLabel As Label = Last
+  Dim hLabel As DrawingArea = Last
   Dim iRealPosX As Integer = Mouse.ScreenX - $MX 
   Dim iRealPosY As Integer = Mouse.ScreenY - $MY 
   
-  ' If iRealPosX < 5 Or iRealPosX > DrawingArea1.Width - 5 Then Return
-  ' If iRealPosY < 5 Or iRealPosY > DrawingArea1.Height - 5 Then Return
-  hLabel.left = Max(Min(DrawingArea1.Width - 10, iRealPosX), 0)
-  hLabel.Top = Max(Min(DrawingArea1.Height - 10, iRealPosY), 0)
-  'hLabel.Move(Mouse.ScreenX - $MX, Mouse.ScreenY - $MY)
-  
-  If hLabel.Tag = 1 Then
-    $flX1 = Round((hLabel.Left + 5) / DrawingArea1.Width, -2)
-    $flY1 = Round((hLabel.Top + 5) / DrawingArea1.Height, -2)
-    
-  Else
-    $flX2 = Round((hLabel.Left + 5) / DrawingArea1.Width, -2)
-    $flY2 = Round((hLabel.Top + 5) / DrawingArea1.Height, -2)
-  Endif
-  
-  '$aGradientPos[hLabel.Tag] = Round((hLabel.X + hLabel.Width / 2 - 5) / (DrawingArea2.Width - 10), -2)
-  DrawingArea1.Refresh
-  'Print $aGradientPos[hLabel.Tag]
+  hLabel.Move(Max(Min(dwgGradient.Width - 10, iRealPosX), 0), Max(Min(dwgGradient.Height - 10, iRealPosY), 0))
+  UpdateAngle
   
 End
 
-Public Sub FileChooser1_Change()
+Public Sub txtImage_Change()
   
-  sImageDir = FileChooser1.Value
-  
-  'Me.Title = value
+  Try picImage.Picture = Picture[Project.Dir &/ txtImage.Text]
   
 End
 
@@ -407,41 +369,15 @@ End
 ' 
 ' End
 
-Public Sub CChooser_Change()
+Public Sub cchColor_Change()
   
-  $aGradientColors[0] = CChooser.Value
+  $iColor = cchColor.Value
   
 End
 
-Private Function GetColorArray(sValue As String) As Integer[]
+Public Sub cchColor_Activate()
 
-  Dim ari As New Integer[]
-  Dim s As String
-  
-  For Each s In Split(sValue)
-    ari.Add(CReportBrush.StringToColor(s))
-  Next
-  
-  Return ari
-
-End
-
-Private Function GetFloatArray(sValue As String) As Float[]
-
-  Dim arf As New Float[]
-  Dim s As String
-  
-  For Each s In Split(sValue)
-    arf.Add(CFloat(s))
-  Next
-  
-  Return arf
-
-End
-
-Public Sub CChooser_Activate()
-
-  CChooser_Change
+  btnOK.Value = True
 
 End
 
@@ -449,4 +385,45 @@ Public Sub btnCancel_Click()
 
   Me.Close
 
+End
+
+Private Sub UpdateGradient()
+
+  Dim bRadial As Boolean = cmbType.Index = CReportBrush.TYPE_RADIAL_GRADIENT
+
+  '$lblA2.Visible = Not bRadial
+  '$lblA1.Visible = Not bRadial
+  'ToggleButton1.Visible = bRadial
+  'ToggleButton2.Visible = bRadial
+  panRadius.Visible = bRadial
+  UpdateAngle
+  
+End
+
+Public Sub txtImage_Click()
+
+  Dim sImage As String
+  
+  sImage = FSelectIcon.Run(txtImage.Text)
+  If Not sImage Then Return
+  txtImage.Text = sImage
+
+End
+
+Public Sub lblAngle_Draw()
+  
+  Dim sText As String
+  
+  If cmbType.Index <> CReportBrush.TYPE_RADIAL_GRADIENT Then Return
+  
+  If Last.Tag = 1 Then
+    sText = "C"
+  Else
+    sText = "F"
+  Endif
+  
+  Draw.Font.Size = 7
+  Draw.Font.Bold = True
+  Draw.Text(sText, 0, 0, Draw.Width, Draw.Height, Align.Center)
+  
 End

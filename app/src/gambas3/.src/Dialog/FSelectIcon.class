@@ -24,7 +24,7 @@ Public Sub Form_Open()
   
   Settings.Read(Me)
 
-  fchIcon.Filter = ["*.png,*.jpg,*.jpeg,*.xpm,*.gif", ("Picture files")]
+  fchIcon.Filter = ["*.png,*.jpg,*.jpeg,*.xpm,*.gif", ("Image files")]
   fchIcon.Root = Project.Dir
   
   cmbSize.List = ["small", "medium", "large", "huge", "16", "22", "32", "48", "64", "96", "128"]

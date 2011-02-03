@@ -394,8 +394,8 @@ msgstr ""
 #: FGotoLine.class:57 FList.class:331 FMain.class:1687 FMenu.class:1238
 #: FNewConnection.class:573 FNewTable.class:159 FNewTranslation.class:64
 #: FOpenProject.class:496 FPasteSpecial.class:273 FPropertyComponent.class:467
-#: FPropertyProject.class:252 FReportBorderChooser.class:335
-#: FReportBrushChooser.class:491 FReportCoordChooser.class:132
+#: FPropertyProject.class:252 FReportBorderChooser.class:353
+#: FReportBrushChooser.class:467 FReportCoordChooser.class:132
 #: FSaveProjectAs.class:124 FSelectExtraFile.class:72 FSelectIcon.class:267
 #: FSnippet.class:136 FTableChooser.class:138 FText.class:100
 msgid "OK"
@@ -480,8 +480,8 @@ msgstr ""
 #: FMakeInstall.class:326 FMenu.class:1243 FNewConnection.class:317
 #: FNewTable.class:165 FNewTranslation.class:70 FOpenProject.class:502
 #: FOption.class:600 FPasteSpecial.class:279 FPropertyComponent.class:473
-#: FPropertyProject.class:801 FReportBorderChooser.class:329
-#: FReportBrushChooser.class:485 FReportCoordChooser.class:126 FSave.class:118
+#: FPropertyProject.class:801 FReportBorderChooser.class:347
+#: FReportBrushChooser.class:461 FReportCoordChooser.class:126 FSave.class:118
 #: FSaveProjectAs.class:130 FSelectExtraFile.class:78 FSelectIcon.class:272
 #: FSnippet.class:142 FTableChooser.class:144 FText.class:106
 #: FTextEditor.class:489 FTranslate.class:638 Project.module:411
@@ -640,7 +640,7 @@ msgstr ""
 msgid "Text"
 msgstr ""
 
-#: FConflict.class:392 FCreateFile.class:708 FReportBrushChooser.class:498
+#: FConflict.class:392 FCreateFile.class:708 FReportBrushChooser.class:474
 #: Project.module:186
 msgid "Image"
 msgstr ""
@@ -907,7 +907,7 @@ msgstr ""
 msgid "Gambas classes"
 msgstr ""
 
-#: FCreateFile.class:87 FSelectIcon.class:27
+#: FCreateFile.class:87
 msgid "Picture files"
 msgstr ""
 
@@ -3559,51 +3559,47 @@ msgstr ""
 msgid "Configure border"
 msgstr ""
 
-#: FReportBorderChooser.class:395
-msgid "Top"
-msgstr ""
-
-#: FReportBorderChooser.class:400
+#: FReportBorderChooser.class:342
 msgid "Bottom"
 msgstr ""
 
-#: FReportBorderChooser.class:405
+#: FReportBorderChooser.class:401
+msgid "Top"
+msgstr ""
+
+#: FReportBorderChooser.class:406
 msgid "Left"
 msgstr ""
 
-#: FReportBorderChooser.class:410
+#: FReportBorderChooser.class:411
 msgid "Right"
 msgstr ""
 
-#: FReportBorderChooser.class:415
+#: FReportBorderChooser.class:416
 msgid "Synchronize"
 msgstr ""
 
-#: FReportBrushChooser.class:480
-msgid "Report Brush"
+#: FReportBrushChooser.class:456
+msgid "Configure brush"
 msgstr ""
 
-#: FReportBrushChooser.class:498
+#: FReportBrushChooser.class:474
 msgid "Color"
 msgstr ""
 
-#: FReportBrushChooser.class:498
-msgid "Gradient"
+#: FReportBrushChooser.class:474
+msgid "Linear gradient"
 msgstr ""
 
-#: FReportBrushChooser.class:527
-msgid "Radial"
+#: FReportBrushChooser.class:474
+msgid "Radial gradient"
 msgstr ""
 
-#: FReportBrushChooser.class:536
-msgid "F"
+#: FReportBrushChooser.class:489
+msgid "Select an image inside the project"
 msgstr ""
 
-#: FReportBrushChooser.class:543
-msgid "C"
-msgstr ""
-
-#: FReportBrushChooser.class:558
+#: FReportBrushChooser.class:539
 msgid "Radius"
 msgstr ""
 
@@ -3725,6 +3721,10 @@ msgstr ""
 
 #: FSelectExtraFile.class:50
 msgid "Select an extra file"
+msgstr ""
+
+#: FSelectIcon.class:27
+msgid "Image files"
 msgstr ""
 
 #: FSelectIcon.class:203

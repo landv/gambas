@@ -3,35 +3,43 @@ Export
 
 Public Enum TYPE_COLOR, TYPE_IMAGE, TYPE_LINEAR_GRADIENT, TYPE_RADIAL_GRADIENT
 
-Public _Type As Integer
-Public _X As Float
-Public _Y As Float
-Public _X2 As Float
-Public _Y2 As Float
-Public _radius As Float
-Public _Image As Image
-Public _Color As Integer[] = [0, &HFFFFFF&]
-Public _Pos As Float[] = [0, 1]
-Private _ImageDir As String
+Public Type As Integer
+Public X1 As Float
+Public Y1 As Float
+Public X2 As Float
+Public Y2 As Float
+Public Radius As Float
+'Public Pattern As Image
+Public Color As Integer
+Public Colors As Integer[] = [0, &HFFFFFF&]
+Public Positions As Float[] = [0, 1]
+Public Path As String
 
-Public Function _PaintBrush(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer) As PaintBrush
+Public Function _PaintBrush(iX1 As Integer, iY1 As Integer, iX2 As Integer, iY2 As Integer) As PaintBrush
   
   Dim hBrush As PaintBrush
-  Dim fradius As Float
-  Dim Width As Integer = X2 - X1
-  Dim Height As Integer = Y2 - Y1
+  Dim hImage As Image
+  Dim fRadius As Float
+  Dim Width As Integer = iX2 - iX1
+  Dim Height As Integer = iY2 - iY1
   
-  Select Case Me._Type
+  Select Case Me.Type
     Case TYPE_COLOR
-      hBrush = Paint.Color(_Color[0])
+      hBrush = Paint.Color(Color)
     Case TYPE_IMAGE
-      hBrush = paint.Image(_Image, X1, Y1)
+      Try hImage = Image.Load(Project.Dir &/ Path)
+      If hImage Then
+        hBrush = Paint.Image(hImage, iX1, iY1)
+      Else
+        hBrush = Paint.Color(Color.Gray)
+      Endif
     Case TYPE_LINEAR_GRADIENT
-      hBrush = paint.LinearGradient(Width * _X, Height * _Y, Width * _X2, Height * _Y2, _Color, _Pos)
+      hBrush = Paint.LinearGradient(Width * X1, Height * Y1, Width * X2, Height * Y2, Colors, Positions)
     Case TYPE_RADIAL_GRADIENT
-      fradius = Width * _radius
-      hBrush = paint.RadialGradient(Width * _X, Height * _Y, fradius, Width * _X2, Height * _Y2, _Color, _Pos)
+      fRadius = Width * Radius
+      hBrush = Paint.RadialGradient(Width * X1, Height * Y1, fRadius, Width * X2, Height * Y2, Colors, Positions)
   End Select
+  
   Return hBrush
   
 End
@@ -64,43 +72,44 @@ Static Public Sub _get(sValue As String) As CReportBrush
     
     Case "image"
       
-      hBrush._Type = TYPE_IMAGE
-      hBrush._Image = Image.Load(ars[0])
-      hBrush._ImageDir = ars[0]
+      hBrush.Type = TYPE_IMAGE
+      'hBrush.Pattern = Image.Load(ars[0])
+      hBrush.Path = Unquote(ars[0])
       
     Case "radialgradient"
       
-      hBrush._Type = TYPE_RADIAL_GRADIENT
-      hBrush._X = CFloat(ars[0])
-      hBrush._Y = CFloat(ars[1])
-      hBrush._Radius = CFloat(ars[2])
-      hBrush._X2 = CFloat(ars[3])
-      hBrush._Y2 = CFloat(ars[4])
-      hBrush._Color = GetColorArray(ars[5])
-      hBrush._Pos = GetFloatArray(ars[6])
+      hBrush.Type = TYPE_RADIAL_GRADIENT
+      hBrush.X1 = CFloat(ars[0])
+      hBrush.Y1 = CFloat(ars[1])
+      hBrush.Radius = CFloat(ars[2])
+      hBrush.X2 = CFloat(ars[3])
+      hBrush.Y2 = CFloat(ars[4])
+      hBrush.Colors = GetColorArray(ars[5])
+      hBrush.Positions = GetFloatArray(ars[6])
       
     Case "lineargradient"
       
-      hBrush._Type = TYPE_LINEAR_GRADIENT
-      hBrush._X = CFloat(ars[0])
-      hBrush._Y = CFloat(ars[1])
-      hBrush._X2 = CFloat(ars[2])
-      hBrush._Y2 = CFloat(ars[3])
-      hBrush._Color = GetColorArray(ars[4])
-      hBrush._Pos = GetFloatArray(ars[5])
+      hBrush.Type = TYPE_LINEAR_GRADIENT
+      hBrush.X1 = CFloat(ars[0])
+      hBrush.Y1 = CFloat(ars[1])
+      hBrush.X2 = CFloat(ars[2])
+      hBrush.Y2 = CFloat(ars[3])
+      hBrush.Colors = GetColorArray(ars[4])
+      hBrush.Positions = GetFloatArray(ars[5])
       
     Case Else
-      'correction de l'hexon
-      hBrush._Color[0] = StringToColor(ars[0])
-      'CChooser.Value = IIf(Len(ars[0]) = 8, Val(ars[0]), Val(ars[0] & "FF"))
+      
+      hBrush.Color = StringToColor(ars[0])
+      hBrush.Colors[0] = hBrush.Color
+      
   End Select
   
 Finally
   
-  If hBrush._Color.Count = 0 Then hBrush._Color = [0, &hFFFFFF&]
-  If hBrush._Color.Count < 2 Then hBrush._Color.Add(&hFFFFFF&)
+  If hBrush.Colors.Count = 0 Then hBrush.Colors = [0, &hFFFFFF&]
+  If hBrush.Colors.Count < 2 Then hBrush.Colors.Add(&hFFFFFF&)
   
-  If hBrush._Pos.Count < 2 Then hBrush._Pos = [0.0, 1.0]
+  If hBrush.Positions.Count < 2 Then hBrush.Positions = [0.0, 1.0]
   
   Return hBrush
   
@@ -160,21 +169,21 @@ Public Function ToString() As String
   Dim f As Float
   Dim sValue As String
   
-  Select Case _Type
+  Select Case Type
     
     Case TYPE_COLOR
       
-      sValue = ColorToString(_Color[0])
+      sValue = ColorToString({Color})
       
     Case TYPE_LINEAR_GRADIENT, TYPE_RADIAL_GRADIENT
       
-      If _Type = TYPE_RADIAL_GRADIENT Then
-        sValue = "RadialGradient(" & _X & "," & _Y & "," & _Radius & "," & _X2 & "," & _Y2 & ",["
+      If Type = TYPE_RADIAL_GRADIENT Then
+        sValue = "RadialGradient(" & X1 & "," & Y1 & "," & Radius & "," & X2 & "," & Y2 & ",["
       Else
-        sValue = "LinearGradient(" & _X & "," & _Y & "," & _X2 & "," & _Y2 & ",["
+        sValue = "LinearGradient(" & X1 & "," & Y1 & "," & X2 & "," & Y2 & ",["
       Endif
       
-      For Each i In _Color
+      For Each i In Colors
         sValue &= ColorToString(i) & ","
       Next
       
@@ -182,7 +191,7 @@ Public Function ToString() As String
       
       sValue &= "],["
       
-      For Each f In _Pos
+      For Each f In Positions
         sValue &= f & ","
         
       Next
@@ -192,7 +201,7 @@ Public Function ToString() As String
     
     Case TYPE_IMAGE
       
-      sValue = "Image(" & Quote(_ImageDir) & ")"
+      sValue = "Image(" & Quote(Path) & ")"
       
   End Select
   
