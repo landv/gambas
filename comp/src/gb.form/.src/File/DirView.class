@@ -182,7 +182,7 @@ End
 Public Sub TreeView_Select()
 
   If Not $bNoExpand And If Not $bInRename Then
-    If Not $hTreeView.Current.Expanded Then $hTimerExpand.Trigger
+    If $hTreeView.Current And If Not $hTreeView.Current.Expanded Then $hTimerExpand.Trigger
   Endif
   If $bNoEvent Then Return 
   Raise {Select}

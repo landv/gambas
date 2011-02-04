@@ -209,7 +209,10 @@ Public Sub DrawingArea_Draw()
     Draw.Clip.Enabled = False
   Endif
   
-  If $bBorder Then Draw.Style.Panel(0, 0, Draw.W, Draw.H, Border.Sunken)
+  If $bBorder Then 
+    Draw.Reset
+    Draw.Style.Panel(0, 0, Draw.W, Draw.H, Border.Sunken)
+  Endif
   
 End
 

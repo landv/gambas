@@ -158,5 +158,5 @@ int gScrollView::scrollWidth()
 
 int gScrollView::scrollHeight()
 {
-	return MAX(_maxw, clientHeight());
+	return MAX(_maxh, clientHeight());
 }
