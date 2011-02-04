@@ -17,7 +17,6 @@ Property {Dir} As String
 Property ShowHidden As Boolean
 Property ShowDirectory As Boolean
 Property Current As String
-Property Font As Font
 Property Mode As Integer
 Property ShowDetailed As Boolean
 Property Read Selection As String[]
@@ -94,10 +93,11 @@ Public Sub _new()
     .Resizable = True
   End With
 
+  Me.Proxy = GetView()
+  
   $hRefresh = New Timer As "Refresh"
 
   RefreshViewLater
-  RefreshGrid
 
 End
 
@@ -257,11 +257,6 @@ Public Sub Reload()
 End
 
 
-Private Sub RefreshGrid()
-
-End
-
-
 Private Function Dir_Read() As String
 
   Return $sDir
@@ -336,18 +331,18 @@ Private Sub Current_Write(sFile As String)
 
 End
 
-Private Function Font_Read() As Font
-
-  Return Super.Font
-
-End
-
-Private Sub Font_Write(hFont As Font)
-
-  Super.Font = hFont
-  RefreshGrid
-
-End
+' Private Function Font_Read() As Font
+' 
+'   Return Super.Font
+' 
+' End
+' 
+' Private Sub Font_Write(hFont As Font)
+' 
+'   Super.Font = hFont
+'   RefreshGrid
+' 
+' End
 
 Private Function ShowDetailed_Read() As Boolean
 
@@ -371,6 +366,7 @@ Private Sub ShowDetailed_Write(bDetailed As Boolean)
 
   Endif
   
+  Me.Proxy = GetView()
   RefreshViewLater
   TakeSelection
 

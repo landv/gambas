@@ -38,6 +38,7 @@ Public Sub _new()
   $hTreeView = New TreeView(Me) As "TreeView"
   $hTreeView.Editable = True
   $hTimerExpand = New Timer As "TimerExpand"
+  Me.Proxy = $hTreeView
   ClearView
 
 End
