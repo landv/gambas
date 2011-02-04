@@ -40,8 +40,7 @@ public:
 
 //"Private"
 	virtual void performArrange();
-  void updateMaxSize();
-	void updateViewportSize();
+  void updateSize();
   guint _timer;
 	
 private:

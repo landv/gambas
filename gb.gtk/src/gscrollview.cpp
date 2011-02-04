@@ -82,7 +82,7 @@ gScrollView::gScrollView(gContainer *parent) : gContainer(parent)
 }
 
 
-void gScrollView::updateMaxSize()
+void gScrollView::updateSize()
 {
 	int i, p;
 	int ww, hh;
@@ -106,10 +106,7 @@ void gScrollView::updateMaxSize()
 	
 	_maxw = ww;
 	_maxh = hh;
-}
 
-void gScrollView::updateViewportSize()
-{
 	gtk_widget_set_size_request(widget, scrollWidth(), scrollHeight());
 }
 
