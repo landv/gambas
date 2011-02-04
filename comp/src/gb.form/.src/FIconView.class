@@ -20,7 +20,12 @@ End
 Public Sub Button1_Click()
 
   'MyIconView1["gambas"].Picture = Picture["icon:/48/gambas"]
-  Try IconView1.Current.Selected = Not IconView1.Current.Selected
+  'Try IconView1.Current.Selected = Not IconView1.Current.Selected
+  If IconView1.Font.Size = 6 Then
+    IconView1.Font.Size = 16
+  Else
+    Dec IconView1.Font.Size
+  Endif
 
 End
 

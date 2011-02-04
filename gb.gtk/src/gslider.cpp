@@ -123,8 +123,6 @@ gSlider::gSlider(gContainer *par, bool scrollbar) : gControl(par)
 	widget = gtk_vscale_new(NULL);
 	gtk_scale_set_draw_value(GTK_SCALE(widget), false);
 		
-	gtk_container_add(GTK_CONTAINER(border), widget);
-	
 	init();
 	
 	realize(false);

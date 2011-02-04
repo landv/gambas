@@ -50,6 +50,7 @@ gScrollView::gScrollView(gContainer *parent) : gContainer(parent)
 
 	g_typ=Type_gScrollView;
 	
+	_maxw = _maxh = 0;
 	_mw = _mh = 0;
 	_timer = 0;
 	
@@ -81,7 +82,7 @@ gScrollView::gScrollView(gContainer *parent) : gContainer(parent)
 }
 
 
-void gScrollView::updateSize()
+void gScrollView::updateMaxSize()
 {
 	int i, p;
 	int ww, hh;
@@ -103,16 +104,13 @@ void gScrollView::updateSize()
 			hh = p;
 	}
 	
-	_mw = ww;
-	ww = width() - getFrameWidth();
-	if (_mw < ww)
-		_mw = ww;
-	_mh = hh;
-	hh = height() - getFrameWidth();
-	if (_mh < hh)
-		_mh = hh;
-	
-	gtk_widget_set_size_request(widget, _mw, _mh);
+	_maxw = ww;
+	_maxh = hh;
+}
+
+void gScrollView::updateViewportSize()
+{
+	gtk_widget_set_size_request(widget, scrollWidth(), scrollHeight());
 }
 
 void gScrollView::performArrange()
@@ -128,10 +126,10 @@ void gScrollView::resize(int w, int h)
 	
 	gContainer::resize(w, h);
 	
-	if (bufW == 0 || bufH == 0)
-		return;
+	//if (bufW == 0 || bufH == 0)
+	//	return;
 	
-	//updateSize();
+	updateSize();
 	
 	//performArrange();
 	//parent()->performArrange();
@@ -154,4 +152,14 @@ void gScrollView::ensureVisible(int x, int y, int w, int h)
 	gt_ensure_visible(&arg, x, y, w, h);
 	
 	scroll(arg.scrollX, arg.scrollY);
+}
+
+int gScrollView::scrollWidth()
+{
+	return MAX(_maxw, clientWidth());
+}
+
+int gScrollView::scrollHeight()
+{
+	return MAX(_maxw, clientHeight());
 }

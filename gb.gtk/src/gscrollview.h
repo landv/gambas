@@ -28,8 +28,8 @@ public:
 	gScrollView(gContainer *parent);
 
 //"Properties"
-	virtual int scrollWidth() { return _mw; }
-	virtual int scrollHeight() { return _mh; }
+	virtual int scrollWidth();
+	virtual int scrollHeight();
 
 //"Methods"
 	virtual void resize(int w,int h);
@@ -40,11 +40,13 @@ public:
 
 //"Private"
 	virtual void performArrange();
-  void updateSize();
+  void updateMaxSize();
+	void updateViewportSize();
   guint _timer;
 	
 private:
 	GtkWidget *viewport;
+	int _maxw, _maxh;
   int _mw, _mh;
 };
 

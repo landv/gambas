@@ -204,7 +204,7 @@ Public Sub _GetTextRect(hRect As Rect, bHorizontal As Boolean) As Rect
   
 End
 
-Public Sub _Draw(hRect As Rect, hClip As Rect, bHorizontal As Boolean, bFocus As Boolean, bHover As Boolean)
+Public Sub _Draw(hRect As Rect, hClip As Rect, hFont As Font, bHorizontal As Boolean, bFocus As Boolean, bHover As Boolean)
   
   Dim X, Y As Integer
   Dim iColor As Integer
@@ -263,6 +263,7 @@ Public Sub _Draw(hRect As Rect, hClip As Rect, bHorizontal As Boolean, bFocus As
     If $sText Then
       'Draw.Clip(hRect.X, Y, hRect.W, hRect.H - Y)
       Draw.Foreground = If($bSelected, Color.SelectedForeground, Color.TextForeground)
+      Draw.Font = hFont
       Draw.RichText($sText, hRect.X, Y, hRect.W, hRect.H - (Y - hRect.Y), Align.Top)
       'Draw.Clip.Enabled = False
     Endif

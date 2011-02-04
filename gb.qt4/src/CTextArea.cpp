@@ -109,12 +109,14 @@ static Qt::Alignment get_alignment(void *_object)
 
 static void set_alignment(void *_object, Qt::Alignment align)
 {
+	QTextCursor oldCursor = WIDGET->textCursor();
 	QTextCursor cursor(WIDGET->document());
 	cursor.select(QTextCursor::Document);
 	QTextBlockFormat format = cursor.blockFormat();
 	format.setAlignment(align);
 	cursor.setBlockFormat(format);
 	WIDGET->setTextCursor(cursor);
+	WIDGET->setTextCursor(oldCursor);
 }
 
 

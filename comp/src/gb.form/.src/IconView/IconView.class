@@ -12,6 +12,7 @@ Property Mode As Integer
 Property Orientation As Integer
 Property Border As Boolean
 Property ScrollBar As Integer
+Property Font As Font
 
 Property Read Count As Integer
 Property Read Current As _IconViewItem
@@ -413,7 +414,7 @@ Public Sub ScrollArea_Draw()
       hClip = New Rect(X, Y, W, H)
       hClip = hClip.Intersection(hRect)
       If hClip Then
-        hItem._Draw(hRect, hClip, $bHorizontal, False, iPos = $iHover Or iPos = $iStart) ' _HaveFocus, $iMouseOver = k And Me.Tracking)
+        hItem._Draw(hRect, hClip, Me.Font, $bHorizontal, False, iPos = $iHover Or iPos = $iStart) ' _HaveFocus, $iMouseOver = k And Me.Tracking)
       Endif
       
     Endif
@@ -576,8 +577,10 @@ End
 Private Sub ToggleCurrentItem(iPos As Integer)
   
   $aItems[iPos].Selected = Not $aItems[iPos].Selected
+  RefreshIcon($iCurrent)
   $iCurrent = iPos
   $iStart = iPos
+  RefreshIcon($iCurrent)
   
   If $iCurrent >= 0 Then _EnsureVisible($iCurrent)
   
@@ -598,6 +601,7 @@ Private Sub SetCurrentItem(iCurrent As Integer, Optional bIgnoreOutside As Boole
     UnselectAll
   
     If iCurrent >= 0 Then
+      RefreshIcon($iCurrent)
       $aItems[iCurrent].Selected = True
       $iCurrent = iCurrent
       $iStart = $iCurrent
@@ -1281,6 +1285,19 @@ Private Sub Orientation_Write(Value As Integer)
   Endif
 
   $bHorizontal = bHor
+  ScrollArea_Arrange
+
+End
+
+Private Function Font_Read() As Font
+
+  Return Super.Font
+
+End
+
+Private Sub Font_Write(Value As Font)
+
+  Super.Font = Value
   ScrollArea_Arrange
 
 End

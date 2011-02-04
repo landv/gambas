@@ -619,3 +619,9 @@ Public Sub SetColorMap(bShow As Boolean)
   panColorMapSide.Visible = bShow
   
 End
+
+Public Sub dwgStdColor_DblClick()
+
+  GetParent()._RaiseActivate()
+
+End
