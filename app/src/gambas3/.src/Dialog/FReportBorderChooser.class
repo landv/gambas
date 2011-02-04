@@ -50,7 +50,7 @@ End
 Public Sub dwgBorder_Draw()
   
   Dim iBorder As Integer
-  Dim iSize As Integer
+  Dim fSize As Float
   Dim hBrush As CReportBrush
 
   For iBorder = 0 To 3
@@ -59,25 +59,23 @@ Public Sub dwgBorder_Draw()
     
     If chkSynchro.Value Then
       hBrush = $aBrush[BORDER_TOP]
-      iSize = CFamilyReport.ToPixel($aCoordBox[BORDER_TOP].Value)
+      fSize = CFamilyReport.ToPixel($aCoordBox[BORDER_TOP].Value)
     Else
       hBrush = $aBrush[iBorder]
-      iSize = CFamilyReport.ToPixel($aCoordBox[iBorder].Value)
+      fSize = CFamilyReport.ToPixel($aCoordBox[iBorder].Value)
     Endif
+    
+    Paint.Brush = hBrush._PaintBrush(0, 0, Paint.Width, Paint.Height)
     
     Select Case iBorder
       Case BORDER_TOP
-        Paint.Rectangle(0, 0, Paint.Width, iSize)
-        Paint.Brush = hBrush._PaintBrush(0, 0, Paint.Width, iSize)
+        Paint.Rectangle(0, 0, Paint.Width, fSize)
       Case BORDER_RIGHT
-        Paint.Rectangle(Paint.Width - iSize, 0, iSize, Paint.Height)
-        Paint.Brush = hBrush._PaintBrush(Paint.Width - iSize, 0, Paint.Width, Paint.Height)
+        Paint.Rectangle(Paint.Width - fSize, 0, fSize, Paint.Height)
       Case BORDER_BOTTOM
-        paint.Rectangle(0, Paint.Height - iSize, Paint.Width, iSize)
-        Paint.Brush = hBrush._PaintBrush(0, Paint.Height - iSize, Paint.Width, Paint.Height)
+        Paint.Rectangle(0, Paint.Height - fSize, Paint.Width, fSize)
       Case BORDER_LEFT
-        Paint.Rectangle(0, 0, iSize, Paint.Height)
-        Paint.Brush = hBrush._PaintBrush(0, 0, iSize, Paint.Height)
+        Paint.Rectangle(0, 0, fSize, Paint.Height)
     End Select
     
     Paint.Fill

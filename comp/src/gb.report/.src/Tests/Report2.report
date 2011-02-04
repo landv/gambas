@@ -1,13 +1,13 @@
 # Gambas Form File 3.0
 
 { Report Report
-  #MoveScaled(0,0,104,81)
+  #MoveScaled(0,0,104,101)
   Padding = "1cm"
   Spacing = "2cm"
   Index = 0
   Text = ("Section 1")
   { ReportHBox1 ReportHBox
-    #MoveScaled(4,2,90,26)
+    #MoveScaled(4,2,90,40)
     Fixed = True
     AutoResize = True
     Spacing = "4cm"
@@ -18,30 +18,32 @@
       Image = Image.Load("new-logo.png")
     }
     { ReportVBox2 ReportVBox
-      #MoveScaled(32,2,56,23)
+      #MoveScaled(32,2,56,36)
       Fixed = True
       Expand = True
       { ReportLabel9 ReportLabel
-        #MoveScaled(2,2,52,7)
+        #MoveScaled(1,1,54,18)
         Font = Font["Bitstream Charter,+8"]
+        Padding = "15mm"
+        Border = ReportBorder["Bottom:4mm LinearGradient(0.53,0.96,0.53,0.83,[#303030,#FFFFFF],[0,0.7])"]
+        Background = ReportBrush["#E07FFF00"]
         Text = ("FACTURE")
         Alignment = Align.Center
       }
       { ReportHBox5 ReportHBox
-        #MoveScaled(2,7,44,6)
-        Height = "1cm"
-        Border = ReportBorder["Top:1mm #E0459F27"]
+        #MoveScaled(13,22,5,2)
+        Height = "5mm"
       }
       { ReportLabel10 ReportLabel
-        #MoveScaled(4,13,31,3)
+        #MoveScaled(4,26,31,3)
         Key = "nom"
       }
       { ReportLabel11 ReportLabel
-        #MoveScaled(4,16,32,3)
+        #MoveScaled(4,29,32,3)
         Key = "adresse"
       }
       { ReportHBox6 ReportHBox
-        #MoveScaled(4,16,41,5)
+        #MoveScaled(4,29,41,5)
         AutoResize = True
         Tag = "*"
         Spacing = "2mm"
@@ -62,7 +64,7 @@
     }
   }
   { ReportVBox1 ReportVBox
-    #MoveScaled(6,29,90,42)
+    #MoveScaled(6,48,90,42)
     Expand = True
     { ReportHBox2 ReportHBox
       #MoveScaled(2,0,86,5)

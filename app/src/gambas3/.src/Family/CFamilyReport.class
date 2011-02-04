@@ -59,7 +59,6 @@ Static Private Sub HasBorder(sBorder As String, sSide As String) As Boolean
   Dim sTest As String
   Dim bBorder As Boolean
   
-  
   For Each sTest In ["left", "right", "top", "bottom", "border"]
     If aBorder.Exist(sTest, gb.IgnoreCase) Then
       bBorder = True
@@ -78,7 +77,7 @@ Static Public Sub PaintBorder(sBorder As String) As Float
   Dim cBorder As New Collection
   Dim iColor As Integer
   Dim ars, ars2 As String[]
-
+  
   If Not sBorder Then Return
   
   For Each sElt In Split(LCase(sBorder), ";")
@@ -86,64 +85,67 @@ Static Public Sub PaintBorder(sBorder As String) As Float
     If ars.Count < 2 Then Return
     ars2 = Split(ars[1], " ")
     ars[0] = Trim(ars[0])
-    If Draw.Device Then
-      
-      Draw.LineStyle = Line.None
-      
-      If ars[0] = "left" Or If ars[0] = "border" Then 
-        Try fWidth = CFamilyReport.ToPixel(ars2[0])
-        Try iColor = CReportBrush[ars2[1]]._Color[0]
-        Draw.FillRect(0, 0, fWidth, Draw.Height, iColor)
-      Endif
-      
-      If ars[0] = "right" Or If ars[0] = "border" Then 
-        Try fWidth = CFamilyReport.ToPixel(ars2[0])
-        Try iColor = CReportBrush[ars2[1]]._Color[0]
-        Draw.FillRect(Draw.Width - fWidth, 0, fWidth, Draw.Height, iColor)
-      Endif
-      If ars[0] = "top" Or If ars[0] = "border" Then
-        Try fWidth = CFamilyReport.ToPixel(ars2[0])
-        Try iColor = CReportBrush[ars2[1]]._Color[0]
-        Draw.FillRect(0, 0, Draw.Width, fWidth, iColor)
-      Endif
-      If ars[0] = "bottom" Or If ars[0] = "border" Then
-        Try fWidth = CFamilyReport.ToPixel(ars2[0])
-        Try iColor = CReportBrush[ars2[1]]._Color[0]
-        Draw.FillRect(0, Draw.Height - fWidth, Draw.Width, fWidth, iColor)
-      Endif
-      
-    Else
+    ' If Draw.Device Then
+    '   
+    '   Draw.LineStyle = Line.None
+    '   
+    '   If ars[0] = "left" Or If ars[0] = "border" Then 
+    '     Try fWidth = CFamilyReport.ToPixel(ars2[0])
+    '     Try iColor = CReportBrush[ars2[1]].Color
+    '     Draw.FillRect(0, 0, fWidth, Draw.Height, iColor)
+    '   Endif
+    '   
+    '   If ars[0] = "right" Or If ars[0] = "border" Then 
+    '     Try fWidth = CFamilyReport.ToPixel(ars2[0])
+    '     iColor = CReportBrush[ars2[1]].Color
+    '     Draw.FillRect(Draw.Width - fWidth, 0, fWidth, Draw.Height, iColor)
+    '   Endif
+    '   If ars[0] = "top" Or If ars[0] = "border" Then
+    '     Try fWidth = CFamilyReport.ToPixel(ars2[0])
+    '     iColor = CReportBrush[ars2[1]].Color
+    '     Draw.FillRect(0, 0, Draw.Width, fWidth, iColor)
+    '   Endif
+    '   If ars[0] = "bottom" Or If ars[0] = "border" Then
+    '     Try fWidth = CFamilyReport.ToPixel(ars2[0])
+    '     iColor = CReportBrush[ars2[1]].Color
+    '     Draw.FillRect(0, Draw.Height - fWidth, Draw.Width, fWidth, iColor)
+    '   Endif
+    '   
+    ' Else
       
       'Paint.Brush = Paint.Color(iColor)
       
       If ars[0] = "left" Or If ars[0] = "border" Then 
         Try fWidth = CFamilyReport.ToPixel(ars2[0])
-         Try Paint.Brush = CReportBrush[ars2[1]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
+        Try Paint.Brush = CReportBrush[ars2[1]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
         Paint.Rectangle(0, 0, fWidth, Paint.Height)
+        Paint.Fill
       Endif
       If ars[0] = "right" Or If ars[0] = "border" Then
         Try fWidth = CFamilyReport.ToPixel(ars2[0])
-         Try Paint.Brush = CReportBrush[ars2[1]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
+        Try Paint.Brush = CReportBrush[ars2[1]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
         Paint.Rectangle(Paint.Width - fWidth, 0, fWidth, Paint.Height)
+        Paint.Fill
       Endif
       If ars[0] = "top" Or If ars[0] = "border" Then
         Try fWidth = CFamilyReport.ToPixel(ars2[0])
-         Try Paint.Brush = CReportBrush[ars2[1]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
+        Try Paint.Brush = CReportBrush[ars2[1]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
         Paint.Rectangle(0, 0, Paint.Width, fWidth)
+        Paint.Fill
       Endif
       If ars[0] = "bottom" Or If ars[0] = "border" Then 
         Try fWidth = CFamilyReport.ToPixel(ars2[0])
-         Try Paint.Brush = CReportBrush[ars2[1]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
+        Try Paint.Brush = CReportBrush[ars2[1]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
         Paint.Rectangle(0, Paint.Height - fWidth, Paint.Width, fWidth)
+        Paint.Fill
       Endif
-      
-      Paint.Fill
-      
-    Endif
-      If ars[0] = "border" Then Break
-    Next
-    Return fWidth
+    'Endif
     
+    If ars[0] = "border" Then Break
+  Next
+  
+  Return fWidth
+  
 End
 
 Public Sub _new()
@@ -155,7 +157,7 @@ End
 Public Sub IsPainted(hCtrl As CControl) As Boolean
   
   If hCtrl.Kind = "ReportLabel" Then Return True
-  'If hCtrl.Kind = "ReportTextLabel" Then Return True
+  If hCtrl.Kind = "ReportTextLabel" Then Return True
   If hCtrl.Kind = "ReportLine" Then Return True
   
 End
@@ -172,6 +174,24 @@ Public Sub IsTransparent(hCtrl As CControl) As Boolean
   
 End
 
+Private Sub GetBrush(hCtrl As CControl)
+  
+  While hCtrl
+    
+    If hCtrl["Brush"] Then
+      Paint.Brush = CReportBrush[hCtrl["Brush"]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
+      Return
+    Endif
+  
+    hCtrl = hCtrl.Parent
+  
+  Wend
+  
+  Paint.Brush = Paint.Color(Color.Black)
+  
+End
+
+
 Public Sub DrawControl(hCtrl As CControl) As Boolean
   
   Dim sAlign As String
@@ -184,20 +204,19 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
   W = hCtrl.Width
   H = hCtrl.Height
   
+  If Draw.Device Then Paint.Begin(Draw.Device)
+  
   If hCtrl["Background"] Then
-    
-    If Draw.Device Then
-      
-      Try Draw.FillRect(0, 0, Draw.Width, Draw.Height, CReportBrush[hCtrl["Background"]]._Color[0])
-      
-    Else
-     Paint.Brush = CReportBrush[hCtrl["Background"]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
+    Paint.Brush = CReportBrush[hCtrl["Background"]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
     Paint.Rectangle(0, 0, Paint.Width, Paint.Height)
     Paint.Fill
-    Endif
   Endif
   
-  fVal = PaintBorder(hCtrl["Border"])
+  If hCtrl["Border"] Then
+    fVal = PaintBorder(hCtrl["Border"])
+  Endif
+  
+  If Draw.Device Then Paint.End
   
   If Not hCtrl.IsContainer() And If hCtrl["Padding"] Then
     fVal = Max(ToPixel(hCtrl["Padding"]), fVal)
@@ -212,9 +231,7 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
   
   If W <= 0 Or If H <= 0 Then Return
   
-  If hCtrl["Brush"] Then
-    Paint.Brush = CReportBrush[hCtrl["Brush"]]._PaintBrush(0, 0, Paint.Width, Paint.Height)
-  Endif
+  If Paint.Device Then GetBrush(hCtrl)
   
   Select Case hCtrl.Kind
       
@@ -226,8 +243,8 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
       
     Case "ReportTextLabel"
       
-      Try Draw.Font = Font[hCtrl["Font"]]
-      Draw.RichText(hCtrl["Text"], X, Y, W, H, Classes["Align"][hCtrl["Alignment"]].Value)
+      Try Paint.Font = Font[hCtrl["Font"]]
+      Paint.RichText(hCtrl["Text"], X, Y, W, H, Classes["Align"][hCtrl["Alignment"]].Value)
       'Paint.Fill
       
     Case "ReportLine"
