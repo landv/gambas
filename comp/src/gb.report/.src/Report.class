@@ -153,7 +153,8 @@ End
 
 Public Sub Paint(Page As Integer)
   Dim TSection As TControl
-  Debug "**** "; Page
+  
+  Debug "**** "; Page;; Paint.ResolutionX;; Paint.ResolutionY
   
   If Me.Parent = Null Then 
     'If $sOldWidth <> ((Paint.Width / $fScale) & " px") Then $bLayoutIsDirty = True

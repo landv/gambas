@@ -35,6 +35,7 @@
 #include "gdialog.h"
 #include "gclipboard.h"
 #include "gmouse.h"
+#include "gprinter.h"
 #include "gmainwindow.h"
 
 //#define DEBUG_IM 1
@@ -320,15 +321,16 @@ static void gambas_handle_event(GdkEvent *event)
 			{
 				if (event->type == GDK_WINDOW_STATE)
 				{
-					//fprintf(stderr, "event: MAP!\n");
+					//fprintf(stderr, "event: GDK_WINDOW_STATE!\n");
 					widget = gtk_window_get_default_widget(GTK_WINDOW(gtk_widget_get_toplevel(widget)));
 					if (widget && GTK_IS_BUTTON(widget))
 					{
+						//fprintf(stderr, "gtk_button_clicked: %s\n", gtk_button_get_label(GTK_BUTTON(widget)));
 						gApplication::_close_next_window = false;
 						gtk_button_clicked(GTK_BUTTON(widget));
-						return;
-						goto __HANDLE_EVENT;
+						//return;
 						//g_timeout_add(0, (GSourceFunc)close_dialog, GTK_BUTTON(widget));
+						goto __HANDLE_EVENT;
 					}
 					//fprintf(stderr, "event: MAP! <<< end\n");
 				}

@@ -63,7 +63,7 @@ End
 
 Private Function Value_Read() As String
   
-  If IsNumber($hTextBox.Text) And If Val($hTextBox.Text) > 0 Then Return $hTextBox.Text & $hButton.Text
+  If IsNumber($hTextBox.Text) And If Val($hTextBox.Text) > 0 Then Return Replace($hTextBox.Text, ",", ".") & $hButton.Text
   
 End
 
@@ -87,7 +87,7 @@ Private Sub Value_Write(Value As String)
     If Not IsDigit(sCar) And If sCar <> "." Then Break
   Next
   
-  Try $hTextBox.Text = CFloat(Left$(Value, I - 1))
+  Try $hTextBox.Text = Str(Left$(Value, I - 1))
   Unit = Trim(Mid$(Value, I))
   
   If Not Unit Then Unit = "%"
@@ -215,7 +215,7 @@ End
 
 Public Sub TextBox_KeyPress()
   
-  Try $fCurVal = CFloat(Last.Text)
+  Try $fCurVal = Val(Last.Text)
   
 End
 
@@ -223,7 +223,7 @@ Public Sub TextBox_MouseWheel()
   
   Dim f As Float
 
-  Try f = CFloat($hTextBox.Text)
+  Try f = Val($hTextBox.Text)
   f += Mouse.Delta
   $fCurVal = Max(0, f)
   $hTextBox.Text = $fCurVal

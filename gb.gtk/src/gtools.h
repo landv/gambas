@@ -123,8 +123,8 @@ void gt_set_cell_renderer_text_from_font(GtkCellRendererText *cell, gFont *font)
 
 // Initialize a PangoLayout from a font
 
-void gt_set_layout_from_font(PangoLayout *layout, gFont *font);
-void gt_add_layout_from_font(PangoLayout *layout, gFont *font);
+void gt_set_layout_from_font(PangoLayout *layout, gFont *font, int dpi = 0);
+void gt_add_layout_from_font(PangoLayout *layout, gFont *font, int dpi = 0);
 
 #define gt_pango_to_pixel(_pango) (((_pango) + PANGO_SCALE - 1) / PANGO_SCALE)
 

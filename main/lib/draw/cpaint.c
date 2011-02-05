@@ -698,7 +698,15 @@ BEGIN_METHOD(Paint_TextExtents, GB_STRING text)
 	CHECK_DEVICE();
 
 	GB.New(POINTER(&extents), GB.FindClass("PaintExtents"), NULL, NULL);
-	PAINT->TextExtents(THIS, STRING(text), LENGTH(text), &extents->ext);
+	
+	if (!LENGTH(text))
+	{
+		PAINT->GetCurrentPoint(THIS, &extents->ext.x1, &extents->ext.y1);
+		extents->ext.x2 = extents->ext.x1;
+		extents->ext.y2 = extents->ext.y1;
+	}
+	else
+		PAINT->TextExtents(THIS, STRING(text), LENGTH(text), &extents->ext);
 	
 	GB.ReturnObject(extents);
 

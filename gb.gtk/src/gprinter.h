@@ -94,6 +94,7 @@ public:
 	
 private:
 	bool run(bool configure);
+	bool isVirtual();
 	GtkPaperSize *getPaperSize();
 	
 	GtkPrintOperation *_operation;

@@ -187,6 +187,9 @@ static int Begin(GB_PAINT *d)
 		
 		EXTRA(d)->context = gtk_print_context_get_cairo_context(context);
 		cairo_reference(CONTEXT(d));
+		
+		cairo_surface_set_fallback_resolution(cairo_get_target(CONTEXT(d)), 300, 300);
+		
 		w = gtk_print_context_get_width(context);
 		h = gtk_print_context_get_height(context);
 		rx = (int)gtk_print_context_get_dpi_x(context);
@@ -619,10 +622,14 @@ static void draw_text(GB_PAINT *d, bool rich, const char *text, int len, float w
 		pango_layout_set_text(layout, text, len);
 	
 	Paint_Font(d, FALSE, (GB_FONT *)&font);
-	gt_add_layout_from_font(layout, font->font);
+	gt_add_layout_from_font(layout, font->font, d->resolutionY);
 	
 	if (w > 0 && h > 0)
+	{
 		gt_layout_alignment(layout, w, h, &tw, &th, align, &offx, &offy);
+		if (rich)
+			offx = 0;
+	}
 	else
 	{
 		offx = 0;
@@ -654,12 +661,9 @@ static void get_text_extents(GB_PAINT *d, bool rich, const char *text, int len, 
 	PangoLayout *layout;
 	CFONT *font;
 	PangoRectangle rect;
-	PangoRectangle logrect;
 	float x, y;
 	
 	layout = pango_cairo_create_layout(CONTEXT(d));
-	Paint_Font(d, FALSE, (GB_FONT *)&font);
-	gt_add_layout_from_font(layout, font->font);
 	
 	if (rich)
 	{
@@ -669,7 +673,10 @@ static void get_text_extents(GB_PAINT *d, bool rich, const char *text, int len, 
 	else
 		pango_layout_set_text(layout, text, len);
 
-	pango_layout_get_extents(layout, &rect, &logrect);
+	Paint_Font(d, FALSE, (GB_FONT *)&font);
+	gt_add_layout_from_font(layout, font->font, d->resolutionY);
+
+	pango_layout_get_extents(layout, &rect, NULL);
 	
 	GetCurrentPoint(d, &x, &y);
 	

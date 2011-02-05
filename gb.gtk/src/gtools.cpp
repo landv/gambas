@@ -1415,13 +1415,23 @@ void gt_set_cell_renderer_text_from_font(GtkCellRendererText *cell, gFont *font)
 		(void *)NULL);	
 }
 
-static void set_layout_from_font(PangoLayout *layout, gFont *font, bool add)
+static void set_layout_from_font(PangoLayout *layout, gFont *font, bool add, int dpi)
 {
 	PangoFontDescription *desc;
 	PangoAttrList *attrs;
 	PangoAttribute *attr;
+	bool copy = false;
 	
 	desc = pango_context_get_font_description(font->ct);
+
+	//desc = pango_font_description_copy(pango_layout_get_font_description(layout));
+	if (dpi && dpi != gDesktop::resolution())
+	{
+		int size = pango_font_description_get_size(desc);
+		desc = pango_font_description_copy(desc);
+		copy = true;
+		pango_font_description_set_size(desc, size * dpi / gDesktop::resolution());
+	}
 
 	pango_layout_set_font_description(layout, desc);
 	
@@ -1456,16 +1466,18 @@ static void set_layout_from_font(PangoLayout *layout, gFont *font, bool add)
 	
 	pango_layout_context_changed(layout);
 	
+	if (copy)
+		pango_font_description_free(desc);
 }
 
-void gt_set_layout_from_font(PangoLayout *layout, gFont *font)
+void gt_set_layout_from_font(PangoLayout *layout, gFont *font, int dpi)
 {
-	set_layout_from_font(layout, font, false);
+	set_layout_from_font(layout, font, false, dpi);
 }
 
-void gt_add_layout_from_font(PangoLayout *layout, gFont *font)
+void gt_add_layout_from_font(PangoLayout *layout, gFont *font, int dpi)
 {
-	set_layout_from_font(layout, font, true);
+	set_layout_from_font(layout, font, true, dpi);
 }
 
 void gt_layout_alignment(PangoLayout *layout, float w, float h, float *tw, float *th, int align, float *offX, float *offY)

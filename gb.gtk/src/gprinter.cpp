@@ -102,6 +102,7 @@ static gboolean cb_preview(GtkPrintOperation *operation, GtkPrintOperationPrevie
 	return FALSE;
 }
 
+
 static gboolean find_default_printer(GtkPrinter *gtk_printer, gPrinter *printer)
 {
 	if (!printer->name())
@@ -188,7 +189,7 @@ bool gPrinter::run(bool configure)
 	const char *file;
 	
 	#if DEBUG_ME
-	fprintf(stderr, "gPrinter::run\n");
+	fprintf(stderr, "gPrinter::run: %d\n", configure);
 	#endif
 
 	operation = gtk_print_operation_new();
@@ -225,7 +226,11 @@ bool gPrinter::run(bool configure)
 		file = outputFileName();
 		if (file) 
 			unlink(file);
-		gApplication::_close_next_window = true;
+		// GTK+ bug: GTK_PRINT_OPERATION_ACTION_PRINT does not work with virtual printers.
+		if (isVirtual())
+			gApplication::_close_next_window = true;
+		else
+			action = GTK_PRINT_OPERATION_ACTION_PRINT;
 	}
 	
 	//gtk_print_settings_to_file(gtk_print_operation_get_print_settings(operation), "/home/benoit/settings-run-before.txt", NULL);
@@ -251,6 +256,12 @@ bool gPrinter::run(bool configure)
 	{
 		#if DEBUG_ME
 		fprintf(stderr, "cancel\n");
+		#endif
+	}
+	else
+	{
+		#if DEBUG_ME
+		fprintf(stderr, "ok\n");
 		#endif
 	}
 
@@ -540,4 +551,23 @@ void gPrinter::setOutputFileName(const char *file)
 	// It does not work!!!
 	if (format)
 		gtk_print_settings_set(_settings, GTK_PRINT_SETTINGS_OUTPUT_FILE_FORMAT, format);
+}
+
+
+static bool _is_virtual;
+
+static gboolean find_printer(GtkPrinter *gtk_printer, gPrinter *printer)
+{
+	if (strcmp(printer->name(), gtk_printer_get_name(gtk_printer)))
+		return false;
+	
+	_is_virtual = gtk_printer_is_virtual(gtk_printer);
+	return true;
+}
+
+bool gPrinter::isVirtual()
+{
+	_is_virtual = false;
+	gtk_enumerate_printers((GtkPrinterFunc)find_printer, this, NULL, TRUE);
+	return _is_virtual;
 }

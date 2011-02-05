@@ -54,31 +54,26 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   Dim hext As PaintExtents
   Dim bRaiseRes As Boolean
   Dim $sTempText As String
+  Dim sText As String
   
   hMyHints.Height = Me._Height + (2 * Me._Padding)
   
-  
-  'PRINT ME.
   If Not IsNull(Me.Font) Then Paint.Font = Me.Font
-  'Paint.Font.size = Paint.Font.size / 96 * paint.ResolutionX 'mTools.ReportResolution
   
   'if the size choosed by the user is less than the font height, set the object to the font height
   
-  
-  
   If $sKey Then 
-    
-    hext = Paint.TextExtents(Me.Parent._GetData($sKey))
-    fTextWidth = MTools.PixelsToUnits(hext.Width)
+    sText = Me.Parent._GetData($sKey)
   Else
-    hext = Paint.TextExtents($sText)
-    fTextWidth = MTools.PixelsToUnits(hext.Width)
+    sText = $sText
   Endif
-  hext = Paint.TextExtents("Fjitgp,")
-  fTextHeight = MTools.PixelsToUnits(hext.Height)
   
-  
-  
+  hExt = Paint.TextExtents(sText)
+
+  ' Paint.DrawText aligns according to the font height, not the text extents
+  fTextWidth = MTools.PixelsToUnits(hExt.Width)
+  fTextHeight = MTools.PixelsToUnits(Paint.Font.Height)
+  'Debug "'" & sText & "'";; Paint.Font.Height;; hExt.Width
   
   If hMyHints.Height < fTextHeight Then hMyHints.Height = fTextHeight + (2 * Me._Padding) + Me.Border._Top + Me.Border._Bottom
   
