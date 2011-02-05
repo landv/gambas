@@ -122,6 +122,7 @@ private:
 	GArray *_gc_stack;
 	int fill;
 	int fillCol;
+	int _fillX, _fillY;
 	int line_style;
 	void *tag;
 	int _width;

@@ -4,7 +4,7 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Mode{Select.*}=Single,Orientation{Arrange.Horizontal;Vertical}=Vertical,Sorted,Editable,GridSize{Range:0;128},IconLines{Range:1;8}=2,Border=True,ScrollBar{Scroll.*}=Both"
+Public Const _Properties As String = "*,Picture,Mode{Select.*}=Single,Orientation{Arrange.Horizontal;Vertical}=Vertical,Sorted,Editable,GridSize{Range:0;128},IconLines{Range:1;8}=2,Border=True,ScrollBar{Scroll.*}=Both"
 Public Const _Group As String = "View"
 Public Const _DefaultEvent As String = "Click"
 
@@ -23,6 +23,7 @@ Property Compare As Integer
 Property Editable As Boolean
 Property Sorted As Boolean
 Property Ascending As Boolean
+Property Picture As Picture
 
 Property Read IconSize As Integer
 Property IconLines As Integer
@@ -87,6 +88,8 @@ Private $hPanelRename As Panel
 Private $hRenameBox As TextArea
 Private $iRename As Integer = -1
 Private $iCurrentBefore As Integer
+
+Private $hPicture As Picture
 
 Public Sub _new()
   
@@ -386,6 +389,12 @@ Public Sub ScrollArea_Draw()
   'Draw.FillRect(X, Y, W, H, Color.TextBackground)
   'Draw.Translate(- $hView.ScrollX, - $hView.ScrollY)
   
+  If $hPicture Then 
+    Draw.FillX = - $hView.ScrollX
+    Draw.FillY = - $hView.ScrollY
+    Draw.Tile($hPicture, 0, 0, Draw.Width, Draw.Height)
+  Endif
+  
   X += $hView.ScrollX
   Y += $hView.ScrollY
   
@@ -414,7 +423,7 @@ Public Sub ScrollArea_Draw()
       hClip = New Rect(X, Y, W, H)
       hClip = hClip.Intersection(hRect)
       If hClip Then
-        hItem._Draw(hRect, hClip, Me.Font, $bHorizontal, False, iPos = $iHover Or iPos = $iStart) ' _HaveFocus, $iMouseOver = k And Me.Tracking)
+        hItem._Draw(hRect, hClip, Me, $bHorizontal, False, iPos = $iHover Or iPos = $iStart) ' _HaveFocus, $iMouseOver = k And Me.Tracking)
       Endif
       
     Endif
@@ -949,12 +958,15 @@ End
 
 Public Sub _SelectItem(hItem As _IconViewItem, bSelected As Boolean)
   
-  If hItem.Selected = bSelected Then Return
-  
   If bSelected Then
-    If $iMode = Select.Single Then UnselectAll
+    If $iMode = Select.Single Then
+      SetCurrentItem(_FindItem(hItem))
+    Endif
     $cSelection[hItem.Key] = hItem
   Else
+    If $iMode = Select.Single Then
+      SetCurrentItem(-1)
+    Endif
     $cSelection.Remove(hItem.Key)
   Endif
 
@@ -1301,5 +1313,18 @@ Private Sub Font_Write(Value As Font)
 
   Super.Font = Value
   ScrollArea_Arrange
+
+End
+
+Private Function Picture_Read() As Picture
+
+  Return $hPicture
+
+End
+
+Private Sub Picture_Write(Value As Picture)
+
+  $hPicture = Value
+  $hView.Refresh
 
 End

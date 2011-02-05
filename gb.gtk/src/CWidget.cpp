@@ -202,7 +202,8 @@ bool gb_raise_MouseEvent(gControl *sender, int type)
 				if (sender->isTopLevel())
 					break;
 				
-				ob = GetObject(sender->parent());
+				sender = sender->parent();
+				ob = GetObject(sender);
 			}
 			
 			break;

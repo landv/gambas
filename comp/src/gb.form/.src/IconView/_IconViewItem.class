@@ -204,12 +204,17 @@ Public Sub _GetTextRect(hRect As Rect, bHorizontal As Boolean) As Rect
   
 End
 
-Public Sub _Draw(hRect As Rect, hClip As Rect, hFont As Font, bHorizontal As Boolean, bFocus As Boolean, bHover As Boolean)
+Public Sub _Draw(hRect As Rect, hClip As Rect, hIconView As IconView, bHorizontal As Boolean, bFocus As Boolean, bHover As Boolean)
   
   Dim X, Y As Integer
   Dim iColor As Integer
+  Dim bFrame As Boolean
   
   hRect.Adjust(4)
+  
+  If Not hIconView.Picture Then
+    bFrame = True
+  Endif
   
   If bHover Or If $bSelected Then
     Paint.Begin(Draw.Device)
@@ -222,6 +227,7 @@ Public Sub _Draw(hRect As Rect, hClip As Rect, hFont As Font, bHorizontal As Boo
     Paint.Brush = Paint.Color(iColor)
     Paint.Fill
     Paint.End
+    bFrame = True
     'Draw.Foreground = Color.TextForeground
   Endif
 
@@ -245,6 +251,11 @@ Public Sub _Draw(hRect As Rect, hClip As Rect, hFont As Font, bHorizontal As Boo
       Endif
       
       If $sText Then
+        Draw.Font = hIconView.Font
+        If Not bFrame Then
+          Draw.Foreground = If($bSelected, Color.SelectedBackground, Color.TextBackground)
+          Draw.RichText($sText, X + 1, hRect.Y + 1, hRect.W - (X - hRect.X), hRect.H, Align.Left)
+        Endif
         Draw.Foreground = If($bSelected, Color.SelectedForeground, Color.TextForeground)
         Draw.RichText($sText, X, hRect.Y, hRect.W - (X - hRect.X), hRect.H, Align.Left)
       Endif
@@ -262,8 +273,12 @@ Public Sub _Draw(hRect As Rect, hClip As Rect, hFont As Font, bHorizontal As Boo
     
     If $sText Then
       'Draw.Clip(hRect.X, Y, hRect.W, hRect.H - Y)
+      Draw.Font = hIconView.Font
+      If Not bFrame Then
+        Draw.Foreground = If($bSelected, Color.SelectedBackground, Color.TextBackground)
+        Draw.RichText($sText, hRect.X + 1, Y + 1, hRect.W, hRect.H - (Y - hRect.Y), Align.Top)
+      Endif
       Draw.Foreground = If($bSelected, Color.SelectedForeground, Color.TextForeground)
-      Draw.Font = hFont
       Draw.RichText($sText, hRect.X, Y, hRect.W, hRect.H - (Y - hRect.Y), Align.Top)
       'Draw.Clip.Enabled = False
     Endif
@@ -282,8 +297,9 @@ End
 Private Sub Selected_Write(Value As Boolean)
 
   If $bSelected = Value Then Return
-  GetIconView()._SelectItem(Me, Value)
+  
   $bSelected = Value
+  GetIconView()._SelectItem(Me, Value)
   RefreshView
 
 End

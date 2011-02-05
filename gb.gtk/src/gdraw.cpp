@@ -129,6 +129,7 @@ void gDraw::reset()
 	fillCol = 0;
 	fill = 0;
 	_transparent = false;
+	_fillX = _fillY = 0;
 }
 
 void gDraw::initGC()
@@ -567,16 +568,14 @@ Fill
 ***************************************************************************/
 int gDraw::fillX()
 {
-	GdkGCValues val;
-
-	gdk_gc_get_values(gc,&val);
-	return val.ts_x_origin;
+	return _fillX;
 }
 
 void gDraw::setFillX(int vl)
 {
 	GdkGCValues val;
 
+	_fillX = vl;
 	gdk_gc_get_values(gc,&val);
 	gdk_gc_offset(gc,vl,val.ts_y_origin);
 	if (gcm) gdk_gc_offset(gcm, vl, val.ts_y_origin);
@@ -584,16 +583,14 @@ void gDraw::setFillX(int vl)
 
 int gDraw::fillY()
 {
-	GdkGCValues val;
-
-	gdk_gc_get_values(gc,&val);
-	return val.ts_y_origin;
+	return _fillY;
 }
 
 void gDraw::setFillY(int vl)
 {
 	GdkGCValues val;
 
+	_fillY = vl;
 	gdk_gc_get_values(gc,&val);
 	gdk_gc_offset(gc,val.ts_x_origin,vl);
 	if (gcm) gdk_gc_offset(gcm, val.ts_x_origin, vl);
@@ -1010,52 +1007,69 @@ void gDraw::picture(gPicture *pic, int x, int y, int w, int h, int sx, int sy, i
 
 void gDraw::tiledPicture(gPicture *pic, int x, int y, int w, int h)
 {
-	GdkPixmap *pixmap;
-	int sx = -fillX();
-	int sy = -fillY();
-	int sw = pic->width();
-	int sh = pic->height();
-
-	if (!pic || pic->isVoid()) return;
+	bool save_clip_enabled;
+	GdkRectangle save_clip;
+	GdkRectangle new_clip = {x, y, w, h};
+	int px, py, pw, ph;
+	int fx, fy;
 	
-	if (!sw || !sh )
-		return;
+	if (!pic || pic->isVoid() || w < 1 || h < 1) return;
 	
-	if ( sx < 0 )
-		sx = sw - -sx % sw;
-	else
-		sx = sx % sw;
-	if ( sy < 0 )
-		sy = sh - -sy % sh;
-	else
-		sy = sy % sh;
-		
-	pixmap = pic->getPixmap();
+	pic->getPixmap();
 	
+	save_clip_enabled = clip_enabled;
+	save_clip = clip;
+	
+	if (clip_enabled)
 	{
-		int yPos, xPos, drawH, drawW, yOff, xOff;
-		yPos = y;
-		yOff = sy;
-		while( yPos < y + h ) 
+		GdkRectangle dst;
+		if (!gdk_rectangle_intersect(&new_clip, &clip, &dst))
+			return;
+		new_clip = dst;
+	}	
+
+	setClip(new_clip.x, new_clip.y, new_clip.width, new_clip.height);
+	
+	pw = pic->width();
+	ph = pic->height();
+
+	fx = -fillX();
+	if (fx > 0)
+		fx = fx % pw;
+	else
+		fx = pw - ((-fx) % pw);
+
+	fy = -fillY();
+	if (fy > 0)
+		fy = fy % ph;
+	else
+		fy = ph - ((-fy) % ph);
+	
+	x -= fx;
+	y -= fy;
+	
+	px = x;
+	py = y;
+	
+	fprintf(stderr, "tiledPicture: %d %d\n", x, y);
+	
+	for(;;)
+	{
+		picture(pic, px, py, pw, ph);
+		px += pw;
+		if (px >= (x + w))
 		{
-				drawH = sh - yOff;    // Cropping first row
-				if ( yPos + drawH > y + h )        // Cropping last row
-						drawH = y + h - yPos;
-				xPos = x;
-				xOff = sx;
-				while( xPos < x + w ) 
-				{
-						drawW = sw - xOff; // Cropping first column
-						if ( xPos + drawW > x + w )    // Cropping last column
-								drawW = x + w - xPos;
-						picture(pic, xPos, yPos, drawW, drawH, xOff, yOff, drawW, drawH);
-						xPos += drawW;
-						xOff = 0;
-				}
-				yPos += drawH;
-				yOff = 0;
+			px = x;
+			py += ph;
+			if (py >= (y + h))
+				break;
 		}
 	}
+	
+	if (save_clip_enabled)
+		setClip(save_clip.x, save_clip.y, save_clip.width, save_clip.height);
+	else
+		setClipEnabled(false);
 }
 
 /****************************************************************************************

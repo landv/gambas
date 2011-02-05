@@ -367,7 +367,7 @@ Private Sub ShowDetailed_Write(bDetailed As Boolean)
   Endif
   
   Me.Proxy = GetView()
-  RefreshViewLater
+  RefreshView
   TakeSelection
 
 End
@@ -496,7 +496,7 @@ Private Sub TakeSelection()
 
   If $hIconView.Mode = Select.Single Then
     If hSrc.Current And If hSrc.Current.Selected Then
-      Try hDst[hSrc.Key].Selected = True
+      hDst[hSrc.Key].Selected = True
     Endif
     Return
   Endif
