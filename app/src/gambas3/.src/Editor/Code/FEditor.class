@@ -677,9 +677,9 @@ Private Function InsertFunction(sProc As String, sType As String, bPublic As Boo
   sStatic = If(bStatic, "Static ", "")
   
   If sType Then
-    Editor.Insert("\n" & sStatic & sPublic & " FUNCTION " & sProc & "(" & sSign & ") AS " & sType & "\n\n  \n\nEND\n", iLine, 0)
+    Editor.Insert("\n" & sStatic & sPublic & " FUNCTION " & sProc & "(" & sSign & ") AS " & sType & "\n\n" & Space$(Project.TabSize) & "\n\nEND\n", iLine, 0)
   Else
-    Editor.Insert("\n" & sStatic & sPublic & " SUB " & sProc & "(" & sSign & ")\n\n  \n\nEND\n", iLine, 0)
+    Editor.Insert("\n" & sStatic & sPublic & " SUB " & sProc & "(" & sSign & ")\n\n" & Space$(Project.TabSize) & "\n\nEND\n", iLine, 0)
   Endif
   
   Editor.End
@@ -811,6 +811,22 @@ Private Sub CheckCodeSnippet() As Boolean
   
 End
 
+Private Sub SymbolBegins(aSym As String[], sWith As String) As Boolean
+  
+  Dim aWith As String[] = Split(UCase(Trim(sWith)), " ")
+  Dim iInd As Integer
+  
+  For iInd = 0 To aWith.Max
+    If aSym[iInd] <> aWith[iInd] Then Return False
+  Next
+  
+  Return True
+  
+Catch
+  
+End
+
+
 Public Sub Editors_KeyPress()
   
   Dim sLine As String
@@ -822,8 +838,9 @@ Public Sub Editors_KeyPress()
   Dim bIndent As Boolean
   Dim bUnindent As Boolean
   Dim aSymbol As String[]
+  Dim iIndent As Integer
   Dim sIndent As String
-  Dim sClose As String
+  Dim sClose, sClose2 As String
   
   If Not Editor.ReadOnly Then
     
@@ -947,7 +964,7 @@ Public Sub Editors_KeyPress()
       sLine = Trim(Editor.Lines[iLine].Text)
       
       If InStr(sLine, "(") = 0 Then Editor.Insert("()")
-      Editor.Insert("\n  \n  \n  \nEND\n")
+      Editor.Insert(Replace("\n \n \n \nEND\n", " ", Space$(Project.TabSize)))
       'edtEditor.Line = iLine + 2
       'edtEditor.Column = 2
       Editor.Goto(iLine + 2, 2)
@@ -971,6 +988,11 @@ Public Sub Editors_KeyPress()
         bIndent = True
         bUnindent = False
         sClose = "Endif"
+        sClose2 = "Else"
+      Else If SymbolBegins(aSymbol, "Public Struct") Or If aSymbol[0] = "STRUCT" Then
+        bIndent = True
+        bUnindent = False
+        sClose = "End Struct"
       Else
         sClose = $cStructClose[aSymbol[0]]
         If sClose Then
@@ -982,15 +1004,36 @@ Public Sub Editors_KeyPress()
     Endif
     
     If bIndent Then
+      
+      iIndent = Editor.GetIndent(sLine)
+      
+      If sClose Then
+        For iInd = Editor.Line + 1 To Editor.Lines.Count - 1
+          sLine = Editor.Lines[iInd].Text
+          If Not Trim(sLine) Then Continue
+          iPos = Editor.GetIndent(sLine)
+          If iPos < iIndent Then Break
+          If iPos > iIndent Then Continue
+          Highlight.Analyze(sLine)
+          If SymbolBegins(Highlight.Symbols, sClose) Then 
+            sClose = ""
+          Else If sClose2 And If SymbolBegins(Highlight.Symbols, sClose2) Then 
+            sClose = ""
+          Endif
+          Break
+        Next
+      Endif
+      
       Editor.Begin
       If bUnindent And If Not Key.Shift Then
-        If Left(sLine, 2) = "  " Then
-          sLine = Mid$(sLine, 3)
+        If IsSpace(Left(sLine, Project.TabSize)) Then
+          sLine = Mid$(sLine, Project.TabSize + 1)
           Editor.Lines[Editor.Line].Text = sLine
+          iIndent -= Project.TabSize
         Endif
       Endif
-      sIndent = Space$(Editor.GetIndent(sLine))
-      Editor.Insert("\n  " & sIndent)
+      sIndent = Space$(iIndent)
+      Editor.Insert("\n" & Space$(Project.TabSize) & sIndent)
       If Not bUnindent And If sClose And If Not Key.Shift Then Editor.Insert("\n" & sIndent & sClose)
       Editor.End
       Editor.Goto(iLine + 1, 2 + Len(sIndent))
