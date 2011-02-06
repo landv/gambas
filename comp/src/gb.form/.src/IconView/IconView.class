@@ -483,7 +483,10 @@ Public Sub ScrollArea_Arrange()
   Dim nRow As Integer
   Dim FW As Integer
   
-  If $aItems.Count = 0 Then Return
+  If $aItems.Count = 0 Then 
+    $hView.Refresh
+    Return
+  Endif
   
   ExitRename
   
