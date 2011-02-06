@@ -526,10 +526,10 @@ BEGIN_METHOD(CWIDGET_moveScaled, GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_FLOAT h)
 
 	int x, y, w, h;
 
-	x = (int)(VARG(x) * MAIN_scale);
-	y = (int)(VARG(y) * MAIN_scale);
-	w = (int)(MISSING(w) ? -1 : (VARG(w) * MAIN_scale));
-	h = (int)(MISSING(h) ? -1 : (VARG(h) * MAIN_scale));
+	x = (int)(VARG(x) * MAIN_scale + 0.5);
+	y = (int)(VARG(y) * MAIN_scale + 0.5);
+	w = (MISSING(w) ? -1 : (int)(VARG(w) * MAIN_scale + 0.5));
+	h = (MISSING(h) ? -1 : (int)(VARG(h) * MAIN_scale + 0.5));
 	
 	if (w == 0) w = 1;
 	if (h == 0) h = 1;
