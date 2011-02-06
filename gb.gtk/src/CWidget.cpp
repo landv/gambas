@@ -536,15 +536,16 @@ END_METHOD
 
 BEGIN_METHOD(CWIDGET_moveScaled, GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_FLOAT h)
 
-	CONTROL->move((long)(VARG(x)*MAIN_scale),(long)(VARG(y)*MAIN_scale));
-	if (MISSING(w)) return;
-	if (MISSING(h))
-	{
-		CONTROL->resize((long)(VARG(w)*MAIN_scale),CONTROL->height());
-		return;
-	}
-	CONTROL->resize((long)(VARG(w)*MAIN_scale),(long)(VARG(h)*MAIN_scale));
+	int x, y, w, h;
 
+	x = (int)(VARG(x) * MAIN_scale + 0.5);
+	y = (int)(VARG(y) * MAIN_scale + 0.5);
+	w = (MISSING(w) ? -1 : (int)(VARG(w) * MAIN_scale + 0.5));
+	h = (MISSING(h) ? -1 : (int)(VARG(h) * MAIN_scale + 0.5));
+	
+	CONTROL->move(x, y);
+	CONTROL->resize(w, h);
+	
 END_METHOD
 
 

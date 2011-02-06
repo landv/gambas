@@ -563,13 +563,13 @@ END_METHOD
 
 BEGIN_METHOD(CCONTROL_move_scaled, GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_FLOAT h)
 
-  int x, y, w, h;
+	int x, y, w, h;
 
-  x = (int)(VARG(x) * MAIN_scale);
-  y = (int)(VARG(y) * MAIN_scale);
-  w = (int)(MISSING(w) ? -1 : (VARG(w) * MAIN_scale));
-  h = (int)(MISSING(h) ? -1 : (VARG(h) * MAIN_scale));
-
+	x = (int)(VARG(x) * MAIN_scale + 0.5);
+	y = (int)(VARG(y) * MAIN_scale + 0.5);
+	w = (MISSING(w) ? -1 : (VARG(w) * MAIN_scale + 0.5));
+	h = (MISSING(h) ? -1 : (VARG(h) * MAIN_scale + 0.5));
+	
   move_resize_widget(_object, x, y, w, h);
 
 END_METHOD
