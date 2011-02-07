@@ -747,13 +747,13 @@ static void command_eval(const char *cmd)
 	EVAL.New(POINTER(&expr), &cmd[start], len - start);
 
   if (EVAL.Compile(expr, *cmd == '='))
-    goto __ERROR;
+	{
+		if (*cmd != '!')
+			fprintf(_out, "!");
+		fputs(expr->error, out);
+    goto __END;
+	}
 	
-//   DEBUG_info.bp = BP;
-//   DEBUG_info.fp = FP;
-//   DEBUG_info.op = OP;
-//   DEBUG_info.cp = CP;
-
   val = (VALUE *)EVAL.Run(expr, GB_DEBUG.GetValue);
   if (!val)
     goto __ERROR;
