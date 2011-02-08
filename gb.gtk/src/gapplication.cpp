@@ -111,6 +111,9 @@ int gKey::fromString(char *str)
 	char *lstr;
 	int key;
 	
+	if (!str || !*str)
+		return 0;
+	
 	lstr = g_ascii_strup(str, -1);
 	key = gdk_keyval_from_name(lstr);
 	g_free(lstr);

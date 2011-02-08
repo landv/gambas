@@ -224,7 +224,7 @@ void gControl::initAll(gContainer *parent)
 	fg_set = false;
 	have_cursor = false;
 	use_base = false;
-	mous = -1;
+	mous = CURSOR_DEFAULT;
 	pr = parent;
 	_name=NULL;
 	visible = false;
@@ -690,11 +690,11 @@ void gControl::setCursor(gCursor *vl)
 	if (curs) { delete curs; curs=NULL;}
 	if (!vl)
 	{
-		setMouse(-1);
+		setMouse(CURSOR_DEFAULT);
 		return;
 	}
 	curs=new gCursor(vl);
-	setMouse(-2);
+	setMouse(CURSOR_CUSTOM);
 }
 
 void gControl::updateCursor(GdkCursor *cursor)
@@ -718,11 +718,11 @@ void gControl::setMouse(int m)
 	if (gApplication::isBusy())
     m = GDK_WATCH;
 	
-	if (m == -2)
+	if (m == CURSOR_CUSTOM)
 	{
 		if (!curs || !curs->cur)
 		{
-			mous = -1;
+			mous = CURSOR_DEFAULT;
 			updateCursor(NULL);
 		}
 		else
@@ -731,7 +731,7 @@ void gControl::setMouse(int m)
 		return;	
 	}
 	
-	if (m != -1) 
+	if (m != CURSOR_DEFAULT) 
 	{
 		if (m < GDK_LAST_CURSOR)
 		{
