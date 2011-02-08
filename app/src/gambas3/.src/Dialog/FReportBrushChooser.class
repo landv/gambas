@@ -44,10 +44,10 @@ Public Sub _new()
   $aGradientColors = [0, &hFFFFFF&]
   $aGradientPos = [0, 1]
   
-  $lblA1 = New DrawingArea(dwgGradient) As "lblAngle"
   $lblA2 = New DrawingArea(dwgGradient) As "lblAngle"
-  $lblA1.Mouse = Mouse.Cross
   $lblA2.Mouse = Mouse.Cross
+  $lblA1 = New DrawingArea(dwgGradient) As "lblAngle"
+  $lblA1.Mouse = Mouse.Cross
    
 End
 
@@ -343,8 +343,6 @@ Private Sub UpdateAngle()
   
 End
 
-
-
 Public Sub lblAngle_MouseMove()
   
   Dim hLabel As DrawingArea = Last
@@ -352,6 +350,22 @@ Public Sub lblAngle_MouseMove()
   Dim iRealPosY As Integer = Mouse.ScreenY - $MY 
   
   hLabel.Move(Max(Min(dwgGradient.Width - 10, iRealPosX), 0), Max(Min(dwgGradient.Height - 10, iRealPosY), 0))
+  UpdateAngle
+  
+End
+
+Public Sub lblAngle_DblClick()
+  
+  Dim hLabel As DrawingArea = Last
+  Dim hOther As DrawingArea
+  
+  If hLabel = $lblA1 Then
+    hOther = $lblA2
+  Else
+    hOther = $lblA1
+  Endif
+  
+  hLabel.Move(hOther.X, hOther.Y)
   UpdateAngle
   
 End

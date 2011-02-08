@@ -435,7 +435,7 @@ msgstr "Configuration additionnelle"
 msgid "&Add to repository"
 msgstr "&Ajouter au référentiel"
 
-#: Language.module:96
+#: Language.module:98
 msgid "Albanian (Albania)"
 msgstr "Albanais (Albanie)"
 
@@ -739,7 +739,7 @@ msgstr "Booléen"
 msgid "Border only"
 msgstr "Contour seulement"
 
-#: FReportBorderChooser.class:400
+#: FReportBorderChooser.class:340
 msgid "Bottom"
 msgstr "Bas"
 
@@ -778,10 +778,6 @@ msgstr "Parcourir &seulement les fichiers sources"
 #: Language.module:12
 msgid "Bulgarian (Bulgaria)"
 msgstr "Bulgare (Bulgarie)"
-
-#: FReportBrushChooser.class:543
-msgid "C"
-msgstr ""
 
 #: CComponent.class:80
 msgid "Cairo graphic library"
@@ -1159,7 +1155,7 @@ msgstr "Fragments de code"
 msgid "Col."
 msgstr "-"
 
-#: FReportBrushChooser.class:498
+#: FReportBrushChooser.class:474
 msgid "Color"
 msgstr "Couleur"
 
@@ -1171,7 +1167,7 @@ msgstr "Colonnes"
 msgid "Command-line application"
 msgstr "Application en ligne de commande"
 
-#: FEditor.class:3441
+#: FEditor.class:3484
 msgid "Comment"
 msgstr "Mettre en commentaire"
 
@@ -1255,9 +1251,13 @@ msgstr "Compresser le fichier"
 msgid "Compression & decompression"
 msgstr "Compression et décompression"
 
-#: FReportBorderChooser.class:325
+#: FReportBorderChooser.class:323
 msgid "Configure border"
 msgstr "Configuration de la bordure"
+
+#: FReportBrushChooser.class:456
+msgid "Configure brush"
+msgstr "Configuration du pinceau"
 
 #: FConflict.class:262
 msgid "Conflict files"
@@ -1471,7 +1471,7 @@ msgstr "&Débogage"
 msgid "Debugging"
 msgstr "Débogage"
 
-#: FEditor.class:2644
+#: FEditor.class:2687
 msgid "(Declarations)"
 msgstr "(Déclarations)"
 
@@ -1739,7 +1739,7 @@ msgstr "Édition"
 msgid "Edit list property"
 msgstr "Éditer la liste des propriétés"
 
-#: FEditor.class:3542 FOption.class:1143
+#: FEditor.class:3585 FOption.class:1143
 msgid "Editor"
 msgstr "Éditeur"
 
@@ -1935,10 +1935,6 @@ msgstr "Dépendances supplémentaires"
 msgid "Extra files"
 msgstr "Fichiers supplémentaires"
 
-#: FReportBrushChooser.class:536
-msgid "F"
-msgstr ""
-
 #: Language.module:43
 msgid "Farsi (Iran)"
 msgstr "Farsi (Iran)"
@@ -2019,11 +2015,11 @@ msgstr "Aide financière"
 msgid "&Find..."
 msgstr "&Rechercher..."
 
-#: FEditor.class:3328
+#: FEditor.class:3371
 msgid "Find definition"
 msgstr "Trouver la définition"
 
-#: FEditor.class:3458 FOutput.class:409 FTextEditor.class:837
+#: FEditor.class:3501 FOutput.class:409 FTextEditor.class:837
 msgid "Find next"
 msgstr "Poursuivre la recherche"
 
@@ -2031,7 +2027,7 @@ msgstr "Poursuivre la recherche"
 msgid "Find next untranslated string"
 msgstr "Rechercher la chaîne non traduite suivante"
 
-#: FEditor.class:3465 FOutput.class:416 FTextEditor.class:844
+#: FEditor.class:3508 FOutput.class:416 FTextEditor.class:844
 msgid "Find previous"
 msgstr "Recherche en arrière"
 
@@ -2263,7 +2259,7 @@ msgstr "-"
 msgid "GNU command option parser"
 msgstr "Analyseur d'options de ligne de commande GNU"
 
-#: FEditor.class:3335 FHelpBrowser.class:329
+#: FEditor.class:3378 FHelpBrowser.class:329
 msgid "Go back"
 msgstr "Revenir en arrière"
 
@@ -2271,7 +2267,7 @@ msgstr "Revenir en arrière"
 msgid "Go forward"
 msgstr "Aller en avant"
 
-#: FEditor.class:3317
+#: FEditor.class:3360
 msgid "Go to"
 msgstr "Aller à"
 
@@ -2279,13 +2275,9 @@ msgstr "Aller à"
 msgid "Go to line"
 msgstr "Aller à la ligne"
 
-#: FEditor.class:3322 FTextEditor.class:772
+#: FEditor.class:3365 FTextEditor.class:772
 msgid "Go to line..."
 msgstr "Aller à la ligne..."
-
-#: FReportBrushChooser.class:498
-msgid "Gradient"
-msgstr ""
 
 #: FCreateProject.class:390
 msgid "Graphical application"
@@ -2387,7 +2379,7 @@ msgstr "Horizontal"
 msgid "Horizontal flip"
 msgstr "Miroir horizontal"
 
-#: FEditor.class:3485 FTextEditor.class:864
+#: FEditor.class:3528 FTextEditor.class:864
 msgid "Horizontal split"
 msgstr "Séparation horizontale"
 
@@ -2466,6 +2458,10 @@ msgstr "&Image..."
 #: FOption.class:1343
 msgid "Image editor"
 msgstr "Éditeur d'images"
+
+#: FSelectIcon.class:27
+msgid "Image files"
+msgstr "Fichiers images"
 
 #: CComponent.class:106
 msgid "Image filtering component"
@@ -2591,11 +2587,11 @@ msgstr "Version initiale"
 msgid "&Insert"
 msgstr "&Insérer"
 
-#: CInsertColor.class:103 FEditor.class:3599 FTextEditor.class:1025
+#: CInsertColor.class:103 FEditor.class:3642 FTextEditor.class:1025
 msgid "Insert color"
 msgstr "Insérer une couleur"
 
-#: FEditor.class:3423 FTextEditor.class:819
+#: FEditor.class:3466 FTextEditor.class:819
 msgid "Insert color..."
 msgstr "Insérer une couleur..."
 
@@ -2755,6 +2751,10 @@ msgstr "Licence"
 msgid "Line"
 msgstr "Ligne"
 
+#: FReportBrushChooser.class:474
+msgid "Linear gradient"
+msgstr "Dégradé linéaire"
+
 #: FImportTable.class:609
 msgid "Line(s)"
 msgstr "Ligne(s)"
@@ -2823,7 +2823,7 @@ msgstr "Générer"
 msgid "Make a gift!"
 msgstr "Faire un don !"
 
-#: FEditor.class:3503
+#: FEditor.class:3546
 msgid "Make code pretty"
 msgstr "Réindenter le code"
 
@@ -3155,7 +3155,7 @@ msgstr "Texte normal"
 msgid "Norwegian (Norway)"
 msgstr "Norvégien (Norvège)"
 
-#: FEditor.class:3478 FTextEditor.class:857
+#: FEditor.class:3521 FTextEditor.class:857
 msgid "No split"
 msgstr "Affichage complet"
 
@@ -3291,7 +3291,7 @@ msgstr "Ouvrir le code"
 msgid "Open &example"
 msgstr "Ouvrir un &exemple"
 
-#: FEditor.class:3342
+#: FEditor.class:3385
 msgid "Open form"
 msgstr "Ouvrir le formulaire"
 
@@ -3419,15 +3419,15 @@ msgstr "Coller"
 msgid "&Paste"
 msgstr "&Coller"
 
-#: FEditor.class:3535 FPasteSpecial.class:243
+#: FEditor.class:3578 FPasteSpecial.class:243
 msgid "Paste as comments"
 msgstr "Coller comme commentaires"
 
-#: FEditor.class:3530 FPasteSpecial.class:258
+#: FEditor.class:3573 FPasteSpecial.class:258
 msgid "Paste as multi-line string"
 msgstr "Coller comme chaîne sur plusieurs lignes"
 
-#: FEditor.class:3525 FPasteSpecial.class:253
+#: FEditor.class:3568 FPasteSpecial.class:253
 msgid "Paste as string"
 msgstr "Coller comme chaîne"
 
@@ -3439,7 +3439,7 @@ msgstr "Coller normalement"
 msgid "Paste special"
 msgstr "Collage spécial"
 
-#: FEditor.class:3417
+#: FEditor.class:3460
 msgid "Paste special..."
 msgstr "Collage spécial..."
 
@@ -3475,7 +3475,7 @@ msgstr "Pipette"
 msgid "Picture"
 msgstr "Image"
 
-#: FCreateFile.class:87 FSelectIcon.class:27
+#: FCreateFile.class:87
 msgid "Picture files"
 msgstr "Fichiers image"
 
@@ -3623,7 +3623,7 @@ msgstr "Imprimer"
 msgid "Printing"
 msgstr "Impression"
 
-#: FEditor.class:3714
+#: FEditor.class:3757
 msgid "Procedure list"
 msgstr "Liste des procédures"
 
@@ -3771,13 +3771,13 @@ msgstr "Quitter"
 msgid "&Quit"
 msgstr "&Quitter"
 
-#: FReportBrushChooser.class:527
-msgid "Radial"
-msgstr ""
+#: FReportBrushChooser.class:474
+msgid "Radial gradient"
+msgstr "Dégradé circulaire"
 
-#: FReportBrushChooser.class:558
+#: FReportBrushChooser.class:539
 msgid "Radius"
-msgstr ""
+msgstr "Rayon"
 
 #: MErrorMessage.module:122
 msgid "Read error"
@@ -3911,10 +3911,6 @@ msgstr "État"
 msgid "&Report..."
 msgstr "&État..."
 
-#: FReportBrushChooser.class:480
-msgid "Report Brush"
-msgstr ""
-
 #: CComponent.class:124
 msgid "Report designer"
 msgstr "Générateur d'états"
@@ -3963,6 +3959,10 @@ msgstr "&Revenir..."
 msgid "Right"
 msgstr "Droite"
 
+#: Language.module:92
+msgid "Romanian (Romania)"
+msgstr "Roumain (Roumanie)"
+
 #: FIconEditor.class:2395
 msgid "Rotate clockwise"
 msgstr "Rotation de 90° vers la droite"
@@ -4003,7 +4003,7 @@ msgstr "Exécuter ensuite cette commande"
 msgid "Run &until"
 msgstr "Exécuter &jusqu'à la ligne courante"
 
-#: FEditor.class:3357
+#: FEditor.class:3400
 msgid "Run &until current line"
 msgstr "Exécuter &jusqu'à la ligne courante"
 
@@ -4011,7 +4011,7 @@ msgstr "Exécuter &jusqu'à la ligne courante"
 msgid "Run until current line"
 msgstr "Exécuter jusqu'à la ligne courante"
 
-#: Language.module:92
+#: Language.module:94
 msgid "Russian (Russia)"
 msgstr "Russe (Russie)"
 
@@ -4159,13 +4159,17 @@ msgstr "Choisissez une application Gambas"
 msgid "Select all"
 msgstr "Sélectionner tout"
 
-#: FEditor.class:3432 FTextEditor.class:828
+#: FEditor.class:3475 FTextEditor.class:828
 msgid "Select &All"
 msgstr "&Tout sélectionner"
 
 #: FSelectExtraFile.class:50
 msgid "Select an extra file"
 msgstr "Choisissez un fichier supplémentaire"
+
+#: FReportBrushChooser.class:489
+msgid "Select an image inside the project"
+msgstr "Sélectionnez une image située à l'intérieur du projet"
 
 #: FSelectIcon.class:203
 msgid "Select a picture"
@@ -4199,7 +4203,7 @@ msgstr "Sélectionnez le répertoire destination"
 msgid "Send to background"
 msgstr "A l'arrière-plan"
 
-#: Language.module:98
+#: Language.module:100
 msgid "Serbian (Serbia & Montenegro)"
 msgstr "Serbe (Serbie & Montenegro)"
 
@@ -4275,7 +4279,7 @@ msgstr "Afficher les bulles d'aide"
 msgid "Signals management"
 msgstr "Gestion des signaux"
 
-#: Language.module:110
+#: Language.module:112
 msgid "Simplified chinese (China)"
 msgstr "Chinois simplifié (Chine)"
 
@@ -4287,7 +4291,7 @@ msgstr "Taille"
 msgid "Slackware"
 msgstr "-"
 
-#: Language.module:94
+#: Language.module:96
 msgid "Slovenian (Slovenia)"
 msgstr "Slovénien (Slovénie)"
 
@@ -4399,7 +4403,7 @@ msgstr "État de la pile"
 msgid "Stack overflow"
 msgstr "Débordement de pile"
 
-#: FEditor.class:3349 FForm.class:3489 FMain.class:2625
+#: FEditor.class:3392 FForm.class:3489 FMain.class:2625
 msgid "&Startup class"
 msgstr "Cla&sse de démarrage"
 
@@ -4491,7 +4495,7 @@ msgstr "SUPER ne peut être utilisé seul"
 msgid "Swap colors"
 msgstr "Echanger les couleurs"
 
-#: Language.module:100
+#: Language.module:102
 msgid "Swedish (Sweden)"
 msgstr "Suèdois (Suède)"
 
@@ -4703,7 +4707,7 @@ msgstr "Le fichier a été modifié.\nDésirez-vous réellement fermer la boite 
 msgid "The file has been modified.\nDo you really want to open another file?"
 msgstr "Le fichier a été modifié.\nDésirez-vous réellement ouvrir un autre fichier ?"
 
-#: FEditor.class:2225 FIconEditor.class:2046 FTextEditor.class:489
+#: FEditor.class:2268 FIconEditor.class:2046 FTextEditor.class:489
 msgid "The file has been modified.\n\nAll your changes will be lost."
 msgstr "Le fichier a été modifié.\n\nToutes les modifications seront perdues."
 
@@ -5043,11 +5047,11 @@ msgstr "Aujourd'hui"
 msgid "Toggle"
 msgstr "-"
 
-#: FEditor.class:3692
+#: FEditor.class:3735
 msgid "Toggle breakpoint"
 msgstr "Basculer un point d'arrêt"
 
-#: FEditor.class:3364
+#: FEditor.class:3407
 msgid "Toggle &breakpoint"
 msgstr "Basculer un &point d'arrêt"
 
@@ -5139,7 +5143,7 @@ msgstr "Trop de symboles inconnus"
 msgid "Too many values"
 msgstr "Trop de valeurs"
 
-#: FReportBorderChooser.class:395
+#: FReportBorderChooser.class:400
 msgid "Top"
 msgstr "Haut"
 
@@ -5147,7 +5151,7 @@ msgstr "Haut"
 msgid "To show the menu bar again, hit the following keys:<p><b>&1</b>"
 msgstr "Pour afficher de nouveau la barre de menus, appuyez sur les touches suivantes&nbsp;:<p><b>&1</b>"
 
-#: Language.module:111
+#: Language.module:113
 msgid "Traditional chinese (Taiwan)"
 msgstr "Chinois traditionnel (Taiwan)"
 
@@ -5179,7 +5183,7 @@ msgstr "Transparent"
 msgid "Trigger string"
 msgstr "Chaîne de déclenchement"
 
-#: Language.module:102
+#: Language.module:104
 msgid "Turkish (Turkey)"
 msgstr "Turque (Turquie)"
 
@@ -5207,7 +5211,7 @@ msgstr "Type incorrect: &1 attendu à la place de &2"
 msgid "Ubuntu"
 msgstr "-"
 
-#: Language.module:104
+#: Language.module:106
 msgid "Ukrainian (Ukrain)"
 msgstr "Ukrainien (Ukraine)"
 
@@ -5275,7 +5279,7 @@ msgstr "Impossible d'enregistrer le projet."
 msgid "Unable to update project from repository."
 msgstr "Impossible de mettre à-jour le projet à partir du référentiel."
 
-#: FEditor.class:3448
+#: FEditor.class:3491
 msgid "Uncomment"
 msgstr "Retirer les commentaires"
 
@@ -5323,7 +5327,7 @@ msgstr "Unique"
 msgid "Unix"
 msgstr "-"
 
-#: Language.module:158
+#: Language.module:160
 msgid "Unknown"
 msgstr "Inconnu"
 
@@ -5459,7 +5463,7 @@ msgstr "Vertical"
 msgid "Vertical flip"
 msgstr "Miroir vertical"
 
-#: FEditor.class:3492 FTextEditor.class:871
+#: FEditor.class:3535 FTextEditor.class:871
 msgid "Vertical split"
 msgstr "Séparation verticale"
 
@@ -5471,11 +5475,11 @@ msgstr "Vidéo"
 msgid "Video capture"
 msgstr "Capture vidéo"
 
-#: Language.module:106
+#: Language.module:108
 msgid "Vietnamese (Vietnam)"
 msgstr "Vietnamien (Viet-nâm)"
 
-#: FEditor.class:3474 FTextEditor.class:853
+#: FEditor.class:3517 FTextEditor.class:853
 msgid "View"
 msgstr "Affichage"
 
@@ -5503,7 +5507,7 @@ msgstr "Conversion depuis Visual Basic™"
 msgid "Void key"
 msgstr "Clef vide"
 
-#: Language.module:108
+#: Language.module:110
 msgid "Wallon (Belgium)"
 msgstr "Wallon (Belgique)"
 
@@ -5511,11 +5515,11 @@ msgstr "Wallon (Belgique)"
 msgid "Watch"
 msgstr "Surveiller"
 
-#: FEditor.class:3372
+#: FEditor.class:3415
 msgid "&Watch expression"
 msgstr "&Surveiller une expression"
 
-#: FEditor.class:3701
+#: FEditor.class:3744
 msgid "Watch expression"
 msgstr "Surveiller des expressions"
 
