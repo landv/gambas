@@ -313,7 +313,7 @@ void CLASS_clean_up(bool silent)
 			if (!CLASS_is_native(class) && class->state && !class->exit)
 			{
 				if (!silent)
-					fprintf(stderr, "gbx" GAMBAS_VERSION_STRING ": % 4d %s\n", class->count, class->name);
+					fprintf(stderr, "gbx" GAMBAS_VERSION_STRING ": % 5d %s\n", class->count, class->name);
 				OBJECT_release(class, NULL);
 				class->exit = TRUE;
 				n++;

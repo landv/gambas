@@ -2571,8 +2571,8 @@ Public Sub Editors_MouseUp()
   Endif
   
   FDebugInfo.InstantWatch(Trim(Editor.Selection.Text), Editor, 
-  Editor.CursorX + Editor.CharWidth * ((Editor.Selection.StartColumn + Editor.Selection.EndColumn) / 2 - Editor.Column), 
-  Mouse.ScreenY - Editor.ScreenY)
+    Editor.CursorX + Editor.CharWidth * ((Editor.Selection.StartColumn + Editor.Selection.EndColumn) / 2 - Editor.Column), 
+    Mouse.ScreenY - Editor.ScreenY)
   
 End
 

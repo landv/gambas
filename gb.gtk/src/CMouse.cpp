@@ -227,9 +227,9 @@ GB_DESC CMouseDesc[] =
   GB_STATIC_PROPERTY_READ("ScreenY", "i", CMOUSE_screen_y),
   GB_STATIC_METHOD("Move", 0, CMOUSE_move, "(X)i(Y)i"),
 
-  GB_CONSTANT("Default", "i", -1),
-  GB_CONSTANT("Custom", "i", -2),
-  GB_CONSTANT("Blank", "i", GDK_LAST_CURSOR),
+  GB_CONSTANT("Default", "i", CURSOR_DEFAULT),
+  GB_CONSTANT("Custom", "i", CURSOR_CUSTOM),
+  GB_CONSTANT("Blank", "i", GDK_BLANK_CURSOR),
   GB_CONSTANT("Arrow", "i", GDK_LEFT_PTR),
   GB_CONSTANT("Cross", "i", GDK_CROSSHAIR),
   GB_CONSTANT("Wait", "i", GDK_WATCH),

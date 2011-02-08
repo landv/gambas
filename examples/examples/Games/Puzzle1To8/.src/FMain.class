@@ -25,7 +25,7 @@
 Public Game As Esquema
 
 Public Sub Form_Open()
-  Game = New esquema
+  Game = New Esquema
   Me.Window.Center
 End
 
@@ -43,11 +43,7 @@ End
 
 Public Sub TXT_KeyPress()
   If Not (Key.code = Key.BackSpace Or Key.code = Key.Delete Or Key.Code = Key.F10) Then 
-    Select Case Key[Key.text]
-      Case Key["1"], Key["2"], Key["3"], Key["4"], Key["5"], Key["6"], Key["7"], Key["8"]
-      Case Else
-        Stop Event
-    End Select
+    If Not IsDigit(Key.Text) Then Stop Event
   End If
 End
 

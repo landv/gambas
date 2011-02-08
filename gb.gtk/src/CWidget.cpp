@@ -678,8 +678,10 @@ END_METHOD
 
 BEGIN_PROPERTY(CWIDGET_mouse)
 
-	if (READ_PROPERTY) { GB.ReturnInteger(CONTROL->mouse()); return; }
-	CONTROL->setMouse(VPROP(GB_INTEGER));
+	if (READ_PROPERTY)
+		GB.ReturnInteger(CONTROL->mouse());
+	else
+		CONTROL->setMouse(VPROP(GB_INTEGER));
 
 END_METHOD
 
