@@ -3,29 +3,29 @@
 '&HC00F47& = red
 '&H4BC021& = green
 
-PUBLIC a AS Integer
-PUBLIC b AS Integer
-PUBLIC c AS Integer
-PUBLIC d AS Integer
+Public a As Integer
+Public b As Integer
+Public c As Integer
+Public d As Integer
 
-PUBLIC SUB Button1_Click()
+Public Sub Button1_Click()
 
   'for checking valid values
    a = CInt(textbox1.text)
    b = CInt(textbox2.text) * 60
    
   ' on or off 
-  IF Button1.Text = "Start" THEN
+  If Button1.Text = "Start" Then
 
     ' are the values valid?
-    IF a >= 0 AND b >= 0 AND 0 <> a + b THEN
+    If a >= 0 And b >= 0 And 0 <> a + b Then
    
      'switching on timer1
-     timer1.enabled = TRUE
+     timer1.enabled = True
      
      'for countdown
      c = (a + b) / 60
-     d = (a + b) MOD 60
+     d = (a + b) Mod 60
      textbox1.Text = d
      textbox2.text = c
      
@@ -34,44 +34,44 @@ PUBLIC SUB Button1_Click()
      button1.Background = &HC00F47&
      
    'if the values are not valid
-   ELSE 
-     message.error("Please fill in valid values!")
-   ENDIF
+   Else 
+     message.error(("Please fill in valid values!"))
+   Endif
    
   'if it is already on
-  ELSE
+  Else
     'switching off timer1 and timer2 and changes in the look
     button1.Text = "Start"
     button1.Background = &H4BC021&
-    timer1.enabled = FALSE
-  ENDIF
+    timer1.enabled = False
+  Endif
    
 'thank you Benoit, that is just a great thing
-CATCH
- message.Error("Please fill in valid values!") 
+Catch
+ message.Error(("Please fill in valid values!")) 
 
-END
+End
 
-PUBLIC SUB Timer1_Timer()
+Public Sub Timer1_Timer()
 
   'how the countdown works
-  IF c = 0 AND d = 0 THEN
+  If c = 0 And d = 0 Then
   'timer1 switchs off himself and writes a message 
-    timer1.Enabled = FALSE
+    timer1.Enabled = False
     button1.Text = "Start"
     button1.Background = &H4BC021&
-    message.info("Time is over!")
-  ELSE 
-    IF d = 0 THEN
+    message.info(("Time is over!"))
+  Else 
+    If d = 0 Then
       c = c - 1 
       d = d + 59
-    ELSE 
+    Else 
       d = d - 1
-    ENDIF
-  ENDIF
+    Endif
+  Endif
 
   'show the countdown
   textbox1.Text = d
   textbox2.text = c
 
-END
+End

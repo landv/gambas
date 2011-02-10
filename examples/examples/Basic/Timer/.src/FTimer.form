@@ -1,77 +1,94 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(33.5,24,49.1667,29)
+  MoveScaled(33.5714,24,52,33)
   Text = ("Timer example")
   Icon = Picture["timer.png"]
   Resizable = False
   { Button1 Button
-    MoveScaled(29,13,8.5,4)
+    MoveScaled(35,14,15,4)
     ToolTip = ("Start")
     Text = ("Trigger")
   }
   { Timer1 #Timer
-    #X = 328
-    #Y = 120
+    #MoveScaled(41,1)
   }
   { Label1 Label
-    MoveScaled(24,13,3.5,4)
-    Text = ("")
+    MoveScaled(30,14,3.5714,4)
     Border = Border.Etched
   }
   { Button2 Button
-    MoveScaled(13,13,9,4)
+    MoveScaled(14,14,14,4)
     ToolTip = ("Reset")
     Text = ("Reset")
   }
   { TextBox1 TextBox
-    MoveScaled(2,13,10,4)
+    MoveScaled(2,14,8,4)
     Text = ("1500")
   }
   { Label2 Label
-    MoveScaled(2,10,9,3)
-    Text = ("Delay")
+    MoveScaled(2,10,34,3)
+    Text = ("Start Timer in...")
     Alignment = Align.Left
   }
   { Label3 Label
-    MoveScaled(2,21,11,3)
+    MoveScaled(2,24,11,3)
     Foreground = &H00AA00&
-    Text = ("Low-Time")
+    Text = ("Start delay")
     Alignment = Align.Left
   }
   { Label4 Label
-    MoveScaled(14,21,11,3)
+    MoveScaled(15,24,13,3)
     Foreground = &HFF0000&
-    Text = ("High-Time")
+    Text = ("Stop delay")
     Alignment = Align.Left
   }
   { TextBox2 TextBox
-    MoveScaled(2,24,8,4)
+    MoveScaled(2,27,8,4)
     Text = ("200")
   }
   { TextBox3 TextBox
-    MoveScaled(14,24,8,4)
+    MoveScaled(15,27,8,4)
     Text = ("800")
   }
   { Label5 Label
-    MoveScaled(24,24,3.5,4)
-    Text = ("")
+    MoveScaled(30,27,3.5714,4)
     Border = Border.Etched
   }
   { ToggleButton1 ToggleButton
-    MoveScaled(29,24,14,4)
+    MoveScaled(35,27,15,4)
     Text = ("Start/Stop")
   }
   { Timer2 #Timer
-    #X = 328
-    #Y = 72
+    #MoveScaled(36,1)
   }
   { Timer3 #Timer
-    #X = 264
-    #Y = 6
+    #MoveScaled(45,1)
   }
   { TextLabel1 TextLabel
-    MoveScaled(1,1,42,6)
+    MoveScaled(2,1,42,6)
     Text = ("Timer example by <b>Juergen Zdero</b> &lt;juergen@zdero.com&gt;")
+  }
+  { Label6 Label
+    MoveScaled(10,14,4,4)
+    Text = ("ms")
+  }
+  { Separator1 Separator
+    MoveScaled(2,9,48,1)
+  }
+  { Separator2 Separator
+    MoveScaled(2,18,48,3)
+  }
+  { Label7 Label
+    MoveScaled(2,21,33,3)
+    Text = ("Or start and stop Timer")
+  }
+  { Label8 Label
+    MoveScaled(10,27,4,4)
+    Text = ("ms")
+  }
+  { Label9 Label
+    MoveScaled(23,27,4,4)
+    Text = ("ms")
   }
 }

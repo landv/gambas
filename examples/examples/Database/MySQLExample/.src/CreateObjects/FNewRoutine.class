@@ -16,7 +16,7 @@ End
 Public Sub Form_Open()
 
   If $bEdit Then
-    Me.Text = ("Edit Rutine")
+    Me.Text = ("Edit Routine")
     lblTitle.Text = Me.Text
     txtName.Enabled = False
     txtParameters.Text = modMain.$Connection.MySQL.Routines.Parameters($sRutine)

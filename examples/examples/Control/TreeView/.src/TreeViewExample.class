@@ -1,11 +1,11 @@
 ' Gambas class file
 
-PUBLIC intEventNumber AS Integer
+Public intEventNumber As Integer
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
   
-  DIM picMale AS Picture
-  DIM picFemale AS Picture
+  Dim picMale As Picture
+  Dim picFemale As Picture
 
   picFemale = Picture["Female.png"]
   picMale = Picture["Male.png"]
@@ -20,60 +20,60 @@ PUBLIC SUB Form_Open()
   'TreeView1.Item.Selected = TRUE
   'TreeView1.Item.Expanded = TRUE
   
-  TreeView1["Bill"].Expanded = TRUE
+  TreeView1["Bill"].Expanded = True
 
-END
+End
 
-PRIVATE SUB RefreshInfo()
+Private Sub RefreshInfo()
 
   'This little check just updates our label so that we know how many
   'children an entry has.
 
-  DIM sText AS String
+  Dim sText As String
 
-  IF NOT TreeView1.Current THEN 
+  If Not TreeView1.Current Then 
     Textlabel1.Text = ""
-    RETURN 
-  ENDIF
+    Return 
+  Endif
 
-  WITH TreeView1.Current
+  With TreeView1.Current
 
-    IF .Children > 1 THEN
-      sText = .Text & " has " & .Children & " children."
-    ELSE IF .Children = 0 THEN
-      sText = .Text & " has no children."
-    ELSE
-      sText = .Text & " has 1 child."
-    END IF
+    If .Children > 1 Then
+      sText = .Text & (" has ") & .Children & (" children.")
+    Else If .Children = 0 Then
+      sText = .Text & (" has no children.")
+    Else
+      sText = .Text & (" has 1 child.")
+    End If
     
-    sText &= "<br>Item rect is (" & .X & "," & .Y & "," & .W & "," & .H & ")"
+    sText &= ("<br>Item rect is (") & .X & "," & .Y & "," & .W & "," & .H & ")"
   
-  END WITH 
+  End With 
   
   TextLabel1.Text = sText
   
-END
+End
 
 
-PUBLIC SUB TreeView1_Click()
+Public Sub TreeView1_Click()
 
   'This just updates our event stack
   Stack_Event_Log("Click")
   
-END
+End
 
 
-PUBLIC SUB Button1_Click()
+Public Sub Button1_Click()
   
-  DIM sIcon AS String
-  DIM sParent AS String
+  Dim sIcon As String
+  Dim sParent As String
 
-  IF Textbox1.Text <> NULL THEN
-    IF RadioButton1.Value THEN
+  If Textbox1.Text <> Null Then
+    If RadioButton1.Value Then
       sIcon = "Male.png"
-    ELSE
+    Else
       sIcon = "Female.png"
-    END IF
+    End If
     'Gets the parent item: the current item, or nothing is the treeview is void
     sParent = TreeView1.Key
     'Now we will add a new entry with a key and a name of what was in the text box
@@ -82,83 +82,83 @@ PUBLIC SUB Button1_Click()
     TreeView1.Item.EnsureVisible 'This will make sure that the item we just added to the list is in the visable area of the control. (Scrolling if necessary)
     TextBox1.Text = "" 'This empties out textbox
     RefreshInfo ' This will update our label and reflect the new number of kids
-  END IF
-END
+  End If
+End
 
-PUBLIC SUB Button2_Click()
+Public Sub Button2_Click()
 
-    IF NOT TreeView1.Key THEN RETURN
+    If Not TreeView1.Key Then Return
     'Lets remove the current cursor item
     TreeView1.Remove(TreeView1.Key)
     'Now move the cursor to the current item (since we are now pointing at a deleted item)
     'But first we check the count to make sure we didn't delete the last item in the list
     'if we did then we obviously don't run this part.
-    IF TreeView1.Count > 0 THEN
+    If TreeView1.Count > 0 Then
       'TreeView1.MoveCurrent
       'This selects or 'highlights' our current item
       'TreeView1.Current.Selected = TRUE
       'This will update our label and reflect the new number of kids
       RefreshInfo
-    END IF
-END
+    End If
+End
 
 
-PUBLIC SUB TreeView1_Collapse()
+Public Sub TreeView1_Collapse()
   'This just updates our event stack
   Stack_Event_Log("Collapse")
-END
+End
 
-PUBLIC SUB TreeView1_DblClick()
+Public Sub TreeView1_DblClick()
   'This just updates our event stack
   Stack_Event_Log("DblClick")
-END
+End
 
-PUBLIC SUB TreeView1_Select()
+Public Sub TreeView1_Select()
   'This just updates our event stack
   RefreshInfo
   Stack_Event_Log("Select")
-END
+End
 
-PUBLIC SUB TreeView1_Delete()
+Public Sub TreeView1_Delete()
   'This just updates our event stack
   Stack_Event_Log("Delete")
-END
+End
 
-PUBLIC SUB TreeView1_Expand()
+Public Sub TreeView1_Expand()
   'This just updates our event stack
   Stack_Event_Log("Expand")
-END
+End
 
 
-PUBLIC SUB Button3_Click()
+Public Sub Button3_Click()
   TextArea1.Text = ""
   'IntEventNumber = 0
-END
+End
 
-PUBLIC SUB About_Click()
-  Message.Info("TreeView example written by C. Packard and Fabien Hutrel.")
-END
+Public Sub About_Click()
+  Message.Info(("TreeView example written by C. Packard and Fabien Hutrel."))
+End
 
-PUBLIC SUB TreeView1_Activate()
+Public Sub TreeView1_Activate()
   'This just updates our event stack
   Stack_Event_Log("Activate")
-END
+End
 
-PUBLIC SUB TreeView1_Rename()
+Public Sub TreeView1_Rename()
   'This just updates our event stack
   Stack_Event_Log("Rename")
-END
+End
 
-PRIVATE SUB Stack_Event_Log(anevent AS String)
+Private Sub Stack_Event_Log(anevent As String)
   'This updates our event stack, this sub is used by all events... it display the current node key.
-  DIM sKey AS String
-  TRY sKey = TreeView1.Item.Key
+  Dim sKey As String
+  Try sKey = TreeView1.Item.Key
   TextArea1.Text = "Event(" & intEventNumber & "): " & anevent & " Item: '" & sKey & "'\n" & TextArea1.Text
   intEventNumber = intEventNumber + 1  
-END
+End
 
 
 
-PUBLIC SUB TreeView1_Cancel()
+Public Sub TreeView1_Cancel()
   Stack_Event_Log("Cancel")
-END
+End

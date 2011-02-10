@@ -148,7 +148,7 @@ End
 
 Public Sub btnabout_Click()
   
-  Balloon.Info("A simple TextEdit example by\nFabien Bodard (gambix@users.sourceforge.net)\nand Benoît Minisini", Last)
+  Balloon.Info(("A simple TextEdit example by\nFabien Bodard (gambix@users.sourceforge.net)\nand Benoît Minisini"), Last)
 
 End
 
@@ -160,13 +160,13 @@ End
 
 Public Sub TextEdit1_Link(Path As String)
 
-  Message("You have clicked on:\n\n" & Path)  
+  Message(("You have clicked on:\n\n") & Path)  
 
 End
 
 Public Sub btnLock_Click()
 
-  TextEdit1.ReadOnly = btnLock.Value  
+  TextEdit1.ReadOnly = btnLock.Value
 
 End
 

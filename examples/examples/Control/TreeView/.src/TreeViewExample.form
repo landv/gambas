@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(25,11.1429,63,54)
+  MoveScaled(25,11.1429,73,54)
   Text = ("TreeView Example")
   Icon = Picture["treeview.png"]
   Resizable = False
@@ -12,22 +12,22 @@
     }
   }
   { TreeView1 TreeView
-    MoveScaled(1,1,20,48)
+    MoveScaled(1,1,24,48)
     Editable = True
   }
   { Button1 Button
-    MoveScaled(45,1,17,4)
+    MoveScaled(54,1,17,4)
     Text = ("Insert Name")
   }
   { Button2 Button
-    MoveScaled(45,6,17,4)
+    MoveScaled(54,6,17,4)
     Text = ("Remove Name")
   }
   { TextBox1 TextBox
-    MoveScaled(22,1,22,4)
+    MoveScaled(27,1,22,4)
   }
   { Frame1 Frame
-    MoveScaled(22,12,40,12)
+    MoveScaled(27,11,44,12)
     Text = ("Selected item")
     { TextLabel1 TextLabel
       MoveScaled(1,4,38,8)
@@ -35,25 +35,25 @@
     }
   }
   { Label2 Label
-    MoveScaled(22,25,39,4)
+    MoveScaled(27,24,39,4)
     Font = Font["Bold"]
     Text = ("Events")
   }
   { TextArea1 TextArea
-    MoveScaled(22,29,40,15)
+    MoveScaled(27,28,44,15)
     ReadOnly = True
   }
   { Button3 Button
-    MoveScaled(46,45,16,4)
+    MoveScaled(51,44,20,4)
     Text = ("&Clear events")
   }
   { RadioButton1 RadioButton
-    MoveScaled(22,6,9,4)
+    MoveScaled(27,6,12,4)
     Text = ("Male")
     Value = True
   }
   { RadioButton2 RadioButton
-    MoveScaled(32,6,12,4)
+    MoveScaled(40,6,13,4)
     Text = ("Female")
   }
 }
