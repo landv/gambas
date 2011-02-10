@@ -71,6 +71,8 @@ static bool _init = FALSE;
 
 static int _last_status = 0;
 
+static struct sigaction _old_SIGCHLD_action;
+
 static void init_child(void);
 static void exit_child(void);
 
@@ -603,7 +605,7 @@ static void callback_child(int fd, int type, void *data)
 }
 
 
-static void signal_child(int sig)
+static void signal_child(int sig, siginfo_t *info, void *context)
 {
 	#ifdef DEBUG_ME
 	fprintf(stderr, "SIGCHLD: _pipe_child[0] = %d\n", _pipe_child[0]);
@@ -613,14 +615,32 @@ static void signal_child(int sig)
 	if (!_init)
 		return;
 
+	//fprintf(stderr, "SIGCHLD\n");
+	
 	buffer = 42;
 	if (write(_pipe_child[1], &buffer, 1) != 1)
 		ERROR_panic("Cannot write into SIGCHLD pipe");
+	
+	if (_old_SIGCHLD_action.sa_handler != SIG_DFL || _old_SIGCHLD_action.sa_handler != SIG_IGN)
+	{
+		if (_old_SIGCHLD_action.sa_flags & SA_SIGINFO)
+		{
+			//fprintf(stderr, "Calling old action %p\n", _old_SIGCHLD_action.sa_sigaction);
+			(*_old_SIGCHLD_action.sa_sigaction)(sig, info, context);
+		}
+		else
+		{
+			//fprintf(stderr, "Calling old handler %p\n", _old_SIGCHLD_action.sa_handler);
+			(*_old_SIGCHLD_action.sa_handler)(sig);
+		}
+	}
 }
 
 
 static void init_child(void)
 {
+	struct sigaction action;
+	
 	if (_init)
 		return;
 
@@ -639,7 +659,19 @@ static void init_child(void)
 	#endif
 
 	/* This may work only on Linux. Should use sigaction() instead! */
-	signal(SIGCHLD, signal_child);
+	
+	action.sa_flags = SA_SIGINFO;
+	sigemptyset(&action.sa_mask);
+	action.sa_sigaction = signal_child;
+
+	if (sigaction(SIGCHLD, NULL, &_old_SIGCHLD_action) != 0)
+		ERROR_panic("Cannot install SIGCHLD handler");
+	
+	if (sigaction(SIGCHLD, &action, NULL) != 0)
+		ERROR_panic("Cannot install SIGCHLD handler");
+	
+	//fprintf(stderr, "old action = %p / %p\n", _old_SIGCHLD_action.sa_handler, _old_SIGCHLD_action.sa_sigaction);
+	
 	GB_Watch(_pipe_child[0], GB_WATCH_READ, (void *)callback_child, 0);
 	_init = TRUE;
 }
@@ -656,6 +688,10 @@ static void exit_child(void)
 	GB_Watch(_pipe_child[0], GB_WATCH_NONE, NULL, 0);
 	close(_pipe_child[0]);
 	close(_pipe_child[1]);
+	
+	if (sigaction(SIGCHLD, &_old_SIGCHLD_action, NULL) != 0)
+		ERROR_panic("Cannot uninstall SIGCHLD handler");
+	
 	_init = FALSE;
 }
 
