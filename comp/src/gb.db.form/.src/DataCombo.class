@@ -36,6 +36,7 @@ Public Sub _new()
   
   $hCtrl = New ComboBox(Me) As "ComboBox"
   Me._AutoResize = True
+  Me.Proxy = $hCtrl
   '$hCtrl.ReadOnly = TRUE
   
 End

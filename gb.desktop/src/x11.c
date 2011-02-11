@@ -107,6 +107,7 @@ static void init_atoms()
 }
 
 #define PROPERTY_START_READ 256
+#define PROPERTY_NEXT_READ 1024
 
 #if 0
 	// On 64 bits OS, format 32 are actually long, i.e. int padded to 64 bits!
@@ -129,6 +130,7 @@ char *X11_get_property(Window wid, Atom prop, Atom *type, int *format, int *pcou
 	uchar *data;
   unsigned long count;
   unsigned long after;
+	unsigned long offset;
 	int size;
 
 	*pcount = 0;
@@ -146,14 +148,17 @@ char *X11_get_property(Window wid, Atom prop, Atom *type, int *format, int *pcou
 	_property_value = GB.NewString((char *)data, count * size);
 	XFree(data);
 	
-	if (after)
+	offset = count * size / sizeof(long);
+	
+	while (after)
 	{
-		if (XGetWindowProperty(_display, wid, prop, PROPERTY_START_READ / sizeof(long), (after + 3) / sizeof(long),
+		if (XGetWindowProperty(_display, wid, prop, offset, PROPERTY_NEXT_READ / sizeof(long),
 				False, AnyPropertyType, type, format,
 				&count, &after, &data) != Success)
 			return NULL;
 
 		*pcount += count;
+		offset += count * size / sizeof(long);
 		
 		GB.AddString(&_property_value, (char *)data, count * size);
 		XFree(data);

@@ -19,6 +19,7 @@ Private $hForm As FBrowser
 Public Sub _new()
   
   $hForm = New FBrowser(Me)
+  Me.Proxy = $hForm.DataView
   
 End
 

@@ -62,6 +62,8 @@ Private $iRowNewRecord As Integer = -1
 Public Sub _new()
   
   $hCtrl = New TableView(Me) As "TableView"
+  Me.Proxy = $hCtrl
+  
   $hTimer = New Timer As "TableView"
   $hCreateTimer = New Timer As "CreateTimer"
   $hCtrl.Header = TableView.Both

@@ -111,6 +111,8 @@ Private Sub CreateControl()
   $hCtrl.Background = If(bReadOnly, Color.ButtonBackground, Color.Default)
   If bFocus Then $hCtrl.SetFocus
   
+  Me.Proxy = $hCtrl
+  
 End
 
 
