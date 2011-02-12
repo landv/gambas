@@ -26,6 +26,8 @@ Public Sub _new()
   Dim iTag As Integer
   Dim W, H As Integer
   
+  If Message.Title Then Me.Title = Message.Title
+  
   If Not $sIcon Then $sIcon = "info"
   Try picIcon.Picture = Picture["icon:/64/" &/ $sIcon]
   If Error Then picIcon.Picture = Picture["icon:/64/info"]
