@@ -621,7 +621,7 @@ static void signal_child(int sig, siginfo_t *info, void *context)
 	if (write(_pipe_child[1], &buffer, 1) != 1)
 		ERROR_panic("Cannot write into SIGCHLD pipe");
 	
-	if (_old_SIGCHLD_action.sa_handler != SIG_DFL || _old_SIGCHLD_action.sa_handler != SIG_IGN)
+	if (_old_SIGCHLD_action.sa_handler != SIG_DFL && _old_SIGCHLD_action.sa_handler != SIG_IGN)
 	{
 		if (_old_SIGCHLD_action.sa_flags & SA_SIGINFO)
 		{
