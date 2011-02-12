@@ -97,11 +97,10 @@ BEGIN_METHOD(CDESKTOP_find, GB_STRING title; GB_STRING klass; GB_STRING role)
 	for (i = 0; i < count; i++)
 	{
 		win = windows[i];
-		//qDebug("win = %08X", win);
+		
 		if (ltitle)
 		{
 			X11_get_window_title(win, &prop, &lprop);
-			//qDebug("title = %.*s", lprop, prop);
 			if (!GB.MatchString(title, ltitle, prop, lprop))
 				continue;
 		}

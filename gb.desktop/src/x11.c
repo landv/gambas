@@ -135,7 +135,7 @@ char *X11_get_property(Window wid, Atom prop, Atom *type, int *format, int *pcou
 
 	*pcount = 0;
 
-	if (XGetWindowProperty(_display, wid, prop, 0, PROPERTY_START_READ / sizeof(long),
+	if (XGetWindowProperty(_display, wid, prop, 0, PROPERTY_START_READ / sizeof(int32_t),
 			False, AnyPropertyType, type, format,
 			&count, &after, &data) != Success)
 		return NULL;
@@ -148,17 +148,17 @@ char *X11_get_property(Window wid, Atom prop, Atom *type, int *format, int *pcou
 	_property_value = GB.NewString((char *)data, count * size);
 	XFree(data);
 	
-	offset = count * size / sizeof(long);
+	offset = count * size / sizeof(int32_t);
 	
 	while (after)
 	{
-		if (XGetWindowProperty(_display, wid, prop, offset, PROPERTY_NEXT_READ / sizeof(long),
+		if (XGetWindowProperty(_display, wid, prop, offset, PROPERTY_NEXT_READ / sizeof(int32_t),
 				False, AnyPropertyType, type, format,
 				&count, &after, &data) != Success)
 			return NULL;
 
 		*pcount += count;
-		offset += count * size / sizeof(long);
+		offset += count * size / sizeof(int32_t);
 		
 		GB.AddString(&_property_value, (char *)data, count * size);
 		XFree(data);
@@ -503,7 +503,12 @@ void X11_find_windows(Window **window_list, int *count)
 
 void X11_get_window_title(Window window, char **result, int *length)
 {
-	*result = get_property(window, XA_WM_NAME, length);
+	static Atom _net_wm_name = 0;
+	
+	if (!_net_wm_name)
+		_net_wm_name = XInternAtom(_display, "_NET_WM_NAME", True);
+	
+	*result = get_property(window, _net_wm_name, length);
 }
 
 void X11_get_window_class(Window window, char **result, int *length)
