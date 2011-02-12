@@ -890,11 +890,11 @@ void IMAGE_bitblt(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int 
 
 void IMAGE_draw_alpha(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int sw, int sh)
 {
-	if (dst->format != src->format)
+	/*if (dst->format != src->format)
 	{
 		GB.Error("The source image and the destination image must have the same format");
 		return;
-	}
+	}*/
 	
 	if (!GB_IMAGE_FMT_IS_32_BITS(dst->format))
 	{
@@ -925,17 +925,18 @@ void IMAGE_draw_alpha(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, 
 	const int dd = dst->width - sw;
 	const int ds = src->width - sw;
 	uint cs, cd;
-	int format = src->format;
+	int sformat = src->format;
+	int dformat = dst->format;
 	int t;
 	
 	while (sh--)
 	{
 		for (t = sw; t--; d++,s++)
 		{
-			cs = BGRA_from_format(*s, format);
-			cd = BGRA_from_format(*d, format);
+			cs = BGRA_from_format(*s, sformat);
+			cd = BGRA_from_format(*d, dformat);
 			if (ALPHA(cs) < ALPHA(cd))
-				*d = BGRA_to_format(RGBA(RED(cd), GREEN(cd), BLUE(cd), ALPHA(cs)), format);
+				*d = BGRA_to_format(RGBA(RED(cd), GREEN(cd), BLUE(cd), ALPHA(cs)), dformat);
 		}
 		
 		d += dd;
