@@ -29,6 +29,7 @@ typedef
 	struct { unsigned char d[3]; } PACKED uint24;
 
 //#define DEBUG_CONVERT
+//#define DEBUG_ME 1
 
 static int _default_format = GB_IMAGE_RGBA;
 
@@ -414,6 +415,10 @@ void IMAGE_create(GB_IMG *img, int width, int height, int format)
 	img->format = format;
 	GB.Alloc(POINTER(&img->data), IMAGE_size(img));
 	img->owner_handle = img->data;
+	
+	#ifdef DEBUG_ME
+	fprintf(stderr, "IMAGE_create: %p\n", img);
+	#endif
 }
 
 void IMAGE_create_with_data(GB_IMG *img, int width, int height, int format, unsigned char *data)
@@ -450,6 +455,14 @@ void *IMAGE_check(GB_IMG *img, GB_IMG_OWNER *temp_owner)
 	if (img->temp_owner == temp_owner)
 		return img->temp_handle;
 	
+	#ifdef DEBUG_ME
+	fprintf(stderr, "IMAGE_check: %p: %s (%p) / %s (%p) -> %s\n", 
+					img, 
+				 img->owner->name, img->owner_handle, 
+				 img->temp_owner ? img->temp_owner->name : "NULL", img->temp_handle, 
+				 temp_owner ? temp_owner->name : "NULL");
+	#endif
+	
 	// If somebody else has a temporary handle
 	if (img->temp_owner)
 	{
@@ -457,6 +470,7 @@ void *IMAGE_check(GB_IMG *img, GB_IMG_OWNER *temp_owner)
 		if (img->temp_owner != img->owner && img->temp_owner->release)
 			(*img->temp_owner->release)(img, img->temp_handle);
 		img->temp_handle = 0;
+		img->temp_owner = NULL;
 	}
 	
 	// Get the temporary handle
@@ -478,6 +492,13 @@ void *IMAGE_check(GB_IMG *img, GB_IMG_OWNER *temp_owner)
 	
 	// Become the temporary owner
 	img->temp_owner = temp_owner;
+	
+	#ifdef DEBUG_ME
+	fprintf(stderr, "==========>: %p: %s (%p) / %s (%p)\n", 
+					img, 
+				 img->owner->name, img->owner_handle, 
+				 img->temp_owner ? img->temp_owner->name : "NULL", img->temp_handle);
+	#endif
 	
 	return img->temp_handle;
 }

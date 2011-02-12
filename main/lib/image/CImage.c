@@ -252,6 +252,35 @@ BEGIN_METHOD(Image_DrawAlpha, GB_OBJECT image; GB_INTEGER x; GB_INTEGER y; GB_IN
 
 END_METHOD
 
+BEGIN_PROPERTY(Image_Format)
+
+	char *format;
+
+	switch(THIS_IMAGE->format)
+	{
+		case GB_IMAGE_BGRX: format = "BGRX"; break;
+		case GB_IMAGE_XRGB: format = "XRGB"; break;
+		case GB_IMAGE_RGBX: format = "RGBX"; break;
+		case GB_IMAGE_XBGR: format = "XBGR"; break;
+		case GB_IMAGE_BGR : format = "BGR"; break;
+		case GB_IMAGE_RGB : format = "RGB"; break;
+
+		case GB_IMAGE_BGRA: format = "BGRA"; break;
+		case GB_IMAGE_ARGB: format = "ARGB"; break;
+		case GB_IMAGE_RGBA: format = "RGBA"; break;
+		case GB_IMAGE_ABGR: format = "ABGR"; break;
+
+		case GB_IMAGE_BGRP: format = "BGRP"; break;
+		case GB_IMAGE_PRGB: format = "PRGB"; break;
+		case GB_IMAGE_RGBP: format = "RGBP"; break;
+		case GB_IMAGE_PBGR: format = "PBGR"; break;
+		default: format = "?";
+	}
+	
+	GB.ReturnConstZeroString(format);
+
+END_PROPERTY
+
 GB_DESC CImageDesc[] =
 {
   GB_DECLARE("Image", sizeof(CIMAGE)),
@@ -272,6 +301,7 @@ GB_DESC CImageDesc[] =
   GB_PROPERTY_READ("H", "i", CIMAGE_height),
   GB_PROPERTY_READ("Depth", "i", CIMAGE_depth),
   GB_PROPERTY_READ("Data", "p", CIMAGE_data),
+  GB_PROPERTY_READ("Format", "s", Image_Format),
   
   GB_METHOD("Clear", NULL, CIMAGE_clear, NULL),
   GB_METHOD("Fill", "Image", CIMAGE_fill, "(Color)i"),
