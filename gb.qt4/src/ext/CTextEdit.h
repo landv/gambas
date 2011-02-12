@@ -79,7 +79,7 @@ public slots:
 
   void changed(void);
   void cursor(void);
-  void link(const QString &);
+  //void link(const QString &);
 };
 
 #endif

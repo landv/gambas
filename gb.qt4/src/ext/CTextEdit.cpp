@@ -39,7 +39,6 @@
 
 DECLARE_EVENT(EVENT_Change);
 DECLARE_EVENT(EVENT_Cursor);
-DECLARE_EVENT(EVENT_Link);
 
 #if 0
 static void to_pos(Q3TextEdit *wid, int par, int car, int *pos)
@@ -690,7 +689,7 @@ GB_DESC CTextEditDesc[] =
   
   GB_EVENT("Change", NULL, NULL, &EVENT_Change),
   GB_EVENT("Cursor", NULL, NULL, &EVENT_Cursor),
-  GB_EVENT("Link", NULL, "(Path)s", &EVENT_Link),
+  //GB_EVENT("Link", NULL, "(Path)s", &EVENT_Link),
 
 	TEXTEDIT_DESCRIPTION,
 
@@ -714,6 +713,7 @@ void CTextArea::cursor(void)
   GB.Raise(THIS, EVENT_Cursor, 0);
 }
 
+#if 0
 void CTextArea::link(const QString &path)
 {
   void *_object = QT.GetObject((QWidget *)sender());
@@ -729,3 +729,4 @@ void CTextArea::link(const QString &path)
     WIDGET->setSource(WIDGET->source());
   }*/
 }
+#endif
