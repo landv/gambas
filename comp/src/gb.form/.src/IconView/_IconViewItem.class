@@ -218,8 +218,9 @@ Public Sub _Draw(hRect As Rect, hClip As Rect, hIconView As IconView, bHorizonta
   
   If bHover Or If $bSelected Then
     Paint.Begin(Draw.Device)
-    Paint.Rectangle(hClip.X, hClip.Y, hClip.Width, hClip.Height)
-    Paint.Clip()
+    Paint.ClipRect = hClip
+    'Paint.Rectangle(hClip.X, hClip.Y, hClip.Width, hClip.Height)
+    'Paint.Clip()
     PaintRoundedRect(hRect.X, hRect.Y, hRect.W, hRect.H, 7)
     iColor = Color.TextBackground
     If $bSelected Then iColor = Color.SelectedBackground
@@ -238,7 +239,8 @@ Public Sub _Draw(hRect As Rect, hClip As Rect, hIconView As IconView, bHorizonta
   hClip = hClip.Intersection(hRect)
   If IsNull(hClip) Then Return
   
-  Draw.Clip(hClip.X, hClip.Y, hClip.Width, hClip.Height)
+  Draw.ClipRect = hClip
+  'Draw.Clip(hClip.X, hClip.Y, hClip.Width, hClip.Height)
   
   If bHorizontal Then
   

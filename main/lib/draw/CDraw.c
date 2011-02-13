@@ -25,6 +25,7 @@
 #include "gb.image.h"
 #include "matrix.h"
 #include "main.h"
+#include "crect.h"
 #include "cpaint.h"
 #include "CDraw.h"
 
@@ -266,6 +267,33 @@ BEGIN_PROPERTY(CDRAW_foreground)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Draw_ClipRect)
+
+	CRECT *rect;
+
+	CHECK_DEVICE();
+
+	if (READ_PROPERTY)
+	{
+		if (!DRAW->Clip.IsEnabled(THIS))
+		{
+			GB.ReturnNull();
+			return;
+		}
+		
+		rect = CRECT_create();
+		DRAW->Clip.Get(THIS, &rect->x, &rect->y, &rect->w, &rect->h);
+		GB.ReturnObject(rect);
+	}
+	else
+	{
+		rect = (CRECT *)VPROP(GB_OBJECT);
+		DRAW->Clip.SetEnabled(THIS, FALSE);
+		if (rect)
+			DRAW->Clip.Set(THIS, rect->x, rect->y, rect->w, rect->h);
+	}
+
+END_PROPERTY
 
 BEGIN_PROPERTY(CDRAW_clip_x)
 
@@ -1210,6 +1238,7 @@ GB_DESC CDrawDesc[] =
 	GB_STATIC_PROPERTY_READ("Height", "i", CDRAW_height),
 	GB_STATIC_PROPERTY_READ("Resolution", "i", CDRAW_resolution),
 	
+	GB_STATIC_PROPERTY("ClipRect", "Rect", Draw_ClipRect),
 	GB_STATIC_PROPERTY_SELF("Clip", ".Draw.Clip"),
 	GB_STATIC_PROPERTY_SELF("Style", ".Draw.Style"),
 	

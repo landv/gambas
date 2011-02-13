@@ -24,6 +24,7 @@
 
 #include "gb.image.h"
 #include "main.h"
+#include "crect.h"
 #include "CDraw.h"
 #include "cpaint.h"
 
@@ -503,6 +504,49 @@ IMPLEMENT_PROPERTY_EXTENTS(Paint_ClipExtents, ClipExtents)
 IMPLEMENT_METHOD_PRESERVE(Paint_Fill, Fill)
 IMPLEMENT_METHOD_PRESERVE(Paint_Stroke, Stroke)
 IMPLEMENT_PROPERTY_EXTENTS(Paint_PathExtents, PathExtents)
+
+BEGIN_PROPERTY(Paint_ClipRect)
+
+	GB_EXTENTS ext;
+	CRECT *rect;
+	int w, h;
+	
+	CHECK_DEVICE();
+	
+	if (READ_PROPERTY)
+	{
+		(*PAINT->ClipExtents)(THIS, &ext);
+		
+		w = floorf(ext.x2) - ceilf(ext.x1);
+		h = floorf(ext.y2) - ceilf(ext.y1);
+		
+		if (w <= 0 || h <= 0)
+		{
+			GB.ReturnNull();
+			return;
+		}
+		
+		rect = CRECT_create();
+		rect->x = ceilf(ext.x1);
+		rect->y = ceilf(ext.y1);
+		rect->w = w;
+		rect->h = h;
+		
+		GB.ReturnObject(rect);
+	}
+	else
+	{
+		rect = (CRECT *)VPROP(GB_OBJECT);
+		PAINT->ResetClip(THIS);
+		if (rect)
+		{
+			PAINT->NewPath(THIS);
+			PAINT->Rectangle(THIS, rect->x, rect->y, rect->w, rect->h);
+			PAINT->Clip(THIS, FALSE);
+		}
+	}
+
+END_PROPERTY
 
 BEGIN_METHOD(Paint_PathContains, GB_FLOAT x; GB_FLOAT y)
 
@@ -1003,6 +1047,7 @@ GB_DESC PaintDesc[] =
 	GB_STATIC_METHOD("Clip", NULL, Paint_Clip, "[(Preserve)b]"),
 	GB_STATIC_METHOD("ResetClip", NULL, Paint_ResetClip, NULL),
 	GB_STATIC_PROPERTY_READ("ClipExtents", "PaintExtents", Paint_ClipExtents),
+	GB_STATIC_PROPERTY("ClipRect", "Rect", Paint_ClipRect),
 	
 	GB_STATIC_METHOD("Fill", NULL, Paint_Fill, "[(Preserve)b]"),
 	//GB_STATIC_PROPERTY_READ("FillExtents", "PaintExtents", Paint_FillExtents),

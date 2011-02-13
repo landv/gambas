@@ -376,20 +376,12 @@ Public Sub ScrollArea_Draw()
   Dim hItem As _IconViewItem
   Dim iPos, iLast, iCol, nCol As Integer
   Dim hRect As New Rect
-  Dim hClip As Rect
+  Dim hClip, hSaveClip As Rect
   Dim bHover As Boolean
   
   If $aItems.Count = 0 Then Return
   
-  With Draw.Clip
-    X = .X
-    Y = .Y
-    W = .Width
-    H = .Height
-  End With
-  
-  'Draw.FillRect(X, Y, W, H, Color.TextBackground)
-  'Draw.Translate(- $hView.ScrollX, - $hView.ScrollY)
+  hSaveClip = Draw.ClipRect
   
   If $hPicture Then 
     Draw.FillX = - $hView.ScrollX
@@ -397,8 +389,10 @@ Public Sub ScrollArea_Draw()
     Draw.Tile($hPicture, 0, 0, Draw.Width, Draw.Height)
   Endif
   
-  X += $hView.ScrollX
-  Y += $hView.ScrollY
+  X = hSaveClip.X + $hView.ScrollX
+  Y = hSaveClip.Y + $hView.ScrollY
+  W = hSaveClip.W
+  H = hSaveClip.H
   
   iPos = FindIcon(X, Y)
   
@@ -411,9 +405,6 @@ Public Sub ScrollArea_Draw()
   iLast = FindIcon(X + W - 1, Y + H - 1, True)
   iCol = 0
   
-  X -= $hView.ScrollX
-  Y -= $hView.ScrollY
-  
   While iPos <= iLast
     
     If iPos >= 0 And If iPos < $aItems.Count Then
@@ -422,8 +413,7 @@ Public Sub ScrollArea_Draw()
       GetIconGeometry(iPos, hRect)
       hRect.Translate(- $hView.ScrollX, - $hView.ScrollY)
       'Debug iPos
-      hClip = New Rect(X, Y, W, H)
-      hClip = hClip.Intersection(hRect)
+      hClip = hRect.Intersection(hSaveClip)
       If hClip Then
         bHover = iPos = $iHover
         If $iMode = Select.Multiple And If iPos = $iStart Then bHover = True
@@ -442,14 +432,14 @@ Public Sub ScrollArea_Draw()
     
   Wend
   
-  Draw.Clip(X, Y, W, H)
+  Draw.ClipRect = hSaveClip '(X, Y, W, H)
   
   If $bSelRect Then
     
     Paint.Begin(Draw.Device)
     
-    Paint.Rectangle(X, Y, W, H)
-    Paint.Clip
+    'Paint.Rectangle(X, Y, W, H)
+    Paint.ClipRect = hSaveClip
     
     Paint.Translate(- $hView.ScrollX, - $hView.ScrollY)
     
@@ -914,7 +904,7 @@ Private Sub SelectRect(Optional iSelect As Integer = 1)
     If iPos >= 0 And If iPos < $aItems.Count Then
       
       GetIconGeometry(iPos, hRect)
-      hRect.Adjust(8)
+      hRect.Adjust(4)
       If hRect.Intersection(hSel) Then
         hItem = $aItems[iPos]
         If iSelect = 1 Then

@@ -40,6 +40,13 @@ static void normalize(CRECT *_object)
 	}
 }
 
+CRECT *CRECT_create(void)
+{
+	CRECT *rect;
+	GB.New(POINTER(&rect), GB.FindClass("Rect"), NULL, NULL);
+	return rect;
+}
+
 BEGIN_METHOD(Rect_new, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
 
 	if (!MISSING(x) && !MISSING(y) && !MISSING(w) && !MISSING(h))
@@ -50,6 +57,23 @@ BEGIN_METHOD(Rect_new, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
 		THIS->h = VARG(h);
 		normalize(THIS);
 	}
+
+END_METHOD
+
+BEGIN_METHOD(Rect_call, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
+
+	CRECT *rect = CRECT_create();
+	
+	if (!MISSING(x) && !MISSING(y) && !MISSING(w) && !MISSING(h))
+	{
+		rect->x = VARG(x);
+		rect->y = VARG(y);
+		rect->w = VARG(w);
+		rect->h = VARG(h);
+		normalize(rect);
+	}
+	
+	GB.ReturnObject(rect);
 
 END_METHOD
 
@@ -171,13 +195,13 @@ END_METHOD
 
 BEGIN_METHOD_VOID(Rect_Copy)
 
-	CRECT *copy;
+	CRECT *copy = CRECT_create();
 	
-	GB.New(POINTER(&copy), GB.FindClass("Rect"), NULL, 0);
 	copy->x = THIS->x;
 	copy->y = THIS->y;
 	copy->w = THIS->w;
 	copy->h = THIS->h;
+	
 	GB.ReturnObject(copy);
 
 END_METHOD
@@ -219,7 +243,7 @@ BEGIN_METHOD(Rect_Union, GB_OBJECT rect)
 	if (GB.CheckObject(rect))
 		return;
 
-	GB.New(POINTER(&dest), GB.FindClass("Rect"), NULL, 0);
+	dest = CRECT_create();
 	
 	x = Min(THIS->x, rect->x);
 	y = Min(THIS->y, rect->y);
@@ -251,7 +275,7 @@ BEGIN_METHOD(Rect_Intersection, GB_OBJECT rect)
 
 	if (x2 > x && y2 > y)
 	{
-		GB.New(POINTER(&dest), GB.FindClass("Rect"), NULL, 0);
+		dest = CRECT_create();
 	
 		dest->x = x;
 		dest->y = y;
@@ -298,6 +322,7 @@ GB_DESC RectDesc[] =
 	GB_DECLARE("Rect", sizeof(CRECT)),
 
 	GB_METHOD("_new", NULL, Rect_new, "[(X)i(Y)i(Width)i(Height)i]"),
+	GB_METHOD("_call", NULL, Rect_call, "[(X)i(Y)i(Width)i(Height)i]"),
 
 	GB_PROPERTY("X", "i", Rect_X),
 	GB_PROPERTY("Y", "i", Rect_Y),

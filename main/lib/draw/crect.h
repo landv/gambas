@@ -44,4 +44,6 @@ typedef
 		}
 	CRECT;
 
+CRECT *CRECT_create(void);
+	
 #endif
