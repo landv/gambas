@@ -4303,7 +4303,11 @@ Public Sub MoveFile(sSrc As String, sDst As String, Optional bOther As Boolean)
   
   If bIsDir Then
     'Move sSrc To sDst
-    VersionControl.MoveDir(sSrc, sDst)
+    If VersionControl.Enabled() Then
+      VersionControl.MoveDir(sSrc, sDst)
+    Else
+      Move sSrc To sDst
+    Endif
     'If Exist(sSrc) Then LockedPaths[sSrc] = True
   Else
     Copy sSrc To sDst
