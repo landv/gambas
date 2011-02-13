@@ -586,7 +586,7 @@ static void gambas_handle_event(GdkEvent *event)
 		{
 			gMainWindow *win;
 			
-			if (gApplication::activeControl())
+			if (!control->_grab && gApplication::activeControl())
 				control = gApplication::activeControl();
 			
 			type =  (event->type == GDK_KEY_PRESS) ? gEvent_KeyPress : gEvent_KeyRelease;
@@ -620,31 +620,31 @@ static void gambas_handle_event(GdkEvent *event)
 					goto __KEY_TRY_PROXY;
 				}
 				
-				if (type == gEvent_KeyPress || type == gEvent_KeyRelease)
+				if (event->key.keyval == GDK_Escape)
 				{
-					if (event->key.keyval == GDK_Escape)
+					if (control->_grab)
 					{
-						if (control->_grab)
-						{
-							gApplication::exitLoop(control);
-							return;
-						}
-						
-						if (check_button(win->_cancel))
-						{
-							win->_cancel->animateClick(type == gEvent_KeyRelease);
-							return;
-						}
+						gApplication::exitLoop(control);
+						return;
 					}
-					else if (event->key.keyval == GDK_Return || event->key.keyval == GDK_KP_Enter)
+					
+					if (check_button(win->_cancel))
 					{
-						if (check_button(win->_default))
-						{
-							win->_default->animateClick(type == gEvent_KeyRelease);
-							return;
-						}
+						win->_cancel->animateClick(type == gEvent_KeyRelease);
+						return;
 					}
 				}
+				else if (event->key.keyval == GDK_Return || event->key.keyval == GDK_KP_Enter)
+				{
+					if (check_button(win->_default))
+					{
+						win->_default->animateClick(type == gEvent_KeyRelease);
+						return;
+					}
+				}
+				
+				if (control->_grab)
+					return;
 			}
 
 			break;

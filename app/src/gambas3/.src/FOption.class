@@ -55,6 +55,13 @@ Public Sub _new()
   Dim hColor As DrawingArea
   Dim hButton As Button
 
+  lvwOption.Add("interface", "  " & ("Interface"), Picture["icon:/32/menu"])
+  lvwOption.Add("editor", ("Editor"), Picture["img/control/editor.png"])
+  lvwOption.Add("application", ("Applications"), Picture["icon:/32/exec"])
+  lvwOption.Add("help", ("Help"), Picture["icon:/32/help"])
+  lvwOption.Add("style", ("Style"), Picture["icon:/32/color"])
+  lvwOption.Add("snippet", ("Code snippets"), Picture["icon:/32/wizard"])
+
   cmbTheme.List = $aThemeName.Copy().Sort(gb.Language)
   cmbTheme.Add(("Select a theme"), 0)
   cmbIconTheme.List = [("Desktop"), "Gnome", "KDE"]
@@ -117,6 +124,9 @@ Public Sub _new()
   gvwSnippet.Columns[0].Width = Desktop.Scale * 8
   
   Me.Utility = Settings["/UseUtilityWindows", 1]
+  
+  lvwOption["interface"].Selected = True
+  lvwOption_Select
   
 End
 
@@ -642,16 +652,16 @@ Private Sub RefreshSnippet()
 End
 
 
-Public Sub tabOption_Click()
-
-  If tabOption.Index = 2 Then
-    If gvwSnippet.Rows.Count = 0 Then
-      RefreshSnippet
-      UpdateSnippet
-    Endif
-  Endif
-
-End
+' Public Sub tabOption_Click()
+' 
+'   If tabOption.Index = 2 Then
+'     If gvwSnippet.Rows.Count = 0 Then
+'       RefreshSnippet
+'       UpdateSnippet
+'     Endif
+'   Endif
+' 
+' End
 
 Private Sub GetSnippet(Optional iRow As Integer = -1) As CSampleCode
 
@@ -761,13 +771,30 @@ End
 ' 
 ' End
 
-Public Sub expOption_Show()
+' Public Sub expOption_Show()
+' 
+'   Dim hLast As Expander = Last
+'   Dim hOther As Expander
+'   
+'   For Each hOther In svwOption.Children
+'     If hOther <> hLast Then hOther.Hidden = True
+'   Next
+' 
+' End
 
-  Dim hLast As Expander = Last
-  Dim hOther As Expander
+Public Sub lvwOption_Select()
+
+  Dim hPanel As Panel
   
-  For Each hOther In svwOption.Children
-    If hOther <> hLast Then hOther.Hidden = True
+  For Each hPanel In panOption.Children
+    hPanel.Visible = hPanel.Tag = lvwOption.Key
   Next
 
+  If lvwOption.Key = "snippet" Then
+    If gvwSnippet.Rows.Count = 0 Then
+      RefreshSnippet
+      UpdateSnippet
+    Endif
+  Endif
+  
 End

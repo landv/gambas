@@ -1749,15 +1749,19 @@ void gControl::setTracking(bool v)
 
 bool gControl::grab(bool showIt)
 {
+	GdkWindow *win;
+	
 	if (_grab)
 		return false;
 	
-	if (gdk_pointer_grab(border->window, false, (GdkEventMask)(GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK), NULL, NULL, gApplication::lastEventTime()) != GDK_GRAB_SUCCESS)
+	win = border->window;
+	
+	if (gdk_pointer_grab(win, FALSE, (GdkEventMask)(GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK), NULL, gdk_window_get_cursor(win), gApplication::lastEventTime()) != GDK_GRAB_SUCCESS)
 	{
 		fprintf(stderr, "gb.gtk: warning: cannot grab pointer\n");
 		return true;
 	}
-	if (gdk_keyboard_grab(border->window, false, gApplication::lastEventTime()) != GDK_GRAB_SUCCESS)
+	if (gdk_keyboard_grab(win, FALSE, gApplication::lastEventTime()) != GDK_GRAB_SUCCESS)
 	{
 		gdk_pointer_ungrab(GDK_CURRENT_TIME);
 		fprintf(stderr, "gb.gtk: warning: cannot grab keyboard\n");

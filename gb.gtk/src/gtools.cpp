@@ -330,21 +330,59 @@ void Frame_setBorder(GtkFrame *fr,int vl)
 
 gPicture *gt_grab_window(GdkWindow *win, int x, int y, int w, int h)
 {
+	int ow, oh;
+	int ww, hh;
+	int dx, dy;
 	GdkPixbuf *buf;
-	GdkColormap* cmap;
-	gPicture *ret;
+	gPicture *pic;
+	
+	ow = w;
+	oh = h;
+	
+	dx = dy = 0;
+	
+	gdk_window_get_geometry(win, 0, 0, &ww, &hh, 0);
 	
 	if (w <= 0 || h <= 0)
 	{
-		x = y = 0;
-		gdk_window_get_geometry(win, 0, 0, &w, &h, 0);
+		w = ww;
+		h = hh;
 	}
 	
-	cmap = gdk_colormap_get_system();
-	buf = gdk_pixbuf_get_from_drawable(NULL, win, cmap, x, y, 0, 0, w, h);
-	ret = new gPicture(buf);
-	g_object_unref(G_OBJECT(cmap));
-	return ret;
+	if (x < 0)
+	{
+		w += x;
+		dx = -x;
+		x = 0;
+	}
+	
+	if (y < 0)
+	{
+		h += y;
+		dy = -y;
+		y = 0;
+	}
+	
+	if ((x + w) > ww)
+		w = ww - x;
+	
+	if ((y + h) > hh)
+		h = hh - y;
+	
+	if (w > 0 && h > 0)
+		buf = gdk_pixbuf_get_from_drawable(NULL, win, NULL, x, y, 0, 0, w, h);
+	
+	if (w == ow && h == oh)
+		return new gPicture(buf);
+		
+	pic = new gPicture(gPicture::MEMORY, ow, oh, false);
+	pic->fill(0);
+	
+	if (w <= 0 || h <= 0)
+		return pic;
+	
+	gdk_pixbuf_copy_area(buf, 0, 0, w, h, pic->getPixbuf(), dx, dy);
+	return pic;
 }
 
 /*************************************************************

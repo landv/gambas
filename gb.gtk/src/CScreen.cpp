@@ -114,7 +114,7 @@ BEGIN_PROPERTY(Desktop_Resolution)
 END_PROPERTY
 
 
-BEGIN_METHOD(Desktop_Grab, GB_INTEGER x; GB_INTEGER y; GB_INTEGER width; GB_INTEGER height)
+BEGIN_METHOD(Desktop_Screenshot, GB_INTEGER x; GB_INTEGER y; GB_INTEGER width; GB_INTEGER height)
 
 	CPICTURE *pic;
 	gPicture *buf = gDesktop::screenshot(VARGOPT(x,0), VARGOPT(y, 0), VARGOPT(width, 0), VARGOPT(height, 0));
@@ -386,7 +386,7 @@ GB_DESC DesktopDesc[] =
 	GB_STATIC_PROPERTY_READ("Resolution", "i", Desktop_Resolution),
 	GB_STATIC_PROPERTY_READ("Scale","i",Desktop_Scale),
 	
-	GB_STATIC_METHOD("Screenshot", "Picture", Desktop_Grab, "[(X)i(Y)i(Width)i(Height)i]"),
+	GB_STATIC_METHOD("Screenshot", "Picture", Desktop_Screenshot, "[(X)i(Y)i(Width)i(Height)i]"),
 
 	GB_END_DECLARE
 };

@@ -155,7 +155,7 @@ Public Config As Settings
 
 Public RestoringFiles As Boolean
 
-Private $aRefreshAfter As New String[]
+Private $aInheritance As New String[]
 Private $iNoRefresh As Integer
 Private $bDoRefresh As Boolean
 Private $cProjectFilter As Collection
@@ -969,6 +969,7 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
   Dim bShow As Boolean
   Dim sExt As String
   Dim sParent As String
+  Dim sParentClass As String
   Dim hImage As Image
   Dim hPict As Picture
   Dim bChecked As Boolean
@@ -1043,11 +1044,13 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
                   sParent = ""
                 Else If Not ProjectTree.Exist(sParent) Then 
                   If Not bIgnoreInheritance Then
-                    $aRefreshAfter.Add(sPath)
+                    $aInheritance.Add(sPath)
                     bIgnore = True
                   Else 
                     sParent = ""
                   Endif
+                'Else
+                '  $aInheritance.Add(sPath & "\n" & sParentClass)
                 Endif
               Endif
             Endif
@@ -1160,29 +1163,37 @@ End
 Private Sub DoRefreshAfter()
   
   Dim sKey As String
+  Dim sParent As String
   Dim iInd As Integer
   Dim iCount As Integer
+  Dim aElt As String[]
   
-  If $aRefreshAfter.Count = 0 Then Return
+  If $aInheritance.Count = 0 Then Return
   
   Do
-    iCount = $aRefreshAfter.Count
+    iCount = $aInheritance.Count
     For iInd = 0 To iCount - 1
-      sKey = $aRefreshAfter[0]
-      $aRefreshAfter.Remove(0)
+      'aElt = Split($aInheritance[0], "\n")
+      'sKey = aElt[0]
+      'sParent = aElt[1]
+      sKey = $aInheritance[0]
+      $aInheritance.Remove(0)
       AddFile(File.Dir(sKey), File.Name(sKey), True)
+      ' If ProjectTree.Exist("@"
+      ' 
+      ' ProjectTree.Add("@" & sKey
     Next
-    If $aRefreshAfter.Count >= iCount Then Break
+    If $aInheritance.Count >= iCount Then Break
   Loop
   
-  If $aRefreshAfter.Count Then 
-    For iInd = 0 To $aRefreshAfter.Max
-      sKey = $aRefreshAfter[iInd]
+  If $aInheritance.Count Then 
+    For iInd = 0 To $aInheritance.Max
+      sKey = $aInheritance[iInd]
       AddFile(File.Dir(sKey), File.Name(sKey), True, True)
-      $aRefreshAfter[iInd] = File.BaseName(sKey)
+      $aInheritance[iInd] = File.BaseName(sKey)
     Next
-    If Not ProjectFilter Then FMain.ShowError("<b>" & ("The following classes have circular inheritance:") & "</b>\n\n" & $aRefreshAfter.Join(", "))
-    $aRefreshAfter.Clear
+    If Not ProjectFilter Then FMain.ShowError("<b>" & ("The following classes have circular inheritance:") & "</b>\n\n" & $aInheritance.Join(", "))
+    $aInheritance.Clear
   Endif
   
 End
@@ -1200,7 +1211,7 @@ Private Procedure AddDir(Optional sDir As String)
     If SourceDir <> Project.Dir Then cDir.Add(SourceDir)
   Endif
   
-  $aRefreshAfter.Clear
+  $aInheritance.Clear
     
   Repeat
     
@@ -3641,12 +3652,12 @@ Private Sub RefreshInheritance()
   Dim sClass As String
   Dim sKey As String
   
-  $aRefreshAfter.Clear
+  $aInheritance.Clear
   
   For Each sKey In $cSourceDir
     If Not File.Ext(sKey) = "class" Then Continue
     Try ProjectTree[sKey].Delete
-    $aRefreshAfter.Add(sKey)
+    $aInheritance.Add(sKey)
   Next
   
   DoRefreshAfter

@@ -7,6 +7,7 @@ Inherits UserControl
 Public Const _Properties As String = "*,Picture,Mode{Select.*}=Single,Orientation{Arrange.Horizontal;Vertical}=Vertical,Sorted,Editable,GridSize{Range:0;128},IconLines{Range:1;8}=2,Border=True,ScrollBar{Scroll.*}=Both"
 Public Const _Group As String = "View"
 Public Const _DefaultEvent As String = "Click"
+Public Const _Similar As String = "ListView"
 
 Property Mode As Integer
 Property Orientation As Integer
@@ -503,9 +504,13 @@ Public Sub ScrollArea_Arrange()
     $iGridWidth = Max($iGridWidth, $iIconSize + 8 + Me.Font.Height * 8)
     
     $nColumn = Max(1, (H - $iPad * 2) \ $iGridHeight)
-    $iGridHeight = Max(1, (H - $iPad * 2) \ $nColumn)
-    
     nRow = ($aItems.Count + $nColumn - 1) \ $nColumn
+    
+    If nRow = 1 Then 
+      $iGridWidth = Max($iGridWidth, W - $iPad * 2)
+    Else
+      $iGridHeight = Max(1, (H - $iPad * 2) \ $nColumn)
+    Endif
     
     $hView.ResizeContents(nRow * $iGridWidth + $iPad * 2, Max(H, $nColumn * $iGridHeight + $iPad * 2))
     
@@ -605,7 +610,7 @@ Private Sub SetCurrentItem(iCurrent As Integer, Optional bIgnoreOutside As Boole
   
   If iCurrent < 0 Or If iCurrent > $aItems.Max Then
     iCurrent = -1
-    If bIgnoreOutside Then Return
+    If bIgnoreOutside Or If $iMode = Select.Single Then Return
   Endif
   
   If Not bSelect Then 
@@ -800,7 +805,7 @@ Public Sub ScrollArea_MouseDown()
     
   Else
     
-    If Not bCtrl Then UnselectAll
+    If Not bCtrl And If $iMode <> Select.Single Then UnselectAll
     
     If $iMode = Select.Multiple Then
       $bSelRect = True

@@ -360,7 +360,7 @@ static MyListView *listview_init(void *_object, void *parent)
 
   wid->setSorting(-1);
   wid->setSelectionMode(Q3ListView::Single);
-	wid->setItemMargin(2);
+	//wid->setItemMargin(2);
 
   CWIDGET_new(wid, (void *)_object);
 
