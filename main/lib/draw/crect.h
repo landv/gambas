@@ -26,7 +26,7 @@
 #include "gambas.h"
 #include "main.h"
 
-#ifndef __CRECT_CPP
+#ifndef __CRECT_C
 extern GB_DESC RectDesc[];
 #else
 

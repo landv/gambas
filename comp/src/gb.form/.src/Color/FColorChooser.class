@@ -570,8 +570,8 @@ End
 
 Public Sub txtHexa_Click()
 
-  panGrab.Mouse = Mouse.Pointing ' Mouse.Custom
-  'panGrab.Cursor = New Cursor(txtHexa.Picture, 0, txtHexa.Picture.H - 1)
+  panGrab.Mouse = Mouse.Custom
+  panGrab.Cursor = New Cursor(txtHexa.Picture, 0, txtHexa.Picture.H - 1)
   panGrab.Show
   panGrab_MouseMove
   panGrab.Grab

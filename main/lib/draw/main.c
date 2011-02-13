@@ -29,6 +29,7 @@
 #include <ctype.h>
 
 #include "gb_common.h"
+#include "crect.h"
 #include "CDraw.h"
 #include "cpaint.h"
 #include "main.h"
@@ -39,6 +40,7 @@ IMAGE_INTERFACE IMAGE EXPORT;
 
 GB_DESC *GB_CLASSES [] EXPORT =
 {
+	RectDesc,
 	CDrawClipDesc,
 	CDrawStyleDesc,
 	CDrawDesc,

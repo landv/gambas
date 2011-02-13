@@ -55,7 +55,6 @@
 #include "gb.qt.h"
 #include "gb.form.font.h"
 
-#include "crect.h"
 #include "CFont.h"
 #include "CScreen.h"
 #include "CWidget.h"
@@ -966,7 +965,6 @@ extern "C" {
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {
-	RectDesc,
 	CBorderDesc, CColorDesc,
 	CAlignDesc, CArrangeDesc, CScrollDesc, CKeyDesc, CLineDesc, CFillDesc, CSelectDesc,
 	CMessageDesc,

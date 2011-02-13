@@ -15,7 +15,6 @@ gb_qt4_la_CXXFLAGS = -DGB_QT_COMPONENT $(AM_CXXFLAGS)
 
 gb_qt4_la_SOURCES = \
  x11.h x11.c \
- crect.h crect.cpp \
  gb.qt.h main.h main_moc.cpp main.cpp \
  CFont.h CFont.cpp \
  CScreen.h CScreen.cpp \

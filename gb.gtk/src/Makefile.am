@@ -99,5 +99,4 @@ gb_gtk_la_SOURCES = \
 	gdrag.h gdrag.cpp \
 	gtools.h kentities.h \
 	gprinter.h gprinter.cpp \
-	crect.h crect.cpp \
 	x11.h x11.c

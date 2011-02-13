@@ -1028,7 +1028,7 @@ void gDraw::tiledPicture(gPicture *pic, int x, int y, int w, int h)
 		new_clip = dst;
 	}	
 
-	setClip(new_clip.x, new_clip.y, new_clip.width, new_clip.height);
+	setClip(&new_clip);
 	
 	pw = pic->width();
 	ph = pic->height();
@@ -1047,11 +1047,11 @@ void gDraw::tiledPicture(gPicture *pic, int x, int y, int w, int h)
 	
 	x -= fx;
 	y -= fy;
+	w += fx;
+	h += fy;
 	
 	px = x;
 	py = y;
-	
-	fprintf(stderr, "tiledPicture: %d %d\n", x, y);
 	
 	for(;;)
 	{
@@ -1067,7 +1067,7 @@ void gDraw::tiledPicture(gPicture *pic, int x, int y, int w, int h)
 	}
 	
 	if (save_clip_enabled)
-		setClip(save_clip.x, save_clip.y, save_clip.width, save_clip.height);
+		setClip(&save_clip);
 	else
 		setClipEnabled(false);
 }

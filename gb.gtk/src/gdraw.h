@@ -90,6 +90,7 @@ public:
 	void polyline (int *vl,int nel);
 	void polygon (int *vl,int nel);
 	void setClip(int x,int y,int w,int h);
+	void setClip(GdkRectangle *rect) { setClip(rect->x, rect->y, rect->width, rect->height); }
 	void text(char *txt, int len, int x, int y, int w, int h, int align);
 	void richText(char *txt, int len, int x, int y, int w, int h, int align);
 

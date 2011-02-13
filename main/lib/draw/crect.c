@@ -1,6 +1,6 @@
 /***************************************************************************
 
-	crect.cpp
+	crect.c
 
 	(c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
 
@@ -20,7 +20,7 @@
 
 ***************************************************************************/
 
-#define __CRECT_CPP
+#define __CRECT_C
 
 #include "gb_common.h"
 #include "crect.h"
@@ -272,7 +272,7 @@ BEGIN_METHOD(Rect_Contains, GB_INTEGER x; GB_INTEGER y)
 	int x = VARG(x);
 	int y = VARG(y);
 	
-	GB.ReturnBoolean(x >= THIS->x && x < (THIS->x + THIS->w) && y >= THIS->y && y < (THIS->y + THIS->h));
+	GB.ReturnBoolean((x >= THIS->x) && (x < (THIS->x + THIS->w)) && (y >= THIS->y) && (y < (THIS->y + THIS->h)));
 
 END_METHOD
 
@@ -281,7 +281,7 @@ BEGIN_METHOD(Rect_Adjust, GB_INTEGER left; GB_INTEGER top; GB_INTEGER right; GB_
 	int left = VARG(left);
 	int top = VARGOPT(top, left);
 	int right = VARGOPT(right, left);
-	int bottom = VARGOPT(right, top);
+	int bottom = VARGOPT(bottom, top);
 
 	THIS->x += left;
 	THIS->w -= (left + right);

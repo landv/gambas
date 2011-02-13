@@ -342,7 +342,7 @@ Private Sub GetPos(iRow As Integer, iColumn As Integer) As Integer
 End
 
 
-Public Sub GetIconGeometry(iPos As Integer, hRect As Rect)
+Private Sub GetIconGeometry(iPos As Integer, hRect As Rect)
   
   Dim iCol, iRow As Integer
   
@@ -377,6 +377,7 @@ Public Sub ScrollArea_Draw()
   Dim iPos, iLast, iCol, nCol As Integer
   Dim hRect As New Rect
   Dim hClip As Rect
+  Dim bHover As Boolean
   
   If $aItems.Count = 0 Then Return
   
@@ -424,7 +425,9 @@ Public Sub ScrollArea_Draw()
       hClip = New Rect(X, Y, W, H)
       hClip = hClip.Intersection(hRect)
       If hClip Then
-        hItem._Draw(hRect, hClip, Me, $bHorizontal, False, iPos = $iHover Or iPos = $iStart) ' _HaveFocus, $iMouseOver = k And Me.Tracking)
+        bHover = iPos = $iHover
+        If $iMode = Select.Multiple And If iPos = $iStart Then bHover = True
+        hItem._Draw(hRect, hClip, Me, $bHorizontal, False, bHover) ' _HaveFocus, $iMouseOver = k And Me.Tracking)
       Endif
       
     Endif
