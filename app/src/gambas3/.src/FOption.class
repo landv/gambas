@@ -55,13 +55,6 @@ Public Sub _new()
   Dim hColor As DrawingArea
   Dim hButton As Button
 
-  lvwOption.Add("interface", "  " & ("Interface"), Picture["icon:/32/menu"])
-  lvwOption.Add("editor", ("Editor"), Picture["img/control/editor.png"])
-  lvwOption.Add("application", ("Applications"), Picture["icon:/32/exec"])
-  lvwOption.Add("help", ("Help"), Picture["icon:/32/help"])
-  lvwOption.Add("style", ("Style"), Picture["icon:/32/color"])
-  lvwOption.Add("snippet", ("Code snippets"), Picture["icon:/32/wizard"])
-
   cmbTheme.List = $aThemeName.Copy().Sort(gb.Language)
   cmbTheme.Add(("Select a theme"), 0)
   cmbIconTheme.List = [("Desktop"), "Gnome", "KDE"]
@@ -124,9 +117,6 @@ Public Sub _new()
   gvwSnippet.Columns[0].Width = Desktop.Scale * 8
   
   Me.Utility = Settings["/UseUtilityWindows", 1]
-  
-  lvwOption["interface"].Selected = True
-  lvwOption_Select
   
 End
 
@@ -782,15 +772,9 @@ End
 ' 
 ' End
 
-Public Sub lvwOption_Select()
+Public Sub ipnOption_Click()
 
-  Dim hPanel As Panel
-  
-  For Each hPanel In panOption.Children
-    hPanel.Visible = hPanel.Tag = lvwOption.Key
-  Next
-
-  If lvwOption.Key = "snippet" Then
+  If ipnOption.Text = ("Code snippets") Then
     If gvwSnippet.Rows.Count = 0 Then
       RefreshSnippet
       UpdateSnippet

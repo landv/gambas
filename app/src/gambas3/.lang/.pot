@@ -479,7 +479,7 @@ msgstr ""
 #: FImportTable.class:39 FList.class:155 FMain.class:194
 #: FMakeInstall.class:326 FMenu.class:1243 FNewConnection.class:317
 #: FNewTable.class:165 FNewTranslation.class:70 FOpenProject.class:502
-#: FOption.class:610 FPasteSpecial.class:279 FPropertyComponent.class:473
+#: FOption.class:600 FPasteSpecial.class:279 FPropertyComponent.class:473
 #: FPropertyProject.class:801 FReportBorderChooser.class:345
 #: FReportBrushChooser.class:475 FReportCoordChooser.class:126 FSave.class:118
 #: FSaveProjectAs.class:130 FSelectExtraFile.class:78 FSelectIcon.class:272
@@ -540,8 +540,8 @@ msgstr ""
 
 #: FCommit.class:252 FConflict.class:343 FConnectionEditor.class:1836
 #: FEditor.class:3424 FForm.class:3802 FIconEditor.class:2160
-#: FImageEditor.class:105 FOption.class:1622 FOutput.class:361
-#: FTextEditor.class:781
+#: FImageEditor.class:105 FOption.class:1486 FOutput.class:361
+#: FTextEditor.class:781 Form1.class:782
 msgid "Undo"
 msgstr ""
 
@@ -793,7 +793,7 @@ msgid "Do you really want to delete table '&1'?"
 msgstr ""
 
 #: FConnectionEditor.class:1330 FForm.class:3584 FMain.class:194
-#: FNewConnection.class:317 FOption.class:757 FTranslate.class:638
+#: FNewConnection.class:317 FOption.class:747 FTranslate.class:638
 msgid "Delete"
 msgstr ""
 
@@ -1152,7 +1152,7 @@ msgid "Function"
 msgstr ""
 
 #: FDebugInfo.class:51 FIconEditor.class:2273 FImportTable.class:76
-#: FOption.class:1205
+#: FOption.class:1167 Form1.class:365
 msgid "Line"
 msgstr ""
 
@@ -1173,7 +1173,7 @@ msgid "Do you want to clear the expression list ?"
 msgstr ""
 
 #: FDebugInfo.class:520 FIconEditor.class:1413 FList.class:155
-#: FOption.class:610 FOutput.class:399
+#: FOption.class:600 FOutput.class:399
 msgid "Clear"
 msgstr ""
 
@@ -1189,7 +1189,8 @@ msgstr ""
 msgid "Debug"
 msgstr ""
 
-#: FDebugInfo.class:1172 FMain.class:2905 FOption.class:1579 FSearch.class:89
+#: FDebugInfo.class:1172 FMain.class:2905 FOption.class:1443 FSearch.class:89
+#: Form1.class:739
 msgid "Console"
 msgstr ""
 
@@ -1218,7 +1219,8 @@ msgid "Remove current expression"
 msgstr ""
 
 #: FDebugInfo.class:1239 FMain.class:2672 FMakeInstall.class:1661
-#: FOption.class:1504 FPropertyComponent.class:442 FPropertyProject.class:1586
+#: FOption.class:1542 FPropertyComponent.class:442 FPropertyProject.class:1586
+#: Form1.class:664
 msgid "&Remove"
 msgstr ""
 
@@ -1385,7 +1387,7 @@ msgstr ""
 msgid "Paste as comments"
 msgstr ""
 
-#: FEditor.class:3585 FOption.class:59
+#: FEditor.class:3585 FOption.class:1128 Form1.class:721
 msgid "Editor"
 msgstr ""
 
@@ -2398,7 +2400,7 @@ msgstr ""
 msgid "Refresh project"
 msgstr ""
 
-#: FMain.class:2822 FOption.class:936
+#: FMain.class:2822 FOption.class:911
 msgid "Preferences"
 msgstr ""
 
@@ -3003,248 +3005,250 @@ msgstr ""
 msgid "Quick"
 msgstr ""
 
-#: FOption.class:58
-msgid "Interface"
-msgstr ""
-
-#: FOption.class:60
-msgid "Applications"
-msgstr ""
-
-#: FOption.class:61 MTheme.module:6
-msgid "Help"
-msgstr ""
-
-#: FOption.class:62
-msgid "Style"
-msgstr ""
-
-#: FOption.class:63
-msgid "Code snippets"
-msgstr ""
-
-#: FOption.class:66
+#: FOption.class:59
 msgid "Select a theme"
 msgstr ""
 
-#: FOption.class:67
+#: FOption.class:60
 msgid "Desktop"
 msgstr ""
 
-#: FOption.class:68 FTranslate.class:135
+#: FOption.class:61 FTranslate.class:135
 msgid "(Default)"
 msgstr ""
 
-#: FOption.class:114
+#: FOption.class:107
 msgid "Define..."
 msgstr ""
 
-#: FOption.class:153
+#: FOption.class:143
 msgid "Gambas highlight theme files"
 msgstr ""
 
-#: FOption.class:154
+#: FOption.class:144
 msgid "Export a theme file"
 msgstr ""
 
-#: FOption.class:304
+#: FOption.class:294
 msgid "Select a theme file"
 msgstr ""
 
-#: FOption.class:327
+#: FOption.class:317
 msgid "You need to restart the application to see your changes."
 msgstr ""
 
-#: FOption.class:610
+#: FOption.class:600
 msgid "Do you really want to clear the documentation cache?"
 msgstr ""
 
-#: FOption.class:757
+#: FOption.class:747
 msgid "Do you really want to delete this snippet?"
 msgstr ""
 
-#: FOption.class:948
+#: FOption.class:777
+msgid "Code snippets"
+msgstr ""
+
+#: FOption.class:923
 msgid "Foreground color..."
 msgstr ""
 
-#: FOption.class:952
+#: FOption.class:927
 msgid "Background color..."
 msgstr ""
 
-#: FOption.class:959
+#: FOption.class:934
 msgid "Bold"
 msgstr ""
 
-#: FOption.class:963
+#: FOption.class:938
 msgid "Italic"
 msgstr ""
 
-#: FOption.class:967
+#: FOption.class:942
 msgid "Underline"
 msgstr ""
 
-#: FOption.class:996
+#: FOption.class:952
+msgid "Interface"
+msgstr ""
+
+#: FOption.class:962 Form1.class:156
 msgid "Font size"
 msgstr ""
 
-#: FOption.class:1002
+#: FOption.class:968 Form1.class:162
 msgid "Normal"
 msgstr ""
 
-#: FOption.class:1002
+#: FOption.class:968 Form1.class:162
 msgid "Small"
 msgstr ""
 
-#: FOption.class:1002
+#: FOption.class:968 Form1.class:162
 msgid "Tiny"
 msgstr ""
 
-#: FOption.class:1013
+#: FOption.class:979 Form1.class:173
 msgid "Tabstrip font size"
 msgstr ""
 
-#: FOption.class:1030
+#: FOption.class:996 Form1.class:190
 msgid "Toolbox size"
 msgstr ""
 
-#: FOption.class:1047
+#: FOption.class:1013 Form1.class:207
 msgid "Sort properties"
 msgstr ""
 
-#: FOption.class:1053 FPropertyComponent.class:342 FPropertyProject.class:1425
+#: FOption.class:1019 FPropertyComponent.class:342 FPropertyProject.class:1425
+#: Form1.class:213
 msgid "No"
 msgstr ""
 
-#: FOption.class:1053 FPropertyComponent.class:342 FPropertyProject.class:1425
+#: FOption.class:1019 FPropertyComponent.class:342 FPropertyProject.class:1425
+#: Form1.class:213
 msgid "Yes"
 msgstr ""
 
-#: FOption.class:1068
+#: FOption.class:1034 Form1.class:228
 msgid "Minimize at runtime"
 msgstr ""
 
-#: FOption.class:1089
+#: FOption.class:1055 Form1.class:249
 msgid "Icon theme"
 msgstr ""
 
-#: FOption.class:1106
+#: FOption.class:1072 Form1.class:266
 msgid "Quiet external commands"
 msgstr ""
 
-#: FOption.class:1127
+#: FOption.class:1093 Form1.class:287
 msgid "Use utility windows"
 msgstr ""
 
-#: FOption.class:1148
+#: FOption.class:1114 Form1.class:308
 msgid "Always display optional messages"
 msgstr ""
 
-#: FOption.class:1176
+#: FOption.class:1138 Form1.class:336
 msgid "Default tab size"
 msgstr ""
 
-#: FOption.class:1188 FPropertyProject.class:1400
+#: FOption.class:1150 FPropertyProject.class:1400 Form1.class:348
 msgid "space(s)"
 msgstr ""
 
-#: FOption.class:1199
+#: FOption.class:1161 Form1.class:359
 msgid "Procedure separation"
 msgstr ""
 
-#: FOption.class:1205 FProperty.class:747
+#: FOption.class:1167 FProperty.class:747 Form1.class:365
 msgid "None"
 msgstr ""
 
-#: FOption.class:1205
+#: FOption.class:1167 Form1.class:365
 msgid "Blend"
 msgstr ""
 
-#: FOption.class:1216
+#: FOption.class:1178 Form1.class:376
 msgid "Highlight current line"
 msgstr ""
 
-#: FOption.class:1237
+#: FOption.class:1199 Form1.class:397
 msgid "Highlight modified lines"
 msgstr ""
 
-#: FOption.class:1258
+#: FOption.class:1220 Form1.class:418
 msgid "Show line numbers"
 msgstr ""
 
-#: FOption.class:1279
+#: FOption.class:1241 Form1.class:439
 msgid "Fold procedures by default"
 msgstr ""
 
-#: FOption.class:1300
+#: FOption.class:1262 Form1.class:460
 msgid "Keywords in upper case"
 msgstr ""
 
-#: FOption.class:1328
+#: FOption.class:1276
+msgid "Applications"
+msgstr ""
+
+#: FOption.class:1286 Form1.class:488
 msgid "Browser"
 msgstr ""
 
-#: FOption.class:1345
+#: FOption.class:1303 Form1.class:505
 msgid "Terminal"
 msgstr ""
 
-#: FOption.class:1362
+#: FOption.class:1320 Form1.class:522
 msgid "Image editor"
 msgstr ""
 
-#: FOption.class:1386
+#: FOption.class:1330 MTheme.module:6
+msgid "Help"
+msgstr ""
+
+#: FOption.class:1340 Form1.class:546
 msgid "Display property help"
 msgstr ""
 
-#: FOption.class:1407
+#: FOption.class:1361 Form1.class:567
 msgid "Show tooltips"
 msgstr ""
 
-#: FOption.class:1428
+#: FOption.class:1382 Form1.class:588
 msgid "Show documentation in popups"
 msgstr ""
 
-#: FOption.class:1449
+#: FOption.class:1403 Form1.class:609
 msgid "Clear documentation cache"
 msgstr ""
 
-#: FOption.class:1468
-msgid "Activate code snippets"
+#: FOption.class:1408
+msgid "Style"
 msgstr ""
 
-#: FOption.class:1490 FTranslate.class:1771
-msgid "&New..."
-msgstr ""
-
-#: FOption.class:1497
-msgid "&Edit..."
-msgstr ""
-
-#: FOption.class:1512
-msgid "Re&set"
-msgstr ""
-
-#: FOption.class:1520
-msgid "E&xport..."
-msgstr ""
-
-#: FOption.class:1528
-msgid "&Import..."
-msgstr ""
-
-#: FOption.class:1550
+#: FOption.class:1414 Form1.class:710
 msgid "Fonts"
 msgstr ""
 
-#: FOption.class:1592
+#: FOption.class:1456 Form1.class:752
 msgid "Theme"
 msgstr ""
 
-#: FOption.class:1610
+#: FOption.class:1474 Form1.class:770
 msgid "Import theme"
 msgstr ""
 
-#: FOption.class:1616
+#: FOption.class:1480 Form1.class:776
 msgid "Export theme"
+msgstr ""
+
+#: FOption.class:1506 Form1.class:628
+msgid "Activate code snippets"
+msgstr ""
+
+#: FOption.class:1528 FTranslate.class:1771 Form1.class:650
+msgid "&New..."
+msgstr ""
+
+#: FOption.class:1535 Form1.class:657
+msgid "&Edit..."
+msgstr ""
+
+#: FOption.class:1550 Form1.class:672
+msgid "Re&set"
+msgstr ""
+
+#: FOption.class:1558 Form1.class:680
+msgid "E&xport..."
+msgstr ""
+
+#: FOption.class:1566 Form1.class:688
+msgid "&Import..."
 msgstr ""
 
 #: FOutput.class:32

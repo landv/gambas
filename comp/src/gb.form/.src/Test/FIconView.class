@@ -4,16 +4,17 @@
 Public Sub Form_Open()
 
   Dim sPath As String
+  Dim sDir As String = "~/gambas/3.0/trunk"
   
-  For Each sPath In Dir("~").Sort(gb.Language + gb.IgnoreCase)
-    If IsDir("~" &/ sPath) Then
+  For Each sPath In Dir(sDir).Sort(gb.Language + gb.IgnoreCase)
+    If IsDir(sDir &/ sPath) Then
       IconView1.Add(sPath, sPath, Picture["icon:/48/directory"])
     Else
       IconView1.Add(sPath, sPath, Picture["icon:/48/file"])
     Endif
   Next
   
-  IconView1.Picture = Picture["img/colormap.png"]
+  'IconView1.Picture = Picture["img/colormap.png"]
   
   IconView1.SetFocus
   

@@ -200,6 +200,16 @@ Public Sub _FindItem(hItem As _IconViewItem) As Integer
   
 End
 
+Public Sub _UpdateIconSize({Picture} As Picture)
+  
+  If {Picture} And If Picture.Height > $iIconSize Then
+    $iIconSize = Picture.Height
+    ScrollArea_Arrange
+  Endif
+  
+End
+
+
 
 Public Function Add(Key As String, Text As String, Optional {Picture} As Picture, Optional After As String) As _IconViewItem
   
@@ -234,11 +244,7 @@ Public Function Add(Key As String, Text As String, Optional {Picture} As Picture
   hItem.Text = Text
   hItem.Picture = {Picture}
   
-  If Picture.Height > $iIconSize Then
-    $iIconSize = Picture.Height
-    ScrollArea_Arrange
-  Endif
-  
+  _UpdateIconSize(Picture)
   _SortIsDirty
   
   Return hItem

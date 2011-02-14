@@ -1,0 +1,244 @@
+' Gambas class file
+
+Export
+Inherits UserContainer
+
+Public Const _Properties As String = "*,Count{Range:1;256}=1,Index,Text,TextFont,Picture,Border"
+Public Const _Similar As String = "TabStrip"
+Public Const _IsMultiContainer As Boolean = True
+
+Event Click
+
+Property Count As Integer
+Property Index As Integer
+Property Text As String
+Property Picture As Picture
+Property Font As Font
+Property TextFont As Font
+Property Border As Boolean
+
+Private $hIconView As IconView
+Private $aCont As New _IconPanelContainer[]
+
+Private $iCurrent As Integer = -1
+Private $hPanel As Panel
+
+Public Sub _new()
+
+  Me.Arrangement = Arrange.Horizontal
+  Me.Spacing = True
+
+  $hIconView = New IconView(Me) As "IconView"
+  $hIconView.Orientation = Arrange.Horizontal
+  $hIconView.IconLines = 2
+  $hIconView.Width = Desktop.Scale * 20
+  $hIconView.Mouse = Mouse.Pointing
+  $hIconView.ScrollBar = Scroll.None
+  $hPanel = New Panel(Me)
+  $hPanel.Expand = True
+  $hPanel.Arrangement = Arrange.Fill
+
+  'Me._Container = $hPanel
+  Me.Count = 1
+  'Me.Index = 0
+  'Me.Border = True
+  Me.Arrangement = Arrange.None
+  Me.Spacing = False
+
+End
+
+Private Function Count_Read() As Integer
+
+  Return $aCont.Count
+
+End
+
+Public Sub _UpdateIconViewWidth()
+  
+  ' Dim hFont As Font = $hIconView.Font
+  ' Dim W, H As Integer
+  ' 
+  ' W = hFont.RichTextWidth(sText)
+  ' 
+  ' Do
+  '   If (W + $hIconView.IconSize) <= $hIconView.W Then Return
+  '   H = hFont.RichTextHeight(sText, W - 8)
+  '   If H > ($hIconView.IconLines * hFont.Height) Then Break
+  '   W -= 8
+  ' Loop
+  
+  $hIconView.W = ((($hIconView.IconSize + Desktop.Scale - 1) \ Desktop.Scale) + 20) * Desktop.Scale
+  
+End
+
+
+Private Sub Count_Write(iCount As Integer)
+
+  Dim iInd As Integer
+  Dim hToolbar As _IconPanelContainer
+  Dim hCont As Container
+  Dim sText As String
+
+  If iCount < 1 Then Error.Raise("Bad argument")
+  If iCount = $aCont.Count Then Return
+
+  If iCount < $aCont.Count Then
+
+    For iInd = $aCont.Max To iCount Step -1
+      hToolbar = $aCont[iInd]
+      If hToolbar.Children.Count Then Error.Raise("IconPanel container is not empty")
+    Next
+
+    For iInd = $aCont.Max To iCount Step -1
+      $aCont[iInd].Delete
+      $hIconView.Remove(iInd)
+      If iInd <= $iCurrent Then Dec $iCurrent
+    Next
+
+    $aCont.Remove(iCount, -1)
+    
+    UpdateContainer
+
+  Else
+
+    For iInd = $aCont.Count To iCount - 1
+      hToolbar = New _IconPanelContainer($hPanel) As "_IconPanelContainer"
+      'hToolbar.Text = "Toolbar " & CInt(iInd)
+      $aCont.Add(hToolbar)
+      $hIconView.Add(iInd, "Item " & CStr(iInd))
+      _UpdateIconViewWidth
+    Next
+    'ME.Container = hCont
+
+    'ME.Index = iCount - 1
+    Index_Write(iCount - 1)
+
+  Endif
+
+End
+
+Private Function Index_Read() As Integer
+
+  Return $iCurrent
+
+End
+
+Private Sub Index_Write(iIndex As Integer)
+
+  If iIndex < 0 Or iIndex >= $aCont.Count Then Error.Raise("Bad index")
+
+  If iIndex = $iCurrent Then Return
+
+  Me._Container = $aCont[iIndex]
+  $iCurrent = iIndex
+  $hIconView[$iCurrent].Selected = True
+
+  UpdateContainer
+  Raise Click
+
+End
+
+Private Sub UpdateContainer()
+
+  Dim hToolBar As _IconPanelContainer
+  Dim iInd As Integer
+  Dim bCurrent As Boolean
+
+  For iInd = 0 To $aCont.Max
+
+    $aCont[iInd].Visible = iInd = $iCurrent
+
+  Next
+
+End
+
+Private Function Text_Read() As String
+
+  Return $aCont[$iCurrent].Text
+
+End
+
+Private Sub Text_Write(sText As String)
+
+  $aCont[$iCurrent].Text = sText
+
+End
+
+Private Function Picture_Read() As Picture
+
+  Return $aCont[$iCurrent].Picture
+
+End
+
+Private Sub Picture_Write(hPict As Picture)
+
+  $aCont[$iCurrent].Picture = hPict
+
+End
+
+Public Function _get(Index As Integer) As _IconPanelContainer
+
+  If Index < 0 Or Index >= $aCont.Count Then Error.Raise("Bad index")
+  Return $aCont[Index]
+
+End
+
+Private Function Font_Read() As Font
+
+  Return Super.Font
+
+End
+
+Private Sub Font_Write(hFont As Font)
+
+  Dim hToolbar As _IconPanelContainer
+
+  Super.Font = hFont
+
+  For Each hToolbar In $aCont
+    hToolBar.Text = hToolBar.Text
+  Next
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $hPanel.Border <> Border.None
+
+End
+
+Private Sub Border_Write(bBorder As Boolean)
+
+  $hPanel.Border = If(bBorder, Border.Sunken, Border.None)
+
+End
+
+Private Function TextFont_Read() As Font
+
+  Return $hIconView.Font
+
+End
+
+Private Sub TextFont_Write(Value As Font)
+
+  $hIconView.Font = Value
+  
+End
+
+Public Sub _GetIconView() As IconView
+  
+  Return $hIconView
+  
+End
+
+Public Sub _GetIndex(hCont As _IconPanelContainer) As Integer
+  
+  Return $aCont.Find(hCont)
+  
+End
+
+Public Sub IconView_Select()
+  
+  Index_Write(CInt($hIconView.Key))
+  
+End

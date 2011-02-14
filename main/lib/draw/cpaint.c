@@ -938,13 +938,15 @@ BEGIN_METHOD(Paint_DrawImage, GB_OBJECT image; GB_FLOAT x; GB_FLOAT y; GB_FLOAT 
 
 	CHECK_DEVICE();
 	
-	if (GB.CheckObject(VARG(image)))
+	image = (GB_IMG *)VARG(image);
+	
+	if (GB.CheckObject(image))
 		return;
 	
 	x = VARG(x);
 	y = VARG(y);
-	w = VARG(width);
-	h = VARG(height);
+	w = VARGOPT(width, image->width);
+	h = VARGOPT(height, image->height);
 	
 	if (GB.CheckObject(VARG(image)))
 		return;
@@ -952,16 +954,14 @@ BEGIN_METHOD(Paint_DrawImage, GB_OBJECT image; GB_FLOAT x; GB_FLOAT y; GB_FLOAT 
 	if (w <= 0.0 || h <= 0.0)
 		return;
 	
+	if (image->width <= 0 || image->height <= 0)
+		return;
+	
 	if (PAINT->DrawImage)
 	{
 		PAINT->DrawImage(THIS, VARG(image), x, y, w, h);
 		return;
 	}
-	
-	image = (GB_IMG *)VARG(image);
-	
-	if (image->width <= 0 || image->height <= 0)
-		return;
 	
 	PAINT->Brush.Image(&brush, (GB_IMAGE)image);
 	pb = make_brush(THIS, brush);
@@ -1060,7 +1060,7 @@ GB_DESC PaintDesc[] =
 	GB_STATIC_METHOD("Stroke", NULL, Paint_Stroke, "[(Preserve)b]"),
 	//GB_STATIC_PROPERTY_READ("StrokeExtents", "PaintExtents", Paint_StrokeExtents),
 	//GB_STATIC_METHOD("InStroke", "b", Paint_InStroke, "(X)f(Y)f"),
-	GB_STATIC_METHOD("DrawImage", NULL, Paint_DrawImage, "(Image)Image;(X)f(Y)f(Width)f(Height)f"),
+	GB_STATIC_METHOD("DrawImage", NULL, Paint_DrawImage, "(Image)Image;(X)f(Y)f[(Width)f(Height)f]"),
 
 	GB_STATIC_PROPERTY_READ("PathExtents", "PaintExtents", Paint_PathExtents),
 	GB_STATIC_METHOD("PathContains", "b", Paint_PathContains, "(X)f(Y)f"),

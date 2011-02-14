@@ -58,6 +58,7 @@ Private Sub Picture_Write(Value As Picture)
 
   If $hPicture = Value Then Return
   $hPicture = Value
+  GetIconView()._UpdateIconSize($hPicture)
   RefreshView
 
 End
@@ -206,7 +207,7 @@ End
 
 Public Sub _Draw(hRect As Rect, hClip As Rect, hIconView As IconView, bHorizontal As Boolean, bFocus As Boolean, bHover As Boolean)
   
-  Dim X, Y As Integer
+  Dim X, Y, W As Integer
   Dim iColor As Integer
   Dim bFrame As Boolean
   
@@ -244,27 +245,35 @@ Public Sub _Draw(hRect As Rect, hClip As Rect, hIconView As IconView, bHorizonta
   
   If bHorizontal Then
   
+    X = hRect.X
+    W = hRect.W
+    
     If System.RightToLeft Then
       
+      If $hPicture Then
+        Draw.Picture($hPicture, hRect.X + hRect.W - $hPicture.W, hRect.Y + (hRect.H - $hPicture.H) / 2)
+        W -= $hPicture.W + 4
+      Endif
+
     Else
       
-      X = hRect.X
   
       If $hPicture Then
         Draw.Picture($hPicture, hRect.X, hRect.Y + (hRect.H - $hPicture.H) / 2)
         X += $hPicture.W + 4
+        W -= $hPicture.W + 4
       Endif
       
-      If $sText Then
-        Draw.Font = hIconView.Font
-        If Not bFrame Then
-          Draw.Foreground = If($bSelected, Color.SelectedBackground, Color.TextBackground)
-          Draw.RichText($sText, X + 1, hRect.Y + 1, hRect.W - (X - hRect.X), hRect.H, Align.Left)
-        Endif
-        Draw.Foreground = If($bSelected, Color.SelectedForeground, Color.TextForeground)
-        Draw.RichText($sText, X, hRect.Y, hRect.W - (X - hRect.X), hRect.H, Align.Left)
-      Endif
+    Endif
       
+    If $sText Then
+      Draw.Font = hIconView.Font
+      If Not bFrame Then
+        Draw.Foreground = If($bSelected, Color.SelectedBackground, Color.TextBackground)
+        Draw.RichText($sText, X + 1, hRect.Y + 1, W, hRect.H, Align.Left)
+      Endif
+      Draw.Foreground = If($bSelected, Color.SelectedForeground, Color.TextForeground)
+      Draw.RichText($sText, X, hRect.Y, W, hRect.H, Align.Left)
     Endif
   
   Else

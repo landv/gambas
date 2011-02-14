@@ -1,0 +1,71 @@
+' Gambas class file
+
+Inherits UserControl
+
+Event Change
+
+Property Text As String
+Property Picture As Picture
+Property Read Container As Container
+
+Private Sub GetIconPanel() As IconPanel
+  
+  Return Me.Parent.Parent
+  
+End
+
+Private Sub GetIconView() As IconView
+  
+  Return GetIconPanel()._GetIconView()
+  
+End
+
+Private Sub GetIndex() As Integer
+  
+  Return GetIconPanel()._GetIndex(Me)
+  
+End
+
+
+Public Sub _new()
+
+End
+
+
+Private Function Text_Read() As String
+
+  Try Return GetIconView()[GetIndex()].Text
+
+End
+
+Private Sub Text_Write(sText As String)
+
+  Try GetIconView()[GetIndex()].Text = sText
+  GetIconPanel()._UpdateIconViewWidth
+
+End
+
+Private Function Picture_Read() As Picture
+
+  Try Return GetIconView()[GetIndex()].Picture
+
+End
+
+Private Sub Picture_Write(hPict As Picture)
+
+  Try GetIconView()[GetIndex()].Picture = hPict
+  GetIconPanel()._UpdateIconViewWidth
+
+End
+
+Public Sub _Change()
+
+  Raise Change
+
+End
+
+Private Function Container_Read() As Container
+
+  Return Me
+
+End
