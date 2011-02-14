@@ -158,12 +158,6 @@ Public Sub btnAlignJustify_Click()
 
 End
 
-Public Sub TextEdit1_Link(Path As String)
-
-  Message(("You have clicked on:\n\n") & Path)  
-
-End
-
 Public Sub btnLock_Click()
 
   TextEdit1.ReadOnly = btnLock.Value

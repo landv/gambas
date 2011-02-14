@@ -17,13 +17,11 @@
         { ToolButtonAdd ToolButton
           MoveScaled(0,0,5,5)
           ToolTip = ("Add image to database")
-          Text = ("")
           Picture = Picture["Images/list-add.png"]
         }
         { ToolButtonRemove ToolButton
           MoveScaled(5,0,5,5)
           ToolTip = ("Remove Image from database")
-          Text = ("")
           Picture = Picture["Images/list-remove.png"]
         }
         { Separator1 Separator
@@ -32,7 +30,6 @@
         { ToolButtonExport ToolButton
           MoveScaled(10,0,5,5)
           ToolTip = ("Export image from database")
-          Text = ("")
           Picture = Picture["Images/document-save-as.png"]
         }
         { Separator2 Separator
@@ -41,7 +38,6 @@
         { ToolButtonUpdate ToolButton
           MoveScaled(16,0,5,5)
           ToolTip = ("Update image description")
-          Text = ("")
           Picture = Picture["Images/document-save.png"]
         }
       }
@@ -56,7 +52,6 @@
       MoveScaled(23,1,34,44)
       { TextAreaDescription TextArea
         MoveScaled(0,0,23,7)
-        Text = ("")
         Wrap = True
         Border = False
       }
@@ -64,6 +59,7 @@
         MoveScaled(0,7,24,35)
         { PictureBoxImage PictureBox
           MoveScaled(0,0,18,25)
+          Stretch = True
         }
       }
     }

@@ -96,7 +96,7 @@ Public Sub DrawClock()
   sTime = Format(dNow, "hh:nn:ss")
   Draw.Font.Bold = True
   Draw.Font.Size = 60 * eScale
-  Draw.ForeColor = Color.Black
+  Draw.Foreground = Color.Black
   WT = Draw.TextWidth("MM:MM:MM") / eScale
   HT = Draw.TextHeight("M") / eScale
   Draw.Text(sTime, (W - WT) / 2, (H / 3 - HT) / 2, WT, HT, Align.Center)
@@ -105,7 +105,7 @@ Public Sub DrawClock()
   Draw.FillColor = Color.Black
   
   'Draw Seconds  arm
-  Draw.Forecolor = Color.Red    'Duh
+  Draw.Foreground = Color.Red    'Duh
   Width = CFloat(LengthSeconds) / 50  'Dynamic WIdth
   Draw.LineWidth = Width * eScale
   angle = CFloat(Second(dNow)) / 60 * 2 * Pi   'The angle that the arm makes, with a line from clock center to 12O'clock
@@ -115,7 +115,7 @@ Public Sub DrawClock()
   
   'Draw Minutes
   Draw.fillstyle = 1
-  Draw.Forecolor = Color.Black
+  Draw.Foreground = Color.Black
   Width = CFloat(LengthSeconds) / 10
   Draw.LineWidth = 1    'Fixed line width as this arm is drawn as a filled polygon, to get the triangluar shaped arm. The line width is irrelevant here.
   angle = CFloat(CFloat(Time(dNow)) * 24 * 60) / 60 * 2 * Pi
@@ -128,7 +128,7 @@ Public Sub DrawClock()
   
   'Draw Hours
   Draw.fillstyle = 1
-  Draw.Forecolor = Color.Black
+  Draw.Foreground = Color.Black
   Width = CFloat(LengthSeconds) / 8
   Draw.LineWidth = 1
   Hour12 = CFloat(Time(dNow)) * 24
@@ -172,7 +172,7 @@ Public Sub DrawFrame()
 
   Length = Min(W / 2, H / 2)
 
-  Draw.Forecolor = Color.Black
+  Draw.Foreground = Color.Black
   Draw.LineWidth = 5 '* eScale
   For i = 0 To 11
   'Draw Big 12 Ticks
@@ -185,7 +185,7 @@ Public Sub DrawFrame()
   Draw.Line(X1, Y1, X2, Y2)
   Next
 
-  Draw.Forecolor = Color.Black
+  Draw.Foreground = Color.Black
   Draw.LineWidth = 0
   For i = 0 To 59
   'Draw small 60 Ticks

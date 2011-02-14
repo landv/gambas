@@ -65,9 +65,9 @@ Public Sub Form_Open()
   Me.Center()
   Dialog.Path = User.Home
   GridViewImages.Columns.Count = 2
-  GridViewImages.Columns[0].Text = "Thumb"
+  GridViewImages.Columns[0].Text = ("Thumb")
   GridViewImages.Columns[0].Width = 1.5 * ModuleDatabase.ThumbSize
-  GridViewImages.Columns[1].Text = "Description"
+  GridViewImages.Columns[1].Text = ("Description")
   GridViewImages.Columns[1].Width = 300
   ' Open database
   ' 
@@ -98,7 +98,7 @@ End
 
 Public Sub ToolButtonAdd_Click()
   Dialog.Filter = FileFilter(True)
-  Dialog.Title = "Add image to database"
+  Dialog.Title = ("Add image to database")
   If Dialog.OpenFile() Then Return 
   ModuleDatabase.Add(Dialog.Path)
   ModuleDatabase.Select()
@@ -110,9 +110,9 @@ End
 Public Sub ToolButtonRemove_Click()
   Dim m As String
   If GridViewImages.Row >= 0 Then
-    m = "Are you sure you want to delete image " & (GridViewImages.Row + 1)
-    m &= " from the database:\n\n" & TextAreaDescription.Text
-    If Message.Question(m, "Delete", "Cancel") = 1 Then 
+    m = ("Are you sure you want to delete image ") & (GridViewImages.Row + 1)
+    m &= (" from the database:\n\n") & TextAreaDescription.Text
+    If Message.Question(m, ("Delete"), ("Cancel")) = 1 Then 
       ModuleDatabase.Delete(GridViewImages.Row)
       ModuleDatabase.Select()
       DisplayImages()
@@ -124,11 +124,11 @@ End
 
 Public Sub ToolButtonExport_Click()
   Dialog.Filter = FileFilter(False)
-  Dialog.Title = "Save image from database"
+  Dialog.Title = ("Save image from database")
   If Dialog.SaveFile() Then Return 
   PictureBoxImage.Picture.Save(Dialog.Path)
 Catch
-  Message.Warning("Error saving image:\n\n" & ERROR.Text)
+  Message.Warning(("Error saving image:\n\n") & ERROR.Text)
 End
 
 Public Sub ToolButtonUpdate_Click()

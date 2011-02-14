@@ -12,7 +12,8 @@ Public Sub btnEmbed_Click()
   Else If Left(sTitle) = "&" Then 
     iHandle = Val(sTitle)
   Else
-    aHandle = Desktop.FindWindow(Trim(txtTitle.Text))
+'     aHandle = Desktop.FindWindow(Trim(txtTitle.Text))
+    aHandle = Desktop.FindWindow(txtTitle.Text)
     If aHandle.Count = 0 Then 
       Message.Warning(("Window not found!"))
       Return
