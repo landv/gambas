@@ -58,7 +58,7 @@ End
 
 Public Sub Form_KeyPress()
 
-  If Key.Esc Then Me.Close
+  If Key.code = Key.Esc Then Me.Close
 
 End
 
