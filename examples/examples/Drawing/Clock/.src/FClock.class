@@ -10,7 +10,7 @@ Private WI As Integer
 'PRIVATE BackPicture AS String
 Private $MX As Integer
 Private $MY As Integer
-Private $hMenu As menu
+Private $hMenu As Menu
 
 
 Public Sub DrawTime()
@@ -136,18 +136,18 @@ Public Sub mnuAbout_Click()
 
 End
 
-' PUBLIC SUB daClock_MouseDown()
+Public Sub Form_MouseDown()
+
+  $MX = Mouse.ScreenX - Me.X
+  $MY = Mouse.ScreenY - Me.Y
+
+End
 ' 
-'   $MX = Mouse.ScreenX - ME.X
-'   $MY = Mouse.ScreenY - ME.Y
-' 
-' END
-' 
-' PUBLIC SUB daClock_MouseMove()
-' 
-'   IF Mouse.Left THEN ME.Move(Mouse.ScreenX - $MX, Mouse.ScreenY - $MY)
-' 
-' END
+Public Sub Form_MouseMove()
+
+  If Mouse.Left Then Me.Move(Mouse.ScreenX - $MX, Mouse.ScreenY - $MY)
+
+End
 
 Public Sub mnuOntop_Click()
 
@@ -161,7 +161,8 @@ Public Sub mnuShowWindow_Click()
 
   'mnuShowWindow.Checked = Not mnuShowWindow.Checked
   'ME.Border = If(mnuShowWindow.Checked, Window.Fixed, Window.None)
-  Me.Mask = Not Me.Mask
-  Me.SkipTaskbar = Not Me.SkipTaskbar
+  Me.Mask = Not mnuShowWindow.Value
+  Me.SkipTaskbar = Not mnuShowWindow.Value
+  Me.Border = mnuShowWindow.Value
 
 End

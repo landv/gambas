@@ -2,8 +2,9 @@
 
 { Form Form
   MoveScaled(80.1429,67,43,43)
-  Text = ("")
   Mask = True
+  Border = False
+  SkipTaskbar = True
   { mnuPopup Menu
     Text = ("central")
     Visible = False
@@ -29,7 +30,6 @@
       Tag = "4"
     }
     { mn2 Menu
-      Text = ("")
     }
     { mnuOntop Menu
       Text = ("Always on top")
@@ -40,20 +40,16 @@
       Toggle = True
     }
     { mnu1 Menu
-      Text = ("")
     }
     { mnuAbout Menu
       Text = ("About")
     }
     { mn Menu
-      Text = ("")
     }
     { mnuQuit Menu
       Text = ("Quit")
     }
   }
   { Timer1 #Timer
-    #X = 126
-    #Y = 203
   }
 }
