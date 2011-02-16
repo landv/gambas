@@ -59,18 +59,10 @@ END_METHOD
 
 BEGIN_PROPERTY(CTEXTAREA_text)
 
-	char *buf;
-
 	if (READ_PROPERTY)
-	{
-		buf=TEXTAREA->text();
-		GB.ReturnNewZeroString(buf);
-		free(buf);
-		return;
-	}
-	
-	TEXTAREA->setText( GB.ToZeroString(PROP(GB_STRING)) );
-	
+		GB.ReturnNewZeroString(TEXTAREA->text());
+	else
+		TEXTAREA->setText( GB.ToZeroString(PROP(GB_STRING)) );
 
 END_PROPERTY
 
@@ -84,61 +76,73 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CTEXTAREA_read_only)
 
-	if (READ_PROPERTY) { GB.ReturnBoolean(TEXTAREA->readOnly()); return; }
-	TEXTAREA->setReadOnly(VPROP(GB_BOOLEAN));
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(TEXTAREA->readOnly());
+	else
+		TEXTAREA->setReadOnly(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CTEXTAREA_wrap)
 
-	if (READ_PROPERTY) { GB.ReturnBoolean(TEXTAREA->wrap()); return; }
-	TEXTAREA->setWrap(VPROP(GB_BOOLEAN));
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(TEXTAREA->wrap());
+	else
+		TEXTAREA->setWrap(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CTEXTAREA_line)
 
-	if (READ_PROPERTY) { GB.ReturnInteger(TEXTAREA->line()); return; }
-	TEXTAREA->setLine(VPROP(GB_INTEGER));
+	if (READ_PROPERTY)
+		GB.ReturnInteger(TEXTAREA->line());
+	else
+		TEXTAREA->setLine(VPROP(GB_INTEGER));
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CTEXTAREA_column)
 
-	if (READ_PROPERTY) { GB.ReturnInteger(TEXTAREA->column()); return; }
-	TEXTAREA->setColumn(VPROP(GB_INTEGER));
+	if (READ_PROPERTY) 
+		GB.ReturnInteger(TEXTAREA->column());
+	else
+		TEXTAREA->setColumn(VPROP(GB_INTEGER));
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CTEXTAREA_pos)
 
-	if (READ_PROPERTY) { GB.ReturnInteger(TEXTAREA->position()); return; }
-	TEXTAREA->setPosition(VPROP(GB_INTEGER));
+	if (READ_PROPERTY)
+		GB.ReturnInteger(TEXTAREA->position());
+	else
+		TEXTAREA->setPosition(VPROP(GB_INTEGER));
 
 END_PROPERTY
 
 
 BEGIN_METHOD_VOID(CTEXTAREA_clear)
 
-	TEXTAREA->setText("");
+	TEXTAREA->clear();
 
 END_METHOD
 
 
 BEGIN_METHOD(CTEXTAREA_insert, GB_STRING text)
 
-	TEXTAREA->insert(  GB.ToZeroString(ARG(text)) );
+	TEXTAREA->insert(GB.ToZeroString(ARG(text)));
 
 END_METHOD
 
 BEGIN_PROPERTY(CTEXTAREA_border)
 
-	if (READ_PROPERTY) { GB.ReturnBoolean(TEXTAREA->hasBorder()); return; }
-	TEXTAREA->setBorder(VPROP(GB_BOOLEAN));
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(TEXTAREA->hasBorder());
+	else
+		TEXTAREA->setBorder(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
@@ -152,17 +156,10 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CTEXTAREA_sel_text)
 
-	char *buf;
-
 	if (READ_PROPERTY)
-	{
-		buf=TEXTAREA->selText();
-		GB.ReturnNewZeroString(buf);
-		if (buf) free(buf);
-		return;
-	}
-	
-	TEXTAREA->setSelText(GB.ToZeroString(PROP(GB_STRING)));
+		GB.ReturnNewZeroString(TEXTAREA->selText());
+	else
+		TEXTAREA->setSelText(GB.ToZeroString(PROP(GB_STRING)));
 
 END_PROPERTY
 
@@ -190,26 +187,19 @@ END_METHOD
 
 BEGIN_METHOD(CTEXTAREA_sel_select, GB_INTEGER start; GB_INTEGER length)
 
-	long start=0;
-	long length=0;
+	int start = VARGOPT(start, 0);
+	int length = VARGOPT(length, TEXTAREA->length());
 	
-	if (MISSING(start)) length=TEXTAREA->length();
-	else start=VARG(start);
-	
-	if (!MISSING(length)) length=VARG(length);
-	
-	TEXTAREA->selSelect(start,length);
+	TEXTAREA->selSelect(start, length);
 
 END_METHOD
+
 
 BEGIN_METHOD_VOID(CTEXTAREA_sel_all)
 
-	long length=TEXTAREA->length();
-
-	TEXTAREA->selSelect(0,length);
+	TEXTAREA->selectAll();
 
 END_METHOD
-
 
 
 BEGIN_METHOD(CTEXTAREA_to_pos, GB_INTEGER line; GB_INTEGER col)
@@ -235,7 +225,6 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CTEXTAREA_copy)
 
-
 	TEXTAREA->copy();
 
 END_METHOD
@@ -250,7 +239,6 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CTEXTAREA_paste)
 
-
 	TEXTAREA->paste();
 
 END_METHOD
@@ -262,31 +250,37 @@ BEGIN_METHOD_VOID(CTEXTAREA_ensure_visible)
 
 END_METHOD
 
+
 BEGIN_PROPERTY(CTEXTAREA_scrollbar)
 
-	if (READ_PROPERTY) { GB.ReturnInteger(TEXTAREA->scrollBar()); return; }
-	TEXTAREA->setScrollBar(VPROP(GB_INTEGER));
+	if (READ_PROPERTY)
+		GB.ReturnInteger(TEXTAREA->scrollBar());
+	else
+		TEXTAREA->setScrollBar(VPROP(GB_INTEGER));
 
 END_METHOD
 
+
 BEGIN_METHOD_VOID(CTEXTAREA_undo)
 
-	stub ("CTEXTAREA_undo");
+	TEXTAREA->undo();
 
 END_METHOD
 
 
 BEGIN_METHOD_VOID(CTEXTAREA_redo)
 
-	stub ("CTEXTAREA_redo");
+	TEXTAREA->redo();
 
 END_METHOD
+
 
 BEGIN_METHOD_VOID(CTEXTAREA_selected)
 
   GB.ReturnBoolean(TEXTAREA->isSelected());
 
 END_METHOD
+
 
 BEGIN_PROPERTY(TextArea_Alignment)
 
@@ -296,6 +290,7 @@ BEGIN_PROPERTY(TextArea_Alignment)
 		WIDGET->setAlignment(VPROP(GB_INTEGER));
 
 END_PROPERTY
+
 
 GB_DESC CTextAreaSelectionDesc[] =
 {
@@ -331,28 +326,28 @@ GB_DESC CTextAreaDesc[] =
   GB_PROPERTY("Pos", "i", CTEXTAREA_pos),
 
   GB_PROPERTY_SELF("Selection", ".TextAreaSelection"),
-  GB_METHOD("Select", 0, CTEXTAREA_sel_select, "[(Start)i(Length)i]"),
-  GB_METHOD("SelectAll", 0, CTEXTAREA_sel_all, 0),
-  GB_METHOD("Unselect", 0, CTEXTAREA_sel_clear, 0),
+  GB_METHOD("Select", NULL, CTEXTAREA_sel_select, "[(Start)i(Length)i]"),
+  GB_METHOD("SelectAll", NULL, CTEXTAREA_sel_all, NULL),
+  GB_METHOD("Unselect", NULL, CTEXTAREA_sel_clear, NULL),
 	GB_PROPERTY_READ("Selected", "b", CTEXTAREA_selected),
 
-  GB_METHOD("Clear", 0, CTEXTAREA_clear, 0),
-  GB_METHOD("Insert", 0, CTEXTAREA_insert, "(Text)s"),
+  GB_METHOD("Clear", NULL, CTEXTAREA_clear, NULL),
+  GB_METHOD("Insert", NULL, CTEXTAREA_insert, "(Text)s"),
 
-  GB_METHOD("Copy", 0, CTEXTAREA_copy, 0),
-  GB_METHOD("Cut", 0, CTEXTAREA_cut, 0),
-  GB_METHOD("Paste", 0, CTEXTAREA_paste, 0),
-  GB_METHOD("Undo", 0, CTEXTAREA_undo, 0),
-  GB_METHOD("Redo", 0, CTEXTAREA_redo, 0),
+  GB_METHOD("Copy", NULL, CTEXTAREA_copy, NULL),
+  GB_METHOD("Cut", NULL, CTEXTAREA_cut, NULL),
+  GB_METHOD("Paste", NULL, CTEXTAREA_paste, NULL),
+  GB_METHOD("Undo", NULL, CTEXTAREA_undo, NULL),
+  GB_METHOD("Redo", NULL, CTEXTAREA_redo, NULL),
 
   GB_METHOD("ToPos", "i", CTEXTAREA_to_pos, "(Line)i(Column)i"),
   GB_METHOD("ToLine", "i", CTEXTAREA_to_line, "(Pos)i"),
   GB_METHOD("ToColumn", "i", CTEXTAREA_to_col, "(Pos)i"),
 
-  GB_METHOD("EnsureVisible", 0, CTEXTAREA_ensure_visible, 0),
+  GB_METHOD("EnsureVisible", NULL, CTEXTAREA_ensure_visible, NULL),
   
-  GB_EVENT("Change", 0, 0, &EVENT_Change),
-  GB_EVENT("Cursor", 0, 0, &EVENT_Cursor),
+  GB_EVENT("Change", NULL, NULL, &EVENT_Change),
+  GB_EVENT("Cursor", NULL, NULL, &EVENT_Cursor),
   
   TEXTAREA_DESCRIPTION,
 

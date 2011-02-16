@@ -22,10 +22,13 @@
 #ifndef __GTEXTAREA_H
 #define __GTEXTAREA_H
 
+class gTextAreaAction;
+
 class gTextArea : public gControl
 {
 public:
 	gTextArea(gContainer *parent);
+	~gTextArea();
 
 //"Properties"
 	int column();
@@ -69,8 +72,17 @@ public:
 
 //"Selection methods"
 	void selDelete();
-	void selSelect(int start,int length);
+	void selSelect(int start, int length);
+	void selectAll() { selSelect(0, length()); }
 
+	bool canUndo() const { return _undo_stack != 0; }
+	bool canRedo() const { return _redo_stack != 0; }
+	void begin() { _not_undoable_action++; }
+	void end() { _not_undoable_action--; }
+	void undo();
+	void redo();
+	void clear();
+	
 //"Signals"
 	void (*onChange)(gTextArea *sender);
 	void (*onCursor)(gTextArea *sender);
@@ -78,6 +90,13 @@ public:
 //"Private"
   void updateCursor(GdkCursor *cursor);
   void waitForLayout(int *tw, int *th);
+	void clearUndoStack();
+	void clearRedoStack();
+	
+	gTextAreaAction *_undo_stack;
+	gTextAreaAction *_redo_stack;
+	int _not_undoable_action;
+	bool _undo_in_progress;
 
 private:
 	GtkWidget *textview;
