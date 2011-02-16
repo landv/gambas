@@ -215,7 +215,7 @@ void STREAM_open(STREAM *stream, const char *path, int mode);
 void STREAM_release(STREAM *stream);
 void STREAM_close(STREAM *stream);
 void STREAM_write(STREAM *stream, void *addr, int len);
-char *STREAM_line_input(STREAM *stream);
+char *STREAM_line_input(STREAM *stream, char *escape);
 char *STREAM_input(STREAM *stream);
 int64_t STREAM_tell(STREAM *stream);
 void STREAM_seek(STREAM *stream, int64_t pos, int whence);

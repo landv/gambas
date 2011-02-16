@@ -135,7 +135,7 @@ Private Sub UpdateKey()
   hFile.EndOfLine = $iEndOfLine
   
   While Not Eof(hFile)
-    sLig = ReadLine(hFile)
+    sLig = hFile.ReadLine($sEscape)
     Inc iLine
     If iLine > $iIgnore Then Break
   Wend
@@ -229,41 +229,41 @@ Private Function TransformField(sName As String) As String
   
 End
 
-Private Sub CountChar(sLig As String, sChar As String) As Integer
-  
-  Dim iCount As Integer
-  Dim iPos As Integer
-  
-  Do
-    iPos = InStr(sLig, sChar, iPos + 1)
-    If iPos = 0 Then Return iCount
-    Inc iCount
-  Loop  
-  
-End
-
-Private Sub ReadLine(hFile As File) As String
-
-  Dim sLine As String
-  Dim nEsc As Integer
-  Dim sPart As String
-  
-  If $sEscape Then
-    Do
-      Line Input #hFile, sPart
-      sLine &= sPart
-      nEsc += CountChar(sPart, $sEscape)
-      If (nEsc And 1) = 0 Then Break
-      sLine &= "\n"
-    Loop
-  Else 
-    Line Input #hFile, sLine
-  Endif
-  
-  Return sLine
-  
-End
-
+' Private Sub CountChar(sLig As String, sChar As String) As Integer
+'   
+'   Dim iCount As Integer
+'   Dim iPos As Integer
+'   
+'   Do
+'     iPos = InStr(sLig, sChar, iPos + 1)
+'     If iPos = 0 Then Return iCount
+'     Inc iCount
+'   Loop  
+'   
+' End
+' 
+' Private Sub ReadLine(hFile As File) As String
+' 
+'   Dim sLine As String
+'   Dim nEsc As Integer
+'   Dim sPart As String
+'   
+'   If $sEscape Then
+'     Do
+'       Line Input #hFile, sPart
+'       sLine &= sPart
+'       nEsc += CountChar(sPart, $sEscape)
+'       If (nEsc And 1) = 0 Then Break
+'       sLine &= "\n"
+'     Loop
+'   Else 
+'     Line Input #hFile, sLine
+'   Endif
+'   
+'   Return sLine
+'   
+' End
+' 
 Private Sub MakeFields(aField As String[]) As String[]
 
   Dim I As Integer
@@ -345,13 +345,13 @@ Private Sub DoImport()
   
   If chkFirstLine.Value Then
     Inc $iLine
-    sLig = ReadLine(hFile)
+    sLig = hFile.ReadLine($sEscape)
     aField = MakeFields(Analyze(sLig))
   Endif
   
   While Not Eof(hFile)
     Inc $iLine
-    sLig = ReadLine(hFile)
+    sLig = hFile.ReadLine($sEscape)
     If $iLine <= $iIgnore Then Continue
     
     aLine = Analyze(sLig, sDestCharset)

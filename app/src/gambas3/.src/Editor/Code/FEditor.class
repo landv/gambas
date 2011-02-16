@@ -35,6 +35,8 @@ Property Read ReadOnly As Boolean '' If the editor is read-only.
 Public Const IDENT_CAR As String = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_$"
 Public Const NBR_COLOR As Integer = 15
 
+Static Public StructControlCompletion As Boolean = True
+
 Static Private $cStructClose As New Collection(gb.IgnoreCase)
 
 Static Private $hVirtualSymbol As New CSymbolInfo
@@ -826,6 +828,76 @@ Catch
   
 End
 
+Private Sub DoStructControlCompletion(iLine As Integer, sLine As String, aSymbol As String[]) As Boolean
+  
+  Dim bIndent, bUnindent As Boolean
+  Dim sClose, sClose2 As String
+  Dim iPos, iInd As Integer
+  Dim iIndent As Integer
+  Dim sIndent As String
+  
+  If aSymbol.Count >= 1 Then
+    If aSymbol[0] = "IF" And If aSymbol[aSymbol.Max] = "THEN" Then
+      bIndent = True
+      bUnindent = False
+      sClose = "Endif"
+      sClose2 = "Else"
+    Else If SymbolBegins(aSymbol, "Public Struct") Or If aSymbol[0] = "STRUCT" Then
+      bIndent = True
+      bUnindent = False
+      sClose = "End Struct"
+    Else
+      sClose = $cStructClose[aSymbol[0]]
+      If sClose Then
+        bIndent = True
+        If sClose = "<" Then sClose = ""
+        'bUnindent = sClose = "<"
+      Endif
+    Endif
+  Endif
+  
+  If bIndent Then
+    
+    iIndent = Editor.GetIndent(sLine)
+    
+    If sClose Then
+      For iInd = Editor.Line + 1 To Editor.Lines.Count - 1
+        sLine = Editor.Lines[iInd].Text
+        If Not Trim(sLine) Then Continue
+        iPos = Editor.GetIndent(sLine)
+        If iPos < iIndent Then Break
+        If iPos > iIndent Then Continue
+        Highlight.Analyze(sLine)
+        If SymbolBegins(Highlight.Symbols, sClose) Then 
+          sClose = ""
+        Else If sClose2 And If SymbolBegins(Highlight.Symbols, sClose2) Then 
+          sClose = ""
+        Endif
+        Break
+      Next
+    Endif
+    
+    Editor.Begin
+    If bUnindent And If Not Key.Shift Then
+      If IsSpace(Left(sLine, Project.TabSize)) Then
+        sLine = Mid$(sLine, Project.TabSize + 1)
+        Editor.Lines[Editor.Line].Text = sLine
+        iIndent -= Project.TabSize
+      Endif
+    Endif
+    sIndent = Space$(iIndent)
+    Editor.Insert("\n" & Space$(Project.TabSize) & sIndent)
+    If StructControlCompletion Then
+      If Not bUnindent And If sClose And If Not Key.Shift Then Editor.Insert("\n" & sIndent & sClose)
+    Endif
+    Editor.End
+    Editor.Goto(iLine + 1, 2 + Len(sIndent))
+    Stop Event
+    Return True
+  Endif
+  
+End
+
 
 Public Sub Editors_KeyPress()
   
@@ -983,63 +1055,7 @@ Public Sub Editors_KeyPress()
       Endif
     Endif
     
-    If aSymbol.Count >= 1 Then
-      If aSymbol[0] = "IF" And If aSymbol[aSymbol.Max] = "THEN" Then
-        bIndent = True
-        bUnindent = False
-        sClose = "Endif"
-        sClose2 = "Else"
-      Else If SymbolBegins(aSymbol, "Public Struct") Or If aSymbol[0] = "STRUCT" Then
-        bIndent = True
-        bUnindent = False
-        sClose = "End Struct"
-      Else
-        sClose = $cStructClose[aSymbol[0]]
-        If sClose Then
-          bIndent = True
-          If sClose = "<" Then sClose = ""
-          'bUnindent = sClose = "<"
-        Endif
-      Endif
-    Endif
-    
-    If bIndent Then
-      
-      iIndent = Editor.GetIndent(sLine)
-      
-      If sClose Then
-        For iInd = Editor.Line + 1 To Editor.Lines.Count - 1
-          sLine = Editor.Lines[iInd].Text
-          If Not Trim(sLine) Then Continue
-          iPos = Editor.GetIndent(sLine)
-          If iPos < iIndent Then Break
-          If iPos > iIndent Then Continue
-          Highlight.Analyze(sLine)
-          If SymbolBegins(Highlight.Symbols, sClose) Then 
-            sClose = ""
-          Else If sClose2 And If SymbolBegins(Highlight.Symbols, sClose2) Then 
-            sClose = ""
-          Endif
-          Break
-        Next
-      Endif
-      
-      Editor.Begin
-      If bUnindent And If Not Key.Shift Then
-        If IsSpace(Left(sLine, Project.TabSize)) Then
-          sLine = Mid$(sLine, Project.TabSize + 1)
-          Editor.Lines[Editor.Line].Text = sLine
-          iIndent -= Project.TabSize
-        Endif
-      Endif
-      sIndent = Space$(iIndent)
-      Editor.Insert("\n" & Space$(Project.TabSize) & sIndent)
-      If Not bUnindent And If sClose And If Not Key.Shift Then Editor.Insert("\n" & sIndent & sClose)
-      Editor.End
-      Editor.Goto(iLine + 1, 2 + Len(sIndent))
-      Stop Event
-      Return
-    Endif
+    If DoStructControlCompletion(iLine, sLine, aSymbol) Then Return
     
   Else If Key.Code = Key.Space Then
     

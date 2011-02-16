@@ -143,7 +143,7 @@ void CFILE_init_watch(void)
 }
 
 
-BEGIN_METHOD_VOID(CFILE_free)
+BEGIN_METHOD_VOID(File_free)
 
 	STREAM_close(&THIS->ob.stream);
 
@@ -153,49 +153,49 @@ BEGIN_METHOD_VOID(CFILE_free)
 END_METHOD
 
 
-BEGIN_PROPERTY(CFILE_get_in)
+BEGIN_PROPERTY(File_In)
 
 	GB_ReturnObject(CFILE_in);
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CFILE_get_out)
+BEGIN_PROPERTY(File_Out)
 
 	GB_ReturnObject(CFILE_out);
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CFILE_get_err)
+BEGIN_PROPERTY(File_Err)
 
 	GB_ReturnObject(CFILE_err);
 
 END_PROPERTY
 
 
-BEGIN_METHOD_VOID(CSTAT_free)
+BEGIN_METHOD_VOID(Stat_free)
 
 	STRING_unref(&THIS_STAT->path);
 
 END_METHOD
 
 
-BEGIN_PROPERTY(CFILE_type)
+BEGIN_PROPERTY(Stat_Type)
 
 	GB_ReturnInt(THIS_STAT->info.type);
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CSTAT_path)
+BEGIN_PROPERTY(Stat_Path)
 
 	GB_ReturnString(THIS_STAT->path);
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CSTAT_link)
+BEGIN_PROPERTY(Stat_Link)
 
 	if (THIS_STAT->info.type == GB_STAT_LINK)
 		GB_ReturnNewZeroString(FILE_readlink(THIS_STAT->path));
@@ -205,28 +205,28 @@ BEGIN_PROPERTY(CSTAT_link)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CFILE_mode)
+BEGIN_PROPERTY(Stat_Mode)
 
 	GB_ReturnInt(THIS_STAT->info.mode);
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CFILE_hidden)
+BEGIN_PROPERTY(Stat_Hidden)
 
 	GB_ReturnBoolean(THIS_STAT->info.hidden);
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CFILE_size)
+BEGIN_PROPERTY(Stat_Size)
 
 	GB_ReturnLong(THIS_STAT->info.size);
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CFILE_atime)
+BEGIN_PROPERTY(Stat_LastAccess)
 
 	VALUE date;
 
@@ -237,7 +237,7 @@ BEGIN_PROPERTY(CFILE_atime)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CFILE_ctime)
+BEGIN_PROPERTY(Stat_LastChange)
 
 	VALUE date;
 
@@ -248,7 +248,7 @@ BEGIN_PROPERTY(CFILE_ctime)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CFILE_mtime)
+BEGIN_PROPERTY(Stat_Time)
 
 	VALUE date;
 
@@ -279,7 +279,7 @@ static char *get_file_user(CFILE *_object)
 	}
 }
 
-BEGIN_PROPERTY(CFILE_user)
+BEGIN_PROPERTY(Stat_User)
 
 	GB_ReturnNewZeroString(get_file_user(THIS));
 
@@ -306,28 +306,28 @@ static char *get_file_group(CFILE *_object)
 	}
 }
 
-BEGIN_PROPERTY(CFILE_group)
+BEGIN_PROPERTY(Stat_Group)
 
 	GB_ReturnNewZeroString(get_file_group(THIS));
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CFILE_setuid)
+BEGIN_PROPERTY(Stat_SetUID)
 
 	GB_ReturnBoolean(THIS_STAT->info.mode & S_ISUID);
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CFILE_setgid)
+BEGIN_PROPERTY(Stat_SetGID)
 
 	GB_ReturnBoolean(THIS_STAT->info.mode & S_ISGID);
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CFILE_sticky)
+BEGIN_PROPERTY(Stat_Sticky)
 
 	GB_ReturnBoolean(THIS_STAT->info.mode & S_ISVTX);
 
@@ -493,7 +493,7 @@ static void return_path(void)
 	GB_ReturnString(tmp);
 }
 
-BEGIN_METHOD(CFILE_dir, GB_STRING path)
+BEGIN_METHOD(File_Dir, GB_STRING path)
 
 	split_path(GB_ToZeroString(ARG(path)));
 	GB_ReturnNewZeroString(_dir);
@@ -501,7 +501,7 @@ BEGIN_METHOD(CFILE_dir, GB_STRING path)
 END_METHOD
 
 
-BEGIN_METHOD(CFILE_set_dir, GB_STRING path; GB_STRING new_dir)
+BEGIN_METHOD(File_SetDir, GB_STRING path; GB_STRING new_dir)
 
 	split_path(GB_ToZeroString(ARG(path)));
 	_dir = GB_ToZeroString(ARG(new_dir));
@@ -510,7 +510,7 @@ BEGIN_METHOD(CFILE_set_dir, GB_STRING path; GB_STRING new_dir)
 END_METHOD
 
 
-BEGIN_METHOD(CFILE_name, GB_STRING path)
+BEGIN_METHOD(File_Name, GB_STRING path)
 
 	char *path;
 
@@ -523,7 +523,7 @@ BEGIN_METHOD(CFILE_name, GB_STRING path)
 END_METHOD
 
 
-BEGIN_METHOD(CFILE_set_name, GB_STRING path; GB_STRING new_name)
+BEGIN_METHOD(File_SetName, GB_STRING path; GB_STRING new_name)
 
 	char *path;
 
@@ -540,7 +540,7 @@ BEGIN_METHOD(CFILE_set_name, GB_STRING path; GB_STRING new_name)
 END_METHOD
 
 
-BEGIN_METHOD(CFILE_ext, GB_STRING path)
+BEGIN_METHOD(File_Ext, GB_STRING path)
 
 	split_path(GB_ToZeroString(ARG(path)));
 	GB_ReturnNewZeroString(_ext);
@@ -548,7 +548,7 @@ BEGIN_METHOD(CFILE_ext, GB_STRING path)
 END_METHOD
 
 
-BEGIN_METHOD(CFILE_set_ext, GB_STRING path; GB_STRING new_ext)
+BEGIN_METHOD(File_SetExt, GB_STRING path; GB_STRING new_ext)
 
 	split_path(GB_ToZeroString(ARG(path)));
 	_ext = GB_ToZeroString(ARG(new_ext));
@@ -557,7 +557,7 @@ BEGIN_METHOD(CFILE_set_ext, GB_STRING path; GB_STRING new_ext)
 END_METHOD
 
 
-BEGIN_METHOD(CFILE_basename, GB_STRING path)
+BEGIN_METHOD(File_BaseName, GB_STRING path)
 
 	split_path(GB_ToZeroString(ARG(path)));
 	GB_ReturnNewZeroString(_basename);
@@ -565,7 +565,7 @@ BEGIN_METHOD(CFILE_basename, GB_STRING path)
 END_METHOD
 
 
-BEGIN_METHOD(CFILE_set_basename, GB_STRING path; GB_STRING new_basename)
+BEGIN_METHOD(File_SetBaseName, GB_STRING path; GB_STRING new_basename)
 
 	split_path(GB_ToZeroString(ARG(path)));
 	_basename = GB_ToZeroString(ARG(new_basename));
@@ -581,7 +581,7 @@ static void error_CFILE_load_save(void)
 		STREAM_close(_stream);
 }
 
-BEGIN_METHOD(CFILE_load, GB_STRING path)
+BEGIN_METHOD(File_Load, GB_STRING path)
 
 	STREAM stream;
 	int64_t len;
@@ -632,7 +632,7 @@ BEGIN_METHOD(CFILE_load, GB_STRING path)
 
 END_METHOD
 
-BEGIN_METHOD(CFILE_save, GB_STRING path; GB_STRING data)
+BEGIN_METHOD(File_Save, GB_STRING path; GB_STRING data)
 
 	STREAM stream;
 
@@ -649,14 +649,14 @@ BEGIN_METHOD(CFILE_save, GB_STRING path; GB_STRING data)
 END_METHOD
 
 
-BEGIN_PROPERTY(CSTREAM_id)
+BEGIN_PROPERTY(Stream_Handle)
 
 	GB_ReturnInteger(STREAM_handle(CSTREAM_stream(THIS_STREAM)));
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CSTREAM_byte_order)
+BEGIN_PROPERTY(Stream_ByteOrder)
 
 	bool endian = EXEC_big_endian;
 
@@ -675,7 +675,7 @@ BEGIN_PROPERTY(CSTREAM_byte_order)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CSTREAM_eol)
+BEGIN_PROPERTY(Stream_EndOfLine)
 
 	if (READ_PROPERTY)
 		GB_ReturnInteger(CSTREAM_stream(THIS_STREAM)->common.eol);
@@ -689,19 +689,19 @@ BEGIN_PROPERTY(CSTREAM_eol)
 
 END_PROPERTY
 
-BEGIN_METHOD_VOID(CSTREAM_close)
+BEGIN_METHOD_VOID(Stream_Close)
 
 	STREAM_close(CSTREAM_stream(THIS_STREAM));
 
 END_METHOD
 
-BEGIN_PROPERTY(CSTREAM_eof)
+BEGIN_PROPERTY(Stream_EndOfFile)
 
 	GB_ReturnBoolean(CSTREAM_stream(THIS_STREAM)->common.eof);
 	
 END_PROPERTY
 
-BEGIN_PROPERTY(CSTREAM_blocking)
+BEGIN_PROPERTY(Stream_Blocking)
 
 	if (READ_PROPERTY)
 		GB_ReturnBoolean(STREAM_is_blocking(CSTREAM_stream(THIS_STREAM)));
@@ -710,7 +710,7 @@ BEGIN_PROPERTY(CSTREAM_blocking)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CSTREAM_tag)
+BEGIN_PROPERTY(Stream_Tag)
 
 	if (READ_PROPERTY)
 		GB_ReturnVariant(&THIS_STREAM->tag);
@@ -719,9 +719,21 @@ BEGIN_PROPERTY(CSTREAM_tag)
 
 END_METHOD
 
-BEGIN_METHOD_VOID(CSTREAM_free)
+BEGIN_METHOD_VOID(Stream_free)
 
 	GB_StoreVariant(NULL, POINTER(&(THIS_STREAM->tag)));
+
+END_METHOD
+
+BEGIN_METHOD(Stream_ReadLine, GB_STRING escape)
+
+	char *escape;
+	
+	escape = GB_ToZeroString(ARG(escape));
+	if (!*escape)
+		escape = NULL;
+
+	GB_ReturnString(STREAM_line_input(CSTREAM_stream(THIS_STREAM), escape));
 
 END_METHOD
 
@@ -732,16 +744,16 @@ GB_DESC NATIVE_Stream[] =
 	GB_DECLARE("Stream", sizeof(CSTREAM)),
 	GB_NOT_CREATABLE(),
 
-	GB_METHOD("_free", NULL, CSTREAM_free, NULL),
+	GB_METHOD("_free", NULL, Stream_free, NULL),
 
-	GB_PROPERTY("ByteOrder", "i", CSTREAM_byte_order),
-	GB_PROPERTY_READ("Handle", "i", CSTREAM_id),
-	GB_PROPERTY_READ("Id", "i", CSTREAM_id),
-	GB_PROPERTY("EndOfLine", "i", CSTREAM_eol),
-	GB_METHOD("Close", NULL, CSTREAM_close, NULL),
-	GB_PROPERTY_READ("EndOfFile", "b", CSTREAM_eof),
-	GB_PROPERTY("Blocking", "b", CSTREAM_blocking),
-	GB_PROPERTY("Tag", "v", CSTREAM_tag),
+	GB_PROPERTY("ByteOrder", "i", Stream_ByteOrder),
+	GB_PROPERTY_READ("Handle", "i", Stream_Handle),
+	GB_PROPERTY("EndOfLine", "i", Stream_EndOfLine),
+	GB_METHOD("Close", NULL, Stream_Close, NULL),
+	GB_PROPERTY_READ("EndOfFile", "b", Stream_EndOfFile),
+	GB_PROPERTY("Blocking", "b", Stream_Blocking),
+	GB_PROPERTY("Tag", "v", Stream_Tag),
+	GB_METHOD("ReadLine", "s", Stream_ReadLine, "[(Escape)s]"),
 
 	GB_END_DECLARE
 };
@@ -766,24 +778,24 @@ GB_DESC NATIVE_Stat[] =
 	GB_DECLARE("Stat", sizeof(CSTAT)),
 	GB_NOT_CREATABLE(),
 
-	GB_METHOD("_free", NULL, CSTAT_free, NULL),
+	GB_METHOD("_free", NULL, Stat_free, NULL),
 
-	GB_PROPERTY_READ("Type", "i", CFILE_type),
-	GB_PROPERTY_READ("Mode", "i", CFILE_mode),
-	GB_PROPERTY_READ("Hidden", "b", CFILE_hidden),
-	GB_PROPERTY_READ("Size", "l", CFILE_size),
-	GB_PROPERTY_READ("Time", "d", CFILE_mtime),
-	GB_PROPERTY_READ("LastAccess", "d", CFILE_atime),
-	GB_PROPERTY_READ("LastModified", "d", CFILE_mtime),
-	GB_PROPERTY_READ("LastChange", "d", CFILE_ctime),
-	GB_PROPERTY_READ("User", "s", CFILE_user),
-	GB_PROPERTY_READ("Group", "s", CFILE_group),
+	GB_PROPERTY_READ("Type", "i", Stat_Type),
+	GB_PROPERTY_READ("Mode", "i", Stat_Mode),
+	GB_PROPERTY_READ("Hidden", "b", Stat_Hidden),
+	GB_PROPERTY_READ("Size", "l", Stat_Size),
+	GB_PROPERTY_READ("Time", "d", Stat_Time),
+	GB_PROPERTY_READ("LastAccess", "d", Stat_LastAccess),
+	GB_PROPERTY_READ("LastModified", "d", Stat_Time),
+	GB_PROPERTY_READ("LastChange", "d", Stat_LastChange),
+	GB_PROPERTY_READ("User", "s", Stat_User),
+	GB_PROPERTY_READ("Group", "s", Stat_Group),
 	GB_PROPERTY_SELF("Perm", ".FilePerm"),
-	GB_PROPERTY_READ("SetGID", "b", CFILE_setgid),
-	GB_PROPERTY_READ("SetUID", "b", CFILE_setuid),
-	GB_PROPERTY_READ("Sticky", "b", CFILE_sticky),
-	GB_PROPERTY_READ("Path", "s", CSTAT_path),
-	GB_PROPERTY_READ("Link", "s", CSTAT_link),
+	GB_PROPERTY_READ("SetGID", "b", Stat_SetGID),
+	GB_PROPERTY_READ("SetUID", "b", Stat_SetUID),
+	GB_PROPERTY_READ("Sticky", "b", Stat_Sticky),
+	GB_PROPERTY_READ("Path", "s", Stat_Path),
+	GB_PROPERTY_READ("Link", "s", Stat_Link),
 
 	GB_END_DECLARE
 };
@@ -795,26 +807,26 @@ GB_DESC NATIVE_File[] =
 	GB_INHERITS("Stream"),
 	GB_NOT_CREATABLE(),
 
-	GB_METHOD("_free", NULL, CFILE_free, NULL),
+	GB_METHOD("_free", NULL, File_free, NULL),
 
 //  GB_STATIC_PROPERTY_READ("Separator", "s", CFILE_separator),
 
-	GB_STATIC_PROPERTY_READ("In", "File", CFILE_get_in),
-	GB_STATIC_PROPERTY_READ("Out", "File", CFILE_get_out),
-	GB_STATIC_PROPERTY_READ("Err", "File", CFILE_get_err),
+	GB_STATIC_PROPERTY_READ("In", "File", File_In),
+	GB_STATIC_PROPERTY_READ("Out", "File", File_Out),
+	GB_STATIC_PROPERTY_READ("Err", "File", File_Err),
 
-	GB_STATIC_METHOD("Dir", "s", CFILE_dir, "(Path)s"),
-	GB_STATIC_METHOD("Name", "s", CFILE_name, "(Path)s"),
-	GB_STATIC_METHOD("Ext", "s", CFILE_ext, "(Path)s"),
-	GB_STATIC_METHOD("BaseName", "s", CFILE_basename, "(Path)s"),
+	GB_STATIC_METHOD("Dir", "s", File_Dir, "(Path)s"),
+	GB_STATIC_METHOD("Name", "s", File_Name, "(Path)s"),
+	GB_STATIC_METHOD("Ext", "s", File_Ext, "(Path)s"),
+	GB_STATIC_METHOD("BaseName", "s", File_BaseName, "(Path)s"),
 
-	GB_STATIC_METHOD("SetDir", "s", CFILE_set_dir, "(Path)s(NewDir)s"),
-	GB_STATIC_METHOD("SetName", "s", CFILE_set_name, "(Path)s(NewName)s"),
-	GB_STATIC_METHOD("SetExt", "s", CFILE_set_ext, "(Path)s(NewExt)s"),
-	GB_STATIC_METHOD("SetBaseName", "s", CFILE_set_basename, "(Path)s(NewBaseName)s"),
+	GB_STATIC_METHOD("SetDir", "s", File_SetDir, "(Path)s(NewDir)s"),
+	GB_STATIC_METHOD("SetName", "s", File_SetName, "(Path)s(NewName)s"),
+	GB_STATIC_METHOD("SetExt", "s", File_SetExt, "(Path)s(NewExt)s"),
+	GB_STATIC_METHOD("SetBaseName", "s", File_SetBaseName, "(Path)s(NewBaseName)s"),
 
-	GB_STATIC_METHOD("Load", "s", CFILE_load, "(FileName)s"),
-	GB_STATIC_METHOD("Save", NULL, CFILE_save, "(FileName)s(Data)s"),
+	GB_STATIC_METHOD("Load", "s", File_Load, "(FileName)s"),
+	GB_STATIC_METHOD("Save", NULL, File_Save, "(FileName)s(Data)s"),
 
 	GB_EVENT("Read", NULL, NULL, &EVENT_Read),
 	GB_EVENT("Write", NULL, NULL, &EVENT_Write),

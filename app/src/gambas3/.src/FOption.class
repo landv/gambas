@@ -85,7 +85,8 @@ Public Sub _new()
     [cmbIntegratedHelp, "/PropertyHelp", 1],
     [cmbHelpCompletion, "/ShowHelpInPopup", 1],
     [cmbMinimize, "/MinimizeOnRun", 0],
-    [cmbUpperCaseKeywords, "/Editor/KeywordsUseUpperCase", 0]]
+    [cmbUpperCaseKeywords, "/Editor/KeywordsUseUpperCase", 0],
+    [cmbControlStructCompletion, "/Editor/ControlStructCompletion", 1]]
   
   $bNoChange = True
   ReadConfig
@@ -574,11 +575,15 @@ End
 
 Public Sub cmbUpperCaseKeywords_Click()
 
-  Dim hFile As Object
-
   Settings["/Editor/KeywordsUseUpperCase"] = cmbUpperCaseKeywords.Index = 1
-
   RefreshEditor
+
+End
+
+Public Sub cmbControlStructCompletion_Click()
+
+  Settings["/Editor/ControlStructCompletion"] = cmbControlStructCompletion.Index = 1
+  FEditor.StructControlCompletion = cmbControlStructCompletion.Index = 1
 
 End
 

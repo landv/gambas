@@ -1,13 +1,13 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,99,57)
+  MoveScaled(0,0,94,57)
   Action = "option"
   Text = ("Preferences")
   Icon = Picture["icon:/small/options"]
   Persistent = True
   Utility = True
-  Arrangement = Arrange.Horizontal
+  Arrangement = Arrange.Fill
   Spacing = True
   Margin = True
   { mnuPopup Menu
@@ -300,6 +300,23 @@
         MoveScaled(59,0,7,4)
       }
     }
+    { HBox25 HBox
+      MoveScaled(0,35,66,4)
+      Spacing = True
+      { Label22 Label
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Control structure automatic completion")
+      }
+      { cmbControlStructCompletion ComboBox
+        MoveScaled(48,0,10,4)
+        ReadOnly = True
+        List = [("No"), ("Yes")]
+      }
+      { Panel15 Panel
+        MoveScaled(59,0,7,4)
+      }
+    }
     Index = 2
     Text = ("Applications")
     Picture = Picture["icon:/large/exec"]
@@ -363,6 +380,7 @@
       }
       { Panel4 Panel
         MoveScaled(59,0,7,4)
+        Visible = False
       }
     }
     { HBox3 HBox
@@ -380,6 +398,7 @@
       }
       { Panel5 Panel
         MoveScaled(59,0,7,4)
+        Visible = False
       }
     }
     { HBox5 HBox
@@ -397,6 +416,7 @@
       }
       { Panel6 Panel
         MoveScaled(59,0,7,4)
+        Visible = False
       }
     }
     { HBox22 HBox

@@ -248,7 +248,7 @@ void SUBR_linput(void)
 
   stream = get_stream(&SP[-1], TRUE);
 
-  addr = STREAM_line_input(stream);
+  addr = STREAM_line_input(stream, NULL);
 
 	SP--;
 	RELEASE_OBJECT(SP);

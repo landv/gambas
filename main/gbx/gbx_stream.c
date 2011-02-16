@@ -546,12 +546,12 @@ static void fill_buffer(STREAM *stream, char *addr)
 }
 
 
-static char *input(STREAM *stream, bool line)
+static char *input(STREAM *stream, bool line, char *escape)
 {
 	int len = 0;
 	int start;
 	unsigned char c, lc = 0;
-	void *test;
+	void *test, *test_org;
 	bool eol;
 	char *buffer;
 	int buffer_len;
@@ -559,8 +559,6 @@ static char *input(STREAM *stream, bool line)
 	char *addr;
 	
 	addr = NULL;
-
-	stream->common.eof = FALSE;
 	
 	if (!line)
 		test = &&__TEST_INPUT;
@@ -573,7 +571,11 @@ static char *input(STREAM *stream, bool line)
 			default: test = &&__TEST_UNIX; break;
 		}
 	}
-
+	
+	test_org = test;
+	
+	stream->common.eof = FALSE;
+	
 	if (!STREAM_is_blocking(stream) && STREAM_eof(stream))
 	{
 		//printf("EOF!\n"); fflush(stdout);
@@ -606,7 +608,6 @@ static char *input(STREAM *stream, bool line)
 		{
 			if (len)
 			{
-				//add_string(addr, &len_str, stream->common.buffer + start, len);
 				STRING_add(&addr, buffer + start, len);
 				len = 0;
 			}
@@ -615,39 +616,29 @@ static char *input(STREAM *stream, bool line)
 			stream->common.buffer_pos = buffer_pos;
 			stream->common.buffer_len = buffer_len;
 			
-			//printf("fill_buffer: (is_file = %d)\n", stream->common.is_file); fflush(stdout);
-			
 			fill_buffer(stream, buffer);
-			//STREAM_read_max(stream, buffer, STREAM_BUFFER_SIZE);
 			
 			buffer_pos = 0;
 			buffer_len = STREAM_eff_read;
 			
-			#if 0
-			printf("-> %d: ", buffer_len);
-			{
-				int i;
-				for (i = 0; i < buffer_len; i++)
-				{
-					printf("%02X ", buffer[i]);
-				}
-				putchar('\n');
-			}
-			#endif
-			
 			if (!buffer_len)
 			{
-				//if (stream->common.available_now)
-				//{
-					stream->common.eof = TRUE;
-					break;
-				//}
+				stream->common.eof = TRUE;
+				break;
 			}
 			
 			start = 0;
 		}
 		
 		c = buffer[buffer_pos++]; //STREAM_getchar(stream);
+
+		if (escape && c == *escape)
+		{
+			if (test == &&__TEST_CONT)
+				test = test_org;
+			else
+				test = &&__TEST_CONT;
+		}
 
 		goto *test;
 
@@ -681,7 +672,9 @@ static char *input(STREAM *stream, bool line)
 
 		if (eol)
 			break;
-
+		
+	__TEST_CONT:
+		
 		len++;
 	}
 
@@ -699,15 +692,15 @@ static char *input(STREAM *stream, bool line)
 }
 
 
-char *STREAM_line_input(STREAM *stream)
+char *STREAM_line_input(STREAM *stream, char *escape)
 {
-	return input(stream, TRUE);
+	return input(stream, TRUE, escape);
 }
 
 
 char *STREAM_input(STREAM *stream)
 {
-	return input(stream, FALSE);
+	return input(stream, FALSE, NULL);
 }
 
 
