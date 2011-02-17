@@ -12,6 +12,7 @@ Private $iMaxY As Integer
 Private $sLastUrl As String
 Private $hSymbol As CSymbolInfo
 Private $X As Integer
+Private $iArrow As Integer
 
 Private Sub UpdateSignature(Optional hForm As FEditor)
   
@@ -51,16 +52,16 @@ Private Sub UpdateSignature(Optional hForm As FEditor)
     panResizeTop.Show
     sepHelp.Raise
     panSignature.Raise
-    sIcon = If($bShowHelp, "down", "up")
+    $iArrow = If($bShowHelp, Align.Bottom, Align.Top)
   Else
     panResizeBottom.Show
     panResizeTop.Hide
     sepHelp.Raise
     panHelp.Raise
-    sIcon = If($bShowHelp, "up", "down")
+    $iArrow = If($bShowHelp, Align.Top, Align.Bottom)
   Endif
 
-  If $bUseHelp Then btnHelp.Picture = Picture["icon:/small/" & sIcon]
+  If $bUseHelp Then btnHelp.Refresh
 
   hCont = $hEditor.Parent
   iX = $X
@@ -245,9 +246,28 @@ Public Sub webHelp_Error()
 
 End
 
-Public Sub btnHelp_Click()
+Public Sub btnHelp_MouseDown()
 
   $bShowHelp = Not $bShowHelp
   UpdateSignature
+
+End
+
+Public Sub btnHelp_Draw()
+
+  If btnHelp.Hovered Then Draw.Foreground = Color.Blue
+  Draw.Style.Arrow(0, 0, btnHelp.W, btnHelp.H, $iArrow)
+
+End
+
+Public Sub btnHelp_Enter()
+
+  btnHelp.Refresh
+
+End
+
+Public Sub btnHelp_Leave()
+
+  btnHelp.Refresh
 
 End
