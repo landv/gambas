@@ -264,32 +264,34 @@ static gboolean cb_keypress(GtkWidget *widget, GdkEvent *event, gTextArea *ctrl)
 {
 	if (event->key.state & GDK_CONTROL_MASK)
 	{
-		if (event->key.keyval == GDK_KEY_Z || event->key.keyval == GDK_KEY_z)
+		int key = gdk_keyval_to_unicode(gdk_keyval_to_upper(event->key.keyval));
+		
+		if (key == 'Z')
 		{
 			ctrl->undo();
 			return true;
 		}
-		else if (event->key.keyval == GDK_KEY_Y || event->key.keyval == GDK_KEY_y)
+		else if (key == 'Y')
 		{
 			ctrl->redo();
 			return true;
 		}
-		else if (event->key.keyval == GDK_KEY_A || event->key.keyval == GDK_KEY_a)
+		else if (key == 'A')
 		{
 			ctrl->selectAll();
 			return true;
 		}
-		else if (event->key.keyval == GDK_KEY_C || event->key.keyval == GDK_KEY_c)
+		else if (key == 'C')
 		{
 			ctrl->copy();
 			return true;
 		}
-		else if (event->key.keyval == GDK_KEY_X || event->key.keyval == GDK_KEY_x)
+		else if (key == 'X')
 		{
 			ctrl->cut();
 			return true;
 		}
-		else if (event->key.keyval == GDK_KEY_V || event->key.keyval == GDK_KEY_v)
+		else if (key == 'V')
 		{
 			ctrl->paste();
 			return true;
