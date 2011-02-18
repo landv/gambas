@@ -69,7 +69,7 @@ End
 Public Sub btnRun_Click()
   
   If Len(txtBarcode.Text) <> 13 Then 
-    Message.Error("Please enter a valid 13 digit EAN-13 number")
+    Message.Error(("Please enter a valid 13 digit EAN-13 number"))
   Else 
     If Val(txtPosX.Text) = 0 Then 
       If rbutScreen Then 
@@ -150,7 +150,7 @@ End
 
 Public Sub btnAbout_Click()
 
-  Message.Info("This program was made by Charles Guerin and\nmodified by Benoît Minisini.")
+  Message.Info(("This program was made by Charles Guerin and\nmodified by Benoît Minisini."))
 
 End
 

@@ -111,7 +111,7 @@ Public Sub Form_Open()
     tmp.width = 16
     tmp.height = 16
     tmp.font.size = 12
-    tmp.forecolor = Int(Rnd(32, 255)) * 65536 + Int(Rnd(32, 255)) * 256 + Int(Rnd(32, 255))
+    tmp.Foreground = Int(Rnd(32, 255)) * 65536 + Int(Rnd(32, 255)) * 256 + Int(Rnd(32, 255))
     tmp.alignment = Align.center
     tmp.text = "#"
     Do While tmp.text = "#"
@@ -128,8 +128,8 @@ Public Sub Form_Open()
   robot.height = 16
   robot.width = 16
   robot.font.size = 12
-  robot.backcolor = Color.white
-  robot.forecolor = Color.black
+  robot.Background = Color.white
+  robot.Foreground = Color.black
   robot.alignment = Align.center
   robot.text = "#"
   
@@ -177,7 +177,7 @@ Sub FoundKitten(nki As Integer)
   heart.visible = True
   KittenIsFound = True
   kittenindex = nki
-  TextLabel1.text = "You found kitten! Way to go, robot!"
+  TextLabel1.text = ("You found kitten! Way to go, robot!")
   nkis[nki].y = heart.y + heart.height
   robot.y = heart.y + heart.height
   robot.x = heart.x - robot.width

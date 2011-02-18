@@ -2,32 +2,26 @@
 
 { Form Form
   MoveScaled(0,0,106,62)
-  Text = ("")
   Icon = Picture["barcode.png"]
   Arrangement = Arrange.Vertical
   Spacing = True
   Padding = 8
   { Panel1 Panel
-    MoveScaled(1,1,85,8)
+    MoveScaled(1,1,95,8)
     { txtBarcode TextBox
       MoveScaled(0,4,24,4)
-      Text = ("")
     }
     { txtPosX TextBox
       MoveScaled(25,4,8,4)
-      Text = ("")
     }
     { txtPosY TextBox
       MoveScaled(34,4,8,4)
-      Text = ("")
     }
     { txtHeight TextBox
       MoveScaled(43,4,8,4)
-      Text = ("")
     }
     { txtWidth TextBox
       MoveScaled(52,4,8,4)
-      Text = ("")
     }
     { Label1 Label
       MoveScaled(0,0,18,4)
@@ -50,11 +44,11 @@
       Text = ("Width")
     }
     { rbutPrinter RadioButton
-      MoveScaled(63,4,20,4)
+      MoveScaled(63,3,27,4)
       Text = ("Size for printer")
     }
     { rbutScreen RadioButton
-      MoveScaled(63,0,20,4)
+      MoveScaled(63,0,27,4)
       Text = ("Size for screen")
       Value = True
     }
@@ -82,7 +76,7 @@
       Text = ("About...")
     }
     { btnExit Button
-      MoveScaled(52,0,9,4)
+      MoveScaled(52,0,11,4)
       Text = ("E&xit")
       Cancel = True
     }

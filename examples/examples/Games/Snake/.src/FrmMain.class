@@ -41,7 +41,7 @@ Public Sub Form_Open()
    MenuGrandMa_Click()
    InitSnake
    UpdateScoreBoard
-   Play("start")
+   Play("start.wav")
    
    Me.Text = "Snake v1.0"
    hPictHead = Picture.Load("head.png")
@@ -55,7 +55,7 @@ Public Sub Form_Open()
    Draw.Font.Size = 120 'Give me real big font
    For i = 1 To 10 'Trick to draw 3D text
    If i = 10 Then Draw.Foreground = &HFF0000& 'This is the last layer, so make it pure red
-   Draw.text("Snake", (dwg.clientW - Draw.TextWidth("Snake")) / 2 - i, (dwg.Height + Draw.TextHeight("Snake")) / 2 - i - 50)
+   Draw.text(("Snake"), (dwg.clientW - Draw.TextWidth("Snake")) / 2 - i, (dwg.Height + Draw.TextHeight("Snake")) / 2 - i - 50)
    Next 
    Draw.Font.Size = 18
    Draw.Text("ver 1.0 by: Ahmad Kamal", (dwg.clientW - Draw.TextWidth("ver 1.0 by: Ahmad Kamal")) / 2, 100)
@@ -93,13 +93,13 @@ Public Sub TmrEngine_Timer()
 'This is the main game engine. With every tick, the game status get updated.
 
   Dim i As Integer
-  Dim hPictHeadRotated As New picture
+  Dim hPictHeadRotated As New Picture
 
   'Here we will move the snake. Instead of moving each & every square of the snake
   'We will use an optimized method. Only the head moves one step forward & the
   'Tail moves to where the head previously was. That way, all the snake seems to be moving!
 
-  If $eLast Then Debug TmrEngine.Delay;; Format(Timer - $eLast, "0.###")
+'   If $eLast Then Debug TmrEngine.Delay;; Format(Timer - $eLast, "0.###")
   $eLast = Timer
   
   Xpos[TailPos[0]] = Xpos[0] 'Tail goes to head
@@ -242,7 +242,7 @@ Public Sub SnakeDies()
   TmrEngine.Enabled = False
   TimerApple.Enabled = False
   Play("dead")
-  Message("The snake's soul will always be remembered.\nGame Over!!\nYou scored: " & score & "\nPress Game -> New to play again.")
+  Message(("The snake's soul will always be remembered.\nGame Over!!\nYou scored: ") & score & ("\nPress Game -> New to play again."))
   
 End
 
@@ -313,10 +313,10 @@ Public Sub MenuHowToPlay_Click()
 
   Dim Help As String
   
-  Help = "The Rules are simple:\n"
-  Help = Help & "Eat as many apples as you can\n"
-  Help = Help & "Do not Hit the walls, or bite yourself!\n\n"
-  Help = Help & "Use the arrow keys to move the snake"
+  Help = ("The Rules are simple:\n")
+  Help = Help & ("Eat as many apples as you can\n")
+  Help = Help & ("Do not Hit the walls, or bite yourself!\n\n")
+  Help = Help & ("Use the arrow keys to move the snake")
   
   Message(Help)
   
@@ -355,8 +355,8 @@ End
 
 Public Sub UpdateScoreBoard()
   
-   LblScore.Text = "Score: " & Score
-   LblSpeed.Text = "Speed: " & Speed
+   LblScore.Text = ("Score: ") & Score
+   LblSpeed.Text = ("Speed: ") & Speed
   
 End
 

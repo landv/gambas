@@ -1,11 +1,11 @@
 ' Gambas class file
 
-STATIC PUBLIC boarddesign AS NEW Object[] ' The game grid
-STATIC PUBLIC POW2 AS Integer[] ' Array for display algo
-STATIC PUBLIC ball AS Picture ' The ball graphic
-STATIC PUBLIC selected AS Boolean ' Is a ball selected?
-STATIC PUBLIC clickedball AS Byte ' Which ball, ignored if above is false
-STATIC PUBLIC ballcount AS Byte ' The number of balls in play
-STATIC PUBLIC totalballs AS Byte ' The number of balls at the start
-STATIC PUBLIC gamemove AS NEW Object[] ' Stores the moves made to allow for undoing
-STATIC PUBLIC selectedlayout AS Byte ' The active board layout
+Static Public boarddesign As New Object[] ' The game grid
+Static Public POW2 As Integer[] ' Array for display algo
+Static Public ball As Picture ' The ball graphic
+Static Public selected As Boolean ' Is a ball selected?
+Static Public clickedball As Byte ' Which ball, ignored if above is false
+Static Public ballcount As Byte ' The number of balls in play
+Static Public totalballs As Byte ' The number of balls at the start
+Static Public gamemove As New Object[] ' Stores the moves made to allow for undoing
+Static Public selectedlayout As Byte ' The active board layout

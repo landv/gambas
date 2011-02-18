@@ -5,7 +5,7 @@
   Text = ("About...")
   Resizable = False
   { !TabStrip1 TabStrip
-    MoveScaled(2,1,50,35)
+    MoveScaled(2,2,50,35)
     #Public = True
     Count = 3
     Index = 0
@@ -28,7 +28,7 @@
     Text = ("How to play?")
     { TextLabel2 TextLabel
       MoveScaled(2,1,45,27)
-      Text = ("<b>Move</b><br>\nTo move around the game board, use the arrow keys: up, down, left and right.<br><br>\n<b>Clear</b><br>\nTo restart the level, press the spacebar key.")
+      Text = ("<b>Aim</b><br>\nThe shrimp has to push the movable boxes to the marked positions.<br><br>\n<b>Move</b><br>\nTo move around the game board, use the arrow keys: up, down, left and right.<br><br>\n<b>Clear</b><br>\nTo restart the level, press the spacebar key.")
       Alignment = Align.Justify
     }
     Index = 0

@@ -69,7 +69,7 @@ End
 
 Public Sub Slider1_Change()
 
-  lblDelay.Caption = "Evolution Delay: " & Str(slider1.Value) & "ms"
+  lblDelay.Caption = ("Evolution Delay: ") & Str(slider1.Value) & "ms"
   tmrEvolution.Delay = slider1.Value    
 
 End

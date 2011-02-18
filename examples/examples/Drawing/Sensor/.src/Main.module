@@ -1,12 +1,12 @@
 ' Gambas module file
 
-PUBLIC SUB Main()
+Public Sub Main()
 
-  IF Application.Args.Count = 2 THEN
+  If Application.Args.Count = 2 Then
     'Message("I will embed into " & Application.Args[1])
     Application.Embedder = Val(Application.Args[1])
-  ENDIF
+  Endif
 
   FSensor.Show
 
-END
+End

@@ -221,7 +221,7 @@ Public Sub MnuQuit_Click()
 End
 
 Public Sub Form_Close()
-  If Message.Question(("Are you sure?"), ("Yes"), "No") = 2 Then
+  If Message.Question(("Are you sure?"), ("Yes"), ("No")) = 2 Then
     Stop Event
   End If
 End
