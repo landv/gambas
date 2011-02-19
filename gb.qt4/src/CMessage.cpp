@@ -56,7 +56,7 @@ typedef
 	
 static char *_title = 0;
 
-static MSG_BUTTON_ROLE _button_role[] =
+/*static MSG_BUTTON_ROLE _button_role[] =
 {
 	{ "Apply", QMessageBox::Apply },
 	{ "Abort", QMessageBox::Abort },
@@ -109,7 +109,7 @@ static QMessageBox::StandardButton get_standard_button(char *text)
 	}
 	
 	return QMessageBox::NoButton;
-}
+}*/
 
 static int make_message(int type, int nbmax, void *_param)
 {
@@ -118,7 +118,7 @@ static int make_message(int type, int nbmax, void *_param)
 	QPushButton *button[3];
 	int ret, nbutton;
 	QMessageBox::ButtonRole role;
-	QMessageBox::StandardButton std;
+	//QMessageBox::StandardButton std;
 	QMessageBox::Icon icon;
 	const char *stock;
 	QString title;
@@ -162,13 +162,13 @@ static int make_message(int type, int nbmax, void *_param)
 		if (MISSING(btn[i]))
 			continue;
 		
-		std = get_standard_button(GB.ToZeroString(ARG(btn[i])));
+		/*std = get_standard_button(GB.ToZeroString(ARG(btn[i])));
 		if (std)
 		{
 			button[n] = mb->addButton(std);
 		}
 		else
-		{
+		{*/
 			if (n == 0)
 				role = QMessageBox::AcceptRole;
 			else if (n == (nbutton - 1))
@@ -177,7 +177,7 @@ static int make_message(int type, int nbmax, void *_param)
 				role = QMessageBox::ActionRole;
 		
 			button[n] = mb->addButton(QSTRING_ARG(btn[i]), role);
-		}
+		//}
 		
 		n++;
 	}
