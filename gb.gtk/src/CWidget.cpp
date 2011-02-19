@@ -268,7 +268,8 @@ void DeleteControl(gControl *control)
 	GB.StoreObject(NULL, POINTER(&widget->cursor));
 	CACTION_register(widget, NULL);
 	
-	WINDOW_kill((CWINDOW*)widget);
+	if (control->isTopLevel())
+		CWINDOW_check_main_window((CWINDOW*)widget);
 	
 	GB.Unref(POINTER(&widget->font));
 	GB.FreeString(&widget->popup);

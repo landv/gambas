@@ -36,8 +36,7 @@ int CWINDOW_Embedder = 0;
 bool CWINDOW_Embedded = false;
 
 CWINDOW *CWINDOW_Active = NULL;
-
-static CWINDOW *MAIN_Window = NULL;
+CWINDOW *CWINDOW_Main = NULL;
 static int MODAL_windows = 0;
 
 DECLARE_EVENT(EVENT_Open);
@@ -52,17 +51,12 @@ DECLARE_EVENT(EVENT_Title);
 DECLARE_EVENT(EVENT_Icon);
 
 
-CWINDOW* WINDOW_get_main()
+void CWINDOW_check_main_window(CWINDOW *win)
 {
-	return MAIN_Window;
-}
-
-void WINDOW_kill(CWINDOW *win)
-{
-	if (MAIN_Window==win) 
+	if (CWINDOW_Main == win) 
 	{
-		//fprintf(stderr, "MAIN_Window = NULL\n");
-		MAIN_Window=NULL;
+		//fprintf(stderr, "CWINDOW_Main = NULL\n");
+		CWINDOW_Main = NULL;
 	}
 }
 
@@ -145,7 +139,7 @@ static bool closeAll()
 			break;
 		//fprintf(stderr, "closeAll: try %p\n", win);
 		window = (CWINDOW *)GetObject(win);
-		if (window == MAIN_Window)
+		if (window == CWINDOW_Main)
 			continue;
 		if (close_window(window))
 			return true;
@@ -154,7 +148,7 @@ static bool closeAll()
 	return false;
 }
 
-static bool deleteAll()
+void CWINDOW_delete_all()
 {
 	int i;
 	gMainWindow *win;
@@ -167,37 +161,55 @@ static bool deleteAll()
 			break;
 		//fprintf(stderr, "closeAll: try %p\n", win);
 		window = (CWINDOW *)GetObject(win);
-		if (window == MAIN_Window)
+		if (window == CWINDOW_Main)
 			continue;
 		win->destroy();
 	}
+}
+
+bool CWINDOW_must_quit()
+{
+	int i;
+	gMainWindow *win;
 	
-	return false;
+	for(i = 0; i < gMainWindow::count(); i++)
+	{
+		win = gMainWindow::get(i);
+		if (win->isTopLevel() && win->isOpened())
+			return false;
+	}
+	
+	return true;
 }
 
 static bool gb_raise_window_Close(gMainWindow *sender)
 {
-	CWINDOW *_ob=(CWINDOW*)GetObject(sender);
+	CWINDOW *_object = (CWINDOW*)GetObject(sender);
 
-	if (!_ob) return false;
-	if (GB.Raise((void*)_ob,EVENT_Close,0)) return true;
-
-	if (MAIN_Window && sender == MAIN_Window->ob.widget)
+	if (!THIS)
+		return false;
+	
+	if (GB.Raise(THIS, EVENT_Close ,0)) 
+		return true;
+	
+	if (CWINDOW_Main && sender == CWINDOW_Main->ob.widget)
 	{
 		if (closeAll())
 			return true;
 		if (!sender->isPersistent())
 		{
-			deleteAll();
-			MAIN_Window = NULL;
+			CWINDOW_delete_all();
+			CWINDOW_Main = NULL;
 		}
 	}
 
-	if (_ob->embed)
+	if (THIS->embed)
 	{
 		CWINDOW_Embedder = 0;
 		CWINDOW_Embedded = false;
 	}
+	
+	MAIN_check_quit();
 	
 	return false;
 }
@@ -293,11 +305,11 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent;)
 	WINDOW->onDeactivate = cb_deactivate;
 	//WINDOW->resize(200,150);
 
-	if ( (!MAIN_Window) && (!parent)) 
+	/*if ( (!CWINDOW_Main) && (!parent)) 
 	{
-		MAIN_Window = THIS;
-		//fprintf(stderr, "MAIN_Window = %p\n", MAIN_Window);
-	}
+		CWINDOW_Main = THIS;
+		//fprintf(stderr, "CWINDOW_Main = %p\n", CWINDOW_Main);
+	}*/
 
 	/*if (parent)
 	{

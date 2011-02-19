@@ -90,7 +90,9 @@ static void my_wait(int duration);
 static void my_post(void);
 static int my_loop();
 static void my_watch(int fd, int type, void *callback, intptr_t param);
-static bool post_Check=false;
+
+static bool _post_check = false;
+static bool _must_check_quit = false;
 
 static bool _application_keypress = false;
 static GB_FUNCTION _application_keypress_func;
@@ -310,7 +312,7 @@ extern "C"
 
 void my_quit (void)
 {
-	CWINDOW *win=WINDOW_get_main();
+	CWINDOW *win = CWINDOW_Main;
 
 	gApplication::suspendEvents(false);
 	if (win)
@@ -413,23 +415,32 @@ static void my_timer(GB_TIMER *timer,bool on)
 
 static void my_post(void)
 {
-	post_Check=true;
+	_post_check = true;
 }
 
-static bool must_quit(void)
+void MAIN_check_quit()
 {
-	//fprintf(stderr, "must_quit: %p %d\n", WINDOW_get_main(), CWatcher::count());
-  return !WINDOW_get_main() && CWatcher::count() == 0; // && in_event_loop;
+	_must_check_quit = true;
 }
 
 static int my_loop()
 {
 	gControl::cleanRemovedControls();
 	
-	while (!must_quit())
-		do_iteration(false);
+	for(;;)
+	{
+		MAIN_do_iteration(false);
+		if (_must_check_quit)
+		{
+			if (CWINDOW_must_quit() && CWatcher::count() == 0)
+				break;
+			_must_check_quit = false;
+		}
+	}
 
-	while (gtk_events_pending ())
+	CWINDOW_delete_all();
+
+	while (gtk_events_pending())
 		gtk_main_iteration();
   
 	CWatcher::Clear();
@@ -440,7 +451,7 @@ static int my_loop()
 
 static void my_wait(int duration)
 {
-	do_iteration(true, true);
+	MAIN_do_iteration(true, true);
 }
 
 static void my_watch(int fd, int type, void *callback, intptr_t param)
@@ -482,7 +493,7 @@ static void my_lang(char *lang,int rtl)
 	}
 }
 
-void do_iteration(bool do_not_block, bool do_not_sleep)
+void MAIN_do_iteration(bool do_not_block, bool do_not_sleep)
 {
 	struct timespec mywait;
 
@@ -504,6 +515,11 @@ void do_iteration(bool do_not_block, bool do_not_sleep)
 	
 	gApplication::_loopLevel--;
 
-	if (post_Check) { post_Check=false; GB.CheckPost(); }
+	if (_post_check)
+	{
+		_post_check = false;
+		GB.CheckPost();
+	}
+	
 	gControl::cleanRemovedControls();
 }

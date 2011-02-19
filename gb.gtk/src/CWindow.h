@@ -50,6 +50,7 @@ extern GB_DESC CWindowsDesc[];
 extern GB_DESC CFormDesc[];
 
 extern CWINDOW *CWINDOW_Active;
+extern CWINDOW *CWINDOW_Main;
 
 #else
 
@@ -58,8 +59,9 @@ extern CWINDOW *CWINDOW_Active;
   
 #endif
 
-CWINDOW* WINDOW_get_main();
-void WINDOW_kill(CWINDOW *win);
+void CWINDOW_check_main_window(CWINDOW *win);
+bool CWINDOW_must_quit();
+void CWINDOW_delete_all();
 
 #endif
 

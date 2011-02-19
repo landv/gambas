@@ -49,6 +49,7 @@ public:
 	bool getSticky();
 	int  getStacking();
 	bool isPersistent() const { return persistent; }
+	bool isOpened() const { return opened; }
 	bool isClosed() const { return !opened; }
 	bool isHidden() const { return _hidden; }
 	bool isPopup() const { return _popup; }

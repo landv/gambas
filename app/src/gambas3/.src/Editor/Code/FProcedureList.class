@@ -137,3 +137,11 @@ Public Sub Form_Activate()
   gvwProc.SetFocus
   
 End
+
+Public Sub gvwProc_Scroll()
+
+  Dim iRow As Integer = gvwProc.RowAt(Mouse.ScreenY - gvwProc.ScreenY)
+  
+  Try gvwProc.Rows[iRow].Selected = True
+
+End

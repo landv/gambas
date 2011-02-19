@@ -406,11 +406,6 @@ void STRING_extend_end(char **ptr)
 }
 
 
-
-/* Attention ! Contrairement �STRING_new, STRING_new_temp_value cr� des
-	cha�es temporaires.
-*/
-
 void STRING_new_temp_value(VALUE *value, const char *src, int len)
 {
 	value->_string.addr = STRING_new_temp(src, len);

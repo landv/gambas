@@ -209,7 +209,10 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Application_MainWindow)
 
-	GB.ReturnObject(CWINDOW_Main);
+	if (READ_PROPERTY)
+		GB.ReturnObject(CWINDOW_Main);
+	else
+		CWINDOW_Main = (CWINDOW *)VPROP(GB_OBJECT);
 
 END_PROPERTY
 
@@ -396,7 +399,7 @@ GB_DESC ApplicationDesc[] =
 	GB_STATIC_PROPERTY("Font", "Font", Application_Font),
 	GB_STATIC_PROPERTY_READ("ActiveWindow", "Window", Application_ActiveWindow),
 	GB_STATIC_PROPERTY_READ("ActiveControl", "Control", Application_ActiveControl),
-	GB_STATIC_PROPERTY_READ("MainWindow", "Window", Application_MainWindow),
+	GB_STATIC_PROPERTY("MainWindow", "Window", Application_MainWindow),
 	GB_STATIC_PROPERTY("Busy", "i", Application_Busy),
 	GB_STATIC_PROPERTY_SELF("ToolTip", ".ApplicationTooltip"),
 	GB_STATIC_PROPERTY("Embedder", "i", Application_Embedder),

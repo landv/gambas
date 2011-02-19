@@ -559,7 +559,7 @@ static bool must_quit(void)
 	#if DEBUG_WINDOW
 	qDebug("must_quit: Window = %d Watch = %d in_event_loop = %d", CWindow::count, CWatch::count, in_event_loop);
 	#endif
-	return CWindow::count == 0 && CWatch::count == 0 && in_event_loop && MAIN_in_message_box == 0;
+	return CWINDOW_must_quit() && CWatch::count == 0 && in_event_loop && MAIN_in_message_box == 0;
 }
 
 static void check_quit_now(intptr_t param)
@@ -719,6 +719,11 @@ static void hook_loop()
 		qApp->exec();
 	else
 		MAIN_check_quit();
+	
+	CWINDOW_close_all();
+	CWINDOW_delete_all();
+
+	qApp->processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::DeferredDeletion, 0);
 }
 
 

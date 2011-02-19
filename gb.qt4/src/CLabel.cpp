@@ -108,6 +108,7 @@ BEGIN_PROPERTY(CLABEL_margin)
 	else
 	{
 		WIDGET->setMargin(VPROP(GB_INTEGER));
+		WIDGET->calcMinimumHeight();
 		WIDGET->update();
 	}
 

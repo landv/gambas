@@ -223,7 +223,10 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Application_MainWindow)
 
-	GB.ReturnObject(WINDOW_get_main());
+	if (READ_PROPERTY)
+		GB.ReturnObject(CWINDOW_Main);
+	else
+		CWINDOW_Main = (CWINDOW *)VPROP(GB_OBJECT);
 
 END_PROPERTY
 

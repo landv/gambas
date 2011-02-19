@@ -261,7 +261,8 @@ Public Sub Main()
   InitVersion
   InitWebView
   CRecentFile.Load
-  FMain.Load 
+  FMain.Load
+  Application.MainWindow = FMain
   
   Do
     

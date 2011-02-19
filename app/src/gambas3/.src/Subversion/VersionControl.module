@@ -65,11 +65,19 @@ Public Sub Process_Kill()
   
 End
 
+Private Sub SvnShell$(sPath As String) As String
+  
+  If InStr(sPath, "@") Then sPath &= "@"
+  Return Shell$(sPath)
+  
+End
+
+
 
 Public Sub AddFile(sPath As String, Optional bForce As Boolean)
 
   If $bSVN Then
-    Run("svn add " & If(bForce, "--force ", "") & Shell$(sPath))
+    Run("svn add " & If(bForce, "--force ", "") & SvnShell$(sPath))
   Endif
   If $bCVS Then
     'NB: For CVS file must already exist
@@ -81,7 +89,7 @@ End
 Public Sub AddDir(sPath As String)
 
   If $bSVN Then
-    Run("svn add " & Shell$(sPath))
+    Run("svn add " & SvnShell$(sPath))
   Endif
   If $bCVS Then
     'NB: For CVS, directory must already exist
@@ -95,7 +103,7 @@ End
 Public Sub RemoveFile(sPath As String, Optional bForce As Boolean)
 
   If $bSVN Then
-    Run("svn remove " & IIf(bForce, "--force ", "") & Shell$(sPath))
+    Run("svn remove " & IIf(bForce, "--force ", "") & SvnShell$(sPath))
   Endif
   If $bCVS Then
     'NB: For CVS do 'cvs remove file' first then delete file
@@ -223,7 +231,7 @@ Public Sub MoveDir(sOld As String, sNew As String) As Boolean
   Dim sDir As String
 
   If $bSVN Then
-    Run("svn move --force " & Shell$(sOld) & " " & Shell$(sNew))
+    Run("svn move --force " & SvnShell$(sOld) & " " & SvnShell$(sNew))
     'AddFile(sNew)
     ' For Each sDir In RDir(sNew, "*", gb.Directory)
     '   If File.Name(sDir) <> ".svn" Then Continue
@@ -286,7 +294,7 @@ End
 Public Sub Update() As Boolean
   
   If $bSVN Then 
-    Run("svn update --non-interactive " & Shell$(Project.Dir))
+    Run("svn update --non-interactive " & SvnShell$(Project.Dir))
     Return Process.LastValue
   Endif
   
@@ -296,7 +304,7 @@ End
 Public Sub Revert() As Boolean
   
   If $bSVN Then 
-    Run("svn -R revert " & Shell$(Project.Dir))
+    Run("svn -R revert " & SvnShell$(Project.Dir))
     Return Process.LastValue
   Endif
   
@@ -306,7 +314,7 @@ End
 Public Sub CheckoutSVN(sPath As String, sDir As String, hEditor As Editor) As Boolean
 
   $hEditor = hEditor
-  Run("cd " & Shell$(sDir) & "; svn checkout " & Shell$(sPath))
+  Run("cd " & Shell$(sDir) & "; svn checkout " & SvnShell$(sPath))
   $hEditor = Null
   
 End
@@ -327,7 +335,7 @@ End
 Public Sub Resolve(sPath As String) As Boolean
   
   If $bSVN Then 
-    Run("svn resolved " & Shell$(sPath))
+    Run("svn resolved " & SvnShell$(sPath))
     Return Process.LastValue
   Endif  
   
@@ -376,7 +384,7 @@ Public Sub Diff(sPath As String) As String
   Dim sDiff As String
   
   If $bSVN Then
-    Shell "svn diff " & Shell$(sPath) To sDiff
+    Shell "svn diff " & SvnShell$(sPath) To sDiff
     Return sDiff
   Endif
   
@@ -395,7 +403,7 @@ Public Sub ControlProject()
   If Exist(Project.Dir &/ "../.svn") Then
     Project.CleanUp
     Try Kill Project.Dir &/ ".settings"
-    Run("svn add " & Shell$(Project.Dir))
+    Run("svn add " & SvnShell$(Project.Dir))
     Project.Config.Save
     Refresh
     Project.Refresh

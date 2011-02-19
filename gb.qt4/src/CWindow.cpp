@@ -302,8 +302,6 @@ void CWINDOW_ensure_active_window()
 }
 
 
-
-
 /***************************************************************************
 
 	Window
@@ -404,13 +402,13 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent)
 	{
 		CWindow::insertTopLevel(THIS);
 		
-		if (CWINDOW_Main == 0)
+		/*if (CWINDOW_Main == 0)
 		{
 			#if DEBUG_WINDOW
 			qDebug("CWINDOW_Main -> %p", THIS);
 			#endif
 			CWINDOW_Main = THIS;
-		}
+		}*/
 	}
 
 	#ifndef NO_X_WINDOW
@@ -2168,14 +2166,15 @@ void MyMainWindow::keyPressEvent(QKeyEvent *e)
 }
 
 
-static bool closeAll()
+bool CWINDOW_close_all()
 {
 	QList<CWINDOW *> list(CWindow::list);
 	CWINDOW *win;
 	int i;
+	bool ret = false;
 
 	#if DEBUG_WINDOW
-	qDebug("CLOSE ALL");
+	qDebug("<<< CLOSE ALL");
 	#endif
 
 	for (i = 0; i < list.count(); i++)
@@ -2183,14 +2182,19 @@ static bool closeAll()
 		win = list.at(i);
 		if (win != CWINDOW_Main && do_close(win, 0))
 		{
-			return true;
+			ret = true;
+			break;
 		}
 	}
 
-	return false;
+	#if DEBUG_WINDOW
+	qDebug(">>> CLOSE ALL");
+	#endif
+
+	return ret;
 }
 
-static void deleteAll()
+void CWINDOW_delete_all()
 {
 	QList<CWINDOW *> list(CWindow::list);
 	CWINDOW *win;
@@ -2213,6 +2217,22 @@ static void deleteAll()
 
 	//qApp->eventLoop()->processEvents(QEventLoop::AllEvents);
 }
+
+bool CWINDOW_must_quit()
+{
+	CWINDOW *win;
+	int i;
+	
+	for (i = 0; i < CWindow::list.count(); i++)
+	{
+		win = CWindow::list.at(i);
+		if (win->opened)
+			return false;
+	}
+	
+	return true;
+}
+
 
 void MyMainWindow::closeEvent(QCloseEvent *e)
 {
@@ -2243,7 +2263,7 @@ void MyMainWindow::closeEvent(QCloseEvent *e)
 
 	if (!cancel && THIS == CWINDOW_Main)
 	{
-		if (closeAll())
+		if (CWINDOW_close_all())
 			cancel = true;
 	}
 
@@ -2274,7 +2294,7 @@ void MyMainWindow::closeEvent(QCloseEvent *e)
 	{
 		if (CWINDOW_Main == THIS)
 		{
-			deleteAll();
+			CWINDOW_delete_all();
 			#if DEBUG_WINDOW
 			qDebug("CWINDOW_Main -> NULL");
 			#endif
@@ -2293,6 +2313,7 @@ void MyMainWindow::closeEvent(QCloseEvent *e)
 	qDebug("THIS->opened <- false: %p: %s", THIS, GB.GetClassName(THIS));
 	#endif
 	THIS->opened = false;
+	MAIN_check_quit();
 	
 	return;
 

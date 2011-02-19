@@ -605,7 +605,7 @@ bool gDrag::getData(const char *prefix)
 			gtk_drag_get_data (_dest->border, _context, (GdkAtom)tg->data, _time);
 			
 			while (!_got_data)
-				do_iteration(true);
+				MAIN_do_iteration(true);
 	
 			norec = false;
 			
