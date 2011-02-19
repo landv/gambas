@@ -265,8 +265,6 @@ void gDrawingArea::clear()
 		refreshCache();
 		return;
 	}
-	
-	refresh(); //gdk_window_clear(GTK_LAYOUT(widget)->bin_window);
 }
 
 void gDrawingArea::refreshCache()
