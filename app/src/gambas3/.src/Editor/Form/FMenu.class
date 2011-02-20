@@ -514,34 +514,24 @@ End
 Private Sub LoadShortcut()
 
   Dim iInd As Integer
+  Dim aShortcut As String[]
 
-  cmbShortcut.Add("(None)")
-  
+  aShortcut = ["(None)"]
+
   For iInd = Asc("A") To Asc("Z")
-    cmbShortcut.Add(Chr$(iInd))
+    aShortcut.Add(Chr$(iInd))
   Next
+
+  aShortcut.Insert(["+", "-", "*", "/"])
+
+  aShortcut.Insert(["Backspace", "Del", "Down", "End", "Enter", "Esc", "Home", "Ins", "Left", "Pause", "PgDown", "PgUp", "Return", "Space", "Right", "Up"])
 
   For iInd = 1 To 12
-    cmbShortcut.Add("F" & CStr(iInd))
+    aShortcut.Add("F" & CStr(iInd))
   Next
   
-  cmbShortcut.Add("Backspace")
-  cmbShortcut.Add("Del")
-  cmbShortcut.Add("Down")
-  cmbShortcut.Add("End")
-  cmbShortcut.Add("Enter")
-  cmbShortcut.Add("Esc")
-  cmbShortcut.Add("Home")
-  cmbShortcut.Add("Ins")
-  cmbShortcut.Add("Left")
-  cmbShortCut.Add("Pause")
-  cmbShortcut.Add("PgDown")
-  cmbShortcut.Add("PgUp")
-  cmbShortcut.Add("Return")
-  cmbShortcut.Add("Space")
-  cmbShortcut.Add("Right")
-  cmbShortcut.Add("Up")
-
+  cmbShortcut.List = aShortcut
+  
 End
 
 
