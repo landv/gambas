@@ -892,6 +892,7 @@ void DRAW_rich_text(QPainter *p, const QString &text, float x, float y, float w,
 		t = "<div align=\"" + a + "\">" + t + "</div>";
 	
 	QTextDocument rt;
+	rt.setDocumentMargin(0);
 	rt.setHtml(t);
 	rt.setDefaultFont(p->font()); 
 	
@@ -938,6 +939,7 @@ static void rich_text_size(GB_DRAW *d, char *text, int len, int sw, int *w, int 
 {
 	QTextDocument rt;
 	
+	rt.setDocumentMargin(0);
 	rt.setHtml(QString::fromUtf8((const char *)text, len));
 	rt.setDefaultFont(DP(d)->font());
 	

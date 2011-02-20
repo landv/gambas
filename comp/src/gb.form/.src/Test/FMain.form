@@ -2,33 +2,10 @@
 
 { Form Form
   MoveScaled(0,0,96,51)
-  Arrangement = Arrange.Horizontal
+  Arrangement = Arrange.Fill
   Spacing = True
   Margin = True
-  { IconPanel1 IconPanel
-    MoveScaled(5,5,79,40)
-    Expand = True
-    Arrangement = Arrange.Fill
-    Count = 3
-    Border = True
-    Index = 0
-    Text = ("Item 0")
-    Picture = Picture["icon:/large/access"]
-    { Button1 Button
-      MoveScaled(1,3,16,4)
-    }
-    Index = 1
-    Text = ("Item 1")
-    Picture = Picture["icon:/large/battery"]
-    { TextBox1 TextBox
-      MoveScaled(2,9,24,4)
-    }
-    Index = 2
-    Text = ("Item 2")
-    Picture = Picture["icon:/large/book"]
-    { ColorChooser1 ColorChooser
-      MoveScaled(1,1,49,36)
-    }
-    Index = 0
+  { FileChooser1 FileChooser
+    MoveScaled(5,2,64,46)
   }
 }

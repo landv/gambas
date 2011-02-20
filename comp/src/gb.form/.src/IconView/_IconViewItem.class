@@ -20,6 +20,7 @@ Private $sText As String
 Private $hPicture As Picture
 Private $bSelected As Boolean
 Private $bEditable As Boolean
+Private $bEllipsized As Boolean
 
 Event _Foo
 
@@ -207,9 +208,10 @@ End
 
 Public Sub _Draw(hRect As Rect, hClip As Rect, hIconView As IconView, bHorizontal As Boolean, bFocus As Boolean, bHover As Boolean)
   
-  Dim X, Y, W As Integer
+  Dim X, Y, W, H, HT As Integer
   Dim iColor As Integer
   Dim bFrame As Boolean
+  Dim sText As String
   
   hRect.Adjust(4)
   
@@ -288,12 +290,24 @@ Public Sub _Draw(hRect As Rect, hClip As Rect, hIconView As IconView, bHorizonta
     If $sText Then
       'Draw.Clip(hRect.X, Y, hRect.W, hRect.H - Y)
       Draw.Font = hIconView.Font
+      
+      sText = $sText
+      
+      H = Draw.Font.RichTextHeight(sText, hRect.W)
+      HT = hRect.H - (Y - hRect.Y)
+      If H > HT Then 
+        sText = Ellipsize(sText, Draw.Font, hRect.W, HT)
+        $bEllipsized = True
+      Else
+        $bEllipsized = False
+      Endif
+      
       If Not bFrame Then
         Draw.Foreground = If($bSelected, Color.SelectedBackground, Color.TextBackground)
-        Draw.RichText($sText, hRect.X + 1, Y + 1, hRect.W, hRect.H - (Y - hRect.Y), Align.Top)
+        Draw.RichText(sText, hRect.X + 1, Y + 1, hRect.W, HT, Align.Top)
       Endif
       Draw.Foreground = If($bSelected, Color.SelectedForeground, Color.TextForeground)
-      Draw.RichText($sText, hRect.X, Y, hRect.W, hRect.H - (Y - hRect.Y), Align.Top)
+      Draw.RichText(sText, hRect.X, Y, hRect.W, HT, Align.Top)
       'Draw.Clip.Enabled = False
     Endif
     
@@ -458,3 +472,23 @@ Public Sub MoveLast()
   
 End
 
+Private Sub Ellipsize(sText As String, hFont As Font, W As Integer, H As Integer) As String
+  
+  Dim sCar As String = "…"
+  Dim iPos As Integer
+  
+  If Not sText Then Return
+  
+  For iPos = 1 To Len(sText)
+    If hFont.RichTextHeight(Left(sText, iPos) & sCar, W) > H Then Break
+  Next
+  
+  Return Left(sText, iPos - 1) & sCar
+  
+End
+
+Public Sub _IsEllipsized() As Boolean
+  
+  Return $bEllipsized
+  
+End

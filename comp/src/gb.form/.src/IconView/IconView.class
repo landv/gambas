@@ -562,6 +562,8 @@ End
 
 Private Sub SetHoverItem(iPos As Integer)
   
+  Dim hItem As _IconViewItem
+  
   If iPos = $iHover Then Return
   
   Swap iPos, $iHover
@@ -570,7 +572,10 @@ Private Sub SetHoverItem(iPos As Integer)
   RefreshIcon($iHover)
   
   $hView.Tooltip = ""
-  If $iHover >= 0 Then $hView.Tooltip = $aItems[$iHover].Text
+  If $iHover >= 0 Then 
+    hItem = $aItems[$iHover]
+    If hItem._IsEllipsized() Then $hView.Tooltip = hItem.Text
+  Endif
   
 End
 
