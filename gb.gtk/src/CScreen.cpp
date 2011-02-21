@@ -414,7 +414,7 @@ GB_DESC ApplicationDesc[] =
 	GB_STATIC_PROPERTY("Font", "Font", Application_Font),
 	GB_STATIC_PROPERTY_READ("ActiveControl","Control",Application_ActiveControl),
 	GB_STATIC_PROPERTY_READ("ActiveWindow", "Window", Application_ActiveWindow),
-	GB_STATIC_PROPERTY_READ("MainWindow", "Window", Application_MainWindow),
+	GB_STATIC_PROPERTY("MainWindow", "Window", Application_MainWindow),
 	GB_STATIC_PROPERTY("Busy", "i", Application_Busy),
 	GB_STATIC_PROPERTY_SELF("ToolTip", ".ApplicationTooltip"),
 	
