@@ -236,7 +236,12 @@ void gDrag::dragText(gControl *source, char *text, char *format)
 	ct = gtk_drag_begin(source->border, list, GDK_ACTION_COPY, 1, NULL);
 	
 	if (_icon) 
-		gtk_drag_set_icon_pixbuf(ct, _icon->getPixbuf(), _icon_x, _icon_y);
+	{
+		GdkPixbuf *icon = _icon->getIconPixbuf();
+		gtk_drag_set_icon_pixbuf(ct, icon, _icon_x, _icon_y);
+		if (icon != _icon->getPixbuf())
+			g_object_unref(G_OBJECT(icon));
+	}
 	
 	gtk_target_list_unref(list);	
 

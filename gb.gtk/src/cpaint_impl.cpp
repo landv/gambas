@@ -720,7 +720,7 @@ static void SetBrush(GB_PAINT *d, GB_BRUSH brush)
 	cairo_set_source(CONTEXT(d), (cairo_pattern_t *)brush);
 }
 
-		
+
 static void BrushFree(GB_BRUSH brush)
 {
 	// Should I release the surface associated with an image brush? Apparently no.
@@ -958,6 +958,32 @@ static void TransformMultiply(GB_TRANSFORM matrix, GB_TRANSFORM matrix2)
 	cairo_matrix_multiply((cairo_matrix_t *)matrix, (cairo_matrix_t *)matrix, (cairo_matrix_t *)matrix2);
 }
 
+static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, float h)
+{
+	cairo_pattern_t *pattern, *save;
+	cairo_matrix_t matrix;
+	gPicture *picture = CIMAGE_get((CIMAGE *)image);
+	
+	save = cairo_get_source(CONTEXT(d));
+	cairo_pattern_reference(save);
+	
+	BrushImage((GB_BRUSH *)&pattern, image);
+	
+	//gdk_cairo_set_source_pixbuf(CONTEXT(d), picture->getPixbuf(), x, y);
+	
+	cairo_matrix_init_identity(&matrix);
+	cairo_matrix_translate(&matrix, x, y);
+	cairo_matrix_scale(&matrix, w / picture->width(), h / picture->height());
+	cairo_pattern_set_matrix(pattern, &matrix);
+	cairo_set_source(CONTEXT(d), pattern);
+	
+	cairo_rectangle(CONTEXT(d), x, y, w, h);
+	cairo_fill(CONTEXT(d));
+	
+	cairo_set_source(CONTEXT(d), save);
+	cairo_pattern_destroy(save);
+}
+
 
 GB_PAINT_DESC PAINT_Interface = 
 {
@@ -996,7 +1022,7 @@ GB_PAINT_DESC PAINT_Interface =
 	RichTextExtents,
 	Matrix,
 	SetBrush,
-	NULL,
+	DrawImage,
 	{
 		BrushFree,
 		BrushColor,

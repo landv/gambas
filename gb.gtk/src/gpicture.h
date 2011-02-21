@@ -95,6 +95,7 @@ public:
 	GdkPixbuf *getPixbuf();
 	GdkPixmap *getPixmap();
 	GdkBitmap *getMask();
+	GdkPixbuf *getIconPixbuf();
 	
 	static gPicture* fromPixbuf(GdkPixbuf *buf) { return new gPicture(buf); }
 
@@ -114,50 +115,5 @@ public:
 private:
 	static GHashTable *cache;
 };
-
-#if 0
-
-class gPicture
-{
-public:
-	gPicture(int w,int h,bool trans);
-	~gPicture();
-
-	int width();
-	int height();
-	int depth();
-	bool transparent();
-
-	void setTransparent(bool vl);
-
-	void resize(int width,int height);
-	int  save(char *path);
-	void fromMemory(char *addr,unsigned int len);
-	static gPicture* fromNamedIcon(char* name);
-	void Fill(int col);
-	gPicture* getImage();
-	gPicture* copy(int x,int y,int w,int h);
-
-	void ref();
-	void unref();
-
-//"Private"
-	GdkDrawable *pic;
-	alphaCache *cache;
-        int _transparent;
-	GdkPixbuf* getPixbuf();
-	static gPicture* fromPixbuf(GdkPixbuf *buf);
-	int refcount;
-};
-
-class gPictureCache
-{
-public:
-	static void save(char *key,gPicture *img);
-	static gPicture* load(char *key);
-	static void flush();
-};
-
-#endif
 
 #endif

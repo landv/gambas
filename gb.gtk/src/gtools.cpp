@@ -333,7 +333,7 @@ gPicture *gt_grab_window(GdkWindow *win, int x, int y, int w, int h)
 	int ow, oh;
 	int ww, hh;
 	int dx, dy;
-	GdkPixbuf *buf;
+	GdkPixbuf *buf = NULL;
 	gPicture *pic;
 	
 	ow = w;

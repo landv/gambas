@@ -291,8 +291,6 @@ void MyDrawingArea::updateBackground()
 		
 		if (w != _background->width() || h != _background->height())
 		{		
-			qDebug("updateBackground: %d %d", w, h);
-		
 			QPixmap *p = new QPixmap(w, h);
 			p->fill(palette().color(backgroundRole()));
 

@@ -1117,7 +1117,7 @@ void gControl::setAcceptDrops(bool vl)
 	
 	if (vl)
 	{
-		gtk_drag_dest_set(border,(GtkDestDefaults)0, 0, 0, (GdkDragAction)(GDK_ACTION_COPY | GDK_ACTION_MOVE | GDK_ACTION_LINK));
+		gtk_drag_dest_set(border, (GtkDestDefaults)0, NULL, 0, (GdkDragAction)(GDK_ACTION_COPY | GDK_ACTION_MOVE | GDK_ACTION_LINK));
 	}
 	else
 	{

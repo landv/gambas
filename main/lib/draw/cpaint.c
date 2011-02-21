@@ -967,11 +967,8 @@ BEGIN_METHOD(Paint_DrawImage, GB_OBJECT image; GB_FLOAT x; GB_FLOAT y; GB_FLOAT 
 	pb = make_brush(THIS, brush);
 	GB.Ref(pb);
 	
-//   hBrush = Paint.Image(hImage)
-//   hBrush.Translate(X, Y)
-//   hBrush.Scale(W / hImage.W, H / hImage.H)
-	
 	PAINT->Transform.Create(&transform);
+	PAINT->Brush.Matrix(brush, FALSE, transform);
 	PAINT->Transform.Translate(transform, x, y);
 	//PAINT->Transform.Scale(transform, w / image->width, h / image->height);
 	fprintf(stderr, "brush %g %g %g %g %d %d\n", x, y, w, h, image->width, image->height);

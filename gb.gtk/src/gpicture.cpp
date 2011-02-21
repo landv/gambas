@@ -1076,3 +1076,18 @@ void gPicture::makeTransparent(gColor color)
 	gt_pixbuf_make_alpha(getPixbuf(), color);
 	invalidate();
 }
+
+GdkPixbuf *gPicture::getIconPixbuf()
+{
+	GdkPixbuf *icon = getPixbuf();
+	
+	if ((_width & 7) || (_height & 7))
+	{
+		icon = gdk_pixbuf_new(GDK_COLORSPACE_RGB, true, 8, (_width + 7) & ~7, (_height + 7) & ~7);
+		gdk_pixbuf_fill(icon, 0);
+		gdk_pixbuf_copy_area(getPixbuf(), 0, 0, _width, _height, icon, 0, 0);
+	}
+	
+	return icon;
+}
+

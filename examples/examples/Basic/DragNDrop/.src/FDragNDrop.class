@@ -57,7 +57,7 @@ End
 
 Public Sub TreeView1_MouseDrag()
 
-  Dim hPict As Picture
+  Dim hImage As Image
 
   If Not Mouse.Left Then Return
 
@@ -65,14 +65,18 @@ Public Sub TreeView1_MouseDrag()
     If .Find(Mouse.X, Mouse.Y) Then Return
     If Not .Key Then Return
 
-    hPict = New Picture(32 + 8 + .Font.TextWidth(.Current.Text), 32, True)
-    Draw.Begin(hPict)
-      Try Draw.Picture(.Current.Picture, 0, 0)
-      Draw.Font = .Font
-      Draw.Text(.Current.Text, 34, 0, hPict.Width, 32, Align.Left)
-    Draw.End
+    hImage = New Image(32 + 8 + .Font.TextWidth(.Current.Text), 32, Color.Transparent)
+    Paint.Begin(hImage)
+      Try Paint.DrawImage(.Current.Picture.Image, 0, 0)
+      'Try Draw.Picture(.Current.Picture, 0, 0)
+      Paint.Font = .Font
+      Paint.Text(.Current.Text, 34, 0, hImage.Width, 32, Align.Left)
+      Paint.Fill
+    Paint.End  
 
-    Drag.Icon = hPict
+    Drag.Icon = hImage.Picture
+    hImage.Save("~/drag.png")
+    'Drag.Icon = .Current.Picture
     .Drag(.Key, MIME_TYPE)
   End With
 
