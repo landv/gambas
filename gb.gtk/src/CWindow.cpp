@@ -154,15 +154,16 @@ void CWINDOW_delete_all()
 	gMainWindow *win;
 	CWINDOW *window;
 	
-	for(i = 0; i < gMainWindow::count(); i++)
+	for(i = 0;; i++)
 	{
 		win = gMainWindow::get(i);
 		if (!win)
 			break;
-		//fprintf(stderr, "closeAll: try %p\n", win);
+		
 		window = (CWINDOW *)GetObject(win);
 		if (window == CWINDOW_Main)
 			continue;
+		
 		win->destroy();
 	}
 }

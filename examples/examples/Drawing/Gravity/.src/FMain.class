@@ -11,7 +11,7 @@ Private world_SlideFloor As Float = 0.9
 Private isDrawing As Boolean
 
 Private Sub AddBall(Optional x As Integer = -1, Optional y As Integer = -1)
-  Dim cBall As New cBall
+  Dim cBall As New CBall
   If x = -1 Then
     cBall.x = Rnd(1, 100)
     cBall.y = Rnd(1, 100)
@@ -27,7 +27,7 @@ End
 
 
 Private Sub DoGravity()
-  Dim myBall As cBall
+  Dim myBall As CBall
   For Each myBall In Objects
       If togGrav.value Then myBall.ay = myBall.ay + world_Gravity '// Make Gravity
       myBall.x = myBall.x + myBall.ax '// Move Ball
@@ -68,13 +68,14 @@ Private Sub DoGravity()
 End
 
 Private Sub DrawWorld()
-  Dim myBall As cBall  
+  Dim myBall As CBall  
   Dim index As Integer
   If isDrawing = False Then
     isDrawing = True
     Try Draw.begin(dW)
     'Draw.Rect(3, 12, dW.Width - 6, dW.Height - 17)
     Draw.FillStyle = 1
+    Draw.FillColor = Color.White
     For Each myBall In Objects
       index = index + 1
       Draw.Foreground = myBall.col
@@ -173,7 +174,7 @@ Public Sub togGrav_Click()
 End
 
 Public Sub cmdRandomize_Click()
-  Dim myBall As cBall  
+  Dim myBall As CBall  
   Dim index As Integer
   cmdRandomize.Enabled = False
   Draw.begin(dW)

@@ -8,7 +8,7 @@ Static Private $bQtBug As Boolean
 
 Private ARROW_HEIGHT As Integer
 
-Private $hWatcher As Watcher
+Private $hObs As Observer
 Private $hWatcher2 As Watcher
 Private $hCtrl As Control
 
@@ -247,7 +247,7 @@ Public Sub Run(sMsg As String, hCtrl As Control, hIcon As Picture, DX As Integer
   hWin = GetTopLevel($hCtrl)
   If Not hWin.Modal Then hWin.Show
   
-  $hWatcher = New Watcher(hWin) As "Watcher"
+  $hObs = New Observer(hWin) As "Window"
   $hWatcher2 = New Watcher($hCtrl) As "Watcher"
 
   If hIcon Then 
@@ -284,15 +284,14 @@ Public Sub Form_Hide()
 
   'Debug
   timCheck.Enabled = False
-  $hWatcher = Null
+  $hObs = Null
   $hWatcher2 = Null
 
 End
 
 Public Sub Watcher_Hide()
   
-  'Debug
-  Me.Hide
+  Me.Close
   
 End
 
@@ -305,18 +304,18 @@ End
 Public Sub txtMessage_MouseDown()
 
   'Debug 
-  Me.Hide
+  Me.Close
 
 End
 
 Public Sub Form_MouseDown()
 
   'Debug 
-  Me.Hide 
+  Me.Close
 
 End
 
-Public Sub Watcher_Move()
+Public Sub Window_Move()
   
   If Abs($hCtrl.ScreenX - $X) >= 4 Or Abs($hCtrl.ScreenY - $Y) >= 4 Then
     MakeBorder      
@@ -324,6 +323,11 @@ Public Sub Watcher_Move()
   
 End
 
+Public Sub Window_Hide()
+  
+  Me.Close
+  
+End
 
 Public Sub timCheck_Timer()
 
@@ -332,12 +336,12 @@ Public Sub timCheck_Timer()
   'Debug Me.X;; Me.Y;; Me.Visible;; Me.Picture.W;; Me.Picture.H
 
   If $bInside Then 
-    Me.Hide
+    Me.Close
     Return 
   Endif 
 
   If (Timer - $dShow) > ($iDelay / 1000) Then 
-    Me.Hide
+    Me.Close
     Return 
   Endif
   

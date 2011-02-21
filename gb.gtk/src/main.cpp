@@ -438,11 +438,12 @@ static int my_loop()
 		}
 	}
 
-	CWINDOW_delete_all();
-
 	while (gtk_events_pending())
 		gtk_main_iteration();
   
+	CWINDOW_delete_all();
+	gControl::cleanRemovedControls();
+
 	CWatcher::Clear();
 	gApplication::exit();
 

@@ -7,33 +7,36 @@
   Icon = Picture["timer.png"]
   Resizable = False
   { Button1 Button
-    MoveScaled(16,11,11,5)
+    MoveScaled(17,11,11,5)
     Font = Font["14"]
     Background = &H4BC021&
     Text = ("Start")
   }
   { Textbox1 TextBox
-    MoveScaled(9,11,5,5)
+    MoveScaled(10,11,6,5)
     Font = Font["18"]
     Background = &H93B8B0&
     Text = ("3")
+    Alignment = Align.Right
   }
   { TextLabel2 TextLabel
-    MoveScaled(6,11,3,4)
+    MoveScaled(7,11,3,4)
     Font = Font["Adobe Courier,18,Bold"]
     Text = (":")
     Alignment = Align.Center
   }
   { TextBox2 TextBox
-    MoveScaled(1,11,5,5)
+    MoveScaled(1,11,6,5)
     Font = Font["18"]
     Background = &H93B8B0&
     Text = ("0")
+    Alignment = Align.Right
   }
   { TextLabel1 TextLabel
     MoveScaled(1,1,29,9)
     Text = ("Another timer example by <b>Maxim Lapis</b> &lt;maxim_lapis@web.de&gt;")
   }
   { Timer1 #Timer
+    #MoveScaled(23,2)
   }
 }
