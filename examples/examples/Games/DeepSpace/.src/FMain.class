@@ -4,78 +4,78 @@
 '   Copyright (C) 2004, Michael Isaac.  All rights reserved.
 '
 
-PRIVATE Attacking AS Boolean
+Private Attacking As Boolean
 
-PUBLIC SUB _new()
+Public Sub _new()
     mMain.Canvas = daCanvas
-END
+End
 
-PUBLIC SUB tmrMainLoop_Timer()
+Public Sub tmrMainLoop_Timer()
     mMain.MainLoop()
-END
+End
 
-PUBLIC SUB Form_KeyPress()
+Public Sub Form_KeyPress()
 
-    SELECT CASE Key.Code
-        CASE Key.Left
-            MMain.Obj[0].TurnLeft = TRUE
-        CASE Key.Right
-            MMain.Obj[0].TurnRight = TRUE
-        CASE Key.Up
-            MMain.Obj[0].Thrust = TRUE
-        CASE Key["F"]
-            MMain.Obj[0].Attack = TRUE
-        CASE Key["D"]
+    Select Case Key.Code
+        Case Key.Left
+            MMain.Obj[0].TurnLeft = True
+        Case Key.Right
+            MMain.Obj[0].TurnRight = True
+        Case Key.Up
+            MMain.Obj[0].Thrust = True
+        Case Key["F"]
+            MMain.Obj[0].Attack = True
+        Case Key["D"]
             MMain.Obj[0].MX = 0
             MMain.Obj[0].MY = 0
-    END SELECT
-END
+    End Select
+End
 
-PUBLIC SUB Form_KeyRelease()
+Public Sub Form_KeyRelease()
 
-    SELECT CASE Key.Code
-        CASE Key.Left
-            MMain.Obj[0].TurnLeft = FALSE
-        CASE Key.Right
-            MMain.Obj[0].TurnRight = FALSE
-        CASE Key.Up
-            MMain.Obj[0].Thrust = FALSE
-        CASE Key["F"]
-            MMain.Obj[0].Attack = FALSE
-    END SELECT
-END
+    Select Case Key.Code
+        Case Key.Left
+            MMain.Obj[0].TurnLeft = False
+        Case Key.Right
+            MMain.Obj[0].TurnRight = False
+        Case Key.Up
+            MMain.Obj[0].Thrust = False
+        Case Key["F"]
+            MMain.Obj[0].Attack = False
+    End Select
+End
 
-PUBLIC SUB Form_Close()
+Public Sub Form_Close()
     mMain.Exit()
-END
+End
 
-PUBLIC SUB Form_Resize()
-    mMain.SCREEN_WIDTH = ME.ClientW
-    mMain.SCREEN_HEIGHT = ME.ClientH
+Public Sub Form_Resize()
+    mMain.SCREEN_WIDTH = Me.ClientW
+    mMain.SCREEN_HEIGHT = Me.ClientH
 
-    daCanvas.H = ME.ClientH
-    daCanvas.W = ME.ClientW
-END
+    daCanvas.H = Me.ClientH
+    daCanvas.W = Me.ClientW
+End
 
-PUBLIC SUB daCanvas_KeyPress()
+Public Sub daCanvas_KeyPress()
     Form_KeyPress()
-END
+End
 
-PUBLIC SUB daCanvas_KeyRelease()
+Public Sub daCanvas_KeyRelease()
     Form_KeyRelease()
-END
+End
 
-PUBLIC SUB mnuMainExit_Click()
-    ME.Delete
-END
+Public Sub mnuMainExit_Click()
+    Me.Delete
+End
 
-PUBLIC SUB mnuMainAbout_Click()
+Public Sub mnuMainAbout_Click()
     FAbout.Show()
-END
+End
 
-PUBLIC SUB mnuShowText_Click()
+Public Sub mnuShowText_Click()
 
-    INC mnuShowText.Checked
+    mnuShowText.Checked = Not mnuShowText.Checked
     MMain.ShowObjectLabel = mnuShowText.Checked
 
-END
+End
