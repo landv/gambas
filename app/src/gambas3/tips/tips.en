@@ -391,6 +391,130 @@ CATCH ' Executed only if there is an error
 END</pre>
 
 
+[OPTIONAL]
+
+<p>Functions and a procedures in Gambas can have optional parameters.</p>
+
+<p>Optional parameters is done simply by putting down the <b>OPTIONAL</b>
+flag just before variable</p>
+
+<pre>PRIVATE SUB MyFunction(param AS String, OPTIONAL optim AS String)
+  ...
+  PRINT "required " & param & ", optional '" & optim "'"
+  ...
+END
+
+'calling in code:
+
+MyFunction("parameter") 'optional (if not needed)
+MyFunction("parameter", "param")
+</pre>
+
+
+[ARRAY]
+
+<p>In Gambas you can easily loop throught array a collection variables by
+<b>FOR EACH</b> function.</p>
+
+<p>Example:</p>
+
+<pre>DIM xml AS NEW XmlDocument
+DIM node AS XmlNode
+DIM i AS Integer
+
+'Open xml
+xml.Open("pokus.xml")
+'Children is indexed via [i], since it's array
+FOR i = 0 TO xml.Root.Children.Count - 1
+  'Attributes are looped via FOR EACH, since it's collection
+  FOR EACH node IN xml.Root.Children[i].Attributes
+    DEBUG node.Name;; Node.Value
+  NEXT
+NEXT</pre>
+
+
+[ICON]
+
+<p>You can use built in icons for nicer GUI of your application, which are available
+in several sizes (from 16x16 to 128x128)</p>
+
+<p>For example:</p>
+
+<pre>Image1.Picture = Picture["icon:/32/warning"]</pre>
+
+
+[SETTINGS]
+
+<p>If you need to store configuration of your program (like window size or position),
+than you are lucky guy. It's very easy and elegant in Gambas.</p>
+
+<p>You can store whole configuration of object, or just one property.</p>
+
+<p>Example:</p>
+
+<pre>'Save object position
+Settings.Write(ME)
+
+'Load object
+Settings.Read(ME)
+
+'Save property
+Settings["win/x"] = ME.X
+
+'Read property
+ME.X = Settings["win/x"]  'you can use even default value like this: ["win/x", 0]
+</pre>
+
+<p><b>Attention:</b> you must include component: <i>gb.settings</i></p>
+
+
+[MESSAGE]
+
+<p>To inform user you can use Gampbas classes <b>Message</b> and <b>Balloon</b>.
+Message comes from (QT, GTK+) component and Balloon from <i>gb.form</i>.</p>
+
+<p><b>Message</b> class uses model dialogs, so there are possible following types:
+Message.Delete(), .Error(), .Info(), .Question() and .Warning()</p>
+
+<p>Your own button labels can be set in every of them. After button press in
+dialog is returned numeric value from 1 to X (depending on type of dialog and
+number of buttons).</p>
+
+<pre>'Following will return 1
+DEBUG Message.Info("Hello world!")
+
+'Same, but short form:
+Message("Hello world!")</pre>
+
+<p><b>Balloon</b> class can be use in forms, different visual components like
+informations or warnings. It comes with same types like Message, but different
+rendering.</p>
+
+<p>While creating dialog you must declare parent container. Optionally you can
+declare X,Y position, time delay before showing and font.</p>
+
+<pre>'Will show ballon in main form
+Balloon.Info("Hello world!", ME)
+
+'short one, but without icon: Balloon("Hello world!", ME)
+</pre>
+
+
+[SUBST]
+
+<p>Substitution is very usefull for internationalization of your application.
+It's done by <b>Subst()</b> instruction.</p>
+
+<p>It has at least 2 parameters. First one is text mask on which is sustitution applied.
+Next are your variables, where first one has number <i>1</i>
+It's used like so: <b>&1, &2, ...</b></p>
+
+<pre>DEBUG Subst(("Substitution of &1, &2 and &3"), "first", "second", "third")
+
+'...will return:
+'Substitution of first, second and third</pre>
+
+
 [END]
 
 <p>You have read all the tips of the days. I hope you have became

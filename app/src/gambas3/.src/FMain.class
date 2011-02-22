@@ -432,9 +432,10 @@ End
 Public Sub UpdateRecentMenu()
   
   Dim hMenu As Menu
+  Dim sMenu As String
   Dim sPath As String
   Dim aList As CRecentFile[]
-  Dim bSort As Boolean
+  Dim iSort As Integer
   Dim hRecentFile As CRecentFile
   Dim sTitle As String
   Dim sLastTitle As String
@@ -449,18 +450,16 @@ Public Sub UpdateRecentMenu()
   
   Inc Application.Busy
   
-  bSort = Settings["/FWelcome/SortRecent", False]
+  iSort = Settings["/FWelcome/SortRecent", CRecentFile.SORT_BY_DATE]
   
   mnuOpenRecent.Children.Clear
   mnuOpenRecent.Enabled = CRecentFile.All.Count > 0
   
   If mnuOpenRecent.Enabled Then
     
-    bSort = Settings["/FWelcome/SortRecent", False]
+    aList = CRecentFile.Get(iSort)
     
-    aList = CRecentFile.Get(bSort)
-    
-    If bSort Then
+    If iSort = CRecentFile.SORT_BY_PATH Then
       
       For Each hRecentFile In aList
         
@@ -524,7 +523,7 @@ Public Sub UpdateRecentMenu()
         
         sPath = hRecentFile.Path
         
-        sTitle = hRecentFile.GetSlot()
+        sTitle = hRecentFile.GetTitle(iSort)
         
         If sTitle <> sLastTitle Then
           If sTitle = ("Today") Then
@@ -547,12 +546,21 @@ Public Sub UpdateRecentMenu()
     
     hMenu = New Menu(mnuOpenRecent)
     
-    hMenu = New Menu(mnuOpenRecent) As "mnuSortRecent"
-    hMenu.Text = ("&Sort by path")
-    hMenu.Toggle = True
-    Object.Lock(hMenu)
-    hMenu.Checked = bSort
-    Object.Unlock(hMenu)
+    hMenuTitle = New Menu(mnuOpenRecent)
+    hMenuTitle.Text = ("Sort history")
+    hMenuTitle.Picture = Picture["icon:/small/sort-ascent"]
+    
+    iVal = 0
+    For Each sMenu In [("Sort by date"), ("Sort by name"), ("Sort by path")]
+      hMenu = New Menu(hMenuTitle) As "mnuSortRecent"
+      hMenu.Text = sMenu
+      hMenu.Tag = iVal
+      Object.Lock(hMenu)
+      hMenu.Checked = iSort = iVal
+      Object.Unlock(hMenu)
+      Inc iVal
+    Next
+    
     hMenu = New Menu(mnuOpenRecent) As "mnuClearRecent"
     hMenu.Text = ("&Clear history")
     hMenu.Picture = Picture["icon:/small/trash"]
@@ -565,7 +573,7 @@ End
 
 Public Sub mnuSortRecent_Click()
   
-  Settings["/FWelcome/SortRecent"] = Not Settings["/FWelcome/SortRecent", False]
+  Settings["/FWelcome/SortRecent"] = Last.Tag
   UpdateRecentMenu
   
 End
