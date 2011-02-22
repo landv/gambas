@@ -212,21 +212,22 @@ Private Sub FillRecent()
   aRecent = CRecentFile.Get($iSort)
 
   For Each hRecent In aRecent
-    If $iSort = CRecentFile.SORT_BY_DATE Then
-      sTitle = hRecent.GetSlot()
-      If sTitle <> sLastTitle Then
-        hDrawingArea = New DrawingArea(lstRecent) As "dwgExample"
-        With hDrawingArea
-          .Enabled = False
-          .Tag = sTitle 
-          .Font = Font["Bold"]
-          .H = .Font.Height + If(sLastTitle, 16, 8)
-          .Foreground = Color.SelectedBackground
-          Y += .H
-        End With
-        sLastTitle = sTitle
-      Endif
+    
+    sTitle = hRecent.GetTitle($iSort)
+    
+    If sTitle <> sLastTitle Then
+      hDrawingArea = New DrawingArea(lstRecent) As "dwgExample"
+      With hDrawingArea
+        .Enabled = False
+        .Tag = sTitle 
+        .Font = Font["Bold"]
+        .H = .Font.Height + If(sLastTitle, 16, 8)
+        .Foreground = Color.SelectedBackground
+        Y += .H
+      End With
+      sLastTitle = sTitle
     Endif
+    
     hProjectItem = New ProjectItem(lstRecent)
     hProjectItem.Y = Y
     Y += hProjectItem.H
@@ -234,6 +235,7 @@ Private Sub FillRecent()
     'bHighlight = Not bHighlight
     If Not hFirst Then hFirst = hProjectItem
     hProjectItem.Path = hRecent.Path
+    
   Next
   
   If hFirst Then lstRecent.Select(hFirst)
@@ -331,7 +333,7 @@ End
 Public Sub OnUpdateRecent()
   
   lstRecent.Clear
-  if tabProject.Index = 1 then FillRecent
+  If tabProject.Index = 1 Then FillRecent
   
 End
 

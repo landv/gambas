@@ -341,23 +341,24 @@ Private Sub FillRecent()
   Next
 
   For iInd = 0 To aList.Count - 1
+    
     hProjectInfo = New CProjectInfo(aList[iInd].Path)
-    If $iSort = CRecentFile.SORT_BY_DATE Then
-      sTitle = aList[iInd].GetSlot()
-      If sTitle <> sLastTitle Then
-        sLastTitle = sTitle
-        hDrawingArea = New DrawingArea(svwRecent) As "dwgExample"
-        'hLabel = NEW Label()
-        With hDrawingArea
-          .Move(0, Y, 64, Desktop.Scale * 4)
-          .Tag = sTitle
-          .Font = Font["Bold"]
-          .Foreground = Color.SelectedBackground
-          '.Background = Color.TextBackground
-          Y = Y + .H
-        End With
-      Endif
+    sTitle = aList[iInd].GetTitle($iSort)
+    
+    If sTitle <> sLastTitle Then
+      sLastTitle = sTitle
+      hDrawingArea = New DrawingArea(svwRecent) As "dwgExample"
+      'hLabel = NEW Label()
+      With hDrawingArea
+        .Move(0, Y, 64, Desktop.Scale * 4)
+        .Tag = sTitle
+        .Font = Font["Bold"]
+        .Foreground = Color.SelectedBackground
+        '.Background = Color.TextBackground
+        Y = Y + .H
+      End With
     Endif
+    
     With hProjectInfo
       hButton = New CCoolButton(svwRecent, 0, Y, svwRecent.ClientW, Desktop.Scale * 6, GetTitle(hProjectInfo), Project.StretchIcon(.Icon, 24).Picture) As "btnOpenRecent"
       hButton.Tag = aList[iInd].Path
