@@ -72,7 +72,7 @@ public:
 
 //"Selection methods"
 	void selDelete();
-	void selSelect(int start, int length);
+	void selSelect(int pos, int length);
 	void selectAll() { selSelect(0, length()); }
 
 	bool canUndo() const { return _undo_stack != 0; }
@@ -100,7 +100,10 @@ public:
 
 private:
 	GtkWidget *textview;
+	GtkTextBuffer *_buffer;
 	bool _align_normal;
+
+	GtkTextIter *getIterAt(int pos = -1);
 };
 
 #endif

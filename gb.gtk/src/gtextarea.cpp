@@ -305,8 +305,6 @@ static gboolean cb_keypress(GtkWidget *widget, GdkEvent *event, gTextArea *ctrl)
 
 gTextArea::gTextArea(gContainer *parent) : gControl(parent)
 {
-	GtkTextBuffer *buf;
-	
 	g_typ = Type_gTextArea;
 	_align_normal = false;
 	
@@ -326,11 +324,11 @@ gTextArea::gTextArea(gContainer *parent) : gControl(parent)
 	g_signal_connect_after(G_OBJECT(textview), "motion-notify-event", G_CALLBACK(cb_motion_notify_event), (gpointer)this);	
 	g_signal_connect(G_OBJECT(textview), "key-press-event", G_CALLBACK(cb_keypress), (gpointer)this);
 	
-	buf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
-	g_signal_connect_after(G_OBJECT(buf), "changed", G_CALLBACK(cb_changed), (gpointer)this);
-	g_signal_connect_after(G_OBJECT(buf), "mark-set", G_CALLBACK(cb_mark_set), (gpointer)this);
-	g_signal_connect(G_OBJECT(buf), "insert-text", G_CALLBACK(cb_insert_text), (gpointer)this);
-	g_signal_connect(G_OBJECT(buf), "delete-range", G_CALLBACK(cb_delete_range), (gpointer)this);
+	_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
+	g_signal_connect_after(G_OBJECT(_buffer), "changed", G_CALLBACK(cb_changed), (gpointer)this);
+	g_signal_connect_after(G_OBJECT(_buffer), "mark-set", G_CALLBACK(cb_mark_set), (gpointer)this);
+	g_signal_connect(G_OBJECT(_buffer), "insert-text", G_CALLBACK(cb_insert_text), (gpointer)this);
+	g_signal_connect(G_OBJECT(_buffer), "delete-range", G_CALLBACK(cb_delete_range), (gpointer)this);
 
 	setBorder(true);
 	setWrap(false);
@@ -368,28 +366,23 @@ gTextArea::~gTextArea()
 
 char *gTextArea::text()
 {
-	GtkTextBuffer *buf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
 	GtkTextIter start;
 	GtkTextIter end;
 	char *text;
 	
-	if (!buf) return NULL;
+	gtk_text_buffer_get_bounds(_buffer, &start, &end);
 	
-	gtk_text_buffer_get_bounds(buf, &start, &end);
-	
-	text = gtk_text_buffer_get_text(buf, &start, &end, true);
+	text = gtk_text_buffer_get_text(_buffer, &start, &end, true);
 	gt_free_later(text);
 	return text;
 }
 
 void gTextArea::setText(const char *txt)
 {
-	GtkTextBuffer *buf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
-	
 	if (!txt) 
 		txt = "";
 	
-	gtk_text_buffer_set_text(buf, (const gchar *)txt, -1);
+	gtk_text_buffer_set_text(_buffer, (const gchar *)txt, -1);
 }
 
 bool gTextArea::readOnly()
@@ -403,108 +396,79 @@ void gTextArea::setReadOnly(bool vl)
 	gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(textview), !vl);
 }
 
+GtkTextIter *gTextArea::getIterAt(int pos)
+{
+	static GtkTextIter iter;
+	
+	if (pos < 0)
+		gtk_text_buffer_get_iter_at_mark(_buffer, &iter, gtk_text_buffer_get_insert(_buffer));
+	else
+		gtk_text_buffer_get_iter_at_offset(_buffer, &iter, pos);
+		
+	return &iter;
+}
+
 int gTextArea::line()
 {
-	GtkTextBuffer *buf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
-	GtkTextMark* mark = gtk_text_buffer_get_insert(buf);
-	GtkTextIter iter;
-	
-	gtk_text_buffer_get_iter_at_mark(buf,&iter,mark);
-	return gtk_text_iter_get_line(&iter);
+	return gtk_text_iter_get_line(getIterAt());
 }
 
 void gTextArea::setLine(int vl)
 {
-	int col=column();
-	GtkTextBuffer *buf=gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
-	GtkTextMark* mark=gtk_text_buffer_get_insert(buf);
-	GtkTextIter iter;
+	int col = column();
+	GtkTextIter *iter = getIterAt();
 	
-	gtk_widget_grab_focus(textview);
-	gtk_text_buffer_get_iter_at_mark(buf,&iter,mark);
-	gtk_text_iter_set_line (&iter,vl);
-	if (gtk_text_iter_get_chars_in_line (&iter)<=col) col=gtk_text_iter_get_chars_in_line (&iter)-1;
-	gtk_text_iter_set_line_offset(&iter,col);
-	gtk_text_buffer_place_cursor(buf,&iter);
-	gtk_text_view_scroll_mark_onscreen(GTK_TEXT_VIEW(textview),mark);
+	gtk_text_iter_set_line(iter, vl);
+	if (gtk_text_iter_get_chars_in_line(iter) <= col)
+		col = gtk_text_iter_get_chars_in_line(iter) - 1;
+	gtk_text_iter_set_line_offset(iter, col);
+	gtk_text_buffer_place_cursor(_buffer, iter);
+	ensureVisible();
 }
 
 int gTextArea::column()
 {
-	GtkTextBuffer *buf=gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
-	GtkTextMark* mark=gtk_text_buffer_get_insert(buf);
-	GtkTextIter iter;
-	
-	gtk_text_buffer_get_iter_at_mark(buf,&iter,mark);
-	return gtk_text_iter_get_line_offset(&iter);
+	return gtk_text_iter_get_line_offset(getIterAt());
 }
 
 void gTextArea::setColumn(int vl)
 {
-	GtkTextBuffer *buf=gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
-	GtkTextMark* mark=gtk_text_buffer_get_insert(buf);
-	GtkTextIter iter;
+	GtkTextIter *iter = getIterAt();
 
-	
-	gtk_widget_grab_focus(textview);
-	gtk_text_buffer_get_iter_at_mark(buf,&iter,mark);
-	
-	if (vl<0) 
+	if (vl < 0) 
 	{
-		vl=gtk_text_iter_get_chars_in_line (&iter)-1;
+		vl = gtk_text_iter_get_chars_in_line(iter)-1;
 	}
 	else
 	{
-		if (gtk_text_iter_get_chars_in_line (&iter)<=vl) 
-			vl=gtk_text_iter_get_chars_in_line (&iter)-1;
+		if (gtk_text_iter_get_chars_in_line (iter) <= vl) 
+			vl = gtk_text_iter_get_chars_in_line(iter) - 1;
 	}
 	
-	gtk_text_iter_set_line_offset(&iter,vl);
-	gtk_text_buffer_place_cursor(buf,&iter);
-	gtk_text_view_scroll_mark_onscreen(GTK_TEXT_VIEW(textview),mark);
+	gtk_text_iter_set_line_offset(iter,vl);
+	gtk_text_buffer_place_cursor(_buffer, iter);
+	ensureVisible();
 }
 
 int gTextArea::position()
 {
-	GtkTextBuffer *buf=gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
-	GtkTextMark* mark=gtk_text_buffer_get_insert(buf);
-	GtkTextIter iter;
-	
-	gtk_text_buffer_get_iter_at_mark(buf,&iter,mark);
-	return gtk_text_iter_get_offset(&iter);
+	return gtk_text_iter_get_offset(getIterAt());
 }
 
 void gTextArea::setPosition(int vl)
 {
-	GtkTextBuffer *buf=gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
-	GtkTextMark* mark=gtk_text_buffer_get_insert(buf);
-	GtkTextIter iter;
-
+	GtkTextIter *iter = getIterAt();
 	
-	gtk_widget_grab_focus(textview);
-	gtk_text_buffer_get_iter_at_mark(buf,&iter,mark);
-	
-	if (vl<0) 
-	{
-		vl=gtk_text_iter_get_offset (&iter);
-	}
-	else
-	{
-		if (gtk_text_iter_get_offset (&iter)<vl) 
-			vl=gtk_text_iter_get_offset (&iter);
-	}
-	
-	gtk_text_iter_set_offset(&iter,vl);
-	gtk_text_buffer_place_cursor(buf,&iter);
-	gtk_text_view_scroll_mark_onscreen(GTK_TEXT_VIEW(textview),mark);
+	gtk_text_iter_set_offset(iter, vl);
+	gtk_text_buffer_place_cursor(_buffer, iter);
+	ensureVisible();
 }
 
 int gTextArea::length()
 {
-	GtkTextBuffer *buf=gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
 	GtkTextIter iter;
 	
-	gtk_text_buffer_get_end_iter(buf,&iter);
+	gtk_text_buffer_get_end_iter(_buffer, &iter);	
 	return gtk_text_iter_get_offset(&iter);
 }
 
@@ -529,28 +493,21 @@ gTextArea methods
 
 void gTextArea::copy()
 {
-	GtkTextBuffer *buf=gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
-	GtkClipboard* clip=gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
-	
-	gtk_text_buffer_copy_clipboard (buf,clip);
+	gtk_text_buffer_copy_clipboard(_buffer, gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
 }
 
 void gTextArea::cut()
 {
-	GtkTextBuffer *buf=gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
-	GtkClipboard* clip=gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
-	
-	gtk_text_buffer_cut_clipboard (buf,clip,true);
+	gtk_text_buffer_cut_clipboard(_buffer, gtk_clipboard_get(GDK_SELECTION_CLIPBOARD), true);
 }
 
 void gTextArea::ensureVisible()
 {
-	setPosition(position());
+	gtk_text_view_scroll_mark_onscreen(GTK_TEXT_VIEW(textview), gtk_text_buffer_get_insert(_buffer));
 }
 
 void gTextArea::paste()
 {
-	GtkTextBuffer *buf=gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
 	char *txt;
 
 	if (gClipboard::getType() != gClipboard::Text) 
@@ -558,55 +515,54 @@ void gTextArea::paste()
 	
 	txt = gClipboard::getText();
 	if (txt)
-		gtk_text_buffer_insert_at_cursor(buf,(const gchar *)txt,-1);
+		gtk_text_buffer_insert_at_cursor(_buffer, (const gchar *)txt, -1);
 }
 
 void gTextArea::insert(const char *txt)
 {
-	GtkTextBuffer *buf=gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
-	if (!txt) txt="";
+	if (!txt || !*txt)
+		return;
 	
-	gtk_text_buffer_insert_at_cursor(buf,(const gchar *)txt,-1);
+	gtk_text_buffer_insert_at_cursor(_buffer, (const gchar *)txt, -1);
 }
 
 int gTextArea::toLine(int pos)
 {
-	GtkTextBuffer *buf=gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
-	GtkTextIter iter;
+	if (pos < 0)
+		pos=0;
+	else if (pos >= length())
+		pos = length() - 1;
 
-	gtk_text_buffer_get_start_iter(buf,&iter);
-	if (pos<0) pos=0;
-	if (pos>=length()) pos=length()-1;
-	gtk_text_iter_set_offset(&iter,pos);
-	return gtk_text_iter_get_line(&iter);
-	
+	return gtk_text_iter_get_line(getIterAt(pos));
 }
 
 int gTextArea::toColumn(int pos)
 {
-	GtkTextBuffer *buf=gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
-	GtkTextIter iter;
+	if (pos < 0)
+		pos=0;
+	else if (pos >= length())
+		pos = length() - 1;
 
-	gtk_text_buffer_get_start_iter(buf,&iter);
-	if (pos<0) pos=0;
-	if (pos>=length()) pos=length()-1;
-	gtk_text_iter_set_offset(&iter,pos);
-	return gtk_text_iter_get_line_offset(&iter);
+	return gtk_text_iter_get_line_offset(getIterAt(pos));
 }
 
 int gTextArea::toPosition(int line,int col)
 {
-	GtkTextBuffer *buf=gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
 	GtkTextIter iter;
 
-	if (line<0) line=0;
-	if (col<0) col=0;
+	if (line < 0) line=0;
+	if (col < 0) col=0;
 	
-	gtk_text_buffer_get_end_iter(buf,&iter);
-	if (line>gtk_text_iter_get_line(&iter)) line=gtk_text_iter_get_line(&iter);
-	gtk_text_iter_set_line(&iter,line);
-	if (col>gtk_text_iter_get_line_offset(&iter)) col=gtk_text_iter_get_line_offset(&iter);
-	gtk_text_iter_set_line_offset(&iter,col);
+	gtk_text_buffer_get_end_iter(_buffer, &iter);
+	if (line > gtk_text_iter_get_line(&iter))
+		line = gtk_text_iter_get_line(&iter);
+	gtk_text_iter_set_line(&iter, line);
+	
+	if (col > gtk_text_iter_get_line_offset(&iter)) 
+		col = gtk_text_iter_get_line_offset(&iter);
+	
+	gtk_text_iter_set_line_offset(&iter, col);
+	
 	return gtk_text_iter_get_offset(&iter);
 } 
 
@@ -619,83 +575,83 @@ gTextArea selection
 
 bool gTextArea::isSelected()
 {
-	GtkTextBuffer *buf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
-	return gtk_text_buffer_get_selection_bounds(buf,NULL,NULL);
+	return gtk_text_buffer_get_selection_bounds(_buffer, NULL, NULL);
 	//return gtk_text_buffer_get_has_selection(buf); // Only since 2.10
 }
 
 int gTextArea::selStart()
 {
-	GtkTextBuffer *buf=gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
-	GtkTextIter start,end;
+	GtkTextIter start, end;
 	
-	gtk_text_buffer_get_selection_bounds(buf,&start,&end);
+	gtk_text_buffer_get_selection_bounds(_buffer, &start, &end);
 	return gtk_text_iter_get_offset(&start);	
 }
 
 int gTextArea::selEnd()
 {
-	GtkTextBuffer *buf=gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
-	GtkTextIter start,end;
+	GtkTextIter start, end;
 	
-	gtk_text_buffer_get_selection_bounds(buf,&start,&end);
+	gtk_text_buffer_get_selection_bounds(_buffer, &start, &end);
 	return gtk_text_iter_get_offset(&end);
 }
 
 char *gTextArea::selText()
 {
-	GtkTextBuffer *buf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
 	GtkTextIter start, end;
 	char *text;
 	
-	gtk_text_buffer_get_selection_bounds(buf, &start, &end);
-
-	text = gtk_text_buffer_get_text(buf, &start, &end, true);
+	gtk_text_buffer_get_selection_bounds(_buffer, &start, &end);
+	text = gtk_text_buffer_get_text(_buffer, &start, &end, true);
 	gt_free_later(text);
 	return text;
 }
 
 void gTextArea::setSelText(const char *vl)
 {
-	GtkTextBuffer *buf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
-	GtkTextIter start,end;
+	GtkTextIter start, end;
 	
-	if (!vl) vl="";
+	if (!vl) 
+		vl = "";
 	
-	if (gtk_text_buffer_get_selection_bounds(buf,&start,&end))
-		gtk_text_buffer_delete(buf,&start,&end);
+	if (gtk_text_buffer_get_selection_bounds(_buffer, &start, &end))
+		gtk_text_buffer_delete(_buffer, &start, &end);
 	
-	gtk_text_buffer_insert(buf,&start,vl,-1);	
+	gtk_text_buffer_insert(_buffer, &start, vl, -1);	
 }
 
 void gTextArea::selDelete()
 {
-	GtkTextBuffer *buf=gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
-	GtkTextIter start,end;
+	GtkTextIter start, end;
 	
-	if (gtk_text_buffer_get_selection_bounds(buf,&start,&end))
+	if (gtk_text_buffer_get_selection_bounds(_buffer, &start, &end))
 	{
-		gtk_text_iter_set_offset(&end,gtk_text_iter_get_offset(&start));
-		gtk_text_buffer_select_range(buf,&start,&end);
+		gtk_text_iter_set_offset(&end, gtk_text_iter_get_offset(&start));
+		gtk_text_buffer_select_range(_buffer, &start, &end);
 	}
 }
 
-void gTextArea::selSelect(int start,int length)
+void gTextArea::selSelect(int pos, int length)
 {
-	GtkTextBuffer *buf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
-	GtkTextIter Start,End;
+	GtkTextIter start, end;
 	
-	gtk_text_buffer_get_end_iter(buf,&Start);
-	if ( gtk_text_iter_get_offset(&Start)<start) start=gtk_text_iter_get_offset(&Start);
+	gtk_text_buffer_get_end_iter(_buffer, &start);
 	
-	if (start<0) { length-=start; start=0; }
-	if ( (start+length)<0 ) length=(-1)*start;
+	if (gtk_text_iter_get_offset(&start) < pos)
+		pos = gtk_text_iter_get_offset(&start);
 	
-	gtk_text_buffer_get_selection_bounds(buf,&Start,&End);
-	gtk_text_iter_set_offset(&Start,start);
-	gtk_text_iter_set_offset(&End,start+length);
-	gtk_text_buffer_select_range(buf,&Start,&End);
+	if (pos < 0) 
+	{
+		length -= pos;
+		pos = 0;
+	}
 	
+	if ((pos + length) < 0)
+		length = (-pos);
+	
+	gtk_text_buffer_get_selection_bounds(_buffer, &start, &end);
+	gtk_text_iter_set_offset(&start, pos);
+	gtk_text_iter_set_offset(&end, pos + length);
+	gtk_text_buffer_select_range(_buffer, &start, &end);
 }
 
 void gTextArea::updateCursor(GdkCursor *cursor)
@@ -719,16 +675,14 @@ void gTextArea::updateCursor(GdkCursor *cursor)
 
 void gTextArea::waitForLayout(int *tw, int *th)
 {
-	GtkTextBuffer *buf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
   GtkTextIter start;
   GtkTextIter end;
 	gint w, h;
 	
 	gtk_text_layout_set_screen_width(GTK_TEXT_VIEW(textview)->layout, width());
 	
-  gtk_text_buffer_get_bounds (buf, &start, &end);
+  gtk_text_buffer_get_bounds (_buffer, &start, &end);
   gtk_text_layout_invalidate (GTK_TEXT_VIEW(textview)->layout, &start, &end);
-
 	gtk_text_layout_validate(GTK_TEXT_VIEW(textview)->layout, 0x7FFFFFFF);
 	gtk_text_layout_get_size(GTK_TEXT_VIEW(textview)->layout, &w, &h);
 	
@@ -782,7 +736,6 @@ void gTextArea::setAlignment(int vl)
 
 void gTextArea::undo()
 {
-	GtkTextBuffer *buf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
 	gTextAreaAction *action;
 	GtkTextIter start, stop;
 	
@@ -803,20 +756,20 @@ void gTextArea::undo()
 	
 	if (action->type == ACTION_INSERT)
 	{
-		gtk_text_buffer_get_iter_at_offset(buf, &start, action->start);
-		gtk_text_buffer_get_iter_at_offset(buf, &stop, action->start + action->length);
-		gtk_text_buffer_delete(buf, &start, &stop);
-		gtk_text_buffer_place_cursor(buf, &start);
+		gtk_text_buffer_get_iter_at_offset(_buffer, &start, action->start);
+		gtk_text_buffer_get_iter_at_offset(_buffer, &stop, action->start + action->length);
+		gtk_text_buffer_delete(_buffer, &start, &stop);
+		gtk_text_buffer_place_cursor(_buffer, &start);
 	}
 	else if (action->type == ACTION_DELETE)
 	{
-		gtk_text_buffer_get_iter_at_offset(buf, &start, action->start);
-		gtk_text_buffer_insert(buf, &start, action->text->str, action->text->len);
-		gtk_text_buffer_get_iter_at_offset(buf, &stop, action->end);
+		gtk_text_buffer_get_iter_at_offset(_buffer, &start, action->start);
+		gtk_text_buffer_insert(_buffer, &start, action->text->str, action->text->len);
+		gtk_text_buffer_get_iter_at_offset(_buffer, &stop, action->end);
 		if (action->delete_key_used)
-			gtk_text_buffer_place_cursor(buf, &start);
+			gtk_text_buffer_place_cursor(_buffer, &start);
 		else
-			gtk_text_buffer_place_cursor(buf, &stop);
+			gtk_text_buffer_place_cursor(_buffer, &stop);
 	}
 	
 	end();
@@ -825,7 +778,6 @@ void gTextArea::undo()
 
 void gTextArea::redo()
 {
-	GtkTextBuffer *buf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
 	gTextAreaAction *action;
 	GtkTextIter start, stop;
 
@@ -846,17 +798,17 @@ void gTextArea::redo()
 	
 	if (action->type == ACTION_INSERT)
 	{
-		gtk_text_buffer_get_iter_at_offset(buf, &start, action->start);
-		gtk_text_buffer_insert(buf, &start, action->text->str, action->text->len);
-		gtk_text_buffer_get_iter_at_offset(buf, &start, action->start + action->length);
-		gtk_text_buffer_place_cursor(buf, &start);
+		gtk_text_buffer_get_iter_at_offset(_buffer, &start, action->start);
+		gtk_text_buffer_insert(_buffer, &start, action->text->str, action->text->len);
+		gtk_text_buffer_get_iter_at_offset(_buffer, &start, action->start + action->length);
+		gtk_text_buffer_place_cursor(_buffer, &start);
 	}
 	else if (action->type == ACTION_DELETE)
 	{
-		gtk_text_buffer_get_iter_at_offset(buf, &start, action->start);
-		gtk_text_buffer_get_iter_at_offset(buf, &stop, action->end);
-		gtk_text_buffer_delete(buf, &start, &stop);
-		gtk_text_buffer_place_cursor(buf, &start);
+		gtk_text_buffer_get_iter_at_offset(_buffer, &start, action->start);
+		gtk_text_buffer_get_iter_at_offset(_buffer, &stop, action->end);
+		gtk_text_buffer_delete(_buffer, &start, &stop);
+		gtk_text_buffer_place_cursor(_buffer, &start);
 	}
 	
 	end();
