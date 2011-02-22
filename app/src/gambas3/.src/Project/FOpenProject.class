@@ -331,7 +331,7 @@ End
 Public Sub OnUpdateRecent()
   
   lstRecent.Clear
-  radSort_Click
+  if tabProject.Index = 1 then FillRecent
   
 End
 
