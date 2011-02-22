@@ -367,10 +367,7 @@ static void string_search(const char *str, int len, const char *pattern, int len
 	int pos;
 
 	if (start)
-	{
 		start = index_to_byte(str, len, start);
-		fprintf(stderr, "start = %d\n", start);
-	}
 
 	if (!nocase)
 	{
