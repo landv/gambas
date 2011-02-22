@@ -543,8 +543,21 @@ void IMAGE_take(GB_IMG *img, GB_IMG_OWNER *owner, void *owner_handle, int width,
 
 void IMAGE_delete(GB_IMG *img)
 {
-	IMAGE_take(img, &_image_owner, NULL, 0, 0, NULL);
+	//IMAGE_take(img, &_image_owner, NULL, 0, 0, NULL);
+	
+	// Release the temporary handle before the owner, because the temporary owner may write to the data before freeing!
+	
+	if (img->temp_owner && img->temp_owner != img->owner && img->temp_handle)
+		(*img->temp_owner->release)(img, img->temp_handle);
+	
+	(*img->owner->free)(img, img->owner_handle);
+	
+	img->width = img->height = 0;
 	img->format = 0;
+	img->temp_owner = NULL;
+	img->temp_handle = NULL;
+	img->owner = NULL;
+	img->owner_handle = NULL;
 }
 
 void IMAGE_synchronize(GB_IMG *img)

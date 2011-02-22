@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  main.c
+  c_surface.h
 
   (c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
 
@@ -20,37 +20,30 @@
 
 ***************************************************************************/
 
-#define __MAIN_C
+#ifndef __C_SURFACE_H
+#define __C_SURFACE_H
 
 #include "main.h"
-#include "c_surface.h"
-#include "c_cairo.h"
 
-GB_INTERFACE GB EXPORT;
-IMAGE_INTERFACE IMAGE EXPORT;
+#ifndef __C_SURFACE_C
 
-GB_DESC *GB_CLASSES[] EXPORT =
-{
-	CairoSurfaceDesc,
-	CairoPdfSurfaceDesc,
-	CairoPsSurfaceDesc,
-	CairoSvgSurfaceDesc,
-	CairoPatternDesc,
-  CairoExtentsDesc,
-  CairoTextExtentsDesc,
-  CairoFontExtentsDesc,
-  CairoMatrixDesc,
-  CairoFontDesc,
-  CairoDesc,
-  NULL
-};
+extern GB_DESC CairoSurfaceDesc[];
+extern GB_DESC CairoPdfSurfaceDesc[];
+extern GB_DESC CairoPsSurfaceDesc[];
+extern GB_DESC CairoSvgSurfaceDesc[];
 
-int EXPORT GB_INIT(void)
-{
-  GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
-	return 0;
-}
+#else
 
-void EXPORT GB_EXIT()
-{
-}
+#define THIS ((CAIRO_SURFACE *)_object)
+
+#endif
+
+typedef
+	struct {
+		GB_BASE ob;
+		cairo_surface_t *surface;
+		char *path;
+		}
+	CAIRO_SURFACE;
+	
+#endif

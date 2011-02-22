@@ -22,6 +22,7 @@
 
 #define __C_CAIRO_C
 
+#include "c_surface.h"
 #include "c_cairo.h"
 
 typedef
@@ -46,6 +47,7 @@ CAIRO_DRAW *_current = NULL;
 
 static void free_image(GB_IMG *img, void *image)
 {
+	fprintf(stderr, "free_image: %p %p (%d)\n", img, image, cairo_surface_get_reference_count((cairo_surface_t *)image));
 	cairo_surface_destroy((cairo_surface_t *)image);
 }
 
@@ -58,11 +60,9 @@ static void *temp_image(GB_IMG *img)
 	else
 		image = cairo_image_surface_create_for_data(img->data, CAIRO_FORMAT_ARGB32, img->width, img->height, 
 		                                            cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, img->width));
+		
+	fprintf(stderr, "temp_image: %p -> %p (%d)\n", img, image, cairo_surface_get_reference_count(image));
 	return image;
-}
-
-static void sync_image(void *image)
-{
 }
 
 static GB_IMG_OWNER _image_owner = {
@@ -71,7 +71,7 @@ static GB_IMG_OWNER _image_owner = {
 	free_image,
 	free_image,
 	temp_image,
-	sync_image,
+	NULL,
 	};
 
 static cairo_surface_t *check_image(void *img)
@@ -504,6 +504,11 @@ BEGIN_METHOD(CAIRO_begin, GB_OBJECT device)
 	if (GB.Is(device, GB.FindClass("Image")))
 	{
 		draw->surface = check_image(device);
+		draw->context = cairo_create(draw->surface);
+	}
+	else if (GB.Is(device, GB.FindClass("CairoSurface")))
+	{
+		draw->surface = ((CAIRO_SURFACE *)device)->surface;
 		draw->context = cairo_create(draw->surface);
 	}
 	else
@@ -996,6 +1001,21 @@ BEGIN_METHOD(Cairo_DrawText, GB_STRING text)
 	
 END_METHOD
 
+BEGIN_METHOD_VOID(Cairo_ShowPage)
+
+	CHECK_CNT();	
+	cairo_show_page(CNT);
+	
+END_METHOD
+
+BEGIN_METHOD_VOID(Cairo_CopyPage)
+
+	CHECK_CNT();	
+	cairo_copy_page(CNT);
+	
+END_METHOD
+
+
 GB_DESC CairoDesc[] = 
 {
 	GB_DECLARE("Cairo", 0), GB_VIRTUAL_CLASS(),
@@ -1162,6 +1182,9 @@ GB_DESC CairoDesc[] =
 	GB_STATIC_METHOD("TextExtents", "CairoTextExtents", Cairo_TextExtents, "(Text)s"),
 	GB_STATIC_METHOD("Text", NULL, Cairo_Text, "(Text)s"),
 	GB_STATIC_METHOD("DrawText", NULL, Cairo_DrawText, "(Text)s"),
+
+	GB_STATIC_METHOD("ShowPage", NULL, Cairo_ShowPage, NULL),
+	GB_STATIC_METHOD("CopyPage", NULL, Cairo_CopyPage, NULL),
 
 	GB_END_DECLARE	
 };
