@@ -97,7 +97,7 @@ Public Sub DrawingArea_Draw()
     W = Min(Me.W - X, Draw.RichTextWidth(sTitle))
     If bSelected Then Draw.Foreground = Color.SelectedForeground
     H = Draw.RichTextHeight(sTitle, W)
-    Draw.RichText(sTitle, X, 0, W, H, Align.TopLeft)
+    Draw.RichText(sTitle, X, PADDING, W, H, Align.TopLeft)
     
   End With
   
@@ -187,7 +187,7 @@ Private Function IdealHeight_Read() As Integer
   X = ICON_SIZE + PADDING * 2
   If $hProjectInfo Then
     sTitle = GetTitle()
-    H = $hDrawingArea.Font.RichTextHeight(sTitle, Min(Me.W - X, $hDrawingArea.Font.RichTextWidth(sTitle)))
+    H = $hDrawingArea.Font.RichTextHeight(sTitle, Min(Me.W - X, $hDrawingArea.Font.RichTextWidth(sTitle))) + PADDING * 2
   Endif
 
   H = Max(H, X)

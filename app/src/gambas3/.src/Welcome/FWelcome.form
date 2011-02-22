@@ -9,6 +9,24 @@
   Arrangement = Arrange.Vertical
   Spacing = True
   Margin = True
+  { mnuSort Menu
+    { mnuSortByDate Menu mnuSort
+      Name = "mnuSortByDate"
+      Text = ("Sort by date")
+      Checked = True
+      Tag = "0"
+    }
+    { mnuSortByName Menu mnuSort
+      Name = "mnuSortByName"
+      Text = ("Sort by name")
+      Tag = "1"
+    }
+    { mnuSortByPath Menu mnuSort
+      Name = "mnuSortByPath"
+      Text = ("Sort by path")
+      Tag = "2"
+    }
+  }
   { dwgWelcome DrawingArea
     MoveScaled(1,1,66,20)
     Background = Color.SelectedBackground
@@ -37,15 +55,6 @@
         Padding = 4
         AutoResize = True
         Alignment = Align.TopNormal
-      }
-      { panSort HBox
-        MoveScaled(1,3,25,4)
-        { chkSortRecent CheckBox
-          MoveScaled(2,0,21,3)
-          Foreground = Color.SelectedForeground
-          Expand = True
-          Text = ("Sort by path")
-        }
       }
       { svwExample ScrollView
         MoveScaled(1,7,23,18)

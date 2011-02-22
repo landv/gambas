@@ -21,6 +21,7 @@ Private Const POS_BUTTON As Integer = 0
 Private HEIGHT_BUTTON As Integer = Desktop.Scale * 8
 
 Private $hWelcome As CWelcome
+Private $iSort As Integer = CRecentFile.SORT_BY_DATE
 
 Static Public Function Run() As String
 
@@ -56,7 +57,7 @@ Public Sub Form_Open()
 
   ' Fill recent list
 
-  chkSortRecent.Value = Settings["/FWelcome/SortRecent", False]
+  $iSort = Settings["/FWelcome/SortRecent", CRecentFile.SORT_BY_DATE]
   FillRecent
 
   If CRecentFile.All.Count Then
@@ -154,10 +155,8 @@ Private Sub Toggle(iState As Integer)
     panList.Visible = True
     If $iRecent = LIST_RECENT Then
       lblList.Text = ("Recent projects")
-      panSort.Show
     Else
       lblList.Text = ("Examples")
-      panSort.Hide
     Endif
   Else
     panList.Visible = False
@@ -263,7 +262,7 @@ End
 Public Sub Form_Close()
 
   Settings.Write(Me)
-  Settings["/FWelcome/SortRecent"] = chkSortRecent.Value
+  Settings["/FWelcome/SortRecent"] = $iSort
 
 End
 
@@ -333,7 +332,7 @@ Private Sub FillRecent()
 
   Inc Application.Busy
   
-  aList = CRecentFile.Get(chkSortRecent.Value)
+  aList = CRecentFile.Get($iSort)
   
   svwRecent.Arrangement = Arrange.None
   
@@ -343,7 +342,7 @@ Private Sub FillRecent()
 
   For iInd = 0 To aList.Count - 1
     hProjectInfo = New CProjectInfo(aList[iInd].Path)
-    If Not chkSortRecent.Value Then
+    If $iSort = CRecentFile.SORT_BY_DATE Then
       sTitle = aList[iInd].GetSlot()
       If sTitle <> sLastTitle Then
         sLastTitle = sTitle
@@ -458,3 +457,23 @@ Public Sub lblWebSite_Leave()
 
 End
 
+
+Public Sub svwRecent_Menu()
+
+  mnuSort.Popup
+
+End
+
+Public Sub mnuSort_Click()
+  
+  Dim hMenu As Menu
+  
+  $iSort = Last.Tag
+  
+  For Each hMenu In mnuSort.Children
+    hMenu.Checked = hMenu = Last
+  Next
+  
+  FillRecent
+  
+End

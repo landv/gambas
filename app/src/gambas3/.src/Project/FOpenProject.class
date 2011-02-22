@@ -25,6 +25,7 @@ Static Private $bAnother As Boolean
 Static Public InAnotherWindow As Boolean
 
 Private $hProjectItem As ProjectItem
+Private $iSort As Integer
 
 Public Sub Run(Optional bAnother As Boolean) As String
 
@@ -93,7 +94,7 @@ Public Sub Form_Open()
 
   InAnotherWindow = False
   btnOther.Visible = $bAnother
-  chkSortRecent.Value = Settings["/FOpenProjet/SortRecent", False]  
+  radSortByPath.Value = Settings["/FOpenProjet/SortRecent", False]  
 
 End
 
@@ -102,7 +103,7 @@ Public Sub Form_Close()
   Settings.Write(Me)  
   Settings.Write(splProject)
   Settings.Write(dchProject)
-  Settings["/FOpenProject/SortRecent"] = chkSortRecent.Value
+  Settings["/FOpenProject/SortRecent"] = radSortByPath.Value
   
 End
 
@@ -208,10 +209,10 @@ Private Sub FillRecent()
   'panRecent.Hide
   lstRecent.Lock
 
-  aRecent = CRecentFile.Get(chkSortRecent.Value)
+  aRecent = CRecentFile.Get($iSort)
 
   For Each hRecent In aRecent
-    If Not chkSortRecent.Value Then
+    If $iSort = CRecentFile.SORT_BY_DATE Then
       sTitle = hRecent.GetSlot()
       If sTitle <> sLastTitle Then
         hDrawingArea = New DrawingArea(lstRecent) As "dwgExample"
@@ -327,20 +328,10 @@ Public Sub dchProject_Activate()
 
 End
 
-
-Public Sub chkSortRecent_Click()
-
-  If tabProject.Index = 1 Then 
-    lstRecent.Clear
-    FillRecent
-  Endif
-
-End
-
 Public Sub OnUpdateRecent()
   
   lstRecent.Clear
-  chkSortRecent_Click
+  radSort_Click
   
 End
 
@@ -362,5 +353,15 @@ Public Sub btnOther_Click()
   InAnotherWindow = True
   btnOK_Click
   
+
+End
+
+Public Sub radSort_Click()
+
+  $iSort = Last.Tag
+  If tabProject.Index = 1 Then
+    lstRecent.Clear
+    FillRecent
+  Endif
 
 End

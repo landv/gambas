@@ -473,7 +473,7 @@ Private Sub FindAfter(hView As TreeView, sText As String, Optional sParent As St
       .MoveFirst
     Endif
     While .Available
-      If Comp(.Item.Text, sText, gb.IgnoreCase + gb.Language) > 0 Then Break
+      If Comp(.Item.Text, sText, gb.Natural + gb.IgnoreCase) > 0 Then Break
       If iConv > 0 Then Break
       sAfter = .Item.Key
       .MoveNext

@@ -1,7 +1,9 @@
 ' Gambas class file
 
+Public Enum SORT_BY_DATE, SORT_BY_NAME, SORT_BY_PATH 
+
 Static Public All As New CRecentFile[]
-Static Public SortByDate As Boolean
+Static Public Sort As Integer
 
 Static Private $bLoaded As Boolean
 
@@ -24,11 +26,14 @@ End
 
 Public Sub _compare(hRecentFile As CRecentFile) As Integer
   
-  If SortByDate Then
-    Return Sgn({Date} - hRecentFile.Date)
-  Else
-    Return Comp(Path, hRecentFile.Path, gb.Natural + gb.IgnoreCase)
-  Endif
+  Select Case Sort
+    Case SORT_BY_DATE
+      Return Sgn(hRecentFile.Date - {Date})
+    Case SORT_BY_NAME
+      Return Comp(File.Name(Path), File.Name(hRecentFile.Path), gb.Natural + gb.IgnoreCase)
+    Case SORT_BY_PATH
+      Return Comp(Path, hRecentFile.Path, gb.Natural + gb.IgnoreCase)
+  End Select
   
 End
 
@@ -104,8 +109,8 @@ Static Public Sub Save()
 
   Settings["/Recent/Count"] = All.Count
 
-  SortByDate = True
-  All.Sort(gb.Descent)
+  Sort = SORT_BY_DATE
+  All.Sort()
 
   For iInd = 0 To All.Max
     Settings["/Recent/File[" & CStr(iInd + 1) & "]"] = All[iInd].Path
@@ -127,8 +132,8 @@ Static Public Sub Add(sPath As String)
   If Right$(sPath) = "/" Then sPath = Left$(sPath, -1)
 
   'sPath = "(" & File.BaseName(sPath) & ") " & File.Dir(sPath)
-  SortByDate = True
-  All.Sort(gb.Descent)
+  Sort = SORT_BY_DATE
+  All.Sort()
 
   While iInd < All.Count
 
@@ -154,15 +159,10 @@ Static Public Sub Add(sPath As String)
 
 End
 
-Static Public Sub Get(Optional bSort As Boolean) As CRecentFile[]
+Static Public Sub Get(Optional iSort As Integer) As CRecentFile[]
   
-  If bSort Then
-    SortByDate = False
-    All.Sort(gb.Ascent)
-  Else
-    SortByDate = True
-    All.Sort(gb.Descent)
-  Endif
+  Sort = iSort
+  All.Sort()
   
   Return All
   
