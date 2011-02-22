@@ -169,15 +169,27 @@ END_METHOD
 
 BEGIN_METHOD(Image_Blur, GB_INTEGER radius)
 
+	Imlib_Image image;
+
 	check_image(THIS);
+	
+	image = imlib_clone_image();
+	imlib_context_set_image(image);
 	imlib_image_blur(VARGOPT(radius, 2));
+  GB.ReturnObject(create_image(image));
 
 END_METHOD
 
 BEGIN_METHOD(Image_Sharpen, GB_INTEGER radius)
 
+	Imlib_Image image;
+
 	check_image(THIS);
+	
+	image = imlib_clone_image();
+	imlib_context_set_image(image);
 	imlib_image_sharpen(VARGOPT(radius, 2));
+  GB.ReturnObject(create_image(image));
 
 END_METHOD
 
@@ -221,8 +233,8 @@ GB_DESC CImageDesc[] =
 	GB_METHOD("Rotate", "Image", Image_Rotate, "(Angle)f"),
   GB_METHOD("Stretch", "Image", Image_Stretch, "(Width)i(Height)i"),
 	
-	GB_METHOD("Blur", NULL, Image_Blur, "[(Radius)i]"),
-	GB_METHOD("Sharpen", NULL, Image_Sharpen, "[(Radius)i]"),
+	GB_METHOD("Blur", "Image", Image_Blur, "[(Radius)i]"),
+	GB_METHOD("Sharpen", "Image", Image_Sharpen, "[(Radius)i]"),
 
   GB_METHOD("Draw", NULL, Image_Draw, "(Image)Image;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
 
