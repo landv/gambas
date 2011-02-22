@@ -107,6 +107,7 @@ BEGIN_METHOD(CairoPdfSurface_new, GB_STRING path; GB_FLOAT width; GB_FLOAT heigh
 	THIS->path = GB.NewZeroString(GB.FileName(STRING(path), LENGTH(path)));
 	THIS->surface = cairo_pdf_surface_create(THIS->path, CM_TO_PT(VARG(width)), CM_TO_PT(VARG(height)));
 
+	#if CAIRO_VERSION >= CAIRO_VERSION_ENCODE(1, 10, 0)
 	if (version)
 	{
 		if (!strcmp(version, "1.4"))
@@ -114,6 +115,7 @@ BEGIN_METHOD(CairoPdfSurface_new, GB_STRING path; GB_FLOAT width; GB_FLOAT heigh
 		else if (!strcmp(version, "1.5"))
 			cairo_pdf_surface_restrict_to_version(THIS->surface, CAIRO_PDF_VERSION_1_5);
 	}
+	#endif
 
 END_METHOD
 
