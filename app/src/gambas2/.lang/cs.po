@@ -291,6 +291,7 @@ msgstr ""
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -303,11 +304,11 @@ msgstr "&?"
 msgid "&1: &2"
 msgstr "-"
 
-#: Package.module:60
+#: Package.module:62
 msgid "'&1' and '&2' are not installed on your system."
 msgstr "'&1' a '&2' nejsou instalovány ve vašem systému."
 
-#: Package.module:51
+#: Package.module:53
 msgid "'&1' is not installed on your system."
 msgstr "'&1' neni instalován ve vašem systému."
 
@@ -319,7 +320,7 @@ msgstr "-"
 msgid "&1 K, &2 line(s)"
 msgstr "-"
 
-#: FMakeInstall.class:826
+#: FMakeInstall.class:839
 msgid "1. Package information"
 msgstr "1. Informace o balíčku"
 
@@ -331,7 +332,7 @@ msgstr "1. Typ projektu"
 msgid "&1 strings (&2 not translated) - &3 % done"
 msgstr "&1 řetězců (&2 nepřelozeno) - &3 % hotovo"
 
-#: FMakeInstall.class:942
+#: FMakeInstall.class:971
 msgid "2. Changelog"
 msgstr "2. Novinky ve verzi"
 
@@ -347,23 +348,23 @@ msgstr "3D programování s OpenGL"
 msgid "3. Project information"
 msgstr "3. Informace o projektu"
 
-#: FMakeInstall.class:971
+#: FMakeInstall.class:1000
 msgid "3. Target distribution"
 msgstr "3. Podporované distribuce"
 
-#: FMakeInstall.class:1126
+#: FMakeInstall.class:1178
 msgid "4. Package group"
 msgstr "4. Skupina balíčků"
 
-#: FMakeInstall.class:1147
+#: FMakeInstall.class:1199
 msgid "5. Menu entry"
 msgstr "5. Umístění v menu"
 
-#: FMakeInstall.class:1180
+#: FMakeInstall.class:1232
 msgid "6. Destination directory"
 msgstr "6. Cílový adresář"
 
-#: FMakeInstall.class:1193
+#: FMakeInstall.class:1245
 msgid "7. Create package"
 msgstr "7. Vytvoření balíčku"
 
@@ -383,7 +384,7 @@ msgstr "O &aplikaci Gambas..."
 msgid "About Gambas..."
 msgstr "O aplikaci Gambas..."
 
-#: Project.module:2821
+#: Project.module:2829
 msgid "A class name must begin with a letter or an underscore, followed by any letter or digit."
 msgstr "Název třídy musí začínat písmenem nebo podtržítkem, následovaným libovolným písmeno nebo číslici."
 
@@ -399,7 +400,7 @@ msgstr "&Add"
 msgid "Add expression"
 msgstr "Přidat výraz"
 
-#: Language.module:94
+#: Language.module:98
 msgid "Albanian (Albania)"
 msgstr "Albánský (Albánie)"
 
@@ -451,7 +452,7 @@ msgstr "Všechny zálohy nebo vytvořené soubory budou odstraněny z adresáře
 msgid "All files"
 msgstr "Všechny soubory"
 
-#: FMakeInstall.class:1198
+#: FMakeInstall.class:1250
 msgid "All needed information have been collected. You can now create the installation packages for your application...\n<p>Click on the <b>OK</b> button to create the packages.\n<p>Click on the <b>Previous</b> button if you had made a mistake.\n<p>Click on the <b>Cancel</b> button to cancel the operation.\n\n"
 msgstr "Veškeré potřebné informace byly shromážděny. Nyní můžete vytvořit instalační balíčky pro vaši aplikaci... \n<p>Klikněte na <b>OK</b> tlačítko pro vytvoření balíčků.\n<p>Klikněte na <b>Předchozí</b> tlačítko, pokud jste udělali chybu.\n<p>Klikněte na <b>Zrušit</b> můžete zrušit operaci.\n\n"
 
@@ -487,6 +488,10 @@ msgstr "Arabsky (Egypt)"
 msgid "Arabic (Tunisia)"
 msgstr "Arabsky (Tunisko)"
 
+#: FMakeInstall.class:1026
+msgid "Archlinux"
+msgstr "-"
+
 #: FFind.class:114
 msgid "Are you sure to want to replace all?"
 msgstr "Jste si jisti, že se chcete nahradit všechno?"
@@ -499,7 +504,7 @@ msgstr "Argumenty"
 msgid "Arrangement"
 msgstr "Uspořádání"
 
-#: Project.module:1375
+#: Project.module:1378
 msgid "at line &1 in &2"
 msgstr "na řádku &1 v &2"
 
@@ -523,11 +528,11 @@ msgstr "Automatické dokončování"
 msgid "Automatic extension"
 msgstr "Automatické rozšíření"
 
-#: Project.module:124
+#: Project.module:127
 msgid "Automation"
 msgstr "Automatizace"
 
-#: FMakeInstall.class:1121
+#: FMakeInstall.class:1047
 msgid "Autotools"
 msgstr "Auto nástroje"
 
@@ -551,7 +556,7 @@ msgstr "Chybné jméno skupiny!"
 msgid "Bad menu name !"
 msgstr "Chybné jméno menu!"
 
-#: Project.module:125
+#: Project.module:128
 msgid "Basic"
 msgstr "Jednoduché"
 
@@ -599,7 +604,7 @@ msgstr "Bulharsky (Bulharsko)"
 msgid "(c) 2000-2007 Benoît Minisini"
 msgstr "-"
 
-#: FTranslate.class:561 Project.module:277
+#: FTranslate.class:561 Project.module:280
 msgid "Cancel"
 msgstr "Zrušit"
 
@@ -607,15 +612,15 @@ msgstr "Zrušit"
 msgid "Cannot add file."
 msgstr "Nelze přidat soubor."
 
-#: Project.module:3440
+#: Project.module:3448
 msgid "Cannot copy file &1."
 msgstr "Soubor &1 nelze kopírovat."
 
-#: Project.module:1761
+#: Project.module:1764
 msgid "Cannot copy template file."
 msgstr "Šablonu nelze zkopírovat."
 
-#: Project.module:3482
+#: Project.module:3490
 msgid "Cannot create link &1."
 msgstr "Nelze vytvořit odkaz &1."
 
@@ -631,23 +636,23 @@ msgstr "Soubor nebo adresář nelze smazat"
 msgid "Cannot import translation file."
 msgstr "Jazykový soubor s překladem nelze načíst."
 
-#: Project.module:1975
+#: Project.module:1978
 msgid "Cannot make executable."
 msgstr "Nelze udělat spustitelný."
 
-#: Project.module:3494
+#: Project.module:3502
 msgid "Cannot move a directory inside itself."
 msgstr "Nelze přesunout adresář uvnitř sebe."
 
-#: Project.module:3538
+#: Project.module:3546
 msgid "Cannot move file &1."
 msgstr "Soubor &1 nejde přesunout."
 
-#: Project.module:1188
+#: Project.module:1191
 msgid "Cannot open file."
 msgstr "Soubor nelze otevřít."
 
-#: Project.module:342
+#: Project.module:345
 msgid "Cannot open project file :\n"
 msgstr "Nelze otevřít projekt:\n"
 
@@ -667,7 +672,7 @@ msgstr "Překlad nelze uložit."
 msgid "Cannot write component description file."
 msgstr "Nelze zapsat součást popisu souboru."
 
-#: Project.module:2379
+#: Project.module:2387
 msgid "Cannot write project file."
 msgstr "Projekt nelze uložit."
 
@@ -677,13 +682,13 @@ msgstr "Titulek"
 
 #: FFind.class:745 FOutput.class:616
 msgid "Case sensitive"
-msgstr "Velká a malá písmena"
+msgstr "Rozlišovat velká a malá písmena"
 
 #: Language.module:14
 msgid "Catalan (Catalonia, Spain)"
 msgstr "Katalánsky (Katalánsko, Španělsko)"
 
-#: FMakeInstall.class:1170
+#: FMakeInstall.class:1222
 msgid "Categories"
 msgstr "Kategorie"
 
@@ -709,7 +714,7 @@ msgstr "Kreslení grafů"
 
 #: FMenu.class:1065
 msgid "Checked"
-msgstr "Zkontrolováno"
+msgstr "Označovací"
 
 #: FPropertyProject.class:868
 msgid "Class"
@@ -719,7 +724,7 @@ msgstr "Třída"
 msgid "&Class..."
 msgstr "&Třída..."
 
-#: FInfo.class:67 Project.module:1036
+#: FInfo.class:67 Project.module:1039
 msgid "Classes"
 msgstr "Třídy"
 
@@ -775,7 +780,7 @@ msgstr "Klinutím na Vložit přidáte nové menu."
 msgid "Clipboard contents"
 msgstr "Obsah schránky"
 
-#: FInfo.class:408 FMakeInstall.class:236 FOption.class:1161 FTips.class:232
+#: FInfo.class:408 FMakeInstall.class:242 FOption.class:1161 FTips.class:232
 msgid "Close"
 msgstr "Zavřít"
 
@@ -813,7 +818,7 @@ msgstr "Aplikace v konzoli"
 
 #: FEditor.class:2839
 msgid "Comment"
-msgstr "Komentář"
+msgstr "Zakomentuj"
 
 #: FOption.class:1053 FTranslate.class:50
 msgid "Comments"
@@ -841,9 +846,9 @@ msgstr "Kompilovat všechno"
 
 #: FMain.class:1613
 msgid "Compile &All"
-msgstr "Kompilovat &všechno"
+msgstr "Kompilovat vše&chno"
 
-#: Project.module:1540
+#: Project.module:1543
 msgid "Compiling project"
 msgstr "Kompiluji projekt"
 
@@ -853,7 +858,7 @@ msgstr "Komponenta"
 
 #: FPropertyProject.class:1632
 msgid "Component advancement"
-msgstr "Rozšíření komponenty"
+msgstr "Verze komponenty"
 
 #: FCreateProject.class:599
 msgid "Component programming"
@@ -883,11 +888,11 @@ msgstr "&Konzole"
 msgid "Console - Gambas"
 msgstr "Konzole - Gambas"
 
-#: FTranslate.class:693 Project.module:2234
+#: FTranslate.class:693 Project.module:2241
 msgid "Continue"
 msgstr "Pokračovat"
 
-#: Project.module:135
+#: Project.module:138
 msgid "Controls"
 msgstr "Řízení"
 
@@ -919,35 +924,35 @@ msgstr "Vytvoření zástupce na ploše"
 msgid "Create a symbolic link"
 msgstr "Vytvořít symbolický odkaz"
 
-#: FMakeInstall.class:1190
+#: FMakeInstall.class:1242
 msgid "Create directories for each distribution"
 msgstr "Vytvořit adresáře pro jednotlivé distribuce"
 
-#: Project.module:3191
+#: Project.module:3199
 msgid "Create source package"
 msgstr "Vytvořit zdrojový balíček"
 
-#: Package.module:359
+#: Package.module:367
 msgid "Creating desktop file..."
 msgstr "Vytvořit zástupce na ploše..."
 
-#: Package.module:528
+#: Package.module:536
 msgid "Creating package..."
 msgstr "Vytvořit balíček..."
 
-#: Package.module:282
+#: Package.module:287
 msgid "Creating package for &1."
 msgstr "Vytvořit balíček pro &1."
 
-#: Package.module:644
+#: Package.module:652
 msgid "Creating source package."
 msgstr "Vytvořit zdrojový balíček."
 
-#: Package.module:668
+#: Package.module:676
 msgid "Creating .spec file."
 msgstr "Vytvořit .spec soubor."
 
-#: Language.module:58
+#: Language.module:60
 msgid "Croatian (Croatia)"
 msgstr "Chorvatsky (Chorvatsko)"
 
@@ -987,11 +992,11 @@ msgstr "Česky (Česká republika)"
 msgid "Danish (Denmark)"
 msgstr "Dánsky (Dánsko)"
 
-#: Project.module:1040
+#: Project.module:1043
 msgid "Data"
 msgstr "Data"
 
-#: Project.module:126
+#: Project.module:129
 msgid "Database"
 msgstr "Databáze"
 
@@ -1011,7 +1016,7 @@ msgstr "Data vázané ovládacími prvky"
 msgid "Data types"
 msgstr "Typy dat"
 
-#: FMakeInstall.class:995
+#: FMakeInstall.class:1068
 msgid "Debian"
 msgstr "-"
 
@@ -1055,7 +1060,7 @@ msgstr "&Smazat..."
 msgid "Delete translation"
 msgstr "Smazat překlad"
 
-#: FMakeInstall.class:917 FPropertyProject.class:1524
+#: FMakeInstall.class:946 FPropertyProject.class:1524
 msgid "Description"
 msgstr "Popis"
 
@@ -1083,7 +1088,7 @@ msgstr "Adresář"
 msgid "&Directory"
 msgstr "&Adresář"
 
-#: Project.module:1780
+#: Project.module:1783
 msgid "Directory already exists."
 msgstr "Adresář se zadaným jménem už existuje."
 
@@ -1095,7 +1100,7 @@ msgstr "Zobrazit vlastní nápovědu"
 msgid "Do not forget to specify the Gambas version used, your distribution name and version, and every other information you find useful."
 msgstr "Nezapomeňte uvést i verzi Gambasu kterou používte, jméno distribuce a jeji verzi, a všechny další informace ktere schledáte užitečnými."
 
-#: Project.module:289
+#: Project.module:292
 msgid "Do not open"
 msgstr "Neotvírat"
 
@@ -1131,7 +1136,7 @@ msgstr "Skutečně chcete smazat tento obrázek?"
 msgid "Do you want to clear the value list ?"
 msgstr "Skutečně chcete smazat uvedený seznam hodnot?"
 
-#: Package.module:531
+#: Package.module:539
 msgid "'dpkg-buildpackage' has failed."
 msgstr "'dpkg-buildpackage' selhalo."
 
@@ -1139,15 +1144,15 @@ msgstr "'dpkg-buildpackage' selhalo."
 msgid "Draw"
 msgstr "Kreslit"
 
-#: Project.module:127
+#: Project.module:130
 msgid "Drawing"
 msgstr "Kreslení"
 
-#: Language.module:77
+#: Language.module:79
 msgid "Dutch (Belgium)"
 msgstr "Holandsky (Belgie)"
 
-#: Language.module:76
+#: Language.module:78
 msgid "Dutch (Netherlands)"
 msgstr "Holandsky (Nizozemí)"
 
@@ -1201,7 +1206,7 @@ msgstr "Smaragdový"
 
 #: FMenu.class:1055
 msgid "Enabled"
-msgstr "Povolený"
+msgstr "Povolené"
 
 #: Language.module:31
 msgid "English (Australia)"
@@ -1281,7 +1286,7 @@ msgstr "Spustitelný"
 
 #: FCreateFile.class:794
 msgid "Existing"
-msgstr "Existuje"
+msgstr "Existující"
 
 #: FTranslate.class:1444
 msgid "&Export..."
@@ -1327,7 +1332,7 @@ msgstr "Perština (Írán)"
 msgid "Features"
 msgstr "Vlastnosti"
 
-#: FMakeInstall.class:1016
+#: FMakeInstall.class:1089
 msgid "Fedora"
 msgstr "-"
 
@@ -1339,11 +1344,11 @@ msgstr "Soubor"
 msgid "&File"
 msgstr "&Soubor"
 
-#: Project.module:1720
+#: Project.module:1723
 msgid "File already exists."
 msgstr "Soubor s uvedeným jménem již existuje."
 
-#: Project.module:1258
+#: Project.module:1261
 msgid "File not found!"
 msgstr "Soubor nebyl nenalezen!"
 
@@ -1415,6 +1420,10 @@ msgstr "Dokonči aktuální funkci"
 msgid "Finished and stable"
 msgstr "Dokončená a stabilní"
 
+#: Language.module:45
+msgid "Finnish (Finland)"
+msgstr ""
+
 #: CComponent.class:68
 msgid "Firebird database driver"
 msgstr "Firebird ovladač databáze"
@@ -1463,7 +1472,7 @@ msgstr "Ovládací prvky formuláře jsou veřejné"
 msgid "Form hierarchy"
 msgstr "Posloupnost formuláře"
 
-#: FInfo.class:68 Project.module:1038
+#: FInfo.class:68 Project.module:1041
 msgid "Forms"
 msgstr "Formuláře"
 
@@ -1479,27 +1488,27 @@ msgstr "&Dopředu"
 msgid "Free"
 msgstr "Volný"
 
-#: FMakeInstall.class:938
+#: FMakeInstall.class:967
 msgid "Freeware"
 msgstr "-"
 
-#: Language.module:46
+#: Language.module:48
 msgid "French (Belgium)"
 msgstr "Francouzsky (Belgie)"
 
-#: Language.module:47
+#: Language.module:49
 msgid "French (Canada)"
 msgstr "Francouzsky (Kanada)"
 
-#: Language.module:45
+#: Language.module:47
 msgid "French (France)"
 msgstr "Francouzsky (Francie)"
 
-#: Language.module:48
+#: Language.module:50
 msgid "French (Switzerland)"
 msgstr "Francouzsky (Švýcarsko)"
 
-#: Language.module:50
+#: Language.module:52
 msgid "Galician (Spain)"
 msgstr "Galsky (Španělsko)"
 
@@ -1547,7 +1556,7 @@ msgstr "Projekt Gambasu"
 msgid "Gambas project file path"
 msgstr "Gambas cesta k souboru projektu"
 
-#: Project.module:128
+#: Project.module:131
 msgid "Games"
 msgstr "Hry"
 
@@ -1555,7 +1564,7 @@ msgstr "Hry"
 msgid "General"
 msgstr "Obecně"
 
-#: FMakeInstall.class:938
+#: FMakeInstall.class:967
 msgid "General Public Licence"
 msgstr "-"
 
@@ -1615,7 +1624,7 @@ msgstr "Řecky (Řecko)"
 msgid "Group"
 msgstr "Skupina"
 
-#: FMakeInstall.class:672
+#: FMakeInstall.class:679
 msgid "Groups"
 msgstr "Skupiny"
 
@@ -1647,7 +1656,7 @@ msgstr "<h2 align=center> Licence </h2>\n\n<p align=center>Tento program je svob
 msgid "Hatched flood fill"
 msgstr "Výplň oblasti"
 
-#: Language.module:52
+#: Language.module:54
 msgid "Hebrew (Israel)"
 msgstr "Hebrejština (Izrael)"
 
@@ -1675,7 +1684,7 @@ msgstr "Zvýrazňování"
 msgid "Highlight modified lines"
 msgstr "Podbarvení změněné oblasti"
 
-#: Language.module:54
+#: Language.module:56
 msgid "Hindi (India)"
 msgstr "Hindština (Indie)"
 
@@ -1707,7 +1716,7 @@ msgstr "HTML text"
 msgid "http://gambas.sourceforge.net"
 msgstr "-"
 
-#: Language.module:56
+#: Language.module:58
 msgid "Hungarian (Hungary)"
 msgstr "Maďarsky (Maďarsko)"
 
@@ -1771,7 +1780,7 @@ msgstr "Odsazení"
 msgid "Index"
 msgstr "Index"
 
-#: Language.module:60
+#: Language.module:62
 msgid "Indonesian (Indonesia)"
 msgstr "Indonésky (Indonézie)"
 
@@ -1783,15 +1792,15 @@ msgstr "Informace"
 msgid "Information about components"
 msgstr "Informace o komponentách"
 
-#: Project.module:1371
+#: Project.module:1374
 msgid "in form definition"
 msgstr "ve formě definice"
 
-#: Package.module:624
+#: Package.module:632
 msgid "Initializing ~/RPM directory."
 msgstr "Inicializuji adresář ~/RPM"
 
-#: FMakeInstall.class:368
+#: FMakeInstall.class:375
 msgid "Initial release"
 msgstr "Initial release"
 
@@ -1799,13 +1808,13 @@ msgstr "Initial release"
 msgid "&Insert"
 msgstr "&Vložit"
 
-#: FMakeInstall.class:854
+#: FMakeInstall.class:867
 msgid "Insert release number in package version"
 msgstr "Vložte číslo vydání ve verzi balíku"
 
 #: FMain.class:1652
 msgid "&Installation package..."
-msgstr "&Instalační balíček ..."
+msgstr "&Instalační balíček..."
 
 #: FMakeExecutable.class:24
 msgid "Install in the user component directory"
@@ -1827,15 +1836,15 @@ msgstr "Vnitřní nativní třídy"
 msgid "Internationalization"
 msgstr "Internacionalizace"
 
-#: Language.module:62
+#: Language.module:64
 msgid "Irish (Ireland)"
 msgstr "Irsky (Irsko)"
 
-#: Language.module:64
+#: Language.module:66
 msgid "Italian (Italy)"
 msgstr "Italsky (Itálie)"
 
-#: Language.module:66
+#: Language.module:68
 msgid "Japanese (Japan)"
 msgstr "Japonsky (Japonsko)"
 
@@ -1867,7 +1876,7 @@ msgstr "Klíč"
 msgid "Keywords"
 msgstr "Klíčová slova"
 
-#: Language.module:68
+#: Language.module:70
 msgid "Khmer (Cambodia)"
 msgstr "Khmer (Kambodža)"
 
@@ -1875,7 +1884,7 @@ msgstr "Khmer (Kambodža)"
 msgid "Konqueror"
 msgstr "-"
 
-#: Language.module:70
+#: Language.module:72
 msgid "Korean (Korea)"
 msgstr "Korejština (Korea)"
 
@@ -1891,11 +1900,11 @@ msgstr "&Poslední"
 msgid "Last modified"
 msgstr "Poslední změna"
 
-#: FMakeInstall.class:938
+#: FMakeInstall.class:967
 msgid "Lesser General Public Licence"
 msgstr "-"
 
-#: FMakeInstall.class:931
+#: FMakeInstall.class:960
 msgid "Licence"
 msgstr "Licence"
 
@@ -1903,7 +1912,7 @@ msgstr "Licence"
 msgid "Line"
 msgstr "Řádek"
 
-#: Project.module:3452
+#: Project.module:3460
 msgid "Linking a directory is forbidden."
 msgstr "Propojení adresář je zakázáno."
 
@@ -1911,7 +1920,7 @@ msgstr "Propojení adresář je zakázáno."
 msgid "Link to"
 msgstr "Odkaz na"
 
-#: Project.module:1140
+#: Project.module:1143
 msgid "Loading &1..."
 msgstr "Načítám &1..."
 
@@ -1927,11 +1936,11 @@ msgstr "Lokální proměnné"
 msgid "Lock form"
 msgstr "Zamknutý formulář"
 
-#: Language.module:74
+#: Language.module:76
 msgid "Macedonian (Republic of Macedonia)"
 msgstr "Makedonsky (Republika Makedonie)"
 
-#: FMakeInstall.class:862
+#: FMakeInstall.class:875
 msgid "Maintainer information"
 msgstr "Správcovské informace"
 
@@ -1941,13 +1950,13 @@ msgstr "Zkompilovat"
 
 #: FAbout.class:284
 msgid "Make a gift!"
-msgstr "Pošli dárek!"
+msgstr "Přispěj dárkem!"
 
 #: FMain.class:2121 FMakeExecutable.class:83
 msgid "Make executable"
 msgstr "Vytvořit spustitelný program"
 
-#: FMain.class:2129 FMakeInstall.class:814
+#: FMain.class:2129 FMakeInstall.class:827
 msgid "Make installation package"
 msgstr "Vytvořit instalační balíček"
 
@@ -1955,19 +1964,19 @@ msgstr "Vytvořit instalační balíček"
 msgid "Make source archive"
 msgstr "Vytvořit archiv zdrojů"
 
-#: Package.module:337
+#: Package.module:345
 msgid "Making build directory."
 msgstr "Vytvořit kompilační adresář."
 
-#: Project.module:1933
+#: Project.module:1936
 msgid "Making executable..."
 msgstr "Vytvářím zpustitelný soubor..."
 
-#: Language.module:72
+#: Language.module:74
 msgid "Malayalam (India)"
 msgstr "Malayalam (Indie)"
 
-#: FMakeInstall.class:1037
+#: FMakeInstall.class:1110
 msgid "Mandriva Linux"
 msgstr "-"
 
@@ -1987,15 +1996,15 @@ msgstr "Editor menu"
 msgid "Menu editor..."
 msgstr "Editor menu..."
 
-#: FMakeInstall.class:604
+#: FMakeInstall.class:611
 msgid "Menus"
 msgstr "Menu"
 
-#: Project.module:129
+#: Project.module:132
 msgid "Miscellaneous"
 msgstr "Různé"
 
-#: Project.module:4074
+#: Project.module:4082
 msgid "modified"
 msgstr "modifikován"
 
@@ -2007,7 +2016,7 @@ msgstr "Modul"
 msgid "&Module..."
 msgstr "&Modul..."
 
-#: FInfo.class:66 Project.module:1035
+#: FInfo.class:66 Project.module:1038
 msgid "Modules"
 msgstr "Moduly"
 
@@ -2065,7 +2074,7 @@ msgstr "MySQL ovladač databáze"
 
 #: FMenu.class:881
 msgid "Name"
-msgstr "Jméno projektu"
+msgstr "Jméno"
 
 #: FDebugInfo.class:71
 msgid "native code"
@@ -2075,7 +2084,7 @@ msgstr "přirozený kód"
 msgid "Network high-level protocols management"
 msgstr "Management protokolů sítě na vysoké ůrovni"
 
-#: CComponent.class:88 Project.module:130
+#: CComponent.class:88 Project.module:133
 msgid "Networking"
 msgstr "Síťování"
 
@@ -2127,7 +2136,7 @@ msgstr "Ne"
 msgid "No help found."
 msgstr "Nápověda nenalezena."
 
-#: Project.module:3131
+#: Project.module:3139
 msgid "Non-ASCII characters are forbidden in a project name."
 msgstr "Ne-ASCII znaky jsou zakázány v názevu projektu."
 
@@ -2139,7 +2148,7 @@ msgstr "Žádný"
 msgid "&None"
 msgstr "Žá&dný"
 
-#: FMakeInstall.class:938
+#: FMakeInstall.class:967
 msgid "Non-free Licence"
 msgstr "-"
 
@@ -2155,7 +2164,7 @@ msgstr "Normální velikost"
 msgid "Normal text"
 msgstr "Normální text"
 
-#: Language.module:79
+#: Language.module:81
 msgid "Norwegian (Norway)"
 msgstr "Norsky (Norsko)"
 
@@ -2171,7 +2180,7 @@ msgstr "není k dispozici"
 msgid "Not finished but stable"
 msgstr "Nekompletní, ale stabilní"
 
-#: Project.module:1552
+#: Project.module:1555
 msgid "Nothing to do."
 msgstr "Není potřeba nic dělat."
 
@@ -2191,7 +2200,7 @@ msgstr "-"
 msgid "ODBC database driver"
 msgstr "ODBC ovladač databáze"
 
-#: Project.module:2656
+#: Project.module:2664
 msgid "OK"
 msgstr "-"
 
@@ -2203,17 +2212,17 @@ msgstr "Jakmile jsou informace zadané, můžete\n kliknout na <b>OK</b> tlačí
 msgid "Opaque"
 msgstr "Neprůhledný"
 
-#: FConflict.class:255 FOpenProject.class:320 Project.module:277
+#: FConflict.class:255 FOpenProject.class:320 Project.module:280
 msgid "Open"
 msgstr "Otevřít"
 
-#: Project.module:289
+#: Project.module:292
 msgid "Open after all"
 msgstr "Přesto otevřít"
 
 #: FForm.class:2922
 msgid "Open code"
-msgstr "Otevří kód"
+msgstr "Přepnout na kód"
 
 #: FMain.class:1565
 msgid "Open &example"
@@ -2221,9 +2230,9 @@ msgstr "Otevřít &příklad"
 
 #: FEditor.class:2747
 msgid "Open form"
-msgstr "Otevřít formulář"
+msgstr "Přepnout na formulář"
 
-#: Project.module:131
+#: Project.module:134
 msgid "OpenGL"
 msgstr "-"
 
@@ -2261,9 +2270,9 @@ msgstr "Otevřít projekt..."
 
 #: FMain.class:1557
 msgid "Open &recent"
-msgstr "Otevřít p&oslední"
+msgstr "Otevřít pos&lední projekt"
 
-#: FMakeInstall.class:1058
+#: FMakeInstall.class:1131
 msgid "OpenSUSE"
 msgstr "-"
 
@@ -2283,11 +2292,11 @@ msgstr "Volby"
 msgid "&Other..."
 msgstr "&Jiné"
 
-#: FMakeInstall.class:938
+#: FMakeInstall.class:967
 msgid "Other Licence(s)"
 msgstr "-"
 
-#: FMakeInstall.class:832
+#: FMakeInstall.class:845
 msgid "Package name"
 msgstr "Název balíčku"
 
@@ -2363,23 +2372,23 @@ msgstr "Soubory s obrázkem"
 msgid "Plain text"
 msgstr "Zobrazit romanizaciProstý text"
 
-#: FMakeInstall.class:333
+#: FMakeInstall.class:340
 msgid "Please choose a menu location."
 msgstr "Prosím, vyberte menu umístění."
 
-#: FMakeInstall.class:322
+#: FMakeInstall.class:329
 msgid "Please choose a package group."
 msgstr "Vyberte si prosím balíček skupiny."
 
-#: FMakeInstall.class:302
+#: FMakeInstall.class:309
 msgid "Please choose at least one target distribution."
 msgstr "Prosím, vyberte alespoň jeden cíl distribuce."
 
-#: FMakeInstall.class:331
+#: FMakeInstall.class:338
 msgid "Please choose the menu location for each target distribution."
 msgstr "Prosím, vyberte menu umístění pro každou cílovou distribuci."
 
-#: FMakeInstall.class:320
+#: FMakeInstall.class:327
 msgid "Please choose the package group for each target distribution."
 msgstr "Vyberte si prosím balíček skupiny pro jednotlivé cílové distribuce."
 
@@ -2387,11 +2396,11 @@ msgstr "Vyberte si prosím balíček skupiny pro jednotlivé cílové distribuce
 msgid "Please enter a menu name."
 msgstr "Prosím, zadejte název nabídky."
 
-#: FMakeInstall.class:947
+#: FMakeInstall.class:976
 msgid "Please enter the changes of your project."
 msgstr "Prosím, zadejte změny vašeho projektu."
 
-#: FMakeInstall.class:292
+#: FMakeInstall.class:299
 msgid "Please enter the first CHANGELOG entry."
 msgstr "Prosím, zadejte první položku NOVINEK."
 
@@ -2403,19 +2412,19 @@ msgstr "Prosím, zadejte umístění úložiště."
 msgid "Please enter the versioning user name"
 msgstr "Prosím, zadejte uživatelské jméno verze"
 
-#: FMakeInstall.class:274
+#: FMakeInstall.class:281
 msgid "Please enter your e-mail address."
 msgstr "Prosím, zadejte vaši e-mailovou adresu."
 
-#: FMakeInstall.class:269
+#: FMakeInstall.class:276
 msgid "Please enter your name."
 msgstr "Prosím, zadejte vaše jméno."
 
-#: Project.module:2783
+#: Project.module:2791
 msgid "Please type a name."
 msgstr "Prosím, napište jméno."
 
-#: Project.module:3120
+#: Project.module:3128
 msgid "Please type a project name."
 msgstr "Prosím, napište jméno projektu."
 
@@ -2423,7 +2432,7 @@ msgstr "Prosím, napište jméno projektu."
 msgid "PNG"
 msgstr "-"
 
-#: Language.module:83
+#: Language.module:85
 msgid "Polish (Poland)"
 msgstr "Polsky (Polsko)"
 
@@ -2431,11 +2440,11 @@ msgstr "Polsky (Polsko)"
 msgid "Popup"
 msgstr "-"
 
-#: Language.module:86
+#: Language.module:88
 msgid "Portuguese (Brazil)"
 msgstr "Portugalsky (Brazílie)"
 
-#: Language.module:85
+#: Language.module:87
 msgid "Portuguese (Portugal)"
 msgstr "Portugalsky (Portugalsko)"
 
@@ -2451,7 +2460,7 @@ msgstr "Možnosti"
 msgid "&Preferences..."
 msgstr "&Možnosti..."
 
-#: FMakeInstall.class:849
+#: FMakeInstall.class:862
 msgid "Prefix package name with the vendor name"
 msgstr "Předpona balíčku s veřejným názvem"
 
@@ -2459,7 +2468,7 @@ msgstr "Předpona balíčku s veřejným názvem"
 msgid "&Previous"
 msgstr "&Předchozí"
 
-#: Project.module:132
+#: Project.module:135
 msgid "Printing"
 msgstr "Tisk"
 
@@ -2523,11 +2532,11 @@ msgstr "Seznam vlastností"
 msgid "Provides"
 msgstr "Poskytuje"
 
-#: FMakeInstall.class:938
+#: FMakeInstall.class:967
 msgid "Public Domain"
 msgstr "-"
 
-#: Language.module:81
+#: Language.module:83
 msgid "Punjabi (India)"
 msgstr "Punjabi (Indie)"
 
@@ -2571,7 +2580,7 @@ msgstr "Ukončit"
 msgid "&Quit"
 msgstr "&Ukončit"
 
-#: Project.module:1074
+#: Project.module:1077
 msgid "read-only"
 msgstr "pouze čtení"
 
@@ -2605,15 +2614,15 @@ msgstr "Regulární výrazy"
 
 #: FTextEditor.class:591 FTranslate.class:655
 msgid "Reload"
-msgstr "Znovu načíst"
+msgstr "Obnovit"
 
 #: FTranslate.class:1423
 msgid "&Reload"
-msgstr "&Znovu načíst"
+msgstr "&Obnovit"
 
 #: FTranslate.class:1422
 msgid "Reload translation"
-msgstr "Znovu načíst transakci"
+msgstr "Obnovit překlad"
 
 #: FProjectEnv.class:253 FPropertyProject.class:1847
 msgid "&Remove"
@@ -2669,7 +2678,7 @@ msgstr "Sklad"
 
 #: CComponentBox.class:199 FPropertyProject.class:1997
 msgid "Requires"
-msgstr "Vyžaduje"
+msgstr "Závislosti"
 
 #: FPropertyProject.class:1816
 msgid "&Reset"
@@ -2679,13 +2688,17 @@ msgstr "-"
 msgid "Resolve conflict with"
 msgstr "Vyřešit konflikt s"
 
-#: FMakeInstall.class:236
+#: FMakeInstall.class:242
 msgid "Retry"
 msgstr "Znovu"
 
 #: FPropertyProject.class:1933
 msgid "&Revert..."
 msgstr "Ob&ráceně..."
+
+#: Language.module:92
+msgid "Romanian (Romania)"
+msgstr ""
 
 #: FIconEditor.class:2410
 msgid "Rotate clockwise"
@@ -2699,7 +2712,7 @@ msgstr "Rotace v protisměru"
 msgid "Rows"
 msgstr "Řádky"
 
-#: Package.module:942
+#: Package.module:950
 msgid "'rpmbuild' has returned the following error code:"
 msgstr "'rpmbuild' vrací následující kód chyby:"
 
@@ -2731,7 +2744,7 @@ msgstr "Spustit &do aktuální řádky"
 msgid "Run until current line"
 msgstr "Spustit do aktuální řádky"
 
-#: Language.module:90
+#: Language.module:94
 msgid "Russian (Russia)"
 msgstr "Rusky (Rusko)"
 
@@ -2775,7 +2788,7 @@ msgstr "&Uložit projekt"
 msgid "Save project"
 msgstr "Uložit projekt"
 
-#: FMain.class:2068 Project.module:1688
+#: FMain.class:2068 Project.module:1691
 msgid "Save project as"
 msgstr "Uložit projekt jako"
 
@@ -2787,7 +2800,7 @@ msgstr "Uložit projekt &jako..."
 msgid "Save translation"
 msgstr "Uložit překlad"
 
-#: Package.module:157
+#: Package.module:162
 msgid "Saving CHANGELOG file."
 msgstr "Uložit SOUBOR ZMĚN."
 
@@ -2831,7 +2844,7 @@ msgstr "Hledej v projektu"
 msgid "Search in strings"
 msgstr "Hledej v textu"
 
-#: FFindList.class:197 FFind.class:670
+#: FFind.class:670 FFindList.class:197
 msgid "Search list"
 msgstr "Seznam hledání"
 
@@ -2891,7 +2904,7 @@ msgstr "Výběr"
 msgid "Send to background"
 msgstr "Přenést dál"
 
-#: Language.module:96
+#: Language.module:100
 msgid "Serbian (Serbia & Montenegro)"
 msgstr "Srbská (Srbsko a Černá Hora)"
 
@@ -2939,7 +2952,7 @@ msgstr "Zobrazit tipy při startu"
 msgid "Show tooltips"
 msgstr "Zobrazit bublinovou nápovědu"
 
-#: Language.module:108
+#: Language.module:112
 msgid "Simplified chinese (China)"
 msgstr "Zjednodušená činština (Čína)"
 
@@ -2947,11 +2960,11 @@ msgstr "Zjednodušená činština (Čína)"
 msgid "Size"
 msgstr "Velikost"
 
-#: FMakeInstall.class:1079
+#: FMakeInstall.class:1152
 msgid "Slackware"
 msgstr "-"
 
-#: Language.module:92
+#: Language.module:96
 msgid "Slovenian (Slovenia)"
 msgstr "Slovinsky (Slovinsko)"
 
@@ -2967,7 +2980,7 @@ msgstr "Hodnota (Snapping value...) je nesprávná."
 msgid "Sol&ve"
 msgstr "&Vyřešit"
 
-#: Project.module:2233
+#: Project.module:2240
 msgid "Some components are missing: &1"
 msgstr "Nekteré komponenty chybějí: &1"
 
@@ -2975,7 +2988,7 @@ msgstr "Nekteré komponenty chybějí: &1"
 msgid "Some conflicts are not yet resolved."
 msgstr "Některé konflikty jsou dosud vyřešeny."
 
-#: Project.module:1536
+#: Project.module:1539
 msgid "Some project source files are in conflict.\nPlease solve them if you want to compile the project."
 msgstr "Některé projekty zdrojové soubory jsou v konfliktu. \nProsím, vyřešte je, pokud chcete kompilovat projekt."
 
@@ -2999,7 +3012,7 @@ msgstr "Seřadit objektové proměnné"
 msgid "Sort properties"
 msgstr "Seřadit vlastnosti"
 
-#: Project.module:133
+#: Project.module:136
 msgid "Sound"
 msgstr "Zvuk"
 
@@ -3007,11 +3020,11 @@ msgstr "Zvuk"
 msgid "&Source archive..."
 msgstr "&Zdrojový archiv"
 
-#: Project.module:3192
+#: Project.module:3200
 msgid "Source packages"
 msgstr "Zdrojové balíčky"
 
-#: Package.module:389
+#: Package.module:397
 msgid "Sources are being debianizated."
 msgstr "Zdroje jsou debianizovány."
 
@@ -3103,7 +3116,7 @@ msgstr "Podpora"
 msgid "Swap colors"
 msgstr "Vyměnit barvy"
 
-#: Language.module:98
+#: Language.module:102
 msgid "Swedish (Sweden)"
 msgstr "Švédsky (Švédsko)"
 
@@ -3127,7 +3140,7 @@ msgstr "Velikost tabulátoru"
 msgid "Tag"
 msgstr "-"
 
-#: Package.module:1173
+#: Package.module:1181
 msgid "'tar' has returned the following error code:"
 msgstr "'tar' vrací následující kód chyby:"
 
@@ -3151,7 +3164,7 @@ msgstr "Komponenta &1 potřebuje jednu z následujících komponent:<br>&2."
 msgid "The &1 component needs the &2 component."
 msgstr "Komponenta &1 potřebuje &2 komponentu"
 
-#: Project.module:2737
+#: Project.module:2745
 msgid "The directory will be removed at the next commit."
 msgstr "Adresář bude odstraněn až v dalším kroku."
 
@@ -3171,11 +3184,11 @@ msgstr "Soubor byl změněn.\nOpravdu chcete otevřít jiný soubor?"
 msgid "The file has been modified.\n\nAll your changes will be lost."
 msgstr "Soubory byly změněny.\n\nVšechny vaše změny budou ztraceny."
 
-#: Project.module:3132
+#: Project.module:3140
 msgid "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr "Následující znaky jsou zakázány ve název projektu: ? * / \\ SPACE"
 
-#: Project.module:885
+#: Project.module:888
 msgid "The following classes have circular inheritance:"
 msgstr "Následující třídy mají kruhové dědičnost:"
 
@@ -3195,15 +3208,15 @@ msgstr "Příkaz 'msgmerge' selhal"
 msgid "The name of the control."
 msgstr "Název ovládacího prvku."
 
-#: Package.module:307
+#: Package.module:315
 msgid "The package build has failed."
 msgstr "Chyba při vytváření balíku."
 
-#: FMakeInstall.class:352
+#: FMakeInstall.class:359
 msgid "The package cannot be stored inside the project directory."
 msgstr "Balíček nesmí být uložen uvnitř adresáře projektu."
 
-#: FMakeInstall.class:236 Package.module:164
+#: FMakeInstall.class:242 Package.module:169
 msgid "The packages have been successfully created."
 msgstr "Instalační balíky byly úspěšně vytvořeny."
 
@@ -3219,11 +3232,11 @@ msgstr "Program byl neočekávaně zastaven\nsignálem #&1.\n\nProsím, zašlete
 msgid "The project could not be committed."
 msgstr "Projekt nemohl být připojený."
 
-#: Project.module:3142
+#: Project.module:3150
 msgid "The project directory already exists."
 msgstr "Adresář projektu již existuje."
 
-#: Project.module:3144
+#: Project.module:3152
 msgid "The project directory cannot be created because a file with the same name already exists."
 msgstr "Adresář projektu nelze vytvořit, protože soubor se stejným názvem již existuje."
 
@@ -3235,11 +3248,11 @@ msgstr "Projekt byl úspěšně vytvořen."
 msgid "The project is void. There is nothing to translate."
 msgstr "V projektu není nic k přeložení."
 
-#: Project.module:3128
+#: Project.module:3136
 msgid "The project name cannot begin with a dot."
 msgstr "Název projektu nemůže začít s tečkou."
 
-#: FMakeInstall.class:285
+#: FMakeInstall.class:292
 msgid "There is no CHANGELOG entry for this release."
 msgstr "Neexistuje žádný CHANGELOG záznam pro tuto verzi."
 
@@ -3251,7 +3264,7 @@ msgstr "Tyto komponenty jsou nekompatibilní<br>&1."
 msgid "These files have been modified.\nDo&nbsp;you want to save them?"
 msgstr "Tyto soubory byly změněny.\nChcete je opravdu uložit?"
 
-#: Project.module:1506
+#: Project.module:1509
 msgid "This component has no exported class."
 msgstr "Tato komponenta nemá veřejné třídy."
 
@@ -3263,11 +3276,11 @@ msgstr "Tento soubor je v rozporu s revizí #&1.\nMusíte vyřešit konflikt, ab
 msgid "This image has been modified.\nDo you want to save it ?"
 msgstr "Obrázek byl změněn.\nChcete jej uložit?"
 
-#: Project.module:277
+#: Project.module:280
 msgid "This is a Gambas 1.0 project.\n\nDo you want to open it anyway?"
 msgstr "Jedná se o Gambas 1.0 projekt.\n\nChcete jej vlastně otevřít?"
 
-#: Project.module:283
+#: Project.module:286
 msgid "This is not a Gambas 2 project."
 msgstr "To není Gambas 2 projekt."
 
@@ -3279,7 +3292,7 @@ msgstr "Tato linka a následující budou ignorovány"
 msgid "This menu is too deep !"
 msgstr "Toto menu má příliš mnoho úrovní!"
 
-#: Project.module:2787
+#: Project.module:2795
 msgid "This name contains a forbidden character:"
 msgstr "This name contains a forbidden character:"
 
@@ -3287,7 +3300,7 @@ msgstr "This name contains a forbidden character:"
 msgid "This name is already in use."
 msgstr "Toto jméno se již používý."
 
-#: Project.module:2791
+#: Project.module:2799
 msgid "This name is already used. Choose another one."
 msgstr "Toto jméno se již používá. Vyberte jiné."
 
@@ -3295,23 +3308,23 @@ msgstr "Toto jméno se již používá. Vyberte jiné."
 msgid "This program is published under the GNU General Public Licence."
 msgstr "Tento program je zveřejněn pod licencí GNU General Public Licence."
 
-#: Project.module:1694
+#: Project.module:1697
 msgid "This project already exists."
 msgstr "Tento projekt už existuje."
 
-#: Project.module:268
+#: Project.module:271
 msgid "This project does not exist."
 msgstr "Tento projekt neexistuje."
 
 #: FPropertyProject.class:1650
 msgid "This project is a component"
-msgstr "Tento projekt je součástí"
+msgstr "Tento projekt je komponentou"
 
-#: Project.module:334
+#: Project.module:337
 msgid "This project is read-only."
 msgstr "Tento projekt je pouze ke čtení."
 
-#: Project.module:289
+#: Project.module:292
 msgid "This project seems to be already opened.\n\nOpening the same project twice can lead to data loss."
 msgstr "Tento projekt vypadá že je již otevřeny.\n\nOtevření stejného projektu dvakrát může vést ke ztrátě dat."
 
@@ -3337,7 +3350,7 @@ msgstr "Titulek"
 
 #: FMenu.class:1060
 msgid "Toggle"
-msgstr "Přepnout"
+msgstr "Přepínací"
 
 #: FMain.class:1747
 msgid "&Toggle breakpoint"
@@ -3371,7 +3384,7 @@ msgstr "Panel nástrojů velikosti"
 msgid "&Tools"
 msgstr "&Nástroje"
 
-#: Language.module:109
+#: Language.module:113
 msgid "Traditional chinese (Taiwan)"
 msgstr "Tradiční čínština (Thajsko)"
 
@@ -3399,7 +3412,7 @@ msgstr "Soubory s překladem"
 msgid "Transparent"
 msgstr "Průhledný"
 
-#: Language.module:100
+#: Language.module:104
 msgid "Turkish (Turkey)"
 msgstr "Turecky (Turecko)"
 
@@ -3407,19 +3420,19 @@ msgstr "Turecky (Turecko)"
 msgid "Type"
 msgstr "Typ"
 
-#: FMakeInstall.class:1100
+#: FMakeInstall.class:1173
 msgid "Ubuntu"
 msgstr "-"
 
-#: Language.module:102
+#: Language.module:106
 msgid "Ukrainian (Ukrain)"
 msgstr "Ukrajinsky (Ukrajina)"
 
-#: Project.module:2480
+#: Project.module:2488
 msgid "Unable to create desktop shortcut."
 msgstr "Nelze vytvořit zástupce na ploše."
 
-#: Project.module:2561
+#: Project.module:2569
 msgid "Unable to install component."
 msgstr "Nelze nainstalovat komponentu."
 
@@ -3431,7 +3444,7 @@ msgstr "Nelze vložit text."
 msgid "Unable to read tip of the day !"
 msgstr "Nelze načíst tipy dne!"
 
-#: Project.module:3001
+#: Project.module:3009
 msgid "Unable to rename '&1'"
 msgstr "Soubor &1 nelze přejmenovat"
 
@@ -3439,11 +3452,11 @@ msgstr "Soubor &1 nelze přejmenovat"
 msgid "Unable to resolve the conflict."
 msgstr "Nelze vyřešit konflikt."
 
-#: Project.module:1707
+#: Project.module:1710
 msgid "Unable to save the project."
 msgstr "Nelze uložit projekt."
 
-#: Project.module:2599
+#: Project.module:2607
 msgid "Unable to uninstall component."
 msgstr "Nelze odinstalovat komponentu."
 
@@ -3453,7 +3466,7 @@ msgstr "Nelze aktualizovat všechny formuláře."
 
 #: FEditor.class:2845
 msgid "Uncomment"
-msgstr "Nekomentovaný"
+msgstr "Odkomentuj"
 
 #: FTextEditor.class:762
 msgid "Undo"
@@ -3467,7 +3480,7 @@ msgstr "Odpojit konzole"
 msgid "Unindent"
 msgstr "Neodsazený"
 
-#: Language.module:156
+#: Language.module:160
 msgid "Unknown"
 msgstr "Neznámý"
 
@@ -3515,7 +3528,7 @@ msgstr "Uživatelské komponenty"
 msgid "Use system charset"
 msgstr "Použití systémové znakové sady"
 
-#: Language.module:88
+#: Language.module:90
 msgid "Valencian (Valencian Community, Spain)"
 msgstr "Valencian (Valencian Community, Spain)"
 
@@ -3527,7 +3540,7 @@ msgstr "Hodnota"
 msgid "Variable"
 msgstr "Proměnná"
 
-#: FMakeInstall.class:904
+#: FMakeInstall.class:917
 msgid "Vendor name"
 msgstr "Výstupní jméno"
 
@@ -3559,7 +3572,7 @@ msgstr "Vertikální překlopení"
 msgid "Vertical split"
 msgstr "Vertikální rozdělení"
 
-#: Project.module:134
+#: Project.module:137
 msgid "Video"
 msgstr "Video"
 
@@ -3567,7 +3580,7 @@ msgstr "Video"
 msgid "Video capture"
 msgstr "Zachytávání videa"
 
-#: Language.module:104
+#: Language.module:108
 msgid "Vietnamese (Vietnam)"
 msgstr "Vietnamsky (Vietnam)"
 
@@ -3581,7 +3594,7 @@ msgstr "&Zobrazit"
 
 #: FMenu.class:1050
 msgid "Visible"
-msgstr "Viditelný"
+msgstr "Viditelné"
 
 #: FOption.class:4
 msgid "Visual"
@@ -3595,7 +3608,7 @@ msgstr "Visual Basic kompatibilita"
 msgid "Visual Basic™ conversion help"
 msgstr "Visual Basic™ nápověda konverze"
 
-#: Language.module:106
+#: Language.module:110
 msgid "Wallon (Belgium)"
 msgstr "Wallon (Belgie)"
 
@@ -3623,6 +3636,10 @@ msgstr "Hlídat výraz"
 msgid "Web applications tools"
 msgstr "Nástroje webové aplikace"
 
+#: FMakeInstall.class:933
+msgid "Website"
+msgstr "Webová stránka"
+
 #: FWelcome.class:420
 msgid "Welcome to Gambas II"
 msgstr "Vítejte v Gambas II"
@@ -3641,7 +3658,7 @@ msgstr "Šířka"
 
 #: FFind.class:755
 msgid "Word only"
-msgstr "Pouze slovo"
+msgstr "Hledej pouze slovo"
 
 #: FInfo.class:105
 msgid "XML file"
@@ -3679,7 +3696,7 @@ msgstr "Chystáte se zrušit změny!"
 msgid "You can support <b>Gambas</b> by writing components, documentation, examples, and so on...\n<p>\nYou can also make a gift to the project by using PayPal:"
 msgstr "<b>Gambas</b> můžete podpořit psaním komponent, dokumentace, příkladů atd...\n<p>\nRovněž můžete poslat projektu příspěvek prostřednictvím PayPal:"
 
-#: Project.module:2756
+#: Project.module:2764
 msgid "You must define a startup class or form!"
 msgstr "Musíte definovat hlavní třídu nebo formulář!"
 
@@ -3687,11 +3704,11 @@ msgstr "Musíte definovat hlavní třídu nebo formulář!"
 msgid "You need to restart the application to see your changes."
 msgstr "Musíte restartovat aplikaci aby byli vidět vaše změny."
 
-#: FMakeInstall.class:888
+#: FMakeInstall.class:901
 msgid "Your e-mail address"
-msgstr "Vaše e-mailová adresa"
+msgstr "Your e-mail address"
 
-#: FMakeInstall.class:872
+#: FMakeInstall.class:885
 msgid "Your name"
 msgstr "Vaše jméno"
 
