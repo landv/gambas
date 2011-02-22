@@ -58,6 +58,7 @@ Public Sub Form_Open()
   ' Fill recent list
 
   $iSort = Settings["/FWelcome/SortRecent", CRecentFile.SORT_BY_DATE]
+  UpdateMenuSort
   FillRecent
 
   If CRecentFile.All.Count Then
@@ -465,16 +466,21 @@ Public Sub svwRecent_Menu()
 
 End
 
-Public Sub mnuSort_Click()
+Private Sub UpdateMenuSort()
   
   Dim hMenu As Menu
   
-  $iSort = Last.Tag
-  
   For Each hMenu In mnuSort.Children
-    hMenu.Checked = hMenu = Last
+    hMenu.Checked = hMenu.Tag = $iSort
   Next
   
+End
+
+
+Public Sub mnuSort_Click()
+  
+  $iSort = Last.Tag
   FillRecent
+  UpdateMenuSort
   
 End
