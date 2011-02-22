@@ -245,32 +245,53 @@ BEGIN_METHOD(string_right, GB_STRING str; GB_INTEGER len)
 END_METHOD
 
 
+static bool convert_to_unicode(wchar_t **wstr, int *wlen, const char *str, int len, bool upper)
+{
+	char *temp;
+	wchar_t *wtemp;
+	int i, l;
+	
+	if (len == 0)
+	{
+		*wstr = NULL;
+		*wlen = 0;
+		return FALSE;
+	}
+	
+	if (STRING_conv(&temp, str, len, "UTF-8", SC_UNICODE, FALSE))
+		return TRUE;
+	
+	wtemp = (wchar_t *)temp;
+	l = wcslen(wtemp);
+	
+	if (upper)
+	{
+		for (i = 0; i < l; i++)
+			wtemp[i] = towupper(wtemp[i]);
+	}
+	else
+	{
+		for (i = 0; i < l; i++)
+			wtemp[i] = towlower(wtemp[i]);
+	}
+	
+	*wstr = wtemp;
+	*wlen = l;
+	return FALSE;
+}
+
 static void convert_string(char *str, int len, bool upper)
 {
-  char *temp = NULL;
-  int i, l;
+	char *temp = NULL;
   wchar_t *wtemp;
+	int ltemp;
 
   if (len > 0)
   {
-    if (STRING_conv(&temp, str, len, "UTF-8", SC_UNICODE, FALSE))
-    	goto __ERROR;
-
-    wtemp = (wchar_t *)temp;
-    l = wcslen(wtemp);
-    
-    if (upper)
-    {
-      for (i = 0; i < l; i++)
-        wtemp[i] = towupper(wtemp[i]);
-    }
-    else
-    {
-      for (i = 0; i < l; i++)
-        wtemp[i] = towlower(wtemp[i]);
-    }
-
-    if (STRING_conv(&temp, temp, l * sizeof(wchar_t), SC_UNICODE, "UTF-8", FALSE))
+		if (convert_to_unicode(&wtemp, &ltemp, str, len, upper))
+			goto __ERROR;
+		
+    if (STRING_conv(&temp, (char *)wtemp, ltemp * sizeof(wchar_t), SC_UNICODE, "UTF-8", FALSE))
     	goto __ERROR;
   }
 
@@ -341,26 +362,57 @@ BEGIN_METHOD(string_code, GB_STRING str; GB_INTEGER index)
 
 END_METHOD
 
-static void string_search(const char *str, int len, const char *pattern, int lenp, int start, bool right)
+static void string_search(const char *str, int len, const char *pattern, int lenp, int start, bool right, bool nocase)
 {
 	int pos;
 
 	if (start)
+	{
 		start = index_to_byte(str, len, start);
+		fprintf(stderr, "start = %d\n", start);
+	}
 
-  pos = STRING_search(str, len, pattern, lenp, start, right, FALSE);
-	GB_ReturnInteger(byte_to_index(str, len, pos));
+	if (!nocase)
+	{
+		pos = STRING_search(str, len, pattern, lenp, start, right, FALSE);
+		pos = byte_to_index(str, len, pos);
+	}
+	else
+	{
+		wchar_t *wstr;
+		int lstr;
+		wchar_t *wpattern;
+		int lpattern;
+		
+		if (convert_to_unicode(&wstr, &lstr, str, len, TRUE))
+			goto __ERROR;
+		
+		if (convert_to_unicode(&wpattern, &lpattern, pattern, lenp, TRUE))
+			goto __ERROR;
+		
+		pos = STRING_search((char *)wstr, lstr * sizeof(wchar_t), (char *)wpattern, lpattern * sizeof(wchar_t), start * sizeof(wchar_t), right, FALSE);
+		if (pos)
+			pos = (pos - 1) / sizeof(wchar_t) + 1;
+	}
+	
+	GB_ReturnInteger(pos);
+	return;
+	
+__ERROR:
+
+	GB_ReturnInteger(0);
+	return;
 }
 
-BEGIN_METHOD(string_instr, GB_STRING str; GB_STRING pattern; GB_INTEGER start)
+BEGIN_METHOD(string_instr, GB_STRING str; GB_STRING pattern; GB_INTEGER start; GB_INTEGER mode)
 
-	string_search(STRING(str), LENGTH(str), STRING(pattern), LENGTH(pattern), VARGOPT(start, 0), FALSE);
+	string_search(STRING(str), LENGTH(str), STRING(pattern), LENGTH(pattern), VARGOPT(start, 0), FALSE, VARGOPT(mode, GB_COMP_BINARY) == GB_COMP_NOCASE);
 
 END_METHOD
 
-BEGIN_METHOD(string_rinstr, GB_STRING str; GB_STRING pattern; GB_INTEGER start)
+BEGIN_METHOD(string_rinstr, GB_STRING str; GB_STRING pattern; GB_INTEGER start; GB_INTEGER mode)
 
-	string_search(STRING(str), LENGTH(str), STRING(pattern), LENGTH(pattern), VARGOPT(start, 0), TRUE);
+	string_search(STRING(str), LENGTH(str), STRING(pattern), LENGTH(pattern), VARGOPT(start, 0), TRUE, VARGOPT(mode, GB_COMP_BINARY) == GB_COMP_NOCASE);
 
 END_METHOD
 
@@ -400,8 +452,8 @@ GB_DESC NATIVE_String[] =
   GB_STATIC_METHOD("LCase", "s", string_lower, "(String)s"),
   GB_STATIC_METHOD("LCase$", "s", string_lower, "(String)s"),
 
-  GB_STATIC_METHOD("InStr", "i", string_instr, "(String)s(Pattern)s[(From)i]"),
-  GB_STATIC_METHOD("RInStr", "i", string_rinstr, "(String)s(Pattern)s[(From)i]"),
+  GB_STATIC_METHOD("InStr", "i", string_instr, "(String)s(Pattern)s[(From)i(Mode)i]"),
+  GB_STATIC_METHOD("RInStr", "i", string_rinstr, "(String)s(Pattern)s[(From)i(Mode)i]"),
 
   GB_STATIC_METHOD("Comp", "i", string_comp, "(String)s(String2)s[(Mode)i]"),
 
