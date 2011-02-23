@@ -22,6 +22,7 @@ Property ShowDetailed As Boolean
 Property Read Selection As String[]
 Property Filter As String[]
 Property Icon As Picture
+Property IconSize As Integer
 Property Border As Boolean
 Property Settings As Variant[]
 Property Read Count As Integer
@@ -40,6 +41,7 @@ Private $aFilter As String[]
 Private $hPict As Picture
 Private $hRefresh As Timer
 Private $bRefreshTriggered As Boolean
+Private $iIconSize As Integer = 32
 
 Static Public Sub _init()
   
@@ -121,6 +123,8 @@ Private Sub GetIcon(sPath As String, iSize As Integer) As Picture
   $hPict = Null
   Raise Icon(sPath)
   If $hPict Then Return $hPict
+  
+  If IsDir(sPath) Then Return
 
   Try sIcon = $cExt[File.Ext(sPath)]
   If sIcon Then Return Picture["icon:/" & CStr(iSize) &/ sIcon]
@@ -186,9 +190,9 @@ Private Sub RefreshView()
     iSize = 16
   Else
     $hIconView.Clear
-    hPictFile = Picture["icon:/32/file"]
-    hPictFolder = Picture["icon:/32/directory"]
-    iSize = 32
+    hPictFile = Picture["icon:/" & $iIconSize & "/file"]
+    hPictFolder = Picture["icon:/" & $iIconSize & "/directory"]
+    iSize = $iIconSize
   Endif
 
   sDir = $sDir
@@ -590,3 +594,16 @@ End
 '   DEBUG $hColumnView.Item.Text
 '   
 ' END
+
+Private Function IconSize_Read() As Integer
+
+  Return $iIconSize
+
+End
+
+Private Sub IconSize_Write(Value As Integer)
+
+  $iIconSize = Value
+  RefreshView
+
+End

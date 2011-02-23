@@ -18,16 +18,27 @@ Private $bFile As Boolean
 Private $iMaxWidth As Integer
 Private $hBookmarkList As CBookmarkList
 Private $hCurrentBookmark As CBookmark
+Private $bShowBookmark As Boolean
 Private mnuEditBookmark As Menu
+Private mnuShowHiddenFiles As Menu
+Private mnuShowDetailed As Menu
+Private $iIconSize As Integer
 
 Static Private $aHistory As New String[]
+Static Private $aIconSize As Integer[] = [16, 22, 32, 48, 64, 128, 192, 256]
 
 Public Sub _new(Optional bFile As Boolean)
 
   DirView = dvwChoose
   FileView = fvwChoose
   
+  $bShowBookmark = True
   $hBookmarkList = New CBookmarkList
+
+  sldIconSize.Value = $aIconSize.Find(32)
+
+  btnParent.Picture = Main.GetArrow(Align.Left, 16).Picture
+
   FillMenu
 
   SetRoot()
@@ -76,8 +87,12 @@ Private Sub UpdateLabelDir()
   
   If sDir = "/" Then
     txtDir.Text = ""
+    txtDir.Hide
+    btnParent.Hide
   Else
     txtDir.Text = sDir
+    txtDir.Show
+    btnParent.Show
   Endif
   
 End
@@ -116,26 +131,36 @@ Public Sub Form_Open()
 
 End
 
+Private Sub UpdateZoom()
+  
+  panIconSize.Visible = Not fvwChoose.ShowDetailed And $bView
+  
+End
+
+
 Public Sub btnView_Click()
 
   $bView = Not $bView
   panView.Visible = $bView
-  btnDetailed.Visible = $bView
+  mnuShowDetailed.Visible = $bView
   If $bView Then
     fvwChoose.Dir = dvwChoose.Current
     splChoose.Layout = [1, 2]
   Endif
+  UpdateZoom
 
 End
 
-Public Sub btnDetailed_Click()
+Public Sub mnuShowDetailed_Click()
 
   fvwChoose.ShowDetailed = Not fvwChoose.ShowDetailed
-  If fvwChoose.ShowDetailed Then
-    btnDetailed.Picture = Picture["icon:/small/view-icon"]
-  Else
-    btnDetailed.Picture = Picture["icon:/small/view-detail"]
-  Endif
+  mnuShowDetailed.Checked = fvwChoose.ShowDetailed
+  UpdateZoom
+  ' If fvwChoose.ShowDetailed Then
+  '   btnDetailed.Picture = Picture["icon:/small/view-icon"]
+  ' Else
+  '   btnDetailed.Picture = Picture["icon:/small/view-detail"]
+  ' Endif
 
 End
 
@@ -213,7 +238,7 @@ End
 
 Public Sub SetShowDetailed(bShowDetailed As Boolean)
 
-  If fvwChoose.ShowDetailed <> bShowDetailed Then btnDetailed_Click
+  If fvwChoose.ShowDetailed <> bShowDetailed Then mnuShowDetailed_Click
 
 End
 
@@ -236,23 +261,20 @@ Public Function GetShowHidden() As Boolean
 End
 
 
-Public Sub btnShowHidden_Click()
+Public Sub mnuShowHiddenFiles_Click()
 
-  fvwChoose.ShowHidden = btnShowHidden.Value
+  fvwChoose.ShowHidden = Not fvwChoose.ShowHidden
   dvwChoose.ShowHidden = fvwChoose.ShowHidden
+  mnuShowHiddenFiles.Checked = fvwChoose.ShowHidden
   Raise ShowHidden
-'   IF fvwChoose.ShowHidden THEN
-'     btnShowHidden.Picture = Picture["img/16/hide-hidden.png"]
-'   ELSE
-'     btnShowHidden.Picture = Picture["img/16/show-hidden.png"]
-'   ENDIF
 
 End
 
 
 Public Sub SetShowHidden(bShowHidden As Boolean)
 
-  btnShowHidden.Value = bShowHidden
+  mnuShowHiddenFiles.Checked = bShowHidden
+  mnuShowHiddenFiles_Click
 
   'IF fvwChoose.ShowHidden <> bShowHidden THEN btnShowHidden_Click
 
@@ -563,9 +585,9 @@ End
 Public Sub GetSettings() As Variant[]
   
   If Not $bFile Then 
-    Return [CVariant(dvwChoose.Root), dvwChoose.Current, $bView, splChoose.Layout, btnShowHidden.Value, fvwChoose.Settings, IsBookmarkVisible()]
+    Return [CVariant(dvwChoose.Root), dvwChoose.Current, $bView, splChoose.Layout, fvwChoose.ShowHidden, fvwChoose.Settings, IsBookmarkVisible(), fvwChoose.IconSize]
   Else
-    Return [CVariant(dvwChoose.Root), dvwChoose.Current, fvwChoose.Current, $bView, splChoose.Layout, btnShowHidden.Value, fvwChoose.Settings, GetFilterIndex(), IsBookmarkVisible()]
+    Return [CVariant(dvwChoose.Root), dvwChoose.Current, fvwChoose.Current, $bView, splChoose.Layout, fvwChoose.ShowHidden, fvwChoose.Settings, GetFilterIndex(), IsBookmarkVisible(), fvwChoose.IconSize]
   Endif 
 
 End
@@ -573,6 +595,7 @@ End
 Public Sub SetSettings(aVar As Variant[])
   
   Dim bBookmark As Boolean
+  Dim iZoom As Integer = -1
   
   If Not $bFile Then 
   
@@ -582,8 +605,10 @@ Public Sub SetSettings(aVar As Variant[])
     Try $bView = Not aVar[2]
     If Not Error Then btnView_Click
     splChoose.Layout = aVar[3]
-    Try btnShowHidden.Value = aVar[4]
+    Try fvwChoose.ShowHidden = aVar[4]
     Try fvwChoose.Settings = aVar[5]
+    Try iZoom = $aIconSize.Find(aVar[6])
+    If iZoom >= 0 Then sldIconSize.Value = iZoom
     
   Else
   
@@ -594,9 +619,11 @@ Public Sub SetSettings(aVar As Variant[])
     Try $bView = Not aVar[3]
     If Not Error Then btnView_Click
     Try splChoose.Layout = aVar[4]
-    Try btnShowHidden.Value = aVar[5]
+    Try fvwChoose.ShowHidden = aVar[5]
     Try fvwChoose.Settings = aVar[6]
     Try SetFilterIndex(aVar[7])
+    Try iZoom = $aIconSize.Find(aVar[8])
+    If iZoom >= 0 Then sldIconSize.Value = iZoom
     
   Endif
 
@@ -604,14 +631,14 @@ Public Sub SetSettings(aVar As Variant[])
   
 End
 
-Public Sub btnNewDir_Click()
+Public Sub mnuCreateDirectory_Click()
 
   dvwChoose.NewFolder
 
 End
 
 
-Public Sub btnRefresh_Click()
+Public Sub mnuRefresh_Click()
 
   dvwChoose.Reload
   fvwChoose.Reload
@@ -638,7 +665,7 @@ End
 
 Public Sub Reload()
   
-  btnRefresh_Click
+  mnuRefresh_Click
   
 End
 
@@ -757,40 +784,63 @@ Private Sub FillMenu()
   Dim aBookmark As String[]
   Dim hMenu As Menu
   
-  If Not IsBookmarkVisible() Then Return
-  
   mnuBookmark.Children.Clear
   
-  For Each hBookmark In $hBookmarkList
-    AddBookmarkMenu(hBookmark)
-  Next
+  If IsBookmarkVisible() Then 
   
-  hMenu = New Menu(mnuBookmark)
+    For Each hBookmark In $hBookmarkList
+      AddBookmarkMenu(hBookmark)
+    Next
+    
+    hMenu = New Menu(mnuBookmark)
+    
+    hMenu = New Menu(mnuBookmark) As "mnuAddBookmark"
+    hMenu.Text = ("&Bookmark current directory")
+    hMenu.Picture = Picture["icon:/small/add"]
+    
+    'hMenu = New Menu(mnuBookmark) As "mnuRemoveBookmark"
+    'hMenu.Text = ("&Remove bookmark")
+    'hMenu.Picture = Picture["icon:/small/remove"]
+    
+    hMenu = New Menu(mnuBookmark) As "mnuEditBookmark"
+    hMenu.Text = ("&Edit bookmarks...")
+    hMenu.Picture = Picture["icon:/small/edit"]
+    mnuEditBookmark = hMenu
+    
+    hMenu = New Menu(mnuBookmark)
+    
+  Endif
   
-  hMenu = New Menu(mnuBookmark) As "mnuAddBookmark"
-  hMenu.Text = ("&Bookmark current directory")
-  hMenu.Picture = Picture["icon:/small/add"]
+  hMenu = New Menu(mnuBookmark) As "mnuShowDetailed"
+  hMenu.Text = ("Show &details")
+  hMenu.Checked = fvwChoose.ShowDetailed
+  mnuShowDetailed = hMenu
   
-  'hMenu = New Menu(mnuBookmark) As "mnuRemoveBookmark"
-  'hMenu.Text = ("&Remove bookmark")
-  'hMenu.Picture = Picture["icon:/small/remove"]
+  hMenu = New Menu(mnuBookmark) As "mnuShowHiddenFiles"
+  hMenu.Text = ("Show &hidden files")
+  hMenu.Checked = fvwChoose.ShowHidden
+  mnuShowHiddenFiles = hMenu
   
-  hMenu = New Menu(mnuBookmark) As "mnuEditBookmark"
-  hMenu.Text = ("&Edit bookmarks...")
-  hMenu.Picture = Picture["icon:/small/edit"]
-  mnuEditBookmark = hMenu
+  hMenu = New Menu(mnuBookmark) As "mnuCreateDirectory"
+  hMenu.Text = ("&Create directory")
+  hMenu.Picture = Picture["icon:/small/new-dir"]
+  
+  hMenu = New Menu(mnuBookmark) As "mnuRefresh"
+  hMenu.Text = ("&Refresh")
+  hMenu.Picture = Picture["icon:/small/refresh"]
   
 End
 
 Public Sub IsBookmarkVisible() As Boolean
   
-  Return btnBookmark.Enabled
+  Return $bShowBookmark 'btnBookmark.Enabled
   
 End
 
 Public Sub ShowBookmark(bShow As Boolean)
   
-  btnBookmark.Enabled = bShow
+  'If $bShowBookmark = bShow Then Return
+  $bShowBookmark = bShow
   UpdateBookmarkButton
   FillMenu
   
@@ -811,5 +861,57 @@ End
 Public Sub btnBookmark_Click()
 
   SetDir($hCurrentBookmark.Path)
+
+End
+
+Public Sub dvwChoose_KeyPress()
+
+  Select Case Key.Code
+    Case Key.F5 
+      mnuRefresh_Click
+    Case Key.F4
+      mnuShowHiddenFiles_Click
+    Case Key.F6
+      mnuShowDetailed_Click
+    Case Key.BackSpace
+      btnParent_Click
+  End Select
+
+End
+
+Public Sub fvwChoose_KeyPress()
+
+  dvwChoose_KeyPress
+
+End
+
+Public Sub dvwChoose_Menu()
+
+  mnuBookmark.Popup
+
+End
+
+Public Sub fvwChoose_Menu()
+
+  mnuBookmark.Popup
+
+End
+
+Public Sub sldIconSize_Change()
+
+  fvwChoose.IconSize = $aIconSize[sldIconSize.Value]
+  sldIconSize.Tooltip = fvwChoose.IconSize
+
+End
+
+Public Sub btnZoomOut_Click()
+
+  Dec sldIconSize.Value
+
+End
+
+Public Sub btnZoomIn_Click()
+
+  Inc sldIconSize.Value
 
 End
