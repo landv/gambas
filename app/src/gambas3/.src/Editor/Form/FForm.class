@@ -1559,7 +1559,7 @@ End
 
 Public Sub DeleteSelection()
 
-  If Selection.Count Then
+  If Selection.Count And If Not $bReadOnly Then
     
     KillSelection
     
@@ -1620,6 +1620,7 @@ End
 
 Function CanPaste() As Boolean
 
+  If $bReadOnly Then Return
   Return Clipboard.Format = MMime.FORM
 
 End

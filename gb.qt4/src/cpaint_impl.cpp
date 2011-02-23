@@ -651,43 +651,66 @@ static void CurveTo(GB_PAINT *d, float x1, float y1, float x2, float y2, float x
 static QPainterPath *_draw_path;
 static float _draw_x, _draw_y;
 
-static void draw_text(GB_PAINT *d, bool rich, const char *text, int len, float w, float h, int align)
+static void draw_text(GB_PAINT *d, bool rich, const char *text, int len, float w, float h, int align, bool draw)
 {
 	QPointF pos;
 	
-	CREATE_PATH(d);
-	
 	GetCurrentPoint(d, &_draw_x, &_draw_y);
-	_draw_path = PATH(d);
-
-	if (w <= 0 || h <= 0)
-		_draw_y -= PAINTER(d)->fontMetrics().ascent();
 	
-	MyPaintDevice device;
-	QPainter p(&device);
-	
-	p.setFont(PAINTER(d)->font());
-	
-	if (rich)
-		DRAW_rich_text(&p, QString::fromUtf8(text, len), 0, 0, w, h, CCONST_alignment(align, ALIGN_TOP_NORMAL, true));	
+	if (draw)
+	{
+		if (CLIP(d))
+		{
+			QTransform save = PAINTER(d)->worldTransform();
+			PAINTER(d)->resetTransform();
+			PAINTER(d)->setClipping(true);
+			PAINTER(d)->setClipPath(*CLIP(d));
+			PAINTER(d)->setWorldTransform(save);
+		}
+		
+		if (rich)
+			DRAW_rich_text(PAINTER(d), QString::fromUtf8(text, len), _draw_x, _draw_y, w, h, CCONST_alignment(align, ALIGN_TOP_NORMAL, true));	
+		else
+			DRAW_text(PAINTER(d), QString::fromUtf8(text, len), _draw_x, _draw_y, w, h, CCONST_alignment(align, ALIGN_TOP_NORMAL, true));	
+		
+		if (CLIP(d))
+			PAINTER(d)->setClipping(false);
+	}
 	else
-		DRAW_text(&p, QString::fromUtf8(text, len), 0, 0, w, h, CCONST_alignment(align, ALIGN_TOP_NORMAL, true));	
+	{
+		CREATE_PATH(d);
 	
-	p.end();
-	_draw_path = NULL;
+		_draw_path = PATH(d);
+
+		if (w <= 0 || h <= 0)
+			_draw_y -= PAINTER(d)->fontMetrics().ascent();
+		
+		MyPaintDevice device;
+		QPainter p(&device);
+		
+		p.setFont(PAINTER(d)->font());
+		
+		if (rich)
+			DRAW_rich_text(&p, QString::fromUtf8(text, len), 0, 0, w, h, CCONST_alignment(align, ALIGN_TOP_NORMAL, true));	
+		else
+			DRAW_text(&p, QString::fromUtf8(text, len), 0, 0, w, h, CCONST_alignment(align, ALIGN_TOP_NORMAL, true));	
+		
+		p.end();
+		_draw_path = NULL;
+	}
 }
 
-static void Text(GB_PAINT *d, const char *text, int len, float w, float h, int align)
+static void Text(GB_PAINT *d, const char *text, int len, float w, float h, int align, bool draw)
 {
-	draw_text(d, false, text, len, w, h, align);
+	draw_text(d, false, text, len, w, h, align, draw);
 }
 
-static void RichText(GB_PAINT *d, const char *text, int len, float w, float h, int align)
+static void RichText(GB_PAINT *d, const char *text, int len, float w, float h, int align, bool draw)
 {
-	draw_text(d, true, text, len, w, h, align);
+	draw_text(d, true, text, len, w, h, align, draw);
 }
 
-static void get_text_extents(GB_PAINT *d, bool rich, const char *text, int len, GB_EXTENTS *ext)
+static void get_text_extents(GB_PAINT *d, bool rich, const char *text, int len, GB_EXTENTS *ext, float width)
 {
 	QPainterPath path;
 	MyPaintDevice device;
@@ -699,7 +722,7 @@ static void get_text_extents(GB_PAINT *d, bool rich, const char *text, int len, 
 	_draw_y -= PAINTER(d)->fontMetrics().ascent();
 	
 	if (rich)
-		DRAW_rich_text(&p, QString::fromUtf8(text, len), 0, 0, -1, -1, CCONST_alignment(ALIGN_TOP_NORMAL, ALIGN_TOP_NORMAL, true));	
+		DRAW_rich_text(&p, QString::fromUtf8(text, len), 0, 0, width, -1, CCONST_alignment(ALIGN_TOP_NORMAL, ALIGN_TOP_NORMAL, true));	
 	else
 		DRAW_text(&p, QString::fromUtf8(text, len), 0, 0, -1, -1, CCONST_alignment(ALIGN_TOP_NORMAL, ALIGN_TOP_NORMAL, true));	
 	
@@ -711,12 +734,12 @@ static void get_text_extents(GB_PAINT *d, bool rich, const char *text, int len, 
 
 static void TextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext)
 {
-	get_text_extents(d, false, text, len, ext);
+	get_text_extents(d, false, text, len, ext, -1);
 }
 
-static void RichTextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext)
+static void RichTextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext, float width)
 {
-	get_text_extents(d, true, text, len, ext);
+	get_text_extents(d, true, text, len, ext, width);
 }
 
 static void Matrix(GB_PAINT *d, int set, GB_TRANSFORM matrix)

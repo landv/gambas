@@ -23,7 +23,8 @@
 #ifndef __GPRINTER_H
 #define __GPRINTER_H
 
-#include <gtkprinter.h>
+#include <gtk/gtkprinter.h>
+#include <gtk/gtkprintunixdialog.h>
 
 class gPrinter
 {
@@ -91,6 +92,9 @@ public:
 	
 	bool _preview;
 	GtkPrinter *_printer;
+	GtkPrintSettings *_settings;
+	
+	static void fixPrintDialog(GtkPrintUnixDialog *dialog);
 	
 private:
 	bool run(bool configure);
@@ -98,12 +102,13 @@ private:
 	GtkPaperSize *getPaperSize();
 	
 	GtkPrintOperation *_operation;
-	GtkPrintSettings *_settings;
 	GtkPageSetup *_page;
 	int _page_count;
 	bool _page_count_set;
 	int _paper_size;
 	bool _use_full_page;
+	
+	static gPrinter *_current;
 };
 
 #endif

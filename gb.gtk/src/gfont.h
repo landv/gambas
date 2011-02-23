@@ -54,7 +54,7 @@ public:
 	char* name();
 	int resolution();
 	double size();
-	bool strikeOut();
+	bool strikeout();
 	bool underline();
 	int grade();
 
@@ -64,7 +64,7 @@ public:
 	void setResolution(int vl);
 	void setSize(double sz);
 	void setGrade(int grade);
-	void setStrikeOut(bool vl);
+	void setStrikeout(bool vl);
 	void setUnderline(bool vl);
 
 	const char *toString();
@@ -94,6 +94,7 @@ private:
 	bool uline;
 	bool strike;
 	void realize();
+	void initFlags();
 	int _height;
 };
 

@@ -226,7 +226,7 @@ static void CFONT_manage(int prop, CFONT *_object, void *_param)
       case CFONT::Bold: GB.ReturnBoolean(f->bold()); break;
       case CFONT::Italic: GB.ReturnBoolean(f->italic()); break;
       case CFONT::Underline: GB.ReturnBoolean(f->underline()); break;
-      case CFONT::StrikeOut: GB.ReturnBoolean(f->strikeOut()); break;
+      case CFONT::Strikeout: GB.ReturnBoolean(f->strikeOut()); break;
     }
   }
   else
@@ -254,7 +254,7 @@ static void CFONT_manage(int prop, CFONT *_object, void *_param)
       case CFONT::Bold: f->setBold(VPROP(GB_BOOLEAN)); break;
       case CFONT::Italic: f->setItalic(VPROP(GB_BOOLEAN)); break;
       case CFONT::Underline: f->setUnderline(VPROP(GB_BOOLEAN)); break;
-      case CFONT::StrikeOut: f->setStrikeOut(VPROP(GB_BOOLEAN)); break;
+      case CFONT::Strikeout: f->setStrikeOut(VPROP(GB_BOOLEAN)); break;
     }
 
     if (THIS->func)
@@ -316,7 +316,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CFONT_strikeout)
 
-  CFONT_manage(CFONT::StrikeOut, OBJECT(CFONT), _param);
+  CFONT_manage(CFONT::Strikeout, OBJECT(CFONT), _param);
 
 END_PROPERTY
 
@@ -577,7 +577,7 @@ GB_DESC CFontDesc[] =
   GB_PROPERTY("Bold", "b", CFONT_bold),
   GB_PROPERTY("Italic", "b", CFONT_italic),
   GB_PROPERTY("Underline", "b", CFONT_underline),
-  GB_PROPERTY("StrikeOut", "b", CFONT_strikeout),
+  GB_PROPERTY("Strikeout", "b", CFONT_strikeout),
 
   GB_METHOD("ToString", "s", CFONT_to_string, NULL),
 

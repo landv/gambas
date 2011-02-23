@@ -188,7 +188,7 @@ static int Begin(GB_PAINT *d)
 		EXTRA(d)->context = gtk_print_context_get_cairo_context(context);
 		cairo_reference(CONTEXT(d));
 		
-		cairo_surface_set_fallback_resolution(cairo_get_target(CONTEXT(d)), 300, 300);
+		cairo_surface_set_fallback_resolution(cairo_get_target(CONTEXT(d)), 1200, 1200);
 		
 		w = gtk_print_context_get_width(context);
 		h = gtk_print_context_get_height(context);
@@ -602,7 +602,7 @@ static void CurveTo(GB_PAINT *d, float x1, float y1, float x2, float y2, float x
 	cairo_curve_to(CONTEXT(d), x1, y1, x2, y2, x3, y3);
 }
 
-static void draw_text(GB_PAINT *d, bool rich, const char *text, int len, float w, float h, int align)
+static void draw_text(GB_PAINT *d, bool rich, const char *text, int len, float w, float h, int align, bool draw)
 {
 	char *html = NULL;
   PangoLayout *layout;
@@ -637,25 +637,28 @@ static void draw_text(GB_PAINT *d, bool rich, const char *text, int len, float w
 	}
 	
 	cairo_rel_move_to(CONTEXT(d), offx, offy);
-  pango_cairo_layout_path(CONTEXT(d), layout);
+	if (draw)
+		pango_cairo_show_layout(CONTEXT(d), layout);
+	else
+		pango_cairo_layout_path(CONTEXT(d), layout);
 
 	g_object_unref(layout);	
 	
 	if (html) g_free(html);
 }
 
-static void Text(GB_PAINT *d, const char *text, int len, float w, float h, int align)
+static void Text(GB_PAINT *d, const char *text, int len, float w, float h, int align, bool draw)
 {
-	draw_text(d, FALSE, text, len, w, h, align);
+	draw_text(d, FALSE, text, len, w, h, align, draw);
 }
 
-static void RichText(GB_PAINT *d, const char *text, int len, float w, float h, int align)
+static void RichText(GB_PAINT *d, const char *text, int len, float w, float h, int align, bool draw)
 {
-	draw_text(d, TRUE, text, len, w, h, align);
+	draw_text(d, TRUE, text, len, w, h, align, draw);
 }
 
 
-static void get_text_extents(GB_PAINT *d, bool rich, const char *text, int len, GB_EXTENTS *ext)
+static void get_text_extents(GB_PAINT *d, bool rich, const char *text, int len, GB_EXTENTS *ext, float width)
 {
 	char *html = NULL;
 	PangoLayout *layout;
@@ -676,6 +679,9 @@ static void get_text_extents(GB_PAINT *d, bool rich, const char *text, int len, 
 	Paint_Font(d, FALSE, (GB_FONT *)&font);
 	gt_add_layout_from_font(layout, font->font, d->resolutionY);
 
+	if (width > 0)
+		pango_layout_set_width(layout, width * PANGO_SCALE);
+
 	pango_layout_get_extents(layout, &rect, NULL);
 	
 	GetCurrentPoint(d, &x, &y);
@@ -691,12 +697,12 @@ static void get_text_extents(GB_PAINT *d, bool rich, const char *text, int len, 
 
 static void TextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext)
 {
-	get_text_extents(d, FALSE, text, len, ext);
+	get_text_extents(d, FALSE, text, len, ext, -1);
 }
 
-static void RichTextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext)
+static void RichTextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext, float width)
 {
-	get_text_extents(d, TRUE, text, len, ext);
+	get_text_extents(d, TRUE, text, len, ext, width);
 }
 
 static void Matrix(GB_PAINT *d, int set, GB_TRANSFORM matrix)
@@ -964,6 +970,8 @@ static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, fl
 	cairo_matrix_t matrix;
 	gPicture *picture = CIMAGE_get((CIMAGE *)image);
 	
+	cairo_save(CONTEXT(d));
+	
 	save = cairo_get_source(CONTEXT(d));
 	cairo_pattern_reference(save);
 	
@@ -974,6 +982,7 @@ static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, fl
 	cairo_matrix_init_identity(&matrix);
 	cairo_matrix_translate(&matrix, x, y);
 	cairo_matrix_scale(&matrix, w / picture->width(), h / picture->height());
+	cairo_matrix_invert(&matrix);
 	cairo_pattern_set_matrix(pattern, &matrix);
 	cairo_set_source(CONTEXT(d), pattern);
 	
@@ -982,6 +991,8 @@ static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, fl
 	
 	cairo_set_source(CONTEXT(d), save);
 	cairo_pattern_destroy(save);
+	
+	cairo_restore(CONTEXT(d));
 }
 
 

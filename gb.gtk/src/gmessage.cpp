@@ -540,7 +540,6 @@ bool gDialog::selectFont()
  	}
 	
 	buf = gtk_font_selection_dialog_get_font_name(msg);
-	//printf("gDialog::selectFont: %s\n", buf);
 	desc = pango_font_description_from_string(buf);
 	g_free(buf);
 	

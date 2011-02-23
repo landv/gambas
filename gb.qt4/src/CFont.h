@@ -63,7 +63,7 @@ typedef
     QFont *font;
     FONT_FUNC func;
     void *object;
-    enum { Name, Size, Grade, Bold, Italic, Underline, StrikeOut };
+    enum { Name, Size, Grade, Bold, Italic, Underline, Strikeout };
     }
   CFONT;
 

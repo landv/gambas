@@ -164,10 +164,10 @@ typedef
 		void (*LineTo)(GB_PAINT *d, float x, float y);
 		void (*CurveTo)(GB_PAINT *d, float x1, float y1, float x2, float y2, float x3, float y3);
 	
-		void (*Text)(GB_PAINT *d, const char *text, int len, float w, float h, int align);
+		void (*Text)(GB_PAINT *d, const char *text, int len, float w, float h, int align, bool draw);
 		void (*TextExtents)(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext);
-		void (*RichText)(GB_PAINT *d, const char *text, int len, float w, float h, int align);
-		void (*RichTextExtents)(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext);
+		void (*RichText)(GB_PAINT *d, const char *text, int len, float w, float h, int align, bool draw);
+		void (*RichTextExtents)(GB_PAINT *d, const char *text, int len, GB_EXTENTS *ext, float width);
 		
 		void (*Matrix)(GB_PAINT *d, int set, GB_TRANSFORM matrix);
 		

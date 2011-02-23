@@ -934,7 +934,7 @@ char *gt_html_to_pango_string(const char *html, int len_html, bool newline)
 							}
 							else if (*pp == '+' && isdigit(pp[1]))
 							{
-								size += p[1] - '0';
+								size += pp[1] - '0';
 								pp += 2;
 							}
 							else if (*pp == '-' && isdigit(pp[1]))
@@ -1449,7 +1449,7 @@ void gt_set_cell_renderer_text_from_font(GtkCellRendererText *cell, gFont *font)
 	g_object_set(G_OBJECT(cell),
 		"font-desc", font->desc(),
 		"underline", font->underline() ? PANGO_UNDERLINE_SINGLE : PANGO_UNDERLINE_NONE,
-		"strikethrough", font->strikeOut(),
+		"strikethrough", font->strikeout(),
 		(void *)NULL);	
 }
 
@@ -1491,7 +1491,7 @@ static void set_layout_from_font(PangoLayout *layout, gFont *font, bool add, int
 		pango_attr_list_insert(attrs, attr);
 	}
 	
-	if (font->strikeOut())
+	if (font->strikeout())
 	{
 		attr = pango_attr_strikethrough_new(true);
 		pango_attr_list_insert(attrs, attr);

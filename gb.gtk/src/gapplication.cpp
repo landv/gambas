@@ -328,8 +328,10 @@ static void gambas_handle_event(GdkEvent *event)
 					widget = gtk_window_get_default_widget(GTK_WINDOW(gtk_widget_get_toplevel(widget)));
 					if (widget && GTK_IS_BUTTON(widget))
 					{
-						//fprintf(stderr, "gtk_button_clicked: %s\n", gtk_button_get_label(GTK_BUTTON(widget)));
+						//GtkPrintUnixDialog *dialog = GTK_PRINT_UNIX_DIALOG(gtk_widget_get_toplevel(widget));
+						//gPrinter::fixPrintDialog(dialog);
 						gApplication::_close_next_window = false;
+						//fprintf(stderr, "gtk_button_clicked: %s\n", gtk_button_get_label(GTK_BUTTON(widget)));
 						gtk_button_clicked(GTK_BUTTON(widget));
 						//return;
 						//g_timeout_add(0, (GSourceFunc)close_dialog, GTK_BUTTON(widget));

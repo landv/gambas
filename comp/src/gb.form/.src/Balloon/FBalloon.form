@@ -7,13 +7,11 @@
   Mask = True
   Persistent = True
   Border = False
-  Type = WindowType.Tooltip
   Stacking = Window.Above
   SkipTaskbar = True
   { txtMessage TextLabel
     MoveScaled(8,3,24,7)
     Alignment = Align.Normal
-    Transparent = True
   }
   { timCheck #Timer
     #MoveScaled(24,15)

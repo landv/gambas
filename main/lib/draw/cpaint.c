@@ -720,7 +720,7 @@ BEGIN_METHOD(Paint_Text, GB_STRING text; GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_
 	if (!MISSING(x) && !MISSING(y))
 		PAINT->MoveTo(THIS, (float)VARG(x), (float)VARG(y));
 	
-	PAINT->Text(THIS, STRING(text), LENGTH(text), VARGOPT(w, -1), VARGOPT(h, -1), VARGOPT(align, GB_DRAW_ALIGN_DEFAULT));
+	PAINT->Text(THIS, STRING(text), LENGTH(text), VARGOPT(w, -1), VARGOPT(h, -1), VARGOPT(align, GB_DRAW_ALIGN_DEFAULT), FALSE);
 	
 END_METHOD
 
@@ -731,7 +731,29 @@ BEGIN_METHOD(Paint_RichText, GB_STRING text; GB_FLOAT x; GB_FLOAT y; GB_FLOAT w;
 	if (!MISSING(x) && !MISSING(y))
 		PAINT->MoveTo(THIS, (float)VARG(x), (float)VARG(y));
 	
-	PAINT->RichText(THIS, STRING(text), LENGTH(text), VARGOPT(w, -1), VARGOPT(h, -1), VARGOPT(align, GB_DRAW_ALIGN_DEFAULT));
+	PAINT->RichText(THIS, STRING(text), LENGTH(text), VARGOPT(w, -1), VARGOPT(h, -1), VARGOPT(align, GB_DRAW_ALIGN_DEFAULT), FALSE);
+	
+END_METHOD
+
+BEGIN_METHOD(Paint_DrawText, GB_STRING text; GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_FLOAT h; GB_INTEGER align)
+
+	CHECK_DEVICE();
+	
+	if (!MISSING(x) && !MISSING(y))
+		PAINT->MoveTo(THIS, (float)VARG(x), (float)VARG(y));
+	
+	PAINT->Text(THIS, STRING(text), LENGTH(text), VARGOPT(w, -1), VARGOPT(h, -1), VARGOPT(align, GB_DRAW_ALIGN_DEFAULT), TRUE);
+	
+END_METHOD
+
+BEGIN_METHOD(Paint_DrawRichText, GB_STRING text; GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_FLOAT h; GB_INTEGER align)
+
+	CHECK_DEVICE();
+	
+	if (!MISSING(x) && !MISSING(y))
+		PAINT->MoveTo(THIS, (float)VARG(x), (float)VARG(y));
+	
+	PAINT->RichText(THIS, STRING(text), LENGTH(text), VARGOPT(w, -1), VARGOPT(h, -1), VARGOPT(align, GB_DRAW_ALIGN_DEFAULT), TRUE);
 	
 END_METHOD
 
@@ -756,14 +778,14 @@ BEGIN_METHOD(Paint_TextExtents, GB_STRING text)
 
 END_METHOD
 
-BEGIN_METHOD(Paint_RichTextExtents, GB_STRING text)
+BEGIN_METHOD(Paint_RichTextExtents, GB_STRING text; GB_FLOAT width)
 
 	PAINT_EXTENTS *extents;
 	
 	CHECK_DEVICE();
 
 	GB.New(POINTER(&extents), GB.FindClass("PaintExtents"), NULL, NULL);
-	PAINT->RichTextExtents(THIS, STRING(text), LENGTH(text), &extents->ext);
+	PAINT->RichTextExtents(THIS, STRING(text), LENGTH(text), &extents->ext, VARGOPT(width, -1));
 	
 	GB.ReturnObject(extents);
 
@@ -1058,8 +1080,10 @@ GB_DESC PaintDesc[] =
 	GB_STATIC_PROPERTY("Font", "Font", Paint_Font),
 	GB_STATIC_METHOD("Text", NULL, Paint_Text, "(Text)s[(X)f(Y)f(Width)f(Height)f(Alignment)i)]"),
 	GB_STATIC_METHOD("RichText", NULL, Paint_RichText, "(Text)s[(X)f(Y)f(Width)f(Height)f(Alignment)i)]"),
+	GB_STATIC_METHOD("DrawText", NULL, Paint_DrawText, "(Text)s[(X)f(Y)f(Width)f(Height)f(Alignment)i)]"),
+	GB_STATIC_METHOD("DrawRichText", NULL, Paint_DrawRichText, "(Text)s[(X)f(Y)f(Width)f(Height)f(Alignment)i)]"),
 	GB_STATIC_METHOD("TextExtents", "PaintExtents", Paint_TextExtents, "(Text)s"),
-	GB_STATIC_METHOD("RichTextExtents", "PaintExtents", Paint_RichTextExtents, "(Text)s"),
+	GB_STATIC_METHOD("RichTextExtents", "PaintExtents", Paint_RichTextExtents, "(Text)s[(Width)f]"),
 	
 	GB_STATIC_METHOD("Color", "PaintBrush", Paint_Color, "(Color)i"),
 	GB_STATIC_METHOD("Image", "PaintBrush", Paint_Image, "(Image)Image;[(X)f(Y)f]"),

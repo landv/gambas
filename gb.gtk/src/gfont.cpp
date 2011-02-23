@@ -59,7 +59,7 @@ static void set_font_from_string(gFont *font, const char *str)
 		else if (!strcasecmp(elt, "underline"))
   		font->setUnderline(true);
 		else if (!strcasecmp(elt, "strikeout"))
-  		font->setStrikeOut(true);
+  		font->setStrikeout(true);
 		else if (elt[0] == '+' || elt[0] == '-' || elt[0] == '0')
 		{
 			grade = atoi(elt);
@@ -76,7 +76,7 @@ static void set_font_from_string(gFont *font, const char *str)
 				font->setBold(false);
 				font->setItalic(false);
 				font->setUnderline(false);
-				font->setStrikeOut(false);
+				font->setStrikeout(false);
 				font->setName(elt);
 			}
 		}
@@ -213,15 +213,34 @@ void gFont::realize()
 	_nfont++;  
 }
 
+void gFont::initFlags()
+{
+	gFont *comp = new gFont();
+	
+	_bold_set = comp->bold() != bold();
+	_italic_set = comp->italic() != italic();
+	_name_set = strcmp(comp->name(), name());
+	_size_set = comp->size() != size();
+	_strikeout_set = comp->strikeout() != strikeout();
+	_underline_set = comp->underline() != underline();
+}
+
+gFont::gFont() : gShare()
+{
+	GtkStyle *sty = gtk_widget_get_default_style();
+  realize();
+	ct = gdk_pango_context_get();
+	pango_context_set_font_description(ct,sty->font_desc);
+}
+
 gFont::gFont(GtkWidget *wid) : gShare()
 {
 	PangoAttrList *lst;
 	PangoAttrIterator* iter;
 	
 	realize();
-	ct=gtk_widget_create_pango_context(wid);
+	ct = gtk_widget_create_pango_context(wid);
 	g_object_ref(ct);
-	
 	
 	if (G_OBJECT_TYPE(wid)==GTK_TYPE_LABEL)
 	{
@@ -235,32 +254,23 @@ gFont::gFont(GtkWidget *wid) : gShare()
 		}
 	} 
 	
-}
-
-gFont::gFont() : gShare()
-{
-	GtkStyle *sty=gtk_widget_get_default_style();
-	
-  realize();
-	ct=gdk_pango_context_get();
-	pango_context_set_font_description(ct,sty->font_desc);
+	initFlags();
 }
 
 gFont::gFont(PangoFontDescription *fd) : gShare()
 {
-	//GtkStyle *sty=gtk_widget_get_default_style();
-	
 	realize();
-	ct=gdk_pango_context_get();
+	ct = gdk_pango_context_get();
 	pango_context_set_font_description(ct, fd);
+	initFlags();
 }
 
 gFont::gFont(const char *name) : gShare()
 {
-	GtkStyle *sty=gtk_widget_get_default_style();
+	GtkStyle *sty = gtk_widget_get_default_style();
 	
 	realize();
-	ct=gdk_pango_context_get();
+	ct = gdk_pango_context_get();
 	pango_context_set_font_description(ct,sty->font_desc);
 
 	set_font_from_string(this, name);
@@ -274,7 +284,7 @@ void gFont::copyTo(gFont *dst)
 	if (_bold_set) dst->setBold(bold());
 	if (_italic_set) dst->setItalic(italic());
 	if (_underline_set) dst->setUnderline(underline());
-	if (_strikeout_set) dst->setStrikeOut(strikeOut());
+	if (_strikeout_set) dst->setStrikeout(strikeout());
 }
 
 void gFont::mergeFrom(gFont *src)
@@ -284,7 +294,7 @@ void gFont::mergeFrom(gFont *src)
 	if (!_bold_set && src->_bold_set) setBold(src->bold());
 	if (!_italic_set && src->_italic_set) setItalic(src->italic());
 	if (!_underline_set && src->_underline_set) setUnderline(src->underline());
-	if (!_strikeout_set && src->_strikeout_set) setStrikeOut(src->strikeOut());
+	if (!_strikeout_set && src->_strikeout_set) setStrikeout(src->strikeout());
 }
 
 gFont *gFont::copy()
@@ -431,8 +441,8 @@ const char *gFont::toString()
 		g_string_append(desc, ",Italic");
 	if (underline())
 		g_string_append(desc, ",Underline");
-	if (strikeOut())
-		g_string_append(desc, ",StrikeOut");
+	if (strikeout())
+		g_string_append(desc, ",Strikeout");
 
 	ret = g_string_free(desc, false);
 	gt_free_later(ret);
@@ -457,7 +467,7 @@ const char *gFont::toFullString()
 	if (_underline_set)
 		g_string_append_printf(desc, "underline=%d ", underline());
 	if (_strikeout_set)
-		g_string_append_printf(desc, "strikeout=%d ", strikeOut());
+		g_string_append_printf(desc, "strikeout=%d ", strikeout());
 
 	ret = g_string_free(desc, false);
 	gt_free_later(ret);
@@ -596,7 +606,7 @@ int gFont::resolution()
 }
 
 
-bool gFont::strikeOut()
+bool gFont::strikeout()
 {
 	return strike;
 }
@@ -611,7 +621,7 @@ void gFont::setResolution(int vl)
 {
 }
 
-void gFont::setStrikeOut(bool vl)
+void gFont::setStrikeout(bool vl)
 {
 	//stub("setStrikeOut(): partially working");
 	strike=vl;

@@ -12,7 +12,7 @@ GB_COMPONENT_PKG_CONFIG(
   GTK,
   [GTK+ toolkit],
   [src],
-  gtk+-2.0 ">= 2.10" librsvg-2.0 ">= 2.14.3" cairo ">= 1.6.0" cairo-ft ">= 1.6.0"
+  gtk+-2.0 ">= 2.10" librsvg-2.0 ">= 2.14.3" cairo ">= 1.6.0" cairo-ft ">= 1.6.0" gtk+-unix-print-2.0 ">= 2.10"
 )
 
 GB_COMPONENT_PKG_CONFIG(

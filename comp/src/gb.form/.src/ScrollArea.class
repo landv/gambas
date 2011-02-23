@@ -6,6 +6,7 @@ Inherits UserContainer
 Public Const _Properties As String = "*,Border=True,ScrollBar{Scroll.*}=Both,Painted,Focus,NoBackground"
 Public Const _DefaultEvent As String = "Draw"
 Public Const _DefaultSize As String = "24,24"
+Public Const _Similar As String = "DrawingArea,ScrollView"
 'Public Const _Group As String = "View"
 
 Property Read ScrollX As Integer
@@ -192,8 +193,9 @@ Public Sub DrawingArea_Draw()
   Dim hClip As Rect
   Dim hFrame As Rect
   
+  If $bBorder Then FW = Style.FrameWidth
+  
   If $iBackground <> Color.Default Then 
-    If $bBorder Then FW = Style.FrameWidth
     Draw.FillRect(FW, FW, Draw.W - FW * 2, Draw.H - FW * 2, $iBackground)
   Endif
   
@@ -233,6 +235,7 @@ Private Sub Border_Write(Value As Boolean)
 
   $bBorder = Value
   ScrollArea_Arrange
+  $hDrawingArea.Refresh
 
 End
 

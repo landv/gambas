@@ -289,11 +289,13 @@ static gboolean cb_keypress(GtkWidget *widget, GdkEvent *event, gTextArea *ctrl)
 		else if (key == 'X')
 		{
 			ctrl->cut();
+			ctrl->ensureVisible();
 			return true;
 		}
 		else if (key == 'V')
 		{
 			ctrl->paste();
+			ctrl->ensureVisible();
 			return true;
 		}
 	}
@@ -773,6 +775,7 @@ void gTextArea::undo()
 	}
 	
 	end();
+	ensureVisible();
 	_undo_in_progress = false;
 }
 
@@ -812,6 +815,7 @@ void gTextArea::redo()
 	}
 	
 	end();
+	ensureVisible();
 	_undo_in_progress = false;
 }
 

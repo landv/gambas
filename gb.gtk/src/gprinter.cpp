@@ -136,6 +136,8 @@ static gboolean find_file_printer(GtkPrinter *gtk_printer, gPrinter *printer)
 	return FALSE;
 }
 
+gPrinter *gPrinter::_current = NULL;
+
 gPrinter::gPrinter()
 {
 	_operation = NULL;
@@ -167,8 +169,8 @@ void gPrinter::storeSettings()
 		return;
 	
 	g_object_unref(G_OBJECT(_settings));
-	_settings = GTK_PRINT_SETTINGS(g_object_ref(gtk_print_operation_get_print_settings(_operation)));
-	//gtk_print_settings_to_file(_settings, "/home/benoit/settings.txt", NULL);
+	_settings = gtk_print_settings_copy(gtk_print_operation_get_print_settings(_operation));
+	gtk_print_settings_to_file(_settings, "/home/benoit/settings.txt", NULL);
 }
 
 void gPrinter::defineSettings()
@@ -198,8 +200,8 @@ bool gPrinter::run(bool configure)
 	gtk_print_operation_set_embed_page_setup(operation, true);
 	gtk_print_operation_set_n_pages(operation, _page_count);
 	gtk_print_operation_set_use_full_page(operation, _use_full_page);
-	gtk_print_operation_set_print_settings(operation, _settings);
 	gtk_print_operation_set_default_page_setup(_operation, _page);
+	gtk_print_operation_set_print_settings(operation, _settings);
   
 	if (configure)
 	{
@@ -225,19 +227,25 @@ bool gPrinter::run(bool configure)
 	{
 		file = outputFileName();
 		if (file) 
+		{
 			unlink(file);
+			setOutputFileName(outputFileName());
+			gtk_print_operation_set_print_settings(operation, _settings);
+		}
 		// GTK+ bug: GTK_PRINT_OPERATION_ACTION_PRINT does not work with virtual printers.
 		if (isVirtual())
+		{
 			gApplication::_close_next_window = true;
+			_current = this;
+		}
 		else
 			action = GTK_PRINT_OPERATION_ACTION_PRINT;
 	}
 	
-	//gtk_print_settings_to_file(gtk_print_operation_get_print_settings(operation), "/home/benoit/settings-run-before.txt", NULL);
-
+	gtk_print_settings_to_file(gtk_print_operation_get_print_settings(operation), "/home/benoit/settings-before.txt", NULL);
 	res = gtk_print_operation_run(operation, action, active ? GTK_WINDOW(active->border) : NULL, &error);
-	
-	//gtk_print_settings_to_file(gtk_print_operation_get_print_settings(operation), "/home/benoit/settings-run-after.txt", NULL);
+	_current = NULL;
+	gtk_print_settings_to_file(gtk_print_operation_get_print_settings(operation), "/home/benoit/settings-after.txt", NULL);
 	
 	if (_preview)
 	{
@@ -544,13 +552,12 @@ void gPrinter::setOutputFileName(const char *file)
 
 	gtk_enumerate_printers((GtkPrinterFunc)find_file_printer, this, NULL, TRUE);
 	
-	gtk_print_settings_set(_settings, GTK_PRINT_SETTINGS_OUTPUT_URI, uri);	
-	
-	g_free(uri);
-
 	// It does not work!!!
 	if (format)
 		gtk_print_settings_set(_settings, GTK_PRINT_SETTINGS_OUTPUT_FILE_FORMAT, format);
+
+	gtk_print_settings_set(_settings, GTK_PRINT_SETTINGS_OUTPUT_URI, uri);	
+	g_free(uri);
 }
 
 
@@ -571,3 +578,12 @@ bool gPrinter::isVirtual()
 	gtk_enumerate_printers((GtkPrinterFunc)find_printer, this, NULL, TRUE);
 	return _is_virtual;
 }
+
+void gPrinter::fixPrintDialog(GtkPrintUnixDialog *dialog)
+{
+	//GtkPrintSettings *settings = gtk_print_unix_dialog_get_settings(dialog);
+	//fprintf(stderr, "gPrinter::fixPrintDialog: '%s' '%s'\n", gtk_print_settings_get(settings, GTK_PRINT_SETTINGS_OUTPUT_URI), gtk_print_settings_get(settings, GTK_PRINT_SETTINGS_OUTPUT_FILE_FORMAT));
+	//fprintf(stderr, "-> '%s' '%s'\n", gtk_print_settings_get(_current->_settings, GTK_PRINT_SETTINGS_OUTPUT_URI), gtk_print_settings_get(_current->_settings, GTK_PRINT_SETTINGS_OUTPUT_FILE_FORMAT));
+	gtk_print_unix_dialog_set_settings(dialog, _current->_settings);
+}
+
