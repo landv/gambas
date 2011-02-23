@@ -33,12 +33,14 @@ typedef
   CIMAGE;
 
 #ifndef __C_IMAGE_C
-extern GB_DESC CImageDesc[];
+extern GB_DESC ImageDesc[];
 #else
 
 #define THIS ((GB_IMG *)_object)
 #define THIS_IMAGE ((Imlib_Image)THIS->temp_handle)
 
 #endif
+
+Imlib_Image IMAGE_check(void *_object);
 
 #endif /* __CIMAGE_H */

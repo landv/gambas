@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  main.c
+  c_imlib.h
 
   (c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
 
@@ -20,29 +20,13 @@
 
 ***************************************************************************/
 
-#define __MAIN_C
+#ifndef __C_IMLIB_H
+#define __C_IMLIB_H
 
 #include "main.h"
-#include "c_image.h"
-#include "c_imlib.h"
 
-GB_INTERFACE GB EXPORT;
-IMAGE_INTERFACE IMAGE EXPORT;
+#ifndef __C_IMLIB_C
+extern GB_DESC ImlibDesc[];
+#endif
 
-GB_DESC *GB_CLASSES[] EXPORT =
-{
-  ImageDesc,
-	//ImlibDesc,
-  NULL
-};
-
-int EXPORT GB_INIT(void)
-{
-	GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
-	imlib_set_cache_size(0);
-	return 0;
-}
-
-void EXPORT GB_EXIT()
-{
-}
+#endif

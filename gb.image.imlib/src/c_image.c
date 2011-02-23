@@ -57,12 +57,17 @@ static GB_IMG_OWNER _image_owner = {
 	NULL,
 	};
 
-Imlib_Image check_image(void *_object)
+static Imlib_Image check_image(void *_object)
 {
 	Imlib_Image image = (Imlib_Image)IMAGE.Check(THIS, &_image_owner);
 	imlib_context_set_image(image);
 	imlib_image_set_has_alpha(TRUE);
 	return image;
+}
+
+Imlib_Image IMAGE_check(void *_object)
+{
+	return check_image(_object);
 }
 
 static void take_image(CIMAGE *_object, Imlib_Image image)
@@ -180,6 +185,19 @@ BEGIN_METHOD(Image_Blur, GB_INTEGER radius)
 
 END_METHOD
 
+BEGIN_METHOD_VOID(Image_Tile)
+
+	Imlib_Image image;
+
+	check_image(THIS);
+	
+	image = imlib_clone_image();
+	imlib_context_set_image(image);
+	imlib_image_tile();
+  GB.ReturnObject(create_image(image));
+
+END_METHOD
+
 BEGIN_METHOD(Image_Sharpen, GB_INTEGER radius)
 
 	Imlib_Image image;
@@ -223,7 +241,22 @@ BEGIN_METHOD(Image_Draw, GB_OBJECT img; GB_INTEGER x; GB_INTEGER y; GB_INTEGER w
 	
 END_METHOD
 
-GB_DESC CImageDesc[] =
+BEGIN_METHOD(Image_Scroll, GB_INTEGER dx; GB_INTEGER dy; GB_INTEGER x; GB_INTEGER y; GB_INTEGER width; GB_INTEGER height)
+
+	int x, y, width, height;
+
+	check_image(THIS);
+	
+	x = VARGOPT(x, 0);
+	y = VARGOPT(y, 0);
+	width = VARGOPT(width, imlib_image_get_width());
+	height = VARGOPT(height, imlib_image_get_height());
+	
+	imlib_image_scroll_rect(x, y, width, height, VARG(dx), VARG(dy));
+
+END_METHOD
+
+GB_DESC ImageDesc[] =
 {
   GB_DECLARE("Image", sizeof(CIMAGE)),
 
@@ -235,9 +268,10 @@ GB_DESC CImageDesc[] =
 	
 	GB_METHOD("Blur", "Image", Image_Blur, "[(Radius)i]"),
 	GB_METHOD("Sharpen", "Image", Image_Sharpen, "[(Radius)i]"),
+	GB_METHOD("Tile", "Image", Image_Tile, NULL),
 
   GB_METHOD("Draw", NULL, Image_Draw, "(Image)Image;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
-
+  GB_METHOD("Scroll", NULL, Image_Scroll, "(DX)i(DY)i[(X)i(Y)i(Width)i(Height)i]"),
 	//Gb_INTERFACE("Draw", &DRAW_Interface),
 
   GB_END_DECLARE
