@@ -44,12 +44,13 @@ typedef
 			unsigned notified : 1;
 			unsigned visible : 1;
 			unsigned fillBackground : 1;
+			unsigned noBackground : 1;
 			unsigned shown : 1; // for containers
 			unsigned tracking : 1;
 			unsigned old_tracking : 1;
 			unsigned grab : 1;
 			unsigned dragging: 1;
-			unsigned _reserved : 6;
+			unsigned _reserved : 5;
 			} flag;
 		GB_VARIANT_VALUE tag;
 		char *name;

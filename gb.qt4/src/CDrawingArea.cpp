@@ -123,6 +123,7 @@ void MyDrawingArea::redraw(QRect &r, bool frame)
 {
 	QPainter *p;
 	void *_object = CWidget::get(this);
+	int fw;
 	
 	if (!_object)
 		return;
@@ -146,6 +147,13 @@ void MyDrawingArea::redraw(QRect &r, bool frame)
 	}*/
 	
 	//p->save();
+	
+	fw = frameWidth();
+	
+	if (THIS->widget.bg != COLOR_DEFAULT)
+	{
+		p->fillRect(fw, fw, width() - fw * 2, height() - fw * 2, QColor((QRgb)THIS->widget.bg));
+	}
 	
 	if (!_use_paint)
 	{
@@ -389,7 +397,7 @@ BEGIN_METHOD(CDRAWINGAREA_new, GB_OBJECT parent)
 
 	//THIS->widget.background = QColorGroup::Base;
 	THIS->container = wid;
-	THIS->widget.flag.fillBackground = false;
+	THIS->widget.flag.noBackground = true;
 
 	CWIDGET_new(wid, (void *)_object);
 
@@ -416,7 +424,7 @@ BEGIN_METHOD_VOID(CDRAWINGAREA_clear)
 END_METHOD
 
 
-BEGIN_PROPERTY(CDRAWINGAREA_background)
+BEGIN_PROPERTY(DrawingArea_Background)
 
 	Control_Background(_object, _param);
 
@@ -524,7 +532,7 @@ GB_DESC CDrawingAreaDesc[] =
 
 	GB_PROPERTY("Border", "i", CDRAWINGAREA_border),
 	GB_PROPERTY("NoBackground", "b", DrawingArea_NoBackground),
-	GB_PROPERTY("Background", "i", CDRAWINGAREA_background),
+	GB_PROPERTY("Background", "i", DrawingArea_Background),
 	
 	GB_PROPERTY("Focus", "b", CDRAWINGAREA_focus),
 	GB_PROPERTY("Enabled", "b", CDRAWINGAREA_enabled),

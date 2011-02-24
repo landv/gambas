@@ -1242,7 +1242,7 @@ void CWIDGET_reset_color(CWIDGET *_object)
 		WIDGET->setPalette(palette);
 	}	
 	
-	w->setAutoFillBackground(THIS->flag.fillBackground || THIS->bg != COLOR_DEFAULT);
+	w->setAutoFillBackground(!THIS->flag.noBackground && (THIS->flag.fillBackground || (THIS->bg != COLOR_DEFAULT && w->backgroundRole() == QPalette::Window)));
 	//w->setAutoFillBackground(THIS->bg != COLOR_DEFAULT);
 	
 	if (!GB.Is(THIS, CLASS_Container))
@@ -1250,23 +1250,6 @@ void CWIDGET_reset_color(CWIDGET *_object)
 	
 	if (GB.Is(THIS, CLASS_Window))
 		CWINDOW_define_mask((CWINDOW *)THIS);
-	
-	/*QWidget *container = ((CCONTAINER *)THIS)->container;
-	if (!container)
-		return;
-	
-	QObjectList list = container->children();
-	int i;
-	CWIDGET *widget;
-
-	for(i = 0; i < list.count(); i++)
-	{
-		widget = CWidget::getRealExisting(list.at(i));
-		if (!widget)
-			continue;
-		if (widget->fg == COLOR_DEFAULT || widget->bg == COLOR_DEFAULT)
-			CWIDGET_reset_color(widget);
-	}*/
 }
 
 void CWIDGET_set_color(CWIDGET *_object, int bg, int fg)
