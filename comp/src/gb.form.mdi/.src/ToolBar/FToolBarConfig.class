@@ -5,6 +5,7 @@ Private $hForm As FToolBar
 Private $aDefault As String[]
 Private $hInside As DrawingArea
 Private $hPopupToolbar As ToolBar
+Private $aDeleteLater As New Control[]
 
 Public Sub Run(hToolbar As ToolBar) 
 
@@ -125,26 +126,32 @@ Public Sub Item_Leave()
   
 End
 
-Private Sub DrawItem(hAction As CAction)
+Private Sub DrawItem(hAction As CAction, bScreenshot As Boolean)
   
   'Dim hAction As CAction
   Dim hIcon As Picture
   Dim sText As String
   Dim W As Integer
+  Dim bText As Boolean
   
   'If hItem.Tag Then hAction = MAction.Actions[hItem.Tag]
+   bText = Draw.W > (Draw.H * 2)
   
   'If $hInside = hItem Then 
   Draw.Style.Button(0, 0, Draw.W, Draw.H, False)
   If hAction Then
-    hIcon = hAction.GetConfigIcon()
+    hIcon = hAction.GetConfigIcon(If(bScreenshot, $hForm.GetRealIconSize(), 0))
     If hIcon Then 
-      Draw.Picture(hIcon, 4, (Draw.H - hIcon.H) / 2)
+      If bText Then
+        Draw.Picture(hIcon, 4, (Draw.H - hIcon.H) / 2)
+      Else
+        Draw.Picture(hIcon, (Draw.W - hIcon.W) / 2, (Draw.H - hIcon.H) / 2)
+      Endif
       W = hIcon.W
     Else
-      W = Stock.GetSize("small")
+      W = $hForm.GetIconSize()
     Endif
-    If Draw.W > (Draw.H * 2) Then Draw.Text(hAction.Display, W + 8, 0, Draw.W - W - 12, Draw.H, Align.Normal)
+    If bText Then Draw.Text(hAction.Display, W + 8, 0, Draw.W - W - 12, Draw.H, Align.Normal)
   Else
     If Last.Tag = "|" Then
       'Draw.Rect(4 + W \ 2 - 2, (Draw.H - W) \ 2, 4, W)
@@ -154,9 +161,13 @@ Private Sub DrawItem(hAction As CAction)
       hIcon = Picture["img/expander.png"]
       sText = ("Expander")
     Endif
-    Draw.Picture(hIcon, 4, (Draw.H - hIcon.H) / 2)
+    If bText Then
+      Draw.Picture(hIcon, 4, (Draw.H - hIcon.H) / 2)
+    Else
+      Draw.Picture(hIcon, (Draw.W - hIcon.W) / 2, (Draw.H - hIcon.H) / 2)
+    Endif
     W = hIcon.W
-    If Draw.W > (Draw.H * 2) Then Draw.Text(sText, W + 8, 0, Draw.W - W - 12, Draw.H, Align.Normal)
+    If bText Then Draw.Text(sText, W + 8, 0, Draw.W - W - 12, Draw.H, Align.Normal)
     'Draw.Style.Separator(8, (hItem.H - W) / 2, W - 4, W, False)
   Endif
   
@@ -165,7 +176,7 @@ End
 
 Public Sub Item_Draw()
   
-  DrawItem(MAction.Actions[Last.Tag])
+  DrawItem(MAction.Actions[Last.Tag], False)
   
 End
 
@@ -220,7 +231,7 @@ Private Sub GetItemScreenshot(hAction As CAction) As Picture
   hPict = New Picture(hItem.W, hItem.H)
   Draw.Begin(hPict)
   Draw.FillRect(0, 0, Draw.W, Draw.H, Color.Background)
-  DrawItem(hAction)
+  DrawItem(hAction, True)
   Draw.End
   
   Return hPict
@@ -284,12 +295,14 @@ Public Sub DragAction(hCtrl As Control, sAction As String)
         If hCtrl.Action Then
           $hForm.HideControl(hCtrl)
         Else
-          hCtrl.Delete
+          $aDeleteLater.Add(hCtrl)
+          hCtrl.Hide
         Endif
         bAnim = True
       Else
         If Not hCtrl.Action Then
-          hCtrl.Delete
+          $aDeleteLater.Add(hCtrl)
+          hCtrl.Hide
         Endif
       Endif
     
@@ -306,6 +319,8 @@ Public Sub DragAction(hCtrl As Control, sAction As String)
   Endif
   
   $hForm.DragEnd(bAnim)
+  
+  If $aDeleteLater.Count Then timDeleteLater.Trigger
   
 End
 
@@ -436,5 +451,21 @@ Public Sub mnuConfigure_Click()
   
   SetCurrentToolbar($hPopupToolbar)
   Me.Show
+  
+End
+
+Public Sub WillBeDeleted(hCtrl As Control) As Boolean
+  
+  Return $aDeleteLater.Exist(hCtrl)
+  
+End
+
+Public Sub timDeleteLater_Timer()
+  
+  Dim hCtrl As Control
+  For Each hCtrl In $aDeleteLater
+    hCtrl.Delete
+  Next
+  $aDeleteLater.Clear
   
 End

@@ -23,9 +23,10 @@ Private mnuEditBookmark As Menu
 Private mnuShowHiddenFiles As Menu
 Private mnuShowDetailed As Menu
 Private $iIconSize As Integer
+Private $hWatch As Watcher
 
 Static Private $aHistory As New String[]
-Static Private $aIconSize As Integer[] = [16, 22, 32, 48, 64, 128, 192, 256]
+Static Private $aIconSize As Integer[] = [16, 22, 32, 48, 64, 96, 128, 192, 256]
 
 Public Sub _new(Optional bFile As Boolean)
 
@@ -38,6 +39,8 @@ Public Sub _new(Optional bFile As Boolean)
   sldIconSize.Value = $aIconSize.Find(32)
 
   btnParent.Picture = Main.GetArrow(Align.Left, 16).Picture
+  
+  $hWatch = New Watcher(fvwChoose) As "FileView"
 
   FillMenu
 
@@ -133,7 +136,7 @@ End
 
 Private Sub UpdateZoom()
   
-  panIconSize.Visible = Not fvwChoose.ShowDetailed And $bView
+  panIconSize.Visible = Not fvwChoose.ShowDetailed And $bView And fvwChoose.Visible
   
 End
 
@@ -814,11 +817,13 @@ Private Sub FillMenu()
   hMenu = New Menu(mnuBookmark) As "mnuShowDetailed"
   hMenu.Text = ("Show &details")
   hMenu.Checked = fvwChoose.ShowDetailed
+  hMenu.Visible = fvwChoose.Visible
   mnuShowDetailed = hMenu
-  
+    
   hMenu = New Menu(mnuBookmark) As "mnuShowHiddenFiles"
   hMenu.Text = ("Show &hidden files")
   hMenu.Checked = fvwChoose.ShowHidden
+  hMenu.Visible = fvwChoose.Visible
   mnuShowHiddenFiles = hMenu
   
   hMenu = New Menu(mnuBookmark) As "mnuCreateDirectory"
@@ -914,4 +919,17 @@ Public Sub btnZoomIn_Click()
 
   Inc sldIconSize.Value
 
+End
+
+Public Sub FileView_Show()
+  
+  FillMenu
+  UpdateZoom
+  
+End
+
+Public Sub FileView_Hide()
+  
+  FileView_Show
+  
 End

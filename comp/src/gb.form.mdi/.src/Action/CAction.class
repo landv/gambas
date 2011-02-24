@@ -98,21 +98,27 @@ Public Sub _compare(hAction As CAction) As Integer
   
 End
 
-Public Sub GetConfigIcon() As Picture
+Public Sub GetConfigIcon(Optional W As Integer) As Picture
   
-  Dim W As Integer
+  Dim aIcon As String[]
   Dim aControl As Object[]
   Dim sType As String
   
-  If Icon Then Return Icon
+  If Icon Then
+    If W = 0 Then Return Icon
+    aIcon = Split(IconPath, "/")
+    aIcon[1] = W
+    Return Picture[aIcon.Join("/")]
+  Endif
   
   aControl = Action[Key].Controls
   If aControl.Count = 0 Then Return
   
+  If W = 0 Then W = Stock.GetSize("small")
+  
   sType = Object.Type(aControl[0])
   If sType = "MenuButton" Then Return Picture["icon:/small/menu"]
   
-  W = Stock.GetSize("small")
   IconPath = "./control" &/ LCase(sType) & ".png"
   Try Return Picture[IconPath].Image.Stretch(W, W).Picture
   

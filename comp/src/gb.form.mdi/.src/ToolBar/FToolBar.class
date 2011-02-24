@@ -7,6 +7,7 @@ Public ToolbarKey As String
 Public $bDesign As Boolean
 
 Static Private $cRegister As New Collection
+Static Private $hExpanderBg As Picture
 
 'Private $hWatcher As Watcher
 'Private $hWatcherParent As Watcher
@@ -736,8 +737,6 @@ Public Sub Form_DragMove()
     
   Endif
   
-  'Debug panWhere = hCtrl;; "panWhere.Next = "; panWhere.Next;; "hCtrl.Next = "; hCtrl.Next;; "bBefore = "; bBefore
-  
   If bBefore Then
     If panWhere.Next = hCtrl Then Return
   Else
@@ -764,8 +763,6 @@ Private Sub OnMouseDrag(hCtrl As Control)
   Dim iArr As Integer
   Dim sAction As String
   
-  'Debug hCtrl
-  
   While hCtrl.Parent <> panToolBar
     hCtrl = hCtrl.Parent
     'Debug "-> "; hCtrl
@@ -776,23 +773,26 @@ Private Sub OnMouseDrag(hCtrl As Control)
   sAction = hCtrl.Action
   If Left(sAction) = "." Then sAction = Mid$(sAction, 2)
   If Not sAction Then
-    If hCtrl.Expand Then
+    If hCtrl Is ToolBarExpander Then
       sAction = "~"
-    Else
+    Else If hCtrl Is Separator
       sAction = "|"
+    Else
+      Return
     Endif
   Endif
 
-  Lock()
+  $bLock = True
+  'Lock()
   DragStart(True)
   panWhere.Next = hCtrl.Next
   hCtrl.Next = panWhere
   ShowWhere(sAction, False, hCtrl)
   hCtrl.Hide
-  Unlock()
-  Wait
+  'Unlock()
   
   FToolBarConfig.DragAction(hCtrl, sAction)
+  $bLock = False
   
 End
 
@@ -897,9 +897,19 @@ Private Sub AddSeparator(Optional hNext As Control)
   
 End
 
+Public Sub ToolBarExpander_Draw()
+  
+  If $bConfigure Then
+    If Not $hExpanderBg Then $hExpanderBg = Picture["img/expander.png"]
+    Draw.Tile($hExpanderBg, 0, (Last.H - $hExpanderBg.H) / 2, Last.W, $hExpanderBg.H)
+  Endif
+  
+End
+
+
 Private Sub AddExpander(Optional hNext As Control)
   
-  Dim hExp As Panel
+  Dim hExp As ToolBarExpander
   Dim hObs As Observer
   Dim W, H As Integer
 
@@ -913,10 +923,9 @@ Private Sub AddExpander(Optional hNext As Control)
     H = GetToolBarHeight()
   Endif
 
-  hExp = New Panel(panToolBar)
+  hExp = New ToolBarExpander(panToolBar) As "ToolBarExpander"
   hExp.Next = hNext
   hExp.Resize(W, H)
-  hExp.Expand = True
   hExp.Drop = True
   hObs = New Observer(hExp) As "Item"
   
@@ -1004,30 +1013,34 @@ Public Sub Form_Close()
 
 End
 
+Private Sub CalcIconSize(iIconSize As Integer) As Integer
+  
+  Select Case iIconSize
+    Case ICON_MEDIUM
+      Return Stock.GetSize("medium")
+    Case ICON_LARGE
+      Return Stock.GetSize("large")
+    Default
+      Return Stock.GetSize("small")
+  End Select
+  
+End
+
 Private Sub GetIcon(sIcon As String) As Picture
   
-  Dim sSize As String
   Dim aIcon As String[]
   Dim hIcon As Picture
   Dim iSize As Integer
   
-  Select Case $iIconSize
-    Case ICON_MEDIUM
-      sSize = "medium"
-    Case ICON_LARGE
-      sSize = "large"
-    Default
-      sSize = "small"
-  End Select
-
+  iSize = CalcIconSize($iIconSize)
+  
   If sIcon Begins "icon:/" Then
     aIcon = Split(sIcon, "/")
-    aIcon[1] = sSize
+    aIcon[1] = iSize
     hIcon = Picture[aIcon.Join("/")]
   Else
     hIcon = Picture[sIcon]
     If hIcon Then
-      iSize = Stock.GetSize(sSize)
       hIcon = hIcon.Image.Stretch(iSize, iSize).Picture
     Endif
   Endif
@@ -1076,7 +1089,10 @@ Private Sub CheckSeparators()
   Dim aDelete As New Control[]
   
   For Each hChild In panToolBar.Children
-    If hChild Is Separator Then hChild.Show
+    If hChild Is Separator Then 
+      If FToolBarConfig.WillBeDeleted(hChild) Then Continue
+      hChild.Show
+    Endif
   Next
 
   If $bConfigure Then Return
@@ -1150,7 +1166,7 @@ Public Sub LoadConfig(Optional bInit As Boolean)
     ResizeControl(hCtrl, iDim)
     If hCtrl.Action Then
       hCtrl.Reparent(panHide)
-    Else If hCtrl Is Separator Then 
+    Else If hCtrl Is Separator Or If hCtrl Is ToolBarExpander Then 
       hCtrl.Delete
     Else
       Inc iInd
@@ -1230,7 +1246,7 @@ Public Sub SaveConfig(Optional bReset As Boolean)
         aConfig.Add(sAction)
       Else If hCtrl Is Separator
         aConfig.Add("|")
-      Else If hCtrl Is Panel And If hCtrl.Expand And If Panel(hCtrl).Children.Count = 0 Then
+      Else If hCtrl Is ToolBarExpander Then
         aConfig.Add("~")
       Else If hCtrl.Visible Then
         aConfig.Add("$" & hCtrl.Name)
@@ -1329,6 +1345,13 @@ Public Sub GetIconSize() As Integer
   Return $iIconSize
   
 End
+
+Public Sub GetRealIconSize() As Integer
+  
+  Return CalcIconSize(GetIconSize())
+  
+End
+
 
 Public Sub SetIconSize(iSize As Integer)
 

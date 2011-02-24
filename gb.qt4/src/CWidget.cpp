@@ -927,14 +927,15 @@ BEGIN_PROPERTY(Control_Next)
 	else
 	{
 		CWIDGET *ob = (CWIDGET *)VPROP(GB_OBJECT);
-
+		
 		if (!ob)
 			WIDGET->raise();
 		else
 		{
 			if (GB.CheckObject(ob))
 				return;
-
+			
+			v = ob->widget->isVisible();
 			WIDGET->stackUnder(ob->widget);
 		}
 		arrange_parent(THIS);

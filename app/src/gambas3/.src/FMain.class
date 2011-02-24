@@ -1907,7 +1907,11 @@ End
 Public Sub txtSearch_Click()
   
   'Project.StoreCombo(cmbFind)
-  FSearch.FindProject(txtSearch.Text)
+  If txtSearch.Text Then
+    FSearch.FindProject(txtSearch.Text)
+  Else
+    FSearch.WakeUp(False)
+  Endif
   
 End
 
