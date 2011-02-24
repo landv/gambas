@@ -906,7 +906,8 @@ void DEBUG_main(boolean error)
 		for(;;)
 		{
 			*cmdbuf = 0;
-	    if (fgets(cmdbuf, sizeof(cmdbuf), _in) == NULL)
+			errno = 0;
+	    if (fgets(cmdbuf, sizeof(cmdbuf), _in) == NULL && errno != EINTR)
 	    	break;
       if (!*cmdbuf)
         continue;
@@ -920,7 +921,7 @@ void DEBUG_main(boolean error)
     // A null string command means an I/O error
     if (len == 0)
 		{
-			fprintf(stderr, "warning: debugger I/O error\n");
+			fprintf(stderr, "warning: debugger I/O error: %s\n", strerror(errno));
 			exit(1);
 		}
 		
