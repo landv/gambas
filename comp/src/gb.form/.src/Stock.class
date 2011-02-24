@@ -204,16 +204,28 @@ Static Private Sub InitTheme()
       
     Case "xfce"
       
-      Try hFile = Open "~/.config/xfce4/mcs_settings/gtk.xml"
-      If Not Error Then 
+      Try hFile = Open "~/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml"
+      If Not Error Then
         While Not Eof(hFile)
           Line Input #hFile, sLig
-          If sLig Like "*<option*name=\"Net/IconThemeName\"*" Then 
-            Try sTheme = Trim(Scan(sLig, "*<option*value=\"*\"*")[2])
+          If sLig Like "*<property name=\"IconThemeName\" type=\"string\" value=\"*\"/>*" Then
+            Try sTheme = Trim(Scan(sLig, "*<property name=\"IconThemeName\" type=\"String\" value=\"*\"/>*")[1])
             Break
-          Endif          
+          Endif
         Wend
         Close #hFile
+      Else
+        Try hFile = Open "~/.config/xfce4/mcs_settings/gtk.xml"
+        If Not Error Then 
+          While Not Eof(hFile)
+            Line Input #hFile, sLig
+            If sLig Like "*<option*name=\"Net/IconThemeName\"*" Then 
+              Try sTheme = Trim(Scan(sLig, "*<option*value=\"*\"*")[2])
+              Break
+            Endif          
+          Wend
+          Close #hFile
+        Endif
       Endif
       
       If sTheme Then 

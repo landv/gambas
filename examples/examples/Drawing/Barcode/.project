@@ -5,9 +5,9 @@ Startup=FMain
 Icon=barcode.png
 Version=0.0.3
 Component=gb.image
-Component=gb.qt4
-Component=gb.qt4.ext
+Component=gb.gui
 Description="A module to print EAN-13 barcodes. The barcode is constructed from first principles (http://en.wikipedia.org/wiki/European_Article_Number). The barcode can be formatted for screen or printer."
+Environment="GB_GUI=gb.gtk"
 TabSize=2
 Translate=1
 Language=de
