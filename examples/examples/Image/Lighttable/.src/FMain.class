@@ -20,8 +20,6 @@ Private iPicCount As Integer
 Private iPicRow As Integer
 Private iRow As Integer
 Private iOffset As Integer
-Private iMStartx As Integer
-Private iMStarty As Integer
 Private iMark As Integer
 Private iNr As Integer
 Private sPath As String
@@ -194,8 +192,6 @@ End
 Public Sub Framegroup_MouseDown() ' a frame is clicked
 
   iNr = Last.Tag
-  iMStartx = Mouse.X
-  iMStarty = Mouse.Y
   Mark_Frame(iNr)
   If PicBox.Visible = True And PicBox.Tag <> aFiles[iNr] Then
     If PicBox.Cursor = hCurClose Then
@@ -209,20 +205,15 @@ End
 
 Public Sub Framegroup_MouseMove() ' Move a frame
 
-  Dim Targetx As Integer
-  Dim Targety As Integer
-
   iNr = Last.Tag
   PicBox.Visible = False
   FInfo.Close
-  Targetx = aFrame[iNr].X + Mouse.X - iMStartx
-  Targety = aFrame[iNr].Y + Mouse.Y - iMStarty
-  aFrame[iNr].X = Targetx
-  aFrame[iNr].Y = Targety
-  If Targety < ScrollView1.ScrollY Then 
+  aFrame[iNr].X += Mouse.X - Mouse.StartX
+  aFrame[iNr].Y += Mouse.Y - Mouse.StartY
+  If aFrame[iNr].Y < ScrollView1.ScrollY Then 
     ScrollView1.Scroll(ScrollView1.ScrollX, ScrollView1.ScrollY - 10)
   Endif 
-  If Targety > Me.Height + ScrollView1.ScrollY - 175 Then 
+  If aFrame[iNr].Y > Me.Height + ScrollView1.ScrollY - 175 Then 
     ScrollView1.Scroll(ScrollView1.ScrollX, ScrollView1.ScrollY + 10)
   Endif
   Mark_Frame(iNr)
