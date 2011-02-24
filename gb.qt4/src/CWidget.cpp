@@ -935,7 +935,6 @@ BEGIN_PROPERTY(Control_Next)
 			if (GB.CheckObject(ob))
 				return;
 			
-			v = ob->widget->isVisible();
 			WIDGET->stackUnder(ob->widget);
 		}
 		arrange_parent(THIS);
