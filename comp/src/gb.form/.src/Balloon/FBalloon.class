@@ -317,8 +317,10 @@ End
 
 Public Sub Window_Move()
   
+  If Not Me.Visible Then Return
+  
   If Abs($hCtrl.ScreenX - $X) >= 4 Or Abs($hCtrl.ScreenY - $Y) >= 4 Then
-    MakeBorder      
+    MakeBorder
   Endif
   
 End

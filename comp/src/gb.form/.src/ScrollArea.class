@@ -84,6 +84,10 @@ Public Sub ScrollArea_Arrange()
   
   If W >= $W And If H >= $H Then
     
+    $hHBar.MinValue = 0
+    $hHBar.MaxValue = 0
+    $hVBar.MinValue = 0
+    $hVBar.MaxValue = 0
     $hHBar.Hide
     $hVBar.Hide
     
@@ -92,6 +96,8 @@ Public Sub ScrollArea_Arrange()
     $hHBar.MinValue = 0
     $hHBar.MaxValue = $W - W
     $hHBar.PageStep = W
+    $hVBar.MinValue = 0
+    $hVBar.MaxValue = 0
     $hHBar.Show
     $hVBar.Hide
     
@@ -100,42 +106,38 @@ Public Sub ScrollArea_Arrange()
     $hVBar.MinValue = 0
     $hVBar.MaxValue = $H - H
     $hVBar.PageStep = H
+    $hHBar.MinValue = 0
+    $hHBar.MaxValue = 0
     $hVBar.Show
     $hHBar.Hide
     
   Else 
     
-    If bHBarAllowed Then
-      $hHBar.MinValue = 0
-      If bVBarAllowed Then
-        P = W - SB - SP
-      Else
-        P = W
-      Endif
-      If $W > P Then
-        $hHBar.MaxValue = $W - P
-        $hHBar.PageStep = P
-        $hHBar.Show
-      Else
-        $hHBar.Hide
-      Endif
+    $hHBar.MinValue = 0
+    If bVBarAllowed Then
+      P = W - SB - SP
+    Else
+      P = W
+    Endif
+    If $W > P Then
+      $hHBar.MaxValue = $W - P
+      $hHBar.PageStep = P
+      $hHBar.Visible = bHBarAllowed
     Else
       $hHBar.Hide
     Endif
-    If bVBarAllowed Then
-      $hVBar.MinValue = 0
-      If bHBarAllowed Then
-        P = H - SB - SP
-      Else
-        P = H 
-      Endif
-      If $H > P Then
-        $hVBar.MaxValue = $H - P
-        $hVBar.PageStep = P
-        $hVBar.Show
-      Else
-        $hVBar.Hide
-      Endif
+    
+    
+    $hVBar.MinValue = 0
+    If bHBarAllowed Then
+      P = H - SB - SP
+    Else
+      P = H 
+    Endif
+    If $H > P Then
+      $hVBar.MaxValue = $H - P
+      $hVBar.PageStep = P
+      $hVBar.Visible = bVBarAllowed
     Else
       $hVBar.Hide
     Endif
@@ -168,13 +170,13 @@ End
 
 Private Function ScrollX_Read() As Integer
 
-  If $hHBar.Visible Then Return $hHBar.Value
+  Return $hHBar.Value
 
 End
 
 Private Function ScrollY_Read() As Integer
 
-  If $hVBar.Visible Then Return $hVBar.Value
+  Return $hVBar.Value
 
 End
 

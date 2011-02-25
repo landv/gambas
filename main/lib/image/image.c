@@ -546,6 +546,7 @@ void IMAGE_take(GB_IMG *img, GB_IMG_OWNER *owner, void *owner_handle, int width,
 	img->data = data;
 	if (owner && owner->format)
 		img->format = owner->format;
+	img->is_void = width <= 0 || height <= 0;
 }
 
 void IMAGE_delete(GB_IMG *img)
