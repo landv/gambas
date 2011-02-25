@@ -58,4 +58,6 @@ void IMAGE_mask(GB_IMG *img, GB_COLOR color);
 void IMAGE_mirror(GB_IMG *src, GB_IMG *dst, bool horizontal, bool vertical);
 void IMAGE_transform(GB_IMG *dst, GB_IMG *src, double sx, double sy, double sdx, double sdy);
 
+#define IMAGE_is_void(_image) ((_image)->is_void)
+
 #endif

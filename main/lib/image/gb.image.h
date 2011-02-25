@@ -89,6 +89,7 @@ typedef
 		void *temp_handle;                        // temporary handle
 		unsigned modified : 1;                    // data has been modified by gb.image
 		unsigned sync : 1;                        // data must be synchronized by calling GB_IMG_OWNER.sync()
+		unsigned is_void : 1;                     // void image (no data)
 		}
 	GB_IMG;
 

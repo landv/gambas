@@ -408,7 +408,10 @@ void IMAGE_create(GB_IMG *img, int width, int height, int format)
 	img->owner = &_image_owner;
 
 	if (width <= 0 || height <= 0)
+	{
+		img->is_void = TRUE;
 		return;
+	}
 	
 	img->width = width;
 	img->height = height;
@@ -421,10 +424,11 @@ void IMAGE_create(GB_IMG *img, int width, int height, int format)
 	#endif
 }
 
+
 void IMAGE_create_with_data(GB_IMG *img, int width, int height, int format, unsigned char *data)
 {
 	IMAGE_create(img, width, height, format);
-	if (data)
+	if (data && !IMAGE_is_void(img))
 		memcpy(img->data, data, IMAGE_size(img));
 }
 
@@ -438,6 +442,9 @@ void IMAGE_convert(GB_IMG *img, int dst_format)
 	
 	//IMAGE_create(&tmp, img->width, img->height, format);
 	img->format = dst_format;
+	if (IMAGE_is_void(img))
+		return;
+	
 	GB.Alloc(POINTER(&data), IMAGE_size(img));
 	convert_image(data, dst_format, img->data, src_format, img->width, img->height);
 	//GB.Free(POINTER(&img->data));
@@ -550,14 +557,16 @@ void IMAGE_delete(GB_IMG *img)
 	if (img->temp_owner && img->temp_owner != img->owner && img->temp_handle)
 		(*img->temp_owner->release)(img, img->temp_handle);
 	
-	(*img->owner->free)(img, img->owner_handle);
+	if (!IMAGE_is_void(img))
+		(*img->owner->free)(img, img->owner_handle);
 	
 	img->width = img->height = 0;
 	img->format = 0;
 	img->temp_owner = NULL;
 	img->temp_handle = NULL;
-	img->owner = NULL;
+	img->owner = &_image_owner;
 	img->owner_handle = NULL;
+	img->is_void = TRUE;
 }
 
 void IMAGE_synchronize(GB_IMG *img)
@@ -567,7 +576,8 @@ void IMAGE_synchronize(GB_IMG *img)
 
 #define GET_POINTER(_img, _p, _pm) \
 	uint *_p = (uint *)(_img)->data; \
-	uint *_pm = (uint *)GET_END_POINTER(_img);
+	uint *_pm = (uint *)GET_END_POINTER(_img); \
+	if ((_img)->is_void) return;
 
 void IMAGE_fill(GB_IMG *img, GB_COLOR col)
 {
@@ -770,12 +780,13 @@ static void color_to_alpha(FLOAT_RGB *src, const FLOAT_RGB *color)
 
 void IMAGE_make_transparent(GB_IMG *img, GB_COLOR col)
 {
-	uint *p = (uint *)img->data;
-	uint *pm = (uint *)(img->data + IMAGE_size(img));
 	uint color;
 	FLOAT_RGB rgb_color;
 	FLOAT_RGB rgb_src;
 	int format = img->format;
+	GET_POINTER(img, p, pm);
+	//uint *p = (uint *)img->data;
+	//uint *pm = (uint *)(img->data + IMAGE_size(img));
 
 	//fprintf(stderr, "IMAGE_make_transparent: %d x %d / %d\n", img->width, img->height, img->format);
 
@@ -1108,7 +1119,7 @@ void IMAGE_mask(GB_IMG *img, GB_COLOR color)
 
 void IMAGE_mirror(GB_IMG *src, GB_IMG *dst, bool horizontal, bool vertical)
 {
-	if (dst->width != src->width || dst->height != src->height || dst->format != src->format)
+	if (dst->width != src->width || dst->height != src->height || dst->format != src->format || IMAGE_is_void(src))
 		return;
 
 	int w = src->width;

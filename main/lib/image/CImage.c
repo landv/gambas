@@ -117,8 +117,9 @@ BEGIN_METHOD_VOID(CIMAGE_gray)
 
 END_METHOD
 
-BEGIN_METHOD_VOID(CIMAGE_clear)
+BEGIN_METHOD_VOID(Image_Clear)
 
+	//IMAGE_fill(THIS_IMAGE, 0XFF000000);
 	IMAGE_delete(THIS_IMAGE);
 
 END_METHOD
@@ -303,7 +304,7 @@ GB_DESC CImageDesc[] =
   GB_PROPERTY_READ("Data", "p", CIMAGE_data),
   GB_PROPERTY_READ("Format", "s", Image_Format),
   
-  GB_METHOD("Clear", NULL, CIMAGE_clear, NULL),
+  GB_METHOD("Clear", NULL, Image_Clear, NULL),
   GB_METHOD("Fill", "Image", CIMAGE_fill, "(Color)i"),
   GB_METHOD("Gray", "Image", CIMAGE_gray, NULL),
   GB_METHOD("Transparent", "Image", CIMAGE_transparent, "[(Color)i]"),
