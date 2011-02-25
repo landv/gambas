@@ -59,7 +59,7 @@ gb_gtk_la_SOURCES = \
 	csvgimage.h csvgimage.cpp \
 	main.h main.cpp \
 	gkey.h \
-	gcursor.h \
+	gcursor.h gcursor.cpp \
 	gmouse.h gmouse.cpp \
 	gdesktop.h \
 	gdraw.h \

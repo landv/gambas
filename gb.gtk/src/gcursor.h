@@ -35,8 +35,8 @@ public:
 	~gCursor();
 
 //"Properties"
-	int left();
-	int top();
+	int left() const { return x; }
+	int top() const { return y; }
 
 //"Private"
 	GdkCursor *cur;

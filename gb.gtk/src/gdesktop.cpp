@@ -39,58 +39,6 @@
 
 /***********************************************************************
 
-	Cursor
-
-************************************************************************/
-
-gCursor::gCursor(gPicture *pic,int px,int py)
-{
-	GdkPixbuf *buf;
-	GdkDisplay *dp=gdk_display_get_default();
-	
-	x=px;
-	y=py;
-	
-	cur=NULL;
-	if (!pic) return;
-	if (!pic->pic) return;
-	
-	if (pic->width()<=x) x=pic->width()-1;
-	if (pic->height()<=y) y=pic->height()-1;
-	
-	buf=pic->getPixbuf();
-	cur=gdk_cursor_new_from_pixbuf(dp,buf,x,y);
-}
-
-gCursor::gCursor(gCursor *cursor)
-{
-	cur=NULL;
-	if (!cursor) return;
-	if (!cursor->cur) return;
-	
-	cur=cursor->cur;
-	x=cursor->x;
-	y=cursor->y;
-	if (cur) gdk_cursor_ref(cur);
-}
-
-gCursor::~gCursor()
-{
-	if (cur) gdk_cursor_unref(cur);
-}
-
-int gCursor::left()
-{
-	return x;
-}
-
-int gCursor::top()
-{
-	return y;
-}
-
-/***********************************************************************
-
 Desktop
 
 ************************************************************************/
