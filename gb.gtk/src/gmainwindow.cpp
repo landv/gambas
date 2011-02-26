@@ -44,6 +44,7 @@
 static gboolean win_frame(GtkWidget *widget,GdkEventWindowState *event,gMainWindow *data)
 {
 	data->performArrange();
+	data->emit(SIGNAL(data->onState));
 	return false;
 }
 
@@ -198,6 +199,7 @@ void gMainWindow::initialize()
 	onResize = NULL;
 	onActivate = NULL;
 	onDeactivate = NULL;
+	onState = NULL;
 	
 	accel = gtk_accel_group_new();
 }

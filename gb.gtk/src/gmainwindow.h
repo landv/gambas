@@ -115,6 +115,7 @@ public:
 	bool (*onClose)(gMainWindow *sender);
 	void (*onActivate)(gMainWindow *sender);
 	void (*onDeactivate)(gMainWindow *sender);
+	void (*onState)(gMainWindow *sender);
 
 //"Static"
 	static GList *windows;

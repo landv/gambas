@@ -49,7 +49,7 @@ DECLARE_EVENT(EVENT_Move);
 DECLARE_EVENT(EVENT_Resize);
 DECLARE_EVENT(EVENT_Title);
 DECLARE_EVENT(EVENT_Icon);
-
+//DECLARE_EVENT(EVENT_State);
 
 void CWINDOW_check_main_window(CWINDOW *win)
 {
@@ -190,7 +190,7 @@ static bool gb_raise_window_Close(gMainWindow *sender)
 	if (!THIS)
 		return false;
 	
-	if (GB.Raise(THIS, EVENT_Close ,0)) 
+	if (GB.Raise(THIS, EVENT_Close, 0)) 
 		return true;
 	
 	if (CWINDOW_Main && sender == CWINDOW_Main->ob.widget)
@@ -261,6 +261,13 @@ static void cb_deactivate(gMainWindow *sender)
 	activate_window(NULL);
 }
 
+/*static void cb_state(gMainWindow *sender)
+{
+	CWINDOW *_object = (CWINDOW*)GetObject(sender);
+	GB.Raise(THIS, EVENT_State, 0);
+}*/
+
+
 /***************************************************************************
 
 	Window
@@ -304,19 +311,7 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent;)
 	WINDOW->onClose = gb_raise_window_Close;
 	WINDOW->onActivate = cb_activate;
 	WINDOW->onDeactivate = cb_deactivate;
-	//WINDOW->resize(200,150);
-
-	/*if ( (!CWINDOW_Main) && (!parent)) 
-	{
-		CWINDOW_Main = THIS;
-		//fprintf(stderr, "CWINDOW_Main = %p\n", CWINDOW_Main);
-	}*/
-
-	/*if (parent)
-	{
-		gb_post_window_Open(WINDOW);
-		gb_post_window_Show(WINDOW);
-	}*/
+	//WINDOW->onState = cb_state;
 
 END_METHOD
 
@@ -463,7 +458,10 @@ BEGIN_PROPERTY(CWINDOW_type)
 	if (READ_PROPERTY)
 		GB.ReturnInteger(WINDOW->getType());
 	else
+	{
+		fprintf(stderr, "gb.gtk: warning: Window.Type is deprecated\n");
 		WINDOW->setType(VPROP(GB_INTEGER));
+	}
 
 END_PROPERTY
 
@@ -864,6 +862,7 @@ GB_DESC CWindowDesc[] =
 	GB_EVENT("Hide", NULL, NULL, &EVENT_Hide),
 	GB_EVENT("Title", NULL, NULL, &EVENT_Title),
 	GB_EVENT("Icon", NULL, NULL, &EVENT_Icon),
+	//GB_EVENT("State", NULL, NULL, &EVENT_State),
 
 	GB_INTERFACE("Draw", &DRAW_Interface),
 

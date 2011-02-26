@@ -95,6 +95,7 @@ DECLARE_EVENT(EVENT_Show);
 DECLARE_EVENT(EVENT_Hide);
 DECLARE_EVENT(EVENT_Title);
 DECLARE_EVENT(EVENT_Icon);
+//DECLARE_EVENT(EVENT_State);
 
 DECLARE_METHOD(CWINDOW_show);
 
@@ -1154,7 +1155,10 @@ BEGIN_PROPERTY(CWINDOW_type)
 	if (READ_PROPERTY)
 		GB.ReturnInteger(WINDOW->getType());
 	else
+	{
+		qDebug("gb.qt4: warning: Window.Type is deprecated");
 		WINDOW->setType(VPROP(GB_INTEGER));
+	}
 
 END_PROPERTY
 
@@ -1508,6 +1512,7 @@ GB_DESC CWindowDesc[] =
 	GB_EVENT("Hide", NULL, NULL, &EVENT_Hide),
 	GB_EVENT("Title", NULL, NULL, &EVENT_Title),
 	GB_EVENT("Icon", NULL, NULL, &EVENT_Icon),
+	//GB_EVENT("State", NULL, NULL, &EVENT_State),
 	
 	GB_INTERFACE("Draw", &DRAW_Interface),
 
@@ -2507,6 +2512,12 @@ void MyMainWindow::changeEvent(QEvent *e)
 	QWidget::changeEvent(e);
 	if (e->type() == QEvent::StyleChange || e->type() == QEvent::FontChange)
 		configure();
+	/*else if (e->type() == QEvent::WindowStateChange)
+	{
+		qDebug("WindowStateChange");
+		CWINDOW *_object = (CWINDOW *)CWidget::get(this);
+		GB.Raise(THIS, EVENT_State, 0);
+	}*/
 }
 
 
