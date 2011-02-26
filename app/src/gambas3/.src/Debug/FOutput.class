@@ -96,6 +96,7 @@ Public Sub edtOutput_KeyPress()
 
       edtOutput.Insert("\n")
       Design.Send(sText & "\n")
+      'Debug
       Stop Event
 
     Else If Left$(sText) = "?" Then

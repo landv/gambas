@@ -107,6 +107,8 @@ Public Sub EnterControl(hCont As Container, hCCtrl As CControl)
   
   Dim sImage As String
   
+  'Debug hCCtrl.Name
+
   Select hCCtrl.Kind
   
     Case "HBox"

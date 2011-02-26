@@ -13,6 +13,7 @@ Public Const HasMenuEditor As Boolean = False
 
 Private $hTimer As Timer
 Private $hCurrentIcon As Control
+Private $bTrigger As Boolean
 
 Private Const ICON_SIZE As Integer = 15
 
@@ -77,20 +78,32 @@ Public Sub DeleteIcon(hCCtrl As CControl)
   
 End
 
+Private Sub GetControlPos(hCtrl As Control) As Integer[]
+  
+  If Not hCtrl.Parent Then Return [hCtrl.X, hCtrl.Y]
+  
+  Return [hCtrl.ScreenX - hCtrl.Parent.ScreenX, hCtrl.ScreenY - hCtrl.Parent.ScreenY]
+
+End
+
+
 Private Sub GetContainerSize(hCont As Container) As Integer[]
   
-  Dim W, H As Integer
-  Dim aSize As Integer[]
+  Dim X, Y, W, H As Integer
+  Dim aPos, aSize As Integer[]
   
   W = hCont.Width
   H = hCont.Height
 
   If hCont.Parent Then
   
+    aPos = GetControlPos(hCont)
+    X = aPos[0]
+    Y = aPos[1]
     aSize = GetContainerSize(hCont.Parent)
     
-    If (W > (aSize[0] - hCont.X)) Then W = aSize[0] - hCont.X
-    If (H > (aSize[1] - hCont.Y)) Then H = aSize[1] - hCont.Y
+    If (W > (aSize[0] - X)) Then W = aSize[0] - X
+    If (H > (aSize[1] - Y)) Then H = aSize[1] - Y
   
   Endif
   
@@ -100,52 +113,76 @@ End
 
 Private Sub IsInside(hCtrl As Control) As Boolean
   
-  Dim aSize As Integer[]
+  Dim hRect, hRectParent As Rect
+  Dim hParent As Container
+  'Dim aPos, aSize As Integer[]
   Dim X, Y As Integer
-  Dim XC, YC, WC, HC As Integer
+  'Dim XC, YC, WC, HC As Integer
   
   X = Mouse.ScreenX
   Y = Mouse.ScreenY
   
-  XC = hCtrl.ScreenX
-  YC = hCtrl.ScreenY
+  hRect = New Rect(hCtrl.ScreenX, hCtrl.ScreenY, hCtrl.W, hCtrl.H)
+  'Debug hCtrl.Name;; hRect.X;; hRect.Y;; hRect.W;; hRect.H
+  hParent = hCtrl.Parent
+  While hParent
+    
+    hRectParent = New Rect(hParent.ScreenX + hParent.ClientX, hParent.ScreenY + hParent.ClientY, hParent.ClientW, hParent.ClientH)
+    'Debug hParent.Name;; hRectParent.X;; hRectParent.Y;; hRectParent.W;; hRectParent.H
+    hRect = hRect.Intersection(hRectParent)
+    If Not hRect Then Return
+    
+    hParent = hParent.Parent
+  Wend
   
-  If hCtrl Is Container Then
-    aSize = GetContainerSize(hCtrl)
-    WC = aSize[0]
-    HC = aSize[1]
-  Else
-    WC = hCtrl.W
-    HC = hCtrl.H
-  Endif
+  ' XC = hCtrl.ScreenX
+  ' YC = hCtrl.ScreenY
+  ' 
+  ' If hCtrl Is Container Then
+  '   aSize = GetContainerSize(hCtrl)
+  '   WC = aSize[0]
+  '   HC = aSize[1]
+  ' Else
+  '   WC = hCtrl.W
+  '   HC = hCtrl.H
+  ' Endif
+  ' 
+  ' aPos = GetControlPos(hCtrl)
+  ' If aPos[0] < 0 Then
+  '   XC -= aPos[0]
+  '   WC += aPos[0]
+  ' Endif
+  ' 
+  ' If aPos[1] < 0 Then
+  '   XC -= aPos[1]
+  '   WC += aPos[1]
+  ' Endif
   
-  If hCtrl.X < 0 Then
-    XC -= hCtrl.X
-    WC += hCtrl.X
-  Endif
+  'Debug "  "; hCtrl.Name;; X;; Y;; "->";; hRect.X;; hRect.Y;; hRect.Right;; hRect.Bottom;; "(";; hRect.W;; hRect.H;; ")";; "=>";; hRect.Contains(X, Y)
   
-  If hCtrl.Y < 0 Then
-    XC -= hCtrl.Y
-    WC += hCtrl.Y
-  Endif
+  Return hRect.Contains(X, Y)
   
-  If X >= XC And If X < (XC + WC) And If Y >= YC And If Y < (YC + HC) Then Return True
+  'If X >= XC And If X < (XC + WC) And If Y >= YC And If Y < (YC + HC) Then Return True
   
 End
 
 
-Private Sub CheckIcon(hCCtrl As CControl)
+Private Sub CheckIcons()
   
-  Dim hCtrl As Control = hCCtrl.Control
-  Dim hIcon As Control = hCCtrl["#icon"]
-  Dim X, Y As Integer
-  Dim aSize As Integer[]
+  Dim hCCtrl As CControl
+  Dim hIcon As Control 
+  Dim aCtrl As New CControl[]
   
-  If Not hIcon Then Return
+  For Each hCCtrl In $cCtrlFromIcon
+    aCtrl.Add(hCCtrl)
+  Next
   
-  If IsInside(hCtrl) Then Return
-  
-  DeleteIcon(hCCtrl)
+  For Each hCCtrl In aCtrl
+    hIcon = hCCtrl["#icon"]
+    If Not hIcon Then Continue
+    If IsInside(hCCtrl.Control) Then Continue
+    DeleteIcon(hCCtrl)
+  Next
   
 End
 
@@ -157,21 +194,20 @@ End
 
 Public Sub LeaveControl(hCont As Container, hCCtrl As CControl)
   
-  Dim hIcon As Control
-  Dim X, Y As Integer
+  Dim iCount As Integer
+  Dim hIconCtrl As CControl
   
-  'CheckIcon(hCCtrl)
-  'Return
+  'Debug hCCtrl.Name
   
-  X = Mouse.ScreenX - hCont.ScreenX - hCont.ClientX
-  Y = Mouse.ScreenY - hCont.ScreenY - hCont.ClientY
+  For Each hIconCtrl In $cCtrlFromIcon
+    If IsInside(hIconCtrl["#icon"]) Then Break
+    Inc iCount
+  Next
+  If iCount = $cCtrlFromIcon.Count Then DeleteIcon(hCCtrl)
   
-  'If hCont.Window.Menus.Visible Then Y -= hCont.Window.ClientY
-
-  hIcon = hCont.Find(X, Y)
-  If hIcon And If $cCtrlFromIcon.Exist(Str(hIcon)) Then Return
-  
-  DeleteIcon(hCCtrl)
+  If $bTrigger Then Return
+  $bTrigger = True
+  $hTimer.Trigger
   
 End
 
@@ -265,6 +301,17 @@ End
 Public Sub Icon_Leave()
   
   If $hCurrentIcon = Last Then $hCurrentIcon = Null
-  CheckIcon($cCtrlFromIcon[Str(Last)])
+  'Debug
+  If $bTrigger Then Return
+  $bTrigger = True
+  $hTimer.Trigger
   
 End
+
+Public Sub Timer_Timer()
+  
+  CheckIcons
+  $bTrigger = False
+  
+End
+
