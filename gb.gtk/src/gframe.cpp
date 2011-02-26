@@ -72,9 +72,6 @@ gFrame::gFrame(gContainer *parent) : gContainer(parent)
 	gtk_frame_set_shadow_type(GTK_FRAME(fr), GTK_SHADOW_ETCHED_IN);
 	gtk_container_add(GTK_CONTAINER(widget), fr);
 	
-	gtk_widget_add_events(widget,GDK_POINTER_MOTION_MASK);
-	gtk_widget_add_events(widget,GDK_BUTTON_RELEASE_MASK);
-	
   realize(false);
   
 	g_signal_connect(G_OBJECT(border), "size-allocate", G_CALLBACK(cb_frame_resize), (gpointer)this);
@@ -107,8 +104,7 @@ void gFrame::setText(char *vl)
 		label = gtk_label_new(vl);
 		gtk_frame_set_label_widget(GTK_FRAME(fr), label);
 		setFont(font());
-		setBackground();
-		setForeground();
+		setForeground(foreground());
 		gtk_widget_show(label);
 	}
 	else
@@ -125,6 +121,5 @@ void gFrame::setFont(gFont *ft)
 void gFrame::setRealForeground(gColor color)
 {
 	gControl::setRealForeground(color);
-	if (label)
-		set_gdk_fg_color(label, color);
+	if (label) set_gdk_fg_color(label, color);
 }
