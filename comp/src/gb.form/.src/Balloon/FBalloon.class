@@ -114,13 +114,13 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
     X = SX - W \ 2 + ARROW_HEIGHT
   Endif
 
-  X = Max(4, Min(Desktop.W - W - 4, X))
+  X = Desktop.X + Max(4, Min(Desktop.W - W - 4, X))
 
   'IF SY < (Desktop.H \ 2) THEN 
   
   'DEBUG SY;; CY;; ME.H
   
-  If (SY >= CY And SY < (Desktop.H - H)) Or SY < H Then 
+  If (SY >= CY And SY < (Desktop.Y + Desktop.Height - H)) Or SY < (Desktop.Y + H) Then 
     Y1 = 0
     Y4 = ARROW_HEIGHT
     Y2 = Y4 + 1
@@ -132,7 +132,7 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
     Y = SY - H
   Endif
   
-  Y = Max(4, Min(Desktop.H - H - 4, Y))
+  Y = Desktop.Y + Max(4, Min(Desktop.H - H - 4, Y))
   
   'DEBUG "X =";; X;; "Y =";; Y;; "W =";; W;; "H ="; H
 

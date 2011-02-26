@@ -31,6 +31,7 @@
 #include <QFrame>
 #include <QHash>
 #include <QStyleOptionFrameV3>
+#include <QGroupBox>
 
 #include "gambas.h"
 #include "gb_common.h"
@@ -718,6 +719,9 @@ static QRect getRect(void *_object)
 
 	if (qobject_cast<MyMainWindow *>(WIDGET))
 		((MyMainWindow *)WIDGET)->configure();
+
+	if (qobject_cast<QGroupBox *>(WIDGET))
+		return QRect(0, 0, w->width(), w->height());
 
 	return w->contentsRect();
 }

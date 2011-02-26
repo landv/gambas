@@ -176,7 +176,7 @@ static int make_message(int type, int nbmax, void *_param)
 			else
 				role = QMessageBox::ActionRole;
 		
-			button[n] = mb->addButton(QSTRING_ARG(btn[i]), role);
+			button[n] = mb->addButton(QSTRING_ARG(btn[i]), QMessageBox::ActionRole);
 		//}
 		
 		n++;
