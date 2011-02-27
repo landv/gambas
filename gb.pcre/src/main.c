@@ -32,7 +32,6 @@
 
 #include "main.h"
 
-
 GB_INTERFACE GB EXPORT;
 
 GB_DESC *GB_CLASSES[] EXPORT =
@@ -43,17 +42,13 @@ GB_DESC *GB_CLASSES[] EXPORT =
   NULL
 };
 
-
 int EXPORT GB_INIT(void)
 {
-  REGEXP_init();
-
   return 0;
 }
 
 
 void EXPORT GB_EXIT()
 {
-  REGEXP_exit();
 }
 

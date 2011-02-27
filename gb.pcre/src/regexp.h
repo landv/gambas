@@ -37,26 +37,22 @@ extern GB_DESC CRegexpSubmatchDesc[];
 #else
 
 typedef
-struct {
-  GB_BASE ob;
-  char *subject;
-  char *pattern;
-  int *ovector;
-  int rc;
-  int compiled;
-  int eopts;
-  int copts;
-  pcre *code;
-  char **smcache;
-  int _submatch;
-}
-CREGEXP;
+	struct 
+	{
+		GB_BASE ob;
+		char *subject;
+		char *pattern;
+		int *ovector;
+		int count;
+		int eopts;
+		int copts;
+		pcre *code;
+		int _submatch;
+	}
+	CREGEXP;
 
-#define THIS  OBJECT(CREGEXP)
+#define THIS OBJECT(CREGEXP)
 
 #endif
-
-void REGEXP_init(void);
-void REGEXP_exit(void);
 
 #endif

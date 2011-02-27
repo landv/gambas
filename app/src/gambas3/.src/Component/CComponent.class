@@ -263,7 +263,16 @@ Static Private Sub InitComponent(sFile As String)
           Else If sKey = "Alpha" Then
             .State = UNSTABLE
           Else If sKey = "State" Then 
-            .State = CInt(sLig)
+            Select Case LCase(sLig)
+              Case "stable", "finished"
+                .State = STABLE
+              Case "notfinished"
+                .State = STABLE_NOT_FINISHED
+              Case "experimental", "unstable"
+                .State = UNSTABLE
+              Default
+                .State = CInt(sLig)
+            End Select
           Else If sKey = "Version" Then
             .Version = sLig
           Else If sKey = "Hidden" Then
