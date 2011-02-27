@@ -27,6 +27,8 @@
 #include "dbus_print_message.h"
 #include "helper.h"
 
+bool DBUS_Debug = FALSE;
+
 typedef
 	void (*RETRIEVE_CALLBACK)(GB_TYPE type, void *data, void *param);
 
@@ -968,9 +970,9 @@ static DBusHandlerResult filter_func(DBusConnection *connection, DBusMessage *me
 			return DBUS_HANDLER_RESULT_HANDLED;
 	}
 	
-  if (!found)
+  if (!found && DBUS_Debug)
 	{
-		fprintf(stderr, "warning: unhandled message: ");
+		fprintf(stderr, "gb.dbus: warning: unhandled message: ");
 		print_message(message, FALSE);
 	}
 	

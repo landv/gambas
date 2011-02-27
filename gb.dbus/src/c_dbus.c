@@ -22,6 +22,7 @@
 
 #define __C_DBUS_C
 
+#include "helper.h"
 #include "c_dbusconnection.h"
 #include "c_dbus.h"
 
@@ -37,12 +38,22 @@ BEGIN_PROPERTY(DBus_Session)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(DBus_Debug)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(DBUS_Debug);
+	else
+		DBUS_Debug = VPROP(GB_BOOLEAN);
+
+END_PROPERTY
+
 GB_DESC CDBusDesc[] =
 {
   GB_DECLARE("_DBus", 0),
 
   GB_STATIC_PROPERTY_READ("System", "DBusConnection", DBus_System),
   GB_STATIC_PROPERTY_READ("Session", "DBusConnection", DBus_Session),
+  GB_STATIC_PROPERTY("Debug", "b", DBus_Debug),
 
   GB_CONSTANT("Method", "i", DBUS_MESSAGE_TYPE_METHOD_CALL),
   GB_CONSTANT("Reply", "i", DBUS_MESSAGE_TYPE_METHOD_RETURN),

@@ -25,6 +25,10 @@
 
 #include "main.h"
 
+#ifndef __HELPER_C
+extern bool DBUS_Debug;
+#endif
+
 bool DBUS_call_method(DBusConnection *connection, const char *application, const char *path, const char *interface, const char *method, 
                       const char *signature_in, const char *signature_out, GB_ARRAY arguments);
 
