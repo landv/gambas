@@ -94,6 +94,7 @@ public:
 	void updateNoBackground();
 	
 	void setDrawEvent(int event) { _draw_event = event; }
+	bool inDrawEvent() const { return _in_draw_event; }
 	
 	//bool isTransparent() { return _transparent; }
 	//void setTransparent(bool on);
@@ -118,6 +119,7 @@ private:
 	bool _set_background;
 	bool _cached;
 	bool _no_background;
+	bool _in_draw_event;
 	int _draw_event;
 };
 

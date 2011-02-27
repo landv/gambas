@@ -147,7 +147,15 @@ static int Begin(GB_PAINT *d)
 		else if (wid->cache)
 			target = wid->cache;
 		else
+		{
+			if (!wid->inDrawEvent())
+			{
+				GB.Error("Cannot paint outside of Draw event handler");
+				return TRUE;
+			}
+			
 			target = wid;
+		}
 			
 		wid->drawn++;
 		

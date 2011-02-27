@@ -163,6 +163,11 @@ static int Begin(GB_PAINT *d)
 		}
 		else
 		{
+			if (!wid->inDrawEvent())
+			{
+				GB.Error("Cannot paint outside of Draw event handler");
+				return TRUE;
+			}
 			dr = wid->widget->window;
 		}
 

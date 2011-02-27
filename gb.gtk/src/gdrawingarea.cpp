@@ -38,7 +38,11 @@ static gboolean cb_expose(GtkWidget *wid, GdkEventExpose *e, gDrawingArea *data)
 	else
 	{
 		if (data->onExpose)
+		{
+			data->_in_draw_event = true;
 			data->onExpose(data,e->area.x,e->area.y,e->area.width,e->area.height);
+			data->_in_draw_event = false;
+		}
 		data->drawBorder();
 	}
 

@@ -56,6 +56,7 @@ MyDrawingArea::MyDrawingArea(QWidget *parent) : MyContainer(parent)
 	_set_background = false;
 	_cached = false;
 	_no_background = false;
+	_in_draw_event = false;
 	_draw_event = EVENT_Draw;
 	
 	setCached(false);
@@ -130,6 +131,8 @@ void MyDrawingArea::redraw(QRect &r, bool frame)
 			
 	//qDebug("paint: %d %d %d %d", r.x(), r.y(), r.width(), r.height());
 
+	_in_draw_event = true;
+		
 	if (_use_paint)
 	{
 		PAINT_begin(THIS);
@@ -183,6 +186,8 @@ void MyDrawingArea::redraw(QRect &r, bool frame)
 		PAINT_end();
 	else
 		DRAW_end();
+
+	_in_draw_event = false;
 }
 
 void MyDrawingArea::paintEvent(QPaintEvent *event)

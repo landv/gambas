@@ -54,10 +54,20 @@ static int begin(GB_DRAW *d)
 	EXTRA(d)->dr = dr = new gDraw();
 	EXTRA(d)->font = NULL;
 	
-	if (GB.Is(d->device, CLASS_Window))
+	/*if (GB.Is(d->device, CLASS_Window))
 		dr->connect(((CWINDOW *)d->device)->ob.widget);
-	else if (GB.Is(d->device, CLASS_DrawingArea))
-		dr->connect(((CDRAWINGAREA *)d->device)->ob.widget);
+	else */
+	if (GB.Is(d->device, CLASS_DrawingArea))
+	{
+		gDrawingArea *da = (gDrawingArea *)((CDRAWINGAREA *)d->device)->ob.widget;
+		if (da->cached() || da->inDrawEvent())
+			dr->connect(((CDRAWINGAREA *)d->device)->ob.widget);
+		else
+		{
+			GB.Error("Cannot draw outside of Draw event handler");
+			return TRUE;
+		}
+	}
 	else if (GB.Is(d->device, CLASS_Picture))
 	{
 		gPicture *pic = ((CPICTURE*)d->device)->picture;

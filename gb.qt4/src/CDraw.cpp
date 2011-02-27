@@ -175,14 +175,15 @@ static int begin(GB_DRAW *d)
 {
 	void *device = d->device;
 	
-	if (GB.Is(device, CLASS_Window))
+	/*if (GB.Is(device, CLASS_Window))
 	{
 		MyMainWindow *win = (MyMainWindow *)((CWIDGET *)device)->widget;
 		 // How to paint unclip ???
 		if (init_drawing(d, win, win->width(), win->height()))
 			return TRUE;
 	}
-	else if (GB.Is(device, CLASS_Picture))
+	else*/
+	if (GB.Is(device, CLASS_Picture))
 	{
 		CPICTURE *pict = (CPICTURE *)device;
 
@@ -218,10 +219,16 @@ static int begin(GB_DRAW *d)
 		
 		if (wid->isCached())
 			ret = init_drawing(d, wid->background(), wid->background()->width(), wid->background()->height());
-		else if (wid->cache)
-			ret = init_drawing(d, wid->cache, wid->width(), wid->height());
 		else
+		{
+			if (!wid->inDrawEvent())
+			{
+				GB.Error("Cannot draw outside of Draw event handler");
+				return TRUE;
+			}
+			
 			ret = init_drawing(d, wid, wid->width(), wid->height());
+		}
 			
 		if (ret)
 			return TRUE;

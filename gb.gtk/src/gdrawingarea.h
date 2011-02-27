@@ -37,6 +37,8 @@ public:
 	void setCached(bool vl);
 	void setCanFocus(bool vl);
 	void setNoBackground(bool vl);
+	
+	bool inDrawEvent() const { return _in_draw_event; }
 
 //"Methods"
 	void clear();
@@ -58,7 +60,8 @@ public:
 	uint _old_bg_id;
 	unsigned _cached : 1;
 	unsigned _resize_cache : 1;
-	unsigned _no_background;
+	unsigned _in_draw_event : 1;
+	unsigned _no_background : 1;
 };
 
 #endif
