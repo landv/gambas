@@ -8,7 +8,7 @@ End
 
 Public Sub Form_Open()
 
-  txtText.Text = String(8, File.Load("molly-malone.txt"))
+  txtText.Text = File.Load("molly-malone.txt")
   txtFontText.Text = Font["17"].ToString()
 
 End
