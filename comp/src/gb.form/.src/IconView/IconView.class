@@ -14,6 +14,7 @@ Property Orientation As Integer
 Property Border As Boolean
 Property ScrollBar As Integer
 Property Font As Font
+Property Background As Integer
 
 Property Read Count As Integer
 Property Read Current As _IconViewItem
@@ -1338,5 +1339,17 @@ Private Sub Picture_Write(Value As Picture)
 
   $hPicture = Value
   $hView.Refresh
+
+End
+
+Private Function Background_Read() As Integer
+
+  Return $hView.Background
+
+End
+
+Private Sub Background_Write(Value As Integer)
+
+  $hView.Background = Value
 
 End
