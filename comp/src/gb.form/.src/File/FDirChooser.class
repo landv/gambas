@@ -103,7 +103,10 @@ End
 
 Public Sub dvwChoose_Click()
 
-  If panView.Visible Then fvwChoose.Dir = dvwChoose.Current
+  If panView.Visible Then 
+    fvwChoose.Dir = dvwChoose.Current
+    fvwChoose.Reload
+  Endif
 
   UpdateLabelDir
 

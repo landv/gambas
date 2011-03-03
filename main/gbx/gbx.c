@@ -1,22 +1,22 @@
 /***************************************************************************
 
-  gbx.c
+	gbx.c
 
-  (c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -60,11 +60,11 @@ static bool _quit_after_main = FALSE;
 
 static void NORETURN my_exit(int ret)
 {
-  LOCAL_exit();
-  COMPONENT_exit();
-  EXTERN_exit();
+	LOCAL_exit();
+	COMPONENT_exit();
+	EXTERN_exit();
 	//fclose(log_file);
-  exit(ret);
+	exit(ret);
 }
 
 static void NORETURN fatal(const char *msg, ...)
@@ -82,15 +82,15 @@ static void NORETURN fatal(const char *msg, ...)
 
 static void init(const char *file)
 {
-  COMPONENT_init();
-  FILE_init();
-  EXEC_init();
-  CLASS_init();
-  CFILE_init();
-  WATCH_init();
-  MATH_init();
+	COMPONENT_init();
+	FILE_init();
+	EXEC_init();
+	CLASS_init();
+	CFILE_init();
+	WATCH_init();
+	MATH_init();
 	PROJECT_init(file);
-  DEBUG_init();
+	DEBUG_init();
 
 	if (file)
 	{
@@ -105,7 +105,7 @@ static void init(const char *file)
 	else
 		STACK_init();
 		
- 	LOCAL_init();
+	LOCAL_init();
 
 	if (EXEC_debug)
 	{
@@ -161,20 +161,20 @@ static bool is_long_option(const char *arg, char option, char *long_option)
 
 int main(int argc, char **argv)
 {
-  //CLASS *class = NULL;
-  CLASS_DESC_METHOD *startup = NULL;
-  int i, n;
-  char *file = NULL;
-  bool nopreload = FALSE;
+	//CLASS *class = NULL;
+	CLASS_DESC_METHOD *startup = NULL;
+	int i, n;
+	char *file = NULL;
+	bool nopreload = FALSE;
 
- 	//char log_path[256];
- 	//sprintf(log_path, "/tmp/gambas-%d.log", getuid());
+	//char log_path[256];
+	//sprintf(log_path, "/tmp/gambas-%d.log", getuid());
 	//log_file = freopen(log_path, "w+", stderr);
- 	//fprintf(stderr, "Fichier log Gambas\n");
+	//fprintf(stderr, "Fichier log Gambas\n");
 
-  MEMORY_init();
-  COMMON_init();
-  //STRING_init();
+	MEMORY_init();
+	COMMON_init();
+	//STRING_init();
 
 	EXEC_arch = (strcmp(FILE_get_name(argv[0]), "gbr" GAMBAS_VERSION_STRING) == 0);
 
@@ -315,50 +315,50 @@ int main(int argc, char **argv)
 
 	argc -= n - 1;
 	
-  TRY
-  {
-    init(file);
-    
+	TRY
+	{
+		init(file);
+		
 		if (!EXEC_arch)
 			argv[0] = PROJECT_name;
 
-    HOOK(main)(&argc, argv);
-    EXEC_main_hook_done = TRUE;
+		HOOK(main)(&argc, argv);
+		EXEC_main_hook_done = TRUE;
 
 		/* Startup class */
-    CLASS_load(PROJECT_class);
-    startup = (CLASS_DESC_METHOD *)CLASS_get_symbol_desc_kind(PROJECT_class, "main", CD_STATIC_METHOD, 0);
-    if (startup == NULL)
-      THROW(E_MAIN);
+		CLASS_load(PROJECT_class);
+		startup = (CLASS_DESC_METHOD *)CLASS_get_symbol_desc_kind(PROJECT_class, "main", CD_STATIC_METHOD, 0);
+		if (startup == NULL)
+			THROW(E_MAIN);
 
-    CAPP_init(); /* needs startup class */
-    CFILE_init_watch();
+		CAPP_init(); /* needs startup class */
+		CFILE_init_watch();
 
-    PROJECT_argc = argc;
-    PROJECT_argv = argv;
-  }
-  CATCH
-  {
-    if (EXEC_debug)
-    {
-    	if (!_welcome)
-    		DEBUG.Main(TRUE);
-      DEBUG.Main(TRUE);
-      main_exit(FALSE);
-      _exit(0);
+		PROJECT_argc = argc;
+		PROJECT_argv = argv;
+	}
+	CATCH
+	{
+		if (EXEC_debug)
+		{
+			if (!_welcome)
+				DEBUG.Main(TRUE);
+			DEBUG.Main(TRUE);
+			main_exit(FALSE);
+			_exit(0);
 		}
 		else
 		{
-	    if (ERROR->info.code && ERROR->info.code != E_ABORT)
-    		ERROR_print();
-    	main_exit(TRUE);
-    	_exit(1);
+			if (ERROR->info.code && ERROR->info.code != E_ABORT)
+				ERROR_print();
+			main_exit(TRUE);
+			_exit(1);
 		}
-  }
-  END_TRY
+	}
+	END_TRY
 
-  TRY
-  {
+	TRY
+	{
 		EXEC_public_desc(PROJECT_class, NULL, startup, 0);
 		EXEC_release_return_value();
 		
@@ -370,11 +370,11 @@ int main(int argc, char **argv)
 		
 		HOOK_DEFAULT(loop, WATCH_loop)();
 		EVENT_check_post();
-  }
-  CATCH
-  {
-    if (ERROR->info.code && ERROR->info.code != E_ABORT)
-    {
+	}
+	CATCH
+	{
+		if (ERROR->info.code && ERROR->info.code != E_ABORT)
+		{
 			if (EXEC_debug)
 			{
 				DEBUG.Main(TRUE);
@@ -387,16 +387,16 @@ int main(int argc, char **argv)
 				main_exit(TRUE);
 				_exit(1);
 			}
-    }
-  }
-  END_TRY
+		}
+	}
+	END_TRY
 
-  main_exit(FALSE);
+	main_exit(FALSE);
 
-  MEMORY_exit();
+	MEMORY_exit();
 
-  fflush(NULL);
+	fflush(NULL);
 
-  exit(EXEC_return_value);
+	exit(EXEC_return_value);
 }
 

@@ -171,6 +171,30 @@ Private Sub GetFileSize(iSize As Long) As String
   
 End
 
+Private Sub GetSelection() As String[]
+  
+  Dim hView As Object
+  Dim aSel As New String[]
+
+  If $hIconView.Visible Then
+    hView = $hIconView
+  Else
+    hView = $hColumnView
+  Endif
+
+  hView.MoveFirst
+  While hView.Available
+    If hView.Item.Selected Then
+      aSel.Add(hView.Item.Key)
+    Endif
+    hView.MoveNext
+  Wend
+
+  Return aSel
+  
+End
+
+
 Private Sub RefreshView()
 
   Dim sFile As String
@@ -180,8 +204,11 @@ Private Sub RefreshView()
   Dim hPict As Picture
   Dim sPrefix As String
   Dim iSize As Integer
+  Dim aSel As String[]
 
   Inc Application.Busy
+
+  aSel = GetSelection()
 
   If $hColumnView.Visible Then
     $hColumnView.Clear
@@ -224,6 +251,10 @@ Private Sub RefreshView()
         $hIconView.Add(sPrefix & sFile, sFile, hPict)
       Endif
     End With
+  Next
+  
+  For Each sFile In aSel
+    Try GetView()[sFile].Selected = True
   Next
 
 Finally
@@ -606,4 +637,18 @@ Private Sub IconSize_Write(Value As Integer)
   $iIconSize = Value
   RefreshView
 
+End
+
+Public Sub SelectAll()
+  
+  If $hIconView.Mode <> Select.Multiple Then Return
+  GetView().SelectAll()
+  
+End
+
+Public Sub UnselectAll()
+  
+  If $hIconView.Mode <> Select.Multiple Then Return
+  GetView().UnselectAll()
+  
 End
