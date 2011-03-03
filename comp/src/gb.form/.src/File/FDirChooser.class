@@ -588,21 +588,21 @@ End
 Public Sub GetSettings() As Variant[]
   
   If Not $bFile Then 
-    Return [CVariant(dvwChoose.Root), dvwChoose.Current, $bView, splChoose.Layout, fvwChoose.ShowHidden, fvwChoose.Settings, IsBookmarkVisible(), fvwChoose.IconSize]
+    Return [CVariant(dvwChoose.Root), dvwChoose.Current, $bView, splChoose.Layout, fvwChoose.ShowHidden, fvwChoose.Settings, fvwChoose.IconSize]
   Else
-    Return [CVariant(dvwChoose.Root), dvwChoose.Current, fvwChoose.Current, $bView, splChoose.Layout, fvwChoose.ShowHidden, fvwChoose.Settings, GetFilterIndex(), IsBookmarkVisible(), fvwChoose.IconSize]
+    Return [CVariant(dvwChoose.Root), dvwChoose.Current, fvwChoose.Current, $bView, splChoose.Layout, fvwChoose.ShowHidden, fvwChoose.Settings, GetFilterIndex(), fvwChoose.IconSize]
   Endif 
 
 End
 
 Public Sub SetSettings(aVar As Variant[])
   
-  Dim bBookmark As Boolean
+  'Dim bBookmark As Boolean = True
   Dim iZoom As Integer = -1
   
   If Not $bFile Then 
   
-    Try bBookmark = aVar[6]
+    'Try bBookmark = aVar[6]
     Try SetRoot(aVar[0])
     Try SetDir(aVar[1])
     Try $bView = Not aVar[2]
@@ -615,7 +615,7 @@ Public Sub SetSettings(aVar As Variant[])
     
   Else
   
-    Try bBookmark = aVar[8]
+    'Try bBookmark = aVar[8]
     Try SetRoot(aVar[0])
     Try SetDir(aVar[1])
     Try fvwChoose.Current = aVar[2]
@@ -630,7 +630,7 @@ Public Sub SetSettings(aVar As Variant[])
     
   Endif
 
-  ShowBookmark(bBookmark)
+  ShowBookmark($bShowBookmark)
   
 End
 
@@ -846,8 +846,8 @@ Public Sub ShowBookmark(bShow As Boolean)
   
   'If $bShowBookmark = bShow Then Return
   $bShowBookmark = bShow
-  UpdateBookmarkButton
   FillMenu
+  UpdateBookmarkButton
   
 End
 
@@ -858,8 +858,8 @@ Public Sub mnuEditBookmark_Click()
   FEditBookmark.Run($hBookmarkList)
   
   $hBookmarkList.Save
-  UpdateBookmarkButton
   FillMenu
+  UpdateBookmarkButton
   
 End
 
