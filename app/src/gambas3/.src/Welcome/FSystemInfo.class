@@ -1,0 +1,27 @@
+' Gambas class file
+
+Public Sub btnClose_Click()
+
+  Me.Close
+
+End
+
+Public Sub btnCopy_Click()
+
+  Clipboard.Copy(txtInfo.Text) 
+
+End
+
+Public Sub Form_Open()
+
+  Dim sTemp As String
+  
+  sTemp = Temp$("report-ng")
+  Try Mkdir sTemp
+  sTemp &/= "report-ng.sh"
+  Try Kill sTemp
+  Copy "report-ng.sh" To sTemp
+  Shell "chmod a+x " & Shell$(sTemp) Wait
+  Exec [sTemp] To txtInfo.Text
+
+End

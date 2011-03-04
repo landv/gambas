@@ -513,9 +513,14 @@
     }
     { Menu8 Menu
     }
+    { mnuSystemInfo Menu
+      Text = ("&System informations...")
+      Picture = Picture["icon:/16/system"]
+    }
     { mnuAbout Menu
       Action = "about"
       Text = ("&About Gambas...")
+      Picture = Picture["icon:/16/gambas"]
     }
   }
   { sepMenu Separator
@@ -965,6 +970,7 @@
   { Action about
     Text = "&About Gambas..."
     Shortcut = ""
+    Picture = "icon:/16/gambas"
   }
   { Action archive
     Text = "&Source archive..."

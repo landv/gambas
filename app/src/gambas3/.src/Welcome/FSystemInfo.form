@@ -1,0 +1,37 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,68,46)
+  Text = ("System information")
+  Icon = Picture["icon:/16/system"]
+  Resizable = False
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { txtInfo TextArea
+    MoveScaled(1,1,62,37)
+    Font = Font["Monospace,-2"]
+    Expand = True
+    ReadOnly = True
+  }
+  { HBox1 HBox
+    MoveScaled(1,41,66,4)
+    Spacing = True
+    { Panel1 Panel
+      MoveScaled(4,0,4,4)
+      Expand = True
+    }
+    { btnCopy Button
+      MoveScaled(23,0,18,4)
+      Text = ("&Copy")
+      Picture = Picture["icon:/small/copy"]
+    }
+    { btnClose Button
+      MoveScaled(48,0,18,4)
+      Text = ("Close")
+      Picture = Picture["icon:/16/close"]
+      Default = True
+      Cancel = True
+    }
+  }
+}

@@ -1,93 +1,74 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(3,6,82,71)
+  MoveScaled(3,6,82,64)
   Background = &HFFFFFF&
   Text = ("About Gambas...")
   Icon = Picture["img/logo/logo-32-head.png"]
   Resizable = False
-  { tabAbout TabStrip
-    MoveScaled(1,22,80,48)
-    Count = 2
-    Index = 0
-    Text = ("About")
-    { svwAuthor ScrollView
-      MoveScaled(2,1,76,41)
-      Arrangement = Arrange.Vertical
-      Spacing = True
-      Border = False
-      ScrollBar = Scroll.None
-      { Panel2 Panel
-        MoveScaled(30,0,10,41)
-      }
-      { TextLabel4 TextLabel
-        MoveScaled(0,57,76,7)
-        Font = Font["Bold,+6"]
-        AutoResize = True
-        Text = ("Gambas Almost Means Basic!")
-        Alignment = Align.Center
-      }
-      { Image1 PictureBox
-        MoveScaled(24,66,20,17)
-        Picture = Picture["img/logo/logo.png"]
-        Alignment = Align.Center
-      }
-      { TextLabel2 TextLabel
-        MoveScaled(4,84,57,26)
-        AutoResize = True
-        Text = ("<h2 align=center>Licence</h2>\n\n<p align=center>This program is FREE SOFTWARE; you can redistribute it AND/OR modify it under the terms of the GNU General Public License as published by the Free Software Foundation ; either version 2, or (at your option) any later version.</p>\n\n<p align=center>This program is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>\n")
-      }
-      { TextLabel3 TextLabel
-        MoveScaled(6,111,50,4)
-        AutoResize = True
-        Text = ("<h2 align=center>Authors</h2>\n")
-        Alignment = Align.Center
-      }
-      { txtAuthor TextEdit
-        MoveScaled(4,118,54,11)
-        Background = &HFFFFFF&
-        ReadOnly = True
-        Border = False
-      }
-      { Panel3 Panel
-        MoveScaled(27,128,10,42)
-      }
-    }
-    { timAuthor #Timer
-      #MoveScaled(47,16)
-      Enabled = True
-      Delay = 25
-    }
-    { btnGift Button
-      MoveScaled(42,1,36,8)
-      Visible = False
-      Font = Font["Bold,+1"]
-      Text = ("Make a gift!")
-      Picture = Picture["img/donate.png"]
-    }
-    { picGradientTop PictureBox
-      MoveScaled(0,1,79,7)
-    }
-    { picGradientBottom PictureBox
-      MoveScaled(0,35,79,7)
-    }
-    Index = 1
-    Text = ("System information")
-    { txtInfo TextArea
-      MoveScaled(1,6,77,37)
-      Font = Font["Monospace,-2"]
-      ReadOnly = True
-    }
-    { btnCopy Button
-      MoveScaled(1,1,15,4)
-      Text = ("&Copy")
-      Picture = Picture["icon:/small/copy"]
-    }
-    Index = 0
-  }
   { dwgWelcome DrawingArea
     MoveScaled(1,1,80,20)
     Background = Color.SelectedBackground
     Border = Border.Plain
+  }
+  { svwAuthor ScrollView
+    MoveScaled(3,22,76,41)
+    Arrangement = Arrange.Vertical
+    Spacing = True
+    Border = False
+    ScrollBar = Scroll.None
+    { Panel2 Panel
+      MoveScaled(30,0,10,41)
+    }
+    { TextLabel4 TextLabel
+      MoveScaled(0,57,76,7)
+      Font = Font["Bold,+6"]
+      AutoResize = True
+      Text = ("Gambas Almost Means Basic!")
+      Alignment = Align.Center
+    }
+    { Image1 PictureBox
+      MoveScaled(24,66,20,17)
+      Picture = Picture["img/logo/logo.png"]
+      Alignment = Align.Center
+    }
+    { TextLabel2 TextLabel
+      MoveScaled(4,84,57,26)
+      AutoResize = True
+      Text = ("<h2 align=center>Licence</h2>\n\n<p align=center>This program is FREE SOFTWARE; you can redistribute it AND/OR modify it under the terms of the GNU General Public License as published by the Free Software Foundation ; either version 2, or (at your option) any later version.</p>\n\n<p align=center>This program is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>\n")
+    }
+    { TextLabel3 TextLabel
+      MoveScaled(6,111,50,4)
+      AutoResize = True
+      Text = ("<h2 align=center>Authors</h2>\n")
+      Alignment = Align.Center
+    }
+    { txtAuthor TextEdit
+      MoveScaled(4,118,54,11)
+      Background = &HFFFFFF&
+      ReadOnly = True
+      Border = False
+    }
+    { Panel3 Panel
+      MoveScaled(27,128,10,42)
+    }
+  }
+  { timAuthor #Timer
+    #MoveScaled(48,37)
+    Enabled = True
+    Delay = 25
+  }
+  { btnGift Button
+    MoveScaled(43,22,36,8)
+    Visible = False
+    Font = Font["Bold,+1"]
+    Text = ("Make a gift!")
+    Picture = Picture["img/donate.png"]
+  }
+  { picGradientTop PictureBox
+    MoveScaled(1,22,79,7)
+  }
+  { picGradientBottom PictureBox
+    MoveScaled(1,56,79,7)
   }
 }
