@@ -102,38 +102,6 @@ Static Private Sub InitComponent(sFile As String)
       
       With hComponent
         
-        ' If sGroup = "Change" Then
-        ' 
-        '   aChange = Changes["." & sKey]
-        '   If Not aChange Then
-        '     aChange = New String[]
-        '     Changes["." & sKey] = aChange
-        '   Endif
-        '   
-        '   aStr = Split(sLig, ",")
-        '   aStr.Add(sKey)
-        '   aChange.Insert(aStr)
-        '   aChange.Sort()
-        ' 
-        '   For Each sChange In aStr
-        ' 
-        '     aChange = Changes[sChange]
-        '     If Not aChange Then
-        '       aChange = New String[]
-        '       Changes[sChange] = aChange
-        '     Endif
-        '     
-        '     aChange.Add("." & sKey)
-        '     
-        '   Next
-        ' 
-        ' Else
-        
-        ' IF sKey = "Key" THEN
-        '   .Key = sLig
-        ' ELSE IF sKey = "Name" THEN 'OR sKey = "Name[" & sLangShort & "]" OR sKey = "Name[" & sLang & "]" THEN
-        '   PRINT "cName[\""; .Key; "\"] = (\""; sLig; "\")"
-        '   .Name = sLig
         If sKey = "Author" Or sKey = "Authors" Then
           .Authors = Split(sLig)
           'Else If sKey = "Type" Then
@@ -160,10 +128,11 @@ Static Private Sub InitComponent(sFile As String)
           .Implement = Split(LCase(sLig))
         Else If sKey = "Need" Or sKey = "Needs" Then
           .Need = Split(LCase(sLig))
-        Else If sKey = "Alpha" Then
-          .State = UNSTABLE
-        Else If sKey = "State" Then 
-          .State = CInt(sLig)
+        ' Do not care with State
+        'Else If sKey = "Alpha" Then
+        '  .State = UNSTABLE
+        'Else If sKey = "State" Then 
+        '  .State = CInt(sLig)
         Else If sKey = "Version" Then
           .Version = sLig
         Endif
