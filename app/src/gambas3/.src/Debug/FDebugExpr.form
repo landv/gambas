@@ -3,7 +3,7 @@
 { Form Form
   MoveScaled(0,0,30,30)
   Foreground = &H000000&
-  Type = WindowType.Utility
+  Utility = True
   SkipTaskbar = True
   Arrangement = Arrange.Vertical
   { HBox1 HBox
@@ -24,6 +24,16 @@
   }
   { Separator1 Separator
     MoveScaled(4,7,10,0)
+  }
+  { lblVoid Label
+    MoveScaled(5,8,22,6)
+    Visible = False
+    Font = Font["Italic"]
+    Background = Color.TextBackground
+    Expand = True
+    Padding = 4
+    Text = ("No element")
+    Alignment = Align.TopNormal
   }
   { gvwExpr TableView
     MoveScaled(2,11,21,17)

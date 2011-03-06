@@ -52,7 +52,8 @@ Private Sub AddColor(sText As String, sTag As String, sColor As String)
 
   hBox = New HBox(lstSystem)
   hBox.Padding = 4
-  hBox.Spacing = 4
+  hBox.Spacing = True
+  hBox.Margin = True
   hBox.Height = 24
   hBox.Tag = sTag
 

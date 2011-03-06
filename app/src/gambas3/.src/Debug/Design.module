@@ -838,7 +838,7 @@ Private Sub Start(sCmd As String)
 
   If Error Then 
     'sArg = Error.Text
-    $hProcess.Kill
+    Try $hProcess.Kill
     'FMain.ShowError(("Unable to start debugger.") & "\n\n" & sArg)
     Return
   Endif

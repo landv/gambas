@@ -394,25 +394,22 @@ Private Sub Init(sInfo As String, bNew As Boolean) As Boolean
     
   Endif
   
-  If nRow = 0 Then Return True
-
   If Left$($sClass) = "." Or If Not $sRealClass Then
     Me.Title = $sExpr & " (" & $sClass & ")"
   Else 
     Me.Title = $sExpr & " (" & $sRealClass & ")"
   Endif
 
-  ' iCol = 0 
-  ' FOR nI = 2 TO aInfo.Count STEP 2
-  '   gvwExpr.Columns[iCol].Text = aInfo[3][nI]
-  '   IF bIsNewYW AND aInfo[3][nI + 1] <> NULL THEN 
-  '     gvwExpr.Columns[iCol].Width = aInfo[3][nI + 1]
-  ' 
-  '   ENDIF 
-  ' 
-  '   INC iCol
-  ' 
-  ' NEXT
+  If nRow = 0 Then 
+    gvwExpr.Hide
+    gvwExpr.Rows.Count = 0
+    lblVoid.Show
+    btnHidden.Hide
+    Return
+  Endif
+  
+  gvwExpr.Show
+  lblVoid.Hide
 
   With gvwExpr
   
@@ -587,6 +584,7 @@ Static Public Sub ReadSettings()
       Endif 
     Endif 
   Next
+  
 End
 
 
@@ -663,6 +661,7 @@ End
 Public Sub UpdateConfig()
   
   gvwExpr.Font.Grade = - Settings["/TabStripFont", 0]
+  lblVoid.Font.Grade = gvwExpr.Font.Grade 
 
 End
 
