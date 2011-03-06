@@ -1294,10 +1294,6 @@ GB_DESC CDrawDesc[] =
 	GB_CONSTANT("Focus", "i", GB_DRAW_STATE_FOCUS),
 	GB_CONSTANT("Hover", "i", GB_DRAW_STATE_HOVER),
 	//GB_CONSTANT("ToolButton", "i", GB_DRAW_STATE_TOOL_BUTTON),
-	GB_CONSTANT("Arc", "i", GB_DRAW_STATE_HOVER),
-	GB_CONSTANT("Pie", "i", GB_DRAW_STATE_HOVER),
-	GB_CONSTANT("Chord", "i", GB_DRAW_STATE_HOVER),
-	
 	#if 0
 	GB_STATIC_METHOD("Drawing", NULL, CDRAW_drawing, "(Drawing)Drawing;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
 

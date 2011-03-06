@@ -110,6 +110,7 @@ public:
 	void			selectAll() { tree->selectAll(); }
 	void			unselectAll() { tree->unselectAll(); }
 	void startRename(char *key) { (*tree)[key]->startRename(); }
+	bool isRenaming() const { return tree->isRenaming(); }
 	char *intern(char *key);
 
 //"Events"

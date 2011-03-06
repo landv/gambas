@@ -19,6 +19,7 @@ Property ShowHidden As Boolean
 Property Picture As Picture
 Property Border As Boolean
 Property Icon As Picture
+Property Read Renaming As Boolean
 
 Private $sRoot As String
 Private $hTreeView As TreeView
@@ -488,4 +489,10 @@ Public Sub Reload()
   
   RefreshView
   
+End
+
+Private Function Renaming_Read() As Boolean
+
+  Return $hTreeView.Renaming
+
 End

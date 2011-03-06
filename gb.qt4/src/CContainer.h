@@ -37,15 +37,16 @@
 
 typedef
 	struct {
-		unsigned mode : 8;
-		unsigned padding : 8;
-		unsigned spacing : 8;
-		unsigned locked : 1;
+		unsigned mode : 4;
 		unsigned user : 1;
+		unsigned locked : 1;
+		unsigned margin : 1;
+		unsigned spacing : 1;
+		unsigned padding : 8;
 		unsigned dirty : 1;
 		unsigned autoresize : 1;
-		unsigned margin : 1;
-		unsigned indent : 3;
+		unsigned indent : 4;
+		unsigned _reserved: 10;
 		}
 	CARRANGEMENT;
 
@@ -62,15 +63,16 @@ typedef
 	struct {
 		CWIDGET widget;
 		QWidget *container;
-		unsigned mode : 8;
-		unsigned padding : 8;
-		unsigned spacing : 8;
-		unsigned locked : 1;
+		unsigned mode : 4;
 		unsigned user : 1;
+		unsigned locked : 1;
+		unsigned margin : 1;
+		unsigned spacing : 1;
+		unsigned padding : 8;
 		unsigned dirty : 1;
 		unsigned autoresize : 1;
-		unsigned margin : 1;
-		unsigned indent : 3;
+		unsigned indent : 4;
+		unsigned _reserved: 10;
 		}
 	CCONTAINER_ARRANGEMENT;
 

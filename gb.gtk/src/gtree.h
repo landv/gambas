@@ -130,6 +130,7 @@ public:
 	void unselectAll();
 	bool isEditable() { return _editable; }
 	void setEditable(bool vl) { _editable = vl; }
+	bool isRenaming() const { return _edited_row != NULL; }
 	
 	// Rows
 	gTreeRow* addRow(char *key, char *parent = NULL, char *after = NULL, bool before = false);

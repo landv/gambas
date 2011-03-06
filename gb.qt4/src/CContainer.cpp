@@ -995,12 +995,12 @@ BEGIN_PROPERTY(CCONTAINER_spacing)
     GB.ReturnBoolean(THIS_ARRANGEMENT->spacing);
   else
   {
-		int v = VPROP(GB_BOOLEAN) ? MAIN_scale : 0;
-		if (v == THIS_ARRANGEMENT->spacing)
-			return;
-		
-		THIS_ARRANGEMENT->spacing = v;
-		arrange_now(CONTAINER);
+  	bool val = VPROP(GB_BOOLEAN);
+  	if (val != THIS_ARRANGEMENT->spacing)
+  	{
+    	THIS_ARRANGEMENT->spacing = val;
+			arrange_now(CONTAINER);
+		}
   }
 
 END_PROPERTY

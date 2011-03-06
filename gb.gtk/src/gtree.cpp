@@ -594,6 +594,7 @@ static void cb_tree_canceled(GtkCellRendererText *renderer, gTree *tree)
 {
 	gTreeView *view = tree->view;
 	view->emit(SIGNAL(view->onCancel), tree->_edited_row);
+	tree->_edited_row = NULL;	
 }
 
 static void cb_column_clicked(GtkTreeViewColumn *col, gTree *tree)

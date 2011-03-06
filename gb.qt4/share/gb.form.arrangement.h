@@ -203,20 +203,18 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 
 		autoresize = arr->autoresize; // && !IS_EXPAND(_object);
 		
-		//padding = arr->padding;
-		
-		/*if (arr->margin) 
+		if (arr->margin)
 			padding = arr->padding ? arr->padding : DESKTOP_SCALE;
+		else if (!arr->spacing)
+			padding = arr->padding;
 		else
-			padding = 0;*/
-		
-		padding = arr->padding + (arr->margin ? DESKTOP_SCALE : 0);
+			padding = 0;
 		
 		if (arr->spacing)
-			spacing = arr->spacing; //arr->padding ? arr->padding : arr->spacing;
+			spacing = arr->padding ? arr->padding : DESKTOP_SCALE;
 		else
 			spacing = 0;
-
+		
 		indent = arr->indent * DESKTOP_SCALE;
 		
 		for(i = 0; i < 3; i++)

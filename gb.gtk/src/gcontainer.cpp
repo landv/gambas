@@ -231,10 +231,14 @@ void gContainer::setArrange(int vl)
 		case ARRANGE_VERTICAL:
 		case ARRANGE_LEFT_RIGHT:
 		case ARRANGE_TOP_BOTTOM:
-		case ARRANGE_FILL: 
-			arrangement.mode=vl;
-			performArrange();
-		default: break;
+		case ARRANGE_FILL:
+			if (vl != arrangement.mode)
+			{
+				arrangement.mode = vl;
+				performArrange();
+			}
+		default: 
+			break;
 	}
 }
 
@@ -245,22 +249,25 @@ int gContainer::padding()
 
 void gContainer::setPadding(int vl)
 {
-	if (vl >= 0 && vl <= 255) 
+	if (vl >= 0 && vl <= 255 && vl != arrangement.padding) 
 	{
-		arrangement.padding=vl;
+		arrangement.padding = vl;
 		performArrange();
 	}
 }
 
 bool gContainer::spacing()
 {
-	return arrangement.spacing != 0;
+	return arrangement.spacing;
 }
 
 void gContainer::setSpacing(bool vl)
 {
-	arrangement.spacing = vl ? gDesktop::scale() : 0;
-	performArrange();
+	if (vl != arrangement.spacing)
+	{
+		arrangement.spacing = vl;
+		performArrange();
+	}
 }
 
 bool gContainer::margin()
@@ -270,8 +277,11 @@ bool gContainer::margin()
 
 void gContainer::setMargin(bool vl)
 {
-	arrangement.margin = vl;
-	performArrange();
+	if (vl != arrangement.margin)
+	{
+		arrangement.margin = vl;
+		performArrange();
+	}
 }
 
 int gContainer::indent()
@@ -283,7 +293,7 @@ void gContainer::setIndent(int vl)
 {
 	if (vl < 0)
 		vl = 1;
-	if (vl >= 0 && vl <= 7) 
+	if (vl >= 0 && vl <= 7 && vl != arrangement.indent) 
 	{
 		arrangement.indent = vl;
 		performArrange();
@@ -297,14 +307,20 @@ bool gContainer::autoResize()
 
 void gContainer::setAutoResize(bool vl)
 {
-	arrangement.autoresize=vl;
-	performArrange();
+	if (vl != arrangement.autoresize)
+	{
+		arrangement.autoresize = vl;
+		performArrange();
+	}
 }
 
 void gContainer::setUser(bool vl)
 {
-	arrangement.user = vl;
-	performArrange();
+	if (vl != arrangement.user)
+	{
+		arrangement.user = vl;
+		performArrange();
+	}
 }
 
 int gContainer::clientX()

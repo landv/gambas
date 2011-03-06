@@ -831,6 +831,9 @@ void gDraw::arc(int x, int y, int w, int h, double start, double end)
 {
 	int as, ae;
 
+	if (!line_style)
+		return;
+	
 	if (start == end)
 	{
 		as = 0;
@@ -842,13 +845,11 @@ void gDraw::arc(int x, int y, int w, int h, double start, double end)
 		ae = (int)(end * 180 / M_PI * 64) - as;
 	}
 
-	if (!line_style) return;
-	
 	gdk_draw_arc(dr, gc, false, x, y, w - 1, h - 1, as, ae);
 	if (drm) gdk_draw_arc(drm, gcm, false, x, y, w - 1, h - 1, as, ae);
 } 
 
-void gDraw::polyline (int *vl, int nel)
+void gDraw::polyline(int *vl, int nel)
 {
 	GdkPoint *points;
 	

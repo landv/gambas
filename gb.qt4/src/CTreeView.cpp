@@ -1546,9 +1546,13 @@ BEGIN_PROPERTY(CCOLUMNVIEW_settings)
 		GB.Call(&_set_settings_func, 2, true);
 	}
 
-
 END_PROPERTY
 
+BEGIN_PROPERTY(TreeView_Renaming)
+
+	GB.ReturnBoolean(WIDGET->isRenaming());
+
+END_PROPERTY
 
 /***************************************************************************
 
@@ -1736,6 +1740,7 @@ GB_DESC CListViewDesc[] =
   GB_PROPERTY_READ("Current", ".ListViewItem", CTREEVIEW_current),
   GB_PROPERTY_READ("Key", "s", CTREEVIEW_key),
   GB_PROPERTY_READ("Item", ".ListViewItem", CTREEVIEW_item),
+  GB_PROPERTY_READ("Renaming", "b", TreeView_Renaming),
 
   GB_PROPERTY_READ("ClientWidth", "i", CTREEVIEW_client_width),
   GB_PROPERTY_READ("ClientW", "i",  CTREEVIEW_client_width),
@@ -1819,6 +1824,7 @@ GB_DESC CTreeViewDesc[] =
   GB_PROPERTY_READ("Current", ".TreeViewItem", CTREEVIEW_current),
   GB_PROPERTY_READ("Key", "s", CTREEVIEW_key),
   GB_PROPERTY_READ("Item", ".TreeViewItem", CTREEVIEW_item),
+  GB_PROPERTY_READ("Renaming", "b", TreeView_Renaming),
 
   GB_PROPERTY_READ("ClientWidth", "i", CTREEVIEW_client_width),
   GB_PROPERTY_READ("ClientW", "i",  CTREEVIEW_client_width),
@@ -1913,6 +1919,7 @@ GB_DESC CColumnViewDesc[] =
   GB_PROPERTY_READ("Current", ".ColumnViewItem", CTREEVIEW_current),
   GB_PROPERTY_READ("Key", "s", CTREEVIEW_key),
   GB_PROPERTY_READ("Item", ".ColumnViewItem", CTREEVIEW_item),
+  GB_PROPERTY_READ("Renaming", "b", TreeView_Renaming),
 
   GB_EVENT("Select", NULL, NULL, &EVENT_Select),
   GB_EVENT("Activate", NULL, NULL, &EVENT_Activate),

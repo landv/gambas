@@ -874,6 +874,8 @@ End
 
 Public Sub dvwChoose_KeyPress()
 
+  If dvwChoose.Renaming Then Return
+
   Select Case Key.Code
     Case Key.F5 
       mnuRefresh_Click

@@ -617,6 +617,8 @@ End
 
 Public Sub btnClearBreak_Click()
 
+  If Project.Running Then Return
+  
   While cvwBreak.Count
     cvwBreak.MoveFirst
     cvwBreak.Item.Selected = True
