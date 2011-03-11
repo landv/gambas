@@ -207,7 +207,7 @@ Public Sub Form_Open()
   tabInfo[1].Visible = VersionControl.Enabled() And Not IsDir($sPath)
   tabInfo.Index = 0
   edtChange.Clear
-  FTextEditor.ReadConfigEditor(edtChange)
+  edtChange.ReadConfig
 
 End
 

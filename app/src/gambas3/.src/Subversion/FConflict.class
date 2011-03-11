@@ -143,7 +143,7 @@ Public Sub Form_Open()
   $hForm = New FInfo(panInfo)
   $hForm.Padding = 0
   
-  FTextEditor.ReadConfigEditor(edtConflict)  
+  edtConflict.ReadConfig
   edtConflict.Styles[Highlight.Comment].Bold = True
 
   LoadFile($sPath)

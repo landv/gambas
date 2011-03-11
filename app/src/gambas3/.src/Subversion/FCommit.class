@@ -22,10 +22,10 @@ Public Sub Form_Open()
     txtPassword.SetFocus
   Endif 
   
-  FTextEditor.ReadConfigEditor(edtChange)
+  edtChange.ReadConfig
   edtChange.Text = "\n---- " & DELIM_CHANGE & " ----\n\n" & $sChange
   
-  FTextEditor.ReadConfigEditor(edtDiff)
+  edtDiff.ReadConfig
   edtDiff.Text = $sDiff
   
   panAdded.Visible = Project.AddedPaths.Count > 0

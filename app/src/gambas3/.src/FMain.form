@@ -3,6 +3,7 @@
 { Form Form
   MoveScaled(0,0,167,93)
   Icon = Picture["img/logo/logo-32-head.png"]
+  Maximized = True
   Arrangement = Arrange.Vertical
   { mnuFile Menu
     Text = ("&File")
@@ -169,12 +170,6 @@
       Text = ("Finis&h")
       Picture = Picture["icon:/small/eject"]
       Shortcut = "Alt+F5"
-    }
-    { Menu6 Menu
-      Action = "until"
-      Text = ("Run &until")
-      Picture = Picture["icon:/small/start"]
-      Shortcut = "Shift+F5"
     }
     { Menu9 Menu
     }
@@ -1261,8 +1256,7 @@
     Picture = "icon:/small/language"
   }
   { Action until
-    Text = "Run &until"
-    Shortcut = "Shift+F5"
+    Text = "Run until current line"
     Picture = "icon:/small/jump"
   }
   { Action version-control

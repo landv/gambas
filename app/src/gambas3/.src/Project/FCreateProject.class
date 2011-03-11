@@ -22,6 +22,7 @@ Public Sub Form_Open()
   Settings.Read(dchProject, "dchProject")
   lstType.Select(panDefaultType)
   wizProject.Index = 0
+  edtOutput.ReadConfig
   edtOutput.Text = ""
   chkOther.Visible = $bAnother
 
@@ -114,6 +115,8 @@ Private Sub CreateProject() As Boolean
   If $bRepository Then 
   
     sPath = Trim(txtRepository.Text)
+    If Right(sPath) = "/" Then sPath = Left(sPath, -1)
+    
     sDir = dchProject.SelectedPath 
     edtOutput.ReadOnly = False
     bErr = VersionControl.CheckoutSVN(sPath, sDir, edtOutput)

@@ -312,6 +312,7 @@ Public Sub ReadWindow(hWindow As Window, sKey As String)
   aPos = Me[sKey &/ "Geometry"]
 
   If Not aPos Or If aPos.Count < 2 Then 
+    Return
   Else
     X = aPos[0]
     Y = aPos[1]

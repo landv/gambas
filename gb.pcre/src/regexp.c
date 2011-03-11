@@ -181,7 +181,7 @@ BEGIN_METHOD(RegExp_Submatches_get, GB_INTEGER index)
 
 	int index = VARG(index);
 
-	if (index < 0 || index >= (THIS->count - 1))
+	if (index < 0 || index >= THIS->count)
 	{
 		GB.Error("Out of bounds");
 		return;
@@ -195,14 +195,14 @@ END_METHOD
 
 BEGIN_PROPERTY(RegExp_Submatch_Text)
 
-	return_match(THIS, THIS->_submatch + 1);
+	return_match(THIS, THIS->_submatch);
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(RegExp_Submatch_Offset)
 
-	GB.ReturnInteger(THIS->ovector[2 * (THIS->_submatch + 1)]);
+	GB.ReturnInteger(THIS->ovector[2 * THIS->_submatch]);
 
 END_PROPERTY
 

@@ -63,7 +63,7 @@ End
 
 Public Sub ReadConfig()
 
-  FTextEditor.ReadConfigEditor(edtOutput)
+  edtOutput.ReadConfig
   edtOutput.Font = Font[Settings["/ConsoleFont", Project.DEFAULT_FONT]]
 
   MTheme.InitEditor(edtOutput)

@@ -114,7 +114,7 @@ Public Sub Form_Open()
   txtMime.Text = Project.MimeTypes.Join("\n")
   txtDesktop.Text = Project.ExtraDesktop
 
-  FTextEditor.ReadConfigEditor(edtLog)
+  edtLog.ReadConfig
   edtLog.Flags[Editor.ShowModifiedLines] = False
   edtLog.Font = Font[Settings["/ConsoleFont", Project.DEFAULT_FONT]]
 

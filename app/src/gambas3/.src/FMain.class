@@ -1193,7 +1193,7 @@ Public Sub Action_Activate(Key As String) As Boolean
     Case "project-property"
       FPropertyProject.Run
     Case "component-property"
-      FPropertyComponent.Run
+      If Not Project.Compile() Then FPropertyComponent.Run
     Case "translate"
       Translate
     Case "compile"

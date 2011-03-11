@@ -242,7 +242,7 @@ Public Sub ReadConfig()
   
   Dim hCtrl As Control
   
-  FTextEditor.ReadConfigEditor(edtRequest)
+  edtRequest.ReadConfig
   tabTable.Font.Grade = - Settings["/TabStripFont", 0]
   tlbData.Font.Grade = - Settings["/GlobalFont", 0]
   

@@ -129,24 +129,10 @@ End
 
 Public Sub ReadConfig()
 
-  ReadConfigEditor(edtEditor)
-  If $hEditor1 Then ReadConfigEditor($hEditor1)
-  If $hEditor2 Then ReadConfigEditor($hEditor2)
+  edtEditor.ReadConfig
+  If $hEditor1 Then $hEditor1.ReadConfig
+  If $hEditor2 Then $hEditor2.ReadConfig
 
-End
-
-Static Public Sub ReadConfigEditor(hEditor As Editor)
-
-  hEditor.Font = Font[Settings["/Editor/Font", Project.DEFAULT_FONT]]
-
-  MTheme.InitEditor(hEditor)
-
-  hEditor.Flags[hEditor.ShowProcedureLimits] = Settings["/Editor/ProcedureLimit", 2] > 0
-  hEditor.Flags[hEditor.BlendedProcedureLimits] = Settings["/Editor/ProcedureLimit", 2] = 2
-  hEditor.Flags[hEditor.ShowModifiedLines] = Settings["/Editor/ShowChange", True]
-  hEditor.Flags[hEditor.ShowLineNumbers] = Settings["/Editor/ShowLineNumbers", False]
-  hEditor.Flags[hEditor.ShowCurrentLine] = Settings["/Editor/ShowCurrent", True]
-  
 End
 
 Public Function Save() As Boolean
@@ -518,7 +504,7 @@ Private Sub InitEditor(hEditor As Editor)
     .ReadOnly = edtEditor.ReadOnly
     .TabSize = edtEditor.TabSize
   End With 
-  ReadConfigEditor(hEditor)
+  hEditor.ReadConfig
   
 End
 

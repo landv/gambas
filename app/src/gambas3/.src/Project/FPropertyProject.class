@@ -91,7 +91,7 @@ Public Sub Form_Open()
 
   tabProject[VERSION_TAB].Visible = VersionControl.Enabled()
   If tabProject[VERSION_TAB].Visible Then
-    FTextEditor.ReadConfigEditor(edtDiff)
+    edtDiff.ReadConfig
   Endif
   tabProject.Index = 0
 

@@ -70,7 +70,7 @@ Public Sub Form_Open()
     txtTrigger.setFocus
   Endif
   
-  FTextEditor.ReadConfigEditor(edtSnippet)
+  edtSnippet.ReadConfig
 
 End
 

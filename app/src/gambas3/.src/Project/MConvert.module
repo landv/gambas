@@ -534,9 +534,11 @@ Public Sub ConvertComponent(sComp As String) As String[]
   While iInd < aComp.Count
     
     hComp = CComponent.All[aComp[iInd]]
-    For Each sComp In hComp.Require
-      If Not aComp.Exist(sComp) Then aComp.Add(sComp)
-    Next
+    If hComp Then
+      For Each sComp In hComp.Require
+        If Not aComp.Exist(sComp) Then aComp.Add(sComp)
+      Next
+    Endif
     Inc iInd
     
   Wend
