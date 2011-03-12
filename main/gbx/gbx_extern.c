@@ -392,7 +392,10 @@ void EXTERN_release(void)
 	while (cb)
 	{
 		if (cb->exec.object)
+		{
 			OBJECT_UNREF(cb->exec.object, "EXTERN_exit");
+			cb->exec.object = NULL;
+		}
 		cb = cb->next;
 	}
 }
@@ -597,8 +600,14 @@ void *EXTERN_make_callback(VALUE_FUNCTION *value)
 	cb->next = _callbacks;
 	_callbacks = cb;
 	
-	if (value->object)
+	// Do not reference value->_function.object, as it has been already referenced
+	// when put on the stack in exec_loop.c
+	
+	/*if (value->object)
+	{
+		fprintf(stderr, "EXTERN_make_callback: ref: %p\n", value->object);
 		OBJECT_REF(value->object, "EXTERN_make_callback");
+	}*/
 	
 	// See gbx_exec_loop.c, at the _CALL label, to understand the following.
 	
@@ -618,6 +627,7 @@ void *EXTERN_make_callback(VALUE_FUNCTION *value)
 		cb->exec.desc = &value->class->table[value->index].desc->method;
 		cb->exec.index = (int)(intptr_t)(cb->exec.desc->exec);
 		cb->exec.class = cb->exec.desc->class;
+		
 		prepare_cif_from_gambas(cb, &cb->exec.class->load->func[cb->exec.index]);
 	}
 	else if (value->kind == FUNCTION_NATIVE)
@@ -628,10 +638,11 @@ void *EXTERN_make_callback(VALUE_FUNCTION *value)
 		cb->exec.index = value->index;
 		cb->exec.desc = &value->class->table[value->index].desc->method;
 		//cb->desc = &value->class->table[value->index].desc->method;
+		
 		prepare_cif_from_native(cb, cb->exec.desc);
 	}
 	else
-		THROW(E_EXTCB, "Function must be public or extern");
+		THROW(E_EXTCB, "Function must be public, private or native");
 		
 	cb->exec.nparam = cb->nparam;
 	
