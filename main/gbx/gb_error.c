@@ -276,8 +276,8 @@ void THROW(int code, ...)
 	int i;
 	char *arg[4];
 
-	if (code == E_SYSTEM)
-		fprintf(stderr, "THROW system error from %s\n", DEBUG_get_current_position());
+	//if (code == E_SYSTEM)
+	//	fprintf(stderr, "THROW system error from %s\n", DEBUG_get_current_position());
 
 	va_start(args, code);
 

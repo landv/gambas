@@ -898,7 +898,7 @@ char *gt_html_to_pango_string(const char *html, int len_html, bool newline)
 							}
 							else if (*pp == '+' && isdigit(pp[1]))
 							{
-								size += p[1] - '0';
+								size += pp[1] - '0';
 								pp += 2;
 							}
 							else if (*pp == '-' && isdigit(pp[1]))
