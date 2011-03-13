@@ -185,7 +185,7 @@ typedef
 		unsigned exported : 1;         // class is exported
 		unsigned autocreate : 1;       // class is auto-creatable
 		unsigned optional : 1;         // class is optional
-		unsigned nocreate : 1;         // class cannot be instanciated
+		unsigned nocreate : 1;         // class cannot be instantiated
 		unsigned _reserved : 12;
 		VARIABLE *stat;                // static variables
 		VARIABLE *dyn;                 // dynamic variables

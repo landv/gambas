@@ -19,9 +19,11 @@ Private $iMaxWidth As Integer
 Private $hBookmarkList As CBookmarkList
 Private $hCurrentBookmark As CBookmark
 Private $bShowBookmark As Boolean
+Private mnuBookmark As Menu
 Private mnuEditBookmark As Menu
 Private mnuShowHiddenFiles As Menu
 Private mnuShowDetailed As Menu
+Private mnuUncompress As Menu
 Private $iIconSize As Integer
 Private $hWatch As Watcher
 
@@ -790,13 +792,18 @@ Private Sub FillMenu()
   Dim aBookmark As String[]
   Dim hMenu As Menu
   
-  mnuBookmark.Children.Clear
+  mnuPopup.Children.Clear
   
   If IsBookmarkVisible() Then 
   
+    mnuBookmark = New Menu(mnuPopup)
+    mnuBookmark.Name = "mnuBookmark"
+    mnuBookmark.Text = ("Bookmarks")
+    mnuBookmark.Picture = Picture["icon:/small/bookmark"]
     For Each hBookmark In $hBookmarkList
       AddBookmarkMenu(hBookmark)
     Next
+    btnBookmark.Menu = "mnuBookmark"
     
     hMenu = New Menu(mnuBookmark)
     
@@ -817,23 +824,30 @@ Private Sub FillMenu()
     
   Endif
   
-  hMenu = New Menu(mnuBookmark) As "mnuShowDetailed"
+  hMenu = New Menu(mnuPopup) As "mnuShowDetailed"
   hMenu.Text = ("Show &details")
   hMenu.Checked = fvwChoose.ShowDetailed
   hMenu.Visible = fvwChoose.Visible
   mnuShowDetailed = hMenu
     
-  hMenu = New Menu(mnuBookmark) As "mnuShowHiddenFiles"
+  hMenu = New Menu(mnuPopup) As "mnuShowHiddenFiles"
   hMenu.Text = ("Show &hidden files")
   hMenu.Checked = fvwChoose.ShowHidden
   hMenu.Visible = fvwChoose.Visible
   mnuShowHiddenFiles = hMenu
   
-  hMenu = New Menu(mnuBookmark) As "mnuCreateDirectory"
+  hMenu = New Menu(mnuPopup)
+  
+  hMenu = New Menu(mnuPopup) As "mnuUncompress"
+  hMenu.Text = ("&Uncompress file")
+  hMenu.Picture = Picture["icon:/small/archive"]
+  mnuUncompress = hMenu
+  
+  hMenu = New Menu(mnuPopup) As "mnuCreateDirectory"
   hMenu.Text = ("&Create directory")
   hMenu.Picture = Picture["icon:/small/new-dir"]
   
-  hMenu = New Menu(mnuBookmark) As "mnuRefresh"
+  hMenu = New Menu(mnuPopup) As "mnuRefresh"
   hMenu.Text = ("&Refresh")
   hMenu.Picture = Picture["icon:/small/refresh"]
   
@@ -897,13 +911,21 @@ End
 
 Public Sub dvwChoose_Menu()
 
-  mnuBookmark.Popup
+  mnuPopup.Popup
 
 End
 
 Public Sub fvwChoose_Menu()
 
-  mnuBookmark.Popup
+  Dim sFile As String = fvwChoose.Current
+  
+  If sFile Like "*.tar.gz" Or If sFile Like "*.tar.bz2" Then
+    mnuUncompress.Show
+  Else
+    mnuUncompress.Hide
+  Endif
+
+  mnuPopup.Popup
 
 End
 
@@ -936,5 +958,44 @@ End
 Public Sub FileView_Hide()
   
   FileView_Show
+  
+End
+
+Public Sub mnuUncompress_Click()
+  
+  Dim sResult As String
+  
+  Inc Application.Busy
+  
+  Select Case File.Name(fvwChoose.Current)
+    
+    Case Like "*.tar.gz"
+      Shell "cd " & Shell(fvwChoose.Dir) & ";tar xfz " & Shell$(fvwChoose.Current) Wait
+      'Exec ["/bin/tar", "xfz", "-C", fvwChoose.Dir, sPath] To sResult
+      
+    Case Like "*.tar.bz2"
+      Shell "cd " & Shell(fvwChoose.Dir) & ";tar xfj " & Shell$(fvwChoose.Current) Wait
+      'Exec ["/bin/tar", "xfj", "-C", fvwChoose.Dir, sPath] To sResult
+      
+    Case Else
+      Message(("Cannot uncompress file.") & "\n\n" & ("Unknown archive."))
+      Dec Application.Busy
+      Return
+      
+  End Select
+  
+  Dec Application.Busy
+  
+  If Process.LastValue Then
+    Message(("Cannot uncompress file.") & "\n\n" & sResult)
+    Return
+  Endif
+  
+  Reload
+  
+Catch
+  
+  Application.Busy = 0
+  Message(("Cannot uncompress file.") & "\n\n" & Error.Text)
   
 End

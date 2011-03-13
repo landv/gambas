@@ -450,7 +450,7 @@ void TRANS_new(void)
 	else if (PATTERN_is_type(*JOB->current))
 	{
 		if (!PATTERN_is(JOB->current[1], RS_LSQR))
-			THROW("Cannot instanciate native types");
+			THROW("Cannot instantiate native types");
 
 		//CODE_push_number(RES_get_type(PATTERN_index(*JOB->current)));
 		CODE_push_class(CLASS_get_array_class(JOB->class, RES_get_type(PATTERN_index(*JOB->current)), -1));

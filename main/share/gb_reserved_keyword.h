@@ -497,7 +497,7 @@ SUBR_INFO COMP_subr_info[] =
 	{ "Unquote",           93,  0,  1     },
 	{ "Unquote$",          93,  0,  1     },
 	
-	{ "MkBool",            94,  1,  1     },
+	/*{ "MkBool",            94,  1,  1     },
 	{ "MkBoolean",         94,  1,  1     },
 	{ "MkByte",            94,  2,  1     },
 	{ "MkShort",           94,  3,  1     },
@@ -519,7 +519,7 @@ SUBR_INFO COMP_subr_info[] =
 	{ "MkSingle$",         94,  6,  1     },
 	{ "MkFloat$",          94,  7,  1     },
 	{ "MkDate$",           94,  8,  1     },
-	{ "MkPointer$",        94,  11, 1     },
+	{ "MkPointer$",        94,  11, 1     },*/
 
 	{ "Bool@",             95,  1,  1     },
 	{ "Boolean@",          95,  1,  1     },

@@ -70,7 +70,7 @@ static const char *_message[67] =
   /* 22 E_NDIM */ "Bad number of dimensions",
   /* 23 E_NARRAY */ "Not an array",
   /* 24 E_MAIN */ "No startup method",
-  /* 25 E_NNEW */ "No instanciation method",
+  /* 25 E_NNEW */ "No instantiation method",
   /* 26 E_ZERO */ "Division by zero",
   /* 27 E_LIBRARY */ ".2Cannot load component '&1': &2",
   /* 28 E_EVENT */ ".3Bad event handler in &1.&2(): &3",
