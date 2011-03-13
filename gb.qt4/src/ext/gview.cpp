@@ -163,7 +163,7 @@ GEditor::GEditor(QWidget *parent)
 			styles[i].background = false;
 	}
 
-	flags = 0;
+	flags = 1 << ShowDots;
 	
 	reset();
 	
@@ -419,6 +419,7 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 	int ps;
 	QColor bg;
 	bool draw_bg;
+	bool show_dots = getFlag(ShowDots);
 
 	p.setFont(font());
 
@@ -481,7 +482,8 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 			
 			if (ps >= 0 && pos >= ps)
 			{
-				paintDottedSpaces(p, row, pos, QMIN(xmin + lmax - pos, sd.length()));
+				if (show_dots)
+					paintDottedSpaces(p, row, pos, QMIN(xmin + lmax - pos, sd.length()));
 			}
 			else
 			{
@@ -508,7 +510,8 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 	{
 		p.setPen(styles[GLine::Normal].color);
 		p.drawText(x, y, l->s.mid(pos).getString());
-		paintDottedSpaces(p, row, pos, QMIN(xmin + lmax - pos, (int)l->s.length() - pos));
+		if (show_dots)
+			paintDottedSpaces(p, row, pos, QMIN(xmin + lmax - pos, (int)l->s.length() - pos));
 	}
 }
 
@@ -790,9 +793,12 @@ void GEditor::paintCell(QPainter *painter, int row, int)
 			p.setPen(styles[GLine::Normal].color);
 			//p.drawText(margin + xmin * charWidth, fm.ascent() + 1, l->s.getString().mid(xmin, lmax));
 			p.drawText(lineWidth(realRow, xmin), fm.ascent() + 1, l->s.getString().mid(xmin, lmax));
-			i = find_last_non_space(l->s.getString()) + 1;
-			if (i >= 0 && i < (xmin + lmax))
-				paintDottedSpaces(p, realRow, i, QMIN(xmin + lmax, (int)l->s.length()) - i);		
+			if (getFlag(ShowDots))
+			{
+				i = find_last_non_space(l->s.getString()) + 1;
+				if (i >= 0 && i < (xmin + lmax))
+					paintDottedSpaces(p, realRow, i, QMIN(xmin + lmax, (int)l->s.length()) - i);		
+			}
 		}
 		/*else if (l->flag)
 		{

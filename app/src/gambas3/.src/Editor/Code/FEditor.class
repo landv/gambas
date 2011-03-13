@@ -172,21 +172,7 @@ End
 
 Private Sub ReadConfigEditor(hEditor As Editor)
   
-  Dim iInd As Integer
-  Dim iColor As Integer
-  Dim hTheme As Integer[]
-  
-  hEditor.Font = Font[Settings["/Editor/Font", Project.DEFAULT_FONT]]
-  
-  MTheme.InitEditor(hEditor)
-  
-  hEditor.Flags[hEditor.ShowProcedureLimits] = Settings["/Editor/ProcedureLimit", 2] > 0
-  hEditor.Flags[hEditor.BlendedProcedureLimits] = Settings["/Editor/ProcedureLimit", 2] = 2
-  hEditor.Flags[hEditor.ShowCurrentLine] = Settings["/Editor/ShowCurrent", True]
-  hEditor.Flags[hEditor.DrawWithRelief] = Settings["/Editor/UseRelief", True]
-  hEditor.Flags[hEditor.ShowModifiedLines] = Settings["/Editor/ShowChange", True]
-  hEditor.Flags[hEditor.ShowLineNumbers] = Settings["/Editor/ShowLineNumbers", False]
-  
+  hEditor.ReadConfig
   hEditor.KeywordsUseUpperCase = Settings["/Editor/KeywordsUseUpperCase"]
   
 End

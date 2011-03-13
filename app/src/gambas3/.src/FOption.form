@@ -266,8 +266,25 @@
         MoveScaled(59,0,7,4)
       }
     }
-    { HBox4 HBox
+    { HBox29 HBox
       MoveScaled(0,25,66,4)
+      Spacing = True
+      { Label25 Label
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Show spaces at end of line with dots")
+      }
+      { cmbShowDots ComboBox
+        MoveScaled(48,0,10,4)
+        ReadOnly = True
+        List = [("No"), ("Yes")]
+      }
+      { Panel16 Panel
+        MoveScaled(59,0,7,4)
+      }
+    }
+    { HBox4 HBox
+      MoveScaled(0,30,66,4)
       Spacing = True
       { Label17 Label
         MoveScaled(0,0,47,4)
@@ -284,7 +301,7 @@
       }
     }
     { HBox20 HBox
-      MoveScaled(0,30,66,4)
+      MoveScaled(0,35,66,4)
       Spacing = True
       { Label20 Label
         MoveScaled(0,0,47,4)
@@ -301,7 +318,7 @@
       }
     }
     { HBox25 HBox
-      MoveScaled(0,35,66,4)
+      MoveScaled(0,40,66,4)
       Spacing = True
       { Label22 Label
         MoveScaled(0,0,47,4)

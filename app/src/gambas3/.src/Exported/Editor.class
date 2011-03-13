@@ -86,7 +86,7 @@ Public Sub Replace(sReplace As String)
   Me.Begin
   Me.Insert(sReplace)
   Me.Select(iLine, iColumn, iLine, iColumn + String.Len(sReplace))
-  Me.End
+  Me.End  
   
 End
 
@@ -116,5 +116,6 @@ Public Sub ReadConfig()
   Me.Flags[Editor.ShowModifiedLines] = Settings["/Editor/ShowChange", True]
   Me.Flags[Editor.ShowLineNumbers] = Settings["/Editor/ShowLineNumbers", False]
   Me.Flags[Editor.ShowCurrentLine] = Settings["/Editor/ShowCurrent", True]
+  Me.Flags[Editor.ShowDots] = Settings["/Editor/ShowDots", True]
   
 End

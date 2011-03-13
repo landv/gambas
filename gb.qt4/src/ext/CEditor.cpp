@@ -1214,6 +1214,7 @@ GB_DESC CEditorDesc[] =
   GB_CONSTANT("HighlightBraces", "i", GEditor::HighlightBraces),
   GB_CONSTANT("HighlightCurrent", "i", GEditor::HighlightCurrent),
   GB_CONSTANT("BlendedProcedureLimits", "i", GEditor::BlendedProcedureLimits),
+  GB_CONSTANT("ShowDots", "i", GEditor::ShowDots),
 
   GB_METHOD("_new", NULL, CEDITOR_new, "(Parent)Container;"),
   GB_METHOD("_free", NULL, CEDITOR_free, NULL),

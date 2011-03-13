@@ -174,7 +174,8 @@ public:
 		ShowLineNumbers = 5,
 		HighlightBraces = 6,
 		HighlightCurrent = 7,
-		BlendedProcedureLimits = 8
+		BlendedProcedureLimits = 8,
+		ShowDots = 9
 	};
 
 	static void setBreakpointPixmap(QPixmap *p);
