@@ -31,6 +31,7 @@
 
 #include "gb_common_buffer.h"
 #include "gb_table.h"
+#include "gb_hash.h"
 #include "gbx_type.h"
 #include "gbx_value.h"
 #include "gbx_class_desc.h"
@@ -61,6 +62,7 @@ typedef
 		struct EXTERN_CALLBACK *next;
 		EXEC_GLOBAL exec;
 		void *closure;
+		void *code;
 		int nparam;
 		TYPE *sign;
 		TYPE ret;
@@ -77,7 +79,8 @@ typedef
 	EXTERN_FUNC;
 
 static TABLE *_table = NULL;
-static EXTERN_CALLBACK *_callbacks = NULL;
+//static EXTERN_CALLBACK *_callbacks = NULL;
+static HASH_TABLE *_callbacks = NULL;
 static EXTERN_FUNC *_functions = NULL;
 
 static ffi_type *_to_ffi_type[17] = {
@@ -387,16 +390,24 @@ void EXTERN_call(void)
 
 void EXTERN_release(void)
 {
-	EXTERN_CALLBACK *cb = _callbacks;
+	EXTERN_CALLBACK *cb;
+	HASH_ENUM iter;
 	
-	while (cb)
+	if (!_callbacks)
+		return;
+	
+	CLEAR(&iter);
+		
+	for(;;)
 	{
+		cb = HASH_TABLE_next(_callbacks, &iter);
+		if (!cb)
+			break;
 		if (cb->exec.object)
 		{
-			OBJECT_UNREF(cb->exec.object, "EXTERN_exit");
+			OBJECT_UNREF(cb->exec.object, "EXTERN_release");
 			cb->exec.object = NULL;
 		}
-		cb = cb->next;
 	}
 }
 
@@ -406,6 +417,7 @@ void EXTERN_exit(void)
 	EXTERN_SYMBOL *esym;
 	EXTERN_CALLBACK *cb;
 	EXTERN_FUNC *func;
+	HASH_ENUM iter;
 	
 	if (_table)
 	{
@@ -419,17 +431,24 @@ void EXTERN_exit(void)
 		TABLE_delete(&_table);
 	}
 	
-	while (_callbacks)
+	if (_callbacks)
 	{
-		cb = _callbacks;
-		_callbacks = cb->next;
+		CLEAR(&iter);
 		
-		if (cb->exec.object)
-			OBJECT_UNREF(cb->exec.object, "EXTERN_exit");
-		FREE(&cb->info.types, "EXTERN_exit");
-		FREE(&cb, "EXTERN_exit");
-	}
+		for(;;)
+		{
+			cb = HASH_TABLE_next(_callbacks, &iter);
+			if (!cb)
+				break;
+			if (cb->exec.object)
+				OBJECT_UNREF(cb->exec.object, "EXTERN_exit");
+			FREE(&cb->info.types, "EXTERN_exit");
+			ffi_closure_free(cb->closure);
+		}
 	
+		HASH_TABLE_delete(&_callbacks);
+	}
+			
 	while (_functions)
 	{
 		func = _functions;
@@ -579,26 +598,38 @@ static void prepare_cif_from_gambas(EXTERN_CALLBACK *cb, FUNCTION *func)
 	cb->ret = func->type;
 }
 
-static void prepare_cif_from_native(EXTERN_CALLBACK *cb, CLASS_DESC_METHOD *desc)
+/*static void prepare_cif_from_native(EXTERN_CALLBACK *cb, CLASS_DESC_METHOD *desc)
 {
 	THROW(E_EXTCB, "Not implemented yet");
-}
+}*/
 
 void *EXTERN_make_callback(VALUE_FUNCTION *value)
 {
-	EXTERN_CALLBACK *cb;
-	void *code;
+	EXTERN_CALLBACK *cb;	
+	union {
+		char key[sizeof(void *)];
+		void *addr;
+	}
+	cb_key;
 	
 	if (value->kind == FUNCTION_EXTERN)
 	{
 		CLASS_EXTERN *ext = &value->class->load->ext[value->index];
-		return get_function(ext);
+		return get_function(ext)->call;
 	}
 	
-	ALLOC(&cb, sizeof(EXTERN_CALLBACK), "EXTERN_make_callback");
+	if (!_callbacks)
+		HASH_TABLE_create(&_callbacks, sizeof(EXTERN_CALLBACK), HF_NORMAL);
 	
-	cb->next = _callbacks;
-	_callbacks = cb;
+	//ALLOC(&cb, sizeof(EXTERN_CALLBACK), "EXTERN_make_callback");
+	
+	cb_key.addr = value;
+	cb = (EXTERN_CALLBACK *)HASH_TABLE_insert(_callbacks, cb_key.key, sizeof(void *));
+	if (cb->code)
+	{
+		OBJECT_UNREF(value->object, "EXTERN_make_callback");
+		return cb->code;
+	}
 	
 	// Do not reference value->_function.object, as it has been already referenced
 	// when put on the stack in exec_loop.c
@@ -630,7 +661,7 @@ void *EXTERN_make_callback(VALUE_FUNCTION *value)
 		
 		prepare_cif_from_gambas(cb, &cb->exec.class->load->func[cb->exec.index]);
 	}
-	else if (value->kind == FUNCTION_NATIVE)
+	/*else if (value->kind == FUNCTION_NATIVE)
 	{
 		cb->exec.object = value->object;
 		cb->exec.class = value->class;
@@ -640,7 +671,7 @@ void *EXTERN_make_callback(VALUE_FUNCTION *value)
 		//cb->desc = &value->class->table[value->index].desc->method;
 		
 		prepare_cif_from_native(cb, cb->exec.desc);
-	}
+	}*/
 	else
 		THROW(E_EXTCB, "Function must be public, private or native");
 		
@@ -648,12 +679,12 @@ void *EXTERN_make_callback(VALUE_FUNCTION *value)
 	
 	prepare_cif(&cb->info, cb->nparam, cb->sign, cb->ret);
 	
-	cb->closure = ffi_closure_alloc(sizeof(ffi_closure), &code);
+	cb->closure = ffi_closure_alloc(sizeof(ffi_closure), &cb->code);
 	
-	if (ffi_prep_closure_loc(cb->closure, &cb->info.cif, callback, cb, code) != FFI_OK)
+	if (ffi_prep_closure_loc(cb->closure, &cb->info.cif, callback, cb, cb->code) != FFI_OK)
 		THROW(E_EXTCB, "Unable to create closure");
 	
-	return code;
+	return cb->code;
 }
 
 #else /* HAVE_FFI_COMPONENT */
