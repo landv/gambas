@@ -93,7 +93,8 @@ public:
 			Green = 2, //!< Green channel
 			Blue = 4,  //!< Blue channel
 			All = 7,    //!< All channels
-			Gray = 15  //!< Grey channel
+			Alpha = 8
+			//Gray = 15  //!< Grey channel
     };
 
     /**

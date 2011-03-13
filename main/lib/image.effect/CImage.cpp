@@ -324,6 +324,81 @@ BEGIN_METHOD(CIMAGE_implode, GB_FLOAT factor; GB_INTEGER background)
 END_METHOD
 
 
+BEGIN_METHOD_VOID(Image_Histogram)
+
+	CIMAGEHISTOGRAM *hist;
+	int *histogram;
+	QImage image(THIS);
+	unsigned int *p, *pm;
+	
+	GB.New(POINTER(&hist), GB.FindClass("ImageHistogram"), NULL, NULL);
+	
+	GB.Alloc(POINTER(&histogram), sizeof(int) * 256 * 4);
+
+	memset(histogram, 0, 256 * 4 * sizeof(int));
+	
+	p = (unsigned int *)image.bits();
+	pm = &p[image.width() * image.height()];
+	
+	while (p < pm)
+	{
+		histogram[qBlue(*p)]++;
+		histogram[qGreen(*p) + 256]++;
+		histogram[qRed(*p) + 256 * 2]++;
+		histogram[qAlpha(*p) + 256 * 3]++;
+		p++;
+	}
+	
+	hist->histogram = histogram;
+	GB.ReturnObject(hist);
+
+END_METHOD
+
+
+BEGIN_METHOD_VOID(ImageHistogram_free)
+
+	GB.Free(POINTER(&THIS_HISTOGRAM->histogram));
+
+END_METHOD
+
+
+BEGIN_METHOD(ImageHistogram_get, GB_INTEGER channel; GB_INTEGER value)
+
+	int channel;
+	int value;
+
+	switch(VARG(channel))
+	{
+		case KImageEffect::Blue: channel = 0; break;
+		case KImageEffect::Green: channel = 1; break;
+		case KImageEffect::Red: channel = 2; break;
+		case KImageEffect::Alpha: channel = 3; break;
+		default: GB.Error("Bad channel"); return;
+	}
+	
+	value = VARG(value);
+	if (value < 0 || value > 255)
+	{
+		GB.Error("Out of bounds");
+		return;
+	}
+	
+	GB.ReturnInteger(THIS_HISTOGRAM->histogram[channel * 256 + value]);
+
+END_METHOD
+
+
+GB_DESC ImageHistogramDesc[] =
+{
+	GB_DECLARE("ImageHistogram", sizeof(CIMAGEHISTOGRAM)),
+	GB_NOT_CREATABLE(),
+	
+	GB_METHOD("_free", NULL, ImageHistogram_free, NULL),
+	GB_METHOD("_get", "i", ImageHistogram_get, "(Channel)i(Value)i"),
+	
+	GB_END_DECLARE
+};
+
 GB_DESC CImageDesc[] =
 {
   GB_DECLARE("Image", 0),
@@ -341,6 +416,7 @@ GB_DESC CImageDesc[] =
 	GB_CONSTANT("Red", "i", KImageEffect::Red),
 	GB_CONSTANT("Green", "i", KImageEffect::Green),
 	GB_CONSTANT("Blue", "i", KImageEffect::Blue),
+	GB_CONSTANT("Alpha", "i", KImageEffect::Alpha),
 
 	GB_CONSTANT("Uniform", "i", KImageEffect::UniformNoise),
 	GB_CONSTANT("Gaussian", "i", KImageEffect::GaussianNoise),
@@ -376,6 +452,8 @@ GB_DESC CImageDesc[] =
 	GB_METHOD("Wave", "Image", CIMAGE_wave, "[(Amplitude)f(WaveLength)f(Background)i]"),
 	GB_METHOD("Noise", "Image", CIMAGE_noise, "(Noise)i"),
 	GB_METHOD("Implode", "Image", CIMAGE_implode, "[(Factor)f(Background)i]"),
+	
+	GB_METHOD("Histogram", "ImageHistogram", Image_Histogram, NULL),
 
   GB_END_DECLARE
 };

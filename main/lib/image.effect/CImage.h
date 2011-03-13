@@ -28,12 +28,20 @@
 #ifndef __CIMAGE_CPP
 
 extern GB_DESC CImageDesc[];
+extern GB_DESC ImageHistogramDesc[];
 
 #else
 
 #define THIS ((GB_IMAGE)_object)
+#define THIS_HISTOGRAM ((CIMAGEHISTOGRAM *)_object)
 
 #endif
 
+typedef
+	struct {
+		GB_BASE ob;
+		int *histogram;
+	}
+	CIMAGEHISTOGRAM;
 
 #endif
