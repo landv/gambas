@@ -623,7 +623,7 @@ void *EXTERN_make_callback(VALUE_FUNCTION *value)
 	
 	//ALLOC(&cb, sizeof(EXTERN_CALLBACK), "EXTERN_make_callback");
 	
-	cb_key.addr = value;
+	cb_key.addr = PC;
 	cb = (EXTERN_CALLBACK *)HASH_TABLE_insert(_callbacks, cb_key.key, sizeof(void *));
 	if (cb->code)
 	{
