@@ -383,7 +383,11 @@ Public Sub TextBox_KeyPress()
         bBefore = IsRightAlign(iPos) 
         
         If bBefore Then
-          sCar = $aMask[iPos - 1]
+          If iPos > 0 Then
+            sCar = $aMask[iPos - 1]
+          Else
+            sCar = ""
+          Endif
           If sCar And If Key.Text Like sCar Then 
             sInsert = Key.Text
             iMove = 0

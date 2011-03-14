@@ -220,6 +220,7 @@ Private Sub Value_Write(Value As Variant)
   Dim sText As String
   Dim sVal As String
   Dim iVal As Integer
+  Dim aText As String[]
 
   Select Case $iType
     
@@ -252,7 +253,12 @@ Private Sub Value_Write(Value As Variant)
       
     Case IpAddress
       If TypeOf(Value) = gb.String Or If IsNull(Value) Then
-        For Each sVal In Split(Value, ".")
+        aText = Split(Value, ".")
+        While aText.Count < 4
+          aText.Add("0")
+        Wend
+        aText.Resize(4)
+        For Each sVal In aText
           Try iVal = CInt(sVal)
           If Error Then Return
           If iVal < 0 Or If iVal > 255 Then Return

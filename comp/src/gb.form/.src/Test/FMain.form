@@ -4,13 +4,11 @@
   MoveScaled(0,0,106,82)
   Spacing = True
   Margin = True
-  { FileChooser1 FileChooser
-    MoveScaled(1,5,104,76)
-    ShowDirectory = True
-    ShowButton = True
+  { ValueBox1 ValueBox
+    MoveScaled(10,11,24,4)
+    Type = ValueBox.IPAddress
   }
-  { Button1 Button
-    MoveScaled(1,1,16,4)
-    Text = ("Button")
+  { MaskBox1 MaskBox
+    MoveScaled(11,22,24,4)
   }
 }
