@@ -157,6 +157,16 @@ static lt_dlhandle get_library(char *name)
 		#else
 			esym->handle = dlopen(name, RTLD_LAZY);
 		#endif
+			
+		if (esym->handle == NULL)
+		{
+			name = GB_RealFileName(name, strlen(name));
+			#ifndef DONT_USE_LTDL
+				esym->handle = lt_dlopenext(name);
+			#else
+				esym->handle = dlopen(name, RTLD_LAZY);
+			#endif
+		}
 	
 		if (esym->handle == NULL)
 			THROW(E_EXTLIB, name, lt_dlerror());

@@ -1824,7 +1824,7 @@ char *GB_RealFileName(const char *name, int len)
 
   temp = FILE_make_temp(NULL, NULL);
   real = STRING_new_temp(NULL, strlen(temp) + strlen(path) + strlen("/data/"));
-  snprintf(real, strlen(temp) + strlen(path) + strlen("/data/"), "%s/data/%s", temp, path);
+  snprintf(real, strlen(temp) + strlen(path) + strlen("/data/") + 1, "%s/data/%s", temp, path);
 
   if (!FILE_exist(real))
   {
@@ -1839,8 +1839,6 @@ char *GB_RealFileName(const char *name, int len)
     }
     END_TRY
   }
-
-  //fprintf(stderr, "GB.RealFileName: %s -> %s\n", path, real);
 
   return real;
 }
