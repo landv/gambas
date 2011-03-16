@@ -277,6 +277,7 @@ void *GAMBAS_DebugApi[] =
 	(void *)CLASS_get_next_sorted_symbol,
 	(void *)DEBUG_get_object_access_type,
 	(void *)DEBUG_find_class,
+	(void *)CARRAY_get_array_bounds,
 	NULL
 };
 

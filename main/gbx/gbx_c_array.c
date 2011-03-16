@@ -425,6 +425,11 @@ void CARRAY_get_value(CARRAY *_object, int index, VALUE *value)
 	VALUE_read(value, get_data(THIS, index), THIS->type);
 }
 
+int *CARRAY_get_array_bounds(CARRAY *_object)
+{
+	return THIS->dim;
+}
+
 
 BEGIN_METHOD(CARRAY_new, GB_INTEGER size)
 

@@ -325,6 +325,7 @@ void PRINT_object(FILE *where, VALUE *value)
 	int len;
 	bool static_class;
 	int access;
+	int *dim;
 	
 	_where = where;
 	
@@ -400,8 +401,30 @@ void PRINT_object(FILE *where, VALUE *value)
 	
 	access = GB_DEBUG.GetObjectAccessType(object, class, &count);
 	
-	//if (GB.Is(object, GB.FindClass("Array")))
-	if (access == GB_DEBUG_ACCESS_ARRAY)
+	if (GB.Is(object, GB.FindClass("Array")))
+	{
+		dim = GB_DEBUG.GetArrayBounds(object);
+		if (!dim)
+			fprintf(_where, "A [%d]", count);
+		else
+		{
+			fprintf(_where, "A [");
+			for(;;)
+			{
+				len = *dim++;
+				if (len > 0)
+					fprintf(_where, "%d,", len);
+				else
+				{
+					fprintf(_where, "%d", -len);
+					break;
+				}
+			}
+			fprintf(_where, "]");
+		}
+		return;
+	}
+	else if (access == GB_DEBUG_ACCESS_ARRAY)
 	{
 		fprintf(_where, "A [%d]", count);
 		return;
@@ -457,6 +480,7 @@ void PRINT_object(FILE *where, VALUE *value)
 				case CD_VARIABLE:
 				case CD_PROPERTY:
 				case CD_PROPERTY_READ:
+				case CD_STRUCT_FIELD:
 					fprintf(_where, " %.*s", cd->len, key);
 					break;
 			}

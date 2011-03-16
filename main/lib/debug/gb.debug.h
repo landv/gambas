@@ -75,6 +75,7 @@ typedef
 		void *(*GetNextSortedSymbol)(void *klass, int *index);
 		int (*GetObjectAccessType)(void *object, CLASS *klass, int *count);
 		GB_CLASS (*FindClass)(const char *name);
+		int *(*GetArrayBounds)(void *array);
 		}
 	GB_DEBUG_INTERFACE;
 

@@ -22,6 +22,7 @@ Private $sClass As String
 Private $sRealClass As String
 Private $bArray As Boolean
 Private $bCollection As Boolean
+Private $aDim As Integer[]
 
 Static Public Sub Add(sExpr As String, sInfo As String)
 
@@ -90,6 +91,30 @@ Public Sub _new(sExpr As String, sInfo As String)
 
 End 
 
+Private Sub GetIndiceFromRow(iRow As Integer) As String
+
+  Dim sSym As String
+  Dim iDim As Integer
+  
+  If $aDim Then
+    
+    For Each iDim In $aDim
+      sSym = CStr(iRow Mod iDim) & ", " & sSym
+      iRow \= iDim
+    Next
+    sSym = Left(sSym, -2)
+    
+  Else
+    
+    sSym = CStr(iRow)
+    
+  Endif
+  
+  Return sSym
+  
+End
+
+
 Public Sub gvwExpr_Data(Row As Integer, Column As Integer)
 
   Dim sSym As String
@@ -98,16 +123,18 @@ Public Sub gvwExpr_Data(Row As Integer, Column As Integer)
   If Column = 0 Then gvwExpr.Data.Foreground = Color.Merge(Color.TextBackground, Color.TextForeground, 0.7)
 
   If $bArray Then 
-  
+    
+    sSym = GetIndiceFromRow(Row)
+      
     If Column = 0 Then 
-      gvwExpr.Data.Text = Row
+      gvwExpr.Data.Text = sSym
     Else 
       sVal = $cVal[Row]
       If sVal Then 
         gvwExpr.Data.Text = sVal
         '$cVal.Remove(Row)
       Else  
-        Design.Command("?X" & $sExpr & "#" & CStr(Row) & "\t" & $sExpr & "[" & Row & "]")
+        Design.Command("?X" & $sExpr & "#" & CStr(Row) & "\t" & $sExpr & "[" & sSym & "]")
       Endif
     Endif
     
@@ -286,6 +313,7 @@ Private Sub Init(sInfo As String, bNew As Boolean) As Boolean
   Dim sType As String
   Dim iCol As Integer
   Dim nRow As Integer
+  Dim iSize As Integer
   Dim nRowAsArray As Integer = -1
   Dim bShowHidden As Boolean = btnHidden.Value
   Dim bHasHidden As Boolean
@@ -315,7 +343,20 @@ Private Sub Init(sInfo As String, bNew As Boolean) As Boolean
     
     $bCollection = False
     $bArray = True
-    nRow = Val(Mid$($aSym[0], 2, -1))
+    
+    sSym = Mid$($aSym[0], 2, -1)
+    If InStr(sSym, ",") Then
+      nRow = 1
+      $aDim = New Integer[]
+      For Each sSym In Split(sSym, ",")
+        iSize = CInt(sSym)
+        $aDim.Add(iSize)
+        nRow *= iSize
+      Next
+    Else
+      nRow = CInt(sSym)
+      $aDim = Null
+    Endif
     
   Else
   
@@ -713,7 +754,7 @@ Public Sub gvwExpr_Save(Row As Integer, Column As Integer, Value As String)
     If $bArray Then 
     
       $cVal[Row] = Null
-      Design.Command("=X" & $sExpr & "#" & CStr(Row) & "\t" & $sExpr & "[" & Row & "] = " & Value)
+      Design.Command("=X" & $sExpr & "#" & CStr(Row) & "\t" & $sExpr & "[" & GetIndiceFromRow(Row) & "] = " & Value)
       
     Else If $bCollection Then
     
