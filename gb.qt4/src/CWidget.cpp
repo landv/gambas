@@ -1024,12 +1024,13 @@ static void set_focus(void *_object)
 	
 	win = CWidget::getTopLevel(THIS);
 
-	if (QWIDGET(win)->isVisible())
+	if (win->opened && QWIDGET(win)->isVisible())
 	{
 		WIDGET->setFocus();
 	}
 	else if ((CWIDGET *)win != THIS)
 	{
+		//qDebug("delayed focus on %s", THIS->name);
 		GB.Unref(POINTER(&win->focus));
 		win->focus = THIS;
 		GB.Ref(THIS);

@@ -90,6 +90,28 @@ BEGIN_PROPERTY(WebSettingsIconDatabase_Path)
 
 END_PROPERTY
 
+BEGIN_METHOD(WebSettingsIconDatabase_get, GB_STRING url)
+
+	QIcon icon;
+	QSize size;
+	QSize max_size;
+	
+	icon = QWebSettings::iconForUrl(QSTRING_ARG(url));
+	if (icon.isNull())
+	{
+		GB.ReturnNull();
+		return;
+	}
+	
+	foreach(size, icon.availableSizes())
+	{
+		if ((size.width() * size.height()) > (max_size.width() * max_size.height()))
+			max_size = size;
+	}
+	
+	GB.ReturnObject(QT.CreatePicture(icon.pixmap(max_size)));
+
+END_METHOD
 
 BEGIN_PROPERTY(WebSettingsCache_Path)
 
@@ -166,6 +188,7 @@ GB_DESC CWebSettingsIconDatabaseDesc[] =
 	
 	GB_STATIC_METHOD("Clear", NULL, WebSettingsIconDatabase_Clear, NULL),
 	GB_STATIC_PROPERTY("Path", "s", WebSettingsIconDatabase_Path),
+	GB_STATIC_METHOD("_get", "Picture", WebSettingsIconDatabase_get, "(Url)s"),
 	
 	GB_END_DECLARE
 };
