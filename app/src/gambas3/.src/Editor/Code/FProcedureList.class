@@ -23,7 +23,7 @@ Public Sub Init(sClass As String, aProc As String[], iCurrent As Integer, W As I
   $iCurrent = iCurrent
   
   gvwProc.Rows.Count = aProc.Count
-  gvwProc.Rows.Unselect
+  gvwProc.Rows.UnselectAll
   gvwProc.Columns.Count = 1
   Me.Resize(W, Min(H, gvwProc.Rows.Count * gvwProc.Rows.Height + 2))
   

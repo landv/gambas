@@ -1410,11 +1410,11 @@ BEGIN_PROPERTY(Control_PopupMenu)
 END_PROPERTY
 
 
-BEGIN_METHOD_VOID(Control_Screenshot)
+/*BEGIN_METHOD_VOID(Control_Screenshot)
 
 	GB.ReturnObject(CPICTURE_grab(QWIDGET(_object)));
 
-END_METHOD
+END_METHOD*/
 
 
 BEGIN_METHOD(Control_Drag, GB_VARIANT data; GB_STRING format)
@@ -2667,7 +2667,7 @@ GB_DESC CControlDesc[] =
 
 	GB_METHOD("SetFocus", NULL, Control_SetFocus, NULL),
 	GB_METHOD("Refresh", NULL, Control_Refresh, "[(X)i(Y)i(Width)i(Height)i]"),
-	GB_METHOD("Screenshot", "Picture", Control_Screenshot, NULL),
+	//GB_METHOD("Screenshot", "Picture", Control_Screenshot, NULL),
 	GB_METHOD("Drag", "Control", Control_Drag, "(Data)v[(Format)s]"),
 	GB_METHOD("Grab", NULL, Control_Grab, NULL),
 

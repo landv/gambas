@@ -140,7 +140,6 @@ public:
 	void refresh();
 	void refresh(int x, int y, int w, int h);
 	virtual void afterRefresh();
-	gPicture *screenshot();
 	bool grab(bool showIt = false);
 	void destroy();
 	void destroyNow() { destroy(); cleanRemovedControls(); }

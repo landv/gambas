@@ -755,7 +755,7 @@ BEGIN_PROPERTY(CWIDGET_tooltip)
 END_PROPERTY
 
 
-BEGIN_METHOD_VOID(CWIDGET_screenshot)
+/*BEGIN_METHOD_VOID(CWIDGET_screenshot)
 
 	CPICTURE *img;
 
@@ -764,7 +764,7 @@ BEGIN_METHOD_VOID(CWIDGET_screenshot)
 	img->picture=CONTROL->screenshot();
 	GB.ReturnObject((void*)img);
 
-END_METHOD
+END_METHOD*/
 
 BEGIN_METHOD_VOID(CCONTROL_grab)
 
@@ -869,7 +869,7 @@ GB_DESC CWidgetDesc[] =
 	
 	GB_METHOD("SetFocus", 0, CWIDGET_set_focus, 0),
 	GB_METHOD("Refresh", 0, CWIDGET_refresh, "[(X)i(Y)i(Width)i(Height)i]"),
-	GB_METHOD("Screenshot", "Picture", CWIDGET_screenshot, 0),
+	//GB_METHOD("Screenshot", "Picture", CWIDGET_screenshot, 0),
 	GB_METHOD("Grab", NULL, CCONTROL_grab, NULL),
 	GB_METHOD("Drag", "Control", CWIDGET_drag, "(Data)v[(Format)s]"),
 

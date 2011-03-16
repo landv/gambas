@@ -1089,11 +1089,6 @@ void gControl::setPrevious(gControl *ctrl)
 		setNext(ctrl->next());
 }
 
-gPicture* gControl::screenshot()
-{
-	return gt_grab_window(border->window);
-}
-
 /*********************************************************************
 
 Drag & Drop

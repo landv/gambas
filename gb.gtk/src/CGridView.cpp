@@ -607,15 +607,14 @@ BEGIN_METHOD(CGRIDROWS_select, GB_INTEGER start; GB_INTEGER length)
 END_PROPERTY
 
 
-BEGIN_METHOD(CGRIDROWS_select_all, GB_BOOLEAN sel)
+BEGIN_METHOD_VOID(GridViewRows_SelectAll)
 
 	WIDGET->clearSelection();
-	if (VARGOPT(sel, TRUE))
-		WIDGET->selectRows(0, WIDGET->rowCount());
+	WIDGET->selectRows(0, WIDGET->rowCount());
 
 END_PROPERTY
 
-BEGIN_METHOD_VOID(CGRIDROWS_unselect)
+BEGIN_METHOD_VOID(GridViewRows_UnselectAll)
 
 	WIDGET->clearSelection();
 
@@ -1068,8 +1067,8 @@ GB_DESC CGridViewRowsDesc[] =
   GB_PROPERTY_READ("Width", "i", CGRIDROWS_width),
   GB_PROPERTY_READ("W", "i", CGRIDROWS_width),
   GB_METHOD("Select", 0, CGRIDROWS_select, "[(Start)i(Length)i]"),
-  GB_METHOD("SelectAll", 0, CGRIDROWS_select_all, "[(Selected)b]"),
-  GB_METHOD("Unselect", 0, CGRIDROWS_unselect, 0),
+  GB_METHOD("SelectAll", 0, GridViewRows_SelectAll, NULL),
+  GB_METHOD("UnselectAll", 0, GridViewRows_UnselectAll, NULL),
   GB_METHOD("Remove", 0, CGRIDROWS_remove, "(Start)i[(Length)i]"),
   GB_METHOD("Insert", 0, CGRIDROWS_insert, "(Start)i[(Length)i]"),
   GB_END_DECLARE
