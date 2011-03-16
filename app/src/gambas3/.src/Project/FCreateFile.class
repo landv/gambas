@@ -49,13 +49,15 @@ Public Sub lstType_Click()
       Case Else
         txtName.Text = Project.GetNewName(sPrefix)
     End Select
-    txtName.SelectAll
+    'txtName.SelectAll
     Object.Unlock(txtName)
   Endif 
   
   iFilter = $aFilterType.Find(LCase(sPrefix))
   $iFilter = iFilter
+  fchExisting.FilterIndex = $iFilter
   
+  txtName.SelectAll
   txtName.SetFocus
   
 End
@@ -101,6 +103,12 @@ Public Sub Form_Open()
     Endif
   Next
   
+  cmbParent.List = Project.GetClassesOnly()
+  cmbParent.Add(("(No parent)"), 0)
+  If Project.IsSourcePath($sPath) Then
+    cmbParent.Text = Project.GetParentClass($sPath)
+  Endif
+  
   If Not $sType Then $sType = "module"
   For Each hCtrl In lstType.Children
     If hCtrl.Tag = $sType Then 
@@ -108,15 +116,6 @@ Public Sub Form_Open()
       Break 
     Endif
   Next
-  
-  cmbParent.List = Project.GetClassesOnly()
-  cmbParent.Add(("(No parent)"), 0)
-  If Project.IsSourcePath($sPath) Then
-    cmbParent.Text = Project.GetParentClass($sPath)
-  Endif
-  
-  'lstType_Click
-  'tabFile_Click
   
 End
 
@@ -161,11 +160,11 @@ Public Sub txtHeight_MouseWheel()
 
 End
 
-Public Sub txtName_GotFocus()
-
-  txtName.SelectAll
-
-End
+' Public Sub txtName_GotFocus()
+' 
+'   txtName.SelectAll
+' 
+' End
 
 Public Sub txtName_Change()
 

@@ -23,6 +23,7 @@
       Spacing = True
       { lstType ListContainer
         MoveScaled(1,1,32,52)
+        Mouse = Mouse.Pointing
         { panModule HBox panType
           Name = "panModule"
           MoveScaled(0,0,31,5)
@@ -127,7 +128,7 @@
             Alignment = Align.Center
           }
           { Label3 Label
-            MoveScaled(6,1,16,3)
+            MoveScaled(5,1,16,3)
             Text = ("Image")
           }
         }
@@ -289,13 +290,13 @@
     Index = 1
     Text = ("Existing")
     { fchExisting FileChooser
-      MoveScaled(1,1,71,35)
+      MoveScaled(1,1,76,50)
       Expand = True
       Filter = []
       ReadOnly = True
     }
     { chkLink CheckBox
-      MoveScaled(1,37,56,3)
+      MoveScaled(1,54,56,3)
       Text = ("Create a symbolic link")
     }
     Index = 0
