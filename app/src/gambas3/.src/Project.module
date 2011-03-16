@@ -600,7 +600,7 @@ Private Function CloseProject() As Boolean
     Design.WriteBreakpoints
     
     Config.Clear("/OpenFile")
-    For Each hForm In Files 'Workspace.Children
+    For Each hForm In Workspace.Children
       
       If Not hForm.Closed Then
         
