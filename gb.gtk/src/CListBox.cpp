@@ -228,6 +228,18 @@ BEGIN_PROPERTY(CLISTBOX_border)
 
 END_PROPERTY
 
+BEGIN_METHOD_VOID(ListBox_SelectAll)
+
+	LISTBOX->selectAll();
+
+END_METHOD
+
+BEGIN_METHOD_VOID(ListBox_UnselectAll)
+
+	LISTBOX->unselectAll();
+
+END_METHOD
+
 /***************************************************************************
 
   ListBoxItem
@@ -269,6 +281,8 @@ GB_DESC CListBoxDesc[] =
   GB_PROPERTY("Index", "i", CLISTBOX_index),
   GB_PROPERTY("Mode", "i", CLISTBOX_mode),
   GB_PROPERTY("Border", "b", CLISTBOX_border),
+	GB_METHOD("SelectAll", NULL, ListBox_SelectAll, NULL),
+	GB_METHOD("UnselectAll", NULL, ListBox_UnselectAll, NULL),
 
   GB_EVENT("Select", 0, 0, &EVENT_Select),
   GB_EVENT("Activate", 0, 0, &EVENT_Activate),

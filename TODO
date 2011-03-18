@@ -24,6 +24,8 @@ INTERPRETER
 - Make the error information associated with the current stack frame.
 - Timer.TimeLeft.
 - OPEN ... LOCK. True lock while reading/writing a file.
+- select() system call can fail if a watched file descriptor is in error. But how can I know
+  the offending file descritor? Maybe by using poll() instead.
 
 DEVELOPMENT ENVIRONMENT
 

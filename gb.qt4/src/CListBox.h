@@ -48,6 +48,7 @@ typedef
     CWIDGET widget;
     int index;
     int last;
+		bool posted;
     }
   CLISTBOX;
 
