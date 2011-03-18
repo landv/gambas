@@ -48,6 +48,7 @@ public:
 
 private:
 	char *indexToKey(int index);
+	GtkTreePath *indexToPath(int index);
 	int _last_key;
 };
 

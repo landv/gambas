@@ -42,9 +42,13 @@ static int pathToIndex(GtkTreePath *path)
 	return indices[0];
 }
 
-static GtkTreePath *indexToPath(int index)
+GtkTreePath *gListBox::indexToPath(int index)
 {
 	char buffer[16];
+	
+	if (index < 0 || index >= count())
+		index = count();
+	
 	sprintf(buffer, "%d", index);
 	return gtk_tree_path_new_from_string(buffer);
 }
@@ -53,6 +57,9 @@ char *gListBox::indexToKey(int index)
 {
 	char *key;
 	GtkTreePath *path = indexToPath(index);
+	if (!path)
+		return NULL;
+	
 	key = gTreeView::find(path);
 	gtk_tree_path_free(path);
 	return key;	
@@ -72,7 +79,17 @@ int gListBox::index()
 void gListBox::setIndex(int ind)
 {
 	GtkTreePath *path = indexToPath(ind);
-	gtk_tree_view_set_cursor(GTK_TREE_VIEW(treeview), path, NULL, false);
+	
+	if (ind < 0 || ind >= count())
+	{
+		if (path)
+			setItemSelected(index(), false);
+	}
+	else
+	{
+		gtk_tree_view_set_cursor(GTK_TREE_VIEW(treeview), path, NULL, false);
+	}
+
 	gtk_tree_path_free(path);
 }
 
