@@ -82,6 +82,7 @@ The executable name has the same name as your project.</p>
 
 
 [PATH]
+
 <p>
 Relative paths have a special meaning in <b>Gambas</b>.
 They always refer to files inside your projects.
@@ -125,6 +126,7 @@ IF Len(MyString) = 0 THEN ...</pre>
 <pre>IF MyString THEN ...
 IF NOT MyString THEN ...</pre>
 
+
 [TRANSLATE]
 
 <p>Gambas applications are fully translatable, provided that you tell it
@@ -133,6 +135,7 @@ which strings must be translated, and which one must not.</p>
 
 <pre>PRINT ("Translate me")
 PRINT "But do not translate me!"</pre>
+
 
 [EVENT]
 
@@ -462,7 +465,8 @@ Settings.Read(ME)
 Settings["win/x"] = ME.X
 
 'Read property
-ME.X = Settings["win/x"]  'you can use even default value like this: ["win/x", 0]
+'you can use even default value like this: ["win/x", 0]
+ME.X = Settings["win/x"]
 </pre>
 
 <p><b>Attention:</b> you must include component: <i>gb.settings</i></p>
@@ -473,28 +477,21 @@ ME.X = Settings["win/x"]  'you can use even default value like this: ["win/x", 0
 <p>To inform user you can use Gampbas classes <b>Message</b> and <b>Balloon</b>.
 Message comes from (QT, GTK+) component and Balloon from <i>gb.form</i>.</p>
 
-<p><b>Message</b> class uses model dialogs, so there are possible following types:
+<p><b>Message</b> and <b>Balloon</b> has following possible types:
 Message.Delete(), .Error(), .Info(), .Question() and .Warning()</p>
 
-<p>Your own button labels can be set in every of them. After button press in
-dialog is returned numeric value from 1 to X (depending on type of dialog and
-number of buttons).</p>
+<p>For every button of <b>Message</b> dialog can be set your own labels.
+After pressing the button the numeric value is given ( 1 to X,
+depending on type and number of buttons).</p>
 
-<pre>'Following will return 1
-DEBUG Message.Info("Hello world!")
+<pre>DEBUG Message.Info("Hello world!")  'Following will return 1
 
-'Same, but short form:
-Message("Hello world!")</pre>
+Message("Hello world!")  'Same, but short form</pre>
 
-<p><b>Balloon</b> class can be use in forms, different visual components like
-informations or warnings. It comes with same types like Message, but different
-rendering.</p>
+<p>While creating the <b>Balloon</b> you must define parent container.
+Optionally you can define time delay in ms and X,Y position.</p>
 
-<p>While creating dialog you must declare parent container. Optionally you can
-declare X,Y position, time delay before showing and font.</p>
-
-<pre>'Will show ballon in main form
-Balloon.Info("Hello world!", ME)
+<pre>Balloon.Info("Hello world!", ME)  'Will show ballon in main form
 
 'short one, but without icon: Balloon("Hello world!", ME)
 </pre>
@@ -509,10 +506,28 @@ It's done by <b>Subst()</b> instruction.</p>
 Next are your variables, where first one has number <i>1</i>
 It's used like so: <b>&1, &2, ...</b></p>
 
-<pre>DEBUG Subst(("Substitution of &1, &2 and &3"), "first", "second", "third")
+<pre>Subst(("Substitution of &1, &2 and &3"), "first", "second", "third")
 
 '...will return:
 'Substitution of first, second and third</pre>
+
+
+[USEFUL]
+
+<p>Some tips for editor:</p>
+
+<p>Comments:</p>
+
+<pre>'Normal comment</pre>
+<b><pre>''Bold comment</pre></b>
+
+<p>How to use code snippets:<br>
+
+'Let's write:
+<pre>main</pre>
+'Than press tab and code snippet will be completed for you<br>
+'by the way, how it's defined in preferences
+</p>
 
 
 [END]
