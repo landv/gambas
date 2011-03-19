@@ -7,7 +7,6 @@ SUBDIRS = \
  @postgresql_dir@ \
  @sqlite2_dir@ \
  @sqlite3_dir@ \
- @firebird_dir@ \
  @net_dir@ \
  @curl_dir@ \
  @smtp_dir@ \
