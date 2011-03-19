@@ -15,18 +15,19 @@ GB_COMPONENT_PKG_CONFIG(
   gtk+-2.0 ">= 2.10" librsvg-2.0 ">= 2.14.3" cairo ">= 1.6.0" cairo-ft ">= 1.6.0" gtk+-unix-print-2.0 ">= 2.10"
 )
 
-GB_COMPONENT_PKG_CONFIG(
-  gtkopengl,
-  GTKOPENGL,
-  [GTKglext toolkit],
-  [opengl],
-  gtkglext-1.0
-)
+dnl GB_COMPONENT_PKG_CONFIG(
+dnl   gtkopengl,
+dnl   GTKOPENGL,
+dnl   [GTKglext toolkit],
+dnl   [opengl],
+dnl   gtkglext-1.0
+dnl )
   
 AC_OUTPUT( \
 Makefile \
 src/Makefile \
-src/opengl/Makefile
 )
+
+dnl src/opengl/Makefile
 
 GB_PRINT_MESSAGES
