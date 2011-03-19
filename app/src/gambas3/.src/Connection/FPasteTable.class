@@ -1,0 +1,226 @@
+' Gambas class file
+
+Static Public DestTable As String
+Static Private $hSrc As FConnectionEditor
+Static Private $hDest As FConnectionEditor
+Static Private $sTable As String
+
+Static Private $iCpt As Integer
+Static Private $iTotal As Integer
+Static Private $eTimer As Float
+
+Public Sub Run(hSrc As FConnectionEditor, sTable As String, hDest As FConnectionEditor) As Boolean
+
+  $hSrc = hSrc
+  $hDest = hDest
+  $sTable = sTable
+
+  Return Not Me.ShowModal()
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+Public Sub Form_Open()
+
+  Dim sText As String
+  Dim iInd As Integer
+  Dim hConn As Connection
+
+  lblSource.Text = $hSrc.GetDescription()
+  lblDest.Text = $hDest.GetDescription()
+
+  hConn = $hDest.GetConnection()
+  For iInd = 0 To 99
+    sText = $sTable
+    If iInd Then sText &= CStr(iInd + 1)
+    If Not hConn.Tables.Exist(sText) Then Break
+  Next
+
+  txtName.Text = sText
+  txtName.SetFocus
+  txtName.SelectAll
+
+End
+
+Public Sub btnOK_Click()
+
+  Dim sDestTable As String
+  
+  sDestTable = Trim(txtName.Text)
+
+  If Not sDestTable Then
+    Message.Warning(("Please enter a table name."))
+    txtName.SetFocus
+    Return
+  Endif
+
+  CopyTable(sDestTable)
+  DestTable = sDestTable
+  Me.Close(True)
+
+End
+
+Private Sub CopyTable(sDestTable As String)
+
+  Dim hSrc As Connection
+  Dim hDst As Connection
+  Dim rSrc As Result
+  Dim sMsg As String
+
+  Inc Application.Busy
+
+  pgbPaste.Value = 0
+
+  hSrc = $hSrc.GetConnection()
+  hDst = $hDest.GetConnection()
+
+  'hSrc.Open
+  'hDst.Open
+
+  $iTotal = 0
+
+  If optCopyData.Value Then
+
+    rSrc = hSrc.Exec("SELECT COUNT(*) FROM " & hSrc.Quote($sTable))
+    $iTotal += rSrc[0]
+
+  Endif
+
+  $iCpt = 0
+  $eTimer = Timer
+
+  'DB.Debug = True
+  DoCopyTable(hSrc, hDst, $sTable, sDestTable)
+  UpdateProgress(True)
+
+Finally
+
+  'DB.Debug = False
+  sMsg = Error.Text
+  Application.Busy = 0
+  'Try hSrc.Close
+  'Try hDst.Close
+
+Catch
+
+  Message.Error(sMsg)
+
+End
+
+
+Private Sub DoCopyTable(hSrc As Connection, hDst As Connection, sSrc As String, sDst As String)
+
+  Dim hTableSrc As Table
+  Dim hTableDst As Table
+  Dim hField As Field
+  Dim hIndex As Index
+  Dim rSrc As Result
+  Dim rDst As Result
+  Dim iInd As Integer
+  Dim sMsg As String
+  Dim sSrcCharset As String
+  Dim sDstCharset As String
+  Dim sName As String
+
+  sSrcCharset = hSrc.Charset
+  sDstCharset = hDst.Charset
+
+  If hDst.Tables.Exist(sDst) Then Error.Raise(("Table already exists"))
+
+  hTableSrc = hSrc.Tables[sSrc]
+  hTableDst = hDst.Tables.Add(sDst, hTableSrc.Type)
+
+  For Each hField In hTableSrc.Fields
+    With hField
+      hTableDst.Fields.Add(.Name, .Type, .Length, .Default)
+    End With
+  Next
+
+  hTableDst.PrimaryKey = hTableSrc.PrimaryKey
+  hTableDst.Update
+
+  For Each hIndex In hTableSrc.Indexes
+    If hIndex.Primary Then Continue
+    With hIndex
+      sName = Replace(.Name, sSrc, sDst)
+      If sName = .Name Then sName = sDst & "_" & sName
+      hTableDst.Indexes.Add(sName, .Fields, .Unique)
+    End With
+  Next
+
+  If optCopyData.Value Then
+
+    hDst.Begin
+
+    rSrc = hSrc.Find(sSrc)
+
+    If sSrcCharset = sDstCharset Then
+
+      For Each rSrc
+        rDst = hDst.Create(sdST)
+        For iInd = 0 To rSrc.Fields.Count - 1
+          rDst[iInd] = rSrc[iInd]
+        Next
+        rDst.Update
+        Inc $iCpt
+        UpdateProgress
+      Next
+
+    Else
+
+      For Each rSrc
+        rDst = hDst.Create(sDst)
+        For iInd = 0 To rSrc.Fields.Count - 1
+          rDst[iInd] = rSrc[iInd]
+          If rSrc.Fields[iInd].Type = gb.String Then
+            Try rDst[iInd] = Conv(rSrc[iInd], sSrcCharset, sDstCharset)
+          Endif
+        Next
+        rDst.Update
+        Inc $iCpt
+        UpdateProgress
+      Next
+
+    Endif
+
+    hDst.Commit
+
+  Endif
+
+Catch
+
+  sMsg = Subst("Cannot copy table &1.", sSrc) & "\n\n" & Error.Text
+  Try hDst.Rollback
+  Try hDst.Tables.Remove(sDst)
+  Error.Raise(sMsg)
+
+End
+
+Private Sub UpdateProgress(Optional bForce As Boolean)
+
+  If Not bForce Then
+    If Timer < $eTimer Then Return
+  Endif
+
+  $eTimer = Timer + 0.25
+
+  If $iTotal Then
+    pgbPaste.Value = CFloat($iCpt) / $iTotal
+  Else
+    pgbPaste.Value = 1
+  Endif
+  Wait
+
+End
+
+Public Sub Form_Close()
+
+  $hSrc = Null
+  $hDest = Null
+
+End

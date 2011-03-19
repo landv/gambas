@@ -4,7 +4,7 @@
   MoveScaled(0,0,122,87)
   Arrangement = Arrange.Vertical
   { panToolBar ToolBar
-    MoveScaled(2,0,72,4)
+    MoveScaled(2,0,75,4)
     Key = "connection"
     Text = ("Connection editor")
     Separator = True
@@ -39,15 +39,29 @@
       Text = ("Rename...")
       Picture = Picture["icon:/small/edit"]
     }
+    { btnCopyTable ToolButton
+      MoveScaled(31,0,4,4)
+      ToolTip = ("Copy table")
+      AutoResize = True
+      Text = ("Copy")
+      Picture = Picture["icon:/small/copy"]
+    }
+    { btnPasteTable ToolButton
+      MoveScaled(35,0,4,4)
+      ToolTip = ("Paste table")
+      AutoResize = True
+      Text = ("Paste...")
+      Picture = Picture["icon:/small/paste"]
+    }
     { btnImport ToolButton
-      MoveScaled(31,0,12,4)
+      MoveScaled(44,0,12,4)
       ToolTip = ("Import text file")
       AutoResize = True
       Text = ("Import...")
       Picture = Picture["icon:/small/open"]
     }
     { btnRequest ToolButton
-      MoveScaled(43,0,15,4)
+      MoveScaled(56,0,15,4)
       ToolTip = ("SQL request")
       AutoResize = True
       Text = ("SQL request")
@@ -355,6 +369,6 @@
   { Toolbar connection
     Text = "Connection editor"
     List = "save,reload"
-    Default = "save,reload,$btnNewTable,$btnKill,$btnRename,$btnImport,$btnRequest"
+    Default = "save,reload,$btnNewTable,$btnKill,$btnRename,$btnCopyTable,$btnPasteTable,$btnImport,$btnRequest"
   }
 }

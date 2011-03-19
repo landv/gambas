@@ -116,6 +116,7 @@ Private Sub SetReadOnly(bReadOnly As Boolean)
   
   btnKill.Enabled = Not bReadOnly
   btnRename.Enabled = Not bReadOnly
+  btnCopy.Enabled = Not bReadOnly
   tlbField.Enabled = Not bReadOnly
   tlbIndex.Enabled = Not bReadOnly
   $bReadOnly = bReadOnly
@@ -129,6 +130,19 @@ Public Sub Form_Activate()
   DB.Current = $hConn
 
 End
+
+Public Sub GetConnection() As Connection
+  
+  Return $hConn
+  
+End
+
+Public Sub GetDescription() As String
+  
+  Return btnTitle.Tooltip
+  
+End
+
 
 Public Sub Reload() As Boolean
   
@@ -165,6 +179,7 @@ Public Sub Reload() As Boolean
   sTitle &= "/" & $hConn.Name
   
   btnTitle.Text = "  " & sTitle & "  "
+  btnTitle.Tooltip = sTitle
   
   datData.Connection = $hConn
   datRequest.Connection = $hConn
@@ -241,16 +256,24 @@ End
 Public Sub ReadConfig()
   
   Dim hCtrl As Control
+  Dim iGrade As Integer
   
   edtRequest.ReadConfig
-  tabTable.Font.Grade = - Settings["/TabStripFont", 0]
-  tlbData.Font.Grade = - Settings["/GlobalFont", 0]
-  
-  For Each hCtrl In [tlbField, tbvField, tlbIndex, tbvIndex, lvwTable, dvwData]
-    hCtrl.Font = tlbData.Font
+  iGrade = - Settings["/TabStripFont", 0]
+  For Each hCtrl In [panToolBar, tabTable, tlbData, tlbData2, tlbData3, tlbField, tbvField, tlbIndex, tbvIndex, dvwData]
+    hCtrl.Font.Grade = iGrade
   Next
+  lvwTable.Font.Grade = - Settings["/GlobalFont", 0]
   
 End
+
+Private Sub SelectTable(sTable As String)
+  
+  Try lvwTable["T" & sTable].Selected = True
+  If Error Then Try lvwTable["S" & sTable].Selected = True
+  
+End
+
 
 Private Sub CheckCurrent() As Boolean
   
@@ -272,8 +295,7 @@ Private Sub CheckCurrent() As Boolean
   
 CANCEL:
 
-  Try lvwTable["T" & $sTable].Selected = True
-  If Error Then Try lvwTable["S" & $sTable].Selected = True
+  SelectTable($sTable)
   Return True
   
 End
@@ -1475,8 +1497,34 @@ Public Sub btnSaveData_Click()
 
 End
 
-Public Sub btnExportData2_Click()
+Public Sub btnCopyTable_Click()
 
+  Dim sTable As String
   
+  If CheckCurrent() Then Return
+  
+  sTable = lvwTable.Key
+  If Not IsLetter(Left(sTable)) Then Return
+  sTable = Mid$(sTable, 2)
+  Clipboard.Copy(Path & "\n" & sTable, MMime.TABLE)
+
+End
+
+Public Sub btnPasteTable_Click()
+
+  Dim aData As String[]
+  Dim hForm As FConnectionEditor
+  
+  If CheckCurrent() Then Return
+  
+  Try aData = Split(Clipboard.Paste(MMime.TABLE), "\n")
+  If Not aData[0] Then Return
+  
+  hForm = Project.LoadFile(aData[0])
+  If Not hForm Then Return
+  
+  If FPasteTable.Run(hForm, aData[1], Me) Then Return
+  
+  LoadList(FPasteTable.DestTable)
 
 End

@@ -58,7 +58,7 @@ Public Sub Form_Open()
   Dim I As Integer
 
   txtPath.Text = $sPath
-  txtPath.Pos = txtPath.Length
+  'txtPath.Pos = txtPath.Length
   
   cmbTable.List = $aTable
   cmbTable.Text = File.BaseName($sPath)

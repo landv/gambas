@@ -2,16 +2,14 @@
 
 { Form Form
   MoveScaled(0,0,59,43)
-  Text = ("")
   Arrangement = Arrange.Vertical
-  Spacing = 8
-  Padding = 8
+  Spacing = True
+  Margin = True
   { lblMessage TextLabel
     MoveScaled(1,1,48,4)
     Visible = False
     Font = Font["+1"]
     AutoResize = True
-    Text = ("")
     Alignment = Align.Center
   }
   { dlgDate DateChooser
@@ -20,7 +18,7 @@
   }
   { HBox1 HBox
     MoveScaled(1,38,48,4)
-    Spacing = 8
+    Spacing = True
     { Panel1 Panel
       MoveScaled(7,0,2,4)
       Expand = True

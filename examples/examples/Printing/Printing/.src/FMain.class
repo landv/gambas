@@ -2,10 +2,6 @@
 
 Private $hImage As Image
 
-Public Sub _new()
-
-End
-
 Public Sub Form_Open()
 
   txtText.Text = File.Load("molly-malone.txt")

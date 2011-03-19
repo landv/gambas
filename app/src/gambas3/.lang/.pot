@@ -390,7 +390,7 @@ msgid ""
 msgstr ""
 
 #: Design.module:387 FColorChooser.class:210 FCommit.class:380
-#: FConnectionEditor.class:411 FCreateFile.class:931 FFontChooser.class:79
+#: FConnectionEditor.class:433 FCreateFile.class:931 FFontChooser.class:79
 #: FGotoLine.class:57 FList.class:331 FMain.class:1701 FMenu.class:1228
 #: FNewConnection.class:573 FNewTable.class:159 FNewTranslation.class:64
 #: FOpenProject.class:527 FPasteSpecial.class:273 FPropertyComponent.class:467
@@ -461,18 +461,19 @@ msgid "Free"
 msgstr ""
 
 #: FColorChooser.class:216 FCommit.class:386 FConflict.class:191
-#: FConnectionEditor.class:261 FCreateFile.class:937 FDebugInfo.class:520
+#: FConnectionEditor.class:284 FCreateFile.class:937 FDebugInfo.class:520
 #: FEditor.class:2270 FFontChooser.class:85 FForm.class:2960
 #: FGotoLine.class:63 FHelpBrowser.class:341 FIconEditor.class:1413
 #: FImportTable.class:39 FList.class:155 FMain.class:200
 #: FMakeInstall.class:326 FMenu.class:1233 FNewConnection.class:317
 #: FNewTable.class:165 FNewTranslation.class:70 FOpenProject.class:533
-#: FOption.class:613 FPasteSpecial.class:279 FPropertyComponent.class:473
-#: FPropertyProject.class:801 FReportBorderChooser.class:345
-#: FReportBrushChooser.class:475 FReportCoordChooser.class:126 FSave.class:118
-#: FSaveProjectAs.class:130 FSelectExtraFile.class:78 FSelectIcon.class:272
-#: FSnippet.class:142 FTableChooser.class:144 FText.class:106
-#: FTextEditor.class:475 FTranslate.class:638 Project.module:412
+#: FOption.class:613 FPasteSpecial.class:279 FPasteTable.class:337
+#: FPropertyComponent.class:473 FPropertyProject.class:801
+#: FReportBorderChooser.class:345 FReportBrushChooser.class:475
+#: FReportCoordChooser.class:126 FSave.class:118 FSaveProjectAs.class:130
+#: FSelectExtraFile.class:78 FSelectIcon.class:272 FSnippet.class:142
+#: FTableChooser.class:144 FText.class:106 FTextEditor.class:475
+#: FTranslate.class:638 Project.module:412
 msgid "Cancel"
 msgstr ""
 
@@ -492,7 +493,7 @@ msgstr ""
 msgid "Project commit"
 msgstr ""
 
-#: FCommit.class:195 FMakeInstall.class:1315 FPropertyProject.class:1351
+#: FCommit.class:195 FMakeInstall.class:1315 FPropertyProject.class:1352
 msgid "Description"
 msgstr ""
 
@@ -505,35 +506,35 @@ msgid ""
 "Some files are not versioned and should be added manually to the repository."
 msgstr ""
 
-#: FCommit.class:234 FConflict.class:325 FConnectionEditor.class:1808
+#: FCommit.class:234 FConflict.class:325 FConnectionEditor.class:1874
 #: FEditor.class:3442 FForm.class:3558 FIconEditor.class:2176
 #: FImageEditor.class:77 FMenu.class:969 FOutput.class:379
 #: FTextEditor.class:784
 msgid "Cut"
 msgstr ""
 
-#: FCommit.class:240 FConflict.class:331 FConnectionEditor.class:1708
+#: FCommit.class:240 FConflict.class:331 FConnectionEditor.class:1651
 #: FEditor.class:3448 FForm.class:3565 FIconEditor.class:2184
 #: FImageEditor.class:86 FMenu.class:975 FOutput.class:386
 #: FTextEditor.class:791
 msgid "Copy"
 msgstr ""
 
-#: FCommit.class:246 FConflict.class:337 FConnectionEditor.class:1829
+#: FCommit.class:246 FConflict.class:337 FConnectionEditor.class:1895
 #: FEditor.class:3455 FForm.class:3578 FIconEditor.class:2192
 #: FImageEditor.class:95 FMenu.class:981 FOutput.class:393
-#: FTextEditor.class:798
+#: FPasteTable.class:331 FTextEditor.class:798
 msgid "Paste"
 msgstr ""
 
-#: FCommit.class:252 FConflict.class:343 FConnectionEditor.class:1836
+#: FCommit.class:252 FConflict.class:343 FConnectionEditor.class:1902
 #: FEditor.class:3426 FForm.class:3803 FIconEditor.class:2160
 #: FImageEditor.class:105 FOption.class:1552 FOutput.class:362
 #: FTextEditor.class:767
 msgid "Undo"
 msgstr ""
 
-#: FCommit.class:258 FConflict.class:349 FConnectionEditor.class:1843
+#: FCommit.class:258 FConflict.class:349 FConnectionEditor.class:1909
 #: FEditor.class:3433 FForm.class:3813 FImageEditor.class:113
 #: FOutput.class:369 FTextEditor.class:774
 msgid "Redo"
@@ -587,7 +588,7 @@ msgstr ""
 msgid "&Edit"
 msgstr ""
 
-#: FConflict.class:25 FIconEditor.class:1426 FImportTable.class:700
+#: FConflict.class:25 FIconEditor.class:1426 FImportTable.class:701
 #: FMakeInstall.class:275 FSearch.class:1182 FSystemInfo.class:73
 #: FTips.class:240
 msgid "Close"
@@ -684,203 +685,215 @@ msgstr ""
 msgid "Field"
 msgstr ""
 
-#: FConnectionEditor.class:183
+#: FConnectionEditor.class:198
 msgid "Unable to connect to database."
 msgstr ""
 
-#: FConnectionEditor.class:261
+#: FConnectionEditor.class:284
 msgid "The table '&1' has been modified. Do you want to save it?"
 msgstr ""
 
-#: FConnectionEditor.class:261 FEditor.class:3560 FForm.class:3719
+#: FConnectionEditor.class:284 FEditor.class:3560 FForm.class:3719
 #: FIconEditor.class:1426 FImageEditor.class:60 FTextEditor.class:889
 msgid "Save"
 msgstr ""
 
-#: FConnectionEditor.class:261
+#: FConnectionEditor.class:284
 msgid "Do not save"
 msgstr ""
 
-#: FConnectionEditor.class:370
+#: FConnectionEditor.class:392
 msgid "Unable to load table '&1'."
 msgstr ""
 
-#: FConnectionEditor.class:415
+#: FConnectionEditor.class:437
 msgid "Unable to run query."
 msgstr ""
 
-#: FConnectionEditor.class:447
+#: FConnectionEditor.class:469
 msgid "unlimited"
 msgstr ""
 
-#: FConnectionEditor.class:530 MConnection.module:94
+#: FConnectionEditor.class:552 MConnection.module:94
 msgid "Boolean"
 msgstr ""
 
-#: FConnectionEditor.class:530 MConnection.module:86
+#: FConnectionEditor.class:552 MConnection.module:86
 msgid "Integer"
 msgstr ""
 
-#: FConnectionEditor.class:530 MConnection.module:88
+#: FConnectionEditor.class:552 MConnection.module:88
 msgid "Long"
 msgstr ""
 
-#: FConnectionEditor.class:530 MConnection.module:98
+#: FConnectionEditor.class:552 MConnection.module:98
 msgid "Serial"
 msgstr ""
 
-#: FConnectionEditor.class:530 MConnection.module:90
+#: FConnectionEditor.class:552 MConnection.module:90
 msgid "Float"
 msgstr ""
 
-#: FConnectionEditor.class:530 MConnection.module:96
+#: FConnectionEditor.class:552 MConnection.module:96
 msgid "String"
 msgstr ""
 
-#: FConnectionEditor.class:530 MConnection.module:92
+#: FConnectionEditor.class:552 MConnection.module:92
 msgid "Date"
 msgstr ""
 
-#: FConnectionEditor.class:530 MConnection.module:100
+#: FConnectionEditor.class:552 MConnection.module:100
 msgid "Blob"
 msgstr ""
 
-#: FConnectionEditor.class:608
+#: FConnectionEditor.class:630
 msgid "This name is already in used."
 msgstr ""
 
-#: FConnectionEditor.class:633
+#: FConnectionEditor.class:655
 msgid "Please enter a number."
 msgstr ""
 
-#: FConnectionEditor.class:638
+#: FConnectionEditor.class:660
 msgid "The length must be greater than 1 and lower than 255."
 msgstr ""
 
-#: FConnectionEditor.class:662
+#: FConnectionEditor.class:684
 msgid "Type mismatch."
 msgstr ""
 
-#: FConnectionEditor.class:702
+#: FConnectionEditor.class:724
 msgid "This name already exists."
 msgstr ""
 
-#: FConnectionEditor.class:781
+#: FConnectionEditor.class:803
 msgid "This field is used in an index."
 msgstr ""
 
-#: FConnectionEditor.class:1134
+#: FConnectionEditor.class:1156
 msgid "The table '&1' has no primary key."
 msgstr ""
 
-#: FConnectionEditor.class:1217
+#: FConnectionEditor.class:1239
 msgid "Cannot write table '&1'."
 msgstr ""
 
-#: FConnectionEditor.class:1330
+#: FConnectionEditor.class:1352
 msgid "Do you really want to delete table '&1'?"
 msgstr ""
 
-#: FConnectionEditor.class:1330 FForm.class:3585 FMain.class:200
+#: FConnectionEditor.class:1352 FForm.class:3585 FMain.class:200
 #: FNewConnection.class:317 FOption.class:760 FTranslate.class:638
 msgid "Delete"
 msgstr ""
 
-#: FConnectionEditor.class:1340
+#: FConnectionEditor.class:1362
 msgid "Cannot delete table '&1'."
 msgstr ""
 
-#: FConnectionEditor.class:1376
+#: FConnectionEditor.class:1398
 msgid "Select the CSV file to import"
 msgstr ""
 
-#: FConnectionEditor.class:1377
+#: FConnectionEditor.class:1399
 msgid "CSV files"
 msgstr ""
 
-#: FConnectionEditor.class:1377 FTranslate.class:1267
+#: FConnectionEditor.class:1399 FTranslate.class:1267
 msgid "All files"
 msgstr ""
 
-#: FConnectionEditor.class:1400
+#: FConnectionEditor.class:1422
 msgid "Do you really want to remove the selected rows?"
 msgstr ""
 
-#: FConnectionEditor.class:1400 FMakeInstall.class:950
+#: FConnectionEditor.class:1422 FMakeInstall.class:950
 msgid "Remove"
 msgstr ""
 
-#: FConnectionEditor.class:1558
+#: FConnectionEditor.class:1608
 msgid "Connection editor"
 msgstr ""
 
-#: FConnectionEditor.class:1572 FEditor.class:2270 FForm.class:2960
+#: FConnectionEditor.class:1622 FEditor.class:2270 FForm.class:2960
 #: FHelpBrowser.class:347 FIconEditor.class:2046 FImageEditor.class:68
 #: FTextEditor.class:475 FTranslate.class:732
 msgid "Reload"
 msgstr ""
 
-#: FConnectionEditor.class:1579 FNewTable.class:98
+#: FConnectionEditor.class:1629 FNewTable.class:98
 msgid "New table"
 msgstr ""
 
-#: FConnectionEditor.class:1585
+#: FConnectionEditor.class:1635
 msgid "Delete table"
 msgstr ""
 
-#: FConnectionEditor.class:1591 FNewTable.class:30
+#: FConnectionEditor.class:1641 FNewTable.class:30
 msgid "Rename table"
 msgstr ""
 
-#: FConnectionEditor.class:1593
+#: FConnectionEditor.class:1643
 msgid "Rename..."
 msgstr ""
 
-#: FConnectionEditor.class:1599
-msgid "Import text file"
+#: FConnectionEditor.class:1649
+msgid "Copy table"
 msgstr ""
 
-#: FConnectionEditor.class:1601
-msgid "Import..."
+#: FConnectionEditor.class:1657 FPasteTable.class:252
+msgid "Paste table"
 msgstr ""
 
-#: FConnectionEditor.class:1607
-msgid "SQL request"
+#: FConnectionEditor.class:1659
+msgid "Paste..."
 msgstr ""
 
 #: FConnectionEditor.class:1665
+msgid "Import text file"
+msgstr ""
+
+#: FConnectionEditor.class:1667
+msgid "Import..."
+msgstr ""
+
+#: FConnectionEditor.class:1673
+msgid "SQL request"
+msgstr ""
+
+#: FConnectionEditor.class:1731
 msgid "Fields"
 msgstr ""
 
-#: FConnectionEditor.class:1681 FMain.class:1803
+#: FConnectionEditor.class:1747 FMain.class:1803
 msgid "Add"
 msgstr ""
 
-#: FConnectionEditor.class:1695
+#: FConnectionEditor.class:1761
 msgid "Down"
 msgstr ""
 
-#: FConnectionEditor.class:1702
+#: FConnectionEditor.class:1768
 msgid "Up"
 msgstr ""
 
-#: FConnectionEditor.class:1710
+#: FConnectionEditor.class:1776
 msgid "Copy field list"
 msgstr ""
 
-#: FConnectionEditor.class:1727
+#: FConnectionEditor.class:1793
 msgid "Indexes"
 msgstr ""
 
-#: FConnectionEditor.class:1744
+#: FConnectionEditor.class:1810
 msgid "New index"
 msgstr ""
 
-#: FConnectionEditor.class:1802
+#: FConnectionEditor.class:1868
 msgid "Run query"
 msgstr ""
 
-#: FConnectionEditor.class:1903
+#: FConnectionEditor.class:1969
 msgid "Export..."
 msgstr ""
 
@@ -941,7 +954,7 @@ msgid "Style sheet"
 msgstr ""
 
 #: FCreateFile.class:800 FCreateProject.class:545 FImportTable.class:526
-#: FPropertyComponent.class:308 FPropertyProject.class:1373
+#: FPropertyComponent.class:308 FPropertyProject.class:1374
 msgid "Options"
 msgstr ""
 
@@ -1091,7 +1104,7 @@ msgstr ""
 msgid "Identification"
 msgstr ""
 
-#: FCreateProject.class:657 FPropertyProject.class:1340
+#: FCreateProject.class:657 FPropertyProject.class:1341
 msgid "Title"
 msgstr ""
 
@@ -1211,7 +1224,7 @@ msgid "Remove current expression"
 msgstr ""
 
 #: FDebugInfo.class:1241 FMain.class:2684 FMakeInstall.class:1661
-#: FOption.class:1608 FPropertyComponent.class:442 FPropertyProject.class:1587
+#: FOption.class:1608 FPropertyComponent.class:442 FPropertyProject.class:1588
 msgid "&Remove"
 msgstr ""
 
@@ -1617,7 +1630,7 @@ msgstr ""
 msgid "Go to line"
 msgstr ""
 
-#: FHelpBrowser.class:22 FPropertyProject.class:1495
+#: FHelpBrowser.class:22 FPropertyProject.class:1496
 msgid "Default language"
 msgstr ""
 
@@ -1795,7 +1808,7 @@ msgstr ""
 msgid "Import file"
 msgstr ""
 
-#: FImportTable.class:531
+#: FImportTable.class:531 FPasteTable.class:270
 msgid "Source"
 msgstr ""
 
@@ -1883,11 +1896,11 @@ msgstr ""
 msgid "Line(s)"
 msgstr ""
 
-#: FImportTable.class:616
+#: FImportTable.class:616 FPasteTable.class:281
 msgid "Destination"
 msgstr ""
 
-#: FImportTable.class:626 FTableChooser.class:112
+#: FImportTable.class:626 FPasteTable.class:297 FTableChooser.class:112
 msgid "Table"
 msgstr ""
 
@@ -1907,7 +1920,7 @@ msgstr ""
 msgid "Messages"
 msgstr ""
 
-#: FImportTable.class:693 FTranslate.class:1757
+#: FImportTable.class:694 FTranslate.class:1757
 msgid "&Import"
 msgstr ""
 
@@ -1987,7 +2000,7 @@ msgstr ""
 msgid "Last modified"
 msgstr ""
 
-#: FInfo.class:391 FPropertyProject.class:1735
+#: FInfo.class:391 FPropertyProject.class:1736
 msgid "Versioning"
 msgstr ""
 
@@ -2003,7 +2016,7 @@ msgstr ""
 msgid "Edit list property"
 msgstr ""
 
-#: FList.class:274 FPropertyProject.class:1581
+#: FList.class:274 FPropertyProject.class:1582
 msgid "&Insert"
 msgstr ""
 
@@ -3104,11 +3117,11 @@ msgstr ""
 msgid "Sort properties"
 msgstr ""
 
-#: FOption.class:1040 FPropertyComponent.class:342 FPropertyProject.class:1426
+#: FOption.class:1040 FPropertyComponent.class:342 FPropertyProject.class:1427
 msgid "No"
 msgstr ""
 
-#: FOption.class:1040 FPropertyComponent.class:342 FPropertyProject.class:1426
+#: FOption.class:1040 FPropertyComponent.class:342 FPropertyProject.class:1427
 msgid "Yes"
 msgstr ""
 
@@ -3136,7 +3149,7 @@ msgstr ""
 msgid "Default tab size"
 msgstr ""
 
-#: FOption.class:1171 FPropertyProject.class:1401
+#: FOption.class:1171 FPropertyProject.class:1402
 msgid "space(s)"
 msgstr ""
 
@@ -3308,6 +3321,18 @@ msgstr ""
 msgid "Clipboard contents"
 msgstr ""
 
+#: FPasteTable.class:57
+msgid "Please enter a table name."
+msgstr ""
+
+#: FPasteTable.class:133
+msgid "Table already exists"
+msgstr ""
+
+#: FPasteTable.class:308
+msgid "Also copy table &data"
+msgstr ""
+
 #: FProperty.class:353
 msgid "Forbidden characters in control name."
 msgstr ""
@@ -3391,7 +3416,7 @@ msgstr ""
 msgid "Features"
 msgstr ""
 
-#: FPropertyComponent.class:404 FPropertyProject.class:1638
+#: FPropertyComponent.class:404 FPropertyProject.class:1639
 msgid "Components"
 msgstr ""
 
@@ -3455,115 +3480,115 @@ msgstr ""
 msgid "GB_GUI=gb.gtk"
 msgstr ""
 
-#: FPropertyProject.class:1313
+#: FPropertyProject.class:1314
 msgid "Version"
 msgstr ""
 
-#: FPropertyProject.class:1363
+#: FPropertyProject.class:1364
 msgid "Author(s)"
 msgstr ""
 
-#: FPropertyProject.class:1378
+#: FPropertyProject.class:1379
 msgid "Edition"
 msgstr ""
 
-#: FPropertyProject.class:1389
+#: FPropertyProject.class:1390
 msgid "Tab size"
 msgstr ""
 
-#: FPropertyProject.class:1409
+#: FPropertyProject.class:1410
 msgid "Compilation"
 msgstr ""
 
-#: FPropertyProject.class:1420
+#: FPropertyProject.class:1421
 msgid "Module symbols are public by default"
 msgstr ""
 
-#: FPropertyProject.class:1437
+#: FPropertyProject.class:1438
 msgid "Form controls are public"
 msgstr ""
 
-#: FPropertyProject.class:1454
+#: FPropertyProject.class:1455
 msgid "Get version from program"
 msgstr ""
 
-#: FPropertyProject.class:1467 FTranslate.class:1554
+#: FPropertyProject.class:1468 FTranslate.class:1554
 msgid "Translation"
 msgstr ""
 
-#: FPropertyProject.class:1478
+#: FPropertyProject.class:1479
 msgid "Project is translatable"
 msgstr ""
 
-#: FPropertyProject.class:1510
+#: FPropertyProject.class:1511
 msgid "Debugging"
 msgstr ""
 
-#: FPropertyProject.class:1521
+#: FPropertyProject.class:1522
 msgid "Use a terminal emulator"
 msgstr ""
 
-#: FPropertyProject.class:1535
+#: FPropertyProject.class:1536
 msgid "Component"
 msgstr ""
 
-#: FPropertyProject.class:1546
+#: FPropertyProject.class:1547
 msgid "This project is a component"
 msgstr ""
 
-#: FPropertyProject.class:1556
+#: FPropertyProject.class:1557
 msgid "Environment"
 msgstr ""
 
-#: FPropertyProject.class:1566
+#: FPropertyProject.class:1567
 msgid "Arguments"
 msgstr ""
 
-#: FPropertyProject.class:1609
+#: FPropertyProject.class:1610
 msgid "Environment variables"
 msgstr ""
 
-#: FPropertyProject.class:1642
+#: FPropertyProject.class:1643
 msgid "Show only components used in project"
 msgstr ""
 
-#: FPropertyProject.class:1648
+#: FPropertyProject.class:1649
 msgid "Show components in beta version"
 msgstr ""
 
-#: FPropertyProject.class:1661
+#: FPropertyProject.class:1662
 msgid "About &component..."
 msgstr ""
 
-#: FPropertyProject.class:1672
+#: FPropertyProject.class:1673
 msgid "&Reset"
 msgstr ""
 
-#: FPropertyProject.class:1690
+#: FPropertyProject.class:1691
 msgid "Libraries"
 msgstr ""
 
-#: FPropertyProject.class:1703
+#: FPropertyProject.class:1704
 msgid "&Add..."
 msgstr ""
 
-#: FPropertyProject.class:1740
+#: FPropertyProject.class:1741
 msgid "Changes since last commit"
 msgstr ""
 
-#: FPropertyProject.class:1753
+#: FPropertyProject.class:1754
 msgid "There is no change to commit."
 msgstr ""
 
-#: FPropertyProject.class:1762
+#: FPropertyProject.class:1763
 msgid "&Update"
 msgstr ""
 
-#: FPropertyProject.class:1768
+#: FPropertyProject.class:1769
 msgid "&Revert..."
 msgstr ""
 
-#: FPropertyProject.class:1774
+#: FPropertyProject.class:1775
 msgid "&Commit..."
 msgstr ""
 
@@ -5093,31 +5118,31 @@ msgstr ""
 msgid "Constants"
 msgstr ""
 
-#: MMime.module:16
+#: MMime.module:17
 msgid "Plain text"
 msgstr ""
 
-#: MMime.module:17
+#: MMime.module:18
 msgid "HTML text"
 msgstr ""
 
-#: MMime.module:18
+#: MMime.module:19
 msgid "Gambas form data"
 msgstr ""
 
-#: MMime.module:19
+#: MMime.module:20
 msgid "Gambas menu data"
 msgstr ""
 
-#: MMime.module:20
+#: MMime.module:21
 msgid "Gambas project file path"
 msgstr ""
 
-#: MMime.module:21
+#: MMime.module:22
 msgid "URI list"
 msgstr ""
 
-#: MMime.module:32
+#: MMime.module:33
 msgid "Unknown format"
 msgstr ""
 

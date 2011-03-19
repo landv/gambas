@@ -179,7 +179,7 @@ Private Sub Load()
 
   If hSrc.Index < 0 Then 
     $bCreate = True
-    $hCtrl.Rows.UnSelect
+    $hCtrl.Rows.UnselectAll
     If bReset Then 
       $bNoActivate = True
       $hCtrl.MoveTo(0, 0)
@@ -692,7 +692,7 @@ End
 Private Sub UnSelect()
   
   $bCreate = True
-  $hCtrl.Rows.UnSelect
+  $hCtrl.Rows.UnselectAll
   
 End
 

@@ -25,11 +25,11 @@
       MoveScaled(1,4,62,34)
       Spacing = True
       Indent = True
-      { txtPath TextBox
+      { txtPath Label
         MoveScaled(0,0,60,4)
-        Background = Color.Background
         Expand = True
-        ReadOnly = True
+        Padding = 4
+        Border = Border.Plain
       }
       { Label6 Label
         MoveScaled(0,5,28,3)
@@ -144,6 +144,7 @@
       MoveScaled(0,0,28,4)
       Expand = True
       Arrangement = Arrange.Fill
+      Margin = True
       Padding = 4
       { pgbImport ProgressBar
         MoveScaled(0,1,29,2)
