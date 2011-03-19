@@ -1,8 +1,6 @@
 COMPONENT = gb.gtk
 include $(top_srcdir)/component.am
 
-SUBDIRS = @GTKOPENGL_DIR@
-
 INCLUDES = @GTK_INC@ -I$(top_srcdir)/share
 
 gblib_LTLIBRARIES = gb.gtk.la
