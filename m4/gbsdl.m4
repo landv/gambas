@@ -5,6 +5,8 @@
 # stolen from Manish Singh
 # Shamelessly stolen from Owen Taylor
 
+#serial 1
+
 dnl GB_PATH_SDL is only a rename for AM_PATH_SDL, grab from sdl-1.2.13 release
 
 dnl GB_PATH_SDL([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
