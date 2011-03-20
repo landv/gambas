@@ -26,8 +26,6 @@
 #include "SDLcore.h"
 #include "SDLtexture.h"
 
-#include "SDL_image.h"
-
 // debugging
 // #define DEBUGSURFACE
 
