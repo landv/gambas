@@ -38,6 +38,7 @@ SDLtexture::SDLtexture(SDLsurface *surface)
 	hSurface = surface;
 	hTexinfo = new texinfo;
 	hTexinfo->Index = 0;
+	hRenderBuffer = 0;
 }
 
 SDLtexture::~SDLtexture()
@@ -45,6 +46,9 @@ SDLtexture::~SDLtexture()
 	if (hTexinfo->Index)
 		glDeleteTextures(1, &(hTexinfo->Index));
 
+	if (hRenderBuffer)
+		delete hRenderBuffer;
+	
 	delete hTexinfo;
 }
 
@@ -55,6 +59,34 @@ void SDLtexture::init()
 
 void SDLtexture::Select()
 {
+	if (!FBOrender::Check())
+		SDLcore::RaiseError("Unable to draw on the texture, FBO not supported!");
+	
+	/* Make sure our texture is properly loaded/synced */
+	this->GetAsTexture(NULL);
+
+	if (!hRenderBuffer)
+		hRenderBuffer = new FBOrender();
+	
+	hRenderBuffer->Bind(hTexinfo->Index);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glViewport(0, 0, hSurface->GetWidth(), hSurface->GetHeight());
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluOrtho2D(0.0f, GLdouble(hSurface->GetWidth()), GLdouble(hSurface->GetHeight()), 0.0f);
+	// enable blending, should work like 2d sdl does
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	// enable anti-aliasing
+	glEnable(GL_POINT_SMOOTH);
+	glMatrixMode(GL_MODELVIEW);
+}
+
+void SDLtexture::Unselect()
+{
+	FBOrender::Unbind();
 }
 
 void SDLtexture::Sync()
@@ -81,8 +113,8 @@ void SDLtexture::GetAsTexture(texinfo *tex)
 			SDL_Surface *origin = hSurface->GetSdlSurface();
 
 			/* Use the surface width and height expanded to powers of 2 */
-			int w = GetPowerOfTwo(origin->w);
-			int h = GetPowerOfTwo(origin->h);
+			int w = this->GetPowerOfTwo(origin->w);
+			int h = this->GetPowerOfTwo(origin->h);
 			hTexinfo->Width = GLdouble(origin->w) / w;  /* Max X */
 			hTexinfo->Height = GLdouble(origin->h) / h;  /* Max Y */
 
@@ -136,7 +168,8 @@ void SDLtexture::GetAsTexture(texinfo *tex)
 		hTexinfo->State = TEXTURE_OK;
 	}
 
-	std::memcpy(tex, hTexinfo, sizeof(texinfo));
+	if (tex)
+		std::memcpy(tex, hTexinfo, sizeof(texinfo));
 }	
 
 int SDLtexture::GetPowerOfTwo(int size)

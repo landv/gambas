@@ -41,8 +41,8 @@ class SDLsurface;
 
 typedef struct {
 	GLuint Index;
-	GLdouble Width;
-	GLdouble Height;
+	GLdouble Width, Height;
+	GLint RealWidth, RealHeight;
 	Uint8 State;
 	}
 	texinfo;
@@ -55,6 +55,7 @@ public:
 
 	static void init(void );
 	void Select(void );
+	static void Unselect(void );
 	SDLsurface* GetSurface(void ) { return hSurface; };
 	void Sync(void );
 
@@ -67,7 +68,7 @@ public:
 private:
 	SDLsurface *hSurface;
 	texinfo *hTexinfo;
-	OSrender *hRenderBuffer;
+	FBOrender *hRenderBuffer;
 };
 
 #endif /* __SDLTEXTURE_H */

@@ -18,14 +18,6 @@ AC_CHECK_LIB(Xcursor, XcursorLibraryLoadCursor,
   touch DISABLED],
   $X_LIBS)
 
-dnl check Xft support
-AC_CHECK_LIB(Xft, XftListFonts,
-  [echo -n
-  LDFLAGS="$LDFLAGS -lXft" SDL_CFLAGS="$SDL_CFLAGS `freetype-config --cflags`"], 
-  [AC_MSG_WARN([libXft not found. Check 'config.log' for more details.])
-  touch DISABLED],
-  $X_LIBS)
-
 dnl check for SDL libs
 GB_COMPONENT(
   sdl,

@@ -23,13 +23,17 @@
 #ifndef __SDLFONT_H
 #define __SDLFONT_H
 
+#if 0
 #include <X11/Xlib.h>
 #include <X11/Xft/Xft.h>
+#endif
 
 #include "SDL_ttf.h"
 
+#if 0
 #include <vector>
 #include <string>
+#endif
 
 #include "SDLsurface.h"
 #if 0

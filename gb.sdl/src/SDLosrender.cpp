@@ -25,14 +25,54 @@
 
 #include "SDLosrender.h"
 
+#include <iostream>
+
 /****** FBO render ******/
+bool FBOrender::hBinded = false;
+
+FBOrender::FBOrender()
+{
+	glGenFramebuffersEXT(1, &hFbo);
+}
+
+FBOrender::~FBOrender()
+{
+	if (hFbo)
+	{
+		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+		glDeleteFramebuffersEXT(1, &hFbo);
+	}
+}
+
+void FBOrender::Bind(GLuint texid)
+{
+	GLenum status;
+	
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, hFbo);
+	glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, texid, 0);
+	
+	status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+
+	if (status != GL_FRAMEBUFFER_COMPLETE_EXT)
+		std::cerr << "FBO can't be completed : "<< std::hex << status << std::endl;
+	
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, hFbo);
+	
+	FBOrender::hBinded = true;
+	std::cout << "FBO: binding " <<  hFbo << " with tex " << texid << std::endl;
+}
+
+void FBOrender::Unbind(void )
+{
+	if (!FBOrender::hBinded)
+		return;
+	
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+	std::cout << "FBO: unbinding " <<  std::endl;
+	FBOrender::hBinded = false;
+}
 
 bool FBOrender::Check(void )
 {
-	bool hasFBO = false;
-
-// 	hasFBO = GL::CheckExtension("GL_EXT_framebuffer_object");
-// 	SDLdebug::Print("GL_EXT_framebuffer_object: %b",hasFBO);
-
-	return (hasFBO);
+	return (GLEW_ARB_framebuffer_object || GLEW_EXT_framebuffer_object);
 }

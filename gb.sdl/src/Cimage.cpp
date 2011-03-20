@@ -118,36 +118,10 @@ CIMAGE *CIMAGE_create(SDLsurface *image)
 }
 
 /***************************************************************************/
-/*
-BEGIN_METHOD(CIMAGE_load, GB_STRING path)
-
-	char *addr;
-	int len;
-	SDLsurface *mySurface = new SDLsurface();
-
-	if (!(GB.LoadFile(STRING(path), LENGTH(path), &addr, &len)))
-	{
-		mySurface->LoadFromMem(addr, len);
-
-		if (mySurface->GetDepth() != 32)
-			mySurface->ConvertDepth(32);
-
-		GB.ReturnObject(CIMAGE_create(mySurface));
-
-		GB.ReleaseFile(addr, len);
-	}
-	else
-		GB.Error("Unable to load image");
-
-END_METHOD
-*/
-/***************************************************************************/
 
 GB_DESC CImage[] =
 {
   GB_DECLARE("Image", sizeof(CIMAGE)),
-
-  //GB_STATIC_METHOD("Load", "Image", CIMAGE_load, "(Path)s"),
 
   GB_END_DECLARE
 };

@@ -115,10 +115,11 @@ void SDLwindow::Select(void )
 
 	if ((glXGetCurrentContext()!=hCtx) && (glXGetCurrentDrawable()!=hDrw))
 	{
-		std::cerr << "glXMakeCurrent()" << std::endl;
+		std::cout << "Set window current with glXMakeCurrent()" << std::endl;
 		glXMakeCurrent(hDpy, hDrw, hCtx);
 	}
-
+	else
+		SDLtexture::Unselect();
 }
 
 void SDLwindow::Clear(Uint32 color)

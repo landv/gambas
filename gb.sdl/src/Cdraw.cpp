@@ -87,15 +87,15 @@ void DRAW_begin(void *device)
 		GB.Ref(THIS->device);
 		return;
 	}
-#if 0
-	if (GB.Is(device, CLASS_Image))
-	{
-		THIS->device = device;
-		THIS->graphic = new SDLgfx(IMAGEID(device));
-		GB.Ref(THIS->device);
-		return;
-	}
-#endif
+
+// 	if (GB.Is(device, CLASS_Image))
+// 	{
+// 		THIS->device = device;
+// 		THIS->graphic = new SDLgfx(IMAGEID(device));
+// 		GB.Ref(THIS->device);
+// 		return;
+// 	}
+
 	GB.Error("Device not supported !");
 }
 

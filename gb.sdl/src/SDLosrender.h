@@ -26,14 +26,21 @@
 #ifndef __SDLOSRENDER_H
 #define __SDLOSRENDER_H
 
-class OSrender
-{
-};
+#include <GL/glew.h>
 
-class FBOrender : public OSrender
+class FBOrender
 {
 public:
+	FBOrender();
+	~FBOrender();
+	
+	void Bind(GLuint );
+
+	static void Unbind(void );
 	static bool Check(void );
+private:
+	GLuint hFbo;
+	static bool hBinded;
 };
 
 #endif /* __SDLOSRENDER_H */
