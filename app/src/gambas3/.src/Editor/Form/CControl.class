@@ -550,7 +550,6 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
     ' Endif
   Endif
 
-  'IF Kind = "TabStrip" THEN
   If IsMultiContainer() Then
     If sProp = "Picture" Then
       If IsNull(vVal) Then
@@ -621,7 +620,15 @@ _DO_NOT_APPLY:
   Endif
 
   If hProp.UpdateName Then UpdateName
-  If Control Is DrawingArea Then Control.Refresh
+  
+  If Control Is DrawingArea Then 
+    Control.Refresh
+  Else If Control Is Menu Then
+    If sProp = "Text" Or If sProp = "Shortcut" Then
+      Control.Text = RTrim($cValue["Text"] & "\t" & $cValue["Shortcut"])
+    Endif  
+  Endif
+
 
   Return
 

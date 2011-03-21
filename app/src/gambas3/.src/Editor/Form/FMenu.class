@@ -85,6 +85,7 @@ Private Sub CreateMenu(hCCtrl As CControl)
 
   Dim hCMenu As CMenu
   Dim hMenu As Menu
+  Dim iPos As Integer
   
   hCMenu = New CMenu
   
@@ -183,6 +184,7 @@ Static Private Sub SaveAllMenu()
   Dim hCMenu As CMenu
   Dim hParent As CControl
   Dim iLevel As Integer
+  Dim sText As String
 
   For Each hCtrl In $hForm.AllMenus
     'cDelete.Add(hCtrl)

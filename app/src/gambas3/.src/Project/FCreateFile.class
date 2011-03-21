@@ -48,6 +48,7 @@ Public Sub lstType_Click()
         txtName.Text = Project.GetNewName(sPrefix, $sDir)
       Case Else
         txtName.Text = Project.GetNewName(sPrefix)
+        fchExisting.ShowHidden = True
     End Select
     'txtName.SelectAll
     Object.Unlock(txtName)

@@ -3,7 +3,7 @@
   main.c
 
   (c) 2004-2007 Andrea Bortolan <andrea_bortolan@yahoo.it>
-  (c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2011 Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
