@@ -601,7 +601,7 @@ Private Function MakeDebPackage(sSys As String)
   Print #hFile, "Section: contrib/"; Project.Groups[sSys]
   Print #hFile, "Priority: optional"
   Print #hFile, "Maintainer: "; Project.Maintainer; " <"; Project.Address; ">"
-  Print #hFile, "Build-Depends: debhelper (>= 5.0.0), gambas2-dev (>= "; MIN_VERSION; "), gambas2-dev (<< "; MAX_VERSION; ")";
+  Print #hFile, "Build-Depends: debhelper (>= 5.0.0), gambas"; System.Version; "-dev (>= "; MIN_VERSION; "), gambas"; System.Version; "-dev (<< "; MAX_VERSION; ")";
   ' For Each sLib In GetDependencies()
   '   aVer = GetComponentMinMaxVersion(sLib)
   '   sLib = ComponentToPackageName(sLib)
@@ -641,7 +641,7 @@ Private Function MakeDebPackage(sSys As String)
     Next 
   Endif
   If Project.CreateComponent Then
-    Print #hFile, " This is a Gambas2 component written in Gambas"
+    Print #hFile, " This is a Gambas3 component written in Gambas"
   Else 
       Print #hFile, " This program is written in Gambas"
   Endif 
@@ -1325,7 +1325,7 @@ Private Sub MakeAutotoolsPackage(sSys As String)
   File.Save(sBuilddir &/ "NEWS", "")
   
   hFile = Open sBuildDir &/ "configure.ac" For Create
-    Print #hFile, "dnl -- package generated with gambas2 ide --"
+    Print #hFile, "dnl -- package generated with gambas3 ide --"
     Print #hFile, ""
     Print #hFile, "AC_INIT(configure.ac)"
     Print #hFile, "GB_INIT_PROJECT(" & Project.Name & ")"

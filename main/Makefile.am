@@ -4,9 +4,15 @@ EXTRA_DIST = TODO reconf spec README mime
 
 install-exec-local:
 	@rm -f $(srcdir)/../warnings.log
-	@if test x"$(DESTDIR)" != x; then \
-		echo "Installing with DESTDIR='$(DESTDIR)'"; \
+	
+	@if test "x$(ROOT)" != "x"; then \
+	 echo "[Installing with ROOT=$(ROOT)]"; \
 	fi
+	@if test "x$(DESTDIR)" != "x"; then \
+	 echo "[Installing with DESTDIR=$(DESTDIR)]"; \
+	 ROOT=$DESTDIR; \
+	fi
+	
 	@echo "Making runtime symbolic link"
 	@$(LN_S) -f gbx$(GAMBAS_VERSION) $(DESTDIR)$(bindir)/gbr$(GAMBAS_VERSION) || true
 	

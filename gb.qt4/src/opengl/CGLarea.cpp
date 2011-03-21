@@ -138,7 +138,7 @@ GB_DESC CGlareaDesc[] =
   GB_METHOD("Update", NULL, CGLAREA_update, NULL),
   GB_METHOD("Refresh", NULL, CGLAREA_update, NULL),
   GB_METHOD("Select", NULL, CGLAREA_select, NULL),
-  GB_METHOD("Text", NULL, CGLAREA_text, "(Text)s(X)i(Y)i"),
+  //GB_METHOD("Text", NULL, CGLAREA_text, "(Text)s(X)i(Y)i"),
 
   GB_CONSTANT("_Properties", "s", CGLAREA_PROPERTIES),
 

@@ -1,6 +1,14 @@
 EXTRA_DIST = reconf src spec mime
 
 install-exec-local:
+	@if test "x$(ROOT)" != "x"; then \
+	 echo "[Installing with ROOT=$(ROOT)]"; \
+	fi
+	@if test "x$(DESTDIR)" != "x"; then \
+	 echo "[Installing with DESTDIR=$(DESTDIR)]"; \
+	 ROOT=$DESTDIR; \
+	fi
+	
 	@echo "Installing the development environment..."
 	@(cd $(srcdir)/src; d=`pwd`; \
 	  for p in `cat INSTALL`; do \
@@ -39,5 +47,5 @@ uninstall-local:
 
 dist-hook:
 	@(cd $(distdir)/src; \
-	rm -rf `find . -name ".gambas" -o -name ".lock" -o -name ".xvpics" -o -name "*~" -o -name "*.out"  -o -name "*.pot" -o -name "*.gambas" -o -name "core.*" -o -name ".kdbg*" -o -name ".svn"`;)
+	rm -rf `find . -name ".gambas" -o -name ".lock" -o -name ".xvpics" -o -name "*~" -o -name "*.out"  -o -name "*.pot" -o -name "*.gambas" -o -name "core*" -o -name ".kdbg*" -o -name ".svn"`;)
 

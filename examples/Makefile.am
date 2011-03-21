@@ -1,19 +1,14 @@
-## Process this file with automake to produce Makefile.in
-
 EXTRA_DIST = reconf examples spec
 
 install-exec-local:
 	@if test "x$(ROOT)" != "x"; then \
-	 echo "Installing with ROOT=$(ROOT)"; \
-         echo; \
-        fi
-
+	 echo "[Installing with ROOT=$(ROOT)]"; \
+	fi
 	@if test "x$(DESTDIR)" != "x"; then \
-	 echo "Installing with DESTDIR=$(DESTDIR)"; \
-         echo; \
+	 echo "[Installing with DESTDIR=$(DESTDIR)]"; \
 	 ROOT=$DESTDIR; \
-        fi
-
+	fi
+	
 	@echo
 	@echo "Installing the gambas examples..."
 	@rm -rf $(DESTDIR)$(gbdatadir)/examples
@@ -30,7 +25,7 @@ uninstall-local:
 
 dist-hook:
 	@(cd $(distdir)/examples; \
-	rm -rf `find . -name ".gambas" -o -name ".lock" -o -name ".xvpics" -o -name "*~" -o -name "*.out"  -o -name "*.pot" -o -name "*.gambas" -o -name "core.*" -o -name ".kdbg*" -o -name ".svn"`;)
+	rm -rf `find . -name ".gambas" -o -name ".lock" -o -name ".xvpics" -o -name "*~" -o -name "*.out"  -o -name "*.pot" -o -name "*.gambas" -o -name "core*" -o -name ".kdbg*" -o -name ".svn"`;)
 	
 ##	@(cd $(distdir)/examples/examples; for p in */ */*/; do \
 ##	  if test -e $$p/.project; then \

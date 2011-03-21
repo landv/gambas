@@ -1,19 +1,14 @@
-## Process this file with automake to produce Makefile.in
-
 EXTRA_DIST = reconf src spec
 ##AUTOMAKE_OPTIONS = dist-bzip2
 
 install-exec-local:
 	@if test "x$(ROOT)" != "x"; then \
-	 echo "Installing with ROOT=$(ROOT)"; \
-         echo; \
-        fi
-
+	 echo "[Installing with ROOT=$(ROOT)]"; \
+	fi
 	@if test "x$(DESTDIR)" != "x"; then \
-	 echo "Installing with DESTDIR=$(DESTDIR)"; \
-         echo; \
+	 echo "[Installing with DESTDIR=$(DESTDIR)]"; \
 	 ROOT=$DESTDIR; \
-        fi
+	fi
 	
 	@echo
 	@echo "Running the informer again twice because of dependencies between information files"
@@ -55,5 +50,5 @@ uninstall-local:
 	  done)
 
 dist-hook:
-	@(cd $(distdir)/src; rm -rf `find . -name ".gambas" -o -name ".lock" -o -name ".xvpics" -o -name "*~" -o -name "*.out"  -o -name "*.pot" -o -name "*.gambas" -o -name "core.*" -o -name ".kdbg*" -o -name ".svn"`;)
+	@(cd $(distdir)/src; rm -rf `find . -name ".gambas" -o -name ".lock" -o -name ".xvpics" -o -name "*~" -o -name "*.out"  -o -name "*.pot" -o -name "*.gambas" -o -name "core*" -o -name ".kdbg*" -o -name ".svn"`;)
 
