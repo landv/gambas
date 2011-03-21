@@ -324,6 +324,135 @@ CATCH ' S'executa només si hi ha un error
 END</pre>
 
 
+[OPTIONAL]
+
+<p>Les funcions i procediments al Gambas poden tenir paràmetres opcionals.</p>
+
+<p>Els paràmetres són opcionals simplement posant l'indicador <b>OPTIONAL</b> just a davant de la variable</p>
+
+<pre>PRIVATE SUB LaMevaFuncio(param AS String, OPTIONAL optim AS String)
+  ...
+  PRINT param & " requerit, '" & optim "' opcional"
+  ...
+END
+
+'cridant la funció:
+
+LaMevaFuncio("parametre") 'sense argument opcional (si no cal)
+LaMevaFuncio("parametre", "parametre_opcional")
+</pre>
+
+
+[ARRAY]
+
+<p>Al Gambas podeu recórrer fàcilment una matriu d'una coŀlecció de variables amb la funció <b>FOR EACH</b>.</p>
+
+<p>Exemple:</p>
+
+<pre>DIM xml AS NEW XmlDocument
+DIM node AS XmlNode
+DIM i AS Integer
+
+'Obre l'xml
+xml.Open("pokus.xml")
+'Children s'indexa via [i], perquè és una matriu
+FOR i = 0 TO xml.Root.Children.Count - 1
+  'Attributes es recorren via FOR EACH, perquè és una coŀlecció
+  FOR EACH node IN xml.Root.Children[i].Attributes
+    DEBUG node.Name;; Node.Value
+  NEXT
+NEXT</pre>
+
+
+[ICON]
+
+<p>Podeu fer servir les icones internes per a crear una interfície més agradable de la vostra aplicació, les quals estan disponibles en diverses mides (des de 16x16 fins a 128x128)</p>
+
+<p>Per exemple:</p>
+
+<pre>Imatge1.Picture = Picture["icon:/32/warning"]</pre>
+
+
+[SETTINGS]
+
+<p>Si necessiteu desar la configuració del vostre programa (tal com la mida i posició de la finestra), llavors esteu de sort. Això és molt elegant i fàcil de fer a Gambas.</p>
+
+<p>Podeu desar tota la configuració d'un objecte, o només una propietat.</p>
+
+<p>Exemple:</p>
+
+<pre>'Desa la posició d'un objecte
+Settings.Write(ME)
+
+'Carrega l'objecte
+Settings.Read(ME)
+
+'Desa la propietat
+Settings["win/x"] = ME.X
+
+'Llegeix la propietat
+'podeu utilitzar fins i tot el valor per defecte, com aquest: ["win/x", 0]
+ME.X = Settings["win/x"]
+</pre>
+
+<p><b>Atenció:</b> heu d'incloure el component: <i>gb.settings</i></p>
+
+
+[MESSAGE]
+
+<p>Per a informar als usuaris, podeu usar les classes del Gambas <b>Message</b> i <b>Balloon</b>.
+Message prové dels components (QT, GTK+)i el Balloon de <i>gb.form</i>.</p>
+
+<p><b>Message</b> i <b>Balloon</b> tenen els següents tipus possibles:
+Message.Delete(), .Error(), .Info(), .Question() i .Warning()</p>
+
+<p>A cada botó del diàleg <b>Message</b> podeu establis les vostres pròpies etiquetes.
+Després de prémer el botó, us tornarà un valor numèric (1 to X, depenent del tipus i la quantitat de botons).</p>
+
+<pre>DEBUG Message.Info("Bon dia món!")  'retornarà 1
+
+Message("Bon dia món!")  'El mateix però el formulari més curt</pre>
+
+<p>Mentre creeu el <b>Balloon</b> heu de definir el contenidor pare.
+Opcionalment podeu definir el temps de mostra en ms, i la posició X,Y.</p>
+
+<pre>Balloon.Info("Bon dia món!", ME)  'Mostrarà el «ballon» dins el formulari principal
+
+'més reduït sense icona: Balloon("Bon dia món!", ME)</pre>
+
+
+[SUBST]
+
+<p>La substitució és molt útil per a la internacionalització de la vostra aplicació.
+Es fa amb l'instrucció <b>Subst()</b>.</p>
+
+<p>Té com a mínim 2 paràmetres. El primer és la màscara de text a on s'aplica la substitució.
+Després hi són les vostres variables, a on la primera té en número <i>1</i>
+S'usa d'aquesta manera: <b>&1, &2, ...</b></p>
+
+<pre>Subst(("Substitució de &1, &2 i &3"), "primer", "segon", "tercer")
+
+'...retornarà això:
+'Substitució de primer, segon i tercer</pre>
+
+
+[USEFUL]
+
+<p>Alguns consells de l'editor:</p>
+
+<p>Comentaris:</p>
+
+<pre>'Comentari normal</pre>
+<b><pre>''Comentari en negreta</pre></b>
+
+<p>Com utilitzar fragments de codi:<br>
+
+'Si escrivim:
+<pre>main</pre>
+'I després premem la tecla tab, el fragment de codi ho completarà per tu<br>
+'per cert, tal com estan definits a les preferències</p>
+
+
 [END]
 
 <p>Ja heu llegit tots els consells del dia. Espero que us hàgiu convertit en un expert de <b>Gambas</b>! :-)</p>
