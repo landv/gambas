@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gb.form\n"
 "POT-Creation-Date: 2002-11-01 04:27+0100\n"
-"PO-Revision-Date: 2010-12-16 23:28+0100\n"
+"PO-Revision-Date: 2011-03-20 15:34+0100\n"
 "Last-Translator: Jordi Sayol <g.sayol@yahoo.es>\n"
 "Language-Team: \n"
 "Language: \n"
@@ -17,6 +17,10 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Poedit-Language: Catalan\n"
+
+#: .project:1
+msgid "More controls for graphical components"
+msgstr "Més controls per als components gràfics"
 
 #: CBookmarkList.class:50
 msgid "Home"
@@ -30,132 +34,163 @@ msgstr "Escriptori"
 msgid "System"
 msgstr "Sistema"
 
-#: DirView.class:409
+#: DirView.class:412
 msgid "Cannot rename directory."
 msgstr "No es pot canviar el nom del directori."
 
-#: DirView.class:439
+#: DirView.class:442
 msgid "New folder"
 msgstr "Nova carpeta"
 
-#: DirView.class:457
+#: DirView.class:460
 msgid "Cannot create directory."
 msgstr "No es pot crear el directori."
 
-#: FCalendar.class:445
+#: FCalendar.class:653
 msgid "Today"
 msgstr "Avui"
 
-#: FCalendar.class:451
+#: FCalendar.class:659
 msgid "Previous month"
 msgstr "Mes anterior"
 
-#: FCalendar.class:481
+#: FCalendar.class:689
 msgid "Next month"
 msgstr "Mes següent"
 
-#: FColorChooser.class:696
+#: FColorChooser.class:702
 msgid "Follow color grid"
 msgstr "Seguiu la graella de color"
 
-#: FColorChooser.class:742
+#: FColorChooser.class:748
 msgid "R"
 msgstr "-"
 
-#: FColorChooser.class:747
+#: FColorChooser.class:753
 msgid "G"
 msgstr "-"
 
-#: FColorChooser.class:752
+#: FColorChooser.class:758
 msgid "B"
 msgstr "-"
 
-#: FColorChooser.class:763
+#: FColorChooser.class:769
 msgid "H"
 msgstr "-"
 
-#: FColorChooser.class:768
+#: FColorChooser.class:774
 msgid "S"
 msgstr "-"
 
-#: FColorChooser.class:779
+#: FColorChooser.class:785
 msgid "V"
 msgstr "-"
 
-#: FColorChooser.class:795
+#: FColorChooser.class:801
 msgid "A"
 msgstr "-"
 
-#: FDirChooser.class:392
+#: FDirChooser.class:422
 msgid "All files (*)"
 msgstr "Tots els fitxers (*)"
 
-#: FDirChooser.class:771
-msgid "&Add bookmark"
-msgstr "&Afegeix l'adreça  d'interès"
-
-#: FDirChooser.class:775
-msgid "&Remove bookmark"
-msgstr "&Suprimeix l'adreça d'interès"
-
-#: FDirChooser.class:779
-msgid "&Edit bookmark..."
-msgstr "&Edita l'adreça d'interès"
-
-#: FDirChooser.class:873
+#: FDirChooser.class:801
 msgid "Bookmarks"
 msgstr "Adreces d'interès"
 
-#: FDirChooser.class:888
+#: FDirChooser.class:811
+msgid "&Bookmark current directory"
+msgstr "Crea adreça d'&interès del directori actual"
+
+#: FDirChooser.class:819
+msgid "&Edit bookmarks..."
+msgstr "&Edita les adreces d'interès..."
+
+#: FDirChooser.class:828
+msgid "Show &details"
+msgstr "Mostra els &detalls"
+
+#: FDirChooser.class:834
+msgid "Show &hidden files"
+msgstr "Mostra els fitxers &ocults"
+
+#: FDirChooser.class:842
+msgid "&Uncompress file"
+msgstr "&Descomprimeix el fitxer"
+
+#: FDirChooser.class:847
+msgid "&Create directory"
+msgstr "&Crea un directori"
+
+#: FDirChooser.class:851
+msgid "&Refresh"
+msgstr "&Actualitza"
+
+#: FDirChooser.class:981
+msgid "Cannot uncompress file."
+msgstr "No es pot descomprimir el fitxer."
+
+#: FDirChooser.class:981
+msgid "Unknown archive."
+msgstr "Fitxer desconegut."
+
+#: FDirChooser.class:1072
 msgid "Parent directory"
 msgstr "Directori pare"
 
-#: FDirChooser.class:894
-msgid "Refresh"
-msgstr "Actualitza"
-
-#: FDirChooser.class:900
-msgid "Create directory"
-msgstr "Crea un directori"
-
-#: FDirChooser.class:912
-msgid "View hidden files"
-msgstr "Mostra els fitxers ocults"
-
-#: FDirChooser.class:920
-msgid "Toggle view"
-msgstr "Commuta la visualització"
-
-#: FDirChooser.class:926
+#: FDirChooser.class:1104
 msgid "Show files"
 msgstr "Mostra els fitxers"
 
-#: FDirChooser.class:991
-#: FEditBookmark.class:102
+#: FDirChooser.class:1169
 #: FInputBox.class:102
 #: FWizard.class:59
 msgid "OK"
 msgstr "D'acord"
 
-#: FDirChooser.class:997
-#: FEditBookmark.class:108
+#: FDirChooser.class:1175
+#: FEditBookmark.class:109
 #: FInputBox.class:108
-#: FWizard.class:165
+#: FWizard.class:166
 msgid "Cancel"
 msgstr "Canceŀla"
 
-#: FEditBookmark.class:66
-msgid "Edit bookmark"
-msgstr "Edita Edita l'adreça d'interès"
-
-#: FEditBookmark.class:75
-#: FileView.class:77
+#: FEditBookmark.class:20
+#: FileView.class:84
 msgid "Name"
 msgstr "Nom"
 
-#: FEditBookmark.class:89
+#: FEditBookmark.class:21
 msgid "Path"
 msgstr "Camí"
+
+#: FEditBookmark.class:109
+msgid "Do you really want to remove this bookmark?"
+msgstr "Segur que voleu esborrar aquest adreça d'interès?"
+
+#: FEditBookmark.class:109
+msgid "Remove"
+msgstr "Suprimeix"
+
+#: FEditBookmark.class:146
+msgid "Edit bookmarks"
+msgstr "Edita les adreces d'interès"
+
+#: FEditBookmark.class:165
+msgid "&Up"
+msgstr "Am&unt "
+
+#: FEditBookmark.class:171
+msgid "&Down"
+msgstr "A&baix"
+
+#: FEditBookmark.class:177
+msgid "&Remove"
+msgstr "&Suprimeix"
+
+#: FEditBookmark.class:188
+msgid "Close"
+msgstr "Tanca"
 
 #: FFontChooser.class:411
 msgid "Family"
@@ -190,7 +225,7 @@ msgid "Strikeout"
 msgstr "Barrat"
 
 #: FFontChooser.class:456
-#: FileView.class:78
+#: FileView.class:85
 msgid "Size"
 msgstr "Mida"
 
@@ -198,7 +233,7 @@ msgstr "Mida"
 msgid "How quickly daft jumping zebras vex"
 msgstr "Jove xef, porti whisky amb quinze glaçons d'hidrogen, coi!"
 
-#: FMessage.class:129
+#: FMessage.class:132
 msgid "Do not display this message again"
 msgstr "No tornis a mostrar aquest missatge"
 
@@ -206,11 +241,11 @@ msgstr "No tornis a mostrar aquest missatge"
 msgid "&Next"
 msgstr "&Següent"
 
-#: FWizard.class:153
+#: FWizard.class:154
 msgid "&Previous"
 msgstr "&Enrere"
 
-#: FileView.class:80
+#: FileView.class:87
 msgid "Last modified"
 msgstr "Última modificació"
 
@@ -222,14 +257,18 @@ msgstr "El caràcter '/' no està permès dins el nom de fitxers o directoris."
 msgid "Step #&1"
 msgstr "Pas número &1"
 
-#~ msgid "TextBox1"
+#~ msgid "&1 K"
 #~ msgstr "-"
+#~ msgid "&Add"
+#~ msgstr "&Afegeix"
 #~ msgid ""
 #~ "Just press the Tab key.\n"
 #~ "A message should appear"
 #~ msgstr "Premeu la tecla de tabulació.\aUn missatge ha d'apareixer"
-#~ msgid "&Add"
-#~ msgstr "&Afegeix"
-#~ msgid "&1 K"
+#~ msgid "TextBox1"
 #~ msgstr "-"
+#~ msgid "Toggle view"
+#~ msgstr "Commuta la visualització"
+#~ msgid "&Add bookmark"
+#~ msgstr "&Afegeix l'adreça  d'interès"
 
