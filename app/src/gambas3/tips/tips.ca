@@ -391,7 +391,7 @@ Settings.Read(ME)
 Settings["win/x"] = ME.X
 
 'Llegeix la propietat
-'podeu utilitzar fins i tot el valor per defecte, com aquest: ["win/x", 0]
+'podeu utilitzar el valor per defecte com aquest: ["win/x", 0]
 ME.X = Settings["win/x"]
 </pre>
 
@@ -400,14 +400,11 @@ ME.X = Settings["win/x"]
 
 [MESSAGE]
 
-<p>Per a informar als usuaris, podeu usar les classes del Gambas <b>Message</b> i <b>Balloon</b>.
-Message prové dels components (QT, GTK+)i el Balloon de <i>gb.form</i>.</p>
+<p>Per a informar als usuaris, podeu usar les classes del Gambas <b>Message</b> i <b>Balloon</b>. Message prové dels components (QT, GTK+)i el Balloon de <i>gb.form</i>.</p>
 
-<p><b>Message</b> i <b>Balloon</b> tenen els següents tipus possibles:
-Message.Delete(), .Error(), .Info(), .Question() i .Warning()</p>
+<p><b>Message</b> i <b>Balloon</b> tenen els següents tipus possibles: Message.Delete(), .Error(), .Info(), .Question() i .Warning()</p>
 
-<p>A cada botó del diàleg <b>Message</b> podeu establis les vostres pròpies etiquetes.
-Després de prémer el botó, us tornarà un valor numèric (1 to X, depenent del tipus i la quantitat de botons).</p>
+<p>A cada botó del diàleg <b>Message</b> podeu establir les vostres pròpies etiquetes. Després de prémer el botó, us tornarà un valor numèric (de 1 a X, depenent del tipus i la quantitat de botons).</p>
 
 <pre>DEBUG Message.Info("Bon dia món!")  'retornarà 1
 
@@ -416,7 +413,8 @@ Message("Bon dia món!")  'El mateix però el formulari més curt</pre>
 <p>Mentre creeu el <b>Balloon</b> heu de definir el contenidor pare.
 Opcionalment podeu definir el temps de mostra en ms, i la posició X,Y.</p>
 
-<pre>Balloon.Info("Bon dia món!", ME)  'Mostrarà el «ballon» dins el formulari principal
+<pre>Balloon.Info("Bon dia món!", ME)
+'Mostrarà el «ballon» dins el formulari principal
 
 'més reduït sense icona: Balloon("Bon dia món!", ME)</pre>
 
@@ -426,9 +424,7 @@ Opcionalment podeu definir el temps de mostra en ms, i la posició X,Y.</p>
 <p>La substitució és molt útil per a la internacionalització de la vostra aplicació.
 Es fa amb l'instrucció <b>Subst()</b>.</p>
 
-<p>Té com a mínim 2 paràmetres. El primer és la màscara de text a on s'aplica la substitució.
-Després hi són les vostres variables, a on la primera té en número <i>1</i>
-S'usa d'aquesta manera: <b>&1, &2, ...</b></p>
+<p>Té com a mínim 2 paràmetres. El primer és la màscara de text a on s'aplica la substitució. Després hi són les vostres variables, a on la primera té en número <i>1</i>. S'usa d'aquesta manera: <b>&1, &2, ...</b></p>
 
 <pre>Subst(("Substitució de &1, &2 i &3"), "primer", "segon", "tercer")
 
