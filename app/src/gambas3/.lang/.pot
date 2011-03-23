@@ -454,18 +454,18 @@ msgstr ""
 
 #: FColorChooser.class:216 FCommit.class:386 FConflict.class:191
 #: FConnectionEditor.class:284 FCreateFile.class:938 FDebugInfo.class:520
-#: FEditor.class:2270 FFontChooser.class:85 FForm.class:2960
-#: FGotoLine.class:63 FHelpBrowser.class:341 FIconEditor.class:1413
-#: FImportTable.class:39 FList.class:155 FMain.class:200
-#: FMakeInstall.class:326 FMenu.class:1235 FNewConnection.class:317
-#: FNewTable.class:165 FNewTranslation.class:70 FOpenProject.class:533
-#: FOption.class:613 FPasteSpecial.class:279 FPasteTable.class:337
-#: FPropertyComponent.class:473 FPropertyProject.class:801
-#: FReportBorderChooser.class:345 FReportBrushChooser.class:475
-#: FReportCoordChooser.class:126 FSave.class:118 FSaveProjectAs.class:130
-#: FSelectExtraFile.class:78 FSelectIcon.class:272 FSnippet.class:142
-#: FTableChooser.class:144 FTextEditor.class:475 FText.class:106
-#: FTranslate.class:638 Project.module:412
+#: FEditor.class:2270 FFindList.class:195 FFontChooser.class:85
+#: FForm.class:2960 FGotoLine.class:63 FHelpBrowser.class:341
+#: FIconEditor.class:1413 FImportTable.class:39 FList.class:155
+#: FMain.class:200 FMakeInstall.class:326 FMenu.class:1235
+#: FNewConnection.class:317 FNewTable.class:165 FNewTranslation.class:70
+#: FOpenProject.class:533 FOption.class:613 FPasteSpecial.class:279
+#: FPasteTable.class:337 FPropertyComponent.class:473
+#: FPropertyProject.class:801 FReportBorderChooser.class:345
+#: FReportBrushChooser.class:475 FReportCoordChooser.class:126 FSave.class:118
+#: FSaveProjectAs.class:130 FSelectExtraFile.class:78 FSelectIcon.class:272
+#: FSnippet.class:142 FTableChooser.class:144 FTextEditor.class:475
+#: FText.class:106 FTranslate.class:638 Project.module:412
 msgid "Cancel"
 msgstr ""
 
@@ -580,9 +580,9 @@ msgstr ""
 msgid "&Edit"
 msgstr ""
 
-#: FConflict.class:25 FIconEditor.class:1426 FImportTable.class:701
-#: FMakeInstall.class:275 FSearch.class:1182 FSystemInfo.class:73
-#: FTips.class:240
+#: FConflict.class:25 FFindList.class:203 FIconEditor.class:1426
+#: FImportTable.class:701 FMakeInstall.class:275 FSearch.class:1182
+#: FSystemInfo.class:73 FTips.class:240
 msgid "Close"
 msgstr ""
 
@@ -619,6 +619,7 @@ msgid "Conflict files"
 msgstr ""
 
 #: FConflict.class:384 FCreateFile.class:736 FDebugInfo.class:63
+#: FFindList.class:76
 msgid "Text"
 msgstr ""
 
@@ -933,7 +934,7 @@ msgstr ""
 msgid "Module"
 msgstr ""
 
-#: FCreateFile.class:631 FDebugInfo.class:49 FInfo.class:85
+#: FCreateFile.class:631 FDebugInfo.class:49 FFindList.class:71 FInfo.class:85
 msgid "Class"
 msgstr ""
 
@@ -1149,8 +1150,8 @@ msgstr ""
 msgid "Function"
 msgstr ""
 
-#: FDebugInfo.class:51 FIconEditor.class:2273 FImportTable.class:76
-#: FOption.class:1188
+#: FDebugInfo.class:51 FFindList.class:73 FIconEditor.class:2273
+#: FImportTable.class:76 FOption.class:1188
 msgid "Line"
 msgstr ""
 
@@ -1268,7 +1269,8 @@ msgstr ""
 msgid "Show search window"
 msgstr ""
 
-#: FDebugInfo.class:1397 FSearch.class:432 FTranslate.class:599
+#: FDebugInfo.class:1397 FFindList.class:279 FSearch.class:432
+#: FTranslate.class:599
 msgid "Search string cannot be found."
 msgstr ""
 
@@ -1397,6 +1399,14 @@ msgstr ""
 
 #: FEditor.class:3759
 msgid "Procedure list"
+msgstr ""
+
+#: FFindList.class:75
+msgid "Column"
+msgstr ""
+
+#: FFindList.class:244
+msgid "Find list"
 msgstr ""
 
 #: FFontChooser.class:57
