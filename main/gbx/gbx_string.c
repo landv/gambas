@@ -143,9 +143,9 @@ static STRING *alloc_string(_len) \
 	if (pool < POOL_SIZE && (_pool_count[pool])) \
 	{ \
 		str = _pool[pool]; \
+		fprintf(stderr, "alloc_string: (%p) %d bytes from pool %d [%d]\n", str, size, pool, _pool_count[pool]); \
 		_pool[pool] = *((STRING **)str); \
 		_pool_count[pool]--; \
-		fprintf(stderr, "alloc_string: (%p) %d bytes from pool %d\n", str, size, pool); \
 	} \
 	else \
 	{ \
@@ -203,6 +203,8 @@ void STRING_free_real(char *ptr)
 		{
 			#ifdef DEBUG_ME
 			fprintf(stderr, "STRING_free_real: (%p / %p) %d bytes to pool %d\n", str, ptr, size, pool);
+			str->ref = 0x87654321;
+			str->len = 0x87654321;
 			#endif
 			*((STRING **)str) = _pool[pool];
 			_pool[pool] = str;
@@ -311,28 +313,31 @@ char *STRING_free_later(char *ptr)
 	/*if (NLast >= MAX_LAST_STRING)
 		THROW(E_STRING);*/
 
-	#ifdef DEBUG_ME
-	if (STRING_last[_index])
+	if (ptr)
 	{
-		DEBUG_where();
-		fprintf(stderr, "STRING_free_later: release temp: %p '%s'\n", STRING_last[_index], STRING_last[_index]);
+		#ifdef DEBUG_ME
+		if (STRING_last[_index])
+		{
+			DEBUG_where();
+			fprintf(stderr, "STRING_free_later: release temp: %p '%s'\n", STRING_last[_index], STRING_last[_index]);
+			fflush(stderr);
+		}
+		#endif
+
+		STRING_unref(&STRING_last[_index]);
+
+		#ifdef DEBUG_ME
+		fprintf(stderr, "STRING_free_later: post temp: %p '%s'\n", ptr, ptr);
 		fflush(stderr);
+		#endif
+
+		STRING_last[_index] = ptr;
+
+		_index++;
+
+		if (_index >= STRING_last_count)
+			_index = 0;
 	}
-	#endif
-
-	STRING_unref(&STRING_last[_index]);
-
-	#ifdef DEBUG_ME
-	fprintf(stderr, "STRING_free_later: post temp: %p '%s'\n", ptr, ptr);
-	fflush(stderr);
-	#endif
-
-	STRING_last[_index] = ptr;
-
-	_index++;
-
-	if (_index >= STRING_last_count)
-		_index = 0;
 	
 	return ptr;
 }
@@ -485,7 +490,10 @@ void STRING_unref(char **ptr)
 	DEBUG_where();
 	fprintf(stderr, "STRING_unref: %p ( %d -> %d )\n", *ptr, str->ref, str->ref - 1);
 	if (str->ref < 1 || str->ref > 10000)
+	{
 		fprintf(stderr, "*** BAD\n");
+		BREAKPOINT();
+	}
 	fflush(stderr);
 	#endif
 

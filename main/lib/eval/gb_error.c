@@ -91,7 +91,7 @@ PUBLIC void THROW2(const char *pattern, const char *msg)
 {
 	GB.FreeString(&EVAL->error);
 	_error_arg = msg;
-	EVAL->error = GB.SubstString(pattern, strlen(pattern), get_error_arg);
+	EVAL->error = GB.NewZeroString(GB.SubstString(pattern, strlen(pattern), get_error_arg));
   ERROR_propagate();
 }
 
