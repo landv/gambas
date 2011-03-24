@@ -426,16 +426,17 @@ void MAIN_check_quit()
 static int my_loop()
 {
 	gControl::cleanRemovedControls();
+	_must_check_quit = true;
 	
 	for(;;)
 	{
-		MAIN_do_iteration(false);
 		if (_must_check_quit)
 		{
 			if (CWINDOW_must_quit() && CWatcher::count() == 0)
 				break;
 			_must_check_quit = false;
 		}
+		MAIN_do_iteration(false);
 	}
 
 	while (gtk_events_pending())
