@@ -3,10 +3,13 @@
 Private $hLogo As Image
 Private $hText As Image
 
+Static Private TEXT_COLOR As Integer = &HFFAF5F&
+
 Public Sub _new(hDrawingArea As DrawingArea)
   
   Dim hSvgLogo As SvgImage
   Dim X As Integer
+  
   
   If Not $hLogo Then 
     
@@ -20,12 +23,12 @@ Public Sub _new(hDrawingArea As DrawingArea)
     $hText = New Image(hDrawingArea.Width, hDrawingArea.Height, Color.Transparent)
     Paint.Begin($hText)
     Paint.Font = Font["+12,Bold"]
-    X = PaintText("Gambas", 8, 48, &HFFAF5F) 'Color.SelectedForeground)
+    X = PaintText("Gambas", 8, 48, TEXT_COLOR)
     
     Paint.Font = Font["+8,Bold"]
-    PaintText(Project.FullVersionWithRevision, X + 8, 32, &HFFAF5F) 'Color.SelectedForeground)
+    PaintText(Project.FullVersionWithRevision, X + 8, 32, TEXT_COLOR) 'Color.SelectedForeground)
     Paint.Font = Font["+2"]
-    PaintText("http://gambas.sourceforge.net", 12, 68, &HFFAF5F) 'Color.LightForeground)
+    PaintText("http://gambas.sourceforge.net", 12, 68, TEXT_COLOR) 'Color.LightForeground)
     
     Paint.Font = Font["Italic,+1"]
     PaintText(("This program is published under\nthe GNU General Public License."), 12, 104, Color.SelectedForeground)

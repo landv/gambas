@@ -223,6 +223,7 @@ void *GAMBAS_Api[] =
   (void *)LOCAL_get_lang,
   (void *)GB_SystemDomainName,
   (void *)GB_IsRightToLeft,
+  (void *)GB_SystemPath,
 
   (void *)GB_ArrayNew,
   (void *)GB_ArrayCount,
@@ -1666,6 +1667,10 @@ int GB_IsRightToLeft(void)
   return LOCAL_local.rtl;
 }
 
+char *GB_SystemPath(void)
+{
+	return PROJECT_exec_path;
+}
 
 /*void GB_StreamInit(GB_STREAM *stream, int fd)
 {

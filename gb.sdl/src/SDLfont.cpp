@@ -23,6 +23,7 @@
 #include "SDLfont.h"
 #include "SDLapp.h"
 #include "gb_common.h"
+#include "main.h"
 
 //#include <algorithm>
 //#include <iostream>
@@ -31,7 +32,7 @@
 #include <ctype.h>
 
 #define DEFAULT_FONT_SIZE 20
-#define DEFAULT_FONT DATA_DIR "/DejaVuSans.ttf"
+#define DEFAULT_FONT "DejaVuSans.ttf"
 /*
 #ifndef TTF_STYLE_STRIKETHROUGH
 #define TTF_STYLE_STRIKETHROUGH	0x08
@@ -145,9 +146,13 @@ SDLfont::SDLfont(const char *fontfile)
 	hfontsize = DEFAULT_FONT_SIZE;
 
 	if (!fontfile)
-		hfontname = DEFAULT_FONT;
+	{
+		hfontname = GB.System.Path();
+		hfontname += "/share/gambas" GAMBAS_VERSION_STRING "/gb.sdl/" DEFAULT_FONT;
+	}
 	else
 		hfontname = fontfile;
+	
 	hSDLfont = 0;
 
 	OpenFont(hfontname.c_str());

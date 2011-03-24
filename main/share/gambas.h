@@ -940,6 +940,7 @@ typedef
 			char *(*Language)(void);
 			char *(*DomainName)(void);
 			int *(*IsRightToLeft)(void);
+			char *(*Path)(void);
 			}
 		System;
 

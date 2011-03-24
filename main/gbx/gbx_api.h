@@ -128,6 +128,7 @@ void *GB_AppStartupClass(void);
 char *GB_SystemCharset(void);
 char *GB_SystemDomainName(void);
 int GB_IsRightToLeft(void);
+char *GB_SystemPath(void);
 
 void *GB_Eval(void *, void *);
 
