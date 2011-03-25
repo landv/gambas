@@ -513,7 +513,7 @@ Jako substituční znak se užívá <b>&1, &2, ...</b>, číslo je dle pořadí 
 
 'napíšete:
 <pre>main</pre>
-'a pak zmáčknete tabulátor, a doplní se útržek kodů,<br>
+'a pak zmáčknete tabulátor, a doplní se útržek kódu,<br>
 'podle toho jak je v nastavení definován
 </p>
 

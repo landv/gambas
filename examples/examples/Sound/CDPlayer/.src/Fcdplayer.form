@@ -1,14 +1,13 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(69.6667,114.6667,50,26)
+  MoveScaled(69.7143,114.7143,50,26)
   Text = ("CDplayer")
   Icon = Picture["cd.png"]
   Resizable = False
   { TrackInfo ComboBox
     MoveScaled(1,1,48,4)
     ToolTip = ("Track")
-    Text = ("")
     ReadOnly = True
   }
   { PButton Button
@@ -21,7 +20,6 @@
   }
   { TextBox1 TextBox
     MoveScaled(1,6,43,4)
-    Text = ("")
     ReadOnly = True
   }
   { SButton Button
@@ -33,9 +31,6 @@
     Text = ("Play &Track")
   }
   { Timer1 #Timer
-    #X = 246
-    #Y = 102
-    Enabled = True
   }
   { Volume Slider
     MoveScaled(46,6,3,17)
