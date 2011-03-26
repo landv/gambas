@@ -1129,7 +1129,7 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
   Dim sFamily As String
 
   If Len(sClass) <= 1 Then
-    If sClass <> "." And If Not IsLetter(sClass) Then Return
+    If sClass <> "." And If Not IsUpper(sClass) Then Return
   Endif
   
   'Debug sClass

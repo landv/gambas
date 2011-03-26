@@ -208,10 +208,11 @@ End
 
 Public Sub _Draw(hRect As Rect, hClip As Rect, hIconView As IconView, bHorizontal As Boolean, bFocus As Boolean, bHover As Boolean)
   
-  Dim X, Y, W, H, HT As Integer
+  Dim X, Y, W, H, HT, PW, PH As Integer
   Dim iColor As Integer
   Dim bFrame As Boolean
   Dim sText As String
+  Dim bSelected As Boolean
   
   hRect.Adjust(4)
   
@@ -219,51 +220,84 @@ Public Sub _Draw(hRect As Rect, hClip As Rect, hIconView As IconView, bHorizonta
     bFrame = True
   Endif
   
-  If bHover Or If $bSelected Then
-    Paint.Begin(Draw.Device)
-    Paint.ClipRect = hClip
-    'Paint.Rectangle(hClip.X, hClip.Y, hClip.Width, hClip.Height)
-    'Paint.Clip()
-    PaintRoundedRect(hRect.X, hRect.Y, hRect.W, hRect.H, 7)
-    iColor = Color.TextBackground
-    If $bSelected Then iColor = Color.SelectedBackground
-    If bHover Then iColor = Color.Merge(iColor, Color.LightBackground)
-    Paint.Brush = Paint.Color(iColor)
-    Paint.Fill
-    'Paint.Rectangle(hRect.X, hRect.Y, hRect.W, hRect.H)
-    'Paint.Brush = Paint.Color(Color.Black)
-    'Paint.Stroke
-    Paint.End
-    bFrame = True
-    'Draw.Foreground = Color.TextForeground
+  If $hPicture Then
+    PW = $hPicture.W
+    PH = $hPicture.H
   Endif
+  
+  iColor = Color.TextBackground
+  If $bSelected Then iColor = Color.SelectedBackground
+  If bHover Then iColor = Color.Merge(iColor, Color.LightBackground)
+  bSelected = $bSelected Or bHover
 
-  hRect.Adjust(4)
+  ' If bHover And Not $bSelected Then
+  '   Paint.Begin(Draw.Device)
+  '   Paint.ClipRect = hClip
+  '   'Paint.Rectangle(hClip.X, hClip.Y, hClip.Width, hClip.Height)
+  '   'Paint.Clip()
+  '   PaintRoundedRect(hRect.X, hRect.Y, hRect.W, hRect.H, 7)
+  '   Paint.Brush = Paint.Color(iColor)
+  '   Paint.Fill
+  '   'Paint.Rectangle(hRect.X, hRect.Y, hRect.W, hRect.H)
+  '   'Paint.Brush = Paint.Color(Color.Black)
+  '   'Paint.Stroke
+  '   Paint.End
+  '   bFrame = True
+  ' Else If $bSelected Then
+  '   bSelected = True
+  '   iColor = Color.SelectedBackground
+  '   If bHover Then iColor = Color.Merge(iColor, Color.LightBackground)
+  ' Endif
+
   hClip = hClip.Intersection(hRect)
   If IsNull(hClip) Then Return
-  
-  Draw.ClipRect = hClip
-  'Draw.Clip(hClip.X, hClip.Y, hClip.Width, hClip.Height)
+  hRect.Adjust(4)
   
   If bHorizontal Then
   
     X = hRect.X
     W = hRect.W
     
+    If bSelected Then
+      Paint.Begin(Draw.Device)
+      Paint.ClipRect = hClip
+      Paint.Brush = Paint.Color(iColor)
+      ' If $hPicture Then
+      '   If System.RightToLeft Then
+      '   Else
+      '     PaintRoundedRect(hRect.X - 4, hRect.Y + (hRect.H - PH) / 2 - 4, PW + 8, PH + 8, 7)
+      '     Paint.Fill
+      '   Endif
+      ' Endif
+      ' If $sText Then
+      '   H = hIconView.Font.RichTextHeight($sText, W - PW - 4)
+      '   If H < (hClip.H - 12) Then
+      '     PaintRoundedRect(hRect.X, hRect.Y - 4 + (hRect.H - H) \ 2, hRect.W + 4, H + 12, 7)
+      '   Else
+      '     PaintRoundedRect(hRect.X, hClip.Y, hRect.W + 4, hClip.H, 7)
+      '   Endif
+      '   Paint.Fill
+      ' Endif
+      PaintRoundedRect(hClip.X, hClip.Y, hClip.W, hClip.H, 7)
+      Paint.Fill
+      Paint.End
+    Endif
+
+    Draw.ClipRect = hClip
+  
     If System.RightToLeft Then
       
       If $hPicture Then
-        Draw.Picture($hPicture, hRect.X + hRect.W - $hPicture.W, hRect.Y + (hRect.H - $hPicture.H) / 2)
-        W -= $hPicture.W + 4
+        Draw.Picture($hPicture, hRect.X + hRect.W - PW, hRect.Y + (hRect.H - PH) / 2)
+        W -= PW + 4
       Endif
 
     Else
-      
   
       If $hPicture Then
-        Draw.Picture($hPicture, hRect.X, hRect.Y + (hRect.H - $hPicture.H) / 2)
-        X += $hPicture.W + 4
-        W -= $hPicture.W + 4
+        Draw.Picture($hPicture, hRect.X, hRect.Y + (hRect.H - PH) / 2)
+        X += PW + 4
+        W -= PW + 4
       Endif
       
     Endif
@@ -281,18 +315,10 @@ Public Sub _Draw(hRect As Rect, hClip As Rect, hIconView As IconView, bHorizonta
   Else
   
     Y = hRect.Y
-    
-    If $hPicture Then
-      Draw.Picture($hPicture, hRect.X + (hRect.W - $hPicture.W) / 2, hRect.Y)
-      Y += $hPicture.H + 4
-    Endif
+    If $hPicture Then Y += $hPicture.H + 4
     
     If $sText Then
-      'Draw.Clip(hRect.X, Y, hRect.W, hRect.H - Y)
-      Draw.Font = hIconView.Font
-      
       sText = $sText
-      
       H = Draw.Font.RichTextHeight(sText, hRect.W)
       HT = hRect.H - (Y - hRect.Y)
       If H > HT Then 
@@ -301,6 +327,32 @@ Public Sub _Draw(hRect As Rect, hClip As Rect, hIconView As IconView, bHorizonta
       Else
         $bEllipsized = False
       Endif
+    Endif
+    
+    If bSelected Then
+      Paint.Begin(Draw.Device)
+      Paint.ClipRect = hClip
+      Paint.Brush = Paint.Color(iColor)
+      If $hPicture Then
+        PaintRoundedRect(hRect.X + (hRect.W - PW) / 2 - 4, hRect.Y - 4, PW + 8, PH + 8, 7)
+        Paint.Fill
+      Endif
+      If $sText Then
+        PaintRoundedRect(hRect.X - 4, Y - 6, hRect.W + 8, hIconView.Font.RichTextHeight(sText, hRect.W) + 10, 7)
+        Paint.Fill
+      Endif
+      Paint.End
+    Endif
+
+    Draw.ClipRect = hClip
+  
+    If $hPicture Then
+      Draw.Picture($hPicture, hRect.X + (hRect.W - PW) / 2, hRect.Y)
+    Endif
+    
+    If $sText Then
+      'Draw.Clip(hRect.X, Y, hRect.W, hRect.H - Y)
+      Draw.Font = hIconView.Font
       
       If Not bFrame Then
         Draw.Foreground = If($bSelected, Color.SelectedBackground, Color.TextBackground)

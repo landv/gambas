@@ -1516,6 +1516,7 @@ Static Public Function ReadSymbolType(aSym As String[], iIndex As Integer, Optio
   If aSym[iIndex] = "STRUCT" Then Inc iIndex
   
   sType = aSym[iIndex]
+  sType = UCase(Left(sType)) & Mid$(sType, 2)
   
   If (iIndex + 2) < aSym.Count Then
     If aSym[iIndex + 1] = "[" Then bArray = True
@@ -1563,13 +1564,16 @@ Static Public Function ReadLocalSymbolType(aSym As String[], iIndex As Integer, 
       If aSym[iIndex] = "NEW" Then Inc iIndex
       
       sType = aSym[iIndex]
-      If $cType.Exist(sType) Then sType = $cType[sType]
+      sType = UCase(Left(sType)) & Mid$(sType, 2)
       
       If (iIndex + 2) < aSym.Count Then
         If aSym[iIndex + 1] = "[" Then 'AND aSym[iIndex + 2] = "]" THEN
         hSymbol.Type = sType & "[]"
         Return True
       Endif
+      
+      If $cType.Exist(sType) Then sType = $cType[sType]
+      
     Endif
     
     hSymbol.Type = sType
