@@ -311,6 +311,8 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 			/*stop_process(process, FALSE);*/
 			return;
 		}
+		
+		process->process_group = TRUE;
 	}
 	else
 	{
@@ -480,6 +482,9 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 		//bool stdin_isatty = isatty(STDIN_FILENO);
 		
 		sigprocmask(SIG_SETMASK, &old, &sig);
+		
+		if (mode & PM_SHELL)
+			setpgrp();
 
 		if (mode & PM_TERM)
 		{
@@ -834,7 +839,11 @@ BEGIN_METHOD_VOID(CPROCESS_kill)
 	if (!THIS->running)
 		return;
 
-	kill(THIS->pid, SIGKILL);
+	if (THIS->process_group)
+		kill(-getpgid(THIS->pid), SIGKILL);
+	else
+		kill(THIS->pid, SIGKILL);
+	
 	CPROCESS_wait_for(THIS);
 
 END_METHOD

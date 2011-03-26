@@ -53,7 +53,8 @@ typedef
     int status;
     int watch;
     volatile sig_atomic_t running;
-    bool to_string;
+    unsigned to_string : 1;
+		unsigned process_group : 1;
     char *result;
     GB_VARIANT_VALUE tag;
   }
