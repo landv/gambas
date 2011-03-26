@@ -206,6 +206,8 @@ Public Sub _GetTextRect(hRect As Rect, bHorizontal As Boolean) As Rect
   
 End
 
+
+
 Public Sub _Draw(hRect As Rect, hClip As Rect, hIconView As IconView, bHorizontal As Boolean, bFocus As Boolean, bHover As Boolean)
   
   Dim X, Y, W, H, HT, PW, PH As Integer
@@ -319,10 +321,10 @@ Public Sub _Draw(hRect As Rect, hClip As Rect, hIconView As IconView, bHorizonta
     
     If $sText Then
       sText = $sText
-      H = Draw.Font.RichTextHeight(sText, hRect.W)
+      H = hIconView.Font.RichTextHeight(sText, hRect.W)
       HT = hRect.H - (Y - hRect.Y)
       If H > HT Then 
-        sText = Ellipsize(sText, Draw.Font, hRect.W, HT)
+        sText = Ellipsize(sText, hIconView.Font, hRect.W, HT)
         $bEllipsized = True
       Else
         $bEllipsized = False
@@ -392,10 +394,49 @@ Public Sub EnsureVisible()
   
 End
 
-Public Sub _Inside(hRect As Rect, X As Integer, Y As Integer) As Boolean
+Public Sub _Inside(hRect As Rect, hIconView As IconView, bHorizontal As Boolean, X As Integer, Y As Integer) As Boolean
+  
+  Dim W, H, YT, HT, PW, PH As Integer
+  Dim hInside As Rect
+  Dim sText As String
   
   hRect.Adjust(4)
-  Return hRect.Contains(X, Y)
+  If Not hRect.Contains(X, Y) Then Return False
+  
+  If bHorizontal Then
+  
+    Return True
+    
+  Else
+  
+    If $hPicture Then
+      PW = $hPicture.W
+      PH = $hPicture.H
+    Else If Not $sText Then
+      PW = 8
+      PH = 8
+    Endif
+  
+    YT = hRect.Y
+    
+    If PW Then 
+      hInside = New Rect(hRect.X + (hRect.W - PW) / 2 - 4, hRect.Y - 4, PW + 8, PH + 8)
+      If hInside.Contains(X, Y) Then Return True
+      YT += PH + 4
+    Endif
+    
+    If $sText Then
+      sText = $sText
+      H = hIconView.Font.RichTextHeight(sText, hRect.W)
+      HT = hRect.H - (YT - hRect.Y)
+      If H > HT Then 
+        sText = Ellipsize(sText, hIconView.Font, hRect.W, HT)
+      Endif
+      hInside = New Rect(hRect.X - 4, YT - 6, hRect.W + 8, hIconView.Font.RichTextHeight(sText, hRect.W) + 10)
+      If hInside.Contains(X, Y) Then Return True
+    Endif
+    
+  Endif
   
 End
 

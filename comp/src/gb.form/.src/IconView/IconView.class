@@ -323,7 +323,7 @@ Private Sub FindIconAccurate(X As Integer, Y As Integer) As Integer
   If iPos >= 0 Then 
     hRect = New Rect
     GetIconGeometry(iPos, hRect)
-    If Not $aItems[iPos]._Inside(hRect, X, Y) Then Return -1
+    If Not $aItems[iPos]._Inside(hRect, Me, $bHorizontal, X, Y) Then Return -1
   Endif
   
   Return iPos
@@ -859,7 +859,7 @@ Public Sub ScrollArea_MouseMove()
   X = Mouse.X + $hView.ScrollX
   Y = Mouse.Y + $hView.ScrollY
   iPos = FindIconAccurate(X, Y)
-  
+
   ' If iPos <> $iHover ThenNot
   '   If Mouse.Left And If $iMode = Select.Multiple And iPos >= 0 Then
   '     $aItems[iPos].Selected = Not $aItems[iPos].Selected
@@ -893,6 +893,8 @@ Private Sub SelectRect(Optional iSelect As Integer = 1)
     $X2 = hRect.X + hRect.W \ 2 + 1
     $Y2 = hRect.Y + hRect.H \ 2 + 1
   Endif
+  
+  If $X1 = $X2 And If $Y1 = $Y2 Then Return
   
   X = Min($X1, $X2)
   Y = Min($Y1, $Y2)
