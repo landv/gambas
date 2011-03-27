@@ -261,16 +261,23 @@ BEGIN_METHOD_VOID(CIMAGE_mirror)
 END_METHOD
 #endif
 
-BEGIN_METHOD(CIMAGE_rotate, GB_FLOAT angle; GB_BOOLEAN smooth)
+BEGIN_METHOD(CIMAGE_rotate, GB_FLOAT angle)
 
   QImage *rotate = new QImage();
-  QMatrix mat;
+	double angle = VARG(angle);
   
   check_image(THIS);
   
-  mat.rotate(VARG(angle) * -360.0 / 2 / M_PI);
-  *rotate = QIMAGE->transformed(mat);
-  GB.ReturnObject(CIMAGE_create(rotate));
+	if (angle != 0.0)
+	{
+		QMatrix mat;
+		mat.rotate(VARG(angle) * -360.0 / 2 / M_PI);
+		*rotate = QIMAGE->transformed(mat);
+	}
+	else
+		*rotate = QIMAGE->copy();
+	
+	GB.ReturnObject(CIMAGE_create(rotate));
 
 END_METHOD
 
