@@ -1,4 +1,4 @@
-EXTRA_DIST = reconf src spec mime
+EXTRA_DIST = reconf src spec mime desktop
 
 install-exec-local:
 	@if test "x$(ROOT)" != "x"; then \
