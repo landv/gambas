@@ -1,4 +1,4 @@
-EXTRA_DIST = reconf src spec mime
+EXTRA_DIST = reconf src spec mime desktop
 
 install-exec-local:
 	@echo "Installing the development environment..."
