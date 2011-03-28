@@ -335,6 +335,36 @@ Private Sub CheckQuoteShell(sLine As String) As String
   
 End
 
+Private Sub FindClassSymbol(sClass As String, sSymbol As String, aSym As String[], aType As Integer[], I As Integer, Optional bAllowAnonymous As Boolean) As Boolean
+
+  Dim sType As String
+  Dim hClass As CClassInfo
+  
+  If aSym[I] == sSymbol And If aSym[I - 1] = "." Then
+    
+    sType = $hForm.GetExpressionType(aSym.Copy(0, I - 1), aType.Copy(0, I - 1), True)
+    
+    If Not sType Then
+      If bAllowAnonymous Then
+        sType = sClass
+      Else
+        Return
+      Endif
+    Endif
+    
+    If sType <> sClass Then
+      hClass = CComponent.Classes[sType]
+      If Not hClass Then Return
+      If Not hClass.Inherits(sClass) Then Return
+    Endif
+    
+    Return True
+    
+  Endif
+  
+End
+
+
 Private Sub CheckReplaceClassSymbol(sId As String, sLine As String, sClass As String, sSymbol As String, sNewSymbol As String, Optional bAllowAnonymous As Boolean) As String
   
   Dim aSym As String[]
@@ -352,39 +382,52 @@ Private Sub CheckReplaceClassSymbol(sId As String, sLine As String, sClass As St
   
   For I = aSym.Max DownTo 1
     
-    If aSym[I] == sSymbol And If aSym[I - 1] = "." Then
-      
-      sType = $hForm.GetExpressionType(aSym.Copy(0, I - 1), aType.Copy(0, I - 1), True)
-      
-      If Not sType Then
-        If bAllowAnonymous Then
-          sType = sClass
-        Else
-          Continue
-        Endif
-      Endif
-      
-      If sType <> sClass Then
-        hClass = CComponent.Classes[sType]
-        If Not hClass Then Continue
-        If Not hClass.Inherits(sClass) Then Continue
-      Endif
+    If FindClassSymbol(sClass, sSymbol, aSym, aType, I, bAllowAnonymous) Then
       
       sRest = Mid$(sLine, aPos[I] + Len(sSymbol) + 1)
       If sId = "FNTH" And If sRest Begins "()" Then sRest = "(\"\")" & Mid$(sRest, 3)
       sLine = Left$(sLine, aPos[I]) & sNewSymbol & sRest
-      bFound = True
+      $sId = sId
+      Return sLine
       
     Endif
     
   Next
   
-  If Not bFound Then Return
+End
+
+Private Sub CheckUdpSocketBind(sId As String, sLine As String) As String
   
-  $sId = sId
-  Return sLine
+  Dim aSym As String[]
+  Dim I As Integer
+  Dim bFound As Boolean
+  Dim sType As String
+  Dim aPos As Integer[]
+  Dim aType As Integer[]
+  Dim sRest As String
+  
+  aSym = Highlight.Analyze(sLine, False).Copy()
+  aType = Highlight.Types.Copy()
+  aPos = Highlight.Positions.Copy()
+  
+  For I = aSym.Max DownTo 1
+    
+    If FindClassSymbol("UdpSocket", "Bind", aSym, aType, I) Then
+      
+      sRest = Mid$(sLine, aPos[I] + Len("Bind") + 1)
+      If Left(sRest) <> "(" Then Return
+      If Mid$(sRest, 2, 1) = ")" Then Return
+      
+      sLine = Left$(sLine, aPos[I]) & "Port = " & Mid$(sRest, 2, -1) & "\n" & Left$(sLine, aPos[I] + Len("Bind")) & "()"
+      $sId = sId
+      Return sLine
+      
+    Endif
+  
+  Next
   
 End
+
 
 Private Sub CheckReplaceFunction(sId As String, sLine As String, sFunc As String, sNewFunc As String) As String
   
@@ -434,6 +477,8 @@ Private Sub ConvertClass(sPath As String)
   Dim sOldLine As String
   Dim sNewLine As String
   Dim sIndent As String
+  Dim aLine As String[]
+  Dim iInd As Integer
   
   $aLine = New String[]
   
@@ -467,6 +512,7 @@ Private Sub ConvertClass(sPath As String)
         If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("TEXT", sLine, "gb", "Text", "IgnoreCase")
         If Not sNewLine Then sNewLine = CheckReplaceFunction("CSNG", sLine, "CSng", "CSingle")
         If Not sNewLine Then sNewLine = CheckReplaceFunction("CLNG", sLine, "CLng", "CLong")
+        If Not sNewLine Then sNewLine = CheckUdpSocketBind("BIND", sLine)
         
         If Not sNewLine Then 
           $aLine.Add(sIndent & sLine)
@@ -475,6 +521,15 @@ Private Sub ConvertClass(sPath As String)
 
         $aLine.Add(sIndent & "' [GB2:" & $sId & "] " & sLine)
         '$aLine.Add(sIndent & sNewLine)
+        
+        If InStr(sNewLine, "\n") Then
+          aLine = Split(sNewLine, "\n")
+          For iInd = 0 To aLine.Max - 1
+            $aLine.Add(sIndent & aLine[iInd])
+          Next
+          sNewLine = aLine[aLine.Max]
+        Endif
+        
         sLine = sNewLine
         
       Loop
