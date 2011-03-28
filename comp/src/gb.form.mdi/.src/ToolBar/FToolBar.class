@@ -9,6 +9,8 @@ Public $bDesign As Boolean
 Static Private $cRegister As New Collection
 Static Private $hExpanderBg As Picture
 
+Private Const SEPARATOR_SIZE As Integer = 3
+
 'Private $hWatcher As Watcher
 'Private $hWatcherParent As Watcher
 Private $hObserverParent As Observer
@@ -79,6 +81,8 @@ Private Function GetToolBarWidth(Optional bPadding As Boolean) As Integer
       W = Max(W, hCtrl.W)
     Next
     
+    W = $iButtonWidth
+    
     ' For Each hCtrl In panToolBar.Children
     '   If hCtrl.Visible Then 
     '     If hCtrl.Expand Then Return GetFreeWidth()
@@ -108,26 +112,36 @@ Private Sub GetToolBarHeight(Optional bPadding As Boolean) As Integer
   
   Dim hCtrl As Control
   Dim X, Y, W, H As Integer
+  Dim HH As Integer
 
   If $bReallyVertical Then
   
-    If dwgHandle.Visible Then Y = dwgHandle.H * 2
+    If dwgHandle.Visible Then HH = dwgHandle.H
   
     For Each hCtrl In panToolBar.Children
       If hCtrl.Visible Then 
-        If X >= GetFreeWidth() Then
-          X = 0
-          Y += H
-          H = 0
-        Endif
-        W += hCtrl.W
-        H = Max(H, hCtrl.H)
-        If hCtrl.Expand Then W = GetFreeWidth()
-        X += W
+        If hCtrl.Expand Then Return GetFreeHeight() - HH
+        H += hCtrl.H
       Endif
     Next
     
-    H = Y
+    ' If dwgHandle.Visible Then Y = dwgHandle.H * 2
+    ' 
+    ' For Each hCtrl In panToolBar.Children
+    '   If hCtrl.Visible Then 
+    '     If X >= GetMaxWidth() Then
+    '       X = 0
+    '       Y += H
+    '       H = 0
+    '     Endif
+    '     W += hCtrl.W
+    '     H = Max(H, hCtrl.H)
+    '     If hCtrl.Expand Then W = GetMaxWidth()
+    '     X += W
+    '   Endif
+    ' Next
+    ' 
+    ' H = Y + H
     
   Else
   
@@ -166,6 +180,13 @@ Private Sub GetToolBarHeight(Optional bPadding As Boolean) As Integer
   
 End
 
+Private Sub GetMaxWidth() As Integer
+  
+  Dim W As Integer = Me.Parent.Width
+  If sepToolbar.Visible Then Dec W
+  Return W
+  
+End
 
 
 Private Function GetFreeWidth() As Integer
@@ -186,7 +207,7 @@ Private Sub SetArrangement()
   
   If $bDesign Then Return
   hToolBar.Padding = 0
-  hToolbar.Arrangement = Arrange.Horizontal 'Arrange.Row 'If($bVertical, Arrange.Column, Arrange.Row)
+  hToolbar.Arrangement = If($bReallyVertical, Arrange.Vertical, Arrange.Horizontal) 'Arrange.Row 'If($bVertical, Arrange.Column, Arrange.Row)
   
 End
 
@@ -202,7 +223,7 @@ Private Sub Update()
   If $bLock Then Return
   $bLock = True
   
-  SetArrangement
+  ToolBar(Me.Parent).Arrangement = Arrange.None
   CheckSeparators
 
   If Not $bReallyVertical Then
@@ -263,16 +284,15 @@ Private Sub Update()
         W = Max($iHandleSize, GetToolBarWidth() + WH)
       Endif
       H = GetToolBarHeight(True)
-      If sepToolbar.Visible Then Inc H
     Else
       If $bAutoResize Then
-        W = Max(GetToolBarWidth(True), panToolBar.W)
-        H = Max($iHandleSize, Min(GetToolBarHeight(True), GetFreeHeight()))
+        'W = Max(GetToolBarWidth(True), GetMaxWidth())
+        H = Max($iHandleSize, Min(GetToolBarHeight() + HH, GetFreeHeight()))
       Else 
-        W = GetToolBarWidth(True)
+        'W = GetToolBarWidth(True)
         H = Max($iHandleSize, GetToolBarHeight() + HH)
       Endif
-      If sepToolbar.Visible Then Inc W
+      W = GetToolBarWidth(True)
     Endif
     'W += $iHandleSize
     
@@ -295,10 +315,23 @@ Private Sub Update()
   
   $bLock = False
 
+  If sepToolbar.Visible Then 
+    If $bReallyVertical Then
+      Inc W
+    Else
+      Inc H
+    Endif
+  Endif
+  
+  'Debug panToolBar.X;; panToolBar.Y;; panToolBar.W;; panToolBar.H;; "/";; W;; H
+  'If panToolBar.Children.Count Then Debug "=>";; panToolBar.Children[0].X;; panToolBar.Children[0].Y
+  
   If Not $bDesign Then 
     Me.Parent.Resize(W, H)
   Endif
-        
+  
+  SetArrangement
+  
 End
 
 Public Sub Form_Resize()
@@ -660,9 +693,9 @@ Private Sub ShowWhere(sAction As String, bAnim As Boolean, Optional hCtrl As Con
   Else
     If $bVertical Then
       W = GetToolBarHeight()
-      H = Desktop.Scale
+      H = SEPARATOR_SIZE
     Else
-      W = Desktop.Scale
+      W = SEPARATOR_SIZE
       H = GetToolBarHeight()
     Endif
   Endif
@@ -825,7 +858,7 @@ Public Sub DragStart(bOutside As Boolean)
   
   $sDropAction = ""
   If bOutside Then
-    panWhere.Resize(Desktop.Scale, Desktop.Scale)
+    panWhere.Resize(SEPARATOR_SIZE, SEPARATOR_SIZE)
     panWhere.Reparent(panToolBar)
   Endif
   
@@ -880,9 +913,9 @@ Private Sub AddSeparator(Optional hNext As Control)
   
   If $bVertical Then
     W = GetToolBarHeight()
-    H = Desktop.Scale
+    H = SEPARATOR_SIZE
   Else
-    W = Desktop.Scale
+    W = SEPARATOR_SIZE
     H = GetToolBarHeight()
   Endif
 
@@ -917,9 +950,9 @@ Private Sub AddExpander(Optional hNext As Control)
   
   If $bVertical Then
     W = GetToolBarHeight()
-    H = Desktop.Scale
+    H = SEPARATOR_SIZE
   Else
-    W = Desktop.Scale
+    W = SEPARATOR_SIZE
     H = GetToolBarHeight()
   Endif
 
@@ -1090,6 +1123,7 @@ Private Sub CheckSeparators()
   
   For Each hChild In panToolBar.Children
     If hChild Is Separator Then 
+      hChild.Resize(SEPARATOR_SIZE, SEPARATOR_SIZE)
       If FToolBarConfig.WillBeDeleted(hChild) Then Continue
       hChild.Show
     Endif

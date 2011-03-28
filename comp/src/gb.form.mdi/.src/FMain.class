@@ -1,2 +1,22 @@
 ' Gambas class file
 
+Private $hWatcher As Watcher
+
+Public Sub Button1_Click()
+
+  Debug ToolButton1.X;; ToolButton1.Y
+
+End
+
+Public Sub Form_Open()
+
+  $hWatcher = New Watcher(ToolButton1) As "Watcher"
+
+End
+
+Public Sub Watcher_Move()
+  
+  Debug ToolButton1.X;; ToolButton1.Y
+  
+End
+

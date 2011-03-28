@@ -429,7 +429,7 @@ End
 
 Public Sub HasProperty(sProp As String) As Boolean
   
-  Return CComponent.Classes[Kind].Properties.Exist(sProp)
+  Try Return CComponent.Classes[Kind].Properties.Exist(sProp)
   
 End
 
@@ -743,7 +743,7 @@ Public Function GetPropertyString(sProp As String) As String
   Dim hProp As CPropertyInfo
   Dim iInd As Integer
 
-  hProp = CComponent.Classes[Kind].Properties[sProp]
+  Try hProp = CComponent.Classes[Kind].Properties[sProp]
   If IsNull(hProp) Then Return
     'PRINT Kind; "."; sProp; " ???"
   'ENDIF
@@ -773,13 +773,13 @@ End
 
 Public Function IsContainer() As Boolean
 
-  Return CComponent.Classes[Kind].Container
+  Try Return CComponent.Classes[Kind].Container
 
 End
 
 Public Function IsMultiContainer() As Boolean
 
-  Return CComponent.Classes[Kind].MultiContainer
+  Try Return CComponent.Classes[Kind].MultiContainer
 
 End
 
