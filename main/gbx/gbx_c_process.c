@@ -575,7 +575,7 @@ static void callback_child(int fd, int type, void *data)
 	/*old = signal(SIGCHLD, signal_child);*/
 
 	if (read(fd, (char *)&buffer, 1) != 1)
-		ERROR_panic("Cannot read from SIGCHLD pipe");
+		ERROR_panic("Cannot read from SIGCHLD pipe", strerror(errno));
 
 	#ifdef DEBUG_ME
 	fprintf(stderr, "<< callback_child\n");
