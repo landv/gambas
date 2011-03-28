@@ -397,9 +397,8 @@ Private Sub CheckReplaceFunction(sId As String, sLine As String, sFunc As String
   Dim sRest As String
   Dim hClass As CClassInfo
   
-  aSym = Highlight.Analyze(sLine, False).Copy()
-  aType = Highlight.Types.Copy()
-  aPos = Highlight.Positions.Copy()
+  aSym = Highlight.Analyze(sLine, False)
+  aPos = Highlight.Positions
   
   For I = 1 To aSym.Max - 1
     
@@ -409,6 +408,9 @@ Private Sub CheckReplaceFunction(sId As String, sLine As String, sFunc As String
       'If sId = "FNTH" And If sRest Begins "()" Then sRest = "(\"\")" & Mid$(sRest, 3)
       sLine = Left$(sLine, aPos[I]) & sNewFunc & sRest
       bFound = True
+      
+      aSym = Highlight.Analyze(sLine, False)
+      aPos = Highlight.Positions
       
     Endif
     
@@ -464,7 +466,7 @@ Private Sub ConvertClass(sPath As String)
         If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("DBGV", sLine, "DataBrowser", "GridView", "View")
         If Not sNewLine Then sNewLine = CheckReplaceClassSymbol("TEXT", sLine, "gb", "Text", "IgnoreCase")
         If Not sNewLine Then sNewLine = CheckReplaceFunction("CSNG", sLine, "CSng", "CSingle")
-        If Not sNewLine Then sNewLine = CheckReplaceFunction("CLNG", sLine, "CLong", "CSingle")
+        If Not sNewLine Then sNewLine = CheckReplaceFunction("CLNG", sLine, "CLng", "CLong")
         
         If Not sNewLine Then 
           $aLine.Add(sIndent & sLine)
