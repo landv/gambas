@@ -1056,9 +1056,14 @@ END_METHOD
 
 BEGIN_PROPERTY(Control_Mouse)
 
-	QWidget *wid = QWIDGET(_object);
+	QWidget *wid;
 	int shape;
 
+	while (THIS->proxy)
+		_object = THIS->proxy;
+	
+	wid = QWIDGET(_object);
+	
 	if (READ_PROPERTY)
 	{
 		if (wid->testAttribute(Qt::WA_SetCursor))
@@ -1080,6 +1085,9 @@ END_METHOD
 
 BEGIN_PROPERTY(Control_Cursor)
 
+	while (THIS->proxy)
+		_object = THIS->proxy;
+	
 	if (READ_PROPERTY)
 		GB.ReturnObject(THIS->cursor);
 	else

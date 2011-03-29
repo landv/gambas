@@ -703,17 +703,29 @@ void gControl::setFont(gFont *ft)
 
 int gControl::mouse()
 {
-	return mous;
+	if (_proxy)
+		return _proxy->mouse();
+	else
+		return mous;
 }
 
 gCursor* gControl::cursor()
 {
+	if (_proxy)
+		return _proxy->cursor();
+	
 	if (!curs) return NULL;
 	return new gCursor(curs);
 }
 
 void gControl::setCursor(gCursor *vl)
 {
+	if (_proxy)
+	{
+		_proxy->setCursor(vl);
+		return;
+	}
+	
 	if (curs) { delete curs; curs=NULL;}
 	if (!vl)
 	{
@@ -739,6 +751,12 @@ void gControl::setMouse(int m)
 	GdkCursor *cr = NULL;
 	GdkPixmap *pix;
 	GdkColor col = {0,0,0,0};
+	
+	if (_proxy)
+	{
+		_proxy->setMouse(m);
+		return;
+	}
 	
 	mous = m;
 	
