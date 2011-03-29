@@ -76,19 +76,14 @@ Private Function GetToolBarWidth(Optional bPadding As Boolean) As Integer
   
   If $bReallyVertical Then 
   
-    For Each hCtrl In panToolBar.Children
-      If Not hCtrl.Visible Then Continue
-      W = Max(W, hCtrl.W)
-    Next
+    ' For Each hCtrl In panToolBar.Children
+    '   If Not hCtrl.Visible Then Continue
+    '   W = Max(W, hCtrl.W)
+    ' Next
+    ' 
+    ' W = Max(W, $iButtonWidth)
     
     W = $iButtonWidth
-    
-    ' For Each hCtrl In panToolBar.Children
-    '   If hCtrl.Visible Then 
-    '     If hCtrl.Expand Then Return GetFreeWidth()
-    '     W += hCtrl.H
-    '   Endif
-    ' Next
     
   Else 
   
@@ -488,7 +483,8 @@ Private Sub InitToolbar()
   
   If Not ToolBarKey Then Return
   
-  aList = FindToolbar().DefaultConfig
+  Try aList = FindToolbar().DefaultConfig
+  If Error Then Return
   
   ' Debug panToolBar.Children.Count
   ' Debug System.Backtrace.Join("\n")
@@ -1088,7 +1084,7 @@ Private Sub ResizeControl(hCtrl As Control, iDim As Integer)
   Dim sAction As String
   Dim hAction As CAction
 
-  If $bVertical Then
+  If $bReallyVertical Then
     hCtrl.W = iDim
   Else
     hCtrl.H = iDim
@@ -1185,7 +1181,7 @@ Public Sub LoadConfig(Optional bInit As Boolean)
     If $iIconSize = ICON_SMALL Then
       If bInit Then Goto RAISE_CONFIGURE
     Endif
-    aConfig = FindToolbar().DefaultConfig
+    Try aConfig = FindToolbar().DefaultConfig
     If Not aConfig Then Goto RAISE_CONFIGURE
   Endif
   

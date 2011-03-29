@@ -419,8 +419,8 @@ int main(int argc, char **argv)
 			if (main_verbose)
 				puts("Removing .info and .list files");
 			FILE_chdir(FILE_get_dir(COMP_project));
-			unlink(".info");
-			unlink(".list");
+			FILE_unlink(".info");
+			FILE_unlink(".list");
 		}
 
 		init_files(FILE_get_dir(COMP_project));

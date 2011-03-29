@@ -347,14 +347,14 @@ static void close_file_and_rename(FILE *f, const char *file, const char *dest)
 	if (f)
 	{
 		fclose(f);
-    unlink(dest); 
-    rename(file, dest);
+    FILE_unlink(dest); 
+    FILE_rename(file, dest);
     FILE_set_owner(dest, COMP_project);
 	}
 	else
 	{
-		unlink(file);
-		unlink(dest);
+		FILE_unlink(file);
+		FILE_unlink(dest);
 	}
 }
 

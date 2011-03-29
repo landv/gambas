@@ -228,7 +228,7 @@ static void get_current(char **str, int *len)
 	parent_get(str, len, 1);
 }
 
-static void save_action()
+static void save_action(bool delete)
 {
 	FILE *file;
 	const char *path;
@@ -243,27 +243,40 @@ static void save_action()
 	name = STR_copy(FILE_set_ext(FILE_get_name(JOB->form), "action"));
 	path = FILE_cat(FILE_get_dir(COMP_project), ".action", name, NULL);
 	
-	if (JOB->verbose)
-		fprintf(stderr, "Writing action file %s\n", path);
-	
-	file = fopen(path, "w");
-	if (!file)
-		THROW("Cannot create action file: &1", path);
-
-	fputs("# Gambas Action File 3.0\n", file);
-
-	_no_trim = TRUE;
-	while (!read_line(&line, &len))
+	if (delete)
 	{
-		fwrite(line, sizeof(char), len, file);
-		putc('\n', file);
+		if (FILE_exist(path))
+		{
+			if (JOB->verbose)
+				fprintf(stderr, "Deleting action file %s\n", path);
+			
+			FILE_unlink(path);
+		}
 	}
-	_no_trim = FALSE;
-
-	if (fclose(file))
-		THROW("Cannot create action file: &1", path);
+	else
+	{
+		if (JOB->verbose)
+			fprintf(stderr, "Writing action file %s\n", path);
 		
-	FILE_set_owner(path, COMP_project);
+		file = fopen(path, "w");
+		if (!file)
+			THROW("Cannot create action file: &1", path);
+
+		fputs("# Gambas Action File 3.0\n", file);
+
+		_no_trim = TRUE;
+		while (!read_line(&line, &len))
+		{
+			fwrite(line, sizeof(char), len, file);
+			putc('\n', file);
+		}
+		_no_trim = FALSE;
+
+		if (fclose(file))
+			THROW("Cannot create action file: &1", path);
+			
+		FILE_set_owner(path, COMP_project);
+	}
 	
 	STR_free(name);
 }
@@ -320,6 +333,7 @@ void FORM_do(bool ctrl_public)
 	const char *pos_rewind;
 	bool virtual;
 	bool public;
+	bool action;
 
 	if (JOB->form == NULL)
 		return;
@@ -515,16 +529,22 @@ void FORM_do(bool ctrl_public)
 
 	print("\nEND\n\n");
 
-	// Create the action file if needed
+	// Create or delete the action file if needed
+	
+	action = FALSE;
 	
 	while (!read_line(&line, &len))
 	{
 		if (!strncasecmp(line, "# Gambas Action File 3.0", len))
 		{
-			save_action();
+			save_action(FALSE);
+			action = TRUE;
 			break;
 		}
 	}
+
+	if (!action)
+		save_action(TRUE);
 
 	FORM_exit();
 	return;

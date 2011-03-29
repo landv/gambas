@@ -591,8 +591,8 @@ static void analyze(const char *comp, bool include)
 	
 		if (!ok)
 		{
-			unlink(path_info);
-			unlink(path_list);
+			FILE_unlink(path_info);
+			FILE_unlink(path_list);
 		}
 		else if (_verbose)
 		{

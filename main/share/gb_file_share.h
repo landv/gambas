@@ -95,6 +95,9 @@ const char *FILE_find_gambas(void);
 
 bool FILE_exist(const char *path);
 
+void FILE_rename(const char *src, const char *dst);
+void FILE_unlink(const char *path);
+
 #ifdef PROJECT_EXEC
 
 void FILE_init(void);
@@ -107,10 +110,8 @@ void FILE_stat(const char *path, FILE_STAT *info, bool follow);
 void FILE_dir_first(const char *path, const char *pattern, int attr);
 bool FILE_dir_next(char **path, int *len);
 
-void FILE_unlink(const char *path);
 void FILE_rmdir(const char *path);
 void FILE_mkdir(const char *path);
-void FILE_rename(const char *src, const char *dst);
 void FILE_copy(const char *src, const char *dst);
 
 bool FILE_access(const char *path, int mode);

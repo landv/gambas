@@ -693,16 +693,6 @@ void FILE_recursive_dir(const char *dir, void (*found)(const char *), void (*aft
 }
 
 
-void FILE_unlink(const char *path)
-{
-	if (FILE_is_relative(path))
-		THROW(E_ACCESS);
-
-	if (unlink(path) != 0)
-		THROW_SYSTEM(errno, path);
-}
-
-
 void FILE_rmdir(const char *path)
 {
 	if (FILE_is_relative(path))
@@ -749,18 +739,6 @@ void FILE_make_path_dir(const char *path)
 	}
 }
 
-
-void FILE_rename(const char *src, const char *dst)
-{
-	if (FILE_is_relative(src) || FILE_is_relative(dst))
-		THROW(E_ACCESS);
-
-	if (FILE_exist(dst))
-		THROW(E_EXIST, dst);
-
-	if (rename(src, dst) != 0)
-		THROW_SYSTEM(errno, dst);
-}
 
 void FILE_copy(const char *src, const char *dst)
 {
@@ -948,6 +926,39 @@ void FILE_chdir(const char *path)
 		THROW_SYSTEM(errno, path);
 	#else
 	if (chdir(path))
-		THROW("Cannot change current directory: &1: &2", path, strerror(errno));
+		THROW("Cannot change current directory to '&1': &2", path, strerror(errno));
 	#endif
 }
+
+void FILE_unlink(const char *path)
+{
+	#ifdef PROJECT_EXEC
+	if (FILE_is_relative(path))
+		THROW(E_ACCESS);
+
+	if (unlink(path) != 0)
+		THROW_SYSTEM(errno, path);
+	#else
+	if (unlink(path) != 0 && errno != ENOENT)
+		THROW("Cannot remove file '&1': &2", path, strerror(errno));
+	#endif
+}
+
+
+void FILE_rename(const char *src, const char *dst)
+{
+	#ifdef PROJECT_EXEC
+	if (FILE_is_relative(src) || FILE_is_relative(dst))
+		THROW(E_ACCESS);
+
+	if (FILE_exist(dst))
+		THROW(E_EXIST, dst);
+
+	if (rename(src, dst) != 0)
+		THROW_SYSTEM(errno, dst);
+	#else
+	if (rename(src, dst) != 0)
+		THROW("Cannot rename file '&1' to '&2': &3", src, dst, strerror(errno));
+	#endif
+}
+
