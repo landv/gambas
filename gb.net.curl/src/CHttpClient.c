@@ -531,6 +531,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(HttpClient_free)
 
+	CCURL_stop(_object);
 	http_reset(THIS);
 	
 	GB.FreeString(&THIS_HTTP->sUserAgent);

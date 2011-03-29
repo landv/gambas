@@ -294,6 +294,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(FtpClient_free)
 
+	CCURL_stop(_object);
 	ftp_reset(THIS_FTP);
 
 END_METHOD
