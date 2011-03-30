@@ -45,15 +45,6 @@
 #define SEND_POST 1
 #define SEND_PUT 2
 
-/*****************************************************
- CURLM : a pointer to use curl_multi interface,
- allowing asynchrnous work without using threads
- in this class. Here also a pipe will be established
- to link with Gambas watching interface
- ******************************************************/
-
-extern CURLM *CCURL_multicurl;
-
 
 static void http_parse_header(CHTTPCLIENT *_object)
 {
@@ -306,8 +297,7 @@ static void http_get(void *_object, GB_ARRAY custom_headers, char *target)
 
 	if (THIS->async)
 	{
-		curl_multi_add_handle(CCURL_multicurl,THIS_CURL);
-		CCURL_init_post();
+		CCURL_start_post(THIS);
 		return;
 	}
 	
@@ -375,8 +365,7 @@ static void http_send(void *_object, int type, char *sContent, char *sData, int 
 
 	if (THIS->async)
 	{
-		curl_multi_add_handle(CCURL_multicurl,THIS_CURL);
-		CCURL_init_post();
+		CCURL_start_post(THIS);
 		return;
 	}
 	

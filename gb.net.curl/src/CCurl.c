@@ -26,6 +26,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include <curl/curl.h>
 #include <curl/easy.h>
@@ -145,6 +146,7 @@ void CCURL_raise_finished(intptr_t lParam)
 	GB.Raise(mythis,CURL_FINISHED,0);
 	GB.Unref(&mythis);
 }
+
 void CCURL_raise_error(intptr_t lParam)
 {
 	void *mythis;
@@ -152,6 +154,7 @@ void CCURL_raise_error(intptr_t lParam)
 	GB.Raise(mythis,CURL_ERROR,0);
 	GB.Unref(&mythis);
 }
+
 void CCURL_raise_connect(intptr_t lParam)
 {
 	void *mythis;
@@ -159,6 +162,7 @@ void CCURL_raise_connect(intptr_t lParam)
 	GB.Raise(mythis,CURL_CONNECT,0);
 	GB.Unref(&mythis);
 }
+
 void CCURL_raise_read(intptr_t lParam)
 {
 	void *mythis;
@@ -168,14 +172,14 @@ void CCURL_raise_read(intptr_t lParam)
 }
 
 
-void CCURL_Manage_ErrCode(void *_object,long ErrCode)
+void CCURL_Manage_ErrCode(void *_object, long ErrCode)
 {
 	if (THIS_FILE)
 	{
 		fclose(THIS_FILE);
 		THIS_FILE=NULL;
 	}
-		
+	
 	switch ( ErrCode )
 	{
 		case CURLE_OK:
@@ -205,6 +209,9 @@ void CCURL_Manage_ErrCode(void *_object,long ErrCode)
 			THIS_STATUS = -1*(1000+ErrCode);
 			break;
 	}
+	
+	if (THIS->async)
+		GB.Unref(POINTER(&_object));
 }
 
 void CCURL_init_stream(void *_object)
@@ -256,10 +263,22 @@ void CCURL_init_post(void)
 {
 	if (CCURL_pipe[0]!=-1) return;
 	
-	pipe(CCURL_pipe);
+	if (pipe(CCURL_pipe))
+	{
+		fprintf(stderr, "gb.net.curl: warning: unable to create the client watching pipe: %s\n", strerror(errno));
+		return;
+	}
 	
-	GB.Watch (CCURL_pipe[0] ,GB_WATCH_READ,CCURL_post_curl,0);
-	write(CCURL_pipe[1],"1",sizeof(char));
+	GB.Watch (CCURL_pipe[0], GB_WATCH_READ, CCURL_post_curl, 0);
+	if (write(CCURL_pipe[1], "1", sizeof(char)) != 1);
+		fprintf(stderr, "gb.net.curl: warning: unable to write to the client watching pipe: %s\n", strerror(errno));
+}
+
+void CCURL_start_post(void *_object)
+{
+	CCURL_init_post();
+	curl_multi_add_handle(CCURL_multicurl, THIS_CURL);
+	GB.Ref(THIS);
 }
 
 void CCURL_post_curl(intptr_t data)
