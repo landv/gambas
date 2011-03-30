@@ -163,8 +163,7 @@ int ftp_get (void *_object)
 		#if DEBUG
 		fprintf(stderr, "-- [%p] curl_multi_add_handle(%p)\n", THIS, THIS_CURL);
 		#endif
-		curl_multi_add_handle(CCURL_multicurl,THIS_CURL);
-		CCURL_init_post();
+		CCURL_start_post(THIS);
 		return 0;
 	}
 	
@@ -190,8 +189,7 @@ int ftp_put (void *_object)
 		#if DEBUG
 		fprintf(stderr, "-- [%p] curl_multi_add_handle(%p)\n", THIS, THIS_CURL);
 		#endif
-		curl_multi_add_handle(CCURL_multicurl,THIS_CURL);
-		CCURL_init_post();
+		CCURL_start_post(THIS);
 		return 0;
 	}
 	

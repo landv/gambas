@@ -238,8 +238,7 @@ int http_get (void *_object)
 	
 	if (THIS->async)
 	{
-		curl_multi_add_handle(CCURL_multicurl,THIS_CURL);
-		CCURL_init_post();
+		CCURL_start_post(THIS);
 		return 0;
 	}
 	
@@ -282,8 +281,7 @@ int http_post (void *_object,char *sContent,char *sData,int lendata)
 
 	if (THIS->async)
 	{
-		curl_multi_add_handle(CCURL_multicurl,THIS_CURL);
-		CCURL_init_post();
+		CCURL_start_post(THIS);
 		return 0;
 	}
 	

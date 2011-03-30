@@ -96,6 +96,7 @@ void CCURL_raise_connect  (intptr_t lParam);
 void CCURL_raise_read     (intptr_t lParam);
 
 void CCURL_init_post(void);
+void CCURL_start_post(void *_object);
 void CCURL_post_curl(intptr_t data);
 
 void CCURL_Manage_ErrCode(void *_object,long ErrCode);

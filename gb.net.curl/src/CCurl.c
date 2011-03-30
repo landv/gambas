@@ -202,6 +202,9 @@ void CCURL_Manage_ErrCode(void *_object,long ErrCode)
 			THIS_STATUS = -1*(1000+ErrCode);
 			break;
 	}
+
+	if (THIS->async)
+		GB.Unref(POINTER(&_object));
 }
 
 void CCURL_init_stream(void *_object)
@@ -257,6 +260,13 @@ void CCURL_init_post(void)
 	
 	GB.Watch (CCURL_pipe[0] ,GB_WATCH_READ,CCURL_post_curl,0);
 	write(CCURL_pipe[1],"1",sizeof(char));
+}
+
+void CCURL_start_post(void *_object)
+{
+	CCURL_init_post();
+	curl_multi_add_handle(CCURL_multicurl, THIS_CURL);
+	GB.Ref(THIS);
 }
 
 void CCURL_post_curl(intptr_t data)
