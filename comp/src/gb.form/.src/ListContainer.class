@@ -3,7 +3,7 @@
 Export
 Inherits UserContainer
 
-Public Const _Properties As String = "*,-Padding,-Spacing,-Arrangement,-AutoResize,-Indent"
+Public Const _Properties As String = "*,-Padding,-Spacing,-Arrangement,-AutoResize,-Indent,Border=True"
 Public Const _Arrangement As Integer = 2
 Public Const _DefaultEvent As String = "Click"
 
@@ -15,6 +15,7 @@ Property Read Count As Integer
 Property Index As Integer
 Property Current As Control
 Property Background As Integer
+Property Border As Boolean
 
 Private $hScrollView As ScrollView
 Private $hLast As Control
@@ -390,5 +391,17 @@ Public Sub ScrollView_KeyPress()
   Else If Key.Code = Key.Space Then
     If GetSelected() Then Raise Activate
   Endif
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $hScrollView.Border
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $hScrollView.Border = Value
 
 End

@@ -119,6 +119,8 @@ Private Sub IsInside(hCtrl As Control) As Boolean
   Dim X, Y As Integer
   'Dim XC, YC, WC, HC As Integer
   
+  If Not Object.IsValid(hCtrl) Then Return
+  
   X = Mouse.ScreenX
   Y = Mouse.ScreenY
   
