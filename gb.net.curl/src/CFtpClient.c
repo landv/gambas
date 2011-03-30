@@ -41,15 +41,6 @@
 #define EXEC_PUT 1
 #define EXEC_CMD 2
 
-/*****************************************************
- CURLM : a pointer to use curl_multi interface,
- allowing asynchrnous work without using threads
- in this class. Here also a pipe will be stablished
- to link with Gambas watching interface
- ******************************************************/
-
-extern CURLM *CCURL_multicurl;
-
 /*******************************************************************
 ####################################################################
 	CALLBACKS FROM CURL LIBRARY
@@ -194,8 +185,7 @@ static int ftp_exec(void *_object, int what, GB_ARRAY commands)
 		#if DEBUG
 		fprintf(stderr, "-- [%p] curl_multi_add_handle(%p)\n", THIS, THIS_CURL);
 		#endif
-		curl_multi_add_handle(CCURL_multicurl,THIS_CURL);
-		CCURL_init_post();
+		CCURL_start_post(THIS);
 		return 0;
 	}
 	

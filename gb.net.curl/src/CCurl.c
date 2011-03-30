@@ -229,59 +229,13 @@ static void stop_post()
 {
 	if (CCURL_pipe[0] < 0) return;
 	
-	GB.Watch (CCURL_pipe[0] ,GB_WATCH_NONE,CCURL_post_curl,0);
+	GB.Watch (CCURL_pipe[0], GB_WATCH_NONE, NULL, 0);
 	close(CCURL_pipe[0]);
 	close(CCURL_pipe[1]);
 	CCURL_pipe[0]=-1;
 }
 
-void CCURL_stop(void *_object)
-{
-	if (THIS_FILE)
-	{
-		fclose(THIS_FILE);
-		THIS_FILE=NULL;
-	}
-	
-	if (THIS_CURL)
-	{
-		#if DEBUG
-		fprintf(stderr, "-- [%p] curl_multi_remove_handle(%p)\n", THIS, THIS_CURL);
-		#endif
-		curl_multi_remove_handle(CCURL_multicurl,THIS_CURL);
-		#if DEBUG
-		fprintf(stderr, "-- [%p] curl_easycleanup(%p)\n", THIS, THIS_CURL);
-		#endif
-		curl_easy_cleanup(THIS_CURL);
-		THIS_CURL=NULL;
-	}
-
-	THIS_STATUS = 0;
-}
-
-void CCURL_init_post(void)
-{
-	if (CCURL_pipe[0]!=-1) return;
-	
-	if (pipe(CCURL_pipe))
-	{
-		fprintf(stderr, "gb.net.curl: warning: unable to create the client watching pipe: %s\n", strerror(errno));
-		return;
-	}
-	
-	GB.Watch (CCURL_pipe[0], GB_WATCH_READ, CCURL_post_curl, 0);
-	if (write(CCURL_pipe[1], "1", sizeof(char)) != 1)
-		fprintf(stderr, "gb.net.curl: warning: unable to write to the client watching pipe: %s\n", strerror(errno));
-}
-
-void CCURL_start_post(void *_object)
-{
-	CCURL_init_post();
-	curl_multi_add_handle(CCURL_multicurl, THIS_CURL);
-	GB.Ref(THIS);
-}
-
-void CCURL_post_curl(intptr_t data)
+static void CCURL_post_curl(intptr_t data)
 {
 	CURLMsg *Msg;
 	int nread;
@@ -315,6 +269,52 @@ void CCURL_post_curl(intptr_t data)
 
 	if (!post)
 		stop_post();
+}
+
+void CCURL_stop(void *_object)
+{
+	if (THIS_FILE)
+	{
+		fclose(THIS_FILE);
+		THIS_FILE=NULL;
+	}
+	
+	if (THIS_CURL)
+	{
+		#if DEBUG
+		fprintf(stderr, "-- [%p] curl_multi_remove_handle(%p)\n", THIS, THIS_CURL);
+		#endif
+		curl_multi_remove_handle(CCURL_multicurl,THIS_CURL);
+		#if DEBUG
+		fprintf(stderr, "-- [%p] curl_easycleanup(%p)\n", THIS, THIS_CURL);
+		#endif
+		curl_easy_cleanup(THIS_CURL);
+		THIS_CURL=NULL;
+	}
+
+	THIS_STATUS = 0;
+}
+
+static void CCURL_init_post(void)
+{
+	if (CCURL_pipe[0]!=-1) return;
+	
+	if (pipe(CCURL_pipe))
+	{
+		fprintf(stderr, "gb.net.curl: warning: unable to create the client watching pipe: %s\n", strerror(errno));
+		return;
+	}
+	
+	GB.Watch (CCURL_pipe[0], GB_WATCH_READ, CCURL_post_curl, 0);
+	if (write(CCURL_pipe[1], "1", sizeof(char)) != 1)
+		fprintf(stderr, "gb.net.curl: warning: unable to write to the client watching pipe: %s\n", strerror(errno));
+}
+
+void CCURL_start_post(void *_object)
+{
+	CCURL_init_post();
+	curl_multi_add_handle(CCURL_multicurl, THIS_CURL);
+	GB.Ref(THIS);
 }
 
 /*********************************************
