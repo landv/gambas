@@ -270,7 +270,7 @@ void CCURL_init_post(void)
 	}
 	
 	GB.Watch (CCURL_pipe[0], GB_WATCH_READ, CCURL_post_curl, 0);
-	if (write(CCURL_pipe[1], "1", sizeof(char)) != 1);
+	if (write(CCURL_pipe[1], "1", sizeof(char)) != 1)
 		fprintf(stderr, "gb.net.curl: warning: unable to write to the client watching pipe: %s\n", strerror(errno));
 }
 
