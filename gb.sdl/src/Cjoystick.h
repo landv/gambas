@@ -48,8 +48,10 @@ extern
 #endif
 int
 EVENT_AxisMotion,
+EVENT_BallMotion,
 EVENT_ButtonPressed,
-EVENT_ButtonReleased;
+EVENT_ButtonReleased,
+EVENT_HatMotion;
 
 #ifndef __CJOYSTICK_CPP
 extern GB_DESC CQueryJoys[];

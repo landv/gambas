@@ -137,7 +137,7 @@ BEGIN_PROPERTY(JOYSTICK_numofhats)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(JOYSTICK_axis)
+BEGIN_PROPERTY(JOYSTICK_device)
 
 	CHECK_VALID();
 	GB.ReturnInteger(CJOY_info.id);
@@ -151,10 +151,24 @@ BEGIN_PROPERTY(JOYSTICK_axisvalue)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(JOYSTICK_button)
+BEGIN_PROPERTY(JOYSTICK_hatvalue)
 
 	CHECK_VALID();
-	GB.ReturnInteger(CJOY_info.id);
+	GB.ReturnInteger(CJOY_info.value1);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(JOYSTICK_ballx)
+
+	CHECK_VALID();
+	GB.ReturnInteger(CJOY_info.value1);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(JOYSTICK_bally)
+
+	CHECK_VALID();
+	GB.ReturnInteger(CJOY_info.value2);
 
 END_PROPERTY
 
@@ -182,13 +196,27 @@ GB_DESC CJoystick[] =
   GB_PROPERTY_READ("NumberOfButtons", "i", JOYSTICK_numofbuts),
   GB_PROPERTY_READ("NumberOfHats", "i", JOYSTICK_numofhats),
   
-  GB_PROPERTY_READ("Axis", "i", JOYSTICK_axis),
+  GB_PROPERTY_READ("Device", "i", JOYSTICK_device),
   GB_PROPERTY_READ("AxisValue", "i", JOYSTICK_axisvalue),
-  GB_PROPERTY_READ("Button", "i", JOYSTICK_button),
+  GB_PROPERTY_READ("HatValue", "i", JOYSTICK_hatvalue),
+  GB_PROPERTY_READ("BallXValue", "i", JOYSTICK_ballx),
+  GB_PROPERTY_READ("BallYValue", "i", JOYSTICK_bally),
   
+  GB_CONSTANT("HatLeftUp", "i", SDL_HAT_LEFTUP),
+  GB_CONSTANT("HatLeft", "i", SDL_HAT_LEFT),
+  GB_CONSTANT("HatLeftDown", "i", SDL_HAT_LEFTDOWN),
+  GB_CONSTANT("HatUp", "i", SDL_HAT_UP),
+  GB_CONSTANT("HatCentered", "i", SDL_HAT_CENTERED),
+  GB_CONSTANT("HatDown", "i", SDL_HAT_DOWN),
+  GB_CONSTANT("HatRightUp", "i", SDL_HAT_RIGHTUP),
+  GB_CONSTANT("HatRight", "i", SDL_HAT_RIGHT),
+  GB_CONSTANT("HatRightDown", "i", SDL_HAT_RIGHTDOWN),
+
   GB_EVENT("AxisMotion", NULL, NULL, &EVENT_AxisMotion),
+  GB_EVENT("BallMotion", NULL, NULL, &EVENT_BallMotion),
   GB_EVENT("ButtonPressed", NULL, NULL, &EVENT_ButtonPressed),
   GB_EVENT("ButtonReleased", NULL, NULL, &EVENT_ButtonReleased),
+  GB_EVENT("HatMotion", NULL, NULL, &EVENT_HatMotion),
 
   GB_END_DECLARE
 };

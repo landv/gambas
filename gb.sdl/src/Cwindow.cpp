@@ -410,8 +410,25 @@ void myWin::JoyEvent(SDL_Event& event)
 		break;
 	}
 	case SDL_JOYHATMOTION:
-	case SDL_JOYBALLMOTION:
+	{
+		if (!joyobjects.count(event.jhat.which))
+			return;
+		CJOY_info.id = event.jhat.hat;
+		CJOY_info.value1 = event.jhat.value;
+		CJOY_info.value2 = 0;
+		GB.Raise(joyobjects[event.jaxis.which], EVENT_HatMotion, 0);
 		break;
+	}
+	case SDL_JOYBALLMOTION:
+	{
+		if (!joyobjects.count(event.jball.which))
+			return;
+		CJOY_info.id = event.jball.ball;
+		CJOY_info.value1 = event.jball.xrel;
+		CJOY_info.value2 = event.jball.yrel;
+		GB.Raise(joyobjects[event.jaxis.which], EVENT_BallMotion, 0);
+		break;
+	}
 	case SDL_JOYBUTTONDOWN:
 	case SDL_JOYBUTTONUP:
 	{
