@@ -34,6 +34,7 @@
 
 #include "Cconst.h"
 #include "Cdesktop.h"
+#include "Cjoystick.h"
 #include "Ckey.h"
 #include "Cmouse.h"
 #include "Cimage.h"
@@ -68,6 +69,7 @@ extern "C"
 		CLine, CFill,
 		CFont,
 		CDesktop,
+		CQueryJoys, CJoystick,
 		CKey,
 		CMouse, CCursor,
 		CImage,
@@ -132,10 +134,17 @@ static void my_main(int *argc, char **argv)
 
 static int my_loop()
 {
+	GLint errcode = 0;
+	
 	while(myApp->HaveWindows())
 	{
 		myApp->ManageEvents();
 		GB.Loop(10);
+		
+/*		errcode = glGetError();
+		
+		if (errcode != GL_NO_ERROR)
+			std::cerr << "GB.SDL: an OpenGL error was detected : " << std::hex << errcode << std::endl; */
 	}
 
 	return 1;

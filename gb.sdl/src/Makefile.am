@@ -27,6 +27,7 @@ gb_sdl_la_SOURCES = \
  Cdraw.h Cdraw.cpp \
  Cfont.h Cfont.cpp \
  Cimage.h Cimage.cpp \
+ Cjoystick.h Cjoystick.cpp \
  Ckey.h Ckey.cpp \
  Cmouse.h Cmouse.cpp \
  Cwindow.h Cwindow.cpp \

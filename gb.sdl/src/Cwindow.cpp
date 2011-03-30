@@ -25,16 +25,20 @@
 #include <iostream>
 
 #include "Cwindow.h"
+#include "Cjoystick.h"
 #include "Ckey.h"
 #include "Cmouse.h"
 #include "Cdraw.h"
 
 #include "SDL.h"
+#include <map>
 
 #define THIS      ((CWINDOW *)_object)
 #define WINDOWID  ((CWINDOW *)_object)->id
 // number of frames before counting FPS
 #define FRAMECOUNT 100
+// for joysticks events, see Cjoystick.cpp
+extern std::map <int, void*> joyobjects;
 
 // events
 DECLARE_EVENT(EVENT_Close);
@@ -388,6 +392,45 @@ void myWin::Open(void)
 		if (GB.CanRaise(hWindow, EVENT_Resize))
 			GB.Raise(hWindow, EVENT_Resize,0);
 	}
+}
+
+void myWin::JoyEvent(SDL_Event& event)
+{
+	CJOY_info.valid = true;
+	switch(event.type)
+	{
+	case SDL_JOYAXISMOTION:
+	{
+		if (!joyobjects.count(event.jaxis.which))
+			return;
+		CJOY_info.id = event.jaxis.axis;
+		CJOY_info.value1 = event.jaxis.value;
+		CJOY_info.value2 = 0;
+		GB.Raise(joyobjects[event.jaxis.which], EVENT_AxisMotion, 0);
+		break;
+	}
+	case SDL_JOYHATMOTION:
+	case SDL_JOYBALLMOTION:
+	case SDL_JOYBUTTONDOWN:
+		break;
+	case SDL_JOYBUTTONUP:
+	{
+		if (!joyobjects.count(event.jbutton.which))
+			return;
+		CJOY_info.id = event.jbutton.button;
+		CJOY_info.value1 = 0;
+		CJOY_info.value2 = 0;
+		if (event.jbutton.state == SDL_PRESSED)
+			GB.Raise(joyobjects[event.jbutton.which], EVENT_ButtonPressed, 0);
+		else
+			GB.Raise(joyobjects[event.jbutton.which], EVENT_ButtonReleased, 0);
+		break;
+	}
+	default:
+		break;
+	}
+	
+	CJOY_info.valid = false;
 }
 
 void myWin::KeyEvent(SDL_KeyboardEvent *keyEvent, int eventType)

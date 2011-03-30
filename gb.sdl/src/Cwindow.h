@@ -43,11 +43,10 @@ public:
 	void MouseLeave(void );
 	void Update(void );
 	void Open(void );
+	void JoyEvent(SDL_Event& );
 	void KeyEvent(SDL_KeyboardEvent* , int);
 	void MouseButtonEvent(SDL_MouseButtonEvent* );
 	void MouseMotionEvent(SDL_MouseMotionEvent* );
-
-
 private:
 	void *hWindow;
 };

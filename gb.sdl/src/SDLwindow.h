@@ -73,6 +73,7 @@ public:
 	virtual void MouseEnter(void ) = 0;
 	virtual void MouseLeave(void ) = 0;
 	virtual void Update(void ) = 0;
+	virtual void JoyEvent(SDL_Event& ) = 0;
 	virtual void KeyEvent(SDL_KeyboardEvent* , int ) = 0;
 	virtual void MouseButtonEvent(SDL_MouseButtonEvent* ) = 0;
 	virtual void MouseMotionEvent(SDL_MouseMotionEvent* ) = 0;

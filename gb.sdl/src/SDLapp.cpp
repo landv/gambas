@@ -49,7 +49,7 @@ SDLapplication::SDLapplication(int &argc, char **argv)
 	// if audio is defined, sdl was init by gb.sdl.sound component !
 	if (sysInit & SDL_INIT_AUDIO)
 	{
-		if (SDL_InitSubSystem(SDL_INIT_VIDEO)<0)
+		if (SDL_InitSubSystem(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK)<0)
 		{
 			sMsg =+ SDL_GetError();
 			goto _error;
@@ -57,7 +57,7 @@ SDLapplication::SDLapplication(int &argc, char **argv)
 	}
 	else
 	{
- 		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_NOPARACHUTE /* | SDL_INIT_EVENTTHREAD */)<0)
+ 		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_NOPARACHUTE | SDL_INIT_JOYSTICK)<0)
 		{
 			sMsg =+ SDL_GetError();
 			goto _error;
@@ -96,7 +96,7 @@ SDLapplication::~SDLapplication()
 
 	// if audio is defined, gb.sdl.audio component still not closed !
 	if (sysInit & SDL_INIT_AUDIO)
-		SDL_QuitSubSystem(SDL_INIT_VIDEO);
+		SDL_QuitSubSystem(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK);
 	else
 		SDL_Quit();
 }
@@ -139,6 +139,13 @@ void SDLapplication::ManageEvents()
 				 // take care if window is closed during resize
 				if (this->HaveWindows())
 					SDLcore::GetWindow()->Show();
+				break;
+			case SDL_JOYAXISMOTION:
+			case SDL_JOYHATMOTION:
+			case SDL_JOYBALLMOTION:
+			case SDL_JOYBUTTONDOWN:
+			case SDL_JOYBUTTONUP:
+				SDLcore::GetWindow()->JoyEvent(event);
 				break;
 			case SDL_KEYDOWN:
 			case SDL_KEYUP:

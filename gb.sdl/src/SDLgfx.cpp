@@ -428,7 +428,7 @@ void SDLgfx::Blit(SDLsurface *surface, int x, int y, int srcX, int srcY,
 
 	texinfo info;
 
-	glPushAttrib(GL_ENABLE_BIT);
+	glPushAttrib(GL_TEXTURE_BIT);
 	SDLtexture *texture = surface->GetTexture();
 	texture->GetAsTexture(&info);
 
@@ -460,6 +460,9 @@ void SDLgfx::Blit(SDLsurface *surface, int x, int y, int srcX, int srcY,
 	myWidth = myWidth / 2;
 	myHeight = myHeight / 2;
 	
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, info.Index);
+
 	glTranslatef(myWidth + x, myHeight + y, 0.0f);
 	glRotatef(rotz, 0, 0, 1);
 	glScalef(scalex, scaley, 0.0f);
@@ -477,7 +480,9 @@ void SDLgfx::Blit(SDLsurface *surface, int x, int y, int srcX, int srcY,
 	glTexCoord2d(myTexWidth, myTexY);
 	glVertex2f(myWidth, -myHeight);
 	glEnd();
-	
+
+	glDisable(GL_TEXTURE_2D);
+
 	glPopAttrib();
 	glLoadIdentity();
 }

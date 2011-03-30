@@ -70,7 +70,7 @@ void SDLtexture::Select()
 	
 	hRenderBuffer->Bind(hTexinfo->Index);
 
-	glMatrixMode(GL_MODELVIEW);
+/*	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glViewport(0, 0, hSurface->GetWidth(), hSurface->GetHeight());
 	glMatrixMode(GL_PROJECTION);
@@ -81,7 +81,7 @@ void SDLtexture::Select()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	// enable anti-aliasing
 	glEnable(GL_POINT_SMOOTH);
-	glMatrixMode(GL_MODELVIEW);
+	glMatrixMode(GL_MODELVIEW);*/
 }
 
 void SDLtexture::Unselect()
@@ -170,6 +170,9 @@ void SDLtexture::GetAsTexture(texinfo *tex)
 
 	if (tex)
 		std::memcpy(tex, hTexinfo, sizeof(texinfo));
+
+	glDisable(GL_TEXTURE_2D);
+
 }	
 
 int SDLtexture::GetPowerOfTwo(int size)
