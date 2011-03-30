@@ -411,8 +411,8 @@ void myWin::JoyEvent(SDL_Event& event)
 	}
 	case SDL_JOYHATMOTION:
 	case SDL_JOYBALLMOTION:
-	case SDL_JOYBUTTONDOWN:
 		break;
+	case SDL_JOYBUTTONDOWN:
 	case SDL_JOYBUTTONUP:
 	{
 		if (!joyobjects.count(event.jbutton.which))
