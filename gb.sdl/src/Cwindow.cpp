@@ -198,12 +198,6 @@ BEGIN_PROPERTY(CWINDOW_height)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CWINDOW_depth)
-
-	GB.ReturnInteger(WINDOWID->GetDepth());
-
-END_PROPERTY
-
 BEGIN_PROPERTY(CWINDOW_shown)
 
 	GB.ReturnBoolean(WINDOWID->IsShown());
@@ -244,9 +238,9 @@ GB_DESC CWindow[] =
   GB_PROPERTY("Resizable", "b", CWINDOW_resizable),
   GB_PROPERTY("Width", "i", CWINDOW_width),
 
-  GB_PROPERTY_READ("Depth", "i", CWINDOW_depth),
-  GB_PROPERTY_READ("Shown", "b", CWINDOW_shown),
+  GB_PROPERTY_READ("Handle", "i", CWINDOW_id),
   GB_PROPERTY_READ("Id", "i", CWINDOW_id),
+  GB_PROPERTY_READ("Shown", "b", CWINDOW_shown),
 
   GB_EVENT("Close", "b", NULL, &EVENT_Close),
   GB_EVENT("Resize", NULL, NULL, &EVENT_Resize),
