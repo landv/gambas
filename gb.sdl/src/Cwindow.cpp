@@ -143,7 +143,7 @@ BEGIN_PROPERTY(CWINDOW_resizable)
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(WINDOWID->IsResizable());
 	else
-		WINDOWID->SetResizable(bool(VPROP(GB_BOOLEAN)));
+		WINDOWID->SetResizable(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 

@@ -34,7 +34,7 @@ SDLwindow::SDLwindow(void )
 	hWidth = 640;
 	hHeight = 480;
 	hFullScreen = false;
-	hResizable = false;
+	hResizable = true;
 	hTitle = "Gambas SDL application";
 }
 
@@ -209,13 +209,13 @@ void SDLwindow::SetResizable(bool choice)
 {
 	if (!hSurface)
 	{
-		hResizable = !hResizable;
+		hResizable = choice;
 		return;
 	}
 
 	if (((hSurface->flags & SDL_RESIZABLE) && !choice) || (!(hSurface->flags & SDL_RESIZABLE) && choice))
 	{
-		hResizable = !hResizable;
+		hResizable = choice;
 		this->Show();
 	}
 }

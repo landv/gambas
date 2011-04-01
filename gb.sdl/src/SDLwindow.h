@@ -45,10 +45,10 @@ public:
 	int GetHeight(void );
 	int GetDepth(void );
 
-      const char* GetTitle(void ) { return (hTitle.c_str()); };
+	const char* GetTitle(void ) { return (hTitle.c_str()); };
 	SDL_Surface* GetSdlSurface(void ) { return (hSurface); };
 	SDLcursor* GetCursor(void ) { return (hCursor); }
-      int GetCursorShape(void ) { return (hCursor->GetShape()); }
+	int GetCursorShape(void ) { return (hCursor->GetShape()); }
 
 	void SetX(int );
 	void SetY(int );
@@ -58,8 +58,8 @@ public:
 	void SetResizable(bool );
 	void SetTitle(char* );
 
-      void SetCursor(SDLcursor* );
-      void SetCursorShape(int );
+	void SetCursor(SDLcursor* );
+	void SetCursorShape(int );
 
 	bool IsFullScreen(void ) {return (hFullScreen); };
 	bool IsResizable(void ) { return (hResizable); };
