@@ -138,17 +138,12 @@ BEGIN_PROPERTY(CWINDOW_fullscreen)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CWINDOW_border)
+BEGIN_PROPERTY(CWINDOW_resizable)
 
 	if (READ_PROPERTY)
-		GB.ReturnInteger(WINDOWID->IsResizable());
+		GB.ReturnBoolean(WINDOWID->IsResizable());
 	else
-	{
-		if (VPROP(GB_INTEGER) == 0)
-			WINDOWID->SetResizable(false);
-		if (VPROP(GB_INTEGER) == 1)
-			WINDOWID->SetResizable(true);
-	}
+		WINDOWID->SetResizable(bool(VPROP(GB_BOOLEAN)));
 
 END_PROPERTY
 
@@ -237,16 +232,16 @@ GB_DESC CWindow[] =
   GB_METHOD("Refresh", NULL, CWINDOW_refresh, NULL),
   GB_METHOD("Update", NULL, CWINDOW_refresh, NULL),
 
+  GB_PROPERTY("Caption", "s", CWINDOW_text),
   GB_PROPERTY("Cursor", "Cursor;", CWINDOW_cursor),
   GB_PROPERTY("Framerate", "i", CWINDOW_framerate),
+  GB_PROPERTY("FullScreen", "b", CWINDOW_fullscreen),
+  GB_PROPERTY("Height", "i", CWINDOW_height),
+  GB_PROPERTY("Mouse", "i", CWINDOW_mouse),
   GB_PROPERTY("Text", "s", CWINDOW_text),
   GB_PROPERTY("Title", "s", CWINDOW_text),
   GB_PROPERTY("Tracking", "b", CWINDOW_tracking),
-  GB_PROPERTY("Caption", "s", CWINDOW_text),
-  GB_PROPERTY("FullScreen", "b", CWINDOW_fullscreen),
-  GB_PROPERTY("Border", "i", CWINDOW_border),
-  GB_PROPERTY("Mouse", "i", CWINDOW_mouse),
-  GB_PROPERTY("Height", "i", CWINDOW_height),
+  GB_PROPERTY("Resizable", "b", CWINDOW_resizable),
   GB_PROPERTY("Width", "i", CWINDOW_width),
 
   GB_PROPERTY_READ("Depth", "i", CWINDOW_depth),
@@ -266,9 +261,6 @@ GB_DESC CWindow[] =
   GB_EVENT("MouseDown", NULL, NULL, &EVENT_MouseDown),
   GB_EVENT("MouseUp", NULL, NULL, &EVENT_MouseUp),
   GB_EVENT("Open", NULL, NULL, &EVENT_Open),
-
-  GB_CONSTANT("Fixed", "i", 0),
-  GB_CONSTANT("Resizable", "i", 1),
 
   GB_END_DECLARE
 };
