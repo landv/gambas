@@ -1,4 +1,81 @@
 -------------------------------------------------------------------------------
+ gambas2-2.23.0 - 01 Apr 2011
+-------------------------------------------------------------------------------
+
+[DEVELOPMENT ENVIRONMENT]
+* NEW: Add support for Finnish language.
+* NEW: Support for the Romanian language.
+* NEW: Romanian translation made by Florin Iacob.
+* NEW: Czech translation updated by Radek Fryšták and Josef Kubíček.
+* NEW: Add desktop and icon files.
+* NEW: Swedish translation updated.
+
+[INTERPRETER]
+* BUG: File.SetExt() now works correctly with files whose name begins with
+  a dot.
+* BUG: Fix a memory leak that can lead to a crash in enumeration
+  management.
+* BUG: The Stat.Perm[] property correctly returns execution permissions
+  now.
+
+[COMPILER]
+* BUG: Correctly read long constants whose value is the lower possible Long
+  value.
+* BUG: Define the LLONG_MAX constant if it is not defined.
+
+[GB.DB.FORM]
+* NEW: New Czech translation made by Radek Fryšták and Josef Kubíček.
+
+[GB.DB.ODBC]
+* BUG: Table existence should be checked correctly now.
+
+[GB.DB.SQLITE3]
+* BUG: Detect integer primary key whatever the case used to write
+  "integer".
+
+[GB.FORM]
+* NEW: New Czech translation made by Radek Fryšták and Josef Kubíček.
+
+[GB.FORM.DIALOG]
+* NEW: New Czech translation made by Radek Fryšták and Josef Kubíček.
+
+[GB.FORM.MDI]
+* NEW: New Czech translation made by Radek Fryšták and Josef Kubíček.
+
+[GB.GTK]
+* BUG: Cursor is correctly updated with the value of Application.Busy now.
+* BUG: Stop Event now works during the Close event of a modal form.
+* BUG: Fix a memory leak that leads to a crash in the TextArea.Paste()
+  method.
+* BUG: Fix Label automatic resize.
+* BUG: Settings the text of a transparent Label or TextLabel having no text
+  works correctly now.
+* BUG: SpinBox Value property should always be accurate now.
+* BUG: TextBox.Selection.Length now returns the correct value.
+* BUG: Calling Menu.Children.Clear() or deleting a menu during a Menu Show
+  event should not crash anymore.
+* BUG: A parent menu does not raise the Click event anymore.
+* BUG: GridView correctly receives the focus now.
+* BUG: Draw.Ellipse() now correctly draws a pie when filling is enabled.
+* BUG: Fix ComboBox.Add() when the position argument is specified.
+* BUG: Fix ListBox.Add() when the position argument is specified.
+* BUG: MoveScaled works correctly for positions and sizes that are not a
+  multiple of Desktop.Scale.
+* BUG: Key[] does not print GTK+ warning anymore when getting a null
+  string as argument.
+* BUG: Mouse.Blank cursor works as expected now.
+* BUG: Relative font sizes are correctly interpreted in rich text now.
+
+[GB.NET.CURL]
+* NEW: Asynchronous FtpClient and HttpClient objects are now automatically
+  kept alive until their operation is finished.
+
+[GB.QT4]
+* BUG: MoveScaled works correctly for positions and sizes that are not a
+  multiple of Desktop.Scale.
+
+
+-------------------------------------------------------------------------------
  gambas2-2.22.0 - 23 Nov 2010
 -------------------------------------------------------------------------------
 
