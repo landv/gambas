@@ -326,9 +326,15 @@ void SDLgfx::DrawPixel(int x, int y)
 {
 	SetContext();
 
+	glPushAttrib(GL_ENABLE_BIT);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	glBegin(GL_POINTS);
 	glVertex2i(x, y);
 	glEnd();
+
+	glPopAttrib();
 }
 
 void SDLgfx::DrawLine(int x1, int y1, int x2, int y2)
@@ -338,6 +344,10 @@ void SDLgfx::DrawLine(int x1, int y1, int x2, int y2)
 
 	SetContext();
 
+	glPushAttrib(GL_ENABLE_BIT);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	SetLinePattern(hLine);
 	glLineWidth(GLfloat(hLineWidth));
 
@@ -345,6 +355,8 @@ void SDLgfx::DrawLine(int x1, int y1, int x2, int y2)
 	glVertex2i(x1, y1);
 	glVertex2i(x2, y2);
 	glEnd();
+
+	glPopAttrib();
 }
 
 void SDLgfx::DrawRect(int x, int y, int w, int h)
@@ -353,6 +365,10 @@ void SDLgfx::DrawRect(int x, int y, int w, int h)
 		return;
 
 	SetContext();
+
+	glPushAttrib(GL_ENABLE_BIT);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	SetFillPattern(hFill);
 
@@ -376,6 +392,8 @@ void SDLgfx::DrawRect(int x, int y, int w, int h)
 		glVertex2i(x, y+h);
 		glEnd();
 	}
+
+	glPopAttrib();
 }
 
 void SDLgfx::DrawEllipse(int x, int y, int w, int h)
@@ -387,6 +405,10 @@ void SDLgfx::DrawEllipse(int x, int y, int w, int h)
 
 	double angle;
 	double step = 2 * PI / 360;
+
+	glPushAttrib(GL_ENABLE_BIT);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glTranslatef(x, y, 0.0f);
 	SetFillPattern(hFill);
@@ -407,6 +429,7 @@ void SDLgfx::DrawEllipse(int x, int y, int w, int h)
 		glEnd();
 	}
 
+	glPopAttrib();
 	glLoadIdentity();
 }
 
@@ -425,10 +448,9 @@ void SDLgfx::Blit(SDLsurface *surface, int x, int y, int srcX, int srcY,
 		return;
 
 	SetContext();
-
 	texinfo info;
 
-	glPushAttrib(GL_TEXTURE_BIT);
+	glPushAttrib(GL_ENABLE_BIT);
 	SDLtexture *texture = surface->GetTexture();
 	texture->GetAsTexture(&info);
 
@@ -460,6 +482,8 @@ void SDLgfx::Blit(SDLsurface *surface, int x, int y, int srcX, int srcY,
 	myWidth = myWidth / 2;
 	myHeight = myHeight / 2;
 	
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, info.Index);
 
@@ -480,8 +504,6 @@ void SDLgfx::Blit(SDLsurface *surface, int x, int y, int srcX, int srcY,
 	glTexCoord2d(myTexWidth, myTexY);
 	glVertex2f(myWidth, -myHeight);
 	glEnd();
-
-	glDisable(GL_TEXTURE_2D);
 
 	glPopAttrib();
 	glLoadIdentity();
