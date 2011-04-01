@@ -374,13 +374,10 @@ void myWin::Open(void)
 		glViewport(0, 0, this->GetWidth(), this->GetHeight());
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		gluOrtho2D(0.0f, GLdouble(this->GetWidth()), GLdouble(this->GetHeight()), 0.0f);
+		glOrtho(0.0f, GLdouble(this->GetWidth()), GLdouble(this->GetHeight()), 0.0f, -1, 1);
 		// enable blending, should work like 2d sdl does
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		// enable anti-aliasing
-		glEnable(GL_POINT_SMOOTH);
-//		glEnable(GL_LINE_SMOOTH);
 		glMatrixMode(GL_MODELVIEW);
 	}	
 
