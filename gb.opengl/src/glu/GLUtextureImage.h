@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  gb.gl.h
+  GLUtextureImage.h
 
   (c) 2005-2007 Laurent Carlier <lordheavy@users.sourceforge.net>
 
@@ -20,22 +20,13 @@
 
 ***************************************************************************/
 
-#ifndef __GB_GL_H
-#define __GB_GL_H
+#ifndef __GLUTEXTUREIMAGE_H
+#define __GLUTEXTUREIMAGE_H
 
-#include "gambas.h"
+#include "main.h"
 
-#define GL_INTERFACE_VERSION 1
+DECLARE_METHOD(GLUBUILD1DMIPMAPS);
+DECLARE_METHOD(GLUBUILD2DMIPMAPS);
 
-typedef
-  struct {
-    intptr_t version;
-    // Must be called after the context is init !
-    //** Perhaps also when context is changed but not tested **
-    void (*Init)(void);
+#endif /* __GLUTEXTUREIMAGE_H */
 
-    void *_null;
-  }
-  GL_INTERFACE;
-
-#endif

@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  gb.gl.h
+  GLU.h
 
   (c) 2005-2007 Laurent Carlier <lordheavy@users.sourceforge.net>
 
@@ -20,22 +20,15 @@
 
 ***************************************************************************/
 
-#ifndef __GB_GL_H
-#define __GB_GL_H
+#ifndef __GLU_H
+#define __GLU_H
 
-#include "gambas.h"
+#include "main.h"
 
-#define GL_INTERFACE_VERSION 1
+#include <glu.h>
 
-typedef
-  struct {
-    intptr_t version;
-    // Must be called after the context is init !
-    //** Perhaps also when context is changed but not tested **
-    void (*Init)(void);
+#ifndef __GLU_C
+extern GB_DESC Cglu[];
+#endif /* __GLU_C */
 
-    void *_null;
-  }
-  GL_INTERFACE;
-
-#endif
+#endif /* __GLU_H */

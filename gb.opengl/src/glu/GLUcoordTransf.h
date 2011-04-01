@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  gb.gl.h
+  GLUcoordTransf.h
 
   (c) 2005-2007 Laurent Carlier <lordheavy@users.sourceforge.net>
 
@@ -20,22 +20,14 @@
 
 ***************************************************************************/
 
-#ifndef __GB_GL_H
-#define __GB_GL_H
+#ifndef __GLUCOORDTRANSF_H
+#define __GLUCOORDTRANSF_H
 
-#include "gambas.h"
+#include "main.h"
 
-#define GL_INTERFACE_VERSION 1
+DECLARE_METHOD(GLULOOKAT);
+DECLARE_METHOD(GLUORTHO2D);
+DECLARE_METHOD(GLUPERSPECTIVE);
+DECLARE_METHOD(GLUPICKMATRIX);
 
-typedef
-  struct {
-    intptr_t version;
-    // Must be called after the context is init !
-    //** Perhaps also when context is changed but not tested **
-    void (*Init)(void);
-
-    void *_null;
-  }
-  GL_INTERFACE;
-
-#endif
+#endif /* __GLUCOORDTRANSF_H */

@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  gb.gl.h
+  main.h
 
   (c) 2005-2007 Laurent Carlier <lordheavy@users.sourceforge.net>
 
@@ -20,22 +20,25 @@
 
 ***************************************************************************/
 
-#ifndef __GB_GL_H
-#define __GB_GL_H
+#ifndef __MAIN_H
+#define __MAIN_H
 
+#include "gb_common.h"
 #include "gambas.h"
+#include "gb.image.h"
+#include <glu.h>
 
-#define GL_INTERFACE_VERSION 1
+#ifndef __MAIN_C
+extern GB_INTERFACE GB;
+extern IMAGE_INTERFACE IMAGE;
+#endif
 
-typedef
-  struct {
-    intptr_t version;
-    // Must be called after the context is init !
-    //** Perhaps also when context is changed but not tested **
-    void (*Init)(void);
+#ifndef WARNING
+#define WARNING(c) printf("WARNING: " c)
+#endif /* WARNING */
 
-    void *_null;
-  }
-  GL_INTERFACE;
+int IMAGE_get_pixel_format(GB_IMG *image);
+bool IMAGE_get(GB_OBJECT *arg, GB_IMG **img, int *format);
 
 #endif
+

@@ -1,7 +1,7 @@
 COMPONENT = gb.opengl
 include $(top_srcdir)/component.am
 
-SUBDIRS = glsl
+SUBDIRS = glsl @GLU_DIR@
 
 gblib_LTLIBRARIES = gb.opengl.la
 INCLUDES = @OPENGL_INC@
@@ -24,8 +24,4 @@ gb_opengl_la_SOURCES = \
  GLpixelOperations.h GLpixelOperations.c \
  GLrasterization.h GLrasterization.c \
  GLtextureMapping.h GLtextureMapping.c \
- GLselectFeedback.h GLselectFeedback.c \
- GLU.h GLU.c \
- GLUcoordTransf.h GLUcoordTransf.c \
- GLUtextureImage.h GLUtextureImage.c
-
+ GLselectFeedback.h GLselectFeedback.c

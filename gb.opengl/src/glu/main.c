@@ -2,7 +2,7 @@
 
   main.c
 
-  (c) 2005-2007 Laurent Carlier <lordheavy@users.sourceforge.net>
+  (c) 2005-2011 Laurent Carlier <lordheavy@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -22,30 +22,16 @@
 
 #define __MAIN_C
 
-#include "GL.h"
-//#include "GLU.h"
+#include "main.h"
 
-#include "gb.gl.h"
+#include "GLU.h"
 
 GB_INTERFACE GB EXPORT;
 IMAGE_INTERFACE IMAGE EXPORT;
 
-void Init(void );
-
 GB_DESC *GB_CLASSES[] EXPORT =
 {
-/* GL */
-	Cgl,
-/* GLU */
-//	Cglu,
-
-	NULL
-};
-
-void *GB_OPENGL_1[] EXPORT = {
-
-	(void *)1,
-	(void *)Init,
+	Cglu,
 
 	NULL
 };
@@ -91,14 +77,4 @@ int EXPORT GB_INIT(void)
 
 void EXPORT GB_EXIT()
 {
-}
-
-void Init()
-{
-	GLenum err = glewInit();
-	if (GLEW_OK != err)
-	{
-		/* Problem: glewInit failed, something is seriously wrong. */
-		GB.Error("Failed to init GLEW: &1\n", glewGetErrorString(err));
-	}
 }
