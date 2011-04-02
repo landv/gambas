@@ -166,6 +166,20 @@ BEGIN_PROPERTY(CMOUSE_middle)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(CMOUSE_wheelup)
+
+	CHECK_VALID()
+	GB.ReturnBoolean(CMOUSE_info.state == SDL_BUTTON_WHEELUP);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CMOUSE_wheeldown)
+
+	CHECK_VALID()
+	GB.ReturnBoolean(CMOUSE_info.state == SDL_BUTTON_WHEELDOWN);
+
+END_PROPERTY
+
 BEGIN_PROPERTY(CMOUSE_button)
 
 	CHECK_VALID()
@@ -239,6 +253,8 @@ GB_DESC CMouse[] =
   GB_STATIC_PROPERTY_READ("Left", "b", CMOUSE_left),
   GB_STATIC_PROPERTY_READ("Right", "b", CMOUSE_right),
   GB_STATIC_PROPERTY_READ("Middle", "b", CMOUSE_middle),
+  GB_STATIC_PROPERTY_READ("WheelUp", "b", CMOUSE_wheelup),
+  GB_STATIC_PROPERTY_READ("WheelDown", "b", CMOUSE_wheeldown),
   GB_STATIC_PROPERTY_READ("Button", "i", CMOUSE_button),
   GB_STATIC_PROPERTY_READ("Shift", "b", CMOUSE_shift),
   GB_STATIC_PROPERTY_READ("Control", "b", CMOUSE_control),
