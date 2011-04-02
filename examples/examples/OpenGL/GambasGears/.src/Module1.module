@@ -8,32 +8,32 @@
 ' Code : Bodard Fabien & Carlier Laurent
 '
 
-PRIVATE screen AS NEW Window(TRUE) AS "Screen"
-PRIVATE gearlists AS Integer
+Private screen As New Window(True) As "Screen"
+Private gearlists As Integer
 
-PRIVATE angle AS Float
-PRIVATE Frames AS Integer
-PRIVATE CTime AS Float
+Private angle As Float
+Private Frames As Integer
+Private CTime As Float
 
-PUBLIC SUB Main()
+Public Sub Main()
 
-  WITH screen
-    .Border = window.Resizable
+  With screen
+    .Resizable = True
     .Width = 480
     .Height = 480
     .Show()
-  END WITH
+  End With
   
   Ctime = Timer()
   
-END
+End
 
-PUBLIC SUB Screen_Open()
+Public Sub Screen_Open()
 
-  DIM red AS Float[]
-  DIM green AS Float[]
-  DIM blue AS Float[]
-  DIM pos AS Float[]
+  Dim red As Float[]
+  Dim green As Float[]
+  Dim blue As Float[]
+  Dim pos As Float[]
 
   red = [0.8, 0.1, 0.0, 0.2]
   green = [0.0, 0.8, 0.2, 0.8]
@@ -64,9 +64,9 @@ PUBLIC SUB Screen_Open()
   Gl.EndList()
   Gl.Enable(Gl.GL_NORMALIZE)
   
-END
+End
 
-PUBLIC SUB Screen_resize()
+Public Sub Screen_resize()
 
   Gl.Viewport(0, 0, Screen.Width, Screen.Height)
   Gl.MatrixMode(Gl.GL_PROJECTION)
@@ -76,15 +76,15 @@ PUBLIC SUB Screen_resize()
   Gl.LoadIdentity()
   Gl.Translatef(0.0, 0.0, -40.0)
 
-END
+End
 
-PUBLIC SUB Screen_Draw()
+Public Sub Screen_Draw()
 
-  DIM calc AS Float
+  Dim calc As Float
 
   angle += 0.1
 
-  Gl.Clear(Gl.GL_COLOR_BUFFER_BIT OR Gl.GL_DEPTH_BUFFER_BIT)
+  Gl.Clear(Gl.GL_COLOR_BUFFER_BIT Or Gl.GL_DEPTH_BUFFER_BIT)
 
   Gl.PushMatrix()
 
@@ -112,47 +112,47 @@ PUBLIC SUB Screen_Draw()
 
   Gl.PopMatrix()
 
-  INC (Frames)
-  IF (Timer() > CTime + 5) THEN
+  Inc (Frames)
+  If (Timer() > CTime + 5) Then
     calc = Timer() - CTime
-    PRINT CStr(Frames) & " frames in " & Format$(calc, "#.0") & " seconds = " & Format$((Frames / calc), "######.000") & " FPS"
+    Print CStr(Frames) & " frames in " & Format$(calc, "#.0") & " seconds = " & Format$((Frames / calc), "######.000") & " FPS"
     Frames = 0
     CTime = Timer()
-  ENDIF
+  Endif
 
-END
+End
 
-PUBLIC SUB Screen_Close()
+Public Sub Screen_Close()
 
   Gl.DeleteLists(gearLists, 3)
 
-END
+End
 
-PUBLIC SUB Screen_keyPress()
+Public Sub Screen_keyPress()
  
-  IF (key.code = key.F1) THEN screen.Fullscreen = NOT screen.Fullscreen
-  IF (key.Code = key.Esc) THEN Screen.Close()
+  If (key.code = key.F1) Then screen.Fullscreen = Not screen.Fullscreen
+  If (key.Code = key.Esc) Then Screen.Close()
   
-END
+End
 
- PUBLIC SUB Screen_MouseMove()
+ Public Sub Screen_MouseMove()
  
-   Gl.Rotatef(Mouse.RelativeY, 0, 0, 1)
-   Gl.Rotatef(Mouse.RelativeX, 1, 0, 0)
+   Gl.Rotatef(Mouse.StartY - Mouse.Y, 0, 0, 1)
+   Gl.Rotatef(Mouse.StartX - Mouse.X, 1, 0, 0)
  
- END
+ End
 
-PUBLIC SUB Gear(inner_radius AS Float, outer_radius AS Float, width AS Float, teeth AS Integer, tooth_depth AS Float)
+Public Sub Gear(inner_radius As Float, outer_radius As Float, width As Float, teeth As Integer, tooth_depth As Float)
 
-   DIM i AS Integer
-   DIM r0 AS Float
-   DIM r1 AS Float
-   DIM r2 AS Float
-   DIM angle AS Float
-   DIM da AS Float
-   DIM u AS Float
-   DIM v AS Float
-   DIM fLen AS Float
+   Dim i As Integer
+   Dim r0 As Float
+   Dim r1 As Float
+   Dim r2 As Float
+   Dim angle As Float
+   Dim da As Float
+   Dim u As Float
+   Dim v As Float
+   Dim fLen As Float
 
    r0 = inner_radius
    r1 = outer_radius - tooth_depth / 2.0
@@ -165,59 +165,59 @@ PUBLIC SUB Gear(inner_radius AS Float, outer_radius AS Float, width AS Float, te
 
    ' Draw front face
    Gl.Begin(Gl.GL_QUAD_STRIP)
-   FOR i = 0 TO teeth
+   For i = 0 To teeth
       angle = i * 2.0 * Pi / teeth
       Gl.Vertexf(r0 * Cos(angle), r0 * Sin(angle), width * 0.5)
       Gl.Vertexf(r1 * Cos(angle), r1 * Sin(angle), width * 0.5)
-      IF i < teeth THEN
+      If i < teeth Then
          Gl.Vertexf(r0 * Cos(angle), r0 * Sin(angle), width * 0.5)
          Gl.Vertexf(r1 * Cos(angle + 3 * da), r1 * Sin(angle + 3 * da), width * 0.5)
-      ENDIF
-   NEXT
+      Endif
+   Next
    Gl.End()
 
    ' Draw front sides of teeth
    Gl.Begin(Gl.GL_QUADS)
    da = 2.0 * Pi / teeth / 4.0
-   FOR i = 0 TO teeth - 1
+   For i = 0 To teeth - 1
       angle = i * 2.0 * Pi / teeth
       Gl.Vertexf(r1 * Cos(angle), r1 * Sin(angle), width * 0.5)
       Gl.Vertexf(r2 * Cos(angle + da), r2 * Sin(angle + da), width * 0.5)
       Gl.Vertexf(r2 * Cos(angle + 2 * da), r2 * Sin(angle + 2 * da), width * 0.5)
       Gl.Vertexf(r1 * Cos(angle + 3 * da), r1 * Sin(angle + 3 * da), width * 0.5)
-   NEXT
+   Next
    Gl.End()
 
    Gl.Normal3f(0.0, 0.0, -1.0)
 
    ' Draw back face
    Gl.Begin(Gl.GL_QUAD_STRIP)
-   FOR i = 0 TO teeth
+   For i = 0 To teeth
       angle = i * 2.0 * Pi / teeth
       Gl.Vertexf(r1 * Cos(angle), r1 * Sin(angle), - width * 0.5)
       Gl.Vertexf(r0 * Cos(angle), r0 * Sin(angle), - width * 0.5)
-      IF i < teeth THEN
+      If i < teeth Then
          Gl.Vertexf(r1 * Cos(angle + 3 * da), r1 * Sin(angle + 3 * da), - width * 0.5)
          Gl.Vertexf(r0 * Cos(angle), r0 * Sin(angle), - width * 0.5)
-      ENDIF
-   NEXT
+      Endif
+   Next
    Gl.End()
 
    ' Draw back sides of teeth
    Gl.Begin(Gl.GL_QUADS)
    da = 2.0 * Pi / teeth / 4.0
-   FOR i = 0 TO teeth - 1
+   For i = 0 To teeth - 1
       angle = i * 2.0 * Pi / teeth
       Gl.Vertexf(r1 * Cos(angle + 3 * da), r1 * Sin(angle + 3 * da), - width * 0.5)
       Gl.Vertexf(r2 * Cos(angle + 2 * da), r2 * Sin(angle + 2 * da), - width * 0.5)
       Gl.Vertexf(r2 * Cos(angle + da), r2 * Sin(angle + da), - width * 0.5)
       Gl.Vertexf(r1 * Cos(angle), r1 * Sin(angle), - width * 0.5)
-   NEXT
+   Next
    Gl.End()
 
    ' Draw outward faces of teeth
    Gl.Begin(Gl.GL_QUAD_STRIP)
-   FOR i = 0 TO teeth - 1
+   For i = 0 To teeth - 1
       angle = i * 2.0 * Pi / teeth
       Gl.Vertexf(r1 * Cos(angle), r1 * Sin(angle), width * 0.5)
       Gl.Vertexf(r1 * Cos(angle), r1 * Sin(angle), - width * 0.5)
@@ -238,7 +238,7 @@ PUBLIC SUB Gear(inner_radius AS Float, outer_radius AS Float, width AS Float, te
       Gl.Vertexf(r1 * Cos(angle + 3 * da), r1 * Sin(angle + 3 * da), width * 0.5)
       Gl.Vertexf(r1 * Cos(angle + 3 * da), r1 * Sin(angle + 3 * da), - width * 0.5)
       Gl.Normal3f(Cos(angle), Sin(angle), 0.0)
-   NEXT
+   Next
    Gl.Vertexf(r1 * Cos(0), r1 * Sin(0), width * 0.5)
    Gl.Vertexf(r1 * Cos(0), r1 * Sin(0), - width * 0.5)
    Gl.End()
@@ -247,12 +247,12 @@ PUBLIC SUB Gear(inner_radius AS Float, outer_radius AS Float, width AS Float, te
 
    ' Draw inside radius cylinder
    Gl.Begin(Gl.GL_QUAD_STRIP)
-   FOR i = 0 TO teeth
+   For i = 0 To teeth
       angle = i * 2.0 * Pi / teeth
       Gl.Normal3f(- Cos(angle), - Sin(angle), 0.0)
       Gl.Vertexf(r0 * Cos(angle), r0 * Sin(angle), - width * 0.5)
       Gl.Vertexf(r0 * Cos(angle), r0 * Sin(angle), width * 0.5)
-   NEXT
+   Next
    Gl.End()
 
-END
+End
