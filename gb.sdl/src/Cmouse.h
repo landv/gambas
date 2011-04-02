@@ -37,6 +37,7 @@ typedef
     int relx;
     int rely;
     int state;
+    SDLMod keymod;
     }
   CMOUSE_INFO;
 

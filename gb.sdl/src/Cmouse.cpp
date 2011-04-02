@@ -119,12 +119,14 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CMOUSE_x)
 
+	CHECK_VALID()
 	GB.ReturnInteger(CMOUSE_info.x);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CMOUSE_y)
 
+	CHECK_VALID()
 	GB.ReturnInteger(CMOUSE_info.y);
 
 END_PROPERTY
@@ -140,6 +142,69 @@ BEGIN_PROPERTY(CMOUSE_starty)
 
 	CHECK_VALID()
 	GB.ReturnInteger(CMOUSE_info.y - CMOUSE_info.rely);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CMOUSE_left)
+
+	CHECK_VALID()
+	GB.ReturnBoolean(CMOUSE_info.state == SDL_BUTTON_LEFT);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CMOUSE_right)
+
+	CHECK_VALID()
+	GB.ReturnBoolean(CMOUSE_info.state == SDL_BUTTON_RIGHT);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CMOUSE_middle)
+
+	CHECK_VALID()
+	GB.ReturnBoolean(CMOUSE_info.state == SDL_BUTTON_MIDDLE);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CMOUSE_button)
+
+	CHECK_VALID()
+	GB.ReturnInteger(CMOUSE_info.state);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CMOUSE_shift)
+
+	CHECK_VALID()
+	GB.ReturnBoolean(CMOUSE_info.keymod & KMOD_SHIFT);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CMOUSE_control)
+
+	CHECK_VALID()
+	GB.ReturnBoolean(CMOUSE_info.keymod & KMOD_CTRL);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CMOUSE_alt)
+
+	CHECK_VALID()
+	GB.ReturnBoolean(CMOUSE_info.keymod & KMOD_ALT);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CMOUSE_meta)
+
+	CHECK_VALID()
+	GB.ReturnBoolean(CMOUSE_info.keymod & KMOD_META);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CMOUSE_normal)
+
+	CHECK_VALID()
+	GB.ReturnBoolean(CMOUSE_info.keymod < KMOD_NUM);
 
 END_PROPERTY
 
@@ -170,6 +235,16 @@ GB_DESC CMouse[] =
   GB_STATIC_PROPERTY_READ("StartY", "i", CMOUSE_starty),
   GB_STATIC_PROPERTY_READ("X", "i", CMOUSE_x),
   GB_STATIC_PROPERTY_READ("Y", "i", CMOUSE_y),
+
+  GB_STATIC_PROPERTY_READ("Left", "b", CMOUSE_left),
+  GB_STATIC_PROPERTY_READ("Right", "b", CMOUSE_right),
+  GB_STATIC_PROPERTY_READ("Middle", "b", CMOUSE_middle),
+  GB_STATIC_PROPERTY_READ("Button", "i", CMOUSE_button),
+  GB_STATIC_PROPERTY_READ("Shift", "b", CMOUSE_shift),
+  GB_STATIC_PROPERTY_READ("Control", "b", CMOUSE_control),
+  GB_STATIC_PROPERTY_READ("Alt", "b", CMOUSE_alt),
+  GB_STATIC_PROPERTY_READ("Meta", "b", CMOUSE_meta),
+  GB_STATIC_PROPERTY_READ("Normal", "b", CMOUSE_normal),
 
   GB_CONSTANT("Default", "i", SDL::DefaultCursor),
   GB_CONSTANT("Custom", "i", SDL::CustomCursor),

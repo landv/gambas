@@ -451,6 +451,8 @@ void myWin::MouseButtonEvent(SDL_MouseButtonEvent *mouseEvent)
 	CMOUSE_info.valid = true;
 	CMOUSE_info.x = mouseEvent->x;
 	CMOUSE_info.y = mouseEvent->y;
+	CMOUSE_info.state = mouseEvent->button;
+	CMOUSE_info.keymod = SDL_GetModState();
 
 	if (mouseEvent->type == SDL_MOUSEBUTTONDOWN)
 		GB.Raise(hWindow, EVENT_MouseDown,0);
@@ -473,6 +475,8 @@ void myWin::MouseMotionEvent(SDL_MouseMotionEvent *mouseEvent)
 	CMOUSE_info.valid = true;
 	CMOUSE_info.x = mouseEvent->x;
 	CMOUSE_info.y = mouseEvent->y;
+	CMOUSE_info.state = mouseEvent->state;
+	CMOUSE_info.keymod = SDL_GetModState();
 	GB.Raise(hWindow, EVENT_MouseMove,0);
 	CMOUSE_info.valid = false;
 }
