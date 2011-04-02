@@ -129,17 +129,17 @@ BEGIN_PROPERTY(CMOUSE_y)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CMOUSE_relx)
+BEGIN_PROPERTY(CMOUSE_startx)
 
 	CHECK_VALID()
-	GB.ReturnInteger(CMOUSE_info.relx);
+	GB.ReturnInteger(CMOUSE_info.x - CMOUSE_info.relx);
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CMOUSE_rely)
+BEGIN_PROPERTY(CMOUSE_starty)
 
 	CHECK_VALID()
-	GB.ReturnInteger(CMOUSE_info.rely);
+	GB.ReturnInteger(CMOUSE_info.y - CMOUSE_info.rely);
 
 END_PROPERTY
 
@@ -166,10 +166,10 @@ GB_DESC CMouse[] =
 
   GB_STATIC_PROPERTY_READ("ScreenX", "i", CMOUSE_screenx),
   GB_STATIC_PROPERTY_READ("ScreenY", "i", CMOUSE_screeny),
+  GB_STATIC_PROPERTY_READ("StartX", "i", CMOUSE_startx),
+  GB_STATIC_PROPERTY_READ("StartY", "i", CMOUSE_starty),
   GB_STATIC_PROPERTY_READ("X", "i", CMOUSE_x),
   GB_STATIC_PROPERTY_READ("Y", "i", CMOUSE_y),
-  GB_STATIC_PROPERTY_READ("RelativeX", "i", CMOUSE_relx),
-  GB_STATIC_PROPERTY_READ("RelativeY", "i", CMOUSE_rely),
 
   GB_CONSTANT("Default", "i", SDL::DefaultCursor),
   GB_CONSTANT("Custom", "i", SDL::CustomCursor),
