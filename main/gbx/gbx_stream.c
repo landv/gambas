@@ -211,6 +211,8 @@ _OPEN:
 	stream->common.standard = FALSE;
 	stream->common.blocking = TRUE;
 	stream->common.available_now = FALSE;
+	stream->common.redirected = FALSE;
+	stream->common.redirect = NULL;
 
 	if ((*(stream->type->open))(stream, path, mode, NULL))
 	{
@@ -238,6 +240,8 @@ void STREAM_release(STREAM *stream)
 		stream->common.buffer_pos = 0;
 		stream->common.buffer_len = 0;
 	}
+	
+	STREAM_cancel(stream);
 }
 
 void STREAM_close(STREAM *stream)
@@ -426,6 +430,9 @@ void STREAM_write(STREAM *stream, void *addr, int len)
 	
 	if (len <= 0)
 		return;
+	
+	if (stream->common.redirected)
+		stream = stream->common.redirect;
 	
 	while ((*(stream->type->write))(stream, addr, len))
 	{
@@ -765,7 +772,7 @@ static STREAM *enter_temp_stream(STREAM *stream)
 	return &_temp_stream;
 }
 
-static STREAM *leave_temp_stream()
+static STREAM *leave_temp_stream(void)
 {
 	_temp_level--;
 	if (_temp_level > 0)
@@ -1561,3 +1568,37 @@ void STREAM_check_blocking(STREAM *stream)
 	
 	stream->common.blocking = (fd < 0) ? TRUE : ((fcntl(fd, F_GETFL) & O_NONBLOCK) == 0);
 }
+
+void STREAM_cancel(STREAM *stream)
+{
+	if (!stream->common.redirect)
+		return;
+
+	STREAM_close(stream->common.redirect);
+	FREE(&stream->common.redirect, "STREAM_cancel");
+	stream->common.redirected = FALSE;
+}
+
+void STREAM_begin(STREAM *stream)
+{
+	STREAM_cancel(stream);
+	
+	if (!stream->common.redirect)
+	{
+		ALLOC_ZERO(&stream->common.redirect, sizeof(STREAM), "STREAM_begin");
+		STREAM_open(stream->common.redirect, NULL, ST_STRING | ST_WRITE);
+	}
+
+	stream->common.redirected = TRUE;
+}
+
+void STREAM_end(STREAM *stream)
+{
+	if (!stream->common.redirect)
+		return;
+	
+	stream->common.redirected = FALSE;
+	STREAM_write(stream, stream->common.redirect->string.buffer, STRING_length(stream->common.redirect->string.buffer));
+	STREAM_cancel(stream);
+}
+

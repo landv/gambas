@@ -49,12 +49,13 @@
 
 #include "gbx_c_application.h"
 
-static GB_FUNCTION signal_func;
-static bool has_signal_func;
+//static GB_FUNCTION signal_func;
+//static bool has_signal_func;
 static bool _daemon = FALSE;
 
 extern char **environ;
 
+#if 0
 static void got_signal_after(intptr_t param)
 {
   GB_Call(&signal_func, 0, FALSE);
@@ -78,7 +79,7 @@ void CAPP_init()
 
   /*printf("has_signal_func = %d\n", has_signal_func);*/
 }
-
+#endif
 
 BEGIN_PROPERTY(Application_Path)
 

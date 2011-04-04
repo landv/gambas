@@ -737,6 +737,24 @@ BEGIN_METHOD(Stream_ReadLine, GB_STRING escape)
 
 END_METHOD
 
+BEGIN_METHOD_VOID(Stream_Begin)
+
+	STREAM_begin(CSTREAM_stream(THIS_STREAM));
+
+END_METHOD
+
+BEGIN_METHOD_VOID(Stream_End)
+
+	STREAM_end(CSTREAM_stream(THIS_STREAM));
+
+END_METHOD
+
+BEGIN_METHOD_VOID(Stream_Cancel)
+
+	STREAM_cancel(CSTREAM_stream(THIS_STREAM));
+
+END_METHOD
+
 #endif
 
 GB_DESC NATIVE_Stream[] =
@@ -754,6 +772,10 @@ GB_DESC NATIVE_Stream[] =
 	GB_PROPERTY("Blocking", "b", Stream_Blocking),
 	GB_PROPERTY("Tag", "v", Stream_Tag),
 	GB_METHOD("ReadLine", "s", Stream_ReadLine, "[(Escape)s]"),
+	
+	GB_METHOD("Begin", NULL, Stream_Begin, NULL),
+	GB_METHOD("Send", NULL, Stream_End, NULL),
+	GB_METHOD("Drop", NULL, Stream_Cancel, NULL),
 
 	GB_END_DECLARE
 };

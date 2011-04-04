@@ -33,7 +33,7 @@ extern GB_DESC NATIVE_System[];
 extern GB_DESC NATIVE_User[];
 #endif
 
-void CAPP_init(void);
-void CAPP_got_signal(void);
+//void CAPP_init(void);
+//void CAPP_got_signal(void);
 
 #endif

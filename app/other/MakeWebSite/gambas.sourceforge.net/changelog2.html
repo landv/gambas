@@ -8,6 +8,7 @@
 ChangeLog
 </div>
 <br>
+<a target="_self" href="#2.23.0">2.23.0</a>&nbsp;
 <a target="_self" href="#2.22.0">2.22.0</a>&nbsp;
 <a target="_self" href="#2.21.0">2.21.0</a>&nbsp;
 <a target="_self" href="#2.20.2">2.20.2</a>&nbsp;
@@ -98,6 +99,101 @@ ChangeLog
 <a target="_self" href="#1.9.2">1.9.2</a>&nbsp;
 <a target="_self" href="#1.9.1">1.9.1</a>&nbsp;
 <br>
+<a style="height:4px; font-size:xx-small;" name="2.23.0"></a>
+<div class="news-title">
+  <img src="top-left-corner.png" class="top-left-corner">
+  <img src="top-right-corner.png" class="top-right-corner">
+  <div style="height:4px;"></div>
+  <div><b>2.23.0 - 01 Apr 2011</b></div>
+</div>
+<div class="news">
+<table class="none" width="100%"><tr><td class="none">
+  <p><font><b>Development Environment</b></font>
+  <ul>
+  <li>NEW: Add support for Finnish language.
+  <li>NEW: Support for the Romanian language.
+  <li>NEW: Romanian translation made by Florin Iacob.
+  <li>NEW: Czech translation updated by Radek Fryšták and Josef Kubíček.
+  <li>NEW: Add desktop and icon files.
+  <li>NEW: Swedish translation updated.
+  </ul>
+  <p><font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: File.SetExt() now works correctly with files whose name begins with
+  a dot.
+  <li>BUG: Fix a memory leak that can lead to a crash in enumeration
+  management.
+  <li>BUG: The Stat.Perm[] property correctly returns execution permissions
+  now.
+  </ul>
+  <p><font><b>Compiler</b></font>
+  <ul>
+  <li>BUG: Correctly read long constants whose value is the lower possible Long
+  value.
+  <li>BUG: Define the LLONG_MAX constant if it is not defined.
+  </ul>
+  <p><font><b><a href="http://gambasdoc.org/help/comp/gb.db.form">GB.DB.FORM</a></b></font>
+  <ul>
+  <li>NEW: New Czech translation made by Radek Fryšták and Josef Kubíček.
+  </ul>
+  <p><font><b><a href="http://gambasdoc.org/help/comp/gb.db.odbc">GB.DB.ODBC</a></b></font>
+  <ul>
+  <li>BUG: Table existence should be checked correctly now.
+  </ul>
+  <p><font><b><a href="http://gambasdoc.org/help/comp/gb.db.sqlite3">GB.DB.SQLITE3</a></b></font>
+  <ul>
+  <li>BUG: Detect integer primary key whatever the case used to write
+  "integer".
+  </ul>
+  <p><font><b><a href="http://gambasdoc.org/help/comp/gb.form">GB.FORM</a></b></font>
+  <ul>
+  <li>NEW: New Czech translation made by Radek Fryšták and Josef Kubíček.
+  </ul>
+  <p><font><b><a href="http://gambasdoc.org/help/comp/gb.form.dialog">GB.FORM.DIALOG</a></b></font>
+  <ul>
+  <li>NEW: New Czech translation made by Radek Fryšták and Josef Kubíček.
+  </ul>
+  <p><font><b><a href="http://gambasdoc.org/help/comp/gb.form.mdi">GB.FORM.MDI</a></b></font>
+  <ul>
+  <li>NEW: New Czech translation made by Radek Fryšták and Josef Kubíček.
+  </ul>
+  <p><font><b><a href="http://gambasdoc.org/help/comp/gb.gtk">GB.GTK</a></b></font>
+  <ul>
+  <li>BUG: Cursor is correctly updated with the value of Application.Busy now.
+  <li>BUG: Stop Event now works during the Close event of a modal form.
+  <li>BUG: Fix a memory leak that leads to a crash in the TextArea.Paste()
+  method.
+  <li>BUG: Fix Label automatic resize.
+  <li>BUG: Settings the text of a transparent Label or TextLabel having no text
+  works correctly now.
+  <li>BUG: SpinBox Value property should always be accurate now.
+  <li>BUG: TextBox.Selection.Length now returns the correct value.
+  <li>BUG: Calling Menu.Children.Clear() or deleting a menu during a Menu Show
+  event should not crash anymore.
+  <li>BUG: A parent menu does not raise the Click event anymore.
+  <li>BUG: GridView correctly receives the focus now.
+  <li>BUG: Draw.Ellipse() now correctly draws a pie when filling is enabled.
+  <li>BUG: Fix ComboBox.Add() when the position argument is specified.
+  <li>BUG: Fix ListBox.Add() when the position argument is specified.
+  <li>BUG: MoveScaled works correctly for positions and sizes that are not a
+  multiple of Desktop.Scale.
+  <li>BUG: Key[] does not print GTK+ warning anymore when getting a null
+  string as argument.
+  <li>BUG: Mouse.Blank cursor works as expected now.
+  <li>BUG: Relative font sizes are correctly interpreted in rich text now.
+  </ul>
+  <p><font><b><a href="http://gambasdoc.org/help/comp/gb.net.curl">GB.NET.CURL</a></b></font>
+  <ul>
+  <li>NEW: Asynchronous FtpClient and HttpClient objects are now automatically
+  kept alive until their operation is finished.
+  </ul>
+  <p><font><b><a href="http://gambasdoc.org/help/comp/gb.qt4">GB.QT4</a></b></font>
+  <ul>
+  <li>BUG: MoveScaled works correctly for positions and sizes that are not a
+  multiple of Desktop.Scale.
+  </ul>
+</td></tr>
+</table></div>
 <a style="height:4px; font-size:xx-small;" name="2.22.0"></a>
 <div class="news-title">
   <img src="top-left-corner.png" class="top-left-corner">

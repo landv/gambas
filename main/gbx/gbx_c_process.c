@@ -621,15 +621,24 @@ static void signal_child(int sig, siginfo_t *info, void *context)
 	fprintf(stderr, "SIGCHLD: _pipe_child[0] = %d\n", _pipe_child[0]);
 	#endif
 	char buffer;
+	int save_errno;
 
 	if (!_init)
 		return;
 
 	//fprintf(stderr, "SIGCHLD\n");
 	
+	save_errno = errno;
+		
 	buffer = 42;
-	if (write(_pipe_child[1], &buffer, 1) != 1)
-		ERROR_panic("Cannot write into SIGCHLD pipe");
+	for(;;)
+	{
+		if (write(_pipe_child[1], &buffer, 1) == 1)
+			break;
+		
+		if (errno != EINTR)
+			ERROR_panic("Cannot write into SIGCHLD pipe: %s", strerror(errno));
+	}
 	
 	if (_old_SIGCHLD_action.sa_handler != SIG_DFL && _old_SIGCHLD_action.sa_handler != SIG_IGN)
 	{
@@ -644,6 +653,8 @@ static void signal_child(int sig, siginfo_t *info, void *context)
 			(*_old_SIGCHLD_action.sa_handler)(sig);
 		}
 	}
+	
+	errno = save_errno;
 }
 
 
@@ -659,7 +670,7 @@ static void init_child(void)
 	#endif
 
 	if (pipe(_pipe_child) != 0)
-		ERROR_panic("Cannot create SIGCHLD pipes");
+		ERROR_panic("Cannot create SIGCHLD pipes: %s", strerror(errno));
 
 	fcntl(_pipe_child[0], F_SETFD, FD_CLOEXEC);
 	fcntl(_pipe_child[1], F_SETFD, FD_CLOEXEC);
@@ -675,10 +686,10 @@ static void init_child(void)
 	action.sa_sigaction = signal_child;
 
 	if (sigaction(SIGCHLD, NULL, &_old_SIGCHLD_action) != 0)
-		ERROR_panic("Cannot install SIGCHLD handler");
+		ERROR_panic("Cannot install SIGCHLD handler: %s", strerror(errno));
 	
 	if (sigaction(SIGCHLD, &action, NULL) != 0)
-		ERROR_panic("Cannot install SIGCHLD handler");
+		ERROR_panic("Cannot install SIGCHLD handler: %s", strerror(errno));
 	
 	//fprintf(stderr, "old action = %p / %p\n", _old_SIGCHLD_action.sa_handler, _old_SIGCHLD_action.sa_sigaction);
 	

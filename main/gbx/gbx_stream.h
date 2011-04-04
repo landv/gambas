@@ -56,19 +56,19 @@ typedef
     unsigned available_now : 1;
 		unsigned standard : 1;
 		unsigned blocking : 1;
+		unsigned redirected : 1;
     #if DEBUG_STREAM
-    unsigned _reserved : 1;
     unsigned tag : 6;
     #else
-    unsigned _reserved : 7;
+    unsigned _reserved : 6;
     #endif
     short buffer_pos;
     short buffer_len;
     char *buffer;
+		union STREAM *redirect;
     }
   PACKED
   STREAM_COMMON;
-
 
 typedef
   struct {
@@ -133,7 +133,6 @@ typedef
     }
   PACKED
   STREAM_STRING;
-
 
 typedef
   union STREAM {
@@ -251,5 +250,9 @@ void STREAM_blocking(STREAM *stream, bool block);
 void STREAM_check_blocking(STREAM *stream);
 
 void STREAM_exit(void);
+
+void STREAM_begin(STREAM *stream);
+void STREAM_cancel(STREAM *stream);
+void STREAM_end(STREAM *stream);
 
 #endif

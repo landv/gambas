@@ -1643,6 +1643,21 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
     Print "  .title { font-size: large; letter-spacing: 1px; }"
     Print "-->"
     Print "</style>"
+  Else If $bView Then
+    Print "<style>"
+    Print "<!--"
+    Print ".title {"
+    Print "  padding: 0px;"
+    Print "  font-weight: bold;"
+    Print "  font-size: xx-large;"
+    Print "  color: #3398c3;"
+    Print "  text-shadow: 2px 2px 2px #FF7F00;"
+    Print "  letter-spacing: 2px;"
+    Print "  margin-bottom: 16px;"
+    Print "  border: none;"
+    Print "}"
+    Print "-->"
+    Print "</style>"
   Endif
   MakeTitle(sTitle)
   Print "</head>"

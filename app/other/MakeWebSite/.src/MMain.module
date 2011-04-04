@@ -10,7 +10,7 @@ Private Const NBR_NEWS As Integer = 3
 
 Sub InitVar()
   
-  Dim aStable As String[] = ["2.22.0", "2.21.0", "2.20.2", "2.19.0"]
+  Dim aStable As String[] = ["2.23.0", "2.22.0", "2.21.0", "2.20.2"]
   'DIM aDev AS String[] = ["92", "91", "90", "51"]
   
   $cVar["STABLE_VERSION"] = aStable[0]
@@ -18,7 +18,7 @@ Sub InitVar()
   $cVar["STABLE_VERSION_2"] = aStable[2]
   $cVar["STABLE_VERSION_3"] = aStable[3]
   
-  $cVar["DEV_VERSION"] = "2.99.0"
+  $cVar["DEV_VERSION"] = "2.99.1"
   '$cVar["DEV_VERSION_1"] = "1.9." & aDev[1]
   '$cVar["DEV_VERSION_2"] = "1.9." & aDev[2]
   '$cVar["DEV_VERSION_3"] = "1.9." & aDev[3]

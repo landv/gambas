@@ -5,13 +5,11 @@ html {
 }
 
 body.left {
-  background: #B0CEE6; /*white; #6e9bed;*/
-  margin: 16px;
-  margin-left: 8px;
-  background-image: url("background-menu-rtl.jpg");
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-position: top right;
+  background: #3398c3;
+  border-left: solid 6px orange;
+  margin: 0px;
+  padding: 8px;
+  height: 100%;
 }
 
 body {
@@ -22,7 +20,7 @@ body {
   background-repeat: no-repeat;
   background-position: top right;
   max-width: 860px;
-  font-family: Lucida Sans,Liberation Sans,sans;
+  font-family: sans;
   direction: rtl;
 }
 
@@ -241,7 +239,7 @@ a:hover {
   padding: 0px;
   font-weight: bold;
   font-size: xx-large;
-  color: #95C1E6;
+  color: #3398c3;
   text-shadow: 2px 2px 2px #808080;
   letter-spacing: 2px;
   /*text-decoration: underline;*/
@@ -275,8 +273,10 @@ H3 {
   color: #606060;
 }
 
-#separator {
-  margin: 0px -12px;
+.separator {
+  height: 6px;
+  background: orange;
+  margin: 8px -8px 8px -8px;
 }
 
 #last-version {

@@ -331,7 +331,7 @@ int main(int argc, char **argv)
 		if (startup == NULL)
 			THROW(E_MAIN);
 
-		CAPP_init(); /* needs startup class */
+		//CAPP_init(); /* needs startup class */
 		CFILE_init_watch();
 
 		PROJECT_argc = argc;
