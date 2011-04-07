@@ -42,7 +42,7 @@ handle = OPEN "elmeufitxer" FOR READ</pre>
 
 [CATDIR]
 
-<p>Sabeu que podeu concatenar noms de directori i noms de fitxer amb l'operador <b><tt>&/</tt></b> ? Aquest operador afegeix si cal els separadors de directoris, així que el camí resultant és perfecte.</p>
+<p>Sabeu que podeu concatenar noms de directori i noms de fitxer amb l'operador "<b><tt>&/</tt></b>"? Aquest operador afegeix si cal els separadors de directoris, així que el camí resultant és perfecte.</p>
 
 <p>Per exemple:</p>
 
@@ -81,7 +81,7 @@ Com a solució temporal, poseu-les dins del mòdul principal i declareu-les com 
 <p>
 Si en comptes d'un mòdul principal teniu un formulari principal al vostre projecte, llavors declareu-les com a <tt>STATIC PUBLIC</tt>.
 <p>
-Per accedir a aquestes variables heu fer servir el nom de mòdul principal ò del formulari: <tt>ElMeuModulPrincipal.LaMevaVariableGlobal</tt> ò <tt>ElMeuFormulariPrincipal.LaMevaVariableGlobal</tt>.
+Per accedir a aquestes variables heu de fer servir el nom de mòdul principal ò del formulari: <tt>ElMeuModulPrincipal.LaMevaVariableGlobal</tt> ò <tt>ElMeuFormulariPrincipal.LaMevaVariableGlobal</tt>.
 
 
 [EMPTY]
@@ -119,28 +119,27 @@ PRINT "Però no em traduïu!"</pre>
 <p>D'aquesta manera, un formulari rep tots els esdeveniments produïts sobre el control que heu creat dins d'ell.</p>
 
 <pre>' Gambas form
-DIM hButton AS Button
+Public Sub _new()
+&nbsp;&nbsp;Dim hButton As Button
+&nbsp;&nbsp;hButton = New Button(Me) As "ElMeuBoto"
+End
 
-PUBLIC SUB _new()
-&nbsp;&nbsp;hButton = NEW Button(ME) AS "MyButton"
-END
-
-PUBLIC SUB MyButton_Click()
-&nbsp;&nbsp;PRINT "You have clicked MyButton !"
-END
+Public Sub ElMeuBoto_Click()
+&nbsp;&nbsp;Print "Heu fet clic a ElMeuBoto!"
+End
 </pre>
 
 
 [FORM]
 
-<p>A <b><i>Gambas</i></b>, un formulari és el seu propi observador d'esdeveniments, d'aquesta forma podeu gestionar directament els seus esdeveniments (com <i>Resize</i>, <i>Activate</i>, ...) dins del seu propi codi de classe.</p>
+<p>A <b><i>Gambas</i></b>, un formulari és el seu propi observador d'esdeveniments, de manera que podeu gestionar directament els seus esdeveniments (com <i>Resize</i>, <i>Activate</i>, ...) dins del seu propi codi de classe.</p>
 
 <p>D'aquesta manera, els novells provinents de <i>Visual Basic</i> no es desorientaran :-).</p>
 
 
 [EMBED]
 
-<p>A <b><i>Gambas</i></b> podeu fer que qualsevol formulari estigui incrustat d'altres formularis&nbsp;!</p>
+<p>A <b><i>Gambas</i></b> podeu fer que qualsevol formulari estigui incrustat dins d'altres formularis&nbsp;!</p>
 
 <p>Per fer servir aquesta poderosa eina, només heu d'instanciar el formulari passant un contenidor pare com a últim argument del constructor.</p>
 
@@ -206,12 +205,12 @@ END</tt></p>
 <p><tt>Left$("Gambas")</tt> retorna <tt>"G"</tt><br>
 <tt>Right$("Gambas")</tt> retorna <tt>"s"</tt></p>
 
-<p>Aquest segon paràmetre pot ser negatiu, i llavors dona el nombre de caràcters que no s'extraurà.</p>
+<p>Aquest segon paràmetre pot ser negatiu, i llavors dona el nombre de caràcters que no es mostraran.</p>
 
 <p><tt>Left$("Gambas", -2)</tt> retorna <tt>"Gamb"</tt><br>
 <tt>Right$("Gambas", -2)</tt> retorna <tt>"mbas"</tt></p>
 
-<p>Així mateix, el tercer argument de <b>Mid$</b> pot ser negatiu, i llavors representa el nombre de caràcters des del final de la cadena que no s'extrauran.</p>
+<p>Així mateix, el tercer argument de <b>Mid$</b> pot ser negatiu, i llavors representa el nombre de caràcters des del final de la cadena que no es mostraran.</p>
 
 <p><tt>Mid$("Gambas", 2, -2)</tt> retorna <tt>"amb"</tt>
 
@@ -424,7 +423,7 @@ Opcionalment podeu definir el temps de mostra en ms, i la posició X,Y.</p>
 <p>La substitució és molt útil per a la internacionalització de la vostra aplicació.
 Es fa amb l'instrucció <b>Subst()</b>.</p>
 
-<p>Té com a mínim 2 paràmetres. El primer és la màscara de text a on s'aplica la substitució. Després hi són les vostres variables, a on la primera té en número <i>1</i>. S'usa d'aquesta manera: <b>&1, &2, ...</b></p>
+<p>Té com a mínim 2 paràmetres. El primer és la màscara de text a on s'aplica la substitució. Després hi són les vostres variables, a on la primera té el número <i>1</i>. S'usa d'aquesta manera: <b>&1, &2, ...</b></p>
 
 <pre>Subst(("Substitució de &1, &2 i &3"), "primer", "segon", "tercer")
 
@@ -451,7 +450,7 @@ Es fa amb l'instrucció <b>Subst()</b>.</p>
 
 [END]
 
-<p>Ja heu llegit tots els consells del dia. Espero que us hàgiu convertit en un expert de <b>Gambas</b>! :-)</p>
+<p>Ja heu llegit tots els consells del dia. Espero que us hàgiu convertit en un expert en <b>Gambas</b>! :-)</p>
 
 <p>Si voleu contribuir, envieu nous consells a l'adreça següent&nbsp;:</p>
 <p><u>gambas@users.sourceforge.net</u></p>
