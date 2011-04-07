@@ -638,6 +638,7 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 
 	int number_sign;
 	uint64_t mantisse;
+	uint64_t power;
 	double number_mant;
 	int number_exp;
 	int number_real_exp;
@@ -933,12 +934,24 @@ _FORMAT:
 	if (!exposant) ndigit += number_exp;
 	ndigit = MinMax(ndigit, 0, DBL_DIG);
 	
-	mantisse = number_mant * pow(10, ndigit + 1);
+	power = pow(10, ndigit + 1);
+	mantisse = number_mant * power;
 	if ((mantisse % 10) >= 5)
 		mantisse += 10;
-	mantisse /= 10;
 	
-	ndigit = sprintf(buf, "0.%" PRId64, mantisse);
+	if (mantisse >= power)
+	{
+		ndigit = sprintf(buf, ".%" PRId64, mantisse);
+		buf[0] = buf[1];
+		buf[1] = '.';
+	}
+	else
+	{
+		ndigit = sprintf(buf, "0.%" PRId64, mantisse);
+	}
+	
+	ndigit--;
+	buf[ndigit] = 0;
 
 	/* 0.0 <= number_mant < 1.0 */
 
