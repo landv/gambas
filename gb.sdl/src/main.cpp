@@ -69,7 +69,7 @@ extern "C"
 		CLine, CFill,
 		CFont,
 		CDesktop,
-		CQueryJoys, CJoystick,
+		CJoyInfos, CQueryJoys, CJoystick,
 		CKey,
 		CMouse, CCursor,
 		CImage,

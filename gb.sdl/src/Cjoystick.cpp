@@ -25,9 +25,22 @@
 #include "Cjoystick.h"
 
 #include <map>
+#include <iostream>
 
-// associate joy ids with gambas objects
-std::map <int, void*> joyobjects;
+// store joysticks infos
+typedef
+  struct {
+    Uint8 Axes;
+    Uint8 Balls;
+    Uint8 Buttons;
+    Uint8 Hats;
+    std::string Name;
+  }
+  JOY_info;
+
+static std::map <int, JOY_info> joyinfos;
+static std::map <int, SDL_Joystick*> joyobjects;
+static int joyindex = 0;
 
 CJOY_INFO CJOY_info = { 0 };
 
@@ -38,13 +51,124 @@ CJOY_INFO CJOY_info = { 0 };
     return; \
   }
 
+static void filljoyinfos()
+{
+	
+	int numjoy = SDL_NumJoysticks();
+	JOY_info myinfo;
+
+	if (!numjoy)
+		return;
+	
+	for (int i=0; i<numjoy; i++)
+	{
+		SDL_Joystick* joy = SDL_JoystickOpen(i);
+		
+		if (!joy)
+		{
+			std::cerr << "Failed to open joystick " << i << ", skipping!" << std::endl;
+			continue;
+		}
+		
+		myinfo.Axes = SDL_JoystickNumAxes(joy);
+		myinfo.Balls = SDL_JoystickNumBalls(joy);
+		myinfo.Buttons = SDL_JoystickNumButtons(joy);
+		myinfo.Hats = SDL_JoystickNumHats(joy);
+		myinfo.Name = SDL_JoystickName(i);
+		joyinfos[i] = myinfo;
+		SDL_JoystickClose(joy);
+	}
+}
+
 /***************************************************************************/
+
+BEGIN_PROPERTY(JOYINFOS_enable)
+
+	if (READ_PROPERTY)
+	{
+		GB.ReturnBoolean(joyobjects.count(joyindex));
+		return;
+	}
+	
+	if (bool(VPROP(GB_BOOLEAN)) == bool(joyobjects.count(joyindex)))
+		return;
+	
+	if (!VPROP(GB_BOOLEAN))
+	{
+		SDL_JoystickClose(joyobjects[joyindex]);
+		joyobjects.erase(joyindex);
+	}
+	else
+	{
+		SDL_Joystick *joy = SDL_JoystickOpen(joyindex);
+		
+		if (!joy)
+			GB.Error(SDL_GetError());
+		else
+			joyobjects[joyindex] = joy;
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(JOYINFOS_numofaxes)
+
+	int num = 0;
+	
+	if (joyinfos.count(joyindex))
+		num = joyinfos[joyindex].Axes;
+
+	GB.ReturnInteger(num);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(JOYINFOS_numofballs)
+
+	int num = 0;
+	
+	if (joyinfos.count(joyindex))
+		num = joyinfos[joyindex].Balls;
+
+	GB.ReturnInteger(num);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(JOYINFOS_numofbuts)
+
+	int num = 0;
+	
+	if (joyinfos.count(joyindex))
+		num = joyinfos[joyindex].Buttons;
+
+	GB.ReturnInteger(num);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(JOYINFOS_numofhats)
+
+	int num = 0;
+	
+	if (joyinfos.count(joyindex))
+		num = joyinfos[joyindex].Hats;
+
+	GB.ReturnInteger(num);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(JOYINFOS_name)
+
+	std::string joyname = "Unknown";
+	
+	if (joyinfos.count(joyindex))
+		joyname = joyinfos[joyindex].Name;
+
+	GB.ReturnNewZeroString(joyname.c_str());
+
+END_PROPERTY
 
 BEGIN_METHOD(JOYSTICKS_get, GB_INTEGER index)
 
 	int numjoy = SDL_NumJoysticks();
 	int index = VARGOPT(index, 0);
-	const char* joyname;
 
 	if (!numjoy)
 	{
@@ -52,18 +176,18 @@ BEGIN_METHOD(JOYSTICKS_get, GB_INTEGER index)
 		return;
 	}
 
-	if (index>numjoy || index<0)
+	if (index>=numjoy || index<0)
 	{
 		GB.Error("Joystick &1 not available !", VARG(index));
 		return;
 	}
 
-	joyname = SDL_JoystickName(index);
+        joyindex = index;
 	
-	if (!joyname)
-		GB.ReturnConstZeroString("Unknown");
-	else
-		GB.ReturnConstZeroString(joyname);
+	if (!joyinfos.size())
+		filljoyinfos();
+	
+	RETURN_SELF();
 
 END_METHOD
 
@@ -73,77 +197,14 @@ BEGIN_PROPERTY(JOYSTICKS_count)
 
 END_METHOD
 
-BEGIN_METHOD(JOYSTICK_new, GB_INTEGER index)
-
-	int numjoy = SDL_NumJoysticks();
-	int index = VARGOPT(index, 0);
-
-	if (!numjoy)
-	{
-		GB.Error("no Joystick found !");
-		return;
-	}
-
-	if (index>numjoy || index <0)
-	{
-		GB.Error("Invalid joystick index!");
-		return;
-	}
-
-	if (joyobjects.count(index))
-	{
-		GB.Error("Joystick &1 already opened!", index);
-		return;
-	}
-	
-	JOYSTICK = SDL_JoystickOpen(index);
-	THIS->id = index;
-
-	if (!JOYSTICK)
-		GB.Error(SDL_GetError());
-
-	joyobjects[THIS->id] = THIS;
-
-END_METHOD
-
-BEGIN_METHOD_VOID(JOYSTICK_free)
-
-	joyobjects.erase(THIS->id);
-	SDL_JoystickClose(JOYSTICK);
-
-END_METHOD
-
-BEGIN_PROPERTY(JOYSTICK_numofaxes)
-
-	GB.ReturnInteger(SDL_JoystickNumAxes(JOYSTICK));
-
-END_PROPERTY
-
-BEGIN_PROPERTY(JOYSTICK_numofballs)
-
-	GB.ReturnInteger(SDL_JoystickNumBalls(JOYSTICK));
-
-END_PROPERTY
-
-BEGIN_PROPERTY(JOYSTICK_numofbuts)
-
-	GB.ReturnInteger(SDL_JoystickNumButtons(JOYSTICK));
-
-END_PROPERTY
-
-BEGIN_PROPERTY(JOYSTICK_numofhats)
-
-	GB.ReturnInteger(SDL_JoystickNumHats(JOYSTICK));
-
-END_PROPERTY
-
-BEGIN_PROPERTY(JOYSTICK_index)
-
-	GB.ReturnInteger(THIS->id);
-
-END_METHOD
-
 BEGIN_PROPERTY(JOYSTICK_device)
+
+	CHECK_VALID();
+	GB.ReturnInteger(CJOY_info.device);
+
+END_METHOD
+
+BEGIN_PROPERTY(JOYSTICK_id)
 
 	CHECK_VALID();
 	GB.ReturnInteger(CJOY_info.id);
@@ -180,11 +241,26 @@ END_PROPERTY
 
 /***************************************************************************/
 
+GB_DESC CJoyInfos[] =
+{
+  GB_DECLARE(".Joystick", 0), GB_VIRTUAL_CLASS(),
+  
+  GB_STATIC_PROPERTY("Enable", "b", JOYINFOS_enable),
+
+  GB_STATIC_PROPERTY_READ("Axes", "i", JOYINFOS_numofaxes),
+  GB_STATIC_PROPERTY_READ("Balls", "i", JOYINFOS_numofballs),
+  GB_STATIC_PROPERTY_READ("Buttons", "i", JOYINFOS_numofbuts),
+  GB_STATIC_PROPERTY_READ("Hats", "i", JOYINFOS_numofhats),
+  GB_STATIC_PROPERTY_READ("Name", "s", JOYINFOS_name),
+ 
+  GB_END_DECLARE
+};
+
 GB_DESC CQueryJoys[] =
 {
   GB_DECLARE("Joysticks", 0), GB_VIRTUAL_CLASS(),
 
-  GB_STATIC_METHOD("_get", "s", JOYSTICKS_get, "(Index)i"),
+  GB_STATIC_METHOD("_get", ".Joystick", JOYSTICKS_get, "(Index)i"),
   GB_STATIC_PROPERTY_READ("Count", "i",  JOYSTICKS_count),
 
   GB_END_DECLARE
@@ -192,22 +268,17 @@ GB_DESC CQueryJoys[] =
 
 GB_DESC CJoystick[] =
 {
-  GB_DECLARE("Joystick", sizeof(CJOYSTICK)),
+  GB_DECLARE("Joystick", 0), GB_VIRTUAL_CLASS(),
 
-  GB_METHOD("_new",  NULL, JOYSTICK_new,  "[(Index)i]"),
-  GB_METHOD("_free", NULL, JOYSTICK_free, NULL),
+//  TODO close all opened joysticks on exit ?
+//  GB_STATIC_METHOD("_exit", NULL, JOYSTICK_exit, NULL),
 
-  GB_PROPERTY_READ("Index", "i", JOYSTICK_index),
-  GB_PROPERTY_READ("Axes", "i", JOYSTICK_numofaxes),
-  GB_PROPERTY_READ("Balls", "i", JOYSTICK_numofballs),
-  GB_PROPERTY_READ("Buttons", "i", JOYSTICK_numofbuts),
-  GB_PROPERTY_READ("Hats", "i", JOYSTICK_numofhats),
-  
-  GB_PROPERTY_READ("Id", "i", JOYSTICK_device),
-  GB_PROPERTY_READ("Axis", "i", JOYSTICK_axisvalue),
-  GB_PROPERTY_READ("Hat", "i", JOYSTICK_hatvalue),
-  GB_PROPERTY_READ("BallX", "i", JOYSTICK_ballx),
-  GB_PROPERTY_READ("BallY", "i", JOYSTICK_bally),
+  GB_STATIC_PROPERTY_READ("Device", "i", JOYSTICK_device),
+  GB_STATIC_PROPERTY_READ("Id", "i", JOYSTICK_id),
+  GB_STATIC_PROPERTY_READ("Axis", "i", JOYSTICK_axisvalue),
+  GB_STATIC_PROPERTY_READ("Hat", "i", JOYSTICK_hatvalue),
+  GB_STATIC_PROPERTY_READ("BallX", "i", JOYSTICK_ballx),
+  GB_STATIC_PROPERTY_READ("BallY", "i", JOYSTICK_bally),
   
   GB_CONSTANT("LeftUp", "i", SDL_HAT_LEFTUP),
   GB_CONSTANT("Left", "i", SDL_HAT_LEFT),
@@ -218,12 +289,6 @@ GB_DESC CJoystick[] =
   GB_CONSTANT("RightUp", "i", SDL_HAT_RIGHTUP),
   GB_CONSTANT("Right", "i", SDL_HAT_RIGHT),
   GB_CONSTANT("RightDown", "i", SDL_HAT_RIGHTDOWN),
-
-  GB_EVENT("AxisMove", NULL, NULL, &EVENT_AxisMotion),
-  GB_EVENT("BallMove", NULL, NULL, &EVENT_BallMotion),
-  GB_EVENT("ButtonPress", NULL, NULL, &EVENT_ButtonPressed),
-  GB_EVENT("ButtonRelease", NULL, NULL, &EVENT_ButtonReleased),
-  GB_EVENT("HatMove", NULL, NULL, &EVENT_HatMotion),
 
   GB_END_DECLARE
 };

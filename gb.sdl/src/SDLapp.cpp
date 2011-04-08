@@ -145,7 +145,9 @@ void SDLapplication::ManageEvents()
 			case SDL_JOYBALLMOTION:
 			case SDL_JOYBUTTONDOWN:
 			case SDL_JOYBUTTONUP:
-				SDLcore::GetWindow()->JoyEvent(event);
+				// Only raise joysticks events if window has input keyboard focus
+				if (SDL_GetAppState() & SDL_APPINPUTFOCUS)
+					SDLcore::GetWindow()->JoyEvent(event);
 				break;
 			case SDL_KEYDOWN:
 			case SDL_KEYUP:

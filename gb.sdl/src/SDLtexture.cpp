@@ -70,18 +70,9 @@ void SDLtexture::Select()
 	
 	hRenderBuffer->Bind(hTexinfo->Index);
 
-/*	glMatrixMode(GL_MODELVIEW);
+	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glViewport(0, 0, hSurface->GetWidth(), hSurface->GetHeight());
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluOrtho2D(0.0f, GLdouble(hSurface->GetWidth()), GLdouble(hSurface->GetHeight()), 0.0f);
-	// enable blending, should work like 2d sdl does
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	// enable anti-aliasing
-	glEnable(GL_POINT_SMOOTH);
-	glMatrixMode(GL_MODELVIEW);*/
 }
 
 void SDLtexture::Unselect()
@@ -159,8 +150,8 @@ void SDLtexture::GetAsTexture(texinfo *tex)
 		with DRI radeon drivers */
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+// 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+// 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 		if (!GLEW_ARB_texture_non_power_of_two)
 			SDL_FreeSurface(image); /* No longer needed */
@@ -171,6 +162,7 @@ void SDLtexture::GetAsTexture(texinfo *tex)
 	if (tex)
 		std::memcpy(tex, hTexinfo, sizeof(texinfo));
 
+	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
 
 }	

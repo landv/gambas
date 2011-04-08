@@ -119,7 +119,10 @@ void SDLwindow::Select(void )
 		glXMakeCurrent(hDpy, hDrw, hCtx);
 	}
 	else
+	{
 		SDLtexture::Unselect();
+/*		this->Open();*/
+	}
 }
 
 void SDLwindow::Clear(Uint32 color)

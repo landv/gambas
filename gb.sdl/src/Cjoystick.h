@@ -29,31 +29,15 @@
 typedef
   struct {
     bool valid;
+    Uint8 device;   /* Joystick that raised the event */
     int id;         /* Can be axis, ball, hat, button id */
     Sint16 value1;  /* Can be value for axis, hat; xrel for ball */
     Sint16 value2;  /* yrel value for ball */
     }
   CJOY_INFO;
 
-typedef
-  struct {
-    GB_BASE ob;
-    SDL_Joystick *joy;
-    int id;
-    }
-  CJOYSTICK;
-
 #ifndef __CJOYSTICK_CPP
-extern
-#endif
-int
-EVENT_AxisMotion,
-EVENT_BallMotion,
-EVENT_ButtonPressed,
-EVENT_ButtonReleased,
-EVENT_HatMotion;
-
-#ifndef __CJOYSTICK_CPP
+extern GB_DESC CJoyInfos[];
 extern GB_DESC CQueryJoys[];
 extern GB_DESC CJoystick[];
 extern CJOY_INFO CJOY_info;
