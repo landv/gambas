@@ -9,8 +9,8 @@ Public Const _DefaultSize As String = "24,24"
 Public Const _Similar As String = "DrawingArea,ScrollView"
 'Public Const _Group As String = "View"
 
-Property Read ScrollX As Integer
-Property Read ScrollY As Integer
+Property ScrollX As Integer
+Property ScrollY As Integer
 Property Read ScrollWidth As Integer
 Property Read ScrollHeight As Integer
 
@@ -174,9 +174,21 @@ Private Function ScrollX_Read() As Integer
 
 End
 
+Private Sub ScrollX_Write(Value As Integer)
+
+  Scroll(Value, $hVBar.Value)
+
+End
+
 Private Function ScrollY_Read() As Integer
 
   Return $hVBar.Value
+
+End
+
+Private Sub ScrollY_Write(Value As Integer)
+
+  Scroll($hHBar.Value, Value)
 
 End
 
@@ -426,3 +438,4 @@ Private Function View_Read() As DrawingArea
   Return $hDrawingArea
 
 End
+

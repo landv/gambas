@@ -13,7 +13,8 @@ body.left {
 
 body {
   background: white; /*#96BBD8;*/
-  margin-top: 8px;
+  padding: 8px;
+  margin: 0px;
   /*background-image: url("background.jpg");
   background-attachment: fixed;
   background-repeat: no-repeat;
@@ -24,7 +25,8 @@ body {
 
 body.none {
   background: white;
-  margin: 8px;
+  padding: 8px;
+  margin: 0px;
 }
 
 frameset {
@@ -258,10 +260,10 @@ a[name]:before {
   content: "";
 }
 
-.border {
-  border: solid 2px #B0CEE6;
-  padding: 4px;
+.architecture-border {
   background: white;
+  border-top: dotted black 6px;
+  padding-top: 6px;
 }
 
 .license {
@@ -344,6 +346,10 @@ img.screenshot {
   /*background: #FFBF7F;*/
   padding: 0px 16px 16px 8px;
   border-bottom: dotted black 6px;
+  margin-left: -8px;
+  background: white;
+  /*border-right: dotted black 6px;*/
+  /*border-radius: 0px 0px 12px;*/
 }
 
 .title {
@@ -354,17 +360,38 @@ img.screenshot {
   text-shadow: 2px 2px 2px #FF7F00;
   letter-spacing: 2px;
   margin-bottom: 16px;
+  margin-top: 4px;
 }
 
 .download {
   float: right;
 }
 
-a.download-orange {
+.download-gray {
   display: block;
   padding: 12px;
   margin-bottom: 4px;
   margin-left: 24px;
+  margin-right: 24px;
+  border: solid #808080 1px;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  color: #fff;
+  background: #C0C0C0; /* old browsers */
+  background: -moz-linear-gradient(top, #C0C0C0 0%, #808080 100%); /* firefox */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#C0C0C0), color-stop(100%,#808080)); /* webkit */
+  background: linear-gradient(top, #C0C0C0 0%, #808080 100%);
+  font-size: large;
+  text-align: center;
+}
+
+.download-orange {
+  display: block;
+  padding: 12px;
+  margin-bottom: 4px;
+  margin-left: 24px;
+  margin-right: 24px;
   border: solid #BF5C00 1px;
   /*-moz-box-shadow:    0 3px rgba(0,0,0,0.1), inset 0 -4px rgba(0,0,0,0.1);
   -webkit-box-shadow: 0 3px rgba(0,0,0,0.1), inset 0 -4px rgba(0,0,0,0.1);
@@ -385,11 +412,16 @@ a.download-orange {
   text-align: center;
 }
 
-a.download-blue {
+a.download-orange:hover {
+  background: orange;
+}
+
+.download-blue {
   display: block;
   padding: 12px;
   margin-bottom: 4px;
   margin-left: 24px;
+  margin-right: 24px;
   border: solid #21647F 1px;
   /*-moz-box-shadow:    0 3px rgba(0,0,0,0.1), inset 0 -4px rgba(0,0,0,0.1);
   -webkit-box-shadow: 0 3px rgba(0,0,0,0.1), inset 0 -4px rgba(0,0,0,0.1);
@@ -410,8 +442,24 @@ a.download-blue {
   text-align: center;
 }
 
+a.download-blue:hover {
+  background: #3398C3; /* old browsers */
+}
+
 .release-notes {
   font-size: small;
   margin-left: 16px;
   margin-bottom: 12px;
+}
+
+#home-background {
+  background-image: url('home.jpeg');
+  background-repeat: no-repeat;
+  background-position: 0px 0px;
+  margin-left: -8px;
+  margin-top: 8px;
+  position: absolute;
+  z-index: -1;
+  width: 868px;
+  height: 480px;
 }

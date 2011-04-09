@@ -10,37 +10,22 @@
 
 <div class="download">
   <div>
-    <a class="download-orange" href="download.html">
-      {Download} <b>Gambas 3.0 RC1</b>
-    </a>
-    <div class="release-notes" align="center"><a href="http://gambasdoc.org/help/doc/release/$(DEV_VERSION)?view&amp;$(LANG)">{Release Notes}</a></div>
-  </div>
-  <div>
-    <a class="download-blue" href="download.html">
+    <a class="download-blue" target="_blank" href="http://sourceforge.net/projects/gambas/files/gambas2/$(STABLE_VERSION)/gambas2-$(STABLE_VERSION).tar.bz2/download">
       {Download} <b>Gambas $(STABLE_VERSION)</b>
     </a>
     <div class="release-notes" align="center"><a href="http://gambasdoc.org/help/doc/release/$(STABLE_VERSION)?view&amp;$(LANG)">{Release Notes}</a></div>
+  </div>
+  <div style="opacity:0.3;">
+    <div class="download-gray" target="_blank" href="http://sourceforge.net/projects/gambas/files/gambas3/gambas3-$(DEV_VERSION).tar.bz2/download">
+      {Download} <b>Gambas 3.0 RC1</b>
+    </div>
+    <div class="release-notes" align="center">{Release Notes}</div>
   </div>
 </div>
 
 <div id="presentation">
   
   <div class="title">Gambas Almost Means BASIC !</div>
-  <!--<div id="last-version">
-  
-    <div class="top-corner">
-      <img src="top-left-corner.png" class="top-left-corner">
-      <img src="top-right-corner.png" class="top-right-corner">
-    </div>
-    <div style="padding:0px 8px;margin:0px;color:white;">
-      <b>{Last stable version is}<br><a href="download.html"><font size="+1">$(STABLE_VERSION)</font></a>
-      (<a href="changelog2.html"><b>Changelog</b></a>)</b>
-    </div>
-    <div class="bottom-corner">
-      <img src="bottom-left-corner.png" class="bottom-left-corner">
-      <img src="bottom-right-corner.png" class="bottom-right-corner">
-    </div>
-  </div>-->
   
   {<b><i>Gambas</i></b> is a free development environment based on a <i>Basic</i> interpreter with object extensions, a bit like <i>Visual Basic&#8482;</i> (but it is <i><b>NOT</b></i> a clone&nbsp;!).}
   {Read the <a href="http://gambasdoc.org/help/doc/intro?view&$(LANG)">introduction</a> for more information.}
@@ -57,16 +42,15 @@
   <!--<table class="none" cellspacing="0" cellpadding="0" border="0" style="margin-top:16px;">
   <tr valign="top">
   <td class="none"><a class="image" href="http://gambasdoc.org/help/doc/formula?view&amp;$(LANG)"><img src="formula.png" border="0" alt="{The greatest formula of the world!}" title="{The greatest formula of the world!}"></a></td>
-  <td class="none"><a class="image" href="http://petition.eurolinux.org/" target="_blank"><img src="noepatents.png" border="0" alt="{No software patents in Europe!}" title="{No software patents in Europe!}"> </a></td>
-  <td class="none"><a class="image" href="http://gnulinex.org/" target="_blank"><img src="linex.png" border="0" alt="{Thanks for the support of gnuLinex!}" title="{Thanks for the support of gnuLinex!}"> </a></td>
-  <td class="none"><a class="image" href="http://www3.clustrmaps.com/user/d7b3ed83" target="_blank"><img src="http://www3.clustrmaps.com/stats/maps-no_clusters/gambas.sourceforge.net-thumb.jpg" border="0"></a></td>
   </tr>
   </table>-->
 
 </div>
 
-<div style="margin-top:16px;" align="center">
-  <img src="home.png">
+<div id="home-background">
+<div align="center">
+<img src="home.png" style="margin-top:16px;">
+</div>
 </div>
 
 <script type="text/javascript">

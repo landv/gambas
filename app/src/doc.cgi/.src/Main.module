@@ -1105,6 +1105,10 @@ Private Function Encode(sText As String) As String
           Case "no-autolink"
             Continue
             
+          Case "include"
+            $sRes &= GetInclude(sArg)
+            Continue
+            
           Case Else 
             $sRes &= "<div style=\"background:solid yellow;\"><b><tt>" & sStr & " ?</tt></b></div>"
             Continue 
@@ -4900,5 +4904,14 @@ Private Sub HighlightCode(sLine As String) As String
   ' 
   ' sRes &= "</div>"
   ' Return sRes
+  
+End
+
+Private Sub GetInclude(sPath As String) As String
+  
+  Dim rPage As Result
+  
+  rPage = FindPage(sPath)
+  If rPage.Available Then Return MakePageWithoutHeader(rPage)
   
 End
