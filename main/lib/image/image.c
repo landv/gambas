@@ -921,9 +921,9 @@ void IMAGE_draw_alpha(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, 
 		return;
 	}*/
 	
-	if (!GB_IMAGE_FMT_IS_32_BITS(dst->format))
+	if (!GB_IMAGE_FMT_IS_32_BITS(src->format) || !GB_IMAGE_FMT_IS_32_BITS(dst->format))
 	{
-		GB.Error("The image must have an alpha channel");
+		GB.Error("The images must have an alpha channel");
 		return;
 	}
 
@@ -944,6 +944,8 @@ void IMAGE_draw_alpha(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, 
 	SYNCHRONIZE(src);
 	SYNCHRONIZE(dst);
 		
+#if 0
+	
 	uint *d = (uint *)dst->data + dy * dst->width + dx;
 	uint *s = (uint *)src->data + sy * src->width + sx;
 
@@ -967,6 +969,38 @@ void IMAGE_draw_alpha(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, 
 		d += dd;
 		s += ds;
 	}
+
+#else
+	
+	uchar *d = (uchar *)((uint *)dst->data + dy * dst->width + dx);
+	uchar *s = (uchar *)((uint *)src->data + sy * src->width + sx);
+
+	const int dd = (dst->width - sw) * 4;
+	const int ds = (src->width - sw) * 4;
+	//uint cs, cd;
+	int sformat = src->format;
+	int dformat = dst->format;
+	int t;
+	
+	if (!GB_IMAGE_FMT_IS_SWAPPED(sformat))
+		s += 3;
+	if (!GB_IMAGE_FMT_IS_SWAPPED(dformat))
+		d += 3;
+	
+	while (sh--)
+	{
+		for (t = sw; t--; d += 4,s += 4)
+		{
+			//cs = BGRA_from_format(*s, sformat);
+			//cd = BGRA_from_format(*d, dformat);
+			if (*s < *d)
+				*d = *s;
+		}
+		
+		d += dd;
+		s += ds;
+	}
+#endif
 
 	MODIFY(dst);
 }
