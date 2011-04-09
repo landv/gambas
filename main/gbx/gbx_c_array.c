@@ -948,7 +948,8 @@ static int find_object(CARRAY *_object, void *value, int start)
 
 	for (i = 0; i < THIS->count; i++)
 	{
-		if (*((void **)get_data(THIS, i)) == value)
+		//if (*((void **)get_data(THIS, i)) == value)
+		if (!COMPARE_object((void **)get_data(THIS, i), &value))
 			return i;
 	}
 
