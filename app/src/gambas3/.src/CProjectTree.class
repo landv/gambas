@@ -444,8 +444,8 @@ Private Sub AddEmblem(hSource As Image, sEmblem As String) As Image
   hEmblem = Picture[sEmblem].Image.Stretch(iSize * 1.5, iSize * 1.5)
   
   hImage = New Image(hSource.Width + iSize, hSource.Height, Color.Transparent)
-  hImage.Draw(hSource, iSize, 0)
-  hImage.Draw(hEmblem, 0, (hImage.H - hEmblem.H) / 2)
+  hImage.PaintImage(hSource, iSize, 0)
+  hImage.PaintImage(hEmblem, 0, (hImage.H - hEmblem.H) / 2)
   Return hImage
   
 End
@@ -454,8 +454,8 @@ Private Sub AddLinkEmblem(hSource As Image) As Image
   
   Dim hImage As New Image(hSource.Width + 1, hSource.Height + 1, Color.Transparent)
   
-  hImage.Draw(hSource, 1, 0)
-  hImage.Draw(Picture["img/16/link.png"].Image, 0, hImage.Height - 16)
+  hImage.PaintImage(hSource, 1, 0)
+  hImage.PaintImage(Picture["img/16/link.png"].Image, 0, hImage.Height - 16)
   Return hImage
   
 End

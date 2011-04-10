@@ -297,30 +297,6 @@ H3 {
   margin-left: 16px;
 }
 
-.top-left-corner {
-  float: left;
-}
-
-.top-right-corner {
-  float: right;
-}
-
-.bottom-left-corner {
-  float: left;
-}
-
-.bottom-right-corner {
-  float: right;
-}
-
-.top-corner {
-  height: 8px;
-  }
-  
-.bottom-corner {
-  height: 8px;
-  }
-  
 img {
   border: none;
 }
@@ -455,11 +431,12 @@ a.download-blue:hover {
 #home-background {
   background-image: url('home.jpeg');
   background-repeat: no-repeat;
-  background-position: 0px 0px;
+  background-position: bottom center;
   margin-left: -8px;
   margin-top: 8px;
   position: absolute;
   z-index: -1;
   width: 868px;
-  height: 480px;
+  height: 90%;
+  bottom: 0px;
 }

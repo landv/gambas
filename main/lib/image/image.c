@@ -838,9 +838,12 @@ int IMAGE_get_default_format()
 
 void IMAGE_bitblt(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int sw, int sh)
 {
-	if (dst->format != src->format)
+	int sfmt = src->format;
+	int dfmt = dst->format;
+	
+	if (!GB_IMAGE_FMT_IS_32_BITS(sfmt) || !GB_IMAGE_FMT_IS_32_BITS(dfmt))
 	{
-		GB.Error("The source image and the destination image must have the same format");
+		GB.Error("The pixel format of both images must be 32 bits");
 		return;
 	}
 	
@@ -861,40 +864,55 @@ void IMAGE_bitblt(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int 
 	SYNCHRONIZE(src);
 	SYNCHRONIZE(dst);
 		
-	if (GB_IMAGE_FMT_IS_32_BITS(src->format))
+	uint *d = (uint *)dst->data + dy * dst->width + dx;
+	uint *s = (uint *)src->data + sy * src->width + sx;
+
+	if (sfmt != dfmt)
 	{
-		uint *d = (uint *)dst->data + dy * dst->width + dx;
-		uint *s = (uint *)src->data + sy * src->width + sx;
-	
-		if (sw < 64)
+		const int dd = dst->width - sw;
+		const int ds = src->width - sw;
+		int t;
+		while (sh--) 
 		{
-			// Trust ourselves
-			const int dd = dst->width - sw;
-			const int ds = src->width - sw;
-			int t;
-			while (sh--) 
+			for (t = sw; t--;)
 			{
-				for (t = sw; t--;)
-					*d++ = *s++;
-				d += dd;
-				s += ds;
+				*d = BGRA_to_format(BGRA_from_format(*s, sfmt), dfmt);
+				d++;
+				s++;
 			}
-		} 
-		else 
-		{
-			// Trust libc
-			const int dd = dst->width;
-			const int ds = src->width;
-			const int b = sw * sizeof(uint);
-			while (sh--) 
-			{
-				memcpy(d, s, b);
-				d += dd;
-				s += ds;
-			}
+			
+			d += dd;
+			s += ds;
 		}
 	}
-	else // 24 bits
+	else if (sw < 64)
+	{
+		const int dd = dst->width - sw;
+		const int ds = src->width - sw;
+		int t;
+		while (sh--) 
+		{
+			for (t = sw; t--;)
+				*d++ = *s++;
+			d += dd;
+			s += ds;
+		}
+	} 
+	else 
+	{
+		// Trust libc
+		const int dd = dst->width;
+		const int ds = src->width;
+		const int b = sw * sizeof(uint);
+		while (sh--) 
+		{
+			memcpy(d, s, b);
+			d += dd;
+			s += ds;
+		}
+	}
+
+	/*else if (GB_IMAGE_FMT_IS_24_BITS(sfmt) && GB_IMAGE_FMT_IS_24_BITS(sfmt))
 	{
 		char *d = (char *)dst->data + (dy * dst->width + dx) * 3;
 		char *s = (char *)src->data + (sy * src->width + sx) * 3;
@@ -908,19 +926,13 @@ void IMAGE_bitblt(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int 
 			d += dd;
 			s += ds;
 		}
-	}
+	}*/
 	
 	MODIFY(dst);
 }
 
 void IMAGE_draw_alpha(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int sw, int sh)
 {
-	/*if (dst->format != src->format)
-	{
-		GB.Error("The source image and the destination image must have the same format");
-		return;
-	}*/
-	
 	if (!GB_IMAGE_FMT_IS_32_BITS(src->format) || !GB_IMAGE_FMT_IS_32_BITS(dst->format))
 	{
 		GB.Error("The images must have an alpha channel");
@@ -991,8 +1003,6 @@ void IMAGE_draw_alpha(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, 
 	{
 		for (t = sw; t--; d += 4,s += 4)
 		{
-			//cs = BGRA_from_format(*s, sformat);
-			//cd = BGRA_from_format(*d, dformat);
 			if (*s < *d)
 				*d = *s;
 		}

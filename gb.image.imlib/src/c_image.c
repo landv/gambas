@@ -211,7 +211,7 @@ BEGIN_METHOD(Image_Sharpen, GB_INTEGER radius)
 
 END_METHOD
 
-BEGIN_METHOD(Image_Draw, GB_OBJECT img; GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_INTEGER sx; GB_INTEGER sy; GB_INTEGER sw; GB_INTEGER sh)
+BEGIN_METHOD(Image_PaintImage, GB_OBJECT img; GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_INTEGER sx; GB_INTEGER sy; GB_INTEGER sw; GB_INTEGER sh)
 
 	int x, y, w, h, sx, sy, sw, sh, src_w, src_h;
 	CIMAGE *image = (CIMAGE *)VARG(img);
@@ -270,7 +270,7 @@ GB_DESC ImageDesc[] =
 	GB_METHOD("Sharpen", "Image", Image_Sharpen, "[(Radius)i]"),
 	GB_METHOD("Tile", "Image", Image_Tile, NULL),
 
-  GB_METHOD("Draw", NULL, Image_Draw, "(Image)Image;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
+  GB_METHOD("PaintImage", NULL, Image_PaintImage, "(Image)Image;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
   GB_METHOD("Scroll", NULL, Image_Scroll, "(DX)i(DY)i[(X)i(Y)i(Width)i(Height)i]"),
 	//Gb_INTERFACE("Draw", &DRAW_Interface),
 

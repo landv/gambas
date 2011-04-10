@@ -897,6 +897,14 @@ gPicture *gPicture::stretch(int w, int h, bool smooth)
   GdkPixbuf *image;
 	int ws, hs;
   
+	if (w <= 0 && h <= 0)
+		return new gPicture();
+	
+	if (w < 0)
+		w = width() * h / height();
+	else if (h < 0)
+		h = height() * w / width();
+	
   if (w <= 0 || h <= 0)
     return new gPicture();
   

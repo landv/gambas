@@ -364,8 +364,7 @@ p {
   padding: 0px 16px 16px 8px;
   border-bottom: dotted black 6px;
   margin-right: -8px;
-  /*border-right: dotted black 6px;*/
-  /*border-radius: 0px 0px 12px;*/
+  background: white;
 }
 
 .title {
@@ -471,11 +470,12 @@ a.download-blue:hover {
 #home-background {
   background-image: url('home.jpeg');
   background-repeat: no-repeat;
-  background-position: 0px 0px;
-  margin-right: -8px;
+  background-position: bottom center;
+  margin-left: -8px;
   margin-top: 8px;
   position: absolute;
   z-index: -1;
   width: 868px;
-  height: 480px;
+  height: 90%;
+  bottom: 0px;
 }

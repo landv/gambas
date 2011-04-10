@@ -139,7 +139,7 @@ BEGIN_METHOD_VOID(CIMAGE_free)
 END_METHOD
 #endif
 
-BEGIN_PROPERTY(CIMAGE_picture)
+BEGIN_PROPERTY(Image_Picture)
 
 	check_image(THIS);
 	
@@ -152,7 +152,7 @@ BEGIN_PROPERTY(CIMAGE_picture)
 END_PROPERTY
 
 
-BEGIN_METHOD(CIMAGE_load, GB_STRING path)
+BEGIN_METHOD(Image_Load, GB_STRING path)
 
 	CIMAGE *image;
 	char *addr;
@@ -177,7 +177,7 @@ BEGIN_METHOD(CIMAGE_load, GB_STRING path)
 END_METHOD
 
 
-BEGIN_METHOD(CIMAGE_save, GB_STRING path; GB_INTEGER quality)
+BEGIN_METHOD(Image_Save, GB_STRING path; GB_INTEGER quality)
 
 	check_image(THIS);
 
@@ -191,7 +191,7 @@ BEGIN_METHOD(CIMAGE_save, GB_STRING path; GB_INTEGER quality)
 END_METHOD
 
 
-BEGIN_METHOD(CIMAGE_stretch, GB_INTEGER width; GB_INTEGER height)
+BEGIN_METHOD(Image_Stretch, GB_INTEGER width; GB_INTEGER height)
 
 	CIMAGE *img;
 
@@ -202,7 +202,7 @@ BEGIN_METHOD(CIMAGE_stretch, GB_INTEGER width; GB_INTEGER height)
 END_METHOD
 
 
-BEGIN_METHOD(CIMAGE_rotate, GB_FLOAT angle)
+BEGIN_METHOD(Image_Rotate, GB_FLOAT angle)
 
 	CIMAGE *img;
 
@@ -213,7 +213,7 @@ BEGIN_METHOD(CIMAGE_rotate, GB_FLOAT angle)
 END_METHOD
 
 
-BEGIN_METHOD(CIMAGE_draw, GB_OBJECT img; GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_INTEGER sx; GB_INTEGER sy; GB_INTEGER sw; GB_INTEGER sh)
+BEGIN_METHOD(Image_PaintImage, GB_OBJECT img; GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_INTEGER sx; GB_INTEGER sy; GB_INTEGER sw; GB_INTEGER sh)
 
   int x, y, w, h, sx, sy, sw, sh;
   CIMAGE *image = (CIMAGE *)VARG(img);
@@ -246,15 +246,15 @@ GB_DESC CImageDesc[] =
 {
   GB_DECLARE("Image", sizeof(CIMAGE)),
 
-  GB_STATIC_METHOD("Load", "Image", CIMAGE_load, "(Path)s"),
-  GB_METHOD("Save", 0, CIMAGE_save, "(Path)s[(Quality)i]"),
+  GB_STATIC_METHOD("Load", "Image", Image_Load, "(Path)s"),
+  GB_METHOD("Save", 0, Image_Save, "(Path)s[(Quality)i]"),
 
-  GB_METHOD("Stretch", "Image", CIMAGE_stretch, "(Width)i(Height)i"),
-  GB_METHOD("Rotate", "Image", CIMAGE_rotate, "(Angle)f"),
+  GB_METHOD("Stretch", "Image", Image_Stretch, "(Width)i(Height)i"),
+  GB_METHOD("Rotate", "Image", Image_Rotate, "(Angle)f"),
 
-  GB_METHOD("Draw", 0, CIMAGE_draw, "(Image)Image;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
+  GB_METHOD("PaintImage", 0, Image_PaintImage, "(Image)Image;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
 
-  GB_PROPERTY_READ("Picture", "Picture", CIMAGE_picture),
+  GB_PROPERTY_READ("Picture", "Picture", Image_Picture),
 
   GB_INTERFACE("Paint", &PAINT_Interface),
 

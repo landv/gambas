@@ -266,7 +266,7 @@ Public Sub DrawIcon(hCont As Container, hCCtrl As CControl, sImage As String)
     hPict = Picture["$arr-" & sImage]
     If Not hPict Then
       hImage = New Image(ICON_SIZE, ICON_SIZE, Color.RGB(0, 0, 0, 96))
-      hImage.Draw(Image.Load("img/family" &/ sImage & ".png"), 0, 0)
+      hImage.PaintImage(Image.Load("img/family" &/ sImage & ".png"), 0, 0)
       hPict = hImage.Picture
       Picture["$arr-" & sImage] = hPict
     Endif

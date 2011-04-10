@@ -1,22 +1,22 @@
 /***************************************************************************
 
-  CImage.cpp
+	CImage.cpp
 
-  (c) 2000-2011 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2011 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -49,32 +49,32 @@
 
 const char *CIMAGE_get_format(QString path)
 {
-  int pos;
+	int pos;
 
-  pos = path.lastIndexOf('.');
-  if (pos < 0)
-    return NULL;
+	pos = path.lastIndexOf('.');
+	if (pos < 0)
+		return NULL;
 
-  path = path.mid(pos + 1).toLower();
+	path = path.mid(pos + 1).toLower();
 
-  if (path == "png")
-    return "PNG";
-  else if (path == "jpg" || path == "jpeg")
-    return "JPEG";
-  else if (path == "gif")
-    return "GIF";
-  else if (path == "bmp")
-    return "BMP";
-  else if (path == "xpm")
-    return "XPM";
-  else
-    return NULL;
+	if (path == "png")
+		return "PNG";
+	else if (path == "jpg" || path == "jpeg")
+		return "JPEG";
+	else if (path == "gif")
+		return "GIF";
+	else if (path == "bmp")
+		return "BMP";
+	else if (path == "xpm")
+		return "XPM";
+	else
+		return NULL;
 }
 
 
 /*******************************************************************************
 
-  Image
+	Image
 
 *******************************************************************************/
 
@@ -99,7 +99,7 @@ static GB_IMG_OWNER _image_owner = {
 	"gb.qt4",
 	GB_IMAGE_BGRA,
 	free_image,
- 	free_image,
+	free_image,
 	temp_image,
 	NULL,
 	};
@@ -125,149 +125,133 @@ static void take_image(CIMAGE *_object, QImage *image)
 CIMAGE *CIMAGE_create(QImage *image)
 {
 	CIMAGE *img;
-  static GB_CLASS class_id = NULL;
+	static GB_CLASS class_id = NULL;
 
-  if (!class_id)
-    class_id = GB.FindClass("Image");
+	if (!class_id)
+		class_id = GB.FindClass("Image");
 
-  GB.New(POINTER(&img), class_id, NULL, NULL);
-  
-  if (image)
+	GB.New(POINTER(&img), class_id, NULL, NULL);
+	
+	if (image)
 	{
 		if (!image->isNull() && image->format() != QImage::Format_ARGB32)
 			*image = image->convertToFormat(QImage::Format_ARGB32);
-  	take_image(img, image);
+		take_image(img, image);
 	}
 	else
-  	take_image(img, new QImage());
+		take_image(img, new QImage());
 	
-  return img;
+	return img;
 }
 
-BEGIN_PROPERTY(CIMAGE_picture)
+BEGIN_PROPERTY(IMAGE_Picture)
 
-  CPICTURE *pict;
-  
-  check_image(THIS);
+	CPICTURE *pict;
+	
+	check_image(THIS);
 
-  GB.New(POINTER(&pict), GB.FindClass("Picture"), NULL, NULL);
-  if (!QIMAGE->isNull())
-  	*pict->pixmap = QPixmap::fromImage(*QIMAGE);
+	GB.New(POINTER(&pict), GB.FindClass("Picture"), NULL, NULL);
+	if (!QIMAGE->isNull())
+		*pict->pixmap = QPixmap::fromImage(*QIMAGE);
 
-  GB.ReturnObject(pict);
+	GB.ReturnObject(pict);
 
 END_PROPERTY
 
 #if 0
 BEGIN_METHOD(CIMAGE_resize, GB_INTEGER width; GB_INTEGER height)
 
-  check_image(THIS);
-
-  if (QIMAGE->isNull())
-  {
-  	take_image(THIS, new QImage(VARG(width), VARG(height), QImage::Format_ARGB32));
-  }
-  else
-  {
-    take_image(THIS, new QImage(QIMAGE->copy(0, 0, VARG(width), VARG(height))));
-  }
-
-END_METHOD
-#endif
-
-BEGIN_METHOD(CIMAGE_load, GB_STRING path)
-
-  QImage *p;
-  CIMAGE *img;
-
-  if (CPICTURE_load_image(&p, STRING(path), LENGTH(path)))
-  {
-  	p->convertToFormat(QImage::Format_ARGB32);
-	  img = CIMAGE_create(p);
-    GB.ReturnObject(img);
-	}
-  else
-    GB.Error("Unable to load image");
-
-END_METHOD
-
-
-BEGIN_METHOD(CIMAGE_save, GB_STRING path; GB_INTEGER quality)
-
-  QString path = TO_QSTRING(GB.FileName(STRING(path), LENGTH(path)));
-  bool ok = false;
-  const char *fmt = CIMAGE_get_format(path);
-
-  if (!fmt)
-  {
-    GB.Error("Unknown format");
-    return;
-  }
-
-  check_image(THIS);
-
-	ok = QIMAGE->save(path, fmt, VARGOPT(quality, -1));
-
-  if (!ok)
-    GB.Error("Unable to save picture");
-
-END_METHOD
-
-BEGIN_METHOD(CIMAGE_stretch, GB_INTEGER width; GB_INTEGER height)
-
-	//static int count = 0;
-  QImage *stretch;
-
-  check_image(THIS);
+	check_image(THIS);
 
 	if (QIMAGE->isNull())
 	{
-    stretch = new QImage(VARG(width), VARG(height), QImage::Format_ARGB32);
+		take_image(THIS, new QImage(VARG(width), VARG(height), QImage::Format_ARGB32));
 	}
 	else
 	{
-		stretch = new QImage();
-		*stretch = QIMAGE->scaled(VARG(width), VARG(height), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-		stretch->detach();
+		take_image(THIS, new QImage(QIMAGE->copy(0, 0, VARG(width), VARG(height))));
 	}
 
-  GB.ReturnObject(CIMAGE_create(stretch));
-
-END_METHOD
-
-#if 0
-BEGIN_METHOD_VOID(CIMAGE_flip)
-
-	QImage *mirror = new QImage();
-	
-  check_image(THIS);
-  *mirror = QIMAGE->mirrored(true, false);
-	
-  GB.ReturnObject(CIMAGE_create(mirror));
-
 END_METHOD
 #endif
 
-#if 0
-BEGIN_METHOD_VOID(CIMAGE_mirror)
+BEGIN_METHOD(IMAGE_Load, GB_STRING path)
 
-	QImage *mirror = new QImage();
-	
-  check_image(THIS);
-  *mirror = QIMAGE->mirrored(false, true);
-	
-  GB.ReturnObject(CIMAGE_create(mirror));
+	QImage *p;
+	CIMAGE *img;
+
+	if (CPICTURE_load_image(&p, STRING(path), LENGTH(path)))
+	{
+		p->convertToFormat(QImage::Format_ARGB32);
+		img = CIMAGE_create(p);
+		GB.ReturnObject(img);
+	}
+	else
+		GB.Error("Unable to load image");
 
 END_METHOD
-#endif
 
-BEGIN_METHOD(CIMAGE_rotate, GB_FLOAT angle)
 
-  QImage *rotate = new QImage();
+BEGIN_METHOD(IMAGE_Save, GB_STRING path; GB_INTEGER quality)
+
+	QString path = TO_QSTRING(GB.FileName(STRING(path), LENGTH(path)));
+	bool ok = false;
+	const char *fmt = CIMAGE_get_format(path);
+
+	if (!fmt)
+	{
+		GB.Error("Unknown format");
+		return;
+	}
+
+	check_image(THIS);
+
+	ok = QIMAGE->save(path, fmt, VARGOPT(quality, -1));
+
+	if (!ok)
+		GB.Error("Unable to save picture");
+
+END_METHOD
+
+BEGIN_METHOD(IMAGE_Stretch, GB_INTEGER width; GB_INTEGER height)
+
+	//static int count = 0;
+	QImage *stretch;
+	int w, h;
+
+	check_image(THIS);
+
+	stretch = new QImage();
+
+	if (!QIMAGE->isNull())
+	{
+		w = VARG(width);
+		h = VARG(height);
+	
+		if (w < 0 && h > 0)
+			w = QIMAGE->width() * h / QIMAGE->height();
+		else if (h < 0 && w > 0)
+			h = QIMAGE->height() * w / QIMAGE->width();
+		
+		if (w > 0 && h > 0)
+		{
+			*stretch = QIMAGE->scaled(w, h, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+			stretch->detach();
+		}
+	}
+
+	GB.ReturnObject(CIMAGE_create(stretch));
+
+END_METHOD
+
+
+BEGIN_METHOD(IMAGE_Rotate, GB_FLOAT angle)
+
+	QImage *rotate = new QImage();
 	double angle = VARG(angle);
-  
-  check_image(THIS);
-  
+	
+	check_image(THIS);
+	
 	if (angle != 0.0)
 	{
 		QMatrix mat;
@@ -282,30 +266,30 @@ BEGIN_METHOD(CIMAGE_rotate, GB_FLOAT angle)
 END_METHOD
 
 
-BEGIN_METHOD(CIMAGE_draw, GB_OBJECT img; GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_INTEGER sx; GB_INTEGER sy; GB_INTEGER sw; GB_INTEGER sh)
+BEGIN_METHOD(IMAGE_PaintImage, GB_OBJECT img; GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_INTEGER sx; GB_INTEGER sy; GB_INTEGER sw; GB_INTEGER sh)
 
-  int x, y, w, h, sx, sy, sw, sh;
-  CIMAGE *image = (CIMAGE *)VARG(img);
-  QImage *src, *dst;
-  double scale_x, scale_y;
+	int x, y, w, h, sx, sy, sw, sh;
+	CIMAGE *image = (CIMAGE *)VARG(img);
+	QImage *src, *dst;
+	double scale_x, scale_y;
 
-  if (GB.CheckObject(image))
-    return;
+	if (GB.CheckObject(image))
+		return;
 
 	src = check_image(image);
 	dst = check_image(THIS);
 
-  x = VARGOPT(x, 0);
-  y = VARGOPT(y, 0);
-  w = VARGOPT(w, -1);
-  h = VARGOPT(h, -1);
+	x = VARGOPT(x, 0);
+	y = VARGOPT(y, 0);
+	w = VARGOPT(w, -1);
+	h = VARGOPT(h, -1);
 
-  sx = VARGOPT(sx, 0);
-  sy = VARGOPT(sy, 0);
-  sw = VARGOPT(sw, src->width());
-  sh = VARGOPT(sh, src->height());
+	sx = VARGOPT(sx, 0);
+	sy = VARGOPT(sy, 0);
+	sw = VARGOPT(sw, src->width());
+	sh = VARGOPT(sh, src->height());
 
-  DRAW_NORMALIZE(x, y, w, h, sx, sy, sw, sh, src->width(), src->height());
+	DRAW_NORMALIZE(x, y, w, h, sx, sy, sw, sh, src->width(), src->height());
 
 	if (w != sw || h != sh)
 	{
@@ -335,19 +319,20 @@ END_METHOD
 
 GB_DESC CImageDesc[] =
 {
-  GB_DECLARE("Image", sizeof(CIMAGE)),
+	GB_DECLARE("Image", sizeof(CIMAGE)),
 
-  GB_STATIC_METHOD("Load", "Image", CIMAGE_load, "(Path)s"),
-  GB_METHOD("Save", NULL, CIMAGE_save, "(Path)s[(Quality)i]"),
+	GB_STATIC_METHOD("Load", "Image", IMAGE_Load, "(Path)s"),
+	GB_METHOD("Save", NULL, IMAGE_Save, "(Path)s[(Quality)i]"),
 
-	GB_METHOD("Stretch", "Image", CIMAGE_stretch, "(Width)i(Height)i"),
-  GB_METHOD("Rotate", "Image", CIMAGE_rotate, "(Angle)f"),
+	GB_METHOD("Stretch", "Image", IMAGE_Stretch, "(Width)i(Height)i"),
+	GB_METHOD("Rotate", "Image", IMAGE_Rotate, "(Angle)f"),
 
-  GB_METHOD("Draw", NULL, CIMAGE_draw, "(Image)Image;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
+	GB_METHOD("PaintImage", NULL, IMAGE_PaintImage, "(Image)Image;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
 
-  GB_PROPERTY_READ("Picture", "Picture", CIMAGE_picture),
+	GB_PROPERTY_READ("Picture", "Picture", IMAGE_Picture),
+	
 	GB_INTERFACE("Paint", &PAINT_Interface),
 	
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
 

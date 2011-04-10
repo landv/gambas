@@ -700,8 +700,8 @@ Private Sub AddEmblem(hSource As Image, sEmblem As String) As Image
   hEmblem = Picture[sEmblem].Image.Stretch(iSize * 1.5, iSize * 1.5)
   
   hImage = New Image(hSource.Width + iSize, hSource.Height, Color.Transparent)
-  hImage.Draw(hSource, iSize, 0)
-  hImage.Draw(hEmblem, 0, (hImage.H - hEmblem.H) / 2)
+  hImage.PaintImage(hSource, iSize, 0)
+  hImage.PaintImage(hEmblem, 0, (hImage.H - hEmblem.H) / 2)
   Return hImage
   
 End
@@ -710,8 +710,8 @@ Private Sub AddLinkEmblem(hSource As Image) As Image
   
   Dim hImage As New Image(hSource.Width + 1, hSource.Height + 1, Color.Transparent)
   
-  hImage.Draw(hSource, 1, 0)
-  hImage.Draw(Picture["img/16/link.png"].Image, 0, hImage.Height - 16)
+  hImage.PaintImage(hSource, 1, 0)
+  hImage.PaintImage(Picture["img/16/link.png"].Image, 0, hImage.Height - 16)
   Return hImage
   
 End
@@ -732,7 +732,7 @@ Public Sub MakeModuleIcon(sModule As String, Optional iSize As Integer) As Image
     hImage = $cImageCache["base"]
     hImage = hImage.Stretch(iSize, iSize)
     hImageModule = Image.Load("img/module" &/ sModule & ".png") '.Stretch(iSize / 2, iSize / 2)
-    hImage.Draw(hImageModule, iSize / 4, iSize / 4, iSize / 2, iSize / 2)
+    hImage.PaintImage(hImageModule, iSize / 4, iSize / 4, iSize / 2, iSize / 2)
     $cImageCache[sKey] = hImage
   Endif
   
@@ -4444,7 +4444,7 @@ Public Function StretchIcon(sPath As String, Optional iSize As Integer = 48) As 
   If W < iSize Or H < iSize Then
     hBackground = New Image(iSize, iSize)
     hBackground.Fill(Color.Transparent)
-    hBackground.Draw(hImage, (iSize - W) / 2, (iSize - H) / 2, W, H)
+    hBackground.PaintImage(hImage, (iSize - W) / 2, (iSize - H) / 2, W, H)
     hImage = hBackground
   Else 
     hImage = hImage.Stretch(W, H)
@@ -4849,7 +4849,7 @@ Public Sub MakeDirectoryIcon(Optional sDir As String)
   
   If sIcon Then 
     Try hIcon = StretchIcon(sIcon, 16)
-    If hIcon Then hDirIcon.Draw(hIcon, 40, 34)
+    If hIcon Then hDirIcon.PaintImage(hIcon, 40, 34)
   Endif
   
   hDirIcon.Save(sDir &/ ".icon.png")
