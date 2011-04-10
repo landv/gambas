@@ -72,7 +72,7 @@ static void sync_image(GB_IMG *image)
 
 static GB_IMG_OWNER _image_owner = {
 	"gb.sdl",
-	GB_IMAGE_RGBA,
+	GB_IMAGE_BGRA,
 	free_image,
 	free_image,
 	temp_image,

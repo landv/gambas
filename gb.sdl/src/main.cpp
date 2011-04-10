@@ -82,6 +82,7 @@ extern "C"
 	int EXPORT GB_INIT(void)
 	{
 		GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
+		IMAGE.SetDefaultFormat(GB_IMAGE_BGRA);
 
 		GB.Hook(GB_HOOK_MAIN, (void *)my_main);
 		GB.Hook(GB_HOOK_LOOP, (void *)my_loop);

@@ -110,11 +110,12 @@ void SDLtexture::GetAsTexture(texinfo *tex)
 			hTexinfo->Height = GLdouble(origin->h) / h;  /* Max Y */
 
 			image = SDL_CreateRGBSurface(SDL_SWSURFACE, w, h, 32,
-			#if SDL_BYTEORDER == SDL_LIL_ENDIAN /* OpenGL RGBA masks */
-				0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000
-			#else
-				0xFF000000, 0x00FF0000,	0x0000FF00, 0x000000FF
-			#endif
+//			#if SDL_BYTEORDER == SDL_LIL_ENDIAN /* OpenGL RGBA masks */
+//				0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000
+//			#else
+//				0xFF000000, 0x00FF0000,	0x0000FF00, 0x000000FF
+//			#endif
+			0x0000FF00, 0x00FF0000, 0xFF000000, 0x000000FF
 			);
 
 			if (!image)
@@ -144,7 +145,8 @@ void SDLtexture::GetAsTexture(texinfo *tex)
 			image = hSurface->GetSdlSurface();
 		}
 
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->w, image->h, 0, GL_RGBA, 
+//		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->w, image->h, 0, GL_RGBA, 
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->w, image->h, 0, GL_BGRA, 
 			GL_UNSIGNED_BYTE, image->pixels);
 		/* Use of CLAMP_TO_EDGE, without it give a black line around the texture
 		with DRI radeon drivers */

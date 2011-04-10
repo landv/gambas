@@ -40,18 +40,7 @@ SDLsurface::SDLsurface(char *data, int width, int height)
 	hTexture = new SDLtexture(this);
 	
 	hSurface = SDL_CreateRGBSurfaceFrom((void *)data, width, height, 32, width * sizeof(int), 
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN /* OpenGL RGBA masks */
-			0x000000FF, 
-			0x0000FF00, 
-			0x00FF0000, 
-			0xFF000000
-#else
-			0xFF000000,
-			0x00FF0000, 
-			0x0000FF00, 
-			0x000000FF
-#endif
-			);
+		0x0000FF00, 0x00FF0000, 0xFF000000, 0x000000FF);
 
 	if (!hSurface)
 		SDLcore::RaiseError(SDL_GetError());
@@ -106,18 +95,7 @@ SDLsurface::SDLsurface(int Width, int Height)
 {
 	hTexture = new SDLtexture(this);
 	hSurface = SDL_CreateRGBSurface(SDL_SWSURFACE, Width, Height, 32,
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN /* OpenGL RGBA masks */
-			0x000000FF, 
-			0x0000FF00, 
-			0x00FF0000, 
-			0xFF000000
-#else
-			0xFF000000,
-			0x00FF0000, 
-			0x0000FF00, 
-			0x000000FF
-#endif
-			);
+		0x0000FF00, 0x00FF0000, 0xFF000000, 0x000000FF);
 
 	if (!hSurface)
 		SDLcore::RaiseError(SDL_GetError());
@@ -137,18 +115,7 @@ SDLsurface::~SDLsurface()
 void SDLsurface::Create(int Width, int Height, int Depth)
 {
 	SDL_Surface *pSurface = SDL_CreateRGBSurface(SDL_SWSURFACE, Width, Height, Depth,
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN /* OpenGL RGBA masks */
-			0x000000FF, 
-			0x0000FF00, 
-			0x00FF0000, 
-			0xFF000000
-#else
-			0xFF000000,
-			0x00FF0000, 
-			0x0000FF00, 
-			0x000000FF
-#endif
-			);
+		0x0000FF00, 0x00FF0000, 0xFF000000, 0x000000FF);
 
 	if (!pSurface)
 		SDLcore::RaiseError(SDL_GetError());
@@ -241,18 +208,7 @@ void SDLsurface::ConvertDepth(int depth)
 #endif
 
 	SDL_Surface *tmpSurf = SDL_CreateRGBSurface(hSurface->flags, 1, 1, depth,
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN /* OpenGL RGBA masks */
-			0x000000FF, 
-			0x0000FF00, 
-			0x00FF0000, 
-			0xFF000000
-#else
-			0xFF000000,
-			0x00FF0000, 
-			0x0000FF00, 
-			0x000000FF
-#endif
-			);
+		0x0000FF00, 0x00FF0000, 0xFF000000, 0x000000FF);
 
 
 	if (!tmpSurf)
@@ -297,19 +253,7 @@ void SDLsurface::Resize(int width, int height)
 		SDL_SetAlpha(hSurface, 0, 0);
 
 	SDL_Surface *tmpSurf = SDL_CreateRGBSurface (SDL_SWSURFACE, width, height, 
-		hSurface->format->BitsPerPixel,
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN /* OpenGL RGBA masks */
-			0x000000FF, 
-			0x0000FF00, 
-			0x00FF0000, 
-			0xFF000000
-#else
-			0xFF000000,
-			0x00FF0000, 
-			0x0000FF00, 
-			0x000000FF
-#endif
-			);
+		hSurface->format->BitsPerPixel, 0x0000FF00, 0x00FF0000, 0xFF000000, 0x000000FF);
 
 	if (!tmpSurf)
 	{
