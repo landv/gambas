@@ -64,7 +64,7 @@ Public Sub Main()
   scroll5b = Rnd(0, 640)
   scroll6 = 0
    
-  'music.Play(-1, 1)
+  music.Play(-1, 1)
 
 End
 
@@ -151,9 +151,9 @@ Public Sub Screen_Draw()
   
   #Endif
 
-  'Draw.ForeColor = &hFFFF00&
-  'Draw.Text(Screen.Framerate & " FPS", 5, 450)
-  Print "\r"; Screen.Framerate; " FPS";
+  Draw.ForeColor = &hFFFF00&
+  Draw.Text(Screen.Framerate & " FPS", 5, 450)
+  'Print "\r"; Screen.Framerate; " FPS";
   
 End
 
