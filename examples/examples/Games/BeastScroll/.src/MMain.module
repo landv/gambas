@@ -31,7 +31,8 @@ Public Sub Main()
   With Screen
     .Width = 640
     .Height = 480
-    .Framerate = 100
+    '.Framerate = 100
+    .Resizable = False
     .Show()
   End With 
 
@@ -63,13 +64,15 @@ Public Sub Main()
   scroll5b = Rnd(0, 640)
   scroll6 = 0
    
-  music.Play(-1, 1)
+  'music.Play(-1, 1)
 
 End
 
 Public Sub Screen_Draw()
   
-  Screen.Clear
+  Dim hImage As Image
+  
+  'Screen.Clear
   
   scroll = scroll + speed
   Dec (scroll1)
@@ -93,6 +96,37 @@ Public Sub Screen_Draw()
   If (scroll5b < - 640) Then scroll5b = scroll5b + 1280
   If (scroll6 < - 640) Then scroll6 = scroll6 + 640
 
+  #If False
+
+  hImage = New Image(Screen.Width, Screen.Height)
+  
+  hImage.DrawImage(ciel, 0, 0)
+  hImage.DrawImage(montagnes, scroll1, 200)
+  hImage.DrawImage(montagnes, scroll1 + 640, 200)
+  hImage.DrawImage(sol1, scroll2, 420)
+  hImage.DrawImage(sol1, scroll2 + 640, 420)
+  hImage.DrawImage(sol2, scroll3, 430)
+  hImage.DrawImage(sol2, scroll3 + 640, 430)
+  hImage.DrawImage(sol3, scroll4, 450)
+  hImage.DrawImage(sol3, scroll4 + 640, 450)
+
+  hImage.PaintImage(nuage1, scroll6, 0)
+  hImage.PaintImage(nuage1, scroll6 + 640, 0)
+  hImage.PaintImage(nuage2, scroll4, 82)
+  hImage.PaintImage(nuage2, scroll4 + 640, 82)
+  hImage.PaintImage(nuage3, scroll3, 120)
+  hImage.PaintImage(nuage3, scroll3 + 640, 120)
+  hImage.PaintImage(nuage4, scroll2, 138)
+  hImage.PaintImage(nuage4, scroll2 + 640, 138)
+  hImage.PaintImage(barriere, scroll5, 440)
+  hImage.PaintImage(arbre, scroll5b, 140)
+  hImage.PaintImage(fireworks, scrollb, 0)
+  hImage.PaintImage(scrolltext, scrollb + 640, 0)
+
+  Draw.Image(hImage, 0, 0)
+
+  #Else
+
   Draw.Image(ciel, 0, 0)
   Draw.Image(montagnes, scroll1, 200)
   Draw.Image(montagnes, scroll1 + 640, 200)
@@ -114,9 +148,13 @@ Public Sub Screen_Draw()
   Draw.Image(arbre, scroll5b, 140)
   Draw.Image(fireworks, scrollb, 0)
   Draw.Image(scrolltext, scrollb + 640, 0)
-  Draw.ForeColor = &hFFFF00&
-  Draw.Text(Screen.Framerate & " FPS", 5, 450)
+  
+  #Endif
 
+  'Draw.ForeColor = &hFFFF00&
+  'Draw.Text(Screen.Framerate & " FPS", 5, 450)
+  Print "\r"; Screen.Framerate; " FPS";
+  
 End
 
 Public Sub Screen_Close()

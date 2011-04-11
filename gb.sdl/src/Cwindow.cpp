@@ -41,7 +41,7 @@
 DECLARE_EVENT(EVENT_Close);
 DECLARE_EVENT(EVENT_Resize);
 DECLARE_EVENT(EVENT_Activate);
-DECLARE_EVENT(EVENT_DeActivate);
+DECLARE_EVENT(EVENT_Deactivate);
 DECLARE_EVENT(EVENT_Enter);
 DECLARE_EVENT(EVENT_JoyAxisMotion);
 DECLARE_EVENT(EVENT_JoyBallMotion);
@@ -247,7 +247,7 @@ GB_DESC CWindow[] =
   GB_EVENT("Close", "b", NULL, &EVENT_Close),
   GB_EVENT("Resize", NULL, NULL, &EVENT_Resize),
   GB_EVENT("Activate", NULL, NULL, &EVENT_Activate),
-  GB_EVENT("DeActivate", NULL, NULL, &EVENT_DeActivate),
+  GB_EVENT("Deactivate", NULL, NULL, &EVENT_Deactivate),
   GB_EVENT("Enter", NULL, NULL, &EVENT_Enter),
   GB_EVENT("JoyAxisMove", NULL, NULL, &EVENT_JoyAxisMotion),
   GB_EVENT("JoyBallMove", NULL, NULL, &EVENT_JoyBallMotion),
@@ -282,7 +282,7 @@ void myWin::GotFocus(void)
 
 void myWin::LostFocus(void)
 {
-	GB.Raise(hWindow, EVENT_DeActivate, 0);
+	GB.Raise(hWindow, EVENT_Deactivate, 0);
 }
 
 void myWin::MouseEnter(void)

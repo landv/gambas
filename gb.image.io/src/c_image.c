@@ -35,6 +35,7 @@ BEGIN_METHOD(CIMAGE_load, GB_STRING path)
 	GError *error = NULL;
 	gsize size;
 	int format;
+	GB_IMG *image;
 
 	if (GB.LoadFile(STRING(path), LENGTH(path), &addr, &len))
 	{
@@ -73,18 +74,23 @@ BEGIN_METHOD(CIMAGE_load, GB_STRING path)
 		GdkPixbuf *aimg;
 		aimg = gdk_pixbuf_add_alpha(img, FALSE, 0, 0, 0);
 		g_object_unref(G_OBJECT(img));
-  	g_object_ref(G_OBJECT(aimg));
-		img = aimg;
+  	img = aimg;
 	}*/
 	
 	switch (gdk_pixbuf_get_n_channels(img))
 	{
 		case 3: format = GB_IMAGE_RGB; break;
 		case 4: format = GB_IMAGE_RGBA; break;
-		default: GB.Error("Unsupported number of channels"); goto __END;
+		default: 
+			g_object_unref(G_OBJECT(img));
+			GB.Error("Unsupported number of channels"); 
+			goto __END;
 	}
 	
-	GB.ReturnObject(IMAGE.Create(gdk_pixbuf_get_width(img), gdk_pixbuf_get_height(img), format, gdk_pixbuf_get_pixels(img)));
+	image = IMAGE.Create(gdk_pixbuf_get_width(img), gdk_pixbuf_get_height(img), format, gdk_pixbuf_get_pixels(img));
+	IMAGE.Convert(image, IMAGE.GetDefaultFormat());
+	GB.ReturnObject(image);
+	
 	g_object_unref(G_OBJECT(img));
 
 __END:

@@ -265,6 +265,18 @@ BEGIN_METHOD(Image_DrawImage, GB_OBJECT image; GB_INTEGER x; GB_INTEGER y; GB_IN
 
 END_METHOD
 
+BEGIN_METHOD(Image_PaintImage, GB_OBJECT image; GB_INTEGER x; GB_INTEGER y; GB_INTEGER srcx; GB_INTEGER srcy; GB_INTEGER srcw; GB_INTEGER srch)
+
+	CIMAGE *image = VARG(image);
+	
+	if (GB.CheckObject(image))
+		return;
+	
+  IMAGE_compose(THIS_IMAGE, VARGOPT(x, 0), VARGOPT(y, 0), &image->image, VARGOPT(srcx, 0), VARGOPT(srcy, 0), VARGOPT(srcw, -1), VARGOPT(srch, -1));
+	GB.ReturnObject(THIS);
+
+END_METHOD
+
 BEGIN_PROPERTY(Image_Format)
 
 	char *format;
@@ -338,6 +350,7 @@ GB_DESC CImageDesc[] =
 
 	//GB_METHOD("Transform", "Image", CIMAGE_transform, "(SrcX)f(SrcY)f(DepX)f(DepY)f"),
   GB_METHOD("DrawImage", "Image", Image_DrawImage, "(Image)Image;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
+  GB_METHOD("PaintImage", "Image", Image_PaintImage, "(Image)Image;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
   
   GB_END_DECLARE
 };

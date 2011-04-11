@@ -836,6 +836,21 @@ int IMAGE_get_default_format()
 	return _default_format;
 }
 
+// Parameter correction
+#define CHECK_PARAMETERS(dst, dx, dy, src, sx, sy, sw, sh) \
+	if ( sw < 0 ) sw = src->width; \
+	if ( sh < 0 ) sh = src->height; \
+	if ( sx < 0 ) { dx -= sx; sw += sx; sx = 0; } \
+	if ( sy < 0 ) { dy -= sy; sh += sy; sy = 0; } \
+	if ( dx < 0 ) { sx -= dx; sw += dx; dx = 0; } \
+	if ( dy < 0 ) { sy -= dy; sh += dy; dy = 0; } \
+	if ( (sx + sw) > src->width ) sw = src->width - sx; \
+	if ( (sy + sh) > src->height ) sh = src->height - sy; \
+	if ( (dx + sw) > dst->width ) sw = dst->width - dx; \
+	if ( (dy + sh) > dst->height ) sh = dst->height - dy; \
+	if (sw <= 0 || sh <= 0) \
+		return;
+
 void IMAGE_bitblt(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int sw, int sh)
 {
 	int sfmt = src->format;
@@ -847,19 +862,7 @@ void IMAGE_bitblt(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int 
 		return;
 	}
 	
-	// Parameter correction
-	
-	if ( sw < 0 ) sw = src->width;
-	if ( sh < 0 ) sh = src->height;
-	if ( sx < 0 ) { dx -= sx; sw += sx; sx = 0; }
-	if ( sy < 0 ) { dy -= sy; sh += sy; sy = 0; }
-	if ( dx < 0 ) { sx -= dx; sw += dx; dx = 0; }
-	if ( dy < 0 ) { sy -= dy; sh += dy; dy = 0; }
-	if ( (sx + sw) > src->width ) sw = src->width - sx;
-	if ( (sy + sh) > src->height ) sh = src->height - sy;
-	if ( (dx + sw) > dst->width ) sw = dst->width - dx;
-	if ( (dy + sh) > dst->height ) sh = dst->height - dy;
-	if ( sw <= 0 || sh <= 0 ) return; // Nothing left to copy
+	CHECK_PARAMETERS(dst, dx, dy, src, sx, sy, sw, sh);
 	
 	SYNCHRONIZE(src);
 	SYNCHRONIZE(dst);
@@ -939,19 +942,7 @@ void IMAGE_draw_alpha(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, 
 		return;
 	}
 
-	// Parameter correction
-	
-	if ( sw < 0 ) sw = src->width;
-	if ( sh < 0 ) sh = src->height;
-	if ( sx < 0 ) { dx -= sx; sw += sx; sx = 0; }
-	if ( sy < 0 ) { dy -= sy; sh += sy; sy = 0; }
-	if ( dx < 0 ) { sx -= dx; sw += dx; dx = 0; }
-	if ( dy < 0 ) { sy -= dy; sh += dy; dy = 0; }
-	if ( sx + sw > src->width ) sw = src->width - sx;
-	if ( sy + sh > src->height ) sh = src->height - sy;
-	if ( dx + sw > dst->width ) sw = dst->width - dx;
-	if ( dy + sh > dst->height ) sh = dst->height - dy;
-	if ( sw <= 0 || sh <= 0 ) return; // Nothing left to copy
+	CHECK_PARAMETERS(dst, dx, dy, src, sx, sy, sw, sh);
 	
 	SYNCHRONIZE(src);
 	SYNCHRONIZE(dst);
@@ -1018,55 +1009,21 @@ void IMAGE_draw_alpha(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, 
 void IMAGE_compose(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int sw, int sh)
 {
 	if (dst->format != src->format)
+	{
+		GB.Error("The images must have the same format");
 		return;
+	}
 
-	// Parameter correction
+	CHECK_PARAMETERS(dst, dx, dy, src, sx, sy, sw, sh);
 	
-	if ( sw < 0 ) sw = src->width;
-	if ( sh < 0 ) sh = src->height;
-	if ( sx < 0 ) { dx -= sx; sw += sx; sx = 0; }
-	if ( sy < 0 ) { dy -= sy; sh += sy; sy = 0; }
-	if ( dx < 0 ) { sx -= dx; sw += dx; dx = 0; }
-	if ( dy < 0 ) { sy -= dy; sh += dy; dy = 0; }
-	if ( sx + sw > src->width ) sw = src->width - sx;
-	if ( sy + sh > src->height ) sh = src->height - sy;
-	if ( dx + sw > dst->width ) sw = dst->width - dx;
-	if ( dy + sh > dst->height ) sh = dst->height - dy;
-	if ( sw <= 0 || sh <= 0 ) return;
-
 	SYNCHRONIZE(src);
 	SYNCHRONIZE(dst);
 
-	/*if ( src->hasAlphaBuffer() ) {
-			QRgb* d = (QRgb*)dst->scanLine(dy) + dx;
-			QRgb* s = (QRgb*)src->scanLine(sy) + sx;
-			const int dd = dst->width() - sw;
-			const int ds = src->width() - sw;
-			while ( sh-- ) {
-		for ( int t=sw; t--; ) {
-				unsigned char a = qAlpha(*s);
-				if ( a == 255 )
-			*d++ = *s++;
-				else if ( a == 0 )
-			++d,++s; // nothing
-				else {
-			unsigned char r = ((qRed(*s)-qRed(*d)) * a) / 256 + qRed(*d);
-			unsigned char g = ((qGreen(*s)-qGreen(*d)) * a) / 256 + qGreen(*d);
-			unsigned char b = ((qBlue(*s)-qBlue(*d)) * a) / 256 + qBlue(*d);
-			a = QMAX(qAlpha(*d),a); // alternatives...
-			*d++ = qRgba(r,g,b,a);
-			++s;
-				}
-		}
-		d += dd;
-		s += ds;
-			}
-	} else {*/
-	
 	switch(src->format)
 	{
 		case GB_IMAGE_RGBA: case GB_IMAGE_BGRA:
 		{
+			#if 0
 			uint *d = (uint *)dst->data + dy * dst->width + dx;
 			uint *s = (uint *)src->data + sy * src->width + sx;
 	
@@ -1079,26 +1036,58 @@ void IMAGE_compose(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int
 				{
 					unsigned char a = ALPHA(*s);
 					if (a == 255)
-						*d++ = *s++;
-					else if (a == 0)
-						++d,++s; // nothing
-					else 
+						*d = *s;
+					else if (a)
 					{
 						unsigned char r = ((RED(*s)-RED(*d)) * a) / 256 + RED(*d);
 						unsigned char g = ((GREEN(*s)-GREEN(*d)) * a) / 256 + GREEN(*d);
 						unsigned char b = ((BLUE(*s)-BLUE(*d)) * a) / 256 + BLUE(*d);
 						if (ALPHA(*d) > a)
 							a = ALPHA(*d);
-						*d++ = RGBA(r,g,b,a);
-						++s;
+						*d = RGBA(r,g,b,a);
 					}
+					d++;
+					s++;
 				}
 				d += dd;
 				s += ds;
 			}
-			
+			#else
+			uchar *d = (uchar *)((uint *)dst->data + dy * dst->width + dx);
+			uchar *s = (uchar *)((uint *)src->data + sy * src->width + sx);
+	
+			const int dd = (dst->width - sw) * 4;
+			const int ds = (src->width - sw) * 4;
+			int t;
+			while (sh--) 
+			{
+				for (t = sw; t--;)
+				{
+					unsigned char a = s[3];
+					if (a == 255)
+						*(uint *)d = *(uint *)s;
+					else if (a)
+					{
+						d[0] = ((s[0] - d[0]) * a) / 256 + d[0];
+						d[1] = ((s[1] - d[1]) * a) / 256 + d[1];
+						d[2] = ((s[2] - d[2]) * a) / 256 + d[2];
+						if (d[3] < a)
+							d[3] = a;
+				}
+					d += 4;
+					s += 4;
+				}
+				d += dd;
+				s += ds;
+			}
+			#endif
+
 			break;
 		}
+		
+		default:
+			GB.Error("Unsupported image format");
+			return;
 	}
 	
 	MODIFY(dst);
