@@ -552,9 +552,7 @@ BEGIN_METHOD(CDRAW_fill_rect, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEG
 	fill_style = DRAW->Fill.GetStyle(THIS);
 	DRAW->Fill.SetStyle(THIS, 1);
 	fill_color = DRAW->Fill.GetColor(THIS);
-	if (MISSING(color))
-		DRAW->Fill.SetColor(THIS, DRAW->GetBackground(THIS));
-	else
+	if (!MISSING(color))
 		DRAW->Fill.SetColor(THIS, VARG(color));
 	
 	DRAW->Draw.Rect(THIS, x, y, w, h);
