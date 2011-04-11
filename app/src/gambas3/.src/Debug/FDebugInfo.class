@@ -21,6 +21,10 @@ Private $aValObject As New String[]
 Private $cObject As New Collection
 Private $bSortObject As Boolean
 
+Private $hForm As FEditor
+Private $iX As Integer
+Private $iY As Integer
+
 Public Sub _new()
   
   With tbvLocal
@@ -382,7 +386,7 @@ End
 Public Sub AddResultWatch(sCmd As String, sRes As String, Optional bInstant As Boolean)
 
   Dim sVal As String
-  Dim hForm As FEditor
+  Dim hEditor As Editor
   
   'IF Left$(sRes, 1) = "=" THEN
   '  sVal = Mid$(sRes, 2)
@@ -393,21 +397,19 @@ Public Sub AddResultWatch(sCmd As String, sRes As String, Optional bInstant As B
 
   If bInstant Then 
     If Right(sCmd) = ":" Then
+      
       If FDebugExpr.Exist(Left(sCmd, Len(sCmd) - 1)) Then Return 
       
-      ' TRY hForm = FDebugExpr.IsSender()
-      ' IF hForm = NULL THEN 
-      '   TRY hForm = Project.ActiveForm
-      '   IF hForm THEN 
-      '     IF Mouse.ScreenY <= hForm.Editor.ScreenY + hForm.Editor.h THEN
-              ShowAsBalloon(sVal)
-      '     ENDIF 
-      '   ENDIF 
-      ' ENDIF 
+      'ShowAsBalloon(sVal)
+      If $hForm Then 
+        $hForm.ShowWatchResult(sVal, $iX, $iY)
+        $hForm = Null
+      Else
+        FOutput.Insert(sVal)
+      Endif
     
     Else 
       Design.Command("#X" & sCmd & "\t" & sCmd)  
-    
     Endif 
   Else  
     Try cvwWatch.Add(sCmd, sCmd)
@@ -480,10 +482,13 @@ Public Sub AddWatch(sExpr As String)
 
 End
 
-Public Sub InstantWatch(sExpr As String, hCtrl As Control, X As Integer, Y As Integer)
+Public Sub InstantWatch(sExpr As String, hForm As FEditor, X As Integer, Y As Integer)
   
   If Not sExpr Then Return
-  Design.SetBalloon(hCtrl, X, Y)
+  
+  $hForm = hForm
+  $iX = X
+  $iY = Y
   Design.Command("?I" & sExpr & "\t" & sExpr)
   
 End

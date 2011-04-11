@@ -2227,6 +2227,7 @@ Public Sub Editors_Scroll()
   HideCompletion
   HideSignature
   HideMessage
+  timWatch_Timer
   
 End
 
@@ -2576,11 +2577,43 @@ Public Sub Editors_MouseUp()
     Return 
   Endif
   
-  FDebugInfo.InstantWatch(Trim(Editor.Selection.Text), Editor, 
-    Editor.CursorX + Editor.CharWidth * ((Editor.Selection.StartColumn + Editor.Selection.EndColumn) / 2 - Editor.Column), 
-    Mouse.ScreenY - Editor.ScreenY)
+  FDebugInfo.InstantWatch(Trim(Editor.Selection.Text), Me, 
+    Editor.X + Editor.ToPosX(Editor.Selection.StartColumn),
+    Editor.Y + Editor.CursorY + Editor.LineHeight)
+    'Editor.X + Editor.CursorX + Editor.CharWidth * ((Editor.Selection.StartColumn + Editor.Selection.EndColumn) / 2 - Editor.Column), 
+    'Editor.Y + Mouse.ScreenY - Editor.ScreenY)
   
 End
+
+Public Sub ShowWatchResult(sStr As String, X As Integer, Y As Integer)
+  
+  If Left(sStr) = "!" Then
+    sStr = Mid$(sStr, 2)
+    If sStr = "Syntax error" Or If sStr = "Non terminated string" Or If sStr = "Unknown symbol" Then Return
+    sStr = Design.MakeErrorMessage(sStr)
+    lblWatch.Background = Color.HSV(0, 64, 255)
+  Else
+    lblWatch.Background = Color.HSV(64, 64, 255)
+  Endif
+  
+  lblWatch.Move(X, Y)
+  lblWatch.Text = sStr
+  lblWatch.Show
+  lblWatch.Raise
+  timWatch.Start
+  Editor.SetFocus
+  
+End
+
+Public Sub timWatch_Timer()
+  
+  lblWatch.Hide
+  timWatch.Stop
+  
+End
+
+
+
 
 Public Sub Editors_Margin({Line} As Integer)
   
@@ -3270,4 +3303,10 @@ Public Sub mnuPretty_Click()
   Editor.Goto(Y, X)
   Editor.End
   
+End
+
+Public Sub lblWatch_MouseDown()
+
+  timWatch_Timer
+
 End

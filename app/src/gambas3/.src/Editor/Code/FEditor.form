@@ -415,6 +415,19 @@
       Border = False
     }
   }
+  { timWatch #Timer
+    #MoveScaled(96,64)
+    Delay = 5000
+  }
+  { lblWatch Label
+    MoveScaled(55,74,20,5)
+    Visible = False
+    Background = &HFFFFBF&
+    Ignore = True
+    Padding = 1
+    AutoResize = True
+    Border = Border.Plain
+  }
 }
 
 # Gambas Action File 3.0
