@@ -490,12 +490,16 @@ BEGIN_PROPERTY(_property) \
 	} \
 END_METHOD
 
+#define IMPLEMENT_PROPERTY_BOOLEAN(_property, _api) \
+	IMPLEMENT_PROPERTY(_property, _api, int, GB_BOOLEAN, GB.ReturnBoolean)
+
 #define IMPLEMENT_PROPERTY_INTEGER(_property, _api) \
 	IMPLEMENT_PROPERTY(_property, _api, int, GB_INTEGER, GB.ReturnInteger)
 
 #define IMPLEMENT_PROPERTY_FLOAT(_property, _api) \
 	IMPLEMENT_PROPERTY(_property, _api, float, GB_FLOAT, GB.ReturnFloat)
 
+IMPLEMENT_PROPERTY_BOOLEAN(Paint_Antialias, Antialias)
 IMPLEMENT_METHOD(Paint_Save, Save)
 IMPLEMENT_METHOD(Paint_Restore, Restore)
 IMPLEMENT_METHOD_PRESERVE(Paint_Clip, Clip)
@@ -1026,6 +1030,7 @@ GB_DESC PaintDesc[] =
 	GB_STATIC_PROPERTY_READ("Height", "f", Paint_Height),
 	GB_STATIC_PROPERTY_READ("ResolutionX", "i", Paint_ResolutionX),
 	GB_STATIC_PROPERTY_READ("ResolutionY", "i", Paint_ResolutionY),
+	GB_STATIC_PROPERTY("Antialias", "b", Paint_Antialias),
 
 	GB_STATIC_METHOD("Save", NULL, Paint_Save, NULL),
 	GB_STATIC_METHOD("Restore", NULL, Paint_Restore, NULL),

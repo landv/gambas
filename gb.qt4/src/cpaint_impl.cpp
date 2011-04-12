@@ -230,6 +230,14 @@ static void Restore(GB_PAINT *d)
 	PAINTER(d)->restore();
 }
 		
+static void Antialias(GB_PAINT *d, int set, int *antialias)
+{
+	if (set)
+		PAINTER(d)->setRenderHint(QPainter::Antialiasing, *antialias);
+	else
+		*antialias = PAINTER(d)->testRenderHint(QPainter::Antialiasing) ? 1 : 0;
+}
+
 static void apply_font(QFont &font, void *object = 0)
 {
 	GB_PAINT *d = (GB_PAINT *)DRAW.Paint.GetCurrent();
@@ -940,6 +948,7 @@ GB_PAINT_DESC PAINT_Interface = {
 	End,
 	Save,
 	Restore,
+	Antialias,
 	Font,
 	Clip,
 	ResetClip,

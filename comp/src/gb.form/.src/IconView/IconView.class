@@ -99,6 +99,7 @@ Public Sub _new()
   $hView.Background = Color.TextBackground
   $hView.Focus = True
   $hView.Tracking = True
+  $hView.ScrollBar = Scroll.Vertical
   
   Me.Proxy = $hView
   
@@ -1314,6 +1315,7 @@ Private Sub Orientation_Write(Value As Integer)
   Endif
 
   $bHorizontal = bHor
+  $hView.ScrollBar = If($bHorizontal, Scroll.Horizontal, Scroll.Vertical)
   ScrollArea_Arrange
 
 End

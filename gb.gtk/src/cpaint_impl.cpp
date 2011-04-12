@@ -249,8 +249,16 @@ static void Restore(GB_PAINT *d)
 	cairo_restore(CONTEXT(d));
 }
 
+static void Antialias(GB_PAINT *d, int set, int *antialias)
+{
+	if (set)
+		cairo_set_antialias(CONTEXT(d), *antialias ? CAIRO_ANTIALIAS_DEFAULT : CAIRO_ANTIALIAS_NONE);
+	else
+		*antialias = (cairo_get_antialias(CONTEXT(d)) == CAIRO_ANTIALIAS_NONE) ? 0 : 1;
+}
+
 // Font is used by X11!
-static void Paint_Font(GB_PAINT *d, int set, GB_FONT *font)
+static void _Font(GB_PAINT *d, int set, GB_FONT *font)
 {
 	if (!EXTRA(d)->font)
 	{
@@ -626,7 +634,7 @@ static void draw_text(GB_PAINT *d, bool rich, const char *text, int len, float w
 	else
 		pango_layout_set_text(layout, text, len);
 	
-	Paint_Font(d, FALSE, (GB_FONT *)&font);
+	_Font(d, FALSE, (GB_FONT *)&font);
 	gt_add_layout_from_font(layout, font->font, d->resolutionY);
 	
 	if (w > 0 && h > 0)
@@ -681,7 +689,7 @@ static void get_text_extents(GB_PAINT *d, bool rich, const char *text, int len, 
 	else
 		pango_layout_set_text(layout, text, len);
 
-	Paint_Font(d, FALSE, (GB_FONT *)&font);
+	_Font(d, FALSE, (GB_FONT *)&font);
 	gt_add_layout_from_font(layout, font->font, d->resolutionY);
 
 	if (width > 0)
@@ -1008,7 +1016,8 @@ GB_PAINT_DESC PAINT_Interface =
 	End,
 	Save,
 	Restore,
-	Paint_Font,
+	Antialias,
+	_Font,
 	Clip,
 	ResetClip,
 	ClipExtents,

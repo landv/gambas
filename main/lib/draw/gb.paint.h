@@ -131,6 +131,8 @@ typedef
 		void (*Save)(GB_PAINT *d);
 		void (*Restore)(GB_PAINT *d);
 		
+		void (*Antialias)(GB_PAINT *d, int set, int *antialias);
+		
 		void (*Font)(GB_PAINT *d, int set, GB_FONT *font);
 		
 		void (*Clip)(GB_PAINT *d, int preserve);
