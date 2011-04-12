@@ -12,11 +12,16 @@
   Spacing = True
   Margin = True
   { mnuBrowse Menu
-    { mnuBrowseAll Menu
-      Text = ("&Browse all")
-    }
     { mnuBrowseSource Menu
       Text = ("Browse &source files only")
+      Picture = Picture["img/16/procedure.png"]
+    }
+    { Menu1 Menu
+    }
+    { mnuReplaceAll Menu
+      Text = ("Replace &all")
+      Picture = Picture["icon:/small/wizard"]
+      Toggle = True
     }
   }
   { VBox3 VBox
@@ -90,7 +95,7 @@
     }
   }
   { timRefresh #Timer
-    #MoveScaled(57,2)
+    #MoveScaled(53,2)
     Delay = 500
   }
   { Separator2 Separator

@@ -24,6 +24,7 @@ Private $bCancel As Boolean
 Private $cGrepCache As New Collection
 Private $cRefreshBrowse As New Collection
 Private $bMustRefreshBrowse As Boolean
+Private $bNoRefreshBrowse As Boolean
 Private $hFont As Font
 
 Private gvwFind As GridView
@@ -224,7 +225,7 @@ End
 '   
 ' End
 
-Private Sub GrepFile(hFile As Object) As CFindResult[]
+Private Sub GrepFile(hFile As Object, Optional bUseReplaceString As Boolean) As CFindResult[]
   
   Dim sText As String
   Dim aGrep As String[]
@@ -243,15 +244,23 @@ Private Sub GrepFile(hFile As Object) As CFindResult[]
   sTemp = Temp$("grep")
   
   aGrep = ["grep", "-nobs"]
-  If Not CaseSensitive Then aGrep.Add("-i")
-  If WordOnly Then aGrep.Add("-w")
-  If RegularExpression Then 
-    aGrep.Add("-E")
-  Else
+  
+  If bUseReplaceString Then
     aGrep.Add("-F")
+    aGrep.Add("--")
+    aGrep.Add(ReplaceString)
+  Else
+    If Not CaseSensitive Then aGrep.Add("-i")
+    If WordOnly Then aGrep.Add("-w")
+    If RegularExpression Then 
+      aGrep.Add("-E")
+    Else
+      aGrep.Add("-F")
+    Endif
+    aGrep.Add("--")
+    aGrep.Add(SearchString)
   Endif
-  aGrep.Add("--")
-  aGrep.Add(SearchString)
+  
   aGrep.Add(sTemp)
   
   Try sPath = hFile.Path
@@ -525,7 +534,7 @@ Private Sub FindPathInBrowseResult(sPath As String) As Integer
 End
 
 
-Private Sub BrowseFile(sPath As String, Optional iIndex As Integer = -1, Optional bRefresh As Boolean)
+Private Sub BrowseFile(sPath As String, bReplace As Boolean, Optional iIndex As Integer = -1, Optional bRefresh As Boolean)
   
   Dim hFile As Object
   Dim aResult As CFindResult[]
@@ -543,6 +552,19 @@ Private Sub BrowseFile(sPath As String, Optional iIndex As Integer = -1, Optiona
   Endif
   
   aResult = GrepFile(hFile)
+  If aResult.Count = 0 Then Return
+  
+  If bReplace Then
+    
+    For iInd = aResult.Max DownTo 0
+      hResult = aResult[iInd]
+      If hFile.SetPosition(hResult) Then Continue
+      hFile.Replace(ReplaceString)
+    Next
+    
+    aResult = GrepFile(hFile, True)
+    
+  Endif
   
   For iInd = 0 To aResult.Max
     hResult = aResult[iInd]
@@ -557,11 +579,10 @@ Private Sub BrowseFile(sPath As String, Optional iIndex As Integer = -1, Optiona
   Next
   
   gvwFind.Rows.Count = $aBrowse.Count
-  'UpdateSpan(iStart)
   
 End
 
-Private Sub Browse(Optional bOnlySource As Boolean)
+Private Sub Browse(Optional bOnlySource As Boolean, Optional bReplace As Boolean)
   
   Dim sDir As String
   Dim sFile As String
@@ -627,12 +648,19 @@ Private Sub Browse(Optional bOnlySource As Boolean)
       FDebugInfo.SetSearchListInfo(sFile)
     Endif
   
-    BrowseFile(sPath)
+    BrowseFile(sPath, bReplace)
     Wait 0.01
     If $bCancel Then Break
     
     'Debug sName
   Next
+  
+  If bReplace Then 
+    SearchString = ReplaceString
+    CaseSensitive = True
+    RegularExpression = False
+    WordOnly = False
+  Endif
   
 Finally
   
@@ -806,23 +834,17 @@ End
 
 Public Sub btnBrowse_Click()
 
-  Browse
+  Browse(False, mnuReplaceAll.Checked)
+  mnuReplaceAll.Checked = False
 
-End
-
-Public Sub mnuBrowseAll_Click()
-  
-  Browse
-  
 End
 
 Public Sub mnuBrowseSource_Click()
   
-  Browse(True)
+  Browse(True, mnuReplaceAll.Checked)
+  mnuReplaceAll.Checked = False
   
 End
-
-
 
 Public Sub gvwFind_Data(Row As Integer, Column As Integer)
 
@@ -835,16 +857,16 @@ Public Sub gvwFind_Data(Row As Integer, Column As Integer)
     Select Case Column
       Case 0
         .Text = $aBrowse[Row].File
-        .Alignment = Align.TopNormal
+        .Alignment = Align.Normal
       Case 1
         .Text = $aBrowse[Row].Line + 1
-        .Alignment = Align.TopRight
+        .Alignment = Align.Right
       Case 2
         .Text = $aBrowse[Row].Column + 1
-        .Alignment = Align.TopRight
+        .Alignment = Align.Right
       Case 3
         .RichText = $aBrowse[Row].Text
-        .Alignment = Align.TopNormal
+        .Alignment = Align.Normal
     End Select
 
     ' If Row Then
@@ -934,6 +956,7 @@ Public Sub RefreshBrowse()
   
   If Not FDebugInfo.IsSearchListVisible() Then Return
   If $cRefreshBrowse.Count = 0 Then Return
+  If InBrowse Then Return
   
   Object.Lock(gvwFind)
   
@@ -949,7 +972,7 @@ Public Sub RefreshBrowse()
         If iIndex >= $aBrowse.Count Then Break
       Wend
     Endif
-    BrowseFile(sPath, iIndex)
+    BrowseFile(sPath, False, iIndex)
     
   Next
   

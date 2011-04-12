@@ -265,7 +265,7 @@ void MyTableItem::paint( QPainter *p, const QColorGroup &cg, const QRect &cr, bo
 		p->setFont(*(d->font->font));
 
 	if (rich)
-		DRAW_rich_text(p, txt, x, y, w, h, _wordWrap ? (_alignment | Qt::WordBreak) : _alignment);
+		DRAW_rich_text(p, txt, x, y, _wordWrap ? w : -1, h, _wordWrap ? (_alignment | Qt::WordBreak) : _alignment);
 	else
 		p->drawText(x, y, w, h, _wordWrap ? (_alignment | Qt::WordBreak) : _alignment, txt );
 		

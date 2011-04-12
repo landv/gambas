@@ -856,12 +856,6 @@ void IMAGE_bitblt(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int 
 	int sfmt = src->format;
 	int dfmt = dst->format;
 	
-	if (!GB_IMAGE_FMT_IS_32_BITS(sfmt) || !GB_IMAGE_FMT_IS_32_BITS(dfmt))
-	{
-		GB.Error("The pixel format of both images must be 32 bits");
-		return;
-	}
-	
 	CHECK_PARAMETERS(dst, dx, dy, src, sx, sy, sw, sh);
 	
 	SYNCHRONIZE(src);
@@ -870,52 +864,54 @@ void IMAGE_bitblt(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int 
 	uint *d = (uint *)dst->data + dy * dst->width + dx;
 	uint *s = (uint *)src->data + sy * src->width + sx;
 
-	if (sfmt != dfmt)
+	if (GB_IMAGE_FMT_IS_32_BITS(sfmt) && GB_IMAGE_FMT_IS_32_BITS(dfmt))
 	{
-		const int dd = dst->width - sw;
-		const int ds = src->width - sw;
-		int t;
-		while (sh--) 
+		if (sfmt != dfmt)
 		{
-			for (t = sw; t--;)
+			const int dd = dst->width - sw;
+			const int ds = src->width - sw;
+			int t;
+			while (sh--) 
 			{
-				*d = BGRA_to_format(BGRA_from_format(*s, sfmt), dfmt);
-				d++;
-				s++;
+				for (t = sw; t--;)
+				{
+					*d = BGRA_to_format(BGRA_from_format(*s, sfmt), dfmt);
+					d++;
+					s++;
+				}
+				
+				d += dd;
+				s += ds;
 			}
-			
-			d += dd;
-			s += ds;
+		}
+		else if (sw < 64)
+		{
+			const int dd = dst->width - sw;
+			const int ds = src->width - sw;
+			int t;
+			while (sh--) 
+			{
+				for (t = sw; t--;)
+					*d++ = *s++;
+				d += dd;
+				s += ds;
+			}
+		} 
+		else 
+		{
+			// Trust libc
+			const int dd = dst->width;
+			const int ds = src->width;
+			const int b = sw * sizeof(uint);
+			while (sh--) 
+			{
+				memcpy(d, s, b);
+				d += dd;
+				s += ds;
+			}
 		}
 	}
-	else if (sw < 64)
-	{
-		const int dd = dst->width - sw;
-		const int ds = src->width - sw;
-		int t;
-		while (sh--) 
-		{
-			for (t = sw; t--;)
-				*d++ = *s++;
-			d += dd;
-			s += ds;
-		}
-	} 
-	else 
-	{
-		// Trust libc
-		const int dd = dst->width;
-		const int ds = src->width;
-		const int b = sw * sizeof(uint);
-		while (sh--) 
-		{
-			memcpy(d, s, b);
-			d += dd;
-			s += ds;
-		}
-	}
-
-	/*else if (GB_IMAGE_FMT_IS_24_BITS(sfmt) && GB_IMAGE_FMT_IS_24_BITS(sfmt))
+	else if (GB_IMAGE_FMT_IS_24_BITS(sfmt) && GB_IMAGE_FMT_IS_24_BITS(sfmt))
 	{
 		char *d = (char *)dst->data + (dy * dst->width + dx) * 3;
 		char *s = (char *)src->data + (sy * src->width + sx) * 3;
@@ -929,7 +925,11 @@ void IMAGE_bitblt(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int 
 			d += dd;
 			s += ds;
 		}
-	}*/
+	}
+	else
+	{
+		GB.Error("The pixel size of both images must be the same");
+	}
 	
 	MODIFY(dst);
 }
