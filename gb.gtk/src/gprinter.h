@@ -23,8 +23,7 @@
 #ifndef __GPRINTER_H
 #define __GPRINTER_H
 
-#include <gtk/gtkprinter.h>
-#include <gtk/gtkprintunixdialog.h>
+#include <gtk/gtkunixprint.h>
 
 class gPrinter
 {
