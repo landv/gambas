@@ -420,6 +420,17 @@ void gTextArea::setLine(int vl)
 	int col = column();
 	GtkTextIter *iter = getIterAt();
 	
+	if (vl < 0)
+	{
+		setPosition(0);
+		return;
+	}
+	else if (vl >= gtk_text_buffer_get_line_count(_buffer))
+	{
+		setPosition(length());
+		return;
+	}
+	
 	gtk_text_iter_set_line(iter, vl);
 	if (gtk_text_iter_get_chars_in_line(iter) <= col)
 		col = gtk_text_iter_get_chars_in_line(iter) - 1;
