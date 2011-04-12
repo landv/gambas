@@ -132,6 +132,7 @@ Public Sub _new(sPath As String)
   
   Editor = edtEditor
   edtEditor.Flags[Editor.HighlightBraces] = True
+  edtEditor.Flags[Editor.ShowCursorPosition] = True
   edtEditor.Highlight = Highlight.Gambas
   
   $hInsertColor = New CInsertColor(btnInsertColor, Editor)
@@ -326,11 +327,11 @@ Private Sub DrawTitle()
   
 End
 
-Private Sub DrawInfo()
-  
-  lblEditor.Text = CStr(Editor.Line + 1) & ":" & CStr(Editor.Column + 1)
-  
-End
+' Private Sub DrawInfo()
+'   
+'   lblEditor.Text = CStr(Editor.Line + 1) & ":" & CStr(Editor.Column + 1)
+'   
+' End
 
 Public Sub Modify(Optional bReset As Boolean)
   
@@ -424,7 +425,7 @@ Private Sub RefreshLineInfo(Optional bForce As Boolean)
     CheckSignature
   Endif
   
-  DrawInfo
+  'DrawInfo
   
 End
 
@@ -2900,6 +2901,7 @@ Private Sub InitEditor(hEditor As Editor)
     .Flags[Editor.HighlightCurrent] = True
     .ReadOnly = edtEditor.ReadOnly
     .TabSize = edtEditor.TabSize
+    .Flags[Editor.ShowCursorPosition] = edtEditor.Flags[Editor.ShowCursorPosition]
   End With 
   ReadConfigEditor(hEditor)
   

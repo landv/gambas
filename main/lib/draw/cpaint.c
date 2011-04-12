@@ -1030,7 +1030,7 @@ GB_DESC PaintDesc[] =
 	GB_STATIC_PROPERTY_READ("Height", "f", Paint_Height),
 	GB_STATIC_PROPERTY_READ("ResolutionX", "i", Paint_ResolutionX),
 	GB_STATIC_PROPERTY_READ("ResolutionY", "i", Paint_ResolutionY),
-	GB_STATIC_PROPERTY("Antialias", "b", Paint_Antialias),
+	GB_STATIC_PROPERTY("AntiAlias", "b", Paint_Antialias),
 
 	GB_STATIC_METHOD("Save", NULL, Paint_Save, NULL),
 	GB_STATIC_METHOD("Restore", NULL, Paint_Restore, NULL),

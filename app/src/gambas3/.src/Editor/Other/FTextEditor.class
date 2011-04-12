@@ -56,6 +56,8 @@ Public Sub _new(sPath As String, Optional bModule As Boolean)
     Me.Name = File.Name(Path)
   Endif
   
+  edtEditor.Flags[Editor.ShowCursorPosition] = True
+  
 End
 
 Public Sub LoadFile() As Boolean
@@ -199,14 +201,6 @@ Public Sub Editors_Change()
 
 End
 
-
-Public Sub Editors_Cursor()
-
-  'PRINT edtEditor.Line; edtEditor.Column
-  'lblCursor.Text = CStr(edtEditor.Line + 1) & " : " & CStr(edtEditor.Column + 1)
-  DrawInfo
-
-End
 
 Public Sub Editors_KeyPress()
   
@@ -455,12 +449,6 @@ Private Function ReadOnly_Read() As Boolean
 
 End
 
-Private Sub DrawInfo()
-  
-  lblEditor.Text = CStr(Editor.Line + 1) & ":" & CStr(Editor.Column + 1)
-  
-End
-
 Public Sub Reload()
 
   edtEditor.Text = File.Load(Path)
@@ -501,6 +489,7 @@ Private Sub InitEditor(hEditor As Editor)
     .Highlight = edtEditor.Highlight
     .Flags[Editor.HighlightCurrent] = edtEditor.Flags[Editor.HighlightCurrent]
     .Flags[Editor.HighlightBraces] = edtEditor.Flags[Editor.HighlightBraces]
+    .Flags[Editor.ShowCursorPosition] = edtEditor.Flags[Editor.ShowCursorPosition]
     .ReadOnly = edtEditor.ReadOnly
     .TabSize = edtEditor.TabSize
   End With 
@@ -555,7 +544,6 @@ Private Sub SetViewMode(iViewMode As Integer)
   $hInsertColor.SetEditor(Editor)
   Editor.SetFocus
   Form_Arrange
-  Editors_Cursor
   
 End
 

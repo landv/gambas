@@ -23,6 +23,7 @@ Public Sub Form_Open()
   Endif 
   
   edtChange.ReadConfig
+  edtChange.Flags[Editor.ShowCursorPosition] = True
   edtChange.Text = "\n---- " & DELIM_CHANGE & " ----\n\n" & $sChange
   
   edtDiff.ReadConfig
@@ -68,13 +69,6 @@ End
 Public Sub btnCancel_Click()
 
   Me.Close
-
-End
-
-
-Public Sub edtChange_Cursor()
-
-  lblCursor.Text = CStr(edtChange.Line + 1) & ":" & CStr(edtChange.Column + 1)
 
 End
 

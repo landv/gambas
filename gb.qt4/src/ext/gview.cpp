@@ -1067,7 +1067,8 @@ bool GEditor::cursorGoto(int ny, int nx, bool mark)
 		
 		if (mark)
 			doc->endSelection(y, x);
-			
+		
+		updateInfo();
 		emit cursorMoved();
 	}
 	else if (center)
@@ -2498,15 +2499,34 @@ void GEditor::paintEmptyArea(QPainter *p, int cx, int cy, int cw, int ch)
 		p->fillRect(r[i], viewport()->paletteBackgroundColor());
 }
 
+void GEditor::getInfo(QRect *rect, QString *info) const
+{
+	int ix, iy, iw, ih;
+	QString s;
+	
+	s = QString("%1:%2").arg(x + 1).arg(y + 1);
+	
+	iw = _charWidth * 10 + 4;
+	ih = _cellh + 2;
+	ix = visibleWidth() - iw - 2;
+	iy = visibleHeight() - ih - 2;
+
+	*rect = QRect(ix, iy, iw, ih);
+	if (info) *info = s;
+}
+
+void GEditor::updateInfo()
+{
+	QRect r;
+	
+	getInfo(&r, NULL);
+	viewport()->update(r);
+}
+
 void GEditor::drawContents(QPainter *p, int cx, int cy, int cw, int ch)
 {
 	int rowfirst = rowAt(cy);
 	int rowlast = rowAt(cy + ch - 1);
-
-	/*if (rowfirst < 0)
-		rowfirst = 0;
-	if (rowlast >= _nrows)
-		rowlast = _nrows - 1;*/
 
 	// Go through the rows
 	for (int r = rowfirst; r <= rowlast; ++r) 
@@ -2518,8 +2538,27 @@ void GEditor::drawContents(QPainter *p, int cx, int cy, int cw, int ch)
 		paintCell(p, r, 0);
 		p->translate(0, -rowp);
 	}
+}
 
-	//paintEmptyArea(p, cx, cy, cw, ch);
+void GEditor::viewportPaintEvent(QPaintEvent *e)
+{
+	QString info;
+	QRect rect;
+	QColor color;
+	
+	Q3ScrollView::viewportPaintEvent(e);
+	
+	if (getFlag(ShowCursorPosition))
+	{
+		QPainter p(viewport());
+		getInfo(&rect, &info);
+		color = styles[GLine::Current].color;
+		color.setAlpha(128);
+		p.fillRect(rect, color);
+		rect.translate(0, 2);
+		p.setPen(styles[GLine::Normal].color);
+		p.drawText(rect, Qt::AlignCenter, info);
+	}
 }
 
 void GEditor::updateViewport()

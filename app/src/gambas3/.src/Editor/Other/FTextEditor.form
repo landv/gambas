@@ -229,21 +229,6 @@
       Border = False
       Menu = "mnuColor"
     }
-    { HBox1 HBox
-      MoveScaled(62,0,16,4)
-      Expand = True
-      { Panel1 Panel
-        MoveScaled(2,0,1,4)
-        Expand = True
-      }
-      { lblEditor Label
-        MoveScaled(3,0,10,4)
-        AutoResize = True
-      }
-      { Panel2 Panel
-        MoveScaled(14,0,1,4)
-      }
-    }
   }
   { edtEditor Editor Editors
     Name = "edtEditor"
@@ -365,6 +350,6 @@
   { Toolbar text
     Text = "Text editor"
     List = "save,reload,show-class,cut,copy,paste,undo,redo,indent,unindent,view-nosplit,view-hsplit,view-vsplit,color"
-    Default = "save,reload,show-class,undo,redo,indent,unindent,color,$HBox1"
+    Default = "save,reload,show-class,undo,redo,indent,unindent,color"
   }
 }

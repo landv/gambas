@@ -135,7 +135,8 @@ private:
 
 	void updateViewport();
 
-	//static void updateBreakpoint(uint bg, uint fg);
+	void getInfo(QRect *rect, QString *info) const;
+	void updateInfo();
 
 private slots:
 
@@ -162,6 +163,7 @@ protected:
 	virtual bool focusNextPrevChild(bool);
 	virtual void inputMethodEvent(QInputMethodEvent *e);
 	virtual void drawContents(QPainter *p, int cx, int cy, int cw, int ch);
+	virtual void viewportPaintEvent(QPaintEvent *e);
 
 public:
 
@@ -175,7 +177,8 @@ public:
 		HighlightBraces = 6,
 		HighlightCurrent = 7,
 		BlendedProcedureLimits = 8,
-		ShowDots = 9
+		ShowDots = 9,
+		ShowCursorPosition = 10
 	};
 
 	static void setBreakpointPixmap(QPixmap *p);

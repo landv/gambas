@@ -825,19 +825,24 @@ END_METHOD
 
 void CWIDGET_set_visible(CWIDGET *_object, bool v)
 {
-	// if (v == THIS->flag.visible)
-	//	return;
+	bool arrange = false;
 	
 	THIS->flag.visible = v;
 	if (THIS->flag.visible)
 	{
+		arrange = !WIDGET->isVisible();
 		QWIDGET(_object)->show();
 		if (GB.Is(THIS, CLASS_Container))
 			CCONTAINER_arrange(THIS);
 	}
 	else
+	{
+		arrange = !WIDGET->isHidden();
 		QWIDGET(_object)->hide();
-  arrange_parent(THIS);
+	}
+	
+	if (arrange)
+		arrange_parent(THIS);
 }
 
 

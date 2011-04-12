@@ -361,21 +361,6 @@
       Action = ".go-back"
       Picture = Picture["icon:/16/left"]
     }
-    { HBox1 HBox
-      MoveScaled(118,0,22,4)
-      Expand = True
-      { Panel1 Panel
-        MoveScaled(2,0,1,4)
-        Expand = True
-      }
-      { lblEditor Label
-        MoveScaled(4,0,14,4)
-        Alignment = Align.Right
-      }
-      { Panel2 Panel
-        MoveScaled(18,0,1,4)
-      }
-    }
   }
   { edtEditor Editor Editors
     Name = "edtEditor"
@@ -587,6 +572,6 @@
   { Toolbar editor
     Text = "Editor"
     List = "save,reload,show-form,cut,copy,paste,color,undo,redo,indent,unindent,comment,uncomment,view-nosplit,view-hsplit,view-vsplit,pretty,break,watch,proc,find-definition,go-back"
-    Default = "save,reload,show-form,paste,color,undo,redo,comment,uncomment,break,watch,|,proc,$HBox1"
+    Default = "save,reload,show-form,paste,color,undo,redo,comment,uncomment,break,watch,|,proc"
   }
 }
