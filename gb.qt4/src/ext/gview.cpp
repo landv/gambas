@@ -129,7 +129,7 @@ GEditor::GEditor(QWidget *parent)
 	setKeyCompression(true);
 	setFocusPolicy(Qt::WheelFocus);
 	setAttribute(Qt::WA_InputMethodEnabled, true);
-	setAttribute(Qt::WA_StaticContents, true);
+	//setAttribute(Qt::WA_StaticContents, true);
 	
 	setMouseTracking(true);
 	viewport()->setMouseTracking(true);
