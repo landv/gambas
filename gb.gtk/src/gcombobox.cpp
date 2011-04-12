@@ -522,8 +522,8 @@ void gComboBox::setFont(gFont *f)
 {
 	gControl::setFont(f);
 	if (cell) g_object_set(G_OBJECT(cell), "font-desc", font() ? font()->desc() : NULL, (void *)NULL);
-	//if (entry)
-	//	gtk_widget_modify_font(entry, font() ? font()->desc() : NULL);
+	if (entry)
+		gtk_widget_modify_font(entry, font() ? font()->desc() : NULL);
 }
 
 void gComboBox::setFocus()
