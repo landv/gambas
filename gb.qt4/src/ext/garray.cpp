@@ -28,6 +28,7 @@ void GArrayImpl::clear()
 {
   GB.FreeArray((void **)(void *)&array);
   GB.NewArray((void **)(void *)&array, sizeof(void *), 0);
+	_count = 0;
 }
 
 void *GArrayImpl::take()
@@ -39,6 +40,7 @@ void *GArrayImpl::take()
 
 	d = array[count() - 1];
 	GB.Remove((void **)(void *)&array, count() - 1, 1);
+	_count--;
 	return d;
 }
 
@@ -46,14 +48,15 @@ void GArrayImpl::insert(uint i, const void *d)
 {
 	GB.Insert((void **)(void *)&array, i, 1);
 	array[i] = (void *)d;
+	_count++;
 }
 
 
 void GArrayImpl::remove(uint i)
 {
 	GB.Remove((void **)(void *)&array, i, 1);
+	_count--;
 }
-
 
 int GArrayImpl::find(const void *d)
 {

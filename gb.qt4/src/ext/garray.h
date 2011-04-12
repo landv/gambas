@@ -34,15 +34,16 @@ protected:
 	void **array;
 	bool autoDelete;
 	uint pos;
+	uint _count;
 
 public:
-	GArrayImpl() { GB.NewArray((void **)(void *)&array, sizeof(void *), 0); autoDelete = false; }
+	GArrayImpl() { GB.NewArray((void **)(void *)&array, sizeof(void *), 0); autoDelete = false; _count = 0; }
 	~GArrayImpl() { GB.FreeArray((void **)(void *)&array); }
 
-  uint count() const { return GB.Count(array); }
+  uint count() const { return _count; }
   void setAutoDelete(bool a) { autoDelete = a; }
   void *last() const { return count() ? array[count() - 1] : 0; }
-  void append(const void *d) { *((const void **)GB.Add((void **)(void *)&array)) = d; }
+  void append(const void *d) { *((const void **)GB.Add((void **)(void *)&array)) = d; _count++; }
   void clear();
   void *take();
   void *at(uint i) const { return array[i]; }

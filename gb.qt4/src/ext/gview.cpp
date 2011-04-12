@@ -999,6 +999,20 @@ bool GEditor::cursorGoto(int ny, int nx, bool mark)
 
 	setxx = xx != nx;
 	
+	if (ny == y)
+	{
+		if (nx < 0 && ny > 0)
+		{
+			ny = viewToReal(realToView(y) - 1);
+			nx = lineLength(ny);
+		}
+		else if (!_insertMode && nx > lineLength(ny) && ny < (numLines() - 1))
+		{
+			ny = viewToReal(realToView(y) + 1);
+			nx = 0;
+		}
+	}
+	
 	if (ny < 0)
 	{
 		nx = QMAX(0, nx);
@@ -1009,21 +1023,8 @@ bool GEditor::cursorGoto(int ny, int nx, bool mark)
 		ny = numLines() - 1;
 		nx = QMIN(nx, lineLength(ny));
 	}
-	else if (ny == y)
-	{
-		if (nx < 0 && ny > 0)
-		{
-			ny--;
-			nx = lineLength(ny);
-		}
-		else if (!_insertMode && nx > lineLength(ny) && ny < (numLines() - 1))
-		{
-			ny++;
-			nx = 0;
-		}
-	}
 	
-	ny = viewToReal(realToView(ny));
+	ny = checkFolded(ny);
 	
 	if (nx < 0)
 		nx = 0;
@@ -2349,18 +2350,36 @@ bool GEditor::isFolded(int row)
 {
 	uint i;
 	GFoldedProc *fp;
+	int d, f;
 	
-	for (i = 0; i < fold.count(); i++)
+	d = 0;
+	f = fold.count();
+	
+	while (f > d)
+	{
+		i = (f + d) / 2;
+		fp = fold.at(i);
+		if (fp->start == row)
+			return true;
+		else if (fp->start < row)
+			d = i + 1;
+		else
+			f = i;
+	}
+	
+	/*for (i = 0; i < fold.count(); i++)
 	{
 		fp = fold.at(i);
 		if (fp->start == row)
 			return true;
-	}
+		else if (fp->start > row)
+			break;
+	}*/
 	
 	return false;
 }
 
-bool GEditor::insideFolded(int row)
+/*bool GEditor::insideFolded(int row)
 {
 	uint i;
 	GFoldedProc *fp;
@@ -2373,6 +2392,26 @@ bool GEditor::insideFolded(int row)
 	}
 	
 	return false;
+}*/
+
+int GEditor::checkFolded(int row)
+{
+	uint i;
+	GFoldedProc *fp;
+	
+	for (i = 0; i < fold.count(); i++)
+	{
+		fp = fold.at(i);
+		if (row <= fp->end)
+		{
+			if (row > fp->start)
+				return fp->start;
+			else
+				break;
+		}
+	}
+	
+	return row;
 }
 
 void GEditor::foldAll()

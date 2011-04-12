@@ -2287,26 +2287,28 @@ Private Function GetCurrentProcLine(iLine As Integer) As Integer
   
   $sName = ""
   
-  If $cProc.Count Then 
-    
-    iRes = -1
-    For Each iProc In $cProc
-      If iRes < iProc And If iProc <= iLine Then 
-        iRes = iProc
-        $sName = $cProc.Key
-      Endif
-    Next
-    Return iRes
-    
-  Else
+  ' If $cProc.Count Then 
+  '   
+  '   iRes = -1
+  '   For Each iProc In $cProc
+  '     If iRes < iProc And If iProc <= iLine Then 
+  '       iRes = iProc
+  '       $sName = $cProc.Key
+  '     Endif
+  '   Next
+  '   Return iRes
+  '   
+  ' Else
     
     Do
-      If IsProc(Editor.Lines[iLine].Text) Then Return iLine
+      If Editor.Lines[iLine].Limit Then
+        If IsProc(Editor.Lines[iLine].Text) Then Return iLine
+      Endif
       Dec iLine
       If iLine < 0 Then Return -1
     Loop
     
-  Endif
+  'Endif
   
 End
 
@@ -2609,8 +2611,10 @@ End
 
 Public Sub timWatch_Timer()
   
-  lblWatch.Hide
-  timWatch.Stop
+  If lblWatch.Visible Then
+    lblWatch.Hide
+    timWatch.Stop
+  Endif
   
 End
 

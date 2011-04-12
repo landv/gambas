@@ -252,7 +252,8 @@ public:
 	void unfoldAll();
 	void unfoldLine(int row);
 	bool isFolded(int row);
-	bool insideFolded(int row);
+	//bool insideFolded(int row);
+	int checkFolded(int row);
 	void foldRemove(int y1, int y2 = -1);
 	void foldInsert(int y, int n);
 	
