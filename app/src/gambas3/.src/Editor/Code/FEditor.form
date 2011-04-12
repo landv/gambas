@@ -404,13 +404,14 @@
     #MoveScaled(96,64)
     Delay = 5000
   }
-  { lblWatch Label
+  { lblWatch TextLabel
     MoveScaled(55,74,20,5)
     Visible = False
     Background = &HFFFFBF&
     Ignore = True
-    Padding = 1
+    Padding = 2
     AutoResize = True
+    Wrap = False
     Border = Border.Plain
   }
 }

@@ -218,7 +218,7 @@ Public Sub Debug_Read(Data As String)
       If aData[1] And If Not $bError Then 
         '$bError = True
         $sError = "<b>" & MakeErrorMessage(aData[1]) & "</b>"
-        If sClass Then $sError &= "<p>" & Subst(("In class &1 at line &2."), $sPosClass, $iPosLine)
+        If sClass Then $sError &= " " & Subst(("at &1:&2."), $sPosClass, $iPosLine)
         If sClass Then
           Try CheckErrorMessage(Project.ActiveForm)
         Else

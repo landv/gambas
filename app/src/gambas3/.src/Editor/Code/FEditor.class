@@ -2588,24 +2588,35 @@ Public Sub Editors_MouseUp()
   
 End
 
-Public Sub ShowWatchResult(sStr As String, X As Integer, Y As Integer)
+Private Sub ShowMessageLabel(sStr As String, X As Integer, Y As Integer, Optional iColor As Integer)
   
-  If Left(sStr) = "!" Then
-    sStr = Mid$(sStr, 2)
-    If sStr = "Syntax error" Or If sStr = "Non terminated string" Or If sStr = "Unknown symbol" Then Return
-    If sStr Begins "Unexpected " Then Return
-    sStr = Design.MakeErrorMessage(sStr)
-    lblWatch.Background = Color.HSV(0, 64, 255)
-  Else
-    lblWatch.Background = Color.HSV(64, 64, 255)
-  Endif
+  If iColor = 0 Then iColor = Color.HSV(64, 64, 255)
   
+  lblWatch.Background = iColor
   lblWatch.Move(X, Y)
   lblWatch.Text = sStr
   lblWatch.Show
   lblWatch.Raise
   timWatch.Start
   Editor.SetFocus
+  
+End
+
+Public Sub ShowWatchResult(sStr As String, X As Integer, Y As Integer)
+  
+  Dim iColor As Integer
+  
+  If Left(sStr) = "!" Then
+    sStr = Mid$(sStr, 2)
+    If sStr = "Syntax error" Or If sStr = "Non terminated string" Or If sStr = "Unknown symbol" Then Return
+    If sStr Begins "Unexpected " Then Return
+    sStr = Design.MakeErrorMessage(sStr)
+    iColor = Color.HSV(0, 64, 255)
+  Else
+    iColor = Color.HSV(64, 64, 255)
+  Endif
+  
+  ShowMessageLabel(Html(sStr), X, Y, iColor)
   
 End
 
@@ -2621,30 +2632,6 @@ End
 Public Sub Editors_Margin({Line} As Integer)
   
   Design.SetBreakpoint(Me.Name, {Line}, Not HasBreakpoint({Line}))
-  
-End
-
-' PRIVATE SUB MoveMessage()
-'   
-'   DIM X, Y AS Integer
-'   
-'   X = Mouse.ScreenX - ME.ScreenX + 8
-'   IF (X + lblMessage.W) >= ME.W THEN 
-'     X = Max(0, Mouse.ScreenX - ME.ScreenX - 8 - lblMessage.W)
-'   ENDIF
-'   
-'   Y = Mouse.ScreenY - ME.ScreenY + 8
-'   IF (Y + lblMessage.H) >= ME.H THEN 
-'     Y = Max(0, Mouse.ScreenY - ME.ScreenY - 8 - lblMessage.H)
-'   ENDIF
-'   
-'   lblMessage.Move(X, Y)
-'   
-' END
-
-Public Sub lblMessage_MouseMove()
-  
-  HideMessage
   
 End
 
@@ -2682,8 +2669,9 @@ End
 Public Sub ShowErrorMessage(sMsg As String, sIcon As String)
   
   Wait ' If the cursor needs to move first
-  'ShowMessage(sMsg, "img/logo/logo-64.png", True)
-  ShowMessage(sMsg, "icon:/32/" & sIcon, True)
+  ''ShowMessage(sMsg, "img/logo/logo-64.png", True)
+  'ShowMessage(sMsg, "icon:/32/" & sIcon, True)
+  ShowMessageLabel(sMsg, Editor.X + Editor.CursorX, Editor.Y + Editor.CursorY + Editor.LineHeight, Color.HSV(0, 64, 255))
   
 End
 
@@ -2692,12 +2680,7 @@ Private Sub HideMessage()
   If Balloon.Control = Editor Then 
     Balloon.Hide
   Endif
-  
-End
-
-Public Sub lblMessage_MouseUp()
-  
-  HideMessage
+  timWatch_Timer
   
 End
 

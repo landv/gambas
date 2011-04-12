@@ -1191,7 +1191,7 @@ Public Sub Action_Activate(Key As String) As Boolean
     Case "refresh-project"
       Project.Refresh
     Case "project-property"
-      FPropertyProject.Run
+      If Not FPropertyProject.Run() Then Project.Refresh
     Case "component-property"
       If Not Project.Compile() Then FPropertyComponent.Run
     Case "translate"
