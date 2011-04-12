@@ -265,23 +265,30 @@ void MyLabel::calcMinimumHeight(bool adjust)
 		doc.setDocumentMargin(0);
 		doc.setHtml(text());
 		
-		w = width() - f * 2;
-		
-		if (adjust)
+		if (wordWrap())
 		{
-			//doc.adjustSize();
+			w = width() - f * 2;
 			doc.setTextWidth(w);
-			nw = doc.idealWidth();
-			doc.setTextWidth(nw);
-			nh = doc.size().height(); // Why (- 6) ? Don't know...
-			nw = doc.size().width();
 			
+			if (adjust)
+			{
+				//doc.adjustSize();
+				nw = doc.idealWidth();
+				doc.setTextWidth(nw);
+				nh = doc.size().height(); // Why (- 6) ? Don't know...
+				nw = doc.size().width();
+				
+			}
+			else
+			{
+				nh = doc.size().height(); // Why (- 6) ? Don't know...
+				nw = w;
+			}
 		}
 		else
 		{
-			doc.setTextWidth(w);
 			nh = doc.size().height(); // Why (- 6) ? Don't know...
-			nw = w;
+			nw = doc.size().width();
 		}
 	}
 	else
