@@ -834,10 +834,13 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
     
   Next 
 
-  If bExport And If bCanInherit And If Classes.Exist(hModule.Name) Then
+  If bExport And If bCanInherit Then
+    hClass = Classes[hModule.Name]
     'sParent = aSym[iInd + 1]
-    MakeInheritance(hModule, cSymbol, hModule.Name, Classes[hModule.Name].Component)
-    bCanInherit = False
+    If hClass And If hClass.Component <> Project.Name And If hClass.Component <> CComponent.PROJECT_NAME Then
+      MakeInheritance(hModule, cSymbol, hModule.Name, hClass.Component)
+      bCanInherit = False
+    Endif
   Endif
 
   For iLine = iLine To hEditor.Lines.Count - 1
