@@ -1164,9 +1164,12 @@ void gt_drawable_fill(GdkDrawable *d, gColor col, GdkGC *gc)
 	bool free_gc = false;
 	
 	fill_gdk_color(&color, col);
+	#if GTK_MAJOR_VERSION >= 2 && GTK_MINOR_VERSION >= 24
 	w = gdk_window_get_width(d);
 	h = gdk_window_get_height(d);
-	
+	#else
+	gdk_drawable_get_size(d, &w, &h);
+	#endif
 	if (!gc)
 	{
 		gc = gdk_gc_new(d);
