@@ -202,9 +202,10 @@ END_PROPERTY
 
 BEGIN_PROPERTY(ApplicationTooltip_Enabled)
 
-	if (READ_PROPERTY) { GB.ReturnBoolean(gApplication::toolTips()); return; }
-	gApplication::enableTooltips(VPROP(GB_BOOLEAN));
-
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(gApplication::toolTips());
+	else
+		gApplication::enableTooltips(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 

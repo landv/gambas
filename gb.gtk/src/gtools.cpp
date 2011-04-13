@@ -59,7 +59,7 @@ void fill_gdk_color(GdkColor *gcol,gColor color, GdkColormap *cmap)
 	gcol->green = UNSCALE(g);
 	gcol->blue = UNSCALE(b);
 	
-	gdk_color_alloc(cmap, gcol);
+	gdk_colormap_alloc_color(cmap, gcol, TRUE, TRUE);
 }
 
 gColor get_gdk_color(GdkColor *gcol)
@@ -1164,7 +1164,8 @@ void gt_drawable_fill(GdkDrawable *d, gColor col, GdkGC *gc)
 	bool free_gc = false;
 	
 	fill_gdk_color(&color, col);
-	gdk_drawable_get_size(d, &w, &h);
+	w = gdk_window_get_width(d);
+	h = gdk_window_get_height(d);
 	
 	if (!gc)
 	{

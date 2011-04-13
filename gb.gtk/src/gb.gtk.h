@@ -59,8 +59,8 @@ typedef
 
 typedef
 	struct {
-	  GB_BASE ob;
-	  void *widget;
+		GB_BASE ob;
+		void *widget;
 		GB_VARIANT_VALUE tag;
 		void *font;
 		char *popup;

@@ -97,7 +97,7 @@ BEGIN_METHOD_VOID(CTRAYICON_new)
 	THIS->base.widget = new gTrayIcon();
 	TRAYICON->hFree = (void*)THIS;
   
-  THIS->base.tag.type = GB_T_NULL;
+	THIS->base.tag.type = GB_T_NULL;
 	
 	TRAYICON->onMousePress=Tray_press;
 	TRAYICON->onMouseRelease=Tray_release;
@@ -125,8 +125,8 @@ static void destroy_tray_icon(CTRAYICON *_object)
 
 BEGIN_METHOD_VOID(CTRAYICON_free)
 
-  GB.StoreObject(NULL, POINTER(&THIS->picture));
-  GB.StoreVariant(NULL, &THIS->base.tag);
+	GB.StoreObject(NULL, POINTER(&THIS->picture));
+	GB.StoreVariant(NULL, &THIS->base.tag);
 
 	destroy_tray_icon(THIS);
 
@@ -148,8 +148,8 @@ BEGIN_PROPERTY(CTRAYICON_picture)
 		return;
 	}
 	
-  GB.StoreObject(PROP(GB_OBJECT), POINTER(&THIS->picture));
-  if (THIS->picture)
+	GB.StoreObject(PROP(GB_OBJECT), POINTER(&THIS->picture));
+	if (THIS->picture)
 		TRAYICON->setPicture(THIS->picture->picture);
 	else
 		TRAYICON->setPicture(0);
@@ -214,10 +214,10 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CTRAYICON_tag)
 
-  if (READ_PROPERTY)
-    GB.ReturnPtr(GB_T_VARIANT, &THIS->base.tag);
-  else
-    GB.StoreVariant(PROP(GB_VARIANT), (void *)&THIS->base.tag);
+	if (READ_PROPERTY)
+		GB.ReturnPtr(GB_T_VARIANT, &THIS->base.tag);
+	else
+		GB.StoreVariant(PROP(GB_VARIANT), (void *)&THIS->base.tag);
 
 END_METHOD
 
@@ -312,10 +312,3 @@ GB_DESC CTrayIconDesc[] =
 	
 	GB_END_DECLARE
 };
-
-
-
-
-
-
-

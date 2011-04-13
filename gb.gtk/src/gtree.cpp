@@ -770,7 +770,7 @@ int gTree::visibleWidth()
 	gint w,h;
 	
 	gtk_tree_view_get_visible_rect (GTK_TREE_VIEW(widget),&rect);
-	gtk_tree_view_tree_to_widget_coords(GTK_TREE_VIEW(widget),rect.width,rect.height,&w,&h);
+	gtk_tree_view_convert_bin_window_to_widget_coords(GTK_TREE_VIEW(widget),rect.width,rect.height,&w,&h);
     return w;
 }
 
@@ -780,7 +780,7 @@ int gTree::visibleHeight()
 	gint w,h;
 	
 	gtk_tree_view_get_visible_rect (GTK_TREE_VIEW(widget),&rect);
-	gtk_tree_view_tree_to_widget_coords(GTK_TREE_VIEW(widget),rect.width,rect.height,&w,&h);
+	gtk_tree_view_convert_bin_window_to_widget_coords(GTK_TREE_VIEW(widget),rect.width,rect.height,&w,&h);
     return h;
 }
 
