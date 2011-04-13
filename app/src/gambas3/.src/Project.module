@@ -1909,13 +1909,13 @@ Private Sub CompileError(sMsg As String)
     
     If hForm And If iLine >= hForm.Editor.Lines.Count Then
       SetMessage(File.BaseName(sFile) & ": " & sErr & " " & ("in form definition"))
-      sMsg = "<b>" & sErr & "</b><p>" & ("in form definition")
+      sMsg = "<b>" & sErr & "</b> " & ("in form definition")
     Else If iLine >= 1 Then
       SetMessage(File.BaseName(sFile) & "." & CStr(iLine) & ": " & sErr)
-      sMsg = "<b>" & sErr & "</b><p>" & Subst(("In class &1 at line &2."), File.Name(sFile), CStr(iLine))
+      sMsg = "<b>" & sErr & "</b> " & Subst(("in &1:&2."), File.Name(sFile), CStr(iLine))
     Else
       SetMessage(File.BaseName(sFile) & ": " & sErr)
-      sMsg = "<b>" & sErr & "</b><p>" & Subst(("In class &1."), File.Name(sFile))
+      sMsg = "<b>" & sErr & "</b> " & Subst(("in &1."), File.Name(sFile))
     Endif
     
   Endif

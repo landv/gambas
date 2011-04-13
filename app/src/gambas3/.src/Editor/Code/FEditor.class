@@ -2594,7 +2594,7 @@ Private Sub ShowMessageLabel(sStr As String, X As Integer, Y As Integer, Optiona
   
   lblWatch.Background = iColor
   lblWatch.Move(X, Y)
-  lblWatch.Text = sStr
+  lblWatch.Text = Replace(Replace(sStr, "<p>", " "), "<br>", " ")
   lblWatch.Show
   lblWatch.Raise
   timWatch.Start
