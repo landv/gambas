@@ -56,6 +56,7 @@ Public Sub Form_Open()
   chkIgnoreStrings.Value = Settings["/FSearch/IgnoreStrings", False]
   chkRegularExpression.Value = Settings["/FSearch/RegularExpression", False]
   chkWordOnly.Value = Settings["/FSearch/WordOnly", False]
+  chkSourceOnly.Value = Settings["/FSearch/SourceOnly", False]
   
 End
 
@@ -70,6 +71,7 @@ Public Sub Form_Close()
   Settings["/FSearch/IgnoreStrings"] = CBool(chkIgnoreStrings.Value)
   Settings["/FSearch/RegularExpression"] = CBool(chkRegularExpression.Value)
   Settings["/FSearch/WordOnly"] = CBool(chkWordOnly.Value)
+  Settings["/FSearch/SourceOnly"] = CBool(chkSourceOnly.Value)
 
 End
 
@@ -133,11 +135,11 @@ Public Sub Update(Optional bForce As Boolean)
   btnReplace.Visible = Not bAllProject
   btnReplaceAll.Visible = Not bAllProject
   
-  If bAllProject Then
-    btnBrowse.Lower
-  Else
-    btnBrowse.Next = btnClose
-  Endif
+  'If bAllProject Then
+  '  btnBrowse.Lower
+  'Else
+  '  btnBrowse.Next = btnClose
+  'Endif
   
   'btnBrowse2.Visible = bAllProject
   
@@ -834,16 +836,14 @@ End
 
 Public Sub btnBrowse_Click()
 
-  Browse(False, mnuReplaceAll.Checked)
-  mnuReplaceAll.Checked = False
+  Browse(chkSourceOnly.Value, False)
 
 End
 
-Public Sub mnuBrowseSource_Click()
-  
-  Browse(True, mnuReplaceAll.Checked)
-  mnuReplaceAll.Checked = False
-  
+Public Sub btnBrowseReplace_Click()
+
+  Browse(chkSourceOnly.Value, True)
+
 End
 
 Public Sub gvwFind_Data(Row As Integer, Column As Integer)
@@ -916,7 +916,7 @@ Public Sub Form_KeyPress()
     If InBrowse Then
       Cancel
     Else
-      btnClose.Value = True
+      Me.Close
     Endif
   Endif
 
@@ -1002,3 +1002,4 @@ Public Sub OnProjectDebug()
   btnReplaceAll.Enabled = btnReplace.Enabled
   
 End
+

@@ -126,7 +126,7 @@ Public Sub EnableStack(bOn As Boolean)
 End
 
 
-Public Sub FillStack(aPos As String[])
+Public Sub FillStack(aPos As String[]) As Boolean
 
   Dim sPos As String
   Dim iInd As Integer
@@ -153,6 +153,8 @@ Public Sub FillStack(aPos As String[])
   
   Try lvwStack[sKey].Selected = True
   Object.Unlock(lvwStack)
+  
+  Return lvwStack.Key = "0"
 
 End
 

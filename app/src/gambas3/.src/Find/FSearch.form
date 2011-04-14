@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,83,32)
+  MoveScaled(0,0,88,31)
   Action = "find"
   Text = ("Search & Replace")
   Icon = Picture["icon:/small/find"]
@@ -11,19 +11,6 @@
   Arrangement = Arrange.Horizontal
   Spacing = True
   Margin = True
-  { mnuBrowse Menu
-    { mnuBrowseSource Menu
-      Text = ("Browse &source files only")
-      Picture = Picture["img/16/procedure.png"]
-    }
-    { Menu1 Menu
-    }
-    { mnuReplaceAll Menu
-      Text = ("Replace &all")
-      Picture = Picture["icon:/small/wizard"]
-      Toggle = True
-    }
-  }
   { VBox3 VBox
     MoveScaled(1,1,59,29)
     Expand = True
@@ -91,6 +78,10 @@
           MoveScaled(0,8,25,4)
           Text = ("C&urrent procedure")
         }
+        { chkSourceOnly CheckBox
+          MoveScaled(0,12,25,4)
+          Text = ("&Source files only")
+        }
       }
     }
   }
@@ -99,45 +90,42 @@
     Delay = 500
   }
   { Separator2 Separator
-    MoveScaled(60,1,1,29)
+    MoveScaled(61,1,1,29)
   }
   { HBox5 VBox
-    MoveScaled(61,1,21,29)
+    MoveScaled(62,1,25,29)
     Spacing = True
     { btnNext Button
-      MoveScaled(0,0,17,4)
+      MoveScaled(0,0,22,4)
+      Expand = True
       Text = ("&Next")
       Picture = Picture["icon:/small/down"]
     }
     { btnPrevious Button
-      MoveScaled(0,4,17,4)
+      MoveScaled(0,5,21,4)
+      Expand = True
       Text = ("&Previous")
       Picture = Picture["icon:/small/up"]
     }
     { btnReplace Button
-      MoveScaled(0,8,17,4)
+      MoveScaled(0,10,17,4)
       Text = ("&Replace")
       Picture = Picture["icon:/small/replace"]
     }
     { btnReplaceAll Button
-      MoveScaled(0,12,17,4)
+      MoveScaled(0,15,17,4)
       Text = ("Replace &all")
       Picture = Picture["icon:/small/wizard"]
     }
-    { Panel1 Panel
-      MoveScaled(5,18,2,1)
-      Expand = True
-    }
-    { btnBrowse MenuButton
+    { btnBrowse Button
       MoveScaled(0,20,18,4)
       Text = ("&Browse")
       Picture = Picture["icon:/small/find"]
-      Menu = "mnuBrowse"
     }
-    { btnClose Button
-      MoveScaled(0,25,18,4)
-      Text = ("Close")
-      Picture = Picture["icon:/small/close"]
+    { btnBrowseReplace Button
+      MoveScaled(0,25,23,4)
+      Text = ("Browse && rep&lace")
+      Picture = Picture["icon:/small/replace"]
     }
   }
 }

@@ -317,3 +317,10 @@ Public Sub GetSelection() As String
   Return edtOutput.GetSelection()
   
 End
+
+Public Sub btnSearch_Click()
+
+  edtOutput.SetFocus
+  FSearch.WakeUp(False)
+
+End

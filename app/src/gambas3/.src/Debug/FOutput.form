@@ -98,11 +98,21 @@
       ToolTip = ("Paste")
       Picture = Picture["icon:/small/paste"]
     }
+    { Separator1 Separator
+      MoveScaled(24,0,1,4.1429)
+    }
+    { btnSearch ToolButton
+      MoveScaled(26,0,11,4)
+      ToolTip = ("Paste")
+      AutoResize = True
+      Text = ("Search...")
+      Picture = Picture["icon:/small/find"]
+    }
     { sepCharset Separator
-      MoveScaled(25,0,1,4)
+      MoveScaled(40,0,1,4)
     }
     { chkCharset CheckBox
-      MoveScaled(28,0,28,4)
+      MoveScaled(41,0,28,4)
       Expand = True
       Text = ("Use system charset")
     }

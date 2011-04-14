@@ -7,7 +7,7 @@ Private Const STATE_DEBUG As Integer = 2
 Private Const STATE_STARTING As Integer = 3
 
 Private $iState As Integer
-Private $bError As Boolean
+'Private $bError As Boolean
 'PRIVATE $cShow AS NEW Object[]
 Private $hProcess As Process
 'PRIVATE $cCommand AS NEW String[]
@@ -210,19 +210,18 @@ Public Sub Debug_Read(Data As String)
         Endif
       Endif
   
-      FDebugInfo.FillStack(aPos)
-
       FDebugInfo.DefineLocal(Trim(aData[3]))
       FDebugInfo.DefineObject(Trim(aData[4]))
 
-      If aData[1] And If Not $bError Then 
-        '$bError = True
-        $sError = "<b>" & MakeErrorMessage(aData[1]) & "</b>"
-        If sClass Then $sError &= " " & Subst(("in &1:&2."), $sPosClass, $iPosLine)
-        If sClass Then
-          Try CheckErrorMessage(Project.ActiveForm)
-        Else
-          Try CheckErrorMessage(Null)
+      If FDebugInfo.FillStack(aPos) Then
+        If aData[1] Then 
+          $sError = "<b>" & MakeErrorMessage(aData[1]) & "</b>"
+          If sClass Then $sError &= " " & Subst(("in &1:&2."), $sPosClass, $iPosLine)
+          If sClass Then
+            Try CheckErrorMessage(Project.ActiveForm)
+          Else
+            Try CheckErrorMessage(Null)
+          Endif
         Endif
       Endif
 
