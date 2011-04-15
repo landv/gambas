@@ -1,0 +1,52 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,68,64)
+  { VBox1 VBox
+    MoveScaled(0,0,36,52)
+    Spacing = True
+    { Frame1 Frame
+      MoveScaled(0,3,36,38)
+      Text = ("Size")
+      { ComboBox1 ComboBox
+        MoveScaled(2,7,33,4)
+        ReadOnly = True
+      }
+      { Label1 Label
+        MoveScaled(3,4,19,3)
+        Text = ("Paper size")
+        Transparent = True
+      }
+      { Frame3 Frame
+        MoveScaled(2,12,33,22)
+        Enabled = False
+        Text = ("Custom paper size")
+        { Label2 Label
+          MoveScaled(2,7,9,3)
+          Text = ("Width:")
+          Transparent = True
+        }
+        { Label3 Label
+          MoveScaled(2,13,9,3)
+          Text = ("Height:")
+          Transparent = True
+        }
+        { txtWidth TextBox
+          MoveScaled(9,6,14,5)
+        }
+        { txtHeight TextBox
+          MoveScaled(9,12,14,5)
+        }
+      }
+    }
+    { Frame2 Frame
+      MoveScaled(0,42,36,9)
+      Text = ("Orientation")
+      { ComboBox2 ComboBox
+        MoveScaled(2,4,28,4)
+        ReadOnly = True
+        List = [("Portrait"), ("Landscape")]
+      }
+    }
+  }
+}

@@ -22,12 +22,6 @@ Public Sub _New()
 End
 
 
-Public Sub ToolButton1_Click()
-
-  Me.Close
-
-End
-
 Public Sub DrawingArea1_Draw()
   'Debug $fScale
   'Paint.Scale($fScale, $fScale)
@@ -43,8 +37,7 @@ Public Sub Form_Open()
   
   'Report.Debug = True
   
-  ComboBox1.List = ["A3", "A4", "A5", "B5", "Executive", "Legal", "Letter", "Custom"]
-  ComboBox1.Index = 1
+
   btnAdjust.Value = True
   'Resize
   Printer1.OutputFile = User.Home &/ "output.pdf"
@@ -84,46 +77,46 @@ Private Sub ResizeMe()
 End
 
 
-Public Sub ComboBox1_Click()
-   
-  Printer1.Paper = Object.GetProperty(Printer, ComboBox1.Text)
-  
-  If ComboBox1.Text = "Custom" Then 
-    Frame3.Enabled = True
-  Else 
-    Frame3.Enabled = False
-    txtWidth.Text = Int(Printer1.PaperWidth)
-    txtHeight.Text = Int(Printer1.PaperHeight)
-  Endif
-  $hreport.Refresh()
-  'Slider1_Change
-End
+' Public Sub ComboBox1_Click()
+'    
+'   Printer1.Paper = A4 'Object.GetProperty(Printer, ComboBox1.Text)
+'   
+'   'If ComboBox1.Text = "Custom" Then 
+'   '  Frame3.Enabled = True
+'   'Else 
+'   '  Frame3.Enabled = False
+'   '  txtWidth.Text = Int(Printer1.PaperWidth)
+'   '  txtHeight.Text = Int(Printer1.PaperHeight)
+'   'Endif
+'   '$hreport.Refresh()
+'   'Slider1_Change
+' End
 
-Public Sub ComboBox2_Click()
+' Public Sub ComboBox2_Click()
+' 
+'   Printer1.Orientation = ComboBox2.Index
+'   ComboBox1_Click
+'   ResizeMe
+' 
+' End
 
-  Printer1.Orientation = ComboBox2.Index
-  ComboBox1_Click
-  ResizeMe
+' Public Sub txtWidth_Change()
+' 
+'   Printer1.PaperWidth = txtWidth.Text
+' 
+'   ResizeMe
+'   
+'   Catch
+'   
+' 
+' End
 
-End
-
-Public Sub txtWidth_Change()
-
-  Printer1.PaperWidth = txtWidth.Text
-
-  ResizeMe
-  
-  Catch
-  
-
-End
-
-Public Sub txtHeight_Change()
-
-    Printer1.PaperHeight = txtHeight.Text
-  ResizeMe
-
-End
+' Public Sub txtHeight_Change()
+' 
+'     Printer1.PaperHeight = txtHeight.Text
+'   ResizeMe
+' 
+' End
 
 Public Sub ToolButton2_Click()
 
@@ -137,7 +130,7 @@ Public Sub ToolButton3_Click()
 
 End
 
-Public Sub Button1_Click()
+Public Sub btnPrint_Click()
   
   If Printer1.Configure() Then Return
   'Me.Enabled = False

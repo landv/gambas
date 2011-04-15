@@ -1,124 +1,49 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,133,88)
+  MoveScaled(0,0,95,57)
   Text = ("Report preview")
   Arrangement = Arrange.Vertical
+  Spacing = True
   Padding = 2
-  { HBox1 HBox
-    MoveScaled(0,0,110,5)
-    { Panel3 Panel
-      MoveScaled(0,1,33,3)
-      Expand = True
-    }
-    { Button1 Button
-      MoveScaled(86,0,10,4)
-      Text = ("Prt")
-    }
-    { ToolButton1 ToolButton
-      MoveScaled(97,0,5,5)
-      Picture = Picture["icon:/small/quit"]
-    }
-  }
-  { HBox2 HBox
-    MoveScaled(3,7,128,50)
-    Expand = True
-    { ScrollView1 ScrollView
-      MoveScaled(1,3,82,38)
-      Background = Color.Background
-      Expand = True
-      { DrawingArea1 DrawingArea
-        MoveScaled(0,0,21,8)
-        Background = &HFFFFFF&
-        Border = Border.Plain
-        Painted = True
-      }
-    }
-    { VBox1 VBox
-      MoveScaled(88,-3,36,52)
-      Spacing = True
-      { Frame1 Frame
-        MoveScaled(0,3,36,38)
-        Text = ("Size")
-        { ComboBox1 ComboBox
-          MoveScaled(2,7,33,4)
-          ReadOnly = True
-        }
-        { Label1 Label
-          MoveScaled(3,4,19,3)
-          Text = ("Paper size")
-          Transparent = True
-        }
-        { Frame3 Frame
-          MoveScaled(2,12,33,22)
-          Enabled = False
-          Text = ("Custom paper size")
-          { Label2 Label
-            MoveScaled(2,7,9,3)
-            Text = ("Width:")
-            Transparent = True
-          }
-          { Label3 Label
-            MoveScaled(2,13,9,3)
-            Text = ("Height:")
-            Transparent = True
-          }
-          { txtWidth TextBox
-            MoveScaled(9,6,14,5)
-          }
-          { txtHeight TextBox
-            MoveScaled(9,12,14,5)
-          }
-        }
-      }
-      { Frame2 Frame
-        MoveScaled(0,42,36,9)
-        Text = ("Orientation")
-        { ComboBox2 ComboBox
-          MoveScaled(2,4,28,4)
-          ReadOnly = True
-          List = [("Portrait"), ("Landscape")]
-        }
-      }
-    }
-  }
-  { Printer1 #Printer
-    #MoveScaled(111,58)
-    FullPage = True
-  }
   { Panel1 Panel
-    MoveScaled(3,61,107,4)
+    MoveScaled(1,0,112,4)
     Arrangement = Arrange.Horizontal
     Border = Border.Plain
+    { btnPrint ToolButton
+      MoveScaled(0,0,9,5)
+      AutoResize = True
+      Text = ("Print")
+      Picture = Picture["icon:/22/printer"]
+    }
     { SpinBox1 SpinBox
-      MoveScaled(1,0,6,4)
+      MoveScaled(6,0,6,4)
       MinValue = 1
     }
-    { Panel2 Panel
-      MoveScaled(8,0,21,3)
+    { HBox3 HBox
+      MoveScaled(12,1,20,2)
       Expand = True
     }
     { btnAdjust ToolButton
-      MoveScaled(35,0,11,4)
-      AutoResize = True
-      Text = ("Adjust")
+      MoveScaled(59,0,4,4)
+      Picture = Picture["icon:/22/zoom-fit"]
       Border = True
       Toggle = True
     }
     { btnZNorm ToolButton
-      MoveScaled(47,0,4,4)
+      MoveScaled(64,0,4,4)
       Picture = Picture["icon:/small/zoom-normal"]
       Border = True
     }
     { Separator1 Separator
-      MoveScaled(54,0,3,4)
+      MoveScaled(68,0,3,4)
     }
     { ToolButton2 ToolButton
-      MoveScaled(59,0,4,4)
+      MoveScaled(70,0,4,4)
       Picture = Picture["icon:/small/zoom-out"]
     }
     { Slider1 Slider
-      MoveScaled(62,0,28,5)
+      MoveScaled(75,0,15,5)
       MinValue = 10
       MaxValue = 400
       Value = 100
@@ -127,5 +52,25 @@
       MoveScaled(90,0,4,4)
       Picture = Picture["icon:/small/zoom-in"]
     }
+  }
+  { HBox2 HBox
+    MoveScaled(3,7,128,50)
+    Expand = True
+    Padding = 5
+    { ScrollView1 ScrollView
+      MoveScaled(1,1,82,38)
+      Background = Color.Background
+      Expand = True
+      { DrawingArea1 DrawingArea
+        MoveScaled(1,1,21,8)
+        Background = &HFFFFFF&
+        Border = Border.Plain
+        Painted = True
+      }
+    }
+  }
+  { Printer1 #Printer
+    #MoveScaled(111,58)
+    FullPage = True
   }
 }

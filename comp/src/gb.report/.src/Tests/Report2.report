@@ -11,12 +11,6 @@
     Fixed = True
     AutoResize = True
     Spacing = "4cm"
-    { ReportImage1 ReportImage
-      #MoveScaled(1,2,23,23)
-      Width = "5cm"
-      Height = "5cm"
-      Image = Image.Load("new-logo.png")
-    }
     { ReportVBox2 ReportVBox
       #MoveScaled(32,2,56,36)
       Fixed = True
@@ -158,7 +152,8 @@
         Width = "3cm"
         Border = ReportBorder["Right=1mm &H00000000&; Bottom=1mm &H00000000&; Left=1mm &H00000000&; "]
         Key = "TOTALHT"
-        Alignment = Align.Center
+        Format = "#.00 €"
+        Alignment = Align.Right
       }
     }
   }
