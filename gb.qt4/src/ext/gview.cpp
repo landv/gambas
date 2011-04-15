@@ -129,17 +129,19 @@ GEditor::GEditor(QWidget *parent)
 	setKeyCompression(true);
 	setFocusPolicy(Qt::WheelFocus);
 	setAttribute(Qt::WA_InputMethodEnabled, true);
-	setAttribute(Qt::WA_StaticContents, true);
+	//setAttribute(Qt::WA_StaticContents, true);
 	
 	setMouseTracking(true);
 	viewport()->setMouseTracking(true);
 	viewport()->setCursor(Qt::ibeamCursor);
   viewport()->setBackgroundRole(QPalette::Base);
-  viewport()->setAutoFillBackground(true);
 	viewport()->setPaletteBackgroundColor(defaultColors[GLine::Background]);
-	viewport()->setAttribute(Qt::WA_NoSystemBackground, true);
-	//viewport()->setAttribute(Qt::WA_StaticContents, true);
-  viewport()->setFocusProxy(this);
+	viewport()->setFocusProxy(this);
+  
+  /*viewport()->setAutoFillBackground(false);
+	//viewport()->setAttribute(Qt::WA_NoSystemBackground, true);*/
+	viewport()->setAttribute(Qt::WA_OpaquePaintEvent, true);
+	viewport()->setAttribute(Qt::WA_StaticContents, false);
 	
 	margin = 0;
 	doc = 0;
@@ -2004,6 +2006,7 @@ void GEditor::baptizeVisible()
 void GEditor::baptizeVisible(int x, int y)
 {
 	doc->baptizeUntil(lastVisibleRow(y));
+	viewport()->update();
 }
 
 void GEditor::inputMethodEvent(QInputMethodEvent *e)
