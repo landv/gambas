@@ -45,7 +45,8 @@ enum
 	HIGHLIGHT_CSS,
 	HIGHLIGHT_WEBPAGE,
 	HIGHLIGHT_DIFF,
-	HIGHLIGHT_JAVASCRIPT
+	HIGHLIGHT_JAVASCRIPT,
+	HIGHLIGHT_C
 };
 
 typedef
@@ -61,6 +62,7 @@ static HIGHLIGHT_NAME _highlight_name[] = {
 	{ HIGHLIGHT_WEBPAGE, "_DoWebpage" },
 	{ HIGHLIGHT_DIFF, "_DoDiff" },
 	{ HIGHLIGHT_JAVASCRIPT, "_DoJavascript" },
+	{ HIGHLIGHT_C, "_DoC" },
 	{ HIGHLIGHT_CUSTOM, NULL }
 };
 
@@ -1025,7 +1027,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CEDITOR_char_width)
 
-  GB.ReturnInteger(WIDGET->getCharWidth());
+  GB.ReturnInteger(WIDGET->getCharWidth('m'));
 
 END_PROPERTY
 
@@ -1092,6 +1094,7 @@ GB_DESC CHighlightDesc[] =
   GB_CONSTANT("WebPage", "i", HIGHLIGHT_WEBPAGE),
   GB_CONSTANT("Diff", "i", HIGHLIGHT_DIFF),
   GB_CONSTANT("JavaScript", "i", HIGHLIGHT_JAVASCRIPT),
+  GB_CONSTANT("C", "i", HIGHLIGHT_C),
 
   GB_CONSTANT("Background", "i", HIGHLIGHT_BACKGROUND),
   GB_CONSTANT("Normal", "i", HIGHLIGHT_NORMAL),

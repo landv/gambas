@@ -110,7 +110,6 @@ void GEditor::reset()
 	_showCol = 0;
 	_showLen = 0;
 	_posOutside = false;
-	lineWidthCacheY = -1;
 	
 	foldClear();
 }
@@ -147,7 +146,6 @@ GEditor::GEditor(QWidget *parent)
 	doc = 0;
 	_showStringIgnoreCase = false;
 	_insertMode = false;
-	_charWidth = fm.width(" ");
 	_cellw = _cellh = 0;
 
 	for (i = 0; i < GLine::NUM_STATE; i++)
@@ -172,7 +170,7 @@ GEditor::GEditor(QWidget *parent)
 	setDocument(NULL);
 
 	setFont(QFont("monospace", QApplication::font().pointSize()));
-	updateHeight();
+	updateFont();
 
 	blinkTimer = new QTimer(this);
 	connect(blinkTimer, SIGNAL(timeout()), this, SLOT(blinkTimerTimeout()));
@@ -222,9 +220,28 @@ void GEditor::setDocument(GDocument *d)
 	//connect(doc, SIGNAL(textChanged()), this, SLOT(docTextChanged()));
 }
 
-int GEditor::getCharWidth() const
+int GEditor::getStringWidth(const QString &s, int len) const
 {
-	return fm.width('m');
+	int i;
+	ushort c;
+	int w = 0;
+	
+	if (len < 0)
+		len = s.length();
+	
+	if (_sameWidth)
+		return len * _sameWidth;
+	
+	for (i = 0; i < len; i++)
+	{
+		c = s.at(i).unicode();
+		if (c & 0xFF00)
+			return fm.width(s);
+		else
+			w += _charWidth[c];
+	}
+	
+	return w;
 }
 
 void GEditor::updateCache()
@@ -241,7 +258,7 @@ void GEditor::updateCache()
 int GEditor::lineWidth(int y) const
 {
 	// Add 2 or a space width so that we see the cursor at end of line
-	return margin + fm.width(doc->lines.at(y)->s.getString()) + (_insertMode ? _charWidth : 2);
+	return margin + getStringWidth(doc->lines.at(y)->s.getString()) + (_insertMode ? _charWidth[' '] : 2);
 }
 
 
@@ -257,7 +274,7 @@ int GEditor::lineWidth(int y, int len)
 		ns = QMAX(0, len - s.length());
 		len = QMIN(len, s.length());
 		
-		if (y != lineWidthCacheY)
+		/*if (y != lineWidthCacheY)
 		{
 			lineWidthCacheY = y;
 			lineWidthCache.clear();
@@ -268,12 +285,13 @@ int GEditor::lineWidth(int y, int len)
 		if (!lw)
 		{
 			//qDebug("lineWidthCache: %d", len);
-			lw = fm.width(s, len);
+			lw = getStringWidth(s, len); //fm.width(s, len);
 			lineWidthCache.insert(len, lw);
-		}
+		}*/
 		
+		int	lw = getStringWidth(s, len);
 		lw += margin;
-		if (ns) lw += ns * _charWidth;
+		if (ns) lw += ns * _charWidth[' '];
 		return lw;
 	}
 }
@@ -362,21 +380,35 @@ void GEditor::redrawContents()
 	//	repaintContents(contentsX(), contentsHeight(), visibleWidth(), visibleHeight() - contentsHeight() + contentsX(), true);
 }
 
+void GEditor::updateFont()
+{
+	fm = fontMetrics();
+	for (int i = 0; i < 256; i++)
+		_charWidth[i] = fm.width(QChar(i));
+	
+	_sameWidth = _charWidth[' '];
+	for (int i = 33; i < 126; i++)
+	{
+		if (_charWidth[i] != _sameWidth)
+		{
+			_sameWidth = 0;
+			break;
+		}
+	}
+	
+	italicFont = font();
+	italicFont.setItalic(true);
+	updateMargin();
+	updateWidth();
+	updateHeight();
+	updateContents();
+}
+
 void GEditor::changeEvent(QEvent *e)
 {
 	Q3ScrollView::changeEvent(e);
 	if (e->type() == QEvent::FontChange)
-	{
-		fm = fontMetrics();
-		_charWidth = fm.width(" ");
-		italicFont = font();
-		italicFont.setItalic(true);
-		clearLineWidthCache();
-		updateMargin();
-		updateWidth();
-		updateHeight();
-		updateContents();
-	}
+		updateFont();
 }
 
 static int find_last_non_space(const QString &s)
@@ -398,7 +430,7 @@ void GEditor::paintDottedSpaces(QPainter &p, int row, int ps, int ls)
 
 	x = lineWidth(row, ps) + 1;
 	y = fm.ascent();
-	w = _charWidth;
+	w = _charWidth[' '];
 	for (i = 0; i < ls; i++)
 	{
 		pa[i].setX(x);
@@ -1032,7 +1064,7 @@ bool GEditor::cursorGoto(int ny, int nx, bool mark)
 		nx = 0;
 	else 
 	{
-		int xmax = _insertMode ? QMAX((_cellw / _charWidth) + 1, lineLength(largestLine)) : lineLength(ny);
+		int xmax = _insertMode ? QMAX((_cellw / _charWidth[' ']) + 1, lineLength(largestLine)) : lineLength(ny);
 		
 		if (nx > xmax)
 			nx = xmax;
@@ -1602,7 +1634,7 @@ int GEditor::posToColumn(int y, int px)
 		_posOutside = true;
 	
 	if (len == 0)
-		return (px - margin) / _charWidth;
+		return (px - margin) / _charWidth[' '];
 		
 	px += contentsX();
 	
@@ -1611,7 +1643,7 @@ int GEditor::posToColumn(int y, int px)
 	while (f > d)
 	{
 		if (i < 0)
-			i = px / fm.width("m");
+			i = px / _charWidth['m'];
 		else
 			i = (d + f) / 2;
 		
@@ -1622,7 +1654,10 @@ int GEditor::posToColumn(int y, int px)
 			continue;
 		}
 		
-		lw += fm.width(s[i]);
+		if (_sameWidth)
+			lw += _sameWidth;
+		else
+			lw = lineWidth(y, i + 1); //+= getStringWidth(s.mid(i, 1)); //fm.width(s[i]);
 		if (px >= lw)
 		{
 			d = i + 1;
@@ -1837,10 +1872,10 @@ void GEditor::ensureCursorVisible()
 		
 		if (center)
 			//ensureVisible(x * charWidth, y * _cellh + _cellh / 2, margin + 2, visibleHeight() / 2);
-			ensureVisible(lineWidth(y, x) + getCharWidth() / 2, yy * _cellh + _cellh / 2, margin + 2, visibleHeight() / 2);
+			ensureVisible(lineWidth(y, x) + _charWidth['m'] / 2, yy * _cellh + _cellh / 2, margin + 2, visibleHeight() / 2);
 		else
 			//ensureVisible(x * charWidth, y * _cellh + _cellh / 2, margin + 2, _cellh);
-			ensureVisible(lineWidth(y, x) + getCharWidth() / 2, yy * _cellh + _cellh / 2, margin + 2, _cellh);
+			ensureVisible(lineWidth(y, x) + _charWidth['m'] / 2, yy * _cellh + _cellh / 2, margin + 2, _cellh);
 	}
 	center = false;
 }
@@ -1943,7 +1978,7 @@ void GEditor::setFlag(int f, bool v)
 
 void GEditor::updateMargin()
 {
-	int charWidth = getCharWidth();
+	int charWidth = _charWidth['m'];
 	int nm, lnl = 0;
 	
 	nm = 2;
@@ -1991,7 +2026,6 @@ void GEditor::docTextChangedLater()
 
 void GEditor::docTextChanged()
 {
-	clearLineWidthCache();
 	if (painting)
 		QTimer::singleShot(0, this, SLOT(docTextChangedLater()));
 	else
@@ -2548,7 +2582,7 @@ void GEditor::getInfo(QRect *rect, QString *info) const
 	
 	s = QString("%1:%2").arg(x + 1).arg(y + 1);
 	
-	iw = _charWidth * 10 + 4;
+	iw = _charWidth[' '] * 10 + 4;
 	ih = _cellh + 2;
 	ix = visibleWidth() - iw - 2;
 	iy = visibleHeight() - ih - 2;

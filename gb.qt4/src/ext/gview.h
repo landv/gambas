@@ -87,7 +87,8 @@ private:
 	int _cellw, _cellh;
 	int _nrows;
 	bool _insertMode;
-	int _charWidth;
+	short _charWidth[256];
+	int _sameWidth;
 	
 	int lastx;
 	bool left;
@@ -98,9 +99,6 @@ private:
 	int flags;
 	QPixmap pattern;
 	
-	QHash<int, int> lineWidthCache;
-	int lineWidthCacheY;
-
 	int lineLength(int y) const { return doc->lineLength(y); }
 	int numLines() const { return doc->numLines(); }
 	int visibleLines() const;
@@ -131,12 +129,14 @@ private:
 	int realToView(int row) const;
 	int checkCursor(int y);	
 	bool isCursorVisible();
-	void clearLineWidthCache() { lineWidthCache.clear(); lineWidthCacheY = -1; }
 
 	void updateViewport();
 
 	void getInfo(QRect *rect, QString *info) const;
 	void updateInfo();
+	void updateFont();
+
+	int getStringWidth(const QString &s, int len = -1) const;
 
 private slots:
 
@@ -227,7 +227,7 @@ public:
 
 	int rowAt(int y) const { return y / _cellh; }
 	int getLineHeight() const { return _cellh; }
-	int getCharWidth() const;
+	int getCharWidth(unsigned char c) const { return _charWidth[c]; }
 	void cursorToPos(int y, int x, int *px, int *py);
 	bool isPosOutside() const { return _posOutside; }
 	int posToLine(int py);
