@@ -26,8 +26,10 @@ Public Sub DrawingArea1_Draw()
   'Debug $fScale
   'Paint.Scale($fScale, $fScale)
   '$hreport.Layout
+  
   $hReport.Scale = $fScale
   $hReport.Paint($iPage)
+  Label2.Text = "/" & $hreport.PageCount
   SpinBox1.MaxValue = $hReport.PageCount 
 End
 
@@ -37,6 +39,7 @@ Public Sub Form_Open()
   
   'Report.Debug = True
   
+
 
   btnAdjust.Value = True
   'Resize

@@ -4,7 +4,7 @@ Export
 Inherits ReportControl
 
 Public Const _Properties As String = "*,Direction{Align.TopLeft;Top;TopRight;Left;Right;BottomLeft;Bottom;BottomRight}=BottomRight,LineWidth{ReportCoord}=2 px"
-
+Public Const _Similar As String = "ReportTextLabel"
 Property Direction As Integer
 
 Private $fLineWidth As Float = 1.0

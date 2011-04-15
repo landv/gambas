@@ -4,7 +4,7 @@ Export
 Inherits ReportFrame
 
 Public Const _Properties As String = "*,Text,Key,Format,Alignment{Align.*},UseField"
-
+Public Const _Similar As String = "ReportTextLabel"
 Private $sText As String
 Private $iAlignment As Integer = Align.Normal
 Private $bIsSpecial As Boolean

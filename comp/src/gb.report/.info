@@ -98,22 +98,6 @@ i
 #Paint
 
 C
-Begin
-M
-
-(Device)o
-End
-M
-
-(Device)o
-Rectangle
-M
-
-(X)f(Y)f(W)f(H)f
-Text
-M
-
-(Text)s[(X)f(Y)f(Width)f(Height)f(Alignment)i]
 #Report
 ReportSection
 CA
@@ -759,6 +743,10 @@ _Properties
 C
 s
 *
+_Similar
+C
+s
+ReportVBox
 _new
 m
 
@@ -782,6 +770,10 @@ _Properties
 C
 s
 *,Image{Image}
+_Similar
+C
+s
+ReportTextLabel
 Image
 p
 Image
@@ -801,6 +793,10 @@ _Properties
 C
 s
 *,Text,Key,Format,Alignment{Align.*},UseField
+_Similar
+C
+s
+ReportTextLabel
 Text
 p
 s
@@ -840,6 +836,10 @@ _Properties
 C
 s
 *,Direction{Align.TopLeft;Top;TopRight;Left;Right;BottomLeft;Bottom;BottomRight}=BottomRight,LineWidth{ReportCoord}=2 px
+_Similar
+C
+s
+ReportTextLabel
 Direction
 p
 i
@@ -878,6 +878,10 @@ s
 #ReportSvgImage
 ReportControl
 C
+_Similar
+C
+s
+ReportTextLabel
 Path
 p
 s
@@ -897,6 +901,10 @@ _Properties
 C
 s
 *,Text,Alignment{Align.*}
+_Similar
+C
+s
+ReportControl
 Text
 p
 s
@@ -924,6 +932,10 @@ _Properties
 C
 s
 *
+_Similar
+C
+s
+ReportVBox
 _new
 m
 

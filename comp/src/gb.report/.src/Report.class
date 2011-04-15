@@ -122,7 +122,7 @@ Public Sub Layout()
   'Me._SetUnifiedValues()
   'Me._GenerateClones()
   '$hReportTControl.ctrl = Me
-  Debug "Page Size W/H: " & Round(Me._Width, -2) & "/" & Round(Me._Height, -2)
+  'Debug "Page Size W/H: " & Round(Me._Width, -2) & "/" & Round(Me._Height, -2)
   iCurPage = -1
   For Each Tsection In $aSections
     CSection = TSection.Ctrl
@@ -141,7 +141,7 @@ Public Sub Layout()
     'Inc iCurPage
   Next
   
-  Debug Me._PageChildren.Count
+  'Debug Me._PageChildren.Count
   $iPageCount = iCurPage + 1
   'MTools.PageCount = $iCount
   $bLayoutIsDirty = False

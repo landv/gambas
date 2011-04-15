@@ -16,12 +16,8 @@
       Text = ("Print")
       Picture = Picture["icon:/22/printer"]
     }
-    { SpinBox1 SpinBox
-      MoveScaled(6,0,6,4)
-      MinValue = 1
-    }
     { HBox3 HBox
-      MoveScaled(12,1,20,2)
+      MoveScaled(32,1,20,2)
       Expand = True
     }
     { btnAdjust ToolButton
@@ -54,11 +50,11 @@
     }
   }
   { HBox2 HBox
-    MoveScaled(3,7,128,50)
+    MoveScaled(2,5,128,36)
     Expand = True
     Padding = 5
     { ScrollView1 ScrollView
-      MoveScaled(1,1,82,38)
+      MoveScaled(1,1,82,32)
       Background = Color.Background
       Expand = True
       { DrawingArea1 DrawingArea
@@ -67,6 +63,27 @@
         Border = Border.Plain
         Painted = True
       }
+    }
+  }
+  { Panel2 Panel
+    MoveScaled(4,49,90,4)
+    Arrangement = Arrange.Horizontal
+    Border = Border.Plain
+    { HBox1 HBox
+      MoveScaled(8,0,36,3)
+      Expand = True
+    }
+    { Label1 Label
+      MoveScaled(55,0,5,4)
+      AutoResize = True
+      Text = ("Page : ")
+    }
+    { SpinBox1 SpinBox
+      MoveScaled(64,0,6,4)
+      MinValue = 1
+    }
+    { Label2 Label
+      MoveScaled(70,0,6,4)
     }
   }
   { Printer1 #Printer

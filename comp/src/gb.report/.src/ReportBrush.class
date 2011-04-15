@@ -30,6 +30,7 @@ Public Function _PaintBrush(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As I
       fradius = Width * _radius
       hBrush = paint.RadialGradient(Width * _X, Height * _Y, fradius, Width * _X2, Height * _Y2, _Color, _Pos)
   End Select
+  hBrush.Translate(x1, Y1)
   Return hBrush
   
 End
