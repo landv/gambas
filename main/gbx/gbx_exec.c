@@ -43,6 +43,7 @@
 #include "gbx_exec.h"
 
 //#define DEBUG_STACK 1
+//#define SHOW_FUNCTION 1
 
 /* Current virtual machine state */
 STACK_CONTEXT EXEC_current = { 0 };
@@ -436,6 +437,11 @@ void EXEC_enter(void)
 		printf(" | >> %s\n", func->debug->name);
 	#endif
 
+	#if SHOW_FUNCTION
+	if (func->debug)
+		fprintf(stderr, "%s.%s\n", EXEC.class->name, func->debug->name);
+	#endif
+		
 	/* check number of arguments */
 
 	if (UNLIKELY(nparam < func->npmin))
@@ -576,6 +582,11 @@ void EXEC_enter_quick(void)
 		printf(" | >> %s\n", func->debug->name);
 	#endif
 
+	#if SHOW_FUNCTION
+	if (func->debug)
+		fprintf(stderr, "%s.%s\n", EXEC.class->name, func->debug->name);
+	#endif
+		
 	/* save context & check stack */
 
 	STACK_push_frame(&EXEC_current, func->stack_usage);

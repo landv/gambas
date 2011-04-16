@@ -740,8 +740,10 @@ void GEditor::paintCell(QPainter *painter, int row, int)
 		}
 		else
 		{
-			QBrush brush(styles[GLine::Selection].color, Qt::Dense4Pattern);
-			p.fillRect(0, 0, cache->width(), 1, brush);
+			//QBrush brush(styles[GLine::Selection].color, Qt::Dense4Pattern);
+			//p.fillRect(0, 0, cache->width(), 1, brush);
+			p.setPen(styles[GLine::Selection].color);
+			p.drawLine(0, 0, cache->width() - 1, 0);
 		}
 	}
 
@@ -814,7 +816,7 @@ void GEditor::paintCell(QPainter *painter, int row, int)
 		//highlight_text(p, x1m * charWidth + margin, fm.ascent(), l->s.getString().mid(x1m, 1), styles[GLine::Highlight].color);
 		//highlight_text(p, x2m * charWidth + margin, fm.ascent(), l->s.getString().mid(x2m, 1), styles[GLine::Highlight].color);
 		highlight_text(p, lineWidth(ym, x1m), fm.ascent(), lineWidth(ym, x1m + 1), _cellh, l->s.getString().mid(x1m, 1), styles[GLine::Highlight].color);
-		//highlight_text(p, lineWidth(ym, x2m), fm.ascent(), lineWidth(ym, x2m + 1), _cellh, l->s.getString().mid(x2m, 1), styles[GLine::Highlight].color);
+		highlight_text(p, lineWidth(ym, x2m), fm.ascent(), lineWidth(ym, x2m + 1), _cellh, l->s.getString().mid(x2m, 1), styles[GLine::Highlight].color);
 		/*p.fillRect(x1m * charWidth + margin, 0, charWidth, _cellh, styles[GLine::Highlight].color);
 		p.fillRect(x2m * charWidth + margin, 0, charWidth, _cellh, styles[GLine::Highlight].color);*/
 	}

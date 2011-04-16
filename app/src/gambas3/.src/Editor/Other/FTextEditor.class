@@ -24,7 +24,7 @@ Public Age As Integer
 
 Property Read ReadOnly As Boolean
 
-Static Private $aExt As String[] = ["htm", "html", "xml", "svg", "css", "webpage", "js"]
+Static Private $aExt As String[] = ["htm", "html", "xml", "svg", "css", "webpage", "js", "c", "h", "cpp"]
 
 ' Private Const STYLE_HTML As Integer = 1
 ' Private Const STYLE_CSS As Integer = 2
@@ -81,6 +81,10 @@ Public Sub LoadFile() As Boolean
       Case "js"
         edtEditor.Highlight = Highlight.JavaScript
         bShowCompress = Not Project.IsHiddenPath(Path)
+      Case "c"
+        edtEditor.Highlight = Highlight.C
+      Case "cpp", "h"
+        edtEditor.Highlight = Highlight.CPlusPlus
       Case Else 
         edtEditor.Highlight = Highlight.HTML
     End Select 
@@ -225,6 +229,24 @@ Public Sub Editors_KeyPress()
         Editor.Cut
       Endif 
     Endif 
+    
+  Else If Key.Code = Key.Return Then 
+      
+    If Key.Control Then
+      
+      If Key.Shift Then 
+        If Editor.Lines[Editor.Line].Expanded Then
+          Editor.CollapseAll
+        Else
+          Editor.ExpandAll
+        Endif
+      Else
+        Editor.Lines[Editor.Line].Expanded = Not Editor.Lines[Editor.Line].Expanded
+      Endif
+      Stop Event
+      
+    Endif
+    
   Endif 
 
 End

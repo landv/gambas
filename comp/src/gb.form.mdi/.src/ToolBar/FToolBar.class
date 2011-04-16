@@ -1117,6 +1117,8 @@ Private Sub CheckSeparators()
   Dim hChild As Control
   Dim aDelete As New Control[]
   
+  If $bDesign Then Return
+  
   For Each hChild In panToolBar.Children
     If hChild Is Separator Then 
       hChild.Resize(SEPARATOR_SIZE, SEPARATOR_SIZE)

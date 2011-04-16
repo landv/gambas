@@ -239,8 +239,18 @@
       Border = False
       Menu = "mnuPasteAs"
     }
+    { btnPasteSpecial ToolButton mnuPasteSpecial
+      Name = "btnPasteSpecial"
+      MoveScaled(20,0,14,4)
+      Visible = False
+      ToolTip = ("Copy")
+      Action = ".paste-special"
+      AutoResize = True
+      Text = ("Paste special...")
+      Picture = Picture["icon:/small/paste"]
+    }
     { btnInsertColor MenuButton
-      MoveScaled(20,0,6,4)
+      MoveScaled(34,0,6,4)
       ToolTip = ("Insert color")
       Action = ".color"
       Picture = Picture["icon:/small/color"]
@@ -249,27 +259,27 @@
     }
     { btnUndo ToolButton mnuUndo
       Name = "btnUndo"
-      MoveScaled(25,0,4,4)
+      MoveScaled(39,0,4,4)
       ToolTip = ("Undo")
       Action = ".undo"
       Picture = Picture["icon:/small/undo"]
     }
     { btnRedo ToolButton mnuRedo
       Name = "btnRedo"
-      MoveScaled(28,0,4,4)
+      MoveScaled(42,0,4,4)
       ToolTip = ("Redo")
       Action = ".redo"
       Picture = Picture["icon:/small/redo"]
     }
     { btnIndent ToolButton
-      MoveScaled(31,0,4,4)
+      MoveScaled(45,0,4,4)
       Visible = False
       ToolTip = ("Indent")
       Action = ".indent"
       Picture = Picture["icon:/small/indent"]
     }
     { btnUnindent ToolButton
-      MoveScaled(34,0,4,4)
+      MoveScaled(48,0,4,4)
       Visible = False
       ToolTip = ("Unindent")
       Action = ".unindent"
@@ -277,21 +287,21 @@
     }
     { btnComment ToolButton mnuComment
       Name = "btnComment"
-      MoveScaled(37,0,4,4)
+      MoveScaled(51,0,4,4)
       ToolTip = ("Comment")
       Action = ".comment"
       Picture = Picture["img/16/comment.png"]
     }
     { btnUncomment ToolButton mnuUncomment
       Name = "btnUncomment"
-      MoveScaled(40,0,4,4)
+      MoveScaled(54,0,4,4)
       ToolTip = ("Uncomment")
       Action = ".uncomment"
       Picture = Picture["img/16/uncomment.png"]
     }
     { btnNoSplit ToolButton mnuNoSplit
       Name = "btnNoSplit"
-      MoveScaled(42,0,4,4)
+      MoveScaled(56,0,4,4)
       Visible = False
       ToolTip = ("No split")
       Action = ".view-nosplit"
@@ -299,7 +309,7 @@
     }
     { btnHorizontalSplit ToolButton mnuHorizontalSplit
       Name = "btnHorizontalSplit"
-      MoveScaled(45,0,4,4)
+      MoveScaled(59,0,4,4)
       Visible = False
       ToolTip = ("Horizontal split")
       Action = ".view-hsplit"
@@ -307,7 +317,7 @@
     }
     { btnVerticalSplit ToolButton mnuVerticalSplit
       Name = "btnVerticalSplit"
-      MoveScaled(48,0,4,4)
+      MoveScaled(62,0,4,4)
       Visible = False
       ToolTip = ("Vertical split")
       Action = ".view-vsplit"
@@ -315,14 +325,14 @@
     }
     { btnPretty ToolButton mnuPretty
       Name = "btnPretty"
-      MoveScaled(51,0,4,4)
+      MoveScaled(65,0,4,4)
       Visible = False
       ToolTip = ("Make code pretty")
       Action = ".pretty"
       Picture = Picture["icon:/small/wizard"]
     }
     { btnBreakpoint ToolButton
-      MoveScaled(54,0,4,4)
+      MoveScaled(68,0,4,4)
       ToolTip = ("Toggle breakpoint")
       Action = ".break"
       Picture = Picture["icon:/small/halt"]
@@ -330,16 +340,16 @@
     }
     { btnWatch ToolButton mnuWatch
       Name = "btnWatch"
-      MoveScaled(57,0,4,4)
+      MoveScaled(71,0,4,4)
       ToolTip = ("Watch expression")
       Action = ".watch"
       Picture = Picture["icon:/small/watch"]
     }
     { Separator2 Separator
-      MoveScaled(63,0,1,4)
+      MoveScaled(77,0,1,4)
     }
     { btnProc ToolButton
-      MoveScaled(65,0,46,4)
+      MoveScaled(79,0,46,4)
       Mouse = Mouse.Pointing
       Action = ".proc"
       Text = ("Procedure list")
@@ -347,7 +357,7 @@
     }
     { btnDefinition ToolButton mnuDefinition
       Name = "btnDefinition"
-      MoveScaled(111,0,4,4)
+      MoveScaled(125,0,4,4)
       Visible = False
       ToolTip = ("Find definition")
       Action = ".find-definition"
@@ -355,7 +365,7 @@
     }
     { btnLastPosition ToolButton mnuLastPosition
       Name = "btnLastPosition"
-      MoveScaled(114,0,4,4)
+      MoveScaled(128,0,4,4)
       Visible = False
       ToolTip = ("Go back")
       Action = ".go-back"
@@ -487,6 +497,7 @@
   { Action paste-special
     Text = "Paste special..."
     Shortcut = "Ctrl+Shift+V"
+    Picture = "icon:/small/paste"
   }
   { Action paste-string
     Text = "Paste as string"
@@ -572,7 +583,7 @@
 { Toolbars
   { Toolbar editor
     Text = "Editor"
-    List = "save,reload,show-form,cut,copy,paste,color,undo,redo,indent,unindent,comment,uncomment,view-nosplit,view-hsplit,view-vsplit,pretty,break,watch,proc,find-definition,go-back"
+    List = "save,reload,show-form,cut,copy,paste,paste-special,color,undo,redo,indent,unindent,comment,uncomment,view-nosplit,view-hsplit,view-vsplit,pretty,break,watch,proc,find-definition,go-back"
     Default = "save,reload,show-form,paste,color,undo,redo,comment,uncomment,break,watch,|,proc"
   }
 }
