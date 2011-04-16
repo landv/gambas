@@ -335,14 +335,14 @@ void COMPILE_begin(const char *file, bool trans)
 	size = 0;
 
 	if (stat(JOB->name, &info))
-		fprintf(stderr, "gbc: Warning: Cannot stat file: %s\n", JOB->name);
+		fprintf(stderr, "gbc: warning: Cannot stat file: %s\n", JOB->name);
 	else
 		size += info.st_size;
 	
 	if (JOB->form)
 	{
 		if (stat(JOB->form, &info))
-			fprintf(stderr, "gbc: Warning: Cannot stat file: %s\n", JOB->form);
+			fprintf(stderr, "gbc: warning: Cannot stat file: %s\n", JOB->form);
 		else
 			size += info.st_size * 2;
 	}
@@ -354,9 +354,9 @@ void COMPILE_begin(const char *file, bool trans)
 
 void COMPILE_load(void)
 {
-	BUFFER_load_file(&JOB->source, JOB->name);
-	/*if (JOB->source[BUFFER_length(JOB->source) - 1] != '\n')
-		BUFFER_add(&JOB->source, "\n", 1);*/
+	if (BUFFER_load_file(&JOB->source, JOB->name))
+		THROW("Cannot load source file: &1", strerror(errno));
+
 	BUFFER_add(&JOB->source, "\n", 1);
 }
 

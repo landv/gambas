@@ -98,46 +98,41 @@ offset_t BUFFER_add(void *p_data, const void *string, size_t len)
 }
 
 
-/*
-long BUFFER_add_string(void *p_data, char *string, short len)
-{
-  long pos;
-  
-  pos = BUFFER_add(p_data, &len, sizeof(len));
-  BUFFER_add(p_data, string, len);
-
-  return pos;
-}
-*/
-
 bool BUFFER_load_file(void *p_data, const char *name)
 {
-  void **data = (void **)p_data;
-  BUFFER *buffer = DATA_TO_BUFFER(*data);
+  void **data;
+  BUFFER *buffer;
 
   int fd;
   struct stat info;
-  long len, lenr;
-  BUFFER *new_buffer;
+	int old_len;
+	int len, lenr;
   void *p;
   
   fd = open(name, O_RDONLY);
   if (fd < 0) 
     return TRUE;
   
-  fstat(fd, &info);
+  if (fstat(fd, &info))
+		return TRUE;
   
   len = info.st_size;
+	
+  data = (void **)p_data;
+	old_len = DATA_TO_BUFFER(*data)->length;
+	
+	BUFFER_need(p_data, len);
+	
+  data = (void **)p_data;
+  buffer = DATA_TO_BUFFER(*data);
 
-  ALLOC(&new_buffer, len + sizeof(BUFFER), "BUFFER_load_file");
-  
-  p = BUFFER_TO_DATA(new_buffer);
+	p = *data + old_len;
+	
   for(;;)
   {
     lenr = read(fd, p, len);
     if (lenr < 0)
     {
-      FREE(&new_buffer, "BUFFER_load_file");
       close(fd);
       return TRUE;
     }
@@ -148,14 +143,7 @@ bool BUFFER_load_file(void *p_data, const char *name)
     p += lenr;
     len -= lenr;
   }
-  
-  if (*data)
-    FREE(&buffer, "BUFFER_load_file");
-    
-  new_buffer->length = len;
-  new_buffer->max = len;
-  *data = BUFFER_TO_DATA(new_buffer);
-  
+
   close(fd);
   
   return FALSE;

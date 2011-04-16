@@ -29,6 +29,7 @@
 
 #include "gbc_compile.h"
 #include "gbc_read.h"
+#include "gbc_trans.h"
 #include "gbc_preprocess.h"
 
 typedef
@@ -39,6 +40,8 @@ typedef
 	PREP_STATE;
 
 #define MAX_LEVEL 16
+
+int PREP_next_line;
 	
 static PREP_STATE _stack[MAX_LEVEL];
 
@@ -225,7 +228,7 @@ void PREP_exit(void)
 		THROW("Missing #Endif");
 }
 
-bool PREP_analyze(PATTERN *line)
+int PREP_analyze(PATTERN *line)
 {
 	bool test;
 	
@@ -293,11 +296,26 @@ bool PREP_analyze(PATTERN *line)
 		_ignore = _stack[_level].ignore;
 		_ignore_level = _stack[_level].ignore_level;
 	}
+	else if (PATTERN_is(*line, RS_P_LINE))
+	{
+		TRANS_NUMBER result;
+		
+		line++;
+		if (!PATTERN_is_number(*line))
+			THROW_UNEXPECTED(line);
+		
+		TRANS_get_number(PATTERN_index(*line), &result);
+		if (result.type != T_INTEGER)
+			THROW_UNEXPECTED(line);
+		
+		PREP_next_line = result.ival;
+		return PREP_LINE;
+	}
 	else if (PATTERN_is(*line, RS_P_CONST))
 	{
 	}
 	else
 		THROW(E_SYNTAX);
 	
-	return _ignore;
+	return _ignore ? PREP_IGNORE : PREP_CONTINUE;
 }

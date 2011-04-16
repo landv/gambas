@@ -75,7 +75,6 @@ enum
 	GOTO_NUMBER,
 	GOTO_ERROR,
 	GOTO_SHARP,
-	GOTO_AT,
 	GOTO_OTHER
 };
 
@@ -105,8 +104,6 @@ static void READ_init(void)
 				first_car[i] = GOTO_STRING;
 			else if (i == '#')
 				first_car[i] = GOTO_SHARP;
-			else if (i == '@')
-				first_car[i] = GOTO_AT;
 			else if ((i >= 'A' && i <= 'Z') || (i >= 'a' && i <= 'z') || i == '$' || i == '_')
 				first_car[i] = GOTO_IDENT;
 			else if (i == '{')
@@ -423,14 +420,14 @@ static void jump_to_next_prep(void)
 
 static void add_newline()
 {
-	bool jump = FALSE;
+	int action = PREP_CONTINUE;
 	
 	if (_prep)
 	{
 		int line = comp->line;
 		
 		add_pattern_no_dump(RT_NEWLINE, comp->line);
-		jump = PREP_analyze(&comp->pattern[_prep_index]);
+		action = PREP_analyze(&comp->pattern[_prep_index]);
 		_prep = FALSE;
 		
 		comp->pattern_count = _prep_index;
@@ -440,8 +437,12 @@ static void add_newline()
 	add_pattern(RT_NEWLINE, comp->line);
 	comp->line++;
 	
-	if (jump)
-		jump_to_next_prep();
+	switch (action)
+	{
+		case PREP_IGNORE: jump_to_next_prep(); break;
+		case PREP_LINE: comp->line = PREP_next_line; break;
+		case PREP_CONTINUE: default: break;
+	}
 }
 
 static void add_end()
@@ -988,6 +989,7 @@ static void add_string()
 }
 
 
+#if 0
 static void add_command()
 {
 	unsigned char car;
@@ -1015,7 +1017,7 @@ static void add_command()
 
 	add_newline();
 }
-
+#endif
 
 void READ_do(void)
 {
@@ -1030,7 +1032,6 @@ void READ_do(void)
 		&&__NUMBER,
 		&&__ERROR, 
 		&&__SHARP,
-		&&__AT,
 		&&__OTHER
 	};
 	
@@ -1113,17 +1114,6 @@ void READ_do(void)
 			_prep_index = comp->pattern_count;
 			
 			add_identifier();
-			_begin_line = FALSE;
-			continue;
-		}
-		else
-			goto __OTHER;
-		
-	__AT:
-		
-		if (_begin_line)
-		{
-			add_command();
 			_begin_line = FALSE;
 			continue;
 		}

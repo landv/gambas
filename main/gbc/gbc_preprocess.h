@@ -23,8 +23,14 @@
 #ifndef __GBC_PREPROCESS_H
 #define __GBC_PREPROCESS_H
 
+enum { PREP_CONTINUE, PREP_IGNORE, PREP_LINE };
+
+#ifndef __GBC_PREPROCESS_C
+extern int PREP_next_line;
+#endif
+
 void PREP_init(void);
 void PREP_exit(void);
-bool PREP_analyze(PATTERN *line);
+int PREP_analyze(PATTERN *line);
 
 #endif

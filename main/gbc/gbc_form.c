@@ -351,7 +351,7 @@ void FORM_do(bool ctrl_public)
 	pos_rewind = _current;
 	form_parent_level = 0;
 
-	print("@SECTION\n");
+	//print("@SECTION\n");
 
 	while (!read_line(&line, &len))
 	{

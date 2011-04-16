@@ -279,9 +279,16 @@ static void compile_file(const char *file)
 		printf("\nCompiling %s...\n", FILE_get_name(JOB->name));
 	}
 
-	COMPILE_load();
 	FORM_do(main_public);
+	BUFFER_add(&JOB->source, "#Line 1\n", 8);
+	COMPILE_load();
 	BUFFER_add(&JOB->source, "\n\n\n\0", 4);
+	
+	#if 0
+	fprintf(stderr, "-----------------\n");
+	fputs(JOB->source, stderr);
+	fprintf(stderr, "-----------------\n");
+	#endif
 
 	READ_do();
 

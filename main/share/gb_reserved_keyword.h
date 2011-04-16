@@ -143,6 +143,7 @@ COMP_INFO COMP_res_info[] =
 	{ "#Else"                                                     },
 	{ "#Endif"                                                    },
 	{ "#Const"                                                    },
+	{ "#Line"                                                     },
 
 	{ ":",            RSF_NONE,                 OP_COLON,     0,                       },  // Use for the immediate collection syntax
 	{ ";"                                                                              },

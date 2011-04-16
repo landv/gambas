@@ -710,7 +710,7 @@ static bool header_function(TRANS_FUNC *func)
 						THROW(E_EXPECTED, "END FUNCTION");
 				}
       }
-			else if (UNLIKELY(PATTERN_is_end(pat) || PATTERN_is_command(pat)))
+			else if (UNLIKELY(PATTERN_is_end(pat))) // || PATTERN_is_command(pat)))
 				THROW(E_MISSING, "END");
 		}
 
@@ -848,7 +848,7 @@ static bool header_structure(void)
 	{
 		do
 		{
-	    if (PATTERN_is_end(*JOB->current) || PATTERN_is_command(*JOB->current))
+	    if (PATTERN_is_end(*JOB->current)) // || PATTERN_is_command(*JOB->current))
   	    THROW ("Missing END STRUCT");
 		}
 		while (TRANS_newline());
@@ -976,11 +976,11 @@ void HEADER_do(void)
     if (header_library())
       continue;
 
-		if (PATTERN_is_command(*JOB->current))
+		/*if (PATTERN_is_command(*JOB->current))
 		{
 			JOB->current++;
 			continue;
-		}
+		}*/
 
     THROW_UNEXPECTED(JOB->current);
   }

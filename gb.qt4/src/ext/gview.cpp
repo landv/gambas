@@ -2584,7 +2584,7 @@ void GEditor::getInfo(QRect *rect, QString *info) const
 	
 	s = QString("%1:%2").arg(x + 1).arg(y + 1);
 	
-	iw = _charWidth[' '] * 10 + 4;
+	iw = _charWidth['9'] * 10 + 4;
 	ih = _cellh + 2;
 	ix = visibleWidth() - iw - 2;
 	iy = visibleHeight() - ih - 2;
@@ -2628,14 +2628,22 @@ void GEditor::viewportPaintEvent(QPaintEvent *e)
 	
 	if (getFlag(ShowCursorPosition))
 	{
-		QPainter p(viewport());
 		getInfo(&rect, &info);
-		color = styles[GLine::Current].color;
-		color.setAlpha(128);
-		p.fillRect(rect, color);
-		rect.translate(0, 2);
-		p.setPen(styles[GLine::Normal].color);
-		p.drawText(rect, Qt::AlignCenter, info);
+		if (rect.intersects(e->rect()))
+		{
+			QPainter p(viewport());
+			color = styles[GLine::Current].color;
+			color.setAlpha(128);
+			p.fillRect(rect, color);
+			//rect.translate(0, 2);
+			p.setPen(styles[GLine::Normal].color);
+			p.drawText(rect, Qt::AlignCenter, info);
+			/*color = styles[GLine::Normal].color;
+			color.setAlpha(128);
+			p.setPen(color);
+			//rect.translate(0, -2);
+			p.drawRect(rect);*/
+		}
 	}
 }
 
