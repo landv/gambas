@@ -31,7 +31,7 @@ public:
 	SDLapplication(int &argc, char **argv);
 	virtual ~SDLapplication();
 
-	void ManageEvents(void );
+	void ManageEvents(bool no_input = false);
 	bool HaveWindows(void );
 
 	int DesktopWidth(void );

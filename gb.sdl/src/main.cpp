@@ -56,8 +56,10 @@ public:
 };
 
 mySDLapp *myApp = NULL;
+
 static void my_main(int *argc, char **argv);
 static int my_loop(void );
+static void my_wait(int duration);
 
 extern "C"
 {
@@ -86,6 +88,7 @@ extern "C"
 
 		GB.Hook(GB_HOOK_MAIN, (void *)my_main);
 		GB.Hook(GB_HOOK_LOOP, (void *)my_loop);
+		GB.Hook(GB_HOOK_WAIT, (void *)my_wait);
 
 		CLASS_Window = GB.FindClass("Window");
 		CLASS_Image = GB.FindClass("Image");
@@ -135,7 +138,7 @@ static void my_main(int *argc, char **argv)
 
 static int my_loop()
 {
-	GLint errcode = 0;
+	//GLint errcode = 0;
 	
 	while(myApp->HaveWindows())
 	{
@@ -149,4 +152,10 @@ static int my_loop()
 	}
 
 	return 1;
+}
+
+static void my_wait(int duration)
+{
+	myApp->ManageEvents(duration == 0);
+	GB.Loop(10);
 }

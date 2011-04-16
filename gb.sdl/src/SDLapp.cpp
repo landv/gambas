@@ -101,11 +101,28 @@ SDLapplication::~SDLapplication()
 		SDL_Quit();
 }
 
-void SDLapplication::ManageEvents()
+static int poll_event(SDL_Event *event, bool no_input)
+{
+	uint mask;
+	
+	SDL_PumpEvents();
+
+	mask = SDL_ALLEVENTS;
+	if (no_input)
+		mask ^= SDL_KEYEVENTMASK | SDL_MOUSEEVENTMASK | SDL_JOYEVENTMASK | SDL_QUITMASK;
+	
+	/* We can't return -1, just return 0 (no event) on error */
+	if ( SDL_PeepEvents(event, 1, SDL_GETEVENT, mask) <= 0 )
+		return 0;
+	return 1;
+}
+
+
+void SDLapplication::ManageEvents(bool no_input)
 {
 	SDL_Event event;
 
-	while (SDL_PollEvent(&event))
+	while (poll_event(&event, no_input))
 	{
 		if (!this->HaveWindows())
 			break;

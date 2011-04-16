@@ -110,13 +110,15 @@ END_METHOD
 BEGIN_PROPERTY(CWINDOW_framerate)
 
 	if (READ_PROPERTY)
-		GB.ReturnInteger(THIS->currentFPS);
+		GB.ReturnFloat(THIS->currentFPS);
 	else
 	{
-		if (VPROP(GB_INTEGER)<0)
+		double val = VPROP(GB_FLOAT);
+		
+		if (val < 0)
 			return;
 
-		THIS->FPSLimit = 1000/VPROP(GB_INTEGER);
+		THIS->FPSLimit = val ? 1000.0 / val : 0;
 		THIS->lastTime = SDL_GetTicks();
 	}
 
@@ -230,7 +232,7 @@ GB_DESC CWindow[] =
 
   GB_PROPERTY("Caption", "s", CWINDOW_text),
   GB_PROPERTY("Cursor", "Cursor;", CWINDOW_cursor),
-  GB_PROPERTY("Framerate", "i", CWINDOW_framerate),
+  GB_PROPERTY("Framerate", "f", CWINDOW_framerate),
   GB_PROPERTY("FullScreen", "b", CWINDOW_fullscreen),
   GB_PROPERTY("Height", "i", CWINDOW_height),
   GB_PROPERTY("Mouse", "i", CWINDOW_mouse),
@@ -301,11 +303,12 @@ void myWin::Quit(void)
 
 	if (!cancel)
 		this->Close();
-
 }
 
 void myWin::Update(void)
 {
+	Uint32 ticks, diff;
+	
 	// no refresh event
 	if (!GB.CanRaise(hWindow, EVENT_Refresh))
 	{
@@ -313,19 +316,22 @@ void myWin::Update(void)
 		return;
 	}
 
-	// framerate limitation
-	if (WINDOW(hWindow)->FPSLimit>0)
-	{
-		Uint32 value = SDL_GetTicks() - WINDOW(hWindow)->lastTime;
+	ticks = SDL_GetTicks();
 
-		if (value<WINDOW(hWindow)->FPSLimit)
+	// framerate limitation
+	if (WINDOW(hWindow)->FPSLimit > 0)
+	{
+		double d = WINDOW(hWindow)->lastTime + WINDOW(hWindow)->FPSLimit;
+
+		//fprintf(stderr, "%d %g %g %d\n", ticks, d, WINDOW(hWindow)->lastTime, d < ticks);
+		
+		if (d > ticks)
 		{
 			SDL_Delay(1);
 			return;
 		}
 
-		WINDOW(hWindow)->lastTime = SDL_GetTicks();
-
+		WINDOW(hWindow)->lastTime = d;
 	}
 
 	DRAW_begin(hWindow);
@@ -342,20 +348,30 @@ void myWin::Update(void)
 		this->Refresh();
 
 	// calculate the framerate
-	if (WINDOW(hWindow)->countFrames>=FRAMECOUNT)
+	/*if (WINDOW(hWindow)->countFrames >= FRAMECOUNT)
 	{
-		double value = double(SDL_GetTicks() - WINDOW(hWindow)->startTime)/FRAMECOUNT;
+		double value = (ticks - WINDOW(hWindow)->startTime) / FRAMECOUNT;
 
-		if (value>0)
-			WINDOW(hWindow)->currentFPS = Uint32(1000/value);
+		if (value > 0)
+			WINDOW(hWindow)->currentFPS = Uint32(1000 / value + 0.5);
 		else 
 			WINDOW(hWindow)->currentFPS = 0;
 
 		WINDOW(hWindow)->countFrames = 0;
-		WINDOW(hWindow)->startTime = SDL_GetTicks();
+		WINDOW(hWindow)->startTime = ticks;
 	}
 	else
-		WINDOW(hWindow)->countFrames++;
+		WINDOW(hWindow)->countFrames++;*/
+	
+	WINDOW(hWindow)->countFrames++;
+	
+	diff = ticks - WINDOW(hWindow)->startTime;
+	if (diff > 1000)
+	{
+		WINDOW(hWindow)->currentFPS = WINDOW(hWindow)->countFrames;
+		WINDOW(hWindow)->countFrames = 0;
+		WINDOW(hWindow)->startTime += 1000;
+	}
 }
 
 void myWin::Open(void)
