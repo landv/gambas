@@ -812,33 +812,28 @@
       Orientation = Align.Left
       Separator = True
       { panSearchProject HBox
-        MoveScaled(0,0,29,4)
-        Margin = True
-        Padding = 3
-        { PictureBox1 PictureBox
-          MoveScaled(5,0,3,4)
-          Picture = Picture["icon:/small/filter"]
+        MoveScaled(0,0,29,3)
+        Background = Color.TextBackground
+        { picFilter PictureBox
+          MoveScaled(0,0,3,3)
+          Picture = Picture["img/32/filter.png"]
+          Stretch = True
           AutoResize = True
-          Alignment = Align.Center
         }
         { txtSearchProject TextBox
-          MoveScaled(9,0,13,4)
+          MoveScaled(4,0,14,3)
           Expand = True
           Border = False
         }
         { btnSearchAdd ToolButton
-          MoveScaled(22,0,3,4)
+          MoveScaled(22,0,3,3)
           ToolTip = ("Show added files")
           Picture = Picture["icon:/small/add"]
         }
         { btnClearSearchProject ToolButton
-          MoveScaled(25,0,3,4)
+          MoveScaled(25,0,3,3)
           ToolTip = ("Reset filter")
           Picture = Picture["icon:/small/refresh"]
-        }
-        { dwgSearchProject DrawingArea
-          MoveScaled(0,0,4,4)
-          Ignore = True
         }
       }
       { Separator4 Separator

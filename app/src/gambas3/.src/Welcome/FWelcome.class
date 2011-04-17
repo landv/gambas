@@ -43,7 +43,7 @@ Public Sub Form_Open()
   Dim hCtrl As CCoolButton
 
   sFont = "Bold"
-  W = panButton.ClientW + 4
+  W = panButton.ClientW
 
   btnNew = New CCoolButton(panButton, 0, POS_BUTTON, W, HEIGHT_BUTTON, ("New project..."), "icon:/large/new", sFont) As "btnNew"
   btnOpen = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON, W, HEIGHT_BUTTON, ("Open project..."), "icon:/large/open", sFont) As "btnOpen"

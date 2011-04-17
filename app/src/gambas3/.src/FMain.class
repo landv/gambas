@@ -1838,49 +1838,6 @@ Public Sub mnuReplace_Click()
   
 End
 
-Public Sub panSearchProject_Arrange()
-  
-  dwgSearchProject.Move(0, 0, panSearchProject.W, panSearchProject.H)
-  dwgSearchProject.Lower
-  
-End
-
-Public Sub panSearchProject_Enter()
-  
-  dwgSearchProject.Refresh
-  
-End
-
-Public Sub panSearchProject_Leave()
-  
-  dwgSearchProject.Refresh
-  
-End
-
-Public Sub dwgSearchProject_Draw()
-  
-  Dim iFlag As Integer
-  
-  If txtSearchProject.HasFocus Then iFlag += Draw.Focus
-  If dwgSearchProject.Hovered Then iFlag += Draw.Hover
-  If Not panSearchProject.Enabled Then iFlag += Draw.Disabled
-  
-  Draw.Style.Box(0, 0, dwgSearchProject.W, dwgSearchProject.H, iFlag)
-  
-End
-
-Public Sub txtSearchProject_GotFocus()
-  
-  dwgSearchProject.Refresh
-  
-End
-
-Public Sub txtSearchProject_LostFocus()
-  
-  dwgSearchProject.Refresh
-  
-End
-
 Public Sub btnClearSearchProject_Click()
   
   txtSearchProject.Clear
@@ -1902,13 +1859,6 @@ Public Sub timSearchProject_Timer()
   timSearchProject.Stop
   
 End
-
-' Public Sub tlbMain_Configure()
-'   
-'   panSepToolbar.H = tlbMain.H
-'   btnShowMenu.H = tlbMain.H
-'   
-' End
 
 Public Sub txtSearch_Click()
   
@@ -1935,8 +1885,3 @@ Public Sub btnSearchAdd_Click()
   
 End
 
-' Public Sub tabProperty_Click()
-' 
-'   If tabProperty.Index = 1 Then FFormStack.SetFocus
-' 
-' End

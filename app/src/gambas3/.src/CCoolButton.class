@@ -26,7 +26,7 @@ Public Sub _new(hContainer As Container, X As Integer, Y As Integer, W As Intege
   $hPanel.Mouse = Mouse.Pointing
   $hPanel.Arrangement = Arrange.Horizontal
   $hPanel.Spacing = True
-  '$hPanel.Margin = True
+  $hPanel.Margin = True
   $hPanel.Focus = True
 
   If TypeOf(vIcon) = gb.String Then
@@ -55,7 +55,18 @@ End
 
 Private Sub UpdateBorder()
   
-  $hPanel.Border = If($bInside Or $hPanel.HasFocus, Border.Plain, Border.None)
+  '$hPanel.Border = If($bInside Or $hPanel.HasFocus, Border.Plain, Border.None)
+  $hPanel.Refresh
+  
+End
+
+Public Sub Panel_Draw()
+  
+  If $hPanel.HasFocus Then
+    Draw.Foreground = $iHighlight '$hPanel.Background
+    Draw.LineStyle = Line.Dot
+    Draw.Rect(1, 1, Draw.W - 2, Draw.H - 2)
+  Endif
   
 End
 
@@ -103,15 +114,16 @@ End
 
 Public Sub Panel_KeyPress()
   
-  If Key.Code = Key.Space Then Panel_MouseDown
+  If Key.Code = Key.Space Then Pressed(True)
   
 End
 
 Public Sub Panel_KeyRelease()
   
   If Key.Code = Key.Space Then
-    Panel_MouseUp
+    Pressed(False)
     Panel_Leave
+    Raise Click
   Endif
   
 End
@@ -130,15 +142,25 @@ Private Function GetPanel() As DrawingArea
 
 End
 
+Private Sub Pressed(bOff As Boolean)
+  
+  If Not bOff Then
+    With GetPanel()
+      .Background = Color.SelectedBackground
+      .Foreground = Color.SelectedForeground
+    End With
+  Else
+    GetPanel().Background = $iHighlight 'Color.LightBackground
+    'hPanel.Foreground = $iColor
+  Endif
+
+End
+
 
 Public Sub Panel_MouseDown()
 
   If Not Mouse.Left Then Return
-
-  With GetPanel()
-    .Background = Color.SelectedBackground
-    .Foreground = Color.SelectedForeground
-  End With
+  Pressed(True)
 
 End
 
@@ -151,12 +173,12 @@ Public Sub Panel_MouseUp()
 
   If Not Mouse.Left Then Return
 
-  hPanel = GetPanel()
-  hPanel.Background = $iHighlight 'Color.LightBackground
-  'hPanel.Foreground = $iColor
+  Pressed(False)
 
-  Try X = Mouse.X
-  Try Y = Mouse.Y
+  hPanel = GetPanel()
+
+  X = Mouse.X
+  Y = Mouse.Y
 
   If Last <> hPanel Then
     X = X + Last.X

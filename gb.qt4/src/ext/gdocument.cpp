@@ -1394,6 +1394,12 @@ int GDocument::getLimitIndex(int y)
 {
 	int i = 0;
 	
+	if (y >= numLines())
+		y = numLines() - 1;
+	
+	if (y < 0)
+		return -1;
+	
 	while (y > 0)
 	{
 		if (lines.at(y)->proc)

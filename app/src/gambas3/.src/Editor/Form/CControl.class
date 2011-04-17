@@ -707,7 +707,7 @@ Private Function ConvertToString(vVal As Variant, hProp As CPropertyInfo) As Str
 
       Return CStr(vVal)
       
-    Case "String[]", "Field[]"
+    Case "String[]", "Fields"
     
       Return vVal.Join("\n")
 
@@ -1530,7 +1530,7 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
           sLine = sLine & vVal
         Endif
         
-      Case "String[]", "Field[]"
+      Case "String[]", "Fields"
       
         aVal = vVal.Copy()
         
@@ -1836,4 +1836,12 @@ Private Function H_Read() As Integer
 
   Try Return $cValue["#Height"]
 
+End
+
+
+Public Sub GetConnection() As String
+  
+  If $cValue["Connection"] Then Return $cValue["Connection"]
+  If Parent Then Return Parent.GetConnection()
+  
 End

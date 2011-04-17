@@ -16,7 +16,7 @@ Property Read Modified As Boolean
 Property ReadOnly As Boolean
 Property All As String
 
-Public Const _Properties As String = "*,ReadOnly,Field,Table,Filter,Display,All"
+Public Const _Properties As String = "*,ReadOnly,Field,Table{Table},Filter,Display,All"
 Public Const _Group As String = "Data"
 Public Const _DrawWith As String = "ComboBox"
 Public Const _Event As String = "Click"

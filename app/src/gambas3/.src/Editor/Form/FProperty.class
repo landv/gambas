@@ -24,7 +24,7 @@ Private $hWebView As WebView
 
 Private $iHighlightColor As Integer
 
-Static Private $aFieldUseDelete As String[] = ["Font", "Picture", "String[]", "Path", "Color", "Field[]", "Image", "ReportCoord", "ReportBorder", "ReportBrush"]
+Static Private $aFieldUseDelete As String[] = ["Font", "Picture", "String[]", "Path", "Color", "Fields", "Image", "ReportCoord", "ReportBorder", "ReportBrush"]
 
 Public Sub _new()
   
@@ -390,7 +390,7 @@ Public Function SaveProperty() As Boolean
 
     Case "s", "Font", "Picture", "Constant", "List", "Path", "Image", "ReportCoord", "ReportBorder", "ReportBrush"
     
-    Case "String[]", "Field[]"
+    Case "String[]", "Fields"
     
       Try vVal = Split(vVal, "\n")
       If Error Then Goto _BAD
@@ -650,7 +650,7 @@ Private Sub ShowProperty(Optional sFocus As String)
     Case "s"
       bButton = True
 
-    Case "String[]", "Field[]", "ReportBorder", "ReportBrush"
+    Case "String[]", "Fields", "ReportBorder", "ReportBrush"
       bButton = True
       txtProperty.ReadOnly = True
       
@@ -864,6 +864,7 @@ Public Sub btnProperty_Click()
   Dim sDest As String
   Dim sFont As String
   Dim sColor As String
+  Dim sConnection As String
 
   $bIgnoreHide = True
 
@@ -912,11 +913,14 @@ Public Sub btnProperty_Click()
       $hEditor.Text = Dialog.Path
       
     Case "Table"
+      
+      If Not $bMany Then sConnection = $hObject.GetConnection()
+      
       FTableChooser.Table = $sOldVal
-      If FTableChooser.Run() Then Goto _EXIT
+      If FTableChooser.Run(sConnection) Then Goto _EXIT
       $hEditor.Text = FTableChooser.Table
 
-    Case "Field[]"
+    Case "Fields"
       If FList.Run(Split($sOldVal, "\n"), ("Edit field list")) Then Goto _EXIT
       $hEditor.Text = FList.Value.Join("\n")
       

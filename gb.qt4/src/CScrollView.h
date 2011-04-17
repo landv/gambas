@@ -63,11 +63,11 @@ public:
 
   MyScrollView(QWidget *);
 	bool _noscroll;
+	int _scrollx, _scrolly;
+	bool _scroll_sent;
 
 protected:
 
-  //void frameChanged();
-  //void resizeEvent(QResizeEvent *);
   void showEvent(QShowEvent *);
 };
 
