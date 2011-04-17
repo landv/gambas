@@ -28,7 +28,7 @@ b
 _Properties
 C
 s
-*,Control=True,Columns{Fields},Editable,Header=True,Orientation{Align.Bottom;Left;Right;Top}=Bottom
+*,Control=True,Columns{Field[]},Editable,Header=True,Orientation{Align.Bottom;Left;Right;Top}=Bottom
 _Group
 C
 s
@@ -95,7 +95,7 @@ s
 _Properties
 C
 s
-*,ReadOnly,Field,Table{Table},Filter,Display,All
+*,ReadOnly,Field{Field},Table{Table},Filter,Display{Field:Table},All
 _Group
 C
 s
@@ -142,7 +142,7 @@ C
 _Properties
 C
 s
-*,Tag,Filter,Fields,Display,DataField,Table,Header,ReadOnly=True,Value,MaxLine=8,WidthList,FormatString
+*,Tag,Filter,Fields{Field[]},Display,DataField,Table,Header,ReadOnly=True,Value,MaxLine=8,WidthList,FormatString
 _DefaultEvent
 C
 s
@@ -281,7 +281,7 @@ b
 _Properties
 C
 s
-*,Field
+*,Field{Field}
 _Group
 C
 s

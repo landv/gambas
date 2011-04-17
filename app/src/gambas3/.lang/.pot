@@ -394,14 +394,15 @@ msgid ""
 msgstr ""
 
 #: Design.module:386 FColorChooser.class:55 FCommit.class:224
-#: FConnectionEditor.class:433 FCreateFile.class:431 FFontChooser.class:35
-#: FGotoLine.class:18 FList.class:116 FMain.class:1327 FMenu.class:366
-#: FNewConnection.class:239 FNewTable.class:81 FNewTranslation.class:16
-#: FOpenProject.class:155 FPasteSpecial.class:72 FPropertyComponent.class:225
-#: FPropertyProject.class:119 FReportBorderChooser.class:52
-#: FReportBrushChooser.class:35 FReportCoordChooser.class:33
-#: FSaveProjectAs.class:54 FSelectExtraFile.class:35 FSelectIcon.class:83
-#: FSnippet.class:52 FTableChooser.class:70 FText.class:36
+#: FConnectionEditor.class:433 FCreateFile.class:431 FFieldChooser.class:133
+#: FFontChooser.class:35 FGotoLine.class:18 FList.class:116 FMain.class:1327
+#: FMenu.class:366 FNewConnection.class:239 FNewTable.class:81
+#: FNewTranslation.class:16 FOpenProject.class:155 FPasteSpecial.class:72
+#: FPropertyComponent.class:225 FPropertyProject.class:119
+#: FReportBorderChooser.class:52 FReportBrushChooser.class:35
+#: FReportCoordChooser.class:33 FSaveProjectAs.class:54
+#: FSelectExtraFile.class:35 FSelectIcon.class:83 FSnippet.class:52
+#: FTableChooser.class:63 FText.class:36
 msgid "OK"
 msgstr ""
 
@@ -466,18 +467,19 @@ msgstr ""
 
 #: FColorChooser.class:61 FCommit.class:230 FConflict.class:191
 #: FConnectionEditor.class:284 FCreateFile.class:437 FDebugInfo.class:217
-#: FEditor.class:2277 FFontChooser.class:41 FForm.class:2960
-#: FGotoLine.class:24 FHelpBrowser.class:61 FIconEditor.class:1413
-#: FImportTable.class:39 FList.class:122 FMain.class:200
-#: FMakeInstall.class:327 FMenu.class:371 FNewConnection.class:245
-#: FNewTable.class:87 FNewTranslation.class:22 FOpenProject.class:161
-#: FOption.class:614 FPasteSpecial.class:78 FPasteTable.class:108
-#: FPropertyComponent.class:231 FPropertyProject.class:125
-#: FReportBorderChooser.class:46 FReportBrushChooser.class:29
-#: FReportCoordChooser.class:27 FSave.class:29 FSaveProjectAs.class:60
-#: FSearch.class:807 FSelectExtraFile.class:41 FSelectIcon.class:88
-#: FSnippet.class:58 FTableChooser.class:76 FText.class:42
-#: FTextEditor.class:485 FTranslate.class:638 Project.module:412
+#: FEditor.class:2277 FFieldChooser.class:139 FFontChooser.class:41
+#: FForm.class:2960 FGotoLine.class:24 FHelpBrowser.class:61
+#: FIconEditor.class:1413 FImportTable.class:39 FList.class:122
+#: FMain.class:200 FMakeInstall.class:327 FMenu.class:371
+#: FNewConnection.class:245 FNewTable.class:87 FNewTranslation.class:22
+#: FOpenProject.class:161 FOption.class:614 FPasteSpecial.class:78
+#: FPasteTable.class:108 FPropertyComponent.class:231
+#: FPropertyProject.class:125 FReportBorderChooser.class:46
+#: FReportBrushChooser.class:29 FReportCoordChooser.class:27 FSave.class:29
+#: FSaveProjectAs.class:60 FSearch.class:807 FSelectExtraFile.class:41
+#: FSelectIcon.class:88 FSnippet.class:58 FTableChooser.class:69
+#: FText.class:42 FTextEditor.class:485 FTranslate.class:638
+#: Project.module:412
 msgid "Cancel"
 msgstr ""
 
@@ -1408,6 +1410,34 @@ msgstr ""
 msgid "(Declarations)"
 msgstr ""
 
+#: FFieldChooser.class:39 FTableChooser.class:31
+msgid "Connection"
+msgstr ""
+
+#: FFieldChooser.class:51 FImportTable.class:153 FPasteTable.class:68
+msgid "Table"
+msgstr ""
+
+#: FFieldChooser.class:122 FList.class:105
+msgid "&Undo"
+msgstr ""
+
+#: FFieldChooser.class:56 FTableChooser.class:66
+msgid "Unable to open connection."
+msgstr ""
+
+#: FFieldChooser.class:63
+msgid "Unable to get table fields."
+msgstr ""
+
+#: FFieldChooser.class:69
+msgid "Edit field list"
+msgstr ""
+
+#: FFieldChooser.class:72
+msgid "Select a field"
+msgstr ""
+
 #: FFontChooser.class:13
 msgid "Select a font"
 msgstr ""
@@ -1861,10 +1891,6 @@ msgstr ""
 msgid "Destination"
 msgstr ""
 
-#: FImportTable.class:153 FPasteTable.class:68 FTableChooser.class:44
-msgid "Table"
-msgstr ""
-
 #: FImportTable.class:168
 msgid "The first line contains field names"
 msgstr ""
@@ -2035,10 +2061,6 @@ msgstr ""
 
 #: FList.class:99 FMain.class:658
 msgid "&Paste"
-msgstr ""
-
-#: FList.class:105
-msgid "&Undo"
 msgstr ""
 
 #: FList.class:105
@@ -3114,7 +3136,7 @@ msgstr ""
 msgid "Procedure separation"
 msgstr ""
 
-#: FOption.class:388 FProperty.class:747
+#: FOption.class:388 FProperty.class:740
 msgid "None"
 msgstr ""
 
@@ -3354,47 +3376,43 @@ msgstr ""
 msgid "..."
 msgstr ""
 
-#: FProperty.class:353
+#: FProperty.class:350
 msgid "Forbidden characters in control name."
 msgstr ""
 
-#: FProperty.class:358
+#: FProperty.class:355
 msgid "This name is already in use."
 msgstr ""
 
-#: FProperty.class:368
+#: FProperty.class:365
 msgid "Forbidden characters in control group."
 msgstr ""
 
-#: FProperty.class:426
+#: FProperty.class:423
 msgid "Incorrect property value."
 msgstr ""
 
-#: FProperty.class:576
+#: FProperty.class:573
 msgid "The name of the control."
 msgstr ""
 
-#: FProperty.class:587
+#: FProperty.class:584
 msgid "The event group that the control belongs to."
 msgstr ""
 
-#: FProperty.class:601
+#: FProperty.class:598
 msgid ""
 "If the form and controls dimensions must follow the size of the default font."
 msgstr ""
 
-#: FProperty.class:605
+#: FProperty.class:602
 msgid "If the control is public."
 msgstr ""
 
-#: FProperty.class:625
+#: FProperty.class:622
 msgid ""
 "This property is virtual: it is only implemented in the IDE, and has no "
 "existence at runtime."
-msgstr ""
-
-#: FProperty.class:924
-msgid "Edit field list"
 msgstr ""
 
 #: FPropertyComponent.class:76
@@ -3817,16 +3835,8 @@ msgstr ""
 msgid "System information"
 msgstr ""
 
-#: FTableChooser.class:18
+#: FTableChooser.class:17
 msgid "Choose a table"
-msgstr ""
-
-#: FTableChooser.class:32
-msgid "Connection"
-msgstr ""
-
-#: FTableChooser.class:65
-msgid "Unable to open connection."
 msgstr ""
 
 #: FText.class:13

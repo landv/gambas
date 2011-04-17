@@ -1143,6 +1143,7 @@ void GDocument::colorize(int y)
   int tag;
   int nupd = 0;
   bool changed = false;
+	bool updateAll = false;
 
   if (highlightMode == None)
     return;
@@ -1170,6 +1171,8 @@ void GDocument::colorize(int y)
 			GB.FreeArray(&l->highlight);
 			proc = l->proc;
 			(*highlightCallback)(views.first(), state, alternate, tag, l->s, &l->highlight, proc);
+			
+			updateAll |= proc != l->proc;
 			l->proc = proc;
 
 			if (old != l->s)
@@ -1190,6 +1193,7 @@ void GDocument::colorize(int y)
 		else
 		{
 			GB.FreeArray(&l->highlight);
+			updateAll |= l->proc;
 			l->proc = false;
 		}
 
@@ -1218,6 +1222,15 @@ void GDocument::colorize(int y)
 	
 	if (nupd >= 1)
 		updateViews(y - nupd + 1, nupd);
+	
+	if (updateAll)
+	{
+		FOR_EACH_VIEW(v)
+		{
+			if (v->getFlag(GEditor::ChangeBackgroundAtLimit))
+				v->updateContents();
+		}
+	}
 }
 
 void GDocument::colorizeAll()

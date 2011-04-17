@@ -1,0 +1,100 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,68,53)
+  Resizable = False
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { HBox2 HPanel
+    MoveScaled(1,1,66,9)
+    Spacing = True
+    { Label1 Label
+      MoveScaled(0,0,19,4)
+      Text = ("Connection")
+    }
+    { lblConnection Label
+      MoveScaled(21,0,40,4)
+      Expand = True
+      Padding = 4
+      Border = Border.Raised
+    }
+    { Label2 Label
+      MoveScaled(0,5,19,4)
+      Text = ("Table")
+    }
+    { lblTable Label
+      MoveScaled(21,5,40,4)
+      Expand = True
+      Padding = 4
+      Border = Border.Raised
+    }
+  }
+  { panField HBox
+    MoveScaled(1,12,66,35)
+    Expand = True
+    Spacing = True
+    { lstField ListBox
+      MoveScaled(2,1,25,33)
+      Expand = True
+      Mode = Select.Multiple
+    }
+    { panFieldList VBox
+      MoveScaled(29,1,5,32)
+      Spacing = True
+      { Panel2 Panel
+        MoveScaled(0,3,5,1)
+        Expand = True
+      }
+      { btnRight Button
+        MoveScaled(0,5,5,5)
+        Picture = Picture["icon:/16/right"]
+      }
+      { btnLeft Button
+        MoveScaled(0,11,5,5)
+        Picture = Picture["icon:/16/left"]
+      }
+      { btnUp Button
+        MoveScaled(0,17,5,5)
+        Picture = Picture["icon:/16/up"]
+      }
+      { btnDown Button
+        MoveScaled(0,23,5,5)
+        Picture = Picture["icon:/16/down"]
+      }
+      { Panel3 Panel
+        MoveScaled(0,29,5,1)
+        Expand = True
+      }
+    }
+    { lstFieldList ListBox
+      MoveScaled(36,1,26,32)
+      Expand = True
+      Mode = Select.Multiple
+    }
+  }
+  { HBox1 HBox
+    MoveScaled(1,48,66,4)
+    Spacing = True
+    { btnUndo Button
+      MoveScaled(1,0,16,4)
+      Visible = False
+      Text = ("&Undo")
+      Picture = Picture["icon:/small/undo"]
+    }
+    { Panel1 Panel
+      MoveScaled(23,0,4,4)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(31,0,16,4)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(48,0,16,4)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

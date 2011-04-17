@@ -16,7 +16,7 @@ Property Read Modified As Boolean
 Property ReadOnly As Boolean
 Property All As String
 
-Public Const _Properties As String = "*,ReadOnly,Field,Table{Table},Filter,Display,All"
+Public Const _Properties As String = "*,ReadOnly,Field{Field},Table{Table},Filter,Display{Field:Table},All"
 Public Const _Group As String = "Data"
 Public Const _DrawWith As String = "ComboBox"
 Public Const _Event As String = "Click"
@@ -206,19 +206,18 @@ End
 Private Function GetValue() As Variant
 
   Dim vVal As Variant
-  Dim iVal As Integer
   
   If Not Trim($hCtrl.Text) Then Return
   If $sAll Then
     If $hCtrl.Index = 0 Then Return
   Endif
   
-  Try iVal = CInt(Trim($hCtrl.Text))
+  Try vVal = CInt(Trim($hCtrl.Text))
   If Error Then
-    iVal = $cKey[Trim($hCtrl.Text)]
+    vVal = $cKey[Trim($hCtrl.Text)]
   Endif
 
-  Return iVal  
+  Return vVal  
   
 End
 

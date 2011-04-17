@@ -1,0 +1,139 @@
+' Gambas class file
+
+Static Public Value As String
+
+Static Private $sConnection As String
+Static Private $sTable As String
+Static Private $bMulti As Boolean
+
+Private $hConn As New Connection
+
+Public Sub Run(sConnection As String, sTable As String, bMulti As Boolean, sValue As String) As Boolean
+
+  $sConnection = sConnection
+  $sTable = sTable
+  $bMulti = bMulti
+  Value = sValue
+
+  Return Not Me.ShowModal()
+
+End
+
+Public Sub btnOK_Click()
+
+  If $bMulti Then
+    Value = lstFieldList.List.Join("\n")
+  Else
+    Value = lstField.Text
+  Endif
+  
+  Me.Close(True)
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+
+Public Sub Form_Open()
+
+  Dim hConfig As Settings
+  Dim hTable As Table
+  Dim hField As Field
+  Dim aField As String[]
+
+  lblConnection.Text = $sConnection
+
+  hConfig = New Settings(Project.Dir &/ ".connection" &/ $sConnection & ".connection")
+  
+  $hConn.Close
+  MConnection.InitFrom($hConn, hConfig, $sConnection, True)
+  Try $hConn.Open
+  If Error Then
+    Balloon.Error(("Unable to open connection.") & "\n\n" & Error.Text, lblConnection)
+    Goto DISABLE
+  Endif
+  
+  lblTable.Text = $sTable
+  aField = MConnection.GetFields($hConn, $sTable)
+  If Not aField Then
+    Balloon.Error(("Unable to get table fields.") & "\n\n" & Error.Text, lblTable)
+    Goto DISABLE
+  Endif
+  
+  lstField.List = aField
+  If $bMulti Then
+    Me.Title = ("Edit field list")
+    lstFieldList.List = Split(Value, "\n")
+  Else
+    Me.Title = ("Select a field")
+    lstField.Index = lstField.Find(Value)
+    panFieldList.Hide
+    lstFieldList.Hide
+    lstField.Mode = Select.Single
+  Endif
+  
+  Return
+
+DISABLE:
+
+  panField.Enabled = False
+  btnOK.Enabled = False
+
+End
+
+Public Sub btnRight_Click()
+
+  Dim iInd As Integer
+  
+  For iInd = 0 To lstField.Count - 1
+    If lstField[iInd].Selected Then
+      lstFieldList.Add(lstField[iInd].Text)
+    Endif
+  Next
+  lstField.UnselectAll
+
+End
+
+Public Sub btnLeft_Click()
+
+  Dim iInd As Integer
+  
+  While iInd < lstFieldList.Count
+    If lstFieldList[iInd].Selected Then
+      lstFieldList.Remove(iInd)
+    Else
+      Inc iInd
+    Endif
+  Wend
+
+End
+
+Public Sub btnDown_Click()
+
+  Dim iInd As Integer
+
+  iInd = lstFieldList.Index
+
+  If iInd < (lstFieldList.Count - 1) Then
+    Swap lstFieldList[iInd].Text, lstFieldList[iInd + 1].Text
+    lstFieldList.Index = iInd + 1
+  Endif
+
+End
+
+Public Sub btnUp_Click()
+
+  Dim iInd As Integer
+
+  iInd = lstFieldList.Index
+
+  If iInd > 0 Then
+    Swap lstFieldList[iInd].Text, lstFieldList[iInd - 1].Text
+    lstFieldList.Index = iInd - 1
+  Endif
+
+End

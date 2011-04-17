@@ -703,11 +703,11 @@ Private Function ConvertToString(vVal As Variant, hProp As CPropertyInfo) As Str
 
       Return CStr(vVal)
 
-    Case "List", "Path", "Picture", "Font", "Table", "Menu", "Image", "ReportCoord", "ReportBorder", "ReportBrush"
+    Case "List", "Path", "Picture", "Font", "Table", "Menu", "Image", "ReportCoord", "ReportBorder", "ReportBrush", "Field"
 
       Return CStr(vVal)
       
-    Case "String[]", "Fields"
+    Case "String[]", "Fields", "Field[]"
     
       Return vVal.Join("\n")
 
@@ -1521,7 +1521,7 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
 
     Select Case hProp.Type
 
-      Case "s", "v", "List", "Path", "Table", "Menu", "ReportCoord"
+      Case "s", "v", "List", "Path", "Table", "Menu", "ReportCoord", "Field"
         vVal = Quote(vVal)
 
         If hProp.Translate Then
@@ -1530,7 +1530,7 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
           sLine = sLine & vVal
         Endif
         
-      Case "String[]", "Fields"
+      Case "String[]", "Fields", "Field[]"
       
         aVal = vVal.Copy()
         
@@ -1843,5 +1843,18 @@ Public Sub GetConnection() As String
   
   If $cValue["Connection"] Then Return $cValue["Connection"]
   If Parent Then Return Parent.GetConnection()
+  
+End
+
+Public Sub GetTable(Optional sField As String) As String
+  
+  Dim sTable As String
+  
+  If sField Then Return $cValue[sField]
+  
+  If Not Parent Then Return
+  sTable = Parent["Table"]
+  If sTable Then Return sTable
+  Return Parent.GetTable()
   
 End

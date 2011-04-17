@@ -16,19 +16,14 @@
       MoveScaled(1,1,19,4)
       Text = ("Connection")
     }
-    { cmbConnection ComboBox
-      MoveScaled(22,1,42,4)
+    { lblConnection Label
+      MoveScaled(22,1,41,4)
       Expand = True
-      ReadOnly = True
-    }
-    { Label2 Label
-      MoveScaled(1,6,19,4)
-      Visible = False
-      Text = ("Table")
-      Alignment = Align.TopNormal
+      Padding = 4
+      Border = Border.Raised
     }
     { lvwTable TreeView
-      MoveScaled(22,6,41,25)
+      MoveScaled(1,6,62,25)
       Expand = True
       Sorted = True
     }

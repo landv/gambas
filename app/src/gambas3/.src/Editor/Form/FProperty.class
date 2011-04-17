@@ -24,7 +24,7 @@ Private $hWebView As WebView
 
 Private $iHighlightColor As Integer
 
-Static Private $aFieldUseDelete As String[] = ["Font", "Picture", "String[]", "Path", "Color", "Fields", "Image", "ReportCoord", "ReportBorder", "ReportBrush"]
+Static Private $aFieldUseDelete As String[] = ["Font", "Picture", "String[]", "Path", "Color", "Field", "Fields", "Field[]", "Image", "ReportCoord", "ReportBorder", "ReportBrush"]
 
 Public Sub _new()
   
@@ -273,8 +273,6 @@ _HIDE:
 
 End
 
-
-
 Public Sub HideAll()
 
   HideProperty
@@ -287,7 +285,6 @@ Public Sub HideAll()
   $hForm = Null
 
 End
-
 
 Public Sub RefreshOne(hCtrl As CControl, sProp As String)
 
@@ -388,9 +385,9 @@ Public Function SaveProperty() As Boolean
 
       If Not IsNull(Val(vVal)) Then vVal = Val(vVal)
 
-    Case "s", "Font", "Picture", "Constant", "List", "Path", "Image", "ReportCoord", "ReportBorder", "ReportBrush"
+    Case "s", "Font", "Picture", "Constant", "List", "Path", "Image", "ReportCoord", "ReportBorder", "ReportBrush", "Field"
     
-    Case "String[]", "Fields"
+    Case "String[]", "Fields", "Field[]"
     
       Try vVal = Split(vVal, "\n")
       If Error Then Goto _BAD
@@ -650,7 +647,8 @@ Private Sub ShowProperty(Optional sFocus As String)
     Case "s"
       bButton = True
 
-    Case "String[]", "Fields", "ReportBorder", "ReportBrush"
+    Case "String[]", "Fields", "Field[]", "ReportBorder", "ReportBrush", "Field", "Table"
+      
       bButton = True
       txtProperty.ReadOnly = True
       
@@ -713,11 +711,6 @@ Private Sub ShowProperty(Optional sFocus As String)
       spnProperty.MaxValue = 4096
       spnProperty.Step = Desktop.Scale
       'spnProperty.Suffix = ""
-    
-    Case "Table"
-      bButton = True
-      
-    Case "Field"
     
     Case "Connection"
 
@@ -854,6 +847,44 @@ Private Function GetFont(sFont As String) As String
 
 End
 
+Private Sub GetConnection() As String
+  
+  Dim hCtrl As CControl
+  Dim sConn As String
+  Dim sResult As String 
+  
+  For Each hCtrl In $hForm.Selection
+    sConn = hCtrl.GetConnection()
+    If Not sResult Then
+      sResult = sConn
+    Else If sConn <> sResult Then 
+      Return
+    Endif
+  Next
+  
+  Return sResult
+  
+End
+
+
+Private Sub GetTable(sField As String) As String
+  
+  Dim hCtrl As CControl
+  Dim sTable As String
+  Dim sResult As String 
+  
+  For Each hCtrl In $hForm.Selection
+    sTable = hCtrl.GetTable(sField)
+    If Not sResult Then
+      sResult = sTable
+    Else If sTable <> sResult Then 
+      Return
+    Endif
+  Next
+  
+  Return sResult
+  
+End
 
 
 Public Sub btnProperty_Click()
@@ -865,6 +896,7 @@ Public Sub btnProperty_Click()
   Dim sFont As String
   Dim sColor As String
   Dim sConnection As String
+  Dim sTable As String
 
   $bIgnoreHide = True
 
@@ -914,23 +946,45 @@ Public Sub btnProperty_Click()
       
     Case "Table"
       
-      If Not $bMany Then sConnection = $hObject.GetConnection()
+      sConnection = GetConnection()
       
-      FTableChooser.Table = $sOldVal
-      If FTableChooser.Run(sConnection) Then Goto _EXIT
-      $hEditor.Text = FTableChooser.Table
+      If sConnection Then
+        FTableChooser.Table = $sOldVal
+        If FTableChooser.Run(sConnection) Then Goto _EXIT
+        $hEditor.Text = FTableChooser.Table
+      Endif
 
-    Case "Fields"
-      If FList.Run(Split($sOldVal, "\n"), ("Edit field list")) Then Goto _EXIT
-      $hEditor.Text = FList.Value.Join("\n")
+    Case "Field"
+      
+      
+      sConnection = GetConnection()
+      sTable = GetTable($sOption)
+      If sConnection And If sTable Then 
+        If FFieldChooser.Run(sConnection, sTable, False, $sOldVal) Then Goto _EXIT
+        $hEditor.Text = FFieldChooser.Value
+      Endif
+      
+    Case "Fields", "Field[]"
+      
+      sConnection = GetConnection()
+      sTable = GetTable()
+      If sConnection And If sTable Then 
+        If FFieldChooser.Run(sConnection, sTable, True, $sOldVal) Then Goto _EXIT
+        $hEditor.Text = FFieldChooser.Value
+      Endif
       
     Case "ReportCoord"
+      
       If FReportCoordChooser.Run($sOldVal) Then Goto _EXIT
       $hEditor.Text = FReportCoordChooser.Coord
+      
     Case "ReportBrush"
+      
       If FReportBrushChooser.Run($sOldVal) Then Goto _EXIT
       $hEditor.Text = FReportBrushChooser.Value
+      
     Case "ReportBorder"
+      
       If FReportBorderChooser.Run($sOldVal) Then Goto _EXIT
       $hEditor.Text = FReportBorderChooser.Value
 
