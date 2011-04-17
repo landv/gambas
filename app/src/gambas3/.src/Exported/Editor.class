@@ -107,12 +107,16 @@ End
 
 Public Sub ReadConfig()
 
+  Dim iLimit As Integer
+  
   Me.Font = Font[Settings["/Editor/Font", Project.DEFAULT_FONT]]
 
   MTheme.InitEditor(Me)
 
-  Me.Flags[Editor.ShowProcedureLimits] = Settings["/Editor/ProcedureLimit", 2] > 0
-  Me.Flags[Editor.BlendedProcedureLimits] = Settings["/Editor/ProcedureLimit", 2] = 2
+  iLimit = Settings["/Editor/ProcedureLimit", 2]
+  Me.Flags[Editor.ShowProcedureLimits] = iLimit > 0 And iLimit < 3
+  Me.Flags[Editor.BlendedProcedureLimits] = iLimit = 2
+  Me.Flags[Editor.ChangeBackgroundAtLimit] = iLimit = 3
   Me.Flags[Editor.ShowModifiedLines] = Settings["/Editor/ShowChange", True]
   Me.Flags[Editor.ShowLineNumbers] = Settings["/Editor/ShowLineNumbers", False]
   Me.Flags[Editor.ShowCurrentLine] = Settings["/Editor/ShowCurrent", True]

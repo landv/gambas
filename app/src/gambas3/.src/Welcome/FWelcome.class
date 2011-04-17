@@ -40,20 +40,21 @@ Public Sub Form_Open()
   Dim sFont As String
   Dim hImage As Image
   Dim hLogo As SvgImage
+  Dim hCtrl As CCoolButton
 
   sFont = "Bold"
   W = panButton.ClientW + 4
 
   btnNew = New CCoolButton(panButton, 0, POS_BUTTON, W, HEIGHT_BUTTON, ("New project..."), "icon:/large/new", sFont) As "btnNew"
-  btnNew.Foreground = Color.SelectedBackground
   btnOpen = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON, W, HEIGHT_BUTTON, ("Open project..."), "icon:/large/open", sFont) As "btnOpen"
-  btnOpen.Foreground = Color.SelectedBackground
   btnRecent = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 2, W, HEIGHT_BUTTON, ("Recent projects"), "icon:/large/open-recent", sFont) As "btnRecent"
-  btnRecent.Foreground = Color.SelectedBackground
   btnExample = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 3, W, HEIGHT_BUTTON, ("Examples"), "icon:/large/help", sFont) As "btnExample"
-  btnExample.Foreground = Color.SelectedBackground
   btnQuit = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 4, W, HEIGHT_BUTTON, ("Quit"), "icon:/large/quit", sFont) As "btnQuit"
-  btnQuit.Foreground = Color.SelectedBackground
+
+  For Each hCtrl In [btnNew, btnOpen, btnRecent, btnExample, btnQuit]
+    hCtrl.Foreground = Color.White
+    hCtrl.Highlight = &H3398C3& ' &HDF6B00&
+  Next
 
   ' Fill recent list
 

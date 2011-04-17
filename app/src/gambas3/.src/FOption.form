@@ -212,7 +212,7 @@
       { cmbProcLimit ComboBox
         MoveScaled(48,0,18,4)
         ReadOnly = True
-        List = [("None"), ("Line"), ("Blend")]
+        List = [("None"), ("Line"), ("Blend"), ("Background")]
       }
     }
     { HBox17 HBox
@@ -335,118 +335,6 @@
       }
     }
     Index = 2
-    Text = ("Applications")
-    Picture = Picture["icon:/large/exec"]
-    { HBox12 HBox
-      MoveScaled(0,0,66,4)
-      Spacing = True
-      { Label13 Label
-        MoveScaled(0,0,47,4)
-        Expand = True
-        Text = ("Browser")
-      }
-      { cmbBrowser ComboBox
-        MoveScaled(48,0,18,4)
-        ReadOnly = True
-        List = []
-      }
-    }
-    { HBox2 HBox
-      MoveScaled(0,5,66,4)
-      Spacing = True
-      { Label4 Label
-        MoveScaled(0,0,47,4)
-        Expand = True
-        Text = ("Terminal")
-      }
-      { cmbTerminal ComboBox
-        MoveScaled(48,0,18,4)
-        ReadOnly = True
-        List = []
-      }
-    }
-    { HBox9 HBox
-      MoveScaled(0,10,66,4)
-      Spacing = True
-      { Label14 Label
-        MoveScaled(0,0,47,4)
-        Expand = True
-        Text = ("Image editor")
-      }
-      { cmbImageEditor ComboBox
-        MoveScaled(48,0,18,4)
-        ReadOnly = True
-        List = []
-      }
-    }
-    Index = 3
-    Text = ("Help")
-    Picture = Picture["icon:/large/help"]
-    { HBox13 HBox
-      MoveScaled(0,0,66,4)
-      Spacing = True
-      { Label32 Label
-        MoveScaled(0,0,47,4)
-        Expand = True
-        Text = ("Display property help")
-      }
-      { cmbIntegratedHelp ComboBox
-        MoveScaled(48,0,10,4)
-        ReadOnly = True
-        List = [("No"), ("Yes")]
-      }
-      { Panel4 Panel
-        MoveScaled(59,0,7,4)
-        Visible = False
-      }
-    }
-    { HBox3 HBox
-      MoveScaled(0,5,66,4)
-      Spacing = True
-      { Label10 Label
-        MoveScaled(0,0,47,4)
-        Expand = True
-        Text = ("Show tooltips")
-      }
-      { cmbTooltip ComboBox
-        MoveScaled(48,0,10,4)
-        ReadOnly = True
-        List = [("No"), ("Yes")]
-      }
-      { Panel5 Panel
-        MoveScaled(59,0,7,4)
-        Visible = False
-      }
-    }
-    { HBox5 HBox
-      MoveScaled(0,10,66,4)
-      Spacing = True
-      { Label23 Label
-        MoveScaled(0,0,47,4)
-        Expand = True
-        Text = ("Show documentation in popups")
-      }
-      { cmbHelpCompletion ComboBox
-        MoveScaled(48,0,10,4)
-        ReadOnly = True
-        List = [("No"), ("Yes")]
-      }
-      { Panel6 Panel
-        MoveScaled(59,0,7,4)
-        Visible = False
-      }
-    }
-    { HBox22 HBox
-      MoveScaled(0,15,66,4)
-      Spacing = True
-      { btnClearCache Button
-        MoveScaled(0,0,39,4)
-        AutoResize = True
-        Text = ("Clear documentation cache")
-        Picture = Picture["icon:/small/trash"]
-      }
-    }
-    Index = 4
     Text = ("Style")
     Picture = Picture["icon:/large/color"]
     { Label24 Label
@@ -524,6 +412,118 @@
       Spacing = True
       Padding = 4
     }
+    Index = 3
+    Text = ("Applications")
+    Picture = Picture["icon:/large/exec"]
+    { HBox12 HBox
+      MoveScaled(0,0,66,4)
+      Spacing = True
+      { Label13 Label
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Browser")
+      }
+      { cmbBrowser ComboBox
+        MoveScaled(48,0,18,4)
+        ReadOnly = True
+        List = []
+      }
+    }
+    { HBox2 HBox
+      MoveScaled(0,5,66,4)
+      Spacing = True
+      { Label4 Label
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Terminal")
+      }
+      { cmbTerminal ComboBox
+        MoveScaled(48,0,18,4)
+        ReadOnly = True
+        List = []
+      }
+    }
+    { HBox9 HBox
+      MoveScaled(0,10,66,4)
+      Spacing = True
+      { Label14 Label
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Image editor")
+      }
+      { cmbImageEditor ComboBox
+        MoveScaled(48,0,18,4)
+        ReadOnly = True
+        List = []
+      }
+    }
+    Index = 4
+    Text = ("Help")
+    Picture = Picture["icon:/large/help"]
+    { HBox13 HBox
+      MoveScaled(0,0,66,4)
+      Spacing = True
+      { Label32 Label
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Display property help")
+      }
+      { cmbIntegratedHelp ComboBox
+        MoveScaled(48,0,10,4)
+        ReadOnly = True
+        List = [("No"), ("Yes")]
+      }
+      { Panel4 Panel
+        MoveScaled(59,0,7,4)
+        Visible = False
+      }
+    }
+    { HBox3 HBox
+      MoveScaled(0,5,66,4)
+      Spacing = True
+      { Label10 Label
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Show tooltips")
+      }
+      { cmbTooltip ComboBox
+        MoveScaled(48,0,10,4)
+        ReadOnly = True
+        List = [("No"), ("Yes")]
+      }
+      { Panel5 Panel
+        MoveScaled(59,0,7,4)
+        Visible = False
+      }
+    }
+    { HBox5 HBox
+      MoveScaled(0,10,66,4)
+      Spacing = True
+      { Label23 Label
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Show documentation in popups")
+      }
+      { cmbHelpCompletion ComboBox
+        MoveScaled(48,0,10,4)
+        ReadOnly = True
+        List = [("No"), ("Yes")]
+      }
+      { Panel6 Panel
+        MoveScaled(59,0,7,4)
+        Visible = False
+      }
+    }
+    { HBox22 HBox
+      MoveScaled(0,15,66,4)
+      Spacing = True
+      { btnClearCache Button
+        MoveScaled(0,0,39,4)
+        AutoResize = True
+        Text = ("Clear documentation cache")
+        Picture = Picture["icon:/small/trash"]
+      }
+    }
     Index = 5
     Text = ("Code snippets")
     Picture = Picture["icon:/large/wizard"]
@@ -532,7 +532,7 @@
       Text = ("Activate code snippets")
     }
     { HBox27 HBox
-      MoveScaled(0,4,69,49)
+      MoveScaled(0,4,66,49)
       Expand = True
       Spacing = True
       { gvwSnippet GridView
@@ -542,7 +542,7 @@
         Scrollbar = Scroll.Vertical
       }
       { VBox2 VBox
-        MoveScaled(50,1,17,45)
+        MoveScaled(46,1,17,45)
         Spacing = True
         { btnInsertSnippet Button
           MoveScaled(0,0,17,4)

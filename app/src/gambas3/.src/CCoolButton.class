@@ -3,6 +3,7 @@
 Property Enabled As Boolean
 Property ToolTip As String
 Property Foreground As Integer
+Property Highlight As Integer
 
 Public Tag As String
 
@@ -11,6 +12,7 @@ Private $hImage As PictureBox
 Private $hLabel As TextLabel
 Private $iColor As Integer
 Private $bInside As Boolean
+Private $iHighlight As Integer = Color.SelectedBackground
 
 Event Click()
 
@@ -35,7 +37,7 @@ Public Sub _new(hContainer As Container, X As Integer, Y As Integer, W As Intege
 
   $hImage = New PictureBox($hPanel) As "Panel"
   If hPict Then
-    $hImage.Resize(hPict.Width + 4, H - 8)
+    $hImage.Resize(hPict.Width + 8, H - 8)
     $hImage.Alignment = Align.Right
     $hImage.Picture = hPict
   Else
@@ -65,9 +67,9 @@ Public Sub Panel_Enter()
   Try hPanel = Last
   If Not hPanel Then Return
 
-  $iColor = hPanel.Foreground
-  hPanel.Background = Color.LightBackground '&88D5FF&
-  hPanel.Foreground = Color.Foreground '&88D5FF&
+  '$iColor = hPanel.Foreground
+  hPanel.Background = $iHighlight 'Color.LightBackground '&88D5FF&
+  'hPanel.Foreground = Color.Foreground '&88D5FF&
   $bInside = True
   UpdateBorder
 
@@ -81,7 +83,7 @@ Public Sub Panel_Leave()
   If Not hPanel Then Return
 
   hPanel.Background = Color.Default 'Last.Parent.Background
-  hPanel.Foreground = $iColor
+  'hPanel.Foreground = $iColor
   $bInside = False
   UpdateBorder
 
@@ -150,8 +152,8 @@ Public Sub Panel_MouseUp()
   If Not Mouse.Left Then Return
 
   hPanel = GetPanel()
-  hPanel.Background = Color.LightBackground
-  hPanel.Foreground = $iColor
+  hPanel.Background = $iHighlight 'Color.LightBackground
+  'hPanel.Foreground = $iColor
 
   Try X = Mouse.X
   Try Y = Mouse.Y
@@ -222,5 +224,17 @@ End
 Private Sub Foreground_Write(Value As Integer)
 
   $hPanel.Foreground = Value
+
+End
+
+Private Function Highlight_Read() As Integer
+
+  Return $iHighlight
+
+End
+
+Private Sub Highlight_Write(Value As Integer)
+
+  $iHighlight = Value
 
 End

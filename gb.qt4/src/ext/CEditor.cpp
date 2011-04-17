@@ -1222,6 +1222,7 @@ GB_DESC CEditorDesc[] =
   GB_CONSTANT("BlendedProcedureLimits", "i", GEditor::BlendedProcedureLimits),
   GB_CONSTANT("ShowDots", "i", GEditor::ShowDots),
   GB_CONSTANT("ShowCursorPosition", "i", GEditor::ShowCursorPosition),
+  GB_CONSTANT("ChangeBackgroundAtLimit", "i", GEditor::ChangeBackgroundAtLimit),
 
   GB_METHOD("_new", NULL, CEDITOR_new, "(Parent)Container;"),
   GB_METHOD("_free", NULL, CEDITOR_free, NULL),

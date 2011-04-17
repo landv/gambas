@@ -147,6 +147,7 @@ GEditor::GEditor(QWidget *parent)
 	_showStringIgnoreCase = false;
 	_insertMode = false;
 	_cellw = _cellh = 0;
+	_oddLine = false;
 
 	for (i = 0; i < GLine::NUM_STATE; i++)
 	{
@@ -672,6 +673,7 @@ void GEditor::paintCell(QPainter *painter, int row, int)
 	int realRow;
 	bool folded;
 	bool highlight;
+	bool odd;
 
 	ur = QRect(0, row * _cellh, _cellw, _cellh);
 	contentsToViewport(ur.x(), ur.y(), x1, y1);
@@ -691,8 +693,6 @@ void GEditor::paintCell(QPainter *painter, int row, int)
 		return;
 	}
 	
-	l = doc->lines.at(realRow);
-	
 	// Colorize as soon as possible
 	highlight = (doc->getHighlightMode() != GDocument::None) && !doc->isLineEditedSomewhere(realRow); //(l->modified && realRow == y && !getFlag(HighlightCurrent)));
 	if (highlight)
@@ -701,6 +701,17 @@ void GEditor::paintCell(QPainter *painter, int row, int)
 		doc->colorize(realRow);
 		painting = false;
 	}
+	
+	l = doc->lines.at(realRow);
+	
+	if (getFlag(ChangeBackgroundAtLimit) && doc->getHighlightMode() != GDocument::None)
+	{
+		if (l->proc)
+			_oddLine = !_oddLine;
+		odd = _oddLine;
+	}
+	else
+		odd = false;
 	
 	folded = l->proc && isFolded(realRow);
 		
@@ -722,7 +733,7 @@ void GEditor::paintCell(QPainter *painter, int row, int)
 
 	QPainter p(cache);
 	
-	color = calc_color(a, b, styles[GLine::Background].color);
+	color = calc_color(a, b, odd ? _oddBackground : styles[GLine::Background].color);
 	
 	p.fillRect(0, 0, _cellw, _cellh, color);
 	
@@ -731,7 +742,7 @@ void GEditor::paintCell(QPainter *painter, int row, int)
 	//p.translate(-ur.left(), 0);
 
 	// Procedure separation
-	if (getFlag(ShowProcedureLimits) && l->proc)
+	if (!getFlag(ChangeBackgroundAtLimit) && getFlag(ShowProcedureLimits) && l->proc)
 	{
 		if (getFlag(BlendedProcedureLimits))
 		{
@@ -794,8 +805,8 @@ void GEditor::paintCell(QPainter *painter, int row, int)
 
 		if (getFlag(ShowModifiedLines) && l->changed)
 			p.fillRect(0, 0, margin - 2, _cellh, styles[GLine::Highlight].color);
-		else if (getFlag(ShowCurrentLine))
-			p.fillRect(0, 0, margin - 2, _cellh, styles[GLine::Line].color);
+		/*else if (getFlag(ShowCurrentLine))
+			p.fillRect(0, 0, margin - 2, _cellh, styles[GLine::Line].color);*/
 
 		//x1 = 0;
 
@@ -1937,13 +1948,24 @@ void GEditor::setStyle(int index, GHighlightStyle *style)
 
 	styles[index] = *style;
 
-	if (index == 0)
+	if (index == GLine::Background)
 	{
 		viewport()->setPaletteBackgroundColor(style->color);
 		redrawContents();
 	}
 	else
 		updateContents();
+	
+	if (index == GLine::Line)
+	{
+		_oddBackground = style->color;
+		if (_oddBackground.saturation() > 10)
+			_oddBackground.setHsv(_oddBackground.hue() + 4, _oddBackground.saturation() / 2, _oddBackground.value());
+		else if (_oddBackground.value() > 127)
+			_oddBackground.setHsv(_oddBackground.hue() + 4, _oddBackground.saturation() / 2, _oddBackground.value() - 32);
+		else
+			_oddBackground.setHsv(_oddBackground.hue() + 4, _oddBackground.saturation() / 2, _oddBackground.value() + 32);
+	}
 }
 
 void GEditor::setNumRows(int n)
@@ -2606,6 +2628,11 @@ void GEditor::drawContents(QPainter *p, int cx, int cy, int cw, int ch)
 	int rowfirst = rowAt(cy);
 	int rowlast = rowAt(cy + ch - 1);
 
+	if (getFlag(ChangeBackgroundAtLimit) && rowfirst > 0)
+		_oddLine = doc->getLimitIndex(rowfirst - 1) & 1;
+	else
+		_oddLine = true;
+	
 	// Go through the rows
 	for (int r = rowfirst; r <= rowlast; ++r) 
 	{

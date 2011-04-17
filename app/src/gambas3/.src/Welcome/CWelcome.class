@@ -3,13 +3,15 @@
 Private $hLogo As Image
 Private $hText As Image
 
-Static Private TEXT_COLOR As Integer = &HFFAF5F&
+Static Private BACKGROUND_COLOR As Integer = &H3398C3& '&HFFAF5F&
+Static Private TEXT_COLOR As Integer = &HDF6B00& ' &HDF6B00 '&HFFAF5F&
 
 Public Sub _new(hDrawingArea As DrawingArea)
   
   Dim hSvgLogo As SvgImage
   Dim X As Integer
   
+  hDrawingArea.Background = BACKGROUND_COLOR
   
   If Not $hLogo Then 
     
@@ -23,11 +25,11 @@ Public Sub _new(hDrawingArea As DrawingArea)
     $hText = New Image(hDrawingArea.Width, hDrawingArea.Height, Color.Transparent)
     Paint.Begin($hText)
     Paint.Font = Font["+12,Bold"]
-    X = PaintText("Gambas", 8, 48, TEXT_COLOR)
+    X = PaintText("Gambas", 8, 48, Color.White) 'TEXT_COLOR)
     
     Paint.Font = Font["+8,Bold"]
-    PaintText(Project.FullVersionWithRevision, X + 8, 32, TEXT_COLOR) 'Color.SelectedForeground)
-    Paint.Font = Font["+2"]
+    PaintText(Project.FullVersionWithRevision, X + 8, 32, Color.White) 'Color.SelectedForeground)
+    Paint.Font = Font["+4,Bold"]
     PaintText("http://gambas.sourceforge.net", 12, 68, TEXT_COLOR) 'Color.LightForeground)
     
     Paint.Font = Font["Italic,+1"]
@@ -49,12 +51,12 @@ Private Sub PaintText(sText As String, X As Integer, Y As Integer, iColor As Int
   Paint.Text(sText, X + 6, Y + 6)
   Paint.Fill
 
-  Paint.Brush = Paint.Color(Color.RGB(128, 128, 128))
-  Paint.Text(sText, X - 1, Y - 1)
-  Paint.Text(sText, X + 1, Y - 1)
-  Paint.Text(sText, X + 1, Y + 1)
-  Paint.Text(sText, X - 1, Y + 1)
-  Paint.Fill
+  ' Paint.Brush = Paint.Color(Color.RGB(128, 128, 128))
+  ' Paint.Text(sText, X - 1, Y - 1)
+  ' Paint.Text(sText, X + 1, Y - 1)
+  ' Paint.Text(sText, X + 1, Y + 1)
+  ' Paint.Text(sText, X - 1, Y + 1)
+  ' Paint.Fill
 
   Paint.Brush = Paint.Color(iColor)
   Paint.Text(sText, X, Y)

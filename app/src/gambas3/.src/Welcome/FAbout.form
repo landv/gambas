@@ -7,9 +7,7 @@
   Icon = Picture["img/logo/logo-32-head.png"]
   Resizable = False
   { dwgWelcome DrawingArea
-    MoveScaled(1,1,80,20)
-    Background = Color.SelectedBackground
-    Border = Border.Plain
+    MoveScaled(0,0,82,20)
   }
   { svwAuthor ScrollView
     MoveScaled(3,22,76,41)
@@ -22,7 +20,7 @@
     }
     { TextLabel4 TextLabel
       MoveScaled(0,57,76,7)
-      Font = Font["Bold,+6"]
+      Font = Font["Bold,+8"]
       AutoResize = True
       Text = ("Gambas Almost Means Basic!")
       Alignment = Align.Center
@@ -33,24 +31,24 @@
       Alignment = Align.Center
     }
     { TextLabel2 TextLabel
-      MoveScaled(4,84,57,26)
+      MoveScaled(9,84,58,29)
       AutoResize = True
       Text = ("<h2 align=center>Licence</h2>\n\n<p align=center>This program is FREE SOFTWARE; you can redistribute it AND/OR modify it under the terms of the GNU General Public License as published by the Free Software Foundation ; either version 2, or (at your option) any later version.</p>\n\n<p align=center>This program is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>\n")
     }
     { TextLabel3 TextLabel
-      MoveScaled(6,111,50,4)
-      AutoResize = True
+      MoveScaled(0,113,76,8)
+      Padding = 8
       Text = ("<h2 align=center>Authors</h2>\n")
-      Alignment = Align.Center
+      Alignment = Align.Bottom
     }
     { txtAuthor TextEdit
-      MoveScaled(4,118,54,11)
+      MoveScaled(4,125,54,11)
       Background = &HFFFFFF&
       ReadOnly = True
       Border = False
     }
     { Panel3 Panel
-      MoveScaled(27,128,10,42)
+      MoveScaled(28,138,10,42)
     }
   }
   { timAuthor #Timer
@@ -66,9 +64,13 @@
     Picture = Picture["img/donate.png"]
   }
   { picGradientTop PictureBox
-    MoveScaled(1,22,79,7)
+    MoveScaled(1,22,80,7)
   }
   { picGradientBottom PictureBox
-    MoveScaled(1,56,79,7)
+    MoveScaled(1,56,80,7)
+  }
+  { Panel1 Panel
+    MoveScaled(0,20,82,1)
+    Background = &H000000&
   }
 }

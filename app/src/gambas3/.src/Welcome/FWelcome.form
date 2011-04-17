@@ -7,8 +7,6 @@
   Text = ("Welcome to Gambas 3")
   Icon = Picture["img/logo/logo-32-head.png"]
   Arrangement = Arrange.Vertical
-  Spacing = True
-  Margin = True
   { mnuSort Menu
     { mnuSortByDate Menu mnuSort
       Name = "mnuSortByDate"
@@ -29,25 +27,30 @@
   }
   { dwgWelcome DrawingArea
     MoveScaled(1,1,66,20)
-    Background = Color.SelectedBackground
-    Border = Border.Plain
+  }
+  { Panel1 Panel
+    MoveScaled(19,22,14,1)
+    Background = &H000000&
   }
   { HBox1 HBox
-    MoveScaled(1,22,66,44)
+    MoveScaled(1,25,66,41)
     Expand = True
     { panButton Panel
-      MoveScaled(1,5,33,35)
+      MoveScaled(3,5,28,35)
+      Background = &HDF6B00&
       Foreground = Color.TextForeground
+    }
+    { Panel2 Panel
+      MoveScaled(34,10,1,7)
+      Background = &H000000&
     }
     { panList Panel
       MoveScaled(37,2,28,30)
       Visible = False
-      Background = Color.SelectedBackground
+      Background = &H3398C3&
       Mouse = Mouse.Arrow
       Expand = True
       Arrangement = Arrange.Vertical
-      Padding = 1
-      Border = Border.Plain
       { lblList Label
         MoveScaled(1,0,24,3)
         Font = Font["Bold"]

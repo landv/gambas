@@ -153,6 +153,7 @@ public:
 	int numLines() const { return lines.count(); }
 	
 	bool hasLimit(int y) { colorize(y); return lines.at(y)->proc; }
+	int getLimitIndex(int y);
 	
 	void getState(int y, bool colorize, uint &state, int &tag, bool &alternate);
 	int getCharState(int y, int x);

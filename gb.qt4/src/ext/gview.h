@@ -89,6 +89,8 @@ private:
 	bool _insertMode;
 	short _charWidth[256];
 	int _sameWidth;
+	bool _oddLine;
+	QColor _oddBackground;
 	
 	int lastx;
 	bool left;
@@ -178,7 +180,8 @@ public:
 		HighlightCurrent = 7,
 		BlendedProcedureLimits = 8,
 		ShowDots = 9,
-		ShowCursorPosition = 10
+		ShowCursorPosition = 10,
+		ChangeBackgroundAtLimit = 11
 	};
 
 	static void setBreakpointPixmap(QPixmap *p);

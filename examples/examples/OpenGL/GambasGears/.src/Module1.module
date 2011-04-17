@@ -13,7 +13,7 @@ Private gearlists As Integer
 
 Private angle As Float
 Private Frames As Integer
-Private CTime As Float
+Private fTime As Float
 
 Public Sub Main()
 
@@ -24,7 +24,7 @@ Public Sub Main()
     .Show()
   End With
   
-  Ctime = Timer()
+  fTime = Timer
   
 End
 
@@ -112,12 +112,9 @@ Public Sub Screen_Draw()
 
   Gl.PopMatrix()
 
-  Inc (Frames)
-  If (Timer() > CTime + 5) Then
-    calc = Timer() - CTime
-    Print CStr(Frames) & " frames in " & Format$(calc, "#.0") & " seconds = " & Format$((Frames / calc), "######.000") & " FPS"
-    Frames = 0
-    CTime = Timer()
+  If (Timer > (fTime + 1)) Then
+    Inc fTime
+    Print Screen.Framerate; " FPS"
   Endif
 
 End

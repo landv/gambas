@@ -223,7 +223,8 @@ Private Sub InitSystemControls()
       hPanel.Border = Border.Plain
       hPanel.Background = &HFFFFDF
       hPanel.Arrangement = Arrange.Horizontal
-      hPanel.Spacing = 8
+      hPanel.Margin = True
+      hPanel.Spacing = True
       hPanel.Padding = 4
       hPanel.Width = Desktop.Scale * 48
       'hPanel.Expand = True

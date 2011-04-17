@@ -1389,3 +1389,17 @@ bool GDocument::isLineEditedSomewhere(int y)
 	//fprintf(stderr, "--> false (no view matches)\n");
 	return false;
 }
+
+int GDocument::getLimitIndex(int y)
+{
+	int i = 0;
+	
+	while (y > 0)
+	{
+		if (lines.at(y)->proc)
+			i++;
+		y--;
+	}
+	
+	return i;
+}

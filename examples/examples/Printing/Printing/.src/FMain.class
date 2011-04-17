@@ -4,6 +4,8 @@ Private $hImage As Image
 
 Public Sub Form_Open()
 
+  Me.Center
+
   txtText.Text = File.Load("molly-malone.txt")
   txtFontText.Text = Font["17"].ToString()
 

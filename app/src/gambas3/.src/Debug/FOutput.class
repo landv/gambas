@@ -68,9 +68,9 @@ Public Sub ReadConfig()
 
   MTheme.InitEditor(edtOutput)
 
-  edtOutput.Flags[Editor.ShowCurrentLine] = False 'Settings["/Editor/ShowCurrent", True]
+  edtOutput.Flags[Editor.ShowCurrentLine] = False
   edtOutput.Flags[Editor.ShowModifiedLines] = False
-  edtOutput.Flags[Editor.ShowLineNumbers] = False 'Settings["/Editor/ShowLineNumbers", False]
+  edtOutput.Flags[Editor.ShowLineNumbers] = False
 
 End
 
