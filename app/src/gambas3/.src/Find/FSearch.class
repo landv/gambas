@@ -50,13 +50,13 @@ Public Sub Form_Open()
   Settings.Read(Me)
   
   chkCaseSensitive.Value = Settings["/FSearch/CaseSensitive", False]
-  chkCurrentProcedure.Value = Settings["/FSearch/CurrentProcedure", False]
+  radCurrentProcedure.Value = Settings["/FSearch/CurrentProcedure", False]
   chkHighlight.Value = Settings["/FSearch/Highlight", False]
   chkIgnoreComments.Value = Settings["/FSearch/IgnoreComments", False]
   chkIgnoreStrings.Value = Settings["/FSearch/IgnoreStrings", False]
   chkRegularExpression.Value = Settings["/FSearch/RegularExpression", False]
   chkWordOnly.Value = Settings["/FSearch/WordOnly", False]
-  chkSourceOnly.Value = Settings["/FSearch/SourceOnly", False]
+  radSourceFileOnly.Value = Settings["/FSearch/SourceOnly", False]
   
 End
 
@@ -65,13 +65,13 @@ Public Sub Form_Close()
   Settings.Write(Me)
 
   Settings["/FSearch/CaseSensitive"] = CBool(chkCaseSensitive.Value)
-  Settings["/FSearch/CurrentProcedure"] = CBool(chkCurrentProcedure.Value)
+  Settings["/FSearch/CurrentProcedure"] = CBool(radCurrentProcedure.Value)
   Settings["/FSearch/Highlight"] = CBool(chkHighlight.Value)
   Settings["/FSearch/IgnoreComments"] = CBool(chkIgnoreComments.Value)
   Settings["/FSearch/IgnoreStrings"] = CBool(chkIgnoreStrings.Value)
   Settings["/FSearch/RegularExpression"] = CBool(chkRegularExpression.Value)
   Settings["/FSearch/WordOnly"] = CBool(chkWordOnly.Value)
-  Settings["/FSearch/SourceOnly"] = CBool(chkSourceOnly.Value)
+  Settings["/FSearch/SourceOnly"] = CBool(radSourceFileOnly.Value)
 
 End
 
@@ -115,33 +115,32 @@ Public Sub Update(Optional bForce As Boolean)
   $hCurrent = hWindow
   
   If $hCurrent Is FOutput Then
+    radCurrentProcedure.Enabled = False
+    radCurrentFile.Enabled = True
+    radCurrentFile.Value = True
   Else 
     $hCurrent = Project.ActiveForm
     If $hCurrent Then
       If $hCurrent Is FEditor Or If $hCurrent Is FTextEditor Then
         bCode = $hCurrent.Editor.Highlight <> Highlight.None
       Endif
+      radCurrentProcedure.Enabled = bCode
+      radCurrentFile.Enabled = True
+      radCurrentFile.Value = True
     Else
       bAllProject = True
+      radCurrentProcedure.Enabled = False
+      radCurrentFile.Enabled = False
     Endif
   Endif
-    
-  'chkIgnoreStrings.Enabled = bCode Or bAllProject
-  'chkIgnoreComments.Enabled = bCode Or bAllProject
-  chkCurrentProcedure.Enabled = bCode
   
-  btnNext.Visible = Not bAllProject
-  btnPrevious.Visible = Not bAllProject
-  btnReplace.Visible = Not bAllProject
-  btnReplaceAll.Visible = Not bAllProject
+  If radCurrentProcedure.Value And If Not radCurrentProcedure.Enabled Then
+    radCurrentFile.Value = True
+  Endif
   
-  'If bAllProject Then
-  '  btnBrowse.Lower
-  'Else
-  '  btnBrowse.Next = btnClose
-  'Endif
-  
-  'btnBrowse2.Visible = bAllProject
+  If radCurrentFile.Value And If Not radCurrentFile.Enabled Then
+    radEverywhere.Value = True
+  Endif
   
   UpdateTitle
   
@@ -163,13 +162,21 @@ End
 
 Public Sub cmbSearch_Activate()
 
-  btnNext.Value = True
+  If btnBrowse.Visible Then
+    btnBrowse.Value = True
+  Else
+    btnNext.Value = True
+  Endif
 
 End
 
 Public Sub cmbReplace_Activate()
 
-  btnReplace.Value = True
+  If btnBrowse.Visible Then
+    btnReplaceAll.Value = True
+  Else
+    btnReplace.Value = True
+  Endif
 
 End
 
@@ -336,7 +343,7 @@ Private Sub InitSearch() As Boolean
   IgnoreComments = chkIgnoreComments.Value
   RegularExpression = chkRegularExpression.Value
   WordOnly = chkWordOnly.Value
-  CurrentProcedure = chkCurrentProcedure.Value
+  CurrentProcedure = radCurrentProcedure.Value
   
   If Not SearchString Then Return True
   
@@ -797,7 +804,13 @@ End
 
 Public Sub btnReplaceAll_Click()
 
-  Run(GO_FORWARD + DO_REPLACE + DO_ALL)
+  If Message.Question(("Do you really want to replace every string?"), ("Replace"), ("Cancel")) <> 1 Then Return
+
+  If btnBrowse.Visible Then
+    Browse(radSourceFileOnly.Value, True)
+  Else
+    Run(GO_FORWARD + DO_REPLACE + DO_ALL)
+  Endif
 
 End
 
@@ -836,13 +849,7 @@ End
 
 Public Sub btnBrowse_Click()
 
-  Browse(chkSourceOnly.Value, False)
-
-End
-
-Public Sub btnBrowseReplace_Click()
-
-  Browse(chkSourceOnly.Value, True)
+  Browse(radSourceFileOnly.Value, False)
 
 End
 
@@ -1003,3 +1010,15 @@ Public Sub OnProjectDebug()
   
 End
 
+
+Public Sub radSearch_Click()
+
+  btnBrowse.Visible = radEverywhere.Value Or radSourceFileOnly.Value
+  btnReplace.Visible = Not btnBrowse.Visible
+  btnNext.Visible = Not btnBrowse.Visible
+  btnPrevious.Visible = Not btnBrowse.Visible
+  
+  cmbSearch.SelectAll
+  cmbSearch.SetFocus
+
+End

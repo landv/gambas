@@ -225,6 +225,7 @@
     Font = Font["-2"]
     Key = "form"
     Text = ("Form")
+    Separator = True
     { ToolButton9 ToolButton mnuSave
       Name = "ToolButton9"
       MoveScaled(0,0,4,4)
@@ -441,9 +442,6 @@
       Action = ".show-tab"
       Picture = Picture["img/16/tabstrip.png"]
     }
-  }
-  { Separator1 Separator
-    MoveScaled(38,6,9,0)
   }
   { svwWorkspace ScrollView
     MoveScaled(2,8,60,39)

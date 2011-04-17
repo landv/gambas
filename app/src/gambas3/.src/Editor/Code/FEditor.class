@@ -366,23 +366,23 @@ End
 
 Public Sub Form_Arrange()
   
-  Dim iToolbarOffset As Integer
-  
-  If $bToolbar Then
-    panToolBar.Move(0, 0, Me.ClientW)
-    iToolbarOffset = panToolBar.H
-  Else
-    iToolbarOffset = 0
-  Endif
-  
-  Select Case $iViewMode
-    Case VIEWMODE_NORMAL
-      edtEditor.Move(0, iToolbarOffset, Me.ClientW, Me.ClientH - iToolbarOffset)
-    Case VIEWMODE_HORIZONTAL
-      splHorizontal.Move(0, iToolbarOffset, Me.ClientW, Me.ClientH - iToolbarOffset)
-    Case VIEWMODE_VERTICAL
-      splVertical.Move(0, iToolbarOffset, Me.ClientW, Me.ClientH - iToolbarOffset)
-  End Select 
+  ' Dim iToolbarOffset As Integer
+  ' 
+  ' If $bToolbar Then
+  '   panToolBar.Move(0, 0, Me.ClientW)
+  '   iToolbarOffset = panToolBar.H
+  ' Else
+  '   iToolbarOffset = 0
+  ' Endif
+  ' 
+  ' Select Case $iViewMode
+  '   Case VIEWMODE_NORMAL
+  '     edtEditor.Move(0, iToolbarOffset, Me.ClientW, Me.ClientH - iToolbarOffset)
+  '   Case VIEWMODE_HORIZONTAL
+  '     splHorizontal.Move(0, iToolbarOffset, Me.ClientW, Me.ClientH - iToolbarOffset)
+  '   Case VIEWMODE_VERTICAL
+  '     splVertical.Move(0, iToolbarOffset, Me.ClientW, Me.ClientH - iToolbarOffset)
+  ' End Select 
   
   ResizeProcList
   
@@ -615,6 +615,7 @@ Private Sub UpdateMenu()
   btnRedo.Visible = bVisible
   btnCut.Visible = bVisible
   btnPaste.Visible = bVisible
+  btnPasteSpecial.Visible = bVisible
   btnInsertColor.Visible = bVisible
   btnComment.Visible = bVisible
   btnUncomment.Visible = bVisible

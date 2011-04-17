@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,88,31)
+  MoveScaled(0,0,88,38)
   Action = "find"
   Text = ("Search & Replace")
   Icon = Picture["icon:/small/find"]
@@ -12,7 +12,7 @@
   Spacing = True
   Margin = True
   { VBox3 VBox
-    MoveScaled(1,1,59,29)
+    MoveScaled(1,1,59,35)
     Expand = True
     Spacing = True
     { HBox1 HBox
@@ -41,10 +41,10 @@
       MoveScaled(0,9,51,1)
     }
     { HBox4 HBox
-      MoveScaled(0,11,58,17)
+      MoveScaled(0,11,58,24)
       Expand = True
       { VBox2 VBox
-        MoveScaled(1,0,26,17)
+        MoveScaled(1,0,26,24)
         Expand = True
         { chkCaseSensitive CheckBox
           MoveScaled(0,0,25,4)
@@ -62,25 +62,46 @@
           MoveScaled(0,12,25,4)
           Text = ("&Highlight result")
         }
-      }
-      { VBox1 VBox
-        MoveScaled(28,0,28,17)
-        Expand = True
         { chkIgnoreStrings CheckBox
-          MoveScaled(0,0,25,4)
+          MoveScaled(0,16,25,4)
           Text = ("&Ignore strings")
         }
         { chkIgnoreComments CheckBox
-          MoveScaled(0,4,25,4)
+          MoveScaled(0,20,25,4)
           Text = ("I&gnore comments")
         }
-        { chkCurrentProcedure CheckBox
-          MoveScaled(0,8,25,4)
+      }
+      { Separator3 Separator
+        MoveScaled(28,4,4,8)
+      }
+      { VBox1 VBox
+        MoveScaled(32,0,24,24)
+        Expand = True
+        { Label3 Label
+          MoveScaled(0,0,19,4)
+          Font = Font["Bold"]
+          Text = ("Search in")
+        }
+        { radCurrentProcedure RadioButton radSearch
+          Name = "radCurrentProcedure"
+          MoveScaled(0,4,25,4)
           Text = ("C&urrent procedure")
         }
-        { chkSourceOnly CheckBox
+        { radCurrentFile RadioButton radSearch
+          Name = "radCurrentFile"
+          MoveScaled(0,8,25,4)
+          Text = ("Current &file")
+          Value = True
+        }
+        { radSourceFileOnly RadioButton radSearch
+          Name = "radSourceFileOnly"
           MoveScaled(0,12,25,4)
-          Text = ("&Source files only")
+          Text = ("&Source files")
+        }
+        { radEverywhere RadioButton radSearch
+          Name = "radEverywhere"
+          MoveScaled(0,16,25,4)
+          Text = ("A&ll files")
         }
       }
     }
@@ -93,39 +114,42 @@
     MoveScaled(61,1,1,29)
   }
   { HBox5 VBox
-    MoveScaled(62,1,25,29)
+    MoveScaled(62,1,25,36)
     Spacing = True
     { btnNext Button
       MoveScaled(0,0,22,4)
-      Expand = True
       Text = ("&Next")
       Picture = Picture["icon:/small/down"]
     }
     { btnPrevious Button
       MoveScaled(0,5,21,4)
-      Expand = True
       Text = ("&Previous")
       Picture = Picture["icon:/small/up"]
     }
-    { btnReplace Button
+    { btnBrowse Button
       MoveScaled(0,10,17,4)
+      Visible = False
+      Text = ("&Browse")
+      Picture = Picture["icon:/small/find"]
+    }
+    { btnReplace Button
+      MoveScaled(0,15,17,4)
       Text = ("&Replace")
       Picture = Picture["icon:/small/replace"]
     }
     { btnReplaceAll Button
-      MoveScaled(0,15,17,4)
+      MoveScaled(0,19,17,4)
       Text = ("Replace &all")
       Picture = Picture["icon:/small/wizard"]
     }
-    { btnBrowse Button
-      MoveScaled(0,20,18,4)
-      Text = ("&Browse")
-      Picture = Picture["icon:/small/find"]
+    { Panel1 Panel
+      MoveScaled(7,24,3,1)
+      Expand = True
     }
-    { btnBrowseReplace Button
-      MoveScaled(0,25,23,4)
-      Text = ("Browse && rep&lace")
-      Picture = Picture["icon:/small/replace"]
+    { PictureBox1 PictureBox
+      MoveScaled(3,25,17,11)
+      Picture = Picture["img/search.png"]
+      Alignment = Align.Top
     }
   }
 }
