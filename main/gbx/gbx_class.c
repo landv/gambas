@@ -1169,12 +1169,12 @@ void *CLASS_auto_create(CLASS *class, int nparam)
 	/*fprintf(stderr, "CLASS_auto_create: create %s\n", class->name);*/
 
 	OBJECT_create_and_set(&class->instance, class, NULL, NULL, nparam);
-	ob = class->instance;
-	OBJECT_REF(ob, "CLASS_auto_create");
+	//ob = class->instance;
+	//OBJECT_REF(ob, "CLASS_auto_create");
 
 	//fprintf(stderr, "<<< CLASS_auto_create: %s (%p) valid=%d\n", class->name, ob, OBJECT_is_valid(ob));
 	
-	return ob;
+	return class->instance;
 }
 
 void CLASS_search_special(CLASS *class)

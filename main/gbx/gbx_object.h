@@ -110,6 +110,7 @@ EXTERN const char *OBJECT_ref_where;
 		{ \
 			fprintf(stderr, "*ALREADY FREED* %p\n", (_object)); \
 			fflush(NULL); \
+			BREAKPOINT(); \
 		} \
 		CLASS_ref(_object); \
 	} \
@@ -124,6 +125,7 @@ EXTERN const char *OBJECT_ref_where;
 		{ \
 			fprintf(stderr, "*ALREADY FREED* %p\n", (_object)); \
 			fflush(NULL); \
+			BREAKPOINT(); \
 		} \
 		if (CLASS_unref(_object, TRUE)) \
 			_object = NULL; \
@@ -136,6 +138,7 @@ EXTERN const char *OBJECT_ref_where;
 	{ \
 		fprintf(stderr, "*ALREADY FREED* %p\n", (_object)); \
 		fflush(NULL); \
+		BREAKPOINT(); \
 	} \
 	CLASS_unref(_object, TRUE); \
 }

@@ -395,6 +395,7 @@ void *OBJECT_create(CLASS *class, const char *name, void *parent, int nparam)
 		if (OBJECT_set_pointer)
 		{
 			*OBJECT_set_pointer = ob;
+			OBJECT_ref(ob);
 			OBJECT_set_pointer = NULL;
 		}
 		
