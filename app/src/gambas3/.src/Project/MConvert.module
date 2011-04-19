@@ -80,6 +80,8 @@ Private Sub ConvertForm(sPath As String)
         sNewClass = "Label"
       Else If sClass = "WebBrowser" Then
         sNewClass = "WebView"
+      Else If sClass = "ColorBox" Then
+        sNewClass = "ColorButton"
       Else
         sNewClass = sClass
       Endif
@@ -133,7 +135,7 @@ Private Sub ConvertForm(sPath As String)
       Else If sLine = "Text = (\"\")" Then
         Continue
       Else If sLine = "#(Scaled) = False" Then
-        sFullLine = "Scaled = False"
+        sFullLine = "#Scaled = False"
       Else If sProp = "URL" Then
         If sClass = "URLLabel" Then Continue
       Else If sProp = "#X" Then
@@ -141,13 +143,24 @@ Private Sub ConvertForm(sPath As String)
         Inc cVirtualPos[iLevel - 1]
       Else If sProp = "#Y" Then
         Continue
+      Else If sProp = "Padding" Then
+        If sClass <> "Label" And If sClass <> "TextLabel" Then
+          sFullLine = "Margin = True"
+          If CInt(sValue) <= 4 Then
+            sFullLine &= "\nPadding = " & sValue
+          Endif
+        Endif
+      Else If sProp = "Spacing" Then
+        sFullLine = "Spacing = True"
       Else If sClass = "WebBrowser" Then
         If ["Java", "JavaScript", "Path", "Plugins", "Zoom"].Exist(sProp) Then Continue
       Endif
     Endif
     
-    If Left(sFullLine) <> " " And If iIndent > 0 Then sFullLine = Space$(iIndent) & sFullLine
-    $aLine.Add(sFullLine)
+    For Each sFullLine In Split(sFullLine, "\n")
+      If Left(sFullLine) <> " " And If iIndent > 0 Then sFullLine = Space$(iIndent) & sFullLine
+      $aLine.Add(sFullLine)
+    Next
     
   Wend
   
@@ -221,8 +234,10 @@ Private Sub CheckOpen(sLine As String) As String
   aSym = Highlight.Analyze(sLine, True)
   
   If aSym.Count < 5 Then Return
-  If UCase(aSym[0]) <> "OPEN" Then Return
-
+  
+  If UCase(aSym[iPos]) = "TRY" Then Inc iPos
+  If UCase(aSym[iPos]) <> "OPEN" Then Return
+  
   iPos = InStr(sLine, " AS ", 1, gb.IgnoreCase)
   If iPos = 0 Then Return
   
@@ -266,7 +281,7 @@ Private Sub CheckQuestionMark(sLine As String) As String
   
   For I = aSym.Max - 1 DownTo 0
     If $aTestFunc.Exist(aSym[I], gb.IgnoreCase) And aSym[I + 1] = "(" Then
-      sLine = Left(sLine, Highlight.Positions[I]) & "Is" & Left(aSym[I], -1) & Mid$(sLine, Highlight.Positions[I + 1] + 1) 
+      sLine = String.Left(sLine, Highlight.Positions[I]) & "Is" & Left(aSym[I], -1) & String.Mid$(sLine, Highlight.Positions[I + 1] + 1) 
       bFound = True
     Endif
   Next
@@ -293,12 +308,12 @@ Private Sub CheckIsType(sLine As String) As String
     If $aIsType.Exist(aSym[I], gb.IgnoreCase) Then 
       J = FindRightBrace(aSym, I + 1)
       If J < 0 Then Continue
-      sLine = Left(sLine, Highlight.Positions[I]) & "TypeOf" & Mid$(sLine, Highlight.Positions[I + 1] + 1, Highlight.Positions[J] - Highlight.Positions[I + 1] + 1) & " = gb." & Mid$(aSym[I], 3) & " " & Mid$(sLine, Highlight.Positions[J] + 2) 
+      sLine = String.Left(sLine, Highlight.Positions[I]) & "TypeOf" & String.Mid$(sLine, Highlight.Positions[I + 1] + 1, Highlight.Positions[J] - Highlight.Positions[I + 1] + 1) & " = gb." & Mid$(aSym[I], 3) & " " & String.Mid$(sLine, Highlight.Positions[J] + 2) 
       bFound = True
     Else If aSym[I] == "IsNumber" Then
       J = FindRightBrace(aSym, I + 1)
       If J < 0 Then Continue
-      sLine = Left(sLine, Highlight.Positions[I]) & "TypeOf" & Mid$(sLine, Highlight.Positions[I + 1] + 1, Highlight.Positions[J] - Highlight.Positions[I + 1] + 1) & " <= gb.Float " & Mid$(sLine, Highlight.Positions[J] + 2) 
+      sLine = String.Left(sLine, Highlight.Positions[I]) & "TypeOf" & String.Mid$(sLine, Highlight.Positions[I + 1] + 1, Highlight.Positions[J] - Highlight.Positions[I + 1] + 1) & " <= gb.Float " & String.Mid$(sLine, Highlight.Positions[J] + 2) 
       bFound = True
     Endif
   Next
@@ -312,7 +327,6 @@ Catch
   
 End
 
-
 Private Sub CheckQuoteShell(sLine As String) As String
   
   Dim aSym As String[]
@@ -323,7 +337,7 @@ Private Sub CheckQuoteShell(sLine As String) As String
   
   For I = aSym.Max - 3 DownTo 0 
     If aSym[I] = "Quote" And If aSym[I + 1] = "." And If aSym[I + 2] = "Shell" And If aSym[I + 3] = "(" Then
-      sLine = Left$(sLine, Highlight.Positions[I]) & "Shell$" & Mid$(sLine, Highlight.Positions[I + 3] + 1)
+      sLine = String.Left$(sLine, Highlight.Positions[I]) & "Shell$" & String.Mid$(sLine, Highlight.Positions[I + 3] + 1)
       bFound = True
     Endif
   Next
@@ -369,12 +383,9 @@ Private Sub CheckReplaceClassSymbol(sId As String, sLine As String, sClass As St
   
   Dim aSym As String[]
   Dim I As Integer
-  Dim bFound As Boolean
-  Dim sType As String
   Dim aPos As Integer[]
   Dim aType As Integer[]
   Dim sRest As String
-  Dim hClass As CClassInfo
   
   aSym = Highlight.Analyze(sLine, False).Copy()
   aType = Highlight.Types.Copy()
@@ -384,9 +395,9 @@ Private Sub CheckReplaceClassSymbol(sId As String, sLine As String, sClass As St
     
     If FindClassSymbol(sClass, sSymbol, aSym, aType, I, bAllowAnonymous) Then
       
-      sRest = Mid$(sLine, aPos[I] + Len(sSymbol) + 1)
+      sRest = String.Mid$(sLine, aPos[I] + Len(sSymbol) + 1)
       If sId = "FNTH" And If sRest Begins "()" Then sRest = "(\"\")" & Mid$(sRest, 3)
-      sLine = Left$(sLine, aPos[I]) & sNewSymbol & sRest
+      sLine = String.Left$(sLine, aPos[I]) & sNewSymbol & sRest
       $sId = sId
       Return sLine
       
@@ -400,8 +411,6 @@ Private Sub CheckUdpSocketBind(sId As String, sLine As String) As String
   
   Dim aSym As String[]
   Dim I As Integer
-  Dim bFound As Boolean
-  Dim sType As String
   Dim aPos As Integer[]
   Dim aType As Integer[]
   Dim sRest As String
@@ -414,16 +423,61 @@ Private Sub CheckUdpSocketBind(sId As String, sLine As String) As String
     
     If FindClassSymbol("UdpSocket", "Bind", aSym, aType, I) Then
       
-      sRest = Mid$(sLine, aPos[I] + Len("Bind") + 1)
+      sRest = String.Mid$(sLine, aPos[I] + Len("Bind") + 1)
       If Left(sRest) <> "(" Then Return
       If Mid$(sRest, 2, 1) = ")" Then Return
       
-      sLine = Left$(sLine, aPos[I]) & "Port = " & Mid$(sRest, 2, -1) & "\n" & Left$(sLine, aPos[I] + Len("Bind")) & "()"
+      sLine = String.Left$(sLine, aPos[I]) & "Port = " & Mid$(sRest, 2, -1) & "\n" & String.Left$(sLine, aPos[I] + Len("Bind")) & "()"
       $sId = sId
       Return sLine
       
     Endif
   
+  Next
+  
+End
+
+
+Private Sub CheckSplitterLayout(sId As String, sLine As String) As String
+  
+  Dim aSym As String[]
+  Dim I As Integer
+  Dim aPos As Integer[]
+  Dim aType As Integer[]
+  Dim iPos As Integer
+  Dim iStart As Integer
+  
+  aSym = Highlight.Analyze(sLine, False).Copy()
+  aType = Highlight.Types.Copy()
+  aPos = Highlight.Positions.Copy()
+  
+  For I = aSym.Max DownTo 1
+    
+    If FindClassSymbol("HSplit", "Layout", aSym, aType, I) Or If FindClassSymbol("VSplit", "Layout", aSym, aType, I) Then
+      
+      If I <= (aSym.Max - 2) And If aSym[I + 1] = "=" And InStr(String.Left(sLine, aPos[I]), "(") = 0 Then ' Assignment detection badly done
+      
+        If UCase(aSym[I + 2]) <> "SPLIT" Then
+          sLine = String.Left$(sLine, aPos[I + 1]) & " = Split(" & String.Mid$(sLine, aPos[I + 2] + 1) & ", \",\")"
+          $sId = sId
+          Return sLine
+        Endif
+      
+      Else
+        
+        If I <= (aSym.Max - 3) And If aSym[I + 1] = ")" And If aSym[I + 2] = "." And If UCase(aSym[I + 3]) = "JOIN" Then Continue
+        
+        iStart = FEditor.ExpressionStart
+        iPos = aPos[I] + Len("Layout")
+        
+        sLine = String.Left$(sLine, aPos[iStart]) & "String[](" & String.Mid$(sLine, aPos[iStart] + 1, iPos - aPos[iStart]) & ").Join(\",\")" & String.Mid$(sLine, iPos + 1)
+        $sId = sId
+        Return sLine
+        
+      Endif
+      
+    Endif
+      
   Next
   
 End
@@ -513,6 +567,7 @@ Private Sub ConvertClass(sPath As String)
         If Not sNewLine Then sNewLine = CheckReplaceFunction("CSNG", sLine, "CSng", "CSingle")
         If Not sNewLine Then sNewLine = CheckReplaceFunction("CLNG", sLine, "CLng", "CLong")
         If Not sNewLine Then sNewLine = CheckUdpSocketBind("BIND", sLine)
+        If Not sNewLine Then sNewLine = CheckSplitterLayout("SLAY", sLine)
         
         If Not sNewLine Then 
           $aLine.Add(sIndent & sLine)

@@ -28,6 +28,8 @@ End
 
 Public Sub Stop()
   
+  If $iLevel = 0 Then Return
+  
   Dec Application.Busy
   Dec $iLevel
   If $iLevel = 0 Then 

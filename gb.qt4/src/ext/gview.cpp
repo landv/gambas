@@ -805,6 +805,8 @@ void GEditor::paintCell(QPainter *painter, int row, int)
 
 		if (getFlag(ShowModifiedLines) && l->changed)
 			p.fillRect(0, 0, margin - 2, _cellh, styles[GLine::Highlight].color);
+		else
+			p.fillRect(0, 0, margin - 2, _cellh, odd ? _oddBackground : styles[GLine::Background].color);
 		/*else if (getFlag(ShowCurrentLine))
 			p.fillRect(0, 0, margin - 2, _cellh, styles[GLine::Line].color);*/
 

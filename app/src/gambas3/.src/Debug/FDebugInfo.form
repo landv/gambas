@@ -159,12 +159,11 @@
           Text = ("Search again")
           Picture = Picture["icon:/small/refresh"]
         }
-        { btnReplaceAll ToolButton
+        { btnClearSearch ToolButton
           MoveScaled(26,0,13,4)
-          Visible = False
           AutoResize = True
-          Text = ("Replace all")
-          Picture = Picture["icon:/small/replace"]
+          Text = ("Reset")
+          Picture = Picture["icon:/small/clear"]
         }
         { btnShowSearch ToolButton
           MoveScaled(41,0,19,4)

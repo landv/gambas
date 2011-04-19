@@ -1,5 +1,5 @@
 ' Gambas class file
-'
+
 ' Gambas 3
 ' Integrated Development Environment for Gambas
 ' 
@@ -36,6 +36,7 @@ Public Const IDENT_CAR As String = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqr
 Public Const NBR_COLOR As Integer = 15
 
 Static Public StructControlCompletion As Boolean = True
+Static Public ExpressionStart As Integer
 
 Static Private $cStructClose As New Collection(gb.IgnoreCase)
 
@@ -296,13 +297,17 @@ Public Function Save(Optional bReset As Boolean) As Boolean
   
   sHeader = "' Gambas " & File.Ext(Path) & " file"
   
+  Editor.Begin
+  
   If Editor.Lines[0].Text <> sHeader Then
     Editor.Insert(sHeader & "\n", 0, 0)
   Endif
   
   If Editor.Lines.Count < 2 Or If Editor.Lines[1].Text Then 
-    Editor.Insert("", 1, 0)
+    Editor.Insert("\n", 1, 0)
   Endif
+  
+  Editor.End
   
   File.Save(Path, GetHighlightedText())
   
@@ -1809,43 +1814,27 @@ Private Function IsTypeSymbol(sPattern As String, iType As Integer) As Boolean
   
 End
 
-Public Function GetExpressionType(aExpr As String[], aType As Integer[], bPointAfter As Boolean) As String
+Private Sub GetExpressionStart(aExpr As String[], aType As Integer[]) As Integer
   
-  Dim aWith As String[]
   Dim iInd As Integer
-  Dim sWait As New String[]
+  Dim aWait As New String[]
   Dim sPattern As String
   Dim bLastSymbol As Boolean
-  Dim sType As String
-  Dim iType As Integer
-  Dim cSymbol As Collection
-  
-  'DIM hSymbol AS CSymbolInfo
-  Dim bNeedMethod As Boolean
-  Dim bNeedArray As Boolean
-  Dim bFoundMethod As Boolean
-  
-  $hSymbol = Null
-  '$bInMethod = 0
-  
-  'IF aExpr.Count = 0 THEN RETURN
-  
-  iInd = aExpr.Count - 1
-  
-  For iInd = iInd To 0 Step -1
+
+  For iInd = aExpr.Max DownTo 0
     
     sPattern = aExpr[iInd]
     If sPattern = ")" Then
-      sWait.Push("(")
+      aWait.Push("(")
       bLastSymbol = False
       Continue
     Else If sPattern = "]" Then
-      sWait.Push("[")
+      aWait.Push("[")
       bLastSymbol = False
       Continue
-    Else If sWait.Count Then
-      If sPattern = sWait[sWait.Count - 1] Then
-        sWait.Pop
+    Else If aWait.Count Then
+      If sPattern = aWait[aWait.Count - 1] Then
+        aWait.Pop
       Endif
       bLastSymbol = False
       Continue
@@ -1863,8 +1852,69 @@ Public Function GetExpressionType(aExpr As String[], aType As Integer[], bPointA
     
   Next
   
-  sWait.Clear
   Inc iInd
+  ExpressionStart = iInd
+  Return iInd
+  
+End
+
+
+Public Function GetExpressionType(aExpr As String[], aType As Integer[], bPointAfter As Boolean) As String
+  
+  Dim aWith As String[]
+  Dim iInd As Integer
+  Dim aWait As New String[]
+  Dim sPattern As String
+  Dim bLastSymbol As Boolean
+  Dim sType As String
+  Dim iType As Integer
+  Dim cSymbol As Collection
+  
+  Dim bNeedMethod As Boolean
+  Dim bNeedArray As Boolean
+  Dim bFoundMethod As Boolean
+  
+  $hSymbol = Null
+  
+  ' 'IF aExpr.Count = 0 THEN RETURN
+  ' 
+  ' iInd = aExpr.Count - 1
+  ' 
+  ' For iInd = iInd To 0 Step -1
+  '   
+  '   sPattern = aExpr[iInd]
+  '   If sPattern = ")" Then
+  '     aWait.Push("(")
+  '     bLastSymbol = False
+  '     Continue
+  '   Else If sPattern = "]" Then
+  '     aWait.Push("[")
+  '     bLastSymbol = False
+  '     Continue
+  '   Else If aWait.Count Then
+  '     If sPattern = aWait[aWait.Count - 1] Then
+  '       aWait.Pop
+  '     Endif
+  '     bLastSymbol = False
+  '     Continue
+  '   Else If sPattern = "." Then
+  '     bLastSymbol = False
+  '     Continue
+  '   Else If IsTypeSymbol(sPattern, aType[iInd]) Then
+  '     If Not bLastSymbol Then
+  '       bLastSymbol = True
+  '       Continue
+  '     Endif
+  '   Endif
+  '   
+  '   Break
+  '   
+  ' Next
+  ' 
+  ' aWait.Clear
+  ' Inc iInd
+  
+  iInd = GetExpressionStart(aExpr, aType)
   
   If iInd >= aExpr.Count Then
     
@@ -1892,15 +1942,15 @@ Public Function GetExpressionType(aExpr As String[], aType As Integer[], bPointA
     
     If sPattern = "(" Then
       'INC $bInMethod
-      sWait.Push(")")
+      aWait.Push(")")
       Continue
     Else If sPattern = "[" Then
-      sWait.Push("]")
+      aWait.Push("]")
       Continue
-    Else If sWait.Count Then
-      If sPattern = sWait[sWait.Count - 1] Then
-        sWait.Pop
-        If sWait.Count Then Continue
+    Else If aWait.Count Then
+      If sPattern = aWait[aWait.Count - 1] Then
+        aWait.Pop
+        If aWait.Count Then Continue
       Else
         Continue
       Endif

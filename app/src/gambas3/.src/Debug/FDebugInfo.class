@@ -1117,3 +1117,9 @@ Public Sub Form_Resize()
   gvwFind.Columns[3].Width = Me.W - gvwFind.Columns[3].X - 8
 
 End
+
+Public Sub btnClearSearch_Click()
+
+  FSearch.ResetBrowse
+
+End

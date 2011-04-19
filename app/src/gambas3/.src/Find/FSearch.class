@@ -588,8 +588,20 @@ Private Sub BrowseFile(sPath As String, bReplace As Boolean, Optional iIndex As 
   Next
   
   gvwFind.Rows.Count = $aBrowse.Count
+  gvwFind.Show
   
 End
+
+Public Sub ResetBrowse()
+  
+  gvwFind.Rows.Count = 0
+  gvwFind.Clear
+  gvwFind.Rows.Height = Max(gvwFind.Font.Height, $hFont.Height)
+  $aBrowse.Clear
+  gvwFind.Hide
+  
+End
+
 
 Private Sub Browse(Optional bOnlySource As Boolean, Optional bReplace As Boolean)
   
@@ -619,10 +631,7 @@ Private Sub Browse(Optional bOnlySource As Boolean, Optional bReplace As Boolean
   'btnClose.Text = ("Cancel")
   $bCancel = False
   
-  gvwFind.Rows.Count = 0
-  gvwFind.Clear
-  gvwFind.Rows.Height = Max(gvwFind.Font.Height, $hFont.Height)
-  $aBrowse.Clear
+  ResetBrowse
   
   Inc FMain.NoMessage
   

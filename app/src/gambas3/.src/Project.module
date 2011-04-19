@@ -440,15 +440,27 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
     Return True
   Endif
 
-  Path = sDir &/ PROJECT_FILE
-  Name = File.Name(sDir)
   Project.Dir = sDir
-  SourceDir = sDir &/ ".src"
-  ProjectFilter = ""
   
+  If bConvert Then
+    
+    FConvert.Start(("Copying project inside a temporary directory..."))
+    Project.Dir = Temp$()
+    Shell "cp -R " & Shell$(sDir) & " " & Shell$(Project.Dir) Wait
+    If Process.LastValue Then Error.Raise(("Unable to create temporary directory"))
+    
+  Endif
+  
+_INIT_AGAIN:
+  
+  Path = Project.Dir &/ PROJECT_FILE
+  Name = File.Name(Project.Dir)
+  SourceDir = Project.Dir &/ ".src"
+
+  ProjectFilter = ""  
   VersionControl.Refresh
   
-  If Not Exist(SourceDir) Then 
+  If bConvert And If Not Exist(SourceDir) Then 
     
     If ReadOnly Then
       Message.Error(("This project is read-only.") & " " & ("It cannot be converted."))
@@ -456,30 +468,62 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
     Endif
     
     bStopConvert = True
-    FConvert.Start(("Converting project structure..."))
+    FConvert.SetMessage(("Converting project structure..."))
     
     ' Needed for MoveFile()
     RefreshSourceCache
     VersionControl.CheckPaths()
     
     InsertDirectory(SourceDir)
-    aDir = Dir(sDir, "*")
+    aDir = Dir(Project.Dir, "*")
     iStep = 0
     For Each sFile In aDir
-      If CModule.Ext.Exist(File.Ext(sFile)) Then MoveFile(sDir &/ sFile, SourceDir &/ sFile)
+      If CModule.Ext.Exist(File.Ext(sFile)) Then MoveFile(Project.Dir &/ sFile, SourceDir &/ sFile)
       Inc iStep
       FConvert.SetProgress(iStep / aDir.Count)
     Next
+    
+    RefreshSourceCache
+    VersionControl.CheckPaths()
+    
+    ReadProject(True)
+    WriteProject(True)
+    
+    MakeDirectoryIcon
+    If ConvertProject() Then Goto _CANCEL
+  
+    If bStopConvert Then
+      FConvert.Stop
+      bStopConvert = False
+    Endif
+    
+    FConvert.SetMessage(("Applying conversion..."))
+    Move sDir To sDir & "~"
+    Shell "mv -f " & Shell$(Project.Dir) & " " & Shell$(sDir) Wait
+    If Process.LastValue Then 
+      Try Move sDir & "~" To sDir
+      Error.Raise(("Unable to apply conversion"))
+    Endif
+    
+    Project.Dir = sDir
+    
+    bConvert = False
+    
+    Goto _INIT_AGAIN
     
   Endif
   
   Config = New Settings(sDir &/ ".settings")
   
   Inc $iNoRefresh
-  ReadProject(bConvert)
+  ' ReadProject(bConvert)
+  ' If Not ReadOnly Then
+  '   If Not Exist(Project.Dir &/ ".hidden") Then Project.InsertDirectory(Project.Dir &/ ".hidden")
+  '   If bConvert Then WriteProject(True)
+  ' Endif
+  ReadProject
   If Not ReadOnly Then
     If Not Exist(Project.Dir &/ ".hidden") Then Project.InsertDirectory(Project.Dir &/ ".hidden")
-    If bConvert Then WriteProject(True)
   Endif
   Dec $iNoRefresh
   
@@ -3773,6 +3817,7 @@ End
 
 Private Sub UnLockIt()
   
+  If Application.Busy < 1 Then Return
   Dec Application.Busy
   
 End

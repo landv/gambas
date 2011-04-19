@@ -76,9 +76,9 @@ BEGIN_PROPERTY(CSPLITTER_layout)
 	{
 		GB_ARRAY array = (GB_ARRAY)VPROP(GB_OBJECT);
 		
-		if (GB.CheckObject(array))
+		if (!array || GB.CheckObject(array) || GB.Array.Count(array) == 0)
 			return;
-
+		
 		WIDGET->setLayout((int *)GB.Array.Get(array, 0), GB.Array.Count(array));
 	}
 

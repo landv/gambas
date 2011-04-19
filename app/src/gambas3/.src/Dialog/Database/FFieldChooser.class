@@ -137,3 +137,9 @@ Public Sub btnUp_Click()
   Endif
 
 End
+
+Public Sub lstField_Activate()
+
+  If Not $bMulti Then btnOK.Value = True
+
+End

@@ -16,8 +16,8 @@ body {
   padding: 8px;
   margin: 0px;
   /*background-image: url("background.jpg");
-  background-attachment: fixed;
   background-repeat: no-repeat;
+  background-attachment: fixed;
   background-position: -184px 0px;*/
   max-width: 860px;
   font-family: sans;
@@ -64,24 +64,6 @@ table.none {
   padding: 0px;
 }
 
-.news {
-  background: none; /*#0090C0;*/
-  border: solid;
-  border-width: 2px 2px 2px 2px;
-  border-color: #B0CEE6;
-  padding: 8px;
-  /*color: white;*/
-}
-
-.snow {
-  background-image: url('snow.png');
-  background-position: left bottom;
-  }
-
-.news-title {
-  background: #B0CEE6;
-}
-
 table {
   background: white; /*#0090C0;*/
   border: solid;
@@ -90,14 +72,6 @@ table {
   border-color: #95C1E6;
   padding: 0px;
   /*color: white;*/
-}
-
-.news th {
-  background: #B0CEE6; /*#006080;*/
-  padding: 2px;
-  border-right: 1px solid #B0CEE6;
-  border-bottom: 1px solid #B0CEE6;
-  text-align: left;
 }
 
 th {
@@ -324,6 +298,7 @@ img.screenshot {
   border-bottom: dotted black 6px;
   margin-left: -8px;
   background: white;
+  margin-top: 8px;
   /*border-right: dotted black 6px;*/
   /*border-radius: 0px 0px 12px;*/
 }
@@ -341,6 +316,7 @@ img.screenshot {
 
 .download {
   float: right;
+  margin: 16px 0px 32px 32px;
 }
 
 .download-gray {
@@ -440,3 +416,39 @@ a.download-blue:hover {
   height: 90%;
   bottom: 0px;
 }
+
+#formula {
+  border: solid 2px black;
+  }
+
+#news {
+  float: right;
+  position: relative;
+  width: 320px;
+  height: 340px;
+  margin: 32px 24px;
+}
+
+#news-frame {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: white;
+  border: solid 6px black;
+  /*-moz-box-shadow:    3px 3px rgba(0,0,0,0.2), inset 0 -4px rgba(0,0,0,0.2);
+  -webkit-box-shadow: 3px  3px rgba(0,0,0,0.2), inset 0 -4px rgba(0,0,0,0.2);
+  box-shadow:         3px 3px rgba(0,0,0,0.2), inset 0 -4px rgba(0,0,0,0.2);*/
+}
+
+#news-shadow {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: -12px;
+  top: -12px;
+  background: black;
+  border: solid 18px black;
+  border-radius: 16px;
+  opacity: 0.3;
+}
+

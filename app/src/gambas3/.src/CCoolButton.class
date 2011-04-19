@@ -26,7 +26,7 @@ Public Sub _new(hContainer As Container, X As Integer, Y As Integer, W As Intege
   $hPanel.Mouse = Mouse.Pointing
   $hPanel.Arrangement = Arrange.Horizontal
   $hPanel.Spacing = True
-  $hPanel.Margin = True
+  '$hPanel.Margin = True
   $hPanel.Focus = True
 
   If TypeOf(vIcon) = gb.String Then
@@ -37,11 +37,11 @@ Public Sub _new(hContainer As Container, X As Integer, Y As Integer, W As Intege
 
   $hImage = New PictureBox($hPanel) As "Panel"
   If hPict Then
-    $hImage.Resize(hPict.Width + 8, H - 8)
+    $hImage.Resize(hPict.Width + 8, H - Desktop.Scale * 2)
     $hImage.Alignment = Align.Right
     $hImage.Picture = hPict
   Else
-    $hImage.Resize(32, H - 8)
+    $hImage.Resize(32, H - Desktop.Scale * 2)
   Endif
 
   $hLabel = New TextLabel($hPanel) As "Panel"

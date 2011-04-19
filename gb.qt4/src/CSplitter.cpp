@@ -124,7 +124,7 @@ BEGIN_PROPERTY(CSPLITTER_layout)
 		int count;
 		GB_ARRAY array = (GB_ARRAY)VPROP(GB_OBJECT);
 		
-		if (GB.CheckObject(array))
+		if (!array || GB.CheckObject(array))
 			return;
 		
 		count =  GB.Array.Count(array);

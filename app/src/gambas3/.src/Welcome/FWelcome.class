@@ -160,6 +160,7 @@ Private Sub Toggle(iState As Integer)
     Else
       lblList.Text = ("Examples")
     Endif
+    lblList2.Text = lblList.Text
   Else
     panList.Visible = False
   Endif
@@ -484,4 +485,11 @@ Public Sub mnuSort_Click()
   FillRecent
   UpdateMenuSort
   
+End
+
+Public Sub panList_Arrange()
+
+  lblList2.Move(lblList.X + 1, lblList.Y + 1, lblList.W, lblList.H)
+  lblList2.Lower
+
 End
