@@ -288,6 +288,7 @@ short PCODE_dump(FILE *out, short addr, PCODE *code)
 						case CPM_FALSE: fprintf(out, "PUSH FALSE"); break;
 						case CPM_TRUE: fprintf(out, "PUSH TRUE"); break;
 						case CPM_LAST: fprintf(out, "PUSH LAST"); break;
+						case CPM_STRING: fprintf(out, "PUSH NULL STRING"); break;
 					}
 					break;
 

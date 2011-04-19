@@ -1006,7 +1006,7 @@ static void output_debug_method()
 	{
 		func = &Class->function[i];
 
-		if (func->pos_line != NULL)
+		if (func->pos_line != NULL && func->line >= 0)
 		{
 			/* line */
 			write_short(func->line);

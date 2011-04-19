@@ -308,7 +308,7 @@ static bool init_breakpoint(DEBUG_BREAK *brk)
 
   if (!PCODE_is_breakpoint(*addr))
   {
-  	WARNING("Cannot set breakpoint: Not a line beginning");
+  	WARNING("Cannot set breakpoint: Not a line beginning: %04d: %04X", addr - func->code, *addr);
     //fprintf(_out, "Not a line beginning ?\n");
     return TRUE;
   }

@@ -73,7 +73,6 @@
 #define CPM_TRUE         3
 #define CPM_LAST         4
 #define CPM_STRING       5
-#define CPM_POP_LAST     6
 
 #define C_TRY                   0x1600
 #define C_END_TRY               0x1700

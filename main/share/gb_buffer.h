@@ -36,7 +36,7 @@ typedef
 void BUFFER_create(void *p_data);
 void BUFFER_delete(void *p_data);
 bool BUFFER_load_file(void *p_data, const char *name);
-offset_t BUFFER_add(void *p_data, const void *string, size_t len);
+offset_t BUFFER_add(void *p_data, const void *string, int len);
 bool BUFFER_need(void *p_data, size_t size);
 
 #define DATA_TO_BUFFER(_data) ((BUFFER *)(_data) - 1)

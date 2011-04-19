@@ -79,13 +79,14 @@ bool BUFFER_need(void *p_data, size_t size)
 }
 
 
-offset_t BUFFER_add(void *p_data, const void *string, size_t len)
+offset_t BUFFER_add(void *p_data, const void *string, int len)
 {
   void **data = (void **)p_data;
   BUFFER *buffer = DATA_TO_BUFFER(*data);
   size_t pos;
 
-	//fprintf(stderr, "BUFFER_add: %ld\n", len);
+	if (len < 0)
+		len = strlen((const char *)string);
 	
   pos = buffer->length;
   BUFFER_need(p_data, len);
