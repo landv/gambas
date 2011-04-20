@@ -279,7 +279,7 @@ static void compile_file(const char *file)
 		printf("\nCompiling %s...\n", FILE_get_name(JOB->name));
 	}
 
-	BUFFER_add(&JOB->source, "#Line -1000000\n", -1); // Negative line numbers don't go into debugger information
+	BUFFER_add(&JOB->source, "#Line " FORM_FIRST_LINE_STRING "\n", -1); // Negative line numbers don't go into debugger information
 	FORM_do(main_public);
 	BUFFER_add(&JOB->source, "#Line 1\n", -1);
 	COMPILE_load();

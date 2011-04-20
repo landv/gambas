@@ -40,7 +40,7 @@
 #include "gb_magic.h"
 #include "gbc_chown.h"
 #include "gbc_compile.h"
-
+#include "gbc_form.h"
 #include "gbc_output.h"
 
 
@@ -1006,7 +1006,7 @@ static void output_debug_method()
 	{
 		func = &Class->function[i];
 
-		if (func->pos_line != NULL && func->line >= 0)
+		if (func->pos_line != NULL && func->line < FORM_FIRST_LINE)
 		{
 			/* line */
 			write_short(func->line);
@@ -1248,7 +1248,10 @@ static void output_translation(void)
 		if (j >= sym->len)
 			continue;
 
-		fprintf(file, "#: %s:%d\n", FILE_get_name(JOB->name), constant->line);
+		if (constant->line < FORM_FIRST_LINE)
+			fprintf(file, "#: %s:%d\n", FILE_get_name(JOB->name), constant->line);
+		else
+			fprintf(file, "#: %s:%d\n", FILE_get_name(JOB->form), constant->line - FORM_FIRST_LINE);
 
 		fprintf(file, "msgid \"");
 

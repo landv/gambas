@@ -30,6 +30,9 @@ typedef
     }
   FORM_PARENT;
 
+#define FORM_FIRST_LINE 100000
+#define FORM_FIRST_LINE_STRING "100000"
+	
 void FORM_do(bool ctrl_public);
 char *FORM_get_file(const char *file);
 
