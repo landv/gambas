@@ -867,7 +867,7 @@ Private Sub GetConnection() As String
 End
 
 
-Private Sub GetTable(sField As String) As String
+Private Sub GetTable(Optional sField As String) As String
   
   Dim hCtrl As CControl
   Dim sTable As String
@@ -955,7 +955,6 @@ Public Sub btnProperty_Click()
       Endif
 
     Case "Field"
-      
       
       sConnection = GetConnection()
       sTable = GetTable($sOption)
