@@ -1,4 +1,5 @@
 ' Gambas class file
+
 '
 ' Copyright (C) Benoît Minisini
 '
@@ -697,4 +698,10 @@ Public Sub mnuUncompress_Click()
   If Not Exist(sPath) Then Return
   SetText(File.Load(sPath))
   
+End
+
+Public Sub Editors_Cursor()
+
+  lblInfo.Text = CStr(Editor.Column + 1) & ":" & CStr(Editor.Line + 1)
+
 End

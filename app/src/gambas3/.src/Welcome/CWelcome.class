@@ -9,7 +9,7 @@ Static Private TEXT_COLOR As Integer = &HDF6B00& ' &HDF6B00 '&HFFAF5F&
 Public Sub _new(hDrawingArea As DrawingArea)
   
   Dim hSvgLogo As SvgImage
-  Dim X As Integer
+  Dim X, Y As Integer
   
   hDrawingArea.Background = BACKGROUND_COLOR
   
@@ -25,15 +25,18 @@ Public Sub _new(hDrawingArea As DrawingArea)
     $hText = New Image(hDrawingArea.Width, hDrawingArea.Height, Color.Transparent)
     Paint.Begin($hText)
     Paint.Font = Font["+12,Bold"]
-    X = PaintText("Gambas", 8, 48, Color.White) 'TEXT_COLOR)
-    
+    Y = Paint.Font.Ascent
+    X = PaintText("Gambas", 8, Y, Color.White) 'TEXT_COLOR)
     Paint.Font = Font["+8,Bold"]
-    PaintText(Project.FullVersionWithRevision, X + 8, 32, Color.White) 'Color.SelectedForeground)
+    PaintText(Project.FullVersionWithRevision, X + 8, Paint.Font.Ascent, Color.White) 'Color.SelectedForeground)
+    
     Paint.Font = Font["+4,Bold"]
-    PaintText("http://gambas.sourceforge.net", 12, 68, TEXT_COLOR) 'Color.LightForeground)
+    Y += Paint.Font.Height
+    PaintText("http://gambas.sourceforge.net", 12, Y, TEXT_COLOR) 'Color.LightForeground)
     
     Paint.Font = Font["Italic,+1"]
-    PaintText(("This program is published under\nthe GNU General Public License."), 12, 104, Color.SelectedForeground)
+    Y += Paint.Font.Height + 16
+    PaintText(("This program is published under\nthe GNU General Public License."), 12, Y, Color.SelectedForeground)
     Paint.End
     
   Endif

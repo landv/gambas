@@ -347,19 +347,9 @@
       Action = ".watch"
       Picture = Picture["icon:/small/watch"]
     }
-    { Separator2 Separator
-      MoveScaled(77,0,1,4)
-    }
-    { btnProc ToolButton
-      MoveScaled(79,0,46,4)
-      Mouse = Mouse.Pointing
-      Action = ".proc"
-      Text = ("Procedure list")
-      Picture = Picture["img/16/procedure.png"]
-    }
     { btnDefinition ToolButton mnuDefinition
       Name = "btnDefinition"
-      MoveScaled(125,0,4,4)
+      MoveScaled(74,0,4,4)
       Visible = False
       ToolTip = ("Find definition")
       Action = ".find-definition"
@@ -367,18 +357,50 @@
     }
     { btnLastPosition ToolButton mnuLastPosition
       Name = "btnLastPosition"
-      MoveScaled(128,0,4,4)
+      MoveScaled(77,0,4,4)
       Visible = False
       ToolTip = ("Go back")
       Action = ".go-back"
       Picture = Picture["icon:/16/left"]
     }
+    { Separator2 Separator
+      MoveScaled(81,0,1,4)
+    }
+    { btnProc ToolButton
+      MoveScaled(82,0,44,4)
+      Mouse = Mouse.Pointing
+      Action = ".proc"
+      Text = ("Procedure list")
+      Picture = Picture["img/16/procedure.png"]
+    }
+    { lblInfo Label
+      MoveScaled(131,0,9,4)
+      Expand = True
+      Padding = 4
+      Alignment = Align.Right
+    }
   }
-  { edtEditor Editor Editors
-    Name = "edtEditor"
-    MoveScaled(11,13,40,35)
+  { Panel1 Panel
+    MoveScaled(14,8,38,63)
+    Background = Color.Background
     Expand = True
-    Border = False
+    Arrangement = Arrange.Fill
+    { edtEditor Editor Editors
+      Name = "edtEditor"
+      MoveScaled(3,1,24,16)
+      Expand = True
+      Border = False
+    }
+    { splHorizontal HSplit
+      MoveScaled(3,19,22,18)
+      Visible = False
+      Expand = True
+    }
+    { splVertical VSplit
+      MoveScaled(2,41,22,18)
+      Visible = False
+      Expand = True
+    }
   }
   { timShowHelp #Timer
     #MoveScaled(63,14)
@@ -387,19 +409,9 @@
     #MoveScaled(61,34)
     Delay = 50
   }
-  { splHorizontal HSplit
-    MoveScaled(2,53,45,18)
-    Visible = False
-    Expand = True
-  }
   { timWatch #Timer
     #MoveScaled(96,64)
     Delay = 5000
-  }
-  { splVertical VSplit
-    MoveScaled(49,53,42,18)
-    Visible = False
-    Expand = True
   }
   { panProc Panel
     MoveScaled(81,9,31,39)
@@ -587,7 +599,7 @@
 { Toolbars
   { Toolbar editor
     Text = "Editor"
-    List = "save,reload,show-form,cut,copy,paste,paste-special,color,undo,redo,indent,unindent,comment,uncomment,view-nosplit,view-hsplit,view-vsplit,pretty,break,watch,proc,find-definition,go-back"
-    Default = "save,reload,show-form,paste,color,undo,redo,comment,uncomment,break,watch,|,proc"
+    List = "save,reload,show-form,cut,copy,paste,paste-special,color,undo,redo,indent,unindent,comment,uncomment,view-nosplit,view-hsplit,view-vsplit,pretty,break,watch,find-definition,go-back,proc"
+    Default = "save,reload,show-form,paste,color,undo,redo,comment,uncomment,break,watch,|,proc,$lblInfo"
   }
 }

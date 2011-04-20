@@ -430,7 +430,7 @@ Private Sub RefreshLineInfo(Optional bForce As Boolean)
     CheckSignature
   Endif
   
-  'DrawInfo
+  lblInfo.Text = CStr(Editor.Column + 1) & ":" & CStr(Editor.Line + 1)
   
 End
 

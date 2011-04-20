@@ -244,6 +244,12 @@
       Action = ".uncompress"
       Picture = Picture["icon:/small/undo"]
     }
+    { lblInfo Label
+      MoveScaled(75,0,9,4)
+      Expand = True
+      Padding = 4
+      Alignment = Align.Right
+    }
   }
   { edtEditor Editor Editors
     Name = "edtEditor"
@@ -365,6 +371,6 @@
   { Toolbar text
     Text = "Text editor"
     List = "save,reload,show-class,cut,copy,paste,undo,redo,indent,unindent,view-nosplit,view-hsplit,view-vsplit,color,compress,uncompress"
-    Default = "save,reload,show-class,undo,redo,indent,unindent,color,compress,uncompress"
+    Default = "save,reload,show-class,undo,redo,indent,unindent,color,compress,uncompress,$lblInfo"
   }
 }

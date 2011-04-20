@@ -34,6 +34,7 @@
 #include <QKeyEvent>
 #include <QEvent>
 #include <QHash>
+#include <QStyle>
 
 #include "gdocument.h"
 #include "../gb.qt.h"
@@ -54,6 +55,8 @@ struct GFoldedProc
 	int end;
 };
 
+class GEditor;
+
 class GEditor : public Q3ScrollView
 {
 	Q_OBJECT
@@ -64,6 +67,7 @@ private:
 
 	static QPixmap *cache;
 	static QPixmap *breakpoint;
+	static QStyle *_style;
 	static int count;
 
 	GDocument *doc;
@@ -122,7 +126,7 @@ private:
 	void paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int h, int x1, int x2, int row);
 	void paintShowString(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int h, int row);
 	void paintDottedSpaces(QPainter &p, int row, int ps, int ls);
-	void paintEmptyArea(QPainter *p, int cx, int cy, int cw, int ch);
+	//void paintEmptyArea(QPainter *p, int cx, int cy, int cw, int ch);
 	
 	void docTextChanged();
 	void redrawContents();
@@ -133,9 +137,6 @@ private:
 	bool isCursorVisible();
 
 	void updateViewport();
-
-	void getInfo(QRect *rect, QString *info) const;
-	void updateInfo();
 	void updateFont();
 
 	int getStringWidth(const QString &s, int len = -1) const;
@@ -152,7 +153,7 @@ private slots:
 
 protected:
 
-	virtual void paintCell(QPainter *, int row, int);
+	virtual void paintCell(QPainter &, int row, int);
 	virtual void changeEvent(QEvent *e);
 	virtual void keyPressEvent(QKeyEvent *e);
 	virtual void mousePressEvent(QMouseEvent *e);
@@ -165,7 +166,7 @@ protected:
 	virtual bool focusNextPrevChild(bool);
 	virtual void inputMethodEvent(QInputMethodEvent *e);
 	virtual void drawContents(QPainter *p, int cx, int cy, int cw, int ch);
-	virtual void viewportPaintEvent(QPaintEvent *e);
+	virtual void viewportResizeEvent(QResizeEvent *e);
 
 public:
 

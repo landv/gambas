@@ -144,7 +144,7 @@ End
 
 Private Sub Pressed(bOff As Boolean)
   
-  If Not bOff Then
+  If bOff Then
     With GetPanel()
       .Background = Color.SelectedBackground
       .Foreground = Color.SelectedForeground

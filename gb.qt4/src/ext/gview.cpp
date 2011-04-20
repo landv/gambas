@@ -41,6 +41,8 @@
 #include <QEvent>
 #include <QStyle>
 #include <QStyleOption>
+#include <QWindowsStyle>
+#include <QAbstractScrollArea>
 
 #include <ctype.h>
 
@@ -88,11 +90,13 @@ static QColor defaultColors[GLine::NUM_STATE] =
 	Qt::green
 };
 
+
 /**---- GEditor -----------------------------------------------------------*/
 
 QPixmap *GEditor::cache = 0;
 QPixmap *GEditor::breakpoint = 0;
 int GEditor::count = 0;
+QStyle *GEditor::_style = 0;
 
 void GEditor::reset()
 {
@@ -121,14 +125,16 @@ GEditor::GEditor(QWidget *parent)
 	int i;
 
 	if (count == 0)
+	{
 		cache = new QPixmap();
+		_style = new QWindowsStyle;
+	}
 
 	count++;
 
 	setKeyCompression(true);
 	setFocusPolicy(Qt::WheelFocus);
 	setAttribute(Qt::WA_InputMethodEnabled, true);
-	//setAttribute(Qt::WA_StaticContents, true);
 	
 	setMouseTracking(true);
 	viewport()->setMouseTracking(true);
@@ -136,11 +142,15 @@ GEditor::GEditor(QWidget *parent)
   viewport()->setBackgroundRole(QPalette::Base);
 	viewport()->setPaletteBackgroundColor(defaultColors[GLine::Background]);
 	viewport()->setFocusProxy(this);
-  
-  /*viewport()->setAutoFillBackground(false);
-	//viewport()->setAttribute(Qt::WA_NoSystemBackground, true);*/
-	viewport()->setAttribute(Qt::WA_OpaquePaintEvent, true);
-	viewport()->setAttribute(Qt::WA_StaticContents, false);
+	Q3ScrollView::setStyle(_style);
+	
+	viewport()->ensurePolished();
+  //viewport()->setAutoFillBackground(true);
+	//viewport()->setAttribute(Qt::WA_StaticContents, true);
+	//viewport()->setAttribute(Qt::WA_DontCreateNativeAncestors, true);
+	//viewport()->setAttribute(Qt::WA_NativeWindow, true);
+	viewport()->setAttribute(Qt::WA_NoSystemBackground, true);
+	viewport()->setAttribute(Qt::WA_PaintOnScreen, true);
 	
 	margin = 0;
 	doc = 0;
@@ -193,6 +203,7 @@ GEditor::~GEditor()
 		delete breakpoint;
 		cache = 0;
 		breakpoint = 0;
+		delete _style;
 	}
 }
 
@@ -247,12 +258,14 @@ int GEditor::getStringWidth(const QString &s, int len) const
 
 void GEditor::updateCache()
 {
-	int nw = QMAX(cache->width(), QMIN(visibleWidth(), _cellw));
-	int nh = QMAX(cache->height(), QMIN(visibleHeight(), _cellh));
+	//int nw = QMAX(cache->width(), QMIN(visibleWidth(), _cellw));
+	//int nh = QMAX(cache->height(), QMIN(visibleHeight(), _cellh));
+	int nw = QMAX(cache->width(), visibleWidth());
+	int nh = QMAX(cache->height(), visibleHeight());
 	if (nw > 0 && nh > 0 && (nw != cache->width() || nh != cache->height()))
 	{
-		//qDebug("updateCache: %d %d\n", nw, nh);
 		cache->resize(nw, nh);
+		cache->fill(Qt::yellow);
 	}
 }
 
@@ -662,7 +675,7 @@ static void highlight_text(QPainter &p, int x, int y, int x2, int yy, QString s,
 	p.fillRect(x, 0, x2 - x, yy - 1, color);
 }
 
-void GEditor::paintCell(QPainter *painter, int row, int)
+void GEditor::paintCell(QPainter &p, int row, int)
 {
 	QRect ur;
 	GLine *l;
@@ -677,7 +690,7 @@ void GEditor::paintCell(QPainter *painter, int row, int)
 
 	ur = QRect(0, row * _cellh, _cellw, _cellh);
 	contentsToViewport(ur.x(), ur.y(), x1, y1);
-	ur.setRect(-x1, y1, ur.width(), ur.height());
+	ur.setRect(-x1, -y1, ur.width(), ur.height());
 
 	if (row < 0)
 		realRow = row;
@@ -689,7 +702,7 @@ void GEditor::paintCell(QPainter *painter, int row, int)
 		QColor color = viewport()->paletteBackgroundColor();
 		if (flashed)
 			color = QColor(QRgb(color.rgb() ^ 0x00FFFFFF));
-		painter->fillRect(0, 0, ur.width(), ur.height(), color);
+		p.fillRect(0, 0, _cellw, _cellh, color);
 		return;
 	}
 	
@@ -731,7 +744,7 @@ void GEditor::paintCell(QPainter *painter, int row, int)
 	if (getFlag(ShowCurrentLine) && realRow == y)
 		b = styles[GLine::Line].color;
 
-	QPainter p(cache);
+	//QPainter p(cache);
 	
 	color = calc_color(a, b, odd ? _oddBackground : styles[GLine::Background].color);
 	
@@ -747,7 +760,7 @@ void GEditor::paintCell(QPainter *painter, int row, int)
 		if (getFlag(BlendedProcedureLimits))
 		{
 			make_blend(pattern, styles[GLine::Line].color, color, _cellh);
-			p.drawTiledPixmap(0, 0, cache->width(), cache->height(), pattern);
+			p.drawTiledPixmap(0, 0, cache->width(), _cellh, pattern);
 		}
 		else
 		{
@@ -758,7 +771,7 @@ void GEditor::paintCell(QPainter *painter, int row, int)
 		}
 	}
 
-	p.translate(-ur.left(), 0);
+	p.translate(-contentsX(), 0);
 
 	// Show string
 	if ((_showRow == realRow || _showString.length()))
@@ -897,6 +910,8 @@ void GEditor::paintCell(QPainter *painter, int row, int)
 		p.fillRect(xc, 0, wc, _cellh, styles[GLine::Normal].color);
 	}
 
+	p.translate(contentsX(), 0);
+	
 	// Flash
 	if (flashed)
 	{
@@ -904,11 +919,44 @@ void GEditor::paintCell(QPainter *painter, int row, int)
 		p.fillRect(0, 0, visibleWidth(), _cellh, Qt::black);
 	}
 
-	p.end();
-	
+
 	//if (cache->width() < visibleWidth())
 	//	qDebug("cache->width() = %d < visibleWidth() = %d", cache->width(), visibleWidth());
-	painter->drawPixmap(ur.left(), 0, *cache, 0, 0, cache->width(), cache->height()); //, _cellw, _cellh);
+	//painter->drawPixmap(ur.left(), 0, *cache, 0, 0, cache->width(), cache->height()); //, _cellw, _cellh);
+}
+
+
+void GEditor::drawContents(QPainter *p, int cx, int cy, int cw, int ch)
+{
+	int rowfirst = rowAt(cy);
+	int rowlast = rowAt(cy + ch - 1);
+
+	if (getFlag(ChangeBackgroundAtLimit) && rowfirst > 0)
+		_oddLine = doc->getLimitIndex(viewToReal(rowfirst - 1)) & 1;
+	else
+		_oddLine = true;
+	
+	QPainter pc(cache);
+	
+	// Go through the rows
+	for (int r = rowfirst; r <= rowlast; ++r) 
+	{
+		// get row position and height
+		//int rowp = r * _cellh;
+		// Translate painter and draw the cell
+		//p->translate(0, rowp);
+		//paintCell(p, r, 0);
+		paintCell(pc, r, 0);
+		pc.translate(0, _cellh);
+	}
+	
+	pc.end();
+	
+	//ur = QRect(0, row * _cellh, _cellw, _cellh);
+	//qDebug("drawContents: %d %d %d %d : %d %d . %d : %d %d", cx, cy, cw, ch, contentsX(), contentsY(), rowfirst * _cellh, viewport()->x(), viewport()->y());
+	//p->setClipRect(cx, cy, cw, ch);
+	//p->setClipping(false);
+	p->drawPixmap(contentsX(), rowfirst * _cellh, *cache); //, 0, 0, _cellw, ch); //, _cellw, _cellh);
 }
 
 
@@ -1118,7 +1166,6 @@ bool GEditor::cursorGoto(int ny, int nx, bool mark)
 		if (mark)
 			doc->endSelection(y, x);
 		
-		updateInfo();
 		emit cursorMoved();
 	}
 	else if (center)
@@ -1861,8 +1908,12 @@ void GEditor::resizeEvent(QResizeEvent *e)
 	Q3ScrollView::resizeEvent(e);
 	baptizeVisible();
 	updateWidth();
+}
+
+void GEditor::viewportResizeEvent(QResizeEvent *e)
+{
+	Q3ScrollView::viewportResizeEvent(e);
 	updateCache();
-	//updateViewport();
 }
 
 bool GEditor::isCursorVisible()
@@ -2066,7 +2117,7 @@ void GEditor::baptizeVisible()
 void GEditor::baptizeVisible(int x, int y)
 {
 	doc->baptizeUntil(lastVisibleRow(y));
-	viewport()->update();
+	//viewport()->update();
 }
 
 void GEditor::inputMethodEvent(QInputMethodEvent *e)
@@ -2430,15 +2481,6 @@ bool GEditor::isFolded(int row)
 			f = i;
 	}
 	
-	/*for (i = 0; i < fold.count(); i++)
-	{
-		fp = fold.at(i);
-		if (fp->start == row)
-			return true;
-		else if (fp->start > row)
-			break;
-	}*/
-	
 	return false;
 }
 
@@ -2585,6 +2627,7 @@ void GEditor::updateLine(int y)
 	updateContents(r);
 }
 
+#if 0
 void GEditor::paintEmptyArea(QPainter *p, int cx, int cy, int cw, int ch)
 {
 	if ((_nrows * _cellh) >= contentsHeight())
@@ -2599,52 +2642,6 @@ void GEditor::paintEmptyArea(QPainter *p, int cx, int cy, int cw, int ch)
 	QVector<QRect> r = reg.rects();
 	for (int i = 0; i < (int)r.count(); ++i)
 		p->fillRect(r[i], viewport()->paletteBackgroundColor());
-}
-
-void GEditor::getInfo(QRect *rect, QString *info) const
-{
-	int ix, iy, iw, ih;
-	QString s;
-	
-	s = QString("%1:%2").arg(x + 1).arg(y + 1);
-	
-	iw = _charWidth['9'] * 10 + 4;
-	ih = _cellh + 2;
-	ix = visibleWidth() - iw - 2;
-	iy = visibleHeight() - ih - 2;
-
-	*rect = QRect(ix, iy, iw, ih);
-	if (info) *info = s;
-}
-
-void GEditor::updateInfo()
-{
-	QRect r;
-	
-	getInfo(&r, NULL);
-	viewport()->update(r);
-}
-
-void GEditor::drawContents(QPainter *p, int cx, int cy, int cw, int ch)
-{
-	int rowfirst = rowAt(cy);
-	int rowlast = rowAt(cy + ch - 1);
-
-	if (getFlag(ChangeBackgroundAtLimit) && rowfirst > 0)
-		_oddLine = doc->getLimitIndex(rowfirst - 1) & 1;
-	else
-		_oddLine = true;
-	
-	// Go through the rows
-	for (int r = rowfirst; r <= rowlast; ++r) 
-	{
-		// get row position and height
-		int rowp = r * _cellh;
-		// Translate painter and draw the cell
-		p->translate(0, rowp);
-		paintCell(p, r, 0);
-		p->translate(0, -rowp);
-	}
 }
 
 void GEditor::viewportPaintEvent(QPaintEvent *e)
@@ -2675,6 +2672,7 @@ void GEditor::viewportPaintEvent(QPaintEvent *e)
 		}
 	}
 }
+#endif
 
 void GEditor::updateViewport()
 {
