@@ -265,7 +265,7 @@ void GEditor::updateCache()
 	if (nw > 0 && nh > 0 && (nw != cache->width() || nh != cache->height()))
 	{
 		cache->resize(nw, nh);
-		cache->fill(Qt::yellow);
+		//cache->fill(Qt::yellow);
 	}
 }
 
@@ -956,7 +956,7 @@ void GEditor::drawContents(QPainter *p, int cx, int cy, int cw, int ch)
 	//qDebug("drawContents: %d %d %d %d : %d %d . %d : %d %d", cx, cy, cw, ch, contentsX(), contentsY(), rowfirst * _cellh, viewport()->x(), viewport()->y());
 	//p->setClipRect(cx, cy, cw, ch);
 	//p->setClipping(false);
-	p->drawPixmap(contentsX(), rowfirst * _cellh, *cache); //, 0, 0, _cellw, ch); //, _cellw, _cellh);
+	p->drawPixmap(contentsX(), rowfirst * _cellh, *cache, 0, 0, _cellw, _cellh * (rowlast - rowfirst + 1)); //, _cellw, _cellh);
 }
 
 

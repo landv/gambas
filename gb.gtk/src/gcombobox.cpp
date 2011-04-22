@@ -253,6 +253,8 @@ gComboBox::~gComboBox()
 	if (_model_dirty_timeout)
 		g_source_remove(_model_dirty_timeout);
 	
+	 gtk_combo_box_popdown(GTK_COMBO_BOX(widget));
+	
 	if (cell) g_object_unref(cell);
 	
 	delete tree;
