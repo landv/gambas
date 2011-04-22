@@ -1115,7 +1115,7 @@ Public Sub WriteBreakpoints()
   For Each hFile In Project.Files
     If Not Project.IsEditor(hFile) Then Continue 
     hEditor = hFile
-    For Each iLine In hEditor.GetBreakpoints()
+    For Each iLine In hEditor.GetBreakpoints(True)
       Inc iCount
       Project.Config["/Breakpoints/Breakpoint[" & CStr(iCount) & "]"] = hEditor.Name & "." & CStr(iLine)
     Next

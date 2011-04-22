@@ -51,8 +51,11 @@ Public Sub _new()
   With cvwBreak
     .Columns.Count = 3
     .Columns[0].Text = ("Class")
+    .Columns[0].Width = Desktop.Scale * 16
     .Columns[1].Text = ("Function")
+    .Columns[1].Width = Desktop.Scale * 16
     .Columns[2].Text = ("Line")
+    .Columns[2].Width = Desktop.Scale * 6
   End With
   
   With gvwFind
@@ -603,8 +606,8 @@ Public Sub AddBreakpoint(sName As String, sProc As String, iLine As Integer, bOn
     Endif 
   Endif
   
-  cvwBreak.Columns[0].Width = -1
-  cvwBreak.Columns[1].Width = -1
+  'cvwBreak.Columns[0].Width = -1
+  'cvwBreak.Columns[1].Width = -1
 
 End
 
@@ -818,7 +821,7 @@ Public Sub btnShowMe_Click()
 
 End
 
-Public Sub RefreshBreakPoint(sClass As String)
+Public Sub RefreshBreakpoint(sClass As String)
   
   $cRefresh[sClass] = sClass
   If tabDebug.Index = TAB_BREAK Then 
@@ -859,8 +862,8 @@ Public Sub timBreakpoint_Timer()
     
   Next
   
-  cvwBreak.Columns[0].Width = -1
-  cvwBreak.Columns[1].Width = -1
+  'cvwBreak.Columns[0].Width = -1
+  'cvwBreak.Columns[1].Width = -1
   
   $cRefresh.Clear
   timBreakpoint.Stop
@@ -872,8 +875,26 @@ Public Sub GetBreakpoints() As String[]
   Dim iInd As Integer
   Dim aBreak As String[]
   Dim aBreakPoint As New String[]
+  Dim hEditor As FEditor
+  Dim sClass As String
+  Dim aClass As New String[]
 
   timBreakpoint_Timer
+  
+  cvwBreak.MoveFirst
+  While cvwBreak.Available
+    aBreak = Split(cvwBreak.Item.Key, "*.*.*")
+    If sClass <> aBreak[0] Then
+      sClass = aBreak[0]
+      aClass.Add(sClass)
+    Endif
+    cvwBreak.MoveNext
+  Wend
+  
+  For Each sClass In aClass
+    hEditor = Project.Files[Project.FindPath(sClass)]
+    hEditor.CheckBreakpoints
+  Next
   
   cvwBreak.MoveFirst
   While cvwBreak.Available

@@ -48,7 +48,6 @@
       Action = ".break"
       Text = ("Toggle &breakpoint")
       Picture = Picture["icon:/small/halt"]
-      Toggle = True
       Shortcut = "F9"
     }
     { mnuWatch Menu
@@ -333,12 +332,12 @@
       Action = ".pretty"
       Picture = Picture["icon:/small/wizard"]
     }
-    { btnBreakpoint ToolButton
+    { btnBreakpoint ToolButton mnuBreakpoint
+      Name = "btnBreakpoint"
       MoveScaled(68,0,4,4)
       ToolTip = ("Toggle breakpoint")
       Action = ".break"
       Picture = Picture["icon:/small/halt"]
-      Toggle = True
     }
     { btnWatch ToolButton mnuWatch
       Name = "btnWatch"

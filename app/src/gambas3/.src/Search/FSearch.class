@@ -994,6 +994,7 @@ Public Sub RefreshBrowse()
   
   $cRefreshBrowse.Clear
   Object.Unlock(gvwFind)
+  gvwFind.Rows.Count = $aBrowse.Count
   gvwFind.Refresh
   gvwFind.ScrollX = 0
   timRefresh.Stop

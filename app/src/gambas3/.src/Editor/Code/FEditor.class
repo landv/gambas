@@ -415,7 +415,8 @@ Private Sub RefreshLineInfo(Optional bForce As Boolean)
     HideSignature
     
     UpdateFunction
-    timProc.Enabled = True
+    timProc.Stop
+    timProc.Start
     
     If IsModified() Then {Scan} = Null
     
@@ -1182,6 +1183,7 @@ Public Function CanSetBreakpoint(iLine As Integer) As Boolean
   
   If iLine < 0 Or If iLine >= Editor.Lines.Count Then Return
   
+  'Editor.Lines[iLine].Refresh
   sLine = Trim(Editor.Lines[iLine].Text)
   iPos = InStr(sLine, "'")
   If iPos Then sLine = Trim(Left$(sLine, iPos - 1))
@@ -1218,9 +1220,8 @@ Private Sub HasBreakpoint(iLine As Integer) As Boolean
   
 End
 
-Public Function GetBreakpoints() As Integer[]
+Public Sub CheckBreakpoints()
   
-  Dim aBreak As New Integer[]
   Dim iLine As Integer
   
   Do
@@ -1228,11 +1229,31 @@ Public Function GetBreakpoints() As Integer[]
     iLine = Editor.FindNextBreakpoint(iLine)
     If iLine < 0 Then Break
     
-    If CanSetBreakpoint(iLine) Then
+    If Not CanSetBreakpoint(iLine) Then SetBreakpoint(iLine, False)
+    Inc iLine
+    
+  Loop
+  
+End
+
+
+Public Function GetBreakpoints(Optional bCheck As Boolean) As Integer[]
+  
+  Dim aBreak As New Integer[]
+  Dim iLine As Integer
+  
+  If bCheck Then CheckBreakpoints
+  
+  Do
+    
+    iLine = Editor.FindNextBreakpoint(iLine)
+    If iLine < 0 Then Break
+    
+    'If CanSetBreakpoint(iLine) Then
       aBreak.Add(iLine)
       'Else 
       '  SetBreakpoint(iLine, False)
-    Endif
+    'Endif
     Inc iLine
     
   Loop
@@ -2583,7 +2604,7 @@ Private Sub RefreshBackground()
       hEditor.Styles[Highlight.Background].Color = Color.Background
       hEditor.Flags[Editor.ShowCurrentLine] = False
       hEditor.Flags[Editor.ShowModifiedLines] = False
-      hEditor.Flags[Editor.ShowProcedureLimits] = False
+      hEditor.Flags[Editor.ShowLimits] = False
     Endif
     
   Next
@@ -2737,12 +2758,7 @@ End
 
 Public Sub timProc_Timer()
   
-  Action.Lock
-  Object.Lock(btnBreakpoint)
-  Action[".break", Me].Value = Editor.Lines[Editor.Line].Breakpoint
-  Object.Unlock(btnBreakpoint)
-  Action.Unlock
-  Action[".break", Me].Enabled = CanSetBreakpoint(Editor.Line)
+  CheckBreakpoints
   timProc.Enabled = False
   
 End 
@@ -3305,7 +3321,7 @@ Public Sub mnuInsertColor_Click()
   
 End
 
-Public Sub btnBreakpoint_Click()
+Public Sub mnuBreakpoint_Click()
   
   Design.SetBreakpoint(Me.Name, Editor.Line, Not HasBreakpoint(Editor.Line))
   
