@@ -1,4 +1,5 @@
 ' Gambas class file
+
 Static Private $hreport As Report
 Private $fScale As Float = 1
 Private $iPage As Integer = 1
@@ -43,7 +44,7 @@ Public Sub Form_Open()
 
   btnAdjust.Value = True
   'Resize
-  Printer1.OutputFile = User.Home &/ "output.pdf"
+  'Printer1.OutputFile = User.Home &/ "output.pdf"
   
 End
 

@@ -264,11 +264,11 @@ Public Sub Clear()
 
 End
 ' 
-' Public Function Preview()
-'   
-'   frmPreview.Run(Me)
-'   
-' End
+Public Function Preview()
+  
+  FPreview.Run(Me)
+  
+End
 
 Public Function Image(Value As String, X As String, Y As String) As ReportBrush
   

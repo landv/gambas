@@ -7,7 +7,7 @@ Inherits ReportFrame
 Public Const _IsContainer As Boolean = True
 Public Const _Group As String = "Container"
 Public Const _Properties As String = "*,Spacing{ReportCoord}"
-Public Const _DefaultEvent As String = "Data"
+'Public Const _DefaultEvent As String = "Data"
 Private $bDataIsResult As Boolean
 
 Public _PageChildren As New Collection
@@ -29,7 +29,7 @@ Private $hData As Object
 Property Read Children As ReportControl[]
 'Property Read Index As Integer
 Property Spacing As String
-Property Data As Object
+'Property Data As Object  '<==== remettre pour automation
 
 Property Read _Spacing As Float
 Property Read _RelativeSpacing As Boolean
