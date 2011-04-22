@@ -248,7 +248,7 @@ static void save_action(bool delete)
 		if (FILE_exist(path))
 		{
 			if (JOB->verbose)
-				fprintf(stderr, "Deleting action file %s\n", path);
+				printf("Deleting action file %s\n", path);
 			
 			FILE_unlink(path);
 		}
@@ -256,7 +256,7 @@ static void save_action(bool delete)
 	else
 	{
 		if (JOB->verbose)
-			fprintf(stderr, "Writing action file %s\n", path);
+			printf("Writing action file %s\n", path);
 		
 		file = fopen(path, "w");
 		if (!file)

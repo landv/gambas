@@ -46,7 +46,7 @@ int TRANS_in_affectation = 0;
 
 void TRANS_reset(void)
 {
-  JOB->line = 1;
+  JOB->line = JOB->first_line;
   JOB->current = JOB->pattern;
   JOB->end = &(JOB->pattern[JOB->pattern_count]);
 }

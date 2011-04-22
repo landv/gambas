@@ -209,9 +209,11 @@ End
 Private Function IsConsoleProject() As Boolean
 
   Dim sLib As String
+  Dim hComp As CComponent
 
   For Each sLib In Project.Components
-    If CComponent.All[sLib].Family = "Form" Then Return False
+    hComp = CComponent.All[sLib]
+    If hComp.IsForm() Then Return False
   Next
 
   Return True

@@ -357,7 +357,7 @@ void COMPILE_load(void)
 	if (BUFFER_load_file(&JOB->source, JOB->name))
 		THROW("Cannot load source file: &1", strerror(errno));
 
-	BUFFER_add(&JOB->source, "\n", 1);
+	//BUFFER_add(&JOB->source, "\n", 1);
 }
 
 

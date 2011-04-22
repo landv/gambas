@@ -40,6 +40,7 @@ typedef
 	struct {
 		char *name;                        /* source file name */
 		int line;                          /* current line number */
+		int first_line;                    /* first line to compile */
 		char *source;                      /* source file contents */
 		unsigned verbose : 1;              /* verbose compilation */
 		unsigned debug : 1;                /* if debugging information must be generated */

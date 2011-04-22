@@ -434,15 +434,14 @@ static void add_newline()
 		comp->line = line;
 	}
 	
+	if (action == PREP_LINE)
+		comp->line = PREP_next_line;
+	
 	add_pattern(RT_NEWLINE, comp->line);
 	comp->line++;
 	
-	switch (action)
-	{
-		case PREP_IGNORE: jump_to_next_prep(); break;
-		case PREP_LINE: comp->line = PREP_next_line; break;
-		case PREP_CONTINUE: default: break;
-	}
+	if (action == PREP_IGNORE)
+		jump_to_next_prep();
 }
 
 static void add_end()
@@ -1042,7 +1041,7 @@ void READ_do(void)
 	READ_init();
 	PREP_init();
 	
-	add_pattern(RT_NEWLINE, 0);
+	//add_pattern(RT_NEWLINE, 0);
 
 	source_ptr = comp->source;
 	source_length = BUFFER_length(comp->source);

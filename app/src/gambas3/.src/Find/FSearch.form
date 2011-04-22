@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,88,38)
+  MoveScaled(0,0,88,41)
   Action = "find"
   Text = ("Search & Replace")
   Icon = Picture["icon:/small/find"]
@@ -12,7 +12,7 @@
   Spacing = True
   Margin = True
   { VBox3 VBox
-    MoveScaled(1,1,59,35)
+    MoveScaled(1,1,59,38)
     Expand = True
     Spacing = True
     { HBox1 HBox
@@ -37,50 +37,58 @@
         Expand = True
       }
     }
-    { Separator1 Separator
-      MoveScaled(0,9,51,1)
-    }
-    { HBox4 HBox
-      MoveScaled(0,11,58,24)
+    { HBox4 Panel
+      MoveScaled(-1,10,58,28)
       Expand = True
+      Arrangement = Arrange.Horizontal
+      Spacing = True
+      Margin = True
+      Border = Border.Plain
       { VBox2 VBox
-        MoveScaled(1,0,26,24)
+        MoveScaled(1,0,26,28)
         Expand = True
+        { Label4 Label
+          MoveScaled(0,0,19,3)
+          Font = Font["Bold"]
+          Text = ("Options")
+          Alignment = Align.TopNormal
+        }
         { chkCaseSensitive CheckBox
-          MoveScaled(0,0,25,4)
+          MoveScaled(0,4,25,4)
           Text = ("&Case sensitive")
         }
         { chkWordOnly CheckBox
-          MoveScaled(0,4,25,4)
+          MoveScaled(0,8,25,4)
           Text = ("&Words only")
         }
         { chkRegularExpression CheckBox
-          MoveScaled(0,8,25,4)
+          MoveScaled(0,12,25,4)
           Text = ("Regular e&xpression")
         }
         { chkHighlight CheckBox
-          MoveScaled(0,12,25,4)
+          MoveScaled(0,16,25,4)
           Text = ("&Highlight result")
         }
         { chkIgnoreStrings CheckBox
-          MoveScaled(0,16,25,4)
+          MoveScaled(0,20,25,4)
           Text = ("&Ignore strings")
         }
         { chkIgnoreComments CheckBox
-          MoveScaled(0,20,25,4)
+          MoveScaled(0,24,25,4)
           Text = ("I&gnore comments")
         }
       }
-      { Separator3 Separator
-        MoveScaled(28,4,4,8)
+      { Panel3 Panel
+        MoveScaled(29,11,1,5)
       }
       { VBox1 VBox
         MoveScaled(32,0,24,24)
         Expand = True
         { Label3 Label
-          MoveScaled(0,0,19,4)
+          MoveScaled(0,0,19,3)
           Font = Font["Bold"]
           Text = ("Search in")
+          Alignment = Align.TopNormal
         }
         { radCurrentProcedure RadioButton radSearch
           Name = "radCurrentProcedure"
@@ -110,11 +118,11 @@
     #MoveScaled(53,2)
     Delay = 500
   }
-  { Separator2 Separator
-    MoveScaled(61,1,1,29)
+  { Panel2 Panel
+    MoveScaled(61,16,1,4)
   }
   { HBox5 VBox
-    MoveScaled(62,1,25,36)
+    MoveScaled(62,1,25,39)
     Spacing = True
     { btnNext Button
       MoveScaled(0,0,22,4)
@@ -147,9 +155,14 @@
       Expand = True
     }
     { PictureBox1 PictureBox
-      MoveScaled(3,25,17,11)
+      MoveScaled(3,26,17,9)
       Picture = Picture["img/search.png"]
+      AutoResize = True
       Alignment = Align.Top
+    }
+    { Panel4 Panel
+      MoveScaled(9,36,3,1)
+      Expand = True
     }
   }
 }

@@ -1263,3 +1263,9 @@ Public Sub UsedByProject() As Boolean
   If Project.Components.Exist(Key) Then Return True
   
 End
+
+Public Sub IsForm() As Boolean
+  
+  Return Implement.Exist("form")
+  
+End

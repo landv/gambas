@@ -889,6 +889,26 @@ static bool header_structure(void)
 	return TRUE;
 }
 
+static void check_class_header()
+{
+	while (TRUE) //(JOB->current < JOB->end)
+	{
+		if (PATTERN_is_end(*JOB->current))
+			break;
+
+		if (TRANS_newline())
+			continue;
+
+		if (header_option())
+			continue;
+		
+		if (header_inherits())
+			continue;
+
+		break;
+	}
+}
+
 void HEADER_do(void)
 {
   union {
@@ -902,31 +922,22 @@ void HEADER_do(void)
   TRANS_reset();
 
   header_module_type();
+	
+	if (JOB->line == 1)
+		check_class_header();
 
-  while (JOB->current < JOB->end)
+  while (TRUE) //JOB->current < JOB->end)
   {
     if (PATTERN_is_end(*JOB->current))
       break;
-
-    if (TRANS_newline())
-      continue;
-
-    if (header_option())
-      continue;
 		
-    if (header_inherits())
-      continue;
-
-		break;
-	}
-
-  while (JOB->current < JOB->end)
-  {
-    if (PATTERN_is_end(*JOB->current))
-      break;
-
     if (TRANS_newline())
+		{
+			if (JOB->line == 1)
+				check_class_header();
+			
       continue;
+		}
 
     if (header_function(&trans.func))
     {
