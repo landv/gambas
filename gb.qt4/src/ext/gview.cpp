@@ -794,7 +794,7 @@ void GEditor::paintCell(QPainter &p, int row, int)
 			else
 			{
 				if (realRow > y1 || x1 == 0)
-					x1 = 0;
+					x1 = margin;
 				else
 					x1 = lineWidth(y1, x1);
 
@@ -818,8 +818,8 @@ void GEditor::paintCell(QPainter &p, int row, int)
 
 		if (getFlag(ShowModifiedLines) && l->changed)
 			p.fillRect(0, 0, margin - 2, _cellh, styles[GLine::Highlight].color);
-		else
-			p.fillRect(0, 0, margin - 2, _cellh, odd ? _oddBackground : styles[GLine::Background].color);
+		//else
+		//	p.fillRect(0, 0, margin - 2, _cellh, odd ? _oddBackground : styles[GLine::Background].color);
 		/*else if (getFlag(ShowCurrentLine))
 			p.fillRect(0, 0, margin - 2, _cellh, styles[GLine::Line].color);*/
 
@@ -1996,6 +1996,8 @@ void GEditor::scrollTimerTimeout()
 
 void GEditor::setStyle(int index, GHighlightStyle *style)
 {
+	int sat;
+	
 	if (index < 0 || index >= GLine::NUM_STATE)
 		return;
 
@@ -2012,12 +2014,13 @@ void GEditor::setStyle(int index, GHighlightStyle *style)
 	if (index == GLine::Line)
 	{
 		_oddBackground = style->color;
+		sat = _oddBackground.saturation() * 3 / 5;
 		if (_oddBackground.saturation() > 10)
-			_oddBackground.setHsv(_oddBackground.hue() + 4, _oddBackground.saturation() / 2, _oddBackground.value());
+			_oddBackground.setHsv(_oddBackground.hue() + 4, sat, _oddBackground.value());
 		else if (_oddBackground.value() > 127)
-			_oddBackground.setHsv(_oddBackground.hue() + 4, _oddBackground.saturation() / 2, _oddBackground.value() - 32);
+			_oddBackground.setHsv(_oddBackground.hue() + 4, sat, _oddBackground.value() - 32);
 		else
-			_oddBackground.setHsv(_oddBackground.hue() + 4, _oddBackground.saturation() / 2, _oddBackground.value() + 32);
+			_oddBackground.setHsv(_oddBackground.hue() + 4, sat, _oddBackground.value() + 32);
 	}
 }
 
