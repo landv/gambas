@@ -106,7 +106,7 @@ static void init_atoms()
   _atom_init = TRUE;
 }
 
-#define PROPERTY_START_READ 256
+#define PROPERTY_START_READ 1024
 #define PROPERTY_NEXT_READ 1024
 
 #if 0
@@ -131,7 +131,7 @@ char *X11_get_property(Window wid, Atom prop, Atom *type, int *format, int *pcou
   unsigned long count;
   unsigned long after;
 	unsigned long offset;
-	int size;
+	int size, offset_size;
 
 	*pcount = 0;
 
@@ -143,23 +143,30 @@ char *X11_get_property(Window wid, Atom prop, Atom *type, int *format, int *pcou
 	*pcount += count;
 	
 	size = *format == 32 ? sizeof(long) : ( *format == 16 ? sizeof(short) : 1 );
+	offset_size = *format == 32 ? sizeof(int32_t) : ( *format == 16 ? sizeof(short) : 1 );
+	
+	//fprintf(stderr, "X11_get_property: format = %d size = %d count = %ld after = %ld\n", *format, size, count, after);
 	
 	GB.FreeString(&_property_value);
 	_property_value = GB.NewString((char *)data, count * size);
 	XFree(data);
 	
-	offset = count * size / sizeof(int32_t);
+	offset = count * offset_size / sizeof(int32_t);
 	
 	while (after)
 	{
-		if (XGetWindowProperty(_display, wid, prop, offset, PROPERTY_NEXT_READ / sizeof(int32_t),
+		//fprintf(stderr, "X11_get_property: offset = %ld read = %ld\n", offset, Min(after, PROPERTY_NEXT_READ) / sizeof(int32_t));
+	
+		if (XGetWindowProperty(_display, wid, prop, offset, Min(after, PROPERTY_NEXT_READ) / sizeof(int32_t),
 				False, AnyPropertyType, type, format,
 				&count, &after, &data) != Success)
 			return NULL;
 
 		*pcount += count;
-		offset += count * size / sizeof(int32_t);
+		offset += count * offset_size / sizeof(int32_t);
 		
+		//fprintf(stderr, "X11_get_property: format = %d size = %d count = %ld after = %ld next offset = %ld\n", *format, size, count, after, offset);
+	
 		GB.AddString(&_property_value, (char *)data, count * size);
 		XFree(data);
 	}
@@ -195,7 +202,7 @@ Atom X11_get_property_type(Window wid, Atom prop, int *format)
   unsigned long after;
   Atom type;
 
-	if (XGetWindowProperty(X11_display, wid, prop, 0, PROPERTY_START_READ / sizeof(long),
+	if (XGetWindowProperty(X11_display, wid, prop, 0, PROPERTY_START_READ / sizeof(int32_t),
 			False, AnyPropertyType, &type, format,
 			&count, &after, &data) != Success)
 		return None;

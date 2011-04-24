@@ -253,3 +253,15 @@ Private Sub Sticky_Write(Value As Boolean)
 
 End
 
+Public Sub GetIcon(Width As Integer, Height As Integer) As Image
+  
+  Dim aIcon As Integer[]
+  Dim hImage As Image
+
+  aIcon = _Desktop.GetWindowProperty(Atom["_NET_WM_ICON"], $iId)
+  If Not aIcon Then Return
+  
+  hImage = _Desktop.MakeIcon(aIcon, Width, Height)
+  If hImage Then Return hImage.Stretch(Width, Height)
+  
+End

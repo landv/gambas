@@ -25,6 +25,8 @@
 #include "x11.h"
 #include "desktop.h"
 
+//#define DEBUG_ICON 1
+
 #if 0
 typedef struct PROPERTY_FORMAT
 {
@@ -182,10 +184,6 @@ BEGIN_METHOD(CDESKTOP_get_window_property, GB_STRING name; GB_INTEGER window)
 		return;
 	}
 	
-	/*name = XGetAtomName(X11_display, type);
-	fprintf(stderr, "type = %s\n", name);
-	XFree(name);*/
-	
 	if (type == XA_ATOM)
 	{
 		GB.Array.New(&array, GB_T_STRING, count);
@@ -223,8 +221,9 @@ BEGIN_METHOD(CDESKTOP_get_window_property, GB_STRING name; GB_INTEGER window)
 			case 16:
 				count = GB.StringLength(value) / sizeof(int);
 				GB.Array.New(&array, GB_T_SHORT, count);
-				for (i = 0; i < count; i++)
-					*((short *)GB.Array.Get(array, i)) = *((short *)value + i);
+				/*for (i = 0; i < count; i++)
+					*((short *)GB.Array.Get(array, i)) = *((short *)value + i);*/
+				memcpy(GB.Array.Get(array, 0), value, sizeof(short) * count);
 				GB.ReturnObject(array);
 				break;
 				
@@ -524,6 +523,11 @@ BEGIN_METHOD(CDESKTOP_make_icon, GB_OBJECT data; GB_INTEGER width; GB_INTEGER he
 				break;
 			w = data[0];
 			h = data[1];
+			if (!w || !h)
+				break;
+			#if DEBUG_ICON
+			fprintf(stderr, "%d [%d %d]\n", count, w, h);
+			#endif
 			if (w > width)
 			{
 				width = w;
@@ -549,6 +553,8 @@ BEGIN_METHOD(CDESKTOP_make_icon, GB_OBJECT data; GB_INTEGER width; GB_INTEGER he
 		h = data[1];
 		if (w == width && h == height)
 			break;
+		if (!w || !h)
+			GB.ReturnNull();
 		size = w * h + 2;
 		data += size;
 		count -= size;
