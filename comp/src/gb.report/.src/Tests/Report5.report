@@ -1,0 +1,52 @@
+# Gambas Form File 3.0
+
+{ Report Report
+  #MoveScaled(0,0,68,64)
+  Index = 0
+  Text = ("")
+  { ReportLabel3 ReportLabel
+    #MoveScaled(6,0,50,10)
+    Height = "20%"
+    Brush = ReportBrush["LinearGradient(0.98,0.04,0.04,0.04,[#FFFF00,#FFFFFF],[0,1])"]
+    Font = Font["DejaVu Sans,Bold,+14"]
+    Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
+    Background = ReportBrush["#0000FF"]
+    Text = ("Gambas")
+    Alignment = Align.Center
+  }
+  { ReportHBox1 ReportHBox
+    #MoveScaled(0,14,87,56)
+    Expand = True
+    { ReportVBox1 ReportVBox
+      #MoveScaled(1,1,25,47)
+      Width = "6cm"
+      Background = ReportBrush["#FF7F00"]
+    }
+    { ReportVBox2 ReportVBox
+      #MoveScaled(27,1,60,54)
+      Expand = True
+      Border = ReportBorder["Left:1mm #000000"]
+      Background = ReportBrush["#FFFFFF"]
+      { RVBCont ReportVBox
+        #MoveScaled(4,11,39,33)
+        Padding = "5mm"
+        Expand = True
+        { ReportLabel1 ReportLabel
+          #MoveScaled(0,0,44,9)
+          Text = ("Gambas Report Demo")
+        }
+      }
+      { ReportLabel2 ReportLabel
+        #MoveScaled(7,49,47,3)
+        Brush = ReportBrush["#FFFFFF"]
+        Font = Font["Bold,+1"]
+        Border = ReportBorder["Top:1mm #000000"]
+        Background = ReportBrush["#0000FF"]
+        Text = ("Page $NPAGE")
+        Alignment = Align.Right
+        UseField = True
+      }
+    }
+  }
+  Index = 0
+}
