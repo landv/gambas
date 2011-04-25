@@ -1,0 +1,23 @@
+' Gambas class file
+
+Public Sub _new()
+  
+  Dim hresult As Result
+  Dim Rlbl As ReportLabel
+  
+  Try Connections["Connection1"].Open
+  If Error Then 
+    Message.Error(" You need to Create the test database With the <b>database example</b>")
+    Return
+  Endif
+  hresult = db.Limit(300).Find("test")
+  If Not hresult.Available Then Return
+  For Each hresult
+    
+    Rlbl = New ReportLabel(RVBCont)
+    Rlbl.Text = hresult!name & " " & hresult!firstname
+    Rlbl.Border.bottom.Width = "1px"
+    
+  Next
+  
+End
