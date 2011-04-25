@@ -56,6 +56,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   
   Dim hChildHints As TSizeHint
   Dim hChild As ReportControl
+  Dim oChild As Object
   Dim iChildrenH As Float
 
   Dim iPage, nbPage As Integer
@@ -67,7 +68,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   Dim fPdg As Float
   Dim bFirst As Boolean 
   Dim fH, hW, fW As Float
-  Dim i As Integer
+  Dim i, j As Integer
   Dim tmpX As Float
   
   
@@ -141,6 +142,16 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
       'If iPage > 0 Then hchild.RelPage = -1
       X += fW
       Inc Me._CurItem
+      oChild = hItem.Ctrl
+      If oChild Is ReportContainer Then
+      
+        If oChild._CurItem < oChild.Children.count Then
+          j = Me.Children.Find(oChild)
+          Me._CurItem = Min(j, Me._CurItem)
+        Endif
+      
+      End If
+      
     Next
     Me._PageChildren[ContPage] = aPageItems
     ' For Each hChild In aIgnored

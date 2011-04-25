@@ -41,7 +41,7 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
   Dim j As Integer
   'Dim aIgnored As New TControl[]  
 '   If ContPage = 1 Then Stop
-  
+  'If Me.Tag = "*" Then Stop
   If H = 0 Then 
     Me._CurItem = Me.Children.Max
     Return

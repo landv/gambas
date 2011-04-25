@@ -1,26 +1,34 @@
 # Gambas Form File 3.0
 
 { Report Report
-  #MoveScaled(0,0,68,64)
+  #MoveScaled(0,0,87,74)
   Index = 0
   Text = ("")
-  { ReportLabel3 ReportLabel
-    #MoveScaled(6,0,50,10)
-    Height = "20%"
-    Brush = ReportBrush["LinearGradient(0.98,0.04,0.04,0.04,[#FFFF00,#FFFFFF],[0,1])"]
-    Font = Font["DejaVu Sans,Bold,+14"]
-    Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
-    Background = ReportBrush["#0000FF"]
-    Text = ("Gambas")
-    Alignment = Align.Center
+  { ReportHBox2 ReportHBox
+    #MoveScaled(0,0,67,14)
+    Height = "5cm"
+    Fixed = True
+    { ReportLabel3 ReportLabel
+      #MoveScaled(26,2,43,10)
+      Brush = ReportBrush["LinearGradient(0.98,0.04,0.04,0.04,[#FFFF00,#FFFFFF],[0,1])"]
+      Fixed = True
+      Font = Font["DejaVu Sans,Bold,+14"]
+      Expand = True
+      AutoResize = True
+      Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
+      Background = ReportBrush["#3398C3"]
+      Text = ("Gambas")
+      Alignment = Align.Center
+    }
   }
   { ReportHBox1 ReportHBox
-    #MoveScaled(0,14,87,56)
+    #MoveScaled(0,15,87,56)
     Expand = True
+    Border = ReportBorder["Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
     { ReportVBox1 ReportVBox
       #MoveScaled(1,1,25,47)
       Width = "6cm"
-      Background = ReportBrush["#FF7F00"]
+      Background = ReportBrush["#DF6B00"]
     }
     { ReportVBox2 ReportVBox
       #MoveScaled(27,1,60,54)
@@ -28,9 +36,10 @@
       Border = ReportBorder["Left:1mm #000000"]
       Background = ReportBrush["#FFFFFF"]
       { RVBCont ReportVBox
-        #MoveScaled(4,11,39,33)
+        #MoveScaled(3,4,39,33)
         Padding = "5mm"
         Expand = True
+        Tag = "*"
         { ReportLabel1 ReportLabel
           #MoveScaled(0,0,44,9)
           Text = ("Gambas Report Demo")
@@ -39,10 +48,12 @@
       { ReportLabel2 ReportLabel
         #MoveScaled(7,49,47,3)
         Brush = ReportBrush["#FFFFFF"]
+        Fixed = True
         Font = Font["Bold,+1"]
+        Padding = "1mm"
         Border = ReportBorder["Top:1mm #000000"]
         Background = ReportBrush["#0000FF"]
-        Text = ("Page $NPAGE")
+        Text = ("Page $PAGE on $NPAGE")
         Alignment = Align.Right
         UseField = True
       }
