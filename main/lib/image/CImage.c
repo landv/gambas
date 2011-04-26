@@ -280,29 +280,41 @@ END_METHOD
 BEGIN_PROPERTY(Image_Format)
 
 	char *format;
+	int fmt;
 
-	switch(THIS_IMAGE->format)
+	if (READ_PROPERTY)
 	{
-		case GB_IMAGE_BGRX: format = "BGRX"; break;
-		case GB_IMAGE_XRGB: format = "XRGB"; break;
-		case GB_IMAGE_RGBX: format = "RGBX"; break;
-		case GB_IMAGE_XBGR: format = "XBGR"; break;
-		case GB_IMAGE_BGR : format = "BGR"; break;
-		case GB_IMAGE_RGB : format = "RGB"; break;
-
-		case GB_IMAGE_BGRA: format = "BGRA"; break;
-		case GB_IMAGE_ARGB: format = "ARGB"; break;
-		case GB_IMAGE_RGBA: format = "RGBA"; break;
-		case GB_IMAGE_ABGR: format = "ABGR"; break;
-
-		case GB_IMAGE_BGRP: format = "BGRP"; break;
-		case GB_IMAGE_PRGB: format = "PRGB"; break;
-		case GB_IMAGE_RGBP: format = "RGBP"; break;
-		case GB_IMAGE_PBGR: format = "PBGR"; break;
-		default: format = "?";
+		GB.ReturnConstZeroString(IMAGE_format_to_string(THIS_IMAGE->format));
 	}
-	
-	GB.ReturnConstZeroString(format);
+	else
+	{
+		format = GB.ToZeroString(PROP(GB_STRING));
+		
+		if (!strcasecmp(format, "BGRA"))
+			fmt = GB_IMAGE_BGRA;
+		else if (!strcasecmp(format, "BGRP"))
+			fmt = GB_IMAGE_BGRP;
+		else if (!strcasecmp(format, "RGBA"))
+			fmt = GB_IMAGE_RGBA;
+		else if (!strcasecmp(format, "RGBP"))
+			fmt = GB_IMAGE_RGBP;
+		else
+		{
+			GB.Error("Unsupported conversion");
+			return;
+		}
+		
+		IMAGE_convert(THIS_IMAGE, fmt);
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Image_Debug)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(IMAGE_debug);
+	else
+		IMAGE_debug = VPROP(GB_BOOLEAN);
 
 END_PROPERTY
 
@@ -313,20 +325,21 @@ GB_DESC CImageDesc[] =
 	GB_CONSTANT("Standard", "i", 0),
 	GB_CONSTANT("Premultiplied", "i", 1),
 
+  GB_STATIC_PROPERTY("Debug", "b", Image_Debug),
+  
 	GB_METHOD("_new", NULL, CIMAGE_new, "[(Width)i(Height)i(Color)i(Format)i]"),
 	GB_METHOD("_free", NULL, CIMAGE_free, NULL),
 
 	GB_METHOD("_get", "i", CIMAGE_get, "(X)i(Y)i"),
 	GB_METHOD("_put", NULL, CIMAGE_put, "(Color)i(X)i(Y)i"),
 
-  //GB_PROPERTY_READ("Format", "i", CIMAGE_format),
   GB_PROPERTY_READ("Width", "i", CIMAGE_width),
   GB_PROPERTY_READ("Height", "i", CIMAGE_height),
   GB_PROPERTY_READ("W", "i", CIMAGE_width),
   GB_PROPERTY_READ("H", "i", CIMAGE_height),
   GB_PROPERTY_READ("Depth", "i", CIMAGE_depth),
   GB_PROPERTY_READ("Data", "p", CIMAGE_data),
-  GB_PROPERTY_READ("Format", "s", Image_Format),
+  GB_PROPERTY("Format", "s", Image_Format),
   
   GB_METHOD("Clear", NULL, Image_Clear, NULL),
   GB_METHOD("Fill", "Image", CIMAGE_fill, "(Color)i"),

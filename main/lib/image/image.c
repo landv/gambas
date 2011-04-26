@@ -25,13 +25,43 @@
 #include "c_color.h"
 #include "image.h"
 
+bool IMAGE_debug = FALSE;
+
 typedef
 	struct { unsigned char d[3]; } PACKED uint24;
 
+typedef
+	struct {
+		int format;
+		const char *name;
+	}
+	FORMAT;
+	
 //#define DEBUG_CONVERT
 //#define DEBUG_ME 1
 
 static int _default_format = GB_IMAGE_RGBA;
+
+static FORMAT _formats[] = 
+{
+	{ GB_IMAGE_BGRX, "BGRX" },
+	{ GB_IMAGE_XRGB, "XRGB" },
+	{ GB_IMAGE_RGBX, "RGBX" },
+	{ GB_IMAGE_XBGR, "XBGR" },
+	{ GB_IMAGE_BGR , "BGR" },
+	{ GB_IMAGE_RGB , "RGB" },
+
+	{ GB_IMAGE_BGRA, "BGRA" },
+	{ GB_IMAGE_ARGB, "ARGB" },
+	{ GB_IMAGE_RGBA, "RGBA" },
+	{ GB_IMAGE_ABGR, "ABGR" },
+
+	{ GB_IMAGE_BGRP, "BGRP" },
+	{ GB_IMAGE_PRGB, "PRGB" },
+	{ GB_IMAGE_RGBP, "RGBP" },
+	{ GB_IMAGE_PBGR, "PBGR" },
+	{ 0, NULL }
+};
 
 /*static inline unsigned char *GET_END_POINTER(GB_IMG *image)
 {
@@ -432,6 +462,19 @@ void IMAGE_create_with_data(GB_IMG *img, int width, int height, int format, unsi
 		memcpy(img->data, data, IMAGE_size(img));
 }
 
+const char *IMAGE_format_to_string(int fmt)
+{
+	FORMAT *pf;
+	
+	for (pf = _formats; pf->name; pf++)
+	{
+		if (fmt == pf->format)
+			return pf->name;
+	}
+	
+	return NULL;
+}
+
 void IMAGE_convert(GB_IMG *img, int dst_format)
 {
 	uchar *data;
@@ -444,6 +487,9 @@ void IMAGE_convert(GB_IMG *img, int dst_format)
 	img->format = dst_format;
 	if (IMAGE_is_void(img))
 		return;
+	
+	if (IMAGE_debug)
+		fprintf(stderr, "gb.image: convert: %s -> %s\n", IMAGE_format_to_string(src_format), IMAGE_format_to_string(dst_format));
 	
 	GB.Alloc(POINTER(&data), IMAGE_size(img));
 	convert_image(data, dst_format, img->data, src_format, img->width, img->height);

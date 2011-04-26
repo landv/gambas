@@ -25,6 +25,10 @@
 
 #include "main.h"
 
+#ifndef __IMAGE_C
+extern bool IMAGE_debug;
+#endif
+
 static inline int RED(uint rgba) { return ((rgba >> 16) & 0xff); }
 static inline int GREEN(uint rgba) { return ((rgba >> 8) & 0xff); }
 static inline int BLUE(uint rgba) { return (rgba & 0xff); }
@@ -57,6 +61,8 @@ void IMAGE_colorize(GB_IMG *img, GB_COLOR color);
 void IMAGE_mask(GB_IMG *img, GB_COLOR color);
 void IMAGE_mirror(GB_IMG *src, GB_IMG *dst, bool horizontal, bool vertical);
 void IMAGE_transform(GB_IMG *dst, GB_IMG *src, double sx, double sy, double sdx, double sdy);
+
+const char *IMAGE_format_to_string(int fmt);
 
 #define IMAGE_is_void(_image) ((_image)->is_void)
 
