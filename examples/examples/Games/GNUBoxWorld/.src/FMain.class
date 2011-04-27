@@ -1,13 +1,25 @@
 ' Gambas class file
 
-'    Copyright(C)2010. Autor: Pablo Mileti  
-
-'This program Is free software: you can redistribute it And / Or modify it under the terms Of the GNU General Public License As published by the Free Software Foundation, either version 3 Of the License, Or (at your option)any later version.
-
-'This program Is distributed In the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty Of MERCHANTABILITY Or FITNESS For A PARTICULAR PURPOSE.See the GNU General Public License For more details.
-
-'You should have received a Copy Of the GNU General Public License along With this program.IfNot, see < http: / / www.gnu.org / licenses / > .
-
+'
+' GNUBoxWorld
+' This is another version of the popular game Box World. Contains 16 levels, all are possible to resolve. 
+' Level designs are taken From Box It game For mobile phones.
+' 
+' Copyright (C) Pablo Mileti from Buenos Aires, Argentina.
+'
+' This program is free software; you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation; either version 3 of the License, or
+' (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+' You should have received a copy of the GNU General Public License
+' along with this program; if not, see http://www.gnu.org/licenses
+'
 
 Public Game As GameBoard
 Public level As Integer
@@ -21,16 +33,26 @@ Public YPosMove As Integer
 Public IgnoreKeys As Boolean
 
 Public Sub Form_Open()
+
+  Dim iInd As Integer
+  Dim hMenu As Menu
+  
+  For iInd = 1 To GameBoard.NUM_LEVELS
+    hMenu = New Menu(mnuLevel) As "mnuLevel"
+    hMenu.Text = Subst("Level &1", iInd)
+    hMenu.Tag = iInd
+  Next
+
   level = 1
   ignorekeys = False
   newGame
   Me.h = 64 * 10
   Me.w = 64 * 11
-  Button1.X = (Me.W / 2) - (Button1.W / 2)
+  btnClear.X = (Me.W / 2) - (btnClear.W / 2)
   Me.Window.Center
 End
 
-Public Sub Button1_KeyPress()
+Public Sub btnClear_KeyPress()
   If Key.code <> Key.up And Key.code <> Key.down And Key.code <> Key.left And Key.code <> Key.Right Then Return
    Select Case Key.code
    Case Key.Right
@@ -46,9 +68,9 @@ Public Sub Button1_KeyPress()
     Move(Key.code, Game.GetCell(Key.code, 1).Movable)
   End If
   If Game.isDone() Then 
-    level = level + 1
-    If level = 17 Then
-      Button1.Visible = False
+    Inc level
+    If level > GameBoard.NUM_LEVELS Then
+      btnClear.Visible = False
       MnuClear.Enabled = False
       PictureBoxPlayer.X = 64
       PictureBoxPlayer.Y = 64
@@ -64,7 +86,7 @@ Public Sub Button1_KeyPress()
   End If
 End
 
-Public Sub Button1_Click()
+Public Sub btnClear_Click()
   newGame()
 End
 
@@ -194,6 +216,9 @@ Public Sub MakePictureBoxes()
 End
 
 Private Sub newGame()
+  
+  Dim hMenu As Menu
+  
   Me.Title = ("GNUBoxWorld - Level ") & level
   Game = New GameBoard(level)
   destroyPicturesBoxes
@@ -201,6 +226,11 @@ Private Sub newGame()
   PictureBoxPlayer.left = PicturesBoxes[Game.RowPlayer, Game.ColPlayer].left
   PictureBoxPlayer.top = PicturesBoxes[Game.RowPlayer, Game.ColPlayer].top
   ShowGameBoard
+  
+  For Each hMenu In mnuLevel.Children
+    hMenu.Checked = hMenu.Tag = level
+  Next
+  
 End
 
 Public Sub destroyPicturesBoxes()
@@ -233,4 +263,11 @@ End
 Public Sub MnuHelpPlay_Click()
   FrmAbout.TabStrip1.index = 2
   FrmAbout.Show
+End
+
+Public Sub mnuLevel_Click()
+  
+  level = Last.Tag
+  newGame
+  
 End

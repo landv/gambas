@@ -1,8 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,44,14)
-  Text = ("")
+  MoveScaled(0,0,42,16)
   Resizable = False
   { MnuGame Menu
     Text = ("Game")
@@ -15,6 +14,9 @@
       Picture = Picture["icon:/32/quit"]
     }
   }
+  { mnuLevel Menu
+    Text = ("Level")
+  }
   { MnuHelp Menu
     Text = ("Help")
     { MnuHelpPlay Menu
@@ -26,8 +28,9 @@
       Picture = Picture["icon:/32/info"]
     }
   }
-  { Button1 Button
-    MoveScaled(15,3,16,4)
+  { btnClear Button
+    MoveScaled(15,2,16,6)
+    Font = Font["Bold,+4"]
     Text = ("Clear")
   }
 }

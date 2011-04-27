@@ -112,6 +112,13 @@ BEGIN_PROPERTY(SvgImage_Height)
 	
 END_PROPERTY
 
+BEGIN_METHOD(SvgImage_Resize, GB_FLOAT width; GB_FLOAT height)
+
+	THIS->width = VARG(width);
+	THIS->height = VARG(height);
+
+END_METHOD
+
 static const char *load_file(CSVGIMAGE *_object, const char *path, int len_path)
 {
 	RsvgHandle *handle = NULL;
@@ -226,6 +233,7 @@ GB_DESC SvgImageDesc[] =
 
   GB_PROPERTY("Width", "f", SvgImage_Width),
   GB_PROPERTY("Height", "f", SvgImage_Height),
+  GB_METHOD("Resize", NULL, SvgImage_Resize, "(Width)f(Height)f"),
 
   GB_STATIC_METHOD("Load", "SvgImage", SvgImage_Load, "(Path)s"),
   GB_METHOD("Save", NULL, SvgImage_Save, "(Path)s"),

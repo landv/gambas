@@ -8,6 +8,8 @@
 
 'You should have received a Copy Of the GNU General Public License along With this program.IfNot, see < http: / / www.gnu.org / licenses / > .
 
+Public Const NUM_LEVELS As Integer = 16
+
 Public RowPlayer As Integer
 Public ColPlayer As Integer
 Public Cells As New Cell[10, 11]
@@ -581,4 +583,13 @@ Public Sub _new(level As Integer)
 
 
   End Select
+  
+  For row = 0 To 9
+    Cells[row, 0].FixObstaculo(Null, Cells[row, 1])
+    For col = 1 To 9
+      Cells[row, col].FixObstaculo(Cells[row, col - 1], Cells[row, col + 1])
+    Next
+    Cells[row, 10].FixObstaculo(Cells[row, 9], Null)
+  Next
+  
 End

@@ -61,3 +61,18 @@ Public Sub _new(type As Integer)
 End Select
 
 End
+
+Public Sub FixObstaculo(hLeft As Cell, hRight As Cell)
+  
+  Dim sSuffix As String
+  
+  If Me.Type <> gbObstacle Then Return
+  
+  If Not hLeft Or If hLeft.Type <> gbObstacle Then sSuffix &= "l"
+  If Not hRight Or If hRight.Type <> gbObstacle Then sSuffix &= "r"
+  
+  If Not sSuffix Then Return
+  
+  Pic = Picture["obstaculo-" & sSuffix & ".png"]
+  
+End

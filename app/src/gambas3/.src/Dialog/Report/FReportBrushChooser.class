@@ -218,9 +218,10 @@ Public Sub Label_DblClick()
   Dim hLabel As Label = Last
   
   Dialog.Color = hLabel.Background
-  If Not Dialog.SelectColor() Then
-    hLabel.Background = Dialog.Color
-    $aGradientColors[hLabel.Tag] = Dialog.Color
+  If Not FColorChooser.Run(hLabel.Background, True) Then
+  'If Not Dialog.SelectColor() Then
+    hLabel.Background = FColorChooser.Value
+    $aGradientColors[hLabel.Tag] = FColorChooser.Value
     dwgGradientColor.Refresh
   Endif
   

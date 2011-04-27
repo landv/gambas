@@ -2652,17 +2652,16 @@ Public Sub Editors_MouseUp()
     Return 
   Endif
   
-  FDebugInfo.InstantWatch(Trim(Editor.Selection.Text), Me, 
-    Editor.X + Editor.ToPosX(Editor.Selection.StartColumn),
-    Editor.Y + Editor.CursorY + Editor.LineHeight)
-    'Editor.X + Editor.CursorX + Editor.CharWidth * ((Editor.Selection.StartColumn + Editor.Selection.EndColumn) / 2 - Editor.Column), 
-    'Editor.Y + Mouse.ScreenY - Editor.ScreenY)
+  FDebugInfo.InstantWatch(Trim(Editor.Selection.Text), Me, Editor.ToPosX(Editor.Selection.StartColumn), Editor.CursorY + Editor.LineHeight)
   
 End
 
 Private Sub ShowMessageLabel(sStr As String, X As Integer, Y As Integer, Optional iColor As Integer)
   
   If iColor = 0 Then iColor = Color.HSV(64, 64, 255)
+  
+  X = Editor.ScreenX + X - lblWatch.Parent.ScreenX
+  Y = Editor.ScreenY + Y - lblWatch.Parent.ScreenY
   
   lblWatch.Background = iColor
   lblWatch.Move(X, Y)
@@ -2743,7 +2742,7 @@ Public Sub ShowErrorMessage(sMsg As String, sIcon As String)
   Wait ' If the cursor needs to move first
   ''ShowMessage(sMsg, "img/logo/logo-64.png", True)
   'ShowMessage(sMsg, "icon:/32/" & sIcon, True)
-  ShowMessageLabel(sMsg, Editor.X + Editor.CursorX, Editor.Y + Editor.CursorY + Editor.LineHeight, Color.HSV(0, 64, 255))
+  ShowMessageLabel(sMsg, Editor.CursorX, Editor.CursorY + Editor.LineHeight, Color.HSV(0, 64, 255))
   
 End
 

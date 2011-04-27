@@ -1922,26 +1922,27 @@ bool GEditor::isCursorVisible()
 	
 	cursorToPos(y, x, &px, &py);
 	
-	return !(px < margin || px >= (visibleWidth() - 2) || py < 0 || py >= (visibleHeight() - _cellh - 1));
+	return !(px < margin || px > (visibleWidth() - QMAX(2, margin)) || py < 0 || py > (visibleHeight() - _cellh));
 }
 
 void GEditor::ensureCursorVisible()
 {
-	int yy;
+	int xx, yy;
 	
 	if (!isUpdatesEnabled())
 		return;
 	
 	if (!isCursorVisible())
 	{
-		yy = realToView(y);
+		xx = lineWidth(y, x); // + _charWidth['m'] / 2
+		yy = realToView(y) * _cellh + _cellh / 2;
 		
 		if (center)
 			//ensureVisible(x * charWidth, y * _cellh + _cellh / 2, margin + 2, visibleHeight() / 2);
-			ensureVisible(lineWidth(y, x) + _charWidth['m'] / 2, yy * _cellh + _cellh / 2, margin + 2, visibleHeight() / 2);
+			ensureVisible(xx, yy, visibleWidth() / 2, visibleHeight() / 2);
 		else
 			//ensureVisible(x * charWidth, y * _cellh + _cellh / 2, margin + 2, _cellh);
-			ensureVisible(lineWidth(y, x) + _charWidth['m'] / 2, yy * _cellh + _cellh / 2, margin + 2, _cellh);
+			ensureVisible(xx, yy, _charWidth['m'] / 2 + (margin / _charWidth['m']) * _charWidth['m'], _cellh);
 	}
 	center = false;
 }
