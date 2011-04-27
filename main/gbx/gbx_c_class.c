@@ -296,6 +296,33 @@ BEGIN_METHOD_VOID(Class_AutoCreate)
 
 END_METHOD
 
+BEGIN_METHOD(Class_New, GB_OBJECT params)
+
+	CLASS *class = OBJECT(CLASS);
+	GB_ARRAY params = VARGOPT(params, NULL);
+	int i, np = 0;
+	void *object;
+
+	if (params)
+		np = GB_ArrayCount(params);
+
+	if (np)
+	{
+		STACK_check(np);
+
+		for (i = 0; i < np; i++)
+		{
+			CARRAY_get_value(params, i, SP);
+			PUSH();
+		}
+	}
+
+	object = EXEC_create_object(class, np, NULL);
+	OBJECT_UNREF_KEEP(object, "Class_New");
+	GB_ReturnObject(object);
+
+END_METHOD
+
 
 /**** Symbol ***************************************************************/
 
@@ -918,6 +945,7 @@ GB_DESC NATIVE_Class[] =
 	GB_PROPERTY_READ("Instance", "o", Class_Instance),
 	GB_PROPERTY_READ("Symbols", "String[]", Class_Symbols),
 	GB_METHOD("AutoCreate", "o", Class_AutoCreate, NULL),
+	GB_METHOD("New", "o", Class_New, "[(Arguments)Array;]"),
 
 	GB_CONSTANT("Variable", "i", 1),
 	GB_CONSTANT("Property", "i", 2),

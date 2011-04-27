@@ -597,6 +597,7 @@ End
 ''Return a new report object
 Public Sub Clone() As Report
   
-  Return Object.New(Object.Type(Me))
+  'Return Object.New(Object.Type(Me))
+  Return Object.Class(Me).New()
   
 End

@@ -192,6 +192,9 @@ BEGIN_METHOD_VOID(SvgImage_Paint)
 	if (!RENDERER)
 		return;
 
+	if (THIS->width <= 0 || THIS->height <= 0)
+		return;
+	
 	PAINT_get_current_point(&x, &y);
 	RENDERER->render(painter, QRectF(x, y, THIS->width, THIS->height));
 

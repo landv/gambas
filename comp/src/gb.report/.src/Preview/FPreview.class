@@ -30,7 +30,7 @@ Public Sub DrawingArea1_Draw()
   
   $hReport.Scale = $fScale
   $hReport.Paint($iPage)
-  Label2.Text = "/" & $hreport.PageCount
+  Label2.Text = " / " & $hreport.PageCount & " "
   SpinBox1.MaxValue = $hReport.PageCount 
 End
 
@@ -50,7 +50,7 @@ End
 
 Public Sub Slider1_Change()
   
-  If Not btnAdjust.tag Then btnAdjust.Value = False
+  btnAdjust.Value = False
   ResizeMe
   
 End
@@ -71,7 +71,9 @@ Private Sub ResizeMe()
     Else
       $fScale = (ScrollView1.ClientH - 20) / iHeight
     Endif
-    
+    Object.Lock(Slider1)
+    Slider1.Value = $fScale * 100
+    Object.Unlock(Slider1)
   Else
     $fScale = Slider1.Value / 100
   Endif
@@ -164,10 +166,6 @@ Public Sub Printer1_End()
   
 End
 
-
-
-
-
 Public Sub Form_Resize()
 
   ResizeMe
@@ -175,10 +173,7 @@ Public Sub Form_Resize()
 End
 
 Public Sub btnAdjust_Click()
-  btnAdjust.Tag = 1
   ResizeMe
-  Slider1.Value = $fScale * 100
-  btnAdjust.Tag = Null
 End
 
 Public Sub btnZNorm_Click()
