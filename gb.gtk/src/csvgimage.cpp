@@ -178,6 +178,9 @@ BEGIN_METHOD_VOID(SvgImage_Paint)
 
 	cairo_t *context = PAINT_get_current_context();
 	const char *err;
+	cairo_matrix_t matrix;
+	double tx, ty, sx, sy;
+	RsvgDimensionData dim;
 	
 	if (!context)
 		return;
@@ -195,7 +198,19 @@ BEGIN_METHOD_VOID(SvgImage_Paint)
 	if (!HANDLE)
 		return;
 	
+	if (THIS->width <= 0 || THIS->height <= 0)
+		return;
+	
+	rsvg_handle_get_dimensions(HANDLE, &dim);
+	sx = THIS->width / dim.width;
+	sy = THIS->height / dim.height;
+	
+	cairo_get_matrix(context, &matrix);
+	cairo_scale(context, sx, sy);
+	cairo_get_current_point(context, &tx, &ty);
+	cairo_translate(context, tx, ty);
 	rsvg_handle_render_cairo(HANDLE, context);
+	cairo_set_matrix(context, &matrix);
 
 END_METHOD
 
