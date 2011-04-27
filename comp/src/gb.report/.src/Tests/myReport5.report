@@ -20,6 +20,12 @@
       Text = ("Gambas")
       Alignment = Align.Center
     }
+    { ReportSvgImage1 ReportSvgImage
+      #MoveScaled(1,0,17,13)
+      Width = "4cm"
+      Height = "4cm"
+      Path = "/home/fabien/gambas/examples/examples/Drawing/Painting/gambas.svg"
+    }
   }
   { ReportHBox1 ReportHBox
     #MoveScaled(0,15,87,56)
@@ -52,7 +58,7 @@
         Font = Font["Bold,+1"]
         Padding = "1mm"
         Border = ReportBorder["Top:1mm #000000"]
-        Background = ReportBrush["#0000FF"]
+        Background = ReportBrush["#3398C3"]
         Text = ("Page $PAGE on $NPAGE")
         Alignment = Align.Right
         UseField = True

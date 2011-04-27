@@ -593,3 +593,10 @@ Private Sub Text_Write(Value As String)
   _Container.Text = Value
 
 End
+
+''Return a new report object
+Public Sub Clone() As Report
+  
+  Return Object.New(Object.Type(Me))
+  
+End

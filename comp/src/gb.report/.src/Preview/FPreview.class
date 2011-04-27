@@ -151,7 +151,8 @@ End
 
 Public Sub Printer1_Begin()
 
-  $hPrint = Object.New(Object.Type($hReport))
+  $hPrint = $hreport.Clone()
+  'Debug Object.Type($hReport)
   $hPrint.Layout
   Printer1.Count = $hPrint.PageCount
 

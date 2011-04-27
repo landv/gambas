@@ -285,6 +285,10 @@ _get
 m
 ReportSection
 (Index)i
+Clone
+m
+Report
+
 #ReportBorder
 
 C
@@ -437,6 +441,10 @@ ReportControl[]
 Spacing
 p
 s
+
+Data
+p
+o
 
 _Spacing
 r
@@ -872,8 +880,12 @@ p
 s
 
 #ReportSvgImage
-ReportControl
+ReportFrame
 C
+_Properties
+C
+s
+*,Path
 _Similar
 C
 s
@@ -886,7 +898,7 @@ _GetSizeHints
 m
 TSizeHint
 (AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f
-_Draw
+_Paint
 m
 
 (Page)i(X)f(Y)f(hControl)TControl;(VirtualId)i

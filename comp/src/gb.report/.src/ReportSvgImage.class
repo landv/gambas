@@ -1,10 +1,12 @@
 ' Gambas class file
+
 Export
-Inherits ReportControl
+Inherits ReportFrame
 
 
 Private $hSvgImage As SvgImage
 Private $sPath As String
+Public Const _Properties As String = "*,Path"
 Public Const _Similar As String = "ReportTextLabel"
 Property Path As String
 
@@ -52,11 +54,19 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   
 End
 
-Public Sub _Draw(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
+Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
+      Dim iX, iY, iW, iH As Integer
     
-      Paint.MoveTo(x + hControl.RealLeft + Me.Padding, y + hControl.RealTop + Me.Padding)
-      $hSvgImage.Width = hControl.RealWidth
-      $hSvgImage.Height = hControl.RealHeight
+      iX = (x + hControl.RealLeft + MTools.UnitsToPixels(Me._Padding + Me.Border._Left))
+  iY = (y + hControl.RealTop + MTools.UnitsToPixels(Me._Padding + Me.Border._Top))
+  iW = (hControl.RealWidth - MTools.UnitsToPixels(2 * Me._Padding + Me.Border._Left + Me.Border._Right))
+  
+  iH = (hControl.RealHeight - MTools.UnitsToPixels(2 * Me._Padding + Me.Border._Top + Me.Border._Bottom))
+  
+  
+      Paint.MoveTo(ix, iY)
+      $hSvgImage.Width = iW
+      $hSvgImage.Height = iH
       $hSvgImage.Paint
       'Draw.Drawing($hDrw, (x + hControl.RealLeft + Me.Padding) * MRTools.ReportZoom, 
       '(y + hControl.RealTop + Me.Padding) * MRTools.ReportZoom, 
