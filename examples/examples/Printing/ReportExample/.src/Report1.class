@@ -4,7 +4,7 @@ Public Sub _new()
   
   Dim hresult As Result
   Dim Rlbl As ReportLabel
-  
+  ReportSvgImage1.Path = Application.Path &/ "gambas.svg"
   Try Connections["Connection1"].Open
   If Error Then 
     Message.Error(" You need to Create the test database With the <b>database example</b>")

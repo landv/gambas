@@ -9,17 +9,22 @@
     #MoveScaled(0,0,67,14)
     Height = "5cm"
     Fixed = True
+    Padding = "2mm"
+    Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
+    Background = ReportBrush["#3398C3"]
+    { ReportSvgImage1 ReportSvgImage
+      #MoveScaled(1,1,15,12)
+      Width = "5cm"
+    }
     { ReportLabel3 ReportLabel
       #MoveScaled(20,2,43,10)
-      Brush = ReportBrush["LinearGradient(0.98,0.04,0.04,0.04,[#FFFF00,#FFFFFF],[0,1])"]
+      Brush = ReportBrush["LinearGradient(0.71,0.07,0.34,0.06,[#FFFF00,#FFFFFF],[0,1])"]
       Fixed = True
       Font = Font["DejaVu Sans,Bold,+14"]
       Expand = True
       AutoResize = True
-      Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
-      Background = ReportBrush["#3398C3"]
       Text = ("Gambas")
-      Alignment = Align.Center
+      Alignment = Align.Left
     }
   }
   { ReportHBox1 ReportHBox
