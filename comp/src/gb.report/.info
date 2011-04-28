@@ -211,7 +211,7 @@ b
 
 Padding
 p
-s
+ReportPadding
 
 Border
 p
@@ -520,7 +520,7 @@ b
 _Properties
 C
 s
-Left{ReportCoord},Top{ReportCoord},Width{ReportCoord},Height{ReportCoord},Brush{ReportBrush},Visible=True,Fixed,Font,Padding{ReportCoord},Expand,AutoResize,Tag
+Left{ReportCoord},Top{ReportCoord},Width{ReportCoord},Height{ReportCoord},Brush{ReportBrush},Visible=True,Fixed,Font,Padding,Expand,AutoResize,Tag
 _Family
 C
 s
@@ -571,7 +571,7 @@ v
 
 Padding
 p
-s
+ReportPadding
 
 Brush
 p
@@ -868,6 +868,45 @@ _Paint
 m
 
 (Page)i(X)f(Y)f(hControl)TControl;(VirtualId)i
+#ReportPadding
+
+C
+Left
+v
+s
+
+Right
+v
+s
+
+Top
+v
+s
+
+Bottom
+v
+s
+
+_Left
+v
+f
+
+_Right
+v
+f
+
+_Top
+v
+f
+
+_Bottom
+v
+f
+
+_Get
+M
+ReportPadding
+(Value)s
 #ReportSection
 ReportVBox
 C

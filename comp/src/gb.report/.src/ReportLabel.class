@@ -56,7 +56,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   Dim $sTempText As String
   Dim sText As String
   
-  hMyHints.Height = Me._Height + (2 * Me._Padding)
+  hMyHints.Height = Me._Height + Me.Padding._Top + Me.Padding._Bottom
   
   If Not IsNull(Me.Font) Then Paint.Font = Me.Font
   
@@ -75,7 +75,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   fTextHeight = MTools.PixelsToUnits(Paint.Font.Height)
   'Debug "'" & sText & "'";; Paint.Font.Height;; hExt.Width
   
-  If hMyHints.Height < fTextHeight Then hMyHints.Height = fTextHeight + (2 * Me._Padding) + Me.Border._Top + Me.Border._Bottom
+  If hMyHints.Height < fTextHeight Then hMyHints.Height = fTextHeight + Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom
   
   If Me._RelativeHeight Then hMyHints.Height = TotalHeight * Me._Height / 100
   If hMyHints.Height <= 0 Then hMyHints.Height = Me.Font.Height
@@ -84,7 +84,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
     hMyHints.Width = Me._Width
   Else 
     
-    hMyHints.Width = fTextWidth + (2 * Me._Padding) + Me.Border._Left + Me.Border._Right
+    hMyHints.Width = fTextWidth + Me.Padding._Left + Me.Padding._Right + Me.Border._Left + Me.Border._Right
   
     'IF hMyHints.Width < ME._Width THEN hMyHints.Width = ME._Width
   Endif
@@ -98,7 +98,7 @@ End
 Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
   
   Dim sTempText As Variant
-  Dim iPadding As Integer
+  'Dim iPadding As Integer
   Dim iX, iY, iW, iH As Integer
   'iPadding = MTools.UnitsToPixels(Me._Padding)
   
@@ -117,11 +117,11 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   
 
   
-  iX = (x + hControl.RealLeft + MTools.UnitsToPixels(Me._Padding + Me.Border._Left))
-  iY = (y + hControl.RealTop + MTools.UnitsToPixels(Me._Padding + Me.Border._Top))
-  iW = (hControl.RealWidth - MTools.UnitsToPixels(2 * Me._Padding + Me.Border._Left + Me.Border._Right))
+  iX = (x + hControl.RealLeft + MTools.UnitsToPixels(Me.Padding._Left + Me.Border._Left))
+  iY = (y + hControl.RealTop + MTools.UnitsToPixels(Me.Padding._Top + Me.Border._Top))
+  iW = (hControl.RealWidth - MTools.UnitsToPixels(Me.Padding._Left + Me.Padding._Right + Me.Border._Left + Me.Border._Right))
   
-  iH = (hControl.RealHeight - MTools.UnitsToPixels(2 * Me._Padding + Me.Border._Top + Me.Border._Bottom))
+  iH = (hControl.RealHeight - MTools.UnitsToPixels(Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom))
   
   Paint.Brush = Me._GetActualBrush(iX, iY, iX + hControl.RealWidth, iY + hControl.RealHeight)
   

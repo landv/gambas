@@ -38,16 +38,16 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
     
     If h > w Then 
       Scale = $hSvgImage.Width / $hSvgImage.Height
-      hMyHints.Width = (h * Scale) + (2 * Me._Padding)
-      hMyHints.Height = h + (2 * Me._Padding)
+      hMyHints.Width = (h * Scale) + Me.Padding._Left + Me.Padding._Right
+      hMyHints.Height = h + Me.Padding._Top + Me.Padding._Bottom
     Else 
       Scale = $hSvgImage.Height / $hSvgImage.Width
-      hMyHints.Height = (w * Scale) + (2 * Me._Padding)
-      hMyHints.Width = w + (2 * Me._Padding)
+      hMyHints.Height = (w * Scale) + Me.Padding._Top + Me.Padding._Bottom
+      hMyHints.Width = w + Me.Padding._Left + Me.Padding._Right
     Endif
   Else 
-    hMyHints.Height = AvailableH + (2 * Me._Padding)
-    hMyHints.Width = AvailableW + (2 * Me._Padding)
+    hMyHints.Height = AvailableH + Me.Padding._Top + Me.Padding._Bottom
+    hMyHints.Width = AvailableW + Me.Padding._Left + Me.Padding._Right
   Endif
   
   Return hMyHints
@@ -57,11 +57,11 @@ End
 Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
       Dim iX, iY, iW, iH As Integer
     
-      iX = (x + hControl.RealLeft + MTools.UnitsToPixels(Me._Padding + Me.Border._Left))
-  iY = (y + hControl.RealTop + MTools.UnitsToPixels(Me._Padding + Me.Border._Top))
-  iW = (hControl.RealWidth - MTools.UnitsToPixels(2 * Me._Padding + Me.Border._Left + Me.Border._Right))
+      iX = (x + hControl.RealLeft + MTools.UnitsToPixels(Me.Padding._Left + Me.Border._Left))
+  iY = (y + hControl.RealTop + MTools.UnitsToPixels(Me.Padding._Top + Me.Border._Top))
+  iW = (hControl.RealWidth - MTools.UnitsToPixels(Me.Padding._Left + Me.Padding._Right + Me.Border._Left + Me.Border._Right))
   
-  iH = (hControl.RealHeight - MTools.UnitsToPixels(2 * Me._Padding + Me.Border._Top + Me.Border._Bottom))
+  iH = (hControl.RealHeight - MTools.UnitsToPixels(Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom))
   
   
       Paint.MoveTo(ix, iY)

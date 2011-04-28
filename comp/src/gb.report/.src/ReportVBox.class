@@ -26,7 +26,7 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
   Dim iNExp As Integer      ' Nombre d'objet a taille étendue
   Dim fSExp As Float        'Place consommée par les objet a taille fixe
   Dim fSpc As Float
-  Dim fPdg As Float
+  'Dim fPdg As Float
   Dim bFirst As Boolean 
   Dim bExitLoop As Boolean
   Dim i As Integer
@@ -49,12 +49,12 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
   
   
   fSpc = IIf(Me._RelativeSpacing, H * Me._Spacing / 100, Me._Spacing) 'ME._Spacing
-  fPdg = Me._Padding
-  X = fPdg
-  Y = fPdg
+  'fPdg = Me._Padding
+  X = Me.Padding._Left
+  Y = Me.Padding._Top
   
-  w -= 2 * fPdg
-  H -= fpdg
+  W = W - Me.Padding._Left - Me.Padding._Right
+  H = H - Me.Padding._Top - Me.Padding._Bottom
   Y -= fspc
   
   For i = 0 To Me.Children.Max
@@ -138,7 +138,7 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
   
 If iNExp > 0 Then fSExp = (H - Y) / iNExp
   
-  Y = fPdg
+  Y = Me.Padding._Top
   'If Me.Tag = "*" Then Stop
   For Each hTItem In aPageItems
     oChild = hTItem.Ctrl
@@ -180,7 +180,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   Dim hChildHints As TSizeHint
   Dim hMyHints As New TSizeHint
   Dim fSpacing As Float
-  Dim fPadding As Float
+  'Dim fPadding As Float
   Dim i, j As Integer
   'If Me._SizeInt Then Return Me._SizeInt
   fSpacing = IIf(Me._RelativeSpacing, TotalHeight * Me._Spacing / 100, Me._Spacing)
@@ -204,9 +204,9 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   
   hMyHints.Height -= fSpacing 
   
-  hMyHints.Height += 2 * Me._Padding '+ 2 * Me._BorderWidth
+  hMyHints.Height += Me.Padding._Top + Me.Padding._Bottom '+ 2 * Me._BorderWidth
   
-  fHeight += 2 * Me._Padding + Me.Border._Top + Me.Border._Bottom
+  fHeight += Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom
   
    If Me._Height > fHeight Then fHeight += Me._Height
   

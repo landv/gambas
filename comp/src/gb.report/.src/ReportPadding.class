@@ -1,0 +1,50 @@
+' Gambas class file
+
+Export
+Public {Left} As String = "0cm"
+Public Right As String = "0cm"
+Public Top As String = "0cm"
+Public Bottom As String = "0cm"
+
+Public _Left As Float
+Public _Right As Float
+Public _Top As Float
+Public _Bottom As Float
+
+
+Static Public Sub _Get(Value As String) As ReportPadding
+
+Dim hPadding As New ReportPadding
+Dim hSize As TSizeParse
+  Dim s As String
+  Dim ars As String[]
+  
+  For Each s In Split(Value, ";")
+    ars = Scan(s, "*=*")
+    If ars.count > 1 Then
+    Select Case LCase(ars[0])
+      Case "padding-left"
+        hPadding.Left = ars[1]
+      Case "padding-top"
+        hPadding.top = ars[1]
+      Case "padding-bottom"
+        hPadding.bottom = ars[1]
+      Case "padding-Right"
+        hPadding.Right = ars[1]
+      Case Else
+        
+    End Select
+    Else
+      Try hSize = New TSizeParse(s)
+      If hSize <> Null Then
+        hPadding.Left = s
+        hPadding.Right = s
+        hPadding.Bottom = s
+        hPadding.Top = s
+      Endif
+    Endif
+    
+  Next
+  Return hPadding
+  
+End

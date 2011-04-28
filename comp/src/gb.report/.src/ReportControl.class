@@ -4,7 +4,7 @@ Export
 Create Private 
 
 Public Const _IsControl As Boolean = True
-Public Const _Properties As String = "Left{ReportCoord},Top{ReportCoord},Width{ReportCoord},Height{ReportCoord},Brush{ReportBrush},Visible=True,Fixed,Font,Padding{ReportCoord},Expand,AutoResize,Tag"
+Public Const _Properties As String = "Left{ReportCoord},Top{ReportCoord},Width{ReportCoord},Height{ReportCoord},Brush{ReportBrush},Visible=True,Fixed,Font,Padding,Expand,AutoResize,Tag"
 Public Const _Family As String = "Report"
 Public _SizeInt As TSizeHint
 Public _Count As Integer = 1
@@ -35,7 +35,8 @@ Private $sHeight As String = "0cm"
 Private $sLeft As String = "0cm"
 Private $sWidth As String = "0cm"
 Private $sTop As String = "0cm"
-Private $sPadding As String = "0cm"
+Private $hPadding As New ReportPadding
+'Private $sPadding As String = "0cm"
 
 Private $iVisible As Boolean = True
 Private $hFont As New Font
@@ -52,7 +53,7 @@ Private $bIgnore As Boolean = False
 Property Read Id As Integer
 Property Read Parent As ReportContainer
 Property Tag As Variant
-Property Padding As String
+Property Padding As ReportPadding
 
 Property Brush As ReportBrush
 'Property {Color} As Integer
@@ -248,15 +249,15 @@ Private Sub Font_Write(Value As Font)
   
 End
 
-Private Function Padding_Read() As String
+Private Function Padding_Read() As ReportPadding
   
-  Return $sPadding
+  Return $hPadding
   
 End
 
-Private Sub Padding_Write(Value As String)
+Private Sub Padding_Write(Value As ReportPadding)
   
-  $sPadding = Value
+  $hPadding = Value
   
 End
 
@@ -348,9 +349,25 @@ Public Sub _SetUnifiedValues()
   $bRelativeHeight = hSizeParse.IsRelative()
   
   'Padding
-  hSizeParse = New TSizeParse($sPadding, True)
-  $fPadding = hSizeParse.GetValue()
-  $bRelativePadding = hSizeParse.IsRelative()
+  ' hSizeParse = New TSizeParse($sPadding, True)
+  ' $fPadding = hSizeParse.GetValue()
+  ' $bRelativePadding = hSizeParse.IsRelative()
+  
+  hSizeParse = New TSizeParse($hPadding.Left, True)
+  $hPadding._Left = hSizeParse.GetValue()
+  
+  hSizeParse = New TSizeParse($hPadding.Right, True)
+  $hPadding._Right = hSizeParse.GetValue()
+  
+  hSizeParse = New TSizeParse($hPadding.Top, True)
+  $hPadding._Top = hSizeParse.GetValue()
+  
+  hSizeParse = New TSizeParse($hPadding.Bottom, True)
+  $hPadding._Bottom = hSizeParse.GetValue()
+  
+  '
+  
+  
   
 End
 

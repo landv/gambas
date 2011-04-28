@@ -54,7 +54,7 @@ Property Ignore As Boolean
 Property Fixed As Boolean
 
 Property Autoresize As Boolean
-Property Padding As String
+Property Padding As ReportPadding
 'All ReportFrame Properties
 Property Border As ReportBorder
 Property BackGround As ReportBrush
@@ -372,13 +372,13 @@ Public Sub _get(Index As Integer) As ReportSection
 End
 
 
-Private Function Padding_Read() As String
+Private Function Padding_Read() As ReportPadding
 
   Return $aSections[0].Ctrl.Padding
 
 End
 
-Private Sub Padding_Write(Value As String)
+Private Sub Padding_Write(Value As ReportPadding)
 
   Dim TSection As TControl
   If Me.Padding <> Value Then

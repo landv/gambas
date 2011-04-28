@@ -6,9 +6,11 @@ Public Sub Main()
   Dim hLabel As ReportLabel
   
   hLabel = New ReportLabel(hReport)
+  hLabel.Padding = ReportPadding["1cm"]
   
+  hLabel.Border.Width = "1mm"
   hLabel.Text = "coucou"
   
-  hReport.Main
+  hReport.Preview
   
 End

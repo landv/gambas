@@ -1,4 +1,5 @@
 ' Gambas class file
+
 Export
 Inherits ReportControl
 
@@ -18,24 +19,24 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
     
     If h > w Then 
       Scale = $hpic.Width / $hpic.Height
-      hMyHints.Width = (h * Scale) + (2 * Me._Padding)
-      hMyHints.Height = h + (2 * Me._Padding)
+      hMyHints.Width = (h * Scale) + Me.Padding._Left + Me.Padding._Right
+      hMyHints.Height = h + Me.Padding._Top + Me.Padding._Bottom
     Else 
       Scale = $hpic.Height / $hpic.Width
-      hMyHints.Height = (w * Scale) + (2 * Me._Padding)
-      hMyHints.Width = w + (2 * Me._Padding)
+      hMyHints.Height = (w * Scale) + Me.Padding._Top + Me.Padding._Bottom
+      hMyHints.Width = w + Me.Padding._Left + Me.Padding._Right
     Endif
   Else 
     
     If h > AvailableH Then 
-      hMyHints.Height = AvailableH + (2 * Me._Padding)
+      hMyHints.Height = AvailableH + Me.Padding._Top + Me.Padding._Bottom
     Else
-      hMyHints.Height = h + (2 * Me._Padding)
+      hMyHints.Height = h + Me.Padding._Top + Me.Padding._Bottom
     Endif
     If w > AvailableW Then
-      hMyHints.Width = AvailableW + (2 * Me._Padding)
+      hMyHints.Width = AvailableW + Me.Padding._Left + Me.Padding._Right
     Else
-      hMyHints.Width = w + (2 * Me._Padding)
+      hMyHints.Width = w + Me.Padding._Left + Me.Padding._Right
     Endif
     
   Endif
@@ -49,8 +50,8 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
     Dim ix, iy As Float
     Dim hBrush As PaintBrush
     
-    ix = x + hControl.RealLeft + MTools.UnitsToPixels(Me._Padding)
-    iy = y + hControl.RealTop + MTools.UnitsToPixels(Me._Padding)
+    ix = x + hControl.RealLeft + MTools.UnitsToPixels(Me.Padding._Left)
+    iy = y + hControl.RealTop + MTools.UnitsToPixels(Me.Padding._Top)
     
     '$hPic = $hPic.Stretch(hControl.RealWidth, hControl.RealHeight)
     

@@ -43,7 +43,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
       Next
       
     hMyHints.Width -= fSpacing 
-    hMyHints.Width += 2 * Me._Padding
+    hMyHints.Width += Me.Padding._Left + Me.Padding._Right
     If hMyHints.Width < Me._Width Then hMyHints.Width = Me._Width
     If Me._RelativeWidth Then hMyHints.Width = AvailableW * Me._Width / 100
     Return hMyHints
@@ -80,10 +80,10 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
     'Padding
     fPdg = Me._Padding
     'déduire les valeur de padding
-    X = fPdg
-    Y = fPdg
-    W -= fPdg * 2
-    H -= fPdg * 2
+    X = Me.Padding._Left
+    Y = Me.Padding._Top
+    W = W - Me.Padding._Left - Me.Padding._Right
+    H = H - Me.Padding._Top - Me.Padding._Bottom
     'Pour chaque objet enfants
     For Each hChild In Me.Children
       'If hChild.Ignore Then Continue
