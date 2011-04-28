@@ -10,32 +10,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: CComponentBox.class:213
-msgid "Experimental"
+#: .project:1
+msgid "Gambas 3"
 msgstr ""
 
-#: CComponentBox.class:215 FPropertyComponent.form:82
-msgid "Not finished but stable"
-msgstr ""
-
-#: CComponentBox.class:223 ProjectItem.class:68
-msgid "Authors"
-msgstr ""
-
-#: CComponentBox.class:230 FPropertyComponent.form:115
-msgid "Requires"
-msgstr ""
-
-#: CComponentBox.class:232
-msgid "Excludes"
-msgstr ""
-
-#: CComponentBox.class:238
-msgid "Implements"
-msgstr ""
-
-#: CComponentBox.class:251 LibraryItem.class:58
-msgid "Provides"
+#: .project:2
+msgid "Integrated Development Environment for Gambas"
 msgstr ""
 
 #: CComponent.class:79
@@ -278,6 +258,34 @@ msgstr ""
 msgid "Loading information on component &1..."
 msgstr ""
 
+#: CComponentBox.class:213
+msgid "Experimental"
+msgstr ""
+
+#: CComponentBox.class:215 FPropertyComponent.form:82
+msgid "Not finished but stable"
+msgstr ""
+
+#: CComponentBox.class:223 ProjectItem.class:68
+msgid "Authors"
+msgstr ""
+
+#: CComponentBox.class:230 FPropertyComponent.form:115
+msgid "Requires"
+msgstr ""
+
+#: CComponentBox.class:232
+msgid "Excludes"
+msgstr ""
+
+#: CComponentBox.class:238
+msgid "Implements"
+msgstr ""
+
+#: CComponentBox.class:251 LibraryItem.class:58
+msgid "Provides"
+msgstr ""
+
 #: CInsertColor.class:103 FEditor.form:384 FTextEditor.form:317
 msgid "Insert color"
 msgstr ""
@@ -388,8 +396,9 @@ msgstr ""
 #: FNewTranslation.form:15 FOpenProject.form:154 FPasteSpecial.form:71
 #: FPropertyComponent.form:224 FPropertyProject.form:118
 #: FReportBorderChooser.form:51 FReportBrushChooser.form:34
-#: FReportCoordChooser.form:32 FSaveProjectAs.form:53 FSelectExtraFile.form:34
-#: FSelectIcon.form:82 FSnippet.form:51 FTableChooser.form:62 FText.form:35
+#: FReportCoordChooser.form:32 FReportPaddingChooser.form:66
+#: FSaveProjectAs.form:53 FSelectExtraFile.form:34 FSelectIcon.form:82
+#: FSnippet.form:51 FTableChooser.form:62 FText.form:35
 msgid "OK"
 msgstr ""
 
@@ -462,10 +471,10 @@ msgstr ""
 #: FOption.class:614 FPasteSpecial.form:77 FPasteTable.form:107
 #: FPropertyComponent.form:230 FPropertyProject.form:124
 #: FReportBorderChooser.form:45 FReportBrushChooser.form:28
-#: FReportCoordChooser.form:26 FSave.form:28 FSaveProjectAs.form:59
-#: FSearch.class:816 FSelectExtraFile.form:40 FSelectIcon.form:87
-#: FSnippet.form:57 FTableChooser.form:68 FTextEditor.class:486 FText.form:41
-#: FTranslate.class:638 Project.module:413
+#: FReportCoordChooser.form:26 FReportPaddingChooser.form:72 FSave.form:28
+#: FSaveProjectAs.form:59 FSearch.class:816 FSelectExtraFile.form:40
+#: FSelectIcon.form:87 FSnippet.form:57 FTableChooser.form:68 FText.form:41
+#: FTextEditor.class:486 FTranslate.class:638 Project.module:413
 msgid "Cancel"
 msgstr ""
 
@@ -3348,42 +3357,6 @@ msgstr ""
 msgid "Table already exists"
 msgstr ""
 
-#: FPropertyComponent.form:75
-msgid "Component advancement"
-msgstr ""
-
-#: FPropertyComponent.form:82
-msgid "Finished and stable"
-msgstr ""
-
-#: FPropertyComponent.form:82
-msgid "Beta version"
-msgstr ""
-
-#: FPropertyComponent.form:93
-msgid "This component is hidden"
-msgstr ""
-
-#: FPropertyComponent.form:106
-msgid "Exported classes"
-msgstr ""
-
-#: FPropertyComponent.form:120
-msgid "Features"
-msgstr ""
-
-#: FPropertyComponent.form:161 FPropertyProject.form:491
-msgid "Components"
-msgstr ""
-
-#: FPropertyComponent.form:205
-msgid "Remove All"
-msgstr ""
-
-#: FPropertyComponent.class:149
-msgid "Cannot write component description file."
-msgstr ""
-
 #: FProperty.form:31
 msgid "Click on a form or a control to modify its properties..."
 msgstr ""
@@ -3433,6 +3406,42 @@ msgstr ""
 msgid ""
 "This property is virtual: it is only implemented in the IDE, and has no "
 "existence at runtime."
+msgstr ""
+
+#: FPropertyComponent.form:75
+msgid "Component advancement"
+msgstr ""
+
+#: FPropertyComponent.form:82
+msgid "Finished and stable"
+msgstr ""
+
+#: FPropertyComponent.form:82
+msgid "Beta version"
+msgstr ""
+
+#: FPropertyComponent.form:93
+msgid "This component is hidden"
+msgstr ""
+
+#: FPropertyComponent.form:106
+msgid "Exported classes"
+msgstr ""
+
+#: FPropertyComponent.form:120
+msgid "Features"
+msgstr ""
+
+#: FPropertyComponent.form:161 FPropertyProject.form:491
+msgid "Components"
+msgstr ""
+
+#: FPropertyComponent.form:205
+msgid "Remove All"
+msgstr ""
+
+#: FPropertyComponent.class:149
+msgid "Cannot write component description file."
 msgstr ""
 
 #: FPropertyProject.form:105
@@ -3607,23 +3616,23 @@ msgstr ""
 msgid "Configure border"
 msgstr ""
 
-#: FReportBorderChooser.form:40
+#: FReportBorderChooser.form:40 FReportPaddingChooser.form:51
 msgid "Bottom"
 msgstr ""
 
-#: FReportBorderChooser.form:100
+#: FReportBorderChooser.form:100 FReportPaddingChooser.form:21
 msgid "Top"
 msgstr ""
 
-#: FReportBorderChooser.form:105
+#: FReportBorderChooser.form:105 FReportPaddingChooser.form:31
 msgid "Left"
 msgstr ""
 
-#: FReportBorderChooser.form:110
+#: FReportBorderChooser.form:110 FReportPaddingChooser.form:41
 msgid "Right"
 msgstr ""
 
-#: FReportBorderChooser.form:115
+#: FReportBorderChooser.form:115 FReportPaddingChooser.form:61
 msgid "Synchronize"
 msgstr ""
 
@@ -3823,6 +3832,14 @@ msgstr ""
 msgid "Choose a table"
 msgstr ""
 
+#: FText.form:12
+msgid "Edit text property"
+msgstr ""
+
+#: FText.form:30
+msgid "Use a fixed font"
+msgstr ""
+
 #: FTextEditor.form:173
 msgid "Compress file"
 msgstr ""
@@ -3841,14 +3858,6 @@ msgstr ""
 
 #: FTextEditor.class:687
 msgid "Unable to compress file."
-msgstr ""
-
-#: FText.form:12
-msgid "Edit text property"
-msgstr ""
-
-#: FText.form:30
-msgid "Use a fixed font"
 msgstr ""
 
 #: FTips.form:18
@@ -5297,18 +5306,6 @@ msgstr ""
 msgid "'tar' has returned the following error code:"
 msgstr ""
 
-#: ProjectItem.class:68
-msgid "Author"
-msgstr ""
-
-#: .project:1
-msgid "Gambas 3"
-msgstr ""
-
-#: .project:2
-msgid "Integrated Development Environment for Gambas"
-msgstr ""
-
 #: Project.module:182
 msgid "Automation"
 msgstr ""
@@ -5632,6 +5629,10 @@ msgstr ""
 
 #: Project.module:5117
 msgid "Unable to convert &1"
+msgstr ""
+
+#: ProjectItem.class:68
+msgid "Author"
 msgstr ""
 
 #: Save.module:39
