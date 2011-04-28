@@ -1,22 +1,22 @@
 /***************************************************************************
 
-  main.c
+	main.c
 
-  (c) 2000-2011 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2011 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -33,11 +33,11 @@
 #include "main.h"
 
 typedef
-  struct {
-    const char *pattern;
-    int type;
-    }
-  CONV_STRING_TYPE;
+	struct {
+		const char *pattern;
+		int type;
+		}
+	CONV_STRING_TYPE;
 
 
 GB_INTERFACE GB EXPORT;
@@ -121,53 +121,53 @@ static char *get_quote_string(const char *str, int len, char quote)
 
 static GB_TYPE conv_type(int type, int len)
 {
-  switch(type)
-  {
-    case FIELD_TYPE_TINY:
-      return (len == 1 ? GB_T_BOOLEAN : GB_T_INTEGER);
+	switch(type)
+	{
+		case FIELD_TYPE_TINY:
+			return (len == 1 ? GB_T_BOOLEAN : GB_T_INTEGER);
 
-    case FIELD_TYPE_INT24:
-    case FIELD_TYPE_SHORT:
-    case FIELD_TYPE_LONG:
-    case FIELD_TYPE_YEAR:
-      return GB_T_INTEGER;
+		case FIELD_TYPE_INT24:
+		case FIELD_TYPE_SHORT:
+		case FIELD_TYPE_LONG:
+		case FIELD_TYPE_YEAR:
+			return GB_T_INTEGER;
 
-    case FIELD_TYPE_LONGLONG:
-    	return GB_T_LONG;
+		case FIELD_TYPE_LONGLONG:
+			return GB_T_LONG;
 
-    case FIELD_TYPE_FLOAT:
-    case FIELD_TYPE_DOUBLE:
-    case FIELD_TYPE_DECIMAL:
-      return GB_T_FLOAT;
+		case FIELD_TYPE_FLOAT:
+		case FIELD_TYPE_DOUBLE:
+		case FIELD_TYPE_DECIMAL:
+			return GB_T_FLOAT;
 
-    case FIELD_TYPE_DATE:
-    case FIELD_TYPE_DATETIME:
-    case FIELD_TYPE_TIME:
-    case FIELD_TYPE_TIMESTAMP:
-      return GB_T_DATE;
+		case FIELD_TYPE_DATE:
+		case FIELD_TYPE_DATETIME:
+		case FIELD_TYPE_TIME:
+		case FIELD_TYPE_TIMESTAMP:
+			return GB_T_DATE;
 
-    case FIELD_TYPE_LONG_BLOB:
-    	//fprintf(stderr, "FIELD_TYPE_LONG_BLOB: %d\n", len);
-      return DB_T_BLOB;
+		case FIELD_TYPE_LONG_BLOB:
+			//fprintf(stderr, "FIELD_TYPE_LONG_BLOB: %d\n", len);
+			return DB_T_BLOB;
 
-    case FIELD_TYPE_BLOB: // TEXT
-    	//fprintf(stderr, "FIELD_TYPE_BLOB: %d\n", len);
-    	if (len >= 0x1000000 || len <= 0) // LONG BLOB
-    		return DB_T_BLOB;
+		case FIELD_TYPE_BLOB: // TEXT
+			//fprintf(stderr, "FIELD_TYPE_BLOB: %d\n", len);
+			if (len >= 0x1000000 || len <= 0) // LONG BLOB
+				return DB_T_BLOB;
 			else
 				return GB_T_STRING;
 
-    case FIELD_TYPE_TINY_BLOB:
-    case FIELD_TYPE_MEDIUM_BLOB:
-    case FIELD_TYPE_STRING:
-    case FIELD_TYPE_VAR_STRING:
-    case FIELD_TYPE_SET:
-    case FIELD_TYPE_ENUM:
-    default:
-    	//fprintf(stderr, "FIELD_TYPE_*: %d\n", len);
-      return GB_T_STRING;
+		case FIELD_TYPE_TINY_BLOB:
+		case FIELD_TYPE_MEDIUM_BLOB:
+		case FIELD_TYPE_STRING:
+		case FIELD_TYPE_VAR_STRING:
+		case FIELD_TYPE_SET:
+		case FIELD_TYPE_ENUM:
+		default:
+			//fprintf(stderr, "FIELD_TYPE_*: %d\n", len);
+			return GB_T_STRING;
 
-  }
+	}
 }
 
 
@@ -175,68 +175,68 @@ static GB_TYPE conv_type(int type, int len)
 
 static int conv_string_type(const char *type, long *len)
 {
-  static CONV_STRING_TYPE types[] =
-  {
-    { "tinyint", FIELD_TYPE_TINY },
-    { "smallint", FIELD_TYPE_SHORT },
-    { "mediumint", FIELD_TYPE_INT24 },
-    { "int", FIELD_TYPE_LONG },
-    { "bigint", FIELD_TYPE_LONGLONG },
-    { "decimal", FIELD_TYPE_DECIMAL },
-    { "numeric", FIELD_TYPE_DECIMAL },
-    { "float", FIELD_TYPE_FLOAT },
-    { "double", FIELD_TYPE_DOUBLE },
-    { "real", FIELD_TYPE_DOUBLE },
-    { "timestamp", FIELD_TYPE_TIMESTAMP },
-    { "date", FIELD_TYPE_DATE },
-    { "time", FIELD_TYPE_TIME },
-    { "datetime", FIELD_TYPE_DATETIME },
-    { "year", FIELD_TYPE_YEAR },
-    { "char", FIELD_TYPE_STRING },
-    { "varchar", FIELD_TYPE_VAR_STRING },
-    { "blob", FIELD_TYPE_BLOB },
-    { "tinyblob", FIELD_TYPE_TINY_BLOB },
-    { "mediumblob", FIELD_TYPE_MEDIUM_BLOB },
-    { "longblob", FIELD_TYPE_LONG_BLOB },
-    { "text", FIELD_TYPE_BLOB },
-    { "tinytext", FIELD_TYPE_TINY_BLOB },
-    { "mediumtext", FIELD_TYPE_MEDIUM_BLOB },
-    { "longtext", FIELD_TYPE_LONG_BLOB },
-    { "set", FIELD_TYPE_SET },
-    { "enum", FIELD_TYPE_ENUM },
-    { "null", FIELD_TYPE_NULL },
-    { NULL, 0 },
-  };
+	static CONV_STRING_TYPE types[] =
+	{
+		{ "tinyint", FIELD_TYPE_TINY },
+		{ "smallint", FIELD_TYPE_SHORT },
+		{ "mediumint", FIELD_TYPE_INT24 },
+		{ "int", FIELD_TYPE_LONG },
+		{ "bigint", FIELD_TYPE_LONGLONG },
+		{ "decimal", FIELD_TYPE_DECIMAL },
+		{ "numeric", FIELD_TYPE_DECIMAL },
+		{ "float", FIELD_TYPE_FLOAT },
+		{ "double", FIELD_TYPE_DOUBLE },
+		{ "real", FIELD_TYPE_DOUBLE },
+		{ "timestamp", FIELD_TYPE_TIMESTAMP },
+		{ "date", FIELD_TYPE_DATE },
+		{ "time", FIELD_TYPE_TIME },
+		{ "datetime", FIELD_TYPE_DATETIME },
+		{ "year", FIELD_TYPE_YEAR },
+		{ "char", FIELD_TYPE_STRING },
+		{ "varchar", FIELD_TYPE_VAR_STRING },
+		{ "blob", FIELD_TYPE_BLOB },
+		{ "tinyblob", FIELD_TYPE_TINY_BLOB },
+		{ "mediumblob", FIELD_TYPE_MEDIUM_BLOB },
+		{ "longblob", FIELD_TYPE_LONG_BLOB },
+		{ "text", FIELD_TYPE_BLOB },
+		{ "tinytext", FIELD_TYPE_TINY_BLOB },
+		{ "mediumtext", FIELD_TYPE_MEDIUM_BLOB },
+		{ "longtext", FIELD_TYPE_LONG_BLOB },
+		{ "set", FIELD_TYPE_SET },
+		{ "enum", FIELD_TYPE_ENUM },
+		{ "null", FIELD_TYPE_NULL },
+		{ NULL, 0 },
+	};
 
-  CONV_STRING_TYPE *cst;
-  long l;
+	CONV_STRING_TYPE *cst;
+	long l;
 
-  if (strncmp(type, "national ", 9) == 0)
-    type += 9;
+	if (strncmp(type, "national ", 9) == 0)
+		type += 9;
 
-  for (cst = types; cst->pattern; cst++)
-  {
-    if (strncmp(type, cst->pattern, strlen(cst->pattern)) == 0)
-      break;
-  }
+	for (cst = types; cst->pattern; cst++)
+	{
+		if (strncmp(type, cst->pattern, strlen(cst->pattern)) == 0)
+			break;
+	}
 
-  if (cst->type)
-  {
-    if (len)
-    {
-      type += strlen(cst->pattern);
-      if (sscanf(type, "(%ld)", &l) == 1)
-        *len = l;
-      else if (cst->type == FIELD_TYPE_LONG_BLOB)
-        *len = -1;
-		  else if (cst->type == FIELD_TYPE_MEDIUM_BLOB || cst->type == FIELD_TYPE_BLOB)
-        *len = 65535;
+	if (cst->type)
+	{
+		if (len)
+		{
+			type += strlen(cst->pattern);
+			if (sscanf(type, "(%ld)", &l) == 1)
+				*len = l;
+			else if (cst->type == FIELD_TYPE_LONG_BLOB)
+				*len = -1;
+			else if (cst->type == FIELD_TYPE_MEDIUM_BLOB || cst->type == FIELD_TYPE_BLOB)
+				*len = 65535;
 			else
 				*len = 0;
-    }
-  }
+		}
+	}
 
-  return cst->type;
+	return cst->type;
 }
 
 
@@ -244,170 +244,170 @@ static int conv_string_type(const char *type, long *len)
 
 static void conv_data(int version, const char *data, long data_length, GB_VARIANT_VALUE *val, int type, int len)
 {
-  GB_VALUE conv;
-  GB_DATE_SERIAL date;
-  double sec;
+	GB_VALUE conv;
+	GB_DATE_SERIAL date;
+	double sec;
 
-  switch (type)
-  {
-    case FIELD_TYPE_TINY:
+	switch (type)
+	{
+		case FIELD_TYPE_TINY:
 
-      if (len == 1)
-      {
-         val->type = GB_T_BOOLEAN;
-         /*GB.NumberFromString(GB_NB_READ_INTEGER, data, strlen(data), &conv);*/
-         val->value._boolean = atoi(data) != 0 ? -1 : 0;
-      }
-      else
-      {
-        GB.NumberFromString(GB_NB_READ_INTEGER, data, strlen(data), &conv);
+			if (len == 1)
+			{
+				val->type = GB_T_BOOLEAN;
+				/*GB.NumberFromString(GB_NB_READ_INTEGER, data, strlen(data), &conv);*/
+				val->value._boolean = atoi(data) != 0 ? -1 : 0;
+			}
+			else
+			{
+				GB.NumberFromString(GB_NB_READ_INTEGER, data, strlen(data), &conv);
 
-        val->type = GB_T_INTEGER;
-        val->value._integer = conv._integer.value;
-      }
+				val->type = GB_T_INTEGER;
+				val->value._integer = conv._integer.value;
+			}
 
-      break;
+			break;
 
-    case FIELD_TYPE_INT24:
-    case FIELD_TYPE_SHORT:
-    case FIELD_TYPE_LONG:
-    /*case FIELD_TYPE_TINY:*/
-    case FIELD_TYPE_YEAR:
+		case FIELD_TYPE_INT24:
+		case FIELD_TYPE_SHORT:
+		case FIELD_TYPE_LONG:
+		/*case FIELD_TYPE_TINY:*/
+		case FIELD_TYPE_YEAR:
 
-      GB.NumberFromString(GB_NB_READ_INTEGER, data, strlen(data), &conv);
+			GB.NumberFromString(GB_NB_READ_INTEGER, data, strlen(data), &conv);
 
-      val->type = GB_T_INTEGER;
-      val->value._integer = conv._integer.value;
+			val->type = GB_T_INTEGER;
+			val->value._integer = conv._integer.value;
 
-      break;
+			break;
 
-    case FIELD_TYPE_LONGLONG:
+		case FIELD_TYPE_LONGLONG:
 
-      GB.NumberFromString(GB_NB_READ_LONG, data, strlen(data), &conv);
+			GB.NumberFromString(GB_NB_READ_LONG, data, strlen(data), &conv);
 
-      val->type = GB_T_LONG;
-      val->value._long = conv._long.value;
+			val->type = GB_T_LONG;
+			val->value._long = conv._long.value;
 
-      break;
+			break;
 
-    case FIELD_TYPE_FLOAT:
-    case FIELD_TYPE_DOUBLE:
-    case FIELD_TYPE_DECIMAL:
+		case FIELD_TYPE_FLOAT:
+		case FIELD_TYPE_DOUBLE:
+		case FIELD_TYPE_DECIMAL:
 
-      GB.NumberFromString(GB_NB_READ_FLOAT, data, strlen(data), &conv);
+			GB.NumberFromString(GB_NB_READ_FLOAT, data, strlen(data), &conv);
 
-      val->type = GB_T_FLOAT;
-      val->value._float = conv._float.value;
+			val->type = GB_T_FLOAT;
+			val->value._float = conv._float.value;
 
-      break;
+			break;
 
-    case FIELD_TYPE_DATE:
-    case FIELD_TYPE_DATETIME:
-    case FIELD_TYPE_TIME:
-    case FIELD_TYPE_TIMESTAMP:
+		case FIELD_TYPE_DATE:
+		case FIELD_TYPE_DATETIME:
+		case FIELD_TYPE_TIME:
+		case FIELD_TYPE_TIMESTAMP:
 
 			// TIMESTAMP display format changed since MySQL 4.1!
-			if (type == FIELD_TYPE_TIMESTAMP && version >= 040100)
+			if (type == FIELD_TYPE_TIMESTAMP && version >= 40100)
 				type = FIELD_TYPE_DATETIME;
 
-      memset(&date, 0, sizeof(date));
+			memset(&date, 0, sizeof(date));
 
-      switch(type)
-      {
-        case FIELD_TYPE_DATE:
+			switch(type)
+			{
+				case FIELD_TYPE_DATE:
 
-          sscanf(data, "%4hu-%2hu-%2hu", &date.year, &date.month, &date.day);
-          break;
+					sscanf(data, "%4hu-%2hu-%2hu", &date.year, &date.month, &date.day);
+					break;
 
-        case FIELD_TYPE_TIME:
+				case FIELD_TYPE_TIME:
 
-          sscanf(data, "%4hu:%2hu:%lf", &date.hour, &date.min, &sec);
-          date.sec = (short)sec;
-          date.msec = (short)((sec - date.sec) * 1000 + 0.5);
-          break;
+					sscanf(data, "%4hu:%2hu:%lf", &date.hour, &date.min, &sec);
+					date.sec = (short)sec;
+					date.msec = (short)((sec - date.sec) * 1000 + 0.5);
+					break;
 
-        case FIELD_TYPE_DATETIME:
+				case FIELD_TYPE_DATETIME:
 
-          sscanf(data, "%4hu-%2hu-%2hu %2hu:%2hu:%lf", &date.year, &date.month, &date.day, &date.hour, &date.min, &sec);
-          date.sec = (short)sec;
-          date.msec = (short)((sec - date.sec) * 1000 + 0.5);
-          break;
+					sscanf(data, "%4hu-%2hu-%2hu %2hu:%2hu:%lf", &date.year, &date.month, &date.day, &date.hour, &date.min, &sec);
+					date.sec = (short)sec;
+					date.msec = (short)((sec - date.sec) * 1000 + 0.5);
+					break;
 
-        case FIELD_TYPE_TIMESTAMP:
-          switch(strlen(data))
-          {
-            case 14:
-              sscanf(data, "%4hu%2hu%2hu%2hu%2hu%lf", &date.year, &date.month, &date.day, &date.hour, &date.min, &sec);
-              date.sec = (short)sec;
-              date.msec = (short)((sec - date.sec) * 1000 + 0.5);
-              break;
-            case 12:
-              sscanf(data, "%2hu%2hu%2hu%2hu%2hu%lf", &date.year, &date.month, &date.day, &date.hour, &date.min, &sec);
-              date.sec = (short)sec;
-              date.msec = (short)((sec - date.sec) * 1000 + 0.5);
-              break;
-            case 10:
-              sscanf(data, "%2hu%2hu%2hu%2hu%2hu", &date.year, &date.month, &date.day, &date.hour, &date.min );
-              break;
-            case 8:
-              sscanf(data, "%4hu%2hu%2hu", &date.year, &date.month, &date.day);
-              break;
-            case 6:
-              sscanf(data, "%2hu%2hu%2hu", &date.year, &date.month, &date.day);
-              break;
-            case 4:
-              sscanf(data, "%2hu%2hu", &date.year, &date.month);
-              break;
-            case 2:
-              sscanf(data, "%2hu", &date.year);
-              break;
-          }
-          if (date.year < 100)
-              date.year += 1900;
-        break;
-      }
+				case FIELD_TYPE_TIMESTAMP:
+					switch(strlen(data))
+					{
+						case 14:
+							sscanf(data, "%4hu%2hu%2hu%2hu%2hu%lf", &date.year, &date.month, &date.day, &date.hour, &date.min, &sec);
+							date.sec = (short)sec;
+							date.msec = (short)((sec - date.sec) * 1000 + 0.5);
+							break;
+						case 12:
+							sscanf(data, "%2hu%2hu%2hu%2hu%2hu%lf", &date.year, &date.month, &date.day, &date.hour, &date.min, &sec);
+							date.sec = (short)sec;
+							date.msec = (short)((sec - date.sec) * 1000 + 0.5);
+							break;
+						case 10:
+							sscanf(data, "%2hu%2hu%2hu%2hu%2hu", &date.year, &date.month, &date.day, &date.hour, &date.min );
+							break;
+						case 8:
+							sscanf(data, "%4hu%2hu%2hu", &date.year, &date.month, &date.day);
+							break;
+						case 6:
+							sscanf(data, "%2hu%2hu%2hu", &date.year, &date.month, &date.day);
+							break;
+						case 4:
+							sscanf(data, "%2hu%2hu", &date.year, &date.month);
+							break;
+						case 2:
+							sscanf(data, "%2hu", &date.year);
+							break;
+					}
+					if (date.year < 100)
+							date.year += 1900;
+				break;
+			}
 
-      GB.MakeDate(&date, (GB_DATE *)&conv);
+			GB.MakeDate(&date, (GB_DATE *)&conv);
 
-      val->type = GB_T_DATE;
-      val->value._date.date = conv._date.value.date;
-      val->value._date.time = conv._date.value.time;
+			val->type = GB_T_DATE;
+			val->value._date.date = conv._date.value.date;
+			val->value._date.time = conv._date.value.time;
 
-      break;
+			break;
 
-    case FIELD_TYPE_LONG_BLOB:
-    	// The BLOB are read by the blob_read() driver function
-    	// You must set NULL there.
+		case FIELD_TYPE_LONG_BLOB:
+			// The BLOB are read by the blob_read() driver function
+			// You must set NULL there.
 			val->type = GB_T_NULL;
 			break;
 
 		// query_fill() only gets this constant, whatever the blob is
-    case FIELD_TYPE_BLOB:
-    	if (len == 16777215 || len <= 0) // LONG BLOB
-    	{
+		case FIELD_TYPE_BLOB:
+			if (len == 16777215 || len <= 0) // LONG BLOB
+			{
 				val->type = GB_T_NULL;
 				break;
 			}
 			// else continue!
 
-    case FIELD_TYPE_TINY_BLOB:
-    case FIELD_TYPE_MEDIUM_BLOB:
-    case FIELD_TYPE_STRING:
-    case FIELD_TYPE_VAR_STRING:
-    case FIELD_TYPE_SET:
-    case FIELD_TYPE_ENUM:
-    default:
-      val->type = GB_T_CSTRING;
-      val->value._string = (char *)data;
-      //val->_string.start = 0;
-      //if (data && data_length == 0)
-      //	data_length = strlen(data);
-      //val->_string.len = data_length;
-      //fprintf(stderr, "conv_data: len = %d\n", len);
-      /*GB.NewString(&val->_string.value, data, strlen(data));*/
+		case FIELD_TYPE_TINY_BLOB:
+		case FIELD_TYPE_MEDIUM_BLOB:
+		case FIELD_TYPE_STRING:
+		case FIELD_TYPE_VAR_STRING:
+		case FIELD_TYPE_SET:
+		case FIELD_TYPE_ENUM:
+		default:
+			val->type = GB_T_CSTRING;
+			val->value._string = (char *)data;
+			//val->_string.start = 0;
+			//if (data && data_length == 0)
+			//	data_length = strlen(data);
+			//val->_string.len = data_length;
+			//fprintf(stderr, "conv_data: len = %d\n", len);
+			/*GB.NewString(&val->_string.value, data, strlen(data));*/
 
-      break;
-  }
+			break;
+	}
 
 }
 
@@ -417,97 +417,97 @@ static char *query_param[3];
 
 static void query_get_param(int index, char **str, int *len, char quote)
 {
-  if (index > 3)
-    return;
+	if (index > 3)
+		return;
 
-  index--;
-  *str = query_param[index];
-  *len = strlen(*str);
-  
-  if (quote == '\'' || quote == '`')
-  {
-  	*str = get_quote_string(*str, *len, quote);
-  	*len = GB.StringLength(*str);
-  }
+	index--;
+	*str = query_param[index];
+	*len = strlen(*str);
+	
+	if (quote == '\'' || quote == '`')
+	{
+		*str = get_quote_string(*str, *len, quote);
+		*len = GB.StringLength(*str);
+	}
 }
 
 /* Internal function to run a query */
 
 static int do_query(DB_DATABASE *db, const char *error, MYSQL_RES **pres,
-                    const char *qtemp, int nsubst, ...)
+										const char *qtemp, int nsubst, ...)
 {
 	MYSQL *conn = (MYSQL *)db->handle;
-  va_list args;
-  int i;
-  const char *query;
-  MYSQL_RES *res;
-  int ret;
+	va_list args;
+	int i;
+	const char *query;
+	MYSQL_RES *res;
+	int ret;
 
-  if (nsubst)
-  {
-    va_start(args, nsubst);
-    if (nsubst > 3)
-      nsubst = 3;
-    for (i = 0; i < nsubst; i++)
-      query_param[i] = va_arg(args, char *);
+	if (nsubst)
+	{
+		va_start(args, nsubst);
+		if (nsubst > 3)
+			nsubst = 3;
+		for (i = 0; i < nsubst; i++)
+			query_param[i] = va_arg(args, char *);
 
-    query = DB.SubstString(qtemp, 0, query_get_param);
-  }
-  else
-    query = qtemp;
+		query = DB.SubstString(qtemp, 0, query_get_param);
+	}
+	else
+		query = qtemp;
 
-  if (DB.IsDebug())
-    fprintf(stderr, "mysql: %p: %s\n", conn, query);
+	if (DB.IsDebug())
+		fprintf(stderr, "mysql: %p: %s\n", conn, query);
 
-  if(mysql_query(conn, query)){
-    ret = TRUE;
-    if (error)
-    	GB.Error(error, mysql_error(conn));
-  }
-  else {
-    res = mysql_store_result(conn);
-    ret = FALSE;
-    if (pres)
-      *pres = res;
-    else
-      mysql_free_result(res);
-  }
+	if(mysql_query(conn, query)){
+		ret = TRUE;
+		if (error)
+			GB.Error(error, mysql_error(conn));
+	}
+	else {
+		res = mysql_store_result(conn);
+		ret = FALSE;
+		if (pres)
+			*pres = res;
+		else
+			mysql_free_result(res);
+	}
 
 	db->error = mysql_errno(conn);
-  return ret;
+	return ret;
 }
 
 /* Internal function to return database version number as a XXYYZZ integer number*/
 
 static int db_version(DB_DATABASE *db)
 {
-  //Check db version
-  const char *vquery = "select left(version(),6)";
-  long dbversion =0;
-  MYSQL_RES *res;
-  MYSQL_ROW row;
+	//Check db version
+	const char *vquery = "select left(version(),6)";
+	long dbversion =0;
+	MYSQL_RES *res;
+	MYSQL_ROW row;
 
-  if (!do_query(db, NULL, &res, vquery, 0))
-  {
-     unsigned int verMain, verMajor, verMinor;
-     row = mysql_fetch_row(res);
-     sscanf(row[0],"%2u.%2u.%2u", &verMain, &verMajor, &verMinor);
-     dbversion = ((verMain * 10000) + (verMajor * 100) + verMinor);
-     mysql_free_result(res);
-  }
-  return dbversion;
+	if (!do_query(db, NULL, &res, vquery, 0))
+	{
+		unsigned int verMain, verMajor, verMinor;
+		row = mysql_fetch_row(res);
+		sscanf(row[0],"%2u.%2u.%2u", &verMain, &verMajor, &verMinor);
+		dbversion = ((verMain * 10000) + (verMajor * 100) + verMinor);
+		mysql_free_result(res);
+	}
+	return dbversion;
 }
 
 /* Search in the first column a result for a specific name */
- 
+
 static bool search_result(MYSQL_RES *res, const char *name, MYSQL_ROW *row)
 {
 	int i;
 	MYSQL_ROW r;
 	
-  for (i = 0; i < mysql_num_rows(res); i++ )
-  {
-    r = mysql_fetch_row(res);
+	for (i = 0; i < mysql_num_rows(res); i++ )
+	{
+		r = mysql_fetch_row(res);
 
 		if (!strcmp(r[0], name))
 		{
@@ -522,27 +522,27 @@ static bool search_result(MYSQL_RES *res, const char *name, MYSQL_ROW *row)
 
 /*****************************************************************************
 
-  get_quote()
+	get_quote()
 
-  Returns the character used for quoting object names.
+	Returns the character used for quoting object names.
 
 *****************************************************************************/
 
 static const char *get_quote(void)
 {
-  return QUOTE_STRING;
+	return QUOTE_STRING;
 }
 
 /*****************************************************************************
 
-  open_database()
+	open_database()
 
-  Connect to a database.
+	Connect to a database.
 
-  <desc> points at a structure describing each connection parameter.
+	<desc> points at a structure describing each connection parameter.
 
-  This function must return a database handle, or NULL if the connection
-  has failed.
+	This function must return a database handle, or NULL if the connection
+	has failed.
 
 *****************************************************************************/
 
@@ -571,151 +571,151 @@ static void set_character_set(DB_DATABASE *db)
 		fprintf(stderr, "WARNING: Unable to set database charset to UTF-8\n");
 		
 //	GB.FreeString(&db_charset);
-   
+	
 	if (do_query(db, "Unable to get database charset: &1", &res, "show variables like 'character_set_client'", 0))
 		return;
 	
 	if (search_result(res, "character_set_client", &row))
 		return;
 	
-  db->charset = GB.NewZeroString(row[1]);
-  //fprintf(stderr, "charset is '%s'\n", db->charset);
-  mysql_free_result(res);
+	db->charset = GB.NewZeroString(row[1]);
+	//fprintf(stderr, "charset is '%s'\n", db->charset);
+	mysql_free_result(res);
 }
 
 static int open_database(DB_DESC *desc, DB_DATABASE *db)
 {
-  MYSQL *conn;
-  char *name;
+	MYSQL *conn;
+	char *name;
 
-  conn = mysql_init(NULL);
+	conn = mysql_init(NULL);
 
-  /* (BM) connect by default to the mysql database */
+	/* (BM) connect by default to the mysql database */
 
-  if (desc->name)
-    name = desc->name;
-  else
-    name = "mysql"; /* Note: Users may not have access to database mysql */
+	if (desc->name)
+		name = desc->name;
+	else
+		name = "mysql"; /* Note: Users may not have access to database mysql */
 
-  //mysql_options(conn, MYSQL_READ_DEFAULT_GROUP,"Gambas");
+	//mysql_options(conn, MYSQL_READ_DEFAULT_GROUP,"Gambas");
 
-  //fprintf(stderr, "mysql_real_connect: host = '%s'\n", desc->host);
+	//fprintf(stderr, "mysql_real_connect: host = '%s'\n", desc->host);
 
-  if (!mysql_real_connect( conn, desc->host, desc->user, desc->password,
-		  name, desc->port == NULL ? 0 : atoi(desc->port), NULL, /*unix_socket: if not null the
+	if (!mysql_real_connect( conn, desc->host, desc->user, desc->password,
+			name, desc->port == NULL ? 0 : atoi(desc->port), NULL, /*unix_socket: if not null the
 	string specifies the socket  or named pipe that should be used */
-		  CLIENT_MULTI_RESULTS /*client flag */)){
-    mysql_close(conn);
-    GB.Error("Cannot open database: &1", mysql_error(conn));
-    return TRUE;
-  }
+			CLIENT_MULTI_RESULTS /*client flag */)){
+		mysql_close(conn);
+		GB.Error("Cannot open database: &1", mysql_error(conn));
+		return TRUE;
+	}
 
-  /* set dbversion */
+	/* set dbversion */
 	db->handle = conn;
-  db->version = db_version(db);
+	db->version = db_version(db);
 
 	set_character_set(db);
 	
 	/* flags: none at the moment */
-  return FALSE;
+	return FALSE;
 }
 
 
 /*****************************************************************************
 
-  close_database()
+	close_database()
 
-  Terminates the database connection.
+	Terminates the database connection.
 
-  <handle> contains the database handle.
+	<handle> contains the database handle.
 
 *****************************************************************************/
 
 static void close_database(DB_DATABASE *db)
 {
-  MYSQL *conn = (MYSQL *)db->handle;
+	MYSQL *conn = (MYSQL *)db->handle;
 
-  if (conn)
-    mysql_close(conn);
+	if (conn)
+		mysql_close(conn);
 }
 
 
 /*****************************************************************************
 
-  format_value()
+	format_value()
 
-  This function transforms a gambas value into a string value that can
-  be inserted into a SQL query.
+	This function transforms a gambas value into a string value that can
+	be inserted into a SQL query.
 
-  <arg> points to the value.
-  <add> is a callback called to insert the string into the query.
+	<arg> points to the value.
+	<add> is a callback called to insert the string into the query.
 
-  This function must return TRUE if it translates the value, and FALSE if
-  it does not.
+	This function must return TRUE if it translates the value, and FALSE if
+	it does not.
 
-  If the value is not translated, then a default translation is used.
+	If the value is not translated, then a default translation is used.
 
 *****************************************************************************/
 
 static int format_value(GB_VALUE *arg, DB_FORMAT_CALLBACK add)
 {
-  int l;
-  GB_DATE_SERIAL *date;
+	int l;
+	GB_DATE_SERIAL *date;
 
-  switch (arg->type)
-  {
-    case GB_T_BOOLEAN:
+	switch (arg->type)
+	{
+		case GB_T_BOOLEAN:
 /*Note this is likely to go to a tinyint  */
 
-      if (VALUE((GB_BOOLEAN *)arg))
-         add("'1'", 3);
-      else
-        add("'0'", 3);
-      return TRUE;
+			if (VALUE((GB_BOOLEAN *)arg))
+				add("'1'", 3);
+			else
+				add("'0'", 3);
+			return TRUE;
 
-    case GB_T_STRING:
-    case GB_T_CSTRING:
+		case GB_T_STRING:
+		case GB_T_CSTRING:
 
 			quote_string(VALUE((GB_STRING *)arg).addr + VALUE((GB_STRING *)arg).start, VALUE((GB_STRING *)arg).len, add);
-      return TRUE;
+			return TRUE;
 
-    case GB_T_DATE:
+		case GB_T_DATE:
 
-      date = GB.SplitDate((GB_DATE *)arg);
+			date = GB.SplitDate((GB_DATE *)arg);
 
-      l = sprintf(_buffer, "'%04d-%02d-%02d %02d:%02d:%02d",
-          date->year, date->month, date->day,
-          date->hour, date->min, date->sec);
+			l = sprintf(_buffer, "'%04d-%02d-%02d %02d:%02d:%02d",
+					date->year, date->month, date->day,
+					date->hour, date->min, date->sec);
 
-      add(_buffer, l);
+			add(_buffer, l);
 
-      if (date->msec)
-      {
-        l = sprintf(_buffer, ".%03d", date->msec);
-        add(_buffer, l);
-      }
+			if (date->msec)
+			{
+				l = sprintf(_buffer, ".%03d", date->msec);
+				add(_buffer, l);
+			}
 
-      add("'", 1);
+			add("'", 1);
 
-      //fprintf(stderr, "format_value: %s / %d %d\n", _buffer, ((GB_DATE *)arg)->value.time, date->msec);
+			//fprintf(stderr, "format_value: %s / %d %d\n", _buffer, ((GB_DATE *)arg)->value.time, date->msec);
 
-      return TRUE;
+			return TRUE;
 
-    default:
-      return FALSE;
-  }
+		default:
+			return FALSE;
+	}
 }
 
 
 /*****************************************************************************
 
-  format_blob()
+	format_blob()
 
-  This function transforms a blob value into a string value that can
-  be inserted into a SQL query.
+	This function transforms a blob value into a string value that can
+	be inserted into a SQL query.
 
-  <blob> points to the DB_BLOB structure.
-  <add> is a callback called to insert the string into the query.
+	<blob> points to the DB_BLOB structure.
+	<add> is a callback called to insert the string into the query.
 
 *****************************************************************************/
 
@@ -727,16 +727,16 @@ static void format_blob(DB_BLOB *blob, DB_FORMAT_CALLBACK add)
 
 /*****************************************************************************
 
-  exec_query()
+	exec_query()
 
-  Send a query to the server and gets the result.
+	Send a query to the server and gets the result.
 
-  <db> is the database handle, as returned by open_database()
-  <query> is the query string.
-  <result> will receive the result handle of the query.
-  <err> is an error message used when the query failed.
+	<db> is the database handle, as returned by open_database()
+	<query> is the query string.
+	<result> will receive the result handle of the query.
+	<err> is an error message used when the query failed.
 
-  <result> can be NULL, when we don't care getting the result.
+	<result> can be NULL, when we don't care getting the result.
 
 *****************************************************************************/
 
@@ -748,145 +748,145 @@ static int exec_query(DB_DATABASE *db, const char *query, DB_RESULT *result, con
 
 /*****************************************************************************
 
-  query_init()
+	query_init()
 
-  Initialize an info structure from a query result.
+	Initialize an info structure from a query result.
 
-  <result> is the handle of the query result.
-  <info> points to the info structure.
-  <count> will receive the number of records returned by the query.
+	<result> is the handle of the query result.
+	<info> points to the info structure.
+	<count> will receive the number of records returned by the query.
 
-  This function must initialize the info->nfield field with the number of
-  field in the query result.
+	This function must initialize the info->nfield field with the number of
+	field in the query result.
 
 *****************************************************************************/
 
 static void query_init(DB_RESULT result, DB_INFO *info, int *count)
 {
-  MYSQL_RES *res = (MYSQL_RES *)result;
+	MYSQL_RES *res = (MYSQL_RES *)result;
 
-  if (res)
-  {
+	if (res)
+	{
 		*count = mysql_num_rows(res);
 		info->nfield = mysql_num_fields(res);
-  }
-  else
-  {
-    *count = 0;
+	}
+	else
+	{
+		*count = 0;
 		info->nfield = 0;
-  }
+	}
 }
 
 
 /*****************************************************************************
 
-  query_release()
+	query_release()
 
-  Free the info structure filled by query_init() and the result handle.
+	Free the info structure filled by query_init() and the result handle.
 
-  <result> is the handle of the query result.
-  <info> points to the info structure.
+	<result> is the handle of the query result.
+	<info> points to the info structure.
 
 *****************************************************************************/
 
 static void query_release(DB_RESULT result, DB_INFO *info)
 {
-  mysql_free_result((MYSQL_RES *)result);
+	mysql_free_result((MYSQL_RES *)result);
 }
 
 
 /*****************************************************************************
 
-  query_fill()
+	query_fill()
 
-  Fill a result buffer with the value of each field of a record.
+	Fill a result buffer with the value of each field of a record.
 
-  <db> is the database handle, as returned by open_database()
-  <result> is the handle of the result.
-  <pos> is the index of the record in the result.
-  <buffer> points to an array having one element for each field in the
-  result.
-  <next> is a boolean telling if we want the next row.
+	<db> is the database handle, as returned by open_database()
+	<result> is the handle of the result.
+	<pos> is the index of the record in the result.
+	<buffer> points to an array having one element for each field in the
+	result.
+	<next> is a boolean telling if we want the next row.
 
-  This function must use GB.StoreVariant() to store the value in the
-  buffer.
+	This function must use GB.StoreVariant() to store the value in the
+	buffer.
 
 *****************************************************************************/
 
 static int query_fill(DB_DATABASE *db, DB_RESULT result, int pos, GB_VARIANT_VALUE *buffer, int next)
 {
-  MYSQL_RES *res = (MYSQL_RES *)result;
-  MYSQL_FIELD *field;
-  MYSQL_ROW row;
-  int i;
-  char *data;
-  GB_VARIANT value;
+	MYSQL_RES *res = (MYSQL_RES *)result;
+	MYSQL_FIELD *field;
+	MYSQL_ROW row;
+	int i;
+	char *data;
+	GB_VARIANT value;
 
-  if (!next)
-    mysql_data_seek(res, pos);/* move to record */
+	if (!next)
+		mysql_data_seek(res, pos);/* move to record */
 
-  row = mysql_fetch_row(res);
-  mysql_field_seek(res, 0);
-  for ( i=0; i < mysql_num_fields(res); i++)
-  {
+	row = mysql_fetch_row(res);
+	mysql_field_seek(res, 0);
+	for ( i=0; i < mysql_num_fields(res); i++)
+	{
 		field = mysql_fetch_field(res);
-    data = row[i];
+		data = row[i];
 
-    value.type = GB_T_VARIANT;
-    value.value.type = GB_T_NULL;
+		value.type = GB_T_VARIANT;
+		value.value.type = GB_T_NULL;
 
 		if (data)
 			conv_data(db->version, data, mysql_fetch_lengths(res)[i], &value.value, field->type, field->length);
 
 		GB.StoreVariant(&value, &buffer[i]);
-  
+	
 		//fprintf(stderr, "query_fill: %d: (%d, %d) : %s : %d\n", i, field->type, field->length, data, buffer[i].type);
 	}
 
-  return FALSE;
+	return FALSE;
 }
 
 
 /*****************************************************************************
 
-  blob_read()
+	blob_read()
 
-  Returns the value of a BLOB field.
+	Returns the value of a BLOB field.
 
-  <result> is the handle of the result.
-  <pos> is the index of the record in the result.
-  <blob> points at a DB_BLOB structure that will receive a pointer to the
-  data and its length.
+	<result> is the handle of the result.
+	<pos> is the index of the record in the result.
+	<blob> points at a DB_BLOB structure that will receive a pointer to the
+	data and its length.
 
-  NOTE: this function is always called after query_fill() with the same
-  value of <pos>.
+	NOTE: this function is always called after query_fill() with the same
+	value of <pos>.
 
 *****************************************************************************/
 
 static void blob_read(DB_RESULT result, int pos, int field, DB_BLOB *blob)
 {
-  MYSQL_RES *res = (MYSQL_RES *)result;
-  MYSQL_ROW row;
+	MYSQL_RES *res = (MYSQL_RES *)result;
+	MYSQL_ROW row;
 
-  mysql_data_seek(res, pos);/* move to record */
-  row = mysql_fetch_row(res);
+	mysql_data_seek(res, pos);/* move to record */
+	row = mysql_fetch_row(res);
 
-  blob->data = row[field];
-  blob->length = mysql_fetch_lengths(res)[field];
-  blob->constant = TRUE;
+	blob->data = row[field];
+	blob->length = mysql_fetch_lengths(res)[field];
+	blob->constant = TRUE;
 
-  //fprintf(stderr, "blob_read: %ld: %s\n", blob->length, blob->data);
+	//fprintf(stderr, "blob_read: %ld: %s\n", blob->length, blob->data);
 }
 
 
 /*****************************************************************************
 
-  field_name()
+	field_name()
 
-  Return the name of a field in a result from its index.
+	Return the name of a field in a result from its index.
 
-  <result> is the result handle.
-  <field> is the field index.
+	<result> is the result handle.
+	<field> is the field index.
 
 *****************************************************************************/
 
@@ -898,63 +898,63 @@ static char *field_name(DB_RESULT result, int field)
 	bool MultiTables = FALSE;
 
 	// Need to identify whether multiple tables included
-        fld = mysql_fetch_fields((MYSQL_RES *)result);
-        for ( i = 1; i < num_fields; i++ ){
+				fld = mysql_fetch_fields((MYSQL_RES *)result);
+				for ( i = 1; i < num_fields; i++ ){
 		if (strcmp(table1, fld[i].table) != 0){
 			MultiTables = TRUE;
 			break;
 		}
 	}
-        fld = mysql_fetch_field_direct((MYSQL_RES *)result, field);
+				fld = mysql_fetch_field_direct((MYSQL_RES *)result, field);
 	// GB.Alloc((void **)&full, strlen(fld->table) + strlen(fld->name));
 	if (MultiTables && *fld->table){
-	   sprintf(_buffer, "%s.%s", fld->table, fld->name);
-	   return _buffer;
+		sprintf(_buffer, "%s.%s", fld->table, fld->name);
+		return _buffer;
 	}
 	else {
 		return fld->name;
 	}
-  //return mysql_fetch_field_direct((MYSQL_RES *)result, field)->name;
+	//return mysql_fetch_field_direct((MYSQL_RES *)result, field)->name;
 }
 
 
 /*****************************************************************************
 
-  field_index()
+	field_index()
 
-  Return the index of a field in a result from its name.
+	Return the index of a field in a result from its name.
 
-  <Result> is the result handle.
-  <name> is the field name.
+	<Result> is the result handle.
+	<name> is the field name.
 
 *****************************************************************************/
 
 static int field_index(DB_RESULT Result, const char *name, DB_DATABASE *db)
 {
-  unsigned int num_fields;
-  unsigned int i;
-  MYSQL_FIELD *field;
-  //char *table = NULL, *fld = NULL;
-  char *table;
-  const char *fld;
-  MYSQL_RES *result = (MYSQL_RES *)Result;
+	unsigned int num_fields;
+	unsigned int i;
+	MYSQL_FIELD *field;
+	//char *table = NULL, *fld = NULL;
+	char *table;
+	const char *fld;
+	MYSQL_RES *result = (MYSQL_RES *)Result;
 
-  fld = strchr(name, (int)FLD_SEP);
-  if (fld)
+	fld = strchr(name, (int)FLD_SEP);
+	if (fld)
 	{ /* Field does includes table info */
 		table = GB.NewString(name, fld - name);
 		fld = fld + 1;
 	}
-  else 
-  {
+	else 
+	{
 		table = NULL;
 		fld = name;
-  }
+	}
 
-  num_fields = mysql_num_fields(result);
+	num_fields = mysql_num_fields(result);
 
-  if (strcmp(name,fld)!=0)
-  { /* table name included */
+	if (strcmp(name,fld)!=0)
+	{ /* table name included */
 		mysql_field_seek(result,0); /* start at beginning */
 		for (i = 0; i < num_fields; i++)
 		{
@@ -966,161 +966,161 @@ static int field_index(DB_RESULT Result, const char *name, DB_DATABASE *db)
 			}
 		}
 		fld = name;
-  }
+	}
 
 	if (table)
 		GB.FreeString(&table);
 
-  /* Do not consider table name, also reached where table cannot be found. *
-   * Mysql can include . in the fieldname!!                                */
-  mysql_field_seek(result, 0); /* start at beginning */
-  for (i = 0; i < num_fields; i++)
-  {
+	/* Do not consider table name, also reached where table cannot be found. *
+	* Mysql can include . in the fieldname!!                                */
+	mysql_field_seek(result, 0); /* start at beginning */
+	for (i = 0; i < num_fields; i++)
+	{
 		field = mysql_fetch_field(result);
 		if (strcmp( fld, field->name) == 0)
 			return i;
-  }
+	}
 
-  return -1;
+	return -1;
 }
 
 
 /*****************************************************************************
 
-  field_type()
+	field_type()
 
-  Return the Gambas type of a field in a result from its index.
+	Return the Gambas type of a field in a result from its index.
 
-  <result> is the result handle.
-  <field> is the field index.
+	<result> is the result handle.
+	<field> is the field index.
 
 *****************************************************************************/
 
 static GB_TYPE field_type(DB_RESULT result, int field)
 {
-  MYSQL_FIELD *f = mysql_fetch_field_direct((MYSQL_RES *)result, field);
-  return conv_type(f->type, f->length);
+	MYSQL_FIELD *f = mysql_fetch_field_direct((MYSQL_RES *)result, field);
+	return conv_type(f->type, f->length);
 }
 
 
 /*****************************************************************************
 
-  field_length()
+	field_length()
 
-  Return the length of a field in a result from its index.
+	Return the length of a field in a result from its index.
 
-  <result> is the result handle.
-  <field> is the field index.
+	<result> is the result handle.
+	<field> is the field index.
 
 *****************************************************************************/
 
 static int field_length(DB_RESULT result, int field)
 {
-  MYSQL_FIELD *f = mysql_fetch_field_direct((MYSQL_RES *)result, field);
-  GB_TYPE type = conv_type(f->type, f->length);
+	MYSQL_FIELD *f = mysql_fetch_field_direct((MYSQL_RES *)result, field);
+	GB_TYPE type = conv_type(f->type, f->length);
 
-  if (type != GB_T_STRING)
-    return 0;
-  else
-    return f->length;
+	if (type != GB_T_STRING)
+		return 0;
+	else
+		return f->length;
 }
 
 
 /*****************************************************************************
 
-  begin_transaction()
+	begin_transaction()
 
-  Begin a transaction.
+	Begin a transaction.
 
-  <handle> is the database handle.
+	<handle> is the database handle.
 
-  This function returns TRUE if the command has failed, and FALSE if
-  everything was OK.
+	This function returns TRUE if the command has failed, and FALSE if
+	everything was OK.
 
-  In mysql commit/rollback can only be used with transaction safe tables (BDB,
-  or InnoDB tables)
+	In mysql commit/rollback can only be used with transaction safe tables (BDB,
+	or InnoDB tables)
 
-  ISAM, MyISAM and HEAP tables will commit straight away. The transaction
-  methods are therefore ignored.
+	ISAM, MyISAM and HEAP tables will commit straight away. The transaction
+	methods are therefore ignored.
 
 *****************************************************************************/
 
 static int begin_transaction(DB_DATABASE *db)
 {
-  /* Autocommit is on by default. Lets set it off. */
-  /* BM: why not doing that when we open the connection ? */
-  do_query(db, "Unable to set autocommit to 0: &1", NULL, "set autocommit=0", 0);
-  return do_query(db, "Unable to begin transaction: &1", NULL, "BEGIN", 0);
+	/* Autocommit is on by default. Lets set it off. */
+	/* BM: why not doing that when we open the connection ? */
+	do_query(db, "Unable to set autocommit to 0: &1", NULL, "set autocommit=0", 0);
+	return do_query(db, "Unable to begin transaction: &1", NULL, "BEGIN", 0);
 }
 
 
 /*****************************************************************************
 
-  commit_transaction()
+	commit_transaction()
 
-  Commit a transaction.
+	Commit a transaction.
 
-  <handle> is the database handle.
+	<handle> is the database handle.
 
-  This function returns TRUE if the command has failed, and FALSE if
-  everything was OK.
+	This function returns TRUE if the command has failed, and FALSE if
+	everything was OK.
 
 *****************************************************************************/
 
 static int commit_transaction(DB_DATABASE *db)
 {
-  bool ret = do_query(db, "Unable to commit transaction: &1", NULL, "COMMIT", 0);
-  /* Autocommit needs to be set back on. */
-  /* BM: and what happens if transactions are imbricated ? */
-  do_query(db, "Unable to set autocommit to On: &1", NULL, "set autocommit=1", 0);
-  return ret;
+	bool ret = do_query(db, "Unable to commit transaction: &1", NULL, "COMMIT", 0);
+	/* Autocommit needs to be set back on. */
+	/* BM: and what happens if transactions are imbricated ? */
+	do_query(db, "Unable to set autocommit to On: &1", NULL, "set autocommit=1", 0);
+	return ret;
 }
 
 
 /*****************************************************************************
 
-  rollback_transaction()
+	rollback_transaction()
 
-  Rollback a transaction.
+	Rollback a transaction.
 
-  <handle> is the database handle.
+	<handle> is the database handle.
 
-  This function returns TRUE if the command has failed, and FALSE if
-  everything was OK.
+	This function returns TRUE if the command has failed, and FALSE if
+	everything was OK.
 
-  In mysql commit/rollback can only be used with transaction safe tables (BDB,
-  or InnoDB tables)
+	In mysql commit/rollback can only be used with transaction safe tables (BDB,
+	or InnoDB tables)
 
-  ISAM, MyISAM and HEAP tables will commit straight away. Therefore a rollback
-  cannot occur!
+	ISAM, MyISAM and HEAP tables will commit straight away. Therefore a rollback
+	cannot occur!
 
 *****************************************************************************/
 
 static int rollback_transaction(DB_DATABASE *db)
 {
-  bool ret = do_query(db, "Unable to rollback transaction: &1", NULL, "ROLLBACK", 0);
-  /* Autocommit needs to be set back on. */
-  /* BM: and what happens if transactions are imbricated ? */
-  do_query(db, "Unable to set autocommit to On: &1", NULL, "set autocommit=1", 0);
-  return ret;
+	bool ret = do_query(db, "Unable to rollback transaction: &1", NULL, "ROLLBACK", 0);
+	/* Autocommit needs to be set back on. */
+	/* BM: and what happens if transactions are imbricated ? */
+	do_query(db, "Unable to set autocommit to On: &1", NULL, "set autocommit=1", 0);
+	return ret;
 }
 
 /*****************************************************************************
 
-  table_init()
+	table_init()
 
-  Initialize an info structure from table fields.
+	Initialize an info structure from table fields.
 
-  <handle> is the database handle.
-  <table> is the table name.
-  <info> points at the info structure.
+	<handle> is the database handle.
+	<table> is the table name.
+	<info> points at the info structure.
 
-  This function must initialize the following info fields:
-   - info->nfield must contain the number of fields in the table.
-   - info->fields is a char*[] pointing at the name of each field.
+	This function must initialize the following info fields:
+	- info->nfield must contain the number of fields in the table.
+	- info->fields is a char*[] pointing at the name of each field.
 
-  This function returns TRUE if the command has failed, and FALSE if
-  everything was OK.
+	This function returns TRUE if the command has failed, and FALSE if
+	everything was OK.
 
 *****************************************************************************/
 
@@ -1128,276 +1128,276 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 
 static int table_init(DB_DATABASE *db, const char *table, DB_INFO *info)
 {
-  MYSQL_FIELD *field;
+	MYSQL_FIELD *field;
 
-  MYSQL *conn = (MYSQL *)db->handle;
-  MYSQL_RES *res;
-  int i, n;
-  DB_FIELD *f;
+	MYSQL *conn = (MYSQL *)db->handle;
+	MYSQL_RES *res;
+	int i, n;
+	DB_FIELD *f;
 
-  /* Nom de la table */
+	/* Nom de la table */
 
-  info->table = GB.NewZeroString(table);
+	info->table = GB.NewZeroString(table);
 
-  res = mysql_list_fields( conn, table, 0);
-  if (!res)
-    return TRUE;
+	res = mysql_list_fields( conn, table, 0);
+	if (!res)
+		return TRUE;
 
-  info->nfield = n = mysql_num_fields(res);
-  if (n == 0)
-    return TRUE;
+	info->nfield = n = mysql_num_fields(res);
+	if (n == 0)
+		return TRUE;
 
-  GB.Alloc((void **)POINTER(&info->field), sizeof(DB_FIELD) * n);
+	GB.Alloc((void **)POINTER(&info->field), sizeof(DB_FIELD) * n);
 
-  i = 0;
+	i = 0;
 
-  while ((field = mysql_fetch_field(res)))
-  {
-    f = &info->field[i];
+	while ((field = mysql_fetch_field(res)))
+	{
+		f = &info->field[i];
 
-    if (field_info(db, table, field->name, f))
+		if (field_info(db, table, field->name, f))
 		{
-		  mysql_free_result(res);
-		  return TRUE;
+			mysql_free_result(res);
+			return TRUE;
 		}
 
 		f->name = GB.NewZeroString(field->name);
 
-    /*f->type = conv_type(field->type, field->length);
-    f->length = 0;
-    if (f->type == GB_T_STRING)
-      f->length = field->length;*/
+		/*f->type = conv_type(field->type, field->length);
+		f->length = 0;
+		if (f->type == GB_T_STRING)
+			f->length = field->length;*/
 
-    i++;
-  }
+		i++;
+	}
 
-  mysql_free_result(res);
+	mysql_free_result(res);
 
-  return FALSE;
+	return FALSE;
 }
 
 
 /*****************************************************************************
 
-  table_index()
+	table_index()
 
-  Initialize an info structure from table primary index.
+	Initialize an info structure from table primary index.
 
-  <handle> is the database handle.
-  <table> is the table name.
-  <info> points at the info structure.
+	<handle> is the database handle.
+	<table> is the table name.
+	<info> points at the info structure.
 
-  This function must initialize the following info fields:
-   - info->nindex must contain the number of fields in the primary index.
-   - info->index is a int[] giving the index of each index field in
-     info->fields.
+	This function must initialize the following info fields:
+	- info->nindex must contain the number of fields in the primary index.
+	- info->index is a int[] giving the index of each index field in
+		info->fields.
 
-  This function must be called after table_init().
+	This function must be called after table_init().
 
-  This function returns TRUE if the command has failed, and FALSE if
-  everything was OK.
+	This function returns TRUE if the command has failed, and FALSE if
+	everything was OK.
 
 *****************************************************************************/
 
 static int table_index(DB_DATABASE *db, const char *table, DB_INFO *info)
 {
-  char *qindex =
-    "show index from `&1`";
+	char *qindex =
+		"show index from `&1`";
 
-  MYSQL_RES *res;
-  MYSQL_ROW row;
-  int i, j, n;
+	MYSQL_RES *res;
+	MYSQL_ROW row;
+	int i, j, n;
 
-  /* Index primaire */
+	/* Index primaire */
 
-  if (do_query(db, "Unable to get primary index: &1", &res, qindex, 1, table))
-	  return TRUE;
+	if (do_query(db, "Unable to get primary index: &1", &res, qindex, 1, table))
+		return TRUE;
 
-  for ( i = 0, n = 0;  i < mysql_num_rows(res); i++ )
-  {
-    row = mysql_fetch_row(res);
-    if (strcmp("PRIMARY", row[2]) == 0) /* Use only Primary key */
-	    n++;
-  }
+	for ( i = 0, n = 0;  i < mysql_num_rows(res); i++ )
+	{
+		row = mysql_fetch_row(res);
+		if (strcmp("PRIMARY", row[2]) == 0) /* Use only Primary key */
+			n++;
+	}
 
-  mysql_data_seek(res, 0);/* move back to first record */
-  info->nindex = n;
-  /* Note: Col 3 is Key_name, Col 4 is Sq_in_index, Col 5 is Field Name */
+	mysql_data_seek(res, 0);/* move back to first record */
+	info->nindex = n;
+	/* Note: Col 3 is Key_name, Col 4 is Sq_in_index, Col 5 is Field Name */
 
-  if (n <= 0)
-  {
-    GB.Error("Table '&1' has no primary index", table);
-    return TRUE;
-  }
+	if (n <= 0)
+	{
+		GB.Error("Table '&1' has no primary index", table);
+		return TRUE;
+	}
 
-  GB.Alloc((void **)POINTER(&info->index), sizeof(int) * n);
+	GB.Alloc((void **)POINTER(&info->index), sizeof(int) * n);
 
-  for (i = 0; i < n; i++)
-  {
-    row = mysql_fetch_row(res);
-    if (strcmp("PRIMARY", row[2]) == 0) /* Use only Primary key */
-    {
-        for (j = 0; j < info->nfield; j++)
-        {
-            if (strcmp(info->field[j].name, row[4]) == 0)
-            {
-                info->index[i] = j;
-                break;
-            }
-     	 }
-    }
-  }
+	for (i = 0; i < n; i++)
+	{
+		row = mysql_fetch_row(res);
+		if (strcmp("PRIMARY", row[2]) == 0) /* Use only Primary key */
+		{
+				for (j = 0; j < info->nfield; j++)
+				{
+						if (strcmp(info->field[j].name, row[4]) == 0)
+						{
+								info->index[i] = j;
+								break;
+						}
+			}
+		}
+	}
 
-  mysql_free_result(res);
-  return FALSE;
+	mysql_free_result(res);
+	return FALSE;
 }
 
 
 /*****************************************************************************
 
-  table_release()
+	table_release()
 
-  Free the info structure filled by table_init() and/or table_index()
+	Free the info structure filled by table_init() and/or table_index()
 
-  <handle> is the database handle.
-  <info> points at the info structure.
+	<handle> is the database handle.
+	<info> points at the info structure.
 
 *****************************************************************************/
 
 static void table_release(DB_DATABASE *db, DB_INFO *info)
 {
-  /* All is done outside the driver */
+	/* All is done outside the driver */
 }
 
 
 /*****************************************************************************
 
-  table_exist()
+	table_exist()
 
-  Returns if a table exists
+	Returns if a table exists
 
-  <handle> is the database handle.
-  <table> is the table name.
+	<handle> is the database handle.
+	<table> is the table name.
 
-  This function returns TRUE if the table exists, and FALSE if not.
+	This function returns TRUE if the table exists, and FALSE if not.
 
 *****************************************************************************/
 
 static int table_exist(DB_DATABASE *db, const char *table)
 {
-  MYSQL_RES *res;
-  int exist;
+	MYSQL_RES *res;
+	int exist;
 
-  const char *query =
-    "show tables like '&1'";
+	const char *query =
+		"show tables like '&1'";
 
-  if (do_query(db, "Unable to check table: &1", &res, query, 1, table))
-    return FALSE;
+	if (do_query(db, "Unable to check table: &1", &res, query, 1, table))
+		return FALSE;
 
-  exist = !search_result(res, table, NULL);
-  mysql_free_result(res);
-  return exist;
+	exist = !search_result(res, table, NULL);
+	mysql_free_result(res);
+	return exist;
 }
 
 
 /*****************************************************************************
 
-  table_list()
+	table_list()
 
-  Returns an array containing the name of each table in the database
+	Returns an array containing the name of each table in the database
 
-  <handle> is the database handle.
-  <tables> points to a variable that will receive the char* array.
+	<handle> is the database handle.
+	<tables> points to a variable that will receive the char* array.
 
-  This function returns the number of tables, or -1 if the command has
-  failed.
+	This function returns the number of tables, or -1 if the command has
+	failed.
 
-  Be careful: <tables> can be NULL, so that just the count is returned.
+	Be careful: <tables> can be NULL, so that just the count is returned.
 
 *****************************************************************************/
 
 static int table_list(DB_DATABASE *db, char ***tables)
 {
-  MYSQL_RES *res;
-  MYSQL_ROW row;
-  long i;
-  long rows;
+	MYSQL_RES *res;
+	MYSQL_ROW row;
+	long i;
+	long rows;
 
-  const char *query =
-    "show tables";
+	const char *query =
+		"show tables";
 
-  if (do_query(db, "Unable to get tables", &res, query, 0))
-    return -1;
+	if (do_query(db, "Unable to get tables", &res, query, 0))
+		return -1;
 
-  rows = mysql_num_rows(res);
-  GB.NewArray(tables, sizeof(char *), rows);
+	rows = mysql_num_rows(res);
+	GB.NewArray(tables, sizeof(char *), rows);
 
-  for (i = 0; i < rows; i++){
-    row = mysql_fetch_row(res);
-    (*tables)[i] = GB.NewZeroString(row[0]);
-  }
+	for (i = 0; i < rows; i++){
+		row = mysql_fetch_row(res);
+		(*tables)[i] = GB.NewZeroString(row[0]);
+	}
 
-  mysql_free_result(res);
+	mysql_free_result(res);
 
-  return rows;
+	return rows;
 }
 
 /*****************************************************************************
 
-  table_primary_key()
+	table_primary_key()
 
-  Returns a string representing the primary key of a table.
+	Returns a string representing the primary key of a table.
 
-  <handle> is the database handle.
-  <table> is the table name.
-  <key> points to a string that will receive the primary key.
+	<handle> is the database handle.
+	<table> is the table name.
+	<key> points to a string that will receive the primary key.
 
-  This function returns TRUE if the command has failed, and FALSE if
-  everything was OK.
+	This function returns TRUE if the command has failed, and FALSE if
+	everything was OK.
 
 *****************************************************************************/
 
 static int table_primary_key(DB_DATABASE *db, const char *table, char ***primary)
 {
-  const char *query =
-    "show index from `&1`";
+	const char *query =
+		"show index from `&1`";
 
-  MYSQL_RES *res;
-  MYSQL_ROW row;
-  int i;
+	MYSQL_RES *res;
+	MYSQL_ROW row;
+	int i;
 
-  if (do_query(db, "Unable to get primary key: &1", &res, query, 1, table))
-    return TRUE;
+	if (do_query(db, "Unable to get primary key: &1", &res, query, 1, table))
+		return TRUE;
 
-  GB.NewArray(primary, sizeof(char *), 0);
+	GB.NewArray(primary, sizeof(char *), 0);
 
-  for (i = 0; i < mysql_num_rows(res); i++)
-  {
-    row = mysql_fetch_row(res);
-    if (strcmp("PRIMARY", row[2]) == 0)
-      *(char **)GB.Add(primary) = GB.NewZeroString(row[4]);
-  }
+	for (i = 0; i < mysql_num_rows(res); i++)
+	{
+		row = mysql_fetch_row(res);
+		if (strcmp("PRIMARY", row[2]) == 0)
+			*(char **)GB.Add(primary) = GB.NewZeroString(row[4]);
+	}
 
-  mysql_free_result(res);
+	mysql_free_result(res);
 
-  return FALSE;
+	return FALSE;
 }
 
 /*****************************************************************************
 
-  table_is_system()
+	table_is_system()
 
-  Returns if a table is a system table.
+	Returns if a table is a system table.
 
-  <handle> is the database handle.
-  <table> is the table name.
+	<handle> is the database handle.
+	<table> is the table name.
 
-  This function returns TRUE if the table is a system table, and FALSE if
-  not.
+	This function returns TRUE if the table is a system table, and FALSE if
+	not.
 
-  Note: In mysql the system tables are stored in a separate database.
-  The tables are mysql.columns_priv, mysql.db, mysql.func, mysql.host,
-  mysql.tables_priv, mysql.user. This has therefore not been implemented.
+	Note: In mysql the system tables are stored in a separate database.
+	The tables are mysql.columns_priv, mysql.db, mysql.func, mysql.host,
+	mysql.tables_priv, mysql.user. This has therefore not been implemented.
 
 *****************************************************************************/
 
@@ -1405,139 +1405,141 @@ static int database_is_system(DB_DATABASE *db, const char *name);
 
 static int table_is_system(DB_DATABASE *db, const char *table)
 {
-  MYSQL_RES *res;
-  MYSQL_ROW row;
-  int system;
+	MYSQL_RES *res;
+	MYSQL_ROW row;
+	int system;
 
-  if (do_query(db, "Unable to check database: &1", &res, "select database()", 0))
-    return FALSE;
+	if (do_query(db, "Unable to check database: &1", &res, "select database()", 0))
+		return FALSE;
 
-  if (mysql_num_rows(res) != 1 )
-  {
-    GB.Error("Unable to check database: More than one current database !?");
-    return FALSE;
-  }
+	if (mysql_num_rows(res) != 1 )
+	{
+		GB.Error("Unable to check database: More than one current database !?");
+		return FALSE;
+	}
 
-  /* (BM) Check that the current database is mysql */
-  /* (BM) All tables of 'mysql' database are system */
+	/* (BM) Check that the current database is mysql */
+	/* (BM) All tables of 'mysql' database are system */
 
-  row = mysql_fetch_row(res);
-  system = database_is_system(db, row[0]);
+	row = mysql_fetch_row(res);
+	system = database_is_system(db, row[0]);
 
-  mysql_free_result(res);
+	mysql_free_result(res);
 
-  return system;
+	return system;
 }
 
 
 /*****************************************************************************
 
-  table_type()
+	table_type()
 
-  Returns the table type.
+	Returns the table type.
 
-  <handle> is the database handle.
-  <table> is the table name.
+	<handle> is the database handle.
+	<table> is the table name.
 
-  This function returns a string containing table type or NULL if error.
+	This function returns a string containing table type or NULL if error.
 
 *****************************************************************************/
 
 static char *table_type(DB_DATABASE *db, const char *table, const char *settype)
 {
-  static char buffer[16];
+	static char buffer[16];
 
-  const char *query =
-      "show table status like '&1'";
+	const char *query =
+			"show table status like '&1'";
 
-  const char *update =
-	  "alter table `&1` type = &2";
+	const char *update =
+		"alter table `&1` type = &2";
 
-  MYSQL_RES *res;
-  MYSQL_ROW row;
+	MYSQL_RES *res;
+	MYSQL_ROW row;
 
-  if (settype){
-     if (do_query(db, "Cannot set table &1 to type &2", &res, update, 2, table, settype))
-        return NULL;
-  }
+	if (settype){
+		if (do_query(db, "Cannot set table &1 to type &2", &res, update, 2, table, settype))
+				return NULL;
+	}
 
-  if (do_query(db, "Invalid table: &1", &res, query, 1, table)){
-    return NULL;
-  }
+	if (do_query(db, "Invalid table: &1", &res, query, 1, table)){
+		return NULL;
+	}
 
-  if (search_result(res, table, &row))
-  {
+	if (search_result(res, table, &row))
+	{
 		GB.Error("Unable to check table for: &1", table);
 		return NULL;
-  }
+	}
 
-  strcpy(buffer, row[1]);
-  mysql_free_result(res);
-  return buffer;
+	strcpy(buffer, row[1]);
+	mysql_free_result(res);
+	return buffer;
 }
 
 
 /*****************************************************************************
 
-  table_delete()
+	table_delete()
 
-  Deletes a table.
+	Deletes a table.
 
-  <handle> is the database handle.
-  <table> is the table name.
+	<handle> is the database handle.
+	<table> is the table name.
 
-  This function returns TRUE if the command has failed, and FALSE if
-  everything was OK.
+	This function returns TRUE if the command has failed, and FALSE if
+	everything was OK.
 
 *****************************************************************************/
 
 static int table_delete(DB_DATABASE *db, const char *table)
 {
-  return do_query(db, "Unable to delete table: &1", NULL, "drop table `&1`", 1, table);
+	return do_query(db, "Unable to delete table: &1", NULL, "drop table `&1`", 1, table);
 }
 
 /*****************************************************************************
 
-  table_create()
+	table_create()
 
-  Creates a table.
+	Creates a table.
 
-  <handle> is the database handle.
-  <table> is the table name.
-  <fields> points to a linked list of field descriptions.
-  <key> is the primary key.
+	<handle> is the database handle.
+	<table> is the table name.
+	<fields> points to a linked list of field descriptions.
+	<key> is the primary key.
 
-  This function returns TRUE if the command has failed, and FALSE if
-  everything was OK.
+	This function returns TRUE if the command has failed, and FALSE if
+	everything was OK.
 
-  MySql has several different table types: InnoDB and BDB are transaction safe
-  whilst HEAP, ISAM, MERGE and MYISAM are not.
+	MySql has several different table types: InnoDB and BDB are transaction safe
+	whilst HEAP, ISAM, MERGE and MYISAM are not.
 
- TYPE =
+TYPE =
 
 *****************************************************************************/
 
 static int table_create(DB_DATABASE *db, const char *table, DB_FIELD *fields, char **primary, const char *tabletype)
 {
-  DB_FIELD *fp;
-  char *type = NULL;
-  int comma;
-  int i;
+	DB_FIELD *fp;
+	char *type = NULL;
+	int comma;
+	int i;
 
-  DB.Query.Init();
- // type should be BDB HEAP ISAM InnoDB MERGE MRG_MYISAM MYISAM
- //MySql will validate
-  DB.Query.Add("CREATE TABLE `");
-  DB.Query.Add(table);
-  DB.Query.Add("` ( ");
+	if (db->version < 040100 && !strcasecmp(tabletype, "MEMORY"))
+		tabletype = "HEAP";
+	
+	DB.Query.Init();
+	
+	DB.Query.Add("CREATE TABLE `");
+	DB.Query.Add(table);
+	DB.Query.Add("` ( ");
 
-  comma = FALSE;
-  for (fp = fields; fp; fp = fp->next)
-  {
-    if (comma)
-      DB.Query.Add(", ");
-    else
-      comma = TRUE;
+	comma = FALSE;
+	for (fp = fields; fp; fp = fp->next)
+	{
+		if (comma)
+			DB.Query.Add(", ");
+		else
+			comma = TRUE;
 
 		DB.Query.Add(QUOTE_STRING);
 		DB.Query.Add(fp->name);
@@ -1584,156 +1586,156 @@ static int table_create(DB_DATABASE *db, const char *table, DB_FIELD *fields, ch
 				DB.Query.Add(" NOT NULL ");
 			}
 		}
-  }
+	}
 
-  if (primary)
-  {
-    DB.Query.Add(", PRIMARY KEY (");
+	if (primary)
+	{
+		DB.Query.Add(", PRIMARY KEY (");
 
-    for (i = 0; i < GB.Count(primary); i++)
-    {
-      if (i > 0)
-        DB.Query.Add(",");
+		for (i = 0; i < GB.Count(primary); i++)
+		{
+			if (i > 0)
+				DB.Query.Add(",");
 
-      DB.Query.Add("`");
-      DB.Query.Add(primary[i]);
-      DB.Query.Add("`");
+			DB.Query.Add("`");
+			DB.Query.Add(primary[i]);
+			DB.Query.Add("`");
 
-      for (fp = fields; fp; fp = fp->next) //Check type of primary field
-      {
-              if(strcmp(fp->name, primary[i]) == 0){
-                if (fp->length <= 0 || fp->length > 255){
-                        if (fp->type == GB_T_STRING)
-                           DB.Query.Add("(255)");
-                }
-              }
-      }
-    }
+			for (fp = fields; fp; fp = fp->next) //Check type of primary field
+			{
+							if(strcmp(fp->name, primary[i]) == 0){
+								if (fp->length <= 0 || fp->length > 255){
+												if (fp->type == GB_T_STRING)
+													DB.Query.Add("(255)");
+								}
+							}
+			}
+		}
 
-    DB.Query.Add(")");
-  }
+		DB.Query.Add(")");
+	}
 
-  DB.Query.Add(" )");
+	DB.Query.Add(" )");
 
-  if (tabletype)
-  {
-    DB.Query.Add(" TYPE = ");
-    DB.Query.Add(tabletype);
-  }
+	if (tabletype)
+	{
+		DB.Query.Add(" TYPE = ");
+		DB.Query.Add(tabletype);
+	}
 
-  /* printf("table_create syntax: %s\n", DB.Query.Get());*/
-  return do_query(db, "Cannot create table: &1", NULL, DB.Query.Get(), 0);
+	/* printf("table_create syntax: %s\n", DB.Query.Get());*/
+	return do_query(db, "Cannot create table: &1", NULL, DB.Query.Get(), 0);
 }
 
 /*****************************************************************************
 
-  field_exist()
+	field_exist()
 
-  Returns if a field exists in a given table
+	Returns if a field exists in a given table
 
-  <handle> is the database handle.
-  <table> is the table name.
-  <field> is the field name.
+	<handle> is the database handle.
+	<table> is the table name.
+	<field> is the field name.
 
-  This function returns TRUE if the field exists, and FALSE if not.
+	This function returns TRUE if the field exists, and FALSE if not.
 
 *****************************************************************************/
 
 static int field_exist(DB_DATABASE *db, const char *table, const char *field)
 {
-  const char *query =
-      "show columns from `&1` like '&2'";
+	const char *query =
+			"show columns from `&1` like '&2'";
 
-  MYSQL_RES *res;
-  int exist;
+	MYSQL_RES *res;
+	int exist;
 
-  if (do_query(db, "Unable to check field: &1", &res, query, 2, table, field))
-    return FALSE;
+	if (do_query(db, "Unable to check field: &1", &res, query, 2, table, field))
+		return FALSE;
 
 	exist = !search_result(res, field, NULL);
-  mysql_free_result(res);
+	mysql_free_result(res);
 
-  return exist;
+	return exist;
 }
 
 
 
 /*****************************************************************************
 
-  field_list()
+	field_list()
 
-  Returns an array containing the name of each field in a given table
+	Returns an array containing the name of each field in a given table
 
-  <handle> is the database handle.
-  <table> is the table name.
-  <fields> points to a variable that will receive the char* array.
+	<handle> is the database handle.
+	<table> is the table name.
+	<fields> points to a variable that will receive the char* array.
 
-  This function returns the number of fields, or -1 if the command has
-  failed.
+	This function returns the number of fields, or -1 if the command has
+	failed.
 
-  Be careful: <fields> can be NULL, so that just the count is returned.
+	Be careful: <fields> can be NULL, so that just the count is returned.
 
 *****************************************************************************/
 
 static int field_list(DB_DATABASE *db, const char *table, char ***fields)
 {
-  const char *query =
-    "show columns from `&1`";
+	const char *query =
+		"show columns from `&1`";
 
-  long i, n;
-  MYSQL_RES *res;
-  MYSQL_ROW row;
+	long i, n;
+	MYSQL_RES *res;
+	MYSQL_ROW row;
 
-  if (do_query(db, "Unable to get fields: &1", &res, query, 1, table))
-     return -1;
+	if (do_query(db, "Unable to get fields: &1", &res, query, 1, table))
+		return -1;
 
-  n = mysql_num_rows(res);
+	n = mysql_num_rows(res);
 
-  if (fields) /* (BM) see the function commentary */
-  {
-    GB.NewArray(fields, sizeof(char *), n);
+	if (fields) /* (BM) see the function commentary */
+	{
+		GB.NewArray(fields, sizeof(char *), n);
 
-    for (i = 0; i < n; i++){
-      row = mysql_fetch_row(res);
-      (*fields)[i] = GB.NewZeroString(row[0]);
-    }
-  }
+		for (i = 0; i < n; i++){
+			row = mysql_fetch_row(res);
+			(*fields)[i] = GB.NewZeroString(row[0]);
+		}
+	}
 
-  mysql_free_result(res);
-  return n;
+	mysql_free_result(res);
+	return n;
 }
 
 
 /*****************************************************************************
 
-  field_info()
+	field_info()
 
-  Get field description
+	Get field description
 
-  <handle> is the database handle.
-  <table> is the table name.
-  <field> is the field name.
-  <info> points to a structure filled by the function.
+	<handle> is the database handle.
+	<table> is the table name.
+	<field> is the field name.
+	<info> points to a structure filled by the function.
 
-  This function returns TRUE if the command has failed, and FALSE if
-  everything was OK.
+	This function returns TRUE if the command has failed, and FALSE if
+	everything was OK.
 
 *****************************************************************************/
 
 static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_FIELD *info)
 {
-  const char *query =
-      "show columns from `&1` like '&2'";
+	const char *query =
+			"show columns from `&1` like '&2'";
 
-  MYSQL_RES *res;
-  MYSQL_ROW row;
-  GB_VARIANT def;
-  char *val;
-  int type;
-  long len = 0;
+	MYSQL_RES *res;
+	MYSQL_ROW row;
+	GB_VARIANT def;
+	char *val;
+	int type;
+	long len = 0;
 
-  if (do_query(db, "Unable to get field info: &1", &res, query, 2, table, field))
-    return TRUE;
+	if (do_query(db, "Unable to get field info: &1", &res, query, 2, table, field))
+		return TRUE;
 
 	if (search_result(res, field, &row))
 	{
@@ -1741,21 +1743,21 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 		return TRUE;
 	}
 
-  info->name = NULL;
-  type = conv_string_type(row[1], &len);
+	info->name = NULL;
+	type = conv_string_type(row[1], &len);
 
-  info->type = conv_type(type, len);
-  if (info->type == GB_T_STRING)
-  {
-    info->length = len;
-    /* (BM) That's new! a TEXT field has a length of 65535 */
-    if (info->length >= 65535)
-      info->length = 0;
-  }
-  else
-    info->length = 0;
+	info->type = conv_type(type, len);
+	if (info->type == GB_T_STRING)
+	{
+		info->length = len;
+		/* (BM) That's new! a TEXT field has a length of 65535 */
+		if (info->length >= 65535)
+			info->length = 0;
+	}
+	else
+		info->length = 0;
 
-  info->def.type = GB_T_NULL;
+	info->def.type = GB_T_NULL;
 
 	if ((info->type == GB_T_INTEGER || info->type == GB_T_LONG) && strstr(row[5], "auto_increment"))
 		info->type = DB_T_SERIAL;
@@ -1780,714 +1782,714 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 		}
 	}
 
-  mysql_free_result(res);
-  return FALSE;
+	mysql_free_result(res);
+	return FALSE;
 }
 
 /*****************************************************************************
 
-  index_exist()
+	index_exist()
 
-  Returns if an index exists in a given table
+	Returns if an index exists in a given table
 
-  <handle> is the database handle.
-  <table> is the table name.
-  <field> is the index name.
+	<handle> is the database handle.
+	<table> is the table name.
+	<field> is the index name.
 
-  This function returns TRUE if the index exists, and FALSE if not.
+	This function returns TRUE if the index exists, and FALSE if not.
 
 *****************************************************************************/
 
 static int index_exist(DB_DATABASE *db, const char *table, const char *index)
 {
-  const char *query =
-      "show index from `&1`";
+	const char *query =
+			"show index from `&1`";
 
-  MYSQL_RES *res;
-  MYSQL_ROW row;
-  int i, n;
+	MYSQL_RES *res;
+	MYSQL_ROW row;
+	int i, n;
 
-  if (do_query(db, "Unable to check index: &1", &res, query, 1, table))
-    return FALSE;
+	if (do_query(db, "Unable to check index: &1", &res, query, 1, table))
+		return FALSE;
 
-  for ( i = 0, n = 0; i < mysql_num_rows(res); i++ )
-  {
-    row = mysql_fetch_row(res);
-    if (strcmp(index, row[2]) == 0)
-        n++;
-   }
+	for ( i = 0, n = 0; i < mysql_num_rows(res); i++ )
+	{
+		row = mysql_fetch_row(res);
+		if (strcmp(index, row[2]) == 0)
+				n++;
+	}
 
-  mysql_free_result(res);
-  if (n <= 0){
-     return FALSE;
-  }
+	mysql_free_result(res);
+	if (n <= 0){
+		return FALSE;
+	}
 
-  return TRUE;
+	return TRUE;
 }
 
 /*****************************************************************************
 
-  index_list()
+	index_list()
 
-  Returns an array containing the name of each index in a given table
+	Returns an array containing the name of each index in a given table
 
-  <handle> is the database handle.
-  <table> is the table name.
-  <indexes> points to a variable that will receive the char* array.
+	<handle> is the database handle.
+	<table> is the table name.
+	<indexes> points to a variable that will receive the char* array.
 
-  This function returns the number of indexes, or -1 if the command has
-  failed.
+	This function returns the number of indexes, or -1 if the command has
+	failed.
 
-  Be careful: <indexes> can be NULL, so that just the count is returned.
+	Be careful: <indexes> can be NULL, so that just the count is returned.
 
 *****************************************************************************/
 
 static int index_list(DB_DATABASE *db, const char *table, char ***indexes)
 {
-  const char *query = "show index from `&1`";
+	const char *query = "show index from `&1`";
 
-  MYSQL_RES *res;
-  MYSQL_ROW row;
-  long i, n, no_indexes;
+	MYSQL_RES *res;
+	MYSQL_ROW row;
+	long i, n, no_indexes;
 
-  if (do_query(db, "Unable to get indexes: &1", &res, query, 1, table))
-    return -1;
+	if (do_query(db, "Unable to get indexes: &1", &res, query, 1, table))
+		return -1;
 
-  for ( i = 0, no_indexes = 0; i < mysql_num_rows(res); i++ )
-  {
-    /* Count the number of 1st sequences in Seq_in_index to
-       give nmber of indexes. row[3] */
-    row = mysql_fetch_row(res);
-    if ( atoi(row[3]) == 1)
-        no_indexes++;
-   }
+	for ( i = 0, no_indexes = 0; i < mysql_num_rows(res); i++ )
+	{
+		/* Count the number of 1st sequences in Seq_in_index to
+			give nmber of indexes. row[3] */
+		row = mysql_fetch_row(res);
+		if ( atoi(row[3]) == 1)
+				no_indexes++;
+	}
 
 
-  GB.NewArray(indexes, sizeof(char *), no_indexes);
-  mysql_data_seek(res, 0); /* move back to first record */
+	GB.NewArray(indexes, sizeof(char *), no_indexes);
+	mysql_data_seek(res, 0); /* move back to first record */
 
-  for ( i = 0, n = 0; i < mysql_num_rows(res); i++ )
-  {
-    row = mysql_fetch_row(res);
-    if ( atoi(row[3]) == 1 /* Start of a new index */)
-       (*indexes)[n++] = GB.NewZeroString(row[2]); /* (BM) The name is row[2], not row[4] */
-  }
+	for ( i = 0, n = 0; i < mysql_num_rows(res); i++ )
+	{
+		row = mysql_fetch_row(res);
+		if ( atoi(row[3]) == 1 /* Start of a new index */)
+			(*indexes)[n++] = GB.NewZeroString(row[2]); /* (BM) The name is row[2], not row[4] */
+	}
 
-  mysql_free_result(res);
-  return no_indexes;
+	mysql_free_result(res);
+	return no_indexes;
 }
 
 /*****************************************************************************
 
-  index_info()
+	index_info()
 
-  Get index description
+	Get index description
 
-  <handle> is the database handle.
-  <table> is the table name.
-  <field> is the index name.
-  <info> points to a structure filled by the function.
+	<handle> is the database handle.
+	<table> is the table name.
+	<field> is the index name.
+	<info> points to a structure filled by the function.
 
-  This function returns TRUE if the command has failed, and FALSE if
-  everything was OK.
+	This function returns TRUE if the command has failed, and FALSE if
+	everything was OK.
 
 *****************************************************************************/
 
 static int index_info(DB_DATABASE *db, const char *table, const char *index, DB_INDEX *info)
 {
-  const char *query =
-    "show index from `&1`";
+	const char *query =
+		"show index from `&1`";
 
-  MYSQL_RES *res;
-  MYSQL_ROW row = 0;
-  int i, n;
+	MYSQL_RES *res;
+	MYSQL_ROW row = 0;
+	int i, n;
 
-  if (do_query(db, "Unable to get index info: &1", &res, query, 2, table, index))
-    return TRUE;
+	if (do_query(db, "Unable to get index info: &1", &res, query, 2, table, index))
+		return TRUE;
 
-  n = mysql_num_rows(res);
-  for (i = 0; i < n; i++ )
-  {
-    row = mysql_fetch_row(res);
-    if ( strcmp( index, row[2]) == 0)
-    { /* (BM) With braces, it should work better :-) */
-        n = 1;
-        break;
-    }
-   }
+	n = mysql_num_rows(res);
+	for (i = 0; i < n; i++ )
+	{
+		row = mysql_fetch_row(res);
+		if ( strcmp( index, row[2]) == 0)
+		{ /* (BM) With braces, it should work better :-) */
+				n = 1;
+				break;
+		}
+	}
 
 	if (n != 1)
-  {
-    GB.Error("Unable to find index &2 in table &1", table, index);
-    return TRUE;
-  }
+	{
+		GB.Error("Unable to find index &2 in table &1", table, index);
+		return TRUE;
+	}
 
-  info->name = NULL;
-  info->unique = strcmp(row[1], "0") == 0;
-  info->primary = strcmp("PRIMARY", row[2]) == 0 ? TRUE : FALSE;
+	info->name = NULL;
+	info->unique = strcmp(row[1], "0") == 0;
+	info->primary = strcmp("PRIMARY", row[2]) == 0 ? TRUE : FALSE;
 
-  DB.Query.Init();
+	DB.Query.Init();
 
-  i = 0;
-  /* (BM) row can be null if we are seeking the last index */
-  while ( row && strcmp(index, row[2]) == 0 )
-  {
-    if (i > 0)
-      DB.Query.Add(",");
+	i = 0;
+	/* (BM) row can be null if we are seeking the last index */
+	while ( row && strcmp(index, row[2]) == 0 )
+	{
+		if (i > 0)
+			DB.Query.Add(",");
 
-    DB.Query.Add(row[4]);
-    row = mysql_fetch_row(res);
-    i++; /* (BM) i must be incremented */
-  }
+		DB.Query.Add(row[4]);
+		row = mysql_fetch_row(res);
+		i++; /* (BM) i must be incremented */
+	}
 
-  mysql_free_result(res);
-  info->fields = DB.Query.GetNew();
+	mysql_free_result(res);
+	info->fields = DB.Query.GetNew();
 
-  return FALSE;
+	return FALSE;
 }
 
 /*****************************************************************************
 
-  index_delete()
+	index_delete()
 
-  Deletes an index.
+	Deletes an index.
 
-  <handle> is the database handle.
-  <table> is the table name.
-  <index> is the index name.
+	<handle> is the database handle.
+	<table> is the table name.
+	<index> is the index name.
 
-  This function returns TRUE if the command has failed, and FALSE if
-  everything was OK.
+	This function returns TRUE if the command has failed, and FALSE if
+	everything was OK.
 
 *****************************************************************************/
 
 static int index_delete(DB_DATABASE *db, const char *table, const char *index)
 {
-  return
-    do_query(db, "Unable to delete index: &1", NULL,
-      "drop index `&1` on `&2`", 1, index, table);
+	return
+		do_query(db, "Unable to delete index: &1", NULL,
+			"drop index `&1` on `&2`", 1, index, table);
 }
 
 /*****************************************************************************
 
-  index_create()
+	index_create()
 
-  Creates an index.
+	Creates an index.
 
-  <handle> is the database handle.
-  <table> is the table name.
-  <index> is the index name.
-  <info> points to a structure describing the index.
+	<handle> is the database handle.
+	<table> is the table name.
+	<index> is the index name.
+	<info> points to a structure describing the index.
 
-  This function returns TRUE if the command has failed, and FALSE if
-  everything was OK.
+	This function returns TRUE if the command has failed, and FALSE if
+	everything was OK.
 
 *****************************************************************************/
 
 static int index_create(DB_DATABASE *db, const char *table, const char *index, DB_INDEX *info)
 {
-  DB.Query.Init();
+	DB.Query.Init();
 
-  DB.Query.Add("CREATE ");
-  if (info->unique)
-    DB.Query.Add("UNIQUE ");
-  DB.Query.Add("INDEX `");
-  DB.Query.Add(index);
-  DB.Query.Add("` ON ");
-  DB.Query.Add(table);
-  DB.Query.Add(" ( ");
-  DB.Query.Add(info->fields);
-  DB.Query.Add(" )");
+	DB.Query.Add("CREATE ");
+	if (info->unique)
+		DB.Query.Add("UNIQUE ");
+	DB.Query.Add("INDEX `");
+	DB.Query.Add(index);
+	DB.Query.Add("` ON ");
+	DB.Query.Add(table);
+	DB.Query.Add(" ( ");
+	DB.Query.Add(info->fields);
+	DB.Query.Add(" )");
 
-  return do_query(db, "Cannot create index: &1", NULL, DB.Query.Get(), 0);
+	return do_query(db, "Cannot create index: &1", NULL, DB.Query.Get(), 0);
 }
 
 /*****************************************************************************
- *
- *   database_exist()
- *
- *   Returns if a database exists
- *
- *   <handle> is any database handle.
- *   <name> is the database name.
- *
- *   This function returns TRUE if the database exists, and FALSE if not.
- *
- ******************************************************************************/
+*
+*   database_exist()
+*
+*   Returns if a database exists
+*
+*   <handle> is any database handle.
+*   <name> is the database name.
+*
+*   This function returns TRUE if the database exists, and FALSE if not.
+*
+******************************************************************************/
 
 static int database_exist(DB_DATABASE *db, const char *name)
 {
-  MYSQL *conn = (MYSQL *)db->handle;
-  MYSQL_RES *res;
-  int exist;
+	MYSQL *conn = (MYSQL *)db->handle;
+	MYSQL_RES *res;
+	int exist;
 
-  res = mysql_list_dbs(conn, name);
-  if (!res)
-  {
+	res = mysql_list_dbs(conn, name);
+	if (!res)
+	{
 		db->error = mysql_errno(conn);	
 		GB.Error("Unable to check database: &1", mysql_error(conn));
 		return FALSE;
-  }
+	}
 
-  exist = mysql_num_rows(res);
-  mysql_free_result(res);
-  return exist;
+	exist = mysql_num_rows(res);
+	mysql_free_result(res);
+	return exist;
 }
 
 /*****************************************************************************
- *
- *   database_list()
- *
- *   Returns an array containing the name of each database
- *
- *   <handle> is any database handle.
- *   <databases> points to a variable that will receive the char* array.
- *
- *   This function returns the number of databases, or -1 if the command has
- *   failed.
- *
- *   Be careful: <databases> can be NULL, so that just the count is returned.
- *
- ******************************************************************************/
+*
+*   database_list()
+*
+*   Returns an array containing the name of each database
+*
+*   <handle> is any database handle.
+*   <databases> points to a variable that will receive the char* array.
+*
+*   This function returns the number of databases, or -1 if the command has
+*   failed.
+*
+*   Be careful: <databases> can be NULL, so that just the count is returned.
+*
+******************************************************************************/
 
 static int database_list(DB_DATABASE *db, char ***databases)
 {
-  long i, rows;
-  MYSQL *conn = (MYSQL *)db->handle;
-  MYSQL_RES *res;
-  MYSQL_ROW row;
+	long i, rows;
+	MYSQL *conn = (MYSQL *)db->handle;
+	MYSQL_RES *res;
+	MYSQL_ROW row;
 
-  res = mysql_list_dbs(conn, 0);
-  if (!res){
-  	db->error = mysql_errno(conn);
-     GB.Error("Unable to get databases: &1", mysql_error(conn));
-     return -1;
-  }
+	res = mysql_list_dbs(conn, 0);
+	if (!res){
+		db->error = mysql_errno(conn);
+		GB.Error("Unable to get databases: &1", mysql_error(conn));
+		return -1;
+	}
 
-  rows = mysql_num_rows(res);
-  /*printf("Got %d databases\n", rows); */
-  GB.NewArray(databases, sizeof(char *), rows);
+	rows = mysql_num_rows(res);
+	/*printf("Got %d databases\n", rows); */
+	GB.NewArray(databases, sizeof(char *), rows);
 
-  for (i = 0; i < rows; i++){
-    row = mysql_fetch_row(res);
-    (*databases)[i] = GB.NewZeroString(row[0]);
-    /*printf("%s\n", (*databases)[i]); */
-  }
+	for (i = 0; i < rows; i++){
+		row = mysql_fetch_row(res);
+		(*databases)[i] = GB.NewZeroString(row[0]);
+		/*printf("%s\n", (*databases)[i]); */
+	}
 
-  mysql_free_result(res);
+	mysql_free_result(res);
 
-  return rows;
+	return rows;
 }
 
 /*****************************************************************************
- *
- *   database_is_system()
- *
- *   Returns if a database is a system database.
- *
- *   <handle> is any database handle.
- *   <name> is the database name.
- *
- *   This function returns TRUE if the database is a system database, and
- *   FALSE if not.
- *
- ******************************************************************************/
+*
+*   database_is_system()
+*
+*   Returns if a database is a system database.
+*
+*   <handle> is any database handle.
+*   <name> is the database name.
+*
+*   This function returns TRUE if the database is a system database, and
+*   FALSE if not.
+*
+******************************************************************************/
 
 static int database_is_system(DB_DATABASE *db, const char *name)
 {
-  return (strcmp("mysql", name) == 0 || strcmp("information_schema", name) == 0);
+	return (strcmp("mysql", name) == 0 || strcmp("information_schema", name) == 0);
 }
 
 /*****************************************************************************
- *
- *   database_delete()
- *
- *   Deletes a database.
- *
- *   <handle> is the database handle.
- *   <name> is the database name.
- *
- *   This function returns TRUE if the command has failed, and FALSE if
- *   everything was OK.
- *
- ******************************************************************************/
+*
+*   database_delete()
+*
+*   Deletes a database.
+*
+*   <handle> is the database handle.
+*   <name> is the database name.
+*
+*   This function returns TRUE if the command has failed, and FALSE if
+*   everything was OK.
+*
+******************************************************************************/
 
 static int database_delete(DB_DATABASE *db, const char *name)
 {
 	if (database_is_system(db, name))
 	{
- 		GB.Error("Unable to delete database: &1", "system database");
- 		return TRUE;
+		GB.Error("Unable to delete database: &1", "system database");
+		return TRUE;
 	}
 
-  return
-     do_query(db, "Unable to delete database: &1", NULL,
-     "drop database `&1`", 1, name);
+	return
+		do_query(db, "Unable to delete database: &1", NULL,
+		"drop database `&1`", 1, name);
 }
 
 /*****************************************************************************
- *
- *   database_create()
- *
- *   Creates a database.
- *
- *   <handle> is the database handle.
- *   <name> is the database name.
- *
- *   This function returns TRUE if the command has failed, and FALSE if
- *   everything was OK.
- *
- ******************************************************************************/
+*
+*   database_create()
+*
+*   Creates a database.
+*
+*   <handle> is the database handle.
+*   <name> is the database name.
+*
+*   This function returns TRUE if the command has failed, and FALSE if
+*   everything was OK.
+*
+******************************************************************************/
 
 static int database_create(DB_DATABASE *db, const char *name)
 {
-  return
-     do_query(db, "Unable to create database: &1", NULL,
-     "create database `&1`", 1, name);
+	return
+		do_query(db, "Unable to create database: &1", NULL,
+		"create database `&1`", 1, name);
 }
 
 
 /*****************************************************************************
- *
- *  user_exist()
- *
- *  Returns if a user exists.
- *
- *  <handle> is any database handle.
- *  <name> is the user name.
- *
- *  This function returns TRUE if the user exists, and FALSE if not.
- *
- ******************************************************************************/
+*
+*  user_exist()
+*
+*  Returns if a user exists.
+*
+*  <handle> is any database handle.
+*  <name> is the user name.
+*
+*  This function returns TRUE if the user exists, and FALSE if not.
+*
+******************************************************************************/
 
 static int user_exist(DB_DATABASE *db, const char *name)
 {
-  const char *query = "select user from mysql.user "
-      "where user = '&1' and host = '&2' ";
-  MYSQL_RES *res;
-  int exist;
-  char *_name, *_host, *_token;
+	const char *query = "select user from mysql.user "
+			"where user = '&1' and host = '&2' ";
+	MYSQL_RES *res;
+	int exist;
+	char *_name, *_host, *_token;
 
-  if (!strrchr(name,'@')){
-	  //To be done: maybe we should  check hostname we are running
-	  //from and use this instead of localhost
-    /* (BM) you forgot the last 0 character */
-	  _name = malloc(strlen(name) + strlen("@localhost") + 1);
-	  sprintf(_name,"%s@localhost", name);
-  }
-  else {
-	  _name = malloc(strlen(name) + 1);
-	  strcpy(_name,name);
-  }
+	if (!strrchr(name,'@')){
+		//To be done: maybe we should  check hostname we are running
+		//from and use this instead of localhost
+		/* (BM) you forgot the last 0 character */
+		_name = malloc(strlen(name) + strlen("@localhost") + 1);
+		sprintf(_name,"%s@localhost", name);
+	}
+	else {
+		_name = malloc(strlen(name) + 1);
+		strcpy(_name,name);
+	}
 
-  _host = strrchr(_name,'@') + 1;
-  _token = _host - 1;
-  _token[0] = 0;
+	_host = strrchr(_name,'@') + 1;
+	_token = _host - 1;
+	_token[0] = 0;
 
 
- if (do_query(db, "Unable to check user: &1@&2", &res, query, 2, _name, _host)){
-    free(_name);
-    //free(_host);
-    return FALSE;
- }
+if (do_query(db, "Unable to check user: &1@&2", &res, query, 2, _name, _host)){
+		free(_name);
+		//free(_host);
+		return FALSE;
+}
 
- exist = mysql_num_rows(res) == 1;
+exist = mysql_num_rows(res) == 1;
 
- free(_name);
- //free(_host);
-  mysql_free_result(res);
+free(_name);
+//free(_host);
+	mysql_free_result(res);
 
- return exist;
+return exist;
 }
 
 /*****************************************************************************
- *
- *   user_list()
- *
- *   Returns an array containing the name of each user.
- *
- *   <handle> is the database handle.
- *   <users> points to a variable that will receive the char* array.
- *
- *   This function returns the number of users, or -1 if the command has
- *   failed.
- *
- *   Be careful: <users> can be NULL, so that just the count is returned.
- *
- ******************************************************************************/
+*
+*   user_list()
+*
+*   Returns an array containing the name of each user.
+*
+*   <handle> is the database handle.
+*   <users> points to a variable that will receive the char* array.
+*
+*   This function returns the number of users, or -1 if the command has
+*   failed.
+*
+*   Be careful: <users> can be NULL, so that just the count is returned.
+*
+******************************************************************************/
 
 static int user_list(DB_DATABASE *db, char ***users)
 {
-  const char *query = "select user, host from mysql.user";
+	const char *query = "select user, host from mysql.user";
 
-  MYSQL_RES *res;
-  MYSQL_ROW row;
-  MYSQL_FIELD *field;
-  long i, count, length;
-  char *_username;
+	MYSQL_RES *res;
+	MYSQL_ROW row;
+	MYSQL_FIELD *field;
+	long i, count, length;
+	char *_username;
 
-  if (do_query(db, "Unable to get users: &1", &res, query, 0))
-    return -1;
+	if (do_query(db, "Unable to get users: &1", &res, query, 0))
+		return -1;
 
-  count = mysql_num_rows(res);
+	count = mysql_num_rows(res);
 
-  if (users)
-  {
-    GB.NewArray(users, sizeof(char *), count);
-    field = mysql_fetch_field(res); //user field
-    length = field->max_length;
-    field = mysql_fetch_field(res); //host field
-    length += field->max_length;
-    _username = malloc(length + 2); /* (BM) +2 because there is the last 0 character ! */
+	if (users)
+	{
+		GB.NewArray(users, sizeof(char *), count);
+		field = mysql_fetch_field(res); //user field
+		length = field->max_length;
+		field = mysql_fetch_field(res); //host field
+		length += field->max_length;
+		_username = malloc(length + 2); /* (BM) +2 because there is the last 0 character ! */
 
-    for ( i = 0; i < count; i++ )
-    {
-       row = mysql_fetch_row(res);
-       sprintf(_username,"%s@%s", row[0], row[1]);
-       (*users)[i] = GB.NewZeroString(_username);
-    }
-    free(_username);
-  }
+		for ( i = 0; i < count; i++ )
+		{
+			row = mysql_fetch_row(res);
+			sprintf(_username,"%s@%s", row[0], row[1]);
+			(*users)[i] = GB.NewZeroString(_username);
+		}
+		free(_username);
+	}
 
-  mysql_free_result(res);
+	mysql_free_result(res);
 
-  return count;
+	return count;
 }
 
 /*****************************************************************************
- *
- *   user_info()
- *
- *   Get user description
- *
- *   <handle> is the database handle.
- *   <name> is the user name.
- *   <info> points to a structure filled by the function.
- *
- *   This function returns TRUE if the command has failed, and FALSE if
- *   everything was OK.
- *
- * Mysql notes: Privileges set to Y in the mysql.user table are global settings
- *              and apply to all databases. eg. These are super user privileges.
- *              mysql.tables_priv lists the access granted to a user on a
- *                   particular table
- *              mysql.columns_priv grant column specific privileges.
- *              mysql.db and mysql.host grant database specific privileges.
- *
- *              User may also not be unique as mysql.user also contains
- *              users from different hosts.  e.g host and user columns will
- *              make it unique! Using 'localhost' here to limit.
- *
- *              The privileges are: grant_priv - allows user to grant
- *                                          privileges to others - which
- *                                          includes the ability to create
- *                                          users;
- *                                  create_priv/drop_priv - create database,
- *                                     tables etc.
- ******************************************************************************/
+*
+*   user_info()
+*
+*   Get user description
+*
+*   <handle> is the database handle.
+*   <name> is the user name.
+*   <info> points to a structure filled by the function.
+*
+*   This function returns TRUE if the command has failed, and FALSE if
+*   everything was OK.
+*
+* Mysql notes: Privileges set to Y in the mysql.user table are global settings
+*              and apply to all databases. eg. These are super user privileges.
+*              mysql.tables_priv lists the access granted to a user on a
+*                   particular table
+*              mysql.columns_priv grant column specific privileges.
+*              mysql.db and mysql.host grant database specific privileges.
+*
+*              User may also not be unique as mysql.user also contains
+*              users from different hosts.  e.g host and user columns will
+*              make it unique! Using 'localhost' here to limit.
+*
+*              The privileges are: grant_priv - allows user to grant
+*                                          privileges to others - which
+*                                          includes the ability to create
+*                                          users;
+*                                  create_priv/drop_priv - create database,
+*                                     tables etc.
+******************************************************************************/
 
 static int user_info(DB_DATABASE *db, const char *name, DB_USER *info )
 {
-  const char *query =
-	  "select create_priv, drop_priv, grant_priv, password from mysql.user "
-	  "where user = '&1' and host = '&2'";
+	const char *query =
+		"select create_priv, drop_priv, grant_priv, password from mysql.user "
+		"where user = '&1' and host = '&2'";
 
-  MYSQL_RES *res;
-  MYSQL_ROW row;
-  char *_name, *_host, *_token;
+	MYSQL_RES *res;
+	MYSQL_ROW row;
+	char *_name, *_host, *_token;
 
-  if (!strrchr(name,'@')){
-	  //To be done: check hostname we are running
-	  //from use instead of localhost
-    /* (BM) You forgot the last 0 character */
- 	  _name = malloc(strlen(name) + strlen("@localhost") + 1);
-	  sprintf(_name,"%s@localhost", name);
-  }
-  else {
-	  _name = malloc(strlen(name) + 1);
-	  strcpy(_name,name);
-  }
+	if (!strrchr(name,'@')){
+		//To be done: check hostname we are running
+		//from use instead of localhost
+		/* (BM) You forgot the last 0 character */
+		_name = malloc(strlen(name) + strlen("@localhost") + 1);
+		sprintf(_name,"%s@localhost", name);
+	}
+	else {
+		_name = malloc(strlen(name) + 1);
+		strcpy(_name,name);
+	}
 
-  _host = strrchr(_name,'@') + 1;
-  _token = _host - 1;
-  _token[0] = 0;
+	_host = strrchr(_name,'@') + 1;
+	_token = _host - 1;
+	_token[0] = 0;
 
- if (do_query(db, "Unable to check user info: &1@&2", &res, query, 2, _name, _host)){
-    free(_name);
-    return TRUE;
- }
+if (do_query(db, "Unable to check user info: &1@&2", &res, query, 2, _name, _host)){
+		free(_name);
+		return TRUE;
+}
 
- if (mysql_num_rows(res) != 1){
-	 GB.Error("user_info: Non unique user found");
-	 free(_name);
-         mysql_free_result(res);
-	 return TRUE;
- }
+if (mysql_num_rows(res) != 1){
+	GB.Error("user_info: Non unique user found");
+	free(_name);
+				mysql_free_result(res);
+	return TRUE;
+}
 
- row = mysql_fetch_row(res);
+row = mysql_fetch_row(res);
 
- info->name = NULL;
- if ( strcmp(row[0], "Y") == 0 || strcmp(row[1], "Y") == 0)
-	 info->admin = 1;
- else
-	 info->admin = 0;
+info->name = NULL;
+if ( strcmp(row[0], "Y") == 0 || strcmp(row[1], "Y") == 0)
+	info->admin = 1;
+else
+	info->admin = 0;
 
- if (row[3])
-     info->password = GB.NewZeroString(row[3]); //password is encrypted in mysql
+if (row[3])
+		info->password = GB.NewZeroString(row[3]); //password is encrypted in mysql
 
-  mysql_free_result(res);
-  free(_name);
+	mysql_free_result(res);
+	free(_name);
 
-  return FALSE;
+	return FALSE;
 }
 
 /*****************************************************************************
 
-  user_delete()
+	user_delete()
 
-  Deletes a user.
+	Deletes a user.
 
-  <handle> is any database handle.
-  <name> is the user name.
+	<handle> is any database handle.
+	<name> is the user name.
 
-  This function returns TRUE if the command has failed, and FALSE if
-  everything was OK.
+	This function returns TRUE if the command has failed, and FALSE if
+	everything was OK.
 
 *****************************************************************************/
 
 static int user_delete(DB_DATABASE *db, const char *name)
 {
-  const char *_delete =
-    "delete from mysql.user where user = '&1' and host = '&2'";
- //   "delete from mysql.user, mysql.db, mysql.columns_priv, mysql.tables_priv "
- //   "where user = '&1' and host = '&2'";
-  char *_name, *_host, *_token;
-  int _ret;
+	const char *_delete =
+		"delete from mysql.user where user = '&1' and host = '&2'";
+//   "delete from mysql.user, mysql.db, mysql.columns_priv, mysql.tables_priv "
+//   "where user = '&1' and host = '&2'";
+	char *_name, *_host, *_token;
+	int _ret;
 
-  if (!strrchr(name,'@')){
-	  //To be done: maybe hostname we are running
-	  //from should be used rather than localhost
-	  _name = malloc(strlen(name) + strlen("@localhost")) + 1;
-	  sprintf(_name,"%s@localhost", name);
-  }
-  else {
-	  _name = malloc(strlen(name) + 1);
-	  strcpy(_name,name);
-  }
+	if (!strrchr(name,'@')){
+		//To be done: maybe hostname we are running
+		//from should be used rather than localhost
+		_name = malloc(strlen(name) + strlen("@localhost")) + 1;
+		sprintf(_name,"%s@localhost", name);
+	}
+	else {
+		_name = malloc(strlen(name) + 1);
+		strcpy(_name,name);
+	}
 
-  _host = strrchr(_name,'@') + 1;
-  _token = _host - 1;
-  _token[0] = 0;
+	_host = strrchr(_name,'@') + 1;
+	_token = _host - 1;
+	_token[0] = 0;
 
- //Still need to look at the removal of privileges
- // _ret =  do_query(db, "Unable to delete user: &1", NULL,
- //	           "revoke all on *.* from &1@&2", 2, _name, _host);
-  _ret =  do_query(db, "Unable to delete user: &1", NULL,
-	          _delete, 2, _name, _host);
-  free(_name);
-  return _ret;
+//Still need to look at the removal of privileges
+// _ret =  do_query(db, "Unable to delete user: &1", NULL,
+//	           "revoke all on *.* from &1@&2", 2, _name, _host);
+	_ret =  do_query(db, "Unable to delete user: &1", NULL,
+						_delete, 2, _name, _host);
+	free(_name);
+	return _ret;
 }
 
 /*****************************************************************************
- *
- *   user_create()
- *
- *     Creates a user.
- *
- *     <handle> is the database handle.
- *     <name> is the user name.
- *     <info> points to a structure describing the user.
- *
- *     This function returns TRUE if the command has failed, and FALSE if
- *           everything was OK.
- *
- ******************************************************************************/
+*
+*   user_create()
+*
+*     Creates a user.
+*
+*     <handle> is the database handle.
+*     <name> is the user name.
+*     <info> points to a structure describing the user.
+*
+*     This function returns TRUE if the command has failed, and FALSE if
+*           everything was OK.
+*
+******************************************************************************/
 
 static int user_create(DB_DATABASE *db, const char *name, DB_USER *info)
 {
-  char *_name;
+	char *_name;
 
-  DB.Query.Init();
+	DB.Query.Init();
 
-  if (!strrchr(name,'@')){
-	  _name = malloc(strlen(name) + strlen("@localhost") + 1);
-	  sprintf(_name,"%s@localhost", name);
-  }
-  else {
-	  _name = malloc(strlen(name) + 1);
-	  strcpy(_name,name);
-  }
+	if (!strrchr(name,'@')){
+		_name = malloc(strlen(name) + strlen("@localhost") + 1);
+		sprintf(_name,"%s@localhost", name);
+	}
+	else {
+		_name = malloc(strlen(name) + 1);
+		strcpy(_name,name);
+	}
 
-  if (info->admin) {
-    DB.Query.Add("GRANT ALL PRIVILEGES ON *.* TO ");
-    DB.Query.Add(_name);
-  }
-  else {
-    DB.Query.Add("GRANT USAGE ON * TO ");
-    DB.Query.Add(_name);
-  }
+	if (info->admin) {
+		DB.Query.Add("GRANT ALL PRIVILEGES ON *.* TO ");
+		DB.Query.Add(_name);
+	}
+	else {
+		DB.Query.Add("GRANT USAGE ON * TO ");
+		DB.Query.Add(_name);
+	}
 
-  if (info->password)
-  {
-     DB.Query.Add(" IDENTIFIED BY '");
-     DB.Query.Add(info->password);
-     DB.Query.Add("'");
-  }
+	if (info->password)
+	{
+		DB.Query.Add(" IDENTIFIED BY '");
+		DB.Query.Add(info->password);
+		DB.Query.Add("'");
+	}
 
-  if (info->admin)
-    DB.Query.Add(" WITH GRANT OPTION");
+	if (info->admin)
+		DB.Query.Add(" WITH GRANT OPTION");
 
-  free(_name);
+	free(_name);
 
-  return do_query(db, "Cannot create user: &1", NULL, DB.Query.Get(), 0);
+	return do_query(db, "Cannot create user: &1", NULL, DB.Query.Get(), 0);
 }
 
 /*****************************************************************************
- *
- *   user_set_password()
- *
- *   Change the user password.
- *
- *   <handle> is the database handle.
- *   <name> is the user name.
- *   <password> is the new password
- *
- *   This function returns TRUE if the command has failed, and FALSE if
- *   everything was OK.
- *
- ******************************************************************************/
+*
+*   user_set_password()
+*
+*   Change the user password.
+*
+*   <handle> is the database handle.
+*   <name> is the user name.
+*   <password> is the new password
+*
+*   This function returns TRUE if the command has failed, and FALSE if
+*   everything was OK.
+*
+******************************************************************************/
 
 static int user_set_password(DB_DATABASE *db, const char *name, const char *password)
 {
-  char *_name;
-  DB.Query.Init();
+	char *_name;
+	DB.Query.Init();
 
-  if (!strrchr(name,'@')){
-	  _name = malloc(strlen(name) + strlen("@localhost") + 1);
-	  sprintf(_name,"%s@localhost", name);
-  }
-  else {
-	  _name = malloc(strlen(name) + 1);
-	  strcpy(_name,name);
-  }
+	if (!strrchr(name,'@')){
+		_name = malloc(strlen(name) + strlen("@localhost") + 1);
+		sprintf(_name,"%s@localhost", name);
+	}
+	else {
+		_name = malloc(strlen(name) + 1);
+		strcpy(_name,name);
+	}
 
-  DB.Query.Add("SET PASSWORD FOR ");
-  DB.Query.Add(_name);
-  DB.Query.Add(" = PASSWORD ('");
-  DB.Query.Add(password);
-  DB.Query.Add("')");
+	DB.Query.Add("SET PASSWORD FOR ");
+	DB.Query.Add(_name);
+	DB.Query.Add(" = PASSWORD ('");
+	DB.Query.Add(password);
+	DB.Query.Add("')");
 
-  free(_name);
+	free(_name);
 
-  return
-      do_query(db, "Cannot change user password: &1",
-        NULL, DB.Query.Get(), 0);
+	return
+			do_query(db, "Cannot change user password: &1",
+				NULL, DB.Query.Get(), 0);
 }
 
 
 /*****************************************************************************
 
-  The driver interface
+	The driver interface
 
 *****************************************************************************/
 
@@ -2495,16 +2497,16 @@ DECLARE_DRIVER(_driver, "mysql");
 
 /*****************************************************************************
 
-  The component entry and exit functions.
+	The component entry and exit functions.
 
 *****************************************************************************/
 
 int EXPORT GB_INIT(void)
 {
-  GB.GetInterface("gb.db", DB_INTERFACE_VERSION, &DB);
-  DB.Register(&_driver);
+	GB.GetInterface("gb.db", DB_INTERFACE_VERSION, &DB);
+	DB.Register(&_driver);
 
-  return 0;
+	return 0;
 }
 
 void EXPORT GB_EXIT()

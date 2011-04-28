@@ -1282,13 +1282,13 @@ Public Sub btnNewTable_Click()
   If CheckCurrent() Then Return
   
   If $hConn.Type = "mysql" Then
-    aType = ["MyISAM", "MERGE", "HEAP", "InnoDB", "BDB", "ISAM"]
+    aType = ["MyISAM", "MERGE", "MEMORY", "InnoDB", "BDB", "ISAM", "ARCHIVE"]
   Endif
 
   If FNewTable.Run($hConn, "", "InnoDB", aType) Then Return
   sName = FNewTable.TableName
 
-  If MConnection.CreateTable($hConn, sName, FNewTable.Type) Then Return
+  If MConnection.CreateTable($hConn, sName, FNewTable.TableType) Then Return
   
   lvwTable.Add("T" & sName, sName, Picture["img/16/table.png"])
   'lvwTable["T" & sName].Selected = True

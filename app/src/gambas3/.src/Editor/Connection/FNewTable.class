@@ -61,8 +61,8 @@ Public Sub btnOK_Click()
     Return
   Endif
 
-  If TableName Then TableType = cmbType.Text
   TableName = sName
+  If TableName Then TableType = cmbType.Text
 
   Me.Close(True)
 
