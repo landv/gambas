@@ -2,19 +2,19 @@
 
 { Report Report
   #MoveScaled(0,0,100,77)
-  Padding = ReportPadding["2cm"]
+  Padding = ReportPadding["Top:1cm;Bottom:15mm;Left:2cm;Right:2cm"]
   Index = 0
   Text = ("Section 1")
   { ReportHBox2 ReportHBox
     #MoveScaled(0,0,67,14)
     Height = "5cm"
     Fixed = True
-    Padding = ReportPadding["Top:1cm;Bottom:1cm;Left:1cm;Right:1cm"]
+    Padding = ReportPadding["Top:5mm;Bottom:5mm;Left:5mm;Right:5mm"]
     Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
     Background = ReportBrush["#3398C3"]
     { ReportSvgImage1 ReportSvgImage
       #MoveScaled(1,1,15,12)
-      Width = "5cm"
+      Width = "4cm"
     }
     { ReportLabel3 ReportLabel
       #MoveScaled(20,2,43,10)
@@ -35,7 +35,7 @@
     { ReportVBox1 ReportVBox
       #MoveScaled(1,1,25,47)
       Width = "6cm"
-      Padding = ReportPadding["0cm"]
+      Padding = ReportPadding["Top:5mm;Bottom:5mm;Left:5mm;Right:5mm"]
       Background = ReportBrush["#DF6B00"]
       { ReportLabel4 ReportLabel
         #MoveScaled(3,2,20,4)
@@ -47,13 +47,12 @@
     }
     { ReportVBox2 ReportVBox
       #MoveScaled(27,1,60,54)
-      Padding = ReportPadding["Top:6mm;Bottom:6mm;Left:6mm;Right:6mm"]
       Expand = True
       Border = ReportBorder["Left:1mm #000000"]
       Background = ReportBrush["#FFFFFF"]
       { RVBCont ReportVBox
         #MoveScaled(3,4,39,33)
-        Padding = ReportPadding["0cm"]
+        Padding = ReportPadding["Top:5mm;Bottom:5mm;Left:5mm;Right:5mm"]
         Expand = True
         Tag = "*"
         Spacing = "1mm"
@@ -73,7 +72,7 @@
         Brush = ReportBrush["#FFFFFF"]
         Fixed = True
         Font = Font["Bold,+1"]
-        Padding = ReportPadding["0cm"]
+        Padding = ReportPadding["Top:1mm;Bottom:1mm;Left:1mm;Right:1mm"]
         Border = ReportBorder["Top:1mm #000000"]
         Background = ReportBrush["#3398C3"]
         Text = ("Page $PAGE on $NPAGE  ")
