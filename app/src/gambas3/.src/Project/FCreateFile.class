@@ -31,6 +31,8 @@ Public Sub lstType_Click()
   Dim bOpt As Boolean
   Dim iFilter As Integer
   
+  Debug
+  
   sPrefix = lstType.Current.Tag
   For Each hChild In panOption.Children
     If Not hChild.Tag Then Continue

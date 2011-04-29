@@ -182,15 +182,17 @@ Private Sub SetSelected(Child As Control)
       iSaveForeground = hChild.Foreground
       hChild.Background = Color.SelectedBackground
       hChild.Foreground = Color.SelectedForeground
-      $hSelected = hChild
     Else If hChild = hOld Then
       hChild.Background = $iSaveBackground
       hChild.Foreground = $iSaveForeground
     Endif
   Next  
   
-  $iSaveBackground = iSaveBackground
-  $iSaveForeground = iSaveForeground
+  $hSelected = Child
+  If $hSelected Then
+    $iSaveBackground = iSaveBackground
+    $iSaveForeground = iSaveForeground
+  Endif
 
   'Wait
   If Child Then Raise Click
