@@ -165,9 +165,11 @@ Private Sub SetSelected(Child As Control)
   Dim iSaveForeground As Integer
   'DIM bNoEvent AS Boolean
   
-  If Child.Parent <> $hScrollView Then Return
-  If Not Child.Enabled Then Return
-  If Child Is Label Or If Child Is Separator Then Return
+  If Child Then
+    If Child.Parent <> $hScrollView Then Return
+    If Not Child.Enabled Then Return
+    If Child Is Label Or If Child Is Separator Then Return
+  Endif
   
   hOld = GetSelected()
   If hOld = Child Then Return 
@@ -191,7 +193,7 @@ Private Sub SetSelected(Child As Control)
   $iSaveForeground = iSaveForeground
 
   'Wait
-  Raise Click
+  If Child Then Raise Click
   
 End
 

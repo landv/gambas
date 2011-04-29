@@ -110,6 +110,7 @@ Public Sub Form_Open()
     cmbParent.Text = Project.GetParentClass($sPath)
   Endif
   
+  lstType.Select(Null)
   If Not $sType Then $sType = "module"
   For Each hCtrl In lstType.Children
     If hCtrl.Tag = $sType Then 

@@ -6,7 +6,7 @@
   Icon = Picture["drop.png"]
   Arrangement = Arrange.Horizontal
   Spacing = True
-  Padding = 8
+  Margin = True
   { VBox2 VBox Test
     Name = "VBox2"
     MoveScaled(1,3,10,42)
@@ -49,7 +49,7 @@
       Name = "PictureBox1"
       MoveScaled(0,0,6,6)
       Tag = "Bicycle"
-      Picture = Picture["bicycle.png"]
+      Picture = Picture["icon:/32/flag"]
       Alignment = Align.Center
       Border = Border.Raised
     }
@@ -57,7 +57,7 @@
       Name = "PictureBox2"
       MoveScaled(0,6,6,6)
       Tag = "Eye"
-      Picture = Picture["eye.png"]
+      Picture = Picture["icon:/32/lamp"]
       Alignment = Align.Center
       Border = Border.Raised
     }
@@ -65,7 +65,7 @@
       Name = "PictureBox3"
       MoveScaled(0,12,6,6)
       Tag = "Map"
-      Picture = Picture["france.png"]
+      Picture = Picture["icon:/32/earth"]
       Alignment = Align.Center
       Border = Border.Raised
     }
@@ -73,7 +73,7 @@
       Name = "PictureBox4"
       MoveScaled(0,18,6,6)
       Tag = "Happy"
-      Picture = Picture["happy.png"]
+      Picture = Picture["icon:/32/bookmark"]
       Alignment = Align.Center
       Border = Border.Raised
     }
@@ -81,7 +81,7 @@
       Name = "PictureBox5"
       MoveScaled(0,24,6,6)
       Tag = "Magnify"
-      Picture = Picture["loupe.png"]
+      Picture = Picture["icon:/32/phone"]
       Alignment = Align.Center
       Border = Border.Raised
     }
@@ -89,7 +89,7 @@
       Name = "PictureBox6"
       MoveScaled(0,30,6,6)
       Tag = "Highlight"
-      Picture = Picture["pen.png"]
+      Picture = Picture["icon:/32/book"]
       Alignment = Align.Center
       Border = Border.Raised
     }
@@ -100,7 +100,7 @@
     { imgHole PictureBox
       MoveScaled(0,38,6,6)
       Drop = True
-      Picture = Picture["BulletHole.xpm"]
+      Picture = Picture["icon:/48/trash"]
       Stretch = True
     }
   }

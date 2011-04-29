@@ -124,6 +124,7 @@ GEditor::GEditor(QWidget *parent)
 	fm(font())
 {
 	int i;
+	QStyle *oldStyle;
 
 	if (count == 0)
 	{
@@ -143,7 +144,11 @@ GEditor::GEditor(QWidget *parent)
   viewport()->setBackgroundRole(QPalette::Base);
 	viewport()->setPaletteBackgroundColor(defaultColors[GLine::Background]);
 	viewport()->setFocusProxy(this);
+	
+	oldStyle = style();
 	Q3ScrollView::setStyle(_style);
+	//Q3ScrollView::setStyle(oldStyle);
+	ensurePolished();
 	
 	viewport()->ensurePolished();
   //viewport()->setAutoFillBackground(true);
@@ -261,8 +266,9 @@ void GEditor::updateCache()
 {
 	//int nw = QMAX(cache->width(), QMIN(visibleWidth(), _cellw));
 	//int nh = QMAX(cache->height(), QMIN(visibleHeight(), _cellh));
-	int nw = QMAX(_cache->width(), visibleWidth());
-	int nh = QMAX(_cache->height(), visibleHeight());
+	int nw = QMAX(_cache->width(), visibleWidth() + _charWidth['m'] * 2);
+	int nh = QMAX(_cache->height(), visibleHeight() + _cellh);
+	
 	if (nw > 0 && nh > 0 && (nw != _cache->width() || nh != _cache->height()))
 		_cache->resize(nw, nh);
 	_checkCache = false;
@@ -943,11 +949,6 @@ void GEditor::drawContents(QPainter *p, int cx, int cy, int cw, int ch)
 	// Go through the rows
 	for (int r = rowfirst; r <= rowlast; ++r) 
 	{
-		// get row position and height
-		//int rowp = r * _cellh;
-		// Translate painter and draw the cell
-		//p->translate(0, rowp);
-		//paintCell(p, r, 0);
 		paintCell(pc, r, 0);
 		pc.translate(0, _cellh);
 	}
