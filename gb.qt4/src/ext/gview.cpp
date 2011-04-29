@@ -93,7 +93,7 @@ static QColor defaultColors[GLine::NUM_STATE] =
 
 /**---- GEditor -----------------------------------------------------------*/
 
-QPixmap *GEditor::cache = 0;
+QPixmap *GEditor::_cache = 0;
 QPixmap *GEditor::breakpoint = 0;
 int GEditor::count = 0;
 QStyle *GEditor::_style = 0;
@@ -114,6 +114,7 @@ void GEditor::reset()
 	_showCol = 0;
 	_showLen = 0;
 	_posOutside = false;
+	_checkCache = true;
 	
 	foldClear();
 }
@@ -126,7 +127,7 @@ GEditor::GEditor(QWidget *parent)
 
 	if (count == 0)
 	{
-		cache = new QPixmap();
+		_cache = new QPixmap();
 		_style = new QWindowsStyle;
 	}
 
@@ -199,9 +200,9 @@ GEditor::~GEditor()
 	count--;
 	if (count == 0)
 	{
-		delete cache;
+		delete _cache;
 		delete breakpoint;
-		cache = 0;
+		_cache = 0;
 		breakpoint = 0;
 		delete _style;
 	}
@@ -260,13 +261,11 @@ void GEditor::updateCache()
 {
 	//int nw = QMAX(cache->width(), QMIN(visibleWidth(), _cellw));
 	//int nh = QMAX(cache->height(), QMIN(visibleHeight(), _cellh));
-	int nw = QMAX(cache->width(), visibleWidth());
-	int nh = QMAX(cache->height(), visibleHeight());
-	if (nw > 0 && nh > 0 && (nw != cache->width() || nh != cache->height()))
-	{
-		cache->resize(nw, nh);
-		//cache->fill(Qt::yellow);
-	}
+	int nw = QMAX(_cache->width(), visibleWidth());
+	int nh = QMAX(_cache->height(), visibleHeight());
+	if (nw > 0 && nh > 0 && (nw != _cache->width() || nh != _cache->height()))
+		_cache->resize(nw, nh);
+	_checkCache = false;
 }
 
 int GEditor::lineWidth(int y) const
@@ -372,14 +371,14 @@ UPDATE_WIDTH:
 	{
 		_cellw = w;
 		updateViewport();
-		//qDebug("setCellWidth: %d (largestLine = %d)", w, largestLine);
 	}
 }
 	
 void GEditor::updateHeight()
 {
 	_cellh = fm.ascent() + fm.descent() + 2;
-	updateCache();
+	//updateCache();
+	_checkCache = true;
 		
 	if (pattern.height() < _cellh)
 		pattern.resize(16, _cellh);
@@ -760,14 +759,14 @@ void GEditor::paintCell(QPainter &p, int row, int)
 		if (getFlag(BlendedProcedureLimits))
 		{
 			make_blend(pattern, styles[GLine::Line].color, color, _cellh);
-			p.drawTiledPixmap(0, 0, cache->width(), _cellh, pattern);
+			p.drawTiledPixmap(0, 0, visibleWidth(), _cellh, pattern);
 		}
 		else
 		{
 			//QBrush brush(styles[GLine::Selection].color, Qt::Dense4Pattern);
 			//p.fillRect(0, 0, cache->width(), 1, brush);
 			p.setPen(styles[GLine::Selection].color);
-			p.drawLine(0, 0, cache->width() - 1, 0);
+			p.drawLine(0, 0, visibleWidth() - 1, 0);
 		}
 	}
 
@@ -936,7 +935,10 @@ void GEditor::drawContents(QPainter *p, int cx, int cy, int cw, int ch)
 	else
 		_oddLine = true;
 	
-	QPainter pc(cache);
+	if (_checkCache)
+		updateCache();
+	
+	QPainter pc(_cache);
 	
 	// Go through the rows
 	for (int r = rowfirst; r <= rowlast; ++r) 
@@ -956,7 +958,7 @@ void GEditor::drawContents(QPainter *p, int cx, int cy, int cw, int ch)
 	//qDebug("drawContents: %d %d %d %d : %d %d . %d : %d %d", cx, cy, cw, ch, contentsX(), contentsY(), rowfirst * _cellh, viewport()->x(), viewport()->y());
 	//p->setClipRect(cx, cy, cw, ch);
 	//p->setClipping(false);
-	p->drawPixmap(contentsX(), rowfirst * _cellh, *cache, 0, 0, _cellw, _cellh * (rowlast - rowfirst + 1)); //, _cellw, _cellh);
+	p->drawPixmap(contentsX(), rowfirst * _cellh, *_cache, 0, 0, _cellw, _cellh * (rowlast - rowfirst + 1)); //, _cellw, _cellh);
 }
 
 
@@ -1913,7 +1915,9 @@ void GEditor::resizeEvent(QResizeEvent *e)
 void GEditor::viewportResizeEvent(QResizeEvent *e)
 {
 	Q3ScrollView::viewportResizeEvent(e);
-	updateCache();
+	//updateCache();
+	updateWidth();
+	_checkCache = true;
 }
 
 bool GEditor::isCursorVisible()
@@ -2682,7 +2686,7 @@ void GEditor::updateViewport()
 {
 	int vw, vh;
 	
-	vw = contentsRect().width();
+	/*vw = contentsRect().width();
 	vh = contentsRect().height();
 	
 	if (doc)
@@ -2690,12 +2694,16 @@ void GEditor::updateViewport()
 		vw = QMAX(_cellw, vw);
 		vh = QMAX(_cellh * _nrows, vh);
 		//qDebug("updateViewport: h = %d  vh = %d", _cellh * numLines(), contentsRect().height());
-	}
+	}*/
+	
+	vw = QMAX(visibleWidth(), _cellw);
+	vh = QMAX(visibleHeight(), _cellh * _nrows);
 	
 	if (vw != contentsWidth() || vh != contentsHeight())
 		Q3ScrollView::resizeContents(vw, vh);
 
-	updateCache();
+	//updateCache();
+		_checkCache = true;
 }
 
 void GEditor::resizeContents(int w, int h)

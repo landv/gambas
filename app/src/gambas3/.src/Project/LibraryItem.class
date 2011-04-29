@@ -65,7 +65,7 @@ Public Sub DrawingArea_Draw()
     X = ICON_SIZE + PADDING * 2
     W = Max(Me.W - X, $iTextW)
     If IsSelected() Then Draw.Foreground = Color.SelectedForeground
-    Draw.RichText($sText, X, 0, W, Desktop.Scale * 4, Align.TopLeft)
+    Draw.RichText($sText, X, PADDING, W, Desktop.Scale * 4, Align.TopLeft)
     
   End With
   

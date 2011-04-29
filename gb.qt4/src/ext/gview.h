@@ -65,7 +65,7 @@ class GEditor : public Q3ScrollView
 
 private:
 
-	static QPixmap *cache;
+	static QPixmap *_cache;
 	static QPixmap *breakpoint;
 	static QStyle *_style;
 	static int count;
@@ -95,6 +95,7 @@ private:
 	int _sameWidth;
 	bool _oddLine;
 	QColor _oddBackground;
+	bool _checkCache;
 	
 	int lastx;
 	bool left;
