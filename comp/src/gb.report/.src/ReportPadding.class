@@ -20,16 +20,16 @@ Dim hSize As TSizeParse
   Dim ars As String[]
   
   For Each s In Split(Value, ";")
-    ars = Scan(s, "*=*")
+    ars = Scan(s, "*:*")
     If ars.count > 1 Then
     Select Case LCase(ars[0])
-      Case "padding-left"
+      Case "left"
         hPadding.Left = ars[1]
-      Case "padding-top"
+      Case "top"
         hPadding.top = ars[1]
-      Case "padding-bottom"
+      Case "bottom"
         hPadding.bottom = ars[1]
-      Case "padding-Right"
+      Case "right"
         hPadding.Right = ars[1]
       Case Else
         
