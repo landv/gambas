@@ -303,6 +303,9 @@ int main(int argc, char **argv)
 
 					//if (strcmp(file_name, ARCH_project_name) == 0)
 					//  continue;
+						
+					if ((len == 4) && (strncmp(file_name, "core", 4) == 0))
+						continue;
 
 					if ((len > 5) && (strncmp(file_name, "core.", 5) == 0))
 						continue;
