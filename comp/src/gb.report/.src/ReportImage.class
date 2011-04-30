@@ -18,26 +18,25 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   Dim w As Float = IIf(Me._Width > AvailableW, AvailableW, Me._Width)
   Dim Scale As Float
 
-  If h > 0 Or w > 0 Then
+  If h = 0 Then H = AvailableH
+  If w = 0 Then w = AvailableW
     
-    If $bStretch Then
-      hMyHints.Width = w + Me.Padding._Top + Me.Padding._Bottom
-      hMyHints.Height = h + AvailableW + Me.Padding._Left + Me.Padding._Right
-    Else
-      If h > w Then 
-        Scale = $hpic.Width / $hpic.Height
-        hMyHints.Width = (h * Scale) + Me.Padding._Left + Me.Padding._Right
-        hMyHints.Height = h + Me.Padding._Top + Me.Padding._Bottom
-      Else 
-        Scale = $hpic.Height / $hpic.Width
-        hMyHints.Height = (w * Scale) + Me.Padding._Top + Me.Padding._Bottom
-        hMyHints.Width = w + Me.Padding._Left + Me.Padding._Right
-      Endif
-    Endif
+  If $bStretch Then
+    hMyHints.Width = w + Me.Padding._Top + Me.Padding._Bottom
+    hMyHints.Height = h + AvailableW + Me.Padding._Left + Me.Padding._Right
   Else
-    hMyHints.Height = AvailableH + Me.Padding._Top + Me.Padding._Bottom
-    hMyHints.Width = AvailableW + Me.Padding._Left + Me.Padding._Right
+    If h < w Then 
+      Scale = $hpic.Width / $hpic.Height
+      hMyHints.Width = (h * Scale) + Me.Padding._Left + Me.Padding._Right
+      hMyHints.Height = h + Me.Padding._Top + Me.Padding._Bottom
+    Else 
+      Scale = $hpic.Height / $hpic.Width
+      hMyHints.Height = (w * Scale) + Me.Padding._Top + Me.Padding._Bottom
+      hMyHints.Width = w + Me.Padding._Left + Me.Padding._Right
+    Endif
   Endif
+  
+
   Return hMyHints
   
 End

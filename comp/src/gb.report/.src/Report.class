@@ -113,6 +113,7 @@ Public Sub _Layout(Optional iPage As Integer = -1)
   Dim CBaseSection As ReportContainer
   Dim i As Integer
   'If iPage < 0 Then Return
+  If Not $bLayoutIsDirty Then Return
   If iPage > -1 Then 
     If iPage <= $iCurPage Then Return
   Else

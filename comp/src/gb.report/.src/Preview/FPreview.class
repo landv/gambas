@@ -29,7 +29,7 @@ Public Sub DrawingArea1_Draw()
   '$hreport.Layout
   
   $hReport.Scale = $fScale
-  $hreport._Layout(SpinBox1.Value - 1)
+  $hreport._Layout(IIf(ToolButton1.Tag, -1, SpinBox1.Value - 1))
   $hReport.Paint($iPage)
   Label2.Text = " / " & IIf($hreport._LayoutNotFinished, "Computing...", $hreport.PageCount)
   SpinBox1.MaxValue = IIf($hreport._LayoutNotFinished, $hReport.PageCount + 1, $hReport.PageCount)
@@ -193,5 +193,13 @@ End
 Public Sub SpinBox1_Enter()
 
   
+
+End
+
+Public Sub ToolButton1_Click()
+
+  Last.Tag = True
+  DrawingArea1.Refresh
+  ToolButton1.Enabled = False
 
 End
