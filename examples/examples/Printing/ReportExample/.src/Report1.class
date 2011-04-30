@@ -2,20 +2,22 @@
 
 Public Sub _new()
   
-  Dim hresult As Result
+  Dim hResult As Result
   Dim Rlbl As ReportLabel
-  ReportSvgImage1.Path = Application.Path &/ "gambas.svg"
-   Connections["Connection1"].Open
+  
+  Try Connections["Connection1"].Open
   If Not Connections["Connection1"].Opened Then 
-    Message.Error(" You need to Create the test database With the <b>database example</b>")
+    Message.Error(" You have to create the test database with the <b>Database</b> example.")
     Return
   Endif
-  hresult = db.Limit(300).Find("test")
-  If Not hresult.Available Then Return
-  For Each hresult
+  
+  hResult = db.Limit(300).Find("test")
+  If Not hResult.Available Then Return
+  
+  For Each hResult
     
     Rlbl = New ReportLabel(RVBCont)
-    Rlbl.Text = hresult!name & " " & hresult!firstname
+    Rlbl.Text = hResult!name & " " & hResult!firstname
     Rlbl.Border.bottom.Width = "1px"
     
   Next

@@ -2286,23 +2286,9 @@ End
 
 Public Sub Control_Draw(Optional iIndex As Integer)
 
-  'DIM hForm AS Form
-'   DIM X AS Integer
-'   DIM Y AS Integer
-'   DIM SX AS Integer
-'   DIM SY AS Integer
-'   DIM SXF AS Integer
-'   DIM SYF AS Integer
-'   DIM iMod AS Integer
-'   DIM DX AS Integer
-'   DIM DY AS Integer
-  'DIM hGrid AS Picture
-
   Dim hCtrl As Control = Last  
   Dim hCCtrl As CControl = Control[hCtrl.Tag]
   Dim hPict As Picture
-  Dim W As Integer = 1
-  Dim iBorder As Integer
   
   If Not hCCtrl Then Return
 
@@ -2313,6 +2299,8 @@ Public Sub Control_Draw(Optional iIndex As Integer)
   Endif
 
   If $hFamily.DrawControl(hCCtrl) Then
+
+    If Paint.Device Then Draw.Begin(Paint.Device)
 
     hPict = Picture[".control" &/ LCase(hCCtrl.Kind)]
     'Draw.ForeColor = Control[Name].Control.Foreground
@@ -2328,6 +2316,8 @@ Public Sub Control_Draw(Optional iIndex As Integer)
     Draw.Rect(0, 0, hCtrl.W, hCtrl.H)
     Draw.LineStyle = Line.None
   
+    If Paint.Device Then Draw.End
+    
   Endif
 
 End
