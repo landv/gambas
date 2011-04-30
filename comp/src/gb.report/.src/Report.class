@@ -10,7 +10,7 @@ Public Const _IsForm As Boolean = True
 Public Const _IsContainer As Boolean = True
 Public Const _IsMultiContainer As Boolean = True
 Public Const _DrawWith As String = "TabStrip"
-
+Public _LayoutNotFinished As Boolean
 Public _Container As ReportSection
 'Public Constants
 Public {Debug} As Boolean = False
@@ -28,7 +28,8 @@ Private $sOldWidth As String
 Private $sOldHeight As String
 Private $iIndex As Integer
 Private $iResolution As Integer = -1
-
+Private $iCurSection As Integer
+Private $iCurPage As Integer = -1
 Property Resolution As Integer 
 
 Property Scale As Float
@@ -98,12 +99,27 @@ Public Sub _New()
 End
 
 Public Sub Layout()
+  
+  _Layout()
+  
+End
 
-  Dim iCurPage As Integer
+
+Public Sub _Layout(Optional iPage As Integer = -1)
+
+  'Dim iCurPage As Integer
   Dim TSection As TControl
   Dim CSection As ReportContainer
   Dim CBaseSection As ReportContainer
-  Debug
+  Dim i As Integer
+  'If iPage < 0 Then Return
+  If iPage > -1 Then 
+    If iPage <= $iCurPage Then Return
+  Else
+    $iCurPage = -1
+    $iCurSection = 0
+    Me._Reset
+  Endif
   If _bInExec Then Return
   'Set execution Flag to true
   _bInExec = True
@@ -117,33 +133,44 @@ Public Sub Layout()
   Endif
   $sOldHeight = Me.Height
   $sOldWidth = Me.Width
-  Me._Reset
+  
   
   'Me._SetUnifiedValues()
   'Me._GenerateClones()
   '$hReportTControl.ctrl = Me
   'Debug "Page Size W/H: " & Round(Me._Width, -2) & "/" & Round(Me._Height, -2)
-  iCurPage = -1
-  For Each Tsection In $aSections
+  '$iCurPage = -1
+  For i = $iCurSection To $aSections.Max
+    Tsection = $aSections[i]
     CSection = TSection.Ctrl
     CSection.Padding = CBaseSection.Padding
     CSection.Spacing = CBaseSection.Spacing
     CSection._SetUnifiedValues() 
     TSection._SetGeometry(0, 0, Me._Width, Me._Height) 
-    Inc iCurPage
+    Inc $iCurPage
     Do
       
-      CSection._SetChildGeometry(0, 0, CSection._Width, CSection._Height, iCurPage)
+      CSection._SetChildGeometry(0, 0, CSection._Width, CSection._Height, $iCurPage)
       If CSection._CurItem > CSection.Children.Max Then Break  
-      Inc iCurPage
-      
+            Inc $iCurPage
+      $iPageCount = $iCurPage 
+      If iPage > -1 And If $iCurPage >= iPage Then 
+        Dec $iCurPage
+        _LayoutNotFinished = True
+        _bInExec = False
+        Return
+      Endif
+
     Loop
     'Inc iCurPage
   Next
   
   'Debug Me._PageChildren.Count
-  $iPageCount = iCurPage + 1
+  $iPageCount = $iCurPage + 1
+  _LayoutNotFinished = False
   'MTools.PageCount = $iCount
+  $iCurSection = 0
+  '$iCurPage = -1
   $bLayoutIsDirty = False
   
   'End of execution
@@ -161,7 +188,7 @@ Public Sub Paint(Page As Integer)
     'If $sOldHeight <> ((Paint.Height / $fScale) & " px") Then $bLayoutIsDirty = True
   Endif
   MTools.Resolution = If($iResolution < 0, Paint.ResolutionX, $iResolution)
-  If $bLayoutIsDirty Then Layout()
+  If $bLayoutIsDirty And $iPageCount = -1 Then Layout()
   
   'Set execution Flag to true
   _bInExec = True
@@ -195,7 +222,7 @@ End
 
 Private Function PageCount_Read() As Integer
   
-  If $bLayoutIsDirty Then Layout() '$iCount = -1
+  If $bLayoutIsDirty And Not _LayoutNotFinished Then Layout() '$iCount = -1
   
   Return $iPageCount
   

@@ -1,83 +1,90 @@
 ' Gambas class file
 
 Export
-Inherits ReportControl
+Inherits ReportFrame
 
-Public Const _Properties As String = "*,Image{Image}"
+Public Const _Properties As String = "*,Stretch,Image{Image}"
 Public Const _Similar As String = "ReportTextLabel"
 Private $hPic As Image
+Private $bStretch As Boolean
 
 Property Image As Image
+Property Stretch As Boolean
 
 Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float) As TSizeHint
-
+  
   Dim hMyHints As New TSizeHint
-  Dim h As Float = Me._Height
-  Dim w As Float = Me._Width
+  Dim h As Float = IIf(Me._Height > AvailableH, AvailableH, Me._Height)
+  Dim w As Float = IIf(Me._Width > AvailableW, AvailableW, Me._Width)
   Dim Scale As Float
+
   If h > 0 Or w > 0 Then
     
-    If h > w Then 
-      Scale = $hpic.Width / $hpic.Height
-      hMyHints.Width = (h * Scale) + Me.Padding._Left + Me.Padding._Right
-      hMyHints.Height = h + Me.Padding._Top + Me.Padding._Bottom
-    Else 
-      Scale = $hpic.Height / $hpic.Width
-      hMyHints.Height = (w * Scale) + Me.Padding._Top + Me.Padding._Bottom
-      hMyHints.Width = w + Me.Padding._Left + Me.Padding._Right
-    Endif
-  Else 
-    
-    If h > AvailableH Then 
-      hMyHints.Height = AvailableH + Me.Padding._Top + Me.Padding._Bottom
+    If $bStretch Then
+      hMyHints.Width = w + Me.Padding._Top + Me.Padding._Bottom
+      hMyHints.Height = h + AvailableW + Me.Padding._Left + Me.Padding._Right
     Else
-      hMyHints.Height = h + Me.Padding._Top + Me.Padding._Bottom
+      If h > w Then 
+        Scale = $hpic.Width / $hpic.Height
+        hMyHints.Width = (h * Scale) + Me.Padding._Left + Me.Padding._Right
+        hMyHints.Height = h + Me.Padding._Top + Me.Padding._Bottom
+      Else 
+        Scale = $hpic.Height / $hpic.Width
+        hMyHints.Height = (w * Scale) + Me.Padding._Top + Me.Padding._Bottom
+        hMyHints.Width = w + Me.Padding._Left + Me.Padding._Right
+      Endif
     Endif
-    If w > AvailableW Then
-      hMyHints.Width = AvailableW + Me.Padding._Left + Me.Padding._Right
-    Else
-      hMyHints.Width = w + Me.Padding._Left + Me.Padding._Right
-    Endif
-    
+  Else
+    hMyHints.Height = AvailableH + Me.Padding._Top + Me.Padding._Bottom
+    hMyHints.Width = AvailableW + Me.Padding._Left + Me.Padding._Right
   Endif
-  
   Return hMyHints
   
 End
 
 Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
-    
-    Dim ix, iy As Float
-    Dim hBrush As PaintBrush
-    
-    ix = x + hControl.RealLeft + MTools.UnitsToPixels(Me.Padding._Left)
-    iy = y + hControl.RealTop + MTools.UnitsToPixels(Me.Padding._Top)
-    
-    '$hPic = $hPic.Stretch(hControl.RealWidth, hControl.RealHeight)
-    
-    hBrush = Paint.Image($hpic)
-    hBrush.Translate(ix, iy)
-    hBrush.Scale(hControl.RealWidth / $hPic.Width, hControl.RealHeight / $hPic.Height)
-    Paint.Brush = hBrush
-    Paint.Rectangle(ix, iy, hControl.RealWidth, hControl.RealHeight)
-    Paint.Fill
-    
-    'Draw.Picture($hPic, (x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
-
+  
+  Dim ix, iy As Float
+  Dim hBrush As PaintBrush
+  
+  ix = x + hControl.RealLeft + MTools.UnitsToPixels(Me.Padding._Left)
+  iy = y + hControl.RealTop + MTools.UnitsToPixels(Me.Padding._Top)
+  
+  '$hPic = $hPic.Stretch(hControl.RealWidth, hControl.RealHeight)
+  
+  hBrush = Paint.Image($hpic)
+  hBrush.Translate(ix, iy)
+  hBrush.Scale(hControl.RealWidth / $hPic.Width, hControl.RealHeight / $hPic.Height)
+  Paint.Brush = hBrush
+  Paint.Rectangle(ix, iy, hControl.RealWidth, hControl.RealHeight)
+  Paint.Fill
+  
+  'Draw.Picture($hPic, (x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
+  
 End
 
-
 Private Function Image_Read() As Image
-
+  
   Return $hPic
-
+  
 End
 
 Private Sub Image_Write(Value As Image)
-
+  
   $hPic = Value
   If Left(Me.Width, 1) = "0" Then Me.Width = $hpic.Width & " px"
   If Left(Me.Height, 1) = "0" Then Me.Height = $hpic.Height & " px"
   
+End
 
+Private Function Stretch_Read() As Boolean
+  
+  Return $bStretch
+  
+End
+
+Private Sub Stretch_Write(Value As Boolean)
+  
+  $bStretch = Value
+  
 End

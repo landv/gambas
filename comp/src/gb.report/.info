@@ -125,6 +125,10 @@ _DrawWith
 C
 s
 TabStrip
+_LayoutNotFinished
+v
+b
+
 _Container
 v
 ReportSection
@@ -249,6 +253,10 @@ Layout
 m
 
 
+_Layout
+m
+
+[(iPage)i]
 Paint
 m
 
@@ -768,7 +776,7 @@ m
 f
 (X)f(Y)f(W)f(H)f(ContPage)i
 #ReportImage
-ReportControl
+ReportFrame
 C
 _Properties
 C
@@ -781,6 +789,10 @@ ReportTextLabel
 Image
 p
 Image
+
+Stretch
+p
+b
 
 _GetSizeHints
 m
@@ -932,6 +944,10 @@ ReportTextLabel
 Image
 p
 SvgImage
+
+Stretch
+p
+b
 
 _GetSizeHints
 m

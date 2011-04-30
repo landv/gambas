@@ -29,9 +29,10 @@ Public Sub DrawingArea1_Draw()
   '$hreport.Layout
   
   $hReport.Scale = $fScale
+  $hreport._Layout(SpinBox1.Value - 1)
   $hReport.Paint($iPage)
-  Label2.Text = " / " & $hreport.PageCount & " "
-  SpinBox1.MaxValue = $hReport.PageCount 
+  Label2.Text = " / " & IIf($hreport._LayoutNotFinished, "Computing...", $hreport.PageCount)
+  SpinBox1.MaxValue = IIf($hreport._LayoutNotFinished, $hReport.PageCount + 1, $hReport.PageCount)
 End
 
 Public Sub Form_Open()
@@ -186,5 +187,11 @@ Public Sub SpinBox1_Change()
 
   $iPage = Last.Value 
   DrawingArea1.Refresh
+
+End
+
+Public Sub SpinBox1_Enter()
+
+  
 
 End

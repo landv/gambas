@@ -4,22 +4,27 @@ Export
 Inherits ReportFrame
 
 Private $hSvgImage As SvgImage
+Private $bStretch As Boolean
 'Private $sPath As String
-Public Const _Properties As String = "*,Image{SvgImage}"
+Public Const _Properties As String = "*,Stretch,Image{SvgImage}"
 Public Const _Similar As String = "ReportTextLabel"
 
 Property Image As SvgImage
+Property Stretch As Boolean
 
 Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float) As TSizeHint
   
   Dim hMyHints As New TSizeHint
-  Dim h As Float = Me._Height
-  Dim w As Float = Me._Width
+  Dim h As Float = IIf(Me._Height > AvailableH, AvailableH, Me._Height)
+  Dim w As Float = IIf(Me._Width > AvailableW, AvailableW, Me._Width)
   Dim Scale As Float
-
   If h > 0 Or w > 0 Then
-    
-    If h > w Then 
+  
+  If $bStretch Then
+    hMyHints.Width = w + Me.Padding._Top + Me.Padding._Bottom
+    hMyHints.Height = h + AvailableW + Me.Padding._Left + Me.Padding._Right
+  Else
+     If h > w Then 
       Scale = $hSvgImage.Width / $hSvgImage.Height
       hMyHints.Width = (h * Scale) + Me.Padding._Left + Me.Padding._Right
       hMyHints.Height = h + Me.Padding._Top + Me.Padding._Bottom
@@ -28,10 +33,28 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
       hMyHints.Height = (w * Scale) + Me.Padding._Top + Me.Padding._Bottom
       hMyHints.Width = w + Me.Padding._Left + Me.Padding._Right
     Endif
-  Else 
-    hMyHints.Height = AvailableH + Me.Padding._Top + Me.Padding._Bottom
-    hMyHints.Width = AvailableW + Me.Padding._Left + Me.Padding._Right
   Endif
+Else
+   hMyHints.Height = AvailableH + Me.Padding._Top + Me.Padding._Bottom
+    hMyHints.Width = AvailableW + Me.Padding._Left + Me.Padding._Right
+Endif
+
+
+  ' If h > 0 Or w > 0 Then
+  '   
+  '   If h > w Then 
+  '     Scale = $hSvgImage.Width / $hSvgImage.Height
+  '     hMyHints.Width = (h * Scale) + Me.Padding._Left + Me.Padding._Right
+  '     hMyHints.Height = h + Me.Padding._Top + Me.Padding._Bottom
+  '   Else 
+  '     Scale = $hSvgImage.Height / $hSvgImage.Width
+  '     hMyHints.Height = (w * Scale) + Me.Padding._Top + Me.Padding._Bottom
+  '     hMyHints.Width = w + Me.Padding._Left + Me.Padding._Right
+  '   Endif
+  ' Else 
+  '   hMyHints.Height = AvailableH + Me.Padding._Top + Me.Padding._Bottom
+  '   hMyHints.Width = AvailableW + Me.Padding._Left + Me.Padding._Right
+  ' Endif
   
   Return hMyHints
   
@@ -68,4 +91,16 @@ Private Sub Image_Write(Value As SvgImage)
   
   $hSvgImage = Value
   
+End
+
+Private Function Stretch_Read() As Boolean
+
+  Return $bStretch
+
+End
+
+Private Sub Stretch_Write(Value As Boolean)
+
+  $bStretch = Value
+
 End
