@@ -6,7 +6,7 @@ Static Private PAN_W As Integer
 
 Static Public WasDefaultValue As Boolean
 
-Static Public COMPLEX_STRING_PROPERTIES As String[] = ["Font[", "Picture[", "Image.Load(", "Connections[", "ReportPadding[", "ReportBorder[", "ReportBrush["]
+Static Public COMPLEX_STRING_PROPERTIES As String[] = ["Font[", "Picture[", "Image.Load(", "SvgImage.Load(", "Connections[", "ReportPadding[", "ReportBorder[", "ReportBrush["]
 
 Public Name As String
 Public Parent As CControl
@@ -703,7 +703,7 @@ Private Function ConvertToString(vVal As Variant, hProp As CPropertyInfo) As Str
 
       Return CStr(vVal)
 
-    Case "List", "Path", "Picture", "Font", "Table", "Menu", "Image", "ReportCoord", "ReportPadding", "ReportBorder", "ReportBrush", "Field"
+    Case "List", "Path", "Picture", "Font", "Table", "Menu", "Image", "SvgImage", "ReportCoord", "ReportPadding", "ReportBorder", "ReportBrush", "Field"
 
       Return CStr(vVal)
       
@@ -1551,6 +1551,9 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
         
       Case "Image"
         sLine &= "Image.Load(" & Quote$(vVal) & ")"
+        
+      Case "SvgImage"
+        sLine &= "SvgImage.Load(" & Quote$(vVal) & ")"
         
       Case "ReportPadding"
         sLine &= "ReportPadding[" & Quote$(vVal) & "]"

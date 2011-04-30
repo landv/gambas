@@ -159,6 +159,7 @@ Public Sub IsPainted(hCtrl As CControl) As Boolean
   If hCtrl.Kind = "ReportLabel" Then Return True
   If hCtrl.Kind = "ReportTextLabel" Then Return True
   If hCtrl.Kind = "ReportLine" Then Return True
+  If hCtrl.Kind = "ReportSvgImage" Then Return True
   
 End
 
@@ -198,6 +199,7 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
   Dim X, Y, W, H, W2, H2 As Float
   Dim fVal As Float
   Dim sPath As String
+  Dim hSvgImage As SvgImage
   
   X = 0
   Y = 0
@@ -308,6 +310,19 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
         hCtrl["#ImageObject"] = Image.Load(Project.Dir &/ sPath)
       Endif
       Try Draw.Image(hCtrl["#ImageObject"], X, Y, W, H)
+      
+    Case "ReportSvgImage"
+      
+      sPath = hCtrl["Image"]
+      If Not sPath Then Return True
+      If hCtrl["#Image"] <> sPath Then
+        hCtrl["#Image"] = sPath
+        hCtrl["#ImageObject"] = SvgImage.Load(Project.Dir &/ sPath)
+      Endif
+      hSvgImage = hCtrl["#ImageObject"]
+      hSvgImage.Resize(W, H)
+      Paint.MoveTo(X, Y)
+      hSvgImage.Paint
       
     Case Else
       

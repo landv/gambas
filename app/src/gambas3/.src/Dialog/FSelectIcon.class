@@ -5,11 +5,13 @@
 Private $sIcon As String
 Private $sSize As String
 Private $bNoStock As Boolean
+Private $bSvgImage As Boolean
 
-Public Sub Run(sIcon As String, Optional bNoStock As Boolean) As String
+Public Sub Run(sIcon As String, Optional bNoStock As Boolean, Optional bSvgImage As Boolean) As String
   
   $sIcon = sIcon
-  $bNoStock = bNoStock Or Not Project.IsStockAllowed()
+  $bNoStock = bNoStock Or Not Project.IsStockAllowed() Or bSvgImage
+  $bSvgImage = bSvgImage
   If Not Me.ShowModal() Then Return
   Return $sIcon
   
@@ -24,7 +26,12 @@ Public Sub Form_Open()
   
   Settings.Read(Me)
 
-  fchIcon.Filter = ["*.png,*.jpg,*.jpeg,*.xpm,*.gif", ("Image files")]
+  If $bSvgImage Then
+    fchIcon.Filter = ["*.svg", ("SVG image files")]
+  Else
+    fchIcon.Filter = ["*.png,*.jpg,*.jpeg,*.xpm,*.gif", ("Image files")]
+  Endif
+  
   fchIcon.Root = Project.Dir
   
   cmbSize.List = ["small", "medium", "large", "huge", "16", "22", "32", "48", "64", "96", "128"]
