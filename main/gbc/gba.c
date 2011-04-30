@@ -256,7 +256,16 @@ int main(int argc, char **argv)
 				//if (strcmp(file_name, ARCH_project_name) == 0)
 				//  continue;
 
+				if ((len == 4) && (strncmp(file_name, "core", 4) == 0))
+					continue;
+
 				if ((len > 5) && (strncmp(file_name, "core.", 5) == 0))
+					continue;
+
+				if ((len > 7) && (strncmp(file_name, "vgcore.", 5) == 0))
+					continue;
+
+				if ((len > 10) && (strncmp(file_name, "callgrind.", 5) == 0))
 					continue;
 
 				file = FILE_cat(path, file_name, NULL);
