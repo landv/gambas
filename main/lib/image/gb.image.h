@@ -117,7 +117,6 @@ typedef
 	_a = ((_color) >> 24) ^ 0xFF; \
 }
 
-
 /* Gambas image component interface */
 
 #define IMAGE_INTERFACE_VERSION 1

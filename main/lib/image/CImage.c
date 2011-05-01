@@ -170,7 +170,7 @@ BEGIN_METHOD(CIMAGE_copy, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h
   GB.New(POINTER(&image), GB.FindClass("Image"), NULL, NULL);
 
 	IMAGE_create(&image->image, w, h, THIS_IMAGE->format);
-  IMAGE_bitblt(&image->image, 0, 0, THIS_IMAGE, x, y, w, h);
+  IMAGE_bitblt(&image->image, 0, 0, -1, -1, THIS_IMAGE, x, y, w, h);
 
   GB.ReturnObject(image);
 
@@ -189,7 +189,7 @@ BEGIN_METHOD(CIMAGE_resize, GB_INTEGER width; GB_INTEGER height)
 	//fprintf(stderr, "format = %d\n", THIS_IMAGE->format);
 	tmp.ob = THIS_IMAGE->ob;
 	IMAGE_create(&tmp, w, h, THIS_IMAGE->format);
-  IMAGE_bitblt(&tmp, 0, 0, THIS_IMAGE, 0, 0, w, h);
+  IMAGE_bitblt(&tmp, 0, 0, -1, -1, THIS_IMAGE, 0, 0, w, h);
 
   IMAGE_delete(THIS_IMAGE);
   *THIS_IMAGE = tmp;
@@ -253,26 +253,26 @@ BEGIN_METHOD(Image_DrawAlpha, GB_OBJECT image; GB_INTEGER x; GB_INTEGER y; GB_IN
 
 END_METHOD
 
-BEGIN_METHOD(Image_DrawImage, GB_OBJECT image; GB_INTEGER x; GB_INTEGER y; GB_INTEGER srcx; GB_INTEGER srcy; GB_INTEGER srcw; GB_INTEGER srch)
+BEGIN_METHOD(Image_DrawImage, GB_OBJECT image; GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_INTEGER srcx; GB_INTEGER srcy; GB_INTEGER srcw; GB_INTEGER srch)
 
 	CIMAGE *image = VARG(image);
 	
 	if (GB.CheckObject(image))
 		return;
 	
-  IMAGE_bitblt(THIS_IMAGE, VARGOPT(x, 0), VARGOPT(y, 0), &image->image, VARGOPT(srcx, 0), VARGOPT(srcy, 0), VARGOPT(srcw, -1), VARGOPT(srch, -1));
+  IMAGE_bitblt(THIS_IMAGE, VARGOPT(x, 0), VARGOPT(y, 0), VARGOPT(w, -1), VARGOPT(h, -1), &image->image, VARGOPT(srcx, 0), VARGOPT(srcy, 0), VARGOPT(srcw, -1), VARGOPT(srch, -1));
 	GB.ReturnObject(THIS);
 
 END_METHOD
 
-BEGIN_METHOD(Image_PaintImage, GB_OBJECT image; GB_INTEGER x; GB_INTEGER y; GB_INTEGER srcx; GB_INTEGER srcy; GB_INTEGER srcw; GB_INTEGER srch)
+BEGIN_METHOD(Image_PaintImage, GB_OBJECT image; GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_INTEGER srcx; GB_INTEGER srcy; GB_INTEGER srcw; GB_INTEGER srch)
 
 	CIMAGE *image = VARG(image);
 	
 	if (GB.CheckObject(image))
 		return;
 	
-  IMAGE_compose(THIS_IMAGE, VARGOPT(x, 0), VARGOPT(y, 0), &image->image, VARGOPT(srcx, 0), VARGOPT(srcy, 0), VARGOPT(srcw, -1), VARGOPT(srch, -1));
+  IMAGE_compose(THIS_IMAGE, VARGOPT(x, 0), VARGOPT(y, 0), VARGOPT(w, -1), VARGOPT(h, -1), &image->image, VARGOPT(srcx, 0), VARGOPT(srcy, 0), VARGOPT(srcw, -1), VARGOPT(srch, -1));
 	GB.ReturnObject(THIS);
 
 END_METHOD
@@ -362,8 +362,8 @@ GB_DESC CImageDesc[] =
 	GB_METHOD("DrawAlpha", "Image", Image_DrawAlpha, "(Image)Image;[(X)i(Y)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
 
 	//GB_METHOD("Transform", "Image", CIMAGE_transform, "(SrcX)f(SrcY)f(DepX)f(DepY)f"),
-  GB_METHOD("DrawImage", "Image", Image_DrawImage, "(Image)Image;[(X)i(Y)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
-  GB_METHOD("PaintImage", "Image", Image_PaintImage, "(Image)Image;[(X)i(Y)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
+  GB_METHOD("DrawImage", "Image", Image_DrawImage, "(Image)Image;[(X)i(Y)i(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
+  GB_METHOD("PaintImage", "Image", Image_PaintImage, "(Image)Image;[(X)i(Y)i(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
   
   GB_END_DECLARE
 };

@@ -196,18 +196,18 @@ typedef
 	DRAW_INTERFACE;
 
 #define DRAW_NORMALIZE(x, y, w, h, sx, sy, sw, sh, width, height) \
-	if (w < 0) w = width; \
-	if (h < 0) h = height; \
 	if (sw < 0) sw = width; \
 	if (sh < 0) sh = height; \
-  if (sx >= (width) || sy >= (height) || sw <= 0 || sh <= 0) \
-    return; \
-  if (sx < 0) x -= sx, sx = 0; \
-  if (sy < 0) y -= sy, sy = 0; \
+	if (w < 0) w = sw; \
+	if (h < 0) h = sh; \
+  if (sx < 0) sw += sx, sx = 0; \
+  if (sy < 0) sh += sy, sy = 0; \
   if (sw > ((width) - sx)) \
     sw = ((width) - sx); \
   if (sh > ((height) - sy)) \
-    sh = ((height) - sy);
+    sh = ((height) - sy); \
+  if (sx >= (width) || sy >= (height) || sw <= 0 || sh <= 0) \
+    return;
 
 #endif
 

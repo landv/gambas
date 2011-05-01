@@ -883,11 +883,18 @@ int IMAGE_get_default_format()
 }
 
 // Parameter correction
-#define CHECK_PARAMETERS(dst, dx, dy, src, sx, sy, sw, sh) \
+#define CHECK_PARAMETERS(dst, dx, dy, dw, dh, src, sx, sy, sw, sh) \
 	if ( sw < 0 ) sw = src->width; \
 	if ( sh < 0 ) sh = src->height; \
-	if ( sx < 0 ) { dx -= sx; sw += sx; sx = 0; } \
-	if ( sy < 0 ) { dy -= sy; sh += sy; sy = 0; } \
+	if (dw < 0) dw = sw; \
+	if (dh < 0) dh = sh; \
+	if (dw != sw || dh != sh) \
+	{ \
+		GB.Error("Stretching images is not implemented in gb.image"); \
+		return; \
+	} \
+	if ( sx < 0 ) { dx -= sx; dw += sx; sw += sx; sx = 0; } \
+	if ( sy < 0 ) { dy -= sy; dh += sx; sh += sy; sy = 0; } \
 	if ( dx < 0 ) { sx -= dx; sw += dx; dx = 0; } \
 	if ( dy < 0 ) { sy -= dy; sh += dy; dy = 0; } \
 	if ( (sx + sw) > src->width ) sw = src->width - sx; \
@@ -897,12 +904,12 @@ int IMAGE_get_default_format()
 	if (sw <= 0 || sh <= 0) \
 		return;
 
-void IMAGE_bitblt(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int sw, int sh)
+void IMAGE_bitblt(GB_IMG *dst, int dx, int dy, int dw, int dh, GB_IMG *src, int sx, int sy, int sw, int sh)
 {
 	int sfmt = src->format;
 	int dfmt = dst->format;
 	
-	CHECK_PARAMETERS(dst, dx, dy, src, sx, sy, sw, sh);
+	CHECK_PARAMETERS(dst, dx, dy, dw, dh, src, sx, sy, sw, sh);
 	
 	SYNCHRONIZE(src);
 	SYNCHRONIZE(dst);
@@ -988,39 +995,11 @@ void IMAGE_draw_alpha(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, 
 		return;
 	}
 
-	CHECK_PARAMETERS(dst, dx, dy, src, sx, sy, sw, sh);
+	CHECK_PARAMETERS(dst, dx, dy, sw, sh, src, sx, sy, sw, sh);
 	
 	SYNCHRONIZE(src);
 	SYNCHRONIZE(dst);
 		
-#if 0
-	
-	uint *d = (uint *)dst->data + dy * dst->width + dx;
-	uint *s = (uint *)src->data + sy * src->width + sx;
-
-	const int dd = dst->width - sw;
-	const int ds = src->width - sw;
-	uint cs, cd;
-	int sformat = src->format;
-	int dformat = dst->format;
-	int t;
-	
-	while (sh--)
-	{
-		for (t = sw; t--; d++,s++)
-		{
-			cs = BGRA_from_format(*s, sformat);
-			cd = BGRA_from_format(*d, dformat);
-			if (ALPHA(cs) < ALPHA(cd))
-				*d = BGRA_to_format(RGBA(RED(cd), GREEN(cd), BLUE(cd), ALPHA(cs)), dformat);
-		}
-		
-		d += dd;
-		s += ds;
-	}
-
-#else
-	
 	uchar *d = (uchar *)((uint *)dst->data + dy * dst->width + dx);
 	uchar *s = (uchar *)((uint *)src->data + sy * src->width + sx);
 
@@ -1047,12 +1026,11 @@ void IMAGE_draw_alpha(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, 
 		d += dd;
 		s += ds;
 	}
-#endif
 
 	MODIFY(dst);
 }
 
-void IMAGE_compose(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int sw, int sh)
+void IMAGE_compose(GB_IMG *dst, int dx, int dy, int dw, int dh, GB_IMG *src, int sx, int sy, int sw, int sh)
 {
 	if (dst->format != src->format)
 	{
@@ -1060,7 +1038,7 @@ void IMAGE_compose(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int
 		return;
 	}
 
-	CHECK_PARAMETERS(dst, dx, dy, src, sx, sy, sw, sh);
+	CHECK_PARAMETERS(dst, dx, dy, dw, dh, src, sx, sy, sw, sh);
 	
 	SYNCHRONIZE(src);
 	SYNCHRONIZE(dst);

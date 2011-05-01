@@ -232,8 +232,8 @@ BEGIN_METHOD(Image_PaintImage, GB_OBJECT img; GB_INTEGER x; GB_INTEGER y; GB_INT
 
 	sx = VARGOPT(sx, 0);
 	sy = VARGOPT(sy, 0);
-	sw = VARGOPT(sw, src_w);
-	sh = VARGOPT(sh, src_h);
+	sw = VARGOPT(sw, -1);
+	sh = VARGOPT(sh, -1);
 
 	DRAW_NORMALIZE(x, y, w, h, sx, sy, sw, sh, src_w, src_h);
 	

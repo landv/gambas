@@ -54,14 +54,13 @@ void IMAGE_set_pixel(GB_IMG *img, int x, int y, GB_COLOR col);
 void IMAGE_replace(GB_IMG *img, GB_COLOR src, GB_COLOR dst, bool noteq);
 void IMAGE_set_default_format(int format);
 int IMAGE_get_default_format();
-void IMAGE_bitblt(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int sw, int sh);
+void IMAGE_bitblt(GB_IMG *dst, int dx, int dy, int dw, int dh, GB_IMG *src, int sx, int sy, int sw, int sh);
 void IMAGE_draw_alpha(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int sw, int sh);
-void IMAGE_compose(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int sw, int sh);
+void IMAGE_compose(GB_IMG *dst, int dx, int dy, int dw, int dh, GB_IMG *src, int sx, int sy, int sw, int sh);
 void IMAGE_colorize(GB_IMG *img, GB_COLOR color);
 void IMAGE_mask(GB_IMG *img, GB_COLOR color);
 void IMAGE_mirror(GB_IMG *src, GB_IMG *dst, bool horizontal, bool vertical);
 void IMAGE_transform(GB_IMG *dst, GB_IMG *src, double sx, double sy, double sdx, double sdy);
-
 const char *IMAGE_format_to_string(int fmt);
 
 #define IMAGE_is_void(_image) ((_image)->is_void)
