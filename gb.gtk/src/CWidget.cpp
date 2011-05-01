@@ -170,6 +170,7 @@ static bool gb_can_raise(gControl *sender, int type)
 bool gb_raise_MouseEvent(gControl *sender, int type)
 {
 	CWIDGET *ob = GetObject(sender);
+	bool ret = false;
 	
 	if (!ob) return false; // possible, for MouseDrag for example
 	
@@ -177,7 +178,7 @@ bool gb_raise_MouseEvent(gControl *sender, int type)
 	{
 		case gEvent_MouseDrag:
 			if (gMouse::button() && GB.CanRaise(ob, EVENT_MouseDrag))
-				GB.Raise(ob, EVENT_MouseDrag, 0);
+				ret = GB.Raise(ob, EVENT_MouseDrag, 0);
 			break;
 			
 		case gEvent_MouseMenu:
@@ -209,11 +210,11 @@ bool gb_raise_MouseEvent(gControl *sender, int type)
 			break;
 			
 		default:
-			GB.Raise(ob, to_gambas_event(type), 0);
+			ret = GB.Raise(ob, to_gambas_event(type), 0);
 		
 	}
 	
-	return false;
+	return ret;
 }
 
 bool gb_raise_KeyEvent(gControl *sender, int type)

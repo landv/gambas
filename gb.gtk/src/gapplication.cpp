@@ -571,10 +571,13 @@ static void gambas_handle_event(GdkEvent *event)
 				gMouse::validate();
 				gMouse::setMouse(x, y, 0, event->scroll.state);
 				gMouse::setWheel(dt, ort);
-				control->onMouseEvent(control, gEvent_MouseWheel);
+				cancel = control->onMouseEvent(control, gEvent_MouseWheel);
 				gMouse::invalidate();
 			}
 
+			if (cancel)
+				return;
+				
 			if (control->_proxy_for)
 			{
 				control = control->_proxy_for;

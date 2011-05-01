@@ -1,66 +1,84 @@
 ' Gambas class file
 
-Static Private $hreport As Report
+Static Private $hReport As Report
+Static Private $aZoom As Integer[] = [12, 18, 25, 35, 50, 71, 100, 141, 200, 283, 400]
+
 Private $fScale As Float = 1
 Private $iPage As Integer = 1
 Private $hPrint As Report
-'Private hPrinter As New Printer
+Private $iX As Integer
+Private $iY As Integer
+
 Static Public Function Run(hReport As Report)
+
   Dim hFPreview As FPreview
-  $hreport = hReport
+
+  $hReport = hReport
   
   hFpreview = New FPreview
   hFpreview.Show
   
 End
 
-
-Public Sub _New()
+Public Sub _new()
   
   Me.Center
   
-  
 End
 
-
-Public Sub DrawingArea1_Draw()
+Public Sub dwgPreview_Draw()
   'Debug $fScale
   'Paint.Scale($fScale, $fScale)
-  '$hreport.Layout
+  '$hReport.Layout
   
   $hReport.Scale = $fScale
-  $hreport._Layout(IIf(ToolButton1.Tag, -1, SpinBox1.Value - 1))
+  If $iPage < 0 Then Inc Application.Busy
+  $hReport._Layout($iPage)
+  If $iPage < 0 Then Dec Application.Busy
+
+  If $iPage < 0 Then
+    $iPage = $hReport.PageCount
+    spnPage.MaxValue = $hReport.PageCount
+    spnPage.Value = $iPage
+    Return
+  Endif
+  
   $hReport.Paint($iPage)
-  Label2.Text = " / " & IIf($hreport._LayoutNotFinished, "Computing...", $hreport.PageCount)
-  SpinBox1.MaxValue = IIf($hreport._LayoutNotFinished, $hReport.PageCount + 1, $hReport.PageCount)
+  
+  If $hReport._LayoutNotFinished Then
+    spnPage.MaxValue = $hReport.PageCount + 1
+  Else
+    lblPageCount.Text = " / " & $hReport.PageCount
+    spnPage.MaxValue = $hReport.PageCount
+    lblPageCount.Show
+    'btnLast.Enabled = False
+  Endif
+  
 End
 
 Public Sub Form_Open()
-
-  If $hreport = Null Then Me.Close
+  
+  If $hReport = Null Then Me.Close
   
   'Report.Debug = True
   
-
-
   btnAdjust.Value = True
-  'Resize
-  'Printer1.OutputFile = User.Home &/ "output.pdf"
+  
+  spnPage.SetFocus
   
 End
 
-Public Sub Slider1_Change()
+Public Sub sldZoom_Change()
   
   btnAdjust.Value = False
   ResizeMe
   
 End
 
-
 Private Sub ResizeMe()
+
   Dim iWidth, iHeight As Integer
   Dim fratio As Float
-  
   
   iWidth = Printer1.PaperWidth * Desktop.Resolution / 25.4
   iHeight = Printer1.PaperHeight * Desktop.Resolution / 25.4
@@ -68,21 +86,25 @@ Private Sub ResizeMe()
   If btnAdjust.Value Then
     
     If Printer1.PaperWidth > Printer1.PaperHeight Then
-      $fScale = (ScrollView1.ClientW - 20) / iWidth
+      $fScale = svwPreview.W / iWidth
     Else
-      $fScale = (ScrollView1.ClientH - 20) / iHeight
+      $fScale = svwPreview.H / iHeight
     Endif
-    Object.Lock(Slider1)
-    Slider1.Value = $fScale * 100
-    Object.Unlock(Slider1)
+    Object.Lock(sldZoom)
+    sldZoom.Value = $fScale * 100
+    Object.Unlock(sldZoom)
   Else
-    $fScale = Slider1.Value / 100
+    $fScale = sldZoom.Value / 100
   Endif
-  DrawingArea1.Resize(iWidth * $fScale, iHeight * $fScale)
-  DrawingArea1.Refresh
-
+  
+  sldZoom.Tooltip = CStr(sldZoom.Value) & "%"
+  Me.Title = ("Report preview") & " - " & sldZoom.Tooltip
+  
+  dwgPreview.Resize(iWidth * $fScale, iHeight * $fScale)
+  dwgPreview.Mouse = If(btnAdjust.Value, Mouse.Default, Mouse.SizeAll)
+  dwgPreview.Refresh
+  
 End
-
 
 ' Public Sub ComboBox1_Click()
 '    
@@ -95,7 +117,7 @@ End
 '   '  txtWidth.Text = Int(Printer1.PaperWidth)
 '   '  txtHeight.Text = Int(Printer1.PaperHeight)
 '   'Endif
-'   '$hreport.Refresh()
+'   '$hReport.Refresh()
 '   'Slider1_Change
 ' End
 
@@ -125,16 +147,36 @@ End
 ' 
 ' End
 
-Public Sub ToolButton2_Click()
+Public Sub btnZoomOut_Click()
 
-  Try Dec Slider1.Value
-
+  Dim I As Integer
+  Dim iZoom As Integer
+  
+  For I = $aZoom.Max DownTo 0
+    iZoom = $aZoom[I]
+    If iZoom < sldZoom.Value Then
+      sldZoom.Value = iZoom
+      Return
+    Endif
+  Next
+  
+  sldZoom.Value = sldZoom.MinValue
+  
 End
 
-Public Sub ToolButton3_Click()
-
-  Try Inc Slider1.Value
-
+Public Sub btnZoomIn_Click()
+  
+  Dim iZoom As Integer
+  
+  For Each iZoom In $aZoom
+    If iZoom > sldZoom.Value Then
+      sldZoom.Value = iZoom
+      Return
+    Endif
+  Next
+  
+  sldZoom.Value = sldZoom.MaxValue
+  
 End
 
 Public Sub btnPrint_Click()
@@ -147,18 +189,18 @@ Public Sub btnPrint_Click()
 End
 
 Public Sub Printer1_Draw()
-
+  
   $hPrint.Paint(Printer1.Page)
-
+  
 End
 
 Public Sub Printer1_Begin()
-
-  $hPrint = $hreport.Clone()
+  
+  $hPrint = $hReport.Clone()
   'Debug Object.Type($hReport)
   $hPrint.Layout
   Printer1.Count = $hPrint.PageCount
-
+  
 End
 
 Public Sub Printer1_End()
@@ -168,38 +210,81 @@ Public Sub Printer1_End()
 End
 
 Public Sub Form_Resize()
-
+  
   ResizeMe
-
+  
 End
 
 Public Sub btnAdjust_Click()
+
   ResizeMe
+
 End
 
 Public Sub btnZNorm_Click()
+
   btnAdjust.Value = False
-  Slider1.Value = 100
-
-End
-
-Public Sub SpinBox1_Change()
-
-  $iPage = Last.Value 
-  DrawingArea1.Refresh
-
-End
-
-Public Sub SpinBox1_Enter()
-
+  sldZoom.Value = 100
   
+End
+
+Public Sub spnPage_Change()
+  
+  $iPage = Last.Value 
+  dwgPreview.Refresh
+  
+End
+
+Public Sub btnLast_Click()
+  
+  If $hReport._LayoutNotFinished Then
+    $iPage = -1
+    dwgPreview.Refresh
+  Else
+    spnPage.Value = $hReport.PageCount
+  Endif
+  
+End
+
+Public Sub btnFirst_Click()
+
+  spnPage.Value = 1
 
 End
 
-Public Sub ToolButton1_Click()
+Public Sub btnLeft_Click()
 
-  Last.Tag = True
-  DrawingArea1.Refresh
-  ToolButton1.Enabled = False
+  If spnPage.Value > spnPage.MinValue Then Dec spnPage.Value
 
+End
+
+Public Sub btnRight_Click()
+
+  If spnPage.Value < spnPage.MaxValue Then Inc spnPage.Value
+
+End
+
+Public Sub dwgPreview_MouseDown()
+
+  $iX = svwPreview.ScrollX + Mouse.ScreenX
+  $iY = svwPreview.ScrollY + Mouse.ScreenY
+
+End
+
+Public Sub dwgPreview_MouseMove()
+
+  svwPreview.Scroll($iX - Mouse.ScreenX, $iY - Mouse.ScreenY)
+
+End
+
+Public Sub dwgPreview_MouseWheel()
+
+  If Mouse.Delta > 0 Then
+    sldZoom.Value += 10
+  Else
+    sldZoom.Value -= 10
+  Endif
+  
+  Stop Event
+  
 End

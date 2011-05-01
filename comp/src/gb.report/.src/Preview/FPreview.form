@@ -1,99 +1,107 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,77,57)
+  MoveScaled(0,0,90,55)
   Text = ("Report preview")
   Arrangement = Arrange.Vertical
   { Panel1 Panel
-    MoveScaled(1,0,73,4)
+    MoveScaled(1,0,88,4)
     Arrangement = Arrange.Horizontal
     { btnPrint ToolButton
-      MoveScaled(0,0,9,5)
+      MoveScaled(0,0,9,4)
       AutoResize = True
       Text = ("Print...")
       Picture = Picture["icon:/small/printer"]
     }
-    { HBox3 HBox
-      MoveScaled(11,1,20,2)
-      Expand = True
+    { Separator4 Separator
+      MoveScaled(10,0,1,4)
+    }
+    { btnFirst ToolButton
+      MoveScaled(11,0,4,4)
+      ToolTip = ("First page")
+      Picture = Picture["icon:/small/first"]
+    }
+    { btnLeft ToolButton
+      MoveScaled(15,0,4,4)
+      ToolTip = ("First page")
+      Picture = Picture["icon:/small/left"]
+    }
+    { Label1 Label
+      MoveScaled(19,0,5,4)
+      AutoResize = True
+      Text = ("Page")
+    }
+    { Panel2 Panel
+      MoveScaled(25,0,1,4)
+    }
+    { spnPage SpinBox
+      MoveScaled(27,0,8,4)
+      MinValue = 1
+    }
+    { lblPageCount Label
+      MoveScaled(36,0,5,4)
+      Visible = False
+      AutoResize = True
+    }
+    { btnRight ToolButton
+      MoveScaled(41,0,4,4)
+      ToolTip = ("First page")
+      Picture = Picture["icon:/small/right"]
+    }
+    { btnLast ToolButton
+      MoveScaled(45,0,4,4)
+      ToolTip = ("Last page")
+      Picture = Picture["icon:/small/last"]
+    }
+    { Separator3 Separator
+      MoveScaled(49,0,1,4)
     }
     { btnAdjust ToolButton
-      MoveScaled(32,0,4,4)
+      MoveScaled(51,0,4,4)
+      ToolTip = ("Fit to window")
       Picture = Picture["icon:/small/zoom-fit"]
       Toggle = True
     }
     { btnZNorm ToolButton
-      MoveScaled(37,0,4,4)
+      MoveScaled(55,0,4,4)
+      ToolTip = ("Zoom 100%")
       Picture = Picture["icon:/small/zoom-normal"]
     }
-    { Separator1 Separator
-      MoveScaled(41,0,1,4)
-    }
-    { ToolButton2 ToolButton
-      MoveScaled(43,0,4,4)
+    { btnZoomOut ToolButton
+      MoveScaled(61,0,4,4)
+      ToolTip = ("Zoom out")
       Picture = Picture["icon:/small/zoom-out"]
     }
-    { Slider1 Slider
-      MoveScaled(48,0,15,4)
-      MinValue = 10
+    { sldZoom Slider
+      MoveScaled(65,0,19,4)
+      MinValue = 12
       MaxValue = 400
       PageStep = 50
       Value = 100
     }
-    { ToolButton3 ToolButton
-      MoveScaled(63,0,4,4)
+    { btnZoomIn ToolButton
+      MoveScaled(84,0,4,4)
+      ToolTip = ("Zoom in")
       Picture = Picture["icon:/small/zoom-in"]
     }
   }
   { Separator2 Separator
     MoveScaled(11,6,14,0)
   }
-  { ScrollView1 ScrollView
-    MoveScaled(3,12,72,32)
+  { Printer1 #Printer
+    #MoveScaled(66,10)
+    FullPage = True
+  }
+  { svwPreview ScrollView
+    MoveScaled(3,12,42,32)
     Background = Color.Background
     Expand = True
     Border = False
-    { DrawingArea1 DrawingArea
-      MoveScaled(1,1,21,8)
+    { dwgPreview DrawingArea
+      MoveScaled(0,0,21,8)
       Background = &HFFFFFF&
       Border = Border.Plain
       Painted = True
     }
-  }
-  { Separator3 Separator
-    MoveScaled(19,45,16,0)
-  }
-  { Panel2 Panel
-    MoveScaled(1,50,73,4)
-    Arrangement = Arrange.Horizontal
-    { Panel3 Panel
-      MoveScaled(5,0,1,4)
-    }
-    { Label1 Label
-      MoveScaled(34,0,7,4)
-      AutoResize = True
-      Text = ("Page : ")
-    }
-    { SpinBox1 SpinBox
-      MoveScaled(43,0,8,4)
-      MinValue = 1
-    }
-    { Label2 Label
-      MoveScaled(51,0,8,4)
-      AutoResize = True
-    }
-    { ToolButton1 ToolButton
-      MoveScaled(58,0,4,4)
-      ToolTip = ("Compute all")
-      Picture = Picture["icon:/22/last"]
-    }
-    { HBox1 HBox
-      MoveScaled(62,0,12,3)
-      Expand = True
-    }
-  }
-  { Printer1 #Printer
-    #MoveScaled(111,58)
-    FullPage = True
   }
 }

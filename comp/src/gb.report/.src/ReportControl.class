@@ -48,8 +48,6 @@ Private $bRelativeHeight As Boolean
 Private $bRelativePadding As Boolean
 Private $bIgnore As Boolean = False
 
-
-
 Property Read Id As Integer
 Property Read Parent As ReportContainer
 Property Tag As Variant
@@ -86,7 +84,9 @@ Property Read {Report} As Report
 Property _ReportId As Integer
 
 Public Sub _New(Optional Parent As ReportContainer = Null)
+
   Dim hRep As Report
+
   $iMyId = $iLastId
   Inc $iLastId
   If IsNull(Parent) Then
@@ -195,9 +195,9 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
 End
 
 Public Sub _PaintFrame(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
-
+  
   Me._Paint(Page, X, Y, hControl, VirtualId)
-
+  
 End
 
 Public Sub _PaintAfter(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
@@ -367,8 +367,6 @@ Public Sub _SetUnifiedValues()
   
   '
   
-  
-  
 End
 
 Private Function Ignore_Read() As Boolean
@@ -480,7 +478,7 @@ Public Function _GetActualBrush(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 
 End
 
 Private Sub _ReportId_Write(Value As Integer)
-
+  
   $iReportId = Value
-
+  
 End

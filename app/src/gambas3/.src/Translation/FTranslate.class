@@ -383,8 +383,6 @@ End
 
 Public Sub btnOK_Click()
 
-  SaveTranslate
-
   Me.Close
 
 End
@@ -1189,6 +1187,7 @@ End
 
 Public Sub Form_Close()
 
+  ShiftToSort
   SaveTranslate
   Settings.Write(Me)
 

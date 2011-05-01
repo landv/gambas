@@ -340,7 +340,7 @@ END_PROPERTY
 BEGIN_PROPERTY(CCOMBOBOX_current)
 
 	if (!COMBOBOX->count()) { GB.ReturnNull(); return; }
-	THIS->index=COMBOBOX->index();
+	THIS->index = COMBOBOX->index();
 	RETURN_SELF();
 
 END_PROPERTY
@@ -383,6 +383,12 @@ BEGIN_PROPERTY(CCOMBOBOX_list)
 		COMBOBOX->unlock();
 
 		GB.FreeString(&text);
+		
+		if (COMBOBOX->isReadOnly())
+		{
+			if (COMBOBOX->index() < 0 && COMBOBOX->count() > 0)
+				COMBOBOX->setIndex(0);
+		}
 	}
 
 END_PROPERTY

@@ -2504,6 +2504,9 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			cancel = GB.Raise(control, EVENT_MouseWheel, 0);
 
 			CMOUSE_clear(false);
+			
+			if (cancel)
+				return true;
 		}
 		
 		if (control->proxy_for)

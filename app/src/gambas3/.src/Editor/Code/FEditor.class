@@ -978,15 +978,15 @@ Public Sub Editors_KeyPress()
       mnuSelectAll_Click
       Stop Event
       
-    Else If Key.Code = Key.Up Then
-      
-      GotoPreviousProc
-      Stop Event
-      
-    Else If Key.Code = Key.Down Then
-      
-      GotoNextProc
-      Stop Event
+    ' Else If Key.Code = Key.Up Then
+    '   
+    '   GotoPreviousProc
+    '   Stop Event
+    '   
+    ' Else If Key.Code = Key.Down Then
+    '   
+    '   GotoNextProc
+    '   Stop Event
       
     Else If Key.Code = Key.Home Or Key.Code = Key.End Then 
       
@@ -1118,7 +1118,7 @@ Static Public Function IsCurrentProc() As Boolean
     
     If aLine[iPos] = "SUB" Then
       bProc = True
-      Break
+      Break 
     Endif
     
     If aLine[iPos] = "PROCEDURE" Then

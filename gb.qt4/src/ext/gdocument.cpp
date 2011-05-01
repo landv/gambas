@@ -1286,6 +1286,7 @@ void GDocument::setHighlightMode(int mode, GHighlightCallback cb)
 
 	baptismLimit = 0;
 
+	updateMargin();
 	updateViews();
 }
 
@@ -1421,4 +1422,12 @@ int GDocument::getLimitIndex(int y)
 	}
 	
 	return i;
+}
+
+void GDocument::updateMargin()
+{
+	FOR_EACH_VIEW(v)
+	{
+		v->updateMargin();
+	}
 }

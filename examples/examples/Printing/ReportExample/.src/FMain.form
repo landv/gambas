@@ -1,16 +1,51 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,56,17)
+  MoveScaled(0,0,65,16)
   Text = ("Report example")
   Resizable = False
-  { Button1 Button
-    MoveScaled(15,5,25,6)
-    Text = ("See Report Example 1")
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { HBox1 HBox
+    MoveScaled(1,1,52,4)
+    Spacing = True
+    { Label1 Label
+      MoveScaled(0,0,22,4)
+      AutoResize = True
+      Text = ("Choose database server")
+    }
+    { cmbServer ComboBox
+      MoveScaled(26,0,24,4)
+      Expand = True
+      ReadOnly = True
+      List = [("MySQL"), ("PostgreSQL"), ("SQLite")]
+    }
   }
-  { Button2 Button
-    MoveScaled(49,0,7,7)
-    Picture = Picture["icon:/32/info"]
-    Border = False
+  { Separator1 Separator
+    MoveScaled(15,6,7,1)
+  }
+  { HBox2 HBox
+    MoveScaled(1,8,63,7)
+    Spacing = True
+    { btnReport Button
+      MoveScaled(0,0,31,7)
+      Expand = True
+      AutoResize = True
+      Text = ("See Report Example 1...")
+      Picture = Picture["icon:/32/print"]
+    }
+    { btnAbout Button
+      MoveScaled(32,0,15,7)
+      AutoResize = True
+      Text = ("About...")
+      Picture = Picture["icon:/32/info"]
+    }
+    { btnClose Button
+      MoveScaled(48,0,15,7)
+      AutoResize = True
+      Text = ("Close")
+      Picture = Picture["icon:/32/close"]
+    }
   }
 }

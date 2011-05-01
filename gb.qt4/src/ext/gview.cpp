@@ -1306,9 +1306,24 @@ void GEditor::cursorDown(bool shift, bool ctrl, bool alt)
 		cursorGoto(doc->getNextLimit(y), xx, shift);
 }
 
-void GEditor::cursorHome(bool shift, bool ctrl)
+void GEditor::cursorHome(bool shift, bool ctrl, bool alt)
 {
-	if (ctrl)
+	if (alt)
+	{
+		int indent = doc->getIndent(y);
+		int i2, y2;
+		
+		for(y2 = y - 1; y2 >= 0; y2--)
+		{
+			i2 = doc->getIndent(y2);
+			if (i2 == indent && i2 < doc->lineLength(y2))
+			{
+				cursorGoto(y2, x, shift);
+				break;
+			}
+		}
+	}
+	else if (ctrl)
 		cursorGoto(0, 0, shift);
 	else
 	{
@@ -1321,9 +1336,24 @@ void GEditor::cursorHome(bool shift, bool ctrl)
 }
 
 
-void GEditor::cursorEnd(bool shift, bool ctrl)
+void GEditor::cursorEnd(bool shift, bool ctrl, bool alt)
 {
-	if (ctrl)
+	if (alt)
+	{
+		int indent = doc->getIndent(y);
+		int i2, y2;
+		
+		for(y2 = y + 1; y2 < numLines(); y2++)
+		{
+			i2 = doc->getIndent(y2);
+			if (i2 == indent && i2 < doc->lineLength(y2))
+			{
+				cursorGoto(y2, x, shift);
+				break;
+			}
+		}
+	}
+	else if (ctrl)
 		cursorGoto(numLines() - 1, lineLength(numLines() - 1), shift);
 	else
 		cursorGoto(y, lineLength(y), shift);
@@ -1588,9 +1618,9 @@ void GEditor::keyPressEvent(QKeyEvent *e)
 			case Qt::Key_Down:
 				cursorDown(shift, ctrl, false); return;
 			case Qt::Key_Home:
-				cursorHome(shift, ctrl); return;
+				cursorHome(shift, ctrl, alt); return;
 			case Qt::Key_End:
-				cursorEnd(shift, ctrl); return;
+				cursorEnd(shift, ctrl, alt); return;
 			case Qt::Key_Prior:
 				cursorPageUp(shift); return;
 			case Qt::Key_Next:
@@ -1643,9 +1673,9 @@ void GEditor::keyPressEvent(QKeyEvent *e)
 			case Qt::Key_Return:
 				newLine(); return;
 			case Qt::Key_Home:
-				cursorHome(shift, ctrl); return;
+				cursorHome(shift, ctrl, alt); return;
 			case Qt::Key_End:
-				cursorEnd(shift, ctrl); return;
+				cursorEnd(shift, ctrl, alt); return;
 			case Qt::Key_Backspace:
 				backspace(ctrl); return;
 			case Qt::Key_Delete:

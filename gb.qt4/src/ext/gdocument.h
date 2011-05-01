@@ -107,6 +107,7 @@ private:
 	void addUndo(GCommand *);
 	void addRedo(GCommand *);
 	void updateViews(int row = -1, int count = 1);
+	void updateMargin();
 
 public:
 

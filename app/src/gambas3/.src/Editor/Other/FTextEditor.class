@@ -27,13 +27,8 @@ Property Read ReadOnly As Boolean
 
 Static Private $aExt As String[] = ["htm", "html", "xml", "svg", "css", "webpage", "js", "c", "h", "cpp"]
 
-' Private Const STYLE_HTML As Integer = 1
-' Private Const STYLE_CSS As Integer = 2
-' Private Const STYLE_WEB As Integer = 3
-' Private Const STYLE_JAVASCRIPT As Integer = 4
-' 
+Private $bNoHighlight As Boolean
 Private $bModify As Boolean
-'Private $iStyle As Integer
 
 Private $iViewMode As Integer
 Private Const VIEWMODE_NORMAL As Integer = 0 
@@ -66,12 +61,12 @@ Public Sub LoadFile() As Boolean
   Dim sExt As String = LCase(File.Ext(Path))
   Dim bShowCompress As Boolean
   
-  If $aExt.Find(sExt) >= 0 Then
-    With edtEditor
-      .Clear
-      .Highlight = Highlight.Custom
-      .Flags[Editor.HighlightBraces] = True
-    End With     
+  With edtEditor
+    .Clear
+    .Flags[Editor.HighlightBraces] = True
+  End With
+  
+  If $aExt.Exist(sExt) Then
 
     Select Case sExt
       Case "css"
@@ -89,6 +84,9 @@ Public Sub LoadFile() As Boolean
       Case Else 
         edtEditor.Highlight = Highlight.HTML
     End Select 
+    $bNoHighlight = False
+  Else
+    $bNoHighlight = True
   Endif
 
   Action[".compress,.uncompress", Me].Visible = bShowCompress
@@ -474,7 +472,18 @@ End
 
 Public Sub Reload()
 
-  edtEditor.Text = File.Load(Path)
+  Dim sText As String
+  sText = File.Load(Path)
+  
+  If $bNoHighlight Then
+    If LTrim(sText) Like "<!DOCTYPE*" Or If LTrim(sText) Like "<html*" Then
+      edtEditor.Highlight = Highlight.HTML
+    Else
+      edtEditor.Highlight = Highlight.None
+    Endif
+  Endif
+  
+  edtEditor.Text = sText
   Editor.SetFocus
   Modify(True)
 

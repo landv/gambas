@@ -371,6 +371,7 @@ Private Sub Count_Write(Value As Integer)
       
       TSection = New TControl
       hSection = New ReportSection
+      hSection.Text = "Section " & CStr(i)
       hSection._ReportId = Me.Id
       ReportControl._ObjectFromId[hSection.Id] = hSection
       TSection.Ctrl = hSection

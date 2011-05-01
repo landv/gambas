@@ -1,12 +1,18 @@
 ' Gambas class file
 
-Public Sub _new()
+'Static Public Type As String
+
+Public Sub _new(sType As String)
   
   Dim hResult As Result
   Dim Rlbl As ReportLabel
+  Dim hConn As Connection
   
-  Try Connections["Connection1"].Open
-  If Not Connections["Connection1"].Opened Then 
+  hConn = Connections["Connection1"]
+  hConn.Type = sType
+  If hConn.Type = "sqlite" Then hConn.Host = User.Home
+  Try hConn.Open
+  If Not hConn.Opened Then 
     Message.Error(" You have to create the test database with the <b>Database</b> example.")
     Return
   Endif

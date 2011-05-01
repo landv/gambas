@@ -461,7 +461,7 @@ Private Sub Data_Write(Value As Object)
       
     Endif
     If Not $bDataIsResult Then 
-      Error.Raise(("You must give a Collecton[] object or a Result Object"))
+      Error.Raise("You must give a Collection[] object or a Result Object")
       Return
     Endif
   Endif

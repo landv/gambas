@@ -207,8 +207,8 @@ public:
 	void cursorDown(bool shift, bool ctrl, bool alt);
 	void cursorPageUp(bool mark);
 	void cursorPageDown(bool mark);
-	void cursorHome(bool shift, bool ctrl);
-	void cursorEnd(bool shift, bool ctrl);
+	void cursorHome(bool shift, bool ctrl, bool alt);
+	void cursorEnd(bool shift, bool ctrl, bool alt);
 	void newLine();
 	void backspace(bool ctrl);
 	void del(bool ctrl);
