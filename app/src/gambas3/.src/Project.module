@@ -218,6 +218,8 @@ Public Sub Main()
   Dim iInd As Integer
   Dim sArg As String
   
+  Application.Env["APPMENU_DISPLAY_BOTH"] = "1"
+  
   Select Case LCase(Settings["/Theme"])
     Case "kde"
       Application.Theme = "kde4"

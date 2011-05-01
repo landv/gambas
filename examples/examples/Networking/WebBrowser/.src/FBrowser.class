@@ -102,15 +102,20 @@ Public Sub WebView_Load()
 
   Dim iInd As Integer
   Dim hView As WebView = GetView()
+  Dim hIcon As Picture
 
   hView.Status = ""
+  hIcon = hView.Icon 'WebSettings.IconDatabase[hView.Url]
+  tabBrowser[hView.Tag].Picture = hIcon
+  
   If Not IsLastCurrentView() Then Return
 
   lblStatus.Text = ""
   txtURL.Text = hView.Url
   pgbLoad.Hide
   
-  tabBrowser[hView.Tag].Picture = hView.Icon
+  UpdateIcon
+  
   ' Debug GetView().Frame
   ' For iInd = 0 To GetView().Frame.Children.Count - 1
   '   Debug "["; iInd; "] "; GetView().Frame.Children[iInd]
@@ -190,9 +195,9 @@ End
 Public Sub WebView_Icon()
 
   Dim hView As WebView = Last
+  'hView.Icon.Save("~/icon.png")
   tabBrowser[hView.Tag].Picture = hView.Icon
-  If Not IsLastCurrentView() Then Return
-  Me.Icon = hView.Icon
+  UpdateIcon
 
 End
 
@@ -247,7 +252,7 @@ Public Sub tabBrowser_Click()
       Me.Title = "Gambas WebKit"
     Endif
     tabBrowser.Text = hView.Title
-    Me.Icon = hView.Icon
+    UpdateIcon
     tabBrowser.Picture = hView.Icon
     txtURL.Text = hView.Url
     lblStatus.Text = hView.Status
@@ -430,5 +435,20 @@ End
 Public Sub txtFind_Activate()
 
   DoFind
+
+End
+
+Private Sub UpdateIcon()
+
+  Dim hView As WebView = GetView()
+  Dim hIcon As Picture
+  
+  hIcon = hView.Icon 'WebSettings.IconDatabase[hView.Url]
+  
+  If hIcon Then
+    Me.Icon = hIcon
+  Else
+    Me.Icon = Picture["icon:/16/earth"]
+  Endif
 
 End

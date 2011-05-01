@@ -48,6 +48,7 @@ DECLARE_EVENT(EVENT_AUTH);
 DECLARE_EVENT(EVENT_DOWNLOAD);
 
 static QNetworkAccessManager *_network_access_manager = 0;
+static CWEBVIEW *_network_access_manager_view = 0;
 
 BEGIN_METHOD(WebView_new, GB_OBJECT parent)
 
@@ -75,18 +76,21 @@ BEGIN_METHOD(WebView_new, GB_OBJECT parent)
 	QObject::connect(wid->page(), SIGNAL(linkHovered(const QString &, const QString &, const QString &)), &CWebView::manager, 
 										SLOT(linkHovered(const QString &, const QString &, const QString &)));
 	QObject::connect(wid->page(), SIGNAL(frameCreated(QWebFrame *)), &CWebView::manager, SLOT(frameCreated(QWebFrame *)));
+	QObject::connect(wid->page(), SIGNAL(downloadRequested(QNetworkRequest)), &CWebView::manager, SLOT(downloadRequested(QNetworkRequest)));
+  QObject::connect(wid->page(), SIGNAL(unsupportedContent(QNetworkReply*)), &CWebView::manager, SLOT(handleUnsupportedContent(QNetworkReply*)));
+	
+  QObject::connect(wid, SIGNAL(iconChanged()), &CWebView::manager, SLOT(iconChanged()));
+	QObject::connect(wid->page()->mainFrame(), SIGNAL(urlChanged(const QUrl &)), &CWebView::manager, SLOT(urlChanged(const QUrl &)));
+
 	QObject::connect(wid->page()->networkAccessManager(), SIGNAL(authenticationRequired(QNetworkReply *, QAuthenticator *)), &CWebView::manager,
 										SLOT(authenticationRequired(QNetworkReply *, QAuthenticator *)));
-	QObject::connect(wid->page(), SIGNAL(downloadRequested(QNetworkRequest)), &CWebView::manager, SLOT(downloadRequested(QNetworkRequest)));
-	
-  QObject::connect(wid->page()->mainFrame(), SIGNAL(iconChanged()), &CWebView::manager, SLOT(iconChanged()));
-	QObject::connect(wid->page()->mainFrame(), SIGNAL(urlChanged(const QUrl &)), &CWebView::manager, SLOT(urlChanged(const QUrl &)));
-  QObject::connect(wid->page(), SIGNAL(unsupportedContent(QNetworkReply*)), &CWebView::manager, SLOT(handleUnsupportedContent(QNetworkReply*)));
-
 END_METHOD
 
 BEGIN_METHOD_VOID(WebView_free)
 
+	if (_network_access_manager_view == THIS)
+		_network_access_manager_view = 0;
+	
 	GB.FreeString(&THIS->status);
 	GB.Unref(POINTER(&THIS->icon));
 
@@ -127,8 +131,15 @@ BEGIN_PROPERTY(WebView_Icon)
 	if (!THIS->icon)
 	{
 		QIcon icon = WIDGET->icon();
-		THIS->icon = QT.CreatePicture(icon.pixmap(16, 16));
-		GB.Ref(THIS->icon);
+		
+		if (icon.isNull()) 
+			icon = QWebSettings::iconForUrl(WIDGET->url());
+		
+		if (!icon.isNull())
+		{
+			THIS->icon = QT.CreatePicture(icon.pixmap(16, 16));
+			GB.Ref(THIS->icon);
+		}
 	}
 
 	GB.ReturnObject(THIS->icon);
@@ -498,6 +509,7 @@ void CWebView::loadStarted()
 {
 	GET_SENDER();
 	THIS->progress = 0;
+	_network_access_manager_view = THIS;
 	GB.Raise(THIS, EVENT_PROGRESS, 0);
 }
 
@@ -537,7 +549,9 @@ void CWebView::frameCreated(QWebFrame *frame)
 
 void CWebView::authenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator)
 {
-	void *_object = QT.GetObject((QWidget *)((QNetworkAccessManager*)sender())->parent());
+	qDebug("CWebView::authenticationRequired: %p", _network_access_manager_view);
+
+	void *_object = _network_access_manager_view; //QT.GetObject((QWidget *)((QNetworkAccessManager*)sender())->parent());
 	if (!THIS)
 		return;
 	
@@ -552,10 +566,11 @@ void CWebView::authenticationRequired(QNetworkReply *reply, QAuthenticator *auth
 
 void CWebView::iconChanged()
 {
-	void *_object = QT.GetObject(((QWebFrame *)sender())->page()->view());
+	//void *_object = QT.GetObject(((QWebFrame *)sender())->page()->view());
+	GET_SENDER();
 	GB.Unref(POINTER(&THIS->icon));
 	THIS->icon = NULL;
-	GB.Raise(THIS, EVENT_ICON, 0);
+	GB.RaiseLater(THIS, EVENT_ICON);
 }
 
 void CWebView::urlChanged(const QUrl &)
