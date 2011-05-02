@@ -794,6 +794,8 @@ typedef
 		int (*GetFunction)(GB_FUNCTION *, void *, const char *, const char *, const char *);
 		GB_VALUE *(*Call)(GB_FUNCTION *, int, int);
 		void *(*GetClassInterface)(GB_CLASS, const char *);
+		void (*GetProperty)(void *, const char *);
+		void (*SetProperty)(void *, const char *, ...);
 
 		int (*Loop)(int);
 		void (*Post)(GB_CALLBACK, intptr_t);
@@ -813,7 +815,7 @@ typedef
 		int (*Conv)(GB_VALUE *, GB_TYPE);
 		char *(*GetUnknown)(void);
 		int (*IsProperty)(void);
-
+		
 		void (*Error)(const char *, ...);
 		void (*Propagate)(void);
 

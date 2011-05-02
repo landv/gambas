@@ -4,6 +4,7 @@
   MoveScaled(0,0,116,65)
   Background = Color.Background
   Icon = Picture["LTicon.png"]
+  Arrangement = Arrange.Vertical
   { mnuMain Menu
     Text = ("Main menu")
     Visible = False
@@ -93,30 +94,33 @@
     }
   }
   { ScrollView1 ScrollView
-    MoveScaled(28,14,41,32)
+    MoveScaled(27,13,41,32)
     Background = Color.TextBackground
+    Expand = True
     Border = False
     { panEmpty Panel
       MoveScaled(4,10,16,16)
     }
   }
+  { Timer1 #Timer
+    #MoveScaled(105,22)
+    Delay = 10
+  }
+  { Timer2 #Timer
+    #MoveScaled(105,30)
+    Delay = 100
+  }
+  { Separator1 Separator
+    MoveScaled(27,56,14,0)
+  }
   { StatusBar Panel
-    MoveScaled(6,57.1429,99,4)
-    Background = &HD0D0D0&
-    Border = Border.Raised
+    MoveScaled(2,60,99,4)
+    Arrangement = Arrange.Horizontal
     { lblCount Label
       MoveScaled(1,0.5714,13,3)
       Font = Font["-1"]
       Alignment = Align.Center
       Border = Border.Sunken
-    }
-    { lblStatus Label
-      MoveScaled(44,0,32,4)
-      Font = Font["-1"]
-      Alignment = Align.Center
-    }
-    { ProgressBar1 ProgressBar
-      MoveScaled(78,0.5714,20,3)
     }
     { lblSort Label
       MoveScaled(15,0.5714,29,3)
@@ -124,19 +128,30 @@
       Alignment = Align.Center
       Border = Border.Sunken
     }
-  }
-  { Timer1 #Timer
-    #MoveScaled(105,22)
-    Delay = 10
+    { Panel1 Panel
+      MoveScaled(45,0,1,4)
+    }
+    { lblStatus Label
+      MoveScaled(47,0,27,4)
+      Font = Font["-1"]
+      Expand = True
+      Alignment = Align.Left
+    }
+    { Panel2 Panel
+      MoveScaled(75,0,22,4)
+      Arrangement = Arrange.Fill
+      Margin = True
+      Padding = 4
+      { ProgressBar1 ProgressBar
+        MoveScaled(0,0,20,3)
+      }
+    }
   }
   { PicBox PictureBox
     MoveScaled(7,37,9,9)
     Visible = False
+    Ignore = True
     Stretch = True
     Border = Border.Etched
-  }
-  { Timer2 #Timer
-    #MoveScaled(105,30)
-    Delay = 100
   }
 }

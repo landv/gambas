@@ -261,10 +261,12 @@ static void CFONT_manage(int prop, CFONT *_object, void *_param)
       (*(THIS->func))(*f, THIS->object);
     else if (THIS->object)
     {
-      // THIS->control->widget->setFont(*f); - Not needed anymore
+			GB.SetProperty(THIS->object, "Font", GB_T_OBJECT, THIS);
+      
+			// THIS->control->widget->setFont(*f); - Not needed anymore
       // TODO Make a Gambas API to call SetProperty faster
   
-      GB_FUNCTION func;
+      /*GB_FUNCTION func;
   
       GB.GetFunction(&func, (void *)GB.FindClass("Object"), "SetProperty", NULL, NULL);
       GB.Push(3,
@@ -272,7 +274,7 @@ static void CFONT_manage(int prop, CFONT *_object, void *_param)
         GB_T_STRING, "Font", 4,
         GB_T_OBJECT, THIS
       );
-      GB.Call(&func, 3, TRUE);
+      GB.Call(&func, 3, TRUE);*/
     }
   }
 }

@@ -159,8 +159,8 @@ Private Sub PaintRoundedRect(X As Integer, Y As Integer, W As Integer, H As Inte
   c1 = fArcToBezier * fRadiusX
   c2 = fArcToBezier * fRadiusY
   
-  Paint.newpath()
-  Paint.moveto(x + fRadiusX, y)
+  Paint.NewPath()
+  Paint.MoveTo(x + fRadiusX, y)
   Paint.RelLineTo(w - 2 * fRadiusX, 0.0)
   Paint.RelCurveTo(c1, 0.0, fRadiusX, c2, fRadiusX, fRadiusY)
   Paint.RelLineTo(0, h - 2 * fRadiusY)
@@ -169,7 +169,7 @@ Private Sub PaintRoundedRect(X As Integer, Y As Integer, W As Integer, H As Inte
   Paint.RelCurveTo(- c1, 0, - fRadiusX, - c2, - fRadiusX, - fRadiusY)
   Paint.RelLineTo(0, - h + 2 * fRadiusY)
   Paint.RelCurveTo(0.0, - c2, fRadiusX - c1, - fRadiusY, fRadiusX, - fRadiusY)
-  Paint.closepath()
+  Paint.ClosePath()
   
 End
 
@@ -206,7 +206,29 @@ Public Sub _GetTextRect(hRect As Rect, bHorizontal As Boolean) As Rect
   
 End
 
+Private Sub GetBackground(hIconView As IconView, Optional bSelected As Boolean) As Integer
 
+  Dim iColor As Integer
+  
+  If bSelected Then Return Color.SelectedBackground
+  
+  iColor = hIconView.Background
+  If iColor = Color.Default Then iColor = Color.TextBackground
+  Return iColor
+
+End
+
+Private Sub GetForeground(hIconView As IconView, Optional bSelected As Boolean) As Integer
+
+  Dim iColor As Integer
+  
+  If bSelected Then Return Color.SelectedForeground
+  
+  iColor = hIconView.Foreground
+  If iColor = Color.Default Then iColor = Color.TextForeground
+  Return iColor
+
+End
 
 Public Sub _Draw(hRect As Rect, hClip As Rect, hIconView As IconView, bHorizontal As Boolean, bFocus As Boolean, bHover As Boolean)
   
@@ -227,9 +249,12 @@ Public Sub _Draw(hRect As Rect, hClip As Rect, hIconView As IconView, bHorizonta
     PH = $hPicture.H
   Endif
   
-  iColor = Color.TextBackground
-  If $bSelected Then iColor = Color.SelectedBackground
+  'iColor = hIconView.Background
+  'If iColor = Color.Default Then iColor = Color.TextBackground
+  'If $bSelected Then iColor = Color.SelectedBackground
+  iColor = GetBackground(hIconView, $bSelected)
   If bHover Then iColor = Color.Merge(iColor, Color.LightBackground)
+  
   bSelected = $bSelected Or bHover
 
   ' If bHover And Not $bSelected Then
@@ -307,10 +332,10 @@ Public Sub _Draw(hRect As Rect, hClip As Rect, hIconView As IconView, bHorizonta
     If $sText Then
       Draw.Font = hIconView.Font
       If Not bFrame Then
-        Draw.Foreground = If($bSelected, Color.SelectedBackground, Color.TextBackground)
+        Draw.Foreground = GetBackground(hIconView, $bSelected) 'If($bSelected, Color.SelectedBackground, Color.TextBackground)
         Draw.RichText($sText, X + 1, hRect.Y + 1, W, hRect.H, Align.Left)
       Endif
-      Draw.Foreground = If($bSelected, Color.SelectedForeground, Color.TextForeground)
+      Draw.Foreground = GetForeground(hIconView, $bSelected) 'If($bSelected, Color.SelectedForeground, Color.TextForeground)
       Draw.RichText($sText, X, hRect.Y, W, hRect.H, Align.Left)
     Endif
   
@@ -357,10 +382,10 @@ Public Sub _Draw(hRect As Rect, hClip As Rect, hIconView As IconView, bHorizonta
       Draw.Font = hIconView.Font
       
       If Not bFrame Then
-        Draw.Foreground = If($bSelected, Color.SelectedBackground, Color.TextBackground)
+        Draw.Foreground = GetBackground(hIconView, $bSelected) 'If($bSelected, Color.SelectedBackground, Color.TextBackground)
         Draw.RichText(sText, hRect.X + 1, Y + 1, hRect.W, HT, Align.Top)
       Endif
-      Draw.Foreground = If($bSelected, Color.SelectedForeground, Color.TextForeground)
+      Draw.Foreground = GetForeground(hIconView, $bSelected) 'If($bSelected, Color.SelectedForeground, Color.TextForeground)
       Draw.RichText(sText, hRect.X, Y, hRect.W, HT, Align.Top)
       'Draw.Clip.Enabled = False
     Endif

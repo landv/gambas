@@ -62,4 +62,6 @@ public slots:
   void link(const QString &);
 };
 
+void CTEXTAREA_set_foreground(void *_object);
+
 #endif

@@ -82,6 +82,8 @@ void *GAMBAS_Api[] =
   (void *)GB_GetFunction,
   (void *)GB_Call,
   (void *)GB_GetClassInterface,
+  (void *)GB_GetProperty,
+  (void *)GB_SetProperty,
 
   (void *)WATCH_one_loop,
   (void *)EVENT_post,
@@ -398,6 +400,46 @@ void GB_Push(int nval, ...)
   va_start(args, nval);
   push(nval, args);
   va_end(args);
+}
+
+
+void GB_GetProperty(void *object, const char *property)
+{
+	static bool init = FALSE;
+  static GB_FUNCTION func;
+	
+  va_list args;
+	
+	if (!init)
+	{
+		GB_GetFunction(&func, (void *)CLASS_find("Object"), "GetProperty", NULL, NULL);
+		init = TRUE;
+	}
+	
+	GB_Push(2, GB_T_OBJECT, object, GB_T_STRING, property, strlen(property));
+	GB_Call(&func, 2, FALSE);
+}
+
+void GB_SetProperty(void *object, const char *property, ...)
+{
+	static bool init = FALSE;
+  static GB_FUNCTION func;
+	
+  va_list args;
+	
+	if (!init)
+	{
+		GB_GetFunction(&func, (void *)CLASS_find("Object"), "SetProperty", NULL, NULL);
+		init = TRUE;
+	}
+	
+	GB_Push(2, GB_T_OBJECT, object, GB_T_STRING, property, strlen(property));
+
+  va_start(args, property);
+  push(1, args);
+  va_end(args);
+	
+	GB_Call(&func, 3, TRUE);
 }
 
 

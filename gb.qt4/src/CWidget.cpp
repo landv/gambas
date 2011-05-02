@@ -42,6 +42,7 @@
 #include "CScrollView.h"
 #include "CProgress.h"
 #include "CDrawingArea.h"
+#include "CTextArea.h"
 
 #include <QApplication>
 #include <QObject>
@@ -75,6 +76,10 @@ static CWIDGET *_old_active_control = 0;
 
 static CWIDGET *_hovered = 0;
 static CWIDGET *_official_hovered = 0;
+
+#define HANDLE_PROXY(_ob) \
+	while (((CWIDGET *)_ob)->proxy) \
+		_ob = (typeof _ob)((CWIDGET *)_ob)->proxy;
 
 static void set_mouse(QWidget *w, int mouse, void *cursor)
 {
@@ -1024,8 +1029,7 @@ static void set_focus(void *_object)
 {
 	CWINDOW *win;
 
-	while (THIS->proxy)
-		_object = THIS->proxy;
+	HANDLE_PROXY(_object);
 	
 	win = CWidget::getTopLevel(THIS);
 
@@ -1064,8 +1068,7 @@ BEGIN_PROPERTY(Control_Mouse)
 	QWidget *wid;
 	int shape;
 
-	while (THIS->proxy)
-		_object = THIS->proxy;
+	HANDLE_PROXY(_object);
 	
 	wid = QWIDGET(_object);
 	
@@ -1090,8 +1093,7 @@ END_METHOD
 
 BEGIN_PROPERTY(Control_Cursor)
 
-	while (THIS->proxy)
-		_object = THIS->proxy;
+	HANDLE_PROXY(_object);
 	
 	if (READ_PROPERTY)
 		GB.ReturnObject(THIS->cursor);
@@ -1223,10 +1225,13 @@ void CWIDGET_reset_color(CWIDGET *_object)
 {
 	int fg, bg;
 	QPalette palette;
-	QWidget *w = get_color_widget(WIDGET);
+	QWidget *w;
 	
+	HANDLE_PROXY(_object);
 	//qDebug("reset_color: %s", THIS->name);
 	//qDebug("set_color: (%s %p) bg = %08X (%d) fg = %08X (%d)", GB.GetClassName(THIS), THIS, THIS->bg, w->backgroundRole(), THIS->fg, w->foregroundRole());
+	
+	w = get_color_widget(WIDGET);
 	
 	if (THIS->bg == COLOR_DEFAULT && THIS->fg == COLOR_DEFAULT)
 	{
@@ -1234,7 +1239,7 @@ void CWIDGET_reset_color(CWIDGET *_object)
 		//if (parent)
 		//	w->setPalette(parent->widget->palette());
 		//else
-		WIDGET->setPalette(QPalette());
+		w->setPalette(QPalette());
 	}
 	else
 	{
@@ -1253,11 +1258,14 @@ void CWIDGET_reset_color(CWIDGET *_object)
 			palette.setColor(QPalette::ButtonText, QColor((QRgb)fg));*/
 		}
 			
-		WIDGET->setPalette(palette);
+		w->setPalette(palette);
 	}	
 	
 	w->setAutoFillBackground(!THIS->flag.noBackground && (THIS->flag.fillBackground || (THIS->bg != COLOR_DEFAULT && w->backgroundRole() == QPalette::Window)));
 	//w->setAutoFillBackground(THIS->bg != COLOR_DEFAULT);
+	
+	if (GB.Is(THIS, CLASS_TextArea))
+		CTEXTAREA_set_foreground(THIS);
 	
 	if (!GB.Is(THIS, CLASS_Container))
 		return;
@@ -1302,6 +1310,16 @@ int CWIDGET_get_foreground(CWIDGET *_object)
 	
 BEGIN_PROPERTY(Control_Background)
 
+	if (THIS->proxy)
+	{
+		if (READ_PROPERTY)
+			GB.GetProperty(THIS->proxy, "Background");
+		else
+			GB.SetProperty(THIS->proxy, "Background", GB_T_INTEGER, VPROP(GB_INTEGER));
+		
+		return;
+	}
+
 	if (READ_PROPERTY)
 		GB.ReturnInteger(CWIDGET_get_background(THIS));
 	else
@@ -1315,6 +1333,16 @@ END_PROPERTY
 
 
 BEGIN_PROPERTY(Control_Foreground)
+
+	if (THIS->proxy)
+	{
+		if (READ_PROPERTY)
+			GB.GetProperty(THIS->proxy, "Foreground");
+		else
+			GB.SetProperty(THIS->proxy, "Foreground", GB_T_INTEGER, VPROP(GB_INTEGER));
+		
+		return;
+	}
 
 	if (READ_PROPERTY)
 		GB.ReturnInteger(CWIDGET_get_foreground(THIS));

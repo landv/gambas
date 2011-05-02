@@ -26,6 +26,8 @@ Property IconSize As Integer
 Property Border As Boolean
 Property Settings As Variant[]
 Property Read Count As Integer
+Property Background As Integer
+Property Foreground As Integer
 
 Static Private $aImgExt As String[] = ["png", "jpeg", "jpg", "gif", "xpm"]
 Static Private $cExt As New Collection(gb.IgnoreCase)
@@ -386,21 +388,26 @@ End
 
 Private Sub ShowDetailed_Write(bDetailed As Boolean)
 
+  Dim hOld As Control
+
   If bDetailed = ShowDetailed_Read() Then Return
 
   If bDetailed Then
 
+    hOld = $hIconView
     $hColumnView.Show
-    $hIconView.Hide
 
   Else
 
+    hOld = $hColumnView
     $hIconView.Show
-    $hColumnView.Hide
 
   Endif
   
+  hOld.Hide
   Me.Proxy = GetView()
+  Me.Background = hOld.Background
+  Me.Foreground = hOld.Foreground
   RefreshView
   TakeSelection
 
@@ -650,4 +657,30 @@ Public Sub UnselectAll()
   If $hIconView.Mode <> Select.Multiple Then Return
   GetView().UnselectAll()
   
+End
+
+Private Function Background_Read() As Integer
+
+  Return $hColumnView.Background
+
+End
+
+Private Sub Background_Write(Value As Integer)
+
+  $hIconView.Background = Value
+  $hColumnView.Background = Value
+
+End
+
+Private Function Foreground_Read() As Integer
+
+  Return $hColumnView.Foreground
+
+End
+
+Private Sub Foreground_Write(Value As Integer)
+
+  $hIconView.Foreground = Value
+  $hColumnView.Foreground = Value
+
 End

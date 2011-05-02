@@ -45,6 +45,9 @@ int GB_NParam(void);
 const char *GB_GetUnknown(void);
 int GB_IsProperty(void);
 
+void GB_GetProperty(void *object, const char *property);
+void GB_SetProperty(void *object, const char *property, ...);
+
 void GB_Error(const char *msg, ...);
 
 void GB_Ref(void *object);

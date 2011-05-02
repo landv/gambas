@@ -1063,17 +1063,6 @@ BEGIN_PROPERTY(CCONTAINER_indent)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CUSERCONTAINER_indent)
-
-	CCONTAINER *cont = (CCONTAINER *)CWidget::get(CONTAINER);
-	CCONTAINER_indent(cont, _param);
-	if (!READ_PROPERTY)
-	{
-		THIS_USERCONTAINER->save = cont->arrangement;
-	}
-
-END_PROPERTY
-
 BEGIN_METHOD(CUSERCONTROL_new, GB_OBJECT parent)
 
 	MyContainer *wid = new MyContainer(QCONTAINER(VARG(parent)));
@@ -1129,6 +1118,24 @@ BEGIN_PROPERTY(CUSERCONTROL_container)
 			CWIDGET_update_design((CWIDGET *)THIS);
 			CCONTAINER_arrange(THIS);
 		}
+	}
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(UserContainer_Background)
+
+	
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CUSERCONTAINER_indent)
+
+	CCONTAINER *cont = (CCONTAINER *)CWidget::get(CONTAINER);
+	CCONTAINER_indent(cont, _param);
+	if (!READ_PROPERTY)
+	{
+		THIS_USERCONTAINER->save = cont->arrangement;
 	}
 
 END_PROPERTY
@@ -1234,6 +1241,8 @@ GB_DESC CUserControlDesc[] =
 	GB_PROPERTY("_Container", "Container", CUSERCONTROL_container),
 	GB_PROPERTY("_AutoResize", "b", CCONTAINER_auto_resize),
 	GB_PROPERTY("_Arrangement", "i", CCONTAINER_arrangement),
+	//GB_PROPERTY("Foreground", "i", UserControl_Foreground),
+	//GB_PROPERTY("Background", "i", UserControl_Background),
 	
 	USERCONTROL_DESCRIPTION,
 	

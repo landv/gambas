@@ -119,6 +119,34 @@ static void set_alignment(void *_object, Qt::Alignment align)
 	WIDGET->setTextCursor(oldCursor);
 }
 
+void CTEXTAREA_set_foreground(void *_object)
+{
+	// FIXME: Nothing works!!!
+	
+	//qDebug("CTEXTAREA_set_foreground: %d", THIS->widget.fg);
+	
+	/*QTextCursor oldCursor = WIDGET->textCursor();
+	QTextCursor cursor(WIDGET->document());
+	cursor.select(QTextCursor::Document);
+
+	QTextBlockFormat format = cursor.blockFormat();
+	if (THIS->widget.fg == COLOR_DEFAULT)
+		format.clearForeground();
+	else
+		format.setForeground(QBrush(QColor((QRgb)THIS->widget.fg)));
+	cursor.setBlockFormat(format);
+	
+	QTextCharFormat charFormat = cursor.charFormat();
+	if (THIS->widget.fg == COLOR_DEFAULT)
+		format.clearForeground();
+	else
+		format.setForeground(QBrush(QColor((QRgb)THIS->widget.fg)));
+	cursor.setCharFormat(charFormat);
+	
+	WIDGET->setTextCursor(cursor);
+	WIDGET->setTextCursor(oldCursor);*/
+}
+
 
 /** TextArea ***************************************************************/
 

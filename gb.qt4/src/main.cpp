@@ -138,6 +138,7 @@ GB_CLASS CLASS_Printer;
 GB_CLASS CLASS_ScrollView;
 GB_CLASS CLASS_Image;
 GB_CLASS CLASS_SvgImage;
+GB_CLASS CLASS_TextArea;
 
 static bool in_event_loop = false;
 static int _no_destroy = 0;
@@ -1057,7 +1058,7 @@ const char *GB_INCLUDE EXPORT = "gb.draw";
 
 int EXPORT GB_INIT(void)
 {
-	char *env;
+	//char *env;
 	
 	// Do not disable GLib support
 	
@@ -1096,6 +1097,7 @@ int EXPORT GB_INIT(void)
 	CLASS_ScrollView = GB.FindClass("ScrollView");
 	CLASS_Image = GB.FindClass("Image");
 	CLASS_SvgImage = GB.FindClass("SvgImage");
+	CLASS_TextArea = GB.FindClass("TextArea");
 
 	QT_InitEventLoop();
 
