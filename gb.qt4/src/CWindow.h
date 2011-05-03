@@ -161,6 +161,7 @@ private:
 	bool _resizable;
 	bool _deleted;
 	bool _enterLoop;
+	bool _utility;
 	int _type;
 
 	void doReparent(QWidget *, Qt::WFlags, const QPoint &);
@@ -212,12 +213,12 @@ public:
 	
 	//bool getTool(void) { return testWFlags(WStyle_Tool); }
 	//void setTool(bool);
-	bool isToolbar(void);
+	bool isUtility(void) const { return _utility; }
+	void setUtility(bool b);
 	
 	void setSizeGrip(bool);
 	void moveSizeGrip();
 
-	void paintUnclip(bool);
 	bool isPersistent(void);
 	void setPersistent(bool);
 

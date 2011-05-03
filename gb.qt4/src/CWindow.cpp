@@ -22,6 +22,8 @@
 
 #define __CWINDOW_CPP
 
+#undef QT3_SUPPORT
+
 #include <qnamespace.h>
 #include <qapplication.h>
 #include <qmenubar.h>
@@ -1165,9 +1167,12 @@ END_PROPERTY
 BEGIN_PROPERTY(Window_Utility)
 
 	if (READ_PROPERTY)
-		GB.ReturnBoolean(WINDOW->getType() == _NET_WM_WINDOW_TYPE_UTILITY);
+		GB.ReturnBoolean(WINDOW->isUtility()); //WINDOW->getType() == _NET_WM_WINDOW_TYPE_UTILITY);
 	else
-		WINDOW->setType(VPROP(GB_BOOLEAN) ? _NET_WM_WINDOW_TYPE_UTILITY : _NET_WM_WINDOW_TYPE_NORMAL);
+	{
+		//WINDOW->setType(VPROP(GB_BOOLEAN) ? _NET_WM_WINDOW_TYPE_UTILITY : _NET_WM_WINDOW_TYPE_NORMAL);
+		WINDOW->setUtility(VPROP(GB_BOOLEAN));
+	}
 
 END_PROPERTY
 
@@ -1566,6 +1571,7 @@ MyMainWindow::MyMainWindow(QWidget *parent, const char *name, bool embedded) :
 	_deleted = false;
 	_type = _NET_WM_WINDOW_TYPE_NORMAL;
 	_enterLoop = false;
+	_utility = false;
 	
 	//setAttribute(Qt::WA_KeyCompression, true);
 	//setAttribute(Qt::WA_InputMethodEnabled, true);
@@ -1617,6 +1623,30 @@ MyMainWindow::~MyMainWindow()
 	//qDebug("~MyMainWindow %p (end)", this);
 }
 
+#if 0
+bool MyMainWindow::event(QEvent *e)
+{
+	if (e->spontaneous() && !CWIDGET_test_flag(THIS, WF_DELETED))
+	{
+		/*if (e->type() == QEvent::WindowActivate)
+		{
+			qDebug("activate: %s %p", GB.GetClassName(THIS), THIS);
+			//CWINDOW_activate((CWIDGET *)THIS);
+			GB.Ref(THIS);
+			GB.Post((void (*)())activate_later, (intptr_t)THIS);
+			
+		}
+		else*/ if (e->type() == QEvent::WindowDeactivate)
+		{
+			qDebug("deactivate: %s %p", GB.GetClassName(THIS), THIS);
+			if (THIS == CWINDOW_Active)
+				CWINDOW_activate(NULL);
+		}
+	}
+	
+	return QWidget::event(e);
+}
+#endif
 
 void MyMainWindow::showEvent(QShowEvent *e)
 {
@@ -1635,6 +1665,8 @@ void MyMainWindow::showEvent(QShowEvent *e)
 		//X11_window_activate(winId());
 		_activate = false;
 	}
+
+	QWidget::showEvent(e);
 }
 
 
@@ -1692,7 +1724,7 @@ void MyMainWindow::showActivate(QWidget *transient)
 	}
 
 	#ifndef NO_X_WINDOW
-	if (isToolbar())
+	if (isUtility())
 	{
 		if (!newParentWidget && CWINDOW_Main && THIS != CWINDOW_Main)
 			newParentWidget = CWINDOW_Main->widget.widget;
@@ -1717,7 +1749,7 @@ void MyMainWindow::showActivate(QWidget *transient)
 
 		//X11_window_startup(WINDOW->winId(), THIS->x, THIS->y, THIS->w, THIS->h);
 
-		if (isToolbar() && _resizable)
+		if (isUtility() && _resizable)
 		{
 			setMinimumSize(THIS->minw, THIS->minh);
     	setSizeGrip(true);
@@ -1775,7 +1807,7 @@ void MyMainWindow::showActivate(QWidget *transient)
 
 void MyMainWindow::showModal(void)
 {
-	Qt::WindowFlags flags = windowFlags();
+	Qt::WindowFlags flags = windowFlags() & ~Qt::WindowType_Mask;
 	CWIDGET *_object = CWidget::get(this);
 	bool persistent = CWIDGET_test_flag(THIS, WF_PERSISTENT);
 	CWINDOW *save = CWINDOW_Current;
@@ -1831,7 +1863,7 @@ void MyMainWindow::showModal(void)
 
 void MyMainWindow::showPopup(QPoint &pos)
 {
-	Qt::WindowFlags flags = windowFlags();
+	Qt::WindowFlags flags = windowFlags() & ~Qt::WindowType_Mask;
 	CWIDGET *_object = CWidget::get(this);
 	bool persistent = CWIDGET_test_flag(THIS, WF_PERSISTENT);
 	CWINDOW *save = CWINDOW_Current;
@@ -1839,7 +1871,7 @@ void MyMainWindow::showPopup(QPoint &pos)
 	if (isModal())
 		return;
 
-	setWindowFlags(Qt::Popup);
+	setWindowFlags(Qt::Popup | flags);
 	setWindowModality(Qt::ApplicationModal);
 
 	/*if (_resizable && _border)
@@ -1884,19 +1916,10 @@ void MyMainWindow::showPopup(QPoint &pos)
 	if (persistent)
 	{
 		setWindowModality(Qt::NonModal);
-		setWindowFlags(Qt::Window);
+		setWindowFlags(Qt::Window | flags);
 	}
 	
 	CWIDGET_check_hovered();
-}
-
-bool MyMainWindow::isToolbar(void)
-{
-	#ifdef NO_X_WINDOW
-	return false;
-	#else
-	return getType() == _NET_WM_WINDOW_TYPE_UTILITY;
-	#endif
 }
 
 #if 0
@@ -1970,6 +1993,24 @@ void MyMainWindow::setBorder(bool b, bool force)
 	doReparent(parentWidget(), flags, pos());
 }
 
+void MyMainWindow::setUtility(bool b)
+{
+	Qt::WindowFlags flags;
+	
+	if (_utility == b)
+		return;
+		
+	_utility = b;
+	flags = windowFlags() & ~Qt::WindowType_Mask;
+	
+	if (b)
+		flags |= Qt::Tool; //|Qt::ToolTip);
+	else
+		flags |= Qt::Window; //|Qt::ToolTip;
+	
+	doReparent(parentWidget(), flags, pos());
+}
+
 void MyMainWindow::setResizable(bool b, bool force)
 {
 	if (_resizable == b && !force)
@@ -2008,12 +2049,6 @@ void MyMainWindow::setType(int type)
 	_type = type;
 }
 #endif
-
-void MyMainWindow::paintUnclip(bool on)
-{
-	setAttribute(Qt::WA_PaintUnclipped, on);
-}
-
 
 void MyMainWindow::moveEvent(QMoveEvent *e)
 {
@@ -2622,17 +2657,6 @@ bool CWindow::eventFilter(QObject *o, QEvent *e)
 
 	if (THIS && !CWIDGET_test_flag(THIS, WF_DELETED))
 	{
-		/*if (e->type() == QEvent::WindowActivate && e->spontaneous())
-		{
-			//qDebug("Activate: fake focus");
-			CWIDGET_handle_focus((CWIDGET *)THIS, true);
-		}
-		else if (e->type() == QEvent::WindowDeactivate && e->spontaneous())
-		{
-			//qDebug("Activate: fake focus");
-			CWIDGET_handle_focus((CWIDGET *)THIS, false);
-		}
-		else */
 		if (e->type() == QEvent::Show) // && !e->spontaneous())
 		{
 			MyMainWindow *w = (MyMainWindow *)o;

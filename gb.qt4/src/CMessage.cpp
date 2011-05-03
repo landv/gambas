@@ -247,7 +247,9 @@ static int make_message(int type, int nbmax, void *_param)
 	
 	mb->exec();
 	
-	CWINDOW_ensure_active_window();
+	//CWINDOW_ensure_active_window();
+	if (parent)
+		parent->activateWindow();
 	
 	// Returned value
 	
