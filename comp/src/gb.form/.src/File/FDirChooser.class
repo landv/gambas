@@ -911,6 +911,7 @@ End
 
 Public Sub dvwChoose_Menu()
 
+  mnuUncompress.Hide
   mnuPopup.Popup
 
 End
@@ -964,8 +965,45 @@ End
 Public Sub mnuUncompress_Click()
   
   Dim sResult As String
+  Dim sOutput As String
+  Dim iMsg As Integer
+  Dim sPath As String
   
   Inc Application.Busy
+  
+  Select Case File.Name(fvwChoose.Current)
+    
+    Case Like "*.tar.gz", "*.tar.bz2"
+      Shell "cd " & Shell(fvwChoose.Dir) & ";tar tf " & Shell$(fvwChoose.Current) To sOutput
+  
+      For Each sOutput In Split(Trim(sOutput), "\n")
+        
+        If Right(sOutput) = "/" Then sOutput = Left$(sOutput, -1)
+        sPath = fvwChoose.Dir &/ sOutput
+        
+        If Exist(sPath) Then
+          
+          If iMsg <> 1 Then
+            Application.Busy = 0
+            iMsg = Message.Warning("<b>" & sOutput & "</b><p>" & ("This file or directory already exists."), ("Overwrite all"), ("Overwrite"), ("Cancel"))
+            If iMsg = 3 Then Return
+            Inc Application.Busy
+          Endif
+          
+          Shell "rm -rf " & Shell$(fvwChoose.Dir &/ sOutput) Wait
+          
+        Endif
+        
+      Next
+      
+    Case Else
+      Application.Busy = 0
+      Message(("Cannot uncompress file.") & "\n\n" & ("Unknown archive."))
+      Return
+      
+  End Select
+
+  If Process.LastValue Then Goto _CANNOT_UNCOMPRESS
   
   Select Case File.Name(fvwChoose.Current)
     
@@ -977,22 +1015,21 @@ Public Sub mnuUncompress_Click()
       Shell "cd " & Shell(fvwChoose.Dir) & ";tar xfj " & Shell$(fvwChoose.Current) Wait
       'Exec ["/bin/tar", "xfj", "-C", fvwChoose.Dir, sPath] To sResult
       
-    Case Else
-      Message(("Cannot uncompress file.") & "\n\n" & ("Unknown archive."))
-      Dec Application.Busy
-      Return
-      
   End Select
+  
+  If Process.LastValue Then Goto _CANNOT_UNCOMPRESS
   
   Dec Application.Busy
   
-  If Process.LastValue Then
-    Message(("Cannot uncompress file.") & "\n\n" & sResult)
-    Return
-  Endif
-  
   Reload
+  Return
   
+_CANNOT_UNCOMPRESS:
+
+  Application.Busy = 0
+  Message(("Cannot uncompress file.") & "\n\n" & sResult)
+  Return
+
 Catch
   
   Application.Busy = 0
