@@ -27,7 +27,7 @@ Private Function GetName() As String
 
   If $sPath Then Return $sPath
 
-  Return "(New document)"
+  Return ("(New document)")
 
 End
 
@@ -63,7 +63,7 @@ End
 Private Function CloseDoc() As Boolean
 
   If $bModify Then
-    Select Case Message.Question(GetName() & "\n\nFile has been modified. Do you want to save it ?", "Yes", "No", "Cancel")
+    Select Case Message.Question(GetName() & ("\n\nFile has been modified. Do you want to save it ?"), ("Yes"), ("No"), ("Cancel"))
       Case 1
         Save
       Case 3
@@ -94,7 +94,7 @@ Public Sub LoadFile(sPath As String)
 
 Catch
 
-  Message.Error(sPath & "\nUnable to load file.\n" & Error.Text)
+  Message.Error(sPath & ("\nUnable to load file.\n") & Error.Text)
 
 End
 
@@ -115,7 +115,7 @@ Public Sub mnuOpen_Click()
   
   Dim sPath As String
 
-  Dialog.Filter = ["*", "All files", "*.{c;cpp;h}", "C/C++ files", "*.txt", "Text files", "*.desktop", "Desktop files"]
+  Dialog.Filter = ["*", ("All files"), "*.{c;cpp;h}", ("C/C++ files"), "*.txt", ("Text files"), "*.desktop", ("Desktop files")]
 
   If Dialog.OpenFile() Then Return
   LoadFile(Dialog.Path)

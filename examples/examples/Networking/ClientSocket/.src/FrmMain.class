@@ -23,10 +23,10 @@ Public Sub MySocket_Ready()
   
   timTimeout.Enabled = False
   If CurProtocol = 1 Then
-    lblMessage.Text = "Connected to path " & MySocket.Path
+    lblMessage.Text = ("Connected to path ") & MySocket.Path
   Else
-    lblMessage.Text = "Connected to remote host " & MySocket.Path
-    lblMessage.Text = lblMessage.Text & " - Using local address : " & MySocket.LocalHost & ":" & MySocket.LocalPort
+    lblMessage.Text = ("Connected to remote host ") & MySocket.Path
+    lblMessage.Text = lblMessage.Text & (" - Using local address : ") & MySocket.LocalHost & ":" & MySocket.LocalPort
   End If
   Me.Enabled = True
   Set_Interface(True)
@@ -39,7 +39,7 @@ Public Sub MySocket_Closed()
   ' closes the socket by any reason
   '********************************************
 
-  lblMessage.Caption = "Connection Closed by foreign host."
+  lblMessage.Caption = ("Connection Closed by foreign host.")
   Me.Enabled = True
   Set_Interface(False)
   
@@ -51,7 +51,7 @@ Public Sub MySocket_Found()
   ' name has been translated to IP
   '********************************************
 
-  lblMessage.Caption = "Host Found. Connecting..."
+  lblMessage.Caption = ("Host Found. Connecting...")
   
 End
 
@@ -81,15 +81,15 @@ Public Sub MySocket_Error()
 
   Select Case MySocket.Status
     Case Net.CannotCreateSocket
-      lblMessage.Text = "The system does not allow to create a socket"
+      lblMessage.Text = ("The system does not allow to create a socket")
     Case Net.HostNotFound
-      lblMessage.Text = "Host not Found"
+      lblMessage.Text = ("Host not Found")
     Case Net.ConnectionRefused
-      lblMessage.Text = "Unable to Connect. Connection Refused"
+      lblMessage.Text = ("Unable to Connect. Connection Refused")
     Case Net.CannotRead
-      lblMessage.Text = "Error Reading Data"
+      lblMessage.Text = ("Error Reading Data")
     Case Net.CannotWrite
-      lblMessage.Text = "Error Writing Data"
+      lblMessage.Text = ("Error Writing Data")
   End Select
   Set_Interface(False)
 
@@ -155,7 +155,7 @@ Public Sub btnConnect_Click()
       '**************************
       btnClose.Enabled = True
       'ME.Enabled=FALSE
-      lblMessage.Text = "Looking up host name..."
+      lblMessage.Text = ("Looking up host name...")
       timTimeout.Delay = 10000 ' we'll wait a maximun time of  10 seconds
       timTimeout.Enabled = True
     End If
@@ -173,7 +173,7 @@ Public Sub timTimeout_Timer()
   If MySocket.Status <> Net.Connected Then
     Close MySocket
     Set_Interface(False)
-    lblMessage.Text = "Timeout trying to stablish connection"
+    lblMessage.Text = ("Timeout trying to stablish connection")
   End If
 
 End
@@ -186,7 +186,7 @@ Public Sub btnClose_Click()
   '**********************************
   Close MySocket
   Set_Interface(False)
-  lblMessage.Text = "Connection closed by user"
+  lblMessage.Text = ("Connection closed by user")
   
 End
 

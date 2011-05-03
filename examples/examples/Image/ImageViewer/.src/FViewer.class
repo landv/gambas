@@ -48,9 +48,9 @@ Public Sub mnuStart_Click()
   timDraw.Enabled = Not timDraw.Enabled
 
   If timDraw.Enabled Then
-    mnuStart.Text = "&Stop"
+    mnuStart.Text = ("&Stop")
   Else
-    mnuStart.Text = "&Start"
+    mnuStart.Text = ("&Start")
   Endif
 
 End
@@ -98,7 +98,7 @@ End
 
 Public Sub mnuAbout_Click()
 
-  Message.Info("A simple image viewer example by\nBenoit Minisini (gambas@users.sourceforge.net)")
+  Message.Info(("A simple image viewer example by\nBenoit Minisini (gambas@users.sourceforge.net)"))
 
 End
 

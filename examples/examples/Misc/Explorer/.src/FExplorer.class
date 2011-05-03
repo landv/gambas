@@ -149,13 +149,13 @@ End
 
 Public Sub mnuAbout_Click()
 
-  Message("IconView example written by\nBenoît Minisini")
+  Message(("IconView example written by\nBenoît Minisini"))
 
 End
 
 Public Sub ivwExplorer_Rename()
 
-  Message("'" & Mid$(Last.Item.Key, 2) & "' has been renamed to '" & Last.Item.Text & "'")
+  Message("'" & Mid$(Last.Item.Key, 2) & ("' has been renamed to '") & Last.Item.Text & "'")
 
 End
 
