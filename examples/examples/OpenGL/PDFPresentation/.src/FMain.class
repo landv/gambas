@@ -1,108 +1,110 @@
 ' Gambas class file
 
-PRIVATE currentDoc AS CpdfPresentation
+Private currentDoc As CpdfPresentation
 'PUBLIC Screen AS NEW Window(TRUE) AS "Screen"
-PRIVATE currentLogo AS Clogo
+Private currentLogo As Clogo
 
-PUBLIC SUB glaPresentation_Draw()
+Public Sub glaPresentation_Draw()
 
-  IF NOT currentDoc THEN RETURN
+  If Not currentDoc Then Return
 
-  IF NOT MMain.ShowLogo THEN
+  If Not MMain.ShowLogo Then
     currentDoc.Draw()
-  ELSE
+  Else
     currentLogo.Draw()
-    IF currentLogo.Finished = TRUE THEN MMain.ShowLogo = FALSE
-  ENDIF
+    If currentLogo.Finished = True Then MMain.ShowLogo = False
+  Endif
 
-END
+End
 
-PUBLIC SUB glaPresentation_KeyPress()
+Public Sub glaPresentation_KeyPress()
 
-  IF key.code = key.Esc THEN ME.Close()
+  If Key.code = Key.Esc Then Me.Close()
   
-  IF key.Code = key["f"] THEN 
-    ME.FullScreen = NOT ME.Fullscreen
-    panSelect.Visible = NOT ME.FullScreen
-    IF ME.FullScreen THEN 
-      ME.Padding = 0
-    ELSE 
-      ME.Padding = 8
-    ENDIF
-  ENDIF
+  If Key.Code = key["f"] Then 
+    Me.FullScreen = Not Me.Fullscreen
+    panSelect.Visible = Not Me.FullScreen
+  Endif
 
-  IF NOT MMain.ShowLogo THEN
+  If Not MMain.ShowLogo Then
     ' right arrow
-    IF key.Code = key.Right THEN currentDoc.MoveNext()
+    If Key.Code = Key.Right Then currentDoc.MoveNext()
     ' left arrow
-    IF key.code = key.Left THEN currentDoc.MovePrev()
-  ELSE
-    IF key.Code = key.Space THEN currentLogo.Quit()
-  ENDIF
+    If Key.code = Key.Left Then currentDoc.MovePrev()
+  Else
+    If Key.Code = Key.Space Then currentLogo.Quit()
+  Endif
 
-END
+End
 
-PUBLIC SUB glaPresentation_Resize()
+Public Sub glaPresentation_Resize()
 
-  IF NOT currentDoc THEN RETURN
+  If Not currentDoc Then Return
 
-  IF MMain.ShowLogo THEN
+  If MMain.ShowLogo Then
     currentLogo.Resize(glaPresentation.Width, glaPresentation.Height)
-  ELSE
+  Else
     currentDoc.Resize(glaPresentation.Width, glaPresentation.Height)
-  ENDIF  
+  Endif  
 
-END
+End
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
   glaPresentation.SetFocus
 
-END
+End
 
-PUBLIC SUB timUpdate_Timer()
+Public Sub timUpdate_Timer()
 
   glaPresentation.Update
 
-END
+End
 
-PUBLIC SUB btnPath_Click()
+Public Sub btnPath_Click()
 
-  DIM sPath AS String
+  Dim sPath As String
 
   Dialog.Title = ("Select a PDF file")
   Dialog.Filter = ["*.pdf", ("PDF files")]
-  IF Dialog.OpenFile() THEN RETURN
+  If Dialog.OpenFile() Then Return
   sPath = Dialog.Path
   txtPath.Text = sPath
 
   timUpdate.Stop
 
-  CurrentDoc = NEW CpdfPresentation(sPath, MMain.FrameRate)
+  CurrentDoc = New CpdfPresentation(sPath, MMain.FrameRate)
   currentDoc.Effect = currentDoc.Rotate
   
-  currentLogo = NEW Clogo(MMain.FrameRate)
+  currentLogo = New Clogo(MMain.FrameRate)
   
   glaPresentation_Resize
   
   timUpdate.Delay = 1000 / MMain.FrameRate
-  PRINT "Frame rate is "; Format(1000 / timUpdate.Delay, "#.##"); " images by second"
+  Print "Frame rate is "; Format(1000 / timUpdate.Delay, "#.##"); " images by second"
   timUpdate.Start
   
   glaPresentation.SetFocus
 
-END
+End
 
-PUBLIC SUB glaPresentation_MouseWheel()
+Public Sub glaPresentation_MouseWheel()
 
-  IF NOT currentDoc THEN RETURN
-  IF MMain.ShowLogo THEN RETURN
+  If Not currentDoc Then Return
+  If MMain.ShowLogo Then Return
 
-  IF Mouse.Delta < 0 THEN 
+  If Mouse.Delta < 0 Then 
     currentDoc.ZoomIn
-  ELSE
+  Else
     currentDoc.ZoomOut
-  ENDIF
+  Endif
     
 
-END
+End
+
+Public Sub btnHelp_Click()
+
+  Message("<h2>PDFPresentation example</h2><i>Made by Laurent Carlier & Benoît Minisini.</i><p>"
+    "Select a PDF file, then press SPACE. Use the left and right arrows to flick through the document.")
+
+End

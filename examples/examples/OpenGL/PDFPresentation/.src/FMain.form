@@ -2,22 +2,29 @@
 
 { Form Form
   MoveScaled(0,0,94,64)
+  Icon = Picture["icon.png"]
   Arrangement = Arrange.Vertical
-  Spacing = True
-  Padding = 8
   { panSelect HBox
-    MoveScaled(0,0,75,4)
+    MoveScaled(0,0,82,6)
     AutoResize = True
     Spacing = True
+    Margin = True
     { txtPath TextBox
       MoveScaled(0,0,54,4)
-      Background = Color.ButtonBackground
       Expand = True
       ReadOnly = True
     }
     { btnPath Button
       MoveScaled(55,0,13,4)
+      AutoResize = True
       Text = ("Select...")
+      Picture = Picture["icon:/small/file"]
+    }
+    { btnHelp Button
+      MoveScaled(69,0,11,4)
+      AutoResize = True
+      Text = ("Help...")
+      Picture = Picture["icon:/small/help"]
     }
   }
   { glaPresentation GlArea
