@@ -65,7 +65,7 @@ End
 
 Private Sub Picture_Write(Value As Picture)
 
-  If Not Value Then Value = Picture["img/select.png"]
+  If Not Value Then Value = Picture["./img/select.png"]
   $hButton.Picture = Value
 
 End
@@ -134,7 +134,8 @@ End
 Private Sub Border_Write(Value As Boolean)
 
   $bBorder = Value
-  $hBackground.Padding = If(Value, Style.TextBoxFrameWidth, 0)
+  $hBackground.Padding = If(Value, Max(3, Style.TextBoxFrameWidth), 0)
+  $hBackground.Margin = Value
   'Background_Arrange
   Me.Refresh
 

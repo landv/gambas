@@ -1,20 +1,26 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,76,89)
-  Arrangement = Arrange.Fill
+  MoveScaled(0,0,76,93)
+  Arrangement = Arrange.Vertical
   Spacing = True
-  Padding = 8
+  Margin = True
+  { Button1 Button
+    MoveScaled(1,0,16,4)
+    Text = ("Refresh")
+  }
   { DataSource2 DataSource
-    MoveScaled(1,1,69,87)
+    MoveScaled(1,5,69,87)
+    Expand = True
     Arrangement = Arrange.Vertical
+    Connection = Connections["Connection2"]
     Table = "color"
     { DataBrowser2 DataBrowser
-      MoveScaled(2,1,59,17)
+      MoveScaled(2,1,59,14)
       Control = False
     }
     { DataSource1 DataSource
-      MoveScaled(1,19,62,68)
+      MoveScaled(1,19,62,65)
       Expand = True
       Arrangement = Arrange.Vertical
       Spacing = True
@@ -23,11 +29,10 @@
         MoveScaled(2,2,59,18)
         Expand = True
         Columns = ["id", "active", "color", "firstname", "salary", "comment"]
-        Editable = True
         Orientation = Align.Top
       }
       { HBox1 HBox
-        MoveScaled(2,21,59,46)
+        MoveScaled(2,21,59,43)
         Spacing = True
         { VBox2 VBox
           MoveScaled(1,1,12,35)

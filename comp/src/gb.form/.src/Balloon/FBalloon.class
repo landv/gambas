@@ -213,8 +213,8 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
     Me.Raise
   Endif
   
-  'Try hCtrl.SetFocus
   Try GetTopLevel(hCtrl).Show
+  Try hCtrl.SetFocus
   
   $dShow = Timer
   
@@ -380,4 +380,3 @@ Static Public Sub SetDelay(iDelay As Integer)
   $iDelay = iDelay
   
 End
-

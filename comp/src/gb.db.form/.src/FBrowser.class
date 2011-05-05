@@ -68,6 +68,13 @@ Public Sub btnSave_Click()
 
 End
 
+Public Sub _OnDatabaseChange()
+  
+  dvwBrowser._OnDatabaseChange
+  
+End
+
+
 Public Sub Update()
 
   Dim bEnabled As Boolean  

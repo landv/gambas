@@ -1142,13 +1142,15 @@ __BOOLEAN:
 
 	if (value->_boolean.value)
 	{
-		*addr = LOCAL_local.true_str;
-		*len = LOCAL_local.len_true_str;
+		*addr = (char *)LOCAL_gettext("True");
+		*len = strlen(*addr);
 	}
 	else
 	{
-		*addr = LOCAL_local.false_str;
-		*len = LOCAL_local.len_false_str;
+		*addr = (char *)LOCAL_gettext("False");
+		*len = strlen(*addr);
+		//*addr = LOCAL_local.false_str;
+		//*len = LOCAL_local.len_false_str;
 	}
 	return;
 

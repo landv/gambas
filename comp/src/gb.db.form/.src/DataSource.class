@@ -261,8 +261,8 @@ Public Sub _OnDatabaseChange()
     'DEBUG hChild.Name
     If hChild Is DataSource Then
       If Not hChild.Connection Then hChild._OnDatabaseChange()
-    Else If Common.IsControl(hChild) Or If hChild Is DataBrowser Or If hChild Is DataView Then
-      Try hChild._OnDatabaseChange()
+    'Else If Common.IsControl(hChild) Or If hChild Is DataBrowser Or If hChild Is DataView Then
+    '  Try hChild._OnDatabaseChange()
     Endif
   Next
   

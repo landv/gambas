@@ -24,6 +24,7 @@ Property Read Current As Variant[]
 Property Read Count As Integer
 Property Read Index As Integer
 Property Read View As TableView
+Property Font As Font
 
 Private Const NEW_RECORD As String = "*"
 
@@ -264,8 +265,6 @@ Public Sub TableView_Scroll()
   
 End
 
-
-
 Public Sub TableView_Timer()
   
   Dim iRow As Integer
@@ -303,6 +302,11 @@ Public Sub TableView_Data(Row As Integer, Column As Integer)
   Dim iIndex As Integer
   Dim hField As DataField
   Dim sText As String
+  
+  'If Column = 0 And If Row = 0 Then
+  '  Error System.Backtrace.Join("\n")
+  '  Error "-------------------------------"
+  'Endif
   
   With $hCtrl.Data
     .Padding = 1
@@ -595,7 +599,7 @@ End
 
 Public Sub MoveTo(Index As Integer)
   
-  If Index = $hCtrl.Row Then Return
+  'If Index = $hCtrl.Row Then Return
   $hCtrl.Row = Index
   $hCtrl.Rows[$hCtrl.Row].Selected = True
   
@@ -621,7 +625,9 @@ End
 Private Sub ShowNewRecord()
   
   If Not HasNewRecord() Then 
+    $bNoActivate = True
     Inc $hCtrl.Rows.Count
+    $bNoActivate = False
     $iRowNewRecord = $hCtrl.Rows.Count - 1
     $hCtrl.Rows[$iRowNewRecord].Text = NEW_RECORD
   'Else
@@ -906,9 +912,23 @@ Private Sub Editable_Write(Value As Boolean)
   If $bEditable = Value Then Return
   $bEditable = Value
   If Value Then 
-    CreateNewRecord
+    'CreateNewRecord
+    Me.Create
   Else
     HideNewRecord
   Endif
+
+End
+
+Private Function Font_Read() As Font
+
+  Return Super.Font
+
+End
+
+Private Sub Font_Write(Value As Font)
+
+  Super.Font = Value
+  $hCtrl.Font = Value
 
 End

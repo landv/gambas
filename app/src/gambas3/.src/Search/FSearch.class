@@ -814,7 +814,7 @@ End
 Public Sub btnReplaceAll_Click()
 
   If Message.Question(("Do you really want to replace every string?"), ("Replace"), ("Cancel")) <> 1 Then Return
-
+  
   If btnBrowse.Visible Then
     Browse(radSourceFileOnly.Value, True)
   Else

@@ -426,6 +426,29 @@ void MyTableItem::move(int srow, int scol, int drow, int dcol)
 
 /** MyTable ******************************************************************/
 
+/*#define BEGIN_NO_REPAINT \
+{ \
+	bool f = testAttribute(Qt::WA_WState_ConfigPending); \
+	setAttribute(Qt::WA_WState_ConfigPending);
+	
+#define END_NO_REPAINT \
+	setAttribute(Qt::WA_WState_ConfigPending, f); \
+}*/
+
+//#define BEGIN_NO_REPAINT
+//#define END_NO_REPAINT
+
+#define BEGIN_NO_REPAINT \
+{ \
+	bool f = viewport()->updatesEnabled(); \
+	viewport()->setUpdatesEnabled(false);
+	
+#define END_NO_REPAINT \
+	viewport()->setUpdatesEnabled(f); \
+}
+
+
+
 MyTable::MyTable(QWidget *parent, CGRIDVIEW *view) :
 Q3Table(0, 0, parent)
 {
@@ -442,6 +465,9 @@ Q3Table(0, 0, parent)
 	_enableUpdates = false;
 	_min_row = -1;
 	_show_grid = true;
+	
+	/*viewport()->setAttribute(Qt::WA_NoSystemBackground, true);
+	viewport()->setAttribute(Qt::WA_PaintOnScreen, true);*/
 	
 	setSelectionMode(NoSelection);
 	setFocusStyle(FollowStyle);
@@ -494,6 +520,8 @@ void MyTable::drawContents(QPainter *p, int cx, int cy, int cw, int ch)
 		paintEmptyArea(p, cx, cy, cw, ch);
 		return;
 	}
+
+	//qDebug("drawContents: (%d %d) -> (%d %d)", rowfirst, colfirst, rowlast, collast);
 
 	/*drawActiveSelection = hasFocus() || viewport()->hasFocus() || d->inMenuMode
 											|| is_child_of(qApp->focusWidget(), viewport())
@@ -708,28 +736,33 @@ void MyTable::setNumCols(int newCols)
 	if (newCols < 0)
 		return;
 
-	_cols = newCols;
-	_item->invalidate();
-
-	b = signalsBlocked();
-	blockSignals(true);
-	Q3Table::setNumCols(newCols);
-	blockSignals(b);
-
-	_last_col_width = 0;
-
-	if (newCols > col)
+	BEGIN_NO_REPAINT
 	{
-		bool upd = horizontalHeader()->isUpdatesEnabled();
-		horizontalHeader()->setUpdatesEnabled(false);
+		_cols = newCols;
+		_item->invalidate();
 
-		for (i = col; i < newCols; i++)
-			horizontalHeader()->setLabel(i, "");
+		b = signalsBlocked();
+		blockSignals(true);
+		Q3Table::setNumCols(newCols);
+		blockSignals(b);
 
-		horizontalHeader()->setUpdatesEnabled(upd);
+		_last_col_width = 0;
+
+		if (newCols > col)
+		{
+			bool upd = horizontalHeader()->isUpdatesEnabled();
+			horizontalHeader()->setUpdatesEnabled(false);
+
+			for (i = col; i < newCols; i++)
+				horizontalHeader()->setLabel(i, "");
+
+			horizontalHeader()->setUpdatesEnabled(upd);
+		}
+
+		clearSelection();
 	}
+	END_NO_REPAINT
 
-	clearSelection();
 	emit currentChanged(-1, -1); 
 }
 
@@ -740,15 +773,20 @@ void MyTable::setNumRows(int newRows)
 	if (newRows < 0)
 		return;
 
-	_rows = newRows;
-	_item->invalidate();
-	
-	b = signalsBlocked();
-	blockSignals(true);
-	Q3Table::setNumRows(newRows);
-	blockSignals(b);
+	BEGIN_NO_REPAINT
+	{
+		_rows = newRows;
+		_item->invalidate();
+		
+		b = signalsBlocked();
+		blockSignals(true);
+		Q3Table::setNumRows(newRows);
+		blockSignals(b);
 
-	clearSelection();
+		clearSelection();
+	}
+	END_NO_REPAINT
+	
 	emit currentChanged(-1, -1); 
 }
 
@@ -2363,7 +2401,7 @@ void CGridView::selected(void)
 	else
 	{
 		//QRect r(WIDGET->contentsToViewport(QPoint(WIDGET->contentsX(), WIDGET->contentsY())), QSize(WIDGET->contentsWidth(), WIDGET->contentsHeight()));
-		WIDGET->viewport()->update();
+		//WIDGET->viewport()->update();
 		GB.RaiseLater(THIS, EVENT_Select);
 	}
 }
