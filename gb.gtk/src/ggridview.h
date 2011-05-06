@@ -61,10 +61,10 @@ public:
 	void clearSelection() { render->clearSelection(); }
 	void selectRows(int start, int end, bool value = true) { render->selectRows(start, end, value); }
 
-	int     visibleTop();
-	int     visibleLeft();
-	int     visibleWidth();
-	int     visibleHeight();
+	int     clientX();
+	int     clientY();
+	int     clientWidth();
+	int     clientHeight();
 	int     scrollBar();
 	int     scrollX();
 	int     scrollY();

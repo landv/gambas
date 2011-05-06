@@ -195,6 +195,8 @@ Private Sub Load()
   $iRowNewRecord = -1
   If CanEdit() Then CreateNewRecord
 
+  EnsureRowVisible($hCtrl.Row)
+
 End
 
 
@@ -231,7 +233,7 @@ Private Sub IsRowVisible(Row As Integer) As Boolean
   Dim H As Integer 
   Dim HH As Integer
   
-  Y = $hCtrl.Rows[Row].Y
+  Y = $hCtrl.Rows[Row].Y - Me.ScrollY
   H = $hCtrl.Rows[Row].H
   HH = $hCtrl.Columns.H
   
@@ -251,11 +253,13 @@ Private Sub EnsureRowVisible(Row As Integer)
   H = $hCtrl.Rows[Row].H
   HH = $hCtrl.Columns.H
   
-  If (Y + H) < HH Then
-    $hCtrl.ScrollY -= HH - (Y + H)
-  Else If (Y > ($hCtrl.ClientH + HH - H)) Then
+  If Y < $hCtrl.ScrollY Then
+    $hCtrl.ScrollY = Y
+  Else If (Y > ($hCtrl.ScrollY + $hCtrl.ClientH + HH - H)) Then
     $hCtrl.ScrollY += Y - ($hCtrl.ClientH + HH - H)
   Endif
+  
+  '$hCtrl[Row, $hCtrl.Column].EnsureVisible
   
 End
 
@@ -440,11 +444,16 @@ End
 
 Private Sub Warning(sMsg As String, Optional bError As Boolean)
   
+  Dim X, Y As Integer
+  
+  X = Me.Rows.Width - Me.ScrollX + Me.ClientX
+  Y = Me.Columns.Height - Me.ScrollY + Me.ClientY
+  
   With $hCtrl[$hCtrl.Row, $hCtrl.Column]
     If bError Then
-      Balloon.Error(sMsg, $hCtrl, .X + .W \ 2, .Y + .H \ 2) 
+      Balloon.Error(sMsg, $hCtrl, X + .X + .W \ 2, Y + .Y + .H \ 2) 
     Else
-      Balloon.Warning(sMsg, $hCtrl, .X + .W \ 2, .Y + .H \ 2) 
+      Balloon.Warning(sMsg, $hCtrl, X + .X + .W \ 2, Y + .Y + .H \ 2) 
     Endif
   End With
 

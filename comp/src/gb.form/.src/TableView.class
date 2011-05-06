@@ -106,9 +106,10 @@ Private Sub MoveEditor()
   
   If Not $hEditor Then Return 
   
-  X = Me.ScreenX - Me.Window.ScreenX - Me.Window.ClientX
-  Y = Me.ScreenY - Me.Window.ScreenY - Me.Window.ClientY
+  X = Me.ScreenX - Me.Window.ScreenX - Me.Window.ClientX + Me.Rows.Width - Me.ScrollX + Me.ClientX
+  Y = Me.ScreenY - Me.Window.ScreenY - Me.Window.ClientY + Me.Columns.Height - Me.ScrollY + Me.ClientY
   'DEBUG $iRow;; $iCol
+  
   With Me[$iRow, $iCol]
     X += .X
     Y += .Y

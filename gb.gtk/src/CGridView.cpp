@@ -726,25 +726,25 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CGRIDVIEW_client_x)
 
-	GB.ReturnInteger(WIDGET->visibleLeft());
+	GB.ReturnInteger(WIDGET->clientX());
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CGRIDVIEW_client_y)
 
-	GB.ReturnInteger(WIDGET->visibleTop());
+	GB.ReturnInteger(WIDGET->clientY());
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CGRIDVIEW_client_width)
 
-	GB.ReturnInteger(WIDGET->visibleWidth());
+	GB.ReturnInteger(WIDGET->clientWidth());
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CGRIDVIEW_client_height)
 
-	GB.ReturnInteger(WIDGET->visibleHeight());
+	GB.ReturnInteger(WIDGET->clientHeight());
 
 END_PROPERTY
 

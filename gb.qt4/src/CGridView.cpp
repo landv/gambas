@@ -1285,7 +1285,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CGRIDITEM_x)
 
-	GB.ReturnInteger(WIDGET->columnPos(THIS->col) - WIDGET->contentsX() + WIDGET->clipper()->x());
+	GB.ReturnInteger(WIDGET->columnPos(THIS->col)); // - WIDGET->contentsX() + WIDGET->clipper()->x());
 
 END_PROPERTY
 
@@ -1303,7 +1303,7 @@ BEGIN_PROPERTY(CGRIDITEM_y)
 	
 	*/
 
-	GB.ReturnInteger(WIDGET->rowPos(THIS->row) - WIDGET->contentsY() + WIDGET->clipper()->y());
+	GB.ReturnInteger(WIDGET->rowPos(THIS->row)); // - WIDGET->contentsY() + WIDGET->clipper()->y());
 
 END_PROPERTY
 
@@ -2009,25 +2009,6 @@ BEGIN_PROPERTY(CGRIDVIEW_client_height)
 
 END_PROPERTY
 
-// CWIDGET_refresh does not work for this widget ??
-// Should do viewport->refresh() !
-
-/*BEGIN_METHOD(CGRIDVIEW_refresh, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
-
-	int x, y, w, h;
-
-	if (!MISSING(x) && !MISSING(y))
-	{
-		x = VARG(x);
-		y = VARG(y);
-		w = VARGOPT(w, WIDGET->width());
-		h = VARGOPT(h, WIDGET->height());
-		WIDGET->viewport()->update(x, y, w, h);
-	}
-	else
-		WIDGET->viewport()->update();
-
-END_METHOD*/
 
 BEGIN_PROPERTY(CGRIDVIEW_scroll_x)
 

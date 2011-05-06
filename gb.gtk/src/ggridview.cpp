@@ -1103,34 +1103,22 @@ int gGridView::columnAt(int x)
 	return -1;
 }
 
-int gGridView::visibleLeft()
+int gGridView::clientX()
 {
-	gboolean vl;
-	int w;
-
-	g_object_get(G_OBJECT(lateral),"visible",&vl,(void *)NULL);
-	if (!vl) return 0;
-	gtk_widget_get_size_request(lateral,&w,NULL);
-	return w;
+	return frame_border;
 }
 
-int gGridView::visibleTop()
+int gGridView::clientY()
 {
-	gboolean vl;
-	int h;
-
-	g_object_get(G_OBJECT(header),"visible",&vl,(void *)NULL);
-	if (!vl) return 0;
-	gtk_widget_get_size_request(header,NULL,&h);
-	return h;
+	return frame_border;
 }
 
-int gGridView::visibleWidth()
+int gGridView::clientWidth()
 {
 	return render->visibleWidth();
 }
 
-int gGridView::visibleHeight()
+int gGridView::clientHeight()
 {
 	return render->visibleHeight();
 }
@@ -1141,8 +1129,8 @@ void gGridView::ensureVisible(int row, int col)
 	GtEnsureVisible arg;
 	bool sx, sy;
 	
-	arg.clientWidth = visibleWidth();
-	arg.clientHeight = visibleHeight();
+	arg.clientWidth = clientWidth();
+	arg.clientHeight = clientHeight();
 	arg.scrollX = scrollX();
 	arg.scrollY = scrollY();
 	arg.scrollWidth = render->width();
@@ -1184,9 +1172,9 @@ void gGridView::ensureVisible(int row, int col)
 			adj=gtk_range_get_adjustment(GTK_RANGE(hbar));
 			g_object_set(G_OBJECT(adj),"value",(gfloat)vl,NULL);
 		}
-		else if ( (vl+columnWidth(col))>visibleWidth() )
+		else if ( (vl+columnWidth(col))>clientWidth() )
 		{
-			vl=render->getOffsetX()+columnWidth(col)-(visibleWidth()-vl);
+			vl=render->getOffsetX()+columnWidth(col)-(clientWidth()-vl);
 			adj=gtk_range_get_adjustment(GTK_RANGE(hbar));
 			g_object_set(G_OBJECT(adj),"value",(gfloat)vl,NULL);
 		}
@@ -1488,23 +1476,33 @@ void gGridView::setRowHeight(int index,int vl)
 
 int gGridView::itemX(int col)
 {
-	int ret,bc;
+	if (col < 0 || col >= columnCount())
+		return -1;
+	else
+		return columnPos(col); // + rowWidth() + 2;
+	
+	/*int ret,bc;
 
 	if (col<0) return -1;
 	if (col>=render->columnCount()) return -1;
 
-	ret = -render->getOffsetX();
+	ret = 0; //-render->getOffsetX();
 	for (bc=0; bc<col; bc++)
 		ret+=render->getColumnSize(bc);
 
 	ret += rowWidth();
 
-	return ret + 2;
+	return ret + 2;*/
 }
 
 int gGridView::itemY(int row)
 {
-	int ret,bc;
+	if (row < 0 || row >= rowCount())
+		return -1;
+	else
+		return rowPos(row); // + headerHeight() + 2;
+	
+	/*int ret,bc;
 
 	if (row<0) return -1;
 	if (row>=render->rowCount()) return -1;
@@ -1515,7 +1513,7 @@ int gGridView::itemY(int row)
 
 	ret += headerHeight();
 
-	return ret + 2;
+	return ret + 2;*/
 }
 
 int gGridView::itemW(int col)
@@ -1879,7 +1877,7 @@ void gGridView::updateHeaders()
 	gtk_widget_set_size_request(header, header->requisition.width, h);
 	gtk_widget_set_size_request(footer, footer->requisition.width, h);
 	
-	wlat = 8 + font()->width("9") * sprintf(void_row_buffer, "%d", rowCount());
+	wlat = 4 + font()->width("9") * sprintf(void_row_buffer, "%d", rowCount());
 	
 	/*wlat = 0;
 	for (i = 0; i < rowCount(); i++)
@@ -1901,8 +1899,14 @@ void gGridView::updateHeaders()
 
 void gGridView::updateLateralWidth(int w)
 {
-	if (w > lateral->allocation.width)
+	int rw;
+	gtk_widget_get_size_request(lateral, &rw, NULL);
+	
+	if (w > lateral->allocation.width && w > rw)
+	{
+		fprintf(stderr, "updateLateralWidth: %d\n", w);
 		gtk_widget_set_size_request(lateral, w, lateral->allocation.height);
+	}
 }
 
 void gGridView::setFont(gFont *ft)
@@ -1960,7 +1964,7 @@ void gGridView::setForeground(gColor color)
 void gGridView::updateLastColumn()
 {
 	int n = columnCount() - 1;
-	int vw = visibleWidth();
+	int vw = clientWidth();
 	
 	if (n < 0)
 		return;
