@@ -233,11 +233,11 @@ Private Sub IsRowVisible(Row As Integer) As Boolean
   Dim H As Integer 
   Dim HH As Integer
   
-  Y = $hCtrl.Rows[Row].Y - Me.ScrollY
+  Y = $hCtrl.Rows[Row].Y - $hCtrl.ScrollY
   H = $hCtrl.Rows[Row].H
   HH = $hCtrl.Columns.H
   
-  Return (Y + H) >= HH And Y < ($hCtrl.ClientH + HH)
+  Return (Y + H) >= 0 And Y < $hCtrl.ClientHeight
 
 Catch
   
@@ -278,6 +278,7 @@ Public Sub TableView_Timer()
   $hTimer.Stop
 
   Try bVisible = IsRowVisible($hCtrl.Row)
+  'Debug $hCtrl.Row;; bVisible
   
   If bVisible Then
     $aAdjust.Push($hCtrl.Row)

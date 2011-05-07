@@ -108,7 +108,6 @@ Private Sub MoveEditor()
   
   X = Me.ScreenX - Me.Window.ScreenX - Me.Window.ClientX + Me.Rows.Width - Me.ScrollX + Me.ClientX
   Y = Me.ScreenY - Me.Window.ScreenY - Me.Window.ClientY + Me.Columns.Height - Me.ScrollY + Me.ClientY
-  'DEBUG $iRow;; $iCol
   
   With Me[$iRow, $iCol]
     X += .X
@@ -130,6 +129,7 @@ Private Sub MoveEditor()
     $hEditor.Font = Me.Font
     $hEditor.Show
     
+    Debug $iRow;; $iCol; " : ";; .Width;; .Height; " / "; $hEditor.Width;; $hEditor.Height
   End With
   
 End

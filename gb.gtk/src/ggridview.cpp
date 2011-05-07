@@ -203,6 +203,7 @@ static void tblateral_select(gGridView *data, int bcurrent, bool move)
 			if (!data->rowSelected(bcurrent))
 			{
 				data->setCursor(bcurrent, col);
+				data->setRowSelected(bcurrent, true);
 				data->emit(SIGNAL(data->onSelect));
 			}
 			break;
@@ -692,34 +693,77 @@ static gboolean cb_scroll(GtkWidget *wid, GdkEventScroll *e, gGridView *data)
 
 static gboolean cb_keypress(GtkWidget *wid,GdkEventKey *e,gGridView *data)
 {
-	int row,col;
-	bool bchange=false;
+	int row, r, col;
+	bool bchange = false;
 
-	data->getCursor(&row,&col);
+	data->getCursor(&row, &col);
 
 	switch(e->keyval)
 	{
-		case GDK_Up:
+		case GDK_KEY_Up:
 			if (row>0) { row--; bchange=true; }
 			break; 
 
-		case GDK_Down:
+		case GDK_KEY_Down:
 			if (row<(data->rowCount()-1)) { row++; bchange=true; }
 			break;
 
-		case GDK_Left:
+		case GDK_KEY_Left:
 			if (col>0) { col--; bchange=true; }
 			break; 
 
-		case GDK_Right:
+		case GDK_KEY_Right:
 			if (col<(data->columnCount()-1)) { col++; bchange=true; }
+			break;
+			
+		case GDK_KEY_Home:
+			if (row > 0)
+			{
+				row = 0;
+				bchange = true;
+			}
+			break;
+			
+		case GDK_KEY_End:
+			if (row < (data->rowCount() - 1))
+			{
+				row = data->rowCount() - 1;
+				bchange = true;
+			}
+			break;
+			
+		case GDK_KEY_Page_Down:
+			
+			r = row;
+			while (r < (data->rowCount() - 1))
+			{
+				r++;
+				bchange = true;
+				if ((data->rowPos(r) + data->rowHeight(r) - data->rowPos(row)) >= data->clientHeight())
+					break;
+			}
+			row = r;
+			break;
+			
+		case GDK_KEY_Page_Up:
+			
+			r = row;
+			while (r > 0)
+			{
+				r--;
+				bchange = true;
+				if ((data->rowPos(row) + data->rowHeight(row) - data->rowPos(r)) >= data->clientHeight())
+					break;
+			}
+			row = r;
 			break;
 	}
 
 	if (bchange)
 	{
-		data->ensureVisible(row,col);
-		data->setCursor(row,col);
+		tblateral_select(data, row, e->state & GDK_SHIFT_MASK);
+		//data->ensureVisible(row, col);
+		//data->setCursor(row, col);
 		return TRUE;
 	}
 
@@ -1155,50 +1199,6 @@ void gGridView::ensureVisible(int row, int col)
 		setScrollX(arg.scrollX);
 	if (sy)
 		setScrollY(arg.scrollY);
-	
-/* int vl;
-	//int bc;
-	GtkAdjustment *adj;
-
-	if (col >= 0 && col < columnCount())
-	{
-		vl = columnPos(col) - scrollX() + columnWidth(col) / 2;
-		//for (bc=0; bc<col; bc++)
-		//	vl+=columnWidth(bc);
-	
-		if (vl<0)
-		{
-			vl=render->getOffsetX()+vl;
-			adj=gtk_range_get_adjustment(GTK_RANGE(hbar));
-			g_object_set(G_OBJECT(adj),"value",(gfloat)vl,NULL);
-		}
-		else if ( (vl+columnWidth(col))>clientWidth() )
-		{
-			vl=render->getOffsetX()+columnWidth(col)-(clientWidth()-vl);
-			adj=gtk_range_get_adjustment(GTK_RANGE(hbar));
-			g_object_set(G_OBJECT(adj),"value",(gfloat)vl,NULL);
-		}
-	}
-
-	if (row >= 0 && row < rowCount())
-	{
-		vl = rowPos(row) - scrollY() + rowHeight(row) / 2;
-		//for (bc=0; bc<row; bc++)
-		//	vl+=rowHeight(bc);
-	
-		if (vl<0)
-		{
-			vl=render->getOffsetY()+vl;
-			adj=gtk_range_get_adjustment(GTK_RANGE(vbar));
-			g_object_set(G_OBJECT(adj),"value",(gfloat)vl,NULL);
-		}
-		else if ( (vl+rowHeight(col))>visibleHeight() )
-		{
-			vl=render->getOffsetY()+rowHeight(col)-(visibleHeight()-vl);
-			adj=gtk_range_get_adjustment(GTK_RANGE(vbar));
-			g_object_set(G_OBJECT(adj),"value",(gfloat)vl,NULL);
-		}
-	}	*/
 }
 
 bool gGridView::drawGrid()
@@ -1241,7 +1241,7 @@ void  gGridView::setCursor(int row,int col)
 	
 	if (selectionMode() == SELECT_SINGLE)
 		setRowSelected(cursor_row, true);
-	
+		
 	ensureVisible(cursor_row, cursor_col);
 	
 	emit(SIGNAL(onChange));
@@ -1903,10 +1903,7 @@ void gGridView::updateLateralWidth(int w)
 	gtk_widget_get_size_request(lateral, &rw, NULL);
 	
 	if (w > lateral->allocation.width && w > rw)
-	{
-		fprintf(stderr, "updateLateralWidth: %d\n", w);
 		gtk_widget_set_size_request(lateral, w, lateral->allocation.height);
-	}
 }
 
 void gGridView::setFont(gFont *ft)

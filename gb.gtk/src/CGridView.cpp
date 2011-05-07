@@ -717,6 +717,18 @@ BEGIN_PROPERTY(CGRIDVIEW_scrollY)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Gridview_ScrollWidth)
+
+	GB.ReturnInteger(WIDGET->scrollWidth());
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Gridview_ScrollHeight)
+
+	GB.ReturnInteger(WIDGET->scrollHeight());
+
+END_PROPERTY
+
 BEGIN_PROPERTY(CGRIDVIEW_grid)
 
 	if (READ_PROPERTY) { GB.ReturnBoolean(WIDGET->drawGrid()); return; }
@@ -1101,6 +1113,10 @@ GB_DESC CGridViewDesc[] =
     
   GB_PROPERTY("ScrollX", "i", CGRIDVIEW_scrollX),
   GB_PROPERTY("ScrollY", "i", CGRIDVIEW_scrollY),
+	GB_PROPERTY_READ("ScrollW", "i", Gridview_ScrollWidth),
+	GB_PROPERTY_READ("ScrollH", "i", Gridview_ScrollHeight),
+	GB_PROPERTY_READ("ScrollWidth", "i", Gridview_ScrollWidth),
+	GB_PROPERTY_READ("ScrollHeight", "i", Gridview_ScrollHeight),
   
   GB_PROPERTY("Row", "i", CGRIDVIEW_row),
   GB_PROPERTY("Column", "i", CGRIDVIEW_column),

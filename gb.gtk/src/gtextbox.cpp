@@ -325,8 +325,9 @@ void gTextBox::clear()
 
 int gTextBox::minimumHeight()
 {
-	GtkRequisition req;
+	/*GtkRequisition req;
 	
 	gtk_widget_size_request(widget, &req);
-	return req.height - 4;
+	return req.height - 4;*/
+	return font()->height() + hasBorder() ? 4 : 2;
 }

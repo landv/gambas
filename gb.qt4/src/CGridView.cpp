@@ -2005,7 +2005,7 @@ END_PROPERTY
 BEGIN_PROPERTY(CGRIDVIEW_client_height)
 
 	WIDGET->updateScrollBars();
-	GB.ReturnInteger(WIDGET->clipper()->height());
+	GB.ReturnInteger(WIDGET->visibleHeight());
 
 END_PROPERTY
 
@@ -2026,6 +2026,19 @@ BEGIN_PROPERTY(CGRIDVIEW_scroll_y)
 		GB.ReturnInteger(WIDGET->contentsY());
 	else
 		WIDGET->setContentsPos(WIDGET->contentsX(), VPROP(GB_INTEGER));
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(Gridview_ScrollWidth)
+
+	GB.ReturnInteger(WIDGET->contentsWidth());
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Gridview_ScrollHeight)
+
+	GB.ReturnInteger(WIDGET->contentsHeight());
 
 END_PROPERTY
 
@@ -2284,6 +2297,10 @@ GB_DESC CGridViewDesc[] =
 
 	GB_PROPERTY("ScrollX", "i", CGRIDVIEW_scroll_x),
 	GB_PROPERTY("ScrollY", "i", CGRIDVIEW_scroll_y),
+	GB_PROPERTY_READ("ScrollW", "i", Gridview_ScrollWidth),
+	GB_PROPERTY_READ("ScrollH", "i", Gridview_ScrollHeight),
+	GB_PROPERTY_READ("ScrollWidth", "i", Gridview_ScrollWidth),
+	GB_PROPERTY_READ("ScrollHeight", "i", Gridview_ScrollHeight),
 	GB_PROPERTY_READ("ClientX", "i", CGRIDVIEW_client_x),
 	GB_PROPERTY_READ("ClientY", "i", CGRIDVIEW_client_y),
 	GB_PROPERTY_READ("ClientWidth", "i", CGRIDVIEW_client_width),

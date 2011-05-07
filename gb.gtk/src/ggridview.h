@@ -68,12 +68,14 @@ public:
 	int     scrollBar();
 	int     scrollX();
 	int     scrollY();
+	int scrollWidth() { return render->width(); }
+	int scrollHeight() { return render->height(); }
 	void    setScrollX(int vl);
 	void    setScrollY(int vl);
 	void    setScrollBar(int vl);
 
-	int    rowAt(int x);
-	int    columnAt(int y);
+	int    rowAt(int y);
+	int    columnAt(int x);
 	int     itemX(int col);
 	int     itemY(int row);
 	int     itemW(int col);
