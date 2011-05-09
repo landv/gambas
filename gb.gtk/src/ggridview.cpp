@@ -700,23 +700,23 @@ static gboolean cb_keypress(GtkWidget *wid,GdkEventKey *e,gGridView *data)
 
 	switch(e->keyval)
 	{
-		case GDK_KEY_Up:
+		case GDK_Up:
 			if (row>0) { row--; bchange=true; }
 			break; 
 
-		case GDK_KEY_Down:
+		case GDK_Down:
 			if (row<(data->rowCount()-1)) { row++; bchange=true; }
 			break;
 
-		case GDK_KEY_Left:
+		case GDK_Left:
 			if (col>0) { col--; bchange=true; }
 			break; 
 
-		case GDK_KEY_Right:
+		case GDK_Right:
 			if (col<(data->columnCount()-1)) { col++; bchange=true; }
 			break;
 			
-		case GDK_KEY_Home:
+		case GDK_Home:
 			if (row > 0)
 			{
 				row = 0;
@@ -724,7 +724,7 @@ static gboolean cb_keypress(GtkWidget *wid,GdkEventKey *e,gGridView *data)
 			}
 			break;
 			
-		case GDK_KEY_End:
+		case GDK_End:
 			if (row < (data->rowCount() - 1))
 			{
 				row = data->rowCount() - 1;
@@ -732,7 +732,7 @@ static gboolean cb_keypress(GtkWidget *wid,GdkEventKey *e,gGridView *data)
 			}
 			break;
 			
-		case GDK_KEY_Page_Down:
+		case GDK_Page_Down:
 			
 			r = row;
 			while (r < (data->rowCount() - 1))
@@ -745,7 +745,7 @@ static gboolean cb_keypress(GtkWidget *wid,GdkEventKey *e,gGridView *data)
 			row = r;
 			break;
 			
-		case GDK_KEY_Page_Up:
+		case GDK_Page_Up:
 			
 			r = row;
 			while (r > 0)

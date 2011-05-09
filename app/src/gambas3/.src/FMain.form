@@ -722,18 +722,11 @@
         Action = "until"
         Picture = Picture["icon:/small/jump"]
       }
-      { Separator5 Separator
-        MoveScaled(90,0,1,4)
-      }
       { txtSearch ButtonBox
         MoveScaled(92,0,37,4)
         ToolTip = ("Browse project...")
         Action = "find-project"
         Picture = Picture["icon:/small/find"]
-      }
-      { Separator8 Separator
-        MoveScaled(130,0,1,4)
-        Visible = False
       }
       { btnMnuFile MenuButton
         MoveScaled(131,0,8,4)
@@ -1265,6 +1258,6 @@
   { Toolbar main
     Text = ""
     List = "new-project,open-project,save-project,save-project-as,project-property,component-property,refresh-project,option,shortcut,translate,archive,exec,install,project,property,control,console,find,help,compile,compile-all,start,pause,stop,step,forward,return,until,find-project,menu-file,menu-project,menu-debug,menu-view,menu-tool,menu-help"
-    Default = "new-project,open-project,save-project,save-project-as,project-property,component-property,option,|,translate,exec,|,compile,compile-all,start,pause,stop,step,forward,return,until,|,find-project"
+    Default = "new-project,open-project,save-project,save-project-as,project-property,component-property,option,|,translate,exec,|,compile,compile-all,start,pause,stop,step,forward,return,until,find-project"
   }
 }

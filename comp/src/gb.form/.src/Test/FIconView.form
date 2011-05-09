@@ -5,8 +5,13 @@
   Icon = Picture["icon:/medium/color"]
   Arrangement = Arrange.Vertical
   Margin = True
+  { Button1 Button
+    MoveScaled(3,1,16,4)
+    Text = ("Enabled")
+  }
   { IconView1 IconView
-    MoveScaled(2,6,42,31)
+    MoveScaled(2,13,42,31)
+    Enabled = False
     Mouse = Mouse.Cross
     Expand = True
     Mode = Select.Multiple

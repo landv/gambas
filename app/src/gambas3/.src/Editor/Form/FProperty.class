@@ -188,8 +188,6 @@ Public Sub RefreshAll()
 
   For Each sProp In aProp
 
-    'PRINT sProp
-
     hProp = CComponent.Classes[sClass].GetProperties()[sProp]
     If hProp.Hidden Then Continue
 

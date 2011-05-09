@@ -210,10 +210,14 @@ Private Sub GetBackground(hIconView As IconView, Optional bSelected As Boolean) 
 
   Dim iColor As Integer
   
-  If bSelected Then Return Color.SelectedBackground
+  If bSelected Then 
+    iColor = Color.SelectedBackground  
+  Else
+    iColor = hIconView.Background
+    If iColor = Color.Default Then iColor = Color.TextBackground
+  Endif
   
-  iColor = hIconView.Background
-  If iColor = Color.Default Then iColor = Color.TextBackground
+  If Not hIconView.Enabled Then iColor = Color.Desaturate(iColor)
   Return iColor
 
 End
@@ -222,10 +226,14 @@ Private Sub GetForeground(hIconView As IconView, Optional bSelected As Boolean) 
 
   Dim iColor As Integer
   
-  If bSelected Then Return Color.SelectedForeground
+  If bSelected Then 
+    iColor = Color.SelectedForeground
+  Else
+    iColor = hIconView.Foreground
+    If iColor = Color.Default Then iColor = Color.TextForeground
+  Endif
   
-  iColor = hIconView.Foreground
-  If iColor = Color.Default Then iColor = Color.TextForeground
+  If Not hIconView.Enabled Then iColor = Color.Desaturate(Color.Merge(iColor, GetBackground(hIconView, bSelected)))
   Return iColor
 
 End

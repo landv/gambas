@@ -378,6 +378,16 @@ BEGIN_METHOD(CCOLOR_merge, GB_INTEGER color1; GB_INTEGER color2; GB_FLOAT weight
 
 END_METHOD
 
+BEGIN_METHOD(Color_Desaturate, GB_INTEGER color)
+
+	int r, g, b, a, gray;
+	
+	gt_color_to_rgba(VARG(color), &r, &g, &b, &a);
+	gray = (r * 11 + g * 16 + b * 5) / 32;
+	GB.ReturnInteger(gt_rgba_to_color(gray, gray, gray, a));
+
+END_METHOD
+
 BEGIN_METHOD(CCOLOR_blend, GB_INTEGER src; GB_INTEGER dst)
 
 	uint src = VARG(src);
@@ -492,6 +502,7 @@ GB_DESC CColorDesc[] =
   GB_STATIC_METHOD("Darker", "i", CCOLOR_darker, "(Color)i"),
   GB_STATIC_METHOD("Merge", "i", CCOLOR_merge, "(Color1)i(Color2)i[(Weight)f]"),
   GB_STATIC_METHOD("Blend", "i", CCOLOR_blend, "(Source)i(Destination)i"),
+  GB_STATIC_METHOD("Desaturate", "i", Color_Desaturate, "(Color)i"),
 
 	GB_STATIC_METHOD("SetAlpha", "i", Color_SetAlpha, "(Color)i(Alpha)i"),
 									 
