@@ -1106,12 +1106,11 @@ char *GB_ToZeroString(GB_STRING *src)
 {
   char *str;
 
+	if (src->value.len == 0)
+		return "";
+	
   STRING_new_temp(&str, src->value.addr + src->value.start, src->value.len);
-
-  if (str == NULL)
-    return "";
-  else
-    return str;
+  return str;
 }
 
 
