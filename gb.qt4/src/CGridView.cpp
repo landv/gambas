@@ -1043,8 +1043,11 @@ QRect MyTable::cellGeometry(int row, int col) const
 
 void MyTable::setContentsPos(int x, int y)
 {
-	Q3Table::setContentsPos(x, y);
-	emit scrolled();
+	if (x != contentsX() || y != contentsY())
+	{
+		Q3Table::setContentsPos(x, y);
+		emit scrolled();
+	}
 }
 
 
