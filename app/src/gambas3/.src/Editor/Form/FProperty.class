@@ -24,7 +24,8 @@ Private $hWebView As WebView
 
 Private $iHighlightColor As Integer
 
-Static Private $aFieldUseDelete As String[] = ["Font", "Picture", "String[]", "Path", "Color", "Field", "Fields", "Field[]", "Image", "SvgImage", "ReportCoord", "ReportPadding", "ReportBorder", "ReportBrush"]
+Static Private $aFieldUseDelete As String[] = ["Font", "Picture", "String[]", "Path", "Color", "Field", "Fields", "Field[]", 
+  "Image", "SvgImage", "ReportCoord", "ReportPadding", "ReportBorder", "ReportBrush", "Table"]
 
 Public Sub _new()
   
@@ -471,7 +472,7 @@ Private Sub MoveProperty()
     iW = .Width '- 2
     If $bButton Then iW = iW - (.Height)
 
-    $hEditor.Move(grdProperty.X + .X, grdProperty.Y + .Y, iW, .Height)
+    $hEditor.Move(grdProperty.X + .X - grdProperty.ScrollX, grdProperty.Y + .Y - grdProperty.ScrollY, iW, .Height)
     $hEditor.Raise
 
   End With

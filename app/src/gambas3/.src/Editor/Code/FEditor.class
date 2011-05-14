@@ -2835,7 +2835,7 @@ Private Sub FillProcCombo()
     
   Next
   
-  $aProc.Sort(gb.IgnoreCase + gb.Natural)
+  $aProc.Sort(gb.IgnoreCase)
   
   For Each sName In $aProc
     

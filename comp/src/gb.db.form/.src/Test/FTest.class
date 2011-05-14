@@ -11,7 +11,7 @@ Public Sub Form_Open()
 
   Dim hCtrl As Control
   
-  Button2_Click
+  'Button2_Click
   'DataSource1.Connection = Main.Conn
 
 End
@@ -25,9 +25,8 @@ Public Sub Button2_Click()
   hConn.Host = "/home/benoit"
   hConn.Open
   
-  DataSource1.Connection = hConn
-  
-  'DataSource1.Table = "test"
+  'DataSource1.Connection = hConn
+  DataSource1.Table = "test"
   'DataSource1.Refresh
 
 End

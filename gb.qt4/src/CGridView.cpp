@@ -798,8 +798,7 @@ void MyTable::updateRow(int row)
 	
 	QRect cg = cellGeometry(row, 0);
 
-	QRect r(contentsToViewport( QPoint( contentsX(), cg.y() - 2 ) ),
-		QSize( contentsWidth(), cg.height()) );
+	QRect r(contentsToViewport(QPoint(contentsX(), cg.y())), QSize(contentsWidth(), cg.height()));
 
 	//QApplication::postEvent(viewport(), new QPaintEvent(r));
 	viewport()->update(r);
@@ -1042,10 +1041,11 @@ QRect MyTable::cellGeometry(int row, int col) const
 	return r;
 }
 
-/*QRect MyTable::cellRect(int row, int col)
+void MyTable::setContentsPos(int x, int y)
 {
-}*/
-
+	Q3Table::setContentsPos(x, y);
+	emit scrolled();
+}
 
 
 
@@ -1784,7 +1784,7 @@ BEGIN_METHOD(CGRIDVIEW_new, GB_OBJECT parent)
 	QObject::connect(wid, SIGNAL(selectionChanged()), MANAGER, SLOT(selected()));
 	QObject::connect(wid, SIGNAL(doubleClicked(int, int, int, const QPoint &)), MANAGER, SLOT(activated()));
 	QObject::connect(wid, SIGNAL(clicked(int, int, int, const QPoint &)), MANAGER, SLOT(clicked()));
-	QObject::connect(wid, SIGNAL(contentsMoving(int, int)), MANAGER, SLOT(scrolled()));
+	QObject::connect(wid, SIGNAL(scrolled()), MANAGER, SLOT(scrolled()));
 	QObject::connect(wid->horizontalHeader(), SIGNAL(clicked(int)), MANAGER, SLOT(columnClicked(int)));
 	QObject::connect(wid->verticalHeader(), SIGNAL(clicked(int)), MANAGER, SLOT(rowClicked(int)));
 	QObject::connect(wid->horizontalHeader(), SIGNAL(sizeChange(int, int, int)), MANAGER, SLOT(columnResized(int)));
@@ -2410,23 +2410,17 @@ void CGridView::clicked(void)
 	GB.Raise(THIS, EVENT_Click, 0);
 }
 
-static void send_scroll(void *_object)
+/*static void send_scroll(void *_object)
 {
 	THIS->scroll_event = FALSE;
 	GB.Raise(THIS, EVENT_Scroll, 0);
 	GB.Unref(&_object);
-}
+}*/
 
 void CGridView::scrolled(void)
 {
 	GET_SENDER();
-
-	if (THIS->scroll_event)
-		return;
-	
-	THIS->scroll_event = TRUE;
-	GB.Ref(THIS);
-	GB.Post((void (*)())send_scroll, (intptr_t)THIS);
+	GB.Raise(THIS, EVENT_Scroll, 0);
 }
 
 void CGridView::columnClicked(int col)

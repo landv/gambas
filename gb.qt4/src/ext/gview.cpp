@@ -1974,10 +1974,10 @@ void GEditor::ensureCursorVisible()
 		
 		if (center)
 			//ensureVisible(x * charWidth, y * _cellh + _cellh / 2, margin + 2, visibleHeight() / 2);
-			ensureVisible(xx, yy, visibleWidth() / 2, visibleHeight() / 2);
+			ensureVisible(xx, yy, margin + 2, visibleHeight() / 2);
 		else
 			//ensureVisible(x * charWidth, y * _cellh + _cellh / 2, margin + 2, _cellh);
-			ensureVisible(xx, yy, _charWidth['m'] / 2 + (margin / _charWidth['m']) * _charWidth['m'], _cellh);
+			ensureVisible(xx, yy, margin + 2, _cellh);
 	}
 	center = false;
 }

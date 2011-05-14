@@ -249,6 +249,8 @@ Private Sub EnsureRowVisible(Row As Integer)
   Dim H As Integer 
   Dim HH As Integer
   
+  If Row < 0 Or If Row >= $hCtrl.Rows.Count Then Return
+  
   Y = $hCtrl.Rows[Row].Y
   H = $hCtrl.Rows[Row].H
   HH = $hCtrl.Columns.H
