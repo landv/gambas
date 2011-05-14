@@ -769,10 +769,13 @@ void MyTable::setNumCols(int newCols)
 void MyTable::setNumRows(int newRows)
 {
 	bool b;
+	int row, col;
 	
 	if (newRows < 0)
 		return;
 
+	getCurrentCell(&row, &col);
+	
 	BEGIN_NO_REPAINT
 	{
 		_rows = newRows;
@@ -781,13 +784,14 @@ void MyTable::setNumRows(int newRows)
 		b = signalsBlocked();
 		blockSignals(true);
 		Q3Table::setNumRows(newRows);
-		blockSignals(b);
-
 		clearSelection();
+		blockSignals(b);
 	}
 	END_NO_REPAINT
 	
+	setCurrentCell(row, col);
 	emit currentChanged(-1, -1); 
+	emit selectionChanged();
 }
 
 
@@ -2384,8 +2388,8 @@ void CGridView::changed(void)
 	w->updateCurrentCell();
 	w->getCurrentCell(&row, &col);
 
-	if (row < 0 || col < 0)
-		return;
+	//if (row < 0 || col < 0)
+	//	return;
 
 	GB.Raise(THIS, EVENT_Change, 0);
 }

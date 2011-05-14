@@ -408,8 +408,6 @@ void GB_GetProperty(void *object, const char *property)
 	static bool init = FALSE;
   static GB_FUNCTION func;
 	
-  va_list args;
-	
 	if (!init)
 	{
 		GB_GetFunction(&func, (void *)CLASS_find("Object"), "GetProperty", NULL, NULL);

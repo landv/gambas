@@ -1442,12 +1442,14 @@ Private Sub UpdateFieldToolbar()
   
   btnDownField.Enabled = tbvField.Row >= 0 And tbvField.Row < (tbvField.Rows.Count - 1)
   btnUpField.Enabled = tbvField.Row > 0
+  btnKillField.Enabled = tbvField.Row >= 0
   
 End
 
 
 Public Sub tbvField_Change()
 
+  Debug tbvField.Row
   UpdateFieldToolbar
 
 End
@@ -1456,6 +1458,7 @@ Private Sub UpdateIndexToolbar()
   
   btnDownIndex.Enabled = CanDownIndex()
   btnUpIndex.Enabled = CanUpIndex()
+  btnKillIndex.Enabled = tbvIndex.Row >= 0
   
 End
 

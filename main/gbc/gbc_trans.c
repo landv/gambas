@@ -65,8 +65,8 @@ static bool read_integer(char *number, int base, bool minus, int64_t *result)
 	switch (base)
 	{
 		case 2: nmax = 64; break;
-		case 10: nmax = 19; break;
 		case 16: nmax = 16; break;
+		case 10: default: nmax = 19; break;
 	}
 
 	if (base == 10)

@@ -889,7 +889,7 @@ static void add_string()
 	const char *end;
 	int i;
 
-	start = source_ptr;
+	start = end = source_ptr;
 	len = 0;
 	newline = 0;
 	jump = FALSE;
