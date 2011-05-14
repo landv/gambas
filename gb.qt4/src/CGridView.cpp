@@ -1789,6 +1789,8 @@ BEGIN_METHOD(CGRIDVIEW_new, GB_OBJECT parent)
 	QObject::connect(wid->verticalHeader(), SIGNAL(clicked(int)), MANAGER, SLOT(rowClicked(int)));
 	QObject::connect(wid->horizontalHeader(), SIGNAL(sizeChange(int, int, int)), MANAGER, SLOT(columnResized(int)));
 	QObject::connect(wid->verticalHeader(), SIGNAL(sizeChange(int, int, int)), MANAGER, SLOT(rowResized(int)));
+	QObject::connect(wid->horizontalScrollBar(), SIGNAL(valueChanged(int)), MANAGER, SLOT(scrolled()));
+	QObject::connect(wid->verticalScrollBar(), SIGNAL(valueChanged(int)), MANAGER, SLOT(scrolled()));
 
 	CWIDGET_new(wid, _object);
 
