@@ -1228,7 +1228,7 @@ Public Sub Control_Click()
   Dim hCtrl As Control = Last
   Dim hCCtrl As CControl = Control[hCtrl.Tag]
   
-  If hCCtrl.IsMultiContainer() Then 
+  If hCCtrl And If hCCtrl.IsMultiContainer() Then 
     UpdateMultiContainer(hCCtrl)
     If hCCtrl.HasIcon() Then $hFamily.EnterControl(RootControl.Control, hCCtrl)
   Endif
