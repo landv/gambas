@@ -54,7 +54,7 @@ CDBUSCONNECTION *CDBUSCONNECTION_get(DBusBusType type)
 			conn = get_bus(type);
 			if (conn)
 			{
-				GB.New(POINTER(&_system), GB.FindClass("DBusConnection"), NULL, NULL);
+				_system = GB.New(GB.FindClass("DBusConnection"), NULL, NULL);
 				GB.Ref(_system);
 				_system->connection = conn;
 			}
@@ -68,7 +68,7 @@ CDBUSCONNECTION *CDBUSCONNECTION_get(DBusBusType type)
 			conn = get_bus(type);
 			if (conn)
 			{
-				GB.New(POINTER(&_session), GB.FindClass("DBusConnection"), NULL, NULL);
+				_session = GB.New(GB.FindClass("DBusConnection"), NULL, NULL);
 				GB.Ref(_session);
 				_session->connection = conn;
 			}

@@ -39,7 +39,7 @@ CWEBFRAME *CWEBFRAME_get(QWebFrame *frame)
 	
 	if (!_object)
 	{
-		GB.New(POINTER(&_object), GB.FindClass("WebFrame"), 0, 0);
+		_object = GB.New(GB.FindClass("WebFrame"), 0, 0);
 		//qDebug("create WebFrame %p", _object);
 		QT.Link(frame, _object);
 		THIS->frame = frame;

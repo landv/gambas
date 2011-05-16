@@ -104,7 +104,7 @@ CIMAGE *CIMAGE_create(SDLsurface *image)
 	if (!class_id)
 		class_id = GB.FindClass("Image");
 
-	GB.New(POINTER(&img), class_id, NULL, NULL);
+	img = (CIMAGE *)GB.New(class_id, NULL, NULL);
   
 	if (image)
 	{

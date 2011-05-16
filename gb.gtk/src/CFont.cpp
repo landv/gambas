@@ -36,7 +36,7 @@ CFONT *CFONT_create(gFont *font, FONT_FUNC func, void *object)
 	if (font && font->getTag())
 		return (CFONT *)font->getTagValue();
 	
-	GB.New((void **)POINTER(&fnt), GB.FindClass("Font"), 0, 0);
+	fnt = (CFONT *)GB.New(GB.FindClass("Font"), 0, 0);
 	
 	if (font)
 	{

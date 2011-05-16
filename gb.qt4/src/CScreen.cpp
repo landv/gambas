@@ -58,7 +58,7 @@ static CSCREEN *get_screen(int num)
 	
 	if (!_screens[num])
 	{
-		GB.New(POINTER(&_screens[num]), GB.FindClass("Screen"), NULL, 0);
+		_screens[num] = (CSCREEN *)GB.New(GB.FindClass("Screen"), NULL, 0);
 		_screens[num]->index = num;
 		GB.Ref(_screens[num]);
 	}

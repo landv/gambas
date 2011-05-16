@@ -112,11 +112,7 @@ typedef unsigned long ulong;
 		};
 	#endif
 
-	typedef
-		char boolean;
-
-	typedef
-		char bool;
+	#define bool char
 
 #endif
 

@@ -53,13 +53,13 @@ boolean TRANS_is(int reserved);
 void TRANS_ignore(int reserved);
 */
 
-boolean TRANS_get_number(int index, TRANS_NUMBER *result);
+bool TRANS_get_number(int index, TRANS_NUMBER *result);
 
 /* eval_trans_expr.c */
 
 void TRANS_expression(void);
 bool TRANS_affectation(void);
-void TRANS_operation(short op, short nparam, boolean output, PATTERN previous);
+void TRANS_operation(short op, short nparam, bool output, PATTERN previous);
 
 /* eval_trans_tree.c */
 

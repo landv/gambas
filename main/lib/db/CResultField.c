@@ -82,7 +82,7 @@ static CRESULTFIELD *make_result_field(CRESULT *result, int index)
 {
   CRESULTFIELD *_object;
 
-  GB.New(POINTER(&_object), GB.FindClass("ResultField"), NULL, NULL);
+  _object = GB.New(GB.FindClass("ResultField"), NULL, NULL);
   THIS->result = result;
   THIS->driver = result->conn->driver;
   THIS->index = index;

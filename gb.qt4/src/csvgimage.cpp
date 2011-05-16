@@ -156,7 +156,7 @@ BEGIN_METHOD(SvgImage_Load, GB_STRING path)
 	CSVGIMAGE *svgimage;
 	const char *err;
 
-	GB.New(POINTER(&svgimage), CLASS_SvgImage, NULL, NULL);
+	svgimage = (CSVGIMAGE *)GB.New(CLASS_SvgImage, NULL, NULL);
 
 	err = load_file(svgimage, STRING(path), LENGTH(path));
 	if (err)

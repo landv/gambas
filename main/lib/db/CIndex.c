@@ -73,7 +73,7 @@ static CINDEX *make_index(CTABLE *table, const char *name, bool must_exist)
   if (check_index(table, name, must_exist))
     return NULL;
 
-  GB.New(POINTER(&_object), GB.FindClass("Index"), NULL, NULL);
+  _object = GB.New(GB.FindClass("Index"), NULL, NULL);
   THIS->table = table;
   THIS->driver = table->conn->driver;
   THIS->name = GB.NewZeroString(name);

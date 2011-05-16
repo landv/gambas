@@ -80,7 +80,7 @@ CIMAGE *create_image(Imlib_Image image)
 {
 	CIMAGE *img;
 
-  GB.New(POINTER(&img), GB.FindClass("Image"), NULL, NULL);
+  img = GB.New(GB.FindClass("Image"), NULL, NULL);
   take_image(img, image);
   return img;
 }

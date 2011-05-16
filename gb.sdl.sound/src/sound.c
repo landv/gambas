@@ -90,7 +90,7 @@ static void free_finished_channels(void)
   CCHANNEL *ch;
 	char foo;
 	
-	read(_ch_pipe[0], &foo, 1);
+	(void)read(_ch_pipe[0], &foo, 1);
 	
 	for (i = 0; i < MAX_CHANNEL; i++)
 	{
@@ -112,7 +112,7 @@ static void channel_finished(int channel)
 
 	// TODO: do not use GB.Post(), because we are not in the main thread. Write to a pipe and watch it in the main thread
 	ch->free = TRUE;
-	write(_ch_pipe[1], &foo, 1);
+	(void)write(_ch_pipe[1], &foo, 1);
 }
 
 static int play_channel(int channel, CSOUND *sound, int loops)
@@ -208,7 +208,7 @@ static void return_channel(int channel, CSOUND *sound)
   ch = channel_cache[channel];
   if (!ch)
   {
-    GB.New(POINTER(&ch), GB.FindClass("Channel"), NULL, NULL);
+    ch = GB.New(GB.FindClass("Channel"), NULL, NULL);
     channel_cache[channel] = ch;
     ch->channel = channel;
     GB.Ref(ch);

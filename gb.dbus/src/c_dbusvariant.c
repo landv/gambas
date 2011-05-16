@@ -27,7 +27,7 @@
 
 BEGIN_METHOD(dbusvariant_call, GB_VARIANT value; GB_STRING signature)
 
-	GB.New(POINTER(&_object), GB.FindClass("DBusVariant"), NULL, NULL);
+	_object = GB.New(GB.FindClass("DBusVariant"), NULL, NULL);
 	GB.StoreVariant(ARG(value), (void *)&THIS->value);
 	GB.StoreString(ARG(signature), &THIS->signature);
 	GB.ReturnObject(THIS);

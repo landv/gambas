@@ -35,7 +35,7 @@
 CPICTURE *CPICTURE_create(gPicture *picture)
 {
 	CPICTURE *pic;
-	GB.New((void **)POINTER(&pic), GB.FindClass("Picture"), 0, 0);
+	pic = (CPICTURE *)GB.New(GB.FindClass("Picture"), 0, 0);
 	if (picture)
 	{
 		pic->picture->unref();

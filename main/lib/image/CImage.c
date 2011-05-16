@@ -167,7 +167,7 @@ BEGIN_METHOD(CIMAGE_copy, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h
   int w = VARGOPT(w, THIS_IMAGE->width);
   int h = VARGOPT(h, THIS_IMAGE->height);
 
-  GB.New(POINTER(&image), GB.FindClass("Image"), NULL, NULL);
+  image = GB.New(GB.FindClass("Image"), NULL, NULL);
 
 	IMAGE_create(&image->image, w, h, THIS_IMAGE->format);
   IMAGE_bitblt(&image->image, 0, 0, -1, -1, THIS_IMAGE, x, y, w, h);

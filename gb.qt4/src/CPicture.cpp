@@ -49,9 +49,9 @@
 
 static QHash<QByteArray, CPICTURE *> dict;
 
-static void create(CPICTURE **ppicture)
+static CPICTURE *create()
 {
-  GB.New(POINTER(ppicture), GB.FindClass("Picture"), NULL, NULL);
+  return (CPICTURE *)GB.New(GB.FindClass("Picture"), NULL, NULL);
 }
 
 static void insert_cache(const char *key, CPICTURE *pict)
@@ -91,7 +91,7 @@ static void insert_cache(const char *key, CPICTURE *pict)
 
 #define CREATE_PICTURE_FROM_IMAGE(_cpicture, _image) \
 { \
-	create(&(_cpicture)); \
+	_cpicture = create(); \
 	if ((_image) && !(_image)->isNull()) \
 		*((_cpicture)->pixmap) = QPixmap::fromImage(*(_image)); \
 }
@@ -135,7 +135,7 @@ CPICTURE *CPICTURE_grab(QWidget *wid, int x, int y, int w, int h)
   CPICTURE *pict;
   int id;
 
-  create(&pict);
+  pict = create();
 
   if (!wid)
   {
@@ -169,9 +169,7 @@ CPICTURE *CPICTURE_grab(QWidget *wid, int x, int y, int w, int h)
 
 CPICTURE *CPICTURE_create(const QPixmap *pixmap)
 {
-	CPICTURE *pict;
-
-	create(&pict);
+	CPICTURE *pict = create();
 	if (pixmap) *pict->pixmap = *pixmap;
 	return pict;
 }
@@ -340,7 +338,7 @@ BEGIN_METHOD(CPICTURE_copy, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER
   int w = VARGOPT(w, THIS->pixmap->width());
   int h = VARGOPT(h, THIS->pixmap->height());
 
-  create(&pict);
+  pict = create();
   delete pict->pixmap;
   pict->pixmap = new QPixmap(w, h);
   

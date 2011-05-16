@@ -74,7 +74,7 @@ void *GAMBAS_Api[] =
   (void *)GB_Hook,
 
   (void *)GB_LoadComponent,
-  (void *)COMPONENT_find,
+  (void *)COMPONENT_exist,
   (void *)GB_CurrentComponent,
   (void *)COMPONENT_get_info,
 
@@ -291,10 +291,23 @@ bool GAMBAS_StopEvent = FALSE;
 static bool _event_stopped = FALSE;
 
 #define CATCH_ERROR \
-  int ret = 0; \
+  bool ret = FALSE; \
   TRY
   
 #define END_CATCH_ERROR \
+  CATCH \
+  { \
+    ret = TRUE; \
+    EXEC_set_native_error(TRUE); \
+  } \
+  END_TRY \
+  return ret;
+
+#define CATCH_ERROR_INT \
+  int ret = 0; \
+  TRY
+  
+#define END_CATCH_ERROR_INT \
   CATCH \
   { \
     ret = -1; \
@@ -303,7 +316,7 @@ static bool _event_stopped = FALSE;
   END_TRY \
   return ret;
 
-int GB_GetInterface(const char *name, int version, void *iface)
+bool GB_GetInterface(const char *name, int version, void *iface)
 {
 	GB_LoadComponent(name);
 	
@@ -331,7 +344,7 @@ void *GB_Hook(int type, void *hook)
 }
 
 
-int GB_LoadComponent(const char *name)
+bool GB_LoadComponent(const char *name)
 {
   CATCH_ERROR
   {
@@ -441,7 +454,7 @@ void GB_SetProperty(void *object, const char *property, ...)
 }
 
 
-int GB_CanRaise(void *object, int event_id)
+bool GB_CanRaise(void *object, int event_id)
 {
   ushort *event_tab;
   int func_id;
@@ -537,7 +550,7 @@ static bool raise_event(OBJECT *observer, void *object, int func_id, int nparam)
 
 // If nparam < 0, the args are already on the stack
 
-int GB_Raise(void *object, int event_id, int nparam, ...)
+bool GB_Raise(void *object, int event_id, int nparam, ...)
 {
   OBJECT *parent;
   int func_id;
@@ -671,7 +684,7 @@ __RETURN:
 }
 
 
-int GB_GetFunction(GB_FUNCTION *_func, void *object, const char *name, const char *sign, const char *type)
+bool GB_GetFunction(GB_FUNCTION *_func, void *object, const char *name, const char *sign, const char *type)
 {
   GB_API_FUNCTION *func = (GB_API_FUNCTION *)_func;
   char len_min, nparam, npvar;
@@ -749,13 +762,13 @@ int GB_GetFunction(GB_FUNCTION *_func, void *object, const char *name, const cha
   if (!func->desc)
   	abort();
 
-  return 0;
+  return FALSE;
 
 _NOT_FOUND:
 
   func->object = NULL;
   func->desc = NULL;
-  return 1;
+  return TRUE;
 }
 
 
@@ -837,7 +850,7 @@ char *GB_GetLastEventName()
 }
 
 
-int GB_Stopped(void)
+bool GB_Stopped(void)
 {
 	return _event_stopped;
 }
@@ -849,7 +862,7 @@ int GB_NParam(void)
 }
 
 
-int GB_IsProperty(void)
+bool GB_IsProperty(void)
 {
   return EXEC_unknown_property;
 }
@@ -1022,7 +1035,7 @@ void GB_ListEnum(void *enum_object)
 }
 
 
-int GB_NextEnum(void)
+bool GB_NextEnum(void)
 {
   for(;;)
   {
@@ -1325,7 +1338,7 @@ char *GB_GetClassName(void *object)
 }
 
 
-int GB_Is(void *object, void *class)
+bool GB_Is(void *object, void *class)
 {
   CLASS *ob_class;
 
@@ -1338,9 +1351,9 @@ int GB_Is(void *object, void *class)
 }
 
 
-int GB_LoadFile(const char *path, int lenp, char **addr, int *len)
+bool GB_LoadFile(const char *path, int lenp, char **addr, int *len)
 {
-  int ret = 0;
+  bool ret = FALSE;
 
   //fprintf(stderr, "GB_LoadFile: %.*s\n", lenp ? lenp : strlen(path), path);
 
@@ -1357,7 +1370,7 @@ int GB_LoadFile(const char *path, int lenp, char **addr, int *len)
       STREAM_unmap(*addr, *len);
 
     EXEC_set_native_error(TRUE);
-    ret = 1;
+    ret = TRUE;
   }
   END_TRY
 
@@ -1445,8 +1458,10 @@ void GB_Watch(int fd, int flag, void *callback, intptr_t param)
 }
 
 
-int GB_New(void **object, void *class, const char *name, void *parent)
+void *GB_New(void *class, const char *name, void *parent)
 {
+	void *object;
+	
   if (name && !parent)
   {
     parent = OP;
@@ -1455,18 +1470,18 @@ int GB_New(void **object, void *class, const char *name, void *parent)
   }
 
   if (!((CLASS *)class)->no_create)
-    *object = OBJECT_create(class, name, parent, 0);
+    object = OBJECT_create(class, name, parent, 0);
   else
   {
-    *object = OBJECT_new(class, name, parent);
-    OBJECT_UNREF_KEEP(*object, "GB_New");
+    object = OBJECT_new(class, name, parent);
+    OBJECT_UNREF_KEEP(object, "GB_New");
   }
-
-  return FALSE;
+  
+  return object;
 }
 
 
-int GB_CheckObject(void *object)
+bool GB_CheckObject(void *object)
 {
   CLASS *class;
   
@@ -1543,7 +1558,7 @@ void GB_Realloc(void **addr, int len)
 }
 
 
-int GB_Conv(GB_VALUE *arg, GB_TYPE type)
+bool GB_Conv(GB_VALUE *arg, GB_TYPE type)
 {
   CATCH_ERROR
   {
@@ -1559,7 +1574,7 @@ int GB_StringLength(const char *str)
 }
 
 
-int GB_NumberToString(int local, double value, const char *format, char **str, int *len)
+bool GB_NumberToString(int local, double value, const char *format, char **str, int *len)
 {
   return
     LOCAL_format_number
@@ -1594,7 +1609,7 @@ void GB_HashTableRemove(GB_HASHTABLE hash, const char *key, int len)
   HASH_TABLE_remove((HASH_TABLE *)hash, key, len);
 }
 
-int GB_HashTableGet(GB_HASHTABLE hash, const char *key, int len, void **data)
+bool GB_HashTableGet(GB_HASHTABLE hash, const char *key, int len, void **data)
 {
   void **pdata;
 
@@ -1605,10 +1620,10 @@ int GB_HashTableGet(GB_HASHTABLE hash, const char *key, int len, void **data)
   if (pdata)
   {
     *data = *pdata;
-    return 0;
+    return FALSE;
   }
   else
-    return 1;
+    return TRUE;
 }
 
 
@@ -1663,7 +1678,7 @@ void GB_FreeString(char **str)
   *str = NULL;
 }
 
-int GB_ConvString(char **result, const char *str, int len, const char *src, const char *dst)
+bool GB_ConvString(char **result, const char *str, int len, const char *src, const char *dst)
 {
   CATCH_ERROR
   {
@@ -1702,7 +1717,7 @@ char *GB_SystemDomainName(void)
 	return COMMON_buffer;
 }
 
-int GB_IsRightToLeft(void)
+bool GB_IsRightToLeft(void)
 {
   return LOCAL_local.rtl;
 }
@@ -1735,17 +1750,17 @@ void GB_StreamSetSwapping(GB_STREAM *stream, int swap)
 	((STREAM *)stream)->common.swap = swap;
 }
 
-int GB_StreamBlock(GB_STREAM *stream, int block)
+bool GB_StreamBlock(GB_STREAM *stream, int block)
 {
 	STREAM *st = (STREAM *)stream;
-	int old = STREAM_is_blocking(st);
+	bool old = STREAM_is_blocking(st);
 	STREAM_blocking(st, block);
 	return old;
 }
 
 int GB_StreamRead(GB_STREAM *stream, void *addr, int len)
 {
-	CATCH_ERROR
+	CATCH_ERROR_INT
 	{
 		if (len < 0)
 			ret = STREAM_read_max((STREAM *)stream, addr, -len);
@@ -1755,17 +1770,17 @@ int GB_StreamRead(GB_STREAM *stream, void *addr, int len)
 			ret = STREAM_eff_read;
 		}
 	}
-	END_CATCH_ERROR
+	END_CATCH_ERROR_INT
 }
 
 int GB_StreamWrite(GB_STREAM *stream, void *addr, int len)
 {
-	CATCH_ERROR
+	CATCH_ERROR_INT
 	{
 		STREAM_write((STREAM *)stream, addr, len);
 		ret = len;
 	}
-	END_CATCH_ERROR
+	END_CATCH_ERROR_INT
 }
 
 int GB_tolower(int c)
@@ -1789,7 +1804,7 @@ char *GB_TempFile(const char *pattern)
 	return FILE_make_temp(&len, pattern);
 }
 
-int GB_CopyFile(const char *src, const char *dst)
+bool GB_CopyFile(const char *src, const char *dst)
 {
 	CATCH_ERROR
 	{
@@ -1929,13 +1944,13 @@ void *GB_DebugGetExec(void)
 }
 
 
-int GB_ExistClass(const char *name)
+bool GB_ExistClass(const char *name)
 {
 	return CLASS_look_global(name, strlen(name)) != NULL;
 }
 
 
-int GB_ExistClassLocal(const char *name)
+bool GB_ExistClassLocal(const char *name)
 {
 	return CLASS_look(name, strlen(name)) != NULL;
 }

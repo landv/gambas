@@ -20,8 +20,6 @@
 
 ***************************************************************************/
 
-
-
 #define __CXSLT_C
 
 #include <stdio.h>
@@ -66,7 +64,7 @@ BEGIN_METHOD(CXSLT_Transform,GB_OBJECT Document;GB_OBJECT StyleSheet;)
 		return;
 	}
 	
-	GB.New(POINTER(&out),GB.FindClass("XmlDocument"),NULL,NULL);
+	out = GB.New(GB.FindClass("XmlDocument"), NULL, NULL);
 	
 	((CXMLDOCUMENT *)out)->doc = xsltApplyStylesheet(sheet, doc->doc, NULL);
 	

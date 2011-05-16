@@ -57,12 +57,9 @@ static bool read_integer(int base, int64_t *result, bool local)
 	int ndigit_thsep;
 	bool first_thsep;
 
-	if (local)
-	{
-		thsep = LOCAL_get(local)->thousand_sep;
-		ndigit_thsep = 0;
-		first_thsep = FALSE;
-	}
+	thsep = LOCAL_get(local)->thousand_sep;
+	ndigit_thsep = 0;
+	first_thsep = FALSE;
 
 	n = 0;
 	nbr = 0;
@@ -178,12 +175,9 @@ static bool read_float(double *result, bool local)
 
 	local_info = LOCAL_get(local);
 	point = local_info->decimal_point;
-	if (local)
-	{
-		thsep = local_info->thousand_sep;
-		ndigit_thsep = 0;
-		first_thsep = FALSE;
-	}
+	thsep = local_info->thousand_sep;
+	ndigit_thsep = 0;
+	first_thsep = FALSE;
 
 	c = last_char();
 	
@@ -416,6 +410,7 @@ __END:
 	else
 		value->_float.value = dval;
 
+	//fprintf(stderr, "return FALSE\n");
 	return FALSE;
 }
 

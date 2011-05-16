@@ -39,7 +39,7 @@ PUBLIC const char *READ_source_ptr;
 #define source_ptr READ_source_ptr
 
 static bool is_init = FALSE;
-static boolean begin_line = FALSE;
+static bool begin_line = FALSE;
 
 static char ident_car[256];
 static char first_car[256];
@@ -412,11 +412,11 @@ static void add_identifier(bool no_res)
 	int type;
 	int flag;
 	PATTERN last_pattern;  
-	boolean not_first;
-	boolean can_be_reserved;
-	boolean can_be_subr;
-	boolean is_type;
-	boolean last_func, last_declare, last_type, last_class;
+	bool not_first;
+	bool can_be_reserved;
+	bool can_be_subr;
+	bool is_type;
+	bool last_func, last_declare, last_type, last_class;
 
 	last_pattern = get_last_pattern();
 

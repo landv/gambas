@@ -100,9 +100,7 @@ GB_DESC CWebHitTestDesc[] =
 
 CWEBHITTEST *WEB_create_hit_test(const QWebHitTestResult &result)
 {
-	CWEBHITTEST *_object;
-	
-  GB.New(POINTER(&_object), GB.FindClass("WebHitTest"), NULL, NULL);
+	CWEBHITTEST *_object = (CWEBHITTEST *)GB.New(GB.FindClass("WebHitTest"), NULL, NULL);
 	*(THIS->result) = result;
 	
 	return THIS;

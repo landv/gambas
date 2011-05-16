@@ -56,7 +56,7 @@ typedef
     char *pattern;
     DEBUG_TYPE type;
     void (*func)(const char *);
-    boolean loop;
+    bool loop;
     }
   DEBUG_COMMAND;
 
@@ -73,19 +73,19 @@ EXTERN char DEBUG_buffer[];
 
 #define DEBUG_WELCOME   "Welcome to the Gambas debugger.\n"
 
-PUBLIC void DEBUG_breakpoint(int id);
-PUBLIC void DEBUG_main(boolean error);
+void DEBUG_breakpoint(int id);
+void DEBUG_main(bool error);
 
-PUBLIC const char *DEBUG_get_position(CLASS *cp, FUNCTION *fp, PCODE *pc);
-PUBLIC const char *DEBUG_get_current_position(void);
-PUBLIC void DEBUG_init_breakpoints(CLASS *class);
+const char *DEBUG_get_position(CLASS *cp, FUNCTION *fp, PCODE *pc);
+const char *DEBUG_get_current_position(void);
+void DEBUG_init_breakpoints(CLASS *class);
 
-PUBLIC void DEBUG_break_on_next_line(void);
+void DEBUG_break_on_next_line(void);
 
-PUBLIC DEBUG_INFO *DEBUG_init(GB_DEBUG_INTERFACE *debug, bool fifo, const char*fifo_name);
-PUBLIC void DEBUG_exit(void);
-PUBLIC void DEBUG_welcome(void);
-PUBLIC void DEBUG_where(void);
-PUBLIC void DEBUG_backtrace(FILE *out);
+DEBUG_INFO *DEBUG_init(GB_DEBUG_INTERFACE *debug, bool fifo, const char*fifo_name);
+void DEBUG_exit(void);
+void DEBUG_welcome(void);
+void DEBUG_where(void);
+void DEBUG_backtrace(FILE *out);
 
 #endif

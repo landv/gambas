@@ -187,7 +187,7 @@ BEGIN_METHOD_VOID(CDEBUG_start)
   _fdr = open(input_fifo(path), O_RDONLY | O_NONBLOCK);
 	fcntl(_fdr, F_SETFL, fcntl(_fdr, F_GETFL) & ~O_NONBLOCK);
 
-  GB.New(POINTER(&_debug_object), GB.FindClass("Debug"), "Debug", NULL);
+  _debug_object = GB.New(GB.FindClass("Debug"), "Debug", NULL);
   GB.Ref(_debug_object);
   
   GB.Alloc(POINTER(&_buffer), BUFFER_SIZE);

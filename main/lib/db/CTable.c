@@ -90,7 +90,7 @@ static CTABLE *make_table(CCONNECTION *conn, const char *name, bool must_exist)
 
 	//fprintf(stderr, "make_table: '%s'\n", name);
   
-  GB.New(POINTER(&_object), GB.FindClass("Table"), NULL, NULL);
+  _object = GB.New(GB.FindClass("Table"), NULL, NULL);
   THIS->conn = conn;
   //GB.Ref(conn);
   THIS->driver = conn->driver;

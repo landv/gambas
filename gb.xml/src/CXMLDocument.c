@@ -20,8 +20,6 @@
 
 ***************************************************************************/
 
-
-
 #define __CXMLDOCUMENT_C
 
 #include <stdio.h>
@@ -38,7 +36,7 @@ CXMLNODE *XML_CreateNode(CXMLDOCUMENT *doc, xmlNode *node)
 	if (!node)
 		return NULL;
 	
-	GB.New(POINTER(&p), GB.FindClass("XmlNode"), NULL, NULL);
+	p = GB.New(GB.FindClass("XmlNode"), NULL, NULL);
 	p->node = node;
 	p->doc = doc;
 	GB.Ref(doc);

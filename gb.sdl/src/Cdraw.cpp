@@ -78,7 +78,7 @@ void DRAW_begin(void *device)
 	if (FONT)
 		GB.Unref(POINTER(&FONT));
 
-	GB.New(POINTER(&FONT), font_id, NULL, NULL);
+	FONT = (CFONT *)GB.New(font_id, NULL, NULL);
 	GB.Ref(FONT);
 	
 	if (GB.Is(device, CLASS_Window)) {

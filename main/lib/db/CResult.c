@@ -268,7 +268,7 @@ CRESULT *DB_MakeResult(CCONNECTION *conn, int mode, char *table_temp, char *quer
 			return NULL;
 	}
 
-	GB.New(POINTER(&_object), GB.FindClass("Result"), NULL, NULL);
+	_object = GB.New(GB.FindClass("Result"), NULL, NULL);
 
 	THIS->conn = conn;
 	GB.Ref(conn);
@@ -810,7 +810,7 @@ static CBLOB *make_blob(CRESULT *result, int field)
 {
 	CBLOB *_object;
 
-	GB.New(POINTER(&_object), CLASS_Blob, NULL, NULL);
+	_object = GB.New(CLASS_Blob, NULL, NULL);
 
 	//BLOB->result = result;
 	//GB.Ref(result);

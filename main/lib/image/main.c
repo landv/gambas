@@ -47,7 +47,7 @@ static GB_IMG *create_image(int width, int height, int format, unsigned char *da
 {
 	CIMAGE *image;
 	
-  GB.New(POINTER(&image), GB.FindClass("Image"), NULL, NULL);
+  image = GB.New(GB.FindClass("Image"), NULL, NULL);
   IMAGE_create_with_data(&image->image, width, height, format, data);
   return (GB_IMG *)image;
 }

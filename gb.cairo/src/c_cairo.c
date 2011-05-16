@@ -206,7 +206,7 @@ BEGIN_METHOD(CAIRO_MATRIX_call, GB_FLOAT xx; GB_FLOAT xy; GB_FLOAT yx; GB_FLOAT 
 
 	CAIRO_MATRIX *matrix;
 	
-	GB.New(POINTER(&matrix), GB.FindClass("CairoMatrix"), NULL, NULL);
+	matrix = GB.New(GB.FindClass("CairoMatrix"), NULL, NULL);
 	
 	cairo_matrix_init(&matrix->matrix, 
 		VARGOPT(xx, 1.0),
@@ -300,7 +300,7 @@ BEGIN_PROPERTY(CAIRO_PATTERN_matrix)
 	
 	if (READ_PROPERTY)
 	{
-		GB.New(POINTER(&matrix), GB.FindClass("CairoMatrix"), NULL, NULL);
+		matrix = GB.New(GB.FindClass("CairoMatrix"), NULL, NULL);
 		cairo_pattern_get_matrix(THIS_PATTERN->pattern, &matrix->matrix);
 		GB.ReturnObject(matrix);
 	}
@@ -436,7 +436,7 @@ BEGIN_PROPERTY(CairoFont_Matrix)
 
 	if (READ_PROPERTY)
 	{
-		GB.New(POINTER(&matrix), GB.FindClass("CairoMatrix"), NULL, NULL);
+		matrix = GB.New(GB.FindClass("CairoMatrix"), NULL, NULL);
 		cairo_get_font_matrix(CNT, &matrix->matrix);
 		GB.ReturnObject(matrix);
 	}
@@ -461,7 +461,7 @@ BEGIN_PROPERTY(CairoFont_Extents)
 
 	CHECK_CNT();
 	
-	GB.New(POINTER(&extents), GB.FindClass("CairoFontExtents"), NULL, NULL);
+	extents = GB.New(GB.FindClass("CairoFontExtents"), NULL, NULL);
 	
 	cairo_font_extents(CNT, &extents->e);
 	
@@ -597,7 +597,7 @@ END_METHOD
 BEGIN_PROPERTY(_property) \
 	CAIRO_EXTENTS *extents; \
 	CHECK_CNT(); \
-	GB.New(POINTER(&extents), GB.FindClass("CairoExtents"), NULL, NULL); \
+	extents = GB.New(GB.FindClass("CairoExtents"), NULL, NULL); \
 	_api(CNT, &extents->x1, &extents->y1, &extents->x2, &extents->y2); \
 	GB.ReturnObject(extents); \
 END_METHOD
@@ -818,7 +818,7 @@ IMPLEMENT_PROPERTY_EXTENTS(CAIRO_path_extents, cairo_path_extents)
 static void make_pattern(cairo_pattern_t *pattern)
 {
 	CAIRO_PATTERN *pat;
-	GB.New(POINTER(&pat), GB.FindClass("CairoPattern"), NULL, NULL);
+	pat = GB.New(GB.FindClass("CairoPattern"), NULL, NULL);
 	pat->pattern = pattern;
 	GB.ReturnObject(pat);
 }
@@ -956,7 +956,7 @@ BEGIN_PROPERTY(CAIRO_matrix)
 
 	if (READ_PROPERTY)
 	{
-		GB.New(POINTER(&matrix), GB.FindClass("CairoMatrix"), NULL, NULL);
+		matrix = GB.New(GB.FindClass("CairoMatrix"), NULL, NULL);
 		cairo_get_matrix(CNT, &matrix->matrix);
 		GB.ReturnObject(matrix);
 	}
@@ -977,7 +977,7 @@ BEGIN_METHOD(Cairo_TextExtents, GB_STRING text)
 
 	CHECK_CNT();
 	
-	GB.New(POINTER(&extents), GB.FindClass("CairoTextExtents"), NULL, NULL);
+	extents = GB.New(GB.FindClass("CairoTextExtents"), NULL, NULL);
 	
 	cairo_text_extents(CNT, GB.ToZeroString(ARG(text)), &extents->e);
 	

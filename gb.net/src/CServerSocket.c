@@ -489,7 +489,7 @@ BEGIN_METHOD_VOID(ServerSocket_Accept)
 
 	if ( SOCKET->status != NET_PENDING){ GB.Error("No connection to accept");return; }
 
-	GB.New(POINTER(&cli_obj),GB.FindClass("Socket"),"Socket",NULL);
+	cli_obj = GB.New(GB.FindClass("Socket"), "Socket", NULL);
 	cli_obj->common.socket = THIS->Client;
 	cli_obj->common.status = NET_CONNECTED;
 	cli_obj->OnClose=CServerSocket_OnClose;

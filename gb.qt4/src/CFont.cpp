@@ -66,9 +66,8 @@ static void exit_font_database()
 
 CFONT *CFONT_create(const QFont &font, FONT_FUNC func, void *object)
 {
-  CFONT *_object;
-
-  GB.New(POINTER(&_object), CLASS_Font, NULL, NULL);
+  CFONT *_object = (CFONT *)GB.New(CLASS_Font, NULL, NULL);
+	
   *(THIS->font) = font;
   THIS->func = func;
   THIS->object = object;
@@ -363,7 +362,7 @@ BEGIN_METHOD(CFONT_get, GB_STRING str)
 
   //qDebug(">> CFONT_get: %s", s.latin1());
 
-  GB.New(POINTER(&font), CLASS_Font, NULL, NULL);
+  font = (CFONT *)GB.New(CLASS_Font, NULL, NULL);
   set_font_from_string(font, s);
 
   GB.ReturnObject(font);

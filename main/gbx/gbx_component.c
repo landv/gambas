@@ -145,6 +145,11 @@ COMPONENT *COMPONENT_find(const char *name)
   return NULL;
 }
 
+bool COMPONENT_exist(const char *name)
+{
+	return COMPONENT_find(name) != NULL;
+}
+
 COMPONENT *COMPONENT_create(const char *name)
 {
   COMPONENT *comp;

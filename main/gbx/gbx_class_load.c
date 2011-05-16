@@ -358,7 +358,7 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 	CTYPE ctype;
 	CLASS_DESC *desc;
 	CLASS_VAR *var;
-	GLOBAL_SYMBOL *global;
+	GLOBAL_SYMBOL *global = NULL;
 	
 	name = (char *)(intptr_t)(*structure++);
 	RELOCATE(name);
@@ -516,7 +516,7 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
   int i, j, pos;
   int offset;
   short n_desc, n_class_ref, n_unknown, n_array, n_struct;
-	CLASS_STRUCT *structure;
+	CLASS_STRUCT *structure = NULL;
 	int size;
 	
   ALLOC_ZERO(&class->load, sizeof(CLASS_LOAD), "CLASS_load");

@@ -49,7 +49,7 @@ static CSCREEN *get_screen(int num)
 	
 	if (!_screens[num])
 	{
-		GB.New(POINTER(&_screens[num]), GB.FindClass("Screen"), NULL, 0);
+		_screens[num] = (CSCREEN *)GB.New(GB.FindClass("Screen"), NULL, 0);
 		_screens[num]->index = num;
 		GB.Ref(_screens[num]);
 	}
@@ -119,7 +119,7 @@ BEGIN_METHOD(Desktop_Screenshot, GB_INTEGER x; GB_INTEGER y; GB_INTEGER width; G
 	CPICTURE *pic;
 	gPicture *buf = gDesktop::screenshot(VARGOPT(x,0), VARGOPT(y, 0), VARGOPT(width, 0), VARGOPT(height, 0));
 	
-	GB.New(POINTER(&pic), GB.FindClass("Picture"), 0, 0);
+	pic = (CPICTURE *)GB.New(GB.FindClass("Picture"), 0, 0);
 	if (pic->picture) pic->picture->unref();
 	pic->picture = buf;
 	GB.ReturnObject(pic);

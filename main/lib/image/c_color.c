@@ -249,7 +249,7 @@ BEGIN_METHOD(CCOLOR_get, GB_INTEGER color)
 
 	CCOLOR *info;
 
-	GB.New(POINTER(&info), GB.FindClass("ColorInfo"), NULL, NULL);
+	info = GB.New(GB.FindClass("ColorInfo"), NULL, NULL);
 	gt_color_to_rgba(VARG(color), &info->r, &info->g, &info->b, &info->a);
   GB.ReturnObject(info);
 

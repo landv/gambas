@@ -42,9 +42,7 @@ static void normalize(CRECT *_object)
 
 CRECT *CRECT_create(void)
 {
-	CRECT *rect;
-	GB.New(POINTER(&rect), GB.FindClass("Rect"), NULL, NULL);
-	return rect;
+	return GB.New(GB.FindClass("Rect"), NULL, NULL);
 }
 
 BEGIN_METHOD(Rect_new, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)

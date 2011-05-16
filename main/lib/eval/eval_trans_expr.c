@@ -154,7 +154,7 @@ static void trans_class(int index)
 }
 
 
-static void trans_identifier(int index, boolean first, boolean point)
+static void trans_identifier(int index, bool first, bool point)
 {
   SYMBOL *sym = TABLE_get_symbol(EVAL->table, index);
 
@@ -178,7 +178,7 @@ static void trans_identifier(int index, boolean first, boolean point)
 }
 
 
-static void trans_subr(int subr, short nparam, boolean output)
+static void trans_subr(int subr, short nparam, bool output)
 {
   SUBR_INFO *info = &COMP_subr_info[subr];
 
@@ -193,7 +193,7 @@ static void trans_subr(int subr, short nparam, boolean output)
 }
 
 
-void TRANS_operation(short op, short nparam, boolean output, PATTERN previous)
+void TRANS_operation(short op, short nparam, bool output, PATTERN previous)
 {
   COMP_INFO *info = &COMP_res_info[op];
 
@@ -349,9 +349,9 @@ static void trans_new(void)
 {
   int index;
   int i, nparam;
-  boolean array = FALSE;
-  boolean event = FALSE;
-  boolean collection = FALSE;
+  bool array = FALSE;
+  bool event = FALSE;
+  bool collection = FALSE;
 
   if (PATTERN_is_identifier(*EVAL->current))
   {

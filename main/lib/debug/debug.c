@@ -108,7 +108,7 @@ static void signal_user(int sig)
 }
 
 
-static boolean calc_line_from_position(CLASS *class, FUNCTION *func, PCODE *addr, ushort *line)
+static bool calc_line_from_position(CLASS *class, FUNCTION *func, PCODE *addr, ushort *line)
 {
   int i;
   ushort pos = addr - func->code;
@@ -133,7 +133,7 @@ static boolean calc_line_from_position(CLASS *class, FUNCTION *func, PCODE *addr
 }
 
 
-static boolean calc_position_from_line(CLASS *class, ushort line, FUNCTION **function, PCODE **addr)
+static bool calc_position_from_line(CLASS *class, ushort line, FUNCTION **function, PCODE **addr)
 {
   int i;
   ushort pos, pos_after;
@@ -335,7 +335,7 @@ static bool init_breakpoint(DEBUG_BREAK *brk)
 }
 
 
-static boolean set_breakpoint(CLASS *class, ushort line)
+static bool set_breakpoint(CLASS *class, ushort line)
 {
   DEBUG_BREAK *brk;
   int id;
@@ -370,7 +370,7 @@ static boolean set_breakpoint(CLASS *class, ushort line)
 }
 
 
-static boolean unset_breakpoint(CLASS *class, ushort line)
+static bool unset_breakpoint(CLASS *class, ushort line)
 {
   int i;
   DEBUG_BREAK *brk;
@@ -841,7 +841,7 @@ static void command_symbol(const char *cmd)
 }
 
 
-void DEBUG_main(boolean error)
+void DEBUG_main(bool error)
 {
   static DEBUG_TYPE last_command = TC_NONE;
 

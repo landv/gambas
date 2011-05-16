@@ -262,7 +262,7 @@ CWEBDOWNLOAD *WEB_create_download(QNetworkReply *reply)
 	char name[32];
 	int index;
 	
-  GB.New(POINTER(&_object), GB.FindClass("WebDownload"), NULL, NULL);
+  _object = (CWEBDOWNLOAD *)GB.New(GB.FindClass("WebDownload"), NULL, NULL);
 	THIS->reply = reply;
 	reply->setParent(0);
 	sprintf(name, "gb-download-%p", THIS);

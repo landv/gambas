@@ -331,7 +331,7 @@ BEGIN_METHOD_VOID(Image_Histogram)
 	QImage image(THIS);
 	unsigned int *p, *pm;
 	
-	GB.New(POINTER(&hist), GB.FindClass("ImageHistogram"), NULL, NULL);
+	hist = (CIMAGEHISTOGRAM *)GB.New(GB.FindClass("ImageHistogram"), NULL, NULL);
 	
 	GB.Alloc(POINTER(&histogram), sizeof(int) * 256 * 4);
 

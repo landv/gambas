@@ -62,6 +62,7 @@ COMPONENT *COMPONENT_create(const char *name);
 void COMPONENT_delete(COMPONENT *comp);
 
 COMPONENT *COMPONENT_find(const char *name);
+bool COMPONENT_exist(const char *name);
 
 void COMPONENT_load(COMPONENT *comp);
 void COMPONENT_load_all(void);

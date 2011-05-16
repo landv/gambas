@@ -102,7 +102,7 @@ static CFIELD *make_field(CTABLE *table, const char *name, bool must_exist)
   if (check_field(table, (char *)name, must_exist))
     return NULL;
 
-  GB.New(POINTER(&_object), GB.FindClass("Field"), NULL, NULL);
+  _object = GB.New(GB.FindClass("Field"), NULL, NULL);
   THIS->table = table;
   THIS->driver = table->conn->driver;
   THIS->name = GB.NewZeroString(name);

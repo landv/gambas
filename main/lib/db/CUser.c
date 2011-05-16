@@ -64,7 +64,7 @@ void *CUSER_get(CCONNECTION *conn, const char *name)
   if (check_user(conn, name, TRUE))
     return NULL;
 
-  GB.New(POINTER(&_object), GB.FindClass("DatabaseUser"), NULL, NULL);
+  _object = GB.New(GB.FindClass("DatabaseUser"), NULL, NULL);
   THIS->conn = conn;
   THIS->driver = conn->driver;
   THIS->name = GB.NewZeroString(name);

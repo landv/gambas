@@ -63,7 +63,7 @@ END_PROPERTY
 BEGIN_METHOD(CFONT_load, GB_STRING path)
 
 	CFONT *font;
-	GB.New(POINTER(&font), CLASS_Font, NULL, NULL);
+	font = (CFONT *)GB.New(CLASS_Font, NULL, NULL);
 	font->font = new SDLfont(GB.RealFileName(STRING(path), LENGTH(path)));
 	GB.ReturnObject(font);
 

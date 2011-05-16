@@ -83,7 +83,7 @@ CIMAGE *CIMAGE_create(gPicture *image)
   if (!class_id)
     class_id = GB.FindClass("Image");
 
-  GB.New(POINTER(&img), class_id, NULL, NULL);
+  img = (CIMAGE *)GB.New(class_id, NULL, NULL);
   
   if (image)
   	take_image(img, image);

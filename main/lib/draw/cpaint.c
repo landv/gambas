@@ -221,7 +221,7 @@ GB_DESC PaintExtentsDesc[] =
 static PAINT_MATRIX *create_matrix(GB_PAINT_DESC *desc, GB_TRANSFORM *transform)
 {
 	PAINT_MATRIX *matrix;
-	GB.New(POINTER(&matrix), GB.FindClass("PaintMatrix"), NULL, NULL);
+	matrix = GB.New(GB.FindClass("PaintMatrix"), NULL, NULL);
 	matrix->desc = desc;
 	matrix->transform = transform;
 	return matrix;
@@ -469,7 +469,7 @@ END_METHOD
 BEGIN_PROPERTY(_property) \
 	PAINT_EXTENTS *extents; \
 	CHECK_DEVICE(); \
-	GB.New(POINTER(&extents), GB.FindClass("PaintExtents"), NULL, NULL); \
+	extents = GB.New(GB.FindClass("PaintExtents"), NULL, NULL); \
 	PAINT->_api(THIS, &extents->ext); \
 	GB.ReturnObject(extents); \
 END_METHOD
@@ -767,7 +767,7 @@ BEGIN_METHOD(Paint_TextExtents, GB_STRING text)
 	
 	CHECK_DEVICE();
 
-	GB.New(POINTER(&extents), GB.FindClass("PaintExtents"), NULL, NULL);
+	extents = GB.New(GB.FindClass("PaintExtents"), NULL, NULL);
 	
 	if (!LENGTH(text))
 	{
@@ -788,7 +788,7 @@ BEGIN_METHOD(Paint_RichTextExtents, GB_STRING text; GB_FLOAT width)
 	
 	CHECK_DEVICE();
 
-	GB.New(POINTER(&extents), GB.FindClass("PaintExtents"), NULL, NULL);
+	extents = GB.New(GB.FindClass("PaintExtents"), NULL, NULL);
 	PAINT->RichTextExtents(THIS, STRING(text), LENGTH(text), &extents->ext, VARGOPT(width, -1));
 	
 	GB.ReturnObject(extents);
@@ -798,7 +798,7 @@ END_METHOD
 static PAINT_BRUSH *make_brush(GB_PAINT *d, GB_BRUSH brush)
 {
 	PAINT_BRUSH *that;
-	GB.New(POINTER(&that), GB.FindClass("PaintBrush"), NULL, NULL);
+	that = GB.New(GB.FindClass("PaintBrush"), NULL, NULL);
 	that->desc = d->desc;
 	that->brush = brush;
 	GB.ReturnObject(that);

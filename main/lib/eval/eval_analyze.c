@@ -217,7 +217,7 @@ static void analyze(EVAL_ANALYZE *result)
   PATTERN *pattern;
   const char *src;
   int nspace;
-  bool empty;
+  bool empty = FALSE;
   int type, old_type, next_type;
   const char *symbol;
   bool space_before, space_after, in_quote;

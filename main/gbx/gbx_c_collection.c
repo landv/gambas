@@ -300,7 +300,7 @@ int GB_CollectionCount(GB_COLLECTION col)
 	return HASH_TABLE_size(((CCOLLECTION *)col)->hash_table);
 }
 
-int GB_CollectionSet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *value)
+bool GB_CollectionSet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *value)
 {
 	VARIANT *data;
 
@@ -316,7 +316,7 @@ int GB_CollectionSet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *va
 	return FALSE;
 }
 
-int GB_CollectionGet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *value)
+bool GB_CollectionGet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *value)
 {
 	VARIANT *var;
 
@@ -335,7 +335,7 @@ int GB_CollectionGet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *va
 	}
 }
 
-int GB_CollectionEnum(GB_COLLECTION col, GB_COLLECTION_ITER *iter, GB_VARIANT *value, char **key, int *len)
+bool GB_CollectionEnum(GB_COLLECTION col, GB_COLLECTION_ITER *iter, GB_VARIANT *value, char **key, int *len)
 {
 	VARIANT *val;
 	HASH_TABLE *hash_table = ((CCOLLECTION *)col)->hash_table;

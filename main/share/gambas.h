@@ -57,7 +57,12 @@
 #endif
 
 #if defined(__cplusplus)
-#define __null ((intptr_t)0)
+	#define __null ((intptr_t)0)
+#else
+	#ifdef bool
+		#undef bool
+	#endif
+	#define bool char
 #endif
 
 #ifndef PACKED
@@ -781,65 +786,65 @@ typedef
 	struct {
 		intptr_t version;
 
-		int (*GetInterface)(const char *, int, void *);
+		bool (*GetInterface)(const char *, int, void *);
 
 		void *(*Hook)(int, void *);
 
-		int (*LoadComponent)(const char *);
-		int (*ExistComponent)(const char *);
+		bool (*LoadComponent)(const char *);
+		bool (*ExistComponent)(const char *);
 		char *(*CurrentComponent)(void);
-		int (*GetComponentInfo)(const char *, void **);
+		bool (*GetComponentInfo)(const char *, void **);
 
 		void (*Push)(int, ...);
-		int (*GetFunction)(GB_FUNCTION *, void *, const char *, const char *, const char *);
+		bool (*GetFunction)(GB_FUNCTION *, void *, const char *, const char *, const char *);
 		GB_VALUE *(*Call)(GB_FUNCTION *, int, int);
 		void *(*GetClassInterface)(GB_CLASS, const char *);
 		void (*GetProperty)(void *, const char *);
 		void (*SetProperty)(void *, const char *, ...);
 
-		int (*Loop)(int);
+		bool (*Loop)(int);
 		void (*Post)(GB_CALLBACK, intptr_t);
 		void (*Post2)(GB_CALLBACK, intptr_t, intptr_t);
 		GB_TIMER *(*Every)(int, GB_TIMER_CALLBACK, intptr_t);
-		int (*Raise)(void *, int, int, ...);
+		bool (*Raise)(void *, int, int, ...);
 		void (*RaiseLater)(void *, int);
 		void (*CheckPost)(void);
-		int (*CanRaise)(void *, int);
+		bool (*CanRaise)(void *, int);
 		int (*GetEvent)(GB_CLASS, const char *);
 		char *(*GetLastEventName)();
 		void (*RaiseTimer)(void *);
-		int (*Stopped)(void);
+		bool (*Stopped)(void);
 		void (*Signal)(int, void *);
 
 		int (*NParam)(void);
-		int (*Conv)(GB_VALUE *, GB_TYPE);
+		bool (*Conv)(GB_VALUE *, GB_TYPE);
 		char *(*GetUnknown)(void);
-		int (*IsProperty)(void);
+		bool (*IsProperty)(void);
 		
 		void (*Error)(const char *, ...);
 		void (*Propagate)(void);
 
 		GB_CLASS (*GetClass)(void *);
 		char *(*GetClassName)(void *);
-		int (*ExistClass)(const char *);
+		bool (*ExistClass)(const char *);
 		GB_CLASS (*FindClass)(const char *);
-		int (*ExistClassLocal)(const char *);
+		bool (*ExistClassLocal)(const char *);
 		GB_CLASS (*FindClassLocal)(const char *);
-		int (*Is)(void *, GB_CLASS);
+		bool (*Is)(void *, GB_CLASS);
 		void (*Ref)(void *);
 		void (*Unref)(void **);
 		void (*UnrefKeep)(void **, int);
 		void (*Detach)(void *);
 		void (*Attach)(void *, void *, const char *);
 		void *(*Parent)(void *);
-		int (*New)(void **, GB_CLASS, char *, void *);
+		void *(*New)(GB_CLASS, char *, void *);
 		void *(*AutoCreate)(GB_CLASS, int);
-		int (*CheckObject)(void *);
+		bool (*CheckObject)(void *);
 
 		void *(*GetEnum)();
 		void (*StopEnum)();
 		void (*ListEnum)(void *);
-		int (*NextEnum)();
+		bool (*NextEnum)();
 		void (*StopAllEnum)(void *);
 
 		void (*Return)(GB_TYPE, ...);
@@ -868,24 +873,24 @@ typedef
 		void (*AddString)(char **, const char *, int);
 		int (*StringLength)(char *);
 		char *(*ToZeroString)(GB_STRING *);
-		int (*MatchString)(const char *, int, const char *, int);
-		int (*NumberFromString)(int, const char *, int, GB_VALUE *);
-		int (*NumberToString)(int, double, const char *, char **, int *);
+		bool (*MatchString)(const char *, int, const char *, int);
+		bool (*NumberFromString)(int, const char *, int, GB_VALUE *);
+		bool (*NumberToString)(int, double, const char *, char **, int *);
 		char *(*Translate)(const char *);
 
 		char *(*SubstString)(const char *, int, GB_SUBST_CALLBACK);
 		char *(*SubstStringAdd)(const char *, int, GB_SUBST_ADD_CALLBACK);
 		void (*SubstAddCallback)(const char *, int);
-		int (*ConvString)(char **, const char *, int, const char *, const char *);
+		bool (*ConvString)(char **, const char *, int, const char *, const char *);
 		char *(*FileName)(char *, int);
 		char *(*RealFileName)(char *, int);
 
-		int (*LoadFile)(const char *, int, char **, int *);
+		bool (*LoadFile)(const char *, int, char **, int *);
 		void (*ReleaseFile)(char *, int);
-		int (*ExistFile)(char *);
+		bool (*ExistFile)(char *);
 		char *(*TempDir)(void);
 		char *(*TempFile)(const char *);
-		int (*CopyFile)(const char *, const char *);
+		bool (*CopyFile)(const char *, const char *);
 		void (*BrowseProject)(GB_BROWSE_CALLBACK);
 
 		void (*Store)(GB_TYPE, GB_VALUE *, void *);
@@ -897,9 +902,9 @@ typedef
 		void (*ReleaseValue)(GB_VALUE *);
 
 		GB_DATE_SERIAL *(*SplitDate)(GB_DATE *);
-		int (*MakeDate)(GB_DATE_SERIAL *, GB_DATE *);
+		bool (*MakeDate)(GB_DATE_SERIAL *, GB_DATE *);
 		void (*MakeDateFromTime)(int, int, GB_DATE *);
-		int (*GetTime)(double *, int);
+		bool (*GetTime)(double *, int);
 
 		void (*Watch)(int, int, void *, intptr_t);
 
@@ -943,7 +948,7 @@ typedef
 			char *(*Charset)(void);
 			char *(*Language)(void);
 			char *(*DomainName)(void);
-			int *(*IsRightToLeft)(void);
+			bool (*IsRightToLeft)(void);
 			char *(*Path)(void);
 			}
 		System;
@@ -960,9 +965,9 @@ typedef
 		struct {
 			void (*New)(GB_COLLECTION *, int);
 			int (*Count)(GB_COLLECTION);
-			void (*Set)(GB_COLLECTION, const char *, int, GB_VARIANT *);
-			int (*Get)(GB_COLLECTION, const char *, int, GB_VARIANT *);
-			int (*Enum)(GB_COLLECTION, GB_COLLECTION_ITER *, GB_VARIANT *, char **key, int *len);
+			bool (*Set)(GB_COLLECTION, const char *, int, GB_VARIANT *);
+			bool (*Get)(GB_COLLECTION, const char *, int, GB_VARIANT *);
+			bool (*Enum)(GB_COLLECTION, GB_COLLECTION_ITER *, GB_VARIANT *, char **key, int *len);
 			}
 		Collection;
 
@@ -972,7 +977,7 @@ typedef
 			int (*Count)(GB_HASHTABLE);
 			void (*Add)(GB_HASHTABLE, const char *, int, void *);
 			void (*Remove)(GB_HASHTABLE, const char *, int);
-			int (*Get)(GB_HASHTABLE, const char *, int, void **);
+			bool (*Get)(GB_HASHTABLE, const char *, int, void **);
 			void (*Enum)(GB_HASHTABLE, GB_HASHTABLE_ENUM_FUNC);
 			}
 		HashTable;
@@ -981,7 +986,7 @@ typedef
 			GB_STREAM *(*Get)(void *object);
 			void (*SetBytesRead)(GB_STREAM *stream, int length);
 			void (*SetSwapping)(GB_STREAM *stream, int swap);
-			int (*Block)(GB_STREAM *stream, int block);
+			bool (*Block)(GB_STREAM *stream, int block);
 			int (*Read)(GB_STREAM *stream, void *addr, int len);
 			int (*Write)(GB_STREAM *stream, void *addr, int len);
 			}

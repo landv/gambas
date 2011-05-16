@@ -121,7 +121,7 @@ static void add_reserved_pattern(int reserved)
 
 
 
-static void add_operator_output(short op, short nparam, boolean has_output)
+static void add_operator_output(short op, short nparam, bool has_output)
 {
 	PATTERN pattern;
 
@@ -162,7 +162,7 @@ static void add_operator(short op, short nparam)
 
 
 
-static void add_subr(PATTERN subr_pattern, short nparam, boolean has_output)
+static void add_subr(PATTERN subr_pattern, short nparam, bool has_output)
 {
 	PATTERN pattern;
 
@@ -328,11 +328,11 @@ static void analyze_call()
 	int nparam_post = 0;
 	PATTERN subr_pattern = NULL_PATTERN;
 	PATTERN last_pattern = get_last_pattern(1);
-	boolean has_output = FALSE;
+	bool has_output = FALSE;
 	/*int i;
 	PATTERN *save_current;*/
 	SUBR_INFO *info;
-	boolean optional = TRUE;
+	bool optional = TRUE;
 
 	/*
 	get_pattern_subr(last_pattern, &subr);
@@ -685,7 +685,7 @@ PUBLIC void TRANS_tree()
 
 
 #if 0
-PUBLIC boolean TRANS_is_statement(TRANS_TREE *tree)
+PUBLIC bool TRANS_is_statement(TRANS_TREE *tree)
 {
 	PATTERN last;
 	int count;

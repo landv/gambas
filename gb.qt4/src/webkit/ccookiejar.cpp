@@ -173,9 +173,7 @@ GB_DESC CCookieDesc[] =
 
 CCOOKIE *WEB_create_cookie(const QNetworkCookie &cookie)
 {
-	CCOOKIE *_object;
-	
-  GB.New(POINTER(&_object), GB.FindClass("Cookie"), NULL, NULL);
+	CCOOKIE *_object = (CCOOKIE *)GB.New(GB.FindClass("Cookie"), NULL, NULL);
 	*(THIS_COOKIE->cookie) = cookie;
 	
 	return THIS_COOKIE;

@@ -554,7 +554,7 @@ int CSocket_connect_socket(void *_object,char *sHost,int lenhost,int myport)
 	*******************************************/
 	if (!THIS->DnsTool)
 	{
-		GB.New(POINTER(&THIS->DnsTool),GB.FindClass("DnsClient"),NULL,NULL);
+		THIS->DnsTool = GB.New(GB.FindClass("DnsClient"), NULL, NULL);
 		THIS->DnsTool->CliParent=_object;
 	}
 

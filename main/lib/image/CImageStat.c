@@ -66,10 +66,11 @@ BEGIN_METHOD(CIMAGESTAT_call, GB_STRING path)
 	if (IMAGE_get_info(&stream, &info))
 	{
 		GB.Error(IMAGE_error);
+		stat = NULL;
 	}
 	else
 	{
-		GB.New(POINTER(&stat), GB.FindClass("ImageStat"), NULL, NULL);
+		stat = GB.New(GB.FindClass("ImageStat"), NULL, NULL);
 		stat->path = GB.NewZeroString(path);
 		stat->type = info.type;
 		stat->width = info.width;
