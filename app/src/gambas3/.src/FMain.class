@@ -1101,15 +1101,23 @@ End
 Public Sub ShowDebug(bShow As Boolean)
   
   panDebug.Hidden = Not bShow
-  'FDebugInfo.UpdateView
+  FDebugInfo.OnVisibilityChange
   
 End
 
 Public Sub HideDebug(bHide As Boolean)
   
   panDebug.Visible = Not bHide
+  FDebugInfo.OnVisibilityChange
   
 End
+
+Public Sub IsDebugVisible() As Boolean
+  
+  Return panDebug.Visible And Not panDebug.Hidden
+  
+End
+
 
 ' PUBLIC SUB mnuHideAll_Click()
 ' 

@@ -1129,7 +1129,7 @@ End
 
 Public Sub IsSearchListVisible() As Boolean
   
-  Return tabDebug.Index = TAB_SEARCH
+  Return tabDebug.Index = TAB_SEARCH And FMain.IsDebugVisible()
   
 End
 
@@ -1143,4 +1143,10 @@ Public Sub btnClearSearch_Click()
 
   FSearch.ResetBrowse
 
+End
+
+Public Sub OnVisibilityChange()
+  
+  If IsSearchListVisible() Then FSearch.RefreshBrowse
+  
 End
