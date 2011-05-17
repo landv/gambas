@@ -1312,7 +1312,7 @@ Public Sub AddControl(sClass As String, Optional hParent As CControl, Optional X
 
   hCtrl = CreateControl(sClass, hParent,, True)
 
-  If X <> 0 Or Y <> 0 Then hCtrl.Move(X, Y)
+  hCtrl.Move(X, Y)
 
   With CComponent.Classes[sClass]
     W = .DefaultWidth

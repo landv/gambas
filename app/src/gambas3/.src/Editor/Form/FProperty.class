@@ -602,7 +602,7 @@ Private Sub ShowProperty(Optional sFocus As String)
         sHelpType = "Boolean"
         sHelpLcType = "boolean"
       Else If hProp.Virtual Then 
-        sHelp = ""
+        sHelp = "?"
       Else
         hSymbol = CComponent.Classes[$hObject.Kind].Symbols[hProp.Name]    
         MHelp.InitWebViewWith($hWebView, MHelp.TYPE_SYMBOL, hSymbol.Name, hSymbol.Class, If($hWebView, "notitle", ""))
@@ -612,13 +612,15 @@ Private Sub ShowProperty(Optional sFocus As String)
   Endif
 
   If sHelp Then 
-    sHTML = File.Load("help/property-help.html")
-    sHTML = Replace(sHTML, "$(class)", "Control")
-    sHTML = Replace(sHTML, "$(name)", grdProperty[grdProperty.Row, 0].Text)
-    sHTML = Replace(sHTML, "$(help)", Html(sHelp))
-    sHTML = Replace(sHTML, "$(type)", sHelpType)
-    sHTML = Replace(sHTML, "$(lctype)", sHelpLcType)
-    sHTML = Replace(sHTML, "$(warning)", ("This property is virtual: it is only implemented in the IDE, and has no existence at runtime."))
+    If sHelp <> "?" Then
+      sHTML = File.Load("help/property-help.html")
+      sHTML = Replace(sHTML, "$(class)", "Control")
+      sHTML = Replace(sHTML, "$(name)", grdProperty[grdProperty.Row, 0].Text)
+      sHTML = Replace(sHTML, "$(help)", Html(sHelp))
+      sHTML = Replace(sHTML, "$(type)", sHelpType)
+      sHTML = Replace(sHTML, "$(lctype)", sHelpLcType)
+      sHTML = Replace(sHTML, "$(warning)", ("This property is virtual: it is only implemented in the IDE, and has no existence at runtime."))
+    Endif
     If Not $hWebView Then
       If FHelpBrowser.Visible Then
         sHTML = Replace(sHTML, "$(hide-title)", "")

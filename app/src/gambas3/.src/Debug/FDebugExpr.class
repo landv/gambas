@@ -455,7 +455,7 @@ Private Sub Init(sInfo As String, bNew As Boolean) As Boolean
   With gvwExpr
   
     .Columns.Count = 2
-    If nRow > 1024 Then Stop
+    'If nRow > 1024 Then Stop
     .Rows.Count = nRow
   
     If $bArray Then 

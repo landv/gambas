@@ -256,16 +256,26 @@ Public Sub InitControl()
     PropertyList.Add(hProp.Name)
   Next
 
-  'If VirtualControl Then
-
   Properties["#X"] = New CPropertyInfo("", Name, "#X", "", Null, True, True)
   Properties["#Y"] = New CPropertyInfo("", Name, "#Y", "", Null, True, True)
   If Not VirtualControl Then
     Properties["#Width"] = New CPropertyInfo("", Name, "#Width", "", Null, True, True)
     Properties["#Height"] = New CPropertyInfo("", Name, "#Height", "", Null, True, True)
   Endif
-
-  'Endif
+  
+  If VirtualControl Then
+    
+    hProp = New CPropertyInfo("", Name, "X", "", Null, True, True, "0")
+    hProp.Exclude = True
+    Properties["X"] = hProp
+    PropertyList.Add("X")
+    
+    hProp = New CPropertyInfo("", Name, "Y", "", Null, True, True, "0")
+    hProp.Exclude = True
+    Properties["Y"] = hProp
+    PropertyList.Add("Y")
+    
+  Endif
 
   If {Form} Then 
     If Family = "Form" Then

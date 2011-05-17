@@ -144,7 +144,7 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
 
   'PRINT "> CreateControl "; sClass
 
-  If sClass = "Report" Then Stop
+  'If sClass = "Report" Then Stop
 
   hClass = CComponent.Classes[sClass]
   bExist = hClass <> Null
@@ -321,12 +321,6 @@ Private Sub InitControl(hCtrl As Object)
   $cValue["#Width"] = 0
   $cValue["#Height"] = 0
 
-  
-
-  'Try SetProperty("Text", hCtrl.Text)
-  'SetProperty("Visible", True)
-  'SetProperty("Tag", Null)
-
   If DrawWith Then
     For Each hProp In CComponent.Classes[Kind].Properties
       If Not hProp.Coord Then SetProperty(hProp.Name, hProp.DefaultValue)
@@ -382,7 +376,7 @@ Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As
       hCtrl = CreateControl(sName, sClass, Parent.Control)
       'hCtrl.Resize(5 * Desktop.Scale, 5 * Desktop.Scale)
       iDim = 2 + (32 + Desktop.Scale - 1) \ Desktop.Scale '(40 + Desktop.Scale - 1) Div Desktop.Scale
-      hCtrl.ResizeScaled(iDim, iDim)
+      hCtrl.MoveScaled(0, 0, iDim, iDim)
       
     Else
 
@@ -407,7 +401,7 @@ Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As
     Object.Attach(hCtrl, hForm, "Control")
   Endif
   
-  VirtualCoord = hClass.Family <> "Form" Or Virtual
+  VirtualCoord = hClass.Family <> "Form" And Not Virtual
 
   InitControl(hCtrl)
 
@@ -1497,7 +1491,10 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
     If hProp.Exclude Then Continue
     
     If Not VirtualCoord Then
-      If sProp = "X" Or If sProp = "Y" Or If sProp = "Width" Or If sProp = "Height" Then Continue
+      If Not Virtual Then
+        If sProp = "X" Or If sProp = "Y" Then Continue
+      Endif
+      If sProp = "Width" Or If sProp = "Height" Then Continue
     Endif
 
     vVal = GetProperty(sProp)
