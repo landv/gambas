@@ -183,7 +183,6 @@ void *EXTERN_get_symbol(const char *library, const char *symbol)
 	return lt_dlsym(handle, symbol);
 }
 
-
 static EXTERN_FUNC *get_function(CLASS_EXTERN *ext)
 {
 	EXTERN_FUNC *func;
@@ -721,6 +720,11 @@ void EXTERN_exit(void)
 }
 
 void *EXTERN_make_callback(VALUE_FUNCTION *value)
+{
+	return NULL;
+}
+
+void *EXTERN_get_symbol(const char *library, const char *symbol)
 {
 	return NULL;
 }
