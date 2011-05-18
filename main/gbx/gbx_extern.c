@@ -177,6 +177,12 @@ static lt_dlhandle get_library(char *name)
 	return esym->handle;
 }  
 
+void *EXTERN_get_symbol(const char *library, const char *symbol)
+{
+	lt_dlhandle handle = get_library(library);
+	return lt_dlsym(handle, symbol);
+}
+
 
 static EXTERN_FUNC *get_function(CLASS_EXTERN *ext)
 {

@@ -44,7 +44,7 @@
 #include "gbx_event.h"
 #include "gbx_string.h"
 #include "gbx_exec.h"
-
+#include "gbx_extern.h"
 #include "gbx_object.h"
 
 #include "gbx_c_application.h"
@@ -390,6 +390,20 @@ BEGIN_PROPERTY(System_Error)
 
 END_PROPERTY
 
+
+BEGIN_METHOD(System_GetExternSymbol, GB_STRING library; GB_STRING name)
+
+	char *library = GB_ToZeroString(ARG(library));
+	char *name = GB_ToZeroString(ARG(name));
+	void *ptr = NULL;
+	
+	if (*library && *name)
+		ptr = EXTERN_get_symbol(library, name);
+	
+	GB_ReturnPointer(ptr);
+
+END_METHOD
+
 #endif
 
 GB_DESC NATIVE_AppArgs[] =
@@ -457,6 +471,8 @@ GB_DESC NATIVE_System[] =
   
   GB_CONSTANT("Family", "s", SYSTEM),
   GB_CONSTANT("Architecture", "s", ARCHITECTURE),
+  
+  GB_STATIC_METHOD("GetExternSymbol", "p", System_GetExternSymbol, "(Library)s(Symbol)s"),
   
   GB_STATIC_PROPERTY_SELF("User", "User"),
 
