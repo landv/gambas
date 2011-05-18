@@ -423,20 +423,11 @@
       Expand = True
       Text = ("There is no change to commit.")
     }
-    { panDiff Panel
-      MoveScaled(4,12,81,29)
+    { edtDiff Editor
+      MoveScaled(4,17,43,11)
       Expand = True
-      Arrangement = Arrange.Fill
-      Margin = True
-      Padding = 1
-      Border = Border.Sunken
-      { edtDiff Editor
-        MoveScaled(11,11,43,11)
-        Expand = True
-        Border = False
-        Highlight = Highlight.Diff
-        ReadOnly = True
-      }
+      Highlight = Highlight.Diff
+      ReadOnly = True
     }
     { HBox15 HBox
       MoveScaled(1,50,84,4)

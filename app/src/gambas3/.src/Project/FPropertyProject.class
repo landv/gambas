@@ -755,10 +755,10 @@ Public Sub tabProject_Click()
       $sVerCtrlDiff = VersionControl.Diff(Project.Dir)
       If $sVerCtrlStatus Then
         edtDiff.Text = String$(76, "=") & "\n" & $sVerCtrlStatus & String$(76, "=") & "\n\n" & $sVerCtrlDiff
-        panDiff.Show
+        edtDiff.Show
         lblNoDiff.Hide
       Else
-        panDiff.Hide
+        edtDiff.Hide
         lblNoDiff.Show
       Endif
       btnCommit.Enabled = Len($sVerCtrlStatus)

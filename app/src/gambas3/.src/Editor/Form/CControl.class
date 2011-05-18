@@ -91,16 +91,16 @@ Static Public Sub GetIcon(sClass As String, sComp As String, Optional iSize As I
   If Not hPict Then
     hImage = Image.Load("img/control/unknown.png")
     Paint.Begin(hImage)
-    Paint.Rectangle(2, 2, hImage.W - 5, hImage.H - 5)
+    Paint.Rectangle(3, 3, hImage.W - 6, hImage.H - 6)
     Paint.Clip
-    Paint.Font.Size = 10
+    Paint.Font.Size = 7
     'Paint.Brush = Paint.Color(Color.RGB(0, 0, 0, 128))
     sText = sClass
     While Len(sText) < 32
       sText &= sClass
     Wend
-    X = 2
-    Y = Paint.Font.Ascent - 1
+    X = 3
+    Y = 10
     
     While Y < hImage.H
       
