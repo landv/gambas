@@ -124,7 +124,7 @@ GEditor::GEditor(QWidget *parent)
 	fm(font())
 {
 	int i;
-	QStyle *oldStyle;
+	//QStyle *oldStyle;
 
 	if (count == 0)
 	{
@@ -138,6 +138,8 @@ GEditor::GEditor(QWidget *parent)
 	setFocusPolicy(Qt::WheelFocus);
 	setAttribute(Qt::WA_InputMethodEnabled, true);
 	
+	_border = true;
+	
 	setMouseTracking(true);
 	viewport()->setMouseTracking(true);
 	viewport()->setCursor(Qt::ibeamCursor);
@@ -145,18 +147,12 @@ GEditor::GEditor(QWidget *parent)
 	viewport()->setPaletteBackgroundColor(defaultColors[GLine::Background]);
 	viewport()->setFocusProxy(this);
 	
-	oldStyle = style();
-	Q3ScrollView::setStyle(_style);
+	//oldStyle = style();
+	//Q3ScrollView::setStyle(_style);
+	//viewport()->setStyle(_style);
 	//Q3ScrollView::setStyle(oldStyle);
 	ensurePolished();
-	
-	viewport()->ensurePolished();
-  //viewport()->setAutoFillBackground(true);
-	//viewport()->setAttribute(Qt::WA_StaticContents, true);
-	//viewport()->setAttribute(Qt::WA_DontCreateNativeAncestors, true);
-	//viewport()->setAttribute(Qt::WA_NativeWindow, true);
-	viewport()->setAttribute(Qt::WA_NoSystemBackground, true);
-	viewport()->setAttribute(Qt::WA_PaintOnScreen, true);
+	updateViewportAttributes();
 	
 	margin = 0;
 	doc = 0;
@@ -958,10 +954,8 @@ void GEditor::drawContents(QPainter *p, int cx, int cy, int cw, int ch)
 	//ur = QRect(0, row * _cellh, _cellw, _cellh);
 	//qDebug("drawContents: %d %d %d %d : %d %d . %d : %d %d", cx, cy, cw, ch, contentsX(), contentsY(), rowfirst * _cellh, viewport()->x(), viewport()->y());
 	//p->setClipRect(cx, cy, cw, ch);
-	//p->setClipping(false);
 	p->drawPixmap(contentsX(), rowfirst * _cellh, *_cache, 0, 0, _cellw, _cellh * (rowlast - rowfirst + 1)); //, _cellw, _cellh);
 }
-
 
 void GEditor::checkMatching()
 {
@@ -2763,4 +2757,28 @@ void GEditor::setInsertMode(bool mode)
 		else
 			updateLine(y);
 	}
+}
+
+void GEditor::updateViewportAttributes()
+{
+	bool b;
+	
+	//if (!::strcmp(style()->metaObject()->className(), "Oxygen::Style"))
+		b = !hasBorder();
+	//else
+	//	b = true;
+	
+	viewport()->setAttribute(Qt::WA_NoSystemBackground, b);
+	viewport()->setAttribute(Qt::WA_PaintOnScreen, b);
+}
+
+void GEditor::setBorder(bool b)
+{
+	if (_border == b)
+		return;
+	
+	style()->unpolish(this);
+	setFrameStyle(b ? StyledPanel + Sunken : NoFrame);
+	style()->polish(this);
+	updateViewportAttributes();
 }

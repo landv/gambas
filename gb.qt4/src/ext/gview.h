@@ -96,6 +96,7 @@ private:
 	bool _oddLine;
 	QColor _oddBackground;
 	bool _checkCache;
+	bool _border;
 	
 	int lastx;
 	bool left;
@@ -141,6 +142,8 @@ private:
 	void updateFont();
 
 	int getStringWidth(const QString &s, int len = -1) const;
+	
+	void updateViewportAttributes();
 
 private slots:
 
@@ -229,6 +232,8 @@ public:
 	void getStyle(int index, GHighlightStyle *style) const;
 	bool getFlag(int f) const { return flags & (1 << f); }
 	void setFlag(int f, bool v);
+	bool hasBorder() const { return _border; }
+	void setBorder(bool b);
 
 	int rowAt(int y) const { return y / _cellh; }
 	int getLineHeight() const { return _cellh; }

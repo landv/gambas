@@ -1077,7 +1077,11 @@ END_METHOD
 
 BEGIN_PROPERTY(CEDITOR_border)
 
-  QT.BorderProperty(_object, _param);
+  //QT.BorderProperty(_object, _param);
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(WIDGET->hasBorder());
+	else
+		WIDGET->setBorder(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
