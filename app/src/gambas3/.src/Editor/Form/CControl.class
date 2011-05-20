@@ -1605,7 +1605,7 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
   
     Endif
   
-    If VirtualCoord Then sLine = "#" & sLine
+    If VirtualCoord Or If Virtual Then sLine = "#" & sLine
   
     cLine.Add(sLine, 0)
     
