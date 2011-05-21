@@ -3504,19 +3504,19 @@ Public Function CheckFileName(sName As String, Optional sDir As String) As Strin
   
   Return
   
-  VOID_NAME:
+VOID_NAME:
   
   Return ("Please type a name.")
   
-  BAD_CHAR:
+BAD_CHAR:
   
   Return ("This name contains a forbidden character:") & " [ " & String.Mid$(sName, iInd, 1) & " ]"
   
-  BAD_START:
+BAD_START:
   
   Return ("The name cannot begins with a dot.")
   
-  ALREADY_EXIST:
+ALREADY_EXIST:
   
   Return ("This name is already used. Choose another one.")
   

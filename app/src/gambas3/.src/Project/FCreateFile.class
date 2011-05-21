@@ -3,7 +3,6 @@
 Private $sPath As String
 Private $sDir As String
 Private $sType As String
-Private $bMouse As Boolean
 Private $bDoNotSetName As Boolean
 Private $bInit As Boolean
 Private $iFilter As Integer 
@@ -123,10 +122,6 @@ End
 
 Public Sub txtWidth_Change()
 
-  'IF $bMouse THEN 
-  '  txtWidth.Value = CInt(txtWidth.Value / txtWidth.Step + 0.5) * txtWidth.Step
-  '  $bMouse = FALSE
-  'ENDIF 
   If btnLinked.Value Then txtHeight.Value = txtWidth.Value  
 
 End
@@ -136,37 +131,6 @@ Public Sub txtHeight_Change()
   If btnLinked.Value Then txtWidth.Value = txtHeight.Value    
 
 End
-
-Public Sub txtWidth_MouseDown()
-
-  $bMouse = True  
-
-End
-
-Public Sub txtHeight_MouseDown()
-
-  $bMouse = True
-
-End
-
-
-Public Sub txtWidth_MouseWheel()
-
-  $bMouse = True  
-
-End
-
-Public Sub txtHeight_MouseWheel()
-
-  $bMouse = True  
-
-End
-
-' Public Sub txtName_GotFocus()
-' 
-'   txtName.SelectAll
-' 
-' End
 
 Public Sub txtName_Change()
 
@@ -186,7 +150,7 @@ Private Sub CreateFile() As Boolean
   
     Case "text", "image", "html", "css"
     
-      If chkExt.Value Then
+      If sName And If chkExt.Value Then
         If sType = "image" Then 
           sName = File.SetExt(sName, LCase(cmbImageType.Text))
         Else If sType = "html" Or sType = "css" Then
@@ -249,7 +213,7 @@ Private Sub CreateFile() As Boolean
       
       sTemp = Project.FORM_MAGIC & "\n\n" &   
               "{ " & sName & " " & UCase(Left(sType)) & Mid$(sType, 2) & "\n" &   
-              "  MoveScaled(0, 0, 68, 64)\n"
+              "  MoveScaled(0,0,68,64)\n"
       
       If sType = "form" Then
       
@@ -263,7 +227,6 @@ Private Sub CreateFile() As Boolean
                    "  Spacing = True\n"
                    "  { Panel1 Panel\n"
                    "    MoveScaled(4,0,4,4)\n"
-                   "    'Move(24,0,24,24)\n"
                    "    Expand = True\n"
                    "  }\n"
                    "  { btnOK Button\n"

@@ -341,3 +341,9 @@ Private Function Extension_Read() As Container
   Return frmChooser.GetExtensionContainer()
 
 End
+
+Public Sub SetFocus()
+  
+  frmChooser.SetFocus
+  
+End

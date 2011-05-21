@@ -764,7 +764,7 @@ Private Function CanDelete(sPath As String) As Boolean
   
   If Not sPath Then Return
   If Left$(sPath) = "$" Then Return
-  If IsDir(sPath) And If Stat(sPath).Type = gb.Link Then Return True
+  If Stat(sPath).Type = gb.Link Then Return True
   If Project.IsReadOnly(sPath) Then Return False
   If tvwProject[sPath].Count = 0 Then Return True
   

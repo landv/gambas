@@ -17,6 +17,7 @@ Public Sub Form_Open()
 
   fchExec.Filter = ["*.gambas", ("Gambas applications")]
   fchExec.SelectedPath = $sPath
+  fchExec.SetFocus
   
   chkDebug.Value = Project.KeepDebugInfo
   chkShortcut.Value = Project.CreateShortcut
