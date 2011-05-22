@@ -1059,7 +1059,7 @@ Private Function Encode(sText As String) As String
             Continue
             
           Case "title-index"
-            sTitleIndexStamp = "{" & Format(Int(Rnd(1000000)), "000000") & "}"
+            sTitleIndexStamp = "{~" & Format(Int(Rnd(1000000)), "000000") & "~}"
             $sRes &= sTitleIndexStamp
             bTitleIndex = True
             Continue
@@ -1125,7 +1125,7 @@ Private Function Encode(sText As String) As String
         sStr = LTrim(Mid$(sStr, iPos))
         If Len(sStr) Then
           'DEC iPos
-          If bTitleIndex And If $aSection.Count = 1 And If iInTable = 0 Then
+          If bTitleIndex And If iInTable = 0 Then
             Inc iTitleIndex
             iTitleLevel = iPos - 1
             $sRes &= "<a name=\"t" & iTitleIndex & "\"></a>"
@@ -1580,20 +1580,31 @@ End
 
 Private Sub PrintVersion()
   
-  Dim sElt As String
+  Dim sUri As String
   
   If $bWget Then Return
   
-  'If IsComponentPath($sPath) Then
-    Print "<div class=\"path\">&nbsp;&nbsp;";
-    If $sVersion = "3.0" Then
-      sElt = Replace($sUri, "v3", "")
-      If Right(sElt) = "&" Or Right(sElt) = "?" Then sElt = Left$(sElt, -1)
-      Print "<a href=\"/help" &/ sElt; "\">[2.0]</a>";
-    Else
-      Print "<a href=\"/help" &/ AddParam($sUri, "v3"); "\">[3.0]</a>";
-    Endif
-    Print "</div>";
+  sUri = RemoveParam($sUri, "v2")
+  sUri = RemoveParam(sUri, "v3")
+  sUri = AddParam(sUri, "v")
+  
+  Print "<div class=\"path\">"
+  Print "<select id=\"version\" onchange=\"window.location.href='/help" &/ sUri; "' + this.value.substr(0,1);\">"
+  Print "<option"; If($sVersion = "2.0", " selected", ""); ">2.0</option>"
+  Print "<option"; If($sVersion = "3.0", " selected", ""); ">3.0</option>"
+  Print "</select></div>";
+  Return
+  
+  ' 'If IsComponentPath($sPath) Then
+  '   Print "<div class=\"path\">&nbsp;&nbsp;";
+  '   If $sVersion = "3.0" Then
+  '     sElt = Replace($sUri, "v3", "")
+  '     If Right(sElt) = "&" Or Right(sElt) = "?" Then sElt = Left$(sElt, -1)
+  '     Print "<a href=\"/help" &/ sElt; "\">[2.0]</a>";
+  '   Else
+  '     Print "<a href=\"/help" &/ AddParam($sUri, "v3"); "\">[3.0]</a>";
+  '   Endif
+  '   Print "</div>";
   'Endif
   
 End
@@ -1704,9 +1715,10 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
       PrintDivLang()
       
       'Print "<div style=\"padding:8px 8px 8px 0px;\">";
-      Print "<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr><td>";
-      PrintPath
+      Print "<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr><td width=\"16\">";
       PrintVersion
+      Print "</td><td nowrap>&nbsp;&nbsp;";
+      PrintPath
       Print "</td><td align=\"right\">";
       
       For Each sLang In $aLang

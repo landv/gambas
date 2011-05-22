@@ -126,7 +126,7 @@ static void prepare_cif(EXTERN_CIF *info, int nparam, TYPE *sign, TYPE ret)
 }
 
 
-static lt_dlhandle get_library(char *name)
+static lt_dlhandle get_library(const char *name)
 {
 	EXTERN_SYMBOL *esym;
 	char *p;

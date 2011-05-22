@@ -28,7 +28,7 @@ Public Sub Init(sClass As String, aProc As String[], iCurrent As Integer, W As I
   gvwProc.Rows.UnselectAll
   gvwProc.Columns.Count = 1
   Me.Resize(W, Min(H, gvwProc.Rows.Count * gvwProc.Rows.Height + 2))
-  gvwProc[$iCurrent, 0].EnsureVisible
+  Try gvwProc[$iCurrent, 0].EnsureVisible
   
   $sFind = ""
   $dFind = Timer
@@ -131,7 +131,6 @@ Private Sub FindProcedure()
   
 End
 
-
 Public Sub gvwProc_KeyPress()
   
   If Key.Code = Key.Return Or If Key.Code = Key.Enter Or If Key.Code = Key.Space Then
@@ -145,6 +144,18 @@ Public Sub gvwProc_KeyPress()
     $sFind &= String.LCase(Key.Text)
     $dFind = Timer
     FindProcedure
+  Else If Key.Code = Key.Up Then
+    If $iCurrent > 0 Then SetCurrent($iCurrent - 1)
+    Stop Event
+  Else If Key.Code = Key.Down Then
+    If $iCurrent < (gvwProc.Rows.Count - 1) Then SetCurrent($iCurrent + 1)
+    Stop Event
+  Else If Key.Code = Key.Home Then
+    SetCurrent(0)
+    Stop Event
+  Else If Key.Code = Key.End Then
+    SetCurrent(gvwProc.Rows.Count - 1)
+    Stop Event
   Endif
   
 End

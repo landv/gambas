@@ -242,10 +242,10 @@ bool gPrinter::run(bool configure)
 			action = GTK_PRINT_OPERATION_ACTION_PRINT;
 	}
 	
-	gtk_print_settings_to_file(gtk_print_operation_get_print_settings(operation), "/home/benoit/settings-before.txt", NULL);
+	//gtk_print_settings_to_file(gtk_print_operation_get_print_settings(operation), "/home/benoit/settings-before.txt", NULL);
 	res = gtk_print_operation_run(operation, action, active ? GTK_WINDOW(active->border) : NULL, &error);
 	_current = NULL;
-	gtk_print_settings_to_file(gtk_print_operation_get_print_settings(operation), "/home/benoit/settings-after.txt", NULL);
+	//gtk_print_settings_to_file(gtk_print_operation_get_print_settings(operation), "/home/benoit/settings-after.txt", NULL);
 	
 	if (_preview)
 	{

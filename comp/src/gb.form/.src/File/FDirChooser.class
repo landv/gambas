@@ -847,6 +847,12 @@ Private Sub FillMenu()
   hMenu.Text = ("&Create directory")
   hMenu.Picture = Picture["icon:/small/new-dir"]
   
+  If Component.IsLoaded("gb.desktop") Then
+    hMenu = New Menu(mnuPopup) As "mnuOpenFolder"
+    hMenu.Text = ("Open in &file manager...")
+    hMenu.Picture = Picture["icon:/small/file-manager"]
+  Endif
+  
   hMenu = New Menu(mnuPopup) As "mnuRefresh"
   hMenu.Text = ("&Refresh")
   hMenu.Picture = Picture["icon:/small/refresh"]
@@ -1041,5 +1047,11 @@ End
 Public Sub SetFocus()
   
   txtFile.SetFocus
+  
+End
+
+Public Sub mnuOpenFolder_Click()
+  
+  Desktop.Open(dvwChoose.Current)
   
 End
