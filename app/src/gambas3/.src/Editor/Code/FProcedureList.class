@@ -92,7 +92,10 @@ Private Sub SetCurrent(iCurrent As Integer)
   
   $iCurrent = iCurrent
   If iOld >= 0 Then gvwProc.Rows[iOld].Refresh
-  If iCurrent >= 0 Then gvwProc.Rows[iCurrent].Refresh
+  If iCurrent >= 0 Then 
+    gvwProc.Rows[iCurrent].Refresh
+    gvwProc[iCurrent, 0].EnsureVisible
+  Endif
 
 End
 
