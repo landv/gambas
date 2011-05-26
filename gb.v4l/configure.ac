@@ -10,7 +10,7 @@ GB_COMPONENT(
   V4L,
   [Video For Linux component],
   [src],
-  [GB_FIND(png.h jpeglib.h linux/videodev.h linux/videodev2.h, /usr/local/lib /usr/local /usr/lib /usr, include)],
+  [GB_FIND(png.h jpeglib.h linux/videodev2.h, /usr/local/lib /usr/local /usr/lib /usr, include)],
   [GB_FIND(libpng.$SHLIBEXT libjpeg.$SHLIBEXT, /usr/local /usr, lib)],
   [$C_LIB -ljpeg -lpng])
 
