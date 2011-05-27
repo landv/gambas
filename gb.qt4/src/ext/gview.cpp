@@ -115,6 +115,7 @@ void GEditor::reset()
 	_showLen = 0;
 	_posOutside = false;
 	_checkCache = true;
+	_ensureCursorVisibleLater = false;
 	
 	foldClear();
 }
@@ -1940,8 +1941,12 @@ void GEditor::resizeEvent(QResizeEvent *e)
 void GEditor::viewportResizeEvent(QResizeEvent *e)
 {
 	Q3ScrollView::viewportResizeEvent(e);
-	//updateCache();
 	updateWidth();
+	if (!_ensureCursorVisibleLater)
+	{
+		_ensureCursorVisibleLater = true;
+		QTimer::singleShot(0, this, SLOT(ensureCursorVisible()));
+	}
 	_checkCache = true;
 }
 
@@ -1961,19 +1966,20 @@ void GEditor::ensureCursorVisible()
 	if (!isUpdatesEnabled())
 		return;
 	
-	if (!isCursorVisible())
+	if (true) // || !isCursorVisible())
 	{
 		xx = lineWidth(y, x); // + _charWidth['m'] / 2
 		yy = realToView(y) * _cellh + _cellh / 2;
 		
-		if (center)
-			//ensureVisible(x * charWidth, y * _cellh + _cellh / 2, margin + 2, visibleHeight() / 2);
-			ensureVisible(xx, yy, margin + 2, visibleHeight() / 2);
-		else
-			//ensureVisible(x * charWidth, y * _cellh + _cellh / 2, margin + 2, _cellh);
-			ensureVisible(xx, yy, margin + 2, _cellh);
+		//qDebug("%p: xx = %d yy = %d vw = %d vh = %d", this, xx, yy, visibleWidth(), visibleHeight());
+		
+		if (xx < visibleWidth())
+			xx = margin;
+		
+		ensureVisible(xx, yy, margin + 2, center ? (visibleHeight() / 2) : _cellh);
 	}
 	center = false;
+	_ensureCursorVisibleLater = false;
 }
 
 

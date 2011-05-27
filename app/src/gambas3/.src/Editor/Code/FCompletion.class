@@ -207,6 +207,11 @@ Private Sub AddClassesAndFill(aClass As String[], Optional sBegin As String)
   Next
 
   aLib = Project.Components.Copy()
+  
+  For Each sLib In Project.Libraries
+    aLib.Add(File.Name(sLib))
+  Next
+  
   aLib.Add("gb", 0)
 
   For Each sLib In aLib

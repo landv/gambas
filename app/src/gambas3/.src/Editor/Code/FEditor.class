@@ -2940,8 +2940,7 @@ End
 Public Sub SetState(sState As String)
   
   Dim aState As String[] = Split(sState, ".")
-  
-  Editor.Goto(CInt(aState[0]), CInt(aState[1]))
+  GotoCenter(CInt(aState[0]), CInt(aState[1]))
   
 End
 

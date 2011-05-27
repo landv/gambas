@@ -5,7 +5,9 @@ Public Enum SORT_BY_DATE, SORT_BY_NAME, SORT_BY_PATH
 Static Public All As New CRecentFile[]
 Static Public Sort As Integer
 
-Static Private $bLoaded As Boolean
+Static Private $dLastLoad As Date
+
+Static Property Read OutOfDate As Boolean
 
 Public Const MAX_RECENT As Integer = 64
 
@@ -95,6 +97,9 @@ Static Public Sub Load()
   Dim sPath As String
   Dim hRecentFile As CRecentFile
 
+  If Not OutOfDate_Read() Then Return
+  
+  Settings.Reload
   nRecent = Settings["/Recent/Count", 0]
   
   All = New CRecentFile[]
@@ -110,13 +115,15 @@ Static Public Sub Load()
     Endif
   Next
   
-  $bLoaded = True
-
+  $dLastLoad = Stat(Settings.Path).LastModified
+  
 End
 
 Static Public Sub Save()
 
   Dim iInd As Integer
+
+  Load
 
   Settings.Clear("/Recent")
 
@@ -132,6 +139,8 @@ Static Public Sub Save()
 
   Settings.Save
 
+  $dLastLoad = Stat(Settings.Path).LastModified
+
 End
 
 Static Public Sub Add(sPath As String)
@@ -140,7 +149,7 @@ Static Public Sub Add(sPath As String)
   Dim nMax As Integer
   Dim hRecentFile As CRecentFile
   
-  If Not $bLoaded Then Return
+  Load
 
   If Right$(sPath) = "/" Then sPath = Left$(sPath, -1)
 
@@ -174,6 +183,8 @@ End
 
 Static Public Sub Get(Optional iSort As Integer) As CRecentFile[]
   
+  Load
+  
   Sort = iSort
   All.Sort()
   
@@ -187,3 +198,9 @@ Static Public Sub Exit()
   
 End
 
+Static Private Function OutOfDate_Read() As Boolean
+
+  If $dLastLoad And If Stat(Settings.Path).LastModified <= $dLastLoad Then Return
+  Return True  
+
+End

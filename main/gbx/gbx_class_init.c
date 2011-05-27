@@ -99,6 +99,7 @@ static const CLASS_INIT init_list[] =
   { NATIVE_Object, NULL },
   { NATIVE_Collection, &CLASS_Collection, CQA_COLLECTION },
   { NATIVE_Error, NULL },
+  { NATIVE_StreamLines, NULL },
   { NATIVE_Stream, &CLASS_Stream },
   { NATIVE_FilePerm, NULL },
   { NATIVE_Stat, &CLASS_Stat },

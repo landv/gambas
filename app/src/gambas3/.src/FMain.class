@@ -1537,16 +1537,10 @@ Public Sub panInfo_Show()
 End
 
 Public Sub mnuOpenRecent_Show()
-  
-  If $bUpdateRecentMenu Then Return
+
+  If $bUpdateRecentMenu And If Not CRecentFile.OutOfDate Then Return  
   UpdateRecentMenu
   $bUpdateRecentMenu = True
-  
-End
-
-Public Sub OnUpdateRecent()
-  
-  $bUpdateRecentMenu = False
   
 End
 

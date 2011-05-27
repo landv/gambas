@@ -1,4 +1,5 @@
 ' Gambas class file
+
 '
 ' Copyright (C) Benoît Minisini
 '
@@ -202,12 +203,13 @@ Private Sub FillRecent()
   Dim Y As Integer
   Dim hDrawingArea As DrawingArea
   
-  If lstRecent.Children.Count Then Return
+  If lstRecent.Count And If Not CRecentFile.OutOfDate Then Return
 
   Inc Application.Busy
 
   'panRecent.Hide
   lstRecent.Lock
+  lstRecent.Clear
 
   aRecent = CRecentFile.Get($iSort)
 

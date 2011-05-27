@@ -47,7 +47,7 @@ Public Sub Form_Open()
   Endif
   
   If Not webHelp.Url Then 
-    webHelp.Url = MHelp.GetURL() & "?help&" & MHelp.GetLanguage()
+    webHelp.Url = MHelp.GetURL() & "?help&" & MHelp.GetLanguage() & "&v3"
     webHelp.TextZoom = 0.8
   Endif
   
@@ -63,7 +63,7 @@ End
 
 Public Sub btnHome_Click()
   
-  webHelp.Url = MHelp.GetURL() & "?help&" & MHelp.GetLanguage()
+  webHelp.Url = MHelp.GetURL() & "?help&" & MHelp.GetLanguage() & "&v3"
   webHelp.TextZoom = 0.8
   
 End
@@ -173,7 +173,7 @@ End
 
 Public Sub btnShowPanel_Click()
   
-  tvwClasses.Visible = Last.Value
+  tvwClasses.Visible = btnShowPanel.Value
   If btnShowPanel.Value Then FillTree
   If splHelp.Layout[0] = 0 Then splHelp.Layout = [1, 2]
 

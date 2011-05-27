@@ -21,7 +21,7 @@ Public Sub _new()
   
   $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
   '$hDrawingArea.Mouse = Mouse.Pointing
-  Me.H = Max(ICON_SIZE, Desktop.Scale * 10) + PADDING * 2
+  Me.H = Max(ICON_SIZE, Desktop.Scale * 12) + PADDING * 2
   
 End
 
@@ -63,7 +63,7 @@ Public Sub DrawingArea_Draw()
     Draw.Picture(Picture["icon:/" & ICON_SIZE & "/exec"], PADDING, PADDING)
     
     X = ICON_SIZE + PADDING * 2
-    W = Max(Me.W - X, $iTextW)
+    W = Max(Me.W - X - PADDING, $iTextW)
     If IsSelected() Then Draw.Foreground = Color.SelectedForeground
     Draw.RichText($sText, X, PADDING, W, Desktop.Scale * 4, Align.TopLeft)
     

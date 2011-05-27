@@ -97,6 +97,7 @@ private:
 	QColor _oddBackground;
 	bool _checkCache;
 	bool _border;
+	bool _ensureCursorVisibleLater;
 	
 	int lastx;
 	bool left;

@@ -7,7 +7,7 @@ Class Window
 Class Desktop
 Class Screens
 
-Static Property Read Path As String
+Static Property Read DefaultDir As String
 
 Private $sPath As String
 Private $sTitle As String
@@ -15,6 +15,7 @@ Private $cSlot As Collection
 Private $bModify As Boolean
 
 Property Read Keys As _SettingsKeys
+Property Read Path As String
 
 Private Sub Load()
   
@@ -78,15 +79,15 @@ Public Sub _new(Optional Path As String, Optional Title As String)
 
   If Left(Path) <> "/" And If Left(Path) <> "~" Then 
     If Not Path Then
-      Path = Settings.Path &/ Application.Name & ".conf"
+      Path = Settings.DefaultDir &/ Application.Name & ".conf"
     Else If Path Begins "./" Then
       Path = "." & Path
     Else If Path Begins "../" Then
     Else
-      Path = Settings.Path &/ Path & ".conf"
+      Path = Settings.DefaultDir &/ Path & ".conf"
     Endif
     If Left(Path) = "/" Then
-      For Each sElt In Split(Settings.Path, "/")
+      For Each sElt In Split(Settings.DefaultDir, "/")
         sPath &/= sElt
         Try Mkdir "/" & sPath
       Next
@@ -116,6 +117,8 @@ Public Sub Save()
   Dim sKey As String
   Dim hFile As File
   Dim vVal As Variant
+  Dim iInd As Integer
+  Dim hLock As File
 
   If Not $bModify Then Return
 
@@ -126,7 +129,14 @@ Public Sub Save()
   aKey.Sort
 
   $bModify = False
-
+  
+  For iInd = 1 To 10
+    Try hLock = Lock $sPath & ".lock"
+    If Error And If iInd = 10 Then Error.Propagate
+    If Not Error Then Break
+    Sleep 0.2
+  Next
+  
   hFile = Open $sPath For Create 
 
   If $sTitle Then
@@ -145,6 +155,8 @@ Public Sub Save()
   Next
 
   Close #hFile
+  Try Kill $sPath & ".lock"
+  Unlock #hLock
 
 'CATCH
 '
@@ -409,11 +421,9 @@ Public Sub Write(hObject As Object, Optional sKey As String)
 End
 
 
-Static Private Function Path_Read() As String
+Private Function Path_Read() As String
 
-  Dim sPath As String = Application.Env["XDG_CONFIG_HOME"]
-  If Not sPath Then sPath = System.User.Home &/ ".config"
-  Return sPath &/ "gambas" & System.Version
+  Return $sPath
 
 End
 
@@ -465,5 +475,13 @@ Private Function Keys_Read() As _SettingsKeys
   _SettingsKeys._Slot = $cSlot
   _SettingsKeys._Parent = ""
   Return _SettingsKeys
+
+End
+
+Static Private Function DefaultDir_Read() As String
+
+  Dim sPath As String = Application.Env["XDG_CONFIG_HOME"]
+  If Not sPath Then sPath = System.User.Home &/ ".config"
+  Return sPath &/ "gambas" & System.Version
 
 End

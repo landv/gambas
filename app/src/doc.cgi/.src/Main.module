@@ -548,7 +548,7 @@ Private Function GetLink(sPath As String, Optional sMyTitle As String, Optional 
     
     sSuff = AddParam($sLangSuff, sMoreSuff)
     'If IsComponentPath(sPath) Then 
-      If $sVersion = "3.0" Then sSuff = AddParam(sSuff, "v3")
+      If $sVersion = "3.0" And If Right$(sPath, 2) <> "v2" Then sSuff = AddParam(sSuff, "v3")
     'Endif
     
     If sTitle Then
@@ -1549,7 +1549,10 @@ Private Sub PrintPath()
     Print "<div class=\"path\">";
   Endif
   
-  Print "<a class=\"flag\" href=\"/help" & AddParam($sLangSuff, $sShowSuff) & "\">";
+  sPath = AddParam($sLangSuff, $sShowSuff)
+  sPath = AddParam(sPath, "v" & Left($sVersion))
+  
+  Print "<a class=\"flag\" href=\"/help" & sPath & "\">";
   Print "<img class=\"flag\" align=\"top\" src=\"/img/lang/"; $sLang; ".png\" alt=\"" & ("Home") & "\">";
   'PRINT GetImage("lang/" & $sLang, "class=\"flag\" alt=\"" & ("Home") & "\"");
   Print "</a>&nbsp;";
@@ -1611,7 +1614,7 @@ End
 
 Private Sub PrintDivLang()
   
-  If $sVersion And If $sPath <> "/" Then
+  If $sVersion Then
     Print "<div class=\"lang"; Replace$($sVersion, ".", ""); "\">";
   Else
     Print "<div class=\"lang\">";

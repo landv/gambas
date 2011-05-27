@@ -755,7 +755,25 @@ BEGIN_METHOD_VOID(Stream_Cancel)
 
 END_METHOD
 
+BEGIN_METHOD_VOID(StreamLines_next)
+
+	if (STREAM_eof(CSTREAM_stream(THIS_STREAM)))
+		GB_StopEnum();
+	else
+		GB_ReturnString(STREAM_line_input(CSTREAM_stream(THIS_STREAM), NULL));
+
+END_METHOD
+
 #endif
+
+GB_DESC NATIVE_StreamLines[] = 
+{
+	GB_DECLARE(".StreamLines", 0), GB_VIRTUAL_CLASS(),
+	
+	GB_METHOD("_next", "s", StreamLines_next, NULL),
+	
+	GB_END_DECLARE
+};
 
 GB_DESC NATIVE_Stream[] =
 {
@@ -772,6 +790,8 @@ GB_DESC NATIVE_Stream[] =
 	GB_PROPERTY("Blocking", "b", Stream_Blocking),
 	GB_PROPERTY("Tag", "v", Stream_Tag),
 	GB_METHOD("ReadLine", "s", Stream_ReadLine, "[(Escape)s]"),
+	
+	GB_PROPERTY_SELF("Lines", ".StreamLines"),
 	
 	GB_METHOD("Begin", NULL, Stream_Begin, NULL),
 	GB_METHOD("Send", NULL, Stream_End, NULL),
