@@ -115,7 +115,7 @@ Static Public Sub Load()
     Endif
   Next
   
-  $dLastLoad = Stat(Settings.Path).LastModified
+  Try $dLastLoad = Stat(Settings.Path).LastModified
   
 End
 
