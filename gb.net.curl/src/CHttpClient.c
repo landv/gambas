@@ -508,13 +508,6 @@ BEGIN_METHOD_VOID(HttpClient_new)
 	THIS_URL=tmp;
 	THIS_HTTP->sUserAgent = GB.NewZeroString("Gambas Http/1.0");
 	
-	tmp=NULL;
-	GB.Alloc((void**)POINTER(&tmp),8);
-	strcpy(tmp,"http://");
-	THIS_PROTOCOL=tmp;
-	
-	//GB.Array.New(&THIS->headers, GB_T_STRING, 0);
-
 END_METHOD
 
 
@@ -571,7 +564,7 @@ GB_DESC CHttpClientDesc[] =
   GB_METHOD("Stop", NULL, HttpClient_Stop, NULL),
   GB_METHOD("Get", NULL, HttpClient_Get, "[(Headers)String[];(TargetFile)s]"),
   GB_METHOD("Post", NULL, HttpClient_Post, "(ContentType)s(Data)s[(Headers)String[];(TargetFile)s]"),
-  GB_METHOD("Put", NULL, HttpClient_Post, "(ContentType)s(Data)s[(Headers)String[];(TargetFile)s]"),
+  GB_METHOD("Put", NULL, HttpClient_Put, "(ContentType)s(Data)s[(Headers)String[];(TargetFile)s]"),
 
   GB_PROPERTY("Auth", "i", HttpClient_Auth),
   GB_PROPERTY("CookiesFile", "s",HttpClient_CookiesFile),

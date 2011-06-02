@@ -43,7 +43,6 @@ extern GB_STREAM_DESC CurlStream;
 #define THIS_CURL       THIS->curl
 #define THIS_URL        THIS->url
 #define THIS_FILE       THIS->file
-#define THIS_PROTOCOL   THIS->protocol
 
 typedef
 	struct {
@@ -56,11 +55,10 @@ typedef
 	struct {
 		GB_BASE ob;
 		GB_STREAM stream;
-		int   status;
-		CURL* curl;
-		char* url;
-		FILE* file;
-		char* protocol;
+		int status;
+		CURL *curl;
+		char *url;
+		FILE *file;
 		CPROXY proxy;
 		Adv_user user;
 		bool async;

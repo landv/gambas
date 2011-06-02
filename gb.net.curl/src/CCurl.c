@@ -417,33 +417,56 @@ END_PROPERTY
 URL to work with
 *****************************************************************/
 
+BEGIN_PROPERTY(CCURL_URL)
 
-BEGIN_PROPERTY ( CCURL_URL )
-
-	char *tmp=NULL;
+	char *url, *tmp;
+	char *protocol;
 	
 	if (READ_PROPERTY)
 	{
-		GB.ReturnNewZeroString(THIS_URL);
+		GB.ReturnString(THIS_URL);
 		return;
 	}
 
 	if (THIS_STATUS > 0)
 	{
-		GB.Error ("URL property is read-only while working");
+		GB.Error ("URL is read-only while working");
 		return;
-		}
-
-	if (THIS_URL)
-	{
-		tmp=THIS_URL;
-		GB.Free(POINTER(&tmp));
 	}
-	GB.Alloc(POINTER(&tmp),(strlen(GB.ToZeroString(PROP(GB_STRING)))+1)*sizeof(char));
-	strcpy(tmp,GB.ToZeroString(PROP(GB_STRING)));
-	Adv_correct_url(&tmp,THIS_PROTOCOL);
-	THIS_URL=tmp;
 
+	url = GB.NewString(PSTRING(), PLENGTH());
+	
+	if (GB.Is(THIS, GB.FindClass("FtpClient")))
+	{
+		protocol = CURL_get_protocol(url, "ftp://");
+		if (strcmp(protocol, "ftp://"))
+			goto UNKNOWN_PROTOCOL;
+	}
+	else if (GB.Is(THIS, GB.FindClass("HttpClient")))
+	{
+		protocol = CURL_get_protocol(url, "http://");
+		if (strcmp(protocol, "http://") && strcmp(protocol, "https://"))
+			goto UNKNOWN_PROTOCOL;
+	}
+	else
+		goto UNKNOWN_PROTOCOL;
+
+	if (strncmp(url, protocol, strlen(protocol)))
+	{
+		tmp = GB.NewZeroString(protocol);
+		GB.AddString(&tmp, url, GB.StringLength(url));
+		GB.FreeString(&url);
+		url = tmp;
+	}
+	
+	GB.FreeString(&THIS_URL);
+	THIS_URL = url;
+	return;
+	
+UNKNOWN_PROTOCOL:
+
+	GB.Error("Unknown protocol");
+	
 END_PROPERTY
 
 BEGIN_METHOD_VOID(CCURL_new)
@@ -457,15 +480,16 @@ BEGIN_METHOD_VOID(CCURL_new)
 	GB.Alloc(POINTER(&data),sizeof(curlData));
 	((void**)THIS->stream._free)[0]=(void*)data;*/
 
-	THIS->stream.desc=NULL;
-	THIS_CURL=NULL;
-	THIS_URL=NULL;
-	THIS_FILE=NULL;
-	THIS_PROTOCOL=NULL;
-	THIS_STATUS=0;
-	Adv_user_NEW  (&THIS->user);
+	THIS->stream.desc = NULL;
+	THIS_CURL = NULL;
+	THIS_URL = NULL;
+	THIS_FILE = NULL;
+	THIS_STATUS = 0;
+	
+	Adv_user_NEW(&THIS->user);
 	Adv_proxy_NEW(&THIS->proxy.proxy);
-	THIS->proxy.parent_status=(int*)&THIS_STATUS;
+	
+	THIS->proxy.parent_status = (int*)&THIS_STATUS;
 
 END_METHOD
 
@@ -475,9 +499,8 @@ BEGIN_METHOD_VOID(CCURL_free)
 	fprintf(stderr, "CCURL_free: %p\n", THIS);
 	#endif
 	
-	char *tmp=THIS_URL;
+	GB.FreeString(&THIS_URL);
 	
-	if (tmp) GB.Free(POINTER(&tmp));
 	if (THIS_FILE) fclose(THIS_FILE);
 	if (THIS_CURL) 
 	{
@@ -488,8 +511,6 @@ BEGIN_METHOD_VOID(CCURL_free)
 	}
 	Adv_user_CLEAR  (&THIS->user);
 	Adv_proxy_CLEAR(&THIS->proxy.proxy);
-	tmp=THIS_PROTOCOL;
-	GB.Free(POINTER(&tmp));
 	
 END_METHOD
 
@@ -550,7 +571,6 @@ GB_DESC CCurlDesc[] =
 	GB_PROPERTY("URL", "s",CCURL_URL),
 	GB_PROPERTY("User","s",CCURL_sUser),
 	GB_PROPERTY("Password","s",CCURL_Password),  
-	//GB_PROPERTY("Tag", "v", CCURL_tag),
 	GB_PROPERTY("Async","b",CCURL_Async),
 	GB_PROPERTY("Timeout","i",CCURL_TimeOut),
 	GB_PROPERTY_SELF("Proxy",".CurlProxy"),

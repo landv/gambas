@@ -46,6 +46,7 @@ typedef struct
 	int auth;
 } Adv_user;
 
+char *CURL_get_protocol(char *url, char *default_protocol);
 void Adv_correct_url(char **buf,char *protocol);
 
 void Adv_add_info      (Adv_ARRAY *Array, int *narray, void *Obj);

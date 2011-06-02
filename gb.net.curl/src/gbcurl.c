@@ -19,6 +19,7 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
+
 /*****************************
  NOTE THAT :
  libcurl <= 7.10.7 lacks CURLE_LDAP_INVALID_URL and CURLE_FILESIZE_EXCEEDED constants
@@ -30,6 +31,7 @@
 #include <curl/curl.h>
 #include "gbcurl.h"
 
+static char *_protocols[] = { "ftp://", "http://", "https://", NULL };
 
 #ifndef CURLAUTH_NONE
 void Adv_WarningAuth(void)
@@ -52,6 +54,23 @@ void Adv_WarningProxyAuth(void)
 }
 
 
+char *CURL_get_protocol(char *url, char *default_protocol)
+{
+	char **p;
+	char *pos;
+	
+	for (p = _protocols; *p; p++)
+	{
+		if (!strncmp(url, *p, strlen(*p)))
+			return *p;
+	}
+	
+	pos = strstr(url, "://");
+	if (pos)
+		return "?";
+	
+	return default_protocol;
+}
 
 void Adv_correct_url(char **buf,char *protocol)
 {

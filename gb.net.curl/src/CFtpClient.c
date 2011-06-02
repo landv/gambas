@@ -267,16 +267,14 @@ END_METHOD
 
 BEGIN_METHOD_VOID(FtpClient_new)
 
-	char *tmp=NULL;	
+	char *tmp;
 	
 	GB.Alloc((void**)POINTER(&tmp),sizeof(char)*(1+strlen("ftp://127.0.0.1:21")));
 	THIS_URL=tmp;
 	strcpy(tmp,"ftp://127.0.0.1:21");
-	tmp=NULL;
-	GB.Alloc((void**)POINTER(&tmp),7);
-	strcpy(tmp,"ftp://");
-	THIS_PROTOCOL=tmp;
-	Adv_user_SETAUTH (&THIS->user,CURLAUTH_BASIC);
+
+	Adv_user_SETAUTH (&THIS->user, CURLAUTH_BASIC);
+	
 	THIS->user.user = GB.NewZeroString("anonymous");
 
 END_METHOD
