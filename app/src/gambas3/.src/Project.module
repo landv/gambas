@@ -501,6 +501,7 @@ _INIT_AGAIN:
     Endif
     
     FConvert.SetMessage(("Applying conversion..."))
+    Shell "rm -rf " & Shell$(sDir & "~") Wait
     Move sDir To sDir & "~"
     Shell "mv -f " & Shell$(Project.Dir) & " " & Shell$(sDir) Wait
     If Process.LastValue Then 
