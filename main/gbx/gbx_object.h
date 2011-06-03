@@ -1,22 +1,22 @@
 /***************************************************************************
 
-  gbx_object.h
+	gbx_object.h
 
-  (c) 2000-2011 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2011 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -32,21 +32,21 @@ EXTERN void **OBJECT_set_pointer;
 #endif
 
 typedef
-  struct {
-    CLASS *class;
-    intptr_t ref;
-    }
-  OBJECT;
+	struct {
+		CLASS *class;
+		intptr_t ref;
+		}
+	OBJECT;
 
 typedef
-  struct {
-    OBJECT *parent;
-    OBJECT *next;
-    OBJECT *prev;
-    void *observer;
-    ushort event[0];
-    }
-  OBJECT_EVENT;
+	struct {
+		OBJECT *parent;
+		OBJECT *next;
+		OBJECT *prev;
+		void *observer;
+		ushort event[0];
+		}
+	OBJECT_EVENT;
 
 #define OBJECT_event(_object) ((OBJECT_EVENT *)((intptr_t *)_object + ((OBJECT *)(_object))->class->off_event / sizeof(intptr_t)))
 #define OBJECT_is(_object, _class) (OBJECT_class(_object) == _class)
@@ -83,10 +83,10 @@ OBJECT *OBJECT_active_parent(void *object);
 /*
 static INLINE CLASS *OBJECT_class(void *object)
 {
-  if (object)
-    return ((OBJECT *)object)->class;
-  else
-    return object;
+	if (object)
+		return ((OBJECT *)object)->class;
+	else
+		return object;
 }
 */
 
@@ -165,18 +165,19 @@ EXTERN const char *OBJECT_ref_where;
 
 #define OBJECT_ref(_object) \
 { \
-  if (_object) \
-    ((OBJECT *)(_object))->ref++; \
+	if (_object) \
+		((OBJECT *)(_object))->ref++; \
 }
 
 #define OBJECT_unref(_object) \
 { \
-  if (_object) \
-  { \
-  	if ((--((OBJECT *)(_object))->ref) <= 0) \
-  	{ \
-			CLASS_free(_object); \
+	if (_object) \
+	{ \
+		if ((--((OBJECT *)(_object))->ref) <= 0) \
+		{ \
+			void *temp = (void *)(_object); \
 			_object = NULL; \
+			CLASS_free(temp); \
 		} \
 	} \
 }
@@ -184,13 +185,17 @@ EXTERN const char *OBJECT_ref_where;
 #define OBJECT_just_unref(_object) \
 { \
 	if ((--((OBJECT *)(_object))->ref) == 0) \
-		CLASS_free(_object); \
+	{ \
+		void *temp = (void *)(_object); \
+		_object = NULL; \
+		CLASS_free(temp); \
+	} \
 }
 
 #define OBJECT_unref_keep(_object) \
 { \
-  if (_object) \
-  	--((OBJECT *)(_object))->ref; \
+	if (_object) \
+		--((OBJECT *)(_object))->ref; \
 }
 
 
@@ -205,15 +210,15 @@ EXTERN const char *OBJECT_ref_where;
 
 static INLINE void OBJECT_null(VALUE *value, CLASS *class)
 {
-  value->_object.class = class;
-  value->_object.object = NULL;
+	value->_object.class = class;
+	value->_object.object = NULL;
 }
 
 
 static INLINE void OBJECT_put(VALUE *value, void *object)
 {
-  value->_object.class = OBJECT_class(object);
-  value->_object.object = object;
+	value->_object.class = OBJECT_class(object);
+	value->_object.object = object;
 }
 
 

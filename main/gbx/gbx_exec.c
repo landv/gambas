@@ -1388,7 +1388,7 @@ __NULL:
 
 __CHECK:
 
-	//CLASS_load(class); If we have an object, the class is necessarily loaded.
+	//CLASS_load(class); //If we have an object, the class is not necessarily loaded?
 
 	if (UNLIKELY(class->must_check && (*(class->check))(object)))
 		THROW(E_IOBJECT);
