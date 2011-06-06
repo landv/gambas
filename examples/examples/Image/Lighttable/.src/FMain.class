@@ -30,27 +30,15 @@ Public Sub Form_Open()
   aFiles = MMain.GetFiles()
   iPicCount = aFiles.Count
   
-  'Me.Height = Desktop.Height  ' Maximized not useable (Me.h/w incorrect)
-  'Me.Width = Desktop.Width
   Me.Caption = ("Lighttable   -   ") & sPath
-  'Me.Maximized = True
   Me.Move(Desktop.X, Desktop.Y, Desktop.Width, Desktop.Height)
   
-  'ScrollView1.Height = Me.Height - 45
-  'ScrollView1.Width = Me.Width - 7
-  'ScrollView1.X = 0
-  'ScrollView1.Y = -2
-  'StatusBar.X = 0
-  'StatusBar.Y = Me.Height - 48
-  'StatusBar.Width = Me.Width
-  'lblStatus.X = (StatusBar.Width - 400) / 2
-  'lblStatus.Width = 400
-  'ProgressBar1.X = Me.Width - 175
   mnuSortA.Enabled = False
   mnuSortT.Enabled = False
   mnuDelete.Enabled = False
   mnuTimecorr.Enabled = False
   mnuSlide.Enabled = False
+  mnuOpen.Enabled = False
   hCurClose = New Cursor(Picture.Load("close.png"))
   hCurHand = New Cursor(Picture.Load("hand1.png"))
   hCurZoom = New Cursor(Picture.Load("zoom-in.png"))
@@ -79,7 +67,7 @@ Public Sub Timer1_Timer()   ' Load the pictures in the background
   Dim hImg As Image
   
   If iPicRow = 0 Then
-    Print Me.Width
+'     Print Me.Width
     iPicRow = Int((Me.Width) / 200)
     iOffset = (Me.Width + 30 - iPicRow * 200) / 2
   Endif
@@ -187,6 +175,7 @@ Public Sub Timer1_Timer()   ' Load the pictures in the background
   mnu_StopLoad_RenameAll.Picture = Stock["16/save-as"]
   mnu_StopLoad_RenameAll.Shortcut = "Ctrl+N"
   mnuSlide.Enabled = True
+  mnuOpen.Enabled = True
   bStop = True
   Me.Tag = "alpha"
   Me.Tooltip = ""
@@ -882,6 +871,13 @@ End
 Public Function GetDelay(iSec As Integer) As Boolean
 
   iDelay = iSec
+
+End
+
+Public Sub mnuOpen_Click()  ' Open another folder
+
+  MMain.Main
+  Me.Close
 
 End
 
