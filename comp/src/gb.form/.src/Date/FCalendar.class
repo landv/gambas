@@ -220,7 +220,7 @@ Public Sub dwgMonth_Draw()
         sKey = CStr(Date(dDate))
         If $cDateColor.Exist(sKey) Then 
           If Draw.Foreground = $iDisabledColor Then 
-            Draw.FillColor = Color.Medium(Draw.Foreground, $cDateColor[sKey])
+            Draw.FillColor = Color.Merge(Draw.Foreground, $cDateColor[sKey])
           Else 
             Draw.FillColor = $cDateColor[sKey]
           Endif
