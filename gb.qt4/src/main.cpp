@@ -678,7 +678,7 @@ static void init_lang(char *lang, bool rtl)
 			goto __INSTALL_TRANSLATOR;
 	}
 
-	qDebug("warning: unable to load Qt translation: %s", lang);
+	qDebug("gb.qt4: warning: unable to load Qt translation: %s", lang);
 	goto __SET_DIRECTION;
 
 __INSTALL_TRANSLATOR:

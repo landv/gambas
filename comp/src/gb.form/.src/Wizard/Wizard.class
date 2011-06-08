@@ -24,7 +24,7 @@ Property ShowIndex As Boolean
 Property Border As Boolean
 
 Private $hWizard As FWizard
-Private $aStep As New Object[]
+Private $aStep As New _WizardContainer[]
 Private $iCurrent As Integer = -1
 Private $iLast As Integer = -1
 Private $bShowIndex As Boolean
@@ -48,7 +48,7 @@ End
 Private Sub Count_Write(iCount As Integer)
 
   Dim iInd As Integer
-  Dim hStep As WizardContainer
+  Dim hStep As _WizardContainer
 
   If iCount < 1 Then Error.Raise("Bad argument")
   If iCount = $aStep.Count Then Return
@@ -70,7 +70,7 @@ Private Sub Count_Write(iCount As Integer)
   Else
 
     For iInd = $aStep.Count To iCount - 1
-      hStep = New WizardContainer($hWizard.GetContainer()) As "WizardContainer"
+      hStep = New _WizardContainer($hWizard.GetContainer()) As "WizardContainer"
       hStep.Tag = iInd
       $aStep.Add(hStep)
       hStep.Text = Subst(("Step #&1"), CInt(iInd + 1))
@@ -164,7 +164,7 @@ End
 
 Private Sub RefreshWizard()
 
-  Dim hCurrent As WizardContainer
+  Dim hCurrent As _WizardContainer
   Dim iIndex As Integer
   Dim sText As String
 
@@ -224,7 +224,7 @@ Public Sub WizardContainer_Refresh()
 
 End
 
-Public Function _get(Index As Integer) As WizardContainer
+Public Function _get(Index As Integer) As _WizardContainer
 
   If Index < 0 Or Index >= $aStep.Count Then Error.Raise("Bad index")
   Return $aStep[Index]
