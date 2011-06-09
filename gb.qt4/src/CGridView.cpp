@@ -213,6 +213,7 @@ void MyTableItem::paint( QPainter *p, const QColorGroup &cg, const QRect &cr, bo
 	int _alignment = CCONST_alignment(d->alignment, ALIGN_NORMAL, true);
 	int _padding = QMAX(1, (int)d->padding);
 	bool _wordWrap = d->wordWrap;
+	QColor col;
 	
 	/*if (((MyTable *)table())->noSelection())
 		selected = false;
@@ -220,10 +221,14 @@ void MyTableItem::paint( QPainter *p, const QColorGroup &cg, const QRect &cr, bo
 	/*if (row() == table()->currentRow() && col() == table()->currentColumn())
 		selected = ((MyTable *)table())->isRowReallySelected(row());*/
 	
-	p->fillRect(x, y, w, h,
-		selected ?
-			cg.brush(QColorGroup::Highlight).color()
-			: (_bg == COLOR_DEFAULT) ? cg.brush(QColorGroup::Base).color() : QColor((uint)_bg));
+	if (selected)
+		col = table()->viewport()->palette().color(QColorGroup::Highlight);
+	else if (_bg != COLOR_DEFAULT)
+		col = QColor((uint)_bg);
+	else
+		col = table()->viewport()->palette().color(table()->viewport()->backgroundRole());
+	
+	p->fillRect(x, y, w, h, col);
 
 	if (_padding)
 	{
@@ -258,9 +263,9 @@ void MyTableItem::paint( QPainter *p, const QColorGroup &cg, const QRect &cr, bo
 	if (selected)
 		p->setPen(cg.highlightedText());
 	else if (_fg == COLOR_DEFAULT)
-		p->setPen(cg.text());
+		p->setPen(table()->viewport()->palette().color(table()->viewport()->foregroundRole()));
 	else
-		p->setPen(QColor(_fg));
+		p->setPen(QColor((uint)_fg));
 
 	if (d->font)
 		p->setFont(*(d->font->font));
