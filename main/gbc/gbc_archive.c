@@ -109,11 +109,11 @@ static void make_executable(void)
 
 	FILE_chdir(FILE_get_dir(ARCH_project));
 	
+	// If we cannot make the archive executable, just print a warning. gbs create an executable cache 
+	// inside /tmp, and /tmp may be mounted with the "noexec" flag.
+	
 	if (stat(TEMP_EXEC, &info) || chmod(TEMP_EXEC, info.st_mode | S_IXUSR | S_IXGRP | S_IXOTH))
-	{
-		err = "Cannot change executable permissions";
-		goto __ERROR;
-	}
+		fprintf(stderr, "gba: warning: cannot change executable permissions\n");
 
 	FILE_set_owner(TEMP_EXEC, FILE_cat(FILE_get_dir(ARCH_project), ".project", NULL));
 
