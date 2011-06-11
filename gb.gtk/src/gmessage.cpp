@@ -112,7 +112,7 @@ guint custom_dialog(const gchar *icon,GtkButtonsType btn,char *sg)
 	hrz=gtk_hbox_new(FALSE, 16);
   gtk_container_set_border_width(GTK_CONTAINER(hrz), 16);
   	
-	gtk_container_add (GTK_CONTAINER(GTK_DIALOG(msg)->vbox),hrz);
+	gtk_container_add (GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(msg))),hrz);
 	
 	gtk_container_add (GTK_CONTAINER(hrz),img);
 	gtk_box_set_child_packing(GTK_BOX(hrz), img, false, false, 0, GTK_PACK_START);
@@ -123,7 +123,7 @@ guint custom_dialog(const gchar *icon,GtkButtonsType btn,char *sg)
 	gtk_widget_show_all(hrz);
 	
 	gtk_widget_realize(msg);
-	gdk_window_set_type_hint(msg->window,GDK_WINDOW_TYPE_HINT_UTILITY);
+	gdk_window_set_type_hint(gtk_widget_get_window (msg),GDK_WINDOW_TYPE_HINT_UTILITY);
 	gtk_window_set_position(GTK_WINDOW(msg),GTK_WIN_POS_CENTER_ALWAYS);
 	
 	resp = run_dialog(GTK_DIALOG(msg));
@@ -570,7 +570,7 @@ bool gDialog::selectColor()
 	else
 		msg=(GtkColorSelectionDialog*)gtk_color_selection_dialog_new ("Select Color");
     
-	gtk_color_selection_set_current_color((GtkColorSelection*)msg->colorsel,&gcol);
+	gtk_color_selection_set_current_color((GtkColorSelection*)gtk_color_selection_dialog_get_color_selection(msg),&gcol);
 	
 	gtk_window_present(GTK_WINDOW(msg));
 	if (run_dialog(GTK_DIALOG(msg)) != GTK_RESPONSE_OK)
@@ -580,7 +580,7 @@ bool gDialog::selectColor()
 		return true;
  	}
 	
-	gtk_color_selection_get_current_color((GtkColorSelection*)msg->colorsel,&gcol);
+	gtk_color_selection_get_current_color((GtkColorSelection*)gtk_color_selection_dialog_get_color_selection(msg),&gcol);
 	
 	DIALOG_color = get_gdk_color(&gcol);
 	

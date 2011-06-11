@@ -146,7 +146,7 @@ static GdkPixmap *create_pixmap(int w, int h)
 	GdkPixmap *pic;
 
   scr = gdk_screen_get_default();
-  depth = (gdk_screen_get_system_visual(scr))->depth;
+  depth = gdk_visual_get_depth((gdk_screen_get_system_visual(scr)));
 
   pic = gdk_pixmap_new(NULL, w, h, depth);
   gdk_drawable_set_colormap(GDK_DRAWABLE(pic), gdk_colormap_get_system());
