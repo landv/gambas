@@ -99,8 +99,8 @@ BEGIN_METHOD(CWATCHER_new, GB_OBJECT control)
 	THIS->h = control->height() - 1;
 
 	wid = THIS->wid->widget->border;
-	g_signal_connect(G_OBJECT(wid), "show", G_CALLBACK(raise_show), _object);
-	g_signal_connect(G_OBJECT(wid), "hide", G_CALLBACK(raise_hide), _object);
+	g_signal_connect(G_OBJECT(wid), "map", G_CALLBACK(raise_show), _object);
+	g_signal_connect(G_OBJECT(wid), "unmap", G_CALLBACK(raise_hide), _object);
 	g_signal_connect(G_OBJECT(wid), "configure-event", G_CALLBACK(raise_configure), _object);
 	g_signal_connect(G_OBJECT(wid), "destroy", G_CALLBACK(cb_destroy), _object);
 
