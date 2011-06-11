@@ -314,8 +314,7 @@ Private Function CopyExtraFiles(sSys As String, sBuildDir As String)
   For Each sFile In Split(Project.ExtraFiles[sSys], ";")
     aFile = Split(sFile, ":")
     aFile.Resize(2)
-   Copy Project.Dir &/ ".hidden" &/ Shell$(aFile[0]) To sBuildDir &/ Shell$(aFile[1]) &/ Shell$(aFile[0])
-    
+   Copy Project.Dir &/ ".hidden" &/ aFile[0] To sBuildDir &/ aFile[1] &/ aFile[0]
   Next
   
 End
@@ -334,7 +333,7 @@ Private Function GetExtraFilesDir(sSys As String, sFormat As String) As String
     aFile = Split(sFile, ":")
     aFile.Resize(2)
     
-    sRes &= Subst(sFormat, Shell$(aFile[1]))
+    sRes &= Shell$(Subst(sFormat, aFile[1]))
     
   Next
   
@@ -1172,7 +1171,9 @@ Private Sub MakeTgzPackage(sSys As String)
     Next
   
   Endif
+  
   CopyExtraFiles(sSys, sBuildDir)
+  
   If Project.CreateComponent Then 
   
     ' 2. Copy the library, the information files and the controls

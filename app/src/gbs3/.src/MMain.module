@@ -20,6 +20,7 @@ Private $bExecuteFromArgs As Boolean
 
 Public Sub Main()
   
+  Dim sName As String
   Dim s As Integer
   Dim sCacheDir As String = File.Dir(File.Dir(Temp$())) &/ "script-cache"
   Dim sRes As String
@@ -28,12 +29,13 @@ Public Sub Main()
   If Not Exist(sCacheDir) Then Mkdir sCacheDir
   
   $sPath = ParseArgs()
+  sName = File.Name(Application.Args[1])
   
   If IsNull($sPath) Then 
     
     $sPath = Read Lof(File.In)
     If Not $sPath Then 
-      Error "gbs: No script file specified"
+      Error "gbs: no script file specified"
       Error "Type 'gbs"; System.Version; " --help' for more information."
       Application.Return = 1
       Return 
@@ -47,7 +49,7 @@ Public Sub Main()
     If Not Exist($sPath) Then 
       $sPath = Application.Dir &/ $sPath
       If Not Exist($sPath) And Not $bExecuteFromArgs Then 
-        Error "gbs: Script file does not exist: " & Application.Args[1]
+        Error "gbs: script file does not exist: " & Application.Args[1]
         Application.Return = 1
         Return 
       Endif
@@ -69,7 +71,7 @@ Public Sub Main()
     
   Else  
     
-    If Not Exist(sCacheDir &/ $sMd5) Then 
+    If Not Exist(sCacheDir &/ $sMd5 &/ sName) Then 
       bCompile = True
     Else
       
@@ -80,7 +82,7 @@ Public Sub Main()
   
   If bCompile Then 
     
-    If File.Name(Application.Args[0]) = "gbw2" Then 
+    If Left(File.Name(Application.Args[0]), -1) = "gbw" Then 
       If $bVerbose Then Print "gbs: compiling server page"
       $sPath = MServerPage.Make($sPath)
       If $bVerbose Then 
@@ -102,14 +104,16 @@ Public Sub Main()
       Return 
     Endif
     
-    Exec [System.Path &/ "bin/gba" & system.Version, "-o", sCacheDir &/ $sMd5, $sPrjPath] To sRes 
+    Mkdir sCacheDir &/ $sMd5
+    Exec [System.Path &/ "bin/gba" & System.Version, "-o", sCacheDir &/ $sMd5 &/ sName, $sPrjPath] To sRes 
     
     File.Save(sCacheDir &/ $sMd5 & ".info", $aIncFiles.Join("\n"))
     
   Endif
   
-  $aAppArgs.Add(sCacheDir &/ $sMd5, 0)
-  Exec $aAppArgs
+  $aAppArgs.Insert(["gbr3", sCacheDir &/ $sMd5 &/ sName], 0)
+  'Print $aAppArgs.Join(" ")
+  Exec $aAppArgs Wait
   
 End
 
