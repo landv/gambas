@@ -49,6 +49,7 @@ void SDLwindow::Show()
 {
 	Uint32 myFlags = (SDL_ASYNCBLIT | SDL_DOUBLEBUF | SDL_OPENGL);
 	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+	SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 8 );
 
 	if (hFullScreen)
 		myFlags = myFlags | SDL_FULLSCREEN;
