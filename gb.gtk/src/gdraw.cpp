@@ -182,7 +182,7 @@ void gDraw::connect(gControl *wid)
 	switch (wid->getClass())
 	{
 		case Type_gMainWindow: 
-			dr = gtk_layout_get_bin_window (GTK_LAYOUT(wid->widget)); 
+			dr = GTK_LAYOUT(wid->widget)->bin_window; 
 			mode = GDK_INCLUDE_INFERIORS;
 			break;
 			
@@ -192,13 +192,12 @@ void gDraw::connect(gControl *wid)
 				dArea=(gDrawingArea*)wid;
 				dArea->resizeCache();
 				dr=dArea->buffer;
-			//	gdk_window_freeze_updates (gtk_layout_get_bin_window (GTK_LAYOUT(wid->widget)));
+			//	gdk_window_freeze_updates (GTK_LAYOUT(wid->widget)->bin_window);
 			}
 			else
 			{
-				GtkAllocation *a;
-				gtk_widget_get_allocation (wid->widget,a);
-				dr = gtk_widget_get_window(wid->widget);
+				GtkAllocation *a = &wid->widget->allocation;
+				dr = wid->widget->window;
 				_x = a->x;
 				_y = a->y;
 			}
@@ -206,11 +205,11 @@ void gDraw::connect(gControl *wid)
 			break;
 			
 		case Type_gFrame:
-			dr=gtk_layout_get_bin_window (GTK_LAYOUT(wid->widget)); 
+			dr=GTK_LAYOUT(wid->widget)->bin_window; 
 			break;
 			
 		default:
-			dr=gtk_widget_get_window (wid->widget);
+			dr=wid->widget->window;
 			break;
 		
 	}
@@ -332,8 +331,8 @@ GtkStyle *gDraw::style(const char *name, GType type)
 	
 	if (!name && _widget)
 	{
-		stl = gtk_style_copy(gtk_widget_get_style(_widget)); //deprecated use _get_style_context instead
-		stl = gtk_style_attach(stl, gtk_widget_get_window (_widget));
+		stl = gtk_style_copy(_widget->style);
+		stl = gtk_style_attach(stl, _widget->window);
 	}
 	else
 	{

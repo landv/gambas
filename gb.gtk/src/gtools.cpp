@@ -1197,7 +1197,7 @@ void gt_pixbuf_render_pixmap_and_mask(GdkPixbuf *pixbuf, GdkPixmap **pixmap_retu
 		GdkGC *gc;
 		*pixmap_return = gdk_pixmap_new (gdk_screen_get_root_window (screen),
 							gdk_pixbuf_get_width (pixbuf), gdk_pixbuf_get_height (pixbuf),
-							gdk_visual_get_depth(gdk_colormap_get_visual (colormap)));
+							gdk_colormap_get_visual (colormap)->depth);
 		
 		gdk_drawable_set_colormap (GDK_DRAWABLE (*pixmap_return), colormap);
 		

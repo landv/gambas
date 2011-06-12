@@ -24,7 +24,7 @@
 #define __GCOLOR_H
 
 #include "gb.image.h"
-#include <gdk/gdk.h>
+
 typedef
 	int gColor;
 

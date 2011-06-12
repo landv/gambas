@@ -3,13 +3,12 @@ include $(top_srcdir)/component.am
 
 #SUBDIRS = @GTKOPENGL_DIR@
 
-##INCLUDES = -DGSEAL_ENABLE -DDISABLE_DEPRECATED @GTK_INC@ -I$(top_srcdir)/share
 INCLUDES = @GTK_INC@ -I$(top_srcdir)/share
+
 gblib_LTLIBRARIES = gb.gtk.la
 
 gb_gtk_la_LIBADD = @GTK_LIB@
 gb_gtk_la_LDFLAGS = -module @LD_FLAGS@ @GTK_LDFLAGS@
-
 
 gb_gtk_la_SOURCES = \
 	gmemory.h gmemory.cpp gtag.h ggambastag.h gshare.h \
