@@ -26,7 +26,7 @@
 
 #include "main.h"
 
-#include <glu.h>
+#include <GL/glu.h>
 
 #ifndef __GLU_C
 extern GB_DESC Cglu[];

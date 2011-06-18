@@ -24,7 +24,6 @@
 #define __MAIN_C
 
 #include "GL.h"
-//#include "GLU.h"
 
 #include "gb.gl.h"
 

@@ -27,7 +27,7 @@
 #include "gb_common.h"
 #include "gambas.h"
 #include "gb.image.h"
-#include <glu.h>
+#include <GL/glu.h>
 
 #ifndef __MAIN_C
 extern GB_INTERFACE GB;

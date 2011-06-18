@@ -5,23 +5,19 @@ AC_CONFIG_MACRO_DIR([m4])
 GB_INIT(gb.opengl)
 AC_PROG_LIBTOOL
 
-GB_COMPONENT(
+GB_COMPONENT_PKG_CONFIG(
   opengl,
   OPENGL,
   [OpenGL support component],
   [src],
-  [GB_FIND(gl.h glew.h, /opt/local /usr /usr/X11R6 /usr/local, include/GL include)],
-  [GB_FIND(libGL.$SHLIBEXT libGLEW.$SHLIBEXT, /opt/local /usr /usr/X11R6 /usr/local, lib)],
-  [-lGL -lGLEW])
+  [gl glew])
 
-GB_COMPONENT(
+GB_COMPONENT_PKG_CONFIG(
   glu,
   GLU,
   [OpenGL Utility support component],
   [glu],
-  [GB_FIND(gl.h glu.h, /opt/local /usr /usr/X11R6 /usr/local, include/GL include)],
-  [GB_FIND(libGL.$SHLIBEXT libGLU.$SHLIBEXT, /opt/local /usr /usr/X11R6 /usr/local, lib)],
-  [-lGLU])
+  [glu])
 
 AC_OUTPUT( \
 Makefile \

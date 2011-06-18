@@ -26,7 +26,7 @@
 
 #include "main.h"
 
-#include <glew.h>
+#include <GL/glew.h>
 
 #ifndef __GL_C
 extern GB_DESC Cgl[];
