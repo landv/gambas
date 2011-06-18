@@ -24,9 +24,9 @@
 #ifndef __SDL_H_H
 #define __SDL_H_H
 
-#include <GL/glew.h>
-#include "SDL.h"
-#include "SDL_syswm.h"
+#include <glew.h>
+#include <SDL.h>
+#include <SDL_syswm.h>
 #include <X11/cursorfont.h>
 
 #include "SDLapp.h"
