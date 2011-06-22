@@ -244,7 +244,7 @@ static bool check_request(void *_object, char *contentType, char *data, int len)
 	for (i = 0; i < strlen(contentType); i++)
 	{
 		c = contentType[i];
-		if (isalnum(c) || c == '-' || c == '+' || c == '.' || c == '/')
+		if (isalnum(c) || c == '-' || c == '+' || c == '.' || c == '/' || c == ';' || c == ' ' || c == '=')
 			continue;
 		GB.Error(ERR_INVALID_CONTENT_TYPE);
 		return TRUE;
