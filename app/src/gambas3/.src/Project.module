@@ -515,6 +515,18 @@ _INIT_AGAIN:
     
     Goto _INIT_AGAIN
     
+  Else If Not Exist(SourceDir) Then 
+    
+    ' Needed for MoveFile()
+    RefreshSourceCache
+    VersionControl.CheckPaths()
+    
+    InsertDirectory(SourceDir)
+    aDir = Dir(Project.Dir, "*")
+    For Each sFile In aDir
+      If CModule.Ext.Exist(File.Ext(sFile)) Then MoveFile(Project.Dir &/ sFile, SourceDir &/ sFile)
+    Next
+    
   Endif
   
   Config = New Settings(sDir &/ ".settings")

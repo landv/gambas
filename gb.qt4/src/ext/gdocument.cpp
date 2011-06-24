@@ -798,13 +798,13 @@ void GDocument::begin(bool linked)
 	if (undoLevel == 0)
 		textHasChanged = false;
 	undoLevel++;  
-	addUndo(new GBeginCommand(linked));
+	if (!blockUndo) addUndo(new GBeginCommand(linked));
 }
 
 void GDocument::end(bool linked)
 {
 	undoLevel--;
-  addUndo(new GEndCommand(linked));
+  if (!blockUndo) addUndo(new GEndCommand(linked));
 	if (undoLevel == 0 && textHasChanged)
   	emitTextChanged();
 }

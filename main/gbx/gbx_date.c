@@ -35,7 +35,7 @@
 
 #include "gbx_date.h"
 
-/*#define DEBUG_DATE*/
+//#define DEBUG_DATE
 
 #define buffer_init COMMON_buffer_init
 #define get_char COMMON_get_char
@@ -128,7 +128,7 @@ void DATE_init(void)
 	#endif
 
 	#ifdef DEBUG_DATE
-	printf("TimeZone = %ld DayLight = %d Hour = %d\n", date_timezone, date_daylight, tm->tm_hour);
+	printf("TimeZone = %d DayLight = %d Hour = %d\n", date_timezone, date_daylight, tm->tm_hour);
 
 	tm = gmtime(&t);
 	printf("Hour = %d\n", tm->tm_hour);

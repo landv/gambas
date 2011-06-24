@@ -99,10 +99,10 @@ Private Sub GetIndiceFromRow(iRow As Integer) As String
   If $aDim Then
     
     For Each iDim In $aDim
-      sSym = CStr(iRow Mod iDim) & ", " & sSym
+      sSym &= ", " & CStr(iRow Mod iDim)
       iRow \= iDim
     Next
-    sSym = Left(sSym, -2)
+    sSym = Mid(sSym, 3)
     
   Else
     

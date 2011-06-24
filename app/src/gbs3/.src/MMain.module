@@ -114,6 +114,7 @@ Public Sub Main()
   $aAppArgs.Insert(["gbr3", sCacheDir &/ $sMd5 &/ sName], 0)
   'Print $aAppArgs.Join(" ")
   Exec $aAppArgs Wait
+  Application.Return = Process.LastValue
   
 End
 
