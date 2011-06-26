@@ -146,8 +146,6 @@ DATE_SERIAL *DATE_split(VALUE *value)
 	nday = value->_date.date;
 	nmsec = value->_date.time;
 
-	//fprintf(stderr, "DATE_split: (%d %d)\n", nday, nmsec);
-
 	if (nday > 0)
 		nmsec += date_timezone * 1000;
 

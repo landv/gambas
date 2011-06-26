@@ -108,7 +108,7 @@ EXTERN char LOCAL_first_day_of_week;
 void LOCAL_init(void);
 void LOCAL_exit(void);
 bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_fmt, char **str, int *len_str, bool local);
-bool LOCAL_format_date(DATE_SERIAL *date, int fmt_type, const char *fmt, int len_fmt, char **str, int *len_str);
+bool LOCAL_format_date(const DATE_SERIAL *date, int fmt_type, const char *fmt, int len_fmt, char **str, int *len_str);
 const char *LOCAL_get_lang(void);
 void LOCAL_set_lang(const char *lang);
 const char *LOCAL_gettext(const char *msgid);

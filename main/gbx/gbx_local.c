@@ -1207,19 +1207,20 @@ static void add_date_token(DATE_SERIAL *date, char *token, int count)
 }
 
 
-bool LOCAL_format_date(DATE_SERIAL *date, int fmt_type, const char *fmt, int len_fmt, char **str, int *len_str)
+bool LOCAL_format_date(const DATE_SERIAL *date, int fmt_type, const char *fmt, int len_fmt, char **str, int *len_str)
 {
+	DATE_SERIAL vdate;
 	char c;
 	bool esc;
 	int pos;
 	int pos_ampm = -1;
 	struct tm date_tm;
-	char real_hour = 0;
 
 	char token;
 	int token_count;
 
 	local_current = &LOCAL_local;
+	vdate = *date;
 
 	switch(fmt_type)
 	{
@@ -1283,11 +1284,10 @@ bool LOCAL_format_date(DATE_SERIAL *date, int fmt_type, const char *fmt, int len
 		if (strncasecmp(&fmt[pos], "am/pm", 5) == 0)
 		{
 			pos_ampm = pos;
-			real_hour = date->hour;
-			if (date->hour >= 12)
-				date->hour -= 12;
-			if (date->hour == 0)
-				date->hour = 12;
+			if (vdate.hour > 12)
+				vdate.hour -= 12;
+			else if (vdate.hour == 0)
+				vdate.hour = 12;
 			break;
 		}
 	}
@@ -1318,7 +1318,7 @@ bool LOCAL_format_date(DATE_SERIAL *date, int fmt_type, const char *fmt, int len
 
 			date_tm.tm_sec = date->sec;
 			date_tm.tm_min = date->min;
-			date_tm.tm_hour = real_hour;
+			date_tm.tm_hour = date->hour;
 			date_tm.tm_mday = 1;
 			date_tm.tm_mon = 0;
 			date_tm.tm_year = 0;
@@ -1333,7 +1333,7 @@ bool LOCAL_format_date(DATE_SERIAL *date, int fmt_type, const char *fmt, int len
 		{
 			if (c != token)
 			{
-				add_date_token(date, &token, token_count);
+				add_date_token(&vdate, &token, token_count);
 				if (token == 'h' && c == 'm')
 					c = 'n';
 
@@ -1345,7 +1345,7 @@ bool LOCAL_format_date(DATE_SERIAL *date, int fmt_type, const char *fmt, int len
 		}
 		else
 		{
-			add_date_token(date, &token, token_count);
+			add_date_token(&vdate, &token, token_count);
 			if (esc)
 				put_char(c);
 			else if (c == '/')
@@ -1357,7 +1357,7 @@ bool LOCAL_format_date(DATE_SERIAL *date, int fmt_type, const char *fmt, int len
 		}
 	}
 
-	add_date_token(date, &token, token_count);
+	add_date_token(&vdate, &token, token_count);
 
 	/* on retourne le r�ultat */
 
