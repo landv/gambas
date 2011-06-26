@@ -1098,13 +1098,21 @@ End
 
 Static Private Sub MustScan(hEditor As FEditor) As Boolean
 
+  Dim sParent As String
   Dim hParentEditor As FEditor
+  Dim bTest As Boolean
 
   If Not hEditor.Scan Then Return True
 
   If hEditor.ParentClass Then 
-    hParentEditor = GetModule(hEditor.ParentClass)
-    If hParentEditor And If hParentEditor <> hEditor Then Return MustScan(hParentEditor)
+    sParent = hEditor.ParentClass
+    hParentEditor = GetModule(sParent)
+    If hParentEditor And If hParentEditor <> hEditor Then 
+      hEditor.ParentClass = "" ' Avoid circular inheritance
+      bTest = MustScan(hParentEditor)
+      hEditor.ParentClass = sParent
+      Return bTest
+    Endif
   Endif
   
 End

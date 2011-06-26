@@ -46,6 +46,7 @@ End
 Static Public Sub Hide(Optional Control As Control)
 
   If Control And If FBalloon.GetControl() <> Control Then Return  
+  'Debug
   FBalloon.Hide
   Wait
   

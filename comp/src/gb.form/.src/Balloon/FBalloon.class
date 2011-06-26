@@ -39,7 +39,7 @@ Private Sub DrawRoundRect(X As Integer, Y As Integer, W As Integer, H As Integer
   Draw.FillStyle = Fill.Solid
   Draw.LineStyle = Line.None
   
-  Draw.FillColor = &FFFFDF&
+  Draw.FillColor = Me.Background '&FFFFDF&
   Draw.Rect(X + ROUND_SIZE, Y, W - ROUND_SIZE * 2, ROUND_SIZE)
   Draw.Rect(X, Y + ROUND_SIZE, W, H - ROUND_SIZE * 2)
   Draw.Rect(X + ROUND_SIZE, Y + H - ROUND_SIZE, W - ROUND_SIZE * 2, ROUND_SIZE)
@@ -171,12 +171,12 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
     'DrawInternalRect(0, ARROW_HEIGHT, ME.W, ME.H - ARROW_HEIGHT * 2)
     Draw.Polygon([X1, Y1, X2, Y2, X3, Y3])
 
-    Draw.FillColor = &FFFFDF&
+    Draw.FillColor = Me.Background
     'DrawInternalRect(1, ARROW_HEIGHT + 1, ME.W - 2, ME.H - (ARROW_HEIGHT + 1) * 2)
     Draw.Polygon([X1, Y1, X2, Y2, X3, Y3])
 
     Draw.LineStyle = Line.Solid
-    Draw.Foreground = &FFFFDF&
+    Draw.Foreground = Me.Background
     Draw.Line(X1, Y1, X2 + 1, Y4)
     Draw.Line(X1, Y1, X3 - 1, Y4)
     Draw.Foreground = &H808080& '&808070&
@@ -291,6 +291,7 @@ End
 
 Public Sub Watcher_Hide()
   
+  'Debug
   Me.Close
   
 End
@@ -327,6 +328,7 @@ End
 
 Public Sub Window_Hide()
   
+  'Debug
   Me.Close
   
 End
@@ -337,11 +339,13 @@ Public Sub timCheck_Timer()
 
   'Debug Me.X;; Me.Y;; Me.Visible;; Me.Picture.W;; Me.Picture.H
   If $bInside Then 
+    'Debug
     Me.Close
     Return 
   Endif 
 
   If (Timer - $dShow) > ($iDelay / 1000) Then 
+    'Debug
     Me.Close
     Return 
   Endif

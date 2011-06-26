@@ -1253,7 +1253,9 @@ Private Sub DoRefreshAfter()
       AddFile(File.Dir(sKey), File.Name(sKey), True, True)
       $aInheritance[iInd] = File.BaseName(sKey)
     Next
-    If Not ProjectFilter Then FMain.ShowError("<b>" & ("The following classes have circular inheritance:") & "</b>\n\n" & $aInheritance.Join(", "))
+    If Not ProjectFilter Then 
+      FMain.ShowError("<b>" & ("The following classes have circular inheritance:") & "</b>\n\n" & $aInheritance.Join(", "))
+    Endif
     $aInheritance.Clear
   Endif
   

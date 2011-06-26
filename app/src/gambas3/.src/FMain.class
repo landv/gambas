@@ -922,7 +922,6 @@ End
 
 Public Sub tvwProject_Select()
   
-  Balloon.Hide(tvwProject)
   GetCurrent()
   RefreshMenu
   
@@ -1075,6 +1074,7 @@ End
 
 Public Sub tvwProject_MouseDown()
   
+  Balloon.Hide(tvwProject)
   $bCtrl = Mouse.Control
   
 End 
