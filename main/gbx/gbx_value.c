@@ -505,21 +505,23 @@ __l2d:
 
 __g2d:
 	{
-		int date = (int)fixf(value->_single.value);
-		value->_date.time = (int)((value->_single.value - date) * 86400000.0 + 0.5);
-		value->_date.date = date;
+		float val = value->_single.value;
+		float ival = floorf(val);
+		value->_date.time = (int)((val - ival) * 86400000.0 + 0.5);
+		value->_date.date = (int)ival;
+		value->type = T_DATE;
+		return;
 	}
-	value->type = T_DATE;
-	return;
 
 __f2d:
 	{
-		int date = (int)fix(value->_float.value);
-		value->_date.time = (int)((value->_float.value - date) * 86400000.0 + 0.5);
-		value->_date.date = date;
+		double val = value->_float.value;
+		double ival = floor(val);
+		value->_date.time = (int)((val - ival) * 86400000.0 + 0.5);
+		value->_date.date = (int)ival;
+		value->type = T_DATE;
+		return;
 	}
-	value->type = T_DATE;
-	return;
 
 __d2c:
 __d2h:
