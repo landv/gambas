@@ -109,12 +109,11 @@ ODBC_TABLES;
 static void *my_malloc(size_t size)
 {
 	void *ptr;
-	GB.Alloc(&ptr, size);
-
+	GB.Alloc(&ptr, (int)size);
 	return ptr;
 }
 
-static void my_free(_ptr)
+static void my_free(void *_ptr)
 {
 	GB.Free(POINTER(&_ptr));
 }

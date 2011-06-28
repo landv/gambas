@@ -117,6 +117,7 @@ void GEditor::reset()
 	_posOutside = false;
 	_checkCache = true;
 	_ensureCursorVisibleLater = false;
+	_sameWidth = 0;
 	
 	foldClear();
 }
