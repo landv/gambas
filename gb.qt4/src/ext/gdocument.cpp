@@ -70,6 +70,7 @@ public:
   virtual bool merge(GCommand *) const { return false; }
   virtual void process(GDocument *doc, bool undo) const { }
 	virtual bool linked() const { return false; }
+	virtual bool remove(GCommand *) const { return false; }
 };
 
 class GBeginCommand: public GCommand
@@ -93,8 +94,8 @@ public:
   Type type() const { return End; }
   void print() const { qDebug("End"); }
   int nest() const { return -1; }
-  bool merge(GCommand *o) const { return (o->type() == Begin); }
 	bool linked() const { return _linked; }
+	bool remove(GCommand *o) const { return (o->type() == Begin); }
 };
 
 class GDeleteCommand: public GCommand
@@ -771,17 +772,25 @@ void GDocument::addUndo(GCommand *c)
 {
   if (blockUndo)
     return;
-
+	
+	//fprintf(stderr, "addUndo: ");
   //c->print();
 
   if (!undoList.isEmpty())
   {
     if (c->merge(undoList.last()))
     {
-      //qDebug("merge");
+      //qDebug("         MERGE");
       delete c;
       return;
     }
+    else if (c->remove(undoList.last()))
+		{
+      //qDebug("         REMOVE");
+			delete c;
+			delete undoList.take();
+			return;
+		}
   }
 
   undoList.append(c);
@@ -845,7 +854,7 @@ bool GDocument::undo()
 			break;
   }
 
-  //qDebug("END UNDO");
+  //qDebug("END UNDO: %d", nest);
 
 	end();
   blockUndo = false;
