@@ -435,6 +435,9 @@ BEGIN_PROPERTY(CCURL_URL)
 		return;
 	}
 
+	if (PLENGTH() == 0)
+		goto UNKNOWN_PROTOCOL;
+	
 	url = GB.NewString(PSTRING(), PLENGTH());
 	
 	if (GB.Is(THIS, GB.FindClass("FtpClient")))
