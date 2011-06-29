@@ -692,7 +692,7 @@ bool gApplication::areTooltipsEnabled()
 
   settings = gtk_settings_get_default();
 
-  g_object_get (settings, "gtk-enable-tooltips", &enabled, NULL);
+  g_object_get (settings, "gtk-enable-tooltips", &enabled, (char *)NULL);
 
   return enabled;
 }
@@ -702,7 +702,7 @@ void gApplication::enableTooltips(bool vl)
   GtkSettings *settings;
 	gboolean enabled = vl;
   settings = gtk_settings_get_default();
-  g_object_set (settings, "gtk-enable-tooltips", &enabled, NULL);
+  g_object_set (settings, "gtk-enable-tooltips", enabled, (char *)NULL);
 }
 
 void gApplication::suspendEvents(bool vl)
