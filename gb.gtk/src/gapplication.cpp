@@ -671,14 +671,10 @@ gApplication
 **************************************************************************/
 
 int appEvents;
-GtkTooltips *app_tooltips_handle;
-bool app_tooltips=true;
-gFont *app_tooltips_font=NULL;
 
 bool gApplication::_busy = false;
 char *gApplication::_title = NULL;
 int gApplication::_loopLevel = 0;
-int gApplication::_tooltip_delay = 500; // GTK+ default
 void *gApplication::_loop_owner = 0;
 GtkWindowGroup *gApplication::_group = NULL;
 gControl *gApplication::_enter = NULL;
@@ -689,61 +685,24 @@ bool (*gApplication::onKeyEvent)(int) = NULL;
 guint32 gApplication::_event_time = 0;
 bool gApplication::_close_next_window = false;
 
-GtkTooltips* gApplication::tipHandle()
+bool gApplication::areTooltipsEnabled()
 {
-	return app_tooltips_handle;
-}
+  gboolean enabled;
+  GtkSettings *settings;
 
-bool gApplication::toolTips()
-{
-	return app_tooltips;
-}
+  settings = gtk_settings_get_default();
 
-void gApplication::setToolTipsFont(gFont *ft)
-{
-	GList *chd;
-	PangoFontDescription *desc;
-	
-	gFont::set(&app_tooltips_font, ft->copy());
-	
-	if (ft)
-    desc = pango_context_get_font_description(ft->ct);
-  else
-    desc = NULL;
-	
-	gtk_widget_modify_font(app_tooltips_handle->tip_window,desc);
-	
-	chd=gtk_container_get_children(GTK_CONTAINER(app_tooltips_handle->tip_window));
-	if (chd)
-	{
-		do { gtk_widget_modify_font(GTK_WIDGET(chd->data),desc);
-		} while (chd->next);
-		g_list_free(chd);
-	}
-}
+  g_object_get (settings, "gtk-enable-tooltips", &enabled, NULL);
 
-gFont *gApplication::toolTipsFont()
-{
-	return app_tooltips_font;
+  return enabled;
 }
 
 void gApplication::enableTooltips(bool vl)
 {
-	if (vl)
-		gtk_tooltips_enable(app_tooltips_handle);
-	else
-		gtk_tooltips_disable(app_tooltips_handle);
-}
-
-void gApplication::setToolTipsDelay(int vl)
-{
-	if (vl < 50)
-		vl = 50;
-	else if (vl > 10000)
-		vl = 10000;
-	
-	_tooltip_delay = vl;
-	gtk_tooltips_set_delay(app_tooltips_handle, vl);
+  GtkSettings *settings;
+	gboolean enabled = vl;
+  settings = gtk_settings_get_default();
+  g_object_set (settings, "gtk-enable-tooltips", &enabled, NULL);
 }
 
 void gApplication::suspendEvents(bool vl)
@@ -777,11 +736,6 @@ void gApplication::init(int *argc,char ***argv)
  
 	gdk_event_handler_set((GdkEventFunc)gambas_handle_event, NULL, NULL);
 	
-	app_tooltips_handle = gtk_tooltips_new();
-	g_object_ref(G_OBJECT(app_tooltips_handle));
-	gtk_tooltips_force_window (app_tooltips_handle);
-	app_tooltips_font = new gFont(app_tooltips_handle->tip_window);
-	
 	gClipboard::init();
 	gKey::init();
 	_loop_owner = 0;
@@ -797,7 +751,6 @@ void gApplication::exit()
   gDesktop::exit();
   gMessage::exit();
   gDialog::exit();
-  gFont::assign(&app_tooltips_font);
   gFont::exit();
   gt_exit();
 }

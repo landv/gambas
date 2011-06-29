@@ -32,7 +32,6 @@
 extern GB_DESC ScreenDesc[];
 extern GB_DESC ScreensDesc[];
 extern GB_DESC DesktopDesc[];
-extern GB_DESC ApplicationTooltipDesc[];
 extern GB_DESC ApplicationDesc[];
 extern GB_DESC StyleDesc[];
 

@@ -50,11 +50,7 @@ public:
 	static bool allEvents();
 
 	static void enableTooltips(bool vl);
-	static bool toolTips();
-	static gFont* toolTipsFont();
-	static void setToolTipsFont(gFont *ft);
-	static int toolTipsDelay() { return _tooltip_delay; }
-	static void setToolTipsDelay(int v);
+	static bool areTooltipsEnabled();
 
 	static void setDefaultTitle(const char *title);
 	static char *defaultTitle() { return _title; }
@@ -78,11 +74,9 @@ public:
 	static int getTextBoxFrameWidth();
 
 	//"Private"
-	static GtkTooltips *tipHandle();
 	static bool _busy;
 	static char *_title;
 	static int _loopLevel;
-	static int _tooltip_delay;
 	static void *_loop_owner;
 	static GtkWindowGroup *_group;
 	static GtkWindowGroup *currentGroup();

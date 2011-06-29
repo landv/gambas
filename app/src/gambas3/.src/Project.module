@@ -235,7 +235,7 @@ Public Sub Main()
   'EXAMPLES_DIR = Replace(EXAMPLES_DIR, " ", "0")
   EXAMPLES_DIR = System.Path &/ "share/gambas" & Split(System.Version, ".")[0] & "/examples"
   
-  Application.Tooltip.Enabled = Settings["/ShowTooltip", True]
+  Application.ShowTooltips = Settings["/ShowTooltip", True]
   
   RefreshBreakpointPicture
   

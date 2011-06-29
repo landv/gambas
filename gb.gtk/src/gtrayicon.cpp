@@ -390,8 +390,7 @@ void gTrayIcon::updateTooltip()
 	if (!plug)
 		return;
 		
-	// TODO gtk_widget_set_tooltip_text(plug, buftext); -- removing of deprecated GtkTooltips
-	gtk_tooltips_set_tip(gApplication::tipHandle(), plug, buftext, NULL);
+	gtk_widget_set_tooltip_text(plug, buftext);
 }
 
 void gTrayIcon::setToolTip(char* vl)

@@ -134,11 +134,6 @@ static void set_font(gFont *font, void *object = 0)
 	MAIN_scale = gDesktop::scale();
 }
 
-static void set_tooltip_font(gFont *font, void *object = 0)
-{
-	gApplication::setToolTipsFont(font);
-}
-
 BEGIN_PROPERTY(Application_Font)
 
 	if (READ_PROPERTY)
@@ -146,16 +141,6 @@ BEGIN_PROPERTY(Application_Font)
 	else if (VPROP(GB_OBJECT))
 		set_font(((CFONT*)VPROP(GB_OBJECT))->font);
 
-END_PROPERTY
-
-
-BEGIN_PROPERTY(ApplicationTooltip_Font)
-
-	if (READ_PROPERTY)
-		GB.ReturnObject(CFONT_create(gApplication::toolTipsFont()->copy(), set_tooltip_font));
-	else if (VPROP(GB_OBJECT))
-		set_tooltip_font(((CFONT*)VPROP(GB_OBJECT))->font);
-	
 END_PROPERTY
 
 
@@ -201,26 +186,14 @@ BEGIN_PROPERTY(Desktop_Scale)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(ApplicationTooltip_Enabled)
+BEGIN_PROPERTY(Application_ShowTooltips)
 
 	if (READ_PROPERTY)
-		GB.ReturnBoolean(gApplication::toolTips());
+		GB.ReturnBoolean(gApplication::areTooltipsEnabled());
 	else
 		gApplication::enableTooltips(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
-
-
-#if 0
-BEGIN_PROPERTY(CAPP_tooltip_delay)
-
-	if (READ_PROPERTY)
-		GB.ReturnInteger(gApplication::toolTipsDelay());
-	else
-		gApplication::setToolTipsDelay(VPROP(GB_INTEGER));
-
-END_PROPERTY
-#endif
 
 
 BEGIN_PROPERTY(Application_MainWindow)
@@ -396,17 +369,6 @@ GB_DESC DesktopDesc[] =
 	GB_END_DECLARE
 };
 
-GB_DESC ApplicationTooltipDesc[] =
-{
-	GB_DECLARE(".ApplicationTooltip", 0), GB_VIRTUAL_CLASS(),
-
-	GB_STATIC_PROPERTY("Enabled", "b", ApplicationTooltip_Enabled),
-	GB_STATIC_PROPERTY("Font", "Font", ApplicationTooltip_Font),
-	//GB_STATIC_PROPERTY("Delay", "i", CAPP_tooltip_delay),
-
-	GB_END_DECLARE
-};
-
 GB_DESC ApplicationDesc[] =
 {
 	GB_DECLARE("Application", 0), GB_VIRTUAL_CLASS(),
@@ -418,7 +380,7 @@ GB_DESC ApplicationDesc[] =
 	GB_STATIC_PROPERTY_READ("ActiveWindow", "Window", Application_ActiveWindow),
 	GB_STATIC_PROPERTY("MainWindow", "Window", Application_MainWindow),
 	GB_STATIC_PROPERTY("Busy", "i", Application_Busy),
-	GB_STATIC_PROPERTY_SELF("ToolTip", ".ApplicationTooltip"),
+	GB_STATIC_PROPERTY("ShowTooltips", "b", Application_ShowTooltips),
 	
 	GB_STATIC_PROPERTY("Embedder", "i", Application_Embedder),
 	GB_STATIC_PROPERTY("Theme", "s", Application_Theme),

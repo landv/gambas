@@ -110,7 +110,6 @@ extern "C"
 		ScreenDesc,
 		ScreensDesc,
 		DesktopDesc,
-		ApplicationTooltipDesc,
 		ApplicationDesc,
 		StyleDesc,
 		CSelectDesc,

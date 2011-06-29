@@ -188,22 +188,12 @@ BEGIN_METHOD(Desktop_Screenshot, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_IN
 END_METHOD
 
 
-BEGIN_PROPERTY(ApplicationTooltip_Enabled)
+BEGIN_PROPERTY(Application_ShowTooltips)
 
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(MyApplication::isTooltipEnabled());
 	else
 		MyApplication::setTooltipEnabled(VPROP(GB_BOOLEAN));
-
-END_PROPERTY
-
-
-BEGIN_PROPERTY(ApplicationTooltip_Font)
-
-	if (READ_PROPERTY)
-		GB.ReturnObject(CFONT_create(QToolTip::font()));
-	else
-		QToolTip::setFont(*((CFONT *)VPROP(GB_OBJECT))->font);
 
 END_PROPERTY
 
@@ -382,16 +372,6 @@ GB_DESC DesktopDesc[] =
 	GB_END_DECLARE
 };
 
-GB_DESC ApplicationTooltipDesc[] =
-{
-	GB_DECLARE(".ApplicationTooltip", 0), GB_VIRTUAL_CLASS(),
-
-	GB_STATIC_PROPERTY("Enabled", "b", ApplicationTooltip_Enabled),
-	GB_STATIC_PROPERTY("Font", "Font", ApplicationTooltip_Font),
-
-	GB_END_DECLARE
-};
-
 GB_DESC ApplicationDesc[] =
 {
 	GB_DECLARE("Application", 0), GB_VIRTUAL_CLASS(),
@@ -402,7 +382,7 @@ GB_DESC ApplicationDesc[] =
 	GB_STATIC_PROPERTY_READ("ActiveControl", "Control", Application_ActiveControl),
 	GB_STATIC_PROPERTY("MainWindow", "Window", Application_MainWindow),
 	GB_STATIC_PROPERTY("Busy", "i", Application_Busy),
-	GB_STATIC_PROPERTY_SELF("ToolTip", ".ApplicationTooltip"),
+	GB_STATIC_PROPERTY("ShowTooltips", "b", Application_ShowTooltips),
 	GB_STATIC_PROPERTY("Embedder", "i", Application_Embedder),
 	GB_STATIC_PROPERTY("Theme", "s", Application_Theme),
 
