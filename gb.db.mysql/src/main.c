@@ -1525,7 +1525,7 @@ static int table_create(DB_DATABASE *db, const char *table, DB_FIELD *fields, ch
 	int comma;
 	int i;
 
-	if (db->version < 040100 && !strcasecmp(tabletype, "MEMORY"))
+	if (db->version < 40100 && !strcasecmp(tabletype, "MEMORY"))
 		tabletype = "HEAP";
 	
 	DB.Query.Init();
@@ -1620,7 +1620,11 @@ static int table_create(DB_DATABASE *db, const char *table, DB_FIELD *fields, ch
 
 	if (tabletype)
 	{
-		DB.Query.Add(" TYPE = ");
+		if (db->version < 40018)
+			DB.Query.Add(" TYPE = ");
+		else
+			DB.Query.Add(" ENGINE = ");
+		
 		DB.Query.Add(tabletype);
 	}
 
