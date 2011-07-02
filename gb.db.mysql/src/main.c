@@ -1553,8 +1553,6 @@ static int table_delete(DB_DATABASE *db, const char *table)
   MySql has several different table types: InnoDB and BDB are transaction safe
   whilst HEAP, ISAM, MERGE and MYISAM are not.
 
- TYPE =
-
 *****************************************************************************/
 
 static int table_create(DB_DATABASE *db, const char *table, DB_FIELD *fields, char **primary, const char *tabletype)
@@ -1564,9 +1562,11 @@ static int table_create(DB_DATABASE *db, const char *table, DB_FIELD *fields, ch
   int comma;
   int i;
 
-  DB.Query.Init();
- // type should be BDB HEAP ISAM InnoDB MERGE MRG_MYISAM MYISAM
- //MySql will validate
+	if (db->version < 40100 && !strcasecmp(tabletype, "MEMORY"))
+		tabletype = "HEAP";
+
+	DB.Query.Init();
+	
   DB.Query.Add("CREATE TABLE `");
   DB.Query.Add(table);
   DB.Query.Add("` ( ");
@@ -1657,7 +1657,10 @@ static int table_create(DB_DATABASE *db, const char *table, DB_FIELD *fields, ch
 
   if (tabletype)
   {
-    DB.Query.Add(" TYPE = ");
+		if (db->version < 40018)
+			DB.Query.Add(" TYPE = ");
+		else
+			DB.Query.Add(" ENGINE = ");
     DB.Query.Add(tabletype);
   }
 
