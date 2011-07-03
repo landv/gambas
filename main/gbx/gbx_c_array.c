@@ -1225,28 +1225,15 @@ BEGIN_METHOD(ByteArray_ToString, GB_INTEGER start; GB_INTEGER length)
 END_METHOD
 
 
-BEGIN_METHOD(ByteArray_FromString, GB_STRING string; GB_INTEGER start)
+BEGIN_METHOD(ByteArray_FromString, GB_STRING string)
 
+	CARRAY *array;
 	char *string = STRING(string);
 	int length = LENGTH(string);
-	int start;
-	int count = THIS->count;
 	
-	start = VARGOPT(start, 0);
-	
-	if (start < 0)
-	{
-		GB_Error((char *)E_BOUND);
-		return;
-	}
-
-	if (start >= count)
-		return;
-
-	if ((start + length) > count)
-		length = count - start;
-	
-	memcpy(THIS->data + start, string, length);
+	GB_ArrayNew((GB_ARRAY *)POINTER(&array), T_BYTE, length);
+	memcpy(THIS->data, string, length);
+	GB_ReturnObject(array);
 
 END_METHOD
 
@@ -1488,7 +1475,7 @@ GB_DESC NATIVE_ByteArray[] =
 	GB_METHOD("Fill", NULL, CARRAY_fill, "(Value)c[(Start)i(Length)i]"),
 
 	GB_METHOD("ToString", "s", ByteArray_ToString, "[(Start)i(Length)i]"),
-	GB_METHOD("FromString", NULL, ByteArray_FromString, "(String)s[(Start)i]"),
+	GB_STATIC_METHOD("FromString", "Byte[]", ByteArray_FromString, "(String)s"),
 
 	GB_END_DECLARE
 };

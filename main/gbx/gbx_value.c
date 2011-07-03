@@ -787,7 +787,6 @@ __OBJECT:
 		}
 		else
 			goto __N;
-
 	}
 
 	if (value->_object.object == NULL)
