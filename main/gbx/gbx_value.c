@@ -65,6 +65,7 @@ VALUE_CONVERT_FUNC VALUE_jump[] =
 };
 */
 
+#if 0
 static bool unknown_function(VALUE *value)
 {
 	if (value->_function.kind == FUNCTION_UNKNOWN)
@@ -85,6 +86,7 @@ static bool unknown_function(VALUE *value)
 	else
 		return FALSE;
 }
+#endif
 
 void THROW_TYPE_INTEGER(TYPE type)
 {
@@ -711,10 +713,10 @@ __2v:
 
 __func:
 
-	if (unknown_function(value))
-		goto __CONV;
-	else
-		goto __N;
+	//if (unknown_function(value))
+	//	goto __CONV;
+	//else
+	goto __N;
 
 __i2p:
 	value->_pointer.value = (void *)(intptr_t)value->_integer.value;
@@ -1229,8 +1231,8 @@ __CLASS:
 
 __FUNCTION:
 
-	if (unknown_function(value))
-		goto __CONV;
+	//if (unknown_function(value))
+	//	goto __CONV;
 	
 	*len = sprintf(COMMON_buffer, "(Function %s:%d)", value->_function.class->name, value->_function.index);
 	*addr = COMMON_buffer;
@@ -1440,9 +1442,9 @@ __v2:
 
 __func:
 
-	if (unknown_function(value))
-		goto __CONV;
-	else
+	//if (unknown_function(value))
+	//	goto __CONV;
+	//else
 		goto __N;
 
 __N:
@@ -1512,9 +1514,9 @@ __v2:
 
 __func:
 
-	if (unknown_function(value))
-		goto __CONV;
-	else
+	//if (unknown_function(value))
+	//	goto __CONV;
+	//else
 		goto __N;
 
 __TYPE:
@@ -1599,9 +1601,9 @@ __v2:
 
 __func:
 
-	if (unknown_function(value))
-		goto __CONV;
-	else
+	//if (unknown_function(value))
+	//	goto __CONV;
+	//else
 		goto __N;
 
 __N:
@@ -1691,9 +1693,9 @@ __v2:
 
 __func:
 
-	if (unknown_function(value))
-		goto __CONV;
-	else
+	//if (unknown_function(value))
+	//	goto __CONV;
+	//else
 		goto __N;
 
 __OK:
@@ -1720,7 +1722,7 @@ void VALUE_convert_variant(VALUE *value)
 
 	char *addr;
 
-__CONV:
+//__CONV:
 
 	if (TYPE_is_object(value->type))
 		goto __2v;
@@ -1755,9 +1757,9 @@ __2v:
 
 __func:
 
-	if (unknown_function(value))
-		goto __CONV;
-	else
+	//if (unknown_function(value))
+	//	goto __CONV;
+	//else
 		goto __N;
 
 __TYPE:
@@ -1892,9 +1894,9 @@ __v2:
 
 __func:
 
-	if (unknown_function(value))
-		goto __CONV;
-	else
+	//if (unknown_function(value))
+	//	goto __CONV;
+	//else
 		goto __N;
 
 __TYPE:

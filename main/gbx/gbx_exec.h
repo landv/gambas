@@ -98,7 +98,6 @@ EXTERN bool EXEC_got_error;
 EXTERN const char EXEC_should_borrow[];
 
 EXTERN const char *EXEC_unknown_name;
-EXTERN bool EXEC_unknown_property;
 EXTERN char EXEC_unknown_nparam;
 
 EXTERN EXEC_GLOBAL EXEC;

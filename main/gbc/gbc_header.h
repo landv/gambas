@@ -48,9 +48,10 @@ enum {
   HS_FUNCTION 	= 1 << 4,
   HS_PUT 				= 1 << 5,
   HS_UNKNOWN 		= 1 << 6,
-  HS_NOPARAM 		= 1 << 7,
-  HS_COMPARE 		= 1 << 8,
-	HS_ATTACH 		= 1 << 9
+  HS_PROPERTY		= 1 << 7,
+  HS_NOPARAM 		= 1 << 8,
+  HS_COMPARE 		= 1 << 9,
+	HS_ATTACH 		= 1 << 10
   };
 
 typedef

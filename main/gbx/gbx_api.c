@@ -865,7 +865,7 @@ int GB_NParam(void)
 
 bool GB_IsProperty(void)
 {
-  return EXEC_unknown_property;
+  return FALSE; //EXEC_unknown_property;
 }
 
 

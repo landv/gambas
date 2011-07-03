@@ -2065,10 +2065,13 @@ fflush(stderr);
 	}
 
 
-	if (!SQL_SUCCEEDED
-			(nReturn = SQLPrimaryKeys(statHandle, 0, 0, 0, SQL_NTS, (SQLCHAR *)table, SQL_NTS)))
+	/*if (!SQL_SUCCEEDED
+			(nReturn = SQLPrimaryKeys(statHandle, 0, 0, 0, SQL_NTS, (SQLCHAR *)table, SQL_NTS)))*/
+	if (!SQL_SUCCEEDED(nReturn = SQLPrimaryKeys(statHandle, (SQLCHAR *)"", 0, (SQLCHAR *)"", 0, (SQLCHAR *)table, SQL_NTS)))
 	{
 		free(res);
+		fprintf(stderr, "return %d\n", nReturn);
+		GB.Error("Unable to get primary key: &1", table);
 		return TRUE;
 	}
 	// GET RESULTS
@@ -2478,7 +2481,7 @@ fflush(stderr);
 
 *****************************************************************************/
 
-static int field_info(DB_DATABASE *db, char *table, char *field,DB_FIELD * info)
+static int field_info(DB_DATABASE *db, char *table, char *field, DB_FIELD * info)
 {
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
@@ -2499,6 +2502,7 @@ fflush(stderr);
 	ODBC_CONN *han = (ODBC_CONN *)db->handle;
 	ODBC_CONN *han1 = (ODBC_CONN *)db->handle;
 
+	*precision = 0;
 
 	strncpy((char *)&query[0], "SELECT ",7);
 	strncpy((char *)&query[7], field,strlen(field));
@@ -2532,7 +2536,6 @@ fflush(stderr);
 	}
 	
 	retcode=SQLColAttribute (statHandle1,1,SQL_DESC_AUTO_UNIQUE_VALUE,NULL,0,NULL,&auton);
-     
 
 	SQLFreeHandle(SQL_HANDLE_STMT, statHandle1);
 
@@ -2560,28 +2563,24 @@ fflush(stderr);
 
 	info->name = NULL;
 	info->type = conv_type(atol((char *)coltype));
-	info->length = atol((char *) precision);
+	info->length = 0;
+	if (*precision)
+		info->length = atol((char *) precision);
 
 	if (info->type == GB_T_STRING)
 	{
-
-
-		info->length = atol((char *)precision);
 		if (info->length < 0)
 			info->length = 0;
-
 	}
-	else
-		info->length = atol((char *) precision);
-if (auton==SQL_TRUE) info->type = DB_T_SERIAL;
+	
+	if (auton == SQL_TRUE)
+		info->type = DB_T_SERIAL;
 
 	info->def.type = GB_T_NULL;
 
 	SQLFreeHandle(SQL_HANDLE_STMT, statHandle);
 
-
 	return FALSE;
-
 }
 
 

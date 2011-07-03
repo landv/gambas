@@ -261,7 +261,13 @@ _POP_PROPERTY_2:
 
 _POP_UNKNOWN_PROPERTY:
 
-	EXEC_unknown_property = TRUE;
+	EXEC_unknown_name = name;
+	EXEC_special(SPEC_PROPERTY, class, object, 0, FALSE);
+	VALUE_conv_boolean(&SP[-1]);
+	SP--;
+	if (!SP->_boolean.value)
+		THROW(E_NPROPERTY, class->name, name);
+		
 	EXEC_unknown_name = CP->load->unknown[PC[1]];
 
 	*SP = SP[-2];

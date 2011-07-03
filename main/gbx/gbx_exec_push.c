@@ -87,6 +87,22 @@ _PUSH_GENERIC:
       THROW(E_NSYMBOL, name, class->name);
 		}
 
+    if (class->special[SPEC_PROPERTY] != NO_SYMBOL)
+		{
+			EXEC_unknown_name = name;
+			EXEC_special(SPEC_PROPERTY, class, object, 0, FALSE);
+			VALUE_conv_boolean(&SP[-1]);
+			SP--;
+			if (SP->_boolean.value)
+			{
+				SP--;
+				EXEC_special(SPEC_UNKNOWN, class, object, 0, FALSE);
+				VALUE_conv_variant(&SP[-1]);
+				OBJECT_UNREF(object, "EXEC_push_unknown");
+				goto _FIN;
+			}
+		}
+
     goto _PUSH_UNKNOWN_METHOD;
   }
   
@@ -438,7 +454,6 @@ _PUSH_UNKNOWN_METHOD:
 
   goto _FIN;
 
-
 _FIN_DEFINED:
 
   BORROW(&SP[-1]);
@@ -448,9 +463,8 @@ _FIN_DEFINED_NO_BORROW:
   if (UNLIKELY(!defined))
     VALUE_conv_variant(&SP[-1]);
 
-  /* sp[-1] contenait l'objet et a ���ras� Il faut donc le d���encer
-     nous-m�e. Sauf si c'est un appel de m�hode statique (cf. plus haut) */
-
+	// SP[-1] was the object and it has been erased. So we must unref it manually,
+	// unless we are calling a static method (see above)
   OBJECT_UNREF(object, "EXEC_push_unknown");
 
 _FIN:

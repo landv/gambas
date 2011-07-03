@@ -1012,7 +1012,6 @@ _CALL:
 
 	__CALL_UNKNOWN:
 
-		EXEC_unknown_property = FALSE;
 		EXEC_unknown_name = CP->load->unknown[val->_function.index];
 		EXEC.desc = CLASS_get_special_desc(EXEC.class, SPEC_UNKNOWN);
 		//EXEC.use_stack = TRUE;

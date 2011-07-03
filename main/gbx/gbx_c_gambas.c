@@ -98,22 +98,15 @@ BEGIN_PROPERTY(Param_Name)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(Param_Property)
+/*BEGIN_PROPERTY(Param_Property)
 
 	GB_ReturnBoolean(EXEC_unknown_property);
 
-END_PROPERTY
+END_PROPERTY*/
 
 BEGIN_PROPERTY(Param_EventName)
 
 	GB_ReturnConstZeroString(EVENT_Name);
-
-END_PROPERTY
-
-BEGIN_PROPERTY(gb_Text)
-
-	ERROR_deprecated("gb.Text");
-	GB_ReturnInteger(GB_COMP_NOCASE);
 
 END_PROPERTY
 
@@ -129,7 +122,7 @@ GB_DESC NATIVE_Param[] =
 
 	GB_STATIC_PROPERTY_READ("Name", "s", Param_Name),
 	GB_STATIC_PROPERTY_READ("EventName", "s", Param_EventName),
-	GB_STATIC_PROPERTY_READ("Property", "b", Param_Property),
+	//GB_STATIC_PROPERTY_READ("Property", "b", Param_Property),
 
 	GB_STATIC_METHOD("_get", "v", Param_get, "(Index)i"),
 	GB_STATIC_METHOD("_next", "v", Param_next, NULL),
@@ -144,7 +137,6 @@ GB_DESC NATIVE_Gambas[] =
 	GB_DECLARE("gb", 0), GB_VIRTUAL_CLASS(),
 
 	GB_CONSTANT("Binary", "i", GB_COMP_BINARY),
-	GB_STATIC_PROPERTY_READ("Text", "i", gb_Text),
 	GB_CONSTANT("IgnoreCase", "i", GB_COMP_NOCASE),
 	GB_CONSTANT("Language", "i", GB_COMP_LANG),
 	GB_CONSTANT("Like","i",GB_COMP_LIKE),

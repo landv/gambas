@@ -539,6 +539,7 @@ static bool header_function(TRANS_FUNC *func)
     { "_get",       HS_PUBLIC + HS_FUNCTION },
     { "_put",       HS_PUBLIC + HS_PROCEDURE + HS_PUT },
     { "_next",      HS_PUBLIC + HS_NOPARAM },
+    { "_property",  HS_PUBLIC + HS_NOPARAM + HS_FUNCTION + HS_PROPERTY },
     { "_unknown",   HS_PUBLIC + HS_UNKNOWN },
     { "_compare",   HS_PUBLIC + HS_DYNAMIC + HS_FUNCTION + HS_COMPARE },
 		{ "_attach",    HS_PUBLIC + HS_DYNAMIC + HS_PROCEDURE + HS_ATTACH },
@@ -650,6 +651,12 @@ static bool header_function(TRANS_FUNC *func)
       {
         if (func->nparam > 0 || !func->vararg)
           THROW("The special method &1 must take a variable number of arguments only", hsp->name);
+      }
+
+      if (hsp->flag & HS_PROPERTY)
+      {
+        if (TYPE_get_id(func->type) != T_BOOLEAN)
+          THROW("The special method &1 must return a boolean", hsp->name);
       }
 
       if (hsp->flag & HS_COMPARE)
