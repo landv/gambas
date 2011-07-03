@@ -199,13 +199,6 @@
       Toggle = True
       Shortcut = "F4"
     }
-    { mnuViewTool Menu
-      Action = "control"
-      Text = ("&Toolbox")
-      Picture = Picture["icon:/small/tools"]
-      Toggle = True
-      Shortcut = "Shift+F4"
-    }
     { mnuViewConsole Menu
       Action = "console"
       Text = ("&Console")
@@ -1004,8 +997,7 @@
     Picture = "icon:/small/terminal"
   }
   { Action control
-    Text = "&Toolbox"
-    Shortcut = "Shift+F4"
+    Text = "Toolbox"
     Picture = "icon:/small/tools"
   }
   { Action copy
