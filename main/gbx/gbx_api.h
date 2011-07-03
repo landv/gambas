@@ -44,7 +44,7 @@ bool GB_Stopped(void);
 
 int GB_NParam(void);
 const char *GB_GetUnknown(void);
-bool GB_IsProperty(void);
+//bool GB_IsProperty(void);
 
 void GB_GetProperty(void *object, const char *property);
 void GB_SetProperty(void *object, const char *property, ...);

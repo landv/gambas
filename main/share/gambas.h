@@ -820,7 +820,6 @@ typedef
 		int (*NParam)(void);
 		bool (*Conv)(GB_VALUE *, GB_TYPE);
 		char *(*GetUnknown)(void);
-		bool (*IsProperty)(void);
 		
 		void (*Error)(const char *, ...);
 		void (*Propagate)(void);

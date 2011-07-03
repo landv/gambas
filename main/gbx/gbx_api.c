@@ -103,7 +103,6 @@ void *GAMBAS_Api[] =
   (void *)GB_NParam,
   (void *)GB_Conv,
   (void *)GB_GetUnknown,
-  (void *)GB_IsProperty,
 
   (void *)GB_Error,
   (void *)ERROR_propagate,
@@ -863,10 +862,10 @@ int GB_NParam(void)
 }
 
 
-bool GB_IsProperty(void)
+/*bool GB_IsProperty(void)
 {
   return FALSE; //EXEC_unknown_property;
-}
+}*/
 
 
 const char *GB_GetUnknown(void)
