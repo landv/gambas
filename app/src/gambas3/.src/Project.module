@@ -2617,7 +2617,7 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
     If Process.LastValue Then Error.Raise(Trim(File.Load(OUTPUT_FILE)))
     'SetMessage(("OK"))
     
-    If Not VersionProgram Then Inc ReleaseVersion
+    If Not VersionProgram And If Not bDoNotIncVersion Then Inc ReleaseVersion
     WriteProject(True, True)
     
     If RunAfterMakingExec Then 
@@ -4471,13 +4471,13 @@ End
 
 Public Sub MakeInstall()
   
-  Dim iRelease As Integer = Project.ReleaseVersion
+  'Dim iRelease As Integer = Project.ReleaseVersion
   
   If MakeExecutable(True, True) Then Return
   If FMakeInstall.ShowModal() Then Return
   
-  Project.ReleaseVersion = iRelease
-  Project.WriteProject
+  'Project.ReleaseVersion = iRelease
+  'Project.WriteProject
   
 End
 
