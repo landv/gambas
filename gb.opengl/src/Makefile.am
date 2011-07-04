@@ -17,6 +17,7 @@ gb_opengl_la_SOURCES = \
  GLcolorLighting.h GLcolorLighting.c \
  GLcoordTransf.h  GLcoordTransf.c \
  GLdisplayList.h GLdisplayList.c \
+ GLeval.h GLeval.c \
  GLfog.h GLfog.c \
  GLframeBufferOps.h GLframeBufferOps.c \
  GLmodesExec.h GLmodesExec.c \

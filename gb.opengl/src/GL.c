@@ -38,6 +38,7 @@
 #include "GLtextureMapping.h"
 #include "GLinfo.h"
 #include "GLselectFeedback.h"
+#include "GLeval.h"
 
 /**************************************************************************/
 
@@ -240,6 +241,18 @@ GB_DESC Cgl[] =
 	GB_STATIC_METHOD("PushName", NULL, GLPUSHNAME, "(Name)i"),
 	GB_STATIC_METHOD("RenderMode", "Array", GLRENDERMODE, "(Mode)i"),
 	GB_STATIC_METHOD("SelectBuffer", NULL, GLSELECTBUFFER, NULL),
+
+	/* Evaluators - see Gleval.h/c	*/
+	GB_STATIC_METHOD("Map1f", NULL, GLMAP1F, "(Target)i(U1)f(U2)f(Stride)i(Order)i(Points)Float[]"),
+	GB_STATIC_METHOD("Map2f", NULL, GLMAP2F, "(Target)i(U1)f(U2)f(Ustride)i(Uorder)i(V1)f(V2)f(Vstride)i(Vorder)i(Points)Float[]"),	
+	GB_STATIC_METHOD("EvalCoord1f", NULL, GLEVALCOORD1F, "(U)f"),
+	GB_STATIC_METHOD("EvalCoord2f", NULL, GLEVALCOORD2F, "(U)f(V)f"),
+	GB_STATIC_METHOD("MapGrid1f", NULL, GLMAPGRID1F, "(Un)i(U)f(V)f"),	
+	GB_STATIC_METHOD("MapGrid2f", NULL, GLMAPGRID2F, "(Un)i(U1)f(U2)f(Vn)i(V1)f(V2)f"),	
+	GB_STATIC_METHOD("EvalPoint1", NULL, GLEVALPOINT1, "(I)i"),	
+	GB_STATIC_METHOD("EvalPoint2", NULL, GLEVALPOINT2, "(I)i(J)i"),	
+	GB_STATIC_METHOD("EvalMesh1", NULL, GLEVALMESH1, "(Mode)i(I1)i(I2)i"),
+	GB_STATIC_METHOD("EvalMesh2", NULL, GLEVALMESH2, "(Mode)i(I1)i(I2)i(J1)i(J2)i"),		
 
 	/* glGetxxxx calls - see GLinfo.h/c   */
 	GB_STATIC_METHOD("GetBooleanv", "Boolean[]", GLGETBOOLEANV, "(Parameter)i"),
