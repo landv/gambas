@@ -1,0 +1,57 @@
+' Gambas class file
+
+Private $hPanel As Panel
+Private $hMovieBox As MovieBox
+Private $hLabel As Label
+
+Public Sub _new(hWindow As Window)
+  
+  $hPanel = New Panel(hWindow)
+  With $hPanel
+    .Ignore = True
+    .Move((hWindow.ClientW - 88) / 2, (hWindow.ClientH - 88) / 2, 88, 88)
+    .Background = Color.LightForeground
+  End With
+  
+  $hMovieBox = New MovieBox($hPanel)
+  With $hMovieBox
+    .Alignment = Align.Center
+    .Background = Color.White
+    .Path = "img/waiting.gif"
+    .Playing = True
+    .Move(8, 8, $hPanel.W - 16, $hPanel.H - 16)
+  End With    
+  
+  $hLabel = New Label($hPanel)
+  With $hLabel
+    .Move(($hPanel.W - Desktop.Scale * 5) / 2, ($hPanel.H - Desktop.Scale * 3) / 2, Desktop.Scale * 5, Desktop.Scale * 3)
+    $hLabel.Foreground = Color.LightForeground
+    $hLabel.Font = Font["7"]
+    $hLabel.Alignment = Align.Center
+  End With
+  
+End
+
+Public Sub _free()
+  
+  Try $hPanel.Delete
+  
+End
+
+
+Public Sub Stop()
+  
+  $hPanel.Delete
+  
+End
+
+Public Sub SetValue(fProgress As Float)
+  
+  Dim sText As String = CStr(CInt(fProgress * 100)) & "%"
+  
+  If sText = $hLabel.Text Then Return
+  $hLabel.Text = sText
+  Wait
+  
+End
+

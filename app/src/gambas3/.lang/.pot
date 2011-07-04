@@ -463,16 +463,16 @@ msgstr ""
 
 #: FColorChooser.form:60 FCommit.form:229 FConflict.class:191
 #: FConnectionEditor.class:284 FCreateFile.form:436 FDebugInfo.form:216
-#: FEditor.class:2348 FFieldChooser.form:138 FFontChooser.form:40
-#: FForm.class:2950 FGotoLine.form:23 FHelpBrowser.form:60
-#: FIconEditor.class:1413 FImportTable.class:39 FList.form:121 FMain.class:200
-#: FMakeInstall.class:327 FMenu.form:370 FNewConnection.form:244
-#: FNewTable.form:86 FNewTranslation.form:21 FOpenProject.form:160
-#: FOption.class:614 FPasteSpecial.form:77 FPasteTable.form:107
-#: FPropertyComponent.form:230 FPropertyProject.form:124
+#: FEditor.class:2348 FExportData.class:126 FFieldChooser.form:138
+#: FFontChooser.form:40 FForm.class:2950 FGotoLine.form:23
+#: FHelpBrowser.form:60 FIconEditor.class:1413 FImportTable.class:39
+#: FList.form:121 FMain.class:200 FMakeInstall.class:327 FMenu.form:370
+#: FNewConnection.form:244 FNewTable.form:86 FNewTranslation.form:21
+#: FOpenProject.form:160 FOption.class:614 FPasteSpecial.form:77
+#: FPasteTable.form:107 FPropertyComponent.form:230 FPropertyProject.form:124
 #: FReportBorderChooser.form:45 FReportBrushChooser.form:28
 #: FReportCoordChooser.form:26 FReportPaddingChooser.form:75 FSave.form:28
-#: FSaveProjectAs.form:59 FSearch.class:816 FSelectExtraFile.form:40
+#: FSaveProjectAs.form:59 FSearch.class:817 FSelectExtraFile.form:40
 #: FSelectIcon.form:87 FSnippet.form:57 FTableChooser.form:68 FText.form:41
 #: FTextEditor.class:495 FTranslate.class:636 Project.module:415
 msgid "Cancel"
@@ -747,7 +747,11 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-#: FConnectionEditor.form:435
+#: FConnectionEditor.form:432 FExportData.form:15
+msgid "Export to CSV file"
+msgstr ""
+
+#: FConnectionEditor.form:434
 msgid "Export..."
 msgstr ""
 
@@ -881,7 +885,7 @@ msgstr ""
 msgid "Select the CSV file to import"
 msgstr ""
 
-#: FConnectionEditor.class:1399
+#: FConnectionEditor.class:1399 FExportData.class:21
 msgid "CSV files"
 msgstr ""
 
@@ -1407,6 +1411,65 @@ msgstr ""
 msgid "(Declarations)"
 msgstr ""
 
+#: FExportData.form:31 FImportTable.form:98
+msgid "Delimiter character"
+msgstr ""
+
+#: FExportData.form:37 FImportTable.form:104
+msgid "Tab"
+msgstr ""
+
+#: FExportData.form:37 FImportTable.form:104
+msgid "Space"
+msgstr ""
+
+#: FExportData.form:37 FImportTable.form:104
+msgid ","
+msgstr ""
+
+#: FExportData.form:37 FImportTable.form:104
+msgid ";"
+msgstr ""
+
+#: FExportData.form:37 FImportTable.form:104
+msgid ":"
+msgstr ""
+
+#: FExportData.form:42 FImportTable.form:109
+msgid "Enclose character"
+msgstr ""
+
+#: FExportData.form:48 FImportTable.form:115
+msgid "'"
+msgstr ""
+
+#: FExportData.form:48 FImportTable.form:115
+msgid "\""
+msgstr ""
+
+#: FExportData.form:54
+msgid "Export field names"
+msgstr ""
+
+#: FExportData.form:60
+msgid "Export selected records only"
+msgstr ""
+
+#: FExportData.class:113
+msgid "Unable to export data."
+msgstr ""
+
+#: FExportData.class:126
+msgid ""
+"This file already exists.\n"
+"\n"
+"Do you want to overwrite it?"
+msgstr ""
+
+#: FExportData.class:126
+msgid "&Overwrite"
+msgstr ""
+
 #: FFieldChooser.form:38 FTableChooser.form:30
 msgid "Connection"
 msgstr ""
@@ -1834,42 +1897,6 @@ msgstr ""
 
 #: FImportTable.form:93
 msgid "Mac"
-msgstr ""
-
-#: FImportTable.form:98
-msgid "Delimiter character"
-msgstr ""
-
-#: FImportTable.form:104
-msgid "Tab"
-msgstr ""
-
-#: FImportTable.form:104
-msgid "Space"
-msgstr ""
-
-#: FImportTable.form:104
-msgid ","
-msgstr ""
-
-#: FImportTable.form:104
-msgid ";"
-msgstr ""
-
-#: FImportTable.form:104
-msgid ":"
-msgstr ""
-
-#: FImportTable.form:109
-msgid "Enclose character"
-msgstr ""
-
-#: FImportTable.form:115
-msgid "'"
-msgstr ""
-
-#: FImportTable.form:115
-msgid "\""
 msgstr ""
 
 #: FImportTable.form:121
@@ -3784,7 +3811,7 @@ msgstr ""
 msgid "Search string replaced &1 times."
 msgstr ""
 
-#: FSearch.class:816
+#: FSearch.class:817
 msgid "Do you really want to replace every string?"
 msgstr ""
 

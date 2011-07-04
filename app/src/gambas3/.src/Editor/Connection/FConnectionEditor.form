@@ -308,8 +308,7 @@
               }
               { btnExportData ToolButton
                 MoveScaled(34,0,12,4)
-                Visible = False
-                Enabled = False
+                ToolTip = ("Export to CSV file")
                 AutoResize = True
                 Text = ("Export...")
                 Picture = Picture["icon:/small/save-as"]
@@ -331,8 +330,9 @@
             { tlbData3 ToolBar
               MoveScaled(2,1,61,4)
               Separator = True
-              { btnExportData2 ToolButton
+              { btnExportRequest ToolButton
                 MoveScaled(0,0,12,4)
+                ToolTip = ("Export to CSV file")
                 AutoResize = True
                 Text = ("Export...")
                 Picture = Picture["icon:/small/save-as"]

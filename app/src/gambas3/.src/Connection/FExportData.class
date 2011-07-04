@@ -1,0 +1,146 @@
+' Gambas class file
+
+Private $hData As DataSource
+Private $hView As DataView
+Private $sDelim As String
+Private $sEscape As String
+
+Public Sub Run(hData As DataSource, hView As DataView) As Boolean
+
+  $hData = hData
+  $hView = hView
+  Return Not Me.ShowModal()
+
+End
+
+Public Sub Form_Open()
+
+  Settings.Read(Me)
+  Settings.Read(fchExport, "fchExport")
+
+  fchExport.Filter = ["*.csv", ("CSV files")]
+  fchExport.SelectedPath = Project.Config["/FExportData/Path"]
+  fchExport.SetFocus
+  
+  cmbDelim.Text = Project.Config["/FExportData/Delim", ","]
+  cmbEscape.Text = Project.Config["/FExportData/Escape", Chr$(34)]
+  chkSelection.Value = Project.Config["/FExportData/Selection", False]
+  chkName.Value = Project.Config["/FExportData/FieldNames", True]
+  
+  panOption.Reparent(fchExport.Extension)
+
+End
+
+Public Sub Form_Close()
+
+  Settings.Write(fchExport, "fchExport")
+  Settings.Write(Me)
+
+End
+
+Private Sub PrintLine(hFile As File, aData As String[])
+  
+  Dim iInd As Integer
+  
+  For iInd = 0 To aData.Max
+    If iInd Then Print #hFile, $sDelim;
+    If $sEscape Then
+      Print #hFile, $sEscape; Replace(aData[iInd], $sEscape, $sEscape & $sEscape); $sEscape;
+    Else
+      Print #hFile, aData[iInd];
+    Endif
+  Next
+  Print #hFile
+  
+End
+
+
+Private Sub DoExport(sPath As String)
+
+  Dim hWaiting As CWaitingAnimation
+  Dim iInd, iField As Integer
+  Dim hFile As File
+  Dim aField As String[]
+  Dim aValue As String[]
+  Dim bSelect As Boolean = chkSelection.Value
+  
+  hWaiting = New CWaitingAnimation(Me)
+
+  aField = $hView.Columns
+  aValue = New String[aField.Count]
+
+  If cmbDelim.Text = cmbDelim[0].Text Then
+    $sDelim = Chr$(9)
+  Else If cmbDelim.Text = cmbDelim[1].Text Then
+    $sDelim = " "
+  Else
+    $sDelim = Trim(cmbDelim.Text)
+  Endif
+  
+  $sEscape = Trim(cmbEscape.Text)
+
+  hFile = Open sPath For Create
+
+  If chkName.Value Then PrintLine(hFile, aField)
+
+  For iInd = 0 To $hData.Count - 1
+    
+    If bSelect Then
+      If Not $hView.View.Rows[iInd].Selected Then Continue
+    Endif
+    
+    $hData.MoveTo(iInd)
+    hWaiting.SetValue(iInd / $hData.Count)
+    
+    For iField = 0 To aField.Max
+      aValue[iField] = Str($hData[aField[iField]])
+    Next
+    PrintLine(hFile, aValue)
+    
+    Wait
+    
+  Next
+  
+  hWaiting.SetValue(1)
+  hFile.Close
+
+Finally
+
+  hWaiting.Stop
+  
+Catch
+  
+  Message.Error("<b>" & ("Unable to export data.") & "</b>\n\n" & Error.Text)
+
+End
+
+Public Sub fchExport_Activate()
+
+  Dim sPath As String = fchExport.SelectedPath
+
+  If Not sPath Then Return
+  
+  If File.Ext(sPath) = "" Then sPath = File.SetExt(sPath, "csv")
+  
+  If Exist(sPath) Then 
+    If Message.Warning(("This file already exists.\n\nDo you want to overwrite it?"), ("&Overwrite"), ("Cancel")) = 2 Then Return
+  Endif 
+
+  DoExport(sPath)
+
+  Project.Config["/FExportData/FieldNames"] = CBool(chkName.Value)
+  Project.Config["/FExportData/Selection"] = CBool(chkSelection.Value)
+  Project.Config["/FImportTable/Path"] = fchExport.SelectedPath
+  Project.Config["/FImportTable/Delim"] = cmbDelim.Text 
+  Project.Config["/FImportTable/Escape"] = cmbEscape.Text 
+
+  Me.Close(True)
+
+End
+
+Public Sub fchExport_Cancel()
+
+  Me.Close
+
+End
+

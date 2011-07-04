@@ -260,7 +260,7 @@ Public Sub ReadConfig()
   
   edtRequest.ReadConfig
   iGrade = - Settings["/TabStripFont", 0]
-  For Each hCtrl In [panToolBar, tabTable, tlbData, tlbData2, tlbData3, tlbField, tbvField, tlbIndex, tbvIndex, dvwData]
+  For Each hCtrl In [panToolBar, tabTable, tlbData, tlbData2, tlbData3, tlbField, tbvField, tlbIndex, tbvIndex, dvwData, dvwRequest]
     hCtrl.Font.Grade = iGrade
   Next
   lvwTable.Font.Grade = - Settings["/GlobalFont", 0]
@@ -1475,12 +1475,6 @@ Public Sub edtRequest_GotFocus()
 
 End
 
-Public Sub btnExportData_Click()
-
-  
-
-End
-
 Public Sub btnAddData_Click()
 
   dvwData.Create
@@ -1522,5 +1516,17 @@ Public Sub btnPasteTable_Click()
   If FPasteTable.Run(hForm, aData[1], Me) Then Return
   
   LoadList(FPasteTable.DestTable)
+
+End
+
+Public Sub btnExportData_Click()
+
+  If datData.Count Then FExportData.Run(datData, dvwData)
+
+End
+
+Public Sub btnExportRequest_Click()
+
+  If datRequest.Count Then FExportData.Run(datRequest, dvwRequest)
 
 End
