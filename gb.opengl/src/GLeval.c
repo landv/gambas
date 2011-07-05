@@ -65,6 +65,19 @@ BEGIN_METHOD(GLEVALCOORD2F, GB_FLOAT u; GB_FLOAT v)
 
 END_METHOD
 
+BEGIN_METHOD(GLEVALCOORD2FV, GB_OBJECT array)
+
+	GB_ARRAY fArray = (GB_ARRAY) VARG(array);
+	int count = GB.Array.Count(fArray);
+	GLdouble params[2];	
+
+	params[0] = count>0 ? *((double *)GB.Array.Get(fArray,0)) : 0;  
+	params[1] = count>1 ? *((double *)GB.Array.Get(fArray,1)) : 0;  
+	
+	glEvalCoord2dv(params);	
+
+END_METHOD
+
 BEGIN_METHOD(GLMAPGRID1F, GB_INTEGER un; GB_FLOAT u1; GB_FLOAT u2)
 
 	glMapGrid1d(VARG(un), VARG(u1), VARG(u2));

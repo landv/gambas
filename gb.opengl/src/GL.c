@@ -247,6 +247,7 @@ GB_DESC Cgl[] =
 	GB_STATIC_METHOD("Map2f", NULL, GLMAP2F, "(Target)i(U1)f(U2)f(Ustride)i(Uorder)i(V1)f(V2)f(Vstride)i(Vorder)i(Points)Float[]"),	
 	GB_STATIC_METHOD("EvalCoord1f", NULL, GLEVALCOORD1F, "(U)f"),
 	GB_STATIC_METHOD("EvalCoord2f", NULL, GLEVALCOORD2F, "(U)f(V)f"),
+	GB_STATIC_METHOD("EvalCoord2fv", NULL, GLEVALCOORD2FV, "(Coords)Float[]"),
 	GB_STATIC_METHOD("MapGrid1f", NULL, GLMAPGRID1F, "(Un)i(U)f(V)f"),	
 	GB_STATIC_METHOD("MapGrid2f", NULL, GLMAPGRID2F, "(Un)i(U1)f(U2)f(Vn)i(V1)f(V2)f"),	
 	GB_STATIC_METHOD("EvalPoint1", NULL, GLEVALPOINT1, "(I)i"),	
