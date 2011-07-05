@@ -29,12 +29,17 @@ dnl   [GB_FIND(libSDL_ttf.$SHLIBEXT libGLEW.$SHLIBEXT, /usr /usr/X11R6 /usr/loca
 dnl   [$X_LIBS -lSDL_ttf -lGLEW],
 dnl   [$SDL_CFLAGS])
 
-GB_COMPONENT_PKG_CONFIG(
+GB_COMPONENT_SEARCH(
    sdl,
    SDL,
    [SDL],
    [src],
-   sdl "> 1.2.8" SDL_ttf glew xcursor)
+   sdl "> 1.2.8" SDL_ttf glew xcursor,
+   [GB_FIND(GL/glew.h SDL_ttf.h X11/Xcursor/Xcursor.h, /usr /usr/local `sdl-config --prefix`, include include/SDL)],
+   [GB_FIND(libSDL_ttf.$SHLIBEXT libGLEW.$SHLIBEXT libXcursor.$SHLIBEXT, /usr /usr/local `sdl-config --prefix`, lib)],
+   [$X_LIBS -lSDL_ttf -lGLEW],
+   [$SDL_CFLAGS]
+)
 
 AC_OUTPUT( \
 Makefile \
