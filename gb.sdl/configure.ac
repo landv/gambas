@@ -37,7 +37,7 @@ GB_COMPONENT_SEARCH(
    sdl "> 1.2.8" SDL_ttf glew xcursor,
    [GB_FIND(GL/glew.h SDL_ttf.h X11/Xcursor/Xcursor.h, /usr /usr/local `sdl-config --prefix`, include include/SDL)],
    [GB_FIND(libSDL_ttf.$SHLIBEXT libGLEW.$SHLIBEXT libXcursor.$SHLIBEXT, /usr /usr/local `sdl-config --prefix`, lib)],
-   [$X_LIBS -lSDL_ttf -lGLEW],
+   [$X_LIBS -lSDL_ttf -lGLEW -lXcursor],
    [$SDL_CFLAGS]
 )
 
