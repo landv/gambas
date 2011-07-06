@@ -26,7 +26,7 @@ dnl   [SDL],
 dnl   [src],
 dnl   [GB_FIND(SDL_opengl.h SDL.h SDL_ttf.h, `sdl-config --prefix`, include/SDL)],
 dnl   [GB_FIND(libSDL_ttf.$SHLIBEXT libGLEW.$SHLIBEXT, /usr /usr/X11R6 /usr/local `sdl-config --prefix`, lib)],
-dnl   [$X_LIBS -lSDL_ttf -lGLEW],
+dnl   [$X_LIBS -lSDL_ttf -lGLEW -lXcursor],
 dnl   [$SDL_CFLAGS])
 
 GB_COMPONENT_SEARCH(
