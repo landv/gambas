@@ -38,6 +38,7 @@ Private $hObserver As Observer
 Private $iScroll As Integer = Scroll.Both
 Private $iBackground As Integer = Color.Default
 Private $bBorder As Boolean 
+Private $bPainted As Boolean
 
 Private $W As Integer
 Private $H As Integer
@@ -221,7 +222,9 @@ Public Sub DrawingArea_Draw()
   
   If hClip Then
     Draw.Clip(hClip.X, hClip.Y, hClip.W, hClip.H)
+    If $bPainted Then Paint.Begin($hDrawingArea)
     Raise Draw
+    If $bPainted Then Paint.End($hDrawingArea)
     Draw.Clip.Enabled = False
   Endif
   
@@ -267,13 +270,13 @@ End
 
 Private Function Painted_Read() As Boolean
 
-  Return $hDrawingArea.Painted
+  Return $bPainted
 
 End
 
 Private Sub Painted_Write(Value As Boolean)
 
-  $hDrawingArea.Painted = Value
+  $bPainted = Value
 
 End
 

@@ -12,6 +12,7 @@ Property Filter As String
 Property Read Modified As Boolean
 Property Read Current As Variant[]
 Property Read Index As Integer
+Property Read Count As Integer
 Property ReadOnly As Boolean
 Property Sort As String
 'Property CacheSize As Integer
@@ -54,10 +55,7 @@ End
 Private Sub IsMultiContainer(hCont As Container) As Boolean
   
   Dim hObj As Object = hCont
-  Dim iCount As Integer
-  
-  Try iCount = hObj.Count
-  Return Not Error 
+  Try Return hObj._MultiContainer
   
 End
 
@@ -725,5 +723,11 @@ Private Sub Connection_Write(Value As Connection)
 
   $DB = Value
   _OnDatabaseChange()
+
+End
+
+Private Function Count_Read() As Integer
+
+  If $hTable Then Return $hTable.Count
 
 End

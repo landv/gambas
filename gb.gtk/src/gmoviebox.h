@@ -30,26 +30,22 @@ public:
 	~gMovieBox();
 
 //"Properties"
-	long foreground();
-	long background();
 	int getBorder() { return getFrameBorder(); }
 	bool playing();
+	int alignment();
 
-	void setForeground(long vl);
-	void setBackground(long vl);
 	void setBorder(int vl) { setFrameBorder(vl); }
 	void setPlaying(bool vl);
+	void setAlignment(int vl);
 
 //"Methods"
-	bool loadMovie(char *buf,long len);
+	bool loadMovie(char *buf, int len);
 
 //"Private"
 	bool pl;
 	guint timeout;
 	GdkPixbufAnimation *animation;
 	GdkPixbufAnimationIter *iter;
-
-
 };
 
 #endif

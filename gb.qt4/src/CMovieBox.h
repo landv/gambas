@@ -31,6 +31,8 @@
 #include <QMovie>
 #include <QBuffer>
 
+#include "CWidget.h"
+
 #ifndef __CMOVIEBOX_CPP
 extern GB_DESC CMovieBoxDesc[];
 #else

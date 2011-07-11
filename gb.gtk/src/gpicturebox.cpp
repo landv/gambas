@@ -32,6 +32,7 @@
 gMovieBox
 
 *****************************************************************************************/
+
 gMovieBox::gMovieBox(gContainer *parent) : gControl(parent)
 {	
 	g_typ=Type_gMovieBox;
@@ -43,6 +44,8 @@ gMovieBox::gMovieBox(gContainer *parent) : gControl(parent)
 	border = gtk_event_box_new();
 	widget = gtk_image_new();
 	realize(true);
+
+	setAlignment(ALIGN_TOP_LEFT);
 }
 
 gMovieBox::~gMovieBox()
@@ -53,29 +56,6 @@ gMovieBox::~gMovieBox()
     g_object_unref(G_OBJECT(animation));  
 }
 
-long gMovieBox::background()
-{
-	return get_gdk_bg_color(border);
-}
-
-void gMovieBox::setBackground(long color)
-{
-	set_gdk_bg_color(border,color);	
-	if (!border->window) gtk_widget_realize(border);
-	gdk_window_process_updates(border->window,true);
-}
-
-long gMovieBox::foreground()
-{
-	return get_gdk_fg_color(widget);
-}
-
-void gMovieBox::setForeground(long color)
-{	
-	set_gdk_fg_color(widget,color);
-	if (!border->window) gtk_widget_realize(border);
-	gdk_window_process_updates(border->window,true);
-}
 
 /*int gMovieBox::getBorder()
 {
@@ -111,7 +91,7 @@ void gMovieBox::setPlaying(bool vl)
 {
 	GTimeVal tim;
 	GdkPixbuf *buf;
-	long interval;
+	int interval;
 	
 	if (vl)
 	{
@@ -138,7 +118,7 @@ void gMovieBox::setPlaying(bool vl)
 	}
 }
 
-bool gMovieBox::loadMovie(char *buf,long len)
+bool gMovieBox::loadMovie(char *buf, int len)
 {
 	GdkPixbufLoader* loader;
 	bool bplay;
@@ -162,6 +142,20 @@ bool gMovieBox::loadMovie(char *buf,long len)
 	setPlaying(bplay);
 	return true;
 }
+
+int gMovieBox::alignment()
+{
+	gfloat x, y;
+	
+	gtk_misc_get_alignment(GTK_MISC(widget), &x, &y);
+	return gt_to_alignment(x, y);
+}
+
+void gMovieBox::setAlignment(int al)
+{
+	gtk_misc_set_alignment(GTK_MISC(widget), gt_from_alignment(al, false), gt_from_alignment(al, true));
+}
+
 
 
 /****************************************************************************************
@@ -195,31 +189,6 @@ gPictureBox::~gPictureBox()
   setPicture(NULL);
 }
 
-long gPictureBox::background()
-{
-	return get_gdk_bg_color(border);
-}
-
-void gPictureBox::setBackground(long color)
-{
-	set_gdk_bg_color(border,color);	
-	if (!border->window) gtk_widget_realize(border);
-	gdk_window_process_updates(border->window,true);
-}
-
-long gPictureBox::foreground()
-{
-	return get_gdk_fg_color(widget);
-}
-
-void gPictureBox::setForeground(long color)
-{	
-	set_gdk_fg_color(widget,color);
-	if (!border->window) gtk_widget_realize(border);
-	gdk_window_process_updates(border->window,true);
-}
-
-
 void gPictureBox::setPicture(gPicture *pic)
 {
   gPicture::assign(&_picture, pic);
@@ -239,46 +208,15 @@ void gPictureBox::setBorder(int vl)
 
 int gPictureBox::alignment()
 {
-	gfloat x,y;
-	int retval=0;
+	gfloat x, y;
 	
-	gtk_misc_get_alignment (GTK_MISC(widget),&x,&y);
-
-	if (!x) retval+=1; 
-	else if (x==1) retval+=2; 
-	
-	if (!y) retval+=16; 
-	else if (y==1) retval+=32;
-	else retval+=64;
-	
-	
-	return retval;
+	gtk_misc_get_alignment(GTK_MISC(widget), &x, &y);
+	return gt_to_alignment(x, y);
 }
 
 void gPictureBox::setAlignment(int al)
 {
-	gfloat x,y,xn;
-		
-	xn = gtk_widget_get_default_direction() == GTK_TEXT_DIR_RTL ? 1 : 0;
-	
-	switch (al)
-	{
-		case ALIGN_BOTTOM: 	y=1; 	x=0.5; break;
-		case ALIGN_BOTTOM_LEFT: 	y=1; 	x=0; break;
-		case ALIGN_BOTTOM_NORMAL: y=1; 	x=xn; break;
-		case ALIGN_BOTTOM_RIGHT: 	y=1; 	x=1; break;
-		case ALIGN_CENTER: 	y=0.5; 	x=0.5; break;
-		case ALIGN_LEFT: 	y=0.5; 	x=0; break;
-		case ALIGN_NORMAL: 	y=0.5;  x=xn; break;
-		case ALIGN_RIGHT: 	y=0.5; 	x=1; break;
-		case ALIGN_TOP: 		y=0; 	x=0.5; break;
-		case ALIGN_TOP_LEFT: 	y=0; 	x=0; break;
-		case ALIGN_TOP_NORMAL: 	y=0; 	x=xn; break;
-		case ALIGN_TOP_RIGHT: 	y=0; 	x=1; break;
-		default: return;
-	}
-	
-	gtk_misc_set_alignment(GTK_MISC(widget),x,y);
+	gtk_misc_set_alignment(GTK_MISC(widget), gt_from_alignment(al, false), gt_from_alignment(al, true));
 }
 
 bool gPictureBox::stretch()
@@ -297,7 +235,7 @@ void gPictureBox::setStretch(bool vl)
 	redraw();
 }
 
-void gPictureBox::resize(long w,long h)
+void gPictureBox::resize(int w, int h)
 {
 	gControl::resize(w,h);
 	if ( stretch() ) redraw();

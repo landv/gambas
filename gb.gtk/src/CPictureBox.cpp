@@ -102,13 +102,12 @@ BEGIN_PROPERTY(CPICTUREBOX_auto_resize)
 
 END_PROPERTY
 
-
-
 BEGIN_PROPERTY(CPICTUREBOX_alignment)
 
-	if (READ_PROPERTY) { GB.ReturnInteger(PBOX->alignment()); return; }
-	PBOX->setAlignment(VPROP(GB_INTEGER));
-
+	if (READ_PROPERTY)
+		GB.ReturnInteger(PBOX->alignment());
+	else
+		PBOX->setAlignment(VPROP(GB_INTEGER));
 
 END_PROPERTY
 
@@ -126,6 +125,7 @@ MovieBox
 
 
 ***********************************************************************************/
+
 BEGIN_METHOD(CMOVIEBOX_new, GB_OBJECT parent)
 
 	InitControl(new gMovieBox(CONTAINER(VARG(parent))),(CWIDGET*)MTHIS);
@@ -191,8 +191,17 @@ BEGIN_METHOD_VOID(CMOVIEBOX_rewind)
 		MBOX->setPlaying(true);
 	}
 
-
 END_METHOD
+
+BEGIN_PROPERTY(MovieBox_Alignment)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(MBOX->alignment());
+	else
+		MBOX->setAlignment(VPROP(GB_INTEGER));
+
+END_PROPERTY
+
 
 
 GB_DESC CPictureBoxDesc[] =
@@ -226,6 +235,7 @@ GB_DESC CMovieBoxDesc[] =
   GB_PROPERTY("Path", "s", CMOVIEBOX_path),
   GB_PROPERTY("Playing", "b", CMOVIEBOX_playing),
   GB_PROPERTY("Border", "i", CMOVIEBOX_border),
+  GB_PROPERTY("Alignment", "i", MovieBox_Alignment),
 
 	MOVIEBOX_DESCRIPTION,
 

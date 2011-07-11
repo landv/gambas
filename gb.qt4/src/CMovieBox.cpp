@@ -30,7 +30,7 @@
 //Added by qt3to4:
 #include <QLabel>
 
-#include "CWidget.h"
+#include "CConst.h"
 #include "CMovieBox.h"
 
 
@@ -87,6 +87,8 @@ BEGIN_METHOD(CMOVIEBOX_new, GB_OBJECT parent)
   QLabel *wid = new QLabel(QCONTAINER(VARG(parent)));
 
   CWIDGET_new(wid, _object);
+
+  wid->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
 END_METHOD
 
@@ -145,6 +147,15 @@ BEGIN_METHOD_VOID(CMOVIEBOX_rewind)
 
 END_METHOD
 
+BEGIN_PROPERTY(MovieBox_Alignment)
+
+  if (READ_PROPERTY)
+    GB.ReturnInteger(CCONST_alignment(WIDGET->alignment() & ALIGN_MASK, ALIGN_NORMAL, false));
+  else
+    WIDGET->setAlignment((Qt::Alignment)CCONST_alignment(VPROP(GB_INTEGER), ALIGN_NORMAL, true));
+
+END_PROPERTY
+
 
 GB_DESC CMovieBoxDesc[] =
 {
@@ -157,6 +168,7 @@ GB_DESC CMovieBoxDesc[] =
   GB_PROPERTY("Playing", "b", CMOVIEBOX_playing),
   //GB_PROPERTY("Alignment", "i<Align>", CMOVIEBOX_alignment),
   GB_PROPERTY("Border", "i", CWIDGET_border_full),
+  GB_PROPERTY("Alignment", "i", MovieBox_Alignment),
   
   GB_METHOD("Rewind", NULL, CMOVIEBOX_rewind, NULL),
 
