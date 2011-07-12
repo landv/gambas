@@ -264,8 +264,7 @@ int libsmtp_dialogue (struct libsmtp_session_struct *libsmtp_session)
 		printf ("DEBUG:List length: %d!\n", g_list_length (libsmtp_session->To));
 	#endif
 
-	if ((libsmtp_session->From->len < 1) || (libsmtp_session->Subject->len < 1) \
-			|| (g_list_length (libsmtp_session->To) <1 ))
+	if (libsmtp_session->From->len < 1 || g_list_length(libsmtp_session->To) < 1)
 	{
 		libsmtp_session->ErrorCode = LIBSMTP_BADARGS;
 		return LIBSMTP_BADARGS;

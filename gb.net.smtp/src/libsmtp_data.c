@@ -151,17 +151,16 @@ int libsmtp_free (struct libsmtp_session_struct *libsmtp_session)
    just sets subject and sender address. SSL and auth stuff should be set
    here in the future. */
 
-int libsmtp_set_environment (char *libsmtp_int_From, char *libsmtp_int_Subject,\
-      unsigned int libsmtp_int_flags, struct libsmtp_session_struct *libsmtp_session)
+int libsmtp_set_environment (char *from, char *subject, unsigned int flags, struct libsmtp_session_struct *session)
 {
-  if ((!strlen (libsmtp_int_From)) || (!strlen (libsmtp_int_Subject)))
+  /*if ((!strlen (libsmtp_int_From)) || (!strlen (libsmtp_int_Subject)))
   {
     libsmtp_session->ErrorCode = LIBSMTP_BADARGS;
     return LIBSMTP_BADARGS;
-  }
+  }*/
 
-  g_string_assign (libsmtp_session->From, libsmtp_int_From);
-  g_string_assign (libsmtp_session->Subject, libsmtp_int_Subject);
+  if (from) g_string_assign(session->From, from);
+  if (subject) g_string_assign(session->Subject, subject);
 
   return LIBSMTP_NOERR;
 }
