@@ -14,6 +14,8 @@ Property Encrypt As Integer
 Private $iCrypt As Integer
 Private $hProcess As Process
 
+Static Private $sOpenSSLPath As String
+
 Private Function Encrypt_Read() As Integer
 
   Return $iCrypt
@@ -32,6 +34,22 @@ Public Sub _new()
   
 End
 
+Private Sub GetOpenSSLPath() As String
+
+  If Not $sOpenSSLPath Then
+    If Exist("/usr/bin/openssl") Then
+      $sOpenSSLPath = "/usr/bin/openssl"
+    Else If Exist("/bin/openssl") Then
+      $sOpenSSLPath = "/bin/openssl"
+    Else
+      Error.Raise("Unable to find openssl")
+    Endif
+  Endif
+  
+  Return $sOpenSSLPath
+
+End
+
 Public Sub Send()
   
   Dim bDefaultPort As Boolean
@@ -41,11 +59,11 @@ Public Sub Send()
   
   If $iCrypt = Net.SSL Then
     If bDefaultPort Then Super.Port = 465
-    $hProcess = Exec ["openssl", "s_client", "-quiet", "-connect", Super.Host & ":" & Super.Port] For Read Write As "Process"
+    $hProcess = Exec [GetOpenSSLPath(), "s_client", "-quiet", "-connect", Super.Host & ":" & Super.Port] For Read Write As "Process"
     Super._NoGreeting = False
     Super._Stream = $hProcess
   Else If $iCrypt = Net.TLS Then
-    $hProcess = Exec ["openssl", "s_client", "-quiet", "-starttls", "smtp", "-connect", Super.Host & ":" & Super.Port] For Read Write As "Process"
+    $hProcess = Exec [GetOpenSSLPath(), "s_client", "-quiet", "-starttls", "smtp", "-connect", Super.Host & ":" & Super.Port] For Read Write As "Process"
     Super._NoGreeting = True
     Super._Stream = $hProcess
   Else
