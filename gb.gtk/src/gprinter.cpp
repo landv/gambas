@@ -65,7 +65,7 @@ static void cb_begin(GtkPrintOperation *operation, GtkPrintContext *context, gPr
 static void cb_end(GtkPrintOperation *operation, GtkPrintContext *context, gPrinter *printer)
 {
 	#if DEBUG_ME
-	fprintf(stderr, "cb_end\n");
+	fprintf(stderr, "cb_end: %d\n", printer->_preview);
 	#endif
 	if (printer->_preview && printer->onEnd)
 		(*printer->onEnd)(printer);
@@ -215,6 +215,7 @@ bool gPrinter::run(bool configure)
 	}
 	else
 	{
+		_preview = true;
 		g_signal_connect(operation, "begin_print", G_CALLBACK(cb_begin), this);
 		g_signal_connect(operation, "end_print", G_CALLBACK(cb_end), this);
 		g_signal_connect(operation, "paginate", G_CALLBACK(cb_paginate), this);
