@@ -695,15 +695,18 @@ _PUSH_ME:
 
 	if (UNLIKELY(GET_UX() & 1))
 	{
-		if (DEBUG_info->op)
+		if (DEBUG_info)
 		{
-			SP->_object.class = DEBUG_info->cp;
-			SP->_object.object = DEBUG_info->op;
-		}
-		else if (DEBUG_info->cp)
-		{
-			SP->type = T_CLASS;
-			SP->_class.class = DEBUG_info->cp;
+			if (DEBUG_info->op)
+			{
+				SP->_object.class = DEBUG_info->cp;
+				SP->_object.object = DEBUG_info->op;
+			}
+			else if (DEBUG_info->cp)
+			{
+				SP->type = T_CLASS;
+				SP->_class.class = DEBUG_info->cp;
+			}
 		}
 		else
 			SP->type = T_NULL;

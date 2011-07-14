@@ -113,7 +113,7 @@ void DEBUG_init(void)
   LIBRARY_get_interface_by_name("gb.debug", DEBUG_INTERFACE_VERSION, &DEBUG);
 
   DEBUG_info = DEBUG.Init((GB_DEBUG_INTERFACE *)(void *)GAMBAS_DebugApi, EXEC_fifo, EXEC_fifo_name);
-
+	
   if (!DEBUG_info)
   	ERROR_panic("Cannot initializing debug mode");
 }
