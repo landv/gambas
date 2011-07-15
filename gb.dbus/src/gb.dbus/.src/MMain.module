@@ -27,13 +27,11 @@ Public Sub Main()
   Dim cInts As Collection = ["image_path": "/usr/share/icons/gnome/48x48/actions/add.png"]
   DBus["org.freedesktop.Notifications"]["/org/freedesktop/Notifications"].Notify("MyApp", 0, "", "PoissonTChat", "Fabien: Chu la ! <a href=\"http://gambaslinux.forumactif.net\">ici</a>", ["test"], cInts, 1000)
   
-  Debug DBus.Session.Applications.Join("\n")
+  'Debug DBus.Session.Applications.Join("\n")
   
   DBus.Debug = True
   DBus.Session.Register(CTest, "/Test")
   
-  'DBus["org.kde.kmail"]["/kmail/kmail_mainwindow_1"].geometry = [0, 24, 1024, 768]
-  'Print DBus["org.gambas.gb.dbus"]["/Test"].Compute(5, 7)  
   
   'aVal = DBus["org.freedesktop.Notifications"]["/org/freedesktop/Notifications"].GetServerInformation()
   'Print aVal[0];; aVal[1];; aVal[2]

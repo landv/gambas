@@ -268,7 +268,7 @@ _POP_UNKNOWN_PROPERTY:
 	if (!SP->_boolean.value)
 		THROW(E_NPROPERTY, class->name, name);
 		
-	EXEC_unknown_name = CP->load->unknown[PC[1]];
+	EXEC_unknown_name = name;
 
 	*SP = SP[-2];
 	PUSH();

@@ -7,6 +7,7 @@ Private $sName As String
 Private $cCache As New Collection
 Private $sKey As String
 Private $iIndex As Integer
+Private $hObject As DBusProxy
 
 Property Read Connection As DBusConnection
 Property Read Name As String
@@ -73,7 +74,7 @@ Public Sub _unknown(...) As Variant
   
   Dim aArg As Variant[]
   Dim iInd As Integer
-  Dim hObject As DBusProxy = _get(Replace($sName, "/", "."))
+  Dim hObject As DBusProxy = $hObject
   
   If Param.Count Then
     aArg = New Variant[Param.Count]
@@ -82,7 +83,16 @@ Public Sub _unknown(...) As Variant
     Next
   Endif
   
-  Return hObject._Invoke(Param.Name, Param.Property, aArg)
+  $hObject = Null
+  Return hObject._Invoke(Param.Name, aArg)
   
 End
+
+Public Sub _property() As Boolean
+  
+  $hObject = _get(Replace($sName, "/", "."))
+  Return $hObject._property()
+  
+End
+
 

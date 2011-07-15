@@ -6,8 +6,11 @@ Create Static
 
 Property Enabled As Boolean
 
+Private $bEnabled As Boolean = True
+
 Public Sub Compute(Value1 As Float, Value2 As Float) As Float
   
+  If Not $bEnabled Then Error.Raise("Disabled")
   Return Value1 + Value2
   
 End
@@ -23,12 +26,12 @@ End
 
 Private Function Enabled_Read() As Boolean
 
-  
+  Return $bEnabled
 
 End
 
 Private Sub Enabled_Write(Value As Boolean)
 
-  
+  $bEnabled = Value
 
 End

@@ -719,19 +719,29 @@ bool DBUS_call_method(DBusConnection *connection, const char *application, const
 	
 	ret = TRUE;
 	
-	dbus_message_set_auto_start (message, TRUE);
+	dbus_message_set_auto_start(message, TRUE);
 
 	if (define_arguments(message, signature_in, arguments))
 		goto __RETURN;
 	
-	dbus_error_init(&error);
-	reply = dbus_connection_send_with_reply_and_block(connection, message, -1, &error);
-	check_message(connection);
-
-	if (dbus_error_is_set(&error))
+	if (!signature_out || !*signature_out)
 	{
-		GB.Error("&1: &2", error.name, error.message);
-		goto __RETURN;
+		dbus_connection_send(connection, message, NULL);
+		dbus_connection_flush(connection);
+		reply = NULL;
+		ret = FALSE;
+	}
+	else
+	{
+		dbus_error_init(&error);
+		reply = dbus_connection_send_with_reply_and_block(connection, message, -1, &error);
+		check_message(connection);
+
+		if (dbus_error_is_set(&error))
+		{
+			GB.Error("&1: &2", error.name, error.message);
+			goto __RETURN;
+		}
 	}
 
 	if (!reply)

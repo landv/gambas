@@ -34,19 +34,53 @@ Public Sub _new(Application As DBusApplication, ObjectPath As String, Optional I
   
 End
 
-Private Sub GetMethodSignature(sMethod As String) As String
+Private Sub GetSignature(sSymbol As String) As String
   
   Dim sFind As String
   Dim iPos, iPos2, iEnd As Integer
   Dim sSignIn, sSignOut As String
   Dim sDir, sType As String
+  Dim sAccess As String
   
-  sSignIn = $cSignature[sMethod]
+  sSignIn = $cSignature[sSymbol]
   If sSignIn Then Return sSignIn
   
-  sFind = "<method name=\"" & sMethod & "\""
+  sFind = "<property name=\"" & sSymbol & "\""
   iPos = InStr($sIntrospection, sFind, 1, gb.IgnoreCase)
-  If iPos = 0 Then Error.Raise("Unknown method")
+  If iPos = 0 Then Goto METHOD
+    
+  iPos += Len(sFind)
+  If Not $sInterface Then
+    If InStr($sIntrospection, sFind, iPos, gb.IgnoreCase) Then Error.Raise("Ambiguous property")
+  Endif
+
+  iPos2 = InStr($sIntrospection, ">", iPos + 1)
+  Try sType = Scan(Mid$($sIntrospection, iPos, iPos2 - iPos), "*type=\"*\"*")[1]
+  If Error Then Error.Raise("Unknown property")
+      
+  Try sAccess = Scan(Mid$($sIntrospection, iPos, iPos2 - iPos), "*access=\"*\"*")[1]
+  If Error Then Error.Raise("Malformed property")
+  
+  If sAccess = "read" Then
+    sType &= ":r"
+  Else If sAccess = "write" Then
+    sType &= ":w"
+  Else If sAccess = "readwrite" Then
+    sType &= ":rw"
+  Else
+    Error.Raise("Malformed property")
+  Endif
+    
+  sType = "P:" & sType
+  $cSignature[sSymbol] = sType
+  Return sType
+
+METHOD:
+
+  sFind = "<method name=\"" & sSymbol & "\""
+  iPos = InStr($sIntrospection, sFind, 1, gb.IgnoreCase)
+  If iPos = 0 Then Error.Raise("Unknown symbol")
+  
   iPos += Len(sFind)
   If Not $sInterface Then
     If InStr($sIntrospection, sFind, iPos, gb.IgnoreCase) Then Error.Raise("Ambiguous method")
@@ -78,72 +112,40 @@ Private Sub GetMethodSignature(sMethod As String) As String
     
   Endif
   
-  sSignIn &= ":" & sSignOut
-  $cSignature[sMethod] = sSignIn
+  sSignIn = "M:" & sSignIn & ":" & sSignOut
+  $cSignature[sSymbol] = sSignIn
   Return sSignIn
   
 End
 
-Private Sub GetPropertySignature(sProperty As String) As String
-  
-  Dim sFind As String
-  Dim iPos, iPos2, iEnd As Integer
-  Dim sSignIn, sSignOut As String
-  Dim sAccess, sType As String
-  
-  sType = $cSignature[":" & sProperty]
-  If sType Then Return sType
-  
-  sFind = "<property name=\"" & sProperty & "\""
-  iPos = InStr($sIntrospection, sFind, 1, gb.IgnoreCase)
-  If iPos = 0 Then Error.Raise("Unknown property")
-  iPos += Len(sFind)
-  If Not $sInterface Then
-    If InStr($sIntrospection, sFind, iPos, gb.IgnoreCase) Then Error.Raise("Ambiguous property")
-  Endif
-
-  iPos2 = InStr($sIntrospection, ">", iPos + 1)
-  Try sType = Scan(Mid$($sIntrospection, iPos, iPos2 - iPos), "*type=\"*\"*")[1]
-  If Error Then Error.Raise("Unknown property")
-      
-  Try sAccess = Scan(Mid$($sIntrospection, iPos, iPos2 - iPos), "*access=\"*\"*")[1]
-  If Error Then Error.Raise("Malformed property")
-  
-  If sAccess = "read" Then
-    sType &= ":r"
-  Else If sAccess = "write" Then
-    sType &= ":w"
-  Else If sAccess = "readwrite" Then
-    sType &= ":rw"
-  Else
-    Error.Raise("Malformed property")
-  Endif
-  
-  $cSignature[":" & sProperty] = sType
-  Return sType
-  
-End
-
-Public Sub _Invoke(sName As String, bProperty As Boolean, aArg As Variant[]) As Variant
+Public Sub _Invoke(sName As String, aArg As Variant[]) As Variant
   
   Dim aSign As String[]
   Dim hApp As DBusApplication
   Dim iInd As Integer
   Dim vVal As Variant
+  Dim sSign As String
+  Dim bProperty As Boolean
   
   hApp = DBus._ApplicationCache[$hAppIndex]
-    
+  
+  sSign = GetSignature(sName)
+  bProperty = Left(sSign, 2) = "P:"
+  sSign = Mid$(sSign, 3)
+  
+  aSign = Split(sSign, ":")
+  
   If bProperty Then 'Error.Raise("Unknown property")
   
-    aSign = Split(GetPropertySignature(sName), ":")
-    
     If IsNull(aArg) Or If aArg.Count = 0 Then
+      Debug "read property " & sName
       If InStr(aSign[1], "r") = 0 Then Error.Raise("Write-only property")
       aArg = New Variant[2]
       aArg[0] = $sInterface
       aArg[1] = sName
       Return hApp.Connection._CallMethod(hApp.Name, $sObjectPath, "org.freedesktop.DBus.Properties", "Get", "ss", "v", aArg)
     Else
+      Debug "write property " & sName
       If InStr(aSign[1], "w") = 0 Then Error.Raise("Read-only property")
       vVal = aArg[0]
       aArg = New Variant[3]
@@ -155,7 +157,6 @@ Public Sub _Invoke(sName As String, bProperty As Boolean, aArg As Variant[]) As 
   
   Else
   
-    aSign = Split(GetMethodSignature(sName), ":")
     'Print GetSignature(Param.Name)
     Return hApp.Connection._CallMethod(hApp.Name, $sObjectPath, $sInterface, Param.Name, aSign[0], aSign[1], aArg)
     
@@ -175,9 +176,18 @@ Public Sub _unknown(...) As Variant
     Next
   Endif
   
-  Return _Invoke(Param.Name, Param.Property, aArg)
+  Return _Invoke(Param.Name, aArg)
   
 End
+
+Public Sub _property() As Boolean
+  
+  'Return True
+  'Debug Param.Name;; GetSignature(Param.Name)
+  Return Left(GetSignature(Param.Name)) = "P"
+  
+End
+
 
 ' We do not use the cached introspection, because new objects may have appeared.
 ' But new interfaces or new methods are unlikely.
