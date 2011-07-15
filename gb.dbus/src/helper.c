@@ -990,12 +990,26 @@ static DBusHandlerResult filter_func(DBusConnection *connection, DBusMessage *me
   return DBUS_HANDLER_RESULT_HANDLED;
 }
 
+static bool get_socket(DBusConnection *connection, int *socket)
+{
+	if (!dbus_connection_get_socket(connection, socket))
+	{
+		GB.Error("Unable to get DBus connection socket");
+		return TRUE;
+	}
+	else
+		return FALSE;
+}
+
 bool DBUS_register(DBusConnection *connection, const char *name, bool unique)
 {
 	DBusError error;
 	int ret, socket;
 
-	if (!dbus_connection_get_socket(connection, &socket) || !dbus_connection_add_filter(connection, filter_func, NULL, NULL))
+	if (get_socket(connection, &socket))
+		return TRUE;
+	
+	if (!dbus_connection_add_filter(connection, filter_func, NULL, NULL))
 	{
 		GB.Error("Unable to watch the DBus connection");
 		return TRUE;
@@ -1007,7 +1021,7 @@ bool DBUS_register(DBusConnection *connection, const char *name, bool unique)
 
 	if (dbus_error_is_set(&error))
 	{
-		GB.Error("Unable to register application");
+		GB.Error("Unable to register application name");
 		return TRUE;
 	}
 
@@ -1024,8 +1038,30 @@ bool DBUS_register(DBusConnection *connection, const char *name, bool unique)
 	check_message(connection);
 		
 	return FALSE;
-	
 }
+
+bool DBUS_unregister(DBusConnection *connection, const char *name)
+{
+	DBusError error;
+	int ret, socket;
+	
+	dbus_error_init(&error);
+	
+	ret = dbus_bus_release_name(connection, name, &error);
+	
+	if (dbus_error_is_set(&error))
+	{
+		GB.Error("Unable to unregister application name");
+		return TRUE;
+	}
+
+	if (get_socket(connection, &socket))
+		return TRUE;
+	
+	GB.Watch(socket, GB_WATCH_NONE, (void *)handle_message, (intptr_t)connection);
+	return FALSE;
+}
+
 
 /***************************************************************************
 

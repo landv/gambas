@@ -158,6 +158,15 @@ BEGIN_METHOD(DBusConnection_RequestName, GB_STRING name; GB_BOOLEAN unique)
 END_METHOD
 
 
+BEGIN_METHOD(DBusConnection_ReleaseName, GB_STRING name)
+
+	bool ret = DBUS_unregister(THIS->connection, GB.ToZeroString(ARG(name)));
+	
+	GB.ReturnBoolean(ret);
+	
+END_METHOD
+
+
 BEGIN_PROPERTY(DBusConnection_Name)
 
 	GB.ReturnNewZeroString(dbus_bus_get_unique_name(THIS->connection));
@@ -183,6 +192,25 @@ BEGIN_METHOD(DBusConnection_Register, GB_OBJECT object; GB_STRING path)
 
 END_METHOD
 
+BEGIN_METHOD(DBusConnection_Unregister, GB_OBJECT object)
+
+	GB_FUNCTION func;
+	void *object = VARG(object);
+	
+	if (GB.CheckObject(object))
+		return;
+
+	if (GB.GetFunction(&func, object, "_Unregister", NULL, NULL))
+	{
+		GB.Error("Cannot find _Unregister method");
+		return;
+	}
+	
+	GB.Push(1, GB_T_OBJECT, THIS);
+	GB.Call(&func, 1, TRUE);
+
+END_METHOD
+
 GB_DESC CDBusConnectionDesc[] =
 {
   GB_DECLARE("DBusConnection", sizeof(CDBUSCONNECTION)), GB_NOT_CREATABLE(),
@@ -195,8 +223,10 @@ GB_DESC CDBusConnectionDesc[] =
 	//GB_METHOD("_RemoveMatch", "b", DBusConnection_RemoveMatch, "(Type)s[(Object)s(Member)s(Interface)s(Destination)s]"),
 	GB_PROPERTY_READ("Applications", "String[]", DBusConnection_Applications),
 	GB_METHOD("_RequestName", "b", DBusConnection_RequestName, "(Name)s[(Unique)b]"),
+	GB_METHOD("_ReleaseName", "b", DBusConnection_ReleaseName, "(Name)s"),
 	GB_PROPERTY_READ("_Name", "s", DBusConnection_Name),
 	GB_METHOD("Register", NULL, DBusConnection_Register, "(Object)DBusObject;(Path)s"),
+	GB_METHOD("Unregister", NULL, DBusConnection_Unregister, "(Object)DBusObject"),
 
   GB_END_DECLARE
 };

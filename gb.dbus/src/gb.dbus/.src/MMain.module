@@ -32,7 +32,10 @@ Public Sub Main()
   DBus.Debug = True
   DBus.Session.Register(CTest, "/Test")
   
+  Wait 10
   
+  DBus.Session.Unregister(CTest)
+    
   'aVal = DBus["org.freedesktop.Notifications"]["/org/freedesktop/Notifications"].GetServerInformation()
   'Print aVal[0];; aVal[1];; aVal[2]
   'Print DBus["system://org.freedesktop.UDisks"]["/"].Children

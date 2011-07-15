@@ -86,36 +86,58 @@ Static Private Sub Normalize(sName As String) As String
 End
 
 
-Public Sub _Register(Connection As DBusConnection, Path As String)
+Public Sub _Register(hConnection As DBusConnection, sPath As String)
   
   Dim hParent As DBusObject
   Dim sParent As String
   
   If Not $sName Then
     $sName = "org.gambas" & Normalize(Application.Name)
-    Connection._RequestName($sName)
+    hConnection._RequestName($sName)
   Endif
   
-  If Left(Path) <> "/" Then Path = "/" & Path
+  If Left(sPath) <> "/" Then sPath = "/" & sPath
   
-  If _ObjectCache.Exist(Path) Then Return
+  If _ObjectCache.Exist(sPath) Then Return
   
-  $sPath = Path
+  $sPath = sPath
   
-  If Path <> "/" Then
+  If sPath <> "/" Then
     
-    sParent = File.Dir(Path)
+    sParent = File.Dir(sPath)
     hParent = _ObjectCache[sParent]
     If Not hParent Then
       hParent = New DBusObject
-      hParent._Register(Connection, sParent)
+      hParent._Register(hConnection, sParent)
     Endif
   
-    hParent._AddChild(File.Name(Path))
+    hParent._AddChild(File.Name(sPath))
     
   Endif
   
-  $hObserver = New DBusObserver(Connection, DBus.Method, Path) As "DBusObserver"
+  $hObserver = New DBusObserver(hConnection, DBus.Method, sPath) As "DBusObserver"
+  
+End
+
+Public Sub _Unregister(hConnection As DBusConnection)
+  
+  Dim sChild As String
+  Dim hChild As DBusObject
+  
+  If $aChildren Then
+    For Each sChild In $aChildren
+      hChild = _ObjectCache[$sPath &/ sChild]
+      hChild._Unregister(hConnection)
+    Next
+  Endif
+  
+  $hObserver = Null
+  _ObjectCache[$sPath] = Null
+  $sPath = ""
+  If _ObjectCache.Count = 0 Then 
+    hConnection._ReleaseName($sName)
+    $sName = ""
+  Endif
   
 End
 
