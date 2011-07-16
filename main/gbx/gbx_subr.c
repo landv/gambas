@@ -176,9 +176,9 @@ bool SUBR_get_boolean(VALUE *param)
 
 static TYPE conv_type(TYPE type)
 {
-	if (type <= T_BYTE)
-		type = T_BYTE;
-	else if (type == T_CSTRING) // || type == T_NULL)
+	/*if (type <= T_BYTE)
+		type = T_BYTE;*/
+	if (type == T_CSTRING) // || type == T_NULL)
 		type = T_STRING;
 
 	return type;

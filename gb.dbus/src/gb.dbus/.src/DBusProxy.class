@@ -138,14 +138,14 @@ Public Sub _Invoke(sName As String, aArg As Variant[]) As Variant
   If bProperty Then 'Error.Raise("Unknown property")
   
     If IsNull(aArg) Or If aArg.Count = 0 Then
-      Debug "read property " & sName
+      'Debug "read property " & sName
       If InStr(aSign[1], "r") = 0 Then Error.Raise("Write-only property")
       aArg = New Variant[2]
       aArg[0] = $sInterface
       aArg[1] = sName
       Return hApp.Connection._CallMethod(hApp.Name, $sObjectPath, "org.freedesktop.DBus.Properties", "Get", "ss", "v", aArg)
     Else
-      Debug "write property " & sName
+      'Debug "write property " & sName
       If InStr(aSign[1], "w") = 0 Then Error.Raise("Read-only property")
       vVal = aArg[0]
       aArg = New Variant[3]

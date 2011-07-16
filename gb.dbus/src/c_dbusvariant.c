@@ -32,6 +32,7 @@ BEGIN_METHOD(dbusvariant_call, GB_VARIANT value; GB_STRING signature)
 	GB.StoreVariant(ARG(value), (void *)&THIS->value);
 	GB.StoreString(ARG(signature), &THIS->signature);
 	GB.ReturnObject(THIS);
+	//fprintf(stderr, "DBusVariant: new: %p %d\n", _object, (int)((GB_BASE *)_object)->ref);
 
 END_METHOD
 
@@ -39,6 +40,7 @@ BEGIN_METHOD_VOID(dbusvariant_free)
 
 	GB.StoreVariant(NULL, (void *)&THIS->value);
 	GB.StoreString(NULL, &THIS->signature);
+	//fprintf(stderr, "DBusVariant: free: %p\n", THIS);
 
 END_METHOD
 

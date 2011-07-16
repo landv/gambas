@@ -194,6 +194,12 @@ void MEMORY_realloc(void *p_ptr, size_t size, const char *src)
   ALLOC *alloc = (ALLOC *)(*((char **)p_ptr) - sizeof(ALLOC));
   ALLOC *old = alloc;
   
+	if (size == 0)
+	{
+		MEMORY_free(p_ptr, src);
+		return;
+	}
+	
   alloc = realloc(alloc, sizeof(ALLOC) + size);
   
   if (!alloc)
@@ -222,6 +228,12 @@ void MEMORY_realloc(void *p_ptr, size_t size)
 {
   void *alloc = *((void **)p_ptr);
 
+	if (size == 0)
+	{
+		MEMORY_free(p_ptr);
+		return;
+	}
+	
   alloc = realloc(alloc, size);
 
   if (!alloc)

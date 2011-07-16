@@ -127,8 +127,8 @@ const char *DBUS_to_dbus_type(GB_TYPE type)
 	
 	switch(type)
 	{
-		case GB_T_BYTE: return DBUS_TYPE_BYTE_AS_STRING;
 		case GB_T_BOOLEAN: return DBUS_TYPE_BOOLEAN_AS_STRING;
+		case GB_T_BYTE: return DBUS_TYPE_BYTE_AS_STRING;
 		case GB_T_SHORT: return DBUS_TYPE_INT16_AS_STRING;
 		case GB_T_INTEGER: return DBUS_TYPE_INT32_AS_STRING;
 		case GB_T_LONG: return DBUS_TYPE_INT64_AS_STRING;
@@ -459,6 +459,7 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 			DBusMessageIter citer;
 			const char *contents_signature;
 			GB_VALUE rarg;
+			GB_VALUE *old_arg = arg;
 			
 			if (arg->type == CLASS_DBusVariant)
 			{
@@ -471,17 +472,23 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 				contents_signature = dbusvariant->signature;
 			}
 			else
-				contents_signature = DBUS_to_dbus_type(arg->type);
-			
-			if (contents_signature)
 			{
-				dbus_message_iter_open_container(iter, DBUS_TYPE_VARIANT, contents_signature, &citer);
-				GB.BorrowValue(arg);
-				if (append_arg(&citer, contents_signature, arg))
-					goto __ERROR;
-				dbus_message_iter_close_container(iter, &citer);
-				break;
+				contents_signature = DBUS_to_dbus_type(arg->type);
 			}
+			
+			if (!contents_signature)
+				goto __UNSUPPORTED;
+			
+			dbus_message_iter_open_container(iter, DBUS_TYPE_VARIANT, contents_signature, &citer);
+			GB.BorrowValue(arg);
+			if (append_arg(&citer, contents_signature, arg))
+			{
+				arg = old_arg;
+				goto __ERROR;
+			}
+			dbus_message_iter_close_container(iter, &citer);
+			arg = old_arg;
+			break;
 		}
 		
 		default:
@@ -654,6 +661,8 @@ static bool define_arguments(DBusMessage *message, const char *signature, GB_ARR
 		nparam = 0;
 		type = GB_T_NULL;
 	}
+	
+	//fprintf(stderr, "define_arguments: %s %d %ld\n", signature, nparam, type);
 	
 	if (signature && *signature)
 	{

@@ -479,7 +479,7 @@ Private Sub FillWithSpecial()
   
   lvwComp.Clear
   
-  For Each sName In ["_attach", "_call", "_compare", "_get", "_init", "_new", "_next", "_put", "_unknown"]
+  For Each sName In ["_attach", "_call", "_compare", "_get", "_init", "_new", "_next", "_property", "_put", "_unknown"]
     Try lvwComp.Add(CStr(MHelp.TYPE_SPECIAL) & sName, sName, hPict)
   Next
   
