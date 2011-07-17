@@ -518,6 +518,12 @@ void SUBR_exist(ushort code)
   bool follow = FALSE;
 
   SUBR_ENTER();
+	
+	if (!NPARAM)
+	{
+		NPARAM++;
+		PARAM--;
+	}
 
   path = get_path(PARAM);
 
