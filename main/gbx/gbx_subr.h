@@ -198,7 +198,7 @@ void SUBR_lock(ushort code);
 void SUBR_inp_out(ushort code);
 
 void SUBR_stat(ushort code);
-void SUBR_exist(void);
+void SUBR_exist(ushort code);
 void SUBR_dir(ushort code);
 void SUBR_kill(void);
 void SUBR_mkdir(void);

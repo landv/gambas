@@ -170,7 +170,6 @@ void *GAMBAS_Api[] =
 
   (void *)GB_LoadFile,
   (void *)STREAM_unmap,
-  (void *)FILE_exist,
   (void *)GB_TempDir,
   (void *)GB_TempFile,
   (void *)GB_CopyFile,
@@ -1375,6 +1374,12 @@ bool GB_LoadFile(const char *path, int lenp, char **addr, int *len)
   END_TRY
 
   return ret;
+}
+
+
+bool GB_ExistFile(const char *path)
+{
+	return FILE_exist(path);
 }
 
 

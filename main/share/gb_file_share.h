@@ -94,8 +94,6 @@ bool FILE_is_dir(const char *path);
 
 const char *FILE_find_gambas(void);
 
-bool FILE_exist(const char *path);
-
 void FILE_rename(const char *src, const char *dst);
 void FILE_unlink(const char *path);
 
@@ -105,6 +103,8 @@ void FILE_init(void);
 void FILE_remove_temp_file(void);
 void FILE_exit(void);
 
+bool FILE_exist_follow(const char *path, bool follow);
+#define FILE_exist(_path) FILE_exist_follow(_path, FALSE)
 bool FILE_exist_real(const char *path);
 
 void FILE_stat(const char *path, FILE_STAT *info, bool follow);
@@ -128,6 +128,7 @@ int64_t FILE_free(const char *path);
 
 #else
 
+bool FILE_exist(const char *path);
 time_t FILE_get_time(const char *path);
 
 #endif

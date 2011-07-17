@@ -299,7 +299,6 @@ _FREE:
 	SUBR_LEAVE();
 }
 
-
 void SUBR_array(ushort code)
 {
 	TYPE type;
@@ -313,17 +312,18 @@ void SUBR_array(ushort code)
 	if (type == T_NULL)
 		type = T_OBJECT;
 	
+	for (i = 0; i < NPARAM; i++)
+		VALUE_conv(&PARAM[i], type);
+	
 	GB_ArrayNew(&array, type, NPARAM);
+	OBJECT_REF(array, "SUBR_array");
 
-	// FIXME: If there is an error, the array is not freed!
 	for (i = 0; i < NPARAM; i++)
 	{
-		VALUE_conv(&PARAM[i], type);
 		GB_Store(type, (GB_VALUE *)&PARAM[i], GB_ArrayGet(array, i));
 		RELEASE(&PARAM[i]);
 	}
-
-	OBJECT_REF(array, "SUBR_array");
+		
 	PARAM->_object.class = OBJECT_class(array); //CLASS_Array;
 	PARAM->_object.object = array;
 	SP = PARAM + 1;

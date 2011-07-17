@@ -323,7 +323,7 @@ void EXEC_loop(void)
 		/* 88 Move            */  &&_SUBR,
 		/* 89 Copy            */  &&_SUBR,
 		/* 8A Link            */  &&_SUBR,
-		/* 8B Exist           */  &&_SUBR,
+		/* 8B Exist           */  &&_SUBR_CODE,
 		/* 8C Access          */  &&_SUBR_CODE,
 		/* 8D Stat            */  &&_SUBR_CODE,
 		/* 8E Dfree           */  &&_SUBR,

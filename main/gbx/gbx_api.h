@@ -91,6 +91,7 @@ bool GB_ExistClassLocal(const char *name);
 char *GB_ToZeroString(GB_STRING *src);
 
 bool GB_LoadFile(const char *path, int lenp, char **addr, int *len);
+bool GB_ExistFile(const char *path);
 //void GB_ReleaseFile(char **addr, int len);
 #define GB_ReleaseFile STREAM_unmap
 char *GB_RealFileName(const char *path, int len);

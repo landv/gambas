@@ -241,7 +241,7 @@ static GB_DESC NATIVE_GambasLanguage[] =
   GB_METHOD("Lof", "l", NULL, "[(File)Stream;]"),
   GB_METHOD("Seek", "l", NULL, "(File)Stream;"),
 
-  GB_METHOD("Exist", "b", NULL, "(Path)s"),
+  GB_METHOD("Exist", "b", NULL, "(Path)s[(FollowLink)b]"),
   GB_METHOD("Stat", "Stat", NULL, "(Path)s[(FollowLink)b]"),
 
   GB_METHOD("Temp$", "s", NULL, "[(Prefix)s]"),

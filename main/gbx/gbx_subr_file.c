@@ -511,16 +511,20 @@ void SUBR_stat(ushort code)
 }
 
 
-void SUBR_exist(void)
+void SUBR_exist(ushort code)
 {
   bool exist;
   const char *path;
+  bool follow = FALSE;
 
-  SUBR_ENTER_PARAM(1);
+  SUBR_ENTER();
 
   path = get_path(PARAM);
 
-  exist = FILE_exist(path);
+	if (NPARAM == 2)
+		follow = SUBR_get_boolean(&PARAM[1]);
+
+	exist = FILE_exist_follow(path, follow);
 
   RETURN->type = T_BOOLEAN;
   RETURN->_integer.value = exist ? -1 : 0;

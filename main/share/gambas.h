@@ -887,7 +887,6 @@ typedef
 
 		bool (*LoadFile)(const char *, int, char **, int *);
 		void (*ReleaseFile)(char *, int);
-		bool (*ExistFile)(char *);
 		char *(*TempDir)(void);
 		char *(*TempFile)(const char *);
 		bool (*CopyFile)(const char *, const char *);

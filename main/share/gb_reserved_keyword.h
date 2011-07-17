@@ -454,7 +454,7 @@ SUBR_INFO COMP_subr_info[] =
 	{ ".Copy",             73,  0,  2     },
 	{ ".Link",             74,  0,  2     },
 #endif
-	{ "Exist",             75,  0,  1     },
+	{ "Exist",             75,  0,  1,  2 },
 	{ "Access",            76,  0,  1,  2 },
 	{ "Stat",              77,  0,  1,  2 },
 	{ "Dfree",             78,  0,  1     },

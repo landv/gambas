@@ -812,23 +812,14 @@ bool FILE_access(const char *path, int mode)
 }
 
 
-bool FILE_exist(const char *path)
+bool FILE_exist_follow(const char *path, bool follow)
 {
 	struct stat buf;
 
 	if (FILE_is_relative(path))
-	{
-		/*if (!EXEC_arch)
-		{
-			chdir(PROJECT_path);
-			if (lstat(path, &buf) == 0)
-				return TRUE;
-		}*/
-
 		return ARCHIVE_exist(NULL, path);
-	}
 
-	return lstat(path, &buf) == 0;
+	return follow ? (stat(path, &buf) == 0) : (lstat(path, &buf) == 0);
 }
 
 
