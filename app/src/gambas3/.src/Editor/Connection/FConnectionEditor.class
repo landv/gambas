@@ -530,9 +530,6 @@ Public Sub tbvField_Activate()
   
 End
 
-
-
-
 Public Sub tbvField_Click()
 
   Dim hField As CField
@@ -574,6 +571,7 @@ Public Sub tbvIndex_Click()
   Dim hIndex As CIndexField
 
   If $bReadOnly Then Return
+  If tbvIndex.Row < 0 Then Return
 
   hIndex = $aIndexField[tbvIndex.Row]
 
