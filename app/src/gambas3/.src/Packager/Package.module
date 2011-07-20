@@ -1366,9 +1366,14 @@ Private Function MakeArchPackage(sSys As String)
   Dim sLib As String
   Dim sCmd As String
   Dim sDependencies As String
+  Dim sPkgDesc As String
   
   Inc Application.Busy
 
+  sPkgDesc = Replace($sDescription, "\n", " ")
+  
+  If sPkgDesc = "" Then sPkgDesc = "a software done with Gambas3"
+  
   $sFormatMinMax = "'&1>=&2' "
   sDependencies = GetDependencies()
   
@@ -1403,6 +1408,7 @@ Private Function MakeArchPackage(sSys As String)
     Print #hFile, ""
     Print #hFile, "pkgname=" & String.LCase$($sName)
     Print #hFile, "_realname=" & $sName
+    Print #hFile, "pkgdesc=\"" & sPkgDesc & "\""
     Print #hFile, "pkgver=" & $sVersion
     Print #hFile, "pkgrel=1"
     Print #hFile, "arch=('any')"
