@@ -884,6 +884,13 @@ void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value)
 		
 		STREAM_read(stream, &buffer._byte, 1);
 		
+		if (buffer._byte == 0)
+		{
+			value->type = T_VARIANT;
+			value->_variant.vtype = T_NULL;
+			return;
+		}
+		
 		if (buffer._byte == 'A')
 		{
 			CARRAY *array;
@@ -1102,6 +1109,13 @@ void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value)
 	}
 	buffer;
 	
+	if (VALUE_is_null(value))
+	{
+		buffer._byte = 0;
+		STREAM_write(stream, &buffer._byte, 1);
+		return;
+	}
+	
 	if (type == T_VARIANT)
 	{
 		VARIANT_undo(value);
@@ -1199,12 +1213,6 @@ void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value)
 			STREAM_write(stream, value->_string.addr + value->_string.start, value->_string.len);
 			break;
 			
-		case T_NULL:
-		
-			buffer._byte = 0;
-			STREAM_write(stream, &buffer._byte, 1);
-			break;
-
 		case T_OBJECT:
 		{
 			CLASS *class = OBJECT_class(value->_object.object);

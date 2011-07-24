@@ -64,8 +64,8 @@ typedef
 		void *(*GetExec)(void);
 		void *(*GetStack)(int frame);
 		void (*PrintError)(FILE *where, bool msgonly, bool newline);
-		void (*SaveError)(void *);
-		void (*RestoreError)(void *);
+		void (*SaveError)(void *, void *);
+		void (*RestoreError)(void *, void *);
 		void (*ToString)(GB_VALUE *value, char **addr, int *len);
 		int (*FormatDate)(GB_DATE_SERIAL *date, int fmt_type, const char *fmt, int len_fmt, char **str, int *len_str);
 		int (*FormatNumber)(double number, int fmt_type, const char *fmt, int len_fmt, char **str, int *len_str, bool local);

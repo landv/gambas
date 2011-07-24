@@ -716,6 +716,7 @@ static void command_eval(const char *cmd)
 {
   EXPRESSION *expr;
   ERROR_INFO save_error = { 0 };
+  ERROR_INFO save_last = { 0 };
   DEBUG_INFO save_debug;
   VALUE *val;
   int start, len;
@@ -742,7 +743,7 @@ static void command_eval(const char *cmd)
 	if (*cmd != '!')
 		fprintf(_out, "\t");
 
-  GB_DEBUG.SaveError(&save_error);
+  GB_DEBUG.SaveError(&save_error, &save_last);
   save_debug = DEBUG_info;
 
 	start++;
@@ -802,7 +803,7 @@ __END:
 
   EVAL.Free(POINTER(&expr));
   DEBUG_info = save_debug; //.cp = NULL;
-  GB_DEBUG.RestoreError(&save_error);
+  GB_DEBUG.RestoreError(&save_error, &save_last);
   
 	fprintf(out, "\n");
 	fflush(out);
