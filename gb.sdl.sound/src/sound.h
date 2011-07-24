@@ -48,7 +48,7 @@ typedef
 
 #endif
 
-#define MAX_CHANNEL  32
+#define MAX_CHANNEL 64
 
 typedef
   struct {

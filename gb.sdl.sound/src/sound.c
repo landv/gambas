@@ -34,7 +34,6 @@ static SOUND_INFO info = { 0 };
 
 static CCHANNEL *channel_cache[MAX_CHANNEL] = { 0 };
 static int channel_count;
-/*static int count_sound = 0;*/
 
 static double music_ref_time = 0;
 static double music_ref_pos = 0;
@@ -332,6 +331,7 @@ BEGIN_PROPERTY(CCHANNEL_count)
       nchan = MAX_CHANNEL;
 
     Mix_AllocateChannels(nchan);
+		channel_count = Mix_AllocateChannels(-1);
   }
 
 END_PROPERTY
