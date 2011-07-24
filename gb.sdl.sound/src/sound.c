@@ -91,7 +91,8 @@ static void free_finished_channels(void)
   CCHANNEL *ch;
 	char foo;
 	
-	(void)read(_ch_pipe[0], &foo, 1);
+	if (read(_ch_pipe[0], &foo, 1) != 1)
+		return;
 	
 	for (i = 0; i < MAX_CHANNEL; i++)
 	{
@@ -112,17 +113,19 @@ static void channel_finished(int channel)
   /*printf("channel_finished: %p\n", ch->sound);*/
 
 	// TODO: do not use GB.Post(), because we are not in the main thread. Write to a pipe and watch it in the main thread
-	ch->free = TRUE;
-	(void)write(_ch_pipe[1], &foo, 1);
+	ch->free = write(_ch_pipe[1], &foo, 1) == 1;
 }
 
-static int play_channel(int channel, CSOUND *sound, int loops)
+static int play_channel(int channel, CSOUND *sound, int loops, int fadein)
 {
 	_ch_playing++;
 	if (_ch_playing == 1)
 		GB.Watch(_ch_pipe[0], GB_WATCH_READ , (void *)free_finished_channels,0);
 
-  return Mix_PlayChannel(channel, sound->chunk, loops);
+	if (fadein > 0)
+		return Mix_FadeInChannel(channel, sound->chunk, loops, fadein);
+	else
+		return Mix_PlayChannel(channel, sound->chunk, loops);
 }
 
 static bool start_sound_engine()
@@ -268,15 +271,13 @@ BEGIN_METHOD_VOID(CSOUND_free)
 END_METHOD
 
 
-BEGIN_METHOD(CSOUND_play, GB_INTEGER loops)
+BEGIN_METHOD(CSOUND_play, GB_INTEGER loops; GB_FLOAT fadein)
 
   int loops = VARGOPT(loops, 0);
   int channel;
 
-/*  count_sound++;
-  printf("Ref sound [%d] play : %p\n", count_sound,THIS);*/
   GB.Ref(THIS);
-  channel = play_channel(-1, THIS, loops);
+  channel = play_channel(-1, THIS, loops, MISSING(fadein) ? 0 : (int)(VARG(fadein) * 1000));
   return_channel(channel, THIS);
 
 END_METHOD
@@ -294,7 +295,7 @@ GB_DESC CSoundDesc[] =
 
   //GB_PROPERTY("Volume", "e", CSOUND_volume),
 
-  GB_METHOD("Play", "Channel", CSOUND_play, "[(Loops)i]"),
+  GB_METHOD("Play", "Channel", CSOUND_play, "[(Loops)i(FadeIn)f]"),
 
   GB_END_DECLARE
 };
@@ -336,7 +337,7 @@ BEGIN_PROPERTY(CCHANNEL_count)
 END_PROPERTY
 
 
-BEGIN_METHOD(CCHANNEL_play, GB_OBJECT sound; GB_INTEGER loops)
+BEGIN_METHOD(CCHANNEL_play, GB_OBJECT sound; GB_INTEGER loops; GB_FLOAT fadein)
 
   CSOUND *sound;
 
@@ -350,7 +351,7 @@ BEGIN_METHOD(CCHANNEL_play, GB_OBJECT sound; GB_INTEGER loops)
   /*printf("Ref %p\n", sound);*/
   GB.Ref(sound);
   THIS->sound = sound;
-  play_channel(THIS->channel, sound, VARGOPT(loops, 0));
+  play_channel(THIS->channel, sound, VARGOPT(loops, 0), MISSING(fadein) ? 0 : (int)(VARG(fadein) * 1000));
 
 END_METHOD
 
@@ -362,9 +363,12 @@ BEGIN_METHOD_VOID(CCHANNEL_pause)
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CCHANNEL_stop)
+BEGIN_METHOD(CCHANNEL_stop, GB_FLOAT fadeout)
 
-  Mix_HaltChannel(THIS->channel);
+	if (MISSING(fadeout))
+		Mix_HaltChannel(THIS->channel);
+	else
+		Mix_FadeOutChannel(THIS->channel, (int)(VARG(fadeout) * 1000));
 
 END_METHOD
 
@@ -401,15 +405,16 @@ BEGIN_PROPERTY(CCHANNEL_volume)
 END_PROPERTY
 
 
+
 GB_DESC CChannelDesc[] =
 {
   GB_DECLARE("Channel", sizeof(CCHANNEL)), GB_NOT_CREATABLE(),
 
   GB_STATIC_METHOD("_exit", NULL, CCHANNEL_exit, NULL),
   //GB_STATIC_PROPERTY("Volume", "e", CCHANNEL_volume),
-  GB_METHOD("Play", NULL, CCHANNEL_play, "[(Sound)Sound;(Loops)i]"),
+  GB_METHOD("Play", NULL, CCHANNEL_play, "[(Sound)Sound;(Loops)i(FadeIn)f]"),
   GB_METHOD("Pause", NULL, CCHANNEL_pause, NULL),
-  GB_METHOD("Stop", NULL, CCHANNEL_stop, NULL),
+  GB_METHOD("Stop", NULL, CCHANNEL_stop, "[(FadeOut)f]"),
 
   GB_PROPERTY("Volume", "f", CCHANNEL_volume),
 
