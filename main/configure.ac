@@ -93,25 +93,6 @@ dnl ---- Check for Portland scripts
 
 AC_CHECK_PROGS(XDG_UTILS, [xdg-mime xdg-icon-resource], [])
 
-dnl ---- Other options
-
-AC_ARG_ENABLE(
-  preloading,
-  [  --enable-preloading            enable preloading (default: no)],
-  gambas_preloading=$enableval,
-  gambas_preloading=no
-)
-
-if test "$SYSTEM" != "CYGWIN"; then
-  if test "$gambas_preloading" = "yes"; then
-    AC_DEFINE(DO_PRELOADING, 1, allows shared library preloading )
-  fi
-else
-  if test "$gambas_preloading" = "yes"; then
-    GB_MESSAGE([Preloading is disabled on this system])
-  fi
-fi
-
 dnl ---- Create makefiles
 
 AC_CONFIG_FILES([\

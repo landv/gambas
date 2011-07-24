@@ -57,8 +57,6 @@ typedef
 #ifndef __GBX_LIBRARY_C
 #endif
 
-void LIBRARY_preload(const char *file, char **argv);
-
 void LIBRARY_init(void);
 void LIBRARY_exit(void);
 

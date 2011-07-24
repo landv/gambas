@@ -166,7 +166,6 @@ int main(int argc, char **argv)
 	CLASS_DESC_METHOD *startup = NULL;
 	int i, n;
 	char *file = NULL;
-	bool nopreload = FALSE;
 
 	//char log_path[256];
 	//sprintf(log_path, "/tmp/gambas-%d.log", getuid());
@@ -202,9 +201,6 @@ int main(int argc, char **argv)
 				"  -h --help      display this help\n"
 				"  -L --license   display license\n"
 				"  -g             enter debugging mode\n"
-	#if DO_PRELOADING          
-				"  -p             disable preloading\n"
-	#endif
 				"  -k             do not unload shared libraries\n"
 				);
 			if (!EXEC_arch)
@@ -258,6 +254,10 @@ int main(int argc, char **argv)
 		{
 			EXEC_debug = TRUE;
 		}
+		else if (is_option(argv[i], 'p'))
+		{
+			EXEC_profile = TRUE;
+		}
 		else if (is_option(argv[i], 'f'))
 		{
 			EXEC_fifo = TRUE;
@@ -266,10 +266,6 @@ int main(int argc, char **argv)
 				EXEC_fifo_name = argv[i + 1];
 				i++;
 			}
-		}
-		else if (is_option(argv[i], 'p'))
-		{
-			nopreload = TRUE;
 		}
 		else if (is_option(argv[i], 'k'))
 		{
@@ -304,9 +300,6 @@ int main(int argc, char **argv)
 	n = i;
 	if (!file)
 		file = ".";
-
-	if (!nopreload)
-		LIBRARY_preload(file, argv);
 
 	if (EXEC_arch)
 		argv[0] = file;
