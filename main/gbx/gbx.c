@@ -25,6 +25,8 @@
 #include "config.h"
 #endif
 
+//#define USE_PROFILE 1
+
 #include "gb_common.h"
 #include "gb_alloc.h"
 #include "gb_error.h"
@@ -47,8 +49,11 @@
 #include "gbx_subr.h"
 #include "gbx_math.h"
 #include "gb_common_buffer.h"
-
 #include "gbx_api.h"
+
+#if USE_PROFILE
+#include "gbx_profile.h"
+#endif
 
 #include "gbx_c_file.h"
 #include "gbx_c_application.h"
@@ -83,6 +88,11 @@ static void NORETURN fatal(const char *msg, ...)
 
 static void init(const char *file)
 {
+	#if USE_PROFILE
+	if (EXEC_profile)
+		PROFILE_init();
+	#endif
+	
 	COMPONENT_init();
 	FILE_init();
 	EXEC_init();
@@ -133,6 +143,9 @@ static void main_exit(bool silent)
 		DEBUG_exit();
 		CFILE_exit();
 		WATCH_exit();
+		#if USE_PROFILE
+		PROFILE_exit();
+		#endif
 		CLASS_exit();
 		COMPONENT_exit();
 		EXTERN_exit();
@@ -254,10 +267,12 @@ int main(int argc, char **argv)
 		{
 			EXEC_debug = TRUE;
 		}
+		#if USE_PROFILE
 		else if (is_option(argv[i], 'p'))
 		{
 			EXEC_profile = TRUE;
 		}
+		#endif
 		else if (is_option(argv[i], 'f'))
 		{
 			EXEC_fifo = TRUE;

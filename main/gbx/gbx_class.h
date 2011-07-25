@@ -112,8 +112,7 @@ typedef
 		char n_param;
 		char npmin;
 		char vararg;
-		unsigned name_written : 1; // for profiling
-		char _reserved : 7;
+		char _reserved;
 		short n_local;
 		short n_ctrl;
 		short stack_usage;
