@@ -254,15 +254,6 @@ BEGIN_METHOD_VOID(Application_Env_next)
 
 END_METHOD
 
-BEGIN_PROPERTY(Application_Return)
-
-  if (READ_PROPERTY)
-  	GB_ReturnInteger(EXEC_return_value);
-	else
-		EXEC_return_value = VPROP(GB_INTEGER) & 0xFF;
-
-END_PROPERTY
-
 static void init_again(int old_pid)
 {
 	char old[PATH_MAX];
@@ -445,7 +436,6 @@ GB_DESC NATIVE_App[] =
   GB_STATIC_PROPERTY_READ("Handle", "i", Application_Id),
   GB_STATIC_PROPERTY_READ("Version", "s", Application_Version),
   GB_STATIC_PROPERTY_READ("Dir", "i", Application_Dir),
-  GB_STATIC_PROPERTY("Return", "i", Application_Return),
   GB_STATIC_PROPERTY("Daemon", "b", Application_Daemon),
   GB_STATIC_PROPERTY_READ("Startup", "Class", Application_Startup),
 

@@ -71,7 +71,6 @@ bool EXEC_keep_library = FALSE; // do not unload libraries
 EXEC_HOOK EXEC_Hook = { NULL };
 EXEC_GLOBAL EXEC;
 bool EXEC_main_hook_done = FALSE;
-int EXEC_return_value = 0;
 bool EXEC_got_error = FALSE;
 uint64_t EXEC_byref = 0;
 

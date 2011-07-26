@@ -62,6 +62,7 @@ EXTERN const size_t TYPE_sizeof_memory_tab[];
 
 #define TYPE_is_object(type)       ((type) >= T_OBJECT)
 #define TYPE_is_pure_object(type)  ((type) > T_OBJECT)
+#define TYPE_is_boolean(type)      ((type) == T_BOOLEAN)
 #define TYPE_is_integer(type)      ((type) >= T_BOOLEAN && (type) <= T_INTEGER)
 #define TYPE_is_integer_long(type) ((type) >= T_BOOLEAN && (type) <= T_LONG)
 #define TYPE_is_long(type)         ((type) == T_LONG)

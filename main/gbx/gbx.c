@@ -179,6 +179,7 @@ int main(int argc, char **argv)
 	CLASS_DESC_METHOD *startup = NULL;
 	int i, n;
 	char *file = NULL;
+	int ret = 0;
 
 	//char log_path[256];
 	//sprintf(log_path, "/tmp/gambas-%d.log", getuid());
@@ -369,6 +370,12 @@ int main(int argc, char **argv)
 	TRY
 	{
 		EXEC_public_desc(PROJECT_class, NULL, startup, 0);
+		
+		if (TYPE_is_boolean(startup->type))
+			ret = RP->_boolean.value ? 1 : 0;
+		else if (TYPE_is_integer(startup->type))
+			ret = RP->_integer.value & 0xFF;
+
 		EXEC_release_return_value();
 		
 		if (_quit_after_main)
@@ -377,8 +384,11 @@ int main(int argc, char **argv)
 			_exit(0);
 		}
 		
-		HOOK_DEFAULT(loop, WATCH_loop)();
-		EVENT_check_post();
+		if (!ret)
+		{
+			HOOK_DEFAULT(loop, WATCH_loop)();
+			EVENT_check_post();
+		}
 	}
 	CATCH
 	{
@@ -406,6 +416,6 @@ int main(int argc, char **argv)
 
 	fflush(NULL);
 
-	exit(EXEC_return_value);
+	exit(ret);
 }
 
