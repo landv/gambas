@@ -18,7 +18,7 @@ Private $bVerbose As Boolean
 Private $aImplemented As New String[]
 Private $bExecuteFromArgs As Boolean
 
-Public Sub Main()
+Public Sub Main() As Integer
   
   Dim sName As String
   Dim s As Integer
@@ -37,8 +37,7 @@ Public Sub Main()
     If Not $sPath Then 
       Error "gbs: no script file specified"
       Error "Type 'gbs"; System.Version; " --help' for more information."
-      Application.Return = 1
-      Return 
+      Return 1
     Else
       $bExecuteFromArgs = True
     Endif
@@ -50,8 +49,7 @@ Public Sub Main()
       $sPath = Application.Dir &/ $sPath
       If Not Exist($sPath) And Not $bExecuteFromArgs Then 
         Error "gbs: script file does not exist: " & Application.Args[1]
-        Application.Return = 1
-        Return 
+        Return 1
       Endif
     Endif
   Endif 
@@ -100,8 +98,7 @@ Public Sub Main()
       Error sRes
       Print File.Load($sPrjPath &/ ".project")
       Print File.Load($sPrjPath &/ ".src" &/ "MMain.module")
-      Application.Return = 1
-      Return 
+      Return 1
     Endif
     
     Mkdir sCacheDir &/ $sMd5
@@ -114,7 +111,7 @@ Public Sub Main()
   $aAppArgs.Insert(["gbr3", sCacheDir &/ $sMd5 &/ sName], 0)
   'Print $aAppArgs.Join(" ")
   Exec $aAppArgs Wait
-  Application.Return = Process.LastValue
+  Return Process.LastValue
   
 End
 
