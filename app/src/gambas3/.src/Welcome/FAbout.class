@@ -88,6 +88,22 @@ Private Sub RemoveLink(sStr As String) As String
   
 End
 
+Private Function GetStars(iStar As Integer) As String
+
+  Dim sStar As String
+  Dim iInd As Integer
+  
+  For iInd = 1 To iStar
+    If ((iInd - 1) Mod 5) = 0 Then
+      sStar &= "★"
+    Else
+      sStar &= "☆"
+    Endif
+  Next
+
+  Return sStar  
+
+End
 
 Private Sub GetAuthor()
 
@@ -170,7 +186,7 @@ Private Sub GetAuthor()
       
       sText &= "<font size=+1>" & aSplit[0] & "</font>"
       sText &= "<blockquote>"
-      sText &= ("Financial support") & "<br>" & String$(Min(16, CInt(aSplit[1])), "★")
+      sText &= ("Financial support") & "<br>" & GetStars(CInt(aSplit[1]))
       
     Else
       
@@ -179,7 +195,7 @@ Private Sub GetAuthor()
       sText &= "<blockquote>"
       If aSplit[3] Then sText &= "<u>" & aSplit[3] & "</u><br>"
       sText &= aSplit[4]
-      If aSplit[1] Then sText &= "<br>" & ("Financial support") & "<br>" & String$(Min(16, CInt(aSplit[1])), "★")
+      If aSplit[1] Then sText &= "<br>" & ("Financial support") & "<br>" & GetStars(CInt(aSplit[1]))
       sText &= "</b>"
 
     Endif

@@ -51,6 +51,9 @@
    - The component interface if present
 */
 
+#ifdef EXPORT
+#undef EXPORT
+#endif
 #ifdef HAVE_GCC_VISIBILITY
 #define EXPORT __attribute__((visibility("default")))
 #else

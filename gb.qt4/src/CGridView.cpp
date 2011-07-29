@@ -459,18 +459,20 @@ MyTable::MyTable(QWidget *parent, CGRIDVIEW *view) :
 Q3Table(0, 0, parent)
 {
 	_item = new MyTableItem(this, view);
+	GB.NewArray(POINTER(&_columns), sizeof(MyTableColumn), 0); 
 	_header = 0;
 	_rows = 0;
 	_cols = 0;
-	_last_col_width = 0;
 	_no_row = true;
 	_no_col = true;
-	_updating_last_column = false;
+	_layouting_columns = false;
 	_autoresize = true;
-	_updateLastColumn = false;
+	_layout_columns_later = false;
 	_enableUpdates = false;
 	_min_row = -1;
 	_show_grid = true;
+	_resizable = true;
+	_expand = false;
 	
 	/*viewport()->setAttribute(Qt::WA_NoSystemBackground, true);
 	viewport()->setAttribute(Qt::WA_PaintOnScreen, true);*/
@@ -486,6 +488,7 @@ Q3Table(0, 0, parent)
 
 MyTable::~MyTable()
 {
+	GB.FreeArray(POINTER(&_columns)); 
 	delete _item;
 }
 
@@ -665,9 +668,11 @@ void MyTable::setColumnWidth(int col, int width)
 		adjustColumn(col);
 	else if (width != columnWidth(col))
 		Q3Table::setColumnWidth(col, width);
-		
-	if (col == (numCols() - 1) && !_updating_last_column)
-		_last_col_width = columnWidth(numCols() - 1);
+	
+	_columns[col].width = columnWidth(col);
+	
+	//if (col == (numCols() - 1) && !_layouting_columns)
+	//		_last_col_width = columnWidth(numCols() - 1);
 }
 
 /*void MyTable::adjustColumn(int col)
@@ -733,15 +738,46 @@ Q3TableItem *MyTable::item( int row, int col ) const
 	return _item;
 }
 
+bool MyTable::isColumnExpand(int col) const
+{
+	if (col < 0 || col >= numCols())
+		return _expand;
+	else
+		return _columns[col].expand;
+}
+
+void MyTable::setColumnExpand(int col, bool v)
+{
+	if (col < 0)
+	{
+		int i;
+		
+		_expand = v;
+		for (i = 0; i < numCols(); i++)
+			_columns[col].expand = v;
+		layoutColumns();
+	}
+	else if (col < numCols() && _columns[col].expand != v)
+	{
+		_columns[col].expand = v;
+		layoutColumns();
+	}
+}
+
 void MyTable::setNumCols(int newCols)
 {
 	int i;
 	int col = numCols();
 	bool b;
 
-	if (newCols < 0)
+	if (newCols < 0 || newCols == col)
 		return;
 
+	if (newCols > col)
+		GB.Insert(POINTER(&_columns), -1, newCols - col);
+	else
+		GB.Remove(POINTER(&_columns), newCols, -1);
+	
 	BEGIN_NO_REPAINT
 	{
 		_cols = newCols;
@@ -752,20 +788,22 @@ void MyTable::setNumCols(int newCols)
 		Q3Table::setNumCols(newCols);
 		blockSignals(b);
 
-		_last_col_width = 0;
-
 		if (newCols > col)
 		{
 			bool upd = horizontalHeader()->isUpdatesEnabled();
 			horizontalHeader()->setUpdatesEnabled(false);
 
 			for (i = col; i < newCols; i++)
+			{
 				horizontalHeader()->setLabel(i, "");
+				_columns[i].expand = _expand;
+			}
 
 			horizontalHeader()->setUpdatesEnabled(upd);
 		}
 
 		clearSelection();
+		layoutColumns();
 	}
 	END_NO_REPAINT
 
@@ -985,40 +1023,68 @@ void MyTable::selectRows(int start, int length)
 	updateHeaderStates();
 }
 
-void MyTable::updateLastColumn()
+void MyTable::layoutColumns()
 {
 	int n = numCols() - 1;
+	int i, w, nx, wx;
 	
 	if (n < 0)
 		return;
 	
-	if (_updating_last_column || !_autoresize)
+	if (_layouting_columns || !_autoresize)
 		return;
-		
-	_updating_last_column = true;
 	
-	if (!_last_col_width)
-		_last_col_width = columnWidth(n);
+	_layouting_columns = true;
 	
-	if (((columnPos(n) + _last_col_width) < visibleWidth()) && (columnWidth(n) != visibleWidth() - columnPos(n)))
-		setColumnWidth(n, visibleWidth() - columnPos(n));
+	w = nx = 0;
+	for (i = 0; i <= n; i++)
+	{
+		w += _columns[i].width;
+		if (_columns[i].expand)
+			nx++;
+	}
 
-	_updating_last_column = false;
-	_updateLastColumn = false;
+	if (w < visibleWidth())
+	{
+		if (nx == 0)
+		{
+			Q3Table::setColumnWidth(n, _columns[n].width + visibleWidth() - w);
+		}
+		else
+		{
+			for (i = 0; i <= n; i++)
+			{
+				if (_columns[i].expand)
+				{
+					wx = (visibleWidth() - w) / nx;
+					Q3Table::setColumnWidth(i, _columns[i].width + wx);
+					w += wx;
+					nx--;
+					if (nx <= 0)
+						break;
+				}
+				else
+					Q3Table::setColumnWidth(i, _columns[i].width);
+			}
+		}
+	}
+	
+	_layouting_columns = false;
+	_layout_columns_later = false;
 }
 
-void MyTable::updateLastColumnLater()
+void MyTable::layoutColumnsLater()
 {
-	if (_updateLastColumn)
+	if (_layout_columns_later)
 		return;
-	_updateLastColumn = true;
-	QTimer::singleShot(0, this, SLOT(updateLastColumn()));	
+	_layout_columns_later = true;
+	QTimer::singleShot(0, this, SLOT(layoutColumns()));	
 }
 
 void MyTable::resizeEvent(QResizeEvent *e)
 {
 	Q3Table::resizeEvent(e);
-	updateLastColumn();
+	layoutColumnsLater();
 }
 
 void MyTable::columnWidthChanged(int col)
@@ -1026,7 +1092,8 @@ void MyTable::columnWidthChanged(int col)
 	//qDebug("MyTable::columnWidthChanged");
 	Q3Table::columnWidthChanged(col);
 	//if (col != (numCols() - 1))
-	updateLastColumnLater();
+	if (!_layouting_columns)
+		layoutColumnsLater();
 }
 
 QRect MyTable::cellGeometry(int row, int col) const
@@ -1718,7 +1785,7 @@ BEGIN_PROPERTY(CGRIDCOLS_width)
 		else
 			WIDGET->setColumnWidth(col, VPROP(GB_INTEGER));
 		
-		WIDGET->updateLastColumn();
+		WIDGET->layoutColumns();
 	}
 
 END_PROPERTY
@@ -1734,7 +1801,7 @@ BEGIN_PROPERTY(CGRIDCOLS_height)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CGRIDCOLS_resizable)
+BEGIN_PROPERTY(GridViewColumn_Resizable)
 
 	int col = THIS->col;
 
@@ -1742,6 +1809,17 @@ BEGIN_PROPERTY(CGRIDCOLS_resizable)
 		GB.ReturnBoolean(WIDGET->horizontalHeader()->isResizeEnabled(col));
 	else
 		WIDGET->horizontalHeader()->setResizeEnabled(VPROP(GB_BOOLEAN), col);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(GridViewColumn_Expand)
+
+	int col = THIS->col;
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(WIDGET->isColumnExpand(col));
+	else
+		WIDGET->setColumnExpand(col, VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
@@ -2227,7 +2305,8 @@ GB_DESC CGridColumnDesc[] =
 	GB_PROPERTY("Text", "s", CGRIDCOLS_text),
 	GB_PROPERTY("Title", "s", CGRIDCOLS_text),
 	GB_METHOD("Refresh", NULL, CGRIDCOLS_refresh, NULL),
-	GB_PROPERTY("Resizable", "b", CGRIDCOLS_resizable),
+	GB_PROPERTY("Resizable", "b", GridViewColumn_Resizable),
+	GB_PROPERTY("Expand", "b", GridViewColumn_Expand),
 
 	GB_END_DECLARE
 };
@@ -2266,7 +2345,8 @@ GB_DESC CGridColumnsDesc[] =
 	GB_PROPERTY("W", "i", CGRIDCOLS_width),
 	GB_PROPERTY_READ("Height", "i", CGRIDCOLS_height),
 	GB_PROPERTY_READ("H", "i", CGRIDCOLS_height),
-	GB_PROPERTY("Resizable", "b", CGRIDCOLS_resizable),
+	GB_PROPERTY("Resizable", "b", GridViewColumn_Resizable),
+	//GB_PROPERTY("Expand", "b", GridViewColumn_Expand),
 	//GB_PROPERTY("Moveable", "b", CGRIDCOLS_moveable),
 	//GB_METHOD("Remove", NULL, CGRIDCOLS_remove, "(Start)i[(Length)i]"),
 	//GB_METHOD("Insert", NULL, CGRIDCOLS_insert, "(Start)i[(Length)i]"),
@@ -2304,7 +2384,7 @@ GB_DESC CGridViewDesc[] =
 	GB_PROPERTY("Header", "i", CGRIDVIEW_header),
 	GB_PROPERTY("Mode", "i", CGRIDVIEW_mode),
 	GB_PROPERTY("AutoResize", "b", CGRIDVIEW_autoresize),
-	GB_PROPERTY("Resizable", "b", CGRIDCOLS_resizable),
+	GB_PROPERTY("Resizable", "b", GridViewColumn_Resizable),
 
 	GB_METHOD("RowAt", "i", CGRIDVIEW_row_at, "(Y)i"),
 	GB_METHOD("ColumnAt", "i", CGRIDVIEW_column_at,"(X)i"),

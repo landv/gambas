@@ -119,6 +119,12 @@ private:
 	MyTableData *_data;
 };
 
+struct MyTableColumn
+{
+	int width;
+	bool expand;
+};
+
 class MyTable : public Q3Table
 {
 	Q_OBJECT
@@ -169,11 +175,14 @@ public:
 	void moveItem(int srow, int scol, int drow, int dcol) { _item->move(srow, scol, drow, dcol); }
 
 	bool isAutoResize() const { return _autoresize; }
-	void setAutoResize(bool v) { _autoresize = v; updateLastColumn(); }
+	void setAutoResize(bool v) { _autoresize = v; layoutColumns(); }
 	
 	bool hasGrid() const { return _show_grid; }
 	void setGrid(bool v) { _show_grid = v; viewport()->update(); }
 
+	bool isColumnExpand(int col) const;
+	void setColumnExpand(int col, bool v);
+	
 	virtual QRect cellGeometry(int row, int col) const;
 	
 	//virtual QRect cellRect(int row, int col) const
@@ -187,7 +196,7 @@ public slots:
 	virtual void setNumRows(int);
 	virtual void columnWidthChanged(int col);
 	virtual void rowHeightChanged(int col);
-	void updateLastColumn();
+	void layoutColumns();
 	virtual void setContentsPos(int x, int y);
 	
 private slots:
@@ -202,20 +211,22 @@ protected:
 private:
 
 	void updateHeaders();
-	void updateLastColumnLater();
+	void layoutColumnsLater();
 	int _header;
 	MyTableItem *_item;
+	MyTableColumn *_columns;
 	int _rows;
 	int _cols;
 	bool _no_row;
 	bool _no_col;
-	int _last_col_width;
-	bool _updating_last_column;
+	bool _layouting_columns;
+	bool _layout_columns_later;
 	bool _autoresize;
-	bool _updateLastColumn;
 	bool _enableUpdates;
 	int _min_row;
 	bool _show_grid;
+	bool _expand;
+	bool _resizable;
 };
 
 class CGridView : public QObject

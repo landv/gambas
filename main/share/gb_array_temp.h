@@ -190,7 +190,7 @@ void ARRAY_remove_many(void *p_data, int pos, int count)
   if ((pos < 0) || (pos >= array->count))
     return;
 
-  if (count > (array->count - pos))
+  if (count < 0 || count > (array->count - pos))
     count = array->count - pos;
 
   addr = ((char *)(*data)) + array->size * pos;

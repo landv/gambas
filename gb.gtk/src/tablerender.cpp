@@ -285,7 +285,6 @@ void gTable::setColumnCount(int number)
 
 gTableData *gTable::getData(int row, int col, bool create)
 {
-	static gTableData cell;
 	gTableData *d;
 	gTablePair pair = {row, col};
 	gTablePair *key;
@@ -306,9 +305,9 @@ gTableData *gTable::getData(int row, int col, bool create)
 		}
 		else
 		{
-			cell.clear();
-			if (voidCell) voidCell(&cell, row, col, userData);
-			d = &cell;
+			static_cell.clear();
+			if (voidCell) voidCell(&static_cell, row, col, userData);
+			d = &static_cell;
 		}
 	}
 		

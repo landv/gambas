@@ -135,7 +135,7 @@ static void gGridView_vbar(GtkAdjustment *adj,gGridView *data)
 
 static gboolean gGridView_configure(GtkWidget *w,GdkEventConfigure *e,gGridView *data)
 {
-	data->updateLastColumn();
+	data->layoutColumns();
 	data->calculateBars();
 	return false;
 }
@@ -170,8 +170,6 @@ static gboolean tbheader_move(GtkWidget *wid, GdkEventMotion *e, gGridView *data
 			min = data->minColumnWidth(data->_index);
 			width = pos - data->columnPos(data->_index);
 			width = Max(width, min);
-			if (data->_index == (data->columnCount() - 1))
-				data->_last_col_width = 0;
 			data->setColumnWidth(data->_index, width);
 		}
 	}
@@ -804,13 +802,12 @@ gGridView::gGridView(gContainer *parent) : gControl(parent)
 	scroll=3;
 	hdata=NULL;
 	vdata=NULL;
-	_last_col_width = 0;
 	scroll_timer = 0;
-	_updating_last_column = false;
+	_layouting_columns = false;
 	_autoresize = true;
 	_show_headers = 0;
 	_show_footers = false;
-
+	
 	border=gtk_event_box_new();
 	//gtk_event_box_set_visible_window(GTK_EVENT_BOX(border), false);
 	
@@ -894,6 +891,8 @@ gGridView::gGridView(gContainer *parent) : gControl(parent)
 	g_object_set(G_OBJECT(footer),"visible",FALSE,(void *)NULL);
 	g_object_set(G_OBJECT(widget),"can-focus",TRUE,(void *)NULL);
 
+	gtk_widget_realize(header);
+	gtk_widget_realize(lateral);
 	gtk_widget_realize(footer);
 	gtk_widget_realize(contents);
 
@@ -1160,11 +1159,13 @@ int gGridView::clientY()
 
 int gGridView::clientWidth()
 {
+	calculateBars();
 	return render->visibleWidth();
 }
 
 int gGridView::clientHeight()
 {
+	calculateBars();
 	return render->visibleHeight();
 }
 
@@ -1252,22 +1253,33 @@ void gGridView::setColumnCount(int vl)
 {
 	int old, i;
 	
-	if (vl<0) vl=0;
+	if (vl < 0) 
+		vl = 0;
 
 	old = columnCount();
 	if (old == vl) return;
 	
 	lock();
 	
+	if (vl == 0)
+		g_free(_columns);
+	else if (!_columns)
+		_columns = g_new(gGridViewColumn, vl);
+	else
+		_columns = g_renew(gGridViewColumn, _columns, vl);
+	
 	render->setColumnCount(vl);
 	render->doNotInvalidate = true;
 	for (i = old; i < vl; i++)
+	{
 		render->setColumnSize(i, 80);
+		_columns[i].expand = false;
+		_columns[i].width = 0;
+	}
 	render->doNotInvalidate = false;
 
 	unlock();
-	_last_col_width = 0;
-	updateLastColumn();
+	layoutColumns();
 	calculateBars();
 
 	if (vl==0) cursor_col=-1;
@@ -1415,7 +1427,7 @@ int gGridView::bestColumnWidth(int index)
 	return w;
 }
 
-void gGridView::setColumnWidth(int index,int vl)
+void gGridView::setColumnWidth(int index, int vl)
 {
 	if (index < 0 || index >= columnCount())
 		return;
@@ -1426,8 +1438,9 @@ void gGridView::setColumnWidth(int index,int vl)
 	if (vl == columnWidth(index))
 		return;
 		
-	render->setColumnSize(index,vl);
-	updateLastColumn();
+	render->setColumnSize(index, vl);
+	_columns[index].width = vl;
+	layoutColumns();
 	
 	gtk_widget_queue_draw(header);
 	gtk_widget_queue_draw(footer);
@@ -1959,31 +1972,54 @@ void gGridView::setForeground(gColor color)
 	//set_gdk_fg_color(lateral, color);
 }
 
-void gGridView::updateLastColumn()
+void gGridView::layoutColumns()
 {
 	int n = columnCount() - 1;
 	int vw = clientWidth();
+	int i, w, nx, wx;
 	
 	if (n < 0)
 		return;
 		
-	if (_updating_last_column || !_autoresize)
+	if (_layouting_columns || !_autoresize)
 		return;
 		
-	_updating_last_column = true;
+	_layouting_columns = true;
 	
-	if (!_last_col_width)
-		_last_col_width = columnWidth(n);
-	
-	//fprintf(stderr, "updateLastColumn: vw = %d columnPos = %d %d _lcw = %d \n", vw, columnPos(n), columnPos(n), _last_col_width);
-	
-	if (((columnPos(n) + _last_col_width) < vw) && (columnWidth(n) != (vw - columnPos(n))))
+	w = nx = 0;
+	for (i = 0; i <= n; i++)
 	{
-		//fprintf(stderr, "updateLastColumn: vw = %d -> %d\n", vw, vw - columnPos(n));
-		setColumnWidth(n, vw - columnPos(n));
+		w += _columns[i].width;
+		if (_columns[i].expand)
+			nx++;
 	}
 
-	_updating_last_column = false;
+	if (w < vw)
+	{
+		if (nx == 0)
+		{
+			render->setColumnSize(n, _columns[n].width + vw - w);
+		}
+		else
+		{
+			for (i = 0; i <= n; i++)
+			{
+				if (_columns[i].expand)
+				{
+					wx = (vw - w) / nx;
+					render->setColumnSize(i, _columns[i].width + wx);
+					w += wx;
+					nx--;
+					if (nx <= 0)
+						break;
+				}
+				else
+					render->setColumnSize(i, _columns[i].width);
+			}
+		}
+	}
+	
+	_layouting_columns = false;
 }
 
 void gGridView::startScrollTimer(GSourceFunc func)
@@ -2007,7 +2043,7 @@ void gGridView::stopScrollTimer()
 void gGridView::setAutoResize(bool v)
 {
 	_autoresize = v;
-	updateLastColumn();
+	layoutColumns();
 }
 
 void gGridView::setItemSpan(int row, int col, int rowspan, int colspan)
@@ -2030,3 +2066,19 @@ void gGridView::afterMap()
 	setFootersVisible(_show_footers);
 }
 
+bool gGridView::isColumnExpand(int col) const
+{
+	if (col < 0 || col >= columnCount())
+		return false;
+	else
+		return _columns[col].expand;
+}
+
+void gGridView::setColumnExpand(int col, bool v)
+{
+	if (col < columnCount() && _columns[col].expand != v)
+	{
+		_columns[col].expand = v;
+		layoutColumns();
+	}
+}

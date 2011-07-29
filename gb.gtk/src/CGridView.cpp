@@ -537,6 +537,17 @@ BEGIN_METHOD_VOID(CGRIDCOL_refresh)
 
 END_METHOD
 
+BEGIN_PROPERTY(GridViewColumn_Expand)
+
+	int col = THIS->col;
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(WIDGET->isColumnExpand(col));
+	else
+		WIDGET->setColumnExpand(col, VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
 
 /*************************************************
 
@@ -1026,16 +1037,17 @@ GB_DESC CGridViewDataDesc[] =
 GB_DESC CGridViewColumnDesc[] =
 {
   GB_DECLARE(".GridViewColumn", 0), GB_VIRTUAL_CLASS(),
-  GB_PROPERTY("Resizable","b",CGRIDVIEW_column_resizable),
+  
   GB_PROPERTY_READ("X", "i", CGRIDVIEWITEM_x),
   GB_PROPERTY_READ("Left", "i", CGRIDVIEWITEM_x),
   GB_PROPERTY("Width", "i", CGRIDVIEW_column_width),
   GB_PROPERTY("W", "i", CGRIDVIEW_column_width),
   GB_PROPERTY("Text","s",CGRIDVIEW_column_headertext),
   GB_PROPERTY("Title","s",CGRIDVIEW_column_headertext),
-  //GB_PROPERTY("HeaderText","s",CGRIDVIEW_column_headertext),
-  //GB_PROPERTY("FooterText","s",CGRIDVIEW_column_footertext),
   GB_METHOD("Refresh", 0, CGRIDCOL_refresh, 0),
+  GB_PROPERTY("Resizable", "b", CGRIDVIEW_column_resizable),
+  GB_PROPERTY("Expand", "b", GridViewColumn_Expand),
+  
   GB_END_DECLARE
 };
 

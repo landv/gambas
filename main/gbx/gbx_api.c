@@ -1652,7 +1652,8 @@ void GB_HashTableEnum(GB_HASHTABLE hash, GB_HASHTABLE_ENUM_FUNC func)
 void GB_NewArray(void *pdata, int size, int count)
 {
   ARRAY_create_with_size(pdata, size, 16);
-  ARRAY_add_data(pdata, count, TRUE);
+  if (count)
+		ARRAY_add_data(pdata, count, TRUE);
 }
 
 

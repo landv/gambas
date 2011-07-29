@@ -59,9 +59,9 @@ public:
 
 class gTableSpan
 {
-	public:
-		char rowspan;
-		char colspan;
+public:
+	char rowspan;
+	char colspan;
 };
 
 
@@ -85,35 +85,35 @@ public:
 
 	bool doNotInvalidate;
 
-	int columnCount   ();
-	int rowCount      ();
-	void          setRowCount      (int number);
-	void          setColumnCount   (int number);
-	char*         getFieldText     (int row, int col);
-	void          setFieldText     (int row, int col, const char * value);
-	char*         getFieldRichText     (int row, int col);
-	void          setFieldRichText     (int row, int col, const char * value);
+	int columnCount();
+	int rowCount();
+	void setRowCount(int number);
+	void setColumnCount(int number);
+	char *getFieldText(int row, int col);
+	void setFieldText(int row, int col, const char * value);
+	char *getFieldRichText(int row, int col);
+	void setFieldRichText(int row, int col, const char * value);
 
 	gTableData *getData(int row, int col, bool create = false);
 	
 	int getColumnPos(int index);
 	int getRowPos(int index);
-	int           getColumnSize    (int position);
-	void          setColumnSize    (int position,int value);
-	int           getRowSize       (int position);
-	void          setRowSize       (int position,int value);
-	bool          getRowSelected   (int position);
-	void          setRowSelected   (int position,bool value);
+	int getColumnSize(int position);
+	void setColumnSize(int position, int value);
+	int getRowSize(int position);
+	void setRowSize(int position, int value);
+	bool getRowSelected(int position);
+	void setRowSelected(int position, bool value);
 	
-	void          clearField       (int row, int col);
-	gColor        getFieldFg       (int row, int col);
-	void          setFieldFg       (int row, int col,gColor value);
-	gColor        getFieldBg       (int row, int col);
-	void          setFieldBg       (int row, int col,gColor value);
-	int           getFieldPadding  (int row, int col);
-	void          setFieldPadding  (int row, int col,int value);
-	int           getFieldAlignment  (int row, int col);
-	void          setFieldAlignment  (int row, int col,int value);
+	void clearField(int row, int col);
+	gColor getFieldFg(int row, int col);
+	void setFieldFg(int row, int col, gColor value);
+	gColor getFieldBg (int row, int col);
+	void setFieldBg(int row, int col, gColor value);
+	int getFieldPadding(int row, int col);
+	void setFieldPadding(int row, int col, int value);
+	int getFieldAlignment(int row, int col);
+	void setFieldAlignment(int row, int col, int value);
 	gPicture *getFieldPicture(int row, int col);
 	void setFieldPicture(int row, int col, gPicture *value);
 	gFont *getFieldFont(int row, int col);
@@ -123,47 +123,50 @@ public:
 	bool getFieldWordWrap(int row, int col);
 	void setFieldWordWrap(int row, int col, bool value);
 	
-	bool          getFieldSelected (int row, int col);
-	void          setFieldSelected (int row, int col,bool value);
+	bool getFieldSelected (int row, int col);
+	void setFieldSelected (int row, int col, bool value);
 	
 	void setSpan(int row, int col, int rowspan, int colspan);
 	void getSpan(int row, int col, int *rowspan, int *colspan);
   
   void moveCell(int srow, int scol, int drow, int dcol);
 	
-	void          (*voidCell)       (gTableData *fill, int row, int col, void *user);
-	void          *userData;
+	void (*voidCell)(gTableData *fill, int row, int col, void *user);
+	void *userData;
+
+private:
+	
+	gTableData static_cell;	
 };
 
 class gTableRender : public gTable
 {
 public:
 	gGridView *view;
-	GtkWidget            *sf;
-	GtkCellRendererText  *txt;
+	GtkWidget *sf;
+	GtkCellRendererText *txt;
 	GtkCellRendererPixbuf *pix;
-	int                   offX;
-	int                   offY;
-	bool                  grid;
-
-	void          renderCell(gTableData *data,GdkGC *gc,GdkRectangle *rect,bool sel);
-
+	int offX;
+	int offY;
+	bool grid;
 	int firstRow, offRow;
 	int firstCol, offCol;
-	
-	gTableRender  (gGridView *v);
-	~gTableRender ();
 
-	int           visibleWidth      ();
-	int           visibleHeight     ();
-	int           width             ();
-	int           height            ();
-	int           getOffsetX        ();
-	int           getOffsetY        ();
-	bool          drawGrid          ();
-	void          setOffsetX        (int vl);
-	void          setOffsetY        (int vl);
-	void          render            (GdkRectangle *ar=NULL);
+	void renderCell(gTableData *data, GdkGC *gc, GdkRectangle *rect, bool sel);
+
+	gTableRender(gGridView *v);
+	~gTableRender();
+
+	int visibleWidth();
+	int visibleHeight();
+	int width();
+	int height();
+	int getOffsetX();
+	int getOffsetY();
+	bool drawGrid();
+	void setOffsetX(int vl);
+	void setOffsetY(int vl);
+	void render(GdkRectangle *ar = NULL);
 	
 	int findVisibleRow(int y);
 	int findVisibleColumn(int x);
@@ -172,21 +175,21 @@ public:
 
   void removeRows(int start, int length);
   void insertRows(int start, int length);
-	void          clearSelection    ();
+	void clearSelection();
 	void selectRows(int start, int length, bool value);
-	void          queryUpdate       (int row,int col);
-	void          setDrawGrid       (bool vl);
-	void          setRowSize        (int position,int value);
-	void          setRowSelected    (int position,bool value);
-	void          setColumnSize     (int position,int value);
-	void          clearField        (int row, int col);
-	void          setFieldText      (int row, int col, const char* value);
-	void          setFieldRichText      (int row, int col, const char* value);
-	void          setFieldFg        (int row, int col,gColor value);
-	void          setFieldBg        (int row, int col,gColor value);
-	void          setFieldPadding   (int row, int col,int value);
+	void queryUpdate(int row, int col);
+	void setDrawGrid(bool vl);
+	void setRowSize(int position, int value);
+	void setRowSelected(int position, bool value);
+	void setColumnSize(int position, int value);
+	void clearField(int row, int col);
+	void setFieldText(int row, int col, const char* value);
+	void setFieldRichText(int row, int col, const char* value);
+	void setFieldFg(int row, int col, gColor value);
+	void setFieldBg(int row, int col, gColor value);
+	void setFieldPadding(int row, int col, int value);
 	//void          setFieldYPad      (int row, int col,int value);
-	void          setFieldSelected  (int row, int col,bool value);
+	void setFieldSelected(int row, int col, bool value);
 	void setFieldPicture(int row, int col, gPicture *value);
 	void setFieldFont(int row, int col, gFont *value);
 	void setFieldWordWrap(int row, int col, bool value);
