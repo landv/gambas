@@ -1106,7 +1106,7 @@ Static Private Sub MustScan(hEditor As FEditor) As Boolean
 
   If hEditor.ParentClass Then 
     sParent = hEditor.ParentClass
-    hParentEditor = GetModule(sParent)
+    Try hParentEditor = GetModule(sParent) ' The user can decide that the parent is a form by error!
     If hParentEditor And If hParentEditor <> hEditor Then 
       hEditor.ParentClass = "" ' Avoid circular inheritance
       bTest = MustScan(hParentEditor)
