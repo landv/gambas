@@ -66,9 +66,7 @@ Thu Aug 16 2001 */
 int libsmtp_mime_headers (struct libsmtp_session_struct *libsmtp_session)
 {
    /* If we use the MIME functionality, we need to send some stuff */
-   int libsmtp_temp;
    GString *libsmtp_temp_gstring;
-   char *libsmtp_temp_string;
    struct libsmtp_part_struct *libsmtp_temp_part;
 
    libsmtp_temp_gstring=g_string_new (NULL);
@@ -139,18 +137,16 @@ int libsmtp_mime_headers (struct libsmtp_session_struct *libsmtp_session)
     libsmtp_temp_part=libsmtp_session->Parts->data;
 
     /* We should check for valied MIME settings first */
-    if ((libsmtp_temp=libsmtp_int_check_part (libsmtp_temp_part)))
+    /*if ((libsmtp_temp=libsmtp_int_check_part (libsmtp_temp_part)))
     {
       libsmtp_session->ErrorCode=libsmtp_temp;
       return libsmtp_temp;
-    }
+    }*/
 
     /* Then we look up the names of the MIME settings of the main body part
        and send them as headers */
 
-    g_string_sprintf (libsmtp_temp_gstring, "Content-Type: %s/%s", \
-       libsmtp_int_lookup_mime_type (libsmtp_temp_part), \
-       libsmtp_int_lookup_mime_subtype (libsmtp_temp_part));
+    g_string_sprintf(libsmtp_temp_gstring, "Content-Type: %s/%s", libsmtp_temp_part->Type->str, libsmtp_temp_part->Subtype->str);
 
     #ifdef LIBSMTP_DEBUG
       printf ("libsmtp_mime_headers: %s. Type: %d/%d\n", libsmtp_temp_gstring->str, \
@@ -163,7 +159,7 @@ int libsmtp_mime_headers (struct libsmtp_session_struct *libsmtp_session)
     /* Multipart parts need a boundary set. We define it as a fixed string
        at the moment, with an added dynamic number. This is always 1 here. */
 
-    if (libsmtp_temp_part->Type==LIBSMTP_MIME_MULTIPART)
+    if (libsmtp_part_is_type(libsmtp_temp_part, "multipart"))
     {
 			libsmtp_set_boundary(libsmtp_temp_part, 0);
 
@@ -179,25 +175,22 @@ int libsmtp_mime_headers (struct libsmtp_session_struct *libsmtp_session)
     }
 
     /* Text and message parts will have a charset setting */
-    if ((libsmtp_temp_part->Type==LIBSMTP_MIME_TEXT) ||
-        (libsmtp_temp_part->Type==LIBSMTP_MIME_MESSAGE))
-      if ((libsmtp_temp_string = (char *)libsmtp_int_lookup_mime_charset(libsmtp_temp_part)))
-      {
-        g_string_sprintf (libsmtp_temp_gstring, "; charset=\"%s\"", \
-           libsmtp_temp_string);
+    if (libsmtp_part_is_type(libsmtp_temp_part, "text") || libsmtp_part_is_type(libsmtp_temp_part, "message"))
+			if (!g_string_is_void(libsmtp_temp_part->Charset))
+			{
+				g_string_sprintf (libsmtp_temp_gstring, "; charset=\"%s\"", libsmtp_temp_part->Charset->str);
 
-        if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 1))
-          return LIBSMTP_ERRORSENDFATAL;
+				if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 1))
+					return LIBSMTP_ERRORSENDFATAL;
 
-        #ifdef LIBSMTP_DEBUG
-          printf ("libsmtp_mime_headers: %s", libsmtp_temp_gstring->str);
-        #endif
-      }
+				#ifdef LIBSMTP_DEBUG
+					printf ("libsmtp_mime_headers: %s", libsmtp_temp_gstring->str);
+				#endif
+			}
 
     /* We need a transfer encoding, too */
 
-    g_string_sprintf (libsmtp_temp_gstring, "\r\nContent-Transfer-Encoding: %s\r\n", \
-       libsmtp_int_lookup_mime_encoding (libsmtp_temp_part));
+    g_string_sprintf (libsmtp_temp_gstring, "\r\nContent-Transfer-Encoding: %s\r\n", libsmtp_int_lookup_mime_encoding (libsmtp_temp_part));
 
     #ifdef LIBSMTP_DEBUG
       printf ("libsmtp_mime_headers: %s\n", libsmtp_temp_gstring);

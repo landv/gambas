@@ -29,6 +29,8 @@
   #include <glib.h>
 #endif
 
+#define g_string_is_void(_str) (!(_str)->str || !*((_str)->str))
+
 //#define LIBSMTP_DEBUG
 
 #define WITH_MIME

@@ -29,88 +29,14 @@
 
 static char *_tmp = NULL;
 
-typedef
-	struct {
-		char *constant;
-		int value;
-		}
-	MIME_FIND;
-
-static MIME_FIND _types[] =
-{
-	{ "text",           		LIBSMTP_MIME_TEXT									},
-	{ "message",        		LIBSMTP_MIME_MESSAGE							},
-	{ "image",          		LIBSMTP_MIME_IMAGE	        			},
-	{ "audio",          		LIBSMTP_MIME_AUDIO	        			},
-	{ "video",          		LIBSMTP_MIME_VIDEO	        			},
-	{ "application",    		LIBSMTP_MIME_APPLICATION	  			},
-	{ "multipart",      		LIBSMTP_MIME_MULTIPART	    			},
-	{ "custom!!",       		LIBSMTP_MIME_CUSTOM	        			},
-
-	{ "plain",              LIBSMTP_MIME_SUB_PLAIN	          },
-	{ "html",               LIBSMTP_MIME_SUB_HTML	            },
-	{ "english",            LIBSMTP_MIME_SUB_ENGLISH	        },
-	{ "richtext",           LIBSMTP_MIME_SUB_RICHTEXT	        },
-
-	{ "rfc822",             LIBSMTP_MIME_SUB_RFC822	          },
-	{ "partial",            LIBSMTP_MIME_SUB_PARTIAL          },
-
-	{ "gif",                LIBSMTP_MIME_SUB_GIF              },
-	{ "jpeg",               LIBSMTP_MIME_SUB_JPG              },
-	{ "png",                LIBSMTP_MIME_SUB_PNG              },
-	{ "tiff",               LIBSMTP_MIME_SUB_TIFF             },
-	{ "x-ms-bmp",           LIBSMTP_MIME_SUB_MS_BMP	          },
-	{ "x-xbitmap",          LIBSMTP_MIME_SUB_XBITMAP          },
-	{ "x-xpixmap",          LIBSMTP_MIME_SUB_XPIXMAP          },
-	{ "x-portable-anymap",  LIBSMTP_MIME_SUB_PORTABLE_ANYMAP	},
-	{ "x-portable-bitmap",  LIBSMTP_MIME_SUB_PORTABLE_BITMAP	},
-	{ "x-portable-graymap", LIBSMTP_MIME_SUB_PORTABLE_GRAYMAP },
-	{ "x-portable-pixmap",  LIBSMTP_MIME_SUB_PORTABLE_PIXMAP	},
-
-	{ "mpeg",               LIBSMTP_MIME_SUB_MPEGAUD          },
-	{ "midi",               LIBSMTP_MIME_SUB_MIDI             },
-	{ "x-wav",              LIBSMTP_MIME_SUB_WAV	            },
-	{ "x-aiff",             LIBSMTP_MIME_SUB_AIFF	            },
-
-	{ "mpeg",               LIBSMTP_MIME_SUB_MPEGVID          },
-	{ "x-ms-video",         LIBSMTP_MIME_SUB_MSVIDEO	        },
-	{ "quicktime",          LIBSMTP_MIME_SUB_QUICKTIME	      },
-	{ "fli",                LIBSMTP_MIME_SUB_FLI	            },
-
-	{ "rtf",                LIBSMTP_MIME_SUB_RTF	            },
-	{ "postscript",         LIBSMTP_MIME_SUB_POSTSCRIPT	      },
-	{ "pdf",                LIBSMTP_MIME_SUB_PDF              },
-	{ "zip",                LIBSMTP_MIME_SUB_ZIP	            },
-	{ "x-debian-package",   LIBSMTP_MIME_SUB_DEBIAN_PACKAGE	  },
-	{ "x-executable",       LIBSMTP_MIME_SUB_EXECUTABLE	      },
-	{ "x-gtar",             LIBSMTP_MIME_SUB_GTAR	            },
-	{ "x-shellscript",      LIBSMTP_MIME_SUB_SHELLSCRIPT	    },
-	{ "x-tar",              LIBSMTP_MIME_SUB_TAR	            },
-	{ "octet-stream",       LIBSMTP_MIME_SUB_OCTET_STREAM	    },
-
-	{ "mixed",              LIBSMTP_MIME_SUB_MIXED	          },
-	{ "parallel",           LIBSMTP_MIME_SUB_PARALLEL	        },
-	{ "digest",             LIBSMTP_MIME_SUB_DIGEST	          },
-	{ "alternative",        LIBSMTP_MIME_SUB_ALTERNATIVE      },
-
-	{ NULL, 0 }
-};
-
-static MIME_FIND _charsets[] =
-{
-	{ "us-ascii",           LIBSMTP_CHARSET_USASCII	          },
-	{ "iso-8859-1",         LIBSMTP_CHARSET_ISO8859_1	        },
-	{ "iso-8859-2",         LIBSMTP_CHARSET_ISO8859_2	        },
-	{ "iso-8859-3",         LIBSMTP_CHARSET_ISO8859_3	        },
-	{ "iso-8859-15",        LIBSMTP_CHARSET_ISO8859_15        },
-	{ "utf-8",              LIBSMTP_CHARSET_UTF_8             },
-
-	{ NULL, 0 }
-};
+static char *_mime_type = NULL;
+static char *_mime_subtype = NULL;
+static char *_mime_charset = NULL;
+static int _mime_encoding = 0;
 
 static char *get_address(char *address)
 {
-	long len;
+	int len;
 
 	GB.FreeString(&_tmp);
 
@@ -144,38 +70,21 @@ static bool send_recipient(struct libsmtp_session_struct *session, GB_ARRAY rec,
 	return FALSE;
 }
 
-static int find_constant(MIME_FIND *table, char *str, int len)
-{
-	if (len <= 0)
-		len = strlen(str);
-
-	if (len >= 2 && str[0] == '"' && str[len -1] == '"')
-	{
-		str++;
-		len--;
-	}
-
-	while (table->constant)
-	{
-		if (strncasecmp(table->constant, str, len) == 0)
-			return table->value;
-		table++;
-	}
-
-	return (-1);
-}
-
-static int decode_mime(char *mime, int *type, int *subtype, int *encoding, int *charset)
+static int decode_mime(char *mime)
 {
 	char *p, *p2;
 
-  *charset = find_constant(_charsets, GB.System.Charset(), 0);
-
+	GB.FreeString(&_mime_type);
+	GB.FreeString(&_mime_subtype);
+	GB.FreeString(&_mime_charset);
+	
+	_mime_charset = GB.NewZeroString(GB.System.Charset());
+	
 	if (!mime || !*mime)
 	{
-		*type = LIBSMTP_MIME_TEXT;
-		*subtype = LIBSMTP_MIME_SUB_PLAIN;
-		*encoding = LIBSMTP_ENC_QUOTED;
+		_mime_type = GB.NewZeroString("text");
+		_mime_subtype = GB.NewZeroString("plain");
+		_mime_encoding = LIBSMTP_ENC_QUOTED;
 		return FALSE;
 	}
 
@@ -187,18 +96,14 @@ static int decode_mime(char *mime, int *type, int *subtype, int *encoding, int *
 		return TRUE;
 	}
 
-	*type = find_constant(_types, p, p2 - p);
-	if (*type < 0)
-	{
-		GB.Error("Unknown MIME type");
-		return TRUE;
-	}
+	_mime_type = GB.NewString(p, p2 - p);
 
 	p = p2 + 1;
 	p2 = index(p, ';');
 	if (p2)
 	{
-		*subtype = find_constant(_types, p, p2 - p);
+		_mime_subtype = GB.NewString(p, p2 - p);
+		
 		p = p2 + 1;
 		if (strncasecmp(p, "CHARSET=", 8))
 		{
@@ -206,37 +111,23 @@ static int decode_mime(char *mime, int *type, int *subtype, int *encoding, int *
 			return TRUE;
 		}
 		p += 8;
-		*charset = find_constant(_charsets, p, &mime[strlen(mime)] - p);
+		_mime_charset = GB.NewString(p, &mime[strlen(mime)] - p);
 	}
 	else
 	{
-		*subtype = find_constant(_types, p, &mime[strlen(mime)] - p);
+		_mime_subtype = GB.NewString(p, &mime[strlen(mime)] - p);
 	}
 
-	if (*subtype < 0)
+	if (!strcmp(_mime_type, "text") || !strcmp(_mime_type, "message"))
 	{
-		GB.Error("Unknown MIME subtype");
-		return TRUE;
-	}
-
-	if (*type == LIBSMTP_MIME_TEXT || *type == LIBSMTP_MIME_MESSAGE)
-	{
-		*encoding = LIBSMTP_ENC_QUOTED;
-
-		if (*charset < 0)
-		{
-			GB.Error("Unknown MIME charset");
-			return TRUE;
-		}
+		_mime_encoding = LIBSMTP_ENC_QUOTED;
 	}
 	else
 	{
-		*charset = LIBSMTP_CHARSET_NOCHARSET;
-
-		if (*type == LIBSMTP_MIME_MULTIPART)
-			*encoding = LIBSMTP_ENC_7BIT;
+		if (!strcmp(_mime_type, "multipart"))
+			_mime_encoding = LIBSMTP_ENC_7BIT;
 		else
-			*encoding = LIBSMTP_ENC_BASE64;
+			_mime_encoding = LIBSMTP_ENC_BASE64;
 	}
 
 	return FALSE;
@@ -304,7 +195,6 @@ static bool begin_session(CSMTPCLIENT *_object)
 	int parent;
 	struct libsmtp_part_struct *parent_part;
 	int i;
-	int type, subtype, encoding, charset;
 	char buffer[24];
 	char *name;
 	
@@ -333,7 +223,7 @@ static bool begin_session(CSMTPCLIENT *_object)
 	{
 		p = &THIS->parts[0];
 		
-		if (decode_mime(p->mime, &type, &subtype, &encoding, &charset))
+		if (decode_mime(p->mime))
 			return TRUE;
 	
 		name = p->name;
@@ -342,7 +232,7 @@ static bool begin_session(CSMTPCLIENT *_object)
 			
 		parent_part = NULL;
 	
-		part = libsmtp_part_new(parent_part, type, subtype, encoding, charset, name, -1, THIS->session);
+		part = libsmtp_part_new(parent_part, _mime_type, _mime_subtype, _mime_encoding, _mime_charset, name, -1, THIS->session);
 		if (!part)
 		{
 			GB.Error("Cannot add part: &1", libsmtp_strerr(THIS->session));
@@ -361,14 +251,14 @@ static bool begin_session(CSMTPCLIENT *_object)
 		
 		for (i = 0; i < npart; i++)
 		{
-			if (decode_mime(THIS->parts[i].mime, &type, &subtype, &encoding, &charset))
+			if (decode_mime(THIS->parts[i].mime))
 				return TRUE;
 		}
 	
 		if (THIS->alternative)
-			main_part = libsmtp_part_new(NULL, LIBSMTP_MIME_MULTIPART, LIBSMTP_MIME_SUB_ALTERNATIVE, LIBSMTP_ENC_7BIT, LIBSMTP_CHARSET_NOCHARSET, "MIME main part", -1, THIS->session);
+			main_part = libsmtp_part_new(NULL, "multipart", "alternative", LIBSMTP_ENC_7BIT, NULL, "MIME main part", -1, THIS->session);
 		else
-			main_part = libsmtp_part_new(NULL, LIBSMTP_MIME_MULTIPART, LIBSMTP_MIME_SUB_MIXED, LIBSMTP_ENC_7BIT, LIBSMTP_CHARSET_NOCHARSET, "MIME main part", -1, THIS->session);
+			main_part = libsmtp_part_new(NULL, "multipart", "mixed", LIBSMTP_ENC_7BIT, NULL, "MIME main part", -1, THIS->session);
 	
 		#ifdef DEBUG_ME
 		fprintf(stderr, "main part = %p  alternative = %d\n", main_part, THIS->alternative);	
@@ -383,7 +273,7 @@ static bool begin_session(CSMTPCLIENT *_object)
 			
 			parent_part = main_part;
 		
-			decode_mime(p->mime, &type, &subtype, &encoding, &charset);
+			decode_mime(p->mime);
 		
 			name = p->name;
 			if (!name || !*name)
@@ -392,7 +282,7 @@ static bool begin_session(CSMTPCLIENT *_object)
 				name = buffer;
 			}
 		
-			part = libsmtp_part_new(parent_part, type, subtype, encoding, charset, name, -1, THIS->session);
+			part = libsmtp_part_new(parent_part, _mime_type, _mime_subtype, _mime_encoding, _mime_charset, name, -1, THIS->session);
 			if (!part)
 			{
 				GB.Error("Cannot add part: &1", libsmtp_strerr(THIS->session));
@@ -695,12 +585,23 @@ BEGIN_PROPERTY(SmtpClient_NoGreeting)
 END_PROPERTY
 
 
+BEGIN_METHOD_VOID(SmtpClient_exit)
+
+	GB.FreeString(&_tmp);
+	GB.FreeString(&_mime_type);
+	GB.FreeString(&_mime_subtype);
+	GB.FreeString(&_mime_charset);
+
+END_METHOD
+
+
 GB_DESC CSmtpClientDesc[] =
 {
   GB_DECLARE("_SmtpClient", sizeof(CSMTPCLIENT)),
 
   GB_METHOD("_new", NULL, SmtpClient_new, NULL),
   GB_METHOD("_free", NULL, SmtpClient_free, NULL),
+  GB_STATIC_METHOD("_exit", NULL, SmtpClient_exit, NULL),
 
 	GB_PROPERTY("Debug", "b", SmtpClient_Debug),
 	GB_PROPERTY("_Stream", "Stream", SmtpClient_Stream),

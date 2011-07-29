@@ -32,107 +32,6 @@
 
 #define LIB_SMTP_MIME_H
 
-/* MIME types */
-
-#define LIBSMTP_MIME_TEXT	0
-#define LIBSMTP_MIME_MESSAGE	1
-#define LIBSMTP_MIME_IMAGE	2
-#define LIBSMTP_MIME_AUDIO	3
-#define LIBSMTP_MIME_VIDEO	4
-#define LIBSMTP_MIME_APPLICATION	5
-#define LIBSMTP_MIME_MULTIPART	6
-#define LIBSMTP_MIME_CUSTOM	7
-
-#define LIBSMTP_MAX_MIME	7
-
-
-/* MIME subtypes */
-
-/* 0 to 999 are TEXT subtypes */
-
-#define LIBSMTP_MIME_SUB_PLAIN	0
-#define LIBSMTP_MIME_SUB_HTML	1
-#define LIBSMTP_MIME_SUB_ENGLISH	2
-#define LIBSMTP_MIME_SUB_RICHTEXT	3
-
-#define LIBSMTP_MAX_MIME_SUB0	3
-
-
-/* 1000 to 1999 are MESSAGE subtypes */
-
-#define LIBSMTP_MIME_SUB_RFC822	1000
-#define LIBSMTP_MIME_SUB_PARTIAL	1001
-
-#define LIBSMTP_MAX_MIME_SUB1	1001
-
-
-/* 2000 to 2999 are IMAGE subtypes */
-
-#define LIBSMTP_MIME_SUB_GIF	2000
-#define LIBSMTP_MIME_SUB_JPG	2001
-#define LIBSMTP_MIME_SUB_PNG	2002
-#define LIBSMTP_MIME_SUB_TIFF	2003
-#define LIBSMTP_MIME_SUB_MS_BMP	2004
-#define LIBSMTP_MIME_SUB_XBITMAP	2005
-#define LIBSMTP_MIME_SUB_XPIXMAP	2006
-#define LIBSMTP_MIME_SUB_PORTABLE_ANYMAP	2007
-#define LIBSMTP_MIME_SUB_PORTABLE_BITMAP	2008
-#define LIBSMTP_MIME_SUB_PORTABLE_GRAYMAP	2009
-#define LIBSMTP_MIME_SUB_PORTABLE_PIXMAP	2010
-
-#define LIBSMTP_MAX_MIME_SUB2	2010
-
-
-/* 3000 to 3999 are AUDIO subtypes */
-
-#define LIBSMTP_MIME_SUB_MPEGAUD	3000
-#define LIBSMTP_MIME_SUB_MIDI	3001
-#define LIBSMTP_MIME_SUB_WAV	3002
-#define LIBSMTP_MIME_SUB_AIFF	3003
-
-#define LIBSMTP_MAX_MIME_SUB3	3003
-
-
-/* 4000 to 4999 are VIDEO subtypes */
-
-#define LIBSMTP_MIME_SUB_MPEGVID	4000
-#define LIBSMTP_MIME_SUB_MSVIDEO	4001
-#define LIBSMTP_MIME_SUB_QUICKTIME	4002
-#define LIBSMTP_MIME_SUB_FLI	4003
-
-#define LIBSMTP_MAX_MIME_SUB4	4003
-
-
-/* 5000 to 5999 are APPLICATION subtypes */
-
-#define LIBSMTP_MIME_SUB_RTF	5000
-#define LIBSMTP_MIME_SUB_POSTSCRIPT	5001
-#define LIBSMTP_MIME_SUB_PDF	5002
-#define LIBSMTP_MIME_SUB_ZIP	5003
-#define LIBSMTP_MIME_SUB_DEBIAN_PACKAGE	5004
-#define LIBSMTP_MIME_SUB_EXECUTABLE	5005
-#define LIBSMTP_MIME_SUB_GTAR	5006
-#define LIBSMTP_MIME_SUB_SHELLSCRIPT	5007
-#define LIBSMTP_MIME_SUB_TAR	5008
-#define LIBSMTP_MIME_SUB_OCTET_STREAM	5009
-
-#define LIBSMTP_MAX_MIME_SUB5	5008
-
-
-/* 6000 to 6999 are MULTIPART subtypes */
-
-#define LIBSMTP_MIME_SUB_MIXED	6000
-#define LIBSMTP_MIME_SUB_PARALLEL	6001
-#define LIBSMTP_MIME_SUB_DIGEST	6002
-#define LIBSMTP_MIME_SUB_ALTERNATIVE	6003
-
-#define LIBSMTP_MAX_MIME_SUB6	6003
-
-
-/* 30000 (for signed ints!!) is the CUSTOM subtype */
-
-#define LIBSMTP_MIME_SUB_CUSTOM	30000
-
 
 /* Encoding types */
 
@@ -145,41 +44,25 @@
 #define LIBSMTP_MAX_ENC	4
 
 
-/* Charset values */
-
-#define LIBSMTP_CHARSET_NOCHARSET			-1
-#define LIBSMTP_CHARSET_USASCII				0
-#define LIBSMTP_CHARSET_ISO8859_1			1
-#define LIBSMTP_CHARSET_ISO8859_2			2
-#define LIBSMTP_CHARSET_ISO8859_3			3
-#define LIBSMTP_CHARSET_ISO8859_15  	4
-#define LIBSMTP_CHARSET_UTF_8 				5
-/* Need to define more here ... */
-
-#define LIBSMTP_MAX_CHARSET		5
-
 struct libsmtp_part_struct {
 	int internal_id;	/* internal id number */
-	int Type;	/* MIME type */
-	GString *CustomType;	/* optional custom MIME type */
-	int Subtype;	/* MIME subtype */
-	GString *CustomSubtype;	/* optional custom MIME subtype */
+	GString *Type;	/* MIME type */
+	GString *Subtype;	/* MIME subtype */
 	int Encoding;	/* MIME transfer encoding */
-	int Charset;	/* optional charset for text MIME types */
+	GString *Charset;	/* optional charset for text MIME types */
 	GString *Description;	/* MIME part description */
 	GString *Boundary;	 /* optional Multipart boundary string */
 	int Tag; /* tag for user */
 	int length; // part length
 };
 
+bool libsmtp_part_is_type(struct libsmtp_part_struct *part, const char *type);
+
 struct libsmtp_part_struct *libsmtp_part_new
-			(struct libsmtp_part_struct *, int, int, int, int, char *, int,
-			struct libsmtp_session_struct *libsmtp_session);
-
-int libsmtp_mime_type_custom (char *, struct libsmtp_part_struct *);
-
-int libsmtp_mime_subtype_custom (char *, struct libsmtp_part_struct *);
-
+    (struct libsmtp_part_struct *libsmtp_int_parent_part, const char *type,
+    const char *subtype, int libsmtp_int_encoding, const char *charset,
+    char *libsmtp_int_desc, int length, struct libsmtp_session_struct *libsmtp_session);
+		
 struct libsmtp_part_struct *libsmtp_part_query (struct libsmtp_session_struct *);
 
 int libsmtp_mime_headers (struct libsmtp_session_struct *);
@@ -189,14 +72,6 @@ int libsmtp_part_send (char *, unsigned int, struct libsmtp_session_struct *);
 int libsmtp_part_next (struct libsmtp_session_struct *);
 
 /* internal functions */
-
-int libsmtp_int_check_part (struct libsmtp_part_struct *);
-
-const char *libsmtp_int_lookup_mime_type (struct libsmtp_part_struct *);
-
-const char *libsmtp_int_lookup_mime_subtype (struct libsmtp_part_struct *);
-
-const char *libsmtp_int_lookup_mime_charset (struct libsmtp_part_struct *);
 
 const char *libsmtp_int_lookup_mime_encoding (struct libsmtp_part_struct *);
 
