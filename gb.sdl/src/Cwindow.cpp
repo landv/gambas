@@ -450,22 +450,49 @@ void myWin::JoyEvent(SDL_Event& event)
 	CJOY_info.valid = false;
 }
 
+static void convert_unicode_to_utf8(Uint16 unicode, char *buffer)
+{
+	if (unicode < 0x80)
+	{
+		buffer[0] = unicode;
+		buffer[1] = 0;
+	}
+	else if (unicode < 0x800)
+	{
+		buffer[0] = 0xC0 | (unicode >> 6);
+		buffer[1] = 0x80 | (unicode & 0x3F);
+		buffer[2] = 0;
+	}
+	else
+	{
+		buffer[0] = 0xE0 | (unicode >> 12);
+		buffer[1] = 0x80 | ((unicode >> 6) & 0x3F);
+		buffer[2] = 0x80 | (unicode & 0x3F);
+		buffer[3] = 0;
+	}
+}
+
 void myWin::KeyEvent(SDL_KeyboardEvent *keyEvent, int eventType)
 {
-	CKEY_info.valid = true;
-	SDLapp->LockX11();
-	CKEY_info.code = XKeycodeToKeysym(SDLapp->X11appDisplay(), keyEvent->keysym.scancode, 0);
-	SDLapp->UnlockX11();
+	CKEY_info.valid++;
+	
+	CKEY_info.code = keyEvent->keysym.sym;
 	CKEY_info.state = keyEvent->keysym.mod;
+	convert_unicode_to_utf8(keyEvent->keysym.unicode, CKEY_info.text);
+	
+	//SDLapp->LockX11();
+	//CKEY_info.code = XKeycodeToKeysym(SDLapp->X11appDisplay(), keyEvent->keysym.scancode, 0);
+	//SDLapp->UnlockX11();
+	//CKEY_info.state = keyEvent->keysym.mod;
 
 	if (eventType == SDL_KEYDOWN)
 		GB.Raise(hWindow, EVENT_KeyPressed,0);
 	else
 		GB.Raise(hWindow, EVENT_KeyReleased,0);
 
-	CKEY_info.valid = false;
-
+	CKEY_info.valid--;
 }
+
 void myWin::MouseButtonEvent(SDL_MouseButtonEvent *mouseEvent)
 {
 	CMOUSE_info.valid = true;

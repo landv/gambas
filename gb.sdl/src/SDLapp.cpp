@@ -44,7 +44,7 @@ SDLapplication::SDLapplication(int &argc, char **argv)
 		return;
 	}
 
-	std::string sMsg = "Failed to init : ";
+	std::string sMsg = "Failed to init: ";
 	Uint32 sysInit = SDL_WasInit(SDL_INIT_EVERYTHING);
 
 	// if audio is defined, sdl was init by gb.sdl.sound component !
@@ -72,6 +72,9 @@ SDLapplication::SDLapplication(int &argc, char **argv)
 	}
 
 	SDLapp = this;
+	
+	SDL_EnableUNICODE(1);
+	
 	SDLcore::Init();
 	SDLdebug::Init();
 
@@ -80,7 +83,6 @@ SDLapplication::SDLapplication(int &argc, char **argv)
 _error:
 	std::cout << sMsg << std::endl;
 	exit (-1);
-
 }
 
 SDLapplication::~SDLapplication()

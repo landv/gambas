@@ -29,14 +29,15 @@
 
 #include "SDL.h"
 #include "SDL_syswm.h"
-#include "X11/keysym.h"
+//#include "X11/keysym.h"
 
 typedef
   struct {
-    bool valid;
-    KeySym code;
-    int state;
-    int cancel;
+    int valid;
+		int code;           // SDL virtual keysym
+		int state;          // modifier state
+    //int cancel;
+		char text[4];       // UTF-8 text
     }
   CKEY_INFO;
 
