@@ -1,22 +1,22 @@
 /***************************************************************************
 
-  gbx_class_desc.h
+	gbx_class_desc.h
 
-  (c) 2000-2011 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2011 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 	MA 02110-1301, USA.
 
 ***************************************************************************/
@@ -44,150 +44,154 @@
 
 
 typedef
-  struct {
-    char *name;
-    TYPE type;                  // property datatype
-    void (*read)();             // read property function
-    void (*write)();            // write property function
-    char native;                // if the property is native
-    char _reserved[3];
+	struct {
+		char *name;
+		TYPE type;                  // property datatype
+		void (*read)();             // read property function
+		void (*write)();            // write property function
+		char native;                // if the property is native
+		char _reserved[3];
 		#ifdef OS_64BITS
 		int _reserved2;
 		#endif
-    struct _CLASS *class;
-    }
-  PACKED
-  CLASS_DESC_PROPERTY;
+		struct _CLASS *class;
+		}
+	PACKED
+	CLASS_DESC_PROPERTY;
 
 typedef
-  struct {
-    char *name;
-    TYPE type;                  // variable datatype
-    int offset;   	            // variable offset in object memory
+	struct {
+		char *name;
+		TYPE type;                  // variable datatype
+		int offset;   	            // variable offset in object memory
 		CTYPE ctype;                // variable compilation datatype
 		intptr_t _reserved;
 		#ifdef OS_64BITS
 		intptr_t _reserved2;
 		#endif
-    struct _CLASS *class;
-    }
-  PACKED
-  CLASS_DESC_VARIABLE;
+		struct _CLASS *class;
+		}
+	PACKED
+	CLASS_DESC_VARIABLE;
 
 typedef
-  struct {
-    char *name;
-    TYPE type;                  // return value datatype
-    void (*exec)();             // method
-    TYPE *signature;            // signature
-    char npmin;                 // minimum number of arguments
-    char npmax;                 // maximum number of arguments
-    char npvar;                 // if there is a variable number of arguments
-    char native;                // if the method is native
+	struct {
+		char *name;
+		TYPE type;                  // return value datatype
+		void (*exec)();             // method
+		TYPE *signature;            // signature
+		char npmin;                 // minimum number of arguments
+		char npmax;                 // maximum number of arguments
+		char npvar;                 // if there is a variable number of arguments
+		char native;                // if the method is native
 		#ifdef OS_64BITS
 		int _reserved;
 		#endif
-    struct _CLASS *class;
-    }
-  PACKED
-  CLASS_DESC_METHOD;
+		struct _CLASS *class;
+		}
+	PACKED
+	CLASS_DESC_METHOD;
 
 typedef
-  struct {
-    char *name;
-    TYPE type;                  // return value datatype - N/A
-    int *index;                 // event index
-    TYPE *signature;            // event signature
-    char npmin;                 // minimum number of arguments
-    char npmax;                 // maximum number of arguments
-    char npvar;                 // if there is a variable number of arguments
-    char _reserved;
+	struct {
+		char *name;
+		TYPE type;                  // return value datatype - N/A
+		int *index;                 // event index
+		TYPE *signature;            // event signature
+		char npmin;                 // minimum number of arguments
+		char npmax;                 // maximum number of arguments
+		char npvar;                 // if there is a variable number of arguments
+		char _reserved;
 		#ifdef OS_64BITS
 		int _reserved2;
 		#endif
-    struct _CLASS *class;
-    }
-  PACKED
-  CLASS_DESC_EVENT;
+		struct _CLASS *class;
+		}
+	PACKED
+	CLASS_DESC_EVENT;
 
 typedef
-  struct {
-    char *name;
-    TYPE type;                  // return value datatype
-    int exec;                   // extern function index
-    TYPE *signature;            // signature
-    char npmin;                 // minimum number of arguments
-    char npmax;                 // maximum number of arguments
-    char npvar;                 // if there is a variable number of arguments
-    char _reserved;
+	struct {
+		char *name;
+		TYPE type;                  // return value datatype
+		int exec;                   // extern function index
+		TYPE *signature;            // signature
+		char npmin;                 // minimum number of arguments
+		char npmax;                 // maximum number of arguments
+		char npvar;                 // if there is a variable number of arguments
+		char _reserved;
 		#ifdef OS_64BITS
 		int _reserved2;
 		#endif
-    struct _CLASS *class;
-    }
-  PACKED
-  CLASS_DESC_EXTERN;
+		struct _CLASS *class;
+		}
+	PACKED
+	CLASS_DESC_EXTERN;
 
 typedef
-  struct {
-    char *name;
-    TYPE type;                  // constant datatype
-    union {
-      int _integer;
-      double _float;
-      char *_string;
-      int64_t _long;
-      void *_pointer;
-      }
-      value;
-		intptr_t _reserved;
-    struct _CLASS *class;
-    }
-  PACKED
-  CLASS_DESC_CONSTANT;
+	struct {
+		char *name;
+		TYPE type;                  // constant datatype
+		union {
+			int _integer;
+			double _float;
+			char *_string;
+			int64_t _long;
+			void *_pointer;
+			}
+			value;
+		unsigned translate : 1;
+		unsigned _reserved : 31;
+		#ifdef OS_64BITS
+		int _reserved2;
+		#endif
+		struct _CLASS *class;
+		}
+	PACKED
+	CLASS_DESC_CONSTANT;
 
 typedef
-  struct {
-    char *name;
-    void (*func)();
-    }
-  PACKED
-  CLASS_DESC_HOOK;
+	struct {
+		char *name;
+		void (*func)();
+		}
+	PACKED
+	CLASS_DESC_HOOK;
 
 typedef
-  struct {
-    char *name;
-    intptr_t type;
-    intptr_t val1;
-    intptr_t val2;
-    intptr_t val3;
-    intptr_t val4;
-    }
-  CLASS_DESC_GAMBAS;
+	struct {
+		char *name;
+		intptr_t type;
+		intptr_t val1;
+		intptr_t val2;
+		intptr_t val3;
+		intptr_t val4;
+		}
+	CLASS_DESC_GAMBAS;
 
 
 typedef
-  union {
-    CLASS_DESC_PROPERTY property;
-    CLASS_DESC_VARIABLE variable;
-    CLASS_DESC_METHOD method;
-    CLASS_DESC_CONSTANT constant;
-    CLASS_DESC_EVENT event;
-    CLASS_DESC_HOOK hook;
-    CLASS_DESC_GAMBAS gambas;
-    CLASS_DESC_EXTERN ext;
-    }
-  PACKED
-  CLASS_DESC;
+	union {
+		CLASS_DESC_PROPERTY property;
+		CLASS_DESC_VARIABLE variable;
+		CLASS_DESC_METHOD method;
+		CLASS_DESC_CONSTANT constant;
+		CLASS_DESC_EVENT event;
+		CLASS_DESC_HOOK hook;
+		CLASS_DESC_GAMBAS gambas;
+		CLASS_DESC_EXTERN ext;
+		}
+	PACKED
+	CLASS_DESC;
 
 typedef
-  struct {
-    char *name;
-    int len;
-    CLASS_DESC *desc;
-    }
-  PACKED
-  CLASS_DESC_SYMBOL;
+	struct {
+		char *name;
+		int len;
+		CLASS_DESC *desc;
+		}
+	PACKED
+	CLASS_DESC_SYMBOL;
 
 
 #define CLASS_DESC_get_type(d) (*(d)->gambas.name)

@@ -1,22 +1,22 @@
 /***************************************************************************
 
-  gbx_exec_push.c
+	gbx_exec_push.c
 
-  (c) 2000-2011 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2011 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 	MA 02110-1301, USA.
 
 ***************************************************************************/
@@ -32,62 +32,64 @@
 #include "gbx_c_collection.h"
 #include "gbx_api.h"
 #include "gbx_struct.h"
+#include "gbx_local.h"
 
 void EXEC_push_unknown(ushort code)
 {
-  static void *jump[] = {
-    /* 0 */ &&_PUSH_GENERIC,
-    /* 1 */ &&_PUSH_CONSTANT,
-    /* 2 */ &&_PUSH_VARIABLE,
-    /* 3 */ &&_PUSH_STATIC_VARIABLE,
-    /* 4 */ &&_PUSH_PROPERTY,
-    /* 5 */ &&_PUSH_METHOD,
-    /* 6 */ &&_PUSH_STATIC_METHOD,
-    /* 7 */ &&_PUSH_VARIABLE_AUTO,
-    /* 8 */ &&_PUSH_PROPERTY_AUTO,
-    /* 9 */ &&_PUSH_METHOD_AUTO,
-    /* 10 */ &&_PUSH_EXTERN,
-		/* 11 */ &&_PUSH_STRUCT_FIELD
-    };
+	static void *jump[] = {
+		&&_PUSH_GENERIC,               // 0
+		&&_PUSH_CONSTANT,              // 1
+		&&_PUSH_VARIABLE,              // 2
+		&&_PUSH_STATIC_VARIABLE,       // 3
+		&&_PUSH_PROPERTY,              // 4
+		&&_PUSH_METHOD,                // 5
+		&&_PUSH_STATIC_METHOD,         // 6
+		&&_PUSH_VARIABLE_AUTO,         // 7
+		&&_PUSH_PROPERTY_AUTO,         // 8
+		&&_PUSH_METHOD_AUTO,           // 9
+		&&_PUSH_EXTERN,                // 10
+		&&_PUSH_STRUCT_FIELD,          // 11
+		&&_PUSH_TCONSTANT,             // 12
+		};
 
-  const char *name;
-  int index;
-  CLASS_DESC *desc;
-  CLASS *class;
-  OBJECT *object;
+	const char *name;
+	int index;
+	CLASS_DESC *desc;
+	CLASS *class;
+	OBJECT *object;
 	void *ref;
-  char *addr;
-  bool defined;
-  VALUE *val;
+	char *addr;
+	bool defined;
+	VALUE *val;
 
-  defined = EXEC_object(&SP[-1], &class, &object);
+	defined = EXEC_object(&SP[-1], &class, &object);
 
-  goto *jump[code & 0xF];
+	goto *jump[code & 0xF];
 
 
 _PUSH_GENERIC:
 
-  name = CP->load->unknown[PC[1]];
+	name = CP->load->unknown[PC[1]];
 
 	// The first time we access a symbol, we must not be virtual to find it
 	val = &SP[-1];
 	if (LIKELY(defined && object && !VALUE_is_super(val)))
-  	index = CLASS_find_symbol(val->_object.class, name);
+		index = CLASS_find_symbol(val->_object.class, name);
 	else
-  	index = CLASS_find_symbol(class, name);
+		index = CLASS_find_symbol(class, name);
 
-  if (UNLIKELY(index == NO_SYMBOL))
-  {
-    //index = CLASS_find_symbol(class, name);
+	if (UNLIKELY(index == NO_SYMBOL))
+	{
+		//index = CLASS_find_symbol(class, name);
 
-    if (class->special[SPEC_UNKNOWN] == NO_SYMBOL)
-    {
+		if (class->special[SPEC_UNKNOWN] == NO_SYMBOL)
+		{
 			if (defined && object && !VALUE_is_super(val))
 				class = val->_object.class;
-      THROW(E_NSYMBOL, name, class->name);
+			THROW(E_NSYMBOL, name, class->name);
 		}
 
-    if (class->special[SPEC_PROPERTY] != NO_SYMBOL)
+		if (class->special[SPEC_PROPERTY] != NO_SYMBOL)
 		{
 			EXEC_unknown_name = name;
 			EXEC_special(SPEC_PROPERTY, class, object, 0, FALSE);
@@ -103,219 +105,248 @@ _PUSH_GENERIC:
 			}
 		}
 
-    goto _PUSH_UNKNOWN_METHOD;
-  }
-  
-  desc = class->table[index].desc;
+		goto _PUSH_UNKNOWN_METHOD;
+	}
+	
+	desc = class->table[index].desc;
 
-  switch (CLASS_DESC_get_type(desc))
-  {
-    case CD_CONSTANT:
+	switch (CLASS_DESC_get_type(desc))
+	{
+		case CD_CONSTANT:
 
-      if (LIKELY(defined))
-      {
-				if ((PC[-1] & 0xF800) == C_PUSH_CLASS)
+			if (TYPE_is_string(desc->constant.type) && desc->constant.translate)
+			{
+				if (defined)
 				{
-					if (desc->constant.type == T_BOOLEAN)
-					{
-						PC[-1] = C_PUSH_MISC | (desc->constant.value._integer ? CPM_TRUE : CPM_FALSE);
-						PC[0] = C_NOP;
-						PC[1] = C_NOP;
-						goto _PUSH_CONSTANT_2;
-					}
-					else if (desc->constant.type == T_BYTE || desc->constant.type == T_SHORT)
-					{
-						PC[-1] = C_PUSH_INTEGER;
-						PC[0] = desc->constant.value._integer;
-						PC[1] = (CODE_CONV << 8) | desc->constant.type;
-						goto _PUSH_CONSTANT_2;
-					}
-					else if (desc->constant.type == T_INTEGER)
-					{
-						PC[-1] = C_PUSH_LONG;
-						PC[0] = desc->constant.value._integer & 0xFFFF;
-						PC[1] = desc->constant.value._integer >> 16;
-						goto _PUSH_CONSTANT_2;
-					}
+					*PC |= 12;
+					PC[1] = index;
 				}
 				
-				*PC |= 1;
+				goto _PUSH_TCONSTANT_2;
+			}
+			else
+			{
+				if (defined)
+				{
+					if ((PC[-1] & 0xF800) == C_PUSH_CLASS)
+					{
+						if (desc->constant.type == T_BOOLEAN)
+						{
+							PC[-1] = C_PUSH_MISC | (desc->constant.value._integer ? CPM_TRUE : CPM_FALSE);
+							PC[0] = C_NOP;
+							PC[1] = C_NOP;
+							goto _PUSH_CONSTANT_2;
+						}
+						else if (desc->constant.type == T_BYTE || desc->constant.type == T_SHORT)
+						{
+							PC[-1] = C_PUSH_INTEGER;
+							PC[0] = desc->constant.value._integer;
+							PC[1] = (CODE_CONV << 8) | desc->constant.type;
+							goto _PUSH_CONSTANT_2;
+						}
+						else if (desc->constant.type == T_INTEGER)
+						{
+							PC[-1] = C_PUSH_LONG;
+							PC[0] = desc->constant.value._integer & 0xFFFF;
+							PC[1] = desc->constant.value._integer >> 16;
+							goto _PUSH_CONSTANT_2;
+						}
+					}
+					
+					*PC |= 1;
+					
+					PC[1] = index;
+				}
+
+				goto _PUSH_CONSTANT_2;
+			}
+
+		case CD_VARIABLE:
+
+			if (object == NULL)
+			{
+				if (UNLIKELY(!class->auto_create))
+					THROW(E_DYNAMIC, class->name, name);
+				object = EXEC_auto_create(class, TRUE);
+				*PC |= 7;
+			}
+			else
+			{
+				if (defined) *PC |= 2;
+			}
+
+			if (defined)
 				PC[1] = index;
-      }
 
-      goto _PUSH_CONSTANT_2;
+			goto _PUSH_VARIABLE_2;
 
-    case CD_VARIABLE:
+		case CD_STRUCT_FIELD:
 
-      if (object == NULL)
-      {
-        if (UNLIKELY(!class->auto_create))
-          THROW(E_DYNAMIC, class->name, name);
-        object = EXEC_auto_create(class, TRUE);
-        *PC |= 7;
-      }
-      else
-      {
-        if (defined) *PC |= 2;
-      }
-
-      if (defined)
-        PC[1] = index;
-
-      goto _PUSH_VARIABLE_2;
-
-    case CD_STRUCT_FIELD:
-
-      if (object == NULL)
-        THROW(E_DYNAMIC, class->name, name);
-      
+			if (object == NULL)
+				THROW(E_DYNAMIC, class->name, name);
+			
 			if (defined) 
 			{
 				*PC |= 11;
-        PC[1] = index;
+				PC[1] = index;
 			}
 
-      goto _PUSH_STRUCT_FIELD_2;
+			goto _PUSH_STRUCT_FIELD_2;
 
-    case CD_STATIC_VARIABLE:
+		case CD_STATIC_VARIABLE:
 
-      if (UNLIKELY(object != NULL))
-        THROW(E_STATIC, class->name, name);
+			if (UNLIKELY(object != NULL))
+				THROW(E_STATIC, class->name, name);
 
-      if (defined) *PC |= 3;
+			if (defined) *PC |= 3;
 
-      if (defined)
-        PC[1] = index;
+			if (defined)
+				PC[1] = index;
 
-      goto _PUSH_STATIC_VARIABLE_2;
+			goto _PUSH_STATIC_VARIABLE_2;
 
-    case CD_PROPERTY:
-    case CD_PROPERTY_READ:
+		case CD_PROPERTY:
+		case CD_PROPERTY_READ:
 
-      if (object == NULL)
-      {
-        if (UNLIKELY(!class->auto_create))
-          THROW(E_DYNAMIC, class->name, name);
-        object = EXEC_auto_create(class, TRUE);
-        *PC |= 8;
-      }
-      else
-      {
-        if (defined) *PC |= 4;
-      }
+			if (object == NULL)
+			{
+				if (UNLIKELY(!class->auto_create))
+					THROW(E_DYNAMIC, class->name, name);
+				object = EXEC_auto_create(class, TRUE);
+				*PC |= 8;
+			}
+			else
+			{
+				if (defined) *PC |= 4;
+			}
 
-      if (defined)
-        PC[1] = index;
+			if (defined)
+				PC[1] = index;
 
-      goto _PUSH_PROPERTY_2;
+			goto _PUSH_PROPERTY_2;
 
-    case CD_STATIC_PROPERTY:
-    case CD_STATIC_PROPERTY_READ:
+		case CD_STATIC_PROPERTY:
+		case CD_STATIC_PROPERTY_READ:
 
-      if (UNLIKELY(object != NULL))
-        THROW(E_STATIC, class->name, name);
+			if (UNLIKELY(object != NULL))
+				THROW(E_STATIC, class->name, name);
 
-      if (defined) *PC |= 4;
+			if (defined) *PC |= 4;
 
-      if (defined)
-        PC[1] = index;
+			if (defined)
+				PC[1] = index;
 
-      goto _PUSH_PROPERTY_2;
+			goto _PUSH_PROPERTY_2;
 
-    case CD_METHOD:
+		case CD_METHOD:
 
-      if (object == NULL)
-      {
-        if (UNLIKELY(!class->auto_create))
-          THROW(E_DYNAMIC, class->name, name);
-        object = EXEC_auto_create(class, TRUE);
-        *PC |= 9;
-      }
-      else
-      {
-        if (defined) *PC |= 5;
-      }
+			if (object == NULL)
+			{
+				if (UNLIKELY(!class->auto_create))
+					THROW(E_DYNAMIC, class->name, name);
+				object = EXEC_auto_create(class, TRUE);
+				*PC |= 9;
+			}
+			else
+			{
+				if (defined) *PC |= 5;
+			}
 
-      if (defined)
-        PC[1] = index;
+			if (defined)
+				PC[1] = index;
 
-      goto _PUSH_METHOD_2;
+			goto _PUSH_METHOD_2;
 
-    case CD_STATIC_METHOD:
+		case CD_STATIC_METHOD:
 
-      if (object)
-      {
-        OBJECT_UNREF(object, "EXEC_push_unknown");
-        object = NULL;
-      }
+			if (object)
+			{
+				OBJECT_UNREF(object, "EXEC_push_unknown");
+				object = NULL;
+			}
 
-      if (defined) *PC |= 6;
+			if (defined) *PC |= 6;
 
-      if (defined)
-        PC[1] = index;
+			if (defined)
+				PC[1] = index;
 
-      goto _PUSH_METHOD_2;
+			goto _PUSH_METHOD_2;
 
-    case CD_EXTERN:
+		case CD_EXTERN:
 
-      if (object)
-      {
-        OBJECT_UNREF(object, "EXEC_push_unknown");
-        object = NULL;
-      }
+			if (object)
+			{
+				OBJECT_UNREF(object, "EXEC_push_unknown");
+				object = NULL;
+			}
 
-      if (defined) *PC |= 10;
+			if (defined) *PC |= 10;
 
-      if (defined)
-        PC[1] = index;
+			if (defined)
+				PC[1] = index;
 
-      goto _PUSH_EXTERN_2;
+			goto _PUSH_EXTERN_2;
 
-    default:
+		default:
 
-      THROW(E_NSYMBOL, name, class->name);
-  }
+			THROW(E_NSYMBOL, name, class->name);
+	}
 
 
 _PUSH_CONSTANT:
 
-  desc = class->table[PC[1]].desc;
+	desc = class->table[PC[1]].desc;
 
 _PUSH_CONSTANT_2:
 
-  VALUE_read(&SP[-1], (void *)&desc->constant.value, desc->constant.type);
-  goto _FIN_DEFINED;
+	VALUE_read(&SP[-1], (void *)&desc->constant.value, desc->constant.type);
+	goto _FIN_DEFINED;
+
+
+_PUSH_TCONSTANT:
+
+	desc = class->table[PC[1]].desc;
+
+_PUSH_TCONSTANT_2:
+
+	SP--;
+	SP->type = T_CSTRING;
+	SP->_string.addr = (char *)LOCAL_gettext(desc->constant.value._string);;
+	SP->_string.start = 0;
+	SP->_string.len = strlen(SP->_string.addr);
+	SP++;
+	goto _FIN_DEFINED_NO_BORROW;
 
 
 _PUSH_VARIABLE_AUTO:
 
-  object = EXEC_auto_create(class, TRUE);
+	object = EXEC_auto_create(class, TRUE);
 
 _PUSH_VARIABLE:
 
-  desc = class->table[PC[1]].desc;
+	desc = class->table[PC[1]].desc;
 
 _PUSH_VARIABLE_2:
 
-  addr = (char *)object + desc->variable.offset;
+	addr = (char *)object + desc->variable.offset;
 	ref = object;
-  goto _READ_VARIABLE;
+	goto _READ_VARIABLE;
 
 
 _PUSH_STATIC_VARIABLE:
 
-  desc = class->table[PC[1]].desc;
+	desc = class->table[PC[1]].desc;
 
 _PUSH_STATIC_VARIABLE_2:
 
-  addr = (char *)desc->variable.class->stat + desc->variable.offset;
+	addr = (char *)desc->variable.class->stat + desc->variable.offset;
 	ref = desc->variable.class;
-  goto _READ_VARIABLE;
+	goto _READ_VARIABLE;
 
 
 _PUSH_STRUCT_FIELD:
 
-  desc = class->table[PC[1]].desc;
+	desc = class->table[PC[1]].desc;
 
 _PUSH_STRUCT_FIELD_2:
 
@@ -325,170 +356,170 @@ _PUSH_STRUCT_FIELD_2:
 		addr = (char *)object + sizeof(CSTRUCT) + desc->variable.offset;
 	
 	ref = object;
-  goto _READ_VARIABLE;
+	goto _READ_VARIABLE;
 
 
 _READ_VARIABLE:
 
-  VALUE_class_read(desc->variable.class, &SP[-1], (void *)addr, desc->variable.ctype, ref);
-  goto _FIN_DEFINED;
+	VALUE_class_read(desc->variable.class, &SP[-1], (void *)addr, desc->variable.ctype, ref);
+	goto _FIN_DEFINED;
 
 
 _PUSH_PROPERTY_AUTO:
 
-  object = EXEC_auto_create(class, TRUE);
+	object = EXEC_auto_create(class, TRUE);
 
 _PUSH_PROPERTY:
 
-  desc = class->table[PC[1]].desc;
+	desc = class->table[PC[1]].desc;
 
 _PUSH_PROPERTY_2:
 
-  if (desc->property.native)
-  {
-    if (EXEC_call_native(desc->property.read, object, desc->property.type, NULL))
-      PROPAGATE();
+	if (desc->property.native)
+	{
+		if (EXEC_call_native(desc->property.read, object, desc->property.type, NULL))
+			PROPAGATE();
 
-    //SP[-1] = TEMP;
-    VALUE_copy(&SP[-1], &TEMP);
-    goto _FIN_DEFINED;
-  }
-  else
-  {
-    EXEC.class = desc->property.class;
-    EXEC.object = object;
-    EXEC.nparam = 0;
-    EXEC.native = FALSE;
-    EXEC.index = (int)(intptr_t)desc->property.read;
+		//SP[-1] = TEMP;
+		VALUE_copy(&SP[-1], &TEMP);
+		goto _FIN_DEFINED;
+	}
+	else
+	{
+		EXEC.class = desc->property.class;
+		EXEC.object = object;
+		EXEC.nparam = 0;
+		EXEC.native = FALSE;
+		EXEC.index = (int)(intptr_t)desc->property.read;
 
-    EXEC_function_keep();
+		EXEC_function_keep();
 
-    //SP[-1] = *RP;
-    VALUE_copy(&SP[-1], RP);
-    RP->type = T_VOID;
-    goto _FIN_DEFINED_NO_BORROW;
-  }
+		//SP[-1] = *RP;
+		VALUE_copy(&SP[-1], RP);
+		RP->type = T_VOID;
+		goto _FIN_DEFINED_NO_BORROW;
+	}
 
 
 _PUSH_STATIC_METHOD:
 
-  if (object)
-  {
-    OBJECT_UNREF(object, "EXEC_push_unknown");
-    object = NULL;
-  }
+	if (object)
+	{
+		OBJECT_UNREF(object, "EXEC_push_unknown");
+		object = NULL;
+	}
 
-  goto _PUSH_METHOD;
+	goto _PUSH_METHOD;
 
 _PUSH_METHOD_AUTO:
 
-  object = EXEC_auto_create(class, TRUE);
+	object = EXEC_auto_create(class, TRUE);
 
 _PUSH_METHOD:
 
-  index = PC[1];
-  desc = class->table[index].desc;
+	index = PC[1];
+	desc = class->table[index].desc;
 
 _PUSH_METHOD_2:
 
-  //printf("PUSH_METHOD: %d %s\n", index, desc->method.name);
+	//printf("PUSH_METHOD: %d %s\n", index, desc->method.name);
 
-  SP--;
-  SP->type = T_FUNCTION;
-  SP->_function.class = class;
-  SP->_function.object = object;
-  /*SP->_function.function = (int)&desc->method;*/
+	SP--;
+	SP->type = T_FUNCTION;
+	SP->_function.class = class;
+	SP->_function.object = object;
+	/*SP->_function.function = (int)&desc->method;*/
 
-  if (FUNCTION_is_native(&desc->method))
-    SP->_function.kind = FUNCTION_NATIVE;
-  else
-    SP->_function.kind =  FUNCTION_PUBLIC;
+	if (FUNCTION_is_native(&desc->method))
+		SP->_function.kind = FUNCTION_NATIVE;
+	else
+		SP->_function.kind =  FUNCTION_PUBLIC;
 
-  SP->_function.index = index;
+	SP->_function.index = index;
 
-  SP->_function.defined = defined;
+	SP->_function.defined = defined;
 
-  SP++;
+	SP++;
 
-  goto _FIN;
+	goto _FIN;
 
 
 _PUSH_EXTERN:
 
-  if (object)
-  {
-    OBJECT_UNREF(object, "EXEC_push_unknown");
-    object = NULL;
-  }
+	if (object)
+	{
+		OBJECT_UNREF(object, "EXEC_push_unknown");
+		object = NULL;
+	}
 
-  index = PC[1];
-  desc = class->table[index].desc;
+	index = PC[1];
+	desc = class->table[index].desc;
 
 _PUSH_EXTERN_2:
 
-  //printf("PUSH_METHOD: %d %s\n", index, desc->method.name);
+	//printf("PUSH_METHOD: %d %s\n", index, desc->method.name);
 
-  SP--;
-  SP->type = T_FUNCTION;
-  SP->_function.class = class;
-  SP->_function.object = object;
-  SP->_function.kind = FUNCTION_EXTERN;
-  SP->_function.index = (int)desc->ext.exec;
-  SP->_function.defined = defined;
-  SP++;
+	SP--;
+	SP->type = T_FUNCTION;
+	SP->_function.class = class;
+	SP->_function.object = object;
+	SP->_function.kind = FUNCTION_EXTERN;
+	SP->_function.index = (int)desc->ext.exec;
+	SP->_function.defined = defined;
+	SP++;
 
-  goto _FIN;
+	goto _FIN;
 
 _PUSH_UNKNOWN_METHOD:
 
-  SP--;
-  SP->type = T_FUNCTION;
-  SP->_function.class = class;
-  SP->_function.object = object;
-  SP->_function.kind = FUNCTION_UNKNOWN;
-  SP->_function.index = PC[1];
-  SP->_function.defined = FALSE;
-  SP++;
+	SP--;
+	SP->type = T_FUNCTION;
+	SP->_function.class = class;
+	SP->_function.object = object;
+	SP->_function.kind = FUNCTION_UNKNOWN;
+	SP->_function.index = PC[1];
+	SP->_function.defined = FALSE;
+	SP++;
 
-  //OBJECT_REF(&object, "EXEC_push_unknown: UNKNOWN");
+	//OBJECT_REF(&object, "EXEC_push_unknown: UNKNOWN");
 
-  goto _FIN;
+	goto _FIN;
 
 _FIN_DEFINED:
 
-  BORROW(&SP[-1]);
+	BORROW(&SP[-1]);
 
 _FIN_DEFINED_NO_BORROW:
 
-  if (UNLIKELY(!defined))
-    VALUE_conv_variant(&SP[-1]);
+	if (!defined)
+		VALUE_conv_variant(&SP[-1]);
 
 	// SP[-1] was the object and it has been erased. So we must unref it manually,
 	// unless we are calling a static method (see above)
-  OBJECT_UNREF(object, "EXEC_push_unknown");
+	OBJECT_UNREF(object, "EXEC_push_unknown");
 
 _FIN:
 
-  PC++;
+	PC++;
 }
 
 void EXEC_push_array(ushort code)
 {
 	static const void *jump[] = { &&__PUSH_GENERIC, &&__PUSH_QUICK_ARRAY, &&__PUSH_QUICK_COLLECTION, &&__PUSH_ARRAY };
 	
-  CLASS *class;
-  OBJECT *object;
-  GET_NPARAM(np);
-  //int dim[MAX_ARRAY_DIM];
-  int i;
-  void *data;
-  bool defined;
-  VALUE *val;
+	CLASS *class;
+	OBJECT *object;
+	GET_NPARAM(np);
+	//int dim[MAX_ARRAY_DIM];
+	int i;
+	void *data;
+	bool defined;
+	VALUE *val;
 	int fast;
-  //ARRAY_DESC *desc;
+	//ARRAY_DESC *desc;
 
-  val = &SP[-np];
-  np--;
+	val = &SP[-np];
+	np--;
 
 	goto *jump[((unsigned char)code) >> 6];
 	
@@ -498,7 +529,7 @@ __PUSH_GENERIC:
 	
 	// The first time we access a symbol, we must not be virtual to find it
 	if (LIKELY(defined && object && !VALUE_is_super(val)))
-  	class = val->_object.class;
+		class = val->_object.class;
 	
 	fast = 3;
 	

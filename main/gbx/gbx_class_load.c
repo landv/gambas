@@ -1122,6 +1122,7 @@ void CLASS_load_without_init(CLASS *class)
         {
           desc->constant.type = T_CSTRING;
           desc->constant.value._string = cc->_string.addr;
+					desc->constant.translate = (cc->type == T_CSTRING);
         }
 
         break;

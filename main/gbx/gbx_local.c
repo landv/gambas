@@ -1534,7 +1534,7 @@ const char *LOCAL_gettext(const char *msgid)
 	*/
 
 	if (!msgid)
-		return NULL;
+		return "";
 
 	//ARCHIVE_get_current(&arch);
 
@@ -1560,10 +1560,10 @@ const char *LOCAL_gettext(const char *msgid)
 
 	/*printf("tr: %s -> %s\n", msgid, tr);*/
 
-	if (tr[0] == 0 || (tr[0] == '-' && (tr[1] == 0 || (tr[1] == '\n' && tr[2] == 0))))
-		return msgid;
-	else
-		return tr;
+	if (!tr || tr[0] == 0 || (tr[0] == '-' && (tr[1] == 0 || (tr[1] == '\n' && tr[2] == 0))))
+		tr = msgid;
+
+	return tr ? tr : "";
 }
 
 int LOCAL_get_first_day_of_week()
