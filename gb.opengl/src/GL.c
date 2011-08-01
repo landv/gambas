@@ -185,8 +185,8 @@ GB_DESC Cgl[] =
 	/* Texture Mapping - see GLtextureMapping.h */
 	GB_STATIC_METHOD("BindTexture", NULL, GLBINDTEXTURE, "(Target)i(Texture)i"),
 	// TODO adapt to gambas
-	//GB_STATIC_METHOD("CopyTexImage1D", NULL, GLCOPYTEXIMAGE1D, "(Target)i(Level)i(Format)i(X)i(Y)i(Width)i(Border)i"),
-	//GB_STATIC_METHOD("CopyTexImage2D", NULL, GLCOPYTEXIMAGE2D, "(Target)i(Level)i(Format)i(X)i(Y)i(Width)i(Height)i(Border)i"),
+	GB_STATIC_METHOD("CopyTexImage1D", NULL, GLCOPYTEXIMAGE1D, "(Target)i(Level)i(Format)i(X)i(Y)i(Width)i(Border)i"),
+	GB_STATIC_METHOD("CopyTexImage2D", NULL, GLCOPYTEXIMAGE2D, "(Target)i(Level)i(Format)i(X)i(Y)i(Width)i(Height)i(Border)i"),
 	GB_STATIC_METHOD("DeleteTextures", NULL, GLDELETETEXTURES, "(Textures)Integer[]"),
 	GB_STATIC_METHOD("GenTextures", "Integer[]", GLGENTEXTURES, "(Count)i"),
 	GB_STATIC_METHOD("IsTexture", "b", GLISTEXTURE, "(Texture)i"),
@@ -210,6 +210,8 @@ GB_DESC Cgl[] =
 	GB_STATIC_METHOD("TexParameterfv", NULL, GLTEXPARAMETERFV, "(Target)i(Pname)i(Params)Float[]"),
 	GB_STATIC_METHOD("TexParameteri", NULL, GLTEXPARAMETERI, "(Target)i(Pname)i(Param)i"),
 	GB_STATIC_METHOD("TexParameteriv", NULL, GLTEXPARAMETERIV, "(Target)i(Pname)i(Params)Integer[]"),
+	GB_STATIC_METHOD("TexGeni", NULL, GLTEXGENI, "(Coord)i(Pname)i(Param)i"),
+	GB_STATIC_METHOD("MultiTexCoord2f", NULL, GLMULTITEXCOORD2F, "(Target)i(S)f(T)f"),
 
 	/* FrameBuffer Operations - see GLframeBufferOps.h  */
 	GB_STATIC_METHOD("Accum", NULL, GLACCUM, "(Operation)i(Value)f"),
