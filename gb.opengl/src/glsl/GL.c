@@ -16,8 +16,7 @@
 
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-	MA 02110-1301, USA.
+  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -28,6 +27,7 @@
 #include "GLshader.h"
 #include "GLprogram.h"
 #include "GLuniform.h"
+#include "GLattributes.h"
 
 GB_DESC Cgl[] =
 {
@@ -55,7 +55,7 @@ GB_DESC Cgl[] =
 	GB_STATIC_METHOD("UseProgram", NULL, GLUSEPROGRAM, "(Program)i"),
 	GB_STATIC_METHOD("ValidateProgram", NULL, GLVALIDATEPROGRAM, "(Program)i"),
 	/* GLuniform.c */
-	GB_STATIC_METHOD("GetUniformLocation", NULL, GLGETUNIFORMLOCATION, "(Program)i(Name)s"),
+	GB_STATIC_METHOD("GetUniformLocation", "i", GLGETUNIFORMLOCATION, "(Program)i(Name)s"),
 	GB_STATIC_METHOD("Uniform1f", NULL, GLUNIFORM1F, "(Location)i(V0)f"),
 	GB_STATIC_METHOD("Uniform2f", NULL, GLUNIFORM2F, "(Location)i(V0)f(V1)f"),
 	GB_STATIC_METHOD("Uniform3f", NULL, GLUNIFORM3F, "(Location)i(V0)f(V1)f(V2)f"),
@@ -81,6 +81,22 @@ GB_DESC Cgl[] =
 	GB_STATIC_METHOD("UniformMatrix4x2fv", NULL, GLUNIFORMMATRIX4X2FV, "(Location)i(Transpose)b(Values)Float[]"),
 	GB_STATIC_METHOD("UniformMatrix3x4fv", NULL, GLUNIFORMMATRIX3X4FV, "(Location)i(Transpose)b(Values)Float[]"),
 	GB_STATIC_METHOD("UniformMatrix4x3fv", NULL, GLUNIFORMMATRIX4X3FV, "(Location)i(Transpose)b(Values)Float[]"),
+	/* GLattributes.c */
+	GB_STATIC_METHOD("BindAttribLocation",NULL, GLBINDATTRIBLOCATION, "(Program)i(Index)i(Name)s"),
+	GB_STATIC_METHOD("VertexAttrib1f", NULL, GLVERTEXATTRIB1F, "(Index)i(X)f"),
+	GB_STATIC_METHOD("VertexAttrib1fv", NULL, GLVERTEXATTRIB1FV, "(Index)i(V)Float[]"),
+	GB_STATIC_METHOD("VertexAttrib2f", NULL, GLVERTEXATTRIB2F, "(Index)i(X)f(Y)f"),
+	GB_STATIC_METHOD("VertexAttrib2fv", NULL, GLVERTEXATTRIB2FV, "(Index)i(V)Float[]"),
+	GB_STATIC_METHOD("VertexAttrib3f", NULL, GLVERTEXATTRIB3F, "(Index)i(X)f(Y)f(Z)f"),
+	GB_STATIC_METHOD("VertexAttrib3fv", NULL, GLVERTEXATTRIB3FV, "(Index)i(V)Float[]"),
+	GB_STATIC_METHOD("VertexAttrib4f", NULL, GLVERTEXATTRIB4F, "(Index)i(X)f(Y)f(Z)f(W)f"),
+	GB_STATIC_METHOD("VertexAttrib4fv", NULL, GLVERTEXATTRIB4FV, "(Index)i(V)Float[]"),
+	GB_STATIC_METHOD("GenFramebuffersEXT", "i", GLGENFRAMEBUFFERSEXT, "(N)i"),
+	GB_STATIC_METHOD("FramebufferTexture2d", NULL, GLFRAMEBUFFERTEXTURE2D, "(Target)i(Attachment)i(Textarget)i(Texture)i(Level)i"),
+	GB_STATIC_METHOD("BindFramebufferEXT", NULL, GLBINDFRAMEBUFFERSEXT, "(Target)i(Framebuffer)i"),
+	GB_STATIC_METHOD("CheckFramebufferStatusEXT", "i", GLCHECKFRAMEBUFFERSTATUSEXT, "(Target)i"),
+	
+
 
 	/* Contants */
 	GB_CONSTANT("GL_ACTIVE_ATTRIBUTES", "i", GL_ACTIVE_ATTRIBUTES),
