@@ -40,5 +40,8 @@ extern IMAGE_INTERFACE IMAGE;
 int IMAGE_get_pixel_format(GB_IMG *image);
 bool IMAGE_get(GB_OBJECT *arg, GB_IMG **img, int *format);
 
+#define IMAGE_get_ncolors(_format) (GB_IMAGE_FMT_IS_24_BITS(_format) ? 3 : 4)
+
+
 #endif
 

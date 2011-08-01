@@ -222,7 +222,7 @@ BEGIN_METHOD(GLTEXIMAGE1D, GB_OBJECT Image; GB_INTEGER Level; GB_INTEGER Border)
 	if (IMAGE_get(ARG(Image), &image, &format))
 		return;
 
-	glTexImage1D(GL_TEXTURE_1D, VARGOPT(Level, 0), 4, image->width,  VARGOPT(Border, 0),
+	glTexImage1D(GL_TEXTURE_1D, VARGOPT(Level, 0), IMAGE_get_ncolors(format), image->width,  VARGOPT(Border, 0),
 		format, GL_UNSIGNED_BYTE, image->data);
 
 END_METHOD
@@ -235,7 +235,7 @@ BEGIN_METHOD(GLTEXIMAGE2D, GB_OBJECT Image; GB_INTEGER Level; GB_INTEGER Border)
 	if (IMAGE_get(ARG(Image), &image, &format))
 		return;
 
-	glTexImage2D(GL_TEXTURE_2D, VARGOPT(Level, 0), 3, image->width, image->height,
+	glTexImage2D(GL_TEXTURE_2D, VARGOPT(Level, 0), IMAGE_get_ncolors(format), image->width, image->height,
 		 VARGOPT(Border, 0), format, GL_UNSIGNED_BYTE, image->data);
 
 END_METHOD
