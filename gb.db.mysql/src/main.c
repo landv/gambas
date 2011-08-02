@@ -157,6 +157,14 @@ static GB_TYPE conv_type(int type, int len)
 				return DB_T_BLOB;
 			else
 				return GB_T_STRING;
+			
+		case FIELD_TYPE_BIT:
+			if (len == 1)
+				return GB_T_BOOLEAN;
+			else if (len <= 32)
+				return GB_T_INTEGER;
+			else if (len <= 64)
+				return GB_T_LONG;
 
 		case FIELD_TYPE_TINY_BLOB:
 		case FIELD_TYPE_MEDIUM_BLOB:
@@ -205,6 +213,7 @@ static int conv_string_type(const char *type, long *len)
 		{ "longtext", FIELD_TYPE_LONG_BLOB },
 		{ "set", FIELD_TYPE_SET },
 		{ "enum", FIELD_TYPE_ENUM },
+		{ "bit", FIELD_TYPE_BIT },
 		{ "null", FIELD_TYPE_NULL },
 		{ NULL, 0 },
 	};
