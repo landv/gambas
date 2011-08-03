@@ -48,6 +48,12 @@ BEGIN_METHOD_VOID(GLCHECKERROR)
 
 END_METHOD
 
+BEGIN_METHOD(GLCHECKEXTENSIONS, GB_STRING extlist)
+
+	GB.ReturnBoolean(glewIsSupported(GB.ToZeroString(ARG(extlist))));
+
+END_METHOD
+
 /**************************************************************************/
 
 GB_DESC Cgl[] =
@@ -56,6 +62,8 @@ GB_DESC Cgl[] =
 	
 	/* Check errors */
 	GB_STATIC_METHOD("GetError", "i", GLCHECKERROR, NULL),
+	/* Check an extension or a driver ability */
+	GB_STATIC_METHOD("CheckExtensions", "b", GLCHECKEXTENSIONS, "(Extensions)s"),
 
 	/* Primitives - see GLprimitives.h */
 	GB_STATIC_METHOD("Begin", NULL, GLBEGIN, "(Primitive)i"),
