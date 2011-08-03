@@ -5,6 +5,7 @@
   Icon = Picture["barcode.png"]
   Arrangement = Arrange.Vertical
   Spacing = True
+  Margin = True
   Padding = 8
   { Panel1 Panel
     MoveScaled(1,1,95,8)
@@ -45,10 +46,12 @@
     }
     { rbutPrinter RadioButton
       MoveScaled(63,3,27,4)
+      Visible = False
       Text = ("Size for printer")
     }
     { rbutScreen RadioButton
       MoveScaled(63,0,27,4)
+      Visible = False
       Text = ("Size for screen")
       Value = True
     }
@@ -69,6 +72,7 @@
     }
     { btnPrint Button
       MoveScaled(20,0,19,4)
+      Visible = False
       Text = ("&Print Barcode")
     }
     { btnAbout Button

@@ -229,10 +229,12 @@ void gMainWindow::initWindow()
 		
 		gtk_widget_add_events(widget,GDK_BUTTON_MOTION_MASK);
 		g_signal_connect(G_OBJECT(widget), "expose-event", G_CALLBACK(cb_expose), (gpointer)this);
+
+		gtk_window_set_has_resize_grip(GTK_WINDOW(border), false);
 	}
 	
 	gtk_window_add_accel_group(GTK_WINDOW(topLevel()->border), accel);
-
+	
 	have_cursor = true; //parent() == 0 && !_xembed;
 }
 
@@ -516,6 +518,9 @@ void gMainWindow::setVisible(bool vl)
 		_not_spontaneous = visible;
 		_hidden = true;
 		gControl::setVisible(false);
+		
+		if (_popup)
+			gApplication::exitLoop(this);
 	}
 }
 

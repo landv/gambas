@@ -1,9 +1,9 @@
 ' Gambas class file
 
 Inherits UserControl
-Export 
+'Export 
 
-Public Const _Properties As String = "*,Tag,Filter,Fields{Field[]},Display,DataField,Table,Header,ReadOnly=True,Value,MaxLine=8,WidthList,FormatString"
+Public Const _Properties As String = "*,Tag,Filter,Fields{Field[]},Display{Field[]},DataField,Table{Table},Header,ReadOnly=True,Value,MaxLine=8,WidthList,FormatString"
 Public Const _DefaultEvent As String = "Change"
 Public Const _DefaultSize As String = "20,4"
 Public Const _DrawWith As String = "ComboBox"
@@ -27,6 +27,7 @@ Private $hList As Integer
 Private $sFormat As String
 Private htimer As Timer
 Private isActivate As Boolean
+
 Property Filter As String
 Property Fields As String[]
 Property Display As String[] 
@@ -54,11 +55,12 @@ Public Sub _New()
   
   $hForm = New Form As "LstForm"
   Object.Attach($hForm, Me, "LstForm")
-  $hForm.Border = False
-  $hForm.Type = WindowType.PopupMenu
-  $hForm.SkipTaskbar = True
+  '$hForm.Border = False
+  '$hForm.Type = WindowType.PopupMenu
+  '$hForm.SkipTaskbar = True
   $hForm.Arrangement = Arrange.Fill
-  $hForm.Stacking = Form.Above
+  $hForm.Persistent = True
+  '$hForm.Stacking = Form.Above
 
   HPanel = New Panel($hForm)
   HPanel.Arrangement = Arrange.Fill
@@ -68,15 +70,16 @@ Public Sub _New()
   $htvw.AutoResize = True
   $htvw.Border = False
   $htvw.Mode = Select.Single
+  $htvw.Tracking = True
   $hObserver = New Observer(Me.Window) As "OBS"
   Me.MaxLine = 8
   Me.ReadOnly = True 
-  $hList = ($htvw.Font.Height("0lp§") + 3) * ($iMaxLine + Abs(CInt($htvw.Header))) + 7
+  $hList = ($htvw.Font.TextHeight("0lp§") + 3) * ($iMaxLine + Abs(CInt($htvw.Header))) + 2
 End
 
-Public Sub Form_Resize()
-    $hForm.Resize($iWidthList, $hList)
-End
+' Public Sub Form_Resize()
+'     $hForm.Resize($iWidthList, $hList)
+' End
 
 Public Sub Refresh()
   LoadValues()
@@ -85,22 +88,32 @@ End
 Private Sub LoadValues()
   Dim i, j, c As Integer
   Dim s As String
+  Dim aFields, aDisplay As String[]
+  Dim hField As ResultField
+  
   $hResult = DB.Find($sTable, $sFilter)
-  $htvw.Columns.Count = $aFields.count
+  
+  aFields = $aFields
+  If aFields.Count = 0 Then 
+    aFields = New String[]
+    For Each hField In $hResult.Fields
+      aFields.Add(hField.Name)
+    Next
+  Endif
+  
+  $htvw.Columns.Count = aFields.Count
   For i = 0 To $htvw.Columns.Count - 1
   
-    If i >= $aDisplay.Count Then 
-      $htvw.Columns[i].Text = $aFields[i]
-    Else 
-      $htvw.Columns[i].Text = $aDisplay[i]
-    Endif
+    Try $htvw.Columns[i].Text = $aDisplay[i]
+    If Error Then $htvw.Columns[i].Text = aFields[i]
+    
   Next
    $htvw.Clear
    i = 0
    For Each $hResult     
-       $htvw.Add(i, $hResult[$aFields[0]])
-       For j = 1 To $aFields.Max
-         $htvw[i][j] = $hResult[$aFields[j]]
+       $htvw.Add(i, $hResult[aFields[0]])
+       For j = 1 To aFields.Max
+         $htvw[i][j] = $hResult[aFields[j]]
        Next
        Inc i
    Next
@@ -111,9 +124,10 @@ Private Sub LoadValues()
    Endif
    If $iWidthList = 0 Then $iWidthList = Me.Width
 
-  $hList = ($htvw.Font.Height("0lp§") + 3) * (c + Abs(CInt($htvw.Header))) + 7
+   $hList = ($htvw.Font.TextHeight("0lp§") + 3) * (c + Abs(CInt($htvw.Header))) + 2
    $hForm.Resize($iWidthList, $hList)
    $htvw.MoveFirst
+   Debug $htvw.Key
    ColumnView_Select()
 End
 
@@ -191,8 +205,8 @@ Public Sub ColumnView_Click()
 End
 
 Public Sub ColumnView_Select()
-    $hResult.MoveTo(Val($htvw.Current.Key))
-    Value_Refresh($hResult)
+  $hResult.MoveTo(CInt($htvw.Key))
+  Value_Refresh($hResult)  
 End
 
 Private Sub Value_Refresh(h As Result)
@@ -279,14 +293,21 @@ Public Sub Combo_KeyPress()
 End
 
 Public Sub Combo_MouseDown()
+  Dim X, Y As Integer
   LoadValues
   If $hCombo.ScreenY + $hCombo.Height + $hForm.Height < Desktop.Height Then 
-    $hForm.Move($hCombo.ScreenX, $hCombo.ScreenY + $hCombo.Height)
+    X = $hCombo.ScreenX
+    Y = $hCombo.ScreenY + $hCombo.Height
   Else 
-    $hForm.Move($hCombo.ScreenX, $hCombo.ScreenY - $hForm.Height)
+    X = $hCombo.ScreenX
+    Y = $hCombo.ScreenY - $hForm.Height
   Endif
-  $hForm.visible = Not (isActivate Or $hForm.visible)
-  isActivate = $hForm.visible
+  If Not (isActivate Or $hForm.visible)
+    $hForm.ShowPopup(X, Y)
+  Else
+    $hForm.Hide
+  Endif
+  isActivate = False
   Stop Event
 End
 

@@ -1,0 +1,558 @@
+' Gambas class file
+
+Inherits UserControl
+Export 
+
+Public Const _Properties As String = "*,Table{Table},Field{Field},Filter,Grid,Highlight=True,Columns{Field[]:Table}"
+Public Const _DefaultEvent As String = "Change"
+Public Const _DefaultSize As String = "20,4"
+Public Const _DrawWith As String = "MenuButton"
+Public Const _Group As String = "Data"
+
+Property Table As String
+Property Field As String
+Property Filter As String
+Property Columns As String[]
+Property Display As String[] 
+
+Property Value As Variant
+'Property ReadOnly As Boolean
+Property Read Modified As Boolean
+Property Read Valid As Boolean
+
+'Property Header As Integer
+Property Grid As Boolean
+Property Highlight As Boolean
+
+Event Validate
+
+'Property Read Current As Variant[]
+'Property Read Count As Integer
+'Property Read Index As Integer
+'Property Font As Font
+
+Private $hDrawingArea As DrawingArea
+Private $sText As String
+Private $hPopup As Window
+Private $hSrc As DataSource
+Private $hView As DataView
+Private $hInfo As DataField
+Private $vVal As Variant
+Private $vCurrent As Variant
+
+Private $hObserver As Observer
+Private $hObsMenu As Observer
+
+Private $sField As String
+
+Private $aDisplay As String[]
+
+Private $bInside As Boolean
+Private $bInsideArrow As Boolean
+Private $bPressed As Boolean
+
+
+Public Sub _new()
+  
+  Dim hPanel As Panel
+  
+  $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
+  $hDrawingArea.Focus = True
+
+  Me.Proxy = $hDrawingArea
+  
+  $hPopup = New Window As "Popup"
+  $hPopup.Arrangement = Arrange.Fill
+  $hPopup.Persistent = True
+  
+  $hSrc = New DataSource($hPopup)
+  $hSrc.Arrangement = Arrange.Fill
+  $hSrc.Border = Border.Plain
+  
+  $hView = New DataView($hSrc) As "DataView"
+  $hView.Mode = Select.Single
+  $hView.Border = False
+  $hView.Header = TableView.None
+  $hView.View.ScrollBar = Scroll.Vertical
+  
+  $hObserver = New Observer($hView.View) As "TableView"
+
+End
+
+' Public Sub Combo_KeyPress()
+'   If key.Code = key.Esc Then LstForm_DeACtivate
+'   If key.Code = key.Enter Or key.code = key.Down Then 
+'     Combo_MouseDown
+'   Endif
+' End
+
+Private Sub LoadPopup()
+  
+  Dim hSrc As DataSource
+  
+  hSrc = Common.GetSource(Me)
+  If Not hSrc Then Return
+  
+  $hSrc.Connection = hSrc.Connection
+  $hSrc.Refresh
+  
+End
+
+Public Sub Refresh()
+
+  Dim hSource As DataSource
+  Dim hInfo As DataField
+  
+  If Not $sField Then Return
+  
+  hSource = Common.GetSource(Me)
+  If Not hSource Then Return
+  
+  If hSource._Check() Then Return
+
+  hInfo = hSource._GetInfo($sField)
+  If hInfo <> $hInfo Then
+    $hInfo = hInfo
+    $hDrawingArea.Enabled = Not $hInfo.ReadOnly
+    $hDrawingArea.Font.Bold = $hInfo.Key
+  Endif
+  
+  $vVal = hSource[$sField]
+  $vCurrent = $vVal
+  SetValue($vVal)
+  
+End
+
+' Private Sub LoadValues()
+'   Dim i, j, c As Integer
+'   Dim s As String
+'   Dim aFields, aDisplay As String[]
+'   Dim hField As ResultField
+'   
+'   $hResult = DB.Find($sTable, $sFilter)
+'   
+'   aFields = $aFields
+'   If aFields.Count = 0 Then 
+'     aFields = New String[]
+'     For Each hField In $hResult.Fields
+'       aFields.Add(hField.Name)
+'     Next
+'   Endif
+'   
+'   $htvw.Columns.Count = aFields.Count
+'   For i = 0 To $htvw.Columns.Count - 1
+'   
+'     Try $htvw.Columns[i].Text = $aDisplay[i]
+'     If Error Then $htvw.Columns[i].Text = aFields[i]
+'     
+'   Next
+'    $htvw.Clear
+'    i = 0
+'    For Each $hResult     
+'        $htvw.Add(i, $hResult[aFields[0]])
+'        For j = 1 To aFields.Max
+'          $htvw[i][j] = $hResult[aFields[j]]
+'        Next
+'        Inc i
+'    Next
+'    If $htvw.Count < $iMaxLine Then 
+'     c = $htvw.Count
+'    Else 
+'     c = $iMaxLine
+'    Endif
+'    If $iWidthList = 0 Then $iWidthList = Me.Width
+' 
+'    $hList = ($htvw.Font.TextHeight("0lp§") + 3) * (c + Abs(CInt($htvw.Header))) + 2
+'    $hForm.Resize($iWidthList, $hList)
+'    $htvw.MoveFirst
+'    Debug $htvw.Key
+'    ColumnView_Select()
+' End
+
+Public Sub TableView_MouseUp()
+
+  SetValue($hView.Current[0])
+  $hPopup.Close
+
+End
+
+Private Function Filter_Read() As String
+
+  Return $hSrc.Filter
+  
+End
+
+Private Sub Filter_Write(Value As String)
+
+  $hSrc.Filter = Value
+  
+End
+
+Private Function Table_Read() As String
+
+  Return $hSrc.Table
+
+End
+
+Private Sub Table_Write(Value As String)
+
+  $hSrc.Table = Value
+
+End
+
+Private Function Display_Read() As String[]
+
+  Return $aDisplay
+  
+End
+
+Private Sub Display_Write(Value As String[])
+
+  $aDisplay = Value
+  
+End
+
+Private Function Header_Read() As Integer
+
+  Return $hView.Header
+  
+End
+
+Private Sub Header_Write(Value As Integer)
+
+  $hView.Header = Value
+
+End
+
+' Private Function ReadOnly_Read() As Boolean
+' 
+'   Return $hCtrl.ReadOnly
+'   
+' End
+' 
+' Private Sub ReadOnly_Write(Value As Boolean)
+' 
+'   $hCtrl.ReadOnly = Value
+'   
+' End
+
+
+Private Sub Value_Refresh(h As Result)
+' Dim s, sRes As String
+'    $vValue = h[$sDataField]
+'   
+'   If Not $sFormat Then 
+'     For Each s In $aFields
+'       sRes &= h[s] & " | "
+'     Next
+'     sRes = Left(sRes, Len(sRes) - 3)
+'   Else
+'     sRes = $sFormat
+'     For Each s In $aFields
+'       sRes = Replace$(sres, "%" & s & "%", CStr(h[s]))
+'     Next
+'   Endif  
+'     
+'     If $hCtrl.ReadOnly Then 
+'       $hCtrl.Clear
+'       $hCtrl.Add(sRes)
+'     Else 
+'       $hCtrl.Text = sRes
+'       $hCtrl.Pos = 0
+'     Endif
+End
+
+Private Function Columns_Read() As String[]
+
+  Return $hView.Columns
+
+End
+
+Private Sub Columns_Write(Value As String[])
+
+  $hView.Columns = Value
+
+End
+
+Private Function Grid_Read() As Boolean
+
+  Return $hView.Grid
+
+End
+
+Private Sub Grid_Write(Value As Boolean)
+
+  $hView.Grid = Value
+
+End
+
+Private Function Highlight_Read() As Boolean
+
+  Return $hView.Highlight
+
+End
+
+Private Sub Highlight_Write(Value As Boolean)
+
+  $hView.Highlight = Value
+
+End
+
+Private Function Field_Read() As String
+
+  Return $sField
+
+End
+
+Private Sub Field_Write(Value As String)
+
+  $sField = Value
+
+End
+
+
+Private Function Value_Read() As Variant
+
+  Dim vVal As Variant
+  
+  Try vVal = GetValue()
+  If Error Then Return $vVal
+  Return vVal
+  
+End
+
+Private Sub Value_Write(vVal As Variant)
+
+  SetValue(vVal)
+  
+Catch
+  
+End
+
+
+Private Sub SetValue(vVal As Variant)
+
+  Dim sText As String
+  Dim iInd As Integer
+  Dim hView As TableView
+
+  LoadPopup
+  If IsNull(vVal) Then
+    '$hView.Create()
+    $sText = ""
+    $hDrawingArea.Refresh
+    Return
+  Endif
+
+  $vCurrent = vVal
+  $hView.Current = [vVal]
+
+  hView = $hView.View
+  
+  For iInd = 0 To hView.Columns.Count - 1
+    sText &= " | " & hView[hView.Row, iInd].Text
+  Next
+  
+  $sText = Mid$(sText, 4)
+  $hDrawingArea.Refresh
+
+End
+
+Private Function GetValue() As Variant
+
+  'LoadPopup
+  Return $vCurrent '$hView.Current[0]
+  
+End
+
+Private Function Modified_Read() As Boolean
+  
+  'If $vVal <> GetValue() Then Stop
+  Return $vVal <> GetValue()
+  
+End
+
+Private Function Valid_Read() As Boolean
+  
+  Dim vVal As Variant
+  Dim bCancel As Boolean
+  
+  Try vVal = GetValue()
+  If Error Then Return False
+  bCancel = Raise Validate(vVal)
+  Return Not bCancel
+  
+End
+
+Public Sub DrawingArea_GotFocus()
+  
+  $hDrawingArea.Refresh
+  
+End
+
+Public Sub DrawingArea_LostFocus()
+  
+  $hDrawingArea.Refresh
+  
+End
+
+Public Sub DrawingArea_Enter()
+  
+  $bInside = True
+  $hDrawingArea.Refresh
+  
+End
+
+Public Sub DrawingArea_Leave()
+  
+  $bInside = False
+  $hDrawingArea.Refresh
+  
+End
+
+Private Sub OpenPopup()
+
+  LoadPopup
+  If $hView.Count Then 
+  
+    $hView.Current = [$vCurrent]
+    
+    $hPopup.Resize(Me.Width, Me.Font.Height * 12)
+    $hPopup.ShowPopup(Me.ScreenX, Me.ScreenY + Me.Height)
+    
+  Endif
+
+End
+
+Public Sub DrawingArea_MouseDown()
+  
+  Dim X, Y As Integer
+  
+  If Not Mouse.Left Then Return
+  If Not Me.Enabled Then Return
+  
+  $bPressed = True
+  $bInsideArrow = Mouse.X > (Me.W - Desktop.Scale * 3 + 3)
+  $hDrawingArea.Refresh
+  
+  DrawingArea_MouseUp
+  If Not $hDrawingArea.Hovered Then DrawingArea_Leave
+  
+End
+
+Public Sub DrawingArea_MouseMove()
+  
+  Dim bPressed As Boolean
+  
+  bPressed = $hDrawingArea.Hovered
+  
+  If $bPressed <> bPressed Then
+    $bPressed = bPressed
+    $hDrawingArea.Refresh
+  Endif
+  
+End
+
+
+Public Sub DrawingArea_MouseUp()
+  
+  If Not Mouse.Left Then Return
+  If Not Me.Enabled Then Return
+  If Not $bPressed Then Return
+
+  $bPressed = False
+  $hDrawingArea.Refresh
+  
+  OpenPopup
+  'If Not $bInsideArrow Then Button_Click
+
+End
+
+Public Sub DrawingArea_Draw()
+  
+  Dim X, X2, Y As Integer
+  Dim iFlag As Integer
+  Dim sText As String
+  Dim bFlat As Boolean
+  
+  If $bInside And If Me.Enabled Then iFlag += Draw.Hover
+  If Not Me.Enabled Then iFlag += Draw.Disabled
+  If $hDrawingArea.HasFocus Then iFlag += Draw.Focus
+  
+  '' TODO: System.RightToLeft
+
+  'bFlat = Not $bBorder 'And Not $bInside
+
+  'If $bInsideArrow Then
+  '  Draw.Style.Button(0, 0, Me.W, Me.H, False, iFlag, bFlat)
+  '  'Draw.Save
+  '  'Draw.Clip(Me.W - Desktop.Scale * 3 + 3, 0, Desktop.Scale * 3 - 3, Me.H)
+  '  'Draw.Style.Button(0, 0, Me.W, Me.H, $bPressed, iFlag, Not $bBorder)
+  '  'Draw.Restore
+  'Else
+    Draw.Style.Button(0, 0, Me.W, Me.H, $bPressed, iFlag, bFlat)
+  'Endif
+    
+  X = Desktop.Scale
+  
+  ' If $hPicture Then
+  '   If Me.Enabled Then
+  '     Draw.Picture($hPicture, X, (Me.H - $hPicture.H) / 2)
+  '   Else
+  '     Draw.Picture($hPicture.Image.Desaturate().Picture, X, (Me.H - $hPicture.H) / 2)
+  '   Endif
+  '   X += $hPicture.H + Desktop.Scale
+  ' Endif
+  
+  If $sText Then 
+    sText = $sText
+    'If $iShortcutPos Then sText = String.Left($sText, $iShortcutPos - 1) & String.Mid$($sText, $iShortcutPos + 1)
+    'If Not $hPicture And If Not $bArrow Then
+    '  X = (Me.W - Draw.Font.TextWidth(sText)) \ 2
+    'Endif
+    Draw.Text(sText, X, 0, Me.W - X, Me.H, Align.Left)
+    'If $iShortcutPos Then
+    '  X2 = X + Draw.Font.TextWidth(String.Left(sText, $iShortcutPos))
+    '  X += Draw.Font.TextWidth(String.Left(sText, $iShortcutPos - 1))
+    '  Y = (Me.H - Draw.Font.Height) / 2 + Draw.Font.Ascent + 1
+    '  Draw.Line(X, Y, X2, Y)
+    'Endif
+  Endif
+  
+  'If $bArrow Then
+    'If $bBorder Or If $bInside Then Draw.Style.Separator(Me.W - Desktop.Scale * 3, 3, 3, Me.H - 6, True)
+    Draw.Style.Arrow(Me.W - Desktop.Scale * 2, 0, Desktop.Scale, Me.H, Align.Bottom, iFlag)
+  'Endif
+  
+End
+
+Public Sub DrawingArea_KeyPress()
+  
+  If Key.Code = Key.Space Then 
+    $bPressed = True
+    $hDrawingArea.Refresh
+  ' Else If Key.Code = Key.Tab Then
+  '   If $hButton Then
+  '     Try Me.Next.SetFocus
+  '     Stop Event
+  '   Endif
+  Endif
+  
+End
+
+Public Sub DrawingArea_KeyRelease()
+  
+  If Key.Code = Key.Space Then 
+    $bPressed = False
+    $hDrawingArea.Refresh
+    Wait
+    'Button_Click
+  Endif
+  
+End
+
+Public Sub Popup_Open()
+  
+  $hView.SetFocus
+  
+End

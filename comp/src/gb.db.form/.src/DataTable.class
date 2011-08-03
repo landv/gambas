@@ -239,7 +239,9 @@ Public Function GetKeys(Index As Integer) As Variant[]
   
   LoadUntil(Index)
 
-  aVal = $aVal[Index]
+  Try aVal = $aVal[Index]
+  If Error Then Return
+  
   If $sSort Then
     aVal = aVal.Copy()
     aVal.Remove(0)
@@ -247,6 +249,31 @@ Public Function GetKeys(Index As Integer) As Variant[]
 
   Return aVal
   
+End
+
+Public Sub SetKeys(Value As Variant[]) As Integer
+
+  Dim iInd, iIndex As Integer
+  Dim rData As Result
+  Dim aComp As Variant[]
+  
+  Do
+    
+    aComp = GetKeys(iIndex)
+    
+    If Not aComp Then Return -1
+    If aComp.Count <> Value.Count Then Return -1
+    
+    For iInd = 0 To aComp.Max
+      If aComp[iInd] <> Value[iInd] Then Break
+    Next
+    
+    If iInd = aComp.Count Then Return iIndex
+    
+    Inc iIndex
+    
+  Loop
+
 End
 
 

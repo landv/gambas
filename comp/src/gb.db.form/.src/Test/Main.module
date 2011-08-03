@@ -1,45 +1,8 @@
 ' Gambas module file
 
-Public Conn As New Connection
-
 Public Sub Main()
 
-  Dim rTest As Result
-  Dim aText As String[]
-  Dim hTable As Table
-
-  ' DB.Debug = True
-
-  Conn.Type = "sqlite"
-  Conn.Name = "test"
-  Conn.Host = "/home/benoit"
-  
-  'Print Str(True)
-  
-  ' $hConn.Open
-  ' For Each hTable In $hConn.Tables
-  '   Print hTable.Name
-  ' Next
-
-  ' $hConn.Type = "mysql"
-  ' $hConn.User = "root"
-  ' $hConn.Name = "test"
-  
-  
-  ' $hConn.Open
-  ' aText = ["la nuit est", "un long fleuve", "tranquille", "qui dort le long", "des pleurs infidèles"]
-  ' DB.Begin
-  ' rTest = DB.Edit("test")
-  ' For Each rTest
-  '   rTest!comment = aText.Copy(0, Int(Rnd(1, aText.Count))).Join("\n")
-  '   rTest.Update
-  ' Next
-  ' DB.Commit
-
-  'DB.Debug = TRUE
-
-  'Application.Theme = "gnome"
-
-  FMain.Show
+  Application.Theme = "gnome"
+  FTest.Show
 
 End

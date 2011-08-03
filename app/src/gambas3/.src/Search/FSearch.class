@@ -10,7 +10,7 @@ Public CurrentProcedureName As String
 Public SearchString As String
 Public ReplaceString As String
 Public BrowseTimeStamp As Integer
-'Private OnlySource As Boolean
+Public OnlySource As Boolean
 
 Public InBrowse As Boolean
 
@@ -344,6 +344,7 @@ Private Sub InitSearch() As Boolean
   RegularExpression = chkRegularExpression.Value
   WordOnly = chkWordOnly.Value
   CurrentProcedure = radCurrentProcedure.Value
+  OnlySource = radSourceFileOnly.Value
   
   If Not SearchString Then Return True
   
@@ -377,6 +378,7 @@ Private Sub Run(iAction As Integer)
   Dim sProc As String
   
   If InitSearch() Then Return
+  ResetBrowse
   
   If CurrentProcedure Then
     If $hCurrent Is FEditor Then
@@ -604,7 +606,7 @@ Public Sub ResetBrowse()
 End
 
 
-Private Sub Browse(Optional bOnlySource As Boolean, Optional bReplace As Boolean)
+Private Sub Browse(Optional bReplace As Boolean, Optional bAgain As Boolean)
   
   Dim sDir As String
   Dim sFile As String
@@ -615,7 +617,9 @@ Private Sub Browse(Optional bOnlySource As Boolean, Optional bReplace As Boolean
   Dim sName As String
   Dim sExt As String
   
-  If InitSearch() Then Return
+  If Not bAgain Then
+    If InitSearch() Then Return
+  Endif
   'OnlySource = bOnlySource
   
   InBrowse = True
@@ -636,7 +640,7 @@ Private Sub Browse(Optional bOnlySource As Boolean, Optional bReplace As Boolean
   
   Inc FMain.NoMessage
   
-  If bOnlySource Then
+  If OnlySource Then
     sDir = Project.Dir &/ ".src"
   Else
     sDir = Project.Dir
@@ -743,13 +747,13 @@ Public Sub FindProject(sText As String)
   
   'WakeUp(False)
   cmbSearch.Text = sText
-  Browse
+  Browse()
   
 End
 
 Public Sub BrowseAgain()
   
-  Browse
+  Browse(False, True)
   
 End
 
@@ -817,7 +821,7 @@ Public Sub btnReplaceAll_Click()
   If Message.Question(("Do you really want to replace every string?"), ("Replace"), ("Cancel")) <> 1 Then Return
   
   If btnBrowse.Visible Then
-    Browse(radSourceFileOnly.Value, True)
+    Browse(True)
   Else
     Run(GO_FORWARD + DO_REPLACE + DO_ALL)
   Endif
@@ -859,7 +863,7 @@ End
 
 Public Sub btnBrowse_Click()
 
-  Browse(radSourceFileOnly.Value, False)
+  Browse(False)
 
 End
 

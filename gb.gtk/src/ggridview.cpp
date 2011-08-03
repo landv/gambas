@@ -807,6 +807,7 @@ gGridView::gGridView(gContainer *parent) : gControl(parent)
 	_autoresize = true;
 	_show_headers = 0;
 	_show_footers = false;
+	_columns = NULL;
 	
 	border=gtk_event_box_new();
 	//gtk_event_box_set_visible_window(GTK_EVENT_BOX(border), false);
@@ -1262,7 +1263,10 @@ void gGridView::setColumnCount(int vl)
 	lock();
 	
 	if (vl == 0)
+	{
 		g_free(_columns);
+		_columns = NULL;
+	}
 	else if (!_columns)
 		_columns = g_new(gGridViewColumn, vl);
 	else

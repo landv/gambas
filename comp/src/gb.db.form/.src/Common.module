@@ -87,6 +87,6 @@ End
 
 Public Function IsControl(hCtrl As Control) As Boolean
   
-  Return hCtrl Is DataControl Or hCtrl Is DataCombo
+  If hCtrl Is DataControl Or If hCtrl Is DataCombo Or If hCtrl Is DataComboView Then Return True
   
 End

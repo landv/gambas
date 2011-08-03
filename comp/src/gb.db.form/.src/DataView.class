@@ -16,15 +16,14 @@ Property Highlight As Boolean
 Property Border As Boolean
 Property Editable As Boolean
 
-'PROPERTY Connection AS Connection
-'PROPERTY Table AS String
-'PROPERTY Filter AS String
 Property Columns As String[]
-Property Read Current As Variant[]
+Property Current As Variant[]
 Property Read Count As Integer
 Property Read Index As Integer
 Property Read View As TableView
 Property Font As Font
+
+'Public _DataComboView As DataComboView
 
 Private Const NEW_RECORD As String = "*"
 
@@ -81,6 +80,7 @@ End
 Private Sub GetSource() As DataSource
   
   Dim hSrc As DataSource
+  
   hSrc = Common.GetSource(Me)
   If Not hSrc Then Return
   If hSrc._Check() Then Return
@@ -568,6 +568,13 @@ Private Function Current_Read() As Variant[]
   
   Return $hTable.GetKeys($hCtrl.Row)
   
+End
+
+
+Private Sub Current_Write(Value As Variant[])
+
+  $hCtrl.Row = $hTable.SetKeys(Value)
+
 End
 
 Public Sub MoveFirst()

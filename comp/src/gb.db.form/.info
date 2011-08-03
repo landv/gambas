@@ -136,13 +136,13 @@ _OnDatabaseChange
 m
 
 
-#DataComboMulti
+#DataComboView
 UserControl
 C
 _Properties
 C
 s
-*,Tag,Filter,Fields{Field[]},Display,DataField,Table,Header,ReadOnly=True,Value,MaxLine=8,WidthList,FormatString
+*,Table{Table},Field{Field},Filter,Grid,Highlight=True,Columns{Field[]:Table}
 _DefaultEvent
 C
 s
@@ -154,16 +154,24 @@ s
 _DrawWith
 C
 s
-ComboBox
+MenuButton
 _Group
 C
 s
 Data
+Table
+p
+s
+
+Field
+p
+s
+
 Filter
 p
 s
 
-Fields
+Columns
 p
 String[]
 
@@ -171,51 +179,31 @@ Display
 p
 String[]
 
-DataField
-p
-s
-
-Table
-p
-s
-
-Tag
-p
-v
-
-Header
-p
-b
-
-ReadOnly
-p
-b
-
 Value
 p
 v
 
-MaxLine
-p
-i
+Modified
+r
+b
 
-WidthList
-p
-i
+Valid
+r
+b
 
-FormatString
+Grid
 p
-s
+b
 
-:Change
+Highlight
+p
+b
+
+:Validate
 :
 
 
-_New
-m
-
-
-Form_Resize
+_new
 m
 
 
@@ -223,35 +211,51 @@ Refresh
 m
 
 
-ColumnView_Select
+TableView_MouseUp
 m
 
 
-LstForm_DeACtivate
+DrawingArea_GotFocus
 m
 
 
-ColumnView_KeyPress
+DrawingArea_LostFocus
 m
 
 
-ColumnView_Click
+DrawingArea_Enter
 m
 
 
-Combo_KeyPress
+DrawingArea_Leave
 m
 
 
-Combo_MouseDown
+DrawingArea_MouseDown
 m
 
 
-OBS_Move
+DrawingArea_MouseUp
 m
 
 
-hTimer_Timer
+DrawingArea_MouseMove
+m
+
+
+DrawingArea_Draw
+m
+
+
+DrawingArea_KeyPress
+m
+
+
+DrawingArea_KeyRelease
+m
+
+
+Popup_Open
 m
 
 
@@ -501,7 +505,7 @@ p
 String[]
 
 Current
-r
+p
 Variant[]
 
 Count

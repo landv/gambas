@@ -1418,7 +1418,7 @@ Public Sub tvwProject_Drop()
       AddDataFiles(aFile, True)
     Endif
     
-  Else
+  Else 'If Drag.Format = MMime.CLASS Then
     
     If Drag.Action = Drag.Move Then
       Project.MoveFile(sSrc, GetCurrentDir($sKey) &/ File.Name(sSrc), Drag.Format = MMime.CLASS)

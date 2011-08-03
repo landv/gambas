@@ -3,6 +3,7 @@
 { Form Form
   MoveScaled(0,0,68,59)
   Arrangement = Arrange.Vertical
+  Spacing = True
   Margin = True
   { HBox1 HBox
     MoveScaled(1,1,64,4)
@@ -21,16 +22,20 @@
     }
   }
   { DataSource1 DataSource
-    MoveScaled(1,6,66,52)
+    MoveScaled(0,6,66,52)
     Expand = True
-    Arrangement = Arrange.Fill
-    Connection = Connections["Connection2"]
-    { DataView1 DataView
-      MoveScaled(8,7,43,34)
-      Font = Font["-2"]
-      Mode = Select.Multiple
-      Editable = True
-      Grid = True
+    Arrangement = Arrange.Vertical
+    Spacing = True
+    Connection = Connections["Connection1"]
+    Table = "Client"
+    { DataComboView1 DataComboView
+      MoveScaled(7,9,29,4)
+      Table = "TypeClient"
+      Field = "idTypeClient"
+    }
+    { DataBrowser1 DataBrowser
+      MoveScaled(6,19,55,30)
+      Expand = True
     }
   }
 }

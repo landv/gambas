@@ -48,9 +48,9 @@ BEGIN_METHOD(CKEY_get, GB_STRING key)
 	char *key = GB.ToZeroString(ARG(key));
 	int code = 0;
 
-	if (key[0] && !key[1] && !(key[1] & 0x80))
+	if (key[0] && !key[1] && !(key[0] & 0x80))
 	{
-		GB.ReturnInteger(key[1]);
+		GB.ReturnInteger(key[0]);
 		return;
 	}
 	else

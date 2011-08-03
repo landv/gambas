@@ -130,7 +130,7 @@ Public Sub load_texture()
   
   gl.Enable(gl.GL_TEXTURE_2D)                     ' Enable Texture Mapping
   texture = Gl.GenTextures(3)
-  wall = Image.Load("wall.png")
+  wall = Image.Load("wall.jpeg")
   Gl.BindTexture(Gl.GL_TEXTURE_2D, texture[0])
   Gl.TexImage2D(wall)
   Glu.Build2DMipmaps(wall)

@@ -3,12 +3,8 @@
 'tutorial based on tutorial from NeHe Productions site at http://nehe.gamedev.net/
 'visit the page for more info on OpenGL
 '
-'Originally this tutorial was about filters,lights and keyboard, 
-'but in Due to limited OpenGl library i Gambas we have to skip filters.
-'we change lighting with "l' or "L" key, and change roration speed 
-'with up, down, left, right, pageup and pagdown keys.
+'We introduce fog effect in this tutorial.  "f" key changes the density of the fog.
 
-' Gambas module file
 Private screen As New Window(True) As "Screen"
 Private xrot As Float    'X Rotation( NEW )
 Private yrot As Float    'Y Rotation( NEW )
@@ -23,6 +19,10 @@ Private light As Integer = 0
 Private lp As Integer
 Private fp As Integer
 Private z As Float = -5.0
+Private gp As Boolean
+Private fogmode As New Float[3]
+Private fogfilter As Integer = 0
+Private fogcolor As Float[]
 
 Public Sub Main()
 
@@ -37,12 +37,22 @@ End
 
 Public Sub Screen_Open()
 
+  fogMode = [0.15, 0.35, 0.5]
+  fogColor = [0.5, 0.5, 0.5, 1.0]
   LightAmbient = [0.2, 0.2, 0.2, 1.0]
   LightDiffuse = [1.0, 1.0, 1.0, 1.0]
   LightPosition = [0.0, 0.0, 2.0, 1.0]
 
   Gl.ClearDepth(100.0)                'Enables Clearing Of The Depth Buffer
-  gl.ClearColor(0.0, 0.0, 0.0, 0.0)   'This Will Clear The Background Color To Black
+  gl.ClearColor(0.5, 0.5, 0.5, 1.0)   'This Will Clear The Background Color To Grey
+  gl.Fogi(gl.GL_FOG_MODE, gl.GL_EXP)  'Fog Mode
+  gl.Fogfv(gl.GL_FOG_COLOR, fogColor)         'Set Fog Color
+  gl.Fogf(gl.GL_FOG_DENSITY, fogmode[fogfilter])            'How Dense Will The Fog Be
+  gl.Hint(gl.GL_FOG_HINT, gl.GL_DONT_CARE)    'Fog Hint Value
+  gl.Fogf(gl.GL_FOG_START, 1.0)               'Fog Start Depth
+  gl.Fogf(gl.GL_FOG_END, 5.0)                 'Fog END Depth
+  gl.Enable(gl.GL_FOG)                        'Enables GL_FOG
+
   gl.DepthFunc(gl.GL_LESS)            'The Type Of Depth Test To Do
   gl.Enable(gl.GL_DEPTH_TEST)         'Enables Depth Testing
   gl.ShadeModel(gl.GL_SMOOTH)         'Enables Smooth Color Shading
@@ -53,6 +63,7 @@ End
 Public Sub Screen_resize()
 
   Gl.Viewport(0, 0, Screen.Width, Screen.Height)
+
   Gl.MatrixMode(Gl.GL_PROJECTION)
   Gl.LoadIdentity()                     'Reset The Projection Matrix
   glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
@@ -75,7 +86,7 @@ Public Sub init()
   Gl.TexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MAG_FILTER, Gl.GL_LINEAR)
   gl.Enable(gl.GL_TEXTURE_2D)                     ' Enable Texture Mapping( NEW )
   gl.ShadeModel(gl.GL_SMOOTH)                     ' Enable Smooth Shading
-  gl.ClearColor(0.0, 0.0, 0.0, 0.0)               ' Black Background
+  gl.ClearColor(0.5, 0.5, 0.5, 1.0)               ' Grey Background
   gl.ClearDepth(2.0)                              ' Depth Buffer Setup
   gl.Enable(gl.GL_DEPTH_TEST)                     ' Enables Depth Testing
   gl.DepthFunc(gl.GL_LESS)                      ' The Type OF Depth Testing TO DO
@@ -197,7 +208,7 @@ Public Sub Screen_draw()
 
   xrot += xspeed      ' Add xspeed TO xrot
   yrot += yspeed      ' Add yspeed TO yrot
-
+  
 End
 
 Public Sub Screen_keyPress()
@@ -209,8 +220,16 @@ Public Sub Screen_keyPress()
     If lp = 1 Then gl.Disable(gl.GL_LIGHTing)
     lp = 1 - lp
   Endif
-  If (key.code = key.PageUp) Then z -= 0.02     'MOVE the cube into the distance.
-  If (key.code = key.Pagedown) Then z += 0.02   'MOVE the cube closer.
+  If (key.text = "F" Or key.text = "f") Then
+    gp = True                           'gp IS Set TO TRUE
+    fogfilter += 1                      'Increase fogfilter By One
+    Print (Str$(fogfilter))
+    If (fogfilter > 2) Then fogfilter = 0   'Is fogfilter Greater Than 2? IF So, Set fogfilter to Zero
+    gl.Fogf(gl.GL_FOG_DENSITY, fogmode[fogfilter])  'Fog Mode
+    gp = False
+  Endif
+  If (key.code = key.PageUp) Then z -= 0.2     'MOVE the cube into the distance.
+  If (key.code = key.Pagedown) Then z += 0.2   'MOVE the cube closer.
   If (key.code = key.UP) Then xspeed -= 0.01     'decrease x rotation speed;
   If (key.code = key.DOWN) Then xspeed += 0.01    'increase x rotation speed;
   If (key.code = key.LEFT) Then yspeed -= 0.01    'decrease y rotation speed;
