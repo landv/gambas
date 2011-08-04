@@ -343,7 +343,7 @@ static void gambas_handle_event(GdkEvent *event)
 			}
 		}
 	}
-
+	
 	if (!((event->type >= GDK_MOTION_NOTIFY && event->type <= GDK_FOCUS_CHANGE) || event->type == GDK_SCROLL))
 		goto __HANDLE_EVENT;
 	
@@ -960,6 +960,7 @@ void gApplication::enterPopup(gMainWindow *owner)
 	oldGroup = enterGroup();
 	
 	gtk_window_set_modal(window, true);
+	gdk_window_set_override_redirect(owner->border->window, true);
 	owner->show();
 	
   if (popup_grab_on_window(owner->border->window, GDK_CURRENT_TIME, FALSE))
@@ -981,6 +982,7 @@ void gApplication::enterPopup(gMainWindow *owner)
 	}
 
 	//gtk_window_set_type_hint(window, GDK_WINDOW_TYPE_HINT_NORMAL);
+	gdk_window_set_override_redirect(owner->border->window, false);
 	gtk_window_set_modal(window, false);
 	exitGroup(oldGroup);
 }

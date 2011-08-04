@@ -230,7 +230,9 @@ void gMainWindow::initWindow()
 		gtk_widget_add_events(widget,GDK_BUTTON_MOTION_MASK);
 		g_signal_connect(G_OBJECT(widget), "expose-event", G_CALLBACK(cb_expose), (gpointer)this);
 
+		#if GTK_MAJOR_VERSION >= 3
 		gtk_window_set_has_resize_grip(GTK_WINDOW(border), false);
+		#endif
 	}
 	
 	gtk_window_add_accel_group(GTK_WINDOW(topLevel()->border), accel);
@@ -625,6 +627,7 @@ void gMainWindow::showPopup(int x, int y)
   gMainWindow *save;
 	bool has_border;
 	int oldx, oldy;
+	//int type;
 	
 	if (!isTopLevel()) return;
 	if (isModal()) return;
@@ -637,7 +640,12 @@ void gMainWindow::showPopup(int x, int y)
 	oldy = top();
 	
 	has_border = gtk_window_get_decorated(GTK_WINDOW(border));
+	//type = getType();
+	
+	//setType(_NET_WM_WINDOW_TYPE_COMBO);
 	gtk_window_set_decorated(GTK_WINDOW(border), false);
+	//gtk_window_set_type_hint(GTK_WINDOW(border), GDK_WINDOW_TYPE_HINT_POPUP_MENU);
+	
   move(x, y);
 	gtk_window_resize(GTK_WINDOW(border), bufW, bufH);
 	
@@ -653,21 +661,20 @@ void gMainWindow::showPopup(int x, int y)
 	_popup = false;
 	
 	if (!persistent)
+	{
 		destroyNow();
+	}
 	else
 	{
-		//if (_current)
-		//gtk_window_activate_focus(GTK_WINDOW(_current->border));
-	
 		hide();
-		//reparent(NULL, oldx, oldy, GTK_WINDOW_TOPLEVEL);
+		
+		//gdk_window_set_override_redirect(gtk_widget_get_window(GTK_WINDOW(border)), false);
 		gtk_window_set_decorated(GTK_WINDOW(border), has_border);
+		//setType(type);
+		//gtk_window_set_type_hint(GTK_WINDOW(border), type);
+		
 		move(oldx, oldy);
-		/*gtk_widget_unrealize(border);
-		((GtkWindow *)border)->type = GTK_WINDOW_TOPLEVEL;
-		gtk_widget_realize(border);*/
 	}
-	
 }
 
 void gMainWindow::showPopup()
