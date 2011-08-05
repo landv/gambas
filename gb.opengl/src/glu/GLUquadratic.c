@@ -23,21 +23,21 @@
 #define __GLUQUADRATIC_C
 
 #include "GLU.h"
+#include "cgluquadric.h"
 
 /**************************************************************************/
 
 
 BEGIN_METHOD_VOID(GLUNEWQUADRIC)
 
-	GLUquadricObj *quad;
-	quad = gluNewQuadric();
-	GB.ReturnPointer(quad);
+	CGLUQUADRIC *ob = CGLUQUADRIC_create(gluNewQuadric());
+	GB.ReturnObject(ob);
 		
 END_METHOD
 
 BEGIN_METHOD(GLUQUADRICNORMALS, GB_OBJECT Quad; GB_INTEGER Normal)
-
-	GLUquadricObj *quad;
+//Hope this will work
+	GLUquadric *quad;
 	quad = VARG(Quad);
 	gluQuadricNormals (quad, VARG(Normal));
 
@@ -45,7 +45,7 @@ END_METHOD
 
 BEGIN_METHOD(GLUQUADRICTEXTURE, GB_OBJECT Quad; GB_BOOLEAN Texture)
 
-	GLUquadricObj *quad;
+	GLUquadric *quad;
 	quad = VARG(Quad);
 	gluQuadricTexture (quad, VARG(Texture));
 
@@ -53,7 +53,7 @@ END_METHOD
 
 BEGIN_METHOD(GLUDELETEQUADRIC, GB_OBJECT Quad)
 
-	GLUquadricObj *quad;
+	GLUquadric *quad;
 	quad = VARG(Quad);
 	gluDeleteQuadric(quad);
 
@@ -61,7 +61,7 @@ END_METHOD
 
 BEGIN_METHOD(GLUSPHERE, GB_OBJECT Quad; GB_FLOAT Radius; GB_INTEGER Slices; GB_INTEGER Stacks)
 
-	GLUquadricObj *quad;
+	GLUquadric *quad;
 	quad = VARG(Quad);
 	gluSphere (quad, VARG(Radius), VARG(Slices), VARG(Stacks));
 	
@@ -70,7 +70,7 @@ END_METHOD
 BEGIN_METHOD(GLUCYLINDER, GB_OBJECT Quad; GB_FLOAT Base; GB_FLOAT Top; GB_FLOAT Height; \
 	 GB_INTEGER Slices; GB_INTEGER Stacks)
 
-	GLUquadricObj *quad;
+	GLUquadric *quad;
 	quad = VARG(Quad);
 	gluCylinder (quad, VARG(Base), VARG(Top), VARG(Height), VARG(Slices), VARG(Stacks));
 	
@@ -80,7 +80,7 @@ END_METHOD
 BEGIN_METHOD(GLUDISK, GB_OBJECT Quad; GB_FLOAT Inner; GB_FLOAT Outer; \
 	 GB_INTEGER Slices; GB_INTEGER Loops)
 
-	GLUquadricObj *quad;
+	GLUquadric *quad;
 	quad = VARG(Quad);
 	gluDisk (quad, VARG(Inner), VARG(Outer), VARG(Slices), VARG(Loops));
 	
@@ -89,7 +89,7 @@ END_METHOD
 BEGIN_METHOD(GLUPARTIALDISK, GB_OBJECT Quad; GB_FLOAT Inner; GB_FLOAT Outer; \
 	 GB_INTEGER Slices; GB_INTEGER Loops; GB_FLOAT Start; GB_FLOAT Sweep)
 
-	GLUquadricObj *quad;
+	GLUquadric *quad;
 	quad = VARG(Quad);
 	gluPartialDisk (quad, VARG(Inner), VARG(Outer), VARG(Slices), VARG(Loops), VARG(Start), VARG(Sweep));
 

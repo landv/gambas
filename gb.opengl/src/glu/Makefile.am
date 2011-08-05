@@ -13,4 +13,5 @@ gb_opengl_glu_la_SOURCES = \
  GLUcoordTransf.h GLUcoordTransf.c \
  GLUtextureImage.h GLUtextureImage.c \
  GLUquadratics.h GLUquadratic.c \
+ cgluquadric.h cgluquadric.c \
  GLUnurb.h GLUnurb.c
