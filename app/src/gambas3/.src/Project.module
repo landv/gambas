@@ -442,7 +442,7 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
     Message.Error(("This project is read-only.") & " " & ("It cannot be converted."))
     Return True
   Endif
-
+  
   Project.Dir = sDir
   
   If bConvert Then
@@ -459,7 +459,7 @@ _INIT_AGAIN:
   Path = Project.Dir &/ PROJECT_FILE
   Name = File.Name(Project.Dir)
   SourceDir = Project.Dir &/ ".src"
-
+  
   ProjectFilter = ""  
   VersionControl.Refresh
   
@@ -494,7 +494,7 @@ _INIT_AGAIN:
     
     MakeDirectoryIcon
     If ConvertProject() Then Goto _CANCEL
-  
+    
     If bStopConvert Then
       FConvert.Stop
       bStopConvert = False

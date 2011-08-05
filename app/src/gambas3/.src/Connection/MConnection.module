@@ -380,3 +380,20 @@ Public Sub GetFields(hConn As Connection, sTable As String) As String[]
 Catch
   
 End
+
+Public Sub Convert(vVal As Variant, iType As Integer) As Variant
+
+  Select iType
+    Case db.Float
+      vVal = Val(vVal)
+      If TypeOf(vVal) <= gb.Float Then Return vVal
+    Case db.Date
+      vVal = Val(vVal)
+      If TypeOf(vVal) = gb.Date Then Return vVal
+  End Select
+  
+  Error.Raise("Type mismatch")
+
+End
+
+

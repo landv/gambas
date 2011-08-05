@@ -85,7 +85,10 @@ Public Sub Menu_Show()
     hMenu.Tag = sDigit
     hImage = New Image(12, 12)
     hImage.FillRect(0, 0, hImage.W, hImage.H, &H808080)
-    iColor = Val("&H" & Mid$(sDigit, Len($sPattern) + 1) & "&")
+    While Not IsHexa(Left(sDigit))
+      sDigit = Mid$(sDigit, 2)
+    Wend
+    iColor = Val("&H" & sDigit & "&")
     hImage.FillRect(1, 1, hImage.W - 2, hImage.H - 2, iColor)
     hMenu.Picture = hImage.Picture
   Next

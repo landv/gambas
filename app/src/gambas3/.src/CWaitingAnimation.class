@@ -1,15 +1,32 @@
 ' Gambas class file
 
+Property Read Cancelled As Boolean
+
 Private $hPanel As Panel
 Private $hMovieBox As MovieBox
 Private $hLabel As Label
+Private $hButton As Button
+Private $bCancelled As Boolean
+Private $fLastWait As Float
 
-Public Sub _new(hWindow As Window)
+Private Sub DisableWindow(hWindow As Window, bDisable As Boolean)
+
+  Dim hCtrl As Control
+  
+  For Each hCtrl In hWindow.Children
+    hCtrl.Enabled = Not bDisable
+  Next
+
+End
+
+Public Sub _new(hWindow As Window, Optional bWithCancel As Boolean)
+  
+  DisableWindow(hWindow, True)
   
   $hPanel = New Panel(hWindow)
   With $hPanel
     .Ignore = True
-    .Move((hWindow.ClientW - 88) / 2, (hWindow.ClientH - 88) / 2, 88, 88)
+    .Move((hWindow.ClientW - Desktop.Scale * 16) / 2, (hWindow.ClientH - Desktop.Scale * 16) / 2, Desktop.Scale * 16, Desktop.Scale * 16)
     .Background = Color.LightForeground
   End With
   
@@ -30,17 +47,28 @@ Public Sub _new(hWindow As Window)
     $hLabel.Alignment = Align.Center
   End With
   
+  If bWithCancel Then
+    
+    $hPanel.H += Desktop.Scale * 5
+    
+    $hButton = New Button($hPanel) As "Button"
+    $hButton.Move(Desktop.Scale, $hPanel.H - Desktop.Scale * 5, $hPanel.W - Desktop.Scale * 2, Desktop.Scale * 4)
+    $hButton.Text = ("Cancel")
+    
+  Endif
+  
 End
 
 Public Sub _free()
   
-  Try $hPanel.Delete
+  Try Stop()
   
 End
 
 
 Public Sub Stop()
   
+  DisableWindow($hPanel.Parent, False)
   $hPanel.Delete
   
 End
@@ -48,6 +76,13 @@ End
 Public Sub SetValue(fProgress As Float)
   
   Dim sText As String = CStr(CInt(fProgress * 100)) & "%"
+
+  If $hButton Then 
+    If $fLastWait = 0 Or If (Timer - $fLastWait) >= 0.2 Then
+      Wait 0.05
+      $fLastWait = Timer
+    Endif
+  Endif
   
   If sText = $hLabel.Text Then Return
   $hLabel.Text = sText
@@ -55,3 +90,17 @@ Public Sub SetValue(fProgress As Float)
   
 End
 
+Public Sub Button_Click()
+
+  $bCancelled = True
+
+End
+
+Private Function Cancelled_Read() As Boolean
+
+  If $bCancelled Then
+    Stop()
+    Return True
+  Endif
+
+End

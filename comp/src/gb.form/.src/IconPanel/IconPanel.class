@@ -56,19 +56,18 @@ End
 
 Public Sub _UpdateIconViewWidth()
   
-  ' Dim hFont As Font = $hIconView.Font
-  ' Dim W, H As Integer
-  ' 
-  ' W = hFont.RichTextWidth(sText)
-  ' 
-  ' Do
-  '   If (W + $hIconView.IconSize) <= $hIconView.W Then Return
-  '   H = hFont.RichTextHeight(sText, W - 8)
-  '   If H > ($hIconView.IconLines * hFont.Height) Then Break
-  '   W -= 8
-  ' Loop
+  Dim iInd As Integer
+  Dim W As Integer
   
-  $hIconView.W = ((($hIconView.IconSize + Desktop.Scale - 1) \ Desktop.Scale) + 20) * Desktop.Scale
+  W = $hIconView.IconSize + Desktop.Scale * 8 '((($hIconView.IconSize + Desktop.Scale - 1) \ Desktop.Scale) + 20) * Desktop.Scale
+  
+  For iInd = 0 To $aCont.Max
+    
+    W = Max(W, $hIconView.Font.TextWidth($hIconView[iInd].Text) + $hIconView.IconSize + Desktop.Scale * 4)
+    
+  Next
+  
+  $hIconView.W = W
   
 End
 

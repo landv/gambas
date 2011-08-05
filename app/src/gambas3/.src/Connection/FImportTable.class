@@ -14,7 +14,6 @@ Private $iIgnore As Integer
 
 Private $iLine As Integer
 Private $bImport As Boolean
-Private $bCancel As Boolean
 
 Private $cCar As New Collection
 
@@ -33,15 +32,8 @@ End
 
 Public Sub btnOK_Click()
 
-  If $bImport Then
-    $bCancel = True
-  Else
-    btnOK.Text = ("Cancel")
-    Wait
-    DoImport
-    btnOK.Text = ("Import")
-  Endif
-
+  DoImport
+ 
 End
 
 Public Sub btnCancel_Click()
@@ -318,9 +310,9 @@ Private Sub DoImport()
   Dim nImport As Integer
   Dim cField As New Collection
   Dim sDestCharset As String
+  Dim hWaiting As CWaitingAnimation
 
   $bImport = True 
-  tabImport.Enabled = False
   gvwMessage.Rows.Count = 0
   hConn = $hConn
   sTable = Trim(cmbTable.Text)
@@ -328,8 +320,7 @@ Private Sub DoImport()
   
   UpdateDelim
   
-  pgbImport.Value = 0
-  pgbImport.Show
+  hWaiting = New CWaitingAnimation(Me, True)
   
   If hConn.IgnoreCharset Then
     sDestCharset = "UTF-8"
@@ -341,7 +332,6 @@ Private Sub DoImport()
   
   hFile = Open $sPath For Input
   $iLine = 0
-  $bCancel = False
   
   If chkFirstLine.Value Then
     Inc $iLine
@@ -404,26 +394,31 @@ Private Sub DoImport()
         sName = aField[I]
         'PRINT sName; " := "; aLine[I]
         Try rData[sName] = aLine[I]
-        If Error Then DoMessage(Conv(sName, $sCharset, Desktop.Charset) & ": " & Error.Text)
+        If Error Then 
+          Try rData[sName] = MConnection.Convert(aLine[I], rData.Fields[sName].Type)
+          If Error Then DoMessage(Conv(sName, $sCharset, Desktop.Charset) & ": " & Error.Text)
+        Endif
       Next
     Else
       For I = 0 To aLine.Max
         Try rData[I + 1] = aLine[I]
-        If Error Then DoMessage(("Field") & CStr(I) & ": " & Error.Text)
+        If Error Then 
+          Try rData[I + 1] = MConnection.Convert(aLine[I], rData.Fields[I + 1].Type)
+          If Error Then DoMessage(("Field") & CStr(I) & ": " & Error.Text)
+        Endif
       Next
     Endif
     rData.Update
     
     Inc nImport
-    pgbImport.Value = Seek(hFile) / Lof(hFile)
-    Wait 0.01
-    If $bCancel Then Error.Raise(("Cancelled by user"))
+    hWaiting.SetValue(Seek(hFile) / Lof(hFile))
+    If hWaiting.Cancelled Then Error.Raise(("Cancelled by user"))
     
   Wend
   
-  pgbImport.Value = 1
-  Wait
+  hWaiting.SetValue(1)
   hConn.Commit
+  hWaiting.Stop
 
   If nImport = 0 Then
     DoMessage(("No record imported."))
@@ -439,7 +434,6 @@ Finally
   
   Close #hFile
   $bImport = False
-  tabImport.Enabled = True
   
 Catch
 

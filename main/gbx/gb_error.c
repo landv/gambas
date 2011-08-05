@@ -585,9 +585,12 @@ void ERROR_save(ERROR_INFO *save, ERROR_INFO *last)
 	*save = ERROR_current->info;
 	CLEAR(&ERROR_current->info);
 
-	ERROR_reset(last);
-	*last = ERROR_last;
-	CLEAR(&ERROR_last);
+	if (last)
+	{
+		ERROR_reset(last);
+		*last = ERROR_last;
+		CLEAR(&ERROR_last);
+	}
 }
 
 void ERROR_restore(ERROR_INFO *save, ERROR_INFO *last)
@@ -596,9 +599,12 @@ void ERROR_restore(ERROR_INFO *save, ERROR_INFO *last)
 	ERROR_current->info = *save;
 	CLEAR(save);
 
-	ERROR_reset(&ERROR_last);
-	ERROR_last = *last;
-	CLEAR(last);
+	if (last)
+	{
+		ERROR_reset(&ERROR_last);
+		ERROR_last = *last;
+		CLEAR(last);
+	}
 }
 
 void ERROR_set_last(void)

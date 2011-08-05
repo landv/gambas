@@ -34,7 +34,7 @@
     MoveScaled(1,1,97,55)
     Arrangement = Arrange.Vertical
     Spacing = True
-    Count = 6
+    Count = 7
     Index = 0
     Text = ("Interface")
     Picture = Picture["icon:/large/menu"]
@@ -584,6 +584,26 @@
           Text = ("&Import...")
           Picture = Picture["icon:/small/open"]
         }
+      }
+    }
+    Index = 6
+    Text = ("Code indentation")
+    Picture = Picture["icon:/32/indent"]
+    { HBox30 HBox
+      MoveScaled(0,0,66,4)
+      Spacing = True
+      { Label28 Label
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Indent local variable declaration")
+      }
+      { cmbIndentDim ComboBox
+        MoveScaled(48,0,10,4)
+        ReadOnly = True
+        List = [("No"), ("Yes")]
+      }
+      { Panel17 Panel
+        MoveScaled(59,0,7,4)
       }
     }
     Index = 0

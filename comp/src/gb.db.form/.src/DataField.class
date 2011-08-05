@@ -16,12 +16,12 @@ Public Function GetWidth(hCtrl As Control) As Integer
   Select Case Type
 
     Case db.Boolean
-      iWidth = hCtrl.Font.TextWidth("False") + 32
+      iWidth = hCtrl.Font.TextWidth(("False"))
 
-    Case db.Integer
+    Case db.Integer, db.Serial
       iWidth = hCtrl.Font.TextWidth("9") * 8
 
-    Case db.Long, db.Serial
+    Case db.Long
       iWidth = hCtrl.Font.TextWidth("9") * 16
 
     Case db.Float

@@ -3,7 +3,7 @@
 Inherits UserControl
 Export 
 
-Public Const _Properties As String = "*,Table{Table},Field{Field},Filter,Grid,Highlight=True,Columns{Field[]:Table}"
+Public Const _Properties As String = "*,Table{Table},Field{Field},Filter,Header,Grid,Highlight=True,Columns{Field[]:Table}"
 Public Const _DefaultEvent As String = "Change"
 Public Const _DefaultSize As String = "20,4"
 Public Const _DrawWith As String = "MenuButton"
@@ -20,7 +20,7 @@ Property Value As Variant
 Property Read Modified As Boolean
 Property Read Valid As Boolean
 
-'Property Header As Integer
+Property Header As Boolean
 Property Grid As Boolean
 Property Highlight As Boolean
 
@@ -171,7 +171,12 @@ End
 
 Public Sub TableView_MouseUp()
 
-  SetValue($hView.Current[0])
+  If $hView.Current Then
+    SetValue($hView.Current[0])
+  Else
+    SetValue(Null)
+  Endif
+  
   $hPopup.Close
 
 End
@@ -212,15 +217,15 @@ Private Sub Display_Write(Value As String[])
   
 End
 
-Private Function Header_Read() As Integer
+Private Function Header_Read() As Boolean
 
   Return $hView.Header
   
 End
 
-Private Sub Header_Write(Value As Integer)
+Private Sub Header_Write(Value As Boolean)
 
-  $hView.Header = Value
+  $hView.Header = If(Value, GridView.Horizontal, GridView.None)
 
 End
 
@@ -431,42 +436,41 @@ Public Sub DrawingArea_MouseDown()
   If Not Mouse.Left Then Return
   If Not Me.Enabled Then Return
   
-  $bPressed = True
+  '$bPressed = True
   $bInsideArrow = Mouse.X > (Me.W - Desktop.Scale * 3 + 3)
   $hDrawingArea.Refresh
   
-  DrawingArea_MouseUp
+  OpenPopup
   If Not $hDrawingArea.Hovered Then DrawingArea_Leave
   
 End
 
-Public Sub DrawingArea_MouseMove()
-  
-  Dim bPressed As Boolean
-  
-  bPressed = $hDrawingArea.Hovered
-  
-  If $bPressed <> bPressed Then
-    $bPressed = bPressed
-    $hDrawingArea.Refresh
-  Endif
-  
-End
-
-
-Public Sub DrawingArea_MouseUp()
-  
-  If Not Mouse.Left Then Return
-  If Not Me.Enabled Then Return
-  If Not $bPressed Then Return
-
-  $bPressed = False
-  $hDrawingArea.Refresh
-  
-  OpenPopup
-  'If Not $bInsideArrow Then Button_Click
-
-End
+' Public Sub DrawingArea_MouseMove()
+'   
+'   Dim bPressed As Boolean
+'   
+'   bPressed = $hDrawingArea.Hovered
+'   
+'   If $bPressed <> bPressed Then
+'     $bPressed = bPressed
+'     $hDrawingArea.Refresh
+'   Endif
+'   
+' End
+' 
+' 
+' Public Sub DrawingArea_MouseUp()
+'   
+'   If Not Mouse.Left Then Return
+'   If Not Me.Enabled Then Return
+'   If Not $bPressed Then Return
+' 
+'   $bPressed = False
+'   $hDrawingArea.Refresh
+'   
+'   'If Not $bInsideArrow Then Button_Click
+' 
+' End
 
 Public Sub DrawingArea_Draw()
   

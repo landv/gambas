@@ -1053,7 +1053,7 @@ void EXEC_native_check(bool defined)
 	EXEC_set_native_error(FALSE); \
 	(*(_exec))((_object), (void *)(_param)); \
 	\
-	if (UNLIKELY(EXEC_has_native_error())) \
+	if (EXEC_has_native_error()) \
 	{ \
 		EXEC_set_native_error(FALSE); \
 		error = TRUE; \

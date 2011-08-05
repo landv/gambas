@@ -16,9 +16,9 @@
       MoveScaled(14,0,13,4)
       Text = ("Refresh")
     }
-    { Button3 Button
-      MoveScaled(28,0,13,4)
-      Text = ("Remove")
+    { ComboBox1 ComboBox
+      MoveScaled(28,0,15,4)
+      List = [("Élément 1"), ("Élément 2"), ("Élément 3"), ("Élément 4"), ("Élément 5"), ("Élément 6"), ("Élément 7")]
     }
   }
   { DataSource1 DataSource
@@ -32,6 +32,8 @@
       MoveScaled(7,9,29,4)
       Table = "TypeClient"
       Field = "idTypeClient"
+      Header = True
+      Grid = True
     }
     { DataBrowser1 DataBrowser
       MoveScaled(6,19,55,30)

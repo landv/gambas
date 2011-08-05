@@ -87,7 +87,8 @@ Public Sub _new()
     [cmbHelpCompletion, "/ShowHelpInPopup", 1],
     [cmbMinimize, "/MinimizeOnRun", 0],
     [cmbUpperCaseKeywords, "/Editor/KeywordsUseUpperCase", 0],
-    [cmbControlStructCompletion, "/Editor/ControlStructCompletion", 1]]
+    [cmbControlStructCompletion, "/Editor/ControlStructCompletion", 1],
+    [cmbIndentDim, "/PrettyPrinter/IndentLocal", 1]]
   
   $bNoChange = True
   ReadConfig

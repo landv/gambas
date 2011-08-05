@@ -300,9 +300,8 @@ CANCEL:
   
 End
 
+Private Sub ReloadTable()
 
-Private Sub LoadTable(Optional sNewTable As String) As Boolean
-  
   Dim hTable As Table
   Dim hField As Field
   Dim hIndex As Index
@@ -310,17 +309,6 @@ Private Sub LoadTable(Optional sNewTable As String) As Boolean
   Dim hCIndexField As CIndexField
   Dim sField As String
   Dim bCreate As Boolean
-
-  If CheckCurrent() Then Return True
-
-  Try lvwTable["T" & sNewTable].Selected = True
-  Try lvwTable["S" & sNewTable].Selected = True
-
-  If Not sNewTable Or If sNewTable = $sTable Then Return
-
-  Inc Application.Busy
-  
-  $sTable = sNewTable
 
   $aField.Clear
   $cFieldName.Clear
@@ -383,6 +371,24 @@ Private Sub LoadTable(Optional sNewTable As String) As Boolean
   
   SetReadOnly(hTable.System)
 
+End
+
+
+Private Sub LoadTable(Optional sNewTable As String) As Boolean
+  
+  If CheckCurrent() Then Return True
+
+  Try lvwTable["T" & sNewTable].Selected = True
+  Try lvwTable["S" & sNewTable].Selected = True
+
+  If Not sNewTable Or If sNewTable = $sTable Then Return
+
+  Inc Application.Busy
+  
+  $sTable = sNewTable
+
+  ReloadTable
+
   Dec Application.Busy
   
 Catch
@@ -425,6 +431,8 @@ Public Sub btnRunQuery_Click()
   
   If Not sReq Then Return
   
+  Inc Application.Busy
+  
   If sReq Like "SELECT *" Then
     Try datRequest.Table = edtRequest.Text
   Else
@@ -434,6 +442,9 @@ Public Sub btnRunQuery_Click()
       edtRequest.Reset
     Endif
   Endif
+  
+  Dec Application.Busy
+  
   If Error Then Balloon.Error(("Unable to run query.") & "\n\n" & Error.Text, btnRunQuery)
 
 End
@@ -1129,8 +1140,6 @@ Catch
 
 End
 
-
-
 Private Sub WriteTable(Optional sOldTable As String) As Boolean
 
   Dim aPrimaryKey As New String[]
@@ -1198,7 +1207,10 @@ Private Sub WriteTable(Optional sOldTable As String) As Boolean
       For Each hCField In $aField
         If hCField.OldName Then
           Try rTable[hCField.Name] = rTemp[hCField.OldName]
-          'IF Error THEN PRINT hField.OldName; "->"; hField.OldName; ": "; Error.Text
+          If Error Then 
+            Try rTable[hCField.Name] = MConnection.Convert(rTemp[hCField.OldName], hCField.Type)
+          Endif
+          If IsNull(rTable[hCField.Name]) Then Stop
         Endif
       Next
 
@@ -1215,6 +1227,7 @@ Private Sub WriteTable(Optional sOldTable As String) As Boolean
   'datRequest.Reset
 
   Modify(True)
+  ReloadTable
 
 Finally
 
@@ -1227,7 +1240,7 @@ Finally
   Else If sOldTable
     Try $hConn.Tables.Remove(sOldTable)
   Endif
-    
+  
   'Endif
 
   Dec Application.Busy
@@ -1353,6 +1366,7 @@ Public Sub btnKill_Click()
 
   $hConn.Tables.Remove($sTable)
   lvwTable.Remove("T" & $sTable)
+  datData.Reset
   btnRequest_Click
 
 Catch
@@ -1500,13 +1514,17 @@ End
 
 Public Sub btnPasteTable_Click()
 
+  Dim sData As String
   Dim aData As String[]
   Dim hForm As FConnectionEditor
   
   If CheckCurrent() Then Return
   
-  Try aData = Split(Clipboard.Paste(MMime.TABLE), "\n")
-  If Not aData[0] Then Return
+  sData = Clipboard.Paste(MMime.TABLE)
+  If Not sData Then Return
+  
+  aData = Split(sData, "\n")
+  If aData.Count <> 2 Then Return
   
   hForm = Project.LoadFile(aData[0])
   If Not hForm Then Return

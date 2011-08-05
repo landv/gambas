@@ -928,7 +928,7 @@ Public Sub tvwProject_Select()
   If tvwProject.Current.Children Then 
     ' Print Mouse.X ;; Mouse.Y ' generates crashes on random places, strange...
     'If Not tvwProject.Find(Mouse.X, Mouse.Y) Then
-      $bExpandOnMouseUp = True
+    $bExpandOnMouseUp = True
     'Endif
   Endif
   
@@ -1117,7 +1117,6 @@ Public Sub IsDebugVisible() As Boolean
   Return panDebug.Visible And Not panDebug.Hidden
   
 End
-
 
 ' PUBLIC SUB mnuHideAll_Click()
 ' 
@@ -1337,9 +1336,9 @@ Public Sub tvwProject_DragMove()
   If Not tvwProject.Find(Drag.X, Drag.Y) Then 
     $sKey = tvwProject.Item.Key
     If Project.IsLocked($sKey) Then Goto STOP_EVENT
-    If Drag.Format = MMime.DATA Then 
+    If Drag.Format = MMime.DATA And If Drag.Source Then 
       If Not IsDataKey($sKey) Then Goto STOP_EVENT
-    Else If Drag.Format = MMime.CLASS Then
+    Else If Drag.Format = MMime.CLASS And If Drag.Source Then
       If $sKey <> Project.KEY_SOURCE Then
         If Not Project.IsSourcePath($sKey) Then Goto STOP_EVENT
       Endif
@@ -1363,7 +1362,7 @@ Public Sub tvwProject_DragMove()
     Return
   Endif
   
-  STOP_EVENT:
+STOP_EVENT:
   
   Stop Event
   
@@ -1537,7 +1536,7 @@ Public Sub panInfo_Show()
 End
 
 Public Sub mnuOpenRecent_Show()
-
+  
   If $bUpdateRecentMenu And If Not CRecentFile.OutOfDate Then Return  
   UpdateRecentMenu
   $bUpdateRecentMenu = True

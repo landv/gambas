@@ -3271,10 +3271,14 @@ Public Sub GetText() As String
   
 End
 
-Public Sub GetHighlightedText() As String
+Public Sub GetHighlightedText(Optional bSelected As Boolean) As String
   
   Editor.HighlightAll
-  Return Editor.Text
+  If bSelected Then
+    Return Editor.Selection.Text
+  Else
+    Return Editor.Text
+  Endif
   
 End
 
@@ -3342,15 +3346,18 @@ Public Sub mnuPretty_Click()
   
   Dim X, Y As Integer
   Dim sText, sNewText As String
+  Dim bSelected As Boolean
   
-  sText = GetHighlightedText()
+  bSelected = Editor.Selected
+  
+  sText = GetHighlightedText(bSelected)
   sNewText = MPrettyCode.Run(sText)
   If sNewText = sText Then Return
   
   X = Editor.Column
   Y = Editor.Line
   Editor.Begin
-  Editor.SelectAll
+  If Not bSelected Then Editor.SelectAll
   Editor.Insert(sNewText)
   Editor.Goto(Y, X)
   Editor.End

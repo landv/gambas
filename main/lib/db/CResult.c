@@ -495,13 +495,12 @@ BEGIN_METHOD(CRESULT_put, GB_VARIANT value; GB_STRING field)
 	}
 
 	if (VARG(value).type != GB_T_NULL && VARG(value).type != type)
-	/*{
-		GB.Error("Type mismatch");
-		return;
-	}*/
 	{
 		if (GB.Conv((GB_VALUE *)(void *)ARG(value), THIS->info.field[index].type))
+		{
+			GB.Error("Type mismatch");
 			return;
+		}
 
 		GB.Conv((GB_VALUE *)(void *)ARG(value), GB_T_VARIANT);
 	}

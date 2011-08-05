@@ -10,6 +10,8 @@ Private $bNeedNewLine As Boolean
 Private $iLastDim As Integer
 Private $iLastSelect As Integer
 
+Private $bIndentDim As Boolean
+
 Public Sub _init()
   
   Dim sStr As String
@@ -103,7 +105,10 @@ Private Sub IndentLine(sLine As String) As String
         $bNeedNewLine = False
       Endif
       
-      If FEditor.IsCurrentProc() Then
+      If aSym.Count = 2 And If aSym[1] = ":" Then
+        iNextLevel = $iLevel
+        Dec $iLevel
+      Else If FEditor.IsCurrentProc() Then
         $iLevel = 0
         iNextLevel = 1
         $bNeedNewLine = True
