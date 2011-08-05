@@ -57,8 +57,8 @@ GB_DESC Cglu[] =
 
 	/* Quadratics - see GLUquadratic.h */
 	GB_STATIC_METHOD("NewQuadric", "GluQuadric", GLUNEWQUADRIC, NULL),
-	GB_STATIC_METHOD("QuadricNormals", NULL, GluQuadricNORMALS, "(Quad)GluQuadric(Normal)i"),
-	GB_STATIC_METHOD("QuadricTexture", NULL, GluQuadricTEXTURE, "(Quad)GluQuadric(Texture)b"),
+	GB_STATIC_METHOD("QuadricNormals", NULL, GLUQUADRICNORMALS, "(Quad)GluQuadric(Normal)i"),
+	GB_STATIC_METHOD("QuadricTexture", NULL, GLUQUADRICTEXTURE, "(Quad)GluQuadric(Texture)b"),
 	GB_STATIC_METHOD("Sphere", NULL, GLUSPHERE, "(Quad)GluQuadric(Radius)f(Slices)i(Stacks)i"),
 	GB_STATIC_METHOD("Cylinder", NULL, GLUCYLINDER, "(Quad)GluQuadric(Base)f(Top)f(Height)f(Slices)i(Stacks)i"),
 	GB_STATIC_METHOD("Disk", NULL, GLUDISK, "(Quad)GluQuadric(Inner)f(Outer)f(Slices)i(Loops)i"),
