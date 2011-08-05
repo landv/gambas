@@ -1017,9 +1017,26 @@ Public Sub Editors_KeyPress()
     
     sLine = Editor.Lines[iLine].Text
     
+    If IsComment(sLine) And If Not Key.Shift Then
+      
+      iInd = Editor.GetIndent(sLine)
+      iPos = iInd + 1
+      While Mid$(sLine, iPos, 1) = "'"
+        Inc iPos
+      Wend
+      While Mid$(sLine, iPos, 1) = " "
+        Inc iPos
+      Wend
+      Editor.Insert("\n" & Left$(sLine, iPos - 1))
+      
+      Stop Event
+      Return
+      
+    Endif
+    
     If Editor.Column < String.Len(sLine) Then Return
     
-    If IsProc(sLine) Then
+    If IsProc(sLine) And If Not Key.Shift Then
       
       For iInd = iLine + 1 To Editor.Lines.Count - 1
         sLine = Editor.Lines[iInd].Text
@@ -1157,6 +1174,13 @@ Static Public Function IsProc(sLine As String) As Boolean
   Return IsCurrentProc()
   
 End
+
+Static Public Sub IsComment(sLine As String) As Boolean
+  
+  Return Left(LTrim(sLine)) = "'"
+  
+End
+
 
 Static Public Sub IsCurrentEndProc() As Boolean
   
