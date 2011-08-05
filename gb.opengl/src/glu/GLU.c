@@ -65,17 +65,17 @@ GB_DESC Cglu[] =
 	GB_STATIC_METHOD("PartialDisk", NULL, GLUPARTIALDISK, "(Quad)GluQuadric;(Inner)f(Outer)f(Slices)i(Loops)i(Start)f(Sweep)f"),
 
 	/* NURBS - SEE GLUnurbs.h */
-	GB_STATIC_METHOD("BeginCurve", NULL, GLUBEGINCURVE, "(Nurb)p"),
-	GB_STATIC_METHOD("BeginSurface", NULL, GLUBEGINSURFACE, "(Nurb)p"),
-	GB_STATIC_METHOD("BeginTrim", NULL, GLUBEGINTRIM, "(Nurb)p"),
-	GB_STATIC_METHOD("DeleteNurbsRenderer", NULL, GLUDELETENURBSRENDERER, "(Nurb)p"),
-	GB_STATIC_METHOD("EndCurve", NULL, GLUENDCURVE, "(Nurb)p"),
-	GB_STATIC_METHOD("EndSurface", NULL, GLUENDSURFACE, "(Nurb)p"),
-	GB_STATIC_METHOD("EndTrim", NULL, GLUENDTRIM, "(Nurb)p"),
-	GB_STATIC_METHOD("NurbsCurve", NULL, GLUNURBSCURVE, "(Nurb)p(KnotCount)i(Knots)Single[];(Stride)i(Control)Single[];(Order)i(Type)i"),
-	GB_STATIC_METHOD("NurbsProperty", NULL, GLUNURBSPROPERTY, "(Nurb)p(Property)i(Value)f"),
-	GB_STATIC_METHOD("NurbsSurface", NULL, GLUNURBSSURFACE, "(Nurb)p(SKnotCount)i(SKnots)Single[];(TKnotCount)i(TKnots)Single[];(SStride)i(TStride)i(SOrder)i(TOrder)i(Type)i(Control)Single[]"),
-	GB_STATIC_METHOD("NewNurbsRenderer","p", GLUNEWNURBSRENDERER, NULL),
+	GB_STATIC_METHOD("BeginCurve", NULL, GLUBEGINCURVE, "(Nurb)GluNurb"),
+	GB_STATIC_METHOD("BeginSurface", NULL, GLUBEGINSURFACE, "(Nurb)GluNurb"),
+	GB_STATIC_METHOD("BeginTrim", NULL, GLUBEGINTRIM, "(Nurb)GluNurb"),
+	GB_STATIC_METHOD("DeleteNurbsRenderer", NULL, GLUDELETENURBSRENDERER, "(Nurb)GluNurb"),
+	GB_STATIC_METHOD("EndCurve", NULL, GLUENDCURVE, "(Nurb)GluNurb"),
+	GB_STATIC_METHOD("EndSurface", NULL, GLUENDSURFACE, "(Nurb)GluNurb"),
+	GB_STATIC_METHOD("EndTrim", NULL, GLUENDTRIM, "(Nurb)GluNurb"),
+	GB_STATIC_METHOD("NurbsCurve", NULL, GLUNURBSCURVE, "(Nurb)GluNurb;(KnotCount)i(Knots)Single[];(Stride)i(Control)Single[];(Order)i(Type)i"),
+	GB_STATIC_METHOD("NurbsProperty", NULL, GLUNURBSPROPERTY, "(Nurb)GluNurb;(Property)i(Value)f"),
+	GB_STATIC_METHOD("NurbsSurface", NULL, GLUNURBSSURFACE, "(Nurb)GluNurb;(SKnotCount)i(SKnots)Single[];(TKnotCount)i(TKnots)Single[];(SStride)i(TStride)i(SOrder)i(TOrder)i(Type)i(Control)Single[]"),
+	GB_STATIC_METHOD("NewNurbsRenderer","GluNurb", GLUNEWNURBSRENDERER, NULL),
 
 
 

@@ -21,71 +21,63 @@
 ***************************************************************************/
 
 #define __GLUNURB_C
-
+#include "cglunurb.h"
 #include "GLU.h"
 
 /**************************************************************************/
 
 BEGIN_METHOD(GLUBEGINCURVE, GB_OBJECT nurb)
 
-	GLUnurbsObj *thenurb;
-	thenurb=VARG(nurb);
+	GLUnurbsObj *thenurb =((CGLUNURB *)VARG(nurb))->nurb;
 	gluBeginCurve(thenurb);
 
 END_METHOD
 
 BEGIN_METHOD(GLUBEGINSURFACE, GB_OBJECT nurb)
 
-	GLUnurbsObj *thenurb;
-	thenurb=VARG(nurb);
+	GLUnurbsObj *thenurb =((CGLUNURB *)VARG(nurb))->nurb;
 	gluBeginSurface(thenurb);
 
 END_METHOD
 
 BEGIN_METHOD(GLUBEGINTRIM, GB_OBJECT nurb)
 
-	GLUnurbsObj *thenurb;
-	thenurb=VARG(nurb);
+	GLUnurbsObj *thenurb =((CGLUNURB *)VARG(nurb))->nurb;
 	gluBeginTrim(thenurb);
 
 END_METHOD
 
 BEGIN_METHOD(GLUDELETENURBSRENDERER, GB_OBJECT nurb)
 
-	GLUnurbsObj *thenurb;
-	thenurb=VARG(nurb);
+	GLUnurbsObj *thenurb =((CGLUNURB *)VARG(nurb))->nurb;
 	gluDeleteNurbsRenderer(thenurb);
 
 END_METHOD
 
 BEGIN_METHOD(GLUENDCURVE, GB_OBJECT nurb)
 
-	GLUnurbsObj *thenurb;
-	thenurb=VARG(nurb);
+	GLUnurbsObj *thenurb =((CGLUNURB *)VARG(nurb))->nurb;
 	gluEndCurve(thenurb);
 
 END_METHOD
 
 BEGIN_METHOD(GLUENDSURFACE, GB_OBJECT nurb)
 
-	GLUnurbsObj *thenurb;
-	thenurb=VARG(nurb);
+	GLUnurbsObj *thenurb =((CGLUNURB *)VARG(nurb))->nurb;
 	gluEndSurface(thenurb);
 
 END_METHOD
 
 BEGIN_METHOD(GLUENDTRIM, GB_OBJECT nurb)
 
-	GLUnurbsObj *thenurb;
-	thenurb=VARG(nurb);	
+	GLUnurbsObj *thenurb =((CGLUNURB *)VARG(nurb))->nurb;
 	gluEndTrim(thenurb);
 
 END_METHOD
 
 BEGIN_METHOD(GLUNURBSCURVE, GB_OBJECT nurb; GB_INTEGER knotCount; GB_OBJECT knots; GB_INTEGER stride; GB_OBJECT control; 			GB_INTEGER order; GB_INTEGER type)
 	
-	GLUnurbsObj *thenurb;
-	thenurb=VARG(nurb);
+	GLUnurbsObj *thenurb =((CGLUNURB *)VARG(nurb))->nurb;
 	GB_ARRAY knot = (GB_ARRAY) VARG(knots);
 	GB_ARRAY controll = (GB_ARRAY) VARG(control);
 	int i; 
@@ -104,8 +96,7 @@ END_METHOD
 
 BEGIN_METHOD(GLUNURBSPROPERTY, GB_OBJECT nurb; GB_INTEGER property; GB_FLOAT value)
 	
-	GLUnurbsObj *thenurb;
-	thenurb=VARG(nurb); 
+	GLUnurbsObj *thenurb =((CGLUNURB *)VARG(nurb))->nurb;
 	gluNurbsProperty(thenurb, VARG(property), VARG(value));
 
 END_METHOD
@@ -125,8 +116,7 @@ BEGIN_METHOD(GLUNURBSSURFACE, GB_OBJECT nurb; GB_INTEGER sKnotCount; GB_OBJECT s
 	int count3 = GB.Array.Count(controll);
 	GLfloat param1[count1], param2[count2],param3[count3];
 	
-	GLUnurbsObj *thenurb;
-	thenurb=VARG(nurb);
+	GLUnurbsObj *thenurb =((CGLUNURB *)VARG(nurb))->nurb;
 	
         for (i=0; i<count1; i++)
 		param1[i] = *((float *)GB.Array.Get(sknot,i));
@@ -141,9 +131,8 @@ END_METHOD
 
 BEGIN_METHOD_VOID(GLUNEWNURBSRENDERER)
 
-	GLUnurbsObj *theNurb;
-	theNurb = gluNewNurbsRenderer();
-	GB.ReturnPointer(theNurb);
+	GLUnurbs *ob = CGLUNURB_create(gluNewNurbsRenderer());
+	GB.ReturnObject(ob);
 
 END_METHOD
 

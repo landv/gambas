@@ -24,7 +24,7 @@
 #define __MAIN_C
 
 #include "main.h"
-
+#include "cglunurb.h"
 #include "cgluquadric.h"
 #include "GLU.h"
 
@@ -35,8 +35,10 @@ GB_DESC *GB_CLASSES[] EXPORT =
 {
 	Cglu,
 	GluQuadricDesc,
+	GluNurbsDesc,
 	NULL
 };
+
 
 int IMAGE_get_pixel_format(GB_IMG *image)
 {

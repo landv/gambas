@@ -1,6 +1,6 @@
 /***************************************************************************
 
-	cgluquadric.c
+	cglunurb.h
 
 	(c) 2000-2011 Benoît Minisini <gambas@users.sourceforge.net>
 	(and Tomek Kolodziejczyk)
@@ -21,33 +21,29 @@
 
 ***************************************************************************/
 
-#define __CGLUQUADRATIC_C
+#ifndef __CGLUNURB_H
+#define __CGLUNURB_H
 
-#include "gb_common.h"
-#include "cgluquadric.h"
+#include "gambas.h"
+#include "main.h"
+#include "GLU.h"
 
-CGLUQUADRIC *CGLUQUADRIC_create(GLUquadric *quadric)
-{
-	CGLUQUADRIC *ob = GB.New(GB.FindClass("GluQuadric"), NULL, NULL);
-	ob->quadric = quadric;
-	return ob;
-};
+#ifndef __CGLUNURB_C
+extern GB_DESC GluNurbsDesc[];
+#else
 
-GB_DESC GluQuadricDesc[] =
-{
-	GB_DECLARE("GluQuadric", sizeof(CGLUQUADRIC)),
-	GB_NOT_CREATABLE(),
-	GB_END_DECLARE
-};
+#define THIS OBJECT(CGLUNURB)
 
-/* If this is ok, then uncomment it please.
+#endif
 
-BEGIN_METHOD(CGLUQUADRIC_free, GB_OBJECT quadric)
+typedef
+	struct {
+		GB_BASE ob;
+		GLUnurbs *nurb;
+		}
+	CGLUNURB;
 
-	if (!quadric) 
-		return;
+CGLUNURB *CGLUNURB_create(GLUnurbs *nurb);
 
-	gluDeleteNurbsRenderer (quadric);
-
-
-END_METHOD*/
+	
+#endif
