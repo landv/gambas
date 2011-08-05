@@ -57,12 +57,12 @@ GB_DESC Cglu[] =
 
 	/* Quadratics - see GLUquadratic.h */
 	GB_STATIC_METHOD("NewQuadric", "GluQuadric", GLUNEWQUADRIC, NULL),
-	GB_STATIC_METHOD("QuadricNormals", NULL, GLUQUADRICNORMALS, "(Quad)GluQuadric(Normal)i"),
-	GB_STATIC_METHOD("QuadricTexture", NULL, GLUQUADRICTEXTURE, "(Quad)GluQuadric(Texture)b"),
-	GB_STATIC_METHOD("Sphere", NULL, GLUSPHERE, "(Quad)GluQuadric(Radius)f(Slices)i(Stacks)i"),
-	GB_STATIC_METHOD("Cylinder", NULL, GLUCYLINDER, "(Quad)GluQuadric(Base)f(Top)f(Height)f(Slices)i(Stacks)i"),
-	GB_STATIC_METHOD("Disk", NULL, GLUDISK, "(Quad)GluQuadric(Inner)f(Outer)f(Slices)i(Loops)i"),
-	GB_STATIC_METHOD("PartialDisk", NULL, GLUPARTIALDISK, "(Quad)GluQuadric(Inner)f(Outer)f(Slices)i(Loops)i(Start)f(Sweep)f"),
+	GB_STATIC_METHOD("QuadricNormals", NULL, GLUQUADRICNORMALS, "(Quad)GluQuadric;(Normal)i"),
+	GB_STATIC_METHOD("QuadricTexture", NULL, GLUQUADRICTEXTURE, "(Quad)GluQuadric;(Texture)b"),
+	GB_STATIC_METHOD("Sphere", NULL, GLUSPHERE, "(Quad)GluQuadric;(Radius)f(Slices)i(Stacks)i"),
+	GB_STATIC_METHOD("Cylinder", NULL, GLUCYLINDER, "(Quad)GluQuadric;(Base)f(Top)f(Height)f(Slices)i(Stacks)i"),
+	GB_STATIC_METHOD("Disk", NULL, GLUDISK, "(Quad)GluQuadric;(Inner)f(Outer)f(Slices)i(Loops)i"),
+	GB_STATIC_METHOD("PartialDisk", NULL, GLUPARTIALDISK, "(Quad)GluQuadric;(Inner)f(Outer)f(Slices)i(Loops)i(Start)f(Sweep)f"),
 
 	/* NURBS - SEE GLUnurbs.h */
 	GB_STATIC_METHOD("BeginCurve", NULL, GLUBEGINCURVE, "(Nurb)p"),
