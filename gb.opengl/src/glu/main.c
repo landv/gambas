@@ -25,6 +25,7 @@
 
 #include "main.h"
 
+#include "cgluquadric.h"
 #include "GLU.h"
 
 GB_INTERFACE GB EXPORT;
@@ -33,7 +34,7 @@ IMAGE_INTERFACE IMAGE EXPORT;
 GB_DESC *GB_CLASSES[] EXPORT =
 {
 	Cglu,
-
+	GluQuadricDesc,
 	NULL
 };
 

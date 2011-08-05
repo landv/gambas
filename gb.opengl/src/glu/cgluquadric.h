@@ -29,7 +29,7 @@
 #include "GLU.h"
 
 #ifndef __CGLUQUADRIC_C
-extern GB_DESC GLUquadricDesc[];
+extern GB_DESC GluQuadricDesc[];
 #else
 
 #define THIS OBJECT(CGLUQUADRIC)
