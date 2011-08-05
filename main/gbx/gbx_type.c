@@ -246,7 +246,7 @@ TYPE TYPE_from_string(const char **ptype)
 
       start = type;
 
-      while (*type != ';' && *type != 0)
+      while (*type != ';' && *type != 0 && *type != '(')
         type++;
 
 			if (*start == '*')
