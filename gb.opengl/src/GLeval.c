@@ -34,11 +34,11 @@ BEGIN_METHOD(GLMAP1F, GB_INTEGER target; GB_FLOAT u1; GB_FLOAT u2; GB_INTEGER st
         for (i=0; i<count; i++)
 		params[i] = *((double *)GB.Array.Get(matrix,i));
 	
-	glMap1d(VARG(target), VARG(u1), VARG(u2), VARG(stride), VARG(order), params);
+	glMap1d( VARG(target), VARG(u1), VARG(u2), VARG(stride), VARG(order), params);
 
 END_METHOD
 
-BEGIN_METHOD(GLMAP2F, GB_INTEGER target; GB_SINGLE u1; GB_SINGLE u2; GB_INTEGER ustride; GB_INTEGER uorder; 
+BEGIN_METHOD(GLMAP2F, GB_INTEGER target; GB_FLOAT u1; GB_FLOAT u2; GB_INTEGER ustride; GB_INTEGER uorder; 
 			GB_FLOAT v1; GB_FLOAT v2; GB_INTEGER vstride; GB_INTEGER vorder; GB_OBJECT array)
 
 	GB_ARRAY matrix = (GB_ARRAY) VARG(array);
@@ -48,8 +48,8 @@ BEGIN_METHOD(GLMAP2F, GB_INTEGER target; GB_SINGLE u1; GB_SINGLE u2; GB_INTEGER 
         for (i=0; i<count; i++)
 		params[i] = *((double *)GB.Array.Get(matrix,i));
 	
-	glMap2d(VARG(target), VARG(u1), VARG(u2), VARG(ustride), VARG(uorder), 
-		VARG(v1), VARG(v2), VARG(vstride), VARG(vorder), params);
+	glMap2d( VARG(target), VARG(u1), VARG(u2), VARG(ustride), VARG(uorder), 
+				VARG(v1), VARG(v2), VARG(vstride), VARG(vorder), params);
 
 END_METHOD
 
