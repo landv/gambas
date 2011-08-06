@@ -21,33 +21,44 @@
 
 ***************************************************************************/
 
-#define __CGLUQUADRATIC_C
+#define __CGLUQUADRIC_C
 
 #include "gb_common.h"
 #include "cgluquadric.h"
 
-CGLUQUADRIC *CGLUQUADRIC_create(GLUquadric *quadric)
+CGLUQUADRIC *CGLUQUADRIC_create()
 {
-	CGLUQUADRIC *ob = GB.New(GB.FindClass("GluQuadric"), NULL, NULL);
-	ob->quadric = quadric;
-	return ob;
+	return GB.New(GB.FindClass("GluQuadric"), NULL, NULL);
 };
+
+static int GluQuadric_check(void *_object)
+{
+	return QUADRIC == NULL;
+}
+
+
+BEGIN_METHOD_VOID(GluQuadric_new)
+
+	THIS->quadric = gluNewQuadric();
+
+END_METHOD
+
+BEGIN_METHOD_VOID(GluQuadric_free)
+
+	if (QUADRIC)
+		gluDeleteQuadric(QUADRIC);
+
+END_METHOD
+
 
 GB_DESC GluQuadricDesc[] =
 {
 	GB_DECLARE("GluQuadric", sizeof(CGLUQUADRIC)),
-	GB_NOT_CREATABLE(),
+	GB_HOOK_CHECK(GluQuadric_check),
+
+	GB_METHOD("_new", NULL, GluQuadric_new, NULL),
+	GB_METHOD("_free", NULL, GluQuadric_free, NULL),
+	
 	GB_END_DECLARE
 };
 
-/* If this is ok, then uncomment it please.
-
-BEGIN_METHOD(CGLUQUADRIC_free, GB_OBJECT quadric)
-
-	if (!quadric) 
-		return;
-
-	gluDeleteNurbsRenderer (quadric);
-
-
-END_METHOD*/

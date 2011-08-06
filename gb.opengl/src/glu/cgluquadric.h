@@ -29,10 +29,13 @@
 #include "GLU.h"
 
 #ifndef __CGLUQUADRIC_C
+
 extern GB_DESC GluQuadricDesc[];
+
 #else
 
 #define THIS OBJECT(CGLUQUADRIC)
+#define QUADRIC (THIS->quadric)
 
 #endif
 
@@ -43,8 +46,7 @@ typedef
 		}
 	CGLUQUADRIC;
 
-CGLUQUADRIC *CGLUQUADRIC_create(GLUquadric *quadric);
-
+CGLUQUADRIC *CGLUQUADRIC_create();
 
 /* Gluquadric structure as described in glu.h source
 

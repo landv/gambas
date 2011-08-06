@@ -26,17 +26,41 @@
 #include "gb_common.h"
 #include "cglunurb.h"
 
-CGLUNURB *CGLUNURB_create(GLUnurbs *nurb)
+CGLUNURB *CGLUNURB_create()
 {
 	CGLUNURB *ob = GB.New(GB.FindClass("GluNurb"), NULL, NULL);
-	ob->nurb = nurb;
 	return ob;
 }
+
+static int GluNurb_check(void *_object)
+{
+	return NURB == NULL;
+}
+
+
+BEGIN_METHOD_VOID(GluNurb_new)
+
+	THIS->nurb = gluNewNurbsRenderer();
+
+END_METHOD
+
+BEGIN_METHOD_VOID(GluNurb_free)
+
+	if (NURB)
+		gluDeleteNurbsRenderer(NURB);
+
+END_METHOD
+
 
 GB_DESC GluNurbsDesc[] =
 {
 	GB_DECLARE("GluNurb", sizeof(CGLUNURB)),
-	GB_NOT_CREATABLE(),
+	
+	GB_HOOK_CHECK(GluNurb_check),
+	
+	GB_METHOD("_new", NULL, GluNurb_new, NULL),
+	GB_METHOD("_free", NULL, GluNurb_free, NULL),
+	
 	GB_END_DECLARE
 };
 

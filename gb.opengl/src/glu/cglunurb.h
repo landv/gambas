@@ -33,6 +33,7 @@ extern GB_DESC GluNurbsDesc[];
 #else
 
 #define THIS OBJECT(CGLUNURB)
+#define NURB (THIS->nurb)
 
 #endif
 
@@ -43,7 +44,7 @@ typedef
 		}
 	CGLUNURB;
 
-CGLUNURB *CGLUNURB_create(GLUnurbs *nurb);
+CGLUNURB *CGLUNURB_create();
 
 	
 #endif
