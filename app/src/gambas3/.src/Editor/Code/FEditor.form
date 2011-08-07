@@ -159,8 +159,9 @@
     }
     { mnuPretty Menu
       Action = ".pretty"
-      Text = ("Make code pretty")
+      Text = ("Format code")
       Picture = Picture["icon:/small/wizard"]
+      Shortcut = "Ctrl+Shift+F"
     }
     { mnuReload Menu
       Action = ".reload"
@@ -523,8 +524,8 @@
     Shortcut = ""
   }
   { Action pretty
-    Text = "Make code pretty"
-    Shortcut = ""
+    Text = "Format code"
+    Shortcut = "Ctrl+Shift+F"
     Picture = "icon:/small/wizard"
   }
   { Action proc

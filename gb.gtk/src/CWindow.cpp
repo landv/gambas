@@ -453,7 +453,7 @@ BEGIN_PROPERTY(CWINDOW_resizable)
 
 END_PROPERTY
 
-
+#if 0
 BEGIN_PROPERTY(CWINDOW_type)
 
 	if (READ_PROPERTY)
@@ -465,7 +465,7 @@ BEGIN_PROPERTY(CWINDOW_type)
 	}
 
 END_PROPERTY
-
+#endif
 
 BEGIN_PROPERTY(Window_Utility)
 
@@ -769,6 +769,7 @@ GB_DESC CWindowControlsDesc[] =
 	GB_END_DECLARE
 };
 
+#if 0
 GB_DESC CWindowTypeDesc[] =
 {
 	GB_DECLARE("WindowType", 0), GB_VIRTUAL_CLASS(),
@@ -790,6 +791,7 @@ GB_DESC CWindowTypeDesc[] =
 
 	GB_END_DECLARE
 };
+#endif
 
 GB_DESC CWindowDesc[] =
 {
@@ -838,7 +840,7 @@ GB_DESC CWindowDesc[] =
 	GB_PROPERTY("Margin", "b", CCONTAINER_margin),
 	GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
 
-	GB_PROPERTY("Type", "i", CWINDOW_type),
+	//GB_PROPERTY("Type", "i", CWINDOW_type),
 	GB_PROPERTY("Utility", "b", Window_Utility),
 	GB_PROPERTY("Border", "b", CWINDOW_border),
 	GB_PROPERTY("Resizable", "b", CWINDOW_resizable),

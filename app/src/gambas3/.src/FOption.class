@@ -88,7 +88,9 @@ Public Sub _new()
     [cmbMinimize, "/MinimizeOnRun", 0],
     [cmbUpperCaseKeywords, "/Editor/KeywordsUseUpperCase", 0],
     [cmbControlStructCompletion, "/Editor/ControlStructCompletion", 1],
-    [cmbIndentDim, "/PrettyPrinter/IndentLocal", 1]]
+    [cmbIndentDim, "/FormatCode/IndentLocal", 1],
+    [cmbRemoveSpace, "/FormatCode/RemoveSpaces", 0],
+    [cmbKeepVoidLine, "/FormatCode/KeepVoidLines", 0]]
   
   $bNoChange = True
   ReadConfig
@@ -796,4 +798,22 @@ Public Sub ipnOption_Click()
     Endif
   Endif
   
+End
+
+Public Sub cmbIndentDim_Click()
+
+  Settings["/FormatCode/IndentLocal"] = cmbIndentDim.Index = 1
+
+End
+
+Public Sub cmbRemoveSpace_Click()
+
+  Settings["/FormatCode/RemoveSpaces"] = cmbRemoveSpace.Index = 1
+
+End
+
+Public Sub cmbKeepVoidLine_Click()
+
+  Settings["/FormatCode/KeepVoidLines"] = cmbKeepVoidLine.Index = 1
+
 End

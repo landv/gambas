@@ -23,9 +23,9 @@ Public Sub Main()
     .Height = 480
     .Show()
   End With
-  
+
   fTime = Timer
-  
+
 End
 
 Public Sub Screen_Open()
@@ -51,19 +51,19 @@ Public Sub Screen_Open()
   gearlists = Gl.GenLists(3)
 
   Gl.NewList(gearlists, Gl.GL_COMPILE)
-    Gl.Materialfv(Gl.GL_FRONT, Gl.GL_AMBIENT_AND_DIFFUSE, red)
-    Gear(1.0, 4.0, 1.0, 20, 0.7)
+  Gl.Materialfv(Gl.GL_FRONT, Gl.GL_AMBIENT_AND_DIFFUSE, red)
+  Gear(1.0, 4.0, 1.0, 20, 0.7)
   Gl.EndList()
   Gl.NewList(gearlists + 1, Gl.GL_COMPILE)
-    Gl.Materialfv(Gl.GL_FRONT, Gl.GL_AMBIENT_AND_DIFFUSE, green)
-    Gear(0.5, 2.0, 2.0, 10, 0.7)
+  Gl.Materialfv(Gl.GL_FRONT, Gl.GL_AMBIENT_AND_DIFFUSE, green)
+  Gear(0.5, 2.0, 2.0, 10, 0.7)
   Gl.EndList()
   Gl.NewList(gearlists + 2, Gl.GL_COMPILE)
-    Gl.Materialfv(Gl.GL_FRONT, Gl.GL_AMBIENT_AND_DIFFUSE, blue)
-    Gear(1.3, 2.0, 0.5, 10, 0.7)
+  Gl.Materialfv(Gl.GL_FRONT, Gl.GL_AMBIENT_AND_DIFFUSE, blue)
+  Gear(1.3, 2.0, 0.5, 10, 0.7)
   Gl.EndList()
   Gl.Enable(Gl.GL_NORMALIZE)
-  
+
 End
 
 Public Sub Screen_resize()
@@ -126,131 +126,131 @@ Public Sub Screen_Close()
 End
 
 Public Sub Screen_keyPress()
- 
+
   Debug Key.Code;; Key.Text
   If (key.code = key.F1) Then screen.Fullscreen = Not screen.Fullscreen
   If (key.Code = key.Esc) Then Screen.Close()
-  
+
 End
 
- Public Sub Screen_MouseMove()
- 
-   Gl.Rotatef(Mouse.StartY - Mouse.Y, 0, 0, 1)
-   Gl.Rotatef(Mouse.StartX - Mouse.X, 1, 0, 0)
- 
- End
+Public Sub Screen_MouseMove()
+
+  Gl.Rotatef(Mouse.StartY - Mouse.Y, 0, 0, 1)
+  Gl.Rotatef(Mouse.StartX - Mouse.X, 1, 0, 0)
+
+End
 
 Public Sub Gear(inner_radius As Float, outer_radius As Float, width As Float, teeth As Integer, tooth_depth As Float)
 
-   Dim i As Integer
-   Dim r0 As Float
-   Dim r1 As Float
-   Dim r2 As Float
-   Dim angle As Float
-   Dim da As Float
-   Dim u As Float
-   Dim v As Float
-   Dim fLen As Float
+  Dim i As Integer
+  Dim r0 As Float
+  Dim r1 As Float
+  Dim r2 As Float
+  Dim angle As Float
+  Dim da As Float
+  Dim u As Float
+  Dim v As Float
+  Dim fLen As Float
 
-   r0 = inner_radius
-   r1 = outer_radius - tooth_depth / 2.0
-   r2 = outer_radius + tooth_depth / 2.0
+  r0 = inner_radius
+  r1 = outer_radius - tooth_depth / 2.0
+  r2 = outer_radius + tooth_depth / 2.0
 
-   da = 2.0 * Pi / teeth / 4.0
+  da = 2.0 * Pi / teeth / 4.0
 
-   Gl.ShadeModel(Gl.GL_FLAT)
-   Gl.Normal3f(0.0, 0.0, 1.0)
+  Gl.ShadeModel(Gl.GL_FLAT)
+  Gl.Normal3f(0.0, 0.0, 1.0)
 
-   ' Draw front face
-   Gl.Begin(Gl.GL_QUAD_STRIP)
-   For i = 0 To teeth
-      angle = i * 2.0 * Pi / teeth
+  ' Draw front face
+  Gl.Begin(Gl.GL_QUAD_STRIP)
+  For i = 0 To teeth
+    angle = i * 2.0 * Pi / teeth
+    Gl.Vertexf(r0 * Cos(angle), r0 * Sin(angle), width * 0.5)
+    Gl.Vertexf(r1 * Cos(angle), r1 * Sin(angle), width * 0.5)
+    If i < teeth Then
       Gl.Vertexf(r0 * Cos(angle), r0 * Sin(angle), width * 0.5)
-      Gl.Vertexf(r1 * Cos(angle), r1 * Sin(angle), width * 0.5)
-      If i < teeth Then
-         Gl.Vertexf(r0 * Cos(angle), r0 * Sin(angle), width * 0.5)
-         Gl.Vertexf(r1 * Cos(angle + 3 * da), r1 * Sin(angle + 3 * da), width * 0.5)
-      Endif
-   Next
-   Gl.End()
-
-   ' Draw front sides of teeth
-   Gl.Begin(Gl.GL_QUADS)
-   da = 2.0 * Pi / teeth / 4.0
-   For i = 0 To teeth - 1
-      angle = i * 2.0 * Pi / teeth
-      Gl.Vertexf(r1 * Cos(angle), r1 * Sin(angle), width * 0.5)
-      Gl.Vertexf(r2 * Cos(angle + da), r2 * Sin(angle + da), width * 0.5)
-      Gl.Vertexf(r2 * Cos(angle + 2 * da), r2 * Sin(angle + 2 * da), width * 0.5)
       Gl.Vertexf(r1 * Cos(angle + 3 * da), r1 * Sin(angle + 3 * da), width * 0.5)
-   Next
-   Gl.End()
+    Endif
+  Next
+  Gl.End()
 
-   Gl.Normal3f(0.0, 0.0, -1.0)
+  ' Draw front sides of teeth
+  Gl.Begin(Gl.GL_QUADS)
+  da = 2.0 * Pi / teeth / 4.0
+  For i = 0 To teeth - 1
+    angle = i * 2.0 * Pi / teeth
+    Gl.Vertexf(r1 * Cos(angle), r1 * Sin(angle), width * 0.5)
+    Gl.Vertexf(r2 * Cos(angle + da), r2 * Sin(angle + da), width * 0.5)
+    Gl.Vertexf(r2 * Cos(angle + 2 * da), r2 * Sin(angle + 2 * da), width * 0.5)
+    Gl.Vertexf(r1 * Cos(angle + 3 * da), r1 * Sin(angle + 3 * da), width * 0.5)
+  Next
+  Gl.End()
 
-   ' Draw back face
-   Gl.Begin(Gl.GL_QUAD_STRIP)
-   For i = 0 To teeth
-      angle = i * 2.0 * Pi / teeth
-      Gl.Vertexf(r1 * Cos(angle), r1 * Sin(angle), - width * 0.5)
-      Gl.Vertexf(r0 * Cos(angle), r0 * Sin(angle), - width * 0.5)
-      If i < teeth Then
-         Gl.Vertexf(r1 * Cos(angle + 3 * da), r1 * Sin(angle + 3 * da), - width * 0.5)
-         Gl.Vertexf(r0 * Cos(angle), r0 * Sin(angle), - width * 0.5)
-      Endif
-   Next
-   Gl.End()
+  Gl.Normal3f(0.0, 0.0, -1.0)
 
-   ' Draw back sides of teeth
-   Gl.Begin(Gl.GL_QUADS)
-   da = 2.0 * Pi / teeth / 4.0
-   For i = 0 To teeth - 1
-      angle = i * 2.0 * Pi / teeth
+  ' Draw back face
+  Gl.Begin(Gl.GL_QUAD_STRIP)
+  For i = 0 To teeth
+    angle = i * 2.0 * Pi / teeth
+    Gl.Vertexf(r1 * Cos(angle), r1 * Sin(angle), - width * 0.5)
+    Gl.Vertexf(r0 * Cos(angle), r0 * Sin(angle), - width * 0.5)
+    If i < teeth Then
       Gl.Vertexf(r1 * Cos(angle + 3 * da), r1 * Sin(angle + 3 * da), - width * 0.5)
-      Gl.Vertexf(r2 * Cos(angle + 2 * da), r2 * Sin(angle + 2 * da), - width * 0.5)
-      Gl.Vertexf(r2 * Cos(angle + da), r2 * Sin(angle + da), - width * 0.5)
-      Gl.Vertexf(r1 * Cos(angle), r1 * Sin(angle), - width * 0.5)
-   Next
-   Gl.End()
-
-   ' Draw outward faces of teeth
-   Gl.Begin(Gl.GL_QUAD_STRIP)
-   For i = 0 To teeth - 1
-      angle = i * 2.0 * Pi / teeth
-      Gl.Vertexf(r1 * Cos(angle), r1 * Sin(angle), width * 0.5)
-      Gl.Vertexf(r1 * Cos(angle), r1 * Sin(angle), - width * 0.5)
-      u = r2 * Cos(angle + da) - r1 * Cos(angle)
-      v = r2 * Sin(angle + da) - r1 * Sin(angle)
-      fLen = Sqr(u * u + v * v)
-      u /= fLen
-      v /= fLen
-      Gl.Normal3f(v, - u, 0.0)
-      Gl.Vertexf(r2 * Cos(angle + da), r2 * Sin(angle + da), width * 0.5)
-      Gl.Vertexf(r2 * Cos(angle + da), r2 * Sin(angle + da), - width * 0.5)
-      Gl.Normal3f(Cos(angle), Sin(angle), 0.0)
-      Gl.Vertexf(r2 * Cos(angle + 2 * da), r2 * Sin(angle + 2 * da), width * 0.5)
-      Gl.Vertexf(r2 * Cos(angle + 2 * da), r2 * Sin(angle + 2 * da), - width * 0.5)
-      u = r1 * Cos(angle + 3 * da) - r2 * Cos(angle + 2 * da)
-      v = r1 * Sin(angle + 3 * da) - r2 * Sin(angle + 2 * da)
-      Gl.Normal3f(v, - u, 0.0)
-      Gl.Vertexf(r1 * Cos(angle + 3 * da), r1 * Sin(angle + 3 * da), width * 0.5)
-      Gl.Vertexf(r1 * Cos(angle + 3 * da), r1 * Sin(angle + 3 * da), - width * 0.5)
-      Gl.Normal3f(Cos(angle), Sin(angle), 0.0)
-   Next
-   Gl.Vertexf(r1 * Cos(0), r1 * Sin(0), width * 0.5)
-   Gl.Vertexf(r1 * Cos(0), r1 * Sin(0), - width * 0.5)
-   Gl.End()
-
-   Gl.ShadeModel(Gl.GL_SMOOTH)
-
-   ' Draw inside radius cylinder
-   Gl.Begin(Gl.GL_QUAD_STRIP)
-   For i = 0 To teeth
-      angle = i * 2.0 * Pi / teeth
-      Gl.Normal3f(- Cos(angle), - Sin(angle), 0.0)
       Gl.Vertexf(r0 * Cos(angle), r0 * Sin(angle), - width * 0.5)
-      Gl.Vertexf(r0 * Cos(angle), r0 * Sin(angle), width * 0.5)
-   Next
-   Gl.End()
+    Endif
+  Next
+  Gl.End()
+
+  ' Draw back sides of teeth
+  Gl.Begin(Gl.GL_QUADS)
+  da = 2.0 * Pi / teeth / 4.0
+  For i = 0 To teeth - 1
+    angle = i * 2.0 * Pi / teeth
+    Gl.Vertexf(r1 * Cos(angle + 3 * da), r1 * Sin(angle + 3 * da), - width * 0.5)
+    Gl.Vertexf(r2 * Cos(angle + 2 * da), r2 * Sin(angle + 2 * da), - width * 0.5)
+    Gl.Vertexf(r2 * Cos(angle + da), r2 * Sin(angle + da), - width * 0.5)
+    Gl.Vertexf(r1 * Cos(angle), r1 * Sin(angle), - width * 0.5)
+  Next
+  Gl.End()
+
+  ' Draw outward faces of teeth
+  Gl.Begin(Gl.GL_QUAD_STRIP)
+  For i = 0 To teeth - 1
+    angle = i * 2.0 * Pi / teeth
+    Gl.Vertexf(r1 * Cos(angle), r1 * Sin(angle), width * 0.5)
+    Gl.Vertexf(r1 * Cos(angle), r1 * Sin(angle), - width * 0.5)
+    u = r2 * Cos(angle + da) - r1 * Cos(angle)
+    v = r2 * Sin(angle + da) - r1 * Sin(angle)
+    fLen = Sqr(u * u + v * v)
+    u /= fLen
+    v /= fLen
+    Gl.Normal3f(v, - u, 0.0)
+    Gl.Vertexf(r2 * Cos(angle + da), r2 * Sin(angle + da), width * 0.5)
+    Gl.Vertexf(r2 * Cos(angle + da), r2 * Sin(angle + da), - width * 0.5)
+    Gl.Normal3f(Cos(angle), Sin(angle), 0.0)
+    Gl.Vertexf(r2 * Cos(angle + 2 * da), r2 * Sin(angle + 2 * da), width * 0.5)
+    Gl.Vertexf(r2 * Cos(angle + 2 * da), r2 * Sin(angle + 2 * da), - width * 0.5)
+    u = r1 * Cos(angle + 3 * da) - r2 * Cos(angle + 2 * da)
+    v = r1 * Sin(angle + 3 * da) - r2 * Sin(angle + 2 * da)
+    Gl.Normal3f(v, - u, 0.0)
+    Gl.Vertexf(r1 * Cos(angle + 3 * da), r1 * Sin(angle + 3 * da), width * 0.5)
+    Gl.Vertexf(r1 * Cos(angle + 3 * da), r1 * Sin(angle + 3 * da), - width * 0.5)
+    Gl.Normal3f(Cos(angle), Sin(angle), 0.0)
+  Next
+  Gl.Vertexf(r1 * Cos(0), r1 * Sin(0), width * 0.5)
+  Gl.Vertexf(r1 * Cos(0), r1 * Sin(0), - width * 0.5)
+  Gl.End()
+
+  Gl.ShadeModel(Gl.GL_SMOOTH)
+
+  ' Draw inside radius cylinder
+  Gl.Begin(Gl.GL_QUAD_STRIP)
+  For i = 0 To teeth
+    angle = i * 2.0 * Pi / teeth
+    Gl.Normal3f(- Cos(angle), - Sin(angle), 0.0)
+    Gl.Vertexf(r0 * Cos(angle), r0 * Sin(angle), - width * 0.5)
+    Gl.Vertexf(r0 * Cos(angle), r0 * Sin(angle), width * 0.5)
+  Next
+  Gl.End()
 
 End

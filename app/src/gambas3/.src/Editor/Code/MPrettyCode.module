@@ -11,6 +11,8 @@ Private $iLastDim As Integer
 Private $iLastSelect As Integer
 
 Private $bIndentDim As Boolean
+Private $bRemoveSpace As Boolean
+Private $bKeepVoidLine As Boolean
 
 Public Sub _init()
   
@@ -32,6 +34,10 @@ Public Sub Run(sText As String, Optional iLevel As Integer) As String
   Dim sLine As String
   Dim iLine As Integer
   
+  $bIndentDim = Settings["/FormatCode/IndentLocal", 1]
+  $bRemoveSpace = Settings["/FormatCode/RemoveSpaces", 0]
+  $bKeepVoidLine = Settings["/FormatCode/KeepVoidLines", 0]
+  
   $iLevel = iLevel
   $bLastNewLine = True
   $iLastDim = -1
@@ -41,8 +47,9 @@ Public Sub Run(sText As String, Optional iLevel As Integer) As String
     
     $iLine = iLine
     aLine[iLine] = IndentLine(aLine[iLine])
+    If $bRemoveSpace Then aLine[iLine] = RTrim(aLine[iLine])
     
-    If iLine > 0 And If Not Trim(aLine[iLine]) And If Not Trim$(aLine[iLine - 1]) Then
+    If Not $bKeepVoidLine And If iLine > 0 And If Not Trim(aLine[iLine]) And If Not Trim$(aLine[iLine - 1]) Then
       aLine.Remove(iLine)
     Else
       Inc iLine
@@ -131,29 +138,38 @@ Private Sub IndentLine(sLine As String) As String
         If sSym = "END" And If aSym.Count >= 2 Then sSym &= " " & aSym[1]
         
         If sSym = "DIM" Then
+          
           $iLastDim = $iLine
-        Else If $iLastDim = ($iLine - 1) Then
-          If Not $bLastNewLine Then sAdd = "\n"
+          If Not $bIndentDim Then $iLevel = 0
+          iNextLevel = 1
+        
+        Else
+        
+          If $iLastDim = ($iLine - 1) Then
+            If Not $bLastNewLine Then sAdd = "\n"
+          Endif
+        
+          If sSym = "END SELECT" Then
+            $iLevel -= 2
+            iNextLevel = $iLevel
+          Else If Right(aSym[0]) = ":" Then
+            iNextLevel = $iLevel
+            $iLevel = 0
+          Else If sSym = "IF" Then
+            iNextLevel = $iLevel
+            iPos = aSym.Find("THEN")
+            If iPos < 0 Or If iPos = aSym.Max Then Inc iNextLevel
+          Else If sSym = "SELECT" Then
+            $iLastSelect = $iLine
+            iNextLevel = $iLevel + 2
+          Else
+            If $cClose.Exist(sSym) Then Dec $iLevel
+            iNextLevel = $iLevel
+            If $cOpen.Exist(sSym) Then Inc iNextLevel
+          Endif
+          
         Endif
         
-        If sSym = "END SELECT" Then
-          $iLevel -= 2
-          iNextLevel = $iLevel
-        Else If Right(aSym[0]) = ":" Then
-          iNextLevel = $iLevel
-          $iLevel = 0
-        Else If sSym = "IF" Then
-          iNextLevel = $iLevel
-          iPos = aSym.Find("THEN")
-          If iPos < 0 Or If iPos = aSym.Max Then Inc iNextLevel
-        Else If sSym = "SELECT" Then
-          $iLastSelect = $iLine
-          iNextLevel = $iLevel + 2
-        Else
-          If $cClose.Exist(sSym) Then Dec $iLevel
-          iNextLevel = $iLevel
-          If $cOpen.Exist(sSym) Then Inc iNextLevel
-        Endif
       Endif
       
       $bLastNewLine = False 

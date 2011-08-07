@@ -502,7 +502,8 @@ Public Sub ScrollArea_Arrange()
     Else
       $iGridWidth = $iIconSize + 16
     Endif
-    $iGridWidth = Max($iGridWidth, $iIconSize + 8 + Me.Font.Height * 8)
+
+    $iGridWidth = Max($iGridWidth, $iIconSize + 8)
     
     $nColumn = Max(1, (H - $iPad * 2) \ $iGridHeight)
     nRow = ($aItems.Count + $nColumn - 1) \ $nColumn

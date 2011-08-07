@@ -24,6 +24,8 @@ Private $aCont As New _IconPanelContainer[]
 Private $iCurrent As Integer = -1
 Private $hPanel As Panel
 
+Private Const MIN_WIDTH_PANEL As Integer = 20
+
 Public Sub _new()
 
   Me.Arrangement = Arrange.Horizontal
@@ -32,10 +34,11 @@ Public Sub _new()
   $hIconView = New IconView(Me) As "IconView"
   $hIconView.Orientation = Arrange.Horizontal
   $hIconView.IconLines = 2
-  $hIconView.Width = Desktop.Scale * 20
+  $hIconView.Width = Desktop.Scale * MIN_WIDTH_PANEL
   $hIconView.Mouse = Mouse.Pointing
   $hIconView.ScrollBar = Scroll.None
-  $hPanel = New Panel(Me)
+  
+  $hPanel = New Panel(Me) As "Panel"
   $hPanel.Expand = True
   $hPanel.Arrangement = Arrange.Fill
 
@@ -59,7 +62,7 @@ Public Sub _UpdateIconViewWidth()
   Dim iInd As Integer
   Dim W As Integer
   
-  W = $hIconView.IconSize + Desktop.Scale * 8 '((($hIconView.IconSize + Desktop.Scale - 1) \ Desktop.Scale) + 20) * Desktop.Scale
+  W = Desktop.Scale * MIN_WIDTH_PANEL
   
   For iInd = 0 To $aCont.Max
     
@@ -67,7 +70,13 @@ Public Sub _UpdateIconViewWidth()
     
   Next
   
-  $hIconView.W = W
+  $hIconView.W = Min(W, Me.Width / 2)
+  
+End
+
+Public Sub Panel_Arrange()
+  
+  _UpdateIconViewWidth()
   
 End
 

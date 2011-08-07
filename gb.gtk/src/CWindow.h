@@ -46,7 +46,7 @@ typedef
 extern GB_DESC CWindowMenusDesc[];
 extern GB_DESC CWindowControlsDesc[];
 extern GB_DESC CWindowDesc[];
-extern GB_DESC CWindowTypeDesc[];
+//extern GB_DESC CWindowTypeDesc[];
 extern GB_DESC CWindowsDesc[];
 extern GB_DESC CFormDesc[];
 

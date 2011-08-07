@@ -1000,7 +1000,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	CScrollViewDesc,
 	CDrawingAreaDesc,
 	CProgressDesc, CSliderDesc, CSpinBoxDesc, CMovieBoxDesc, CScrollBarDesc,
-	CWindowMenusDesc, CWindowControlsDesc, CWindowTypeDesc, CWindowDesc, CWindowsDesc, CFormDesc,
+	CWindowMenusDesc, CWindowControlsDesc, CWindowDesc, CWindowsDesc, CFormDesc,
 	CDialogDesc,
 	#ifndef NO_X_WINDOW
 	CEmbedderDesc, CTrayIconDesc, CTrayIconsDesc,

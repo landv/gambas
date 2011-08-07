@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,94,57)
+  MoveScaled(0,0,102,57)
   Action = "option"
   Text = ("Preferences")
   Icon = Picture["icon:/small/options"]
@@ -31,7 +31,7 @@
     }
   }
   { ipnOption IconPanel
-    MoveScaled(1,1,97,55)
+    MoveScaled(1,1,92,55)
     Arrangement = Arrange.Vertical
     Spacing = True
     Count = 7
@@ -527,7 +527,7 @@
     }
     Index = 5
     Text = ("Code snippets")
-    Picture = Picture["icon:/large/wizard"]
+    Picture = Picture["icon:/large/insert-text"]
     { chkSnippet CheckBox
       MoveScaled(0,0,29,3)
       Text = ("Activate code snippets")
@@ -587,8 +587,8 @@
       }
     }
     Index = 6
-    Text = ("Code indentation")
-    Picture = Picture["icon:/32/indent"]
+    Text = ("Code formatting")
+    Picture = Picture["icon:/32/wizard"]
     { HBox30 HBox
       MoveScaled(0,0,66,4)
       Spacing = True
@@ -603,6 +603,40 @@
         List = [("No"), ("Yes")]
       }
       { Panel17 Panel
+        MoveScaled(59,0,7,4)
+      }
+    }
+    { HBox31 HBox
+      MoveScaled(0,5,66,4)
+      Spacing = True
+      { Label29 Label
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Remove useless spaces at end of line")
+      }
+      { cmbRemoveSpace ComboBox
+        MoveScaled(48,0,10,4)
+        ReadOnly = True
+        List = [("No"), ("Yes")]
+      }
+      { Panel18 Panel
+        MoveScaled(59,0,7,4)
+      }
+    }
+    { HBox32 HBox
+      MoveScaled(0,10,66,4)
+      Spacing = True
+      { Label30 Label
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Keep successive void lines")
+      }
+      { cmbKeepVoidLine ComboBox
+        MoveScaled(48,0,10,4)
+        ReadOnly = True
+        List = [("No"), ("Yes")]
+      }
+      { Panel19 Panel
         MoveScaled(59,0,7,4)
       }
     }
