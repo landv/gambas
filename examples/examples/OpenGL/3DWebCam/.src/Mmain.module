@@ -54,29 +54,29 @@ End
 
 Public Sub LoadTextures()
 
-  Gl.BindTexture(gl.GL_TEXTURE_2D, textures[0])
+  Gl.BindTexture(gl.TEXTURE_2D, textures[0])
   Gl.TexImage2D(logo)
-  Gl.TexParameteri(gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MIN_FILTER, gl.GL_LINEAR)
-  Gl.TexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_LINEAR)
+  Gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+  Gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
 
 End
 
 Public Sub InitGL()
 
   ' Enable smooth shading
-  Gl.ShadeModel(gl.GL_SMOOTH)
+  Gl.ShadeModel(gl.SMOOTH)
   ' Set the background black
   Gl.ClearColor(0.0, 0.0, 0.0, 0.5)
   ' Depth buffer setup
   Gl.ClearDepth(1.0)
   ' Enables Depth Testing
-  Gl.Enable(gl.GL_DEPTH_TEST)
+  Gl.Enable(gl.DEPTH_TEST)
   ' Enable texturing
-  Gl.Enable(Gl.GL_TEXTURE_2D)
+  Gl.Enable(gl.TEXTURE_2D)
   ' The Type OF Depth Test TO DO
-  Gl.DepthFunc(gl.GL_LESS)
+  Gl.DepthFunc(gl.LESS)
   ' Really Nice Perspective Calculations
-  Gl.Hint(gl.GL_PERSPECTIVE_CORRECTION_HINT, gl.GL_NICEST)
+  Gl.Hint(gl.PERSPECTIVE_CORRECTION_HINT, gl.NICEST)
 
 End
 
@@ -102,14 +102,14 @@ Public Sub Screen_resize()
   ' Setup our viewport
   Gl.Viewport(0, 0, Screen.Width, Screen.Height)
   ' change to the projection matrix AND set our viewing volume.
-  Gl.MatrixMode(gl.GL_PROJECTION)
+  Gl.MatrixMode(gl.PROJECTION)
   Gl.LoadIdentity()
 
   ' Set our perspective
   Glu.Perspective(45.0, ratio, 0.1, 100.0)
 
   ' Make sure we're changing the model view and not the projection
-  Gl.MatrixMode(gl.GL_MODELVIEW)
+  Gl.MatrixMode(gl.MODELVIEW)
   GL.LoadIdentity()
 
 End
@@ -126,7 +126,7 @@ Public Sub Screen_Draw()
     UpdateLogo = False
   Endif
   
-  Gl.Clear(gl.GL_COLOR_BUFFER_BIT Or gl.GL_DEPTH_BUFFER_BIT)
+  Gl.Clear(gl.COLOR_BUFFER_BIT Or gl.DEPTH_BUFFER_BIT)
 
   Gl.LoadIdentity()
   Gl.Translatef(0.0, 0.0, -5.0)
@@ -136,9 +136,9 @@ Public Sub Screen_Draw()
   Gl.Rotatef(zrot, 0.0, 0.0, 1.0) ' Rotate On The Z Axis
 
   ' Select our texture
-  Gl.BindTexture(gl.GL_TEXTURE_2D, textures[0])
+  Gl.BindTexture(gl.TEXTURE_2D, textures[0])
 
-  Gl.Begin(gl.GL_QUADS)
+  Gl.Begin(gl.QUADS)
     ' front face
     ' Bottom Left OF The Texture AND Quad
     Gl.TexCoord2f(0.0, 1.0)
