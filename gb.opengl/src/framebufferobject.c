@@ -25,29 +25,63 @@
 
 #include "GL.h"
 
-BEGIN_METHOD(GLBINDFRAMEBUFFEREXT, GB_INTEGER Target; GB_INTEGER Framebuffer)
+BEGIN_METHOD(GLBINDFRAMEBUFFEREXT, GB_INTEGER target; GB_INTEGER framebuffer)
 
-	glBindFramebufferEXT(VARG(Target), VARG(Framebuffer));
-
-END_METHOD
-
-BEGIN_METHOD(GLBINDRENDERBUFFEREXT, GB_INTEGER Target; GB_INTEGER Renderbuffer)
-
-	glBindRenderbufferEXT(VARG(Target), VARG(Renderbuffer));
+	glBindFramebufferEXT(VARG(target), VARG(framebuffer));
 
 END_METHOD
 
-BEGIN_METHOD(GLCHECKFRAMEBUFFERSTATUSEXT, GB_INTEGER Target)
+BEGIN_METHOD(GLBINDRENDERBUFFEREXT, GB_INTEGER target; GB_INTEGER renderbuffer)
 
-	GLuint result;
-	result = glCheckFramebufferStatusEXT(VARG(Target));
-	GB.ReturnInteger(result);
+	glBindRenderbufferEXT(VARG(target), VARG(renderbuffer));
 
 END_METHOD
 
-BEGIN_METHOD(GLFRAMEBUFFERTEXTURE2DEXT, GB_INTEGER Target; GB_INTEGER Attachment; GB_INTEGER Textarget; GB_INTEGER Texture; GB_INTEGER Level)
+BEGIN_METHOD(GLCHECKFRAMEBUFFERSTATUSEXT, GB_INTEGER target)
 
-	 glFramebufferTexture2DEXT(VARG(Target), VARG(Attachment), VARG(Textarget), VARG(Texture), VARG(Level));
+	GB.ReturnInteger(glCheckFramebufferStatusEXT(VARG(target)));
+
+END_METHOD
+
+BEGIN_METHOD(GLDELETEFRAMEBUFFERSEXT, GB_OBJECT buffers)
+
+
+	GB_ARRAY iArray = (GB_ARRAY) VARG(buffers);
+	int i,count = GB.Array.Count(iArray);
+	GLuint buffer[1];
+	
+	if (count<=0)
+		return;
+
+	for (i=0;i<count; i++)
+	{
+		buffer[0]=*((GLuint *)GB.Array.Get(iArray,i));
+		glDeleteFramebuffersEXT(1, buffer);
+	}
+
+END_METHOD
+
+BEGIN_METHOD(GLDELETERENDERBUFFERSEXT, GB_OBJECT buffers)
+
+
+	GB_ARRAY iArray = (GB_ARRAY) VARG(buffers);
+	int i,count = GB.Array.Count(iArray);
+	GLuint buffer[1];
+	
+	if (count<=0)
+		return;
+
+	for (i=0;i<count; i++)
+	{
+		buffer[0]=*((GLuint *)GB.Array.Get(iArray,i));
+		glDeleteRenderbuffersEXT(1, buffer);
+	}
+
+END_METHOD
+
+BEGIN_METHOD(GLFRAMEBUFFERTEXTURE2DEXT, GB_INTEGER target; GB_INTEGER attachment; GB_INTEGER textarget; GB_INTEGER texture; GB_INTEGER level)
+
+	 glFramebufferTexture2DEXT(VARG(target), VARG(attachment), VARG(textarget), VARG(texture), VARG(level));
 
 END_METHOD
 
@@ -89,9 +123,21 @@ BEGIN_METHOD(GLGENRENDERBUFFERSEXT, GB_INTEGER count)
 
 END_METHOD
 
+BEGIN_METHOD(GLISFRAMEBUFFEREXT, GB_INTEGER buffer)
+
+	GB.ReturnBoolean(glIsFramebufferEXT(VARG(buffer)));
+
+END_METHOD
+
 BEGIN_METHOD(GLISRENDERBUFFEREXT, GB_INTEGER buffer)
 
 	GB.ReturnBoolean(glIsRenderbufferEXT(VARG(buffer)));
+
+END_METHOD
+
+BEGIN_METHOD(GLRENDERBUFFERSTORAGEEXT, GB_INTEGER target; GB_INTEGER format; GB_INTEGER width; GB_INTEGER height)
+
+	 glRenderbufferStorageEXT(VARG(target), VARG(format), VARG(width), VARG(height));
 
 END_METHOD
 
