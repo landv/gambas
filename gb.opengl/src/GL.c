@@ -325,10 +325,13 @@ GB_DESC Cgl[] =
 	
 	/* 310; GL_EXT_framebuffer_object (incomplete) */
 	/* framebufferobject.c */
-	GB_STATIC_METHOD("GenFramebuffersEXT", "i", GLGENFRAMEBUFFERSEXT, "(N)i"),
-	GB_STATIC_METHOD("FramebufferTexture2dEXT", NULL, GLFRAMEBUFFERTEXTURE2DEXT, "(Target)i(Attachment)i(Textarget)i(Texture)i(Level)i"),
-	GB_STATIC_METHOD("BindFramebufferEXT", NULL, GLBINDFRAMEBUFFERSEXT, "(Target)i(Framebuffer)i"),
+	GB_STATIC_METHOD("BindFramebufferEXT", NULL, GLBINDFRAMEBUFFEREXT, "(Target)i(Framebuffer)i"),
+	GB_STATIC_METHOD("BindRenderbufferEXT",NULL, GLBINDRENDERBUFFEREXT, "(Target)i(Renderbuffer)i"),
 	GB_STATIC_METHOD("CheckFramebufferStatusEXT", "i", GLCHECKFRAMEBUFFERSTATUSEXT, "(Target)i"),
+	GB_STATIC_METHOD("FramebufferTexture2dEXT", NULL, GLFRAMEBUFFERTEXTURE2DEXT, "(Target)i(Attachment)i(TexTarget)i(Texture)i(Level)i"),
+	GB_STATIC_METHOD("GenFramebuffersEXT", "Integer[]", GLGENFRAMEBUFFERSEXT, "(Count)i"),
+	GB_STATIC_METHOD("GenRenderbuffersEXT", "Integer[]", GLGENRENDERBUFFERSEXT, "(Count)i"),
+	GB_STATIC_METHOD("IsRenderbufferEXT", "b", GLISRENDERBUFFEREXT, "(Renderbuffer)i"),
 
 	// Old constant naming support
 	
