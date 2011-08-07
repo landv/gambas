@@ -59,6 +59,8 @@ GB_DESC Cglu[] =
 	GB_STATIC_METHOD("NewQuadric", "GluQuadric", GLUNEWQUADRIC, NULL),
 	GB_STATIC_METHOD("QuadricNormals", NULL, GLUQUADRICNORMALS, "(Quad)GluQuadric;(Normal)i"),
 	GB_STATIC_METHOD("QuadricTexture", NULL, GLUQUADRICTEXTURE, "(Quad)GluQuadric;(Texture)b"),
+	GB_STATIC_METHOD("QuadricOrientation", NULL, GLUQUADRICORIENTATION, "(Quad)GluQuadric;(Orientation)i"),
+	GB_STATIC_METHOD("QuadricDrawStyle", NULL, GLUQUADRICDRAWSTYLE, "(Quad)GluQuadric;(DrawStyle)i"),
 	GB_STATIC_METHOD("Sphere", NULL, GLUSPHERE, "(Quad)GluQuadric;(Radius)f(Slices)i(Stacks)i"),
 	GB_STATIC_METHOD("Cylinder", NULL, GLUCYLINDER, "(Quad)GluQuadric;(Base)f(Top)f(Height)f(Slices)i(Stacks)i"),
 	GB_STATIC_METHOD("Disk", NULL, GLUDISK, "(Quad)GluQuadric;(Inner)f(Outer)f(Slices)i(Loops)i"),
@@ -77,16 +79,36 @@ GB_DESC Cglu[] =
 	GB_STATIC_METHOD("NurbsSurface", NULL, GLUNURBSSURFACE, "(Nurb)GluNurb;(SKnotCount)i(SKnots)Single[];(TKnotCount)i(TKnots)Single[];(SStride)i(TStride)i(SOrder)i(TOrder)i(Type)i(Control)Single[]"),
 	GB_STATIC_METHOD("NewNurbsRenderer","GluNurb", GLUNEWNURBSRENDERER, NULL),
 
-
-
 	/********************/
 	/* opengl constants */
 	/********************/
 
 	/* Errors */
-	GB_CONSTANT("GLU_INVALID_ENUM", "i", GLU_INVALID_ENUM),
-	GB_CONSTANT("GLU_INVALID_VALUE", "i", GLU_INVALID_OPERATION),
-	GB_CONSTANT("GLU_OUT_OF_MEMORY", "i", GLU_OUT_OF_MEMORY),
-
+	GB_CONSTANT("INVALID_ENUM", "i", GLU_INVALID_ENUM),
+	GB_CONSTANT("INVALID_VALUE", "i", GLU_INVALID_OPERATION),
+	GB_CONSTANT("OUT_OF_MEMORY", "i", GLU_OUT_OF_MEMORY),
+	
+	GB_CONSTANT("NONE", "i", GLU_NONE), 
+	GB_CONSTANT("FLAT", "i", GLU_FLAT), 
+	GB_CONSTANT("SMOOTH", "i", GLU_SMOOTH), 
+	
+	GB_CONSTANT("OUTSIDE", "i", GLU_OUTSIDE),
+	GB_CONSTANT("INSIDE", "i", GLU_INSIDE),
+	
+	GB_CONSTANT("FILL", "i", GLU_FILL),
+	GB_CONSTANT("LINE", "i", GLU_LINE),
+	GB_CONSTANT("POINT", "i", GLU_POINT),
+	GB_CONSTANT("SILHOUETTE", "i", GLU_SILHOUETTE),
+	
+	GB_CONSTANT("CULLING", "i", GLU_CULLING),
+	GB_CONSTANT("SAMPLING_TOLERANCE", "i", GLU_SAMPLING_TOLERANCE),
+	GB_CONSTANT("SAMPLING_METHOD", "i", GLU_SAMPLING_METHOD),
+	GB_CONSTANT("PARAMETRIC_TOLERANCE", "i", GLU_PARAMETRIC_TOLERANCE),
+	GB_CONSTANT("DISPLAY_MODE", "i", GLU_DISPLAY_MODE),
+	GB_CONSTANT("AUTO_LOAD_MATRIX", "i", GLU_AUTO_LOAD_MATRIX),
+	GB_CONSTANT("U_STEP", "i", GLU_U_STEP),
+	GB_CONSTANT("V_STEP", "i", GLU_V_STEP),
+	GB_CONSTANT("NURBS_MODE", "i", GLU_NURBS_MODE),
+	
 	GB_END_DECLARE
 };
