@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,102,57)
+  MoveScaled(0,0,92,57)
   Action = "option"
   Text = ("Preferences")
   Icon = Picture["icon:/small/options"]
@@ -589,8 +589,25 @@
     Index = 6
     Text = ("Code formatting")
     Picture = Picture["icon:/32/wizard"]
-    { HBox30 HBox
+    { HBox33 HBox
       MoveScaled(0,0,66,4)
+      Spacing = True
+      { Label31 Label
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Format on load & save")
+      }
+      { cmbFormatOnLoad ComboBox
+        MoveScaled(48,0,10,4)
+        ReadOnly = True
+        List = [("No"), ("Yes")]
+      }
+      { Panel20 Panel
+        MoveScaled(59,0,7,4)
+      }
+    }
+    { HBox30 HBox
+      MoveScaled(0,5,66,4)
       Spacing = True
       { Label28 Label
         MoveScaled(0,0,47,4)
@@ -607,7 +624,7 @@
       }
     }
     { HBox31 HBox
-      MoveScaled(0,5,66,4)
+      MoveScaled(0,10,66,4)
       Spacing = True
       { Label29 Label
         MoveScaled(0,0,47,4)
@@ -624,7 +641,7 @@
       }
     }
     { HBox32 HBox
-      MoveScaled(0,10,66,4)
+      MoveScaled(0,15,66,4)
       Spacing = True
       { Label30 Label
         MoveScaled(0,0,47,4)

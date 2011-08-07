@@ -90,7 +90,8 @@ Public Sub _new()
     [cmbControlStructCompletion, "/Editor/ControlStructCompletion", 1],
     [cmbIndentDim, "/FormatCode/IndentLocal", 1],
     [cmbRemoveSpace, "/FormatCode/RemoveSpaces", 0],
-    [cmbKeepVoidLine, "/FormatCode/KeepVoidLines", 0]]
+    [cmbKeepVoidLine, "/FormatCode/KeepVoidLines", 0],
+    [cmbFormatOnLoad, "/FormatCode/FormatOnLoad", 0]]
   
   $bNoChange = True
   ReadConfig
@@ -815,5 +816,11 @@ End
 Public Sub cmbKeepVoidLine_Click()
 
   Settings["/FormatCode/KeepVoidLines"] = cmbKeepVoidLine.Index = 1
+
+End
+
+Public Sub cmbFormatOnLoad_Click()
+
+  Settings["/FormatCode/FormatOnLoad"] = cmbFormatOnLoad.Index = 1
 
 End

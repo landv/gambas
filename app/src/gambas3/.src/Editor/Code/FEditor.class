@@ -2,7 +2,7 @@
 
 ' Gambas 3
 ' Integrated Development Environment for Gambas
-' 
+'
 ' Copyright (C) Benoît Minisini, Fabien Bodard, Charlie Reinl, José Luis Redrejo, Robert Rowe
 '
 ' This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 '
 ' You should have received a copy of the GNU General Public License
 ' along with this program; if not, write to the Free Software
-' Foundation, Inc., 51 Franklin St, Fifth Floor, 
+' Foundation, Inc., 51 Franklin St, Fifth Floor,
 ' Boston, MA  02110-1301  USA
 '
 
@@ -73,7 +73,7 @@ Private Const TYPE_ARRAY As Integer = 2
 Private $bLastStatic As Boolean
 
 Private $iViewMode As Integer
-Private VIEWMODE_NORMAL As Integer = 0 
+Private VIEWMODE_NORMAL As Integer = 0
 Private VIEWMODE_HORIZONTAL As Integer = 1
 Private VIEWMODE_VERTICAL As Integer = 2
 
@@ -94,7 +94,7 @@ Private $iSamplePos As Integer
 Private $hInsertColor As CInsertColor
 
 Static Public Sub _init()
-  
+
   $cType["Boolean"] = "b"
   $cType["Byte"] = "c"
   $cType["Short"] = "h"
@@ -107,7 +107,7 @@ Static Public Sub _init()
   $cType["Variant"] = "v"
   $cType["Object"] = "o"
   $cType["Pointer"] = "p"
-  
+
   $cStructClose["DO"] = "Loop"
   $cStructClose["WHILE"] = "Wend"
   $cStructClose["REPEAT"] = "Until"
@@ -119,94 +119,94 @@ Static Public Sub _init()
   $cStructClose["DEFAULT"] = "<"
   $cStructClose["CATCH"] = "<"
   $cStructClose["FINALLY"] = "<"
-  
+
 End
 
 Public Sub _new(sPath As String)
-  
+
   Dim hModule As CModule
-  
+
   $iLastLine = -1
-  
+
   Path = sPath
   Me.Name = File.BaseName(Path)
-  
+
   Editor = edtEditor
   edtEditor.Flags[Editor.HighlightBraces] = True
   edtEditor.Flags[Editor.ShowCursorPosition] = True
   edtEditor.Highlight = Highlight.Gambas
-  
+
   $hInsertColor = New CInsertColor(btnInsertColor, Editor)
-  
+
   ' If Not frmCompletion Then
   '   frmCompletion = New FCompletion(Me)
   '   frmCompletion.Hide
   '   frmSignature = New FSignature(Me)
   '   frmSignature.Hide
   ' Endif
-  
+
   ReadConfig
   Refresh
-  
+
   'Editor = edtEditor
   Me.Icon = Picture["img/16/" &/ File.ext(sPath) & ".png"]
-  
+
   SetReadOnly
-  
+
   For Each hModule In CModule.All
     If Exist(File.SetExt(Path, hModule.Key)) Then
       $sModule = hModule.Key
       btnForm.Visible = True
     Endif
   Next
-  
+
   $bDoNotSavePosition = True
-  
+
 End
 
 Public Sub Refresh()
-  
+
   edtEditor.TabSize = Project.TabSize
   If $hEditor1 Then $hEditor1.TabSize = Project.TabSize
   If $hEditor2 Then $hEditor1.TabSize = Project.TabSize
-  
+
 End
 
 Private Sub ReadConfigEditor(hEditor As Editor)
-  
+
   hEditor.ReadConfig
   hEditor.KeywordsUseUpperCase = Settings["/Editor/KeywordsUseUpperCase"]
-  
+
 End
 
 Public Sub ReadConfig()
-  
+
   Dim iInd As Integer
   Dim iColor As Integer
   Dim hTheme As Integer[]
-  
+
   $bToolBar = Settings["/Editor/Toolbar", True]
   panToolbar.Visible = $bToolbar
   Form_Arrange
-  
+
   ReadConfigEditor(edtEditor)
   If $hEditor1 Then ReadConfigEditor($hEditor1)
   If $hEditor2 Then ReadConfigEditor($hEditor2)
-  
+
   $bCompletion = Settings["/Editor/Completion", True]
   $bCleanOnSave = Settings["/Editor/CleanOnSave", False]
-  
+
   $bShowPopupHelp = Settings["/Editor/ShowPopupHelp", True]
-  
+
   panProc.Font.Grade = - Settings["/GlobalFont", 0]
   gvwProc.Rows.H = panProc.Font.Height + 1
-  
+
   RefreshBackground
-  
+
 End
 
 Public Function Save(Optional bReset As Boolean) As Boolean
-  
+
   Dim sHeader As String
   Dim iLig As Integer
   Dim iProc As Integer
@@ -219,37 +219,37 @@ Public Function Save(Optional bReset As Boolean) As Boolean
   Dim bChange As Boolean
   Dim iCount As Integer
   Dim iVoidLine As Integer
-  
+
   If Project.ReadOnly Then Return
   If Not $bModify Then
     If bReset Then Editor.Reset
     Return
   Endif
-  
+
   Editors_Scroll
-  
+
   Save.Begin(Path)
-  
+
   '   IF $bCleanOnSave THEN
-  ' 
+  '
   '     iProc = -1
   '     iLine = edtEditor.Line
   '     iCol = edtEditor.Column
-  ' 
+  '
   '     iCount = edtEditor.Lines.Count
   '     FOR iLig = 0 TO iCount
-  ' 
+  '
   '       IF iLig < iCount THEN
   '         sLig = RTrim(edtEditor.Lines[iLig])
   '       ELSE
   '         sLig = "SUB gambas()"
   '       ENDIF
-  ' 
+  '
   '       IF NOT LTrim(sLig) THEN
   '         INC iVoidLine
   '         CONTINUE
   '       ENDIF
-  ' 
+  '
   '       IF IsProc(sLig) THEN
   '         IF iProc >= 0 THEN
   ' '           IF iFull < 2 THEN
@@ -270,19 +270,19 @@ Public Function Save(Optional bReset As Boolean) As Boolean
   '       ELSE
   '         INC iFull
   '       ENDIF
-  ' 
+  '
   '       IF iLig < iCount THEN
   '         sData = sData & String(iVoidLine, "\n") & sLig & "\n"
   '         iVoidLine = 0
   '       ENDIF
-  ' 
+  '
   '     NEXT
-  ' 
+  '
   '   'IF Len(sData) <> Len(edtEditor.Text) THEN
   '   File.Save(Path, sData)
-  ' 
+  '
   '   IF bChange THEN
-  ' 
+  '
   '     edtEditor.Text = sData
   '     bReset = TRUE
   '     'TRY edtEditor.Line = iLine
@@ -290,65 +290,69 @@ Public Function Save(Optional bReset As Boolean) As Boolean
   '     '  TRY edtEditor.Column = iCol
   '     'ENDIF
   '     edtEditor.Goto(iLine, iCol)
-  ' 
+  '
   '   ENDIF
-  ' 
+  '
   ' ELSE
-  
+
   sHeader = "' Gambas " & File.Ext(Path) & " file"
-  
+
   Editor.Begin
-  
+
   If Editor.Lines[0].Text <> sHeader Then
     Editor.Insert(sHeader & "\n", 0, 0)
   Endif
-  
-  If Editor.Lines.Count < 2 Or If Editor.Lines[1].Text Then 
+
+  If Editor.Lines.Count < 2 Or If Editor.Lines[1].Text Then
     Editor.Insert("\n", 1, 0)
   Endif
-  
+
   Editor.End
   
-  File.Save(Path, GetHighlightedText())
-  
+  If Settings["/FormatCode/FormatOnLoad"] Then 
+    File.Save(Path, MPrettyCode.Run(GetHighlightedText()))
+  Else
+    File.Save(Path, GetHighlightedText())
+  Endif
+
   ' ENDIF
-  
+
   $bModify = False
   DrawTitle
-  
+
   If bReset Then Editor.Reset
-  
+
   Save.End()
-  
+
 Catch
-  
+
   Return Save.Error()
-  
+
 End
 
 Private Sub DrawTitle()
-  
+
   Project.DrawTitle(Me)
-  
+
 End
 
 ' Private Sub DrawInfo()
-'   
+'
 '   lblEditor.Text = CStr(Editor.Line + 1) & ":" & CStr(Editor.Column + 1)
-'   
+'
 ' End
 
 Public Sub Modify(Optional bReset As Boolean)
-  
+
   If Project.ReadOnly Then Return
-  
+
   If bReset Then
-    
-    If Not $bModify Then Return  
+
+    If Not $bModify Then Return
     $bModify = False
-    
+
   Else
-    
+
     $bModify = True
     Inc Project.TimeStamp
     Inc Age
@@ -356,30 +360,30 @@ Public Sub Modify(Optional bReset As Boolean)
     $aProc.Clear ' = New String[]
     FDebugInfo.RefreshBreakpoint(Me.Name)
     FSearch.OnFileChange(Me.Path)
-    
+
   Endif
-  
+
   DrawTitle
-  
+
 End
 
 Public Function IsModified() As Boolean
-  
+
   Return $bModify
-  
+
 End
 
 Public Sub Form_Arrange()
-  
+
   ' Dim iToolbarOffset As Integer
-  ' 
+  '
   ' If $bToolbar Then
   '   panToolBar.Move(0, 0, Me.ClientW)
   '   iToolbarOffset = panToolBar.H
   ' Else
   '   iToolbarOffset = 0
   ' Endif
-  ' 
+  '
   ' Select Case $iViewMode
   '   Case VIEWMODE_NORMAL
   '     edtEditor.Move(0, iToolbarOffset, Me.ClientW, Me.ClientH - iToolbarOffset)
@@ -387,119 +391,119 @@ Public Sub Form_Arrange()
   '     splHorizontal.Move(0, iToolbarOffset, Me.ClientW, Me.ClientH - iToolbarOffset)
   '   Case VIEWMODE_VERTICAL
   '     splVertical.Move(0, iToolbarOffset, Me.ClientW, Me.ClientH - iToolbarOffset)
-  ' End Select 
-  
+  ' End Select
+
   ResizeProcList
-  
+
 End
 
 Public Sub Editors_Change()
-  
+
   Modify
-  
+
 End
 
 Private Sub RefreshLineInfo(Optional bForce As Boolean)
-  
+
   Dim eTime As Float
-  
-  If bForce Then 
+
+  If bForce Then
     $iLastLine = -1
   Endif
-  
+
   If Editor.Line <> $iLastLine Then
-    
+
     $iLastLine = Editor.Line
-    
+
     HideCompletion
     HideSignature
-    
+
     UpdateFunction
     timProc.Stop
     timProc.Start
-    
+
     If IsModified() Then {Scan} = Null
-    
+
     If $hSampleCode Then
       If Editor.Line < $iSampleStart Or If Editor.Line >= $iSampleEnd Then
         $hSampleCode = Null
       Endif
     Endif
-    
+
   Else If $bCheckSignature Or If FSignature.VisibleFrom(Editor) Then
     $bCheckSignature = False
     CheckSignature
   Endif
-  
+
   lblInfo.Text = CStr(Editor.Column + 1) & ":" & CStr(Editor.Line + 1)
-  
+
 End
 
 Public Sub Editors_Cursor()
-  
+
   RefreshLineInfo
   HideMessage
-  
+
   If Editor.Lines[Editor.Line].Current Then Design.CheckErrorMessage(Me)
-  
+
 End
 
 Public Sub Form_GotFocus()
-  
+
   Editor.SetFocus
-  
+
 End
 
 Public Sub Form_Deactivate()
-  
+
   HideCompletion
   HideSignature
   'mnuEditor.Enabled = False
-  
+
 End
 
 Public Sub Goto(iLine As Integer, Optional iColumn As Integer = -1, Optional bCenter As Boolean)
-  
+
   'DEC iLine
   If iColumn < 0 Then iColumn = Editor.Column
-  
+
   If iLine < 0 Then
     iLine = 0
   Else If iLine >= Editor.Lines.Count Then
     iLine = Editor.Lines.Count - 1
   Endif
-  
+
   If Not Editor.Lines[iLine].Limit Then Editor.Lines[iLine].Expanded = True
   Editor.Goto(iLine, iColumn, bCenter)
-  
+
 End
 
 Public Sub GotoCenter(iLine As Integer, Optional iColumn As Integer = -1, Optional bSave As Boolean)
-  
+
   Dim hEditor As Editor = {Editor}
-  
+
   If bSave Then Project.SavePosition
   'If iColumn = -2 Then
   '  iColumn = -1
   '  Try iColumn = hEditor.Lines[iLine].Length - String.Len(LTrim(hEditor.Lines[iLine].Text))
   'Endif
   Me.Goto(iLine, iColumn, True)
-  
+
 End
 
 Public Sub Editors_Menu()
-  
+
   Dim hMenu As Menu
   Dim iInd As Integer
-  
+
   mnuForm.Visible = Project.ExistForm(Me.Name)
   CreateMenu
   mnuEditor.Popup
-  
+
 End
 
 Private Sub CreateMenu()
-  
+
   Dim iInd As Integer
   Dim sLine As String
   Dim sName As String
@@ -514,38 +518,38 @@ Private Sub CreateMenu()
   Dim hSymbol As CSymbolInfo
   Dim iLine As Integer
   Dim cSymbol As Collection
-  
+
   'DIM hPoint AS Picture
-  
+
   'IF $hMenuGo THEN $hMenuGo.Delete
-  
+
   '$hMenuGo = NEW Menu(mnuEditor)
   '$hMenuGo.Caption = "&Go to"
-  
+
   Inc Application.Busy
-  
+
   mnuGoto.Children.Clear
-  
+
   cSymbol = CComponent.GetClassSymbols(Me.Name)
-  
+
   For Each hSymbol In cSymbol
-    
+
     If LCase(hSymbol.Kind) <> "m" Then Continue
     If hSymbol.LineNumber = 0 Then Continue
     cFunc.Add(hSymbol.Name)
-    
+
   Next
-  
+
   cFunc.Sort(gb.IgnoreCase + gb.Natural)
   hParent = mnuGoto
-  
+
   'hPoint = Picture["img/16/point.png"]
-  
+
   For Each sName In cFunc
-    
+
     hSymbol = cSymbol[sName]
     sFullName = sName
-    
+
     iPos = InStr(sName, "_")
     If iPos Then
       sNewParent = Left$(sName, iPos - 1)
@@ -557,53 +561,53 @@ Private Sub CreateMenu()
     Else
       sNewParent = ""
     Endif
-    
+
     If UCase(sNewParent) <> UCase(sParent) Then
-      
+
       If sNewParent Then
-        
+
         hParent = New Menu(mnuGoto)
         hParent.Text = sNewParent
-        
+
       Else
-        
+
         hParent = mnuGoto
-        
+
       Endif
-      
+
       sParent = sNewParent
-      
+
     Endif
-    
+
     hMenu = New Menu(hParent) As "mnuGoto"
     hMenu.Text = sName
     hMenu.Tag = hSymbol.LineNumber - 1
     'IF NOT hSymbol.NotPublic THEN hMenu.Picture = hPoint
-    
+
   Next
-  
+
   mnuGoto.Visible = cFunc.count > 0
   mnuSepGoto.Visible = cFunc.count > 0
   mnuStartup.Checked = Project.Startup = File.BaseName(Path)
-  
+
   UpdateMenu
-  
+
   Dec Application.Busy
-  
+
 End
 
 Private Sub UpdateMenu()
-  
+
   Dim bVisible As Boolean
-  
+
   Action["watch"].Enabled = Project.Running 'AND Len(Trim(edtEditor.Selection.Text)) > 0
-  
-  'mnuWatch.Visible = 
+
+  'mnuWatch.Visible =
   'btnWatch.Visible = Project.Running
   'mnuUntil.Visible = mnuWatch.Visible
-  
+
   bVisible = Not edtEditor.ReadOnly
-  
+
   mnuUndo.Visible = bVisible
   mnuRedo.Visible = bVisible
   mnuSepUndo.Visible = bVisible
@@ -616,7 +620,7 @@ Private Sub UpdateMenu()
   mnuReload.Visible = bVisible
   mnuInsertColor.Visible = bVisible
   mnuWatch.Visible = Not bVisible
-  
+
   btnUndo.Visible = bVisible
   btnRedo.Visible = bVisible
   btnCut.Visible = bVisible
@@ -630,22 +634,22 @@ Private Sub UpdateMenu()
   btnReload.Visible = bVisible
   btnSave.Visible = bVisible
   btnWatch.Visible = Not bVisible
-  
+
 End
 
 Public Sub mnuGoto_Click()
-  
+
   GotoProc(CInt(Last.Tag))
-  
+
 End
 
 Private Function InsertFunction(sProc As String, sType As String, bPublic As Boolean, sSign As String, Optional bStatic As Boolean) As Integer
-  
+
   Dim iLine As Integer
   Dim iCol As Integer
   Dim sPublic As String
   Dim sStatic As String
-  
+
   ' For iLine = 0 To Editor.Lines.Count - 1
   '   If IsProc(Editor.Lines[iLine].Text) Then
   '     If Comp($sName, sProc, gb.Text) = 0 Then
@@ -653,54 +657,54 @@ Private Function InsertFunction(sProc As String, sType As String, bPublic As Boo
   '     Endif
   '   Endif
   ' Next
-  
+
   FillProcCombo
   Try iLine = $cProc[sProc]
   If Not Error Then Return iLine
-  
+
   If Project.ReadOnly Then Return -1
-  
+
   Editor.Begin
-  
+
   iLine = Editor.Lines.Count - 1
   iCol = Editor.Lines[iLine].Length
   If iCol Then
     Editor.Insert("\n", iLine, iCol)
     Inc iLine
   Endif
-  
+
   sPublic = If(bPublic, "Public", "Private")
   sStatic = If(bStatic, "Static ", "")
-  
+
   If sType Then
     Editor.Insert("\n" & sStatic & sPublic & " FUNCTION " & sProc & "(" & sSign & ") AS " & sType & "\n\n" & Space$(Project.TabSize) & "\n\nEND\n", iLine, 0)
   Else
     Editor.Insert("\n" & sStatic & sPublic & " SUB " & sProc & "(" & sSign & ")\n\n" & Space$(Project.TabSize) & "\n\nEND\n", iLine, 0)
   Endif
-  
+
   Editor.End
-  
+
   Return iLine + 1
-  
+
 End
 
 Public Sub GotoEvent(sName As String, sEvent As String, Optional sSign As String)
-  
+
   Dim sProc As String
-  
-  sProc = sName & "_" & sEvent  
+
+  sProc = sName & "_" & sEvent
   GotoProc(InsertFunction(sProc, "", True, sSign)) ' + 1, Len(edtEditor.Lines[iLine]))
-  
+
 End
 
 Public Sub mnuSave_Click()
-  
+
   Save
-  
+
 End
 
 Private Sub InsertProperty()
-  
+
   Dim iPos As Integer
   Dim bStatic As Boolean
   Dim bRead As Boolean
@@ -708,84 +712,84 @@ Private Sub InsertProperty()
   Dim sType As String
   Dim iLine As Integer
   Dim iCol As Integer
-  
+
   If Highlight.Symbols[0] = "STATIC" Then
     bStatic = True
     iPos = 2
   Else
     iPos = 1
   Endif
-  
-  If Highlight.Symbols[iPos] = "READ" Then 
-    bRead = True 
+
+  If Highlight.Symbols[iPos] = "READ" Then
+    bRead = True
     Inc iPos
   Endif
-  
+
   sName = Highlight.Symbols[iPos]
-  If sName = "{" Then 
+  If sName = "{" Then
     Inc iPos
-    If Highlight.Types[iPos] <> Highlight.Symbol Then Return 
+    If Highlight.Types[iPos] <> Highlight.Symbol Then Return
     sName = Highlight.Symbols[iPos]
     Inc iPos
     If Highlight.Symbols[iPos] <> "}" Then Return
-  Else 
-    If Highlight.Types[iPos] <> Highlight.Symbol Then Return 
+  Else
+    If Highlight.Types[iPos] <> Highlight.Symbol Then Return
   Endif
-  
+
   Inc iPos
   If Highlight.Symbols[iPos] <> "AS" Then Return
   Inc iPos
   sType = Highlight.Symbols[iPos]
-  If Highlight.Types[iPos] <> Highlight.DataType Then Return 
+  If Highlight.Types[iPos] <> Highlight.DataType Then Return
   Inc iPos
   If Highlight.Symbols.Max >= iPos Then
     If Highlight.Symbols[iPos] = "[" Then
       sType &= "[]"
     Endif
   Endif
-  
+
   iLine = Editor.Line
   iCol = Editor.Column
-  
+
   InsertFunction(sName & "_Read", sType, False, "", bStatic)
   If Not bRead Then
     InsertFunction(sName & "_Write", "", False, "Value AS " & sType, bStatic)
   Endif
-  
+
   Editor.Goto(iLine, iCol)
-  
+
 Catch
-  
+
 End
 
 Private Sub CheckCodeSnippet() As Boolean
-  
+
   Dim sLine As String
   Dim iPos As Integer
   Dim sCar As String
   Dim iLine, iCol As Integer
-  
+
   If Settings["/Editor/CodeSnippet", 1] = 0 Then Return
-  
+
   If Not $hSampleCode Then
-    
+
     If Editor.Column < Editor.Lines[Editor.Line].Length Then Return
-    
+
     sLine = String.Left(Editor.Lines[Editor.Line].Text, Editor.Column)
     For iPos = 1 To Len(sLine)
       If Not IsSpace(Mid$(sLine, iPos, 1)) Then Break
     Next
     If iPos > Len(sLine) Then Return
-    
+
     sLine = String.Mid$(sLine, iPos)
-    
+
     CSampleCode.Init
     $hSampleCode = CSampleCode.All[sLine]
     If Not $hSampleCode Then Return
-    
+
     $iSampleStart = Editor.Line
     $iSampleEnd = $iSampleStart + $hSampleCode.GetLineCount()
-    
+
     Editor.Begin
     Editor.Remove(Editor.Line, Editor.Column - String.Len(sLine), Editor.Line, Editor.Column)
     iLine = Editor.Line
@@ -795,41 +799,41 @@ Private Sub CheckCodeSnippet() As Boolean
     'Editor.Insert($hSampleCode.Make(iIndent), Editor.Line, Editor.Column)
     Editor.Goto(iLine, iCol)
     Editor.End
-    
+
   Endif
-  
+
   If $hSampleCode.GotoNextPos(Editor, $iSampleStart, $iSampleEnd, $iSamplePos) Then
     $hSampleCode = Null
     Return CheckCodeSnippet()
   Endif
-  
+
   Return True
-  
+
 End
 
 Private Sub SymbolBegins(aSym As String[], sWith As String) As Boolean
-  
+
   Dim aWith As String[] = Split(UCase(Trim(sWith)), " ")
   Dim iInd As Integer
-  
+
   For iInd = 0 To aWith.Max
     If aSym[iInd] <> aWith[iInd] Then Return False
   Next
-  
+
   Return True
-  
+
 Catch
-  
+
 End
 
 Private Sub DoStructControlCompletion(iLine As Integer, sLine As String, aSymbol As String[]) As Boolean
-  
+
   Dim bIndent, bUnindent As Boolean
   Dim sClose, sClose2 As String
   Dim iPos, iInd As Integer
   Dim iIndent As Integer
   Dim sIndent As String
-  
+
   If aSymbol.Count >= 1 Then
     If aSymbol[0] = "IF" And If aSymbol[aSymbol.Max] = "THEN" Then
       bIndent = True
@@ -849,11 +853,11 @@ Private Sub DoStructControlCompletion(iLine As Integer, sLine As String, aSymbol
       Endif
     Endif
   Endif
-  
+
   If bIndent Then
-    
+
     iIndent = Editor.GetIndent(sLine)
-    
+
     If sClose Then
       For iInd = Editor.Line + 1 To Editor.Lines.Count - 1
         sLine = Editor.Lines[iInd].Text
@@ -862,15 +866,15 @@ Private Sub DoStructControlCompletion(iLine As Integer, sLine As String, aSymbol
         If iPos < iIndent Then Break
         If iPos > iIndent Then Continue
         Highlight.Analyze(sLine)
-        If SymbolBegins(Highlight.Symbols, sClose) Then 
+        If SymbolBegins(Highlight.Symbols, sClose) Then
           sClose = ""
-        Else If sClose2 And If SymbolBegins(Highlight.Symbols, sClose2) Then 
+        Else If sClose2 And If SymbolBegins(Highlight.Symbols, sClose2) Then
           sClose = ""
         Endif
         Break
       Next
     Endif
-    
+
     Editor.Begin
     If bUnindent And If Not Key.Shift Then
       If IsSpace(Left(sLine, Project.TabSize)) Then
@@ -889,12 +893,11 @@ Private Sub DoStructControlCompletion(iLine As Integer, sLine As String, aSymbol
     Stop Event
     Return True
   Endif
-  
+
 End
 
-
 Public Sub Editors_KeyPress()
-  
+
   Dim sLine As String
   Dim iLine As Integer
   Dim iCol As Integer
@@ -907,94 +910,94 @@ Public Sub Editors_KeyPress()
   Dim iIndent As Integer
   Dim sIndent As String
   Dim sClose, sClose2 As String
-  
+
   If Not Editor.ReadOnly Then
-    
+
     iLine = Editor.Line
-    
+
     If FCompletion.VisibleFrom(Editor) Then
       bStop = FCompletion.ManageKey()
     Endif
-    
+
     If FSignature.VisibleFrom(Editor) Then
       bStop = bStop Or FSignature.ManageKey()
       'IF Key.Text THEN CheckSignature(Key.Text)
     Endif
-    
+
     If bStop Then
       Stop Event
       Return
     Endif
-    
+
   Endif
-  
+
   If Key.Code = Key.F6 Then
-    
+
     ToggleProcList
     Stop Event
-    
+
   Else If Key.Code = Key.F2 Then
-    
+
     If Key.Shift Then
       Project.LastPosition
     Else If Key.Normal Then
       FindDefinition
     Endif
-    
+
     Stop Event
-    
+
   Else If Key.Code = Key.Pause Then
-    
+
     '     IF Key.Alt THEN
     '       Design.Stop
     '       STOP EVENT
     '     ENDIF
-    
+
   Else If Key.Code = Key.Insert Then
-    
+
     If Key.Shift Then
       If Not Editor.ReadOnly Then
         Editor.Paste
         Stop Event
-      Endif 
+      Endif
     Else If Key.Control Then
       Editor.Copy
       Stop Event
-    Endif 
-    
+    Endif
+
   Else If Key.Code = Key.Delete Then
-    
+
     If Key.Shift Then
       If Not Editor.ReadOnly Then
         Editor.Cut
         Stop Event
-      Endif 
-    Endif 
-    
+      Endif
+    Endif
+
   Else If Key.Control Then
-    
+
     If Key.Code = Key["A"] Then
-      
+
       mnuSelectAll_Click
       Stop Event
-      
-    ' Else If Key.Code = Key.Up Then
-    '   
-    '   GotoPreviousProc
-    '   Stop Event
-    '   
-    ' Else If Key.Code = Key.Down Then
-    '   
-    '   GotoNextProc
-    '   Stop Event
-      
-    Else If Key.Code = Key.Home Or Key.Code = Key.End Then 
-      
+
+      ' Else If Key.Code = Key.Up Then
+      '
+      '   GotoPreviousProc
+      '   Stop Event
+      '
+      ' Else If Key.Code = Key.Down Then
+      '
+      '   GotoNextProc
+      '   Stop Event
+
+    Else If Key.Code = Key.Home Or Key.Code = Key.End Then
+
       Project.SavePosition()
-      
-    Else If Key.Code = Key.Return Then 
-      
-      If Key.Shift Then 
+
+    Else If Key.Code = Key.Return Then
+
+      If Key.Shift Then
         If Editor.Lines[Editor.Line].Expanded Then
           Editor.CollapseAll
         Else
@@ -1004,21 +1007,21 @@ Public Sub Editors_KeyPress()
         Editor.Lines[Editor.Line].Expanded = Not Editor.Lines[Editor.Line].Expanded
       Endif
       Stop Event
-      
+
     Endif
-    
+
     Return
-    
+
   Endif
-  
+
   If Editor.ReadOnly Then Return
-  
+
   If Asc(Key.Text) = 13 Then
-    
+
     sLine = Editor.Lines[iLine].Text
-    
+
     If IsComment(sLine) And If Not Key.Shift Then
-      
+
       iInd = Editor.GetIndent(sLine)
       iPos = iInd + 1
       While Mid$(sLine, iPos, 1) = "'"
@@ -1028,300 +1031,298 @@ Public Sub Editors_KeyPress()
         Inc iPos
       Wend
       Editor.Insert("\n" & Left$(sLine, iPos - 1))
-      
+
       Stop Event
       Return
-      
+
     Endif
-    
+
     If Editor.Column < String.Len(sLine) Then Return
-    
+
     If IsProc(sLine) And If Not Key.Shift Then
-      
+
       For iInd = iLine + 1 To Editor.Lines.Count - 1
         sLine = Editor.Lines[iInd].Text
         If IsEndProc(sLine) Then Return
         If IsProc(sLine) Then Break
       Next
-      
+
       sLine = Trim(Editor.Lines[iLine].Text)
-      
+
       If InStr(sLine, "(") = 0 Then Editor.Insert("()")
       Editor.Insert(Replace("\n \n \n \nEND\n", " ", Space$(Project.TabSize)))
       'edtEditor.Line = iLine + 2
       'edtEditor.Column = 2
       Editor.Goto(iLine + 2, 2)
-      
+
       Stop Event
       Return
-      
+
     Endif
-    
+
     aSymbol = Highlight.Symbols
-    
+
     If aSymbol.Count >= 4 Then
       If aSymbol[0] = "PROPERTY" Or If aSymbol[0] = "STATIC" And aSymbol[1] = "PROPERTY" Then
         InsertProperty
         Return
       Endif
     Endif
-    
+
     If DoStructControlCompletion(iLine, sLine, aSymbol) Then Return
-    
+
   Else If Key.Code = Key.Space Then
-    
+
     CheckCompletion(" ")
     $bCheckSignature = True
-    
+
   Else If Key.Code = Key.Backspace Then
-    
+
     CheckCompletion("<")
     $bCheckSignature = True
-    
+
   Else If Key.Text = "." Then
-    
+
     CheckCompletion(".")
-    
+
     ' Else If Key.Text = "_" Then
-    ' 
+    '
     '   CheckCompletion("_")
-    ' 
+    '
   Else If InStr("(),[]", Key.Text) Then
-    
+
     $bCheckSignature = True
-    
+
   Else If InStr(IDENT_CAR, Key.Text) Then
-    
+
     CheckCompletion("A")
-    
+
   Else If Key.Code = Key.Tab Then
-    
+
     If Not Editor.Selected Or If Editor.Selection.StartLine = Editor.Selection.EndLine Then
       If CheckCodeSnippet() Then Stop Event
     Endif
-    
+
   Endif
-  
+
 End
 
 Static Public Function IsCurrentProc() As Boolean
-  
+
   Dim aLine As String[]
   Dim bProc As Boolean
   Dim iPos As Integer
-  
+
   aLine = Highlight.Symbols
-  
+
   $bPublic = False
   $bStatic = False
   $sName = ""
-  
+
   For iPos = 0 To aLine.Count - 1
-    
+
     If aLine[iPos] = "PUBLIC" Then
       $bPublic = True
       Continue
     Endif
-    
+
     If aLine[iPos] = "PRIVATE" Then
       $bPublic = False
       Continue
     Endif
-    
+
     If aLine[iPos] = "STATIC" Then
       $bStatic = True
       Continue
     Endif
-    
+
     If aLine[iPos] = "SUB" Then
       bProc = True
-      Break 
+      Break
     Endif
-    
+
     If aLine[iPos] = "PROCEDURE" Then
       bProc = True
       Break
     Endif
-    
+
     If aLine[iPos] = "FUNCTION" Then
       bProc = True
       Break
     Endif
-    
+
     Break
-    
+
   Next
-  
+
   If Not bProc Then Return
-  
+
   Inc iPos
   If iPos >= aLine.Count Then Return
-  
+
   $sName = aLine[iPos]
-  If $sName = "{" Then 
+  If $sName = "{" Then
     Inc iPos
     If iPos >= aLine.Count Then Return
     $sName = aLine[iPos + 1]
   Endif
-  
+
   Return True
-  
+
 End
 
 Static Public Function IsProc(sLine As String) As Boolean
-  
+
   Highlight.Analyze(sLine)
   Return IsCurrentProc()
-  
+
 End
 
 Static Public Sub IsComment(sLine As String) As Boolean
-  
+
   Return Left(LTrim(sLine)) = "'"
-  
+
 End
 
-
 Static Public Sub IsCurrentEndProc() As Boolean
-  
+
   Dim aLine As String[]
-  
+
   aLine = Highlight.Symbols
-  
+
   If aLine.Count = 1 Then Return aLine[0] = "END"
   If aLine.Count = 2 Then Return aLine[0] = "END" And (aLine[1] = "PROCEDURE" Or aLine[1] = "FUNCTION" Or aLine[1] = "SUB")
-  
+
 End
 
 Static Public Function IsEndProc(sLine As String) As Boolean
-  
+
   Highlight.Analyze(sLine)
   Return IsCurrentEndProc()
-  
+
 End
 
 Public Function CanSetBreakpoint(iLine As Integer) As Boolean
-  
+
   Dim sLine As String
   Dim iPos As Integer
-  
+
   If iLine < 0 Or If iLine >= Editor.Lines.Count Then Return
-  
+
   'Editor.Lines[iLine].Refresh
   sLine = Trim(Editor.Lines[iLine].Text)
   iPos = InStr(sLine, "'")
   If iPos Then sLine = Trim(Left$(sLine, iPos - 1))
   If Len(Trim(sLine)) = 0 Then Return False
-  
-  If $cProc.Count Then 
+
+  If $cProc.Count Then
     If iLine < $iFirstProcLine Then Return False
     If iLine = $cProc[btnProc.Text] Then Return False
-  Else 
+  Else
     If GetCurrentProcLine(iLine) < 0 Then Return False
     If IsProc(Editor.Lines[iLine].Text) Then Return False
   Endif
-  
+
   Return True
-  
+
 End
 
 Public Sub SetBreakpoint(iLine As Integer, bVal As Boolean) As Boolean
-  
+
   If bVal And If Not CanSetBreakpoint(iLine) Then Return True
-  
+
   ' Update debug window
   FDebugInfo.AddBreakpoint(Me.Name, GetProcAt(iLine), iLine, bVal)
-  
+
   'Editor.Lines.SetFlag(iLine, Editor.Breakpoint, bVal)
   Editor.Lines[iLine].Breakpoint = bVal
-  If iLine = Editor.Line Then RefreshLineInfo(True) 
-  
+  If iLine = Editor.Line Then RefreshLineInfo(True)
+
 End
 
 Private Sub HasBreakpoint(iLine As Integer) As Boolean
-  
+
   Return Editor.Lines[iLine].Breakpoint
-  
+
 End
 
 Public Sub CheckBreakpoints()
-  
+
   Dim iLine As Integer
-  
+
   Do
-    
+
     iLine = Editor.FindNextBreakpoint(iLine)
     If iLine < 0 Then Break
-    
+
     If Not CanSetBreakpoint(iLine) Then SetBreakpoint(iLine, False)
     Inc iLine
-    
+
   Loop
-  
+
 End
 
-
 Public Function GetBreakpoints(Optional bCheck As Boolean) As Integer[]
-  
+
   Dim aBreak As New Integer[]
   Dim iLine As Integer
-  
+
   If bCheck Then CheckBreakpoints
-  
+
   Do
-    
+
     iLine = Editor.FindNextBreakpoint(iLine)
     If iLine < 0 Then Break
-    
+
     'If CanSetBreakpoint(iLine) Then
-      aBreak.Add(iLine)
-      'Else 
-      '  SetBreakpoint(iLine, False)
+    aBreak.Add(iLine)
+    'Else
+    '  SetBreakpoint(iLine, False)
     'Endif
     Inc iLine
-    
+
   Loop
-  
+
   'PRINT Me.Name; ":"; cBreak.Count; " Breakpoint(s)"
-  
+
   Return aBreak
-  
+
 End
 
 Public Sub Rename(sNewName As String, sNewPath As String)
-  
+
   Me.Name = sNewName
   Path = sNewPath 'File.Dir(Path) &/ sNewName & "." & File.Ext(Path)
   DrawTitle
-  
+
 End
 
 Private Sub StoreSelection()
-  
+
   With Editor
     $iStartLine = .Selection.StartLine
     $iEndLine = .Selection.EndLine
     If .Selection.EndColumn > 0 Or Not .Selected Then Inc $iEndLine
   End With
-  
+
 End
 
 Private Sub RecallSelection()
-  
+
   Editor.Select($iStartLine, 0, $iEndLine, 0)
-  
+
 End
 
 Private Sub GetIndentWidth(iStart As Integer, iEnd As Integer) As Integer
-  
+
   Dim iLine As Integer
   Dim sLine As String
   Dim iInd As Integer
   Dim iIndent As Integer = 0
-  
+
   For iLine = iStart To iEnd - 1
     sLine = Editor.Lines[iLine].Text
-    If LTrim(sLine) Then 
+    If LTrim(sLine) Then
       iInd = Len(sLine) - Len(LTrim(sLine))
       If iIndent = 0 Then
         iIndent = iInd
@@ -1331,13 +1332,13 @@ Private Sub GetIndentWidth(iStart As Integer, iEnd As Integer) As Integer
       If iIndent = 0 Then Break
     Endif
   Next
-  
+
   Return iIndent
-  
+
 End
 
 Public Sub mnuComment_Click()
-  
+
   Dim iStart As Integer
   Dim iLength As Integer
   Dim iStartLine As Integer
@@ -1345,192 +1346,192 @@ Public Sub mnuComment_Click()
   Dim iLine As Integer
   Dim sText As String
   Dim iIndent As Integer
-  
+
   If Editor.ReadOnly Then Return
   'IF NOT Editor.Selected THEN RETURN
-  
+
   If Editor.Selected Then
     StoreSelection
-    
+
     iIndent = GetIndentWidth($iStartLine, $iEndLine)
-    
+
     Editor.Begin
     For iLine = $iStartLine To $iEndLine - 1
       Editor.Lines[iLine].Text = Space$(iIndent) & "' " & Mid$(Editor.Lines[iLine].Text, iIndent + 1)
     Next
     Editor.End
     'Modify
-    
+
     RecallSelection
-  Else 
+  Else
     'Comment only the current line
     iLine = Editor.Line
     Editor.Lines[iLine].Text = Space$(iIndent) & "' " & Mid$(Editor.Lines[iLine].Text, iIndent + 1)
-  Endif 
-  
+  Endif
+
 End
 
 Public Sub mnuUncomment_Click()
-  
+
   Dim iStart As Integer
   Dim iLength As Integer
   Dim iBack As Integer
   Dim iLine As Integer
   Dim sLine As String
   Dim iIndent As Integer
-  
+
   If Editor.ReadOnly Then Return
   'IF NOT Editor.Selected THEN RETURN
-  
-  If Editor.Selected Then 
+
+  If Editor.Selected Then
     StoreSelection
-    
+
     iIndent = GetIndentWidth($iStartLine, $iEndLine)
-    
+
     For iLine = $iStartLine To $iEndLine - 1
       sLine = Editor.Lines[iLine].Text
       If Len(sLine) < (iIndent + 1) Then Break
       If Left(LTrim(sLine), 1) <> "'" Then Break
     Next
-    
+
     If iLine = $iEndLine Then
       Editor.Begin
       For iLine = $iStartLine To $iEndLine - 1
-        If Left(LTrim(Editor.Lines[iLine].Text), 2) = "' " Then 
+        If Left(LTrim(Editor.Lines[iLine].Text), 2) = "' " Then
           Editor.Lines[iLine].Text = Space$(iIndent) & Mid$(LTrim(Editor.Lines[iLine].Text), 3)
-        Else 
+        Else
           Editor.Lines[iLine].Text = Space$(iIndent) & Mid$(LTrim(Editor.Lines[iLine].Text), 2)
-        Endif 
+        Endif
       Next
       Editor.End
       'Modify
     Endif
-    
+
     RecallSelection
-  Else 
+  Else
     iLine = Editor.Line
     sLine = Editor.Lines[iLine].Text
-    If Len(sLine) < (iIndent + 1) Then Return 
-    If Left(LTrim(sLine), 1) <> "'" Then Return 
-    If Left(LTrim(Editor.Lines[iLine].Text), 2) = "' " Then 
+    If Len(sLine) < (iIndent + 1) Then Return
+    If Left(LTrim(sLine), 1) <> "'" Then Return
+    If Left(LTrim(Editor.Lines[iLine].Text), 2) = "' " Then
       Editor.Lines[iLine].Text = Space$(iIndent) & Mid$(LTrim(Editor.Lines[iLine].Text), 3)
-    Else 
+    Else
       Editor.Lines[iLine].Text = Space$(iIndent) & Mid$(LTrim(Editor.Lines[iLine].Text), 2)
-    Endif 
-  Endif 
-  
+    Endif
+  Endif
+
 End
 
 Public Sub mnuCut_Click()
-  
+
   Editor.Cut
-  
+
 End
 
 Public Sub mnuCopy_Click()
-  
+
   Editor.Copy
-  
+
 End
 
 Public Sub mnuPaste_Click()
-  
+
   Editor.Paste
-  
+
 End
 
 Public Sub mnuPasteSpecial_Click()
-  
+
   FPasteSpecial.Run(Editor)
-  
+
 End
 
 Public Sub mnuUndo_Click()
-  
+
   HideCompletion
   HideSignature
   Editor.Undo
-  
+
 End
 
 Public Sub mnuRedo_Click()
-  
+
   HideCompletion
   HideSignature
   Editor.Redo
-  
+
 End
 
 Public Sub mnuForm_Click()
-  
+
   Project.OpenForm(Me.Name, $sModule)
-  
+
 End
 
 Public Sub mnuGotoLine_Click()
-  
+
   Dim iLine As Integer
-  
+
   iLine = FGotoLine.Run(Editor.Line + 1)
   If iLine <= 0 Then Return
   GotoCenter(iLine - 1, 0, True)
-  
+
 End
 
 Public Sub Form_Hide()
-  
+
   HideCompletion
   'Project.Deactivate(ME)
-  
+
 End
 
 Public Sub mnuSelectAll_Click()
-  
+
   Editor.SelectAll
-  
+
 End
 
 Private Sub GotoPreviousProc()
-  
+
   Dim iInd As Integer
-  
+
   Project.SavePosition
-  
+
   For iInd = Editor.Line - 2 To 0 Step -1
     If IsProc(Editor.Lines[iInd].Text) Then
       Me.Goto(iInd, Editor.Column, True)
       Return
     Endif
   Next
-  
+
   Me.Goto(0, Editor.Column)
-  
+
 End
 
 Private Sub GotoNextProc()
-  
+
   Dim iInd As Integer
-  
+
   Project.SavePosition
-  
+
   For iInd = Editor.Line + 1 To Editor.Lines.Count - 1
-    
+
     If IsProc(Editor.Lines[iInd].Text) Then
       Me.Goto(iInd, Editor.Column, True)
       Return
     Endif
-    
+
   Next
-  
+
   Me.Goto(Editor.Lines.Count - 1, Editor.Column)
-  
+
 End
 
 ' PUBLIC SUB btnGoto_Click()
-' 
+'
 '   CreateMenu
 '   mnuGoto.Popup(btnGoto.ScreenX, btnGoto.ScreenY + btnGoto.H)
-' 
+'
 ' END
 
 '' +Description
@@ -1543,15 +1544,15 @@ End
 '' This function returns the datatype of the symbol.
 
 Static Public Function ReadSymbolType(aSym As String[], iIndex As Integer, Optional sSymbol As String) As String
-  
+
   Dim sType As String
   Dim bArray As Boolean
-  
+
   If sSymbol Then
     If UCase(aSym[iIndex]) <> UCase(sSymbol) Then Return
     Inc iIndex
   Endif
-  
+
   If aSym[iIndex] = "[" Then
     While iIndex < aSym.Count
       If aSym[iIndex] = "]" Then Break
@@ -1561,26 +1562,26 @@ Static Public Function ReadSymbolType(aSym As String[], iIndex As Integer, Optio
     Inc iIndex
     bArray = True
   Endif
-  
+
   If aSym[iIndex] <> "AS" Then Return
   Inc iIndex
   If aSym[iIndex] = "NEW" Then Inc iIndex
   If aSym[iIndex] = "STRUCT" Then Inc iIndex
-  
+
   sType = aSym[iIndex]
   sType = UCase(Left(sType)) & Mid$(sType, 2)
-  
+
   If (iIndex + 2) < aSym.Count Then
     If aSym[iIndex + 1] = "[" Then bArray = True
   Endif
-  
+
   If bArray Then Return sType & "[]"
-  
+
   If $cType.Exist(sType) Then sType = $cType[sType]
   Return sType
-  
+
 Catch
-  
+
 End
 
 '' +Description
@@ -1594,72 +1595,72 @@ End
 '' This function returns [TRUE] if the symbol has been found, [FALSE] otherwise.
 
 Static Public Function ReadLocalSymbolType(aSym As String[], iIndex As Integer, sSymbol As String, hSymbol As CSymbolInfo) As Boolean
-  
+
   Dim sType As String
   Dim sWait As String
   Dim sSym As String
-  
+
   Do
-    
+
     If UCase(aSym[iIndex]) = UCase(sSymbol) Then
-      
+
       hSymbol.Name = aSym[iIndex]
-      
+
       Inc iIndex
-      
+
       Do
         If aSym[iIndex] = "AS" Then Break
         Inc iIndex
       Loop
-      
+
       Inc iIndex
       If aSym[iIndex] = "NEW" Then Inc iIndex
-      
+
       sType = aSym[iIndex]
       sType = UCase(Left(sType)) & Mid$(sType, 2)
-      
+
       If (iIndex + 2) < aSym.Count Then
         If aSym[iIndex + 1] = "[" Then 'AND aSym[iIndex + 2] = "]" THEN
-        hSymbol.Type = sType & "[]"
-        Return True
+          hSymbol.Type = sType & "[]"
+          Return True
+        Endif
+
+        If $cType.Exist(sType) Then sType = $cType[sType]
+
       Endif
-      
-      If $cType.Exist(sType) Then sType = $cType[sType]
-      
+
+      hSymbol.Type = sType
+      Return True
     Endif
-    
-    hSymbol.Type = sType
-    Return True
-  Endif
-  
-  Do
+
+    Do
+      Inc iIndex
+      sSym = aSym[iIndex]
+      If sWait Then
+        If sSym = sWait Then
+          sWait = ""
+        Endif
+      Else If sSym = "(" Then
+        sWait = ")"
+      Else If sSym = "[" Then
+        sWait = "]"
+      Else If aSym[iIndex] = "," Then
+        Break
+      Endif
+    Loop
+
     Inc iIndex
-    sSym = aSym[iIndex] 
-    If sWait Then
-      If sSym = sWait Then
-        sWait = ""
-      Endif
-    Else If sSym = "(" Then 
-      sWait = ")"
-    Else If sSym = "[" Then
-      sWait = "]"
-    Else If aSym[iIndex] = "," Then 
-      Break
-    Endif
+
   Loop
-  
-  Inc iIndex
-  
-Loop
 
 Catch
 
 End
 
 Public Sub GetLastSymbolDesc() As CSymbolInfo
-  
+
   Return $hSymbol
-  
+
 End
 
 '' +Description
@@ -1671,7 +1672,7 @@ End
 '' The datatype of the symbol is returned, or [NULL] if the symbol is not found.
 
 Public Function GetSymbolType(sSymbol As String, Optional bPoint As Boolean) As String
-  
+
   Dim iLine As Integer
   Dim iInd As Integer
   Dim iPos As Integer
@@ -1680,24 +1681,24 @@ Public Function GetSymbolType(sSymbol As String, Optional bPoint As Boolean) As 
   Dim sType As String
   Dim sPath As String
   Dim hForm As Object
-  
+
   'sSymbol = UCase(sSymbol)
   $bLastStatic = False
   $hSymbol = Null
-  
+
   If sSymbol = "ME" Then Return Me.Name
-  
+
   If sSymbol = "SUPER" Then
     CComponent.GetClassSymbols(Me.Name)
     Return ParentClass
   Endif
-  
+
   If Left(sSymbol) = "{" And If Right(sSymbol) = "}" Then sSymbol = Mid$(sSymbol, 2, -1)
-  
+
   ' Look for local variables
-  
+
   iLine = Editor.Line
-  
+
   Do
     Dec iLine
     If iLine < 0 Then Return
@@ -1726,11 +1727,11 @@ Public Function GetSymbolType(sSymbol As String, Optional bPoint As Boolean) As 
     Endif
     If IsCurrentProc() Then Break
   Loop
-  
+
   ' Look for parameters
-  
+
   For iInd = 0 To aSym.Count - 3
-    
+
     sType = ReadSymbolType(aSym, iInd, sSymbol)
     If sType Then
       With $hVirtualSymbol
@@ -1744,17 +1745,17 @@ Public Function GetSymbolType(sSymbol As String, Optional bPoint As Boolean) As 
       $hSymbol = $hVirtualSymbol
       Return sType
     Endif
-    
+
   Next
-  
+
   'IF UCase($sName) = UCase(sSymbol) THEN
   '  GOTO RETURN_FUNCTION
   'ENDIF
-  
+
   'PRINT "GetSymbolType: "; sSymbol
-  
+
   ' Look for private symbols
-  
+
   Try $hSymbol = CComponent.GetClassSymbols(Me.Name)[sSymbol]
   If Not Error Then
     If $hSymbol Then
@@ -1767,49 +1768,49 @@ Public Function GetSymbolType(sSymbol As String, Optional bPoint As Boolean) As 
           Return $hSymbol.Type
         Endif
       Endif
-      
+
       $hSymbol = Null
-      
+
     Endif
   Endif
-  
+
   ' Look for subroutines
-  
+
   If Not bPoint Then
     $hSymbol = CComponent.GetClassSymbols(".")[sSymbol]
     If $hSymbol Then
       Return $hSymbol.Type
     Endif
   Endif
-  
+
   ' Look for static classes
-  
+
   $bLastStatic = True
-  
+
   If CComponent.Classes.Exist(sSymbol) Then
     'TRY $hSymbol = CComponent.GetClassSymbols(sSymbol)["_call"]
     Return sSymbol
   Endif
-  
+
   ' Look for project classes
-  
+
   If Project.Exist(sSymbol) Then
     If Project.ExistForm(sSymbol) Then $bLastStatic = False
     Return sSymbol
   Endif
-  
+
 End
 
 Private Sub GetSymbolWith(aExpr As String[], aType As Integer[], Optional iInd As Integer = -1)
-  
+
   Dim iLine As Integer
   Dim aWith As String[]
   Dim aWithType As Integer[]
   Dim iLevel As Integer
   Dim iAssign As Integer
-  
+
   iLine = Editor.Line
-  
+
   Do
     Dec iLine
     If iLine < 0 Then Break
@@ -1820,7 +1821,7 @@ Private Sub GetSymbolWith(aExpr As String[], aType As Integer[], Optional iInd A
           aWithType = Highlight.Types
           aWith.Remove(0)
           aWithType.Remove(0)
-          
+
           For iAssign = 0 To aWith.Max
             If Right(aWith[iAssign]) = "=" Then
               aWith.Remove(iAssign, -1)
@@ -1828,7 +1829,7 @@ Private Sub GetSymbolWith(aExpr As String[], aType As Integer[], Optional iInd A
               Break
             Endif
           Next
-          
+
           aExpr.Insert(aWith, iInd)
           aType.Insert(aWithType, iInd)
           Return
@@ -1843,11 +1844,11 @@ Private Sub GetSymbolWith(aExpr As String[], aType As Integer[], Optional iInd A
     Endif
     If IsCurrentProc() Then Break
   Loop
-  
+
 End
 
 Private Function IsTypeSymbol(sPattern As String, iType As Integer) As Boolean
-  
+
   If iType = Highlight.Symbol Then Return True
   If iType = Highlight.DataType Then Return True
   If iType = Highlight.Function Then Return True
@@ -1856,18 +1857,18 @@ Private Function IsTypeSymbol(sPattern As String, iType As Integer) As Boolean
     If sPattern = "SUPER" Then Return True
     If sPattern = "LAST" Then Return True
   Endif
-  
+
 End
 
 Private Sub GetExpressionStart(aExpr As String[], aType As Integer[]) As Integer
-  
+
   Dim iInd As Integer
   Dim aWait As New String[]
   Dim sPattern As String
   Dim bLastSymbol As Boolean
 
   For iInd = aExpr.Max DownTo 0
-    
+
     sPattern = aExpr[iInd]
     If sPattern = ")" Then
       aWait.Push("(")
@@ -1892,20 +1893,19 @@ Private Sub GetExpressionStart(aExpr As String[], aType As Integer[]) As Integer
         Continue
       Endif
     Endif
-    
+
     Break
-    
+
   Next
-  
+
   Inc iInd
   ExpressionStart = iInd
   Return iInd
-  
+
 End
 
-
 Public Function GetExpressionType(aExpr As String[], aType As Integer[], bPointAfter As Boolean) As String
-  
+
   Dim aWith As String[]
   Dim iInd As Integer
   Dim aWait As New String[]
@@ -1914,19 +1914,19 @@ Public Function GetExpressionType(aExpr As String[], aType As Integer[], bPointA
   Dim sType As String
   Dim iType As Integer
   Dim cSymbol As Collection
-  
+
   Dim bNeedMethod As Boolean
   Dim bNeedArray As Boolean
   Dim bFoundMethod As Boolean
-  
+
   $hSymbol = Null
-  
+
   ' 'IF aExpr.Count = 0 THEN RETURN
-  ' 
+  '
   ' iInd = aExpr.Count - 1
-  ' 
+  '
   ' For iInd = iInd To 0 Step -1
-  '   
+  '
   '   sPattern = aExpr[iInd]
   '   If sPattern = ")" Then
   '     aWait.Push("(")
@@ -1951,18 +1951,18 @@ Public Function GetExpressionType(aExpr As String[], aType As Integer[], bPointA
   '       Continue
   '     Endif
   '   Endif
-  '   
+  '
   '   Break
-  '   
+  '
   ' Next
-  ' 
+  '
   ' aWait.Clear
   ' Inc iInd
-  
+
   iInd = GetExpressionStart(aExpr, aType)
-  
+
   If iInd >= aExpr.Count Then
-    
+
     If iInd > 0 Then
       If Not bPointAfter Then Return
       Select Case aType[iInd - 1]
@@ -1971,20 +1971,20 @@ Public Function GetExpressionType(aExpr As String[], aType As Integer[], bPointA
           Return
       End Select
     Endif
-    
+
     GetSymbolWith(aExpr, aType)
     'PRINT "#1 WITH: "; aExpr.Join("/")
-    
+
   Else If aExpr[iInd] = "." Then
     GetSymbolWith(aExpr, aType, iInd)
     'PRINT "#2 WITH: "; aExpr.Join("/")
   Endif
-  
+
   For iInd = iInd To aExpr.Count - 1
-    
+
     sPattern = aExpr[iInd]
     'PRINT sPattern
-    
+
     If sPattern = "(" Then
       'INC $bInMethod
       aWait.Push(")")
@@ -2000,7 +2000,7 @@ Public Function GetExpressionType(aExpr As String[], aType As Integer[], bPointA
         Continue
       Endif
     Endif
-    
+
     'IF aType[iInd] = Editor.Symbol OR aType[iInd] = Editor.DataType OR aType[iInd] = Editor.Keyword THEN
     If IsTypeSymbol(sPattern, aType[iInd]) Then
       If Not sType Then
@@ -2055,16 +2055,16 @@ Public Function GetExpressionType(aExpr As String[], aType As Integer[], bPointA
       sType = $hSymbol.Type
       $bLastStatic = False ' A method cannot return static classes
     Endif
-    
+
   Next
-  
+
   If bNeedMethod Then Return
   Return sType
-  
+
 End
 
 Private Sub CheckCompletion(sMode As String)
-  
+
   'DIM sMode AS String
   Dim sLine As String
   Dim sType As String
@@ -2073,10 +2073,10 @@ Private Sub CheckCompletion(sMode As String)
   Dim sWord As String
   Dim iPos As Integer
   Dim eTime As Float
-  
+
   If Not $bCompletion Then Return
   If Editor.Selected Then Return
-  
+
   'IF Key.Code = Key.Backspace THEN
   '  IF FCompletion.IsMine(edtEditor) THEN
   '    sMode = Mid$(sLig, edtEditor.Column - 1, 1)
@@ -2084,12 +2084,12 @@ Private Sub CheckCompletion(sMode As String)
   'ELSE
   '  sMode = Key.Text
   'ENDIF
-  
+
   'IF NOT sMode THEN RETURN
-  
+
   sLine = String.Left$(Highlight.Purge(Editor.Lines[Editor.Line].Text), Editor.Column)
   If Right$(RTrim(sLine)) = "'" Then Return
-  
+
   If sMode = " " Then
     If UCase(Right$(sLine, 3)) = " AS" Or UCase(Right$(sLine, 4)) = " NEW" Or UCase(Right$(sLine, 3)) = " IS" Then
       HideCompletion
@@ -2107,21 +2107,21 @@ Private Sub CheckCompletion(sMode As String)
       FCompletion.Open(Me, sMode, sType, $bLastStatic, False) 'LCase(sType) = LCase(ME.Name))
     Endif
   Else If sMode = "A" Then
-    If Not FCompletion.VisibleFrom(Editor) Then 
+    If Not FCompletion.VisibleFrom(Editor) Then
       sWord = GetIdentifier(sLine & Key.Text, Editor.Column + 1)
       If Len(sWord) >= 3 Then FCompletion.Open(Me, sMode, sWord)
       'IF Len(sWord) >= 3 THEN DEBUG FindCompletion(sWord).Join(" ")
     Endif
-  Else If sMode = "_" Then 
-    If Not FCompletion.VisibleFrom(Editor) Then 
+  Else If sMode = "_" Then
+    If Not FCompletion.VisibleFrom(Editor) Then
       sWord = GetIdentifier(sLine, Editor.Column)
-      If Len(sWord) >= 3 Then 
+      If Len(sWord) >= 3 Then
         FCompletion.Open(Me, "A", sWord & "_")
       Endif
       'IF Len(sWord) >= 3 THEN DEBUG FindCompletion(sWord).Join(" ")
     Endif
   Else If sMode = "<" Then
-    If Not Editor.Selected And If Editor.Column >= 1 And If Not FCompletion.VisibleFrom(Editor) Then 
+    If Not Editor.Selected And If Editor.Column >= 1 And If Not FCompletion.VisibleFrom(Editor) Then
       sLine = Left(sLine, -1)
       sWord = GetIdentifier(sLine, Editor.Column - 1)
       If Right(sLine) <> "." And If Len(sLine) > Len(sWord) And If Mid$(sLine, Len(sLine) - Len(sWord), 1) = "." Then
@@ -2130,37 +2130,37 @@ Private Sub CheckCompletion(sMode As String)
         CheckCompletion(".")
         FCompletion.SetText(sWord)
         Editor.Goto(Editor.Line, iPos)
-        Return 
-      Endif      
+        Return
+      Endif
       If Len(sWord) >= 3 Then FCompletion.Open(Me, sMode, sWord)
       'IF Len(sWord) >= 3 THEN DEBUG FindCompletion(sWord).Join(" ")
     Endif
   Else
     HideCompletion
   Endif
-  
+
 End
 
 Private Sub HideCompletion()
-  
+
   FCompletion.HideFrom(Editor)
-  
+
 End
 
 Private Function GetExpressionSignature(aExpr As String[], aType As Integer[]) As CSymbolInfo
-  
+
   Dim iInd As Integer
   Dim sWait As New String[]
   Dim sPattern As String
   Dim sType As String
   Dim bNew As Boolean
   Dim hClass As CClassInfo
-  
+
   $hSymbol = Null
   $iArgSignature = 0
-  
+
   For iInd = aExpr.Count - 1 To 0 Step -1
-    
+
     sPattern = aExpr[iInd]
     If sPattern = ")" Then
       sWait.Push("(")
@@ -2178,21 +2178,21 @@ Private Function GetExpressionSignature(aExpr As String[], aType As Integer[]) A
       Continue
     Else If sPattern = "(" Or sPattern = "[" Then
       Break
-    Else If sPattern = "," Then 
+    Else If sPattern = "," Then
       Inc $iArgSignature
     Endif
-    
+
   Next
-  
+
   If iInd < 1 Then Return
-  
+
   $iPosSignature = Editor.ToPosX(Highlight.Positions[iInd - 1])
-  
+
   If iInd >= 2 Then bNew = aExpr[iInd - 2] = "NEW"
-  
+
   aExpr.Remove(iInd, -1)
   aType.Remove(iInd, -1)
-  
+
   sType = GetExpressionType(aExpr, aType, False)
   'IF NOT $hSymbol THEN
   If sType Then
@@ -2207,7 +2207,7 @@ Private Function GetExpressionSignature(aExpr As String[], aType As Integer[]) A
       Try $hSymbol = CComponent.GetClassSymbols(sType)["_get"]
     Endif
   Endif
-  
+
   '   IF $hSymbol THEN
   '     IF $hSymbol.IsStatic() XOR $bLastStatic THEN
   '       hClass = CComponent.Classes[$hSymbol.Component &/ $hSymbol.Class]
@@ -2220,34 +2220,34 @@ Private Function GetExpressionSignature(aExpr As String[], aType As Integer[]) A
   '       ENDIF
   '     ENDIF
   '   ENDIF
-  
+
   'ENDIF
-  
+
   Return $hSymbol
-  
+
 End
 
 Private Function GetExpressionSymbol(aExpr As String[], aType As Integer[]) As CSymbolInfo
-  
+
   Dim iInd As Integer
   Dim sWait As New String[]
   Dim sPattern As String
   Dim sType As String
   Dim bNew As Boolean
   Dim hClass As CClassInfo
-  
+
   $hSymbol = Null
   If aExpr.Count = 0 Then Return
-  
+
   sPattern = aExpr[aExpr.Count - 1]
-  
+
   If InStr("[(", sPattern) Then
     aType.Remove(aExpr.Count - 1)
     aExpr.Remove(aExpr.Count - 1)
   Endif
-  
+
   If aExpr.Count >= 2 Then bNew = aExpr[aExpr.Count - 2] = "NEW"
-  
+
   sType = GetExpressionType(aExpr, aType, False)
   'IF NOT $hSymbol THEN
   'IF sPattern = "(" THEN
@@ -2259,7 +2259,7 @@ Private Function GetExpressionSymbol(aExpr As String[], aType As Integer[]) As C
   'ELSE IF sPattern = "[" THEN
   'TRY $hSymbol = CComponent.GetClassSymbols(sType)["_get"]
   'ENDIF
-  
+
   '   IF $hSymbol THEN
   '     IF $hSymbol.IsStatic() XOR $bLastStatic THEN
   '       hClass = CComponent.Classes[$hSymbol.Component &/ $hSymbol.Class]
@@ -2272,29 +2272,29 @@ Private Function GetExpressionSymbol(aExpr As String[], aType As Integer[]) As C
   '       ENDIF
   '     ENDIF
   '   ENDIF
-  
+
   'ENDIF
-  
+
   Return $hSymbol
-  
+
 End
 
 Private Sub CheckSignature(Optional sText As String)
-  
+
   Dim sLig As String
   Dim hSymbol As CSymbolInfo
   Dim sKind As String
-  
+
   If Not $bCompletion Then Return
-  
+
   'sLig = Left$(edtEditor.GetPurgedLine(edtEditor.Line), edtEditor.Column) & sText
   sLig = String.Left$(Highlight.Purge(Editor.Lines[Editor.Line].Text), Editor.Column) & sText
   Highlight.Analyze(sLig)
-  
+
   If Not IsCurrentProc() Then
-    
+
     hSymbol = GetExpressionSignature(Highlight.Symbols, Highlight.Types)
-    
+
     If hSymbol Then
       sKind = LCase(hSymbol.Kind)
       If InStr(":mx", sKind) Then
@@ -2305,138 +2305,139 @@ Private Sub CheckSignature(Optional sText As String)
       Endif
       Return
     Endif
-    
+
   Endif
-  
+
   HideSignature
-  
+
 End
 
 Private Sub HideSignature()
-  
+
   FSignature.HideFrom(Editor)
-  
+
 End
 
 Public Sub Editors_Scroll()
-  
+
   'PRINT "Scroll"
   HideCompletion
   HideSignature
   HideMessage
   timWatch_Timer
-  
+
 End
 
 Private Sub SetReadOnly()
-  
+
   edtEditor.ReadOnly = False
   If Project.ReadOnly Or If Project.Running Or If Project.IsReadOnly(Path) Then
     edtEditor.ReadOnly = True
   Endif
-  
+
   If $hEditor1 Then $hEditor1.ReadOnly = edtEditor.ReadOnly
   If $hEditor2 Then $hEditor2.ReadOnly = edtEditor.ReadOnly
-  
+
   UpdateMenu
-  
+
 End
 
 Public Sub Reload()
-  
+
   Dim sText As String
-  
+
   sText = File.Load(Path)
   If Right(sText) <> "\n" Then sText &= "\n"
+  If Settings["/FormatCode/FormatOnLoad"] Then sText = MPrettyCode.Run(sText)
   edtEditor.Text = sText
   If Not Project.RestoringFiles Then
     If Settings["/Editor/Fold"] Then edtEditor.CollapseAll
   Endif
   Editor.SetFocus
   Modify(True)
-  
+
 End
 
 Public Sub LoadFile() As Boolean
-  
+
   Reload
-  
+
   DrawTitle
   UpdateMenu
-  
+
 End
 
 Public Sub mnuReload_Click()
-  
+
   If IsModified() Then
     If Message.Warning(("The file has been modified.\n\nAll your changes will be lost."), ("Reload"), ("Cancel")) <> 1 Then Return
   Endif
-  
+
   Reload
-  
+
 End
 
 Private Function GetCurrentProcLine(iLine As Integer) As Integer
-  
+
   Dim iProc As Integer
   Dim iRes As Integer
-  
+
   $sName = ""
-  
-  ' If $cProc.Count Then 
-  '   
+
+  ' If $cProc.Count Then
+  '
   '   iRes = -1
   '   For Each iProc In $cProc
-  '     If iRes < iProc And If iProc <= iLine Then 
+  '     If iRes < iProc And If iProc <= iLine Then
   '       iRes = iProc
   '       $sName = $cProc.Key
   '     Endif
   '   Next
   '   Return iRes
-  '   
+  '
   ' Else
-    
-    Do
-      If Editor.Lines[iLine].Limit Then
-        If IsProc(Editor.Lines[iLine].Text) Then Return iLine
-      Endif
-      Dec iLine
-      If iLine < 0 Then Return -1
-    Loop
-    
+
+  Do
+    If Editor.Lines[iLine].Limit Then
+      If IsProc(Editor.Lines[iLine].Text) Then Return iLine
+    Endif
+    Dec iLine
+    If iLine < 0 Then Return -1
+  Loop
+
   'Endif
-  
+
 End
 
 Public Sub GetProcAt(iLine As Integer) As String
-  
+
   GetCurrentProcLine(iLine)
   Return $sName
-  
+
 End
 
 Public Sub btnIndent_Click()
-  
+
   Editor.Indent
-  
+
 End
 
 Public Sub btnUnindent_Click()
-  
+
   Editor.Unindent
-  
+
 End
 
 Private Function IsKeyword(iCpt As Integer) As Boolean
-  
+
   If Highlight.Types[iCpt] = Highlight.Keyword Then Return True
   If Highlight.Types[iCpt] = Highlight.Function Then Return True
   If Highlight.Types[iCpt] = Highlight.Operator And If IsLetter(Left$(Highlight.Symbols[iCpt])) Then Return True
-  
+
 End
 
 Private Sub FindDefinition(bPopupHelp As Boolean, Optional iX As Integer, Optional iY As Integer)
-  
+
   Dim sLig As String
   Dim iCol As Integer
   Dim hSymbol As CSymbolInfo
@@ -2445,11 +2446,11 @@ Private Sub FindDefinition(bPopupHelp As Boolean, Optional iX As Integer, Option
   Dim sKeyword As String
   Dim sKeyword2 As String
   Dim iLine As Integer
-  
+
   If Not bPopupHelp Then
     iLine = Editor.Line
     iCol = Editor.Column
-    If Editor.Selected Then 
+    If Editor.Selected Then
       If Editor.Selection.EndLine > Editor.Selection.StartLine Then Return
       iCol = Editor.Selection.EndColumn
     Else
@@ -2460,71 +2461,71 @@ Private Sub FindDefinition(bPopupHelp As Boolean, Optional iX As Integer, Option
     iLine = Editor.PosToLine(iY)
     If iLine < 0 Or If iCol < 0 Then Return
   Endif
-  
+
   sLig = Highlight.Purge(Editor.Lines[iLine].Text)
-  
+
   Repeat
     Inc iCol
     If iCol > Len(sLig) Then Break
   Until InStr(IDENT_CAR, Mid$(sLig, iCol, 1)) = 0
-  
+
   If iCol < Len(sLig) Then
     If InStr("[(", Mid$(sLig, iCol, 1)) Then
       Inc iCol
     Endif
   Endif
-  
+
   sLig = Left$(sLig, iCol - 1)
   If Right(sLig) = "[" Then sLig &= "]"
   'Editor.ShowWord(iLine, iCol, 3)
   Highlight.Analyze(sLig)
-  
+
   'IF IsCurrentProc() THEN RETURN
-  
+
   iCpt = Highlight.Types.Max
   sKeyword = ""
-  
+
   If iCpt >= 0 Then
     sKeyword = Highlight.Symbols[iCpt]
-    
+
     If IsKeyword(iCpt) Then
-      
+
       ' If iCpt > 0 Then
       '   Dec iCpt
       '   If IsKeyword(iCpt) Then
       '     sKeyword2 = Highlight.Symbols[iCpt] & sKeyword
       '   Endif
       ' Endif
-      ' 
+      '
       ' If sKeyword2 Then
       '   MHelp.ShowWebViewWith(Null, MHelp.TYPE_KEYWORD, sKeyword2)
-      '   If FHelpBrowser.Error Then 
+      '   If FHelpBrowser.Error Then
       '     MHelp.ShowWebViewWith(Null, MHelp.TYPE_KEYWORD, sKeyword)
       '   Endif
       ' Else
       MHelp.ShowHelpBrowserWith(Null, MHelp.TYPE_KEYWORD, sKeyword)
       'Endif
       Return
-      
-    Else If Highlight.Types[iCpt] = Highlight.DataType Then 
-      
+
+    Else If Highlight.Types[iCpt] = Highlight.DataType Then
+
       If System.Datatypes.Exist(sKeyword, gb.IgnoreCase) Then
         MHelp.ShowHelpBrowserWith(Null, MHelp.TYPE_NATIVE, sKeyword)
       Else
         hClass = CComponent.Classes[sKeyword]
-        If hClass Then 
+        If hClass Then
           'MHelp.GotoClass(hClass.Component, hClass.Name)
           MHelp.ShowHelpBrowserWith(Null, MHelp.TYPE_CLASS, hClass.Name)
-        Endif 
+        Endif
       Endif
       Return
-      
+
     Endif
   Endif
-  
+
   'Editor.Analyze(Left$(sLig, iCol - 1))
   hSymbol = GetExpressionSymbol(Highlight.Symbols, Highlight.Types)
-  If Not hSymbol Then 
+  If Not hSymbol Then
     If sKeyword Then
       If CComponent.Classes.Exist(sKeyword) Then
         MHelp.ShowHelpBrowserWith(Null, MHelp.TYPE_CLASS, sKeyword)
@@ -2532,39 +2533,39 @@ Private Sub FindDefinition(bPopupHelp As Boolean, Optional iX As Integer, Option
     Endif
     Return
   Endif
-  
+
   'PRINT hSymbol.Class
-  
+
   If hSymbol.LineNumber Then 'And If Not bPopupHelp Then
-  Project.SavePosition()
-  Project.OpenFile(hSymbol.Class, hSymbol.LineNumber)
-Else
-  MHelp.ShowHelpBrowserWith(Null, MHelp.TYPE_SYMBOL, hSymbol.Name, hSymbol.Class)
-Endif
+    Project.SavePosition()
+    Project.OpenFile(hSymbol.Class, hSymbol.LineNumber)
+  Else
+    MHelp.ShowHelpBrowserWith(Null, MHelp.TYPE_SYMBOL, hSymbol.Name, hSymbol.Class)
+  Endif
 
 End
 
 Public Sub OnProjectDebug()
-  
+
   SetReadOnly
-  
+
 End
 
 Public Sub OnShowString(sStr As String, bIgnoreCase As Boolean)
-  
+
   edtEditor.ShowString(sStr, bIgnoreCase)
   If $hEditor1 Then $hEditor1.ShowString(sStr, bIgnoreCase)
   If $hEditor2 Then $hEditor2.ShowString(sStr, bIgnoreCase)
-  
+
 End
 
 Static Public Function GetIdentifier(sLine As String, iPos As Integer) As String
-  
+
   Dim sCar As String
   Dim iPos2 As Integer
-  
+
   iPos2 = iPos
-  
+
   Do
     If iPos <= 0 Then Break
     sCar = Mid$(sLine, iPos, 1)
@@ -2572,56 +2573,56 @@ Static Public Function GetIdentifier(sLine As String, iPos As Integer) As String
     If InStr(IDENT_CAR, sCar) = 0 Then Break
     Dec iPos
   Loop
-  
+
   Inc iPos
-  
+
   Do
     If iPos2 > Len(sLine) Then Break
     sCar = Mid$(sLine, iPos, 1)
     If InStr(IDENT_CAR, sCar) = 0 Then Break
     Inc iPos2
   Loop
-  
+
   Return Mid$(sLine, iPos, iPos2 - iPos)
-  
+
 Catch
-  
+
 End
 
 Public Sub WatchExpression()
-  
+
   Dim sWatch As String
-  
+
   If Not Project.Running Then Return
   sWatch = Trim(Editor.Selection.Text)
   If Not sWatch Then Return
-  
+
   FDebugInfo.AddWatch(Trim(Editor.Selection.Text))
-  
+
 End
 
 Public Sub RunUntil()
-  
+
   If Not CanSetBreakpoint(Editor.Line) Then Return
   Project.RunUntil(Me, Editor.Line)
-  
+
 End
 
 Public Sub Form_Activate()
-  
+
   RefreshLineInfo(True)
   Project.SetCurrentPopup(mnuEditor)
-  
+
 End
 
 Private Sub RefreshBackground()
-  
+
   Dim hEditor As Editor
-  
+
   For Each hEditor In [$hEditor1, $hEditor2]
-    
+
     If Not hEditor Then Continue
-    
+
     If hEditor.HasFocus Then
       ReadConfigEditor(hEditor)
     Else
@@ -2630,29 +2631,27 @@ Private Sub RefreshBackground()
       hEditor.Flags[Editor.ShowModifiedLines] = False
       hEditor.Flags[Editor.ShowLimits] = False
     Endif
-    
+
   Next
-  
+
 End
 
-
 Public Sub Editors_GotFocus()
-  
+
   Dim hEditor As Editor = Last
-  
+
   Editor = hEditor
   $hInsertColor.SetEditor(Editor)
   Project.SetCurrentPopup(mnuEditor)
-  
+
   If hEditor = $hEditor1 Or hEditor = $hEditor2 Then
     RefreshBackground
   Endif
-  
+
 End
 
-
 ' Public Sub Editors_MouseMove()
-'   
+'
 '   If Not Project.Running Then
 '     If FDebugInfo.IsHelpVisible() Or $bShowPopupHelp Then
 '         timShowHelp.Enabled = True
@@ -2660,33 +2659,33 @@ End
 '     $X = Mouse.X
 '     $Y = Mouse.Y
 '   Endif
-'   
+'
 ' End
 
 Public Sub Editors_MouseUp()
-  
+
   'HideMessage
-  
+
   If Not Editor.Selected Or If Editor.Selection.StartLine < Editor.Selection.EndLine Then
     Return
   Endif
-  
+
   If Not Project.Running Then
     'FindDefinition(True, Mouse.X, Mouse.Y)
-    Return 
+    Return
   Endif
-  
+
   FDebugInfo.InstantWatch(Trim(Editor.Selection.Text), Me, Editor.ToPosX(Editor.Selection.StartColumn), Editor.CursorY + Editor.LineHeight)
-  
+
 End
 
 Private Sub ShowMessageLabel(sStr As String, X As Integer, Y As Integer, Optional iColor As Integer)
-  
+
   If iColor = 0 Then iColor = Color.HSV(64, 64, 255)
-  
+
   X = Editor.ScreenX + X - lblWatch.Parent.ScreenX
   Y = Editor.ScreenY + Y - lblWatch.Parent.ScreenY
-  
+
   lblWatch.Background = iColor
   lblWatch.Move(X, Y)
   lblWatch.Text = Replace(Replace(sStr, "<p>", " "), "<br>", " ")
@@ -2694,13 +2693,13 @@ Private Sub ShowMessageLabel(sStr As String, X As Integer, Y As Integer, Optiona
   lblWatch.Raise
   timWatch.Start
   Editor.SetFocus
-  
+
 End
 
 Public Sub ShowWatchResult(sStr As String, X As Integer, Y As Integer)
-  
+
   Dim iColor As Integer
-  
+
   If Left(sStr) = "!" Then
     sStr = Mid$(sStr, 2)
     If sStr = "Syntax error" Or If sStr = "Non terminated string" Or If sStr = "Unknown symbol" Then Return
@@ -2710,266 +2709,267 @@ Public Sub ShowWatchResult(sStr As String, X As Integer, Y As Integer)
   Else
     iColor = Color.HSV(64, 64, 255)
   Endif
-  
+
   ShowMessageLabel(Html(sStr), X, Y, iColor)
-  
+
 End
 
 Public Sub timWatch_Timer()
-  
+
   If lblWatch.Visible Then
     lblWatch.Hide
     timWatch.Stop
   Endif
-  
+
 End
 
 Public Sub Editors_Margin({Line} As Integer)
-  
+
   Design.SetBreakpoint(Me.Name, {Line}, Not HasBreakpoint({Line}))
-  
+
 End
 
 Public Sub ShowMessage(sMsg As String, Optional sIcon As String, Optional bNoEscape As Boolean)
-  
+
   Dim hIcon As Picture
   Dim X, Y As Integer
-  
+
   If Not bNoEscape Then
     sMsg = Replace(sMsg, "\t", "\n")
     sMsg = Replace(sMsg, "    ", "&nbsp;")
     sMsg = Replace(sMsg, "&", "&amp;")
     sMsg = Replace(sMsg, "<", "&lt;")
     sMsg = Replace(sMsg, ">", "&gt;")
-    If Left(sMsg, 2) = "**" Then 
+    If Left(sMsg, 2) = "**" Then
       sMsg = Trim(Mid$(sMsg, 3))
       hIcon = Picture["icon:/32/error"]
-    Endif 
+    Endif
   Endif
-  
+
   If sIcon Then hIcon = Picture[sIcon]
-  
+
   X = Editor.CursorX
   Y = Editor.CursorY + Editor.LineHeight \ 2
-  If Editor.Selected Then 
+  If Editor.Selected Then
     If Editor.Selection.StartLine = Editor.Selection.EndLine Then
       X = (Editor.ToPosX(Editor.Selection.StartColumn, Editor.Line) + Editor.ToPosX(Editor.Selection.EndColumn, Editor.Line)) \ 2
     Endif
   Endif
-  
+
   Balloon(sMsg, Editor, hIcon, X, Y)
-  
+
 End
 
 Public Sub ShowErrorMessage(sMsg As String, sIcon As String)
-  
+
   Wait ' If the cursor needs to move first
   ''ShowMessage(sMsg, "img/logo/logo-64.png", True)
   'ShowMessage(sMsg, "icon:/32/" & sIcon, True)
   ShowMessageLabel(sMsg, Editor.CursorX, Editor.CursorY + Editor.LineHeight, Color.HSV(0, 64, 255))
-  
+
 End
 
 Private Sub HideMessage()
-  
-  If Balloon.Control = Editor Then 
+
+  If Balloon.Control = Editor Then
     Balloon.Hide
   Endif
   timWatch_Timer
-  
+
 End
 
 Public Sub timProc_Timer()
-  
+
   CheckBreakpoints
   timProc.Enabled = False
-  
-End 
+
+End
 
 Private Sub SetComboProcText(sProc As String)
-  
+
   btnProc.Text = sProc
-  
+
 End
 
 Private Sub UpdateFunction()
-  
+
   Dim iLine As Integer = GetCurrentProcLine(Editor.Line)
   Dim sProc As String = $sName
   Dim iIndex As Integer
-  
-  If Not sProc Then 
+
+  If Not sProc Then
     sProc = ("(Declarations)")
     iLine = 0
   Endif
-  
+
   'If Not $cProc.Exist(sProc) Then
   '  $cProc[sProc] = iLine
   '  $aProc.Add(sProc)
   '  $aProc.Sort(gb.IgnoreCase)
   'Endif
   SetComboProcText(sProc)
-  
+
   ' iIndex = cmbProc.Find(sProc)
-  ' If iIndex < 0 Then 
+  ' If iIndex < 0 Then
   '   cmbProc.Add(sProc)
   '   iIndex = cmbProc.Find(sProc)
   ' Endif
   ' Object.Lock(cmbProc)
   ' cmbProc.Index = iIndex
   ' Object.Unlock(cmbProc)
-  
+
 End
 
 Private Sub FillProcCombo()
-  
+
   Dim hSymbol As CSymbolInfo
   Dim cSymbol As Collection
   Dim sText As String
   Dim sName As String
-  
+
   'DIM fTime AS Float
   'DIM iInd AS Integer
-  
+
   If $cProc.Count Then Return
-  
+
   Inc Application.Busy
-  
+
   'fTime = Timer
   'FOR iInd = 1 TO 20
   'aFunc.Clear
-  
+
   sText = btnProc.Text
-  
+
   'cmbProc.Clear
-  
+
   $cProc = New Collection(gb.IgnoreCase)
   $aProc = New String[]
   $iFirstProcLine = 1000000
-  
+
   {Scan} = Null
   cSymbol = CComponent.GetClassSymbols(Me.Name)
-  
+
   For Each hSymbol In cSymbol
-    
+
     If LCase(hSymbol.Kind) <> "m" Then Continue
     If hSymbol.LineNumber = 0 Then Continue
     If hSymbol.Class <> Me.Name Then Continue
     $aProc.Add(hSymbol.Name)
-    
+
   Next
-  
+
   $aProc.Sort(gb.IgnoreCase)
-  
+
   For Each sName In $aProc
-    
+
     hSymbol = cSymbol[sName]
     'cmbProc.Add(sName)
     $cProc[hSymbol.Name] = hSymbol.LineNumber - 1
     $iFirstProcLine = Min($iFirstProcLine, hSymbol.LineNumber - 1)
-    
+
   Next
-  
+
   $aProc.Add(("(Declarations)"), 0)
   $cProc[$aProc[0]] = 0
-  
+
   SetComboProcText(sText)
-  
-  'NEXT 
+
+  'NEXT
   'DEBUG Timer - fTime
-  
+
   Dec Application.Busy
-  
+
 End
 
 ' Public Sub cmbProc_KeyPress()
-' 
+'
 '   FillProcCombo
-' 
+'
 ' End
-' 
+'
 ' Public Sub cmbProc_MouseDown()
-' 
+'
 '   FillProcCombo
-' 
+'
 ' End
 
 Public Sub GotoProc(iLine As Integer)
-  
+
   Dim sLine As String
   Dim iCol As Integer
   Dim iStart As Integer
-  
+
   If iLine < 0 Then
     Editor.Goto(Editor.Lines.Count, 0)
     Return
   Endif
-  
+
   iStart = iLine
-  
+
   Do
     Inc iLine
-    If iLine >= Editor.Lines.Count Then 
+    If iLine >= Editor.Lines.Count Then
       Dec iLine
       Break
     Endif
     sLine = Trim(Editor.Lines[iLine].Text)
     If sLine Then Break
   Loop
-  
-  If UCase(sLine) = "END" Or If UCase(sLine) = "END SUB" Then 
+
+  If UCase(sLine) = "END" Or If UCase(sLine) = "END SUB" Then
     iLine = Min(iStart + 2, iLine - 1)
   Endif
-  
+
   iCol = String.Len(Editor.Lines[iLine].Text) - String.Len(LTrim(Editor.Lines[iLine].Text))
-  
+
   Me.GotoCenter(iLine, iCol, True)
   Editor.SetFocus
-  
+
 End
 
 ' Public Sub cmbProc_Click()
-' 
+'
 '   Dim iLine As Integer
-'   
+'
 '   Try iLine = $cProc[cmbProc.Text]
 '   GotoProc(iLine)
-' 
+'
 ' End
-' 
+'
 ' Public Sub cmbProc_MouseWheel()
-' 
+'
 '   FillProcCombo
-' 
+'
 ' End
-' 
+'
 ' Public Sub cmbProc_GotFocus()
-' 
+'
 '   Editor.SetFocus
-' 
+'
 ' End
 
 Private Function ReadOnly_Read() As Boolean
-  
+
   Return edtEditor.ReadOnly
-  
+
 End
 
 Public Sub GetState() As String
-  
+
   Return CStr(Editor.Line) & "." & CStr(Editor.Column)
-  
+
 End
 
 Public Sub SetState(sState As String)
-  
+
   Dim aState As String[] = Split(sState, ".")
+
   GotoCenter(CInt(aState[0]), CInt(aState[1]))
-  
+
 End
 
 Private Sub InitEditor(hEditor As Editor)
-  
+
   With hEditor
     .Border = False
     .View = edtEditor
@@ -2978,33 +2978,33 @@ Private Sub InitEditor(hEditor As Editor)
     .ReadOnly = edtEditor.ReadOnly
     .TabSize = edtEditor.TabSize
     .Flags[Editor.ShowCursorPosition] = edtEditor.Flags[Editor.ShowCursorPosition]
-  End With 
+  End With
   ReadConfigEditor(hEditor)
-  
+
 End
 
 Private Sub SetViewMode(iViewMode As Integer)
-  
-  If $iViewMode = iViewMode Then Return 
+
+  If $iViewMode = iViewMode Then Return
   $iViewMode = iViewMode
-  
-  If $iViewMode <> VIEWMODE_NORMAL And If Not $hEditor1 Then 
+
+  If $iViewMode <> VIEWMODE_NORMAL And If Not $hEditor1 Then
     $hEditor1 = New Editor(Me) As "Editors"
     InitEditor($hEditor1)
     $hEditor2 = New Editor(Me) As "Editors"
     InitEditor($hEditor2)
-    FSearch.OnNewForm(Me)  
+    FSearch.OnNewForm(Me)
   Endif
-  
+
   Select Case $iViewMode
-      
+
     Case VIEWMODE_NORMAL
       edtEditor.Show
       splHorizontal.Hide
       splVertical.Hide
       edtEditor.Goto(Editor.Line, Editor.Column, True)
-      Editor = edtEditor  
-      
+      Editor = edtEditor
+
     Case VIEWMODE_HORIZONTAL
       $hEditor1.Reparent(splHorizontal)
       $hEditor2.Reparent(splHorizontal)
@@ -3014,7 +3014,7 @@ Private Sub SetViewMode(iViewMode As Integer)
       $hEditor1.Goto(Editor.Line, Editor.Column, True)
       $hEditor2.Goto(Editor.Line, Editor.Column, True)
       Editor = $hEditor1
-      
+
     Case VIEWMODE_VERTICAL
       $hEditor1.Reparent(splVertical)
       $hEditor2.Reparent(splVertical)
@@ -3024,117 +3024,117 @@ Private Sub SetViewMode(iViewMode As Integer)
       $hEditor1.Goto(Editor.Line, Editor.Column, True)
       $hEditor2.Goto(Editor.Line, Editor.Column, True)
       Editor = $hEditor1
-      
-  End Select   
-  
+
+  End Select
+
   Editor.SetFocus
   Form_Arrange
   Editors_Cursor
-  
+
 End
 
 Public Sub mnuNoSplit_Click()
-  
+
   SetViewMode(VIEWMODE_NORMAL)
-  
+
 End
 
 Public Sub mnuHorizontalSplit_Click()
-  
+
   SetViewMode(VIEWMODE_HORIZONTAL)
-  
+
 End
 
 Public Sub mnuVerticalSplit_Click()
-  
+
   SetViewMode(VIEWMODE_VERTICAL)
-  
+
 End
 
 Public Sub mnuDefinition_Click()
-  
+
   FindDefinition(False)
-  
+
 End
 
 Public Sub mnuLastPosition_Click()
-  
+
   Project.LastPosition
-  
+
 End
 
 Public Sub GetFoldedProc() As Integer[]
-  
+
   Dim aFold As New Integer[]
   Dim iLine As Integer
-  
+
   Do
-    If Not Editor.Lines[iLine].Expanded Then 
+    If Not Editor.Lines[iLine].Expanded Then
       'DEBUG Name;; iLine
       aFold.Add(iLine)
     Endif
     iLine = Editor.FindNextLimit(iLine)
     If iLine < 0 Then Break
   Loop
-  
-  Return aFold  
-  
+
+  Return aFold
+
 End
 
 Public Sub SetFoldedProc(aFold As Integer[])
-  
+
   Dim iLine As Integer
-  
+
   'Editor.Lines.ExpandAll
   For Each iLine In aFold
     'DEBUG Name;; iLine
     Editor.Lines[iLine].Expanded = False
   Next
-  
+
 End
 
 Public Sub mnuStartup_Click()
-  
+
   If mnuStartup.Checked Then Return
   mnuStartup.Checked = True
   Project.DefineStartup(Path)
-  
+
 End
 
 Public Sub mnuPasteAsString_Click()
-  
+
   FPasteSpecial.Run(Editor, FPasteSpecial.MODE_STRING)
-  
+
 End
 
 Public Sub mnuPasteAsStringSplit_Click()
-  
+
   FPasteSpecial.Run(Editor, FPasteSpecial.MODE_STRING_SPLIT)
-  
+
 End
 
 Public Sub mnuPasteAsComment_Click()
-  
-  FPasteSpecial.Run(Editor, FPasteSpecial.MODE_COMMENT)  
-  
+
+  FPasteSpecial.Run(Editor, FPasteSpecial.MODE_COMMENT)
+
 End
 
 Public Sub panToolBar_Configure()
-  
+
   If $sModule Then
     btnForm.Picture = Picture["img/16/" & $sModule & ".png"]
     btnForm.ToolTip = CModule[$sModule].Name
     btnForm.Show
   Else
     btnForm.Hide
-  Endif  
-  
+  Endif
+
 End
 
 ' Public Sub Editors_DblClick()
-' 
+'
 '   If Mouse.Control Then FindDefinition(False)
-' 
+'
 ' End
 
 ' Public Sub timShowHelp_Timer()
@@ -3142,65 +3142,64 @@ End
 '   If FHelp.MouseOver Then Return
 '   If Editor.PosToColumn($X, $Y) >= 0 Then FindDefinition(True, $X, $Y)
 '   timShowHelp.Enabled = False
-'   
+'
 ' End
 
 Private Sub ResizeProcList()
-  
+
   panProc.Resize(btnProc.W, Min(panProc.Parent.ClientH - panProc.Y + 1, gvwProc.Rows.Count * gvwProc.Rows.H + 2))
-  
+
 End
 
 Private Sub ToggleProcList()
-  
+
   Dim iCurrent As Integer
   Dim nRow As Integer
   Dim iLine As Integer
-  
+
   FillProcCombo
   iCurrent = $aProc.Find(btnProc.Text)
-  
+
   iCurrent = FProcedureList.Popup(Me.Name, $aProc, iCurrent, btnProc.ScreenX, btnProc.ScreenY + btnProc.H, btnProc.W, Me.ClientH - panToolbar.H - Desktop.Scale)
-  If iCurrent >= 0 Then 
+  If iCurrent >= 0 Then
     Try iLine = $cProc[$aProc[iCurrent]]
     GotoProc(iLine)
   Endif
-  
+
 End
 
-
 Public Sub btnProc_MouseDown()
-  
+
   If Not Mouse.Left Then Return
   ToggleProcList
   Stop Event
-  
+
 End
 
 ' Public Sub gvwProc_LostFocus()
-'   
+'
 '   panProc.Hide
-'   
+'
 ' End
-' 
+'
 ' Public Sub gvwProc_Data(Row As Integer, Column As Integer)
-'   
+'
 '   Dim cSymbol As Collection
 '   Dim hSymbol As CSymbolInfo
 '   Dim sName As String
-'   
+'
 '   'Dim hColor As Color
-'   
+'
 '   Try sName = $aProc[Row]
 '   If Not sName Then Return
-'   
+'
 '   cSymbol = CComponent.GetClassSymbols(Me.Name)
 '   hSymbol = cSymbol[sName]
-'   
+'
 '   gvwProc.Data.Text = sName
 '   If hSymbol Then
 '     If hSymbol.Kind = "M" Then gvwProc.Data.Font.Bold = True
-'     If hSymbol.NotPublic Then 
+'     If hSymbol.NotPublic Then
 '       'hColor = Color(Color.Foreground)
 '       'hColor.Value = 255 - (255 - hColor.Value) * 0.6
 '       gvwProc.Data.Foreground = Color.Lighter(Color.Foreground)
@@ -3209,113 +3208,113 @@ End
 '   Else
 '     gvwProc.Data.Foreground = Color.Lighter(Color.Foreground)
 '   Endif
-'   If Left(sName) = "_" Then 
+'   If Left(sName) = "_" Then
 '     'gvwProc.Data.Picture = Picture["img/16/point.png"]
 '     'gvwProc.Data.Foreground = Color.Lighter(Color.Foreground)
 '   Else If InStr(sName, "_") Then
 '     'gvwProc.Data.Picture = Picture["img/16/event.png"]
 '     gvwProc.Data.Font.Italic = True
 '   Endif
-'   
-'   If sName = btnProc.Text Then 
+'
+'   If sName = btnProc.Text Then
 '     gvwProc.Data.Background = Color.LightBackground
 '   Endif
-'   
+'
 ' End
-' 
+'
 ' Public Sub gvwProc_Click()
-'   
+'
 '   Dim iLine As Integer
-'   
+'
 '   Try iLine = $cProc[$aProc[gvwProc.Row]]
 '   GotoProc(iLine)
-'   
+'
 ' End
-' 
+'
 ' Public Sub gvwProc_MouseMove()
-'   
+'
 '   Dim iRow As Integer = gvwProc.RowAt(Mouse.Y)
-'   
+'
 '   Try gvwProc.Rows[iRow].Selected = True
-'   
+'
 ' End
-' 
+'
 ' Public Sub btnProc_DblClick()
-'   
+'
 '   btnProc_MouseDown
-'   
+'
 ' End
 
 '' Update a control name and its event handler in the source code when it is renamed
 
 Public Sub RenameControl(sOld As String, sNew As String)
-  
+
   Dim iLine As Integer
   Dim sLine As String
   Dim aSym As String[]
   Dim iInd As Integer
   Dim sSym As String
   Dim bChange As Boolean
-  
+
   sOld = UCase(sOld)
-  
+
   Editor.Begin
-  
+
   For iLine = 0 To Editor.Lines.Count - 1
-    
+
     sLine = Editor.Lines[iLine].Text
     aSym = Highlight.Analyze(sLine)
     bChange = False
-    
+
     For iInd = aSym.Max DownTo 0
-      
+
       If Highlight.Types[iInd] <> Highlight.Symbol Then Continue
-      
+
       sSym = UCase(aSym[iInd])
-      
+
       If sSym <> sOld Then
         If Not (sSym Begins (sOld & "_")) Then Continue
       Endif
-      
+
       sLine = Left$(sLine, Highlight.Positions[iInd]) & sNew & Mid$(sLine, Highlight.Positions[iInd] + Len(sOld) + 1)
       bChange = True
-      
+
     Next
-    
+
     If bChange Then Editor.Lines[iLine].Text = sLine
   Next
-  
+
   Editor.End
-  
+
 End
 
 Public Sub GetText() As String
-  
+
   Return Editor.Text
-  
+
 End
 
 Public Sub GetHighlightedText(Optional bSelected As Boolean) As String
-  
+
   Editor.HighlightAll
   If bSelected Then
     Return Editor.Selection.Text
   Else
     Return Editor.Text
   Endif
-  
+
 End
 
 Public Sub GetPosition() As Integer
-  
+
   Return Editor.GetPosition()
-  
+
 End
 
 Public Sub SetPosition(hResult As CFindResult, Optional bJustCheck As Boolean) As Boolean
-  
+
   Dim bResult As Boolean
-  
+
   If FSearch.CurrentProcedure Then
     bResult = Editor.SetPosition(hResult, True)
     If Not bResult Then
@@ -3326,58 +3325,58 @@ Public Sub SetPosition(hResult As CFindResult, Optional bJustCheck As Boolean) A
     bResult = Editor.SetPosition(hResult, bJustCheck)
   Endif
   Return bResult
-  
+
 End
 
 Public Sub Replace(sReplace As String)
-  
+
   Editor.Replace(sReplace)
-  
+
 End
 
 Public Sub GetSelection() As String
-  
+
   Return Editor.GetSelection()
-  
+
 End
 
 Public Sub mnuInsertColor_Click()
-  
+
   $hInsertColor.Insert
-  
+
 End
 
 Public Sub mnuBreakpoint_Click()
-  
+
   Design.SetBreakpoint(Me.Name, Editor.Line, Not HasBreakpoint(Editor.Line))
-  
+
 End
 
 Public Sub mnuWatch_Click()
-  
+
   WatchExpression
   FDebugInfo.ShowWatchTab
-  
+
 End
 
 Public Sub mnuUntil_Click()
-  
+
   RunUntil
-  
+
 End
 
 Public Sub mnuPretty_Click()
-  
+
   Dim X, Y As Integer
   Dim sText, sNewText As String
   Dim bSelected As Boolean
-  
+
   bSelected = Editor.Selected
-  
+
   sText = GetHighlightedText(bSelected)
   sNewText = MPrettyCode.Run(sText)
   If sNewText = sText Then Return
-  
+
   X = Editor.Column
   Y = Editor.Line
   Editor.Begin
@@ -3385,7 +3384,7 @@ Public Sub mnuPretty_Click()
   Editor.Insert(sNewText)
   Editor.Goto(Y, X)
   Editor.End
-  
+
 End
 
 Public Sub lblWatch_MouseDown()
