@@ -79,9 +79,33 @@ BEGIN_METHOD(GLDELETERENDERBUFFERSEXT, GB_OBJECT buffers)
 
 END_METHOD
 
+BEGIN_METHOD(GLFRAMEBUFFERRENDERBUFFEREXT, GB_INTEGER target; GB_INTEGER attachment; GB_INTEGER rbtarget; GB_INTEGER buffer)
+
+	 glFramebufferRenderbufferEXT(VARG(target), VARG(attachment), VARG(rbtarget), VARG(buffer));
+
+END_METHOD
+
+BEGIN_METHOD(GLFRAMEBUFFERTEXTURE1DEXT, GB_INTEGER target; GB_INTEGER attachment; GB_INTEGER textarget; GB_INTEGER texture; GB_INTEGER level)
+
+	 glFramebufferTexture1DEXT(VARG(target), VARG(attachment), VARG(textarget), VARG(texture), VARG(level));
+
+END_METHOD
+
 BEGIN_METHOD(GLFRAMEBUFFERTEXTURE2DEXT, GB_INTEGER target; GB_INTEGER attachment; GB_INTEGER textarget; GB_INTEGER texture; GB_INTEGER level)
 
 	 glFramebufferTexture2DEXT(VARG(target), VARG(attachment), VARG(textarget), VARG(texture), VARG(level));
+
+END_METHOD
+
+BEGIN_METHOD(GLFRAMEBUFFERTEXTURE3DEXT, GB_INTEGER target; GB_INTEGER attachment; GB_INTEGER textarget; GB_INTEGER texture; GB_INTEGER level; GB_INTEGER zoffset)
+
+	 glFramebufferTexture3DEXT(VARG(target), VARG(attachment), VARG(textarget), VARG(texture), VARG(level), VARG(zoffset));
+
+END_METHOD
+
+BEGIN_METHOD(GLGENERATEMIPMAPEXT, GB_INTEGER target)
+
+	GenerateMipmapEXT(VARG(target));
 
 END_METHOD
 
@@ -119,6 +143,32 @@ BEGIN_METHOD(GLGENRENDERBUFFERSEXT, GB_INTEGER count)
 	for (i=0;i<count; i++)
 		*((GLuint *)GB.Array.Get(iArray, i)) = renderbuffers[i];
 	
+	GB.ReturnObject(iArray);
+
+END_METHOD
+
+BEGIN_METHOD(GLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXT, GB_INTEGER target; GB_INTEGER attachment; GB_INTEGER pname)
+
+	int params[1];
+	GB_ARRAY iArray;
+
+	GB.Array.New(&iArray , GB_T_INTEGER , 1);
+	glGetFramebufferAttachmentParameterivEXT(VARG(target), VARG(attachment), VARG(pname), params);
+
+	*((GLuint *)GB.Array.Get(iArray, 0)) = params[0];
+	GB.ReturnObject(iArray);
+
+END_METHOD
+
+BEGIN_METHOD(GLGETRENDERBUFFERPARAMETERIVEXT, GB_INTEGER target; GB_INTEGER pname)
+
+	int params[1];
+	GB_ARRAY iArray;
+
+	GB.Array.New(&iArray , GB_T_INTEGER , 1);
+	GetRenderbufferParameterivEXT(VARG(target), VARG(pname), params);
+
+	*((GLuint *)GB.Array.Get(iArray, 0)) = params[0];
 	GB.ReturnObject(iArray);
 
 END_METHOD

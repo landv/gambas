@@ -345,27 +345,27 @@ GB_DESC Cgl[] =
 	
 	/* EXT and Vendors extensions */
 	
-	/* 310; GL_EXT_framebuffer_object (incomplete) */
+	/* 310; GL_EXT_framebuffer_object */
 	/* framebufferobject.c */
 	GB_STATIC_METHOD("BindFramebufferEXT", NULL, GLBINDFRAMEBUFFEREXT, "(Target)i(Framebuffer)i"),
 	GB_STATIC_METHOD("BindRenderbufferEXT",NULL, GLBINDRENDERBUFFEREXT, "(Target)i(Renderbuffer)i"),
 	GB_STATIC_METHOD("CheckFramebufferStatusEXT", "i", GLCHECKFRAMEBUFFERSTATUSEXT, "(Target)i"),
 	GB_STATIC_METHOD("DeleteFramebuffersEXT", NULL, GLDELETEFRAMEBUFFERSEXT, "(Framebuffers)Integer[]"),
 	GB_STATIC_METHOD("DeleteRenderbuffersEXT", NULL, GLDELETERENDERBUFFERSEXT, "(Renderbuffers)Integer[]"),
-// TODO	GB_STATIC_METHOD("FramebufferRenderbufferEXT", NULL, GLFRAMEBUFFERRENDERBUFFEREXT, "(Target)i(Attachment)i(RenderbufferTarget)i(Renderbuffer)i");
-// TODO	GB_STATIC_METHOD("FramebufferTexture1DEXT", NULL, GLFRAMEBUFFERTEXTURE1DEXT, "(Target)i(Attachment)i(TexTarget)i(Texture)i(Level)i"),
+	GB_STATIC_METHOD("FramebufferRenderbufferEXT", NULL, GLFRAMEBUFFERRENDERBUFFEREXT, "(Target)i(Attachment)i(RenderbufferTarget)i(Renderbuffer)i"),
+	GB_STATIC_METHOD("FramebufferTexture1DEXT", NULL, GLFRAMEBUFFERTEXTURE1DEXT, "(Target)i(Attachment)i(TexTarget)i(Texture)i(Level)i"),
 	GB_STATIC_METHOD("FramebufferTexture2DEXT", NULL, GLFRAMEBUFFERTEXTURE2DEXT, "(Target)i(Attachment)i(TexTarget)i(Texture)i(Level)i"),
-// TODO	GB_STATIC_METHOD("FramebufferTexture3DEXT", NULL, GLFRAMEBUFFERTEXTURE3DEXT, "(Target)i(Attachment)i(TexTarget)i(Texture)i(Level)i"),
-// TODO	GB_STATIC_METHOD("GenerateMipmapEXT", NULL, GLGENERATEMIPMAPEXT, "(Target)i");
+	GB_STATIC_METHOD("FramebufferTexture3DEXT", NULL, GLFRAMEBUFFERTEXTURE3DEXT, "(Target)i(Attachment)i(TexTarget)i(Texture)i(Level)i(Zoffset)i"),
+	GB_STATIC_METHOD("GenerateMipmapEXT", NULL, GLGENERATEMIPMAPEXT, "(Target)i"),
 	GB_STATIC_METHOD("GenFramebuffersEXT", "Integer[]", GLGENFRAMEBUFFERSEXT, "(Count)i"),
 	GB_STATIC_METHOD("GenRenderbuffersEXT", "Integer[]", GLGENRENDERBUFFERSEXT, "(Count)i"),
-// TODO	GB_STATIC_METHOD("GetFramebufferAttachmentParameterivEXT", "Integer[]", GLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXT, "(Target)i(Attachment)i(Pname)i");
-// TODO	GB_STATIC_METHOD("GetRenderbufferParameterivEXT", "Integer[]", GLGETRENDERBUFFERPARAMETERIVEXT, "(Target)i(Pname)i"),
+	GB_STATIC_METHOD("GetFramebufferAttachmentParameterivEXT", "Integer[]", GLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXT, "(Target)i(Attachment)i(Pname)i"),
+	GB_STATIC_METHOD("GetRenderbufferParameterivEXT", "Integer[]", GLGETRENDERBUFFERPARAMETERIVEXT, "(Target)i(Pname)i"),
 	GB_STATIC_METHOD("IsFramebufferEXT", "b", GLISFRAMEBUFFEREXT, "(Framebuffer)i"),
 	GB_STATIC_METHOD("IsRenderbufferEXT", "b", GLISRENDERBUFFEREXT, "(Renderbuffer)i"),
 	GB_STATIC_METHOD("RenderbufferStorageEXT", NULL, GLRENDERBUFFERSTORAGEEXT, "(Target)i(InternalFormat)i(Width)i(Height)i"),
+
 	// Old constant naming support
-	
 	GB_STATIC_METHOD("_unknown", "v", GL_unknown, "."),
 	GB_STATIC_METHOD("_property", "b", GL_property, NULL),
 
