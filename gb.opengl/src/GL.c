@@ -39,6 +39,7 @@
 #include "GLinfo.h"
 #include "GLselectFeedback.h"
 #include "GLeval.h"
+#include "framebufferobject.h"
 
 /**************************************************************************/
 
@@ -285,7 +286,7 @@ GB_DESC Cgl[] =
 	/* 310; GL_EXT_framebuffer_object (incomplete) */
 	/* framebufferobject.c */
 	GB_STATIC_METHOD("GenFramebuffersEXT", "i", GLGENFRAMEBUFFERSEXT, "(N)i"),
-	GB_STATIC_METHOD("FramebufferTexture2dEXT", NULL, GLFRAMEBUFFERTEXTURE2D, "(Target)i(Attachment)i(Textarget)i(Texture)i(Level)i"),
+	GB_STATIC_METHOD("FramebufferTexture2dEXT", NULL, GLFRAMEBUFFERTEXTURE2DEXT, "(Target)i(Attachment)i(Textarget)i(Texture)i(Level)i"),
 	GB_STATIC_METHOD("BindFramebufferEXT", NULL, GLBINDFRAMEBUFFERSEXT, "(Target)i(Framebuffer)i"),
 	GB_STATIC_METHOD("CheckFramebufferStatusEXT", "i", GLCHECKFRAMEBUFFERSTATUSEXT, "(Target)i"),
 

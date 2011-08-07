@@ -27,7 +27,7 @@
 
 BEGIN_METHOD(GLFRAMEBUFFERTEXTURE2DEXT, GB_INTEGER Target; GB_INTEGER Attachment; GB_INTEGER Textarget; GB_INTEGER Texture; GB_INTEGER Level)
 
-	 glFramebufferTexture2D(VARG(Target), VARG(Attachment), VARG(Textarget), VARG(Texture), VARG(Level));
+	 glFramebufferTexture2DEXT(VARG(Target), VARG(Attachment), VARG(Textarget), VARG(Texture), VARG(Level));
 
 END_METHOD
 
@@ -48,7 +48,7 @@ END_METHOD
 BEGIN_METHOD(GLCHECKFRAMEBUFFERSTATUSEXT, GB_INTEGER Target)
 
 	GLuint result;
-	result = glCheckFramebufferStatusEXT (VARG(Target));
+	result = glCheckFramebufferStatusEXT(VARG(Target));
 	GB.ReturnInteger(result);
 
 END_METHOD
