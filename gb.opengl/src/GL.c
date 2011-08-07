@@ -64,11 +64,17 @@ BEGIN_METHOD_VOID(GL_property)
 
 END_METHOD
 
-BEGIN_METHOD(GL_unknown, GB_VALUE param[0])
+BEGIN_METHOD_VOID(GL_unknown)
 
 	static int nwarn = 0;
 	static void *klass = NULL;
+	static const char *same_name[] = { "VIEWPORT", "ACCUM", "CLEAR", NULL};
+	static const int same_value[] = { GL_VIEWPORT, GL_ACCUM, GL_CLEAR };
+	
 	char *name = GB.GetUnknown();
+	const char **p;
+	bool add_underscore;
+	int same_index;
 	
 	if (strncasecmp(name, "GL_", 3))
 	{
@@ -82,16 +88,32 @@ BEGIN_METHOD(GL_unknown, GB_VALUE param[0])
 		return;
 	}
 	
+	name += 3;
+	
+	add_underscore = FALSE;
+	same_index = 0;
+	for (p = same_name; *p; p++, same_index++)
+	{
+		if (!strcasecmp(*p, name))
+		{
+			add_underscore = TRUE;
+			break;
+		}
+	}
+	
 	nwarn++;
 	if (nwarn <= MAX_COMPAT_WARNING)
-		fprintf(stderr, "gb.opengl: warning: Gl.%s constant is deprecated. Use Gl.%s now.\n", name, &name[3]);
+		fprintf(stderr, "gb.opengl: warning: Gl.GL_%s constant is deprecated. Use Gl.%s%s now.\n", name, name, add_underscore ? "_" : "");
 	else if (nwarn == (MAX_COMPAT_WARNING + 1))
 		fprintf(stderr, "gb.opengl: warning: too many deprecated constant warnings.\n");
 	
 	if (!klass)
 		klass = (void *)GB.FindClass("Gl");
 
-	GB.GetProperty(klass, &name[3]);
+	if (add_underscore)
+		GB.ReturnInteger(same_value[same_index]);
+	else 
+		GB.GetProperty(klass, name);
 
 END_METHOD
 
@@ -381,7 +403,7 @@ GB_DESC Cgl[] =
 	GB_CONSTANT("LIST_MODE" ,"i", GL_LIST_MODE),
 
 	/* Accumulation buffer */
-	GB_CONSTANT("ACCUM", "i", GL_ACCUM),
+	GB_CONSTANT("ACCUM_", "i", GL_ACCUM),
 	GB_CONSTANT("ACCUM_ALPHA_BITS", "i", GL_ACCUM_ALPHA_BITS),
 	GB_CONSTANT("ACCUM_CLEAR_VALUE", "i", GL_ACCUM_CLEAR_VALUE),
 	GB_CONSTANT("ACCUM_BLUE_BITS", "i", GL_ACCUM_BLUE_BITS),
@@ -583,7 +605,7 @@ GB_DESC Cgl[] =
 	GB_CONSTANT("INDEX_LOGIC_OP", "i", GL_INDEX_LOGIC_OP),
 	GB_CONSTANT("COLOR_LOGIC_OP", "i", GL_COLOR_LOGIC_OP),
 	GB_CONSTANT("LOGIC_OP_MODE", "i", GL_LOGIC_OP_MODE),
-	GB_CONSTANT("CLEAR", "i", GL_CLEAR),
+	GB_CONSTANT("CLEAR_", "i", GL_CLEAR),
 	GB_CONSTANT("SET", "i", GL_SET),
 	GB_CONSTANT("COPY", "i", GL_COPY),
 	GB_CONSTANT("COPY_INVERTED", "i", GL_COPY_INVERTED),
@@ -697,7 +719,7 @@ GB_DESC Cgl[] =
 	GB_CONSTANT("RGBA_MODE", "i", GL_RGBA_MODE),
 	GB_CONSTANT("TEXTURE_MATRIX", "i", GL_TEXTURE_MATRIX),
 	GB_CONSTANT("TEXTURE_STACK_DEPTH", "i", GL_TEXTURE_STACK_DEPTH),
-	GB_CONSTANT("VIEWPORT", "i", GL_VIEWPORT),
+	GB_CONSTANT("VIEWPORT_", "i", GL_VIEWPORT),
 
 	/* Evaluators */
 	GB_CONSTANT("AUTO_NORMAL", "i", GL_AUTO_NORMAL),
