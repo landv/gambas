@@ -25,4 +25,5 @@ gb_opengl_la_SOURCES = \
  GLpixelOperations.h GLpixelOperations.c \
  GLrasterization.h GLrasterization.c \
  GLtextureMapping.h GLtextureMapping.c \
- GLselectFeedback.h GLselectFeedback.c
+ GLselectFeedback.h GLselectFeedback.c \
+ framebufferobject.h framebufferobject.c

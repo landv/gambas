@@ -1,8 +1,8 @@
 /***************************************************************************
 
-  GLattributes.h
+  framebufferobject.h
 
-  (c) 2009 Laurent Carlier <lordheavy@users.sourceforge.net>
+  (c) 2011 Laurent Carlier <lordheavy@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -16,22 +16,18 @@
 
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
-#ifndef __GLATTRIBUTES_H
-#define __GLATTRIBUTES_H
+#ifndef __FBO_H
+#define __FBO_H
 
 #include "main.h"
-DECLARE_METHOD(GLBINDATTRIBLOCATION);
-DECLARE_METHOD(GLVERTEXATTRIB1F);
-DECLARE_METHOD(GLVERTEXATTRIB1FV);
-DECLARE_METHOD(GLVERTEXATTRIB2F);
-DECLARE_METHOD(GLVERTEXATTRIB2FV);
-DECLARE_METHOD(GLVERTEXATTRIB3F);
-DECLARE_METHOD(GLVERTEXATTRIB3FV);
-DECLARE_METHOD(GLVERTEXATTRIB4F);
-DECLARE_METHOD(GLVERTEXATTRIB4FV);
+DECLARE_METHOD(GLGENFRAMEBUFFERSEXT);
+DECLARE_METHOD(GLFRAMEBUFFERTEXTURE2DEXT);
+DECLARE_METHOD(GLBINDFRAMEBUFFERSEXT);
+DECLARE_METHOD(GLCHECKFRAMEBUFFERSTATUSEXT);
 
-#endif /* __GLATTRIBUTES_H */
+#endif /* __FBO_H */

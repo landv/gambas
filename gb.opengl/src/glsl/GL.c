@@ -91,12 +91,6 @@ GB_DESC Cgl[] =
 	GB_STATIC_METHOD("VertexAttrib3fv", NULL, GLVERTEXATTRIB3FV, "(Index)i(V)Float[]"),
 	GB_STATIC_METHOD("VertexAttrib4f", NULL, GLVERTEXATTRIB4F, "(Index)i(X)f(Y)f(Z)f(W)f"),
 	GB_STATIC_METHOD("VertexAttrib4fv", NULL, GLVERTEXATTRIB4FV, "(Index)i(V)Float[]"),
-	GB_STATIC_METHOD("GenFramebuffersEXT", "i", GLGENFRAMEBUFFERSEXT, "(N)i"),
-	GB_STATIC_METHOD("FramebufferTexture2d", NULL, GLFRAMEBUFFERTEXTURE2D, "(Target)i(Attachment)i(Textarget)i(Texture)i(Level)i"),
-	GB_STATIC_METHOD("BindFramebufferEXT", NULL, GLBINDFRAMEBUFFERSEXT, "(Target)i(Framebuffer)i"),
-	GB_STATIC_METHOD("CheckFramebufferStatusEXT", "i", GLCHECKFRAMEBUFFERSTATUSEXT, "(Target)i"),
-	
-
 
 	/* Contants */
 	GB_CONSTANT("GL_ACTIVE_ATTRIBUTES", "i", GL_ACTIVE_ATTRIBUTES),
