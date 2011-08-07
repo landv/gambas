@@ -308,9 +308,11 @@ typedef
 
 /* Predefined errors constants */
 
-#define GB_ERR_TYPE   ((char *)6)
-#define GB_ERR_ARG    ((char *)20)
-#define GB_ERR_BOUND  ((char *)21)
+#define GB_ERR_TYPE       ((char *)6)
+#define GB_ERR_NSYMBOL    ((char *)11)
+#define GB_ERR_NPROPERTY  ((char *)17)
+#define GB_ERR_ARG        ((char *)20)
+#define GB_ERR_BOUND      ((char *)21)
 
 
 /* Gambas description start macro */

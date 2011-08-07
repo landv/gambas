@@ -744,6 +744,7 @@ int CLASS_return_zero()
 	return 0;
 }
 
+static CLASS *_sorted_class;
 
 static int partition(CLASS_DESC_SYMBOL *cds, ushort *sym, const int start, const int end)
 {
@@ -776,6 +777,11 @@ static int partition(CLASS_DESC_SYMBOL *cds, ushort *sym, const int start, const
 				len--;
 			}
 			
+			if (result == 0)
+			{
+				if (*cds[pivot].name != '.')
+					ERROR_panic("Symbol '%s' declared twice in class '%s'\n", cds[sym[i]].name, _sorted_class->name);
+			}
 			if (result >= 0)
 				continue;
 		}
@@ -812,6 +818,8 @@ void CLASS_sort(CLASS *class)
 
 	if (!class->n_desc)
 		return;
+	
+	_sorted_class = class;
 	
 	ALLOC(&sym, sizeof(ushort) * class->n_desc, "CLASS_sort");
 
