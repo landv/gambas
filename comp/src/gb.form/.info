@@ -1093,6 +1093,10 @@ IconView_Select
 m
 
 
+IconView_MouseWheel
+m
+
+
 #IconView
 UserControl
 C
@@ -2148,7 +2152,7 @@ _new
 m
 
 
-WizardContainer_Refresh
+WizardContainer__Refresh
 m
 
 
@@ -2187,6 +2191,25 @@ _get
 m
 i
 (Date)d
+#_IconPanelContainer
+UserControl
+C
+Text
+p
+s
+
+Picture
+p
+Picture
+
+Container
+r
+Container
+
+_new
+m
+
+
 #_IconViewItem
 
 C
@@ -2293,7 +2316,7 @@ b
 #_WizardContainer
 UserControl
 C
-:Refresh
+:_Refresh
 :
 
 

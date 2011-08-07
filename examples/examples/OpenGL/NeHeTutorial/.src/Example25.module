@@ -97,13 +97,13 @@ Public Sub Screen_Open()
 
   Gl.ClearDepth(100.0)                'Enables Clearing Of The Depth Buffer
   gl.ClearColor(0.0, 0.0, 0.0, 0.0)   'This Will Clear The Background Color To Black
-  gl.DepthFunc(gl.GL_LESS)            'The Type Of Depth Test To Do
-  gl.Enable(gl.GL_DEPTH_TEST)         'Enables Depth Testing
-  gl.ShadeModel(gl.GL_SMOOTH)         'Enables Smooth Color Shading
-  gl.MatrixMode(gl.GL_PROJECTION)
+  gl.DepthFunc(gl.LESS)            'The Type Of Depth Test To Do
+  gl.Enable(gl.DEPTH_TEST)         'Enables Depth Testing
+  gl.ShadeModel(gl.SMOOTH)         'Enables Smooth Color Shading
+  gl.MatrixMode(gl.PROJECTION)
   gl.LoadIdentity()                     'Reset The Projection Matrix
   glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
-  gl.MatrixMode(gl.GL_MODELVIEW)
+  gl.MatrixMode(gl.MODELVIEW)
   Init()
 
 End
@@ -111,22 +111,22 @@ End
 Public Sub Screen_resize()
 
   Gl.Viewport(0, 0, Screen.Width, Screen.Height)
-  Gl.MatrixMode(Gl.GL_PROJECTION)
+  Gl.MatrixMode(Gl.PROJECTION)
   Gl.LoadIdentity()                     'Reset The Projection Matrix
   glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
-  Gl.MatrixMode(Gl.GL_MODELVIEW)
+  Gl.MatrixMode(Gl.MODELVIEW)
 
 End
 
 Public Sub Init()     'All Setup FOR OpenGL Goes Here
 
-  gl.BlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE)    'Set The Blending FUNCTION For Translucency
+  gl.BlendFunc(gl.SRC_ALPHA, gl.ONE)    'Set The Blending FUNCTION For Translucency
   gl.clearColor(0.0, 0.0, 0.0, 0.0)       'This Will Clear The Background Color TO Black
   gl.clearDepth(1.0)                      'Enables Clearing OF The Depth Buffer
-  gl.DepthFunc(gl.GL_LESS)                'The Type OF Depth Test TO DO
-  gl.Enable(gl.GL_DEPTH_TEST)             'Enables Depth Testing
-  gl.ShadeModel(gl.GL_SMOOTH)             'Enables Smooth Color Shading
-  gl.Hint(gl.GL_PERSPECTIVE_CORRECTION_HINT, gl.GL_NICEST) 'Really Nice Perspective Calculations
+  gl.DepthFunc(gl.LESS)                'The Type OF Depth Test TO DO
+  gl.Enable(gl.DEPTH_TEST)             'Enables Depth Testing
+  gl.ShadeModel(gl.SMOOTH)             'Enables Smooth Color Shading
+  gl.Hint(gl.PERSPECTIVE_CORRECTION_HINT, gl.NICEST) 'Really Nice Perspective Calculations
   load_objects()
 
 End
@@ -136,7 +136,7 @@ Public Sub Screen_Draw()
   Dim tx, ty, tz As Float             '/ / Temp X, Y & Z Variables
   Dim i, j, k, p As Integer
 
-  gl.Clear(gl.GL_COLOR_BUFFER_BIT Or gl.GL_DEPTH_BUFFER_BIT) 'Clear The Screen And The Depth Buffer
+  gl.Clear(gl.COLOR_BUFFER_BIT Or gl.DEPTH_BUFFER_BIT) 'Clear The Screen And The Depth Buffer
   gl.LoadIdentity()                                          'Reset The View
   gl.Translatef(cx, cy, cz)             'Translate The The Current Position TO Start Drawing
   gl.Rotatef(xrot, 1, 0, 0)             'Rotate On The X Axis By xrot
@@ -149,7 +149,7 @@ Public Sub Screen_Draw()
 
   'VERTEX q; / / Holds Returned Calculated Values FOR One Vertex
 
-  gl.begin(gl.GL_POINTS)                'Begin Drawing Points
+  gl.begin(gl.POINTS)                'Begin Drawing Points
 
   For i = 0 To num_points - 1           'Loop Through All The Verts Of morph
 

@@ -20,23 +20,23 @@ Public Sub Screen_Open()
 
   Gl.ClearDepth(100.0)                'Enables Clearing Of The Depth Buffer
   gl.ClearColor(0.0, 0.0, 0.0, 0.0)   'This Will Clear The Background Color To Black
-  gl.DepthFunc(gl.GL_LESS)            'The Type Of Depth Test To Do
-  gl.Enable(gl.GL_DEPTH_TEST)         'Enables Depth Testing
-  gl.ShadeModel(gl.GL_SMOOTH)         'Enables Smooth Color Shading
-  gl.MatrixMode(gl.GL_PROJECTION)
+  gl.DepthFunc(gl.LESS)            'The Type Of Depth Test To Do
+  gl.Enable(gl.DEPTH_TEST)         'Enables Depth Testing
+  gl.ShadeModel(gl.SMOOTH)         'Enables Smooth Color Shading
+  gl.MatrixMode(gl.PROJECTION)
   gl.LoadIdentity()                     'Reset The Projection Matrix
   glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
-  gl.MatrixMode(gl.GL_MODELVIEW)
+  gl.MatrixMode(gl.MODELVIEW)
 
 End
 
 Public Sub Screen_resize()
 
   Gl.Viewport(0, 0, Screen.Width, Screen.Height)
-  Gl.MatrixMode(Gl.GL_PROJECTION)
+  Gl.MatrixMode(Gl.PROJECTION)
   Gl.LoadIdentity()                     'Reset The Projection Matrix
   glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
-  Gl.MatrixMode(Gl.GL_MODELVIEW)
+  Gl.MatrixMode(Gl.MODELVIEW)
 
 End
 

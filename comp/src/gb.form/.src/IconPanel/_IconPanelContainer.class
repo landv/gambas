@@ -1,8 +1,8 @@
 ' Gambas class file
 
-Inherits UserControl
+Export
 
-Event Change
+Inherits UserControl
 
 Property Text As String
 Property Picture As Picture
@@ -55,12 +55,6 @@ Private Sub Picture_Write(hPict As Picture)
 
   Try GetIconView()[GetIndex()].Picture = hPict
   GetIconPanel()._UpdateIconViewWidth
-
-End
-
-Public Sub _Change()
-
-  Raise Change
 
 End
 

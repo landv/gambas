@@ -35,13 +35,13 @@ Public Sub Screen_Open()
   LightPosition = [0.0, 0.0, 2.0, 1.0]
   Gl.ClearDepth(100.0)                'Enables Clearing Of The Depth Buffer
   gl.ClearColor(0.0, 0.0, 0.0, 0.0)   'This Will Clear The Background Color To Black
-  gl.DepthFunc(gl.GL_LESS)            'The Type Of Depth Test To Do
-  gl.Enable(gl.GL_DEPTH_TEST)         'Enables Depth Testing
-  gl.ShadeModel(gl.GL_SMOOTH)         'Enables Smooth Color Shading
-  gl.MatrixMode(gl.GL_PROJECTION)
+  gl.DepthFunc(gl.LESS)            'The Type Of Depth Test To Do
+  gl.Enable(gl.DEPTH_TEST)         'Enables Depth Testing
+  gl.ShadeModel(gl.SMOOTH)         'Enables Smooth Color Shading
+  gl.MatrixMode(gl.PROJECTION)
   gl.LoadIdentity()                     'Reset The Projection Matrix
   glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
-  gl.MatrixMode(gl.GL_MODELVIEW)
+  gl.MatrixMode(gl.MODELVIEW)
   init()
 
 End
@@ -49,28 +49,28 @@ End
 Public Sub Screen_resize()
 
   Gl.Viewport(0, 0, Screen.Width / 2, Screen.Height / 2)
-  Gl.MatrixMode(Gl.GL_PROJECTION)
+  Gl.MatrixMode(Gl.PROJECTION)
   Gl.LoadIdentity()                     'Reset The Projection Matrix
   glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
-  Gl.MatrixMode(Gl.GL_MODELVIEW)
+  Gl.MatrixMode(Gl.MODELVIEW)
 
   Gl.Viewport(screen.Width / 2, 0, Screen.Width / 2, Screen.Height / 2)
-  Gl.MatrixMode(Gl.GL_PROJECTION)
+  Gl.MatrixMode(Gl.PROJECTION)
   Gl.LoadIdentity()                     'Reset The Projection Matrix
   glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
-  Gl.MatrixMode(Gl.GL_MODELVIEW)
+  Gl.MatrixMode(Gl.MODELVIEW)
 
   Gl.Viewport(0, screen.Height / 2, Screen.Width / 2, Screen.Height / 2)
-  Gl.MatrixMode(Gl.GL_PROJECTION)
+  Gl.MatrixMode(Gl.PROJECTION)
   Gl.LoadIdentity()                     'Reset The Projection Matrix
   glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
-  Gl.MatrixMode(Gl.GL_MODELVIEW)
+  Gl.MatrixMode(Gl.MODELVIEW)
 
   Gl.Viewport(screen.Width / 2, screen.Height / 2, Screen.Width / 2, Screen.Height / 2)
-  Gl.MatrixMode(Gl.GL_PROJECTION)
+  Gl.MatrixMode(Gl.PROJECTION)
   Gl.LoadIdentity()                     'Reset The Projection Matrix
   glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
-  Gl.MatrixMode(Gl.GL_MODELVIEW)
+  Gl.MatrixMode(Gl.MODELVIEW)
 
 End
 
@@ -102,7 +102,7 @@ Public Sub TexturedCylinder(radius As Float, height As Float, slices As Integer)
 
   '    / * Cover the base AND top * /
 
-  gl.Begin(gl.GL_TRIANGLE_FAN)
+  gl.Begin(gl.TRIANGLE_FAN)
   gl.Normal3f(0.0, 0.0, -1.0)
   gl.Vertex3f(0.0, 0.0, - height / 2)
   For j = 0 To slices
@@ -110,7 +110,7 @@ Public Sub TexturedCylinder(radius As Float, height As Float, slices As Integer)
   Next
   gl.End()
 
-  gl.Begin(gl.GL_TRIANGLE_FAN)
+  gl.Begin(gl.TRIANGLE_FAN)
   gl.Normal3f(0.0, 0.0, 1.0)
   gl.Vertex3f(0.0, 0.0, height / 2)
   For j = slices To 0 Step -1
@@ -123,7 +123,7 @@ Public Sub TexturedCylinder(radius As Float, height As Float, slices As Integer)
   z0 = - height / 2
   z1 = height / 2
 
-  gl.Begin(gl.GL_QUAD_STRIP)
+  gl.Begin(gl.QUAD_STRIP)
   For j = 0 To slices
     gl.Normal3f(cost[j], sint[j], 0.0)
     gl.TexCoord2f(j * 1 / slices, 0)
@@ -140,7 +140,7 @@ Public Sub init()
   Dim logo As Image
   Dim a, b, c, d As Integer
 
-  gl.Enable(gl.GL_TEXTURE_2D)                     ' Enable Texture Mapping( NEW )
+  gl.Enable(gl.TEXTURE_2D)                     ' Enable Texture Mapping( NEW )
   logo = Image.Load("barrel.png")
   c = logo.Height - 1
   d = logo.Width - 1
@@ -150,20 +150,20 @@ Public Sub init()
     Next
   Next
   textures = Gl.GenTextures(1)
-  Gl.BindTexture(Gl.GL_TEXTURE_2D, textures[0])
+  Gl.BindTexture(Gl.TEXTURE_2D, textures[0])
   Gl.TexImage2D(logo)
   Glu.Build2DMipmaps(logo)
-  Gl.TexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MIN_FILTER, Gl.GL_LINEAR_MIPMAP_NEAREST)
-  Gl.TexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MAG_FILTER, Gl.GL_LINEAR)
+  Gl.TexParameteri(Gl.TEXTURE_2D, Gl.TEXTURE_MIN_FILTER, Gl.LINEAR_MIPMAP_NEAREST)
+  Gl.TexParameteri(Gl.TEXTURE_2D, Gl.TEXTURE_MAG_FILTER, Gl.LINEAR)
   objects = Gl.GenLists(4)
   GL.LoadIdentity
-  Gl.NewList(objects, Gl.GL_COMPILE)
+  Gl.NewList(objects, Gl.COMPILE)
   TexturedCylinder(2.0, 5.0, 24.0)
   gl.EndList()
 
   GL.LoadIdentity
-  Gl.NewList(objects + 1, Gl.GL_COMPILE)
-  gl.begin(gl.GL_QUADS)
+  Gl.NewList(objects + 1, Gl.COMPILE)
+  gl.begin(gl.QUADS)
   gl.Normal3f(0, 0, 1)
   gl.Color3f(0.0, 0.0, 1.0)
   gl.Vertex3f(-40, -40, -10)
@@ -173,18 +173,18 @@ Public Sub init()
   gl.End()
   gl.EndList()
 
-  gl.Enable(gl.GL_TEXTURE_2D)                     ' Enable Texture Mapping( NEW )
-  gl.ShadeModel(gl.GL_SMOOTH)                     ' Enable Smooth Shading
+  gl.Enable(gl.TEXTURE_2D)                     ' Enable Texture Mapping( NEW )
+  gl.ShadeModel(gl.SMOOTH)                     ' Enable Smooth Shading
   gl.ClearColor(0.3, 0.0, 0.3, 0.5)               ' Black Background
   gl.ClearDepth(1.0)                              ' Depth Buffer Setup
-  gl.Enable(gl.GL_DEPTH_TEST)                     ' Enables Depth Testing
-  gl.DepthFunc(gl.GL_LEQUAL)                      ' The Type OF Depth Testing TO DO
-  gl.Hint(gl.GL_PERSPECTIVE_CORRECTION_HINT, gl.GL_NICEST)      ' Really Nice Perspective Calculations
-  gl.Lightfv(gl.GL_LIGHT0, gl.GL_AMBIENT, LightAmbient) ' add lighting.(ambient)
-  gl.Lightfv(gl.GL_LIGHT0, gl.GL_DIFFUSE, LightDiffuse) ' add lighting.(diffuse).
-  gl.Lightfv(gl.GL_LIGHT0, gl.GL_POSITION, LightPosition) ' set light position.
-  gl.Enable(gl.GL_LIGHT0)
-  gl.Enable(gl.GL_LIGHTING)
+  gl.Enable(gl.DEPTH_TEST)                     ' Enables Depth Testing
+  gl.DepthFunc(gl.LEQUAL)                      ' The Type OF Depth Testing TO DO
+  gl.Hint(gl.PERSPECTIVE_CORRECTION_HINT, gl.NICEST)      ' Really Nice Perspective Calculations
+  gl.Lightfv(gl.LIGHT0, gl.AMBIENT, LightAmbient) ' add lighting.(ambient)
+  gl.Lightfv(gl.LIGHT0, gl.DIFFUSE, LightDiffuse) ' add lighting.(diffuse).
+  gl.Lightfv(gl.LIGHT0, gl.POSITION, LightPosition) ' set light position.
+  gl.Enable(gl.LIGHT0)
+  gl.Enable(gl.LIGHTING)
 
 End
 
@@ -192,18 +192,18 @@ Public Sub Screen_Draw()
 
   'gl.ClearColor(0.23, 0.2, 0.3, 0.5)
 
-  gl.Clear(gl.GL_COLOR_BUFFER_BIT Or gl.GL_DEPTH_BUFFER_BIT)    ' Clear The Screen And The Depth Buffer
+  gl.Clear(gl.COLOR_BUFFER_BIT Or gl.DEPTH_BUFFER_BIT)    ' Clear The Screen And The Depth Buffer
 
   Gl.Viewport(0, 0, Screen.Width / 2, Screen.Height / 2)        'Lower left screen
-  Gl.MatrixMode(Gl.GL_PROJECTION)
+  Gl.MatrixMode(Gl.PROJECTION)
   Gl.LoadIdentity()                                             'Reset The Projection Matrix
   glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
-  Gl.MatrixMode(Gl.GL_MODELVIEW)
+  Gl.MatrixMode(Gl.MODELVIEW)
 
   gl.LoadIdentity()                                     'Reset The Current Modelview Matrix
   gl.PushMatrix()
   gl.Translatef(0, 0, -10)
-  gl.begin(gl.GL_QUADS)
+  gl.begin(gl.QUADS)
   gl.Normal3f(0, 0, 1)
   gl.Color3f(0.0, 0.0, 1.0)
   gl.Vertex3f(-40, -40, -10)
@@ -213,7 +213,7 @@ Public Sub Screen_Draw()
   gl.End()
   gl.PopMatrix()
 
-  gl.begin(gl.GL_LINE_STRIP)
+  gl.begin(gl.LINE_STRIP)
   gl.Vertex3f(0, screen.Height / 2, 0)
   gl.Vertex3f(screen.Width / 2, screen.Height / 2, 0)
   gl.Vertex3f(screen.Width / 2, screen.Height, 0)
@@ -222,49 +222,49 @@ Public Sub Screen_Draw()
   gl.Rotatef(45, 1.0, 1.0, 0.0)                      'Rotate The Quad On The X axis( NEW )
   gl.Rotatef(rtx, 1.0, 0.0, 0.0)
   gl.Rotatef(rty, 0.0, 1.0, 0.0)
-  gl.BindTexture(gl.GL_TEXTURE_2D, textures[0])         ' SELECT Our Texture
+  gl.BindTexture(gl.TEXTURE_2D, textures[0])         ' SELECT Our Texture
   Gl.PushMatrix()
   Gl.CallList(objects)
   gl.PopMatrix()
 
   Gl.Viewport(screen.Width / 2, 0, Screen.Width / 2, Screen.Height / 2) 'Top left screen
-  Gl.MatrixMode(Gl.GL_PROJECTION)
+  Gl.MatrixMode(Gl.PROJECTION)
   Gl.LoadIdentity()                     'Reset The Projection Matrix
   glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
-  Gl.MatrixMode(Gl.GL_MODELVIEW)
+  Gl.MatrixMode(Gl.MODELVIEW)
 
   gl.LoadIdentity()                                     'Reset The Current Modelview Matrix
   gl.translatef(0, 0.0, -16.0)                        'Move Right 1.5 Units And Into The Screen 6.0
   gl.Rotatef(90, 0.0, 0.0, 1.0)                      'Rotate The Quad On The X axis( NEW )
   gl.Rotatef(rtx, 1.0, 0.0, 0.0)
   gl.Rotatef(rty, 0.0, 1.0, 0.0)
-  gl.BindTexture(gl.GL_TEXTURE_2D, textures[0])         ' SELECT Our Texture
+  gl.BindTexture(gl.TEXTURE_2D, textures[0])         ' SELECT Our Texture
   Gl.PushMatrix()
   Gl.CallList(objects)
   gl.PopMatrix()
 
   Gl.Viewport(0, screen.Height / 2, Screen.Width / 2, Screen.Height / 2)   'Lower right screen
-  Gl.MatrixMode(Gl.GL_PROJECTION)
+  Gl.MatrixMode(Gl.PROJECTION)
   Gl.LoadIdentity()                     'Reset The Projection Matrix
   glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
-  Gl.MatrixMode(Gl.GL_MODELVIEW)
+  Gl.MatrixMode(Gl.MODELVIEW)
 
   gl.LoadIdentity()                                     'Reset The Current Modelview Matrix
   gl.translatef(0, 0.0, -16.0)                        'Move Right 1.5 Units And Into The Screen 6.0
   gl.Rotatef(90, 0.0, 1.0, 0.0)                      'Rotate The Quad On The X axis( NEW )
   gl.Rotatef(rtx, 1.0, 0.0, 0.0)
   gl.Rotatef(rty, 0.0, 1.0, 0.0)
-  gl.BindTexture(gl.GL_TEXTURE_2D, textures[0])         ' SELECT Our Texture
+  gl.BindTexture(gl.TEXTURE_2D, textures[0])         ' SELECT Our Texture
   Gl.PushMatrix()
   Gl.CallList(objects)
   gl.PopMatrix()
 
   Gl.Viewport(screen.Width / 2, screen.Height / 2, Screen.Width / 2, Screen.Height / 2) 'top right
-  Gl.MatrixMode(Gl.GL_PROJECTION)
+  Gl.MatrixMode(Gl.PROJECTION)
   Gl.LoadIdentity()                     'Reset The Projection Matrix
   glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
-  Gl.MatrixMode(Gl.GL_MODELVIEW)
-  'gl.Clear(gl.GL_COLOR_BUFFER_BIT OR gl.GL_DEPTH_BUFFER_BIT)    ' Clear The Screen And The Depth Buffer
+  Gl.MatrixMode(Gl.MODELVIEW)
+  'gl.Clear(gl.COLOR_BUFFER_BIT OR gl.DEPTH_BUFFER_BIT)    ' Clear The Screen And The Depth Buffer
   gl.LoadIdentity()                                     'Reset The Current Modelview Matrix
   gl.PushMatrix()
   gl.Translatef(0, 0, -10)
@@ -274,7 +274,7 @@ Public Sub Screen_Draw()
   gl.Rotatef(90, 1.0, 0.0, 0.0)                      'Rotate The Quad On The X axis( NEW )
   gl.Rotatef(rtx, 1.0, 0.0, 0.0)
   gl.Rotatef(rty, 0.0, 1.0, 0.0)
-  gl.BindTexture(gl.GL_TEXTURE_2D, textures[0])         ' SELECT Our Texture
+  gl.BindTexture(gl.TEXTURE_2D, textures[0])         ' SELECT Our Texture
   Gl.PushMatrix()
   Gl.CallList(objects)
   gl.PopMatrix()

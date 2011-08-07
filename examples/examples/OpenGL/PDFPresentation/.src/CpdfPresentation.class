@@ -133,12 +133,12 @@ Public Sub Resize(W As Integer, H As Integer)
   ' Setup our viewport
   Gl.Viewport(0, 0, W, H)
   ' change to the projection matrix AND set our viewing volume.
-  Gl.MatrixMode(Gl.GL_PROJECTION)
+  Gl.MatrixMode(Gl.PROJECTION)
   Gl.LoadIdentity()
   ' Set our perspective
   Glu.Perspective(45.0, ratio, 0.1, 100.0)
   ' Make sure we're changing the model view and not the projection
-  Gl.MatrixMode(Gl.GL_MODELVIEW)
+  Gl.MatrixMode(Gl.MODELVIEW)
   GL.LoadIdentity()
 
 End
@@ -200,20 +200,20 @@ End
 Private Sub initialize()
 
   ' Enable texturing
-  Gl.Enable(Gl.GL_TEXTURE_2D)
+  Gl.Enable(Gl.TEXTURE_2D)
   ' Enable smooth shading
-  Gl.ShadeModel(Gl.GL_SMOOTH)
+  Gl.ShadeModel(Gl.SMOOTH)
   ' Set the background black
   Gl.ClearColor(0.0, 0.0, 0.0, 1.0)
   ' Depth buffer setup
   Gl.ClearDepth(1.0)
   ' Enables Depth Testing
-  Gl.Enable(Gl.GL_DEPTH_TEST)
+  Gl.Enable(Gl.DEPTH_TEST)
   ' The Type OF Depth Test TO DO
-  Gl.DepthFunc(Gl.GL_LESS)
+  Gl.DepthFunc(Gl.LESS)
   ' Really Nice Perspective Calculations
-  Gl.Hint(Gl.GL_PERSPECTIVE_CORRECTION_HINT, Gl.GL_NICEST)
-  Gl.Disable(Gl.GL_BLEND)
+  Gl.Hint(Gl.PERSPECTIVE_CORRECTION_HINT, Gl.NICEST)
+  Gl.Disable(Gl.BLEND)
 
   textures = Gl.GenTextures(3)
   loadTexture(textures[textureshown], 1)
@@ -237,16 +237,16 @@ Private Sub Paint()
     ZoomFactor = Max(GotoZoomFactor, ZoomFactor / (1.2 ^ (1 / 4)))
   Endif
 
-  gl.Clear(gl.GL_COLOR_BUFFER_BIT Or gl.GL_DEPTH_BUFFER_BIT)
+  gl.Clear(gl.COLOR_BUFFER_BIT Or gl.DEPTH_BUFFER_BIT)
   ' Reset The View
   gl.LoadIdentity()
 
   If DrawFlag Then
     gl.Translatef(0.80, -1.9, -8.0)
     gl.Rotatef(180, 1.0, 0, 0)
-    gl.BindTexture(gl.GL_TEXTURE_2D, textures[textureShown])
+    gl.BindTexture(gl.TEXTURE_2D, textures[textureShown])
 
-    gl.Begin(gl.GL_QUADS)
+    gl.Begin(gl.QUADS)
 
     For x = 0 To 43
       For y = 0 To 43
@@ -283,10 +283,10 @@ Private Sub Paint()
     gl.Translatef(0, 0, Ztrans * ZoomFactor)
     gl.Rotatef(angle, 0, Yrot, 0)
 
-    Gl.BindTexture(Gl.GL_TEXTURE_2D, textures[textureShown])
+    Gl.BindTexture(Gl.TEXTURE_2D, textures[textureShown])
 
     ' Draw A Quad
-    gl.Begin(gl.GL_QUADS)
+    gl.Begin(gl.QUADS)
       Gl.TexCoordf(tX, tY)
       gl.Vertexf(- qWidth, qHeight, 0.0)
       Gl.TexCoordf(twidth, tY)
@@ -326,10 +326,10 @@ Private Sub loadTexture(texture As Integer, page As Integer)
   imgPage.Resize(textureSize, textureSize)
   '$cImageCache[page] = imgPage
   'ENDIF
-  Gl.BindTexture(Gl.GL_TEXTURE_2D, texture)
+  Gl.BindTexture(Gl.TEXTURE_2D, texture)
   Gl.TexImage2D(imgPage)
-  Gl.TexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MIN_FILTER, Gl.GL_LINEAR)
-  Gl.TexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MAG_FILTER, Gl.GL_LINEAR)
+  Gl.TexParameteri(Gl.TEXTURE_2D, Gl.TEXTURE_MIN_FILTER, Gl.LINEAR)
+  Gl.TexParameteri(Gl.TEXTURE_2D, Gl.TEXTURE_MAG_FILTER, Gl.LINEAR)
 
 End
 

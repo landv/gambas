@@ -51,9 +51,9 @@ Public Sub Screen_Open()
 
   Gl.ClearDepth(100.0)                'Enables Clearing Of The Depth Buffer
   gl.ClearColor(0.0, 0.0, 0.0, 0.0)   'This Will Clear The Background Color To Black
-  gl.DepthFunc(gl.GL_LESS)            'The Type Of Depth Test To Do
-  gl.Enable(gl.GL_DEPTH_TEST)         'Enables Depth Testing
-  gl.ShadeModel(gl.GL_SMOOTH)         'Enables Smooth Color Shading
+  gl.DepthFunc(gl.LESS)            'The Type Of Depth Test To Do
+  gl.Enable(gl.DEPTH_TEST)         'Enables Depth Testing
+  gl.ShadeModel(gl.SMOOTH)         'Enables Smooth Color Shading
   init()
 
 End
@@ -61,11 +61,11 @@ End
 Public Sub Screen_resize()
 
   Gl.Viewport(0, 0, Screen.Width, Screen.Height)
-  Gl.MatrixMode(Gl.GL_PROJECTION)
+  Gl.MatrixMode(Gl.PROJECTION)
   Gl.LoadIdentity()                     'Reset The Projection Matrix
   glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
-  Gl.MatrixMode(Gl.GL_MODELVIEW)
-  gl.Enable(gl.GL_BLEND)
+  Gl.MatrixMode(Gl.MODELVIEW)
+  gl.Enable(gl.BLEND)
 
 End
 
@@ -76,13 +76,13 @@ Public Sub load_texture()
 
   starr = Image.Load("Star.png")
   texture = Gl.GenTextures(1)
-  Gl.BindTexture(Gl.GL_TEXTURE_2D, texture[0])   '2d texture (x and y size)
+  Gl.BindTexture(Gl.TEXTURE_2D, texture[0])   '2d texture (x and y size)
   Gl.TexImage2D(starr)
   Glu.Build2DMipmaps(starr)
   'scale linearly when image smalled than texture
-  Gl.TexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MIN_FILTER, Gl.GL_LINEAR)
+  Gl.TexParameteri(Gl.TEXTURE_2D, Gl.TEXTURE_MIN_FILTER, Gl.LINEAR)
   'scale linearly when image bigger than texture
-  Gl.TexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MAG_FILTER, Gl.GL_LINEAR)
+  Gl.TexParameteri(Gl.TEXTURE_2D, Gl.TEXTURE_MAG_FILTER, Gl.LINEAR)
 
 End
 
@@ -91,17 +91,17 @@ Public Sub init()
   Dim lops As Integer
 
   load_texture()
-  gl.Enable(gl.GL_TEXTURE_2D)                     ' Enable Texture Mapping
+  gl.Enable(gl.TEXTURE_2D)                     ' Enable Texture Mapping
   gl.ClearColor(0.0, 0.0, 0.0, 0.0)               ' Black Background
   gl.ClearDepth(1.0)                              ' Depth Buffer Setup
-  gl.ShadeModel(gl.GL_SMOOTH)                     ' Enable Smooth Shading
-  gl.MatrixMode(gl.GL_PROJECTION)
+  gl.ShadeModel(gl.SMOOTH)                     ' Enable Smooth Shading
+  gl.MatrixMode(gl.PROJECTION)
   gl.LoadIdentity()                     'Reset The Projection Matrix
   glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
-  gl.MatrixMode(gl.GL_MODELVIEW)
-  gl.blendfunc(gl.GL_SRC_ALPHA, gl.GL_ONE)      ' Set The Blending FUNCTION For Translucency
-  gl.Enable(gl.GL_BLEND)        'Turn Blending On
-  gl.Disable(gl.GL_DEPTH_TEST)  'Turn Depth Testing Off
+  gl.MatrixMode(gl.MODELVIEW)
+  gl.blendfunc(gl.SRC_ALPHA, gl.ONE)      ' Set The Blending FUNCTION For Translucency
+  gl.Enable(gl.BLEND)        'Turn Blending On
+  gl.Disable(gl.DEPTH_TEST)  'Turn Depth Testing Off
 
   For lops = 0 To num_star
     star[lops, angle] = 0.0   ' initially no rotation.
@@ -117,8 +117,8 @@ Public Sub Screen_draw()
 
   Dim lops As Integer
 
-  gl.Clear(gl.GL_COLOR_BUFFER_BIT Or gl.GL_DEPTH_BUFFER_BIT)         ' Clear Screen AND Depth Buffer
-  gl.BindTexture(gl.GL_TEXTURE_2D, texture[0])         ' SELECT Our Texture
+  gl.Clear(gl.COLOR_BUFFER_BIT Or gl.DEPTH_BUFFER_BIT)         ' Clear Screen AND Depth Buffer
+  gl.BindTexture(gl.TEXTURE_2D, texture[0])         ' SELECT Our Texture
 
   For lops = 0 To num_star               'loop through all the stars.
     gl.LoadIdentity()                     'reset the view before we draw EACH star.
@@ -135,7 +135,7 @@ Public Sub Screen_draw()
       'assign a color using bytes
       gl.Color4f(star[num_star - lops, r], star[num_star - lops, g], star[num_star - lops, b], 255)
 
-      gl.Begin(gl.GL_QUADS)                 'begin drawing the textured quad.
+      gl.Begin(gl.QUADS)                 'begin drawing the textured quad.
       gl.TexCoord2f(0.0, 0.0)
       gl.Vertex3f(-1.0, -1.0, 0.0)
       gl.TexCoord2f(1.0, 0.0)
@@ -152,7 +152,7 @@ Public Sub Screen_draw()
 
     'Assign A Color Using Bytes
     gl.Color4f(star[num_star - lops, r], star[num_star - lops, g], star[num_star - lops, b], 255)
-    gl.Begin(gl.GL_QUADS)                      'Begin Drawing The Textured Quad
+    gl.Begin(gl.QUADS)                      'Begin Drawing The Textured Quad
     gl.TexCoord2f(0.0, 0.0)
     gl.Vertex3f(-1.0, -1.0, 0.0)
     gl.TexCoord2f(1.0, 0.0)

@@ -100,11 +100,11 @@ Public Sub load_texture()
 
   part = Image.Load("Star.png")
   textures = Gl.GenTextures(1)
-  Gl.BindTexture(Gl.GL_TEXTURE_2D, textures[0])
+  Gl.BindTexture(Gl.TEXTURE_2D, textures[0])
   Gl.TexImage2D(part)
   Glu.Build2DMipmaps(part)
-  Gl.TexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MIN_FILTER, Gl.GL_LINEAR_MIPMAP_NEAREST)
-  Gl.TexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MAG_FILTER, Gl.GL_LINEAR)
+  Gl.TexParameteri(Gl.TEXTURE_2D, Gl.TEXTURE_MIN_FILTER, Gl.LINEAR_MIPMAP_NEAREST)
+  Gl.TexParameteri(Gl.TEXTURE_2D, Gl.TEXTURE_MAG_FILTER, Gl.LINEAR)
 
 End
 
@@ -112,13 +112,13 @@ Public Sub Screen_Open()
 
   Gl.ClearDepth(100.0)                'Enables Clearing Of The Depth Buffer
   gl.ClearColor(0.0, 0.0, 0.0, 0.0)   'This Will Clear The Background Color To Black
-  gl.DepthFunc(gl.GL_LESS)            'The Type Of Depth Test To Do
-  gl.Enable(gl.GL_DEPTH_TEST)         'Enables Depth Testing
-  gl.ShadeModel(gl.GL_SMOOTH)         'Enables Smooth Color Shading
-  gl.MatrixMode(gl.GL_PROJECTION)
+  gl.DepthFunc(gl.LESS)            'The Type Of Depth Test To Do
+  gl.Enable(gl.DEPTH_TEST)         'Enables Depth Testing
+  gl.ShadeModel(gl.SMOOTH)         'Enables Smooth Color Shading
+  gl.MatrixMode(gl.PROJECTION)
   gl.LoadIdentity()                     'Reset The Projection Matrix
   glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
-  gl.MatrixMode(gl.GL_MODELVIEW)
+  gl.MatrixMode(gl.MODELVIEW)
   init()
 
 End
@@ -127,10 +127,10 @@ Public Sub Screen_resize()
 
   Gl.Viewport(0, 0, Screen.Width, Screen.Height)
 
-  Gl.MatrixMode(Gl.GL_PROJECTION)
+  Gl.MatrixMode(Gl.PROJECTION)
   Gl.LoadIdentity()                     'Reset The Projection Matrix
   glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
-  Gl.MatrixMode(Gl.GL_MODELVIEW)
+  Gl.MatrixMode(Gl.MODELVIEW)
 
 End
 
@@ -138,18 +138,18 @@ Public Sub init()
 
   Dim l As Integer
 
-  gl.Enable(gl.GL_TEXTURE_2D)                     ' Enable Texture Mapping( NEW )
+  gl.Enable(gl.TEXTURE_2D)                     ' Enable Texture Mapping( NEW )
   load_texture()
-  gl.ShadeModel(gl.GL_SMOOTH)                     ' Enable Smooth Shading
+  gl.ShadeModel(gl.SMOOTH)                     ' Enable Smooth Shading
   gl.ClearColor(0.0, 0.0, 0.0, 0.0)               ' Black Background
   gl.ClearDepth(1.0)                              ' Depth Buffer Setup
-  gl.Disable(gl.GL_DEPTH_TEST)                    ' Disable Depth Testing
-  gl.Enable(gl.GL_BLEND)                          ' Enable Blending
-  gl.BlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE)                   ' Type OF Blending TO Perform
-  gl.Hint(gl.GL_PERSPECTIVE_CORRECTION_HINT, gl.GL_NICEST)                     ' Really Nice Perspective Calculations
-  gl.Hint(gl.GL_POINT_SMOOTH_HINT, gl.GL_NICEST)  ' Really Nice Point Smoothing
-  gl.Enable(gl.GL_TEXTURE_2D)                     ' Enable Texture Mapping
-  gl.BindTexture(gl.GL_TEXTURE_2D, textures[0])    ' SELECT Our Texture
+  gl.Disable(gl.DEPTH_TEST)                    ' Disable Depth Testing
+  gl.Enable(gl.BLEND)                          ' Enable Blending
+  gl.BlendFunc(gl.SRC_ALPHA, gl.ONE)                   ' Type OF Blending TO Perform
+  gl.Hint(gl.PERSPECTIVE_CORRECTION_HINT, gl.NICEST)                     ' Really Nice Perspective Calculations
+  gl.Hint(gl.POINT_SMOOTH_HINT, gl.NICEST)  ' Really Nice Point Smoothing
+  gl.Enable(gl.TEXTURE_2D)                     ' Enable Texture Mapping
+  gl.BindTexture(gl.TEXTURE_2D, textures[0])    ' SELECT Our Texture
 
   For l = 0 To MAX_PARTICLES - 1                 ' Initials All The Textures
     activ[L] = True                              ' Make All The Particles Active
@@ -173,7 +173,7 @@ Public Sub Screen_draw()
   Dim l As Integer
   Dim xq, yq, zq As Float
 
-  gl.Clear(gl.GL_COLOR_BUFFER_BIT Or gl.GL_DEPTH_BUFFER_BIT)  ' Clear Screen AND Depth Buffer
+  gl.Clear(gl.COLOR_BUFFER_BIT Or gl.DEPTH_BUFFER_BIT)  ' Clear Screen AND Depth Buffer
   gl.LoadIdentity()                                           ' Reset The ModelView Matrix
 
   For l = 0 To MAX_PARTICLES - 1                              'Loop Through All The Particles
@@ -186,7 +186,7 @@ Public Sub Screen_draw()
       '      Draw The Particle Using Our RGB Values, Fade The Particle Based On It 's Life 
       gl.Color4f(particle[l, r], particle[l, g], particle[l, b], particle[l, life])
 
-      gl.Begin(gl.GL_TRIANGLE_STRIP)                      'Build Quad FROM A Triangl.e Strip
+      gl.Begin(gl.TRIANGLE_STRIP)                      'Build Quad FROM A Triangl.e Strip
       gl.TexCoord2i(1, 1)
       gl.Vertex3f(xq + 0.5, yq + 0.5, zq)              ' Top Right
       gl.TexCoord2i(0, 1)

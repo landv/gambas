@@ -251,3 +251,13 @@ Public Sub IconView_Select()
   Index_Write(CInt($hIconView.Key))
   
 End
+
+Public Sub IconView_MouseWheel()
+  
+  If Mouse.Delta < 0 And If $iCurrent < $aCont.Max Then
+    Index_Write($iCurrent + 1)
+  Else If Mouse.Delta > 0 And If $iCurrent > 0 Then
+    Index_Write($iCurrent - 1)
+  Endif
+  
+End

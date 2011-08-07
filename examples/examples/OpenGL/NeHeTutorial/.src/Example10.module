@@ -79,9 +79,9 @@ Public Sub Screen_Open()
   
   Gl.ClearDepth(100.0)                'Enables Clearing Of The Depth Buffer
   gl.ClearColor(0.0, 0.0, 0.0, 0.0)   'This Will Clear The Background Color To Black
-  gl.DepthFunc(gl.GL_LESS)            'The Type Of Depth Test To Do
-  gl.Enable(gl.GL_DEPTH_TEST)         'Enables Depth Testing
-  gl.ShadeModel(gl.GL_SMOOTH)         'Enables Smooth Color Shading
+  gl.DepthFunc(gl.LESS)            'The Type Of Depth Test To Do
+  gl.Enable(gl.DEPTH_TEST)         'Enables Depth Testing
+  gl.ShadeModel(gl.SMOOTH)         'Enables Smooth Color Shading
   init()
   
 End
@@ -90,10 +90,10 @@ Public Sub Screen_resize()
 
   Gl.Viewport(0, 0, Screen.Width, Screen.Height)
   
-  Gl.MatrixMode(Gl.GL_PROJECTION)
+  Gl.MatrixMode(Gl.PROJECTION)
   Gl.LoadIdentity()                     'Reset The Projection Matrix
   glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
-  Gl.MatrixMode(Gl.GL_MODELVIEW)
+  Gl.MatrixMode(Gl.MODELVIEW)
   
 End
 
@@ -128,25 +128,25 @@ Public Sub load_texture()
   Dim ceiling As Image
   Dim egs As Boolean
   
-  gl.Enable(gl.GL_TEXTURE_2D)                     ' Enable Texture Mapping
+  gl.Enable(gl.TEXTURE_2D)                     ' Enable Texture Mapping
   texture = Gl.GenTextures(3)
   wall = Image.Load("wall.jpeg")
-  Gl.BindTexture(Gl.GL_TEXTURE_2D, texture[0])
+  Gl.BindTexture(Gl.TEXTURE_2D, texture[0])
   Gl.TexImage2D(wall)
   Glu.Build2DMipmaps(wall)
   
   floor1 = Image.Load("floor.png")
-  Gl.BindTexture(Gl.GL_TEXTURE_2D, texture[1])
+  Gl.BindTexture(Gl.TEXTURE_2D, texture[1])
   Gl.TexImage2D(Floor1)
   Glu.Build2DMipmaps(Floor1)
   
   ceiling = Image.Load("ceiling.png")
-  Gl.BindTexture(Gl.GL_TEXTURE_2D, texture[2])
+  Gl.BindTexture(Gl.TEXTURE_2D, texture[2])
   Gl.TexImage2D(ceiling)
   Glu.Build2DMipmaps(ceiling)
   
-  Gl.TexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MIN_FILTER, Gl.GL_LINEAR_MIPMAP_NEAREST)
-  Gl.TexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MAG_FILTER, Gl.GL_LINEAR)
+  Gl.TexParameteri(Gl.TEXTURE_2D, Gl.TEXTURE_MIN_FILTER, Gl.LINEAR_MIPMAP_NEAREST)
+  Gl.TexParameteri(Gl.TEXTURE_2D, Gl.TEXTURE_MAG_FILTER, Gl.LINEAR)
   
 End
 
@@ -154,26 +154,26 @@ Public Sub init()
 
   load_world()
   load_texture()
-  gl.Enable(gl.GL_TEXTURE_2D)                     ' Enable Texture Mapping( NEW )
-  gl.ShadeModel(gl.GL_SMOOTH)                     ' Enable Smooth Shading
+  gl.Enable(gl.TEXTURE_2D)                     ' Enable Texture Mapping( NEW )
+  gl.ShadeModel(gl.SMOOTH)                     ' Enable Smooth Shading
   gl.ClearColor(0.0, 0.0, 0.0, 0.0)               ' Black Background
   gl.ClearDepth(2.0)                              ' Depth Buffer Setup
-  gl.Enable(gl.GL_DEPTH_TEST)                     ' Enables Depth Testing
-  gl.DepthFunc(gl.GL_LESS)                      ' The Type OF Depth Testing TO DO
-  gl.MatrixMode(gl.GL_PROJECTION)
+  gl.Enable(gl.DEPTH_TEST)                     ' Enables Depth Testing
+  gl.DepthFunc(gl.LESS)                      ' The Type OF Depth Testing TO DO
+  gl.MatrixMode(gl.PROJECTION)
   gl.LoadIdentity()                     'Reset The Projection Matrix
   glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
-  gl.MatrixMode(gl.GL_MODELVIEW)
-  gl.Lightfv(gl.GL_LIGHT1, gl.GL_AMBIENT, LightAmbient) ' add lighting.(ambient)
-  gl.Lightfv(gl.GL_LIGHT1, gl.GL_DIFFUSE, LightDiffuse) ' add lighting.(diffuse).
-  gl.Lightfv(gl.GL_LIGHT1, gl.GL_POSITION, LightPosition) ' set light position.
-  gl.Enable(gl.GL_LIGHT1)
+  gl.MatrixMode(gl.MODELVIEW)
+  gl.Lightfv(gl.LIGHT1, gl.AMBIENT, LightAmbient) ' add lighting.(ambient)
+  gl.Lightfv(gl.LIGHT1, gl.DIFFUSE, LightDiffuse) ' add lighting.(diffuse).
+  gl.Lightfv(gl.LIGHT1, gl.POSITION, LightPosition) ' set light position.
+  gl.Enable(gl.LIGHT1)
   objlists = Gl.GenLists(3)
   
-  Gl.NewList(objlists, Gl.GL_COMPILE)
+  Gl.NewList(objlists, Gl.COMPILE)
   
-  gl.BindTexture(gl.GL_TEXTURE_2D, texture[0])         ' SELECT Our Texture
-  Gl.Begin(Gl.GL_QUADS)
+  gl.BindTexture(gl.TEXTURE_2D, texture[0])         ' SELECT Our Texture
+  Gl.Begin(Gl.QUADS)
   gl.Normal3f(0.0, 0.0, 1.0)       'front face
   Gl.TexCoordf(0.0, 1.0)
   Gl.Vertexf(-1.0, 0.0, 1.0)
@@ -224,10 +224,10 @@ Public Sub init()
   
   gl.EndList()
   
-  Gl.NewList(objlists + 1, Gl.GL_COMPILE)
+  Gl.NewList(objlists + 1, Gl.COMPILE)
   
-  gl.BindTexture(gl.GL_TEXTURE_2D, texture[1])         ' SELECT Our Texture
-  gl.Begin(gl.GL_QUADS)
+  gl.BindTexture(gl.TEXTURE_2D, texture[1])         ' SELECT Our Texture
+  gl.Begin(gl.QUADS)
   Gl.TexCoordf(0.0, 1.0)
   gl.Vertex3f(-1, 0, world_y_size * 2 - 1)
   Gl.TexCoordf(1.0, 1.0)
@@ -240,10 +240,10 @@ Public Sub init()
   
   Gl.EndList()
   
-  Gl.NewList(objlists + 2, Gl.GL_COMPILE)
+  Gl.NewList(objlists + 2, Gl.COMPILE)
   
-  gl.BindTexture(gl.GL_TEXTURE_2D, texture[2])         ' SELECT Our Texture
-  gl.Begin(gl.GL_QUADS)
+  gl.BindTexture(gl.TEXTURE_2D, texture[2])         ' SELECT Our Texture
+  gl.Begin(gl.QUADS)
   Gl.TexCoordf(0.0, 0.0)
   gl.Vertex3f(-1, 4, 1)
   Gl.TexCoordf(0.0, 1.0)
@@ -271,7 +271,7 @@ Public Sub Screen_draw()
   sceneroty = 360.0 - yrot
   
   gl.LoadIdentity()
-  gl.Clear(gl.GL_COLOR_BUFFER_BIT Or gl.GL_DEPTH_BUFFER_BIT)         ' Clear Screen AND Depth Buffer
+  gl.Clear(gl.COLOR_BUFFER_BIT Or gl.DEPTH_BUFFER_BIT)         ' Clear Screen AND Depth Buffer
   
   For i = 0 To world_x_size - 1
     For j = 0 To world_y_size - 1
@@ -322,8 +322,8 @@ Public Sub Screen_keyPress()
   If (key.code = key.F1) Then screen.Fullscreen = Not screen.Fullscreen
   If (key.Code = key.Esc) Then Screen.Close()
   If (key.text = "l" Or key.Text = "L") Then
-    If lp = 0 Then gl.Enable(gl.GL_LIGHTing)
-    If lp = 1 Then gl.Disable(gl.GL_LIGHTing)
+    If lp = 0 Then gl.Enable(gl.LIGHTing)
+    If lp = 1 Then gl.Disable(gl.LIGHTing)
     lp = 1 - lp
   Endif
   If (key.code = key.PageUp) Then

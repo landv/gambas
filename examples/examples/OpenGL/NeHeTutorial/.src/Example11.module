@@ -34,9 +34,9 @@ Public Sub Screen_Open()
 
   Gl.ClearDepth(100.0)                'Enables Clearing Of The Depth Buffer
   gl.ClearColor(0.0, 0.0, 0.0, 0.0)   'This Will Clear The Background Color To Black
-  gl.DepthFunc(gl.GL_LESS)            'The Type Of Depth Test To Do
-  gl.Enable(gl.GL_DEPTH_TEST)         'Enables Depth Testing
-  gl.ShadeModel(gl.GL_SMOOTH)         'Enables Smooth Color Shading
+  gl.DepthFunc(gl.LESS)            'The Type Of Depth Test To Do
+  gl.Enable(gl.DEPTH_TEST)         'Enables Depth Testing
+  gl.ShadeModel(gl.SMOOTH)         'Enables Smooth Color Shading
   init()
 
 End
@@ -44,11 +44,11 @@ End
 Public Sub Screen_resize()
 
   Gl.Viewport(0, 0, Screen.Width, Screen.Height)
-  Gl.MatrixMode(Gl.GL_PROJECTION)
+  Gl.MatrixMode(Gl.PROJECTION)
   Gl.LoadIdentity()                     'Reset The Projection Matrix
   glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
-  Gl.MatrixMode(Gl.GL_MODELVIEW)
-  gl.Enable(gl.GL_BLEND)
+  Gl.MatrixMode(Gl.MODELVIEW)
+  gl.Enable(gl.BLEND)
 
 End
 
@@ -59,12 +59,12 @@ Public Sub load_texture()
 
   starr = Image.Load("glass.png")
   texture = Gl.GenTextures(1)
-  Gl.BindTexture(Gl.GL_TEXTURE_2D, texture[0])   '2d texture (x and y size)
+  Gl.BindTexture(Gl.TEXTURE_2D, texture[0])   '2d texture (x and y size)
 
   'scale linearly when image smalled than texture
-  Gl.TexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MIN_FILTER, Gl.GL_LINEAR)
+  Gl.TexParameteri(Gl.TEXTURE_2D, Gl.TEXTURE_MIN_FILTER, Gl.LINEAR)
   'scale linearly when image bigger than texture
-  Gl.TexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MAG_FILTER, Gl.GL_LINEAR)
+  Gl.TexParameteri(Gl.TEXTURE_2D, Gl.TEXTURE_MAG_FILTER, Gl.LINEAR)
   Gl.TexImage2D(starr)
 
 End
@@ -75,17 +75,17 @@ Public Sub init()
   Dim float_x, float_y As Float                    'loop counters.
 
   load_texture()
-  gl.Enable(gl.GL_TEXTURE_2D)                     ' Enable Texture Mapping
+  gl.Enable(gl.TEXTURE_2D)                     ' Enable Texture Mapping
   gl.ClearColor(0.0, 0.0, 1.0, 0.0)               ' Black Background
   gl.ClearDepth(1.0)
-  gl.DepthFunc(gl.GL_LESS)                         ' Depth Buffer Setup
-  gl.enable(gl.GL_DEPTH_TEST)
-  gl.ShadeModel(gl.GL_SMOOTH)                     ' Enable Smooth Shading
+  gl.DepthFunc(gl.LESS)                         ' Depth Buffer Setup
+  gl.enable(gl.DEPTH_TEST)
+  gl.ShadeModel(gl.SMOOTH)                     ' Enable Smooth Shading
 
-  gl.MatrixMode(gl.GL_PROJECTION)
+  gl.MatrixMode(gl.PROJECTION)
   gl.LoadIdentity()                     'Reset The Projection Matrix
   glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
-  gl.MatrixMode(gl.GL_MODELVIEW)
+  gl.MatrixMode(gl.MODELVIEW)
 
   For float_x = 0.0 To 9.0 Step 0.2
     For float_y = 0.0 To 9.0 Step 0.2
@@ -102,15 +102,15 @@ Public Sub Screen_draw()
   Dim x, y As Integer
   Dim float_x, float_y, float_xb, float_yb As Float
 
-  gl.clear(gl.GL_COLOR_BUFFER_BIT Or gl.GL_DEPTH_BUFFER_BIT)   'Clear The Screen And The Depth Buffer
+  gl.clear(gl.COLOR_BUFFER_BIT Or gl.DEPTH_BUFFER_BIT)   'Clear The Screen And The Depth Buffer
   gl.LoadIdentity()                                         'Reset The View
   gl.Translatef(0.0, 0.0, -12.0)                            'MOVE 12 units into the screen.
-  gl.BindTexture(gl.GL_TEXTURE_2D, texture[0])              'Choose the texture TO use.
-  gl.PolygonMode(gl.GL_BACK, gl.GL_FILL)                    'Back Face Is Filled In
-  gl.PolygonMode(gl.GL_FRONT, gl.GL_LINE)                   'Front Face Is Drawn With Lines
+  gl.BindTexture(gl.TEXTURE_2D, texture[0])              'Choose the texture TO use.
+  gl.PolygonMode(gl.BACK, gl.FILL)                    'Back Face Is Filled In
+  gl.PolygonMode(gl.FRONT, gl.LINE)                   'Front Face Is Drawn With Lines
   gl.Rotatef(180, 0, 0, 1)
 
-  gl.Begin(gl.GL_QUADS)
+  gl.Begin(gl.QUADS)
   For x = 0 To 43
     For y = 0 To 43
       float_x = x / 44

@@ -4,7 +4,7 @@ Export
 
 Inherits UserControl
 
-Event Refresh
+Event _Refresh
 
 Property Text As String
 Property Picture As Picture
@@ -32,7 +32,7 @@ End
 Private Sub Text_Write(sText As String)
 
   $sText = sText
-  Raise Refresh
+  Raise _Refresh
 
 End
 
@@ -45,7 +45,7 @@ End
 Private Sub Picture_Write(hPict As Picture)
 
   $hPict = hPict
-  Raise Refresh
+  Raise _Refresh
 
 End
 

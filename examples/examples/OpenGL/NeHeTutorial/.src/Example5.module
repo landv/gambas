@@ -25,13 +25,13 @@ Public Sub Screen_Open()
 
   Gl.ClearDepth(100.0)                'Enables Clearing Of The Depth Buffer
   gl.ClearColor(0.0, 0.0, 0.0, 0.0)   'This Will Clear The Background Color To Black
-  gl.DepthFunc(gl.GL_LESS)            'The Type Of Depth Test To Do
-  gl.Enable(gl.GL_DEPTH_TEST)         'Enables Depth Testing
-  gl.ShadeModel(gl.GL_SMOOTH)         'Enables Smooth Color Shading
-  gl.MatrixMode(gl.GL_PROJECTION)
+  gl.DepthFunc(gl.LESS)            'The Type Of Depth Test To Do
+  gl.Enable(gl.DEPTH_TEST)         'Enables Depth Testing
+  gl.ShadeModel(gl.SMOOTH)         'Enables Smooth Color Shading
+  gl.MatrixMode(gl.PROJECTION)
   gl.LoadIdentity()                     'Reset The Projection Matrix
   glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
-  gl.MatrixMode(gl.GL_MODELVIEW)
+  gl.MatrixMode(gl.MODELVIEW)
 
 End
 
@@ -39,10 +39,10 @@ Public Sub Screen_resize()
 
   Gl.Viewport(0, 0, Screen.Width, Screen.Height)
 
-  Gl.MatrixMode(Gl.GL_PROJECTION)
+  Gl.MatrixMode(Gl.PROJECTION)
   Gl.LoadIdentity()                     'Reset The Projection Matrix
   glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
-  Gl.MatrixMode(Gl.GL_MODELVIEW)
+  Gl.MatrixMode(Gl.MODELVIEW)
 
 End
 
@@ -52,12 +52,12 @@ End
 
 Public Sub Screen_Draw()
 
-  gl.Clear(gl.GL_COLOR_BUFFER_BIT Or gl.GL_DEPTH_BUFFER_BIT)    ' Clear The Screen And The Depth Buffer
+  gl.Clear(gl.COLOR_BUFFER_BIT Or gl.DEPTH_BUFFER_BIT)    ' Clear The Screen And The Depth Buffer
   gl.LoadIdentity()                                           'Reset The View
   gl.translatef(-1.5, 0.0, -6.0)                             ' MOVE Left 1.5 Units AND Into The Screen 6.0
   gl.Rotatef(rtri, 0.0, 1.0, 0.0)                       'Rotate The Triangle On The Y axis( NEW )
 
-  gl.Begin(gl.GL_TRIANGLES)                             'Drawing Using Triangles
+  gl.Begin(gl.TRIANGLES)                             'Drawing Using Triangles
   gl.Color3f(1.0, 0.0, 0.0)                           'Set The Color TO Red
   gl.Vertex3f(0.0, 1.0, 0.0)                          'Top (Front)
   gl.Color3f(0.0, 1.0, 0.0)                           'Set The Color TO Green
@@ -66,7 +66,7 @@ Public Sub Screen_Draw()
   gl.Vertex3f(1.0, -1.0, 1.0)                         'Bottom Right (Front)
   gl.End()                                               'Finished Drawing The Triangle
 
-  gl.Begin(gl.GL_TRIANGLES)                             'Drawing Using Triangles
+  gl.Begin(gl.TRIANGLES)                             'Drawing Using Triangles
   gl.Color3f(1.0, 0.0, 0.0)                           'Set The Color TO Red
   gl.Vertex3f(0.0, 1.0, 0.0)                          'Top (Right)
   gl.Color3f(0.0, 0.0, 1.0)                           'Set The Color TO Blue
@@ -75,7 +75,7 @@ Public Sub Screen_Draw()
   gl.Vertex3f(1.0, -1.0, -1.0)                         'Bottom Right (Right)
   gl.End()
 
-  gl.Begin(gl.GL_TRIANGLES)                             'Drawing Using Triangles
+  gl.Begin(gl.TRIANGLES)                             'Drawing Using Triangles
   gl.Color3f(1.0, 0.0, 0.0)                           'Set The Color TO Red
   gl.Vertex3f(0.0, 1.0, 0.0)                          'Top (Back)
   gl.Color3f(0.0, 1.0, 0.0)                           'Set The Color TO Green
@@ -84,7 +84,7 @@ Public Sub Screen_Draw()
   gl.Vertex3f(-1.0, -1.0, -1.0)                         'Bottom Right (Back)
   gl.End()
 
-  gl.Begin(gl.GL_TRIANGLES)                             'Drawing Using Triangles
+  gl.Begin(gl.TRIANGLES)                             'Drawing Using Triangles
   gl.Color3f(1.0, 0.0, 0.0)                           'Set The Color TO Red
   gl.Vertex3f(0.0, 1.0, 0.0)                          'Top (Left)
   gl.Color3f(0.0, 0.0, 1.0)                           'Set The Color TO Blue
@@ -97,7 +97,7 @@ Public Sub Screen_Draw()
   gl.translatef(1.5, 0.0, -6.0)                        'Move Right 1.5 Units And Into The Screen 6.0
   gl.Rotatef(rquad, 1.0, 0.0, 0.0)                      'Rotate The Quad On The X axis( NEW )
 
-  gl.Begin(gl.GL_QUADS)                                 'Draw A Quad
+  gl.Begin(gl.QUADS)                                 'Draw A Quad
   gl.Color3f(0.0, 1.0, 0.0)        ' / / Set The Color TO Green
   gl.Vertex3f(1.0, 1.0, -1.0)        ' / / Top Right OF The Quad(Top)
   gl.Vertex3f(-1.0, 1.0, -1.0)        ' / / Top Left OF The Quad(Top)

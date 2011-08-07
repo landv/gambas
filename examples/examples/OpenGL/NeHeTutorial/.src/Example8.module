@@ -41,9 +41,9 @@ Public Sub Screen_Open()
 
   Gl.ClearDepth(100.0)                'Enables Clearing Of The Depth Buffer
   gl.ClearColor(0.0, 0.0, 0.0, 0.0)   'This Will Clear The Background Color To Black
-  gl.DepthFunc(gl.GL_LESS)            'The Type Of Depth Test To Do
-  gl.Enable(gl.GL_DEPTH_TEST)         'Enables Depth Testing
-  gl.ShadeModel(gl.GL_SMOOTH)         'Enables Smooth Color Shading
+  gl.DepthFunc(gl.LESS)            'The Type Of Depth Test To Do
+  gl.Enable(gl.DEPTH_TEST)         'Enables Depth Testing
+  gl.ShadeModel(gl.SMOOTH)         'Enables Smooth Color Shading
   init()
 
 End
@@ -51,12 +51,12 @@ End
 Public Sub Screen_resize()
 
   gl.ClearColor(0.5, 0.5, 0.5, 0.5)
-  gl.Clear(gl.GL_COLOR_BUFFER_BIT)
+  gl.Clear(gl.COLOR_BUFFER_BIT)
   Gl.Viewport(0, 0, Screen.Width, Screen.Height)
-  Gl.MatrixMode(Gl.GL_PROJECTION)
+  Gl.MatrixMode(Gl.PROJECTION)
   Gl.LoadIdentity()                     'Reset The Projection Matrix
   glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
-  Gl.MatrixMode(Gl.GL_MODELVIEW)
+  Gl.MatrixMode(Gl.MODELVIEW)
 
 End
 
@@ -65,46 +65,46 @@ Public Sub init()
   Dim logo As Image
   Dim egs As Boolean
 
-  gl.Enable(gl.GL_TEXTURE_2D)                     ' Enable Texture Mapping( NEW )
+  gl.Enable(gl.TEXTURE_2D)                     ' Enable Texture Mapping( NEW )
   logo = Image.Load("glass.png")
   textures = Gl.GenTextures(1)
-  Gl.BindTexture(Gl.GL_TEXTURE_2D, textures[0])
+  Gl.BindTexture(Gl.TEXTURE_2D, textures[0])
   Gl.TexImage2D(logo)
   Glu.Build2DMipmaps(logo)
-  Gl.TexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MIN_FILTER, Gl.GL_LINEAR_MIPMAP_NEAREST)
-  Gl.TexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MAG_FILTER, Gl.GL_LINEAR)
-  gl.Enable(gl.GL_TEXTURE_2D)                     ' Enable Texture Mapping( NEW )
-  gl.ShadeModel(gl.GL_SMOOTH)                     ' Enable Smooth Shading
+  Gl.TexParameteri(Gl.TEXTURE_2D, Gl.TEXTURE_MIN_FILTER, Gl.LINEAR_MIPMAP_NEAREST)
+  Gl.TexParameteri(Gl.TEXTURE_2D, Gl.TEXTURE_MAG_FILTER, Gl.LINEAR)
+  gl.Enable(gl.TEXTURE_2D)                     ' Enable Texture Mapping( NEW )
+  gl.ShadeModel(gl.SMOOTH)                     ' Enable Smooth Shading
   gl.ClearColor(0.0, 0.0, 0.0, 0.0)               ' Black Background
   gl.ClearDepth(1.0)                              ' Depth Buffer Setup
-  gl.Enable(gl.GL_DEPTH_TEST)                     ' Enables Depth Testing
-  gl.DepthFunc(gl.GL_LESS)                      ' The Type OF Depth Testing TO DO
-  gl.MatrixMode(gl.GL_PROJECTION)
+  gl.Enable(gl.DEPTH_TEST)                     ' Enables Depth Testing
+  gl.DepthFunc(gl.LESS)                      ' The Type OF Depth Testing TO DO
+  gl.MatrixMode(gl.PROJECTION)
   gl.LoadIdentity()                     'Reset The Projection Matrix
   glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
-  gl.MatrixMode(gl.GL_MODELVIEW)
-  gl.Lightfv(gl.GL_LIGHT0, gl.GL_AMBIENT, LightAmbient) ' add lighting.(ambient)
-  gl.Lightfv(gl.GL_LIGHT0, gl.GL_DIFFUSE, LightDiffuse) ' add lighting.(diffuse).
-  gl.Lightfv(gl.GL_LIGHT0, gl.GL_POSITION, LightPosition) ' set light position.
-  gl.Enable(gl.GL_LIGHT0)
-  gl.Enable(gl.GL_LIGHTING)
-  gl.blendfunc(gl.GL_SRC_ALPHA, gl.GL_ONE)      ' Set The Blending FUNCTION For Translucency
+  gl.MatrixMode(gl.MODELVIEW)
+  gl.Lightfv(gl.LIGHT0, gl.AMBIENT, LightAmbient) ' add lighting.(ambient)
+  gl.Lightfv(gl.LIGHT0, gl.DIFFUSE, LightDiffuse) ' add lighting.(diffuse).
+  gl.Lightfv(gl.LIGHT0, gl.POSITION, LightPosition) ' set light position.
+  gl.Enable(gl.LIGHT0)
+  gl.Enable(gl.LIGHTING)
+  gl.blendfunc(gl.SRC_ALPHA, gl.ONE)      ' Set The Blending FUNCTION For Translucency
   gl.Color4f(1.0, 1.0, 1.0, 0.5)
 
 End
 
 Public Sub Screen_draw()
 
-  gl.Clear(gl.GL_COLOR_BUFFER_BIT Or gl.GL_DEPTH_BUFFER_BIT)         ' Clear Screen AND Depth Buffer
+  gl.Clear(gl.COLOR_BUFFER_BIT Or gl.DEPTH_BUFFER_BIT)         ' Clear Screen AND Depth Buffer
   gl.LoadIdentity()         ' Reset The Current Matrix
   gl.Translatef(0.0, 0.0, z)   'move z units out from the screen.
 
   gl.Rotatef(xrot, 1.0, 0.0, 0.0)         ' Rotate On The X Axis
   gl.Rotatef(yrot, 0.0, 1.0, 0.0)         ' Rotate On The Y Axis
 
-  gl.BindTexture(gl.GL_TEXTURE_2D, textures[0])         ' SELECT Our Texture
+  gl.BindTexture(gl.TEXTURE_2D, textures[0])         ' SELECT Our Texture
 
-  Gl.Begin(Gl.GL_QUADS)
+  Gl.Begin(Gl.QUADS)
   gl.Normal3f(0.0, 0.0, 1.0)
   ' front face
   ' Bottom Left OF The Texture AND Quad
@@ -208,18 +208,18 @@ Public Sub Screen_keyPress()
   If (key.Code = key.Esc) Then Screen.Close()
   If (key.Text = "b" Or key.Text = "B") Then
     If bp = 1 Then
-      gl.Disable(gl.GL_BLEND)       ' Turn Blending Off
-      gl.Enable(gl.GL_DEPTH_TEST)   ' Turn Depth Testing On
+      gl.Disable(gl.BLEND)       ' Turn Blending Off
+      gl.Enable(gl.DEPTH_TEST)   ' Turn Depth Testing On
     Endif
     If bp = 0 Then
-      gl.Enable(gl.GL_BLEND)        'Turn Blending On
-      gl.Disable(gl.GL_DEPTH_TEST)  'Turn Depth Testing Off
+      gl.Enable(gl.BLEND)        'Turn Blending On
+      gl.Disable(gl.DEPTH_TEST)  'Turn Depth Testing Off
     Endif
     bp = 1 - bp
   Endif
   If (key.text = "l" Or key.Text = "L") Then
-    If lp = 0 Then gl.Enable(gl.GL_LIGHTing)
-    If lp = 1 Then gl.Disable(gl.GL_LIGHTing)
+    If lp = 0 Then gl.Enable(gl.LIGHTing)
+    If lp = 1 Then gl.Disable(gl.LIGHTing)
     lp = 1 - lp
   Endif
   If (key.code = key.PageUp) Then z -= 0.02     'MOVE the cube into the distance.

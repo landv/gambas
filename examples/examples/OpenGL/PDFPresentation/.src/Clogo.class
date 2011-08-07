@@ -1,69 +1,69 @@
 ' Gambas class file
 
 ' texture
-PRIVATE textures AS NEW Integer[]
+Private textures As New Integer[]
 
 ' Rotations & translations
-PRIVATE xrot AS Float
-PRIVATE yrot AS Float
-PRIVATE zrot AS Float
-PRIVATE ztrans AS Float = -4.5
+Private xrot As Float
+Private yrot As Float
+Private zrot As Float
+Private ztrans As Float = -4.5
 
-PRIVATE initialized AS Boolean = FALSE
-PRIVATE aColor AS Float = 1.0
-PRIVATE aFinished AS Boolean = FALSE
-PRIVATE wantFading AS Boolean = FALSE
+Private initialized As Boolean = False
+Private aColor As Float = 1.0
+Private aFinished As Boolean = False
+Private wantFading As Boolean = False
 
-PRIVATE $eSpeed AS Float
+Private $eSpeed As Float
 
-PROPERTY READ finished AS Boolean
+Property Read finished As Boolean
 
-PUBLIC SUB _new(FrameRate AS Integer)
+Public Sub _new(FrameRate As Integer)
   
   $eSpeed = 300 / FrameRate
   
-END
+End
 
 
-PUBLIC SUB _free()
+Public Sub _free()
 
   Gl.DeleteTextures(textures)
 
-END
+End
 
-PUBLIC SUB Resize(W AS Integer, H AS Integer)
+Public Sub Resize(W As Integer, H As Integer)
 
   ' Width/Height Ratio
-  DIM ratio AS Float
-  DIM Height AS Integer
+  Dim ratio As Float
+  Dim Height As Integer
 
   Height = H
   ' Protect against a divide by zero
-  IF Height = 0 THEN Height = 1
+  If Height = 0 Then Height = 1
 
   ratio = W / Height
 
   ' Setup our viewport
   Gl.Viewport(0, 0, W, H)
   ' change to the projection matrix AND set our viewing volume.
-  Gl.MatrixMode(Gl.GL_PROJECTION)
+  Gl.MatrixMode(Gl.PROJECTION)
   Gl.LoadIdentity()
 
   ' Set our perspective
   Glu.Perspective(45.0, ratio, 0.1, 10.0)
 
   ' Make sure we're changing the model view and not the projection
-  Gl.MatrixMode(Gl.GL_MODELVIEW)
+  Gl.MatrixMode(Gl.MODELVIEW)
   GL.LoadIdentity()
 
-END
+End
 
-PUBLIC SUB Draw()
+Public Sub Draw()
 
-  IF initialized = FALSE THEN initialize()
-  IF wantFading = TRUE THEN ME.Quit()
+  If initialized = False Then initialize()
+  If wantFading = True Then Me.Quit()
 
-  Gl.Clear(Gl.GL_COLOR_BUFFER_BIT OR Gl.GL_DEPTH_BUFFER_BIT)
+  Gl.Clear(Gl.COLOR_BUFFER_BIT Or Gl.DEPTH_BUFFER_BIT)
 
   Gl.LoadIdentity()
   Gl.Translatef(0.0, 0.0, ztrans)
@@ -73,9 +73,9 @@ PUBLIC SUB Draw()
   Gl.Rotatef(zrot, 0.0, 0.0, 1.0) ' Rotate On The Z Axis
 
   ' Select our texture
-  Gl.BindTexture(Gl.GL_TEXTURE_2D, textures[0])
+  Gl.BindTexture(Gl.TEXTURE_2D, textures[0])
 
-  Gl.Begin(Gl.GL_QUADS)
+  Gl.Begin(Gl.QUADS)
     Gl.Colorf(aColor, aColor, aColor, 0.5)
     ' front face
     ' Bottom Left OF The Texture AND Quad
@@ -166,59 +166,59 @@ PUBLIC SUB Draw()
   xrot = xrot + 0.1 * $eSpeed
   zrot = zrot + 0.1 * $eSpeed
 
-END
+End
 
-FUNCTION Finished_Read() AS Boolean
+Function Finished_Read() As Boolean
 
-  RETURN aFinished
+  Return aFinished
 
-END
+End
 
-PUBLIC SUB Quit()
+Public Sub Quit()
 
   aColor -= 0.01 * $eSpeed
 
-  IF wantFading = FALSE THEN wantFading = TRUE
-  IF aColor < 0 THEN aFinished = TRUE
+  If wantFading = False Then wantFading = True
+  If aColor < 0 Then aFinished = True
 
-END
+End
 
-PRIVATE SUB Initialize()
+Private Sub Initialize()
 
   ' Enable texturing
-  Gl.Enable(Gl.GL_TEXTURE_2D)
+  Gl.Enable(Gl.TEXTURE_2D)
   loadTextures()
   ' Enable smooth shading
-  Gl.ShadeModel(Gl.GL_SMOOTH)
+  Gl.ShadeModel(Gl.SMOOTH)
   ' Set the background black
   Gl.ClearColor(0.0, 0.0, 0.0, 0.0)
   ' Depth buffer setup
   Gl.ClearDepth(1.0)
   ' Enables Depth Testing
-  Gl.Enable(Gl.GL_DEPTH_TEST)
+  Gl.Enable(Gl.DEPTH_TEST)
   ' The Type OF Depth Test TO DO
-  Gl.DepthFunc(Gl.GL_LEQUAL)
+  Gl.DepthFunc(Gl.LEQUAL)
   ' Really Nice Perspective Calculations
-  Gl.Hint(Gl.GL_PERSPECTIVE_CORRECTION_HINT, Gl.GL_NICEST)
-  Gl.BlendFunc(Gl.GL_SRC_ALPHA, Gl.GL_ONE)
-  Gl.Enable(Gl.GL_BLEND)
-  Gl.Disable(Gl.GL_DEPTH_TEST)
-  initialized = TRUE
+  Gl.Hint(Gl.PERSPECTIVE_CORRECTION_HINT, Gl.NICEST)
+  Gl.BlendFunc(Gl.SRC_ALPHA, Gl.ONE)
+  Gl.Enable(Gl.BLEND)
+  Gl.Disable(Gl.DEPTH_TEST)
+  initialized = True
 
-END
+End
 
-PRIVATE SUB LoadTextures()
+Private Sub LoadTextures()
 
-  DIM logo AS Image
+  Dim logo As Image
 
   logo = Image.Load("logo.png")
 
   textures = Gl.GenTextures(1)
 
-  Gl.BindTexture(Gl.GL_TEXTURE_2D, textures[0])
+  Gl.BindTexture(Gl.TEXTURE_2D, textures[0])
   Gl.TexImage2D(logo)
   Glu.Build2DMipmaps(logo)
-  Gl.TexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MIN_FILTER, Gl.GL_LINEAR_MIPMAP_NEAREST)
-  Gl.TexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MAG_FILTER, Gl.GL_LINEAR)
+  Gl.TexParameteri(Gl.TEXTURE_2D, Gl.TEXTURE_MIN_FILTER, Gl.LINEAR_MIPMAP_NEAREST)
+  Gl.TexParameteri(Gl.TEXTURE_2D, Gl.TEXTURE_MAG_FILTER, Gl.LINEAR)
 
-END
+End
