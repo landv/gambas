@@ -50,6 +50,7 @@ Private $hCreateTimer As Timer
 Private $bTimer As Boolean
 Private $bAdjust As Boolean
 Private $aAdjust As New Integer[]
+Private $iLastRow As Integer = -1
 
 Private $sCharset As String
 
@@ -76,6 +77,13 @@ Public Sub _new()
   $iHighlight = Color.LightBackground
   
 End
+
+Private Sub GetDefaultRowHeight() As Integer
+
+  Return $hCtrl.Font.Height + 6
+
+End
+
 
 Private Sub GetSource() As DataSource
   
@@ -172,6 +180,7 @@ Private Sub Load()
   
   'Object.Lock($hCtrl)
   $bNoActivate = True
+  $hCtrl.Rows.H = GetDefaultRowHeight()
   $hCtrl.Rows.Count = $hTable.Count
   $bNoActivate = False
   'Object.Unlock($hCtrl)
@@ -271,6 +280,32 @@ Public Sub TableView_Scroll()
   
 End
 
+Private Sub AdjustRow()
+  
+  Dim H As Integer
+  Dim iRow As Integer
+  
+  If $hCtrl.Rows.Count >= 65536 Then Return
+
+  If $iLastRow >= 0 Then
+    Try $hCtrl.Rows[$iLastRow].H = GetDefaultRowHeight()
+  Endif
+  
+  iRow = $hCtrl.Row
+  
+  If iRow >= 0 Then
+    Try $hCtrl.Rows[iRow].H = -1
+    If Not Error Then
+      H = Max(Min(256, $hCtrl.Rows[iRow].H + 4), GetDefaultRowHeight())
+      $hCtrl.Rows[iRow].H = H
+    Endif
+  Endif
+  
+  $iLastRow = iRow
+  
+End
+
+
 Public Sub TableView_Timer()
   
   Dim iRow As Integer
@@ -354,13 +389,13 @@ Public Sub TableView_Data(Row As Integer, Column As Integer)
     
   End With
   
-  If Not $bAdjust Then
-    If Not $aAdjust.Exist(Row) Then $aAdjust.Push(Row)
-    If Not $bTimer Then 
-      $bTimer = True
-      $hTimer.Trigger
-    Endif
-  Endif
+  ' If Not $bAdjust Then
+  '   If Not $aAdjust.Exist(Row) Then $aAdjust.Push(Row)
+  '   If Not $bTimer Then 
+  '     $bTimer = True
+  '     $hTimer.Trigger
+  '   Endif
+  ' Endif
   
   Return
   
@@ -438,9 +473,8 @@ Public Sub TableView_Change()
   If $bNoActivate Then Return
 
   'Balloon.Hide($hCtrl)
-
   $bCreate = False
-  Try $hCtrl.Rows[$hCtrl.Row].H = -1
+  AdjustRow
   Raise Activate
   
 End
@@ -949,5 +983,7 @@ Private Sub Font_Write(Value As Font)
 
   Super.Font = Value
   $hCtrl.Font = Value
+  $hCtrl.Rows.H = GetDefaultRowHeight()
+  AdjustRow()
 
 End

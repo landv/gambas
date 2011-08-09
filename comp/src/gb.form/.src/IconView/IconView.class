@@ -164,24 +164,28 @@ Public Function MoveTo(Key As String) As Boolean
   Else
     SetIntern($aItems.Find($cItems[Key]))
   Endif
+  Return $iIntern < 0
   
 End
 
 Public Function MoveFirst() As Boolean
   
   SetIntern(0)
+  Return $iIntern < 0
   
 End
 
 Public Function MoveNext() As Boolean
   
   SetIntern($iIntern + 1)
+  Return $iIntern < 0
   
 End
 
 Public Function MovePrevious() As Boolean
   
   SetIntern($iIntern - 1)
+  Return $iIntern < 0
   
 End
 
