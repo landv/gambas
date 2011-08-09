@@ -575,6 +575,9 @@ Public Sub Load()
   ' Endif
   
   For Each sClass In ClassList
+    
+    If Not IsLetter(Left(sClass)) Then Continue
+    
     hClass = Classes[sClass]
     
     hSym = hClass.Symbols["_IsControl"]
