@@ -1211,7 +1211,6 @@ bool LOCAL_format_date(const DATE_SERIAL *date, int fmt_type, const char *fmt, i
 {
 	DATE_SERIAL vdate;
 	char c;
-	bool esc;
 	int pos;
 	int pos_ampm = -1;
 	struct tm date_tm;
@@ -1298,7 +1297,6 @@ bool LOCAL_format_date(const DATE_SERIAL *date, int fmt_type, const char *fmt, i
 
 	token = 0;
 	token_count = 0;
-	esc = FALSE;
 
 	for (pos = 0; pos < len_fmt; pos++)
 	{
@@ -1308,8 +1306,9 @@ bool LOCAL_format_date(const DATE_SERIAL *date, int fmt_type, const char *fmt, i
 			pos++;
 			if (pos >= len_fmt)
 				break;
-			c = fmt[pos];
-			esc = TRUE;
+			add_date_token(&vdate, &token, token_count);
+			put_char(fmt[pos]);
+			continue;
 		}
 
 		if (pos == pos_ampm)
@@ -1346,9 +1345,7 @@ bool LOCAL_format_date(const DATE_SERIAL *date, int fmt_type, const char *fmt, i
 		else
 		{
 			add_date_token(&vdate, &token, token_count);
-			if (esc)
-				put_char(c);
-			else if (c == '/')
+			if (c == '/')
 				put_char(local_current->date_sep);
 			else if (c == ':')
 				put_char(local_current->time_sep);
