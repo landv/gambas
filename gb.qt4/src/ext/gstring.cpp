@@ -24,4 +24,15 @@
 #define __G_ARRAY_CPP
 
 #include "garray.h"
+#include "gstring.h"
 
+bool GString::hasUnicode() const
+{
+	for (uint i = 0; i < (uint)s.length(); i++)
+	{
+		if (s[i].unicode() & 0xFF00)
+			return true;
+	}
+	
+	return false;
+}

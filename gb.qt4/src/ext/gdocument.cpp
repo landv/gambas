@@ -39,18 +39,27 @@ GLine::GLine()
 	s = "";
 	state = Normal;
 	alternate = false;
-	tag = 0;
-	flag = 0;
 	modified = false;
 	changed = false;
-	baptized = false;
+	flag = 0;
+	tag = 0;
 	proc = false;
+	baptized = false;
+	unicode = false;
 	highlight = NULL;
 }
 
 GLine::~GLine()
 {
 	GB.FreeArray(&highlight);
+}
+
+void GLine::insert(uint pos, const GString &text)
+{
+	s.insert(pos, text);
+	modified = changed = true;
+	if (text.hasUnicode())
+		unicode = true;
 }
 
 /**---- GCommand -----------------------------------------------------------*/
@@ -392,8 +401,7 @@ void GDocument::insert(int y, int x, const GString &text)
 
     if (pos2 > pos)
     {
-      l->s.insert(x, text.mid(pos, pos2 - pos));
-      l->modified = l->changed = true;
+			l->insert(x, text.mid(pos, pos2 - pos));
 
       //maxLength = GMAX(maxLength, (int)l->s.length());
       updateLineWidth(y);
@@ -439,9 +447,7 @@ void GDocument::insert(int y, int x, const GString &text)
 
   if (n < 0 && rest.length())
   {
-    l->s.insert(x, rest);
-    l->modified = l->changed = true;
-
+		l->insert(x, rest);
     //maxLength = GMAX(maxLength, (int)l->s.length());
     updateLineWidth(y);
   }
@@ -502,6 +508,10 @@ void GDocument::remove(int y1, int x1, int y2, int x2)
 
       l->s.remove(x1, x2 - x1);
       l->modified = l->changed = true;
+			
+			if (text.hasUnicode())
+				l->unicode = l->s.hasUnicode();
+			
       updateLineWidth(y1);
 
       FOR_EACH_VIEW(v)

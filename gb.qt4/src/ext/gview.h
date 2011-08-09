@@ -143,7 +143,7 @@ private:
 	void updateViewport();
 	void updateFont();
 
-	int getStringWidth(const QString &s, int len = -1) const;
+	int getStringWidth(const QString &s, int len, bool unicode) const;
 	
 	void updateViewportAttributes();
 

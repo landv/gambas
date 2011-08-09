@@ -69,6 +69,7 @@ public:
 	char at(uint pos) const;
 	GString lower() const;
 	GString upper() const;
+	bool hasUnicode() const;
 };
 
 inline GString::GString(const GString &str)

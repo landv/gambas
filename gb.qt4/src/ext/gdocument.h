@@ -68,11 +68,13 @@ public:
 	unsigned flag : 2;
 	unsigned proc : 1;
 	unsigned baptized : 1;
-	unsigned _reserved : 4;
+	unsigned unicode : 1;
+	unsigned _reserved : 3;
 	signed tag : 16;
 
 	GLine();
 	~GLine();
+	void insert(uint pos, const GString &text);
 };
 
 class GCommand;

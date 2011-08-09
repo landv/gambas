@@ -237,23 +237,23 @@ void GEditor::setDocument(GDocument *d)
 	//connect(doc, SIGNAL(textChanged()), this, SLOT(docTextChanged()));
 }
 
-int GEditor::getStringWidth(const QString &s, int len) const
+int GEditor::getStringWidth(const QString &s, int len, bool unicode) const
 {
 	int i;
 	ushort c;
 	int w = 0;
 	
-	if (len < 0)
-		len = s.length();
+	//if (len < 0)
+	//	len = s.length();
 	
-	if (_sameWidth)
+	if (_sameWidth && !unicode)
 		return len * _sameWidth;
 	
 	for (i = 0; i < len; i++)
 	{
 		c = s.at(i).unicode();
 		if (c & 0xFF00)
-			return fm.width(s);
+			return fm.width(s, len);
 		else
 			w += _charWidth[c];
 	}
@@ -276,7 +276,8 @@ void GEditor::updateCache()
 int GEditor::lineWidth(int y) const
 {
 	// Add 2 or a space width so that we see the cursor at end of line
-	return margin + getStringWidth(doc->lines.at(y)->s.getString()) + (_insertMode ? _charWidth[' '] : 2);
+	GLine *l = doc->lines.at(y);
+	return margin + getStringWidth(l->s.getString(), l->s.length(), l->unicode) + (_insertMode ? _charWidth[' '] : 2);
 }
 
 
@@ -288,7 +289,8 @@ int GEditor::lineWidth(int y, int len)
 		return margin;
 	else
 	{
-		QString s = doc->lines.at(y)->s.getString();
+		GLine *l = doc->lines.at(y);
+		QString s = l->s.getString();
 		ns = QMAX(0, len - s.length());
 		len = QMIN(len, s.length());
 		
@@ -307,7 +309,7 @@ int GEditor::lineWidth(int y, int len)
 			lineWidthCache.insert(len, lw);
 		}*/
 		
-		int	lw = getStringWidth(s, len);
+		int	lw = getStringWidth(s, len, l->unicode);
 		lw += margin;
 		if (ns) lw += ns * _charWidth[' '];
 		return lw;
@@ -405,7 +407,7 @@ void GEditor::updateFont()
 		_charWidth[i] = fm.width(QChar(i));
 	
 	_sameWidth = _charWidth[' '];
-	for (int i = 33; i < 126; i++)
+	for (int i = 33; i < 256; i++)
 	{
 		if (_charWidth[i] != _sameWidth)
 		{
@@ -676,7 +678,7 @@ static void highlight_text(QPainter &p, int x, int y, int x2, int yy, QString s,
 		for (j = -1; j <= 1; j++)
 			p.drawText(x + i, y + j, s);*/
 		
-	p.fillRect(x, 0, x2 - x, yy - 1, color);
+	p.fillRect(x, 0, x2 - x, yy, color);
 }
 
 void GEditor::paintCell(QPainter &p, int row, int)
