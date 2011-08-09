@@ -23,6 +23,8 @@ if test "$have_poppler" = "yes"; then
   AC_DEFINE_UNQUOTED(POPPLER_VERSION_0_8, $((1-$?)), Poppler version >= 0.8)
   pkg-config --atleast-version=0.11.3 poppler
   AC_DEFINE_UNQUOTED(POPPLER_VERSION_0_11_3, $((1-$?)), Poppler version >= 0.11.3)
+  pkg-config --atleast-version=0.17.0 poppler
+  AC_DEFINE_UNQUOTED(POPPLER_VERSION_0_17, $((1-$?)), Poppler version >= 0.17)
 fi
 
 AC_OUTPUT( \
