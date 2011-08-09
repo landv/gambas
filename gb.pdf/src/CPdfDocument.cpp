@@ -44,6 +44,7 @@
 #include <Outline.h>
 #include <Link.h>
 #include <Gfx.h>
+#include <glib/poppler-features.h>
 
 /*****************************************************************************
 
@@ -956,12 +957,17 @@ END_METHOD
  Bookmarks of a PDF page
 
 ******************************************************************************/
+
 void aux_fill_links(void *_object)
 {
+	#if POPPLER_VERSION_0_17
+	THIS->links = new Links (THIS->page->getAnnots (THIS->doc->getCatalog()));
+	#else
 	Object obj;
 	
 	THIS->links = new Links (THIS->page->getAnnots (&obj),THIS->doc->getCatalog()->getBaseURI ());
 	obj.free();
+	#endif
 }
 
 BEGIN_PROPERTY (PDFPAGELINKS_count)
