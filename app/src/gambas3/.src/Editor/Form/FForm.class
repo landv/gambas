@@ -2004,10 +2004,9 @@ Private Sub GotoEventMethod(hCtrl As CControl, sEvent As String)
   hEditor = GetEditor(True)
   If Not hEditor Then Return
   
-  hEditor.GotoEvent(sGroup, sEvent,
-    CSymbolInfo.TransformSignature(CComponent.Classes[hCtrl.Kind].Symbols[":" & sEvent].Signature, False))
-  
-  Project.ShowFile(hEditor)
+  If Not hEditor.GotoEvent(sGroup, sEvent, CSymbolInfo.TransformSignature(CComponent.Classes[hCtrl.Kind].Symbols[":" & sEvent].Signature, False)) Then
+    Project.ShowFile(hEditor)
+  Endif
   
 End
 

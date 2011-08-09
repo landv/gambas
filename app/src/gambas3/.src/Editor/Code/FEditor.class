@@ -220,7 +220,7 @@ Public Function Save(Optional bReset As Boolean) As Boolean
   Dim iCount As Integer
   Dim iVoidLine As Integer
 
-  If Project.ReadOnly Then Return
+  If Me.ReadOnly Then Return
   If Not $bModify Then
     If bReset Then Editor.Reset
     Return
@@ -344,7 +344,7 @@ End
 
 Public Sub Modify(Optional bReset As Boolean)
 
-  If Project.ReadOnly Then Return
+  If Me.ReadOnly Then Return
 
   If bReset Then
 
@@ -662,7 +662,7 @@ Private Function InsertFunction(sProc As String, sType As String, bPublic As Boo
   Try iLine = $cProc[sProc]
   If Not Error Then Return iLine
 
-  If Project.ReadOnly Then Return -1
+  If Me.ReadOnly Then Return -1
 
   Editor.Begin
 
@@ -688,12 +688,15 @@ Private Function InsertFunction(sProc As String, sType As String, bPublic As Boo
 
 End
 
-Public Sub GotoEvent(sName As String, sEvent As String, Optional sSign As String)
+Public Sub GotoEvent(sName As String, sEvent As String, Optional sSign As String) As Boolean
 
   Dim sProc As String
+  Dim iLine As Integer
 
   sProc = sName & "_" & sEvent
-  GotoProc(InsertFunction(sProc, "", True, sSign)) ' + 1, Len(edtEditor.Lines[iLine]))
+  iLine = InsertFunction(sProc, "", True, sSign)
+  If iLine < 0 Then Return True
+  GotoProc(iLine) ' + 1, Len(edtEditor.Lines[iLine]))
 
 End
 
@@ -2898,6 +2901,7 @@ Public Sub GotoProc(iLine As Integer)
   Dim sLine As String
   Dim iCol As Integer
   Dim iStart As Integer
+  Dim hEditor As Editor = Editor
 
   If iLine < 0 Then
     Editor.Goto(Editor.Lines.Count, 0)
