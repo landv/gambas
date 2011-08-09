@@ -69,3 +69,9 @@ Public Function GetShortcut() As String
   Endif
 
 End
+
+Public Sub ToString() As String
+  
+  Return [Name, Caption, Shortcut, Group, CStr(Ctrl), CStr(Shift), CStr(Alt), CStr(Enabled), CStr(Visible), CStr(Checked), CStr(Toggle), CStr(Level), Picture, Tag, Action].Join(":")
+  
+End

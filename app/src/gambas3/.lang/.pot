@@ -286,11 +286,11 @@ msgstr ""
 msgid "Provides"
 msgstr ""
 
-#: CInsertColor.class:106 FEditor.form:385 FTextEditor.form:317
+#: CInsertColor.class:106 FEditor.form:397 FTextEditor.form:317
 msgid "Insert color"
 msgstr ""
 
-#: CModule.class:28 FCreateFile.form:150 FEditor.form:339 FForm.form:378
+#: CModule.class:28 FCreateFile.form:150 FEditor.form:351 FForm.form:378
 #: FInfo.class:89
 msgid "Form"
 msgstr ""
@@ -369,7 +369,7 @@ msgstr ""
 #: FDebugInfo.form:216 FEditor.class:2376 FExportData.class:126
 #: FFieldChooser.form:138 FFontChooser.form:40 FForm.class:2949
 #: FGotoLine.form:23 FHelpBrowser.form:60 FIconEditor.class:1413
-#: FList.form:121 FMain.class:200 FMakeInstall.class:327 FMenu.form:370
+#: FList.form:121 FMain.class:200 FMakeInstall.class:327 FMenu.form:374
 #: FNewConnection.form:244 FNewTable.form:86 FNewTranslation.form:21
 #: FOpenProject.form:160 FOption.class:618 FPasteSpecial.form:77
 #: FPasteTable.form:107 FPropertyComponent.form:230 FPropertyProject.form:124
@@ -409,7 +409,7 @@ msgstr ""
 #: Design.module:386 FColorChooser.form:54 FCommit.form:223
 #: FConnectionEditor.class:441 FCreateFile.form:430 FFieldChooser.form:132
 #: FFontChooser.form:34 FGotoLine.form:17 FList.form:115 FMain.form:1306
-#: FMenu.form:365 FNewConnection.form:238 FNewTable.form:80
+#: FMenu.form:369 FNewConnection.form:238 FNewTable.form:80
 #: FNewTranslation.form:15 FOpenProject.form:154 FPasteSpecial.form:71
 #: FPropertyComponent.form:224 FPropertyProject.form:118
 #: FReportBorderChooser.form:51 FReportBrushChooser.form:34
@@ -500,41 +500,41 @@ msgid ""
 msgstr ""
 
 #: FCommit.form:91 FConflict.form:53 FConnectionEditor.form:340
-#: FEditor.form:170 FForm.form:207 FIconEditor.form:102 FImageEditor.form:71
-#: FMenu.form:106 FOutput.form:58 FTextEditor.form:89
+#: FEditor.form:150 FForm.form:207 FIconEditor.form:102 FImageEditor.form:71
+#: FMenu.form:107 FOutput.form:58 FTextEditor.form:89
 msgid "Cut"
 msgstr ""
 
 #: FCommit.form:97 FConflict.form:59 FConnectionEditor.form:117
-#: FEditor.form:176 FForm.form:214 FIconEditor.form:110 FImageEditor.form:80
-#: FMenu.form:112 FOutput.form:65 FTextEditor.form:96
+#: FEditor.form:156 FForm.form:214 FIconEditor.form:110 FImageEditor.form:80
+#: FMenu.form:113 FOutput.form:65 FTextEditor.form:96
 msgid "Copy"
 msgstr ""
 
 #: FCommit.form:103 FConflict.form:65 FConnectionEditor.form:361
-#: FEditor.form:183 FForm.form:227 FIconEditor.form:118 FImageEditor.form:89
-#: FMenu.form:118 FOutput.form:72 FPasteTable.form:101 FTextEditor.form:103
+#: FEditor.form:163 FForm.form:227 FIconEditor.form:118 FImageEditor.form:89
+#: FMenu.form:119 FOutput.form:72 FPasteTable.form:101 FTextEditor.form:103
 msgid "Paste"
 msgstr ""
 
 #: FCommit.form:109 FConflict.form:71 FConnectionEditor.form:368
-#: FEditor.form:154 FForm.form:454 FIconEditor.form:86 FImageEditor.form:99
+#: FEditor.form:134 FForm.form:454 FIconEditor.form:86 FImageEditor.form:99
 #: FOption.form:632 FOutput.form:41 FTextEditor.form:72
 msgid "Undo"
 msgstr ""
 
 #: FCommit.form:115 FConflict.form:77 FConnectionEditor.form:375
-#: FEditor.form:161 FForm.form:464 FImageEditor.form:107 FOutput.form:48
+#: FEditor.form:141 FForm.form:464 FImageEditor.form:107 FOutput.form:48
 #: FTextEditor.form:79
 msgid "Redo"
 msgstr ""
 
-#: FCommit.form:121 FConflict.form:83 FEditor.form:411 FMenu.form:128
+#: FCommit.form:121 FConflict.form:83 FEditor.form:423 FMenu.form:129
 #: FTextEditor.form:276
 msgid "Indent"
 msgstr ""
 
-#: FCommit.form:127 FConflict.form:89 FEditor.form:419 FMenu.form:134
+#: FCommit.form:127 FConflict.form:89 FEditor.form:431 FMenu.form:135
 #: FTextEditor.form:283
 msgid "Unindent"
 msgstr ""
@@ -655,12 +655,13 @@ msgstr ""
 msgid "Connection editor"
 msgstr ""
 
-#: FConnectionEditor.form:80 FEditor.form:289 FForm.form:368
-#: FIconEditor.form:71 FImageEditor.form:54 FTextEditor.form:194
+#: FConnectionEditor.form:80 FEditor.form:301 FForm.form:368
+#: FIconEditor.form:71 FImageEditor.form:54 FMenu.class:65
+#: FTextEditor.form:194
 msgid "Save"
 msgstr ""
 
-#: FConnectionEditor.form:88 FEditor.form:283 FForm.form:362
+#: FConnectionEditor.form:88 FEditor.form:295 FForm.form:362
 #: FHelpBrowser.form:66 FIconEditor.form:78 FImageEditor.form:62
 #: FTextEditor.form:188 FTranslate.class:730
 msgid "Reload"
@@ -1284,123 +1285,131 @@ msgstr ""
 msgid "Dynamic variables"
 msgstr ""
 
-#: FEditor.form:91
+#: FEditor.form:93
 msgid "Go to"
 msgstr ""
 
-#: FEditor.form:96 FTextEditor.form:63
+#: FEditor.form:98 FTextEditor.form:63
 msgid "Go to line..."
 msgstr ""
 
-#: FEditor.form:102
+#: FEditor.form:104
 msgid "Find definition"
 msgstr ""
 
-#: FEditor.form:109 FHelpBrowser.form:48
+#: FEditor.form:111 FHelpBrowser.form:48
 msgid "Go back"
 msgstr ""
 
-#: FEditor.form:116
+#: FEditor.form:118
 msgid "Open form"
 msgstr ""
 
-#: FEditor.form:123 FForm.form:139 FMain.form:679
+#: FEditor.form:125 FForm.form:139 FMain.form:679
 msgid "&Startup class"
 msgstr ""
 
-#: FEditor.form:131
-msgid "Run &until current line"
-msgstr ""
-
-#: FEditor.form:138
-msgid "Toggle &breakpoint"
-msgstr ""
-
-#: FEditor.form:145
-msgid "&Watch expression"
-msgstr ""
-
-#: FEditor.form:190
+#: FEditor.form:170
 msgid "Paste special..."
 msgstr ""
 
-#: FEditor.form:196 FTextEditor.form:110
-msgid "Insert color..."
-msgstr ""
-
-#: FEditor.form:205 FTextEditor.form:119
+#: FEditor.form:179 FTextEditor.form:119
 msgid "Select &All"
 msgstr ""
 
-#: FEditor.form:214
+#: FEditor.form:188
 msgid "Comment"
 msgstr ""
 
-#: FEditor.form:221
+#: FEditor.form:195
 msgid "Uncomment"
 msgstr ""
 
-#: FEditor.form:231 FOutput.form:89 FTextEditor.form:128
+#: FEditor.form:205 FOutput.form:89 FTextEditor.form:128
 msgid "Find next"
 msgstr ""
 
-#: FEditor.form:238 FOutput.form:96 FTextEditor.form:135
+#: FEditor.form:212 FOutput.form:96 FTextEditor.form:135
 msgid "Find previous"
 msgstr ""
 
-#: FEditor.form:247 FTextEditor.form:144
-msgid "View"
+#: FEditor.form:221
+msgid "Run &until current line"
 msgstr ""
 
-#: FEditor.form:251 FTextEditor.form:148
-msgid "No split"
+#: FEditor.form:228
+msgid "Toggle &breakpoint"
 msgstr ""
 
-#: FEditor.form:258 FTextEditor.form:155
-msgid "Horizontal split"
+#: FEditor.form:235
+msgid "&Watch expression"
 msgstr ""
 
-#: FEditor.form:265 FTextEditor.form:162
-msgid "Vertical split"
+#: FEditor.form:243
+msgid "Advanced"
 msgstr ""
 
-#: FEditor.form:276
+#: FEditor.form:247 FTextEditor.form:110
+msgid "Insert color..."
+msgstr ""
+
+#: FEditor.form:253
 msgid "Format code"
 msgstr ""
 
-#: FEditor.form:299 FPasteSpecial.form:51
+#: FEditor.form:259
+msgid "Sort procedures..."
+msgstr ""
+
+#: FEditor.form:265 FTextEditor.form:144
+msgid "View"
+msgstr ""
+
+#: FEditor.form:269 FTextEditor.form:148
+msgid "No split"
+msgstr ""
+
+#: FEditor.form:276 FTextEditor.form:155
+msgid "Horizontal split"
+msgstr ""
+
+#: FEditor.form:283 FTextEditor.form:162
+msgid "Vertical split"
+msgstr ""
+
+#: FEditor.form:311 FPasteSpecial.form:51
 msgid "Paste as string"
 msgstr ""
 
-#: FEditor.form:304 FPasteSpecial.form:56
+#: FEditor.form:316 FPasteSpecial.form:56
 msgid "Paste as multi-line string"
 msgstr ""
 
-#: FEditor.form:309 FPasteSpecial.form:41
+#: FEditor.form:321 FPasteSpecial.form:41
 msgid "Paste as comments"
 msgstr ""
 
-#: FEditor.form:317 FOption.form:364
+#: FEditor.form:329 FOption.form:364
 msgid "Editor"
 msgstr ""
 
-#: FEditor.form:376 FPasteSpecial.form:19
+#: FEditor.form:388 FPasteSpecial.form:19
 msgid "Paste special"
 msgstr ""
 
-#: FEditor.form:471
+#: FEditor.form:483
 msgid "Make code pretty"
 msgstr ""
 
-#: FEditor.form:479
+#: FEditor.form:491
 msgid "Toggle breakpoint"
 msgstr ""
 
-#: FEditor.form:487
+#: FEditor.form:499
 msgid "Watch expression"
 msgstr ""
 
-#: FEditor.form:518
+#: FEditor.form:530
 msgid "Procedure list"
 msgstr ""
 
@@ -1709,11 +1718,11 @@ msgstr ""
 msgid "Move top"
 msgstr ""
 
-#: FFormStack.form:38 FMenu.form:140
+#: FFormStack.form:38 FMenu.form:141
 msgid "Move up"
 msgstr ""
 
-#: FFormStack.form:44 FMenu.form:146
+#: FFormStack.form:44 FMenu.form:147
 msgid "Move down"
 msgstr ""
 
@@ -2864,64 +2873,76 @@ msgstr ""
 msgid "Do you really want to remove all extra files?"
 msgstr ""
 
-#: FMenu.form:81
+#: FMenu.form:82
 msgid "Insert menu"
 msgstr ""
 
-#: FMenu.form:88
+#: FMenu.form:89
 msgid "Next menu"
 msgstr ""
 
-#: FMenu.form:96
+#: FMenu.form:97
 msgid "Delete menu"
 msgstr ""
 
-#: FMenu.form:254
+#: FMenu.form:257
 msgid "CTRL"
 msgstr ""
 
-#: FMenu.form:259
+#: FMenu.form:262
 msgid "SHIFT"
 msgstr ""
 
-#: FMenu.form:264
+#: FMenu.form:267
 msgid "ALT"
 msgstr ""
 
-#: FMenu.form:312
+#: FMenu.form:315
 msgid "Visible"
 msgstr ""
 
-#: FMenu.form:317
+#: FMenu.form:320
 msgid "Enabled"
 msgstr ""
 
-#: FMenu.form:322
+#: FMenu.form:325
 msgid "Toggle"
 msgstr ""
 
-#: FMenu.form:327
+#: FMenu.form:330
 msgid "Checked"
 msgstr ""
 
-#: FMenu.form:349
+#: FMenu.form:353
 msgid "Click on Insert to add a new menu."
 msgstr ""
 
-#: FMenu.class:281
+#: FMenu.class:65
+msgid "Menus have been modified!"
+msgstr ""
+
+#: FMenu.class:65
+msgid "Ignore"
+msgstr ""
+
+#: FMenu.class:309
 msgid "Please enter a menu name."
 msgstr ""
 
-#: FMenu.class:287
+#: FMenu.class:315
 msgid "Bad menu name !"
 msgstr ""
 
-#: FMenu.class:293
+#: FMenu.class:321
 msgid "Bad group name !"
 msgstr ""
 
-#: FMenu.class:554
+#: FMenu.class:589
 msgid "This menu is too deep !"
+msgstr ""
+
+#: FMenu.class:912 Project.module:4954
+msgid "modified"
 msgstr ""
 
 #: FNewConnection.form:79
@@ -5676,10 +5697,6 @@ msgstr ""
 
 #: Project.module:4416
 msgid "Cannot move file &1."
-msgstr ""
-
-#: Project.module:4954
-msgid "modified"
 msgstr ""
 
 #: Project.module:5100

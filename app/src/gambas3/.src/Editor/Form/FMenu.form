@@ -4,6 +4,7 @@
   MoveScaled(17,15,83,81)
   Text = ("Menu editor")
   Icon = Picture["icon:/small/menu"]
+  Persistent = True
   Arrangement = Arrange.Vertical
   Spacing = True
   Margin = True
@@ -90,11 +91,13 @@
     { Separator3 Separator
       MoveScaled(12,6,16,0)
     }
-    { lstMenu ListBox
-      MoveScaled(4,10,65,23)
+    { gvwMenu GridView
+      MoveScaled(7,12,54,21)
       Expand = True
-      Border = False
       Mode = Select.Multiple
+      Grid = False
+      Scrollbar = Scroll.Vertical
+      Border = False
     }
   }
   { VBox3 VBox
@@ -224,7 +227,8 @@
         }
         { btnIcon Button btnPicture
           Name = "btnIcon"
-          MoveScaled(0,20,10,11)
+          MoveScaled(0,18,10,11)
+          Visible = False
         }
         { Panel1 Panel
           MoveScaled(3,31,5,3)

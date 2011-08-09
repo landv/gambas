@@ -7,15 +7,12 @@ Private $iLevel As Integer
 Private $cName As New Collection
 Private $iCurrent As Integer
 Private $bFreeze As Boolean
+Private $bModified As Boolean
 
 Static Public Sub Run(hForm As FForm)
 
-  Dim hMenu As FMenu
-
   $hForm = hForm
-
-  hMenu = New FMenu
-  If hMenu.ShowModal() Then SaveAllMenu
+  FMenu.ShowModal()
 
 End
 
@@ -48,6 +45,12 @@ Public Sub Form_Open()
   'PRINT "_new"
   Me.Title = $hForm.Name & " - " & ("Menu editor")
   
+  gvwMenu.Rows.Count = 0
+  gvwMenu.Columns.Count = 3
+  gvwMenu.Columns[0].Width = 20
+  gvwMenu.Columns[1].Expand = True
+  gvwMenu.Columns[2].Width = Desktop.Scale * 16
+  
   $iCurrent = -1
   LoadShortcut
   LoadAllMenu
@@ -57,6 +60,17 @@ Public Sub Form_Open()
 End
 
 Public Sub Form_Close()
+  
+  If $bModified Then
+    Select Case Message.Warning(("Menus have been modified!"), ("Save"), ("Ignore"), ("Cancel"))
+      Case 1
+        SaveAllMenu
+      Case 2
+      Case 3
+        Stop Event
+        Return
+    End Select
+  Endif
   
   Settings.Write(Me)
   
@@ -76,7 +90,8 @@ Public Sub btnOK_Click()
 
   If WriteMenu() Then Return
   If CheckMenu() Then Return
-  Me.Close(True)
+  SaveAllMenu
+  Me.Close
 
 End
 
@@ -120,25 +135,25 @@ Private Sub CreateMenu(hCCtrl As CControl)
 End
 
 
-Private Sub DrawMenu(iInd As Integer)
-
-  Dim sElt As String
-  
-  $bFreeze = True
-
-  With $aMenu[iInd]
-
-    sElt = String$(.Level, "···") & .Caption
-    If .Shortcut Then
-      sElt = sElt & " (" & .GetShortcut() & ")"
-    Endif
-    lstMenu[iInd].Text = sElt
-
-  End With
-  
-  $bFreeze = False
-
-End
+' Private Sub DrawMenu(iInd As Integer)
+' 
+'   Dim sElt As String
+'   
+'   $bFreeze = True
+' 
+'   With $aMenu[iInd]
+' 
+'     sElt = String$(.Level, "···") & .Caption
+'     If .Shortcut Then
+'       sElt = sElt & " (" & .GetShortcut() & ")"
+'     Endif
+'     lstMenu[iInd].Text = sElt
+' 
+'   End With
+'   
+'   $bFreeze = False
+' 
+' End
 
 
 Private Sub LoadAllMenu()
@@ -158,18 +173,22 @@ Private Sub LoadAllMenu()
     'ENDIF
   Next
 
-  lstMenu.Clear
-
-  For iInd = 0 To $aMenu.Count - 1
-    lstMenu.Add("")
-    DrawMenu(iInd)
-  Next  
+  ' lstMenu.Clear
+  ' 
+  ' For iInd = 0 To $aMenu.Count - 1
+  '   lstMenu.Add("")
+  '   DrawMenu(iInd)
+  ' Next  
+  ' 
+  ' lstMenu.Add("")
+  ' 
+  ' lstMenu.Index = 0
   
-  lstMenu.Add("")
-  
-  lstMenu.Index = 0
+  $aMenu.Add(Null)
+  gvwMenu.Rows.Count = $aMenu.Count
   
   $bFreeze = False
+  $bModified = False
 
   SetCurrent(0)
   ReadMenu
@@ -177,7 +196,7 @@ Private Sub LoadAllMenu()
 End
 
 
-Static Private Sub SaveAllMenu()
+Private Sub SaveAllMenu()
 
   'DIM cDelete AS NEW Array
   Dim hCtrl As CControl
@@ -199,49 +218,55 @@ Static Private Sub SaveAllMenu()
 
   For Each hCMenu In $aMenu
   
-    With hCMenu
+    If hCMenu Then 
   
-      If .Level > iLevel Then
-      
-        hParent = hCtrl
-        iLevel = .Level
-        
-      Else
-      
-        While .Level < iLevel
-          hParent = hParent.Parent
-          iLevel = iLevel - 1
-        Wend
-      
-      Endif
-      
-      hCtrl = $hForm.CreateControl("Menu", hParent, .Name)
-      
-      hCtrl.SetProperty("Text", .Caption)
-      hCtrl.SetProperty("Action", .Action)
-      hCtrl.SetProperty("Visible", .Visible)
-      hCtrl.SetProperty("Enabled", .Enabled)
-      hCtrl.SetProperty("Checked", .Checked)
-      hCtrl.SetProperty("Toggle", .Toggle)
-      hCtrl.SetProperty("Shortcut", .GetShortcut())
-      hCtrl.SetProperty("Picture", .Picture)
-      hCtrl.SetProperty("Tag", .Tag)
-      hCtrl.SetProperty(CPropertyInfo.EVENT_NAME, .Group)
+      With hCMenu
     
-    End With
+        If .Level > iLevel Then
+        
+          hParent = hCtrl
+          iLevel = .Level
+          
+        Else
+        
+          While .Level < iLevel
+            hParent = hParent.Parent
+            iLevel = iLevel - 1
+          Wend
+        
+        Endif
+        
+        hCtrl = $hForm.CreateControl("Menu", hParent, .Name)
+        
+        hCtrl.SetProperty("Text", .Caption)
+        hCtrl.SetProperty("Action", .Action)
+        hCtrl.SetProperty("Visible", .Visible)
+        hCtrl.SetProperty("Enabled", .Enabled)
+        hCtrl.SetProperty("Checked", .Checked)
+        hCtrl.SetProperty("Toggle", .Toggle)
+        hCtrl.SetProperty("Shortcut", .GetShortcut())
+        hCtrl.SetProperty("Picture", .Picture)
+        hCtrl.SetProperty("Tag", .Tag)
+        hCtrl.SetProperty(CPropertyInfo.EVENT_NAME, .Group)
+      
+      End With
+      
+    Endif
   
   Next
   
   $hForm.UpdateBorder
+  
+  $bModified = False
 
 End
 
 
 
-Public Sub lstMenu_Click()
+Public Sub gvwMenu_Select()
 
   If $bFreeze Then Return
-  ChangeCurrent(lstMenu.Index)
+  ChangeCurrent(gvwMenu.Row)
 
 End
 
@@ -261,6 +286,7 @@ Private Sub WriteMenu() As Boolean
 
   Dim iInd As Integer
   Dim sName As String
+  Dim sComp As String
 
   'IF NOT ME.Visible THEN
   '  PRINT "WriteMenu ??"
@@ -271,9 +297,11 @@ Private Sub WriteMenu() As Boolean
 
   iInd = $iCurrent
 
-  If iInd < 0 Or iInd >= $aMenu.Count Then Return 
+  If iInd < 0 Or iInd >= $aMenu.Max Then Return 
 
   With $aMenu[iInd]
+    
+    sComp = .ToString()
 
     sName = Trim(txtName.Text)
 
@@ -320,10 +348,14 @@ Private Sub WriteMenu() As Boolean
     Endif
     .Picture = txtPicture.Text
     .Tag = txtTag.Text
+    
+    If .ToString() <> sComp Then SetModified
   
   End With
   
-  DrawMenu($iCurrent)
+  gvwMenu.Rows[$iCurrent].Refresh
+  
+  'DrawMenu($iCurrent)
   
 End
 
@@ -336,7 +368,7 @@ Private Sub ReadMenu()
   
   iInd = $iCurrent
 
-  If iInd >= 0 And iInd < $aMenu.Count Then
+  If iInd >= 0 And iInd < $aMenu.Max Then
   
     With $aMenu[iInd]
     
@@ -379,9 +411,9 @@ End
 
 Private Sub DeleteMenu(iInd As Integer)
 
-  lstMenu.Remove(iInd)
   $cName.Remove($aMenu[iInd].Name)
   $aMenu.Remove(iInd)
+  SetModified
 
 End
 
@@ -394,17 +426,20 @@ Public Sub btnDelete_Click()
 
   $bFreeze = True
 
-  While iInd < (lstMenu.Count - 1)
+  While iInd < $aMenu.Max
 
-    If lstMenu[iInd].Selected Then
+    If gvwMenu.Rows[iInd].Selected Then
       DeleteMenu(iInd)
     Else
-      iInd = iInd + 1
+      Inc iInd
     Endif
   
   Wend
   
+  gvwMenu.Rows.Count = $aMenu.Count
+  gvwMenu.Refresh
   SetCurrent($iCurrent)
+  
   $bFreeze = False
   
   ReadMenu
@@ -421,13 +456,13 @@ Public Sub btnInsert_Click()
 
   $bFreeze = True
 
-  If $iCurrent < (lstMenu.Count - 1) Then Inc $iCurrent
+  If $iCurrent < $aMenu.Max Then Inc $iCurrent
 
   hCMenu = New CMenu
   hCMenu.Name = GetName()
   hCMenu.Caption = hCMenu.Name
   'hCMenu.Caption = hCMenu.Name
-  If lstMenu.Index > 0 Then
+  If $iCurrent > 0 Then
     hCMenu.Level = $aMenu[$iCurrent - 1].Level
   Endif
 
@@ -435,14 +470,15 @@ Public Sub btnInsert_Click()
   'hCMenu.Caption = hCMenu.Name
 
   $aMenu.Add(hCMenu, $iCurrent)
-  lstMenu.Add("", $iCurrent)
+  SetModified
+  Inc gvwMenu.Rows.Count
+  gvwMenu.Refresh
 
   ReadMenu
 
   $bFreeze = False
 
-  DrawMenu($iCurrent)
-  lstMenu.Index = -1
+  gvwMenu.Rows.UnselectAll
   SetCurrent($iCurrent)
 
   txtName.SelectAll
@@ -473,14 +509,14 @@ Public Sub btnRight_Click()
 
   If WriteMenu() Then Return
 
-  For iInd = 0 To lstMenu.Count - 2
+  For iInd = 0 To $aMenu.Count - 2
 
-    If lstMenu[iInd].Selected Then
+    If gvwMenu.Rows[iInd].Selected Then
       With $aMenu[iInd]
         .Level = .Level + 1
+        gvwMenu.Rows[iInd].Refresh
+        SetModified
       End With
-      DrawMenu(iInd)
-      lstMenu[iInd].Selected = True
     Endif
 
   Next
@@ -496,14 +532,14 @@ Public Sub btnLeft_Click()
 
   If WriteMenu() Then Return
 
-  For iInd = 0 To lstMenu.Count - 2
+  For iInd = 0 To $aMenu.Count - 2
 
-    If lstMenu[iInd].Selected Then
+    If gvwMenu.Rows[iInd].Selected Then
       With $aMenu[iInd]
         .Level = Max(.Level - 1, 0)
+        gvwMenu.Rows[iInd].Refresh
+        SetModified
       End With
-      DrawMenu(iInd)
-      lstMenu[iInd].Selected = True
     Endif
   
   Next
@@ -545,12 +581,11 @@ Private Function CheckMenu() As Boolean
 
   iLastLevel = -1
 
-  For iInd = 0 To $aMenu.Count - 1
+  For iInd = 0 To $aMenu.Max - 1
 
     If $aMenu[iInd].Level - iLastLevel > 1 Then
-      lstMenu.Index = -1
-      lstMenu.Index = iInd
-      lstMenu[lstMenu.Index].Selected = True
+      gvwMenu.Rows.UnselectAll
+      gvwMenu.Row = iInd
       Message.Warning(("This menu is too deep !"))
       Return True
     Endif
@@ -588,10 +623,7 @@ Public Sub btnNext_Click()
   Dim iIndex As Integer
 
   If $iCurrent < $aMenu.Count Then
-    iIndex = lstMenu.Index
-    lstMenu.Index = -1
-    lstMenu.Index = iIndex + 1
-    lstMenu[lstMenu.Index].Selected = True
+    Inc gvwMenu.Row
   Endif
 
 End
@@ -604,34 +636,23 @@ Public Sub btnUp_Click()
   Dim hCMenu As CMenu
   Dim iCount As Integer
 
-  iCount = lstMenu.Count
+  iCount = $aMenu.Count
   If iCount <= 1 Then Return
 
-  If $iCurrent = (lstMenu.Count - 1) Then Return
+  If $iCurrent = $aMenu.Max Then Return
+  If gvwMenu.Rows[0].Selected Then Return
+  
+  For iInd = 0 To $aMenu.Count - 2
 
-  If lstMenu[0].Selected Then Return
-
-  For iInd = 0 To lstMenu.Count - 2
-
-    If lstMenu[iInd].Selected Then
-
-      $bFreeze = True
-
-      sItem = lstMenu[iInd].Text
-      lstMenu.Add(sItem, iInd - 1)
-      lstMenu.Remove(iInd + 1)
-      lstMenu[iInd - 1].Selected = True
-
-      hCMenu = $aMenu[iInd - 1]
-      $aMenu[iInd - 1] = $aMenu[iInd]
-      $aMenu[iInd] = hCMenu
-
+    If gvwMenu.Rows[iInd].Selected Then
+      Swap $aMenu[iInd], $aMenu[iInd - 1]
+      SetModified
     End If
 
   Next
 
   SetCurrent($iCurrent - 1)
-  $bFreeze = False
+  gvwMenu.Refresh
 
   ReadMenu
 
@@ -645,34 +666,26 @@ Public Sub btnDown_Click()
   Dim hCMenu As CMenu
   Dim iCount As Integer
 
-  iCount = lstMenu.Count
+  iCount = $aMenu.Count
   If iCount <= 1 Then Return
 
-  If $iCurrent = (lstMenu.Count - 1) Then Return
+  If $iCurrent = $aMenu.Max Then Return
 
-  If lstMenu[iCount - 2].Selected Or lstMenu[iCount - 1].Selected Then Return
+  If gvwMenu.Rows[iCount - 2].Selected Or gvwMenu.Rows[iCount - 1].Selected Then Return
 
-  For iInd = lstMenu.Count - 2 To 0 Step -1
+  For iInd = $aMenu.Count - 2 To 0 Step -1
 
-    If lstMenu[iInd].Selected Then
+    If gvwMenu.Rows[iInd].Selected Then
 
-      $bFreeze = True
-
-      sItem = lstMenu[iInd].Text
-      lstMenu.Remove(iInd)
-      lstMenu.Add(sItem, iInd + 1)
-      lstMenu[iInd + 1].Selected = True
-
-      hCMenu = $aMenu[iInd]
-      $aMenu[iInd] = $aMenu[iInd + 1]
-      $aMenu[iInd + 1] = hCMenu
+      Swap $aMenu[iInd], $aMenu[iInd + 1]
+      SetModified
 
     End If
 
   Next
 
   SetCurrent($iCurrent + 1)
-  $bFreeze = False
+  gvwMenu.Refresh
 
   ReadMenu
 
@@ -681,11 +694,11 @@ End
 
 Private Sub SetCurrent(iCurrent As Integer)
 
-  If iCurrent < 0 Or iCurrent >= lstMenu.Count Then Return
+  If iCurrent < 0 Or iCurrent >= $aMenu.Count Then Return
 
   $iCurrent = iCurrent
-  lstMenu.Index = $iCurrent
-  lstMenu[iCurrent].Selected = True
+  gvwMenu.Row = $iCurrent
+  gvwMenu.Rows[gvwMenu.Row].Selected = True
 
 End
 
@@ -707,6 +720,7 @@ Private Sub SetPicture(sPict As String)
   hPict = Project.GetPicture(sPict)
   If hPict Then hPict = hPict.Image.Stretch(48, 48).Picture
   btnIcon.Picture = hPict
+  WriteMenu
   
 Catch
 
@@ -727,24 +741,24 @@ Public Sub btnSave_Click()
 
 End
 
-Public Sub lstMenu_MouseDown()
-
-  Dim iInd As Integer
-  
-  If Not (Mouse.Control Or Mouse.Shift) Then
-    For iInd = 0 To lstMenu.Count - 1
-      lstMenu[iInd].Selected = False
-    Next
-  Endif
-
-End
+' Public Sub lstMenu_MouseDown()
+' 
+'   Dim iInd As Integer
+'   
+'   If Not (Mouse.Control Or Mouse.Shift) Then
+'     For iInd = 0 To $aMenu.Max
+'       gvwMenu[iInd].Selected = False
+'     Next
+'   Endif
+' 
+' End
 
 Public Sub btnShortcut_Click()
 
   chkCtrl.Value = False
   chkShift.Value = False
   chkAlt.Value = False
-  cmbShortcut.Index = 0  
+  cmbShortcut.Index = 0
 
 End
 
@@ -771,8 +785,8 @@ Public Sub btnCopy_Click()
   Dim iInd As Integer
   Dim sData As String
   
-  For iInd = 0 To lstMenu.Count - 2
-    If lstMenu[iInd].Selected Then
+  For iInd = 0 To $aMenu.Count - 2
+    If gvwMenu.Rows[iInd].Selected Then
       sData &= GetMenu($aMenu[iInd]) & "\n"
     Endif
   Next
@@ -838,16 +852,16 @@ Public Sub txtSearch_Click()
   
   If Not sFind Then Return
   
-  iStart = lstMenu.Index
+  iStart = gvwMenu.Row 
   If iStart < 0 Then iStart = 0
   
   iIndex = iStart
   Do
     Inc iIndex
-    If iIndex >= lstMenu.Count Then iIndex = 0
+    If iIndex >= $aMenu.Count Then iIndex = 0
     If iIndex = iStart Then Break
-    If lstMenu[iIndex].Text Like ("*" & sFind & "*") Then 
-      lstMenu.Index = iIndex
+    If $aMenu[iIndex].Text Like ("*" & sFind & "*") Then 
+      SetCurrent(iIndex)
       Break
     Endif
   Loop
@@ -857,5 +871,70 @@ End
 Public Sub txtSearch_Activate()
 
   txtSearch_Click
+
+End
+
+Public Sub gvwMenu_Data(Row As Integer, Column As Integer)
+
+  Dim hPict As Picture
+  Dim sElt As String
+  
+  If Row >= $aMenu.Max Then Return
+  
+  With $aMenu[Row]
+  
+    Select Case Column
+      
+      Case 0
+        If .Picture Then
+          hPict = Project.GetPicture(.Picture)
+          If hPict Then hPict = hPict.Image.Stretch(16, 16).Picture
+          gvwMenu.Data.Picture = hPict
+          gvwMenu.Data.Alignment = Align.Center
+        Endif
+        
+      Case 1
+        sElt = String$(.Level, "···") & .Caption
+        gvwMenu.Data.Text = sElt
+        
+      Case 2
+        gvwMenu.Data.Text = .Shortcut
+      
+    End Select
+    
+  End With
+
+End
+
+Private Sub SetModified()
+
+  If Not $bModified Then
+    Me.Title = Me.Title & " [" & ("modified") & "]"
+    $bModified = True
+  Endif
+
+End
+
+Public Sub chkVisible_Click()
+
+  WriteMenu
+
+End
+
+Public Sub chkEnabled_Click()
+
+  WriteMenu
+
+End
+
+Public Sub chkToggle_Click()
+
+  WriteMenu
+
+End
+
+Public Sub chkChecked_Click()
+
+  WriteMenu
 
 End

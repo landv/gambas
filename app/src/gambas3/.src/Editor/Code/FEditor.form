@@ -39,24 +39,6 @@
     }
     { mnuSepGoto Menu
     }
-    { mnuUntil Menu
-      Text = ("Run &until current line")
-      Picture = Picture["icon:/small/jump"]
-      Shortcut = "Shift+F5"
-    }
-    { mnuBreakpoint Menu
-      Action = ".break"
-      Text = ("Toggle &breakpoint")
-      Picture = Picture["icon:/small/halt"]
-      Shortcut = "F9"
-    }
-    { mnuWatch Menu
-      Action = ".watch"
-      Text = ("&Watch expression")
-      Picture = Picture["icon:/small/watch"]
-    }
-    { mnuSepWatch Menu
-    }
     { mnuUndo Menu
       Action = ".undo"
       Text = ("Undo")
@@ -91,11 +73,6 @@
       Action = ".paste-special"
       Text = ("Paste special...")
       Shortcut = "Ctrl+Shift+V"
-    }
-    { mnuInsertColor Menu
-      Action = ".color"
-      Text = ("Insert color...")
-      Picture = Picture["icon:/small/color"]
     }
     { Menu3 Menu
     }
@@ -134,34 +111,65 @@
     }
     { mnuSep4 Menu
     }
-    { mnuEditorView Menu
-      Text = ("View")
-      { mnuNoSplit Menu
-        Action = ".view-nosplit"
-        Text = ("No split")
-        Picture = Picture["icon:/small/view-normal"]
-        Shortcut = "Ctrl+B"
+    { mnuUntil Menu
+      Text = ("Run &until current line")
+      Picture = Picture["icon:/small/jump"]
+      Shortcut = "Shift+F5"
+    }
+    { mnuBreakpoint Menu
+      Action = ".break"
+      Text = ("Toggle &breakpoint")
+      Picture = Picture["icon:/small/halt"]
+      Shortcut = "F9"
+    }
+    { mnuWatch Menu
+      Action = ".watch"
+      Text = ("&Watch expression")
+      Picture = Picture["icon:/small/watch"]
+    }
+    { mnuSepWatch Menu
+    }
+    { Menu1 Menu
+      Text = ("Advanced")
+      { mnuInsertColor Menu
+        Action = ".color"
+        Text = ("Insert color...")
+        Picture = Picture["icon:/small/color"]
       }
-      { mnuHorizontalSplit Menu
-        Action = ".view-hsplit"
-        Text = ("Horizontal split")
-        Picture = Picture["icon:/small/view-split-h"]
-        Shortcut = "Ctrl+H"
+      { mnuPretty Menu
+        Action = ".pretty"
+        Text = ("Format code")
+        Picture = Picture["icon:/small/wizard"]
+        Shortcut = "Ctrl+Shift+F"
       }
-      { mnuVerticalSplit Menu
-        Action = ".view-vsplit"
-        Text = ("Vertical split")
-        Picture = Picture["icon:/small/view-split-v"]
-        Shortcut = "Ctrl+J"
+      { mnuSortProc Menu
+        Text = ("Sort procedures...")
+        Picture = Picture["icon:/small/sort-ascent"]
+        Visible = False
+      }
+      { mnuEditorView Menu
+        Text = ("View")
+        { mnuNoSplit Menu
+          Action = ".view-nosplit"
+          Text = ("No split")
+          Picture = Picture["icon:/small/view-normal"]
+          Shortcut = "Ctrl+B"
+        }
+        { mnuHorizontalSplit Menu
+          Action = ".view-hsplit"
+          Text = ("Horizontal split")
+          Picture = Picture["icon:/small/view-split-h"]
+          Shortcut = "Ctrl+H"
+        }
+        { mnuVerticalSplit Menu
+          Action = ".view-vsplit"
+          Text = ("Vertical split")
+          Picture = Picture["icon:/small/view-split-v"]
+          Shortcut = "Ctrl+J"
+        }
       }
     }
     { mnuSep5 Menu
-    }
-    { mnuPretty Menu
-      Action = ".pretty"
-      Text = ("Format code")
-      Picture = Picture["icon:/small/wizard"]
-      Shortcut = "Ctrl+Shift+F"
     }
     { mnuReload Menu
       Action = ".reload"
