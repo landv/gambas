@@ -15,11 +15,12 @@ Public splineArr_x As New Integer[]
 Public splineArr_y As New Integer[]
 
 Public Sub btnCubicSpline_Click()
-Dim i As Integer
-Dim xi As Integer
-Dim acc As Pointer
-Dim spline As Pointer
-Dim gsl_interp_cspline As Pointer
+
+   Dim i As Integer
+   Dim xi As Integer
+   Dim acc As Pointer
+   Dim spline As Pointer
+   Dim gsl_interp_cspline As Pointer
 
    If pointsArr_x.Length < 3 Then Return
 
@@ -27,17 +28,17 @@ Dim gsl_interp_cspline As Pointer
    acc = gsl_interp_accel_alloc()
    spline = gsl_spline_alloc(gsl_interp_cspline, pointsArr_x.Count)
    gsl_spline_init(spline, pointsArr_x.Data, pointsArr_y.Data, pointsArr_x.Count)
-  
+
    xi = pointsArr_x[0]
    While xi < pointsArr_x[pointsArr_x.Max]
       splineArr_x.Add(xi)
       splineArr_y.Add(gsl_spline_eval(spline, xi, acc))
       xi += 1
-   Wend 
-  dwgGraph.Refresh
- 
-  gsl_spline_free(spline)
-  gsl_interp_accel_free(acc)
+   Wend
+   dwgGraph.Refresh
+
+   gsl_spline_free(spline)
+   gsl_interp_accel_free(acc)
 
 End
 
@@ -49,10 +50,10 @@ Public Sub dwgGraph_MouseDown()
       pointsArr_x.Add(Mouse.X)
       pointsArr_y.Add(Mouse.Y)
    Else
-     dwgGraph.Background = &HFF8080
+      dwgGraph.Background = &HFF8080
    Endif
    dwgGraph.Refresh
-   
+
 End
 
 Public Sub dwgGraph_MouseUp()
@@ -62,12 +63,13 @@ Public Sub dwgGraph_MouseUp()
 End
 
 Public Sub dwgGraph_Draw()
-Dim i As Integer
-   
-   'lines  
+
+   Dim i As Integer
+
+   'lines
    paint.Brush = paint.Color(Color.DarkGray)
    Paint.LineWidth = 0.5
-   paint.Font.Size = 10 
+   paint.Font.Size = 10
    For i = 0 To pointsArr_x.Max
       If i = 0 Then
          Paint.MoveTo(pointsArr_x[i], pointsArr_y[i])
@@ -76,20 +78,20 @@ Dim i As Integer
       Endif
    Next
    paint.Stroke
-   
+
    'numbers
    For i = 0 To pointsArr_x.Max
       paint.Text(i + 1, pointsArr_x[i], pointsArr_y[i] - 8)
    Next
    paint.Fill
-   
+
    'points
-   paint.Brush = paint.Color(Color.red)  
+   paint.Brush = paint.Color(Color.red)
    For i = 0 To pointsArr_x.Max
       Paint.Arc(pointsArr_x[i], pointsArr_y[i], 3)
       Paint.Fill
    Next
-   
+
    'spline
    If splineArr_x.Count Then
       paint.Brush = paint.Color(Color.DarkMagenta)
@@ -106,7 +108,6 @@ Dim i As Integer
 
 End
 
-
 Public Sub btnClear_Click()
 
    pointsArr_x.Clear
@@ -114,11 +115,11 @@ Public Sub btnClear_Click()
    splineArr_x.Clear
    splineArr_y.Clear
    dwgGraph.Refresh
-   
+
 End
 
 Public Sub btnAbout_Click()
-   
+
    Message.Info("<h2>Gnu Scientific Library example</h2>Made by <b>Juergen Zdero</b> (juergen@zdero.eu) and <b>Benoît Minisini</b> (gambas@users.sourceforge.net)")
 
 End
