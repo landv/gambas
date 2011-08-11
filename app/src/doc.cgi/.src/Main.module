@@ -2462,6 +2462,20 @@ Private Sub RemoveMarkup(sStr As String) As String
 
 End
 
+Private Sub GetOpenGL(sName As String, sLib As String) As String
+
+  Dim sPath As String
+  
+  sPath = $sRoot &/ "opengl/3" &/ sLib & LCase(sName) & ".txt"
+  If Exist(sPath) Then Return File.Load(sPath)
+  sPath = $sRoot &/ "opengl/2" &/ sLib & LCase(sName) & ".txt"
+  If Exist(sPath) Then Return File.Load(sPath)
+  
+  If $hSym And If $hSym.Kind = "C" Then Return
+  If Len(sName) > 3 Then Return GetOpenGL(Left(sName, -1), sLib)
+
+End
+
 Private Sub EditPage()
 
   Dim rPage As Result
@@ -2593,29 +2607,9 @@ Private Sub EditPage()
           rPage!sTitle = "@" & Replace($sPath, "/" & $hComp.Key, "/gb.qt")
           'rPage!sDesc = NULL
         Else If $hComp.Key = "gb.opengl" Then
-          If $hSym Then
-            sPath = $sRoot &/ "opengl/3" &/ "gl" & LCase($hSym.Name) & ".txt"
-            If Exist(sPath) Then
-              rPage!sDesc = File.Load(sPath)
-            Else
-              sPath = $sRoot &/ "opengl/2" &/ "gl" & LCase($hSym.Name) & ".txt"
-              If Exist(sPath) Then
-                rPage!sDesc = File.Load(sPath)
-              Endif
-            Endif
-          Endif
+          If $hSym Then rPage!sDesc = GetOpenGL($hSym.Name, "gl")
         Else If $hComp.Key = "gb.opengl.glu" Then
-          If $hSym Then
-            sPath = $sRoot &/ "opengl/3" &/ "glu" & LCase($hSym.Name) & ".txt"
-            If Exist(sPath) Then
-              rPage!sDesc = File.Load(sPath)
-            Else
-              sPath = $sRoot &/ "opengl/2" &/ "glu" & LCase($hSym.Name) & ".txt"
-              If Exist(sPath) Then
-                rPage!sDesc = File.Load(sPath)
-              Endif
-            Endif
-          Endif
+          If $hSym Then rPage!sDesc = GetOpenGL($hSym.Name, "glu")
         Endif
       Endif
 
@@ -3887,9 +3881,11 @@ Private Function GetIndex2(sRoot As String) As String
     Endif
     sTitle = GetTitle(sPath, True)
     If Not sTitle Then Continue
+    
     If sTitle Like Replace(sPrefix, "[", "[[]") Then
       sTitle = LTrim(Mid$(sTitle, Len(sPrefix)))
     Endif
+    
     aPath.Add(sTitle & "\n" & rPage!sPath)
   Next
 
@@ -4079,6 +4075,8 @@ Private Function GetSymbolLink(hSym As CSymbolInfo, hClass As CClassInfo, Option
 
   Dim sRes As String
   Dim sComp As String
+  Dim sPath As String
+  Dim iPos As Integer
 
   If $cCompRedirect Then
     sComp = hSym.Component
@@ -4090,7 +4088,13 @@ Private Function GetSymbolLink(hSym As CSymbolInfo, hClass As CClassInfo, Option
 
   'If hSym.Class <> hClass.Name Then sRes &= "<font color=\"#808080\">"
   If hSym.IsStatic() Then sRes &= "<b>"
-  sRes &= GetLink(GetSymbolPath(hSym), sMyTitle,, "none")
+  
+  sPath = GetSymbolPath(hSym)
+  If Not sMyTitle Then sMyTitle = GetTitle(sPath)
+  iPos = InStr(sMyTitle, " / ")
+  If iPos Then sMyTitle = Left(sMyTitle, iPos - 1)
+  sRes &= GetLink(sPath, sMyTitle,, "none")
+  
   If hSym.IsStatic() Then sRes &= "</b>"
   'If hSym.Class <> hClass.Name Then sRes &= "°"
 
@@ -4984,13 +4988,5 @@ Private Sub GetInclude(sPath As String) As String
 
   rPage = FindPage(sPath)
   If rPage.Available Then Return MakePageWithoutHeader(rPage)
-
-End
-
-Private Sub GetOpenGL() As String
-
-  If Not $hSym Then Return
-  
-  
 
 End

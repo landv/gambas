@@ -5,11 +5,15 @@ html {
 }
 
 body.left {
-  border-left: solid 6px black;
+  border: solid 6px black;
   background: #DF6B00;
   margin: 0px;
   padding: 0px;
-  height: 100%;
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
 }
 
 body {
@@ -492,6 +496,7 @@ a.download-blue:hover {
 }
 
 #news-shadow {
+  display: none;
   position: absolute;
   width: 100%;
   height: 100%;
