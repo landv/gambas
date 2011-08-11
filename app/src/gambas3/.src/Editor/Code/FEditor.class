@@ -1026,16 +1026,23 @@ Public Sub Editors_KeyPress()
     If IsComment(sLine) And If Not Key.Shift Then
 
       iInd = Editor.GetIndent(sLine)
-      iPos = iInd + 1
-      While Mid$(sLine, iPos, 1) = "'"
-        Inc iPos
-      Wend
-      While Mid$(sLine, iPos, 1) = " "
-        Inc iPos
-      Wend
-      Editor.Insert("\n" & Left$(sLine, iPos - 1))
+      If Editor.Column > iInd Then
+        iPos = iInd + 1
+        While Mid$(sLine, iPos, 1) = "'"
+          Inc iPos
+        Wend
+        While Mid$(sLine, iPos, 1) = " "
+          Inc iPos
+        Wend
+        Editor.Begin
+        Editor.Insert("\n" & Space$(iInd))
+        Editor.End
+        Editor.Begin
+        Editor.Insert(Mid$(Left$(sLine, iPos - 1), iInd + 1))
+        Editor.End
+        Stop Event
+      Endif
 
-      Stop Event
       Return
 
     Endif
