@@ -421,21 +421,20 @@ End
 Public Sub btnDelete_Click()
 
   Dim iInd As Integer
+  Dim aDelete As New Integer[]
 
   'IF WriteMenu() THEN RETURN
 
   $bFreeze = True
-
-  While iInd < $aMenu.Max
-
-    If gvwMenu.Rows[iInd].Selected Then
-      DeleteMenu(iInd)
-    Else
-      Inc iInd
-    Endif
   
-  Wend
-  
+  For iInd = 0 To $aMenu.Max - 1
+    If gvwMenu.Rows[iInd].Selected Then aDelete.Add(iInd)
+  Next
+
+  For iInd = aDelete.Max DownTo 0
+    DeleteMenu(aDelete[iInd])
+  Next
+
   gvwMenu.Rows.Count = $aMenu.Count
   gvwMenu.Refresh
   SetCurrent($iCurrent)
