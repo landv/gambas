@@ -858,9 +858,9 @@ Public Sub txtSearch_Click()
   iIndex = iStart
   Do
     Inc iIndex
-    If iIndex >= $aMenu.Count Then iIndex = 0
+    If iIndex >= $aMenu.Max Then iIndex = 0
     If iIndex = iStart Then Break
-    If $aMenu[iIndex].Text Like ("*" & sFind & "*") Then 
+    If $aMenu[iIndex].Caption Like ("*" & sFind & "*") Then 
       SetCurrent(iIndex)
       Break
     Endif
