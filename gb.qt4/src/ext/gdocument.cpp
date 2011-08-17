@@ -581,11 +581,14 @@ void GDocument::setText(const GString & text)
 
   readOnly = false;
   blockUndo = true;
-
+	
   clear();
+	clearUndo();
+	undoLevel++; // Prevent textChanged emission
   insert(0, 0, text);
   colorize(0);
   reset();
+	undoLevel--;
 
   blockUndo = false;
   readOnly = oldReadOnly;
@@ -594,6 +597,8 @@ void GDocument::setText(const GString & text)
   {
     v->cursorGoto(0, 0, false);
   }
+  
+  emitTextChanged();
 }
 
 void GDocument::unsubscribe(GEditor *view)
