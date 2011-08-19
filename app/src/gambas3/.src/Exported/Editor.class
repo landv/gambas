@@ -5,6 +5,8 @@ Export
 Private $iStartLine As Integer
 Private $iEndLine As Integer
 
+
+
 Public Sub GetPosition() As Integer
   
   Dim iLine, iColumn, iInd, iPos As Integer
@@ -134,6 +136,8 @@ Public Sub StoreSelection()
     $iEndLine = .Selection.EndLine
     If .Selection.EndColumn > 0 Or Not .Selected Then Inc $iEndLine
   End With
+  
+  RecallSelection
 
 End
 

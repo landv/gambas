@@ -61,9 +61,6 @@ Private $bShowPopupHelp As Boolean
 Private $X As Integer
 Private $Y As Integer
 
-Private $iStartLine As Integer
-Private $iEndLine As Integer
-
 Private $bDoNotSavePosition As Boolean
 
 Private Const TYPE_SYMBOL As Integer = 0
@@ -1347,10 +1344,13 @@ Public Sub mnuComment_Click()
   If Editor.Selected Then
     Editor.StoreSelection
 
-    iIndent = GetIndentWidth($iStartLine, $iEndLine)
+    iStartLine = Editor.Selection.StartLine
+    iEndLine = Editor.Selection.EndLine
+
+    iIndent = GetIndentWidth(iStartLine, iEndLine)
 
     Editor.Begin
-    For iLine = $iStartLine To $iEndLine - 1
+    For iLine = iStartLine To iEndLine - 1
       Editor.Lines[iLine].Text = Space$(iIndent) & "' " & Mid$(Editor.Lines[iLine].Text, iIndent + 1)
     Next
     Editor.End
@@ -1373,6 +1373,8 @@ Public Sub mnuUncomment_Click()
   Dim iLine As Integer
   Dim sLine As String
   Dim iIndent As Integer
+  Dim iStartLine As Integer
+  Dim iEndLine As Integer
 
   If Editor.ReadOnly Then Return
   'IF NOT Editor.Selected THEN RETURN
@@ -1380,17 +1382,20 @@ Public Sub mnuUncomment_Click()
   If Editor.Selected Then
     Editor.StoreSelection
 
-    iIndent = GetIndentWidth($iStartLine, $iEndLine)
+    iStartLine = Editor.Selection.StartLine
+    iEndLine = Editor.Selection.EndLine
 
-    For iLine = $iStartLine To $iEndLine - 1
+    iIndent = GetIndentWidth(iStartLine, iEndLine)
+
+    For iLine = iStartLine To iEndLine - 1
       sLine = Editor.Lines[iLine].Text
       If Len(sLine) < (iIndent + 1) Then Break
       If Left(LTrim(sLine), 1) <> "'" Then Break
     Next
 
-    If iLine = $iEndLine Then
+    If iLine = iEndLine Then
       Editor.Begin
-      For iLine = $iStartLine To $iEndLine - 1
+      For iLine = iStartLine To iEndLine - 1
         If Left(LTrim(Editor.Lines[iLine].Text), 2) = "' " Then
           Editor.Lines[iLine].Text = Space$(iIndent) & Mid$(LTrim(Editor.Lines[iLine].Text), 3)
         Else
