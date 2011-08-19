@@ -69,11 +69,6 @@
       Picture = Picture["icon:/small/paste"]
       Shortcut = "Ctrl+V"
     }
-    { mnuPasteSpecial Menu
-      Action = ".paste-special"
-      Text = ("Paste special...")
-      Shortcut = "Ctrl+Shift+V"
-    }
     { Menu3 Menu
     }
     { mnuSelectAll Menu
@@ -82,20 +77,6 @@
       Shortcut = "Ctrl+A"
     }
     { mnuSep2 Menu
-    }
-    { mnuComment Menu
-      Action = ".comment"
-      Text = ("Comment")
-      Picture = Picture["img/16/comment.png"]
-      Shortcut = "Ctrl+K"
-    }
-    { mnuUncomment Menu
-      Action = ".uncomment"
-      Text = ("Uncomment")
-      Picture = Picture["img/16/uncomment.png"]
-      Shortcut = "Ctrl+U"
-    }
-    { mnuSepComment Menu
     }
     { mnuFindNext Menu
       Action = "find-next"
@@ -131,6 +112,40 @@
     }
     { Menu1 Menu
       Text = ("Advanced")
+      { mnuLowerCase Menu
+        Action = ".lcase"
+        Text = ("Lower case")
+        Picture = Picture["img/16/lcase.png"]
+        Shortcut = "Ctrl+Shift+L"
+      }
+      { mnuUpperCase Menu
+        Action = ".ucase"
+        Text = ("Upper case")
+        Picture = Picture["img/16/ucase.png"]
+        Shortcut = "Ctrl+Shift+U"
+      }
+      { Menu2 Menu
+      }
+      { mnuComment Menu
+        Action = ".comment"
+        Text = ("Comment")
+        Picture = Picture["img/16/comment.png"]
+        Shortcut = "Ctrl+K"
+      }
+      { mnuUncomment Menu
+        Action = ".uncomment"
+        Text = ("Uncomment")
+        Picture = Picture["img/16/uncomment.png"]
+        Shortcut = "Ctrl+U"
+      }
+      { mnuSepComment Menu
+      }
+      { mnuPasteSpecial Menu
+        Action = ".paste-special"
+        Text = ("Paste special...")
+        Picture = Picture["icon:/small/paste"]
+        Shortcut = "Ctrl+Shift+V"
+      }
       { mnuInsertColor Menu
         Action = ".color"
         Text = ("Insert color...")
@@ -509,6 +524,11 @@
     Text = "Indent"
     Picture = "icon:/small/indent"
   }
+  { Action lcase
+    Text = "Lower case"
+    Shortcut = "Ctrl+Shift+L"
+    Picture = "img/16/lcase.png"
+  }
   { Action paste
     Text = "Paste"
     Shortcut = "Ctrl+V"
@@ -567,6 +587,11 @@
     Text = "&Startup class"
     Shortcut = ""
     Picture = "icon:/small/play"
+  }
+  { Action ucase
+    Text = "Upper case"
+    Shortcut = "Ctrl+Shift+U"
+    Picture = "img/16/ucase.png"
   }
   { Action uncomment
     Text = "Uncomment"

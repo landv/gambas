@@ -46,11 +46,6 @@
       Picture = Picture["icon:/small/paste"]
       Shortcut = "Ctrl+V"
     }
-    { mnuInsertColor Menu
-      Action = ".color"
-      Text = ("Insert color...")
-      Picture = Picture["icon:/small/color"]
-    }
     { mnuSep3 Menu
     }
     { mnuSelectAll Menu
@@ -74,38 +69,60 @@
     }
     { mnuSep4 Menu
     }
-    { mnuEditorView Menu
-      Text = ("View")
-      { mnuNoSplit Menu
-        Action = ".view-nosplit"
-        Text = ("No split")
-        Picture = Picture["icon:/small/view-normal"]
-        Shortcut = "Ctrl+B"
+    { Menu4 Menu
+      Text = ("Advanced")
+      { mnuUpperCase Menu
+        Action = ".ucase"
+        Text = ("Upper case")
+        Picture = Picture["img/16/ucase.png"]
+        Shortcut = "Ctrl+Shift+U"
       }
-      { mnuHorizontalSplit Menu
-        Action = ".view-hsplit"
-        Text = ("Horizontal split")
-        Picture = Picture["icon:/small/view-split-h"]
-        Shortcut = "Ctrl+H"
+      { mnuLowerCase Menu
+        Action = ".lcase"
+        Text = ("Lower case")
+        Picture = Picture["img/16/lcase.png"]
+        Shortcut = "Ctrl+Shift+L"
       }
-      { mnuVerticalSplit Menu
-        Action = ".view-vsplit"
-        Text = ("Vertical split")
-        Picture = Picture["icon:/small/view-split-v"]
-        Shortcut = "Ctrl+J"
+      { mnuSep5 Menu
       }
-    }
-    { mnuSep5 Menu
-    }
-    { mnuCompress Menu
-      Action = ".compress"
-      Text = ("Compress file")
-      Picture = Picture["icon:/small/archive"]
-    }
-    { mnuUncompress Menu
-      Action = ".uncompress"
-      Text = ("Uncompress file")
-      Picture = Picture["icon:/small/undo"]
+      { mnuInsertColor Menu
+        Action = ".color"
+        Text = ("Insert color...")
+        Picture = Picture["icon:/small/color"]
+      }
+      { mnuCompress Menu
+        Action = ".compress"
+        Text = ("Compress file")
+        Picture = Picture["icon:/small/archive"]
+      }
+      { mnuUncompress Menu
+        Action = ".uncompress"
+        Text = ("Uncompress file")
+        Picture = Picture["icon:/small/undo"]
+      }
+      { Menu5 Menu
+      }
+      { mnuEditorView Menu
+        Text = ("View")
+        { mnuNoSplit Menu
+          Action = ".view-nosplit"
+          Text = ("No split")
+          Picture = Picture["icon:/small/view-normal"]
+          Shortcut = "Ctrl+B"
+        }
+        { mnuHorizontalSplit Menu
+          Action = ".view-hsplit"
+          Text = ("Horizontal split")
+          Picture = Picture["icon:/small/view-split-h"]
+          Shortcut = "Ctrl+H"
+        }
+        { mnuVerticalSplit Menu
+          Action = ".view-vsplit"
+          Text = ("Vertical split")
+          Picture = Picture["icon:/small/view-split-v"]
+          Shortcut = "Ctrl+J"
+        }
+      }
     }
     { Menu1 Menu
     }
@@ -308,6 +325,11 @@
     Text = "Indent"
     Picture = "icon:/small/indent"
   }
+  { Action lcase
+    Text = "Lower case"
+    Shortcut = "Ctrl+Shift+L"
+    Picture = "img/16/lcase.png"
+  }
   { Action paste
     Text = "Paste"
     Shortcut = "Ctrl+V"
@@ -335,6 +357,11 @@
   { Action show-class
     Text = "Code"
     Picture = "img/16/class.png"
+  }
+  { Action ucase
+    Text = "Upper case"
+    Shortcut = "Ctrl+Shift+U"
+    Picture = "img/16/ucase.png"
   }
   { Action uncompress
     Text = "Uncompress file"

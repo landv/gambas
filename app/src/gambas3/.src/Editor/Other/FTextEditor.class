@@ -714,3 +714,29 @@ Public Sub Editors_Cursor()
   lblInfo.Text = CStr(Editor.Column + 1) & ":" & CStr(Editor.Line + 1)
 
 End
+
+Public Sub mnuLowerCase_Click()
+  
+  If Editor.ReadOnly Then Return
+  If Not Editor.Selected Then Return
+  
+  Editor.StoreSelection
+  Editor.Begin
+  Editor.Insert(String.LCase(Editor.Selection.Text))
+  Editor.End
+  Editor.RecallSelection
+  
+End
+
+Public Sub mnuUpperCase_Click()
+  
+  If Editor.ReadOnly Then Return
+  If Not Editor.Selected Then Return
+  
+  Editor.StoreSelection
+  Editor.Begin
+  Editor.Insert(String.UCase(Editor.Selection.Text))
+  Editor.End
+  Editor.RecallSelection
+  
+End

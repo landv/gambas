@@ -131,6 +131,8 @@ Public Sub _new(sPath As String)
   Path = sPath
   Me.Name = File.BaseName(Path)
 
+  SetReadOnly
+
   Editor = edtEditor
   edtEditor.Flags[Editor.HighlightBraces] = True
   edtEditor.Flags[Editor.ShowCursorPosition] = True
@@ -150,8 +152,6 @@ Public Sub _new(sPath As String)
 
   'Editor = edtEditor
   Me.Icon = Picture["img/16/" &/ File.ext(sPath) & ".png"]
-
-  SetReadOnly
 
   For Each hModule In CModule.All
     If Exist(File.SetExt(Path, hModule.Key)) Then
@@ -1307,22 +1307,6 @@ Public Sub Rename(sNewName As String, sNewPath As String)
 
 End
 
-Private Sub StoreSelection()
-
-  With Editor
-    $iStartLine = .Selection.StartLine
-    $iEndLine = .Selection.EndLine
-    If .Selection.EndColumn > 0 Or Not .Selected Then Inc $iEndLine
-  End With
-
-End
-
-Private Sub RecallSelection()
-
-  Editor.Select($iStartLine, 0, $iEndLine, 0)
-
-End
-
 Private Sub GetIndentWidth(iStart As Integer, iEnd As Integer) As Integer
 
   Dim iLine As Integer
@@ -1361,7 +1345,7 @@ Public Sub mnuComment_Click()
   'IF NOT Editor.Selected THEN RETURN
 
   If Editor.Selected Then
-    StoreSelection
+    Editor.StoreSelection
 
     iIndent = GetIndentWidth($iStartLine, $iEndLine)
 
@@ -1372,7 +1356,7 @@ Public Sub mnuComment_Click()
     Editor.End
     'Modify
 
-    RecallSelection
+    Editor.RecallSelection
   Else
     'Comment only the current line
     iLine = Editor.Line
@@ -1394,7 +1378,7 @@ Public Sub mnuUncomment_Click()
   'IF NOT Editor.Selected THEN RETURN
 
   If Editor.Selected Then
-    StoreSelection
+    Editor.StoreSelection
 
     iIndent = GetIndentWidth($iStartLine, $iEndLine)
 
@@ -1417,7 +1401,7 @@ Public Sub mnuUncomment_Click()
       'Modify
     Endif
 
-    RecallSelection
+    Editor.RecallSelection
   Else
     iLine = Editor.Line
     sLine = Editor.Lines[iLine].Text
@@ -3402,4 +3386,30 @@ Public Sub lblWatch_MouseDown()
 
   timWatch_Timer
 
+End
+
+Public Sub mnuLowerCase_Click()
+  
+  If Editor.ReadOnly Then Return
+  If Not Editor.Selected Then Return
+  
+  Editor.StoreSelection
+  Editor.Begin
+  Editor.Insert(String.LCase(Editor.Selection.Text))
+  Editor.End
+  Editor.RecallSelection
+  
+End
+
+Public Sub mnuUpperCase_Click()
+  
+  If Editor.ReadOnly Then Return
+  If Not Editor.Selected Then Return
+  
+  Editor.StoreSelection
+  Editor.Begin
+  Editor.Insert(String.UCase(Editor.Selection.Text))
+  Editor.End
+  Editor.RecallSelection
+  
 End

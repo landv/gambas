@@ -315,7 +315,7 @@ End
 Private Sub GetTitle(hProjectInfo As CProjectInfo) As String
   
   With hProjectInfo
-    Return "<b>" & .Name & "</b> " & .Version & "<br><font size=\"-1\" color=\"gray\">" & .Title & "</font>"
+    Return "<b>" & .Name & "</b> " & .Version & "<br><font size=\"-1\" color=\"#404040\">" & .Title & "</font>"
   End With
   
 End
@@ -342,7 +342,7 @@ Private Sub FillRecent()
   For Each hChild In svwRecent.Children
     hChild.Delete
   Next
-
+  
   For iInd = 0 To aList.Count - 1
     
     hProjectInfo = New CProjectInfo(aList[iInd].Path)

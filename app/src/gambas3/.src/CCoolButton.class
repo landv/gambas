@@ -80,6 +80,7 @@ Public Sub Panel_Enter()
 
   '$iColor = hPanel.Foreground
   hPanel.Background = $iHighlight 'Color.LightBackground '&88D5FF&
+  $hLabel.Foreground = Color.SelectedForeground
   'hPanel.Foreground = Color.Foreground '&88D5FF&
   $bInside = True
   UpdateBorder
@@ -95,6 +96,7 @@ Public Sub Panel_Leave()
 
   hPanel.Background = Color.Default 'Last.Parent.Background
   'hPanel.Foreground = $iColor
+  $hLabel.Foreground = Color.Default
   $bInside = False
   UpdateBorder
 

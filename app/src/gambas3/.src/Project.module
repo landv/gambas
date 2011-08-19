@@ -4964,7 +4964,9 @@ Public Sub IsExported(sPath As String) As Boolean
   Dim hFile As File
   Dim sLine As String
   
-  hFile = Open sPath
+  Try hFile = Open sPath
+  If Error Then Return
+  
   While Not Eof(hFile)
     Line Input #hFile, sLine
     sLine = Highlight.Purge(Trim(sLine))

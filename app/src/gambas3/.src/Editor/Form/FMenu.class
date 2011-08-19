@@ -49,7 +49,7 @@ Public Sub Form_Open()
   gvwMenu.Columns.Count = 3
   gvwMenu.Columns[0].Width = 20
   gvwMenu.Columns[1].Expand = True
-  gvwMenu.Columns[2].Width = Desktop.Scale * 16
+  gvwMenu.Columns[2].Width = Desktop.Scale * 20
   
   $iCurrent = -1
   LoadShortcut
@@ -627,6 +627,17 @@ Public Sub btnNext_Click()
 
 End
 
+Private Sub SetSelected(aSel As Integer[])
+
+  Dim iSel As Integer
+  
+  gvwMenu.Rows.UnselectAll
+  For Each iSel In aSel
+    gvwMenu.Rows[iSel].Selected = True
+  Next
+
+End
+
 
 Public Sub btnUp_Click()
 
@@ -634,6 +645,7 @@ Public Sub btnUp_Click()
   Dim sItem As String
   Dim hCMenu As CMenu
   Dim iCount As Integer
+  Dim aSel As New Integer[]
 
   iCount = $aMenu.Count
   If iCount <= 1 Then Return
@@ -641,9 +653,10 @@ Public Sub btnUp_Click()
   If $iCurrent = $aMenu.Max Then Return
   If gvwMenu.Rows[0].Selected Then Return
   
-  For iInd = 0 To $aMenu.Count - 2
+  For iInd = 1 To $aMenu.Count - 2
 
     If gvwMenu.Rows[iInd].Selected Then
+      aSel.Add(iInd - 1)
       Swap $aMenu[iInd], $aMenu[iInd - 1]
       SetModified
     End If
@@ -651,6 +664,7 @@ Public Sub btnUp_Click()
   Next
 
   SetCurrent($iCurrent - 1)
+  SetSelected(aSel)
   gvwMenu.Refresh
 
   ReadMenu
@@ -664,6 +678,7 @@ Public Sub btnDown_Click()
   Dim sItem As String
   Dim hCMenu As CMenu
   Dim iCount As Integer
+  Dim aSel As New Integer[]
 
   iCount = $aMenu.Count
   If iCount <= 1 Then Return
@@ -672,10 +687,11 @@ Public Sub btnDown_Click()
 
   If gvwMenu.Rows[iCount - 2].Selected Or gvwMenu.Rows[iCount - 1].Selected Then Return
 
-  For iInd = $aMenu.Count - 2 To 0 Step -1
+  For iInd = iCount - 1 DownTo 0
 
     If gvwMenu.Rows[iInd].Selected Then
 
+      aSel.Add(iInd + 1)
       Swap $aMenu[iInd], $aMenu[iInd + 1]
       SetModified
 
@@ -684,6 +700,7 @@ Public Sub btnDown_Click()
   Next
 
   SetCurrent($iCurrent + 1)
+  SetSelected(aSel)
   gvwMenu.Refresh
 
   ReadMenu
@@ -897,7 +914,7 @@ Public Sub gvwMenu_Data(Row As Integer, Column As Integer)
         gvwMenu.Data.Text = sElt
         
       Case 2
-        gvwMenu.Data.Text = .Shortcut
+        gvwMenu.Data.Text = .GetShortcut()
       
     End Select
     

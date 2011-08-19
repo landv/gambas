@@ -2,6 +2,9 @@
 
 Export
 
+Private $iStartLine As Integer
+Private $iEndLine As Integer
+
 Public Sub GetPosition() As Integer
   
   Dim iLine, iColumn, iInd, iPos As Integer
@@ -123,3 +126,20 @@ Public Sub ReadConfig()
   Me.Flags[Editor.ShowDots] = Settings["/Editor/ShowDots", True]
   
 End
+
+Public Sub StoreSelection()
+
+  With Me
+    $iStartLine = .Selection.StartLine
+    $iEndLine = .Selection.EndLine
+    If .Selection.EndColumn > 0 Or Not .Selected Then Inc $iEndLine
+  End With
+
+End
+
+Public Sub RecallSelection()
+
+  Me.Select($iStartLine, 0, $iEndLine, 0)
+
+End
+

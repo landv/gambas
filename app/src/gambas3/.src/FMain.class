@@ -290,7 +290,7 @@ Public Sub mnuPopup_Show()
   UpdateMenu
   
   If sCurrent And If Project.IsReadOnly(sCurrent) Then
-    mnuNew.Visible = False
+    'mnuNew.Visible = False
     If Not IsDir(sCurrent) Or If Stat(sCurrent).Type <> gb.Link Then
       mnuCut.Visible = False
       mnuCopy.Visible = False
