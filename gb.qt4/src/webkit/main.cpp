@@ -50,6 +50,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	CWebSettingsIconDatabaseDesc,
 	CWebSettingsCacheDesc,
 	CWebSettingsFontDesc,
+	CWebSettingsProxyDesc,
 	CWebSettingsDesc,
 	CWebFrameChildrenDesc,
 	CWebFrameDesc,

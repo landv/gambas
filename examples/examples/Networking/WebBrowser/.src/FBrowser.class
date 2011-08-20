@@ -452,3 +452,25 @@ Private Sub UpdateIcon()
   Endif
 
 End
+
+Public Sub btnConfig_Click()
+
+  With WebSettings.Proxy
+    
+    FOption.Type = .Type
+    FOption.Host = .Host
+    FOption.Port = .Port
+    FOption.User = .User
+    FOption.Password = .Password
+    
+    If FOption.Run() Then Return
+    
+    .Type = FOption.Type
+    .Host = FOption.Host
+    .Port = FOption.Port
+    .User = FOption.User
+    .Password = FOption.Password 
+    
+  End With
+
+End

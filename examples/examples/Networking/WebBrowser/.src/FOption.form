@@ -1,0 +1,69 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,61,35)
+  Text = ("Proxy configuration")
+  Resizable = False
+  Spacing = True
+  Margin = True
+  { Label1 Label
+    MoveScaled(1,1,15,4)
+    Text = ("Type")
+  }
+  { Label2 Label
+    MoveScaled(1,6,15,4)
+    Text = ("Host")
+  }
+  { Label3 Label
+    MoveScaled(1,11,15,4)
+    Text = ("Port")
+  }
+  { Label4 Label
+    MoveScaled(1,16,15,4)
+    Text = ("User")
+  }
+  { Label5 Label
+    MoveScaled(1,21,15,4)
+    Text = ("Password")
+  }
+  { HBox1 HBox
+    MoveScaled(1,30,59,4)
+    Spacing = True
+    { Panel1 Panel
+      MoveScaled(4,0,4,4)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(11,0,16,4)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(28,0,16,4)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+  { txtHost TextBox
+    MoveScaled(17,6,43,4)
+    Enabled = False
+  }
+  { cmbType ComboBox
+    MoveScaled(17,1,43,4)
+    ReadOnly = True
+    List = [("No proxy"), ("HTTP proxy"), ("SOCKS5 proxy")]
+  }
+  { txtPort SpinBox
+    MoveScaled(17,11,12,4)
+    Enabled = False
+  }
+  { txtUser TextBox
+    MoveScaled(17,16,43,4)
+    Enabled = False
+  }
+  { txtPassword TextBox
+    MoveScaled(17,21,43,4)
+    Enabled = False
+    Password = True
+  }
+}

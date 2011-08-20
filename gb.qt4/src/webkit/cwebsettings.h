@@ -36,6 +36,7 @@ extern GB_DESC CWebViewSettingsDesc[];
 extern GB_DESC CWebSettingsFontDesc[];
 extern GB_DESC CWebSettingsIconDatabaseDesc[];
 extern GB_DESC CWebSettingsCacheDesc[];
+extern GB_DESC CWebSettingsProxyDesc[];
 extern GB_DESC CWebSettingsDesc[];
 
 #else

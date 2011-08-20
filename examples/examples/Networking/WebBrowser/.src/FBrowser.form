@@ -6,7 +6,7 @@
   Icon = Picture["icon:/small/gambas"]
   Arrangement = Arrange.Vertical
   { HBox2 HBox
-    MoveScaled(1,1,89,4)
+    MoveScaled(1,1,99,4)
     { btnBack ToolButton
       MoveScaled(0,0,4,4)
       Picture = Picture["icon:/small/left"]
@@ -61,6 +61,10 @@
     { btnDownloadList ToolButton
       MoveScaled(81,0,4,4)
       Picture = Picture["icon:/small/archive"]
+    }
+    { btnConfig ToolButton
+      MoveScaled(85,0,4,4)
+      Picture = Picture["icon:/small/options"]
     }
   }
   { tabBrowser TabStrip
