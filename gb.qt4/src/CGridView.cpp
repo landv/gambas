@@ -767,33 +767,32 @@ void MyTable::setColumnExpand(int col, bool v)
 void MyTable::setNumCols(int newCols)
 {
 	int i;
-	int col = numCols();
 	bool b;
+	int row, col;
 
-	if (newCols < 0 || newCols == col)
+	if (newCols < 0 || newCols == _cols)
 		return;
 
-	if (newCols > col)
-		GB.Insert(POINTER(&_columns), -1, newCols - col);
+	getCurrentCell(&row, &col);
+	
+	if (newCols > _cols)
+		GB.Insert(POINTER(&_columns), -1, newCols - _cols);
 	else
 		GB.Remove(POINTER(&_columns), newCols, -1);
 	
 	BEGIN_NO_REPAINT
 	{
-		_cols = newCols;
-		_item->invalidate();
-
 		b = signalsBlocked();
 		blockSignals(true);
 		Q3Table::setNumCols(newCols);
 		blockSignals(b);
 
-		if (newCols > col)
+		if (newCols > _cols)
 		{
 			bool upd = horizontalHeader()->isUpdatesEnabled();
 			horizontalHeader()->setUpdatesEnabled(false);
 
-			for (i = col; i < newCols; i++)
+			for (i = _cols; i < newCols; i++)
 			{
 				horizontalHeader()->setLabel(i, "");
 				_columns[i].expand = _expand;
@@ -802,12 +801,20 @@ void MyTable::setNumCols(int newCols)
 			horizontalHeader()->setUpdatesEnabled(upd);
 		}
 
+		_cols = newCols;
+		_item->invalidate();
+
 		clearSelection();
 		layoutColumns();
 	}
 	END_NO_REPAINT
 
-	emit currentChanged(-1, -1); 
+	setCurrentCell(row, col);
+	if (row >= 0 && col >= 0)
+	{
+		emit currentChanged(-1, -1); 
+		emit selectionChanged();
+	}
 }
 
 void MyTable::setNumRows(int newRows)
@@ -815,7 +822,7 @@ void MyTable::setNumRows(int newRows)
 	bool b;
 	int row, col;
 	
-	if (newRows < 0)
+	if (newRows < 0 || newRows == _rows)
 		return;
 
 	getCurrentCell(&row, &col);
@@ -834,8 +841,11 @@ void MyTable::setNumRows(int newRows)
 	END_NO_REPAINT
 	
 	setCurrentCell(row, col);
-	emit currentChanged(-1, -1); 
-	emit selectionChanged();
+	if (row >= 0 && col >= 0)
+	{
+		emit currentChanged(-1, -1); 
+		emit selectionChanged();
+	}
 }
 
 
