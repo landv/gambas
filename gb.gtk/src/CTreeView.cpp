@@ -1109,7 +1109,7 @@ GB_DESC CListViewDesc[] =
   GB_METHOD("Add", ".ListViewItem", CLISTVIEW_add, "(Key)s(Text)s[(Picture)Picture;(After)s]"),
   GB_METHOD("Remove", 0, CTREEVIEW_remove, "(Key)s"),
   GB_METHOD("Exist", "b", CTREEVIEW_exist, "(Key)s"),
-  GB_METHOD("Find", "b", CTREEVIEW_find, "(X)i(Y)i"),
+  GB_METHOD("FindAt", "b", CTREEVIEW_find, "(X)i(Y)i"),
   //GB_METHOD("FindText", "b", CTREEVIEW_find, "(X)i(Y)i"),
   GB_METHOD("SelectAll", NULL, TreeView_SelectAll, NULL),
   GB_METHOD("UnselectAll", NULL, TreeView_UnselectAll, NULL),
@@ -1182,7 +1182,7 @@ GB_DESC CTreeViewDesc[] =
   GB_METHOD("Add", ".TreeViewItem", CTREEVIEW_add, "(Key)s(Text)s[(Picture)Picture;(Parent)s(After)s]"),
   GB_METHOD("Remove", 0, CTREEVIEW_remove, "(Key)s"),
   GB_METHOD("Exist", "b", CTREEVIEW_exist, "(Key)s"),
-  GB_METHOD("Find", "b", CTREEVIEW_find, "(X)i(Y)i"),
+  GB_METHOD("FindAt", "b", CTREEVIEW_find, "(X)i(Y)i"),
   GB_METHOD("SelectAll", NULL, TreeView_SelectAll, NULL),
   GB_METHOD("UnselectAll", NULL, TreeView_UnselectAll, NULL),
 
@@ -1278,7 +1278,7 @@ GB_DESC CColumnViewDesc[] =
   GB_METHOD("Add", ".ColumnViewItem", CTREEVIEW_add, "(Key)s(Text)s[(Picture)Picture;(Parent)s(After)s]"),
   GB_METHOD("Remove", 0, CTREEVIEW_remove, "(Key)s"),
   GB_METHOD("Exist", "b", CTREEVIEW_exist, "(Key)s"),
-  GB_METHOD("Find", "b", CTREEVIEW_find, "(X)i(Y)i"),
+  GB_METHOD("FindAt", "b", CTREEVIEW_find, "(X)i(Y)i"),
   GB_METHOD("SelectAll", NULL, TreeView_SelectAll, NULL),
   GB_METHOD("UnselectAll", NULL, TreeView_UnselectAll, NULL),
 

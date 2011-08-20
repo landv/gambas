@@ -85,26 +85,26 @@ void COLOR_rgb_to_hsv(int r, int g, int b, int *H, int *S, int *V)
 	}	
 }
 
-static void gt_rgb_to_hsv_cached(int r, int g, int b, int *H, int *S, int *V)
+static void gt_rgb_to_hsv_cached(int r, int g, int b, int *h, int *s, int *v)
 {
 	static int old_r = 0, old_g = 0, old_b = 0, old_h = -1, old_s = 0, old_v = 0;
 
 	if (r == old_r && g == old_g && b == old_b)
 	{
-		*H = old_h;
-		*S = old_s;
-		*V = old_v;
+		*h = old_h;
+		*s = old_s;
+		*v = old_v;
 		return;
 	}
 
-	COLOR_rgb_to_hsv(r, g, b, H, S, V);
+	COLOR_rgb_to_hsv(r, g, b, h, s, v);
 
 	old_r = r;
 	old_g = g;
 	old_b = b;
-	old_h = *H;
-	old_s = *S;
-	old_v = *V;
+	old_h = *h;
+	old_s = *s;
+	old_v = *v;
 }
 
 void COLOR_hsv_to_rgb(int h, int s, int v, int *R, int *G, int *B)
@@ -232,13 +232,21 @@ GB_COLOR COLOR_darker(GB_COLOR color)
 	return v;
 }
 
-BEGIN_METHOD(CCOLOR_rgb, GB_INTEGER r; GB_INTEGER g; GB_INTEGER b; GB_INTEGER a)
+BEGIN_METHOD(Color_RGB, GB_INTEGER r; GB_INTEGER g; GB_INTEGER b; GB_INTEGER a)
 
   GB.ReturnInteger(gt_rgba_to_color(VARG(r), VARG(g), VARG(b), VARGOPT(a, 0)));
 
 END_METHOD
 
-BEGIN_METHOD(CCOLOR_hsv, GB_INTEGER h; GB_INTEGER s; GB_INTEGER v; GB_INTEGER a)
+BEGIN_METHOD(Color_SetRGB, GB_INTEGER color; GB_INTEGER red; GB_INTEGER green; GB_INTEGER blue; GB_INTEGER alpha)
+
+	int r, g, b, a;
+	gt_color_to_rgba(VARG(color), &r, &g, &b, &a);
+  GB.ReturnInteger(gt_rgba_to_color(VARGOPT(red, r), VARGOPT(green, g), VARGOPT(blue, b), VARGOPT(alpha, a)));
+
+END_METHOD
+
+BEGIN_METHOD(Color_HSV, GB_INTEGER h; GB_INTEGER s; GB_INTEGER v; GB_INTEGER a)
 
 	int r, g, b;
 	COLOR_hsv_to_rgb(VARG(h), VARG(s), VARG(v), &r, &g, &b);
@@ -246,7 +254,17 @@ BEGIN_METHOD(CCOLOR_hsv, GB_INTEGER h; GB_INTEGER s; GB_INTEGER v; GB_INTEGER a)
 
 END_METHOD
 
-BEGIN_METHOD(CCOLOR_get, GB_INTEGER color)
+BEGIN_METHOD(Color_SetHSV, GB_INTEGER color; GB_INTEGER hue; GB_INTEGER saturation; GB_INTEGER value; GB_INTEGER alpha)
+
+	int r, g, b, a, h, s, v;
+	gt_color_to_rgba(VARG(color), &r, &g, &b, &a);
+	gt_rgb_to_hsv_cached(r, g, b, &h, &s, &v);
+	COLOR_hsv_to_rgb(VARGOPT(hue, h), VARGOPT(saturation, s), VARGOPT(value, v), &r, &g, &b);
+  GB.ReturnInteger(gt_rgba_to_color(r, g, b, VARGOPT(alpha, a)));
+
+END_METHOD
+
+BEGIN_METHOD(Color_get, GB_INTEGER color)
 
 	CCOLOR *info;
 
@@ -361,19 +379,19 @@ BEGIN_PROPERTY(CCOLOR_info_color)
 
 END_PROPERTY
 
-BEGIN_METHOD(CCOLOR_lighter, GB_INTEGER color)
+BEGIN_METHOD(Color_Lighter, GB_INTEGER color)
 
   GB.ReturnInteger(COLOR_lighter(VARG(color)));
   
 END_METHOD
 
-BEGIN_METHOD(CCOLOR_darker, GB_INTEGER color)
+BEGIN_METHOD(Color_Darker, GB_INTEGER color)
 
   GB.ReturnInteger(COLOR_darker(VARG(color)));
 
 END_METHOD
 
-BEGIN_METHOD(CCOLOR_merge, GB_INTEGER color1; GB_INTEGER color2; GB_FLOAT weight)
+BEGIN_METHOD(Color_Merge, GB_INTEGER color1; GB_INTEGER color2; GB_FLOAT weight)
 
 	GB.ReturnInteger(COLOR_merge(VARG(color1), VARG(color2), VARGOPT(weight, 0.5)));
 
@@ -389,7 +407,7 @@ BEGIN_METHOD(Color_Desaturate, GB_INTEGER color)
 
 END_METHOD
 
-BEGIN_METHOD(CCOLOR_blend, GB_INTEGER src; GB_INTEGER dst)
+BEGIN_METHOD(Color_Blend, GB_INTEGER src; GB_INTEGER dst)
 
 	uint src = VARG(src);
 	uint dst = VARG(dst);
@@ -432,8 +450,17 @@ BEGIN_METHOD(CCOLOR_blend, GB_INTEGER src; GB_INTEGER dst)
 
 END_METHOD
 
+BEGIN_METHOD(Color_GetAlpha, GB_INTEGER color)
+
+	int r, g, b, a;
+	
+	gt_color_to_rgba(VARG(color), &r, &g, &b, &a);
+	GB.ReturnInteger(a);
+
+END_METHOD
 
 BEGIN_METHOD(Color_SetAlpha, GB_INTEGER color; GB_INTEGER alpha)
+
 	int r, g, b, a;
 	
 	gt_color_to_rgba(VARG(color), &r, &g, &b, &a);
@@ -496,19 +523,22 @@ GB_DESC CColorDesc[] =
 
   GB_CONSTANT("Transparent", "i", 0xFFFFFFFF),
 
-  GB_STATIC_METHOD("RGB", "i", CCOLOR_rgb, "(Red)i(Green)i(Blue)i[(Alpha)i]"),
-  GB_STATIC_METHOD("HSV", "i", CCOLOR_hsv, "(Hue)i(Saturation)i(Value)i[(Alpha)i]"),
+  GB_STATIC_METHOD("RGB", "i", Color_RGB, "(Red)i(Green)i(Blue)i[(Alpha)i]"),
+  GB_STATIC_METHOD("HSV", "i", Color_HSV, "(Hue)i(Saturation)i(Value)i[(Alpha)i]"),
   
-  GB_STATIC_METHOD("Lighter", "i", CCOLOR_lighter, "(Color)i"),
-  GB_STATIC_METHOD("Darker", "i", CCOLOR_darker, "(Color)i"),
-  GB_STATIC_METHOD("Merge", "i", CCOLOR_merge, "(Color1)i(Color2)i[(Weight)f]"),
-  GB_STATIC_METHOD("Blend", "i", CCOLOR_blend, "(Source)i(Destination)i"),
+  GB_STATIC_METHOD("Lighter", "i", Color_Lighter, "(Color)i"),
+  GB_STATIC_METHOD("Darker", "i", Color_Darker, "(Color)i"),
+  GB_STATIC_METHOD("Merge", "i", Color_Merge, "(Color1)i(Color2)i[(Weight)f]"),
+  GB_STATIC_METHOD("Blend", "i", Color_Blend, "(Source)i(Destination)i"),
   GB_STATIC_METHOD("Desaturate", "i", Color_Desaturate, "(Color)i"),
 
 	GB_STATIC_METHOD("SetAlpha", "i", Color_SetAlpha, "(Color)i(Alpha)i"),
-									 
-  GB_STATIC_METHOD("_get", "ColorInfo", CCOLOR_get, "(Color)i"),
-  //GB_STATIC_METHOD("_call", "ColorInfo", CCOLOR_get, "(Color)i"),
+	GB_STATIC_METHOD("SetRGB", "i", Color_SetRGB, "(Color)i[(Red)i(Green)i(Blue)i(Alpha)i]"),
+	GB_STATIC_METHOD("SetHSV", "i", Color_SetHSV, "(Color)i[(Hue)i(Saturation)i(Value)i(Alpha)i]"),
+	GB_STATIC_METHOD("GetAlpha", "i", Color_GetAlpha, "(Color)i"),
+	
+  GB_STATIC_METHOD("_get", "ColorInfo", Color_get, "(Color)i"),
+  //GB_STATIC_METHOD("_call", "ColorInfo", Color_get, "(Color)i"),
 	
   GB_END_DECLARE
 };

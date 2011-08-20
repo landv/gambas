@@ -462,7 +462,7 @@ int CLASS_return_zero();
 void CLASS_sort(CLASS *class);
 
 void CLASS_inheritance(CLASS *class, CLASS *parent);
-void CLASS_make_description(CLASS *class, CLASS_DESC *desc, int n_desc, int *first);
+void CLASS_make_description(CLASS *class, const CLASS_DESC *desc, int n_desc, int *first);
 void CLASS_make_event(CLASS *class, int *first);
 void CLASS_calc_info(CLASS *class, int n_event, int size_dynamic, bool all, int size_static);
 

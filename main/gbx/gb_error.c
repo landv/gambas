@@ -109,7 +109,7 @@ static const char *_message[67] =
   /* 60 E_EXTLIB */ ".2Cannot find dynamic library '&1': &2",
   /* 61 E_EXTSYM */ ".2Cannot find symbol '&2' in dynamic library '&1'",
   /* 62 E_BYREF */ "Argument cannot be passed by reference",
-  /* 63 E_OVERRIDE */ ".3'&1.&2' is badly overridden in class '&3'",
+  /* 63 E_OVERRIDE */ ".3'&1.&2' is incorrectly overridden in class '&3'",
 	/* 64 E_NKEY */ "Void key",
 	/* 65 E_SARRAY */ "Embedded array",
 	/* 66 E_EXTCB */ ".1Cannot create callback: &1"

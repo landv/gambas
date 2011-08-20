@@ -138,7 +138,7 @@ Public Sub Exist(Key As String) As Boolean
   
 End
 
-Public Sub Find(X As Integer, Y As Integer) As Boolean
+Public Sub FindAt(X As Integer, Y As Integer) As Boolean
   
   $iIntern = FindIconAccurate(X, Y)
   Return $iIntern < 0

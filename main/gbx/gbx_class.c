@@ -882,7 +882,7 @@ void CLASS_inheritance(CLASS *class, CLASS *parent)
 
 
 
-const char *CLASS_DESC_get_type_name(CLASS_DESC *desc)
+const char *CLASS_DESC_get_type_name(const CLASS_DESC *desc)
 {
 	switch (desc->gambas.val4)
 	{
@@ -895,30 +895,66 @@ const char *CLASS_DESC_get_type_name(CLASS_DESC *desc)
 		case CD_CONSTANT_ID: return "C";
 		case CD_EVENT_ID: return ":";
 		case CD_EXTERN_ID: return "X";
-		default: return "?";
+		default: 
+			fprintf(stderr, "CLASS_DESC_get_type_name: %s: %ld\n", desc->gambas.name, desc->gambas.val4);
+			return "?";
 	}
 }
 
-// A symbol can be overridden by a more powerful one:
-// - A read-only property can be overridden by a read-write property.
-// - A constant can be overridden by any property.
-
-static bool check_override(char parent_type, char type)
+static bool check_signature(char type, const CLASS_DESC *desc, const CLASS_DESC *pdesc)
 {
-	if (parent_type == type)
-		return FALSE;
-		
-	if (parent_type == 'r' && type == 'p')
-		return FALSE;
-	if (parent_type == 'R' && type == 'P')
-		return FALSE;
-	if (parent_type == 'C' && (type == 'R' || type == 'P'))
+	/*TYPE *sd, *sp;
+	int nsd, nsp;*/
+	
+	if (desc->property.type != pdesc->property.type)
+	{
+		//fprintf(stderr, "type! %ld / %ld\n", desc->property.type, pdesc->property.type);
+		return TRUE;
+	}
+	else
 		return FALSE;
 	
-	return TRUE;
+#if 0
+	switch (type)
+	{
+		case CD_METHOD:
+		case CD_STATIC_METHOD:
+			
+			sd = desc->method.signature;
+			nsd = desc->method.npmax;
+			sp = pdesc->method.signature;
+			nsp = pdesc->method.npmax;
+			break;
+
+		case CD_EVENT:
+
+			sd = desc->event.signature;
+			nsd = desc->event.npmax;
+			sp = pdesc->event.signature;
+			nsp = pdesc->event.npmax;
+			break;
+			
+		case CD_EXTERN:
+			
+			sd = desc->ext.signature;
+			nsd = desc->ext.npmax;
+			sp = pdesc->ext.signature;
+			nsp = pdesc->ext.npmax;
+			break;
+
+		default:
+
+			return FALSE;
+	}
+
+	if (TYPE_compare_signature(sd, nsd, sp, nsp))
+		return TRUE;
+	else
+		return FALSE;
+#endif
 }
 
-void CLASS_make_description(CLASS *class, CLASS_DESC *desc, int n_desc, int *first)
+void CLASS_make_description(CLASS *class, const CLASS_DESC *desc, int n_desc, int *first)
 {
 	static const char *nonher[] = { "_new", "_free", "_init", "_exit", NULL };
 
@@ -961,6 +997,10 @@ void CLASS_make_description(CLASS *class, CLASS_DESC *desc, int n_desc, int *fir
 			{
 				name = &(desc[j].gambas.name[1]);
 				type = CLASS_DESC_get_type(&desc[j]);
+				//ptype = (const char*)desc[j].gambas.type;
+				//fprintf(stderr, "%s -> ", ptype);
+				//desc[j].gambas.type = TYPE_from_string(&ptype);
+				//fprintf(stderr, "%p\n", (void *)desc[j].gambas.type);
 			}
 			else
 			{
@@ -976,43 +1016,46 @@ void CLASS_make_description(CLASS *class, CLASS_DESC *desc, int n_desc, int *fir
 			while ((parent = parent->parent))
 			{
 				ind = CLASS_find_symbol(parent, name);
-				if (ind != NO_SYMBOL)
+				if (ind == NO_SYMBOL)
+					continue;
+
+				cds = &parent->table[ind];
+					
+				// The parent class public symbols of non-native classes were replaced by the symbol kind returned by CLASS_DESC_get_type_name()
+				
+				if (cds->desc)
 				{
-					cds = &parent->table[ind];
+					parent_type = CLASS_DESC_get_type(cds->desc);
 					
-					// The parent class public symbols of non-native classes were replaced by the symbol kind returned by CLASS_DESC_get_type_name()
-					
-					if (cds->desc)
-					{
-						parent_type = CLASS_DESC_get_type(cds->desc);
-						
-						if (check_override(parent_type, type))
-						{
-							#if DEBUG_DESC
-							fprintf(stderr, "type = '%c' parent_type = '%c'\n", type, parent_type);
-							#endif
-							THROW(E_OVERRIDE, parent->name, cds->name, class->name);
-						}
-					}
-					
-					cds = &class->table[ind];
-					
-					#if DEBUG_DESC
-					fprintf(stderr, "%s: [%d] (%p %d) := (%p %d)\n", name, ind, cds->desc, cds->desc ? cds->desc->gambas.val1 : 0, &desc[j], desc[j].gambas.val1);
-					#endif
-					
-					cds->desc = &desc[j];
-					cds->name = ".";
-					cds->len = 1;
-					
-					if (!desc[j].gambas.val1 && index(CD_CALL_SOMETHING_LIST, type) != NULL)
+					if (parent_type != type)
 					{
 						#if DEBUG_DESC
-						fprintf(stderr, "'%s' gambas.val1: %d -> %d\n", desc[j].gambas.name, desc[j].gambas.val1, class->parent->table[ind].desc->gambas.val1);
+						fprintf(stderr, "type = '%c' parent_type = '%c'\n", type, parent_type);
 						#endif
-						desc[j].gambas.val1 = class->parent->table[ind].desc->gambas.val1;
+						THROW(E_OVERRIDE, parent->name, cds->name, class->name);
 					}
+					
+					if (!CLASS_is_native(class) && check_signature(type, &desc[j], cds->desc))
+						THROW(E_OVERRIDE, parent->name, cds->name, class->name);
 				}
+				
+				cds = &class->table[ind];
+				
+				#if DEBUG_DESC
+				fprintf(stderr, "%s: [%d] (%p %ld) := (%p %ld)\n", name, ind, cds->desc, cds->desc ? cds->desc->gambas.val1 : 0, &desc[j], desc[j].gambas.val1);
+				#endif
+				
+				cds->desc = (CLASS_DESC *)&desc[j];
+				cds->name = ".";
+				cds->len = 1;
+				
+				/*if (!desc[j].gambas.val1 && index(CD_CALL_SOMETHING_LIST, type) != NULL)
+				{
+					//#if DEBUG_DESC
+					fprintf(stderr, "CLASS_make_description: '%s.%s' gambas.val1: %ld -> %ld\n", class->name, desc[j].gambas.name, desc[j].gambas.val1, class->parent->table[ind].desc->gambas.val1);
+					//#endif
+					((CLASS_DESC *)desc)[j].gambas.val1 = class->parent->table[ind].desc->gambas.val1;
+				}*/
 			}
 		}
 		
@@ -1033,7 +1076,7 @@ void CLASS_make_description(CLASS *class, CLASS_DESC *desc, int n_desc, int *fir
 
 	for (j = 0; j < n_desc; j++, i++)
 	{
-		class->table[i].desc = &desc[j];
+		class->table[i].desc = (CLASS_DESC *)&desc[j];
 
 		/* On saute le caractère de type de symbole */
 		if (CLASS_is_native(class))

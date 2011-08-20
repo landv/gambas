@@ -397,7 +397,6 @@ __NORMAL:
 	return GB_DEBUG_ACCESS_NORMAL;
 }
 
-
 void DEBUG_print_backtrace(ERROR_INFO *err)
 {
 	int i, n;
@@ -413,6 +412,38 @@ void DEBUG_print_backtrace(ERROR_INFO *err)
 		fprintf(stderr, "%d: %s\n", n, DEBUG_get_position(sc[i].cp, sc[i].fp, sc[i].pc));
 	}
 }
+
+#if 0
+const char *DEBUG_get_current_backtrace(void)
+{
+	char *result = NULL;
+	int i, n;
+	ERROR_INFO err;
+	STACK_CONTEXT *sc;
+	
+  err.cp = CP;
+  err.fp = FP;
+  err.pc = PC;
+	err.bt_count = STACK_frame_count;
+
+	sc = (STACK_CONTEXT *)(STACK_base + STACK_size) - err.bt_count;
+	
+	STRING_add(&result, DEBUG_get_position(err.cp, err.fp, err.pc), 0);
+	STRING_add_char(&result, '\n');
+	for (i = 0, n = 0; i < err.bt_count; i++)
+	{
+		//fprintf(stderr, "%d: %s\n", i, DEBUG_get_position(bt[i].cp, bt[i].fp, bt[i].pc));
+		if (!sc[i].pc)
+			continue;
+		n++;
+		STRING_add(&result, DEBUG_get_position(sc[i].cp, sc[i].fp, sc[i].pc), 0);
+		STRING_add_char(&result, '\n');
+	}
+	
+	STRING_free_later(result);
+	return result;
+}
+#endif
 
 
 GB_ARRAY DEBUG_get_string_array_from_backtrace(ERROR_INFO *err)

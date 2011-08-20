@@ -12,7 +12,7 @@ Event Activate
 'EVENT WindowMenu
 
 Property ActiveWindow As Window
-Property Read Children As Window[]
+Property Read Windows As Window[]
 Property Font As Font
 Property Background As Integer
 Property Orientation As Integer
@@ -66,7 +66,7 @@ Private Sub ActiveWindow_Write(Value As Window)
 
 End
 
-Private Function Children_Read() As Window[]
+Private Function Windows_Read() As Window[]
 
   Return hWorkspace.GetWindows()
 

@@ -1333,7 +1333,7 @@ Public Sub tvwProject_DragMove()
   
   Dim sKey As String
   
-  If Not tvwProject.Find(Drag.X, Drag.Y) Then 
+  If Not tvwProject.FindAt(Drag.X, Drag.Y) Then 
     $sKey = tvwProject.Item.Key
     If Project.IsLocked($sKey) Then Goto STOP_EVENT
     If Drag.Format = MMime.DATA And If Drag.Source Then 
@@ -1441,7 +1441,7 @@ Public Sub tvwProject_MouseDrag()
   
   If Not Mouse.Left Then Return
   
-  If tvwProject.Find(Mouse.StartX, Mouse.StartY) Then Return
+  If tvwProject.FindAt(Mouse.StartX, Mouse.StartY) Then Return
   sKey = tvwProject.Item.Key
   If tvwProject.Key <> sKey Then Return
   'If Project.IsSourcePath(sKey) Then Return

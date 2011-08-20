@@ -502,7 +502,7 @@ __MISMATCH:
 }
 
 
-static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfirst)
+static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, int *pndesc)
 {
   char *section;
 	CLASS_INFO *info;
@@ -879,14 +879,11 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
   //if (info->s_dynamic == 0)
   //  class->no_create = TRUE;
   
-  /* Descriptions */
-
-  CLASS_make_description(class, start, n_desc, pfirst);
-
   /* Class size and offsets */
 
   CLASS_calc_info(class, class->n_event, info->s_dynamic, FALSE, info->s_static);
 	
+	*pstart = start;
   *pndesc = n_desc;
 }
 
@@ -908,6 +905,8 @@ void CLASS_load_without_init(CLASS *class)
   int first;
   int first_event;
   COMPONENT *save;
+	CLASS_DESC *start;
+	char kind;
 	
   //size_t alloc = MEMORY_size;
 	
@@ -991,7 +990,7 @@ void CLASS_load_without_init(CLASS *class)
 
 	class->init_dynamic = TRUE;
 
-	load_and_relocate(class, len_data, &n_desc, &first);
+	load_and_relocate(class, len_data, &start, &n_desc);
 
   /* Information on static and dynamic variables */
 
@@ -1059,15 +1058,20 @@ void CLASS_load_without_init(CLASS *class)
 
   /* Class public description */
 
-  for (i = first; i < class->n_desc; i++)
+  for (i = 0; i < n_desc; i++)
   {
-    desc = class->table[i].desc;
+    desc = &start[i]; //class->table[i].desc;
 
-		desc->gambas.name = (char *)CLASS_DESC_get_type_name(desc);
+		//desc->gambas.name = (char *)CLASS_DESC_get_type_name(desc);
 
     conv_type(class, &desc->gambas.type);
+		
+		kind = *CLASS_DESC_get_type_name(desc);
 
-    switch (CLASS_DESC_get_type(desc))
+		if (!desc->gambas.val1 && index(CD_CALL_SOMETHING_LIST, kind) != NULL)
+			fprintf(stderr, "CLASS_load_without_init: '%s.%s' gambas.val1 == 0\n", class->name, desc->gambas.name);
+		
+    switch (kind)
     {
       case CD_METHOD:
       case CD_STATIC_METHOD:
@@ -1098,7 +1102,7 @@ void CLASS_load_without_init(CLASS *class)
       case CD_VARIABLE:
       case CD_STATIC_VARIABLE:
 
-        if (CLASS_DESC_get_type(desc) == CD_STATIC_VARIABLE)
+        if (kind == CD_STATIC_VARIABLE)
           var = &class->load->stat[desc->gambas.val1];
         else
           var = &class->load->dyn[desc->gambas.val1];
@@ -1150,9 +1154,20 @@ void CLASS_load_without_init(CLASS *class)
 
         THROW(E_CLASS, ClassName, "Bad description", "");
     }
-
-    desc->method.class = class;
   }
+
+  /* Inheritance */
+
+  CLASS_make_description(class, start, n_desc, &first);
+
+	/* Transfer symbol kind into symbol name (which is stored in the symbol table now), like native classes */
+	
+  for (i = 0; i < n_desc; i++)
+  {
+    desc = &start[i];
+		desc->gambas.name = (char *)CLASS_DESC_get_type_name(desc);
+    desc->method.class = class;
+	}
 
   /* Event description */
 

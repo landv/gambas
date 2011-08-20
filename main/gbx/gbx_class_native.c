@@ -67,7 +67,7 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
 
   CLASS_EVENT *event;
   const char *ptype;
-  const char *type;
+  //const char *type;
   int first_event, nsign;
   TYPE *sign;
   int first;
@@ -156,22 +156,15 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
 
   for(desc = start, n_desc = 0; desc->gambas.name != NULL; desc++, n_desc++);
 
-  CLASS_make_description(class, start, n_desc, &first);
+  /* Description analysis */
 
-  /* Analyse de la description :
-     - Calcul du nombre de signatures
-     - Calcul du nombre d'��ements
-  */
-
-  for (i = first; i < class->n_desc; i++)
+  for (i = 0; i < n_desc; i++)
   {
-    desc = class->table[i].desc;
+    desc = &start[i];
 
-    ptype = (char *)desc->gambas.type;
-    
-    type = ptype;
-    desc->gambas.type = TYPE_from_string(&ptype);
-
+		ptype = (char *)desc->gambas.type;
+		desc->gambas.type = TYPE_from_string(&ptype);
+		
     switch (CLASS_DESC_get_type(desc))
     {
       case CD_CONSTANT:
@@ -229,9 +222,13 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
 
   CLASS_calc_info(class, class->n_event, size_dynamic, TRUE, 0);
 
+	// Inheritance
+	
+  CLASS_make_description(class, start, n_desc, &first);
+
   CLASS_make_event(class, &first_event);
 
-  /* Transfert des évènements et signatures */
+  // Transfer events and signatures
 
   if (nsign)
   {

@@ -19,9 +19,9 @@ install-exec-local:
 	@if test x"$(XDG_UTILS)" != x; then \
 		echo "Registering Gambas executable mimetype"; \
 		$(INSTALL) -d $(DESTDIR)$(gbdatadir)/icons; \
-		cp -f $(srcdir)/mime/application-x-gambas.png $(DESTDIR)$(gbdatadir)/icons; \
-		xdg-icon-resource install --context mimetypes --size 64 $(DESTDIR)$(gbdatadir)/icons/application-x-gambas.png application-x-gambas; \
-		xdg-mime install $(srcdir)/mime/application-x-gambas.xml; \
+		cp -f $(srcdir)/mime/application-x-gambas3.png $(DESTDIR)$(gbdatadir)/icons; \
+		xdg-icon-resource install --context mimetypes --size 64 $(DESTDIR)$(gbdatadir)/icons/application-x-gambas3.png application-x-gambas3; \
+		xdg-mime install $(srcdir)/mime/application-x-gambas3.xml; \
 	fi
 
 uninstall-local:
