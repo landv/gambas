@@ -25,6 +25,7 @@
 
 #include <QNetworkCookieJar>
 #include <QNetworkAccessManager>
+#include <QNetworkProxy>
 #include <QWebPage>
 #include <QWebFrame>
 
@@ -338,7 +339,7 @@ BEGIN_PROPERTY(WebView_Cookies)
 	}
 	else
 	{
-		// TODO
+		// TODO what todo?
 		cookies = VPROP(GB_OBJECT);
 		if (GB.CheckObject(cookies))
 			return;
@@ -379,6 +380,86 @@ BEGIN_METHOD(WebView_FindText, GB_STRING text; GB_BOOLEAN backward; GB_BOOLEAN c
 
 END_METHOD
 
+/***************************************************************************/
+
+BEGIN_PROPERTY(WebViewProxy_Host)
+
+	QNetworkProxy proxy = _network_access_manager->proxy();
+	
+	if (READ_PROPERTY)
+		GB.ReturnNewZeroString(TO_UTF8(proxy.hostName()));
+	else
+	{
+		proxy.setHostName(QSTRING_PROP());
+		_network_access_manager->setProxy(proxy);
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(WebViewProxy_User)
+
+	QNetworkProxy proxy = _network_access_manager->proxy();
+	
+	if (READ_PROPERTY)
+		GB.ReturnNewZeroString(TO_UTF8(proxy.user()));
+	else
+	{
+		proxy.setUser(QSTRING_PROP());
+		_network_access_manager->setProxy(proxy);
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(WebViewProxy_Password)
+
+	QNetworkProxy proxy = _network_access_manager->proxy();
+	
+	if (READ_PROPERTY)
+		GB.ReturnNewZeroString(TO_UTF8(proxy.password()));
+	else
+	{
+		proxy.setPassword(QSTRING_PROP());
+		_network_access_manager->setProxy(proxy);
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(WebViewProxy_Port)
+
+	QNetworkProxy proxy = _network_access_manager->proxy();
+	
+	if (READ_PROPERTY)
+		GB.ReturnInteger(proxy.port());
+	else
+	{
+		proxy.setPort(VPROP(GB_INTEGER));
+		_network_access_manager->setProxy(proxy);
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(WebViewProxy_Type)
+
+	QNetworkProxy proxy = _network_access_manager->proxy();
+	
+	if (READ_PROPERTY)
+		GB.ReturnInteger(proxy.type());
+	else
+	{
+		int type = VPROP(GB_INTEGER);
+		if (type == QNetworkProxy::NoProxy || type == QNetworkProxy::Socks5Proxy || type == QNetworkProxy::HttpProxy)
+		{
+			proxy.setType((QNetworkProxy::ProxyType)type);
+			_network_access_manager->setProxy(proxy);
+		}
+	}
+
+END_PROPERTY
+
+
+
+/***************************************************************************/
+
 GB_DESC CWebViewAuthDesc[] =
 {
   GB_DECLARE(".WebView.Auth", sizeof(CWEBVIEW)), GB_VIRTUAL_CLASS(),
@@ -387,6 +468,19 @@ GB_DESC CWebViewAuthDesc[] =
 	GB_PROPERTY_READ("Realm", "s", WebViewAuth_Realm),
 	GB_PROPERTY("User", "s", WebViewAuth_User),
 	GB_PROPERTY("Password", "s", WebViewAuth_Password),
+	
+	GB_END_DECLARE
+};
+
+GB_DESC CWebViewProxyDesc[] =
+{
+  GB_DECLARE(".WebView.Proxy", 0), GB_VIRTUAL_CLASS(),
+	
+	GB_STATIC_PROPERTY("Type", "i", WebViewProxy_Type),
+	GB_STATIC_PROPERTY("Host", "s", WebViewProxy_Host),
+	GB_STATIC_PROPERTY("Port", "i", WebViewProxy_Port),
+	GB_STATIC_PROPERTY("User", "s", WebViewProxy_User),
+	GB_STATIC_PROPERTY("Password", "s", WebViewProxy_Password),
 	
 	GB_END_DECLARE
 };
@@ -420,6 +514,7 @@ GB_DESC CWebViewDesc[] =
 	
 	GB_PROPERTY_SELF("Settings", ".WebView.Settings"),
 	GB_PROPERTY_SELF("Auth", ".WebView.Auth"),
+	GB_PROPERTY_SELF("Proxy", ".WebView.Proxy"),
 
 	GB_METHOD("Back", NULL, WebView_Back, NULL),
 	GB_METHOD("Forward", NULL, WebView_Forward, NULL),
@@ -435,6 +530,10 @@ GB_DESC CWebViewDesc[] =
 	GB_METHOD("HitTest", "WebHitTest", WebView_HitTest, "(X)i(Y)i"),
 	GB_METHOD("FindText", "b", WebView_FindText, "[(Text)s(Backward)b(CaseSensitive)b(Wrap)b]"),
 
+	GB_CONSTANT("NoProxy", "i", QNetworkProxy::NoProxy),
+	GB_CONSTANT("Socks5Proxy", "i", QNetworkProxy::Socks5Proxy),
+	GB_CONSTANT("HttpProxy", "i", QNetworkProxy::HttpProxy),
+	
 	GB_CONSTANT("_Properties", "s", "*,Url,Cached"),
 	
 	GB_EVENT("Click", NULL, "(Frame)WebFrame", &EVENT_CLICK),
@@ -550,7 +649,7 @@ void CWebView::frameCreated(QWebFrame *frame)
 
 void CWebView::authenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator)
 {
-	qDebug("CWebView::authenticationRequired: %p", _network_access_manager_view);
+	//qDebug("CWebView::authenticationRequired: %p", _network_access_manager_view);
 
 	void *_object = _network_access_manager_view; //QT.GetObject((QWidget *)((QNetworkAccessManager*)sender())->parent());
 	if (!THIS)

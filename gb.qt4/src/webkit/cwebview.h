@@ -39,6 +39,7 @@
 extern GB_DESC CWebViewAuthDesc[];
 extern GB_DESC CWebViewDesc[];
 extern GB_DESC CWebViewDownloadsDesc[];
+extern GB_DESC CWebViewProxyDesc[];
 
 #else
 

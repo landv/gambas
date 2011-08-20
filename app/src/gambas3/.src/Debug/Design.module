@@ -134,6 +134,8 @@ Public Sub MakeErrorMessage(sErr As String) As String
   Dim aErr As String[]
   Dim iInd As Integer
   
+  ' Subsitution can be recursive in error messages!
+  
   aErr = Split(sErr, "|")
   aErr.Resize(aErr.Count + 4)
   

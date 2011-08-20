@@ -171,8 +171,6 @@ GB_DESC CWebViewSettingsDesc[] =
 	GB_END_DECLARE
 };
 
-/***************************************************************************/
-
 GB_DESC CWebSettingsFontDesc[] =
 {
   GB_DECLARE(".WebSettings.Font", 0), GB_VIRTUAL_CLASS(),
