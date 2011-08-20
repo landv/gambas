@@ -714,7 +714,7 @@ Private Sub SetCurrent(iCurrent As Integer)
 
   $iCurrent = iCurrent
   gvwMenu.Row = $iCurrent
-  gvwMenu.Rows[gvwMenu.Row].Selected = True
+  gvwMenu.Rows[$iCurrent].Selected = True
 
 End
 
@@ -910,7 +910,18 @@ Public Sub gvwMenu_Data(Row As Integer, Column As Integer)
         Endif
         
       Case 1
-        sElt = String$(.Level, "···") & .Caption
+        
+        If .Caption Then
+          sElt = .Caption
+        Else
+          sElt = .Name
+          gvwMenu.Data.Font.Italic = True
+          gvwMenu.Data.Foreground = Color.Lighter(Color.TextForeground)
+        Endif
+        
+        If .Level Then
+          sElt = String$(.Level, "    ·    ") & sElt
+        Endif
         gvwMenu.Data.Text = sElt
         
       Case 2

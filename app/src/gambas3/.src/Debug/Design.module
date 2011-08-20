@@ -367,7 +367,7 @@ Private Sub AfterStop()
   FDebugInfo.Clear
   FDebugExpr.Clear
 
-  For Each hForm In Project.Workspace.Children
+  For Each hForm In Project.Workspace.Windows
     Try hForm.OnProjectDebug 
   Next
   'FMain.ShowTool(TRUE)
@@ -748,7 +748,7 @@ Private Sub Start(sCmd As String)
   $bStart = True
   Project.Running = True
 
-  For Each hForm In Project.Workspace.Children
+  For Each hForm In Project.Workspace.Windows
     Try hForm.OnProjectDebug
   Next
   FOutput.OnProjectDebug

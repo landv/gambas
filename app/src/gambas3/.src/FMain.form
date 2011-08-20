@@ -120,7 +120,7 @@
     { mnuProperty Menu
       Action = "project-property"
       Text = ("&Properties...")
-      Picture = Picture["icon:/small/gambas"]
+      Picture = Picture["icon:/small/edit"]
       Shortcut = "Ctrl+P"
     }
     { mnuPropertyComp Menu
@@ -550,7 +550,7 @@
         MoveScaled(14,0,4,4)
         ToolTip = ("Project properties")
         Action = "project-property"
-        Picture = Picture["icon:/small/gambas"]
+        Picture = Picture["icon:/small/edit"]
       }
       { btnComponent ToolButton
         MoveScaled(17,0,4,4)
@@ -1163,7 +1163,7 @@
   { Action project-property
     Text = "&Properties..."
     Shortcut = "Ctrl+P"
-    Picture = "icon:/small/gambas"
+    Picture = "icon:/small/edit"
   }
   { Action property
     Text = "&Properties"
