@@ -44,7 +44,6 @@
 #include <Outline.h>
 #include <Link.h>
 #include <Gfx.h>
-#include <glib/poppler-features.h>
 
 /*****************************************************************************
 
