@@ -24,7 +24,9 @@
 #define __CWEBSETTINGS_CPP
 
 #include <QNetworkDiskCache>
+#include <QNetworkProxy>
 
+#include "cwebview.h"
 #include "cwebsettings.h"
 
 //static QNetworkDiskCache *_cache = 0;
@@ -157,6 +159,86 @@ BEGIN_METHOD_VOID(WebSettings_exit)
 
 END_METHOD
 
+/***************************************************************************/
+
+BEGIN_PROPERTY(WebSettingsProxy_Host)
+
+	QNetworkAccessManager *nam = WEBVIEW_get_network_manager();
+	QNetworkProxy proxy = nam->proxy();
+	
+	if (READ_PROPERTY)
+		GB.ReturnNewZeroString(TO_UTF8(proxy.hostName()));
+	else
+	{
+		proxy.setHostName(QSTRING_PROP());
+		nam->setProxy(proxy);
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(WebSettingsProxy_User)
+
+	QNetworkAccessManager *nam = WEBVIEW_get_network_manager();
+	QNetworkProxy proxy = nam->proxy();
+	
+	if (READ_PROPERTY)
+		GB.ReturnNewZeroString(TO_UTF8(proxy.user()));
+	else
+	{
+		proxy.setUser(QSTRING_PROP());
+		nam->setProxy(proxy);
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(WebSettingsProxy_Password)
+
+	QNetworkAccessManager *nam = WEBVIEW_get_network_manager();
+	QNetworkProxy proxy = nam->proxy();
+	
+	if (READ_PROPERTY)
+		GB.ReturnNewZeroString(TO_UTF8(proxy.password()));
+	else
+	{
+		proxy.setPassword(QSTRING_PROP());
+		nam->setProxy(proxy);
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(WebSettingsProxy_Port)
+
+	QNetworkAccessManager *nam = WEBVIEW_get_network_manager();
+	QNetworkProxy proxy = nam->proxy();
+	
+	if (READ_PROPERTY)
+		GB.ReturnInteger(proxy.port());
+	else
+	{
+		proxy.setPort(VPROP(GB_INTEGER));
+		nam->setProxy(proxy);
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(WebSettingsProxy_Type)
+
+	QNetworkAccessManager *nam = WEBVIEW_get_network_manager();
+	QNetworkProxy proxy = nam->proxy();
+	
+	if (READ_PROPERTY)
+		GB.ReturnInteger(proxy.type());
+	else
+	{
+		int type = VPROP(GB_INTEGER);
+		if (type == QNetworkProxy::NoProxy || type == QNetworkProxy::Socks5Proxy || type == QNetworkProxy::HttpProxy)
+		{
+			proxy.setType((QNetworkProxy::ProxyType)type);
+			nam->setProxy(proxy);
+		}
+	}
+
+END_PROPERTY
 
 /***************************************************************************/
 
@@ -201,6 +283,19 @@ GB_DESC CWebSettingsCacheDesc[] =
 	GB_END_DECLARE
 };
 
+GB_DESC CWebSettingsProxyDesc[] =
+{
+  GB_DECLARE(".WebSettings.Proxy", 0), GB_VIRTUAL_CLASS(),
+	
+	GB_STATIC_PROPERTY("Type", "i", WebSettingsProxy_Type),
+	GB_STATIC_PROPERTY("Host", "s", WebSettingsProxy_Host),
+	GB_STATIC_PROPERTY("Port", "i", WebSettingsProxy_Port),
+	GB_STATIC_PROPERTY("User", "s", WebSettingsProxy_User),
+	GB_STATIC_PROPERTY("Password", "s", WebSettingsProxy_Password),
+	
+	GB_END_DECLARE
+};
+
 GB_DESC CWebSettingsDesc[] =
 {
   GB_DECLARE("WebSettings", 0),
@@ -227,9 +322,15 @@ GB_DESC CWebSettingsDesc[] =
 	GB_CONSTANT("OfflineWebApplicationCacheEnabled", "i", QWebSettings::OfflineWebApplicationCacheEnabled),
 	GB_CONSTANT("LocalStorageDatabaseEnabled", "i", QWebSettings::LocalStorageDatabaseEnabled),
 	
+	GB_CONSTANT("NoProxy", "i", QNetworkProxy::NoProxy),
+	GB_CONSTANT("Socks5Proxy", "i", QNetworkProxy::Socks5Proxy),
+	GB_CONSTANT("HttpProxy", "i", QNetworkProxy::HttpProxy),
+	
 	GB_STATIC_PROPERTY_SELF("Font", ".WebSettings.Font"),
 	GB_STATIC_PROPERTY_SELF("IconDatabase", ".WebSettings.IconDatabase"),
 	GB_STATIC_PROPERTY_SELF("Cache", ".WebSettings.Cache"),
+	GB_STATIC_PROPERTY_SELF("Proxy", ".WebSettings.Proxy"),
+	
 	GB_STATIC_METHOD("_get", "b", WebSettings_get, "(Flag)i"),
 	GB_STATIC_METHOD("_put", NULL, WebSettings_put, "(Value)b(Flag)i"),
 	

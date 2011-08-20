@@ -102,4 +102,6 @@ public slots:
 	void handleUnsupportedContent(QNetworkReply*);
 };
 
+QNetworkAccessManager *WEBVIEW_get_network_manager();
+
 #endif
