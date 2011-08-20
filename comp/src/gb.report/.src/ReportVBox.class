@@ -16,7 +16,7 @@ Public Sub _Free()
   
 End
 
-Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer) As Boolean
+Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer) 
   
   Dim hChildHints As TSizeHint
   Dim hChild As ReportControl
@@ -169,7 +169,7 @@ If iNExp > 0 Then fSExp = (H - Y) / iNExp
   
   
   Me._PageChildren[ContPage] = aPageItems
-  If bExitLoop Then Return True
+  'If bExitLoop Then Return True
   
 End
 

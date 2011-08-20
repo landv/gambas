@@ -38,7 +38,7 @@
       Background = ReportBrush["#DF6B00"]
     }
     { ReportVBox2 ReportVBox
-      #MoveScaled(27,1,60,54)
+      #MoveScaled(27,1,56,54)
       Expand = True
       Border = ReportBorder["Left:1mm #000000"]
       Background = ReportBrush["#FFFFFF"]
@@ -56,6 +56,7 @@
         Brush = ReportBrush["#FFFFFF"]
         Fixed = True
         Font = Font["Bold,+1"]
+        Padding = ReportPadding["Top:4mm;Bottom:4mm;Left:2mm;Right:2mm"]
         Border = ReportBorder["Top:1mm #000000"]
         Background = ReportBrush["#3398C3"]
         Text = ("Page $PAGE on $NPAGE")

@@ -180,7 +180,7 @@ Private Sub Expand_Write(Value As Boolean)
   
 End
 
-Public Sub _GetSizeHints(AvailableW As Integer, AvailableH As Integer, TotalWidth As Integer, TotalHeight As Integer) As Integer
+Public Sub _GetSizeHints(AvailableW As Integer, AvailableH As Integer, TotalWidth As Integer, TotalHeight As Integer) As TSizeHint
   
   Error.Raise("Something goes wrong the _GetSizeHints is not correctly implemented")
   
@@ -291,7 +291,7 @@ Private Function _Padding_Read() As Float
   
 End
 
-Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer) As Float
+Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer) 
   
 End
 

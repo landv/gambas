@@ -860,7 +860,7 @@ void CLASS_inheritance(CLASS *class, CLASS *parent)
 	}
 	CATCH
 	{
-		THROW(E_CLASS, class->name, "Cannot load parent class ", parent->name);
+		THROW(E_CLASS, class->name, "Cannot load parent class: ", STRING_new_temp_zero(ERROR_current->info.msg));
 	}
 	END_TRY
 

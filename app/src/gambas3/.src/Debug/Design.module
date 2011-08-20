@@ -132,10 +132,18 @@ End
 Public Sub MakeErrorMessage(sErr As String) As String
   
   Dim aErr As String[]
+  Dim iInd As Integer
   
   aErr = Split(sErr, "|")
-  aErr.Resize(5)
-  Return Subst(Tr$(aErr[0]), aErr[1], aErr[2], aErr[3], aErr[4])
+  aErr.Resize(aErr.Count + 4)
+  
+  For iInd = aErr.Max - 4 DownTo 0
+    If InStr(aErr[iInd], "&1") Then
+      aErr[iInd] = Subst(Tr$(aErr[iInd]), aErr[iInd + 1], aErr[iInd + 2], aErr[iInd + 3], aErr[iInd + 4])
+    Endif
+  Next
+  
+  Return aErr[0]
   
 End
 

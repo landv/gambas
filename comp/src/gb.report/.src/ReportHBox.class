@@ -52,7 +52,7 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   End
   
   
-  Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer) As Float
+  Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer) 
   
   Dim hChildHints As TSizeHint
   Dim hChild As ReportControl

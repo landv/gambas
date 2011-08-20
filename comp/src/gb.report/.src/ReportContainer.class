@@ -237,7 +237,7 @@ Public Sub _GenerateClones()
   
 End
 
-Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer) As Float
+Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer) 
   
   Dim hChildHints As TSizeHint
   Dim hChild As TControl
@@ -261,7 +261,8 @@ Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float
   If _Arrangement = Arrange.Vertical Then 
     '*************************************************
     
-    Return _SetVerticalChildGeometry(X, Y, W, H, ContPage)
+    _SetVerticalChildGeometry(X, Y, W, H, ContPage)
+    Return
     
     ' fSpc = IIf(Me._RelativeSpacing, H * Me._Spacing / 100, Me._Spacing) 'ME._Spacing
     ' fPdg = Me._Padding
