@@ -180,6 +180,7 @@ COMPONENT *COMPONENT_create(const char *name)
 	if (library)
 	{
 		comp->archive = ARCHIVE_create(name, path);
+		comp->user = TRUE;
 	}
 	else
 	{
@@ -243,12 +244,14 @@ void COMPONENT_load(COMPONENT *comp)
 {
   COMPONENT *current;
 
-  if (comp->loaded)
+  if (comp->loaded || comp->loading)
     return;
 
   #if DEBUG_COMP
     fprintf(stderr, "Loading component %s\n", comp->name);
   #endif
+		
+	comp->loading = TRUE;
 
   current = COMPONENT_current;
   COMPONENT_current = comp;
@@ -256,8 +259,9 @@ void COMPONENT_load(COMPONENT *comp)
   if (comp->library)
     comp->order = LIBRARY_load(comp->library);
   if (comp->archive)
-    ARCHIVE_load(comp->archive);
+    ARCHIVE_load(comp->archive, comp->user);
 
+	comp->loading = FALSE;
   comp->loaded = TRUE;
   COMPONENT_current = current;
 }

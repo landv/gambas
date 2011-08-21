@@ -93,18 +93,20 @@ static void project_version(char *name, int len)
 
 static void project_component(char *name, int len)
 {
-  const char *delim = ",";
-  char *comp;
+  //const char *delim = ",";
+  //char *comp;
 
   name[len] = 0;
 
-  comp = strtok(name, delim);
+  /*comp = strtok(name, delim);
   while (comp != NULL)
   {
 		COMPONENT_create(comp);
 			
     comp = strtok(NULL, delim);
-  }
+  }*/
+	
+	COMPONENT_create(name);
 }
 
 
@@ -261,29 +263,48 @@ static bool get_line(char **addr, const char *end, char **start, int *len)
 	return (*len > 0);
 }
 
-static void project_analyze_startup(char *addr, int len)
+void PROJECT_analyze_startup(char *addr, int len, PROJECT_COMPONENT_CALLBACK cb)
 {
   char *end = &addr[len];
 	char *p;
-	int l;
+	int l, i;
 
-	if (get_line(&addr, end, &p, &l))
-		project_startup(p, l);
-	if (get_line(&addr, end, &p, &l))
-		project_title(p, l);
-	if (get_line(&addr, end, &p, &l))
-		project_stack(p, l);
-	if (get_line(&addr, end, &p, &l))
-		project_stacktrace(p, l);
-	if (get_line(&addr, end, &p, &l))
-		project_version(p, l);
+	if (!cb)
+	{
+		if (get_line(&addr, end, &p, &l))
+			project_startup(p, l);
+		if (get_line(&addr, end, &p, &l))
+			project_title(p, l);
+		if (get_line(&addr, end, &p, &l))
+			project_stack(p, l);
+		if (get_line(&addr, end, &p, &l))
+			project_stacktrace(p, l);
+		if (get_line(&addr, end, &p, &l))
+			project_version(p, l);
+	}
+	else
+	{
+		for (i = 1; i <= 5; i++)
+			get_line(&addr, end, &p, &l);
+	}
 
 	while (get_line(&addr, end, &p, &l));
 
-	while (get_line(&addr, end, &p, &l))
-		project_component(p, l);
+	if (!cb)
+	{
+		while (get_line(&addr, end, &p, &l))
+			project_component(p, l);
 		
-	check_after_analyze();
+		check_after_analyze();
+	}
+	else
+	{
+		while (get_line(&addr, end, &p, &l))
+		{
+			p[l] = 0;
+			(*cb)(p);
+		}
+	}
 }
 
 char *PROJECT_get_home(void)
@@ -427,7 +448,7 @@ bool PROJECT_load()
 	TRY
 	{
 		STREAM_load(file, &project_buffer, &len);
-		project_analyze_startup(project_buffer, len);
+		PROJECT_analyze_startup(project_buffer, len, NULL);
 	}
 	CATCH
 	{

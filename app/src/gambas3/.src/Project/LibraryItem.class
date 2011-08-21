@@ -56,7 +56,8 @@ Public Sub DrawingArea_Draw()
     '$sText &= Subst("<font size=\"-1\" color=\"&1\"><b>", If(IsSelected(), "white", "gray")) & Replace($sPath, System.User.Home, "~") & "</b></font>"
     $sText &= "<hr><font size=\"-1\"><b>" & ("Location") & "&nbsp;:&nbsp;</b>" & Replace($sPath, System.User.Home, "~") & "</font>"
     $sText &= "<br><font size=\"-1\"><b>" & ("Provides") & "&nbsp;:&nbsp;</b>" & .Classes.Join(", ") & "</font>"
-    $sText &= "</font>"
+    If .Libraries.Count Then $sText &= "<br><font size=\"-1\"><b>" & ("Depends on") & "&nbsp;:&nbsp;</b>" & .Libraries.Join(", ") & "</font>"
+    $sText &= "<br></font>"
 
     $iTextW = Draw.RichTextWidth($sText)
 
@@ -65,7 +66,7 @@ Public Sub DrawingArea_Draw()
     X = ICON_SIZE + PADDING * 2
     W = Max(Me.W - X - PADDING, $iTextW)
     If IsSelected() Then Draw.Foreground = Color.SelectedForeground
-    Draw.RichText($sText, X, PADDING, W, Desktop.Scale * 4, Align.TopLeft)
+    Draw.RichText($sText, X, PADDING, W, Desktop.Scale * 6, Align.TopLeft)
     
   End With
   

@@ -1059,7 +1059,7 @@ End
 Public Sub OnProjectChange()
   
   UpdateMenu
-  btnSearchAdd.Visible = VersionControl.Enabled()
+  btnSearchAdd.Visible = VersionControl.Enabled() 'And panSearchProject.Hovered
   'UpdateTranslate
   'RefreshInfo
   'IF $bHidden THEN HideAll
@@ -1839,7 +1839,7 @@ Public Sub mnuReplace_Click()
   
 End
 
-Public Sub btnClearSearchProject_Click()
+Public Sub btnSearchClear_Click()
   
   txtSearchProject.Clear
   Project.ProjectFilter = ""
@@ -1884,4 +1884,28 @@ Public Sub btnSearchAdd_Click()
   Project.ProjectFilter = Project.FILTER_ADDED
   timSearchProject_Timer
   
+End
+
+' Public Sub panSearchProject_Enter()
+' 
+'   btnSearchAdd.Visible = VersionControl.Enabled()
+'   btnSearchClear.Visible = True
+'   btnSearchExported.Visible = True
+' 
+' End
+' 
+' Public Sub panSearchProject_Leave()
+' 
+'   btnSearchAdd.Visible = False
+'   btnSearchClear.Visible = False
+'   btnSearchExported.Visible = False
+' 
+' End
+
+Public Sub btnSearchExported_Click()
+
+  txtSearchProject.Clear
+  Project.ProjectFilter = Project.FILTER_EXPORTED
+  timSearchProject_Timer
+
 End

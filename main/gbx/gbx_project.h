@@ -33,6 +33,9 @@ typedef
     }
   PROJECT_COMMAND;
 
+typedef
+	void (*PROJECT_COMPONENT_CALLBACK)(char *);
+	
 #ifndef __GBX_PROJECT_C
 EXTERN char *PROJECT_path;
 EXTERN char *PROJECT_exec_path;
@@ -51,5 +54,6 @@ void PROJECT_init(const char *file);
 bool PROJECT_load(void);
 void PROJECT_exit(void);
 char *PROJECT_get_home(void);
+void PROJECT_analyze_startup(char *addr, int len, PROJECT_COMPONENT_CALLBACK cb);
 
 #endif

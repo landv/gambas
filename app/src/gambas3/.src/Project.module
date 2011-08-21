@@ -111,6 +111,7 @@ Public Const DEFAULT_FONT As String = "Monospace,9"
 Public Const DEFAULT_URL As String = "http://www.endoftheinternet.com/"
 
 Public Const FILTER_ADDED As String = " +"
+Public Const FILTER_EXPORTED As String = " X"
 
 Public Files As New Collection
 
@@ -776,7 +777,7 @@ Private Sub AddLinkEmblem(hSource As Image) As Image
   
 End
 
-Private Sub MakeStartupIcon(hImage As Image)
+Private Sub MakeExportedIcon(hImage As Image)
 
   Dim X, Y As Integer
   Dim iCol As Integer
@@ -803,26 +804,32 @@ Private Sub MakeStartupIcon(hImage As Image)
 
 End
 
-Public Sub MakeModuleIcon(sModule As String, iSize As Integer, Optional bStartup As Boolean) As Image
+Public Sub MakeModuleIcon(sModule As String, iSize As Integer, Optional bStartup As Boolean, Optional bExported As Boolean) As Image
   
   Dim hImage As Image
   Dim hImageModule As Image
+  Dim hImageStartup As Image
   Dim sKey As String
   
   If Not $cImageCache["base"] Then $cImageCache["base"] = Picture["icon:/32/file"].Image
   
   If iSize = 0 Then iSize = 16
   
-  sKey = sModule & "-" & iSize & If(bStartup, "-s", "") & ".png"
+  sKey = sModule & "-" & iSize & If(bStartup, "s", "") & If(bExported, "x", "") & ".png"
   hImage = $cImageCache[sKey]
   If Not hImage Then 
     hImage = $cImageCache["base"]
     hImage = hImage.Stretch(iSize, iSize)
     hImageModule = Image.Load("img/module" &/ sModule & ".png") '.Stretch(iSize / 2, iSize / 2)
     hImage.PaintImage(hImageModule, iSize / 4, iSize / 4, iSize / 2, iSize / 2)
-    If bStartup Then 
-      MakeStartupIcon(hImage)
+
+    If bExported Then MakeExportedIcon(hImage)
+    
+    If bStartup Then
+      hImageStartup = Image.Load("img/16/startup.png").Stretch(iSize \ 2, iSize \ 2)
+      hImage.PaintImage(hImageStartup, 0, (hImage.H - hImageStartup.H) \ 2)
     Endif
+
     $cImageCache[sKey] = hImage
   Endif
   
@@ -854,6 +861,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
   Dim bAdded As Boolean
   Dim hProject As CProjectInfo
   Dim sLink As String
+  Dim bExported As Boolean
   
   If iSize Then 
     sPrefix = "icon:/" & iSize
@@ -897,6 +905,9 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
             sModule = sExt
             sIcon = sExt & "-" & iSize
             bStartup = File.BaseName(sPath) = Startup And Not bNoStartup
+            If sExt = "class" Or If sExt = "module" Then 
+              bExported = IsExported(sPath)
+            Endif
           Endif
           
         Case "jpg", "jpeg", "xpm", "bmp", "png", "gif"
@@ -971,12 +982,15 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
     
   Else
     
-    sKey = sIcon
-    If bLink Then sKey = File.Dir(sKey) &/ File.BaseName(sKey) & "-link" & ".png"
-    If bStartup Then sKey = File.Dir(sKey) &/ File.BaseName(sKey) & "-startup" & ".png"
-    If bConflict Then sKey = File.Dir(sKey) &/ File.BaseName(sKey) & "-conflict" & ".png"
-    If bLocked Then sKey = File.Dir(sKey) &/ File.BaseName(sKey) & "-locked" & ".png"
-    If bAdded Then sKey = File.Dir(sKey) &/ File.BaseName(sKey) & "-added" & ".png"
+    sKey = File.Dir(sIcon) &/ File.BaseName(sIcon) & "-"
+    If bLink Then sKey &= "l"
+    If bStartup Then sKey &= "s"
+    If bConflict Then sKey &= "c"
+    If bLocked Then sKey &= "k"
+    If bAdded Then sKey &= "a"
+    If bExported Then sKey &= "x"
+    If Right(sKey) = "-" Then sKey = Left(sKey, -1)
+    sKey &= ".png"
     
     'hPict = NULL
     'IF NOT bNoStartup THEN hPict = Picture[sKey]
@@ -986,7 +1000,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
     If Not hPict Then 
       
       If sModule Then
-        hImage = MakeModuleIcon(sModule, iSize, bStartup)
+        hImage = MakeModuleIcon(sModule, iSize, bStartup, bExported)
       Else
         Try hImage = Picture[sIcon].Image
         If Error Then hImage = Picture[sPrefix &/ "file"].Image
@@ -1452,6 +1466,17 @@ Private Sub UpdateTitle()
   
 End
 
+Private Sub AddPathToFilter(sPath As String)
+  
+  $cProjectFilter[sPath] = True
+  While Len(sPath) > Len(Project.Dir)
+    sPath = File.Dir(sPath)
+    $cProjectFilter[sPath] = True
+  Wend
+  
+End
+
+
 Private Sub InitProjectFilter()
   
   Dim sPath As String
@@ -1468,11 +1493,15 @@ Private Sub InitProjectFilter()
     
     For Each AddedPaths
       sPath = AddedPaths.Key
-      $cProjectFilter[sPath] = True
-      While Len(sPath) > Len(Project.Dir)
-        sPath = File.Dir(sPath)
-        $cProjectFilter[sPath] = True
-      Wend
+      AddPathToFilter(sPath)
+    Next
+  
+  Else If ProjectFilter = FILTER_EXPORTED Then
+    
+    $cProjectFilter = New Collection
+    
+    For Each sPath In $cSourceDir
+      If IsExported(sPath) Then AddPathToFilter(sPath)
     Next
     
   Else
@@ -1494,11 +1523,7 @@ Private Sub InitProjectFilter()
       If sPath Begins (Project.Dir &/ ".src") Then sFile = File.BaseName(sFile)
       If InStr(String.LCase(sFile), sFilter) = 0 Then Continue
       
-      $cProjectFilter[sPath] = True
-      While Len(sPath) > Len(Project.Dir)
-        sPath = File.Dir(sPath)
-        $cProjectFilter[sPath] = True
-      Wend
+      AddPathToFilter(sPath)
       
     Next
     
@@ -4993,6 +5018,10 @@ Public Sub IsExported(sPath As String) As Boolean
   
   Dim hFile As File
   Dim sLine As String
+  Dim sExt As String
+  
+  sExt = File.Ext(sPath)
+  If sExt <> "module" And If sExt <> "class" Then Return
   
   Try hFile = Open sPath
   If Error Then Return

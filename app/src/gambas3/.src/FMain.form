@@ -807,19 +807,24 @@
           AutoResize = True
         }
         { txtSearchProject TextBox
-          MoveScaled(4,0,14,3)
+          MoveScaled(5,0,12,3)
           Expand = True
           Border = False
+        }
+        { btnSearchExported ToolButton
+          MoveScaled(19,0,3,3)
+          ToolTip = ("Show exported classes")
+          Picture = Picture["icon:/small/bookmark"]
         }
         { btnSearchAdd ToolButton
           MoveScaled(22,0,3,3)
           ToolTip = ("Show added files")
           Picture = Picture["icon:/small/add"]
         }
-        { btnClearSearchProject ToolButton
+        { btnSearchClear ToolButton
           MoveScaled(25,0,3,3)
           ToolTip = ("Reset filter")
-          Picture = Picture["icon:/small/refresh"]
+          Picture = Picture["icon:/small/clear"]
         }
       }
       { Separator4 Separator
