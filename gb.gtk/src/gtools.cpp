@@ -1166,7 +1166,11 @@ void gt_pixmap_fill(GdkPixmap *pix, gColor col, GdkGC *gc)
 	
 	fill_gdk_color(&color, col);
 	
+	#if GTK_MAJOR_VERSION >= 3 || (GTK_MAJOR_VERSION >= 2 && GTK_MINOR_VERSION >= 24)
 	gdk_pixmap_get_size(pix, &w, &h);
+	#else
+	gdk_drawable_get_size(GDK_DRAWABLE(pix), &w, &h);
+	#endif
 	
 	if (!gc)
 	{
