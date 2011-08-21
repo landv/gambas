@@ -746,7 +746,7 @@ END_METHOD
 
 GB_DESC CWindowMenusDesc[] =
 {
-	GB_DECLARE(".WindowMenus", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".Window.Menus", 0), GB_VIRTUAL_CLASS(),
 
 	GB_METHOD("_next", "Menu", CWINDOW_menu_next, 0),
 	GB_METHOD("_get", "Menu", CWINDOW_menu_get, "(Index)i"),
@@ -760,7 +760,7 @@ GB_DESC CWindowMenusDesc[] =
 
 GB_DESC CWindowControlsDesc[] =
 {
-	GB_DECLARE(".WindowControls", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".Window.Controls", 0), GB_VIRTUAL_CLASS(),
 
 	GB_METHOD("_next", "Control", CWINDOW_control_next, 0),
 	GB_METHOD("_get", "Control", CWINDOW_get, "(Name)s"),
@@ -850,8 +850,8 @@ GB_DESC CWindowDesc[] =
 	
 	GB_PROPERTY_READ("Screen", "i", Window_Screen),
 
-	GB_PROPERTY_SELF("Menus", ".WindowMenus"),
-	GB_PROPERTY_SELF("Controls", ".WindowControls"),
+	GB_PROPERTY_SELF("Menus", ".Window.Menus"),
+	GB_PROPERTY_SELF("Controls", ".Window.Controls"),
 
 	WINDOW_DESCRIPTION,
 

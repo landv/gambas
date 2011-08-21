@@ -10,8 +10,8 @@ Property Read Query As String
 Property Read Files As Collection
 Property Delimiter As String
 Property Read InternetExplorer As Integer
-Property Read Get As _RequestGet
-Property Read Post As _RequestPost
+Property Read Get As _Request_Get
+Property Read Post As _Request_Post
 
 
 Private $cCookies As Collection
@@ -50,11 +50,11 @@ Public Sub _get(Key As String) As String
   Decode
   
   If $bPost Then
-    sVal = _RequestPost[Key]
+    sVal = _Request_Post[Key]
     If sVal Then Return sVal
   Endif
   
-  Return _RequestGet[Key]
+  Return _Request_Get[Key]
   
 End
 
@@ -71,10 +71,10 @@ Private Function Fields_Read() As String[]
 
   If Not $aField Then
     If Not $bPost Then
-      $aField = _RequestGet.Fields
+      $aField = _Request_Get.Fields
     Else
-      $aField = _RequestGet.Fields.Copy()
-      For Each sField In _RequestPost.Fields
+      $aField = _Request_Get.Fields.Copy()
+      For Each sField In _Request_Post.Fields
         If Not $aField.Exist(sField) Then $aField.Add(sField)
       Next
     Endif
@@ -126,7 +126,7 @@ End
 
 Private Function Files_Read() As Collection
 
-  Return _RequestPost.Files
+  Return _Request_Post.Files
 
 End
 
@@ -156,14 +156,14 @@ Private Function InternetExplorer_Read() As Integer
 
 End
 
-Private Function Get_Read() As _RequestGet
+Private Function Get_Read() As _Request_Get
 
-  Return _RequestGet
+  Return _Request_Get
 
 End
 
-Private Function Post_Read() As _RequestPost
+Private Function Post_Read() As _Request_Post
 
-  Return _RequestPost
+  Return _Request_Post
 
 End

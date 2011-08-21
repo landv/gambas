@@ -577,7 +577,7 @@ GB_DESC CCurlDesc[] =
 	GB_PROPERTY("Password","s",CCURL_Password),  
 	GB_PROPERTY("Async","b",CCURL_Async),
 	GB_PROPERTY("Timeout","i",CCURL_TimeOut),
-	GB_PROPERTY_SELF("Proxy",".CurlProxy"),
+	GB_PROPERTY_SELF("Proxy",".Curl.Proxy"),
 	GB_PROPERTY_READ("Status","i",CCURL_Status),
 	GB_PROPERTY("Debug", "b", Curl_Debug),
 

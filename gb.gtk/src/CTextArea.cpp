@@ -295,7 +295,7 @@ END_PROPERTY
 
 GB_DESC CTextAreaSelectionDesc[] =
 {
-  GB_DECLARE(".TextAreaSelection", 0), GB_VIRTUAL_CLASS(),
+  GB_DECLARE(".TextArea.Selection", 0), GB_VIRTUAL_CLASS(),
 
   GB_PROPERTY("Text", "s", CTEXTAREA_sel_text),
   GB_PROPERTY_READ("Length", "i", CTEXTAREA_sel_length),
@@ -326,7 +326,7 @@ GB_DESC CTextAreaDesc[] =
   GB_PROPERTY("Column", "i", CTEXTAREA_column),
   GB_PROPERTY("Pos", "i", CTEXTAREA_pos),
 
-  GB_PROPERTY_SELF("Selection", ".TextAreaSelection"),
+  GB_PROPERTY_SELF("Selection", ".TextArea.Selection"),
   GB_METHOD("Select", NULL, CTEXTAREA_sel_select, "[(Start)i(Length)i]"),
   GB_METHOD("SelectAll", NULL, CTEXTAREA_sel_all, NULL),
   GB_METHOD("Unselect", NULL, CTEXTAREA_sel_clear, NULL),

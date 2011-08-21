@@ -403,7 +403,7 @@ END_PROPERTY
 
 GB_DESC CTextBoxSelectionDesc[] =
 {
-  GB_DECLARE(".TextBoxSelection", 0), GB_VIRTUAL_CLASS(),
+  GB_DECLARE(".TextBox.Selection", 0), GB_VIRTUAL_CLASS(),
 
   GB_PROPERTY("Text", "s", CTEXTBOX_sel_text),
   GB_PROPERTY_READ("Length", "i", CTEXTBOX_sel_length),
@@ -430,7 +430,7 @@ GB_DESC CTextBoxDesc[] =
   GB_PROPERTY("Password", "b", CTEXTBOX_password),
   GB_PROPERTY("MaxLength", "i", CTEXTBOX_max_length),
 
-  GB_PROPERTY_SELF("Selection", ".TextBoxSelection"),
+  GB_PROPERTY_SELF("Selection", ".TextBox.Selection"),
   GB_METHOD("Select", 0, CTEXTBOX_sel_select, "[(Start)i(Length)i]"),
   GB_METHOD("SelectAll", 0, CTEXTBOX_sel_all, 0),
   GB_METHOD("Unselect", 0, CTEXTBOX_sel_clear, 0),
@@ -451,7 +451,7 @@ GB_DESC CTextBoxDesc[] =
 
 GB_DESC CComboBoxItemDesc[] =
 {
-  GB_DECLARE(".ComboBoxItem", 0), GB_VIRTUAL_CLASS(),
+  GB_DECLARE(".ComboBox.Item", 0), GB_VIRTUAL_CLASS(),
 
   GB_PROPERTY("Text", "s", CCOMBOBOX_item_text),
 
@@ -464,7 +464,7 @@ GB_DESC CComboBoxDesc[] =
   GB_DECLARE("ComboBox", sizeof(CCOMBOBOX)), GB_INHERITS("Control"),
 
   GB_METHOD("_new", 0, CCOMBOBOX_new, "(Parent)Container;"),
-  GB_METHOD("_get", ".ComboBoxItem", CCOMBOBOX_get, "(Index)i"),
+  GB_METHOD("_get", ".ComboBox.Item", CCOMBOBOX_get, "(Index)i"),
   GB_METHOD("Popup", 0, CCOMBOBOX_popup, 0),
   GB_METHOD("Clear", 0, CTEXTBOX_clear, 0),
   GB_METHOD("Insert", 0, CTEXTBOX_insert, "(Text)s"),
@@ -479,7 +479,7 @@ GB_DESC CComboBoxDesc[] =
   GB_PROPERTY("Password", "b", CTEXTBOX_password),
   GB_PROPERTY("MaxLength", "i", CTEXTBOX_max_length),
   
-  GB_PROPERTY_SELF("Selection", ".TextBoxSelection"),
+  GB_PROPERTY_SELF("Selection", ".TextBox.Selection"),
   GB_METHOD("Select", 0, CTEXTBOX_sel_select, "[(Start)i(Length)i]"),
   GB_METHOD("SelectAll", 0, CTEXTBOX_sel_all, 0),
   GB_METHOD("Unselect", 0, CTEXTBOX_sel_clear, 0),
@@ -488,7 +488,7 @@ GB_DESC CComboBoxDesc[] =
   GB_PROPERTY("Sorted", "b", CCOMBOBOX_sorted),
   GB_PROPERTY("List", "String[]", CCOMBOBOX_list),
   GB_PROPERTY_READ("Count", "i", CCOMBOBOX_count),
-  GB_PROPERTY_READ("Current", ".ComboBoxItem", CCOMBOBOX_current),
+  GB_PROPERTY_READ("Current", ".ComboBox.Item", CCOMBOBOX_current),
   GB_PROPERTY("Index", "i", CCOMBOBOX_index),
 
   GB_EVENT("Change", 0, 0, &EVENT_Change),

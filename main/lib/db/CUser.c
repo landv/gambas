@@ -171,7 +171,7 @@ GB_DESC CUserDesc[] =
 
 /***************************************************************************
 
-  .ConnectionUsers
+  .Connection.Users
 
 ***************************************************************************/
 
@@ -217,7 +217,7 @@ END_METHOD
 
 GB_DESC CConnectionUsersDesc[] =
 {
-  GB_DECLARE(".ConnectionUsers", 0), GB_INHERITS(".SubCollection"),
+  GB_DECLARE(".Connection.Users", 0), GB_INHERITS(".SubCollection"),
 
   GB_METHOD("Add", NULL, CUSER_add, "(Name)s[(Password)s(Admin)b]"),
   GB_METHOD("Remove", NULL, CUSER_remove, "(Name)s"),

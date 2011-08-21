@@ -649,7 +649,7 @@ END_PROPERTY*/
 
 GB_DESC CMenuChildrenDesc[] =
 {
-  GB_DECLARE(".MenuChildren", sizeof(CMENU)), GB_VIRTUAL_CLASS(),
+  GB_DECLARE(".Menu.Children", sizeof(CMENU)), GB_VIRTUAL_CLASS(),
 
   GB_METHOD("_next", "Menu", CMENU_next, NULL),
   GB_METHOD("_get", "Menu", CMENU_get, "(Index)i"),
@@ -692,7 +692,7 @@ GB_DESC CMenuDesc[] =
   GB_PROPERTY("Action", "s", Control_Action),
   GB_PROPERTY_READ("Window", "Window", CMENU_window),
 
-  GB_PROPERTY_SELF("Children", ".MenuChildren"),
+  GB_PROPERTY_SELF("Children", ".Menu.Children"),
   //GB_PROPERTY_READ("Index", "i", CMENU_item_index),
 
 	MENU_DESCRIPTION,

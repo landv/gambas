@@ -154,7 +154,7 @@ GB_DESC CDatabaseDesc[] =
 
 /***************************************************************************
 
-  .ConnectionDatabases
+  .Connection.Databases
 
 ***************************************************************************/
 
@@ -194,7 +194,7 @@ END_METHOD
 
 GB_DESC CConnectionDatabasesDesc[] =
 {
-  GB_DECLARE(".ConnectionDatabases", 0), GB_INHERITS(".SubCollection"),
+  GB_DECLARE(".Connection.Databases", 0), GB_INHERITS(".SubCollection"),
 
   GB_METHOD("Add", NULL, CDATABASE_add, "(Name)s"),
   GB_METHOD("Remove", NULL, CDATABASE_remove, "(Name)s"),

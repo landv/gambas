@@ -463,12 +463,21 @@ GB_DESC CXmlReaderNodeTypeDesc[] =
 	GB_END_DECLARE
 };
 
+GB_DESC CXmlReaderNodeAttributesDesc[] =
+{
+	GB_DECLARE(".XmlReader.Node.Attributes", 0), GB_VIRTUAL_CLASS(),
+
+	GB_METHOD("_next", ".XmlReader.Node", CXmlReader_next, NULL),
+	GB_PROPERTY_READ("Count", "i", CXmlReader_count),
+
+	GB_END_DECLARE
+};
+
 GB_DESC CXmlReaderNodeDesc[] =
 {
+	GB_DECLARE(".XmlReader.Node", 0), GB_VIRTUAL_CLASS(),
 
-	GB_DECLARE(".XmlReaderNode", 0), GB_VIRTUAL_CLASS(),
-
-	GB_PROPERTY_READ("Attributes", ".XmlReaderNodeAttributes",CXMLReader_Node),
+	GB_PROPERTY_READ("Attributes", ".XmlReader.Node.Attributes",CXMLReader_Node),
 	GB_PROPERTY_READ("BaseUri","s",CRNODE_BaseUri),
 	GB_PROPERTY_READ("Depth","i",CRNODE_Depth),
 	GB_PROPERTY_READ("IsDefault","b",CRNODE_IsDefault),
@@ -485,20 +494,8 @@ GB_DESC CXmlReaderNodeDesc[] =
 	GB_END_DECLARE
 };
 
-GB_DESC CXmlReaderNodeAttributesDesc[] =
-{
-	GB_DECLARE(".XmlReaderNodeAttributes", 0), GB_VIRTUAL_CLASS(),
-
-	GB_METHOD("_next", ".XmlReaderNode", CXmlReader_next, NULL),
-        GB_PROPERTY_READ("Count", "i", CXmlReader_count),
-
-	GB_END_DECLARE
-};
-
-
 GB_DESC CXmlReaderDesc[] =
 {
-
   GB_DECLARE("XmlReader", sizeof(CXMLREADER)),
 
   GB_STATIC_METHOD("Decode","s",CXmlReader_Decode,"(Data)s(Encoding)s"),
@@ -512,7 +509,7 @@ GB_DESC CXmlReaderDesc[] =
   GB_METHOD("Read",NULL,CXmlReader_Read,NULL),
 
   GB_PROPERTY_READ("Eof","b",CXMLReader_EOF),
-  GB_PROPERTY_READ("Node",".XmlReaderNode",CXMLReader_Node),
+  GB_PROPERTY_READ("Node",".XmlReader.Node",CXMLReader_Node),
 
   GB_END_DECLARE
 };

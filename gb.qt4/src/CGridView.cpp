@@ -2227,7 +2227,7 @@ END_PROPERTY
 
 GB_DESC CGridViewDataDesc[] =
 {
-	GB_DECLARE(".GridViewData", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".GridView.Data", 0), GB_VIRTUAL_CLASS(),
 
 	//GB_PROPERTY_READ("Row", "i", CGRIDITEM_row),
 	//GB_PROPERTY_READ("Column", "i", CGRIDITEM_column),
@@ -2251,7 +2251,7 @@ GB_DESC CGridViewDataDesc[] =
 
 GB_DESC CGridItemDesc[] =
 {
-	GB_DECLARE(".GridViewCell", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".GridView.Cell", 0), GB_VIRTUAL_CLASS(),
 
 	//GB_PROPERTY_READ("Row", "i", CGRIDITEM_row),
 	//GB_PROPERTY_READ("Column", "i", CGRIDITEM_column),
@@ -2288,7 +2288,7 @@ GB_DESC CGridItemDesc[] =
 
 GB_DESC CGridRowDesc[] =
 {
-	GB_DECLARE(".GridViewRow", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".GridView.Row", 0), GB_VIRTUAL_CLASS(),
 
 	GB_PROPERTY_READ("Y", "i", CGRIDITEM_y),
 	GB_PROPERTY_READ("Top", "i", CGRIDITEM_y),
@@ -2306,7 +2306,7 @@ GB_DESC CGridRowDesc[] =
 
 GB_DESC CGridColumnDesc[] =
 {
-	GB_DECLARE(".GridViewColumn", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".GridView.Column", 0), GB_VIRTUAL_CLASS(),
 
 	GB_PROPERTY_READ("X", "i", CGRIDITEM_x),
 	GB_PROPERTY_READ("Left", "i", CGRIDITEM_x),
@@ -2324,9 +2324,9 @@ GB_DESC CGridColumnDesc[] =
 
 GB_DESC CGridRowsDesc[] =
 {
-	GB_DECLARE(".GridViewRows", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".GridView.Rows", 0), GB_VIRTUAL_CLASS(),
 
-	GB_METHOD("_get", ".GridViewRow", CGRIDROWS_get, "(Row)i"),
+	GB_METHOD("_get", ".GridView.Row", CGRIDROWS_get, "(Row)i"),
 	GB_PROPERTY("Count", "i", CGRIDROWS_count),
 	GB_PROPERTY("Height", "i", CGRIDROWS_height),
 	GB_PROPERTY_READ("HeaderHeight", "i", CGRIDCOLS_height),
@@ -2346,9 +2346,9 @@ GB_DESC CGridRowsDesc[] =
 
 GB_DESC CGridColumnsDesc[] =
 {
-	GB_DECLARE(".GridViewColumns", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".GridView.Columns", 0), GB_VIRTUAL_CLASS(),
 
-	GB_METHOD("_get", ".GridViewColumn", CGRIDCOLS_get, "(Column)i"),
+	GB_METHOD("_get", ".GridView.Column", CGRIDCOLS_get, "(Column)i"),
 	GB_PROPERTY("Count", "i", CGRIDCOLS_count),
 	GB_PROPERTY("Width", "i", CGRIDCOLS_width),
 	GB_PROPERTY_READ("HeaderWidth", "i", CGRIDROWS_width),
@@ -2377,17 +2377,17 @@ GB_DESC CGridViewDesc[] =
 	GB_METHOD("_new", NULL, CGRIDVIEW_new, "(Parent)Container;"),
 	//GB_METHOD("_free", NULL, CGRIDVIEW_free, NULL),
 
-	GB_PROPERTY_READ("Rows", ".GridViewRows", CGRIDVIEW_self),
-	GB_PROPERTY_READ("Columns", ".GridViewColumns", CGRIDVIEW_self),
+	GB_PROPERTY_READ("Rows", ".GridView.Rows", CGRIDVIEW_self),
+	GB_PROPERTY_READ("Columns", ".GridView.Columns", CGRIDVIEW_self),
 
-	GB_METHOD("_get", ".GridViewCell", CGRIDVIEW_get, "(Row)i(Column)i"),
+	GB_METHOD("_get", ".GridView.Cell", CGRIDVIEW_get, "(Row)i(Column)i"),
 
 	GB_METHOD("Clear", NULL, CGRIDVIEW_clear, NULL),
 
 	GB_PROPERTY("Row", "i", CGRIDVIEW_row),
 	GB_PROPERTY("Column", "i", CGRIDVIEW_column),
 	GB_METHOD("MoveTo", NULL, CGRIDVIEW_move_to, "(Row)i(Column)i"),
-	GB_PROPERTY_READ("Current", ".GridViewCell", CGRIDVIEW_current),
+	GB_PROPERTY_READ("Current", ".GridView.Cell", CGRIDVIEW_current),
 	GB_PROPERTY("Grid", "b", CGRIDVIEW_grid),
 	GB_PROPERTY("Border", "b", CWIDGET_border_simple),
 	GB_PROPERTY("ScrollBar", "i", CGRIDVIEW_scrollbars),
@@ -2413,7 +2413,7 @@ GB_DESC CGridViewDesc[] =
 	GB_PROPERTY_READ("ClientHeight", "i", CGRIDVIEW_client_height),
 	GB_PROPERTY_READ("ClientH", "i", CGRIDVIEW_client_height),
 
-	GB_PROPERTY_SELF("Data", ".GridViewData"),
+	GB_PROPERTY_SELF("Data", ".GridView.Data"),
 
 	//GB_METHOD("Refresh", NULL, CGRIDVIEW_refresh, "[(X)i(Y)i(Width)i(Height)i]"),
 

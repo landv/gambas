@@ -14,7 +14,7 @@ Private $sTitle As String
 Private $cSlot As Collection
 Private $bModify As Boolean
 
-Property Read Keys As _SettingsKeys
+Property Read Keys As _Settings_Keys
 Property Read Path As String
 
 Private Sub Load()
@@ -470,11 +470,11 @@ Public Sub Reload()
 End
 
 
-Private Function Keys_Read() As _SettingsKeys
+Private Function Keys_Read() As _Settings_Keys
 
-  _SettingsKeys._Slot = $cSlot
-  _SettingsKeys._Parent = ""
-  Return _SettingsKeys
+  _Settings_Keys._Slot = $cSlot
+  _Settings_Keys._Parent = ""
+  Return _Settings_Keys
 
 End
 

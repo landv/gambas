@@ -44,7 +44,6 @@ void ToIPv4(char *src,char *dst,int leadzero)
 	int myloop;
 	int zone=0;
 	int np=0;
-	int bucle;
 	int nc[4]={0,0,0,0};
 	
 	dst[0]=0;
@@ -94,11 +93,7 @@ void ToIPv4(char *src,char *dst,int leadzero)
 	if (!leadzero)
 		sprintf(dst,"%d.%d.%d.%d",nc[0],nc[1],nc[2],nc[3]);
  	else
-	{
-		sprintf(dst,"%3d.%3d.%3d.%3d",nc[0],nc[1],nc[2],nc[3]);
-		for (bucle=0;bucle<15;bucle++)
-			if (dst[bucle]==' ') dst[bucle]='0';
-	}
+		sprintf(dst,"%03d.%03d.%03d.%03d",nc[0],nc[1],nc[2],nc[3]);
 }
 
 BEGIN_METHOD(CNET_Format,GB_STRING IpString;GB_INTEGER Format;GB_BOOLEAN LeadZero;)

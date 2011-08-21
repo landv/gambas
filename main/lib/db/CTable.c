@@ -34,7 +34,7 @@
 
 static GB_SUBCOLLECTION_DESC _fields_desc =
 {
-  ".TableFields",
+  ".Table.Fields",
   (void *)CFIELD_get,
   (void *)CFIELD_exist,
   (void *)CFIELD_list,
@@ -43,7 +43,7 @@ static GB_SUBCOLLECTION_DESC _fields_desc =
 
 static GB_SUBCOLLECTION_DESC _indexes_desc =
 {
-  ".TableIndexes",
+  ".Table.Indexes",
   (void *)CINDEX_get,
   (void *)CINDEX_exist,
   (void *)CINDEX_list,
@@ -370,8 +370,8 @@ GB_DESC CTableDesc[] =
 
   GB_METHOD("Update", NULL, CTABLE_update, NULL),
 
-  GB_PROPERTY_READ("Fields", ".TableFields", CTABLE_fields),
-  GB_PROPERTY_READ("Indexes", ".TableIndexes", CTABLE_indexes),
+  GB_PROPERTY_READ("Fields", ".Table.Fields", CTABLE_fields),
+  GB_PROPERTY_READ("Indexes", ".Table.Indexes", CTABLE_indexes),
 
   GB_END_DECLARE
 };
@@ -379,7 +379,7 @@ GB_DESC CTableDesc[] =
 
 /***************************************************************************
 
-  .ConnectionTables
+  .Connection.Tables
 
 ***************************************************************************/
 
@@ -425,7 +425,7 @@ END_METHOD
 
 GB_DESC CConnectionTablesDesc[] =
 {
-  GB_DECLARE(".ConnectionTables", 0), GB_INHERITS(".SubCollection"),
+  GB_DECLARE(".Connection.Tables", 0), GB_INHERITS(".SubCollection"),
 
   GB_METHOD("Add", "Table", CTABLE_add, "(Name)s[(Type)s]"),
   GB_METHOD("Remove", NULL, CTABLE_remove, "(Name)s"),

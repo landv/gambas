@@ -6,11 +6,11 @@ Class _Desktop
 
 'STATIC PROPERTY READ Menus AS _DesktopMenus
 'STATIC PROPERTY READ Icons AS _DesktopIcons
-Static Property Read ScreenSaver As _DesktopScreenSaver
+Static Property Read ScreenSaver As _Desktop_ScreenSaver
 Static Property Read Type As String
 Static Property Count As Integer
 Static Property Current As Integer
-Static Property Read Windows As _DesktopWindows
+Static Property Read Windows As _Desktop_Windows
 Static Property ActiveWindow As Integer
 Static Property Read RootWindow As Integer
 Static Property Showing As Boolean
@@ -18,7 +18,7 @@ Static Property Read Width As Integer
 Static Property Read Height As Integer
 Static Property Read W As Integer
 Static Property Read H As Integer
-Static Property Read Passwords As _DesktopPasswords
+Static Property Read Passwords As _Desktop_Passwords
 Static Property Read Path As String
 
 Static Private $sDesktop As String
@@ -80,9 +80,9 @@ Static Private Function Icons_Read() As _DesktopIcons
 
 End
 
-Static Private Function ScreenSaver_Read() As _DesktopScreenSaver
+Static Private Function ScreenSaver_Read() As _Desktop_ScreenSaver
 
-  Return _DesktopScreenSaver
+  Return _Desktop_ScreenSaver
 
 End
 
@@ -286,9 +286,9 @@ Static Private Sub Count_Write(Value As Integer)
 
 End
 
-Static Private Function Windows_Read() As _DesktopWindows
+Static Private Function Windows_Read() As _Desktop_Windows
 
-  Return _DesktopWindows
+  Return _Desktop_Windows
 
 End
 
@@ -352,9 +352,9 @@ Static Private Function H_Read() As Integer
 
 End
 
-Static Private Function Passwords_Read() As _DesktopPasswords
+Static Private Function Passwords_Read() As _Desktop_Passwords
 
-  Return _DesktopPasswords
+  Return _Desktop_Passwords
 
 End
 

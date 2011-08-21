@@ -247,7 +247,7 @@ GB_DESC CFieldDesc[] =
 
 /***************************************************************************
 
-  .TableFields
+  .Table.Fields
 
 ***************************************************************************/
 
@@ -312,7 +312,7 @@ END_METHOD
 
 GB_DESC CTableFieldsDesc[] =
 {
-  GB_DECLARE(".TableFields", 0), GB_INHERITS(".SubCollection"),
+  GB_DECLARE(".Table.Fields", 0), GB_INHERITS(".SubCollection"),
 
   GB_METHOD("Add", NULL, CFIELD_add, "(Name)s(Type)i[(Length)i(Default)v]"),
   //GB_METHOD("Remove", NULL, CFIELD_remove, "(Name)s"),

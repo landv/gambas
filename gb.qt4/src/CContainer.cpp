@@ -1195,7 +1195,7 @@ END_METHOD
 
 GB_DESC CChildrenDesc[] =
 {
-	GB_DECLARE(".ContainerChildren", sizeof(CCONTAINER)), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".Container.Children", sizeof(CCONTAINER)), GB_VIRTUAL_CLASS(),
 
 	GB_METHOD("_next", "Control", CCONTAINER_children_next, NULL),
 	GB_METHOD("_get", "Control", CCONTAINER_children_get, "(Index)i"),
@@ -1211,7 +1211,7 @@ GB_DESC CContainerDesc[] =
 	GB_DECLARE("Container", sizeof(CCONTAINER)), GB_INHERITS("Control"),
 	GB_NOT_CREATABLE(),
 
-	GB_PROPERTY_SELF("Children", ".ContainerChildren"),
+	GB_PROPERTY_SELF("Children", ".Container.Children"),
 
 	GB_PROPERTY_READ("ClientX", "i", CCONTAINER_x),
 	GB_PROPERTY_READ("ClientY", "i", CCONTAINER_y),

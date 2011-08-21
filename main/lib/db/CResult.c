@@ -38,7 +38,7 @@ static void set_blob(CBLOB *_object, char *data, int length);
 
 static GB_SUBCOLLECTION_DESC _fields_desc =
 {
-	".ResultFields",
+	".Result.Fields",
 	(void *)CRESULTFIELD_get,
 	(void *)CRESULTFIELD_exist,
 	(void *)NULL,
@@ -793,7 +793,7 @@ GB_DESC CResultDesc[] =
 	GB_METHOD("Update", NULL, CRESULT_update, NULL),
 	GB_METHOD("Delete", NULL, CRESULT_delete, "[(Keep)b]"),
 	
-	GB_PROPERTY_READ("Fields", ".ResultFields", CRESULT_fields),
+	GB_PROPERTY_READ("Fields", ".Result.Fields", CRESULT_fields),
 	GB_PROPERTY_READ("Connection", "Connection", CRESULT_connection),
 
 	GB_END_DECLARE

@@ -3,7 +3,7 @@
 C
 ScreenSaver
 R
-_DesktopScreenSaver
+_Desktop_ScreenSaver
 
 Type
 R
@@ -19,7 +19,7 @@ i
 
 Windows
 R
-_DesktopWindows
+_Desktop_Windows
 
 ActiveWindow
 P
@@ -51,7 +51,7 @@ i
 
 Passwords
 R
-_DesktopPasswords
+_Desktop_Passwords
 
 Path
 R
@@ -298,44 +298,6 @@ GetIcon
 m
 Image
 (Width)i(Height)i
-#_DesktopPasswords
-
-CA
-_get
-m
-s
-(Key)s
-_put
-m
-
-(Value)s(Key)s
-#_DesktopScreenSaver
-
-CA
-Enabled
-R
-b
-
-Suspend
-M
-
-(Window)Window;
-Resume
-M
-
-(Window)Window;
-Activate
-M
-
-
-Lock
-M
-
-
-Reset
-M
-
-
 #_DesktopVirtual
 
 C
@@ -371,7 +333,45 @@ _new
 m
 
 (iIndex)i
-#_DesktopWindows
+#_Desktop_Passwords
+
+CA
+_get
+m
+s
+(Key)s
+_put
+m
+
+(Value)s(Key)s
+#_Desktop_ScreenSaver
+
+CA
+Enabled
+R
+b
+
+Suspend
+M
+
+(Window)Window;
+Resume
+M
+
+(Window)Window;
+Activate
+M
+
+
+Lock
+M
+
+
+Reset
+M
+
+
+#_Desktop_Windows
 
 CA
 Count

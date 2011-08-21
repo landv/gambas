@@ -675,7 +675,7 @@ Private Sub RemovePara()
 
 End
 
-Private Sub EnterSection(sSection As String, Optional sArg As String)
+Private Sub EnterSection(sSection As String)
 
   Dim aSection As String[]
   Dim sParam As String
@@ -869,6 +869,7 @@ Private Function Encode(sText As String) As String
   Dim bLastVoid As Boolean
   Dim bHeader As Boolean
   Dim sArg As String
+  Dim hSym As CSymbolInfo
   Dim iLevel As Integer
   Dim iLevelLen As Integer
   Dim bList As Boolean
@@ -1075,9 +1076,15 @@ Private Function Encode(sText As String) As String
             Continue
 
           Case "syntax"
-            If $hSym Then
-              EnterSection("syntax")
-              $sRes &= GetSyntax()
+            If sArg Then
+              hSym = $hClass.Symbols[Replace(sArg, ".", ":")]
+              If hSym Then EnterSection("syntax no-title")
+            Else
+              hSym = $hSym
+              If hSym Then EnterSection("syntax")
+            Endif
+            If hSym Then
+              $sRes &= GetSymbolSyntax(hSym)
               LeaveSection()
             Endif
             Continue
@@ -2297,12 +2304,14 @@ Private Function MakePageWithoutHeader(rPage As Result) As String
     $cGotSpecial["classes"] = True
   Else
 
-    If $iType = TYPE_SYMBOL Then 'And If $hSym Then
+    sResult = Encode(rPage!sDesc)
+
+    If $iType = TYPE_SYMBOL And If Not $cGotSpecial.Exist("syntax") Then
       Print Encode("@syntax")
       Print "<p/>"
     Endif
-
-    Print Encode(rPage!sDesc)
+    
+    Print sResult
 
     If $iType = TYPE_COMPONENT And If Not $cGotSpecial.Exist("classes") Then
       Print "<p/>"
@@ -3953,7 +3962,7 @@ Private Function GetTranslate() As String
   Dim bOdd As Boolean
 
   If $sLang = DEFAULT_LANG Then
-    Return "<h2>Nothing to translate, but the following is not yet documented!</h2>\n" & GetTodo()
+    Return "<i>Nothing to translate, but the following is not yet documented!</i>\n" & GetTodo()
   Endif
 
   rPageDef = DB.Find("page", "sLang = &1 ORDER BY dDate DESC", DEFAULT_LANG)
@@ -4001,7 +4010,9 @@ Private Function GetToDo() As String
   Dim hComp As CComponent
   Dim hClass As CClassInfo
   Dim hSymbol As CSymbolInfo
+  Dim bPrintComponent As Boolean
   Dim bPrintClass As Boolean
+  Dim sClass As String
   Dim rPage As Result
   Dim sRes As String
   Dim sComp As String
@@ -4015,40 +4026,53 @@ Private Function GetToDo() As String
   CComponent.Init
 
   For Each hComp In CComponent.All
+    
     hComp.Load
-  Next
+    sComp = hComp.Name
+    bPrintComponent = True
 
-  For Each hClass In CComponent.Classes
-
-    If hClass.Name = "." Then Continue
-    If InStr(hClass.Name, "*") Then Continue
-
-    bPrintClass = True
-
-    'If $cCompRedirect And If $cCompRedirect.Exist(sComp) Then Continue
-    sComp = hClass.Component
-    If aIgnore.Find(sComp) >= 0 Then Continue
-
-    For Each hSymbol In hClass.Symbols
-
-      If hSymbol.Class <> hClass.Name Or If hSymbol.Component <> hClass.Component Then Continue
-      sName = hSymbol.Name
-      If sName = "_free" Then Continue
-      If InStr(sName, "_") Then
-        If Left(sName) <> "_" Or If aAllow.Find(sName) < 0 Then Continue
-      Endif
-
-      rPage = DB.Find("page", "sLang = &1 AND sPath = &2", DEFAULT_LANG, GetSymbolPath(hSymbol))
-      If Not rPage.Available Then
-
-        If bPrintClass Then
-          sRes &= "<h3>" & GetLink("/comp" &/ sComp &/ LCase(hClass.Name), hClass.Name & " (" & sComp & ")") & "</h3>\n"
-          bPrintClass = False
+    For Each sClass In hComp.ClassList
+  
+      If sClass = "." Then Continue
+      If InStr(sClass, "*") Then Continue
+      
+      hClass = hComp[sClass]
+  
+      bPrintClass = True
+  
+      'If $cCompRedirect And If $cCompRedirect.Exist(sComp) Then Continue
+      If aIgnore.Find(sComp) >= 0 Then Continue
+  
+      For Each hSymbol In hClass.Symbols
+  
+        If hSymbol.Class <> hClass.Name Or If hSymbol.Component <> hClass.Component Then Continue
+        
+        sName = hSymbol.Name
+        
+        If sName = "_free" Then Continue
+        If sName = "_new" And If Not hClass.Creatable Then Continue
+        
+        If InStr(sName, "_") Then
+          If Left(sName) <> "_" Or If aAllow.Find(sName) < 0 Then Continue
         Endif
-        sRes &= GetSymbolLink(hSymbol, hClass, hClass.Name & "." & hSymbol.Name) & "&nbsp;\n"
-        Inc iCpt
-      Endif
+  
+        rPage = DB.Find("page", "sLang = &1 AND sPath = &2", DEFAULT_LANG, GetSymbolPath(hSymbol))
+        If Not rPage.Available Then
+          
+          If bPrintComponent Then
+            sRes &= "<h2>" & GetLink("/comp" &/ sComp) & "</h2>"
+            bPrintComponent = False
+          Endif
+          If bPrintClass Then
+            sRes &= "<h3>" & GetLink("/comp" &/ sComp &/ LCase(hClass.Name), hClass.Name) & "</h3>\n"
+            bPrintClass = False
+          Endif
+          sRes &= GetSymbolLink(hSymbol, hClass, hClass.Name & "." & hSymbol.Name) & "&nbsp;\n"
+          Inc iCpt
+        Endif
+      Next
     Next
+  
   Next
 
   Return sRes & "<hr>\n" & Subst("&1 symbols to document yet.\n", CStr(iCpt))
@@ -4389,17 +4413,23 @@ Private Sub ClassHasEvents() As Boolean
 
 End
 
-Private Function GetSyntax() As String
-
-  If $hSym Then Return GetSymbolSyntax($hSym)
-
-End
-
 Private Function GetSymbolSyntax(hSym As CSymbolInfo) As String
 
   Dim sSyntax As String
   Dim sName As String
+  Dim sVirtual As String
   Dim sValue As String
+  Dim iPos As Integer
+
+  sName = hSym.Class
+  
+  If InStr("._", Left(sName)) > 0 Then
+    sName = Mid$(sName, 2)
+    iPos = InStr(Replace(sName, "_", "."), ".")
+    If iPos Then
+      sVirtual = Left(sName, iPos - 1)
+    Endif
+  Endif
 
   Select Case hSym.Name
 
@@ -4409,14 +4439,18 @@ Private Function GetSymbolSyntax(hSym As CSymbolInfo) As String
         sName = hSym.Class
       Else
         sName = GetClassVariableName(hSym.Class)
-        sSyntax = sSyntax & Keyword("DIM") & " " & sName & " " & Keyword("AS") & " " & GetType(hSym.Class) & "\n"
+        If sVirtual Then
+          sSyntax = sSyntax & Keyword("Dim") & " " & GetClassVariableName(sVirtual) & " " & Keyword("As") & " " & GetType(sVirtual) & "\n"
+        Else
+          sSyntax = sSyntax & Keyword("Dim") & " " & sName & " " & Keyword("As") & " " & GetType(hSym.Class) & "\n"
+        Endif
       Endif
 
       sValue = GetClassVariableName(hSym.Type)
 
-      sSyntax = sSyntax & Keyword("DIM") & " " & sValue & " " & Keyword("AS") & " " & GetType(hSym.Type) & "\n\n"
-      sSyntax = sSyntax & sValue & " " & Keyword("=") & " "
-      sSyntax = sSyntax & sName & " " & Keyword("[") & GetSignature(hSym.Signature) & Keyword("]")
+      sSyntax &= Keyword("Dim") & " " & sValue & " " & Keyword("As") & " " & GetType(hSym.Type) & "\n\n"
+      sSyntax &= sValue & " " & Keyword("=") & " "
+      sSyntax &= sName & " " & Keyword("[") & GetSignature(hSym.Signature) & Keyword("]")
 
     Case "_put"
 
@@ -4426,12 +4460,16 @@ Private Function GetSymbolSyntax(hSym As CSymbolInfo) As String
         sName = hSym.Class
       Else
         sName = GetClassVariableName(hSym.Class)
-        sSyntax = sSyntax & Keyword("DIM") & " " & sName & " " & Keyword("AS") & " " & GetType(hSym.Class) & "\n"
+        If sVirtual Then
+          sSyntax = sSyntax & Keyword("Dim") & " " & GetClassVariableName(sVirtual) & " " & Keyword("As") & " " & GetType(sVirtual) & "\n"
+        Else
+          sSyntax = sSyntax & Keyword("Dim") & " " & sName & " " & Keyword("As") & " " & GetType(hSym.Class) & "\n"
+        Endif
       Endif
 
       sValue = GetClassVariableName(hSym.Type)
 
-      sSyntax = sSyntax & Keyword("DIM") & " " & sValue & " " & Keyword("AS") & " " & GetType(hSym.Type) & "\n\n"
+      sSyntax = sSyntax & Keyword("Dim") & " " & sValue & " " & Keyword("As") & " " & GetType(hSym.Type) & "\n\n"
       sSyntax = sSyntax & sName & " " & Keyword("[") & GetSignature(hSym.Signature) & Keyword("]")
       sSyntax = sSyntax & " " & Keyword("=") & " " & sValue
 
@@ -4441,51 +4479,55 @@ Private Function GetSymbolSyntax(hSym As CSymbolInfo) As String
         sName = hSym.Class
       Else
         sName = GetClassVariableName(hSym.Class)
-        sSyntax = sSyntax & Keyword("DIM") & " " & sName & " " & Keyword("AS") & " " & GetType(hSym.Class) & "\n"
+        If sVirtual Then
+          sSyntax = sSyntax & Keyword("Dim") & " " & GetClassVariableName(sVirtual) & " " & Keyword("As") & " " & GetType(sVirtual) & "\n"
+        Else
+          sSyntax = sSyntax & Keyword("Dim") & " " & sName & " " & Keyword("As") & " " & GetType(hSym.Class) & "\n"
+        Endif
       Endif
 
       If hSym.Type Then
         sValue = GetClassVariableName(hSym.Type)
-        sSyntax = sSyntax & Keyword("DIM") & " " & sValue & " " & Keyword("AS") & " " & GetType(hSym.Type) & "\n\n"
-        sSyntax = sSyntax & Keyword("FOR EACH") & " " & sValue & " " & Keyword("IN") & " " & sName & "\n"
+        sSyntax = sSyntax & Keyword("Dim") & " " & sValue & " " & Keyword("As") & " " & GetType(hSym.Type) & "\n\n"
+        sSyntax = sSyntax & Keyword("For Each") & " " & sValue & " " & Keyword("In") & " " & sName & "\n"
       Else
-        sSyntax = sSyntax & Keyword("FOR EACH") & " " & sName & "\n"
+        sSyntax = sSyntax & Keyword("For Each") & " " & sName & "\n"
       Endif
 
-      sSyntax = sSyntax & "&nbsp;&nbsp;...<br/>" & Keyword("NEXT")
+      sSyntax = sSyntax & "&nbsp;&nbsp;...<br/>" & Keyword("Next")
 
     Case "_new"
 
       sName = GetClassVariableName(hSym.Class)
 
-      sSyntax &= Keyword("DIM") & " " & sName & " " & Keyword("AS") & " " & GetType(hSym.Class) & "\n\n"
-      sSyntax &= sName & " " & Keyword("=") & " " & Keyword("NEW") & " " & GetType(hSym.Class)
+      sSyntax &= Keyword("Dim") & " " & sName & " " & Keyword("As") & " " & GetType(hSym.Class) & "\n\n"
+      sSyntax &= sName & " " & Keyword("=") & " " & Keyword("New") & " " & GetType(hSym.Class)
       sSyntax &= " " & Keyword("(") & GetSignature(hSym.Signature) & Keyword(")")
       If ClassHasEvents() Then
-        sSyntax &= " <b>[</b> " & Keyword("AS") & " \"<i>event name</i>\" <b>]</b>"
+        sSyntax &= " <b>[</b> " & Keyword("As") & " \"<i>event name</i>\" <b>]</b>"
       Endif
 
     Case Else
 
       If hSym.IsStatic() And hSym.Kind <> "C" Then
-        sSyntax = Keyword("STATIC") & " "
+        sSyntax = Keyword("Static") & " "
       Endif
 
       Select Case LCase(hSym.Kind)
 
         Case "p"
-          sSyntax = sSyntax & Keyword("PROPERTY") & " "
+          sSyntax = sSyntax & Keyword("Property") & " "
         Case "r"
-          sSyntax = sSyntax & Keyword("PROPERTY READ") & " "
+          sSyntax = sSyntax & Keyword("Property Read") & " "
         Case "c"
-          sSyntax = sSyntax & Keyword("CONST") & " "
+          sSyntax = sSyntax & Keyword("Const") & " "
         Case ":"
-          sSyntax = sSyntax & Keyword("EVENT") & " "
+          sSyntax = sSyntax & Keyword("Event") & " "
         Case "m"
           If hSym.Type Then
-            sSyntax = sSyntax & Keyword("FUNCTION") & " "
+            sSyntax = sSyntax & Keyword("Function") & " "
           Else
-            sSyntax = sSyntax & Keyword("SUB") & " "
+            sSyntax = sSyntax & Keyword("Sub") & " "
           Endif
 
       End Select
@@ -4500,7 +4542,7 @@ Private Function GetSymbolSyntax(hSym As CSymbolInfo) As String
         sSyntax = sSyntax & " " & Keyword("(") & GetSignature(hSym.Signature) & Keyword(")")
       Endif
 
-      If hSym.Type Then sSyntax = sSyntax & " " & Keyword("AS") & " " & GetType(hSym.Type)
+      If hSym.Type Then sSyntax = sSyntax & " " & Keyword("As") & " " & GetType(hSym.Type)
 
       If hSym.Kind = "C" Then
         sSyntax = sSyntax & " " & Keyword("=") & " "
@@ -4661,12 +4703,14 @@ Private Function GetSymbolName(sName As String) As String
 
   'sName = Replace(sName, "_", "")
   sName = Replace(sName, ":", "")
-  sName = Replace(sName, "$", "")
+  'sName = Replace(sName, "$", "")
   Return sName
 
 End
 
 Private Function Keyword(sWord As String, Optional iColor As Integer) As String
+
+  If $sVersion = "2.0" Then sWord = UCase(sWord)
 
   If iColor Then
     Return "<font color=\"#" & Hex$(iColor, 6) & "\">" & sWord & "</font>"
@@ -4741,7 +4785,7 @@ Private Function GetSignature(sSign As String) As String
         sRes = sRes & Keyword(",") & " "
       Endif
 
-      sRes = sRes & "<u>" & Mid$(sSign, iInd + 1, iPos - iInd - 1) & "</u> " & Keyword("AS") & " "
+      sRes = sRes & "<u>" & Mid$(sSign, iInd + 1, iPos - iInd - 1) & "</u> " & Keyword("As") & " "
 
       iInd = iPos
       bName = True
@@ -4781,7 +4825,7 @@ Private Function GetSignature(sSign As String) As String
         sRes = sRes & ", "
       Endif
 
-      sRes = sRes & "? " & Keyword("AS") & " "
+      sRes = sRes & "? " & Keyword("As") & " "
       bName = False
 
     Endif

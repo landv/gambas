@@ -769,7 +769,7 @@ END_METHOD
 
 GB_DESC NATIVE_StreamLines[] = 
 {
-	GB_DECLARE(".StreamLines", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".Stream.Lines", 0), GB_VIRTUAL_CLASS(),
 	
 	GB_METHOD("_next", "s", StreamLines_next, NULL),
 	
@@ -792,7 +792,7 @@ GB_DESC NATIVE_Stream[] =
 	GB_PROPERTY("Tag", "v", Stream_Tag),
 	GB_METHOD("ReadLine", "s", Stream_ReadLine, "[(Escape)s]"),
 	
-	GB_PROPERTY_SELF("Lines", ".StreamLines"),
+	GB_PROPERTY_SELF("Lines", ".Stream.Lines"),
 	
 	GB_METHOD("Begin", NULL, Stream_Begin, NULL),
 	GB_METHOD("Send", NULL, Stream_End, NULL),
@@ -804,7 +804,7 @@ GB_DESC NATIVE_Stream[] =
 
 GB_DESC NATIVE_FilePerm[] =
 {
-	GB_DECLARE(".FilePerm", 0),
+	GB_DECLARE(".File.Perm", 0),
 	GB_VIRTUAL_CLASS(),
 
 	GB_METHOD("_get", "s", CFILE_perm_get, "(UserOrGroup)s"),
@@ -833,7 +833,7 @@ GB_DESC NATIVE_Stat[] =
 	GB_PROPERTY_READ("LastChange", "d", Stat_LastChange),
 	GB_PROPERTY_READ("User", "s", Stat_User),
 	GB_PROPERTY_READ("Group", "s", Stat_Group),
-	GB_PROPERTY_SELF("Perm", ".FilePerm"),
+	GB_PROPERTY_SELF("Perm", ".File.Perm"),
 	GB_PROPERTY_READ("SetGID", "b", Stat_SetGID),
 	GB_PROPERTY_READ("SetUID", "b", Stat_SetUID),
 	GB_PROPERTY_READ("Sticky", "b", Stat_Sticky),

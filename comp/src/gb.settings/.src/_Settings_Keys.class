@@ -8,10 +8,10 @@ Public _Parent As String
 
 Private $aKeys As String[]
 
-Public Sub _get(Parent As String) As _SettingsKeys
+Public Sub _get(Parent As String) As _Settings_Keys
   
   _Parent &/= Parent
-  Return _SettingsKeys
+  Return _Settings_Keys
   
 End
 

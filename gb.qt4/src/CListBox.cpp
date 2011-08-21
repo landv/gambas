@@ -306,7 +306,7 @@ END_METHOD
 
 GB_DESC CListBoxItemDesc[] =
 {
-	GB_DECLARE(".ListBoxItem", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".ListBox.Item", 0), GB_VIRTUAL_CLASS(),
 
 	GB_PROPERTY("Text", "s", CLISTBOX_item_text),
 	GB_PROPERTY("Selected", "b", CLISTBOX_item_selected),
@@ -322,7 +322,7 @@ GB_DESC CListBoxDesc[] =
 
 	GB_METHOD("_new", NULL, CLISTBOX_new, "(Parent)Container;"),
 
-	GB_METHOD("_get", ".ListBoxItem", CLISTBOX_get, "(Index)i"),
+	GB_METHOD("_get", ".ListBox.Item", CLISTBOX_get, "(Index)i"),
 
 	GB_METHOD("Clear", NULL, CLISTBOX_clear, NULL),
 	GB_METHOD("Add", NULL, CLISTBOX_add, "(Text)s[(Index)i]"),
@@ -335,7 +335,7 @@ GB_DESC CListBoxDesc[] =
 	//GB_PROPERTY("Contents", "s", CLISTBOX_list),
 
 	GB_PROPERTY_READ("Count", "i", CLISTBOX_count),
-	GB_PROPERTY_READ("Current", ".ListBoxItem", CLISTBOX_current),
+	GB_PROPERTY_READ("Current", ".ListBox.Item", CLISTBOX_current),
 	GB_PROPERTY_READ("Text", "s", CLISTBOX_text),
 	GB_PROPERTY("Index", "i", CLISTBOX_index),
 

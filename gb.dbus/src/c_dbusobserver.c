@@ -255,7 +255,7 @@ END_METHOD
 
 GB_DESC CDBusObserverMessageDesc[] =
 {
-  GB_DECLARE(".DBusObserverMessage", 0), GB_VIRTUAL_CLASS(),
+  GB_DECLARE(".DBusObserver.Message", 0), GB_VIRTUAL_CLASS(),
 
 	GB_PROPERTY_READ("Type", "i", DBusObserverMessage_Type),
 	GB_PROPERTY_READ("Serial", "i", DBusObserverMessage_Serial),
@@ -279,7 +279,7 @@ GB_DESC CDBusObserverDesc[] =
 	
 	//GB_PROPERTY("Tag", "v", DBusObserver_Tag),
 	GB_PROPERTY("Enabled", "b", DBusObserver_Enabled),
-	GB_PROPERTY_READ("Message", ".DBusObserverMessage", DBusObserver_Message),
+	GB_PROPERTY_READ("Message", ".DBusObserver.Message", DBusObserver_Message),
 	GB_METHOD("Reply", NULL, DBusObserver_Reply, "[(Signature)s(Arguments)Array;]"),
 	GB_METHOD("Error", NULL, DBusObserver_Error, "[(Error)s(Type)s]"),
 	

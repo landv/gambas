@@ -1319,7 +1319,7 @@ Gambas Interface
 
 GB_DESC PdfResultItemDesc[]=
 {
-	GB_DECLARE(".PdfResultItem",0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".PdfDocument.Page.Result.Item",0), GB_VIRTUAL_CLASS(),
 
 	GB_PROPERTY_READ("Left","f",PDFPAGERESULT_left),
 	GB_PROPERTY_READ("Top","f",PDFPAGERESULT_top),
@@ -1331,9 +1331,9 @@ GB_DESC PdfResultItemDesc[]=
 
 GB_DESC PdfResultDesc[]=
 {
-	GB_DECLARE(".PdfResult",0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".PdfDocument.Page.Result",0), GB_VIRTUAL_CLASS(),
 
-	GB_METHOD("_get",".PdfResultItem",PDFPAGERESULT_get,"(Index)i"),
+	GB_METHOD("_get",".PdfDocument.Page.Result.Item",PDFPAGERESULT_get,"(Index)i"),
 	GB_PROPERTY_READ("Count","i",PDFPAGERESULT_count),
 
 	GB_END_DECLARE
@@ -1342,7 +1342,7 @@ GB_DESC PdfResultDesc[]=
 
 GB_DESC PdfLinkDataDesc[]=
 {
-	GB_DECLARE(".PdfLinkData",0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".PdfDocument.Page.Link.Data",0), GB_VIRTUAL_CLASS(),
 
 	GB_PROPERTY_READ("Type","i",PDFPAGELINKDATA_type),
 	GB_PROPERTY_READ("Target","s",PDFPAGELINKDATA_uri),
@@ -1359,27 +1359,27 @@ GB_DESC PdfLinkDataDesc[]=
 
 GB_DESC PdfLinkDesc[]=
 {
-	GB_DECLARE(".PdfLink",0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".PdfDocument.Page.Link",0), GB_VIRTUAL_CLASS(),
 
 	GB_PROPERTY_READ("Left","f",PDFPAGELINK_left),
 	GB_PROPERTY_READ("Top","f",PDFPAGELINK_top),
 	GB_PROPERTY_READ("Width","f",PDFPAGELINK_width),
 	GB_PROPERTY_READ("Height","f",PDFPAGELINK_height),
-	GB_PROPERTY_READ("Data",".PdfLinkData", PDFPAGELINKDATA_check),
+	GB_PROPERTY_READ("Data",".PdfDocument.Page.Link.Data", PDFPAGELINKDATA_check),
 
 	GB_END_DECLARE
 };
 
 GB_DESC PdfIndexDesc[]=
 {
-	GB_DECLARE(".PdfIndex",0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".PdfDocument.Index",0), GB_VIRTUAL_CLASS(),
 
 	GB_PROPERTY("Expanded","b",PDFINDEX_is_open),
 	GB_PROPERTY_READ("Count","i",PDFINDEX_count),
 	GB_PROPERTY_READ("HasChildren","b",PDFINDEX_has_children),
 	GB_PROPERTY_READ("Title","s",PDFINDEX_title),
 
-	GB_PROPERTY_READ("Data", ".PdfLinkData", PDFPAGELINKDATA_check),
+	GB_PROPERTY_READ("Data", ".PdfDocument.Page.LinkData", PDFPAGELINKDATA_check),
 	GB_METHOD("MovePrevious","b",PDFINDEX_prev,0),
 	GB_METHOD("MoveNext","b",PDFINDEX_next,0),
 	GB_METHOD("MoveChild","b",PDFINDEX_child,0),
@@ -1392,20 +1392,20 @@ GB_DESC PdfIndexDesc[]=
 
 GB_DESC PdfPageDesc[]=
 {
-	GB_DECLARE(".PdfPage",0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".PdfDocument.Page",0), GB_VIRTUAL_CLASS(),
 
 	GB_PROPERTY_READ("W","f",PDFPAGE_width),
 	GB_PROPERTY_READ("H","f",PDFPAGE_height),
 	GB_PROPERTY_READ("Width","f",PDFPAGE_width),
 	GB_PROPERTY_READ("Height","f",PDFPAGE_height),
 	GB_PROPERTY_READ("Image","Image",PDFPAGE_property_image),
-	GB_PROPERTY_SELF("Result",".PdfResult"),
+	GB_PROPERTY_SELF("Result",".PdfDocument.Page.Result"),
 
 	GB_METHOD("GetImage","Image",PDFPAGE_image,"[(X)i(Y)i(Width)i(Height)i]"),
 	GB_METHOD("Find","b",PDFPAGE_find,"(Text)s[(CaseSensitive)b]"),
 	GB_METHOD("Select","s",PDFPAGE_select,"[(X)i(Y)i(W)i(H)i]"),
 
-	GB_METHOD("_get",".PdfLink",PDFPAGELINKS_get,"(Index)i"),
+	GB_METHOD("_get",".PdfDocument.Page.Link",PDFPAGELINKS_get,"(Index)i"),
 	GB_PROPERTY_READ("Count","i",PDFPAGELINKS_count),
 
 	GB_END_DECLARE
@@ -1413,7 +1413,7 @@ GB_DESC PdfPageDesc[]=
 
 GB_DESC PdfDocumentInfo[] =
 {
-	GB_DECLARE(".PdfInfo",0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".PdfDocument.Info",0), GB_VIRTUAL_CLASS(),
 
 	GB_PROPERTY_READ("Title","s",PDFINFO_title),
 	GB_PROPERTY_READ("Format","s",PDFINFO_format),
@@ -1437,7 +1437,6 @@ GB_DESC PdfDocumentInfo[] =
 
 GB_DESC PdfLayoutDesc[] =
 {
-
   GB_DECLARE("PdfLayout", 0), GB_NOT_CREATABLE(),
 
   GB_CONSTANT("Unset","i",Catalog::pageLayoutNone),
@@ -1468,7 +1467,6 @@ GB_DESC PdfModeDesc[] =
 
 GB_DESC PdfDocumentDesc[] =
 {
-
   GB_DECLARE("PdfDocument", sizeof(CPDFDOCUMENT)),
 
   GB_CONSTANT("Unknown","i",actionUnknown),  /* unknown action */
@@ -1489,7 +1487,7 @@ GB_DESC PdfDocumentDesc[] =
 
   GB_METHOD("Open",0,PDFDOCUMENT_open,"(File)s"),
   GB_METHOD("Close",0,PDFDOCUMENT_close,0),
-  GB_METHOD("_get",".PdfPage",PDFDOCUMENT_get,"(Index)i"),
+  GB_METHOD("_get",".PdfDocument.Page",PDFDOCUMENT_get,"(Index)i"),
 
   GB_PROPERTY("Zoom", "f", PDFDOCUMENT_scale),
   GB_PROPERTY("Orientation", "i", PDFDOCUMENT_rotation),
@@ -1497,8 +1495,8 @@ GB_DESC PdfDocumentDesc[] =
   GB_PROPERTY_READ("Ready","b",PDFDOCUMENT_ready),
   GB_PROPERTY_READ("Count","i",PDFDOCUMENT_count),
   GB_PROPERTY_READ("HasIndex","b",PDFDOCUMENT_has_index),
-  GB_PROPERTY_READ("Index",".PdfIndex",PDFDOCUMENT_index),
-  GB_PROPERTY_READ("Info",".PdfInfo",PDFDOCUMENT_info),
+  GB_PROPERTY_READ("Index",".PdfDocument.Index",PDFDOCUMENT_index),
+  GB_PROPERTY_READ("Info",".PdfDocument.Info",PDFDOCUMENT_info),
 
   GB_END_DECLARE
 };

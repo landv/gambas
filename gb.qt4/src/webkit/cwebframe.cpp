@@ -148,7 +148,7 @@ END_METHOD
 
 GB_DESC CWebFrameChildrenDesc[] =
 {
-  GB_DECLARE(".WebFrameChildren", sizeof(CWEBFRAME)), GB_VIRTUAL_CLASS(),
+  GB_DECLARE(".WebFrame.Children", sizeof(CWEBFRAME)), GB_VIRTUAL_CLASS(),
 	
 	GB_PROPERTY_READ("Count", "i", WebFrameChildren_Count),
 	GB_METHOD("_get", "WebFrame", WebFrameChildren_get, "(Index)i"),
@@ -163,7 +163,7 @@ GB_DESC CWebFrameDesc[] =
 	GB_METHOD("_free", NULL, WebFrame_free, NULL),
 	
 	GB_PROPERTY_READ("Name", "s", WebFrame_Name),
-	GB_PROPERTY_SELF("Children", ".WebFrameChildren"),
+	GB_PROPERTY_SELF("Children", ".WebFrame.Children"),
 	GB_PROPERTY_READ("Parent", "WebFrame", WebFrame_Parent),
 	GB_PROPERTY("Url", "s", WebFrame_Url),
 	GB_METHOD("Print", NULL, WebFrame_Print, "(Printer)Printer;"),

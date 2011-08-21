@@ -846,7 +846,7 @@ void CTabStrip::tabCloseRequested(int index)
 
 GB_DESC CTabChildrenDesc[] =
 {
-	GB_DECLARE(".TabChildren", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".Tab.Children", 0), GB_VIRTUAL_CLASS(),
 
 	GB_METHOD("_next", "Control", CTAB_next, NULL),
 	GB_PROPERTY_READ("Count", "i", CTAB_count),
@@ -865,7 +865,7 @@ GB_DESC CTabDesc[] =
 	GB_PROPERTY("Caption", "s", CTAB_text),
 	GB_PROPERTY("Enabled", "b", CTAB_enabled),
 	GB_PROPERTY("Visible", "b", CTAB_visible),
-	GB_PROPERTY_SELF("Children", ".TabChildren"),
+	GB_PROPERTY_SELF("Children", ".Tab.Children"),
 	GB_METHOD("Delete", NULL, CTAB_delete, NULL),
 
 	GB_END_DECLARE

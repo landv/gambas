@@ -392,7 +392,7 @@ GB_DESC CXmlWriterDTDDesc[] =
 {
 	// TOOD: external entity
 	// Namespace
-	GB_DECLARE(".XmlWriterDTD", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".XmlWriter.DTD", 0), GB_VIRTUAL_CLASS(),
 	
 	GB_METHOD("Start",NULL,CXmlWriter_StartDTD,"(Name)s[(PubID)s(SysID)s]"),
 	GB_METHOD("Element",NULL,CXmlWriter_DTDElement,"(Name)s[(Content)s]"),
@@ -407,7 +407,7 @@ GB_DESC CXmlWriterDesc[] =
 {
   GB_DECLARE("XmlWriter", sizeof(CXMLWRITER)),
 
-  GB_PROPERTY_READ("DTD",".XmlWriterDTD",CXMLWriter_DTD),
+  GB_PROPERTY_READ("DTD",".XmlWriter.DTD",CXMLWriter_DTD),
   
   GB_METHOD("_free",NULL,CXmlWriter_Free,NULL),
 

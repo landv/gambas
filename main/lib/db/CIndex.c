@@ -200,7 +200,7 @@ GB_DESC CIndexDesc[] =
 
 /***************************************************************************
 
-  .TableIndexes
+  .Table.Indexes
 
 ***************************************************************************/
 
@@ -260,7 +260,7 @@ END_METHOD
 
 GB_DESC CTableIndexesDesc[] =
 {
-  GB_DECLARE(".TableIndexes", 0), GB_INHERITS(".SubCollection"),
+  GB_DECLARE(".Table.Indexes", 0), GB_INHERITS(".SubCollection"),
 
   GB_METHOD("Add", NULL, CINDEX_add, "(Name)s(Fields)String[];[(Unique)b]"),
   GB_METHOD("Remove", NULL, CINDEX_remove, "(Name)s"),

@@ -148,7 +148,7 @@ END_METHOD*/
  ***************************************************************/
 GB_DESC CProxyDesc[] =
 {
-  GB_DECLARE(".CurlProxy", sizeof(CPROXY)), GB_VIRTUAL_CLASS(),
+  GB_DECLARE(".Curl.Proxy", sizeof(CPROXY)), GB_VIRTUAL_CLASS(),
 
   //GB_METHOD("_new", NULL, CProxy_NEW, NULL),
   //GB_METHOD("_free", NULL, CProxy_FREE, NULL),

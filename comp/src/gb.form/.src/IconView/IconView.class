@@ -17,8 +17,8 @@ Property Font As Font
 Property Background As Integer
 
 Property Read Count As Integer
-Property Read Current As _IconViewItem
-Property Read Item As _IconViewItem
+Property Read Current As _IconView_Item
+Property Read Item As _IconView_Item
 Property Read Available As Boolean
 Property Read Key As String
 Property Compare As Integer
@@ -47,7 +47,7 @@ Private $hView As ScrollArea
 'Private $hObserver As Observer
 
 Private $cItems As New Collection
-Private $aItems As New _IconViewItem[]
+Private $aItems As New _IconView_Item[]
 Private $cSelection As New Collection
 
 Private $iIconSize As Integer
@@ -110,7 +110,7 @@ Public Sub _new()
   
 End
 
-Public Sub _get(Key As String) As _IconViewItem
+Public Sub _get(Key As String) As _IconView_Item
   
   Return $cItems[Key]
   
@@ -196,7 +196,7 @@ Public Sub MoveBack()
   
 End
 
-Public Sub _FindItem(hItem As _IconViewItem) As Integer
+Public Sub _FindItem(hItem As _IconView_Item) As Integer
   
   If hItem Then 
     Return $aItems.Find(hItem)
@@ -217,10 +217,10 @@ End
 
 
 
-Public Function Add(Key As String, Text As String, Optional {Picture} As Picture, Optional After As String) As _IconViewItem
+Public Function Add(Key As String, Text As String, Optional {Picture} As Picture, Optional After As String) As _IconView_Item
   
-  Dim hItem As _IconViewItem = New _IconViewItem As "IconViewItem"
-  Dim hAfter As _IconViewItem
+  Dim hItem As _IconView_Item = New _IconView_Item As "IconViewItem"
+  Dim hAfter As _IconView_Item
   Dim iPos As Integer
   
   If Not Key Then Error.Raise("Void key")
@@ -259,7 +259,7 @@ End
 
 Public Sub Remove(Key As String)
   
-  Dim hItem As _IconViewItem
+  Dim hItem As _IconView_Item
   Dim iPos As Integer
   
   hItem = $cItems[Key]
@@ -375,7 +375,7 @@ Private Sub GetIconGeometry(iPos As Integer, hRect As Rect)
   
 End
 
-Public Sub _GetItemGeometry(hItem As _IconViewItem, hRect As Rect)
+Public Sub _GetItemGeometry(hItem As _IconView_Item, hRect As Rect)
   
   GetIconGeometry($aItems.Find(hItem), hRect)
   
@@ -385,7 +385,7 @@ Public Sub ScrollArea_Draw()
   
   Dim X, Y, W, H As Integer
   Dim X1, Y1, X2, Y2 As Integer
-  Dim hItem As _IconViewItem
+  Dim hItem As _IconView_Item
   Dim iPos, iLast, iCol, nCol As Integer
   Dim hRect As New Rect
   Dim hClip, hSaveClip As Rect
@@ -570,7 +570,7 @@ End
 
 Private Sub SetHoverItem(iPos As Integer)
   
-  Dim hItem As _IconViewItem
+  Dim hItem As _IconView_Item
   
   If iPos = $iHover Then Return
   
@@ -651,7 +651,7 @@ Private Sub SetCurrentItem(iCurrent As Integer, Optional bIgnoreOutside As Boole
 End
 
 
-Private Function Current_Read() As _IconViewItem
+Private Function Current_Read() As _IconView_Item
   
   Try Return $aItems[$iCurrent]
   
@@ -659,7 +659,7 @@ End
 
 Public Sub SelectAll()
   
-  Dim hItem As _IconViewItem
+  Dim hItem As _IconView_Item
   
   For Each hItem In $aItems
     hItem.Selected = True
@@ -669,7 +669,7 @@ End
 
 Public Sub UnselectAll()
   
-  Dim hItem As _IconViewItem
+  Dim hItem As _IconView_Item
   
   If $cSelection.Count = 0 Then Return
   
@@ -892,7 +892,7 @@ Private Sub SelectRect(Optional iSelect As Integer = 1)
   
   Dim X, Y, W, H As Integer
   Dim iPos, nCol, iLast, iCol As Integer
-  Dim hItem As _IconViewItem
+  Dim hItem As _IconView_Item
   Dim hRect As New Rect
   Dim hSel As Rect
   
@@ -983,7 +983,7 @@ Public Sub ScrollArea_MouseUp()
 End
 
 
-Public Sub _SelectItem(hItem As _IconViewItem, bSelected As Boolean)
+Public Sub _SelectItem(hItem As _IconView_Item, bSelected As Boolean)
   
   If bSelected Then
     If $iMode = Select.Single Then
@@ -1001,7 +1001,7 @@ Public Sub _SelectItem(hItem As _IconViewItem, bSelected As Boolean)
   
 End
 
-Public Sub _RefreshItem(hItem As _IconViewItem)
+Public Sub _RefreshItem(hItem As _IconView_Item)
   
   RefreshIcon($aItems.Find(hItem))
   
@@ -1034,7 +1034,7 @@ Private Sub ScrollBar_Write(Value As Integer)
 
 End
 
-Private Function Item_Read() As _IconViewItem
+Private Function Item_Read() As _IconView_Item
 
   If $iIntern >= 0 Then Return $aItems[$iIntern]
 
@@ -1188,7 +1188,7 @@ Public Sub _SortIsDirty()
   
 End
 
-Public Sub _MoveItem(hItem As _IconViewItem, iNewPos As Integer)
+Public Sub _MoveItem(hItem As _IconView_Item, iNewPos As Integer)
   
   Dim iPos As Integer
   
@@ -1236,7 +1236,7 @@ Private Sub IconLines_Write(Value As Integer)
 
 End
 
-Public Sub _RenameItem(hItem As _IconViewItem)
+Public Sub _RenameItem(hItem As _IconView_Item)
   
   Dim hRect As New Rect
   

@@ -1563,7 +1563,7 @@ END_PROPERTY
 
 GB_DESC CListViewItemDesc[] =
 {
-  GB_DECLARE(".ListViewItem", 0), GB_VIRTUAL_CLASS(), GB_HOOK_CHECK(check_item),
+  GB_DECLARE(".ListView.Item", 0), GB_VIRTUAL_CLASS(), GB_HOOK_CHECK(check_item),
 
   GB_PROPERTY_READ("Key", "s", CTREEVIEWITEM_key),
   GB_PROPERTY("Picture", "Picture", CTREEVIEWITEM_picture),
@@ -1599,7 +1599,7 @@ GB_DESC CListViewItemDesc[] =
 
 GB_DESC CTreeViewItemDesc[] =
 {
-  GB_DECLARE(".TreeViewItem", 0), GB_VIRTUAL_CLASS(), GB_HOOK_CHECK(check_item),
+  GB_DECLARE(".TreeView.Item", 0), GB_VIRTUAL_CLASS(), GB_HOOK_CHECK(check_item),
 
   GB_PROPERTY_READ("Key", "s", CTREEVIEWITEM_key),
   GB_PROPERTY_READ("ParentKey", "s", CTREEVIEWITEM_parent_key),
@@ -1648,7 +1648,7 @@ GB_DESC CTreeViewItemDesc[] =
 
 GB_DESC CColumnViewItemDesc[] =
 {
-  GB_DECLARE(".ColumnViewItem", 0), GB_VIRTUAL_CLASS(), GB_HOOK_CHECK(check_item),
+  GB_DECLARE(".ColumnView.Item", 0), GB_VIRTUAL_CLASS(), GB_HOOK_CHECK(check_item),
 
   GB_PROPERTY_READ("Key", "s", CTREEVIEWITEM_key),
   GB_PROPERTY_READ("ParentKey", "s", CTREEVIEWITEM_parent_key),
@@ -1727,10 +1727,10 @@ GB_DESC CListViewDesc[] =
   GB_METHOD("MoveBelow", "b", CTREEVIEW_below, NULL),
   GB_METHOD("MoveBack", "b", CTREEVIEW_back, NULL),
 
-  GB_METHOD("_get", ".ListViewItem", CTREEVIEW_get, "(Key)s"),
+  GB_METHOD("_get", ".ListView.Item", CTREEVIEW_get, "(Key)s"),
 
   GB_METHOD("Clear", NULL, CTREEVIEW_clear, NULL),
-  GB_METHOD("Add", ".ListViewItem", CLISTVIEW_add, "(Key)s(Text)s[(Picture)Picture;(After)s]"),
+  GB_METHOD("Add", ".ListView.Item", CLISTVIEW_add, "(Key)s(Text)s[(Picture)Picture;(After)s]"),
   GB_METHOD("Remove", NULL, CTREEVIEW_remove, "(Key)s"),
   GB_METHOD("Exist", "b", CTREEVIEW_exist, "(Key)s"),
   GB_METHOD("FindAt", "b", CTREEVIEW_find, "(X)i(Y)i"),
@@ -1738,9 +1738,9 @@ GB_DESC CListViewDesc[] =
   GB_METHOD("SelectAll", NULL, TreeView_SelectAll, NULL),
   GB_METHOD("UnselectAll", NULL, TreeView_UnselectAll, NULL),
 
-  GB_PROPERTY_READ("Current", ".ListViewItem", CTREEVIEW_current),
+  GB_PROPERTY_READ("Current", ".ListView.Item", CTREEVIEW_current),
   GB_PROPERTY_READ("Key", "s", CTREEVIEW_key),
-  GB_PROPERTY_READ("Item", ".ListViewItem", CTREEVIEW_item),
+  GB_PROPERTY_READ("Item", ".ListView.Item", CTREEVIEW_item),
   GB_PROPERTY_READ("Renaming", "b", TreeView_Renaming),
 
   GB_PROPERTY_READ("ClientWidth", "i", CTREEVIEW_client_width),
@@ -1812,19 +1812,19 @@ GB_DESC CTreeViewDesc[] =
   GB_METHOD("GoBelow", "b", CTREEVIEW_below, NULL),
   GB_METHOD("GoBack", "b", CTREEVIEW_back, NULL),*/
 
-  GB_METHOD("_get", ".TreeViewItem", CTREEVIEW_get, "(Key)s"),
+  GB_METHOD("_get", ".TreeView.Item", CTREEVIEW_get, "(Key)s"),
 
   GB_METHOD("Clear", NULL, CTREEVIEW_clear, NULL),
-  GB_METHOD("Add", ".TreeViewItem", CTREEVIEW_add, "(Key)s(Text)s[(Picture)Picture;(Parent)s(After)s]"),
+  GB_METHOD("Add", ".TreeView.Item", CTREEVIEW_add, "(Key)s(Text)s[(Picture)Picture;(Parent)s(After)s]"),
   GB_METHOD("Remove", NULL, CTREEVIEW_remove, "(Key)s"),
   GB_METHOD("Exist", "b", CTREEVIEW_exist, "(Key)s"),
   GB_METHOD("FindAt", "b", CTREEVIEW_find, "(X)i(Y)i"),
   GB_METHOD("SelectAll", NULL, TreeView_SelectAll, NULL),
   GB_METHOD("UnselectAll", NULL, TreeView_UnselectAll, NULL),
 
-  GB_PROPERTY_READ("Current", ".TreeViewItem", CTREEVIEW_current),
+  GB_PROPERTY_READ("Current", ".TreeView.Item", CTREEVIEW_current),
   GB_PROPERTY_READ("Key", "s", CTREEVIEW_key),
-  GB_PROPERTY_READ("Item", ".TreeViewItem", CTREEVIEW_item),
+  GB_PROPERTY_READ("Item", ".TreeView.Item", CTREEVIEW_item),
   GB_PROPERTY_READ("Renaming", "b", TreeView_Renaming),
 
   GB_PROPERTY_READ("ClientWidth", "i", CTREEVIEW_client_width),
@@ -1855,7 +1855,7 @@ GB_DESC CTreeViewDesc[] =
 
 GB_DESC CColumnViewColumnDesc[] =
 {
-  GB_DECLARE(".ColumnViewColumn", 0), GB_VIRTUAL_CLASS(),
+  GB_DECLARE(".ColumnView.Column", 0), GB_VIRTUAL_CLASS(),
 
   GB_PROPERTY("Text", "s", CLISTVIEW_column_text),
   GB_PROPERTY("Alignment", "i", CLISTVIEW_column_alignment),
@@ -1867,9 +1867,9 @@ GB_DESC CColumnViewColumnDesc[] =
 
 GB_DESC CColumnViewColumnsDesc[] =
 {
-  GB_DECLARE(".ColumnViewColumns", 0), GB_VIRTUAL_CLASS(),
+  GB_DECLARE(".ColumnView.Columns", 0), GB_VIRTUAL_CLASS(),
 
-  GB_METHOD("_get", ".ColumnViewColumn", CLISTVIEW_columns_get, "(Column)i"),
+  GB_METHOD("_get", ".ColumnView.Column", CLISTVIEW_columns_get, "(Column)i"),
 
   GB_PROPERTY("Count", "i", CLISTVIEW_columns_count),
   GB_PROPERTY("Sort", "i", CLISTVIEW_columns_sort),
@@ -1907,19 +1907,19 @@ GB_DESC CColumnViewDesc[] =
   GB_METHOD("MoveBelow", "b", CTREEVIEW_below, NULL),
   GB_METHOD("MoveBack", "b", CTREEVIEW_back, NULL),
 
-  GB_METHOD("_get", ".ColumnViewItem", CTREEVIEW_get, "(Key)s"),
+  GB_METHOD("_get", ".ColumnView.Item", CTREEVIEW_get, "(Key)s"),
 
   GB_METHOD("Clear", NULL, CCOLUMNVIEW_clear, NULL),
-  GB_METHOD("Add", ".ColumnViewItem", CTREEVIEW_add, "(Key)s(Text)s[(Picture)Picture;(Parent)s(After)s]"),
+  GB_METHOD("Add", ".ColumnView.Item", CTREEVIEW_add, "(Key)s(Text)s[(Picture)Picture;(Parent)s(After)s]"),
   GB_METHOD("Remove", NULL, CTREEVIEW_remove, "(Key)s"),
   GB_METHOD("Exist", "b", CTREEVIEW_exist, "(Key)s"),
   GB_METHOD("FindAt", "b", CTREEVIEW_find, "(X)i(Y)i"),
   GB_METHOD("SelectAll", NULL, TreeView_SelectAll, NULL),
   GB_METHOD("UnselectAll", NULL, TreeView_UnselectAll, NULL),
 
-  GB_PROPERTY_READ("Current", ".ColumnViewItem", CTREEVIEW_current),
+  GB_PROPERTY_READ("Current", ".ColumnView.Item", CTREEVIEW_current),
   GB_PROPERTY_READ("Key", "s", CTREEVIEW_key),
-  GB_PROPERTY_READ("Item", ".ColumnViewItem", CTREEVIEW_item),
+  GB_PROPERTY_READ("Item", ".ColumnView.Item", CTREEVIEW_item),
   GB_PROPERTY_READ("Renaming", "b", TreeView_Renaming),
 
   GB_EVENT("Select", NULL, NULL, &EVENT_Select),
@@ -1932,7 +1932,7 @@ GB_DESC CColumnViewDesc[] =
   GB_EVENT("Collapse", NULL, NULL, &EVENT_Collapse),
   //GB_EVENT("ColumnClick", NULL, "(Column)i", &EVENT_ColumnClick),
 
-  GB_PROPERTY_SELF("Columns", ".ColumnViewColumns"),
+  GB_PROPERTY_SELF("Columns", ".ColumnView.Columns"),
 
   GB_PROPERTY("Resizable", "b", CLISTVIEW_resizable),
   GB_PROPERTY("Header", "b", CTREEVIEW_header),

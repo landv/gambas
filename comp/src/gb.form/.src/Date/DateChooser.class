@@ -8,7 +8,7 @@ Property Year As Integer
 Property Month As Integer
 Property Day As Integer
 Property Font As Font
-Property Read Colors As _DateChooserColors
+Property Read Colors As _DateChooser_Colors
 Property Mode As Integer
 
 Public Const DateOnly As Integer = 0
@@ -120,10 +120,10 @@ Private Sub Font_Write(Value As Font)
   
 End
 
-Private Function Colors_Read() As _DateChooserColors
+Private Function Colors_Read() As _DateChooser_Colors
 
-  _DateChooserColors._Calendar = $hCal
-  Return _DateChooserColors
+  _DateChooser_Colors._Calendar = $hCal
+  Return _DateChooser_Colors
 
 End
 

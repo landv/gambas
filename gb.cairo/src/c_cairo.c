@@ -472,7 +472,7 @@ END_PROPERTY
 
 GB_DESC CairoFontDesc[] = 
 {
-	GB_DECLARE(".CairoFont", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".Cairo.Font", 0), GB_VIRTUAL_CLASS(),
 	
 	GB_STATIC_PROPERTY("Name", "s", CairoFont_Name),
 	GB_STATIC_PROPERTY("Bold", "b", CairoFont_Bold),
@@ -1179,7 +1179,7 @@ GB_DESC CairoDesc[] =
 	GB_STATIC_METHOD("Rotate", NULL, CAIRO_rotate, "(Angle)f"),
 	GB_STATIC_PROPERTY("Matrix", "CairoMatrix", CAIRO_matrix),
 	
-	GB_STATIC_PROPERTY_SELF("Font", ".CairoFont"),
+	GB_STATIC_PROPERTY_SELF("Font", ".Cairo.Font"),
 	GB_STATIC_METHOD("TextExtents", "CairoTextExtents", Cairo_TextExtents, "(Text)s"),
 	GB_STATIC_METHOD("Text", NULL, Cairo_Text, "(Text)s"),
 	GB_STATIC_METHOD("DrawText", NULL, Cairo_DrawText, "(Text)s"),

@@ -248,7 +248,7 @@ GB_DESC CRegexpDesc[] =
 	GB_CONSTANT("BadUTF8Offset", "i", PCRE_ERROR_BADUTF8_OFFSET),
 #endif
 
-	GB_PROPERTY_SELF("SubMatches", ".RegExpSubmatches"),
+	GB_PROPERTY_SELF("SubMatches", ".Regexp.Submatches"),
 	
 	GB_PROPERTY_READ("Text", "s", RegExp_Text), /* this is the string matched by the entire pattern */
 	GB_PROPERTY_READ("Offset", "i", RegExp_Offset), /* this is the string matched by the entire pattern */
@@ -260,9 +260,9 @@ GB_DESC CRegexpDesc[] =
 
 GB_DESC CRegexpSubmatchesDesc[] =
 {
-	GB_DECLARE(".RegexpSubmatches", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".Regexp.Submatches", 0), GB_VIRTUAL_CLASS(),
 
-	GB_METHOD("_get", ".RegexpSubmatch", RegExp_Submatches_get, "(Index)i"),
+	GB_METHOD("_get", ".Regexp.Submatch", RegExp_Submatches_get, "(Index)i"),
 	GB_PROPERTY_READ("Count", "i", RegExp_Submatches_Count),
 
 	GB_END_DECLARE
@@ -270,7 +270,7 @@ GB_DESC CRegexpSubmatchesDesc[] =
 
 GB_DESC CRegexpSubmatchDesc[] =
 {
-	GB_DECLARE(".RegexpSubmatch", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".Regexp.Submatch", 0), GB_VIRTUAL_CLASS(),
 
 	GB_PROPERTY_READ("Offset", "i", RegExp_Submatch_Offset),
 	GB_PROPERTY_READ("Text", "s", RegExp_Submatch_Text),

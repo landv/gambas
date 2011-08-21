@@ -249,7 +249,7 @@ End
 Public Sub cmbTooltip_Click()
 
   Settings["/ShowTooltip"] = cmbTooltip.Index = 1
-  Application.Tooltip.Enabled = cmbTooltip.Index = 1
+  Application.ShowTooltips = cmbTooltip.Index = 1
   
 End
 

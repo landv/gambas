@@ -984,7 +984,7 @@ END_PROPERTY
 
 GB_DESC CGridViewItemDesc[] =
 {
-  GB_DECLARE(".GridViewCell", 0), GB_VIRTUAL_CLASS(),
+  GB_DECLARE(".GridView.Cell", 0), GB_VIRTUAL_CLASS(),
   
   //GB_PROPERTY_READ("Row", "i", CGRIDVIEWITEM_key),
   //GB_PROPERTY_READ("Column", "i", CGRIDVIEWITEM_column),  
@@ -1019,7 +1019,7 @@ GB_DESC CGridViewItemDesc[] =
 
 GB_DESC CGridViewDataDesc[] =
 {
-  GB_DECLARE(".GridViewData", 0), GB_VIRTUAL_CLASS(),
+  GB_DECLARE(".GridView.Data", 0), GB_VIRTUAL_CLASS(),
 
   GB_PROPERTY("Picture", "Picture", CGRIDVIEWDATA_picture),
   GB_PROPERTY("Text", "s", CGRIDVIEWDATA_text),
@@ -1036,7 +1036,7 @@ GB_DESC CGridViewDataDesc[] =
 
 GB_DESC CGridViewColumnDesc[] =
 {
-  GB_DECLARE(".GridViewColumn", 0), GB_VIRTUAL_CLASS(),
+  GB_DECLARE(".GridView.Column", 0), GB_VIRTUAL_CLASS(),
   
   GB_PROPERTY_READ("X", "i", CGRIDVIEWITEM_x),
   GB_PROPERTY_READ("Left", "i", CGRIDVIEWITEM_x),
@@ -1053,8 +1053,8 @@ GB_DESC CGridViewColumnDesc[] =
 
 GB_DESC CGridViewColumnsDesc[] =
 {
-  GB_DECLARE(".GridViewColumns", 0), GB_VIRTUAL_CLASS(),
-  GB_METHOD("_get", ".GridViewColumn", CGRIDVIEW_columns_get, "(Column)i"),
+  GB_DECLARE(".GridView.Columns", 0), GB_VIRTUAL_CLASS(),
+  GB_METHOD("_get", ".GridView.Column", CGRIDVIEW_columns_get, "(Column)i"),
   GB_PROPERTY("Resizable","b",CGRIDVIEW_columns_resizable),
   GB_PROPERTY("Count", "i", CGRIDVIEW_columns_count),
   GB_PROPERTY("Width", "i", CGRIDCOLS_width),
@@ -1067,7 +1067,7 @@ GB_DESC CGridViewColumnsDesc[] =
 
 GB_DESC CGridViewRowDesc[] =
 {
-  GB_DECLARE(".GridViewRow", 0), GB_VIRTUAL_CLASS(),
+  GB_DECLARE(".GridView.Row", 0), GB_VIRTUAL_CLASS(),
   GB_PROPERTY_READ("Y", "i", CGRIDVIEWITEM_y),
   GB_PROPERTY_READ("Top", "i", CGRIDVIEWITEM_y),
   GB_PROPERTY("Height", "i", CGRIDVIEW_row_height),
@@ -1082,8 +1082,8 @@ GB_DESC CGridViewRowDesc[] =
 
 GB_DESC CGridViewRowsDesc[] =
 {
-  GB_DECLARE(".GridViewRows", 0), GB_VIRTUAL_CLASS(),
-  GB_METHOD("_get", ".GridViewRow", CGRIDVIEW_rows_get, "(Row)i"),
+  GB_DECLARE(".GridView.Rows", 0), GB_VIRTUAL_CLASS(),
+  GB_METHOD("_get", ".GridView.Row", CGRIDVIEW_rows_get, "(Row)i"),
   GB_PROPERTY("Count", "i", CGRIDVIEW_count),
   GB_PROPERTY("Resizable","b",CGRIDVIEW_rows_resizable),
   GB_PROPERTY("Height", "i", CGRIDROWS_height),
@@ -1109,7 +1109,7 @@ GB_DESC CGridViewDesc[] =
   GB_CONSTANT("Both", "i", 3),
 
   GB_METHOD("_new", 0, CGRIDVIEW_new, "(Parent)Container;"),
-  GB_METHOD("_get", ".GridViewCell", CGRIDVIEW_get, "(Row)i(Column)i"),
+  GB_METHOD("_get", ".GridView.Cell", CGRIDVIEW_get, "(Row)i(Column)i"),
   GB_METHOD("Clear", 0, CGRIDVIEW_clear, 0),
   GB_METHOD("Find", "b", CGRIDVIEW_find, "(X)i(Y)i"),
   GB_METHOD("RowAt","i",CGRIDVIEW_rowat,"(Y)i"),
@@ -1135,11 +1135,11 @@ GB_DESC CGridViewDesc[] =
   GB_PROPERTY("Column", "i", CGRIDVIEW_column),
   GB_METHOD("MoveTo", 0, CGRIDVIEW_move_to, "(Row)i(Column)i"),
   
-  GB_PROPERTY_READ("Data", ".GridViewData",CGRIDVIEW_data),
+  GB_PROPERTY_READ("Data", ".GridView.Data",CGRIDVIEW_data),
   
-  GB_PROPERTY_SELF("Columns", ".GridViewColumns"),
-  GB_PROPERTY_SELF("Rows", ".GridViewRows"),
-  GB_PROPERTY_READ("Current", ".GridViewCell", CGRIDVIEW_current),
+  GB_PROPERTY_SELF("Columns", ".GridView.Columns"),
+  GB_PROPERTY_SELF("Rows", ".GridView.Rows"),
+  GB_PROPERTY_READ("Current", ".GridView.Cell", CGRIDVIEW_current),
   GB_PROPERTY_READ("ClientX", "i", CGRIDVIEW_client_x),
   GB_PROPERTY_READ("ClientY", "i",  CGRIDVIEW_client_y),
   GB_PROPERTY_READ("ClientWidth", "i", CGRIDVIEW_client_width),

@@ -1789,7 +1789,7 @@ END_PROPERTY
 
 GB_DESC CFeaturesDesc[] =
 {
-	GB_DECLARE(".VideoDeviceFeatures", 0),
+	GB_DECLARE(".VideoDevice.Features", 0),
 	GB_VIRTUAL_CLASS(),
 
 	GB_PROPERTY_READ("Name","s",CFEATURES_name),
@@ -1807,7 +1807,7 @@ GB_DESC CFeaturesDesc[] =
 
 GB_DESC CTunerDesc[] =
 {
-	GB_DECLARE(".VideoDeviceTuner", 0),
+	GB_DECLARE(".VideoDevice.Tuner", 0),
 	GB_VIRTUAL_CLASS(),
 
 	GB_PROPERTY_READ("Name","s",CTUNER_name),
@@ -1845,9 +1845,9 @@ GB_DESC CWebcamDesc[] =
   GB_METHOD("_new",NULL,CWEBCAM_new,"(Device)s[(V4L|V4L2)i]"),
   GB_METHOD("_free",NULL,CWEBCAM_free,NULL),
 
-  GB_PROPERTY_SELF("Features",".VideoDeviceFeatures"),
+  GB_PROPERTY_SELF("Features",".VideoDevice.Features"),
 
-  GB_PROPERTY_SELF("Tuner",".VideoDeviceTuner"),
+  GB_PROPERTY_SELF("Tuner",".VideoDevice.Tuner"),
   GB_PROPERTY("Source","i",CWEBCAM_source),
 
   GB_PROPERTY_READ("Width","i",CWEBCAM_width),

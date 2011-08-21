@@ -211,7 +211,7 @@ GB_DESC CResultFieldDesc[] =
 
 /***************************************************************************
 
-  .ResultFields
+  .Result.Fields
 
 ***************************************************************************/
 
@@ -247,7 +247,7 @@ END_METHOD
 
 GB_DESC CResultFieldsDesc[] =
 {
-  GB_DECLARE(".ResultFields", 0), GB_INHERITS(".SubCollection"),
+  GB_DECLARE(".Result.Fields", 0), GB_INHERITS(".SubCollection"),
 
   GB_PROPERTY_READ("Count", "i", CRESULTFIELD_count),
   //GB_PROPERTY_READ("Length", "i", CRESULTFIELD_count),

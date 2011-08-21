@@ -135,7 +135,7 @@ Public Const KEY_MISC As String = "$O"
 Public Const KEY_PROJECT As String = "$P"
 Public Const KEY_CONNECTION As String = "$D"
 
-Private Const CLASS_AUTH_CAR As String = "abcdefghijklmnopqrstuvwxyz0123456789"
+Private Const CLASS_AUTH_CAR As String = "abcdefghijklmnopqrstuvwxyz0123456789_"
 Private Const CLASS_AUTH_FIRST_CAR As String = "abcdefghijklmnopqrstuvwxyz_"
 Private Const FILE_FORBIDDEN_CAR As String = "?*/~"
 
@@ -4028,6 +4028,8 @@ Public Sub MakeSourcePackageTo(sPath As String)
     sOpt = "z"
   Else If Right$(sPath, 4) = ".bz2" Then
     sOpt = "j"
+  Else If Right$(sPath, 3) = ".xz" Then
+    sOpt = "J"
   Endif
   
   sCmd = "cd " & Shell$(File.Dir(Project.Dir)) & ";"
@@ -4056,7 +4058,7 @@ Public Sub MakePackage()
   
   Dialog.Path = sDir &/ Name & "-" & Subst("&1.&2", MajorVersion, MinorVersion) & IIf(ReleaseVersion > 0, "." & ReleaseVersion, "") & ".tar.gz"
   Dialog.Title = ("Create source package")
-  Dialog.Filter = ["*.tar.gz", ("Source packages"), "*.tar.bz2", ("Source packages")] '& " (*.tar.gz)", ("All files") & " (*)"]
+  Dialog.Filter = ["*.tar.gz", ("Source packages"), "*.tar.bz2", ("Source packages"), "*.tar.xz", ("Source packages")]
   Dialog.AutoExt = True
   
   If Dialog.SaveFile() Then Return

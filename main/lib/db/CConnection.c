@@ -42,7 +42,7 @@ static CCONNECTION *_current = NULL;
 
 static GB_SUBCOLLECTION_DESC _databases_desc =
 {
-  ".ConnectionDatabases",
+  ".Connection.Databases",
   (void *)CDATABASE_get,
   (void *)CDATABASE_exist,
   (void *)CDATABASE_list,
@@ -51,7 +51,7 @@ static GB_SUBCOLLECTION_DESC _databases_desc =
 
 static GB_SUBCOLLECTION_DESC _users_desc =
 {
-  ".ConnectionUsers",
+  ".Connection.Users",
   (void *)CUSER_get,
   (void *)CUSER_exist,
   (void *)CUSER_list,
@@ -60,7 +60,7 @@ static GB_SUBCOLLECTION_DESC _users_desc =
 
 static GB_SUBCOLLECTION_DESC _tables_desc =
 {
-  ".ConnectionTables",
+  ".Connection.Tables",
   (void *)CTABLE_get,
   (void *)CTABLE_exist,
   (void *)CTABLE_list,
@@ -746,9 +746,9 @@ GB_DESC CConnectionDesc[] =
   GB_METHOD("Quote", "s", CCONNECTION_quote, "(Name)s[(Table)b]"),
   GB_METHOD("FormatBlob", "s", CCONNECTION_format_blob, "(Data)s"),
 
-  GB_PROPERTY("Tables", ".ConnectionTables", CCONNECTION_tables),
-  GB_PROPERTY("Databases", ".ConnectionDatabases", CCONNECTION_databases),
-  GB_PROPERTY("Users", ".ConnectionUsers", CCONNECTION_users),
+  GB_PROPERTY("Tables", ".Connection.Tables", CCONNECTION_tables),
+  GB_PROPERTY("Databases", ".Connection.Databases", CCONNECTION_databases),
+  GB_PROPERTY("Users", ".Connection.Users", CCONNECTION_users),
   //GB_PROPERTY("Views", ".ConnectionViews", CCONNECTION_views),
 
   GB_CONSTANT("_Properties", "s", "Type,Host,Login,Password,Name,Port"),
@@ -798,10 +798,10 @@ GB_DESC CDBDesc[] =
   GB_STATIC_METHOD("Quote", "s", CCONNECTION_quote, "(Name)s[(Table)b]"),
   GB_STATIC_METHOD("FormatBlob", "s", CCONNECTION_format_blob, "(Data)s"),
 
-  GB_STATIC_PROPERTY("Tables", ".ConnectionTables", CCONNECTION_tables),
+  GB_STATIC_PROPERTY("Tables", ".Connection.Tables", CCONNECTION_tables),
   //GB_STATIC_PROPERTY("Views", ".ConnectionViews", CCONNECTION_views),
-  GB_STATIC_PROPERTY("Databases", ".ConnectionDatabases", CCONNECTION_databases),
-  GB_STATIC_PROPERTY("Users", ".ConnectionUsers", CCONNECTION_users),
+  GB_STATIC_PROPERTY("Databases", ".Connection.Databases", CCONNECTION_databases),
+  GB_STATIC_PROPERTY("Users", ".Connection.Users", CCONNECTION_users),
 
   GB_END_DECLARE
 };

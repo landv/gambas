@@ -224,7 +224,7 @@ END_METHOD
 
 GB_DESC CXmlNodeChildrenDesc[] =
 {
-	GB_DECLARE(".XmlNodeChildren", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".XmlNode.Children", 0), GB_VIRTUAL_CLASS(),
 
 	GB_METHOD("_get", "XmlNode",CXmlNode_c_get, "(Element)i"),
 	GB_PROPERTY_READ("Count", "i", CXmlNode_c_count),
@@ -235,7 +235,7 @@ GB_DESC CXmlNodeChildrenDesc[] =
 
 GB_DESC CXmlNodeAttributesDesc[] =
 {
-	GB_DECLARE(".XmlNodeAttributes", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".XmlNode.Attributes", 0), GB_VIRTUAL_CLASS(),
 
 	GB_METHOD("_next", "XmlNode", CXmlNode_a_next, NULL),
 	GB_PROPERTY_READ("Count", "i", CXmlNode_a_count),
@@ -247,7 +247,6 @@ GB_DESC CXmlNodeAttributesDesc[] =
 
 GB_DESC CXmlNodeDesc[] =
 {
-
   GB_DECLARE("XmlNode", sizeof(CXMLNODE)), GB_NOT_CREATABLE(),
 
   GB_NOT_CREATABLE(),
@@ -281,8 +280,8 @@ GB_DESC CXmlNodeDesc[] =
   GB_PROPERTY_READ("Parent","XmlNode",CXMLNode_Parent),
   GB_PROPERTY_READ("Next","XmlNode",CXMLNode_Next),
   GB_PROPERTY_READ("Previous","XmlNode",CXMLNode_Prev),
-  GB_PROPERTY_SELF("Children",".XmlNodeChildren"),
-  GB_PROPERTY_SELF("Attributes",".XmlNodeAttributes"),
+  GB_PROPERTY_SELF("Children",".XmlNode.Children"),
+  GB_PROPERTY_SELF("Attributes",".XmlNode.Attributes"),
 
   GB_METHOD("NewAttribute",NULL,CXMLNode_AddAttr,"(Name)s(Value)s"),
   GB_METHOD("NewElement",NULL,CXMLNode_AddElement,"(Name)s(Value)s"),

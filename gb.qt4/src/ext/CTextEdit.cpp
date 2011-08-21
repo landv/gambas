@@ -611,7 +611,7 @@ END_PROPERTY
 
 GB_DESC CTextEditFormatDesc[] =
 {
-  GB_DECLARE(".TextEditFormat", 0), GB_VIRTUAL_CLASS(),
+  GB_DECLARE(".TextEdit.Format", 0), GB_VIRTUAL_CLASS(),
 
   GB_PROPERTY("Alignment", "i", CTEXTEDIT_format_alignment),
   //GB_PROPERTY("Position", "i", CTEXTEDIT_format_position),
@@ -624,7 +624,7 @@ GB_DESC CTextEditFormatDesc[] =
 
 GB_DESC CTextEditSelectionDesc[] =
 {
-  GB_DECLARE(".TextEditSelection", 0), GB_VIRTUAL_CLASS(),
+  GB_DECLARE(".TextEdit.Selection", 0), GB_VIRTUAL_CLASS(),
 
   GB_PROPERTY("Text", "s", CTEXTAREA_sel_text),
   GB_PROPERTY("RichText", "s", CTEXTAREA_sel_rich_text),
@@ -664,7 +664,7 @@ GB_DESC CTextEditDesc[] =
 
   GB_METHOD("EnsureVisible", NULL, CTEXTAREA_ensure_visible, NULL),
 
-  GB_PROPERTY_SELF("Selection", ".TextEditSelection"),
+  GB_PROPERTY_SELF("Selection", ".TextEdit.Selection"),
   GB_METHOD("Select", NULL, CTEXTAREA_sel_select, "[(Start)i(Length)i]"),
   GB_METHOD("SelectAll", NULL, CTEXTAREA_sel_all, NULL),
   GB_METHOD("Unselect", NULL, CTEXTAREA_sel_clear, NULL),
@@ -686,7 +686,7 @@ GB_DESC CTextEditDesc[] =
   GB_PROPERTY_READ("TextWidth", "i", CTEXTEDIT_text_width),
   GB_PROPERTY_READ("TextHeight", "i", CTEXTEDIT_text_height),
 
-  GB_PROPERTY_SELF("Format", ".TextEditFormat"),
+  GB_PROPERTY_SELF("Format", ".TextEdit.Format"),
   
   GB_EVENT("Change", NULL, NULL, &EVENT_Change),
   GB_EVENT("Cursor", NULL, NULL, &EVENT_Cursor),
