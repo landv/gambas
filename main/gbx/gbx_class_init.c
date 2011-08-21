@@ -102,7 +102,7 @@ static const CLASS_INIT init_list[] =
   { NATIVE_Error, NULL },
   { NATIVE_StreamLines, NULL },
   { NATIVE_Stream, &CLASS_Stream },
-  { NATIVE_FilePerm, NULL },
+  { NATIVE_StatPerm, NULL },
   { NATIVE_Stat, &CLASS_Stat },
   { NATIVE_File, &CLASS_File },
   { NATIVE_AppEnv, &CLASS_AppEnv },

@@ -59,7 +59,7 @@ extern GB_DESC NATIVE_StreamLines[];
 extern GB_DESC NATIVE_Stream[];
 extern GB_DESC NATIVE_File[];
 extern GB_DESC NATIVE_Stat[];
-extern GB_DESC NATIVE_FilePerm[];
+extern GB_DESC NATIVE_StatPerm[];
 extern CFILE *CFILE_in;
 extern CFILE *CFILE_out;
 extern CFILE *CFILE_err;

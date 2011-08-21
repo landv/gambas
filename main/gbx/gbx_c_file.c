@@ -802,9 +802,9 @@ GB_DESC NATIVE_Stream[] =
 };
 
 
-GB_DESC NATIVE_FilePerm[] =
+GB_DESC NATIVE_StatPerm[] =
 {
-	GB_DECLARE(".File.Perm", 0),
+	GB_DECLARE(".Stat.Perm", 0),
 	GB_VIRTUAL_CLASS(),
 
 	GB_METHOD("_get", "s", CFILE_perm_get, "(UserOrGroup)s"),
@@ -833,7 +833,7 @@ GB_DESC NATIVE_Stat[] =
 	GB_PROPERTY_READ("LastChange", "d", Stat_LastChange),
 	GB_PROPERTY_READ("User", "s", Stat_User),
 	GB_PROPERTY_READ("Group", "s", Stat_Group),
-	GB_PROPERTY_SELF("Perm", ".File.Perm"),
+	GB_PROPERTY_SELF("Perm", ".Stat.Perm"),
 	GB_PROPERTY_READ("SetGID", "b", Stat_SetGID),
 	GB_PROPERTY_READ("SetUID", "b", Stat_SetUID),
 	GB_PROPERTY_READ("Sticky", "b", Stat_Sticky),
