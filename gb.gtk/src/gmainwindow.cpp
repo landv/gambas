@@ -484,7 +484,7 @@ void gMainWindow::setVisible(bool vl)
 					gtk_window_set_transient_for(GTK_WINDOW(border), GTK_WINDOW(active->border));
 			}
 			
-			#if GTK_MAJOR_VERSION >= 2 && GTK_MINOR_VERSION >= 24
+			#if (GTK_MAJOR_VERSION >= 2 && GTK_MINOR_VERSION >= 24) || (GTK_MAJOR_VERSION >= 3)
 			gtk_window_set_has_resize_grip(GTK_WINDOW(border), false);
 			#endif
 			
