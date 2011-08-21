@@ -101,7 +101,7 @@ void gt_ensure_visible(GtEnsureVisible *arg, int x, int y, int w, int h);
   if (sh > ((height) - sy)) \
     sh = ((height) - sy);
 
-void gt_drawable_fill(GdkDrawable *d, gColor col, GdkGC *gc);
+void gt_pixmap_fill(GdkPixmap *pix, gColor col, GdkGC *gc);
 
 // Creates a disabled version of a pixbuf
 

@@ -27,6 +27,8 @@ Private mnuUncompress As Menu
 Private $iIconSize As Integer
 Private $hWatch As Watcher
 
+Private $bPressed As Boolean
+
 Static Private $aHistory As New String[]
 Static Private $aIconSize As Integer[] = [16, 22, 32, 48, 64, 96, 128, 192, 256]
 
@@ -40,7 +42,7 @@ Public Sub _new(Optional bFile As Boolean)
 
   sldIconSize.Value = $aIconSize.Find(32)
 
-  btnParent.Picture = Main.GetArrow(Align.Left, 16).Picture
+  'btnParent.Picture = Main.GetArrow(Align.Left, 16).Picture
   
   $hWatch = New Watcher(fvwChoose) As "FileView"
 
@@ -172,12 +174,6 @@ Public Sub mnuShowDetailed_Click()
 
 End
 
-Public Sub btnParent_Click()
-
-  dvwChoose.Current = File.Dir(dvwChoose.Current)
-
-End
-
 ' Private Sub AddToHistory(sDir As String)
 '   
 '   Dim iInd As Integer
@@ -197,7 +193,7 @@ End
 
 Private Sub UpdateBookmarkButton()
   
-  If IsBookmarkVisible() Then
+  If IsBookmarkVisible() And If $hCurrentBookmark Then
     btnBookmark.Text = $hCurrentBookmark.Name
     btnBookmark.Picture = Picture[$hCurrentBookmark.Icon]
     mnuEditBookmark.Enabled = $hBookmarkList.GetEditableCount() > 0
@@ -206,17 +202,22 @@ Private Sub UpdateBookmarkButton()
     btnBookmark.Picture = dvwChoose.Picture 'Picture["icon:/small/directory"]
   Endif
   
+  btnBookmark.Tooltip = dvwChoose.Root
+  
 End
 
 
 Private Sub SetBookmark(hBookmark As CBookmark)
   
-  If Not hBookmark Then Return
+  'If Not hBookmark Then Return
   
   $hCurrentBookmark = hBookmark
   
-  SetRoot(hBookmark.Path)
-  dvwChoose.Picture = Picture[hBookmark.Icon]
+  If hBookmark Then
+    SetRoot(hBookmark.Path)
+    dvwChoose.Picture = Picture[hBookmark.Icon]
+  Endif
+  
   UpdateBookmarkButton
   
 End
@@ -534,10 +535,14 @@ End
 
 Public Sub SetRoot(Optional sRoot As String)
   
+  Dim hBookmark As CBookmark
+
   If sRoot = dvwChoose.Root Then Return
+
   dvwChoose.Root = sRoot
-  btnBookmark.Tooltip = sRoot
-  UpdateBookmarkButton
+
+  hBookmark = $hBookmarkList.FindBookmark(sRoot)
+  SetBookmark(hBookmark)
   
 End
 
@@ -888,7 +893,7 @@ End
 
 Public Sub btnBookmark_Click()
 
-  dvwChoose.Current = $hCurrentBookmark.Path
+  If $hCurrentBookmark Then dvwChoose.Current = $hCurrentBookmark.Path
   dvwChoose.Reload
 
 End
@@ -1054,4 +1059,50 @@ Public Sub mnuOpenFolder_Click()
   
   Desktop.Open(dvwChoose.Current)
   
+End
+
+Public Sub btnParent_Click()
+
+  dvwChoose.Current = File.Dir(dvwChoose.Current)
+
+End
+
+Public Sub btnParent_Draw()
+
+  Dim iFlag As Integer
+
+  If btnParent.Hovered And If btnParent.Enabled Then iFlag += Draw.Hover
+  If Not btnParent.Enabled Then iFlag += Draw.Disabled
+  If btnParent.HasFocus Then iFlag += Draw.Focus
+  
+  If btnParent.Hovered Then Draw.Style.Button(0, 0, btnParent.W, btnParent.H, $bPressed, iFlag, True)
+  Draw.Style.Arrow((btnParent.W - 8) \ 2, (btnParent.H - 8) \ 2, 8, 8, Align.Left, iFlag)
+
+End
+
+Public Sub btnParent_Enter()
+
+  btnParent.Refresh
+
+End
+
+Public Sub btnParent_Leave()
+
+  btnParent.Refresh
+
+End
+
+Public Sub btnParent_MouseDown()
+
+  $bPressed = True
+  btnParent.Refresh
+
+End
+
+Public Sub btnParent_MouseUp()
+
+  $bPressed = False
+  btnParent.Refresh
+  If btnParent.Hovered Then btnParent_Click
+
 End

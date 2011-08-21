@@ -384,7 +384,7 @@ void gPicture::fill(gColor col)
 {
   if (_type == SERVER)
   {
-  	gt_drawable_fill(GDK_DRAWABLE(pic), col, NULL);
+  	gt_pixmap_fill(pic, col, NULL);
   }
   else if (_type == MEMORY)
   {

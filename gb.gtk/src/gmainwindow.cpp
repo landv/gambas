@@ -229,10 +229,6 @@ void gMainWindow::initWindow()
 		
 		gtk_widget_add_events(widget,GDK_BUTTON_MOTION_MASK);
 		g_signal_connect(G_OBJECT(widget), "expose-event", G_CALLBACK(cb_expose), (gpointer)this);
-
-		#if GTK_MAJOR_VERSION >= 3
-		gtk_window_set_has_resize_grip(GTK_WINDOW(border), false);
-		#endif
 	}
 	
 	gtk_window_add_accel_group(GTK_WINDOW(topLevel()->border), accel);
@@ -399,7 +395,7 @@ void gMainWindow::resize(int w, int h)
 		else
 		{
 			//fprintf(stderr, "resize: %d %d (%d)\n", w, h, gtk_window_get_resizable(GTK_WINDOW(border)));
-			if (gtk_window_get_resizable(GTK_WINDOW(border)))
+			if (isResizable())
 				gtk_window_resize(GTK_WINDOW(border),w, h);
 			else
 				gtk_widget_set_size_request(border, w, h);
@@ -487,6 +483,10 @@ void gMainWindow::setVisible(bool vl)
 				if (isModal() && active && active != this)
 					gtk_window_set_transient_for(GTK_WINDOW(border), GTK_WINDOW(active->border));
 			}
+			
+			#if GTK_MAJOR_VERSION >= 2 && GTK_MINOR_VERSION >= 24
+			gtk_window_set_has_resize_grip(GTK_WINDOW(border), false);
+			#endif
 			
 			gtk_window_move(GTK_WINDOW(border), bufX, bufY);
 			if (isPopup())

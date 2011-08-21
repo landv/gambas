@@ -1158,28 +1158,25 @@ GtkStyle *gt_get_style(const char *name, int type)
 }
 
 
-void gt_drawable_fill(GdkDrawable *d, gColor col, GdkGC *gc)
+void gt_pixmap_fill(GdkPixmap *pix, gColor col, GdkGC *gc)
 {
 	GdkColor color;
-	gint w, h;
+	int w, h;
 	bool free_gc = false;
 	
 	fill_gdk_color(&color, col);
-	#if GTK_MAJOR_VERSION >= 2 && GTK_MINOR_VERSION >= 24
-	w = gdk_window_get_width(d);
-	h = gdk_window_get_height(d);
-	#else
-	gdk_drawable_get_size(d, &w, &h);
-	#endif
+	
+	gdk_pixmap_get_size(pix, &w, &h);
+	
 	if (!gc)
 	{
-		gc = gdk_gc_new(d);
+		gc = gdk_gc_new(pix);
 		free_gc = true;
 	}
 	
 	gdk_gc_set_foreground(gc, &color);
 	gdk_gc_set_background(gc, &color);
-	gdk_draw_rectangle(d, gc, true, 0, 0, w, h);
+	gdk_draw_rectangle(pix, gc, true, 0, 0, w, h);
 	
 	if (free_gc)
 		g_object_unref(gc);
@@ -1203,7 +1200,7 @@ void gt_pixbuf_render_pixmap_and_mask(GdkPixbuf *pixbuf, GdkPixmap **pixmap_retu
 		
 		gc = gdk_gc_new(*pixmap_return);
 		
-		gt_drawable_fill(*pixmap_return, 0, gc);
+		gt_pixmap_fill(*pixmap_return, 0, gc);
 		
 		gdk_draw_pixbuf (*pixmap_return, gc, pixbuf, 
 					0, 0, 0, 0,
@@ -1407,7 +1404,7 @@ GdkBitmap *gt_make_text_mask(GdkDrawable *dr, int w, int h, PangoLayout *ly, int
 	
 	tmp_gc = gdk_gc_new(tmp_pixmap);
 	
-	gt_drawable_fill(tmp_pixmap, 0, tmp_gc);
+	gt_pixmap_fill(tmp_pixmap, 0, tmp_gc);
 	
 	fill_gdk_color(&color, 0, gdk_drawable_get_colormap(dr));
 	gdk_gc_set_background(tmp_gc, &color);

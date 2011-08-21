@@ -78,7 +78,7 @@ Public Sub Save()
   Dim iInd As Integer  
   Dim hBookmark As CBookmark
   
-  If Not Components["gb.settings"] Then Return
+  If Not Component.IsLoaded("gb.settings") Then Return
   
   hSettings = New Settings("gb.form")
 
@@ -117,6 +117,12 @@ Public Sub FindBookmark({Link} As String) As CBookmark
   For Each hBookmark In Me
     If hBookmark.Link = {Link} Then Return hBookmark
   Next
+  
+  If Left({Link}) = "/" Then
+    For Each hBookmark In Me
+      If hBookmark.Path = {Link} Then Return hBookmark
+    Next
+  Endif
   
 End
 
