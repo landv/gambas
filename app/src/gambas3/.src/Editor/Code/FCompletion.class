@@ -835,6 +835,7 @@ Public Sub HideFrom(hEditor As Editor)
   
   If $hEditor <> hEditor Then Return
   $hEditor = Null
+  If Not Me.Visible Then Return
   Me.Hide
   
 End

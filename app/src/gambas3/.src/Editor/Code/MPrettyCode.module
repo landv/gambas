@@ -9,6 +9,7 @@ Private $bLastNewLine As Boolean
 Private $bNeedNewLine As Boolean
 Private $iLastDim As Integer
 Private $iLastSelect As Integer
+Private $bLastWrap As Boolean
 
 Private $bIndentDim As Boolean
 Private $bRemoveSpace As Boolean
@@ -42,6 +43,7 @@ Public Sub Run(sText As String, Optional iLevel As Integer) As String
   $bLastNewLine = True
   $iLastDim = -1
   $iLastSelect = -1
+  $bLastWrap = False
   
   While iLine < aLine.Count
     
@@ -89,6 +91,7 @@ Private Sub IndentLine(sLine As String) As String
   Dim sSym As String
   Dim iPos As Integer
   Dim iType As Integer
+  Dim bLastWrap As Boolean
   
   sLine = LTrim(sLine)
   
@@ -106,6 +109,10 @@ Private Sub IndentLine(sLine As String) As String
     Wend
     
     If aSym.Count Then
+      
+      bLastWrap = $bLastWrap
+      $bLastWrap = False
+      If iType = Highlight.Operator And If InStr(":]);.!", aSym[aSym.Max]) = 0 And If aSym[0] <> "PRINT" Then $bLastWrap = True 
       
       If $bNeedNewLine Then
         If Not $bLastNewLine Then sAdd = "\n"
@@ -166,6 +173,7 @@ Private Sub IndentLine(sLine As String) As String
             If $cClose.Exist(sSym) Then Dec $iLevel
             iNextLevel = $iLevel
             If $cOpen.Exist(sSym) Then Inc iNextLevel
+            If bLastWrap Then Inc $iLevel
           Endif
           
         Endif

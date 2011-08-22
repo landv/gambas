@@ -35,7 +35,7 @@ Public Sub DesktopWatcher_Change(Window As Integer, {Property} As Integer)
   
     Select Case {Property}
       Case Atom["_NET_CLIENT_LIST_STACKING"]
-        _DesktopWindows.Refresh
+        _Desktop_Windows.Refresh
         Raise Windows
       Case Atom["_NET_CURRENT_DESKTOP"]
         Raise Change

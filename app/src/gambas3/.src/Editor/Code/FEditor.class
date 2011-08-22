@@ -400,8 +400,9 @@ Public Sub Editors_Change()
 
 End
 
-Private Sub RefreshLineInfo(Optional bForce As Boolean)
+Private Sub RefreshLineInfo(Optional bForce As Boolean) As Boolean
 
+  Dim bNewLine As Boolean
   Dim eTime As Float
 
   If bForce Then
@@ -411,9 +412,6 @@ Private Sub RefreshLineInfo(Optional bForce As Boolean)
   If Editor.Line <> $iLastLine Then
 
     $iLastLine = Editor.Line
-
-    HideCompletion
-    HideSignature
 
     UpdateFunction
     timProc.Stop
@@ -426,20 +424,28 @@ Private Sub RefreshLineInfo(Optional bForce As Boolean)
         $hSampleCode = Null
       Endif
     Endif
+    
+    bNewLine = True
 
   Else If $bCheckSignature Or If FSignature.VisibleFrom(Editor) Then
+    
     $bCheckSignature = False
     CheckSignature
+    
   Endif
 
   lblInfo.Text = CStr(Editor.Column + 1) & ":" & CStr(Editor.Line + 1)
+  Return bNewLine
 
 End
 
 Public Sub Editors_Cursor()
 
-  RefreshLineInfo
-  HideMessage
+  If RefreshLineInfo() Then
+    HideMessage
+    HideCompletion
+    HideSignature
+  Endif
 
   If Editor.Lines[Editor.Line].Current Then Design.CheckErrorMessage(Me)
 
@@ -453,8 +459,8 @@ End
 
 Public Sub Form_Deactivate()
 
-  HideCompletion
-  HideSignature
+  'HideCompletion
+  'HideSignature
   'mnuEditor.Enabled = False
 
 End
