@@ -11,6 +11,7 @@ Public Sub Main()
   Dim sSize As String
   Dim sTemplate As String
   Dim sExt As String
+  Dim sSrc As String
   
   hFile = Open "~/gambas/3.0/trunk/comp/src/gb.form/map/gnome.map"
   
@@ -32,8 +33,12 @@ Public Sub Main()
     
     Print sIcon
     
-    For Each sTheme In ["Tango", "gnome", "hicolor"]
-      For Each sSize In ["16", "22", "32", "scalable"]
+    For Each sSize In ["16", "22", "32", "scalable"]
+      
+      'Try Kill "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & ".png"
+      'Try Kill "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & ".svg"
+      
+      For Each sTheme In ["Tango", "gnome", "hicolor"]
     
         If sSize = "scalable" Then
           sTemplate = "/usr/share/icons/&1/&2"
