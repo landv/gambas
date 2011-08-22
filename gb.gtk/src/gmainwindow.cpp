@@ -484,10 +484,12 @@ void gMainWindow::setVisible(bool vl)
 					gtk_window_set_transient_for(GTK_WINDOW(border), GTK_WINDOW(active->border));
 			}
 			
-			#if GTK_CHECK_VERSION(2,24,4)
+			#if GTK_CHECK_VERSION(3,0,0)
 			gtk_window_set_has_resize_grip(GTK_WINDOW(border), false);
+			#else
+			if (g_object_class_find_property(G_OBJECT_GET_CLASS(border), "has-resize-grip"))
+				g_object_set(G_OBJECT(border), "has-resize-grip", false, (char *)NULL);
 			#endif
-			
 			gtk_window_move(GTK_WINDOW(border), bufX, bufY);
 			if (isPopup())
 				gtk_widget_show_now(border);
