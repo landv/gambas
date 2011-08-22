@@ -93,6 +93,7 @@ Private $sTemp As String
 Private $hTemp As File
 
 Private $sError As String
+Private $sLog As String
 
 Public Sub FormatDate(dDate As Date) As String
 
@@ -170,7 +171,7 @@ Public Sub Main()
 
   $eTime = Timer
 
-  $aLang = [DEFAULT_LANG, "fr", "de", "es", "it", "nl", "pl", "pt", "pt_BR", "mk", "sq", "ca", "hu", "cs", "tr", "ar", "fa", "vi", "ko", "ja", "ru", "zh", "zh_TW", "eo"]
+  $aLang = [DEFAULT_LANG, "fr", "de", "es", "it", "nl", "pl", "pt", "pt_BR", "mk", "sq", "ca", "hu", "cs", "tr", "ar", "fa", "id", "vi", "ko", "ja", "ru", "zh", "zh_TW", "eo"]
 
   $sRoot = File.Dir(File.Dir(Application.Path)) 'Application.Env["DOCUMENT_ROOT"]
   If Not Exist($sRoot &/ ".htaccess") Then $sRoot = User.Home &/ "www/help"
@@ -236,7 +237,9 @@ Catch
   Endif
   Print "<html><body><h2>Unexpected error while displaying this page.</h2>"
   Print "<pre>"; Error.Text
-  Print "<b>"; Error.Where; "</b></pre></body>"
+  Print "<b>"; Error.Where; "</b>"
+  Print $sLog
+  Print "</pre></body>"
   DeleteTempFile
 
 End
@@ -2485,6 +2488,38 @@ Private Sub GetOpenGL(sName As String, sLib As String) As String
 
 End
 
+Private Sub GetDefaultSymbolTitle(hSym As CSymbolInfo) As String
+
+  Dim sTitle As String
+  Dim sName As String
+  
+  sTitle = hSym.Name
+  
+  If Left$(hSym.Name) = "_" Then
+    sName = Replace(GetVirtualClass(hSym.Class & "."), "_", ".")
+    If Not sName Then 
+      sName = $hSym.Class
+    Endif
+    Select Case $hSym.Name
+      Case "_new"
+        sTitle = If($sVersion = "2.0", "NEW ", "New ") & sName
+      Case "_put"
+        sTitle = sName & "[] = ..."
+      Case "_get"
+        sTitle = sName & "[]"
+      Case "_call"
+        sTitle = sName & "()"
+      Case "_next"
+        sTitle = If($sVersion = "2.0", "FOR EACH ", "For Each ") & sName
+    End Select
+  Endif
+
+  If Left$(sTitle) = ":" Then sTitle = Mid$(sTitle, 2)
+  
+  Return sTitle
+
+End
+
 Private Sub EditPage()
 
   Dim rPage As Result
@@ -2496,6 +2531,7 @@ Private Sub EditPage()
   Dim sDir As String
   Dim sPath As String
   Dim sKind As String
+  Dim sTitle As String
 
   rPage = FindPage($sPath, True)
   If Not rPage.Available Then
@@ -2525,7 +2561,7 @@ Private Sub EditPage()
           Case TYPE_CLASS
 
             If $hClass Then
-              rPage!sTitle = QuoteSpecial($hClass.Name)
+              rPage!sTitle = $hClass.Name
 
               sPath = sDir &/ GetOldComponentName($hComp.Key) & GetOldClassName($hClass.Name) & ".html"
               If Exist(sPath) Then
@@ -2536,26 +2572,7 @@ Private Sub EditPage()
           Case TYPE_SYMBOL
 
             If $hSym Then
-              If Left$($hSym.Name) = "_" Then
-                Select Case $hSym.Name
-                  Case "_new"
-                    rPage!sTitle = "NEW " & $hClass.Name
-                  Case "_put"
-                    rPage!sTitle = $hClass.Name & "[] = ..."
-                  Case "_get"
-                    rPage!sTitle = $hClass.Name & "[]"
-                  Case "_call"
-                    rPage!sTitle = $hClass.Name & "()"
-                  Case "_next"
-                    rPage!sTitle = "FOR EACH " & $hClass.Name
-                  Default
-                    rPage!sTitle = $hSym.Name
-                End Select
-              Else
-                rPage!sTitle = $hSym.Name
-              Endif
-
-              If Left$(rPage!sTitle) = ":" Then rPage!sTitle = Mid$(rPage!sTitle, 2)
+              rPage!sTitle = GetDefaultSymbolTitle($hSym)
 
               sName = UCase($hSym.Kind)
               If sName = ":" Then
@@ -2624,27 +2641,23 @@ Private Sub EditPage()
 
     Endif
 
-    If IsNull(rPage!sTitle) Then
-      sName = File.Name($sPath)
-      If Left(sName) = ":" Then sName = Mid$(sName, 2)
-      rPage!sTitle = sName
-    Endif
-
   Endif
 
+  sTitle = rPage!sTitle
+
   $bNew = rPage!sLang <> $sLang
-  MakeHeader(rPage!sTitle)
+  MakeHeader(sTitle)
 
   sSave = "\n<input type=\"submit\" name=\"command\" accesskey=\"S\" value=\"" & ("Save") & "\"></input>" &
   "&nbsp;&nbsp;<input type=\"submit\" name=\"command\" value=\"" & ("Delete") & "\"></input>"
   If $bImage Then
     Print "<form action=\"" & "/edit" &/ $sUri & "\" method=\"post\" name=\"edit\" enctype=\"multipart/form-data\">"
-    Print "<p/><input type=\"text\" name=\"sTitle\" size=\"64\" maxlength=\"64\" value=\"" & rPage!sTitle & "\"></input>&nbsp;&nbsp;" & sSave 
+    Print "<p/><input type=\"text\" name=\"sTitle\" size=\"64\" maxlength=\"64\" value=\"" & sTitle & "\"></input>&nbsp;&nbsp;" & sSave 
     Print "<p/><input type=\"file\" name=\"sData\" size=\"64\"></input>"
     Print "</form>"
   Else
     Print "<form action=\"" & "/edit" &/ $sUri & "\" method=\"post\" name=\"edit\">"
-    Print "<p/><input type=\"text\" name=\"sTitle\" size=\"64\" maxlength=\"64\" value=\"" & rPage!sTitle & "\"></input>&nbsp;&nbsp;" & sSave 
+    Print "<p/><input type=\"text\" name=\"sTitle\" size=\"64\" maxlength=\"64\" value=\"" & sTitle & "\"></input>&nbsp;&nbsp;" & sSave 
     Print "<p/><textarea style=\"width:100%\" rows=\"40\" name=\"sDesc\">"; EncodeHTML(rPage!sDesc); "</textarea>"
     Print "</form>"
   Endif
@@ -2964,6 +2977,7 @@ Private Sub UpdatePage()
   Dim sName As String
   Dim sField As String
   Dim bStop As Boolean
+  Dim sTitle As String
 
   rPage = DB.Create("page")
   rPage!sPath = $sPath
@@ -3081,6 +3095,33 @@ Private Sub UpdatePage()
       Next
     Endif
 
+    sTitle = rPage!sTitle
+    If Not sTitle Then
+      
+      Select Case $iType
+      
+        Case TYPE_COMPONENT
+          Try sTitle = $hComp.Name
+          
+        Case TYPE_CLASS
+          Try sTitle = $hClass.Name
+          
+        Case TYPE_SYMBOL
+          If $hSym Then
+            sTitle = GetDefaultSymbolTitle($hSym)
+          Endif
+        
+        Default
+      
+          sName = File.Name($sPath)
+          If Left(sName) = ":" Then sName = Mid$(sName, 2)
+          sTitle = sName
+          
+      End Select
+      
+      rPage!sTitle = sTitle
+      
+    Endif
     'db.Debug = TRUE
     DB.Begin
 
@@ -3134,6 +3175,7 @@ Private Sub RenamePage()
   Print "<b>" & ("New path") & "</b>&nbsp;&nbsp;"
   Print "<input type=\"text\" name=\"sNewPath\" size=\"80\" maxlength=\"64\" value=\"" & rPage!sPath & "\"></input>"
   Print "<p/><input type=\"checkbox\" name=\"bChild\">" & ("Rename children") & "</input>"
+  Print "<p/><input type=\"checkbox\" name=\"bKeep\">" & ("Keep original") & "</input>"
   Print "<p/>"
   Print "<input type=\"submit\" value=\"" & ("Rename") & "\"></input>"
 
@@ -3143,42 +3185,87 @@ Private Sub RenamePage()
 
 End
 
-Private Sub RenameOnePage(sPath As String, sNewPath As String, Optional sPrefix As String)
+Private Sub RenameOnePage(sPath As String, sNewPath As String, bKeep As Boolean, Optional sPrefix As String)
 
-  Dim rPage As Result
+  Dim rPage, rCopy As Result
   Dim sOld As String
 
-  If sPrefix Then
-    rPage = DB.Edit("page", "sPath like &1", Replace(sPrefix, "%", "%%") & "%")
-  Else
-    rPage = DB.Edit("page")
-  Endif
-
-  While rPage.Available
-
-    If Left$(File.Name(rPage!sPath)) <> ":" Then
-
-      If rPage!sPath = sPath Then
-        rPage!sPath = sNewPath
-        rPage!dDate = Now
-        rPage!sUser = Application.Env["REMOTE_USER"]
-      Endif
-
-      sOld = sPath
-      rPage!sDesc = Replace(rPage!sDesc, "[" & sOld & "]", "[" & sNewPath & "]")
-      rPage!sDesc = Replace(rPage!sDesc, "[" & sOld &/ "]", "[" & sNewPath & "]")
-      If Left(sOld) = "/" Then
-        sOld = Mid$(sOld, 2)
-        rPage!sDesc = Replace(rPage!sDesc, "[" & sOld & "]", "[" & sNewPath & "]")
-        rPage!sDesc = Replace(rPage!sDesc, "[" & sOld &/ "]", "[" & sNewPath & "]")
-      Endif
-
-      rPage.Update
-
+  If bKeep Then
+  
+    If sPrefix Then
+      rPage = DB.Find("page", "sPath like &1", Replace(sPrefix, "%", "%%") & "%")
+    Else
+      rPage = DB.Find("page", "sPath = &1", sPath)
     Endif
+  
+    While rPage.Available
+  
+      If Left$(File.Name(rPage!sPath)) <> ":" Then
+  
+        If rPage!sPath = sPath Then 
+        
+          rCopy = DB.Edit("page", "sPath = &1 and sLang = &2", sNewPath, rPage!sLang)
+          If Not rCopy.Available Then rCopy = DB.Create("page")
+          
+          rCopy!sPath = sNewPath
+          rCopy!dDate = Now
+          rCopy!sUser = $sUser
+          rCopy!sLang = rPage!sLang
+          rCopy!sTitle = rPage!sTitle
+          rCopy!sHTML = ""
+    
+          sOld = sPath
+          rCopy!sDesc = rPage!sDesc
+          rCopy!sDesc = Replace(rCopy!sDesc, "[" & sOld, "[" & sNewPath)
+          If Left(sOld) = "/" Then
+            sOld = Mid$(sOld, 2)
+            rCopy!sDesc = Replace(rCopy!sDesc, "[" & sOld, "[" & sNewPath)
+          Endif
+    
+          rCopy.Update
+          
+        Endif
+  
+      Endif
+  
+      rPage.MoveNext
+    Wend
 
-    rPage.MoveNext
-  Wend
+  Else
+
+    If sPrefix Then
+      rPage = DB.Edit("page", "sPath like &1", Replace(sPrefix, "%", "%%") & "%")
+    Else
+      rPage = DB.Edit("page")
+    Endif
+  
+    While rPage.Available
+  
+      If Left$(File.Name(rPage!sPath)) <> ":" Then
+  
+        If rPage!sPath = sPath Then
+          rPage!sPath = sNewPath
+          rPage!dDate = Now
+          rPage!sUser = $sUser
+        Endif
+  
+        sOld = sPath
+        rPage!sDesc = Replace(rPage!sDesc, "[" & sOld, "[" & sNewPath)
+        'rPage!sDesc = Replace(rPage!sDesc, "[" & sOld &/ "]", "[" & sNewPath & "]")
+        If Left(sOld) = "/" Then
+          sOld = Mid$(sOld, 2)
+          rPage!sDesc = Replace(rPage!sDesc, "[" & sOld, "[" & sNewPath)
+          'rPage!sDesc = Replace(rPage!sDesc, "[" & sOld &/ "]", "[" & sNewPath & "]")
+        Endif
+  
+        rPage.Update
+  
+      Endif
+  
+      rPage.MoveNext
+    Wend
+    
+  Endif
 
 End
 
@@ -3189,10 +3276,13 @@ Private Sub DoRenamePage()
   Dim bUpdate As Boolean
   Dim cForm As Collection
   Dim bChild As Boolean
+  Dim bKeep As Boolean
+  Dim sUri As String
 
   cForm = GetForm()
   sNewPath = cForm!sNewPath
   bChild = cForm.Exist("bChild")
+  bKeep = cForm.Exist("bKeep")
 
   If Left$(sNewPath) <> "/" Then sNewPath = "/" & sNewPath
   If Right$(sNewPath) = "/" Then sNewPath = Right(sNewPath, -1)
@@ -3208,17 +3298,17 @@ Private Sub DoRenamePage()
 
   If Not bChild Then
 
-    RenameOnePage($sPath, sNewPath)
+    RenameOnePage($sPath, sNewPath, bKeep)
 
   Else
 
-    rPage = DB.Edit("page", "sPath like &1", Replace($sPath, "%", "%%") & "%")
+    rPage = DB.Edit("page", "sPath like &1 and sLang = 'en'", Replace($sPath, "%", "%%") & "%")
     While rPage.Available
 
       If Left$(File.Name(rPage!sPath)) <> ":" Then
 
         If rPage!sPath Like (Replace($sPath, "[", "[[]") & "*") Then
-          RenameOnePage(rPage!sPath, sNewPath & Mid$(rPage!sPath, Len($sPath) + 1), $sPath)
+          RenameOnePage(rPage!sPath, sNewPath & Mid$(rPage!sPath, Len($sPath) + 1), bKeep, $sPath)
         Endif
 
       Endif
@@ -3231,7 +3321,10 @@ Private Sub DoRenamePage()
   DB.Commit
 
   Print "Content-type: text/html"
-  Print "Location: http://" & Application.Env["HTTP_HOST"] &/ "help" &/ sNewPath & $sLangSuff
+  Print "Location: ";
+  sUri = "http://" & Application.Env["HTTP_HOST"] &/ "help" &/ sNewPath & $sLangSuff
+  If $sVersion = "3.0" Then sUri = AddParam(sUri, "v3")
+  Print sUri
   Print
 
 End
@@ -3962,7 +4055,7 @@ Private Function GetTranslate() As String
   Dim bOdd As Boolean
 
   If $sLang = DEFAULT_LANG Then
-    Return "<i>Nothing to translate, but the following is not yet documented!</i>\n" & GetTodo()
+    Return "Nothing to translate, but the following is not yet documented!\n" & GetTodo()
   Endif
 
   rPageDef = DB.Find("page", "sLang = &1 ORDER BY dDate DESC", DEFAULT_LANG)
@@ -4050,7 +4143,9 @@ Private Function GetToDo() As String
         sName = hSymbol.Name
         
         If sName = "_free" Then Continue
-        If sName = "_new" And If Not hClass.Creatable Then Continue
+        If sName = "_new" Then
+          If Not hClass.Creatable Or If hClass.IsVirtual() Then Continue
+        Endif
         
         If InStr(sName, "_") Then
           If Left(sName) <> "_" Or If aAllow.Find(sName) < 0 Then Continue
@@ -4413,23 +4508,35 @@ Private Sub ClassHasEvents() As Boolean
 
 End
 
+Private Sub GetVirtualClass(sClass As String) As String
+  
+  Dim iPos As Integer
+  Dim sVirtual As String
+  
+  If InStr("._", Left(sClass)) > 0 Then
+    sClass = Mid$(sClass, 2)
+    iPos = RInStr(Replace(sClass, "_", "."), ".")
+    If iPos Then
+      sVirtual = Left(sClass, iPos - 1)
+    Endif
+  Endif
+  
+  Return sVirtual
+  
+End
+
+
 Private Function GetSymbolSyntax(hSym As CSymbolInfo) As String
 
   Dim sSyntax As String
   Dim sName As String
+  Dim sVar As String
   Dim sVirtual As String
   Dim sValue As String
   Dim iPos As Integer
 
   sName = hSym.Class
-  
-  If InStr("._", Left(sName)) > 0 Then
-    sName = Mid$(sName, 2)
-    iPos = InStr(Replace(sName, "_", "."), ".")
-    If iPos Then
-      sVirtual = Left(sName, iPos - 1)
-    Endif
-  Endif
+  sVirtual = GetVirtualClass(sName)
 
   Select Case hSym.Name
 
@@ -4437,16 +4544,20 @@ Private Function GetSymbolSyntax(hSym As CSymbolInfo) As String
 
       If hSym.IsStatic() Then
         sName = hSym.Class
+        If sVirtual Then sName = Mid$(sName, 2)
       Else
         sName = GetClassVariableName(hSym.Class)
         If sVirtual Then
-          sSyntax = sSyntax & Keyword("Dim") & " " & GetClassVariableName(sVirtual) & " " & Keyword("As") & " " & GetType(sVirtual) & "\n"
+          sVar = GetClassVariableName(sVirtual)
+          sSyntax = sSyntax & Keyword("Dim") & " " & sVar & " " & Keyword("As") & " " & GetType(sVirtual) & "\n"
         Else
-          sSyntax = sSyntax & Keyword("Dim") & " " & sName & " " & Keyword("As") & " " & GetType(hSym.Class) & "\n"
+          sVar = sName
+          sSyntax = sSyntax & Keyword("Dim") & " " & sVar & " " & Keyword("As") & " " & GetType(hSym.Class) & "\n"
         Endif
       Endif
 
-      sValue = GetClassVariableName(hSym.Type)
+      sValue = Replace(GetClassVariableName(hSym.Type), ".", "")
+      If sValue = sVar Then sValue &= "2"
 
       sSyntax &= Keyword("Dim") & " " & sValue & " " & Keyword("As") & " " & GetType(hSym.Type) & "\n\n"
       sSyntax &= sValue & " " & Keyword("=") & " "
@@ -4458,16 +4569,20 @@ Private Function GetSymbolSyntax(hSym As CSymbolInfo) As String
 
       If hSym.IsStatic() Then
         sName = hSym.Class
+        If sVirtual Then sName = Mid$(sName, 2)
       Else
         sName = GetClassVariableName(hSym.Class)
         If sVirtual Then
-          sSyntax = sSyntax & Keyword("Dim") & " " & GetClassVariableName(sVirtual) & " " & Keyword("As") & " " & GetType(sVirtual) & "\n"
+          sVar = GetClassVariableName(sVirtual)
+          sSyntax = sSyntax & Keyword("Dim") & " " & sVar & " " & Keyword("As") & " " & GetType(sVirtual) & "\n"
         Else
-          sSyntax = sSyntax & Keyword("Dim") & " " & sName & " " & Keyword("As") & " " & GetType(hSym.Class) & "\n"
+          sVar = sName
+          sSyntax = sSyntax & Keyword("Dim") & " " & sVar & " " & Keyword("As") & " " & GetType(hSym.Class) & "\n"
         Endif
       Endif
 
-      sValue = GetClassVariableName(hSym.Type)
+      sValue = Replace(GetClassVariableName(hSym.Type), ".", "")
+      If sValue = sVar Then sValue &= "2"
 
       sSyntax = sSyntax & Keyword("Dim") & " " & sValue & " " & Keyword("As") & " " & GetType(hSym.Type) & "\n\n"
       sSyntax = sSyntax & sName & " " & Keyword("[") & GetSignature(hSym.Signature) & Keyword("]")
@@ -4477,17 +4592,21 @@ Private Function GetSymbolSyntax(hSym As CSymbolInfo) As String
 
       If hSym.IsStatic() Then
         sName = hSym.Class
+        If sVirtual Then sName = Mid$(sName, 2)
       Else
         sName = GetClassVariableName(hSym.Class)
         If sVirtual Then
-          sSyntax = sSyntax & Keyword("Dim") & " " & GetClassVariableName(sVirtual) & " " & Keyword("As") & " " & GetType(sVirtual) & "\n"
+          sVar = GetClassVariableName(sVirtual)
+          sSyntax = sSyntax & Keyword("Dim") & " " & sVar & " " & Keyword("As") & " " & GetType(sVirtual) & "\n"
         Else
-          sSyntax = sSyntax & Keyword("Dim") & " " & sName & " " & Keyword("As") & " " & GetType(hSym.Class) & "\n"
+          sVar = sName
+          sSyntax = sSyntax & Keyword("Dim") & " " & sVar & " " & Keyword("As") & " " & GetType(hSym.Class) & "\n"
         Endif
       Endif
 
       If hSym.Type Then
-        sValue = GetClassVariableName(hSym.Type)
+        sValue = Replace(GetClassVariableName(hSym.Type), ".", "")
+        If sValue = sVar Then sValue &= "2"
         sSyntax = sSyntax & Keyword("Dim") & " " & sValue & " " & Keyword("As") & " " & GetType(hSym.Type) & "\n\n"
         sSyntax = sSyntax & Keyword("For Each") & " " & sValue & " " & Keyword("In") & " " & sName & "\n"
       Else
@@ -4533,9 +4652,13 @@ Private Function GetSymbolSyntax(hSym As CSymbolInfo) As String
       End Select
 
       If hSym.Name = "_call" Then
-        sSyntax = sSyntax & "<b>" & GetSymbolName(hSym.Class) & "</b>"
+        If sVirtual Then
+          sSyntax &= "<b>" & Replace(Mid$(hSym.Class, 2), "_", ".") & "</b>"
+        Else
+          sSyntax &= "<b>" & GetSymbolName(hSym.Class) & "</b>"
+        Endif
       Else
-        sSyntax = sSyntax & "<b>" & GetSymbolName(hSym.Name) & "</b>"
+        sSyntax &= "<b>" & GetSymbolName(hSym.Name) & "</b>"
       Endif
 
       If InStr(":m", LCase(hSym.Kind)) Then
@@ -4710,7 +4833,7 @@ End
 
 Private Function Keyword(sWord As String, Optional iColor As Integer) As String
 
-  If $sVersion = "2.0" Then sWord = UCase(sWord)
+  If $sVersion = "2.0" And If iColor = 0 Then sWord = UCase(sWord)
 
   If iColor Then
     Return "<font color=\"#" & Hex$(iColor, 6) & "\">" & sWord & "</font>"
@@ -4719,9 +4842,6 @@ Private Function Keyword(sWord As String, Optional iColor As Integer) As String
   Endif
 
 End
-
-'
-'
 
 Private Function GetType(sType As String) As String
 
@@ -4878,7 +4998,11 @@ Private Function GetClassVariableName(sClass As String) As String
     Endif
   Else
     sClass = Replace(sClass, "[]", "Array")
-    If Left$(sClass) = "." Then sClass = Mid$(sClass, 2)
+    If Left$(sClass) = "." Then 
+      sClass = Mid$(sClass, 2)
+    Else If Left(sClass) = "_" Then
+      sClass = Replace(Mid$(sClass, 2), "_", ".")
+    Endif
     sRes = "h" & sClass
   Endif
 
