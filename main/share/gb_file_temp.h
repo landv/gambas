@@ -580,8 +580,12 @@ bool FILE_dir_next(char **path, int *len)
 				continue;
 			#else
 			strcpy(p, name);
-			stat(file_buffer, &info);
-			if ((file_attr == GB_STAT_DIRECTORY) ^ (S_ISDIR(info.st_mode) != 0))
+			if (stat(file_buffer, &info))
+			{
+				if (file_attr == GB_STAT_DIRECTORY)
+					continue;
+			}
+			else if ((file_attr == GB_STAT_DIRECTORY) ^ (S_ISDIR(info.st_mode) != 0))
 				continue;
 			#endif
 		}

@@ -549,6 +549,15 @@ static bool raise_event(OBJECT *observer, void *object, int func_id, int nparam)
 
 // If nparam < 0, the args are already on the stack
 
+static void *_GB_Raise_unref = NULL;
+static int _GB_Raise_nparam = 0;
+
+static void error_GB_Raise()
+{
+	RELEASE_MANY(SP, _GB_Raise_nparam);
+	OBJECT_UNREF(_GB_Raise_unref, "error_GB_Raise");
+}
+
 bool GB_Raise(void *object, int event_id, int nparam, ...)
 {
   OBJECT *parent;
@@ -557,6 +566,8 @@ bool GB_Raise(void *object, int event_id, int nparam, ...)
   va_list args;
   bool arg;
   COBSERVER *obs;
+	void *save_GB_Raise_unref;
+	int save_GB_Raise_nparam;
 
   if (GAMBAS_DoNotRaiseEvent)
     return FALSE;
@@ -564,9 +575,13 @@ bool GB_Raise(void *object, int event_id, int nparam, ...)
   if (!OBJECT_is_valid(object) || !OBJECT_has_events(object))
     return FALSE;
 
-	/*TRY
-	{*/
+	save_GB_Raise_unref = _GB_Raise_unref;
+	save_GB_Raise_nparam = _GB_Raise_nparam;
+	
+	ON_ERROR(error_GB_Raise)
+	{
 		OBJECT_REF(object, "GB_Raise");
+		_GB_Raise_unref = object;
 	
 		arg = nparam < 0;
 		nparam = abs(nparam);
@@ -578,6 +593,8 @@ bool GB_Raise(void *object, int event_id, int nparam, ...)
 			va_end(args);
 		}
 	
+		_GB_Raise_nparam = nparam;
+		
 		result = FALSE;
 	
 		// Observers before
@@ -670,14 +687,11 @@ __RETURN:
 	
 		RELEASE_MANY(SP, nparam);
 		OBJECT_UNREF(object, "GB_Raise");	
-	/*}
-	CATCH
-	{
-		RELEASE_MANY(SP, nparam);
-		OBJECT_UNREF(object, "GB_Raise");	
-		PROPAGATE();
 	}
-	END_TRY*/
+	END_ERROR
+
+	_GB_Raise_unref = save_GB_Raise_unref;
+	_GB_Raise_nparam = save_GB_Raise_nparam;
 
 	return result;
 }

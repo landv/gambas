@@ -103,39 +103,35 @@ elif [ x"$DESKTOP_SESSION" != x"gnome" ]; then DESKTOP=Gnome;
 elif [ x"$DESKTOP_SESSION" != x"xfce" ]; then DESKTOP=Xfce;
 fi
 
-
 # ---------------- PRINT ALL TO FILE
 
-echo "[OperatingSystem]"
+echo "[System]"
 echo "OperatingSystem=$OS"
 echo "KernelRelease=$KERNEL"
+echo "Architecture=$ARCH"
+echo "Memory=$RAM"
 echo "DistributionVendor=$vendor"
 echo "DistributionRelease=$release"
-echo ""
-echo "[System]"
-echo "CPUArchitecture=$ARCH"
-echo "TotalRam=$RAM"
 echo "Desktop=$DESKTOP"
 echo ""
-echo "[Gambas]"
 
-if [ "$GAMBAS" = "" ]; then
-  echo "Gambas1=Not Installed"
-else
-  echo "Gambas1=$GAMBAS"
-  echo "Gambas1Path=$GAMBASPATH"
+if [ "$GAMBAS" != "" ]; then
+  echo "[Gambas 1]"
+  echo "Version=$GAMBAS"
+  echo "Path=$GAMBASPATH"
+  echo
 fi
 
-if [ "$GAMBAS2" = "" ]; then
-  echo "Gambas2=Not Installed"
-else
-  echo "Gambas2=$GAMBAS2"
-  echo "Gambas2Path=$GAMBAS2PATH"
+if [ "$GAMBAS2" != "" ]; then
+  echo "[Gambas 2]"
+  echo "Version=$GAMBAS2"
+  echo "Path=$GAMBAS2PATH"
+  echo
 fi
 
-if [ "$GAMBAS3" = "" ]; then
-  echo "Gambas3=Not Installed"
-else
-  echo "Gambas3=$GAMBAS3" 
-  echo "Gambas3Path=$GAMBAS3PATH" 
+if [ "$GAMBAS3" != "" ]; then
+  echo "[Gambas 3]"
+  echo "Version=$GAMBAS3" 
+  echo "Path=$GAMBAS3PATH" 
+  echo
 fi

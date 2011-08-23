@@ -348,7 +348,7 @@ Private Function GetIcon(sPath As String) As Picture
 
   If sPath = GetRoot() Then Return $hRootPict  
   $hPict = Null
-  Raise Icon(sPath)
+  Try Raise Icon(sPath)
   If $hPict Then Return $hPict
   Return Picture["icon:/small/directory"]
   
