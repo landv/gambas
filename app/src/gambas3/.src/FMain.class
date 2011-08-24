@@ -996,7 +996,8 @@ Public Sub ReadConfig()
   Me.Menus.Visible = Settings["/ShowMenus", True]
   'btnShowMenu.Visible = Not Me.Menus.Visible
   
-  MTheme.InitControl(tvwProject)
+  ' BUG: Changing tvwProject foreground does nothing!
+  'MTheme.InitControl(tvwProject)
   
   'panTabProperty.H = tabProperty.ClientY - 2
   

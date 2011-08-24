@@ -8,6 +8,8 @@ Public Const STYLE_CSS As Integer = 3
 
 Private Const TAG_HTML As Integer = 0
 Private Const TAG_CODE As Integer = 1
+Private Const TAG_SCRIPT As Integer = 2
+Private Const TAG_STYLE As Integer = 3
 
 Private Sub AnalyzeCode(sText As String) As String
   
@@ -61,6 +63,8 @@ Public Sub Run(iStyle As Integer)
   Dim iTag As Integer
   Dim iCount As Integer
   Dim iCodeStart As Integer
+  Dim bScript, bStyle As Boolean
+  Dim sMarkup As String
 
   iState = Highlight.State
   iTag = Highlight.Tag
@@ -72,12 +76,17 @@ Public Sub Run(iStyle As Integer)
   
     Case STYLE_HTML, STYLE_WEB
 
-      If iTag = TAG_HTML Then
-        bMarkup = iState = Highlight.Keyword
-      Else If iTag = TAG_CODE
-        bCode = True
-        iCodeStart = 1
-      Endif
+      Select Case iTag
+        Case TAG_HTML
+          bMarkup = iState = Highlight.Keyword
+        Case TAG_CODE
+          bCode = True
+          iCodeStart = 1
+        Case TAG_SCRIPT
+          bScript = True
+        Case TAG_STYLE
+          bStyle = True
+      End Select
     
       For iInd = 1 To String.Len(sText)
     
@@ -106,6 +115,40 @@ Public Sub Run(iStyle As Integer)
             'iNextState = iSaveNextState 'Highlight.Normal
           Endif
           Continue
+          
+        Else If bScript Then
+          
+          If String.Mid$(sText, iInd, 9) = "</script>" Then
+            bScript = False
+            Highlight.AlternateState = False
+            Highlight.Add(Highlight.Keyword, 9)
+            iInd += 8
+            sTextAfter &= "</script>"
+            iState = iSaveState 'Highlight.Normal
+            iNextState = iState
+          Else
+            sTextAfter &= sCar
+            Highlight.Add(iState)
+            iState = iNextState
+          Endif
+          Continue
+
+        Else If bStyle Then
+          
+          If String.Mid$(sText, iInd, 8) = "</style>" Then
+            bStyle = False
+            Highlight.AlternateState = False
+            Highlight.Add(Highlight.Keyword, 8)
+            iInd += 7
+            sTextAfter &= "</style>"
+            iState = iSaveState 'Highlight.Normal
+            iNextState = iState
+          Else
+            sTextAfter &= sCar
+            Highlight.Add(iState)
+            iState = iNextState
+          Endif
+          Continue
 
         Else If iStyle = STYLE_WEB And If String.Mid$(sText, iInd, 2) = "<%" Then
         
@@ -127,7 +170,7 @@ Public Sub Run(iStyle As Integer)
           bCode = True
           iCodeStart = iInd + 1
           Continue
-        
+          
         Else If bMarkup Then
     
           If bQuoteMarkup Then
@@ -137,8 +180,23 @@ Public Sub Run(iStyle As Integer)
             Endif
           Else If sCar = ">" Then
             bMarkup = False
-            iState = Highlight.Keyword
-            iNextState = Highlight.Normal
+            If sMarkup Then
+              Highlight.Add(Highlight.Keyword, 1)
+              sTextAfter &= sCar
+              iSaveState = iState
+              iState = Highlight.Normal
+              iNextState = Highlight.Normal
+              If sMarkup = "script" Then
+                bScript = True
+              Else If sMarkup = "style" Then
+                bStyle = True
+              Endif
+              Highlight.AlternateState = True
+              Continue
+            Else
+              iState = Highlight.Keyword
+              iNextState = Highlight.Normal
+            Endif
           Else If sCar = " " Then
             iNextState = Highlight.Operator
           Else If sCar = "=" Then
@@ -158,26 +216,18 @@ Public Sub Run(iStyle As Integer)
                 Else If String.Mid$(sText, iInd, 9) = "<![CDATA[" Then
                   iState = Highlight.Symbol
                   iNextState = Highlight.Symbol
-                ' Else If iStyle = STYLE_WEB And If String.Mid$(sText, iInd, 2) = "<%" Then
-                '   If String.Mid$(sText, iInd + 2, 1) = "=" Then
-                '     iCount = 3
-                '   Else 
-                '     iCount = 2
-                '   Endif
-                '   Highlight.AlternateState = True
-                '   Highlight.Add(Highlight.Keyword, iCount)
-                '   sTextAfter &= String.Mid$(sText, iInd, iCount)
-                '   iInd += iCount - 1
-                '   iState = Highlight.Normal
-                '   iNextState = Highlight.Normal
-                '   bCode = True
-                '   iCodeStart = iInd + 1
-                '   Continue
                 Else
                   iState = Highlight.Keyword
                   iNextState = Highlight.Keyword
                   bMarkup = True
-                  If String.Mid$(sText, iInd, 5) = "<body" Or If String.Mid$(sText, iInd, 5) = "<head" Then bLimit = True
+                  sMarkup = ""
+                  If String.Mid$(sText, iInd, 5) = "<body" Or If String.Mid$(sText, iInd, 5) = "<head" Then 
+                    bLimit = True
+                  Else If String.Mid$(sText, iInd, 7) = "<script" Then
+                    sMarkup = "script"
+                  Else If String.Mid$(sText, iInd, 6) = "<style" Then
+                    sMarkup = "style"
+                  Endif
                 Endif
               Else If sCar = "&" Then
                 iPos = String.InStr(sText, ";", iInd)
@@ -222,6 +272,10 @@ Public Sub Run(iStyle As Integer)
       If bCode Then
         sTextAfter &= AnalyzeCode(String.Mid$(sText, iCodeStart))
         iTag = TAG_CODE
+      Else If bScript Then
+        iTag = TAG_SCRIPT
+      Else If bStyle Then
+        iTag = TAG_STYLE
       Else
         iTag = TAG_HTML
         If iNextState <> Highlight.Comment And If iNextState <> Highlight.Symbol Then

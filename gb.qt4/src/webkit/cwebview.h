@@ -70,7 +70,6 @@ typedef
 		QT_PICTURE icon;
 		QNetworkReply *reply;
 		QAuthenticator *authenticator;
-		bool cached;
 	}
 	CWEBVIEW;
 

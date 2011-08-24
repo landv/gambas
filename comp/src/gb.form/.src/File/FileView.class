@@ -122,7 +122,7 @@ Private Sub GetIcon(sPath As String, iSize As Integer) As Picture
   Dim sIcon As String
   
   $hPict = Null
-  Raise Icon(sPath)
+  Try Raise Icon(sPath)
   If $hPict Then Return $hPict
   
   If IsDir(sPath) Then Return

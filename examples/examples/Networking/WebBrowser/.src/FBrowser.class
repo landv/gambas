@@ -22,7 +22,7 @@ Private $sLastLink As String
 Public Sub Form_Open()
 
   WebSettings.IconDatabase.Path = File.Dir(File.Dir(Temp$()))
-  WebSettings.Font[WebSettings.FixedFont] = "Monospace"
+  WebSettings.Fonts.FixedFont = "Monospace"
   WebSettings[WebSettings.PluginsEnabled] = True
   WebSettings[WebSettings.JavascriptEnabled] = True
   WebSettings[WebSettings.JavaEnabled] = True
@@ -230,7 +230,7 @@ Private Sub CreateView()
   tabBrowser.Index = iLast
   hView = New WebView(tabBrowser) As "WebView"
   hView.Tag = tabBrowser.Index
-  Print WebSettings.Font[WebSettings.FixedFont]
+  Print WebSettings.Fonts.FixedFont
   Object.Unlock(tabBrowser)
   tabBrowser_Click
   

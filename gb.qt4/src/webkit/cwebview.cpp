@@ -35,6 +35,13 @@
 #include "cwebhittest.h"
 #include "cwebview.h"
 
+typedef
+	struct {
+		const char *name;
+		QWebPage::WebAction action;
+	}
+	WEBVIEW_ACTION;
+	
 DECLARE_EVENT(EVENT_CLICK);
 DECLARE_EVENT(EVENT_LINK);
 DECLARE_EVENT(EVENT_PROGRESS);
@@ -52,6 +59,79 @@ DECLARE_EVENT(EVENT_DOWNLOAD);
 static QNetworkAccessManager *_network_access_manager = 0;
 static CWEBVIEW *_network_access_manager_view = 0;
 
+static WEBVIEW_ACTION _actions[] = 
+{
+	{ "OpenLink", QWebPage::OpenLink },
+	{ "OpenLinkInNewWindow", QWebPage::OpenLinkInNewWindow },
+	{ "OpenFrameInNewWindow", QWebPage::OpenFrameInNewWindow },
+	{ "DownloadLinkToDisk", QWebPage::DownloadLinkToDisk },
+	{ "CopyLinkToClipboard", QWebPage::CopyLinkToClipboard },
+	{ "OpenImageInNewWindow", QWebPage::OpenImageInNewWindow },
+	{ "DownloadImageToDisk", QWebPage::DownloadImageToDisk },
+	{ "CopyImageToClipboard", QWebPage::CopyImageToClipboard },
+	{ "Back", QWebPage::Back },
+	{ "Forward", QWebPage::Forward },
+	{ "Stop", QWebPage::Stop },
+	{ "StopScheduledPageRefresh", QWebPage::StopScheduledPageRefresh },
+	{ "Reload", QWebPage::Reload },
+	{ "ReloadAndBypassCache", QWebPage::ReloadAndBypassCache },
+	{ "Cut", QWebPage::Cut },
+	{ "Copy", QWebPage::Copy },
+	{ "Paste", QWebPage::Paste },
+	{ "Undo", QWebPage::Undo },
+	{ "Redo", QWebPage::Redo },
+	{ "MoveToNextChar", QWebPage::MoveToNextChar },
+	{ "MoveToPreviousChar", QWebPage::MoveToPreviousChar },
+	{ "MoveToNextWord", QWebPage::MoveToNextWord },
+	{ "MoveToPreviousWord", QWebPage::MoveToPreviousWord },
+	{ "MoveToNextLine", QWebPage::MoveToNextLine },
+	{ "MoveToPreviousLine", QWebPage::MoveToPreviousLine },
+	{ "MoveToStartOfLine", QWebPage::MoveToStartOfLine },
+	{ "MoveToEndOfLine", QWebPage::MoveToEndOfLine },
+	{ "MoveToStartOfBlock", QWebPage::MoveToStartOfBlock },
+	{ "MoveToEndOfBlock", QWebPage::MoveToEndOfBlock },
+	{ "MoveToStartOfDocument", QWebPage::MoveToStartOfDocument },
+	{ "MoveToEndOfDocument", QWebPage::MoveToEndOfDocument },
+	{ "SelectNextChar", QWebPage::SelectNextChar },
+	{ "SelectPreviousChar", QWebPage::SelectPreviousChar },
+	{ "SelectNextWord", QWebPage::SelectNextWord },
+	{ "SelectPreviousWord", QWebPage::SelectPreviousWord },
+	{ "SelectNextLine", QWebPage::SelectNextLine },
+	{ "SelectPreviousLine", QWebPage::SelectPreviousLine },
+	{ "SelectStartOfLine", QWebPage::SelectStartOfLine },
+	{ "SelectEndOfLine", QWebPage::SelectEndOfLine },
+	{ "SelectStartOfBlock", QWebPage::SelectStartOfBlock },
+	{ "SelectEndOfBlock", QWebPage::SelectEndOfBlock },
+	{ "SelectStartOfDocument", QWebPage::SelectStartOfDocument },
+	{ "SelectEndOfDocument", QWebPage::SelectEndOfDocument },
+	{ "DeleteStartOfWord", QWebPage::DeleteStartOfWord },
+	{ "DeleteEndOfWord", QWebPage::DeleteEndOfWord },
+	{ "SetTextDirectionDefault", QWebPage::SetTextDirectionDefault },
+	{ "SetTextDirectionLeftToRight", QWebPage::SetTextDirectionLeftToRight },
+	{ "SetTextDirectionRightToLeft", QWebPage::SetTextDirectionRightToLeft },
+	{ "ToggleBold", QWebPage::ToggleBold },
+	{ "ToggleItalic", QWebPage::ToggleItalic },
+	{ "ToggleUnderline", QWebPage::ToggleUnderline },
+	{ "InspectElement", QWebPage::InspectElement },
+	{ "InsertParagraphSeparator", QWebPage::InsertParagraphSeparator },
+	{ "InsertLineSeparator", QWebPage::InsertLineSeparator },
+	{ "SelectAll", QWebPage::SelectAll },
+	{ "PasteAndMatchStyle", QWebPage::PasteAndMatchStyle },
+	{ "RemoveFormat", QWebPage::RemoveFormat },
+	{ "ToggleStrikethrough", QWebPage::ToggleStrikethrough },
+	{ "ToggleSubscript", QWebPage::ToggleSubscript },
+	{ "ToggleSuperscript", QWebPage::ToggleSuperscript },
+	{ "InsertUnorderedList", QWebPage::InsertUnorderedList },
+	{ "InsertOrderedList", QWebPage::InsertOrderedList },
+	{ "Indent", QWebPage::Indent },
+	{ "Unindent", QWebPage::Outdent },
+	{ "AlignCenter", QWebPage::AlignCenter },
+	{ "AlignJustified", QWebPage::AlignJustified },
+	{ "AlignLeft", QWebPage::AlignLeft },
+	{ "AlignRight", QWebPage::AlignRight },
+	{ NULL, QWebPage::NoWebAction }
+};
+
 QNetworkAccessManager *WEBVIEW_get_network_manager()
 {
 	if (!_network_access_manager)
@@ -61,6 +141,19 @@ QNetworkAccessManager *WEBVIEW_get_network_manager()
 	}
 	
 	return _network_access_manager;
+}
+
+static QWebPage::WebAction get_action(const char *name)
+{
+	WEBVIEW_ACTION *p;
+	
+	for (p = _actions; p->name; p++)
+	{
+		if (!strcasecmp(p->name, name))
+			return p->action;
+	}
+	
+	return QWebPage::NoWebAction;
 }
 
 BEGIN_METHOD(WebView_new, GB_OBJECT parent)
@@ -305,23 +398,6 @@ BEGIN_PROPERTY(WebViewAuth_Password)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(WebView_Cached)
-
-	if (READ_PROPERTY)
-		GB.ReturnBoolean(THIS->cached);
-	else
-	{
-		bool val = VPROP(GB_BOOLEAN);
-		
-		if (val == THIS->cached)
-			return;
-		
-		THIS->cached = val;
-		WEBSETTINGS_set_cache(WIDGET, val);
-	}
-
-END_PROPERTY
-
 BEGIN_PROPERTY(WebView_Cookies)
 
 	MyCookieJar *cookieJar = static_cast<MyCookieJar *>(_network_access_manager->cookieJar());
@@ -387,6 +463,53 @@ BEGIN_METHOD(WebView_FindText, GB_STRING text; GB_BOOLEAN backward; GB_BOOLEAN c
 
 END_METHOD
 
+BEGIN_PROPERTY(WebView_Editable)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(WIDGET->page()->isContentEditable());
+	else
+		WIDGET->page()->setContentEditable(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
+BEGIN_METHOD(WebView_Exec, GB_STRING action; GB_VARIANT arg)
+
+	QWebPage::WebAction action = get_action(GB.ToZeroString(ARG(action)));
+	
+	if (action == QWebPage::NoWebAction)
+	{
+		GB.Error("Unknown action");
+		return;
+	}
+	
+	if (MISSING(arg))
+	{
+		WIDGET->page()->triggerAction(action);
+	}
+	else
+	{
+		if (GB.Conv((GB_VALUE *)ARG(arg), GB_T_BOOLEAN))
+			return;
+		
+		WIDGET->page()->triggerAction(action, ((GB_BOOLEAN *)ARG(arg))->value);
+	}
+
+END_METHOD
+
+/*
+BEGIN_METHOD(WebView_CanExec, GB_STRING action)
+
+	QWebPage::Action action = get_action(GB.ToZeroString(ARG(action)));
+	
+	if (action == QWebPage::NoWebAction)
+	{
+		GB.Error("Unknown action");
+		return;
+	}
+	
+END_METHOD
+*/
+
 /***************************************************************************/
 
 GB_DESC CWebViewAuthDesc[] =
@@ -438,14 +561,17 @@ GB_DESC CWebViewDesc[] =
 	
 	GB_PROPERTY("NewView", "WebView", WebView_NewView),
 
-	GB_PROPERTY("Cached", "b", WebView_Cached),
-	
 	GB_PROPERTY("Cookies", "Cookie[]", WebView_Cookies),
 	
 	GB_METHOD("HitTest", "WebHitTest", WebView_HitTest, "(X)i(Y)i"),
 	GB_METHOD("FindText", "b", WebView_FindText, "[(Text)s(Backward)b(CaseSensitive)b(Wrap)b]"),
 
-	GB_CONSTANT("_Properties", "s", "*,Url,Cached"),
+	GB_PROPERTY("Editable", "b", WebView_Editable),
+	GB_METHOD("Exec", NULL, WebView_Exec, "(Action)s[(Argument)v]"),
+	//GB_METHOD("CanExec", "b", WebView_CanExec, "(Action)s"),
+
+	GB_CONSTANT("_Properties", "s", "*,Url,Editable"),
+	GB_CONSTANT("_Group", "s", "View"),
 	
 	GB_EVENT("Click", NULL, "(Frame)WebFrame", &EVENT_CLICK),
 	GB_EVENT("Link", NULL, "(Url)s", &EVENT_LINK),

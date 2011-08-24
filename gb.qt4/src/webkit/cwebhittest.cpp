@@ -67,12 +67,6 @@ BEGIN_PROPERTY(WebHitTest_Url)
 
 END_PROPERTY
 
-BEGIN_METHOD_VOID(WebHitTest_new)
-
-	RESULT = new QWebHitTestResult;
-
-END_METHOD
-
 BEGIN_METHOD_VOID(WebHitTest_free)
 
 	delete RESULT;
@@ -81,9 +75,9 @@ END_METHOD
 
 GB_DESC CWebHitTestDesc[] =
 {
-  GB_DECLARE("WebHitTest", sizeof(CWEBHITTEST)),
+  GB_DECLARE("WebHitTest", sizeof(CWEBHITTEST)), GB_NOT_CREATABLE(),
   
-  GB_METHOD("_new", NULL, WebHitTest_new, NULL),
+  //GB_METHOD("_new", NULL, WebHitTest_new, NULL),
   GB_METHOD("_free", NULL, WebHitTest_free, NULL),
   
 	GB_PROPERTY_READ("Document", "b", WebHitTest_Document),
@@ -102,7 +96,8 @@ GB_DESC CWebHitTestDesc[] =
 CWEBHITTEST *WEB_create_hit_test(const QWebHitTestResult &result)
 {
 	CWEBHITTEST *_object = (CWEBHITTEST *)GB.New(GB.FindClass("WebHitTest"), NULL, NULL);
-	*(THIS->result) = result;
+	RESULT = new QWebHitTestResult;
+	*RESULT = result;
 	
 	return THIS;
 }

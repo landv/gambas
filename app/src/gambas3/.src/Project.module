@@ -209,6 +209,7 @@ Private Sub InitWebView()
     sPath &/= "help"
     Try Mkdir sPath
     WebSettings.Cache.Path = sPath
+    WebSettings.Cache.Enabled = True
   Endif
 
 End

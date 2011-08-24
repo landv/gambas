@@ -127,7 +127,7 @@ private:
 	void lineRemoved(int y);
 	int findLargestLine();
 
-	void paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int h, int x1, int x2, int row);
+	void paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int h, int x1, int x2, int row, QColor &);
 	void paintShowString(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int h, int row);
 	void paintDottedSpaces(QPainter &p, int row, int ps, int ls);
 	//void paintEmptyArea(QPainter *p, int cx, int cy, int cw, int ch);

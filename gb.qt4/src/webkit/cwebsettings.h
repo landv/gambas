@@ -33,7 +33,7 @@
 #ifndef __CWEBSETTINGS_CPP
 
 extern GB_DESC CWebViewSettingsDesc[];
-extern GB_DESC CWebSettingsFontDesc[];
+extern GB_DESC CWebSettingsFontsDesc[];
 extern GB_DESC CWebSettingsIconDatabaseDesc[];
 extern GB_DESC CWebSettingsCacheDesc[];
 extern GB_DESC CWebSettingsProxyDesc[];
@@ -45,6 +45,6 @@ extern GB_DESC CWebSettingsDesc[];
 
 #endif
 
-void WEBSETTINGS_set_cache(QWebView *view, bool on);
+//void WEBSETTINGS_set_cache(QWebView *view, bool on);
 
 #endif

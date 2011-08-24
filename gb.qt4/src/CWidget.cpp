@@ -1241,6 +1241,7 @@ void CWIDGET_reset_color(CWIDGET *_object)
 		//	w->setPalette(parent->widget->palette());
 		//else
 		w->setPalette(QPalette());
+		//WIDGET->setPalette(QPalette());
 	}
 	else
 	{
@@ -1254,12 +1255,16 @@ void CWIDGET_reset_color(CWIDGET *_object)
 		if (fg != COLOR_DEFAULT)
 		{
 			palette.setColor(w->foregroundRole(), QColor((QRgb)fg));
+			//palette.setColor(QPalette::Text, QColor((QRgb)fg));
+			//palette.setColor(QPalette::WindowText, QColor((QRgb)fg));
+			//palette.setColor(QPalette::ButtonText, QColor((QRgb)fg));
 			/*palette.setColor(QPalette::WindowText, QColor((QRgb)fg));
 			palette.setColor(QPalette::Text, QColor((QRgb)fg));
 			palette.setColor(QPalette::ButtonText, QColor((QRgb)fg));*/
 		}
 			
 		w->setPalette(palette);
+		//WIDGET->setPalette(palette);
 	}	
 	
 	w->setAutoFillBackground(!THIS->flag.noBackground && (THIS->flag.fillBackground || (THIS->bg != COLOR_DEFAULT && w->backgroundRole() == QPalette::Window)));

@@ -461,7 +461,27 @@ void GEditor::paintDottedSpaces(QPainter &p, int row, int ps, int ls)
 	p.drawPoints(pa, i);
 }
 
-void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int h, int xs1, int xs2, int row)
+static QColor merge_color(const QColor &ca, const QColor &cb)
+{
+	int r, g, b;
+	
+	if (cb.value() >= 128)
+	{
+		r = ca.red() * cb.red() / 255;
+		g = ca.green() * cb.green() / 255;
+		b = ca.blue() * cb.blue() / 255;
+	}
+	else
+	{
+		r = ca.red() * (255-cb.red()) / 255;
+		g = ca.green() * (255-cb.green()) / 255;
+		b = ca.blue() * (255-cb.blue()) / 255;
+	}
+
+	return QColor(r, g, b);
+}
+
+void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int h, int xs1, int xs2, int row, QColor &fbg)
 {
 	int i;
 	int len, style, pos;
@@ -475,6 +495,31 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 	bool draw_bg;
 	bool show_dots = getFlag(ShowDots);
 
+	if (l->s.length() == 0)
+	{
+		if (l->alternate)
+		{
+			nx = _cellw;
+			
+			int x1 = x;
+			int x2 = nx;
+			int xd1 = xs1;
+			int xd2 = xs2;
+			
+			if (xd1 < x1)
+				xd1 = x1;
+			if (xd2 > x2)
+				xd2 = x2;
+
+			p.fillRect(x, 0, nx - x, h, merge_color(styles[GLine::Alternate].color, fbg));
+			
+			if (xd2 > xd1)
+				p.fillRect(xd1, 0, xd2 - xd1, h, styles[GLine::Selection].color);
+		}
+		
+		return;
+	}
+	
 	p.setFont(font());
 
 	pos = 0;
@@ -504,6 +549,8 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 			{
 				draw_bg = true;
 				bg = styles[GLine::Alternate].color;
+				if (i == (GB.Count(l->highlight) - 1))
+					nx = _cellw;
 			}
 			
 			if (style == GLine::Keyword && doc->isKeywordsUseUpperCase())
@@ -523,10 +570,7 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 				if (xd2 > x2)
 					xd2 = x2;
 
-				if (alternate && (i == (GB.Count(l->highlight) - 1)))
-					nx = _cellw;
-					
-				p.fillRect(x, 0, nx - x, h, bg);
+				p.fillRect(x, 0, nx - x, h, merge_color(bg, fbg));
 				
 				if (xd2 > xd1)
 					p.fillRect(xd1, 0, xd2 - xd1, h, styles[GLine::Selection].color);
@@ -653,19 +697,21 @@ static QColor calc_color(QColor ca, QColor cb, QColor cd)
 {
 	int r = 1, g = 1, b = 1, n = 0;
 
-	#define test(x) if (x.isValid()) { r *= x.red(); g *= x.green(); b *= x.blue(); n++; }
+	if (!ca.isValid() && !cb.isValid())
+		return cd;
+	
+	if (!ca.isValid())
+		return cb;
+	
+	if (!cb.isValid())
+		return ca;
+	
+	#define test(x) r *= x.red(); g *= x.green(); b *= x.blue(); n++;
 
 	test(ca);
 	test(cb);
-	//test(cc);
-
-	if (n == 0)
-		return cd;
-	else
-	{
-		n = (n == 2) ? 255 : (n == 3) ? 255*255 : 1;
-		return QColor(r / n, g / n, b / n);
-	}
+	n = (n == 2) ? 255 : (n == 3) ? 255*255 : 1;
+	return QColor(r / n, g / n, b / n);
 }
 
 static void highlight_text(QPainter &p, int x, int y, int x2, int yy, QString s, QColor color)
@@ -752,7 +798,10 @@ void GEditor::paintCell(QPainter &p, int row, int)
 
 	//QPainter p(cache);
 	
-	color = calc_color(a, b, odd ? _oddBackground : styles[GLine::Background].color);
+	if (isEnabled())
+		color = calc_color(a, b, odd ? _oddBackground : styles[GLine::Background].color);
+	else
+		color = palette().color(QPalette::Disabled, QPalette::Base);
 	
 	p.fillRect(0, 0, _cellw, _cellh, color);
 	
@@ -761,7 +810,7 @@ void GEditor::paintCell(QPainter &p, int row, int)
 	//p.translate(-ur.left(), 0);
 
 	// Procedure separation
-	if (!getFlag(ChangeBackgroundAtLimit) && getFlag(ShowProcedureLimits) && l->proc)
+	if (l->proc && !getFlag(ChangeBackgroundAtLimit) && getFlag(ShowProcedureLimits) && !folded)
 	{
 		if (getFlag(BlendedProcedureLimits))
 		{
@@ -854,9 +903,9 @@ void GEditor::paintCell(QPainter &p, int row, int)
 	}
 
 	// Line text
-	if (l->s.length())
+	if (!highlight)
 	{
-		if (!highlight)
+		if (l->s.length())
 		{
 			p.setPen(styles[GLine::Normal].color);
 			//p.drawText(margin + xmin * charWidth, fm.ascent() + 1, l->s.getString().mid(xmin, lmax));
@@ -868,15 +917,10 @@ void GEditor::paintCell(QPainter &p, int row, int)
 					paintDottedSpaces(p, realRow, i, QMIN(xmin + lmax, (int)l->s.length()) - i);		
 			}
 		}
-		/*else if (l->flag)
-		{
-			p.setPen(styles[GLine::Background].color);
-			p.drawText(margin, fm.ascent(), l->s.getString().mid(xmin, lmax));
-		}*/
-		else
-		{
-			paintText(p, l, margin, fm.ascent() + 1, xmin, lmax, _cellh, xs1, xs2, realRow);
-		}
+	}
+	else
+	{
+		paintText(p, l, margin, fm.ascent() + 1, xmin, lmax, _cellh, xs1, xs2, realRow, color);
 	}
 	
 	// Folding symbol
@@ -2054,9 +2098,9 @@ void GEditor::setStyle(int index, GHighlightStyle *style)
 	if (index == GLine::Line)
 	{
 		_oddBackground = style->color;
-		sat = _oddBackground.saturation() * 3 / 5;
+		sat = _oddBackground.saturation();
 		if (_oddBackground.saturation() > 10)
-			_oddBackground.setHsv(_oddBackground.hue() + 4, sat, _oddBackground.value());
+			_oddBackground.setHsv(_oddBackground.hue() + 4, sat * 3 / 5, _oddBackground.value());
 		else if (_oddBackground.value() > 127)
 			_oddBackground.setHsv(_oddBackground.hue() + 4, sat, _oddBackground.value() - 32);
 		else

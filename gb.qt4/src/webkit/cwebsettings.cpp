@@ -30,23 +30,26 @@
 #include "cwebsettings.h"
 
 //static QNetworkDiskCache *_cache = 0;
+static bool _cache_enabled = false;
 static char *_cache_path = 0;
 
-void WEBSETTINGS_set_cache(QWebView *view, bool on)
+static void set_cache(bool on)
 {
 	QNetworkDiskCache *cache;
 	
 	if (!_cache_path)
 		return;
 	
+	_cache_enabled = on;
+	
 	if (on)
 	{
 		cache = new QNetworkDiskCache(0);
 		cache->setCacheDirectory(TO_QSTRING(_cache_path));
-		view->page()->networkAccessManager()->setCache(cache);
+		WEBVIEW_get_network_manager()->setCache(cache);
 	}
 	else
-		view->page()->networkAccessManager()->setCache(0);
+		WEBVIEW_get_network_manager()->setCache(0);
 }
 
 
@@ -58,25 +61,86 @@ static QWebSettings *get_settings(void *_object)
 		return WEBVIEW->settings();
 }
 
+/***************************************************************************/
 
-BEGIN_METHOD(WebSettingsFont_get, GB_INTEGER font)
+static void handle_font_family(QWebSettings::FontFamily font, void *_object, void *_param)
+{
+	if (READ_PROPERTY)
+		GB.ReturnNewZeroString(TO_UTF8(get_settings(_object)->fontFamily(font)));
+	else
+		get_settings(_object)->setFontFamily(font, QSTRING_PROP());
+}
 
-	QWebSettings *settings = get_settings(_object);
-	QWebSettings::FontFamily font(QWebSettings::FontFamily(VARG(font)));
+BEGIN_PROPERTY(WebSettingsFonts_CursiveFont)
 
-	GB.ReturnNewZeroString(TO_UTF8(settings->fontFamily(font)));
-
-END_METHOD
-
-BEGIN_METHOD(WebSettingsFont_put, GB_STRING family; GB_INTEGER font)
-
-	QWebSettings *settings = get_settings(_object);
-	QWebSettings::FontFamily font(QWebSettings::FontFamily(VARG(font)));
-	
-	settings->setFontFamily(font, QSTRING_ARG(family));
+	handle_font_family(QWebSettings::CursiveFont, _object, _param);
 
 END_METHOD
 
+BEGIN_PROPERTY(WebSettingsFonts_FantasyFont)
+
+	handle_font_family(QWebSettings::FantasyFont, _object, _param);
+
+END_METHOD
+
+BEGIN_PROPERTY(WebSettingsFonts_FixedFont)
+
+	handle_font_family(QWebSettings::FixedFont, _object, _param);
+
+END_METHOD
+
+BEGIN_PROPERTY(WebSettingsFonts_SansSerifFont)
+
+	handle_font_family(QWebSettings::SansSerifFont, _object, _param);
+
+END_METHOD
+
+BEGIN_PROPERTY(WebSettingsFonts_SerifFont)
+
+	handle_font_family(QWebSettings::SerifFont, _object, _param);
+
+END_METHOD
+
+BEGIN_PROPERTY(WebSettingsFonts_StandardFont)
+
+	handle_font_family(QWebSettings::StandardFont, _object, _param);
+
+END_METHOD
+
+static void handle_font_size(QWebSettings::FontSize size, void *_object, void *_param)
+{
+	if (READ_PROPERTY)
+		GB.ReturnInteger(get_settings(_object)->fontSize(size));
+	else
+		get_settings(_object)->setFontSize(size, VPROP(GB_INTEGER));
+}
+
+BEGIN_PROPERTY(WebSettingsFonts_DefaultFixedFontSize)
+
+	handle_font_size(QWebSettings::DefaultFixedFontSize, _object, _param);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(WebSettingsFonts_DefaultFontSize)
+
+	handle_font_size(QWebSettings::DefaultFontSize, _object, _param);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(WebSettingsFonts_MinimumFontSize)
+
+	handle_font_size(QWebSettings::MinimumFontSize, _object, _param);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(WebSettingsFonts_MinimumLogicalFontSize)
+
+	handle_font_size(QWebSettings::MinimumLogicalFontSize, _object, _param);
+
+END_PROPERTY
+
+
+/***************************************************************************/
 
 BEGIN_METHOD_VOID(WebSettingsIconDatabase_Clear)
 
@@ -116,15 +180,32 @@ BEGIN_METHOD(WebSettingsIconDatabase_get, GB_STRING url)
 
 END_METHOD
 
+
+/***************************************************************************/
+
 BEGIN_PROPERTY(WebSettingsCache_Path)
 
 	if (READ_PROPERTY)
 		GB.ReturnString(_cache_path);
 	else
+	{
 		GB.StoreString(PROP(GB_STRING), &_cache_path);
+		set_cache(_cache_enabled);
+	}
 
 END_PROPERTY
 
+BEGIN_PROPERTY(WebSettingsCache_Enabled)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(_cache_enabled);
+	else
+		set_cache(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
+
+/***************************************************************************/
 
 BEGIN_METHOD(WebSettings_get, GB_INTEGER flag)
 
@@ -152,6 +233,9 @@ BEGIN_METHOD(WebSettings_Reset, GB_INTEGER flag)
 	settings->resetAttribute(flag);
 
 END_METHOD
+
+
+/***************************************************************************/
 
 BEGIN_METHOD_VOID(WebSettings_exit)
 
@@ -253,12 +337,21 @@ GB_DESC CWebViewSettingsDesc[] =
 	GB_END_DECLARE
 };
 
-GB_DESC CWebSettingsFontDesc[] =
+GB_DESC CWebSettingsFontsDesc[] =
 {
-  GB_DECLARE(".WebSettings.Font", 0), GB_VIRTUAL_CLASS(),
-	
-	GB_STATIC_METHOD("_get", "s", WebSettingsFont_get, "(Font)i"),
-	GB_STATIC_METHOD("_put", NULL, WebSettingsFont_get, "(Family)s(Font)i"),
+	GB_DECLARE(".WebSettings.Fonts", 0), GB_VIRTUAL_CLASS(),
+
+	GB_STATIC_PROPERTY("StandardFont", "s", WebSettingsFonts_StandardFont),
+	GB_STATIC_PROPERTY("FixedFont", "s", WebSettingsFonts_FixedFont),
+	GB_STATIC_PROPERTY("SerifFont", "s", WebSettingsFonts_SerifFont),
+	GB_STATIC_PROPERTY("SansSerifFont", "s", WebSettingsFonts_SansSerifFont),
+	GB_STATIC_PROPERTY("CursiveFont", "s", WebSettingsFonts_CursiveFont),
+	GB_STATIC_PROPERTY("FantasyFont", "s", WebSettingsFonts_FantasyFont),
+
+	GB_STATIC_PROPERTY("MinimumFontSize", "i", WebSettingsFonts_MinimumFontSize),
+	GB_STATIC_PROPERTY("MinimumLogicalFontSize", "i", WebSettingsFonts_MinimumLogicalFontSize),
+	GB_STATIC_PROPERTY("DefaultFontSize", "i", WebSettingsFonts_DefaultFontSize),
+	GB_STATIC_PROPERTY("DefaultFixedFontSize", "i", WebSettingsFonts_DefaultFixedFontSize),
 	
 	GB_END_DECLARE
 };
@@ -278,6 +371,7 @@ GB_DESC CWebSettingsCacheDesc[] =
 {
   GB_DECLARE(".WebSettings.Cache", 0), GB_VIRTUAL_CLASS(),
 	
+	GB_STATIC_PROPERTY("Enabled", "b", WebSettingsCache_Enabled),
 	GB_STATIC_PROPERTY("Path", "s", WebSettingsCache_Path),
 	
 	GB_END_DECLARE
@@ -300,13 +394,6 @@ GB_DESC CWebSettingsDesc[] =
 {
   GB_DECLARE("WebSettings", 0),
 	
-	GB_CONSTANT("StandardFont", "i", QWebSettings::StandardFont),
-	GB_CONSTANT("FixedFont", "i", QWebSettings::FixedFont),
-	GB_CONSTANT("SerifFont", "i", QWebSettings::SerifFont),
-	GB_CONSTANT("SansSerifFont", "i", QWebSettings::SansSerifFont),
-	GB_CONSTANT("CursiveFont", "i", QWebSettings::CursiveFont),
-	GB_CONSTANT("FantasyFont", "i", QWebSettings::FantasyFont),
-	
 	GB_CONSTANT("AutoLoadImages", "i", QWebSettings::AutoLoadImages),
 	GB_CONSTANT("JavascriptEnabled", "i", QWebSettings::JavascriptEnabled),
 	GB_CONSTANT("JavaEnabled", "i", QWebSettings::JavaEnabled),
@@ -326,7 +413,7 @@ GB_DESC CWebSettingsDesc[] =
 	GB_CONSTANT("Socks5Proxy", "i", QNetworkProxy::Socks5Proxy),
 	GB_CONSTANT("HttpProxy", "i", QNetworkProxy::HttpProxy),
 	
-	GB_STATIC_PROPERTY_SELF("Font", ".WebSettings.Font"),
+	GB_STATIC_PROPERTY_SELF("Fonts", ".WebSettings.Fonts"),
 	GB_STATIC_PROPERTY_SELF("IconDatabase", ".WebSettings.IconDatabase"),
 	GB_STATIC_PROPERTY_SELF("Cache", ".WebSettings.Cache"),
 	GB_STATIC_PROPERTY_SELF("Proxy", ".WebSettings.Proxy"),
