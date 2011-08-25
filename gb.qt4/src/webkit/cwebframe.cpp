@@ -26,6 +26,7 @@
 #include <QUrl>
 #include <QWebPage>
 #include <QWebFrame>
+#include <QDateTime>
 
 #include "cwebframe.h"
 #include "../cprinter.h"
@@ -47,6 +48,62 @@ CWEBFRAME *CWEBFRAME_get(QWebFrame *frame)
 	}
 	
 	return (CWEBFRAME *)_object;
+}
+
+void CWEBFRAME_eval(QWebFrame *frame, const QString &javascript)
+{
+	GB_DATE date;
+	GB_DATE_SERIAL ds;
+	QDateTime qdate;
+	
+	QVariant result = frame->evaluateJavaScript(javascript);
+	
+	switch (result.type())
+	{
+		case QVariant::Bool:
+			GB.ReturnBoolean(result.toBool());
+			break;
+			
+		case QVariant::Date:
+		case QVariant::DateTime:
+			qdate = result.toDateTime();
+			ds.year = qdate.date().year();
+			ds.month = qdate.date().month();
+			ds.day = qdate.date().day();
+			ds.hour = qdate.time().hour();
+			ds.min = qdate.time().minute();
+			ds.sec = qdate.time().second();
+			ds.msec = qdate.time().msec();
+			GB.MakeDate(&ds, &date);
+			GB.ReturnDate(&date);
+			break;
+			
+		case QVariant::Double:
+			GB.ReturnFloat(result.toDouble());
+			break;
+			
+		case QVariant::Int:
+		case QVariant::UInt:
+			GB.ReturnInteger(result.toInt());
+			break;
+			
+		case QVariant::LongLong:
+		case QVariant::ULongLong:
+			GB.ReturnLong(result.toLongLong());
+			break;
+			
+		case QVariant::String:
+			GB.ReturnNewZeroString(TO_UTF8(result.toString()));
+			break;
+		
+		// TODO: Handle these three datatypes
+		case QVariant::Hash:
+		case QVariant::List:
+		case QVariant::RegExp:
+		default:
+			GB.ReturnNull();
+			break;
+	}
 }
 
 BEGIN_METHOD_VOID(WebFrame_free)
@@ -121,30 +178,11 @@ BEGIN_PROPERTY(WebFrame_Text)
 
 END_PROPERTY
 
-#if 0
 BEGIN_METHOD(WebFrame_EvalJavaScript, GB_STRING javascript)
 
-	QVariant result = FRAME->evaluateJavascript(QSTRING_ARG(javascript));
-	
-	switch (result->type())
-	{
-		case QVariant::Bool: GB.ReturnBoolean(result.toBool());
-		case QVariant::Date:
-		case QVariant::DateTime:
-		case QVariant::Double:
-		case QVariant::Hash:
-		case QVariant::Int:
-		case QVariant::List:
-		case QVariant::LongLong:
-		case QVariant::RegExp:
-		case QVariant::String:
-		case QVariant::UInt:
-		case QVariant::ULongLong:
-			
-	}
+	CWEBFRAME_eval(FRAME, QSTRING_ARG(javascript));
 
 END_METHOD
-#endif
 
 GB_DESC CWebFrameChildrenDesc[] =
 {
@@ -169,7 +207,7 @@ GB_DESC CWebFrameDesc[] =
 	GB_METHOD("Print", NULL, WebFrame_Print, "(Printer)Printer;"),
 	GB_PROPERTY_READ("HTML", "s", WebFrame_HTML),
 	GB_PROPERTY_READ("Text", "s", WebFrame_Text),
-	//GB_METHOD("EvalJavaScript", NULL, WebFrame_EvalJavaScript, "(JavaScript)s"),
+	GB_METHOD("Eval", "v", WebFrame_EvalJavaScript, "(JavaScript)s"),
 	
 	GB_END_DECLARE
 };

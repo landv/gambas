@@ -26,13 +26,16 @@ Public Sub Form_Open()
   WebSettings[WebSettings.PluginsEnabled] = True
   WebSettings[WebSettings.JavascriptEnabled] = True
   WebSettings[WebSettings.JavaEnabled] = True
+  WebSettings.Fonts.DefaultFontSize = 12
+  WebSettings.Fonts.DefaultFixedFontSize = 12
 
   CreateView()
   btnZoomNormal_Click
   txtURL.SetFocus
   tabBrowser_Click
-  'txtURL.Text = "http://gambas.sourceforge.net"
-  'txtURL_Activate
+  
+  txtURL.Text = "http://gambas.sourceforge.net"
+  txtURL_Activate
   
 End
 
@@ -230,7 +233,8 @@ Private Sub CreateView()
   tabBrowser.Index = iLast
   hView = New WebView(tabBrowser) As "WebView"
   hView.Tag = tabBrowser.Index
-  Print WebSettings.Fonts.FixedFont
+  hView.Editable = btnEdit.Value
+  'Print WebSettings.Fonts.FixedFont
   Object.Unlock(tabBrowser)
   tabBrowser_Click
   
@@ -473,4 +477,97 @@ Public Sub btnConfig_Click()
     
   End With
 
+End
+
+Public Sub btnEdit_Click()
+
+  Dim hWebView As WebView
+  
+  For Each hWebView In tabBrowser.Children
+    hWebView.Editable = btnEdit.Value
+  Next
+  
+  WebSettings[WebSettings.JavascriptCanAccessClipboard] = btnEdit.Value
+  panEdit.Visible = btnEdit.Value
+
+End
+
+Public Sub btnAction_Click()
+
+  Dim hWebView As WebView = GetView()
+  
+  Debug "Action " & Last.Tag & ": "; hWebView.Eval(Subst("document.execCommand('&1', false, false)", Last.Tag))
+
+End
+
+Public Sub btnColor_Click()
+
+  Dim hWebView As WebView = GetView()
+
+  If Dialog.SelectColor() Then Return
+  hWebView.Eval(Subst("document.execCommand('forecolor', false, '&1')", "#" & Hex$(Dialog.Color, 6)))
+
+End
+
+Public Sub mnuFont_Show()
+  
+  Dim sFont As String
+  Dim hMenu As Menu
+  
+  If mnuFont.Children.Count > 1 Then Return
+  
+  mnuFont.Children.Clear
+  
+  For Each sFont In Fonts
+    
+    hMenu = New Menu(mnuFont) As "mnuSelectFont"
+    hMenu.Text = sFont
+    
+  Next
+  
+End
+
+
+Public Sub mnuSelectFont_Click()
+
+  Dim hWebView As WebView = GetView()
+  Dim sFont As String = Last.Text
+
+  hWebView.Eval(Subst("document.execCommand('fontname', false, '&1')", sFont))
+
+End
+
+
+Public Sub btnBackground_Click()
+
+  Dim hWebView As WebView = GetView()
+
+  Dialog.Title = "Select a color"
+  If Dialog.SelectColor() Then Return
+  hWebView.Eval(Subst("document.execCommand('backcolor', false, '&1')", "#" & Hex$(Dialog.Color, 6)))
+
+End
+
+Public Sub mnuSelectSize_Click()
+
+  Dim hWebView As WebView = GetView()
+  Dim sSize As String = Last.Text
+
+  hWebView.Eval(Subst("document.execCommand('fontsize', false, '&1')", sSize))
+
+End
+
+
+
+Public Sub btnInsertImage_Click()
+
+  Dim hWebView As WebView = GetView()
+  
+  Dialog.Title = "Select an image"
+  Dialog.Filter = ["*.jpg;*.jpeg;*.png;*.gif;*.xpm;*.bmp", "Image files"]
+  If Dialog.OpenFile() Then Return
+
+  Print Dialog.Path
+  hWebView.Eval(Subst("document.execCommand('insertImage', false, '&1')", "file://" & Replace(Dialog.Path, "'", "\\'")))
+  
 End

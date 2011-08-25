@@ -51,5 +51,6 @@ typedef
 	CWEBFRAME;
 
 CWEBFRAME *CWEBFRAME_get(QWebFrame *frame);
+void CWEBFRAME_eval(QWebFrame *frame, const QString &javascript);
 
 #endif

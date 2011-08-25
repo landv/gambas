@@ -35,12 +35,12 @@
 #include "cwebhittest.h"
 #include "cwebview.h"
 
-typedef
+/*typedef
 	struct {
 		const char *name;
 		QWebPage::WebAction action;
 	}
-	WEBVIEW_ACTION;
+	WEBVIEW_ACTION;*/
 	
 DECLARE_EVENT(EVENT_CLICK);
 DECLARE_EVENT(EVENT_LINK);
@@ -59,6 +59,7 @@ DECLARE_EVENT(EVENT_DOWNLOAD);
 static QNetworkAccessManager *_network_access_manager = 0;
 static CWEBVIEW *_network_access_manager_view = 0;
 
+/*
 static WEBVIEW_ACTION _actions[] = 
 {
 	{ "OpenLink", QWebPage::OpenLink },
@@ -131,6 +132,7 @@ static WEBVIEW_ACTION _actions[] =
 	{ "AlignRight", QWebPage::AlignRight },
 	{ NULL, QWebPage::NoWebAction }
 };
+*/
 
 QNetworkAccessManager *WEBVIEW_get_network_manager()
 {
@@ -143,6 +145,7 @@ QNetworkAccessManager *WEBVIEW_get_network_manager()
 	return _network_access_manager;
 }
 
+/*
 static QWebPage::WebAction get_action(const char *name)
 {
 	WEBVIEW_ACTION *p;
@@ -155,6 +158,7 @@ static QWebPage::WebAction get_action(const char *name)
 	
 	return QWebPage::NoWebAction;
 }
+*/
 
 BEGIN_METHOD(WebView_new, GB_OBJECT parent)
 
@@ -472,6 +476,7 @@ BEGIN_PROPERTY(WebView_Editable)
 
 END_PROPERTY
 
+#if 0
 BEGIN_METHOD(WebView_Exec, GB_STRING action; GB_VARIANT arg)
 
 	QWebPage::WebAction action = get_action(GB.ToZeroString(ARG(action)));
@@ -495,6 +500,7 @@ BEGIN_METHOD(WebView_Exec, GB_STRING action; GB_VARIANT arg)
 	}
 
 END_METHOD
+#endif
 
 /*
 BEGIN_METHOD(WebView_CanExec, GB_STRING action)
@@ -509,6 +515,12 @@ BEGIN_METHOD(WebView_CanExec, GB_STRING action)
 	
 END_METHOD
 */
+
+BEGIN_METHOD(WebView_Eval, GB_STRING javascript)
+
+	CWEBFRAME_eval(WIDGET->page()->currentFrame(), QSTRING_ARG(javascript));
+
+END_METHOD
 
 /***************************************************************************/
 
@@ -567,8 +579,9 @@ GB_DESC CWebViewDesc[] =
 	GB_METHOD("FindText", "b", WebView_FindText, "[(Text)s(Backward)b(CaseSensitive)b(Wrap)b]"),
 
 	GB_PROPERTY("Editable", "b", WebView_Editable),
-	GB_METHOD("Exec", NULL, WebView_Exec, "(Action)s[(Argument)v]"),
+	//GB_METHOD("Exec", NULL, WebView_Exec, "(Action)s[(Argument)v]"),
 	//GB_METHOD("CanExec", "b", WebView_CanExec, "(Action)s"),
+	GB_METHOD("Eval", "v", WebView_Eval, "(JavaScript)s"),
 
 	GB_CONSTANT("_Properties", "s", "*,Url,Editable"),
 	GB_CONSTANT("_Group", "s", "View"),
