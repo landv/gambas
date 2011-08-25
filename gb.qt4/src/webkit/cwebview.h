@@ -29,6 +29,7 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QWebFrame>
+#include <QWebPage>
 #include <QWebView>
 
 #include "cwebdownload.h"
@@ -46,6 +47,19 @@ extern GB_DESC CWebViewDownloadsDesc[];
 #define WIDGET    ((MyWebView *)((QT_WIDGET *)_object)->widget)
 
 #endif
+
+class MyWebPage : public QWebPage
+{
+	Q_OBJECT
+
+public:
+	
+	MyWebPage(QObject *parent);
+
+protected:
+	
+	virtual QString userAgentForUrl(const QUrl& url) const;
+};
 
 class MyWebView : public QWebView
 {
@@ -70,6 +84,7 @@ typedef
 		QT_PICTURE icon;
 		QNetworkReply *reply;
 		QAuthenticator *authenticator;
+		char *userAgent;
 	}
 	CWEBVIEW;
 

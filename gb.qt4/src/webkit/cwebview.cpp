@@ -198,6 +198,7 @@ BEGIN_METHOD_VOID(WebView_free)
 		_network_access_manager_view = 0;
 	
 	GB.FreeString(&THIS->status);
+	GB.FreeString(&THIS->userAgent);
 	GB.Unref(POINTER(&THIS->icon));
 
 END_METHOD
@@ -522,6 +523,15 @@ BEGIN_METHOD(WebView_Eval, GB_STRING javascript)
 
 END_METHOD
 
+BEGIN_PROPERTY(WebView_UserAgent)
+
+	if (READ_PROPERTY)
+		GB.ReturnString(THIS->userAgent);
+	else
+		GB.StoreString(PROP(GB_STRING), &THIS->userAgent);
+
+END_PROPERTY
+
 /***************************************************************************/
 
 GB_DESC CWebViewAuthDesc[] =
@@ -583,6 +593,8 @@ GB_DESC CWebViewDesc[] =
 	//GB_METHOD("CanExec", "b", WebView_CanExec, "(Action)s"),
 	GB_METHOD("Eval", "v", WebView_Eval, "(JavaScript)s"),
 
+	GB_PROPERTY("UserAgent", "s", WebView_UserAgent),
+
 	GB_CONSTANT("_Properties", "s", "*,Url,Editable"),
 	GB_CONSTANT("_Group", "s", "View"),
 	
@@ -605,9 +617,23 @@ GB_DESC CWebViewDesc[] =
 
 /***************************************************************************/
 
+MyWebPage::MyWebPage(QObject *parent) : QWebPage(parent)
+{
+}
+
+QString MyWebPage::userAgentForUrl(const QUrl& url) const 
+{
+	MyWebView *view = (MyWebView *)parent();
+	void *_object = QT.GetObject(view);
+	
+	return (const char *)THIS->userAgent;
+};
+
+
 MyWebView::MyWebView(QWidget *parent) : QWebView(parent)
 {
 	//settings()->setFontFamily(QWebSettings::FixedFont, "monospace");
+	setPage(new MyWebPage(this));
 }
 
 QWebView *MyWebView::createWindow(QWebPage::WebWindowType type)
