@@ -1125,6 +1125,8 @@ int gGridView::rowAt(int y)
 	int bpos=-render->getOffsetX();
 	int bc;
 
+	y -= headerHeight();
+	
 	for (bc=0; bc<render->rowCount(); bc++)
 	{
 		if ( (bpos<=y) && ( (bpos+render->getRowSize(bc)))>=y ) return bc;
@@ -1139,6 +1141,8 @@ int gGridView::columnAt(int x)
 	int bpos=-render->getOffsetY();
 	int bc;
 
+	x -= rowWidth();
+	
 	for (bc=0; bc<render->columnCount(); bc++)
 	{
 		if ( (bpos<=x) && ( (bpos+render->getColumnSize(bc)))>=x ) return bc;
