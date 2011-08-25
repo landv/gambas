@@ -99,6 +99,8 @@ QPixmap *GEditor::breakpoint = 0;
 int GEditor::count = 0;
 QStyle *GEditor::_style = 0;
 
+QImage *_blend_pattern = 0;
+
 void GEditor::reset()
 {
 	x = y = xx = 0;
@@ -387,9 +389,6 @@ void GEditor::updateHeight()
 	//updateCache();
 	_checkCache = true;
 		
-	if (pattern.height() < _cellh)
-		pattern.resize(16, _cellh);
-
 	updateViewport();
 }
 
@@ -650,38 +649,32 @@ void GEditor::paintShowString(QPainter &p, GLine *l, int x, int y, int xmin, int
 	}
 }
 
-static void make_blend(QPixmap &pix, QColor start, QColor end, int height) //, bool loop = false)
+static void make_blend(QImage *pix, QColor start) //, bool loop = false)
 {
-	double r, g, b, dr, dg, db;
-	int n = height * 3 / 4;
+	double r, g, b, a, da;
+	int n = pix->height() * 3 / 4;
 	int i;
 	QPainter p;
 
-	pix.fill(end);
+	pix->fill(0);
 
 	r = start.red();
 	g = start.green();
 	b = start.blue();
+	a = 255;
 
 	if (n == 0)
 		n = 1;
 
-	dr = (end.red() - r) / n;
-	dg = (end.green() - g) / n;
-	db = (end.blue() - b) / n;
+	da = -(a / n);
 
-	p.begin(&pix);
-
-	//if (loop)
-	//	n >>= 1;
+	p.begin(pix);
 
 	for (i = 0; i < n; i++)
 	{
-		QBrush brush(QColor((int)r, (int)g, (int)b));
-		p.fillRect(0, i, pix.width(), 1, brush);
-		//if (loop)
-		//  p.fillRect(0, n - i, pix.width(), 1, brush);
-		r += dr; g += dg; b += db;
+		QBrush brush(QColor((int)r, (int)g, (int)b, (int) a));
+		p.fillRect(0, i, pix->width(), 1, brush);
+		a += da;
 	}
 
 	p.end();
@@ -739,6 +732,8 @@ void GEditor::paintCell(QPainter &p, int row, int)
 	bool folded;
 	bool highlight;
 	bool odd;
+	bool drawSep;
+	int ysep, wsep;
 
 	ur = QRect(0, row * _cellh, _cellw, _cellh);
 	contentsToViewport(ur.x(), ur.y(), x1, y1);
@@ -808,23 +803,6 @@ void GEditor::paintCell(QPainter &p, int row, int)
 	p.setFont(font());
 	//p.setFont(painter->font());
 	//p.translate(-ur.left(), 0);
-
-	// Procedure separation
-	if (l->proc && !getFlag(ChangeBackgroundAtLimit) && getFlag(ShowProcedureLimits) && !folded)
-	{
-		if (getFlag(BlendedProcedureLimits))
-		{
-			make_blend(pattern, styles[GLine::Line].color, color, _cellh);
-			p.drawTiledPixmap(0, 0, visibleWidth(), _cellh, pattern);
-		}
-		else
-		{
-			//QBrush brush(styles[GLine::Selection].color, Qt::Dense4Pattern);
-			//p.fillRect(0, 0, cache->width(), 1, brush);
-			p.setPen(styles[GLine::Selection].color);
-			p.drawLine(0, 0, visibleWidth() - 1, 0);
-		}
-	}
 
 	p.translate(-contentsX(), 0);
 
@@ -923,6 +901,57 @@ void GEditor::paintCell(QPainter &p, int row, int)
 		paintText(p, l, margin, fm.ascent() + 1, xmin, lmax, _cellh, xs1, xs2, realRow, color);
 	}
 	
+	// Procedure separation
+	//if (l->proc && !getFlag(ChangeBackgroundAtLimit) && getFlag(ShowProcedureLimits) && !folded)
+	drawSep = false;
+	ysep = 0;
+	if (!getFlag(ChangeBackgroundAtLimit) && realRow > 0)
+	{
+		if (l->isEmpty() && realRow < (numLines() - 1))
+		{
+			GLine *l2 = doc->lines.at(realRow + 1);
+			if (l2->proc && !isFolded(realRow + 1))
+			{
+				drawSep = true;
+				ysep = _cellh / 2;
+			}
+		}
+		else if (l->proc && !folded && !doc->lines.at(viewToReal(row - 1))->isEmpty())
+			drawSep = true;
+	}
+	
+	if (drawSep)
+	{
+		p.translate(contentsX(), 0);
+
+		if (getFlag(BlendedProcedureLimits))
+		{
+			if (!_blend_pattern)
+			{
+				_blend_pattern = new QImage(64, _cellh, QImage::Format_ARGB32_Premultiplied);
+				make_blend(_blend_pattern, styles[GLine::Line].color);
+			}
+			
+			if (xs1 || xs2)
+				wsep = margin - contentsX();
+			else
+				wsep = visibleWidth();
+			
+			for (i = 0; i < wsep; i += _blend_pattern->width())
+				p.drawImage(i, ysep, *_blend_pattern, 0, 0, QMIN(wsep - i, _blend_pattern->width()), _cellh - ysep);
+			//p.drawTiledImage(0, ysep, visibleWidth(), _cellh - ysep, pattern);
+		}
+		else
+		{
+			//QBrush brush(styles[GLine::Selection].color, Qt::Dense4Pattern);
+			//p.fillRect(0, 0, cache->width(), 1, brush);
+			p.setPen(styles[GLine::Selection].color);
+			p.drawLine(0, ysep, visibleWidth() - 1, ysep);
+		}
+		
+		p.translate(-contentsX(), 0);
+	}
+
 	// Folding symbol
 	if (margin && l->proc)
 	{
@@ -1004,6 +1033,12 @@ void GEditor::drawContents(QPainter *p, int cx, int cy, int cw, int ch)
 	//qDebug("drawContents: %d %d %d %d : %d %d . %d : %d %d", cx, cy, cw, ch, contentsX(), contentsY(), rowfirst * _cellh, viewport()->x(), viewport()->y());
 	//p->setClipRect(cx, cy, cw, ch);
 	p->drawPixmap(contentsX(), rowfirst * _cellh, *_cache, 0, 0, _cellw, _cellh * (rowlast - rowfirst + 1)); //, _cellw, _cellh);
+	
+	if (_blend_pattern)
+	{
+		delete _blend_pattern;
+		_blend_pattern = 0;
+	}
 }
 
 void GEditor::checkMatching()

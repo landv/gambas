@@ -107,7 +107,6 @@ private:
 	QFont italicFont;
 	GHighlightStyle styles[GLine::NUM_STATE];
 	int flags;
-	QPixmap pattern;
 	
 	int lineLength(int y) const { return doc->lineLength(y); }
 	int numLines() const { return doc->numLines(); }

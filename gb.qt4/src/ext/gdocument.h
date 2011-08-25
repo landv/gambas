@@ -75,6 +75,7 @@ public:
 	GLine();
 	~GLine();
 	void insert(uint pos, const GString &text);
+	bool isEmpty() const;
 };
 
 class GCommand;

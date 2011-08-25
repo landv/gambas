@@ -62,6 +62,19 @@ void GLine::insert(uint pos, const GString &text)
 		unicode = true;
 }
 
+bool GLine::isEmpty() const
+{
+	uint i;
+	
+	for (i = 0; i < s.length(); i++)
+	{
+		if (!s.isSpace(i))
+			return false;
+	}
+	
+	return true;
+}
+
 /**---- GCommand -----------------------------------------------------------*/
 
 class GCommand
@@ -651,6 +664,9 @@ void GDocument::updateViews(int row, int count)
 
   count = GMIN((int)oldCount - row, count);
 
+	if (((row + count) < numLines()) && lines.at(row + count)->proc)
+		count++;
+	
   FOR_EACH_VIEW(v)
   {
     for (i = row; i < (uint)(row + count); i++)
@@ -1252,7 +1268,7 @@ void GDocument::colorize(int y)
 	{
 		FOR_EACH_VIEW(v)
 		{
-			if (v->getFlag(GEditor::ChangeBackgroundAtLimit))
+			//if (v->getFlag(GEditor::ChangeBackgroundAtLimit))
 				v->updateContents();
 		}
 	}
