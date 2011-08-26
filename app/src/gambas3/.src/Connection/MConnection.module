@@ -364,7 +364,7 @@ Public Sub CheckPassword(sPath As String) As Boolean
   
 End
 
-Public Sub GetFields(hConn As Connection, sTable As String) As String[]
+Public Sub GetFields(hConn As Connection, sTable As String, Optional bSort As Boolean) As String[]
 
   Dim hTable As Table
   Dim hField As Field
@@ -374,7 +374,7 @@ Public Sub GetFields(hConn As Connection, sTable As String) As String[]
   For Each hField In hTable.Fields
     aField.Add(hField.Name)
   Next
-  aField.Sort(gb.Natural)
+  If bSort Then aField.Sort(gb.Natural)
   Return aField
   
 Catch

@@ -5,13 +5,14 @@ Inherits UserControl
 
 'PROPERTY Border AS Integer "<Border>"
 Property Columns As String[]
+Property Labels As String[]
 Property Control As Boolean
 Property Read View As TableView
 Property Header As Boolean
 Property Orientation As Integer
 Property Editable As Boolean
 
-Public Const _Properties As String = "*,Control=True,Columns{Field[]},Editable,Header=True,Orientation{Align.Bottom;Left;Right;Top}=Bottom"
+Public Const _Properties As String = "*,Control=True,Columns{Field[]},Labels,Editable,Header=True,Orientation{Align.Bottom;Left;Right;Top}=Bottom"
 Public Const _Group As String = "Data"
 
 Private $hForm As FBrowser
@@ -124,5 +125,17 @@ End
 Private Sub Editable_Write(Value As Boolean)
 
   $hForm.DataView.Editable = True
+
+End
+
+Private Function Labels_Read() As String[]
+
+  Return $hForm.DataView.Labels
+
+End
+
+Private Sub Labels_Write(Value As String[])
+
+  $hForm.DataView.Labels = Value
 
 End

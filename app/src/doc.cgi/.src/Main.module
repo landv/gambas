@@ -789,6 +789,7 @@ End
 Private Sub LeaveSection()
 
   Dim sList As String
+  Dim sTmp As String
 
   FinishList
   RemovePara
@@ -816,7 +817,11 @@ Private Sub LeaveSection()
         $sRes &= "</table>\n"
 
       Case "seealso"
-        $sRes = Left$($sRes, $iPos) & Replace(Mid$($sRes, $iPos + 1, -4), "</a>", "</a>, ") & Right$($sRes, 4)
+        sTmp = Mid$($sRes, $iPos + 1, -4)
+        sTmp = Replace(sTmp, "</a>", "</a>, ")
+        sTmp = Replace(sTmp, ",,", ",")
+        sTmp = Replace(sTmp, ", ,", ",")
+        $sRes = Left$($sRes, $iPos) & sTmp & Right$($sRes, 4)
         '$sRes &= "</td></tr>\n"
         '$sRes &= "</table>\n"
         $sRes &= "</div>\n"
@@ -2636,6 +2641,8 @@ Private Sub EditPage()
           If $hSym Then rPage!sDesc = GetOpenGL($hSym.Name, "gl")
         Else If $hComp.Key = "gb.opengl.glu" Then
           If $hSym Then rPage!sDesc = GetOpenGL($hSym.Name, "glu")
+        Else If $hComp.Key = "gb.opengl.glsl" Then
+          If $hSym Then rPage!sDesc = GetOpenGL($hSym.Name, "gl")
         Endif
       Endif
 

@@ -5,7 +5,7 @@ Export
 Inherits UserControl
 
 'Public Const _Properties As String = "*,AutoResize,Text,Picture,Border,Radio,Toggle,Value"
-Public Const _Properties As String = "*,Action,AutoResize,Text,Picture,Arrow=True,Border=True,Menu"
+Public Const _Properties As String = "*,Action,AutoResize,Text,Picture,Arrow=True,Border=True,Menu,MenuOnly"
 Public Const _DefaultSize As String = "6,4"
 Public Const _Similar As String = "Button"
 Public Const _DefaultEvent As String = "Click"
@@ -19,9 +19,10 @@ Event Click
 Property Picture As Picture
 Property Text As String
 Property Menu As String
+Property Arrow As Boolean
+Property MenuOnly As Boolean
 'Property Action As String
 Property Value As Boolean
-Property Arrow As Boolean
 Property AutoResize As Boolean
 Property Border As Boolean
 
@@ -38,6 +39,7 @@ Private $bInsideArrow As Boolean
 Private $bPressed As Boolean
 Private $bArrow As Boolean
 Private $bAutoResize As Boolean
+Private $bMenuOnly As Boolean
 
 Public Sub _new()
   
@@ -130,7 +132,7 @@ End
 
 Public Sub Button_Click()
   
-  If $bArrow Then
+  If Not $bMenuOnly Then
     Action.Raise(Me)
     Raise Click
   Else
@@ -182,19 +184,6 @@ Public Sub Arrow_Click()
   
 End
 
-' Private Function Action_Read() As String
-' 
-'   Return Super.Action
-' 
-' End
-' 
-' Private Sub Action_Write(Value As String)
-' 
-'   'Action.Register(Me, Value)
-'   Super.Action = Value
-' 
-' End
-
 Private Function Value_Read() As Boolean
 
   Return False
@@ -206,7 +195,6 @@ Private Sub Value_Write(Value As Boolean)
   If Value Then Print "Click"
 
 End
-
 
 Private Function Arrow_Read() As Boolean
 
@@ -228,7 +216,8 @@ Private Sub UpdateSize()
   If $bAutoResize Then 
     If $sText Then W = Me.Font.TextWidth($sText) + Desktop.Scale
     If $hPicture Then W += $hPicture.W + Desktop.Scale
-    If $bArrow Then W += Desktop.Scale * 2
+    'If $bArrow Then W += Desktop.Scale * 2
+    W += Desktop.Scale * 2
     W += Desktop.Scale
     Me.W = W
   Endif
@@ -344,16 +333,19 @@ Public Sub DrawingArea_Draw()
   Dim iFlag As Integer
   Dim sText As String
   Dim bFlat As Boolean
+  Dim bDrawArrow As Boolean
   
   If $bInside And If Me.Enabled Then iFlag += Draw.Hover
   If Not Me.Enabled Then iFlag += Draw.Disabled
   If $hDrawingArea.HasFocus Then iFlag += Draw.Focus
   
+  bDrawArrow = $bArrow And (Me.W > Desktop.Scale * 4)
+  
   '' TODO: System.RightToLeft
 
   bFlat = Not $bBorder 'And Not $bInside
 
-  If $bInsideArrow Then
+  If $bInsideArrow Or If $bMenuOnly Then
     Draw.Style.Button(0, 0, Me.W, Me.H, False, iFlag, bFlat)
     'Draw.Save
     'Draw.Clip(Me.W - Desktop.Scale * 3 + 3, 0, Desktop.Scale * 3 - 3, Me.H)
@@ -389,7 +381,7 @@ Public Sub DrawingArea_Draw()
     Endif
   Endif
   
-  If $bArrow Then
+  If bDrawArrow Then
     'If $bBorder Or If $bInside Then Draw.Style.Separator(Me.W - Desktop.Scale * 3, 3, 3, Me.H - 6, True)
     Draw.Style.Arrow(Me.W - Desktop.Scale * 2, 0, Desktop.Scale, Me.H, Align.Bottom, iFlag)
   Endif
@@ -419,4 +411,16 @@ Public Sub DrawingArea_KeyRelease()
     Button_Click
   Endif
   
+End
+
+Private Function MenuOnly_Read() As Boolean
+
+  Return $bMenuOnly
+
+End
+
+Private Sub MenuOnly_Write(Value As Boolean)
+
+  $bMenuOnly = Value
+
 End

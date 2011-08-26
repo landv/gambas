@@ -258,21 +258,21 @@
       Picture = Picture["icon:/small/fill"]
     }
     { btnFont MenuButton
-      MoveScaled(82,0,4,4)
+      MoveScaled(82,0,6,4)
       ToolTip = ("Font family")
       Picture = Picture["icon:/small/font"]
-      Arrow = False
       Border = False
       Menu = "mnuFont"
+      MenuOnly = True
     }
     { btnFont2 MenuButton
-      MoveScaled(86,0,4,4)
+      MoveScaled(88,0,6,4)
       Font = Font["Bold,-1"]
       ToolTip = ("Font size")
       Text = ("+1")
-      Arrow = False
       Border = False
       Menu = "mnuSize"
+      MenuOnly = True
     }
   }
   { tabBrowser TabStrip

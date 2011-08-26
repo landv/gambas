@@ -3,7 +3,7 @@
 Export
 Inherits UserControl
 
-Public Const _Properties As String = "*,Mode{Select.None;Single;Multiple}=None,Editable,Header{TableView.None;Horizontal;Vertical;Both}=Both,Grid,Highlight=True,Columns{Field[]},Border=True"
+Public Const _Properties As String = "*,Mode{Select.None;Single;Multiple}=None,Editable,Header{TableView.None;Horizontal;Vertical;Both}=Both,Grid,Highlight=True,Columns{Field[]},Labels,Border=True"
 Public Const _DrawWith As String = "GridView"
 Public Const _Group As String = "Data"
 
@@ -17,6 +17,7 @@ Property Border As Boolean
 Property Editable As Boolean
 
 Property Columns As String[]
+Property Labels As String[]
 Property Current As Variant[]
 Property Read Count As Integer
 Property Read Index As Integer
@@ -34,6 +35,7 @@ Private $hCtrl As TableView
 Private $hTable As DataTable
 Private $bAllColumns As Boolean
 Private $aColumns As String[]
+Private $aLabels As String[]
 Private $aType As DataField[]
 Private $aColumnsIndex As Integer[]
 Private $bCreate As Boolean
@@ -96,6 +98,24 @@ Private Sub GetSource() As DataSource
   
 End
 
+Private Sub RefreshLabels()
+
+  Dim hSrc As DataSource
+  Dim iInd As Integer
+
+  hSrc = GetSource()
+  If Not hSrc Then Return
+  If Not $hTable Then Return
+
+  For iInd = 0 To $aColumns.Max
+    With $hTable.GetFieldInfo($aColumns[iInd])
+      Try $hCtrl.Columns[iInd].Text = $aLabels[iInd]
+      If Error Then $hCtrl.Columns[iInd].Text = .Name
+      $hCtrl.Columns[iInd].Width = .GetWidth($hCtrl)
+    End With
+  Next
+
+End
 
 Private Sub RefreshColumns()
   
@@ -124,12 +144,7 @@ Private Sub RefreshColumns()
   'Object.Lock($hCtrl)
   $bNoActivate = True
   $hCtrl.Columns.Count = $aColumns.Count
-  For iInd = 0 To $aColumns.Max
-    With $hTable.GetFieldInfo($aColumns[iInd])
-      $hCtrl.Columns[iInd].Text = .Name
-      $hCtrl.Columns[iInd].Width = .GetWidth($hCtrl)
-    End With
-  Next
+  RefreshLabels
   '$hCtrl.AutoResize = False
   '$hCtrl.AutoResize = True
   $bNoActivate = False
@@ -985,5 +1000,23 @@ Private Sub Font_Write(Value As Font)
   $hCtrl.Font = Value
   $hCtrl.Rows.H = GetDefaultRowHeight()
   AdjustRow()
+
+End
+
+Private Function Labels_Read() As String[]
+
+  If Not $aLabels Then Return Null
+  Return $aLabels.Copy
+
+End
+
+Private Sub Labels_Write(Value As String[])
+
+  If Value And If Value.Count Then
+    $aLabels = Value.Copy()
+  Else
+    $aLabels = Null
+  Endif
+  RefreshLabels
 
 End

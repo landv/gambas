@@ -5,6 +5,10 @@ Columns
 p
 String[]
 
+Labels
+p
+String[]
+
 Control
 p
 b
@@ -28,7 +32,7 @@ b
 _Properties
 C
 s
-*,Control=True,Columns{Field[]},Editable,Header=True,Orientation{Align.Bottom;Left;Right;Top}=Bottom
+*,Control=True,Columns{Field[]},Labels,Editable,Header=True,Orientation{Align.Bottom;Left;Right;Top}=Bottom
 _Group
 C
 s
@@ -459,7 +463,7 @@ C
 _Properties
 C
 s
-*,Mode{Select.None;Single;Multiple}=None,Editable,Header{TableView.None;Horizontal;Vertical;Both}=Both,Grid,Highlight=True,Columns{Field[]},Border=True
+*,Mode{Select.None;Single;Multiple}=None,Editable,Header{TableView.None;Horizontal;Vertical;Both}=Both,Grid,Highlight=True,Columns{Field[]},Labels,Border=True
 _DrawWith
 C
 s
@@ -497,6 +501,10 @@ p
 b
 
 Columns
+p
+String[]
+
+Labels
 p
 String[]
 
