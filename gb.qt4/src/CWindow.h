@@ -80,11 +80,11 @@ typedef
 		unsigned minsize : 1;
 		unsigned title : 1;
 		unsigned stateChange : 1;
-		//unsigned opening : 1;
 		unsigned closing : 1;
 		unsigned hideMenuBar : 1;
 		unsigned showMenuBar : 1;
 		unsigned sticky : 1;
+		unsigned mustCenter : 1;
 		}
 	CWINDOW;
 
@@ -156,7 +156,6 @@ private:
 
 	QSizeGrip *sg;
 	QMenuBar *mb;
-	bool mustCenter;
 	bool _activate;
 	bool _border;
 	bool _resizable;

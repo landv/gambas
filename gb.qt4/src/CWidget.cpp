@@ -417,6 +417,14 @@ void CWIDGET_move(void *_object, int x, int y)
 {
   QWidget *wid = get_widget(THIS);
 
+  if (GB.Is(THIS, CLASS_Window))
+  {
+		CWINDOW *win = (CWINDOW *)_object;
+    win->x = x;
+    win->y = y;
+		win->mustCenter = false;
+  }
+  
 	if (wid)
 	{
 		if (x == wid->x() && y == wid->y())
@@ -425,15 +433,10 @@ void CWIDGET_move(void *_object, int x, int y)
   	wid->move(x, y);
 	}
 
-  if (GB.Is(THIS, CLASS_Window))
-  {
-    ((CWINDOW *)_object)->x = x;
-    ((CWINDOW *)_object)->y = y;
-  }
-  
 	CWIDGET_after_geometry_change(THIS, false);
 }
 
+/*
 void CWIDGET_move_cached(void *_object, int x, int y)
 {
   if (GB.Is(THIS, CLASS_Window))
@@ -444,6 +447,7 @@ void CWIDGET_move_cached(void *_object, int x, int y)
   
 	CWIDGET_after_geometry_change(THIS, false);
 }
+*/
 
 void CWIDGET_resize(void *_object, int w, int h)
 {
@@ -492,6 +496,7 @@ void CWIDGET_resize(void *_object, int w, int h)
 	CWIDGET_after_geometry_change(THIS, true);
 }
 
+/*
 void CWIDGET_resize_cached(void *_object, int w, int h)
 {
   if (GB.Is(THIS, CLASS_Window))
@@ -502,11 +507,30 @@ void CWIDGET_resize_cached(void *_object, int w, int h)
 
 	CWIDGET_after_geometry_change(THIS, true);
 }
-
+*/
 
 void CWIDGET_move_resize(void *_object, int x, int y, int w, int h)
 {
   QWidget *wid = get_widget(THIS);
+
+	if (wid)
+	{
+		if (w < 0)
+			w = wid->width();
+
+		if (h < 0)
+			h = wid->height();
+	}
+
+  if (GB.Is(THIS, CLASS_Window))
+  {
+		CWINDOW *win = (CWINDOW *)_object;
+		win->x = x;
+    win->y = y;
+    win->w = w;
+    win->h = h;
+		win->mustCenter = false;
+  }
 
 	if (wid)
 	{
@@ -527,14 +551,6 @@ void CWIDGET_move_resize(void *_object, int x, int y, int w, int h)
 		else
 			wid->setGeometry(x, y, qMax(0, w), qMax(0, h));
 	}
-
-  if (GB.Is(THIS, CLASS_Window))
-  {
-    ((CWINDOW *)_object)->x = x;
-    ((CWINDOW *)_object)->y = y;
-    ((CWINDOW *)_object)->w = w;
-    ((CWINDOW *)_object)->h = h;
-  }
 
 	CWIDGET_after_geometry_change(THIS, true);
 }
@@ -577,6 +593,7 @@ void CWIDGET_move_resize(void *_object, int x, int y, int w, int h)
 }
 #endif
 
+/*
 void CWIDGET_move_resize_cached(void *_object, int x, int y, int w, int h)
 {
   if (GB.Is(THIS, CLASS_Window))
@@ -589,6 +606,7 @@ void CWIDGET_move_resize_cached(void *_object, int x, int y, int w, int h)
 
 	CWIDGET_after_geometry_change(THIS, true);
 }
+*/
 
 void CWIDGET_check_hovered()
 {

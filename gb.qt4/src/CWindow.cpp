@@ -698,6 +698,7 @@ END_METHOD
 BEGIN_METHOD_VOID(CWINDOW_show_modal)
 
 	THIS->ret = 0;
+	THIS->mustCenter = true;
 
 	if (!emit_open_event(THIS))
 	{
@@ -1574,7 +1575,6 @@ MyMainWindow::MyMainWindow(QWidget *parent, const char *name, bool embedded) :
 	_border = true;
 	_resizable = true;
 	//state = StateNormal;
-	mustCenter = false;
 	_deleted = false;
 	_type = _NET_WM_WINDOW_TYPE_NORMAL;
 	_enterLoop = false;
@@ -1827,8 +1827,6 @@ void MyMainWindow::showModal(void)
 
 	old = MyApplication::eventLoop;
 	MyApplication::eventLoop = &eventLoop;
-
-	mustCenter = true;
 
 	#ifndef NO_X_WINDOW
 	if (CWINDOW_Active)
@@ -2466,10 +2464,10 @@ void MyMainWindow::center(bool force = false)
 	QPoint p;
 	QRect r;
 
-	if (!force && !mustCenter)
+	if (!force && !THIS->mustCenter)
 		return;
 
-	mustCenter = false;
+	THIS->mustCenter = false;
 
 	r = QApplication::desktop()->availableGeometry(QApplication::desktop()->screenNumber(this));
 
