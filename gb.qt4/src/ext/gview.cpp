@@ -764,17 +764,37 @@ void GEditor::paintCell(QPainter &p, int row, int)
 	
 	l = doc->lines.at(realRow);
 	
-	if (getFlag(ChangeBackgroundAtLimit) && doc->getHighlightMode() != GDocument::None)
+	folded = l->proc && isFolded(realRow);
+		
+	drawSep = false;
+	ysep = 0;
+	if (realRow > 0)
+	{
+		int nextRow = viewToReal(row + 1);
+		
+		if (l->isEmpty() && nextRow < numLines())
+		{
+			GLine *l2 = doc->lines.at(nextRow);
+			if (l2->proc && !isFolded(nextRow))
+			{
+				drawSep = true;
+				ysep = _cellh / 2;
+			}
+		}
+		else if (l->proc && (folded || !doc->lines.at(viewToReal(row - 1))->isEmpty()))
+			drawSep = true;
+	}
+
+	if (getFlag(ChangeBackgroundAtLimit)) //) && doc->getHighlightMode() != GDocument::None)
 	{
 		if (l->proc)
 			_oddLine = !_oddLine;
 		odd = _oddLine;
+		//drawSep = false;
 	}
 	else
 		odd = false;
 	
-	folded = l->proc && isFolded(realRow);
-		
 	//xmin = (ur.left() - margin) / charWidth;
 	xmin = posToColumn(realRow, 0) - 1;
 	if (xmin < 0)
@@ -799,6 +819,14 @@ void GEditor::paintCell(QPainter &p, int row, int)
 		color = palette().color(QPalette::Disabled, QPalette::Base);
 	
 	p.fillRect(0, 0, _cellw, _cellh, color);
+	
+	if (drawSep && getFlag(ChangeBackgroundAtLimit) && isEnabled())
+	{
+		if (ysep)
+			p.fillRect(0, ysep, visibleWidth(), _cellh - ysep, !odd ? _oddBackground : styles[GLine::Background].color);
+		
+		drawSep = false;
+	}
 	
 	p.setFont(font());
 	//p.setFont(painter->font());
@@ -880,6 +908,49 @@ void GEditor::paintCell(QPainter &p, int row, int)
 		p.fillRect(x2m * charWidth + margin, 0, charWidth, _cellh, styles[GLine::Highlight].color);*/
 	}
 
+	// Procedure separation
+	
+	if (drawSep)
+	{
+		p.translate(contentsX(), 0);
+
+		if (getFlag(BlendedProcedureLimits))
+		{
+			if (!_blend_pattern)
+			{
+				_blend_pattern = new QImage(64, _cellh, QImage::Format_ARGB32_Premultiplied);
+				make_blend(_blend_pattern, styles[GLine::Line].color);
+			}
+			
+			wsep = visibleWidth();
+			
+			for (i = 0; i < wsep; i += _blend_pattern->width())
+				p.drawImage(i, ysep, *_blend_pattern, 0, 0, QMIN(wsep - i, _blend_pattern->width()), _cellh - ysep);
+			
+			if (xs1 && xs2)
+				p.fillRect(x1, 0, x2 - x1, _cellh, styles[GLine::Selection].color);
+			//p.drawTiledImage(0, ysep, visibleWidth(), _cellh - ysep, pattern);
+		}
+		else if (getFlag(ChangeBackgroundAtLimit))
+		{
+			if (ysep)
+			{
+				p.fillRect(0, ysep, visibleWidth(), _cellh - ysep, !odd ? _oddBackground : styles[GLine::Background].color);
+				if (xs1 && xs2)
+					p.fillRect(x1, 0, x2 - x1, _cellh, styles[GLine::Selection].color);
+			}
+		}
+		else if (getFlag(ShowProcedureLimits))
+		{
+			//QBrush brush(styles[GLine::Selection].color, Qt::Dense4Pattern);
+			//p.fillRect(0, 0, cache->width(), 1, brush);
+			p.setPen(styles[GLine::Selection].color);
+			p.drawLine(0, ysep, visibleWidth() - 1, ysep);
+		}
+		
+		p.translate(-contentsX(), 0);
+	}
+
 	// Line text
 	if (!highlight)
 	{
@@ -901,57 +972,6 @@ void GEditor::paintCell(QPainter &p, int row, int)
 		paintText(p, l, margin, fm.ascent() + 1, xmin, lmax, _cellh, xs1, xs2, realRow, color);
 	}
 	
-	// Procedure separation
-	//if (l->proc && !getFlag(ChangeBackgroundAtLimit) && getFlag(ShowProcedureLimits) && !folded)
-	drawSep = false;
-	ysep = 0;
-	if (!getFlag(ChangeBackgroundAtLimit) && realRow > 0)
-	{
-		if (l->isEmpty() && realRow < (numLines() - 1))
-		{
-			GLine *l2 = doc->lines.at(realRow + 1);
-			if (l2->proc && !isFolded(realRow + 1))
-			{
-				drawSep = true;
-				ysep = _cellh / 2;
-			}
-		}
-		else if (l->proc && !folded && !doc->lines.at(viewToReal(row - 1))->isEmpty())
-			drawSep = true;
-	}
-	
-	if (drawSep)
-	{
-		p.translate(contentsX(), 0);
-
-		if (getFlag(BlendedProcedureLimits))
-		{
-			if (!_blend_pattern)
-			{
-				_blend_pattern = new QImage(64, _cellh, QImage::Format_ARGB32_Premultiplied);
-				make_blend(_blend_pattern, styles[GLine::Line].color);
-			}
-			
-			if (xs1 || xs2)
-				wsep = margin - contentsX();
-			else
-				wsep = visibleWidth();
-			
-			for (i = 0; i < wsep; i += _blend_pattern->width())
-				p.drawImage(i, ysep, *_blend_pattern, 0, 0, QMIN(wsep - i, _blend_pattern->width()), _cellh - ysep);
-			//p.drawTiledImage(0, ysep, visibleWidth(), _cellh - ysep, pattern);
-		}
-		else
-		{
-			//QBrush brush(styles[GLine::Selection].color, Qt::Dense4Pattern);
-			//p.fillRect(0, 0, cache->width(), 1, brush);
-			p.setPen(styles[GLine::Selection].color);
-			p.drawLine(0, ysep, visibleWidth() - 1, ysep);
-		}
-		
-		p.translate(-contentsX(), 0);
-	}
-
 	// Folding symbol
 	if (margin && l->proc)
 	{
@@ -2130,16 +2150,14 @@ void GEditor::setStyle(int index, GHighlightStyle *style)
 	else
 		updateContents();
 	
-	if (index == GLine::Line)
+	if (index == GLine::Background)
 	{
 		_oddBackground = style->color;
 		sat = _oddBackground.saturation();
-		if (_oddBackground.saturation() > 10)
-			_oddBackground.setHsv(_oddBackground.hue() + 4, sat * 3 / 5, _oddBackground.value());
-		else if (_oddBackground.value() > 127)
-			_oddBackground.setHsv(_oddBackground.hue() + 4, sat, _oddBackground.value() - 32);
+		if (_oddBackground.value() > 127)
+			_oddBackground.setHsv(_oddBackground.hue(), sat, _oddBackground.value() - 16);
 		else
-			_oddBackground.setHsv(_oddBackground.hue() + 4, sat, _oddBackground.value() + 32);
+			_oddBackground.setHsv(_oddBackground.hue(), sat, _oddBackground.value() + 16);
 	}
 }
 
