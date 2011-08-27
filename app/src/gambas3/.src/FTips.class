@@ -44,7 +44,7 @@ End
 Private Sub ShowNextTip(Optional bPrev As Boolean)
 
   txtTip.Text = GetNextTip(bPrev)
-  lblTitle.Text = ("Tip of the day") & " #" & CStr($iTip)
+  lblTitle.Text = Subst(("Tip of the day #&1"), CStr($iTip))
 
 End
 

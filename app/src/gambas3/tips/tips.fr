@@ -80,10 +80,10 @@ de répertoire <tt>'/'</tt> lorsque c'est nécessaire.
 <p>
 Par exemple :
 <pre>Print "/home/gambas" &/ ".bashrc"
-/home/gambas/.bashrc
+&rarr; /home/gambas/.bashrc
 
 Print "/home/gambas/" &/ "/tmp" &/ "foo.bar"
-/home/gambas/tmp/foo.bar
+&rarr; /home/gambas/tmp/foo.bar
 </pre>
 <p>N'est-ce pas merveilleux ? :-)
 
@@ -156,6 +156,24 @@ lesquelles doivent être traduites, et lesquelles ne le doivent pas.</p>
 
 <pre>Print ("Traduisez-moi")
 Print "Mais ne me traduisez pas!"</pre>
+
+
+[SUBST]
+
+<h3>Subst$</h3>
+
+<p>La fonction <b><tt>Subst$()</tt></b> est très utile pour internationaliser votre application.
+
+<p>Elle prend au moins deux arguments. Le premier est le masque de texte à l'intérieur duquel les 
+substitutions vont s'appliquer. Les autres sont les substitutions, numérotées en commençant par un.
+
+<p>Chaque occurence <tt>&X</tt> de la chaîne de substitution sera remplacée par le X<sup>ème</sup>
+argument à substituer. Par exemple :
+
+<pre>Print Subst(("Substitution de &1, &2 et &3"),
+  "premier", "deuxième", "troisième")
+
+&rarr; Substitution de premier, deuxième et troisième</pre>
 
 
 [EVENT]
@@ -308,7 +326,7 @@ caractères à ne pas extraire.</p>
 <p>De même, le troisième argument de <tt><b>Mid$</b></tt> peut être négatif. Il
 donne alors le nombre de caractères depuis la fin de la chaîne à ne pas extraire.</p>
 
-<p><tt>Mid$("Gambas", 2, -2)</tt> retournue <tt>"amb"</tt>.</p>
+<p><tt>Mid$("Gambas", 2, -2)</tt> retourne <tt>"amb"</tt>.</p>
 
 
 [OBSERVER]
@@ -318,7 +336,7 @@ donne alors le nombre de caractères depuis la fin de la chaîne à ne pas extra
 <p>La classe <b>Observer</b> vous permet d'intercepter n'importe quel évènement
 de n'importe quel objet avant même qu'il ait été effectivement émis.</p>
 
-<pre>MyTextBox = New TextBox(ME) As "MyTextBox"
+<pre>MyTextBox = New TextBox(Me) As "MyTextBox"
 MyObserver = New Observer(MyTextBox) As "MyObserver"
 ...
 Public Sub MyObserver_KeyPress()
@@ -331,6 +349,244 @@ End</pre>
 
 L'observateur peut annuler l'évènement avec <tt>Stop Event</tt> pour
 empêcher son émission.
+
+
+[STRING]
+
+<h3>Chaînes UTF-8</h3>
+
+<p><b>Gambas</b> utilise le jeu de caractères <b>UTF-8</b> pour représenter
+les chaînes de caractères en mémoire.
+
+<p>Mais les fonctions de traitement de chaînes de caractères standardes ne
+fonctionnent qu'avec de l'<b>ASCII</b>&nbsp;:
+<tt>Left</tt>, <tt>Mid</tt>, <tt>Right</tt>, <tt>UCase</tt>...
+
+<p>Si vous voulez manipuler des chaînes de caractères UTF-8, vous devez utiliser
+les méthodes de la classe statique <b>String</b>, qui possèdent les mêmes noms
+que leur équivalent standardes.
+
+<pre>Print Len("bébé");; Left$("bébé", 3)
+&rarr; 6 bé
+
+Print String.Len("bébé");; String.Left("bébé", 3)
+&rarr; 4 béb</pre>
+
+
+[ASSIGNMENT]
+
+<h3>Assignations</h3>
+
+<p>Gambas implémente les raccourcis d'assignation auxquels les programmeurs C/C++ sont habitués.
+
+<pre>MyVariable += 2
+MyVariable *= 4
+MyVariable &= "Great"</pre>
+équivaut à
+<pre>MyVariable = MyVariable + 2
+MyVariable = MyVariable * 4
+MyVariable = MyVariable & "Great"</pre>
+
+<p>Et ainsi de suite...
+
+
+[DEBUG]
+
+<h3>Debug</h3>
+
+<p>Vous pouvez utiliser l'instruction <b><tt>Debug</tt></b> pour imprimer des messages de débogage
+sur la console (c'est-à-dire la sortie erreur standard). Elle se comporte exactement comme
+l'instruction <tt>Print</tt>.
+
+<p>Ces messages sont prefixés avec le nom de la classe, le nom de la méthode et le numéro de ligne
+de l'instruction <tt>Debug</tt>. Si vous ne voulez pas de ce préfixe, vous pouvez utiliser
+l'instruction <b><tt>Error</tt></b> à la place de <tt>Debug</tt>. 
+
+<p>Les messages de débogages sont automatiquement ignorés lorsque vous créez un exécutable
+privé des informations de débogage.
+
+
+[TRY]
+
+<h3>Gestion des erreurs (1)</h3>
+
+<p>La gestion des erreurs en <b>Gambas</b> s'effectue à l'aide des instructions suivantes&nbsp;:
+<b><tt>Try</tt></b>, <b><tt>Error</tt></b>, <tt>Catch</tt>, et <tt>Finally</tt>.
+
+<p><tt>Try</tt> essaie d'exécuter une instruction sans déclencher d'erreur. Le mot-clef <tt>Error</tt>
+est utilisé juste après pour savoir si l'instruction s'est exécutée correctement.
+
+<pre>Try MyFile = Open "/etc/password" For Write
+If Error Then Print "Je ne peux pas faire tout ce que je veux !"</pre>
+
+
+[CATCH]
+
+<h3>Gestion des erreurs (2)</h3>
+
+<p>La gestion des erreurs en <b>Gambas</b> s'effectue à l'aide des instructions suivantes&nbsp;:
+<tt>Try</tt>, <tt>Error</tt>, <b><tt>Catch</tt></b>, et <tt>Finally</tt>.
+
+<p><tt>Catch</tt> marque le début du gestionnaire d'erreurs d'une fonction ou d'une procédure.
+Il doit être placé à la fin du code de la fonction.
+
+<p>Ce gestionnaire d'erreur est exécuté lorsqu'une erreur est levée entre le début et la fin de 
+l'exécution de la fonction.
+
+<p>Si une erreur survient pendant l'exécution du gestionnaire d'erreur, elle est propagée normalement.
+
+<pre>Sub ProcessFile(FileName As String)
+  ...
+  Open FileName For Read As #hFile
+  ...
+  Close #hFile
+  
+Catch ' Exécuté seulement si il y'a eu une erreur
+
+  Print "Impossible de traiter le fichier "; FileName
+
+End</pre>
+
+
+[FINALLY]
+
+<h3>Gestion des erreurs (3)</h3>
+
+<p>La gestion des erreurs en <b>Gambas</b> s'effectue à l'aide des instructions suivantes&nbsp;:
+<tt>Try</tt>, <tt>Error</tt>, <tt>Catch</tt>, et <b><tt>Finally</tt></b>.
+
+<p><tt>Finally</tt> introduit une partie de code exécutée à la fin de la fonction dans tous les cas,
+même si uen erreur a été levée pendant l'exécution de la fonciton.
+
+<p>L'utilisation de <tt>Finally</tt> est facultative. Mais si l'instruction <tt>Catch</tt> est utilisée,
+alors <tt>Finally</tt> doit obligatoirement la précéder.
+
+<p>Si une erreur survient pendant l'exécution du code introduit par <tt>Finally</tt>, elle est propagée
+normalement.
+
+<pre>Sub ProcessFile(FileName As String)
+  ...
+  Open FileName For Read As #hFile
+  ...
+Finally ' Toujours exécuté, même s'il y a eu une erreur
+
+  Close #hFile
+  
+Catch ' Exécuté seulement en cas d'erreur
+  
+  Print "Cannot print file "; FileName
+  
+End</pre>
+
+
+[OPTIONAL]
+
+<h3>Optional</h3>
+
+<p>Les fonctions ou procédures de <b>Gambas</b> peuvent avoir des arguments optionels.
+
+<p>Les arguments sont rendus optionnels en les prefixant simplement avec le mot-clef 
+<b><tt>Optional</tt></b>.
+
+<p>Les arguments optionnels peuvent aussi avoir une valeur par défaut explicite.
+
+<pre>Private Sub MyFunction(Param AS String, Optional Optim AS String = "Default")
+  ...
+  Print "Obligatoire: "; param; ", Optionnel: "; optim
+  ...
+End</pre>
+
+
+[ARRAY]
+
+<h3>For Each</h3>
+
+<p>En <b>Gambas</b> vous pouvez facilement enumérer le contenu d'un tableau, d'une
+collection, ou de toute autre classe enumérable, avec l'instruction <b><tt>For Each</tt></b>.
+
+<p>Par exemple :
+
+<pre>Dim Xml As New XmlDocument
+Dim Node As XmlNode
+Dim I As Integer
+
+' Ouverture du fichier XML
+Xml.Open("pokus.xml")
+' Les noeuds enfants sont indexés avec [I], car il s'agit
+' d'un tableau
+For I = 0 To Xml.Root.Children.Count - 1
+  ' Les attributs sont énumérés avec For Each, car il s'agit
+  ' d'une collection
+  For Each Node In Xml.Root.Children[i].Attributes
+    Print Node.Name;; Node.Value
+  Next
+Next</pre>
+
+
+[ICON]
+
+<h3>Icônes prédéfinies</h3>
+
+<p>Vous pouvez utiliser les icônes prédéfinies pour améliorer l'apparence de vos interfaces.
+Ces icônes sont disponibles en tailles prédéfinies (<tt>"small"</tt>, <tt>"medium"</tt>, <tt>"large"</tt>,...)
+ou bien en tailles absolues (de 16x16 à 256x256).
+
+<p>Par exemple :
+
+<pre>Image1.Picture = Picture["icon:/32/warning"]
+Image2.Picture = Picture["icon:/small/error"]
+</pre>
+
+<p><b>Attention :</b> le composant <tt>gb.form</tt> est requis.
+
+
+[SETTINGS]
+
+<h3>Settings</h3>
+
+<p>Si vous avez besoin de mémoriser la configuration de votre programme (comme la géométrie de vos formulaires)
+alors vous être chanceux. C'est très simple et très élégant à faire en <b>Gambas</b>. :-)
+
+<p>Pour enregistrer la position d'un formulaire :
+<pre>Settings.Write(TheForm)</pre>
+
+<p>Pour la rappeler :
+<pre>Settings.Read(TheForm)</pre>
+
+<p>Pour enregistrer un élément de configuration :
+<pre>Settings["Slot/Key"] = Value</pre>
+
+<p>Et pour le rappeler :
+<pre>Value = Settings["Slot/Key", DefaultValue]</pre>
+
+La configuration est enregistrée dans le fichier <tt>~/.config/gambas3/&lt;MonApplication&gt;.conf</tt>,
+où <tt>&lt;MonApplication&gt;</tt> est le nom de votre projet.
+
+<p><b>Attention :</b> Le composant <tt>gb.settings</tt> est requis.
+
+
+[EDITOR]
+
+<p>Voici quelques astuces de l'éditeur...
+
+<h3>Deux types de commentaires</h3>
+
+<pre>' Commentaire normal</pre>
+<b><pre>'' Commentaire en gras</pre></b>
+
+<p>Les commentaires en gras sont utilisés pour documenter votre code.
+
+<h3>Comment utiliser les fragments de code</h3>
+
+<p>Saisissez <tt>main</tt> puis appuyez sur la touche <b>TAB</b>. Une fonction de démarrage
+publique et statique <tt>Main</tt> est automatiquement insérée dans votre code.
+
+<p>Saisissez <tt>ds</tt> puis appuyez sur la touche <b>TAB</b>. Une déclaration de variable
+locale de type <b>String</b> est insérée automatiquement, et vous pouvez saisir le nom
+de la variable immédiatement.
+
+<p>Les fragments code sont intégralement configurables depuis la boîte de dialogue des
+options globales de l'environnement de développement.
 
 
 [END]

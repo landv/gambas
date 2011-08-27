@@ -68,10 +68,10 @@ perfect.</p>
 <p>For example:</p>
 
 <pre>Print "/home/gambas" &/ ".bashrc"
-/home/gambas/.bashrc
+&rarr; /home/gambas/.bashrc
 
 Print "/home/gambas/" &/ "/tmp" &/ "foo.bar"
-/home/gambas/tmp/foo.bar
+&rarr; /home/gambas/tmp/foo.bar
 </pre>
 
 <p>Isn't it marvellous ?</p>
@@ -150,6 +150,24 @@ which strings must be translated, and which one must not.</p>
 
 <pre>Print ("Translate me")
 Print "But do not translate me!"</pre>
+
+
+[SUBST]
+
+<h3>Subst$</h3>
+
+<p>The <b><tt>Subst$()</tt></b> function is very useful to internationalize your application.</p>
+
+<p>It takes at least two arguments. The first one is the text mask which the substitution applies on.
+The other ones are the substitution arguments, numbered from one.</p>
+
+<p>Each <tt>&X</tt> pattern in the substitution string will be replaced by the X<sup>th</sup> substitution argument.
+For example: </p>
+
+<pre>Print Subst(("Substitution of &1, &2 and &3"),
+  "first", "second", "third")
+
+&rarr; Substitution of first, second and third</pre>
 
 
 [EVENT]
@@ -315,7 +333,7 @@ not to extract.</p>
 <p>The <b>Observer</b> class allows you to intercept all events raised
 by an object before they are actually sent.</p>
 
-<pre>MyTextBox = New TextBox(ME) As "MyTextBox"
+<pre>MyTextBox = New TextBox(Me) As "MyTextBox"
 MyObserver = New Observer(MyTextBox) As "MyObserver"
 ...
 Public Sub MyObserver_KeyPress()
@@ -334,29 +352,34 @@ raising it.
 
 <h3>UTF-8 Strings</h3>
 
-<p>Gambas uses the <b>UTF-8</b> charset to represent strings in memory.</p>
+<p><b>Gambas</b> uses the <b>UTF-8</b> charset to represent strings in memory.
 
-<p>But all standard Gambas string functions deal with <b>ASCII</b>: 
+<p>But all standard string functions deal with <b>ASCII</b> only: 
 <tt>Left</tt>, <tt>Mid</tt>, <tt>Right</tt>, <tt>UCase</tt>...
 
-<p>If you want to manipulate UTF-8 string, you must use the methods of the
+<p>If you want to deal with UTF-8 strings, you have to use the methods of the
 <b>String</b> static class, which have the same name as their standard counterparts.
 
 <pre>Print Len("bébé");; Left$("bébé", 3)
-6 bé
+&rarr; 6 bé
+
 Print String.Len("bébé");; String.Left("bébé", 3)
-4 béb</pre>
+&rarr; 4 béb</pre>
 
 
 [ASSIGNMENT]
 
 <h3>Assignments</h3>
 
-<p>Gambas implements the assignment shortcuts that the C/C++ programmers are used to.
+<p><b>Gambas</b> implements the assignment shortcuts that the C/C++ programmers are used to.
 
-<p><tt>MyVariable += 2</tt> is an equivalent of <tt>MyVariable = MyVariable + 2</tt>
-
-<p><tt>MyVariable &= "Great"</tt> is an equivalent of <tt>MyVariable = MyVariable & "Great"</tt>
+<pre>MyVariable += 2
+MyVariable *= 4
+MyVariable &= "Great"</pre>
+is an equivalent of
+<pre>MyVariable = MyVariable + 2
+MyVariable = MyVariable * 4
+MyVariable = MyVariable & "Great"</pre>
 
 <p>And so on...
 
@@ -381,11 +404,11 @@ without debugging information.
 
 <h3>Error management (1)</h3>
 
-<p>Error management in Gambas is done with the following instructions: 
+<p>Error management in <b>Gambas</b>is done with the following instructions: 
 <b><tt>Try</tt></b>, <b><tt>Error</tt></b>, <tt>Catch</tt>, and <tt>Finally</tt>.
 
-<p><tt>Try</tt> tries to execute a statement without raising an error. The <tt>ERROR</tt>
-instruction is used just after to know if the statement was executed correctly.
+<p><tt>Try</tt> tries to execute a statement without raising an error. The <tt>Error</tt>
+keyword is used just after to know if the statement was executed correctly.
 
 <pre>Try MyFile = Open "/etc/password" For Write
 If Error Then Print "I cannot do what I want!"</pre>
@@ -395,7 +418,7 @@ If Error Then Print "I cannot do what I want!"</pre>
 
 <h3>Error management (2)</h3>
 
-<p>Error management in Gambas is done with the following instructions: 
+<p>Error management in <b>Gambas</b>is done with the following instructions: 
 <tt>Try</tt>, <tt>Error</tt>, <b><tt>Catch</tt></b>, and <tt>Finally</tt>.
 
 <p><tt>Catch</tt> indicates the beginning of the error management part of a function or procedure. 
@@ -423,7 +446,7 @@ End</pre>
 
 <h3>Error management (3)</h3>
 
-<p>Error management in Gambas is done with the following instructions: 
+<p>Error management in <b>Gambas</b>is done with the following instructions: 
 <tt>Try</tt>, <tt>Error</tt>, <tt>Catch</tt>, and <b><tt>Finally</tt></b>.
 
 <p><tt>Finally</tt> introduces the code executed at the end of the function, even if an error was 
@@ -452,7 +475,7 @@ End</pre>
 
 <h3>Optional</h3>
 
-<p>Functions and procedures in Gambas can have optional arguments.</p>
+<p>Functions and procedures in <b>Gambas</b> can have optional arguments.</p>
 
 <p>Optional arguments are done simply by putting down the <b><tt>Optional</tt></b>
 keyword just before the argument name.</p>
@@ -463,15 +486,14 @@ keyword just before the argument name.</p>
   ...
   Print "Required: "; param; ", Optional: "; optim
   ...
-End
-</pre>
+End</pre>
 
 
 [ARRAY]
 
 <h3>For Each</h3>
 
-<p>In Gambas you can easily loop through an array, a collection, or many other
+<p>In <b>Gambas</b> you can easily loop through an array, a collection, or many other
 enumerable classes with the <b><tt>For Each</tt></b> instruction.</p>
 
 <p>For example:</p>
@@ -499,25 +521,26 @@ Next</pre>
 in several predefined sizes (<tt>"small"</tt>, <tt>"medium"</tt>, <tt>"large"</tt>,...)
 or absolute sizes (from 16x16 to 256x256).</p>
 
-<p>For example:</p>
+<p>For example:
 
 <pre>Image1.Picture = Picture["icon:/32/warning"]
 Image2.Picture = Picture["icon:/small/error"]
 </pre>
 
-<b>Warning:</b> the <tt>gb.form</tt> component is required.
+<p><b>Warning:</b> the <tt>gb.form</tt> component is required.
+
 
 [SETTINGS]
 
 <h3>Settings</h3>
 
 <p>If you need to store the configuration of your program (like the geometry of your forms),
-then you are a lucky guy. It's very easy and elegant in <b>Gambas</b>. :-)</p>
+then you are a lucky guy. It's very easy and elegant in <b>Gambas</b>. :-)
 
-To save the position of a form:
+<p>To save the position of a form:
 <pre>Settings.Write(TheForm)</pre>
 
-To recall it:
+<p>To recall it:
 <pre>Settings.Read(TheForm)</pre>
 
 To save any settings:
@@ -532,44 +555,26 @@ where <tt>&lt;MyApplication&gt;</tt> is the name of your project.
 <p><b>Warning:</b> The <tt>gb.settings</tt> component is required.
 
 
-[SUBST]
-
-<h3>Subst$</h3>
-
-<p>The <b><tt>Subst$()</tt></b> function is very useful to internationalize your application.</p>
-
-<p>It takes at least two arguments. The first one is the text mask which the substitution applies on.
-The other ones are the substitution arguments, numbered from one.</p>
-
-<p>Each <tt>&X</tt> pattern in the subsitution string will be replaced by the X<sup>th</sup> substitution argument.
-For example: </p>
-
-<pre>Print Subst(("Substitution of &1, &2 and &3"),
-  "first", "second", "third")
-
-&rarr; Substitution of first, second and third</pre>
-
-
 [EDITOR]
 
 <p>Here is a few editor tips...</p>
 
-<h3>You have two types of comments:</h3>
+<h3>Two Types Of Comments</h3>
 
-<pre>'Normal comment</pre>
-<b><pre>''Bold comment</pre></b>
+<pre>' Normal comment</pre>
+<b><pre>'' Bold comment</pre></b>
 
 <p>Bold comments are used for documenting your code.</p>
 
-<h3>How to use code snippets:</h3>
+<h3>How To Use Code Snippets</h3>
 
-Let's type <tt>main</tt> then the <b>TAB</b> key. A static public <tt>Main</tt>
+<p>Let's type <tt>main</tt> then the <b>TAB</b> key. A static public <tt>Main</tt>
 startup function is automatically inserted in your code.
 
-Let's type <tt>ds</tt> then the <b>TAB</b> key. A local string variable declaration is
+<p>Let's type <tt>ds</tt> then the <b>TAB</b> key. A local string variable declaration is
 automatically inserted, and you can type the variable name immediately.
 
-Code snippets are entirely configurable from the global IDE option dialog.
+<p>Code snippets are entirely configurable from the global IDE option dialog.
 
 
 [END]
