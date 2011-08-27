@@ -3,7 +3,7 @@
 Export
 Inherits ReportFrame
 
-Public Const _Properties As String = "*,Text,Format,Alignment{Align.*},UseField" '"*,Text,Key,Format,Alignment{Align.*},UseField"
+Public Const _Properties As String = "*,Text,Key,Format,Alignment{Align.*},UseField" '"*,Text,Key,Format,Alignment{Align.*},UseField"
 Public Const _Similar As String = "ReportTextLabel"
 Private $sText As String
 Private $iAlignment As Integer = Align.Normal
@@ -139,13 +139,13 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
 
   'Draw.Clip((x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
   'Draw.Text($sText, (x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom, $iAlignment)
-
+  Paint.save
   Paint.Rectangle(iX, iY, iW, iH)
   Paint.Clip
 
   Paint.Text(sTempText, iX, iY, iW, iH, $iAlignment)
   Paint.Fill
-  Paint.ResetClip
+  Paint.Restore
   'If $sKey Then $sText = Null
   'Draw.Clip.Enabled = False
 
