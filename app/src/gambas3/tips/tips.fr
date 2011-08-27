@@ -1,6 +1,6 @@
 [WELCOME]
 
-<p>Bienvenue dans <b>Gambas</b> !</p>
+<h3>Bienvenue dans <b>Gambas</b> !</h3>
 
 <p><b>Gambas</b> est un environnement graphique de développement
 basé sur un interpréteur <i>Basic</i> avancé.</p>
@@ -17,16 +17,18 @@ programmes reste sous <i>votre</i> entière responsabilité...</p>
 
 [STARTUP]
 
+<h3>Classe de démarrage</h3>
+
 <p>Tout projet doit avoir une <i>classe de démarrage</i>. Cette classe 
 de démarrage doit posséder une méthode publique statique appelée 
-<i>Main</i> ne possédant aucun paramètre. Celle-ci agira alors comme 
+<b><tt>Main</tt></b> ne possédant aucun paramètre. Celle-ci agira alors comme 
 méthode de démarrage de votre programme.</p>
 
 <p>Pour définir la classe de démarrage, cliquez dessus avec le bouton 
-droit dans l'arbre du projet, et cochez l'entrée <i>Classe de 
-démarrage</i> dans le menu contextuel.</p>
+droit dans l'arbre du projet, et cochez l'entrée <u>Classe de 
+démarrage</u> dans le menu contextuel.</p>
 
-<p>Il n'est pas nécessaire de définir la méthode <i>Main</i> dans un 
+<p>Il n'est pas nécessaire de définir la méthode <tt>Main</tt> dans un 
 formulaire de démarrage, car celui-ci en possède une par défaut.</p>
 
 <p>Cette méthode de démarrage par défaut se charge d'instancier puis 
@@ -36,9 +38,11 @@ d'afficher le formulaire, à la manière de <i>Visual Basic&trade;</i>.
 
 [EXEC]
 
+<h3>Exécutable</h3>
+
 Vous pouvez créer un fichier exécutable à partir de votre projet.
-Pour cela, sélectionnez <i>Générer l'exécutable...</i> dans le menu
-<i>Projet</i>.
+Pour cela, sélectionnez <u>Générer l'exécutable...</u> dans le menu
+<u>Projet</u>.
 <p>
 L'exécutable est placé par défaut dans le répertoire du projet.
 Il porte le même nom que le projet.
@@ -46,23 +50,27 @@ Il porte le même nom que le projet.
 
 [OPEN]
 
-L'instruction <b><tt>OPEN</tt></b> de <b>Gambas</b> ne fonctionne
+<h3>Open</h3>
+
+L'instruction <b><tt>Open</tt></b> de <b>Gambas</b> ne fonctionne
 pas comme celle de <i>Visual Basic&trade;</i>. Elle ne retourne
 pas le fichier ouvert sous forme d'un entier, mais d'un objet de
-la classe <i>File</i>.
+la classe <b>File</b>.
 <p>
-Ainsi, au lieu de taper:
-<pre>DIM handle AS Integer
+Ainsi, au lieu de taper :
+<pre>Dim Handle As Integer
 ...
-OPEN "mon-fichier.txt" FOR READ AS #handle</pre>
+Open "mon-fichier.txt" For Read As #Handle</pre>
 <p>
-Vous devez taper:
-<pre>DIM handle AS File
+Vous devez taper :
+<pre>Dim Handle As File
 ...
-handle = OPEN "mon-fichier.txt" FOR READ</pre>
+Handle = Open "mon-fichier.txt" For Read</pre>
 
 
 [CATDIR]
+
+<h3>Concaténation de chemins</h3>
 
 Savez-vous que vous pouvez concaténer des noms de répertoires et
 de fichiers avec l'opérateur <b><tt>&/</tt></b> ? 
@@ -71,16 +79,18 @@ Cet opérateur s'occupe d'ajouter le caractère de délimitation
 de répertoire <tt>'/'</tt> lorsque c'est nécessaire.
 <p>
 Par exemple :
-<pre>PRINT "/home/gambas" &/ ".bashrc"
+<pre>Print "/home/gambas" &/ ".bashrc"
 /home/gambas/.bashrc
 
-PRINT "/home/gambas/" &/ "/tmp" &/ "foo.bar"
+Print "/home/gambas/" &/ "/tmp" &/ "foo.bar"
 /home/gambas/tmp/foo.bar
 </pre>
 <p>N'est-ce pas merveilleux ? :-)
 
 
 [PATH]
+
+<h3>Chemins relatifs</h3>
 
 Les chemins relatifs ont une signification particulière dans <i><b>Gambas</b></i>.
 Ils font référence aux fichiers situés à l'intérieur de votre projet.
@@ -94,16 +104,17 @@ fichiers n'ont plus de signification lorsque le projet est transformé
 en exécutable.
 
 
-
 [GLOBAL]
+
+<h3>Variables globales</h3>
 
 Il n'y a <u>pas</u> de variables globales en <b>Gambas</b>&nbsp;!
 <p>
 Par contre, vous pouvez placer les variables auquel vous désirez de tout
-votre projet dans votre module principal en les déclarant <tt>PUBLIC</tt>.
+votre projet dans votre module principal en les déclarant <tt>Public</tt>.
 <p>
 Si vous n'avez pas de module principal, mais un formulaire principal,
-déclarez-les comme <tt>STATIC PUBLIC</tt>.
+déclarez-les comme <tt>Static Public</tt>.
 <p>
 Pour accéder à ces variables, vous devez utiliser le nom du module ou du
 formulaire principal ainsi&nbsp;:
@@ -115,22 +126,26 @@ formulaire principal ainsi&nbsp;:
 
 [EMPTY]
 
+<h3>Chaînes vides</h3>
+
 Pour savoir si une chaîne est vide, il n'est pas nécessaire d'effectuer
 une comparaison avec <tt>""</tt> ou bien d'utiliser la fonction
 <tt><b>Len()</b></tt>. Il est possible de la tester directement, car une
-chaîne vide est équivalente à <tt><b>FALSE</b></tt> et une chaîne non-vide
-est équivalente à <tt><b>TRUE</b></tt>.
+chaîne vide est équivalente à <tt><b>False</b></tt> et une chaîne non-vide
+est équivalente à <tt><b>True</b></tt>.
 <p>
 Par exemple, plutôt que de faire :
-<pre>IF Len(MaChaine) > 0 THEN ...
-IF Len(MaChaine) = 0 THEN ...</pre>
+<pre>If Len(MaChaine) > 0 Then ...
+If Len(MaChaine) = 0 Then ...</pre>
 <p>
 Vous devriez plutôt faire :
-<pre>IF MaChaine THEN ...
-IF NOT MaChaine THEN ...</pre>
+<pre>If MaChaine Then ...
+If Not MaChaine Then ...</pre>
 
 
 [TRANSLATE]
+
+<h3>Traduction</h3>
 
 <p>Un programme écrit en <b>Gambas</b> est traduisible dans n'importe quel langue,
 à condition que vous indiquiez parmi les chaînes de caractères du programme
@@ -139,18 +154,21 @@ lesquelles doivent être traduites, et lesquelles ne le doivent pas.</p>
 <p>Pour indiquer quelles chaînes doivent être traduites, il suffit de les
 écrire entre parenthèses:</p>
 
-<pre>PRINT ("Traduisez-moi")
-PRINT "Mais ne me traduisez pas!"</pre>
+<pre>Print ("Traduisez-moi")
+Print "Mais ne me traduisez pas!"</pre>
 
 
 [EVENT]
+
+<h3>Gestionnaires d'évènements</h3>
 
 Chaque contrôle, et chaque objet pouvant générer des évènements, possède
 un <i>observateur d'évènement</i> et un <i>nom de groupe</i> d'évènement.
 <p>
 L'observateur d'évènement reçoit chaque évènement généré par un objet, et
 le nom de groupe d'évènenement est le préfixe de la fonction qui sera
-appelée pour gérer l'évènement.
+appelée pour gérer l'évènement. Cette fonction est appelée <i>gestionnaire
+d'évènements</i>.
 <p>
 Par défaut, l'observateur d'évènement est l'objet à l'intérieur duquel
 vous avez créé le contrôle, et le nom de groupe est le nom du contrôle.
@@ -159,44 +177,48 @@ De cette manière, un formulaire recevra tous les évènements des contrôles
 lui appartenant.
 <p>
 <pre>' Gambas form
-DIM hButton AS Button
+Dim hButton As Button
 
-PUBLIC SUB _new()
-&nbsp;&nbsp;hButton = NEW Button(ME) AS "MonBouton"
-END
+Public Sub _new()
+&nbsp;&nbsp;hButton = New Button(Me) As "MonBouton"
+End
 
-PUBLIC SUB MonButton_Click()
-&nbsp;&nbsp;PRINT "Vous avez cliqué sur MonBouton !"
-END
+Public Sub MonButton_Click()
+&nbsp;&nbsp;Print "Vous avez cliqué sur MonBouton !"
+End
 </pre>
 
 
 [FORM]
 
+<h3>Formulaires</h3>
+
 En <b>Gambas</b>, un formulaire est son propre observateur d'évènements, afin
-que vous puissez directement gérer ses évènements (comme <i>Resize</i>,
-<i>Activate</i>, ...) dans le code même de la classe associée.
+que vous puissez directement gérer ses évènements (comme <b>Resize</b>,
+<b>Activate</b>, ...) dans le code même de la classe associée.
 <p>
-De cette manière, les débutants venant de <i>Visual Basic</i> ne sont
+De cette manière, les débutants venant de <i>Visual Basic&trade;</i> ne sont
 pas désorientés :-).
 
 
 [EMBED]
+
+<h3>Formulaires imbriqués</h3>
 
 <p>Vous pouvez imbriquer un formulaire à l'intérieur d'un autre en 
 <b>Gambas</b>&nbsp;! Pour cela, instanciez simplement votre formulaire en lui passant
 un conteneur parent en argument supplémentaire.</p>
 
 <p>Par exemple&nbsp;:</p>
-<p><pre>DIM hForm AS MyDialog
-DIM hSuperControl AS MyForm
+<p><pre>Dim hForm As MyDialog
+Dim hSuperControl As MyForm
 
 ' Création d'une boîte dialogue
-hForm = NEW MyDialog
+hForm = New MyDialog
 ' Insertion d'un formulaire dans le dialogue
 ' Notez que le constructeur du formulaire prend deux arguments avant 
 ' le conteneur
-hSuperControl = NEW MyForm(Param1, Param2, MyDialog)
+hSuperControl = New MyForm(Param1, Param2, MyDialog)
 ' Déplacement et redimensionnement du formulaire
 hSuperControl.Move(8, 8, 128, 64)
 </pre>
@@ -207,83 +229,113 @@ est son propre observateur d'évènements.</p>
 
 [GROUP]
 
-<p>Every control has a <i>(Group)</i> property. When this property
-is set, the prefix of the event handler name is the name of the group
-and not the name of the control.</p>
+<h3>Groupes de contrôles</h3>
 
-<p>Let's suppose you have a <i>Button</i> named <b>btnAction</b>
-with the following <i>Click</i> event handler :</p>
+<p>Chaque contrôle possède une propriété <i>(Group)</i>. Lorsque cette propriété est
+définie, le préfixe de chaque gestionnaire d'évènement devient le nom de ce groupe
+et non plus le nom du contrôle.</p>
 
-<pre>PUBLIC SUB btnAction_Click()</pre>
+<p>Supposons qu'on ait un <b>Button</b> appelé <tt>btnAction</tt> avec le gestionnaire
+d'évènement <b>Click</b> suivant :</p>
 
-<p>If you set the <i>(Group)</i> property of <b>btnAction</b> to
-<i>MyGroup</i>, then the event handler that will receive events from
-the button will be the following :</p>
+<pre>Public Sub btnAction_Click()</pre>
 
-<pre>PUBLIC SUB MyGroup_Click()</pre>
+<p>Si vous définissez la propriété <i>(Group)</i> de <b>btnAction</b> à <tt>"MyGroup"</tt>,
+alors le gestionnaire d'évènement sera le suivant :</p>
 
-<p>This property lets you handle events of different controls in
-a single function. And the controls of the same group do not need
-to have the same type !</p>
+<pre>Public Sub MyGroup_Click()</pre>
 
-<p><b>Note :</b> The old <i>Visual Basic</i> veteran may recognize
-the concept of <i>control array</i>, but in a more powerful
-implementation. :-)</p>
+<p>Cette propriété vous permet de gérer les évènements de différents contrôles au sein
+d'une seule fonction. Et les contrôles d'un même groupe peuvent être de types différents !</p>
 
+<p><b>Remarque :</b> le bon vieux vétéran du <i>Visual Basic</i> reconnaîtra éventuellement
+le concept de <i>tableau de contrôle</i>, mais dans une implémentation bien plus puissante. :-)</p>
 
 [TAG]
 
-<p>Each control has a <i>Tag</i> property. This property is for the
-programmer, and can contain any <b>VARIANT</b> data that you find
-relevant.</p>
+<h3>La propriété Tag</h3>
 
-<p>This is very useful, when you want to distinguish controls of the
-same group in a common event handler.</p>
+<p>Chaque contrôle possède une propriété <b>Tag</b>. Cette propriété est
+destinée au programmeur, et peut contenir n'importe quel donnée de type <b>Variant</b>
+que vous trouverez adéquate.</p>
 
+<p>Ceci est très utile si, par exemple, vous voulez distinguer les contrôles d'un
+même groupe au sein de leur gestionnaire d'évènement commun.</p>
 
 
 [LAST]
 
-<p>The <b>LAST</b> keyword returns the last control that has
-received an event. This is very useful when you want to write an
-event handler that is independent of any control name.</p>
+<h3>Last</h3>
 
-<p>For example, let's suppose you want to write a calculator program.
-You have defined ten buttons, one for each digit, each one in the
-same <i>group</i> "Digit". The <i>Tag</i> of each control is set to
-the digit drawn in the button. Your event handler may look like that :</p>
+<p>Le mot-clef <b><tt>Last</tt></b> retourne le dernier contrôle ayant reçu
+un évènement. Ceci est très utile si vous voulez écrire un gestionnaire
+d'évènement indépendant d'un nom de contrôle.</p>
 
-<p><tt>PUBLIC SUB Digit_Click()<br><br>
-&nbsp;&nbsp;Display = Display & LAST.Tag<br>
-&nbsp;&nbsp;RefreshDisplay<br><br>
-END</tt></p>
+<p>Par exemple, supposons que vous voulez programmez une calculatrice.
+Vous avez défini dix boutons, un pour chaque chiffre, tous dans le même
+<i>groupe</i> <tt>"Digit"</tt>. La propriété <b>Tag</b> de chaque bouton
+contient le chiffre dessiné sur le bouton.</p>
+
+<p>Votre gestionnaire d'évènement ressemblera à ceci&nbsp;:</p>
+
+<pre>Public Sub Digit_Click()
+
+&nbsp;&nbsp;Display = Display & Last.Tag
+&nbsp;&nbsp;RefreshDisplay
+
+End</pre>
 
 
 [LEFT]
 
-<p>The well known <i>BASIC</i> routines <b>Left$</b>, <b>Right$</b>
-and <b>Mid$</b> have useful behaviours in <b>Gambas</b></p>
+<h3>Left$ / Mid$ / Right$</h3>
 
-<p>The second parameter of <b>Left$</b> and <b>Right$</b> is
-optional, and is one by default.</p>
+<p>Les fonctions BASIC bien connues que sont <b><tt>Left$</tt></b>, <tt><b>Right$</b></tt>
+et <tt><b>Mid$</b></tt> possèdent des syntaxes spécifiques bien utiles en <b>Gambas</b>.
 
-<p><tt>Left$("Gambas")</tt> returns <tt>"G"</tt><br>
-<tt>Right$("Gambas")</tt> returns <tt>"s"</tt></p>
+<p>Le deuxième argument de <b><tt>Left$</tt></b> et de <b><tt>Right$</tt></b> est optionnel,
+et vaut un par défaut.</p>
 
-<p>This second parameter can be negative, and then gives the number
-of characters not to extract.</p>
+<p><tt>Left$("Gambas")</tt> retourne <tt>"G"</tt>.<br>
+<tt>Right$("Gambas")</tt> retourne <tt>"s"</tt>.</p>
 
-<p><tt>Left$("Gambas", -2)</tt> returns <tt>"Gamb"</tt><br>
-<tt>Right$("Gambas", -2)</tt> returns <tt>"mbas"</tt></p>
+<p>Ce second argument peut être négatif. Il donne alors le nimbre de
+caractères à ne pas extraire.</p>
 
-<p>Likewise, the third argument of <b>Mid$</b> can be negative, and
-then gives the number of characters from the end of the string
-not to extract.</p>
+<p><tt>Left$("Gambas", -2)</tt> retourne <tt>"Gamb"</tt>.<br>
+<tt>Right$("Gambas", -2)</tt> retourne <tt>"mbas"</tt>.</p>
 
-<p><tt>Mid$("Gambas", 2, -2)</tt> returns <tt>"amb"</tt>
+<p>De même, le troisième argument de <tt><b>Mid$</b></tt> peut être négatif. Il
+donne alors le nombre de caractères depuis la fin de la chaîne à ne pas extraire.</p>
+
+<p><tt>Mid$("Gambas", 2, -2)</tt> retournue <tt>"amb"</tt>.</p>
+
+
+[OBSERVER]
+
+<h3>Observer</h3>
+
+<p>La classe <b>Observer</b> vous permet d'intercepter n'importe quel évènement
+de n'importe quel objet avant même qu'il ait été effectivement émis.</p>
+
+<pre>MyTextBox = New TextBox(ME) As "MyTextBox"
+MyObserver = New Observer(MyTextBox) As "MyObserver"
+...
+Public Sub MyObserver_KeyPress()
+  Debug "Reçu en premier"
+End
+
+Public Sub MyTextBox_KeyPress()
+  Debug "Reçu en dernier"
+End</pre>
+
+L'observateur peut annuler l'évènement avec <tt>Stop Event</tt> pour
+empêcher son émission.
 
 
 [END]
+
+<h3>C'est terminé !</h3>
 
 <p>Vous avez lu toutes les astuces du jour. J'espère que vous êtes
 devenu un expert <b>Gambas</b> maintenant ! :-)</p>
