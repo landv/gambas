@@ -20,15 +20,14 @@ Property Key As String
 Property {Format} As String
 Property UseField As Boolean
 
-
 Private Function Text_Read() As String
-  
+
   Return $sText
 
 End
 
 Private Sub Text_Write(Value As String)
-  
+
   $sText = Value
   'Me._Count = 2
 
@@ -55,102 +54,102 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   Dim bRaiseRes As Boolean
   Dim $sTempText As String
   Dim sText As String
-  
-  hMyHints.Height = Me._Height + Me.Padding._Top + Me.Padding._Bottom
-  
+
+  hMyHints.Height = Me._Height + Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom
+
   If Not IsNull(Me.Font) Then Paint.Font = Me.Font
-  
+
   'if the size choosed by the user is less than the font height, set the object to the font height
-  
-  If $sKey Then 
+
+  If $sKey Then
     sText = Me.Parent._GetData($sKey)
   Else
     sText = $sText
   Endif
-  
+
   hExt = Paint.TextExtents(sText)
 
   ' Paint.DrawText aligns according to the font height, not the text extents
   fTextWidth = MTools.PixelsToUnits(hExt.Width)
   fTextHeight = MTools.PixelsToUnits(Paint.Font.Height)
   'Debug "'" & sText & "'";; Paint.Font.Height;; hExt.Width
-  
-  If hMyHints.Height < fTextHeight Then hMyHints.Height = fTextHeight + Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom
-  
+
+  If hMyHints.Height < (fTextHeight + Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom) Then hMyHints.Height = fTextHeight + Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom
+
   If Me._RelativeHeight Then hMyHints.Height = TotalHeight * Me._Height / 100
   If hMyHints.Height <= 0 Then hMyHints.Height = Me.Font.Height
-  
-  If Me._Width > 0 And Not Me.Autoresize Then 
+
+  If Me._Width > 0 And Not Me.Autoresize Then
     hMyHints.Width = Me._Width
-  Else 
-    
+  Else
+
     hMyHints.Width = fTextWidth + Me.Padding._Left + Me.Padding._Right + Me.Border._Left + Me.Border._Right
-  
+
     'IF hMyHints.Width < ME._Width THEN hMyHints.Width = ME._Width
   Endif
-    If Me._RelativeWidth Then hMyHints.Width = TotalWidth * Me._Width / 100
-    If hMyHints.Width > AvailableW Then hMyHints.Width = AvailableW
-  
+  If Me._RelativeWidth Then hMyHints.Width = TotalWidth * Me._Width / 100
+  If hMyHints.Width > AvailableW Then hMyHints.Width = AvailableW
+
   Return hMyHints
-  
+
 End
 
 Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, VirtualId As Integer)
-  
+
   Dim sTempText As Variant
   'Dim iPadding As Integer
   Dim iX, iY, iW, iH As Integer
   'iPadding = MTools.UnitsToPixels(Me._Padding)
-  
+
   If $sKey Then
-  sTempText = Me.Parent._GetData($sKey)
+    sTempText = Me.Parent._GetData($sKey)
   Else
-  sTempText = $sText
+    sTempText = $sText
   Endif
-  If $sFormat Then 
+  If $sFormat Then
     Try sTempText = Format(sTempText, $sFormat)
   Endif
-  If $bUseField Then 
+  If $bUseField Then
     sTempText = DecodeText(sTempText, Page)
   Endif
   'Draw.Foreground = Me.Foreground
-  
 
-  
   iX = (x + hControl.RealLeft + MTools.UnitsToPixels(Me.Padding._Left + Me.Border._Left))
   iY = (y + hControl.RealTop + MTools.UnitsToPixels(Me.Padding._Top + Me.Border._Top))
   iW = (hControl.RealWidth - MTools.UnitsToPixels(Me.Padding._Left + Me.Padding._Right + Me.Border._Left + Me.Border._Right))
-  
+
   iH = (hControl.RealHeight - MTools.UnitsToPixels(Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom))
-  
+
   Paint.Brush = Me._GetActualBrush(iX, iY, iX + hControl.RealWidth, iY + hControl.RealHeight)
-  
-    If Report.Debug Then
-      
-    
+
+  If Report.Debug Then
+
     Paint.Brush = Paint.Color(Color.Red)
     Paint.Rectangle(ix, iy, iw, ih)
     Paint.Stroke
-    
-    
+
   Endif
-  
+
   'Set the Font if it is initialized
-  If Not IsNull(Me.Font) Then 
+  If Not IsNull(Me.Font) Then
     Paint.Font = Me.Font
     'If Paint.ResolutionY <> Desktop.Resolution Then Stop
     'Paint.Font.size = Paint.Font.size * Paint.ResolutionY / Desktop.Resolution 'mTools.ReportResolution
   Endif
-  
+
   'Draw.Clip((x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
-    'Draw.Text($sText, (x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom, $iAlignment)
+  'Draw.Text($sText, (x + hControl.RealLeft + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(Me.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom, $iAlignment)
 
-    Paint.Text(sTempText, iX, iY, iW, iH, $iAlignment)
-    Paint.Fill
-    'If $sKey Then $sText = Null
+  Paint.Rectangle(iX, iY, iW, iH)
+  Paint.Clip
+
+  Paint.Text(sTempText, iX, iY, iW, iH, $iAlignment)
+  Paint.Fill
+  Paint.ResetClip
+  'If $sKey Then $sText = Null
   'Draw.Clip.Enabled = False
-End
 
+End
 
 Private Function IsSpecial_Read() As Boolean
 
@@ -158,13 +157,11 @@ Private Function IsSpecial_Read() As Boolean
 
 End
 
-
 Private Sub IsSpecial_Write(Value As Boolean)
 
   $bIsSpecial = Value
 
 End
-
 
 Private Function Key_Read() As String
 
@@ -191,17 +188,17 @@ Private Sub Format_Write(Value As String)
 End
 
 Private Function DecodeText(sText As String, Optional Page As Integer, Optional ForSize As Boolean = False) As String
-  
-  If ForSize Then 
+
+  If ForSize Then
     If InStr(sText, "$PAGE") Then sText = Replace(sText, "$PAGE", "999")
     If InStr(sText, "$NPAGE") Then sText = Replace(sText, "$NPAGE", "999")
   Else
     If InStr(sText, "$PAGE") Then sText = Replace(sText, "$PAGE", Str(Page + 1))
     If InStr(sText, "$NPAGE") Then sText = Replace(sText, "$NPAGE", Str(Me.Report.PageCount))
   Endif
-  
+
   Return sText
-  
+
 End
 
 Private Function UseField_Read() As Boolean

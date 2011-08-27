@@ -18,12 +18,15 @@
     }
     { ReportLabel3 ReportLabel
       #MoveScaled(20,2,48,10)
+      Left = "1mm"
+      Top = "1mm"
+      Width = "3cm"
       Brush = ReportBrush["LinearGradient(0.98,0.04,0.04,0.04,[#FFFF00,#FFFFFF],[0,1])"]
       Fixed = True
       Font = Font["DejaVu Sans,Bold,+14"]
       Padding = ReportPadding["Top:6mm;Bottom:6mm;Left:6mm;Right:6mm"]
+      Ignore = True
       Expand = True
-      AutoResize = True
       Text = ("Gambas")
       Alignment = Align.Left
     }
@@ -48,7 +51,23 @@
         Tag = "*"
         { ReportLabel1 ReportLabel
           #MoveScaled(4,3,44,9)
+          Font = Font["+3"]
+          Padding = ReportPadding["Top:4mm;Bottom:4mm;Left:2mm"]
           Text = ("Gambas Report Demo")
+          Alignment = Align.Center
+        }
+        { ReportLabel4 ReportLabel
+          #MoveScaled(4,10,48,10)
+          Left = "1mm"
+          Top = "5cm"
+          Brush = ReportBrush["LinearGradient(0.98,0.04,0.04,0.04,[#FFFF00,#FFFFFF],[0,1])"]
+          Fixed = True
+          Font = Font["DejaVu Sans,Bold,+14"]
+          Padding = ReportPadding["Top:6mm;Bottom:6mm;Left:6mm;Right:6mm"]
+          Ignore = True
+          AutoResize = True
+          Text = ("Gambas")
+          Alignment = Align.Left
         }
       }
       { ReportLabel2 ReportLabel
@@ -57,6 +76,7 @@
         Fixed = True
         Font = Font["Bold,+1"]
         Padding = ReportPadding["Top:4mm;Bottom:4mm;Left:2mm;Right:2mm"]
+        AutoResize = True
         Border = ReportBorder["Top:1mm #000000"]
         Background = ReportBrush["#3398C3"]
         Text = ("Page $PAGE on $NPAGE")
