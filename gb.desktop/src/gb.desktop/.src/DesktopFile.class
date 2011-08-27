@@ -1,160 +1,160 @@
 ' Gambas class file
 
-EXPORT
+'Export
 
-PUBLIC CONST Application AS Integer = 1
-PUBLIC CONST {Link} AS Integer = 2
-PUBLIC CONST Directory AS Integer = 3
+Public Const Application As Integer = 1
+Public Const {Link} As Integer = 2
+Public Const Directory As Integer = 3
 
-PROPERTY READ Version AS String
-PROPERTY Type AS Integer
-PROPERTY Name AS String
-PROPERTY GenericName AS String
-PROPERTY Comment AS String
-PROPERTY Icon AS String
-PROPERTY {Exec} AS String
-PROPERTY Path AS String
-PROPERTY Terminal AS Boolean 
-PROPERTY StartupNotify AS Boolean
-PROPERTY READ MimeType AS String[]
-PROPERTY READ Categories AS String[]
+Property Read Version As String
+Property Type As Integer
+Property Name As String
+Property GenericName As String
+Property Comment As String
+Property Icon As String
+Property {Exec} As String
+Property Path As String
+Property Terminal As Boolean 
+Property StartupNotify As Boolean
+Property Read MimeType As String[]
+Property Read Categories As String[]
 
-PUBLIC SUB _new(Path AS String)
+Public Sub _new(Path As String)
   
   
   
-END
+End
 
-PUBLIC SUB Save()
+Public Sub Save()
   
   
   
-END
+End
 
 
-PRIVATE FUNCTION Version_Read() AS String
-
-  
-
-END
-
-
-PRIVATE FUNCTION Name_Read() AS String
+Private Function Version_Read() As String
 
   
 
-END
+End
 
-PRIVATE SUB Name_Write(Value AS String)
 
-  
-
-END
-
-PRIVATE FUNCTION GenericName_Read() AS String
+Private Function Name_Read() As String
 
   
 
-END
+End
 
-PRIVATE SUB GenericName_Write(Value AS String)
-
-  
-
-END
-
-PRIVATE FUNCTION Comment_Read() AS String
+Private Sub Name_Write(Value As String)
 
   
 
-END
+End
 
-PRIVATE SUB Comment_Write(Value AS String)
-
-  
-
-END
-
-PRIVATE FUNCTION Icon_Read() AS String
+Private Function GenericName_Read() As String
 
   
 
-END
+End
 
-PRIVATE SUB Icon_Write(Value AS String)
-
-  
-
-END
-
-PRIVATE FUNCTION Type_Read() AS Integer
+Private Sub GenericName_Write(Value As String)
 
   
 
-END
+End
 
-PRIVATE SUB Type_Write(Value AS Integer)
-
-  
-
-END
-
-PRIVATE FUNCTION Exec_Read() AS String
+Private Function Comment_Read() As String
 
   
 
-END
+End
 
-PRIVATE SUB Exec_Write(Value AS String)
-
-  
-
-END
-
-PRIVATE FUNCTION Path_Read() AS String
+Private Sub Comment_Write(Value As String)
 
   
 
-END
+End
 
-PRIVATE SUB Path_Write(Value AS String)
-
-  
-
-END
-
-PRIVATE FUNCTION Terminal_Read() AS Boolean
+Private Function Icon_Read() As String
 
   
 
-END
+End
 
-PRIVATE SUB Terminal_Write(Value AS Boolean)
-
-  
-
-END
-
-PRIVATE FUNCTION StartupNotify_Read() AS Boolean
+Private Sub Icon_Write(Value As String)
 
   
 
-END
+End
 
-PRIVATE SUB StartupNotify_Write(Value AS Boolean)
-
-  
-
-END
-
-PRIVATE FUNCTION MimeType_Read() AS String[]
+Private Function Type_Read() As Integer
 
   
 
-END
+End
 
-PRIVATE FUNCTION Categories_Read() AS String[]
+Private Sub Type_Write(Value As Integer)
 
   
 
-END
+End
+
+Private Function Exec_Read() As String
+
+  
+
+End
+
+Private Sub Exec_Write(Value As String)
+
+  
+
+End
+
+Private Function Path_Read() As String
+
+  
+
+End
+
+Private Sub Path_Write(Value As String)
+
+  
+
+End
+
+Private Function Terminal_Read() As Boolean
+
+  
+
+End
+
+Private Sub Terminal_Write(Value As Boolean)
+
+  
+
+End
+
+Private Function StartupNotify_Read() As Boolean
+
+  
+
+End
+
+Private Sub StartupNotify_Write(Value As Boolean)
+
+  
+
+End
+
+Private Function MimeType_Read() As String[]
+
+  
+
+End
+
+Private Function Categories_Read() As String[]
+
+  
+
+End

@@ -170,10 +170,6 @@ End
 Static Private Sub GetDesktop() As String
   
   If Not $sDesktop Then
-    ' If [x "$KDE_FULL_SESSION" = x "true"]; Then DE = kde;
-    ' elif[x "$GNOME_DESKTOP_SESSION_ID"! = x ""]; Then DE = gnome;
-    ' elif xprop - root _DT_SAVE_MODE | grep ' = \"xfce4\"$' >/dev/null 2>&1; then DE=xfce;
-    ' fi
     
     If Application.Env["KDE_FULL_SESSION"] Then
       If Application.Env["KDE_SESSION_VERSION"] = "4" Then
@@ -189,6 +185,8 @@ Static Private Sub GetDesktop() As String
       $sDesktop = "ENLIGHTENMENT"
     Else If Application.Env["WMAKER_BIN_NAME"] Then
       $sDesktop = "WINDOWMAKER"
+    Else If Application.Env["DESKTOP_SESSION"] = "LXDE" Then
+      $sDesktop = "LXDE"
     Else
       $sDesktop = "?"
     Endif
@@ -370,3 +368,10 @@ Static Private Function RootWindow_Read() As Integer
   Return _Desktop.RootWindow
 
 End
+
+Static Public Sub RunAsRoot(Command As String)
+  
+  Main.RunXdgUtil("xdg-su", ["-c", Command])
+  
+End
+

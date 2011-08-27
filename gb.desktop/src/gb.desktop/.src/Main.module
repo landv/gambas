@@ -12,6 +12,7 @@ Public Sub RunXdgUtil(sProg As String, aArg As String[], Optional bWait As Boole
   Dim sPath As String
   Dim sDir As String
   Dim aCmd As String[]
+  Dim bAgain As Boolean
   
   sCmd = $cTool[sProg]
   
@@ -21,9 +22,21 @@ Public Sub RunXdgUtil(sProg As String, aArg As String[], Optional bWait As Boole
       sDir = Temp$("xdg-utils")
       sDir = File.Dir(sDir) &/ File.BaseName(sDir)
       Try Mkdir sDir
+      
+    TRY_AGAIN:
+    
       sCmd = sDir &/ sProg
       Copy "xdg-utils" &/ sProg To sCmd
       Shell "chmod a+x " & Shell$(sCmd) Wait
+      
+      If Process.LastValue Then
+        If bAgain Then Error.Raise("Unable to install xdg tool: " & sProg)
+        sDir = "~/tmp/xdg-utils"
+        Try Mkdir "~/tmp"
+        bAgain = True
+        Goto TRY_AGAIN
+      Endif
+      
     'Endif
     sCmd = Trim(sCmd)
     $cTool[sProg] = sCmd
