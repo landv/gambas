@@ -74,13 +74,15 @@ static void init_conv(const char *str, int len)
   _clen = -1;
 }
 
+#define get_char_length() (_char_length[(unsigned char)_str[_pos]])
+
 static int get_next_pos(void)
 {
   if (_pos >= _len)
     return 0;
 
   //_pos += get_char_length(&_str[_pos]);
-  _pos += _char_length[(unsigned char)_str[_pos]];
+  _pos += get_char_length();
 
   return _pos;
 }
@@ -140,14 +142,14 @@ static int index_to_byte(const char *str, int len, int index)
 }
 
 
-BEGIN_METHOD(string_pos, GB_STRING str; GB_INTEGER index)
+BEGIN_METHOD(String_Pos, GB_STRING str; GB_INTEGER index)
 
   GB_ReturnInteger(index_to_byte(STRING(str), LENGTH(str), VARG(index)));
 
 END_METHOD
 
 
-BEGIN_METHOD(string_len, GB_STRING str)
+BEGIN_METHOD(String_Len, GB_STRING str)
 
   init_conv(STRING(str), LENGTH(str));
 
@@ -156,7 +158,7 @@ BEGIN_METHOD(string_len, GB_STRING str)
 END_METHOD
 
 
-BEGIN_METHOD(string_index, GB_STRING str; GB_INTEGER pos)
+BEGIN_METHOD(String_Index, GB_STRING str; GB_INTEGER pos)
 
   GB_ReturnInteger(byte_to_index(STRING(str), LENGTH(str), VARG(pos)));
 
@@ -204,7 +206,7 @@ static void get_substring(int start, int len)
 }
 
 
-BEGIN_METHOD(string_mid, GB_STRING str; GB_INTEGER start; GB_INTEGER len)
+BEGIN_METHOD(String_Mid, GB_STRING str; GB_INTEGER start; GB_INTEGER len)
 
   int start = VARG(start);
   int len = VARGOPT(len, LENGTH(str));
@@ -221,7 +223,7 @@ BEGIN_METHOD(string_mid, GB_STRING str; GB_INTEGER start; GB_INTEGER len)
 END_METHOD
 
 
-BEGIN_METHOD(string_left, GB_STRING str; GB_INTEGER len)
+BEGIN_METHOD(String_Left, GB_STRING str; GB_INTEGER len)
 
   int len = VARGOPT(len, 1);
 
@@ -232,7 +234,7 @@ BEGIN_METHOD(string_left, GB_STRING str; GB_INTEGER len)
 END_METHOD
 
 
-BEGIN_METHOD(string_right, GB_STRING str; GB_INTEGER len)
+BEGIN_METHOD(String_Right, GB_STRING str; GB_INTEGER len)
 
   int len = VARGOPT(len, 1);
 
@@ -308,21 +310,21 @@ __ERROR:
 }
 
 
-BEGIN_METHOD(string_lower, GB_STRING str)
+BEGIN_METHOD(String_Lower, GB_STRING str)
 
   convert_string(STRING(str), LENGTH(str), FALSE);
 
 END_METHOD
 
 
-BEGIN_METHOD(string_upper, GB_STRING str)
+BEGIN_METHOD(String_Upper, GB_STRING str)
 
   convert_string(STRING(str), LENGTH(str), TRUE);
 
 END_METHOD
 
 
-BEGIN_METHOD(string_chr, GB_INTEGER code)
+BEGIN_METHOD(String_Chr, GB_INTEGER code)
 
 	const char *charset = EXEC_big_endian ? "UCS-4BE" : "UCS-4LE";
 	char *temp;
@@ -332,7 +334,7 @@ BEGIN_METHOD(string_chr, GB_INTEGER code)
 
 END_METHOD
 
-BEGIN_METHOD(string_code, GB_STRING str; GB_INTEGER index)
+BEGIN_METHOD(String_Code, GB_STRING str; GB_INTEGER index)
 
 	int index, pos, npos;
 	const char *charset = EXEC_big_endian ? "UCS-4BE" : "UCS-4LE";
@@ -402,19 +404,19 @@ __ERROR:
 	return;
 }
 
-BEGIN_METHOD(string_instr, GB_STRING str; GB_STRING pattern; GB_INTEGER start; GB_INTEGER mode)
+BEGIN_METHOD(String_Instr, GB_STRING str; GB_STRING pattern; GB_INTEGER start; GB_INTEGER mode)
 
 	string_search(STRING(str), LENGTH(str), STRING(pattern), LENGTH(pattern), VARGOPT(start, 0), FALSE, VARGOPT(mode, GB_COMP_BINARY) == GB_COMP_NOCASE);
 
 END_METHOD
 
-BEGIN_METHOD(string_rinstr, GB_STRING str; GB_STRING pattern; GB_INTEGER start; GB_INTEGER mode)
+BEGIN_METHOD(String_RInstr, GB_STRING str; GB_STRING pattern; GB_INTEGER start; GB_INTEGER mode)
 
 	string_search(STRING(str), LENGTH(str), STRING(pattern), LENGTH(pattern), VARGOPT(start, 0), TRUE, VARGOPT(mode, GB_COMP_BINARY) == GB_COMP_NOCASE);
 
 END_METHOD
 
-BEGIN_METHOD(string_comp, GB_STRING str1; GB_STRING str2; GB_INTEGER mode)
+BEGIN_METHOD(String_Comp, GB_STRING str1; GB_STRING str2; GB_INTEGER mode)
 
 	int mode = VARGOPT(mode, GB_COMP_BINARY) | GB_COMP_LANG;
 	bool nocase = (mode & GB_COMP_NOCASE) != 0;
@@ -426,42 +428,129 @@ BEGIN_METHOD(string_comp, GB_STRING str1; GB_STRING str2; GB_INTEGER mode)
 
 END_METHOD
 
+#define IS_VALID(_char)                        \
+    ((_char) < 0x110000 &&                     \
+     (((_char) & 0xFFFFF800) != 0xD800) &&     \
+     ((_char) < 0xFDD0 || (_char) > 0xFDEF) &&  \
+     ((_char) & 0xFFFE) != 0xFFFE)
+
+BEGIN_METHOD(String_IsValid, GB_STRING str)
+
+	int len;
+	uint unicode;
+	bool valid = FALSE;
+	int i;
+	const uchar *str;
+	
+  init_conv(STRING(str), LENGTH(str));
+	while (_str[_pos])
+	{
+		len = get_char_length();
+		if ((_pos + len) > _len)
+			goto _INVALID;
+		
+		str = (const uchar *)&_str[_pos];
+		
+		//for (i = 0; i < len; i++)
+		//	fprintf(stderr, "%02X ", str[i]);
+		
+		for (i = 1; i < len; i++)
+		{
+			if ((str[i] & 0xC0) != 0x80)
+				goto _INVALID;
+		}
+		
+		switch (len)
+		{
+			case 2:
+				unicode = (str[1] & 0x3F) + ((str[0] & 0x1F) << 6);
+				if (unicode < 0x80)
+					goto _INVALID;
+				break;
+				
+			case 3:
+				unicode = (str[2] & 0x3F) + ((str[1] & 0x3F) << 6) + ((str[0] & 0xF) << 12);
+				if (unicode < 0x800)
+					goto _INVALID;
+				break;
+			
+			case 4:
+				unicode = (str[3] & 0x3F) + ((str[2] & 0x3F) << 6) + ((str[1] & 0x3F) << 12) + ((str[0] & 0x7) << 18);
+				if (unicode < 0x10000)
+					goto _INVALID;
+				break;
+			
+			case 5:
+				unicode = (str[4] & 0x3F) + ((str[3] & 0x3F) << 6) + ((str[2] & 0x3F) << 12) + ((str[1] & 0x3F) << 18) + ((str[0] & 0x3) << 24);
+				if (unicode < 0x200000)
+					goto _INVALID;
+				break;
+			
+			case 6:
+				unicode = (str[5] & 0x3F) + ((str[4] & 0x3F) << 6) + ((str[3] & 0x3F) << 12) + ((str[2] & 0x3F) << 18) + ((str[1] & 0x3F) << 24) + ((str[0] & 0x1) << 30);
+				if (unicode < 0x4000000)
+					goto _INVALID;
+				break;
+				
+			default:
+				unicode = str[0];
+				break;
+		}
+		
+		if (!IS_VALID(unicode))
+			goto _INVALID;
+		
+		get_next_pos();
+		//fprintf(stderr, " . ");
+	}
+	
+	valid = TRUE;
+	
+_INVALID:
+
+	GB_ReturnBoolean(valid);
+	//fprintf(stderr, "\n");
+
+END_METHOD
+
 #endif
 
 GB_DESC NATIVE_String[] =
 {
   GB_DECLARE("String", 0),  GB_VIRTUAL_CLASS(),
 
-  GB_STATIC_METHOD("Len", "i", string_len, "(String)s"),
+  GB_STATIC_METHOD("Len", "i", String_Len, "(String)s"),
 
-  GB_STATIC_METHOD("Mid", "s", string_mid, "(String)s(Start)i[(Length)i]"),
-  GB_STATIC_METHOD("Mid$", "s", string_mid, "(String)s(Start)i[(Length)i]"),
-  GB_STATIC_METHOD("Left", "s", string_left, "(String)s[(Length)i]"),
-  GB_STATIC_METHOD("Left$", "s", string_left, "(String)s[(Length)i]"),
-  GB_STATIC_METHOD("Right", "s", string_right, "(String)s[(Length)i]"),
-  GB_STATIC_METHOD("Right$", "s", string_right, "(String)s[(Length)i]"),
+  GB_STATIC_METHOD("Mid", "s", String_Mid, "(String)s(Start)i[(Length)i]"),
+  GB_STATIC_METHOD("Mid$", "s", String_Mid, "(String)s(Start)i[(Length)i]"),
+  GB_STATIC_METHOD("Left", "s", String_Left, "(String)s[(Length)i]"),
+  GB_STATIC_METHOD("Left$", "s", String_Left, "(String)s[(Length)i]"),
+  GB_STATIC_METHOD("Right", "s", String_Right, "(String)s[(Length)i]"),
+  GB_STATIC_METHOD("Right$", "s", String_Right, "(String)s[(Length)i]"),
 
-  GB_STATIC_METHOD("Upper", "s", string_upper, "(String)s"),
-  GB_STATIC_METHOD("Upper$", "s", string_upper, "(String)s"),
-  GB_STATIC_METHOD("UCase", "s", string_upper, "(String)s"),
-  GB_STATIC_METHOD("UCase$", "s", string_upper, "(String)s"),
-  GB_STATIC_METHOD("Lower", "s", string_lower, "(String)s"),
-  GB_STATIC_METHOD("Lower$", "s", string_lower, "(String)s"),
-  GB_STATIC_METHOD("LCase", "s", string_lower, "(String)s"),
-  GB_STATIC_METHOD("LCase$", "s", string_lower, "(String)s"),
+  GB_STATIC_METHOD("Upper", "s", String_Upper, "(String)s"),
+  GB_STATIC_METHOD("Upper$", "s", String_Upper, "(String)s"),
+  GB_STATIC_METHOD("UCase", "s", String_Upper, "(String)s"),
+  GB_STATIC_METHOD("UCase$", "s", String_Upper, "(String)s"),
+  GB_STATIC_METHOD("Lower", "s", String_Lower, "(String)s"),
+  GB_STATIC_METHOD("Lower$", "s", String_Lower, "(String)s"),
+  GB_STATIC_METHOD("LCase", "s", String_Lower, "(String)s"),
+  GB_STATIC_METHOD("LCase$", "s", String_Lower, "(String)s"),
 
-  GB_STATIC_METHOD("InStr", "i", string_instr, "(String)s(Pattern)s[(From)i(Mode)i]"),
-  GB_STATIC_METHOD("RInStr", "i", string_rinstr, "(String)s(Pattern)s[(From)i(Mode)i]"),
+  GB_STATIC_METHOD("InStr", "i", String_Instr, "(String)s(Pattern)s[(From)i(Mode)i]"),
+  GB_STATIC_METHOD("RInStr", "i", String_RInstr, "(String)s(Pattern)s[(From)i(Mode)i]"),
 
-  GB_STATIC_METHOD("Comp", "i", string_comp, "(String)s(String2)s[(Mode)i]"),
+  GB_STATIC_METHOD("Comp", "i", String_Comp, "(String)s(String2)s[(Mode)i]"),
 
-  GB_STATIC_METHOD("Byte", "i", string_pos, "(String)s(Index)i"),
-  GB_STATIC_METHOD("Pos", "i", string_pos, "(String)s(Index)i"),
-  GB_STATIC_METHOD("Index", "i", string_index, "(String)s(Byte)i"),
+  GB_STATIC_METHOD("Byte", "i", String_Pos, "(String)s(Index)i"),
+  GB_STATIC_METHOD("Pos", "i", String_Pos, "(String)s(Index)i"),
+  GB_STATIC_METHOD("Index", "i", String_Index, "(String)s(Byte)i"),
 
-  GB_STATIC_METHOD("Chr", "s", string_chr, "(Unicode)i"),
-  GB_STATIC_METHOD("Chr$", "s", string_chr, "(Unicode)i"),
-  GB_STATIC_METHOD("Code", "i", string_code, "(String)s[(Index)i]"),
+  GB_STATIC_METHOD("Chr", "s", String_Chr, "(Unicode)i"),
+  GB_STATIC_METHOD("Chr$", "s", String_Chr, "(Unicode)i"),
+  GB_STATIC_METHOD("Code", "i", String_Code, "(String)s[(Index)i]"),
+
+  GB_STATIC_METHOD("IsValid", "b", String_IsValid, "(String)s"),
 
   GB_END_DECLARE
 };

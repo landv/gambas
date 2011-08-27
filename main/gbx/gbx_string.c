@@ -818,7 +818,7 @@ int STRING_conv(char **result, const char *str, int len, const char *src, const 
 		iconv_close(handle);
 	
 		if (unicode)
-			STRING_add(result, "\0\0\0", sizeof(wchar_t) - 1);
+			STRING_add(result, "\0\0\0", 3);
 	
 		STRING_extend_end(result);
 	
