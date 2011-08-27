@@ -257,7 +257,11 @@ void COMPONENT_load(COMPONENT *comp)
   COMPONENT_current = comp;
 
   if (comp->library)
+	{
     comp->order = LIBRARY_load(comp->library);
+		comp->library->persistent = comp->preload;
+	}
+	
   if (comp->archive)
     ARCHIVE_load(comp->archive, comp->user);
 

@@ -260,7 +260,6 @@ int LIBRARY_load(LIBRARY *lib)
 
   /* Initialisation */
   order = (*func)();
-	lib->persistent = order < 0;
 	
   /* Déclaration des classes */
   desc = get_symbol(lib, LIB_CLASS, FALSE);
