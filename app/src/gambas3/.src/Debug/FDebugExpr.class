@@ -120,7 +120,7 @@ Public Sub gvwExpr_Data(Row As Integer, Column As Integer)
   Dim sSym As String
   Dim sVal As String
 
-  If Column = 0 Then gvwExpr.Data.Foreground = Color.Merge(Color.TextBackground, Color.TextForeground, 0.7)
+  If Column = 0 Then gvwExpr.Data.Foreground = Color.Gradient(Color.TextBackground, Color.TextForeground, 0.7)
 
   If $bArray Then 
     

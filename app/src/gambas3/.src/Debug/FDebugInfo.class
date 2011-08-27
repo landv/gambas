@@ -935,7 +935,7 @@ Public Sub tbvLocal_Data(Row As Integer, Column As Integer)
         .Text = If(UCase(sVar) = "S:", ("Static variables"), ("Dynamic variables"))
       Else
         .Text = sVar
-        .Foreground = Color.Merge(Color.TextBackground, Color.TextForeground, 0.7)
+        .Foreground = Color.Gradient(Color.TextBackground, Color.TextForeground, 0.7)
       Endif
     Else
       Try .Text = aValue[Row]

@@ -200,9 +200,36 @@ GB_COLOR COLOR_merge(GB_COLOR col1, GB_COLOR col2, double weight)
 		
 		#define MIX(_val1, _val2) ((int)((_val1) * (1 - weight) + (_val2) * weight + 0.5))
 		
-		COLOR_hsv_to_rgb(MIX(h1, h2), MIX(s1, s2), MIX(v1, v2), &r, &g, &b);
+		if (h1 < 0)
+			h1 = h2;
+		else if (h2 < 0)
+			h2 = h1;
+		else
+			h1 = MIX(h1, h2);
+		
+		COLOR_hsv_to_rgb(h1, MIX(s1, s2), MIX(v1, v2), &r, &g, &b);
 		
 		return gt_rgba_to_color(r, g, b, MIX(a1, a2));
+	}
+}
+
+GB_COLOR COLOR_gradient(GB_COLOR col1, GB_COLOR col2, double weight)
+{
+	int r1, g1, b1, a1;
+	int r2, g2, b2, a2;
+	
+	if (weight == 0.0)
+		return col1;
+	else if (weight == 1.0)
+		return col2;
+	else
+	{
+		gt_color_to_rgba(col1, &r1, &g1, &b1, &a1);
+		gt_color_to_rgba(col2, &r2, &g2, &b2, &a2);
+		
+		#define MIX(_val1, _val2) ((int)((_val1) * (1 - weight) + (_val2) * weight + 0.5))
+		
+		return gt_rgba_to_color(MIX(r1, r2), MIX(g1, g2), MIX(b1, b2), MIX(a1, a2));
 	}
 }
 
@@ -397,6 +424,12 @@ BEGIN_METHOD(Color_Merge, GB_INTEGER color1; GB_INTEGER color2; GB_FLOAT weight)
 
 END_METHOD
 
+BEGIN_METHOD(Color_Gradient, GB_INTEGER color1; GB_INTEGER color2; GB_FLOAT weight)
+
+	GB.ReturnInteger(COLOR_gradient(VARG(color1), VARG(color2), VARGOPT(weight, 0.5)));
+
+END_METHOD
+
 BEGIN_METHOD(Color_Desaturate, GB_INTEGER color)
 
 	int r, g, b, a, gray;
@@ -529,6 +562,7 @@ GB_DESC CColorDesc[] =
   GB_STATIC_METHOD("Lighter", "i", Color_Lighter, "(Color)i"),
   GB_STATIC_METHOD("Darker", "i", Color_Darker, "(Color)i"),
   GB_STATIC_METHOD("Merge", "i", Color_Merge, "(Color1)i(Color2)i[(Weight)f]"),
+  GB_STATIC_METHOD("Gradient", "i", Color_Gradient, "(Color1)i(Color2)i[(Weight)f]"),
   GB_STATIC_METHOD("Blend", "i", Color_Blend, "(Source)i(Destination)i"),
   GB_STATIC_METHOD("Desaturate", "i", Color_Desaturate, "(Color)i"),
 
