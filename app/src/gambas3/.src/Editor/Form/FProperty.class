@@ -209,7 +209,7 @@ Public Sub RefreshAll()
 
     grdProperty[iRow, 1].Text = sVal
     'grdProperty[iRow, 0].Padding = 4
-
+    '
     Inc iRow
 
   Next
@@ -310,7 +310,7 @@ Public Sub RefreshOne(hCtrl As CControl, sProp As String)
       grdProperty[iRow, 1].Background = Color.LightBackground
       grdProperty[iRow, 0].Font.Bold = True
     Endif
-
+    
   Endif
 
   If sProp = $sLast Then
@@ -438,6 +438,7 @@ Public Sub HideProperty() As Boolean
     btnProperty.Hide
     spnProperty.Hide
     crdProperty.Hide
+    panEditor.Hide
 
     ' If btnLock.Value Then
     '   $sFocus = $sLast
@@ -448,7 +449,7 @@ Public Sub HideProperty() As Boolean
     $sLast = ""
     $iLast = -1
     $hEditor = Null
-
+    
   Endif
 
 End
@@ -461,19 +462,10 @@ Private Sub MoveProperty()
 
   With grdProperty[grdProperty.Row, 1]
 
-    iW = .Width '- 2
-    If $bButton Then iW = iW - (.Height)
-
-    $hEditor.Move(grdProperty.X + .X - grdProperty.ScrollX, grdProperty.Y + .Y - grdProperty.ScrollY, iW, .Height)
-    $hEditor.Raise
+    panEditor.Move(grdProperty.X + .X - grdProperty.ScrollX, grdProperty.Y + .Y - grdProperty.ScrollY, .Width, .Height)
+    panEditor.Raise
 
   End With
-
-  If $bButton Then
-    btnProperty.Resize(txtProperty.Height, txtProperty.Height)
-    btnProperty.Move(txtProperty.X + txtProperty.Width, txtProperty.Y)
-    btnProperty.Raise
-  Endif
 
 End
 
@@ -515,6 +507,24 @@ Private Sub FindProperty(sProp As String) As Integer
   Endif
 
   Return -1
+
+End
+
+Private Sub InitComboWith(aList As String[], Optional sVoid As String)
+
+  Dim hMenu As Menu
+  Dim sVal As String
+
+  mnuProperty.Children.Clear
+
+  If sVoid Then
+    hMenu = New Menu(mnuProperty) As "mnuProperty"
+    hMenu.Text = sVoid
+  Endif
+  For Each sVal In aList
+    hMenu = New Menu(mnuProperty) As "mnuProperty"
+    hMenu.Text = sVal
+  Next
 
 End
 
@@ -647,24 +657,14 @@ Private Sub ShowProperty(Optional sFocus As String)
       If hProp.ConstantClass Then
 
         hEditor = cmbProperty
-        cmbProperty.ReadOnly = True
-        cmbProperty.Clear
-
-        For Each sConst In hProp.ConstantList
-          cmbProperty.Add(sConst)
-        Next
-
-        'cmbProperty.Sort
+        InitComboWith(hProp.GetConstantList())
 
       Endif
 
     Case "b"
 
       hEditor = cmbProperty
-      cmbProperty.ReadOnly = True
-      cmbProperty.Clear
-      cmbProperty.Add("False")
-      cmbProperty.Add("True")
+      InitComboWith(["False", "True"])
 
     Case "Font", "Picture", "Path", "Color", "Image", "SvgImage", "ReportPadding", "ReportBorder", "ReportBrush"
 
@@ -705,19 +705,12 @@ Private Sub ShowProperty(Optional sFocus As String)
     Case "Connection"
 
       hEditor = cmbProperty
-      cmbProperty.ReadOnly = True
-      cmbProperty.List = MConnection.GetConnections()
-      cmbProperty.Add("", 0)
+      InitComboWith(MConnection.GetConnections(), " ")
 
     Case "Menu"
 
-      aElt = $hForm.GetMenus()
-      'If aElt.Count = 0 Then Return
-
       hEditor = cmbProperty
-      cmbProperty.ReadOnly = True
-      aElt.Add("", 0)
-      cmbProperty.List = aElt
+      InitComboWith($hForm.GetMenus(), " ")
 
     Case "ReportCoord"
       hEditor = crdProperty
@@ -725,13 +718,7 @@ Private Sub ShowProperty(Optional sFocus As String)
     Case Else 'object
 
       hEditor = cmbProperty
-      cmbProperty.ReadOnly = True
-      cmbProperty.Clear
-      cmbProperty.Add("(" & ("None") & ")")
-
-      For Each sCtrl In $hForm.FindControlFromType($sType).Sort(gb.Natural + gb.IgnoreCase)
-        cmbProperty.Add(sCtrl)
-      Next
+      InitComboWith($hForm.FindControlFromType($sType).Sort(gb.Natural + gb.IgnoreCase), "(" & ("None") & ")")
 
   End Select
 
@@ -744,9 +731,10 @@ Private Sub ShowProperty(Optional sFocus As String)
 
   MoveProperty
 
-  $hEditor.Visible = True
+  $hEditor.Show
+  panEditor.Show
   btnProperty.Visible = bButton
-  btnProperty.Raise
+  'btnProperty.Raise
 
   $hEditor.SetFocus
 
@@ -760,14 +748,15 @@ Private Sub ShowProperty(Optional sFocus As String)
 
 End
 
-Public Sub cmbProperty_Activate()
+' Public Sub cmbProperty_Activate()
+' 
+'   SaveProperty
+' 
+' End
 
-  SaveProperty
+Public Sub mnuProperty_Click()
 
-End
-
-Public Sub cmbProperty_Click()
-
+  cmbProperty.Text = Trim(Last.Text)
   SaveProperty
 
 End
@@ -983,12 +972,28 @@ _EXIT:
 
 End
 
+Private Sub NextComboProperty(bPrevious As Boolean)
+
+  Dim iInd As Integer
+
+  For iInd = 0 To mnuProperty.Children.Count - 1
+    If Trim(mnuProperty.Children[iInd].Text) = cmbProperty.Text Then Break
+  Next
+  If bPrevious Then
+    Dec iInd
+    If iInd < 0 Then iInd = mnuProperty.Children.Count - 1
+  Else
+    Inc iInd
+    If iInd >= mnuProperty.Children.Count Then iInd = 0
+  Endif
+  mnuProperty.Children[iInd].Value = True
+
+End
+
 Public Sub grdProperty_DblClick()
 
   If cmbProperty.Visible Then
-    If cmbProperty.ReadOnly Then
-      cmbProperty.Index = (cmbProperty.Index + 1) Mod cmbProperty.Count
-    Endif
+    NextComboProperty(False)
   Else If btnProperty.Visible Then
     btnProperty_Click
   Endif
@@ -1160,9 +1165,17 @@ Public Sub cmbProperty_KeyPress()
 
   If Key.Code = Key.Delete Or Key.Code = Key.Backspace Then
 
-    cmbProperty.Text = ""
-    SaveProperty
+    If mnuProperty.Children[0].Text = " " Then
+      mnuProperty.Children[0].Value = True
+      SaveProperty
+    Endif
 
   Endif
+
+End
+
+Public Sub cmbProperty_MouseWheel()
+
+  NextComboProperty(Mouse.Delta > 0)
 
 End

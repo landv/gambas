@@ -163,6 +163,12 @@ End
 
 Public Sub Background_Draw()
   
+  Dim FW As Integer
+  
+  If $bBorder Then FW = Style.FrameWidth
+  
+  If Me.Background <> Color.Default Then Draw.FillRect(FW, FW, Draw.W - FW * 2, Draw.H - FW * 2, Me.Background)
+  
   If $bBorder Then 
     Draw.Style.Box(0, 0, $hBackground.W, $hBackground.H)
   Endif

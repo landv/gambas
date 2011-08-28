@@ -292,7 +292,7 @@ Public Sub DrawingArea_MouseDown()
   Endif
   $hDrawingArea.Refresh
   
-  If $bInsideArrow Then
+  If $bInsideArrow Or $bMenuOnly Then
     Arrow_Click
     DrawingArea_MouseUp
     If Not $hDrawingArea.Hovered Then DrawingArea_Leave
@@ -323,7 +323,7 @@ Public Sub DrawingArea_MouseUp()
   $bPressed = False
   $hDrawingArea.Refresh
   
-  If Not $bInsideArrow Then Button_Click
+  If Not ($bInsideArrow Or $bMenuOnly) Then Button_Click
 
 End
 

@@ -457,7 +457,7 @@ BEGIN_PROPERTY(CMENU_value)
   }
   else if (!CMENU_is_toplevel(THIS))
   {
-		qDebug("CMENU_value: %s", THIS->widget.name);
+		//qDebug("CMENU_value: %s", THIS->widget.name);
     GB.Ref(THIS);
     send_click_event(THIS);
   }

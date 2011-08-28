@@ -341,3 +341,17 @@ Catch
   DefaultValue = Null
 
 End
+
+Public Sub GetConstantList() As String[]
+  
+  Dim aList As New String[]
+  Dim sConst As String
+  
+  For Each sConst In ConstantList
+    aList.Add(sConst)
+  Next
+  
+  Return aList
+  
+End
+

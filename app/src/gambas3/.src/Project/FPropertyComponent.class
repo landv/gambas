@@ -230,10 +230,12 @@ Public Sub Form_Open()
 
   lblTitle.Text = Project.Name
   
-  aClass = Split(File.Load(Project.Dir &/ ".list"), "\n", "", True)
-  For iInd = 0 To aClass.Max
-    If Left(aClass[iInd]) = "?" Then aClass[iInd] = Mid$(aClass[iInd], 2)
-  Next
+  Try aClass = Split(File.Load(Project.Dir &/ ".list"), "\n", "", True)
+  If Not Error Then
+    For iInd = 0 To aClass.Max
+      If Left(aClass[iInd]) = "?" Then aClass[iInd] = Mid$(aClass[iInd], 2)
+    Next
+  Endif
   lstExport.List = aClass
   
 End

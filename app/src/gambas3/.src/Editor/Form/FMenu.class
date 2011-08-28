@@ -473,12 +473,11 @@ Public Sub btnInsert_Click()
   Inc gvwMenu.Rows.Count
   gvwMenu.Refresh
 
-  ReadMenu
-
   $bFreeze = False
 
   gvwMenu.Rows.UnselectAll
   SetCurrent($iCurrent)
+  ReadMenu
 
   txtName.SelectAll
   txtName.SetFocus
@@ -914,7 +913,11 @@ Public Sub gvwMenu_Data(Row As Integer, Column As Integer)
         If .Caption Then
           sElt = .Caption
         Else
-          sElt = .Name
+          If .Level = 0 Then
+            sElt = .Name
+          Else
+            sElt = "-------- " & .Name
+          Endif
           gvwMenu.Data.Font.Italic = True
           gvwMenu.Data.Foreground = Color.Lighter(Color.TextForeground)
         Endif

@@ -49,25 +49,24 @@
         #MoveScaled(5,4,39,33)
         Expand = True
         Tag = "*"
-        { ReportLabel1 ReportLabel
-          #MoveScaled(4,3,44,9)
-          Font = Font["+3"]
-          Padding = ReportPadding["Top:4mm;Bottom:4mm;Left:2mm"]
-          Text = ("Gambas Report Demo")
-          Alignment = Align.Center
-        }
         { ReportLabel4 ReportLabel
-          #MoveScaled(4,10,48,10)
+          #MoveScaled(1,11,36,19)
           Left = "1mm"
           Top = "5cm"
-          Brush = ReportBrush["LinearGradient(1,0.04,0,0.04,[#FFFF00,#FFFFFF],[0,1])"]
+          Brush = ReportBrush["LinearGradient(0,0,1,0,[#FFFF00,#FFFFDF],[0,0.99])"]
           Fixed = True
           Font = Font["DejaVu Sans,Bold,+14"]
           Padding = ReportPadding["Top:6mm;Bottom:6mm;Left:6mm;Right:6mm"]
           Ignore = True
-          AutoResize = True
           Text = ("Gambas")
           Alignment = Align.Left
+        }
+        { ReportLabel1 ReportLabel
+          #MoveScaled(2,3,44,9)
+          Font = Font["+3"]
+          Padding = ReportPadding["Top:4mm;Bottom:4mm;Left:2mm"]
+          Text = ("Gambas Report Demo")
+          Alignment = Align.Center
         }
       }
       { ReportLabel2 ReportLabel

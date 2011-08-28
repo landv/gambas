@@ -6,6 +6,11 @@
   Icon = Picture["img/16/grid.png"]
   Persistent = True
   Arrangement = Arrange.Vertical
+  { mnuProperty Menu
+    { Menu1 Menu
+      Text = ("Menu1")
+    }
+  }
   { lblMessage TextLabel
     MoveScaled(1,1,31,12)
     Visible = False
@@ -32,53 +37,56 @@
     MoveScaled(8,21,14,0)
   }
   { Panel1 Panel
-    MoveScaled(3,23,56,22)
+    MoveScaled(2,23,56,22)
     Expand = True
     Arrangement = Arrange.Fill
     { grdProperty GridView
-      MoveScaled(22,0,25,19)
+      MoveScaled(25,1,25,19)
       Visible = False
+      Background = Color.TextBackground
       Scrollbar = Scroll.Vertical
       Border = False
     }
-    { cmbProperty ComboBox
-      MoveScaled(2,4,16,4)
+    { panEditor HBox
+      MoveScaled(3,3,24,18)
       Visible = False
       Background = Color.TextBackground
       Ignore = True
-      ReadOnly = True
-    }
-    { spnProperty SpinBox
-      MoveScaled(2,9,14,3)
-      Visible = False
-      Background = Color.TextBackground
-      Ignore = True
-      Border = False
-    }
-    { txtProperty TextBox
-      MoveScaled(2,14,11,3)
-      Visible = False
-      Background = Color.TextBackground
-      Ignore = True
-      Border = False
-    }
-    { btnProperty ToolButton
-      MoveScaled(14,14,3,3)
-      Visible = False
-      Font = Font["Bold,-2"]
-      Background = Color.TextBackground
-      Ignore = True
-      Text = ("...")
-    }
-    { crdProperty CoordBox txtProperty
-      Name = "crdProperty"
-      MoveScaled(2,18,17,3)
-      Visible = False
-      Background = Color.TextBackground
-      Ignore = True
-      Border = False
-      AllowRelative = True
-      AutoConvert = True
+      { txtProperty TextBox
+        MoveScaled(0,9,11,3)
+        Visible = False
+        Expand = True
+        Border = False
+      }
+      { spnProperty SpinBox
+        MoveScaled(0,5,14,3)
+        Visible = False
+        Expand = True
+        Border = False
+      }
+      { crdProperty CoordBox txtProperty
+        Name = "crdProperty"
+        MoveScaled(0,14,17,3)
+        Visible = False
+        Expand = True
+        Border = False
+        AllowRelative = True
+        AutoConvert = True
+      }
+      { cmbProperty MenuButton
+        MoveScaled(1,0,16,4)
+        Visible = False
+        Expand = True
+        Border = False
+        Menu = "mnuProperty"
+        MenuOnly = True
+      }
+      { btnProperty ToolButton
+        MoveScaled(12,9,3,3)
+        Visible = False
+        Font = Font["Bold,-2"]
+        Text = ("...")
+      }
     }
   }
   { spnHelp SidePanel
