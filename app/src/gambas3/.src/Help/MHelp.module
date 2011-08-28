@@ -492,7 +492,7 @@ Public Function GetProjectClassHelpHTML(sClass As String, Optional hWebView As W
   
   Dim sHelp, sHtml, sLine, sWhere, sSymbols, sParSymbols, sInfo, sInherit As String
   Dim hForm As FEditor
-  Dim hedit As Editor
+  Dim hEdit As Editor
   Dim i As Integer
   Dim hSymbol As CSymbolInfo
   Dim cClassSymbols As Collection
@@ -509,15 +509,20 @@ Public Function GetProjectClassHelpHTML(sClass As String, Optional hWebView As W
   
   If Not hEdit Then Return  
   
-  For i = 0 To hedit.Lines.Count - 1
-    sLine = Trim(hedit.Lines[i].Text)
+  For i = 0 To hEdit.Lines.Count - 1
+    sLine = Trim(hEdit.Lines[i].Text)
     If sLine Begins "''" Then
       sHelp &= Trim(Mid(sLine, 3)) & "<br>"
     Else
-      If sLine Begins "'" Or sline = "" Then Continue
+      If sLine Begins "'" Then Continue
+      If Not sLine And If Not sHelp Then Continue
       Break
     Endif
   Next
+  
+  While sHelp Ends "<br>"
+    sHelp = Trim(Left(sHelp, -4))
+  Wend
   
   hClassInfo = CComponent.GetClassDescription(sClass)
   cClassSymbols = CComponent.GetClassSymbols(sClass)
