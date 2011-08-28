@@ -1542,7 +1542,7 @@ Public Sub DeleteSelection()
 
 End
 
-Public Sub GetSelection(Optional bAbsolute As Boolean) As String
+Public Sub GetSelection(Optional bAbsolute As Boolean, Optional aSelection As CControl[]) As String
 
   Dim hCtrl As CControl
 
@@ -1565,9 +1565,15 @@ Public Sub GetSelection(Optional bAbsolute As Boolean) As String
   Endif
 
   $bDoNotArrange = True
-  For Each hCtrl In Selection
-    SaveOne(hCtrl)
-  Next
+  If aSelection Then
+    For Each hCtrl In aSelection
+      SaveOne(hCtrl)
+    Next
+  Else
+    For Each hCtrl In Selection
+      SaveOne(hCtrl)
+    Next
+  Endif
   $bDoNotArrange = False
 
   $iSaveX = 0
@@ -2118,6 +2124,7 @@ Sub RefreshMenu()
 
   Dim bOn As Boolean
   Dim bEnabled As Boolean
+  Dim hCtrl As CControl
 
   bOn = Not IsNull(Master)
 
@@ -2147,10 +2154,38 @@ Sub RefreshMenu()
     Endif
   Endif
 
-  Action[".move-tab*,.show-tab"].Visible = mnuShowTab.Visible
+  Action[".move-tab*,.show-tab", Me].Visible = mnuShowTab.Visible
 
   Action[".menu", Me].Visible = $hFamily.HasMenuEditor
+  
+  If Selection.Count = 1 And If Master <> RootControl And If Master.IsContainer() And If GetChildren(Master.Name).Count Then
+    Action[".delete-container", Me].Visible = True
+  Else
+    Action[".delete-container", Me].Visible = False
+  Endif
 
+  If Selection.Count Then
+    
+    bOn = True
+    For Each hCtrl In Selection
+      If hCtrl.Parent <> Master.Parent Then
+        bOn = False
+        Break
+      Endif
+    Next
+  
+    Action[".embed-container", Me].Visible = bOn
+    
+    'If bOn And If Master.Parent = RootControl Then bOn = False
+    'Action[".remove-from-container", Me].Visible = bOn
+    
+  Else
+    
+    'Action[".embed-container,.remove-from-container", Me].Visible = bOn
+    Action[".embed-container", Me].Visible = False
+
+  Endif
+  
 End
 
 Sub SelectionChange()
@@ -2853,6 +2888,15 @@ Public Sub Action_Activate(Key As String) As Boolean
 
     Case ".lock"
       SetLock(Action[".lock", Me].Value)
+      
+    Case ".delete-container"
+      DeleteContainer
+      
+    Case ".embed-container"
+      EmbedIntoContainer
+      
+    ' Case ".remove-from-container"
+    '   RemoveFromContainer
 
     Default
       Return True
@@ -3259,3 +3303,76 @@ Public Sub svwWorkspace_MouseDown()
   UnSelectAll
 
 End
+
+Private Sub DeleteContainer()
+
+  Dim sChildren As String
+  Dim hParent As CControl = Master.Parent
+  Dim X, Y As Integer
+  Dim hCtrl As CControl
+  
+  If Not hParent Then Return
+
+  X = Master.X
+  Y = Master.Y
+  sChildren = GetSelection(True, GetChildren(Master.Name))
+  If Not sChildren Then Return
+  
+  DeleteSelection
+  PutSelection(sChildren, hParent)
+  
+  For Each hCtrl In Selection
+    hCtrl.Move(hCtrl.X + X, hCtrl.Y + Y)
+  Next
+
+End
+
+Private Sub EmbedIntoContainer()
+
+  Dim hCtrl As CControl
+  Dim hParent As CControl
+  Dim X1, Y1, X2, Y2 As Integer
+  Dim sChildren As String
+
+  X1 = Master.X
+  Y1 = Master.Y
+
+  For Each hCtrl In Selection
+    X1 = Min(X1, hCtrl.X)
+    X2 = Max(X2, hCtrl.X + hCtrl.W - 1)
+    Y1 = Min(Y1, hCtrl.Y)
+    Y2 = Max(Y2, hCtrl.Y + hCtrl.H - 1)
+  Next
+
+  sChildren = GetSelection(True)
+  
+  hParent = CreateControl("Panel", Master.Parent)
+  hParent.MoveAndResize(X1, Y1, X2 - X1 + Desktop.Scale, Y2 - Y1 + Desktop.Scale)
+  
+  DeleteSelection
+  PutSelection(sChildren, hParent)
+  
+  For Each hCtrl In Selection
+    hCtrl.Move(hCtrl.X - X1, hCtrl.Y - Y1)
+  Next
+
+End
+
+' Private Sub RemoveFromContainer()
+' 
+'   Dim sChildren As String
+'   Dim hParent As CControl
+'   Dim hCtrl As CControl
+'   
+'   Try hParent = Master.Parent.Parent
+'   If Error Then Return
+'   
+'   sChildren = GetSelection()
+'   DeleteSelection
+'   PutSelection(sChildren, hParent)
+' 
+'   For Each hCtrl In Selection
+'     hCtrl.Move(hCtrl.X + hParent.X, hCtrl.Y + hParent.Y)
+'   Next
+' 
+' End

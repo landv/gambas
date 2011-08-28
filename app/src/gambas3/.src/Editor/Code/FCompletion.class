@@ -1,7 +1,7 @@
 ' Gambas class file
 
-  ' 0 = MHelp.TYPE_NATIVE
 Static Private $aNativeDatatypes As String[] = ["Boolean 0", "Byte 0", "Short 0", "Integer 0", "Long 0", "Single 0", "Float 0", "Date 0", "String 0", "Object 0", "Variant 0", "Pointer 0"]
+Static Private $aSpecialMethods As String[] = ["_attach", "_call", "_compare", "_get", "_init", "_new", "_next", "_property", "_put", "_unknown"]
 
 Private $iCol As Integer
 Private $sText As String
@@ -178,6 +178,7 @@ Public Sub Open(hForm As FEditor, sMode As String, Optional sClass As String, Op
   Me.Reparent(hForm, iX, iY)
   Me.Show
   Me.Raise
+  
   $hEditor.SetFocus
 
 End
@@ -409,7 +410,7 @@ Private Sub FillWithIdent(sWord As String)
   Next
 
   If Left(sWord) = "_" Then 
-    For Each sCar In ["_call", "_compare", "_get", "_init", "_new", "_next", "_put", "_unknown"]
+    For Each sCar In $aSpecialMethods
       If sCar Like sWord & "*" Then 
         cKey[sCar] = True
         aResult.Add(sCar & " " & MHelp.TYPE_SPECIAL)
@@ -479,7 +480,7 @@ Private Sub FillWithSpecial()
   
   lvwComp.Clear
   
-  For Each sName In ["_attach", "_call", "_compare", "_get", "_init", "_new", "_next", "_property", "_put", "_unknown"]
+  For Each sName In $aSpecialMethods
     Try lvwComp.Add(CStr(MHelp.TYPE_SPECIAL) & sName, sName, hPict)
   Next
   

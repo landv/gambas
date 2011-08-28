@@ -85,7 +85,8 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
         Return
       Endif
       'If hCCtrl.GetProperty("Background") Then Return
-      Draw.Foreground = Color.Gradient(Color.Background, &H808080&)
+      Draw.Foreground = &HFF8080&
+      'Draw.Foreground = Color.Gradient(Color.Background, &H808080&)
     
     Case Else
       

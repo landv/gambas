@@ -110,6 +110,18 @@
       Picture = Picture["icon:/small/delete"]
       Shortcut = "Del"
     }
+    { mnuDeleteContainer Menu
+      Action = ".delete-container"
+      Text = ("Delete container only")
+      Picture = Picture["img/16/delete-container.png"]
+      Visible = False
+    }
+    { mnuEmbedContainer Menu
+      Action = ".embed-container"
+      Text = ("Embed into a container")
+      Picture = Picture["img/16/embed-container.png"]
+      Visible = False
+    }
     { mnuSep2 Menu
     }
     { mnuArrange Menu
@@ -622,6 +634,16 @@
     Text = "Delete"
     Shortcut = "Del"
     Picture = "icon:/small/delete"
+  }
+  { Action delete-container
+    Text = "Delete container only"
+    Shortcut = ""
+    Picture = "img/16/delete-container.png"
+  }
+  { Action embed-container
+    Text = "Embed into a container"
+    Shortcut = ""
+    Picture = "img/16/embed-container.png"
   }
   { Action grid
     Text = "Toggle grid"

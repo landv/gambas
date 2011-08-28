@@ -54,7 +54,6 @@ Public Sub Form_Open()
   $iCurrent = -1
   LoadShortcut
   LoadAllMenu
-  
   UpdatePaste
 
 End
@@ -186,12 +185,12 @@ Private Sub LoadAllMenu()
   
   $aMenu.Add(Null)
   gvwMenu.Rows.Count = $aMenu.Count
+  gvwMenu.Rows.Height = Max(18, gvwMenu.Font.Height)
   
   $bFreeze = False
   $bModified = False
 
   SetCurrent(0)
-  ReadMenu
 
 End
 
@@ -266,18 +265,8 @@ End
 Public Sub gvwMenu_Select()
 
   If $bFreeze Then Return
-  ChangeCurrent(gvwMenu.Row)
-
-End
-
-
-Private Sub ChangeCurrent(iNew As Integer)
-
-  If iNew = $iCurrent Then Return
-
-  WriteMenu()
-  $iCurrent = iNew
-  ReadMenu()
+  If gvwMenu.Row < 0 Then Return
+  SetCurrent(gvwMenu.Row)
 
 End
 
@@ -354,8 +343,6 @@ Private Sub WriteMenu() As Boolean
   End With
   
   gvwMenu.Rows[$iCurrent].Refresh
-  
-  'DrawMenu($iCurrent)
   
 End
 
@@ -437,11 +424,10 @@ Public Sub btnDelete_Click()
 
   gvwMenu.Rows.Count = $aMenu.Count
   gvwMenu.Refresh
-  SetCurrent($iCurrent)
   
   $bFreeze = False
   
-  ReadMenu
+  SetCurrent($iCurrent)
 
 End
 
@@ -449,35 +435,31 @@ End
 Public Sub btnInsert_Click()
 
   Dim hCMenu As CMenu
-  'DIM iIndex AS INTEGER
+  Dim iIndex As Integer
 
   If WriteMenu() Then Return
 
   $bFreeze = True
 
-  If $iCurrent < $aMenu.Max Then Inc $iCurrent
+  iIndex = $iCurrent
+  If iIndex < 0 Then iIndex = $aMenu.Max
 
   hCMenu = New CMenu
   hCMenu.Name = GetName()
   hCMenu.Caption = hCMenu.Name
-  'hCMenu.Caption = hCMenu.Name
-  If $iCurrent > 0 Then
-    hCMenu.Level = $aMenu[$iCurrent - 1].Level
-  Endif
+  If iIndex > 0 Then hCMenu.Level = $aMenu[iIndex - 1].Level
 
   $cName[hCMenu.Name] = True
   'hCMenu.Caption = hCMenu.Name
 
-  $aMenu.Add(hCMenu, $iCurrent)
+  $aMenu.Add(hCMenu, iIndex)
   SetModified
   Inc gvwMenu.Rows.Count
   gvwMenu.Refresh
 
   $bFreeze = False
 
-  gvwMenu.Rows.UnselectAll
-  SetCurrent($iCurrent)
-  ReadMenu
+  SetCurrent(iIndex)
 
   txtName.SelectAll
   txtName.SetFocus
@@ -662,11 +644,12 @@ Public Sub btnUp_Click()
 
   Next
 
-  SetCurrent($iCurrent - 1)
+  Dec $iCurrent
+  SetCurrent($iCurrent)
   SetSelected(aSel)
   gvwMenu.Refresh
 
-  ReadMenu
+  'ReadMenu
 
 End
 
@@ -698,22 +681,31 @@ Public Sub btnDown_Click()
 
   Next
 
-  SetCurrent($iCurrent + 1)
+  Inc $iCurrent
+  SetCurrent($iCurrent)
   SetSelected(aSel)
   gvwMenu.Refresh
 
-  ReadMenu
+  'ReadMenu
 
 End
 
 
 Private Sub SetCurrent(iCurrent As Integer)
 
-  If iCurrent < 0 Or iCurrent >= $aMenu.Count Then Return
-
-  $iCurrent = iCurrent
-  gvwMenu.Row = $iCurrent
-  gvwMenu.Rows[$iCurrent].Selected = True
+  If iCurrent <> $iCurrent Then WriteMenu
+  
+  If iCurrent < 0 Or iCurrent >= $aMenu.Count Then 
+    gvwMenu.Rows.UnselectAll
+    $iCurrent = -1
+  Else
+    $iCurrent = iCurrent
+    If gvwMenu.Row <> $iCurrent Then gvwMenu.Row = $iCurrent
+    gvwMenu.Rows[$iCurrent].Selected = True
+    gvwMenu[$iCurrent, 0].EnsureVisible
+  Endif
+  
+  ReadMenu
 
 End
 
@@ -916,7 +908,7 @@ Public Sub gvwMenu_Data(Row As Integer, Column As Integer)
           If .Level = 0 Then
             sElt = .Name
           Else
-            sElt = "-------- " & .Name
+            sElt = String$(2, "―") & " " & .Name & " " & String$(6, "―")
           Endif
           gvwMenu.Data.Font.Italic = True
           gvwMenu.Data.Foreground = Color.Lighter(Color.TextForeground)
