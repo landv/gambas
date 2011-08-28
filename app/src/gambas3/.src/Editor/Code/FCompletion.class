@@ -3,6 +3,8 @@
 Static Private $aNativeDatatypes As String[] = ["Boolean 0", "Byte 0", "Short 0", "Integer 0", "Long 0", "Single 0", "Float 0", "Date 0", "String 0", "Object 0", "Variant 0", "Pointer 0"]
 Static Private $aSpecialMethods As String[] = ["_attach", "_call", "_compare", "_get", "_init", "_new", "_next", "_property", "_put", "_unknown"]
 
+Static Private $hClassPicture As Picture
+
 Private $iCol As Integer
 Private $sText As String
 Private $bLoaded As Boolean
@@ -233,13 +235,15 @@ Private Sub AddClassesAndFill(aClass As String[], Optional sBegin As String)
 
   aClass.Sort(gb.IgnoreCase + gb.Natural)
 
-  hPic[0] = Picture["img/16/gambas.png"]
-  hPic[1] = Picture["img/16/class.png"]
+  If Not $hClassPicture Then $hClassPicture = Project.MakeModuleIcon("class", 16).Picture
+
+  hPic[0] = Picture["img/logo/logo-16.png"]
+  hPic[1] = $hClassPicture
   hPic[2] = Picture["img/symbol/control.png"]
-  hPic[3] = Picture["img/16/point.png"]
+  hPic[3] = Picture["img/symbol/symbol.png"]
   hPic[4] = Picture["img/symbol/event.png"]
   hPic[5] = hPic[0]
-  hPic[6] = Picture["img/16/key.png"]
+  hPic[6] = Picture["img/symbol/special.png"]
   
   lvwComp.Clear
 

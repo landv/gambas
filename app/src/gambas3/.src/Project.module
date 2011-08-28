@@ -561,6 +561,7 @@ _INIT_AGAIN:
   If Not $bTesting
     FMain.OnProjectChange
     FSearch.OnProjectChange
+    FHelpBrowser.OnProjectChange
     'FOpenProject.OnUpdateRecent
     Design.ClearOutput
     Design.ReadBreakpoints

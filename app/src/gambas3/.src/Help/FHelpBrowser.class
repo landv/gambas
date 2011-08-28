@@ -46,10 +46,12 @@ Public Sub Form_Open()
     btnHome.Text = ("Default language")
   Endif
   
-  If Not webHelp.Url Then 
-    webHelp.Url = MHelp.GetURL() & "?help&" & MHelp.GetLanguage() & "&v3"
-    webHelp.TextZoom = 0.8
-  Endif
+  'If Not webHelp.Url Then 
+  '  webHelp.Url = MHelp.GetURL() & "?help&" & MHelp.GetLanguage() & "&v3"
+  '  webHelp.TextZoom = 0.8
+  'Endif
+  
+  OnProjectChange
   
 End
 
@@ -61,9 +63,15 @@ Public Sub Form_Close()
   
 End
 
+Private Function GetHomeURL() As String
+
+  Return MHelp.GetURL() & "?help&" & MHelp.GetLanguage() & "&v3"
+
+End
+
 Public Sub btnHome_Click()
   
-  webHelp.Url = MHelp.GetURL() & "?help&" & MHelp.GetLanguage() & "&v3"
+  webHelp.Url = GetHomeURL()
   webHelp.TextZoom = 0.8
   
 End
@@ -273,5 +281,13 @@ Public Sub mnuSelectLanguage_Click()
   
   SetLang(Last.Tag)
   btnHome.Text = Last.Text
+  
+End
+
+Public Sub OnProjectChange()
+  
+  If Me.Closed Then Return
+  If btnShowPanel.Value Then FillTree
+  If webHelp.Url <> GetHomeURL() Then btnHome_Click
   
 End
