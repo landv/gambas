@@ -370,7 +370,7 @@ End
 Public Sub cmbImageEditor_Click()
 
   If cmbImageEditor.Index > 0 Then 
-    Settings["/ImageEditor"] = $aTerminal[cmbImageEditor.Index - 1]
+    Settings["/ImageEditor"] = $aImageEditor[cmbImageEditor.Index - 1]
   Else   
     Settings["/ImageEditor"] = ""
   Endif
