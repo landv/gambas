@@ -291,3 +291,9 @@ Public Sub OnProjectChange()
   If webHelp.Url <> GetHomeURL() Then btnHome_Click
   
 End
+
+Public Sub webHelp_NewWindow(Modal As Boolean)
+
+  Project.OpenWebPage($sLastUrl)
+
+End
