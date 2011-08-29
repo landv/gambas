@@ -709,7 +709,7 @@ End
 
 Public Sub lvwComp_Click()
 
-  InsertItem
+  Try InsertItem
 
 End
 
@@ -722,6 +722,8 @@ Public Sub lvwComp_KeyPress()
   $hEditor.SetFocus
   hForm = $hEditor.Window
   hForm.Editors_KeyPress
+  
+Catch
 
 End
 
@@ -784,6 +786,8 @@ Public Sub lvwComp_Select()
   If Not $bShowHelp Then Return
   timHelp.Stop
   timHelp.Start
+  
+Catch
   
 End
 
