@@ -970,13 +970,13 @@ void CLASS_make_description(CLASS *class, const CLASS_DESC *desc, int n_desc, in
 	fprintf(stderr, "\n---- %s\n", class->name);
 	#endif
 	
-	/* Number of descriptions */
+	// Compute number of public descriptions
 
 	class->n_desc = n_desc;
 	if (class->parent)
 		class->n_desc += class->parent->n_desc;
 
-	/* Fabrication de la table */
+	// Make the description symbol table
 
 	if (class->n_desc)
 		ALLOC(&class->table, sizeof(CLASS_DESC_SYMBOL) * class->n_desc, "CLASS_make_description");

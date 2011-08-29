@@ -368,6 +368,7 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
   Dim sHtml As String
   Dim sLang As String
   Dim iPos As Integer
+  Dim sTemp As String
   
   If Not hWebView Then 
     If Not FHelpBrowser.Visible Then Return
@@ -394,11 +395,13 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
       hSymbol = hEditor.GetLastSymbolDesc()
     Endif
     If hSymbol Then 
-      If Not hSymbol.Component Then
+      If Not hSymbol.Component Or hSymbol.Component = CComponent.PROJECT_NAME Then
         sHtml = hSymbol.GetHelpHTML()
+        sUrl = "-" & sClass & "-" & sSymbol
       Else If CComponent.All.Exist(hSymbol.Component) And If Not CComponent.All[hSymbol.Component].Library Then 
         sUrl = hSymbol.GetHelpURL()
       Else
+        sUrl = hSymbol.Component & "-" & sClass & "-" & sSymbol
         sHtml = hSymbol.GetHelpHTML()
       Endif
     Endif
@@ -407,9 +410,13 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
     
     Try hClass = CComponent.Classes[sSymbol]
     If hClass Then 
-      sUrl = hClass.GetHelpURL()
-    Else If Project.GetClasses().Exist(sSymbol) Then
+      If hClass.Component And If hClass.Component <> CComponent.PROJECT_NAME Then
+        sUrl = hClass.GetHelpURL()  
+      Endif
+    Endif
+    If Not sUrl And If Project.GetClasses().Exist(sSymbol) Then
       sHtml = GetProjectClassHelpHTML(sSymbol)
+      sUrl = "-" & sSymbol
     Endif
     
   Else If iType = TYPE_SPECIAL Then
@@ -430,10 +437,17 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
   Endif
   
   hWebView.Stop
-  If sUrl Then
+  
+  If sHtml Then
+    
+    sTemp = File.Dir(Temp$()) &/ "help"
+    Try Mkdir sTemp
+    sTemp &/= sUrl & ".html"
+    File.Save(sTemp, sHtml)
+    hWebView.Url = "file://" & sTemp
+    
+  Else If sUrl Then
     hWebView.Url = sUrl
-  Else If sHtml Then
-    hWebView.Html = sHtml
   Else
     hWebView.HTML = "<html><body><h2>" & ("No help found.") & "</h2></body></html>"
   Endif
@@ -635,7 +649,7 @@ Public Function GetProjectClassHelpHTML(sClass As String, Optional hWebView As W
     sHtml = SubstPart(sHtml, "ShowInherits", True)
     sHtml = SubstPart(sHtml, "ShowParConst", aParentConst.Count > 0)
     sHtml = Replace(sHtml, "$(ParConst)", aParentConst.Join(" "))
-    sHtml = Replace(sHtml, "$(Inherits)", Subst(("This class inherits &1."), Subst("<a href=\"&1\">&2</a>", GetClassURL(hClassInfo.ParentComponent, hClassInfo.Parent), hClassInfo.Parent)))
+    sHtml = Replace(sHtml, "$(Inherits)", Subst(("This class inherits &1."), Subst("<a href=\"&1\">&2</a>", Html(GetClassURL(hClassInfo.ParentComponent, hClassInfo.Parent)), hClassInfo.Parent)))
     sHtml = Replace(sHtml, "$(ParSymbols)", sParSymbols)
   Else
     sHtml = SubstPart(sHtml, "ShowInherits", False)
@@ -649,6 +663,8 @@ Public Function GetProjectClassHelpHTML(sClass As String, Optional hWebView As W
   
   sHtml = Replace(sHtml, "''Symbols''", ("Symbols"))
   sHtml = Replace(sHtml, "''Constants''", ("Constants"))
+  
+  sHtml = Replace(sHtml, "$(hide-title)", "")
   
   Return sHtml
 
@@ -701,5 +717,11 @@ Public Sub ManageSpecialLink(hWebView As WebView, sUrl As String)
     InitWebViewWith(hWebView, TYPE_SYMBOL, sSymbol, sClass)
     
   Endif 
+  
+End
+
+Public Sub Clear()
+  
+  Try Shell "rm -rf " & Shell$(File.Dir(Temp$()) &/ "help")
   
 End

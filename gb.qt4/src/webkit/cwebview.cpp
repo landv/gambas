@@ -532,6 +532,7 @@ BEGIN_PROPERTY(WebView_UserAgent)
 
 END_PROPERTY
 
+
 /***************************************************************************/
 
 GB_DESC CWebViewAuthDesc[] =
@@ -626,7 +627,10 @@ QString MyWebPage::userAgentForUrl(const QUrl& url) const
 	MyWebView *view = (MyWebView *)parent();
 	void *_object = QT.GetObject(view);
 	
-	return (const char *)THIS->userAgent;
+	if (THIS->userAgent)
+		return (const char *)THIS->userAgent;
+	else
+		return QWebPage::userAgentForUrl(url);
 };
 
 
@@ -771,6 +775,8 @@ void CWebView::handleUnsupportedContent(QNetworkReply *reply)
 {
 	void *_object = QT.GetObject(((QWebPage*)sender())->view());
 	CWEBDOWNLOAD *download;
+	
+	qDebug("unsupportedContent");
 	
 	if (reply->error() == QNetworkReply::NoError) 
 	{
