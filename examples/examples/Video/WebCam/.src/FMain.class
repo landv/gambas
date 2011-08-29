@@ -1,4 +1,5 @@
 ' Gambas class file
+
 '
 ' WebCam
 ' Demo program to show off the Gambas V4L module
@@ -7,15 +8,6 @@
 ' License: as-is
 '
 Private $windows As Form[]
-
-Public Sub form_Show()
-   
-  Me.Top = 50
-  Me.Left = 100
-  Wait 1
-  ScanDevices()
-  
-End
 
 Public Sub ScanDevices()
 
@@ -28,6 +20,7 @@ Public Sub ScanDevices()
     
   $windows = New Form[]
   count = 0
+  Me.Show
 
   status = "Searching: "
   For i = 0 To 20
@@ -54,6 +47,8 @@ Public Sub ScanDevices()
   For Each myWin In $windows
     myWin.Show
   Next
+  
+Catch
 
 End
 
@@ -115,4 +110,16 @@ Public Sub menu_save_Click()
   Settings.Save
   Message("Settings Saved!")
   
+End
+
+Public Sub Form_Open()
+
+  Me.Center
+
+End
+
+Public Sub Form_Activate()
+
+  If Not $windows Then ScanDevices
+
 End

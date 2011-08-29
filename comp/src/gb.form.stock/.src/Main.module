@@ -1,5 +1,16 @@
 ' Gambas module file
 
+Private Sub Copy(sSrc As String, sDest As String) As Boolean
+
+  Print sSrc; " ==> "; sDest
+  Try Copy sSrc To sDest
+  If Error Then
+    Print "*ERROR*"
+    Return True
+  Endif
+
+End
+
 Public Sub Main()
   
   Dim hFile As File
@@ -38,16 +49,21 @@ Public Sub Main()
       'Try Kill "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & ".png"
       'Try Kill "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & ".svg"
       
-      For Each sTheme In ["Tango", "gnome", "hicolor"]
+      For Each sTheme In ["elementary/&2/&1", "Tango/&1/&2", "gnome/&1/&2", "hicolor/&1/&2"]
+    
+        sTemplate = "/usr/share/icons" &/ sTheme
     
         If sSize = "scalable" Then
-          sTemplate = "/usr/share/icons/&1/&2"
           sExt = ".svg"
+          If Copy(Subst(sTemplate, sSize, File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), sExt), "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & sExt) Then
+            Copy(Subst(sTemplate, "16", File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), sExt), "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & sExt)
+          Endif
         Else
-          sTemplate = "/usr/share/icons/&1/&2x&2"
           sExt = ".png"
+          If Copy(Subst(sTemplate, sSize, File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), sExt), "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & sExt) Then
+            Copy(Subst(sTemplate, sSize & "x" & sSize, File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), sExt), "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & sExt)
+          Endif
         Endif
-        Try Copy Subst(sTemplate, sTheme, sSize) &/ File.SetExt(sPath, sExt) To "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & sExt
     
       Next
     Next

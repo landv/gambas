@@ -901,14 +901,14 @@ BEGIN_METHOD_VOID(CTREEVIEW_below)
 END_METHOD
 
 
-BEGIN_METHOD_VOID(TreeView_SelectAll)
+BEGIN_METHOD_VOID(CTREEVIEW_SelectAll)
 
 	WIDGET->selectAll(true);
 
 END_METHOD
 
 
-BEGIN_METHOD_VOID(TreeView_UnselectAll)
+BEGIN_METHOD_VOID(CTREEVIEW_UnselectAll)
 
 	WIDGET->selectAll(false);
 
@@ -1549,7 +1549,7 @@ BEGIN_PROPERTY(CCOLUMNVIEW_settings)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(TreeView_Renaming)
+BEGIN_PROPERTY(CTREEVIEW_Renaming)
 
 	GB.ReturnBoolean(WIDGET->isRenaming());
 
@@ -1735,13 +1735,13 @@ GB_DESC CListViewDesc[] =
   GB_METHOD("Exist", "b", CTREEVIEW_exist, "(Key)s"),
   GB_METHOD("FindAt", "b", CTREEVIEW_find, "(X)i(Y)i"),
   //GB_METHOD("FindText", "b", CTREEVIEW_find, "(X)i(Y)i"),
-  GB_METHOD("SelectAll", NULL, TreeView_SelectAll, NULL),
-  GB_METHOD("UnselectAll", NULL, TreeView_UnselectAll, NULL),
+  GB_METHOD("SelectAll", NULL, CTREEVIEW_SelectAll, NULL),
+  GB_METHOD("UnselectAll", NULL, CTREEVIEW_UnselectAll, NULL),
 
   GB_PROPERTY_READ("Current", ".ListView.Item", CTREEVIEW_current),
   GB_PROPERTY_READ("Key", "s", CTREEVIEW_key),
   GB_PROPERTY_READ("Item", ".ListView.Item", CTREEVIEW_item),
-  GB_PROPERTY_READ("Renaming", "b", TreeView_Renaming),
+  GB_PROPERTY_READ("Renaming", "b", CTREEVIEW_Renaming),
 
   GB_PROPERTY_READ("ClientWidth", "i", CTREEVIEW_client_width),
   GB_PROPERTY_READ("ClientW", "i",  CTREEVIEW_client_width),
@@ -1819,13 +1819,13 @@ GB_DESC CTreeViewDesc[] =
   GB_METHOD("Remove", NULL, CTREEVIEW_remove, "(Key)s"),
   GB_METHOD("Exist", "b", CTREEVIEW_exist, "(Key)s"),
   GB_METHOD("FindAt", "b", CTREEVIEW_find, "(X)i(Y)i"),
-  GB_METHOD("SelectAll", NULL, TreeView_SelectAll, NULL),
-  GB_METHOD("UnselectAll", NULL, TreeView_UnselectAll, NULL),
+  GB_METHOD("SelectAll", NULL, CTREEVIEW_SelectAll, NULL),
+  GB_METHOD("UnselectAll", NULL, CTREEVIEW_UnselectAll, NULL),
 
   GB_PROPERTY_READ("Current", ".TreeView.Item", CTREEVIEW_current),
   GB_PROPERTY_READ("Key", "s", CTREEVIEW_key),
   GB_PROPERTY_READ("Item", ".TreeView.Item", CTREEVIEW_item),
-  GB_PROPERTY_READ("Renaming", "b", TreeView_Renaming),
+  GB_PROPERTY_READ("Renaming", "b", CTREEVIEW_Renaming),
 
   GB_PROPERTY_READ("ClientWidth", "i", CTREEVIEW_client_width),
   GB_PROPERTY_READ("ClientW", "i",  CTREEVIEW_client_width),
@@ -1914,13 +1914,13 @@ GB_DESC CColumnViewDesc[] =
   GB_METHOD("Remove", NULL, CTREEVIEW_remove, "(Key)s"),
   GB_METHOD("Exist", "b", CTREEVIEW_exist, "(Key)s"),
   GB_METHOD("FindAt", "b", CTREEVIEW_find, "(X)i(Y)i"),
-  GB_METHOD("SelectAll", NULL, TreeView_SelectAll, NULL),
-  GB_METHOD("UnselectAll", NULL, TreeView_UnselectAll, NULL),
+  GB_METHOD("SelectAll", NULL, CTREEVIEW_SelectAll, NULL),
+  GB_METHOD("UnselectAll", NULL, CTREEVIEW_UnselectAll, NULL),
 
   GB_PROPERTY_READ("Current", ".ColumnView.Item", CTREEVIEW_current),
   GB_PROPERTY_READ("Key", "s", CTREEVIEW_key),
   GB_PROPERTY_READ("Item", ".ColumnView.Item", CTREEVIEW_item),
-  GB_PROPERTY_READ("Renaming", "b", TreeView_Renaming),
+  GB_PROPERTY_READ("Renaming", "b", CTREEVIEW_Renaming),
 
   GB_EVENT("Select", NULL, NULL, &EVENT_Select),
   GB_EVENT("Activate", NULL, NULL, &EVENT_Activate),

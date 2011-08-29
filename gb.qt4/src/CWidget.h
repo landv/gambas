@@ -173,7 +173,7 @@ int CWIDGET_check(void *object);
 QString CWIDGET_Utf8ToQString(GB_STRING *str);
 void CWIDGET_destroy(CWIDGET *);
 void CWIDGET_update_design(CWIDGET *_object);
-void CWIDGET_iconset(QIcon &icon, QPixmap &p, int size = 0);
+void CWIDGET_iconset(QIcon &icon, const QPixmap &p, int size = 0);
 void CWIDGET_set_color(CWIDGET *_object, int bg, int fg);
 void CWIDGET_reset_color(CWIDGET *_object);
 int CWIDGET_get_background(CWIDGET *_object);

@@ -2684,12 +2684,15 @@ static void gray_image(QImage &img)
 }
 #endif
 
-void CWIDGET_iconset(QIcon &icon, QPixmap &pixmap, int size)
+void CWIDGET_iconset(QIcon &icon, const QPixmap &pixmap, int size)
 {
 	QImage img;
 	//QPixmap disabled;
 	QPixmap normal;
 
+	if (pixmap.isNull())
+		return;
+	
 	if (size > 0)
 	{
 		img = pixmap.toImage().convertToFormat(QImage::Format_ARGB32);

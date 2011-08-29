@@ -1,15 +1,14 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,40.1667,14)
+  MoveScaled(0,0,41,15)
   Background = Color.SelectedBackground
-  Text = ("")
   Icon = Picture["camera.png"]
   Border = False
   Arrangement = Arrange.Fill
+  Margin = True
   Padding = 4
   { tooltray_popup Menu
-    Text = ("")
     Tag = "X"
     { Menu3 Menu
       Text = ("WebCam Options")
@@ -32,20 +31,14 @@
       Tag = "X"
     }
     { Menu1 Menu
-      Text = ("")
       Tag = "X"
     }
   }
-  { tooltray #TrayIcon
-    #X = 294
-    #Y = 126
-    Visible = True
-    Tooltip = "Gambas Webcam Demo (V4L2)"
-    Picture = Picture["camera.png"]
-  }
   { Panel1 Panel
-    MoveScaled(0.6667,0,39,13)
+    MoveScaled(0.7143,0,39,13)
     Background = Color.LightBackground
+    Arrangement = Arrange.Vertical
+    Margin = True
     Border = Border.Sunken
     { TextLabel1 TextLabel
       MoveScaled(2,1,36,5)
@@ -53,17 +46,23 @@
       Text = ("Encryptec WebCam Viewer")
     }
     { TextLabel2 TextLabel
-      MoveScaled(2,5.1667,35,3)
+      MoveScaled(2,5.1429,35,3)
       Foreground = Color.SelectedBackground
       Text = ("(c) Encryptec Limited 2009")
       Alignment = Align.Center
     }
     { text_status TextLabel
-      MoveScaled(1,9,37,3)
+      MoveScaled(2,8,36,4)
       Font = Font["-1"]
       Foreground = &H600080&
       Text = ("Scanning for Devices ...")
-      Alignment = Align.Center
+      Alignment = Align.Left
     }
+  }
+  { tooltray #TrayIcon
+    #MoveScaled(21,7)
+    Visible = True
+    Tooltip = "Gambas Webcam Demo (V4L2)"
+    Picture = Picture["camera.png"]
   }
 }

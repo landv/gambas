@@ -91,6 +91,9 @@
 
 #define DESCRIBE_SPECIAL_CONTROL(_prop, _event, _size) \
 	DESCRIBE_CONTROL(_prop, _event, _size), \
+	GB_CONSTANT("_IsControl", "b", TRUE), \
+	GB_CONSTANT("_IsVirtual", "b", TRUE), \
+	GB_CONSTANT("_Family", "s", "Form"), \
 	GB_CONSTANT("_Group", "s", "Special")
 
 #define DESCRIBE_CONTAINER(_prop, _event, _arr) \

@@ -13,6 +13,7 @@
   }
   { TreeView1 TreeView
     MoveScaled(1,1,24,48)
+    Mode = Select.Multiple
     Editable = True
   }
   { Button1 Button
@@ -24,11 +25,11 @@
     Text = ("Remove Name")
   }
   { TextBox1 TextBox
-    MoveScaled(27,1,22,4)
+    MoveScaled(27,1,25,4)
   }
   { Frame1 Frame
     MoveScaled(27,11,44,13)
-    Text = ("Selected item")
+    Text = ("Current item")
     { TextLabel1 TextLabel
       MoveScaled(1,4,38,8)
     }

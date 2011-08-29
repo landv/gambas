@@ -1479,6 +1479,7 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
   Dim bHasSize As Boolean
 
   cProp = CComponent.Classes[Kind].Properties
+  'If Not CComponent.Classes[Kind].PropertyList Then Stop
 
   For Each sProp In CComponent.Classes[Kind].PropertyList
 

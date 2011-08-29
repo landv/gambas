@@ -40,6 +40,7 @@
 #include "CWidget.h"
 #include "CImage.h"
 #include "CClipboard.h"
+//#include "CListView.h"
 #include "CTreeView.h"
 
 CDRAG_INFO CDRAG_info = { 0 };
@@ -490,6 +491,7 @@ bool CDRAG_drag_move(QWidget *w, CWIDGET *control, QDropEvent *e)
 	//qDebug("CDRAG_drag_move: (%s %p) %p", GB.GetClassName(control), control, qobject_cast<MyListView *>(QWIDGET(control)));
 
 	// Hack for QScrollView
+	
 	if (CWIDGET_test_flag(control, WF_SCROLLVIEW) && qobject_cast<MyListView *>(QWIDGET(control)))
 	{
 		accepted = e->isAccepted();
