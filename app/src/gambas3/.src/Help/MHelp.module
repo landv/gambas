@@ -292,36 +292,7 @@ Public Sub GetURL(Optional sPath As String) As String
   
 End
 
-Public Sub GetSymbolURL(sComponent As String, sClass As String, Optional sSymbol As String) As String
-  
-  Dim sPath As String
-  Dim sName As String
-  Dim sRes As String
-  Dim sComp As String
-  
-  sPath = GetURL("comp")
-  sComp = sComponent
-  'If sComp = "gb.qt4" Or If sComp = "gb.gtk" Or If sComp = "gb.gui" Then sComp = "gb.qt"
-  'If sComp = "gb.qt4.ext" Then sComp = "gb.qt.ext"
-  sPath &/= LCase(sComp)
-  sPath &/= LCase(Left(sClass) & Replace(Mid(sClass, 2), "_", "."))
-  
-  If sSymbol Then
-    sName = LCase(sSymbol)
-    sName = Left(sName) & Replace(Mid$(sName, 2), "_", ".")
-    sName = Replace(sName, ":", ".")
-    sPath &/= sName
-  Endif
-  
-  Return sPath & "?help&v3&" & GetLanguage()
-  
-End
 
-Public Sub GetClassURL(sComponent As String, sClass As String) As String
-  
-  Return GetSymbolURL(sComponent, sClass)
-  
-End
 
 Public Sub GetLangURL(sSymbol As String) As String
   
@@ -426,14 +397,8 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
   Else If iType = TYPE_COMPONENT
     
     Try hComp = CComponent.All[sSymbol]
-    If hComp Then sUrl = GetClassURL(sSymbol, "")
+    If hComp Then sUrl = hComp.GetHelpURL()
     
-  Endif
-  
-  If sUrl Then
-    If sMore Then sUrl &= "&" & sMore
-    sMore &= "&" & GetLanguage()
-    If hWebView.Url = sUrl Then Return
   Endif
   
   hWebView.Stop
@@ -447,7 +412,13 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
     hWebView.Url = "file://" & sTemp
     
   Else If sUrl Then
+    
+    If sMore Then sUrl &= "&" & sMore
+    sMore &= "&" & GetLanguage() ' ??
+    'If hWebView.Url = sUrl Then Return
+  
     hWebView.Url = sUrl
+    
   Else
     hWebView.HTML = "<html><body><h2>" & ("No help found.") & "</h2></body></html>"
   Endif
@@ -496,11 +467,11 @@ Private Sub SubstPart(sHtml As String, sPart As String, bShow As Boolean) As Str
 End
 
 
-''+Description
-''Return the formated help of the local class if it exist
-''+Arguments
+'' +Description
+'' Return the formated help of the local class if it exist
+'' +Arguments
 '' - #sClass# is the class to analyze
-'' - #hWebView# is the WebView control to use (by default.
+'' - #hWebView# is the WebView control to use.
 
 Public Function GetProjectClassHelpHTML(sClass As String, Optional hWebView As WebView) As String
   
@@ -510,11 +481,13 @@ Public Function GetProjectClassHelpHTML(sClass As String, Optional hWebView As W
   Dim i As Integer
   Dim hSymbol As CSymbolInfo
   Dim cClassSymbols As Collection
-  Dim hClassInfo As CClassInfo
+  Dim hClassInfo, hParentClass As CClassInfo
   Dim aProperty, aEvent, aMethod, aConst, aVar As New String[]
   Dim aParentProperty, aParentEvent, aParentMethod, aParentConst, aParentVar As New String[]
   Dim sComp, sSymbolName As String
   Dim hArray As String[]
+  Dim sLink As String
+  Dim sParent As String
 
   'Getting help
   hForm = Project.LoadFile(Project.FindPath(sClass))
@@ -550,11 +523,7 @@ Public Function GetProjectClassHelpHTML(sClass As String, Optional hWebView As W
       sSymbolName = hSymbol.Name
       If Left(sSymbolName) = ":" Then sSymbolName = Mid$(sSymbolName, 2)
       
-      If hSymbol.Component Then
-        sComp = Subst("<a class=\"none\" href=\"&1\">&2</a>", GetSymbolURL(hSymbol.Component, hSymbol.Class, sSymbolName), sSymbolName)
-      Else
-        sComp = Subst("<a class=\"none\" href=\"gambas://project/&1/&2#&3?showfile\">&2</a>", hSymbol.Class, sSymbolName, hSymbol.LineNumber)
-      Endif
+      sComp = Subst("<a class=\"none\" href=\"&1\">&2</a>", Html(hSymbol.GetHelpURL()), sSymbolName)
       
       If hSymbol.NotPublic Or If hSymbol.IsHidden() Then Continue
 
@@ -646,13 +615,23 @@ Public Function GetProjectClassHelpHTML(sClass As String, Optional hWebView As W
   Endif
   
   If hClassInfo.Parent Then 
+    
+    sParent = hClassInfo.Parent
+    
+    hParentClass = CComponent.Classes[hClassInfo.ParentComponent &/ sParent]
+    If Not hParentClass Then hParentClass = CComponent.GetClassDescription(sParent)
+    
     sHtml = SubstPart(sHtml, "ShowInherits", True)
     sHtml = SubstPart(sHtml, "ShowParConst", aParentConst.Count > 0)
     sHtml = Replace(sHtml, "$(ParConst)", aParentConst.Join(" "))
-    sHtml = Replace(sHtml, "$(Inherits)", Subst(("This class inherits &1."), Subst("<a href=\"&1\">&2</a>", Html(GetClassURL(hClassInfo.ParentComponent, hClassInfo.Parent)), hClassInfo.Parent)))
+    
+    sHtml = Replace(sHtml, "$(Inherits)", Subst(("This class inherits &1."), Subst("<a href=\"&1\">&2</a>", Html(hParentClass.GetHelpURL()), sParent)))
     sHtml = Replace(sHtml, "$(ParSymbols)", sParSymbols)
+    
   Else
+    
     sHtml = SubstPart(sHtml, "ShowInherits", False)
+    
   Endif
   
   sHtml = SubstPart(sHtml, "ShowConst", aConst.Count > 0)
@@ -670,7 +649,7 @@ Public Function GetProjectClassHelpHTML(sClass As String, Optional hWebView As W
 
 End
 
-''Manage the gambas:// links
+'' Manage 'the gambas://' links
 
 Public Sub ManageSpecialLink(hWebView As WebView, sUrl As String)
   
@@ -702,6 +681,7 @@ Public Sub ManageSpecialLink(hWebView As WebView, sUrl As String)
     Endif
     If bShowFile Then 
       Project.OpenFile(Project.FindPath(sClass), iLine)
+      FMain.Show
     Else
       If aValues.Count = 4 Then
         InitWebViewWith(hWebView, TYPE_CLASS, aValues[3])

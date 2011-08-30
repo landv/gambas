@@ -675,7 +675,7 @@ void CWebView::loadFinished(bool ok)
 	if (ok)
 		GB.Raise(THIS, EVENT_LOAD, 0);
 	else
-		GB.Raise(THIS, EVENT_ERROR, 0);
+		GB.RaiseLater(THIS, EVENT_ERROR);
 }
 
 void CWebView::loadProgress(int progress)
@@ -775,8 +775,6 @@ void CWebView::handleUnsupportedContent(QNetworkReply *reply)
 {
 	void *_object = QT.GetObject(((QWebPage*)sender())->view());
 	CWEBDOWNLOAD *download;
-	
-	qDebug("unsupportedContent");
 	
 	if (reply->error() == QNetworkReply::NoError) 
 	{

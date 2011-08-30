@@ -333,7 +333,25 @@ End
 
 Public Sub GetHelpURL() As String
   
-  If Component Then Return MHelp.GetClassURL(Component, Name)
+  Dim sPath As String
+  Dim sComp As String
+  
+  If Component And If Component <> CComponent.PROJECT_NAME Then
+
+    sPath = MHelp.GetURL("comp")
+    sComp = Component
+    'If sComp = "gb.qt4" Or If sComp = "gb.gtk" Or If sComp = "gb.gui" Then sComp = "gb.qt"
+    'If sComp = "gb.qt4.ext" Then sComp = "gb.qt.ext"
+    sPath &/= LCase(sComp)
+    sPath &/= LCase(Left(Name) & Replace(Mid(Name, 2), "_", "."))
+    
+    Return sPath & "?help&v3&" & MHelp.GetLanguage()
+    
+  Else
+  
+    Return Subst("gambas://project/&1", Name)
+    
+  Endif
   
 End
 

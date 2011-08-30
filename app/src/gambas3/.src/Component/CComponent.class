@@ -1271,3 +1271,22 @@ Public Sub IsForm() As Boolean
   Return Implement.Exist("form")
   
 End
+
+Public Sub GetHelpURL() As String
+  
+  Dim sPath As String
+  Dim sComp As String
+  
+  If Key And If Key <> CComponent.PROJECT_NAME Then
+
+    sPath = MHelp.GetURL("comp")
+    sComp = Key
+    'If sComp = "gb.qt4" Or If sComp = "gb.gtk" Or If sComp = "gb.gui" Then sComp = "gb.qt"
+    'If sComp = "gb.qt4.ext" Then sComp = "gb.qt.ext"
+    sPath &/= LCase(sComp)
+    
+    Return sPath & "?help&v3&" & MHelp.GetLanguage()
+    
+  Endif
+  
+End

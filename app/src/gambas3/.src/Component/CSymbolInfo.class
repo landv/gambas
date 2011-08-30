@@ -699,12 +699,35 @@ End
 
 Public Function GetHelpURL() As String
   
-  If Component Then 
-    If Component = "gb" And If Class = "." Then
-      Return MHelp.GetLangURL(Name)
-    Else
-      Return MHelp.GetSymbolURL(Component, Class, Name)
-    Endif
+  Dim sPath As String
+  Dim sName As String
+  Dim sRes As String
+  Dim sComp As String
+  
+  If Component = "gb" And If Class = "." Then
+    Return MHelp.GetLangURL(Name)
+  Endif
+  
+  If Component And If Component <> CComponent.PROJECT_NAME Then
+
+    sPath = MHelp.GetURL("comp")
+    sComp = Component
+    'If sComp = "gb.qt4" Or If sComp = "gb.gtk" Or If sComp = "gb.gui" Then sComp = "gb.qt"
+    'If sComp = "gb.qt4.ext" Then sComp = "gb.qt.ext"
+    sPath &/= LCase(sComp)
+    sPath &/= LCase(Left(Class) & Replace(Mid(Class, 2), "_", "."))
+    
+    sName = LCase(Name)
+    sName = Left(sName) & Replace(Mid$(sName, 2), "_", ".")
+    sName = Replace(sName, ":", ".")
+    sPath &/= sName
+    
+    Return sPath & "?help&v3&" & MHelp.GetLanguage()
+    
+  Else
+  
+    Return Subst("gambas://project/&1/&2#&3?showfile", Class, Name, LineNumber)
+    
   Endif
   
 End
