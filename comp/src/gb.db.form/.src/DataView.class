@@ -72,7 +72,7 @@ Public Sub _new()
   $hCtrl.Header = TableView.Both
   $hCtrl.Grid = False
   $bAllColumns = True
-  Refresh
+  Update
   Create()
   
   $bHighlight = True
@@ -195,8 +195,8 @@ Private Sub Load()
   
   'Object.Lock($hCtrl)
   $bNoActivate = True
-  $hCtrl.Rows.H = GetDefaultRowHeight()
   $hCtrl.Rows.Count = $hTable.Count
+  '$hCtrl.Rows.H = GetDefaultRowHeight()
   $bNoActivate = False
   'Object.Unlock($hCtrl)
   
@@ -224,7 +224,7 @@ Private Sub Load()
 End
 
 
-Public Sub Refresh()
+Public Sub Update()
   
   Load
   
@@ -295,30 +295,20 @@ Public Sub TableView_Scroll()
   
 End
 
-Private Sub AdjustRow()
-  
-  Dim H As Integer
-  Dim iRow As Integer
-  
-  If $hCtrl.Rows.Count >= 65536 Then Return
-
-  If $iLastRow >= 0 Then
-    Try $hCtrl.Rows[$iLastRow].H = GetDefaultRowHeight()
-  Endif
-  
-  iRow = $hCtrl.Row
-  
-  If iRow >= 0 Then
-    Try $hCtrl.Rows[iRow].H = -1
-    If Not Error Then
-      H = Max(Min(256, $hCtrl.Rows[iRow].H + 4), GetDefaultRowHeight())
-      $hCtrl.Rows[iRow].H = H
-    Endif
-  Endif
-  
-  $iLastRow = iRow
-  
-End
+' Private Sub AdjustRow(iRow As Integer, H As Integer)
+'   
+'   Dim H As Integer
+' 
+'   'If $iLastRow >= 0 Then
+'   '  Try $hCtrl.Rows[$iLastRow].H = GetDefaultRowHeight()
+'   'Endif
+'   If $bEditable Then H += 4
+'   H = Max(Min(256, H), GetDefaultRowHeight())
+'   $hCtrl.Rows[iRow].H = H
+'   
+'   '$iLastRow = iRow
+'   
+' End
 
 
 Public Sub TableView_Timer()
@@ -359,6 +349,7 @@ Public Sub TableView_Data(Row As Integer, Column As Integer)
   Dim iIndex As Integer
   Dim hField As DataField
   Dim sText As String
+  Dim H As Integer
   
   'If Column = 0 And If Row = 0 Then
   '  Error System.Backtrace.Join("\n")
@@ -403,6 +394,13 @@ Public Sub TableView_Data(Row As Integer, Column As Integer)
     .Alignment = Align.TopNormal
     
   End With
+  
+  If $bEditable And If Row = $hCtrl.Row And If $hCtrl.Rows[Row].Selected Then
+    H = Min(256, $hCtrl.Font.TextHeight($hCtrl.Data.Text) + 8)
+  Else
+    H = GetDefaultRowHeight()
+  Endif
+  If $hCtrl.Rows[Row].H <> H Then $hCtrl.Rows[Row].H = H
   
   ' If Not $bAdjust Then
   '   If Not $aAdjust.Exist(Row) Then $aAdjust.Push(Row)
@@ -489,7 +487,7 @@ Public Sub TableView_Change()
 
   'Balloon.Hide($hCtrl)
   $bCreate = False
-  AdjustRow
+  'AdjustRow
   Raise Activate
   
 End
@@ -953,7 +951,7 @@ End
 
 Public Sub _OnDatabaseChange()
   
-  Refresh()
+  Update
   
 End
 
@@ -998,8 +996,8 @@ Private Sub Font_Write(Value As Font)
 
   Super.Font = Value
   $hCtrl.Font = Value
-  $hCtrl.Rows.H = GetDefaultRowHeight()
-  AdjustRow()
+  '$hCtrl.Rows.H = GetDefaultRowHeight()
+  'AdjustRow()
 
 End
 

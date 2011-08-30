@@ -227,7 +227,7 @@ Public Function MoveTo(iIndex As Integer) As Boolean
 End
 
 
-Private Sub Redraw(Optional bRefresh As Boolean)
+Private Sub Redraw(Optional bUpdate As Boolean)
 
   Dim hChild As Object
 
@@ -236,10 +236,10 @@ Private Sub Redraw(Optional bRefresh As Boolean)
   For Each hChild In GetChildren()
     'DEBUG hChild.Name
     If Common.IsControl(hChild) Or If hChild Is DataSource Then
-      hChild.Refresh
+      hChild.Update
     Else If hChild Is DataBrowser Or If hChild Is DataView Then
-      If bRefresh Then 
-        hChild.Refresh
+      If bUpdate Then 
+        hChild.Update
       Endif
     Endif
   Next
@@ -267,7 +267,7 @@ Public Sub _OnDatabaseChange()
 End
 
 
-Public Sub Refresh()
+Public Sub Update()
   
   Load
   
@@ -331,13 +331,13 @@ VOID:
   
 End
 
-Public Sub Create(Optional bRefresh As Boolean)
+Public Sub Create(Optional bUpdate As Boolean)
   
   If CheckModified() Then Return
 
-  If bRefresh Then $hTable.Refresh
+  If bUpdate Then $hTable.Refresh
   $iIndex = -1
-  Redraw(bRefresh)
+  Redraw(bUpdate)
   SetFocus($hTable.Keys[0])
   
 End
@@ -703,7 +703,7 @@ Public Sub Reset()
   If Not $hTable Then Return
   $hTable.Reset()
   $hTable = Null
-  Refresh()
+  Update
   
 End
 

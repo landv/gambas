@@ -125,6 +125,19 @@ BEGIN_PROPERTY(DrawingArea_NoBackground)
 
 END_PROPERTY
 
+BEGIN_METHOD(DrawingArea_Refresh, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
+
+	int x, y, w, h;
+
+	x = VARGOPT(x, 0);
+	y = VARGOPT(y, 0);
+	w = VARGOPT(w, WIDGET->width());
+	h = VARGOPT(h, WIDGET->height());
+	
+	WIDGET->refresh(x,y,w,h);
+
+END_METHOD
+
 GB_DESC CDrawingAreaDesc[] =
 {
 	GB_DECLARE("DrawingArea", sizeof(CDRAWINGAREA)), GB_INHERITS("Container"),
@@ -145,6 +158,7 @@ GB_DESC CDrawingAreaDesc[] =
 	GB_PROPERTY("NoBackground", "b", DrawingArea_NoBackground),
 
 	GB_METHOD("Clear", 0, CDRAWINGAREA_clear, 0),
+	GB_METHOD("Refresh", NULL, DrawingArea_Refresh, "[(X)i(Y)i(Width)i(Height)i]"),
 
 	GB_EVENT("Draw", 0, 0, &EVENT_draw),
 	

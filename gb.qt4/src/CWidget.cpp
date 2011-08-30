@@ -1023,24 +1023,11 @@ BEGIN_PROPERTY(Control_Previous)
 END_PROPERTY
 
 
-BEGIN_METHOD(Control_Refresh, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
+BEGIN_METHOD_VOID(Control_Refresh) //, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
 
-	int x, y, w, h;
-
-	if (!MISSING(x) && !MISSING(y))
-	{
-		x = VARG(x);
-		y = VARG(y);
-		w = VARGOPT(w, QWIDGET(_object)->width());
-		h = VARGOPT(h, QWIDGET(_object)->height());
-		QWIDGET(_object)->update(x, y, w, h);
-	}
-	else
-	{
-		QWIDGET(_object)->update();
-		if (CWIDGET_test_flag(THIS, WF_SCROLLVIEW))
-			get_viewport(WIDGET)->update();
-	}
+	QWIDGET(_object)->update();
+	if (CWIDGET_test_flag(THIS, WF_SCROLLVIEW))
+		get_viewport(WIDGET)->update();
 
 END_METHOD
 
@@ -2737,7 +2724,7 @@ GB_DESC CControlDesc[] =
 	GB_PROPERTY("Previous", "Control", Control_Previous),
 
 	GB_METHOD("SetFocus", NULL, Control_SetFocus, NULL),
-	GB_METHOD("Refresh", NULL, Control_Refresh, "[(X)i(Y)i(Width)i(Height)i]"),
+	GB_METHOD("Refresh", NULL, Control_Refresh, NULL),
 	//GB_METHOD("Screenshot", "Picture", Control_Screenshot, NULL),
 	GB_METHOD("Drag", "Control", Control_Drag, "(Data)v[(Format)s]"),
 	GB_METHOD("Grab", NULL, Control_Grab, NULL),

@@ -185,6 +185,8 @@ public:
 	
 	virtual QRect cellGeometry(int row, int col) const;
 	
+	void setDefaultRowHeight(int h) { _default_row_height = h; }
+	
 	//virtual QRect cellRect(int row, int col) const
 
 Q_SIGNALS:
@@ -217,6 +219,7 @@ private:
 	MyTableColumn *_columns;
 	int _rows;
 	int _cols;
+	int _default_row_height;
 	bool _no_row;
 	bool _no_col;
 	bool _layouting_columns;

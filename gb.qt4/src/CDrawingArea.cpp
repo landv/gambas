@@ -505,6 +505,8 @@ END_PROPERTY
 
 BEGIN_METHOD(DrawingArea_Refresh, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
 
+	int x, y, w, h;
+
 	if (WIDGET->isCached())
 	{
 		QRect r;
@@ -517,8 +519,19 @@ BEGIN_METHOD(DrawingArea_Refresh, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_I
 		WIDGET->redraw(r, false);
 	}
 	
-	Control_Refresh(_object, _param);
-
+	if (!MISSING(x) && !MISSING(y))
+	{
+		x = VARG(x);
+		y = VARG(y);
+		w = VARGOPT(w, QWIDGET(_object)->width());
+		h = VARGOPT(h, QWIDGET(_object)->height());
+		WIDGET->update(x, y, w, h);
+	}
+	else
+	{
+		WIDGET->update();
+	}
+	
 END_METHOD
 
 GB_DESC CDrawingAreaDesc[] =

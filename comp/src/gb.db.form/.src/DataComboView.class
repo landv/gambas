@@ -94,11 +94,11 @@ Private Sub LoadPopup()
   If Not hSrc Then Return
   
   $hSrc.Connection = hSrc.Connection
-  $hSrc.Refresh
+  $hSrc.Update
   
 End
 
-Public Sub Refresh()
+Public Sub Update()
 
   Dim hSource As DataSource
   Dim hInfo As DataField
@@ -229,43 +229,6 @@ Private Sub Header_Write(Value As Boolean)
 
 End
 
-' Private Function ReadOnly_Read() As Boolean
-' 
-'   Return $hCtrl.ReadOnly
-'   
-' End
-' 
-' Private Sub ReadOnly_Write(Value As Boolean)
-' 
-'   $hCtrl.ReadOnly = Value
-'   
-' End
-
-
-Private Sub Value_Refresh(h As Result)
-' Dim s, sRes As String
-'    $vValue = h[$sDataField]
-'   
-'   If Not $sFormat Then 
-'     For Each s In $aFields
-'       sRes &= h[s] & " | "
-'     Next
-'     sRes = Left(sRes, Len(sRes) - 3)
-'   Else
-'     sRes = $sFormat
-'     For Each s In $aFields
-'       sRes = Replace$(sres, "%" & s & "%", CStr(h[s]))
-'     Next
-'   Endif  
-'     
-'     If $hCtrl.ReadOnly Then 
-'       $hCtrl.Clear
-'       $hCtrl.Add(sRes)
-'     Else 
-'       $hCtrl.Text = sRes
-'       $hCtrl.Pos = 0
-'     Endif
-End
 
 Private Function Columns_Read() As String[]
 

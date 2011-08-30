@@ -641,23 +641,9 @@ BEGIN_PROPERTY(CWIDGET_previous)
 END_PROPERTY
 
 
-BEGIN_METHOD(CWIDGET_refresh, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
+BEGIN_METHOD_VOID(CWIDGET_refresh) //, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
 
-	int x=-1,y=-1,w=-1,h=-1;
-	
-	if (!MISSING(x) && !MISSING(y))
-	{
-		x=VARG(x);
-		y=VARG(y);
-		if (MISSING(w)) w=CONTROL->width();
-		else			w=VARG(w);
-		if (MISSING(h)) h=CONTROL->height();
-		else			h=VARG(h);
-
-	}
-	
-	CONTROL->refresh(x,y,w,h);
-
+	CONTROL->refresh();
 
 END_METHOD
 
@@ -874,23 +860,23 @@ GB_DESC CWidgetDesc[] =
 
 	//GB_METHOD("_free", 0, CWIDGET_delete, 0),
 
-	GB_METHOD("Move", 0, CWIDGET_move, "(X)i(Y)i[(Width)i(Height)i]"),
-	GB_METHOD("Resize", 0, CWIDGET_resize, "(Width)i(Height)i"),
-	GB_METHOD("MoveScaled", 0, CWIDGET_moveScaled, "(X)f(Y)f[(Width)f(Height)f]"),
-	GB_METHOD("ResizeScaled", 0, CWIDGET_resizeScaled, "(Width)f(Height)f"),
-	GB_METHOD("Delete", 0, CWIDGET_delete, 0),
-	GB_METHOD("Show", 0, CWIDGET_show, 0),
-	GB_METHOD("Hide", 0, CWIDGET_hide, 0),
-	GB_METHOD("Reparent",0,CWIDGET_reparent,"(Parent)Container;[(X)i(Y)i]"),
+	GB_METHOD("Move", NULL, CWIDGET_move, "(X)i(Y)i[(Width)i(Height)i]"),
+	GB_METHOD("Resize", NULL, CWIDGET_resize, "(Width)i(Height)i"),
+	GB_METHOD("MoveScaled", NULL, CWIDGET_moveScaled, "(X)f(Y)f[(Width)f(Height)f]"),
+	GB_METHOD("ResizeScaled", NULL, CWIDGET_resizeScaled, "(Width)f(Height)f"),
+	GB_METHOD("Delete", NULL, CWIDGET_delete, NULL),
+	GB_METHOD("Show", NULL, CWIDGET_show, NULL),
+	GB_METHOD("Hide", NULL, CWIDGET_hide, NULL),
+	GB_METHOD("Reparent", NULL, CWIDGET_reparent, "(Parent)Container;[(X)i(Y)i]"),
 	
-	GB_METHOD("Raise", 0, CWIDGET_raise, 0),
-	GB_METHOD("Lower", 0, CWIDGET_lower, 0),
+	GB_METHOD("Raise", NULL, CWIDGET_raise, NULL),
+	GB_METHOD("Lower", NULL, CWIDGET_lower, NULL),
 
 	GB_PROPERTY("Next", "Control", CWIDGET_next),
 	GB_PROPERTY("Previous", "Control", CWIDGET_previous),
 	
-	GB_METHOD("SetFocus", 0, CWIDGET_set_focus, 0),
-	GB_METHOD("Refresh", 0, CWIDGET_refresh, "[(X)i(Y)i(Width)i(Height)i]"),
+	GB_METHOD("SetFocus", NULL, CWIDGET_set_focus, NULL),
+	GB_METHOD("Refresh", NULL, CWIDGET_refresh, NULL),
 	//GB_METHOD("Screenshot", "Picture", CWIDGET_screenshot, 0),
 	GB_METHOD("Grab", NULL, CCONTROL_grab, NULL),
 	GB_METHOD("Drag", "Control", CWIDGET_drag, "(Data)v[(Format)s]"),

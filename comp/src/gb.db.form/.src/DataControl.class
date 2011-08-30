@@ -116,7 +116,7 @@ Private Sub CreateControl()
 End
 
 
-Public Sub Refresh()
+Public Sub Update()
   
   Dim hInfo As DataField
   
@@ -227,7 +227,7 @@ Private Sub Field_Write(sKey As String)
   
   If sKey = $sKey Then Return
   $sKey = sKey
-  Me.Refresh
+  Update
   
 End
 

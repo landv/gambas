@@ -903,18 +903,17 @@ const char *CLASS_DESC_get_type_name(const CLASS_DESC *desc)
 
 static bool check_signature(char type, const CLASS_DESC *desc, const CLASS_DESC *pdesc)
 {
-	/*TYPE *sd, *sp;
-	int nsd, nsp;*/
+	TYPE *sd, *sp;
+	int nsd, nsp;
 	
 	if (desc->property.type != pdesc->property.type)
 	{
 		//fprintf(stderr, "type! %ld / %ld\n", desc->property.type, pdesc->property.type);
 		return TRUE;
 	}
-	else
-		return FALSE;
+	//else
+	//	return FALSE;
 	
-#if 0
 	switch (type)
 	{
 		case CD_METHOD:
@@ -951,7 +950,6 @@ static bool check_signature(char type, const CLASS_DESC *desc, const CLASS_DESC 
 		return TRUE;
 	else
 		return FALSE;
-#endif
 }
 
 void CLASS_make_description(CLASS *class, const CLASS_DESC *desc, int n_desc, int *first)
@@ -1035,7 +1033,7 @@ void CLASS_make_description(CLASS *class, const CLASS_DESC *desc, int n_desc, in
 						THROW(E_OVERRIDE, parent->name, cds->name, class->name);
 					}
 					
-					if (!CLASS_is_native(class) && check_signature(type, &desc[j], cds->desc))
+					if (!CLASS_is_native(class) && strcmp(name, "_new") && check_signature(type, &desc[j], cds->desc))
 						THROW(E_OVERRIDE, parent->name, cds->name, class->name);
 				}
 				

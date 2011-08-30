@@ -107,7 +107,7 @@ Private Sub Reload()
 End
 
 
-Public Sub Refresh(Optional bReload As Boolean)
+Public Sub Update(Optional bReload As Boolean)
   
   Dim hSource As DataSource
   Dim hInfo As DataField
@@ -237,7 +237,7 @@ End
 Private Sub Table_Write(sTable As String)
   
   $sTable = sTable
-  Refresh(True)
+  Update(True)
   
 End
 
@@ -250,7 +250,7 @@ End
 Private Sub Filter_Write(sFilter As String)
   
   $sFilter = sFilter
-  Refresh(True)
+  Update(True)
   
 End
 
@@ -263,7 +263,7 @@ End
 Private Sub Display_Write(sDisplay As String)
   
   $sDisplay = sDisplay
-  Refresh(True)
+  Update(True)
   
 End
 
@@ -277,7 +277,7 @@ Private Sub Field_Write(sKey As String)
   
   If sKey = $sKey Then Return
   $sKey = sKey
-  Refresh(True)
+  Update(True)
   
 End
 
@@ -304,7 +304,7 @@ End
 Private Sub ReadOnly_Write(bReadOnly As Boolean)
   
   $hCtrl.ReadOnly = bReadOnly
-  Refresh(True)
+  Update(True)
   
 End
 
@@ -326,7 +326,7 @@ End
 Private Sub All_Write(Value As String)
 
   $sAll = Value
-  Refresh(True)
+  Update(True)
 
 End
 
