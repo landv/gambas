@@ -190,6 +190,58 @@ End
 '
 ' End
 
+Private Sub FilterRecent()
+
+  Dim sFilter As String = Trim(txtFilter.Text)
+  Dim hCtrl, hLast As Control
+  Dim hFirst, hProjectItem As ProjectItem
+  
+  lstRecent.Lock
+  
+  If Not sFilter Then
+    sFilter = "*"
+  Else
+    sFilter = "*" & String.LCase(sFilter) & "*"
+  Endif
+  
+  
+  For Each hCtrl In lstRecent.Children
+    
+    If hCtrl Is ProjectItem Then
+      hProjectItem = hCtrl
+      With hProjectItem.Info
+        If Not sFilter Or If .Name Like sFilter Or If String.LCase(.Title) Like sFilter Or If String.LCase(.Authors.Join(" ")) Like sFilter Then
+          hProjectItem.Show
+        Else
+          hProjectItem.Hide
+        Endif
+      End With
+      If hProjectItem.Visible Then 
+        If Not hFirst Then hFirst = hProjectItem
+      Endif
+    Endif
+    
+  Next
+  
+  For Each hCtrl In lstRecent.Children
+    
+    If hCtrl Is DrawingArea Then
+      If hLast Then hLast.Hide
+      hLast = hCtrl
+    Else If hCtrl Is ProjectItem And If hCtrl.Visible Then
+      If hLast Then hLast.Show
+      hLast = Null
+    Endif
+    
+  Next
+  
+  If hLast Then hLast.Hide
+  
+  lstRecent.Select(hFirst)
+  lstRecent.Unlock
+  
+End
+
 Private Sub FillRecent()
   
   Dim hProjectItem As ProjectItem
@@ -254,6 +306,7 @@ Public Sub tabProject_Click()
 
   If tabProject.Index = 1 Then 
     FillRecent
+    txtFilter.SetFocus
   Else If tabProject.Index = 2 Then 
     FillExample
   Endif  
@@ -366,6 +419,31 @@ Public Sub radSort_Click()
   If tabProject.Index = 1 Then
     lstRecent.Clear
     FillRecent
+  Endif
+
+End
+
+Public Sub txtFilter_Click()
+
+  txtFilter.Text = ""
+
+End
+
+Public Sub txtFilter_Change()
+
+  FilterRecent
+
+End
+
+
+Public Sub txtFilter_KeyPress()
+
+  If Key.Code = Key.Down Then
+    lstRecent.ScrollView_KeyPress
+    Stop Event
+  Else If Key.Code = Key.Up Then
+    lstRecent.ScrollView_KeyPress
+    Stop Event
   Endif
 
 End

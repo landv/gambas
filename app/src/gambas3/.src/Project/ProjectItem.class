@@ -7,6 +7,7 @@ Property Path As String
 Property Highlight As Boolean
 Property Background As Integer
 Property Read IdealHeight As Integer
+Property Read Info As CProjectInfo
 
 Private $hDrawingArea As DrawingArea
 Private $sPath As String
@@ -50,6 +51,7 @@ Private Sub SetPath(sPath As String)
   Refresh
   
 End
+
 
 Private Sub GetTitle() As String
   
@@ -194,4 +196,10 @@ Private Function IdealHeight_Read() As Integer
   If $bShowPath Then H += Desktop.Scale * 2
   Return H
   
+End
+
+Private Function Info_Read() As CProjectInfo
+
+  Return $hProjectInfo
+
 End

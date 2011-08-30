@@ -3319,6 +3319,7 @@ Private Sub DeleteContainer()
   If Not sChildren Then Return
   
   DeleteSelection
+  UnSelectAll
   PutSelection(sChildren, hParent)
   
   For Each hCtrl In Selection
@@ -3350,6 +3351,7 @@ Private Sub EmbedIntoContainer()
   hParent.MoveAndResize(X1, Y1, X2 - X1 + Desktop.Scale, Y2 - Y1 + Desktop.Scale)
   
   DeleteSelection
+  UnSelectAll
   PutSelection(sChildren, hParent)
   
   For Each hCtrl In Selection

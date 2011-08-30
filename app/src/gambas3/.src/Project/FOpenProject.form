@@ -59,11 +59,16 @@
       MoveScaled(1,1,83,60)
       Arrangement = Arrange.Vertical
       { HBox2 HBox
-        MoveScaled(2,5,78,4)
+        MoveScaled(1,1,78,4)
         Spacing = True
+        { txtFilter ButtonBox
+          MoveScaled(1,0,24,4)
+          Expand = True
+          Picture = Picture["icon:/small/clear"]
+        }
         { radSortByDate RadioButton radSort
           Name = "radSortByDate"
-          MoveScaled(0,0,16,4)
+          MoveScaled(29,0,16,4)
           Tag = "0"
           AutoResize = True
           Text = ("Sort by date")
@@ -71,21 +76,21 @@
         }
         { radSortByName RadioButton radSort
           Name = "radSortByName"
-          MoveScaled(16,0,16,4)
+          MoveScaled(45,0,16,4)
           Tag = "1"
           AutoResize = True
           Text = ("Sort by name")
         }
         { radSortByPath RadioButton radSort
           Name = "radSortByPath"
-          MoveScaled(32,0,16,4)
+          MoveScaled(61,0,16,4)
           Tag = "2"
           AutoResize = True
           Text = ("Sort by path")
         }
       }
       { lstRecent ListContainer
-        MoveScaled(0,9,79,19)
+        MoveScaled(1,6,49,46)
         Expand = True
       }
     }
