@@ -220,6 +220,8 @@ Static Public Sub OpenTerminal(Optional {Dir} As String)
       sExec = "gnome-terminal"
     Case "XFCE"
       sExec = "Terminal"
+    Case "LXDE"
+      sExec = "lxterminal"
     Case Else
       sExec = "xterm"
   

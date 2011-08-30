@@ -473,7 +473,6 @@ Q3Table(0, 0, parent)
 	_show_grid = true;
 	_resizable = true;
 	_expand = false;
-	_default_row_height = 0;
 	
 	/*viewport()->setAttribute(Qt::WA_NoSystemBackground, true);
 	viewport()->setAttribute(Qt::WA_PaintOnScreen, true);*/
