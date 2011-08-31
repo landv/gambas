@@ -1033,7 +1033,7 @@ void CLASS_make_description(CLASS *class, const CLASS_DESC *desc, int n_desc, in
 						THROW(E_OVERRIDE, parent->name, cds->name, class->name);
 					}
 					
-					if (!CLASS_is_native(class) && strcmp(name, "_new") && check_signature(type, &desc[j], cds->desc))
+					if (!CLASS_is_native(class) && strcasecmp(name, "_new") && check_signature(type, &desc[j], cds->desc))
 						THROW(E_OVERRIDE, parent->name, cds->name, class->name);
 				}
 				

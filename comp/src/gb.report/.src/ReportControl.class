@@ -180,7 +180,7 @@ Private Sub Expand_Write(Value As Boolean)
 
 End
 
-Public Sub _GetSizeHints(AvailableW As Integer, AvailableH As Integer, TotalWidth As Integer, TotalHeight As Integer) As TSizeHint
+Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float) As TSizeHint
 
   Error.Raise("Something goes wrong the _GetSizeHints is not correctly implemented")
 

@@ -234,7 +234,7 @@ Public Sub _GenerateClones()
 
 End
 
-Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer)
+Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer, bInFixed As Boolean)
 
   Dim hChildHints As TSizeHint
   Dim hChild As TControl
