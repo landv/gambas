@@ -49,7 +49,6 @@ void ERROR_reset(ERROR_INFO *info)
 	}
 
 	info->msg = NULL;
-	info->bt_count = 0;
 }
 
 

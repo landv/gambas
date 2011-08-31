@@ -112,6 +112,7 @@ enum {
 EXTERN ERROR_CONTEXT *ERROR_current;
 EXTERN ERROR_INFO ERROR_last;
 EXTERN ERROR_HANDLER *ERROR_handler;
+EXTERN void *ERROR_backtrace;
 
 #if DEBUG_ERROR
 EXTERN int ERROR_depth;
@@ -157,9 +158,9 @@ void ERROR_clear(void);
 void ERROR_reset(ERROR_INFO *info);
 void ERROR_lock(void);
 void ERROR_unlock(void);
-void ERROR_set_last(void);
+void ERROR_set_last(bool bt);
 void ERROR_deprecated(const char *msg);
 
-#define ERROR_exit() ERROR_reset(&ERROR_last)
+void ERROR_exit(void);
 
 #endif

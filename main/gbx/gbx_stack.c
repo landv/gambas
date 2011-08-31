@@ -31,7 +31,6 @@
 #include "gbx_exec.h"
 #include "gb_error.h"
 #include "gbx_string.h"
-
 #include "gbx_stack.h"
 
 // The stack grows by 4K slot (8K on 64 bits CPU)
@@ -239,4 +238,30 @@ void STACK_grow(void)
 	#endif
 }
 
-
+STACK_BACKTRACE *STACK_get_backtrace(void)
+{
+	STACK_BACKTRACE *bt, *pbt;
+	int i;
+	
+	if (STACK_frame_count == 0)
+		return NULL;
+	
+	ALLOC(&bt, sizeof(STACK_BACKTRACE) * (1 + STACK_frame_count), "STACK_get_backtrace");
+	
+	bt->cp = CP;
+	bt->fp = FP;
+	bt->pc = PC;
+	
+	for (i = 0, pbt = &bt[1]; i < STACK_frame_count; i++, pbt++)
+	{
+		pbt->cp = STACK_frame[i].cp;
+		pbt->fp = STACK_frame[i].fp;
+		pbt->pc = STACK_frame[i].pc;
+	}
+	
+	// Mark the end of the backtrace
+	pbt--;
+	pbt->cp = (void *)(((intptr_t)(pbt->cp)) | 1); 
+	 
+	return bt;
+}

@@ -36,6 +36,7 @@
 #include "gbx_class.h"
 #include "gbx_c_array.h"
 #include "gbx_project.h"
+#include "gbx_stack.h"
 
 #include "gbx_debug.h"
 
@@ -397,75 +398,53 @@ __NORMAL:
 	return GB_DEBUG_ACCESS_NORMAL;
 }
 
-void DEBUG_print_backtrace(ERROR_INFO *err)
+void DEBUG_print_backtrace(STACK_BACKTRACE *bt)
 {
 	int i, n;
-	STACK_CONTEXT *sc = (STACK_CONTEXT *)(STACK_base + STACK_size) - err->bt_count;
+	bool stop;
+	//STACK_CONTEXT *sc = (STACK_CONTEXT *)(STACK_base + STACK_size) - err->bt_count;
 	
-	fprintf(stderr, "0: %s\n", DEBUG_get_position(err->cp, err->fp, err->pc));
-	for (i = 0, n = 0; i < err->bt_count; i++)
+	//fprintf(stderr, "0: %s\n", DEBUG_get_position(err->cp, err->fp, err->pc));
+	for (i = 0, n = 0, stop = FALSE; !stop; i++)
 	{
 		//fprintf(stderr, "%d: %s\n", i, DEBUG_get_position(bt[i].cp, bt[i].fp, bt[i].pc));
-		if (!sc[i].pc)
-			continue;
-		n++;
-		fprintf(stderr, "%d: %s\n", n, DEBUG_get_position(sc[i].cp, sc[i].fp, sc[i].pc));
+		if (STACK_backtrace_is_end(&bt[i]))
+		{
+			stop = TRUE;
+			STACK_backtrace_remove_end(&bt[i]);
+		}
+		if (bt[i].pc)
+		{
+			n++;
+			fprintf(stderr, "%d: %s\n", n, DEBUG_get_position(bt[i].cp, bt[i].fp, bt[i].pc));
+		}
 	}
 }
 
-#if 0
-const char *DEBUG_get_current_backtrace(void)
-{
-	char *result = NULL;
-	int i, n;
-	ERROR_INFO err;
-	STACK_CONTEXT *sc;
-	
-  err.cp = CP;
-  err.fp = FP;
-  err.pc = PC;
-	err.bt_count = STACK_frame_count;
-
-	sc = (STACK_CONTEXT *)(STACK_base + STACK_size) - err.bt_count;
-	
-	STRING_add(&result, DEBUG_get_position(err.cp, err.fp, err.pc), 0);
-	STRING_add_char(&result, '\n');
-	for (i = 0, n = 0; i < err.bt_count; i++)
-	{
-		//fprintf(stderr, "%d: %s\n", i, DEBUG_get_position(bt[i].cp, bt[i].fp, bt[i].pc));
-		if (!sc[i].pc)
-			continue;
-		n++;
-		STRING_add(&result, DEBUG_get_position(sc[i].cp, sc[i].fp, sc[i].pc), 0);
-		STRING_add_char(&result, '\n');
-	}
-	
-	STRING_free_later(result);
-	return result;
-}
-#endif
-
-
-GB_ARRAY DEBUG_get_string_array_from_backtrace(ERROR_INFO *err)
+GB_ARRAY DEBUG_get_string_array_from_backtrace(STACK_BACKTRACE *bt)
 {
 	GB_ARRAY array;
-	int i, n;
-	STACK_CONTEXT *sc = (STACK_CONTEXT *)(STACK_base + STACK_size) - err->bt_count;
+	int i, n, size;
 	
-	for (i = 0, n = 1; i < err->bt_count; i++)
+	for (i = 0, size = 0;; i++)
 	{
-		if (!sc[i].pc)
-			continue;
-		n++;
+		if (bt[i].pc)
+			size++;
+		if (STACK_backtrace_is_end(&bt[i]))
+		{
+			STACK_backtrace_remove_end(&bt[i]);
+			break;
+		}
 	}
-
-	GB_ArrayNew(&array, GB_T_STRING, n);
-	*((char **)GB_ArrayGet(array, 0)) = STRING_new_zero(DEBUG_get_position(err->cp, err->fp, err->pc));
-	for (i = 0, n = 1; i < err->bt_count; i++)
+	
+	GB_ArrayNew(&array, GB_T_STRING, size);
+	//*((char **)GB_ArrayGet(array, 0)) = STRING_new_zero(DEBUG_get_position(err->cp, err->fp, err->pc));
+	
+	for (i = 0, n = 0; n < size; i++)
 	{
-		if (!sc[i].pc)
+		if (!bt[i].pc)
 			continue;
-		*((char **)GB_ArrayGet(array, n)) = STRING_new_zero(DEBUG_get_position(sc[i].cp, sc[i].fp, sc[i].pc));
+		*((char **)GB_ArrayGet(array, n)) = STRING_new_zero(DEBUG_get_position(bt[i].cp, bt[i].fp, bt[i].pc));
 		n++;
 	}
 

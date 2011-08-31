@@ -1,22 +1,22 @@
 /***************************************************************************
 
-  gbx_exec.h
+	gbx_exec.h
 
-  (c) 2000-2011 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2011 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 	MA 02110-1301, USA.
 
 ***************************************************************************/
@@ -39,37 +39,37 @@
 
 
 typedef
-  void (*EXEC_FUNC)();
+	void (*EXEC_FUNC)();
 
 typedef
-  void (*EXEC_FUNC_CODE)(ushort);
+	void (*EXEC_FUNC_CODE)(ushort);
 
 typedef
-  struct {
-    CLASS *class;
-    OBJECT *object;
-    int index;
-    CLASS_DESC_METHOD *desc;
-    char nparam;
-    bool native;
-    bool use_stack;
-    }
-  EXEC_GLOBAL;
+	struct {
+		CLASS *class;
+		OBJECT *object;
+		int index;
+		CLASS_DESC_METHOD *desc;
+		char nparam;
+		bool native;
+		bool use_stack;
+		}
+	EXEC_GLOBAL;
 
 typedef
-  struct {
-    void (*main)();
-    void (*loop)();
-    void (*wait)();
-    void (*timer)();
-    void (*lang)();
-    void (*watch)();
-    void (*post)();
-    void (*quit)();
-    void (*error)();
+	struct {
+		void (*main)();
+		void (*loop)();
+		void (*wait)();
+		void (*timer)();
+		void (*lang)();
+		void (*watch)();
+		void (*post)();
+		void (*quit)();
+		void (*error)();
 		double (*timeout)();
-    }
-  EXEC_HOOK;
+		}
+	EXEC_HOOK;
 
 #ifndef __GBX_EXEC_C
 
@@ -252,19 +252,19 @@ do { \
 
 #define RELEASE_MANY(_val, _n) \
 do { \
- if (_n) \
- { \
-  if ((_n) == 1) \
-  { \
-    _val--; \
-    RELEASE((_val)); \
-  } \
-  else \
-  { \
-    RELEASE_many((_val), (_n)); \
-    _val -= (_n); \
-  } \
- } \
+if (_n) \
+{ \
+	if ((_n) == 1) \
+	{ \
+		_val--; \
+		RELEASE((_val)); \
+	} \
+	else \
+	{ \
+		RELEASE_many((_val), (_n)); \
+		_val -= (_n); \
+	} \
+} \
 } while (0)
 
 #define PUSH() \
@@ -275,8 +275,8 @@ do { \
 
 #define POP() \
 do { \
-  SP--; \
-  RELEASE(SP); \
+	SP--; \
+	RELEASE(SP); \
 } while (0)
 
 #define COPY_VALUE(_dst, _src) VALUE_copy(_dst, _src)

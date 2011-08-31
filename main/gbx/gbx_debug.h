@@ -25,6 +25,7 @@
 #define __GBX_DEBUG_H
 
 #include "gbx_class.h"
+#include "gbx_stack.h"
 #include "gb_pcode.h"
 #include "../lib/debug/gb.debug.h"
 
@@ -34,8 +35,6 @@
 #define DEBUG_STRING   0
 /* Bytecode debugging */
 #define DEBUG_PCODE    0
-/* Stack debugging */
-#define DEBUG_STACK    0
 /* Class loading debugging */
 #define DEBUG_LOAD     0
 /* Event debugging */
@@ -62,7 +61,7 @@ int DEBUG_set_value(const char *sym, int len, VALUE *value);
 int DEBUG_get_object_access_type(void *object, CLASS *class, int *count);
 GB_CLASS DEBUG_find_class(const char *name);
 
-void DEBUG_print_backtrace(ERROR_INFO *err);
-GB_ARRAY DEBUG_get_string_array_from_backtrace(ERROR_INFO *err);
+void DEBUG_print_backtrace(STACK_BACKTRACE *bt);
+GB_ARRAY DEBUG_get_string_array_from_backtrace(STACK_BACKTRACE *bt);
 
 #endif

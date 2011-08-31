@@ -364,14 +364,10 @@ END_PROPERTY
 
 BEGIN_PROPERTY(System_Backtrace)
 
-	ERROR_INFO err;
-	
-  err.cp = CP;
-  err.fp = FP;
-  err.pc = PC;
-	err.bt_count = STACK_frame_count;
+	STACK_BACKTRACE *bt = STACK_get_backtrace();
 
-	GB_ReturnObject(DEBUG_get_string_array_from_backtrace(&err));
+	GB_ReturnObject(DEBUG_get_string_array_from_backtrace(bt));
+	STACK_free_backtrace(&bt);
 	
 END_PROPERTY
 

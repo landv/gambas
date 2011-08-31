@@ -136,10 +136,10 @@ END_METHOD
 
 BEGIN_PROPERTY(CERROR_backtrace)
 
-	if (!ERROR_last.code || !ERROR_last.bt_count)
+	if (!ERROR_backtrace)
 		GB_ReturnNull();
 	else
-		GB_ReturnObject(DEBUG_get_string_array_from_backtrace(&ERROR_last));
+		GB_ReturnObject(DEBUG_get_string_array_from_backtrace(ERROR_backtrace));
 	
 END_PROPERTY
 

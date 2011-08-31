@@ -896,7 +896,7 @@ void EXEC_function_loop()
 					fprintf(stderr, "#1 EP = %d  SP = %d\n", EP - (VALUE *)STACK_base, SP - (VALUE *)STACK_base);
 					fprintf(stderr, "TRY\n");
 					#endif
-					ERROR_set_last();
+					ERROR_set_last(FALSE);
 					
 					while (SP > EP)
 						POP();
@@ -914,7 +914,7 @@ void EXEC_function_loop()
 					fprintf(stderr, "CATCH\n");
 					#endif
 
-					ERROR_set_last();
+					ERROR_set_last(TRUE);
 					PC = EC;
 					EC = NULL;
 					retry = TRUE;
@@ -929,7 +929,7 @@ void EXEC_function_loop()
 					//ERROR_INFO save = { 0 };
 					//ERROR_save(&save);
 
-					ERROR_set_last();
+					ERROR_set_last(TRUE);
 
 					if (EXEC_debug && !STACK_has_error_handler())
 					{

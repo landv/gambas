@@ -31,12 +31,14 @@
 #include "gbx_debug.h"
 #include "gbx_exec.h"
 #include "gbx_api.h"
+#include "gbx_stack.h"
 #include "gb_error.h"
 
 //#define DEBUG_ERROR 1
 
 ERROR_CONTEXT *ERROR_current = NULL;
 ERROR_INFO ERROR_last = { 0 };
+void *ERROR_backtrace = NULL;
 ERROR_HANDLER *ERROR_handler = NULL;
 #if DEBUG_ERROR
 int ERROR_depth = 0;
@@ -165,7 +167,6 @@ void ERROR_reset(ERROR_INFO *info)
 		info->free = FALSE;
 	}
 	info->msg = NULL;
-	info->bt_count = 0;
 }
 
 void ERROR_clear()
@@ -439,7 +440,6 @@ void ERROR_define(const char *pattern, char *arg[])
   ERROR_current->info.cp = CP;
   ERROR_current->info.fp = FP;
   ERROR_current->info.pc = PC;
-	ERROR_current->info.bt_count = STACK_frame_count;
   
   #if DEBUG_ERROR
 	ERROR_debug("ERROR_define: %s\n", ERROR_current->info.msg);
@@ -568,7 +568,7 @@ void ERROR_print(void)
   ERROR_print_at(stderr, FALSE, TRUE);
   
   //if (ERROR_backtrace)
-	DEBUG_print_backtrace(&ERROR_current->info);
+	DEBUG_print_backtrace(ERROR_backtrace);
 
 	if (EXEC_main_hook_done && !EXEC_debug && EXEC_Hook.error && !lock)
   {
@@ -607,12 +607,17 @@ void ERROR_restore(ERROR_INFO *save, ERROR_INFO *last)
 	}
 }
 
-void ERROR_set_last(void)
+void ERROR_set_last(bool bt)
 {
 	ERROR_reset(&ERROR_last);
 	ERROR_last = ERROR_current->info;
 	if (ERROR_last.free)
 		STRING_ref(ERROR_last.msg);
+	if (bt)
+	{
+		STACK_free_backtrace(&ERROR_backtrace);
+		ERROR_backtrace = STACK_get_backtrace();
+	}
 }
 
 void ERROR_warning(const char *warning, ...)
@@ -633,3 +638,8 @@ void ERROR_deprecated(const char *msg)
 	ERROR_warning("%s: %s is deprecated.", DEBUG_get_current_position(), msg);
 }
 
+void ERROR_exit(void)
+{
+	ERROR_reset(&ERROR_last);
+	FREE(&ERROR_backtrace, "ERROR_exit");
+}

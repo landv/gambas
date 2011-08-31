@@ -26,7 +26,16 @@
 
 #include "gbx_value.h"
 #include "gb_pcode.h"
-#include "gbx_debug.h"
+
+typedef
+	struct {
+		void *cp;
+		void *fp;
+		void *pc;
+	}
+	PACKED
+	STACK_BACKTRACE;
+
 
 typedef
   struct _stack_context {
@@ -71,7 +80,15 @@ bool STACK_check(int need);
 
 void STACK_push_frame(STACK_CONTEXT *context, int check);
 void STACK_pop_frame(STACK_CONTEXT *context);
+
 bool STACK_has_error_handler(void);
+
+STACK_BACKTRACE *STACK_get_backtrace(void);
+#define STACK_free_backtrace(_backtrace) FREE(_backtrace, "STRACK_free_backtrace")
+#define STACK_backtrace_is_end(_bt) ((((intptr_t)((_bt)->cp)) & 1) != 0)
+#define STACK_backtrace_remove_end(_bt) ((_bt)->cp = (void *)(((intptr_t)((_bt)->cp)) & ~1))
+
+
 STACK_CONTEXT *STACK_get_frame(int frame);
 void STACK_grow(void);
 

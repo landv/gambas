@@ -30,7 +30,6 @@ typedef
 		char native;        // A native method has raised an error
 		char free;          // If 'msg' sould be freed
 		char _reserved;
-		int bt_count;
 		void *cp;
 		void *fp;
 		void *pc;
