@@ -1230,10 +1230,13 @@ _JUMP_FIRST:
 
 /*-----------------------------------------------*/
 
-_JUMP_NEXT:
+#define MUST_CONTINUE_32(_x, _y) (!(_x) || (((_x) ^ (_y)) >> 31) & 1)
+#define MUST_CONTINUE_64(_x, _y) (!(_x) || (((_x) ^ (_y)) >> 63) & 1)
 
+_JUMP_NEXT:
 	{
-		static const void *jn_jump[] = { &&_JN_START, &&_JN_NEXT_1, &&_JN_NEXT_2, &&_JN_NEXT_3, &&_JN_NEXT_4, &&_JN_NEXT_5, &&_JN_NEXT_6 };
+		static const void *jn_jump[] = { &&_JN_START, NULL, &&_JN_BYTE, &&_JN_SHORT, &&_JN_INTEGER, &&_JN_LONG, &&_JN_SINGLE, &&_JN_FLOAT };
+		static const void *jn_test[] = { NULL, NULL, &&_JN_BYTE_TEST, &&_JN_SHORT_TEST, &&_JN_INTEGER_TEST, &&_JN_LONG_TEST, &&_JN_SINGLE_TEST, &&_JN_FLOAT_TEST };
 
 		VALUE * NO_WARNING(end);
 		VALUE * NO_WARNING(inc);
@@ -1268,137 +1271,88 @@ _JUMP_NEXT:
 		_pop_ctrl(ind);
 
 		val = &BP[PC[2] & 0xFF];
-
-		if (LIKELY(TYPE_is_integer(type)))
-		{
-			if (LIKELY(inc->_integer.value > 0))
-			{
-				*PC |= 1;
-				goto _JN_TEST_1;
-			}
-			else
-			{
-				*PC |= 2;
-				goto _JN_TEST_2;
-			}
-		}
-		else if (TYPE_is_float(type))
-		{
-			if (inc->_float.value > 0)
-			{
-				*PC |= 3;
-				goto _JN_TEST_3;
-			}
-			else
-			{
-				*PC |= 4;
-				goto _JN_TEST_4;
-			}
-		}
-		else if (TYPE_is_long(type))
-		{
-			if (inc->_long.value > 0)
-			{
-				*PC |= 5;
-				goto _JN_TEST_5;
-			}
-			else
-			{
-				*PC |= 6;
-				goto _JN_TEST_6;
-			}
-		}
-		else
+		
+		if (type < T_BYTE || type > T_FLOAT)
 			THROW(E_TYPE, "Integer, Float or Long", TYPE_get_name(type));
 
-	_JN_NEXT_1:
-
+		*PC |= type;
+		goto *jn_test[type];
+		
+	_JN_BYTE:
+		val->_integer.value = (unsigned char)(val->_integer.value + inc->_integer.value);
+	
+	_JN_BYTE_TEST:
+		if (MUST_CONTINUE_32(val->_integer.value - end->_integer.value, inc->_integer.value))
+		{
+			PC += 3;
+			goto _MAIN;
+		}
+		else
+			goto _JN_END;
+		
+	_JN_SHORT:
+		val->_integer.value = (short)(val->_integer.value + inc->_integer.value);
+	
+	_JN_SHORT_TEST:
+		if (MUST_CONTINUE_32(val->_integer.value - end->_integer.value, inc->_integer.value))
+		{
+			PC += 3;
+			goto _MAIN;
+		}
+		else
+			goto _JN_END;
+		
+	_JN_INTEGER:
 		val->_integer.value += inc->_integer.value;
-
-	_JN_TEST_1:
-
-		if (LIKELY(val->_integer.value <= end->_integer.value))
+	
+	_JN_INTEGER_TEST:
+		if (MUST_CONTINUE_32(val->_integer.value - end->_integer.value, inc->_integer.value))
 		{
 			PC += 3;
 			goto _MAIN;
 		}
-
-		goto _JN_END;
-
-	_JN_NEXT_2:
-
-		val->_integer.value += inc->_integer.value;
-
-	_JN_TEST_2:
-
-		if (LIKELY(val->_integer.value >= end->_integer.value))
-		{
-			PC += 3;
-			goto _MAIN;
-		}
-
-		goto _JN_END;
-
-	_JN_NEXT_3:
-
-		val->_float.value += inc->_float.value;
-
-	_JN_TEST_3:
-
-		if (LIKELY(val->_float.value <= end->_float.value))
-		{
-			PC += 3;
-			goto _MAIN;
-		}
-
-		goto _JN_END;
-
-	_JN_NEXT_4:
-
-		val->_float.value += inc->_float.value;
-
-	_JN_TEST_4:
-
-		if (LIKELY(val->_float.value >= end->_float.value))
-		{
-			PC += 3;
-			goto _MAIN;
-		}
-
-		goto _JN_END;
-
-	_JN_NEXT_5:
-
+		else
+			goto _JN_END;
+		
+	_JN_LONG:
 		val->_long.value += inc->_long.value;
-
-	_JN_TEST_5:
-
-		if (LIKELY(val->_long.value <= end->_long.value))
+		
+	_JN_LONG_TEST:
+		if (MUST_CONTINUE_64(val->_long.value - end->_long.value, inc->_long.value))
 		{
 			PC += 3;
 			goto _MAIN;
 		}
-
-		goto _JN_END;
-
-	_JN_NEXT_6:
-
-		val->_long.value += inc->_long.value;
-
-	_JN_TEST_6:
-
-		if (LIKELY(val->_long.value >= end->_long.value))
+		else
+			goto _JN_END;
+		
+	_JN_SINGLE:
+		val->_single.value += inc->_single.value;
+		
+	_JN_SINGLE_TEST:
+		if (MUST_CONTINUE_32(val->_integer.value - end->_integer.value, inc->_integer.value))
 		{
 			PC += 3;
 			goto _MAIN;
 		}
-
-		goto _JN_END;
-
+		else
+			goto _JN_END;
+	
+	_JN_FLOAT:
+		val->_float.value += inc->_float.value;
+		
+	_JN_FLOAT_TEST:
+		if (MUST_CONTINUE_64(val->_long.value - end->_long.value, inc->_long.value))
+		{
+			PC += 3;
+			goto _MAIN;
+		}
+		else
+			goto _JN_END;
+		
 	_JN_END:
-
 		PC += (signed short)PC[1] + 2;
-		goto _MAIN;
+ 		goto _MAIN;
 	}
 
 /*-----------------------------------------------*/
