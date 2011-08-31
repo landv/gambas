@@ -167,7 +167,8 @@ static void free_music(void)
 
 static void stop_sound_engine()
 {
-	GB.Watch(_ch_pipe[0], GB_WATCH_NONE, (void *)0, 0);
+	if (_ch_playing)
+		GB.Watch(_ch_pipe[0], GB_WATCH_NONE, (void *)0, 0);
 	close(_ch_pipe[0]);
 	close(_ch_pipe[1]);
   free_music();
