@@ -30,6 +30,9 @@
 #include "CSystem.h"
 /*#define DEBUG*/
 
+static char _analyze_buffer[256];
+static int _analyze_buffer_pos;
+
 static EVAL_COLOR colors[EVAL_MAX_COLOR];
 static int colors_len;
 
@@ -212,6 +215,41 @@ static int get_utf8_length(const char *s, int l)
   return len;
 }
 
+static void init_result()
+{
+	_analyze_buffer_pos = 0;
+}
+
+static void flush_result(EVAL_ANALYZE *result)
+{
+	if (_analyze_buffer_pos > 0)
+	{
+		GB.AddString(&result->str, _analyze_buffer, _analyze_buffer_pos);
+		_analyze_buffer_pos = 0;
+	}
+}
+
+static void add_result(EVAL_ANALYZE *result, const char *str, int len)
+{
+	if ((_analyze_buffer_pos + len) > sizeof(_analyze_buffer))
+		flush_result(result);
+	
+	if (len > sizeof(_analyze_buffer))
+		GB.AddString(&result->str, str, len);
+	else
+	{
+		memcpy(&_analyze_buffer[_analyze_buffer_pos], str, len);
+		_analyze_buffer_pos += len;
+	}
+}
+
+static void add_result_char(EVAL_ANALYZE *result, char c)
+{
+	if ((_analyze_buffer_pos + 1) > sizeof(_analyze_buffer))
+		flush_result(result);
+	
+	_analyze_buffer[_analyze_buffer_pos++] = c;
+}
 
 static void analyze(EVAL_ANALYZE *result)
 {
@@ -247,8 +285,10 @@ static void analyze(EVAL_ANALYZE *result)
   if (!pattern)
     return;
 
+	init_result();
+	
   if (nspace)
-    GB.AddString(&result->str, EVAL->source, nspace);
+    add_result(result, EVAL->source, nspace);
 
   type = EVAL->comment ? EVAL_TYPE_COMMENT : EVAL_TYPE_END;
   next_type = EVAL_TYPE_END;
@@ -400,30 +440,29 @@ static void analyze(EVAL_ANALYZE *result)
 
     if (space_before && old_type != EVAL_TYPE_END)
     {
-      GB.AddString(&result->str, " ", 1);
+			add_result_char(result, ' ');
       add_data(preprocessor ? EVAL_TYPE_PREPROCESSOR : EVAL_TYPE_END, 1);
     }
 
     if (type == EVAL_TYPE_STRING)
-      GB.AddString(&result->str, "\"", 1);
+			add_result_char(result, '"');
 
     if (len)
     {
 			if (EVAL->rewrite && type == EVAL_TYPE_CLASS)
 			{
-				char c = toupper(symbol[0]);
-				GB.AddString(&result->str, &c, 1);
-				if (len > 1) GB.AddString(&result->str, &symbol[1], len - 1);
+				add_result_char(result, toupper(symbol[0]));
+				if (len > 1) add_result(result, &symbol[1], len - 1);
 			}
 			else
-				GB.AddString(&result->str, symbol, len);
+				add_result(result, symbol, len);
       //printf("add: %.*s\n", len, symbol);
       len = get_utf8_length(symbol, len);
     }
 
     if (type == EVAL_TYPE_STRING)
     {
-      GB.AddString(&result->str, "\"", 1);
+      add_result_char(result, '"');
       len += 2;
     }
 
@@ -435,6 +474,8 @@ static void analyze(EVAL_ANALYZE *result)
 
     pattern++;
   }
+
+	flush_result(result);
 
   result->color = colors;
   result->len = colors_len;
