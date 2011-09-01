@@ -255,12 +255,14 @@ Public Sub Main()
   Next
 
   If $bTesting And If sPath Then
-    'FMain.Load
+    InitVersion
+    InitWebView
+    CRecentFile.Load
+    FMain.Load
     Project.Open(sPath)
     Project.Close
-    'FMain.Close
-    CSampleCode.Exit
-    CComponent.Exit
+    FMain.Close
+    Project.Exit
     Return
   Endif
 
@@ -550,7 +552,12 @@ _INIT_AGAIN:
 
   MConnection.Password.Clear
 
-  If Not $bTesting Then Refresh
+  If $bTesting Then 
+    RefreshSourceCache
+    VersionControl.CheckPaths()
+  Else
+    Refresh
+  Endif
 
   DefineStartup(Startup, True)
 

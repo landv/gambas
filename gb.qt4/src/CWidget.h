@@ -60,6 +60,7 @@ typedef
 		char *popup;
 		void *proxy;
 		void *proxy_for;
+		char *action;
 		int level;
 		int fg;
 		int bg;
@@ -190,9 +191,8 @@ void CWIDGET_resize_cached(void *_object, int w, int h);
 void CWIDGET_move_resize_cached(void *_object, int x, int y, int w, int h);
 void CWIDGET_handle_focus(CWIDGET *control, bool on);
 
-void CACTION_register(void *control, const char *key);
+void CACTION_register(void *control, const char *old, const char *key);
 void CACTION_raise(void *control);
-void CACTION_get(void *control);
 
 #ifndef DO_NOT_DECLARE_EVENTS
 #ifndef __CWIDGET_CPP

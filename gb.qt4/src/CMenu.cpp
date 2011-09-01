@@ -91,7 +91,8 @@ static void refresh_menubar(CMENU *menu)
 
 static void unregister_menu(CMENU *_object)
 {
-	CACTION_register((CWIDGET *)THIS, NULL);
+	CACTION_register((CWIDGET *)THIS, THIS->action, NULL);
+	GB.FreeString(&THIS->action);
 }
 
 static void set_menu_visible(void *_object, bool v)
@@ -634,6 +635,20 @@ BEGIN_PROPERTY(CMENU_window)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Menu_Action)
+
+	if (READ_PROPERTY)
+		GB.ReturnString(THIS->action);
+	else
+	{
+		char *action = PLENGTH() ? GB.NewString(PSTRING(), PLENGTH()) : NULL;
+		CACTION_register(THIS, THIS->action, action);
+		GB.FreeString(&THIS->action);
+		THIS->action = action;
+	}
+
+END_PROPERTY
+
 /*BEGIN_PROPERTY(CMENU_tear_off)
 
 	if (!THIS->menu)
@@ -689,7 +704,7 @@ GB_DESC CMenuDesc[] =
   GB_PROPERTY("Toggle", "b", CMENU_toggle),
   GB_PROPERTY("Value", "b", CMENU_value),
   //GB_PROPERTY("TearOff", "b", CMENU_tear_off),
-  GB_PROPERTY("Action", "s", Control_Action),
+  GB_PROPERTY("Action", "s", Menu_Action),
   GB_PROPERTY_READ("Window", "Window", CMENU_window),
 
   GB_PROPERTY_SELF("Children", ".Menu.Children"),

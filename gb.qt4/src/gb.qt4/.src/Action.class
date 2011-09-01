@@ -58,16 +58,6 @@ End
 
 
 
-Static Public Sub Get(Control As Object) As String
-  
-  Dim aCtrl As Object[]
-  
-  For Each aCtrl In $cControls
-    If aCtrl.Find(Control) >= 0 Then Return $cControls.Key
-  Next
-  
-End
-
 Static Private Sub HasHandler(hForm As Object) As Boolean
   
   Dim iType As Integer
@@ -112,22 +102,18 @@ Static Private Sub GetActiveWindow(hCtrl As Object) As Window
   
 End
 
-Static Public Sub Register(Control As Object, Key As String)
+Static Public Sub Register(Control As Object, Old As String, Key As String)
   
-  Dim iInd As Integer
   Dim aCtrl As Object[]
-  Dim sOld As String
   Dim hWin As Window
   Dim hObs As Observer
   Dim sType As String
   
-  sOld = Get(Control)
-  If sOld = Key Then Return
+  If Old = Key Then Return
   
-  If sOld Then
-    aCtrl = $cControls[sOld]
-    iInd = aCtrl.Find(Control)
-    aCtrl.Remove(iInd)
+  If Old Then
+    aCtrl = $cControls[Old]
+    aCtrl.Remove(aCtrl.Find(Control))
   Endif
   
   If Key Then
@@ -177,7 +163,7 @@ Static Public Sub Raise(Control As Object)
     Return
   Endif
 
-  sKey = Get(Control)
+  sKey = Control.Action
   'DEBUG Control;; sKey
   If Not sKey Then Return
 
@@ -493,15 +479,13 @@ Private Sub Value_Write(Value As Boolean)
   Dim hCtrl As Object
   Dim aCtrl As Object[] = GetControls()
   Dim cKey As New Collection
-  Dim sKey As String
   
   For Each hCtrl In aCtrl
     'Debug hCtrl;; Value
     If IsToggle(hCtrl) Then 
       SetToggle(hCtrl, Value)
     Else 
-      sKey = Get(hCtrl)
-      cKey[sKey] = hCtrl
+      cKey[hCtrl.Action] = hCtrl
     Endif
   Next    
 

@@ -567,8 +567,8 @@ void ERROR_print(void)
   
   ERROR_print_at(stderr, FALSE, TRUE);
   
-  //if (ERROR_backtrace)
-	DEBUG_print_backtrace(ERROR_backtrace);
+  if (ERROR_backtrace)
+		DEBUG_print_backtrace(ERROR_backtrace);
 
 	if (EXEC_main_hook_done && !EXEC_debug && EXEC_Hook.error && !lock)
   {

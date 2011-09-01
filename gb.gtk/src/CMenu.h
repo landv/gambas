@@ -44,6 +44,7 @@ typedef
 		GB_BASE ob;
 		gMenu *widget;
 		GB_VARIANT_VALUE tag;
+		char *action;
 	} 
 	CMENU;
 

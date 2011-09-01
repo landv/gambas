@@ -35,7 +35,7 @@ Sets or clears the action flag.
 
 static GB_FUNCTION _action_register_func;
 static GB_FUNCTION _action_raise_func;
-static GB_FUNCTION _action_get_func;
+//static GB_FUNCTION _action_get_func;
 
 static void init_action()
 {
@@ -46,14 +46,14 @@ static void init_action()
 		return;
 
 	klass = (void *)GB.FindClass("Action");
-	GB.GetFunction(&_action_register_func, klass, "Register", "os", "");
+	GB.GetFunction(&_action_register_func, klass, "Register", "oss", "");
 	GB.GetFunction(&_action_raise_func, klass, "Raise", "o", "");
-	GB.GetFunction(&_action_get_func, klass, "Get", "o", "s");
+	//GB.GetFunction(&_action_get_func, klass, "Get", "o", "s");
 
 	init = true;
 }
 
-void CACTION_register(void *control, const char *key)
+void CACTION_register(void *control, const char *old, const char *key)
 {
 	//qDebug("CACTION_register: (%s %p) %s", GB.GetClassName(control), control, key);
 	//fprintf(stderr, "CACTION_register: (%s %p %p) %s\n", GB.GetClassName(control), control, ((CWIDGET *)control)->widget, key);
@@ -64,11 +64,12 @@ void CACTION_register(void *control, const char *key)
 
 	init_action();
 
-	GB.Push(2,
+	GB.Push(3,
 		GB_T_OBJECT, control,
+		GB_T_STRING, old, 0,
 		GB_T_STRING, key, 0);
 
-	GB.Call(&_action_register_func, 2, true);
+	GB.Call(&_action_register_func, 3, true);
 
 	SET_ACTION(control, key && *key);
 }
@@ -84,14 +85,4 @@ void CACTION_raise(void *control)
 
 	GB.Push(1, GB_T_OBJECT, control);
 	GB.Call(&_action_raise_func, 1, true);
-}
-
-void CACTION_get(void *control)
-{
-	init_action();
-
-	GB.Push(1, GB_T_OBJECT, control);
-	GB.Call(&_action_get_func, 1, false);
-
-	// The result is in the good place, as if we did a GB.ReturnString()
 }

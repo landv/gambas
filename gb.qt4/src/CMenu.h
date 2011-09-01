@@ -63,6 +63,7 @@ typedef
     QMenu *menu;
 		QKeySequence *accel;
     CPICTURE *picture;
+		char *action;
     unsigned deleted : 1;
     unsigned toggle : 1;
     //unsigned noshortcut : 1;

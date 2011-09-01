@@ -51,6 +51,7 @@ typedef
 		void *font;
 		void *cursor;
 		char *popup;
+		char *action;
 	}  
 	CWIDGET;
 
@@ -79,9 +80,8 @@ DECLARE_PROPERTY(CCONTROL_action);
 
 int CWIDGET_check(void *_object);
 
-void CACTION_register(void *control, const char *key);
+void CACTION_register(void *control, const char *old, const char *key);
 void CACTION_raise(void *control);
-void CACTION_get(void *control);
 
 #endif
 

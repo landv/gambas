@@ -268,7 +268,9 @@ void DeleteControl(gControl *control)
 	
 	GB.StoreVariant(NULL, POINTER(&widget->tag));
 	GB.StoreObject(NULL, POINTER(&widget->cursor));
-	CACTION_register(widget, NULL);
+	
+	CACTION_register(widget, widget->action, NULL);
+	GB.FreeString(&widget->action);
 	
 	if (control->isTopLevel())
 		CWINDOW_check_main_window((CWINDOW*)widget);
@@ -820,9 +822,12 @@ END_PROPERTY
 BEGIN_PROPERTY(CCONTROL_action)
 
 	if (READ_PROPERTY)
-		CACTION_get(THIS);
+		GB.ReturnString(THIS->action);
 	else
-		CACTION_register(THIS, GB.ToZeroString(PROP(GB_STRING)));
+	{
+		CACTION_register(THIS, THIS->action, GB.ToZeroString(PROP(GB_STRING)));
+		GB.StoreString(PROP(GB_STRING), &THIS->action);
+	}
 
 END_PROPERTY
 

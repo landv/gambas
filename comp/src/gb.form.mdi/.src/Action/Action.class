@@ -39,14 +39,14 @@ Static Private Function List_Read() As String[]
 
 End
 
-Static Public Sub Register(Control As Object, Key As String)
+Static Public Sub Register(Control As Object, Old As String, Key As String)
   
   Dim sShortcut As String
   Dim sAction As String
   Dim hObs As Observer
   Dim hWin As Window
   
-  Super.Register(Control, Key)
+  Super.Register(Control, Old, Key)
   
   If Key Then
     If Control Is Menu Then

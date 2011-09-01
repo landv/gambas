@@ -1435,9 +1435,14 @@ END_PROPERTY
 BEGIN_PROPERTY(Control_Action)
 
 	if (READ_PROPERTY)
-		CACTION_get(THIS);
+		GB.ReturnString(THIS->action);
 	else
-		CACTION_register(THIS, GB.ToZeroString(PROP(GB_STRING)));
+	{
+		char *action = PLENGTH() ? GB.NewString(PSTRING(), PLENGTH()) : NULL;
+		CACTION_register(THIS, THIS->action, action);
+		GB.FreeString(&THIS->action);
+		THIS->action = action;
+	}
 
 END_PROPERTY
 
@@ -1998,7 +2003,8 @@ void CWidget::destroy()
 	if (_official_hovered == ob)
 		_official_hovered = NULL;
 	
-	CACTION_register(ob, NULL);
+	CACTION_register(ob, ob->action, NULL);
+	GB.FreeString(&ob->action);
 	
 	if (ob->proxy)
 		((CWIDGET *)ob->proxy)->proxy_for = NULL;

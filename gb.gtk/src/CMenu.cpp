@@ -47,8 +47,7 @@ static void send_click_event(void *_object)
 
 static int CMENU_check(void *_object)
 {
-	if (!MENU) return true;
-  	return false;
+	return (MENU == NULL);
 }
 
 static void delete_later(gMenu *menu)
@@ -66,7 +65,8 @@ static void cb_finish(gMenu *sender)
 	CMENU *_object = (CMENU*)sender->hFree;
 	if (_object) 
 	{ 
-		//CACTION_register(THIS, NULL);
+		CACTION_register(THIS, THIS->action, NULL);
+		GB.FreeString(&THIS->action);	
 		THIS->widget = NULL;
     GB.StoreVariant(NULL, POINTER(&THIS->tag));
 		GB.Unref(POINTER(&_object));
@@ -366,6 +366,18 @@ BEGIN_PROPERTY(CMENU_name)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Menu_Action)
+
+	if (READ_PROPERTY)
+		GB.ReturnString(THIS->action);
+	else
+	{
+		CACTION_register(THIS, THIS->action, GB.ToZeroString(PROP(GB_STRING)));
+		GB.StoreString(PROP(GB_STRING), &THIS->action);
+	}
+
+END_PROPERTY
+
 /*BEGIN_PROPERTY(CMENU_tear_off)
 
 	if (READ_PROPERTY)
@@ -411,7 +423,7 @@ GB_DESC CMenuDesc[] =
   GB_PROPERTY("Toggle", "b", CMENU_toggle),
   GB_PROPERTY("Value", "b", CMENU_value),
   //GB_PROPERTY("TearOff", "b", CMENU_tear_off),
-  GB_PROPERTY("Action", "s", CCONTROL_action),
+  GB_PROPERTY("Action", "s", Menu_Action),
   GB_PROPERTY_READ("Window", "Window", CMENU_window),
 
   GB_PROPERTY_SELF("Children", ".Menu.Children"),

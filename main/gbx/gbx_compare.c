@@ -469,6 +469,13 @@ int COMPARE_object(void **a, void **b)
 	bool comp;
 	CLASS *ca, *cb;
 	
+	/*{
+		STACK_BACKTRACE *bt = STACK_get_backtrace();
+		fprintf(stderr, "COMPARE_object\n");
+		DEBUG_print_backtrace(bt);
+		STACK_free_backtrace(&bt);
+	}*/
+	
 	ca = OBJECT_class(*a);
 	cb = OBJECT_class(*b);
 
